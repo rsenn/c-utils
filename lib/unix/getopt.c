@@ -92,13 +92,13 @@ _getopt_(int argc, char* const argv[], const char* optstring, const struct longo
         ++nextchar;
         if(longopts != 0 && *(argv[optind] + 1) == '-') {
           char const* spec_long = argv[optind] + 2;
-          char const* pos_eq = strchr(spec_long, '=');
-          ssize_t spec_len = (pos_eq == NULL ? str_len(spec_long) : pos_eq - spec_long);
+    size_t pos_eq = str_chr(spec_long, '=');
+          ssize_t spec_len =pos_eq;
           int index_search = 0;
           int index_found = -1;
           const struct longopt* optdef = 0;
           while(longopts->name != 0) {
-            if(strncmp(spec_long, longopts->name, spec_len) == 0) {
+            if(str_diffn(spec_long, longopts->name, spec_len) == 0) {
               if(optdef != 0) {
                 if(opterr) {
                   buffer_putm_2(optbuf, "ambiguous option: ", spec_long);
@@ -114,7 +114,7 @@ _getopt_(int argc, char* const argv[], const char* optstring, const struct longo
           }
           if(optdef == 0) {
             if(opterr) {
-              buffer_putm_2(optbuf, "no such a option: ", spec_long);
+              buffer_putm_2(optbuf, "no such option: ", spec_long);
               buffer_putnlflush(optbuf);
             }
             return '?';

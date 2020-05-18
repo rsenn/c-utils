@@ -71,6 +71,26 @@ static int libs_mode = 0;
 static int static_libs = 0;
 static int cflags_mode = 0;
 
+int
+get_field_index(int flags) {
+  if(flags & (PRINT_LIBS | LIBS_ONLY_L | LIBS_ONLY_OTHER))
+    return 2;
+  if(flags & (PRINT_CFLAGS | CFLAGS_ONLY_I | CFLAGS_ONLY_OTHER))
+    return 1;
+  if(flags & (PRINT_REQUIRES))
+    return 3;
+  if(flags & (PRINT_VERSION))
+    return 0;
+
+  buffer_puts(buffer_2, "ERROR: field index flags = ");
+  buffer_putxlong(buffer_2, flags);
+  buffer_putnlflush(buffer_2);
+
+  exit(2);
+
+  return -1;
+}
+
 const char*
 host_arch(const char* compiler, stralloc* out) {
   pid_t pid;
@@ -527,7 +547,7 @@ pkg_conf(strarray* modules, int mode) {
         stralloc_catc(&value, '\n');
       stralloc_cat(&value, &pf.name);
     } else {
-      const char* fn = field_names[cmd.code - 1];
+      const char* fn = field_names[get_field_index(cmd.code)];
 
       pkg_set(&pf);
 
@@ -536,8 +556,9 @@ pkg_conf(strarray* modules, int mode) {
 #endif
 
       if(!pkg_expand(&pf, fn, &value)) {
-        errmsg_warn("Expanding ", pkgname, "::", fn, NULL);
         buffer_flush(buffer_1);
+        buffer_flush(buffer_2);
+        errmsg_warn("Expanding ", pkgname, "::", fn, NULL);
         pkg_unset(&pf);
         pkg_free(&pf);
         return 0;
@@ -553,7 +574,7 @@ pkg_conf(strarray* modules, int mode) {
 
         strlist_foreach_s(&sl, s) {
           if((cmd.code == PRINT_LIBS) && libs_mode) {
-            int flag = (str_start(s, "-L") || str_start(s, "-l"));
+            int flag = (/* str_start(s, "-L") ||  */str_start(s, "-l"));
             if((libs_mode == LIBS_ONLY_L) ^ flag != 0)
               continue;
           }
@@ -657,10 +678,16 @@ pkgcfg_init(const char* argv0) {
 
   pos = stralloc_finds(&cmd.self, "pkg");
 
-  if(pos > 0 && cmd.self.s[pos - 1] == '-')
+  if(pos > 0 && cmd.self.s[pos - 1] == '-') {
     pos--;
 
-  stralloc_copyb(&cmd.host, cmd.self.s, pos);
+    stralloc_copyb(&cmd.host, cmd.self.s, pos);
+  }
+
+  if(cmd.host.len == 0)
+    if(!host_arch("cc", &cmd.host))
+      if(!host_arch("gcc", &cmd.host))
+        host_arch("clang", &cmd.host);
 
   stralloc_copy(&dir, &cmd.prefix);
   stralloc_cats(&dir, "/");
@@ -689,14 +716,12 @@ pkgcfg_init(const char* argv0) {
   strlist_init(&cmd.path, '\0');
 
   if(pkgcfg_path) {
-    for(x = pkgcfg_path; *x; x += pos) {
-
+    strlist_froms(&cmd.path, pkgcfg_path, ':');
+/*     for(x = pkgcfg_path; *x; x += pos) {
       pos = str_chr(x, ':');
-
       strlist_pushb(&cmd.path, x, pos);
-
       pos++;
-    }
+    } */
   } else {
     stralloc_copy(&dir, &cmd.prefix);
     if(sysroot)
@@ -727,12 +752,7 @@ pkgcfg_init(const char* argv0) {
       strlist_push_sa(&cmd.path, &dir);
   }
 
-  if(cmd.host.len == 0)
-    if(!host_arch("cc", &cmd.host))
-      if(!host_arch("gcc", &cmd.host))
-        host_arch("clang", &cmd.host);
-
-#ifdef DEBUG_OUTPUT
+#ifdef DEBUG_OUTPUT_
   buffer_puts(buffer_2, "full qualified host: '");
   buffer_putsa(buffer_2, &cmd.host);
   buffer_putsflush(buffer_2, "'\n");
@@ -764,16 +784,16 @@ main(int argc, char* argv[]) {
       {"help", 0, NULL, 'h'},
       {"version", 0, NULL, 'v'},
       {"modversion", 0, NULL, PRINT_VERSION},
-      {"cflags", 0, NULL, PRINT_CFLAGS},
-      {"libs", 0, NULL, PRINT_LIBS},
+      // {"cflags", 0, NULL, PRINT_CFLAGS},
       {"path", 0, NULL, PRINT_PATH},
       {"variable", 1, NULL, 'V'},
       {"list-all", 0, NULL, 'l'},
       {"print-errors", 0, NULL, 'P'},
       {"short-errors", 0, NULL, 'S'},
       {"exists", 0, NULL, 'E'},
-      //   {"libs-only-l", 0, &libs_mode, LIBS_ONLY_L},
-      //       {"libs-only-other", 0, &libs_mode, LIBS_ONLY_OTHER},
+      {"libs-only-l", 0, &libs_mode, LIBS_ONLY_L},
+      {"libs-only-other", 0, &libs_mode, LIBS_ONLY_OTHER},
+      //  {"libs", 0, NULL, PRINT_LIBS},
       {"cflags-only-I", 0, &cflags_mode, CFLAGS_ONLY_I},
       {"cflags-only-other", 0, &cflags_mode, CFLAGS_ONLY_OTHER},
       {"static", 0, NULL, STATIC_LIBS},
@@ -806,29 +826,42 @@ main(int argc, char* argv[]) {
 #ifdef _MSC_VER
   optbuf = buffer_1;
 #endif
+  opterr = 0;
 
   for(;;) {
-    c = getopt_long(argc, argv, "?hmilpaPSvV:", opts, &index);
+    c = getopt_long(argc, argv, "hmilpaPSvV:", opts, &index);
     if(c == -1)
       break;
     if(c == 0)
       continue;
 
     switch(c) {
-      case '?':
+
       case 'h': usage(argv[0]); return 0;
       case 'V': break;
       case 'v': {
         buffer_putsflush(buffer_1, "1.0\n");
         exit(0);
       }
+      case LIBS_ONLY_L:
+      case LIBS_ONLY_OTHER:
+        cmd.code |= PRINT_LIBS;
+        libs_mode = c;
+        break;
+      case CFLAGS_ONLY_I:
+      case CFLAGS_ONLY_OTHER:
+        cmd.code |= PRINT_CFLAGS;
+        cflags_mode = c;
+        break;
+
       case STATIC_LIBS: static_libs = 1; break;
       case PRINT_VERSION:
       case PRINT_CFLAGS:
       case PRINT_LIBS:
       case PRINT_PATH:
+
         if(!cmd.code)
-          cmd.code = c;
+          cmd.code |= c;
         break;
       case 'l':
         if(!cmd.code)
@@ -838,16 +871,45 @@ main(int argc, char* argv[]) {
       case 'P': mode = PKGCFG_PRINT_ERR; break;
       case 'S': mode = PKGCFG_SHORT_ERR; break;
       case 'E': mode = PKGCFG_EXISTS; break;
+      case '?': {
+
+        const char* arg = argv[optind];
+
+        if(!str_diffn(arg, "--libs", 6) || !str_diffn(arg, "--cflags", 8)) {
+          int i = arg[2] == 'l' ? PRINT_LIBS : PRINT_CFLAGS;
+          cmd.code |= i;
+          if(i == PRINT_LIBS)
+            libs_mode = arg[str_find(arg, "only")] ? (arg[str_find(arg, "other")] ? LIBS_ONLY_OTHER : LIBS_ONLY_L) : 0;
+          else
+            cflags_mode =
+                arg[str_find(arg, "only")] ? (arg[str_find(arg, "other")] ? CFLAGS_ONLY_OTHER : CFLAGS_ONLY_I) : 0;
+
+          argv[optind] = "--static";
+          /*           for(i = optind; argv[i]; i++)
+                      argv[i] = argv[i+1];
+           */
+          continue;
+        }
+
+        goto getopt_end;
+      }
+
       default:
-        buffer_puts(buffer_1, "WARNING: Invalid argument -");
-        buffer_putc(buffer_1, isprint(c) ? c : '?');
-        buffer_putm_internal(buffer_1, " '", optarg ? optarg : "", "'", 0);
-        buffer_putnlflush(buffer_1);
+        buffer_puts(buffer_2, "WARNING: Invalid argument -");
+        buffer_putc(buffer_2, isprint(c) ? c : '?');
+        buffer_putm_internal(buffer_2, " '", optarg ? optarg : argv[optind], "'", 0);
+        buffer_putnlflush(buffer_2);
+        usage(argv[0]);
+        return 1;
         break;
-        /*usage(argv[0]);
-        return 1;*/
     }
   }
+getopt_end:
+
+  if(libs_mode)
+    cmd.code |= PRINT_LIBS;
+  if(cflags_mode)
+    cmd.code |= PRINT_CFLAGS;
 
   sysroot = env_get("PKG_CONFIG_SYSROOT");
 
