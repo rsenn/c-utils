@@ -17,7 +17,7 @@
 #include "lib/case.h"
 #include "lib/buffer.h"
 #include "lib/getopt.h"
-#include <errno.h>8
+#include <errno.h>
 #include <signal.h>
 #ifdef __ORANGEC__
 #include <sockets.h>
@@ -90,7 +90,7 @@ http_io_handler(http* h, buffer* out) {
         char buf[8192];
         ssize_t n;
 
-        while((n = http_read(h, buf, sizeof(buf), &h->q.in)) > 0) {
+        while((n = http_read(h->sock, buf, sizeof(buf), &h->q.in)) > 0) {
           if(buffer_put(out, buf, n)) {
             errmsg_warnsys("write error: ", 0);
             return 2;
@@ -146,13 +146,13 @@ main(int argc, char* argv[]) {
     errmsg_warnsys("open error: ", outname, 0);
     return 126;
   }
-  buffer_init(&out, &write, outfile, outbuf, sizeof(outbuf));
+  buffer_init(&out, (buffer_op_proto*)&write, outfile, outbuf, sizeof(outbuf));
   http_init(&h, url_host, url_port);
   h.nonblocking = 1;
   h.keepalive = 0;
   argi = optind;
   if(argv[optind] == 0) {
-    argv[optind++] = default_url;
+    argv[optind++] = (char*)default_url;
     // argv[1] = "http://127.0.0.1:5555/show";
     argv[optind] = 0;
   }

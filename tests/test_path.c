@@ -162,7 +162,7 @@ TEST(test_path_collapse) {
   stralloc sa;
   stralloc_init(&sa);
 
-  path_collapse("/this/is/a/test/dir/..", &sa);
+  path_collapse("/this/is/a/test/dir/..", 0);
 
   buffer_puts(buffer_1, "\n\"");
   buffer_putsa(buffer_1, &sa);

@@ -482,7 +482,7 @@ pkg_list() {
   }
 
   slist_foreach(pkgs, item) {
-    const char* x = slist_data(item);
+    char* x = slist_data(item);
     buffer_puts(buffer_1, x);
     buffer_putnlflush(buffer_1);
 
@@ -654,8 +654,11 @@ pkgcfg_init(const char* argv0) {
       argv0 = x;
   }
 
-  if(!argv0[str_chr(argv0, '/')])
-    argv0 = (const char*)path_readlink("/proc/self/exe", &dir);
+  if(!argv0[str_chr(argv0, '/')]) {
+    path_readlink("/proc/self/exe", &dir);
+    stralloc_nul(&dir);
+    argv0 = dir.s;
+  }
 
   stralloc_copys(&cmd.self, path_basename(argv0));
 

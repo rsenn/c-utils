@@ -7,7 +7,7 @@ json_default_printer(jsonfmt* p, jsonval* v, int depth, int index) {
   p->indent = "  ";
   p->newline = "\n";
   p->spacing = " ";
-  p->quote = "\"";
+  p->quote[0] = '"';
 };
 
 void
@@ -21,5 +21,5 @@ json_tosa(jsonval val, stralloc* sa, void (*p)(jsonfmt*, jsonval*, int, int)) {
   buffer_init(&b, (ssize_t(*)(fd_t, void*, size_t, void*)) & stralloc_write, -1, buf, sizeof(buf));
   b.cookie = sa;
 
-  json_print(val, &b, p);
+  json_print(val, &b, (void*)p);
 }

@@ -65,15 +65,16 @@ pretty_printer(jsonfmt* p, jsonval* v, int depth, int index, char q) {
   p->precision = 5;
   p->depth = depth;
   p->index = index;
-  p->quote = quote;
+  p->quote[0]= q;
+  p->quote[1]= 0;
 
   if(v == NULL) {
-    p->quote = no_quote ? "\0" : quote_char;
+    p->quote[0] = no_quote ? '\0' : quote_char[0];
     return;
   }
 
   if(numbers && json_isnumber(*v))
-    p->quote = "\0";
+    p->quote[0] = '\0';
 
   if(compact) {
     p->newline = p->indent = p->spacing = "";

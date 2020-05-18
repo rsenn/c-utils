@@ -201,7 +201,7 @@ void unit_test_copy(buffer* src, buffer* dst);
 bool unit_test_empty(buffer* file);
 struct taia* unit_test_gettime(void);
 void unit_test_optparse(int argc, char** argv);
-buffer* unit_test_tmpfile(buffer* b, char* tmpl);
+buffer* unit_test_tmpfile(buffer* b, char** tmpl);
 void unit_test_usage(const char* cmd);
 
 buffer* unit_test_getbuffer(int fileno);

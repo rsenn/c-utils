@@ -7,7 +7,7 @@ json_tostring_printer(jsonfmt* p, jsonval* v, int depth, int index) {
   p->indent = "";
   p->newline = "";
   p->spacing = " ";
-  p->quote = "\"";
+  p->quote[0] = '"';
 };
 
 const char*

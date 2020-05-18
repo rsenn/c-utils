@@ -11,8 +11,17 @@
 #include "lib/getopt.h"
 #include "lib/errmsg.h"
 #include "lib/scan.h"
+#include "lib/open.h"
+#include <stdio.h>
 #include <ctype.h>
 #include <errno.h>
+
+#if WINDOWS_NATIVE
+#include <io.h>
+#else
+#include <unistd.h>
+#endif
+
 
 static buffer infile, b;
 static int depth = 0, prev_closing = 0;

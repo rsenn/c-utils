@@ -46,7 +46,7 @@ dir_entries(const char* dir, strarray* arr) {
 int64
 serial_ports() {
   static int i;
-  const char** port;
+  char** port;
   strarray temp, newports;
   strarray_init(&temp);
   strarray_init(&newports);

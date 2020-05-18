@@ -2,12 +2,21 @@
 #include "lib/scan.h"
 #include "lib/open.h"
 #include "lib/mmap.h"
+#include "lib/str.h"
+#include "lib/byte.h"
+
+#if WINDOWS_NATIVE
+#include <io.h>
+#else
+#include <unistd.h>
+#endif
+
 
 int
 get_account(const char* name, int* uid, int* gid) {
   size_t p = 0, n, i, len;
   char *x, *end;
-  if((x = mmap_read("/etc/passwd", &n)) == NULL || n == 0)
+  if((x = (char*)mmap_read("/etc/passwd", &n)) == NULL || n == 0)
     return 0;
   end = x + n;
   len = str_len(name);

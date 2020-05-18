@@ -62,7 +62,8 @@ compact_printer(jsonfmt* p, jsonval* v, int depth, int index, char quot) {
   p->newline = "\n";
   p->spacing = " ";
   p->separat = ",\n";
-  p->quote = quote;
+  p->quote[0] = quot;
+  p->quote[1] = '\0';
   p->precision = 3;
   p->depth = depth;
   p->index = index;
@@ -76,7 +77,8 @@ default_printer(jsonfmt* p, jsonval* v, int depth, int index, char quot) {
   p->spacing = spacing ? spacing : " ";
   p->newline = depth > depth_arg ? p->spacing : "\n";
   p->separat = separator ? separator : depth > depth_arg ? ", " : ",\n";
-  p->quote = quote;
+  p->quote[0] = quot;
+  p->quote[1] = '\0';
   p->precision = 10;
   p->depth = depth - (index == -2);
   p->index = index;

@@ -106,9 +106,9 @@ unit_test_closetemp(buffer* b) {
 }
 
 buffer*
-unit_test_tmpfile(buffer* b, char* tmpl) {
+unit_test_tmpfile(buffer* b, char** tmpl) {
   int fd;
-  if((fd = open_temp(tmpl)) == -1) {
+  if((fd = open_temp((const char**)tmpl)) == -1) {
     buffer_puts(muerr, "ERROR: tmpfile failed");
     buffer_putnlflush(muerr);
     exit(EXIT_FAILURE);
@@ -126,8 +126,11 @@ unit_test_run(struct unit_test* mu_, unit_test_func_t func, const char* name) {
   struct unit_test* running = &run;
   static buffer testtmp, failtmp;
 
-  run.testlog = unit_test_tmpfile(&testtmp, "testlog-XXXXXX");
-  run.faillog = unit_test_tmpfile(&failtmp, "faillog-XXXXXX");
+  static char *testlog_filename = "testlog-XXXXXX";
+  static char *faillog_filename = "testlog-XXXXXX";
+
+  run.testlog = unit_test_tmpfile(&testtmp, &testlog_filename);
+  run.faillog = unit_test_tmpfile(&failtmp, &faillog_filename);
 
   /*if(!muconf_ptr()->s) {
     buffer_1small = running->testlog;
