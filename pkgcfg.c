@@ -490,33 +490,27 @@ pkg_list() {
 int
 pkg_open(const char* pkgname, pkg* pf) {
   buffer pc;
-  int ret, i, n = strlist_count(&cmd.path);
-
+  const char* s;
+  int ret = 0, i;
+ 
   stralloc_init(&pf->name);
 
-  for(i = 0; i < n; ++i) {
-    const char* s = strlist_at(&cmd.path, i);
+  strlist_foreach_s(&cmd.path, s) {
 
-    if(s == NULL)
-      break;
-    stralloc path;
-    stralloc_init(&path);
+    stralloc_copys(&pf->name, s);
 
-    stralloc_copys(&path, s);
+    stralloc_catm_internal(&pf->name, "/", pkgname, ".pc", 0);
+    stralloc_nul(&pf->name);
 
-    stralloc_catm_internal(&path, "/", pkgname, ".pc", 0);
-    stralloc_nul(&path);
 
-    stralloc_copy(&pf->name, &path);
-
-    if(!buffer_mmapread(&pc, path.s))
+    if(!buffer_mmapread(&pc, pf->name.s))
       break;
   }
 
-  if(pc.x == NULL)
-    return 0;
-
-  ret = pkg_read(&pc, pf);
+  if(pc.x)
+     ret = pkg_read(&pc, pf);
+  else 
+    stralloc_free(&pf->name);
 
   return ret;
 }
@@ -574,7 +568,7 @@ pkg_conf(strarray* modules, int mode) {
 
         strlist_foreach_s(&sl, s) {
           if((cmd.code == PRINT_LIBS) && libs_mode) {
-            int flag = (/* str_start(s, "-L") ||  */str_start(s, "-l"));
+            int flag = (/* str_start(s, "-L") ||  */ str_start(s, "-l"));
             if((libs_mode == LIBS_ONLY_L) ^ flag != 0)
               continue;
           }
@@ -717,11 +711,11 @@ pkgcfg_init(const char* argv0) {
 
   if(pkgcfg_path) {
     strlist_froms(&cmd.path, pkgcfg_path, ':');
-/*     for(x = pkgcfg_path; *x; x += pos) {
-      pos = str_chr(x, ':');
-      strlist_pushb(&cmd.path, x, pos);
-      pos++;
-    } */
+    /*     for(x = pkgcfg_path; *x; x += pos) {
+          pos = str_chr(x, ':');
+          strlist_pushb(&cmd.path, x, pos);
+          pos++;
+        } */
   } else {
     stralloc_copy(&dir, &cmd.prefix);
     if(sysroot)
