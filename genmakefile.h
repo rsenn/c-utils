@@ -23,7 +23,7 @@
 #include "lib/case.h"
 #include "map.h"
 
-typedef enum { WIN, MAC, LINUX } os_type;
+typedef enum { OS_WIN, OS_MAC, OS_LINUX } os_type;
 
 #if WINDOWS
 #define MAX_CMD_LEN 1023

@@ -2141,7 +2141,7 @@ gen_clean_rule(HMAP_DB* rules) {
     strlist_init(&delete_args, '\0');
 
     if(delete_command.len == 0)
-      stralloc_copys(&delete_command, /* cfg.sys.type == WIN ? "DEL /F /Q" : */ "$(RM)");
+      stralloc_copys(&delete_command, /* cfg.sys.type == OS_WIN ? "DEL /F /Q" : */ "$(RM)");
 
     cmdoffs = delete_command.len;
 
@@ -3535,16 +3535,16 @@ set_system(const char* s) {
   int ret = 1;
 
   if(s[str_find(s, "win")] || s[str_find(s, "mingw")]) {
-    cfg.sys.os = WIN;
+    cfg.sys.os = OS_WIN;
     cfg.sys.type = NTOS;
   } else if(s[str_find(s, "msys")] || s[str_find(s, "cygwin")]) {
-    cfg.sys.os = WIN;
+    cfg.sys.os = OS_WIN;
     cfg.sys.type = UNIX;
   } else if(s[str_find(s, "mac")]) {
-    cfg.sys.os = MAC;
+    cfg.sys.os = OS_MAC;
     cfg.sys.type = UNIX;
   } else if(s[str_find(s, "lin")]) {
-    cfg.sys.os = LINUX;
+    cfg.sys.os = OS_LINUX;
     cfg.sys.type = UNIX;
   } else {
     ret = 0;
@@ -3572,7 +3572,7 @@ set_make_type() {
   newline = "\n";
 #endif
 
-  stralloc_copys(&mkdir_command, cfg.sys.os == WIN ? "IF NOT EXIST $@ MKDIR $@" : "mkdir -p $@");
+  stralloc_copys(&mkdir_command, cfg.sys.os == OS_WIN ? "IF NOT EXIST $@ MKDIR $@" : "mkdir -p $@");
 
   if(str_start(tools.make, "batch") || str_start(tools.make, "cmd")) {
     pathsep_args = '\\';
@@ -4294,7 +4294,7 @@ set_compiler_type(const char* compiler) {
     var_push_sa("CPPFLAGS", &chipdef);
   }
 
-  if(cfg.sys.os == WIN) {
+  if(cfg.sys.os == OS_WIN) {
     // push_lib("EXTRA_LIBS", "advapi32");
 
     /*  if(str_start(compiler, "dmc"))
@@ -4492,13 +4492,13 @@ main(int argc, char* argv[]) {
   MAP_NEW(targetdirs);
 
 #if defined(_WIN32) || defined(_WIN64) || WINDOWS_NATIVE
-  cfg.sys.os = WIN;
+  cfg.sys.os = OS_WIN;
   cfg.sys.type = NTOS;
 #elif defined(__linux__) || defined(__unix__)
-  cfg.sys.os = LINUX;
+  cfg.sys.os = OS_LINUX;
   cfg.sys.type = UNIX;
 #elif defined(__APPLE__)
-  cfg.sys.os = MAC;
+  cfg.sys.os = OS_MAC;
   cfg.sys.type = UNIX;
 #endif
 
