@@ -19,9 +19,12 @@
 #include "lib/mmap.h"
 #include "lib/array.h"
 #include "lib/socket.h"
+#include "lib/open.h"
+#include "lib/wait.h"
 #include "map.h"
 
 #include <ctype.h>
+#include <spawn.h>
 #include <stdlib.h>
 
 #define PKGCFG_EXISTS 1
@@ -30,12 +33,17 @@
 
 typedef enum {
   PRINT_VERSION = 1,
-  PRINT_CFLAGS,
-  PRINT_LIBS,
-  PRINT_REQUIRES,
-  PRINT_PATH,
-  LIST_ALL,
+  PRINT_CFLAGS = 2,
+  PRINT_LIBS = 4,
+  PRINT_REQUIRES = 8,
+  PRINT_PATH = 16,
+  LIST_ALL = 32,
+  STATIC_LIBS = 64
 } id;
+
+typedef enum { LIBS_ONLY_L = 128, LIBS_ONLY_OTHER = 256 } libs_mode_t;
+
+typedef enum { CFLAGS_ONLY_I = 512, CFLAGS_ONLY_OTHER = 1024 } cflags_mode_t;
 
 static struct {
   id code;
@@ -59,6 +67,40 @@ static const char* const field_names[] = {
 };
 
 static const char *sysroot = 0, *pkgcfg_path = 0;
+static int libs_mode = 0;
+static int static_libs = 0;
+static int cflags_mode = 0;
+
+const char*
+host_arch(const char* compiler, stralloc* out) {
+  pid_t pid;
+  posix_spawn_file_actions_t actions;
+  posix_spawnattr_t attr;
+  int p[2];
+  char* const argv[] = {(char*)compiler, "-dumpmachine", 0};
+  char* const envp[1] = {0};
+
+  stralloc_zero(out);
+
+  if(pipe(p) == -1)
+    return NULL;
+  posix_spawnattr_setflags(&attr, 0);
+  posix_spawn_file_actions_init(&actions);
+  posix_spawn_file_actions_adddup2(&actions, p[1], 1);
+
+  if(posix_spawnp(&pid, compiler, &actions, &attr, argv, envp) == 0) {
+    int ws = 0;
+    close(p[1]);
+
+    waitpid_nointr(pid, &ws, WNOHANG);
+
+    readclose_append(p[0], out, 1024);
+
+    stralloc_trimr(out, "\r\t\v\n", 4);
+    stralloc_nul(out);
+  }
+  return out->len ? out->s : 0;
+}
 
 /**
  * @brief pkg_get Get a property
@@ -500,6 +542,32 @@ pkg_conf(strarray* modules, int mode) {
         pkg_free(&pf);
         return 0;
       }
+
+      if((cmd.code == PRINT_LIBS && libs_mode) || (cmd.code == PRINT_CFLAGS && cflags_mode)) {
+        strlist sl;
+        const char* s;
+        strlist_init(&sl, '\0');
+        stralloc_nul(&value);
+        strlist_froms(&sl, value.s, ' ');
+        stralloc_zero(&value);
+
+        strlist_foreach_s(&sl, s) {
+          if((cmd.code == PRINT_LIBS) && libs_mode) {
+            int flag = (str_start(s, "-L") || str_start(s, "-l"));
+            if((libs_mode == LIBS_ONLY_L) ^ flag != 0)
+              continue;
+          }
+          if((cmd.code == PRINT_CFLAGS) && libs_mode) {
+            int flag = !!(str_start(s, "-I"));
+            if((libs_mode == CFLAGS_ONLY_I) ^ flag != 0)
+              continue;
+          }
+
+          if(value.len > 0)
+            stralloc_catc(&value, ' ');
+          stralloc_cats(&value, s);
+        }
+      }
     }
 
     pkg_unset(&pf);
@@ -507,12 +575,8 @@ pkg_conf(strarray* modules, int mode) {
   }
 
   if(!(mode & PKGCFG_EXISTS)) {
-    /* strlist sl;
-    strlist_init(&sl, '\n');
-    stralloc_nul(&value);
-    strlist_froms(&sl, value.s, ' ');
-    strlist_dump(buffer_2, &sl);
- */
+    /*
+     */
     buffer_putsa(buffer_1, &value);
     buffer_putnlflush(buffer_1);
   }
@@ -568,7 +632,7 @@ pkgcfg_init(const char* argv0) {
   }
 
   if(!argv0[str_chr(argv0, '/')])
-    argv0 = path_readlink("/proc/self/exe", &dir);
+    argv0 = (const char*)path_readlink("/proc/self/exe", &dir);
 
   stralloc_copys(&cmd.self, path_basename(argv0));
 
@@ -663,6 +727,17 @@ pkgcfg_init(const char* argv0) {
       strlist_push_sa(&cmd.path, &dir);
   }
 
+  if(cmd.host.len == 0)
+    if(!host_arch("cc", &cmd.host))
+      if(!host_arch("gcc", &cmd.host))
+        host_arch("clang", &cmd.host);
+
+#ifdef DEBUG_OUTPUT
+  buffer_puts(buffer_2, "full qualified host: '");
+  buffer_putsa(buffer_2, &cmd.host);
+  buffer_putsflush(buffer_2, "'\n");
+#endif
+
   stralloc_free(&dir);
 }
 
@@ -697,34 +772,37 @@ main(int argc, char* argv[]) {
       {"print-errors", 0, NULL, 'P'},
       {"short-errors", 0, NULL, 'S'},
       {"exists", 0, NULL, 'E'},
-    /*   {"atleast", 0, NULL, 0},
-      {"atleast-pkgconfig-version", 0, NULL, 0},
-      {"atleast-version", 0, NULL, 0},
-      {"cflags-only-I", 0, NULL, 0},
-      {"cflags-only-other", 0, NULL, 0},
-      {"debug", 0, NULL, 0},
-      {"define-prefix", 0, NULL, 0},
-      {"define-variable", 0, NULL, 0},
-      {"dont-define-prefix", 0, NULL, 0},
-      {"errors-to-stdout", 0, NULL, 0},
-      {"exact-version", 0, NULL, 0},
-      {"libs-only-l", 0, NULL, 0},
-      {"libs-only-other", 0, NULL, 0},
-      {"max-version", 0, NULL, 0},
-      {"prefix-variable", 0, NULL, 0},
-      {"print-provides", 0, NULL, 0},
-      {"print-requires", 0, NULL, 0},
-      {"print-requires-private", 0, NULL, 0},
-      {"print-variables", 0, NULL, 0},
-      {"silence-errors", 0, NULL, 0},
-      {"static", 0, NULL, 0},
-      {"uninstalled", 0, NULL, 0},
-      {"validate", 0, NULL, 0}, */
+      //   {"libs-only-l", 0, &libs_mode, LIBS_ONLY_L},
+      //       {"libs-only-other", 0, &libs_mode, LIBS_ONLY_OTHER},
+      {"cflags-only-I", 0, &cflags_mode, CFLAGS_ONLY_I},
+      {"cflags-only-other", 0, &cflags_mode, CFLAGS_ONLY_OTHER},
+      {"static", 0, NULL, STATIC_LIBS},
+
+      /*   {"atleast", 0, NULL, 0},
+          {"atleast-pkgconfig-version", 0, NULL, 0},
+          {"atleast-version", 0, NULL, 0},
+            {"debug", 0, NULL, 0},
+          {"define-prefix", 0, NULL, 0},
+          {"define-variable", 0, NULL, 0},
+          {"dont-define-prefix", 0, NULL, 0},
+          {"errors-to-stdout", 0, NULL, 0},
+          {"exact-version", 0, NULL, 0},
+
+          {"max-version", 0, NULL, 0},
+          {"prefix-variable", 0, NULL, 0},
+          {"print-provides", 0, NULL, 0},
+          {"print-requires", 0, NULL, 0},
+          {"print-requires-private", 0, NULL, 0},
+          {"print-variables", 0, NULL, 0},
+          {"silence-errors", 0, NULL, 0},
+          {"uninstalled", 0, NULL, 0},
+          {"validate", 0, NULL, 0}, */
 
       {0, 0, 0, 0},
   };
 
   errmsg_iam(argv[0]);
+
 #ifdef _MSC_VER
   optbuf = buffer_1;
 #endif
@@ -732,7 +810,7 @@ main(int argc, char* argv[]) {
   for(;;) {
     c = getopt_long(argc, argv, "?hmilpaPSvV:", opts, &index);
     if(c == -1)
-      break; 
+      break;
     if(c == 0)
       continue;
 
@@ -744,6 +822,7 @@ main(int argc, char* argv[]) {
         buffer_putsflush(buffer_1, "1.0\n");
         exit(0);
       }
+      case STATIC_LIBS: static_libs = 1; break;
       case PRINT_VERSION:
       case PRINT_CFLAGS:
       case PRINT_LIBS:
