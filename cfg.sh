@@ -100,9 +100,14 @@ cfg-diet() {
 
   export PKG_CONFIG_PATH="$libdir/pkgconfig"
   
-  builddir=build/${host%-*}-diet \
+  : ${builddir=build/${host%-*}-diet}
+  prefix=/opt/diet
+
+  export builddir prefix
   cfg \
     -DCMAKE_INSTALL_PREFIX="$prefix" \
+    -DBUILD_SSL=OFF \
+    -DBUILD_SHARED_LIBS=OFF \
     -DENABLE_SHARED=OFF \
     -DENABLE_STATIC=ON \
     -DSHARED_LIBS=OFF \

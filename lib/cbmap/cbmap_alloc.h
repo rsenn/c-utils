@@ -34,14 +34,15 @@ double cbmap_mem_allocated(void);
 int cbmap_mem_memalign(void** p, size_t alignment, size_t size);
 
 #include "../str.h"
+#include "../alloc.h"
 
-#define CBM_CALLOC(n, s) calloc((n), (s))
-#define CBM_MALLOC(n) malloc((n))
-#define CBM_FREE(p) free((p))
+#define CBM_CALLOC(n, s) alloc_zero((n) * (s))
+#define CBM_MALLOC(n) alloc((n))
+#define CBM_FREE(p) alloc_free((p))
 #define CBM_STRDUP(s) str_dup((s))
 #define CBM_STRNDUP(s, n) str_ndup((s), (n))
 #define CBM_MEM_LOG()
-#define CBM_MEMALIGN(p, a, s) cbmap_mem_memalign((p), (a), (s))
+#define CBM_MEMALIGN(p, a, s) *(p) = alloc((s))
 #define CBM_MEM_ALLOCATED() ((double)0)
 
 #endif

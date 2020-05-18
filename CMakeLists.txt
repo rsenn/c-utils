@@ -4,6 +4,9 @@ set(CMAKE_WARN_VS8 OFF)
 
 project(c-utils C)
 
+set(PROJECT_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/3rdparty)
+set(PROJECT_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/3rdparty)
+
 option(USE_LZMA "lzma compression" ON)
 option(USE_BZIP "bzip2 compression" ON)
 option(USE_ZLIB "zlib compression" ON)
@@ -12,6 +15,7 @@ option(USE_SSL "ssl encryption" ON)
 option(USE_SELECT "Use select() syscall" ON)
 option(USE_POLL "Use poll() syscall" OFF)
 option(USE_EPOLL  "Use epoll() syscall" OFF)
+option(BUILD_SHARED_LIBS  "Build shared libs" ON)
 
 
 set(DIRLIST_VERSION 1.0)
@@ -166,6 +170,13 @@ if(USE_POLL STREQUAL "OFF" AND NOT USE_SELECT STREQUAL "ON")
     set(USE_POLL TRUE)
   endif(HAVE_POLL)
 endif(USE_POLL STREQUAL "OFF" AND NOT USE_SELECT STREQUAL "ON")
+
+
+check_function_exists(wordexp HAVE_WORDEXP)
+
+if(HAVE_WORDEXP)
+add_definitions(-DHAVE_WORDEXP=1)
+endif(HAVE_WORDEXP)
 
 message("USE_SELECT=${USE_SELECT}")
 message("USE_POLL=${USE_POLL}")
@@ -665,15 +676,18 @@ foreach(LIBNAME ${MODSUBDIRS})
   file(GLOB MODSOURCES lib/${LIBNAME}_*.c)
   endif()
   add_library("${LIBNAME}" STATIC ${MODSOURCES} ${MODHEADERS})
-  add_library("${LIBNAME}-shared" SHARED ${MODSOURCES} ${MODHEADERS})
-  set_target_properties("${LIBNAME}" PROPERTIES
-    PREFIX ""
-    COMPILE_FLAGS "${WARN_C_COMPILER_FLAGS}"
-  )  
-  set_target_properties("${LIBNAME}-shared" PROPERTIES
+  if(BUILD_SHARED_LIBS)
+   add_library("${LIBNAME}-shared" SHARED ${MODSOURCES} ${MODHEADERS})
+    set_target_properties("${LIBNAME}-shared" PROPERTIES
     PREFIX "lib"
     COMPILE_FLAGS "${WARN_C_COMPILER_FLAGS} -fPIC"
   )
+  endif(BUILD_SHARED_LIBS)
+  set_target_properties("${LIBNAME}" PROPERTIES
+    PREFIX ""
+    COMPILE_FLAGS "${WARN_C_COMPILER_FLAGS}"
+  )
+ 
 endforeach(LIBNAME)
 
 foreach(NETLIB dns http io ndelay socket)
@@ -700,7 +714,7 @@ target_link_libraries(json charbuf hmap scan)
 target_link_libraries(map str)
 target_link_libraries(mmap open scan ${LIBPSAPI})
 target_link_libraries(open str uint32)
-target_link_libraries(path unix dir strlist)
+target_link_libraries(path  dir strlist)
 target_link_libraries(pe uint64 uint32 uint16)
 target_link_libraries(playlist byte fmt scan str xml)
 target_link_libraries(rdir dir)
@@ -736,7 +750,7 @@ if(USE_EFENCE)
   set(ELECTRICFENCE_LIBRARY efence)
 endif(USE_EFENCE)
 
-set(COMMON_LIBS unix strlist array safemult scan str byte mmap open fmt )
+set(COMMON_LIBS  strlist array safemult scan str byte mmap open fmt )
 file(GLOB MODHEADERS lib/*.h)
 function(add_program PROG)
   unset(INCLUDES)
@@ -769,15 +783,19 @@ function(add_module MOD SRC)
   #message("Program '${MOD}' dependencies: ${INCLUDES}")
   set(LIBS "")
   foreach(LIB ${ARGN})
-  list(APPEND LIBS "${LIB}-shared")
+  if(BUILD_SHARED_LIBS)
+    list(APPEND LIBS "${LIB}-shared")
+  endif(BUILD_SHARED_LIBS)
   endforeach(LIB ${ARGN})
   if(NOT EMSCRIPTEN)
   add_library(${MOD} SHARED ${SRC}  )
   target_link_libraries(${MOD} ${LIBS} ${EXTRA_LIBRARIES})
   install(TARGETS ${MOD} DESTINATION libexec)
+  if(BUILD_SHARED_LIBS)
   set_target_properties(${MOD} PROPERTIES 
     LINK_FLAGS "-L${OPENSSL_LIB_DIR} -shared"
     )
+  endif(BUILD_SHARED_LIBS)
   target_compile_options(${MOD} PUBLIC -fPIC)
   endif(NOT EMSCRIPTEN)
 endfunction(add_module MOD)
@@ -835,7 +853,7 @@ add_program(opensearch-dump xml stralloc buffer)
 add_program(pathtool stralloc buffer errmsg path strlist unix)
 add_program(pelist buffer errmsg mmap pe str unix)
 add_program(omflist stralloc buffer errmsg omf mmap str unix)
-add_program(pkgcfg stralloc buffer byte cbmap dir env errmsg path slist str unix strarray strlist)
+add_program(pkgcfg path unix hmap stralloc buffer byte cbmap dir env errmsg slist str strarray strlist)
 add_program(plsconv stralloc buffer byte open playlist str unix)
 add_program(rdir-test rdir stralloc buffer)
 add_program(reg2cmd stralloc buffer byte fmt open scan str uint64)
@@ -875,7 +893,9 @@ add_program(parse strlist errmsg)
 add_program(testihex ihex stralloc buffer alloc mmap)
 add_program(setuidgid errmsg  mmap open scan str)
 #add_program(libc-resolv-override dns errmsg  mmap open scan str)
-add_module(libresolvoverride libc-resolv-override.c dns stralloc)
 
+if(ENABLE_SHARED AND BUILD_SHARED_LIBS)
+  add_module(libresolvoverride libc-resolv-override.c dns stralloc)
+endif(ENABLE_SHARED AND BUILD_SHARED_LIBS)
 add_subdirectory(tests)
 add_subdirectory(examples)

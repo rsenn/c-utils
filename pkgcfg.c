@@ -2,7 +2,6 @@
 #include "lib/algorithm.h"
 #include "lib/buffer.h"
 #include "lib/byte.h"
-#include "lib/cbmap.h"
 #include "lib/dir.h"
 #include "lib/env.h"
 #include "lib/errmsg.h"
@@ -20,6 +19,8 @@
 #include "lib/mmap.h"
 #include "lib/array.h"
 #include "lib/socket.h"
+#include "map.h"
+
 #include <ctype.h>
 #include <stdlib.h>
 
@@ -40,12 +41,14 @@ static struct {
   id code;
   strlist path;
   stralloc self;
+  stralloc host;
+  stralloc prefix;
 } cmd;
 
 typedef struct pkg_s {
   stralloc name;
-  cbmap_t vars;
-  cbmap_t fields;
+  MAP_T vars;
+  MAP_T fields;
 } pkg;
 
 static const char* const field_names[] = {
@@ -54,6 +57,8 @@ static const char* const field_names[] = {
     "Libs",
     "Requires",
 };
+
+static const char *sysroot = 0, *pkgcfg_path = 0;
 
 /**
  * @brief pkg_get Get a property
@@ -65,7 +70,8 @@ const char*
 pkg_get(pkg* pf, const char* key) {
   char* v = NULL;
   size_t len;
-  cbmap_get(isupper(key[0]) ? pf->fields : pf->vars, (char*)key, str_len(key) + 1, (void**)&v, &len);
+  MAP_T map = isupper(key[0]) ? pf->fields : pf->vars;
+  v = MAP_GET(map, (char*)key, str_len(key) + 1);
   return v;
 }
 
@@ -76,23 +82,34 @@ pkg_get(pkg* pf, const char* key) {
  * @return           1 on sucess, 0 on failure
  */
 int
-wordexp_sa(const char* s, stralloc* sa) {
-  wordexp_t wx;
-  char** w;
-  size_t i;
+wordexp_sa(const char* s, stralloc* sa, MAP_T vars) {
+  const char *x, *v;
+  size_t i, n;
+  stralloc var;
+  stralloc_init(&var);
 
-  if(wordexp(s, &wx, WRDE_NOCMD | WRDE_UNDEF))
-    return 0;
+  for(x = s; *x; x += n) {
+    i = str_find(x, "${");
+    n = i;
 
-  w = wx.we_wordv;
+    stralloc_catb(sa, x, i);
 
-  for(i = 0; i < wx.we_wordc; ++i) {
-    if(sa->len)
-      stralloc_catb(sa, " ", 1);
-    stralloc_cats(sa, w[i]);
+    if(x[i]) {
+      i += 2;
+      x += i;
+
+      n = str_chr(x, '}');
+
+      stralloc_copyb(&var, x, n);
+      stralloc_nul(&var);
+
+      v = MAP_GET(vars, var.s, var.len + 1);
+
+      stralloc_cats(sa, v);
+      //      wordexp_sa(v, sa, vars);
+      n += 1;
+    }
   }
-
-  wordfree(&wx);
 
   return 1;
 }
@@ -125,8 +142,9 @@ pkg_expand(pkg* pf, const char* key, stralloc* out) {
 
     for(;;) {
       stralloc_nul(&v);
-      if(!wordexp_sa(v.s, out))
+      if(!wordexp_sa(v.s, out, pf->vars))
         return 0;
+
       if(stralloc_finds(out, "${") == out->len)
         break;
 
@@ -144,8 +162,8 @@ pkg_expand(pkg* pf, const char* key, stralloc* out) {
  */
 void
 pkg_free(pkg* p) {
-  cbmap_destroy(&p->fields);
-  cbmap_destroy(&p->vars);
+  MAP_DESTROY(p->fields);
+  MAP_DESTROY(p->vars);
   stralloc_free(&p->name);
 }
 
@@ -161,8 +179,8 @@ pkg_read(buffer* b, pkg* p) {
   stralloc_init(&name);
   stralloc_init(&value);
 
-  p->vars = cbmap_new();
-  p->fields = cbmap_new();
+  MAP_NEW(p->vars);
+  MAP_NEW(p->fields);
 
   for(;;) {
     int ret;
@@ -197,13 +215,22 @@ pkg_read(buffer* b, pkg* p) {
       stralloc_trimr(&value, "\r\n\t \0", 5);
       stralloc_nul(&value);
       stralloc_nul(&name);
+
+      if(stralloc_starts(&value, "/"))
+        stralloc_prepends(&value, sysroot);
+
 #ifdef DEBUG_OUTPUT_
       buffer_putm_3(buffer_2, "Name: ", name.s, "\n");
       buffer_putm_3(buffer_2, "Value: ", value.s, "\n");
       buffer_flush(buffer_2);
 #endif
+      {
+        MAP_T map = sep == '=' ? p->vars : p->fields;
+        MAP_INSERT(map, name.s, name.len + 1, value.s, value.len + 1);
+      }
 
-      cbmap_insert(sep == '=' ? p->vars : p->fields, name.s, name.len + 1, value.s, value.len + 1);
+      /*     if(islower(name.s[0]))
+            setenv(name.s, value.s, 1); */
     }
   }
 
@@ -251,7 +278,9 @@ visit_set(const void* key, size_t key_len, const void* value, size_t value_len, 
  */
 int
 pkg_set(pkg* p) {
-  return cbmap_visit_all(p->vars, &visit_set, p);
+  MAP_T map = p->vars;
+  MAP_VISIT_ALL(map, visit_set, p);
+  return 0;
 }
 
 static int
@@ -272,7 +301,8 @@ visit_unset(const void* key, size_t key_len, const void* value, size_t value_len
  */
 int
 pkg_unset(pkg* p) {
-  return cbmap_visit_all(p->vars, &visit_unset, p);
+  MAP_VISIT_ALL(p->vars, visit_unset, p);
+  return 0;
 }
 
 typedef struct {
@@ -306,8 +336,8 @@ pkg_dump(buffer* b, pkg* pf) {
   buffer_putsa(b, &pf->name);
   buffer_putnlflush(b);
 
-  cbmap_visit_all(pf->vars, &visit_dump, &dump_st);
-  cbmap_visit_all(pf->fields, &visit_dump, &dump_st);
+  MAP_VISIT_ALL(pf->vars, visit_dump, &dump_st);
+  MAP_VISIT_ALL(pf->fields, visit_dump, &dump_st);
 }
 
 void
@@ -403,7 +433,14 @@ pkg_open(const char* pkgname, pkg* pf) {
   stralloc_init(&pf->name);
 
   for(i = 0; i < n; ++i) {
-    stralloc path = strlist_at_sa(&cmd.path, i);
+    const char* s = strlist_at(&cmd.path, i);
+
+    if(s == NULL)
+      break;
+    stralloc path;
+    stralloc_init(&path);
+
+    stralloc_copys(&path, s);
 
     stralloc_catm_internal(&path, "/", pkgname, ".pc", 0);
     stralloc_nul(&path);
@@ -452,7 +489,7 @@ pkg_conf(strarray* modules, int mode) {
 
       pkg_set(&pf);
 
-#ifdef DEBUG
+#ifdef DEBUG_OUTPUT_
       pkg_dump(buffer_2, &pf);
 #endif
 
@@ -470,10 +507,163 @@ pkg_conf(strarray* modules, int mode) {
   }
 
   if(!(mode & PKGCFG_EXISTS)) {
+    strlist sl;
+    strlist_init(&sl, '\n');
+    stralloc_nul(&value);
+    strlist_froms(&sl, value.s, ' ');
+    strlist_dump(buffer_2, &sl);
+
     buffer_putsa(buffer_1, &value);
     buffer_putnlflush(buffer_1);
   }
   return 1;
+}
+
+char*
+search_path(const char* path, const char* what, stralloc* out) {
+  const char* x;
+  char* ret = 0;
+  size_t pos;
+  stralloc stra;
+
+  stralloc_init(&stra);
+
+  for(x = path; *x; x += pos) {
+    pos = str_chr(x, ':');
+
+    stralloc_copyb(&stra, x, pos);
+    stralloc_catc(&stra, '/');
+    stralloc_cats(&stra, what);
+    stralloc_nul(&stra);
+
+    if(path_exists(stra.s)) {
+      stralloc_copy(out, &stra);
+      stralloc_nul(out);
+      ret = out->s;
+      break;
+    }
+
+    pos++;
+  }
+  stralloc_free(&stra);
+  return ret;
+}
+
+void
+pkgcfg_init(const char* argv0) {
+  size_t pos;
+  const char* x;
+  stralloc dir;
+  stralloc_init(&dir);
+
+  // path_readlink("/proc/self/exe", &cmd.self);
+  stralloc_init(&cmd.self);
+  stralloc_init(&cmd.host);
+  stralloc_init(&cmd.prefix);
+
+  if(!argv0[str_chr(argv0, '/')]) {
+
+    if((x = search_path(env_get("PATH"), argv0, &dir)))
+      argv0 = x;
+  }
+
+  if(!argv0[str_chr(argv0, '/')])
+    argv0 = path_readlink("/proc/self/exe", &dir);
+
+  stralloc_copys(&cmd.self, path_basename(argv0));
+
+#ifdef DEBUG_OUTPUT_
+  buffer_puts(buffer_2, "argv0: ");
+  buffer_puts(buffer_2, argv0);
+  buffer_putnlflush(buffer_2);
+  buffer_puts(buffer_2, "self: ");
+  buffer_putsa(buffer_2, &cmd.self);
+  buffer_putnlflush(buffer_2);
+#endif
+
+  path_dirname(argv0, &cmd.prefix);
+
+  stralloc_trunc(&cmd.prefix, stralloc_finds(&cmd.prefix, "/bin"));
+
+#ifdef DEBUG_OUTPUT_
+  buffer_puts(buffer_2, "prefix: ");
+  buffer_putsa(buffer_2, &cmd.prefix);
+  buffer_putnlflush(buffer_2);
+#endif
+
+  pos = stralloc_finds(&cmd.self, "pkg");
+
+  if(pos > 0 && cmd.self.s[pos - 1] == '-')
+    pos--;
+
+  stralloc_copyb(&cmd.host, cmd.self.s, pos);
+
+  stralloc_copy(&dir, &cmd.prefix);
+  stralloc_cats(&dir, "/");
+  stralloc_cat(&dir, &cmd.host);
+  stralloc_cats(&dir, "/sysroot");
+  stralloc_nul(&dir);
+
+#ifdef DEBUG_OUTPUT_
+  buffer_puts(buffer_2, "dir: ");
+  buffer_putsa(buffer_2, &dir);
+  buffer_putnlflush(buffer_2);
+#endif
+
+  if(path_exists(dir.s) && sysroot == 0) {
+    sysroot = str_dup(dir.s);
+  }
+
+#ifdef DEBUG_OUTPUT_
+  if(sysroot) {
+    buffer_puts(buffer_2, "sysroot: ");
+    buffer_puts(buffer_2, sysroot);
+    buffer_putnlflush(buffer_2);
+  }
+#endif
+
+  strlist_init(&cmd.path, '\0');
+
+  if(pkgcfg_path) {
+    for(x = pkgcfg_path; *x; x += pos) {
+
+      pos = str_chr(x, ':');
+
+      strlist_pushb(&cmd.path, x, pos);
+
+      pos++;
+    }
+  } else {
+    stralloc_copy(&dir, &cmd.prefix);
+    if(sysroot)
+      stralloc_prepends(&dir, sysroot);
+
+    pos = dir.len;
+
+    stralloc_cats(&dir, "/lib/");
+    stralloc_cat(&dir, &cmd.host);
+    stralloc_cats(&dir, "/pkgconfig");
+    stralloc_nul(&dir);
+
+    if(path_exists(dir.s))
+      strlist_push_sa(&cmd.path, &dir);
+
+    dir.len = pos;
+    stralloc_cats(&dir, "/lib/pkgconfig");
+    stralloc_nul(&dir);
+
+    if(path_exists(dir.s))
+      strlist_push_sa(&cmd.path, &dir);
+
+    dir.len = pos;
+    stralloc_cats(&dir, "/share/pkgconfig");
+    stralloc_nul(&dir);
+
+    if(path_exists(dir.s))
+      strlist_push_sa(&cmd.path, &dir);
+  }
+
+  stralloc_free(&dir);
 }
 
 void
@@ -497,6 +687,7 @@ main(int argc, char* argv[]) {
   int mode = 0;
   struct longopt opts[] = {
       {"help", 0, NULL, 'h'},
+      {"version", 0, NULL, 'v'},
       {"modversion", 0, NULL, PRINT_VERSION},
       {"cflags", 0, NULL, PRINT_CFLAGS},
       {"libs", 0, NULL, PRINT_LIBS},
@@ -514,7 +705,7 @@ main(int argc, char* argv[]) {
 #endif
 
   for(;;) {
-    c = getopt_long(argc, argv, "?hmilpaPS", opts, &index);
+    c = getopt_long(argc, argv, "?hmilpaPSv", opts, &index);
     if(c == -1)
       break;
     if(c == 0)
@@ -523,6 +714,11 @@ main(int argc, char* argv[]) {
     switch(c) {
       case '?':
       case 'h': usage(argv[0]); return 0;
+      case 'v': {
+
+        buffer_putsflush(buffer_1, "1.0\n");
+        exit(0);
+      }
       case PRINT_VERSION:
       case PRINT_CFLAGS:
       case PRINT_LIBS:
@@ -549,29 +745,34 @@ main(int argc, char* argv[]) {
     }
   }
 
-  path_readlink("/proc/self/exe", &cmd.self);
+  sysroot = env_get("PKG_CONFIG_SYSROOT");
 
-  strlist_froms(&cmd.path, getenv("PKG_CONFIG_PATH"), ':');
+  pkgcfg_path = env_get("PKG_CONFIG_PATH");
 
-  if(strlist_count(&cmd.path) == 0) {
-    stralloc prefix;
-    stralloc_init(&prefix);
-    stralloc_copy(&prefix, &cmd.self);
-    {
-      size_t len = stralloc_finds(&prefix, "/bin");
+  pkgcfg_init(argv[0]);
 
-      if(len == prefix.len) {
-        stralloc_copys(&prefix, "/usr");
-        len = prefix.len;
-      }
-      prefix.len = len;
-      stralloc_cats(&prefix, "/lib/pkgconfig");
-      strlist_push_sa(&cmd.path, &prefix);
-      prefix.len = len;
-      stralloc_cats(&prefix, "/share/pkgconfig");
-      strlist_push_sa(&cmd.path, &prefix);
-    }
-  }
+  if(!sysroot)
+    sysroot = "";
+
+    // strlist_froms(&cmd.path, pkgcfg_path, ':');
+    /*
+      if(strlist_count(&cmd.path) == 0) {
+
+        {
+          size_t len = stralloc_finds(&prefix, "/bin");
+
+          if(len == prefix.len) {
+            stralloc_copys(&prefix, "/usr");
+            len = prefix.len;
+          }
+          prefix.len = len;
+          stralloc_cats(&prefix, "/lib/pkgconfig");
+          strlist_push_sa(&cmd.path, &prefix);
+          prefix.len = len;
+          stralloc_cats(&prefix, "/share/pkgconfig");
+          strlist_push_sa(&cmd.path, &prefix);
+        }
+      } */
 
 #ifdef PKGCONF_DEBUG
   buffer_putm_2(buffer_2, path_basename(argv[0]), ": ");

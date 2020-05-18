@@ -1,62 +1,27 @@
-#include "../wordexp.h"
-#include "../windoze.h"
-
-#ifndef HAVE_WORDEXP
+#include <wordexp.h>
+#include <unistd.h>
+#include <stdio.h>
+#include <string.h>
+#include <limits.h>
+#include <stdint.h>
+#include <stdlib.h>
+#include <sys/wait.h>
+#include <signal.h>
 #include <errno.h>
 #include <fcntl.h>
-#include <limits.h>
-#include <signal.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <sys/types.h>
-
-#if WINDOWS_NATIVE
-#include <io.h>
-#include <process.h>
-#endif
-
-#ifndef SIGKILL
-#define SIGKILL SIGTERM
-#endif
-
-#ifndef O_CLOEXEC
-#define O_CLOEXEC 0
-#endif
-
-#ifndef SSIZE_MAX
-#define SSIZE_MAX LONG_MAX
-#endif
-
-#if !defined(HAVE_GETDELIM) && !defined(__LCC__)
-extern ssize_t getdelim(char**, size_t*, int, FILE*);
-#endif
-
-extern int pipe2(int[2], int);
-
-#if defined(__MINGW32__) || defined(__MINGW64__)
-typedef _sigset_t sigset_t;
-#endif
-
-#if !WINDOWS_NATIVE
-#include <sys/wait.h>
-#include <unistd.h>
-#endif
+#include <pthread.h>
 
 static void
-reap(int pid) {
-#if !WINDOWS_NATIVE
+reap(pid_t pid) {
   int status;
   while(waitpid(pid, &status, 0) < 0 && errno == EINTR)
     ;
-#endif
 }
 
 static char*
 getword(FILE* f) {
   char* s = 0;
-  size_t a[1] = {0};
-  return getdelim(&s, a, 0, f) < 0 ? 0 : s;
+  return getdelim(&s, (size_t[1]){0}, 0, f) < 0 ? 0 : s;
 }
 
 static int
@@ -71,10 +36,8 @@ do_wordexp(const char* s, wordexp_t* we, int flags) {
   size_t wc = 0;
   char** wv = 0;
   int p[2];
-  int pid;
-#if !WINDOWS_NATIVE
+  pid_t pid;
   sigset_t set;
-#endif
 
   if(flags & WRDE_REUSE)
     wordfree(we);
@@ -82,8 +45,8 @@ do_wordexp(const char* s, wordexp_t* we, int flags) {
   if(flags & WRDE_NOCMD)
     for(i = 0; s[i]; i++) switch(s[i]) {
         case '\\':
-          if(!sq)
-            i++;
+          if(!sq && !s[++i])
+            return WRDE_SYNTAX;
           break;
         case '\'':
           if(!dq)
@@ -136,7 +99,7 @@ do_wordexp(const char* s, wordexp_t* we, int flags) {
 
   i = wc;
   if(flags & WRDE_DOOFFS) {
-    if(we->we_offs > SSIZE_MAX / sizeof(void*) / 4)
+    if(we->we_offs > SIZE_MAX / sizeof(void*) / 4)
       goto nospace;
     i += we->we_offs;
   } else {
@@ -145,38 +108,28 @@ do_wordexp(const char* s, wordexp_t* we, int flags) {
 
   if(pipe2(p, O_CLOEXEC) < 0)
     goto nospace;
-
-#if !WINDOWS_NATIVE
   //__block_all_sigs(&set);
   pid = fork();
   //__restore_sigs(&set);
-#else
-  pid = -1;
-#endif
   if(pid < 0) {
     close(p[0]);
     close(p[1]);
     goto nospace;
   }
   if(!pid) {
-    if(p[1] == 1) {
-#ifdef F_SETFD
+    if(p[1] == 1)
       fcntl(1, F_SETFD, 0);
-#endif
-    } else {
+    else
       dup2(p[1], 1);
-    }
     execl("/bin/sh", "sh", "-c", "eval \"printf %s\\\\\\\\0 x $1 $2\"", "sh", s, redir, (char*)0);
-    exit(1);
+    _exit(1);
   }
   close(p[1]);
 
   f = fdopen(p[0], "r");
   if(!f) {
     close(p[0]);
-#if !WINDOWS_NATIVE
     kill(pid, SIGKILL);
-#endif
     reap(pid);
     goto nospace;
   }
@@ -193,7 +146,7 @@ do_wordexp(const char* s, wordexp_t* we, int flags) {
   while((w = getword(f))) {
     if(i + 1 >= l) {
       l += l / 2 + 10;
-      tmp = alloc_re(wv, l * sizeof(char*));
+      tmp = realloc(wv, l * sizeof(char*));
       if(!tmp)
         break;
       wv = tmp;
@@ -229,7 +182,7 @@ nospace:
 }
 
 int
-wordexp(const char* s, wordexp_t* we, int flags) {
+wordexp(const char* restrict s, wordexp_t* restrict we, int flags) {
   int r, cs;
   // pthread_setcancelstate(PTHREAD_CANCEL_DISABLE, &cs);
   r = do_wordexp(s, we, flags);
@@ -247,4 +200,3 @@ wordfree(wordexp_t* we) {
   we->we_wordv = 0;
   we->we_wordc = 0;
 }
-#endif

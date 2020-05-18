@@ -272,8 +272,15 @@ again:
 
   if(in_place) {
     // buffer inplace;
-    unlink(in_path);
-    link(tmpl, in_path);
+    if(unlink(in_path) != 0)
+      errmsg_warnsys("unlink: ", in_path, 0);
+
+    if(link(tmpl, in_path) == 0) {
+      unlink(tmpl);
+    } else {
+      errmsg_warnsys("unlink: ", tmpl, 0);
+    }
+
     /*    buffer_truncfile(&inplace, out_path);
         buffer_put(&inplace, tmp.s, tmp.len);
         buffer_flush(&inplace);

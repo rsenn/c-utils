@@ -29,6 +29,16 @@ $(BUILDDIR)uncompr.o: 3rdparty/zlib/uncompr.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
 $(BUILDDIR)adler32.o: 3rdparty/zlib/adler32.c 
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)feature_tests.o: 3rdparty/openssl/build/x86_64-linux-diet/CMakeFiles/feature_tests.c 
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)LONG_INT.o: 3rdparty/openssl/build/x86_64-linux-diet/CMakeFiles/CheckTypeSize/LONG_INT.c 
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)INT.o: 3rdparty/openssl/build/x86_64-linux-diet/CMakeFiles/CheckTypeSize/INT.c 
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)LONG_LONG_INT.o: 3rdparty/openssl/build/x86_64-linux-diet/CMakeFiles/CheckTypeSize/LONG_LONG_INT.c 
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
+$(BUILDDIR)CMakeCCompilerId.o: 3rdparty/openssl/build/x86_64-linux-diet/CMakeFiles/3.1.3/CompilerIdC/CMakeCCompilerId.c 
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
 $(BUILDDIR)conf.o: 3rdparty/openssl/fuzz/conf.c 
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) $(INCLUDES) $(DEFS) -c -o $@ $<
 $(BUILDDIR)crl.o: 3rdparty/openssl/fuzz/crl.c 

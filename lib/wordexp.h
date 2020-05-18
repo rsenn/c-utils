@@ -1,17 +1,15 @@
 #ifndef _WORDEXP_H
 #define _WORDEXP_H
 
-#include <stdlib.h>
-#include "typedefs.h"
-#include "windoze.h"
-
-#if WINDOWS_NATIVE
-#include <windows.h>
-#endif
-
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+#include <features.h>
+
+#define __NEED_size_t
+
+#include <sys/types.h>
 
 #define WRDE_DOOFFS 1
 #define WRDE_APPEND 2
@@ -23,7 +21,7 @@ extern "C" {
 typedef struct {
   size_t we_wordc;
   char** we_wordv;
-  ssize_t we_offs;
+  size_t we_offs;
 } wordexp_t;
 
 #define WRDE_NOSYS -1
@@ -33,7 +31,7 @@ typedef struct {
 #define WRDE_CMDSUB 4
 #define WRDE_SYNTAX 5
 
-int wordexp(const char*, wordexp_t*, int);
+int wordexp(const char* __restrict, wordexp_t* __restrict, int);
 void wordfree(wordexp_t*);
 
 #ifdef __cplusplus

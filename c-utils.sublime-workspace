@@ -88,10 +88,10 @@
 	"buffers":
 	[
 		{
-			"contents": "variable: IFS\nvariable: TS\nvariable: SOURCES\nexpansion: $(find \"$@\" -name \"*.c\" )\nfunction: find_source\nexpansion: $SOURCES\nexpansion: $1\nfunction: isin\nvariable: __NEEDLE\nexpansion: $1\nexpansion: $#\nexpansion: $__NEEDLE\nexpansion: $1\nfunction: pushv\nexpansion: $1\nexpansion: $1\nexpansion: $1\nfunction: pushv_unique\nvariable: __VAR\nexpansion: $1\nvariable: __ARG\nvariable: IFS\nexpansion: $__VAR\nexpansion: $__VAR\nexpansion: $__ARG\nfunction: output_target\nvariable: SOURCE\nexpansion: $1\nvariable: SUFFIX\nvariable: IFS\nvariable: DEPS\nexpansion: $SOURCE\nexpansion: $*\nvariable: OBJECT\nexpansion: $(basename \"$SOURCE\" .c)${SUFFIX}\nexpansion: ${CPPFLAGS:+$OBJECT: CPPFLAGS += $CPPFLAGS\n}$OBJECT\nexpansion: ${DEPS}\nexpansion: $TS\nvariable: ALL_INCLUDES\nexpansion: $SOURCES\nvariable: SOURCE\nexpansion: ${SOURCE#./}\nvariable: SOURCE_DIR\nexpansion: $(dirname \"${SOURCE}\")\nexpansion: $SOURCE_DIR\nvariable: SOURCE_ROOT\nexpansion: ${SOURCE_DIR#3rdparty/}\nvariable: SOURCE_ROOT\nexpansion: ${SOURCE_ROOT%%/*}\nvariable: SOURCE_ROOT\nvariable: INCLUDES\nvariable: INCLUDE_FILES\nvariable: CMDS\nvariable: TMP\nexpansion: `mktemp $PWD/tmpXXXXX`\nexpansion: $SOURCE\nexpansion: $TMP\nvariable: IFS\nvariable: IFS\nvariable: INCLUDE\nexpansion: ${INCLUDE_CMD#*include}\nvariable: INCLUDE\nexpansion: ${INCLUDE#[ \\r\\t]}\nvariable: INCLUDE\nexpansion: ${INCLUDE%[ \\r\\t]}\nexpansion: $INCLUDE\nvariable: SYSINCLUDE\nvariable: SYSINCLUDE\nvariable: INCLUDE_FILE\nexpansion: ${INCLUDE#*[\\\"<]}\nvariable: INCLUDE_FILE\nexpansion: ${INCLUDE_FILE%[\\\">]*}\nexpansion: $SYSINCLUDE\nexpansion: $INCLUDE_FILE\nvariable: CMDS\nexpansion: ${CMDS:+$CMDS }$INCLUDE_CMD\nexpansion: $INCLUDE_FILE\nvariable: RELATIVE\nvariable: RELATIVE\nvariable: INCLUDE_NAME\nexpansion: $(basename \"$INCLUDE_FILE\")\nexpansion: $RELATIVE\nvariable: INCLUDE_PATH\nexpansion: $SOURCE_DIR\nexpansion: ${INCLUDE_FILE}\nvariable: DIR\nexpansion: $SOURCE_DIR\nvariable: INCLUDE_PATH\nexpansion: $( (find \"${DIR}\" -name \"$INCLUDE_NAME\" -not -wholename \"*build/*\") | head -n1)\nexpansion: $INCLUDE_PATH\nexpansion: $DIR\nvariable: DIR\nexpansion: `dirname \"$DIR\"`\nexpansion: $RELATIVE\nexpansion: $INCLUDE_PATH\nexpansion: ${INCLUDE_PATH}\nexpansion: $INCLUDE_PATH\nexpansion: ${INCLUDE_PATH}\nexpansion: $FILE\nexpansion: $LINE\nexpansion: $INCLUDE_CMD\nexpansion: $INCLUDE_PATH\nvariable: INCLUDE_REL\nexpansion: $( realpath --relative-to=\"$(dirname \"$SOURCE\")\" $INCLUDE_PATH)\nvariable: INCLUDE_DIR\nexpansion: `dirname $INCLUDE_PATH`\nvariable: INCLUDE_DIR\nexpansion: ${INCLUDE_DIR#./}\nexpansion: ${INCLUDE_DIR}\nexpansion: ${INCLUDE_DIR}\nexpansion: ${INCLUDE_PATH}\nvariable: CPPFLAGS\nexpansion: ${INCLUDES}\nexpansion: $SOURCE\nexpansion: $INCLUDE_FILES\nvariable: INCLUDE_FILES\nexpansion: $TMP\nexpansion: $ALL_INCLUDES\nexpansion: $ALL_INCLUDES",
+			"contents": "expansion: $(find \"$@\" -name \"*.[ch]\" )\nexpansion: $(find_source \"$INCLUDE_FILE\")\nexpansion: $(realpath --relative-to=\"$(dirname \"$FILE\")\" \"$INCLUDE_PATH\")\nexpansion: $1\nexpansion: $FILE\nexpansion: $INCLUDE\nexpansion: $INCLUDE\nexpansion: $INCLUDE_FILE\nexpansion: $INCLUDE_OUT\nexpansion: $INCLUDE_PATH\nexpansion: $INCLUDE_PATH\nexpansion: $INCLUDE_PATHS\nexpansion: $INCLUDE_REL\nexpansion: $INCLUDE_REL\nexpansion: $INCLUDE_REL\nexpansion: $LINE\nexpansion: $SOURCES\nexpansion: $SOURCES\nexpansion: $SYSINCLUDE\nexpansion: ${INCLUDE#*[\\\"<]}\nexpansion: ${INCLUDE#[ \\r\\t]}\nexpansion: ${INCLUDE%[ \\r\\t]}\nexpansion: ${INCLUDE_CMD#*include}\nexpansion: ${INCLUDE_FILE%[\\\">]*}\nfunction: find_source\nvariable: IFS\nvariable: IFS\nvariable: IFS\nvariable: INCLUDE\nvariable: INCLUDE\nvariable: INCLUDE\nvariable: INCLUDE_FILE\nvariable: INCLUDE_FILE\nvariable: INCLUDE_OUT\nvariable: INCLUDE_OUT\nvariable: INCLUDE_PATHS\nvariable: INCLUDE_REL\nvariable: SOURCES\nvariable: SYSINCLUDE\nvariable: SYSINCLUDE",
 			"settings":
 			{
-				"buffer_size": 2728,
+				"buffer_size": 975,
 				"line_ending": "Unix",
 				"name": "𝌆 Outline",
 				"scratch": true
@@ -142,15 +142,6 @@
 			}
 		},
 		{
-			"file": "scripts/get-includes.sh",
-			"settings":
-			{
-				"buffer_size": 3060,
-				"encoding": "UTF-8",
-				"line_ending": "Unix"
-			}
-		},
-		{
 			"file": "GNUmakefile",
 			"settings":
 			{
@@ -194,6 +185,18 @@
 		"last_filter": "",
 		"selected_items":
 		[
+			[
+				"outline",
+				"Browse Mode: Outline (Right)"
+			],
+			[
+				"remove ",
+				"Package Control: Remove Package"
+			],
+			[
+				"c99",
+				"Set Syntax: C99"
+			],
 			[
 				"toks",
 				"Toks: Full report any occurrences of symbol (prompt)"
@@ -271,20 +274,12 @@
 				"Color Scheme Editor: Edit current color scheme"
 			],
 			[
-				"remove ",
-				"Package Control: Remove Package"
-			],
-			[
 				"install pac",
 				"Package Control: Install Package"
 			],
 			[
 				"add repo",
 				"Package Control: Add Repository"
-			],
-			[
-				"outline",
-				"Outline: Toggle Sort"
 			],
 			[
 				"index",
@@ -456,7 +451,6 @@
 	[
 		"/home/roman/Dokumente/Sources/c-utils",
 		"/home/roman/Dokumente/Sources/c-utils/lib",
-		"/home/roman/Dokumente/Sources/c-utils/lib/buffer",
 		"/home/roman/Dokumente/Sources/c-utils/lib/open",
 		"/home/roman/Dokumente/Sources/c-utils/lib/rdir",
 		"/home/roman/Dokumente/Sources/c-utils/lib/strarray",
@@ -464,6 +458,9 @@
 	],
 	"file_history":
 	[
+		"/home/roman/Dokumente/Sources/c-utils/scripts/get-includes.sh",
+		"/home/roman/Dokumente/Sources/c-utils/strip-comments.c",
+		"/home/roman/Dokumente/Sources/c-utils/xmlpp.c",
 		"/home/roman/Dokumente/Sources/skalibs/src/libposixplz/execvep.c",
 		"/home/roman/Dokumente/Sources/skalibs/src/libposixplz/execvep_internal.c",
 		"/home/roman/Dokumente/Sources/skalibs/src/libposixplz/execvep_loose.c",
@@ -521,7 +518,6 @@
 		"/home/roman/Dokumente/Sources/c-utils/lib/stralloc/openreadclose.c",
 		"/home/roman/Dokumente/Sources/c-utils/3rdparty/bzip2/blocksort.c",
 		"/home/roman/Dokumente/Sources/c-utils/libc-resolv-override.c",
-		"/home/roman/Dokumente/Sources/c-utils/strip-comments.c",
 		"/home/roman/Dokumente/Sources/c-utils/genmakefile.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/fmt/fmt_double.c",
 		"/home/roman/Dokumente/Sources/an-tronics/diptrace/Amplifier Class AB.sch",
@@ -586,12 +582,10 @@
 		"/home/roman/Dokumente/Sources/c-utils/lib/slist.h",
 		"/home/roman/Dokumente/Sources/c-utils/eagle-to-circuit.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/hmap.h",
-		"/home/roman/Dokumente/Sources/c-utils/xmlpp.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/xml/xml_read_callback.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/textcode.h",
 		"/home/roman/Dokumente/Sources/c-utils/lib/buffer/buffer_mmapprivate.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/mmap/mmap_private.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/buffer/buffer_write.c"
+		"/home/roman/Dokumente/Sources/c-utils/lib/mmap/mmap_private.c"
 	],
 	"find":
 	{
@@ -622,6 +616,10 @@
 		"case_sensitive": true,
 		"find_history":
 		[
+			"link",
+			"tmpl",
+			"temp",
+			"tmp",
 			"output_",
 			"IFS=",
 			"pushv_uniq",
@@ -745,11 +743,7 @@
 			"ip4",
 			"\\*d",
 			"dns_packet_getname",
-			"resolvconfip",
-			"dns_resolvconfip",
-			"resolvconf",
-			"logserial",
-			"PROGRAMS"
+			"resolvconfip"
 		],
 		"highlight": false,
 		"in_selection": false,
@@ -870,7 +864,7 @@
 	"groups":
 	[
 		{
-			"selected": 0,
+			"selected": 5,
 			"sheets":
 			[
 				{
@@ -878,7 +872,7 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 2728,
+						"buffer_size": 975,
 						"regions":
 						{
 						},
@@ -887,624 +881,225 @@
 						],
 						"settings":
 						{
-							"current_file": "/home/roman/Dokumente/Sources/c-utils/scripts/get-includes.sh",
+							"color_scheme": "Packages/Color Scheme - Default/Monokai.tmTheme",
+							"current_file": "/home/roman/Dokumente/Sources/c-utils/scripts/relative-includes.sh",
+							"outline_alphabetical": true,
 							"outline_rename_mode": false,
 							"symkeys":
 							[
 								[
-									12,
-									15
+									27,
+									55
 								],
 								[
-									21,
-									23
+									500,
+									530
 								],
 								[
-									31,
-									38
+									707,
+									769
 								],
 								[
-									39,
-									64
+									107,
+									109
 								],
 								[
-									65,
-									76
+									1007,
+									1012
 								],
 								[
-									89,
-									97
+									322,
+									330
 								],
 								[
-									115,
-									117
+									983,
+									991
 								],
 								[
-									123,
-									127
+									931,
+									944
 								],
 								[
-									134,
-									142
+									992,
+									1004
 								],
 								[
-									144,
-									146
+									592,
+									605
 								],
 								[
-									159,
-									161
+									634,
+									647
 								],
 								[
-									192,
-									201
+									555,
+									569
 								],
 								[
-									206,
-									208
+									831,
+									843
 								],
 								[
-									241,
-									246
+									878,
+									890
 								],
 								[
-									268,
-									270
+									913,
+									925
 								],
 								[
-									276,
-									278
+									975,
+									980
 								],
 								[
-									283,
-									285
+									81,
+									89
 								],
 								[
-									295,
-									307
+									145,
+									153
 								],
 								[
-									320,
-									325
+									782,
+									793
 								],
 								[
-									326,
-									328
+									426,
+									443
 								],
 								[
-									329,
-									334
+									264,
+									282
 								],
 								[
-									335,
-									338
+									294,
+									312
 								],
 								[
-									396,
-									402
+									229,
+									252
 								],
 								[
-									415,
-									421
+									460,
+									482
 								],
 								[
-									424,
-									430
+									57,
+									68
 								],
 								[
-									454,
-									467
+									11,
+									14
 								],
 								[
-									474,
-									480
+									160,
+									163
 								],
 								[
-									481,
-									483
+									212,
+									215
+								],
+								[
+									221,
+									228
+								],
+								[
+									256,
+									263
+								],
+								[
+									286,
+									293
+								],
+								[
+									413,
+									425
+								],
+								[
+									447,
+									459
+								],
+								[
+									817,
+									828
+								],
+								[
+									863,
+									874
 								],
 								[
 									486,
-									492
+									499
 								],
 								[
-									506,
-									509
+									695,
+									706
 								],
 								[
-									516,
-									520
+									19,
+									26
 								],
 								[
-									522,
-									529
+									351,
+									361
 								],
 								[
-									530,
-									532
-								],
-								[
-									534,
-									540
-								],
-								[
-									554,
-									587
-								],
-								[
-									601,
-									652
-								],
-								[
-									654,
-									661
-								],
-								[
-									662,
-									665
-								],
-								[
-									775,
-									787
-								],
-								[
-									804,
-									812
-								],
-								[
-									820,
-									826
-								],
-								[
-									828,
-									840
-								],
-								[
-									844,
-									854
-								],
-								[
-									855,
-									877
-								],
-								[
-									884,
-									895
-								],
-								[
-									917,
-									928
-								],
-								[
-									929,
-									952
-								],
-								[
-									955,
-									966
-								],
-								[
-									976,
-									994
-								],
-								[
-									1005,
-									1016
-								],
-								[
-									1027,
-									1035
-								],
-								[
-									1037,
-									1050
-								],
-								[
-									1053,
-									1057
-								],
-								[
-									1086,
-									1089
-								],
-								[
-									1090,
-									1112
-								],
-								[
-									1143,
-									1150
-								],
-								[
-									1152,
-									1156
-								],
-								[
-									1165,
-									1168
-								],
-								[
-									1218,
-									1221
-								],
-								[
-									1234,
-									1241
-								],
-								[
-									1242,
-									1265
-								],
-								[
-									1270,
-									1277
-								],
-								[
-									1278,
-									1296
-								],
-								[
-									1301,
-									1308
-								],
-								[
-									1309,
-									1327
-								],
-								[
-									1338,
-									1346
-								],
-								[
-									1368,
-									1378
-								],
-								[
-									1396,
-									1406
-								],
-								[
-									1429,
-									1441
-								],
-								[
-									1442,
-									1459
-								],
-								[
-									1464,
-									1476
-								],
-								[
-									1477,
-									1499
-								],
-								[
-									1505,
-									1516
-								],
-								[
-									1543,
-									1556
-								],
-								[
-									1576,
-									1580
-								],
-								[
-									1582,
-									1609
-								],
-								[
-									1621,
-									1634
-								],
-								[
-									1651,
-									1659
-								],
-								[
-									1677,
-									1685
-								],
-								[
-									1708,
-									1720
-								],
-								[
-									1721,
-									1748
-								],
-								[
-									1756,
-									1765
-								],
-								[
-									1778,
-									1790
-								],
-								[
-									1792,
-									1803
-								],
-								[
-									1804,
-									1819
-								],
-								[
-									1836,
-									1839
-								],
-								[
-									1840,
-									1851
-								],
-								[
-									1878,
-									1890
-								],
-								[
-									1891,
-									1970
-								],
-								[
-									1988,
-									2001
-								],
-								[
-									2023,
-									2027
-								],
-								[
-									2054,
-									2057
-								],
-								[
-									2058,
-									2074
-								],
-								[
-									2100,
-									2109
-								],
-								[
-									2134,
-									2147
-								],
-								[
-									2196,
-									2211
-								],
-								[
-									2275,
-									2288
-								],
-								[
-									2316,
-									2331
-								],
-								[
-									2334,
-									2339
-								],
-								[
-									2340,
-									2345
-								],
-								[
-									2346,
-									2358
-								],
-								[
-									2376,
-									2389
-								],
-								[
-									2409,
-									2420
-								],
-								[
-									2421,
-									2484
-								],
-								[
-									2489,
-									2500
-								],
-								[
-									2501,
-									2524
-								],
-								[
-									2529,
-									2540
-								],
-								[
-									2541,
-									2558
-								],
-								[
-									2594,
-									2608
-								],
-								[
-									2646,
-									2660
-								],
-								[
-									2695,
-									2710
-								],
-								[
-									2870,
-									2878
-								],
-								[
-									2880,
-									2891
-								],
-								[
-									2936,
-									2943
-								],
-								[
-									2945,
-									2959
-								],
-								[
-									2962,
-									2975
-								],
-								[
-									2983,
-									2987
-								],
-								[
-									3004,
-									3017
-								],
-								[
-									3036,
-									3049
+									378,
+									388
 								]
 							],
 							"symlist":
 							[
-								"variable: IFS",
-								"variable: TS",
-								"variable: SOURCES",
-								"expansion: $(find \"$@\" -name \"*.c\" )",
-								"function: find_source",
-								"expansion: $SOURCES",
+								"expansion: $(find \"$@\" -name \"*.[ch]\" )",
+								"expansion: $(find_source \"$INCLUDE_FILE\")",
+								"expansion: $(realpath --relative-to=\"$(dirname \"$FILE\")\" \"$INCLUDE_PATH\")",
 								"expansion: $1",
-								"function: isin",
-								"variable: __NEEDLE",
-								"expansion: $1",
-								"expansion: $#",
-								"expansion: $__NEEDLE",
-								"expansion: $1",
-								"function: pushv",
-								"expansion: $1",
-								"expansion: $1",
-								"expansion: $1",
-								"function: pushv_unique",
-								"variable: __VAR",
-								"expansion: $1",
-								"variable: __ARG",
-								"variable: IFS",
-								"expansion: $__VAR",
-								"expansion: $__VAR",
-								"expansion: $__ARG",
-								"function: output_target",
-								"variable: SOURCE",
-								"expansion: $1",
-								"variable: SUFFIX",
-								"variable: IFS",
-								"variable: DEPS",
-								"expansion: $SOURCE",
-								"expansion: $*",
-								"variable: OBJECT",
-								"expansion: $(basename \"$SOURCE\" .c)${SUFFIX}",
-								"expansion: ${CPPFLAGS:+$OBJECT: CPPFLAGS += $CPPFLAGS\n}$OBJECT",
-								"expansion: ${DEPS}",
-								"expansion: $TS",
-								"variable: ALL_INCLUDES",
-								"expansion: $SOURCES",
-								"variable: SOURCE",
-								"expansion: ${SOURCE#./}",
-								"variable: SOURCE_DIR",
-								"expansion: $(dirname \"${SOURCE}\")",
-								"expansion: $SOURCE_DIR",
-								"variable: SOURCE_ROOT",
-								"expansion: ${SOURCE_DIR#3rdparty/}",
-								"variable: SOURCE_ROOT",
-								"expansion: ${SOURCE_ROOT%%/*}",
-								"variable: SOURCE_ROOT",
-								"variable: INCLUDES",
-								"variable: INCLUDE_FILES",
-								"variable: CMDS",
-								"variable: TMP",
-								"expansion: `mktemp $PWD/tmpXXXXX`",
-								"expansion: $SOURCE",
-								"expansion: $TMP",
-								"variable: IFS",
-								"variable: IFS",
-								"variable: INCLUDE",
-								"expansion: ${INCLUDE_CMD#*include}",
-								"variable: INCLUDE",
-								"expansion: ${INCLUDE#[ \\r\\t]}",
-								"variable: INCLUDE",
-								"expansion: ${INCLUDE%[ \\r\\t]}",
-								"expansion: $INCLUDE",
-								"variable: SYSINCLUDE",
-								"variable: SYSINCLUDE",
-								"variable: INCLUDE_FILE",
-								"expansion: ${INCLUDE#*[\\\"<]}",
-								"variable: INCLUDE_FILE",
-								"expansion: ${INCLUDE_FILE%[\\\">]*}",
-								"expansion: $SYSINCLUDE",
-								"expansion: $INCLUDE_FILE",
-								"variable: CMDS",
-								"expansion: ${CMDS:+$CMDS }$INCLUDE_CMD",
-								"expansion: $INCLUDE_FILE",
-								"variable: RELATIVE",
-								"variable: RELATIVE",
-								"variable: INCLUDE_NAME",
-								"expansion: $(basename \"$INCLUDE_FILE\")",
-								"expansion: $RELATIVE",
-								"variable: INCLUDE_PATH",
-								"expansion: $SOURCE_DIR",
-								"expansion: ${INCLUDE_FILE}",
-								"variable: DIR",
-								"expansion: $SOURCE_DIR",
-								"variable: INCLUDE_PATH",
-								"expansion: $( (find \"${DIR}\" -name \"$INCLUDE_NAME\" -not -wholename \"*build/*\") | head -n1)",
-								"expansion: $INCLUDE_PATH",
-								"expansion: $DIR",
-								"variable: DIR",
-								"expansion: `dirname \"$DIR\"`",
-								"expansion: $RELATIVE",
-								"expansion: $INCLUDE_PATH",
-								"expansion: ${INCLUDE_PATH}",
-								"expansion: $INCLUDE_PATH",
-								"expansion: ${INCLUDE_PATH}",
 								"expansion: $FILE",
-								"expansion: $LINE",
-								"expansion: $INCLUDE_CMD",
+								"expansion: $INCLUDE",
+								"expansion: $INCLUDE",
+								"expansion: $INCLUDE_FILE",
+								"expansion: $INCLUDE_OUT",
 								"expansion: $INCLUDE_PATH",
+								"expansion: $INCLUDE_PATH",
+								"expansion: $INCLUDE_PATHS",
+								"expansion: $INCLUDE_REL",
+								"expansion: $INCLUDE_REL",
+								"expansion: $INCLUDE_REL",
+								"expansion: $LINE",
+								"expansion: $SOURCES",
+								"expansion: $SOURCES",
+								"expansion: $SYSINCLUDE",
+								"expansion: ${INCLUDE#*[\\\"<]}",
+								"expansion: ${INCLUDE#[ \\r\\t]}",
+								"expansion: ${INCLUDE%[ \\r\\t]}",
+								"expansion: ${INCLUDE_CMD#*include}",
+								"expansion: ${INCLUDE_FILE%[\\\">]*}",
+								"function: find_source",
+								"variable: IFS",
+								"variable: IFS",
+								"variable: IFS",
+								"variable: INCLUDE",
+								"variable: INCLUDE",
+								"variable: INCLUDE",
+								"variable: INCLUDE_FILE",
+								"variable: INCLUDE_FILE",
+								"variable: INCLUDE_OUT",
+								"variable: INCLUDE_OUT",
+								"variable: INCLUDE_PATHS",
 								"variable: INCLUDE_REL",
-								"expansion: $( realpath --relative-to=\"$(dirname \"$SOURCE\")\" $INCLUDE_PATH)",
-								"variable: INCLUDE_DIR",
-								"expansion: `dirname $INCLUDE_PATH`",
-								"variable: INCLUDE_DIR",
-								"expansion: ${INCLUDE_DIR#./}",
-								"expansion: ${INCLUDE_DIR}",
-								"expansion: ${INCLUDE_DIR}",
-								"expansion: ${INCLUDE_PATH}",
-								"variable: CPPFLAGS",
-								"expansion: ${INCLUDES}",
-								"expansion: $SOURCE",
-								"expansion: $INCLUDE_FILES",
-								"variable: INCLUDE_FILES",
-								"expansion: $TMP",
-								"expansion: $ALL_INCLUDES",
-								"expansion: $ALL_INCLUDES"
+								"variable: SOURCES",
+								"variable: SYSINCLUDE",
+								"variable: SYSINCLUDE"
 							],
-							"syntax": "Packages/Outline/outline.hidden-tmLanguage"
+							"syntax": "Packages/Text/Plain text.tmLanguage"
 						},
 						"translation.x": 0.0,
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 8,
+					"stack_index": 7,
 					"type": "text"
-				}
-			]
-		},
-		{
-			"selected": 5,
-			"sheets":
-			[
+				},
 				{
 					"buffer": 1,
 					"file": "libc-resolv-override.c",
@@ -1532,7 +1127,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 7,
+					"stack_index": 6,
 					"type": "text"
 				},
 				{
@@ -1562,7 +1157,7 @@
 						"translation.y": 1255.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 5,
+					"stack_index": 4,
 					"type": "text"
 				},
 				{
@@ -1592,7 +1187,7 @@
 						"translation.y": 8643.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 3,
+					"stack_index": 2,
 					"type": "text"
 				},
 				{
@@ -1636,55 +1231,26 @@
 						"selection":
 						[
 							[
-								1124,
-								1124
+								569,
+								569
 							]
 						],
 						"settings":
 						{
+							"color_scheme": "Packages/JavaScriptNext - ES6 Syntax/Next.tmTheme",
 							"syntax": "Packages/ShellScript/Bash.sublime-syntax",
 							"tab_size": 2,
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 768.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 2,
-					"type": "text"
-				},
-				{
-					"buffer": 6,
-					"file": "scripts/get-includes.sh",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 3060,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								765,
-								765
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/ShellScript/Bash.sublime-syntax",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 835.0,
+						"translation.y": 257.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 0,
 					"type": "text"
 				},
 				{
-					"buffer": 7,
+					"buffer": 6,
 					"file": "GNUmakefile",
 					"semi_transient": false,
 					"settings":
@@ -1709,11 +1275,11 @@
 						"translation.y": 48451.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 4,
+					"stack_index": 3,
 					"type": "text"
 				},
 				{
-					"buffer": 8,
+					"buffer": 7,
 					"file": "/home/roman/Dokumente/Sources/daemontools/src/setuidgid.c",
 					"semi_transient": false,
 					"settings":
@@ -1739,9 +1305,14 @@
 						"translation.y": 576.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 6,
+					"stack_index": 5,
 					"type": "text"
 				}
+			]
+		},
+		{
+			"sheets":
+			[
 			]
 		}
 	],
@@ -1758,29 +1329,27 @@
 		"cells":
 		[
 			[
-				2,
 				0,
-				3,
-				2
+				0,
+				1,
+				1
 			],
 			[
-				0,
+				1,
 				0,
 				2,
-				2
+				1
 			]
 		],
 		"cols":
 		[
 			0.0,
-			0.2,
-			0.8,
+			0.5,
 			1.0
 		],
 		"rows":
 		[
 			0.0,
-			0.5,
 			1.0
 		]
 	},
@@ -1834,6 +1403,14 @@
 		"last_filter": "",
 		"selected_items":
 		[
+			[
+				"xmlpp",
+				"xmlpp.c"
+			],
+			[
+				"strip-c",
+				"strip-comments.c"
+			],
 			[
 				"gen-ma",
 				"scripts/gen-makefile-deps.sh"
@@ -2035,10 +1612,6 @@
 				"strip-comments.c"
 			],
 			[
-				"strip-c",
-				"strip-comments.c"
-			],
-			[
 				"ready",
 				"lib/stralloc/stralloc_ready.c"
 			],
@@ -2177,10 +1750,6 @@
 			[
 				"buffer_wr",
 				"lib/buffer/buffer_write_fd.c"
-			],
-			[
-				"xmlpp",
-				"xmlpp.c"
 			],
 			[
 				"hmap.h",
@@ -2367,7 +1936,7 @@
 		],
 		"width": 0.0
 	},
-	"selected_group": 1,
+	"selected_group": 0,
 	"settings":
 	{
 	},
