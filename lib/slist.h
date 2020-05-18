@@ -39,14 +39,14 @@ int slist_unshifts(slink**, const char* s);
 #define _slist_next(st) (((struct slink*)(st))->next)
 
 static inline void*
-slink_data(slink** link) {
-  return &((*link)[1]);
-}
-static inline void*
 slist_data(slink* list) {
-  return &(list[1]);
+  return (void *)(((slink**)list)[1]);
 }
 
+static inline void*
+slink_data(slink** link) {
+  return slist_data(*link);
+}
 static inline slink**
 slink_next(slink** link) {
   return &((*link)->next);

@@ -414,7 +414,7 @@ pkg_init(pkg* pf, const char* fn) {
 void
 pkg_list() {
   slink* pkgs;
-  slink** it;
+  slink **it, *item;
   stralloc path, line;
   const char* s;
   size_t n, len;
@@ -428,11 +428,11 @@ pkg_list() {
     const char* entry;
     dir_t d;
     stralloc_copyb(&path, s, n);
-      len = path.len;
+    len = path.len;
     stralloc_nul(&path);
 
-  if(dir_open(&d, path.s))
-    continue;
+    if(dir_open(&d, path.s))
+      continue;
 
     while((entry = dir_read(&d))) {
       stralloc_catm_internal(&path, "/", entry, 0);
@@ -463,10 +463,15 @@ pkg_list() {
 
           stralloc_nul(&line);
 
-          buffer_putsa(buffer_1, &line);
-          buffer_putnlflush(buffer_1);
+          /*     buffer_putsa(buffer_1, &line);
+              buffer_putnlflush(buffer_1); */
+       
+          for(it = &pkgs; *it; it = &((*it)->next)) {
+            if(str_diff(line.s, slist_data(*it)) < 0)
+              break;
+          }
 
-          slist_pushs(&pkgs, line.s);
+          slist_unshifts(it, line.s);
           line.s = NULL;
           line.a = 0;
         }
@@ -478,7 +483,10 @@ pkg_list() {
     }
   }
 
-  slink_foreach(&pkgs, it) {}
+  slist_foreach(pkgs, item) { 
+    buffer_puts(buffer_1, slist_data(item));
+    buffer_putnlflush(buffer_1);
+  }
 }
 
 /**
