@@ -141,7 +141,7 @@ void print_element_attrs(xmlnode* a_node);
 
 void
 dump_strarray(const char* name, strarray* stra) {
-  const char** p;
+  char** p;
   size_t n = 0;
   buffer_puts(buffer_2, name);
   buffer_puts(buffer_2, ":\n  ");
@@ -155,16 +155,18 @@ dump_strarray(const char* name, strarray* stra) {
   }
   buffer_putnlflush(buffer_2);
 }
+void print_xy(buffer* b, const char* name, double x, double y);
+
 int dump_net(const void* key, size_t key_len, const void* value, size_t value_len, void* user_data);
 cbmap_t devicesets, packages, parts, nets, symbols;
 static strarray layers;
 static int measures_layer = -1, bottom_layer = -1;
 static array wires;
-static wire bounds;
+static rect bounds;
 
 static int do_list_layers, do_draw_measures, do_align_coords, print_comments;
 static const char* current_layer = "Bottom";
-static current_layer_id = -1;
+static int current_layer_id = -1;
 static const char* current_signal = NULL;
 
 static double alignment = 2.54; // millimeters
@@ -413,7 +415,7 @@ layer_name(int i) {
 const char*
 layer_by_id(const char* str) {
   int id;
-  if((id = layer_name(str)) != -1)
+  if((id = get_layer(str)) != -1)
     return layer_name(id);
   return NULL;
 }
@@ -519,6 +521,14 @@ rect_outset(rect* r, double offset) {
 
 void
 rect_zero(rect* r) {
+  r->x1 = 0;
+  r->y1 = 0;
+  r->x2 = 0;
+  r->y2 = 0;
+}
+
+void
+wire_zero(wire* r) {
   r->x1 = 0;
   r->y1 = 0;
   r->x2 = 0;
@@ -800,7 +810,7 @@ build_deviceset(xmlnode* set) {
 xmlnodeset
 
 getnodeset(void* n, const char* xpath) {
-  return xml_find_all_1(n, xml_match_name, (void*)xpath);
+  return xml_find_all_1(n, (xml_pred_t*)&xml_match_name, (void*)xpath);
 }
 
 /**

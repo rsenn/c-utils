@@ -131,7 +131,7 @@ _getopt_(int argc, char* const argv[], const char* optstring, const struct longo
               }
               break;
             case required_argument:
-              if(pos_eq == NULL) {
+              if(spec_long[pos_eq] == '\0'){
                 ++optind;
                 optarg = argv[optind];
               } else {

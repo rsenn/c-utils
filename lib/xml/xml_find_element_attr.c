@@ -50,7 +50,7 @@ xml_find_all_attrs(xmlnode* node, const char* attrs) {
   // strlist_froms(&attrlist, attrs, '|');
   stralloc_copys(&attrlist.sa, attrs);
 
-  r = xml_find_all_2(node, xml_has_attr, NULL, &attrlist);
+  r = xml_find_all_2(node, (xml_pred_t*)&xml_has_attr, NULL, &attrlist);
   strlist_free(&attrlist);
   return r;
 }

@@ -1,5 +1,6 @@
 #include "../typedefs.h"
 #include "../windoze.h"
+#include "../alloc.h"
 #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -16,6 +17,7 @@
 ssize_t
 getdelim(char** lineptr, size_t* n, int delim, FILE* stream) {
   size_t i;
+      char* new;
   if(!lineptr || !n) {
     errno = EINVAL;
     return -1;
@@ -26,8 +28,7 @@ getdelim(char** lineptr, size_t* n, int delim, FILE* stream) {
     int x;
     if(i >= *n) {
       int tmp = *n + 100;
-      char* new = alloc_re(*lineptr, tmp);
-      if(!new)
+     if(!alloc_re((void**)lineptr, *n, tmp))
         return -1;
       *lineptr = new;
       *n = tmp;

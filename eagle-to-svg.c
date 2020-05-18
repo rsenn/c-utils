@@ -150,7 +150,7 @@ main(int argc, char* argv[]) {
 
   doc = xml_read_tree(&input);
 
-  nodeset = xml_find_all_1(doc, xml_match_name, "layer");
+  nodeset = xml_find_all_1(doc, (xml_pred_t*)&xml_match_name, "layer");
 
   MAP_NEW(layers);
   MAP_NEW(colors);
@@ -206,7 +206,7 @@ main(int argc, char* argv[]) {
   xml_set_attribute(svggroup, "stroke-linecap", "round");
   xml_set_attribute(svggroup, "fill", "none");
 
-  nodeset = xml_find_all_1(signals, xml_match_name, "wire");
+  nodeset = xml_find_all_1(signals, (xml_pred_t*)&xml_match_name, "wire");
 
   xmlnodeset_foreach(&nodeset, nptr) {
     rect_t rect = get_rect(*nptr);

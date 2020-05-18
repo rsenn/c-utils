@@ -42,7 +42,7 @@ int cbmap_mem_memalign(void** p, size_t alignment, size_t size);
 #define CBM_STRDUP(s) str_dup((s))
 #define CBM_STRNDUP(s, n) str_ndup((s), (n))
 #define CBM_MEM_LOG()
-#define CBM_MEMALIGN(p, a, s) *(p) = alloc((s))
+#define CBM_MEMALIGN(p, a, s) ((*(p) = alloc((s))) == NULL)
 #define CBM_MEM_ALLOCATED() ((double)0)
 
 #endif

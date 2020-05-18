@@ -1,4 +1,5 @@
 #include "../strarray.h"
+#include "../str.h"
 
 void
 strarray_intersection(const strarray* s1, const strarray* s2, strarray* out) {

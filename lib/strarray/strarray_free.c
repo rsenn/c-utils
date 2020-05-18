@@ -4,7 +4,7 @@
 
 void
 strarray_free(strarray* arr) {
-  const char** x;
+  char** x;
   strarray_foreach(arr, x) {
     if(*x)
       alloc_free((void*)*x);

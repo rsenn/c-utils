@@ -39,7 +39,7 @@ cbmap_data_node_new(cbmap_allocator_t key_allocator,
   struct cbmap_data_node* data;
 
   /* Data node (memaligned) */
-  int fail = CBM_MEMALIGN((void**)&data, sizeof(void*), sizeof(struct cbmap_data_node));
+  int fail = CBM_MEMALIGN(&data, sizeof(void*), sizeof(struct cbmap_data_node));
   if(fail) {
     return NULL;
   }

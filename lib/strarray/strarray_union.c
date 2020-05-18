@@ -1,5 +1,5 @@
-
 #include "../strarray.h"
+#include "../str.h"
 
 void
 strarray_union(const strarray* s1, const strarray* s2, strarray* out) {

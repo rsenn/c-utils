@@ -466,7 +466,7 @@ build_deviceset(xmlnode* set) {
  */
 xmlnodeset
 getnodeset(void* n, const char* xpath) {
-  return xml_find_all_1(n, xml_match_name, xpath);
+  return xml_find_all_1(n, (xml_pred_t*)&xml_match_name, xpath);
 }
 
 /**

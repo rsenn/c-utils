@@ -1,5 +1,5 @@
 #include "../rdir.h"
-#include <assert.h>
+#include "../byte.h"
 
 int
 rdir_open(rdir_t* d, const char* p) {

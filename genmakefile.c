@@ -69,7 +69,7 @@ debug_sa(const char* name, stralloc* sa) {
 
 void
 debug_stra(const char* name, const strarray* stra) {
-  const char** s;
+  char** s;
   buffer_puts(buffer_2, name);
   buffer_puts(buffer_2, "[\n");
   strarray_foreach(stra, s) {
@@ -1393,7 +1393,7 @@ sources_get(const char* basedir) {
 
 const char*
 sources_find(const char* name, size_t len, size_t* cptr) {
-  const char** x;
+  char** x;
   const char* ret = 0;
   size_t i, n, count = 0;
 #ifdef DEBUG_OUTPUT_
@@ -1696,7 +1696,7 @@ sourcedir_get_sa(stralloc* path) {
  */
 void
 sourcedir_populate(HMAP_DB* sourcedirs, strarray* sources) {
-  const char** p;
+  char** p;
   stralloc dir;
   strlist l;
   stralloc_init(&dir);
@@ -4431,7 +4431,7 @@ main(int argc, char* argv[]) {
   static strarray libs, includes;
   buffer filebuf;
   buffer* out = buffer_1;
-  const char** it;
+  char** it;
   const char* s;
   size_t n;
   target *rule, *all, *compile;

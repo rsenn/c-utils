@@ -87,7 +87,8 @@ output_mplab_project(buffer* b, MAP_T _rules, MAP_T vars, const strlist* include
   MAP_ITER_T it;
   MAP_T toolcfg;
   strlist incdirs, srcdirs;
-  const char *dir, *s, **p;
+  const char *dir, *s;
+  char **p;
   size_t n;
   stralloc sa, file, dirname;
   mplab_config_t mplab_cfg = {.warning_level = (is_debug() ? 3 : -3),

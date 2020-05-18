@@ -1,5 +1,6 @@
-#include <wordexp.h>
+#define _GNU_SOURCE
 #include <unistd.h>
+#include <wordexp.h>
 #include <stdio.h>
 #include <string.h>
 #include <limits.h>
