@@ -93,12 +93,45 @@ get_field_index(int flags) {
   return -1;
 }
 
+char*
+search_path(const char* path, const char* what, stralloc* out) {
+  const char* x;
+  char* ret = 0;
+  size_t pos;
+  stralloc stra;
+
+  stralloc_init(&stra);
+
+  for(x = path; *x; x += pos) {
+    pos = str_chr(x, ':');
+
+    stralloc_copyb(&stra, x, pos);
+    stralloc_catc(&stra, '/');
+    stralloc_cats(&stra, what);
+    stralloc_nul(&stra);
+
+    if(path_exists(stra.s)) {
+      stralloc_copy(out, &stra);
+      stralloc_nul(out);
+      ret = out->s;
+      break;
+    }
+
+    pos++;
+  }
+  stralloc_free(&stra);
+  return ret;
+}
+
 const char*
 host_arch(const char* compiler, stralloc* out) {
   pid_t pid;
   int p[2];
   char* const argv[] = {(char*)compiler, "-dumpmachine", 0};
   char* const envp[1] = {0};
+  const char* bin;
+  stralloc dir;
+  stralloc_init(&dir);
 
   stralloc_zero(out);
 
@@ -125,7 +158,12 @@ host_arch(const char* compiler, stralloc* out) {
 
     dup2(p[1], 1);
 
-    if(execvpe(compiler, argv, envp)) {
+    if((bin = search_path(env_get("PATH"), compiler, &dir)) == 0) {
+      errmsg_warnsys(bin, " not found: ", 0);
+      exit(127);
+    }
+
+    if(execve(bin, argv, envp)) {
       errmsg_warnsys("execvpe error: ", 0);
       exit(1);
     }
@@ -613,35 +651,6 @@ host_arch(const char* compiler, stralloc* out) {
       buffer_putnlflush(buffer_1);
     }
     return 1;
-  }
-
-  char* search_path(const char* path, const char* what, stralloc* out) {
-    const char* x;
-    char* ret = 0;
-    size_t pos;
-    stralloc stra;
-
-    stralloc_init(&stra);
-
-    for(x = path; *x; x += pos) {
-      pos = str_chr(x, ':');
-
-      stralloc_copyb(&stra, x, pos);
-      stralloc_catc(&stra, '/');
-      stralloc_cats(&stra, what);
-      stralloc_nul(&stra);
-
-      if(path_exists(stra.s)) {
-        stralloc_copy(out, &stra);
-        stralloc_nul(out);
-        ret = out->s;
-        break;
-      }
-
-      pos++;
-    }
-    stralloc_free(&stra);
-    return ret;
   }
 
   void pkgcfg_init(const char* argv0) {
