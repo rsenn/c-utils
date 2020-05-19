@@ -174,7 +174,10 @@ host_arch(const char* compiler, stralloc* out) {
       int ws = 0;
       close(p[1]);
 
+#ifndef __dietlibc__
+
       waitpid_nointr(pid, &ws, WNOHANG);
+#endif
 
       readclose_append(p[0], out, 1024);
 
@@ -861,10 +864,8 @@ host_arch(const char* compiler, stralloc* out) {
         case 'h': usage(argv[0]); return 0;
         case 'V': break;
         case 'v': {
-          buffer_puts(buffer_1, "1.0");
-          buffer_putnlflush(buffer_1);
-          return 0;
-          break;
+          show_version = 1;
+          goto getopt_end;
         }
         case LIBS_ONLY_L:
         case LIBS_ONLY_OTHER:
@@ -928,6 +929,7 @@ host_arch(const char* compiler, stralloc* out) {
       }
     }
   getopt_end:
+
     if(show_version) {
       buffer_puts(buffer_1, "1.0");
       buffer_putnlflush(buffer_1);
