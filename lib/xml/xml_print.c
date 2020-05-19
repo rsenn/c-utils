@@ -45,9 +45,9 @@ xml_print_node(xmlnode* node, buffer* b, int depth, xml_print_fmt_t* fmt) {
   buffer_putm_internal(b, "<", node->name, 0);
 
   if(node->type == XML_ELEMENT && node->attributes && node->attributes->tuple_count) {
-    //fmt(node, b, depth, ' ', 1);
+    // fmt(node, b, depth, ' ', 1);
 
-      buffer_putc(b, ' ');
+    buffer_putc(b, ' ');
     xml_print_attributes(node->attributes, b, " ", "=", "\"");
     buffer_flush(b);
   }
@@ -69,7 +69,7 @@ xml_print_node(xmlnode* node, buffer* b, int depth, xml_print_fmt_t* fmt) {
     buffer_puts(b, node->name);
     buffer_putc(b, '>');
 
-    fmt(node, b, depth, '\n', 1);
+    fmt(node->parent, b, depth, '\n', 1);
 
   } else if(node->name[0] == '/' || (node->next && node_is_closing(node->next))) {
     buffer_putc(b, '>');
@@ -83,7 +83,7 @@ xml_print_node(xmlnode* node, buffer* b, int depth, xml_print_fmt_t* fmt) {
   //    if(node_is_closing(next) && !str_diff(&next->name[1], node->name)) return xml_print_node(next, b, depth);
   //  }
   if(closing)
-    fmt(node, b, depth, '\n', 1);
+    fmt(node->parent, b, depth, '\n', 1);
 
   buffer_flush(b);
 }
@@ -96,10 +96,11 @@ xml_print_list(xmlnode* list, buffer* b, int depth, xml_print_fmt_t* fmt) {
 
 void
 xml_print(xmlnode* node, buffer* b, xml_print_fmt_t* fmt) {
-  if(node->type == XML_DOCUMENT) {
-    buffer_puts(b, "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
+  if(node->type == XML_DOCUMENT)
     node = node->children;
-  }
+
+  if(!(node->name && node->name[0] == '?'))
+    buffer_puts(b, "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
 
   (node && node->next ? xml_print_list : xml_print_node)(node, b, 0, fmt ? fmt : &default_fmt);
 }

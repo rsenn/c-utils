@@ -66,6 +66,7 @@ xml_read_callback(xmlreader* r, xml_read_callback_fn* fn) {
     if((n = buffer_gettok_sa(b, &tag, " \n\t\r\v/>", 7)) < 0)
       break;
     stralloc_nul(&tag);
+
     buffer_skipspace(b);
 
     while((s = buffer_peek(b)) && isalpha(*s)) {

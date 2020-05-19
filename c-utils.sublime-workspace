@@ -120,108 +120,39 @@
 	"buffers":
 	[
 		{
-			"file": "pkgcfg.c",
+			"file": "lib/xml.h",
 			"settings":
 			{
-				"buffer_size": 22116,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/stralloc.h",
-			"settings":
-			{
-				"buffer_size": 12024,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/stralloc/stralloc_erase.c",
-			"settings":
-			{
-				"buffer_size": 184,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/slist.h",
-			"settings":
-			{
-				"buffer_size": 3455,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/slist/slist_unshifts.c",
-			"settings":
-			{
-				"buffer_size": 295,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/slist/slist_pushs.c",
-			"settings":
-			{
-				"buffer_size": 412,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/dir/dir_open.c",
-			"settings":
-			{
-				"buffer_size": 2217,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/errmsg.h",
-			"settings":
-			{
-				"buffer_size": 1903,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/errmsg/errmsg_warn.c",
-			"settings":
-			{
-				"buffer_size": 237,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/errmsg/errmsg_write.c",
-			"settings":
-			{
-				"buffer_size": 449,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/str.h",
-			"settings":
-			{
-				"buffer_size": 3547,
+				"buffer_size": 9565,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "lib/getopt.h",
+			"file": "pkgcfg.c",
 			"settings":
 			{
-				"buffer_size": 1311,
+				"buffer_size": 22300,
+				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "lib/unix/getopt.c",
+			"file": "lib/xml/xml_num_children.c",
 			"settings":
 			{
-				"buffer_size": 6109,
+				"buffer_size": 159,
 				"line_ending": "Unix"
+			}
+		},
+		{
+			"contents": "Searching 1139 files for \"xml.*prin\" (regex, case sensitive)\n\n/home/roman/Dokumente/Sources/c-utils/lib/xml.h:\n  123: void xml_print_attributes(HMAP_DB* db, buffer* b, const char* sep, const char* eq, const char* quot);\n  124: void xml_print_nodeset(const xmlnodeset* ns, buffer* b);\n  125: void xml_print(xmlnode* node, buffer* b);\n\n/home/roman/Dokumente/Sources/c-utils/lib/xml/xml_debug.c:\n   40:       xml_print_attributes(node->attributes, b, \" \", \"=\", \"'\");\n\n/home/roman/Dokumente/Sources/c-utils/lib/xml/xml_print.c:\n    4: static void xml_print_list(xmlnode*, buffer*, int);\n    7: xml_print_node(xmlnode* node, buffer* b, int depth) {\n   31:     xml_print_attributes(node->attributes, b, \" \", \"=\", \"\\\"\");\n   40:       (num_children > 1 ? xml_print_list : xml_print_node)(node->children, b, 0);\n   43:       (num_children > 1 ? xml_print_list : xml_print_node)(node->children, b, depth + 1);\n   59:   //    if(node_is_closing(next) && !str_diff(&next->name[1], node->name)) return xml_print_node(next, b, depth);\n   68: xml_print_list(xmlnode* list, buffer* b, int depth) {\n   70:   for(node = list; node; node = node->next) xml_print_node(node, b, depth);\n   74: xml_print(xmlnode* node, buffer* b) {\n   80:   (node && node->next ? xml_print_list : xml_print_node)(node, b, 0);\n\n/home/roman/Dokumente/Sources/c-utils/lib/xml/xml_print_attributes.c:\n    7: xml_print_attributes(HMAP_DB* db, buffer* b, const char* sep, const char* eq, const char* quot) {\n\n/home/roman/Dokumente/Sources/c-utils/lib/xml/xml_print_nodeset.c:\n    4: xml_print_nodeset(const xmlnodeset* ns, buffer* b) {\n   17:     xml_print_attributes(ns->nodes[i]->attributes, b, \",\", \"=\", \"\\\"\");\n\n17 matches across 5 files\n\n\nSearching 1140 files for \"xml_read_callback\" (regex, case sensitive)\n\n/home/roman/Dokumente/Sources/c-utils/lib/playlist/playlist_xspf.c:\n   57:   xml_read_callback(pl->ptr, &xspf_xml_callback);\n\n/home/roman/Dokumente/Sources/c-utils/lib/xml.h:\n   56: typedef int(xml_read_callback_fn)(xmlreader* r, xmlnodeid id, stralloc* name, stralloc* value, HMAP_DB** attrs);\n  129: void xml_read_callback(xmlreader* r, xml_read_callback_fn* fn);\n\n/home/roman/Dokumente/Sources/c-utils/lib/xml/xml_read_callback.c:\n   39: xml_read_callback(xmlreader* r, xml_read_callback_fn* fn) {\n\n/home/roman/Dokumente/Sources/c-utils/lib/xml/xml_read_tree.c:\n  121:   xml_read_callback(&r, xml_read_node);\n\n7 matches across 4 files\n",
+			"settings":
+			{
+				"buffer_size": 2406,
+				"line_ending": "Unix",
+				"name": "Find Results",
+				"scratch": true
 			}
 		}
 	],
@@ -516,10 +447,30 @@
 	},
 	"expanded_folders":
 	[
-		"/home/roman/Dokumente/Sources/c-utils"
+		"/home/roman/Sources/c-utils"
 	],
 	"file_history":
 	[
+		"/home/roman/Sources/c-utils/xml2json.c",
+		"/home/roman/Sources/c-utils/lib/xml/xml_print.c",
+		"/home/roman/Sources/c-utils/lib/buffer/buffer_skip_pred.c",
+		"/home/roman/Sources/c-utils/lib/buffer/buffer_skipspace.c",
+		"/home/roman/Sources/c-utils/lib/xml/xml_read_callback.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/xml/xml_read_tree.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/xml/xml_reader_init.c",
+		"/home/roman/Dokumente/Sources/c-utils/xmlpp.c",
+		"/home/roman/Dokumente/Sources/c-utils/pkgcfg.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/stralloc.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/stralloc/stralloc_erase.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/slist.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/slist/slist_unshifts.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/slist/slist_pushs.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/dir/dir_open.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/errmsg.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/errmsg/errmsg_warn.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/errmsg/errmsg_write.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/str.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/getopt.h",
 		"/home/roman/Dokumente/Sources/c-utils/lib/unix/getopt.c",
 		"/home/roman/Dokumente/Sources/pkg-config-0.29.1/main.c",
 		"/home/roman/Dokumente/Sources/c-utils/CMakeLists.txt",
@@ -527,7 +478,6 @@
 		"/home/roman/Dokumente/Sources/c-utils/lib/open.h",
 		"/home/roman/Dokumente/Sources/c-utils/lib/stralloc/readclose.c",
 		"/home/roman/Dokumente/Sources/c-utils/3rdparty/bzip2/bzlib_private.h",
-		"/home/roman/Dokumente/Sources/c-utils/lib/stralloc.h",
 		"/home/roman/Dokumente/Sources/skalibs/src/libstddjb/child_spawn0.c",
 		"/home/roman/Dokumente/Sources/skalibs/src/libstddjb/child_spawn1_internal.c",
 		"/home/roman/Dokumente/Sources/skalibs/src/libstddjb/child_spawn1_pipe.c",
@@ -552,7 +502,6 @@
 		"/home/roman/Dokumente/Sources/skalibs/src/libstddjb/pathexec_r_name.c",
 		"/home/roman/Dokumente/Sources/skalibs/src/libstddjb/pathexec_r_name.lo",
 		"/home/roman/Dokumente/Sources/skalibs/src/libstddjb/pathexec_run.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/str.h",
 		"/home/roman/Dokumente/Sources/plot-cv/quickjs/CMakeLists.txt",
 		"/home/roman/Dokumente/Sources/plot-cv/quickjs/quickjs.c",
 		"/home/roman/Dokumente/Sources/plot-cv/quickjs/quickjs-libc.c",
@@ -589,7 +538,6 @@
 		"/home/roman/Dokumente/Sources/c-utils/lib/strlist/strlist_froms.c",
 		"/home/roman/Dokumente/Sources/c-utils/scripts/get-includes.sh",
 		"/home/roman/Dokumente/Sources/c-utils/strip-comments.c",
-		"/home/roman/Dokumente/Sources/c-utils/xmlpp.c",
 		"/home/roman/Dokumente/Sources/skalibs/src/libposixplz/execvep.c",
 		"/home/roman/Dokumente/Sources/skalibs/src/libposixplz/execvep_internal.c",
 		"/home/roman/Dokumente/Sources/skalibs/src/libposixplz/execvep_loose.c",
@@ -607,7 +555,6 @@
 		"/home/roman/Dokumente/Sources/c-utils/lib/alloc/alloc.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/alloc.h",
 		"/home/roman/Dokumente/Sources/c-utils/lib/dns/dns_ip6.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/errmsg.h",
 		"/home/roman/Dokumente/Sources/c-utils/FunctionGenerator-ICL8038.brd",
 		"/home/roman/Dokumente/Sources/c-utils/build/functions.mk",
 		"/home/roman/Dokumente/Sources/c-utils/dnsip.c",
@@ -631,27 +578,11 @@
 		"/home/roman/Dokumente/Sources/c-utils/3rdparty/openssl/apps/opt.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/dns/dns_nd.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/stralloc/openreadclose.c",
-		"/home/roman/Dokumente/Sources/c-utils/3rdparty/bzip2/blocksort.c",
-		"/home/roman/Dokumente/Sources/c-utils/genmakefile.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/fmt/fmt_double.c",
-		"/home/roman/Dokumente/Sources/an-tronics/diptrace/Amplifier Class AB.sch",
-		"/home/roman/Dokumente/Sources/c-utils/lib/strarray.h",
-		"/home/roman/Dokumente/Sources/c-utils/ar-wrap.c",
-		"/home/roman/Dokumente/Sources/an-tronics/diptrace/Amplifier Class AB.brd",
-		"/home/roman/Dokumente/Sources/c-utils/lib/xml.h",
-		"/home/roman/Dokumente/Sources/c-utils/lib/xml/xml_get_attribute_double.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/xml/xml_set_attribute_long.c",
-		"/home/roman/Dokumente/Sources/an-tronics/eagle/lbr/d.lbr",
-		"/home/roman/Dokumente/Sources/an-tronics/eagle/lbr/c.lbr",
-		"/home/roman/Dokumente/Sources/an-tronics/eagle/lbr/r.lbr",
-		"/home/roman/Dokumente/Sources/an-tronics/eagle/lbr/t.lbr",
-		"/home/roman/Dokumente/Sources/an-tronics/eagle/lbr/l.lbr",
-		"/opt/eagle-7.2.0/scr/eagle.scr",
-		"/home/roman/Dokumente/Sources/c-utils/lib/strlist/strlist_sort.c"
+		"/home/roman/Dokumente/Sources/c-utils/3rdparty/bzip2/blocksort.c"
 	],
 	"find":
 	{
-		"height": 42.0
+		"height": 40.0
 	},
 	"find_in_files":
 	{
@@ -678,6 +609,32 @@
 		"case_sensitive": true,
 		"find_history":
 		[
+			"main",
+			"version",
+			"\"vers",
+			"buffer_skip_pred",
+			"peek",
+			"reader",
+			"xml_read_callback",
+			"children",
+			"recu",
+			"get_depth",
+			"depth",
+			"xml_",
+			"' '",
+			"print",
+			"xml.*prin",
+			"compact",
+			"\\\\n",
+			"\\n",
+			"\\\\n",
+			"\\n",
+			"\\\\n",
+			"one_line",
+			"main",
+			"one",
+			"onelin",
+			"onelni",
 			"STATIC",
 			"static_lib",
 			"getopt",
@@ -779,33 +736,7 @@
 			"dlopen",
 			"NO_DL",
 			"dlclose",
-			"dlopen",
-			"compile",
-			"compile_f",
-			"compile",
-			"usable_siz",
-			"fesetround",
-			"feset",
-			"cfg-d",
-			"log1p",
-			"dlopen",
-			"check_lib",
-			"CheckLib",
-			"checkLib",
-			"check_",
-			"check_lib",
-			"strlist_d",
-			"OUTPUT$",
-			"MAP_INSERT",
-			"setenv",
-			"sysroot",
-			"prefix",
-			"pkg_dump",
-			"VISIT_ALL",
-			"froms",
-			"wordexp_sa",
-			"dump",
-			"froms"
+			"dlopen"
 		],
 		"highlight": false,
 		"in_selection": false,
@@ -926,111 +857,24 @@
 	"groups":
 	[
 		{
-			"selected": 0,
+			"selected": 2,
 			"sheets":
 			[
 				{
 					"buffer": 0,
-					"file": "pkgcfg.c",
+					"file": "lib/xml.h",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 22116,
+						"buffer_size": 9565,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								1871,
-								1871
-							]
-						],
-						"settings":
-						{
-							"color_scheme": "Packages/Babel/Next Roman.tmTheme",
-							"syntax": "Packages/C11/C11.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 1796.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 0,
-					"type": "text"
-				},
-				{
-					"buffer": 1,
-					"file": "lib/stralloc.h",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 12024,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								11526,
-								11526
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C++/C++.sublime-syntax"
-						},
-						"translation.x": 0.0,
-						"translation.y": 6602.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 1,
-					"type": "text"
-				},
-				{
-					"buffer": 2,
-					"file": "lib/stralloc/stralloc_erase.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 184,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								47,
-								47
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C11/C11.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 2,
-					"type": "text"
-				},
-				{
-					"buffer": 3,
-					"file": "lib/slist.h",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 3455,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								833,
-								833
+								604,
+								604
 							]
 						],
 						"settings":
@@ -1040,268 +884,209 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 527.0,
+						"translation.y": 480.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "pkgcfg.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 22300,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								20295,
+								20295
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C11/C11.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 21680.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "lib/xml/xml_num_children.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 159,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								20,
+								20
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C11/C11.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2406,
+						"regions":
+						{
+							"match":
+							{
+								"flags": 112,
+								"regions":
+								[
+									[
+										123,
+										131
+									],
+									[
+										232,
+										240
+									],
+									[
+										296,
+										304
+									],
+									[
+										406,
+										414
+									],
+									[
+										543,
+										551
+									],
+									[
+										590,
+										598
+									],
+									[
+										655,
+										663
+									],
+									[
+										747,
+										772
+									],
+									[
+										836,
+										861
+									],
+									[
+										989,
+										997
+									],
+									[
+										1028,
+										1036
+									],
+									[
+										1133,
+										1141
+									],
+									[
+										1172,
+										1180
+									],
+									[
+										1241,
+										1266
+									],
+									[
+										1365,
+										1373
+									],
+									[
+										1538,
+										1546
+									],
+									[
+										1602,
+										1610
+									],
+									[
+										1845,
+										1862
+									],
+									[
+										1962,
+										1979
+									],
+									[
+										2075,
+										2092
+									],
+									[
+										2107,
+										2124
+									],
+									[
+										2209,
+										2226
+									],
+									[
+										2241,
+										2258
+									],
+									[
+										2342,
+										2359
+									]
+								],
+								"scope": ""
+							}
+						},
+						"selection":
+						[
+							[
+								1698,
+								1698
+							]
+						],
+						"settings":
+						{
+							"detect_indentation": false,
+							"line_numbers": false,
+							"output_tag": 2,
+							"result_base_dir": "",
+							"result_file_regex": "^([^ \t].*):$",
+							"result_line_regex": "^ +([0-9]+):",
+							"scroll_past_end": true,
+							"syntax": "Packages/Default/Find Results.hidden-tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 775.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 3,
-					"type": "text"
-				},
-				{
-					"buffer": 4,
-					"file": "lib/slist/slist_unshifts.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 295,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C11/C11.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 4,
-					"type": "text"
-				},
-				{
-					"buffer": 5,
-					"file": "lib/slist/slist_pushs.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 412,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								284,
-								284
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C11/C11.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 5,
-					"type": "text"
-				},
-				{
-					"buffer": 6,
-					"file": "lib/dir/dir_open.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 2217,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								491,
-								491
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C11/C11.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 351.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 7,
-					"type": "text"
-				},
-				{
-					"buffer": 7,
-					"file": "lib/errmsg.h",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 1903,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								452,
-								452
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C++/C++.sublime-syntax"
-						},
-						"translation.x": 0.0,
-						"translation.y": 243.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 8,
-					"type": "text"
-				},
-				{
-					"buffer": 8,
-					"file": "lib/errmsg/errmsg_warn.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 237,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								215,
-								215
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C11/C11.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 9,
-					"type": "text"
-				},
-				{
-					"buffer": 9,
-					"file": "lib/errmsg/errmsg_write.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 449,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C11/C11.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 10,
-					"type": "text"
-				},
-				{
-					"buffer": 10,
-					"file": "lib/str.h",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 3547,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								208,
-								208
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C++/C++.sublime-syntax"
-						},
-						"translation.x": 0.0,
-						"translation.y": 95.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 6,
-					"type": "text"
-				},
-				{
-					"buffer": 11,
-					"file": "lib/getopt.h",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 1311,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								1311,
-								1311
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C++/C++.sublime-syntax"
-						},
-						"translation.x": 0.0,
-						"translation.y": 286.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 11,
-					"type": "text"
-				},
-				{
-					"buffer": 12,
-					"file": "lib/unix/getopt.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 6109,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								2515,
-								2515
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C11/C11.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 2214.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 12,
 					"type": "text"
 				}
 			]
@@ -1388,6 +1173,34 @@
 		"selected_items":
 		[
 			[
+				"pkgcf",
+				"pkgcfg.c"
+			],
+			[
+				"skip_pred",
+				"lib/buffer/buffer_skip_pred.c"
+			],
+			[
+				"skipspace",
+				"lib/buffer/buffer_skipspace.c"
+			],
+			[
+				"xml.h",
+				"lib/xml.h"
+			],
+			[
+				"xml_read",
+				"lib/xml/xml_read_tree.c"
+			],
+			[
+				"xml_print",
+				"lib/xml/xml_print.c"
+			],
+			[
+				"xmlpp.c",
+				"xmlpp.c"
+			],
+			[
 				"_erase",
 				"lib/stralloc/stralloc_erase.c"
 			],
@@ -1446,10 +1259,6 @@
 			[
 				"cmakeli",
 				"CMakeLists.txt"
-			],
-			[
-				"pkgcf",
-				"pkgcfg.c"
 			],
 			[
 				"strlist",
@@ -1712,10 +1521,6 @@
 				"eagle-gen-cmds.c"
 			],
 			[
-				"xml.h",
-				"lib/xml.h"
-			],
-			[
 				"strarray",
 				"lib/strarray.h"
 			],
@@ -1878,26 +1683,6 @@
 			[
 				"errmsg",
 				"lib/errmsg.h"
-			],
-			[
-				"gnumake",
-				"GNUmakefile"
-			],
-			[
-				"buffer.h",
-				"lib/buffer.h"
-			],
-			[
-				"erial.c",
-				"serial.c"
-			],
-			[
-				"serial.h",
-				"serial.h"
-			],
-			[
-				"from_arg",
-				"lib/strarray/strarray_from_argv.c"
 			]
 		],
 		"width": 0.0

@@ -15,16 +15,6 @@
 
 static void xml_print_list(xmlnode*, buffer*, int, const char*);
 
-static int
-xml_num_children(xmlnode* node) {
-  int n = 0;
-  for(node = node->children; node; node = node->next) {
-    n += xml_num_children(node);
-    ++n;
-  }
-  return n;
-}
-
 void
 xml_print_attrs(HMAP_DB* db, buffer* b) {
   TUPLE* tpl = db->list_tuple;

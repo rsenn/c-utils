@@ -13,16 +13,6 @@
 
 static void xml_print_list(xmlnode*, buffer*, int, const char*);
 
-static int
-xml_num_children(xmlnode* node) {
-  int n = 0;
-  for(node = node->children; node; node = node->next) {
-    n += xml_num_children(node);
-    ++n;
-  }
-  return n;
-}
-
 static void
 xml_print_node(xmlnode* node, buffer* b, int depth, const char* nl) {
   int closing = node_is_closing(node);

@@ -118,30 +118,44 @@ usage(char* av0) {
 static int max_depth;
 static int
 xmlpp_get_depth(xmlnode* node, int d) {
-xmlnode* n;
+  xmlnode* n;
   if(d == 0)
     max_depth = 0;
   else if(d > max_depth)
     max_depth = d;
 
-  for(n = node->children; n; n = n->next)
-    xmlpp_get_depth(n, d + 1);
+  for(n = node->children; n; n = n->next) xmlpp_get_depth(n, d + 1);
 
   return max_depth;
 }
 
-
 static void
-xmlpp_fmt(xmlnode* node, buffer* b, int depth, char ch) {
+xmlpp_fmt(xmlnode* node, buffer* b, int depth, char ch, int n) {
+  static xmlnode* parent;
 
-   int inner = depth < 0;
+  xmlnode* p;
+
+  int inner = depth < 0;
 
   depth = depth < 0 ? -depth : depth;
+  if(one_line)
+    return;
+  if(compact) {
+    if(inner && xmlpp_get_depth(node, 0) <= 1 && xml_num_children(node) <= 1) {
+      parent = node;
+      return;
+    }
 
-if(xmlpp_get_depth(node, 0) <= 1)
-  return;
+    for(p = node; p; p = p->parent) {
+      if(p == parent)
+        return;
+    }
+  }
 
-  buffer_putc(b, ch);
+  while(n-- > 0) buffer_putc(b, ch);
+
+  if(ch == '\n')
+    buffer_flush(buffer_1);
 
   /*   switch(ch) {
       case '\n':
