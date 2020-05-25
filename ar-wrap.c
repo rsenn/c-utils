@@ -467,7 +467,7 @@ main(int argc, char* argv[]) {
 
   errno = 0;
   ret = process_create(realcmd.s, (const char**)av, 0, 0);
-  // ret = execvp(realcmd.s, av);
+  // ret = execve(realcmd.s, av);
 
   if(ret == -1) {
     errmsg_warnsys("process_create:", 0);

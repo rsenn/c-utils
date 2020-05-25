@@ -2,6 +2,7 @@
 #include "../alloc.h"
 #include "../hashmap.h"
 #include "../alloc.h"
+
 void
 hashmap_put(hashmap* map, void* key, void* value) {
   linked_list* list;

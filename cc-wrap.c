@@ -179,7 +179,7 @@ write_log(const strlist* argv, const char* file) {
 }
 
 int
-main(int argc, char* argv[]) {
+main(int argc, char* argv[], char* envp[]) {
   size_t p;
   int i;
   stralloc sa;
@@ -267,17 +267,17 @@ main(int argc, char* argv[]) {
   buffer_putnlflush(buffer_1);
 #endif
 #ifdef DEBUG_OUTPUT
-  buffer_puts(buffer_2, "execvp: '");
+  buffer_puts(buffer_2, "execve: '");
   buffer_putsa(buffer_2, &sa);
   buffer_puts(buffer_2, "'");
   buffer_putnlflush(buffer_2);
 #endif
 
   av = strlist_to_argv(&args);
-  ret = execvp(realcmd.s, av);
+  ret = execve(realcmd.s, av, envp);
 
   if(ret == -1) {
-    errmsg_warnsys("execvp:", 0);
+    errmsg_warnsys("execve:", 0);
     return 1;
   }
 

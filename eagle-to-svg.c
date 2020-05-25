@@ -131,7 +131,7 @@ main(int argc, char* argv[]) {
   xmlnode** nptr;
   xmlnode* signals;
   xmlnode *svgdoc, *svgelem, *svggroup, *svgdefs;
-  TUPLE* t;
+  MAP_PAIR_T t;
   int output_fd = 1;
   int argi = 1;
   const char* input_file = "/home/roman/Dokumente/Sources/pictest/eagle/PIC18F2550-USB+ICSP-Board.brd";
@@ -165,13 +165,13 @@ main(int argc, char* argv[]) {
   }
 
   MAP_FOREACH(layers, t) {
-    const char* color = MAP_GET(colors, t->key, t->key_len);
+    const char* color = MAP_GET(colors, MAP_KEY(t), str_len(MAP_KEY(t)));
     unsigned int c = 0;
     scan_uint(color, &c);
 
-    buffer_put(buffer_2, t->key, t->key_len - 1);
+    buffer_put(buffer_2, MAP_KEY(t), str_len(MAP_KEY(t)));
     buffer_puts(buffer_2, ": ");
-    buffer_put(buffer_2, t->vals.val_chars, t->data_len - 1);
+    buffer_put(buffer_2, MAP_VALUE(t), str_len(MAP_VALUE(t)));
     buffer_puts(buffer_2, ": ");
     buffer_puts(buffer_2, color);
     buffer_puts(buffer_2, ": ");

@@ -846,7 +846,7 @@ pkg-conf = $(foreach L,$(2),$(shell $(PKG_CONFIG_CMD) $(1) $(L) |sed "s,\([[:upp
 
 #LIBRARIES = $(patsubst %,$(BUILDDIR)lib%$(M64_).a,z bz2 lzma)
 PROGRAMS = $(patsubst %,$(BUILDDIR)%$(M64_)$(EXEEXT),binfmttest bsdiffcat buffertest ccat compiler-wrapper count-depth decode-ls-lR dnsip dnsname dnstest eagle-gen-cmds eagle-init-brd \
-eagle-to-circuit eagle-to-svg elf64list elflist elfwrsec genmakefile hexedit httptest impgen jsontest jsonpp list-r macho32list mediathek-list mediathek-parser ntldd omflist opensearch-dump pathtool pelist pkgcfg plsconv rdir-test reg2cmd regfilter sln strarraytest torrent-progress xmlpp xml2json xmltest xmltest2 xmltest3 xmltest4 xml2moon ziptest cc-wrap  ar-wrap cofflist msys-shell tcping cmake-run httpproxy parse testihex piccfg crc strip-comments logserial libc-resolv-override setuidgid) $(BUILDDIR) libcresolvoverride$(M64_).so 
+eagle-to-circuit eagle-to-svg elf64list elflist elfwrsec genmakefile hexedit httptest impgen jsontest jsonpp list-r macho32list mediathek-list mediathek-parser ntldd omflist opensearch-dump pathtool pelist pkgcfg plsconv rdir-test reg2cmd regfilter sln strarraytest torrent-progress xmlpp xml2json xmltest xmltest2 xmltest3 xmltest4 xml2moon ziptest cc-wrap  ar-wrap cofflist msys-shell tcping cmake-run httpproxy parse testihex piccfg crc strip-comments logserial libc-resolv-override setuidgid)
 MAN3 = $(wildcard lib/*/*.3)
 
  #opensearch-dump
@@ -1088,8 +1088,8 @@ EXAMPLES := $(BUILDDIR)array$(EXEEXT) $(BUILDDIR)b64encode$(EXEEXT) $(BUILDDIR)b
 $(info BUILDDIR: $(BUILDDIR))
 
 
-all: builddir $(BUILDDIR) $(FLAGS_FILE) $(MODULES) $(LIBRARIES) $(PROGRAMS) $(EXAMPLES)
-	$(info all: $(notdir builddir $(BUILDDIR) $(FLAGS_FILE) $(MODULES) $(LIBRARIES) $(PROGRAMS)))
+all: builddir $(BUILDDIR) $(FLAGS_FILE) $(MODULES) $(LIBRARIES) $(PROGRAMS) $(EXAMPLES)  #libcresolvoverride$(M64_).so 
+	$(info all: $(notdir $^))
 
 #$(BUILDDIR)tryerrno.c:
 #	echo "int main() {\
@@ -1420,14 +1420,14 @@ ifeq ($(DO_STRIP),1)
 endif
 
 $(BUILDDIR)eagle-to-circuit$(M64_)$(EXEEXT): LIBS += $(OTHERLIBS) -lm
-$(BUILDDIR)eagle-to-circuit$(M64_)$(EXEEXT): $(BUILDDIR)eagle-to-circuit.o $(call add-library, errmsg path cbmap xml array safemult charbuf textbuf hmap strlist stralloc buffer alloc mmap io open byte scan fmt str alloc) 
+$(BUILDDIR)eagle-to-circuit$(M64_)$(EXEEXT): $(BUILDDIR)eagle-to-circuit.o $(call add-library, errmsg path hashmap xml array safemult charbuf textbuf hmap strlist stralloc buffer alloc mmap io open byte scan fmt str alloc) 
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
 ifeq ($(DO_STRIP),1)
 	#$(STRIP) $@
 endif
 
 $(BUILDDIR)eagle-to-svg$(M64_)$(EXEEXT): LIBS += $(OTHERLIBS) -lm
-$(BUILDDIR)eagle-to-svg$(M64_)$(EXEEXT): $(BUILDDIR)eagle-to-svg.o $(call add-library, errmsg path cbmap xml array safemult charbuf textbuf hmap strlist stralloc buffer alloc mmap io open byte scan fmt str alloc) 
+$(BUILDDIR)eagle-to-svg$(M64_)$(EXEEXT): $(BUILDDIR)eagle-to-svg.o $(call add-library, errmsg path cbmap xml array safemult charbuf textbuf hashmap hmap strlist stralloc buffer alloc mmap io open byte scan fmt str alloc) 
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
 ifeq ($(DO_STRIP),1)
 	#$(STRIP) $@
@@ -1479,7 +1479,7 @@ ifeq ($(USE_DIET),1)
 $(BUILDDIR)pkgcfg$(M64_)$(EXEEXT): LIBS += -lpthread
 endif
 $(BUILDDIR)pkgcfg$(M64_)$(EXEEXT): LIBS += $(EXTRA_LIBS)
-$(BUILDDIR)pkgcfg$(M64_)$(EXEEXT): $(BUILDDIR)pkgcfg.o $(BUILDDIR)getopt.o $(BUILDDIR)wordexp.o $(call add-library, wait hmap env slist cbmap path unix dir strarray strlist stralloc buffer alloc errmsg array safemult mmap byte scan fmt str open uint32)
+$(BUILDDIR)pkgcfg$(M64_)$(EXEEXT): $(BUILDDIR)pkgcfg.o $(BUILDDIR)getopt.o $(BUILDDIR)wordexp.o $(call add-library, wait hashmap hmap env slist cbmap path unix dir strarray strlist stralloc buffer alloc errmsg array safemult mmap byte scan fmt str open uint32)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) $(CFLAGS) $(EXTRA_CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS)   $(EXTRA_LIBS)
 ifeq ($(DO_STRIP),1)
 	#$(STRIP) $@
@@ -1624,7 +1624,7 @@ endif
 
 
 $(BUILDDIR)genmakefile$(M64_)$(EXEEXT): LIBS += $(LIBBZ2) $(SHLWAPI_LIB)
-$(BUILDDIR)genmakefile$(M64_)$(EXEEXT): $(BUILDDIR)genmakefile.o $(BUILDDIR)ini.o $(BUILDDIR)mplab.o $(call add-library,case errmsg strarray slist rdir dir path strlist hmap stralloc buffer alloc mmap unix open scan fmt byte str array safemult )
+$(BUILDDIR)genmakefile$(M64_)$(EXEEXT): $(BUILDDIR)genmakefile.o $(BUILDDIR)ini.o $(BUILDDIR)mplab.o $(call add-library,case errmsg strarray slist rdir dir path strlist hashmap hmap stralloc buffer alloc mmap unix open scan fmt byte str array safemult )
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) $(CFLAGS) $(EXTRA_CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
 ifeq ($(DO_STRIP),1)
 	$(STRIP) $@
@@ -1717,6 +1717,20 @@ endif
 
 $(BUILDDIR)piccfg$(M64_)$(EXEEXT): LIBS += -lz
 $(BUILDDIR)piccfg$(M64_)$(EXEEXT): $(BUILDDIR)piccfg.o $(call add-library,ihex dir path strlist map stralloc buffer alloc mmap scan fmt open str byte uint16)
+	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) $(CFLAGS) $(EXTRA_CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
+ifeq ($(DO_STRIP),1)
+	$(STRIP) $@
+endif
+
+$(BUILDDIR)logserial$(M64_)$(EXEEXT): LIBS += -lz
+$(BUILDDIR)logserial$(M64_)$(EXEEXT): $(BUILDDIR)logserial.o $(call add-library, errmsg rdir dir io   buffer stralloc alloc iarray strarray array fmt byte str taia tai)
+	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) $(CFLAGS) $(EXTRA_CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
+ifeq ($(DO_STRIP),1)
+	$(STRIP) $@
+endif
+
+$(BUILDDIR)setuidgid$(M64_)$(EXEEXT): LIBS += -lz
+$(BUILDDIR)setuidgid$(M64_)$(EXEEXT): $(BUILDDIR)setuidgid.o $(call add-library, stralloc path 	)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) $(CFLAGS) $(EXTRA_CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
 ifeq ($(DO_STRIP),1)
 	$(STRIP) $@

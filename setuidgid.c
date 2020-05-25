@@ -4,6 +4,7 @@
 #include "lib/mmap.h"
 #include "lib/str.h"
 #include "lib/byte.h"
+#include "lib/path.h"
 
 #if WINDOWS_NATIVE
 #include <io.h>
@@ -11,6 +12,35 @@
 #include <unistd.h>
 #endif
 
+char*
+search_path(const char* path, const char* what, stralloc* out) {
+  const char* x;
+  char* ret = 0;
+  size_t pos;
+  stralloc stra;
+
+  stralloc_init(&stra);
+
+  for(x = path; *x; x += pos) {
+    pos = str_chr(x, ':');
+
+    stralloc_copyb(&stra, x, pos);
+    stralloc_catc(&stra, '/');
+    stralloc_cats(&stra, what);
+    stralloc_nul(&stra);
+
+    if(path_exists(stra.s)) {
+      stralloc_copy(out, &stra);
+      stralloc_nul(out);
+      ret = out->s;
+      break;
+    }
+
+    pos++;
+  }
+  stralloc_free(&stra);
+  return ret;
+}
 
 int
 get_account(const char* name, int* uid, int* gid) {
@@ -40,8 +70,10 @@ get_account(const char* name, int* uid, int* gid) {
 }
 
 int
-main(int argc, char* argv[]) {
+main(int argc, char* argv[], char* envp[]) {
   const char* account;
+  char* prog = argv[0];
+  stralloc full_path;
   int uid = -1, gid = -1;
   int res;
   account = *++argv;
@@ -63,7 +95,12 @@ main(int argc, char* argv[]) {
   if(uid != -1)
     setuid(uid);
 
-  execvp(argv[0], argv);
+  if(prog[str_chr(prog, '/')] == '\0') {
+    stralloc_init(&full_path);
+    prog = search_path(getenv("PATH"), prog, &full_path);
+  }
+
+  execve(prog, argv, envp);
   errmsg_warn("setuidgid: unable to run ", argv[0], ": ", 0);
   return 111;
 }

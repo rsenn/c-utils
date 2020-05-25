@@ -17,7 +17,7 @@
 ssize_t
 getdelim(char** lineptr, size_t* n, int delim, FILE* stream) {
   size_t i;
-  char* new;
+  char* new = 0;
   if(!lineptr || !n) {
     errno = EINVAL;
     return -1;

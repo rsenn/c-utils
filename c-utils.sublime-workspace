@@ -132,7 +132,7 @@
 			"file": "pkgcfg.c",
 			"settings":
 			{
-				"buffer_size": 22300,
+				"buffer_size": 24095,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
@@ -609,6 +609,12 @@
 		"case_sensitive": true,
 		"find_history":
 		[
+			"show_vers",
+			"version\"",
+			"search",
+			"execvpe",
+			"search_path",
+			"posix_spawn",
 			"main",
 			"version",
 			"\"vers",
@@ -730,13 +736,7 @@
 			"isfinit",
 			" ",
 			"isfinit",
-			"isfini",
-			"dlopen",
-			"add_def",
-			"dlopen",
-			"NO_DL",
-			"dlclose",
-			"dlopen"
+			"isfini"
 		],
 		"highlight": false,
 		"in_selection": false,
@@ -857,7 +857,7 @@
 	"groups":
 	[
 		{
-			"selected": 2,
+			"selected": 1,
 			"sheets":
 			[
 				{
@@ -884,7 +884,7 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 480.0,
+						"translation.y": 404.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 2,
@@ -896,28 +896,29 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 22300,
+						"buffer_size": 24095,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								20295,
-								20295
+								20664,
+								20664
 							]
 						],
 						"settings":
 						{
+							"color_scheme": "Packages/Rainglow/rainglow/Horizon Contrast (rainglow).tmTheme",
 							"syntax": "Packages/C11/C11.tmLanguage",
 							"tab_size": 2,
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 21680.0,
+						"translation.y": 18211.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 1,
+					"stack_index": 0,
 					"type": "text"
 				},
 				{
@@ -947,7 +948,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 0,
+					"stack_index": 1,
 					"type": "text"
 				},
 				{
@@ -1083,7 +1084,7 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 775.0,
+						"translation.y": 655.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 3,

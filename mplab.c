@@ -83,12 +83,12 @@ opt_speed() {
 static void set_debug(MAP_T map);
 
 void
-output_mplab_project(buffer* b, MAP_T _rules, MAP_T vars, const strlist* include_dirs) {
-  MAP_ITER_T it;
+output_mplab_project(buffer* b, MAP_T* _rules, MAP_T* vars, const strlist* include_dirs) {
+  MAP_PAIR_T it;
   MAP_T toolcfg;
   strlist incdirs, srcdirs;
   const char *dir, *s;
-  char **p;
+  char** p;
   size_t n;
   stralloc sa, file, dirname;
   mplab_config_t mplab_cfg = {.warning_level = (is_debug() ? 3 : -3),
@@ -388,9 +388,9 @@ output_mplab_project(buffer* b, MAP_T _rules, MAP_T vars, const strlist* include
 
   MAP_FOREACH(toolcfg, it) {
     stralloc_zero(&sa);
-    stralloc_catb(&sa, it->key, it->key_len - 1);
+    stralloc_catb(&sa, MAP_KEY(it), str_len(MAP_KEY(it)));
     stralloc_catc(&sa, '=');
-    stralloc_catb(&sa, it->vals.val_chars, it->data_len - 1);
+    stralloc_catb(&sa, MAP_VALUE(it), str_len(MAP_VALUE(it)));
 
     strlist_push_sa(&tcfg, &sa);
     set_int(toolcfg, "E7", 0);

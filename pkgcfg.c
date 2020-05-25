@@ -398,8 +398,7 @@ host_arch(const char* compiler, stralloc* out) {
    * @return         1 on success, 0 on failure
    */
   int pkg_set(pkg * p) {
-    MAP_T map = p->vars;
-    MAP_VISIT_ALL(map, visit_set, p);
+    MAP_VISIT_ALL(p->vars, visit_set, p);
     return 0;
   }
 

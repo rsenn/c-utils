@@ -74,7 +74,7 @@ usage(char* argv0) {
 }
 
 int
-main(int argc, char* argv[]) {
+main(int argc, char* argv[], char* envp[]) {
   int i;
   stralloc sa;
   strarray v;
@@ -176,17 +176,17 @@ main(int argc, char* argv[]) {
   buffer_putnlflush(buffer_1);
 #endif
 #ifdef DEBUG
-  buffer_puts(buffer_2, "execvp: '");
+  buffer_puts(buffer_2, "execve: '");
   buffer_putsa(buffer_2, &sa);
   buffer_puts(buffer_2, "'");
   buffer_putnlflush(buffer_2);
 #endif
 */
   av = strlist_to_argv(&args);
-  ret = execvp(execbin.s, av);
+  ret = execve(execbin.s, av, envp);
 
   if(ret == -1) {
-    errmsg_warnsys("execvp:", 0);
+    errmsg_warnsys("execve:", 0);
     return 1;
   }
 

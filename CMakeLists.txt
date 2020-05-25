@@ -16,7 +16,7 @@ option(USE_SELECT "Use select() syscall" ON)
 option(USE_POLL "Use poll() syscall" OFF)
 option(USE_EPOLL  "Use epoll() syscall" OFF)
 option(BUILD_SHARED_LIBS  "Build shared libs" ON)
-
+option(LINK_STATIC  "Link libraries static" OFF)
 
 set(DIRLIST_VERSION 1.0)
 set(CPACK_SOURCE_GENERATOR TXZ)
@@ -26,6 +26,9 @@ set(CPACK_PACKAGE_NAME dirlist)
 set(CPACK_RESOURCE_FILE_README ${PROJECT_SOURCE_DIR}/README)
 set(CPACK_INSTALL_CMAKE_PROJECTS ${CMAKE_CURRENT_BINARY_DIR};${CMAKE_PROJECT_NAME};ALL)
 
+if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+  set(CMAKE_INSTALL_PREFIX "/usr" CACHE PATH "Installation prefix" FORCE)
+endif(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
 
 #if(EXISTS "${CMAKE_SOURCE_DIR}/3rdparty/openssl/CMakeLists.txt")
 #  add_subdirectory(3rdparty/openssl)
@@ -142,6 +145,12 @@ if(ENABLE_LTO)
 endif(ENABLE_LTO)
 
 
+
+if(NOT LINK_STATIC STREQUAL OFF)
+  set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -static")
+endif(NOT LINK_STATIC STREQUAL OFF)
+
+
 check_function_exists(lseek64 HAVE_LSEEK64)
 if(NOT HAVE_LSEEK64)
   check_function_exists(llseek HAVE_LLSEEK)
@@ -172,6 +181,15 @@ if(USE_POLL STREQUAL "OFF" AND NOT USE_SELECT STREQUAL "ON")
 endif(USE_POLL STREQUAL "OFF" AND NOT USE_SELECT STREQUAL "ON")
 
 
+check_function_exists(opendir HAVE_OPENDIR)
+check_function_exists(closedir HAVE_READDIR)
+check_function_exists(closedir HAVE_CLOSEDIR)
+
+
+if(HAVE_OPENDIR AND HAVE_READDIR AND HAVE_CLOSEDIR)
+  add_definitions(-DUSE_READDIR=1)
+endif(HAVE_OPENDIR AND HAVE_READDIR AND HAVE_CLOSEDIR)
+  
 check_function_exists(wordexp HAVE_WORDEXP)
 
 if(HAVE_WORDEXP)
@@ -831,12 +849,12 @@ add_program(dnsname dns stralloc buffer errmsg ${LIBIPHLPAPI})
 add_program(dnstest dns stralloc buffer errmsg ${LIBIPHLPAPI} ${LIBMSWSOCK})
 add_program(eagle-gen-cmds xml stralloc buffer strarray array byte cb cbmap errmsg fmt hmap mmap scan str unix ${LIBMATH})
 add_program(eagle-init-brd xml stralloc buffer hmap strlist  scan str ${LIBMATH})
-add_program(eagle-to-circuit xml stralloc buffer strlist array byte cb cbmap fmt hmap mmap scan str ${LIBMATH})
-add_program(eagle-to-svg xml stralloc buffer strlist array byte cb cbmap fmt hmap mmap scan str)
+add_program(eagle-to-circuit xml stralloc buffer strlist array byte cb cbmap fmt hashmap hmap mmap scan str ${LIBMATH})
+add_program(eagle-to-svg xml stralloc buffer strlist array byte cb cbmap fmt hashmap hmap mmap scan str)
 add_program(elf64list elf mmap uint16 uint32 uint64)
 add_program(elflist buffer alloc errmsg unix elf mmap str)
 add_program(elfwrsec buffer alloc elf mmap)
-add_program(genmakefile case errmsg strarray slist rdir dir path strlist hmap stralloc buffer mmap unix open scan fmt byte str array safemult alloc)
+add_program(genmakefile case errmsg strarray slist rdir dir path strlist hashmap hmap stralloc buffer mmap unix open scan fmt byte str array safemult alloc)
 add_program(hexedit stralloc buffer array io errmsg mmap open path scan uint64 unix ${ZLIB_LIBRARY})
 add_program(httptest http dns stralloc buffer errmsg byte io socket alloc taia ${LIBMSWSOCK} ${CRYPTO_LIBRARIES} pthread)
 add_program(impgen pe buffer byte mmap open)
@@ -853,7 +871,7 @@ add_program(opensearch-dump xml stralloc buffer)
 add_program(pathtool stralloc buffer errmsg path strlist unix)
 add_program(pelist buffer errmsg mmap pe str unix)
 add_program(omflist stralloc buffer errmsg omf mmap str unix)
-add_program(pkgcfg wait path unix hmap stralloc buffer byte cbmap dir env errmsg slist str strarray strlist)
+add_program(pkgcfg wait path unix hashmap hmap stralloc buffer byte cbmap dir env errmsg slist str strarray strlist)
 add_program(plsconv stralloc buffer byte open playlist str unix)
 add_program(rdir-test rdir stralloc buffer)
 add_program(reg2cmd stralloc buffer byte fmt open scan str uint64)
@@ -891,7 +909,7 @@ add_program(logserial rdir dir errmsg io ndelay strarray stralloc buffer taia ta
 
 add_program(parse strlist errmsg)
 add_program(testihex ihex stralloc buffer alloc mmap)
-add_program(setuidgid errmsg  mmap open scan str)
+add_program(setuidgid errmsg  path stralloc mmap open scan str)
 #add_program(libc-resolv-override dns errmsg  mmap open scan str)
 
 if(ENABLE_SHARED AND BUILD_SHARED_LIBS)

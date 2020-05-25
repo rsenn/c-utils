@@ -16,6 +16,7 @@ struct rdir_s {
   stralloc sa;
   dir_t dir;
 };
+
 typedef struct rdir_s rdir_t;
 
 int rdir_open(rdir_t* d, const char* p);

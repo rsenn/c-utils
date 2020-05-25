@@ -126,6 +126,8 @@ int hashmap_contains_key(hashmap* map, void* key);
 int hashmap_default_comparator(const void*, const void* r);
 size_t hashmap_default_hash_func(const void*, size_t capacity);
 
+linked_list_node* hashmap_search(hashmap* map, void* key);
+
 #ifdef __cplusplus
 }
 #endif

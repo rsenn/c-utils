@@ -3,6 +3,8 @@
 
 #include "map.h"
 #include "lib/byte.h"
+#include "lib/stralloc.h"
+#include "lib/buffer.h"
 
 typedef struct ini_section {
   struct ini_section* next;

@@ -3,6 +3,7 @@
 
 #include "genmakefile.h"
 #include "map.h"
+#include "mplab.h"
 
 extern buffer* optbuf;
 
@@ -775,37 +776,34 @@ var_subst(const stralloc* in, stralloc* out, const char* pfx, const char* sfx, i
 target*
 rule_get(const char* name) {
   target* ret = NULL;
-  TUPLE* t = NULL;
+  MAP_PAIR_T t = NULL;
   size_t len = str_len(name);
 
-  if(rules == NULL)
-    MAP_NEW(rules);
-
-  if(hmap_search(rules, name, len + 1, &t) != HMAP_SUCCESS) {
+  if(MAP_SEARCH(rules, name, len + 1, &t)) {
     target tgt;
     byte_zero(&tgt, sizeof(struct target_s));
 
-    tgt.name = str_ndup(name, len); //*/ t->key;
+    tgt.name = str_ndup(name, len); //*/ MAP_KEY(t);
     strlist_init(&tgt.output, ' ');
     stralloc_copys(&tgt.output.sa, name);
     strlist_init(&tgt.prereq, ' ');
 
     //    hmap_add(&rules, name, len + 1, 1, HMAP_DATA_TYPE_CUSTOM, ret, sizeof(struct target_s));
-    hmap_set(&rules, name, len + 1, &tgt, ((sizeof(struct target_s) + 3) / 4) * 4);
-    (hmap_search(rules, name, len + 1, &t) == HMAP_SUCCESS);
+    MAP_INSERT(rules, name, len + 1, &tgt, ((sizeof(struct target_s) + 3) / 4) * 4);
+    (MAP_SEARCH(rules, name, len + 1, &t));
 
-    // ret = hmap_data(t);
+    // ret = MAP_VALUE(t);
 
 #ifdef DEBUG_OUTPUTI_
     if(t) {
-      buffer_putm_internal(buffer_2, "Created rule '", ((target*)hmap_data(t))->name, "'\n", 0);
+      buffer_putm_internal(buffer_2, "Created rule '", ((target*)MAP_VALUE(t))->name, "'\n", 0);
       buffer_flush(buffer_2);
     }
 #endif
   }
 
   if(t)
-    ret = hmap_data(t);
+    ret = MAP_VALUE(t);
 
   return ret;
 }
@@ -828,19 +826,19 @@ rule_get_sa(stralloc* name) {
  */
 target*
 rule_find(const char* needle) {
-  TUPLE* t;
+  MAP_PAIR_T t;
 
   MAP_FOREACH(rules, t) {
-    const char* name = t->key;
+    const char* name = MAP_KEY(t);
 
     if(str_equal(name, needle))
-      return t->vals.val_custom;
+      return MAP_VALUE(t);
 
     if(str_equal(path_basename((char*)name), path_basename((char*)needle)))
-      return t->vals.val_custom;
-
-    if(t->next == rules->list_tuple)
-      break;
+      return MAP_VALUE(t);
+    /*
+        if(t->next == rules->list_tuple)
+          break; */
   }
   return 0;
 }
@@ -1396,7 +1394,7 @@ sources_find(const char* name, size_t len, size_t* cptr) {
   char** x;
   const char* ret = 0;
   size_t i, n, count = 0;
-#ifdef DEBUG_OUTPUT_
+#ifdef DEBUG_OUTPUT
   buffer_puts(buffer_2, "Find source: ");
   buffer_put(buffer_2, name, len);
   buffer_putnlflush(buffer_2);
@@ -1459,21 +1457,18 @@ var_isset(const char* name) {
  */
 strlist*
 var_list(const char* name) {
-  TUPLE* t;
+  MAP_PAIR_T t;
 
-  if(vars == NULL)
-    MAP_NEW(vars);
-
-  if(hmap_search(vars, name, str_len(name) + 1, &t) != HMAP_SUCCESS) {
+  if(!MAP_SEARCH(vars, name, str_len(name) + 1, &t)) {
     strlist var;
 
     strlist_init(&var, (name[0] >= 'A' && name[0] <= 'Z') ? ' ' : pathsep_args);
 
-    hmap_set(&vars, name, str_len(name) + 1, &var, sizeof(strlist));
-    hmap_search(vars, name, str_len(name) + 1, &t);
+    MAP_INSERT(vars, name, str_len(name) + 1, &var, sizeof(strlist));
+    MAP_SEARCH(vars, name, str_len(name) + 1, &t);
   }
 
-  return (strlist*)t->vals.val_chars;
+  return (strlist*)MAP_VALUE(t);
 }
 
 /**
@@ -1605,10 +1600,10 @@ push_define(const char* def) {
  */
 void
 get_rules_by_cmd(stralloc* cmd, strlist* deps) {
-  TUPLE* t;
+  MAP_PAIR_T t;
 
   MAP_FOREACH(rules, t) {
-    target* rule = t->vals.val_custom;
+    target* rule = MAP_VALUE(t);
 
     if(rule->recipe.s == cmd->s || stralloc_equal(&rule->recipe, cmd)) {
       strlist_push(deps, rule->name);
@@ -1683,8 +1678,8 @@ sourcedir_get_sa(stralloc* path) {
   if(!(s = sourcedir_find_sa(path))) {
     sourcedir newdir;
     byte_zero(&newdir, sizeof(newdir));
-    hmap_set(&sourcedirs, path->s, path->len + 1, &newdir, sizeof(newdir));
-    s = hmap_get(sourcedirs, path->s, path->len + 1);
+    MAP_INSERT(sourcedirs, path->s, path->len + 1, &newdir, sizeof(newdir));
+    s = MAP_GET(sourcedirs, path->s, path->len + 1);
   }
   return s;
 }
@@ -1695,7 +1690,7 @@ sourcedir_get_sa(stralloc* path) {
  * @param sourcedirs
  */
 void
-sourcedir_populate(HMAP_DB* sourcedirs, strarray* sources) {
+sourcedir_populate(MAP_T sourcedirs, strarray* sources) {
   char** p;
   stralloc dir;
   strlist l;
@@ -1759,15 +1754,15 @@ sourcedir_populate(HMAP_DB* sourcedirs, strarray* sources) {
  * @param sourcedirs
  */
 void
-sourcedir_dump_all(buffer* b, HMAP_DB* sourcedirs) {
-  TUPLE* t;
+sourcedir_dump_all(buffer* b, MAP_T sourcedirs) {
+  MAP_PAIR_T t;
 
   MAP_FOREACH(sourcedirs, t) {
-    sourcedir* srcdir = hmap_data(t);
+    sourcedir* srcdir = MAP_VALUE(t);
     sourcefile* pfile;
 
     buffer_puts(b, " '");
-    buffer_put(b, t->key, t->key_len);
+    buffer_put(b, MAP_KEY(t), str_len(MAP_KEY(t)));
     buffer_puts(b, "' (");
     buffer_putulong(b, srcdir->n_sources);
     buffer_puts(b, "): [");
@@ -2025,8 +2020,8 @@ remove_indirect_deps(array* deps) {
  * @param rules
  */
 void
-deps_for_libs(HMAP_DB* rules) {
-  TUPLE* t;
+deps_for_libs(MAP_T rules) {
+  MAP_PAIR_T t;
   strlist deps, indir;
   stralloc sa;
   strlist_init(&deps, '\0');
@@ -2034,13 +2029,13 @@ deps_for_libs(HMAP_DB* rules) {
   stralloc_init(&sa);
 
   MAP_FOREACH(sourcedirs, t) {
-    sourcedir* srcdir = hmap_data(t);
+    sourcedir* srcdir = MAP_VALUE(t);
     target* lib;
     size_t n;
     const char* s;
 
     stralloc_zero(&sa);
-    path_prefix_s(&dirs.work.sa, str_basename(t->key), &sa);
+    path_prefix_s(&dirs.work.sa, str_basename(MAP_KEY(t)), &sa);
     stralloc_cats(&sa, exts.lib);
 
     if((lib = rule_find_sa(&sa))) {
@@ -2105,7 +2100,7 @@ target_ptrs(const strlist* targets, array* out) {
 }
 
 target*
-gen_single_rule(HMAP_DB* rules, stralloc* output, strlist* prereq, stralloc* cmd) {
+gen_single_rule(MAP_T rules, stralloc* output, strlist* prereq, stralloc* cmd) {
   target* rule;
 
   if((rule = rule_get_sa(output))) {
@@ -2127,12 +2122,12 @@ gen_single_rule(HMAP_DB* rules, stralloc* output, strlist* prereq, stralloc* cmd
  * @param rules
  */
 void
-gen_clean_rule(HMAP_DB* rules) {
+gen_clean_rule(MAP_T rules) {
   target* rule;
 
   /* Generate "clean" rule */
   if((rule = rule_get("clean"))) {
-    TUPLE* t;
+    MAP_PAIR_T t;
     char* arg;
     size_t cmdoffs, lineoffs = 0;
     stralloc fn;
@@ -2147,13 +2142,13 @@ gen_clean_rule(HMAP_DB* rules) {
 
     MAP_FOREACH(rules, t) {
 
-      const char* target = t->key;
+      const char* target = MAP_KEY(t);
 
       /* Ignore the dirs.build rule */
-      if(stralloc_equals(&dirs.work.sa, t->key))
+      if(stralloc_equals(&dirs.work.sa, MAP_KEY(t)))
         continue;
 
-      rule = hmap_data(t);
+      rule = MAP_VALUE(t);
 
       if(target[str_chr(target, '%')]) {
         stralloc_nul(&rule->output.sa);
@@ -2164,14 +2159,14 @@ gen_clean_rule(HMAP_DB* rules) {
       if(strlist_count(&rule->prereq) && rule->recipe.s) {
         size_t bpos;
 
-        if(t->key[(bpos = str_rchr(t->key, '{'))]) {
-          size_t epos = str_rchr(&t->key[bpos + 1], '}');
+        if((MAP_KEY(t))[(bpos = str_rchr(MAP_KEY(t), '{'))]) {
+          size_t epos = str_rchr(&(MAP_KEY(t))[bpos + 1], '}');
 
           stralloc_zero(&fn);
-          stralloc_catb(&fn, &t->key[bpos + 1], epos);
+          stralloc_catb(&fn, &(MAP_KEY(t)[bpos + 1]), epos);
           stralloc_catc(&fn, pathsep_make);
           stralloc_cats(&fn, "*");
-          stralloc_catb(&fn, &t->key[bpos + 1 + epos + 1], str_chr(&t->key[bpos + 1 + epos + 1], ':'));
+          stralloc_catb(&fn, &(MAP_KEY(t)[bpos + 1 + epos + 1]), str_chr(&(MAP_KEY(t)[bpos + 1 + epos + 1]), ':'));
           stralloc_nul(&fn);
           arg = fn.s;
         } else {
@@ -2214,7 +2209,7 @@ gen_clean_rule(HMAP_DB* rules) {
  * @return
  */
 target*
-gen_srcdir_compile_rules(HMAP_DB* rules, sourcedir* sdir, const char* dir) {
+gen_srcdir_compile_rules(MAP_T rules, sourcedir* sdir, const char* dir) {
   sourcefile* src;
   target* rule;
   stralloc target, srcs, obj;
@@ -2327,7 +2322,7 @@ gen_srcdir_compile_rules(HMAP_DB* rules, sourcedir* sdir, const char* dir) {
  */
 target*
 gen_simple_compile_rules(
-    HMAP_DB* rules, sourcedir* srcdir, const char* dir, const char* fromext, const char* toext, stralloc* cmd) {
+    MAP_T rules, sourcedir* srcdir, const char* dir, const char* fromext, const char* toext, stralloc* cmd) {
   sourcefile* src;
   stralloc ppsrc, obj;
   stralloc_init(&ppsrc);
@@ -2391,7 +2386,7 @@ gen_simple_compile_rules(
  * @return
  */
 target*
-gen_srcdir_lib_rule(HMAP_DB* rules, sourcedir* srcdir, const char* name) {
+gen_srcdir_lib_rule(MAP_T rules, sourcedir* srcdir, const char* name) {
   target *dep = 0, *rule;
   stralloc sa;
   stralloc_init(&sa);
@@ -2459,7 +2454,7 @@ gen_srcdir_lib_rule(HMAP_DB* rules, sourcedir* srcdir, const char* name) {
  * @param name                      source dir name
  */
 void
-gen_srcdir_rule(HMAP_DB* rules, sourcedir* sdir, const char* name) {
+gen_srcdir_rule(MAP_T rules, sourcedir* sdir, const char* name) {
   sourcefile* src;
   target* rule;
   stralloc mask;
@@ -2506,8 +2501,8 @@ gen_srcdir_rule(HMAP_DB* rules, sourcedir* sdir, const char* name) {
  * @param srcdirs
  */
 void
-gen_lib_rules(HMAP_DB* rules, HMAP_DB* srcdirs) {
-  TUPLE* t;
+gen_lib_rules(MAP_T rules, MAP_T srcdirs) {
+  MAP_PAIR_T t;
   target* all;
   stralloc inc, abspath;
   stralloc_init(&inc);
@@ -2517,17 +2512,17 @@ gen_lib_rules(HMAP_DB* rules, HMAP_DB* srcdirs) {
 
   MAP_FOREACH(srcdirs, t) {
     target* rule;
-    sourcedir* srcdir = hmap_data(t);
-    const char *s, *base = path_basename(t->key);
+    sourcedir* srcdir = MAP_VALUE(t);
+    const char *s, *base = path_basename(MAP_KEY(t));
     size_t n;
 
     if(str_equal(base, ".")) {
       stralloc_zero(&abspath);
-      path_absolute(t->key, &abspath);
+      path_absolute(MAP_KEY(t), &abspath);
       stralloc_nul(&abspath);
       base = path_basename(abspath.s);
     }
-    // debug_s("srcdir", t->key);
+    // debug_s("srcdir", MAP_KEY(t));
     // debug_s("base", base);
     //
 
@@ -2556,7 +2551,7 @@ gen_lib_rules(HMAP_DB* rules, HMAP_DB* srcdirs) {
  * @return
  */
 int
-gen_link_rules(HMAP_DB* rules, strarray* sources) {
+gen_link_rules(MAP_T rules, strarray* sources) {
   int num_main = 0, count = 0;
   target *all, *preprocess, *compile, *link;
   const char *x, *link_lib;
@@ -2784,19 +2779,20 @@ output_build_rules(buffer* b, const char* name, const stralloc* cmd) {
  * @return
  */
 target*
-gen_install_rules(HMAP_DB* rules) {
-  TUPLE* t;
+gen_install_rules(MAP_T rules) {
+  MAP_PAIR_T t;
   target* inst = NULL;
   const char* v = 0;
 
   MAP_FOREACH(rules, t) {
-    target* rule = t->vals.val_custom;
+    target* rule = MAP_VALUE(t);
     int do_lib, do_bin;
 
-    do_lib = (inst_libs && (str_end(t->key, ".lib") || str_end(t->key, ".a") || t->key[str_find(t->key, ".so")] ||
-                            rule->recipe.s == lib_command.s));
+    do_lib = (inst_libs && (str_end(MAP_KEY(t), ".lib") || str_end(MAP_KEY(t), ".a") ||
+                            MAP_KEY(t)[str_find(MAP_KEY(t), ".so")] || rule->recipe.s == lib_command.s));
 
-    do_bin = (inst_bins && (str_end(t->key, ".dll") || str_end(t->key, ".exe") || rule->recipe.s == link_command.s));
+    do_bin =
+        (inst_bins && (str_end(MAP_KEY(t), ".dll") || str_end(MAP_KEY(t), ".exe") || rule->recipe.s == link_command.s));
 
     if(!(do_lib || do_bin))
       continue;
@@ -2833,7 +2829,7 @@ gen_install_rules(HMAP_DB* rules) {
 
       var_set("INSTALL_EXEC", str_start(v, "install") ? "$(INSTALL) -m 755" : "$(INSTALL)");
 
-      stralloc_catm_internal(&inst->recipe, newline, "\t$(INSTALL_EXEC) ", t->key, " $(DESTDIR)$(bindir)", 0);
+      stralloc_catm_internal(&inst->recipe, newline, "\t$(INSTALL_EXEC) ", MAP_KEY(t), " $(DESTDIR)$(bindir)", 0);
     }
 
     if(do_lib) {
@@ -2846,7 +2842,7 @@ gen_install_rules(HMAP_DB* rules) {
         stralloc_catm_internal(&inst->recipe, newline, "\t$(INSTALL_DIR) $(DESTDIR)$(libdir)", 0);
       }
 
-      stralloc_catm_internal(&inst->recipe, newline, "\t$(INSTALL_DATA) ", t->key, " $(DESTDIR)$(libdir)", 0);
+      stralloc_catm_internal(&inst->recipe, newline, "\t$(INSTALL_DATA) ", MAP_KEY(t), " $(DESTDIR)$(libdir)", 0);
     }
   }
   return inst;
@@ -2854,8 +2850,8 @@ gen_install_rules(HMAP_DB* rules) {
 
 void
 get_keys(MAP_T map, strlist* list) {
-  TUPLE* t;
-  MAP_FOREACH(vars, t) { strlist_push(list, t->key); }
+  MAP_PAIR_T t;
+  MAP_FOREACH(vars, t) { strlist_push(list, MAP_KEY(t)); }
 }
 
 int
@@ -3131,19 +3127,19 @@ get_ref_vars(const stralloc* in, strlist* out) {
  * @param vars
  */
 void
-var_output(buffer* b, HMAP_DB* vars, const char* name) {
+var_output(buffer* b, MAP_T vars, const char* name) {
   stralloc v;
   strlist* var;
   strlist refvars;
-  TUPLE* t = 0;
+  MAP_PAIR_T t = 0;
 
-  if(hmap_search(vars, name, str_len(name) + 1, &t) == HMAP_SUCCESS) {
+  if(MAP_SEARCH(vars, name, str_len(name) + 1, &t)) {
     stralloc_init(&v);
 
-    var = hmap_data(t);
+    var = MAP_VALUE(t);
 
     if(var->sa.len) {
-      stralloc_copys(&v, t->key);
+      stralloc_copys(&v, MAP_KEY(t));
       if(ninja)
         stralloc_lower(&v);
 
@@ -3192,7 +3188,7 @@ var_output(buffer* b, HMAP_DB* vars, const char* name) {
     stralloc_free(&v);
     strlist_free(&refvars);
 
-    hmap_delete(&vars, t->key, t->key_len);
+    MAP_DELETE(vars, MAP_KEY(t), str_len(MAP_KEY(t)));
   }
 }
 
@@ -3203,7 +3199,7 @@ var_output(buffer* b, HMAP_DB* vars, const char* name) {
  */
 void
 output_all_vars(buffer* b, MAP_T vars, strlist* varnames) {
-  TUPLE* t;
+  MAP_PAIR_T t;
   const char* name;
   stralloc_nul(&varnames->sa);
   strlist_foreach_s(varnames, name) { var_output(b, vars, name); }
@@ -3358,27 +3354,27 @@ output_ninja_rule(buffer* b, target* rule) {
  * @param hmap
  */
 void
-output_all_rules(buffer* b, HMAP_DB* hmap) {
-  TUPLE* t;
+output_all_rules(buffer* b, MAP_T hmap) {
+  MAP_PAIR_T t;
 
   MAP_FOREACH(hmap, t) {
-    target* rule = t->vals.val_custom;
-    const char* name = t->key;
+    target* rule = MAP_VALUE(t);
+    const char* name = MAP_KEY(t);
 
     if(!cmd_libs && str_end(name, ".a"))
       continue;
 
 #ifdef DEBUG_OUTPUT_
     buffer_puts(buffer_2, "Outputting rule '");
-    buffer_put(buffer_2, t->key, t->key_len);
+    buffer_put(buffer_2, MAP_KEY(t), MAP_KEY(t) _len);
     buffer_putc(buffer_2, '\'');
     buffer_putnlflush(buffer_2);
 #endif
 
     if(ninja)
-      output_ninja_rule(b, t->vals.val_custom);
+      output_ninja_rule(b, MAP_VALUE(t));
     else
-      output_make_rule(b, t->vals.val_custom);
+      output_make_rule(b, MAP_VALUE(t));
   }
 }
 
@@ -3395,11 +3391,11 @@ output_script(buffer* b, target* rule) {
   int flush = 0;
 
   if(rule == NULL) {
-    TUPLE* t;
+    MAP_PAIR_T t;
     ++serial;
 
     /*    MAP_FOREACH(rules, t) {
-          rule = hmap_data(t);
+          rule = MAP_VALUE(t);
 
           output_script(b, rule);
         }
@@ -4436,7 +4432,7 @@ main(int argc, char* argv[]) {
   size_t n;
   target *rule, *all, *compile;
   char** arg;
-  TUPLE* t;
+  MAP_PAIR_T t;
 
   struct longopt opts[] = {{"help", 0, NULL, 'h'},
                            {"objext", 1, NULL, 'O'},
@@ -4490,6 +4486,8 @@ main(int argc, char* argv[]) {
 
   MAP_NEW(sourcedirs);
   MAP_NEW(targetdirs);
+  MAP_NEW(rules);
+  MAP_NEW(vars);
 
 #if defined(_WIN32) || defined(_WIN64) || WINDOWS_NATIVE
   cfg.sys.os = OS_WIN;
@@ -4979,9 +4977,9 @@ main(int argc, char* argv[]) {
     buffer_puts(buffer_2, "targetdirs:\n");
 
     MAP_FOREACH(targetdirs, t) {
-      uint32* count_ptr = (uint32*)t->vals.val_chars;
+      uint32* count_ptr = (uint32*)MAP_VALUE(t);
       buffer_puts(buffer_2, "  '");
-      buffer_puts(buffer_2, t->key);
+      buffer_puts(buffer_2, MAP_KEY(t));
       buffer_puts(buffer_2, "' => ");
       buffer_putulong(buffer_2, *count_ptr);
       buffer_putnlflush(buffer_2);
@@ -4996,15 +4994,15 @@ main(int argc, char* argv[]) {
 
       deps_for_libs(rules);
     } else {
-      TUPLE* t;
+      MAP_PAIR_T t;
       MAP_FOREACH(sourcedirs, t) {
-        sourcedir* srcdir = hmap_data(t);
+        sourcedir* srcdir = MAP_VALUE(t);
 
         /*if(tools.preproc) {
-          gen_simple_compile_rules(rules, srcdir, t->key, ".c", exts.pps, &preprocess_command);
-          gen_simple_compile_rules(rules, srcdir, t->key, exts.pps, exts.obj, &compile_command);
+          gen_simple_compile_rules(rules, srcdir, MAP_KEY(t), ".c", exts.pps, &preprocess_command);
+          gen_simple_compile_rules(rules, srcdir, MAP_KEY(t), exts.pps, exts.obj, &compile_command);
         } else */
-        { gen_simple_compile_rules(rules, srcdir, t->key, ".c", exts.obj, &compile_command); }
+        { gen_simple_compile_rules(rules, srcdir, MAP_KEY(t), ".c", exts.obj, &compile_command); }
       }
     }
 
@@ -5014,12 +5012,12 @@ main(int argc, char* argv[]) {
     }
 
     if(cmd_bins == 0 || cmd_libs == 1) {
-      TUPLE* t;
+      MAP_PAIR_T t;
       MAP_FOREACH(rules, t) {
-        target* tgt = hmap_data(t);
+        target* tgt = MAP_VALUE(t);
 
         if(stralloc_equal(&tgt->recipe, &lib_command) && cmd_libs)
-          strlist_push(&all->prereq, t->key);
+          strlist_push(&all->prereq, MAP_KEY(t));
       }
     }
   }
@@ -5027,9 +5025,9 @@ main(int argc, char* argv[]) {
   gen_clean_rule(rules);
 
   {
-    TUPLE* t;
+    MAP_PAIR_T t;
     MAP_FOREACH(rules, t) {
-      target* tgt = hmap_data(t);
+      target* tgt = MAP_VALUE(t);
       // print_rule_deps(buffer_2, tgt);
     }
   }

@@ -4,6 +4,7 @@
 #include "lib/fmt.h"
 #include "lib/alloc.h"
 #include "lib/stralloc.h"
+#include "lib/buffer.h"
 
 void
 ini_set(ini_section_t* ini, const char* key, const char* value) {
@@ -46,7 +47,7 @@ ini_new(ini_section_t** ptr, const char* name) {
 
 void
 ini_write(buffer* b, ini_section_t* ini) {
-  MAP_ITER_T t;
+  MAP_PAIR_T t;
 
   while(ini) {
     buffer_putc(b, '[');
@@ -54,9 +55,9 @@ ini_write(buffer* b, ini_section_t* ini) {
     buffer_put(b, "]\r\n", 3);
 
     MAP_FOREACH(ini->map, t) {
-      buffer_put(b, t->key, t->key_len - 1);
+      buffer_put(b, MAP_KEY(t), str_len(MAP_KEY(t)));
       buffer_putc(b, '=');
-      buffer_put(b, t->vals.val_chars, t->data_len - 1);
+      buffer_put(b, MAP_VALUE(t), str_len(MAP_VALUE(t)));
       buffer_puts(b, "\r\n");
     }
 

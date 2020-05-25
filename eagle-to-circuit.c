@@ -191,8 +191,8 @@ get_or_create(MAP_T m, char* name, size_t datasz) {
     char* data = malloc(datasz);
 #endif
     byte_zero(data, datasz);
-    if(MAP_INSERT(m, name, str_len(name) + 1, data, datasz))
-      ptr = get(m, name, datasz);
+    MAP_INSERT(m, name, str_len(name) + 1, data, datasz);
+    ptr = MAP_GET(m, name, str_len(name) + 1);
 #if !defined(HAVE_ALLOCA) && !defined(HAVE_DYNSTACK)
     free(data);
 #endif
@@ -1046,8 +1046,8 @@ main(int argc, char* argv[]) {
   MAP_VISIT_ALL(parts, dump_part, "part");
   MAP_VISIT_ALL(nets, dump_net, 0);
 
-  hmap_dump(nets, buffer_1);
-  hmap_print_list(nets);
+  MAP_DUMP(nets, buffer_1);
+  // hmap_print_list(nets);
 
   strlist_dump(buffer_2, &connections);
 
