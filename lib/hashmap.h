@@ -85,7 +85,7 @@ void* hashmap_get(hashmap* map, void* key);
  * @param key key associated with value
  * @param value value associated with key
  */
-void hashmap_put(hashmap* map, void* key, void* value);
+linked_list_node* hashmap_put(hashmap* map, void* key, void* value);
 
 /**
  * Remove the mapping from the map if this key exists. Calling this on
@@ -127,6 +127,8 @@ int hashmap_default_comparator(const void*, const void* r);
 size_t hashmap_default_hash_func(const void*, size_t capacity);
 
 linked_list_node* hashmap_search(hashmap* map, void* key);
+
+hashmap_pair* hashmap_find(hashmap* map, void* key);
 
 #ifdef __cplusplus
 }

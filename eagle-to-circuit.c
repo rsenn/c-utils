@@ -586,12 +586,12 @@ dump_package(const void* key, size_t key_len, const void* value, size_t value_le
 }
 
 static int
-cmp_ref(const char** a, const char** b) {
-  size_t alen = byte_chr(*a, str_len(*a), '\t'), blen = byte_chr(*b, str_len(*b), '\t');
+cmp_ref(const char* a, const char* b) {
+  size_t alen = byte_chr(a, str_len(a), '\t'), blen = byte_chr(b, str_len(b), '\t');
   if(alen != blen)
     return alen - blen;
 
-  return str_diff(*a, *b);
+  return str_diff(a, b);
 }
 
 int
@@ -686,9 +686,9 @@ net_connects(const struct net* net, struct part* part, int pin) {
 
 void
 part_unconnected() {
-  TUPLE* t;
+  MAP_PAIR_T t;
   MAP_FOREACH(parts, t) {
-    struct part* part = hmap_data(t);
+    struct part* part = MAP_VALUE(t);
     for(size_t i = 0; i < part->num_pins; i++) {
       struct net* pin = &part->pins[i];
       buffer_puts(buffer_2, "Part ");

@@ -120,39 +120,72 @@
 	"buffers":
 	[
 		{
-			"file": "lib/xml.h",
+			"contents": "",
 			"settings":
 			{
-				"buffer_size": 9565,
-				"encoding": "UTF-8",
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "pkgcfg.c",
-			"settings":
-			{
-				"buffer_size": 24095,
-				"encoding": "UTF-8",
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/xml/xml_num_children.c",
-			"settings":
-			{
-				"buffer_size": 159,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"contents": "Searching 1139 files for \"xml.*prin\" (regex, case sensitive)\n\n/home/roman/Dokumente/Sources/c-utils/lib/xml.h:\n  123: void xml_print_attributes(HMAP_DB* db, buffer* b, const char* sep, const char* eq, const char* quot);\n  124: void xml_print_nodeset(const xmlnodeset* ns, buffer* b);\n  125: void xml_print(xmlnode* node, buffer* b);\n\n/home/roman/Dokumente/Sources/c-utils/lib/xml/xml_debug.c:\n   40:       xml_print_attributes(node->attributes, b, \" \", \"=\", \"'\");\n\n/home/roman/Dokumente/Sources/c-utils/lib/xml/xml_print.c:\n    4: static void xml_print_list(xmlnode*, buffer*, int);\n    7: xml_print_node(xmlnode* node, buffer* b, int depth) {\n   31:     xml_print_attributes(node->attributes, b, \" \", \"=\", \"\\\"\");\n   40:       (num_children > 1 ? xml_print_list : xml_print_node)(node->children, b, 0);\n   43:       (num_children > 1 ? xml_print_list : xml_print_node)(node->children, b, depth + 1);\n   59:   //    if(node_is_closing(next) && !str_diff(&next->name[1], node->name)) return xml_print_node(next, b, depth);\n   68: xml_print_list(xmlnode* list, buffer* b, int depth) {\n   70:   for(node = list; node; node = node->next) xml_print_node(node, b, depth);\n   74: xml_print(xmlnode* node, buffer* b) {\n   80:   (node && node->next ? xml_print_list : xml_print_node)(node, b, 0);\n\n/home/roman/Dokumente/Sources/c-utils/lib/xml/xml_print_attributes.c:\n    7: xml_print_attributes(HMAP_DB* db, buffer* b, const char* sep, const char* eq, const char* quot) {\n\n/home/roman/Dokumente/Sources/c-utils/lib/xml/xml_print_nodeset.c:\n    4: xml_print_nodeset(const xmlnodeset* ns, buffer* b) {\n   17:     xml_print_attributes(ns->nodes[i]->attributes, b, \",\", \"=\", \"\\\"\");\n\n17 matches across 5 files\n\n\nSearching 1140 files for \"xml_read_callback\" (regex, case sensitive)\n\n/home/roman/Dokumente/Sources/c-utils/lib/playlist/playlist_xspf.c:\n   57:   xml_read_callback(pl->ptr, &xspf_xml_callback);\n\n/home/roman/Dokumente/Sources/c-utils/lib/xml.h:\n   56: typedef int(xml_read_callback_fn)(xmlreader* r, xmlnodeid id, stralloc* name, stralloc* value, HMAP_DB** attrs);\n  129: void xml_read_callback(xmlreader* r, xml_read_callback_fn* fn);\n\n/home/roman/Dokumente/Sources/c-utils/lib/xml/xml_read_callback.c:\n   39: xml_read_callback(xmlreader* r, xml_read_callback_fn* fn) {\n\n/home/roman/Dokumente/Sources/c-utils/lib/xml/xml_read_tree.c:\n  121:   xml_read_callback(&r, xml_read_node);\n\n7 matches across 4 files\n",
-			"settings":
-			{
-				"buffer_size": 2406,
+				"buffer_size": 0,
 				"line_ending": "Unix",
-				"name": "Find Results",
+				"name": "𝌆 Outline",
 				"scratch": true
+			}
+		},
+		{
+			"file": "genmakefile.c",
+			"settings":
+			{
+				"buffer_size": 127593,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "map.h",
+			"settings":
+			{
+				"buffer_size": 6296,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/hmap/hmap_set.c",
+			"settings":
+			{
+				"buffer_size": 584,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/hmap/hmap_search.c",
+			"settings":
+			{
+				"buffer_size": 994,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "genmakefile.h",
+			"settings":
+			{
+				"buffer_size": 6171,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/unix/getopt.c",
+			"settings":
+			{
+				"buffer_size": 6181,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/getopt.h",
+			"settings":
+			{
+				"buffer_size": 1311,
+				"line_ending": "Unix"
 			}
 		}
 	],
@@ -447,11 +480,95 @@
 	},
 	"expanded_folders":
 	[
-		"/home/roman/Sources/c-utils"
+		"/home/roman/Sources/c-utils",
+		"/home/roman/Sources/c-utils/inst",
+		"/home/roman/Sources/c-utils/lib",
+		"/home/roman/Sources/c-utils/lib/hmap",
+		"/home/roman/Sources/c-utils/lib/strarray",
+		"/home/roman/Sources/c-utils/lib/strlist"
 	],
 	"file_history":
 	[
+		"/home/roman/Sources/c-utils/CMakeLists.txt",
+		"/home/roman/Sources/c-utils/lib/slist/slist_add_before.c",
+		"/home/roman/Sources/c-utils/lib/slist.h",
+		"/home/roman/Sources/c-utils/lib/strlist/strlist_containsb.c",
+		"/home/roman/Sources/c-utils/lib/strarray/strarray_push_unique.c",
+		"/home/roman/Sources/c-utils/lib/strarray/strarray_sort.c",
+		"/home/roman/Sources/c-utils/lib/strarray/strarray_pushb.c",
+		"/home/roman/Sources/c-utils/map.h",
+		"/home/roman/Sources/c-utils/genmakefile.mk",
+		"/home/roman/Sources/c-utils/lib/strlist/strlist_sort.c",
+		"/home/roman/Sources/c-utils/lib/strlist/strlist_filter.c",
+		"/home/roman/Sources/c-utils/lib/strlist.h",
+		"/home/roman/Sources/c-utils/genmakefile.h",
+		"/home/roman/Sources/c-utils/lib/case/case_diffs.c",
+		"/home/roman/Sources/c-utils/lib/strarray.h",
+		"/home/roman/Sources/c-utils/c-utils.sublime-project",
+		"/home/roman/Sources/c-utils/build/x86_64-linux-musl/CMakeFiles/regfilter.dir/cmake_clean.cmake",
+		"/home/roman/Sources/c-utils/lib/strarray/strarray_push.c",
+		"/home/roman/Sources/c-utils/lib/strarray/strarray_index_of_b.c",
+		"/home/roman/Sources/c-utils/lib/strarray/strarray_intersection.c",
+		"/home/roman/Sources/c-utils/lib/strarray/strarray_index_of.c",
+		"/home/roman/Sources/c-utils/lib/strarray/strarray_glob.c",
+		"/home/roman/Sources/c-utils/lib/strarray/strarray_removesuffixs.c",
+		"/home/roman/Sources/c-utils/lib/strarray/strarray_transform.c",
+		"/home/roman/Sources/c-utils/lib/strarray/strarray_pop.c",
+		"/home/roman/Sources/c-utils/lib/hashmap/hashmap_get.c",
+		"/home/roman/Sources/c-utils/lib/hashmap/hashmap_find.c",
+		"/home/roman/Sources/c-utils/lib/hashmap/hashmap_free.c",
+		"/home/roman/Sources/c-utils/lib/hashmap/hashmap_keys.c",
+		"/home/roman/Sources/c-utils/lib/hashmap/hashmap_remove.c",
+		"/home/roman/Sources/c-utils/lib/hashmap/hashmap_search.c",
+		"/home/roman/Sources/c-utils/lib/hashmap/hashmap_default_comparator.c",
+		"/home/roman/Sources/c-utils/lib/hashmap/hashmap_size.c",
+		"/home/roman/Sources/c-utils/lib/hashmap/hashmap_put.c",
+		"/home/roman/Sources/c-utils/lib/hashmap.h",
+		"/home/roman/Sources/c-utils/lib/hashmap/linked_list_prepend.c",
+		"/home/roman/Sources/c-utils/lib/hashmap/linked_list_append.c",
+		"/home/roman/Sources/c-utils/eagle-to-circuit.c",
+		"/home/roman/Sources/c-utils/lib/linked_list.h",
+		"/home/roman/Sources/c-utils/lib/hashmap/linked_list_free.c",
+		"/home/roman/Sources/c-utils/lib/byte.h",
+		"/home/roman/Sources/c-utils/lib/rdir/rdir_read.c",
+		"/home/roman/Sources/c-utils/lib/hashmap/linked_list_init.c",
+		"/home/roman/Sources/c-utils/lib/hashmap/linked_list_head.c",
+		"/home/roman/Sources/c-utils/build/x86_64-linux-musl/CMakeFiles/elfwrsec.dir/cmake_clean.cmake",
+		"/home/roman/Sources/c-utils/lib/dir/dir_open.c",
+		"/home/roman/Sources/c-utils/lib/dir/dir_read.c",
+		"/home/roman/Sources/c-utils/lib/hashmap/hashmap_contains_key.c",
+		"/home/roman/Sources/c-utils/lib/hashmap/hashmap_init.c",
+		"/home/roman/Sources/c-utils/mplab.c",
+		"/home/roman/Sources/c-utils/pkgcfg.c",
+		"/home/roman/Sources/c-utils/lib/hmap.h",
+		"/home/roman/Sources/c-utils/GNUmakefile",
+		"/home/roman/Sources/c-utils/genmakefile.c",
+		"/home/roman/Sources/c-utils/lib/rdir/rdir_open.c",
+		"/home/roman/Sources/c-utils/lib/rdir.h",
+		"/home/roman/Sources/c-utils/lib/hashmap/hashmap_default_hash_func.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/rdir/rdir_read.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/dir.h",
+		"/home/roman/Sources/c-utils/lib/dir/dir_close.c",
+		"/home/roman/Sources/c-utils/mplab.h",
+		"/home/roman/Sources/c-utils/msys-shell.c",
+		"/home/roman/Sources/c-utils/opensearch-dump.c",
+		"/home/roman/Sources/c-utils/ini.c",
+		"/home/roman/Sources/c-utils/ini.h",
+		"/home/roman/Sources/c-utils/build/cmake/Werror.cmake",
+		"/home/roman/Sources/c-utils/lib/unix/getdelim.c",
+		"/home/roman/Sources/c-utils/eagle-gen-cmds.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/hmap.h",
+		"/home/roman/Sources/c-utils/lib/xml.h",
+		"/home/roman/Sources/c-utils/eagle-to-svg.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/hashmap/hashmap_clear.c",
 		"/home/roman/Sources/c-utils/xml2json.c",
+		"/home/roman/Sources/c-utils/xml2moon.c",
+		"/home/roman/Sources/c-utils/cc-wrap.c",
+		"/home/roman/Sources/c-utils/build/.cmake/api/v1/reply/target-hmap-618dc598ca6c474cbfbf.json",
+		"/home/roman/Sources/c-utils/lib/cbmap/cbmap_visit.c",
+		"/home/roman/Sources/c-utils/lib/cbmap.h",
+		"/home/roman/Sources/c-utils/lib/cbmap_internal.h",
+		"/home/roman/Sources/c-utils/lib/xml/xml_num_children.c",
 		"/home/roman/Sources/c-utils/lib/xml/xml_print.c",
 		"/home/roman/Sources/c-utils/lib/buffer/buffer_skip_pred.c",
 		"/home/roman/Sources/c-utils/lib/buffer/buffer_skipspace.c",
@@ -499,96 +616,19 @@
 		"/home/roman/Dokumente/Sources/skalibs/src/libstddjb/pathexec.lo",
 		"/home/roman/Dokumente/Sources/skalibs/src/libstddjb/pathexec_r.c",
 		"/home/roman/Dokumente/Sources/skalibs/src/libstddjb/pathexec_r.lo",
-		"/home/roman/Dokumente/Sources/skalibs/src/libstddjb/pathexec_r_name.c",
-		"/home/roman/Dokumente/Sources/skalibs/src/libstddjb/pathexec_r_name.lo",
-		"/home/roman/Dokumente/Sources/skalibs/src/libstddjb/pathexec_run.c",
-		"/home/roman/Dokumente/Sources/plot-cv/quickjs/CMakeLists.txt",
-		"/home/roman/Dokumente/Sources/plot-cv/quickjs/quickjs.c",
-		"/home/roman/Dokumente/Sources/plot-cv/quickjs/quickjs-libc.c",
-		"/home/roman/Dokumente/Sources/plot-cv/quickjs/cfg.sh",
-		"/home/roman/Dokumente/Sources/c-utils/lib/strlist.h",
-		"/home/roman/Dokumente/Sources/c-utils/lib/str/str_find.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/wordexp.h",
-		"/home/roman/Dokumente/Sources/c-utils/lib/stralloc/stralloc_prepend.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/stralloc/stralloc_prepends.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/stralloc/stralloc_prependb.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/stralloc/stralloc_insertb.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/stralloc/stralloc_readyplus.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/stralloc/stralloc_ready.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/path.h",
-		"/home/roman/Dokumente/Sources/c-utils/lib/path/path_readlink.c",
-		"/home/roman/Dokumente/Sources/c-utils/map.h",
-		"/home/roman/Dokumente/Sources/c-utils/lib/hmap.h",
-		"/home/roman/Dokumente/Sources/c-utils/genmakefile.h",
-		"/home/roman/Dokumente/Sources/c-utils/lib/cbmap.h",
-		"/home/roman/Dokumente/Sources/daemontools/src/setuidgid.c",
-		"/home/roman/Dokumente/Sources/skalibs/src/libstddjb/pathexec0.lo",
-		"/home/roman/Dokumente/Sources/skalibs/src/libstddjb/pathexec0.c",
-		"/home/roman/Dokumente/Sources/skalibs/src/libstddjb/child_spawn1_internal.",
-		"/home/roman/Dokumente/Sources/skalibs/src/libstddjb/pathexec_run.lo",
-		"/home/roman/Dokumente/Sources/plot-cv/quickjs/qjs.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/strlist/strlist_count.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/str/str_istr.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/str/str_str.c",
-		"/home/roman/Dokumente/Sources/c-utils/build/gnu/config.sub",
-		"/home/roman/Dokumente/Sources/c-utils/lib/stralloc/stralloc_trunc.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/env/env_get.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/byte.h",
-		"/home/roman/Dokumente/Sources/c-utils/lib/unix/wordexp.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/strlist/strlist_froms.c",
-		"/home/roman/Dokumente/Sources/c-utils/scripts/get-includes.sh",
-		"/home/roman/Dokumente/Sources/c-utils/strip-comments.c",
-		"/home/roman/Dokumente/Sources/skalibs/src/libposixplz/execvep.c",
-		"/home/roman/Dokumente/Sources/skalibs/src/libposixplz/execvep_internal.c",
-		"/home/roman/Dokumente/Sources/skalibs/src/libposixplz/execvep_loose.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/scan.h",
-		"/home/roman/Dokumente/Sources/c-utils/lib/mmap/mmap_read.c",
-		"/home/roman/Dokumente/Sources/skalibs/src/libstddjb/xexecvep.c",
-		"/home/roman/Dokumente/Sources/skalibs/src/libstddjb/xpathexec0.c",
-		"/home/roman/Dokumente/Sources/skalibs/src/libstddjb/xpathexec0_run.c",
-		"/home/roman/Dokumente/Sources/skalibs/src/libstddjb/xpathexec.c",
-		"/home/roman/Dokumente/Sources/skalibs/src/libstddjb/xpathexec_fromenv.c",
-		"/home/roman/Dokumente/Sources/skalibs/src/libstddjb/xpathexec_r.c",
-		"/home/roman/Dokumente/Sources/skalibs/src/libstddjb/xpathexec_r_name.c",
-		"/home/roman/Dokumente/Sources/skalibs/src/libstddjb/xpathexec_run.c",
-		"/home/roman/Dokumente/Sources/skalibs/src/sysdeps/trycmsgcloexec.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/alloc/alloc.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/alloc.h",
-		"/home/roman/Dokumente/Sources/c-utils/lib/dns/dns_ip6.c",
-		"/home/roman/Dokumente/Sources/c-utils/FunctionGenerator-ICL8038.brd",
-		"/home/roman/Dokumente/Sources/c-utils/build/functions.mk",
-		"/home/roman/Dokumente/Sources/c-utils/dnsip.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/dns.h",
-		"/home/roman/Dokumente/Sources/c-utils/lib/dns/dns_rcip.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/case.h",
-		"/home/roman/Dokumente/Sources/c-utils/eagle-gen-cmds.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/buffer/buffer_putc.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/byte/byte_equal.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/socket/fmt_ip4.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/ip6.h",
-		"/home/roman/Dokumente/Sources/c-utils/lib/socket/scan_ip6.c",
-		"/home/roman/Dokumente/Sources/c-utils/libc-resolv-override.h",
-		"/home/roman/Dokumente/Sources/c-utils/lib/dns/dns_packet.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/dns/dns_name.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/dns/dns_ip4.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/dns/dns_dfd.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/textcode/scan_base64.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/textcode/scan_uuencoded.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/byte/byte_fill.c",
-		"/home/roman/Dokumente/Sources/c-utils/3rdparty/openssl/apps/opt.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/dns/dns_nd.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/stralloc/openreadclose.c",
-		"/home/roman/Dokumente/Sources/c-utils/3rdparty/bzip2/blocksort.c"
+		"/home/roman/Dokumente/Sources/skalibs/src/libstddjb/pathexec_r_name.c"
 	],
 	"find":
 	{
-		"height": 40.0
+		"height": 46.0
 	},
 	"find_in_files":
 	{
 		"height": 258.0,
 		"where_history":
 		[
+			"*.c,/home/roman/Dokumente/Sources/c-utils/lib,*.c,*.h,*.js,/home/roman/Sources/c-utils,*.c,*.h",
+			"*.c,/home/roman/Dokumente/Sources/c-utils/lib,*.c,*.h,*.js",
 			"/home/roman/Dokumente/Sources/c-utils/lib,*.c,*.h,*.js",
 			"/home/roman/Dokumente/Sources/c-utils,*.c,*.h,*.js",
 			"/home/roman/Dokumente/Sources/c-utils/lib,*.c,*.h,*.js",
@@ -609,134 +649,134 @@
 		"case_sensitive": true,
 		"find_history":
 		[
-			"show_vers",
-			"version\"",
-			"search",
-			"execvpe",
-			"search_path",
-			"posix_spawn",
-			"main",
-			"version",
-			"\"vers",
-			"buffer_skip_pred",
-			"peek",
-			"reader",
-			"xml_read_callback",
-			"children",
-			"recu",
-			"get_depth",
-			"depth",
-			"xml_",
-			"' '",
-			"print",
-			"xml.*prin",
-			"compact",
-			"\\\\n",
-			"\\n",
-			"\\\\n",
-			"\\n",
-			"\\\\n",
-			"one_line",
-			"main",
-			"one",
-			"onelin",
-			"onelni",
-			"STATIC",
-			"static_lib",
-			"getopt",
-			"str_diff",
-			"main",
-			"_move",
-			"move",
-			"slist_begin",
-			"str_diff",
-			"push",
-			"\\[1",
-			"len",
-			"strlist_count",
-			"strlist",
-			"pkg_open",
-			"search_path",
-			"search_",
-			"mmap",
-			"pkg_get",
-			"\\.pc",
-			"search_path",
-			"expand",
-			"islow",
-			"ONLY",
-			"only",
-			"cmd.path",
-			"full qua",
-			"pkg_expand",
-			"Expanding",
-			"only-l",
-			"field_names",
-			"field_name",
-			"get_field_index",
-			"field_names",
-			"find",
-			"contain",
+			"sourcedir_get_sa",
+			"slist_add",
+			"->sources",
+			"gen_srcdir_compile_rules",
+			"->output",
+			"output_make_rule",
+			"output_all_rules",
+			"is_filename",
+			"^is_source",
+			"gen_srcdir_lib_rule",
+			"->rules",
+			"target",
+			"rule",
+			"is_source",
+			"is_include",
+			"^is_",
+			"pptok",
+			"\"file\"",
+			"file\"",
+			"spec_len =",
+			"spec_len",
 			"no such",
-			"only-",
-			"str[a-z]*\\(",
-			"str",
-			"ambig",
-			"host_arc",
-			"host_arch",
-			"readclo",
-			"pkgcfg",
-			"pkgcfg ",
-			"pkgcfg",
-			"host_arc",
-			"trim",
-			"full",
-			"fq",
-			"pkgcfg_init",
-			"pkg_init",
-			"init",
-			"fq",
-			"host_arc",
-			"^main",
-			"pipe\\(",
-			"\"libs",
-			"PRINT_CFLAGS",
-			"PRINT_LIBS",
-			"\"libs",
-			"start",
-			"starts",
+			"has_arg",
+			"no_argument",
+			"no argu",
+			"No such",
+			"getopt",
+			"mediathek",
+			"mediathe,",
+			"LINKER_FLAG",
+			"-static",
+			"add_exe",
+			"set_target",
+			"_",
+			"\"_\"",
+			"'_'",
+			"^gen",
+			"sources_new",
+			"add",
+			"->sources",
+			"^gen",
+			"file\"",
+			"^gen_srcdi",
+			"->sources",
+			"^sources_add",
+			"rdir_",
+			"rdir",
+			"^source",
+			"^source_",
+			"source_",
+			"sources",
+			"sdir",
+			"DEBUG_OUTPUT",
+			"  add_path_sa",
+			"^add_path_sa",
+			"add_path_sa",
+			"->output",
+			"sources",
+			"sources_add",
+			"^sources_add",
+			"sources_add",
+			"rdir_",
+			"sources_sort",
+			"strarray_sort",
+			"sources_sort",
+			"^sources_add",
+			"populate",
+			"populate_",
+			"populate_s",
+			"^gen_srcdir",
+			"->vars",
+			"vars",
+			"output_make_rule",
+			"output_all",
+			"_rule",
+			"output_rule",
+			"^gen_",
+			"pptok",
+			"^gen_.*rule",
+			"^gen_",
+			"pptok",
+			"^sourcedir_get",
+			"^sourcedir",
+			"sourcedir",
+			"pptok",
+			"sourcedir",
+			"sourcedirg1",
+			"sourcedir",
+			"srcdir",
+			"pptok",
+			"strlist_sort",
+			"sort",
+			"debug_sl",
+			"^\\s*debug_sl",
+			"debug_sl",
+			"pptok",
 			"foreach",
 			"filter",
-			"cmd.code",
-			"code",
-			"PRINT_LIBS",
-			"libs\"",
-			"pkg_expand",
-			"pkg_set",
-			"pkg_ex",
-			"STATIC",
-			"ONLY",
-			"only",
-			"VARIAB",
-			"main",
-			"PROJECT_NAME",
-			"quickjs\\)",
-			"quickjs",
-			"SHARED",
-			"malloc_usa",
-			"NO_DL",
-			"MALLOC_US",
-			"__dietlibc",
-			"__diet",
-			"log",
-			"log1p",
-			"NO_",
-			"isfini",
-			"diet",
-			"isfinit",
-			" ",
-			"isfinit",
-			"isfini"
+			"^gen_srcdir",
+			"rule",
+			"^gen_srcdir_compile_rules",
+			"dep = gen_sim",
+			"dep = gen_",
+			"dep = ",
+			"gen_simple_compile_rules",
+			"gen_simple",
+			"^gen_simple",
+			"gen_simple",
+			"return",
+			"^gen_sim",
+			"MAP_COMPARATOR",
+			"^var_list",
+			"byte_diff",
+			"sourcedir_get_sa",
+			"gen_lib_rules",
+			"sourcedirs",
+			"MAP_NEW",
+			"sourcedirs",
+			"found =",
+			"sourcedir_get_sa",
+			"^sourcedir",
+			"^srcdir",
+			"srcs",
+			"MAP_VALUE",
+			"^sourcedir_get_sa",
+			"^sourcedir",
+			"MAP_.*sourcedir",
+			"srcdirs"
 		],
 		"highlight": false,
 		"in_selection": false,
@@ -744,6 +784,10 @@
 		"regex": true,
 		"replace_history":
 		[
+			"",
+			"MAP_KEY(t)",
+			"MAP_DELETE",
+			"hmap_data(t)",
 			"",
 			"}",
 			"dns->t.packet",
@@ -857,65 +901,105 @@
 	"groups":
 	[
 		{
-			"selected": 1,
+			"selected": 0,
 			"sheets":
 			[
 				{
 					"buffer": 0,
-					"file": "lib/xml.h",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 9565,
+						"buffer_size": 0,
 						"regions":
 						{
 						},
 						"selection":
 						[
-							[
-								604,
-								604
-							]
 						],
 						"settings":
 						{
-							"syntax": "Packages/C++/C++.sublime-syntax",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
+							"current_file": "/home/roman/Sources/c-utils/genmakefile.c",
+							"outline_rename_mode": false,
+							"symkeys":
+							[
+							],
+							"symlist":
+							[
+							],
+							"syntax": "Packages/Outline/outline.hidden-tmLanguage"
 						},
 						"translation.x": 0.0,
-						"translation.y": 404.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 2,
+					"stack_index": 4,
 					"type": "text"
-				},
+				}
+			]
+		},
+		{
+			"selected": 0,
+			"sheets":
+			[
 				{
 					"buffer": 1,
-					"file": "pkgcfg.c",
+					"file": "genmakefile.c",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 24095,
+						"buffer_size": 127593,
 						"regions":
 						{
+							"col_FFA500FF":
+							{
+								"flags": 16,
+								"regions":
+								[
+									[
+										81822,
+										81828
+									],
+									[
+										92473,
+										92479
+									]
+								],
+								"scope": "col_FFA500FF"
+							},
+							"col_FFA500FF_icon":
+							{
+								"flags": 16,
+								"icon": "Packages/User/Color Highlight.cache/col_FFA500FF_circle.png",
+								"regions":
+								[
+									[
+										81753,
+										81753
+									],
+									[
+										92410,
+										92410
+									]
+								],
+								"scope": "col_gutter"
+							}
 						},
 						"selection":
 						[
 							[
-								20664,
-								20664
+								56951,
+								56951
 							]
 						],
 						"settings":
 						{
-							"color_scheme": "Packages/Rainglow/rainglow/Horizon Contrast (rainglow).tmTheme",
+							"color_scheme": "Packages/Rainglow/rainglow/Tron Contrast (rainglow).tmTheme",
 							"syntax": "Packages/C11/C11.tmLanguage",
 							"tab_size": 2,
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 18211.0,
+						"translation.y": 80470.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 0,
@@ -923,23 +1007,455 @@
 				},
 				{
 					"buffer": 2,
-					"file": "lib/xml/xml_num_children.c",
+					"file": "map.h",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 159,
+						"buffer_size": 6296,
+						"regions":
+						{
+							"col_0B67AAB9":
+							{
+								"flags": 16,
+								"regions":
+								[
+									[
+										3170,
+										3180
+									]
+								],
+								"scope": "col_0B67AAB9"
+							},
+							"col_0B67AAB9_icon":
+							{
+								"flags": 16,
+								"icon": "Packages/User/Color Highlight.cache/col_0B67AAB9_circle.png",
+								"regions":
+								[
+									[
+										3164,
+										3164
+									]
+								],
+								"scope": "col_gutter"
+							},
+							"col_20C91D6C":
+							{
+								"flags": 16,
+								"regions":
+								[
+									[
+										3116,
+										3126
+									]
+								],
+								"scope": "col_20C91D6C"
+							},
+							"col_20C91D6C_icon":
+							{
+								"flags": 16,
+								"icon": "Packages/User/Color Highlight.cache/col_20C91D6C_circle.png",
+								"regions":
+								[
+									[
+										3110,
+										3110
+									]
+								],
+								"scope": "col_gutter"
+							},
+							"col_2E8B1C8A":
+							{
+								"flags": 16,
+								"regions":
+								[
+									[
+										3080,
+										3090
+									]
+								],
+								"scope": "col_2E8B1C8A"
+							},
+							"col_2E8B1C8A_icon":
+							{
+								"flags": 16,
+								"icon": "Packages/User/Color Highlight.cache/col_2E8B1C8A_circle.png",
+								"regions":
+								[
+									[
+										3074,
+										3074
+									]
+								],
+								"scope": "col_gutter"
+							},
+							"col_49D7D461":
+							{
+								"flags": 16,
+								"regions":
+								[
+									[
+										3278,
+										3288
+									]
+								],
+								"scope": "col_49D7D461"
+							},
+							"col_49D7D461_icon":
+							{
+								"flags": 16,
+								"icon": "Packages/User/Color Highlight.cache/col_49D7D461_circle.png",
+								"regions":
+								[
+									[
+										3272,
+										3272
+									]
+								],
+								"scope": "col_gutter"
+							},
+							"col_5C77FD0D":
+							{
+								"flags": 16,
+								"regions":
+								[
+									[
+										3314,
+										3324
+									]
+								],
+								"scope": "col_5C77FD0D"
+							},
+							"col_5C77FD0D_icon":
+							{
+								"flags": 16,
+								"icon": "Packages/User/Color Highlight.cache/col_5C77FD0D_circle.png",
+								"regions":
+								[
+									[
+										3308,
+										3308
+									]
+								],
+								"scope": "col_gutter"
+							},
+							"col_6BFB5D73":
+							{
+								"flags": 16,
+								"regions":
+								[
+									[
+										3350,
+										3360
+									]
+								],
+								"scope": "col_6BFB5D73"
+							},
+							"col_6BFB5D73_icon":
+							{
+								"flags": 16,
+								"icon": "Packages/User/Color Highlight.cache/col_6BFB5D73_circle.png",
+								"regions":
+								[
+									[
+										3344,
+										3344
+									]
+								],
+								"scope": "col_gutter"
+							},
+							"col_8898BBA8":
+							{
+								"flags": 16,
+								"regions":
+								[
+									[
+										3224,
+										3234
+									]
+								],
+								"scope": "col_8898BBA8"
+							},
+							"col_8898BBA8_icon":
+							{
+								"flags": 16,
+								"icon": "Packages/User/Color Highlight.cache/col_8898BBA8_circle.png",
+								"regions":
+								[
+									[
+										3218,
+										3218
+									]
+								],
+								"scope": "col_gutter"
+							},
+							"col_9625E261":
+							{
+								"flags": 16,
+								"regions":
+								[
+									[
+										3134,
+										3144
+									]
+								],
+								"scope": "col_9625E261"
+							},
+							"col_9625E261_icon":
+							{
+								"flags": 16,
+								"icon": "Packages/User/Color Highlight.cache/col_9625E261_circle.png",
+								"regions":
+								[
+									[
+										3128,
+										3128
+									]
+								],
+								"scope": "col_gutter"
+							},
+							"col_A8FA6D8C":
+							{
+								"flags": 16,
+								"regions":
+								[
+									[
+										3098,
+										3108
+									]
+								],
+								"scope": "col_A8FA6D8C"
+							},
+							"col_A8FA6D8C_icon":
+							{
+								"flags": 16,
+								"icon": "Packages/User/Color Highlight.cache/col_A8FA6D8C_circle.png",
+								"regions":
+								[
+									[
+										3092,
+										3092
+									]
+								],
+								"scope": "col_gutter"
+							},
+							"col_AEABCA3B":
+							{
+								"flags": 16,
+								"regions":
+								[
+									[
+										3188,
+										3198
+									]
+								],
+								"scope": "col_AEABCA3B"
+							},
+							"col_AEABCA3B_icon":
+							{
+								"flags": 16,
+								"icon": "Packages/User/Color Highlight.cache/col_AEABCA3B_circle.png",
+								"regions":
+								[
+									[
+										3182,
+										3182
+									]
+								],
+								"scope": "col_gutter"
+							},
+							"col_B0A3595A":
+							{
+								"flags": 16,
+								"regions":
+								[
+									[
+										3206,
+										3216
+									]
+								],
+								"scope": "col_B0A3595A"
+							},
+							"col_B0A3595A_icon":
+							{
+								"flags": 16,
+								"icon": "Packages/User/Color Highlight.cache/col_B0A3595A_circle.png",
+								"regions":
+								[
+									[
+										3200,
+										3200
+									]
+								],
+								"scope": "col_gutter"
+							},
+							"col_BBE5D3AE":
+							{
+								"flags": 16,
+								"regions":
+								[
+									[
+										3152,
+										3162
+									]
+								],
+								"scope": "col_BBE5D3AE"
+							},
+							"col_BBE5D3AE_icon":
+							{
+								"flags": 16,
+								"icon": "Packages/User/Color Highlight.cache/col_BBE5D3AE_circle.png",
+								"regions":
+								[
+									[
+										3146,
+										3146
+									]
+								],
+								"scope": "col_gutter"
+							},
+							"col_CEC21AA0":
+							{
+								"flags": 16,
+								"regions":
+								[
+									[
+										3296,
+										3306
+									]
+								],
+								"scope": "col_CEC21AA0"
+							},
+							"col_CEC21AA0_icon":
+							{
+								"flags": 16,
+								"icon": "Packages/User/Color Highlight.cache/col_CEC21AA0_circle.png",
+								"regions":
+								[
+									[
+										3290,
+										3290
+									]
+								],
+								"scope": "col_gutter"
+							},
+							"col_D011E8EC":
+							{
+								"flags": 16,
+								"regions":
+								[
+									[
+										3332,
+										3342
+									]
+								],
+								"scope": "col_D011E8EC"
+							},
+							"col_D011E8EC_icon":
+							{
+								"flags": 16,
+								"icon": "Packages/User/Color Highlight.cache/col_D011E8EC_circle.png",
+								"regions":
+								[
+									[
+										3326,
+										3326
+									]
+								],
+								"scope": "col_gutter"
+							},
+							"col_E164242E":
+							{
+								"flags": 16,
+								"regions":
+								[
+									[
+										3242,
+										3252
+									]
+								],
+								"scope": "col_E164242E"
+							},
+							"col_E164242E_icon":
+							{
+								"flags": 16,
+								"icon": "Packages/User/Color Highlight.cache/col_E164242E_circle.png",
+								"regions":
+								[
+									[
+										3236,
+										3236
+									]
+								],
+								"scope": "col_gutter"
+							},
+							"col_F85AFDD0":
+							{
+								"flags": 16,
+								"regions":
+								[
+									[
+										3260,
+										3270
+									]
+								],
+								"scope": "col_F85AFDD0"
+							},
+							"col_F85AFDD0_icon":
+							{
+								"flags": 16,
+								"icon": "Packages/User/Color Highlight.cache/col_F85AFDD0_circle.png",
+								"regions":
+								[
+									[
+										3254,
+										3254
+									]
+								],
+								"scope": "col_gutter"
+							}
+						},
+						"selection":
+						[
+							[
+								4724,
+								4724
+							]
+						],
+						"settings":
+						{
+							"color_scheme": "Packages/Rainglow/rainglow/Tron Contrast (rainglow).tmTheme",
+							"syntax": "Packages/C++/C++.sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 4464.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "lib/hmap/hmap_set.c",
+					"semi_transient": true,
+					"settings":
+					{
+						"buffer_size": 584,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								20,
-								20
+								0,
+								0
 							]
 						],
 						"settings":
 						{
+							"color_scheme": "Packages/Rainglow/rainglow/Tron Contrast (rainglow).tmTheme",
 							"syntax": "Packages/C11/C11.tmLanguage",
 							"tab_size": 2,
 							"translate_tabs_to_spaces": true
@@ -948,146 +1464,129 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 1,
+					"stack_index": 2,
 					"type": "text"
 				},
 				{
-					"buffer": 3,
+					"buffer": 4,
+					"file": "lib/hmap/hmap_search.c",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 2406,
+						"buffer_size": 994,
 						"regions":
 						{
-							"match":
-							{
-								"flags": 112,
-								"regions":
-								[
-									[
-										123,
-										131
-									],
-									[
-										232,
-										240
-									],
-									[
-										296,
-										304
-									],
-									[
-										406,
-										414
-									],
-									[
-										543,
-										551
-									],
-									[
-										590,
-										598
-									],
-									[
-										655,
-										663
-									],
-									[
-										747,
-										772
-									],
-									[
-										836,
-										861
-									],
-									[
-										989,
-										997
-									],
-									[
-										1028,
-										1036
-									],
-									[
-										1133,
-										1141
-									],
-									[
-										1172,
-										1180
-									],
-									[
-										1241,
-										1266
-									],
-									[
-										1365,
-										1373
-									],
-									[
-										1538,
-										1546
-									],
-									[
-										1602,
-										1610
-									],
-									[
-										1845,
-										1862
-									],
-									[
-										1962,
-										1979
-									],
-									[
-										2075,
-										2092
-									],
-									[
-										2107,
-										2124
-									],
-									[
-										2209,
-										2226
-									],
-									[
-										2241,
-										2258
-									],
-									[
-										2342,
-										2359
-									]
-								],
-								"scope": ""
-							}
 						},
 						"selection":
 						[
 							[
-								1698,
-								1698
+								713,
+								713
 							]
 						],
 						"settings":
 						{
-							"detect_indentation": false,
-							"line_numbers": false,
-							"output_tag": 2,
-							"result_base_dir": "",
-							"result_file_regex": "^([^ \t].*):$",
-							"result_line_regex": "^ +([0-9]+):",
-							"scroll_past_end": true,
-							"syntax": "Packages/Default/Find Results.hidden-tmLanguage",
-							"translate_tabs_to_spaces": false
+							"color_scheme": "Packages/Rainglow/rainglow/Tron Contrast (rainglow).tmTheme",
+							"syntax": "Packages/C11/C11.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 655.0,
+						"translation.y": 372.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 3,
+					"type": "text"
+				},
+				{
+					"buffer": 5,
+					"file": "genmakefile.h",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 6171,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1401,
+								1401
+							]
+						],
+						"settings":
+						{
+							"color_scheme": "Packages/Rainglow/rainglow/Tron Contrast (rainglow).tmTheme",
+							"syntax": "Packages/C++/C++.sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 1601.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 5,
+					"type": "text"
+				},
+				{
+					"buffer": 6,
+					"file": "lib/unix/getopt.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 6181,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2247,
+								2247
+							]
+						],
+						"settings":
+						{
+							"color_scheme": "Packages/Rainglow/rainglow/Tron Contrast (rainglow).tmTheme",
+							"syntax": "Packages/C11/C11.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 2753.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 6,
+					"type": "text"
+				},
+				{
+					"buffer": 7,
+					"file": "lib/getopt.h",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1311,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								541,
+								541
+							]
+						],
+						"settings":
+						{
+							"color_scheme": "Packages/Rainglow/rainglow/Tron Contrast (rainglow).tmTheme",
+							"syntax": "Packages/C++/C++.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 93.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 7,
 					"type": "text"
 				}
 			]
@@ -1095,7 +1594,7 @@
 	],
 	"incremental_find":
 	{
-		"height": 36.0
+		"height": 40.0
 	},
 	"input":
 	{
@@ -1106,20 +1605,29 @@
 		"cells":
 		[
 			[
+				2,
+				0,
+				3,
+				2
+			],
+			[
 				0,
 				0,
-				1,
-				1
+				2,
+				2
 			]
 		],
 		"cols":
 		[
 			0.0,
+			0.2,
+			0.8,
 			1.0
 		],
 		"rows":
 		[
 			0.0,
+			0.5,
 			1.0
 		]
 	},
@@ -1164,7 +1672,7 @@
 	"project": "c-utils.sublime-project",
 	"replace":
 	{
-		"height": 68.0
+		"height": 88.0
 	},
 	"save_all_on_build": true,
 	"select_file":
@@ -1173,6 +1681,206 @@
 		"last_filter": "",
 		"selected_items":
 		[
+			[
+				"map.h",
+				"map.h"
+			],
+			[
+				"genmake",
+				"genmakefile.h"
+			],
+			[
+				"getopt.h",
+				"lib/getopt.h"
+			],
+			[
+				"getopt",
+				"lib/unix/getopt.c"
+			],
+			[
+				"cmakeLi",
+				"CMakeLists.txt"
+			],
+			[
+				"slist.h",
+				"lib/slist.h"
+			],
+			[
+				"slist_add",
+				"lib/slist/slist_add_before.c"
+			],
+			[
+				"strlist.h",
+				"lib/strlist.h"
+			],
+			[
+				"strlist_sort",
+				"lib/strlist/strlist_sort.c"
+			],
+			[
+				"genma",
+				"genmakefile.h"
+			],
+			[
+				"case_diffs",
+				"lib/case/case_diffs.c"
+			],
+			[
+				"stsrlist_sort",
+				"lib/strlist/strlist_sort.c"
+			],
+			[
+				"strarray.h",
+				"lib/strarray.h"
+			],
+			[
+				"filter",
+				"build/x86_64-linux-musl/CMakeFiles/regfilter.dir/cmake_clean.cmake"
+			],
+			[
+				"hashmap.h",
+				"lib/hashmap.h"
+			],
+			[
+				"byte.h",
+				"lib/byte.h"
+			],
+			[
+				"linked",
+				"lib/linked_list.h"
+			],
+			[
+				"to-cir",
+				"eagle-to-circuit.c"
+			],
+			[
+				"append.c",
+				"lib/hashmap/linked_list_append.c"
+			],
+			[
+				"to-circ",
+				"eagle-to-circuit.c"
+			],
+			[
+				"weak",
+				"build/x86_64-linux-musl/CMakeFiles/elfwrsec.dir/cmake_clean.cmake"
+			],
+			[
+				"dir_read.c",
+				"lib/dir/dir_read.c"
+			],
+			[
+				"dir_open",
+				"lib/dir/dir_open.c"
+			],
+			[
+				"rdir_read",
+				"lib/rdir/rdir_read.c"
+			],
+			[
+				"cmake",
+				"CMakeLists.txt"
+			],
+			[
+				"rdir_",
+				"lib/dir/dir_open.c"
+			],
+			[
+				"rdir.h",
+				"lib/rdir.h"
+			],
+			[
+				"dir_close",
+				"lib/dir/dir_close.c"
+			],
+			[
+				"rdir_ope",
+				"lib/rdir/rdir_open.c"
+			],
+			[
+				"read.c",
+				"lib/dir/dir_read.c"
+			],
+			[
+				"pkgcfg.c",
+				"pkgcfg.c"
+			],
+			[
+				"mplab.c",
+				"mplab.c"
+			],
+			[
+				"mplab.h",
+				"mplab.h"
+			],
+			[
+				"hmap.h",
+				"lib/hmap.h"
+			],
+			[
+				"gnuma",
+				"GNUmakefile"
+			],
+			[
+				"gnumake",
+				"GNUmakefile"
+			],
+			[
+				"getdelim",
+				"lib/unix/getdelim.c"
+			],
+			[
+				"Werror",
+				"build/cmake/Werror.cmake"
+			],
+			[
+				"xml.h",
+				"lib/xml.h"
+			],
+			[
+				"gen-cmd",
+				"eagle-gen-cmds.c"
+			],
+			[
+				"eagle-to-svg",
+				"eagle-to-svg.c"
+			],
+			[
+				"eagle-to-c",
+				"eagle-to-circuit.c"
+			],
+			[
+				"msys-shell",
+				"msys-shell.c"
+			],
+			[
+				"ini.c",
+				"ini.c"
+			],
+			[
+				"ini.h",
+				"ini.h"
+			],
+			[
+				"xml2moon.c",
+				"xml2moon.c"
+			],
+			[
+				"xml2json.c",
+				"xml2json.c"
+			],
+			[
+				"hmap.j",
+				"build/.cmake/api/v1/reply/target-hmap-618dc598ca6c474cbfbf.json"
+			],
+			[
+				"mplab",
+				"mplab.c"
+			],
+			[
+				"cc-wrap",
+				"cc-wrap.c"
+			],
 			[
 				"pkgcf",
 				"pkgcfg.c"
@@ -1184,10 +1892,6 @@
 			[
 				"skipspace",
 				"lib/buffer/buffer_skipspace.c"
-			],
-			[
-				"xml.h",
-				"lib/xml.h"
 			],
 			[
 				"xml_read",
@@ -1222,14 +1926,6 @@
 				"lib/slist/slist_pushs.c"
 			],
 			[
-				"slist.h",
-				"lib/slist.h"
-			],
-			[
-				"dir_open",
-				"lib/dir/dir_open.c"
-			],
-			[
 				"errmsg.h",
 				"lib/errmsg.h"
 			],
@@ -1240,10 +1936,6 @@
 			[
 				"errmsg_wa",
 				"lib/errmsg/errmsg_warn.c"
-			],
-			[
-				"getopt",
-				"lib/unix/getopt.c"
 			],
 			[
 				"readclose",
@@ -1268,10 +1960,6 @@
 			[
 				"quickjs",
 				"~/Dokumente/Sources/plot-cv/quickjs/quickjs.c"
-			],
-			[
-				"strlist.h",
-				"lib/strlist.h"
 			],
 			[
 				"str_find",
@@ -1326,10 +2014,6 @@
 				"lib/env/env_get.c"
 			],
 			[
-				"byte.h",
-				"lib/byte.h"
-			],
-			[
 				"path.h",
 				"lib/path.h"
 			],
@@ -1354,18 +2038,6 @@
 				"lib/strlist/strlist_froms.c"
 			],
 			[
-				"hmap.h",
-				"lib/hmap.h"
-			],
-			[
-				"map.h",
-				"map.h"
-			],
-			[
-				"genma",
-				"genmakefile.h"
-			],
-			[
 				"cbmap",
 				"lib/cbmap.h"
 			],
@@ -1384,10 +2056,6 @@
 			[
 				"gen-",
 				"scripts/gen-makefile-deps.sh"
-			],
-			[
-				"gnuma",
-				"GNUmakefile"
 			],
 			[
 				"CMakeLists",
@@ -1524,166 +2192,6 @@
 			[
 				"strarray",
 				"lib/strarray.h"
-			],
-			[
-				"get_attr",
-				"lib/xml/xml_get_attribute_double.c"
-			],
-			[
-				"",
-				"~/Dokumente/Sources/an-tronics/diptrace/Amplifier Class AB.brd"
-			],
-			[
-				"gen-cmds",
-				"eagle-gen-cmds.c"
-			],
-			[
-				"strlist_sort",
-				"lib/strlist/strlist_sort.c"
-			],
-			[
-				"strip-comm",
-				"strip-comments.c"
-			],
-			[
-				"ready",
-				"lib/stralloc/stralloc_ready.c"
-			],
-			[
-				"copyb",
-				"lib/stralloc/stralloc_copyb.c"
-			],
-			[
-				"stralloc_copys",
-				"lib/stralloc/stralloc_copys.c"
-			],
-			[
-				"list-r.c",
-				"list-r.c"
-			],
-			[
-				"strarr",
-				"lib/strarray.h"
-			],
-			[
-				"array.h",
-				"lib/array.h"
-			],
-			[
-				"io.h",
-				"lib/io.h"
-			],
-			[
-				"tai.h",
-				"lib/tai.h"
-			],
-			[
-				"taia_now",
-				"lib/taia/taia_now.c"
-			],
-			[
-				"taia_",
-				"lib/taia/taia_frac.c"
-			],
-			[
-				"taia.h",
-				"lib/taia.h"
-			],
-			[
-				"putdouble",
-				"lib/buffer/buffer_putdouble.c"
-			],
-			[
-				"dir.h",
-				"lib/dir.h"
-			],
-			[
-				"rdir.h",
-				"lib/rdir.h"
-			],
-			[
-				"rdir_read",
-				"lib/rdir/rdir_read.c"
-			],
-			[
-				"rdir_open",
-				"lib/rdir/rdir_open.c"
-			],
-			[
-				"dir_close",
-				"lib/dir/dir_close.c"
-			],
-			[
-				"dir_in",
-				"lib/dir_internal.h"
-			],
-			[
-				"rdir_close",
-				"lib/rdir/rdir_close.c"
-			],
-			[
-				"strarray_free",
-				"lib/strarray/strarray_free.c"
-			],
-			[
-				"cmake",
-				"CMakeLists.txt"
-			],
-			[
-				"logser",
-				"logserial.c"
-			],
-			[
-				"serial.c",
-				"serial.c"
-			],
-			[
-				"o.h",
-				"lib/omf.h"
-			],
-			[
-				"ndelay",
-				"lib/ndelay/ndelay_on.c"
-			],
-			[
-				"httptest",
-				"httptest.c"
-			],
-			[
-				"charbuf",
-				"lib/charbuf.h"
-			],
-			[
-				"json.h",
-				"lib/json.h"
-			],
-			[
-				"json_rea",
-				"lib/json/json_read_tree.c"
-			],
-			[
-				"json_read",
-				"lib/json/json_read_callback.c"
-			],
-			[
-				"jsonpp.c",
-				"jsonpp.c"
-			],
-			[
-				"mmap_priva",
-				"lib/mmap/mmap_private.c"
-			],
-			[
-				"buffer_wr",
-				"lib/buffer/buffer_write_fd.c"
-			],
-			[
-				"strarray.h",
-				"lib/strarray.h"
-			],
-			[
-				"errmsg",
-				"lib/errmsg.h"
 			]
 		],
 		"width": 0.0
@@ -1706,7 +2214,7 @@
 		],
 		"width": 0.0
 	},
-	"selected_group": 0,
+	"selected_group": 1,
 	"settings":
 	{
 	},

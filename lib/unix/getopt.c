@@ -94,6 +94,8 @@ _getopt_(int argc, char* const argv[], const char* optstring, const struct longo
           char const* spec_long = argv[optind] + 2;
           size_t pos_eq = str_chr(spec_long, '=');
           ssize_t spec_len = pos_eq;
+          if(spec_long[pos_eq] == '\0')
+            pos_eq = 0;
           int index_search = 0;
           int index_found = -1;
           const struct longopt* optdef = 0;

@@ -4,7 +4,6 @@
 #include "../dir_internal.h"
 #include "../stralloc.h"
 #include "../str.h"
-#include "../alloc.h"
 
 #include <assert.h>
 #include <stdlib.h>
@@ -68,7 +67,10 @@ rdir_read(rdir_t* d) {
 static void
 rdir_push(rdir_t* d) {
   rdir_t* rdn = (rdir_t*)malloc(sizeof(rdir_t));
+
+  byte_copy(rdn, sizeof(rdir_t), d);
   byte_zero(d, sizeof(rdir_t));
+
   d->prev = rdn;
 
   d->sa = rdn->sa;

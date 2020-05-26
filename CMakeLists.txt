@@ -147,7 +147,8 @@ endif(ENABLE_LTO)
 
 
 if(NOT LINK_STATIC STREQUAL OFF)
-  set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -static")
+  set(EXE_LINKER_FLAGS "${EXE_LINKER_FLAGS} -static")
+  set(CHK_DLFCN FALSE)
 endif(NOT LINK_STATIC STREQUAL OFF)
 
 
@@ -699,6 +700,7 @@ foreach(LIBNAME ${MODSUBDIRS})
     set_target_properties("${LIBNAME}-shared" PROPERTIES
     PREFIX "lib"
     COMPILE_FLAGS "${WARN_C_COMPILER_FLAGS} -fPIC"
+
   )
   endif(BUILD_SHARED_LIBS)
   set_target_properties("${LIBNAME}" PROPERTIES
@@ -783,7 +785,8 @@ function(add_program PROG)
   target_link_libraries(${PROG} ${ARGN} ${ELECTRICFENCE_LIBRARY} ${EXTRA_LIBRARIES})
   install(TARGETS ${PROG} DESTINATION bin)
   if(NOT EMSCRIPTEN AND OPENSSL_FOUND AND USE_SSL)
-  set_target_properties(${PROG} PROPERTIES LINK_FLAGS "-L${OPENSSL_LIB_DIR} -Wl,-rpath=${OPENSSL_LIB_DIR}"
+  set_target_properties(${PROG} PROPERTIES 
+    LINK_FLAGS "-L${OPENSSL_LIB_DIR} -Wl,-rpath=${OPENSSL_LIB_DIR} ${EXE_LINKER_FLAGS}"
     COMPILE_FLAGS "")
   endif(NOT EMSCRIPTEN AND OPENSSL_FOUND AND USE_SSL)
   if(EMSCRIPTEN)
@@ -811,7 +814,7 @@ function(add_module MOD SRC)
   install(TARGETS ${MOD} DESTINATION libexec)
   if(BUILD_SHARED_LIBS)
   set_target_properties(${MOD} PROPERTIES 
-    LINK_FLAGS "-L${OPENSSL_LIB_DIR} -shared"
+    EXE_LINKER_FLAGS "-L${OPENSSL_LIB_DIR} -shared"
     )
   endif(BUILD_SHARED_LIBS)
   target_compile_options(${MOD} PUBLIC -fPIC)
@@ -855,6 +858,7 @@ add_program(elf64list elf mmap uint16 uint32 uint64)
 add_program(elflist buffer alloc errmsg unix elf mmap str)
 add_program(elfwrsec buffer alloc elf mmap)
 add_program(genmakefile case errmsg strarray slist rdir dir path strlist hashmap hmap stralloc buffer mmap unix open scan fmt byte str array safemult alloc)
+add_program(piccfg ihex errmsg strarray slist rdir dir path strlist hashmap hmap stralloc buffer mmap unix open scan fmt byte str array safemult alloc)
 add_program(hexedit stralloc buffer array io errmsg mmap open path scan uint64 unix ${ZLIB_LIBRARY})
 add_program(httptest http dns stralloc buffer errmsg byte io socket alloc taia ${LIBMSWSOCK} ${CRYPTO_LIBRARIES} pthread)
 add_program(impgen pe buffer byte mmap open)

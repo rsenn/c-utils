@@ -341,8 +341,8 @@ get_cfgdat(const char* chip) {
       if(subdir[0] == '.')
         continue;
       dir = subdir;
-      /*  buffer_putm_internal(buffer_2, "subdir = ", subdir, 0);
-        buffer_putnlflush(buffer_2);*/
+        buffer_putm_internal(buffer_2, "subdir = ", subdir, 0);
+        buffer_putnlflush(buffer_2);
     }
     stralloc_cats(&path, dir);
   }

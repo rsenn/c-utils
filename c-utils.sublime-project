@@ -38,7 +38,17 @@
 				"*.d",
 				"*.m4",
 				"*~",
-				"*.pro.user*"
+				"*.pro.user*",
+				"*.internal",
+				"*.make",
+				"*cache"
+			],	"folder_exclude_patterns":
+			[
+				"*build/*/CMakeFiles/*",
+				"CMakeFiles",
+				".*",
+				"3rdparty/xz",
+				"*3rdparty/xz*"
 			],
 			"path": "."
 		}

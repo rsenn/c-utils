@@ -1,7 +1,7 @@
 #include "../linked_list.h"
 #include "../alloc.h"
 
-void
+linked_list_node*
 linked_list_prepend(linked_list* list, void* data) {
   linked_list_node* new_node = (linked_list_node*)alloc(sizeof(linked_list_node));
   new_node->data = data;
@@ -9,4 +9,5 @@ linked_list_prepend(linked_list* list, void* data) {
   list->head->next = new_node;
 
   list->size++;
+  return new_node;
 }

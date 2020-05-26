@@ -1,27 +1,28 @@
+#define _GNU_SOURCE
 #include "../str.h"
 #include "../strlist.h"
 
 #include <string.h>
 #include <stdlib.h>
 
-typedef int(cmp_fn_t)(const void*, const void*);
-
 static int
-sort_cmp(const char** a, const char** b) {
-  return str_diff(*a, *b);
+sort_cmp(const void* a, const void* b, void* arg) {
+  strlist_cmpfn_t* fn = arg;
+  return fn(*(const char**)a, *(const char**)b);
 }
 
 size_t
-strlist_sort(strlist* sl, cmp_fn_t* cmp_fn) {
+strlist_sort(strlist* sl, strlist_cmpfn_t* cmp_fn) {
   size_t p, l = 0;
   char *end, *tmp, **ptrs;
 
   stralloc_readyplus(&sl->sa, 1);
 
-  if(cmp_fn == NULL)
-    cmp_fn = (cmp_fn_t*)&sort_cmp;
+  p = strlist_count(sl);
+  if(p <= 1)
+    return p;
 
-  ptrs = (char**)malloc(sizeof(char*) * (strlist_count(sl)));
+  ptrs = (char**)malloc(sizeof(char*) * p);
   tmp = sl->sa.s;
   end = &sl->sa.s[sl->sa.len];
 
@@ -34,7 +35,7 @@ strlist_sort(strlist* sl, cmp_fn_t* cmp_fn) {
     p += len;
   }
 
-  qsort(ptrs, l, sizeof(char*), (cmp_fn_t*)cmp_fn);
+  qsort_r(ptrs, l, sizeof(char*), &sort_cmp, cmp_fn ? cmp_fn : (strlist_cmpfn_t*)&str_diff);
   sl->sa.s = 0;
   stralloc_init(&sl->sa);
 

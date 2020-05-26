@@ -1,7 +1,7 @@
 #ifndef _MAP_H
 #define _MAP_H
 
-#if 1
+#if 0
 #include "lib/hashmap.h"
 #include "lib/linked_list.h"
 #include "lib/alloc.h"
@@ -12,16 +12,18 @@
 
 typedef hashmap MAP_T;
 typedef hashmap_pair* MAP_PAIR_T;
-
+typedef linked_list_node* MAP_NODE_T;
 
 #define MAP_SIZE(map) hashmap_size(&(map))
 #define MAP_NEW(map) hashmap_init(&(map), 64, MAP_COMPARATOR, &hashfunc)
 #define MAP_GET(map, key, klen) hashmap_get(&(map), (void*)(key))
 #define MAP_DESTROY(map) hashmap_free(&(map))
 #define MAP_FOREACH(map, iter)                                                                                         \
-  for(linked_list_node* node = linked_list_head((map).keys); node && (iter = node->data); node = node->next)
-#define MAP_KEY(iter) ((char*)(hashmap_pair*)(iter)->key)
-#define MAP_DATA(iter) (void*)((linked_list_node*)(iter)->data)
+  for(linked_list_node* node = linked_list_head(hashmap_keys(&(map)));                                                 \
+      (iter = node ? hashmap_getpair(hashmap_search(&(map), node->data)) : 0);                                         \
+      node = node->next)
+#define MAP_KEY(pair) ((char*)(pair)->key)
+#define MAP_DATA(iter) ((MAP_PAIR_T)(iter)->data)
 #define MAP_VALUE(pair) ((pair) ? (void*)(((MAP_PAIR_T)(pair))->value) : 0)
 #define MAP_DELETE(map, key, klen) hashmap_remove(&(map), (void*)(key))
 #define MAP_SEARCH(map, key, klen, pair) (*(pair) = hashmap_getpair(hashmap_search(&(map), (void*)(key))))
@@ -40,20 +42,21 @@ hashmap_getpair(linked_list_node* node) {
 
 #define MAP_INSERT(map, key, klen, data, dlen) hashmap_insert(&(map), (void*)(key), klen, (void*)(data), dlen)
 
-static void
+static linked_list_node*
 hashmap_insert(MAP_T* map, void* key, size_t klen, void* data, size_t dlen) {
   char *k, *v;
   klen = (klen > 0 && ((char*)key)[klen - 1] == '\0') ? klen : klen + 1;
   k = alloc(klen);
   byte_copy(k, klen, key);
   dlen = (dlen > 0 && ((char*)data)[dlen - 1] == '\0') ? dlen : dlen + 1;
-  v = alloc(dlen);
-  byte_copy(v, dlen, data);
-  hashmap_put(map, k, v);
+  v = alloc(dlen + sizeof(size_t));
+  byte_copy(v + sizeof(size_t), dlen, data);
+
+  *((size_t*)(v)) = dlen;
+
+  hashmap_put(map, k, v + sizeof(size_t));
 }
 #define MAP_DUMP(map, buf)
-
-
 
 #define HASH_TYPE uint64
 #define HASH_BITS (sizeof(HASH_TYPE) * 8)
@@ -136,14 +139,22 @@ hashfunc(const void* str, size_t capacity) {
 static int
 MAP_COMPARATOR(const void* l, const void* r) {
   return str_diff(l, r);
-}
+  /*size_t lsz = *(((size_t*)l)-1);
+  size_t rsz = *(((size_t*)r)-1);
 
+  if(lsz != rsz)
+    return (ssize_t)lsz   - (ssize_t)rsz;
+
+  return byte_diff(l, lsz, r);*/
+}
 
 #else
 #include "lib/hmap.h"
 
 typedef HMAP_DB* MAP_T;
 typedef TUPLE* MAP_PAIR_T;
+typedef TUPLE* MAP_NODE_T;
+
 #define MAP_SIZE hmap_size
 #define MAP_NEW(map) hmap_init(MAP_BUCKET, &(map))
 #define MAP_DESTROY(map) hmap_destroy(&(map))
@@ -174,6 +185,9 @@ MAP_GET(HMAP_DB* map, const void* key, size_t klen) {
 #define MAP_SET(map, key, value) MAP_INSERT(map, (key), str_len(key) + 1, (value), str_len(value) + 1)
 #define MAP_INSERT(map, key, klen, data, dlen)                                                                         \
   (dlen == 0 ? hmap_add(&(map), key, klen, 0, HMAP_DATA_TYPE_CUSTOM, data) : hmap_set(&(map), key, klen, data, dlen))
+#define MAP_SEARCH(map, key, klen, tuple) (hmap_search(map, key, klen, tuple) == HMAP_SUCCESS ? *(tuple) : 0)
+#define MAP_KEY(tuple) ((char*)(tuple)->key)
+
 #endif
 
 #endif /* defined _MAP_H */

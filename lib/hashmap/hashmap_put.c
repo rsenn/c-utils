@@ -3,7 +3,7 @@
 #include "../hashmap.h"
 #include "../alloc.h"
 
-void
+linked_list_node*
 hashmap_put(hashmap* map, void* key, void* value) {
   linked_list* list;
   linked_list_node* head;
@@ -18,14 +18,15 @@ hashmap_put(hashmap* map, void* key, void* value) {
     hashmap_pair* pair = (hashmap_pair*)head->data;
     if(map->comparator(pair->key, key) == 0) {
       pair->value = value;
-      return;
+      return head;
     }
     head = head->next;
   }
   pair = (hashmap_pair*)alloc(sizeof(hashmap_pair));
   pair->key = key;
   pair->value = value;
-  linked_list_prepend(list, pair);
-  linked_list_append(map->keys, key);
   map->size++;
+  head = linked_list_prepend(list, pair);
+  linked_list_append(map->keys, key);
+  return head;
 }

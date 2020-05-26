@@ -61,14 +61,14 @@ linked_list_node* linked_list_head(linked_list* list);
  * @param list linked list structure
  * @param data data to append
  */
-void linked_list_append(linked_list* list, void* data);
+linked_list_node* linked_list_append(linked_list* list, void* data);
 
 /**
  * Prepend data to the list.
  * @param list linked list structure
  * @param data data to prepend
  */
-void linked_list_prepend(linked_list* list, void* data);
+linked_list_node* linked_list_prepend(linked_list* list, void* data);
 
 /**
  * Free the linked list and all its nodes and data. Uses @ref

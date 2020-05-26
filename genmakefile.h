@@ -70,6 +70,7 @@ typedef struct {
   slink* sources;
   strlist includes;
   array rules;
+  strlist pptoks;
 } sourcedir;
 
 typedef struct target_s {
@@ -80,6 +81,7 @@ typedef struct target_s {
   array deps;
   array objs;
   uint32 serial;
+  strlist vars;
 } target;
 
 typedef struct {
@@ -122,10 +124,8 @@ void add_path_sa(strlist*, stralloc* path);
 void add_path(strlist*, const char* path);
 void sourcedir_add(strlist*, const char* path);
 void deps_direct(strlist*, const target* t);
-void deps_for_libs(MAP_T);
 void deps_indirect(strlist*, const strlist* names);
 char* dirname_alloc(const char*);
-void sourcedir_dump_all(buffer*, MAP_T sourcedirs);
 int extract_build_type(const stralloc*);
 void extract_includes(const char*, size_t n, strlist* includes, int sys);
 void extract_pptok(const char*, size_t n, strlist* tokens);
@@ -133,17 +133,7 @@ void extract_tokens(const char*, size_t n, strlist* tokens);
 void format_linklib_dummy(const char*, stralloc* out);
 void format_linklib_lib(const char*, stralloc* out);
 void format_linklib_switch(const char*, stralloc* out);
-void gen_clean_rule(MAP_T);
-target* gen_install_rules(MAP_T);
-void gen_lib_rules(MAP_T, MAP_T srcdirs);
-int gen_link_rules(MAP_T, strarray* sources);
-target* gen_simple_compile_rules(
-    MAP_T, sourcedir* srcdir, const char* dir, const char* fromext, const char* toext, stralloc* cmd);
-target* gen_single_rule(MAP_T, stralloc* output, strlist* prereq, stralloc* cmd);
-target* gen_srcdir_compile_rules(MAP_T, sourcedir* sdir, const char* dir);
-void sourcedir_gen_rule(MAP_T, sourcedir* sdir, const char* name);
 int get_includes(const char*, strlist* includes, int sys);
-void get_keys(MAP_T, strlist* list);
 void get_ref_vars(const stralloc*, strlist* out);
 void get_rules_by_cmd(stralloc*, strlist* deps);
 void includes_cppflags(void);
@@ -155,14 +145,11 @@ int is_object(const char*);
 int is_object_sa(stralloc*);
 int is_source(const char*);
 int is_source_sa(stralloc*);
-target* gen_srcdir_lib_rule(MAP_T, sourcedir* srcdir, const char* name);
 int main(int, char* argv[]);
 int main_present(const char*);
 int main_scan(const char*, size_t n);
 int mkdir_components(strlist*, int mode);
 int mkdir_sa(const stralloc*, int mode);
-void output_all_rules(buffer*, MAP_T hmap);
-void output_all_vars(buffer*, MAP_T vars, strlist* varnames);
 void output_build_rules(buffer*, const char* name, const stralloc* cmd);
 void output_make_rule(buffer*, target* rule);
 void output_ninja_rule(buffer*, target* rule);
@@ -204,8 +191,6 @@ sourcedir* sourcedir_findb(const char*, size_t n);
 sourcedir* sourcedir_find(const char*);
 sourcedir* sourcedir_find_sa(stralloc*);
 sourcedir* sourcedir_get_sa(stralloc*);
-void sourcedir_populate(MAP_T, strarray* sources);
-void sources_add(const char*);
 void sources_get(const char*);
 sourcefile* sources_new(const char*);
 int sources_sort(const char**, const char** b);
@@ -216,7 +201,6 @@ void usage(char*);
 const char* var_get(const char*);
 int var_isset(const char*);
 strlist* var_list(const char*);
-void var_output(buffer*, MAP_T vars, const char* name);
 void var_push(const char*, const char* value);
 void var_push_sa(const char*, stralloc* value);
 strlist* var_set(const char*, const char* value);
@@ -227,7 +211,6 @@ void with_lib(const char*);
 extern exts_t exts;
 extern config_t cfg;
 extern dirs_t dirs;
-extern MAP_T rules, vars, sourcedirs;
 extern strarray srcs;
 extern tools_t tools;
 

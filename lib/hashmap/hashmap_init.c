@@ -8,7 +8,7 @@ hashmap_init(hashmap* map, size_t capacity, hashmap_comparator comparator, hashm
   map->capacity = capacity;
   map->size = 0;
   map->table = (linked_list**)alloc_zero(sizeof(linked_list*) * map->capacity);
-  //byte_zero(map->table, sizeof(linked_list*) * map->capacity);
+  // byte_zero(map->table, sizeof(linked_list*) * map->capacity);
   if(comparator) {
     map->comparator = comparator;
   } else {

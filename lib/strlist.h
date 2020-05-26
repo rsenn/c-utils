@@ -12,6 +12,9 @@
 extern "C" {
 #endif
 
+typedef int(strlist_cmpfn_t)(const void*, const void*);
+typedef int(strlist_filterfn_t)(const void*, size_t);
+
 /* strlist is the internal data structure all functions are working on.
  */
 typedef struct strlist_s {
@@ -134,6 +137,8 @@ int strlist_removes(strlist*, const char* s);
 int strlist_trunc(strlist*, size_t items);
 int strlist_sub(strlist*, const strlist* o);
 void strlist_fromv(strlist*, const char** v, int c);
+
+size_t strlist_filter(strlist* sl, strlist_filterfn_t* filter_fn, strlist* out);
 
 #ifdef __cplusplus
 }

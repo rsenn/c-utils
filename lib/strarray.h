@@ -10,7 +10,7 @@
 extern "C" {
 #endif
 
-/* strarray is the internal data structure all functions are working on.
+/* strarray is the internfal data structure all functions are working on.
  */
 
 typedef array strarray;
