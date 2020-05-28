@@ -603,14 +603,27 @@ if(BUILD_LZMA)
     3rdparty/xz/src/liblzma/check/*_table.c
     3rdparty/xz/src/liblzma/check/sha256.c
     #3rdparty/xz/src/liblzma/check/*.S
-    3rdparty/xz/src/liblzma/common/*.c
+    3rdparty/xz/src/liblzma/common/*block_util.c
+    3rdparty/xz/src/liblzma/common/*coder.c
+    3rdparty/xz/src/liblzma/common/*coder_memusage.c
+    #3rdparty/xz/src/liblzma/common/*coder_mt.c
+    3rdparty/xz/src/liblzma/common/*common.c
+    3rdparty/xz/src/liblzma/common/*easy_preset.c
+    3rdparty/xz/src/liblzma/common/*filter_common.c
+    3rdparty/xz/src/liblzma/common/*hardware_cputhreads.c
+    3rdparty/xz/src/liblzma/common/*hardware_physmem.c
+    3rdparty/xz/src/liblzma/common/*index.c
+    3rdparty/xz/src/liblzma/common/*index_hash.c
+    3rdparty/xz/src/liblzma/common/*outqueue.c
+    3rdparty/xz/src/liblzma/common/*stream_flags_common.c
+    3rdparty/xz/src/liblzma/common/*vli_size.c
     3rdparty/xz/src/liblzma/delta/*.c
     3rdparty/xz/src/liblzma/lz/*.c
     3rdparty/xz/src/liblzma/lzma/*.c
     3rdparty/xz/src/liblzma/rangecoder/*.c
     3rdparty/xz/src/liblzma/simple/*.c
   )
-  list(FILTER LIBLZMA_SOURCES EXCLUDE REGEX ".*_mt\\..*")
+#  list(FILTER LIBLZMA_SOURCES EXCLUDE REGEX ".*_mt\\..*")
 
   add_library(lzma ${LIBLZMA_SOURCES})
   set(LZMA_SOURCE_DIR "${CMAKE_SOURCE_DIR}/3rdparty/xz")

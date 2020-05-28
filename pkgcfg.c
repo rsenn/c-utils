@@ -500,7 +500,11 @@ host_arch(const char* compiler, stralloc* out) {
           if(!buffer_mmapread(&pc, path.s)) {
             path.len -= 3;
             stralloc_nul(&path);
-
+#ifdef DEBUG_OUTPUT
+    buffer_puts(buffer_2, "file: ");
+    buffer_putsa(buffer_2, &path);
+    buffer_putnlflush(buffer_2);
+#endif
             stralloc_copys(&line, str_basename(path.s));
 
             if(pkg_read(&pc, &pf)) {
@@ -522,7 +526,7 @@ host_arch(const char* compiler, stralloc* out) {
               slist_pushs(&pkgs, line.s);
             }
 
-            byte_zero(&line, sizeof(line));
+            stralloc_free(&line);
           }
 
           pkg_free(&pf);
@@ -532,12 +536,13 @@ host_arch(const char* compiler, stralloc* out) {
       }
     }
 
-    slist_foreach(pkgs, item) {
+    slist_foreach_safe(pkgs, item, it) {
       char* x = slist_data(item);
       buffer_puts(buffer_1, x);
       buffer_putnlflush(buffer_1);
 
       free(x);
+      alloc_free(item);
     }
   }
 
@@ -853,10 +858,13 @@ host_arch(const char* compiler, stralloc* out) {
 
     for(;;) {
       c = getopt_long(argc, argv, "hmilpaPSvV:", opts, &index);
-      if(c == -1)
+      if(opterr || argv[optind] == 0)
         break;
       if(c == 0)
         continue;
+
+      if(opts[index].val == 'l')
+        c = opts[index].val;
 
       switch(c) {
 
@@ -929,6 +937,10 @@ host_arch(const char* compiler, stralloc* out) {
     }
   getopt_end:
 
+  if(argv[optind - 1] && str_equal(argv[optind - 1], "--list-all")) {
+            cmd.code = LIST_ALL;
+}
+
     if(show_version) {
       buffer_puts(buffer_1, "1.0");
       buffer_putnlflush(buffer_1);
@@ -977,7 +989,7 @@ host_arch(const char* compiler, stralloc* out) {
 
     if(cmd.code == LIST_ALL) {
       pkg_list();
-      return 0;
+      exit(0);
     } else if(optind < argc) {
       strarray modules;
       strarray_from_argv(argc - optind, (const char* const*)&argv[optind], &modules);

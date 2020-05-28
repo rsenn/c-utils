@@ -1723,7 +1723,7 @@ ifeq ($(DO_STRIP),1)
 endif
 
 $(BUILDDIR)logserial$(M64_)$(EXEEXT): LIBS += -lz
-$(BUILDDIR)logserial$(M64_)$(EXEEXT): $(BUILDDIR)logserial.o $(call add-library, errmsg rdir dir io   buffer stralloc alloc iarray strarray array fmt byte str taia tai)
+$(BUILDDIR)logserial$(M64_)$(EXEEXT): $(BUILDDIR)logserial.o $(call add-library, errmsg rdir dir io   buffer stralloc  iarray strarray array alloc fmt byte str taia tai)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) $(CFLAGS) $(EXTRA_CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
 ifeq ($(DO_STRIP),1)
 	$(STRIP) $@
