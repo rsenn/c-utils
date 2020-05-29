@@ -18,6 +18,10 @@ option(USE_EPOLL  "Use epoll() syscall" OFF)
 option(BUILD_SHARED_LIBS  "Build shared libs" ON)
 option(LINK_STATIC  "Link libraries static" OFF)
 
+if(LINK_STATIC)
+  set(DSO_NONE TRUE)
+endif(LINK_STATIC)
+
 set(DIRLIST_VERSION 1.0)
 set(CPACK_SOURCE_GENERATOR TXZ)
 set(CPACK_SOURCE_IGNORE_FILES ${ignored_files})

@@ -500,10 +500,10 @@ host_arch(const char* compiler, stralloc* out) {
           if(!buffer_mmapread(&pc, path.s)) {
             path.len -= 3;
             stralloc_nul(&path);
-#ifdef DEBUG_OUTPUT
-    buffer_puts(buffer_2, "file: ");
-    buffer_putsa(buffer_2, &path);
-    buffer_putnlflush(buffer_2);
+#ifdef DEBUG_OUTPUT_
+            buffer_puts(buffer_2, "file: ");
+            buffer_putsa(buffer_2, &path);
+            buffer_putnlflush(buffer_2);
 #endif
             stralloc_copys(&line, str_basename(path.s));
 
@@ -810,7 +810,7 @@ host_arch(const char* compiler, stralloc* out) {
         {"help", 0, NULL, 'h'},
         {"version", 0, &show_version, 1},
         {"modversion", 0, NULL, PRINT_VERSION},
-        // {"cflags", 0, NULL, PRINT_CFLAGS},
+        {"cflags", 0, NULL, PRINT_CFLAGS},
         {"path", 0, NULL, PRINT_PATH},
         {"variable", 1, NULL, 'V'},
         {"list-all", 0, NULL, 'l'},
@@ -819,7 +819,7 @@ host_arch(const char* compiler, stralloc* out) {
         {"exists", 0, NULL, 'E'},
         {"libs-only-l", 0, &libs_mode, LIBS_ONLY_L},
         {"libs-only-other", 0, &libs_mode, LIBS_ONLY_OTHER},
-        //  {"libs", 0, NULL, PRINT_LIBS},
+        {"libs", 0, NULL, PRINT_LIBS},
         {"cflags-only-I", 0, &cflags_mode, CFLAGS_ONLY_I},
         {"cflags-only-other", 0, &cflags_mode, CFLAGS_ONLY_OTHER},
         {"static", 0, &static_libs, 1},
@@ -858,7 +858,7 @@ host_arch(const char* compiler, stralloc* out) {
 
     for(;;) {
       c = getopt_long(argc, argv, "hmilpaPSvV:", opts, &index);
-      if(opterr || argv[optind] == 0)
+      if(c == -1 || opterr || argv[optind] == 0)
         break;
       if(c == 0)
         continue;
@@ -937,9 +937,9 @@ host_arch(const char* compiler, stralloc* out) {
     }
   getopt_end:
 
-  if(argv[optind - 1] && str_equal(argv[optind - 1], "--list-all")) {
-            cmd.code = LIST_ALL;
-}
+    if(argv[optind - 1] && str_equal(argv[optind - 1], "--list-all")) {
+      cmd.code = LIST_ALL;
+    }
 
     if(show_version) {
       buffer_puts(buffer_1, "1.0");

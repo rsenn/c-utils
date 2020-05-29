@@ -126,8 +126,8 @@ unit_test_run(struct unit_test* mu_, unit_test_func_t func, const char* name) {
   struct unit_test* running = &run;
   static buffer testtmp, failtmp;
 
-  static char *testlog_filename = "testlog-XXXXXX";
-  static char *faillog_filename = "testlog-XXXXXX";
+  static char* testlog_filename = "testlog-XXXXXX";
+  static char* faillog_filename = "testlog-XXXXXX";
 
   run.testlog = unit_test_tmpfile(&testtmp, &testlog_filename);
   run.faillog = unit_test_tmpfile(&failtmp, &faillog_filename);

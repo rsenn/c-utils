@@ -79,8 +79,7 @@ int strlist_cat_unique(strlist* sl, const strlist* l);
 #define strlist_end(sl) ((sl)->sa.s + (sl)->sa.len)
 
 #define strlist_foreach(sl, str, n)                                                                                    \
-  for((str) = (sl)->sa.s;                                                                                              \
-      ((n) = byte_chr((str), strlist_end(sl) - (str), (sl)->sep)) > 0 && (str) < strlist_end(sl);                    \
+  for((str) = (sl)->sa.s; ((n) = byte_chr((str), strlist_end(sl) - (str), (sl)->sep)) > 0 && (str) < strlist_end(sl);  \
       (str) += (n) + 1)
 
 #define strlist_foreach_s(sl, str)                                                                                     \

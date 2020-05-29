@@ -65,3 +65,14 @@ ini_write(buffer* b, ini_section_t* ini) {
   }
   buffer_flush(b);
 }
+
+void
+ini_read(buffer* b, ini_section_t** ptr) {
+  stralloc line;
+
+  for(stralloc_init(&line); buffer_getline_sa(b, &line); stralloc_zero(&line)) {
+    stralloc_trimr(&line, "\r\n", 2);
+    buffer_putsa(buffer_2, &line);
+    buffer_putnlflush(buffer_2);
+  }
+}

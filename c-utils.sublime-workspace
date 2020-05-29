@@ -120,89 +120,20 @@
 	"buffers":
 	[
 		{
-			"contents": "",
+			"contents": "PKGCFG_EXISTS\nPKGCFG_PRINT_ERR\nPKGCFG_SHORT_ERR\nget_field_index\nsearch_path\nhost_arch",
 			"settings":
 			{
-				"buffer_size": 0,
+				"buffer_size": 85,
 				"line_ending": "Unix",
 				"name": "𝌆 Outline",
 				"scratch": true
 			}
 		},
 		{
-			"file": "genmakefile.c",
+			"file": "pkgcfg.c",
 			"settings":
 			{
-				"buffer_size": 127593,
-				"encoding": "UTF-8",
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "piccfg.c",
-			"settings":
-			{
-				"buffer_size": 14087,
-				"encoding": "UTF-8",
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "CMakeLists.txt",
-			"settings":
-			{
-				"buffer_size": 39280,
-				"encoding": "UTF-8",
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "map.h",
-			"settings":
-			{
-				"buffer_size": 6296,
-				"encoding": "UTF-8",
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/hmap/hmap_set.c",
-			"settings":
-			{
-				"buffer_size": 584,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/hmap/hmap_search.c",
-			"settings":
-			{
-				"buffer_size": 994,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "genmakefile.h",
-			"settings":
-			{
-				"buffer_size": 6171,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/unix/getopt.c",
-			"settings":
-			{
-				"buffer_size": 6181,
-				"encoding": "UTF-8",
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/getopt.h",
-			"settings":
-			{
-				"buffer_size": 1311,
+				"buffer_size": 24445,
 				"line_ending": "Unix"
 			}
 		}
@@ -235,6 +166,10 @@
 		"selected_items":
 		[
 			[
+				"ctags",
+				"CTags: Rebuild Tags"
+			],
+			[
 				"outline",
 				"Browse Mode: Outline (Right)"
 			],
@@ -253,10 +188,6 @@
 			[
 				"install",
 				"Package Control: Install Package"
-			],
-			[
-				"ctags",
-				"CTags: Show Symbols (all)"
 			],
 			[
 				"ctag",
@@ -501,25 +432,34 @@
 		"/home/roman/Sources/c-utils",
 		"/home/roman/Sources/c-utils/inst",
 		"/home/roman/Sources/c-utils/lib",
-		"/home/roman/Sources/c-utils/lib/hmap",
-		"/home/roman/Sources/c-utils/lib/strarray",
-		"/home/roman/Sources/c-utils/lib/strlist"
+		"/home/roman/Sources/c-utils/lib/slist"
 	],
 	"file_history":
 	[
+		"/home/roman/Sources/c-utils/genmakefile.c",
+		"/home/roman/Sources/c-utils/piccfg.c",
 		"/home/roman/Sources/c-utils/CMakeLists.txt",
-		"/home/roman/Sources/c-utils/lib/slist/slist_add_before.c",
 		"/home/roman/Sources/c-utils/lib/slist.h",
+		"/home/roman/Sources/c-utils/lib/str/str_dup.c",
+		"/home/roman/Sources/c-utils/lib/slist/slist_unshifts.c",
+		"/home/roman/Sources/c-utils/lib/slist/slist_pushs.c",
+		"/home/roman/Sources/c-utils/lib/slist/slist_push.c",
+		"/home/roman/Sources/c-utils/lib/strlist.h",
+		"/home/roman/Sources/c-utils/GNUmakefile",
+		"/home/roman/Sources/c-utils/map.h",
+		"/home/roman/Sources/c-utils/lib/hmap/hmap_search.c",
+		"/home/roman/Sources/c-utils/genmakefile.h",
+		"/home/roman/Sources/c-utils/lib/unix/getopt.c",
+		"/home/roman/Sources/c-utils/lib/getopt.h",
+		"/home/roman/Sources/c-utils/pkgcfg.c",
+		"/home/roman/Sources/c-utils/lib/slist/slist_add_before.c",
 		"/home/roman/Sources/c-utils/lib/strlist/strlist_containsb.c",
 		"/home/roman/Sources/c-utils/lib/strarray/strarray_push_unique.c",
 		"/home/roman/Sources/c-utils/lib/strarray/strarray_sort.c",
 		"/home/roman/Sources/c-utils/lib/strarray/strarray_pushb.c",
-		"/home/roman/Sources/c-utils/map.h",
 		"/home/roman/Sources/c-utils/genmakefile.mk",
 		"/home/roman/Sources/c-utils/lib/strlist/strlist_sort.c",
 		"/home/roman/Sources/c-utils/lib/strlist/strlist_filter.c",
-		"/home/roman/Sources/c-utils/lib/strlist.h",
-		"/home/roman/Sources/c-utils/genmakefile.h",
 		"/home/roman/Sources/c-utils/lib/case/case_diffs.c",
 		"/home/roman/Sources/c-utils/lib/strarray.h",
 		"/home/roman/Sources/c-utils/c-utils.sublime-project",
@@ -557,10 +497,7 @@
 		"/home/roman/Sources/c-utils/lib/hashmap/hashmap_contains_key.c",
 		"/home/roman/Sources/c-utils/lib/hashmap/hashmap_init.c",
 		"/home/roman/Sources/c-utils/mplab.c",
-		"/home/roman/Sources/c-utils/pkgcfg.c",
 		"/home/roman/Sources/c-utils/lib/hmap.h",
-		"/home/roman/Sources/c-utils/GNUmakefile",
-		"/home/roman/Sources/c-utils/genmakefile.c",
 		"/home/roman/Sources/c-utils/lib/rdir/rdir_open.c",
 		"/home/roman/Sources/c-utils/lib/rdir.h",
 		"/home/roman/Sources/c-utils/lib/hashmap/hashmap_default_hash_func.c",
@@ -626,19 +563,11 @@
 		"/home/roman/Dokumente/Sources/c-utils/cfg.sh",
 		"/home/roman/Dokumente/Sources/c-utils/scripts/gen-makefile-deps.sh",
 		"/home/roman/Dokumente/Sources/c-utils/scripts/relative-includes.sh",
-		"/home/roman/Dokumente/Sources/skalibs/src/libstddjb/pathexec0_run.c",
-		"/home/roman/Dokumente/Sources/skalibs/src/libstddjb/pathexec0_run.lo",
-		"/home/roman/Dokumente/Sources/skalibs/src/libstddjb/pathexec.c",
-		"/home/roman/Dokumente/Sources/skalibs/src/libstddjb/pathexec_fromenv.c",
-		"/home/roman/Dokumente/Sources/skalibs/src/libstddjb/pathexec_fromenv.lo",
-		"/home/roman/Dokumente/Sources/skalibs/src/libstddjb/pathexec.lo",
-		"/home/roman/Dokumente/Sources/skalibs/src/libstddjb/pathexec_r.c",
-		"/home/roman/Dokumente/Sources/skalibs/src/libstddjb/pathexec_r.lo",
-		"/home/roman/Dokumente/Sources/skalibs/src/libstddjb/pathexec_r_name.c"
+		"/home/roman/Dokumente/Sources/skalibs/src/libstddjb/pathexec0_run.c"
 	],
 	"find":
 	{
-		"height": 50.0
+		"height": 43.0
 	},
 	"find_in_files":
 	{
@@ -667,6 +596,15 @@
 		"case_sensitive": true,
 		"find_history":
 		[
+			"OUTPUT$",
+			"OUTPUT",
+			"getopt",
+			"foreach",
+			"dir_open",
+			"logserial.*EXE",
+			"^pkg",
+			"search_path",
+			"LIBDIR",
 			"genmak",
 			"piccfg",
 			"infer",
@@ -785,16 +723,7 @@
 			"^gen_sim",
 			"MAP_COMPARATOR",
 			"^var_list",
-			"byte_diff",
-			"sourcedir_get_sa",
-			"gen_lib_rules",
-			"sourcedirs",
-			"MAP_NEW",
-			"sourcedirs",
-			"found =",
-			"sourcedir_get_sa",
-			"^sourcedir",
-			"^srcdir"
+			"byte_diff"
 		],
 		"highlight": false,
 		"in_selection": false,
@@ -927,7 +856,7 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 0,
+						"buffer_size": 85,
 						"regions":
 						{
 						},
@@ -936,13 +865,43 @@
 						],
 						"settings":
 						{
-							"current_file": "/home/roman/Sources/c-utils/CMakeLists.txt",
+							"current_file": "/home/roman/Sources/c-utils/pkgcfg.c",
 							"outline_rename_mode": false,
 							"symkeys":
 							[
+								[
+									643,
+									656
+								],
+								[
+									667,
+									683
+								],
+								[
+									694,
+									710
+								],
+								[
+									1476,
+									1491
+								],
+								[
+									1905,
+									1916
+								],
+								[
+									2441,
+									2450
+								]
 							],
 							"symlist":
 							[
+								"PKGCFG_EXISTS",
+								"PKGCFG_PRINT_ERR",
+								"PKGCFG_SHORT_ERR",
+								"get_field_index",
+								"search_path",
+								"host_arch"
 							],
 							"syntax": "Packages/Outline/outline.hidden-tmLanguage"
 						},
@@ -950,690 +909,43 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 6,
+					"stack_index": 1,
 					"type": "text"
 				}
 			]
 		},
 		{
-			"selected": 2,
+			"selected": 0,
 			"sheets":
 			[
 				{
 					"buffer": 1,
-					"file": "genmakefile.c",
+					"file": "pkgcfg.c",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 127593,
+						"buffer_size": 24445,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								69968,
-								69968
+								11039,
+								11039
 							]
 						],
 						"settings":
 						{
-							"color_scheme": "Packages/Dayle Rees Color Schemes/sublime/contrast/stark-contrast.tmTheme",
-							"syntax": "Packages/C11/C11.tmLanguage",
+							"syntax": "Packages/C99/C99.tmLanguage",
 							"tab_size": 2,
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 58807.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 2,
-					"type": "text"
-				},
-				{
-					"buffer": 2,
-					"file": "piccfg.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 14087,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								12953,
-								12953
-							]
-						],
-						"settings":
-						{
-							"color_scheme": "Packages/Dayle Rees Color Schemes/sublime/contrast/stark-contrast.tmTheme",
-							"syntax": "Packages/C11/C11.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 9964.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 1,
-					"type": "text"
-				},
-				{
-					"buffer": 3,
-					"file": "CMakeLists.txt",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 39280,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								37486,
-								37486
-							]
-						],
-						"settings":
-						{
-							"color_scheme": "Packages/Dayle Rees Color Schemes/sublime/contrast/stark-contrast.tmTheme",
-							"syntax": "Packages/CMakeEditor/CMakeEditor.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 16082.0,
+						"translation.y": 13644.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 0,
-					"type": "text"
-				},
-				{
-					"buffer": 4,
-					"file": "map.h",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 6296,
-						"regions":
-						{
-							"col_0B67AAB9":
-							{
-								"flags": 16,
-								"regions":
-								[
-									[
-										3170,
-										3180
-									]
-								],
-								"scope": "col_0B67AAB9"
-							},
-							"col_0B67AAB9_icon":
-							{
-								"flags": 16,
-								"icon": "Packages/User/Color Highlight.cache/col_0B67AAB9_circle.png",
-								"regions":
-								[
-									[
-										3164,
-										3164
-									]
-								],
-								"scope": "col_gutter"
-							},
-							"col_20C91D6C":
-							{
-								"flags": 16,
-								"regions":
-								[
-									[
-										3116,
-										3126
-									]
-								],
-								"scope": "col_20C91D6C"
-							},
-							"col_20C91D6C_icon":
-							{
-								"flags": 16,
-								"icon": "Packages/User/Color Highlight.cache/col_20C91D6C_circle.png",
-								"regions":
-								[
-									[
-										3110,
-										3110
-									]
-								],
-								"scope": "col_gutter"
-							},
-							"col_2E8B1C8A":
-							{
-								"flags": 16,
-								"regions":
-								[
-									[
-										3080,
-										3090
-									]
-								],
-								"scope": "col_2E8B1C8A"
-							},
-							"col_2E8B1C8A_icon":
-							{
-								"flags": 16,
-								"icon": "Packages/User/Color Highlight.cache/col_2E8B1C8A_circle.png",
-								"regions":
-								[
-									[
-										3074,
-										3074
-									]
-								],
-								"scope": "col_gutter"
-							},
-							"col_49D7D461":
-							{
-								"flags": 16,
-								"regions":
-								[
-									[
-										3278,
-										3288
-									]
-								],
-								"scope": "col_49D7D461"
-							},
-							"col_49D7D461_icon":
-							{
-								"flags": 16,
-								"icon": "Packages/User/Color Highlight.cache/col_49D7D461_circle.png",
-								"regions":
-								[
-									[
-										3272,
-										3272
-									]
-								],
-								"scope": "col_gutter"
-							},
-							"col_5C77FD0D":
-							{
-								"flags": 16,
-								"regions":
-								[
-									[
-										3314,
-										3324
-									]
-								],
-								"scope": "col_5C77FD0D"
-							},
-							"col_5C77FD0D_icon":
-							{
-								"flags": 16,
-								"icon": "Packages/User/Color Highlight.cache/col_5C77FD0D_circle.png",
-								"regions":
-								[
-									[
-										3308,
-										3308
-									]
-								],
-								"scope": "col_gutter"
-							},
-							"col_6BFB5D73":
-							{
-								"flags": 16,
-								"regions":
-								[
-									[
-										3350,
-										3360
-									]
-								],
-								"scope": "col_6BFB5D73"
-							},
-							"col_6BFB5D73_icon":
-							{
-								"flags": 16,
-								"icon": "Packages/User/Color Highlight.cache/col_6BFB5D73_circle.png",
-								"regions":
-								[
-									[
-										3344,
-										3344
-									]
-								],
-								"scope": "col_gutter"
-							},
-							"col_8898BBA8":
-							{
-								"flags": 16,
-								"regions":
-								[
-									[
-										3224,
-										3234
-									]
-								],
-								"scope": "col_8898BBA8"
-							},
-							"col_8898BBA8_icon":
-							{
-								"flags": 16,
-								"icon": "Packages/User/Color Highlight.cache/col_8898BBA8_circle.png",
-								"regions":
-								[
-									[
-										3218,
-										3218
-									]
-								],
-								"scope": "col_gutter"
-							},
-							"col_9625E261":
-							{
-								"flags": 16,
-								"regions":
-								[
-									[
-										3134,
-										3144
-									]
-								],
-								"scope": "col_9625E261"
-							},
-							"col_9625E261_icon":
-							{
-								"flags": 16,
-								"icon": "Packages/User/Color Highlight.cache/col_9625E261_circle.png",
-								"regions":
-								[
-									[
-										3128,
-										3128
-									]
-								],
-								"scope": "col_gutter"
-							},
-							"col_A8FA6D8C":
-							{
-								"flags": 16,
-								"regions":
-								[
-									[
-										3098,
-										3108
-									]
-								],
-								"scope": "col_A8FA6D8C"
-							},
-							"col_A8FA6D8C_icon":
-							{
-								"flags": 16,
-								"icon": "Packages/User/Color Highlight.cache/col_A8FA6D8C_circle.png",
-								"regions":
-								[
-									[
-										3092,
-										3092
-									]
-								],
-								"scope": "col_gutter"
-							},
-							"col_AEABCA3B":
-							{
-								"flags": 16,
-								"regions":
-								[
-									[
-										3188,
-										3198
-									]
-								],
-								"scope": "col_AEABCA3B"
-							},
-							"col_AEABCA3B_icon":
-							{
-								"flags": 16,
-								"icon": "Packages/User/Color Highlight.cache/col_AEABCA3B_circle.png",
-								"regions":
-								[
-									[
-										3182,
-										3182
-									]
-								],
-								"scope": "col_gutter"
-							},
-							"col_B0A3595A":
-							{
-								"flags": 16,
-								"regions":
-								[
-									[
-										3206,
-										3216
-									]
-								],
-								"scope": "col_B0A3595A"
-							},
-							"col_B0A3595A_icon":
-							{
-								"flags": 16,
-								"icon": "Packages/User/Color Highlight.cache/col_B0A3595A_circle.png",
-								"regions":
-								[
-									[
-										3200,
-										3200
-									]
-								],
-								"scope": "col_gutter"
-							},
-							"col_BBE5D3AE":
-							{
-								"flags": 16,
-								"regions":
-								[
-									[
-										3152,
-										3162
-									]
-								],
-								"scope": "col_BBE5D3AE"
-							},
-							"col_BBE5D3AE_icon":
-							{
-								"flags": 16,
-								"icon": "Packages/User/Color Highlight.cache/col_BBE5D3AE_circle.png",
-								"regions":
-								[
-									[
-										3146,
-										3146
-									]
-								],
-								"scope": "col_gutter"
-							},
-							"col_CEC21AA0":
-							{
-								"flags": 16,
-								"regions":
-								[
-									[
-										3296,
-										3306
-									]
-								],
-								"scope": "col_CEC21AA0"
-							},
-							"col_CEC21AA0_icon":
-							{
-								"flags": 16,
-								"icon": "Packages/User/Color Highlight.cache/col_CEC21AA0_circle.png",
-								"regions":
-								[
-									[
-										3290,
-										3290
-									]
-								],
-								"scope": "col_gutter"
-							},
-							"col_D011E8EC":
-							{
-								"flags": 16,
-								"regions":
-								[
-									[
-										3332,
-										3342
-									]
-								],
-								"scope": "col_D011E8EC"
-							},
-							"col_D011E8EC_icon":
-							{
-								"flags": 16,
-								"icon": "Packages/User/Color Highlight.cache/col_D011E8EC_circle.png",
-								"regions":
-								[
-									[
-										3326,
-										3326
-									]
-								],
-								"scope": "col_gutter"
-							},
-							"col_E164242E":
-							{
-								"flags": 16,
-								"regions":
-								[
-									[
-										3242,
-										3252
-									]
-								],
-								"scope": "col_E164242E"
-							},
-							"col_E164242E_icon":
-							{
-								"flags": 16,
-								"icon": "Packages/User/Color Highlight.cache/col_E164242E_circle.png",
-								"regions":
-								[
-									[
-										3236,
-										3236
-									]
-								],
-								"scope": "col_gutter"
-							},
-							"col_F85AFDD0":
-							{
-								"flags": 16,
-								"regions":
-								[
-									[
-										3260,
-										3270
-									]
-								],
-								"scope": "col_F85AFDD0"
-							},
-							"col_F85AFDD0_icon":
-							{
-								"flags": 16,
-								"icon": "Packages/User/Color Highlight.cache/col_F85AFDD0_circle.png",
-								"regions":
-								[
-									[
-										3254,
-										3254
-									]
-								],
-								"scope": "col_gutter"
-							}
-						},
-						"selection":
-						[
-							[
-								4724,
-								4724
-							]
-						],
-						"settings":
-						{
-							"color_scheme": "Packages/Rainglow/rainglow/Tron Contrast (rainglow).tmTheme",
-							"syntax": "Packages/C++/C++.sublime-syntax",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 3267.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 3,
-					"type": "text"
-				},
-				{
-					"buffer": 5,
-					"file": "lib/hmap/hmap_set.c",
-					"semi_transient": true,
-					"settings":
-					{
-						"buffer_size": 584,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"color_scheme": "Packages/Rainglow/rainglow/Tron Contrast (rainglow).tmTheme",
-							"syntax": "Packages/C11/C11.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 4,
-					"type": "text"
-				},
-				{
-					"buffer": 6,
-					"file": "lib/hmap/hmap_search.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 994,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								713,
-								713
-							]
-						],
-						"settings":
-						{
-							"color_scheme": "Packages/Rainglow/rainglow/Tron Contrast (rainglow).tmTheme",
-							"syntax": "Packages/C11/C11.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 274.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 5,
-					"type": "text"
-				},
-				{
-					"buffer": 7,
-					"file": "genmakefile.h",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 6171,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								1401,
-								1401
-							]
-						],
-						"settings":
-						{
-							"color_scheme": "Packages/Rainglow/rainglow/Tron Contrast (rainglow).tmTheme",
-							"syntax": "Packages/C++/C++.sublime-syntax",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 1174.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 7,
-					"type": "text"
-				},
-				{
-					"buffer": 8,
-					"file": "lib/unix/getopt.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 6181,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								2247,
-								2247
-							]
-						],
-						"settings":
-						{
-							"color_scheme": "Packages/Rainglow/rainglow/Tron Contrast (rainglow).tmTheme",
-							"syntax": "Packages/C11/C11.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 2017.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 8,
-					"type": "text"
-				},
-				{
-					"buffer": 9,
-					"file": "lib/getopt.h",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 1311,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								541,
-								541
-							]
-						],
-						"settings":
-						{
-							"color_scheme": "Packages/Rainglow/rainglow/Tron Contrast (rainglow).tmTheme",
-							"syntax": "Packages/C++/C++.sublime-syntax"
-						},
-						"translation.x": 0.0,
-						"translation.y": 72.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 9,
 					"type": "text"
 				}
 			]
@@ -1729,6 +1041,34 @@
 		"selected_items":
 		[
 			[
+				"pkgcfg.c",
+				"pkgcfg.c"
+			],
+			[
+				"sttr_dup",
+				"lib/str/str_dup.c"
+			],
+			[
+				"slist.h",
+				"lib/slist.h"
+			],
+			[
+				"slist_pu",
+				"lib/slist/slist_push.c"
+			],
+			[
+				"strlist.h",
+				"lib/strlist.h"
+			],
+			[
+				"GNU",
+				"GNUmakefile"
+			],
+			[
+				"pkgcf",
+				"pkgcfg.c"
+			],
+			[
 				"cmakelists",
 				"CMakeLists.txt"
 			],
@@ -1757,16 +1097,8 @@
 				"CMakeLists.txt"
 			],
 			[
-				"slist.h",
-				"lib/slist.h"
-			],
-			[
 				"slist_add",
 				"lib/slist/slist_add_before.c"
-			],
-			[
-				"strlist.h",
-				"lib/strlist.h"
 			],
 			[
 				"strlist_sort",
@@ -1857,10 +1189,6 @@
 				"lib/dir/dir_read.c"
 			],
 			[
-				"pkgcfg.c",
-				"pkgcfg.c"
-			],
-			[
 				"mplab.c",
 				"mplab.c"
 			],
@@ -1937,10 +1265,6 @@
 				"cc-wrap.c"
 			],
 			[
-				"pkgcf",
-				"pkgcfg.c"
-			],
-			[
 				"skip_pred",
 				"lib/buffer/buffer_skip_pred.c"
 			],
@@ -1999,10 +1323,6 @@
 			[
 				"open.h",
 				"lib/open.h"
-			],
-			[
-				"GNU",
-				"GNUmakefile"
 			],
 			[
 				"cmakeli",
@@ -2231,14 +1551,6 @@
 			[
 				"putdo",
 				"lib/buffer/buffer_putdouble.c"
-			],
-			[
-				"fmt_du",
-				"lib/fmt/fmt_double.c"
-			],
-			[
-				"set_attr",
-				"lib/xml/xml_set_attribute_double.c"
 			]
 		],
 		"width": 0.0
