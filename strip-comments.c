@@ -180,6 +180,7 @@ end:
   buffer_flush(out);
   stralloc_free(&line);
   charbuf_close(in);
+  return 0;
 }
 
 int

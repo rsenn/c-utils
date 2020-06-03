@@ -55,6 +55,9 @@ size_t path_skip(const char* s, size_t n);
 size_t path_skips(const char* s);
 char* path_skip_separator(const char* p);
 
+void path_concat(const char* a, size_t alen, const char* b, size_t blen, stralloc* out);
+void path_append(const char* x, size_t len, stralloc* out);
+
 #ifdef STRLIST_H
 int path_split(const char* p, strlist* sl);
 #endif

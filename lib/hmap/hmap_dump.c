@@ -11,7 +11,7 @@ put_tuple(buffer* b, TUPLE* t) {
   buffer_puts(b, " ");
   while(n > 0 && x[n - 1] == '\0') --n;
   buffer_put(b, x, n);
-  buffer_putm_internal(b, "=", 0);
+  buffer_putm_internal(b, " = ", 0);
   buffer_flush(b);
 }
 

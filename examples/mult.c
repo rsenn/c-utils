@@ -6,6 +6,7 @@ main() {
   int16 a;
   int32 b;
   int64 c;
+  uint64 d;
 
   assert(imult16(4, 10000, &a) == 0);
   assert(imult16(-4, 10000, &a) == 0);
@@ -20,8 +21,8 @@ main() {
   assert(imult64(-0x4000000000000000ll, 2, &c) == 1 && c == (int64)-0x8000000000000000ll);
   assert(imult64(0x3fffffffffffffffll, 2, &c) == 1 && c == 0x7ffffffffffffffell);
 
-  assert(umult64(0x0000000100000002ull, 0x00000000ffffffffull, &c) == 0);
-  assert(umult64(0x0000000000000001ull, 0x00000000ffffffffull, &c) == 1);
+  assert(umult64(0x0000000100000002ull, 0x00000000ffffffffull, &d) == 0);
+  assert(umult64(0x0000000000000001ull, 0x00000000ffffffffull, &d) == 1);
 
   return 0;
 }

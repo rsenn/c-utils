@@ -940,7 +940,7 @@ main(int argc, char* argv[]) {
       case 'n': opt_numeric = 1; break;
       case 'r': opt_relative = 1; break;
       case 'c': opt_crc = 1; break;
-      case 'm': scan_ulong(optarg, &opt_minsize); break;
+      case 'm': scan_long(optarg, &opt_minsize); break;
       default: usage(argv[0]); return 1;
     }
   }

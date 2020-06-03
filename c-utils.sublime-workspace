@@ -120,10 +120,10 @@
 	"buffers":
 	[
 		{
-			"contents": "PKGCFG_EXISTS\nPKGCFG_PRINT_ERR\nPKGCFG_SHORT_ERR\nget_field_index\nsearch_path\nhost_arch",
+			"contents": "os_type\nmachine_type\nsystem_type\nsourcefile\nsourcedir\ntarget\ndirs_t\nexts_t\ntools_t\nbuild_type_t\nconfig_t\nincludes_add\nadd_path_sa\nadd_path\nsourcedir_add\ndeps_direct\ndeps_indirect\ndirname_alloc\nextract_build_type\nextract_includes\nextract_pptok\nextract_tokens\nformat_linklib_dummy\nformat_linklib_lib\nformat_linklib_switch\nget_includes\nget_ref_vars\nget_rules_by_cmd\nincludes_cppflags\nincludes_to_libs\ninput_command_line\nis_include\nis_include_sa\nis_object\nis_object_sa\nis_source\nis_source_sa\nmain\nmain_present\nmain_scan\nmkdir_components\nmkdir_sa\noutput_build_rules\noutput_make_rule\noutput_ninja_rule\noutput_script\npath_extension\npath_output\npath_prefix_b\npath_prefix_s\npath_wildcard\nprint_rule_deps\nprint_rule_deps_r\npush_define\npush_lib\nput_newline\nremove_indirect_deps\nremove_indirect_deps_recursive\nrule_add_deps\nrule_add_dep\nrule_command_subst\nrule_command\nrule_dep_list_recursive\nrule_dep_list\nrule_deps_indirect\nrule_dump\nrule_find_b\nrule_find\nrule_find_sa\nrule_get\nrule_get_sa\nrule_match\nrule_rename\nset_chip\nset_command\nset_compiler_type\nset_machine\nset_make_type\nset_system\nsourcedir_findb\nsourcedir_find\nsourcedir_find_sa\nsourcedir_get_sa\nsources_get\nsources_new\nsources_sort\nstralloc_weak\nstrarray_dump\ntarget_ptrs\nusage\nvar_get\nvar_isset\nvar_list\nvar_push\nvar_push_sa\nvar_set\nvar_subst\nvar_unset\nwith_lib",
 			"settings":
 			{
-				"buffer_size": 85,
+				"buffer_size": 1312,
 				"line_ending": "Unix",
 				"name": "𝌆 Outline",
 				"scratch": true
@@ -134,6 +134,38 @@
 			"settings":
 			{
 				"buffer_size": 24445,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "genmakefile.h",
+			"settings":
+			{
+				"buffer_size": 6171,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "testini.c",
+			"settings":
+			{
+				"buffer_size": 251,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "ini.c",
+			"settings":
+			{
+				"buffer_size": 1611,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/stralloc/stralloc_trimr.c",
+			"settings":
+			{
+				"buffer_size": 226,
 				"line_ending": "Unix"
 			}
 		}
@@ -856,7 +888,7 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 85,
+						"buffer_size": 1312,
 						"regions":
 						{
 						},
@@ -865,43 +897,508 @@
 						],
 						"settings":
 						{
-							"current_file": "/home/roman/Sources/c-utils/pkgcfg.c",
+							"current_file": "/home/roman/Sources/c-utils/genmakefile.h",
 							"outline_rename_mode": false,
 							"symkeys":
 							[
 								[
-									643,
-									656
+									565,
+									572
 								],
 								[
-									667,
-									683
+									1118,
+									1130
 								],
 								[
-									694,
-									710
+									1194,
+									1205
 								],
 								[
-									1476,
-									1491
+									1284,
+									1294
 								],
 								[
-									1905,
-									1916
+									1404,
+									1413
 								],
 								[
-									2441,
-									2450
+									1580,
+									1586
+								],
+								[
+									1672,
+									1678
+								],
+								[
+									1752,
+									1758
+								],
+								[
+									1848,
+									1855
+								],
+								[
+									1975,
+									1987
+								],
+								[
+									2084,
+									2092
+								],
+								[
+									2100,
+									2112
+								],
+								[
+									2132,
+									2143
+								],
+								[
+									2176,
+									2184
+								],
+								[
+									2219,
+									2232
+								],
+								[
+									2267,
+									2278
+								],
+								[
+									2312,
+									2325
+								],
+								[
+									2365,
+									2378
+								],
+								[
+									2397,
+									2415
+								],
+								[
+									2439,
+									2455
+								],
+								[
+									2513,
+									2526
+								],
+								[
+									2573,
+									2587
+								],
+								[
+									2634,
+									2654
+								],
+								[
+									2689,
+									2707
+								],
+								[
+									2742,
+									2763
+								],
+								[
+									2797,
+									2809
+								],
+								[
+									2857,
+									2869
+								],
+								[
+									2907,
+									2923
+								],
+								[
+									2956,
+									2973
+								],
+								[
+									2986,
+									3002
+								],
+								[
+									3039,
+									3057
+								],
+								[
+									3086,
+									3096
+								],
+								[
+									3115,
+									3128
+								],
+								[
+									3145,
+									3154
+								],
+								[
+									3173,
+									3185
+								],
+								[
+									3202,
+									3211
+								],
+								[
+									3230,
+									3242
+								],
+								[
+									3259,
+									3263
+								],
+								[
+									3288,
+									3300
+								],
+								[
+									3319,
+									3328
+								],
+								[
+									3357,
+									3373
+								],
+								[
+									3399,
+									3407
+								],
+								[
+									3441,
+									3459
+								],
+								[
+									3514,
+									3530
+								],
+								[
+									3560,
+									3577
+								],
+								[
+									3607,
+									3620
+								],
+								[
+									3651,
+									3665
+								],
+								[
+									3718,
+									3729
+								],
+								[
+									3781,
+									3794
+								],
+								[
+									3858,
+									3871
+								],
+								[
+									3929,
+									3942
+								],
+								[
+									3982,
+									3997
+								],
+								[
+									4024,
+									4041
+								],
+								[
+									4116,
+									4127
+								],
+								[
+									4147,
+									4155
+								],
+								[
+									4192,
+									4203
+								],
+								[
+									4233,
+									4253
+								],
+								[
+									4268,
+									4298
+								],
+								[
+									4334,
+									4347
+								],
+								[
+									4383,
+									4395
+								],
+								[
+									4426,
+									4444
+								],
+								[
+									4508,
+									4520
+								],
+								[
+									4551,
+									4574
+								],
+								[
+									4628,
+									4641
+								],
+								[
+									4669,
+									4687
+								],
+								[
+									4715,
+									4724
+								],
+								[
+									4743,
+									4754
+								],
+								[
+									4787,
+									4796
+								],
+								[
+									4819,
+									4831
+								],
+								[
+									4852,
+									4860
+								],
+								[
+									4883,
+									4894
+								],
+								[
+									4911,
+									4921
+								],
+								[
+									4958,
+									4969
+								],
+								[
+									5002,
+									5010
+								],
+								[
+									5030,
+									5041
+								],
+								[
+									5093,
+									5110
+								],
+								[
+									5129,
+									5140
+								],
+								[
+									5159,
+									5172
+								],
+								[
+									5184,
+									5194
+								],
+								[
+									5220,
+									5235
+								],
+								[
+									5271,
+									5285
+								],
+								[
+									5311,
+									5328
+								],
+								[
+									5352,
+									5368
+								],
+								[
+									5386,
+									5397
+								],
+								[
+									5424,
+									5435
+								],
+								[
+									5454,
+									5466
+								],
+								[
+									5503,
+									5516
+								],
+								[
+									5556,
+									5569
+								],
+								[
+									5606,
+									5617
+								],
+								[
+									5652,
+									5657
+								],
+								[
+									5678,
+									5685
+								],
+								[
+									5704,
+									5713
+								],
+								[
+									5737,
+									5745
+								],
+								[
+									5765,
+									5773
+								],
+								[
+									5812,
+									5823
+								],
+								[
+									5864,
+									5871
+								],
+								[
+									5910,
+									5919
+								],
+								[
+									6005,
+									6014
+								],
+								[
+									6034,
+									6042
 								]
 							],
 							"symlist":
 							[
-								"PKGCFG_EXISTS",
-								"PKGCFG_PRINT_ERR",
-								"PKGCFG_SHORT_ERR",
-								"get_field_index",
-								"search_path",
-								"host_arch"
+								"os_type",
+								"machine_type",
+								"system_type",
+								"sourcefile",
+								"sourcedir",
+								"target",
+								"dirs_t",
+								"exts_t",
+								"tools_t",
+								"build_type_t",
+								"config_t",
+								"includes_add",
+								"add_path_sa",
+								"add_path",
+								"sourcedir_add",
+								"deps_direct",
+								"deps_indirect",
+								"dirname_alloc",
+								"extract_build_type",
+								"extract_includes",
+								"extract_pptok",
+								"extract_tokens",
+								"format_linklib_dummy",
+								"format_linklib_lib",
+								"format_linklib_switch",
+								"get_includes",
+								"get_ref_vars",
+								"get_rules_by_cmd",
+								"includes_cppflags",
+								"includes_to_libs",
+								"input_command_line",
+								"is_include",
+								"is_include_sa",
+								"is_object",
+								"is_object_sa",
+								"is_source",
+								"is_source_sa",
+								"main",
+								"main_present",
+								"main_scan",
+								"mkdir_components",
+								"mkdir_sa",
+								"output_build_rules",
+								"output_make_rule",
+								"output_ninja_rule",
+								"output_script",
+								"path_extension",
+								"path_output",
+								"path_prefix_b",
+								"path_prefix_s",
+								"path_wildcard",
+								"print_rule_deps",
+								"print_rule_deps_r",
+								"push_define",
+								"push_lib",
+								"put_newline",
+								"remove_indirect_deps",
+								"remove_indirect_deps_recursive",
+								"rule_add_deps",
+								"rule_add_dep",
+								"rule_command_subst",
+								"rule_command",
+								"rule_dep_list_recursive",
+								"rule_dep_list",
+								"rule_deps_indirect",
+								"rule_dump",
+								"rule_find_b",
+								"rule_find",
+								"rule_find_sa",
+								"rule_get",
+								"rule_get_sa",
+								"rule_match",
+								"rule_rename",
+								"set_chip",
+								"set_command",
+								"set_compiler_type",
+								"set_machine",
+								"set_make_type",
+								"set_system",
+								"sourcedir_findb",
+								"sourcedir_find",
+								"sourcedir_find_sa",
+								"sourcedir_get_sa",
+								"sources_get",
+								"sources_new",
+								"sources_sort",
+								"stralloc_weak",
+								"strarray_dump",
+								"target_ptrs",
+								"usage",
+								"var_get",
+								"var_isset",
+								"var_list",
+								"var_push",
+								"var_push_sa",
+								"var_set",
+								"var_subst",
+								"var_unset",
+								"with_lib"
 							],
 							"syntax": "Packages/Outline/outline.hidden-tmLanguage"
 						},
@@ -909,13 +1406,13 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 1,
+					"stack_index": 5,
 					"type": "text"
 				}
 			]
 		},
 		{
-			"selected": 0,
+			"selected": 1,
 			"sheets":
 			[
 				{
@@ -937,15 +1434,136 @@
 						],
 						"settings":
 						{
+							"color_scheme": "Packages/User/SchemeEditorTemp/Horizon Contrast (rainglow).tmTheme",
 							"syntax": "Packages/C99/C99.tmLanguage",
 							"tab_size": 2,
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 13644.0,
+						"translation.y": 11372.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 4,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "genmakefile.h",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 6171,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								5512,
+								5512
+							]
+						],
+						"settings":
+						{
+							"color_scheme": "Packages/User/SchemeEditorTemp/Next (Roman).tmTheme",
+							"syntax": "Packages/C++/C++.sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 3437.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "testini.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 251,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								247,
+								247
+							]
+						],
+						"settings":
+						{
+							"color_scheme": "Packages/User/SchemeEditorTemp/Horizon Contrast (rainglow).tmTheme",
+							"syntax": "Packages/C99/C99.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 3,
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "ini.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1611,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1128,
+								1128
+							]
+						],
+						"settings":
+						{
+							"color_scheme": "Packages/User/SchemeEditorTemp/Next (Roman).tmTheme",
+							"syntax": "Packages/C99/C99.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 435.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 5,
+					"file": "lib/stralloc/stralloc_trimr.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 226,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								224,
+								224
+							]
+						],
+						"settings":
+						{
+							"color_scheme": "Packages/User/SchemeEditorTemp/Horizon Contrast (rainglow).tmTheme",
+							"syntax": "Packages/C99/C99.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
 					"type": "text"
 				}
 			]
@@ -1041,6 +1659,22 @@
 		"selected_items":
 		[
 			[
+				"ini.c",
+				"ini.c"
+			],
+			[
+				"stralloc_",
+				"lib/stralloc/stralloc_trimr.c"
+			],
+			[
+				"testini",
+				"testini.c"
+			],
+			[
+				"genma",
+				"genmakefile.h"
+			],
+			[
 				"pkgcfg.c",
 				"pkgcfg.c"
 			],
@@ -1103,10 +1737,6 @@
 			[
 				"strlist_sort",
 				"lib/strlist/strlist_sort.c"
-			],
-			[
-				"genma",
-				"genmakefile.h"
 			],
 			[
 				"case_diffs",
@@ -1235,10 +1865,6 @@
 			[
 				"msys-shell",
 				"msys-shell.c"
-			],
-			[
-				"ini.c",
-				"ini.c"
 			],
 			[
 				"ini.h",
@@ -1543,14 +2169,6 @@
 			[
 				"libc-res",
 				"libc-resolv-override.c"
-			],
-			[
-				"fmt_d",
-				"lib/fmt/fmt_double.c"
-			],
-			[
-				"putdo",
-				"lib/buffer/buffer_putdouble.c"
 			]
 		],
 		"width": 0.0

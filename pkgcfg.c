@@ -465,7 +465,7 @@ host_arch(const char* compiler, stralloc* out) {
    */
   void pkg_list() {
     slink* pkgs;
-    slink **it, *item;
+    slink **it, *item, *next;
     stralloc path, line;
     const char* s;
     size_t n, len;
@@ -536,7 +536,7 @@ host_arch(const char* compiler, stralloc* out) {
       }
     }
 
-    slist_foreach_safe(pkgs, item, it) {
+    slist_foreach_safe(pkgs, item, next) {
       char* x = slist_data(item);
       buffer_puts(buffer_1, x);
       buffer_putnlflush(buffer_1);
@@ -631,12 +631,12 @@ host_arch(const char* compiler, stralloc* out) {
           strlist_foreach_s(&sl, s) {
             if((cmd.code == PRINT_LIBS) && libs_mode) {
               int flag = (/* str_start(s, "-L") ||  */ str_start(s, "-l"));
-              if((libs_mode == LIBS_ONLY_L) ^ flag != 0)
+              if((libs_mode == LIBS_ONLY_L) ^ (flag != 0))
                 continue;
             }
             if((cmd.code == PRINT_CFLAGS) && libs_mode) {
               int flag = !!(str_start(s, "-I"));
-              if((libs_mode == CFLAGS_ONLY_I) ^ flag != 0)
+              if((libs_mode == CFLAGS_ONLY_I) ^ (flag != 0))
                 continue;
             }
 

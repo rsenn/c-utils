@@ -45,10 +45,10 @@ search_path(const char* path, const char* what, stralloc* out) {
 int
 get_account(const char* name, int* uid, int* gid) {
   size_t p = 0, n, i, len;
-  char *x, *end;
+  char *x;
   if((x = (char*)mmap_read("/etc/passwd", &n)) == NULL || n == 0)
     return 0;
-  end = x + n;
+ // end = x + n;
   len = str_len(name);
   while(p + len + 1 < n) {
     if(x[p + len] == ':' && !byte_diff(&x[p], len, name)) {

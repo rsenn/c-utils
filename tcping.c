@@ -102,7 +102,7 @@ read_hosts(const char* file) {
       while(s < l && (hlen = scan_nonwhitenskip(&p[s], l - s))) {
         stralloc_copyb(&hostname, &p[s], hlen);
 
-#ifdef DEBUG_OUTPUT
+#ifdef DEBUG_OUTPUT_
         buffer_puts(buffer_1, "IP: ");
         buffer_put(buffer_1, ipbuf, ip4_fmt(ipbuf, ip));
 
@@ -141,7 +141,8 @@ main(int argc, char* argv[]) {
   int ret;
   int verbose = 1;
   int c;
-  long timeout_sec = 0, timeout_usec = 0;
+  uint64 timeout_sec = 0, timeout_usec = 0;
+  uint64 result;
   int port = 0;
   stralloc host, ips;
   tai6464 now, deadline;
@@ -158,13 +159,13 @@ main(int argc, char* argv[]) {
     switch(c) {
       case 'q': verbose = 0; break;
       case 't':
-        if(scan_long(optarg, &timeout_sec) == 0) {
+        if(scan_ulonglong(optarg, &timeout_sec) == 0) {
           usage(argv[0]);
           return 108;
         }
         break;
       case 'u':
-        if(scan_long(optarg, &timeout_usec) == 0)
+        if(scan_ulonglong(optarg, &timeout_usec) == 0)
           usage(argv[0]);
         break;
       default: usage(argv[0]); return 107;
@@ -238,7 +239,8 @@ main(int argc, char* argv[]) {
     buffer_putnlflush(buffer_2);
 
     taia_uint(&deadline, timeout_sec + timeout_usec / 1000000);
-    umult32(timeout_usec % 1000000, 1000, &deadline.nano);
+    umult64(timeout_usec % 1000000, 1000, &result);
+    deadline.nano = result;
     taia_add(&deadline, &deadline, &now);
 
     buffer_puts(buffer_2, "Deadline: ");

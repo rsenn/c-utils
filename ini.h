@@ -12,6 +12,7 @@ typedef struct ini_section {
   MAP_T map;
 } ini_section_t;
 
+ini_section_t* ini_newb(ini_section_t** ptr, const char* name, size_t namelen);
 ini_section_t* ini_new(ini_section_t** ptr, const char* name);
 static void
 ini_init(ini_section_t* ini) {
@@ -20,7 +21,7 @@ ini_init(ini_section_t* ini) {
 void ini_set(ini_section_t* ini, const char* key, const char* value);
 void ini_set_long(ini_section_t* ini, const char* key, long value);
 void ini_set_sa(ini_section_t* ini, stralloc* key, stralloc* value);
-void ini_write(buffer* b, ini_section_t* ini);
+void ini_write(buffer* b, ini_section_t* ini, int utf16);
 void ini_read(buffer* b, ini_section_t** ini);
 
 #endif /* defined _INI_H */

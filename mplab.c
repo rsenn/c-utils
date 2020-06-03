@@ -448,7 +448,7 @@ output_mplab_project(buffer* b, MAP_T* _rules, MAP_T* vars, const strlist* inclu
   ini_set(section, "Post-Build", "");
   ini_set_long(section, "Post-BuildEnabled", 1);
 
-  ini_write(b, ini);
+  ini_write(b, ini, 0);
 
   stralloc_free(&sa);
   stralloc_free(&file);

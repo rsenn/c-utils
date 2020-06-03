@@ -63,6 +63,7 @@ typedef struct {
   struct slink link;
   const char* name;
   int has_main;
+  strlist includes;
 } sourcefile;
 
 typedef struct {
