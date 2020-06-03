@@ -32,7 +32,7 @@ int path_canonical(const char* path, stralloc* out);
 int path_canonicalize(const char* path, stralloc* sa, int symbolic);
 int path_canonical_sa(stralloc* sa);
 size_t path_collapse(char*, size_t);
-int path_collapse_sa(stralloc*);
+size_t path_collapse_sa(stralloc*);
 char* path_dirname(const char* path, stralloc* dir);
 int path_exists(const char* p);
 int path_find(const char* path, const char* name, stralloc* out);
@@ -50,6 +50,9 @@ size_t path_num_sa(const char* p, size_t len, stralloc* sa, int n);
 int path_readlink(const char* path, stralloc* sa);
 int path_realpath(const char* path, stralloc* sa, int symbolic, stralloc* cwd);
 int path_relative(const char* path, const char* relative_to, stralloc* out);
+
+int path_relative(const char* path, const char* relative_to, stralloc* out);
+
 size_t path_right(const char* s, size_t n);
 size_t path_skip(const char* s, size_t n);
 size_t path_skips(const char* s);

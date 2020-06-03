@@ -12,6 +12,6 @@ slist_unshiftb(slink** list, const void* x, size_t len) {
   n->next = *list;
   *list = n;
 
- byte_copy(((const char**)&n[1]),len, x);
+  byte_copy(((const char**)&n[1]), len, x);
   return 1;
 }

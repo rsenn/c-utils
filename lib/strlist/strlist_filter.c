@@ -4,13 +4,13 @@
 
 #include <string.h>
 #include <stdlib.h>
-
+/*
 static int
-sort_cmp(const void* a, const void* b, void* arg) {
-  strlist_cmpfn_t* fn = arg;
+sort_filter(const void* a, const void* b, void* arg) {
+  strlist_filterfn_t* fn = arg;
   return fn(*(const char**)a, *(const char**)b);
 }
-
+*/
 size_t
 strlist_filter(strlist* sl, strlist_filterfn_t* filter_fn, strlist* out) {
   const char* x;

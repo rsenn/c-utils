@@ -48,7 +48,6 @@ slist_data(slink* list) {
   return *(void**)&list[1];
 }
 
-
 static inline void*
 slink_data(slink** link) {
   return slist_data(*link);

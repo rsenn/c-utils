@@ -18,7 +18,7 @@ slist_pushb(slink** list, const void* x, size_t len) {
   *ptr = n;
 
   n[0].next = NULL;
-  byte_copy(((const char**)&n[1]) , len, x);
+  byte_copy(((const char**)&n[1]), len, x);
 
   //  *((const char**)&n[1]) = str_dup(s);
   return 1;

@@ -64,6 +64,7 @@ typedef struct {
   const char* name;
   int has_main;
   strlist includes;
+  strlist pptoks;
 } sourcefile;
 
 typedef struct {
