@@ -28,5 +28,11 @@ path_collapse(char* path, size_t n) {
     x += i;
     n -= i;
   }
-  return x - path;
+
+  n = x - path;
+
+  if(n > 2 && path[n - 1] == '.' && path[n - 2] == PATHSEP_C)
+    n -= 2;
+
+  return n;
 }
