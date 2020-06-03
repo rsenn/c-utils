@@ -31,12 +31,11 @@ slink* slist_remove(slink**);
 int slist_shifts(slink**);
 slink* slist_shift(slink**);
 int slist_unshifts(slink**, const char* s);
-
 int slist_pushb(slink** list, const void* x, size_t len);
 int slist_unshiftb(slink** list, const void* x, size_t len);
 
 #define slink_foreach(link, n) for((n) = (void*)(link); *(void**)(n); (n) = (void*)((slink*)(n))->next)
-#define slist_foreach(list, n) for((n) = (void*)slist_begin(list); (n); (n) = (void*)slist_next(n))
+#define slist_foreach(list, n) for((n) = (void*)slist_begin(list); (n); (n) = (void*)slist_next((slink*)n))
 #define slist_foreach_safe(list, n, next)                                                                              \
   for((n) = (void*)slist_begin(list); (n) && ((next) = slist_next((n))); (n) = (next))
 

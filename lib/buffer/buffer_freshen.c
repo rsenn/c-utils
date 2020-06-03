@@ -2,7 +2,7 @@
 #include "../byte.h"
 #include <assert.h>
 
-ssize_t buffer_dummyread(int, void*, size_t, void*);
+ssize_t buffer_dummyread(int, void*, size_t);
 ssize_t buffer_dummyreadmmap(int, void*, size_t, void*);
 ssize_t buffer_stubborn_read(ssize_t (*)(), int, void*, size_t, void*);
 

@@ -2,7 +2,7 @@
 #include "../strlist.h"
 
 int
-strlist_containsb(strlist* sl, const char* x, size_t len) {
+strlist_containsb(const strlist* sl, const char* x, size_t len) {
   size_t i;
 
   for(i = 0; i < sl->sa.len;) {

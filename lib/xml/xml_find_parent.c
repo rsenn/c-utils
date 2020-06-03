@@ -1,8 +1,9 @@
 #include "../buffer.h"
+#include "../str.h"
 #include "../strlist.h"
 #include "../xml.h"
 
-int xml_has_attr(xmlnode* node, const void*, const void*, const void*);
+int xml_has_attr(xmlnode* node, const void*, const strlist*);
 int xml_tag_pred(xmlnode* node, const void*, const void*, const void*);
 
 static xmlnode*
@@ -77,5 +78,7 @@ xml_find_parent(xmlnode* node, const char* tag) {
 
 xmlnode*
 xml_find_parent_attr(xmlnode* node, const char* attrs) {
-  return xml_find_parent_pred_2(node, &xml_has_attr, NULL, attrs);
+  strlist sl = { .sa = { .s = (char*)attrs, .len = str_len(attrs),  .a = 0 }, .sep = ',' };
+
+  return xml_find_parent_pred_2(node, (void*)&xml_has_attr, NULL, &sl);
 }

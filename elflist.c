@@ -245,7 +245,7 @@ elf_dump_dynamic(range map) {
   }
 }
 
-extern int buffer_putptr_size_2;
+extern ssize_t buffer_putptr_size_2;
 
 /**
  * @brief elf_dump_symbols

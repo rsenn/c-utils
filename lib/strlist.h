@@ -38,9 +38,9 @@ char* strlist_at(const strlist*, size_t i);
 char* strlist_at_n(const strlist*, size_t i, size_t* n);
 stralloc strlist_at_sa(const strlist*, size_t i);
 int strlist_cat(strlist*, const strlist* l);
-int strlist_containsb(strlist*, const char* x, size_t len);
+int strlist_containsb(const strlist*, const char* x, size_t len);
 int strlist_contains_sa(strlist*, const stralloc* sa);
-int strlist_contains(strlist*, const char* s);
+int strlist_contains(const strlist*, const char* s);
 int strlist_copyat(const strlist*, size_t i, stralloc* out);
 size_t strlist_count(const strlist*);
 void strlist_dump(buffer*, const strlist* sl);
@@ -76,6 +76,8 @@ int strlist_trunc(strlist*, size_t items);
 int strlist_unshift(strlist*, const char* s);
 int strlist_unshiftb(strlist*, const char*, size_t);
 int strlist_cat_unique(strlist* sl, const strlist* l);
+size_t strlist_diff(const strlist*, const strlist*, strlist*);
+size_t strlist_remove_all(strlist*, const strlist*);
 
 #define strlist_end(sl) ((sl)->sa.s + (sl)->sa.len)
 
@@ -131,7 +133,7 @@ int strlist_pop(strlist*);
 int strlist_pop(strlist*);
 
 int64 strlist_indexofb(strlist*, const char* x, size_t n);
-int strlist_containsb(strlist*, const char* x, size_t len);
+int strlist_containsb(const strlist*, const char* x, size_t len);
 int strlist_removeb(strlist*, const char* x, size_t n);
 int strlist_removes(strlist*, const char* s);
 

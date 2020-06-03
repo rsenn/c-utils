@@ -40,7 +40,7 @@ typedef struct {
 
 static array patches;
 
-extern int buffer_dummyreadmmap();
+extern ssize_t buffer_dummyreadmmap();
 
 uint32
 crc32(uint32 crc, const char* data, size_t size) {

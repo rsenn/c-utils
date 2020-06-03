@@ -3,7 +3,7 @@
 #include "../strlist.h"
 
 int
-strlist_contains(strlist* sl, const char* s) {
+strlist_contains(const strlist* sl, const char* s) {
   size_t i, len = str_len(s);
 
   for(i = 0; i < sl->sa.len;) {
