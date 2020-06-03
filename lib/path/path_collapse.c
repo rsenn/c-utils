@@ -31,7 +31,9 @@ path_collapse(char* path, size_t n) {
 
   n = x - path;
 
-  if(n > 2 && path[n - 1] == '.' && path[n - 2] == PATHSEP_C)
+  if(n > 3 && path[n - 1] == PATHSEP_C && path[n - 2] == '.' && path[n - 3] == PATHSEP_C)
+    n -= 3;
+  else if(n > 2 && path[n - 1] == '.' && path[n - 2] == PATHSEP_C)
     n -= 2;
 
   return n;

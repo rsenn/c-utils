@@ -52,6 +52,11 @@ path_relative(const char* path, const char* relative_to, stralloc* out) {
   if(stralloc_starts(&p.sa, ".."))
     path_absolute_sa(&p.sa);
 
+  if(stralloc_equal(&r.sa, &p.sa)) {
+    stralloc_copys(out, ".");
+    return 1;
+  }
+
   {
     size_t n1 = strlist_count(&p);
     size_t n2 = strlist_count(&r);
@@ -95,5 +100,6 @@ path_relative(const char* path, const char* relative_to, stralloc* out) {
   strlist_free(&r);
   strlist_free(&rel);
 #endif
+
   return 1;
 }

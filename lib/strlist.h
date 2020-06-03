@@ -74,6 +74,7 @@ int strlist_sub(strlist*, const strlist* o);
 char** strlist_to_argv(const strlist*);
 int strlist_trunc(strlist*, size_t items);
 int strlist_unshift(strlist*, const char* s);
+int strlist_unshiftb(strlist*, const char*, size_t);
 int strlist_cat_unique(strlist* sl, const strlist* l);
 
 #define strlist_end(sl) ((sl)->sa.s + (sl)->sa.len)
