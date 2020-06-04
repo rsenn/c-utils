@@ -756,7 +756,7 @@ pkgcfg_init(const char* argv0) {
   }
 #endif
 
-  strlist_init(&cmd.path, '\0');
+  strlist_init(&cmd.path, ':');
 
   if(pkgcfg_path) {
     strlist_froms(&cmd.path, pkgcfg_path, ':');
@@ -775,7 +775,7 @@ pkgcfg_init(const char* argv0) {
     stralloc_cats(&dir, "/lib/");
     stralloc_cat(&dir, &cmd.host);
     stralloc_cats(&dir, "/pkgconfig");
-    stralloc_nul(&dir);
+      stralloc_nul(&dir);
 
     if(path_exists(dir.s))
       strlist_push_sa(&cmd.path, &dir);
