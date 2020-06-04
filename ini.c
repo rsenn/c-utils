@@ -129,17 +129,17 @@ int static getchar_utf8(buffer* b, int* ptr) {
 }
 
 static int
-getline_sa(buffer* b, stralloc* line, getchar_fn* getc) {
+getline_sa(buffer* b, stralloc* line, getchar_fn* getbyte) {
   int prev = -1, ch;
   stralloc_zero(line);
-  while(getc(b, &ch) >= 1) {
+  while(getbyte(b, &ch) >= 1) {
     if(ch > 255) {
       char chars[4];
       stralloc_catb(line, chars, fmt_utf8(chars, ch));
 
     } else if(ch == '\\') {
       prev = ch;
-      if(getc(b, &ch) <= 0)
+      if(getbyte(b, &ch) <= 0)
         break;
       if(ch == '\n')
         continue;

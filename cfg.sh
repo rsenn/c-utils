@@ -93,9 +93,9 @@ cfg-diet() {
   export CC
 
   if type pkgconf >/dev/null; then
-    export PKG_CONFIG=pkgconf
+    export PKG_CONFIG=`type pkgconf 2>&1 |sed 's,.* is ,,'`
   elif type pkg-config >/dev/null; then
-    export PKG_CONFIG=pkg-config
+    export PKG_CONFIG=`type pkg-config 2>&1 |sed 's,.* is ,,'`
   fi
 
   export PKG_CONFIG_PATH="$libdir/pkgconfig"
@@ -117,6 +117,7 @@ cfg-diet() {
     -DCMAKE_SYSTEM_LIBRARY_PATH="$prefix/lib-${host%%-*}" \
     -D{CMAKE_INSTALL_LIBDIR=,INSTALL_LIB_DIR=$prefix/}"lib-${host%%-*}" \
       ${launcher:+-DCMAKE_C_COMPILER_LAUNCHER="$launcher"} \
+  -DPKG_CONFIG_EXECUTABLE="$PKG_CONFIG" \
     "$@")
 }
 
