@@ -157,7 +157,7 @@ typedef TUPLE* MAP_NODE_T;
 
 #define MAP_SIZE hmap_size
 #define MAP_NEW(map) hmap_init(MAP_BUCKET, &(map))
-#define MAP_DESTROY(map) hmap_destroy(&(map))
+#define MAP_DESTROY(map) ((map) ? hmap_destroy(&(map)) : (void)0)
 #define MAP_DATA hmap_data
 #define MAP_FOREACH(map, iter) hmap_foreach(map, iter)
 #define MAP_VALUE(iter) ((void*)((iter)->vals.val_custom))
