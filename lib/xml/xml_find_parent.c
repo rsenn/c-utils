@@ -78,7 +78,7 @@ xml_find_parent(xmlnode* node, const char* tag) {
 
 xmlnode*
 xml_find_parent_attr(xmlnode* node, const char* attrs) {
-  strlist sl = { .sa = { .s = (char*)attrs, .len = str_len(attrs),  .a = 0 }, .sep = ',' };
+  strlist sl = {.sa = {.s = (char*)attrs, .len = str_len(attrs), .a = 0}, .sep = ','};
 
   return xml_find_parent_pred_2(node, (void*)&xml_has_attr, NULL, &sl);
 }

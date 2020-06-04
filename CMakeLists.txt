@@ -154,6 +154,7 @@ if(NOT LINK_STATIC STREQUAL OFF)
   set(EXE_LINKER_FLAGS "${EXE_LINKER_FLAGS} -static")
   set(CHK_DLFCN FALSE)
 endif(NOT LINK_STATIC STREQUAL OFF)
+  set(CMAKE_STATIC_LINKER_FLAGS "")
 
 
 check_function_exists(lseek64 HAVE_LSEEK64)
@@ -194,7 +195,7 @@ check_function_exists(closedir HAVE_CLOSEDIR)
 if(HAVE_OPENDIR AND HAVE_READDIR AND HAVE_CLOSEDIR)
   add_definitions(-DUSE_READDIR=1)
 endif(HAVE_OPENDIR AND HAVE_READDIR AND HAVE_CLOSEDIR)
-  
+
 check_function_exists(wordexp HAVE_WORDEXP)
 
 if(HAVE_WORDEXP)
@@ -724,7 +725,7 @@ foreach(LIBNAME ${MODSUBDIRS})
     PREFIX ""
     COMPILE_FLAGS "${WARN_C_COMPILER_FLAGS}"
   )
- 
+
 endforeach(LIBNAME)
 
 foreach(NETLIB dns http io ndelay socket)
@@ -771,7 +772,7 @@ target_link_libraries(process wait errmsg)
 target_link_libraries(ihex scan byte)
 target_link_libraries(uint32 taia tai)
 
-set(genmakefile_SOURCES mplab.c ini.c)
+set(genmakefile_SOURCES mplab.c  ini.c ini.h genmakefile.h)
 
 if(OPENSSL_LIB_DIR)
   set(CMAKE_EXE_LINKER_FLAGS "-L${OPENSSL_LIB_DIR}")
@@ -796,11 +797,11 @@ function(add_program PROG)
     if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${DEP}" AND NOT IS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/${DEP}")
       list(APPEND "${PROG}_SOURCES" "${DEP}")
     else(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${DEP}" AND NOT IS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/${DEP}")
-    list(FIND MODSUBDIRS "${DEP}" I)
-    if(I GREATER -1)
-      list(APPEND INCLUDES "lib/${DEP}.h")
-    endif(I GREATER -1)
-      list(APPEND DEPS ${DEP})
+      list(FIND MODSUBDIRS "${DEP}" I)
+      if(I GREATER -1)
+        list(APPEND INCLUDES "lib/${DEP}.h")
+      endif(I GREATER -1)
+        list(APPEND DEPS ${DEP})
     endif(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${DEP}" AND NOT IS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/${DEP}")
    endforeach(DEP ${ARGN})
   #message("Program '${PROG}' dependencies: ${INCLUDES}")
@@ -808,7 +809,7 @@ function(add_program PROG)
   target_link_libraries(${PROG} ${DEPS} ${ELECTRICFENCE_LIBRARY} ${EXTRA_LIBRARIES})
   install(TARGETS ${PROG} DESTINATION bin)
   if(NOT EMSCRIPTEN AND OPENSSL_FOUND AND USE_SSL)
-  set_target_properties(${PROG} PROPERTIES 
+  set_target_properties(${PROG} PROPERTIES
     LINK_FLAGS "-L${OPENSSL_LIB_DIR} -Wl,-rpath=${OPENSSL_LIB_DIR} ${EXE_LINKER_FLAGS}"
     COMPILE_FLAGS "")
   endif(NOT EMSCRIPTEN AND OPENSSL_FOUND AND USE_SSL)
@@ -836,7 +837,7 @@ function(add_module MOD SRC)
   target_link_libraries(${MOD} ${LIBS} ${EXTRA_LIBRARIES})
   install(TARGETS ${MOD} DESTINATION libexec)
   if(BUILD_SHARED_LIBS)
-  set_target_properties(${MOD} PROPERTIES 
+  set_target_properties(${MOD} PROPERTIES
     EXE_LINKER_FLAGS "-L${OPENSSL_LIB_DIR} -shared"
     )
   endif(BUILD_SHARED_LIBS)
@@ -926,7 +927,7 @@ add_program(xml2moon xml textcode errmsg)
 add_program(strip-comments  errmsg env charbuf buffer path dir strarray strlist stralloc fmt)
 
 add_program(httpproxy http io map)
-add_program(testini ini.c hmap stralloc buffer  mmap open)
+add_program(testini ini.c ini.h hmap stralloc buffer  mmap open)
 #add_program(montty io map)
 add_program(logserial rdir dir errmsg io ndelay strarray stralloc buffer taia tai)
 #add_program(tinyproxy http io)

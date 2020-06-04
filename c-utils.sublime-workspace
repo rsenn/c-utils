@@ -120,52 +120,230 @@
 	"buffers":
 	[
 		{
-			"contents": "os_type\nmachine_type\nsystem_type\nsourcefile\nsourcedir\ntarget\ndirs_t\nexts_t\ntools_t\nbuild_type_t\nconfig_t\nincludes_add\nadd_path_sa\nadd_path\nsourcedir_add\ndeps_direct\ndeps_indirect\ndirname_alloc\nextract_build_type\nextract_includes\nextract_pptok\nextract_tokens\nformat_linklib_dummy\nformat_linklib_lib\nformat_linklib_switch\nget_includes\nget_ref_vars\nget_rules_by_cmd\nincludes_cppflags\nincludes_to_libs\ninput_command_line\nis_include\nis_include_sa\nis_object\nis_object_sa\nis_source\nis_source_sa\nmain\nmain_present\nmain_scan\nmkdir_components\nmkdir_sa\noutput_build_rules\noutput_make_rule\noutput_ninja_rule\noutput_script\npath_extension\npath_output\npath_prefix_b\npath_prefix_s\npath_wildcard\nprint_rule_deps\nprint_rule_deps_r\npush_define\npush_lib\nput_newline\nremove_indirect_deps\nremove_indirect_deps_recursive\nrule_add_deps\nrule_add_dep\nrule_command_subst\nrule_command\nrule_dep_list_recursive\nrule_dep_list\nrule_deps_indirect\nrule_dump\nrule_find_b\nrule_find\nrule_find_sa\nrule_get\nrule_get_sa\nrule_match\nrule_rename\nset_chip\nset_command\nset_compiler_type\nset_machine\nset_make_type\nset_system\nsourcedir_findb\nsourcedir_find\nsourcedir_find_sa\nsourcedir_get_sa\nsources_get\nsources_new\nsources_sort\nstralloc_weak\nstrarray_dump\ntarget_ptrs\nusage\nvar_get\nvar_isset\nvar_list\nvar_push\nvar_push_sa\nvar_set\nvar_subst\nvar_unset\nwith_lib",
+			"contents": "lcd\nButton\nISR\ninterrupt\nsetup\nloop",
 			"settings":
 			{
-				"buffer_size": 1312,
+				"buffer_size": 35,
 				"line_ending": "Unix",
 				"name": "𝌆 Outline",
 				"scratch": true
 			}
 		},
 		{
-			"file": "pkgcfg.c",
+			"file": "genmakefile.c",
 			"settings":
 			{
-				"buffer_size": 24445,
+				"buffer_size": 139521,
+				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "genmakefile.h",
+			"file": "/home/roman/Dokumente/Sources/Arduino-Projects/HB100/HB100.ino",
 			"settings":
 			{
-				"buffer_size": 6171,
+				"buffer_size": 2975,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "testini.c",
+			"file": "/home/roman/Dokumente/Sources/Arduino-Projects/HB100-Filtering/HB100-Filtering.ino",
 			"settings":
 			{
-				"buffer_size": 251,
+				"buffer_size": 3239,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "ini.c",
+			"file": "/home/roman/Dokumente/Sources/Arduino-Projects/Frequency_counter_arduino/Frequency_counter_arduino.ino",
 			"settings":
 			{
-				"buffer_size": 1611,
+				"buffer_size": 947,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "lib/stralloc/stralloc_trimr.c",
+			"file": "/home/roman/Dokumente/Sources/Arduino-Projects/Inductance_Capacitance_Meter/Inductance_Capacitance_Meter.ino",
 			"settings":
 			{
-				"buffer_size": 226,
+				"buffer_size": 13581,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/home/roman/Dokumente/Sources/Arduino-Projects/libraries/TimerOne/examples/ATTiny85/ATTiny85.ino",
+			"settings":
+			{
+				"buffer_size": 318,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/home/roman/Dokumente/Sources/Arduino-Projects/ArduPIC32/ArduPIC32.ino",
+			"settings":
+			{
+				"buffer_size": 10545,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/home/roman/Dokumente/Sources/Arduino-Projects/WhistleSwitch/WhistleSwitch.ino",
+			"settings":
+			{
+				"buffer_size": 58041,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/home/roman/Dokumente/Sources/Arduino-Projects/FunctionGeneratorABMS/Arduino_Frequency_Counter_Duty_Cycle_Meter_2.ino",
+			"settings":
+			{
+				"buffer_size": 8977,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/home/roman/Dokumente/Sources/Arduino-Projects/FunctionGeneratorABMS/Arduino_Frequency_Counter_Duty_Cycle_Meter_4.ino",
+			"settings":
+			{
+				"buffer_size": 9911,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/home/roman/Dokumente/Sources/Arduino-Projects/FunctionGeneratorABMS/Arduino_Frequency_Counter_Duty_Cycle_Meter_5.ino",
+			"settings":
+			{
+				"buffer_size": 8948,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/home/roman/Dokumente/Sources/Arduino-Projects/FunctionGeneratorABMS/Arduino_Frequency_Counter_Duty_Cycle_Meter.ino",
+			"settings":
+			{
+				"buffer_size": 2736,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/home/roman/Dokumente/Sources/Arduino-Projects/ArduinoFunctionGenerator/ArduinoFunctionGenerator.ino",
+			"settings":
+			{
+				"buffer_size": 5593,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/home/roman/Dokumente/Sources/Arduino-Projects/scope/scope.ino",
+			"settings":
+			{
+				"buffer_size": 5944,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/home/roman/Dokumente/Sources/Arduino-Projects/Inductance_Meter/Inductance_Meter.ino",
+			"settings":
+			{
+				"buffer_size": 4122,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/home/roman/Dokumente/Sources/Arduino-Projects/ArduinoAdcAndFrequencyEstimation/Arduino/ADC_Streamer.ino",
+			"settings":
+			{
+				"buffer_size": 752,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/home/roman/Dokumente/Sources/Arduino-Projects/BlinkWithoutDelay/BlinkWithoutDelay.ino",
+			"settings":
+			{
+				"buffer_size": 1865,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/home/roman/Dokumente/Sources/Arduino-Projects/small-scope/small-scope.ino",
+			"settings":
+			{
+				"buffer_size": 6101,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/home/roman/Dokumente/Sources/Arduino-Projects/FunctionGenerator/FunctionGenerator.ino",
+			"settings":
+			{
+				"buffer_size": 1964,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/home/roman/Dokumente/Sources/Arduino-Projects/function_generator/function_generator.ino",
+			"settings":
+			{
+				"buffer_size": 14018,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/home/roman/Dokumente/Sources/Arduino-Projects/Arduino-Frequency-Counter/FrequencyCounter.ino",
+			"settings":
+			{
+				"buffer_size": 2360,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/home/roman/Dokumente/Sources/Arduino-Projects/Simple-Arduino-Frequency-Counter/frequency_counter.ino",
+			"settings":
+			{
+				"buffer_size": 890,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "CMakeLists.txt",
+			"settings":
+			{
+				"buffer_size": 40562,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/home/roman/Arduino/libraries/Nokia_5110_LCD_library/src/Nokia_LCD.cpp",
+			"settings":
+			{
+				"buffer_size": 7857,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/home/roman/Arduino/libraries/Nokia_5110/src/Nokia_5110.h",
+			"settings":
+			{
+				"buffer_size": 1363,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/home/roman/Arduino/libraries/Adafruit_GFX_Library/Adafruit_SPITFT.cpp",
+			"settings":
+			{
+				"buffer_size": 95531,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/home/roman/Arduino/libraries/Nokia_5110/src/Nokia_5110.cpp",
+			"settings":
+			{
+				"buffer_size": 4183,
 				"line_ending": "Unix"
 			}
 		}
@@ -461,45 +639,110 @@
 	},
 	"expanded_folders":
 	[
-		"/home/roman/Sources/c-utils",
-		"/home/roman/Sources/c-utils/inst",
-		"/home/roman/Sources/c-utils/lib",
-		"/home/roman/Sources/c-utils/lib/slist"
+		"/home/roman/Dokumente/Sources/c-utils"
 	],
 	"file_history":
 	[
-		"/home/roman/Sources/c-utils/genmakefile.c",
-		"/home/roman/Sources/c-utils/piccfg.c",
-		"/home/roman/Sources/c-utils/CMakeLists.txt",
+		"/home/roman/Sources/c-utils/lib/strarray.h",
+		"/home/roman/Sources/c-utils/lib/str.h",
+		"/home/roman/Sources/c-utils/lib/uint32/uint32_seed.c",
+		"/home/roman/Sources/c-utils/lib/uint32.h",
+		"/home/roman/Sources/c-utils/lib/strlist/strlist_unshift.c",
+		"/home/roman/Sources/c-utils/lib/strlist/strlist_unshiftb.c",
+		"/home/roman/Sources/c-utils/lib/strlist/strlist_pushb.c",
+		"/home/roman/Sources/c-utils/lib/strlist/strlist_diff.c",
+		"/home/roman/Sources/c-utils/lib/path/path_canonical.c",
+		"/home/roman/Sources/c-utils/lib/strlist/strlist_contains.c",
+		"/home/roman/Sources/c-utils/lib/strlist/strlist_remove_all.c",
+		"/home/roman/Sources/c-utils/lib/strlist.h",
+		"/home/roman/Sources/c-utils/lib/strlist/strlist_containsb.c",
 		"/home/roman/Sources/c-utils/lib/slist.h",
-		"/home/roman/Sources/c-utils/lib/str/str_dup.c",
+		"/home/roman/Sources/c-utils/map.h",
+		"/home/roman/Sources/c-utils/genmakefile.h",
+		"/home/roman/Sources/c-utils/lib/strarray/strarray_pushb.c",
+		"/home/roman/Sources/c-utils/lib/strarray/strarray_index_of.c",
+		"/home/roman/Sources/c-utils/lib/stralloc/stralloc_remove.c",
+		"/home/roman/Sources/c-utils/lib/path/path_is_directory.c",
+		"/home/roman/Sources/c-utils/lib/path/path_realpath.c",
+		"/home/roman/Sources/c-utils/lib/path/path_relative.c",
+		"/home/roman/Sources/c-utils/lib/strarray/strarray_push_unique.c",
+		"/home/roman/Sources/c-utils/lib/fmt/fmt_escapecharjson.c",
+		"/home/roman/Sources/c-utils/lib/path/path_collapse.c",
+		"/home/roman/Sources/c-utils/mplab.c",
+		"/home/roman/Sources/c-utils/lib/rdir/rdir_read.c",
+		"/home/roman/Sources/c-utils/lib/path/path_concat.c",
+		"/home/roman/Sources/c-utils/lib/path/path_append.c",
+		"/home/roman/Sources/c-utils/lib/path/path_canonical_sa.c",
+		"/home/roman/Sources/c-utils/lib/path/path_collapse_sa.c",
+		"/home/roman/Sources/c-utils/lib/path.h",
+		"/home/roman/Sources/c-utils/lib/strlist/strlist_filter.c",
+		"/home/roman/Sources/c-utils/lib/stralloc/stralloc_nul.c",
+		"/home/roman/Sources/c-utils/lib/byte.h",
+		"/home/roman/Sources/c-utils/lib/strarray/strarray_pushb_unique.c",
+		"/home/roman/Sources/c-utils/lib/strlist/strlist_pushb_unique.c",
+		"/home/roman/Sources/c-utils/lib/slist/slist_shift.c",
+		"/home/roman/Sources/c-utils/lib/path/path_exists.c",
+		"/home/roman/Sources/c-utils/lib/path/path_isdir.c",
+		"/home/roman/Sources/c-utils/lib/path/path_basename.c",
+		"/home/roman/Sources/c-utils/lib/stralloc.h",
+		"/home/roman/Sources/c-utils/lib/slist/slist_pushb.c",
+		"/home/roman/Sources/c-utils/lib/slist/slist_unshiftb.c",
+		"/home/roman/Sources/c-utils/genmakefile.c",
+		"/home/roman/Sources/c-utils/lib/list.h",
 		"/home/roman/Sources/c-utils/lib/slist/slist_unshifts.c",
 		"/home/roman/Sources/c-utils/lib/slist/slist_pushs.c",
+		"/home/roman/Sources/c-utils/lib/slist/slist_init.c",
+		"/home/roman/Sources/c-utils/lib/path/path_num.c",
+		"/home/roman/Sources/c-utils/ini.c",
+		"/home/roman/Dokumente/Sources/c-utils/output.ini",
+		"/home/roman/.wine32/drive_c/windows/Microsoft.NET/Framework/v4.0.30319/_DataPerfCounters.ini",
+		"/home/roman/Sources/c-utils/ini.h",
+		"/home/roman/Sources/c-utils/testini.c",
+		"/home/roman/Sources/c-utils/lib/buffer/buffer_write.c",
+		"/home/roman/Sources/c-utils/lib/buffer/buffer_write_fd.c",
+		"/home/roman/Sources/c-utils/lib/uint16.h",
+		"/home/roman/Sources/c-utils/lib/scan/scan_utf8.c",
+		"/home/roman/Sources/c-utils/lib/buffer.h",
+		"/home/roman/Sources/c-utils/lib/stralloc/stralloc_fmt_call.c",
+		"/home/roman/Sources/c-utils/lib/stralloc/stralloc_fmt.c",
+		"/home/roman/Sources/c-utils/jsonpp.c",
+		"/home/roman/Sources/c-utils/lib/fmt/fmt_utf8.c",
+		"/home/roman/Sources/c-utils/lib/buffer/buffer_skipn.c",
+		"/home/roman/Sources/c-utils/tcping.c",
+		"/home/roman/Sources/c-utils/lib/hmap/hmap_dump.c",
+		"/home/roman/Sources/c-utils/strip-comments.c",
+		"/home/roman/Sources/c-utils/pkgcfg.c",
+		"/home/roman/Sources/c-utils/list-r.c",
+		"/home/roman/Sources/c-utils/examples/mult.c",
+		"/home/roman/Sources/c-utils/lib/taia.h",
+		"/home/roman/Sources/c-utils/lib/safemult/umult64.c",
+		"/home/roman/Sources/c-utils/setuidgid.c",
+		"/opt/eclipse-cpp-photon-R-linux-gtk-x86_64/configuration/org.eclipse.osgi/206/0/.cp/about.ini",
+		"/home/roman/Sources/c-utils/lib/buffer/buffer_get.c",
+		"/home/roman/Sources/c-utils/lib/uint16/uint16_unpack_big.c",
+		"/home/roman/Sources/c-utils/lib/buffer/buffer_peek.c",
+		"/home/roman/Schreibtisch/ds9.txt",
+		"/home/roman/Sources/c-utils/lib/buffer/buffer_puttai.c",
+		"/home/roman/Sources/c-utils/lib/scan/scan_xchar.c",
+		"/home/roman/Sources/c-utils/CMakeLists.txt",
+		"/home/roman/Sources/c-utils/lib/stralloc/stralloc_trimr.c",
+		"/home/roman/Sources/c-utils/piccfg.c",
+		"/home/roman/Sources/c-utils/lib/str/str_dup.c",
 		"/home/roman/Sources/c-utils/lib/slist/slist_push.c",
-		"/home/roman/Sources/c-utils/lib/strlist.h",
 		"/home/roman/Sources/c-utils/GNUmakefile",
-		"/home/roman/Sources/c-utils/map.h",
 		"/home/roman/Sources/c-utils/lib/hmap/hmap_search.c",
-		"/home/roman/Sources/c-utils/genmakefile.h",
 		"/home/roman/Sources/c-utils/lib/unix/getopt.c",
 		"/home/roman/Sources/c-utils/lib/getopt.h",
-		"/home/roman/Sources/c-utils/pkgcfg.c",
 		"/home/roman/Sources/c-utils/lib/slist/slist_add_before.c",
-		"/home/roman/Sources/c-utils/lib/strlist/strlist_containsb.c",
-		"/home/roman/Sources/c-utils/lib/strarray/strarray_push_unique.c",
 		"/home/roman/Sources/c-utils/lib/strarray/strarray_sort.c",
-		"/home/roman/Sources/c-utils/lib/strarray/strarray_pushb.c",
 		"/home/roman/Sources/c-utils/genmakefile.mk",
 		"/home/roman/Sources/c-utils/lib/strlist/strlist_sort.c",
-		"/home/roman/Sources/c-utils/lib/strlist/strlist_filter.c",
 		"/home/roman/Sources/c-utils/lib/case/case_diffs.c",
-		"/home/roman/Sources/c-utils/lib/strarray.h",
 		"/home/roman/Sources/c-utils/c-utils.sublime-project",
 		"/home/roman/Sources/c-utils/build/x86_64-linux-musl/CMakeFiles/regfilter.dir/cmake_clean.cmake",
 		"/home/roman/Sources/c-utils/lib/strarray/strarray_push.c",
 		"/home/roman/Sources/c-utils/lib/strarray/strarray_index_of_b.c",
 		"/home/roman/Sources/c-utils/lib/strarray/strarray_intersection.c",
-		"/home/roman/Sources/c-utils/lib/strarray/strarray_index_of.c",
 		"/home/roman/Sources/c-utils/lib/strarray/strarray_glob.c",
 		"/home/roman/Sources/c-utils/lib/strarray/strarray_removesuffixs.c",
 		"/home/roman/Sources/c-utils/lib/strarray/strarray_transform.c",
@@ -519,8 +762,6 @@
 		"/home/roman/Sources/c-utils/eagle-to-circuit.c",
 		"/home/roman/Sources/c-utils/lib/linked_list.h",
 		"/home/roman/Sources/c-utils/lib/hashmap/linked_list_free.c",
-		"/home/roman/Sources/c-utils/lib/byte.h",
-		"/home/roman/Sources/c-utils/lib/rdir/rdir_read.c",
 		"/home/roman/Sources/c-utils/lib/hashmap/linked_list_init.c",
 		"/home/roman/Sources/c-utils/lib/hashmap/linked_list_head.c",
 		"/home/roman/Sources/c-utils/build/x86_64-linux-musl/CMakeFiles/elfwrsec.dir/cmake_clean.cmake",
@@ -528,78 +769,12 @@
 		"/home/roman/Sources/c-utils/lib/dir/dir_read.c",
 		"/home/roman/Sources/c-utils/lib/hashmap/hashmap_contains_key.c",
 		"/home/roman/Sources/c-utils/lib/hashmap/hashmap_init.c",
-		"/home/roman/Sources/c-utils/mplab.c",
 		"/home/roman/Sources/c-utils/lib/hmap.h",
-		"/home/roman/Sources/c-utils/lib/rdir/rdir_open.c",
-		"/home/roman/Sources/c-utils/lib/rdir.h",
-		"/home/roman/Sources/c-utils/lib/hashmap/hashmap_default_hash_func.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/rdir/rdir_read.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/dir.h",
-		"/home/roman/Sources/c-utils/lib/dir/dir_close.c",
-		"/home/roman/Sources/c-utils/mplab.h",
-		"/home/roman/Sources/c-utils/msys-shell.c",
-		"/home/roman/Sources/c-utils/opensearch-dump.c",
-		"/home/roman/Sources/c-utils/ini.c",
-		"/home/roman/Sources/c-utils/ini.h",
-		"/home/roman/Sources/c-utils/build/cmake/Werror.cmake",
-		"/home/roman/Sources/c-utils/lib/unix/getdelim.c",
-		"/home/roman/Sources/c-utils/eagle-gen-cmds.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/hmap.h",
-		"/home/roman/Sources/c-utils/lib/xml.h",
-		"/home/roman/Sources/c-utils/eagle-to-svg.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/hashmap/hashmap_clear.c",
-		"/home/roman/Sources/c-utils/xml2json.c",
-		"/home/roman/Sources/c-utils/xml2moon.c",
-		"/home/roman/Sources/c-utils/cc-wrap.c",
-		"/home/roman/Sources/c-utils/build/.cmake/api/v1/reply/target-hmap-618dc598ca6c474cbfbf.json",
-		"/home/roman/Sources/c-utils/lib/cbmap/cbmap_visit.c",
-		"/home/roman/Sources/c-utils/lib/cbmap.h",
-		"/home/roman/Sources/c-utils/lib/cbmap_internal.h",
-		"/home/roman/Sources/c-utils/lib/xml/xml_num_children.c",
-		"/home/roman/Sources/c-utils/lib/xml/xml_print.c",
-		"/home/roman/Sources/c-utils/lib/buffer/buffer_skip_pred.c",
-		"/home/roman/Sources/c-utils/lib/buffer/buffer_skipspace.c",
-		"/home/roman/Sources/c-utils/lib/xml/xml_read_callback.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/xml/xml_read_tree.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/xml/xml_reader_init.c",
-		"/home/roman/Dokumente/Sources/c-utils/xmlpp.c",
-		"/home/roman/Dokumente/Sources/c-utils/pkgcfg.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/stralloc.h",
-		"/home/roman/Dokumente/Sources/c-utils/lib/stralloc/stralloc_erase.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/slist.h",
-		"/home/roman/Dokumente/Sources/c-utils/lib/slist/slist_unshifts.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/slist/slist_pushs.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/dir/dir_open.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/errmsg.h",
-		"/home/roman/Dokumente/Sources/c-utils/lib/errmsg/errmsg_warn.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/errmsg/errmsg_write.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/str.h",
-		"/home/roman/Dokumente/Sources/c-utils/lib/getopt.h",
-		"/home/roman/Dokumente/Sources/c-utils/lib/unix/getopt.c",
-		"/home/roman/Dokumente/Sources/pkg-config-0.29.1/main.c",
-		"/home/roman/Dokumente/Sources/c-utils/CMakeLists.txt",
-		"/home/roman/Dokumente/Sources/c-utils/GNUmakefile",
-		"/home/roman/Dokumente/Sources/c-utils/lib/open.h",
-		"/home/roman/Dokumente/Sources/c-utils/lib/stralloc/readclose.c",
-		"/home/roman/Dokumente/Sources/c-utils/3rdparty/bzip2/bzlib_private.h",
-		"/home/roman/Dokumente/Sources/skalibs/src/libstddjb/child_spawn0.c",
-		"/home/roman/Dokumente/Sources/skalibs/src/libstddjb/child_spawn1_internal.c",
-		"/home/roman/Dokumente/Sources/skalibs/src/libstddjb/child_spawn1_pipe.c",
-		"/home/roman/Dokumente/Sources/skalibs/src/libstddjb/child_spawn2.c",
-		"/home/roman/Dokumente/Sources/skalibs/src/libstddjb/child_spawn3.c",
-		"/home/roman/Dokumente/Sources/skalibs/src/libstddjb/child_spawn.c",
-		"/home/roman/Dokumente/Sources/skalibs/src/sysdeps/tryposixspawn.c",
-		"/home/roman/Dokumente/Sources/c-utils/libc-resolv-override.c",
-		"/home/roman/Dokumente/Sources/c-utils/setuidgid.c",
-		"/home/roman/Dokumente/Sources/c-utils/c-utils.sublime-project",
-		"/home/roman/Dokumente/Sources/c-utils/cfg.sh",
-		"/home/roman/Dokumente/Sources/c-utils/scripts/gen-makefile-deps.sh",
-		"/home/roman/Dokumente/Sources/c-utils/scripts/relative-includes.sh",
-		"/home/roman/Dokumente/Sources/skalibs/src/libstddjb/pathexec0_run.c"
+		"/home/roman/Sources/c-utils/lib/rdir/rdir_open.c"
 	],
 	"find":
 	{
-		"height": 43.0
+		"height": 39.0
 	},
 	"find_in_files":
 	{
@@ -625,137 +800,137 @@
 	},
 	"find_state":
 	{
-		"case_sensitive": true,
+		"case_sensitive": false,
 		"find_history":
 		[
-			"OUTPUT$",
-			"OUTPUT",
-			"getopt",
-			"foreach",
-			"dir_open",
-			"logserial.*EXE",
-			"^pkg",
-			"search_path",
-			"LIBDIR",
-			"genmak",
-			"piccfg",
-			"infer",
-			"chip.s",
-			"infer",
-			"infer_chip",
-			"sourcedir_get_sa",
-			"slist_add",
-			"->sources",
-			"gen_srcdir_compile_rules",
-			"->output",
-			"output_make_rule",
-			"output_all_rules",
-			"is_filename",
-			"^is_source",
-			"gen_srcdir_lib_rule",
-			"->rules",
-			"target",
-			"rule",
-			"is_source",
-			"is_include",
-			"^is_",
-			"pptok",
-			"\"file\"",
-			"file\"",
-			"spec_len =",
-			"spec_len",
-			"no such",
-			"has_arg",
-			"no_argument",
-			"no argu",
-			"No such",
-			"getopt",
-			"mediathek",
-			"mediathe,",
-			"LINKER_FLAG",
-			"-static",
-			"add_exe",
-			"set_target",
-			"_",
-			"\"_\"",
-			"'_'",
-			"^gen",
-			"sources_new",
-			"add",
-			"->sources",
-			"^gen",
-			"file\"",
-			"^gen_srcdi",
-			"->sources",
-			"^sources_add",
-			"rdir_",
-			"rdir",
-			"^source",
-			"^source_",
-			"source_",
-			"sources",
-			"sdir",
-			"DEBUG_OUTPUT",
-			"  add_path_sa",
-			"^add_path_sa",
-			"add_path_sa",
-			"->output",
-			"sources",
-			"sources_add",
-			"^sources_add",
-			"sources_add",
-			"rdir_",
-			"sources_sort",
-			"strarray_sort",
-			"sources_sort",
-			"^sources_add",
-			"populate",
-			"populate_",
-			"populate_s",
-			"^gen_srcdir",
-			"->vars",
-			"vars",
-			"output_make_rule",
-			"output_all",
-			"_rule",
-			"output_rule",
-			"^gen_",
-			"pptok",
-			"^gen_.*rule",
-			"^gen_",
-			"pptok",
-			"^sourcedir_get",
-			"^sourcedir",
-			"sourcedir",
-			"pptok",
-			"sourcedir",
-			"sourcedirg1",
-			"sourcedir",
+			"rising",
+			"line\\(",
+			"line",
+			"drawLine",
+			"setCur",
+			"LINKER_FLAGS",
+			"CMAKE_STATIC",
+			"LINKER_FLAGS",
+			"LINKER",
+			"LINK",
+			"STATIC_LINK",
+			"STATIC_LINk",
+			"containsb",
+			"containsn",
+			"strlist",
+			"contains",
+			"strlist",
+			"contains",
+			"diff",
+			"addinc",
+			"sources_addincludes",
 			"srcdir",
-			"pptok",
-			"strlist_sort",
-			"sort",
-			"debug_sl",
-			"^\\s*debug_sl",
-			"debug_sl",
-			"pptok",
-			"foreach",
-			"filter",
-			"^gen_srcdir",
-			"rule",
-			"^gen_srcdir_compile_rules",
-			"dep = gen_sim",
-			"dep = gen_",
-			"dep = ",
-			"gen_simple_compile_rules",
-			"gen_simple",
-			"^gen_simple",
-			"gen_simple",
-			"return",
-			"^gen_sim",
-			"MAP_COMPARATOR",
-			"^var_list",
-			"byte_diff"
+			"addinc",
+			"sources_addincludes",
+			"addsource",
+			"sourcedir_deps",
+			"source directory",
+			"source dir",
+			"source:",
+			"sources_addincludes",
+			"addinc",
+			"addsou",
+			"addinc",
+			"extract",
+			"DEBUG_OUTPUT_",
+			"Added",
+			"DEBUG_OUTPUT",
+			"sources_get",
+			"^sources_add",
+			"sources_add",
+			"sources",
+			"source:",
+			"sources_deps",
+			"is_source",
+			",",
+			"is_source",
+			"includes,",
+			"includes",
+			"is_sou",
+			"sources_addincludes",
+			"srcs",
+			"sourcedir_addsource",
+			"sources_addincludes",
+			"sources_deps",
+			"      ",
+			"^sourcedir",
+			"strlist_init.*\\&d,",
+			"strlist_init.*\\&d",
+			"strlist_init.*\\&",
+			"strlist_init",
+			"addinc",
+			"sources_deps",
+			"sources_deps:",
+			"sources_deps",
+			"_cat",
+			"concat",
+			"addinc",
+			"addic",
+			"sources_deps",
+			"sourcedir;",
+			"is_direc",
+			"sources_deps",
+			"^sources_add",
+			"sources_add",
+			"source_add",
+			"^sourcedir_deps",
+			"sourcedir_deps",
+			"sourcedir_deps_b",
+			"sourcedir_deps",
+			"source:",
+			"sources_addincludes",
+			"file",
+			"addinc",
+			"includes_extra",
+			"sources_addincludes",
+			"sources_new",
+			"^sources_new",
+			"^sources_get",
+			"includes_extra",
+			"addincludes",
+			"popula",
+			"srcs",
+			"sourcedir_get",
+			"sourcedir.*get",
+			"srcdir_add",
+			"srcdir_get",
+			"srcdir_getr",
+			"strarray_dump",
+			"srcs",
+			"deps '",
+			"'\"",
+			"srcs",
+			"strarray_dump",
+			"dump",
+			"sources_add",
+			"readdir",
+			"sources_get",
+			"rdir_",
+			"sources_readdir",
+			"is_director",
+			"sourcedir_addsource",
+			"sourcedir.dump",
+			"sourcedir",
+			"gen_link_rules",
+			"sources",
+			"}\n",
+			"recurs",
+			"serial =",
+			"^main\\(",
+			"^main",
+			"random",
+			"sourcedir;",
+			"sourcedir",
+			"sourcedir_deps",
+			"unshift",
+			"input_com",
+			"deps",
+			"printdep"
 		],
 		"highlight": false,
 		"in_selection": false,
@@ -880,7 +1055,7 @@
 	"groups":
 	[
 		{
-			"selected": 0,
+			"selected": 12,
 			"sheets":
 			[
 				{
@@ -888,517 +1063,57 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 1312,
+						"buffer_size": 35,
 						"regions":
 						{
 						},
 						"selection":
 						[
+							[
+								0,
+								0
+							]
 						],
 						"settings":
 						{
-							"current_file": "/home/roman/Sources/c-utils/genmakefile.h",
+							"color_scheme": "Packages/Babel/Next Roman.tmTheme",
+							"current_file": "/home/roman/Dokumente/Sources/Arduino-Projects/FunctionGeneratorABMS/Arduino_Frequency_Counter_Duty_Cycle_Meter.ino",
 							"outline_rename_mode": false,
 							"symkeys":
 							[
 								[
-									565,
-									572
+									292,
+									295
 								],
 								[
-									1118,
-									1130
+									330,
+									336
 								],
 								[
-									1194,
-									1205
+									501,
+									504
 								],
 								[
-									1284,
-									1294
+									575,
+									584
 								],
 								[
-									1404,
-									1413
+									807,
+									812
 								],
 								[
-									1580,
-									1586
-								],
-								[
-									1672,
-									1678
-								],
-								[
-									1752,
-									1758
-								],
-								[
-									1848,
-									1855
-								],
-								[
-									1975,
-									1987
-								],
-								[
-									2084,
-									2092
-								],
-								[
-									2100,
-									2112
-								],
-								[
-									2132,
-									2143
-								],
-								[
-									2176,
-									2184
-								],
-								[
-									2219,
-									2232
-								],
-								[
-									2267,
-									2278
-								],
-								[
-									2312,
-									2325
-								],
-								[
-									2365,
-									2378
-								],
-								[
-									2397,
-									2415
-								],
-								[
-									2439,
-									2455
-								],
-								[
-									2513,
-									2526
-								],
-								[
-									2573,
-									2587
-								],
-								[
-									2634,
-									2654
-								],
-								[
-									2689,
-									2707
-								],
-								[
-									2742,
-									2763
-								],
-								[
-									2797,
-									2809
-								],
-								[
-									2857,
-									2869
-								],
-								[
-									2907,
-									2923
-								],
-								[
-									2956,
-									2973
-								],
-								[
-									2986,
-									3002
-								],
-								[
-									3039,
-									3057
-								],
-								[
-									3086,
-									3096
-								],
-								[
-									3115,
-									3128
-								],
-								[
-									3145,
-									3154
-								],
-								[
-									3173,
-									3185
-								],
-								[
-									3202,
-									3211
-								],
-								[
-									3230,
-									3242
-								],
-								[
-									3259,
-									3263
-								],
-								[
-									3288,
-									3300
-								],
-								[
-									3319,
-									3328
-								],
-								[
-									3357,
-									3373
-								],
-								[
-									3399,
-									3407
-								],
-								[
-									3441,
-									3459
-								],
-								[
-									3514,
-									3530
-								],
-								[
-									3560,
-									3577
-								],
-								[
-									3607,
-									3620
-								],
-								[
-									3651,
-									3665
-								],
-								[
-									3718,
-									3729
-								],
-								[
-									3781,
-									3794
-								],
-								[
-									3858,
-									3871
-								],
-								[
-									3929,
-									3942
-								],
-								[
-									3982,
-									3997
-								],
-								[
-									4024,
-									4041
-								],
-								[
-									4116,
-									4127
-								],
-								[
-									4147,
-									4155
-								],
-								[
-									4192,
-									4203
-								],
-								[
-									4233,
-									4253
-								],
-								[
-									4268,
-									4298
-								],
-								[
-									4334,
-									4347
-								],
-								[
-									4383,
-									4395
-								],
-								[
-									4426,
-									4444
-								],
-								[
-									4508,
-									4520
-								],
-								[
-									4551,
-									4574
-								],
-								[
-									4628,
-									4641
-								],
-								[
-									4669,
-									4687
-								],
-								[
-									4715,
-									4724
-								],
-								[
-									4743,
-									4754
-								],
-								[
-									4787,
-									4796
-								],
-								[
-									4819,
-									4831
-								],
-								[
-									4852,
-									4860
-								],
-								[
-									4883,
-									4894
-								],
-								[
-									4911,
-									4921
-								],
-								[
-									4958,
-									4969
-								],
-								[
-									5002,
-									5010
-								],
-								[
-									5030,
-									5041
-								],
-								[
-									5093,
-									5110
-								],
-								[
-									5129,
-									5140
-								],
-								[
-									5159,
-									5172
-								],
-								[
-									5184,
-									5194
-								],
-								[
-									5220,
-									5235
-								],
-								[
-									5271,
-									5285
-								],
-								[
-									5311,
-									5328
-								],
-								[
-									5352,
-									5368
-								],
-								[
-									5386,
-									5397
-								],
-								[
-									5424,
-									5435
-								],
-								[
-									5454,
-									5466
-								],
-								[
-									5503,
-									5516
-								],
-								[
-									5556,
-									5569
-								],
-								[
-									5606,
-									5617
-								],
-								[
-									5652,
-									5657
-								],
-								[
-									5678,
-									5685
-								],
-								[
-									5704,
-									5713
-								],
-								[
-									5737,
-									5745
-								],
-								[
-									5765,
-									5773
-								],
-								[
-									5812,
-									5823
-								],
-								[
-									5864,
-									5871
-								],
-								[
-									5910,
-									5919
-								],
-								[
-									6005,
-									6014
-								],
-								[
-									6034,
-									6042
+									1288,
+									1292
 								]
 							],
 							"symlist":
 							[
-								"os_type",
-								"machine_type",
-								"system_type",
-								"sourcefile",
-								"sourcedir",
-								"target",
-								"dirs_t",
-								"exts_t",
-								"tools_t",
-								"build_type_t",
-								"config_t",
-								"includes_add",
-								"add_path_sa",
-								"add_path",
-								"sourcedir_add",
-								"deps_direct",
-								"deps_indirect",
-								"dirname_alloc",
-								"extract_build_type",
-								"extract_includes",
-								"extract_pptok",
-								"extract_tokens",
-								"format_linklib_dummy",
-								"format_linklib_lib",
-								"format_linklib_switch",
-								"get_includes",
-								"get_ref_vars",
-								"get_rules_by_cmd",
-								"includes_cppflags",
-								"includes_to_libs",
-								"input_command_line",
-								"is_include",
-								"is_include_sa",
-								"is_object",
-								"is_object_sa",
-								"is_source",
-								"is_source_sa",
-								"main",
-								"main_present",
-								"main_scan",
-								"mkdir_components",
-								"mkdir_sa",
-								"output_build_rules",
-								"output_make_rule",
-								"output_ninja_rule",
-								"output_script",
-								"path_extension",
-								"path_output",
-								"path_prefix_b",
-								"path_prefix_s",
-								"path_wildcard",
-								"print_rule_deps",
-								"print_rule_deps_r",
-								"push_define",
-								"push_lib",
-								"put_newline",
-								"remove_indirect_deps",
-								"remove_indirect_deps_recursive",
-								"rule_add_deps",
-								"rule_add_dep",
-								"rule_command_subst",
-								"rule_command",
-								"rule_dep_list_recursive",
-								"rule_dep_list",
-								"rule_deps_indirect",
-								"rule_dump",
-								"rule_find_b",
-								"rule_find",
-								"rule_find_sa",
-								"rule_get",
-								"rule_get_sa",
-								"rule_match",
-								"rule_rename",
-								"set_chip",
-								"set_command",
-								"set_compiler_type",
-								"set_machine",
-								"set_make_type",
-								"set_system",
-								"sourcedir_findb",
-								"sourcedir_find",
-								"sourcedir_find_sa",
-								"sourcedir_get_sa",
-								"sources_get",
-								"sources_new",
-								"sources_sort",
-								"stralloc_weak",
-								"strarray_dump",
-								"target_ptrs",
-								"usage",
-								"var_get",
-								"var_isset",
-								"var_list",
-								"var_push",
-								"var_push_sa",
-								"var_set",
-								"var_subst",
-								"var_unset",
-								"with_lib"
+								"lcd",
+								"Button",
+								"ISR",
+								"interrupt",
+								"setup",
+								"loop"
 							],
 							"syntax": "Packages/Outline/outline.hidden-tmLanguage"
 						},
@@ -1406,98 +1121,391 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 5,
+					"stack_index": 22,
 					"type": "text"
-				}
-			]
-		},
-		{
-			"selected": 1,
-			"sheets":
-			[
+				},
 				{
 					"buffer": 1,
-					"file": "pkgcfg.c",
+					"file": "genmakefile.c",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 24445,
+						"buffer_size": 139521,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								11039,
-								11039
+								65452,
+								65452
 							]
 						],
 						"settings":
 						{
-							"color_scheme": "Packages/User/SchemeEditorTemp/Horizon Contrast (rainglow).tmTheme",
+							"color_scheme": "Packages/Babel/Next Roman.tmTheme",
 							"syntax": "Packages/C99/C99.tmLanguage",
 							"tab_size": 2,
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 11372.0,
+						"translation.y": 53442.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 21,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "/home/roman/Dokumente/Sources/Arduino-Projects/HB100/HB100.ino",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2975,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++11/C++11.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 20,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "/home/roman/Dokumente/Sources/Arduino-Projects/HB100-Filtering/HB100-Filtering.ino",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 3239,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++11/C++11.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 19,
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "/home/roman/Dokumente/Sources/Arduino-Projects/Frequency_counter_arduino/Frequency_counter_arduino.ino",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 947,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++11/C++11.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 13,
+					"type": "text"
+				},
+				{
+					"buffer": 5,
+					"file": "/home/roman/Dokumente/Sources/Arduino-Projects/Inductance_Capacitance_Meter/Inductance_Capacitance_Meter.ino",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 13581,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++11/C++11.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 6,
+					"type": "text"
+				},
+				{
+					"buffer": 6,
+					"file": "/home/roman/Dokumente/Sources/Arduino-Projects/libraries/TimerOne/examples/ATTiny85/ATTiny85.ino",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 318,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++11/C++11.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 18,
+					"type": "text"
+				},
+				{
+					"buffer": 7,
+					"file": "/home/roman/Dokumente/Sources/Arduino-Projects/ArduPIC32/ArduPIC32.ino",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 10545,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++11/C++11.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 12,
+					"type": "text"
+				},
+				{
+					"buffer": 8,
+					"file": "/home/roman/Dokumente/Sources/Arduino-Projects/WhistleSwitch/WhistleSwitch.ino",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 58041,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++11/C++11.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 17,
+					"type": "text"
+				},
+				{
+					"buffer": 9,
+					"file": "/home/roman/Dokumente/Sources/Arduino-Projects/FunctionGeneratorABMS/Arduino_Frequency_Counter_Duty_Cycle_Meter_2.ino",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 8977,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++11/C++11.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 5,
+					"type": "text"
+				},
+				{
+					"buffer": 10,
+					"file": "/home/roman/Dokumente/Sources/Arduino-Projects/FunctionGeneratorABMS/Arduino_Frequency_Counter_Duty_Cycle_Meter_4.ino",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 9911,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++11/C++11.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 4,
 					"type": "text"
 				},
 				{
-					"buffer": 2,
-					"file": "genmakefile.h",
+					"buffer": 11,
+					"file": "/home/roman/Dokumente/Sources/Arduino-Projects/FunctionGeneratorABMS/Arduino_Frequency_Counter_Duty_Cycle_Meter_5.ino",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 6171,
+						"buffer_size": 8948,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								5512,
-								5512
+								0,
+								0
 							]
 						],
 						"settings":
 						{
-							"color_scheme": "Packages/User/SchemeEditorTemp/Next (Roman).tmTheme",
-							"syntax": "Packages/C++/C++.sublime-syntax",
+							"syntax": "Packages/C++11/C++11.tmLanguage",
 							"tab_size": 2,
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 3437.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 11,
+					"type": "text"
+				},
+				{
+					"buffer": 12,
+					"file": "/home/roman/Dokumente/Sources/Arduino-Projects/FunctionGeneratorABMS/Arduino_Frequency_Counter_Duty_Cycle_Meter.ino",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2736,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								74,
+								74
+							]
+						],
+						"settings":
+						{
+							"color_scheme": "Packages/Babel/Next Roman.tmTheme",
+							"syntax": "Packages/C++11/C++11.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 0,
 					"type": "text"
 				},
 				{
-					"buffer": 3,
-					"file": "testini.c",
+					"buffer": 13,
+					"file": "/home/roman/Dokumente/Sources/Arduino-Projects/ArduinoFunctionGenerator/ArduinoFunctionGenerator.ino",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 251,
+						"buffer_size": 5593,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								247,
-								247
+								0,
+								0
 							]
 						],
 						"settings":
 						{
-							"color_scheme": "Packages/User/SchemeEditorTemp/Horizon Contrast (rainglow).tmTheme",
-							"syntax": "Packages/C99/C99.tmLanguage"
+							"syntax": "Packages/C++11/C++11.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
 						"translation.y": 0.0,
@@ -1507,57 +1515,27 @@
 					"type": "text"
 				},
 				{
-					"buffer": 4,
-					"file": "ini.c",
+					"buffer": 14,
+					"file": "/home/roman/Dokumente/Sources/Arduino-Projects/scope/scope.ino",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 1611,
+						"buffer_size": 5944,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								1128,
-								1128
+								0,
+								0
 							]
 						],
 						"settings":
 						{
-							"color_scheme": "Packages/User/SchemeEditorTemp/Next (Roman).tmTheme",
-							"syntax": "Packages/C99/C99.tmLanguage",
+							"syntax": "Packages/C++11/C++11.tmLanguage",
 							"tab_size": 2,
 							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 435.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 1,
-					"type": "text"
-				},
-				{
-					"buffer": 5,
-					"file": "lib/stralloc/stralloc_trimr.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 226,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								224,
-								224
-							]
-						],
-						"settings":
-						{
-							"color_scheme": "Packages/User/SchemeEditorTemp/Horizon Contrast (rainglow).tmTheme",
-							"syntax": "Packages/C99/C99.tmLanguage"
 						},
 						"translation.x": 0.0,
 						"translation.y": 0.0,
@@ -1565,13 +1543,409 @@
 					},
 					"stack_index": 2,
 					"type": "text"
+				},
+				{
+					"buffer": 15,
+					"file": "/home/roman/Dokumente/Sources/Arduino-Projects/Inductance_Meter/Inductance_Meter.ino",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 4122,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2475,
+								2475
+							]
+						],
+						"settings":
+						{
+							"color_scheme": "Packages/Babel/Next Roman.tmTheme",
+							"syntax": "Packages/C++11/C++11.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 1517.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 16,
+					"file": "/home/roman/Dokumente/Sources/Arduino-Projects/ArduinoAdcAndFrequencyEstimation/Arduino/ADC_Streamer.ino",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 752,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++11/C++11.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 16,
+					"type": "text"
+				},
+				{
+					"buffer": 17,
+					"file": "/home/roman/Dokumente/Sources/Arduino-Projects/BlinkWithoutDelay/BlinkWithoutDelay.ino",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1865,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++11/C++11.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 15,
+					"type": "text"
+				},
+				{
+					"buffer": 18,
+					"file": "/home/roman/Dokumente/Sources/Arduino-Projects/small-scope/small-scope.ino",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 6101,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++11/C++11.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 14,
+					"type": "text"
+				},
+				{
+					"buffer": 19,
+					"file": "/home/roman/Dokumente/Sources/Arduino-Projects/FunctionGenerator/FunctionGenerator.ino",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1964,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++11/C++11.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 10,
+					"type": "text"
+				},
+				{
+					"buffer": 20,
+					"file": "/home/roman/Dokumente/Sources/Arduino-Projects/function_generator/function_generator.ino",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 14018,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++11/C++11.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 9,
+					"type": "text"
+				},
+				{
+					"buffer": 21,
+					"file": "/home/roman/Dokumente/Sources/Arduino-Projects/Arduino-Frequency-Counter/FrequencyCounter.ino",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2360,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++11/C++11.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 8,
+					"type": "text"
+				},
+				{
+					"buffer": 22,
+					"file": "/home/roman/Dokumente/Sources/Arduino-Projects/Simple-Arduino-Frequency-Counter/frequency_counter.ino",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 890,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"color_scheme": "Packages/Babel/Next Roman.tmTheme",
+							"syntax": "Packages/C++11/C++11.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 7,
+					"type": "text"
+				},
+				{
+					"buffer": 23,
+					"file": "CMakeLists.txt",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 40562,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								4265,
+								4265
+							]
+						],
+						"settings":
+						{
+							"color_scheme": "Packages/Babel/Next Roman.tmTheme",
+							"syntax": "Packages/CMakeEditor/CMakeEditor.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 2522.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 27,
+					"type": "text"
+				},
+				{
+					"buffer": 24,
+					"file": "/home/roman/Arduino/libraries/Nokia_5110_LCD_library/src/Nokia_LCD.cpp",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 7857,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								4,
+								4
+							]
+						],
+						"settings":
+						{
+							"color_scheme": "Packages/Babel/Next Roman.tmTheme",
+							"syntax": "Packages/C++/C++.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 24,
+					"type": "text"
+				},
+				{
+					"buffer": 25,
+					"file": "/home/roman/Arduino/libraries/Nokia_5110/src/Nokia_5110.h",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1363,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								550,
+								550
+							]
+						],
+						"settings":
+						{
+							"color_scheme": "Packages/Babel/Next Roman.tmTheme",
+							"syntax": "Packages/C++/C++.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 60.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 23,
+					"type": "text"
+				},
+				{
+					"buffer": 26,
+					"file": "/home/roman/Arduino/libraries/Adafruit_GFX_Library/Adafruit_SPITFT.cpp",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 95531,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								66577,
+								66577
+							]
+						],
+						"settings":
+						{
+							"color_scheme": "Packages/Babel/Next Roman.tmTheme",
+							"syntax": "Packages/C++/C++.sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 31777.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 25,
+					"type": "text"
+				},
+				{
+					"buffer": 27,
+					"file": "/home/roman/Arduino/libraries/Nokia_5110/src/Nokia_5110.cpp",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 4183,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2914,
+								2914
+							]
+						],
+						"settings":
+						{
+							"color_scheme": "Packages/Babel/Next Roman.tmTheme",
+							"syntax": "Packages/C++/C++.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 26,
+					"type": "text"
 				}
 			]
 		}
 	],
 	"incremental_find":
 	{
-		"height": 44.0
+		"height": 29.0
 	},
 	"input":
 	{
@@ -1582,29 +1956,20 @@
 		"cells":
 		[
 			[
-				2,
-				0,
-				3,
-				2
-			],
-			[
 				0,
 				0,
-				2,
-				2
+				1,
+				1
 			]
 		],
 		"cols":
 		[
 			0.0,
-			0.2,
-			0.8,
 			1.0
 		],
 		"rows":
 		[
 			0.0,
-			0.5,
 			1.0
 		]
 	},
@@ -1649,7 +2014,7 @@
 	"project": "c-utils.sublime-project",
 	"replace":
 	{
-		"height": 84.0
+		"height": 74.0
 	},
 	"save_all_on_build": true,
 	"select_file":
@@ -1659,40 +2024,292 @@
 		"selected_items":
 		[
 			[
-				"ini.c",
-				"ini.c"
-			],
-			[
-				"stralloc_",
-				"lib/stralloc/stralloc_trimr.c"
-			],
-			[
-				"testini",
-				"testini.c"
-			],
-			[
-				"genma",
-				"genmakefile.h"
-			],
-			[
-				"pkgcfg.c",
-				"pkgcfg.c"
-			],
-			[
-				"sttr_dup",
-				"lib/str/str_dup.c"
+				"cmakeli",
+				"CMakeLists.txt"
 			],
 			[
 				"slist.h",
 				"lib/slist.h"
 			],
 			[
-				"slist_pu",
-				"lib/slist/slist_push.c"
+				"containsb",
+				"lib/strlist/strlist_containsb.c"
 			],
 			[
 				"strlist.h",
 				"lib/strlist.h"
+			],
+			[
+				"contains",
+				"lib/strlist/strlist_contains.c"
+			],
+			[
+				"strlist_diff",
+				"lib/strlist/strlist_diff.c"
+			],
+			[
+				"strlist_",
+				"lib/strlist/strlist_pushb.c"
+			],
+			[
+				"genma",
+				"genmakefile.h"
+			],
+			[
+				"genm",
+				"genmakefile.h"
+			],
+			[
+				"genmakefile",
+				"genmakefile.h"
+			],
+			[
+				"strarray.h",
+				"lib/strarray.h"
+			],
+			[
+				"str.h",
+				"lib/str.h"
+			],
+			[
+				"seed.c",
+				"lib/uint32/uint32_seed.c"
+			],
+			[
+				"uint32",
+				"lib/uint32.h"
+			],
+			[
+				"list.h",
+				"lib/strlist.h"
+			],
+			[
+				"unshift",
+				"lib/strlist/strlist_unshift.c"
+			],
+			[
+				"map.h",
+				"map.h"
+			],
+			[
+				"genmake",
+				"genmakefile.h"
+			],
+			[
+				"strarray_push",
+				"lib/strarray/strarray_pushb.c"
+			],
+			[
+				"index_of",
+				"lib/strarray/strarray_index_of.c"
+			],
+			[
+				"stralloc_remove",
+				"lib/stralloc/stralloc_remove.c"
+			],
+			[
+				"mplab.c",
+				"mplab.c"
+			],
+			[
+				"fmt_esca",
+				"lib/fmt/fmt_escapecharjson.c"
+			],
+			[
+				"genmakefile.h",
+				"genmakefile.h"
+			],
+			[
+				"rdir_rea",
+				"lib/rdir/rdir_read.c"
+			],
+			[
+				"canoni",
+				"lib/path/path_canonical.c"
+			],
+			[
+				"path.h",
+				"lib/path.h"
+			],
+			[
+				"path_relative",
+				"lib/path/path_relative.c"
+			],
+			[
+				"byte.h",
+				"lib/byte.h"
+			],
+			[
+				"pushb",
+				"lib/strlist/strlist_pushb.c"
+			],
+			[
+				"strlist_pushb",
+				"lib/strlist/strlist_pushb_unique.c"
+			],
+			[
+				"path.",
+				"lib/path.h"
+			],
+			[
+				"path_ex",
+				"lib/path/path_exists.c"
+			],
+			[
+				"path_bas",
+				"lib/path/path_basename.c"
+			],
+			[
+				"path_concat",
+				"lib/path/path_concat.c"
+			],
+			[
+				"stralloc.h",
+				"lib/stralloc.h"
+			],
+			[
+				"slist_pushb",
+				"lib/slist/slist_pushb.c"
+			],
+			[
+				"unshiftb",
+				"lib/slist/slist_unshiftb.c"
+			],
+			[
+				"slist_shift",
+				"lib/slist/slist_shift.c"
+			],
+			[
+				"pushs",
+				"lib/slist/slist_pushs.c"
+			],
+			[
+				"slist_",
+				"lib/slist/slist_init.c"
+			],
+			[
+				"collapse",
+				"lib/path/path_collapse.c"
+			],
+			[
+				"path_",
+				"lib/path/path_num.c"
+			],
+			[
+				"ini.c",
+				"ini.c"
+			],
+			[
+				"mplab",
+				"mplab.c"
+			],
+			[
+				"ini.h",
+				"ini.h"
+			],
+			[
+				"buffer_write_fd",
+				"lib/buffer/buffer_write_fd.c"
+			],
+			[
+				"buffer_wr",
+				"lib/buffer/buffer_write.c"
+			],
+			[
+				"uint16.h",
+				"lib/uint16.h"
+			],
+			[
+				"scan_utf",
+				"lib/scan/scan_utf8.c"
+			],
+			[
+				"buffer.h",
+				"lib/buffer.h"
+			],
+			[
+				"stralloc_fm",
+				"lib/stralloc/stralloc_fmt_call.c"
+			],
+			[
+				"utf8.c",
+				"lib/fmt/fmt_utf8.c"
+			],
+			[
+				"skip",
+				"lib/buffer/buffer_skipn.c"
+			],
+			[
+				"hmap_dump",
+				"lib/hmap/hmap_dump.c"
+			],
+			[
+				"mult.c",
+				"examples/mult.c"
+			],
+			[
+				"list-r",
+				"list-r.c"
+			],
+			[
+				"pkgcfg.c",
+				"pkgcfg.c"
+			],
+			[
+				"umul",
+				"lib/safemult/umult64.c"
+			],
+			[
+				"taia",
+				"lib/taia.h"
+			],
+			[
+				"tcping",
+				"tcping.c"
+			],
+			[
+				"strip-c",
+				"strip-comments.c"
+			],
+			[
+				"setuid",
+				"setuidgid.c"
+			],
+			[
+				"buffer_get",
+				"lib/buffer/buffer_get.c"
+			],
+			[
+				"buffer_peek",
+				"lib/buffer/buffer_peek.c"
+			],
+			[
+				"testini",
+				"testini.c"
+			],
+			[
+				"cmake",
+				"CMakeLists.txt"
+			],
+			[
+				"umult",
+				"lib/safemult/umult64.c"
+			],
+			[
+				"tcpin",
+				"tcping.c"
+			],
+			[
+				"stralloc_",
+				"lib/stralloc/stralloc_trimr.c"
+			],
+			[
+				"sttr_dup",
+				"lib/str/str_dup.c"
+			],
+			[
+				"slist_pu",
+				"lib/slist/slist_push.c"
 			],
 			[
 				"GNU",
@@ -1709,14 +2326,6 @@
 			[
 				"piccfg",
 				"piccfg.c"
-			],
-			[
-				"map.h",
-				"map.h"
-			],
-			[
-				"genmake",
-				"genmakefile.h"
 			],
 			[
 				"getopt.h",
@@ -1747,20 +2356,12 @@
 				"lib/strlist/strlist_sort.c"
 			],
 			[
-				"strarray.h",
-				"lib/strarray.h"
-			],
-			[
 				"filter",
 				"build/x86_64-linux-musl/CMakeFiles/regfilter.dir/cmake_clean.cmake"
 			],
 			[
 				"hashmap.h",
 				"lib/hashmap.h"
-			],
-			[
-				"byte.h",
-				"lib/byte.h"
 			],
 			[
 				"linked",
@@ -1795,10 +2396,6 @@
 				"lib/rdir/rdir_read.c"
 			],
 			[
-				"cmake",
-				"CMakeLists.txt"
-			],
-			[
 				"rdir_",
 				"lib/dir/dir_open.c"
 			],
@@ -1817,10 +2414,6 @@
 			[
 				"read.c",
 				"lib/dir/dir_read.c"
-			],
-			[
-				"mplab.c",
-				"mplab.c"
 			],
 			[
 				"mplab.h",
@@ -1867,10 +2460,6 @@
 				"msys-shell.c"
 			],
 			[
-				"ini.h",
-				"ini.h"
-			],
-			[
 				"xml2moon.c",
 				"xml2moon.c"
 			],
@@ -1881,10 +2470,6 @@
 			[
 				"hmap.j",
 				"build/.cmake/api/v1/reply/target-hmap-618dc598ca6c474cbfbf.json"
-			],
-			[
-				"mplab",
-				"mplab.c"
 			],
 			[
 				"cc-wrap",
@@ -1915,16 +2500,8 @@
 				"lib/stralloc/stralloc_erase.c"
 			],
 			[
-				"stralloc.h",
-				"lib/stralloc.h"
-			],
-			[
 				"unshifts",
 				"lib/slist/slist_unshifts.c"
-			],
-			[
-				"str.h",
-				"lib/str.h"
 			],
 			[
 				"pushs.c",
@@ -1951,224 +2528,12 @@
 				"lib/open.h"
 			],
 			[
-				"cmakeli",
-				"CMakeLists.txt"
-			],
-			[
 				"strlist",
 				"lib/strlist.h"
 			],
 			[
 				"quickjs",
 				"~/Dokumente/Sources/plot-cv/quickjs/quickjs.c"
-			],
-			[
-				"str_find",
-				"lib/str/str_find.c"
-			],
-			[
-				"str_str",
-				"lib/str/str_istr.c"
-			],
-			[
-				"wordexp.h",
-				"lib/wordexp.h"
-			],
-			[
-				"cfg.s",
-				"cfg.sh"
-			],
-			[
-				"cmakel",
-				"CMakeLists.txt"
-			],
-			[
-				"trunc",
-				"lib/stralloc/stralloc_trunc.c"
-			],
-			[
-				"ready.c",
-				"lib/stralloc/stralloc_ready.c"
-			],
-			[
-				"readyplu",
-				"lib/stralloc/stralloc_readyplus.c"
-			],
-			[
-				"insertb.c",
-				"lib/stralloc/stralloc_insertb.c"
-			],
-			[
-				"prependb",
-				"lib/stralloc/stralloc_prependb.c"
-			],
-			[
-				"prepends",
-				"lib/stralloc/stralloc_prepends.c"
-			],
-			[
-				"stralloc_pre",
-				"lib/stralloc/stralloc_prepend.c"
-			],
-			[
-				"env_get",
-				"lib/env/env_get.c"
-			],
-			[
-				"path.h",
-				"lib/path.h"
-			],
-			[
-				"path_read",
-				"lib/path/path_readlink.c"
-			],
-			[
-				"wordex",
-				"lib/unix/wordexp.c"
-			],
-			[
-				"wordexp",
-				"lib/unix/wordexp.c"
-			],
-			[
-				"strlist_coun",
-				"lib/strlist/strlist_count.c"
-			],
-			[
-				"strlist_from",
-				"lib/strlist/strlist_froms.c"
-			],
-			[
-				"cbmap",
-				"lib/cbmap.h"
-			],
-			[
-				"xmlpp",
-				"xmlpp.c"
-			],
-			[
-				"strip-c",
-				"strip-comments.c"
-			],
-			[
-				"gen-ma",
-				"scripts/gen-makefile-deps.sh"
-			],
-			[
-				"gen-",
-				"scripts/gen-makefile-deps.sh"
-			],
-			[
-				"CMakeLists",
-				"CMakeLists.txt"
-			],
-			[
-				"setuid",
-				"setuidgid.c"
-			],
-			[
-				"scan.h",
-				"lib/scan.h"
-			],
-			[
-				"mmap_read",
-				"lib/mmap/mmap_read.c"
-			],
-			[
-				"alloc.h",
-				"lib/alloc.h"
-			],
-			[
-				"alloc.c",
-				"lib/alloc/alloc.c"
-			],
-			[
-				"functions.mk",
-				"build/functions.mk"
-			],
-			[
-				"func",
-				"FunctionGenerator-ICL8038.brd"
-			],
-			[
-				"dns.h",
-				"lib/dns.h"
-			],
-			[
-				"dnsip",
-				"dnsip.c"
-			],
-			[
-				"case.h",
-				"lib/case.h"
-			],
-			[
-				"rcip",
-				"lib/dns/dns_rcip.c"
-			],
-			[
-				"libc",
-				"libc-resolv-override.c"
-			],
-			[
-				"scan_ip",
-				"lib/socket/scan_ip6.c"
-			],
-			[
-				"ip6",
-				"lib/ip6.h"
-			],
-			[
-				"byte_",
-				"lib/byte/byte_equal.c"
-			],
-			[
-				"buffer_put",
-				"lib/buffer/buffer_putc.c"
-			],
-			[
-				"fmt_ip",
-				"lib/socket/fmt_ip4.c"
-			],
-			[
-				"dns_rc",
-				"lib/dns/dns_rcip.c"
-			],
-			[
-				"packet",
-				"lib/dns/dns_packet.c"
-			],
-			[
-				"libc-",
-				"libc-resolv-override.h"
-			],
-			[
-				"byte_fill",
-				"lib/byte/byte_fill.c"
-			],
-			[
-				"dns_name",
-				"lib/dns/dns_name.c"
-			],
-			[
-				"libc-r",
-				"libc-resolv-override.c"
-			],
-			[
-				"packet.",
-				"lib/dns/dns_packet.c"
-			],
-			[
-				"dns_pack",
-				"lib/dns/dns_packet.c"
-			],
-			[
-				"openread",
-				"lib/stralloc/openreadclose.c"
-			],
-			[
-				"libc-res",
-				"libc-resolv-override.c"
 			]
 		],
 		"width": 0.0
@@ -2191,7 +2556,7 @@
 		],
 		"width": 0.0
 	},
-	"selected_group": 1,
+	"selected_group": 0,
 	"settings":
 	{
 	},
@@ -2199,7 +2564,7 @@
 	"show_open_files": false,
 	"show_tabs": true,
 	"side_bar_visible": true,
-	"side_bar_width": 355.0,
+	"side_bar_width": 363.0,
 	"status_bar_visible": true,
 	"template_settings":
 	{
