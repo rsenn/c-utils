@@ -4,6 +4,10 @@
 		"selected_items":
 		[
 			[
+				"iden",
+				"identifiers"
+			],
+			[
 				"CFLAGS_O",
 				"CFLAGS_ONLY_OTHER"
 			],
@@ -120,111 +124,38 @@
 	"buffers":
 	[
 		{
-			"contents": "PKGCFG_EXISTS\nPKGCFG_PRINT_ERR\nPKGCFG_SHORT_ERR\nget_field_index\nsearch_path\nhost_arch\npkg_get\nwordexp_sa\npkg_expand\npkg_free\npkg_read\nvisit_set\npkg_set\nvisit_unset\npkg_unset\nvisit_dump\npkg_dump\npkg_init\npkg_list\npkg_open\npkg_conf\npkgcfg_init\nusage\nmain",
+			"contents": "",
 			"settings":
 			{
-				"buffer_size": 252,
+				"buffer_size": 0,
 				"line_ending": "Unix",
 				"name": "𝌆 Outline",
 				"scratch": true
 			}
 		},
 		{
-			"file": "genmakefile.c",
+			"file": "/home/roman/.config/sublime-text-3/Packages/User/CNew/CNew.sublime-syntax",
 			"settings":
 			{
-				"buffer_size": 139521,
+				"buffer_size": 1803,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "lib/cb/cb_insert.c",
+			"file": "/home/roman/.config/sublime-text-3/Packages/User/CNew/CNew Roman.sublime-color-scheme",
 			"settings":
 			{
-				"buffer_size": 2431,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "testini.c",
-			"settings":
-			{
-				"buffer_size": 636,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "ini.c",
-			"settings":
-			{
-				"buffer_size": 4539,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "/home/roman/Dokumente/Sources/musl/src/stdlib/qsort.c",
-			"settings":
-			{
-				"buffer_size": 4991,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/strlist/strlist_sort.c",
-			"settings":
-			{
-				"buffer_size": 1085,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "pkgcfg.c",
-			"settings":
-			{
-				"buffer_size": 23104,
+				"buffer_size": 8698,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "map.h",
+			"file": "lib/cas.h",
 			"settings":
 			{
-				"buffer_size": 6316,
-				"encoding": "UTF-8",
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/cb/cb_new_kv.c",
-			"settings":
-			{
-				"buffer_size": 318,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/cb/cb_find.c",
-			"settings":
-			{
-				"buffer_size": 1390,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/dir/dir_name.c",
-			"settings":
-			{
-				"buffer_size": 610,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/cb/cb_find_prefix.c",
-			"settings":
-			{
-				"buffer_size": 1329,
+				"buffer_size": 1949,
 				"line_ending": "Unix"
 			}
 		}
@@ -256,6 +187,18 @@
 		"last_filter": "",
 		"selected_items":
 		[
+			[
+				"schemeed",
+				"SchemeEditor: Edit Current Scheme"
+			],
+			[
+				"install pac",
+				"Package Control: Install Package"
+			],
+			[
+				"remove pac",
+				"Package Control: Remove Package"
+			],
 			[
 				"outlin",
 				"Browse Mode: Outline (Right)"
@@ -325,10 +268,6 @@
 				"SchemeEditor: Edit installed scheme"
 			],
 			[
-				"schemeed",
-				"SchemeEditor: Edit Current Scheme"
-			],
-			[
 				"schemed",
 				"SchemeEditor: Edit Current Scheme"
 			],
@@ -345,10 +284,6 @@
 				"Color Scheme Editor: Edit current color scheme"
 			],
 			[
-				"install pac",
-				"Package Control: Install Package"
-			],
-			[
 				"add repo",
 				"Package Control: Add Repository"
 			],
@@ -359,10 +294,6 @@
 			[
 				"install pack",
 				"Package Control: Install Package"
-			],
-			[
-				"remove pac",
-				"Package Control: Remove Package"
 			],
 			[
 				"add re",
@@ -531,6 +462,22 @@
 	],
 	"file_history":
 	[
+		"/home/roman/Dokumente/Sources/c-utils/setuidgid.c",
+		"/home/roman/.config/sublime-text-3/Packages/RainbowBrackets/README.md",
+		"/home/roman/Dokumente/Sources/c-utils/lib/cb/cb_find.c",
+		"/home/roman/.config/sublime-text-3/Packages/User/Sublime Snippets (Raw).JSON-tmLanguage",
+		"/home/roman/.config/sublime-text-3/Packages/C++/C.sublime-syntax",
+		"/home/roman/.config/sublime-text-3/Packages/User/CNew/CNew.sublime-syntax",
+		"/home/roman/Dokumente/Sources/c-utils/genmakefile.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/cb/cb_insert.c",
+		"/home/roman/Dokumente/Sources/c-utils/testini.c",
+		"/home/roman/Dokumente/Sources/c-utils/ini.c",
+		"/home/roman/Dokumente/Sources/musl/src/stdlib/qsort.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/strlist/strlist_sort.c",
+		"/home/roman/Dokumente/Sources/c-utils/pkgcfg.c",
+		"/home/roman/Dokumente/Sources/c-utils/map.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/cb/cb_new_kv.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/cb/cb_find_prefix.c",
 		"/home/roman/Dokumente/Sources/Arduino-Projects/HB100/HB100.ino",
 		"/home/roman/Dokumente/Sources/Arduino-Projects/HB100-Filtering/HB100-Filtering.ino",
 		"/home/roman/Dokumente/Sources/Arduino-Projects/Frequency_counter_arduino/Frequency_counter_arduino.ino",
@@ -642,23 +589,7 @@
 		"/home/roman/Sources/c-utils/lib/stralloc/stralloc_trimr.c",
 		"/home/roman/Sources/c-utils/piccfg.c",
 		"/home/roman/Sources/c-utils/lib/str/str_dup.c",
-		"/home/roman/Sources/c-utils/lib/slist/slist_push.c",
-		"/home/roman/Sources/c-utils/GNUmakefile",
-		"/home/roman/Sources/c-utils/lib/hmap/hmap_search.c",
-		"/home/roman/Sources/c-utils/lib/unix/getopt.c",
-		"/home/roman/Sources/c-utils/lib/getopt.h",
-		"/home/roman/Sources/c-utils/lib/slist/slist_add_before.c",
-		"/home/roman/Sources/c-utils/lib/strarray/strarray_sort.c",
-		"/home/roman/Sources/c-utils/genmakefile.mk",
-		"/home/roman/Sources/c-utils/lib/strlist/strlist_sort.c",
-		"/home/roman/Sources/c-utils/lib/case/case_diffs.c",
-		"/home/roman/Sources/c-utils/c-utils.sublime-project",
-		"/home/roman/Sources/c-utils/build/x86_64-linux-musl/CMakeFiles/regfilter.dir/cmake_clean.cmake",
-		"/home/roman/Sources/c-utils/lib/strarray/strarray_push.c",
-		"/home/roman/Sources/c-utils/lib/strarray/strarray_index_of_b.c",
-		"/home/roman/Sources/c-utils/lib/strarray/strarray_intersection.c",
-		"/home/roman/Sources/c-utils/lib/strarray/strarray_glob.c",
-		"/home/roman/Sources/c-utils/lib/strarray/strarray_removesuffixs.c"
+		"/home/roman/Sources/c-utils/lib/slist/slist_push.c"
 	],
 	"find":
 	{
@@ -691,6 +622,17 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"example-c",
+			"patterns",
+			"'.*\\\\\\(",
+			"'\\\\\\(",
+			"\\\\\\(",
+			"variable\\.",
+			"identifier",
+			"^ *identif",
+			"identif",
+			"operators",
+			"CNew",
 			"cmd.path",
 			"strlist_foreach",
 			"cmd.path",
@@ -807,18 +749,7 @@
 			"sources_get",
 			"rdir_",
 			"sources_readdir",
-			"is_director",
-			"sourcedir_addsource",
-			"sourcedir.dump",
-			"sourcedir",
-			"gen_link_rules",
-			"sources",
-			"}\n",
-			"recurs",
-			"serial =",
-			"^main\\(",
-			"^main",
-			"random"
+			"is_director"
 		],
 		"highlight": false,
 		"in_selection": false,
@@ -826,6 +757,7 @@
 		"regex": true,
 		"replace_history":
 		[
+			"cnew",
 			"",
 			"MAP_KEY(t)",
 			"MAP_DELETE",
@@ -951,7 +883,7 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 252,
+						"buffer_size": 0,
 						"regions":
 						{
 						},
@@ -960,133 +892,14 @@
 						],
 						"settings":
 						{
-							"current_file": "/home/roman/Dokumente/Sources/c-utils/pkgcfg.c",
+							"color_scheme": "Packages/Outline/outline.hidden-tmTheme",
+							"current_file": "/home/roman/Dokumente/Sources/c-utils/lib/cas.h",
 							"outline_rename_mode": false,
 							"symkeys":
 							[
-								[
-									643,
-									656
-								],
-								[
-									667,
-									683
-								],
-								[
-									694,
-									710
-								],
-								[
-									1476,
-									1491
-								],
-								[
-									1905,
-									1916
-								],
-								[
-									2441,
-									2450
-								],
-								[
-									3809,
-									3816
-								],
-								[
-									4162,
-									4172
-								],
-								[
-									4887,
-									4897
-								],
-								[
-									5508,
-									5516
-								],
-								[
-									5785,
-									5793
-								],
-								[
-									7349,
-									7358
-								],
-								[
-									8109,
-									8116
-								],
-								[
-									8193,
-									8204
-								],
-								[
-									8566,
-									8575
-								],
-								[
-									8712,
-									8722
-								],
-								[
-									9288,
-									9296
-								],
-								[
-									9557,
-									9565
-								],
-								[
-									9709,
-									9717
-								],
-								[
-									11612,
-									11620
-								],
-								[
-									12157,
-									12165
-								],
-								[
-									14069,
-									14080
-								],
-								[
-									16972,
-									16977
-								],
-								[
-									17703,
-									17707
-								]
 							],
 							"symlist":
 							[
-								"PKGCFG_EXISTS",
-								"PKGCFG_PRINT_ERR",
-								"PKGCFG_SHORT_ERR",
-								"get_field_index",
-								"search_path",
-								"host_arch",
-								"pkg_get",
-								"wordexp_sa",
-								"pkg_expand",
-								"pkg_free",
-								"pkg_read",
-								"visit_set",
-								"pkg_set",
-								"visit_unset",
-								"pkg_unset",
-								"visit_dump",
-								"pkg_dump",
-								"pkg_init",
-								"pkg_list",
-								"pkg_open",
-								"pkg_conf",
-								"pkgcfg_init",
-								"usage",
-								"main"
 							],
 							"syntax": "Packages/Outline/outline.hidden-tmLanguage"
 						},
@@ -1094,305 +907,36 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 9,
+					"stack_index": 3,
 					"type": "text"
 				}
 			]
 		},
 		{
-			"selected": 6,
+			"selected": 2,
 			"sheets":
 			[
 				{
 					"buffer": 1,
-					"file": "genmakefile.c",
+					"file": "/home/roman/.config/sublime-text-3/Packages/User/CNew/CNew.sublime-syntax",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 139521,
+						"buffer_size": 1803,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								65452,
-								65452
+								1001,
+								1001
 							]
 						],
 						"settings":
 						{
-							"color_scheme": "Packages/Babel/Next Roman.tmTheme",
-							"syntax": "Packages/C99/C99.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 50898.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 12,
-					"type": "text"
-				},
-				{
-					"buffer": 2,
-					"file": "lib/cb/cb_insert.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 2431,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C99/C99.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 11,
-					"type": "text"
-				},
-				{
-					"buffer": 3,
-					"file": "testini.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 636,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C99/C99.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 10,
-					"type": "text"
-				},
-				{
-					"buffer": 4,
-					"file": "ini.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 4539,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								2665,
-								2665
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C99/C99.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 2260.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 8,
-					"type": "text"
-				},
-				{
-					"buffer": 5,
-					"file": "/home/roman/Dokumente/Sources/musl/src/stdlib/qsort.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 4991,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C99/C99.tmLanguage",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 481.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 7,
-					"type": "text"
-				},
-				{
-					"buffer": 6,
-					"file": "lib/strlist/strlist_sort.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 1085,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								403,
-								403
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C99/C99.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 121.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 6,
-					"type": "text"
-				},
-				{
-					"buffer": 7,
-					"file": "pkgcfg.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 23104,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								15938,
-								15938
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C99/C99.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 15303.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 0,
-					"type": "text"
-				},
-				{
-					"buffer": 8,
-					"file": "map.h",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 6316,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								4677,
-								4677
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C++/C++.sublime-syntax",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 3001.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 5,
-					"type": "text"
-				},
-				{
-					"buffer": 9,
-					"file": "lib/cb/cb_new_kv.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 318,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C99/C99.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 4,
-					"type": "text"
-				},
-				{
-					"buffer": 10,
-					"file": "lib/cb/cb_find.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 1390,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C99/C99.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
+							"color_scheme": "Packages/Neon Color Scheme/Neon.tmTheme",
+							"syntax": "Packages/YAML/YAML.sublime-syntax"
 						},
 						"translation.x": 0.0,
 						"translation.y": 0.0,
@@ -1402,25 +946,281 @@
 					"type": "text"
 				},
 				{
-					"buffer": 11,
-					"file": "lib/dir/dir_name.c",
-					"semi_transient": true,
+					"buffer": 2,
+					"file": "/home/roman/.config/sublime-text-3/Packages/User/CNew/CNew Roman.sublime-color-scheme",
+					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 610,
+						"buffer_size": 8698,
 						"regions":
 						{
+							"col_00FF00FF":
+							{
+								"flags": 16,
+								"regions":
+								[
+									[
+										272,
+										286
+									]
+								],
+								"scope": "col_00FF00FF"
+							},
+							"col_00FF00FF_icon":
+							{
+								"flags": 16,
+								"icon": "Packages/User/Color Highlight.cache/col_00FF00FF_circle.png",
+								"regions":
+								[
+									[
+										257,
+										257
+									]
+								],
+								"scope": "col_gutter"
+							},
+							"col_00FFFFFF":
+							{
+								"flags": 16,
+								"regions":
+								[
+									[
+										135,
+										151
+									]
+								],
+								"scope": "col_00FFFFFF"
+							},
+							"col_00FFFFFF_icon":
+							{
+								"flags": 16,
+								"icon": "Packages/User/Color Highlight.cache/col_00FFFFFF_circle.png",
+								"regions":
+								[
+									[
+										117,
+										117
+									]
+								],
+								"scope": "col_gutter"
+							},
+							"col_010101FF":
+							{
+								"flags": 16,
+								"regions":
+								[
+									[
+										102,
+										114
+									]
+								],
+								"scope": "col_010101FF"
+							},
+							"col_010101FF_icon":
+							{
+								"flags": 16,
+								"icon": "Packages/User/Color Highlight.cache/col_010101FF_circle.png",
+								"regions":
+								[
+									[
+										87,
+										87
+									]
+								],
+								"scope": "col_gutter"
+							},
+							"col_282828FF":
+							{
+								"flags": 16,
+								"regions":
+								[
+									[
+										343,
+										356
+									]
+								],
+								"scope": "col_282828FF"
+							},
+							"col_282828FF_icon":
+							{
+								"flags": 16,
+								"icon": "Packages/User/Color Highlight.cache/col_282828FF_circle.png",
+								"regions":
+								[
+									[
+										326,
+										326
+									]
+								],
+								"scope": "col_gutter"
+							},
+							"col_787878FF":
+							{
+								"flags": 16,
+								"regions":
+								[
+									[
+										375,
+										391
+									]
+								],
+								"scope": "col_787878FF"
+							},
+							"col_787878FF_icon":
+							{
+								"flags": 16,
+								"icon": "Packages/User/Color Highlight.cache/col_787878FF_circle.png",
+								"regions":
+								[
+									[
+										359,
+										359
+									]
+								],
+								"scope": "col_gutter"
+							},
+							"col_FF0000FF":
+							{
+								"flags": 16,
+								"regions":
+								[
+									[
+										205,
+										219
+									]
+								],
+								"scope": "col_FF0000FF"
+							},
+							"col_FF0000FF_icon":
+							{
+								"flags": 16,
+								"icon": "Packages/User/Color Highlight.cache/col_FF0000FF_circle.png",
+								"regions":
+								[
+									[
+										188,
+										188
+									]
+								],
+								"scope": "col_gutter"
+							},
+							"col_FF8000FF":
+							{
+								"flags": 16,
+								"regions":
+								[
+									[
+										238,
+										254
+									]
+								],
+								"scope": "col_FF8000FF"
+							},
+							"col_FF8000FF_icon":
+							{
+								"flags": 16,
+								"icon": "Packages/User/Color Highlight.cache/col_FF8000FF_circle.png",
+								"regions":
+								[
+									[
+										222,
+										222
+									]
+								],
+								"scope": "col_gutter"
+							},
+							"col_FFFF00FF":
+							{
+								"flags": 16,
+								"regions":
+								[
+									[
+										169,
+										185
+									]
+								],
+								"scope": "col_FFFF00FF"
+							},
+							"col_FFFF00FF_icon":
+							{
+								"flags": 16,
+								"icon": "Packages/User/Color Highlight.cache/col_FFFF00FF_circle.png",
+								"regions":
+								[
+									[
+										154,
+										154
+									]
+								],
+								"scope": "col_gutter"
+							},
+							"col_FFFFFFFF":
+							{
+								"flags": 16,
+								"regions":
+								[
+									[
+										298,
+										303
+									],
+									[
+										307,
+										323
+									],
+									[
+										515,
+										520
+									],
+									[
+										557,
+										562
+									],
+									[
+										1073,
+										1078
+									]
+								],
+								"scope": "col_FFFFFFFF"
+							},
+							"col_FFFFFFFF_icon":
+							{
+								"flags": 16,
+								"icon": "Packages/User/Color Highlight.cache/col_FFFFFFFF_circle.png",
+								"regions":
+								[
+									[
+										289,
+										289
+									],
+									[
+										493,
+										493
+									],
+									[
+										524,
+										524
+									],
+									[
+										1023,
+										1023
+									]
+								],
+								"scope": "col_gutter"
+							}
 						},
 						"selection":
 						[
 							[
-								0,
-								0
+								4678,
+								4678
 							]
 						],
 						"settings":
 						{
-							"syntax": "Packages/C99/C99.tmLanguage"
+							"color_scheme": "Packages/Neon Color Scheme/Neon.tmTheme",
+							"syntax": "Packages/PackageDev/Package/Sublime Text Color Scheme/Sublime Text Color Scheme.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
 						"translation.y": 0.0,
@@ -1430,14 +1230,39 @@
 					"type": "text"
 				},
 				{
-					"buffer": 12,
-					"file": "lib/cb/cb_find_prefix.c",
-					"semi_transient": false,
+					"buffer": 3,
+					"file": "lib/cas.h",
+					"semi_transient": true,
 					"settings":
 					{
-						"buffer_size": 1329,
+						"buffer_size": 1949,
 						"regions":
 						{
+							"col_FFFF0FC0":
+							{
+								"flags": 16,
+								"regions":
+								[
+									[
+										971,
+										981
+									]
+								],
+								"scope": "col_FFFF0FC0"
+							},
+							"col_FFFF0FC0_icon":
+							{
+								"flags": 16,
+								"icon": "Packages/User/Color Highlight.cache/col_FFFF0FC0_circle.png",
+								"regions":
+								[
+									[
+										945,
+										945
+									]
+								],
+								"scope": "col_gutter"
+							}
 						},
 						"selection":
 						[
@@ -1448,7 +1273,8 @@
 						],
 						"settings":
 						{
-							"syntax": "Packages/C99/C99.tmLanguage",
+							"color_scheme": "Packages/Neon Color Scheme/Neon.tmTheme",
+							"syntax": "Packages/User/CNew/CNew.sublime-syntax",
 							"tab_size": 2,
 							"translate_tabs_to_spaces": true
 						},
@@ -1456,7 +1282,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 3,
+					"stack_index": 0,
 					"type": "text"
 				}
 			]
@@ -1501,7 +1327,7 @@
 			1.0
 		]
 	},
-	"menu_visible": true,
+	"menu_visible": false,
 	"output.CSS Extended Completions":
 	{
 		"height": 0.0
@@ -1551,6 +1377,10 @@
 		"last_filter": "",
 		"selected_items":
 		[
+			[
+				"setuidgid",
+				"setuidgid.c"
+			],
 			[
 				"map.h",
 				"map.h"
@@ -2058,10 +1888,6 @@
 			[
 				"readclose",
 				"lib/stralloc/readclose.c"
-			],
-			[
-				"open.h",
-				"lib/open.h"
 			]
 		],
 		"width": 0.0
