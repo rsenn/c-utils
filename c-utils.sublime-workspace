@@ -120,10 +120,10 @@
 	"buffers":
 	[
 		{
-			"contents": "lcd\nButton\nISR\ninterrupt\nsetup\nloop",
+			"contents": "PKGCFG_EXISTS\nPKGCFG_PRINT_ERR\nPKGCFG_SHORT_ERR\nget_field_index\nsearch_path\nhost_arch\npkg_get\nwordexp_sa\npkg_expand\npkg_free\npkg_read\nvisit_set\npkg_set\nvisit_unset\npkg_unset\nvisit_dump\npkg_dump\npkg_init\npkg_list\npkg_open\npkg_conf\npkgcfg_init\nusage\nmain",
 			"settings":
 			{
-				"buffer_size": 35,
+				"buffer_size": 252,
 				"line_ending": "Unix",
 				"name": "𝌆 Outline",
 				"scratch": true
@@ -139,39 +139,65 @@
 			}
 		},
 		{
-			"file": "/home/roman/Dokumente/Sources/Arduino-Projects/HB100/HB100.ino",
+			"file": "lib/cb/cb_insert.c",
 			"settings":
 			{
-				"buffer_size": 2975,
+				"buffer_size": 2431,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "/home/roman/Dokumente/Sources/Arduino-Projects/HB100-Filtering/HB100-Filtering.ino",
+			"file": "testini.c",
 			"settings":
 			{
-				"buffer_size": 3239,
+				"buffer_size": 636,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "/home/roman/Dokumente/Sources/Arduino-Projects/Frequency_counter_arduino/Frequency_counter_arduino.ino",
+			"file": "ini.c",
 			"settings":
 			{
-				"buffer_size": 947,
+				"buffer_size": 4539,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "/home/roman/Dokumente/Sources/Arduino-Projects/Inductance_Capacitance_Meter/Inductance_Capacitance_Meter.ino",
+			"file": "/home/roman/Dokumente/Sources/musl/src/stdlib/qsort.c",
 			"settings":
 			{
-				"buffer_size": 13581,
+				"buffer_size": 4991,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "/home/roman/Dokumente/Sources/Arduino-Projects/libraries/TimerOne/examples/ATTiny85/ATTiny85.ino",
+			"file": "lib/strlist/strlist_sort.c",
+			"settings":
+			{
+				"buffer_size": 1085,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "pkgcfg.c",
+			"settings":
+			{
+				"buffer_size": 23104,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "map.h",
+			"settings":
+			{
+				"buffer_size": 6316,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/cb/cb_new_kv.c",
 			"settings":
 			{
 				"buffer_size": 318,
@@ -179,171 +205,26 @@
 			}
 		},
 		{
-			"file": "/home/roman/Dokumente/Sources/Arduino-Projects/ArduPIC32/ArduPIC32.ino",
+			"file": "lib/cb/cb_find.c",
 			"settings":
 			{
-				"buffer_size": 10545,
+				"buffer_size": 1390,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "/home/roman/Dokumente/Sources/Arduino-Projects/WhistleSwitch/WhistleSwitch.ino",
+			"file": "lib/dir/dir_name.c",
 			"settings":
 			{
-				"buffer_size": 58041,
+				"buffer_size": 610,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "/home/roman/Dokumente/Sources/Arduino-Projects/FunctionGeneratorABMS/Arduino_Frequency_Counter_Duty_Cycle_Meter_2.ino",
+			"file": "lib/cb/cb_find_prefix.c",
 			"settings":
 			{
-				"buffer_size": 8977,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "/home/roman/Dokumente/Sources/Arduino-Projects/FunctionGeneratorABMS/Arduino_Frequency_Counter_Duty_Cycle_Meter_4.ino",
-			"settings":
-			{
-				"buffer_size": 9911,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "/home/roman/Dokumente/Sources/Arduino-Projects/FunctionGeneratorABMS/Arduino_Frequency_Counter_Duty_Cycle_Meter_5.ino",
-			"settings":
-			{
-				"buffer_size": 8948,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "/home/roman/Dokumente/Sources/Arduino-Projects/FunctionGeneratorABMS/Arduino_Frequency_Counter_Duty_Cycle_Meter.ino",
-			"settings":
-			{
-				"buffer_size": 2736,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "/home/roman/Dokumente/Sources/Arduino-Projects/ArduinoFunctionGenerator/ArduinoFunctionGenerator.ino",
-			"settings":
-			{
-				"buffer_size": 5593,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "/home/roman/Dokumente/Sources/Arduino-Projects/scope/scope.ino",
-			"settings":
-			{
-				"buffer_size": 5944,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "/home/roman/Dokumente/Sources/Arduino-Projects/Inductance_Meter/Inductance_Meter.ino",
-			"settings":
-			{
-				"buffer_size": 4122,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "/home/roman/Dokumente/Sources/Arduino-Projects/ArduinoAdcAndFrequencyEstimation/Arduino/ADC_Streamer.ino",
-			"settings":
-			{
-				"buffer_size": 752,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "/home/roman/Dokumente/Sources/Arduino-Projects/BlinkWithoutDelay/BlinkWithoutDelay.ino",
-			"settings":
-			{
-				"buffer_size": 1865,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "/home/roman/Dokumente/Sources/Arduino-Projects/small-scope/small-scope.ino",
-			"settings":
-			{
-				"buffer_size": 6101,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "/home/roman/Dokumente/Sources/Arduino-Projects/FunctionGenerator/FunctionGenerator.ino",
-			"settings":
-			{
-				"buffer_size": 1964,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "/home/roman/Dokumente/Sources/Arduino-Projects/function_generator/function_generator.ino",
-			"settings":
-			{
-				"buffer_size": 14018,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "/home/roman/Dokumente/Sources/Arduino-Projects/Arduino-Frequency-Counter/FrequencyCounter.ino",
-			"settings":
-			{
-				"buffer_size": 2360,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "/home/roman/Dokumente/Sources/Arduino-Projects/Simple-Arduino-Frequency-Counter/frequency_counter.ino",
-			"settings":
-			{
-				"buffer_size": 890,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "CMakeLists.txt",
-			"settings":
-			{
-				"buffer_size": 40562,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "/home/roman/Arduino/libraries/Nokia_5110_LCD_library/src/Nokia_LCD.cpp",
-			"settings":
-			{
-				"buffer_size": 7857,
-				"encoding": "UTF-8",
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "/home/roman/Arduino/libraries/Nokia_5110/src/Nokia_5110.h",
-			"settings":
-			{
-				"buffer_size": 1363,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "/home/roman/Arduino/libraries/Adafruit_GFX_Library/Adafruit_SPITFT.cpp",
-			"settings":
-			{
-				"buffer_size": 95531,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "/home/roman/Arduino/libraries/Nokia_5110/src/Nokia_5110.cpp",
-			"settings":
-			{
-				"buffer_size": 4183,
+				"buffer_size": 1329,
 				"line_ending": "Unix"
 			}
 		}
@@ -375,6 +256,10 @@
 		"last_filter": "",
 		"selected_items":
 		[
+			[
+				"outlin",
+				"Browse Mode: Outline (Right)"
+			],
 			[
 				"ctags",
 				"CTags: Rebuild Tags"
@@ -410,10 +295,6 @@
 			[
 				"install ",
 				"Package Control: Install Package"
-			],
-			[
-				"outlin",
-				"Browse Mode: Outline (Right)"
 			],
 			[
 				"Package Control: ",
@@ -639,10 +520,43 @@
 	},
 	"expanded_folders":
 	[
-		"/home/roman/Dokumente/Sources/c-utils"
+		"/home/roman/Dokumente/Sources/c-utils",
+		"/home/roman/Dokumente/Sources/c-utils/lib",
+		"/home/roman/Dokumente/Sources/c-utils/lib/cb",
+		"/home/roman/Dokumente/Sources/c-utils/lib/cbmap",
+		"/home/roman/Dokumente/Sources/c-utils/lib/charbuf",
+		"/home/roman/Dokumente/Sources/c-utils/lib/coff",
+		"/home/roman/Dokumente/Sources/c-utils/lib/dir",
+		"/home/roman/Dokumente/Sources/c-utils/lib/dns"
 	],
 	"file_history":
 	[
+		"/home/roman/Dokumente/Sources/Arduino-Projects/HB100/HB100.ino",
+		"/home/roman/Dokumente/Sources/Arduino-Projects/HB100-Filtering/HB100-Filtering.ino",
+		"/home/roman/Dokumente/Sources/Arduino-Projects/Frequency_counter_arduino/Frequency_counter_arduino.ino",
+		"/home/roman/Dokumente/Sources/Arduino-Projects/Inductance_Capacitance_Meter/Inductance_Capacitance_Meter.ino",
+		"/home/roman/Dokumente/Sources/Arduino-Projects/libraries/TimerOne/examples/ATTiny85/ATTiny85.ino",
+		"/home/roman/Dokumente/Sources/Arduino-Projects/ArduPIC32/ArduPIC32.ino",
+		"/home/roman/Dokumente/Sources/Arduino-Projects/WhistleSwitch/WhistleSwitch.ino",
+		"/home/roman/Dokumente/Sources/Arduino-Projects/FunctionGeneratorABMS/Arduino_Frequency_Counter_Duty_Cycle_Meter_2.ino",
+		"/home/roman/Dokumente/Sources/Arduino-Projects/FunctionGeneratorABMS/Arduino_Frequency_Counter_Duty_Cycle_Meter_4.ino",
+		"/home/roman/Dokumente/Sources/Arduino-Projects/FunctionGeneratorABMS/Arduino_Frequency_Counter_Duty_Cycle_Meter_5.ino",
+		"/home/roman/Dokumente/Sources/Arduino-Projects/FunctionGeneratorABMS/Arduino_Frequency_Counter_Duty_Cycle_Meter.ino",
+		"/home/roman/Dokumente/Sources/Arduino-Projects/ArduinoFunctionGenerator/ArduinoFunctionGenerator.ino",
+		"/home/roman/Dokumente/Sources/Arduino-Projects/scope/scope.ino",
+		"/home/roman/Dokumente/Sources/Arduino-Projects/Inductance_Meter/Inductance_Meter.ino",
+		"/home/roman/Dokumente/Sources/Arduino-Projects/ArduinoAdcAndFrequencyEstimation/Arduino/ADC_Streamer.ino",
+		"/home/roman/Dokumente/Sources/Arduino-Projects/BlinkWithoutDelay/BlinkWithoutDelay.ino",
+		"/home/roman/Dokumente/Sources/Arduino-Projects/small-scope/small-scope.ino",
+		"/home/roman/Dokumente/Sources/Arduino-Projects/FunctionGenerator/FunctionGenerator.ino",
+		"/home/roman/Dokumente/Sources/Arduino-Projects/function_generator/function_generator.ino",
+		"/home/roman/Dokumente/Sources/Arduino-Projects/Arduino-Frequency-Counter/FrequencyCounter.ino",
+		"/home/roman/Dokumente/Sources/Arduino-Projects/Simple-Arduino-Frequency-Counter/frequency_counter.ino",
+		"/home/roman/Dokumente/Sources/c-utils/CMakeLists.txt",
+		"/home/roman/Arduino/libraries/Nokia_5110_LCD_library/src/Nokia_LCD.cpp",
+		"/home/roman/Arduino/libraries/Nokia_5110/src/Nokia_5110.h",
+		"/home/roman/Arduino/libraries/Adafruit_GFX_Library/Adafruit_SPITFT.cpp",
+		"/home/roman/Arduino/libraries/Nokia_5110/src/Nokia_5110.cpp",
 		"/home/roman/Sources/c-utils/lib/strarray.h",
 		"/home/roman/Sources/c-utils/lib/str.h",
 		"/home/roman/Sources/c-utils/lib/uint32/uint32_seed.c",
@@ -744,33 +658,7 @@
 		"/home/roman/Sources/c-utils/lib/strarray/strarray_index_of_b.c",
 		"/home/roman/Sources/c-utils/lib/strarray/strarray_intersection.c",
 		"/home/roman/Sources/c-utils/lib/strarray/strarray_glob.c",
-		"/home/roman/Sources/c-utils/lib/strarray/strarray_removesuffixs.c",
-		"/home/roman/Sources/c-utils/lib/strarray/strarray_transform.c",
-		"/home/roman/Sources/c-utils/lib/strarray/strarray_pop.c",
-		"/home/roman/Sources/c-utils/lib/hashmap/hashmap_get.c",
-		"/home/roman/Sources/c-utils/lib/hashmap/hashmap_find.c",
-		"/home/roman/Sources/c-utils/lib/hashmap/hashmap_free.c",
-		"/home/roman/Sources/c-utils/lib/hashmap/hashmap_keys.c",
-		"/home/roman/Sources/c-utils/lib/hashmap/hashmap_remove.c",
-		"/home/roman/Sources/c-utils/lib/hashmap/hashmap_search.c",
-		"/home/roman/Sources/c-utils/lib/hashmap/hashmap_default_comparator.c",
-		"/home/roman/Sources/c-utils/lib/hashmap/hashmap_size.c",
-		"/home/roman/Sources/c-utils/lib/hashmap/hashmap_put.c",
-		"/home/roman/Sources/c-utils/lib/hashmap.h",
-		"/home/roman/Sources/c-utils/lib/hashmap/linked_list_prepend.c",
-		"/home/roman/Sources/c-utils/lib/hashmap/linked_list_append.c",
-		"/home/roman/Sources/c-utils/eagle-to-circuit.c",
-		"/home/roman/Sources/c-utils/lib/linked_list.h",
-		"/home/roman/Sources/c-utils/lib/hashmap/linked_list_free.c",
-		"/home/roman/Sources/c-utils/lib/hashmap/linked_list_init.c",
-		"/home/roman/Sources/c-utils/lib/hashmap/linked_list_head.c",
-		"/home/roman/Sources/c-utils/build/x86_64-linux-musl/CMakeFiles/elfwrsec.dir/cmake_clean.cmake",
-		"/home/roman/Sources/c-utils/lib/dir/dir_open.c",
-		"/home/roman/Sources/c-utils/lib/dir/dir_read.c",
-		"/home/roman/Sources/c-utils/lib/hashmap/hashmap_contains_key.c",
-		"/home/roman/Sources/c-utils/lib/hashmap/hashmap_init.c",
-		"/home/roman/Sources/c-utils/lib/hmap.h",
-		"/home/roman/Sources/c-utils/lib/rdir/rdir_open.c"
+		"/home/roman/Sources/c-utils/lib/strarray/strarray_removesuffixs.c"
 	],
 	"find":
 	{
@@ -803,6 +691,13 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"cmd.path",
+			"strlist_foreach",
+			"cmd.path",
+			"strlist",
+			"pkgcfg_path",
+			"PKG_CONFIG_PATH",
+			"cb_new_kv",
 			"rising",
 			"line\\(",
 			"line",
@@ -923,14 +818,7 @@
 			"serial =",
 			"^main\\(",
 			"^main",
-			"random",
-			"sourcedir;",
-			"sourcedir",
-			"sourcedir_deps",
-			"unshift",
-			"input_com",
-			"deps",
-			"printdep"
+			"random"
 		],
 		"highlight": false,
 		"in_selection": false,
@@ -1055,7 +943,7 @@
 	"groups":
 	[
 		{
-			"selected": 12,
+			"selected": 0,
 			"sheets":
 			[
 				{
@@ -1063,57 +951,142 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 35,
+						"buffer_size": 252,
 						"regions":
 						{
 						},
 						"selection":
 						[
-							[
-								0,
-								0
-							]
 						],
 						"settings":
 						{
-							"color_scheme": "Packages/Babel/Next Roman.tmTheme",
-							"current_file": "/home/roman/Dokumente/Sources/Arduino-Projects/FunctionGeneratorABMS/Arduino_Frequency_Counter_Duty_Cycle_Meter.ino",
+							"current_file": "/home/roman/Dokumente/Sources/c-utils/pkgcfg.c",
 							"outline_rename_mode": false,
 							"symkeys":
 							[
 								[
-									292,
-									295
+									643,
+									656
 								],
 								[
-									330,
-									336
+									667,
+									683
 								],
 								[
-									501,
-									504
+									694,
+									710
 								],
 								[
-									575,
-									584
+									1476,
+									1491
 								],
 								[
-									807,
-									812
+									1905,
+									1916
 								],
 								[
-									1288,
-									1292
+									2441,
+									2450
+								],
+								[
+									3809,
+									3816
+								],
+								[
+									4162,
+									4172
+								],
+								[
+									4887,
+									4897
+								],
+								[
+									5508,
+									5516
+								],
+								[
+									5785,
+									5793
+								],
+								[
+									7349,
+									7358
+								],
+								[
+									8109,
+									8116
+								],
+								[
+									8193,
+									8204
+								],
+								[
+									8566,
+									8575
+								],
+								[
+									8712,
+									8722
+								],
+								[
+									9288,
+									9296
+								],
+								[
+									9557,
+									9565
+								],
+								[
+									9709,
+									9717
+								],
+								[
+									11612,
+									11620
+								],
+								[
+									12157,
+									12165
+								],
+								[
+									14069,
+									14080
+								],
+								[
+									16972,
+									16977
+								],
+								[
+									17703,
+									17707
 								]
 							],
 							"symlist":
 							[
-								"lcd",
-								"Button",
-								"ISR",
-								"interrupt",
-								"setup",
-								"loop"
+								"PKGCFG_EXISTS",
+								"PKGCFG_PRINT_ERR",
+								"PKGCFG_SHORT_ERR",
+								"get_field_index",
+								"search_path",
+								"host_arch",
+								"pkg_get",
+								"wordexp_sa",
+								"pkg_expand",
+								"pkg_free",
+								"pkg_read",
+								"visit_set",
+								"pkg_set",
+								"visit_unset",
+								"pkg_unset",
+								"visit_dump",
+								"pkg_dump",
+								"pkg_init",
+								"pkg_list",
+								"pkg_open",
+								"pkg_conf",
+								"pkgcfg_init",
+								"usage",
+								"main"
 							],
 							"syntax": "Packages/Outline/outline.hidden-tmLanguage"
 						},
@@ -1121,9 +1094,15 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 22,
+					"stack_index": 9,
 					"type": "text"
-				},
+				}
+			]
+		},
+		{
+			"selected": 6,
+			"sheets":
+			[
 				{
 					"buffer": 1,
 					"file": "genmakefile.c",
@@ -1149,19 +1128,19 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 53442.0,
+						"translation.y": 50898.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 21,
+					"stack_index": 12,
 					"type": "text"
 				},
 				{
 					"buffer": 2,
-					"file": "/home/roman/Dokumente/Sources/Arduino-Projects/HB100/HB100.ino",
+					"file": "lib/cb/cb_insert.c",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 2975,
+						"buffer_size": 2431,
 						"regions":
 						{
 						},
@@ -1174,7 +1153,7 @@
 						],
 						"settings":
 						{
-							"syntax": "Packages/C++11/C++11.tmLanguage",
+							"syntax": "Packages/C99/C99.tmLanguage",
 							"tab_size": 2,
 							"translate_tabs_to_spaces": true
 						},
@@ -1182,16 +1161,16 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 20,
+					"stack_index": 11,
 					"type": "text"
 				},
 				{
 					"buffer": 3,
-					"file": "/home/roman/Dokumente/Sources/Arduino-Projects/HB100-Filtering/HB100-Filtering.ino",
+					"file": "testini.c",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 3239,
+						"buffer_size": 636,
 						"regions":
 						{
 						},
@@ -1204,7 +1183,7 @@
 						],
 						"settings":
 						{
-							"syntax": "Packages/C++11/C++11.tmLanguage",
+							"syntax": "Packages/C99/C99.tmLanguage",
 							"tab_size": 2,
 							"translate_tabs_to_spaces": true
 						},
@@ -1212,46 +1191,46 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 19,
+					"stack_index": 10,
 					"type": "text"
 				},
 				{
 					"buffer": 4,
-					"file": "/home/roman/Dokumente/Sources/Arduino-Projects/Frequency_counter_arduino/Frequency_counter_arduino.ino",
+					"file": "ini.c",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 947,
+						"buffer_size": 4539,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								0,
-								0
+								2665,
+								2665
 							]
 						],
 						"settings":
 						{
-							"syntax": "Packages/C++11/C++11.tmLanguage",
+							"syntax": "Packages/C99/C99.tmLanguage",
 							"tab_size": 2,
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 2260.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 13,
+					"stack_index": 8,
 					"type": "text"
 				},
 				{
 					"buffer": 5,
-					"file": "/home/roman/Dokumente/Sources/Arduino-Projects/Inductance_Capacitance_Meter/Inductance_Capacitance_Meter.ino",
+					"file": "/home/roman/Dokumente/Sources/musl/src/stdlib/qsort.c",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 13581,
+						"buffer_size": 4991,
 						"regions":
 						{
 						},
@@ -1264,20 +1243,109 @@
 						],
 						"settings":
 						{
-							"syntax": "Packages/C++11/C++11.tmLanguage",
+							"syntax": "Packages/C99/C99.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 481.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 7,
+					"type": "text"
+				},
+				{
+					"buffer": 6,
+					"file": "lib/strlist/strlist_sort.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1085,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								403,
+								403
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C99/C99.tmLanguage",
 							"tab_size": 2,
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 121.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 6,
 					"type": "text"
 				},
 				{
-					"buffer": 6,
-					"file": "/home/roman/Dokumente/Sources/Arduino-Projects/libraries/TimerOne/examples/ATTiny85/ATTiny85.ino",
+					"buffer": 7,
+					"file": "pkgcfg.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 23104,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								15938,
+								15938
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C99/C99.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 15303.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 8,
+					"file": "map.h",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 6316,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								4677,
+								4677
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 3001.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 5,
+					"type": "text"
+				},
+				{
+					"buffer": 9,
+					"file": "lib/cb/cb_new_kv.c",
 					"semi_transient": false,
 					"settings":
 					{
@@ -1294,127 +1362,7 @@
 						],
 						"settings":
 						{
-							"syntax": "Packages/C++11/C++11.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 18,
-					"type": "text"
-				},
-				{
-					"buffer": 7,
-					"file": "/home/roman/Dokumente/Sources/Arduino-Projects/ArduPIC32/ArduPIC32.ino",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 10545,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C++11/C++11.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 12,
-					"type": "text"
-				},
-				{
-					"buffer": 8,
-					"file": "/home/roman/Dokumente/Sources/Arduino-Projects/WhistleSwitch/WhistleSwitch.ino",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 58041,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C++11/C++11.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 17,
-					"type": "text"
-				},
-				{
-					"buffer": 9,
-					"file": "/home/roman/Dokumente/Sources/Arduino-Projects/FunctionGeneratorABMS/Arduino_Frequency_Counter_Duty_Cycle_Meter_2.ino",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 8977,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C++11/C++11.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 5,
-					"type": "text"
-				},
-				{
-					"buffer": 10,
-					"file": "/home/roman/Dokumente/Sources/Arduino-Projects/FunctionGeneratorABMS/Arduino_Frequency_Counter_Duty_Cycle_Meter_4.ino",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 9911,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C++11/C++11.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
+							"syntax": "Packages/C99/C99.tmLanguage"
 						},
 						"translation.x": 0.0,
 						"translation.y": 0.0,
@@ -1424,12 +1372,12 @@
 					"type": "text"
 				},
 				{
-					"buffer": 11,
-					"file": "/home/roman/Dokumente/Sources/Arduino-Projects/FunctionGeneratorABMS/Arduino_Frequency_Counter_Duty_Cycle_Meter_5.ino",
+					"buffer": 10,
+					"file": "lib/cb/cb_find.c",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 8948,
+						"buffer_size": 1390,
 						"regions":
 						{
 						},
@@ -1442,98 +1390,7 @@
 						],
 						"settings":
 						{
-							"syntax": "Packages/C++11/C++11.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 11,
-					"type": "text"
-				},
-				{
-					"buffer": 12,
-					"file": "/home/roman/Dokumente/Sources/Arduino-Projects/FunctionGeneratorABMS/Arduino_Frequency_Counter_Duty_Cycle_Meter.ino",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 2736,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								74,
-								74
-							]
-						],
-						"settings":
-						{
-							"color_scheme": "Packages/Babel/Next Roman.tmTheme",
-							"syntax": "Packages/C++11/C++11.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 0,
-					"type": "text"
-				},
-				{
-					"buffer": 13,
-					"file": "/home/roman/Dokumente/Sources/Arduino-Projects/ArduinoFunctionGenerator/ArduinoFunctionGenerator.ino",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 5593,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C++11/C++11.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 3,
-					"type": "text"
-				},
-				{
-					"buffer": 14,
-					"file": "/home/roman/Dokumente/Sources/Arduino-Projects/scope/scope.ino",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 5944,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C++11/C++11.tmLanguage",
+							"syntax": "Packages/C99/C99.tmLanguage",
 							"tab_size": 2,
 							"translate_tabs_to_spaces": true
 						},
@@ -1545,43 +1402,40 @@
 					"type": "text"
 				},
 				{
-					"buffer": 15,
-					"file": "/home/roman/Dokumente/Sources/Arduino-Projects/Inductance_Meter/Inductance_Meter.ino",
-					"semi_transient": false,
+					"buffer": 11,
+					"file": "lib/dir/dir_name.c",
+					"semi_transient": true,
 					"settings":
 					{
-						"buffer_size": 4122,
+						"buffer_size": 610,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								2475,
-								2475
+								0,
+								0
 							]
 						],
 						"settings":
 						{
-							"color_scheme": "Packages/Babel/Next Roman.tmTheme",
-							"syntax": "Packages/C++11/C++11.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
+							"syntax": "Packages/C99/C99.tmLanguage"
 						},
 						"translation.x": 0.0,
-						"translation.y": 1517.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 1,
 					"type": "text"
 				},
 				{
-					"buffer": 16,
-					"file": "/home/roman/Dokumente/Sources/Arduino-Projects/ArduinoAdcAndFrequencyEstimation/Arduino/ADC_Streamer.ino",
+					"buffer": 12,
+					"file": "lib/cb/cb_find_prefix.c",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 752,
+						"buffer_size": 1329,
 						"regions":
 						{
 						},
@@ -1594,7 +1448,7 @@
 						],
 						"settings":
 						{
-							"syntax": "Packages/C++11/C++11.tmLanguage",
+							"syntax": "Packages/C99/C99.tmLanguage",
 							"tab_size": 2,
 							"translate_tabs_to_spaces": true
 						},
@@ -1602,342 +1456,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 16,
-					"type": "text"
-				},
-				{
-					"buffer": 17,
-					"file": "/home/roman/Dokumente/Sources/Arduino-Projects/BlinkWithoutDelay/BlinkWithoutDelay.ino",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 1865,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C++11/C++11.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 15,
-					"type": "text"
-				},
-				{
-					"buffer": 18,
-					"file": "/home/roman/Dokumente/Sources/Arduino-Projects/small-scope/small-scope.ino",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 6101,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C++11/C++11.tmLanguage",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 14,
-					"type": "text"
-				},
-				{
-					"buffer": 19,
-					"file": "/home/roman/Dokumente/Sources/Arduino-Projects/FunctionGenerator/FunctionGenerator.ino",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 1964,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C++11/C++11.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 10,
-					"type": "text"
-				},
-				{
-					"buffer": 20,
-					"file": "/home/roman/Dokumente/Sources/Arduino-Projects/function_generator/function_generator.ino",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 14018,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C++11/C++11.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 9,
-					"type": "text"
-				},
-				{
-					"buffer": 21,
-					"file": "/home/roman/Dokumente/Sources/Arduino-Projects/Arduino-Frequency-Counter/FrequencyCounter.ino",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 2360,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C++11/C++11.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 8,
-					"type": "text"
-				},
-				{
-					"buffer": 22,
-					"file": "/home/roman/Dokumente/Sources/Arduino-Projects/Simple-Arduino-Frequency-Counter/frequency_counter.ino",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 890,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"color_scheme": "Packages/Babel/Next Roman.tmTheme",
-							"syntax": "Packages/C++11/C++11.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 7,
-					"type": "text"
-				},
-				{
-					"buffer": 23,
-					"file": "CMakeLists.txt",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 40562,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								4265,
-								4265
-							]
-						],
-						"settings":
-						{
-							"color_scheme": "Packages/Babel/Next Roman.tmTheme",
-							"syntax": "Packages/CMakeEditor/CMakeEditor.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 2522.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 27,
-					"type": "text"
-				},
-				{
-					"buffer": 24,
-					"file": "/home/roman/Arduino/libraries/Nokia_5110_LCD_library/src/Nokia_LCD.cpp",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 7857,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								4,
-								4
-							]
-						],
-						"settings":
-						{
-							"color_scheme": "Packages/Babel/Next Roman.tmTheme",
-							"syntax": "Packages/C++/C++.sublime-syntax",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 24,
-					"type": "text"
-				},
-				{
-					"buffer": 25,
-					"file": "/home/roman/Arduino/libraries/Nokia_5110/src/Nokia_5110.h",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 1363,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								550,
-								550
-							]
-						],
-						"settings":
-						{
-							"color_scheme": "Packages/Babel/Next Roman.tmTheme",
-							"syntax": "Packages/C++/C++.sublime-syntax",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 60.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 23,
-					"type": "text"
-				},
-				{
-					"buffer": 26,
-					"file": "/home/roman/Arduino/libraries/Adafruit_GFX_Library/Adafruit_SPITFT.cpp",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 95531,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								66577,
-								66577
-							]
-						],
-						"settings":
-						{
-							"color_scheme": "Packages/Babel/Next Roman.tmTheme",
-							"syntax": "Packages/C++/C++.sublime-syntax",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 31777.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 25,
-					"type": "text"
-				},
-				{
-					"buffer": 27,
-					"file": "/home/roman/Arduino/libraries/Nokia_5110/src/Nokia_5110.cpp",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 4183,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								2914,
-								2914
-							]
-						],
-						"settings":
-						{
-							"color_scheme": "Packages/Babel/Next Roman.tmTheme",
-							"syntax": "Packages/C++/C++.sublime-syntax",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 26,
+					"stack_index": 3,
 					"type": "text"
 				}
 			]
@@ -1945,7 +1464,7 @@
 	],
 	"incremental_find":
 	{
-		"height": 29.0
+		"height": 30.0
 	},
 	"input":
 	{
@@ -1956,20 +1475,29 @@
 		"cells":
 		[
 			[
+				2,
+				0,
+				3,
+				2
+			],
+			[
 				0,
 				0,
-				1,
-				1
+				2,
+				2
 			]
 		],
 		"cols":
 		[
 			0.0,
+			0.2,
+			0.8,
 			1.0
 		],
 		"rows":
 		[
 			0.0,
+			0.5,
 			1.0
 		]
 	},
@@ -2023,6 +1551,26 @@
 		"last_filter": "",
 		"selected_items":
 		[
+			[
+				"map.h",
+				"map.h"
+			],
+			[
+				"pkgcfg",
+				"pkgcfg.c"
+			],
+			[
+				"strlist_so",
+				"lib/strlist/strlist_sort.c"
+			],
+			[
+				"ini.c",
+				"ini.c"
+			],
+			[
+				"testini",
+				"testini.c"
+			],
 			[
 				"cmakeli",
 				"CMakeLists.txt"
@@ -2086,10 +1634,6 @@
 			[
 				"unshift",
 				"lib/strlist/strlist_unshift.c"
-			],
-			[
-				"map.h",
-				"map.h"
 			],
 			[
 				"genmake",
@@ -2196,10 +1740,6 @@
 				"lib/path/path_num.c"
 			],
 			[
-				"ini.c",
-				"ini.c"
-			],
-			[
 				"mplab",
 				"mplab.c"
 			],
@@ -2282,10 +1822,6 @@
 			[
 				"buffer_peek",
 				"lib/buffer/buffer_peek.c"
-			],
-			[
-				"testini",
-				"testini.c"
 			],
 			[
 				"cmake",
@@ -2526,14 +2062,6 @@
 			[
 				"open.h",
 				"lib/open.h"
-			],
-			[
-				"strlist",
-				"lib/strlist.h"
-			],
-			[
-				"quickjs",
-				"~/Dokumente/Sources/plot-cv/quickjs/quickjs.c"
 			]
 		],
 		"width": 0.0
@@ -2556,7 +2084,7 @@
 		],
 		"width": 0.0
 	},
-	"selected_group": 0,
+	"selected_group": 1,
 	"settings":
 	{
 	},

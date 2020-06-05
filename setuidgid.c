@@ -1,3 +1,4 @@
+#define _GNU_SOURCE
 #include "lib/errmsg.h"
 #include "lib/scan.h"
 #include "lib/open.h"
@@ -5,6 +6,9 @@
 #include "lib/str.h"
 #include "lib/byte.h"
 #include "lib/path.h"
+#include "lib/buffer.h"
+
+#include <stdlib.h>
 
 #if WINDOWS_NATIVE
 #include <io.h>
@@ -70,22 +74,29 @@ get_account(const char* name, int* uid, int* gid) {
 }
 
 int
-main(int argc, char* argv[], char* envp[]) {
+main(int argc, char* argv[] /*, char* envp[]*/) {
   const char* account;
-  char* prog = argv[0];
+  char *prog, *cmd, **args;
   stralloc full_path;
   int uid = -1, gid = -1;
   int res;
-  account = *++argv;
 
-  if(!account || !*++argv) {
-    errmsg_warn("setuidgid: usage: setuidgid account child", 0);
+  prog = argv[0];
+
+  account = argv[1];
+
+  args = &argv[2];
+
+  if(!account || *args == 0) {
+    buffer_putm_internal(buffer_2, "account: ", account ? account : "NULL", " args[0]: ", args[0], 0);
+    buffer_putnlflush(buffer_2);
+    errmsg_warn(prog, ": usage: setuidgid account child", 0);
     return 100;
   }
 
   if(!scan_int(account, &uid)) {
     if(!(res = get_account(account, &uid, &gid))) {
-      errmsg_warn("setuidgid: no such account: ", account, 0);
+      errmsg_warn(prog, ": no such account: ", account, 0);
       return 111;
     }
   }
@@ -95,12 +106,14 @@ main(int argc, char* argv[], char* envp[]) {
   if(uid != -1)
     setuid(uid);
 
-  if(prog[str_chr(prog, '/')] == '\0') {
+  cmd = args[0];
+
+  if(cmd[str_chr(cmd, '/')] == '\0') {
     stralloc_init(&full_path);
-    prog = search_path(getenv("PATH"), prog, &full_path);
+    cmd = search_path(getenv("PATH"), cmd, &full_path);
   }
 
-  execve(prog, argv, envp);
-  errmsg_warn("setuidgid: unable to run ", argv[0], ": ", 0);
-  return 111;
+  execve(cmd, args, environ);
+  errmsg_warn(prog, ": unable to run ", cmd, ": ", 0);
+  return 127;
 }
