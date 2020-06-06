@@ -1736,7 +1736,7 @@ ifeq ($(DO_STRIP),1)
 endif
 
 $(BUILDDIR)setuidgid$(M64_)$(EXEEXT): LIBS += -lz
-$(BUILDDIR)setuidgid$(M64_)$(EXEEXT): $(BUILDDIR)setuidgid.o $(call add-library, stralloc path 	)
+$(BUILDDIR)setuidgid$(M64_)$(EXEEXT): $(BUILDDIR)setuidgid.o $(call add-library, buffer stralloc path 	)
 	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) $(CFLAGS) $(EXTRA_CFLAGS) $(EXTRA_CPPFLAGS) -Wl,-rpath=$(BUILDDIR:%/=%) -o $@ $^ $(LIBS) $(EXTRA_LIBS)
 ifeq ($(DO_STRIP),1)
 	$(STRIP) $@
