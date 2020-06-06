@@ -653,6 +653,7 @@ list_dir_internal(stralloc* dir, char type, long depth) {
     byte_zero(&st, sizeof(st));
 #endif
     dtype = dir_type(&d);
+    dir_name(&d);
     dir->len = l;
     if(str_equal(name, "") || str_equal(name, ".") || str_equal(name, "..")) {
       continue;
