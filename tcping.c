@@ -141,11 +141,11 @@ main(int argc, char* argv[]) {
   int ret;
   int verbose = 1;
   int c;
-  uint64 timeout_sec = 0, timeout_usec = 0;
+  uint64 timeout_sec = 10, timeout_usec = 0;
   uint64 result;
   int port = 0;
   stralloc host, ips;
-  tai6464 now, deadline;
+  tai6464 now, deadline, timeout;
   static char seed[128];
 
   errmsg_iam(argv[0]);
@@ -228,6 +228,7 @@ main(int argc, char* argv[]) {
         return 4;
       }
     }
+    errno = 0;
 
     io_wantread(sock);
     io_wantwrite(sock);
@@ -238,10 +239,11 @@ main(int argc, char* argv[]) {
     buffer_puttai(buffer_2, &now.sec);
     buffer_putnlflush(buffer_2);
 
-    taia_uint(&deadline, timeout_sec + timeout_usec / 1000000);
+    taia_uint(&timeout, timeout_sec + timeout_usec / 1000000);
     umult64(timeout_usec % 1000000, 1000, &result);
-    deadline.nano = result;
-    taia_add(&deadline, &deadline, &now);
+
+    timeout.nano = result;
+    taia_add(&deadline, &now, &timeout);
 
     buffer_puts(buffer_2, "Deadline: ");
     buffer_puttai(buffer_2, &deadline.sec);
@@ -279,7 +281,7 @@ main(int argc, char* argv[]) {
       }
     } else {
       if(verbose)
-        buffer_putsflush(buffer_2, "error: select: sock not set\n");
+        errmsg_warn("error: select: sock not set", 0);
       return 3;
     }
   }
