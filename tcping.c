@@ -273,7 +273,10 @@ main(int argc, char* argv[]) {
       }
       if(error != 0) {
         if(verbose) {
-          buffer_putm_internal(buffer_1, argv[optind], " port ", argv[optind + 1], " closed.", 0);
+          if(error == EHOSTUNREACH)
+            buffer_putm_internal(buffer_1, argv[optind], ": host is down", 0);
+          else
+            buffer_putm_internal(buffer_1, argv[optind], " port ", argv[optind + 1], " closed.", 0);
           buffer_putnlflush(buffer_1);
         }
         closesocket(sock);

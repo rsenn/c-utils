@@ -14,7 +14,7 @@
 #include <unistd.h>
 #include <time.h>
 #include <stdlib.h>
-#include <sys/types.h> 
+#include <sys/types.h>
 
 static int g_running = 0;
 
@@ -98,9 +98,8 @@ main(int argc, char** argv) {
   int opt_val = 1;
   unsigned int addrlen;
 
-buffer_write_fd(&dist_file, open_trunc(input_file));
-buffer_write_fd(&local_file, open_trunc(output_file));
-
+  buffer_write_fd(&dist_file, open_trunc(input_file));
+  buffer_write_fd(&local_file, open_trunc(output_file));
 
   g_running = 1;
 
@@ -131,25 +130,25 @@ buffer_write_fd(&local_file, open_trunc(output_file));
 
   status = bind(proxy_in, (const struct sockaddr*)&addr_from, sizeof(struct sockaddr_in));
   if(status < 0) {
-   errmsg_warnsys( "error in bind", 0);
+    errmsg_warnsys("error in bind", 0);
     return -1;
   }
 
   status = listen(proxy_in, 1);
   if(status < 0) {
-    errmsg_warnsys("error in listen",0);
+    errmsg_warnsys("error in listen", 0);
     return -1;
   }
 
   proxy_client = accept(proxy_in, (struct sockaddr*)&client_addr, &addrlen);
   if(proxy_client < 0) {
-    errmsg_warnsys("error in accept",0);
+    errmsg_warnsys("error in accept", 0);
     return -1;
   }
 
   status = connect(proxy_out, (struct sockaddr*)&addr_dest, sizeof(struct sockaddr));
   if(status < 0) {
-   errmsg_warnsys("error in connect",0);
+    errmsg_warnsys("error in connect", 0);
     return -1;
   }
 
@@ -158,10 +157,9 @@ buffer_write_fd(&local_file, open_trunc(output_file));
 
     int var1 = recv(proxy_client, &c1, 1, MSG_DONTWAIT);
     if(var1 > 0) {
-       buffer_put(&local_file, &c1, 1);
+      buffer_put(&local_file, &c1, 1);
       buffer_flush(&local_file);
-      
-    
+
       write(proxy_out, &c1, 1);
     } else if(var1 < 0) {
       if(errno != EAGAIN) {
@@ -173,7 +171,7 @@ buffer_write_fd(&local_file, open_trunc(output_file));
     if(var2 > 0) {
       buffer_put(&dist_file, &c2, 1);
       buffer_flush(&dist_file);
-      
+
       write(proxy_client, &c2, 1);
     } else if(var2 < 0) {
       if(errno != EAGAIN) {
