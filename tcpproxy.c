@@ -1,15 +1,20 @@
 
 #include <stdio.h>
 #include <errno.h>
+#include "lib/errmsg.h"
+#include "lib/socket.h"
+#include "lib/io.h"
+#include "lib/buffer.h"
+#include "lib/open.h"
+#include <sys/socket.h>
+#include <netdb.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
 #include <string.h>
 #include <unistd.h>
 #include <time.h>
 #include <stdlib.h>
-#include <sys/types.h>
-//#include <sys/socket.h>
-//#include <netdb.h>
-//#include <netinet/in.h>
-//#include <arpa/inet.h>
+#include <sys/types.h> 
 
 static int g_running = 0;
 
@@ -21,7 +26,7 @@ static int forward_port = -1;
 
 void
 usage(void) {
-  printf("proxy [-l <listening port>] -f <forward ip>:<forward port>\n");
+  printf("proxy [-l <listening port>] -f <forward ip>:<forward port>", 0);
   exit(0);
 }
 
@@ -76,6 +81,7 @@ main(int argc, char** argv) {
   struct sockaddr_in client_addr;
   struct hostent* localHost;
   char* localIP;
+  buffer dist_file, local_file;
 
   memset(forward_addr, 0, 512);
 
@@ -92,8 +98,9 @@ main(int argc, char** argv) {
   int opt_val = 1;
   unsigned int addrlen;
 
-  FILE* dist_file = fopen(input_file, "w");
-  FILE* local_file = fopen(output_file, "w");
+buffer_write_fd(&dist_file, open_trunc(input_file));
+buffer_write_fd(&local_file, open_trunc(output_file));
+
 
   g_running = 1;
 
@@ -109,14 +116,14 @@ main(int argc, char** argv) {
   addr_from.sin_addr.s_addr = htonl(INADDR_ANY);
 
   /* create & connect sockets */
-  proxy_in = socket(AF_INET, SOCK_STREAM, 0);
-  proxy_out = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+  proxy_in = socket_tcp4b();
+  proxy_out = socket_tcp4b();
   if(proxy_in < 0) {
-    fprintf(stderr, "error in socket create\n");
+    errmsg_warnsys("error in socket create", 0);
     return -1;
   }
   if(proxy_out < 0) {
-    fprintf(stderr, "error in socket create\n");
+    errmsg_warnsys("error in socket create", 0);
     return -1;
   }
   setsockopt(proxy_in, SOL_SOCKET, SO_REUSEADDR, (const char*)&opt_val, sizeof(int));
@@ -124,25 +131,25 @@ main(int argc, char** argv) {
 
   status = bind(proxy_in, (const struct sockaddr*)&addr_from, sizeof(struct sockaddr_in));
   if(status < 0) {
-    fprintf(stderr, "error in bind\n");
+   errmsg_warnsys( "error in bind", 0);
     return -1;
   }
 
   status = listen(proxy_in, 1);
   if(status < 0) {
-    fprintf(stderr, "error in listen\n");
+    errmsg_warnsys("error in listen",0);
     return -1;
   }
 
   proxy_client = accept(proxy_in, (struct sockaddr*)&client_addr, &addrlen);
   if(proxy_client < 0) {
-    fprintf(stderr, "error in accept\n");
+    errmsg_warnsys("error in accept",0);
     return -1;
   }
 
   status = connect(proxy_out, (struct sockaddr*)&addr_dest, sizeof(struct sockaddr));
   if(status < 0) {
-    fprintf(stderr, "error in connect\n");
+   errmsg_warnsys("error in connect",0);
     return -1;
   }
 
@@ -151,8 +158,10 @@ main(int argc, char** argv) {
 
     int var1 = recv(proxy_client, &c1, 1, MSG_DONTWAIT);
     if(var1 > 0) {
-      fprintf(local_file, "%c", c1);
-      fflush(local_file);
+       buffer_put(&local_file, &c1, 1);
+      buffer_flush(&local_file);
+      
+    
       write(proxy_out, &c1, 1);
     } else if(var1 < 0) {
       if(errno != EAGAIN) {
@@ -162,8 +171,9 @@ main(int argc, char** argv) {
 
     int var2 = recv(proxy_out, &c2, 1, MSG_DONTWAIT);
     if(var2 > 0) {
-      fprintf(dist_file, "%c", c2);
-      fflush(dist_file);
+      buffer_put(&dist_file, &c2, 1);
+      buffer_flush(&dist_file);
+      
       write(proxy_client, &c2, 1);
     } else if(var2 < 0) {
       if(errno != EAGAIN) {
@@ -178,8 +188,8 @@ main(int argc, char** argv) {
     }
   }
 
-  fclose(dist_file);
-  fclose(local_file);
+  buffer_close(&dist_file);
+  buffer_close(&local_file);
   close(proxy_client);
   close(proxy_in);
   close(proxy_out);
