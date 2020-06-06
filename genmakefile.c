@@ -13,34 +13,40 @@ void debug_int(const char* name, int i);
 void debug_sa(const char* name, stralloc* sa);
 void debug_sl(const char* name, const strlist* l, const char* sep);
 void debug_s(const char* name, const char* s);
+
+
 const char* const build_types[] = {"Release", "RelWithDebInfo", "MinSizeRel", "Debug"};
 typedef void(linklib_fmt)(const char*, stralloc*);
+
 static int cmd_objs = 0, cmd_libs = 0, cmd_bins = 0;
-strarray srcs;
 static stralloc preprocess_command, compile_command, lib_command, link_command, mkdir_command, delete_command;
-exts_t exts = {DEFAULT_OBJEXT, DEFAULT_LIBEXT, DEFAULT_EXEEXT, DEFAULT_PPSEXT};
 static const char* libpfx = DEFAULT_LIBPFX;
 static const char *make_begin_inline, *make_sep_inline, *make_end_inline;
 static const char* comment = "#";
 static const char* cross_compile = "";
 static stralloc output_name;
-dirs_t dirs;
 static strlist vpath;
 static stralloc srcdir;
 static char pathsep_make = DEFAULT_PATHSEP, pathsep_args = DEFAULT_PATHSEP;
 static strlist build_as_lib;
 static strlist include_dirs, link_libraries;
 static strlist pptoks;
-MAP_T sourcedirs, targetdirs, rules, vars;
+static MAP_T sourcedirs, targetdirs, rules, vars;
 static slink* sources;
-tools_t tools;
 static const char* newline = "\n";
-config_t cfg = {{0, 0}, {0, 0}, {0, 0, 0}, -1};
 static int batch, shell, ninja;
 static int batchmode;
 static linklib_fmt* format_linklib_fn;
 static int inst_bins, inst_libs;
 static int cygming;
+
+strarray srcs;
+exts_t exts = {DEFAULT_OBJEXT, DEFAULT_LIBEXT, DEFAULT_EXEEXT, DEFAULT_PPSEXT};
+dirs_t dirs;
+tools_t tools;
+config_t cfg = {{0, 0}, {0, 0}, {0, 0, 0}, -1};
+
+
 #ifdef _DEBUG
 /**
  * @brief debug_sa
