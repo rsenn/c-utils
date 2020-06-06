@@ -140,6 +140,7 @@ main(int argc, char** argv) {
     return -1;
   }
 
+addrlen = sizeof(struct sockaddr_in);
   proxy_client = accept(proxy_in, (struct sockaddr*)&client_addr, &addrlen);
   if(proxy_client < 0) {
     errmsg_warnsys("error in accept", 0);
