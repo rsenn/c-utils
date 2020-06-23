@@ -76,7 +76,7 @@ usage(char* av0) {
                        "  -i, --imports           List imports\n",
                        "  -e, --exports           List exports\n",
                        "\n",
-                       0);
+                       NULL);
   buffer_flush(buffer_1);
 }
 
@@ -146,7 +146,7 @@ main(int argc, char** argv) {
         }
 
 #ifdef DEBUG
-        buffer_putm_internal(buffer_2, name ? name : "<null>", " (0x", 0);
+        buffer_putm_internal(buffer_2, name ? name : "<null>", " (0x", NULL);
         buffer_putxlong0(buffer_2, r->type, 2);
         buffer_puts(buffer_2, ") : ");
 

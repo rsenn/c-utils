@@ -136,7 +136,7 @@ pathtool(const char* arg, stralloc* sa) {
     stralloc_nul(&relative_to.sa);
 
 #ifdef DEBUG_OUTPUT
-    buffer_putm_internal(buffer_2, "relative(\"", path.sa.s, "\", \"", relative_to.sa.s, "\")", 0);
+    buffer_putm_internal(buffer_2, "relative(\"", path.sa.s, "\", \"", relative_to.sa.s, "\")", NULL);
     buffer_putsa(buffer_2, sa);
     buffer_putnlflush(buffer_2);
 #endif

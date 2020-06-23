@@ -242,14 +242,14 @@ get_setting_value(cword* word, csetting* setting) {
   uint16 byteval = get_setting_word(word, setting);
   /*
     if(verbose) {
-      buffer_putm_internal(buffer_2, word->name, ": ", setting->name, " = ", 0);
+      buffer_putm_internal(buffer_2, word->name, ": ", setting->name, " = ", NULL);
       buffer_putxlong0(buffer_2, byteval, 2);
       buffer_putnlflush(buffer_2);
     }
   */
   slink_foreach(setting->values, value) {
     if(verbose) {
-      buffer_putm_internal(buffer_2, "  ", value->name, ": ", 0);
+      buffer_putm_internal(buffer_2, "  ", value->name, ": ", NULL);
       buffer_putxlong0(buffer_2, value->value, 2);
       buffer_putnlflush(buffer_2);
     }
@@ -338,11 +338,12 @@ get_cfgdat(const char* chip) {
     stralloc_nul(&path);
     dir_open(&d, path.s);
     while((subdir = dir_read(&d))) {
-      if(subdir[0] == '.')
+      if(subdir[0] == '.' || dir_type(&d) != D_DIRECTORY)
         continue;
       dir = subdir;
-      buffer_putm_internal(buffer_2, "subdir = ", subdir, 0);
+      buffer_putm_internal(buffer_2, "subdir = ", subdir, NULL);
       buffer_putnlflush(buffer_2);
+      break;
     }
     stralloc_cats(&path, dir);
   }
@@ -353,7 +354,7 @@ get_cfgdat(const char* chip) {
   stralloc_nul(&path);
 
   if(path_exists(path.s)) {
-    buffer_putm_internal(buffer_2, "Found cfgdata: ", path.s, 0);
+    buffer_putm_internal(buffer_2, "Found cfgdata: ", path.s, NULL);
     buffer_putnlflush(buffer_2);
     return path.s;
   }
@@ -396,7 +397,7 @@ process_config(void (*callback)(strlist*, const char* key, const char* value), s
       if(value == NULL) {
         buffer_puts(buffer_2, "WARNING:  value ");
         buffer_putxlong0(buffer_2, get_setting_word(word, setting), 2);
-        buffer_putm_internal(buffer_2, " for setting ", setting->name, " not found!", 0);
+        buffer_putm_internal(buffer_2, " for setting ", setting->name, " not found!", NULL);
         buffer_putnlflush(buffer_2);
         continue;
       }
@@ -404,7 +405,7 @@ process_config(void (*callback)(strlist*, const char* key, const char* value), s
       if(value->is_default && nodefault) {
 #ifdef DEBUG_OUTPUT
         if(verbose > 1) {
-          buffer_putm_internal(buffer_2, "skip default value ", value->name, " for setting ", setting->name, 0);
+          buffer_putm_internal(buffer_2, "skip default value ", value->name, " for setting ", setting->name, NULL);
           buffer_putnlflush(buffer_2);
         }
 #endif
@@ -446,7 +447,7 @@ output_items(const strlist* items) {
       if(value)
         description = value->description;
       buffer_putspad(buffer_1, x, 20);
-      buffer_putm_internal(buffer_1, " // ", description, 0);
+      buffer_putm_internal(buffer_1, " // ", description, NULL);
 
     } else
 

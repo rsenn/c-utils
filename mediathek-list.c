@@ -144,7 +144,7 @@ void
 process_status(void) {
   /* display interesting process IDs  */
 #if !(defined(_WIN32) || defined(_WIN64))
-  buffer_putm_internal(buffer_2, "process ", argv0, ": pid=", 0);
+  buffer_putm_internal(buffer_2, "process ", argv0, ": pid=", NULL);
   buffer_putlong(buffer_2, getpid());
   buffer_puts(buffer_2, ", ppid=");
   buffer_putlong(buffer_2, getppid());
@@ -428,7 +428,7 @@ match_tokens(char* toks, const char* x, size_t n) {
   }
 
   if(ret && debug > 1) {
-    buffer_putm_internal(buffer_2, "token list '", toks, "' matched '", 0);
+    buffer_putm_internal(buffer_2, "token list '", toks, "' matched '", NULL);
     buffer_put(buffer_2, x, n);
     buffer_puts(buffer_2, "'.");
     buffer_putnlflush(buffer_2);
@@ -538,13 +538,13 @@ print_entry(buffer* b, const mediathek_entry_t* e) {
 
   const char* sep = ", ";
 
-  buffer_putm_internal(b, "Kanal:\t", e->channel.s ? e->channel.s : "<null>" /*strlist_at(sl, 1)*/, sep, 0);
-  buffer_putm_internal(b, "Thema:\t", e->topic.s ? e->topic.s : "<null>" /*strlist_at(sl, 2)*/, sep, 0);
-  buffer_putm_internal(b, "Titel:\t", e->title.s /*strlist_at(sl, 3)*/, sep, 0);
+  buffer_putm_internal(b, "Kanal:\t", e->channel.s ? e->channel.s : "<null>" /*strlist_at(sl, 1)*/, sep, NULL);
+  buffer_putm_internal(b, "Thema:\t", e->topic.s ? e->topic.s : "<null>" /*strlist_at(sl, 2)*/, sep, NULL);
+  buffer_putm_internal(b, "Titel:\t", e->title.s /*strlist_at(sl, 3)*/, sep, NULL);
 
-  buffer_putm_internal(b, "Datum:\t", format_datetime(e->tm, dt_fmt), sep, 0);
-  buffer_putm_internal(b, "Dauer:\t", format_time(e->dr), sep, 0);
-  buffer_putm_internal(b, "Grösse:\t", format_num(e->mbytes), "MB", sep, 0);
+  buffer_putm_internal(b, "Datum:\t", format_datetime(e->tm, dt_fmt), sep, NULL);
+  buffer_putm_internal(b, "Dauer:\t", format_time(e->dr), sep, NULL);
+  buffer_putm_internal(b, "Grösse:\t", format_num(e->mbytes), "MB", sep, NULL);
 
   /* buffer_putm_3(b, "URL:\t", url , sep);
    buffer_putm_5(b, "URL lo:\t", make_url(url, strlist_at(sl, 13)), sep);

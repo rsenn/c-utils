@@ -88,7 +88,7 @@ main(int argc, char* argv[] /*, char* envp[]*/) {
   args = &argv[2];
 
   if(!account || *args == 0) {
-    buffer_putm_internal(buffer_2, "account: ", account ? account : "NULL", " args[0]: ", args[0], 0);
+    buffer_putm_internal(buffer_2, "account: ", account ? account : "NULL", " args[0]: ", args[0], NULL);
     buffer_putnlflush(buffer_2);
     errmsg_warn(prog, ": usage: setuidgid account child", 0);
     return 100;

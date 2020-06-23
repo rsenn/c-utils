@@ -76,7 +76,7 @@ mklink(char* target, char* link) {
   }
 
   if(verbose) {
-    buffer_putm_internal(buffer_2, "'", link, "' -> '", target, "'", 0);
+    buffer_putm_internal(buffer_2, "'", link, "' -> '", target, "'", NULL);
     buffer_putnlflush(buffer_2);
   }
 
@@ -151,7 +151,7 @@ usage(char* av0) {
                        "  -h, --help              Show this help\n",
                        "  -v, --verbose           Be verbose\n",
                        "\n",
-                       0);
+                       NULL);
   buffer_flush(buffer_1);
 }
 

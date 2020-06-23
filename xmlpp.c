@@ -66,7 +66,7 @@ xml_read_function(xmlreader* reader, xmlnodeid id, stralloc* name, stralloc* val
         }
       }
 
-      buffer_putm_internal(output, "<", reader->closing ? "/" : "", name->s, 0);
+      buffer_putm_internal(output, "<", reader->closing ? "/" : "", name->s, NULL);
 
       if(attrs && *attrs && (*attrs)->list_tuple) {
         buffer_putspace(output);

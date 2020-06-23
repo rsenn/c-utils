@@ -14,7 +14,6 @@ void debug_sa(const char* name, stralloc* sa);
 void debug_sl(const char* name, const strlist* l, const char* sep);
 void debug_s(const char* name, const char* s);
 
-
 const char* const build_types[] = {"Release", "RelWithDebInfo", "MinSizeRel", "Debug"};
 typedef void(linklib_fmt)(const char*, stralloc*);
 
@@ -45,7 +44,6 @@ exts_t exts = {DEFAULT_OBJEXT, DEFAULT_LIBEXT, DEFAULT_EXEEXT, DEFAULT_PPSEXT};
 dirs_t dirs;
 tools_t tools;
 config_t cfg = {{0, 0}, {0, 0}, {0, 0, 0}, -1};
-
 
 #ifdef _DEBUG
 /**
@@ -93,7 +91,7 @@ debug_byte(const char* name, const char* x, size_t n) {
 }
 void
 debug_target(const target* t) {
-  buffer_putm_internal(buffer_2, "name: ", t->name, "\n", 0);
+  buffer_putm_internal(buffer_2, "name: ", t->name, "\n", NULL);
   buffer_puts(buffer_2, "output: ");
   buffer_putsa(buffer_2, &t->output.sa);
   buffer_puts(buffer_2, "\nprereq: ");
@@ -729,7 +727,7 @@ rule_get(const char* name) {
     // ret = MAP_VALUE(t);
 #ifdef DEBUG_OUTPUTI_
     if(t) {
-      buffer_putm_internal(buffer_2, "Created rule '", ((target*)MAP_VALUE(t))->name, "'\n", 0);
+      buffer_putm_internal(buffer_2, "Created rule '", ((target*)MAP_VALUE(t))->name, "'\n", NULL);
       buffer_flush(buffer_2);
     }
 #endif
@@ -984,18 +982,18 @@ rule_add_deps(target* t, const strlist* deps) {
 void
 rule_dump(target* rule) {
 #ifdef DEBUG
-  buffer_putm_internal(buffer_2, "Rule '", rule->name, "'\n", 0);
+  buffer_putm_internal(buffer_2, "Rule '", rule->name, "'\n", NULL);
   if(rule->prereq.sa.len) {
     stralloc_nul(&rule->prereq.sa);
-    buffer_putm_internal(buffer_2, "  prereq: ", rule->prereq.sa.s, "\n", 0);
+    buffer_putm_internal(buffer_2, "  prereq: ", rule->prereq.sa.s, "\n", NULL);
   }
   if(rule->output.sa.len) {
     stralloc_nul(&rule->output.sa);
-    buffer_putm_internal(buffer_2, "  output: ", rule->output.sa.s, "\n", 0);
+    buffer_putm_internal(buffer_2, "  output: ", rule->output.sa.s, "\n", NULL);
   }
   if(rule->recipe.len) {
     stralloc_nul(&rule->recipe);
-    buffer_putm_internal(buffer_2, "  recipe: ", rule->recipe.s, "\n", 0);
+    buffer_putm_internal(buffer_2, "  recipe: ", rule->recipe.s, "\n", NULL);
   }
   if(array_length(&rule->deps, sizeof(target*))) {
     target** t;
@@ -2085,7 +2083,7 @@ print_rule_deps(buffer* b, target* t) {
 
   strlist_push(&deplist, t->name);
 
-  buffer_putm_internal(b, "# Dependencies for '", t->name, "':", 0);
+  buffer_putm_internal(b, "# Dependencies for '", t->name, "':", NULL);
   buffer_putnlflush(b);
 
   print_rule_deps_r(b, t, &deplist, &hierlist, 0);
@@ -2189,7 +2187,7 @@ deps_for_libs() {
       strlist_sub(&libs, &indir);
 
       /*#if DEBUG_OUTPUT_
-            buffer_putm_internal(buffer_2, "Deps for library '", lib->name, "': ", 0);
+            buffer_putm_internal(buffer_2, "Deps for library '", lib->name, "': ", NULL);
             buffer_putsa(buffer_2, &libs.sa);
             buffer_putnlflush(buffer_2);
       #endif
@@ -2777,7 +2775,7 @@ gen_link_rules(/*strarray* sources*/) {
         stralloc_weak(&compile->recipe, &compile_command);
 
         /*        stralloc_nul(&incs);
-                buffer_putm_internal(buffer_2, "rule '", compile->name, "' includes: ", incs.sa.s, 0);
+                buffer_putm_internal(buffer_2, "rule '", compile->name, "' includes: ", incs.sa.s, NULL);
                 buffer_putnlflush(buffer_2);
         */
       }
@@ -2889,7 +2887,7 @@ gen_link_rules(/*strarray* sources*/) {
 
 #if 0 // def DEBUG_OUTPUT_
                 /*print_rule_deps(buffer_2, link);
-                buffer_putm_internal(buffer_2, "Deps for executable '", link->name, "': ", 0);
+                buffer_putm_internal(buffer_2, "Deps for executable '", link->name, "': ", NULL);
                 buffer_putsa(buffer_2, &deps.sa);
                 buffer_putnlflush(buffer_2);*/
 #endif
@@ -2937,7 +2935,7 @@ output_build_rules(buffer* b, const char* name, const stralloc* cmd) {
   stralloc out;
   stralloc_init(&out);
 
-  buffer_putm_internal(b, "rule ", name, "\n  command = ", 0);
+  buffer_putm_internal(b, "rule ", name, "\n  command = ", NULL);
   var_subst(cmd, &out, "$", "", 1);
   stralloc_replaces(&out, "$@", "$out");
   stralloc_replaces(&out, "$<", "$in");
@@ -3326,7 +3324,7 @@ var_output(buffer* b, MAP_T* vars, const char* name) {
       {
         const char* ref;
         strlist_foreach_s(&refvars, ref) {
-          /*    buffer_putm_internal(buffer_2, "recurse referenced var: ", ref, "\n", 0);
+          /*    buffer_putm_internal(buffer_2, "recurse referenced var: ", ref, "\n", NULL);
               buffer_flush(buffer_2);*/
 
           var_output(b, vars, ref);
@@ -3334,11 +3332,11 @@ var_output(buffer* b, MAP_T* vars, const char* name) {
       }
 
       if(batch)
-        buffer_putm_internal(b, "@SET ", v.s, "=", 0);
+        buffer_putm_internal(b, "@SET ", v.s, "=", NULL);
       else if(shell)
-        buffer_putm_internal(b, v.s, "=\"", 0);
+        buffer_putm_internal(b, v.s, "=\"", NULL);
       else
-        buffer_putm_internal(b, v.s, " = ", 0);
+        buffer_putm_internal(b, v.s, " = ", NULL);
 
       if(ninja || shell) {
         stralloc_zero(&v);
@@ -3398,7 +3396,7 @@ output_make_rule(buffer* b, target* rule) {
 
   if(num_deps == 0 && str_diffn(rule->name, dirs.work.sa.s, dirs.work.sa.len) &&
      !rule->name[str_chr(rule->name, pathsep_make)] && str_end(rule->name, ":")) {
-    buffer_putm_internal(b, ".PHONY: ", rule->name, newline, 0);
+    buffer_putm_internal(b, ".PHONY: ", rule->name, newline, NULL);
   }
 
   strlist_foreach(&rule->vars, x, n) {
@@ -3594,7 +3592,7 @@ output_script(buffer* b, target* rule) {
 
   if(!rule->name[str_chr(rule->name, '%')]) {
     if(rule->recipe.s != compile_command.s)
-      buffer_putm_internal(b, newline, "REM Rules for '", rule->name, "'", newline, 0);
+      buffer_putm_internal(b, newline, "REM Rules for '", rule->name, "'", newline, NULL);
   }
 
   strlist_foreach(&rule->prereq, x, n) {
@@ -5116,7 +5114,7 @@ main(int argc, char* argv[]) {
   strarray_foreach(&args, arg) {
 
     if(!path_exists(*arg)) {
-      buffer_putm_internal(buffer_2, "ERROR: Doesn't exist: ", *arg, newline, 0);
+      buffer_putm_internal(buffer_2, "ERROR: Doesn't exist: ", *arg, newline, NULL);
       buffer_flush(buffer_2);
       ret = 127;
       goto fail;
@@ -5286,7 +5284,7 @@ fail:
     goto quit;
   }
 
-  buffer_putm_internal(out, comment, " Generated by:", newline, comment, "  ", 0);
+  buffer_putm_internal(out, comment, " Generated by:", newline, comment, "  ", NULL);
   buffer_putsa(out, &cmdline.sa);
   buffer_putsflush(out, newline);
 
@@ -5304,10 +5302,10 @@ fail:
   if(str_equal(tools.make, "gmake")) {
     stralloc_nul(&vpath.sa);
 
-    //      buffer_putm_internal(out, "\nvpath ", vpath.sa.s, "\n", 0);
+    //      buffer_putm_internal(out, "\nvpath ", vpath.sa.s, "\n", NULL);
 
     stralloc_replacec(&vpath.sa, ' ', ':');
-    buffer_putm_internal(out, "VPATH = ", vpath.sa.s, "\n\n", 0);
+    buffer_putm_internal(out, "VPATH = ", vpath.sa.s, "\n\n", NULL);
     buffer_flush(out);
   }
 
@@ -5320,9 +5318,9 @@ fail:
 
   if(batch || shell) {
     if(batch) {
-      buffer_putm_internal(out, "CD %~dp0", newline, 0);
+      buffer_putm_internal(out, "CD %~dp0", newline, NULL);
     } else {
-      buffer_putm_internal(out, "cd \"$(dirname \"$0\")\"\n\n", 0);
+      buffer_putm_internal(out, "cd \"$(dirname \"$0\")\"\n\n", NULL);
     }
 
     output_script(out, NULL);
@@ -5340,7 +5338,7 @@ quit :
     sourcedir* sdir = MAP_VALUE(t);
     if(1 /* && strlist_count(&sdir->deps)*/) {
 
-      buffer_putm_internal(buffer_2, "source directory '", MAP_KEY(t), "' deps =\n", 0);
+      buffer_putm_internal(buffer_2, "source directory '", MAP_KEY(t), "' deps =\n", NULL);
 
       strlist_zero(&deps);
       sourcedir_deps(sdir, &deps);
@@ -5360,7 +5358,7 @@ quit :
       source = slist_data(link);
 
       if(0 && /*source->name[str_find(source->name, "genmakefile")] && strlist_count(&source->deps)*/ 1) {
-        buffer_putm_internal(buffer_2, "source: ", source->name, " deps: ", 0);
+        buffer_putm_internal(buffer_2, "source: ", source->name, " deps: ", NULL);
         strlist_zero(&deps);
         sources_deps(source, &deps);
         buffer_puts(buffer_2, " includes: ");

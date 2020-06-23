@@ -163,7 +163,7 @@ parse_line(const char* x, ssize_t n) {
 
 #ifdef DEBUG_OUTPUT
   stralloc_nul(&str);
-  buffer_putm_internal(buffer_2, "Command: ", str.s, "\n", "Arguments: ", 0);
+  buffer_putm_internal(buffer_2, "Command: ", str.s, "\n", "Arguments: ", NULL);
   strlist_dump(buffer_2, &args);
   buffer_putnlflush(buffer_2);
 #endif
@@ -181,7 +181,7 @@ usage(char* argv0) {
                        "  -t type  Output type\n"
                        "\n"
                        "Supported types are: m3u pls xspf\n",
-                       0);
+                       NULL);
   buffer_flush(buffer_1);
   exit(0);
 }

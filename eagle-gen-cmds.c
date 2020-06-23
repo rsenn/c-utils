@@ -1207,8 +1207,17 @@ print_xml_rect(buffer* b, xmlnode* e) {
   y1 = xml_get_attribute(e, "y1");
   x2 = xml_get_attribute(e, "x2");
   y2 = xml_get_attribute(e, "y2");
-  buffer_putm_internal(
-      b, "(", x1 ? x1 : "<null>", " ", y1 ? y1 : "<null>", ") (", x2 ? x2 : "<null>", " ", y2 ? y2 : "<null>", ")", 0);
+  buffer_putm_internal(b,
+                       "(",
+                       x1 ? x1 : "<null>",
+                       " ",
+                       y1 ? y1 : "<null>",
+                       ") (",
+                       x2 ? x2 : "<null>",
+                       " ",
+                       y2 ? y2 : "<null>",
+                       ")",
+                       NULL);
   buffer_flush(b);
 }
 
@@ -1221,7 +1230,7 @@ print_xml_layer(buffer* b, xmlnode* e) {
 
     if(layer_id != current_layer_id) {
       const char* layerName = layer_index(layer_id);
-      buffer_putm_internal(b, "Layer ", layerName ? layerName : layer, ";\n", 0);
+      buffer_putm_internal(b, "Layer ", layerName ? layerName : layer, ";\n", NULL);
 
       current_layer_id = layer_id;
     }
@@ -1267,11 +1276,11 @@ print_script(buffer* b, xmlnode* e) {
 
   if(str_equal(e->name, "element")) {
     const char* rot = xml_get_attribute(e, "rot");
-    buffer_putm_internal(b, "MOVE ", xml_get_attribute(e, "name"), " ", 0);
+    buffer_putm_internal(b, "MOVE ", xml_get_attribute(e, "name"), " ", NULL);
 
     print_xml_xy(b, e);
     if(rot) {
-      buffer_putm_internal(b, "; ROTATE ", rot, " '", xml_get_attribute(e, "name"), "'", 0);
+      buffer_putm_internal(b, "; ROTATE ", rot, " '", xml_get_attribute(e, "name"), "'", NULL);
     }
 
   } else if(str_equal(e->name, "wire")) {
@@ -1667,7 +1676,7 @@ main(int argc, char* argv[]) {
         double x1, x2, y1, y2;
 
         if(print_comments) {
-          buffer_putm_internal(buffer_1, "\n# Element '", node->name, "' XPath: ", 0);
+          buffer_putm_internal(buffer_1, "\n# Element '", node->name, "' XPath: ", NULL);
           buffer_puts(buffer_1, "# ");
           xml_path(node, &path);
           buffer_putsa(buffer_1, &path);
@@ -1728,7 +1737,7 @@ main(int argc, char* argv[]) {
 
         buffer_puts(buffer_2, "Aligned ");
         buffer_putlong(buffer_2, num_aligned);
-        buffer_putm_internal(buffer_2, " nodes\n", "Saving to '", base, "'...", 0);
+        buffer_putm_internal(buffer_2, " nodes\n", "Saving to '", base, "'...", NULL);
         buffer_putnlflush(buffer_2);
         {
           stralloc filename;

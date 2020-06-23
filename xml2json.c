@@ -251,7 +251,7 @@ int
 testwalk(xmlnode* node, xmlnode* root) {
   if(node->name && node->name[0] != '/' && node->type == XML_ELEMENT) {
     int depth = xml_depth(node);
-    buffer_putm_internal(buffer_2, "walk: ", node->name, " depth: ", 0);
+    buffer_putm_internal(buffer_2, "walk: ", node->name, " depth: ", NULL);
     buffer_putlong(buffer_2, depth);
     buffer_putnlflush(buffer_2);
   }

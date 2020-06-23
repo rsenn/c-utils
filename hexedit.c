@@ -257,7 +257,7 @@ usage(const char* av0) {
                        "\n"
                        "  [edit-specifier] is <address>=<value>\n"
                        "\n",
-                       0);
+                       NULL);
   buffer_putnlflush(buffer_2);
 }
 

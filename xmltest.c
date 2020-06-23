@@ -63,7 +63,7 @@ xml_dump(xmlnode* n, buffer* b, const char* parent, int depth) {
     if(n->type == XML_TEXT) {
       const char* x = xml_get_text(n, &name);
       if(x[0]) {
-        buffer_putm_internal(b, "", parent, "->children = xml_textnode(\"", x, "\");", 0);
+        buffer_putm_internal(b, "", parent, "->children = xml_textnode(\"", x, "\");", NULL);
         newline_indent(b, depth);
       }
     } else if(n->type == XML_ELEMENT) {
@@ -110,7 +110,7 @@ xml_dump(xmlnode* n, buffer* b, const char* parent, int depth) {
             newline_indent(b, depth);
             strlist_push(&vars, name.s);
           }
-          buffer_putm_internal(b, name.s, " = ", 0);
+          buffer_putm_internal(b, name.s, " = ", NULL);
           do_assign = 1;
         }
       }
@@ -124,23 +124,23 @@ xml_dump(xmlnode* n, buffer* b, const char* parent, int depth) {
         chained_attributes = 0;
 
       if(parent)
-        buffer_putm_internal(b, "xml_child_element", attrs_str, "(\"", n->name, "\", ", parent, 0);
+        buffer_putm_internal(b, "xml_child_element", attrs_str, "(\"", n->name, "\", ", parent, NULL);
       else
-        buffer_putm_internal(b, "xml_element", attrs_str, "(\"", n->name, 0);
+        buffer_putm_internal(b, "xml_element", attrs_str, "(\"", n->name, NULL);
       buffer_flush(b);
 
       if(attrs_str[1] == 't') {
         stralloc text;
         stralloc_init(&text);
-        buffer_putm_internal(b, ", \"", xml_get_text(n, &text), "\"", 0);
+        buffer_putm_internal(b, ", \"", xml_get_text(n, &text), "\"", NULL);
         stralloc_free(&text);
         text_children = 0;
       } else if(!chained_attributes && n->attributes) {
         i = 0;
         hmap_foreach(n->attributes, t) {
-          buffer_putm_internal(b, ", \"", 0);
+          buffer_putm_internal(b, ", \"", NULL);
           buffer_put(b, t->key, t->key_len);
-          buffer_putm_internal(b, "\", \"", t->vals.val_chars, "\"", 0);
+          buffer_putm_internal(b, "\", \"", t->vals.val_chars, "\"", NULL);
         }
         if(attrs_str[1] == 't' || attrs_str[1] == 'a')
           buffer_puts(b, ", 0");
@@ -167,7 +167,7 @@ xml_dump(xmlnode* n, buffer* b, const char* parent, int depth) {
             if(1)
               newline_indent(b, depth + 1);
 
-            buffer_putm_internal(b, i == 0 ? "\"" : "\"", t->key, "\", \"", t->vals.val_chars, "\",", 0);
+            buffer_putm_internal(b, i == 0 ? "\"" : "\"", t->key, "\", \"", t->vals.val_chars, "\",", NULL);
             ++i;
           }
           newline_indent(b, depth);
@@ -176,16 +176,16 @@ xml_dump(xmlnode* n, buffer* b, const char* parent, int depth) {
           hmap_foreach(n->attributes, t) {
             newline_indent(b, depth);
             buffer_putm_internal(
-                b, "xml_set_attribute(", name.s, ", \"", t->key, "\", \"", t->vals.val_chars, "\")", 0);
+                b, "xml_set_attribute(", name.s, ", \"", t->key, "\", \"", t->vals.val_chars, "\")", NULL);
           }
         }
       }
 
       if(attrs_str[1] != 't') {
         if(text_children) {
-          buffer_putm_internal(b, "->children =", 0);
+          buffer_putm_internal(b, "->children =", NULL);
           // newline_indent(b, depth + 2)
-          buffer_putm_internal(b, " xml_textnode(\"", n->children->name, "\");", 0);
+          buffer_putm_internal(b, " xml_textnode(\"", n->children->name, "\");", NULL);
         }
 
         if(!text_children) {

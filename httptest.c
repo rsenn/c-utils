@@ -60,7 +60,7 @@ usage(char* av0) {
                        "  -h, --help              Show this help\n"
                        "  -o, --output FILE       Output file\n"
                        "\n",
-                       0);
+                       NULL);
   buffer_flush(buffer_1);
 }
 

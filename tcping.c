@@ -64,7 +64,7 @@ static char ipbuf[IP4_FMT];
 void
 usage(char* prog) {
   buffer_putm_internal(
-      buffer_2, "Usage: ", str_basename(prog), " [-q] [-t timeout_sec] [-u timeout_usec] <host> <port>", 0);
+      buffer_2, "Usage: ", str_basename(prog), " [-q] [-t timeout_sec] [-u timeout_usec] <host> <port>", NULL);
   buffer_putnlflush(buffer_2);
 }
 
@@ -191,7 +191,7 @@ main(int argc, char* argv[]) {
   }
 
 #ifdef DEBUG_OUTPUT
-  buffer_putm_internal(buffer_1, "IP address for ", argv[optind], ": ", 0);
+  buffer_putm_internal(buffer_1, "IP address for ", argv[optind], ": ", NULL);
   buffer_put(buffer_1, ipbuf, ip4_fmt(ipbuf, ips.s));
   buffer_putnlflush(buffer_1);
 #endif
@@ -214,7 +214,7 @@ main(int argc, char* argv[]) {
       /* solaris immediately returns ECONNREFUSED on local ports */
       if(errno == ECONNREFUSED) {
         if(verbose) {
-          buffer_putm_internal(buffer_1, argv[optind], " port ", argv[optind + 1], " closed.", 0);
+          buffer_putm_internal(buffer_1, argv[optind], " port ", argv[optind + 1], " closed.", NULL);
           buffer_putnlflush(buffer_1);
         }
         closesocket(sock);
@@ -255,7 +255,7 @@ main(int argc, char* argv[]) {
       /* timeout */
       closesocket(sock);
       if(verbose) {
-        buffer_putm_internal(buffer_1, argv[optind], " port ", argv[optind + 1], " user timeout.", 0);
+        buffer_putm_internal(buffer_1, argv[optind], " port ", argv[optind + 1], " user timeout.", NULL);
         buffer_putnlflush(buffer_1);
       }
       return 2;
@@ -274,9 +274,9 @@ main(int argc, char* argv[]) {
       if(error != 0) {
         if(verbose) {
           if(error == EHOSTUNREACH)
-            buffer_putm_internal(buffer_1, argv[optind], ": host is down", 0);
+            buffer_putm_internal(buffer_1, argv[optind], ": host is down", NULL);
           else
-            buffer_putm_internal(buffer_1, argv[optind], " port ", argv[optind + 1], " closed.", 0);
+            buffer_putm_internal(buffer_1, argv[optind], " port ", argv[optind + 1], " closed.", NULL);
           buffer_putnlflush(buffer_1);
         }
         closesocket(sock);
@@ -291,7 +291,7 @@ main(int argc, char* argv[]) {
   /* OK, connection established */
   closesocket(sock);
   if(verbose) {
-    buffer_putm_internal(buffer_1, argv[optind], " port ", argv[optind + 1], " open.", 0);
+    buffer_putm_internal(buffer_1, argv[optind], " port ", argv[optind + 1], " open.", NULL);
     buffer_putnlflush(buffer_1);
   }
   return 0;

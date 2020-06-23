@@ -65,7 +65,7 @@ usage(char* argv0) {
                        "  -t type  Output type\n"
                        "\n"
                        "Supported types are: m3u pls xspf\n",
-                       0);
+                       NULL);
   buffer_flush(buffer_1);
   exit(0);
 }

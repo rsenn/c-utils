@@ -20,13 +20,13 @@ xml_print_attrs(HMAP_DB* db, buffer* b) {
   TUPLE* tpl = db->list_tuple;
 
   while(tpl) {
-    buffer_putm_internal(b, tpl == db->list_tuple ? "" : ", ", 0);
+    buffer_putm_internal(b, tpl == db->list_tuple ? "" : ", ", NULL);
     if(tpl->key[str_chr(tpl->key, '-')])
-      buffer_putm_internal(b, "\"", tpl->key, "\"", 0);
+      buffer_putm_internal(b, "\"", tpl->key, "\"", NULL);
     else
       buffer_puts(b, tpl->key);
 
-    buffer_putm_internal(b, ": ", "\"", 0);
+    buffer_putm_internal(b, ": ", "\"", NULL);
 
     switch(tpl->data_type) {
       case HMAP_DATA_TYPE_INT: buffer_putlong(b, tpl->vals.val_int); break;
@@ -59,7 +59,7 @@ xml_print_node(xmlnode* node, buffer* b, int depth, const char* nl) {
 
   if(!closing) {
     buffer_putnspace(b, depth * 2);
-    buffer_putm_internal(b, node->name, 0);
+    buffer_putm_internal(b, node->name, NULL);
   }
 
   if(node->attributes && node->attributes->tuple_count) {
@@ -84,7 +84,7 @@ xml_print_node(xmlnode* node, buffer* b, int depth, const char* nl) {
         text.len = fmt_stripwhitespace(text.s, content, len);
       }
       stralloc_nul(&text);
-      buffer_putm_internal(b, ", \"", text.s, "\"", 0);
+      buffer_putm_internal(b, ", \"", text.s, "\"", NULL);
 
       /*xml_print_list(node->children, b, 0, " ");
       buffer_puts(b, "\"\n");

@@ -684,6 +684,10 @@ list_dir_internal(stralloc* dir, char type, long depth) {
           continue;
         }
       }
+      if(opt_deref && is_symlink) {
+        is_symlink = 0;
+        is_dir = S_ISDIR(st.st_mode);
+      }
     }
     nlink = is_dir ? st.st_nlink : 1;
     mode = st.st_mode | ((dtype & D_SYMLINK) ? S_IFLNK : 0);
@@ -842,9 +846,10 @@ write_err_check(int fd, const void* buf, size_t len) {
 
 void
 usage(char* argv0) {
+  const char* prog = str_basename(argv0);
   buffer_putm_internal(buffer_1,
                        "Usage: ",
-                       str_basename(argv0),
+                       prog,
                        " [-o output] [infile or stdin]\n\n",
                        "  -1 ... -9           compression level; default is 3\n",
                        "\n",

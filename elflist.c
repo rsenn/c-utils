@@ -39,7 +39,7 @@ static const char* filename;
 void
 elf_print_prefix(buffer* b) {
   if(filename)
-    buffer_putm_internal(b, filename, ":", 0);
+    buffer_putm_internal(b, filename, ":", NULL);
 }
 
 #define MACHINES                                                                                                       \
@@ -433,7 +433,7 @@ elf_dump_segments(range map) {
                          (flags & ELF_PF_R) ? "r" : "-",
                          (flags & ELF_PF_W) ? "w" : "-",
                          (flags & ELF_PF_W) ? "x" : "-",
-                         0);
+                         NULL);
     buffer_putnlflush(buffer_1);
   }
 }

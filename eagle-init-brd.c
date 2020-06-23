@@ -88,7 +88,7 @@ dump_part(part_t const* p) {
                        p->device,
                        ",value=",
                        p->value,
-                       0);
+                       NULL);
 
   buffer_puts(buffer_2, ",x=");
   buffer_putdouble(buffer_2, p->x, 1);

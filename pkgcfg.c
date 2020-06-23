@@ -944,7 +944,7 @@ main(int argc, char* argv[]) {
       default:
         buffer_puts(buffer_2, "WARNING: Invalid argument -");
         buffer_putc(buffer_2, isprint(c) ? c : '?');
-        buffer_putm_internal(buffer_2, " '", optarg ? optarg : argv[optind], "'", 0);
+        buffer_putm_internal(buffer_2, " '", optarg ? optarg : argv[optind], "'", NULL);
         buffer_putnlflush(buffer_2);
         usage(argv[0]);
         return 1;

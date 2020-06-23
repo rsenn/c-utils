@@ -69,7 +69,7 @@ usage(char* argv0) {
                        "Options\n",
                        "  -h, --help                show this help\n",
                        "\n",
-                       0);
+                       NULL);
   buffer_putnlflush(buffer_1);
 }
 

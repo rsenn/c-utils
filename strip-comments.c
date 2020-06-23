@@ -42,7 +42,7 @@ usage(char* av0) {
                        "  -h, --help              Show this help\n"
                        "  -i, --in-place          Write to input file\n"
                        "\n",
-                       0);
+                       NULL);
   buffer_flush(buffer_1);
 }
 
@@ -222,13 +222,13 @@ main(int argc, char* argv[]) {
   //  stralloc_init(&data);
 
   if(optind < argc) {
-    buffer_putm_internal(buffer_2, "Opening input file '", argv[optind], "'...", 0);
+    buffer_putm_internal(buffer_2, "Opening input file '", argv[optind], "'...", NULL);
     buffer_putnlflush(buffer_2);
     in_fd = open_read((in_path = argv[optind]));
     optind++;
   }
   if(optind < argc) {
-    buffer_putm_internal(buffer_2, "Opening output file '", argv[optind], "'...", 0);
+    buffer_putm_internal(buffer_2, "Opening output file '", argv[optind], "'...", NULL);
     buffer_putnlflush(buffer_2);
     out_fd = open_trunc((out_path = argv[optind]));
     optind++;
