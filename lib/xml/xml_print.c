@@ -42,7 +42,7 @@ xml_print_node(xmlnode* node, buffer* b, int depth, xml_print_fmt_t* fmt) {
     //  buffer_putnspace(b, depth * 2);
   }
 
-  buffer_putm_internal(b, "<", node->name, 0);
+  buffer_putm_internal(b, "<", node->name, NULL);
 
   if(node->type == XML_ELEMENT && node->attributes && node->attributes->tuple_count) {
     // fmt(node, b, depth, ' ', 1);

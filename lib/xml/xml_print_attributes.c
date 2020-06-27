@@ -8,7 +8,7 @@ xml_print_attributes(HMAP_DB* db, buffer* b, const char* sep, const char* eq, co
   TUPLE* tpl = db->list_tuple;
 
   while(tpl) {
-    buffer_putm_internal(b, tpl == db->list_tuple ? "" : sep, tpl->key, eq, quot, 0);
+    buffer_putm_internal(b, tpl == db->list_tuple ? "" : sep, tpl->key, eq, quot, NULL);
 
     switch(tpl->data_type) {
       case HMAP_DATA_TYPE_INT: buffer_putlong(b, tpl->vals.val_int); break;

@@ -99,7 +99,7 @@ static void handleevent(fd_t fd, int readable, int writable, int error) {
 static void
 put_fdset(buffer* b, const char* name, const fd_set* fds, fd_t maxfd) {
   fd_t i;
-  buffer_putm_internal(b, "fd_set ", name, "=[", 0);
+  buffer_putm_internal(b, "fd_set ", name, "=[", NULL);
   for(i = 0; i <= maxfd; ++i) {
     if(FD_ISSET(i, fds)) {
       buffer_putspace(b);

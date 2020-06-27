@@ -1193,6 +1193,7 @@ void
 print_xml_xy(buffer* b, xmlnode* e) {
   double x = xml_get_attribute_double(e, "x");
   double y = xml_get_attribute_double(e, "y");
+  xy_align(&x, &y);
   buffer_puts(b, "(");
   buffer_putdouble(b, x / 25.4, 2);
   buffer_puts(b, " ");

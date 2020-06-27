@@ -20,7 +20,7 @@ static void
 
 putsa(const char* name, stralloc* tag) {
   size_t i;
-  buffer_putm_internal(buffer_1, name, ": ", 0);
+  buffer_putm_internal(buffer_1, name, ": ", NULL);
 
   for(i = 0; i < tag->len; ++i) {
     if(tag->s[i] == '\r')

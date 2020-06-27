@@ -9,7 +9,7 @@ hmap_set_stralloc(HMAP_DB** hmap_db, const stralloc* key, const stralloc* data) 
   assert(key->len);
 
   if(!data->s || !data->len) {
-    buffer_putm_internal(buffer_2, "hmap_set_stralloc", " ", __FILE__, ":", 0);
+    buffer_putm_internal(buffer_2, "hmap_set_stralloc", " ", __FILE__, ":", NULL);
     buffer_putlong(buffer_2, __LINE__);
     buffer_puts(buffer_2, ": No data for key '");
     buffer_put(buffer_2, key->s, key->len);

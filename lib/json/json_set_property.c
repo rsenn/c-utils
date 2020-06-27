@@ -10,7 +10,7 @@ json_set_property(jsonval* obj, jsonval name, jsonval value) {
     json_tostring(name, &key);
     stralloc_nul(&key);
 
-    /*    buffer_putm_internal(buffer_2, "key: ", key.s, "\n", 0);
+    /*    buffer_putm_internal(buffer_2, "key: ", key.s, "\n", NULL);
         buffer_flush(buffer_2);*/
 
     if(obj->dictv == NULL)

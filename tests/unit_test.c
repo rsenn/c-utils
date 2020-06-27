@@ -140,7 +140,7 @@ unit_test_run(struct unit_test* mu_, unit_test_func_t func, const char* name) {
   rc = unit_test_call(running, func);
 
   if(running->failure == 0) {
-    buffer_putm_internal(mu_->testlog, PASS("."), 0);
+    buffer_putm_internal(mu_->testlog, PASS("."), NULL);
     if(muconf_ptr()->v) {
       TESTLOG_STR("  ");
       TESTLOG_STR(name);
@@ -156,13 +156,13 @@ unit_test_run(struct unit_test* mu_, unit_test_func_t func, const char* name) {
   }
 
   if(!unit_test_empty(running->faillog)) {
-    buffer_putm_internal(mu_->testlog, FAIL("\nFAILURE"), " in ", BOLD(name), "\n", 0);
+    buffer_putm_internal(mu_->testlog, FAIL("\nFAILURE"), " in ", BOLD(name), "\n", NULL);
     unit_test_copy(running->faillog, mu_->testlog);
   }
 
   if(!muconf_ptr()->q) {
     if(!unit_test_empty(running->testlog)) {
-      buffer_putm_internal(mu_->testlog, INFO("\nCAPTURED STDOUT/STDERR"), " for ", BOLD(name), "\n", 0);
+      buffer_putm_internal(mu_->testlog, INFO("\nCAPTURED STDOUT/STDERR"), " for ", BOLD(name), "\n", NULL);
       unit_test_copy(running->testlog, mu_->testlog);
     }
   }

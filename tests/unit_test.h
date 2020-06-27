@@ -116,7 +116,7 @@ typedef char bool;
     size_t n = str_rfind(file, ".." PATHSEP_S);                                                                        \
     if(file[n])                                                                                                        \
       file += n + 3;                                                                                                   \
-    buffer_putm_internal((mu_)->faillog, file, ":", 0);                                                                \
+    buffer_putm_internal((mu_)->faillog, file, ":", NULL);                                                                \
     buffer_putulong((mu_)->faillog, __LINE__);                                                                         \
     buffer_puts((mu_)->faillog, "  Assertion failed: ");                                                               \
     buffer_puts((mu_)->faillog, #x1);                                                                                  \
