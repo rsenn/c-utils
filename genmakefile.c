@@ -725,7 +725,7 @@ rule_get(const char* name) {
     MAP_INSERT(rules, name, len + 1, &tgt, ((sizeof(struct target_s) + 3) / 4) * 4);
     (MAP_SEARCH(rules, name, len + 1, &t));
     // ret = MAP_VALUE(t);
-#ifdef DEBUG_OUTPUTI_
+#ifdef DEBUG_OUTPUT_I
     if(t) {
       buffer_putm_internal(buffer_2, "Created rule '", ((target*)MAP_VALUE(t))->name, "'\n", NULL);
       buffer_flush(buffer_2);
@@ -1243,7 +1243,7 @@ sources_sort(const char** a, const char** b) {
 void
 sources_get(const char* basedir) {
   rdir_t rdir;
-#ifdef DEBUG_OUTPUT
+#ifdef DEBUG_OUTPUT_
   buffer_puts(buffer_2, "sources_get: ");
   buffer_puts(buffer_2, basedir);
   buffer_putnlflush(buffer_2);
@@ -1316,7 +1316,7 @@ sources_deps(sourcefile* file, strlist* out) {
 
   strlist_foreach(&file->deps, x, len) {
     stralloc_nul(&srcdir);
-#if DEBUG_OUTPUTI_q
+#if DEBUG_OUTPUT_I_q
     buffer_puts(buffer_2, "sources_deps '");
     buffer_puts(buffer_2, file->name);
     buffer_puts(buffer_2, "' ");
@@ -1413,7 +1413,7 @@ sources_addincludes(sourcefile* file, sourcedir* sdir, const strlist* includes, 
     path_concat(dirs.this.sa.s, dirs.this.sa.len, path.s, path.len, &real);
     path_canonical_sa(&real);
     path_collapse_sa(&real);
-#if DEBUG_OUTPUT
+#if DEBUG_OUTPUT_
     {
       buffer_puts(buffer_2, "source_addincludes: file=");
       buffer_puts(buffer_2, file->name);
@@ -1434,7 +1434,7 @@ sources_addincludes(sourcefile* file, sourcedir* sdir, const strlist* includes, 
       stralloc_nul(&path);
       stralloc_nul(&real);
       if(stralloc_diff(&basedir, &dir)) {
-#if DEBUG_OUTPUT
+#if DEBUG_OUTPUT_
         buffer_puts(buffer_2, "real = ");
         buffer_putsa(buffer_2, &real);
         buffer_puts(buffer_2, " path = ");
@@ -1453,7 +1453,7 @@ sources_addincludes(sourcefile* file, sourcedir* sdir, const strlist* includes, 
             sources_get(real.s);
             strlist_push_unique_sa(&file->deps, &path);
             strlist_push_unique_sa(&sdir->deps, &path);
-#if DEBUG_OUTPUT
+#if DEBUG_OUTPUT_
             buffer_puts(buffer_2, "path = ");
             buffer_putsa(buffer_2, &path);
             buffer_putnlflush(buffer_2);
@@ -2470,7 +2470,7 @@ gen_srcdir_compile_rules(sourcedir* sdir, const char* dir) {
   stralloc_free(&target);
   stralloc_free(&defines);
 
-#ifdef DEBUG_OUTPUT
+#ifdef DEBUG_OUTPUT_
   rule_dump(rule);
 #endif
 
@@ -5194,7 +5194,7 @@ main(int argc, char* argv[]) {
     sourcedir_dump_all(buffer_2);
 #endif
 
-#if DEBUG_OUTPUT
+#if DEBUG_OUTPUT_
 
     // debug_stra("srcs", &srcs);
     buffer_puts(buffer_2, "cmd_libs = ");

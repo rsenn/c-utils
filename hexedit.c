@@ -326,6 +326,20 @@ main(int argc, char* argv[]) {
     }
   }
 
+  patch_new("Sublime Text 3095 Linux x64", 0, 0);
+  patch(0xd703, 0x85, 0x39);
+  patch_new("Sublime Text 3095 Linux x86", 0, 0);
+  patch(0xd152, 0x85, 0x39);
+
+  patch_new("Sublime Text 3095 Windows x64", 0, 0);
+
+  patch(0xf0bdf, 0x85, 0x3B);
+  patch_new("Sublime Text 3095 Windows x86", 0, 0);
+  patch(0xa96f4, 0x1a, 0x2a);
+  patch_new("Sublime Text 3095 Mac", 0, 0);
+
+  patch(0x6615, 0x85, 0x39);
+
   /* Linux x64 */
   patch_new("Sublime Text 3065 Linux x64", 13170144, 0);
   patch(0x00005ac2, 0x2e, 0xe2);
@@ -352,8 +366,9 @@ main(int argc, char* argv[]) {
   /* Linux x64 */
   patch_new("Sublime Text 3176 Linux x64", 0, 0);
   patch(0xeb83, 0x00, 0x01); /* Persistent License Check */
-  patch(0xd539, 0x00, 0x01); /* Initial License Check */
+
   patch(0xd538, 0x38, 0x08);
+  patch(0xd539, 0x00, 0x01);  /* Initial License Check */
   patch(0x460b5, 0x53, 0xC3); /* Software Update Prompt */
 
   /* Windows x86 */
