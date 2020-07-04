@@ -41,7 +41,7 @@ cfg() {
       -DENABLE_PIC=OFF ;;
   esac
 
-  : ${generator:="Unix Makefiles"}
+  : ${generator:="CodeLite - Unix Makefiles"}
 
  (mkdir -p $builddir
   : ${relsrcdir=`realpath --relative-to "$builddir" .`}
