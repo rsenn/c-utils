@@ -64,7 +64,7 @@ uint16_get(const void* ptr) {
   return *(uint16*)in;
 }
 
-inline uint16
+static inline uint16
 uint16_read(const char* in) {
   return *(uint16*)in;
 }

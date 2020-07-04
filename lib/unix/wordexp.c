@@ -12,6 +12,8 @@
 #include <fcntl.h>
 #include <pthread.h>
 
+#define restrict __restrict
+
 static void
 reap(pid_t pid) {
   int status;

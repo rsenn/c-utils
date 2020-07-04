@@ -17,8 +17,8 @@ umult64(uint64 a, uint64 b, uint64* c) {
 #if defined(__x86_64__) && defined(__OPTIMIZE__) && defined(__GNUC__) && !defined(__clang__)
 
 /* WARNING: this only works if compiled with -fomit-frame-pointer */
-void
-umult64() {
+int
+umult64(uint64 a, uint64 b, uint64* c) {
   asm volatile("xchgq %rdx,%rsi\n"
                "movq %rdi,%rax\n"
                "mulq %rdx\n"
