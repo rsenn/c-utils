@@ -367,14 +367,13 @@ main(int argc, char* argv[]) {
   patch(0x6615, 0x85, 0x39);
 
   /* Linux x64 */
-  patch_new("Sublime Text 3065 Linux x64", 13170144, 0);
-  patch(0x00005ac2, 0x2e, 0xe2);
-  patch(0x001BD111, 0x8A, 0x90);
-  patch(0x001BD112, 0x9B, 0xB3);
-  patch(0x001BD113, 0xB8, 0x01);
+  patch_new("Sublime Text 3065 Linux x64", 5173248, 0xa5984d0d);
+  patch(0x001BD110, 0x8A, 0x90);
+  patch(0x001BD111, 0x9B, 0xB3);
+  patch(0x001BD112, 0xB8, 0x01);
+  patch(0x001BD113, 0x00, 0x90);
   patch(0x001BD114, 0x00, 0x90);
   patch(0x001BD115, 0x00, 0x90);
-  patch(0x001BD116, 0x00, 0x90);
 
   /* Linux x64 */
   patch_new("Sublime Text 3126 Linux x64", 5200392, 0);
@@ -438,10 +437,10 @@ main(int argc, char* argv[]) {
   patch(0x8F6A8, 0x48, 0xC3);  /* Purchase License Nag */
 
   /* Linux x64 */
-  patch_new("Sublime Text 3207 Linux x64", 8787520, 0);
+  patch_new("Sublime Text 3207 Linux x64", 8787520, 0xdafb1051);
   patch(0x3c03dc, 0x84, 0x85); /* Initial License Check */
   patch(0x4797a0, 0x75, 0x74); /* Persistent License Check */
- // patch(0x31d180, 0x75, 0x74); /* Purchase License Nag */
+  patch(0x31d180, 0x75, 0x74); /* Purchase License Nag */
 
 
   /* Windows x64 */

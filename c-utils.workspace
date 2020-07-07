@@ -1,2 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<CodeLite_Workspace Name="dirlist" Database="" Version="10.0.0"/>
+<CodeLite_Workspace Name="dirlist" Database="" Version="10.0.0">
+  <Project Name="c-utils" Path="../../Dokumente/Sources/c-utils/build/codelite-x64/c-utils.project" Active="Yes"/>
+  <BuildMatrix>
+    <WorkspaceConfiguration Name="Debug" Selected="yes">
+      <Environment/>
+      <Project Name="c-utils" ConfigName="Debug"/>
+    </WorkspaceConfiguration>
+    <WorkspaceConfiguration Name="Release" Selected="yes">
+      <Environment/>
+      <Project Name="c-utils" ConfigName="Debug"/>
+    </WorkspaceConfiguration>
+  </BuildMatrix>
+</CodeLite_Workspace>

@@ -8,20 +8,20 @@
 	"buffers":
 	[
 		{
-			"contents": "#include \"lib/windoze.h\"\n#include \"lib/unix.h\"\n#include \"lib/io.h\"\n#include \"lib/iarray.h\"\n#include \"lib/array.h\"\n#include \"lib/buffer.h\"\n#include \"lib/stralloc.h\"\n#include \"lib/mmap.h\"\n#include \"lib/scan.h\"\n#include \"lib/uint64.h\"\n#include \"lib/uint8.h\"\n#include \"lib/errmsg.h\"\n#include \"lib/open.h\"\n#include \"lib/path.h\"\n#include \"lib/str.h\"\n#include \"lib/byte.h\"\n#include \"lib/fmt.h\"\n\n#if WINDOWS_NATIVE\n#include <windows.h>\n#endif\n\n#include <fcntl.h>\n#include <stdio.h>\n\nchar hexdigits[] = \"0123456789abcdef\";\n\ntypedef struct {\n  uint64 offset;\n  uint8 from;\n  uint8 to;\n} record_t;°\n\ntypedef struct {\n  const char* name;\n  size_t file_size;\n  uint32 crc32;\n  array records;\n} patch_t;\n\nstatic array patches;\n\nextern ssize_t buffer_dummyreadmmap();\n\nuint32\ncrc32(uint32 crc, const char* data, size_t size) {\n  uint32 i, r = ~0;\n  const char* end = data + size;\n\n  while(data < end) {\n    r ^= *data++;\n\n    for(i = 0; i < 8; i++) {\n      uint32 t = ~((r & 1) - 1);\n      r = (r >> 1) ^ (0xedb88320 & t);\n    }\n  }\n\n  return ~r;\n}\n\nint\nget_crc32(const char* filename, uint32* crc) {\n  size_t n;\n  const char* x;\n\n  if((x = mmap_read(filename, &n)) == 0)\n    return -1;\n\n  *crc = crc32(0, x, n);\n\n  mmap_unmap(x, n);\n  return 0;\n}\n\nuint32\nbuffer_crc32(buffer* b) {\n  uint32 r;\n  r = crc32(0, (const char*)b->x, b->n);\n  return r;\n}\n\nvoid\nbuffer_filename(buffer* b, stralloc* sa) {\n  stralloc_zero(sa);\n  stralloc_nul(sa);\n\n#ifdef F_GETPATH\n  stralloc_ready(sa, MAXPATHLEN + 1);\n\n  fcntl(b->fd, F_GETPATH, sa->s);\n  stralloc(b->fd, F_GETPATH, sa->s);\n  stralloc_shrink(sa);\n#elif !WINDOWS_NATIVE\n  {\n    stralloc procp;\n    stralloc_init(&procp);\n    stralloc_cats(&procp, \"/proc/\");\n    stralloc_catulong(&procp, getpid());\n    stralloc_cats(&procp, \"/fd/\");\n    stralloc_catulong(&procp, b->fd);\n    stralloc_nul(&procp);\n    path_readlink(procp.s, sa);\n  }\n#else\n  mmap_filename(b->x, sa);\n#endif\n}\n\nint\nbuffer_backup(buffer* b) {\n  int fd;\n  size_t size = b->n;\n  stralloc orig, backup;\n  stralloc_init(&orig);\n  stralloc_init(&backup);\n\n  if(b->op == (buffer_op_proto*)&buffer_dummyreadmmap) {\n    buffer_munmap(b);\n  }\n  buffer_filename(b, &orig);\n\n  stralloc_copy(&backup, &orig);\n  stralloc_cats(&backup, \".orig\");\n  stralloc_nul(&backup);\n  stralloc_nul(&orig);\n\n#if WINDOWS_NATIVE\n  if(CopyFileA(orig.s, backup.s, FALSE) != TRUE)\n    return -1;\n\n  if((fd = open_rw(orig.s)) == -1)\n    return -1;\n#else\n  if(rename(orig.s, backup.s) == -1)\n    return -1;\n\n  if((fd = open_rw(orig.s)) == -1)\n    return -1;\n\n  if(io_sendfile(fd, b->fd, 0, size) == -1)\n    return -1;\n#endif\n\n  buffer_close(b);\n\n  if(buffer_mmapshared_fd(b, fd))\n    return -1;\n\n  return 0;\n}\n\nvoid\nprint(unsigned char* p, size_t i, unsigned char from, unsigned char to) {\n  buffer_puts(buffer_2, \"0x\");\n  buffer_putxlong(buffer_2, i);\n  buffer_putspace(buffer_2);\n  buffer_puts(buffer_2, \"0x\");\n  buffer_PUTC(buffer_2, hexdigits[from >> 4]);\n  buffer_PUTC(buffer_2, hexdigits[from & 0x0f]);\n  buffer_putspace(buffer_2);\n  buffer_puts(buffer_2, \"0x\");\n  buffer_PUTC(buffer_2, hexdigits[to >> 4]);\n  buffer_PUTC(buffer_2, hexdigits[to & 0x0f]);\n}\n\npatch_t*\npatch_new(const char* name, size_t file_size, uint32 crc32) {\n  patch_t* patch = array_allocate(&patches, sizeof(patch_t), array_length(&patches, sizeof(patch_t)));\n\n  patch->name = name;\n  patch->file_size = file_size;\n  patch->crc32 = crc32;\n\n  return patch;\n}\n\nvoid\npatch(size_t i, unsigned char from, unsigned char to) {\n  patch_t* patch = array_get(&patches, sizeof(patch_t), array_length(&patches, sizeof(patch_t)) - 1);\n  record_t* rec = array_allocate(&patch->records, sizeof(record_t), array_length(&patch->records, sizeof(record_t)));\n\n  rec->offset = i;\n  rec->from = from;\n  rec->to = to;\n}\n\nint\npatch_check(unsigned char* x, size_t n, patch_t* p) {\n  size_t i, nrec = array_length(&p->records, sizeof(record_t));\n  size_t done = 0;\n\n  buffer_putm_internal(buffer_2, \"Checking for '\", p->name, \"'...\", 0);\n  buffer_flush(buffer_2);\n\n  if(p->file_size) {\n\n    if(p->file_size && p->file_size != n) {\n      buffer_putsflush(buffer_2, \"SIZE MISMATCH\\n\");\n      return -1;\n    }\n\n    buffer_puts(buffer_2, \"SIZE \");\n    buffer_putulong(buffer_2, p->file_size);\n    buffer_puts(buffer_2, \" OK\");\n  }\n\n  buffer_putnlflush(buffer_2);\n\n  for(i = 0; i < nrec; ++i) {\n    record_t* r = array_get(&p->records, sizeof(record_t), i);\n\n    buffer_puts(buffer_2, \"position 0x\");\n    buffer_putxlong0(buffer_2, r->offset, 8);\n    buffer_puts(buffer_2,  \" is 0x\");\n    buffer_putxlong0(buffer_2, x[r->offset] == r->to ? r->to : r->from, 2);\n    if(x[r->offset] == r->from || x[r->offset] == r->to) {\n\n      buffer_puts(buffer_2, x[r->offset] == r->from ? \" OK\" : \" ALREADY PATCHED\");\n      buffer_putnlflush(buffer_2);\n    } else {\n      buffer_puts(buffer_2, \" NO (0x\");\n      buffer_putxlong0(buffer_2, x[r->offset], 2);\n      buffer_putsflush(buffer_2, \")\\n\");\n      return -2;\n    }\n\n    if(x[r->offset] == r->to)\n      ++done;\n  }\n\n  if(done == nrec)\n    return 1;\n  return 0;\n}\n\npatch_t*\npatch_find(unsigned char* x, size_t n) {\n  size_t i, np = array_length(&patches, sizeof(patch_t));\n  for(i = 0; i < np; ++i) {\n    patch_t* p = array_get(&patches, sizeof(patch_t), i);\n\n    if(patch_check(x, n, p) >= 0)\n      return p;\n  }\n  return NULL;\n}\n\nvoid\nrecord_apply(unsigned char* p, size_t i, unsigned char from, unsigned char to) {\n  buffer_puts(buffer_2, \"patch \");\n  print(p, i, from, to);\n  if(p[i] == from) {\n    p[i] = to;\n    buffer_puts(buffer_2, \" ok\");\n  } else {\n    buffer_puts(buffer_2, \" fail\");\n  }\n  buffer_putnlflush(buffer_2);\n}\n\nvoid\npatch_apply(unsigned char* x, size_t n, patch_t* p) {\n  size_t i, nrec = array_length(&p->records, sizeof(record_t));\n\n  if(p->file_size && p->file_size != n)\n    return;\n\n  for(i = 0; i < nrec; ++i) {\n    record_t* r = array_get(&p->records, sizeof(record_t), i);\n\n    record_apply(x, r->offset, r->from, r->to);\n  }\n}\n\nvoid\nusage(const char* av0) {\n  buffer_putm_internal(buffer_2,\n                       \"Usage: \",\n                       av0,\n                       \" <file> [edit-specifier]\\n\"\n                       \"\\n\"\n                       \"  [edit-specifier] is <address>=<value>\\n\"\n                       \"\\n\",\n                       NULL);\n  buffer_putnlflush(buffer_2);\n}\n\nint\nmain(int argc, char* argv[]) {\n  int ret = 1;\n  int index = 1;\n  patch_t* p;\n  size_t n;\n  unsigned char* x;\n  buffer file;\n  int fd;\n\n  errmsg_iam(argv[0]);\n\n  if(argc <= index) {\n    usage(argv[0]);\n    return 1;\n  }\n\n  if((fd = open_read(argv[index])) == -1 || buffer_mmapread_fd(&file, fd)) {\n    errmsg_warnsys(str_basename(argv[0]), \": opening file: \", argv[index], 0);\n    return 1;\n  }\n\n  x = (unsigned char*)file.x;\n  n = file.n;\n  // x = (unsigned char*)mmap_shared(argv[index], &n);\n\n  // patch_new(\"command line\", file.n, 0);\n\n  while(++index < argc) {\n    uint64 addr = 0;\n    uint64 val_cmp = 0, val_set = 0;\n    // size_t s_cmp = 0, s_set = 0;\n\n    char* spec = argv[index];\n    char sym = spec[0], *s = &spec[1];\n\n    while((sym = *spec++)) {\n      size_t n = 0;\n      if(sym == '@') {\n        n = scan_xlonglong(spec, &addr);\n      } else if(sym == '?') {\n      } else if(sym == '=') {\n        uint8 ch = 0;\n        do {\n          n = (scan_xchar(spec, &ch) + 1);\n          if(n >= 1) {\n            patch(addr, file.x[addr], ch);\n          }\n          if(n > 2)\n            n = 2;\n          addr++;\n          spec += n;\n\n        } while(n > 1);\n\n      } else {\n        buffer_putm_3(buffer_2, \"ERROR: \", spec, \"\\n\");\n        buffer_putnlflush(buffer_2);\n        return 2;\n      }\n      if(n == 0)\n        break;\n      spec += n;\n    }\n  }\n\n  patch_new(\"Sublime Text 3095 Linux x64\", 0, 0);\n  patch(0xd703, 0x85, 0x39);\n  patch_new(\"Sublime Text 3095 Linux x86\", 0, 0);\n  patch(0xd152, 0x85, 0x39);\n\n  patch_new(\"Sublime Text 3095 Windows x64\", 0, 0);\n\n  patch(0xf0bdf, 0x85, 0x3B);\n  patch_new(\"Sublime Text 3095 Windows x86\", 0, 0);\n  patch(0xa96f4, 0x1a, 0x2a);\n  patch_new(\"Sublime Text 3095 Mac\", 0, 0);\n\n  patch(0x6615, 0x85, 0x39);\n\n  /* Linux x64 */\n  patch_new(\"Sublime Text 3065 Linux x64\", 13170144, 0);\n  patch(0x00005ac2, 0x2e, 0xe2);\n  patch(0x001BD111, 0x8A, 0x90);\n  patch(0x001BD112, 0x9B, 0xB3);\n  patch(0x001BD113, 0xB8, 0x01);\n  patch(0x001BD114, 0x00, 0x90);\n  patch(0x001BD115, 0x00, 0x90);\n  patch(0x001BD116, 0x00, 0x90);\n\n  /* Linux x64 */\n  patch_new(\"Sublime Text 3126 Linux x64\", 5200392, 0);\n  patch(0xc62e, 0x94, 0x95); /* License Check */\n\n  /* Linux x86 */\n  patch_new(\"Sublime Text 3126 Linux x86\", 5200392, 0);\n  patch(0xC35C\t, 0x94, 0x95); /* License Check */\n\n  /* Linux x32 */\n  patch_new(\"Sublime Text 3176 Linux x86\", 0, 0);\n  patch(0xD779, 0x00, 0x01);\n  patch(0xC068, 0x38, 0x08);\n  patch(0xC069, 0x00, 0x01);\n  patch(0x482C5, 0x83, 0xC3);\n  patch(0x482C6, 0xEC, 0x90);\n  patch(0x482C7, 0x0C, 0x90);\n\n  /* Linux x64 */\n  patch_new(\"Sublime Text 3176 Linux x64\", 0, 0);\n  patch(0xeb83, 0x00, 0x01); /* Persistent License Check */\n\n  patch(0xd538, 0x38, 0x08);\n  patch(0xd539, 0x00, 0x01);  /* Initial License Check */\n  patch(0x460b5, 0x53, 0xC3); /* Software Update Prompt */\n\n  /* Windows x86 */\n  patch_new(\"Sublime Text 3176 Windows x86\", 0, 0);\n  patch(0xeb83, 0x00, 0x01); /* Persistent License Check */\n  patch(0x267CA, 0x00, 0x01);\n  patch(0x26C4F, 0x38, 0x08);\n  patch(0x26C50, 0x00, 0x01);\n  patch(0x50AFA, 0x55, 0xC3);\n\n  /* Windows x64 */\n  patch_new(\"Sublime Text 3176 Windows x64\", 7352944, 0);\n  patch(0x3985A, 0x00, 0x01); /* Persistent License Check */\n  patch(0x3A073, 0x38, 0x08);\n  patch(0x3A074, 0x00, 0x01); /* Initial License Check */\n  patch(0x792FB, 0x57, 0xC3); /* Software Update Prompt */\n\n  /* Windows x64 */\n  patch_new(\"Sublime Text 3193 Windows x64\", 0, 0);\n\n  patch(0x58BA04, 0x97, 0x00);\n  patch(0x58BA05, 0x94, 0x00);\n  patch(0x58BA06, 0x0d, 0x00);\n\n\n  /* Linux x64 */\n  patch_new(\"Sublime Text 3200 Linux x64\", 0, 0);\n\n  patch(0x3BEB98, 0x84, 0x85); /* Initial License Check */\n  patch(0x477C6E, 0x75, 0x74); /* Persistent License Check */\n\n  /* Windows x64 */\n  patch_new(\"Sublime Text 3200 Windows x64\", 0, 0);\n\n  patch(0x8545, 0x84, 0x85);   /* Initial License Check */\n  patch(0x192487, 0x75, 0x74); /* Persistent License Check */\n  patch(0x8F6A8, 0x48, 0xC3);  /* Purchase License Nag */\n\n  /* Linux x64 */\n  patch_new(\"Sublime Text 3207 Linux x64\", 8787520, 0);\n  patch(0x3c03dc, 0x84, 0x85); /* Initial License Check */\n  patch(0x4797a0, 0x75, 0x74); /* Persistent License Check */\n // patch(0x31d180, 0x75, 0x74); /* Purchase License Nag */\n\n\n  /* Windows x64 */\n  patch_new(\"Sublime Text 3207 Windows x64\", 0, 0);\n\n  patch(0x8545, 0x84, 0x85);   /* Initial License Check */\n  patch(0x193263, 0x75, 0x74); /* Persistent License Check */\n  patch(0x90315, 0x48, 0xc3);  /* Purchase License Nag */\n  patch(0xd6b6c, 0x84, 0x85);  /* Initial Update Check */\n  patch(0x4d745a, 0x85, 0x84); /* Menu Update Check */\n\n  /* Linux x86 */\n  patch_new(\"Sublime Text 3211 Linux x86\", 0, 0);\n  patch(0x39c5ea, 0x55, 0xb8);\n  patch(0x39c5eb, 0x53, 0x01);\n  patch(0x39c5ec, 0x57, 0x00);\n  patch(0x39c5ed, 0x56, 0x00);\n  patch(0x39c5ee, 0x81, 0x00);\n  patch(0x39c5ef, 0xec, 0xc3);\n\n  /* Linux x64 */\n  patch_new(\"Sublime Text 3211 Linux x64\", 8803928, 0xcc65df3b);\n  patch(0x31dbd5, 0x55, 0xb8);\n  patch(0x31dbd6, 0x41, 0x01);\n  patch(0x31dbd7, 0x57, 0x00);\n  patch(0x31dbd8, 0x41, 0x00);\n  patch(0x31dbd9, 0x56, 0x00);\n  patch(0x31dbda, 0x41, 0xc3);\n\n  /* Windows x86 */\n  patch_new(\"Sublime Text 3211 Windows x86\", 0, 0);\n#if 0 // pre-regged variant\n  patch(0x0cdc7, 0x00, 0x10);\n  patch(0x7a48f, 0xf2, 0x66);\n  patch(0x7a490, 0x0f, 0x83);\n  patch(0x7a491, 0x11, 0x09);\n  patch(0x7a492, 0x01, 0x10);\n  patch(0x7c40e, 0x25, 0x0d);\n  patch(0x7c413, 0x00, 0x10);\n#endif\n\n  patch(0x7a75e, 0x55, 0xb8);\n  patch(0x7a75f, 0x89, 0x01);\n  patch(0x7a760, 0xe5, 0x00);\n  patch(0x7a761, 0x53, 0x00);\n  patch(0x7a762, 0x57, 0x00);\n  patch(0x7a763, 0x56, 0xc3);\n  /* Windows x64 */\n  patch_new(\"Sublime Text 3211 Windows x64\", 0, 0);\n#if 0 // pre-regged variant\n  patch(0x0e12a, 0x00, 0x10);\n  patch(0x8f099, 0x48, 0x80);\n  patch(0x8f09a, 0x89, 0x09);\n  patch(0x8f09b, 0x01, 0x10);\n  patch(0x915aa, 0x25, 0x0d);\n  patch(0x915af, 0x00, 0x10);\n#endif\n  patch(0x8f4b0, 0x55, 0xb8);\n  patch(0x8f4b1, 0x41, 0x01);\n  patch(0x8f4b2, 0x57, 0x00);\n  patch(0x8f4b3, 0x41, 0x00);\n  patch(0x8f4b4, 0x56, 0x00);\n  patch(0x8f4b5, 0x41, 0xc3);\n\n  /* MacOSX x64 */\n  patch_new(\"Sublime Text 3211 MacOSX x64\", 0, 0);\n\n  patch(0xda4cf, 0x55, 0xb8);\n  patch(0xda4d0, 0x48, 0x01);\n  patch(0xda4d1, 0x89, 0x00);\n  patch(0xda4d2, 0xe5, 0x00);\n  patch(0xda4d3, 0x41, 0x00);\n  patch(0xda4d4, 0x57, 0xc3);\n\n  /* eagle-lin32-7.2.0 */\n  patch_new(\"EAGLE 7.2.0 Linux x86\", 20629928, 0);\n  patch(0x0000854f, 0x2e, 0x00);\n  patch(0x00008a10, 0x2e, 0x00);\n  patch(0x00251874, 0x0f, 0x31);\n  patch(0x00251875, 0xb6, 0xc0);\n  patch(0x00251876, 0x46, 0x90);\n  patch(0x00251877, 0x06, 0x90);\n  patch(0x00251878, 0xc1, 0x90);\n  patch(0x00251879, 0xe8, 0x90);\n  patch(0x0025187a, 0x04, 0x90);\n  patch(0x0044bbb4, 0x74, 0xeb);\n  /*\n    patch(0x00251874, 0x0f, 0x31);32\n    patch(0x00251875, 0xb6, 0xc0);\n    patch(0x00251876, 0x46, 0x90);\n    patch(0x00251877, 0x06, 0x90);\n    patch(0x00251878, 0xc1, 0x90);\n    patch(0x00251879, 0xe8, 0x90);\n    patch(0x0025187a, 0x04, 0x90);\n    patch(0x0044bbb4, 0x74, 0xeb);\n  */\n  /* eagle-lin32-7.5.0 */\n  patch_new(\"EAGLE 7.5.0 Linux x86\", 25715928, 0);\n  patch(0x0010cc56, 0xc3, 0x41);\n  patch(0x002a4dda, 0x31, 0xc1);\n  patch(0x002a4ddb, 0xc0, 0xe8);\n  patch(0x002a4ddc, 0x90, 0x04);\n\n  /* eagle-lin32-7.7.0 */\n  patch_new(\"EAGLE 7.7.0 Linux x86\", 27784220, 0);\n\n  patch(0x00016a1b, 0x2e, 0x00);\n  patch(0x00016a1c, 0x30, 0x00);\n  patch(0x00016a1d, 0x2e, 0x00);\n  patch(0x00016a1e, 0x30, 0x00);\n  patch(0x0001713d, 0x2e, 0x00);\n  patch(0x0001713e, 0x30, 0x00);\n  patch(0x0001713f, 0x2e, 0x00);\n  patch(0x00017140, 0x30, 0x00);\n  patch(0x002ec33e, 0x0f, 0x31);\n  patch(0x002ec33f, 0xb6, 0xc0);\n  patch(0x002ec340, 0x46, 0x90);\n  patch(0x002ec341, 0x06, 0x90);\n  patch(0x002ec342, 0xc1, 0x90);\n  patch(0x002ec343, 0xe8, 0x90);\n  patch(0x002ec344, 0x04, 0x90);\n  patch(0x0051fc14, 0x74, 0xeb);\n\n  /* eagle-win64-7.6.0 */\n  patch_new(\"EAGLE 7.6.0 Windows x64\", 28329984, 0);\n\n  patch(0x000d6932, 0x48, 0x90);\n  patch(0x000d6933, 0x8b, 0x90);\n  patch(0x000d6934, 0xcf, 0x90);\n  patch(0x000d6935, 0xe8, 0x90);\n  patch(0x000d6936, 0x96, 0x90);\n  patch(0x000d6937, 0x71, 0x90);\n  patch(0x000d6938, 0x50, 0x90);\n  patch(0x000d6939, 0x00, 0x90);\n  patch(0x00244e0c, 0x0f, 0x33);\n  patch(0x00244e0d, 0xb6, 0xd2);\n  patch(0x00244e0e, 0x56, 0x90);\n  patch(0x00244e0f, 0x06, 0x90);\n  patch(0x002450b8, 0x75, 0xeb);\n  patch(0x003f325d, 0x74, 0xeb);\n  patch(0x003f3271, 0x74, 0xeb);\n\n  /* eagle-lin64-7.6.0 */\n  patch_new(\"EAGLE 7.6.0 Linux x64\", 25715928, 0);\n  patch(0x0010cc56, 0xc3, 0x41);\n  patch(0x002a4dda, 0x31, 0xc1);\n  patch(0x002a4ddb, 0xc0, 0xe8);\n  patch(0x002a4ddc, 0x90, 0x04);\n\n  /* eagle-win32-7.7.0 */\n  patch_new(\"EAGLE 7.7.0 Windows x86\", 21286400, 0);\n\n  patch(0x0017fa6f, 0x06, 0x05);\n  patch(0x0017fd4c, 0x75, 0xeb);\n  patch(0x002a3063, 0x74, 0xeb);\n  patch(0x002a3076, 0x74, 0xeb);\n  patch(0x00f51a5e, 0x45, 0x55);\n  patch(0x00f51a5f, 0x78, 0x6c);\n  patch(0x00f51a60, 0x70, 0x74);\n  patch(0x00f51a61, 0x72, 0x69);\n  patch(0x00f51a62, 0x65, 0x6d);\n  patch(0x00f51a63, 0x73, 0x61);\n  patch(0x00f51a64, 0x73, 0x74);\n  patch(0x00f51a65, 0x00, 0x65);\n  patch(0x00f53199, 0x74, 0x53);\n  patch(0x00f5319a, 0x6f, 0x41);\n  patch(0x00f5319b, 0x20, 0x4b);\n  patch(0x00f5319c, 0x72, 0x49);\n  patch(0x00f5319d, 0x75, 0x53);\n  patch(0x00f5319e, 0x6e, 0x20);\n  patch(0x00f5319f, 0x20, 0x55);\n  patch(0x00f531a0, 0x45, 0x4b);\n  patch(0x00f531a1, 0x41, 0x52);\n  patch(0x00f531a2, 0x47, 0x20);\n  patch(0x00f531a3, 0x4c, 0x20);\n  patch(0x00f531a4, 0x45, 0x20);\n\n  /* eagle-win64-7.7.0 */\n  patch_new(\"EAGLE 7.7.0 Windows x64\", 28654080, 0);\n\n  patch(0x000d7800, 0x48, 0x90);\n  patch(0x000d7801, 0x8b, 0x90);\n  patch(0x000d7802, 0xcf, 0x90);\n  patch(0x000d7803, 0xe8, 0x90);\n  patch(0x000d7804, 0xd8, 0x90);\n  patch(0x000d7805, 0xec, 0x90);\n  patch(0x000d7806, 0x50, 0x90);\n  patch(0x000d7807, 0x00, 0x90);\n  patch(0x00246838, 0x0f, 0x33);\n  patch(0x00246839, 0xb6, 0xd2);\n  patch(0x0024683a, 0x56, 0x90);\n  patch(0x0024683b, 0x06, 0x90);\n  patch(0x00246ae4, 0x75, 0xeb);\n  patch(0x003f52c9, 0x74, 0xeb);\n  patch(0x003f52dd, 0x74, 0xeb);\n\n  if((p = patch_find(x, n))) {\n    int check = patch_check(x, n, p);\n\n    buffer_puts(buffer_2, check == 1 ? \"Already patched: \" : \"Found patch: \");\n    buffer_puts(buffer_2, p->name);\n    buffer_putnlflush(buffer_2);\n\n    if(check == 0) {\n      buffer_backup(&file);\n      patch_apply((unsigned char*)file.x, file.a, p);\n      ret = 0;\n    }\n  }\n\n  buffer_close(&file);\n  return ret;\n}\n",
-			"file": "hexedit.c",
-			"file_size": 16763,
-			"file_write_time": 132383034898319318,
-			"settings":
-			{
-				"buffer_size": 16764,
-				"line_ending": "Unix"
-			}
-		},
-		{
+			"contents": "",
 			"settings":
 			{
 				"buffer_size": 0,
+				"line_ending": "Unix",
+				"name": "𝌆 Outline",
+				"scratch": true
+			}
+		},
+		{
+			"file": "hexedit.c",
+			"settings":
+			{
+				"buffer_size": 16745,
 				"line_ending": "Unix"
 			}
 		},
@@ -32,30 +32,76 @@
 				"buffer_size": 139614,
 				"line_ending": "Unix"
 			}
+		},
+		{
+			"file": "serial.c",
+			"settings":
+			{
+				"buffer_size": 5226,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"contents": "#include \"../byte.h\"\n#include \"../cbmap_internal.h\"\n\nint\ncbmap_delete(cbmap_t map, void* key, size_t key_len) {\n  unsigned char* p = (unsigned char*)map->root;\n  const unsigned char* key_bytes = (const unsigned char*)key;\n  void** wherep = &map->root;\n  void** whereq = NULL;\n  struct cbmap_internal_node* q = NULL;\n  int direction = 0;\n  struct cbmap_data_node* data;\n\n  if(p == NULL || key == NULL) {\n    return 0;\n  }\n\n  while(IS_INTERNAL_NODE(p)) {\n    unsigned char c = 0;\n    whereq = wherep;\n    q = GET_INTERNAL_NODE(p);\n    if(q->byte < key_len) {\n      c = key_bytes[q->byte];\n    }\n    direction = (1 + (q->otherbits | c)) >> 8;\n    wherep = &q->branch[direction];\n    p = (unsigned char*)*wherep;\n  }\n\n  data = (struct cbmap_data_node*)p;\n  if(data->key_len != key_len || KEY_COMPARE(data->key, key, key_len) != 0) {\n    return NOT_FOUND;\n  }\n\n  map->count--; \n  cbmap_data_node_destroy(data, &map->key_allocator, &map->value_allocator);\n\n  if(whereq == NULL) {\n    map->root = NULL;\n    return FOUND;\n  }\n\n  *whereq = q->branch[1 - direction];\n  cbmap_internal_node_destroy(q);\n\n  return FOUND;\n}\n",
+			"file": "lib/cbmap/cbmap_delete.c",
+			"file_size": 1109,
+			"file_write_time": 132373915027218371,
+			"settings":
+			{
+				"buffer_size": 1110,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "serial.h",
+			"settings":
+			{
+				"buffer_size": 3367,
+				"line_ending": "Unix"
+			}
 		}
 	],
 	"build_system": "",
-	"build_system_choices":
-	[
-	],
-	"build_varint": "",
 	"command_palette":
 	{
 		"height": 0.0,
-		"last_filter": "",
 		"selected_items":
 		[
 			[
-				"add re",
-				"Package Control: Add Repository"
+				"ctag",
+				"CTags: Rebuild Tags"
+			],
+			[
+				"outlin",
+				"Browse Mode: Outline (Right)"
+			],
+			[
+				"ctags",
+				"CTags: Rebuild Tags"
+			],
+			[
+				"install p",
+				"Package Control: Install Package"
+			],
+			[
+				"tags",
+				"CTags: Rebuild Tags"
 			],
 			[
 				"install",
 				"Package Control: Install Package"
 			],
 			[
-				"install p",
-				"Package Control: Install Package"
+				"extra",
+				"Extract Sublime Package: Extract all packages"
+			],
+			[
+				"extrac",
+				"Extract Sublime Package: Extract all packages"
+			],
+			[
+				"add re",
+				"Package Control: Add Repository"
 			],
 			[
 				"outline",
@@ -97,11 +143,11 @@
 	],
 	"find":
 	{
-		"height": 0.0
+		"height": 42.0
 	},
 	"find_in_files":
 	{
-		"height": 0.0,
+		"height": 107.0,
 		"where_history":
 		[
 		]
@@ -111,6 +157,8 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"3065",
+			"31BFED"
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -128,41 +176,11 @@
 	"groups":
 	[
 		{
-			"selected": 1,
+			"selected": 0,
 			"sheets":
 			[
 				{
 					"buffer": 0,
-					"file": "hexedit.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 16764,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								16764,
-								16764
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C11/C11.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 1,
-					"type": "text"
-				},
-				{
-					"buffer": 1,
 					"semi_transient": false,
 					"settings":
 					{
@@ -179,10 +197,54 @@
 						],
 						"settings":
 						{
-							"syntax": "Packages/Text/Plain text.tmLanguage"
+							"current_file": "/home/roman/Dokumente/Sources/c-utils/hexedit.c",
+							"outline_rename_mode": false,
+							"symkeys":
+							[
+							],
+							"symlist":
+							[
+							],
+							"syntax": "Packages/Outline/outline.hidden-tmLanguage"
 						},
 						"translation.x": 0.0,
 						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 3,
+					"type": "text"
+				}
+			]
+		},
+		{
+			"selected": 0,
+			"sheets":
+			[
+				{
+					"buffer": 1,
+					"file": "hexedit.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 16745,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								8243,
+								8243
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C11/C11.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 7337.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 0,
@@ -201,8 +263,68 @@
 						"selection":
 						[
 							[
-								0,
-								0
+								139614,
+								139614
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C11/C11.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 308.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 5,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "serial.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 5226,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								5059,
+								5059
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C11/C11.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 4597.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "lib/cbmap/cbmap_delete.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1110,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								872,
+								872
 							]
 						],
 						"settings":
@@ -215,7 +337,35 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 2,
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 5,
+					"file": "serial.h",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 3367,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								3309,
+								3309
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 2680.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 4,
 					"type": "text"
 				}
 			]
@@ -234,29 +384,41 @@
 		"cells":
 		[
 			[
+				2,
+				0,
+				3,
+				2
+			],
+			[
 				0,
 				0,
-				1,
-				1
+				2,
+				2
 			]
 		],
 		"cols":
 		[
 			0.0,
+			0.2,
+			0.8,
 			1.0
 		],
 		"rows":
 		[
 			0.0,
+			0.5,
 			1.0
 		]
 	},
 	"menu_visible": true,
+	"output.exec":
+	{
+		"height": 138.0
+	},
 	"output.find_results":
 	{
 		"height": 0.0
 	},
-	"pinned_build_system": "",
 	"project": "c-utils.sublime-project",
 	"replace":
 	{
@@ -266,16 +428,27 @@
 	"select_file":
 	{
 		"height": 0.0,
-		"last_filter": "",
 		"selected_items":
 		[
 			[
-				"genma",
-				"genmakefile.c"
-			],
-			[
 				"hexed",
 				"hexedit.c"
+			],
+			[
+				"hexedit",
+				"hexedit.c"
+			],
+			[
+				"serial",
+				"serial.h"
+			],
+			[
+				"seri",
+				"serial.c"
+			],
+			[
+				"genma",
+				"genmakefile.c"
 			],
 			[
 				"hexe",
@@ -299,7 +472,6 @@
 	"select_project":
 	{
 		"height": 0.0,
-		"last_filter": "",
 		"selected_items":
 		[
 		],
@@ -308,13 +480,12 @@
 	"select_symbol":
 	{
 		"height": 0.0,
-		"last_filter": "",
 		"selected_items":
 		[
 		],
 		"width": 0.0
 	},
-	"selected_group": 0,
+	"selected_group": 1,
 	"settings":
 	{
 	},
