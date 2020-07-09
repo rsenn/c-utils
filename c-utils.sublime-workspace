@@ -18,53 +18,41 @@
 			}
 		},
 		{
-			"file": "hexedit.c",
-			"settings":
-			{
-				"buffer_size": 16745,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "genmakefile.c",
-			"settings":
-			{
-				"buffer_size": 139614,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "serial.c",
-			"settings":
-			{
-				"buffer_size": 5226,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"contents": "#include \"../byte.h\"\n#include \"../cbmap_internal.h\"\n\nint\ncbmap_delete(cbmap_t map, void* key, size_t key_len) {\n  unsigned char* p = (unsigned char*)map->root;\n  const unsigned char* key_bytes = (const unsigned char*)key;\n  void** wherep = &map->root;\n  void** whereq = NULL;\n  struct cbmap_internal_node* q = NULL;\n  int direction = 0;\n  struct cbmap_data_node* data;\n\n  if(p == NULL || key == NULL) {\n    return 0;\n  }\n\n  while(IS_INTERNAL_NODE(p)) {\n    unsigned char c = 0;\n    whereq = wherep;\n    q = GET_INTERNAL_NODE(p);\n    if(q->byte < key_len) {\n      c = key_bytes[q->byte];\n    }\n    direction = (1 + (q->otherbits | c)) >> 8;\n    wherep = &q->branch[direction];\n    p = (unsigned char*)*wherep;\n  }\n\n  data = (struct cbmap_data_node*)p;\n  if(data->key_len != key_len || KEY_COMPARE(data->key, key, key_len) != 0) {\n    return NOT_FOUND;\n  }\n\n  map->count--; \n  cbmap_data_node_destroy(data, &map->key_allocator, &map->value_allocator);\n\n  if(whereq == NULL) {\n    map->root = NULL;\n    return FOUND;\n  }\n\n  *whereq = q->branch[1 - direction];\n  cbmap_internal_node_destroy(q);\n\n  return FOUND;\n}\n",
-			"file": "lib/cbmap/cbmap_delete.c",
-			"file_size": 1109,
-			"file_write_time": 132373915027218371,
-			"settings":
-			{
-				"buffer_size": 1110,
-				"line_ending": "Unix"
-			}
-		},
-		{
 			"file": "serial.h",
 			"settings":
 			{
 				"buffer_size": 3367,
 				"line_ending": "Unix"
 			}
+		},
+		{
+			"file": "/home/roman/Dokumente/Sources/pictest/pictest_16f876a_xc8.X.production.asm",
+			"settings":
+			{
+				"buffer_size": 46521,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/home/roman/Dokumente/Sources/pictest/pictest_16f876a_xc8.X.production.lst",
+			"settings":
+			{
+				"buffer_size": 72492,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
 		}
 	],
 	"build_system": "",
+	"build_system_choices":
+	[
+	],
+	"build_varint": "",
 	"command_palette":
 	{
 		"height": 0.0,
+		"last_filter": "",
 		"selected_items":
 		[
 			[
@@ -138,12 +126,17 @@
 	],
 	"file_history":
 	[
+		"/home/roman/Dokumente/Sources/c-utils/lib/cbmap/cbmap_delete.c",
+		"/home/roman/Dokumente/Sources/c-utils/serial.c",
+		"/home/roman/Dokumente/Sources/c-utils/hexedit.c",
+		"/home/roman/Dokumente/Sources/c-utils/cofflist.c",
+		"/home/roman/Dokumente/Sources/c-utils/genmakefile.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/cbmap/cbmap_count.c",
 		"/home/roman/Dokumente/Sources/c-utils/cfg.sh"
 	],
 	"find":
 	{
-		"height": 42.0
+		"height": 39.0
 	},
 	"find_in_files":
 	{
@@ -157,6 +150,7 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"coff_symtab_mchp_types",
 			"3065",
 			"31BFED"
 		],
@@ -190,14 +184,10 @@
 						},
 						"selection":
 						[
-							[
-								0,
-								0
-							]
 						],
 						"settings":
 						{
-							"current_file": "/home/roman/Dokumente/Sources/c-utils/hexedit.c",
+							"current_file": "/home/roman/Dokumente/Sources/pictest/pictest_16f876a_xc8.X.production.lst",
 							"outline_rename_mode": false,
 							"symkeys":
 							[
@@ -217,131 +207,11 @@
 			]
 		},
 		{
-			"selected": 0,
+			"selected": 2,
 			"sheets":
 			[
 				{
 					"buffer": 1,
-					"file": "hexedit.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 16745,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								8243,
-								8243
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C11/C11.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 7337.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 0,
-					"type": "text"
-				},
-				{
-					"buffer": 2,
-					"file": "genmakefile.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 139614,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								139614,
-								139614
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C11/C11.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 308.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 5,
-					"type": "text"
-				},
-				{
-					"buffer": 3,
-					"file": "serial.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 5226,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								5059,
-								5059
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C11/C11.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 4597.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 2,
-					"type": "text"
-				},
-				{
-					"buffer": 4,
-					"file": "lib/cbmap/cbmap_delete.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 1110,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								872,
-								872
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C11/C11.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 1,
-					"type": "text"
-				},
-				{
-					"buffer": 5,
 					"file": "serial.h",
 					"semi_transient": false,
 					"settings":
@@ -353,8 +223,8 @@
 						"selection":
 						[
 							[
-								3309,
-								3309
+								2376,
+								2376
 							]
 						],
 						"settings":
@@ -362,10 +232,67 @@
 							"syntax": "Packages/C++/C++.sublime-syntax"
 						},
 						"translation.x": 0.0,
-						"translation.y": 2680.0,
+						"translation.y": 1623.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 4,
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "/home/roman/Dokumente/Sources/pictest/pictest_16f876a_xc8.X.production.asm",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 46521,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Text/Plain text.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "/home/roman/Dokumente/Sources/pictest/pictest_16f876a_xc8.X.production.lst",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 72492,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								4096,
+								4096
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Text/Plain text.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 1825.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
 					"type": "text"
 				}
 			]
@@ -373,7 +300,7 @@
 	],
 	"incremental_find":
 	{
-		"height": 0.0
+		"height": 27.0
 	},
 	"input":
 	{
@@ -419,17 +346,23 @@
 	{
 		"height": 0.0
 	},
+	"pinned_build_system": "",
 	"project": "c-utils.sublime-project",
 	"replace":
 	{
-		"height": 0.0
+		"height": 50.0
 	},
 	"save_all_on_build": true,
 	"select_file":
 	{
 		"height": 0.0,
+		"last_filter": "",
 		"selected_items":
 		[
+			[
+				"cofflist",
+				"cofflist.c"
+			],
 			[
 				"hexed",
 				"hexedit.c"
@@ -472,6 +405,7 @@
 	"select_project":
 	{
 		"height": 0.0,
+		"last_filter": "",
 		"selected_items":
 		[
 		],
@@ -480,6 +414,7 @@
 	"select_symbol":
 	{
 		"height": 0.0,
+		"last_filter": "",
 		"selected_items":
 		[
 		],
