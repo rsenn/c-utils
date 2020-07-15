@@ -790,9 +790,16 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
   option(USE_EFENCE "Enable electric fence" OFF)
 endif()
 
+if(CMAKE_C_COMPILER MATCHES diet)
+  set(DIET TRUE)
+endif()
 
 if(USE_EFENCE)
-  set(ELECTRICFENCE_LIBRARY efence)
+  if(DIET)
+    set(ELECTRICFENCE_LIBRARY efence pthread)
+  else(DIET)
+    set(ELECTRICFENCE_LIBRARY efence)
+  endif(DIET)
 endif(USE_EFENCE)
 
 set(COMMON_LIBS  strlist array safemult scan str byte mmap open fmt )

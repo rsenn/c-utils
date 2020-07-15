@@ -8,37 +8,36 @@
 	"buffers":
 	[
 		{
-			"contents": "",
+			"contents": "—Ⓒ– cvalue { … } ; — type\n Ⓣ  cvalue ; — typedef\n—Ⓒ– csetting { … } ; — type\n Ⓣ  csetting ; — typedef\n—Ⓒ– cword { … } ; — type\n Ⓣ  cword ; — typedef\n—Ⓕ– config_data_at ( ) { … } — function\n—Ⓕ– dump_cword ( ) { … } — function\n—Ⓕ– dump_csetting ( ) { … } — function\n—Ⓕ– dump_cvalue ( ) { … } — function\n—Ⓕ– parse_cfgvalue ( ) { … } — function\n—Ⓕ– parse_cfgsetting ( ) { … } — function\n—Ⓕ– parse_cfgword ( ) { … } — function\n—Ⓕ– parse_cfgdata ( ) { … } — function\n—Ⓕ– config_bytes ( ) { … } — function\n—Ⓕ– get_setting_word ( ) { … } — function\n—Ⓕ– get_setting_value ( ) { … } — function\n—Ⓕ– find_setting ( ) { … } — function\n—Ⓕ– find_value ( ) { … } — function\n—Ⓕ– infer_chip ( ) { … } — function\n—Ⓕ– get_cfgdat ( ) { … } — function\n—Ⓕ– add_item ( ) { … } — function\n—Ⓕ– process_config ( ) { … } — function\n—Ⓕ– output_items ( ) { … } — function\n—Ⓕ– usage ( ) { … } — function\n—Ⓕ– main ( ) { … } — function",
 			"settings":
 			{
-				"buffer_size": 0,
+				"buffer_size": 902,
 				"line_ending": "Unix",
 				"name": "𝌆 Outline",
 				"scratch": true
 			}
 		},
 		{
-			"file": "serial.h",
+			"file": "genmakefile.c",
 			"settings":
 			{
-				"buffer_size": 3367,
+				"buffer_size": 139614,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "/home/roman/Dokumente/Sources/pictest/pictest_16f876a_xc8.X.production.asm",
+			"file": "genmakefile.h",
 			"settings":
 			{
-				"buffer_size": 46521,
-				"encoding": "UTF-8",
+				"buffer_size": 7533,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "/home/roman/Dokumente/Sources/pictest/pictest_16f876a_xc8.X.production.lst",
+			"file": "piccfg.c",
 			"settings":
 			{
-				"buffer_size": 72492,
+				"buffer_size": 14148,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
@@ -126,6 +125,9 @@
 	],
 	"file_history":
 	[
+		"/home/roman/Dokumente/Sources/c-utils/serial.h",
+		"/home/roman/Dokumente/Sources/pictest/pictest_16f876a_xc8.X.production.asm",
+		"/home/roman/Dokumente/Sources/pictest/pictest_16f876a_xc8.X.production.lst",
 		"/home/roman/Dokumente/Sources/c-utils/lib/cbmap/cbmap_delete.c",
 		"/home/roman/Dokumente/Sources/c-utils/serial.c",
 		"/home/roman/Dokumente/Sources/c-utils/hexedit.c",
@@ -178,7 +180,7 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 0,
+						"buffer_size": 902,
 						"regions":
 						{
 						},
@@ -187,13 +189,143 @@
 						],
 						"settings":
 						{
-							"current_file": "/home/roman/Dokumente/Sources/pictest/pictest_16f876a_xc8.X.production.lst",
+							"current_file": "/home/roman/Dokumente/Sources/c-utils/piccfg.c",
 							"outline_rename_mode": false,
 							"symkeys":
 							[
+								[
+									444,
+									450
+								],
+								[
+									559,
+									565
+								],
+								[
+									583,
+									591
+								],
+								[
+									708,
+									716
+								],
+								[
+									734,
+									739
+								],
+								[
+									865,
+									870
+								],
+								[
+									1114,
+									1128
+								],
+								[
+									1356,
+									1366
+								],
+								[
+									1697,
+									1710
+								],
+								[
+									1996,
+									2007
+								],
+								[
+									2290,
+									2304
+								],
+								[
+									2814,
+									2830
+								],
+								[
+									3265,
+									3278
+								],
+								[
+									3783,
+									3796
+								],
+								[
+									4760,
+									4772
+								],
+								[
+									5118,
+									5134
+								],
+								[
+									5272,
+									5289
+								],
+								[
+									5899,
+									5911
+								],
+								[
+									6168,
+									6178
+								],
+								[
+									6482,
+									6492
+								],
+								[
+									7121,
+									7131
+								],
+								[
+									8425,
+									8433
+								],
+								[
+									8719,
+									8733
+								],
+								[
+									9888,
+									9900
+								],
+								[
+									10788,
+									10793
+								],
+								[
+									11613,
+									11617
+								]
 							],
 							"symlist":
 							[
+								"—Ⓒ– cvalue { … } ; — type",
+								" Ⓣ  cvalue ; — typedef",
+								"—Ⓒ– csetting { … } ; — type",
+								" Ⓣ  csetting ; — typedef",
+								"—Ⓒ– cword { … } ; — type",
+								" Ⓣ  cword ; — typedef",
+								"—Ⓕ– config_data_at ( ) { … } — function",
+								"—Ⓕ– dump_cword ( ) { … } — function",
+								"—Ⓕ– dump_csetting ( ) { … } — function",
+								"—Ⓕ– dump_cvalue ( ) { … } — function",
+								"—Ⓕ– parse_cfgvalue ( ) { … } — function",
+								"—Ⓕ– parse_cfgsetting ( ) { … } — function",
+								"—Ⓕ– parse_cfgword ( ) { … } — function",
+								"—Ⓕ– parse_cfgdata ( ) { … } — function",
+								"—Ⓕ– config_bytes ( ) { … } — function",
+								"—Ⓕ– get_setting_word ( ) { … } — function",
+								"—Ⓕ– get_setting_value ( ) { … } — function",
+								"—Ⓕ– find_setting ( ) { … } — function",
+								"—Ⓕ– find_value ( ) { … } — function",
+								"—Ⓕ– infer_chip ( ) { … } — function",
+								"—Ⓕ– get_cfgdat ( ) { … } — function",
+								"—Ⓕ– add_item ( ) { … } — function",
+								"—Ⓕ– process_config ( ) { … } — function",
+								"—Ⓕ– output_items ( ) { … } — function",
+								"—Ⓕ– usage ( ) { … } — function",
+								"—Ⓕ– main ( ) { … } — function"
 							],
 							"syntax": "Packages/Outline/outline.hidden-tmLanguage"
 						},
@@ -212,39 +344,11 @@
 			[
 				{
 					"buffer": 1,
-					"file": "serial.h",
+					"file": "genmakefile.c",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 3367,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								2376,
-								2376
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C++/C++.sublime-syntax"
-						},
-						"translation.x": 0.0,
-						"translation.y": 1623.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 2,
-					"type": "text"
-				},
-				{
-					"buffer": 2,
-					"file": "/home/roman/Dokumente/Sources/pictest/pictest_16f876a_xc8.X.production.asm",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 46521,
+						"buffer_size": 139614,
 						"regions":
 						{
 						},
@@ -257,8 +361,39 @@
 						],
 						"settings":
 						{
-							"syntax": "Packages/Text/Plain text.tmLanguage",
-							"translate_tabs_to_spaces": false
+							"syntax": "Packages/C Improved/C Improved.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "genmakefile.h",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 7533,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C Improved/C Improved.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
 						"translation.y": 0.0,
@@ -269,27 +404,29 @@
 				},
 				{
 					"buffer": 3,
-					"file": "/home/roman/Dokumente/Sources/pictest/pictest_16f876a_xc8.X.production.lst",
+					"file": "piccfg.c",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 72492,
+						"buffer_size": 14148,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								4096,
-								4096
+								296,
+								296
 							]
 						],
 						"settings":
 						{
-							"syntax": "Packages/Text/Plain text.tmLanguage"
+							"syntax": "Packages/C Improved/C Improved.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 1825.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 0,
@@ -360,6 +497,18 @@
 		"selected_items":
 		[
 			[
+				"piccf",
+				"piccfg.c"
+			],
+			[
+				"genma",
+				"genmakefile.h"
+			],
+			[
+				"genmak",
+				"genmakefile.c"
+			],
+			[
 				"cofflist",
 				"cofflist.c"
 			],
@@ -378,10 +527,6 @@
 			[
 				"seri",
 				"serial.c"
-			],
-			[
-				"genma",
-				"genmakefile.c"
 			],
 			[
 				"hexe",

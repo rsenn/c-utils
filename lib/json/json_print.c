@@ -189,7 +189,7 @@ json_print_array(jsonval* val, buffer* b, int depth, void (*p)(jsonfmt*, jsonval
 
   slink_foreach(val->listv, it.iter) {
     p(&printer, val, depth + 1, index);
-    json_print_val(slist_data(it.ptr), b, depth + 1, p);
+    json_print_val((jsonval*)(&it.ptr[1]), b, depth + 1, p);
     ++index;
     if(slist_next(it.ptr)) {
       json_print_separator(val, b, JSON_FMT_SEPARATOR, &printer);

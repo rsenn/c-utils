@@ -33,7 +33,7 @@ json_free_val(jsonval* val, jsonval* parent) {
       for(link = val->listv; link; link = next) {
         next = link->next;
 
-        json_free_val(slist_data(link), val);
+        json_free_val((jsonval*)(&link[1]), val);
         alloc_free(link);
       }
       val->listv = 0;
