@@ -21,7 +21,10 @@ http_sendreq(http* h) {
   buffer_puts(out, "Host: ");
   buffer_putsa(out, &h->host);
   buffer_puts(out, "\r\n");
+
+  if(!h->keepalive)
   buffer_putm_internal(out, "Connection: ", h->keepalive ? "keep-alive" : "close", "\r\n", NULL);
+  buffer_puts(out, "Accept: */*\r\n");
   buffer_puts(out, "\r\n");
 #if DEBUG_OUTPUT
   {

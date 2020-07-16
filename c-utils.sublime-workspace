@@ -8,10 +8,10 @@
 	"buffers":
 	[
 		{
-			"contents": "—Ⓒ– cvalue { … } ; — type\n Ⓣ  cvalue ; — typedef\n—Ⓒ– csetting { … } ; — type\n Ⓣ  csetting ; — typedef\n—Ⓒ– cword { … } ; — type\n Ⓣ  cword ; — typedef\n—Ⓕ– config_data_at ( ) { … } — function\n—Ⓕ– dump_cword ( ) { … } — function\n—Ⓕ– dump_csetting ( ) { … } — function\n—Ⓕ– dump_cvalue ( ) { … } — function\n—Ⓕ– parse_cfgvalue ( ) { … } — function\n—Ⓕ– parse_cfgsetting ( ) { … } — function\n—Ⓕ– parse_cfgword ( ) { … } — function\n—Ⓕ– parse_cfgdata ( ) { … } — function\n—Ⓕ– config_bytes ( ) { … } — function\n—Ⓕ– get_setting_word ( ) { … } — function\n—Ⓕ– get_setting_value ( ) { … } — function\n—Ⓕ– find_setting ( ) { … } — function\n—Ⓕ– find_value ( ) { … } — function\n—Ⓕ– infer_chip ( ) { … } — function\n—Ⓕ– get_cfgdat ( ) { … } — function\n—Ⓕ– add_item ( ) { … } — function\n—Ⓕ– process_config ( ) { … } — function\n—Ⓕ– output_items ( ) { … } — function\n—Ⓕ– usage ( ) { … } — function\n—Ⓕ– main ( ) { … } — function",
+			"contents": " Ⓜ  USE_WS2_32 … — macro object\n—Ⓕ– do_send ( ) { … } — function\n—Ⓕ– http_sendreq ( ) { … } — function",
 			"settings":
 			{
-				"buffer_size": 902,
+				"buffer_size": 102,
 				"line_ending": "Unix",
 				"name": "𝌆 Outline",
 				"scratch": true
@@ -26,10 +26,70 @@
 			}
 		},
 		{
+			"file": "/home/roman/Dokumente/Sources/plot-cv/lib/xml/xpath.js",
+			"settings":
+			{
+				"buffer_size": 9365,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "mediathek-list.c",
+			"settings":
+			{
+				"buffer_size": 16110,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/http/http_get.c",
+			"settings":
+			{
+				"buffer_size": 2319,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"contents": "Searching 3303 files for \"connection.*close\" (regex)\n\n/home/roman/Dokumente/Sources/c-utils/3rdparty/openssl/apps/s_client.c:\n 2816            ret = get_last_socket_error();\n 2817            if(c_brief)\n 2818:             BIO_puts(bio_err, \"CONNECTION CLOSED BY SERVER\\n\");\n 2819            else\n 2820              BIO_printf(bio_err, \"read:errno=%d\\n\", ret);\n\n/home/roman/Dokumente/Sources/c-utils/3rdparty/openssl/apps/s_server.c:\n 2520      SSL_free(con);\n 2521    }\n 2522:   BIO_printf(bio_s_out, \"CONNECTION CLOSED\\n\");\n 2523    OPENSSL_clear_free(buf, bufsize);\n 2524    return ret;\n ....\n 3198      } else if(i == 0) { /* end of input */\n 3199        ret = 1;\n 3200:       BIO_printf(bio_err, \"CONNECTION CLOSED\\n\");\n 3201        goto end;\n 3202      } else {\n ....\n 3208        if(!s_ign_eof && (i == 5) && (strncmp(buf, \"CLOSE\", 5) == 0)) {\n 3209          ret = 1;\n 3210:         BIO_printf(bio_err, \"CONNECTION CLOSED\\n\");\n 3211          goto end;\n 3212        }\n\n/home/roman/Dokumente/Sources/c-utils/3rdparty/openssl/ssl/statem/statem_srvr.c:\n  931          if(SSL_get_error(s, 0) == SSL_ERROR_SYSCALL && conn_is_closed()) {\n  932            /*\n  933:            * We ignore connection closed errors in TLSv1.3 when sending a\n  934             * NewSessionTicket and behave as if we were successful. This is\n  935             * so that we are still able to read data sent to us by a client\n\n/home/roman/Dokumente/Sources/c-utils/examples/httpd.c:\n   56    c = r->hdrbuf = (char*)malloc(str_len(message) + str_len(title) + 200);\n   57    if(!c) {\n   58:     r->hdrbuf = \"HTTP/1.0 500 internal error\\r\\nContent-Type: text/plain\\r\\nConnection: close\\r\\n\\r\\nout of memory\\n\";\n   59      r->hlen = str_len(r->hdrbuf);\n   60    } else {\n\n/home/roman/Dokumente/Sources/c-utils/lib/http/http_sendreq.c:\n   22    buffer_putsa(out, &h->host);\n   23    buffer_puts(out, \"\\r\\n\");\n   24:   buffer_putm_internal(out, \"Connection: \", h->keepalive ? \"keep-alive\" : \"close\", \"\\r\\n\", NULL);\n   25    buffer_puts(out, \"\\r\\n\");\n   26  #if DEBUG_OUTPUT\n\n7 matches across 5 files\n\n\nSearching 3303 files for \"keepalive\" (regex)\n\n/home/roman/Dokumente/Sources/c-utils/3rdparty/openssl/crypto/bio/b_sock2.c:\n   64   *\n   65   * Options can be a combination of the following:\n   66:  * - BIO_SOCK_KEEPALIVE: enable regularly sending keep-alive messages.\n   67   * - BIO_SOCK_NONBLOCK: Make the socket non-blocking.\n   68   * - BIO_SOCK_NODELAY: don't delay small messages.\n   ..\n   87      return 0;\n   88  \n   89:   if(options & BIO_SOCK_KEEPALIVE) {\n   90:     if(setsockopt(sock, SOL_SOCKET, SO_KEEPALIVE, (const void*)&on, sizeof(on)) != 0) {\n   91        SYSerr(SYS_F_SETSOCKOPT, get_last_socket_error());\n   92:       BIOerr(BIO_F_BIO_CONNECT, BIO_R_UNABLE_TO_KEEPALIVE);\n   93        return 0;\n   94      }\n   ..\n  173   *\n  174   * Options can be a combination of the following:\n  175:  * - BIO_SOCK_KEEPALIVE: enable regularly sending keep-alive messages.\n  176   * - BIO_SOCK_NONBLOCK: Make the socket non-blocking.\n  177   * - BIO_SOCK_NODELAY: don't delay small messages.\n  ...\n  220      return 0;\n  221  \n  222:   if(options & BIO_SOCK_KEEPALIVE) {\n  223:     if(setsockopt(sock, SOL_SOCKET, SO_KEEPALIVE, (const void*)&on, sizeof(on)) != 0) {\n  224        SYSerr(SYS_F_SETSOCKOPT, get_last_socket_error());\n  225:       BIOerr(BIO_F_BIO_LISTEN, BIO_R_UNABLE_TO_KEEPALIVE);\n  226        return 0;\n  227      }\n\n/home/roman/Dokumente/Sources/c-utils/3rdparty/openssl/crypto/bio/bio_err.c:\n   99      {ERR_PACK(ERR_LIB_BIO, 0, BIO_R_UNABLE_TO_BIND_SOCKET), \"unable to bind socket\"},\n  100      {ERR_PACK(ERR_LIB_BIO, 0, BIO_R_UNABLE_TO_CREATE_SOCKET), \"unable to create socket\"},\n  101:     {ERR_PACK(ERR_LIB_BIO, 0, BIO_R_UNABLE_TO_KEEPALIVE), \"unable to keepalive\"},\n  102      {ERR_PACK(ERR_LIB_BIO, 0, BIO_R_UNABLE_TO_LISTEN_SOCKET), \"unable to listen socket\"},\n  103      {ERR_PACK(ERR_LIB_BIO, 0, BIO_R_UNABLE_TO_NODELAY), \"unable to nodelay\"},\n\n/home/roman/Dokumente/Sources/c-utils/3rdparty/openssl/crypto/bio/bss_conn.c:\n  141        case BIO_CONN_S_CONNECT:\n  142          BIO_clear_retry_flags(b);\n  143:         ret = BIO_connect(b->num, BIO_ADDRINFO_address(c->addr_iter), BIO_SOCK_KEEPALIVE | c->connect_mode);\n  144          b->retry_reason = 0;\n  145          if(ret == 0) {\n\n/home/roman/Dokumente/Sources/c-utils/3rdparty/openssl/include/openssl/bio.h:\n  659  #define BIO_SOCK_REUSEADDR 0x01\n  660  #define BIO_SOCK_V6_ONLY 0x02\n  661: #define BIO_SOCK_KEEPALIVE 0x04\n  662  #define BIO_SOCK_NONBLOCK 0x08\n  663  #define BIO_SOCK_NODELAY 0x10\n\n/home/roman/Dokumente/Sources/c-utils/3rdparty/openssl/include/openssl/bioerr.h:\n  110  #define BIO_R_UNABLE_TO_BIND_SOCKET 117\n  111  #define BIO_R_UNABLE_TO_CREATE_SOCKET 118\n  112: #define BIO_R_UNABLE_TO_KEEPALIVE 137\n  113  #define BIO_R_UNABLE_TO_LISTEN_SOCKET 119\n  114  #define BIO_R_UNABLE_TO_NODELAY 138\n\n/home/roman/Dokumente/Sources/c-utils/build/clang64/3rdparty/openssl/include/openssl/bio.h:\n  659  #define BIO_SOCK_REUSEADDR 0x01\n  660  #define BIO_SOCK_V6_ONLY 0x02\n  661: #define BIO_SOCK_KEEPALIVE 0x04\n  662  #define BIO_SOCK_NONBLOCK 0x08\n  663  #define BIO_SOCK_NODELAY 0x10\n\n/home/roman/Dokumente/Sources/c-utils/build/clang64/3rdparty/openssl/include/openssl/bioerr.h:\n  110  #define BIO_R_UNABLE_TO_BIND_SOCKET 117\n  111  #define BIO_R_UNABLE_TO_CREATE_SOCKET 118\n  112: #define BIO_R_UNABLE_TO_KEEPALIVE 137\n  113  #define BIO_R_UNABLE_TO_LISTEN_SOCKET 119\n  114  #define BIO_R_UNABLE_TO_NODELAY 138\n\n/home/roman/Dokumente/Sources/c-utils/build/x86_64-linux-diet/3rdparty/openssl/include/openssl/bio.h:\n  659  #define BIO_SOCK_REUSEADDR 0x01\n  660  #define BIO_SOCK_V6_ONLY 0x02\n  661: #define BIO_SOCK_KEEPALIVE 0x04\n  662  #define BIO_SOCK_NONBLOCK 0x08\n  663  #define BIO_SOCK_NODELAY 0x10\n\n/home/roman/Dokumente/Sources/c-utils/build/x86_64-linux-diet/3rdparty/openssl/include/openssl/bioerr.h:\n  110  #define BIO_R_UNABLE_TO_BIND_SOCKET 117\n  111  #define BIO_R_UNABLE_TO_CREATE_SOCKET 118\n  112: #define BIO_R_UNABLE_TO_KEEPALIVE 137\n  113  #define BIO_R_UNABLE_TO_LISTEN_SOCKET 119\n  114  #define BIO_R_UNABLE_TO_NODELAY 138\n\n/home/roman/Dokumente/Sources/c-utils/build/x86_64-linux-gnu/3rdparty/openssl/include/openssl/bio.h:\n  659  #define BIO_SOCK_REUSEADDR 0x01\n  660  #define BIO_SOCK_V6_ONLY 0x02\n  661: #define BIO_SOCK_KEEPALIVE 0x04\n  662  #define BIO_SOCK_NONBLOCK 0x08\n  663  #define BIO_SOCK_NODELAY 0x10\n\n/home/roman/Dokumente/Sources/c-utils/build/x86_64-linux-gnu/3rdparty/openssl/include/openssl/bioerr.h:\n  110  #define BIO_R_UNABLE_TO_BIND_SOCKET 117\n  111  #define BIO_R_UNABLE_TO_CREATE_SOCKET 118\n  112: #define BIO_R_UNABLE_TO_KEEPALIVE 137\n  113  #define BIO_R_UNABLE_TO_LISTEN_SOCKET 119\n  114  #define BIO_R_UNABLE_TO_NODELAY 138\n\n/home/roman/Dokumente/Sources/c-utils/examples/httpd.c:\n   34    char* hdrbuf;\n   35    int hlen;\n   36:   int keepalive;\n   37  };\n   38  \n   ..\n   62      c += fmt_str(c, title);\n   63      c += fmt_str(c, \"\\r\\nContent-Type: text/html\\r\\nConnection: \");\n   64:     c += fmt_str(c, r->keepalive ? \"keep-alive\" : \"close\");\n   65      c += fmt_str(c, \"\\r\\nContent-Length: \");\n   66      c += fmt_ulong(c, str_len(message) + str_len(title) + 16 - 4);\n   ..\n  167        if((m = http_header(h, \"Connection\"))) {\n  168          if(str_equal(m, \"keep-alive\"))\n  169:           h->keepalive = 1;\n  170          else\n  171:           h->keepalive = 0;\n  172        } else {\n  173          if(byte_equal(d + 1, 8, \"HTTP/1.0\"))\n  174:           h->keepalive = 0;\n  175          else\n  176:           h->keepalive = 1;\n  177        }\n  178        m = mimetype(c);\n  ...\n  185        c += fmt_httpdate(c, s.st_mtime);\n  186        c += fmt_str(c, \"\\r\\nConnection: \");\n  187:       c += fmt_str(c, h->keepalive ? \"keep-alive\" : \"close\");\n  188        c += fmt_str(c, \"\\r\\n\\r\\n\");\n  189        iob_addbuf(&h->iob, h->hdrbuf, c - h->hdrbuf);\n  ...\n  308          free(h->hdrbuf);\n  309          h->hdrbuf = 0;\n  310:         if(h->keepalive) {\n  311            io_dontwantwrite(i);\n  312            io_wantread(i);\n\n/home/roman/Dokumente/Sources/c-utils/httptest.c:\n  150    http_init(&h, url_host, url_port);\n  151    h.nonblocking = 1;\n  152:   h.keepalive = 0;\n  153    argi = optind;\n  154    if(argv[optind] == 0) {\n\n/home/roman/Dokumente/Sources/c-utils/lib/http.h:\n   73    int err;\n   74    int nonblocking : 1;\n   75:   int keepalive : 1;\n   76    int connected : 1;\n   77    int tls : 1;\n\n/home/roman/Dokumente/Sources/c-utils/lib/http/http_init.c:\n   15    h->err = 0;\n   16    h->nonblocking = 0;\n   17:   h->keepalive = 0;\n   18    h->connected = 0;\n   19    h->tls = 0;\n\n/home/roman/Dokumente/Sources/c-utils/lib/http/http_sendreq.c:\n   22    buffer_putsa(out, &h->host);\n   23    buffer_puts(out, \"\\r\\n\");\n   24:   buffer_putm_internal(out, \"Connection: \", h->keepalive ? \"keep-alive\" : \"close\", \"\\r\\n\", NULL);\n   25    buffer_puts(out, \"\\r\\n\");\n   26  #if DEBUG_OUTPUT\n\n/home/roman/Dokumente/Sources/c-utils/lib/http/http_writeable.c:\n   27    buffer_puts(buffer_2, \" connected=\");\n   28    buffer_putlong(buffer_2, !!h->connected);\n   29:   buffer_puts(buffer_2, \" keepalive=\");\n   30:   buffer_putlong(buffer_2, !!h->keepalive);\n   31    buffer_puts(buffer_2, \" nonblocking=\");\n   32    buffer_putlong(buffer_2, !!h->nonblocking);\n\n33 matches across 17 files\n\n\nSearching 3303 files for \"keepalive\" (regex)\n\n/home/roman/Dokumente/Sources/c-utils/3rdparty/openssl/crypto/bio/b_sock2.c:\n   64   *\n   65   * Options can be a combination of the following:\n   66:  * - BIO_SOCK_KEEPALIVE: enable regularly sending keep-alive messages.\n   67   * - BIO_SOCK_NONBLOCK: Make the socket non-blocking.\n   68   * - BIO_SOCK_NODELAY: don't delay small messages.\n   ..\n   87      return 0;\n   88  \n   89:   if(options & BIO_SOCK_KEEPALIVE) {\n   90:     if(setsockopt(sock, SOL_SOCKET, SO_KEEPALIVE, (const void*)&on, sizeof(on)) != 0) {\n   91        SYSerr(SYS_F_SETSOCKOPT, get_last_socket_error());\n   92:       BIOerr(BIO_F_BIO_CONNECT, BIO_R_UNABLE_TO_KEEPALIVE);\n   93        return 0;\n   94      }\n   ..\n  173   *\n  174   * Options can be a combination of the following:\n  175:  * - BIO_SOCK_KEEPALIVE: enable regularly sending keep-alive messages.\n  176   * - BIO_SOCK_NONBLOCK: Make the socket non-blocking.\n  177   * - BIO_SOCK_NODELAY: don't delay small messages.\n  ...\n  220      return 0;\n  221  \n  222:   if(options & BIO_SOCK_KEEPALIVE) {\n  223:     if(setsockopt(sock, SOL_SOCKET, SO_KEEPALIVE, (const void*)&on, sizeof(on)) != 0) {\n  224        SYSerr(SYS_F_SETSOCKOPT, get_last_socket_error());\n  225:       BIOerr(BIO_F_BIO_LISTEN, BIO_R_UNABLE_TO_KEEPALIVE);\n  226        return 0;\n  227      }\n\n/home/roman/Dokumente/Sources/c-utils/3rdparty/openssl/crypto/bio/bio_err.c:\n   99      {ERR_PACK(ERR_LIB_BIO, 0, BIO_R_UNABLE_TO_BIND_SOCKET), \"unable to bind socket\"},\n  100      {ERR_PACK(ERR_LIB_BIO, 0, BIO_R_UNABLE_TO_CREATE_SOCKET), \"unable to create socket\"},\n  101:     {ERR_PACK(ERR_LIB_BIO, 0, BIO_R_UNABLE_TO_KEEPALIVE), \"unable to keepalive\"},\n  102      {ERR_PACK(ERR_LIB_BIO, 0, BIO_R_UNABLE_TO_LISTEN_SOCKET), \"unable to listen socket\"},\n  103      {ERR_PACK(ERR_LIB_BIO, 0, BIO_R_UNABLE_TO_NODELAY), \"unable to nodelay\"},\n\n/home/roman/Dokumente/Sources/c-utils/3rdparty/openssl/crypto/bio/bss_conn.c:\n  141        case BIO_CONN_S_CONNECT:\n  142          BIO_clear_retry_flags(b);\n  143:         ret = BIO_connect(b->num, BIO_ADDRINFO_address(c->addr_iter), BIO_SOCK_KEEPALIVE | c->connect_mode);\n  144          b->retry_reason = 0;\n  145          if(ret == 0) {\n\n/home/roman/Dokumente/Sources/c-utils/3rdparty/openssl/include/openssl/bio.h:\n  659  #define BIO_SOCK_REUSEADDR 0x01\n  660  #define BIO_SOCK_V6_ONLY 0x02\n  661: #define BIO_SOCK_KEEPALIVE 0x04\n  662  #define BIO_SOCK_NONBLOCK 0x08\n  663  #define BIO_SOCK_NODELAY 0x10\n\n/home/roman/Dokumente/Sources/c-utils/3rdparty/openssl/include/openssl/bioerr.h:\n  110  #define BIO_R_UNABLE_TO_BIND_SOCKET 117\n  111  #define BIO_R_UNABLE_TO_CREATE_SOCKET 118\n  112: #define BIO_R_UNABLE_TO_KEEPALIVE 137\n  113  #define BIO_R_UNABLE_TO_LISTEN_SOCKET 119\n  114  #define BIO_R_UNABLE_TO_NODELAY 138\n\n/home/roman/Dokumente/Sources/c-utils/build/clang64/3rdparty/openssl/include/openssl/bio.h:\n  659  #define BIO_SOCK_REUSEADDR 0x01\n  660  #define BIO_SOCK_V6_ONLY 0x02\n  661: #define BIO_SOCK_KEEPALIVE 0x04\n  662  #define BIO_SOCK_NONBLOCK 0x08\n  663  #define BIO_SOCK_NODELAY 0x10\n\n/home/roman/Dokumente/Sources/c-utils/build/clang64/3rdparty/openssl/include/openssl/bioerr.h:\n  110  #define BIO_R_UNABLE_TO_BIND_SOCKET 117\n  111  #define BIO_R_UNABLE_TO_CREATE_SOCKET 118\n  112: #define BIO_R_UNABLE_TO_KEEPALIVE 137\n  113  #define BIO_R_UNABLE_TO_LISTEN_SOCKET 119\n  114  #define BIO_R_UNABLE_TO_NODELAY 138\n\n/home/roman/Dokumente/Sources/c-utils/build/x86_64-linux-diet/3rdparty/openssl/include/openssl/bio.h:\n  659  #define BIO_SOCK_REUSEADDR 0x01\n  660  #define BIO_SOCK_V6_ONLY 0x02\n  661: #define BIO_SOCK_KEEPALIVE 0x04\n  662  #define BIO_SOCK_NONBLOCK 0x08\n  663  #define BIO_SOCK_NODELAY 0x10\n\n/home/roman/Dokumente/Sources/c-utils/build/x86_64-linux-diet/3rdparty/openssl/include/openssl/bioerr.h:\n  110  #define BIO_R_UNABLE_TO_BIND_SOCKET 117\n  111  #define BIO_R_UNABLE_TO_CREATE_SOCKET 118\n  112: #define BIO_R_UNABLE_TO_KEEPALIVE 137\n  113  #define BIO_R_UNABLE_TO_LISTEN_SOCKET 119\n  114  #define BIO_R_UNABLE_TO_NODELAY 138\n\n/home/roman/Dokumente/Sources/c-utils/build/x86_64-linux-gnu/3rdparty/openssl/include/openssl/bio.h:\n  659  #define BIO_SOCK_REUSEADDR 0x01\n  660  #define BIO_SOCK_V6_ONLY 0x02\n  661: #define BIO_SOCK_KEEPALIVE 0x04\n  662  #define BIO_SOCK_NONBLOCK 0x08\n  663  #define BIO_SOCK_NODELAY 0x10\n\n/home/roman/Dokumente/Sources/c-utils/build/x86_64-linux-gnu/3rdparty/openssl/include/openssl/bioerr.h:\n  110  #define BIO_R_UNABLE_TO_BIND_SOCKET 117\n  111  #define BIO_R_UNABLE_TO_CREATE_SOCKET 118\n  112: #define BIO_R_UNABLE_TO_KEEPALIVE 137\n  113  #define BIO_R_UNABLE_TO_LISTEN_SOCKET 119\n  114  #define BIO_R_UNABLE_TO_NODELAY 138\n\n/home/roman/Dokumente/Sources/c-utils/examples/httpd.c:\n   34    char* hdrbuf;\n   35    int hlen;\n   36:   int keepalive;\n   37  };\n   38  \n   ..\n   62      c += fmt_str(c, title);\n   63      c += fmt_str(c, \"\\r\\nContent-Type: text/html\\r\\nConnection: \");\n   64:     c += fmt_str(c, r->keepalive ? \"keep-alive\" : \"close\");\n   65      c += fmt_str(c, \"\\r\\nContent-Length: \");\n   66      c += fmt_ulong(c, str_len(message) + str_len(title) + 16 - 4);\n   ..\n  167        if((m = http_header(h, \"Connection\"))) {\n  168          if(str_equal(m, \"keep-alive\"))\n  169:           h->keepalive = 1;\n  170          else\n  171:           h->keepalive = 0;\n  172        } else {\n  173          if(byte_equal(d + 1, 8, \"HTTP/1.0\"))\n  174:           h->keepalive = 0;\n  175          else\n  176:           h->keepalive = 1;\n  177        }\n  178        m = mimetype(c);\n  ...\n  185        c += fmt_httpdate(c, s.st_mtime);\n  186        c += fmt_str(c, \"\\r\\nConnection: \");\n  187:       c += fmt_str(c, h->keepalive ? \"keep-alive\" : \"close\");\n  188        c += fmt_str(c, \"\\r\\n\\r\\n\");\n  189        iob_addbuf(&h->iob, h->hdrbuf, c - h->hdrbuf);\n  ...\n  308          free(h->hdrbuf);\n  309          h->hdrbuf = 0;\n  310:         if(h->keepalive) {\n  311            io_dontwantwrite(i);\n  312            io_wantread(i);\n\n/home/roman/Dokumente/Sources/c-utils/httptest.c:\n  150    http_init(&h, url_host, url_port);\n  151    h.nonblocking = 1;\n  152:   h.keepalive = 0;\n  153    argi = optind;\n  154    if(argv[optind] == 0) {\n\n/home/roman/Dokumente/Sources/c-utils/lib/http.h:\n   73    int err;\n   74    int nonblocking : 1;\n   75:   int keepalive : 1;\n   76    int connected : 1;\n   77    int tls : 1;\n\n/home/roman/Dokumente/Sources/c-utils/lib/http/http_init.c:\n   15    h->err = 0;\n   16    h->nonblocking = 0;\n   17:   h->keepalive = 0;\n   18    h->connected = 0;\n   19    h->tls = 0;\n\n/home/roman/Dokumente/Sources/c-utils/lib/http/http_sendreq.c:\n   22    buffer_putsa(out, &h->host);\n   23    buffer_puts(out, \"\\r\\n\");\n   24:   buffer_putm_internal(out, \"Connection: \", h->keepalive ? \"keep-alive\" : \"close\", \"\\r\\n\", NULL);\n   25    buffer_puts(out, \"\\r\\n\");\n   26  #if DEBUG_OUTPUT\n\n/home/roman/Dokumente/Sources/c-utils/lib/http/http_writeable.c:\n   27    buffer_puts(buffer_2, \" connected=\");\n   28    buffer_putlong(buffer_2, !!h->connected);\n   29:   buffer_puts(buffer_2, \" keepalive=\");\n   30:   buffer_putlong(buffer_2, !!h->keepalive);\n   31    buffer_puts(buffer_2, \" nonblocking=\");\n   32    buffer_putlong(buffer_2, !!h->nonblocking);\n\n/home/roman/Dokumente/Sources/c-utils/mediathek-list.c:\n  168    http_init(&h, \"127.0.0.1\", 80);\n  169    h.nonblocking = 0;\n  170:   h.keepalive = 1;\n  171  \n  172    http_get(&h, url);\n\n34 matches across 18 files\n\n\nSearching 3303 files for \"->keepalive\" (regex)\n\n/home/roman/Dokumente/Sources/c-utils/examples/httpd.c:\n   62      c += fmt_str(c, title);\n   63      c += fmt_str(c, \"\\r\\nContent-Type: text/html\\r\\nConnection: \");\n   64:     c += fmt_str(c, r->keepalive ? \"keep-alive\" : \"close\");\n   65      c += fmt_str(c, \"\\r\\nContent-Length: \");\n   66      c += fmt_ulong(c, str_len(message) + str_len(title) + 16 - 4);\n   ..\n  167        if((m = http_header(h, \"Connection\"))) {\n  168          if(str_equal(m, \"keep-alive\"))\n  169:           h->keepalive = 1;\n  170          else\n  171:           h->keepalive = 0;\n  172        } else {\n  173          if(byte_equal(d + 1, 8, \"HTTP/1.0\"))\n  174:           h->keepalive = 0;\n  175          else\n  176:           h->keepalive = 1;\n  177        }\n  178        m = mimetype(c);\n  ...\n  185        c += fmt_httpdate(c, s.st_mtime);\n  186        c += fmt_str(c, \"\\r\\nConnection: \");\n  187:       c += fmt_str(c, h->keepalive ? \"keep-alive\" : \"close\");\n  188        c += fmt_str(c, \"\\r\\n\\r\\n\");\n  189        iob_addbuf(&h->iob, h->hdrbuf, c - h->hdrbuf);\n  ...\n  308          free(h->hdrbuf);\n  309          h->hdrbuf = 0;\n  310:         if(h->keepalive) {\n  311            io_dontwantwrite(i);\n  312            io_wantread(i);\n\n/home/roman/Dokumente/Sources/c-utils/lib/http/http_init.c:\n   15    h->err = 0;\n   16    h->nonblocking = 0;\n   17:   h->keepalive = 0;\n   18    h->connected = 0;\n   19    h->tls = 0;\n\n/home/roman/Dokumente/Sources/c-utils/lib/http/http_sendreq.c:\n   22    buffer_putsa(out, &h->host);\n   23    buffer_puts(out, \"\\r\\n\");\n   24:   buffer_putm_internal(out, \"Connection: \", h->keepalive ? \"keep-alive\" : \"close\", \"\\r\\n\", NULL);\n   25    buffer_puts(out, \"\\r\\n\");\n   26  #if DEBUG_OUTPUT\n\n/home/roman/Dokumente/Sources/c-utils/lib/http/http_writeable.c:\n   28    buffer_putlong(buffer_2, !!h->connected);\n   29    buffer_puts(buffer_2, \" keepalive=\");\n   30:   buffer_putlong(buffer_2, !!h->keepalive);\n   31    buffer_puts(buffer_2, \" nonblocking=\");\n   32    buffer_putlong(buffer_2, !!h->nonblocking);\n\n10 matches across 4 files\n\n\nSearching 3303 files for \"->keepalive\" (regex)\n\n/home/roman/Dokumente/Sources/c-utils/examples/httpd.c:\n   62      c += fmt_str(c, title);\n   63      c += fmt_str(c, \"\\r\\nContent-Type: text/html\\r\\nConnection: \");\n   64:     c += fmt_str(c, r->keepalive ? \"keep-alive\" : \"close\");\n   65      c += fmt_str(c, \"\\r\\nContent-Length: \");\n   66      c += fmt_ulong(c, str_len(message) + str_len(title) + 16 - 4);\n   ..\n  167        if((m = http_header(h, \"Connection\"))) {\n  168          if(str_equal(m, \"keep-alive\"))\n  169:           h->keepalive = 1;\n  170          else\n  171:           h->keepalive = 0;\n  172        } else {\n  173          if(byte_equal(d + 1, 8, \"HTTP/1.0\"))\n  174:           h->keepalive = 0;\n  175          else\n  176:           h->keepalive = 1;\n  177        }\n  178        m = mimetype(c);\n  ...\n  185        c += fmt_httpdate(c, s.st_mtime);\n  186        c += fmt_str(c, \"\\r\\nConnection: \");\n  187:       c += fmt_str(c, h->keepalive ? \"keep-alive\" : \"close\");\n  188        c += fmt_str(c, \"\\r\\n\\r\\n\");\n  189        iob_addbuf(&h->iob, h->hdrbuf, c - h->hdrbuf);\n  ...\n  308          free(h->hdrbuf);\n  309          h->hdrbuf = 0;\n  310:         if(h->keepalive) {\n  311            io_dontwantwrite(i);\n  312            io_wantread(i);\n\n/home/roman/Dokumente/Sources/c-utils/lib/http/http_init.c:\n   15    h->err = 0;\n   16    h->nonblocking = 0;\n   17:   h->keepalive = 0;\n   18    h->connected = 0;\n   19    h->tls = 0;\n\n/home/roman/Dokumente/Sources/c-utils/lib/http/http_sendreq.c:\n   22    buffer_putsa(out, &h->host);\n   23    buffer_puts(out, \"\\r\\n\");\n   24:   buffer_putm_internal(out, \"Connection: \", h->keepalive ? \"keep-alive\" : \"close\", \"\\r\\n\", NULL);\n   25    buffer_puts(out, \"\\r\\n\");\n   26  #if DEBUG_OUTPUT\n\n/home/roman/Dokumente/Sources/c-utils/lib/http/http_writeable.c:\n   28    buffer_putlong(buffer_2, !!h->connected);\n   29    buffer_puts(buffer_2, \" keepalive=\");\n   30:   buffer_putlong(buffer_2, !!h->keepalive);\n   31    buffer_puts(buffer_2, \" nonblocking=\");\n   32    buffer_putlong(buffer_2, !!h->nonblocking);\n\n10 matches across 4 files\n",
+			"settings":
+			{
+				"buffer_size": 20924,
+				"line_ending": "Unix",
+				"name": "Find Results",
+				"scratch": true
+			}
+		},
+		{
+			"file": "examples/httpd.c",
+			"settings":
+			{
+				"buffer_size": 9021,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/http/http_sendreq.c",
+			"settings":
+			{
+				"buffer_size": 1190,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "httptest.c",
+			"settings":
+			{
+				"buffer_size": 4585,
+				"line_ending": "Unix"
+			}
+		},
+		{
 			"file": "CMakeLists.txt",
 			"settings":
 			{
-				"buffer_size": 40892,
+				"buffer_size": 40914,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
@@ -50,7 +110,6 @@
 			"settings":
 			{
 				"buffer_size": 3793,
-				"encoding": "Hexadecimal",
 				"line_ending": "Unix"
 			}
 		},
@@ -231,11 +290,11 @@
 	],
 	"find":
 	{
-		"height": 44.0
+		"height": 48.0
 	},
 	"find_in_files":
 	{
-		"height": 124.0,
+		"height": 136.0,
 		"where_history":
 		[
 			"/home/roman/Dokumente/Sources/c-utils,*.c,*.h",
@@ -247,6 +306,16 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"keepalive",
+			"->keepalive",
+			"keepalive",
+			";\n",
+			"keepalive",
+			"connection.*close",
+			"close",
+			"mediathek_urls",
+			"http_",
+			"http",
 			"separat",
 			"prin",
 			"printer",
@@ -300,7 +369,7 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 902,
+						"buffer_size": 102,
 						"regions":
 						{
 						},
@@ -309,143 +378,29 @@
 						],
 						"settings":
 						{
-							"current_file": "/home/roman/Dokumente/Sources/c-utils/piccfg.c",
+							"color_scheme": "Packages/Outline/outline.hidden-tmTheme",
+							"current_file": "/home/roman/Dokumente/Sources/c-utils/lib/http/http_sendreq.c",
 							"outline_rename_mode": false,
 							"symkeys":
 							[
 								[
-									444,
-									450
+									8,
+									18
 								],
 								[
-									559,
-									565
+									153,
+									160
 								],
 								[
-									583,
-									591
-								],
-								[
-									708,
-									716
-								],
-								[
-									734,
-									739
-								],
-								[
-									865,
-									870
-								],
-								[
-									1114,
-									1128
-								],
-								[
-									1356,
-									1366
-								],
-								[
-									1697,
-									1710
-								],
-								[
-									1996,
-									2007
-								],
-								[
-									2290,
-									2304
-								],
-								[
-									2814,
-									2830
-								],
-								[
-									3265,
-									3278
-								],
-								[
-									3783,
-									3796
-								],
-								[
-									4760,
-									4772
-								],
-								[
-									5118,
-									5134
-								],
-								[
-									5272,
-									5289
-								],
-								[
-									5899,
-									5911
-								],
-								[
-									6168,
-									6178
-								],
-								[
-									6482,
-									6492
-								],
-								[
-									7121,
-									7131
-								],
-								[
-									8425,
-									8433
-								],
-								[
-									8719,
-									8733
-								],
-								[
-									9888,
-									9900
-								],
-								[
-									10788,
-									10793
-								],
-								[
-									11613,
-									11617
+									238,
+									250
 								]
 							],
 							"symlist":
 							[
-								"—Ⓒ– cvalue { … } ; — type",
-								" Ⓣ  cvalue ; — typedef",
-								"—Ⓒ– csetting { … } ; — type",
-								" Ⓣ  csetting ; — typedef",
-								"—Ⓒ– cword { … } ; — type",
-								" Ⓣ  cword ; — typedef",
-								"—Ⓕ– config_data_at ( ) { … } — function",
-								"—Ⓕ– dump_cword ( ) { … } — function",
-								"—Ⓕ– dump_csetting ( ) { … } — function",
-								"—Ⓕ– dump_cvalue ( ) { … } — function",
-								"—Ⓕ– parse_cfgvalue ( ) { … } — function",
-								"—Ⓕ– parse_cfgsetting ( ) { … } — function",
-								"—Ⓕ– parse_cfgword ( ) { … } — function",
-								"—Ⓕ– parse_cfgdata ( ) { … } — function",
-								"—Ⓕ– config_bytes ( ) { … } — function",
-								"—Ⓕ– get_setting_word ( ) { … } — function",
-								"—Ⓕ– get_setting_value ( ) { … } — function",
-								"—Ⓕ– find_setting ( ) { … } — function",
-								"—Ⓕ– find_value ( ) { … } — function",
-								"—Ⓕ– infer_chip ( ) { … } — function",
-								"—Ⓕ– get_cfgdat ( ) { … } — function",
-								"—Ⓕ– add_item ( ) { … } — function",
-								"—Ⓕ– process_config ( ) { … } — function",
-								"—Ⓕ– output_items ( ) { … } — function",
-								"—Ⓕ– usage ( ) { … } — function",
-								"—Ⓕ– main ( ) { … } — function"
+								" Ⓜ  USE_WS2_32 … — macro object",
+								"—Ⓕ– do_send ( ) { … } — function",
+								"—Ⓕ– http_sendreq ( ) { … } — function"
 							],
 							"syntax": "Packages/Outline/outline.hidden-tmLanguage"
 						},
@@ -453,13 +408,13 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 13,
+					"stack_index": 20,
 					"type": "text"
 				}
 			]
 		},
 		{
-			"selected": 0,
+			"selected": 6,
 			"sheets":
 			[
 				{
@@ -489,16 +444,634 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 0,
+					"stack_index": 8,
 					"type": "text"
 				},
 				{
 					"buffer": 2,
+					"file": "/home/roman/Dokumente/Sources/plot-cv/lib/xml/xpath.js",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 9365,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1659,
+								1659
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Babel/JavaScript (Babel).sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true,
+							"typescript_plugin_format_options":
+							{
+								"convertTabsToSpaces": true,
+								"indentSize": 2,
+								"tabSize": 2
+							},
+							"use_tab_stops": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 792.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 6,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "mediathek-list.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 16110,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								3597,
+								3597
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C Improved/C Improved.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true,
+							"typescript_plugin_format_options":
+							{
+								"convertTabsToSpaces": true,
+								"indentSize": 2,
+								"tabSize": 2
+							}
+						},
+						"translation.x": 0.0,
+						"translation.y": 4107.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 4,
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "lib/http/http_get.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2319,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C Improved/C Improved.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 1284.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 3,
+					"type": "text"
+				},
+				{
+					"buffer": 5,
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 20924,
+						"regions":
+						{
+							"match":
+							{
+								"flags": 112,
+								"regions":
+								[
+									[
+										241,
+										257
+									],
+									[
+										502,
+										518
+									],
+									[
+										701,
+										717
+									],
+									[
+										910,
+										926
+									],
+									[
+										1187,
+										1203
+									],
+									[
+										1641,
+										1658
+									],
+									[
+										1916,
+										1967
+									],
+									[
+										2283,
+										2292
+									],
+									[
+										2525,
+										2534
+									],
+									[
+										2584,
+										2593
+									],
+									[
+										2752,
+										2761
+									],
+									[
+										2894,
+										2903
+									],
+									[
+										3136,
+										3145
+									],
+									[
+										3195,
+										3204
+									],
+									[
+										3362,
+										3371
+									],
+									[
+										3731,
+										3740
+									],
+									[
+										3754,
+										3763
+									],
+									[
+										4193,
+										4202
+									],
+									[
+										4468,
+										4477
+									],
+									[
+										4767,
+										4776
+									],
+									[
+										5066,
+										5075
+									],
+									[
+										5379,
+										5388
+									],
+									[
+										5688,
+										5697
+									],
+									[
+										6011,
+										6020
+									],
+									[
+										6319,
+										6328
+									],
+									[
+										6641,
+										6650
+									],
+									[
+										6859,
+										6868
+									],
+									[
+										7034,
+										7043
+									],
+									[
+										7323,
+										7332
+									],
+									[
+										7378,
+										7387
+									],
+									[
+										7487,
+										7496
+									],
+									[
+										7542,
+										7551
+									],
+									[
+										7737,
+										7746
+									],
+									[
+										7965,
+										7974
+									],
+									[
+										8183,
+										8192
+									],
+									[
+										8367,
+										8376
+									],
+									[
+										8555,
+										8564
+									],
+									[
+										8809,
+										8818
+									],
+									[
+										9116,
+										9125
+									],
+									[
+										9169,
+										9178
+									],
+									[
+										9524,
+										9533
+									],
+									[
+										9766,
+										9775
+									],
+									[
+										9825,
+										9834
+									],
+									[
+										9993,
+										10002
+									],
+									[
+										10135,
+										10144
+									],
+									[
+										10377,
+										10386
+									],
+									[
+										10436,
+										10445
+									],
+									[
+										10603,
+										10612
+									],
+									[
+										10972,
+										10981
+									],
+									[
+										10995,
+										11004
+									],
+									[
+										11434,
+										11443
+									],
+									[
+										11709,
+										11718
+									],
+									[
+										12008,
+										12017
+									],
+									[
+										12307,
+										12316
+									],
+									[
+										12620,
+										12629
+									],
+									[
+										12929,
+										12938
+									],
+									[
+										13252,
+										13261
+									],
+									[
+										13560,
+										13569
+									],
+									[
+										13882,
+										13891
+									],
+									[
+										14100,
+										14109
+									],
+									[
+										14275,
+										14284
+									],
+									[
+										14564,
+										14573
+									],
+									[
+										14619,
+										14628
+									],
+									[
+										14728,
+										14737
+									],
+									[
+										14783,
+										14792
+									],
+									[
+										14978,
+										14987
+									],
+									[
+										15206,
+										15215
+									],
+									[
+										15424,
+										15433
+									],
+									[
+										15608,
+										15617
+									],
+									[
+										15796,
+										15805
+									],
+									[
+										16050,
+										16059
+									],
+									[
+										16357,
+										16366
+									],
+									[
+										16410,
+										16419
+									],
+									[
+										16661,
+										16670
+									],
+									[
+										16984,
+										16995
+									],
+									[
+										17273,
+										17284
+									],
+									[
+										17328,
+										17339
+									],
+									[
+										17437,
+										17448
+									],
+									[
+										17492,
+										17503
+									],
+									[
+										17687,
+										17698
+									],
+									[
+										17915,
+										17926
+									],
+									[
+										18122,
+										18133
+									],
+									[
+										18376,
+										18387
+									],
+									[
+										18689,
+										18700
+									],
+									[
+										19076,
+										19087
+									],
+									[
+										19365,
+										19376
+									],
+									[
+										19420,
+										19431
+									],
+									[
+										19529,
+										19540
+									],
+									[
+										19584,
+										19595
+									],
+									[
+										19779,
+										19790
+									],
+									[
+										20007,
+										20018
+									],
+									[
+										20214,
+										20225
+									],
+									[
+										20468,
+										20479
+									],
+									[
+										20781,
+										20792
+									]
+								],
+								"scope": ""
+							}
+						},
+						"selection":
+						[
+							[
+								20469,
+								20469
+							]
+						],
+						"settings":
+						{
+							"detect_indentation": false,
+							"line_numbers": false,
+							"output_tag": 5,
+							"result_base_dir": "",
+							"result_file_regex": "^([^ \t].*):$",
+							"result_line_regex": "^ +([0-9]+):",
+							"scroll_past_end": true,
+							"syntax": "Packages/Default/Find Results.hidden-tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 14711.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 6,
+					"file": "examples/httpd.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 9021,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								5275,
+								5275
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C Improved/C Improved.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 4270.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 7,
+					"file": "lib/http/http_sendreq.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1190,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								681,
+								681
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C Improved/C Improved.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true,
+							"typescript_plugin_format_options":
+							{
+								"convertTabsToSpaces": true,
+								"indentSize": 2,
+								"tabSize": 2
+							}
+						},
+						"translation.x": 53.0,
+						"translation.y": 94.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 8,
+					"file": "httptest.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 4585,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1909,
+								1909
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C Improved/C Improved.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 831.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 5,
+					"type": "text"
+				},
+				{
+					"buffer": 9,
 					"file": "CMakeLists.txt",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 40892,
+						"buffer_size": 40914,
 						"regions":
 						{
 						},
@@ -519,11 +1092,11 @@
 						"translation.y": 15354.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 12,
+					"stack_index": 19,
 					"type": "text"
 				},
 				{
-					"buffer": 3,
+					"buffer": 10,
 					"file": "jsonpp.c",
 					"semi_transient": false,
 					"settings":
@@ -549,11 +1122,11 @@
 						"translation.y": 3332.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 2,
+					"stack_index": 10,
 					"type": "text"
 				},
 				{
-					"buffer": 4,
+					"buffer": 11,
 					"file": "3rdparty/openssl/test/recipes/ocsp-response.der",
 					"semi_transient": false,
 					"settings":
@@ -577,11 +1150,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 1,
+					"stack_index": 9,
 					"type": "text"
 				},
 				{
-					"buffer": 5,
+					"buffer": 12,
 					"file": "lib/json.h",
 					"semi_transient": false,
 					"settings":
@@ -593,25 +1166,31 @@
 						"selection":
 						[
 							[
-								865,
-								865
+								340,
+								340
 							]
 						],
 						"settings":
 						{
 							"syntax": "Packages/C Improved/C Improved.tmLanguage",
 							"tab_size": 2,
-							"translate_tabs_to_spaces": true
+							"translate_tabs_to_spaces": true,
+							"typescript_plugin_format_options":
+							{
+								"convertTabsToSpaces": true,
+								"indentSize": 2,
+								"tabSize": 2
+							}
 						},
 						"translation.x": 0.0,
-						"translation.y": 505.0,
+						"translation.y": 1892.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 3,
+					"stack_index": 7,
 					"type": "text"
 				},
 				{
-					"buffer": 6,
+					"buffer": 13,
 					"file": "lib/json/json_recurse.c",
 					"semi_transient": false,
 					"settings":
@@ -637,11 +1216,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 9,
+					"stack_index": 16,
 					"type": "text"
 				},
 				{
-					"buffer": 7,
+					"buffer": 14,
 					"file": "lib/slist/slist_push.c",
 					"semi_transient": false,
 					"settings":
@@ -665,11 +1244,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 8,
+					"stack_index": 15,
 					"type": "text"
 				},
 				{
-					"buffer": 8,
+					"buffer": 15,
 					"file": "lib/json/json_push.c",
 					"semi_transient": false,
 					"settings":
@@ -693,11 +1272,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 7,
+					"stack_index": 14,
 					"type": "text"
 				},
 				{
-					"buffer": 9,
+					"buffer": 16,
 					"file": "lib/json/json_print.c",
 					"semi_transient": false,
 					"settings":
@@ -723,11 +1302,11 @@
 						"translation.y": 3385.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 6,
+					"stack_index": 13,
 					"type": "text"
 				},
 				{
-					"buffer": 10,
+					"buffer": 17,
 					"file": "lib/json/json_free.c",
 					"semi_transient": false,
 					"settings":
@@ -753,11 +1332,11 @@
 						"translation.y": 265.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 5,
+					"stack_index": 12,
 					"type": "text"
 				},
 				{
-					"buffer": 11,
+					"buffer": 18,
 					"file": "lib/json/json_read_callback.c",
 					"semi_transient": false,
 					"settings":
@@ -781,11 +1360,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 11,
+					"stack_index": 18,
 					"type": "text"
 				},
 				{
-					"buffer": 12,
+					"buffer": 19,
 					"file": "lib/json/json_read_tree.c",
 					"semi_transient": false,
 					"settings":
@@ -809,11 +1388,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 4,
+					"stack_index": 11,
 					"type": "text"
 				},
 				{
-					"buffer": 13,
+					"buffer": 20,
 					"file": "lib/json/json_parse.c",
 					"semi_transient": false,
 					"settings":
@@ -839,7 +1418,7 @@
 						"translation.y": 1840.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 10,
+					"stack_index": 17,
 					"type": "text"
 				}
 			]
@@ -847,7 +1426,7 @@
 	],
 	"incremental_find":
 	{
-		"height": 32.0
+		"height": 36.0
 	},
 	"input":
 	{
@@ -885,6 +1464,10 @@
 		]
 	},
 	"menu_visible": true,
+	"output.doc":
+	{
+		"height": 0.0
+	},
 	"output.exec":
 	{
 		"height": 138.0
@@ -897,7 +1480,7 @@
 	"project": "c-utils.sublime-project",
 	"replace":
 	{
-		"height": 60.0
+		"height": 68.0
 	},
 	"save_all_on_build": true,
 	"select_file":
@@ -906,6 +1489,18 @@
 		"last_filter": "",
 		"selected_items":
 		[
+			[
+				"http_get",
+				"lib/http/http_get.c"
+			],
+			[
+				"httptest",
+				"httptest.c"
+			],
+			[
+				"mediathek-list",
+				"mediathek-list.c"
+			],
 			[
 				"json.h",
 				"lib/json.h"

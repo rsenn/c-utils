@@ -68,7 +68,7 @@ const char* const mediathek_urls[] = {
     "http://verteiler6.mediathekview.de/Filmliste-akt.xz",
 };
 
-const char* mediathek_url = "http://verteiler1.mediathekview.de/Filmliste-akt.xz";
+const char* mediathek_url = "https://liste.mediathekview.de/Filmliste-akt.xz";
 //"http://127.0.0.1/Filmliste-akt.xz";
 
 static unsigned long min_length;
@@ -167,6 +167,7 @@ read_mediathek_list(const char* url, buffer* b) {
 
   http_init(&h, "127.0.0.1", 80);
   h.nonblocking = 0;
+  h.keepalive = 1;
 
   http_get(&h, url);
 
