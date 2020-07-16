@@ -21,7 +21,7 @@ json_recurse_val(jsonval* val, void (*fn)(), void* arg, int depth) {
     }
     case JSON_ARRAY: {
       slink* link;
-      slink_foreach(val->listv, link) { json_recurse_val( (jsonval*)&(link)[1], fn, arg, depth + 1); }
+      slink_foreach(val->listv, link) { json_recurse_val((jsonval*)&(link)[1], fn, arg, depth + 1); }
       break;
     }
   }

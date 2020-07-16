@@ -212,7 +212,7 @@ patch_check(unsigned char* x, size_t n, patch_t* p) {
 
     buffer_puts(buffer_2, "position 0x");
     buffer_putxlong0(buffer_2, r->offset, 8);
-    buffer_puts(buffer_2,  " is 0x");
+    buffer_puts(buffer_2, " is 0x");
     buffer_putxlong0(buffer_2, x[r->offset] == r->to ? r->to : r->from, 2);
     if(x[r->offset] == r->from || x[r->offset] == r->to) {
 
@@ -381,7 +381,7 @@ main(int argc, char* argv[]) {
 
   /* Linux x86 */
   patch_new("Sublime Text 3126 Linux x86", 5200392, 0);
-  patch(0xC35C	, 0x94, 0x95); /* License Check */
+  patch(0xC35C, 0x94, 0x95); /* License Check */
 
   /* Linux x32 */
   patch_new("Sublime Text 3176 Linux x86", 0, 0);
@@ -422,7 +422,6 @@ main(int argc, char* argv[]) {
   patch(0x58BA05, 0x94, 0x00);
   patch(0x58BA06, 0x0d, 0x00);
 
-
   /* Linux x64 */
   patch_new("Sublime Text 3200 Linux x64", 0, 0);
 
@@ -441,7 +440,6 @@ main(int argc, char* argv[]) {
   patch(0x3c03dc, 0x84, 0x85); /* Initial License Check */
   patch(0x4797a0, 0x75, 0x74); /* Persistent License Check */
   patch(0x31d180, 0x75, 0x74); /* Purchase License Nag */
-
 
   /* Windows x64 */
   patch_new("Sublime Text 3207 Windows x64", 0, 0);

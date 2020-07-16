@@ -16,7 +16,7 @@ imult64(int64 a, int64 b, int64* c) {
 
 /* WARNING: this only works if compiled with -fomit-frame-pointer */
 int
-imult64( int64 a, int64 b, int64* c) {
+imult64(int64 a, int64 b, int64* c) {
   asm volatile("xchgq %rdx,%rsi\n"
                "movq %rdi,%rax\n"
                "imulq %rdx\n"

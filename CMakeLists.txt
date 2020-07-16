@@ -357,7 +357,7 @@ if(USE_ZLIB)
     set(ZLIB_FOUND TRUE)
     if(ZLIB STREQUAL "")
       set(ZLIB z)
-    endif()
+    endif(ZLIB STREQUAL "")
     set(ZLIB_LIBARY_RELEASE "${ZLIB}" CACHE FILEPATH "")
     set(ZLIB_LIBARY_DEBUG "${ZLIB}" CACHE FILEPATH "")
     set(ZLIB_LIBARY "${ZLIB}" CACHE FILEPATH "")
@@ -390,9 +390,9 @@ if(USE_BZIP)
   ## Check BZip2
   ################################################################################
   pkg_search_module(BZIP2 libbz2 bzip2)
-  if(NOT BZIP2_FOUND)
+  if(NOT ${BZIP2_FOUND})
     include(FindBZip2)
-  endif(NOT BZIP2_FOUND)
+  endif(NOT ${BZIP2_FOUND})
 endif(USE_BZIP)
 
 ################################################################################

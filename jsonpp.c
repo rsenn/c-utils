@@ -20,7 +20,7 @@ static charbuf infile;
 static char quote[4] = {'"', 0};
 static int one_line, indent = 2, compact, depth_arg = 3;
 static stralloc indent_str;
-static const char *spacing, *separator;
+static const char *spacing, *separator = "\n";
 
 void
 put_str_escaped(buffer* b, const char* str) {
@@ -59,8 +59,8 @@ compact_printer(jsonfmt* p, jsonval* v, int depth, int index, char quot) {
     buffer_puts(buffer_2, ")");
     buffer_putnlflush(buffer_2);
   }*/
-    p->indent = one_line || depth > depth_arg ? "" : "  ";
-    // depth <= 1 ? "  " : depth > 3 ? "  " : " ";
+  p->indent = one_line || depth > depth_arg ? "" : "  ";
+  // depth <= 1 ? "  " : depth > 3 ? "  " : " ";
 
   p->newline = one_line ? "" : "\n";
   p->spacing = spacing ? spacing : " ";
@@ -75,11 +75,10 @@ compact_printer(jsonfmt* p, jsonval* v, int depth, int index, char quot) {
 static void
 default_printer(jsonfmt* p, jsonval* v, int depth, int index, char quot) {
   int pretty = v && get_depth(v) > 1;
-i
   p->indent = depth > depth_arg ? "" : "  "; // depth <= 1 ? "  " : depth > 3 ? "  " : " ";
   p->spacing = spacing ? spacing : " ";
   p->newline = one_line ? "" : depth > depth_arg ? p->spacing : "\n";
-  p->separat = separator ? separator : depth > depth_arg ? ", " : ",\n";
+  p->separat = "\n"; // separator ? separator : depth > depth_arg ? ", " : ",\n";
   p->quote[0] = quot;
   p->quote[1] = '\0';
   p->precision = 10;

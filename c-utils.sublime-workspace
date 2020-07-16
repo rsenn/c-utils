@@ -26,19 +26,109 @@
 			}
 		},
 		{
-			"file": "genmakefile.h",
+			"file": "CMakeLists.txt",
 			"settings":
 			{
-				"buffer_size": 7533,
+				"buffer_size": 40892,
+				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "piccfg.c",
+			"file": "jsonpp.c",
 			"settings":
 			{
-				"buffer_size": 14148,
+				"buffer_size": 5661,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"contents": "m3082 05e9 0a01 00a0 8205 e230 8205 de06\n092b 0601 0505 0730 0101 0482 05cf 3082\n05cb 3082 011a a181 8630 8183 310b 3009\n0603 5504 0613 0247 4231 1f30 1d06 0355\n0408 0c16 5465 7374 2053 7461 7465 206f\n7220 5072 6f76 696e 6365 311a 3018 0603\n5504 0a0c 114f 7267 616e 697a 6174 696f\n6e20 4e61 6d65 3121 301f 0603 5504 0b0c\n184f 7267 616e 697a 6174 696f 6e61 6c20\n556e 6974 204e 616d 6531 1430 1206 0355\n0403 0c0b 436f 6d6d 6f6e 204e 616d 6518\n0f32 3031 3631 3131 3531 3431 3430 335a\n3059 3057 3042 3009 0605 2b0e 0302 1a05\n0004 141d 76de 86eb 6db1 78a8 68c1 3314\n51f1 f543 2e97 3004 14c8 8a9e 9667 b169\n98f0 d800 9f6b 2288 0a1d 098e c902 0900\nf700 b371 9777 9249 8000 180f 3230 3136\n3131 3135 3134 3134 3033 5aa1 2330 2130\n1f06 092b 0601 0505 0730 0102 0412 0410\n13e7 7881 5b2f 9530 5ce6 68af 6e22 e2e3\n300d 0609 2a86 4886 f70d 0101 0b05 0003\n8201 0100 31fd 37a8 d7a4 49a5 f32f 891a\ne7a1 378a ea7e c451 556b 06a2 ccc7 c0a7\n3a07 24ed 2a72 f570 8db3 9a04 77f3 2bfe\n40a4 1af0 5020 23df bc79 e1fc 94b3 411e\ne66b d08e 3bb3 b667 84e7 264b 41a5 b1c0\n2870 caf6 26c1 b6e7 cc65 0cac ac21 d442\n40bc 3617 481e 21b0 9e46 5f14 cf7c 52f8\nd8df 04fd 1b36 02d6 2870 32f9 44d2 3060\n8c43 718d ceac 92f7 a91d cc12 32f6 1cde\nfffa 3c43 2e69 a502 3a68 3388 2efc 700e\n70f2 418e de31 5d2d b02a a663 7c65 f987\n7448 d4a6 46b0 3800 0dbe 24f6 625e e19e\n8049 d64a 86eb 69ea 3606 85f2 d4d9 16e6\n8521 f4ce c6ea 3365 e9a1 4c35 0446 2e36\n6254 11d0 4e43 60fa 6125 9d6a 6a72 35b6\n0a25 3017 eecb 6a9a a469 a8a3 b8b0 80e1\n04f5 3b92 a082 0395 3082 0391 3082 038d\n3082 0275 a003 0201 0202 0900 f700 b371\n9777 9247 300d 0609 2a86 4886 f70d 0101\n0405 0030 5731 0b30 0906 0355 0406 1302\n4155 3113 3011 0603 5504 080c 0a53 6f6d\n652d 5374 6174 6531 2130 1f06 0355 040a\n0c18 496e 7465 726e 6574 2057 6964 6769\n7473 2050 7479 204c 7464 3110 300e 0603\n5504 030c 0752 6f6f 7420 4341 301e 170d\n3135 3038 3035 3139 3532 3137 5a17 0d31\n3630 3830 3431 3935 3231 375a 3081 8331\n0b30 0906 0355 0406 1302 4742 311f 301d\n0603 5504 080c 1654 6573 7420 5374 6174\n6520 6f72 2050 726f 7669 6e63 6531 1a30\n1806 0355 040a 0c11 4f72 6761 6e69 7a61\n7469 6f6e 204e 616d 6531 2130 1f06 0355\n040b 0c18 4f72 6761 6e69 7a61 7469 6f6e\n616c 2055 6e69 7420 4e61 6d65 3114 3012\n0603 5504 030c 0b43 6f6d 6d6f 6e20 4e61\n6d65 3082 0122 300d 0609 2a86 4886 f70d\n0101 0105 0003 8201 0f00 3082 010a 0282\n0101 00bd 98c0 dbe0 41ca 0e82 543c 91d8\n2a71 d47e fb00 13bb e791 3237 98cb 247b\na885 d71d a9c1 1dd8 d5dc e28a 37ab 6001\n8d3b a836 d476 c661 9076 0087 be87 31b7\n297a 0680 026b e6cf 3557 2373 ad5a e3fb\nf916 24cd aa5f edd1 1a90 0663 6ecb 3083\n0edb 5872 3648 20c5 f7b8 e677 55bf 29ca\ne26c 2aa2 8422 a748 8d56 390d 9768 e4c5\n20b6 3420 da28 9bee a1f2 6549 4716 4949\n4822 2c23 8883 6866 b39a bca9 7697 90c3\n4c52 d388 4a92 697f 420b b4eb 09dd b92a\ndc9e 2e24 5be2 e5d5 adf8 b5c0 bc9a fe75\nd9f8 5763 4635 1eb0 c6cf a8f5 039c 79ec\nbdf1 ea54 9f02 fea1 32ae 87c9 66b4 bfb7\n795a 7c0e 9912 11cb d0f1 b8ff 3798 0173\nebf0 826e 5c1e 4485 d71b 27cd 37c6 c1a2\na528 9f02 0301 0001 a32f 302d 3009 0603\n551d 1304 0230 0030 0b06 0355 1d0f 0404\n0302 05e0 3013 0603 551d 2504 0c30 0a06\n082b 0601 0505 0703 0930 0d06 092a 8648\n86f7 0d01 0104 0500 0382 0101 0057 1d7a\n9cd4 d38f 5fff e0af 9f11 ab2e 4f70 fd18\n10a2 ef15 02ae 7eea 85ee 315d 13a5 daa9\n892a 300b 3971 b6b8 5c49 3112 3253 3714\n009f 6aad 955f e39d 9d44 18b4 1262 4a68\nc265 bda0 5a44 118f af4e 9658 e502 7795\n96e8 5c11 da0b ce01 122b f2a0 4789 c25e\n5fcf f26a a4e5 9acc 1057 dfbc fc6f b0ee\n0892 ba87 06c7 3d90 faf9 9864 631d 6643\n1f14 92d3 8ae9 9110 7d78 99d0 b998 9586\nac1e 0bda 6b6e 2898 3334 6679 8f7a 9fa4\na58d bced 3188 69de 6df5 4bf7 67e1 7574\nec45 2937 6c2b f7e1 c057 ce98 007c 9a6e\n6d41 8190 addc efd7 33dc 4efb 27b2 ddb9\n6107 7d18 60cd 5827 1c83 4855 6c19 2169\n21a8 35a3 1fd6 aa76 3f33 d99f 8c7a 2e36\nc8ab dce1 58d4 d7ee 6e0d 5fd9 14",
+			"file": "3rdparty/openssl/test/recipes/ocsp-response.der",
+			"file_size": 1517,
+			"file_write_time": 132301306650000000,
+			"settings":
+			{
+				"buffer_size": 3793,
+				"encoding": "Hexadecimal",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/json.h",
+			"settings":
+			{
+				"buffer_size": 3946,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/json/json_recurse.c",
+			"settings":
+			{
+				"buffer_size": 791,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"contents": "    #include \"../slist.h\"\n\nvoid\nslist_push(slink** list, slink* link) {\n  slink** ptr = list;\n\n  while(*ptr) ptr = &(*ptr)->next;\n\n  *ptr = link;\n}\n",
+			"file": "lib/slist/slist_push.c",
+			"file_size": 144,
+			"file_write_time": 132373915026818367,
+			"settings":
+			{
+				"buffer_size": 148,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/json/json_push.c",
+			"settings":
+			{
+				"buffer_size": 293,
 				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/json/json_print.c",
+			"settings":
+			{
+				"buffer_size": 5827,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/json/json_free.c",
+			"settings":
+			{
+				"buffer_size": 1410,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/json/json_read_callback.c",
+			"settings":
+			{
+				"buffer_size": 156,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/json/json_read_tree.c",
+			"settings":
+			{
+				"buffer_size": 442,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/json/json_parse.c",
+			"settings":
+			{
+				"buffer_size": 4071,
 				"line_ending": "Unix"
 			}
 		}
@@ -125,6 +215,9 @@
 	],
 	"file_history":
 	[
+		"/home/roman/Dokumente/Sources/c-utils/genmakefile.h",
+		"/home/roman/Dokumente/Sources/c-utils/piccfg.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/slist.h",
 		"/home/roman/Dokumente/Sources/c-utils/serial.h",
 		"/home/roman/Dokumente/Sources/pictest/pictest_16f876a_xc8.X.production.asm",
 		"/home/roman/Dokumente/Sources/pictest/pictest_16f876a_xc8.X.production.lst",
@@ -138,13 +231,15 @@
 	],
 	"find":
 	{
-		"height": 39.0
+		"height": 44.0
 	},
 	"find_in_files":
 	{
-		"height": 107.0,
+		"height": 124.0,
 		"where_history":
 		[
+			"/home/roman/Dokumente/Sources/c-utils,*.c,*.h",
+			""
 		]
 	},
 	"find_state":
@@ -152,6 +247,31 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"separat",
+			"prin",
+			"printer",
+			"separator",
+			"\\\\n",
+			"json_pretty_print",
+			"default_printer",
+			"spacing",
+			"newline",
+			"_data\\(",
+			"_data",
+			"json_data",
+			"slink_new",
+			"slist[a-z_]*\\(",
+			"slist_add\\(",
+			"slist_add",
+			"slink_add",
+			"json.*slint",
+			"json.*slist",
+			"slist.*json",
+			"slink.*json",
+			"slink",
+			"json_recurse",
+			"recurse",
+			"efence",
 			"coff_symtab_mchp_types",
 			"3065",
 			"31BFED"
@@ -159,7 +279,7 @@
 		"highlight": true,
 		"in_selection": false,
 		"preserve_case": false,
-		"regex": false,
+		"regex": true,
 		"replace_history":
 		[
 		],
@@ -333,13 +453,13 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 3,
+					"stack_index": 13,
 					"type": "text"
 				}
 			]
 		},
 		{
-			"selected": 2,
+			"selected": 0,
 			"sheets":
 			[
 				{
@@ -369,16 +489,280 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 2,
+					"stack_index": 0,
 					"type": "text"
 				},
 				{
 					"buffer": 2,
-					"file": "genmakefile.h",
+					"file": "CMakeLists.txt",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 7533,
+						"buffer_size": 40892,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								33055,
+								33055
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/CMake/CMake.sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 15354.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 12,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "jsonpp.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 5661,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								5339,
+								5339
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C Improved/C Improved.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 3332.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "3rdparty/openssl/test/recipes/ocsp-response.der",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 3793,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1,
+								1
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Text/Plain text.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 5,
+					"file": "lib/json.h",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 3946,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								865,
+								865
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C Improved/C Improved.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 505.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 3,
+					"type": "text"
+				},
+				{
+					"buffer": 6,
+					"file": "lib/json/json_recurse.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 791,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								779,
+								779
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C Improved/C Improved.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 9,
+					"type": "text"
+				},
+				{
+					"buffer": 7,
+					"file": "lib/slist/slist_push.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 148,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								148,
+								148
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C Improved/C Improved.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 8,
+					"type": "text"
+				},
+				{
+					"buffer": 8,
+					"file": "lib/json/json_push.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 293,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								293,
+								293
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C Improved/C Improved.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 7,
+					"type": "text"
+				},
+				{
+					"buffer": 9,
+					"file": "lib/json/json_print.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 5827,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								4817,
+								4817
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C Improved/C Improved.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 3385.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 6,
+					"type": "text"
+				},
+				{
+					"buffer": 10,
+					"file": "lib/json/json_free.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1410,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								795,
+								795
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C Improved/C Improved.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 265.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 5,
+					"type": "text"
+				},
+				{
+					"buffer": 11,
+					"file": "lib/json/json_read_callback.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 156,
 						"regions":
 						{
 						},
@@ -391,32 +775,58 @@
 						],
 						"settings":
 						{
-							"syntax": "Packages/C Improved/C Improved.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
+							"syntax": "Packages/C Improved/C Improved.tmLanguage"
 						},
 						"translation.x": 0.0,
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 1,
+					"stack_index": 11,
 					"type": "text"
 				},
 				{
-					"buffer": 3,
-					"file": "piccfg.c",
+					"buffer": 12,
+					"file": "lib/json/json_read_tree.c",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 14148,
+						"buffer_size": 442,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								296,
-								296
+								377,
+								377
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C Improved/C Improved.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 4,
+					"type": "text"
+				},
+				{
+					"buffer": 13,
+					"file": "lib/json/json_parse.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 4071,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1989,
+								1989
 							]
 						],
 						"settings":
@@ -426,10 +836,10 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 1840.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 0,
+					"stack_index": 10,
 					"type": "text"
 				}
 			]
@@ -437,7 +847,7 @@
 	],
 	"incremental_find":
 	{
-		"height": 27.0
+		"height": 32.0
 	},
 	"input":
 	{
@@ -487,7 +897,7 @@
 	"project": "c-utils.sublime-project",
 	"replace":
 	{
-		"height": 50.0
+		"height": 60.0
 	},
 	"save_all_on_build": true,
 	"select_file":
@@ -496,6 +906,46 @@
 		"last_filter": "",
 		"selected_items":
 		[
+			[
+				"json.h",
+				"lib/json.h"
+			],
+			[
+				"json_free.c",
+				"lib/json/json_free.c"
+			],
+			[
+				"json_print",
+				"lib/json/json_print.c"
+			],
+			[
+				"",
+				"lib/slist/slist_push.c"
+			],
+			[
+				"json_push",
+				"lib/json/json_push.c"
+			],
+			[
+				"slist_push",
+				"lib/slist/slist_push.c"
+			],
+			[
+				"json_re",
+				"lib/json/json_read_tree.c"
+			],
+			[
+				"json_read",
+				"lib/json/json_read_callback.c"
+			],
+			[
+				"jsonpp.c",
+				"jsonpp.c"
+			],
+			[
+				"cmakelists",
+				"CMakeLists.txt"
+			],
 			[
 				"piccf",
 				"piccfg.c"
