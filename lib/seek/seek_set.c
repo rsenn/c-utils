@@ -1,13 +1,18 @@
-/* Public domain. */
-
+#include "../seek.h"
+#include <stdio.h>
+#include <errno.h>
+#if WINDOWS_NATIVE
+#include <io.h>
+#else
+#include <unistd.h>
 #include <sys/types.h>
-#include "seek.h"
+#endif
 
-#define SET 0 /* sigh */
+#define SET SEEK_SET /* sigh */
 
 int
-seek_set(int fd, seek_pos pos) {
-  if(lseek(fd, (off_t)pos, SET) == -1)
+seek_set(fd_t fd, seek_pos pos) {
+  if(lseek(fd, (int64)pos, SET) == -1)
     return -1;
   return 0;
 }

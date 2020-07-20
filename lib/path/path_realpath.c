@@ -17,9 +17,8 @@ path_realpath(const char* path, stralloc* sa, int symbolic, stralloc* cwd) {
   if(cwd == NULL) {
     path_getcwd(&tmpcwd);
     stralloc_nul(&tmpcwd);
-cwd = &tmpcwd;
+    cwd = &tmpcwd;
   }
-
 
   /* if its not absolute on the first recursion level then make it so */
   if(!path_is_absolute(path) && sa->len == 0) {

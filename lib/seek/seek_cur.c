@@ -1,8 +1,16 @@
-#include <sys/types.h>
+#include "../seek.h"
+#include <stdio.h>
+#include <errno.h>
+#if WINDOWS_NATIVE
+#include <io.h>
+#else
 #include <unistd.h>
-#include "seek.h"
+#include <sys/types.h>
+#endif
 
-#define CUR 1 /* sigh */
+#define CUR SEEK_CUR /* sigh */
 
-seek_pos seek_cur(int fd)
-{ return lseek(fd,(off_t) 0,CUR); }
+seek_pos
+seek_cur(fd_t fd) {
+  return lseek(fd, (int64)0, CUR);
+}

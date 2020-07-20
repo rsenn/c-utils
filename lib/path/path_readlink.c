@@ -26,9 +26,9 @@ path_readlink(const char* path, stralloc* sa) {
 
   sa->len = sz;
   /* now truncate to effective length */
-/*  if(sz >= 0) {
-    stralloc_trunc(sa, sz);
-    return 0;
-  }*/
+  /*  if(sz >= 0) {
+      stralloc_trunc(sa, sz);
+      return 0;
+    }*/
   return sa->len;
 }
