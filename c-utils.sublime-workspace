@@ -8,80 +8,55 @@
 	"buffers":
 	[
 		{
-			"contents": " Ⓜ  USE_WS2_32 … — macro object\n—Ⓕ– do_send ( ) { … } — function\n—Ⓕ– http_sendreq ( ) { … } — function",
+			"contents": " Ⓜ  stat … — macro object\n—Ⓒ– procfd { … } ; — type\n Ⓣ  procfd_t ; — typedef\n Ⓣ  pipe_t ; — typedef\n—Ⓕ– usage ( ) { … } — function\n—Ⓕ– get_pipe ( ) { … } — function\n—Ⓕ– print_number_nonl ( ) { … } — function\n—Ⓕ– print_number ( ) { … } — function\n—Ⓕ– type ( ) { … } — function\n—Ⓕ– print_stat ( ) { … } — function\n—Ⓕ– print_stralloc_nonl ( ) { … } — function\n—Ⓕ– print_stralloc ( ) { … } — function\n—Ⓕ– print_string_nonl ( ) { … } — function\n—Ⓕ– print_string ( ) { … } — function\n—Ⓕ– proc_fd_root ( ) { … } — function\n—Ⓕ– proc_subdir_path ( ) { … } — function\n—Ⓕ– proc_fd_path ( ) { … } — function\n—Ⓕ– proc_fdinfo_path ( ) { … } — function\n—Ⓕ– proc_fd_str ( ) { … } — function\n—Ⓕ– read_proc ( ) { … } — function\n—Ⓕ– compare_pipes ( ) { … } — function\n—Ⓕ– procfd_dump ( ) { … } — function\n—Ⓕ– main ( ) { … } — function",
 			"settings":
 			{
-				"buffer_size": 102,
+				"buffer_size": 815,
 				"line_ending": "Unix",
 				"name": "𝌆 Outline",
 				"scratch": true
 			}
 		},
 		{
-			"file": "genmakefile.c",
+			"file": "pipeinfo.c",
 			"settings":
 			{
-				"buffer_size": 139614,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "/home/roman/Dokumente/Sources/plot-cv/lib/xml/xpath.js",
-			"settings":
-			{
-				"buffer_size": 9365,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "mediathek-list.c",
-			"settings":
-			{
-				"buffer_size": 16110,
+				"buffer_size": 10395,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "lib/http/http_get.c",
+			"file": "lib/slist/slist_push.c",
 			"settings":
 			{
-				"buffer_size": 2319,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"contents": "Searching 3303 files for \"connection.*close\" (regex)\n\n/home/roman/Dokumente/Sources/c-utils/3rdparty/openssl/apps/s_client.c:\n 2816            ret = get_last_socket_error();\n 2817            if(c_brief)\n 2818:             BIO_puts(bio_err, \"CONNECTION CLOSED BY SERVER\\n\");\n 2819            else\n 2820              BIO_printf(bio_err, \"read:errno=%d\\n\", ret);\n\n/home/roman/Dokumente/Sources/c-utils/3rdparty/openssl/apps/s_server.c:\n 2520      SSL_free(con);\n 2521    }\n 2522:   BIO_printf(bio_s_out, \"CONNECTION CLOSED\\n\");\n 2523    OPENSSL_clear_free(buf, bufsize);\n 2524    return ret;\n ....\n 3198      } else if(i == 0) { /* end of input */\n 3199        ret = 1;\n 3200:       BIO_printf(bio_err, \"CONNECTION CLOSED\\n\");\n 3201        goto end;\n 3202      } else {\n ....\n 3208        if(!s_ign_eof && (i == 5) && (strncmp(buf, \"CLOSE\", 5) == 0)) {\n 3209          ret = 1;\n 3210:         BIO_printf(bio_err, \"CONNECTION CLOSED\\n\");\n 3211          goto end;\n 3212        }\n\n/home/roman/Dokumente/Sources/c-utils/3rdparty/openssl/ssl/statem/statem_srvr.c:\n  931          if(SSL_get_error(s, 0) == SSL_ERROR_SYSCALL && conn_is_closed()) {\n  932            /*\n  933:            * We ignore connection closed errors in TLSv1.3 when sending a\n  934             * NewSessionTicket and behave as if we were successful. This is\n  935             * so that we are still able to read data sent to us by a client\n\n/home/roman/Dokumente/Sources/c-utils/examples/httpd.c:\n   56    c = r->hdrbuf = (char*)malloc(str_len(message) + str_len(title) + 200);\n   57    if(!c) {\n   58:     r->hdrbuf = \"HTTP/1.0 500 internal error\\r\\nContent-Type: text/plain\\r\\nConnection: close\\r\\n\\r\\nout of memory\\n\";\n   59      r->hlen = str_len(r->hdrbuf);\n   60    } else {\n\n/home/roman/Dokumente/Sources/c-utils/lib/http/http_sendreq.c:\n   22    buffer_putsa(out, &h->host);\n   23    buffer_puts(out, \"\\r\\n\");\n   24:   buffer_putm_internal(out, \"Connection: \", h->keepalive ? \"keep-alive\" : \"close\", \"\\r\\n\", NULL);\n   25    buffer_puts(out, \"\\r\\n\");\n   26  #if DEBUG_OUTPUT\n\n7 matches across 5 files\n\n\nSearching 3303 files for \"keepalive\" (regex)\n\n/home/roman/Dokumente/Sources/c-utils/3rdparty/openssl/crypto/bio/b_sock2.c:\n   64   *\n   65   * Options can be a combination of the following:\n   66:  * - BIO_SOCK_KEEPALIVE: enable regularly sending keep-alive messages.\n   67   * - BIO_SOCK_NONBLOCK: Make the socket non-blocking.\n   68   * - BIO_SOCK_NODELAY: don't delay small messages.\n   ..\n   87      return 0;\n   88  \n   89:   if(options & BIO_SOCK_KEEPALIVE) {\n   90:     if(setsockopt(sock, SOL_SOCKET, SO_KEEPALIVE, (const void*)&on, sizeof(on)) != 0) {\n   91        SYSerr(SYS_F_SETSOCKOPT, get_last_socket_error());\n   92:       BIOerr(BIO_F_BIO_CONNECT, BIO_R_UNABLE_TO_KEEPALIVE);\n   93        return 0;\n   94      }\n   ..\n  173   *\n  174   * Options can be a combination of the following:\n  175:  * - BIO_SOCK_KEEPALIVE: enable regularly sending keep-alive messages.\n  176   * - BIO_SOCK_NONBLOCK: Make the socket non-blocking.\n  177   * - BIO_SOCK_NODELAY: don't delay small messages.\n  ...\n  220      return 0;\n  221  \n  222:   if(options & BIO_SOCK_KEEPALIVE) {\n  223:     if(setsockopt(sock, SOL_SOCKET, SO_KEEPALIVE, (const void*)&on, sizeof(on)) != 0) {\n  224        SYSerr(SYS_F_SETSOCKOPT, get_last_socket_error());\n  225:       BIOerr(BIO_F_BIO_LISTEN, BIO_R_UNABLE_TO_KEEPALIVE);\n  226        return 0;\n  227      }\n\n/home/roman/Dokumente/Sources/c-utils/3rdparty/openssl/crypto/bio/bio_err.c:\n   99      {ERR_PACK(ERR_LIB_BIO, 0, BIO_R_UNABLE_TO_BIND_SOCKET), \"unable to bind socket\"},\n  100      {ERR_PACK(ERR_LIB_BIO, 0, BIO_R_UNABLE_TO_CREATE_SOCKET), \"unable to create socket\"},\n  101:     {ERR_PACK(ERR_LIB_BIO, 0, BIO_R_UNABLE_TO_KEEPALIVE), \"unable to keepalive\"},\n  102      {ERR_PACK(ERR_LIB_BIO, 0, BIO_R_UNABLE_TO_LISTEN_SOCKET), \"unable to listen socket\"},\n  103      {ERR_PACK(ERR_LIB_BIO, 0, BIO_R_UNABLE_TO_NODELAY), \"unable to nodelay\"},\n\n/home/roman/Dokumente/Sources/c-utils/3rdparty/openssl/crypto/bio/bss_conn.c:\n  141        case BIO_CONN_S_CONNECT:\n  142          BIO_clear_retry_flags(b);\n  143:         ret = BIO_connect(b->num, BIO_ADDRINFO_address(c->addr_iter), BIO_SOCK_KEEPALIVE | c->connect_mode);\n  144          b->retry_reason = 0;\n  145          if(ret == 0) {\n\n/home/roman/Dokumente/Sources/c-utils/3rdparty/openssl/include/openssl/bio.h:\n  659  #define BIO_SOCK_REUSEADDR 0x01\n  660  #define BIO_SOCK_V6_ONLY 0x02\n  661: #define BIO_SOCK_KEEPALIVE 0x04\n  662  #define BIO_SOCK_NONBLOCK 0x08\n  663  #define BIO_SOCK_NODELAY 0x10\n\n/home/roman/Dokumente/Sources/c-utils/3rdparty/openssl/include/openssl/bioerr.h:\n  110  #define BIO_R_UNABLE_TO_BIND_SOCKET 117\n  111  #define BIO_R_UNABLE_TO_CREATE_SOCKET 118\n  112: #define BIO_R_UNABLE_TO_KEEPALIVE 137\n  113  #define BIO_R_UNABLE_TO_LISTEN_SOCKET 119\n  114  #define BIO_R_UNABLE_TO_NODELAY 138\n\n/home/roman/Dokumente/Sources/c-utils/build/clang64/3rdparty/openssl/include/openssl/bio.h:\n  659  #define BIO_SOCK_REUSEADDR 0x01\n  660  #define BIO_SOCK_V6_ONLY 0x02\n  661: #define BIO_SOCK_KEEPALIVE 0x04\n  662  #define BIO_SOCK_NONBLOCK 0x08\n  663  #define BIO_SOCK_NODELAY 0x10\n\n/home/roman/Dokumente/Sources/c-utils/build/clang64/3rdparty/openssl/include/openssl/bioerr.h:\n  110  #define BIO_R_UNABLE_TO_BIND_SOCKET 117\n  111  #define BIO_R_UNABLE_TO_CREATE_SOCKET 118\n  112: #define BIO_R_UNABLE_TO_KEEPALIVE 137\n  113  #define BIO_R_UNABLE_TO_LISTEN_SOCKET 119\n  114  #define BIO_R_UNABLE_TO_NODELAY 138\n\n/home/roman/Dokumente/Sources/c-utils/build/x86_64-linux-diet/3rdparty/openssl/include/openssl/bio.h:\n  659  #define BIO_SOCK_REUSEADDR 0x01\n  660  #define BIO_SOCK_V6_ONLY 0x02\n  661: #define BIO_SOCK_KEEPALIVE 0x04\n  662  #define BIO_SOCK_NONBLOCK 0x08\n  663  #define BIO_SOCK_NODELAY 0x10\n\n/home/roman/Dokumente/Sources/c-utils/build/x86_64-linux-diet/3rdparty/openssl/include/openssl/bioerr.h:\n  110  #define BIO_R_UNABLE_TO_BIND_SOCKET 117\n  111  #define BIO_R_UNABLE_TO_CREATE_SOCKET 118\n  112: #define BIO_R_UNABLE_TO_KEEPALIVE 137\n  113  #define BIO_R_UNABLE_TO_LISTEN_SOCKET 119\n  114  #define BIO_R_UNABLE_TO_NODELAY 138\n\n/home/roman/Dokumente/Sources/c-utils/build/x86_64-linux-gnu/3rdparty/openssl/include/openssl/bio.h:\n  659  #define BIO_SOCK_REUSEADDR 0x01\n  660  #define BIO_SOCK_V6_ONLY 0x02\n  661: #define BIO_SOCK_KEEPALIVE 0x04\n  662  #define BIO_SOCK_NONBLOCK 0x08\n  663  #define BIO_SOCK_NODELAY 0x10\n\n/home/roman/Dokumente/Sources/c-utils/build/x86_64-linux-gnu/3rdparty/openssl/include/openssl/bioerr.h:\n  110  #define BIO_R_UNABLE_TO_BIND_SOCKET 117\n  111  #define BIO_R_UNABLE_TO_CREATE_SOCKET 118\n  112: #define BIO_R_UNABLE_TO_KEEPALIVE 137\n  113  #define BIO_R_UNABLE_TO_LISTEN_SOCKET 119\n  114  #define BIO_R_UNABLE_TO_NODELAY 138\n\n/home/roman/Dokumente/Sources/c-utils/examples/httpd.c:\n   34    char* hdrbuf;\n   35    int hlen;\n   36:   int keepalive;\n   37  };\n   38  \n   ..\n   62      c += fmt_str(c, title);\n   63      c += fmt_str(c, \"\\r\\nContent-Type: text/html\\r\\nConnection: \");\n   64:     c += fmt_str(c, r->keepalive ? \"keep-alive\" : \"close\");\n   65      c += fmt_str(c, \"\\r\\nContent-Length: \");\n   66      c += fmt_ulong(c, str_len(message) + str_len(title) + 16 - 4);\n   ..\n  167        if((m = http_header(h, \"Connection\"))) {\n  168          if(str_equal(m, \"keep-alive\"))\n  169:           h->keepalive = 1;\n  170          else\n  171:           h->keepalive = 0;\n  172        } else {\n  173          if(byte_equal(d + 1, 8, \"HTTP/1.0\"))\n  174:           h->keepalive = 0;\n  175          else\n  176:           h->keepalive = 1;\n  177        }\n  178        m = mimetype(c);\n  ...\n  185        c += fmt_httpdate(c, s.st_mtime);\n  186        c += fmt_str(c, \"\\r\\nConnection: \");\n  187:       c += fmt_str(c, h->keepalive ? \"keep-alive\" : \"close\");\n  188        c += fmt_str(c, \"\\r\\n\\r\\n\");\n  189        iob_addbuf(&h->iob, h->hdrbuf, c - h->hdrbuf);\n  ...\n  308          free(h->hdrbuf);\n  309          h->hdrbuf = 0;\n  310:         if(h->keepalive) {\n  311            io_dontwantwrite(i);\n  312            io_wantread(i);\n\n/home/roman/Dokumente/Sources/c-utils/httptest.c:\n  150    http_init(&h, url_host, url_port);\n  151    h.nonblocking = 1;\n  152:   h.keepalive = 0;\n  153    argi = optind;\n  154    if(argv[optind] == 0) {\n\n/home/roman/Dokumente/Sources/c-utils/lib/http.h:\n   73    int err;\n   74    int nonblocking : 1;\n   75:   int keepalive : 1;\n   76    int connected : 1;\n   77    int tls : 1;\n\n/home/roman/Dokumente/Sources/c-utils/lib/http/http_init.c:\n   15    h->err = 0;\n   16    h->nonblocking = 0;\n   17:   h->keepalive = 0;\n   18    h->connected = 0;\n   19    h->tls = 0;\n\n/home/roman/Dokumente/Sources/c-utils/lib/http/http_sendreq.c:\n   22    buffer_putsa(out, &h->host);\n   23    buffer_puts(out, \"\\r\\n\");\n   24:   buffer_putm_internal(out, \"Connection: \", h->keepalive ? \"keep-alive\" : \"close\", \"\\r\\n\", NULL);\n   25    buffer_puts(out, \"\\r\\n\");\n   26  #if DEBUG_OUTPUT\n\n/home/roman/Dokumente/Sources/c-utils/lib/http/http_writeable.c:\n   27    buffer_puts(buffer_2, \" connected=\");\n   28    buffer_putlong(buffer_2, !!h->connected);\n   29:   buffer_puts(buffer_2, \" keepalive=\");\n   30:   buffer_putlong(buffer_2, !!h->keepalive);\n   31    buffer_puts(buffer_2, \" nonblocking=\");\n   32    buffer_putlong(buffer_2, !!h->nonblocking);\n\n33 matches across 17 files\n\n\nSearching 3303 files for \"keepalive\" (regex)\n\n/home/roman/Dokumente/Sources/c-utils/3rdparty/openssl/crypto/bio/b_sock2.c:\n   64   *\n   65   * Options can be a combination of the following:\n   66:  * - BIO_SOCK_KEEPALIVE: enable regularly sending keep-alive messages.\n   67   * - BIO_SOCK_NONBLOCK: Make the socket non-blocking.\n   68   * - BIO_SOCK_NODELAY: don't delay small messages.\n   ..\n   87      return 0;\n   88  \n   89:   if(options & BIO_SOCK_KEEPALIVE) {\n   90:     if(setsockopt(sock, SOL_SOCKET, SO_KEEPALIVE, (const void*)&on, sizeof(on)) != 0) {\n   91        SYSerr(SYS_F_SETSOCKOPT, get_last_socket_error());\n   92:       BIOerr(BIO_F_BIO_CONNECT, BIO_R_UNABLE_TO_KEEPALIVE);\n   93        return 0;\n   94      }\n   ..\n  173   *\n  174   * Options can be a combination of the following:\n  175:  * - BIO_SOCK_KEEPALIVE: enable regularly sending keep-alive messages.\n  176   * - BIO_SOCK_NONBLOCK: Make the socket non-blocking.\n  177   * - BIO_SOCK_NODELAY: don't delay small messages.\n  ...\n  220      return 0;\n  221  \n  222:   if(options & BIO_SOCK_KEEPALIVE) {\n  223:     if(setsockopt(sock, SOL_SOCKET, SO_KEEPALIVE, (const void*)&on, sizeof(on)) != 0) {\n  224        SYSerr(SYS_F_SETSOCKOPT, get_last_socket_error());\n  225:       BIOerr(BIO_F_BIO_LISTEN, BIO_R_UNABLE_TO_KEEPALIVE);\n  226        return 0;\n  227      }\n\n/home/roman/Dokumente/Sources/c-utils/3rdparty/openssl/crypto/bio/bio_err.c:\n   99      {ERR_PACK(ERR_LIB_BIO, 0, BIO_R_UNABLE_TO_BIND_SOCKET), \"unable to bind socket\"},\n  100      {ERR_PACK(ERR_LIB_BIO, 0, BIO_R_UNABLE_TO_CREATE_SOCKET), \"unable to create socket\"},\n  101:     {ERR_PACK(ERR_LIB_BIO, 0, BIO_R_UNABLE_TO_KEEPALIVE), \"unable to keepalive\"},\n  102      {ERR_PACK(ERR_LIB_BIO, 0, BIO_R_UNABLE_TO_LISTEN_SOCKET), \"unable to listen socket\"},\n  103      {ERR_PACK(ERR_LIB_BIO, 0, BIO_R_UNABLE_TO_NODELAY), \"unable to nodelay\"},\n\n/home/roman/Dokumente/Sources/c-utils/3rdparty/openssl/crypto/bio/bss_conn.c:\n  141        case BIO_CONN_S_CONNECT:\n  142          BIO_clear_retry_flags(b);\n  143:         ret = BIO_connect(b->num, BIO_ADDRINFO_address(c->addr_iter), BIO_SOCK_KEEPALIVE | c->connect_mode);\n  144          b->retry_reason = 0;\n  145          if(ret == 0) {\n\n/home/roman/Dokumente/Sources/c-utils/3rdparty/openssl/include/openssl/bio.h:\n  659  #define BIO_SOCK_REUSEADDR 0x01\n  660  #define BIO_SOCK_V6_ONLY 0x02\n  661: #define BIO_SOCK_KEEPALIVE 0x04\n  662  #define BIO_SOCK_NONBLOCK 0x08\n  663  #define BIO_SOCK_NODELAY 0x10\n\n/home/roman/Dokumente/Sources/c-utils/3rdparty/openssl/include/openssl/bioerr.h:\n  110  #define BIO_R_UNABLE_TO_BIND_SOCKET 117\n  111  #define BIO_R_UNABLE_TO_CREATE_SOCKET 118\n  112: #define BIO_R_UNABLE_TO_KEEPALIVE 137\n  113  #define BIO_R_UNABLE_TO_LISTEN_SOCKET 119\n  114  #define BIO_R_UNABLE_TO_NODELAY 138\n\n/home/roman/Dokumente/Sources/c-utils/build/clang64/3rdparty/openssl/include/openssl/bio.h:\n  659  #define BIO_SOCK_REUSEADDR 0x01\n  660  #define BIO_SOCK_V6_ONLY 0x02\n  661: #define BIO_SOCK_KEEPALIVE 0x04\n  662  #define BIO_SOCK_NONBLOCK 0x08\n  663  #define BIO_SOCK_NODELAY 0x10\n\n/home/roman/Dokumente/Sources/c-utils/build/clang64/3rdparty/openssl/include/openssl/bioerr.h:\n  110  #define BIO_R_UNABLE_TO_BIND_SOCKET 117\n  111  #define BIO_R_UNABLE_TO_CREATE_SOCKET 118\n  112: #define BIO_R_UNABLE_TO_KEEPALIVE 137\n  113  #define BIO_R_UNABLE_TO_LISTEN_SOCKET 119\n  114  #define BIO_R_UNABLE_TO_NODELAY 138\n\n/home/roman/Dokumente/Sources/c-utils/build/x86_64-linux-diet/3rdparty/openssl/include/openssl/bio.h:\n  659  #define BIO_SOCK_REUSEADDR 0x01\n  660  #define BIO_SOCK_V6_ONLY 0x02\n  661: #define BIO_SOCK_KEEPALIVE 0x04\n  662  #define BIO_SOCK_NONBLOCK 0x08\n  663  #define BIO_SOCK_NODELAY 0x10\n\n/home/roman/Dokumente/Sources/c-utils/build/x86_64-linux-diet/3rdparty/openssl/include/openssl/bioerr.h:\n  110  #define BIO_R_UNABLE_TO_BIND_SOCKET 117\n  111  #define BIO_R_UNABLE_TO_CREATE_SOCKET 118\n  112: #define BIO_R_UNABLE_TO_KEEPALIVE 137\n  113  #define BIO_R_UNABLE_TO_LISTEN_SOCKET 119\n  114  #define BIO_R_UNABLE_TO_NODELAY 138\n\n/home/roman/Dokumente/Sources/c-utils/build/x86_64-linux-gnu/3rdparty/openssl/include/openssl/bio.h:\n  659  #define BIO_SOCK_REUSEADDR 0x01\n  660  #define BIO_SOCK_V6_ONLY 0x02\n  661: #define BIO_SOCK_KEEPALIVE 0x04\n  662  #define BIO_SOCK_NONBLOCK 0x08\n  663  #define BIO_SOCK_NODELAY 0x10\n\n/home/roman/Dokumente/Sources/c-utils/build/x86_64-linux-gnu/3rdparty/openssl/include/openssl/bioerr.h:\n  110  #define BIO_R_UNABLE_TO_BIND_SOCKET 117\n  111  #define BIO_R_UNABLE_TO_CREATE_SOCKET 118\n  112: #define BIO_R_UNABLE_TO_KEEPALIVE 137\n  113  #define BIO_R_UNABLE_TO_LISTEN_SOCKET 119\n  114  #define BIO_R_UNABLE_TO_NODELAY 138\n\n/home/roman/Dokumente/Sources/c-utils/examples/httpd.c:\n   34    char* hdrbuf;\n   35    int hlen;\n   36:   int keepalive;\n   37  };\n   38  \n   ..\n   62      c += fmt_str(c, title);\n   63      c += fmt_str(c, \"\\r\\nContent-Type: text/html\\r\\nConnection: \");\n   64:     c += fmt_str(c, r->keepalive ? \"keep-alive\" : \"close\");\n   65      c += fmt_str(c, \"\\r\\nContent-Length: \");\n   66      c += fmt_ulong(c, str_len(message) + str_len(title) + 16 - 4);\n   ..\n  167        if((m = http_header(h, \"Connection\"))) {\n  168          if(str_equal(m, \"keep-alive\"))\n  169:           h->keepalive = 1;\n  170          else\n  171:           h->keepalive = 0;\n  172        } else {\n  173          if(byte_equal(d + 1, 8, \"HTTP/1.0\"))\n  174:           h->keepalive = 0;\n  175          else\n  176:           h->keepalive = 1;\n  177        }\n  178        m = mimetype(c);\n  ...\n  185        c += fmt_httpdate(c, s.st_mtime);\n  186        c += fmt_str(c, \"\\r\\nConnection: \");\n  187:       c += fmt_str(c, h->keepalive ? \"keep-alive\" : \"close\");\n  188        c += fmt_str(c, \"\\r\\n\\r\\n\");\n  189        iob_addbuf(&h->iob, h->hdrbuf, c - h->hdrbuf);\n  ...\n  308          free(h->hdrbuf);\n  309          h->hdrbuf = 0;\n  310:         if(h->keepalive) {\n  311            io_dontwantwrite(i);\n  312            io_wantread(i);\n\n/home/roman/Dokumente/Sources/c-utils/httptest.c:\n  150    http_init(&h, url_host, url_port);\n  151    h.nonblocking = 1;\n  152:   h.keepalive = 0;\n  153    argi = optind;\n  154    if(argv[optind] == 0) {\n\n/home/roman/Dokumente/Sources/c-utils/lib/http.h:\n   73    int err;\n   74    int nonblocking : 1;\n   75:   int keepalive : 1;\n   76    int connected : 1;\n   77    int tls : 1;\n\n/home/roman/Dokumente/Sources/c-utils/lib/http/http_init.c:\n   15    h->err = 0;\n   16    h->nonblocking = 0;\n   17:   h->keepalive = 0;\n   18    h->connected = 0;\n   19    h->tls = 0;\n\n/home/roman/Dokumente/Sources/c-utils/lib/http/http_sendreq.c:\n   22    buffer_putsa(out, &h->host);\n   23    buffer_puts(out, \"\\r\\n\");\n   24:   buffer_putm_internal(out, \"Connection: \", h->keepalive ? \"keep-alive\" : \"close\", \"\\r\\n\", NULL);\n   25    buffer_puts(out, \"\\r\\n\");\n   26  #if DEBUG_OUTPUT\n\n/home/roman/Dokumente/Sources/c-utils/lib/http/http_writeable.c:\n   27    buffer_puts(buffer_2, \" connected=\");\n   28    buffer_putlong(buffer_2, !!h->connected);\n   29:   buffer_puts(buffer_2, \" keepalive=\");\n   30:   buffer_putlong(buffer_2, !!h->keepalive);\n   31    buffer_puts(buffer_2, \" nonblocking=\");\n   32    buffer_putlong(buffer_2, !!h->nonblocking);\n\n/home/roman/Dokumente/Sources/c-utils/mediathek-list.c:\n  168    http_init(&h, \"127.0.0.1\", 80);\n  169    h.nonblocking = 0;\n  170:   h.keepalive = 1;\n  171  \n  172    http_get(&h, url);\n\n34 matches across 18 files\n\n\nSearching 3303 files for \"->keepalive\" (regex)\n\n/home/roman/Dokumente/Sources/c-utils/examples/httpd.c:\n   62      c += fmt_str(c, title);\n   63      c += fmt_str(c, \"\\r\\nContent-Type: text/html\\r\\nConnection: \");\n   64:     c += fmt_str(c, r->keepalive ? \"keep-alive\" : \"close\");\n   65      c += fmt_str(c, \"\\r\\nContent-Length: \");\n   66      c += fmt_ulong(c, str_len(message) + str_len(title) + 16 - 4);\n   ..\n  167        if((m = http_header(h, \"Connection\"))) {\n  168          if(str_equal(m, \"keep-alive\"))\n  169:           h->keepalive = 1;\n  170          else\n  171:           h->keepalive = 0;\n  172        } else {\n  173          if(byte_equal(d + 1, 8, \"HTTP/1.0\"))\n  174:           h->keepalive = 0;\n  175          else\n  176:           h->keepalive = 1;\n  177        }\n  178        m = mimetype(c);\n  ...\n  185        c += fmt_httpdate(c, s.st_mtime);\n  186        c += fmt_str(c, \"\\r\\nConnection: \");\n  187:       c += fmt_str(c, h->keepalive ? \"keep-alive\" : \"close\");\n  188        c += fmt_str(c, \"\\r\\n\\r\\n\");\n  189        iob_addbuf(&h->iob, h->hdrbuf, c - h->hdrbuf);\n  ...\n  308          free(h->hdrbuf);\n  309          h->hdrbuf = 0;\n  310:         if(h->keepalive) {\n  311            io_dontwantwrite(i);\n  312            io_wantread(i);\n\n/home/roman/Dokumente/Sources/c-utils/lib/http/http_init.c:\n   15    h->err = 0;\n   16    h->nonblocking = 0;\n   17:   h->keepalive = 0;\n   18    h->connected = 0;\n   19    h->tls = 0;\n\n/home/roman/Dokumente/Sources/c-utils/lib/http/http_sendreq.c:\n   22    buffer_putsa(out, &h->host);\n   23    buffer_puts(out, \"\\r\\n\");\n   24:   buffer_putm_internal(out, \"Connection: \", h->keepalive ? \"keep-alive\" : \"close\", \"\\r\\n\", NULL);\n   25    buffer_puts(out, \"\\r\\n\");\n   26  #if DEBUG_OUTPUT\n\n/home/roman/Dokumente/Sources/c-utils/lib/http/http_writeable.c:\n   28    buffer_putlong(buffer_2, !!h->connected);\n   29    buffer_puts(buffer_2, \" keepalive=\");\n   30:   buffer_putlong(buffer_2, !!h->keepalive);\n   31    buffer_puts(buffer_2, \" nonblocking=\");\n   32    buffer_putlong(buffer_2, !!h->nonblocking);\n\n10 matches across 4 files\n\n\nSearching 3303 files for \"->keepalive\" (regex)\n\n/home/roman/Dokumente/Sources/c-utils/examples/httpd.c:\n   62      c += fmt_str(c, title);\n   63      c += fmt_str(c, \"\\r\\nContent-Type: text/html\\r\\nConnection: \");\n   64:     c += fmt_str(c, r->keepalive ? \"keep-alive\" : \"close\");\n   65      c += fmt_str(c, \"\\r\\nContent-Length: \");\n   66      c += fmt_ulong(c, str_len(message) + str_len(title) + 16 - 4);\n   ..\n  167        if((m = http_header(h, \"Connection\"))) {\n  168          if(str_equal(m, \"keep-alive\"))\n  169:           h->keepalive = 1;\n  170          else\n  171:           h->keepalive = 0;\n  172        } else {\n  173          if(byte_equal(d + 1, 8, \"HTTP/1.0\"))\n  174:           h->keepalive = 0;\n  175          else\n  176:           h->keepalive = 1;\n  177        }\n  178        m = mimetype(c);\n  ...\n  185        c += fmt_httpdate(c, s.st_mtime);\n  186        c += fmt_str(c, \"\\r\\nConnection: \");\n  187:       c += fmt_str(c, h->keepalive ? \"keep-alive\" : \"close\");\n  188        c += fmt_str(c, \"\\r\\n\\r\\n\");\n  189        iob_addbuf(&h->iob, h->hdrbuf, c - h->hdrbuf);\n  ...\n  308          free(h->hdrbuf);\n  309          h->hdrbuf = 0;\n  310:         if(h->keepalive) {\n  311            io_dontwantwrite(i);\n  312            io_wantread(i);\n\n/home/roman/Dokumente/Sources/c-utils/lib/http/http_init.c:\n   15    h->err = 0;\n   16    h->nonblocking = 0;\n   17:   h->keepalive = 0;\n   18    h->connected = 0;\n   19    h->tls = 0;\n\n/home/roman/Dokumente/Sources/c-utils/lib/http/http_sendreq.c:\n   22    buffer_putsa(out, &h->host);\n   23    buffer_puts(out, \"\\r\\n\");\n   24:   buffer_putm_internal(out, \"Connection: \", h->keepalive ? \"keep-alive\" : \"close\", \"\\r\\n\", NULL);\n   25    buffer_puts(out, \"\\r\\n\");\n   26  #if DEBUG_OUTPUT\n\n/home/roman/Dokumente/Sources/c-utils/lib/http/http_writeable.c:\n   28    buffer_putlong(buffer_2, !!h->connected);\n   29    buffer_puts(buffer_2, \" keepalive=\");\n   30:   buffer_putlong(buffer_2, !!h->keepalive);\n   31    buffer_puts(buffer_2, \" nonblocking=\");\n   32    buffer_putlong(buffer_2, !!h->nonblocking);\n\n10 matches across 4 files\n",
-			"settings":
-			{
-				"buffer_size": 20924,
-				"line_ending": "Unix",
-				"name": "Find Results",
-				"scratch": true
-			}
-		},
-		{
-			"file": "examples/httpd.c",
-			"settings":
-			{
-				"buffer_size": 9021,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/http/http_sendreq.c",
-			"settings":
-			{
-				"buffer_size": 1190,
+				"buffer_size": 144,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "httptest.c",
+			"file": "lib/stralloc.h",
 			"settings":
 			{
-				"buffer_size": 4585,
+				"buffer_size": 12024,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/scan/scan_whitenskip.c",
+			"settings":
+			{
+				"buffer_size": 208,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/mmap/mmap_read.c",
+			"settings":
+			{
+				"buffer_size": 1297,
+				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
 		},
@@ -89,105 +64,156 @@
 			"file": "CMakeLists.txt",
 			"settings":
 			{
-				"buffer_size": 40914,
+				"buffer_size": 41000,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "jsonpp.c",
+			"file": "lib/stralloc/openreadclose.c",
 			"settings":
 			{
-				"buffer_size": 5661,
+				"buffer_size": 381,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"contents": "m3082 05e9 0a01 00a0 8205 e230 8205 de06\n092b 0601 0505 0730 0101 0482 05cf 3082\n05cb 3082 011a a181 8630 8183 310b 3009\n0603 5504 0613 0247 4231 1f30 1d06 0355\n0408 0c16 5465 7374 2053 7461 7465 206f\n7220 5072 6f76 696e 6365 311a 3018 0603\n5504 0a0c 114f 7267 616e 697a 6174 696f\n6e20 4e61 6d65 3121 301f 0603 5504 0b0c\n184f 7267 616e 697a 6174 696f 6e61 6c20\n556e 6974 204e 616d 6531 1430 1206 0355\n0403 0c0b 436f 6d6d 6f6e 204e 616d 6518\n0f32 3031 3631 3131 3531 3431 3430 335a\n3059 3057 3042 3009 0605 2b0e 0302 1a05\n0004 141d 76de 86eb 6db1 78a8 68c1 3314\n51f1 f543 2e97 3004 14c8 8a9e 9667 b169\n98f0 d800 9f6b 2288 0a1d 098e c902 0900\nf700 b371 9777 9249 8000 180f 3230 3136\n3131 3135 3134 3134 3033 5aa1 2330 2130\n1f06 092b 0601 0505 0730 0102 0412 0410\n13e7 7881 5b2f 9530 5ce6 68af 6e22 e2e3\n300d 0609 2a86 4886 f70d 0101 0b05 0003\n8201 0100 31fd 37a8 d7a4 49a5 f32f 891a\ne7a1 378a ea7e c451 556b 06a2 ccc7 c0a7\n3a07 24ed 2a72 f570 8db3 9a04 77f3 2bfe\n40a4 1af0 5020 23df bc79 e1fc 94b3 411e\ne66b d08e 3bb3 b667 84e7 264b 41a5 b1c0\n2870 caf6 26c1 b6e7 cc65 0cac ac21 d442\n40bc 3617 481e 21b0 9e46 5f14 cf7c 52f8\nd8df 04fd 1b36 02d6 2870 32f9 44d2 3060\n8c43 718d ceac 92f7 a91d cc12 32f6 1cde\nfffa 3c43 2e69 a502 3a68 3388 2efc 700e\n70f2 418e de31 5d2d b02a a663 7c65 f987\n7448 d4a6 46b0 3800 0dbe 24f6 625e e19e\n8049 d64a 86eb 69ea 3606 85f2 d4d9 16e6\n8521 f4ce c6ea 3365 e9a1 4c35 0446 2e36\n6254 11d0 4e43 60fa 6125 9d6a 6a72 35b6\n0a25 3017 eecb 6a9a a469 a8a3 b8b0 80e1\n04f5 3b92 a082 0395 3082 0391 3082 038d\n3082 0275 a003 0201 0202 0900 f700 b371\n9777 9247 300d 0609 2a86 4886 f70d 0101\n0405 0030 5731 0b30 0906 0355 0406 1302\n4155 3113 3011 0603 5504 080c 0a53 6f6d\n652d 5374 6174 6531 2130 1f06 0355 040a\n0c18 496e 7465 726e 6574 2057 6964 6769\n7473 2050 7479 204c 7464 3110 300e 0603\n5504 030c 0752 6f6f 7420 4341 301e 170d\n3135 3038 3035 3139 3532 3137 5a17 0d31\n3630 3830 3431 3935 3231 375a 3081 8331\n0b30 0906 0355 0406 1302 4742 311f 301d\n0603 5504 080c 1654 6573 7420 5374 6174\n6520 6f72 2050 726f 7669 6e63 6531 1a30\n1806 0355 040a 0c11 4f72 6761 6e69 7a61\n7469 6f6e 204e 616d 6531 2130 1f06 0355\n040b 0c18 4f72 6761 6e69 7a61 7469 6f6e\n616c 2055 6e69 7420 4e61 6d65 3114 3012\n0603 5504 030c 0b43 6f6d 6d6f 6e20 4e61\n6d65 3082 0122 300d 0609 2a86 4886 f70d\n0101 0105 0003 8201 0f00 3082 010a 0282\n0101 00bd 98c0 dbe0 41ca 0e82 543c 91d8\n2a71 d47e fb00 13bb e791 3237 98cb 247b\na885 d71d a9c1 1dd8 d5dc e28a 37ab 6001\n8d3b a836 d476 c661 9076 0087 be87 31b7\n297a 0680 026b e6cf 3557 2373 ad5a e3fb\nf916 24cd aa5f edd1 1a90 0663 6ecb 3083\n0edb 5872 3648 20c5 f7b8 e677 55bf 29ca\ne26c 2aa2 8422 a748 8d56 390d 9768 e4c5\n20b6 3420 da28 9bee a1f2 6549 4716 4949\n4822 2c23 8883 6866 b39a bca9 7697 90c3\n4c52 d388 4a92 697f 420b b4eb 09dd b92a\ndc9e 2e24 5be2 e5d5 adf8 b5c0 bc9a fe75\nd9f8 5763 4635 1eb0 c6cf a8f5 039c 79ec\nbdf1 ea54 9f02 fea1 32ae 87c9 66b4 bfb7\n795a 7c0e 9912 11cb d0f1 b8ff 3798 0173\nebf0 826e 5c1e 4485 d71b 27cd 37c6 c1a2\na528 9f02 0301 0001 a32f 302d 3009 0603\n551d 1304 0230 0030 0b06 0355 1d0f 0404\n0302 05e0 3013 0603 551d 2504 0c30 0a06\n082b 0601 0505 0703 0930 0d06 092a 8648\n86f7 0d01 0104 0500 0382 0101 0057 1d7a\n9cd4 d38f 5fff e0af 9f11 ab2e 4f70 fd18\n10a2 ef15 02ae 7eea 85ee 315d 13a5 daa9\n892a 300b 3971 b6b8 5c49 3112 3253 3714\n009f 6aad 955f e39d 9d44 18b4 1262 4a68\nc265 bda0 5a44 118f af4e 9658 e502 7795\n96e8 5c11 da0b ce01 122b f2a0 4789 c25e\n5fcf f26a a4e5 9acc 1057 dfbc fc6f b0ee\n0892 ba87 06c7 3d90 faf9 9864 631d 6643\n1f14 92d3 8ae9 9110 7d78 99d0 b998 9586\nac1e 0bda 6b6e 2898 3334 6679 8f7a 9fa4\na58d bced 3188 69de 6df5 4bf7 67e1 7574\nec45 2937 6c2b f7e1 c057 ce98 007c 9a6e\n6d41 8190 addc efd7 33dc 4efb 27b2 ddb9\n6107 7d18 60cd 5827 1c83 4855 6c19 2169\n21a8 35a3 1fd6 aa76 3f33 d99f 8c7a 2e36\nc8ab dce1 58d4 d7ee 6e0d 5fd9 14",
-			"file": "3rdparty/openssl/test/recipes/ocsp-response.der",
-			"file_size": 1517,
-			"file_write_time": 132301306650000000,
+			"contents": "Searching 1159 files for \"access\\(\" (regex)\n\n/home/roman/Dokumente/Sources/c-utils/lib/path/path_exists.c:\n   18    int r;\n   19  #if WINDOWS_NATIVE\n   20:   if(access(p, 0) == 0)\n   21      return 1;\n   22  #endif\n\n/home/roman/Dokumente/Sources/c-utils/lib/unix/win32_loadprog.c:\n   87    {\n   88      strcpy(fullname, name);\n   89:     return (_taccess(name, 4) == 0); /* do we have read access? */\n   90    }\n   91  }\n\n2 matches across 2 files\n",
 			"settings":
 			{
-				"buffer_size": 3793,
+				"buffer_size": 447,
+				"line_ending": "Unix",
+				"name": "Find Results",
+				"scratch": true
+			}
+		},
+		{
+			"file": "lib/path/path_exists.c",
+			"settings":
+			{
+				"buffer_size": 395,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "lib/json.h",
+			"file": "lib/path/path_readlink.c",
 			"settings":
 			{
-				"buffer_size": 3946,
+				"buffer_size": 763,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "lib/json/json_recurse.c",
+			"file": "lib/strlist/strlist_sort.c",
 			"settings":
 			{
-				"buffer_size": 791,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"contents": "    #include \"../slist.h\"\n\nvoid\nslist_push(slink** list, slink* link) {\n  slink** ptr = list;\n\n  while(*ptr) ptr = &(*ptr)->next;\n\n  *ptr = link;\n}\n",
-			"file": "lib/slist/slist_push.c",
-			"file_size": 144,
-			"file_write_time": 132373915026818367,
-			"settings":
-			{
-				"buffer_size": 148,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/json/json_push.c",
-			"settings":
-			{
-				"buffer_size": 293,
+				"buffer_size": 1121,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "lib/json/json_print.c",
+			"file": "lib/array.h",
 			"settings":
 			{
-				"buffer_size": 5827,
+				"buffer_size": 2541,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/stralloc/mmap_filename.c",
+			"settings":
+			{
+				"buffer_size": 2623,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/stralloc/stralloc_trunc.c",
+			"settings":
+			{
+				"buffer_size": 282,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/errmsg/errmsg_iam.c",
+			"settings":
+			{
+				"buffer_size": 96,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "buffertest.c",
+			"settings":
+			{
+				"buffer_size": 1926,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/mmap/mmap_readat.c",
+			"settings":
+			{
+				"buffer_size": 821,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/mmap/mmap_private.c",
+			"settings":
+			{
+				"buffer_size": 1222,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/mmap.h",
+			"settings":
+			{
+				"buffer_size": 1364,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "lib/json/json_free.c",
+			"file": "lib/mmap/mmap_read_fd_range.c",
 			"settings":
 			{
-				"buffer_size": 1410,
-				"encoding": "UTF-8",
+				"buffer_size": 1018,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "lib/json/json_read_callback.c",
+			"file": "lib/uint64.h",
 			"settings":
 			{
-				"buffer_size": 156,
+				"buffer_size": 2557,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "lib/json/json_read_tree.c",
+			"file": "lib/seek/seek_set.c",
 			"settings":
 			{
-				"buffer_size": 442,
+				"buffer_size": 398,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "lib/json/json_parse.c",
+			"file": "lib/seek/seek_end.c",
 			"settings":
 			{
-				"buffer_size": 4071,
+				"buffer_size": 347,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/seek/seek_cur.c",
+			"settings":
+			{
+				"buffer_size": 328,
 				"line_ending": "Unix"
 			}
 		}
@@ -270,13 +296,60 @@
 	[
 		"/home/roman/Dokumente/Sources/c-utils",
 		"/home/roman/Dokumente/Sources/c-utils/lib",
-		"/home/roman/Dokumente/Sources/c-utils/lib/cbmap"
+		"/home/roman/Dokumente/Sources/c-utils/lib/cbmap",
+		"/home/roman/Dokumente/Sources/c-utils/lib/seek"
 	],
 	"file_history":
 	[
+		"/home/roman/Dokumente/Sources/c-utils/lib/slist.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/stralloc/buffer_put_escaped.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/stralloc.h",
+		"/home/roman/Dokumente/Sources/c-utils/CMakeLists.txt",
+		"/home/roman/Dokumente/Sources/c-utils/lib/seek.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/mmap/mmap_read_fd.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/mmap/mmap_read_fd_range.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/scan.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/path/path_readlink.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/dir.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/dir/dir_open.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/path.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/path/path_realpath.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/path/path_getcwd.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/buffer/buffer_seek.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/seek/seek_cur.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/seek/seek_set.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/seek/seek_by_jump.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/seek/seek_by_read.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/array/array_allocate.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/errmsg.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/buffer/buffer_2.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/buffer/buffer_putnspace.c",
+		"/home/roman/Dokumente/Sources/c-utils/3rdparty/openssl/crypto/bn/bn_asm.c",
+		"/home/roman/Dokumente/Sources/c-utils/examples/dnsip.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/buffer.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/open.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/typedefs.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/seek/seek_print.c",
+		"/home/roman/Dokumente/Sources/c-utils/genmakefile.c",
+		"/home/roman/Dokumente/Sources/plot-cv/lib/xml/xpath.js",
+		"/home/roman/Dokumente/Sources/c-utils/mediathek-list.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/http/http_get.c",
+		"/home/roman/Dokumente/Sources/c-utils/examples/httpd.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/http/http_sendreq.c",
+		"/home/roman/Dokumente/Sources/c-utils/httptest.c",
+		"/home/roman/Dokumente/Sources/c-utils/jsonpp.c",
+		"/home/roman/Dokumente/Sources/c-utils/3rdparty/openssl/test/recipes/ocsp-response.der",
+		"/home/roman/Dokumente/Sources/c-utils/lib/json.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/json/json_recurse.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/slist/slist_push.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/json/json_push.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/json/json_print.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/json/json_free.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/json/json_read_callback.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/json/json_read_tree.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/json/json_parse.c",
 		"/home/roman/Dokumente/Sources/c-utils/genmakefile.h",
 		"/home/roman/Dokumente/Sources/c-utils/piccfg.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/slist.h",
 		"/home/roman/Dokumente/Sources/c-utils/serial.h",
 		"/home/roman/Dokumente/Sources/pictest/pictest_16f876a_xc8.X.production.asm",
 		"/home/roman/Dokumente/Sources/pictest/pictest_16f876a_xc8.X.production.lst",
@@ -284,19 +357,19 @@
 		"/home/roman/Dokumente/Sources/c-utils/serial.c",
 		"/home/roman/Dokumente/Sources/c-utils/hexedit.c",
 		"/home/roman/Dokumente/Sources/c-utils/cofflist.c",
-		"/home/roman/Dokumente/Sources/c-utils/genmakefile.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/cbmap/cbmap_count.c",
 		"/home/roman/Dokumente/Sources/c-utils/cfg.sh"
 	],
 	"find":
 	{
-		"height": 48.0
+		"height": 50.0
 	},
 	"find_in_files":
 	{
-		"height": 136.0,
+		"height": 142.0,
 		"where_history":
 		[
+			"/home/roman/Dokumente/Sources/c-utils/lib,*.c,*.h",
 			"/home/roman/Dokumente/Sources/c-utils,*.c,*.h",
 			""
 		]
@@ -306,6 +379,94 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"type\\(",
+			"slist_add",
+			"_dump",
+			" st_",
+			"procfd_dump",
+			"buffer_1",
+			"\"  path",
+			"path\"",
+			"print_number",
+			"path\"",
+			"verbose",
+			"\\&fd",
+			"print_number.*fd\\)",
+			"print_number.*fd",
+			"print_number",
+			"print_number_nonl",
+			"      print_number_nonl(\" st_atime\", pfd->st.st_atim.tv_sec);\n",
+			"st;",
+			"print_number",
+			"^print_number",
+			"print_number",
+			"print_stralloc_nonl",
+			"print_stralloc",
+			"pfd =",
+			"size_t n",
+			"n =",
+			"stralloc",
+			"foreach",
+			"mmap_read",
+			"link_librar",
+			"setuidgid",
+			"procfdinfo",
+			"mmap_read",
+			"procfd",
+			"fd/",
+			"path,",
+			"access\\(",
+			"procfd",
+			"proc_fd_path",
+			"print_number_nonl",
+			"print_number",
+			"procfd_t",
+			"slist_add",
+			"slink",
+			"slink_add",
+			"_alloc",
+			"sort",
+			"array_for",
+			"array_",
+			"append",
+			"push",
+			"IFIFO",
+			"stralloc_trunc",
+			"main",
+			"errmsg_",
+			"mmap_filename",
+			"_1, \" ",
+			"print_number",
+			"tmpfd",
+			"seek ",
+			"seek",
+			"pipeinfo",
+			"include.*io.h",
+			"include.*i.h",
+			"io.h",
+			"alloca\\(",
+			"diesys\\(",
+			"die",
+			"buffer",
+			"buffer ",
+			"IFLNK",
+			"target",
+			"}\n",
+			");",
+			"8long",
+			"put8long",
+			"putxlong",
+			"starts",
+			"_remove",
+			"remove",
+			"contains",
+			"fd_pathath",
+			"cwd",
+			"realpath",
+			"readlink",
+			"proc_fd_path",
+			"scan_long",
+			"readlink",
 			"keepalive",
 			"->keepalive",
 			"keepalive",
@@ -351,6 +512,8 @@
 		"regex": true,
 		"replace_history":
 		[
+			" ",
+			"_1, \", "
 		],
 		"reverse": false,
 		"show_context": true,
@@ -369,7 +532,7 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 102,
+						"buffer_size": 815,
 						"regions":
 						{
 						},
@@ -379,28 +542,128 @@
 						"settings":
 						{
 							"color_scheme": "Packages/Outline/outline.hidden-tmTheme",
-							"current_file": "/home/roman/Dokumente/Sources/c-utils/lib/http/http_sendreq.c",
+							"current_file": "/home/roman/Dokumente/Sources/c-utils/pipeinfo.c",
 							"outline_rename_mode": false,
 							"symkeys":
 							[
 								[
-									8,
-									18
+									548,
+									552
 								],
 								[
-									153,
-									160
+									582,
+									588
 								],
 								[
-									238,
-									250
+									676,
+									684
+								],
+								[
+									736,
+									742
+								],
+								[
+									827,
+									832
+								],
+								[
+									1345,
+									1353
+								],
+								[
+									1601,
+									1618
+								],
+								[
+									1750,
+									1762
+								],
+								[
+									1880,
+									1884
+								],
+								[
+									2213,
+									2223
+								],
+								[
+									3365,
+									3384
+								],
+								[
+									3549,
+									3563
+								],
+								[
+									3684,
+									3701
+								],
+								[
+									3808,
+									3820
+								],
+								[
+									3936,
+									3948
+								],
+								[
+									4120,
+									4136
+								],
+								[
+									4318,
+									4330
+								],
+								[
+									4502,
+									4518
+								],
+								[
+									4695,
+									4706
+								],
+								[
+									4800,
+									4809
+								],
+								[
+									7472,
+									7485
+								],
+								[
+									7589,
+									7600
+								],
+								[
+									8465,
+									8469
 								]
 							],
 							"symlist":
 							[
-								" Ⓜ  USE_WS2_32 … — macro object",
-								"—Ⓕ– do_send ( ) { … } — function",
-								"—Ⓕ– http_sendreq ( ) { … } — function"
+								" Ⓜ  stat … — macro object",
+								"—Ⓒ– procfd { … } ; — type",
+								" Ⓣ  procfd_t ; — typedef",
+								" Ⓣ  pipe_t ; — typedef",
+								"—Ⓕ– usage ( ) { … } — function",
+								"—Ⓕ– get_pipe ( ) { … } — function",
+								"—Ⓕ– print_number_nonl ( ) { … } — function",
+								"—Ⓕ– print_number ( ) { … } — function",
+								"—Ⓕ– type ( ) { … } — function",
+								"—Ⓕ– print_stat ( ) { … } — function",
+								"—Ⓕ– print_stralloc_nonl ( ) { … } — function",
+								"—Ⓕ– print_stralloc ( ) { … } — function",
+								"—Ⓕ– print_string_nonl ( ) { … } — function",
+								"—Ⓕ– print_string ( ) { … } — function",
+								"—Ⓕ– proc_fd_root ( ) { … } — function",
+								"—Ⓕ– proc_subdir_path ( ) { … } — function",
+								"—Ⓕ– proc_fd_path ( ) { … } — function",
+								"—Ⓕ– proc_fdinfo_path ( ) { … } — function",
+								"—Ⓕ– proc_fd_str ( ) { … } — function",
+								"—Ⓕ– read_proc ( ) { … } — function",
+								"—Ⓕ– compare_pipes ( ) { … } — function",
+								"—Ⓕ– procfd_dump ( ) { … } — function",
+								"—Ⓕ– main ( ) { … } — function"
 							],
 							"syntax": "Packages/Outline/outline.hidden-tmLanguage"
 						},
@@ -408,97 +671,30 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 20,
+					"stack_index": 24,
 					"type": "text"
 				}
 			]
 		},
 		{
-			"selected": 6,
+			"selected": 0,
 			"sheets":
 			[
 				{
 					"buffer": 1,
-					"file": "genmakefile.c",
+					"file": "pipeinfo.c",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 139614,
+						"buffer_size": 10395,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C Improved/C Improved.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 8,
-					"type": "text"
-				},
-				{
-					"buffer": 2,
-					"file": "/home/roman/Dokumente/Sources/plot-cv/lib/xml/xpath.js",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 9365,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								1659,
-								1659
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Babel/JavaScript (Babel).sublime-syntax",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true,
-							"typescript_plugin_format_options":
-							{
-								"convertTabsToSpaces": true,
-								"indentSize": 2,
-								"tabSize": 2
-							},
-							"use_tab_stops": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 792.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 6,
-					"type": "text"
-				},
-				{
-					"buffer": 3,
-					"file": "mediathek-list.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 16110,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								3597,
-								3597
+								7760,
+								7760
 							]
 						],
 						"settings":
@@ -514,7 +710,63 @@
 							}
 						},
 						"translation.x": 0.0,
-						"translation.y": 4107.0,
+						"translation.y": 8764.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "lib/slist/slist_push.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 144,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								67,
+								67
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C Improved/C Improved.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "lib/stralloc.h",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 12024,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2504,
+								2504
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C Improved/C Improved.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 1914.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 4,
@@ -522,564 +774,77 @@
 				},
 				{
 					"buffer": 4,
-					"file": "lib/http/http_get.c",
+					"file": "lib/scan/scan_whitenskip.c",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 2319,
+						"buffer_size": 208,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								0,
-								0
+								63,
+								63
 							]
 						],
 						"settings":
 						{
-							"syntax": "Packages/C Improved/C Improved.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
+							"syntax": "Packages/C Improved/C Improved.tmLanguage"
 						},
 						"translation.x": 0.0,
-						"translation.y": 1284.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 3,
-					"type": "text"
-				},
-				{
-					"buffer": 5,
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 20924,
-						"regions":
-						{
-							"match":
-							{
-								"flags": 112,
-								"regions":
-								[
-									[
-										241,
-										257
-									],
-									[
-										502,
-										518
-									],
-									[
-										701,
-										717
-									],
-									[
-										910,
-										926
-									],
-									[
-										1187,
-										1203
-									],
-									[
-										1641,
-										1658
-									],
-									[
-										1916,
-										1967
-									],
-									[
-										2283,
-										2292
-									],
-									[
-										2525,
-										2534
-									],
-									[
-										2584,
-										2593
-									],
-									[
-										2752,
-										2761
-									],
-									[
-										2894,
-										2903
-									],
-									[
-										3136,
-										3145
-									],
-									[
-										3195,
-										3204
-									],
-									[
-										3362,
-										3371
-									],
-									[
-										3731,
-										3740
-									],
-									[
-										3754,
-										3763
-									],
-									[
-										4193,
-										4202
-									],
-									[
-										4468,
-										4477
-									],
-									[
-										4767,
-										4776
-									],
-									[
-										5066,
-										5075
-									],
-									[
-										5379,
-										5388
-									],
-									[
-										5688,
-										5697
-									],
-									[
-										6011,
-										6020
-									],
-									[
-										6319,
-										6328
-									],
-									[
-										6641,
-										6650
-									],
-									[
-										6859,
-										6868
-									],
-									[
-										7034,
-										7043
-									],
-									[
-										7323,
-										7332
-									],
-									[
-										7378,
-										7387
-									],
-									[
-										7487,
-										7496
-									],
-									[
-										7542,
-										7551
-									],
-									[
-										7737,
-										7746
-									],
-									[
-										7965,
-										7974
-									],
-									[
-										8183,
-										8192
-									],
-									[
-										8367,
-										8376
-									],
-									[
-										8555,
-										8564
-									],
-									[
-										8809,
-										8818
-									],
-									[
-										9116,
-										9125
-									],
-									[
-										9169,
-										9178
-									],
-									[
-										9524,
-										9533
-									],
-									[
-										9766,
-										9775
-									],
-									[
-										9825,
-										9834
-									],
-									[
-										9993,
-										10002
-									],
-									[
-										10135,
-										10144
-									],
-									[
-										10377,
-										10386
-									],
-									[
-										10436,
-										10445
-									],
-									[
-										10603,
-										10612
-									],
-									[
-										10972,
-										10981
-									],
-									[
-										10995,
-										11004
-									],
-									[
-										11434,
-										11443
-									],
-									[
-										11709,
-										11718
-									],
-									[
-										12008,
-										12017
-									],
-									[
-										12307,
-										12316
-									],
-									[
-										12620,
-										12629
-									],
-									[
-										12929,
-										12938
-									],
-									[
-										13252,
-										13261
-									],
-									[
-										13560,
-										13569
-									],
-									[
-										13882,
-										13891
-									],
-									[
-										14100,
-										14109
-									],
-									[
-										14275,
-										14284
-									],
-									[
-										14564,
-										14573
-									],
-									[
-										14619,
-										14628
-									],
-									[
-										14728,
-										14737
-									],
-									[
-										14783,
-										14792
-									],
-									[
-										14978,
-										14987
-									],
-									[
-										15206,
-										15215
-									],
-									[
-										15424,
-										15433
-									],
-									[
-										15608,
-										15617
-									],
-									[
-										15796,
-										15805
-									],
-									[
-										16050,
-										16059
-									],
-									[
-										16357,
-										16366
-									],
-									[
-										16410,
-										16419
-									],
-									[
-										16661,
-										16670
-									],
-									[
-										16984,
-										16995
-									],
-									[
-										17273,
-										17284
-									],
-									[
-										17328,
-										17339
-									],
-									[
-										17437,
-										17448
-									],
-									[
-										17492,
-										17503
-									],
-									[
-										17687,
-										17698
-									],
-									[
-										17915,
-										17926
-									],
-									[
-										18122,
-										18133
-									],
-									[
-										18376,
-										18387
-									],
-									[
-										18689,
-										18700
-									],
-									[
-										19076,
-										19087
-									],
-									[
-										19365,
-										19376
-									],
-									[
-										19420,
-										19431
-									],
-									[
-										19529,
-										19540
-									],
-									[
-										19584,
-										19595
-									],
-									[
-										19779,
-										19790
-									],
-									[
-										20007,
-										20018
-									],
-									[
-										20214,
-										20225
-									],
-									[
-										20468,
-										20479
-									],
-									[
-										20781,
-										20792
-									]
-								],
-								"scope": ""
-							}
-						},
-						"selection":
-						[
-							[
-								20469,
-								20469
-							]
-						],
-						"settings":
-						{
-							"detect_indentation": false,
-							"line_numbers": false,
-							"output_tag": 5,
-							"result_base_dir": "",
-							"result_file_regex": "^([^ \t].*):$",
-							"result_line_regex": "^ +([0-9]+):",
-							"scroll_past_end": true,
-							"syntax": "Packages/Default/Find Results.hidden-tmLanguage",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 14711.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 1,
-					"type": "text"
-				},
-				{
-					"buffer": 6,
-					"file": "examples/httpd.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 9021,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								5275,
-								5275
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C Improved/C Improved.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 4270.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 2,
-					"type": "text"
-				},
-				{
-					"buffer": 7,
-					"file": "lib/http/http_sendreq.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 1190,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								681,
-								681
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C Improved/C Improved.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true,
-							"typescript_plugin_format_options":
-							{
-								"convertTabsToSpaces": true,
-								"indentSize": 2,
-								"tabSize": 2
-							}
-						},
-						"translation.x": 53.0,
-						"translation.y": 94.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 0,
-					"type": "text"
-				},
-				{
-					"buffer": 8,
-					"file": "httptest.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 4585,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								1909,
-								1909
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C Improved/C Improved.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 831.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 5,
 					"type": "text"
 				},
 				{
-					"buffer": 9,
-					"file": "CMakeLists.txt",
+					"buffer": 5,
+					"file": "lib/mmap/mmap_read.c",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 40914,
+						"buffer_size": 1297,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								33055,
-								33055
+								825,
+								825
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C Improved/C Improved.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 805.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 7,
+					"type": "text"
+				},
+				{
+					"buffer": 6,
+					"file": "CMakeLists.txt",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 41000,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								38915,
+								38915
 							]
 						],
 						"settings":
@@ -1089,27 +854,27 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 15354.0,
+						"translation.y": 26309.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 19,
+					"stack_index": 1,
 					"type": "text"
 				},
 				{
-					"buffer": 10,
-					"file": "jsonpp.c",
+					"buffer": 7,
+					"file": "lib/stralloc/openreadclose.c",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 5661,
+						"buffer_size": 381,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								5339,
-								5339
+								0,
+								0
 							]
 						],
 						"settings":
@@ -1119,126 +884,55 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 3332.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 10,
-					"type": "text"
-				},
-				{
-					"buffer": 11,
-					"file": "3rdparty/openssl/test/recipes/ocsp-response.der",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 3793,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								1,
-								1
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Text/Plain text.tmLanguage"
-						},
-						"translation.x": 0.0,
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 9,
+					"stack_index": 6,
 					"type": "text"
 				},
 				{
-					"buffer": 12,
-					"file": "lib/json.h",
+					"buffer": 8,
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 3946,
+						"buffer_size": 447,
 						"regions":
 						{
-						},
-						"selection":
-						[
-							[
-								340,
-								340
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C Improved/C Improved.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true,
-							"typescript_plugin_format_options":
+							"match":
 							{
-								"convertTabsToSpaces": true,
-								"indentSize": 2,
-								"tabSize": 2
+								"flags": 112,
+								"regions":
+								[
+									[
+										161,
+										168
+									],
+									[
+										348,
+										355
+									]
+								],
+								"scope": ""
 							}
 						},
-						"translation.x": 0.0,
-						"translation.y": 1892.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 7,
-					"type": "text"
-				},
-				{
-					"buffer": 13,
-					"file": "lib/json/json_recurse.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 791,
-						"regions":
-						{
-						},
 						"selection":
 						[
 							[
-								779,
-								779
+								167,
+								167
 							]
 						],
 						"settings":
 						{
-							"syntax": "Packages/C Improved/C Improved.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 16,
-					"type": "text"
-				},
-				{
-					"buffer": 14,
-					"file": "lib/slist/slist_push.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 148,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								148,
-								148
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C Improved/C Improved.tmLanguage"
+							"detect_indentation": false,
+							"line_numbers": false,
+							"output_tag": 1,
+							"result_base_dir": "",
+							"result_file_regex": "^([^ \t].*):$",
+							"result_line_regex": "^ +([0-9]+):",
+							"scroll_past_end": true,
+							"syntax": "Packages/Default/Find Results.hidden-tmLanguage",
+							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
 						"translation.y": 0.0,
@@ -1248,20 +942,20 @@
 					"type": "text"
 				},
 				{
-					"buffer": 15,
-					"file": "lib/json/json_push.c",
+					"buffer": 9,
+					"file": "lib/path/path_exists.c",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 293,
+						"buffer_size": 395,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								293,
-								293
+								288,
+								288
 							]
 						],
 						"settings":
@@ -1269,79 +963,19 @@
 							"syntax": "Packages/C Improved/C Improved.tmLanguage"
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 120.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 14,
 					"type": "text"
 				},
 				{
-					"buffer": 16,
-					"file": "lib/json/json_print.c",
+					"buffer": 10,
+					"file": "lib/path/path_readlink.c",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 5827,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								4817,
-								4817
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C Improved/C Improved.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 3385.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 13,
-					"type": "text"
-				},
-				{
-					"buffer": 17,
-					"file": "lib/json/json_free.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 1410,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								795,
-								795
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C Improved/C Improved.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 265.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 12,
-					"type": "text"
-				},
-				{
-					"buffer": 18,
-					"file": "lib/json/json_read_callback.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 156,
+						"buffer_size": 763,
 						"regions":
 						{
 						},
@@ -1350,6 +984,126 @@
 							[
 								0,
 								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C Improved/C Improved.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 13,
+					"type": "text"
+				},
+				{
+					"buffer": 11,
+					"file": "lib/strlist/strlist_sort.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1121,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1063,
+								1063
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C Improved/C Improved.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 543.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 3,
+					"type": "text"
+				},
+				{
+					"buffer": 12,
+					"file": "lib/array.h",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2541,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								687,
+								687
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C Improved/C Improved.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 452.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 16,
+					"type": "text"
+				},
+				{
+					"buffer": 13,
+					"file": "lib/stralloc/mmap_filename.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2623,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								264,
+								264
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C Improved/C Improved.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 19,
+					"type": "text"
+				},
+				{
+					"buffer": 14,
+					"file": "lib/stralloc/stralloc_trunc.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 282,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								282,
+								282
 							]
 						],
 						"settings":
@@ -1364,20 +1118,20 @@
 					"type": "text"
 				},
 				{
-					"buffer": 19,
-					"file": "lib/json/json_read_tree.c",
+					"buffer": 15,
+					"file": "lib/errmsg/errmsg_iam.c",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 442,
+						"buffer_size": 96,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								377,
-								377
+								59,
+								59
 							]
 						],
 						"settings":
@@ -1388,24 +1142,24 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 11,
+					"stack_index": 23,
 					"type": "text"
 				},
 				{
-					"buffer": 20,
-					"file": "lib/json/json_parse.c",
+					"buffer": 16,
+					"file": "buffertest.c",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 4071,
+						"buffer_size": 1926,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								1989,
-								1989
+								781,
+								781
 							]
 						],
 						"settings":
@@ -1415,10 +1169,240 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 1840.0,
+						"translation.y": 612.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 10,
+					"type": "text"
+				},
+				{
+					"buffer": 17,
+					"file": "lib/mmap/mmap_readat.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 821,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								285,
+								285
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C Improved/C Improved.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 11,
+					"type": "text"
+				},
+				{
+					"buffer": 18,
+					"file": "lib/mmap/mmap_private.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1222,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C Improved/C Improved.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 12,
+					"type": "text"
+				},
+				{
+					"buffer": 19,
+					"file": "lib/mmap.h",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1364,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								417,
+								417
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C Improved/C Improved.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 19.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 9,
+					"type": "text"
+				},
+				{
+					"buffer": 20,
+					"file": "lib/mmap/mmap_read_fd_range.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1018,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								832,
+								832
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C Improved/C Improved.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 3.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 17,
+					"type": "text"
+				},
+				{
+					"buffer": 21,
+					"file": "lib/uint64.h",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2557,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								319,
+								319
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C Improved/C Improved.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 1173.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 22,
+					"type": "text"
+				},
+				{
+					"buffer": 22,
+					"file": "lib/seek/seek_set.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 398,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								311,
+								311
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C Improved/C Improved.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 21,
+					"type": "text"
+				},
+				{
+					"buffer": 23,
+					"file": "lib/seek/seek_end.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 347,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								191,
+								191
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C Improved/C Improved.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 20,
+					"type": "text"
+				},
+				{
+					"buffer": 24,
+					"file": "lib/seek/seek_cur.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 328,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								284,
+								284
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C Improved/C Improved.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 8,
 					"type": "text"
 				}
 			]
@@ -1426,7 +1410,7 @@
 	],
 	"incremental_find":
 	{
-		"height": 36.0
+		"height": 38.0
 	},
 	"input":
 	{
@@ -1480,7 +1464,7 @@
 	"project": "c-utils.sublime-project",
 	"replace":
 	{
-		"height": 68.0
+		"height": 96.0
 	},
 	"save_all_on_build": true,
 	"select_file":
@@ -1489,6 +1473,210 @@
 		"last_filter": "",
 		"selected_items":
 		[
+			[
+				"cmake",
+				"CMakeLists.txt"
+			],
+			[
+				"slist_pus",
+				"lib/slist/slist_push.c"
+			],
+			[
+				"pipeinf",
+				"pipeinfo.c"
+			],
+			[
+				"slist",
+				"lib/slist.h"
+			],
+			[
+				"buffer_putes",
+				"lib/stralloc/buffer_put_escaped.c"
+			],
+			[
+				"stralloc.h",
+				"lib/stralloc.h"
+			],
+			[
+				"white",
+				"lib/scan/scan_whitenskip.c"
+			],
+			[
+				"openread",
+				"lib/stralloc/openreadclose.c"
+			],
+			[
+				"cmakelists",
+				"CMakeLists.txt"
+			],
+			[
+				"mmap_read.c",
+				"lib/mmap/mmap_read.c"
+			],
+			[
+				"seek.h",
+				"lib/seek.h"
+			],
+			[
+				"read.c",
+				"lib/mmap/mmap_read.c"
+			],
+			[
+				"mmap.h",
+				"lib/mmap.h"
+			],
+			[
+				"mmap_read",
+				"lib/mmap/mmap_read.c"
+			],
+			[
+				"pipein",
+				"pipeinfo.c"
+			],
+			[
+				"path_",
+				"lib/path/path_readlink.c"
+			],
+			[
+				"strlist_sort",
+				"lib/strlist/strlist_sort.c"
+			],
+			[
+				"slist.h",
+				"lib/slist.h"
+			],
+			[
+				"array.h",
+				"lib/array.h"
+			],
+			[
+				"read_fd",
+				"lib/mmap/mmap_read_fd_range.c"
+			],
+			[
+				"pipeinfo",
+				"pipeinfo.c"
+			],
+			[
+				"uint64",
+				"lib/uint64.h"
+			],
+			[
+				"mmap_",
+				"lib/mmap/mmap_private.c"
+			],
+			[
+				"mmap",
+				"lib/mmap/mmap_readat.c"
+			],
+			[
+				"trunc.c",
+				"lib/stralloc/stralloc_trunc.c"
+			],
+			[
+				"mmap_file",
+				"lib/stralloc/mmap_filename.c"
+			],
+			[
+				"mmap_read_fd",
+				"lib/mmap/mmap_read_fd.c"
+			],
+			[
+				"seek_set",
+				"lib/seek/seek_set.c"
+			],
+			[
+				"typedef",
+				"lib/typedefs.h"
+			],
+			[
+				"seek_print",
+				"lib/seek/seek_print.c"
+			],
+			[
+				"seek_cu",
+				"lib/seek/seek_cur.c"
+			],
+			[
+				"alloca",
+				"lib/array/array_allocate.c"
+			],
+			[
+				"by_read",
+				"lib/seek/seek_by_read.c"
+			],
+			[
+				"errmsg",
+				"lib/errmsg.h"
+			],
+			[
+				"seek_b",
+				"lib/seek/seek_by_jump.c"
+			],
+			[
+				"seek_",
+				"lib/seek/seek_cur.c"
+			],
+			[
+				"seek",
+				"lib/buffer/buffer_seek.c"
+			],
+			[
+				"readlink",
+				"lib/path/path_readlink.c"
+			],
+			[
+				"path_read",
+				"lib/path/path_readlink.c"
+			],
+			[
+				"buffer",
+				"lib/buffer.h"
+			],
+			[
+				"buffer.h",
+				"lib/buffer.h"
+			],
+			[
+				"stralloc",
+				"lib/stralloc.h"
+			],
+			[
+				"getwd",
+				"lib/path/path_getcwd.c"
+			],
+			[
+				"path_real",
+				"lib/path/path_realpath.c"
+			],
+			[
+				"path_rea",
+				"lib/path/path_readlink.c"
+			],
+			[
+				"path.h",
+				"lib/path.h"
+			],
+			[
+				"scan.h",
+				"lib/scan.h"
+			],
+			[
+				"dir_open",
+				"lib/dir/dir_open.c"
+			],
+			[
+				"dir.h",
+				"lib/dir.h"
+			],
+			[
+				"path.",
+				"lib/path.h"
+			],
+			[
+				"open.h",
+				"lib/open.h"
+			],
 			[
 				"http_get",
 				"lib/http/http_get.c"
@@ -1536,10 +1724,6 @@
 			[
 				"jsonpp.c",
 				"jsonpp.c"
-			],
-			[
-				"cmakelists",
-				"CMakeLists.txt"
 			],
 			[
 				"piccf",

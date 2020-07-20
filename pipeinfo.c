@@ -78,11 +78,17 @@ get_pipe(int64 id) {
 }
 
 void
-print_number_nonl(const char* property, int64 num) {
-
-  buffer_putm_internal(buffer_1, property, "=", 0);
-  buffer_putlonglong(buffer_1, num);
+print_number_nonl_base(const char* property, int64 num, int base) {
+  buffer_putm_internal(buffer_1, property, "=", base == 8 ? "0" : base == 16 ? "0x" : "", 0);
+  (base == 8 ? buffer_put8long(buffer_1, num)
+             : base == 16 ? buffer_putxlonglong0(buffer_1, num, 2) : buffer_putlonglong(buffer_1, num));
 }
+
+void
+print_number_nonl(const char* property, int64 num) {
+  return print_number_nonl_base(property, num, 10);
+}
+
 void
 print_number(const char* property, int64 num) {
   print_number_nonl(property, num);
@@ -111,8 +117,9 @@ print_stat(const char* property, const struct stat* st) {
   buffer_putm_internal(buffer_1, " [ mode 0", 0);
   buffer_put8long(buffer_1, st->st_mode & 07777);
   if(st->st_dev) {
-    buffer_putm_internal(buffer_1, ", dev 0x", 0);
-    buffer_putxlong0(buffer_1, st->st_dev, 3);
+    print_number_nonl_base(", dev", st->st_dev, 16); /*
+      buffer_putm_internal(buffer_1, ", dev", 0);
+      buffer_putxlong0(buffer_1, st->st_dev, 3);*/
   }
   if(st->st_rdev) {
     buffer_putm_internal(buffer_1, ", rdev 0x", 0);
@@ -151,8 +158,13 @@ print_stralloc(const char* property, const stralloc* sa) {
 }
 
 void
+print_string_nonl(const char* property, const char* str) {
+  buffer_putm_internal(buffer_1, property, "=", str, 0);
+}
+
+void
 print_string(const char* property, const char* str) {
-  buffer_putm_internal(buffer_1, property, ": ", str, 0);
+  print_string_nonl(property, str);
   buffer_putnlflush(buffer_1);
 }
 
@@ -219,64 +231,37 @@ read_proc() {
   const char *fdStr, *s;
   if(dir_open(&procdir, "/proc"))
     return;
-
   while((s = dir_read(&procdir))) {
     if(!isdigit(s[0]))
       continue;
-
     if(scan_uint(s, &pid) > 0) {
       fdPath = proc_fd_path(pid, -1, &procfd);
-
       stralloc_copys(&current, fdPath);
       stralloc_nul(&current);
-
       if(dir_open(&fddir, fdPath))
         continue;
-
       while((fdStr = dir_read(&fddir))) {
         if(!isdigit(fdStr[0]))
           continue;
+        scan_uint(fdStr, &fd);
 
-        if(scan_uint(fdStr, &fd) > 0) {
-
-          print_number("  fd", fd);
-          byte_zero(&lst, sizeof(lst));
-          byte_zero(&st, sizeof(st));
-          fdPath = proc_fd_path(pid, fd, &procfd);
-
-          lstat(fdPath, &lst);
-          stat(fdPath, &st);
-
-          buffer_putm_internal(buffer_1, "  path: ", fdPath, "\n", 0);
-
-          if(lst.st_mode)
-            print_stat("   lst", &lst);
-
-          if(st.st_mode)
-            print_stat("  stat", &st);
-
-          stralloc_zero(&target);
-
-          if(S_ISLNK(lst.st_mode))
-            path_readlink(fdPath, &target);
-        }
-
+        byte_zero(&lst, sizeof(lst));
+        byte_zero(&st, sizeof(st));
+        fdPath = proc_fd_path(pid, fd, &procfd);
+        lstat(fdPath, &lst);
+        stat(fdPath, &st);
+        stralloc_zero(&target);
+        if(S_ISLNK(lst.st_mode))
+          path_readlink(fdPath, &target);
         stralloc_zero(&real);
         path_realpath(fdPath, &real, 0, &current);
         stralloc_nul(&real);
-
         if(stralloc_start(&real, &current))
           stralloc_remove(&real, 0, current.len);
-
-        /*  if(!stralloc_contains(&real, "pipe"))
-            continue;*/
-
         n = -1;
-        // print_number("  tmpfd", tmpfd);
         if((tmpfd = open_read(real.s)) != -1) {
           stralloc filename;
           stralloc_init(&filename);
-
           x = mmap_read_fd_range(tmpfd, &len, 0, getpagesize());
           if(x) {
             n = len;
@@ -285,8 +270,6 @@ read_proc() {
           } else {
             errmsg_warnsys("mmap", 0);
           }
-          print_stralloc("mapped", &filename);
-
           if(n == -1) {
             n = seek_cur(tmpfd);
             seek_end(tmpfd);
@@ -295,55 +278,27 @@ read_proc() {
           stralloc_free(&filename);
         }
         if(n >= 0)
-          print_number("     n", n);
-
-        if(S_ISLNK(lst.st_mode)) {
-          if(!stralloc_equal(&real, &target))
-            print_stralloc("  real", &real);
-
-          if(stralloc_starts(&target, "pipe:[")) {
-            pipeId = -1;
-            scan_uint(target.s + 6, &pipeId);
-            print_number("  pipe", pipeId);
+          if(S_ISLNK(lst.st_mode)) {
+            if(!stralloc_equal(&real, &target))
+              if(stralloc_starts(&target, "pipe:[")) {
+                pipeId = -1;
+                scan_uint(target.s + 6, &pipeId);
+              }
           }
-
-          { print_stralloc("target", &target); }
-        }
-
         if(S_ISFIFO(st.st_mode)) {
           p = get_pipe(pipeId);
-
           pfd = alloc_zero(sizeof(procfd_t));
-
-          slist_add((void*)&p->list, (void*)pfd);
-
+          slist_push((void*)&p->list, (void*)pfd);
           pfd->pid = pid;
           pfd->fd = fd;
-
           byte_copy(&pfd->st, sizeof(struct stat), &st);
-
-          // stralloc_copy(&pfd->path, &real);
-
           prev = '\0';
           openreadclose(proc_fdinfo_path(pid, fd, &procfdinfo), &pfd->info, 1024);
-          /* if((n = pfd->info.len)) {
-             for(x = stralloc_begin(&pfd->info); n > 0; x++, n--) {
-               if(*x != '\n' && (i = scan_whitenskip(x, n)) && i >= 1)
-                 x += i, n -= i;
-
-               *x == '\n' ? buffer_puts(buffer_1, "\\n\n") : buffer_putc(buffer_1, *x);
-               prev = *x;
-             }
-             buffer_putnlflush(buffer_1);
-           }
-
- */
         }
-        buffer_putnlflush(buffer_1);
       }
     }
-    buffer_putnlflush(buffer_1);
   }
+
   stralloc_free(&procfd);
   stralloc_free(&real);
   stralloc_free(&target);
@@ -359,21 +314,24 @@ compare_pipes(const pipe_t* a, const pipe_t* b) {
 }
 void
 procfd_dump(const procfd_t* pfd) {
-  print_number_nonl(" fd", pfd->fd);
+  print_number_nonl("fd", pfd->fd);
   // print_stralloc_nonl(" path", &pfd->path);
-  buffer_puts(buffer_1, " st_mode: ");
-  buffer_putxlong(buffer_1, pfd->st.st_mode);
-  print_number_nonl(" st_size", pfd->st.st_size);
-  print_number_nonl(" st_dev", pfd->st.st_dev);
-  print_number_nonl(" st_uid", pfd->st.st_uid);
-  print_number_nonl(" st_gid", pfd->st.st_gid);
-  print_number_nonl(" st_atime", pfd->st.st_atim.tv_sec);
-  if(pfd->st.st_atim.tv_sec != pfd->st.st_mtim.tv_sec)
-    print_number_nonl(" st_mtime", pfd->st.st_mtim.tv_sec);
-  if(pfd->st.st_mtim.tv_sec != pfd->st.st_ctim.tv_sec)
-    print_number_nonl(" st_ctime", pfd->st.st_ctim.tv_sec);
-  buffer_puts(buffer_1, " info: ");
+  print_string_nonl(" type", type(pfd->st.st_mode));
+  print_number_nonl_base(" mode", pfd->st.st_mode, 8);
+  print_number_nonl(" size", pfd->st.st_size);
+  print_number_nonl_base(" dev", pfd->st.st_dev, 16);
+  print_number_nonl(" uid", pfd->st.st_uid);
+  print_number_nonl(" gid", pfd->st.st_gid);
+  if(0) {
+    print_number_nonl(" atime", pfd->st.st_atime);
+    if(pfd->st.st_atime != pfd->st.st_mtime)
+      print_number_nonl(" mtime", pfd->st.st_mtime);
+    if(pfd->st.st_mtime != pfd->st.st_ctime)
+      print_number_nonl(" ctime", pfd->st.st_ctime);
+  }
+  buffer_puts(buffer_1, " info='");
   buffer_put_escaped(buffer_1, pfd->info.s, pfd->info.len);
+  buffer_puts(buffer_1, "'");
   //      print_stralloc(" info", &pfd->info);
 }
 
@@ -407,8 +365,10 @@ main(int argc, char* argv[]) {
     argc++;
   }
 
-  read_proc();
-  qsort(array_start(&pipes), array_length(&pipes, sizeof(pipe_t)), sizeof(pipe_t), &compare_pipes);
+  if(0) {
+    read_proc();
+    qsort(array_start(&pipes), array_length(&pipes, sizeof(pipe_t)), sizeof(pipe_t), &compare_pipes);
+  }
 
   if(verbose) {
     i = 0;
@@ -421,10 +381,12 @@ main(int argc, char* argv[]) {
 
       slist_foreach(p->list, pfd) {
         buffer_putc(buffer_1, '\n');
-        if(prev != pfd->pid)
+        if(prev != pfd->pid) {
           print_number_nonl("  pid", pfd->pid);
-        else
-          buffer_puts(buffer_1, "           ");
+          buffer_putc(buffer_1, '\n');
+        }
+        buffer_puts(buffer_1, "\t\t");
+
         procfd_dump(pfd);
         prev = pfd->pid;
       }
@@ -435,28 +397,32 @@ main(int argc, char* argv[]) {
   }
 
   while(optind < argc) {
+    struct stat st;
     const char* a = argv[optind++];
-    fd_t fd = str_equal(a, "-") ? 0 : open_rw(a);
+    fd_t fd = 0;
+
+    if(str_diff(a, "-"))
+      fd = open_read(a);
 
     buffer_putm_internal(buffer_1, "arg: '", a, "'", 0);
     buffer_putnlflush(buffer_1);
-    struct stat st;
 
     if(fstat(fd, &st) != -1) {
-      const char* fd_path = proc_fd_path(-1, fd, &procfd);
+      const char* path = proc_fd_path(-1, fd, &procfd);
       stralloc target;
       stralloc_init(&target);
 
-      path_readlink(fd_path, &target);
+      path_readlink(path, &target);
 
-      print_string("fd_path", fd_path);
-      print_stralloc("target", &target);
+      print_string("path", path);
+      print_stralloc_nonl("  target", &target);
 
-      print_number("fd", fd);
-      print_number("tar", fd);
-      print_number("size", st.st_size);
-      print_number("blksize", st.st_blksize);
-      print_number("blocks", st.st_blocks);
+      print_number_nonl(" fd", fd);
+      print_number_nonl(" size", st.st_size);
+      print_number_nonl(" blksize", st.st_blksize);
+      print_number_nonl(" blocks", st.st_blocks);
+
+      buffer_putnlflush(buffer_1);
     }
   }
 }
