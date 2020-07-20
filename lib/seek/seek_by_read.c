@@ -1,4 +1,8 @@
+#define _LARGEFILE_SOURCE 1
+#define _FILE_OFFSET_BITS 64
+#define _LARGEFILE64_SOURCE 1
 #include "../seek.h"
+#include "../io.h"
 #include "../alloc.h"
 #include <stdio.h>
 #include <errno.h>
@@ -9,7 +13,7 @@
 #include <sys/types.h>
 #endif
 
-/*  If we are reading through a pipe, or from stdin then we can't lseek,
+/*  If we are reading through a pipe, or from stdin then we can't io_seek,
  *  we must read and discard the data to skip over it.
  */
 void

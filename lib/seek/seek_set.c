@@ -1,4 +1,8 @@
+#define _LARGEFILE_SOURCE 1
+#define _FILE_OFFSET_BITS 64
+#define _LARGEFILE64_SOURCE 1
 #include "../seek.h"
+#include "../io.h"
 #include <stdio.h>
 #include <errno.h>
 #if WINDOWS_NATIVE
@@ -12,7 +16,7 @@
 
 int
 seek_set(fd_t fd, seek_pos pos) {
-  if(lseek(fd, (int64)pos, SET) == -1)
+  if(io_seek(fd, (int64)pos, SET) == -1)
     return -1;
   return 0;
 }

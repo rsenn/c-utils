@@ -6,7 +6,7 @@
 #include "typedefs.h"
 #include "uint64.h"
 
-typedef unsigned long seek_pos;
+typedef uint64 seek_pos;
 
 extern seek_pos seek_cur(fd_t);
 

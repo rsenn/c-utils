@@ -1,4 +1,8 @@
+#define _LARGEFILE_SOURCE 1
+#define _FILE_OFFSET_BITS 64
+#define _LARGEFILE64_SOURCE 1
 #include "../seek.h"
+#include "../io.h"
 #include <stdio.h>
 #include <errno.h>
 #if WINDOWS_NATIVE
@@ -8,9 +12,5 @@
 #include <sys/types.h>
 #endif
 
-#define CUR SEEK_CUR /* sigh */
-
-seek_pos
-seek_cur(fd_t fd) {
-  return lseek(fd, (int64)0, CUR);
-}
+seek_pos seek_cur(fd_t fd)
+{ return lseek(fd,(off_t) 0,SEEK_CUR); }
