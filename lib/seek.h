@@ -17,7 +17,7 @@ extern int seek_trunc(fd_t, seek_pos);
 
 #define seek_begin(fd) (seek_set((fd), (seek_pos)0))
 
-void     seek_by_jump(fd_t fd, int64 amount);
-void     seek_by_read(fd_t fd, int64 amount);
+void seek_by_jump(fd_t fd, int64 amount);
+void seek_by_read(fd_t fd, int64 amount);
 
 #endif
