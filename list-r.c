@@ -214,7 +214,7 @@ get_file_owner(const char* path) {
   /* Check GetLastError for CreateFile error code. */
   if(hFile == INVALID_HANDLE_VALUE) {
     dwErrorCode = GetLastError();
-    /*   	snprintf(tmpbuf, sizeof(tmpbuf), "CreateFile error = %d\n", dwErrorCode); */
+    /*     snprintf(tmpbuf, sizeof(tmpbuf), "CreateFile error = %d\n", dwErrorCode); */
     return 0;
   }
   if(get_win_api(&get_security_info, "advapi32", "GetSecurityInfo") == -1)

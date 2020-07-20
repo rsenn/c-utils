@@ -1707,9 +1707,9 @@ YY_DECL {
 /* yy_get_next_buffer - try to read in a new buffer
  *
  * Returns a code representing an action:
- *	EOB_ACT_LAST_MATCH -
- *	EOB_ACT_CONTINUE_SCAN - continue scanning from current position
- *	EOB_ACT_END_OF_FILE - end of file
+ *  EOB_ACT_LAST_MATCH -
+ *  EOB_ACT_CONTINUE_SCAN - continue scanning from current position
+ *  EOB_ACT_END_OF_FILE - end of file
  */
 static int
 yy_get_next_buffer(void) {
@@ -1856,7 +1856,7 @@ yy_get_previous_state(void) {
 /* yy_try_NUL_trans - try to make a transition on the NUL character
  *
  * synopsis
- *	next_state = yy_try_NUL_trans( current_state );
+ *  next_state = yy_try_NUL_trans( current_state );
  */
 static yy_state_type
 yy_try_NUL_trans(yy_state_type yy_current_state) {
@@ -2011,8 +2011,8 @@ yy_switch_to_buffer(YY_BUFFER_STATE new_buffer) {
 
   /* TODO. We should be able to replace this entire function body
    * with
-   *		yypop_buffer_state();
-   *		yypush_buffer_state(new_buffer);
+   *    yypop_buffer_state();
+   *    yypush_buffer_state(new_buffer);
    */
   yyensure_buffer_stack();
   if(YY_CURRENT_BUFFER == new_buffer)

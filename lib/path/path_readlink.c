@@ -23,10 +23,12 @@ path_readlink(const char* path, stralloc* sa) {
     sz = readlink(path, sa->s, n);
     /* repeat until we have reserved enough space */
   } while(sz == n);
+
+  sa->len = sz;
   /* now truncate to effective length */
-  if(sz >= 0) {
+/*  if(sz >= 0) {
     stralloc_trunc(sa, sz);
     return 0;
-  }
-  return -1;
+  }*/
+  return sa->len;
 }
