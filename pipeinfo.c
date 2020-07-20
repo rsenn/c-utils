@@ -48,7 +48,7 @@ usage(char* av0) {
 void
 print_number(const char* property, int64 num) {
 
-  buffer_putm_internal(buffer_1, property, " = ", 0);
+  buffer_putm_internal(buffer_1, property, ": ", 0);
   buffer_putlonglong(buffer_1, num);
   buffer_putnlflush(buffer_1);
 }
@@ -72,46 +72,46 @@ print_stat(const char* property, const struct stat* st) {
   buffer_putm_internal(buffer_1, property, ": ", 0);
   t ? buffer_puts(buffer_1, t) : buffer_put8long(buffer_1, st->st_mode & S_IFMT);
 
-  buffer_putm_internal(buffer_1, " [mode=0", 0);
+  buffer_putm_internal(buffer_1, " [ mode 0", 0);
   buffer_put8long(buffer_1, st->st_mode & 07777);
   if(st->st_dev) {
-    buffer_putm_internal(buffer_1, " dev=0x", 0);
+    buffer_putm_internal(buffer_1, ", dev 0x", 0);
     buffer_putxlong0(buffer_1, st->st_dev, 3);
   }
   if(st->st_rdev) {
-    buffer_putm_internal(buffer_1, " rdev=0x", 0);
+    buffer_putm_internal(buffer_1, ", rdev 0x", 0);
     buffer_putxlong0(buffer_1, st->st_rdev, 3);
   }
   if(st->st_ino) {
-    buffer_putm_internal(buffer_1, " ino=0x", 0);
+    buffer_putm_internal(buffer_1, ", inode 0x", 0);
     buffer_putxlong0(buffer_1, st->st_ino, 3);
   }
   if(st->st_size) {
-    buffer_putm_internal(buffer_1, " size=", 0);
+    buffer_putm_internal(buffer_1, ", size ", 0);
     buffer_putulonglong(buffer_1, st->st_size);
   }
   if(st->st_blocks) {
-    buffer_putm_internal(buffer_1, " blocks=", 0);
+    buffer_putm_internal(buffer_1, ", blocks ", 0);
     buffer_putulonglong(buffer_1, st->st_blocks);
   }
   if(st->st_blksize) {
-    buffer_putm_internal(buffer_1, " blksize=0x", 0);
+    buffer_putm_internal(buffer_1, ", blksize 0x", 0);
     buffer_putxlonglong(buffer_1, st->st_blksize);
   }
-  buffer_puts(buffer_1, "]");
+  buffer_puts(buffer_1, " ]");
   buffer_putnlflush(buffer_1);
 }
 
 void
 print_stralloc(const char* property, const stralloc* sa) {
-  buffer_putm_internal(buffer_1, property, " = ", 0);
+  buffer_putm_internal(buffer_1, property, ": ", 0);
   buffer_putsa(buffer_1, sa);
   buffer_putnlflush(buffer_1);
 }
 
 void
 print_string(const char* property, const char* str) {
-  buffer_putm_internal(buffer_1, property, " = ", str, 0);
+  buffer_putm_internal(buffer_1, property, ": ", str, 0);
   buffer_putnlflush(buffer_1);
 }
 
@@ -138,7 +138,8 @@ proc_fd_path(int32 pid, fd_t fd) {
 void
 read_proc() {
   dir_t procdir, fddir;
-  uint32 pid, fd;
+  int32 pid, fd, pipeId;
+  int64 n;
   const char *fdPath, targetPath;
   stralloc target, real, current;
   stralloc_init(&real);
@@ -171,13 +172,20 @@ read_proc() {
           byte_zero(&lst, sizeof(lst));
           byte_zero(&st, sizeof(st));
           fdPath = proc_fd_path(pid, fd);
-          buffer_putm_internal(buffer_1, "fdPath: ", fdPath, " ", 0);
 
-          if(lstat(fdPath, &lst) != -1)
-            print_stat("\n  lst", &lst);
+          lstat(fdPath, &lst);
+          stat(fdPath, &st);
 
-          if(stat(fdPath, &st) != -1)
-            print_stat("\n  stat", &st);
+    /*      if(!S_ISFIFO(st.st_mode))
+            continue;*/
+
+          buffer_putm_internal(buffer_1, "  path: ", fdPath, "\n", 0);
+
+          if(lst.st_mode)
+            print_stat("   lst", &lst);
+
+          if(st.st_mode)
+            print_stat("  stat", &st);
 
           stralloc_zero(&target);
 
@@ -186,7 +194,8 @@ read_proc() {
           }
 
           stralloc_zero(&real);
-          path_realpath(fdPath, &real, 1, &current);
+          path_realpath(fdPath, &real, 0, &current);
+          stralloc_nul(&real);
 
           if(stralloc_start(&real, &current))
             stralloc_remove(&real, 0, current.len);
@@ -195,20 +204,42 @@ read_proc() {
               continue;*/
 
           fd_t tmpfd = open_read(real.s);
+          n = -1;
+          // print_number("  tmpfd", tmpfd);
+          if(tmpfd != -1) {
+            size_t len;
+            stralloc filename;
+            char* x = mmap_read_fd(tmpfd, &len);
+            if(x == NULL) {
+              errmsg_warnsys("mmap", 0);
+            } else {
+              n = len;
+              stralloc_init(&filename);
+              mmap_filename(x, &filename);
+              mmap_unmap(x, len);
+            }
+            print_stralloc("filename", &filename);
 
-          print_number("tmpfd", tmpfd);
-          seek_end(tmpfd);
+if(n == -1){
+            n = seek_cur(tmpfd);
+            seek_end(tmpfd);
+}
 
-          uint64 n = seek_cur(tmpfd);
+            close(tmpfd);
+          }
           if(n > 0)
-            print_number("n", n);
-          close(tmpfd);
-
+            print_number("     n", n);
           // print_number("pid", pid);
           if(S_ISLNK(lst.st_mode)) {
             if(!stralloc_equal(&real, &target))
-              print_stralloc("real", &real);
-            print_stralloc("target", &target);
+              print_stralloc("  real", &real);
+
+            if(stralloc_starts(&target, "pipe:[")) {
+              pipeId = -1;
+              scan_uint(target.s + 6, &pipeId);
+              print_number("  pipe", pipeId);
+            }
+            { print_stralloc("target", &target); }
           }
 
           buffer_putnlflush(buffer_1);
