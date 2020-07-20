@@ -7,8 +7,10 @@
 #include "../open.h"
 #endif
 #include "../mmap.h"
+#include "../seek.h"
+#include "../uint64.h"
 
-const char*
+char*
 mmap_read(const char* filename, size_t* filesize) {
 #ifdef _WIN32
   HANDLE fd, m;
@@ -34,7 +36,8 @@ mmap_read(const char* filename, size_t* filesize) {
   int fd = open_read(filename);
   char* map;
   if(fd >= 0) {
-    register off_t o = lseek(fd, 0, SEEK_END);
+    seek_end(fd);
+    uint64 o = seek_cur(fd);
     if(o == 0 || (sizeof(off_t) != sizeof(size_t) && o > (off_t)(size_t)-1)) {
       close(fd);
       return 0;

@@ -7,11 +7,13 @@
 #include "lib/path.h"
 #include "lib/str.h"
 #include "lib/stralloc.h"
+#include "lib/slist.h"
 #include "lib/scan.h"
 #include "lib/mmap.h"
 #include "lib/seek.h"
 #include "lib/unix.h"
 #include "lib/open.h"
+#include "lib/array.h"
 #include "lib/byte.h"
 #include "lib/getopt.h"
 
@@ -28,7 +30,22 @@
 #define stat _stat
 #endif
 
+typedef struct procfd {
+  struct procfd* next;
+  int32 pid;
+  int32 fd;
+  struct stat st;
+  stralloc info;
+} procfd_t;
+
+typedef struct {
+  int64 id;
+  procfd_t* list;
+} pipe_t;
+
+static array pipes;
 static int verbose;
+static stralloc procfd, procfdinfo;
 
 void
 usage(char* av0) {
@@ -46,11 +63,29 @@ usage(char* av0) {
   buffer_flush(buffer_1);
 }
 
+pipe_t*
+get_pipe(int64 id) {
+  pipe_t* p;
+  array_foreach(&pipes, sizeof(pipe_t), p) {
+    if(p->id == id)
+      return p;
+  }
+
+  p = array_allocate(&pipes, sizeof(pipe_t), array_length(&pipes, sizeof(pipe_t)));
+  p->id = id;
+  p->list = NULL;
+  return p;
+}
+
+void
+print_number_nonl(const char* property, int64 num) {
+
+  buffer_putm_internal(buffer_1, property, "=", 0);
+  buffer_putlonglong(buffer_1, num);
+}
 void
 print_number(const char* property, int64 num) {
-
-  buffer_putm_internal(buffer_1, property, ": ", 0);
-  buffer_putlonglong(buffer_1, num);
+  print_number_nonl(property, num);
   buffer_putnlflush(buffer_1);
 }
 
@@ -104,9 +139,14 @@ print_stat(const char* property, const struct stat* st) {
 }
 
 void
-print_stralloc(const char* property, const stralloc* sa) {
-  buffer_putm_internal(buffer_1, property, ": ", 0);
+print_stralloc_nonl(const char* property, const stralloc* sa) {
+  buffer_putm_internal(buffer_1, property, "='", 0);
   buffer_putsa(buffer_1, sa);
+  buffer_puts(buffer_1, "'");
+}
+void
+print_stralloc(const char* property, const stralloc* sa) {
+  print_stralloc_nonl(property, sa);
   buffer_putnlflush(buffer_1);
 }
 
@@ -125,24 +165,53 @@ proc_fd_root(int32 pid, stralloc* out) {
 }
 
 const char*
-proc_fd_path(int32 pid, fd_t fd) {
-  static stralloc sa;
-  stralloc_zero(&sa);
-  proc_fd_root(pid, &sa);
-  stralloc_cats(&sa, "/fd/");
+proc_subdir_path(int32 pid, const char* subdir, stralloc* out) {
+  stralloc_zero(out);
+  proc_fd_root(pid, out);
+  stralloc_catm_internal(out, "/", subdir, "/", 0);
+
+  return out->s;
+}
+
+const char*
+proc_fd_path(int32 pid, fd_t fd, stralloc* out) {
+  proc_subdir_path(pid, "fd", out);
   if(fd >= 0)
-    stralloc_catulong(&sa, fd);
-  stralloc_nul(&sa);
-  return sa.s;
+    stralloc_catulong(out, fd);
+  stralloc_nul(out);
+  return out->s;
+}
+const char*
+proc_fdinfo_path(int32 pid, fd_t fd, stralloc* out) {
+  proc_subdir_path(pid, "fdinfo", out);
+  if(fd >= 0)
+    stralloc_catulong(out, fd);
+  stralloc_nul(out);
+  return out->s;
+}
+
+const char*
+proc_fd_str(const procfd_t* pfd, stralloc* out) {
+  return proc_fd_path(pfd->pid, pfd->fd, out);
 }
 
 void
 read_proc() {
   dir_t procdir, fddir;
-  int32 pid, fd, pipeId;
+  uint32 pid, fd, pipeId;
   int64 n;
+  fd_t tmpfd;
+
+  pipe_t* p;
+  procfd_t* pfd;
+  size_t len, i;
+  int32 prev;
   const char *fdPath, targetPath;
+  char* x;
+  struct stat lst, st;
+
   stralloc target, real, current;
+  stralloc_init(&procfd);
   stralloc_init(&real);
   stralloc_init(&target);
   stralloc_init(&current);
@@ -156,7 +225,7 @@ read_proc() {
       continue;
 
     if(scan_uint(s, &pid) > 0) {
-      fdPath = proc_fd_path(pid, -1);
+      fdPath = proc_fd_path(pid, -1, &procfd);
 
       stralloc_copys(&current, fdPath);
       stralloc_nul(&current);
@@ -167,18 +236,16 @@ read_proc() {
       while((fdStr = dir_read(&fddir))) {
         if(!isdigit(fdStr[0]))
           continue;
-        fd = -1;
+
         if(scan_uint(fdStr, &fd) > 0) {
-          struct stat lst, st;
+
+          print_number("  fd", fd);
           byte_zero(&lst, sizeof(lst));
           byte_zero(&st, sizeof(st));
-          fdPath = proc_fd_path(pid, fd);
+          fdPath = proc_fd_path(pid, fd, &procfd);
 
           lstat(fdPath, &lst);
           stat(fdPath, &st);
-
-    /*      if(!S_ISFIFO(st.st_mode))
-            continue;*/
 
           buffer_putm_internal(buffer_1, "  path: ", fdPath, "\n", 0);
 
@@ -190,70 +257,130 @@ read_proc() {
 
           stralloc_zero(&target);
 
-          if(S_ISLNK(lst.st_mode)) {
+          if(S_ISLNK(lst.st_mode))
             path_readlink(fdPath, &target);
+        }
+
+        stralloc_zero(&real);
+        path_realpath(fdPath, &real, 0, &current);
+        stralloc_nul(&real);
+
+        if(stralloc_start(&real, &current))
+          stralloc_remove(&real, 0, current.len);
+
+        /*  if(!stralloc_contains(&real, "pipe"))
+            continue;*/
+
+        n = -1;
+        // print_number("  tmpfd", tmpfd);
+        if((tmpfd = open_read(real.s)) != -1) {
+          stralloc filename;
+          stralloc_init(&filename);
+
+          x = mmap_read_fd_range(tmpfd, &len, 0, getpagesize());
+          if(x) {
+            n = len;
+            mmap_filename(x, &filename);
+            mmap_unmap(x, len);
+          } else {
+            errmsg_warnsys("mmap", 0);
           }
+          print_stralloc("mapped", &filename);
 
-          stralloc_zero(&real);
-          path_realpath(fdPath, &real, 0, &current);
-          stralloc_nul(&real);
-
-          if(stralloc_start(&real, &current))
-            stralloc_remove(&real, 0, current.len);
-
-          /*  if(!stralloc_contains(&real, "pipe"))
-              continue;*/
-
-          fd_t tmpfd = open_read(real.s);
-          n = -1;
-          // print_number("  tmpfd", tmpfd);
-          if(tmpfd != -1) {
-            size_t len;
-            stralloc filename;
-            char* x = mmap_read_fd_range(tmpfd, &len, 0, getpagesize());
-            if(x ) {
-              n = len;
-              stralloc_init(&filename);
-              mmap_filename(x, &filename);
-              mmap_unmap(x, len);
-            } else {
-              errmsg_warnsys("mmap", 0);
-            }
-            print_stralloc("mapped", &filename);
-
-if(n == -1){
+          if(n == -1) {
             n = seek_cur(tmpfd);
             seek_end(tmpfd);
+          }
+          close(tmpfd);
+          stralloc_free(&filename);
+        }
+        if(n >= 0)
+          print_number("     n", n);
+
+        if(S_ISLNK(lst.st_mode)) {
+          if(!stralloc_equal(&real, &target))
+            print_stralloc("  real", &real);
+
+          if(stralloc_starts(&target, "pipe:[")) {
+            pipeId = -1;
+            scan_uint(target.s + 6, &pipeId);
+            print_number("  pipe", pipeId);
+          }
+
+          { print_stralloc("target", &target); }
+        }
+
+        if(S_ISFIFO(st.st_mode)) {
+          p = get_pipe(pipeId);
+
+          pfd = alloc_zero(sizeof(procfd_t));
+
+          slist_add((void*)&p->list, (void*)pfd);
+
+          pfd->pid = pid;
+          pfd->fd = fd;
+
+          byte_copy(&pfd->st, sizeof(struct stat), &st);
+
+          // stralloc_copy(&pfd->path, &real);
+
+          prev = '\0';
+          openreadclose(proc_fdinfo_path(pid, fd, &procfdinfo), &pfd->info, 1024);
+          /* if((n = pfd->info.len)) {
+             for(x = stralloc_begin(&pfd->info); n > 0; x++, n--) {
+               if(*x != '\n' && (i = scan_whitenskip(x, n)) && i >= 1)
+                 x += i, n -= i;
+
+               *x == '\n' ? buffer_puts(buffer_1, "\\n\n") : buffer_putc(buffer_1, *x);
+               prev = *x;
+             }
+             buffer_putnlflush(buffer_1);
+           }
+
+ */
+        }
+        buffer_putnlflush(buffer_1);
+      }
+    }
+    buffer_putnlflush(buffer_1);
+  }
+  stralloc_free(&procfd);
+  stralloc_free(&real);
+  stralloc_free(&target);
+  stralloc_free(&current);
 }
 
-            close(tmpfd);
-          }
-          if(n > 0)
-            print_number("     n", n);
-          // print_number("pid", pid);
-          if(S_ISLNK(lst.st_mode)) {
-            if(!stralloc_equal(&real, &target))
-              print_stralloc("  real", &real);
+int
+compare_pipes(const pipe_t* a, const pipe_t* b) {
+  if(a->id != b->id)
+    return a->id - b->id;
 
-            if(stralloc_starts(&target, "pipe:[")) {
-              pipeId = -1;
-              scan_uint(target.s + 6, &pipeId);
-              print_number("  pipe", pipeId);
-            }
-            { print_stralloc("target", &target); }
-          }
-
-          buffer_putnlflush(buffer_1);
-        }
-      }
-      buffer_putnlflush(buffer_1);
-    }
-  }
+  return 0;
+}
+void
+procfd_dump(const procfd_t* pfd) {
+  print_number_nonl(" fd", pfd->fd);
+  // print_stralloc_nonl(" path", &pfd->path);
+  buffer_puts(buffer_1, " st_mode: ");
+  buffer_putxlong(buffer_1, pfd->st.st_mode);
+  print_number_nonl(" st_size", pfd->st.st_size);
+  print_number_nonl(" st_dev", pfd->st.st_dev);
+  print_number_nonl(" st_uid", pfd->st.st_uid);
+  print_number_nonl(" st_gid", pfd->st.st_gid);
+  print_number_nonl(" st_atime", pfd->st.st_atim.tv_sec);
+  if(pfd->st.st_atim.tv_sec != pfd->st.st_mtim.tv_sec)
+    print_number_nonl(" st_mtime", pfd->st.st_mtim.tv_sec);
+  if(pfd->st.st_mtim.tv_sec != pfd->st.st_ctim.tv_sec)
+    print_number_nonl(" st_ctime", pfd->st.st_ctim.tv_sec);
+  buffer_puts(buffer_1, " info: ");
+  buffer_put_escaped(buffer_1, pfd->info.s, pfd->info.len);
+  //      print_stralloc(" info", &pfd->info);
 }
 
 int
 main(int argc, char* argv[]) {
-  int index = 0, c;
+  int index = 0, c, i, prev;
+  const pipe_t* p;
   static const struct longopt opts[] = {{"help", 0, NULL, 'h'}, {"verbose", 0, 0, 'v'}, {0, 0, 0, 0}};
 
   errmsg_iam(argv[0]);
@@ -281,6 +408,31 @@ main(int argc, char* argv[]) {
   }
 
   read_proc();
+  qsort(array_start(&pipes), array_length(&pipes, sizeof(pipe_t)), sizeof(pipe_t), &compare_pipes);
+
+  if(verbose) {
+    i = 0;
+    array_foreach(&pipes, sizeof(pipe_t), p) {
+      const procfd_t* pfd;
+      print_number("i", i);
+      print_number_nonl("pipe#", p->id);
+
+      prev = -1;
+
+      slist_foreach(p->list, pfd) {
+        buffer_putc(buffer_1, '\n');
+        if(prev != pfd->pid)
+          print_number_nonl("  pid", pfd->pid);
+        else
+          buffer_puts(buffer_1, "           ");
+        procfd_dump(pfd);
+        prev = pfd->pid;
+      }
+
+      buffer_putnlflush(buffer_1);
+      i++;
+    }
+  }
 
   while(optind < argc) {
     const char* a = argv[optind++];
@@ -291,7 +443,7 @@ main(int argc, char* argv[]) {
     struct stat st;
 
     if(fstat(fd, &st) != -1) {
-      const char* fd_path = proc_fd_path(-1, fd);
+      const char* fd_path = proc_fd_path(-1, fd, &procfd);
       stralloc target;
       stralloc_init(&target);
 

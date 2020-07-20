@@ -23,7 +23,7 @@ char* mmap_read_fd_range(fd_t fd, size_t* size, size_t offset, size_t len);
 
 /* open file for reading, mmap whole file, close file, write length of
  * map in filesize and return pointer to map. */
-const char* mmap_read(const char* filename, size_t* filesize);
+char* mmap_read(const char* filename, size_t* filesize);
 
 /* open file for writing, mmap whole file privately (copy on write),
  * close file, write length of map in filesize and return pointer to
