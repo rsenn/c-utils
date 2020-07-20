@@ -17,6 +17,10 @@ char* mmap_map(fd_t fd, size_t sz, uint64 offset);
  * return pointer to map */
 char* mmap_read_fd(fd_t fd, size_t* filesize);
 
+/* map fd for reading
+ * return pointer to map */
+char* mmap_read_fd_range(fd_t fd, size_t* size, size_t offset, size_t len);
+
 /* open file for reading, mmap whole file, close file, write length of
  * map in filesize and return pointer to map. */
 const char* mmap_read(const char* filename, size_t* filesize);

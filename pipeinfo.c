@@ -10,6 +10,7 @@
 #include "lib/scan.h"
 #include "lib/mmap.h"
 #include "lib/seek.h"
+#include "lib/unix.h"
 #include "lib/open.h"
 #include "lib/byte.h"
 #include "lib/getopt.h"
@@ -209,16 +210,16 @@ read_proc() {
           if(tmpfd != -1) {
             size_t len;
             stralloc filename;
-            char* x = mmap_read_fd(tmpfd, &len);
-            if(x == NULL) {
-              errmsg_warnsys("mmap", 0);
-            } else {
+            char* x = mmap_read_fd_range(tmpfd, &len, 0, getpagesize());
+            if(x ) {
               n = len;
               stralloc_init(&filename);
               mmap_filename(x, &filename);
               mmap_unmap(x, len);
+            } else {
+              errmsg_warnsys("mmap", 0);
             }
-            print_stralloc("filename", &filename);
+            print_stralloc("mapped", &filename);
 
 if(n == -1){
             n = seek_cur(tmpfd);
