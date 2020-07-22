@@ -44,13 +44,14 @@ int slist_unshiftb(slink** list, const void* x, size_t len);
 
 static inline void*
 slist_data(slink* list) {
-  return *(void**)&list[1];
+  return &((void**)list)[1];
 }
 
 static inline void*
 slink_data(slink** link) {
   return slist_data(*link);
 }
+
 static inline slink**
 slink_next(slink** link) {
   return &((*link)->next);

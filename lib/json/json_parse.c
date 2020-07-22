@@ -34,14 +34,18 @@ json_parse_getsa(charbuf* b, stralloc* out) {
     stralloc_append(&sa, &ch);
   }
   for(size_t i = 0; i < sa.len; i++) {
-    unsigned int r, n;
+    size_t r;
+    unsigned int n;
     if((r = scan_utf8(&sa.s[i], sa.len - i, &n)) > 1) {
       stralloc_cats(out, "\\u");
+      stralloc_catxlong0(out, n, n > 0xffffffu ? 8 : n > 0xffffu ? 6 : 4);
+      i += r - 1;
     } else {
       ch = n;
       stralloc_append(out, &ch);
     }
   }
+  stralloc_free(&sa);
   return 1;
 }
 

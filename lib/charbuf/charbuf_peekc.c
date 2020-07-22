@@ -16,5 +16,5 @@ charbuf_peekc(charbuf* b, char* ch) {
   if(b->p && ch)
     *ch = b->ch;
 
-  return ret;
+  return !!ret;
 }

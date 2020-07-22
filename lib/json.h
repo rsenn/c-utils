@@ -95,7 +95,7 @@ const char* json_tostring(jsonval, stralloc* sa);
 
 static inline int
 json_is_identifier_char(int c) {
-  return isalpha(c) || c == '$' || c == '_' || ispunct(c);
+  return (isalnum(c) || c == '$' || c == '_' || c == '@');
 }
 static inline const char*
 json_str(jsonval* val) {

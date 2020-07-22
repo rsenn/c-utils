@@ -107,7 +107,7 @@ json_print_separator(jsonval* val, buffer* b, int what, const jsonfmt* printer) 
 static void
 json_print_key(buffer* b, const char* key, size_t key_len, const jsonfmt* fmt) {
   char quote;
-  quote = byte_fullfils_predicate(key, key_len, json_is_identifier_char) ? '\0' : fmt->quote[0];
+  quote = (!isdigit(key[0]) && byte_fullfils_predicate(key, key_len, json_is_identifier_char)) ? '\0' : fmt->quote[0];
 
   if(quote)
     buffer_putc(b, quote);
@@ -124,7 +124,7 @@ json_print_str(buffer* b, const char* x, size_t len, const jsonfmt* fmt) {
     buffer_putc(b, quote);
   while(len--) {
     assert(*x);
-    if(*x == quote || *x == '\\')
+    if(*x == quote || (*x == '\\' && !(len > 0 && x[1] == 'u')))
       buffer_put(b, tmp, fmt_escapecharjson(tmp, *x, quote));
     else
       buffer_PUTC(b, *x);
@@ -189,11 +189,13 @@ json_print_array(jsonval* val, buffer* b, int depth, void (*p)(jsonfmt*, jsonval
 
   slink_foreach(val->listv, it.iter) {
     p(&printer, val, depth + 1, index);
-    json_print_val((jsonval*)(&it.ptr[1]), b, depth + 1, p);
+    if(index > 0)
+            json_print_separator(val, b, JSON_FMT_SEPARATOR, &printer);
+
+    json_print_val(slist_data(it.ptr), b, depth + 1, p);
     ++index;
-    if(slist_next(it.ptr)) {
-      json_print_separator(val, b, JSON_FMT_SEPARATOR, &printer);
-    }
+    //if(!!slist_next(it.ptr)) json_print_separator(val, b, JSON_FMT_SEPARATOR, &printer);
+
   }
   p(&printer, val, depth + 1, -2);
 

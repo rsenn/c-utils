@@ -220,13 +220,15 @@ main(int argc, char* argv[]) {
       out_fd = open_trunc(out_file);
     }
 
+    if(out_file) {
+      buffer_puts(buffer_2, "out file: ");
+      buffer_puts(buffer_2, out_file);
+      buffer_putnlflush(buffer_2);
+    }
+
     buffer_write_fd(&out_buf, out_fd);
 
     doc = json_read_tree(&in_buf);
-
-    buffer_puts(buffer_2, "out file: ");
-    buffer_puts(buffer_2, out_file);
-    buffer_putnlflush(buffer_2);
 
     json_pretty_print(*doc, &out_buf);
     buffer_flush(&out_buf);
