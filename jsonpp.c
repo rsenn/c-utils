@@ -211,7 +211,7 @@ main(int argc, char* argv[]) {
 
     if(in_place) {
       const char tmpl[] = ".tmpXXXXXX";
-      out_file = alloc(str_len(in_file)+str_len(tmpl));
+      out_file = alloc(str_len(in_file) + str_len(tmpl));
       str_copy(&out_file[str_copy(out_file, in_file)], tmpl);
 
       out_fd = open_temp(&out_file);
@@ -237,11 +237,11 @@ main(int argc, char* argv[]) {
 
     if(in_place) {
       if(unlink(in_file) == -1) {
-        errmsg_infosys("unlink",0);
+        errmsg_infosys("unlink", 0);
         return 1;
       }
       if(rename(out_file, in_file) == -1) {
-        errmsg_infosys("rename",0);
+        errmsg_infosys("rename", 0);
         return 1;
       }
     }
