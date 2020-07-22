@@ -212,7 +212,8 @@ main(int argc, char* argv[]) {
     if(in_place) {
       const char tmpl[] = ".tmpXXXXXX";
       out_file = alloc(str_len(in_file) + str_len(tmpl));
-      str_copy(&out_file[str_copy(out_file, in_file)], tmpl);
+
+      str_copy(&out_file[str_copyn(out_file, in_file, str_rchr(in_file, '.'))], tmpl);
 
       out_fd = open_temp(&out_file);
     } else if(out_file) {
