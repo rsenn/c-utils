@@ -8,229 +8,133 @@
 	"buffers":
 	[
 		{
-			"contents": " Ⓜ  _FILE_OFFSET_BITS … — macro object\n Ⓜ  _CRT_INTERNAL_NONSTDC_NAMES … — macro object\n Ⓜ  read … — macro object\n Ⓜ  write … — macro object\n Ⓜ  open … — macro object\n Ⓜ  close … — macro object\n Ⓜ  O_BINARY … — macro object\n—Ⓕ– open_read ( ) { … } — function",
+			"contents": "—Ⓒ– indent_write { … } ; — type\n—Ⓕ– buffer_indent_set ( ) { … } — function\n—Ⓕ– buffer_indent_write ( ) { … } — function\n—Ⓕ– buffer_indent ( ) { … } — function\n—Ⓕ– depth_fn ( ) { … } — function\n—Ⓕ– get_depth ( ) { … } — function\n—Ⓕ– json_default_printer ( ) { … } — function\n ⒡  json_print_val ( ) ; — function declaration\n—Ⓕ– byte_fullfils_predicate ( ) { … } — function\n—Ⓕ– json_print_separator ( ) { … } — function\n—Ⓕ– json_print_key ( ) { … } — function\n—Ⓕ– json_print_str ( ) { … } — function\n—Ⓕ– json_print_object ( ) { … } — function\n—Ⓕ– json_print_array ( ) { … } — function\n—Ⓕ– json_print_val ( ) { … } — function\n—Ⓕ– json_print ( ) { … } — function",
 			"settings":
 			{
-				"buffer_size": 258,
+				"buffer_size": 657,
 				"line_ending": "Unix",
 				"name": "𝌆 Outline",
 				"scratch": true
 			}
 		},
 		{
-			"file": "pipeinfo.c",
+			"file": "jsonpp.c",
 			"settings":
 			{
-				"buffer_size": 10750,
+				"buffer_size": 6721,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "lib/open/open_excl.c",
+			"file": "lib/charbuf/charbuf_peekc.c",
 			"settings":
 			{
-				"buffer_size": 586,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/open/open_read.c",
-			"settings":
-			{
-				"buffer_size": 489,
+				"buffer_size": 323,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "lib/slist/slist_push.c",
+			"file": "lib/json/json_parse.c",
 			"settings":
 			{
-				"buffer_size": 144,
+				"buffer_size": 4458,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/json/json_print.c",
+			"settings":
+			{
+				"buffer_size": 5968,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "lib/stralloc.h",
+			"contents": "Searching 1160 files for \"json_is_identifier_char\" (regex)\n\n/home/roman/Dokumente/Sources/c-utils/lib/json.h:\n   95  \n   96  static inline int\n   97: json_is_identifier_char(int c) {\n   98    return isalpha(c) || c == '$' || c == '_' || ispunct(c);\n   99  }\n\n/home/roman/Dokumente/Sources/c-utils/lib/json/json_print.c:\n  108  json_print_key(buffer* b, const char* key, size_t key_len, const jsonfmt* fmt) {\n  109    char quote;\n  110:   quote = byte_fullfils_predicate(key, key_len, json_is_identifier_char) ? '\\0' : fmt->quote[0];\n  111  \n  112    if(quote)\n\n2 matches across 2 files\n\n\nSearching 1160 files for \"json_is_identifier_char\" (regex)\n\n/home/roman/Dokumente/Sources/c-utils/lib/json.h:\n   95  \n   96  static inline int\n   97: json_is_identifier_char(int c) {\n   98    return (isalnum(c) || c == '$' || c == '_' || c == '@');\n   99  }\n\n/home/roman/Dokumente/Sources/c-utils/lib/json/json_print.c:\n  108  json_print_key(buffer* b, const char* key, size_t key_len, const jsonfmt* fmt) {\n  109    char quote;\n  110:   quote = byte_fullfils_predicate(key, key_len, json_is_identifier_char) ? '\\0' : fmt->quote[0];\n  111  \n  112    if(quote)\n\n2 matches across 2 files\n\n\nSearching 1160 files for \"->quote\" (regex)\n\n/home/roman/Dokumente/Sources/c-utils/lib/json/json_print.c:\n   74    p->spacing = pretty ? \" \" : \"\";\n   75    p->separat = pretty ? \", \" : \",\";\n   76:   p->quote[0] = quote;\n   77:   p->quote[1] = '\\0';\n   78    p->precision = 10;\n   79    p->depth = depth;\n   ..\n  108  json_print_key(buffer* b, const char* key, size_t key_len, const jsonfmt* fmt) {\n  109    char quote;\n  110:   quote = (!isdigit(key[0]) && byte_fullfils_predicate(key, key_len, json_is_identifier_char)) ? fmt->quote[1] : fmt->quote[0];\n  111  \n  112    if(quote)\n  ...\n  120  json_print_str(buffer* b, const char* x, size_t len, const jsonfmt* fmt) {\n  121    char tmp[6];\n  122:   char quote = fmt->quote[0];\n  123    if(quote)\n  124      buffer_putc(b, quote);\n\n/home/roman/Dokumente/Sources/c-utils/lib/json/json_tosa.c:\n    8    p->newline = \"\\n\";\n    9    p->spacing = \" \";\n   10:   p->quote[0] = '\"';\n   11  };\n   12  \n\n/home/roman/Dokumente/Sources/c-utils/lib/json/json_tostring.c:\n    8    p->newline = \"\";\n    9    p->spacing = \" \";\n   10:   p->quote[0] = '\"';\n   11  };\n   12  \n\n7 matches across 3 files\n",
 			"settings":
 			{
-				"buffer_size": 12024,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/scan/scan_whitenskip.c",
-			"settings":
-			{
-				"buffer_size": 208,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/mmap/mmap_read.c",
-			"settings":
-			{
-				"buffer_size": 1297,
-				"encoding": "UTF-8",
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "CMakeLists.txt",
-			"settings":
-			{
-				"buffer_size": 41000,
-				"encoding": "UTF-8",
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/stralloc/openreadclose.c",
-			"settings":
-			{
-				"buffer_size": 381,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"contents": "Searching 1159 files for \"access\\(\" (regex)\n\n/home/roman/Dokumente/Sources/c-utils/lib/path/path_exists.c:\n   18    int r;\n   19  #if WINDOWS_NATIVE\n   20:   if(access(p, 0) == 0)\n   21      return 1;\n   22  #endif\n\n/home/roman/Dokumente/Sources/c-utils/lib/unix/win32_loadprog.c:\n   87    {\n   88      strcpy(fullname, name);\n   89:     return (_taccess(name, 4) == 0); /* do we have read access? */\n   90    }\n   91  }\n\n2 matches across 2 files\n",
-			"settings":
-			{
-				"buffer_size": 447,
+				"buffer_size": 2308,
 				"line_ending": "Unix",
 				"name": "Find Results",
 				"scratch": true
 			}
 		},
 		{
-			"file": "lib/path/path_exists.c",
+			"file": "lib/json.h",
 			"settings":
 			{
-				"buffer_size": 395,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/path/path_readlink.c",
-			"settings":
-			{
-				"buffer_size": 763,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/strlist/strlist_sort.c",
-			"settings":
-			{
-				"buffer_size": 1121,
+				"buffer_size": 3946,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "lib/array.h",
+			"file": "lib/path/symlink.c",
 			"settings":
 			{
-				"buffer_size": 2541,
+				"buffer_size": 7989,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "lib/stralloc/mmap_filename.c",
+			"file": "lib/str/str_copyn.c",
 			"settings":
 			{
-				"buffer_size": 2623,
+				"buffer_size": 271,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "lib/stralloc/stralloc_trunc.c",
+			"file": "lib/byte/byte_rchr.c",
 			"settings":
 			{
-				"buffer_size": 282,
+				"buffer_size": 430,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "lib/errmsg/errmsg_iam.c",
+			"file": "lib/open/open_temp.c",
 			"settings":
 			{
-				"buffer_size": 96,
+				"buffer_size": 1567,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "buffertest.c",
+			"file": "lib/errmsg.h",
 			"settings":
 			{
-				"buffer_size": 1926,
+				"buffer_size": 1903,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "lib/mmap/mmap_readat.c",
+			"file": "lib/buffer.h",
 			"settings":
 			{
-				"buffer_size": 821,
+				"buffer_size": 10359,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "lib/mmap/mmap_private.c",
+			"file": "lib/buffer/buffer_write_fd.c",
 			"settings":
 			{
-				"buffer_size": 1222,
+				"buffer_size": 455,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "lib/mmap.h",
+			"contents": "#include \"lib/buffer.h\"\n#include \"lib/hmap.h\"\n#include \"lib/io.h\"\n#include \"lib/iarray.h\"\n#include \"lib/stralloc.h\"\n#include \"lib/xml.h\"\n#include \"lib/byte.h\"\n#include \"lib/fmt.h\"\n#include \"lib/mmap.h\"\n#include \"lib/str.h\"\n#include \"lib/getopt.h\"\n#include \"lib/errmsg.h\"\n#include \"lib/scan.h\"\n#include \"lib/open.h\"\n#include <stdio.h>\n#include <ctype.h>\n#include <errno.h>\n\n#if WINDOWS_NATIVE\n#include <io.h>\n#else\n#include <unistd.h>\n#endif\n\nstatic buffer infile, b;\nstatic int depth = 0, prev_closing = 0;\nstatic stralloc prev_element;\nstatic int quote_char = '\"';\nstatic int one_line, indent = 2, compact, terminate, inplace;\nstatic stralloc indent_str;\nbuffer* output;\n\nint\nxml_read_function(xmlreader* reader, xmlnodeid id, stralloc* name, stralloc* value, HMAP_DB** attrs) {\n  static int newline_written = 0;\n  switch(id) {\n    case XML_TEXT: {\n      if(name) {\n        stralloc_trimr(name, \" \\r\\n\\t\", 4);\n        buffer_putsa(output, name);\n      }\n      break;\n    }\n    case XML_ELEMENT: {\n\n      /* buffer_puts(buffer_2, \"Element: \");\n      buffer_putsa(buffer_2, name);\n      if(value)\n        buffer_putsa(buffer_2, value);\n      buffer_putnlflush(buffer_2); */\n\n      int closing = reader->closing || reader->self_closing;\n\n      if(reader->closing) {\n        --depth;\n      }\n\n      if(!(reader->closing && !prev_closing && stralloc_equal(&prev_element, name)) && stralloc_length(&prev_element)) {\n\n        if(!newline_written && !one_line) {\n          buffer_puts(output, \"\\n\");\n          buffer_flush(output);\n\n          newline_written = 1;\n          buffer_putnspace(output, depth * indent);\n        }\n      }\n\n      buffer_putm_internal(output, \"<\", reader->closing ? \"/\" : \"\", name->s, NULL);\n\n      if(attrs && *attrs && (*attrs)->list_tuple) {\n        buffer_putspace(output);\n        xml_print_attributes(*attrs, output, \" \", \"=\", \"\\\"\");\n      }\n\n      if(terminate && !reader->self_closing) {\n        if(str_equal(name->s, \"img\") || str_equal(name->s, \"link\") || str_equal(name->s, \"br\"))\n          reader->self_closing = 1;\n      }\n\n      buffer_puts(output, reader->self_closing ? (name->s[0] == '?' ? \"?>\" : \" />\") : \">\");\n\n      stralloc_copy(&prev_element, name);\n      prev_closing = closing;\n\n      if(!reader->closing && !reader->self_closing)\n        ++depth;\n\n      newline_written = 0;\n\n      break;\n    }\n    default: break;\n  }\n  return 1;\n}\n\nvoid\nusage(char* av0) {\n  buffer_putm_internal(buffer_1,\n                       \"Usage: \",\n                       str_basename(av0),\n                       \" [OPTIONS] [FILES...]\\n\"\n                       \"\\n\"\n                       \"Options:\\n\"\n                       \"\\n\"\n                       \"  -h, --help              Show this help\\n\"\n                       \"  -s, --single-quote      Use ' as quote\\n\"\n                       \"  -d, --double-quote      Use \\\" as quote\\n\"\n                       \"  -o, --one-line          One-line\\n\"\n                       \"  -c, --compact           Compact\\n\"\n                       \"  -l, --indent NUM        Indent level\\n\"\n                       \"  -t, --terminate         Terminate non-closed tags (img, link, br, ...)\\n\"\n                       \"\\n\",\n                       0);\n  buffer_flush(buffer_1);\n}\nstatic int max_depth;\nstatic int\nxmlpp_get_depth(xmlnode* node, int d) {\n  xmlnode* n;\n  if(d == 0)\n    max_depth = 0;\n  else if(d > max_depth)\n    max_depth = d;\n\n  for(n = node->children; n; n = n->next) xmlpp_get_depth(n, d + 1);\n\n  return max_depth;\n}\n\nstatic void\nxmlpp_fmt(xmlnode* node, buffer* b, int depth, char ch, int n) {\n  static xmlnode* parent;\n\n  xmlnode* p;\n\n  int inner = depth < 0;\n\n  depth = depth < 0 ? -depth : depth;\n  if(one_line)\n    return;\n  if(compact) {\n    if(inner && xmlpp_get_depth(node, 0) <= 1 && xml_num_children(node) <= 1) {\n      parent = node;\n      return;\n    }\n\n    for(p = node; p; p = p->parent) {\n      if(p == parent)\n        return;\n    }\n  }\n\n  while(n-- > 0) buffer_putc(b, ch);\n\n  if(ch == '\\n')\n    buffer_flush(buffer_1);\n\n  /*   switch(ch) {\n      case '\\n':\n      break;\n      case ' ':\n      break;\n    } */\n}\n\nint\nmain(int argc, char* argv[]) {\n  buffer outfile;\n  xmlreader r;\n  xmlnode* doc;\n  int ret;\n  int c;\n  int index = 0;\n  const char* input_file;\n  const char* tmpl = 0;\n  struct longopt opts[] = {{\"help\", 0, NULL, 'h'},\n                           {\"single-quote\", 0, &quote_char, '\\''},\n                           {\"double-quote\", 0, &quote_char, '\"'},\n                           {\"one-line\", 0, NULL, 'o'},\n                           {\"compact\", 0, NULL, 'c'},\n                           {\"indent\", 0, NULL, 'l'},\n                           {\"inplace\", 0, NULL, 'i'},\n                           {\"terminate\", 0, NULL, 't'},\n                           {0, 0, 0, 0}};\n\n  errmsg_iam(argv[0]);\n  output = buffer_1;\n\n  for(;;) {\n    c = getopt_long(argc, argv, \"hsdol:cti\", opts, &index);\n    if(c == -1)\n      break;\n    if(c == 0)\n      continue;\n\n    switch(c) {\n      case 'h': usage(argv[0]); return 0;\n      case 's': quote_char = '\\''; break;\n      case 'd': quote_char = '\"'; break;\n      case 'o': one_line = 1; break;\n      case 'c': compact = 1; break;\n      case 't': terminate = 1; break;\n      case 'i': inplace = 1; break;\n      case 'l': scan_int(optarg, &indent); break;\n      default: usage(argv[0]); return 1;\n    }\n  }\n\n  if(optind < argc)\n    ret = buffer_mmapprivate(&infile, (input_file = argv[optind]));\n  else\n    ret = buffer_read_fd(&infile, 0);\n\n  if(inplace) {\n    fd_t out_fd = open_temp(&tmpl);\n    if(out_fd == -1) {\n      errmsg_warn(\"output file\", 0);\n      return 1;\n    }\n    buffer_write_fd(&outfile, out_fd);\n    output = &outfile;\n  }\n\n  if(ret) {\n    errmsg_infosys(\"input\");\n    return errno == ENOENT ? 127 : 1;\n  }\n\n  // xml_reader_init(&r, &infile);\n  doc = xml_read_tree(&infile);\n\n  xml_print(doc, output, xmlpp_fmt);\n  // xml_read_callback(&r, xml_read_function);\n  buffer_close(&infile);\n\n  buffer_putnlflush(output);\n  buffer_close(output);\n\n  if(inplace) {\n    if(unlink(input_file) == -1) {\n      errmsg_infosys(\"unlink\");\n      return 1;\n    }\n    if(rename(tmpl, input_file) == -1) {\n      errmsg_infosys(\"rename\");\n      return 1;\n    }\n  }\n\n  return 0;\n}\n",
+			"file": "xmlpp.c",
+			"file_size": 6206,
+			"file_write_time": 132397330262871869,
 			"settings":
 			{
-				"buffer_size": 1364,
-				"encoding": "UTF-8",
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/mmap/mmap_read_fd_range.c",
-			"settings":
-			{
-				"buffer_size": 1018,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/uint64.h",
-			"settings":
-			{
-				"buffer_size": 2557,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/seek/seek_set.c",
-			"settings":
-			{
-				"buffer_size": 398,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/seek/seek_end.c",
-			"settings":
-			{
-				"buffer_size": 347,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/seek/seek_cur.c",
-			"settings":
-			{
-				"buffer_size": 328,
+				"buffer_size": 6206,
 				"line_ending": "Unix"
 			}
 		}
@@ -314,27 +218,69 @@
 		"/home/roman/Dokumente/Sources/c-utils",
 		"/home/roman/Dokumente/Sources/c-utils/lib",
 		"/home/roman/Dokumente/Sources/c-utils/lib/cbmap",
+		"/home/roman/Dokumente/Sources/c-utils/lib/json",
 		"/home/roman/Dokumente/Sources/c-utils/lib/seek"
 	],
 	"file_history":
 	[
 		"/home/roman/Dokumente/Sources/c-utils/lib/slist.h",
-		"/home/roman/Dokumente/Sources/c-utils/lib/stralloc/buffer_put_escaped.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/open/open_temp.c",
+		"/home/roman/Dokumente/Sources/c-utils/pipeinfo.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/open/open_excl.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/open/open_read.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/buffer/buffer_write_fd.c",
+		"/home/roman/Dokumente/Sources/c-utils/xmlpp.c",
+		"/home/roman/Dokumente/Sources/c-utils/strip-comments.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/json/json_print.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/json/json_read_tree.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/json/json_read_callback.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/json/json_parse.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/stralloc/stralloc_catxlong.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/fmt/fmt_ulong0.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/stralloc/stralloc_catxlong0.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/fmt/fmt_xlong.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/scan/scan_utf8.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/scan.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/utf8.h",
+		"/home/roman/Dokumente/Sources/c-utils/examples/utf8_example.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/scan/scan_utf8_sem.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/ucs/str_utf8_latin.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/ucs/stralloc_utf8_to_latin1.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/ucs.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/ucs/stralloc_latin1_to_utf8.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/ucs/scan_latin1_utf8.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/slist/slist_push.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/stralloc.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/scan/scan_whitenskip.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/path/path_exists.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/path/path_readlink.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/strlist/strlist_sort.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/array.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/stralloc/mmap_filename.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/stralloc/stralloc_trunc.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/errmsg/errmsg_iam.c",
+		"/home/roman/Dokumente/Sources/c-utils/buffertest.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/mmap/mmap_readat.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/mmap/mmap_private.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/mmap.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/mmap/mmap_read_fd_range.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/uint64.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/seek/seek_set.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/seek/seek_end.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/seek/seek_cur.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/mmap/mmap_read.c",
 		"/home/roman/Dokumente/Sources/c-utils/CMakeLists.txt",
+		"/home/roman/Dokumente/Sources/c-utils/lib/stralloc/openreadclose.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/ucs/ucs_latin1.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/stralloc/buffer_put_escaped.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/seek.h",
 		"/home/roman/Dokumente/Sources/c-utils/lib/mmap/mmap_read_fd.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/mmap/mmap_read_fd_range.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/scan.h",
-		"/home/roman/Dokumente/Sources/c-utils/lib/path/path_readlink.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/dir.h",
 		"/home/roman/Dokumente/Sources/c-utils/lib/dir/dir_open.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/path.h",
 		"/home/roman/Dokumente/Sources/c-utils/lib/path/path_realpath.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/path/path_getcwd.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/buffer/buffer_seek.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/seek/seek_cur.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/seek/seek_set.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/seek/seek_by_jump.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/seek/seek_by_read.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/array/array_allocate.c",
@@ -358,13 +304,8 @@
 		"/home/roman/Dokumente/Sources/c-utils/3rdparty/openssl/test/recipes/ocsp-response.der",
 		"/home/roman/Dokumente/Sources/c-utils/lib/json.h",
 		"/home/roman/Dokumente/Sources/c-utils/lib/json/json_recurse.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/slist/slist_push.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/json/json_push.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/json/json_print.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/json/json_free.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/json/json_read_callback.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/json/json_read_tree.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/json/json_parse.c",
 		"/home/roman/Dokumente/Sources/c-utils/genmakefile.h",
 		"/home/roman/Dokumente/Sources/c-utils/piccfg.c",
 		"/home/roman/Dokumente/Sources/c-utils/serial.h",
@@ -379,7 +320,7 @@
 	],
 	"find":
 	{
-		"height": 50.0
+		"height": 44.0
 	},
 	"find_in_files":
 	{
@@ -396,6 +337,33 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"->quote",
+			"quote\\[",
+			"compliant",
+			"->quote",
+			"slist_next",
+			"print_arr",
+			"json_is_identifier_char",
+			"ispunct",
+			"json_is_identifier_char",
+			"print.key",
+			"key",
+			"\\\\\\\\",
+			"out_file",
+			"out_file =",
+			"in_file",
+			"infile",
+			"inplace",
+			"in_plalce",
+			"in_place",
+			"inplace",
+			"main",
+			"inplace",
+			"utf8",
+			"ucs_to_latin1_char",
+			"json_parse_getsa",
+			"json_print_key",
+			"\",\"",
 			"print_number_nonl_base",
 			"dev\"",
 			"print_number_nonl_base",
@@ -496,34 +464,7 @@
 			"readlink",
 			"keepalive",
 			"->keepalive",
-			"keepalive",
-			";\n",
-			"keepalive",
-			"connection.*close",
-			"close",
-			"mediathek_urls",
-			"http_",
-			"http",
-			"separat",
-			"prin",
-			"printer",
-			"separator",
-			"\\\\n",
-			"json_pretty_print",
-			"default_printer",
-			"spacing",
-			"newline",
-			"_data\\(",
-			"_data",
-			"json_data",
-			"slink_new",
-			"slist[a-z_]*\\(",
-			"slist_add\\(",
-			"slist_add",
-			"slink_add",
-			"json.*slint",
-			"json.*slist",
-			"slist.*json"
+			"keepalive"
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -551,7 +492,333 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 258,
+						"buffer_size": 657,
+						"regions":
+						{
+						},
+						"selection":
+						[
+						],
+						"settings":
+						{
+							"color_scheme": "Packages/Outline/outline.hidden-tmTheme",
+							"current_file": "/home/roman/Dokumente/Sources/c-utils/lib/json/json_print.c",
+							"outline_rename_mode": false,
+							"symkeys":
+							[
+								[
+									183,
+									195
+								],
+								[
+									276,
+									293
+								],
+								[
+									421,
+									440
+								],
+								[
+									901,
+									914
+								],
+								[
+									1096,
+									1104
+								],
+								[
+									1197,
+									1206
+								],
+								[
+									1323,
+									1343
+								],
+								[
+									1737,
+									1751
+								],
+								[
+									1842,
+									1865
+								],
+								[
+									2024,
+									2044
+								],
+								[
+									2266,
+									2280
+								],
+								[
+									2614,
+									2628
+								],
+								[
+									3035,
+									3052
+								],
+								[
+									4072,
+									4088
+								],
+								[
+									4959,
+									4973
+								],
+								[
+									5718,
+									5728
+								]
+							],
+							"symlist":
+							[
+								"—Ⓒ– indent_write { … } ; — type",
+								"—Ⓕ– buffer_indent_set ( ) { … } — function",
+								"—Ⓕ– buffer_indent_write ( ) { … } — function",
+								"—Ⓕ– buffer_indent ( ) { … } — function",
+								"—Ⓕ– depth_fn ( ) { … } — function",
+								"—Ⓕ– get_depth ( ) { … } — function",
+								"—Ⓕ– json_default_printer ( ) { … } — function",
+								" ⒡  json_print_val ( ) ; — function declaration",
+								"—Ⓕ– byte_fullfils_predicate ( ) { … } — function",
+								"—Ⓕ– json_print_separator ( ) { … } — function",
+								"—Ⓕ– json_print_key ( ) { … } — function",
+								"—Ⓕ– json_print_str ( ) { … } — function",
+								"—Ⓕ– json_print_object ( ) { … } — function",
+								"—Ⓕ– json_print_array ( ) { … } — function",
+								"—Ⓕ– json_print_val ( ) { … } — function",
+								"—Ⓕ– json_print ( ) { … } — function"
+							],
+							"syntax": "Packages/Outline/outline.hidden-tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 14,
+					"type": "text"
+				}
+			]
+		},
+		{
+			"selected": 3,
+			"sheets":
+			[
+				{
+					"buffer": 1,
+					"file": "jsonpp.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 6721,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								5199,
+								5199
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C Improved/C Improved.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 3457.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "lib/charbuf/charbuf_peekc.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 323,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								322,
+								322
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C Improved/C Improved.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 4,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "lib/json/json_parse.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 4458,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								890,
+								890
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C Improved/C Improved.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 2.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 3,
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "lib/json/json_print.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 5968,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1658,
+								1658
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C Improved/C Improved.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 600.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 5,
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2308,
+						"regions":
+						{
+							"match":
+							{
+								"flags": 112,
+								"regions":
+								[
+									[
+										150,
+										173
+									],
+									[
+										484,
+										507
+									],
+									[
+										738,
+										761
+									],
+									[
+										1072,
+										1095
+									],
+									[
+										1375,
+										1382
+									],
+									[
+										1405,
+										1412
+									],
+									[
+										1701,
+										1708
+									],
+									[
+										1717,
+										1724
+									],
+									[
+										1891,
+										1898
+									],
+									[
+										2082,
+										2089
+									],
+									[
+										2246,
+										2253
+									]
+								],
+								"scope": ""
+							}
+						},
+						"selection":
+						[
+							[
+								1419,
+								1419
+							]
+						],
+						"settings":
+						{
+							"detect_indentation": false,
+							"line_numbers": false,
+							"output_tag": 3,
+							"result_base_dir": "",
+							"result_file_regex": "^([^ \t].*):$",
+							"result_line_regex": "^ +([0-9]+):",
+							"scroll_past_end": true,
+							"syntax": "Packages/Default/Find Results.hidden-tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 897.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 6,
+					"file": "lib/json.h",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 3946,
 						"regions":
 						{
 						},
@@ -564,239 +831,152 @@
 						],
 						"settings":
 						{
-							"color_scheme": "Packages/Outline/outline.hidden-tmTheme",
-							"current_file": "/home/roman/Dokumente/Sources/c-utils/lib/open/open_read.c",
-							"outline_rename_mode": false,
-							"symkeys":
-							[
-								[
-									8,
-									25
-								],
-								[
-									97,
-									124
-								],
-								[
-									205,
-									209
-								],
-								[
-									224,
-									229
-								],
-								[
-									245,
-									249
-								],
-								[
-									264,
-									269
-								],
-								[
-									384,
-									392
-								],
-								[
-									407,
-									416
-								]
-							],
-							"symlist":
-							[
-								" Ⓜ  _FILE_OFFSET_BITS … — macro object",
-								" Ⓜ  _CRT_INTERNAL_NONSTDC_NAMES … — macro object",
-								" Ⓜ  read … — macro object",
-								" Ⓜ  write … — macro object",
-								" Ⓜ  open … — macro object",
-								" Ⓜ  close … — macro object",
-								" Ⓜ  O_BINARY … — macro object",
-								"—Ⓕ– open_read ( ) { … } — function"
-							],
-							"syntax": "Packages/Outline/outline.hidden-tmLanguage"
+							"syntax": "Packages/C Improved/C Improved.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 330.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 26,
+					"stack_index": 10,
 					"type": "text"
-				}
-			]
-		},
-		{
-			"selected": 2,
-			"sheets":
-			[
+				},
 				{
-					"buffer": 1,
-					"file": "pipeinfo.c",
+					"buffer": 7,
+					"file": "lib/path/symlink.c",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 10750,
+						"buffer_size": 7989,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								10367,
-								10367
+								668,
+								668
 							]
 						],
 						"settings":
 						{
 							"syntax": "Packages/C Improved/C Improved.tmLanguage",
 							"tab_size": 2,
-							"translate_tabs_to_spaces": true,
-							"typescript_plugin_format_options":
-							{
-								"convertTabsToSpaces": true,
-								"indentSize": 2,
-								"tabSize": 2
-							}
+							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 11341.0,
+						"translation.y": 690.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 2,
+					"stack_index": 11,
 					"type": "text"
 				},
 				{
-					"buffer": 2,
-					"file": "lib/open/open_excl.c",
+					"buffer": 8,
+					"file": "lib/str/str_copyn.c",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 586,
+						"buffer_size": 271,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								516,
-								516
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C Improved/C Improved.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 206.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 1,
-					"type": "text"
-				},
-				{
-					"buffer": 3,
-					"file": "lib/open/open_read.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 489,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								357,
-								357
+								0,
+								0
 							]
 						],
 						"settings":
 						{
 							"syntax": "Packages/C Improved/C Improved.tmLanguage",
-							"typescript_plugin_format_options":
-							{
-								"convertTabsToSpaces": true,
-								"indentSize": 2,
-								"tabSize": 2
-							}
-						},
-						"translation.x": 0.0,
-						"translation.y": 301.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 0,
-					"type": "text"
-				},
-				{
-					"buffer": 4,
-					"file": "lib/slist/slist_push.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 144,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								67,
-								67
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C Improved/C Improved.tmLanguage"
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 4,
+					"stack_index": 12,
 					"type": "text"
 				},
 				{
-					"buffer": 5,
-					"file": "lib/stralloc.h",
+					"buffer": 9,
+					"file": "lib/byte/byte_rchr.c",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 12024,
+						"buffer_size": 430,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								2504,
-								2504
+								0,
+								0
 							]
 						],
 						"settings":
 						{
-							"syntax": "Packages/C Improved/C Improved.tmLanguage"
+							"syntax": "Packages/C Improved/C Improved.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 1914.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 13,
+					"type": "text"
+				},
+				{
+					"buffer": 10,
+					"file": "lib/open/open_temp.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1567,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1131,
+								1131
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C Improved/C Improved.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 815.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 6,
 					"type": "text"
 				},
 				{
-					"buffer": 6,
-					"file": "lib/scan/scan_whitenskip.c",
+					"buffer": 11,
+					"file": "lib/errmsg.h",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 208,
+						"buffer_size": 1903,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								63,
-								63
+								1814,
+								1814
 							]
 						],
 						"settings":
@@ -804,79 +984,19 @@
 							"syntax": "Packages/C Improved/C Improved.tmLanguage"
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 294.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 7,
 					"type": "text"
 				},
 				{
-					"buffer": 7,
-					"file": "lib/mmap/mmap_read.c",
+					"buffer": 12,
+					"file": "lib/buffer.h",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 1297,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								825,
-								825
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C Improved/C Improved.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 805.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 9,
-					"type": "text"
-				},
-				{
-					"buffer": 8,
-					"file": "CMakeLists.txt",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 41000,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								38915,
-								38915
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/CMake/CMake.sublime-syntax",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 26309.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 3,
-					"type": "text"
-				},
-				{
-					"buffer": 9,
-					"file": "lib/stralloc/openreadclose.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 381,
+						"buffer_size": 10359,
 						"regions":
 						{
 						},
@@ -901,71 +1021,20 @@
 					"type": "text"
 				},
 				{
-					"buffer": 10,
+					"buffer": 13,
+					"file": "lib/buffer/buffer_write_fd.c",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 447,
-						"regions":
-						{
-							"match":
-							{
-								"flags": 112,
-								"regions":
-								[
-									[
-										161,
-										168
-									],
-									[
-										348,
-										355
-									]
-								],
-								"scope": ""
-							}
-						},
-						"selection":
-						[
-							[
-								167,
-								167
-							]
-						],
-						"settings":
-						{
-							"detect_indentation": false,
-							"line_numbers": false,
-							"output_tag": 1,
-							"result_base_dir": "",
-							"result_file_regex": "^([^ \t].*):$",
-							"result_line_regex": "^ +([0-9]+):",
-							"scroll_past_end": true,
-							"syntax": "Packages/Default/Find Results.hidden-tmLanguage",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 17,
-					"type": "text"
-				},
-				{
-					"buffer": 11,
-					"file": "lib/path/path_exists.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 395,
+						"buffer_size": 455,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								288,
-								288
+								2,
+								2
 							]
 						],
 						"settings":
@@ -973,87 +1042,27 @@
 							"syntax": "Packages/C Improved/C Improved.tmLanguage"
 						},
 						"translation.x": 0.0,
-						"translation.y": 120.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 16,
-					"type": "text"
-				},
-				{
-					"buffer": 12,
-					"file": "lib/path/path_readlink.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 763,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C Improved/C Improved.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 15,
-					"type": "text"
-				},
-				{
-					"buffer": 13,
-					"file": "lib/strlist/strlist_sort.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 1121,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								1063,
-								1063
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C Improved/C Improved.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 543.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 5,
+					"stack_index": 9,
 					"type": "text"
 				},
 				{
 					"buffer": 14,
-					"file": "lib/array.h",
+					"file": "xmlpp.c",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 2541,
+						"buffer_size": 6206,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								687,
-								687
+								6191,
+								6191
 							]
 						],
 						"settings":
@@ -1063,356 +1072,10 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 452.0,
+						"translation.y": 5114.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 18,
-					"type": "text"
-				},
-				{
-					"buffer": 15,
-					"file": "lib/stralloc/mmap_filename.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 2623,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								264,
-								264
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C Improved/C Improved.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 21,
-					"type": "text"
-				},
-				{
-					"buffer": 16,
-					"file": "lib/stralloc/stralloc_trunc.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 282,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								282,
-								282
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C Improved/C Improved.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 20,
-					"type": "text"
-				},
-				{
-					"buffer": 17,
-					"file": "lib/errmsg/errmsg_iam.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 96,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								59,
-								59
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C Improved/C Improved.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 25,
-					"type": "text"
-				},
-				{
-					"buffer": 18,
-					"file": "buffertest.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 1926,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								781,
-								781
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C Improved/C Improved.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 612.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 12,
-					"type": "text"
-				},
-				{
-					"buffer": 19,
-					"file": "lib/mmap/mmap_readat.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 821,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								285,
-								285
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C Improved/C Improved.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 13,
-					"type": "text"
-				},
-				{
-					"buffer": 20,
-					"file": "lib/mmap/mmap_private.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 1222,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C Improved/C Improved.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 14,
-					"type": "text"
-				},
-				{
-					"buffer": 21,
-					"file": "lib/mmap.h",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 1364,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								417,
-								417
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C Improved/C Improved.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 19.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 11,
-					"type": "text"
-				},
-				{
-					"buffer": 22,
-					"file": "lib/mmap/mmap_read_fd_range.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 1018,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								832,
-								832
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C Improved/C Improved.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 3.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 19,
-					"type": "text"
-				},
-				{
-					"buffer": 23,
-					"file": "lib/uint64.h",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 2557,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								319,
-								319
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C Improved/C Improved.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 1173.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 24,
-					"type": "text"
-				},
-				{
-					"buffer": 24,
-					"file": "lib/seek/seek_set.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 398,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								311,
-								311
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C Improved/C Improved.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 23,
-					"type": "text"
-				},
-				{
-					"buffer": 25,
-					"file": "lib/seek/seek_end.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 347,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								191,
-								191
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C Improved/C Improved.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 22,
-					"type": "text"
-				},
-				{
-					"buffer": 26,
-					"file": "lib/seek/seek_cur.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 328,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								284,
-								284
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C Improved/C Improved.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 10,
+					"stack_index": 5,
 					"type": "text"
 				}
 			]
@@ -1484,6 +1147,142 @@
 		"selected_items":
 		[
 			[
+				"jsonpp",
+				"jsonpp.c"
+			],
+			[
+				"slsit.h",
+				"lib/slist.h"
+			],
+			[
+				"slist",
+				"lib/slist.h"
+			],
+			[
+				"slink",
+				"lib/path/symlink.c"
+			],
+			[
+				"json.h",
+				"lib/json.h"
+			],
+			[
+				"slist.h",
+				"lib/slist.h"
+			],
+			[
+				"peekc",
+				"lib/charbuf/charbuf_peekc.c"
+			],
+			[
+				"json_parse",
+				"lib/json/json_parse.c"
+			],
+			[
+				"copyn",
+				"lib/str/str_copyn.c"
+			],
+			[
+				"rchr",
+				"lib/byte/byte_rchr.c"
+			],
+			[
+				"open_temp",
+				"lib/open/open_temp.c"
+			],
+			[
+				"errmsg",
+				"lib/errmsg.h"
+			],
+			[
+				"buffer_write",
+				"lib/buffer/buffer_write_fd.c"
+			],
+			[
+				"buffer.h",
+				"lib/buffer.h"
+			],
+			[
+				"xmlpp",
+				"xmlpp.c"
+			],
+			[
+				"buffer_write_fd",
+				"lib/buffer/buffer_write_fd.c"
+			],
+			[
+				"strip-com",
+				"strip-comments.c"
+			],
+			[
+				"xlong0",
+				"lib/stralloc/stralloc_catxlong0.c"
+			],
+			[
+				"long0",
+				"lib/fmt/fmt_ulong0.c"
+			],
+			[
+				"catxl",
+				"lib/stralloc/stralloc_catxlong.c"
+			],
+			[
+				"stralloc.h",
+				"lib/stralloc.h"
+			],
+			[
+				"fmt_xl",
+				"lib/fmt/fmt_xlong.c"
+			],
+			[
+				"xlong",
+				"lib/fmt/fmt_xlong.c"
+			],
+			[
+				"scan.h",
+				"lib/scan.h"
+			],
+			[
+				"json_par",
+				"lib/json/json_parse.c"
+			],
+			[
+				"scan_latin1_utf8",
+				"lib/ucs/scan_latin1_utf8.c"
+			],
+			[
+				"scan_utf",
+				"lib/ucs/scan_latin1_utf8.c"
+			],
+			[
+				"latin_to",
+				"lib/ucs/stralloc_latin1_to_utf8.c"
+			],
+			[
+				"ucs",
+				"lib/ucs.h"
+			],
+			[
+				"utf8",
+				"lib/ucs/stralloc_utf8_to_latin1.c"
+			],
+			[
+				"utf",
+				"lib/utf8.h"
+			],
+			[
+				"json_ca",
+				"lib/json/json_read_callback.c"
+			],
+			[
+				"json_",
+				"lib/json/json_read_tree.c"
+			],
+			[
+				"print",
+				"lib/json/json_print.c"
+			],
+			[
 				"open_read",
 				"lib/open/open_read.c"
 			],
@@ -1504,16 +1303,8 @@
 				"pipeinfo.c"
 			],
 			[
-				"slist",
-				"lib/slist.h"
-			],
-			[
 				"buffer_putes",
 				"lib/stralloc/buffer_put_escaped.c"
-			],
-			[
-				"stralloc.h",
-				"lib/stralloc.h"
 			],
 			[
 				"white",
@@ -1558,10 +1349,6 @@
 			[
 				"strlist_sort",
 				"lib/strlist/strlist_sort.c"
-			],
-			[
-				"slist.h",
-				"lib/slist.h"
 			],
 			[
 				"array.h",
@@ -1624,10 +1411,6 @@
 				"lib/seek/seek_by_read.c"
 			],
 			[
-				"errmsg",
-				"lib/errmsg.h"
-			],
-			[
 				"seek_b",
 				"lib/seek/seek_by_jump.c"
 			],
@@ -1652,10 +1435,6 @@
 				"lib/buffer.h"
 			],
 			[
-				"buffer.h",
-				"lib/buffer.h"
-			],
-			[
 				"stralloc",
 				"lib/stralloc.h"
 			],
@@ -1674,10 +1453,6 @@
 			[
 				"path.h",
 				"lib/path.h"
-			],
-			[
-				"scan.h",
-				"lib/scan.h"
 			],
 			[
 				"dir_open",
@@ -1706,10 +1481,6 @@
 			[
 				"mediathek-list",
 				"mediathek-list.c"
-			],
-			[
-				"json.h",
-				"lib/json.h"
 			],
 			[
 				"json_free.c",
