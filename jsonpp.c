@@ -66,7 +66,7 @@ compact_printer(jsonfmt* p, jsonval* v, int depth, int index) {
 
   p->separat = separator ? separator : ",\n";
   p->quote[0] = quote[0];
-  p->quote[1] = '\0';
+  p->quote[1] = quote[1];
   p->precision = 3;
   p->depth = depth;
   p->index = index;
@@ -80,7 +80,7 @@ default_printer(jsonfmt* p, jsonval* v, int depth, int index) {
   p->newline = one_line ? "" : depth > depth_arg ? p->spacing : "\n";
   p->separat = separator ? separator : depth > depth_arg ? ", " : ",\n";
   p->quote[0] = quote[0];
-  p->quote[1] = '\0';
+  p->quote[1] = quote[1];
   p->precision = 10;
   p->depth = depth - (index == -2);
   p->index = index;
@@ -158,6 +158,7 @@ main(int argc, char* argv[]) {
                            {"spacing", 0, NULL, 'W'},
                            {"one-line", 0, NULL, 'o'},
                            {"compact", 0, NULL, 'c'},
+                           {"compliant", 0, NULL, 'C'},
                            {"inplace", 0, NULL, 'i'},
                            {"indent", 0, NULL, 'l'},
                            {0, 0, 0, 0}};
@@ -165,7 +166,7 @@ main(int argc, char* argv[]) {
   errmsg_iam(argv[0]);
 
   for(;;) {
-    c = getopt_long(argc, argv, "hsdol:cD:S:W:i", opts, &index);
+    c = getopt_long(argc, argv, "hsdol:cD:S:W:iC", opts, &index);
     if(c == -1)
       break;
     if(c == 0)
@@ -180,6 +181,7 @@ main(int argc, char* argv[]) {
       case 'D': scan_int(optarg, &depth_arg); break;
       case 'o': one_line = 1; break;
       case 'c': compact = 1; break;
+      case 'C':  quote[0] = quote[1] = '"'; break;
       case 'l': scan_int(optarg, &indent); break;
       case 'i': in_place = 1; break;
       default: usage(argv[0]); return 1;
