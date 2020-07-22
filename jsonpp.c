@@ -16,11 +16,10 @@
 #include <ctype.h>
 #include <sys/types.h>
 
-static charbuf infile;
 static char quote[4] = {'"', 0};
-static int one_line, indent = 2, compact, depth_arg = 3;
+static int one_line, indent = 2, compact, depth_arg = 3, in_place;
 static stralloc indent_str;
-static const char *spacing, *separator = "\n";
+static const char *spacing, *separator;
 
 void
 put_str_escaped(buffer* b, const char* str) {
@@ -31,9 +30,9 @@ put_str_escaped(buffer* b, const char* str) {
 }
 
 static void
-max_depth_fn(jsonval* v, int* arg, int depth) {
-  if(depth > *arg)
-    *arg = depth;
+max_depth_fn(jsonval* v, int* in_file, int depth) {
+  if(depth > *in_file)
+    *in_file = depth;
 }
 
 static int
@@ -44,7 +43,7 @@ get_depth(const jsonval* v) {
 }
 
 static void
-compact_printer(jsonfmt* p, jsonval* v, int depth, int index, char quot) {
+compact_printer(jsonfmt* p, jsonval* v, int depth, int index) {
 
   int valdepth = v ? get_depth(v) : 0;
   int pretty = depth < 4 && valdepth > 1;
@@ -64,8 +63,9 @@ compact_printer(jsonfmt* p, jsonval* v, int depth, int index, char quot) {
 
   p->newline = one_line ? "" : "\n";
   p->spacing = spacing ? spacing : " ";
+
   p->separat = separator ? separator : ",\n";
-  p->quote[0] = quot;
+  p->quote[0] = quote[0];
   p->quote[1] = '\0';
   p->precision = 3;
   p->depth = depth;
@@ -73,13 +73,13 @@ compact_printer(jsonfmt* p, jsonval* v, int depth, int index, char quot) {
 };
 
 static void
-default_printer(jsonfmt* p, jsonval* v, int depth, int index, char quot) {
+default_printer(jsonfmt* p, jsonval* v, int depth, int index) {
   int pretty = v && get_depth(v) > 1;
   p->indent = depth > depth_arg ? "" : "  "; // depth <= 1 ? "  " : depth > 3 ? "  " : " ";
   p->spacing = spacing ? spacing : " ";
   p->newline = one_line ? "" : depth > depth_arg ? p->spacing : "\n";
-  p->separat = "\n"; // separator ? separator : depth > depth_arg ? ", " : ",\n";
-  p->quote[0] = quot;
+  p->separat = separator ? separator : depth > depth_arg ? ", " : ",\n";
+  p->quote[0] = quote[0];
   p->quote[1] = '\0';
   p->precision = 10;
   p->depth = depth - (index == -2);
@@ -144,10 +144,11 @@ charbuf_read(fd_t fd, char* buf, size_t len, void* ptr) {
 int
 main(int argc, char* argv[]) {
   int fd;
-  jsonval* doc;
   stralloc tmp;
   int c;
   int index = 0;
+  int out_fd = 1;
+  const char* out_file = 0;
 
   struct longopt opts[] = {{"help", 0, NULL, 'h'},
                            {"single-quote", 0, NULL, 's'},
@@ -157,13 +158,14 @@ main(int argc, char* argv[]) {
                            {"spacing", 0, NULL, 'W'},
                            {"one-line", 0, NULL, 'o'},
                            {"compact", 0, NULL, 'c'},
+                           {"inplace", 0, NULL, 'i'},
                            {"indent", 0, NULL, 'l'},
                            {0, 0, 0, 0}};
 
   errmsg_iam(argv[0]);
 
   for(;;) {
-    c = getopt_long(argc, argv, "hsdol:cD:S:W:", opts, &index);
+    c = getopt_long(argc, argv, "hsdol:cD:S:W:i", opts, &index);
     if(c == -1)
       break;
     if(c == 0)
@@ -179,6 +181,7 @@ main(int argc, char* argv[]) {
       case 'o': one_line = 1; break;
       case 'c': compact = 1; break;
       case 'l': scan_int(optarg, &indent); break;
+      case 'i': in_place = 1; break;
       default: usage(argv[0]); return 1;
     }
   }
@@ -189,20 +192,58 @@ main(int argc, char* argv[]) {
 
   stralloc_init(&tmp);
 
-  fd = optind < argc ? open_read(argv[optind]) : 0;
+  if(optind == argc) {
+    argv[++argc] = NULL;
+  }
 
-  charbuf_init(&infile, (read_fn*)&read, fd);
+  while(optind < argc) {
+    charbuf in_buf;
+    buffer out_buf;
+    jsonval* doc;
+    const char* in_file = argv[optind++];
 
-  doc = json_read_tree(&infile);
+    fd = in_file ? open_read(in_file) : 0;
 
-  //  buffer_puts(buffer_2, "max_depth: ");
-  //  buffer_putulong(buffer_2, get_depth(doc));
-  //  buffer_putnlflush(buffer_2);
+    charbuf_init(&in_buf, (read_fn*)&read, fd);
 
-  json_pretty_print(*doc, buffer_1);
-  buffer_flush(buffer_1);
+    if(out_fd > 2)
+      close(out_fd);
 
-  charbuf_close(&infile);
+    if(in_place) {
+      const char tmpl[] = ".tmpXXXXXX";
+      out_file = alloc(str_len(in_file)+str_len(tmpl));
+      str_copy(&out_file[str_copy(out_file, in_file)], tmpl);
 
-  json_free(doc);
+      out_fd = open_temp(&out_file);
+    } else if(out_file) {
+      out_fd = open_trunc(out_file);
+    }
+
+    buffer_write_fd(&out_buf, out_fd);
+
+    doc = json_read_tree(&in_buf);
+
+    buffer_puts(buffer_2, "out file: ");
+    buffer_puts(buffer_2, out_file);
+    buffer_putnlflush(buffer_2);
+
+    json_pretty_print(*doc, &out_buf);
+    buffer_flush(&out_buf);
+
+    charbuf_close(&in_buf);
+    buffer_close(&out_buf);
+
+    json_free(doc);
+
+    if(in_place) {
+      if(unlink(in_file) == -1) {
+        errmsg_infosys("unlink",0);
+        return 1;
+      }
+      if(rename(out_file, in_file) == -1) {
+        errmsg_infosys("rename",0);
+        return 1;
+      }
+    }
+  }
 }

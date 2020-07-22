@@ -8,10 +8,10 @@
 	"buffers":
 	[
 		{
-			"contents": " Ⓜ  stat … — macro object\n—Ⓒ– procfd { … } ; — type\n Ⓣ  procfd_t ; — typedef\n Ⓣ  pipe_t ; — typedef\n—Ⓕ– usage ( ) { … } — function\n—Ⓕ– get_pipe ( ) { … } — function\n—Ⓕ– print_number_nonl ( ) { … } — function\n—Ⓕ– print_number ( ) { … } — function\n—Ⓕ– type ( ) { … } — function\n—Ⓕ– print_stat ( ) { … } — function\n—Ⓕ– print_stralloc_nonl ( ) { … } — function\n—Ⓕ– print_stralloc ( ) { … } — function\n—Ⓕ– print_string_nonl ( ) { … } — function\n—Ⓕ– print_string ( ) { … } — function\n—Ⓕ– proc_fd_root ( ) { … } — function\n—Ⓕ– proc_subdir_path ( ) { … } — function\n—Ⓕ– proc_fd_path ( ) { … } — function\n—Ⓕ– proc_fdinfo_path ( ) { … } — function\n—Ⓕ– proc_fd_str ( ) { … } — function\n—Ⓕ– read_proc ( ) { … } — function\n—Ⓕ– compare_pipes ( ) { … } — function\n—Ⓕ– procfd_dump ( ) { … } — function\n—Ⓕ– main ( ) { … } — function",
+			"contents": " Ⓜ  _FILE_OFFSET_BITS … — macro object\n Ⓜ  _CRT_INTERNAL_NONSTDC_NAMES … — macro object\n Ⓜ  read … — macro object\n Ⓜ  write … — macro object\n Ⓜ  open … — macro object\n Ⓜ  close … — macro object\n Ⓜ  O_BINARY … — macro object\n—Ⓕ– open_read ( ) { … } — function",
 			"settings":
 			{
-				"buffer_size": 815,
+				"buffer_size": 258,
 				"line_ending": "Unix",
 				"name": "𝌆 Outline",
 				"scratch": true
@@ -21,7 +21,24 @@
 			"file": "pipeinfo.c",
 			"settings":
 			{
-				"buffer_size": 10395,
+				"buffer_size": 10750,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/open/open_excl.c",
+			"settings":
+			{
+				"buffer_size": 586,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/open/open_read.c",
+			"settings":
+			{
+				"buffer_size": 489,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
@@ -379,6 +396,16 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"print_number_nonl_base",
+			"dev\"",
+			"print_number_nonl_base",
+			"dev\"",
+			"print_number_nonl_base",
+			"number_nonl",
+			"number_non",
+			"print_stralloc_nonl",
+			"print_number_nonl",
+			"print_num",
 			"type\\(",
 			"slist_add",
 			"_dump",
@@ -496,15 +523,7 @@
 			"slink_add",
 			"json.*slint",
 			"json.*slist",
-			"slist.*json",
-			"slink.*json",
-			"slink",
-			"json_recurse",
-			"recurse",
-			"efence",
-			"coff_symtab_mchp_types",
-			"3065",
-			"31BFED"
+			"slist.*json"
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -532,138 +551,67 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 815,
+						"buffer_size": 258,
 						"regions":
 						{
 						},
 						"selection":
 						[
+							[
+								0,
+								0
+							]
 						],
 						"settings":
 						{
 							"color_scheme": "Packages/Outline/outline.hidden-tmTheme",
-							"current_file": "/home/roman/Dokumente/Sources/c-utils/pipeinfo.c",
+							"current_file": "/home/roman/Dokumente/Sources/c-utils/lib/open/open_read.c",
 							"outline_rename_mode": false,
 							"symkeys":
 							[
 								[
-									548,
-									552
+									8,
+									25
 								],
 								[
-									582,
-									588
+									97,
+									124
 								],
 								[
-									676,
-									684
+									205,
+									209
 								],
 								[
-									736,
-									742
+									224,
+									229
 								],
 								[
-									827,
-									832
+									245,
+									249
 								],
 								[
-									1345,
-									1353
+									264,
+									269
 								],
 								[
-									1601,
-									1618
+									384,
+									392
 								],
 								[
-									1750,
-									1762
-								],
-								[
-									1880,
-									1884
-								],
-								[
-									2213,
-									2223
-								],
-								[
-									3365,
-									3384
-								],
-								[
-									3549,
-									3563
-								],
-								[
-									3684,
-									3701
-								],
-								[
-									3808,
-									3820
-								],
-								[
-									3936,
-									3948
-								],
-								[
-									4120,
-									4136
-								],
-								[
-									4318,
-									4330
-								],
-								[
-									4502,
-									4518
-								],
-								[
-									4695,
-									4706
-								],
-								[
-									4800,
-									4809
-								],
-								[
-									7472,
-									7485
-								],
-								[
-									7589,
-									7600
-								],
-								[
-									8465,
-									8469
+									407,
+									416
 								]
 							],
 							"symlist":
 							[
-								" Ⓜ  stat … — macro object",
-								"—Ⓒ– procfd { … } ; — type",
-								" Ⓣ  procfd_t ; — typedef",
-								" Ⓣ  pipe_t ; — typedef",
-								"—Ⓕ– usage ( ) { … } — function",
-								"—Ⓕ– get_pipe ( ) { … } — function",
-								"—Ⓕ– print_number_nonl ( ) { … } — function",
-								"—Ⓕ– print_number ( ) { … } — function",
-								"—Ⓕ– type ( ) { … } — function",
-								"—Ⓕ– print_stat ( ) { … } — function",
-								"—Ⓕ– print_stralloc_nonl ( ) { … } — function",
-								"—Ⓕ– print_stralloc ( ) { … } — function",
-								"—Ⓕ– print_string_nonl ( ) { … } — function",
-								"—Ⓕ– print_string ( ) { … } — function",
-								"—Ⓕ– proc_fd_root ( ) { … } — function",
-								"—Ⓕ– proc_subdir_path ( ) { … } — function",
-								"—Ⓕ– proc_fd_path ( ) { … } — function",
-								"—Ⓕ– proc_fdinfo_path ( ) { … } — function",
-								"—Ⓕ– proc_fd_str ( ) { … } — function",
-								"—Ⓕ– read_proc ( ) { … } — function",
-								"—Ⓕ– compare_pipes ( ) { … } — function",
-								"—Ⓕ– procfd_dump ( ) { … } — function",
-								"—Ⓕ– main ( ) { … } — function"
+								" Ⓜ  _FILE_OFFSET_BITS … — macro object",
+								" Ⓜ  _CRT_INTERNAL_NONSTDC_NAMES … — macro object",
+								" Ⓜ  read … — macro object",
+								" Ⓜ  write … — macro object",
+								" Ⓜ  open … — macro object",
+								" Ⓜ  close … — macro object",
+								" Ⓜ  O_BINARY … — macro object",
+								"—Ⓕ– open_read ( ) { … } — function"
 							],
 							"syntax": "Packages/Outline/outline.hidden-tmLanguage"
 						},
@@ -671,13 +619,13 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 24,
+					"stack_index": 26,
 					"type": "text"
 				}
 			]
 		},
 		{
-			"selected": 0,
+			"selected": 2,
 			"sheets":
 			[
 				{
@@ -686,15 +634,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 10395,
+						"buffer_size": 10750,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								7760,
-								7760
+								10367,
+								10367
 							]
 						],
 						"settings":
@@ -710,14 +658,76 @@
 							}
 						},
 						"translation.x": 0.0,
-						"translation.y": 8764.0,
+						"translation.y": 11341.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "lib/open/open_excl.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 586,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								516,
+								516
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C Improved/C Improved.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 206.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "lib/open/open_read.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 489,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								357,
+								357
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C Improved/C Improved.tmLanguage",
+							"typescript_plugin_format_options":
+							{
+								"convertTabsToSpaces": true,
+								"indentSize": 2,
+								"tabSize": 2
+							}
+						},
+						"translation.x": 0.0,
+						"translation.y": 301.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 0,
 					"type": "text"
 				},
 				{
-					"buffer": 2,
+					"buffer": 4,
 					"file": "lib/slist/slist_push.c",
 					"semi_transient": false,
 					"settings":
@@ -741,11 +751,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 2,
+					"stack_index": 4,
 					"type": "text"
 				},
 				{
-					"buffer": 3,
+					"buffer": 5,
 					"file": "lib/stralloc.h",
 					"semi_transient": false,
 					"settings":
@@ -769,11 +779,11 @@
 						"translation.y": 1914.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 4,
+					"stack_index": 6,
 					"type": "text"
 				},
 				{
-					"buffer": 4,
+					"buffer": 6,
 					"file": "lib/scan/scan_whitenskip.c",
 					"semi_transient": false,
 					"settings":
@@ -797,11 +807,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 5,
+					"stack_index": 7,
 					"type": "text"
 				},
 				{
-					"buffer": 5,
+					"buffer": 7,
 					"file": "lib/mmap/mmap_read.c",
 					"semi_transient": false,
 					"settings":
@@ -827,11 +837,11 @@
 						"translation.y": 805.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 7,
+					"stack_index": 9,
 					"type": "text"
 				},
 				{
-					"buffer": 6,
+					"buffer": 8,
 					"file": "CMakeLists.txt",
 					"semi_transient": false,
 					"settings":
@@ -857,11 +867,11 @@
 						"translation.y": 26309.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 1,
+					"stack_index": 3,
 					"type": "text"
 				},
 				{
-					"buffer": 7,
+					"buffer": 9,
 					"file": "lib/stralloc/openreadclose.c",
 					"semi_transient": false,
 					"settings":
@@ -887,11 +897,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 6,
+					"stack_index": 8,
 					"type": "text"
 				},
 				{
-					"buffer": 8,
+					"buffer": 10,
 					"semi_transient": false,
 					"settings":
 					{
@@ -938,11 +948,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 15,
+					"stack_index": 17,
 					"type": "text"
 				},
 				{
-					"buffer": 9,
+					"buffer": 11,
 					"file": "lib/path/path_exists.c",
 					"semi_transient": false,
 					"settings":
@@ -966,11 +976,11 @@
 						"translation.y": 120.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 14,
+					"stack_index": 16,
 					"type": "text"
 				},
 				{
-					"buffer": 10,
+					"buffer": 12,
 					"file": "lib/path/path_readlink.c",
 					"semi_transient": false,
 					"settings":
@@ -996,11 +1006,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 13,
+					"stack_index": 15,
 					"type": "text"
 				},
 				{
-					"buffer": 11,
+					"buffer": 13,
 					"file": "lib/strlist/strlist_sort.c",
 					"semi_transient": false,
 					"settings":
@@ -1026,11 +1036,11 @@
 						"translation.y": 543.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 3,
+					"stack_index": 5,
 					"type": "text"
 				},
 				{
-					"buffer": 12,
+					"buffer": 14,
 					"file": "lib/array.h",
 					"semi_transient": false,
 					"settings":
@@ -1056,11 +1066,11 @@
 						"translation.y": 452.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 16,
+					"stack_index": 18,
 					"type": "text"
 				},
 				{
-					"buffer": 13,
+					"buffer": 15,
 					"file": "lib/stralloc/mmap_filename.c",
 					"semi_transient": false,
 					"settings":
@@ -1086,11 +1096,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 19,
+					"stack_index": 21,
 					"type": "text"
 				},
 				{
-					"buffer": 14,
+					"buffer": 16,
 					"file": "lib/stralloc/stralloc_trunc.c",
 					"semi_transient": false,
 					"settings":
@@ -1114,11 +1124,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 18,
+					"stack_index": 20,
 					"type": "text"
 				},
 				{
-					"buffer": 15,
+					"buffer": 17,
 					"file": "lib/errmsg/errmsg_iam.c",
 					"semi_transient": false,
 					"settings":
@@ -1142,11 +1152,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 23,
+					"stack_index": 25,
 					"type": "text"
 				},
 				{
-					"buffer": 16,
+					"buffer": 18,
 					"file": "buffertest.c",
 					"semi_transient": false,
 					"settings":
@@ -1172,11 +1182,11 @@
 						"translation.y": 612.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 10,
+					"stack_index": 12,
 					"type": "text"
 				},
 				{
-					"buffer": 17,
+					"buffer": 19,
 					"file": "lib/mmap/mmap_readat.c",
 					"semi_transient": false,
 					"settings":
@@ -1202,11 +1212,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 11,
+					"stack_index": 13,
 					"type": "text"
 				},
 				{
-					"buffer": 18,
+					"buffer": 20,
 					"file": "lib/mmap/mmap_private.c",
 					"semi_transient": false,
 					"settings":
@@ -1232,11 +1242,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 12,
+					"stack_index": 14,
 					"type": "text"
 				},
 				{
-					"buffer": 19,
+					"buffer": 21,
 					"file": "lib/mmap.h",
 					"semi_transient": false,
 					"settings":
@@ -1260,11 +1270,11 @@
 						"translation.y": 19.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 9,
+					"stack_index": 11,
 					"type": "text"
 				},
 				{
-					"buffer": 20,
+					"buffer": 22,
 					"file": "lib/mmap/mmap_read_fd_range.c",
 					"semi_transient": false,
 					"settings":
@@ -1290,11 +1300,11 @@
 						"translation.y": 3.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 17,
+					"stack_index": 19,
 					"type": "text"
 				},
 				{
-					"buffer": 21,
+					"buffer": 23,
 					"file": "lib/uint64.h",
 					"semi_transient": false,
 					"settings":
@@ -1318,11 +1328,11 @@
 						"translation.y": 1173.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 22,
+					"stack_index": 24,
 					"type": "text"
 				},
 				{
-					"buffer": 22,
+					"buffer": 24,
 					"file": "lib/seek/seek_set.c",
 					"semi_transient": false,
 					"settings":
@@ -1346,11 +1356,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 21,
+					"stack_index": 23,
 					"type": "text"
 				},
 				{
-					"buffer": 23,
+					"buffer": 25,
 					"file": "lib/seek/seek_end.c",
 					"semi_transient": false,
 					"settings":
@@ -1374,11 +1384,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 20,
+					"stack_index": 22,
 					"type": "text"
 				},
 				{
-					"buffer": 24,
+					"buffer": 26,
 					"file": "lib/seek/seek_cur.c",
 					"semi_transient": false,
 					"settings":
@@ -1402,7 +1412,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 8,
+					"stack_index": 10,
 					"type": "text"
 				}
 			]
@@ -1473,6 +1483,14 @@
 		"last_filter": "",
 		"selected_items":
 		[
+			[
+				"open_read",
+				"lib/open/open_read.c"
+			],
+			[
+				"open_",
+				"lib/open/open_excl.c"
+			],
 			[
 				"cmake",
 				"CMakeLists.txt"

@@ -8,9 +8,11 @@
 #include <ctype.h>
 
 int
-json_parse_getsa(charbuf* b, stralloc* sa) {
+json_parse_getsa(charbuf* b, stralloc* out) {
   char ch;
   int quoted = 0;
+  stralloc sa;
+  stralloc_init(&sa);
   charbuf_skip_pred(b, &isspace);
   quoted = charbuf_skip_ifeq(b, '"');
 
@@ -28,7 +30,17 @@ json_parse_getsa(charbuf* b, stralloc* sa) {
     } else if(!quoted && ch == ':') {
       break;
     }
-    stralloc_append(sa, &ch);
+
+    stralloc_append(&sa, &ch);
+  }
+  for(size_t i = 0; i < sa.len; i++) {
+    unsigned int r, n;
+    if((r = scan_utf8(&sa.s[i], sa.len - i, &n)) > 1) {
+      stralloc_cats(out, "\\u");
+    } else {
+      ch = n;
+      stralloc_append(out, &ch);
+    }
   }
   return 1;
 }

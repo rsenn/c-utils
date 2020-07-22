@@ -274,6 +274,8 @@ size_t stralloc_case_starts(const stralloc*, const char* prefix);
 size_t stralloc_case_start(const stralloc*, const stralloc* prefix);
 size_t stralloc_catuint(stralloc*, unsigned int ui);
 size_t stralloc_catxlong(stralloc*, unsigned long u);
+size_t stralloc_catxlong0(stralloc* sa, unsigned long n, int pad);
+
 size_t stralloc_count(const stralloc*, char c);
 size_t stralloc_erase(stralloc*);
 void stralloc_lower(stralloc*);

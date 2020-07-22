@@ -46,8 +46,8 @@ open_temp(const char** pt) {
     tmpl = (const char*)default_tmpl;
     tmp = (char*)&tmpl[5];
   } else {
-    str_copy(default_tmpl, tmpl);
-    tmpl = default_tmpl;
+    /* str_copy(default_tmpl, tmpl);
+     tmpl = default_tmpl;*/
     tmp = (char*)tmpl + str_chr(tmpl, 'X');
     if(tmp < tmpl)
       goto error;
