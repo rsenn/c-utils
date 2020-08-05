@@ -181,7 +181,7 @@ main(int argc, char* argv[]) {
       case 'D': scan_int(optarg, &depth_arg); break;
       case 'o': one_line = 1; break;
       case 'c': compact = 1; break;
-      case 'C':  quote[0] = quote[1] = '"'; break;
+      case 'C': quote[0] = quote[1] = '"'; break;
       case 'l': scan_int(optarg, &indent); break;
       case 'i': in_place = 1; break;
       default: usage(argv[0]); return 1;

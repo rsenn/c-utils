@@ -74,10 +74,15 @@ get_crc32(const char* filename, uint32* crc) {
 }
 
 uint32
-buffer_crc32(buffer* b) {
+byte_crc32(const char* x, size_t n) {
   uint32 r;
-  r = crc32(0, (const char*)b->x, b->n);
+  r = crc32(0, (const char*)x, n);
   return r;
+}
+
+uint32
+buffer_crc32(buffer* b) {
+  return byte_crc32(b->x, b->n);
 }
 
 void
@@ -189,12 +194,15 @@ int
 patch_check(unsigned char* x, size_t n, patch_t* p) {
   size_t i, nrec = array_length(&p->records, sizeof(record_t));
   size_t done = 0;
+  if(p->file_size && p->file_size != n)
+    return -1;
+  if(p->crc32 && p->crc32 != byte_crc32((const char*)x, n))
+    return -1;
 
   buffer_putm_internal(buffer_2, "Checking for '", p->name, "'...", 0);
   buffer_flush(buffer_2);
 
   if(p->file_size) {
-
     if(p->file_size && p->file_size != n) {
       buffer_putsflush(buffer_2, "SIZE MISMATCH\n");
       return -1;
@@ -352,17 +360,17 @@ main(int argc, char* argv[]) {
     }
   }
 
-  patch_new("Sublime Text 3095 Linux x64", 0, 0);
+  patch_new("Sublime Text 3095 Linux x64", 5402336, 0xa1431014);
   patch(0xd703, 0x85, 0x39);
-  patch_new("Sublime Text 3095 Linux x86", 0, 0);
+  patch_new("Sublime Text 3095 Linux x86", 5186596, 0x206b4a7e);
   patch(0xd152, 0x85, 0x39);
 
-  patch_new("Sublime Text 3095 Windows x64", 0, 0);
+  patch_new("Sublime Text 3095 Windows x64", 6152960, 0x47994765);
 
   patch(0xf0bdf, 0x85, 0x3B);
-  patch_new("Sublime Text 3095 Windows x86", 0, 0);
+  patch_new("Sublime Text 3095 Windows x86", 4338432, 0xe1cbd5aa);
   patch(0xa96f4, 0x1a, 0x2a);
-  patch_new("Sublime Text 3095 Mac", 0, 0);
+  patch_new("Sublime Text 3095 Mac", 12522320, 0x81c9200c);
 
   patch(0x6615, 0x85, 0x39);
 
@@ -376,15 +384,15 @@ main(int argc, char* argv[]) {
   patch(0x001BD115, 0x00, 0x90);
 
   /* Linux x64 */
-  patch_new("Sublime Text 3126 Linux x64", 5200392, 0);
+  patch_new("Sublime Text 3126 Linux x64", 5200392, 0x53b8b50c);
   patch(0xc62e, 0x94, 0x95); /* License Check */
 
   /* Linux x86 */
-  patch_new("Sublime Text 3126 Linux x86", 5200392, 0);
+  patch_new("Sublime Text 3126 Linux x86", 4992708, 0xf2562728);
   patch(0xC35C, 0x94, 0x95); /* License Check */
 
   /* Linux x32 */
-  patch_new("Sublime Text 3176 Linux x86", 0, 0);
+  patch_new("Sublime Text 3176 Linux x86", 7555888, 0xa7b1b28c);
   patch(0xD779, 0x00, 0x01);
   patch(0xC068, 0x38, 0x08);
   patch(0xC069, 0x00, 0x01);
@@ -393,7 +401,7 @@ main(int argc, char* argv[]) {
   patch(0x482C7, 0x0C, 0x90);
 
   /* Linux x64 */
-  patch_new("Sublime Text 3176 Linux x64", 0, 0);
+  patch_new("Sublime Text 3176 Linux x64", 7235496, 0x0b9ff058);
   patch(0xeb83, 0x00, 0x01); /* Persistent License Check */
 
   patch(0xd538, 0x38, 0x08);
@@ -401,7 +409,7 @@ main(int argc, char* argv[]) {
   patch(0x460b5, 0x53, 0xC3); /* Software Update Prompt */
 
   /* Windows x86 */
-  patch_new("Sublime Text 3176 Windows x86", 0, 0);
+  patch_new("Sublime Text 3176 Windows x86", 5186160, 0xd4cff4dd);
   patch(0xeb83, 0x00, 0x01); /* Persistent License Check */
   patch(0x267CA, 0x00, 0x01);
   patch(0x26C4F, 0x38, 0x08);
@@ -416,20 +424,20 @@ main(int argc, char* argv[]) {
   patch(0x792FB, 0x57, 0xC3); /* Software Update Prompt */
 
   /* Windows x64 */
-  patch_new("Sublime Text 3193 Windows x64", 0, 0);
+  patch_new("Sublime Text 3193 Windows x64", 8330872, 0x879cf71d);
 
   patch(0x58BA04, 0x97, 0x00);
   patch(0x58BA05, 0x94, 0x00);
   patch(0x58BA06, 0x0d, 0x00);
 
   /* Linux x64 */
-  patch_new("Sublime Text 3200 Linux x64", 0, 0);
+  patch_new("Sublime Text 3200 Linux x64", 8766968, 0x94a745c1);
 
   patch(0x3BEB98, 0x84, 0x85); /* Initial License Check */
   patch(0x477C6E, 0x75, 0x74); /* Persistent License Check */
 
   /* Windows x64 */
-  patch_new("Sublime Text 3200 Windows x64", 0, 0);
+  patch_new("Sublime Text 3200 Windows x64", 8331384, 0x8261a833);
 
   patch(0x8545, 0x84, 0x85);   /* Initial License Check */
   patch(0x192487, 0x75, 0x74); /* Persistent License Check */
@@ -442,7 +450,7 @@ main(int argc, char* argv[]) {
   patch(0x31d180, 0x75, 0x74); /* Purchase License Nag */
 
   /* Windows x64 */
-  patch_new("Sublime Text 3207 Windows x64", 0, 0);
+  patch_new("Sublime Text 3207 Windows x64", 8348280, 0xd729b18a);
 
   patch(0x8545, 0x84, 0x85);   /* Initial License Check */
   patch(0x193263, 0x75, 0x74); /* Persistent License Check */
@@ -451,7 +459,7 @@ main(int argc, char* argv[]) {
   patch(0x4d745a, 0x85, 0x84); /* Menu Update Check */
 
   /* Linux x86 */
-  patch_new("Sublime Text 3211 Linux x86", 0, 0);
+  patch_new("Sublime Text 3211 Linux x86", 9873136, 0x0fd9ad24);
   patch(0x39c5ea, 0x55, 0xb8);
   patch(0x39c5eb, 0x53, 0x01);
   patch(0x39c5ec, 0x57, 0x00);
@@ -469,7 +477,7 @@ main(int argc, char* argv[]) {
   patch(0x31dbda, 0x41, 0xc3);
 
   /* Windows x86 */
-  patch_new("Sublime Text 3211 Windows x86", 0, 0);
+  patch_new("Sublime Text 3211 Windows x86", 6896528, 0xd20af2da);
 #if 0 // pre-regged variant
   patch(0x0cdc7, 0x00, 0x10);
   patch(0x7a48f, 0xf2, 0x66);
@@ -487,7 +495,7 @@ main(int argc, char* argv[]) {
   patch(0x7a762, 0x57, 0x00);
   patch(0x7a763, 0x56, 0xc3);
   /* Windows x64 */
-  patch_new("Sublime Text 3211 Windows x64", 0, 0);
+  patch_new("Sublime Text 3211 Windows x64", 8368016, 0xd42a5d56);
 #if 0 // pre-regged variant
   patch(0x0e12a, 0x00, 0x10);
   patch(0x8f099, 0x48, 0x80);
@@ -504,7 +512,7 @@ main(int argc, char* argv[]) {
   patch(0x8f4b5, 0x41, 0xc3);
 
   /* MacOSX x64 */
-  patch_new("Sublime Text 3211 MacOSX x64", 0, 0);
+  patch_new("Sublime Text 3211 MacOSX x64", 14126480, 0xd76d794a);
 
   patch(0xda4cf, 0x55, 0xb8);
   patch(0xda4d0, 0x48, 0x01);
