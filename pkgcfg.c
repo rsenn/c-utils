@@ -68,7 +68,7 @@ static const char* const field_names[] = {
     "Requires",
 };
 
-static const char *sysroot = 0;
+static const char* sysroot = 0;
 static int libs_mode = 0;
 static int static_libs = 0;
 static int cflags_mode = 0;
@@ -516,6 +516,7 @@ pkg_list() {
         pkg_init(&pf, path.s);
 
         if(!buffer_mmapread(&pc, path.s)) {
+          stralloc_zero(&line);
 
 #ifdef DEBUG_OUTPUT_
           buffer_puts(buffer_2, "file: ");
@@ -527,15 +528,17 @@ pkg_list() {
             i = 0;
           else
             i++;
-          n = path.len - i;
-          if(stralloc_endb(&path, ".pc", 3))
-            n -= 3;
+          n = path.len - i - 3;
 
-          stralloc_copyb(&line, path.s + i, n);
+          stralloc_catb(&line, path.s + i, n);
 
           if(cmd.code == LIST_PATH) {
-            stralloc_cats(&line, " ");
-            stralloc_cat(&line, &path);
+            if( verbose == 1)
+              stralloc_zero(&line);
+            else if(line.len > 0)
+              stralloc_cats(&line, " ");
+
+            stralloc_catb(&line, path.s, verbose == 0 ? i-1 : path.len);
           } else if(pkg_read(&pc, &pf)) {
             const char* desc;
 
@@ -789,15 +792,12 @@ pkgcfg_init(const char* argv0, const char* pkgcfg_path) {
 
   if(pkgcfg_path) {
     strlist_froms(&cmd.path, pkgcfg_path, ':');
-    /*     for(x = pkgcfg_path; *x; x += pos) {
-          pos = str_chr(x, ':');
-          strlist_pushb(&cmd.path, x, pos);
-          pos++;
-        } */
+
   } else {
-       if(sysroot)
+    if(sysroot)
       stralloc_copys(&dir, sysroot);
-else stralloc_copy(&dir, &cmd.prefix);
+    else
+      stralloc_copy(&dir, &cmd.prefix);
 
     pos = dir.len;
 
@@ -843,6 +843,8 @@ usage(char* progname) {
   buffer_puts(buffer_1, "  --path                            show the exact filenames for any matching .pc files\n");
   buffer_puts(buffer_1, "  --modversion                      print the specified module's version to stdout\n");
   buffer_puts(buffer_1, "  --list-all                        list all known packages\n");
+  buffer_puts(buffer_1, "  --verbose                         increase verbosity\n");
+  buffer_puts(buffer_1, "  --debug                           show verbose debug information\n");
   buffer_putnlflush(buffer_1);
 }
 
@@ -859,7 +861,7 @@ main(int argc, char* argv[]) {
       {"modversion", 0, NULL, PRINT_VERSION},
       {"cflags", 0, NULL, PRINT_CFLAGS},
       {"path", 0, NULL, PRINT_PATH},
-      {"verbose", 0, &verbose, 1},
+      {"verbose", 0, NULL, 'v'},
       {"debug", 0, &verbose, 2},
       {"variable", 1, NULL, 'V'},
       {"list-all", 0, NULL, 'l'},
@@ -919,8 +921,8 @@ main(int argc, char* argv[]) {
     switch(c) {
 
       case 'h': usage(argv[0]); return 0;
-      case 'V': break;
-      case 'v': {
+      case 'v': verbose++; break;
+      case 'V': {
         show_version = 1;
         goto getopt_end;
       }
@@ -1003,7 +1005,7 @@ getopt_end:
 
   sysroot = env_get("PKG_CONFIG_SYSROOT");
 
-  pkgcfg_init(argv[0],env_get("PKG_CONFIG_PATH"));
+  pkgcfg_init(argv[0], env_get("PKG_CONFIG_PATH"));
 
   if(!sysroot)
     sysroot = "";
