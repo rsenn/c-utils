@@ -1479,6 +1479,7 @@ add_program(
   env
   errmsg
   slist
+  case
   str
   strarray
   strlist)

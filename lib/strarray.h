@@ -83,6 +83,10 @@ int strarray_pushb_unique(strarray* arr, const char* b, size_t n);
 void strarray_intersection(const strarray* s1, const strarray* s2, strarray* out);
 void strarray_union(const strarray* s1, const strarray* s2, strarray* out);
 
+#ifdef BUFFER_H
+int buffer_putstra(buffer* b, const strarray* stra, const char* sep);
+#endif
+
 #ifdef __cplusplus
 }
 #endif
