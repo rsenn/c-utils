@@ -98,7 +98,7 @@ cfg-diet() {
     export PKG_CONFIG=`type pkg-config 2>&1 |sed 's,.* is ,,'`
   fi
 
-  export PKG_CONFIG_PATH="$libdir/pkgconfig"
+  : ${PKG_CONFIG_PATH="$libdir/pkgconfig"}; export PKG_CONFIG_PATH
   
   : ${builddir=build/${host%-*}-diet}
   prefix=/opt/diet

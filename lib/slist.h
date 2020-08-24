@@ -28,6 +28,7 @@ size_t slist_length(slink**);
 int slist_pushs(slink**, const char* s);
 void slist_push(slink**, slink* link);
 slink* slist_remove(slink**);
+void slist_removes(slink**);
 int slist_shifts(slink**);
 slink* slist_shift(slink**);
 int slist_unshifts(slink**, const char* s);

@@ -553,8 +553,7 @@ pkg_list() {
     buffer_puts(buffer_1, x);
     buffer_putnlflush(buffer_1);
 
-    free(x);
-    alloc_free(item);
+    slist_removes(item);
   }
 }
 

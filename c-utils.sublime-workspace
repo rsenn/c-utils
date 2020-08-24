@@ -8,10 +8,10 @@
 	"buffers":
 	[
 		{
-			"contents": "—Ⓒ– indent_write { … } ; — type\n—Ⓕ– buffer_indent_set ( ) { … } — function\n—Ⓕ– buffer_indent_write ( ) { … } — function\n—Ⓕ– buffer_indent ( ) { … } — function\n—Ⓕ– depth_fn ( ) { … } — function\n—Ⓕ– get_depth ( ) { … } — function\n—Ⓕ– json_default_printer ( ) { … } — function\n ⒡  json_print_val ( ) ; — function declaration\n—Ⓕ– byte_fullfils_predicate ( ) { … } — function\n—Ⓕ– json_print_separator ( ) { … } — function\n—Ⓕ– json_print_key ( ) { … } — function\n—Ⓕ– json_print_str ( ) { … } — function\n—Ⓕ– json_print_object ( ) { … } — function\n—Ⓕ– json_print_array ( ) { … } — function\n—Ⓕ– json_print_val ( ) { … } — function\n—Ⓕ– json_print ( ) { … } — function",
+			"contents": " Ⓣ  record_t ; — typedef\n Ⓣ  patch_t ; — typedef\n ⒡  buffer_dummyreadmmap ( ) ; — function declaration\n—Ⓕ– crc32 ( ) { … } — function\n—Ⓕ– get_crc32 ( ) { … } — function\n—Ⓕ– byte_crc32 ( ) { … } — function\n—Ⓕ– buffer_crc32 ( ) { … } — function\n—Ⓕ– buffer_filename ( ) { … } — function\n—Ⓕ– buffer_backup ( ) { … } — function\n—Ⓕ– print ( ) { … } — function\n—Ⓕ– patch_new ( ) { … } — function\n—Ⓕ– patch ( ) { … } — function\n—Ⓕ– patch_check ( ) { … } — function\n—Ⓕ– patch_find ( ) { … } — function\n—Ⓕ– record_apply ( ) { … } — function\n—Ⓕ– patch_apply ( ) { … } — function\n—Ⓕ– usage ( ) { … } — function\n—Ⓕ– main ( ) { … } — function",
 			"settings":
 			{
-				"buffer_size": 657,
+				"buffer_size": 628,
 				"line_ending": "Unix",
 				"name": "𝌆 Outline",
 				"scratch": true
@@ -21,7 +21,7 @@
 			"file": "jsonpp.c",
 			"settings":
 			{
-				"buffer_size": 6721,
+				"buffer_size": 6720,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
@@ -47,7 +47,16 @@
 			"file": "lib/json/json_print.c",
 			"settings":
 			{
-				"buffer_size": 5968,
+				"buffer_size": 6057,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "hexedit.c",
+			"settings":
+			{
+				"buffer_size": 17205,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
@@ -320,7 +329,7 @@
 	],
 	"find":
 	{
-		"height": 44.0
+		"height": 39.0
 	},
 	"find_in_files":
 	{
@@ -337,6 +346,7 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"crc32\\(",
 			"->quote",
 			"quote\\[",
 			"compliant",
@@ -463,8 +473,7 @@
 			"scan_long",
 			"readlink",
 			"keepalive",
-			"->keepalive",
-			"keepalive"
+			"->keepalive"
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -492,7 +501,7 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 657,
+						"buffer_size": 628,
 						"regions":
 						{
 						},
@@ -502,93 +511,103 @@
 						"settings":
 						{
 							"color_scheme": "Packages/Outline/outline.hidden-tmTheme",
-							"current_file": "/home/roman/Dokumente/Sources/c-utils/lib/json/json_print.c",
+							"current_file": "/home/roman/Dokumente/Sources/c-utils/hexedit.c",
 							"outline_rename_mode": false,
 							"symkeys":
 							[
 								[
-									183,
-									195
+									577,
+									585
 								],
 								[
-									276,
-									293
+									680,
+									687
 								],
 								[
-									421,
-									440
+									728,
+									748
 								],
 								[
-									901,
-									914
+									760,
+									765
 								],
 								[
-									1096,
-									1104
+									1038,
+									1047
 								],
 								[
-									1197,
-									1206
+									1240,
+									1250
 								],
 								[
-									1323,
-									1343
+									1347,
+									1359
 								],
 								[
-									1737,
-									1751
+									1414,
+									1429
 								],
 								[
-									1842,
-									1865
+									1982,
+									1995
 								],
 								[
-									2024,
-									2044
+									2748,
+									2753
 								],
 								[
-									2266,
-									2280
+									3205,
+									3214
 								],
 								[
-									2614,
-									2628
+									3474,
+									3479
 								],
 								[
-									3035,
-									3052
+									3813,
+									3824
 								],
 								[
-									4072,
-									4088
+									5222,
+									5232
 								],
 								[
-									4959,
-									4973
+									5485,
+									5497
 								],
 								[
-									5718,
-									5728
+									5786,
+									5797
+								],
+								[
+									6112,
+									6117
+								],
+								[
+									6476,
+									6480
 								]
 							],
 							"symlist":
 							[
-								"—Ⓒ– indent_write { … } ; — type",
-								"—Ⓕ– buffer_indent_set ( ) { … } — function",
-								"—Ⓕ– buffer_indent_write ( ) { … } — function",
-								"—Ⓕ– buffer_indent ( ) { … } — function",
-								"—Ⓕ– depth_fn ( ) { … } — function",
-								"—Ⓕ– get_depth ( ) { … } — function",
-								"—Ⓕ– json_default_printer ( ) { … } — function",
-								" ⒡  json_print_val ( ) ; — function declaration",
-								"—Ⓕ– byte_fullfils_predicate ( ) { … } — function",
-								"—Ⓕ– json_print_separator ( ) { … } — function",
-								"—Ⓕ– json_print_key ( ) { … } — function",
-								"—Ⓕ– json_print_str ( ) { … } — function",
-								"—Ⓕ– json_print_object ( ) { … } — function",
-								"—Ⓕ– json_print_array ( ) { … } — function",
-								"—Ⓕ– json_print_val ( ) { … } — function",
-								"—Ⓕ– json_print ( ) { … } — function"
+								" Ⓣ  record_t ; — typedef",
+								" Ⓣ  patch_t ; — typedef",
+								" ⒡  buffer_dummyreadmmap ( ) ; — function declaration",
+								"—Ⓕ– crc32 ( ) { … } — function",
+								"—Ⓕ– get_crc32 ( ) { … } — function",
+								"—Ⓕ– byte_crc32 ( ) { … } — function",
+								"—Ⓕ– buffer_crc32 ( ) { … } — function",
+								"—Ⓕ– buffer_filename ( ) { … } — function",
+								"—Ⓕ– buffer_backup ( ) { … } — function",
+								"—Ⓕ– print ( ) { … } — function",
+								"—Ⓕ– patch_new ( ) { … } — function",
+								"—Ⓕ– patch ( ) { … } — function",
+								"—Ⓕ– patch_check ( ) { … } — function",
+								"—Ⓕ– patch_find ( ) { … } — function",
+								"—Ⓕ– record_apply ( ) { … } — function",
+								"—Ⓕ– patch_apply ( ) { … } — function",
+								"—Ⓕ– usage ( ) { … } — function",
+								"—Ⓕ– main ( ) { … } — function"
 							],
 							"syntax": "Packages/Outline/outline.hidden-tmLanguage"
 						},
@@ -596,13 +615,13 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 14,
+					"stack_index": 15,
 					"type": "text"
 				}
 			]
 		},
 		{
-			"selected": 3,
+			"selected": 4,
 			"sheets":
 			[
 				{
@@ -611,7 +630,7 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 6721,
+						"buffer_size": 6720,
 						"regions":
 						{
 						},
@@ -632,7 +651,7 @@
 						"translation.y": 3457.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 2,
+					"stack_index": 3,
 					"type": "text"
 				},
 				{
@@ -662,7 +681,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 4,
+					"stack_index": 5,
 					"type": "text"
 				},
 				{
@@ -692,7 +711,7 @@
 						"translation.y": 2.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 3,
+					"stack_index": 4,
 					"type": "text"
 				},
 				{
@@ -701,7 +720,7 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 5968,
+						"buffer_size": 6057,
 						"regions":
 						{
 						},
@@ -722,11 +741,41 @@
 						"translation.y": 600.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 0,
+					"stack_index": 1,
 					"type": "text"
 				},
 				{
 					"buffer": 5,
+					"file": "hexedit.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 17205,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								10225,
+								10225
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C Improved/C Improved.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 7382.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 6,
 					"semi_transient": false,
 					"settings":
 					{
@@ -809,11 +858,11 @@
 						"translation.y": 897.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 1,
+					"stack_index": 2,
 					"type": "text"
 				},
 				{
-					"buffer": 6,
+					"buffer": 7,
 					"file": "lib/json.h",
 					"semi_transient": false,
 					"settings":
@@ -839,11 +888,11 @@
 						"translation.y": 330.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 10,
+					"stack_index": 11,
 					"type": "text"
 				},
 				{
-					"buffer": 7,
+					"buffer": 8,
 					"file": "lib/path/symlink.c",
 					"semi_transient": false,
 					"settings":
@@ -869,11 +918,11 @@
 						"translation.y": 690.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 11,
+					"stack_index": 12,
 					"type": "text"
 				},
 				{
-					"buffer": 8,
+					"buffer": 9,
 					"file": "lib/str/str_copyn.c",
 					"semi_transient": false,
 					"settings":
@@ -899,11 +948,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 12,
+					"stack_index": 13,
 					"type": "text"
 				},
 				{
-					"buffer": 9,
+					"buffer": 10,
 					"file": "lib/byte/byte_rchr.c",
 					"semi_transient": false,
 					"settings":
@@ -929,11 +978,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 13,
+					"stack_index": 14,
 					"type": "text"
 				},
 				{
-					"buffer": 10,
+					"buffer": 11,
 					"file": "lib/open/open_temp.c",
 					"semi_transient": false,
 					"settings":
@@ -959,11 +1008,11 @@
 						"translation.y": 815.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 6,
+					"stack_index": 7,
 					"type": "text"
 				},
 				{
-					"buffer": 11,
+					"buffer": 12,
 					"file": "lib/errmsg.h",
 					"semi_transient": false,
 					"settings":
@@ -987,11 +1036,11 @@
 						"translation.y": 294.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 7,
+					"stack_index": 8,
 					"type": "text"
 				},
 				{
-					"buffer": 12,
+					"buffer": 13,
 					"file": "lib/buffer.h",
 					"semi_transient": false,
 					"settings":
@@ -1017,11 +1066,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 8,
+					"stack_index": 9,
 					"type": "text"
 				},
 				{
-					"buffer": 13,
+					"buffer": 14,
 					"file": "lib/buffer/buffer_write_fd.c",
 					"semi_transient": false,
 					"settings":
@@ -1045,11 +1094,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 9,
+					"stack_index": 10,
 					"type": "text"
 				},
 				{
-					"buffer": 14,
+					"buffer": 15,
 					"file": "xmlpp.c",
 					"semi_transient": false,
 					"settings":
@@ -1072,10 +1121,10 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 5114.0,
+						"translation.y": 4555.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 5,
+					"stack_index": 6,
 					"type": "text"
 				}
 			]
@@ -1146,6 +1195,10 @@
 		"last_filter": "",
 		"selected_items":
 		[
+			[
+				"hexed",
+				"hexedit.c"
+			],
 			[
 				"jsonpp",
 				"jsonpp.c"
@@ -1529,10 +1582,6 @@
 			[
 				"cofflist",
 				"cofflist.c"
-			],
-			[
-				"hexed",
-				"hexedit.c"
 			],
 			[
 				"hexedit",
