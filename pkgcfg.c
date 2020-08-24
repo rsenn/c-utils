@@ -533,12 +533,12 @@ pkg_list() {
           stralloc_catb(&line, path.s + i, n);
 
           if(cmd.code == LIST_PATH) {
-            if( verbose == 1)
+            if(verbose == 1)
               stralloc_zero(&line);
             else if(line.len > 0)
               stralloc_cats(&line, " ");
 
-            stralloc_catb(&line, path.s, verbose == 0 ? i-1 : path.len);
+            stralloc_catb(&line, path.s, verbose == 0 ? i - 1 : path.len);
           } else if(pkg_read(&pc, &pf)) {
             const char* desc;
 
