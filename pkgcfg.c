@@ -1,5 +1,7 @@
 #include "lib/unix.h"
 #include "lib/algorithm.h"
+#include "lib/uint64.h"
+#include "lib/uint16.h"
 #include "lib/buffer.h"
 #include "lib/byte.h"
 #include "lib/dir.h"
@@ -22,6 +24,7 @@
 #include "lib/open.h"
 #include "lib/wait.h"
 #include "lib/case.h"
+#include "lib/scan.h"
 #include "map.h"
 
 #include <ctype.h>
@@ -40,8 +43,10 @@ typedef enum {
   PRINT_REQUIRES = 8,
   PRINT_PATH = 16,
   LIST_ALL = 32,
-  LIST_PATH = 64
+  LIST_PATH = 64,
+  ATLEAST_PKGCONFIG_VERSION = 1024
 } id;
+typedef enum { OP_EQ = 0, OP_NE, OP_GT, OP_GE, OP_LT, OP_LE } op_code;
 
 typedef enum { LIBS_ONLY_L = 64, LIBS_ONLY_OTHER = 128 } libs_mode_t;
 
@@ -59,7 +64,16 @@ typedef struct pkg_s {
   stralloc name;
   MAP_T vars;
   MAP_T fields;
+  uint64 version;
+
 } pkg;
+
+typedef struct cond_s {
+  stralloc op_str;
+  op_code op_val;
+  stralloc version_str;
+  uint64 version_val;
+} cond;
 
 static const char* const field_names[] = {
     "Version",
@@ -67,6 +81,7 @@ static const char* const field_names[] = {
     "Libs",
     "Requires",
 };
+static const char* const op_strings[] = {"==", "!=", ">", ">=", "<", "<="};
 
 static const char* sysroot = 0;
 static int libs_mode = 0;
@@ -75,6 +90,7 @@ static int cflags_mode = 0;
 static int sorted = 1;
 static int verbose = 0;
 static int show_version = 0;
+static int atleast_version = 0;
 
 int
 get_field_index(int flags) {
@@ -93,6 +109,16 @@ get_field_index(int flags) {
 
   exit(2);
 
+  return -1;
+}
+
+int
+get_op_index(const stralloc* op) {
+  int i;
+  for(i = 0; op_strings[i]; i++) {
+    if(stralloc_equals(op, op_strings[i]))
+      return i;
+  }
   return -1;
 }
 
@@ -296,6 +322,42 @@ pkg_free(pkg* p) {
   stralloc_free(&p->name);
 }
 
+void
+pkg_parse_version(uint64* v, const char* x, size_t n) {
+  int s;
+  *v = 0;
+  for(s = 48; s >= 0; s -= 16) {
+    uint16 num = 0xffff;
+    if(n) {
+      size_t i, j;
+      i = scan_ushort(x, &num);
+      j = scan_noncharsetnskip(&x[i], "0123456789", n - i);
+      if(i + j > 0) {
+        x += i + j;
+        n -= i + j;
+      } else {
+        n = 0;
+      }
+    }
+    *v |= (num & 0xffffll) << s;
+  }
+}
+
+size_t
+pkg_format_version(uint64 v, stralloc* sa) {
+  int s;
+  stralloc_zero(sa);
+  for(s = 48; s >= 0; s -= 16) {
+    uint16 num = (v >> s) & 0xffff;
+    if(num == 0xffff)
+      break;
+    if(sa->len)
+      stralloc_catb(sa, ".", 1);
+    stralloc_catlong(sa, num);
+  }
+  return sa->len;
+}
+
 /**
  * @brief pkg_read  Read in a package structure
  * @param b         Input buffer
@@ -310,6 +372,7 @@ pkg_read(buffer* b, pkg* p) {
 
   MAP_NEW(p->vars);
   MAP_NEW(p->fields);
+  p->version = 0LL;
 
   for(;;) {
     int ret;
@@ -353,6 +416,10 @@ pkg_read(buffer* b, pkg* p) {
       buffer_putm_3(buffer_2, "Value: ", value.s, "\n");
       buffer_flush(buffer_2);
 #endif
+
+      if(stralloc_equals(&name, "Version"))
+        pkg_parse_version(&p->version, value.s, value.len);
+
       {
         MAP_T map = sep == '=' ? p->vars : p->fields;
         MAP_INSERT(map, name.s, name.len + 1, value.s, value.len + 1);
@@ -615,13 +682,83 @@ pkg_open(const char* pkgname, pkg* pf) {
       break;
   }
 
-  if(pc.x)
+  if(pc.x) {
+#ifdef DEBUG_OUTPUT
+    buffer_puts(buffer_2, "opened: ");
+    buffer_puts(buffer_2, pf->name.s);
+
+    buffer_putnlflush(buffer_2);
+#endif
     ret = pkg_read(&pc, pf);
-  else
+  } else
     stralloc_free(&pf->name);
 
   return ret;
 }
+
+int
+pkg_parse_cond(cond* c, const char* x, size_t n) {
+  int op = -1;
+  size_t i = scan_nonwhitenskip(x, n);
+  stralloc_init(&c->op_str);
+  stralloc_init(&c->version_str);
+  stralloc_copyb(&c->op_str, x, i);
+
+  op = get_op_index(&c->op_str);
+
+  c->op_val = op;
+
+  x += i;
+  n -= i;
+  i = scan_whitenskip(x, n);
+  x += i;
+  n -= i;
+  stralloc_copyb(&c->version_str, x, n);
+
+  pkg_parse_version(&c->version_val, x, n);
+
+  return 0;
+}
+
+int
+pkg_check_cond(const cond* c, const pkg* p) {
+  switch(c->op_val) {
+    case OP_EQ: return p->version == c->version_val;
+    case OP_NE: return p->version != c->version_val;
+    case OP_GT: return p->version > c->version_val;
+    case OP_GE: return p->version >= c->version_val;
+    case OP_LT: return p->version < c->version_val;
+    case OP_LE: return p->version <= c->version_val;
+  }
+  return -1;
+}
+void
+pkg_dump_cond(const cond* c) {
+  buffer_puts(buffer_2, "op_str='");
+  buffer_putsa(buffer_2, &c->op_str);
+
+  buffer_puts(buffer_2, "', op-val = ");
+  buffer_putlong(buffer_2, c->op_val);
+  buffer_puts(buffer_2, ", version_str = '");
+  buffer_putsa(buffer_2, &c->version_str);
+  buffer_puts(buffer_2, "'");
+
+  buffer_puts(buffer_2, ", version_val = ");
+  buffer_putxlonglong0(buffer_2, c->version_val, 16);
+
+  {
+    stralloc ver;
+
+    stralloc_init(&ver);
+    pkg_format_version(c->version_val, &ver);
+    buffer_puts(buffer_2, ", version_fmt = ");
+    buffer_putsa(buffer_2, &ver);
+  }
+
+  buffer_putnlflush(buffer_2);
+}
+
+static cond condition;
 
 /**
  * @brief pkg_conf Evaluates pkgcfg all commands
@@ -629,20 +766,65 @@ pkg_open(const char* pkgname, pkg* pf) {
  */
 int
 pkg_conf(strarray* modules, int mode) {
-  int i;
-  stralloc value;
+  int i, do_cond;
+  size_t n, pos;
+  stralloc name, cond, value;
+  stralloc_init(&name);
+  stralloc_init(&cond);
   stralloc_init(&value);
 
   for(i = 0; i < strarray_size(modules); ++i) {
     const char* pkgname = strarray_at(modules, i);
+#ifdef DEBUG_OUTPUT
+    buffer_puts(buffer_2, "pkgname: ");
+    buffer_puts(buffer_2, pkgname);
+
+    buffer_putnlflush(buffer_2);
+#endif
     pkg pf;
     byte_zero(&pf, sizeof(pf));
+    stralloc_copys(&name, pkgname);
+    stralloc_zero(&cond);
+    n = byte_chr(name.s, name.len, ' ');
+    do_cond = 0;
+    if(n < name.len) {
+      pos = n;
+      if(pos < name.len)
+        pos += scan_whitenskip(&name.s[pos], name.len - pos);
 
-    if(!pkg_open(pkgname, &pf)) {
-      if(mode & PKGCFG_EXISTS)
-        return 0;
-      continue;
+      pkg_parse_cond(&condition, &name.s[pos], name.len - pos);
+      /*   pkg_dump_cond(&condition);
+
+        stralloc_copyb(&cond, &name.s[pos], name.len - pos); */
+      do_cond = 1;
+      name.len = n;
     }
+
+#ifdef DEBUG_OUTPUT
+    buffer_puts(buffer_2, "name: ");
+    buffer_putsa(buffer_2, &name);
+    buffer_puts(buffer_2, " cond: ");
+    buffer_putsa(buffer_2, &cond);
+    buffer_putnlflush(buffer_2);
+#endif
+    stralloc_nul(&name);
+
+    if(!pkg_open(name.s, &pf))
+      continue;
+
+    if(do_cond) {
+      int r = pkg_check_cond(&condition, &pf);
+      if(r == -1) {
+      } else if(r == 0) {
+        continue;
+      }
+    }
+    if(mode & PKGCFG_EXISTS)
+      return 0;
+
+#ifdef DEBUG_OUTPUT
+    pkg_dump(buffer_2, &pf);
+#endif
 
     if(cmd.code == PRINT_PATH) {
       if(value.len)
@@ -652,10 +834,6 @@ pkg_conf(strarray* modules, int mode) {
       const char* fn = field_names[get_field_index(cmd.code)];
 
       pkg_set(&pf);
-
-#ifdef DEBUG_OUTPUT_
-      pkg_dump(buffer_2, &pf);
-#endif
 
       if(!pkg_expand(&pf, fn, &value)) {
         buffer_flush(buffer_1);
@@ -849,6 +1027,7 @@ usage(char* progname) {
 }
 
 extern buffer* optbuf;
+static strlist args;
 
 int
 main(int argc, char* argv[]) {
@@ -877,6 +1056,7 @@ main(int argc, char* argv[]) {
       {"static", 0, &static_libs, 1},
       {"sorted", 0, &sorted, 1},
       {"unsorted", 0, &sorted, 0},
+      {"atleast-pkgconfig-version", 1, NULL, ATLEAST_PKGCONFIG_VERSION},
 
       /*   {"atleast", 0, NULL, 0},
           {"atleast-pkgconfig-version", 0, NULL, 0},
@@ -902,6 +1082,12 @@ main(int argc, char* argv[]) {
   };
 
   errmsg_iam(argv[0]);
+  strlist_fromv(&args, (const char**)argv, argc);
+
+#if DEBUG_OUTPUT
+  buffer_puts(buffer_2, "args: ");
+  strlist_dump(buffer_2, &args);
+#endif
 
 #ifdef _MSC_VER
   optbuf = buffer_1;
@@ -919,6 +1105,8 @@ main(int argc, char* argv[]) {
       c = opts[index].val;
 
     switch(c) {
+
+      case ATLEAST_PKGCONFIG_VERSION: atleast_version = 1; break;
 
       case 'h': usage(argv[0]); return 0;
       case 'v': verbose++; break;
@@ -951,9 +1139,9 @@ main(int argc, char* argv[]) {
           cmd.code |= c;
         break;
 
-      case 'P': mode = PKGCFG_PRINT_ERR; break;
-      case 'S': mode = PKGCFG_SHORT_ERR; break;
-      case 'E': mode = PKGCFG_EXISTS; break;
+      case 'P': mode |= PKGCFG_PRINT_ERR; break;
+      case 'S': mode |= PKGCFG_SHORT_ERR; break;
+      case 'E': mode |= PKGCFG_EXISTS; break;
       case '?': {
 
         const char* arg = argv[optind];
@@ -996,6 +1184,9 @@ getopt_end:
   if(show_version) {
     buffer_puts(buffer_1, "1.0");
     buffer_putnlflush(buffer_1);
+    return 0;
+  }
+  if(atleast_version) {
     return 0;
   }
   if(libs_mode)
