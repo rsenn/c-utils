@@ -1707,6 +1707,7 @@ add_program(
 # add_program(montty io map)
 add_program(
   logserial
+  hmap
   path
   unix
   rdir

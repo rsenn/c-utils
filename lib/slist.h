@@ -115,7 +115,7 @@ slink_insert(slink** at, slink* link) {
   return &link->next;
 }
 
-#define slist_insert(list, link) slink_insert(list, (slink*)(link))
+#define slist_insert(list, link) slink_insert((slink**)(list), (slink*)(link))
 
 inline static slink*
 slist_begin(slink* list) {

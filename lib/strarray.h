@@ -16,7 +16,7 @@ extern "C" {
 typedef array strarray;
 
 /* strarray_init will initialize a strarray. */
-#define strarray_zero(l) array_trunc((l), 0)
+#define strarray_zero(l) array_trunc((l))
 #define strarray_init(l) byte_zero((l), sizeof(strarray))
 
 #define strarray_size(l) array_length((l), sizeof(char*))
