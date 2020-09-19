@@ -47,6 +47,58 @@ serial_open(const char* port, unsigned int baud) {
 
   // Set Baudrate
   switch(baud) {
+    case 0:
+      cfsetispeed(&options, B0);
+      cfsetospeed(&options, B0);
+      break;
+    case 50:
+      cfsetispeed(&options, B50);
+      cfsetospeed(&options, B50);
+      break;
+    case 75:
+      cfsetispeed(&options, B75);
+      cfsetospeed(&options, B75);
+      break;
+    case 110:
+      cfsetispeed(&options, B110);
+      cfsetospeed(&options, B110);
+      break;
+    case 134:
+      cfsetispeed(&options, B134);
+      cfsetospeed(&options, B134);
+      break;
+    case 150:
+      cfsetispeed(&options, B150);
+      cfsetospeed(&options, B150);
+      break;
+    case 200:
+      cfsetispeed(&options, B200);
+      cfsetospeed(&options, B200);
+      break;
+    case 300:
+      cfsetispeed(&options, B300);
+      cfsetospeed(&options, B300);
+      break;
+    case 600:
+      cfsetispeed(&options, B600);
+      cfsetospeed(&options, B600);
+      break;
+    case 1200:
+      cfsetispeed(&options, B1200);
+      cfsetospeed(&options, B1200);
+      break;
+    case 1800:
+      cfsetispeed(&options, B1800);
+      cfsetospeed(&options, B1800);
+      break;
+    case 2400:
+      cfsetispeed(&options, B2400);
+      cfsetospeed(&options, B2400);
+      break;
+    case 4800:
+      cfsetispeed(&options, B4800);
+      cfsetospeed(&options, B4800);
+      break;
     case 9600:
       cfsetispeed(&options, B9600);
       cfsetospeed(&options, B9600);
@@ -59,14 +111,67 @@ serial_open(const char* port, unsigned int baud) {
       cfsetispeed(&options, B38400);
       cfsetospeed(&options, B38400);
       break;
-      /*   case 76800:
-            cfsetispeed(&options, B76800);
-            cfsetospeed(&options, B76800);
-            break; */
+    case 57600:
+      cfsetispeed(&options, B57600);
+      cfsetospeed(&options, B57600);
+      break;
     case 115200:
       cfsetispeed(&options, B115200);
       cfsetospeed(&options, B115200);
       break;
+    case 230400:
+      cfsetispeed(&options, B230400);
+      cfsetospeed(&options, B230400);
+      break;
+    case 460800:
+      cfsetispeed(&options, B460800);
+      cfsetospeed(&options, B460800);
+      break;
+    case 500000:
+      cfsetispeed(&options, B500000);
+      cfsetospeed(&options, B500000);
+      break;
+    case 576000:
+      cfsetispeed(&options, B576000);
+      cfsetospeed(&options, B576000);
+      break;
+    case 921600:
+      cfsetispeed(&options, B921600);
+      cfsetospeed(&options, B921600);
+      break;
+    case 1000000:
+      cfsetispeed(&options, B1000000);
+      cfsetospeed(&options, B1000000);
+      break;
+    case 1152000:
+      cfsetispeed(&options, B1152000);
+      cfsetospeed(&options, B1152000);
+      break;
+    case 1500000:
+      cfsetispeed(&options, B1500000);
+      cfsetospeed(&options, B1500000);
+      break;
+    case 2000000:
+      cfsetispeed(&options, B2000000);
+      cfsetospeed(&options, B2000000);
+      break;
+    case 2500000:
+      cfsetispeed(&options, B2500000);
+      cfsetospeed(&options, B2500000);
+      break;
+    case 3000000:
+      cfsetispeed(&options, B3000000);
+      cfsetospeed(&options, B3000000);
+      break;
+    case 3500000:
+      cfsetispeed(&options, B3500000);
+      cfsetospeed(&options, B3500000);
+      break;
+    case 4000000:
+      cfsetispeed(&options, B4000000);
+      cfsetospeed(&options, B4000000);
+      break;
+
     default:
       fprintf(stderr, "Warning: Baudrate not supported!\n");
       serial_close(fd);

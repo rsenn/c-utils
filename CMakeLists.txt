@@ -404,7 +404,7 @@ endif(USE_BZIP)
 # ##############################################################################
 # Check OpenSSL
 # ##############################################################################
-if(USE_SSL) # AND NOT BUILD_SSL)
+if(USE_SSL AND NOT BUILD_SSL)
   message("OPENSSL_ROOT = $ENV{OPENSSL_ROOT}")
   if(NOT OPENSSL_ROOT_DIR)
     if("$ENV{OPENSSL_ROOT}")
@@ -1707,6 +1707,8 @@ add_program(
 # add_program(montty io map)
 add_program(
   logserial
+  path
+  unix
   rdir
   dir
   errmsg

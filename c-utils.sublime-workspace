@@ -8,151 +8,21 @@
 	"buffers":
 	[
 		{
-			"contents": "",
+			"contents": " Ⓜ  _XOPEN_SOURCE … — macro object\n Ⓜ  __POSIX_VISIBLE … — macro object\n Ⓜ  __MISC_VISIBLE … — macro object\n Ⓜ  BUFSIZE … — macro object\n—Ⓕ– __declspec ( ) { … } — function\n Ⓜ  popen … — macro object\n Ⓜ  popen … — macro object\n—Ⓕ– count_field_lengths ( ) { … } — function\n—Ⓕ– split_fields ( ) { … } — function\n—Ⓕ– process_status ( ) { … } — function\n—Ⓕ– read_mediathek_list ( ) { … } — function\n—Ⓕ– parse_time ( ) { … } — function\n—Ⓕ– format_num ( ) { … } — function\n—Ⓕ– format_time ( ) { … } — function\n—Ⓕ– parse_datetime ( ) { … } — function\n—Ⓕ– parse_anydate ( ) { … } — function\n—Ⓕ– format_datetime ( ) { … } — function\n—Ⓕ– make_url ( ) { … } — function\n—Ⓒ– mediathek_entry { … } ; — type\n Ⓣ  mediathek_entry_t ; — typedef\n—Ⓕ– new_mediathek_entry ( ) { … } — function\n—Ⓕ– delete_mediathek_entry ( ) { … } — function\n—Ⓕ– match_tokens ( ) { … } — function\n—Ⓕ– match_toklists ( ) { … } — function\n—Ⓕ– parse_entry ( ) { … } — function\n—Ⓕ– print_entry ( ) { … } — function\n—Ⓕ– output_entry ( ) { … } — function\n—Ⓕ– parse_mediathek_list ( ) { … } — function\n—Ⓕ– usage ( ) { … } — function\n—Ⓕ– main ( ) { … } — function",
 			"settings":
 			{
-				"buffer_size": 0,
+				"buffer_size": 1116,
 				"line_ending": "Unix",
 				"name": "𝌆 Outline",
 				"scratch": true
 			}
 		},
 		{
-			"file": "lib/slist.h",
+			"file": "mediathek-list.c",
 			"settings":
 			{
-				"buffer_size": 3927,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "pkgcfg.c",
-			"settings":
-			{
-				"buffer_size": 24308,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/strlist.h",
-			"settings":
-			{
-				"buffer_size": 5628,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/str.h",
-			"settings":
-			{
-				"buffer_size": 3547,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "CMakeLists.txt",
-			"settings":
-			{
-				"buffer_size": 43930,
+				"buffer_size": 16104,
 				"encoding": "UTF-8",
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/case/case_diffs.c",
-			"settings":
-			{
-				"buffer_size": 404,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/strarray.h",
-			"settings":
-			{
-				"buffer_size": 3355,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/strlist/strlist_fromb.c",
-			"settings":
-			{
-				"buffer_size": 369,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/strlist/strlist_dump.c",
-			"settings":
-			{
-				"buffer_size": 922,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/strarray/strarray_appends.c",
-			"settings":
-			{
-				"buffer_size": 413,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/strarray/strarray_sort.c",
-			"settings":
-			{
-				"buffer_size": 426,
-				"encoding": "UTF-8",
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/strarray/buffer_putstra.c",
-			"settings":
-			{
-				"buffer_size": 306,
-				"encoding": "UTF-8",
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/slist/slist_remove.c",
-			"settings":
-			{
-				"buffer_size": 149,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/slist/slist_removes.c",
-			"settings":
-			{
-				"buffer_size": 151,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/slist/slist_pushs.c",
-			"settings":
-			{
-				"buffer_size": 415,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/slist/slist_unshifts.c",
-			"settings":
-			{
-				"buffer_size": 295,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/str/str_dup.c",
-			"settings":
-			{
-				"buffer_size": 214,
 				"line_ending": "Unix"
 			}
 		}
@@ -169,6 +39,14 @@
 		"selected_items":
 		[
 			[
+				"svgo",
+				"SVGO: Prettify SVG"
+			],
+			[
+				"ctag",
+				"CTags: Rebuild Tags"
+			],
+			[
 				"rebuild",
 				"CTags: Rebuild Tags"
 			],
@@ -179,10 +57,6 @@
 			[
 				"install",
 				"Package Control: Install Package"
-			],
-			[
-				"ctag",
-				"CTags: Rebuild Tags"
 			],
 			[
 				"outlin",
@@ -237,13 +111,40 @@
 	},
 	"expanded_folders":
 	[
-		"/home/roman/Dokumente/Sources/c-utils",
-		"/home/roman/Dokumente/Sources/c-utils/lib",
-		"/home/roman/Dokumente/Sources/c-utils/lib/strlist"
+		"/home/roman/Dokumente/Sources/c-utils"
 	],
 	"file_history":
 	[
+		"/home/roman/Dokumente/Sources/c-utils/build/cmake/BuildOpenSSL.cmake",
+		"/home/roman/Dokumente/Sources/c-utils/lib/slist.h",
 		"/home/roman/Dokumente/Sources/c-utils/pkgcfg.c",
+		"/home/roman/Dokumente/Sources/plot-cv/static/svg/CAM.svg",
+		"/home/roman/Dokumente/Sources/c-utils/lib/http/http_ssl_read.c",
+		"/home/roman/Dokumente/Sources/c-utils/CMakeLists.txt",
+		"/home/roman/Dokumente/Sources/c-utils/lib/http/http_get.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/http/http_init.c",
+		"/home/roman/Dokumente/Sources/c-utils/httptest.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/strlist/strlist_dump.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/stralloc.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/strlist/strlist_fromv.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/scan/scan_uint.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/scan/scan_ulong.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/scan/scan_whitenskip.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/strlist.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/str.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/case/case_diffs.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/strarray.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/strarray/strarray_from_argv.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/strlist/strlist_from_argv.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/strlist/strlist_fromb.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/strarray/strarray_appends.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/strarray/strarray_sort.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/strarray/buffer_putstra.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/slist/slist_remove.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/slist/slist_removes.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/slist/slist_pushs.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/slist/slist_unshifts.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/str/str_dup.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/strlist/strlist_removes.c",
 		"/home/roman/Dokumente/Sources/c-utils/jsonpp.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/charbuf/charbuf_peekc.c",
@@ -259,7 +160,6 @@
 		"/home/roman/Dokumente/Sources/c-utils/lib/buffer.h",
 		"/home/roman/Dokumente/Sources/c-utils/lib/buffer/buffer_write_fd.c",
 		"/home/roman/Dokumente/Sources/c-utils/xmlpp.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/slist.h",
 		"/home/roman/Dokumente/Sources/c-utils/pipeinfo.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/open/open_excl.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/open/open_read.c",
@@ -281,8 +181,6 @@
 		"/home/roman/Dokumente/Sources/c-utils/lib/ucs/stralloc_latin1_to_utf8.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/ucs/scan_latin1_utf8.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/slist/slist_push.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/stralloc.h",
-		"/home/roman/Dokumente/Sources/c-utils/lib/scan/scan_whitenskip.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/path/path_exists.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/path/path_readlink.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/strlist/strlist_sort.c",
@@ -300,7 +198,6 @@
 		"/home/roman/Dokumente/Sources/c-utils/lib/seek/seek_end.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/seek/seek_cur.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/mmap/mmap_read.c",
-		"/home/roman/Dokumente/Sources/c-utils/CMakeLists.txt",
 		"/home/roman/Dokumente/Sources/c-utils/lib/stralloc/openreadclose.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/ucs/ucs_latin1.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/stralloc/buffer_put_escaped.c",
@@ -325,10 +222,8 @@
 		"/home/roman/Dokumente/Sources/c-utils/genmakefile.c",
 		"/home/roman/Dokumente/Sources/plot-cv/lib/xml/xpath.js",
 		"/home/roman/Dokumente/Sources/c-utils/mediathek-list.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/http/http_get.c",
 		"/home/roman/Dokumente/Sources/c-utils/examples/httpd.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/http/http_sendreq.c",
-		"/home/roman/Dokumente/Sources/c-utils/httptest.c",
 		"/home/roman/Dokumente/Sources/c-utils/3rdparty/openssl/test/recipes/ocsp-response.der",
 		"/home/roman/Dokumente/Sources/c-utils/lib/json/json_recurse.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/json/json_push.c",
@@ -346,7 +241,7 @@
 	],
 	"find":
 	{
-		"height": 46.0
+		"height": 42.0
 	},
 	"find_in_files":
 	{
@@ -360,9 +255,69 @@
 	},
 	"find_state":
 	{
-		"case_sensitive": false,
+		"case_sensitive": true,
 		"find_history":
 		[
+			"crypto",
+			"target_",
+			"set_target",
+			"SSL",
+			"read_mediathek_list",
+			"http_init",
+			"http_",
+			"http",
+			"://",
+			"value",
+			"pkg_expand",
+			"get_field_index",
+			"get_field",
+			"strlist_dump",
+			"PKGCFG_EXISTS",
+			"mode =",
+			"PKGCFG_EXISTS",
+			"mode ==",
+			"mode =",
+			"mode;",
+			"check_cond",
+			"check_conf",
+			"pkg_open",
+			"pkg_conf",
+			"^pkg_conf",
+			"^pkgcfg_conf",
+			"^pkgcfg",
+			"cond",
+			"pkg_check_cond",
+			"check_",
+			"parse_",
+			"_parse_",
+			"_read\\(",
+			"_read",
+			"^pkgcfg_read",
+			"^pkg",
+			"^pkg_read",
+			"parse_cond",
+			"pkg_format_version",
+			"CATC",
+			"get_field_index",
+			"field_names",
+			"get_field_index",
+			"PRINT_VERSION",
+			"modvers",
+			"unsigned short",
+			"  unsigned short ",
+			"pkg_parse_version",
+			"version_str",
+			"version",
+			"field_names",
+			"exists",
+			"EXISTS",
+			"field index",
+			"pkg_conf",
+			"exists\"",
+			"show_vers",
+			"from_argv",
+			"argv",
+			"11",
 			"pkgcfg_path",
 			"PKG_CONFIG_PATH",
 			"pkgcfg_init",
@@ -430,74 +385,15 @@
 			"path\"",
 			"print_number",
 			"path\"",
-			"verbose",
-			"\\&fd",
-			"print_number.*fd\\)",
-			"print_number.*fd",
-			"print_number",
-			"print_number_nonl",
-			"      print_number_nonl(\" st_atime\", pfd->st.st_atim.tv_sec);\n",
-			"st;",
-			"print_number",
-			"^print_number",
-			"print_number",
-			"print_stralloc_nonl",
-			"print_stralloc",
-			"pfd =",
-			"size_t n",
-			"n =",
-			"stralloc",
-			"foreach",
-			"mmap_read",
-			"link_librar",
-			"setuidgid",
-			"procfdinfo",
-			"mmap_read",
-			"procfd",
-			"fd/",
-			"path,",
-			"access\\(",
-			"procfd",
-			"proc_fd_path",
-			"print_number_nonl",
-			"print_number",
-			"procfd_t",
-			"slist_add",
-			"slink",
-			"slink_add",
-			"_alloc",
-			"sort",
-			"array_for",
-			"array_",
-			"append",
-			"push",
-			"IFIFO",
-			"stralloc_trunc",
-			"main",
-			"errmsg_",
-			"mmap_filename",
-			"_1, \" ",
-			"print_number",
-			"tmpfd",
-			"seek ",
-			"seek",
-			"pipeinfo",
-			"include.*io.h",
-			"include.*i.h",
-			"io.h",
-			"alloca\\(",
-			"diesys\\(",
-			"die",
-			"buffer",
-			"buffer ",
-			"IFLNK"
+			"verbose"
 		],
-		"highlight": true,
+		"highlight": false,
 		"in_selection": false,
 		"preserve_case": false,
 		"regex": true,
 		"replace_history":
 		[
+			"uint16",
 			" ",
 			"_1, \", "
 		],
@@ -518,7 +414,7 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 0,
+						"buffer_size": 1116,
 						"regions":
 						{
 						},
@@ -528,13 +424,163 @@
 						"settings":
 						{
 							"color_scheme": "Packages/Outline/outline.hidden-tmTheme",
-							"current_file": "/home/roman/Dokumente/Sources/c-utils/pkgcfg.c",
+							"current_file": "/home/roman/Dokumente/Sources/c-utils/mediathek-list.c",
 							"outline_rename_mode": false,
 							"symkeys":
 							[
+								[
+									8,
+									21
+								],
+								[
+									32,
+									47
+								],
+								[
+									63,
+									77
+								],
+								[
+									780,
+									787
+								],
+								[
+									831,
+									841
+								],
+								[
+									895,
+									900
+								],
+								[
+									953,
+									958
+								],
+								[
+									1908,
+									1927
+								],
+								[
+									2239,
+									2251
+								],
+								[
+									2858,
+									2872
+								],
+								[
+									3459,
+									3478
+								],
+								[
+									4282,
+									4292
+								],
+								[
+									4708,
+									4718
+								],
+								[
+									4909,
+									4920
+								],
+								[
+									5404,
+									5418
+								],
+								[
+									5649,
+									5662
+								],
+								[
+									5976,
+									5991
+								],
+								[
+									6330,
+									6338
+								],
+								[
+									6656,
+									6671
+								],
+								[
+									6831,
+									6848
+								],
+								[
+									6919,
+									6938
+								],
+								[
+									7146,
+									7168
+								],
+								[
+									7530,
+									7542
+								],
+								[
+									8217,
+									8231
+								],
+								[
+									8676,
+									8687
+								],
+								[
+									9979,
+									9990
+								],
+								[
+									10881,
+									10893
+								],
+								[
+									11362,
+									11382
+								],
+								[
+									13539,
+									13544
+								],
+								[
+									14455,
+									14459
+								]
 							],
 							"symlist":
 							[
+								" Ⓜ  _XOPEN_SOURCE … — macro object",
+								" Ⓜ  __POSIX_VISIBLE … — macro object",
+								" Ⓜ  __MISC_VISIBLE … — macro object",
+								" Ⓜ  BUFSIZE … — macro object",
+								"—Ⓕ– __declspec ( ) { … } — function",
+								" Ⓜ  popen … — macro object",
+								" Ⓜ  popen … — macro object",
+								"—Ⓕ– count_field_lengths ( ) { … } — function",
+								"—Ⓕ– split_fields ( ) { … } — function",
+								"—Ⓕ– process_status ( ) { … } — function",
+								"—Ⓕ– read_mediathek_list ( ) { … } — function",
+								"—Ⓕ– parse_time ( ) { … } — function",
+								"—Ⓕ– format_num ( ) { … } — function",
+								"—Ⓕ– format_time ( ) { … } — function",
+								"—Ⓕ– parse_datetime ( ) { … } — function",
+								"—Ⓕ– parse_anydate ( ) { … } — function",
+								"—Ⓕ– format_datetime ( ) { … } — function",
+								"—Ⓕ– make_url ( ) { … } — function",
+								"—Ⓒ– mediathek_entry { … } ; — type",
+								" Ⓣ  mediathek_entry_t ; — typedef",
+								"—Ⓕ– new_mediathek_entry ( ) { … } — function",
+								"—Ⓕ– delete_mediathek_entry ( ) { … } — function",
+								"—Ⓕ– match_tokens ( ) { … } — function",
+								"—Ⓕ– match_toklists ( ) { … } — function",
+								"—Ⓕ– parse_entry ( ) { … } — function",
+								"—Ⓕ– print_entry ( ) { … } — function",
+								"—Ⓕ– output_entry ( ) { … } — function",
+								"—Ⓕ– parse_mediathek_list ( ) { … } — function",
+								"—Ⓕ– usage ( ) { … } — function",
+								"—Ⓕ– main ( ) { … } — function"
 							],
 							"syntax": "Packages/Outline/outline.hidden-tmLanguage"
 						},
@@ -542,509 +588,43 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 17,
+					"stack_index": 1,
 					"type": "text"
 				}
 			]
 		},
 		{
-			"selected": 1,
+			"selected": 0,
 			"sheets":
 			[
 				{
 					"buffer": 1,
-					"file": "lib/slist.h",
+					"file": "mediathek-list.c",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 3927,
+						"buffer_size": 16104,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								923,
-								923
+								3146,
+								3146
 							]
 						],
 						"settings":
 						{
-							"syntax": "Packages/C++/C++.sublime-syntax",
+							"syntax": "Packages/C Improved/C Improved.tmLanguage",
 							"tab_size": 2,
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 1,
-					"type": "text"
-				},
-				{
-					"buffer": 2,
-					"file": "pkgcfg.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 24308,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								10736
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C11/C11.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 12964.0,
+						"translation.y": 2762.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 0,
-					"type": "text"
-				},
-				{
-					"buffer": 3,
-					"file": "lib/strlist.h",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 5628,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								16,
-								16
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C++/C++.sublime-syntax",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 5,
-					"type": "text"
-				},
-				{
-					"buffer": 4,
-					"file": "lib/str.h",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 3547,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								1159,
-								1159
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C++/C++.sublime-syntax"
-						},
-						"translation.x": 0.0,
-						"translation.y": 450.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 6,
-					"type": "text"
-				},
-				{
-					"buffer": 5,
-					"file": "CMakeLists.txt",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 43930,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								40946,
-								40946
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/CMake/CMake.sublime-syntax",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 33333.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 7,
-					"type": "text"
-				},
-				{
-					"buffer": 6,
-					"file": "lib/case/case_diffs.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 404,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								1,
-								1
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C11/C11.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 8,
-					"type": "text"
-				},
-				{
-					"buffer": 7,
-					"file": "lib/strarray.h",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 3355,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								832,
-								832
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C++/C++.sublime-syntax"
-						},
-						"translation.x": 0.0,
-						"translation.y": 369.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 4,
-					"type": "text"
-				},
-				{
-					"buffer": 8,
-					"file": "lib/strlist/strlist_fromb.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 369,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C11/C11.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 3,
-					"type": "text"
-				},
-				{
-					"buffer": 9,
-					"file": "lib/strlist/strlist_dump.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 922,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								162,
-								162
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C11/C11.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 2,
-					"type": "text"
-				},
-				{
-					"buffer": 10,
-					"file": "lib/strarray/strarray_appends.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 413,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C11/C11.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 10,
-					"type": "text"
-				},
-				{
-					"buffer": 11,
-					"file": "lib/strarray/strarray_sort.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 426,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								176,
-								176
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C11/C11.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 9,
-					"type": "text"
-				},
-				{
-					"buffer": 12,
-					"file": "lib/strarray/buffer_putstra.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 306,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								48,
-								48
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C11/C11.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 11,
-					"type": "text"
-				},
-				{
-					"buffer": 13,
-					"file": "lib/slist/slist_remove.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 149,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								19,
-								19
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C11/C11.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 13,
-					"type": "text"
-				},
-				{
-					"buffer": 14,
-					"file": "lib/slist/slist_removes.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 151,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								127,
-								127
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C11/C11.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 12,
-					"type": "text"
-				},
-				{
-					"buffer": 15,
-					"file": "lib/slist/slist_pushs.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 415,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								357,
-								357
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C11/C11.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 14,
-					"type": "text"
-				},
-				{
-					"buffer": 16,
-					"file": "lib/slist/slist_unshifts.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 295,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C11/C11.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 15,
-					"type": "text"
-				},
-				{
-					"buffer": 17,
-					"file": "lib/str/str_dup.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 214,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								145,
-								145
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C11/C11.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 16,
 					"type": "text"
 				}
 			]
@@ -1106,7 +686,7 @@
 	"project": "c-utils.sublime-project",
 	"replace":
 	{
-		"height": 64.0
+		"height": 85.0
 	},
 	"save_all_on_build": true,
 	"select_file":
@@ -1116,11 +696,67 @@
 		"selected_items":
 		[
 			[
+				"buildssl",
+				"build/cmake/BuildOpenSSL.cmake"
+			],
+			[
+				"cmake",
+				"build/cmake/BuildOpenSSL.cmake"
+			],
+			[
+				"http_ssl_read",
+				"lib/http/http_ssl_read.c"
+			],
+			[
+				"http_init",
+				"lib/http/http_init.c"
+			],
+			[
+				"http_get",
+				"lib/http/http_get.c"
+			],
+			[
+				"httptest",
+				"httptest.c"
+			],
+			[
+				"mediathek-list.c",
+				"mediathek-list.c"
+			],
+			[
+				"strlist_dump",
+				"lib/strlist/strlist_dump.c"
+			],
+			[
+				"stralloc.h",
+				"lib/stralloc.h"
+			],
+			[
+				"strlist_from",
+				"lib/strlist/strlist_fromv.c"
+			],
+			[
+				"whiten",
+				"lib/scan/scan_whitenskip.c"
+			],
+			[
+				"pkgcfg",
+				"pkgcfg.c"
+			],
+			[
+				"strlist.h",
+				"lib/strlist.h"
+			],
+			[
+				"from_argv",
+				"lib/strarray/strarray_from_argv.c"
+			],
+			[
 				"strarray",
 				"lib/strarray.h"
 			],
 			[
-				"strlist.h",
+				"strlist",
 				"lib/strlist.h"
 			],
 			[
@@ -1248,10 +884,6 @@
 				"lib/stralloc/stralloc_catxlong.c"
 			],
 			[
-				"stralloc.h",
-				"lib/stralloc.h"
-			],
-			[
 				"fmt_xl",
 				"lib/fmt/fmt_xlong.c"
 			],
@@ -1310,10 +942,6 @@
 			[
 				"open_",
 				"lib/open/open_excl.c"
-			],
-			[
-				"cmake",
-				"CMakeLists.txt"
 			],
 			[
 				"slist_pus",
@@ -1490,14 +1118,6 @@
 			[
 				"open.h",
 				"lib/open.h"
-			],
-			[
-				"http_get",
-				"lib/http/http_get.c"
-			],
-			[
-				"httptest",
-				"httptest.c"
 			],
 			[
 				"mediathek-list",

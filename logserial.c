@@ -13,13 +13,17 @@
 #include "lib/taia.h"
 #include "lib/dir.h"
 #include "lib/rdir.h"
+#include "lib/path.h"
+#include "lib/getopt.h"
+#include "lib/scan.h"
 #include <stdlib.h>
 #include <unistd.h>
+#include <ctype.h>
 
 static strarray ports;
 static fd_t input_fd = 0;
 static stralloc input_buf;
-
+static int verbose = 0;
 /**
  * @brief      { function_description }
  *
@@ -244,30 +248,95 @@ process_loop(fd_t serial_fd, int64 timeout) {
   }
   return ret;
 }
+void
+usage(char* progname) {
+  buffer_putm_3(buffer_1, "Usage: ", path_basename(progname), " [OPTIONS] [PORT] [BAUDRATE]\n");
+  buffer_puts(buffer_1, "Options\n");
+  buffer_puts(buffer_1, "  --help, -h                        show this help\n");
+  buffer_puts(buffer_1, "  --version                         print program version\n");
 
+  buffer_puts(buffer_1, "  --verbose                         increase verbosity\n");
+  buffer_puts(buffer_1, "  --debug                           show verbose debug information\n");
+  buffer_putnlflush(buffer_1);
+}
+
+extern buffer* optbuf;
 int
-main() {
+main(int argc, char* argv[]) {
+  const char* portname = NULL;
+  unsigned int baudrate = 0;
+  int c;
+  int index = 0;
+  int mode = 0;
   int running = 1;
   fd_t serial_fd;
+  struct longopt opts[] = {
+      {"help", 0, NULL, 'h'},
+      {"verbose", 0, NULL, 'v'},
+
+      {0, 0, 0, 0},
+  };
+
+  errmsg_iam(argv[0]);
+
+#ifdef _MSC_VER
+  optbuf = buffer_1;
+#endif
+  opterr = 0;
+
+  for(;;) {
+    c = getopt_long(argc, argv, "hv", opts, &index);
+    if(c == -1 || opterr /* || argv[optind] == 0 */)
+      break;
+    if(c == 0)
+      continue;
+
+    switch(c) {
+
+      case 'h': usage(argv[0]); return 0;
+      case 'v': verbose++; break;
+
+      default:
+        buffer_puts(buffer_2, "WARNING: Invalid argument -");
+        buffer_putc(buffer_2, isprint(c) ? c : '?');
+        buffer_putm_internal(buffer_2, " '", optarg ? optarg : argv[optind], "'", NULL);
+        buffer_putnlflush(buffer_2);
+        usage(argv[0]);
+        return 1;
+    }
+  }
+getopt_end:
+  if(optind < argc) {
+    portname = argv[optind++];
+
+    if(optind < argc && scan_uint(argv[optind], &baudrate))
+      optind++;
+    else
+      baudrate = 38400;
+  }
+
   io_fd(input_fd);
   io_nonblock(input_fd);
 
   while(running) {
     int64 i, newports;
-    const char* portname = NULL;
-    newports = get_ports();
-    /*buffer_puts(buffer_2, "num ports: ");
-    buffer_putlonglong(buffer_2, newports);
-    buffer_putnlflush(buffer_2);*/
-    if(newports == 0) {
-      usleep(250 * 1000);
-      continue;
+
+    if(portname == NULL) {
+      newports = get_ports();
+      buffer_puts(buffer_2, "num ports: ");
+      buffer_putlonglong(buffer_2, newports);
+      buffer_putnlflush(buffer_2);
+      if(newports == 0) {
+        usleep(250 * 1000);
+        continue;
+      }
+      portname = strarray_at(&ports, 0);
     }
-    portname = strarray_at(&ports, 0);
-    buffer_puts(buffer_2, "portname: ");
-    buffer_puts(buffer_2, portname);
+
+    /*    buffer_puts(buffer_2, "portname: ");
+        buffer_puts(buffer_2, portname);*/
     buffer_putnlflush(buffer_2);
-    serial_fd = serial_open(portname, 38400);
+    serial_fd = serial_open(portname, baudrate);
     io_nonblock(serial_fd);
     io_closeonexec(serial_fd);
 
@@ -275,9 +344,9 @@ main() {
       usleep(250 * 1000);
       continue;
     }
-    /*buffer_puts(buffer_2, "port opened: ");
-    buffer_putlong(buffer_2, serial_fd);
-    buffer_putnlflush(buffer_2); */
+    buffer_puts(buffer_2, "port opened: ");
+    buffer_puts(buffer_2, portname);
+    buffer_putnlflush(buffer_2);
     // buffer_read_fd(&serial, serial_fd);
     io_fd(serial_fd);
     io_wantread(serial_fd);

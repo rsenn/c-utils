@@ -21,7 +21,7 @@ http_ssl_read(fd_t fd, void* buf, size_t len, void* b) {
     else if((err = http_ssl_error(h, ret)))
       return http_ssl_io_errhandle(h, err);
   }
-#if DEBUG_OUTPUT
+#if DEBUG_OUTPUT_
   buffer_puts(buffer_2, "http_ssl_read ");
   buffer_puts(buffer_2, " ret=");
   buffer_putlong(buffer_2, ret);

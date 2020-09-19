@@ -278,10 +278,11 @@ wordexp_sa(const char* s, stralloc* sa, MAP_T vars) {
  */
 int
 pkg_expand(pkg* pf, const char* key, stralloc* out) {
-  stralloc k;
+  stralloc k, v;
   const char* s;
 
   stralloc_init(&k);
+  stralloc_init(&v);
   stralloc_copys(&k, key);
   stralloc_nul(&k);
 
@@ -290,23 +291,18 @@ pkg_expand(pkg* pf, const char* key, stralloc* out) {
   if((s = pkg_get(pf, key)) == NULL)
     return 0;
 
-  {
-    stralloc v;
-    stralloc_init(&v);
-    stralloc_copys(&v, s);
+  stralloc_copys(&v, s);
 
-    for(;;) {
-      stralloc_nul(&v);
-      if(!wordexp_sa(v.s, out, pf->vars))
-        return 0;
+  for(;;) {
+    stralloc_nul(&v);
+    if(!wordexp_sa(v.s, out, pf->vars))
+      return 0;
 
-      if(stralloc_finds(out, "${") == out->len)
-        break;
+    if(stralloc_finds(out, "${") == out->len)
+      break;
 
-      stralloc_free(&v);
-      v = *out;
-      stralloc_init(out);
-    }
+    stralloc_copy(&v, out);
+    stralloc_zero(out);
   }
 
   return 1;
@@ -683,7 +679,7 @@ pkg_open(const char* pkgname, pkg* pf) {
   }
 
   if(pc.x) {
-#ifdef DEBUG_OUTPUT
+#ifdef DEBUG_OUTPUT_
     buffer_puts(buffer_2, "opened: ");
     buffer_puts(buffer_2, pf->name.s);
 
@@ -775,7 +771,7 @@ pkg_conf(strarray* modules, int mode) {
 
   for(i = 0; i < strarray_size(modules); ++i) {
     const char* pkgname = strarray_at(modules, i);
-#ifdef DEBUG_OUTPUT
+#ifdef DEBUG_OUTPUT_
     buffer_puts(buffer_2, "pkgname: ");
     buffer_puts(buffer_2, pkgname);
 
@@ -800,7 +796,7 @@ pkg_conf(strarray* modules, int mode) {
       name.len = n;
     }
 
-#ifdef DEBUG_OUTPUT
+#ifdef DEBUG_OUTPUT_
     buffer_puts(buffer_2, "name: ");
     buffer_putsa(buffer_2, &name);
     buffer_puts(buffer_2, " cond: ");
@@ -822,7 +818,7 @@ pkg_conf(strarray* modules, int mode) {
     if(mode & PKGCFG_EXISTS)
       return 0;
 
-#ifdef DEBUG_OUTPUT
+#ifdef DEBUG_OUTPUT_
     pkg_dump(buffer_2, &pf);
 #endif
 
@@ -831,19 +827,21 @@ pkg_conf(strarray* modules, int mode) {
         stralloc_catc(&value, '\n');
       stralloc_cat(&value, &pf.name);
     } else {
-      const char* fn = field_names[get_field_index(cmd.code)];
+      int fi = cmd.code != 0 ? get_field_index(cmd.code) : -1;
+      const char* fn = fi == -1 ? NULL : field_names[fi];
 
       pkg_set(&pf);
-
-      if(!pkg_expand(&pf, fn, &value)) {
-        buffer_flush(buffer_1);
-        buffer_flush(buffer_2);
-        errmsg_warn("Expanding ", pkgname, "::", fn, NULL);
-        pkg_unset(&pf);
-        pkg_free(&pf);
-        return 0;
+      // stralloc_zero(&value);
+      if(fn) {
+        if(!pkg_expand(&pf, fn, &value)) {
+          buffer_flush(buffer_1);
+          buffer_flush(buffer_2);
+          errmsg_warn("Expanding ", pkgname, "::", fn, NULL);
+          pkg_unset(&pf);
+          pkg_free(&pf);
+          return 0;
+        }
       }
-
       if((cmd.code == PRINT_LIBS && libs_mode) || (cmd.code == PRINT_CFLAGS && cflags_mode)) {
         strlist sl;
         const char* s;
@@ -881,7 +879,7 @@ pkg_conf(strarray* modules, int mode) {
     buffer_putsa(buffer_1, &value);
     buffer_putnlflush(buffer_1);
   }
-  return 1;
+  return 0;
 }
 
 void
@@ -1082,11 +1080,13 @@ main(int argc, char* argv[]) {
   };
 
   errmsg_iam(argv[0]);
+  strlist_init(&args, '\t');
   strlist_fromv(&args, (const char**)argv, argc);
 
 #if DEBUG_OUTPUT
-  buffer_puts(buffer_2, "args: ");
-  strlist_dump(buffer_2, &args);
+  buffer_puts(buffer_2, "pkgcfg args = ");
+  buffer_putsa(buffer_2, &args.sa);
+  buffer_putnlflush(buffer_2);
 #endif
 
 #ifdef _MSC_VER

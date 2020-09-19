@@ -138,6 +138,10 @@ configure_file(
 
 add_library(crypto ${LIBCRYPTO_SOURCES})
 
+if(LINUX)
+  target_compile_definitions(crypto PRIVATE  OPENSSL_SYS_LINUX )
+endif()
+
 
 file(GLOB LIBSSL_SOURCES
   ssl/*.c
