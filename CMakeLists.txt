@@ -21,6 +21,11 @@ option(USE_POLL "Use poll() syscall" OFF)
 option(USE_EPOLL "Use epoll() syscall" OFF)
 option(BUILD_SHARED_LIBS "Build shared libs" ON)
 option(LINK_STATIC "Link libraries static" OFF)
+option(ENABLE_WERROR "Enable -Werror (warnings are errors)" OFF)
+
+if(ENABLE_WERROR)
+  add_definitions(-Wall -Werror -Wno-unused)
+endif(ENABLE_WERROR)
 
 if(LINK_STATIC)
   set(DSO_NONE TRUE)
@@ -911,7 +916,8 @@ set(MODSUBDIRS
     rdir
     safemult
     scan
-    seek # sig
+    seek
+    sig
     slist
     socket
     str
@@ -1707,6 +1713,7 @@ add_program(
 # add_program(montty io map)
 add_program(
   logserial
+sig
   hmap
   path
   unix

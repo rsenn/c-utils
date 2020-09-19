@@ -13,7 +13,7 @@ sig_action(int sig, struct sigaction const* new, struct sigaction* old) {
 #ifndef FLAG_PREFERSELECT
   sanew.sa_flags |= SA_RESTART;
 #endif
-  if(sig_action(sig, &sanew, &saold) < 0)
+  if(sigaction(sig, &sanew, &saold) < 0)
     return -1;
   if(old) {
     int r = sigismember(&saold.sa_mask, (sig == SIGTERM) ? SIGPIPE : SIGTERM);

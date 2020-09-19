@@ -1,3 +1,5 @@
+#define _POSIX_C_SOURCE 1
+#define _GNU_SOURCE 1
 #include "serial.h"
 #include "serial.c"
 #include "lib/str.h"
@@ -19,9 +21,11 @@
 #include "lib/taia.h"
 #include "lib/tai.h"
 #include "lib/slist.h"
+#include "lib/sig.h"
 #include <stdlib.h>
 #include <unistd.h>
 #include <ctype.h>
+#include <setjmp.h>
 #include "map.h"
 
 typedef struct port {
@@ -32,8 +36,8 @@ typedef struct link {
     struct slink link;
     struct link* next;
   };
-  const char* name;
-  struct port port;
+  char* name;
+  struct taia time;
 } link_t;
 
 static strarray ports;
@@ -42,6 +46,8 @@ static stralloc input_buf;
 static int verbose = 0;
 static MAP_T port_map;
 static link_t* port_list;
+static jmp_buf context;
+volatile int running;
 
 /**
  * @brief      { function_description }
@@ -65,7 +71,7 @@ struct link**
 find_port(const char* name) {
   struct link** it;
 
-  slink_foreach(&port_list, it) {
+  for(it = &port_list; *it; it = &(*it)->next) {
 
     if(str_equal(name, (*it)->name))
       return it;
@@ -80,7 +86,7 @@ remove_port(const char* name) {
 
   *it = (*it)->next;
 
-  free((void*)l->name);
+  free((char*)l->name);
   alloc_free((void*)l);
 }
 
@@ -88,80 +94,13 @@ void
 clear_ports() {
   struct link **it, **next;
 
-  slist_foreach_safe(&port_list, it, next) {
+  slink_foreach_safe(port_list, it, next) {
 
     struct link* l = *it;
 
-    alloc_free(l->name);
+    free((char*)l->name);
     alloc_free(l);
   }
-}
-
-/**
- * @brief      { function_description }
- *
- * @return     { description_of_the_return_value }
- */
-int64
-serial_ports() {
-  static int i;
-  char** port;
-  struct link** it;
-  strarray temp, newports;
-  strarray_init(&temp);
-  strarray_init(&newports);
-  dir_entries("/dev/", &temp);
-
-  strarray_foreach(&temp, port) {
-    if(!str_start(*port, "/dev/ttyA") && !str_start(*port, "/dev/ttyUSB") && !str_start(*port, "/dev/tnt"))
-      continue;
-
-    // if(strarray_index_of(&ports, *port) == -1) {
-    if(strarray_push_unique(&newports, *port)) {
-
-      port_t p;
-      taia_now(&p.time);
-      MAP_INSERT(port_map, *port, str_len(*port) + 1, &p, sizeof(port_t));
-
-      if(!find_port(*port)) {
-        struct link* l = alloc(sizeof(struct link));
-
-        l->link.next = &port_list->link;
-        l->name = str_dup(*port);
-        l->port = p;
-
-        slist_insert(&port_list, &l->link);
-
-        port_list = l;
-      }
-
-      /*  buffer_putlong(buffer_2, i);
-       buffer_puts(buffer_2, ": detected new port: ");
-       buffer_puts(buffer_2, *port);
-       buffer_putnlflush(buffer_2); */
-    }
-  }
-
-  slink_foreach(&port_list, it) {
-
-    buffer_puts(buffer_2, (*it)->name);
-    buffer_putnlflush(buffer_2);
-  }
-  strarray_foreach(&ports, port) {
-    if(strarray_index_of(&newports, *port) == -1) {
-      MAP_DELETE(port_map, *port, str_len(*port) + 1);
-
-      /*   buffer_putlong(buffer_2, i);
-        buffer_puts(buffer_2, ": disappeared port: ");
-        buffer_puts(buffer_2, *port);
-        buffer_putnlflush(buffer_2); */
-    }
-  }
-
-  strarray_free(&ports);
-  ports = newports;
-  i++;
-  return strarray_size(&ports);
 }
 
 /**
@@ -171,36 +110,129 @@ serial_ports() {
  */
 int64
 get_ports(strarray* ports) {
-  int64 n = 0, r = 0;
+  int64 j, n = 0, r = 0;
   char** pvec;
+  strarray temp;
+  strarray_init(&temp);
   strarray_zero(ports);
-  for(pvec = get_serial_ports(); pvec[n]; n++) {
-    const char* port = pvec[n];
+  dir_entries("/dev/", &temp);
+  n = strarray_size(&temp);
+  pvec = strarray_begin(&temp);
+  for(j = 0; j < n; j++) {
+    const char* port = pvec[j];
     size_t i = str_rchr(port, '/');
     if(port[i]) {
       i++;
-      if(str_start(&port[i], "tnt") || str_start(&port[i], "ACM") ||
-         str_start(&port[i], "USB") /*||   port[i + 3] == 'S'*/) {
+      if(/*str_start(&port[i], "tnt") ||*/ str_start(&port[i], "ttyACM") ||
+         str_start(&port[i], "ttyUSB") /*||   port[i + 3] == 'S'*/) {
         if(access(port, R_OK)) {
           if(errno != ENOENT && errno != ENODEV && errno != EACCES)
             errmsg_warnsys(port, 0);
           continue;
         }
         if(!strarray_contains(ports, port)) {
-          // strarray_push(&ports, port);
-          strarray_splice(ports, 0, 0, 1, &port);
-          /*  buffer_puts(buffer_2, "detected new port: ");
-           buffer_puts(buffer_2, port);
-           buffer_putnlflush(buffer_2); */
+          strarray_push(ports, port);
+          //          strarray_splice(ports, 0, 0, 1, &port);
+          /*       buffer_puts(buffer_2, "detected new port: ");
+                 buffer_puts(buffer_2, port);
+                 buffer_putnlflush(buffer_2);*/
           r++;
         }
       }
     }
   }
-  free(pvec);
+  strarray_free(&temp);
   return strarray_size(ports);
 }
 
+/**
+ * @brief      { function_description }
+ *
+ * @return     { description_of_the_return_value }
+ */
+int64
+serial_ports(strarray* ports) {
+  static int i;
+  char** port;
+  struct link **it, *entry;
+  strarray temp;
+  strarray_init(&temp);
+
+  get_ports(&temp);
+
+  // dir_entries("/dev/", &temp);
+
+  strarray_foreach(&temp, port) {
+    struct stat st;
+    struct taia t;
+
+    if(!str_start(*port, "/dev/ttyA") && !str_start(*port, "/dev/ttyUSB") && !str_start(*port, "/dev/tnt"))
+      continue;
+
+    byte_zero(&st, sizeof(st));
+
+    if(stat(*port, &st) != -1) {
+
+      taia_uint(&t, st.st_ctime);
+      t.nano = st.st_ctim.tv_nsec;
+    } else {
+      taia_now(&t);
+    }
+
+    // if(strarray_index_of(&ports, *port) == -1) {
+
+    if(!find_port(*port)) {
+      port_t p;
+      taia_uint(&p.time, 0);
+      taia_add(&p.time, &p.time, &t);
+      taia_now(&p.time);
+
+      MAP_INSERT(port_map, *port, str_len(*port) + 1, &p, sizeof(port_t));
+
+      struct link* l = alloc_zero(sizeof(struct link));
+
+      l->next = port_list;
+      l->name = str_dup(*port);
+
+      byte_copy(&l->time, sizeof(l->time), &p.time);
+
+      slist_insert(&port_list, &l->link);
+
+      port_list = l;
+
+      buffer_putlong(buffer_2, i);
+      buffer_puts(buffer_2, ": detected new port: ");
+      buffer_puts(buffer_2, *port);
+      buffer_puts(buffer_2, " ");
+      buffer_puttai(buffer_2, &l->time.sec);
+
+      buffer_putnlflush(buffer_2);
+    }
+  }
+  for(entry = port_list; entry; entry = entry->next) {
+
+    char* port = entry->name;
+
+    if(strarray_index_of(&temp, port) == -1) {
+      MAP_DELETE(port_map, port, str_len(port) + 1);
+
+      buffer_putlong(buffer_2, i);
+      buffer_puts(buffer_2, ": disappeared port: ");
+      buffer_puts(buffer_2, port);
+      buffer_putnlflush(buffer_2);
+
+      remove_port(port);
+    }
+  }
+
+  strarray_free(&temp);
+  strarray_zero(ports);
+
+  slink_foreach(&port_list, it) { strarray_push(ports, (*it)->name); }
+
+  i++;
+  return strarray_size(ports);
+}
 /**
  * @brief      { function_description }
  *
@@ -240,7 +272,7 @@ term_init(fd_t fd, struct termios* state) {
   /* Because the terminal needs to be restored to the original state,
    * you want to ignore CTRL-C (break). */
   //  raw.c_iflag |= IGNBRK;  /* do ignore break, */
-  raw.c_iflag &= ~BRKINT; /* do not generate INT signal at break. */
+  // raw.c_iflag &= ~BRKINT; /* do not generate INT signal at break. */
 
   /* Make sure we are enabled to receive data. */
   raw.c_cflag |= CREAD;
@@ -308,7 +340,7 @@ term_process() {
   if((ret = read(input_fd, x, sizeof(x))) > 0) {
     buffer_puts(buffer_1, "Read ");
     buffer_putlong(buffer_1, ret);
-    buffer_puts(buffer_1, " bytes from terminal: ");
+    buffer_puts(buffer_1, " bytes from terminal: 0x");
     buffer_putxlong0(buffer_1, (unsigned char)x[0], 2);
     buffer_putnlflush(buffer_1);
   }
@@ -338,6 +370,9 @@ process_serial(fd_t serial_fd) {
     errmsg_warn("serial closed", 0);
     io_dontwantread(serial_fd);
     io_close(serial_fd);
+
+    // longjmp(context, 1);
+
   } else if(ret < 0) {
     if(errno == EAGAIN) {
       io_eagain_read(serial_fd);
@@ -403,11 +438,12 @@ process_loop(fd_t serial_fd, int64 timeout) {
       buffer_flush(buffer_1);
       stralloc_zero(&input_buf);
     }
-    if(wait_msecs <= 0)
-      break;
+    /* if(wait_msecs <= 0)
+       break;*/
   }
   return ret;
 }
+
 void
 usage(char* progname) {
   buffer_putm_3(buffer_1, "Usage: ", path_basename(progname), " [OPTIONS] [PORT] [BAUDRATE]\n");
@@ -420,6 +456,14 @@ usage(char* progname) {
   buffer_putnlflush(buffer_1);
 }
 
+void
+signal_handler(int sig) {
+  buffer_puts(buffer_2, "Signal ");
+  buffer_putulong(buffer_2, sig);
+  buffer_putnlflush(buffer_2);
+
+  running = 0;
+}
 extern buffer* optbuf;
 int
 main(int argc, char* argv[]) {
@@ -428,8 +472,9 @@ main(int argc, char* argv[]) {
   struct termios tio;
   int c;
   int index = 0;
+
+  ssize_t ret;
   int mode = 0;
-  int running = 1;
   fd_t serial_fd;
   struct longopt opts[] = {
       {"help", 0, NULL, 'h'},
@@ -478,30 +523,40 @@ getopt_end:
     else
       baudrate = 38400;
   }
+  term_init(input_fd, &tio);
 
   io_fd(input_fd);
   io_nonblock(input_fd);
+  io_wantread(input_fd);
+  sig_blocknone();
+
+  sig_catch(SIGINT, signal_handler);
+  sig_catch(SIGTERM, signal_handler);
+  sig_catch(SIGSTOP, signal_handler);
+  running = 1;
 
   while(running) {
     int64 i, newports;
 
-    if(portname == NULL) {
+    setjmp(context);
+
+    // if(portname == NULL)
+    {
 
       newports = get_ports(&portArr);
-      serial_ports();
-      buffer_puts(buffer_2, "num ports: ");
+      serial_ports(&portArr);
+      /*buffer_puts(buffer_2, "num ports: ");
       buffer_putlonglong(buffer_2, newports);
-      buffer_putnlflush(buffer_2);
+      buffer_putnlflush(buffer_2);*/
       if(newports == 0) {
         usleep(250 * 1000);
         continue;
       }
       portname = strarray_at(&portArr, 0);
-      strarray_free(&portArr);
+      //  strarray_free(&portArr);
     }
 
-    /*    buffer_puts(buffer_2, "portname: ");
-        buffer_puts(buffer_2, portname);*/
+    buffer_puts(buffer_2, "portname: ");
     buffer_putnlflush(buffer_2);
     serial_fd = serial_open(portname, baudrate);
     io_nonblock(serial_fd);
@@ -517,23 +572,26 @@ getopt_end:
     // buffer_read_fd(&serial, serial_fd);
     io_fd(serial_fd);
     io_wantread(serial_fd);
-    term_init(input_fd, &tio);
-    io_wantread(input_fd);
 
     // serial.op = &read;
-    while(process_loop(serial_fd, 250) > 0)
+    if((ret = process_loop(serial_fd, 250)) > 0)
       ;
 
-    term_restore(input_fd, &tio);
     io_dontwantread(serial_fd);
     io_close(serial_fd);
+    remove_port(portname);
+
     int64 idx = strarray_index_of(&ports, portname);
     if(idx != -1) {
+
       /*buffer_puts(buffer_2, "removed port: ");
       buffer_puts(buffer_2, strarray_at(&ports, idx));
       buffer_putnlflush(buffer_2); */
       strarray_splice(&ports, idx, 1, 0, NULL);
     }
+
+    if(ret == 0)
+      continue;
     /*buffer_puts(buffer_1, "Ports (");
     buffer_putulong(buffer_1, strarray_size(&ports));
     buffer_puts(buffer_1, "): "); */
@@ -547,5 +605,9 @@ getopt_end:
     }
     buffer_putnlflush(buffer_1); */
   }
+
+  term_restore(input_fd, &tio);
+
+  strarray_free(&portArr);
   stralloc_free(&input_buf);
 }

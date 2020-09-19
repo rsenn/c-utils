@@ -26,7 +26,9 @@ static int forward_port = -1;
 
 void
 usage(void) {
-  printf("proxy [-l <listening port>] -f <forward ip>:<forward port>", 0);
+  buffer_puts(buffer_2, "proxy [-l <listening port>] -f <forward ip>:<forward port>");
+  buffer_putnlflush(buffer_2);
+
   exit(0);
 }
 

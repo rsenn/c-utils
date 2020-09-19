@@ -39,7 +39,8 @@ int slist_unshiftb(slink** list, const void* x, size_t len);
 #define slist_foreach(list, n) for((n) = (void*)slist_begin(list); (n); (n) = (void*)slist_next((slink*)n))
 #define slist_foreach_safe(list, n, next)                                                                              \
   for((n) = slist_begin(list); (((n) && ((next) = slist_next((n)))), 1); (n) = (next))
-#define slink_foreach_safe(list, n, next) for((n) = &(link); ((*(n) && ((next) = slink_next((n)))), 1); (n) = (next))
+#define slink_foreach_safe(list, n, next)                                                                              \
+  for((n) = &(list); ((*(n) && ((next) = (void*)slink_next((struct slink**)(n)))), 1); (n) = (next))
 
 #define _slist_begin(st) ((struct slink**)&(st))
 #define _slist_next(st) (((struct slink*)(st))->next)
