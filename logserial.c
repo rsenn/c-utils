@@ -22,6 +22,7 @@
 #include "lib/tai.h"
 #include "lib/slist.h"
 #include "lib/sig.h"
+#include "lib/charbuf.h"
 #include <stdlib.h>
 #include <unistd.h>
 #include <ctype.h>
@@ -41,8 +42,9 @@ typedef struct link {
 } link_t;
 
 static strarray ports;
-static fd_t input_fd = 0;
-static stralloc input_buf;
+static fd_t term_fd = 0;
+static charbuf term_buf = CHARBUF_INIT((void*)&read, STDIN_FILENO);
+static stralloc serial_buf;
 static int verbose = 0;
 static MAP_T port_map;
 static link_t* port_list;
@@ -334,14 +336,15 @@ term_restore(fd_t fd, const struct termios* state) {
  */
 ssize_t
 term_process() {
-  char x[128];
+  unsigned char c;
   ssize_t ret;
 
-  if((ret = read(input_fd, x, sizeof(x))) > 0) {
+  if((ret = charbuf_getc(&term_buf, &c)) > 0) {
+
     buffer_puts(buffer_1, "Read ");
     buffer_putlong(buffer_1, ret);
     buffer_puts(buffer_1, " bytes from terminal: 0x");
-    buffer_putxlong0(buffer_1, (unsigned char)x[0], 2);
+    buffer_putxlong0(buffer_1, (unsigned long)c, 2);
     buffer_putnlflush(buffer_1);
   }
 
@@ -360,11 +363,11 @@ process_serial(fd_t serial_fd) {
   char x[1024];
   ssize_t ret;
   if((ret = read(serial_fd, x, sizeof(x))) > 0) {
-    stralloc_catb(&input_buf, x, ret);
-    if(stralloc_contains(&input_buf, "\n")) {
-      buffer_putsa(buffer_1, &input_buf);
+    stralloc_catb(&serial_buf, x, ret);
+    if(stralloc_contains(&serial_buf, "\n")) {
+      buffer_putsa(buffer_1, &serial_buf);
       buffer_flush(buffer_1);
-      stralloc_zero(&input_buf);
+      stralloc_zero(&serial_buf);
     }
   } else if(ret == 0) {
     errmsg_warn("serial closed", 0);
@@ -428,15 +431,15 @@ process_loop(fd_t serial_fd, int64 timeout) {
             return ret;
         }
       }
-      if(read_fd == input_fd) {
+      if(read_fd == term_fd) {
         if((ret = term_process() <= 0))
           return ret;
       }
     }
-    if(stralloc_length(&input_buf)) {
-      buffer_putsa(buffer_1, &input_buf);
+    if(stralloc_length(&serial_buf)) {
+      buffer_putsa(buffer_1, &serial_buf);
       buffer_flush(buffer_1);
-      stralloc_zero(&input_buf);
+      stralloc_zero(&serial_buf);
     }
     /* if(wait_msecs <= 0)
        break;*/
@@ -462,7 +465,14 @@ signal_handler(int sig) {
   buffer_putulong(buffer_2, sig);
   buffer_putnlflush(buffer_2);
 
+  if(sig == SIGINT) {
+    longjmp(context, 1);
+  }
   running = 0;
+
+  if(sig == SIGTERM) {
+    exit(2);
+  }
 }
 extern buffer* optbuf;
 int
@@ -523,11 +533,14 @@ getopt_end:
     else
       baudrate = 38400;
   }
-  term_init(input_fd, &tio);
 
-  io_fd(input_fd);
-  io_nonblock(input_fd);
-  io_wantread(input_fd);
+  setjmp(context);
+
+  term_init(term_fd, &tio);
+
+  io_fd(term_fd);
+  io_nonblock(term_fd);
+  io_wantread(term_fd);
   sig_blocknone();
 
   sig_catch(SIGINT, signal_handler);
@@ -537,8 +550,6 @@ getopt_end:
 
   while(running) {
     int64 i, newports;
-
-    setjmp(context);
 
     // if(portname == NULL)
     {
@@ -606,8 +617,8 @@ getopt_end:
     buffer_putnlflush(buffer_1); */
   }
 
-  term_restore(input_fd, &tio);
+  term_restore(term_fd, &tio);
 
   strarray_free(&portArr);
-  stralloc_free(&input_buf);
+  stralloc_free(&serial_buf);
 }

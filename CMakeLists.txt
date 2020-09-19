@@ -414,7 +414,7 @@ if(USE_SSL AND NOT BUILD_SSL)
   if(NOT OPENSSL_ROOT_DIR)
     if("$ENV{OPENSSL_ROOT}")
       set(OPENSSL_ROOT_DIR
-         "$ENV{OPENSSL_ROOT}"
+          "$ENV{OPENSSL_ROOT}"
           CACHE FILEPATH "OpenSSL root directory")
     else("$ENV{OPENSSL_ROOT}")
       set(OPENSSL_ROOT_DIR
@@ -423,7 +423,7 @@ if(USE_SSL AND NOT BUILD_SSL)
     endif("$ENV{OPENSSL_ROOT}")
   endif(NOT OPENSSL_ROOT_DIR)
 
-set(PKG_CONFIG_USE_CMAKE_PREFIX_PATH OFF)
+  set(PKG_CONFIG_USE_CMAKE_PREFIX_PATH OFF)
   pkg_search_module(OPENSSL openssl libssl NO_CMAKE_PATH)
 
   if(OPENSSL_FOUND)
@@ -1713,7 +1713,8 @@ add_program(
 # add_program(montty io map)
 add_program(
   logserial
-sig
+  sig
+  charbuf
   hmap
   path
   unix
