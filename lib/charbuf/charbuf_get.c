@@ -8,6 +8,7 @@ charbuf_get(charbuf* b) {
 
   if(b->p) {
     b->p = 0;
+
   } else {
     b->ch = '\0';
     if((ret = b->op(b->fd, &b->ch, 1, b) <= 0)) {

@@ -1423,6 +1423,7 @@ endif(USE_LZMA)
 
 add_program(
   mediathek-parser
+  case
   ucs
   errmsg
   stralloc

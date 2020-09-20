@@ -2,7 +2,7 @@
 
 int
 charbuf_getc(charbuf* b, char* ch) {
-  int ret = 1;
+  int ret;
   if(b->eof || b->err)
     return -1;
 
@@ -18,10 +18,10 @@ charbuf_getc(charbuf* b, char* ch) {
       b->eof = 1;
     else if(ret < 0)
       b->err = 1;
-  } else  {
+  } else {
     b->p = 1;
-   *ch = b->ch;
- }
- 
-return ret;
+    *ch = b->ch;
+  }
+
+  return ret;
 }

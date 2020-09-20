@@ -8,21 +8,20 @@
 	"buffers":
 	[
 		{
-			"contents": " Ⓜ  _XOPEN_SOURCE … — macro object\n Ⓜ  __POSIX_VISIBLE … — macro object\n Ⓜ  __MISC_VISIBLE … — macro object\n Ⓜ  BUFSIZE … — macro object\n—Ⓕ– __declspec ( ) { … } — function\n Ⓜ  popen … — macro object\n Ⓜ  popen … — macro object\n—Ⓕ– count_field_lengths ( ) { … } — function\n—Ⓕ– split_fields ( ) { … } — function\n—Ⓕ– process_status ( ) { … } — function\n—Ⓕ– read_mediathek_list ( ) { … } — function\n—Ⓕ– parse_time ( ) { … } — function\n—Ⓕ– format_num ( ) { … } — function\n—Ⓕ– format_time ( ) { … } — function\n—Ⓕ– parse_datetime ( ) { … } — function\n—Ⓕ– parse_anydate ( ) { … } — function\n—Ⓕ– format_datetime ( ) { … } — function\n—Ⓕ– make_url ( ) { … } — function\n—Ⓒ– mediathek_entry { … } ; — type\n Ⓣ  mediathek_entry_t ; — typedef\n—Ⓕ– new_mediathek_entry ( ) { … } — function\n—Ⓕ– delete_mediathek_entry ( ) { … } — function\n—Ⓕ– match_tokens ( ) { … } — function\n—Ⓕ– match_toklists ( ) { … } — function\n—Ⓕ– parse_entry ( ) { … } — function\n—Ⓕ– print_entry ( ) { … } — function\n—Ⓕ– output_entry ( ) { … } — function\n—Ⓕ– parse_mediathek_list ( ) { … } — function\n—Ⓕ– usage ( ) { … } — function\n—Ⓕ– main ( ) { … } — function",
+			"contents": "—Ⓕ– charbuf_getc ( ) { … } — function",
 			"settings":
 			{
-				"buffer_size": 1116,
+				"buffer_size": 37,
 				"line_ending": "Unix",
 				"name": "𝌆 Outline",
 				"scratch": true
 			}
 		},
 		{
-			"file": "mediathek-list.c",
+			"file": "lib/charbuf/charbuf_getc.c",
 			"settings":
 			{
-				"buffer_size": 16104,
-				"encoding": "UTF-8",
+				"buffer_size": 379,
 				"line_ending": "Unix"
 			}
 		}
@@ -115,12 +114,42 @@
 	],
 	"file_history":
 	[
-		"/home/roman/Dokumente/Sources/c-utils/build/cmake/BuildOpenSSL.cmake",
-		"/home/roman/Dokumente/Sources/c-utils/lib/slist.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/sig.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/sig/sig_catch.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/sig/sig_action.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/buffer/buffer_puttai.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/io/io_waituntil2.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/sig/sig_blocknone.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/charbuf/charbuf_skip.c",
+		"/home/roman/Dokumente/Sources/c-utils/serial.c",
+		"/home/roman/Dokumente/Sources/c-utils/CMakeLists.txt",
+		"/home/roman/Dokumente/Sources/c-utils/lib/taia/taia_uint.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/taia/taia_now.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/taia.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/taia/taia_add.c",
+		"/home/roman/Dokumente/Sources/c-utils/map.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/charbuf/charbuf_getc.c",
+		"/home/roman/Dokumente/Sources/c-utils/logserial.c",
+		"/home/roman/Dokumente/Sources/c-utils/mediathek-list.c",
+		"/home/roman/Dokumente/Sources/c-utils/mediathek-parser.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/case.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/charbuf/charbuf_get.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/charbuf/charbuf_peekc.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/charbuf.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/buffer/buffer_getc.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/scan.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/byte.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/strarray/strarray_to_argv.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/strarray.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/fmt/fmt_tai.c",
 		"/home/roman/Dokumente/Sources/c-utils/pkgcfg.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/tai/tai_uint.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/tai.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/slist.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/str/str_dup.c",
+		"/home/roman/Dokumente/Sources/c-utils/build/cmake/BuildOpenSSL.cmake",
 		"/home/roman/Dokumente/Sources/plot-cv/static/svg/CAM.svg",
 		"/home/roman/Dokumente/Sources/c-utils/lib/http/http_ssl_read.c",
-		"/home/roman/Dokumente/Sources/c-utils/CMakeLists.txt",
 		"/home/roman/Dokumente/Sources/c-utils/lib/http/http_get.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/http/http_init.c",
 		"/home/roman/Dokumente/Sources/c-utils/httptest.c",
@@ -133,7 +162,6 @@
 		"/home/roman/Dokumente/Sources/c-utils/lib/strlist.h",
 		"/home/roman/Dokumente/Sources/c-utils/lib/str.h",
 		"/home/roman/Dokumente/Sources/c-utils/lib/case/case_diffs.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/strarray.h",
 		"/home/roman/Dokumente/Sources/c-utils/lib/strarray/strarray_from_argv.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/strlist/strlist_from_argv.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/strlist/strlist_fromb.c",
@@ -144,10 +172,8 @@
 		"/home/roman/Dokumente/Sources/c-utils/lib/slist/slist_removes.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/slist/slist_pushs.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/slist/slist_unshifts.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/str/str_dup.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/strlist/strlist_removes.c",
 		"/home/roman/Dokumente/Sources/c-utils/jsonpp.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/charbuf/charbuf_peekc.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/json/json_parse.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/json/json_print.c",
 		"/home/roman/Dokumente/Sources/c-utils/hexedit.c",
@@ -171,7 +197,6 @@
 		"/home/roman/Dokumente/Sources/c-utils/lib/stralloc/stralloc_catxlong0.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/fmt/fmt_xlong.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/scan/scan_utf8.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/scan.h",
 		"/home/roman/Dokumente/Sources/c-utils/lib/utf8.h",
 		"/home/roman/Dokumente/Sources/c-utils/examples/utf8_example.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/scan/scan_utf8_sem.c",
@@ -216,28 +241,7 @@
 		"/home/roman/Dokumente/Sources/c-utils/lib/buffer/buffer_putnspace.c",
 		"/home/roman/Dokumente/Sources/c-utils/3rdparty/openssl/crypto/bn/bn_asm.c",
 		"/home/roman/Dokumente/Sources/c-utils/examples/dnsip.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/open.h",
-		"/home/roman/Dokumente/Sources/c-utils/lib/typedefs.h",
-		"/home/roman/Dokumente/Sources/c-utils/lib/seek/seek_print.c",
-		"/home/roman/Dokumente/Sources/c-utils/genmakefile.c",
-		"/home/roman/Dokumente/Sources/plot-cv/lib/xml/xpath.js",
-		"/home/roman/Dokumente/Sources/c-utils/mediathek-list.c",
-		"/home/roman/Dokumente/Sources/c-utils/examples/httpd.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/http/http_sendreq.c",
-		"/home/roman/Dokumente/Sources/c-utils/3rdparty/openssl/test/recipes/ocsp-response.der",
-		"/home/roman/Dokumente/Sources/c-utils/lib/json/json_recurse.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/json/json_push.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/json/json_free.c",
-		"/home/roman/Dokumente/Sources/c-utils/genmakefile.h",
-		"/home/roman/Dokumente/Sources/c-utils/piccfg.c",
-		"/home/roman/Dokumente/Sources/c-utils/serial.h",
-		"/home/roman/Dokumente/Sources/pictest/pictest_16f876a_xc8.X.production.asm",
-		"/home/roman/Dokumente/Sources/pictest/pictest_16f876a_xc8.X.production.lst",
-		"/home/roman/Dokumente/Sources/c-utils/lib/cbmap/cbmap_delete.c",
-		"/home/roman/Dokumente/Sources/c-utils/serial.c",
-		"/home/roman/Dokumente/Sources/c-utils/cofflist.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/cbmap/cbmap_count.c",
-		"/home/roman/Dokumente/Sources/c-utils/cfg.sh"
+		"/home/roman/Dokumente/Sources/c-utils/lib/open.h"
 	],
 	"find":
 	{
@@ -258,6 +262,126 @@
 		"case_sensitive": true,
 		"find_history":
 		[
+			"-parser",
+			"format",
+			"\\\\r\\\\n",
+			"     \n",
+			"term_process",
+			"read\\(",
+			"serial_read",
+			"OPOST",
+			"ISTR",
+			"term_fd",
+			"longjmp",
+			"getc",
+			"term_process",
+			"term_proccess",
+			"term_proc",
+			"serial_fd",
+			"charbuf_",
+			"charbuf",
+			"charbuf_getc",
+			"term_buf",
+			"input_buf",
+			"input ",
+			"input",
+			"term_in",
+			"sig_ca",
+			"term_i",
+			"sighandler_t_ref",
+			"signal_ha",
+			"sig",
+			"sig_catcha",
+			"logser",
+			"hmap",
+			"add_",
+			"logser",
+			"running",
+			"term_init",
+			"CANON",
+			"from ter",
+			"process_serial",
+			"closed",
+			"process_loop",
+			"io_wait",
+			"longj",
+			"setjmp",
+			"_loop",
+			"new port",
+			"num ports",
+			"setjmp",
+			"copy",
+			"port_list->li",
+			"port_list",
+			"it =",
+			"slink_foreac",
+			"slink_foreach",
+			"longjmp",
+			"ctype",
+			"process_serial",
+			"closed",
+			"process_ser",
+			"closed",
+			"process_serial",
+			"closed",
+			"tnt",
+			"strarray_at",
+			"serial_ports",
+			"portName",
+			"strarray_pushs",
+			"strarray_push",
+			"serial_ports",
+			"new port",
+			"Could",
+			"ould",
+			"argv",
+			"puttai",
+			"taia_now",
+			"alloc_free",
+			"stat\\(",
+			"stat",
+			"slist_rem",
+			"slink_remove",
+			"serial_ports",
+			"get_serial_ports",
+			"serial_ports",
+			"slink_forea",
+			"l->next",
+			"port_t",
+			"link_t",
+			"port_t",
+			"unshift",
+			"struct link",
+			"port_t",
+			"port_list",
+			"MAP_INSERT",
+			"logserial",
+			"clear",
+			"get_ports",
+			"#define MAP_INSERT(map, key, klen, data, dlen) hashmap_insert(&(map), (void*)(key), klen, (void*)(data), dlen)\n",
+			"MAP_NEW",
+			"port\\[",
+			"'U'",
+			"num ports",
+			"exit",
+			"init_term",
+			"state",
+			" ",
+			"struct ter",
+			"input_fd",
+			"wantread",
+			"process_loop",
+			"wantread",
+			"process_term",
+			"open_trunc",
+			"open_",
+			"baud",
+			"ulong",
+			"uint",
+			"DEBUG_OUT",
+			"logserial",
+			"iam",
+			"show_vers",
 			"crypto",
 			"target_",
 			"set_target",
@@ -265,127 +389,7 @@
 			"read_mediathek_list",
 			"http_init",
 			"http_",
-			"http",
-			"://",
-			"value",
-			"pkg_expand",
-			"get_field_index",
-			"get_field",
-			"strlist_dump",
-			"PKGCFG_EXISTS",
-			"mode =",
-			"PKGCFG_EXISTS",
-			"mode ==",
-			"mode =",
-			"mode;",
-			"check_cond",
-			"check_conf",
-			"pkg_open",
-			"pkg_conf",
-			"^pkg_conf",
-			"^pkgcfg_conf",
-			"^pkgcfg",
-			"cond",
-			"pkg_check_cond",
-			"check_",
-			"parse_",
-			"_parse_",
-			"_read\\(",
-			"_read",
-			"^pkgcfg_read",
-			"^pkg",
-			"^pkg_read",
-			"parse_cond",
-			"pkg_format_version",
-			"CATC",
-			"get_field_index",
-			"field_names",
-			"get_field_index",
-			"PRINT_VERSION",
-			"modvers",
-			"unsigned short",
-			"  unsigned short ",
-			"pkg_parse_version",
-			"version_str",
-			"version",
-			"field_names",
-			"exists",
-			"EXISTS",
-			"field index",
-			"pkg_conf",
-			"exists\"",
-			"show_vers",
-			"from_argv",
-			"argv",
-			"11",
-			"pkgcfg_path",
-			"PKG_CONFIG_PATH",
-			"pkgcfg_init",
-			"sysroot",
-			"from",
-			"case_diff",
-			"diffn",
-			"pkg_list",
-			"LIST_ALL",
-			"cmd;",
-			"cmd",
-			"LIST_ALL",
-			"LIBS_ONLY_L",
-			"strarray",
-			"^  pkgcfg",
-			"\\(pkgcfg",
-			"pkgcfg",
-			"pkgcfg ",
-			"^pkg_list",
-			"crc32\\(",
-			"->quote",
-			"quote\\[",
-			"compliant",
-			"->quote",
-			"slist_next",
-			"print_arr",
-			"json_is_identifier_char",
-			"ispunct",
-			"json_is_identifier_char",
-			"print.key",
-			"key",
-			"\\\\\\\\",
-			"out_file",
-			"out_file =",
-			"in_file",
-			"infile",
-			"inplace",
-			"in_plalce",
-			"in_place",
-			"inplace",
-			"main",
-			"inplace",
-			"utf8",
-			"ucs_to_latin1_char",
-			"json_parse_getsa",
-			"json_print_key",
-			"\",\"",
-			"print_number_nonl_base",
-			"dev\"",
-			"print_number_nonl_base",
-			"dev\"",
-			"print_number_nonl_base",
-			"number_nonl",
-			"number_non",
-			"print_stralloc_nonl",
-			"print_number_nonl",
-			"print_num",
-			"type\\(",
-			"slist_add",
-			"_dump",
-			" st_",
-			"procfd_dump",
-			"buffer_1",
-			"\"  path",
-			"path\"",
-			"print_number",
-			"path\"",
-			"verbose"
+			"http"
 		],
 		"highlight": false,
 		"in_selection": false,
@@ -393,6 +397,8 @@
 		"regex": true,
 		"replace_history":
 		[
+			"term_buf.fd",
+			" ",
 			"uint16",
 			" ",
 			"_1, \", "
@@ -414,7 +420,7 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 1116,
+						"buffer_size": 37,
 						"regions":
 						{
 						},
@@ -424,163 +430,18 @@
 						"settings":
 						{
 							"color_scheme": "Packages/Outline/outline.hidden-tmTheme",
-							"current_file": "/home/roman/Dokumente/Sources/c-utils/mediathek-list.c",
+							"current_file": "/home/roman/Dokumente/Sources/c-utils/lib/charbuf/charbuf_getc.c",
 							"outline_rename_mode": false,
 							"symkeys":
 							[
 								[
-									8,
-									21
-								],
-								[
-									32,
-									47
-								],
-								[
-									63,
-									77
-								],
-								[
-									780,
-									787
-								],
-								[
-									831,
-									841
-								],
-								[
-									895,
-									900
-								],
-								[
-									953,
-									958
-								],
-								[
-									1908,
-									1927
-								],
-								[
-									2239,
-									2251
-								],
-								[
-									2858,
-									2872
-								],
-								[
-									3459,
-									3478
-								],
-								[
-									4282,
-									4292
-								],
-								[
-									4708,
-									4718
-								],
-								[
-									4909,
-									4920
-								],
-								[
-									5404,
-									5418
-								],
-								[
-									5649,
-									5662
-								],
-								[
-									5976,
-									5991
-								],
-								[
-									6330,
-									6338
-								],
-								[
-									6656,
-									6671
-								],
-								[
-									6831,
-									6848
-								],
-								[
-									6919,
-									6938
-								],
-								[
-									7146,
-									7168
-								],
-								[
-									7530,
-									7542
-								],
-								[
-									8217,
-									8231
-								],
-								[
-									8676,
-									8687
-								],
-								[
-									9979,
-									9990
-								],
-								[
-									10881,
-									10893
-								],
-								[
-									11362,
-									11382
-								],
-								[
-									13539,
-									13544
-								],
-								[
-									14455,
-									14459
+									29,
+									41
 								]
 							],
 							"symlist":
 							[
-								" Ⓜ  _XOPEN_SOURCE … — macro object",
-								" Ⓜ  __POSIX_VISIBLE … — macro object",
-								" Ⓜ  __MISC_VISIBLE … — macro object",
-								" Ⓜ  BUFSIZE … — macro object",
-								"—Ⓕ– __declspec ( ) { … } — function",
-								" Ⓜ  popen … — macro object",
-								" Ⓜ  popen … — macro object",
-								"—Ⓕ– count_field_lengths ( ) { … } — function",
-								"—Ⓕ– split_fields ( ) { … } — function",
-								"—Ⓕ– process_status ( ) { … } — function",
-								"—Ⓕ– read_mediathek_list ( ) { … } — function",
-								"—Ⓕ– parse_time ( ) { … } — function",
-								"—Ⓕ– format_num ( ) { … } — function",
-								"—Ⓕ– format_time ( ) { … } — function",
-								"—Ⓕ– parse_datetime ( ) { … } — function",
-								"—Ⓕ– parse_anydate ( ) { … } — function",
-								"—Ⓕ– format_datetime ( ) { … } — function",
-								"—Ⓕ– make_url ( ) { … } — function",
-								"—Ⓒ– mediathek_entry { … } ; — type",
-								" Ⓣ  mediathek_entry_t ; — typedef",
-								"—Ⓕ– new_mediathek_entry ( ) { … } — function",
-								"—Ⓕ– delete_mediathek_entry ( ) { … } — function",
-								"—Ⓕ– match_tokens ( ) { … } — function",
-								"—Ⓕ– match_toklists ( ) { … } — function",
-								"—Ⓕ– parse_entry ( ) { … } — function",
-								"—Ⓕ– print_entry ( ) { … } — function",
-								"—Ⓕ– output_entry ( ) { … } — function",
-								"—Ⓕ– parse_mediathek_list ( ) { … } — function",
-								"—Ⓕ– usage ( ) { … } — function",
-								"—Ⓕ– main ( ) { … } — function"
+								"—Ⓕ– charbuf_getc ( ) { … } — function"
 							],
 							"syntax": "Packages/Outline/outline.hidden-tmLanguage"
 						},
@@ -599,19 +460,19 @@
 			[
 				{
 					"buffer": 1,
-					"file": "mediathek-list.c",
-					"semi_transient": false,
+					"file": "lib/charbuf/charbuf_getc.c",
+					"semi_transient": true,
 					"settings":
 					{
-						"buffer_size": 16104,
+						"buffer_size": 379,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								3146,
-								3146
+								0,
+								0
 							]
 						],
 						"settings":
@@ -621,7 +482,7 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 2762.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 0,
@@ -632,11 +493,11 @@
 	],
 	"incremental_find":
 	{
-		"height": 34.0
+		"height": 29.0
 	},
 	"input":
 	{
-		"height": 41.0
+		"height": 42.0
 	},
 	"layout":
 	{
@@ -686,7 +547,7 @@
 	"project": "c-utils.sublime-project",
 	"replace":
 	{
-		"height": 85.0
+		"height": 75.0
 	},
 	"save_all_on_build": true,
 	"select_file":
@@ -696,11 +557,151 @@
 		"selected_items":
 		[
 			[
-				"buildssl",
-				"build/cmake/BuildOpenSSL.cmake"
+				"cmake",
+				"CMakeLists.txt"
 			],
 			[
-				"cmake",
+				"case",
+				"lib/case.h"
+			],
+			[
+				"-parser",
+				"mediathek-parser.c"
+			],
+			[
+				"ediathek-li",
+				"mediathek-list.c"
+			],
+			[
+				"serial",
+				"serial.c"
+			],
+			[
+				"logser",
+				"logserial.c"
+			],
+			[
+				"charbuf_getc",
+				"lib/charbuf/charbuf_getc.c"
+			],
+			[
+				"getc",
+				"lib/charbuf/charbuf_getc.c"
+			],
+			[
+				"charbu",
+				"lib/charbuf.h"
+			],
+			[
+				"sig_",
+				"lib/sig/sig_catch.c"
+			],
+			[
+				"sig_ac",
+				"lib/sig/sig_action.c"
+			],
+			[
+				"sig_catch",
+				"lib/sig/sig_catch.c"
+			],
+			[
+				"sig_ca",
+				"lib/sig/sig_catch.c"
+			],
+			[
+				"waitun",
+				"lib/io/io_waituntil2.c"
+			],
+			[
+				"byte.h",
+				"lib/byte.h"
+			],
+			[
+				"to_argv",
+				"lib/strarray/strarray_to_argv.c"
+			],
+			[
+				"strarray.h",
+				"lib/strarray.h"
+			],
+			[
+				"puttai",
+				"lib/buffer/buffer_puttai.c"
+			],
+			[
+				"fmt_tai",
+				"lib/fmt/fmt_tai.c"
+			],
+			[
+				"taia_uin",
+				"lib/taia/taia_uint.c"
+			],
+			[
+				"taia_add",
+				"lib/taia/taia_add.c"
+			],
+			[
+				"taia_now",
+				"lib/taia/taia_now.c"
+			],
+			[
+				"taia_ui",
+				"lib/taia/taia_uint.c"
+			],
+			[
+				"tai_ui",
+				"lib/tai/tai_uint.c"
+			],
+			[
+				"taia.h",
+				"lib/taia.h"
+			],
+			[
+				"str_dup",
+				"lib/str/str_dup.c"
+			],
+			[
+				"slist.h",
+				"lib/slist.h"
+			],
+			[
+				"strarray",
+				"lib/strarray.h"
+			],
+			[
+				"pkgcf",
+				"pkgcfg.c"
+			],
+			[
+				"taia",
+				"lib/taia.h"
+			],
+			[
+				"tai",
+				"lib/tai.h"
+			],
+			[
+				"map.h",
+				"map.h"
+			],
+			[
+				"serial.c",
+				"serial.c"
+			],
+			[
+				"scan",
+				"lib/scan.h"
+			],
+			[
+				"mediathe",
+				"mediathek-list.c"
+			],
+			[
+				"cmakeList",
+				"CMakeLists.txt"
+			],
+			[
+				"buildssl",
 				"build/cmake/BuildOpenSSL.cmake"
 			],
 			[
@@ -752,20 +753,12 @@
 				"lib/strarray/strarray_from_argv.c"
 			],
 			[
-				"strarray",
-				"lib/strarray.h"
-			],
-			[
 				"strlist",
 				"lib/strlist.h"
 			],
 			[
 				"str.h",
 				"lib/str.h"
-			],
-			[
-				"strarray.h",
-				"lib/strarray.h"
 			],
 			[
 				"cmakeli",
@@ -780,15 +773,7 @@
 				"lib/strarray/strarray_appends.c"
 			],
 			[
-				"pkgcf",
-				"pkgcfg.c"
-			],
-			[
 				"",
-				"lib/slist.h"
-			],
-			[
-				"slist.h",
 				"lib/slist.h"
 			],
 			[
@@ -798,10 +783,6 @@
 			[
 				"slist_remo",
 				"lib/strlist/strlist_removes.c"
-			],
-			[
-				"str_dup",
-				"lib/str/str_dup.c"
 			],
 			[
 				"slist",
@@ -1086,114 +1067,6 @@
 			[
 				"stralloc",
 				"lib/stralloc.h"
-			],
-			[
-				"getwd",
-				"lib/path/path_getcwd.c"
-			],
-			[
-				"path_real",
-				"lib/path/path_realpath.c"
-			],
-			[
-				"path_rea",
-				"lib/path/path_readlink.c"
-			],
-			[
-				"path.h",
-				"lib/path.h"
-			],
-			[
-				"dir_open",
-				"lib/dir/dir_open.c"
-			],
-			[
-				"dir.h",
-				"lib/dir.h"
-			],
-			[
-				"path.",
-				"lib/path.h"
-			],
-			[
-				"open.h",
-				"lib/open.h"
-			],
-			[
-				"mediathek-list",
-				"mediathek-list.c"
-			],
-			[
-				"json_free.c",
-				"lib/json/json_free.c"
-			],
-			[
-				"json_print",
-				"lib/json/json_print.c"
-			],
-			[
-				"json_push",
-				"lib/json/json_push.c"
-			],
-			[
-				"slist_push",
-				"lib/slist/slist_push.c"
-			],
-			[
-				"json_re",
-				"lib/json/json_read_tree.c"
-			],
-			[
-				"json_read",
-				"lib/json/json_read_callback.c"
-			],
-			[
-				"jsonpp.c",
-				"jsonpp.c"
-			],
-			[
-				"piccf",
-				"piccfg.c"
-			],
-			[
-				"genma",
-				"genmakefile.h"
-			],
-			[
-				"genmak",
-				"genmakefile.c"
-			],
-			[
-				"cofflist",
-				"cofflist.c"
-			],
-			[
-				"hexedit",
-				"hexedit.c"
-			],
-			[
-				"serial",
-				"serial.h"
-			],
-			[
-				"seri",
-				"serial.c"
-			],
-			[
-				"hexe",
-				"hexedit.c"
-			],
-			[
-				"freq",
-				"Freq-meter.c"
-			],
-			[
-				"cap-me",
-				"Cap-meter.c"
-			],
-			[
-				"lc-me",
-				"LC-meter.c"
 			]
 		],
 		"width": 0.0

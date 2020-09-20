@@ -45,7 +45,10 @@ typedef long sigset_t;
 #endif
 
 #define SA_MASKALL 1
+
+#ifndef SA_NOCLDSTOP
 #define SA_NOCLDSTOP 2
+#endif
 
 typedef void sighandler_t_fn(int);
 typedef sighandler_t_fn* sighandler_t_ref;

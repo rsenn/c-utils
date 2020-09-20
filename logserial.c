@@ -42,14 +42,15 @@ typedef struct link {
 } link_t;
 
 static strarray ports;
-static fd_t term_fd = 0;
+// static fd_t term_buf.fd = 0;
 static charbuf term_buf = CHARBUF_INIT((void*)&read, STDIN_FILENO);
 static stralloc serial_buf;
-static int verbose = 0;
+static int verbose, rawmode;
 static MAP_T port_map;
 static link_t* port_list;
 static jmp_buf context;
 volatile int running;
+fd_t serial_fd;
 
 /**
  * @brief      { function_description }
@@ -271,29 +272,24 @@ term_init(fd_t fd, struct termios* state) {
   /* New terminal settings are based on current ones. */
   raw = old;
 
-  /* Because the terminal needs to be restored to the original state,
-   * you want to ignore CTRL-C (break). */
-  //  raw.c_iflag |= IGNBRK;  /* do ignore break, */
-  // raw.c_iflag &= ~BRKINT; /* do not generate INT signal at break. */
+  if(rawmode) {
 
-  /* Make sure we are enabled to receive data. */
-  raw.c_cflag |= CREAD;
+    raw.c_lflag &= ~(ICANON | IEXTEN | ISIG);
+    raw.c_lflag |= ECHONL | ISIG;
 
-  /* Do not generate signals from special keypresses. */
-  // raw.c_lflag &= ~ISIG;
+    raw.c_iflag &= ~(BRKINT | INPCK | ISTRIP | IXON | IGNCR);
+    raw.c_iflag |= INLCR;
 
-  /* Do not echo characters. */
-  raw.c_lflag &= ~ECHO;
+    raw.c_cflag &= ~(CSIZE | PARENB);
 
-  /* Most importantly, disable "canonical" mode. */
-  raw.c_lflag &= ~ICANON;
+    raw.c_cflag |= CS8;
 
-  /* In non-canonical mode, we can set whether getc() returns immediately
-   * when there is no data, or whether it waits until there is data.
-   * You can even set the wait timeout in tenths of a second.
-   * This sets indefinite wait mode. */
-  raw.c_cc[VMIN] = 1;  /* Wait until at least one character available, */
-  raw.c_cc[VTIME] = 0; /* Wait indefinitely. */
+    raw.c_oflag &= ~(OPOST);
+    raw.c_oflag |= ONLCR;
+
+    raw.c_cc[VMIN] = 0;
+    raw.c_cc[VTIME] = 0;
+  }
 
   /* Set the new terminal settings. */
   if(tcsetattr(fd, TCSAFLUSH, &raw))
@@ -332,22 +328,20 @@ term_restore(fd_t fd, const struct termios* state) {
 /**
  * @brief      { function_description }
  *
+ * @param      ch    { parameter_description }
+ *
  * @return     { description_of_the_return_value }
  */
 ssize_t
-term_process() {
-  unsigned char c;
-  ssize_t ret;
+term_process(char* ch) {
 
-  if((ret = charbuf_getc(&term_buf, &c)) > 0) {
+  ssize_t ret = charbuf_getc(&term_buf, ch);
 
-    buffer_puts(buffer_1, "Read ");
-    buffer_putlong(buffer_1, ret);
-    buffer_puts(buffer_1, " bytes from terminal: 0x");
-    buffer_putxlong0(buffer_1, (unsigned long)c, 2);
-    buffer_putnlflush(buffer_1);
-  }
-
+  /* if(ret > 0) {
+     if(*ch == '\n')
+       write(term_buf.fd, "\r\n", 2);
+     *ch = '\r';
+   }*/
   return ret;
 }
 
@@ -362,13 +356,21 @@ ssize_t
 process_serial(fd_t serial_fd) {
   char x[1024];
   ssize_t ret;
-  if((ret = read(serial_fd, x, sizeof(x))) > 0) {
-    stralloc_catb(&serial_buf, x, ret);
-    if(stralloc_contains(&serial_buf, "\n")) {
-      buffer_putsa(buffer_1, &serial_buf);
-      buffer_flush(buffer_1);
-      stralloc_zero(&serial_buf);
-    }
+  if((ret = read(serial_fd, x, 1)) > 0) {
+
+    /*  if(x[0] == '\r' || x[0] == '\n')
+        buffer_puts(buffer_1, "\r\n");
+      else*/
+    buffer_put(buffer_1, x, ret);
+
+    buffer_flush(buffer_1);
+
+    /*    stralloc_catb(&serial_buf, x, ret);
+        if(stralloc_contains(&serial_buf, "\n")) {
+          buffer_putsa(buffer_1, &serial_buf);
+          buffer_flush(buffer_1);
+          stralloc_zero(&serial_buf);
+        }*/
   } else if(ret == 0) {
     errmsg_warn("serial closed", 0);
     io_dontwantread(serial_fd);
@@ -398,19 +400,21 @@ process_serial(fd_t serial_fd) {
 ssize_t
 process_loop(fd_t serial_fd, int64 timeout) {
   char x[1024];
+  char ch;
   ssize_t ret;
   tai6464 t, deadline, msecs, diff;
   taia_now(&t);
   taia_uint(&msecs, timeout / 1000);
   msecs.nano = (timeout % 1000) * 1000000;
-  taia_add(&deadline, &t, &msecs);
   for(;;) {
     taia_now(&t);
+    taia_add(&deadline, &t, &msecs);
+
     taia_sub(&diff, &deadline, &t);
     int64 wait_msecs = taia_approx(&diff) * 1000;
     if(wait_msecs < 0)
       wait_msecs = 0;
-    fd_t read_fd;
+    fd_t read_fd, write_fd;
     //
     // io_wantread(serial_fd);
     /* if(wait_msecs > 0) {
@@ -424,16 +428,26 @@ process_loop(fd_t serial_fd, int64 timeout) {
     } else {
       ret = 1;
     }
+    while((write_fd = io_canwrite()) != -1) {
+      if(write_fd == serial_fd) {
+        if(ch == '\r' || ch == '\n')
+          write(serial_fd, "\r\n", 2);
+        else
+          write(serial_fd, &ch, 1);
+
+        io_dontwantwrite(serial_fd);
+      }
+    }
     while((read_fd = io_canread()) != -1) {
       if(read_fd == serial_fd) {
         if((ret = process_serial(serial_fd) <= 0)) {
           if(!(ret == -1 && errno == EAGAIN))
-            return ret;
+            goto end;
         }
       }
-      if(read_fd == term_fd) {
-        if((ret = term_process() <= 0))
-          return ret;
+      if(read_fd == term_buf.fd) {
+        if((ret = term_process(&ch)) > 0)
+          io_wantwrite(serial_fd);
       }
     }
     if(stralloc_length(&serial_buf)) {
@@ -444,6 +458,7 @@ process_loop(fd_t serial_fd, int64 timeout) {
     /* if(wait_msecs <= 0)
        break;*/
   }
+end:
   return ret;
 }
 
@@ -477,7 +492,7 @@ signal_handler(int sig) {
 extern buffer* optbuf;
 int
 main(int argc, char* argv[]) {
-  const char* portname = NULL;
+  char* portname = NULL;
   unsigned int baudrate = 0;
   struct termios tio;
   int c;
@@ -485,10 +500,10 @@ main(int argc, char* argv[]) {
 
   ssize_t ret;
   int mode = 0;
-  fd_t serial_fd;
   struct longopt opts[] = {
       {"help", 0, NULL, 'h'},
       {"verbose", 0, NULL, 'v'},
+      {"raw", 0, NULL, 'r'},
 
       {0, 0, 0, 0},
   };
@@ -504,7 +519,7 @@ main(int argc, char* argv[]) {
   opterr = 0;
 
   for(;;) {
-    c = getopt_long(argc, argv, "hv", opts, &index);
+    c = getopt_long(argc, argv, "hvr", opts, &index);
     if(c == -1 || opterr /* || argv[optind] == 0 */)
       break;
     if(c == 0)
@@ -514,6 +529,7 @@ main(int argc, char* argv[]) {
 
       case 'h': usage(argv[0]); return 0;
       case 'v': verbose++; break;
+      case 'r': rawmode = 1; break;
 
       default:
         buffer_puts(buffer_2, "WARNING: Invalid argument -");
@@ -536,23 +552,25 @@ getopt_end:
 
   setjmp(context);
 
-  term_init(term_fd, &tio);
+  term_init(term_buf.fd, &tio);
 
-  io_fd(term_fd);
-  io_nonblock(term_fd);
-  io_wantread(term_fd);
+  io_fd(term_buf.fd);
+  io_nonblock(term_buf.fd);
+  io_wantread(term_buf.fd);
   sig_blocknone();
 
-  sig_catch(SIGINT, signal_handler);
+  //  sig_catch(SIGINT, signal_handler);
   sig_catch(SIGTERM, signal_handler);
   sig_catch(SIGSTOP, signal_handler);
   running = 1;
 
   while(running) {
     int64 i, newports;
+    char* port;
 
-    // if(portname == NULL)
-    {
+    if(portname) {
+      port = portname;
+    } else {
 
       newports = get_ports(&portArr);
       serial_ports(&portArr);
@@ -585,7 +603,7 @@ getopt_end:
     io_wantread(serial_fd);
 
     // serial.op = &read;
-    if((ret = process_loop(serial_fd, 250)) > 0)
+    if((ret = process_loop(serial_fd, 30000)) > 0)
       ;
 
     io_dontwantread(serial_fd);
@@ -617,7 +635,7 @@ getopt_end:
     buffer_putnlflush(buffer_1); */
   }
 
-  term_restore(term_fd, &tio);
+  term_restore(term_buf.fd, &tio);
 
   strarray_free(&portArr);
   stralloc_free(&serial_buf);

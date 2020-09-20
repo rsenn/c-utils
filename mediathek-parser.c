@@ -11,6 +11,7 @@
 #include "lib/fmt.h"
 #include "lib/mmap.h"
 #include "lib/ucs.h"
+#include "lib/case.h"
 
 #include <ctype.h>
 #include <errno.h>
@@ -26,20 +27,26 @@
 #endif
 
 #define isdelim(c) (c == ' ' || c == '\t' || c == '\n' || c == '-' || c == ';' || c == ',')
-
+typedef enum format { M3U = 0, WGET, CURL } format_t;
 static int lowq = 0, debug = 0;
 static const char* datetime_format = "%d.%m.%Y %H:%M:%S";
 static int csv = 0;
+static format_t output_format = M3U;
 
 char* str_ptime(const char* s, const char* format, struct tm* tm);
 
-void output_entry(const char* sender,
-                  const char* thema,
-                  const char* title,
-                  unsigned duration,
-                  const char* datetime,
-                  const char* url,
-                  const char* description);
+typedef void output_fn(const char* sender,
+                       const char* thema,
+                       const char* title,
+                       unsigned duration,
+                       const char* datetime,
+                       const char* url,
+                       const char* description);
+typedef output_fn* output_fn_ptr;
+
+output_fn output_m3u_entry, output_wget_entry, output_curl_entry;
+
+const output_fn_ptr output_handlers[3] = {&output_m3u_entry, &output_wget_entry, &output_curl_entry};
 
 /**
  * @brief read_line
@@ -278,7 +285,7 @@ process_entry(char** av, int ac) {
 
     strftime(timebuf, sizeof(timebuf), "%Y%m%d %H:%M", &tm);
 
-    output_entry(sender, thema, title, d, timebuf, lowq > 0 ? url_lo.s : url, description);
+    output_handlers[output_format](sender, thema, title, d, timebuf, lowq > 0 ? url_lo.s : url, description);
 
     (void)t;
   } else {
@@ -317,13 +324,13 @@ put_quoted_string(const char* str) {
  * @param description
  */
 void
-output_entry(const char* sender,
-             const char* thema,
-             const char* title,
-             unsigned duration,
-             const char* datetime,
-             const char* url,
-             const char* description) {
+output_m3u_entry(const char* sender,
+                 const char* thema,
+                 const char* title,
+                 unsigned duration,
+                 const char* datetime,
+                 const char* url,
+                 const char* description) {
 
   if(csv == 0) {
     buffer_puts(buffer_1, "#EXTINF:");
@@ -359,6 +366,36 @@ output_entry(const char* sender,
   buffer_put(buffer_1, "\r\n", 2);
   buffer_flush(buffer_1);
 }
+void
+output_wget_entry(const char* sender,
+                  const char* thema,
+                  const char* title,
+                  unsigned duration,
+                  const char* datetime,
+                  const char* url,
+                  const char* description) {
+
+  buffer_putm_internal(buffer_1, "wget -c ", url, 0);
+  buffer_putm_internal(buffer_1, " -O '", sender, " - ", thema, " - ", title, ".mp4'", 0);
+  buffer_putnlflush(buffer_1);
+}
+
+void
+output_curl_entry(const char* sender,
+                  const char* thema,
+                  const char* title,
+                  unsigned duration,
+                  const char* datetime,
+                  const char* url,
+                  const char* description) {
+
+  buffer_putm_internal(buffer_1, "curl -L -k ", url, 0);
+  buffer_putm_internal(buffer_1, " -o '", sender, " - ", thema, " - ", title, ".mp4'", 0);
+  /*    buffer_puts(buffer_1, "|");
+      buffer_puts(buffer_1, description);*/
+
+  buffer_putnlflush(buffer_1);
+}
 
 /**
  * @brief process_input
@@ -374,7 +411,7 @@ process_input(buffer* input) {
   stralloc_init(&sa);
   strlist_init(&fields, '\0');
 
-  if(csv == 0)
+  if(csv == 0 && output_format == M3U)
     buffer_puts(buffer_1, "#EXTM3U\r\n");
 
   for(stralloc_init(&sa); buffer_getline_sa(input, &sa); stralloc_zero(&sa)) {
@@ -426,7 +463,7 @@ main(int argc, char* argv[]) {
       {0, 0, 0, 0},
   };
 
-  while((opt = getopt_long(argc, argv, "cdf:t:i:x:l", opts, &index)) != -1) {
+  while((opt = getopt_long(argc, argv, "cdf:t:i:x:lF:", opts, &index)) != -1) {
     if(opt == 0)
       continue;
 
@@ -434,6 +471,16 @@ main(int argc, char* argv[]) {
       case 'c': csv = 1; break;
       case 'd': debug++; break;
       case 'l': lowq++; break;
+      case 'F': {
+        if(case_equals(optarg, "wget"))
+          output_format = WGET;
+        else if(case_equals(optarg, "curl"))
+          output_format = CURL;
+        else
+          output_format = M3U;
+
+        break;
+      }
       case 'f': datetime_format = optarg; break;
       default: /* '?' */ buffer_putm_3(buffer_2, "Usage: ", argv[0], "[-d] [-l] <file>\n"); exit(EXIT_FAILURE);
     }

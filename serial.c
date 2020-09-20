@@ -179,7 +179,7 @@ serial_open(const char* port, unsigned int baud) {
   }
 
   // Input Modes
-  options.c_iflag |= IGNCR; // Ignore CR
+  options.c_iflag &= ~IGNCR; // Ignore CR
 #ifdef XONXOFF
   options.c_iflag |= IXON; // XON-XOFF Flow Control
 #endif
