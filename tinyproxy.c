@@ -111,7 +111,6 @@ typedef struct socketbuf_s {
 
 typedef struct dns_result_s {
   range data;
-  size_t rlen;
   tai6464 t;
 } dns_response_t;
 
@@ -192,7 +191,6 @@ dns_query(stralloc* h) {
     char buf[100];
     size_t i;
     res = alloc_zero(sizeof(dns_response_t));
-    res->rlen = reclen;
     taia_now(&res->t);
     res->data.start = dns.s;
     res->data.end = dns.s + dns.len;
@@ -445,7 +443,6 @@ connection_open_log(connection_t* c, const char* prefix, const char* suffix) {
   n += '-';
   taia_now(&now);
   n += fmt_ulonglong(&buf[n], now.sec.x);
-  
 
   for(i = 0; i < n; i++) {
     char c = buf[i];
@@ -515,15 +512,16 @@ socket_connect(socketbuf_t* sb) {
       stralloc_nul(&sb->host);
       errmsg_warnsys("ERROR: resolving ", sb->host.s, ": ", NULL);
       return -1;
+    } else {
+      if(range_size(&res->data) > 0)
+        addr = res->data.start;
+
     }
 
-    if(res->rlen == 4)
-      af = AF_INET;
+    if(addr != sb->addr)
+      byte_copy(sb->addr, res->data.elem_size, addr);
 
-    if(af != -1) {
-      size_t i;
-      addr = res->data.start;
-    }
+    af = res->data.elem_size == 16 ? AF_INET6 : AF_INET;
   }
 
   if((sock = af == AF_INET6 ? socket_tcp6() : socket_tcp4()) < 0)
