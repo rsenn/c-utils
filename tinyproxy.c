@@ -758,7 +758,7 @@ server_exit(int code) {
   buffer_puts(buffer_2, "Output files: ");
   strlist_dump(buffer_2, &output_files);
   buffer_putnlflush(buffer_2);
-   exit(code);
+  exit(code);
 }
 
 void
@@ -766,7 +766,7 @@ server_sigint(int sig) {
 
   buffer_puts(&log, "SIGINT received");
   buffer_putnlflush(&log);
-   buffer_close(&log);
+  buffer_close(&log);
   server_exit(1);
 }
 void
@@ -1069,7 +1069,7 @@ main(int argc, char* argv[]) {
   //    sig_block(SIGINT);
   sig_push(SIGTERM, &server_sigterm);
   sig_push(SIGINT, &server_sigint);
-    
+
   if((server_sock = server_listen(server.port)) < 0) { // start server
     errmsg_warn("Cannot run server:", 0);
 
@@ -1080,9 +1080,6 @@ main(int argc, char* argv[]) {
   sockbuf_put_addr(buffer_2, &server);
   buffer_putnlflush(buffer_2);
   buffer_puts(buffer_2, "Connecting to ");
-  /*if(remote.af == -1)
-    buffer_putsa(buffer_2, &remote.host);
-  else*/
   sockbuf_put_addr(buffer_2, &remote);
   buffer_putnlflush(buffer_2);
 
