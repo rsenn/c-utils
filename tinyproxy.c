@@ -315,12 +315,15 @@ void
 dump_strarray(buffer* b, const strarray* a, const char* quote, const char* sep) {
   static char quote_chars[] = {' ', '"', '\'', '`', '(', ')', 0};
   const char* s;
-  size_t i, len = strarray_size(a);
+  size_t i, n, len = strarray_size(a);
   if(!quote)
     quote = "\"";
   if(!sep)
     sep = ", ";
-  for(i = 0; i < len; i++) {
+
+n  = len > 10 ? 10 : len;
+
+  for(i = 0; i < n; i++) {
     if(i)
       buffer_putm_internal(b, sep, 0);
     s = strarray_at(a, i);
@@ -330,6 +333,9 @@ dump_strarray(buffer* b, const strarray* a, const char* quote, const char* sep) 
     else
       buffer_puts(b, s);
   }
+  if(n < len) 
+    buffer_putm_internal(b, s, " ", "...", " ", "more", 0);
+  
   buffer_flush(b);
 }
 
@@ -851,11 +857,13 @@ server_finalize() {
     buffer_putnlflush(&w);
     buffer_free(&w);
     ret = io_sendfile(wr, file, 0, filesize);
+#ifdef DEBUG_OUTPUT_
     buffer_puts(buffer_2, "Output file: ");
     buffer_put(buffer_2, s, n);
     buffer_puts(buffer_2, " ret =");
     buffer_putlong(buffer_2, ret);
     buffer_putnlflush(buffer_2);
+#endif
   }
   stralloc_copys(&filename, fileBase);
   stralloc_catb(&filename, buf, strftime(buf, sizeof(buf), "-%Y%m%d-%H%M%S", &lt));
@@ -904,6 +912,7 @@ server_tar_files(const char* cmd, const stralloc* archive, strlist* files) {
   }
   strarray_unshift(&argv, cmd);
   buffer_puts(buffer_1, "Exec: ");
+
   dump_strarray(buffer_1, &argv, "'", " ");
   buffer_putnlflush(buffer_1);
 
