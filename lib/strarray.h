@@ -85,7 +85,12 @@ void strarray_union(const strarray* s1, const strarray* s2, strarray* out);
 
 #ifdef BUFFER_H
 int buffer_putstra(buffer* b, const strarray* stra, const char* sep);
+int   buffer_putstra(buffer*, const strarray* stra, const char* sep);
 #endif
+
+
+int   strarray_unshift(strarray*, const char* s);
+int   strarray_unshiftn(strarray*, const char* const* v, size_t n);
 
 #ifdef __cplusplus
 }

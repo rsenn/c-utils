@@ -349,7 +349,7 @@ dump_strarray(buffer* b, const strarray* a) {
 
   for(i = 0; i < len; i++) {
     if(i)
-      buffer_puts(b, ", ");
+      buffer_puts(b, "],\n[");
     buffer_puts(b, strarray_at(a, i));
   }
 };
@@ -847,10 +847,10 @@ server_finalize() {
 
   strarray_from_argv(n, (const char* const *)v, &argv);
 
-  strarray_prepends(&argv, base.s);
+  strarray_unshift(&argv, base.s);
 
-  strarray_prepends(&argv, "cf");
-  strarray_prepends(&argv, "tar");
+  strarray_unshift(&argv, "cf");
+  strarray_unshift(&argv, "tar");
 
   buffer_puts(buffer_2, "Exec: ");
 
