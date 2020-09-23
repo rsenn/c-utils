@@ -153,14 +153,13 @@ void sockbuf_check(socketbuf_t*);
 void sockbuf_log_data(socketbuf_t*, bool send, char* x, ssize_t len);
 ssize_t sockbuf_forward_data(socketbuf_t*, socketbuf_t* destination);
 
-fd_t server_socket(void);
-fd_t server_listen(uint16);
-void server_finalize(void);
-void server_exit(int);
-void server_sigint(int);
-void server_sigterm(int);
-void server_loop(void);
-void server_connection_count(void);
+void            server_finalize(void);
+void            server_tar_files(const char*, const stralloc* archive, const strlist* files);
+void            server_exit(int);
+void            server_sigint(int);
+void            server_sigterm(int);
+void            server_loop(void);
+void            server_connection_count(void);
 
 void usage(const char*);
 
@@ -824,7 +823,6 @@ server_finalize() {
   static const char* const programs[] = {"bsdtar", "star", "gtar", "tar", "7z", "7za", 0};
   strlist syspath;
 
-  strarray argv;
   size_t i, n;
   time_t t;
   buffer w;
@@ -882,6 +880,7 @@ server_finalize() {
     buffer_putlong(buffer_2, ret);
     buffer_putnlflush(buffer_2);
   }
+
   stralloc_replace(&base, 0, 6, "all", 3);
   stralloc_replace(&base, base.len - 4, 4, ".tar", 4);
   stralloc_nul(&base);
@@ -889,33 +888,45 @@ server_finalize() {
   if(stat(base.s, &st) != -1)
     unlink(base.s);
 
-  buffer_putnlflush(buffer_2);
   stralloc_init(&cmd);
   stralloc_nul(&syspath.sa);
+
   s = NULL;
   for(i = 0; programs[i]; i++) {
     if((s = search_path(syspath.sa.s, programs[i], &cmd)))
       break;
   }
-  b = path_basename(s);
-  strarray_from_argv(strlist_count(&output_files), (const char* const*)strlist_to_argv(&output_files), &argv);
-  if(str_start(b, "7z")) {
-    strarray_unshiftm(&argv, "a", "-ssc", base.s, 0);
+
+
+
+  stralloc_free(&base);
+
+  strlist_foreach_s(&output_files, s) { unlink(s); }
+}
+
+void
+  server_tar_files(const char* cmd, const stralloc* archive,const strlist* files) {
+  const char *base;
+   base = path_basename(cmd);
+  strarray_from_argv(strlist_count(files), (const char* const*)strlist_to_argv(files), &argv);
+  if(str_start(base, "7z")) {
+  strarray_unshift
+    strarray_unshiftm(&argv, "a", "-ssc", archive->s, 0);
   } else {
-    if(str_equal(b, "star"))
+    if(str_equal(base, "star"))
       strarray_unshift(&argv, "artype=pax");
-    else if(str_start(b, "g") || str_start(b, "bsd"))
+    else if(str_start(base, "g") || str_start(base, "bsd"))
       strarray_unshiftm(&argv, "--format=pax", 0);
     else
       strarray_unshiftm(&argv, "-H", "pax", 0);
     out = STDOUT_FILENO;
-    if(str_equal(b, "bsdtar"))
+    if(str_equal(base, "bsdtar"))
       strarray_unshiftm(&argv, "-f", base.s, 0);
     else
       out = open_trunc(base.s);
     strarray_unshiftm(&argv, "-c", 0);
   }
-  strarray_unshift(&argv, b);
+  strarray_unshift(&argv, base);
   buffer_puts(buffer_1, "Exec: ");
   dump_strarray(buffer_1, &argv, "'", " ");
   buffer_putnlflush(buffer_1);
@@ -945,14 +956,7 @@ server_finalize() {
     buffer_putlong(buffer_2, WEXITSTATUS(status));
     buffer_putnlflush(buffer_2);
   }
-
-  stralloc_free(&base);
-  
-    strlist_foreach_s(&output_files, s) {
-      unlink(s);
-    }
 }
-
 void
 server_exit(int code) {
   server_finalize();
