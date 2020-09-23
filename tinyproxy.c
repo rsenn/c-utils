@@ -438,7 +438,7 @@ connection_open_log(connection_t* c, const char* prefix, const char* suffix) {
     stralloc_catm_internal(&filename, fileBase, "-", 0);
   if(prefix)
     stralloc_catm_internal(&filename, prefix, "-", 0);
-  stralloc_catb(&filename, buf, sockbuf_fmt_addr(&c->client, buf, '_'));
+  stralloc_catb(&filename, buf, sockbuf_fmt_addr(&c->client, buf, '-'));
   stralloc_catc(&filename, '-');
   if(c->proxy.af == -1) {
     socketbuf_t* sb = &c->proxy;
@@ -447,7 +447,7 @@ connection_open_log(connection_t* c, const char* prefix, const char* suffix) {
     else if((ret = socket_local4(sb->sock, sb->addr, &sb->port)) == 0)
       sb->af = AF_INET;
   }
-  stralloc_catb(&filename, buf, sockbuf_fmt_addr(&c->proxy, buf, '_'));
+  stralloc_catb(&filename, buf, sockbuf_fmt_addr(&c->proxy, buf, '-'));
   /*  stralloc_catm_internal(&filename, "-", 0);
     taia_now(&now);
     stralloc_catb(&filename, buf, fmt_ulonglong(buf, now.sec.x));*/
@@ -472,6 +472,7 @@ socket_find(fd_t sock) {
     return &c->proxy;
   return NULL;
 }
+
 
 socketbuf_t*
 socket_other(fd_t sock) {
@@ -831,8 +832,9 @@ server_finalize() {
     stralloc_catm_internal(&filename, b, "-", 0);
 
   n = filename.len;
-  stralloc_cats(&filename, "recv.txt");
-  // stralloc_catb(&filename, buf, strftime(buf, sizeof(buf), "-%d%m%Y-%H%M%S", &lt));
+   stralloc_catb(&filename, buf, strftime(buf, sizeof(buf), "-%Y%m%d-%H%M%S-", &lt));
+
+  stralloc_cats(&filename, ".log");
   in = open_append(stralloc_cstr(&filename));
 
   stralloc_replace(&filename, n, 4, "send", 4);
@@ -860,7 +862,7 @@ server_finalize() {
     buffer_putnlflush(buffer_2);
   }
   stralloc_copys(&filename, fileBase);
-  stralloc_catb(&filename, buf, strftime(buf, sizeof(buf), "-%Y%m%d_-_%H_%M_%S", &lt));
+  stralloc_catb(&filename, buf, strftime(buf, sizeof(buf), "-%Y%m%d-%H%M%S", &lt));
   stralloc_cats(&filename, ".tar");
 
   if(stat((s = stralloc_cstr(&filename)), &st) != -1)
