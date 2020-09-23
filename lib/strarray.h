@@ -87,10 +87,7 @@ void strarray_union(const strarray* s1, const strarray* s2, strarray* out);
 int buffer_putstra(buffer* b, const strarray* stra, const char* sep);
 int buffer_putstra(buffer*, const strarray* stra, const char* sep);
 #endif
-
-int strarray_unshiftb(strarray*, const char* s, size_t n);
-
-
+int strarray_unshiftb(strarray*, const char* b, size_t n);
 int strarray_unshift(strarray*, const char* s);
 int strarray_unshiftm(strarray*, ...);
 int strarray_unshiftn(strarray*, const char* const* v, size_t n);
