@@ -39,8 +39,8 @@ errmsg_flush(int64 fd) {
 
 void
 errmsg_start(int64 fd) {
-  if(argv0) {
-    errmsg_puts(fd, argv0);
+  if(errmsg_argv0) {
+    errmsg_puts(fd, errmsg_argv0);
     errmsg_puts(fd, ": ");
   }
 }

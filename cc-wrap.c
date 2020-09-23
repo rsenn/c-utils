@@ -142,16 +142,16 @@ get_prog_name(void) {
   }
 #endif
 
-  if(!path_is_absolute(argv0)) {
+  if(!path_is_absolute(errmsg_argv0)) {
     pathlist_get(&path, "PATH");
     pathlist_get(&pathext, "PATHEXT");
 
     if(strlist_count(&pathext) == 0)
       strlist_push(&pathext, "");
 
-    pathlist_lookup(argv0, &prog);
+    pathlist_lookup(errmsg_argv0, &prog);
   } else {
-    stralloc_copys(&prog, argv0);
+    stralloc_copys(&prog, errmsg_argv0);
   }
   stralloc_nul(&prog);
   return prog.s;
@@ -197,7 +197,7 @@ main(int argc, char* argv[], char* envp[]) {
   get_prog_name();
 
 #ifdef DEBUG_OUTPUT
-  buffer_puts(buffer_2, "argv0: ");
+  buffer_puts(buffer_2, "errmsg_argv0: ");
   buffer_puts(buffer_2, argv[0]);
   buffer_puts(buffer_2, ", prog: ");
   buffer_putsa(buffer_2, &prog);

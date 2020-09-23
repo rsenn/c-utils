@@ -244,16 +244,16 @@ get_prog_name(stralloc* prog) {
   }
 #endif
 
-  if(!path_is_absolute(argv0)) {
+  if(!path_is_absolute(errmsg_argv0)) {
     pathlist_get(&path, "PATH");
     pathlist_get(&pathext, "PATHEXT");
 
     if(strlist_count(&pathext) == 0)
       strlist_push(&pathext, "");
 
-    pathlist_lookup(argv0, prog);
+    pathlist_lookup(errmsg_argv0, prog);
   } else {
-    stralloc_copys(prog, argv0);
+    stralloc_copys(prog, errmsg_argv0);
   }
   stralloc_nul(prog);
   return prog->s;

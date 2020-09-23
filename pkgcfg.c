@@ -883,7 +883,7 @@ pkg_conf(strarray* modules, int mode) {
 }
 
 void
-pkgcfg_init(const char* argv0, const char* pkgcfg_path) {
+pkgcfg_init(const char* errmsg_argv0, const char* pkgcfg_path) {
   size_t pos;
   const char* x;
   stralloc dir;
@@ -894,30 +894,30 @@ pkgcfg_init(const char* argv0, const char* pkgcfg_path) {
   stralloc_init(&cmd.host);
   stralloc_init(&cmd.prefix);
 
-  if(!argv0[str_chr(argv0, '/')]) {
+  if(!errmsg_argv0[str_chr(errmsg_argv0, '/')]) {
 
-    if((x = search_path(env_get("PATH"), argv0, &dir)))
-      argv0 = x;
+    if((x = search_path(env_get("PATH"), errmsg_argv0, &dir)))
+      errmsg_argv0 = x;
   }
 
-  if(!argv0[str_chr(argv0, '/')]) {
+  if(!errmsg_argv0[str_chr(errmsg_argv0, '/')]) {
     path_readlink("/proc/self/exe", &dir);
     stralloc_nul(&dir);
-    argv0 = dir.s;
+    errmsg_argv0 = dir.s;
   }
 
-  stralloc_copys(&cmd.self, path_basename(argv0));
+  stralloc_copys(&cmd.self, path_basename(errmsg_argv0));
 
 #ifdef DEBUG_OUTPUT_
-  buffer_puts(buffer_2, "argv0: ");
-  buffer_puts(buffer_2, argv0);
+  buffer_puts(buffer_2, "errmsg_argv0: ");
+  buffer_puts(buffer_2, errmsg_argv0);
   buffer_putnlflush(buffer_2);
   buffer_puts(buffer_2, "self: ");
   buffer_putsa(buffer_2, &cmd.self);
   buffer_putnlflush(buffer_2);
 #endif
 
-  path_dirname(argv0, &cmd.prefix);
+  path_dirname(errmsg_argv0, &cmd.prefix);
 
   stralloc_trunc(&cmd.prefix, stralloc_finds(&cmd.prefix, "/bin"));
 

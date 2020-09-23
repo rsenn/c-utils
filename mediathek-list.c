@@ -144,7 +144,7 @@ void
 process_status(void) {
   /* display interesting process IDs  */
 #if !(defined(_WIN32) || defined(_WIN64))
-  buffer_putm_internal(buffer_2, "process ", argv0, ": pid=", NULL);
+  buffer_putm_internal(buffer_2, "process ", errmsg_argv0, ": pid=", NULL);
   buffer_putlong(buffer_2, getpid());
   buffer_puts(buffer_2, ", ppid=");
   buffer_putlong(buffer_2, getppid());
@@ -688,13 +688,13 @@ parse_mediathek_list(buffer* inbuf) {
 
 /**
  * @brief usage
- * @param argv0
+ * @param errmsg_argv0
  */
 void
-usage(char* argv0) {
+usage(char* errmsg_argv0) {
   buffer_putm_internal(buffer_1,
                        "Usage: ",
-                       str_basename(argv0),
+                       str_basename(errmsg_argv0),
                        "[OPTIONS] [KEYWORDS...]\n",
                        "\n",
                        "Options\n",
@@ -772,10 +772,10 @@ main(int argc, char* argv[]) {
      }
   */
 
-  argv0 = argv[0];
+  errmsg_argv0 = argv[0];
 
-  if(argv0[str_rchr(argv0, '/')] != '\0')
-    argv0 += str_rchr(argv0, '/') + 1;
+  if(errmsg_argv0[str_rchr(errmsg_argv0, '/')] != '\0')
+    errmsg_argv0 += str_rchr(errmsg_argv0, '/') + 1;
 
   if(!read_mediathek_list(mediathek_url, &in)) {
     int n = parse_mediathek_list(&in);

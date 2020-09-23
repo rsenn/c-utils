@@ -35,7 +35,7 @@ get_prog_name(void) {
   }
 #endif
 
-  stralloc_copys(&prog, argv0);
+  stralloc_copys(&prog, errmsg_argv0);
   stralloc_nul(&prog);
   return prog.s;
 }
@@ -172,10 +172,10 @@ parse_line(const char* x, ssize_t n) {
 }
 
 void
-usage(char* argv0) {
+usage(char* errmsg_argv0) {
   buffer_putm_internal(buffer_1,
                        "Usage: ",
-                       argv0,
+                       errmsg_argv0,
                        " [-f type] [-t type] [-o output] [input or stdin]\n\n",
                        "  -f type  Input type\n"
                        "  -t type  Output type\n"
@@ -247,7 +247,7 @@ main(int argc, char* argv[]) {
   }
 
 #ifdef DEBUG_OUTPUT_
-  buffer_puts(buffer_2, "argv0: ");
+  buffer_puts(buffer_2, "errmsg_argv0: ");
   buffer_puts(buffer_2, argv[0]);
   buffer_puts(buffer_2, ", prog: ");
   buffer_putsa(buffer_2, &prog);

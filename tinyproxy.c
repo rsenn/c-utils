@@ -850,7 +850,7 @@ server_finalize() {
     buffer_putlong(buffer_2, ret);
     buffer_putnlflush(buffer_2);
   }
-  stralloc_copys(&filename, "all");
+  stralloc_copys(&filename, path_basename(errmsg_argv0));
   stralloc_catb(&filename, buf, strftime(buf, sizeof(buf), "-%Y%m%d-%H%M%S", &lt));
   stralloc_cats(&filename, ".tar");
 
@@ -1142,10 +1142,10 @@ server_connection_count() {
 }
 
 void
-usage(const char* argv0) {
+usage(const char* errmsg_argv0) {
   buffer_putm_internal(buffer_2,
                        "Syntax: ",
-                       argv0,
+                       errmsg_argv0,
                        " [...OPTIONS]\n"
                        "  -b ADDR     local address\n"
                        "  -l PORT     local port\n"

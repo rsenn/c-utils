@@ -4515,13 +4515,13 @@ set_compiler_type(const char* compiler) {
 
 /**
  * @brief usage  Show command line usage
- * @param argv0
+ * @param errmsg_argv0
  */
 void
-usage(char* argv0) {
+usage(char* errmsg_argv0) {
   buffer_putm_internal(buffer_1,
                        "Usage: ",
-                       str_basename(argv0),
+                       str_basename(errmsg_argv0),
                        " [sources...]\n"
                        "\n"
                        "Options\n"

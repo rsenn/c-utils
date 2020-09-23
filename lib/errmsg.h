@@ -12,9 +12,9 @@ extern "C" {
 /* These use file descriptor 2, not buffer_2!
  * Call buffer_flush(buffer_2) before calling these! */
 
-extern const char* argv0;
+extern const char* errmsg_argv0;
 
-void errmsg_iam(const char* who); /* set argv0 */
+const char* errmsg_iam(const char* who); /* set errmsg_argv0 */
 
 /* terminate with NULL. */
 /* newline is appended automatically. */
