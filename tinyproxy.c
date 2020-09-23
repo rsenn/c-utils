@@ -491,32 +491,37 @@ server_loop() {
       check_socket(&c->proxy);
     }
     io_waituntil2(1000 * 100);
+#ifdef DEBUG_OUTPUT_
     buffer_puts(buffer_2, "Loop #");
     buffer_putulonglong(buffer_2, iteration++);
     buffer_putnlflush(buffer_2);
-
+#endif
+#ifdef DEBUG_OUTPUT_
     io_dump();
+#endif
     //  iarray_dump(io_getfds());
 
     while((sock = io_canwrite()) != -1) {
       if((c = find_proxy(sock)) && !c->connected) {
+#ifdef DEBUG_OUTPUT_
         buffer_puts(buffer_2, "Socket #");
         buffer_putulong(buffer_2, sock);
         buffer_puts(buffer_2, " connected!");
         buffer_putnlflush(buffer_2);
+#endif
         c->connected = 1;
         io_dontwantwrite(sock);
         io_wantread(sock);
       } else if((sb = find_socket(sock))) {
+#ifdef DEBUG_OUTPUT_
         buffer_puts(buffer_2, "Flush socket ");
         buffer_putulong(buffer_2, sock);
         buffer_puts(buffer_2, " p=");
         buffer_putulong(buffer_2, sb->buf.p);
         buffer_puts(buffer_2, " n=");
         buffer_putulong(buffer_2, sb->buf.n);
-
         buffer_putnlflush(buffer_2);
-
+#endif
         if(sb->buf.n < sb->buf.p) {
           buffer_flush(&sb->buf);
           io_dontwantwrite(sock);
@@ -552,24 +557,28 @@ server_loop() {
 
           n = forward_data(&c->client, &c->proxy);
           if(n > 0) {
+#ifdef DEBUG_OUTPUT_
             buffer_puts(buffer_2, "Client socket #");
             buffer_putulong(buffer_2, sock);
             buffer_puts(buffer_2, " forwarded ");
             buffer_putlonglong(buffer_2, n);
             buffer_puts(buffer_2, " bytes");
             buffer_putnlflush(buffer_2);
+#endif
           }
         } else if((c = find_proxy(sock))) {
 
           n = forward_data(&c->proxy, &c->client);
 
           if(n > 0) {
+#ifdef DEBUG_OUTPUT_
             buffer_puts(buffer_2, "Proxy socket #");
             buffer_putulong(buffer_2, sock);
             buffer_puts(buffer_2, " forwarded ");
             buffer_putlonglong(buffer_2, n);
             buffer_puts(buffer_2, " bytes");
             buffer_putnlflush(buffer_2);
+#endif
           }
         } else {
           buffer_puts(buffer_2, "No such fd: ");
