@@ -899,6 +899,8 @@ server_finalize() {
       break;
   }
 
+  server_tar_files(s, &base, &output_files);
+
   stralloc_free(&base);
 
   strlist_foreach_s(&output_files, s) { unlink(s); }
@@ -936,6 +938,7 @@ server_tar_files(const char* cmd, const stralloc* archive, strlist* files) {
   buffer_puts(buffer_1, "Exec: ");
   dump_strarray(buffer_1, &argv, "'", " ");
   buffer_putnlflush(buffer_1);
+
   v = strarray_to_argv(&argv);
   if((child_pid = vfork()) == 0) {
     char* const env[] = {"PATH=/bin:/usr/bin", 0};

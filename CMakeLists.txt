@@ -193,8 +193,13 @@ if(USE_POLL STREQUAL "OFF" AND NOT USE_SELECT STREQUAL "ON")
   endif(HAVE_POLL)
 endif(USE_POLL STREQUAL "OFF" AND NOT USE_SELECT STREQUAL "ON")
 
+check_function_exists(daemon HAVE_DAEMON)
+
+if(HAVE_DAEMON)
+add_definitions(-DHAVE_DAEMON=1)
+endif(HAVE_DAEMON)
 check_function_exists(opendir HAVE_OPENDIR)
-check_function_exists(closedir HAVE_READDIR)
+check_function_exists(readdir HAVE_READDIR)
 check_function_exists(closedir HAVE_CLOSEDIR)
 
 if(HAVE_OPENDIR
@@ -1802,7 +1807,7 @@ add_program(
   buffer
   taia
   tai)
-add_program(tinyproxy path wait range dns taia tai hmap env ndelay buffer strarray array strlist stralloc errmsg sig socket fmt scan io uint32)
+add_program(tinyproxy unix path wait range dns taia tai hmap env ndelay buffer strarray array strlist stralloc errmsg sig socket fmt scan io uint32)
 if(NOT WIN32)
   add_program(tcpproxy http io errmsg buffer open)
 endif(NOT WIN32)
