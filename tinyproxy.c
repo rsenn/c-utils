@@ -40,6 +40,7 @@
 #include "lib/ip4.h"
 #include "lib/ip6.h"
 #include "lib/open.h"
+#include "lib/str.h"
 #include "lib/io.h"
 #include "lib/io_internal.h"
 #include "lib/socket.h"
@@ -71,7 +72,7 @@
 #include <systemd/sd-daemon.h>
 #endif
 
-#define BUF_SIZE 16384
+#define BUF_SIZE 512
 
 #define READ 0
 #define WRITE 1
@@ -89,10 +90,12 @@
 
 typedef enum { TRUE = 1, FALSE = 0 } bool;
 typedef struct socketbuf_s {
-
   fd_t sock;
   buffer buf;
-
+  char addr[16];
+  uint16 port;
+  int af;
+  fd_t dump;
 } socketbuf_t;
 
 typedef struct connection_s {
@@ -104,28 +107,42 @@ typedef struct connection_s {
 
 static slink* connections;
 
-int check_ipversion(char* address);
-int create_socket(int port);
-void sigchld_handler(int signal);
-void sigterm_handler(int signal);
-void server_loop();
-
-void handle_client(fd_t client_sock, char client_addr[16]);
-ssize_t forward_data(socketbuf_t* source, socketbuf_t* destination);
-void forward_data_ext(fd_t source_sock, fd_t destination_sock, char* cmd);
-int create_connection();
-int parse_options(int argc, char* argv[]);
-void plog(int priority, const char* format, ...);
-void log_data(fd_t sock, bool send, void* buffer, size_t len);
+connection_t* alloc_connection(fd_t, char [16], uint16);
+int bind_socket(void);
+size_t buffer_numlines(buffer*, size_t*);
+void check_socket(socketbuf_t*);
+void close_socket(socketbuf_t*);
+int create_connection(void);
+int create_socket(int);
+void delete_connection(connection_t*);
+connection_t* find_client(fd_t);
+connection_t* find_connection(fd_t);
+connection_t* find_proxy(fd_t);
+socketbuf_t* find_socket(fd_t);
+size_t fmt_socket_addr(socketbuf_t*, char*);
+ssize_t forward_data(socketbuf_t*, socketbuf_t*);
+size_t get_fds(array*);
+void handle_client(fd_t, char [16], uint16);
+void iarray_dump(iarray*);
+void io_dump(void);
+void log_data(fd_t, bool, char*, ssize_t);
+fd_t open_socket_dump(socketbuf_t*, const char*, const char*);
+int parse_addr(const char*, char [16]);
+int parse_options(int, char*[]);
+void put_socket_addr(buffer*, socketbuf_t*);
+void server_loop(void);
+void sigchld_handler(int);
+void sigterm_handler(int);
+ssize_t socket_send(fd_t, void*, size_t, void*);
+void update_connection_count(void);
 
 fd_t server_sock, remote_sock;
-uint16 remote_port = 0, local_port = 0;
+uint16 connect_port = 0, local_port = 0;
 int64 connections_processed = 0, max_length = -1;
 char *remote_host, *cmd_in, *cmd_out;
 static char bind_addr[16], connect_addr[16];
 static int bind_af = AF_INET, connect_af = AF_INET;
-bool foreground = TRUE;
-bool use_syslog = FALSE;
+bool foreground = TRUE, use_syslog = FALSE, line_buffer = FALSE, dump = FALSE;
 
 static char logbuf[1024];
 static buffer log = BUFFER_INIT(write, STDOUT_FILENO, logbuf, sizeof(logbuf));
@@ -147,9 +164,7 @@ get_fds(array* arr) {
 void
 iarray_dump(iarray* ia) {
   size_t i, n = iarray_length(ia);
-
   for(i = 0; i <= n; i++) {
-
     buffer_puts(buffer_2, "Entry #");
     buffer_putulong(buffer_2, i);
     buffer_puts(buffer_2, ": ");
@@ -157,6 +172,7 @@ iarray_dump(iarray* ia) {
     buffer_putnlflush(buffer_2);
   }
 }
+
 void
 io_dump() {
   array fds;
@@ -190,30 +206,38 @@ io_dump() {
 
 ssize_t
 socket_send(fd_t fd, void* x, size_t n, void* ptr) {
-  //  if(io_fd_canwrite(fd))
-  ssize_t r;
-  r = send(fd, x, n, 0);
+  ssize_t r = send(fd, x, n, 0);
 
-  if(r > 0)
+  if(r > 0) {
+    socketbuf_t* sb = find_socket(fd);
     log_data(fd, TRUE, x, n);
+
+    if(sb->dump != -1)
+      write(sb->dump, x, n);
+  }
   if(r == -1 && errno == EWOULDBLOCK)
     r = 0;
-
   return r;
 }
 
 connection_t*
-alloc_connection(fd_t client_sock) {
+alloc_connection(fd_t sock, char addr[16], uint16 port) {
   connection_t* c = alloc_zero(sizeof(connection_t));
   slink_insert(&connections, &c->link);
-  c->client.sock = client_sock;
+  c->client.sock = sock;
+  c->client.port = port;
+  c->client.af = bind_af;
+  byte_copy(c->client.addr, 16, addr);
 
+  if(dump)
+    c->client.dump = open_socket_dump(&c->client, "client-", ".txt");
+  else
+    c->client.dump = -1;
   return c;
 }
 
 void
 delete_connection(connection_t* c) {
-
   connection_t** ptr;
   slink_foreach(&connections, ptr) {
     if(*ptr == c)
@@ -250,6 +274,7 @@ find_connection(fd_t sock) {
     c = find_proxy(sock);
   return c;
 }
+
 socketbuf_t*
 find_socket(fd_t sock) {
   connection_t* c;
@@ -260,9 +285,54 @@ find_socket(fd_t sock) {
   return NULL;
 }
 
+size_t
+fmt_socket_addr(socketbuf_t* sb, char* dest) {
+  size_t n = sb->af == AF_INET6 ? fmt_ip6(dest, sb->addr) : fmt_ip4(dest, sb->addr);
+  dest[n++] = ':';
+
+  n += fmt_ulong(&dest[n], sb->port);
+  return n;
+}
+
+fd_t
+open_socket_dump(socketbuf_t* sb, const char* prefix, const char* suffix) {
+  char buf[256] = {0};
+  fd_t fd;
+  size_t i, n;
+
+  n = str_copy(buf, prefix);
+
+  n += fmt_socket_addr(sb, &buf[n]);
+  n += str_copy(&buf[n], suffix);
+
+  for(i = 0; i < n; i++) {
+    char c = buf[i];
+    if(c == ':') //!((c >= 'A' && c <= 'F') || (c >= 'a' && c <= 'f') || (c >= '0' && c <= '9') || c == '.'))
+      buf[i] = '_';
+  }
+  buf[i] = '\0';
+  fd = open_trunc(buf);
+  return fd;
+}
+
+void
+put_socket_addr(buffer* b, socketbuf_t* sb) {
+  char buf[100];
+
+  buffer_put(b, buf, fmt_socket_addr(sb, buf));
+}
+
+void
+close_socket(socketbuf_t* sb) {
+
+  buffer_flush(&sb->buf);
+  buffer_close(&sb->buf);
+  io_close(sb->sock);
+}
+
 void
 check_socket(socketbuf_t* sb) {
-  int wantwrite = sb->buf.p > 0;
+  int wantwrite = /*line_buffer ? buffer_numlines(&sb->buf, NULL) > 0 :*/ sb->buf.p > 0;
   io_entry* e = io_getentry(sb->sock);
 
   if(wantwrite) {
@@ -306,117 +376,20 @@ bind_socket() {
   return -1;
 }
 
-/* Program start */
-int
-main(int argc, char* argv[]) {
-  int pid;
-  errmsg_iam(argv[0]);
-
-  local_port = parse_options(argc, argv);
-
-  if(local_port < 0) {
-    buffer_putm_internal(buffer_2,
-                         "Syntax: ",
-                         argv[0],
-                         " [-b bind_address] -l local_port -h remote_host -p remote_port [-i \"input parser\"] [-o "
-                         "\"output parser\"] [-f (stay in foreground)] [-s (use syslog)]\n",
-                         0);
-    buffer_flush(buffer_2);
-    return local_port;
-  }
-  /*
-    if(use_syslog)
-      openlog("proxy", LOG_PID, LOG_DAEMON);
-      */
-  sig_block(SIGPIPE);
-
-  if((server_sock = create_socket(local_port)) < 0) { // start server
-    errmsg_warn("Cannot run server:", 0);
-
-    return server_sock;
-  }
-
-  io_fd(server_sock);
-  io_wantread(server_sock);
-
-  // signal(SIGCHLD, sigchld_handler); // prevent ended children from becoming zombies
-  // signal(SIGTERM, sigterm_handler); // handle KILL signal
-
-  if(foreground) {
-    server_loop();
-  } else {
-    switch(pid = fork()) {
-      case 0: // deamonized child
-        server_loop();
-        break;
-      case -1: // error
-        // plog(LOG_CRIT, "Cannot daemonize: %m");
-        return pid;
-      default: // parent
-        close(server_sock);
-    }
-  }
-
-  if(use_syslog)
-    closelog();
-
-  return EXIT_SUCCESS;
-}
-
-/* Parse command line options */
-int
-parse_options(int argc, char* argv[]) {
-  int c, index = 0;
-  struct longopt opts[] = {{"local-port", 0, NULL, 'l'},
-                           {"local-addr", 0, NULL, 'b'},
-                           {"remote-port", 0, NULL, 'p'},
-                           {"remote-addr", 0, NULL, 'h'},
-                           {"input-parser", 0, NULL, 'i'},
-                           {"output-parser", 0, NULL, 'O'},
-                           {"foreground", 0, NULL, 'f'},
-                           {"syslog", 0, NULL, 's'},
-                           {"logfile", 0, NULL, 'o'},
-                           {"append", 0, NULL, 'a'},
-                           {"max-length", 0, NULL, 'm'},
-                           {0}};
-
-  while((c = getopt_long(argc, argv, "b:l:h:p:i:O:fso:a:m:", opts, &index)) != -1) {
-    switch(c) {
-      case 'l': scan_ushort(optarg, &local_port); break;
-      case 'b': bind_af = parse_addr(optarg, bind_addr); break;
-      case 'h': connect_af = parse_addr(optarg, connect_addr); break;
-      case 'p': scan_ushort(optarg, &remote_port); break;
-      case 'i': cmd_in = optarg; break;
-      case 'O': cmd_out = optarg; break;
-      case 'f': foreground = TRUE; break;
-      case 's': use_syslog = TRUE; break;
-      case 'm': scan_longlong(optarg, &max_length); break;
-      case 'a': log.fd = open_append(optarg); break;
-      case 'o': log.fd = open_trunc(optarg); break;
-    }
-  }
-
-  if(local_port && connect_af != -1 && remote_port) {
-    return local_port;
-  } else {
-    return SYNTAX_ERROR;
-  }
-}
-
-int
-check_ipversion(char* address) {
-  /* Check for valid IPv4 or Iv6 string. Returns AF_INET for IPv4, AF_INET6 for IPv6 */
-
-  struct in6_addr bindaddr;
-
-  if(inet_pton(AF_INET, address, &bindaddr) == 1) {
-    return AF_INET;
-  } else {
-    if(inet_pton(AF_INET6, address, &bindaddr) == 1) {
-      return AF_INET6;
-    }
-  }
-  return 0;
+size_t
+buffer_numlines(buffer* b, size_t* end_ptr) {
+  size_t pos;
+  size_t i, n = 0;
+  pos = byte_rchr(b->x, b->p, '\n');
+  if(pos < b->p)
+    for(i = 0; i < pos; i++)
+      if(b->x[i] == '\n')
+        n++;
+      else
+        pos = 0;
+  if(end_ptr)
+    *end_ptr = pos;
+  return n;
 }
 
 /* Create server socket */
@@ -437,30 +410,6 @@ create_socket(int port) {
     return SERVER_LISTEN_ERROR;
 
   return server_sock;
-}
-
-/* Send log message to stderr or syslog */
-void
-plog(int priority, const char* format, ...) {
-  va_list ap;
-
-  va_start(ap, format);
-
-  if(use_syslog)
-    vsyslog(priority, format, ap);
-  else {
-    int r = 0;
-    const char* s;
-    while((s = va_arg(ap, const char*)))
-      if(buffer_puts(buffer_2, s) == -1) {
-        r = -1;
-        break;
-      }
-    va_end(ap);
-    buffer_putnlflush(buffer_2);
-  }
-
-  va_end(ap);
 }
 
 /* Update systemd status with connection count */
@@ -509,16 +458,17 @@ server_loop() {
       check_socket(&c->proxy);
     }
     io_waituntil2(1000 * 100);
-#ifdef DEBUG_OUTPUT
+#ifdef DEBUG_OUTPUT_
     buffer_puts(buffer_2, "Loop #");
     buffer_putulonglong(buffer_2, iteration++);
     buffer_putnlflush(buffer_2);
 #endif
-#ifdef DEBUG_OUTPUT
+#ifdef DEBUG_OUTPUT_
     io_dump();
 #endif
+#ifdef DEBUG_OUTPUT_
     iarray_dump(io_getfds());
-
+#endif
     while((sock = io_canwrite()) != -1) {
       if((c = find_proxy(sock)) && !c->connected) {
         buffer_puts(&log, "Socket #");
@@ -538,8 +488,24 @@ server_loop() {
         buffer_putulong(buffer_2, sb->buf.n);
         buffer_putnlflush(buffer_2);
 #endif
+
+        /*   if(line_buffer) {
+             size_t num_lines, end_pos;
+
+             if((num_lines = buffer_numlines(&sb->buf, &end_pos)) > 0) {
+               ssize_t r = socket_send(sb->sock, sb->buf.x, end_pos, 0);
+               if(r > 0) {
+                 buffer* b = &sb->buf;
+                 if(r < b->p)
+                   byte_copyr(b->x, b->p - r, &b->x[r]);
+                 b->p -= r;
+               }
+             }
+
+           } else */
         if(sb->buf.p > 0) {
           buffer_flush(&sb->buf);
+
           io_dontwantwrite(sock);
         }
       } else {
@@ -555,15 +521,14 @@ server_loop() {
       if(sock == server_sock) {
         fd_t client_sock;
 
-        client_sock = connect_af ? socket_accept4(server_sock, client_addr, &client_port)
-                                 : socket_accept6(server_sock, client_addr, &client_port, 0);
+        client_sock = bind_af ? socket_accept4(server_sock, client_addr, &client_port)
+                              : socket_accept6(server_sock, client_addr, &client_port, 0);
 
         if(client_sock == -1) {
           errmsg_warn("Accept error: ", strerror(errno), 0);
           exit(2);
         }
-
-        handle_client(client_sock, client_addr);
+        handle_client(client_sock, client_addr, client_port);
 
         connections_processed++;
 
@@ -606,25 +571,29 @@ server_loop() {
 
         if(n == 0 || (n < 0 && errno != EAGAIN && errno != EWOULDBLOCK)) {
           connection_t* c = find_connection(sock);
-          buffer_puts(buffer_2, "Connection #");
-          buffer_putulong(buffer_2, c->client.sock);
-          buffer_puts(buffer_2, " <-> ");
-          buffer_putulong(buffer_2, c->proxy.sock);
+
+          buffer_puts(&log, "Connection #");
+          buffer_putulong(&log, c->client.sock);
+
+          buffer_puts(&log, " ");
+          put_socket_addr(&log, &c->client);
+
+          buffer_puts(&log, " <-> #");
+          buffer_putulong(&log, c->proxy.sock);
+          buffer_puts(&log, " ");
+          put_socket_addr(&log, &c->proxy);
           if(n == 0) {
-            buffer_puts(buffer_2, " closed");
+            buffer_puts(&log, " closed");
           } else {
-            buffer_puts(buffer_2, " error: ");
-            buffer_puts(buffer_2, strerror(errno));
-            buffer_puts(buffer_2, " errno: ");
-            buffer_putlong(buffer_2, errno);
+            buffer_puts(&log, " error: ");
+            buffer_puts(&log, strerror(errno));
+            buffer_puts(&log, " errno: ");
+            buffer_putlong(&log, errno);
           }
-          buffer_putnlflush(buffer_2);
+          buffer_putnlflush(&log);
 
-          buffer_close(&c->client.buf);
-          buffer_close(&c->proxy.buf);
-
-          io_close(c->client.sock);
-          io_close(c->proxy.sock);
+          close_socket(&c->client);
+          close_socket(&c->proxy);
 
           delete_connection(c);
         }
@@ -632,15 +601,19 @@ server_loop() {
     }
   }
 }
+
 /* Handle client connection */
 void
-handle_client(fd_t client_sock, char client_addr[16]) {
+handle_client(fd_t sock, char addr[16], uint16 port) {
 
-  connection_t* c = alloc_connection(client_sock);
+  connection_t* c = alloc_connection(sock, addr, port);
 
   if((c->proxy.sock = create_connection()) < 0)
-    // plog(LOG_ERR, "Cannot connect to host: %m");
     goto cleanup;
+
+  byte_copy(c->proxy.addr, connect_af == AF_INET6 ? 16 : 4, connect_addr);
+  c->proxy.port = connect_port;
+  c->proxy.af = connect_af;
 
   buffer_init_free(&c->client.buf, socket_send, c->client.sock, alloc_zero(1024), 1024);
   buffer_init_free(&c->proxy.buf, socket_send, c->proxy.sock, alloc_zero(1024), 1024);
@@ -649,6 +622,10 @@ handle_client(fd_t client_sock, char client_addr[16]) {
   io_nonblock(c->client.sock);
   io_wantread(c->client.sock);
 
+  buffer_puts(&log, "New connection from ");
+  put_socket_addr(&log, &c->client);
+
+  buffer_putnlflush(&log);
   return;
 
 cleanup:
@@ -657,23 +634,41 @@ cleanup:
 }
 
 void
-log_data(fd_t sock, bool send, void* buffer, size_t len) {
-size_t n = len;
-  buffer_puts(&log, send ? "Sent " : "Received ");
-  buffer_putulong(&log, len);
-  buffer_puts(&log, send ? " bytes to #" : " bytes from #");
-  buffer_putlong(&log, sock);
-  buffer_puts(&log, ": '");
+log_data(fd_t sock, bool send, char* x, ssize_t len) {
+  while(len > 0) {
+    size_t end, n;
 
-  if(max_length >= 0)
-    n = max_length;
-  buffer_put_escaped(&log, buffer, n);
+    end = n = line_buffer ? byte_chrs(x, len, "\r\n", 2) : len;
+    while(n < len && byte_chr("\r\n", 2, x[n]) < 2) {
+      n++;
+      if(x[n - 1] == '\n')
+        break;
+    }
+    if(!line_buffer)
+      end = n;
 
-  if(n < len)
-    buffer_puts(&log, "<shortened> ...");
+    buffer_puts(&log, send ? "Sent " : "Received ");
+    if(line_buffer) {
+      buffer_puts(&log, end == n ? "data" : "line");
+      buffer_puts(&log, send ? " to #" : " from #");
+    } else {
+      buffer_putulong(&log, n);
+      buffer_puts(&log, send ? " bytes to #" : " bytes from #");
+    }
+    buffer_putlong(&log, sock);
+    buffer_puts(&log, ": '");
 
-  buffer_puts(&log, "'");
-  buffer_putnlflush(&log);
+    (line_buffer ? buffer_put : buffer_put_escaped)(&log, x, max_length > 0 && max_length < end ? max_length : end);
+
+    if(max_length > 0 && max_length < end)
+      buffer_puts(&log, "<shortened> ...");
+
+    buffer_puts(&log, "'");
+    buffer_putnlflush(&log);
+
+    x += n;
+    len -= n;
+  }
 }
 
 /* Forward data between sockets */
@@ -681,90 +676,27 @@ ssize_t
 forward_data(socketbuf_t* source, socketbuf_t* destination) {
   ssize_t n;
   size_t written = 0;
-  char buffer[1024];
+  char buffer[BUF_SIZE];
 
-  while((n = recv(source->sock, buffer, sizeof(buffer), 0)) > 0) { // read data from input socket
+  if((n = recv(source->sock, buffer, sizeof(buffer), 0)) > 0) { // read data from input socket
 
     buffer_put(&destination->buf, buffer, n); // send data to output socket
     written += n;
 
     log_data(source->sock, FALSE, buffer, n);
-    //   log_data(destination->sock, TRUE, buffer, n);
   }
   if(written > 0) {
-    //  io_wantwrite(destination->sock);
-
     if(n == -1 && errno == EAGAIN)
       return written;
   }
   return n <= 0 ? n : written;
 }
 
-/* Forward data between sockets through external command */
-void
-forward_data_ext(int source_sock, int destination_sock, char* cmd) {
-  char buffer[BUF_SIZE];
-  int n, i, pipe_in[2], pipe_out[2];
-
-  if(pipe(pipe_in) < 0 || pipe(pipe_out) < 0) // create command input and output pipes
-    // plog(LOG_CRIT, "Cannot create pipe: %m");
-    exit(CREATE_PIPE_ERROR);
-
-  if(fork() == 0) {
-    dup2(pipe_in[READ], STDIN_FILENO);    // replace standard input with input part of pipe_in
-    dup2(pipe_out[WRITE], STDOUT_FILENO); // replace standard output with output part of pipe_out
-    close(pipe_in[WRITE]);                // close unused end of pipe_in
-    close(pipe_out[READ]);                // close unused end of pipe_out
-    n = system(cmd);                      // execute command
-    exit(n);
-  } else {
-    close(pipe_in[READ]);   // no need to read from input pipe here
-    close(pipe_out[WRITE]); // no need to write to output pipe here
-
-    while((n = recv(source_sock, buffer, BUF_SIZE, 0)) > 0) { // read data from input socket
-      if(write(pipe_in[WRITE], buffer, n) < 0) {              // write data to input pipe of external command
-        // plog(LOG_ERR, "Cannot write to pipe: %m");
-        exit(BROKEN_PIPE_ERROR);
-      }
-      if((i = read(pipe_out[READ], buffer, BUF_SIZE)) > 0) { // read command output
-        send(destination_sock, buffer, i, 0);                // send data to output socket
-      }
-    }
-
-    io_close(destination_sock);
-
-    io_close(source_sock);
-  }
-}
-
 /* Create client connection */
 int
 create_connection() {
-  struct addrinfo /*hints, */* res = NULL;
   int sock;
-  int validfamily = 0;
   int ret;
-  char portstr[12];
-  /*
-    memset(&hints, 0x00, sizeof(hints));
-
-    hints.ai_flags = AI_NUMERICSERV;  // numeric service number, not resolve
-    hints.ai_family = AF_UNSPEC;
-    hints.ai_socktype = SOCK_STREAM;*/
-
-  portstr[fmt_ulong(portstr, remote_port)] = '\0';
-
-  /* check for numeric IP to specify IPv6 or IPv4 socket */
-  /* if((validfamily = check_ipversion(remote_host))) {
-     hints.ai_family = validfamily;
-     hints.ai_flags |= AI_NUMERICHOST; // remote_host is a valid numeric ip, skip resolve
-   }*/
-
-  /* Check if specified host is valid. Try to resolve address if remote_host is a hostname */
-  /*  if(getaddrinfo(remote_host, portstr, &hints, &res) != 0) {
-      errno = EFAULT;
-      return CLIENT_RESOLVE_ERROR;
-    }*/
 
   if((sock = connect_af == AF_INET6 ? socket_tcp6() : socket_tcp4()) < 0)
     return CLIENT_SOCKET_ERROR;
@@ -773,16 +705,106 @@ create_connection() {
   io_nonblock(sock);
 
   if(connect_af == AF_INET6)
-    ret = socket_connect6(sock, connect_addr, remote_port, 0);
+    ret = socket_connect6(sock, connect_addr, connect_port, 0);
   else
-    ret = socket_connect4(sock, connect_addr, remote_port);
+    ret = socket_connect4(sock, connect_addr, connect_port);
 
   if(ret < 0 && errno != EINPROGRESS)
     return CLIENT_CONNECT_ERROR;
 
   io_wantwrite(sock);
-  // io_wantread(sock);
 
   return sock;
 }
-/* vim: set et ts=4 sw=4: */
+
+/* Parse command line options */
+int
+parse_options(int argc, char* argv[]) {
+  int c, index = 0;
+  struct longopt opts[] = {{"local-port", 0, NULL, 'l'},
+                           {"local-addr", 0, NULL, 'b'},
+                           {"remote-port", 0, NULL, 'p'},
+                           {"remote-addr", 0, NULL, 'h'},
+                           {"input-parser", 0, NULL, 'i'},
+                           {"output-parser", 0, NULL, 'O'},
+                           {"foreground", 0, NULL, 'f'},
+                           {"syslog", 0, NULL, 's'},
+                           {"logfile", 0, NULL, 'o'},
+                           {"append", 0, NULL, 'a'},
+                           {"max-length", 0, NULL, 'm'},
+                           {"line-buffer", 0, NULL, 'L'},
+                           {"dump", 0, NULL, 'd'},
+                           {0}};
+
+  while((c = getopt_long(argc, argv, "b:l:h:p:i:O:fso:a:m:Ld", opts, &index)) != -1) {
+    switch(c) {
+      case 'l': scan_ushort(optarg, &local_port); break;
+      case 'b': bind_af = parse_addr(optarg, bind_addr); break;
+      case 'h': connect_af = parse_addr(optarg, connect_addr); break;
+      case 'p': scan_ushort(optarg, &connect_port); break;
+      case 'i': cmd_in = optarg; break;
+      case 'O': cmd_out = optarg; break;
+      case 'f': foreground = TRUE; break;
+      case 's': use_syslog = TRUE; break;
+      case 'm': scan_longlong(optarg, &max_length); break;
+      case 'L': line_buffer = TRUE; break;
+      case 'd': dump = TRUE; break;
+      case 'a': log.fd = open_append(optarg); break;
+      case 'o': log.fd = open_trunc(optarg); break;
+    }
+  }
+
+  if(local_port && connect_af != -1 && connect_port) {
+    return local_port;
+  } else {
+    return SYNTAX_ERROR;
+  }
+}
+/* Program start */
+int
+main(int argc, char* argv[]) {
+  int pid;
+  errmsg_iam(argv[0]);
+
+  local_port = parse_options(argc, argv);
+
+  if(local_port < 0) {
+    buffer_putm_internal(buffer_2,
+                         "Syntax: ",
+                         argv[0],
+                         "  -b ADDR     local address\n"
+                         "  -l PORT     local port\n"
+                         "  -h ADDR     remote address\n"
+                         "  -p PORT     remote port\n"
+                         "  -f          stay in foreground\n"
+                         "  -s          use syslog\n"
+                         "  -o          output logfile\n"
+                         "  -a          append logfile\n"
+                         "  -m LENGTH   max line length\n"
+                         "  -L          line buffered\n",
+                         0);
+    buffer_flush(buffer_2);
+    return local_port;
+  }
+
+  if(use_syslog)
+    openlog("proxy", LOG_PID, LOG_DAEMON);
+
+  sig_block(SIGPIPE);
+
+  if((server_sock = create_socket(local_port)) < 0) { // start server
+    errmsg_warn("Cannot run server:", 0);
+
+    return server_sock;
+  }
+
+  io_fd(server_sock);
+  io_wantread(server_sock);
+
+  server_loop();
+
+  if(use_syslog)
+    closelog();
+
+  return EXIT_SUCCESS;
+}
