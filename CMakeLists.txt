@@ -16,12 +16,17 @@ option(USE_BZIP "bzip2 compression" ON)
 option(USE_ZLIB "zlib compression" ON)
 option(USE_SSL "ssl encryption" ON)
 
-option(USE_SELECT "Use select() syscall" ON)
+#[[option(USE_SELECT "Use select() syscall" ON)
 option(USE_POLL "Use poll() syscall" OFF)
-option(USE_EPOLL "Use epoll() syscall" OFF)
+option(USE_EPOLL "Use epoll() syscall" OFF)]]
 option(BUILD_SHARED_LIBS "Build shared libs" ON)
 option(LINK_STATIC "Link libraries static" OFF)
 option(ENABLE_WERROR "Enable -Werror (warnings are errors)" OFF)
+option(DEBUG_IO "Debug I/O code" OFF)
+
+if(DEBUG_IO)
+  add_definitions(-DDEBUG_IO=1)
+endif(DEBUG_IO)
 
 if(ENABLE_WERROR)
   add_definitions(-Wall -Werror -Wno-unused)
@@ -206,11 +211,11 @@ check_function_exists(wordexp HAVE_WORDEXP)
 if(HAVE_WORDEXP)
   add_definitions(-DHAVE_WORDEXP=1)
 endif(HAVE_WORDEXP)
-
+#[[
 message("USE_SELECT=${USE_SELECT}")
 message("USE_POLL=${USE_POLL}")
-message("USE_EPOLL=${USE_EPOLL}")
-if(USE_POLL STREQUAL "OFF"
+message("USE_EPOLL=${USE_EPOLL}")]]
+#[[if(USE_POLL STREQUAL "OFF"
    AND USE_SELECT STREQUAL "OFF"
    AND USE_EPOLL STREQUAL "OFF")
   set(USE_SELECT TRUE)
@@ -222,7 +227,7 @@ endif()
 if(USE_SELECT STREQUAL "ON")
   add_definitions(-DUSE_SELECT=1 -DIOPAUSE_SELECT=1)
 endif()
-
+]]
 check_include_file(stdint.h HAVE_STDINT_H)
 check_include_file(stdlib.h HAVE_STDLIB_H)
 check_include_file(stdbool.h HAVE_STDBOOL_H)
@@ -502,48 +507,71 @@ set(CMAKE_REQUIRED_FLAGS)
 set(CMAKE_REQUIRED_LINK_OPTIONS)
 set(CMAKE_REQUIRED_LIBRARIES)
 
+if(NOT MUX_METHODS)
+  set(MUX_METHODS
+      ""
+      CACHE STRING "available I/O multiplexing methods")
+endif(NOT MUX_METHODS)
 check_library_exists("" poll "" HAVE_POLL)
-# check_function_exists(poll HAVE_POLL)
-check_function_exists(select HAVE_SELECT)
+if(NOT HAVE_POLL)
+  check_function_exists(poll HAVE_POLL)
+endif(NOT HAVE_POLL)
 
-if(HAVE_POLL)
-  list(APPEND MUX_METHODS POLL)
-endif(HAVE_POLL)
-if(HAVE_SELECT)
-  list(APPEND MUX_METHODS SELECT)
-endif(HAVE_SELECT)
+check_library_exists("" epoll_create "" HAVE_EPOLL)
+if(NOT HAVE_EPOLL)
+  check_function_exists(epoll_create HAVE_EPOLL)
+endif(NOT HAVE_EPOLL)
+
+check_library_exists("" kqueue "" HAVE_KQUEUE)
+if(NOT HAVE_KQUEUE)
+  check_function_exists(kqueue HAVE_KQUEUE)
+endif(NOT HAVE_KQUEUE)
+
+check_library_exists("${LIBMSWSOCK}" select "" HAVE_SELECT)
+if(NOT HAVE_SELECT)
+  check_function_exists(select HAVE_SELECT)
+endif(NOT HAVE_SELECT)
+
+foreach(METHOD KQUEUE DEVPOLL EPOLL SIGIO POLL SELECT)
+  if(HAVE_${METHOD})
+    list(APPEND MUX_METHODS "${METHOD}")
+  endif(HAVE_${METHOD})
+endforeach()
 
 if(LIBMSWSOCK)
   list(APPEND CMAKE_REQUIRED_LIBRARIES ${LIBMSWSOCK})
 endif(LIBMSWSOCK)
 
-if(UNIX OR LINUX)
-  list(APPEND MUX_METHODS KQUEUE)
-  list(APPEND MUX_METHODS EPOLL)
-  list(APPEND MUX_METHODS SIGIO)
-endif(UNIX OR LINUX)
-
 message("Available MUX methods: ${MUX_METHODS}")
 
-if(NOT MUX)
-  set(MUX "SELECT")
-endif(NOT MUX)
-option(MUX_METHOD "I/O Multiplexer method" "${MUX}")
+list(GET MUX_METHODS 0 MUX)
 
-if(MUX_METHOD STREQUAL SELECT)
+if(NOT MUX AND HAVE_KQUEUE)
+  set(MUX KQUEUE)
+endif(NOT MUX AND HAVE_KQUEUE)
+if(NOT MUX AND HAVE_SIGIO)
+  set(MUX SIGIO)
+endif(NOT MUX AND HAVE_SIGIO)
+if(NOT MUX AND HAVE_EPOLL)
+  set(MUX EPOLL)
+endif(NOT MUX AND HAVE_EPOLL)
+if(NOT MUX AND HAVE_POLL)
+  set(MUX POLL)
+endif(NOT MUX AND HAVE_POLL)
+if(NOT MUX AND HAVE_SELECT)
+  set(MUX SELECT)
+endif(NOT MUX AND HAVE_SELECT)
+
+set(MUX_METHOD
+    "${MUX}"
+    CACHE STRING "I/O Multiplexer method")
+message("MUX method: ${MUX_METHOD}")
+
+if(MUX_METHOD STREQUAL "SELECT")
   add_definitions(-DUSE_SELECT=1)
-endif(MUX_METHOD STREQUAL SELECT)
-
-if(MUX_METHOD STREQUAL KQUEUE)
-  add_definitions(-DHAVE_KQUEUE=1)
-endif(MUX_METHOD STREQUAL KQUEUE)
-
-if(MUX_METHOD STREQUAL EPOLL)
-  add_definitions(-DHAVE_EPOLL=1)
-endif(MUX_METHOD STREQUAL EPOLL)
-if(MUX_METHOD STREQUAL SIGIO)
-  add_definitions(-DHAVE_SIGIO=1)
-endif(MUX_METHOD STREQUAL SIGIO)
+else()
+  add_definitions(-DHAVE_${MUX_METHOD}=1)
+endif()
 
 if(WIN32 OR MSVC)
   if(USE_WIDECHAR)

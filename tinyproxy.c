@@ -120,7 +120,7 @@ void log_data(fd_t sock, bool send, void* buffer, size_t len);
 
 fd_t server_sock, remote_sock;
 uint16 remote_port = 0, local_port = 0;
-uint64 connections_processed = 0;
+int64 connections_processed = 0, max_length = -1;
 char *remote_host, *cmd_in, *cmd_out;
 static char bind_addr[16], connect_addr[16];
 static int bind_af = AF_INET, connect_af = AF_INET;
@@ -270,10 +270,9 @@ check_socket(socketbuf_t* sb) {
     buffer_putulong(&log, sb->sock);
     buffer_putnlflush(&log);
     io_wantwrite(sb->sock);
-   } else  {
+  } else {
     io_wantread(sb->sock);
   }
-
 }
 
 int
@@ -377,19 +376,23 @@ parse_options(int argc, char* argv[]) {
                            {"foreground", 0, NULL, 'f'},
                            {"syslog", 0, NULL, 's'},
                            {"logfile", 0, NULL, 'o'},
+                           {"append", 0, NULL, 'a'},
+                           {"max-length", 0, NULL, 'm'},
                            {0}};
 
-  while((c = getopt_long(argc, argv, "b:l:h:p:i:O:fso:", opts, &index)) != -1) {
+  while((c = getopt_long(argc, argv, "b:l:h:p:i:O:fso:a:m:", opts, &index)) != -1) {
     switch(c) {
-      case 'l': local_port = atoi(optarg); break;
+      case 'l': scan_ushort(optarg, &local_port); break;
       case 'b': bind_af = parse_addr(optarg, bind_addr); break;
       case 'h': connect_af = parse_addr(optarg, connect_addr); break;
-      case 'p': remote_port = atoi(optarg); break;
+      case 'p': scan_ushort(optarg, &remote_port); break;
       case 'i': cmd_in = optarg; break;
       case 'O': cmd_out = optarg; break;
       case 'f': foreground = TRUE; break;
       case 's': use_syslog = TRUE; break;
-      case 'o': log.fd = open_append(optarg); break;
+      case 'm': scan_longlong(optarg, &max_length); break;
+      case 'a': log.fd = open_append(optarg); break;
+      case 'o': log.fd = open_trunc(optarg); break;
     }
   }
 
@@ -514,7 +517,7 @@ server_loop() {
 #ifdef DEBUG_OUTPUT
     io_dump();
 #endif
-      iarray_dump(io_getfds());
+    iarray_dump(io_getfds());
 
     while((sock = io_canwrite()) != -1) {
       if((c = find_proxy(sock)) && !c->connected) {
@@ -655,16 +658,24 @@ cleanup:
 
 void
 log_data(fd_t sock, bool send, void* buffer, size_t len) {
-
+size_t n = len;
   buffer_puts(&log, send ? "Sent " : "Received ");
   buffer_putulong(&log, len);
   buffer_puts(&log, send ? " bytes to #" : " bytes from #");
   buffer_putlong(&log, sock);
   buffer_puts(&log, ": '");
-  buffer_put_escaped(&log, buffer, len);
+
+  if(max_length >= 0)
+    n = max_length;
+  buffer_put_escaped(&log, buffer, n);
+
+  if(n < len)
+    buffer_puts(&log, "<shortened> ...");
+
   buffer_puts(&log, "'");
   buffer_putnlflush(&log);
 }
+
 /* Forward data between sockets */
 ssize_t
 forward_data(socketbuf_t* source, socketbuf_t* destination) {

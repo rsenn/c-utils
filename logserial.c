@@ -177,7 +177,9 @@ serial_ports(strarray* ports) {
     if(stat(*port, &st) != -1) {
 
       taia_uint(&t, st.st_ctime);
+#if _POSIX_C_SOURCE >= 200809L
       t.nano = st.st_ctim.tv_nsec;
+#endif
     } else {
       taia_now(&t);
     }
