@@ -140,7 +140,7 @@ void connection_delete(connection_t*);
 connection_t* connection_find(fd_t, fd_t proxy);
 fd_t connection_open_log(connection_t*, const char* prefix, const char* suffix);
 
-static const char* const programs[] = {"bsdtar", "star", "gtar",  "tar", 0};
+static const char* const programs[] = {"7z", "7za", "bsdtar", "star", "gtar", "tar", 0};
 
 socketbuf_t* socket_find(fd_t);
 socketbuf_t* socket_other(fd_t);
@@ -863,6 +863,7 @@ server_finalize() {
     buffer_put(&w, buf, strftime(buf, sizeof(buf), "%d.%m.%Y %H:%M:%S", &localt));
     // buffer_putulong(&w, created);
     buffer_putnlflush(&w);
+
     buffer_free(&w);
 
     ret = io_sendfile(wr, file, 0, filesize);
@@ -892,14 +893,23 @@ server_finalize() {
   b = path_basename(s);
   strarray_from_argv(strlist_count(&output_files), (const char* const*)strlist_to_argv(&output_files), &argv);
   //  strarray_unshift(&argv, base.s);
-  if(str_equal(b, "star"))
-    strarray_unshift(&argv, "artype=pax");
-  else if(str_equal(b, "bsdtar"))
-    strarray_unshiftm(&argv, "-f", base.s, 0);
-  strarray_unshiftm(&argv, b, "-c", "-vv",  0);
+  //
+  if(str_start(b, "7z")) {
+    strarray_unshiftm(&argv, "a", base.s, 0);
 
-  out = open_trunc(base.s);
+  } else {
+    if(str_equal(b, "star"))
+      strarray_unshift(&argv, "artype=pax");
 
+    out = STDOUT_FILENO;
+    if(str_equal(b, "bsdtar"))
+      strarray_unshiftm(&argv, "-f", base.s, 0);
+    else
+      out = open_trunc(base.s);
+
+    strarray_unshiftm(&argv, "-c", "-vv", 0);
+  }
+  strarray_unshift(&argv, b);
   buffer_puts(buffer_1, "Exec: ");
   dump_strarray(buffer_1, &argv);
   buffer_putnlflush(buffer_1);
@@ -909,9 +919,10 @@ server_finalize() {
     close(2);
     dup2(1, 2);
 
-    close(1);
-    dup2(out, 1);
-
+    if(out != STDOUT_FILENO) {
+      close(1);
+      dup2(out, 1);
+    }
     execve(s, v, env);
     exit(127);
   }
