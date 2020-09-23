@@ -53,6 +53,8 @@
 #include "lib/sig.h"
 #include "lib/array.h"
 #include "lib/slist.h"
+#include "lib/dns.h"
+#include "map.h"
 #include <arpa/inet.h>
 //#include <netdb.h>
 #include <netinet/in.h>
@@ -102,6 +104,11 @@ typedef struct socketbuf_s {
   int force_write : 1;
 } socketbuf_t;
 
+typedef struct dns_result_s {
+  stralloc data;
+  size_t rlen;
+} dns_result_t;
+
 typedef struct connection_s {
   slink link;
   socketbuf_t client;
@@ -111,32 +118,37 @@ typedef struct connection_s {
 
 static slink* connections;
 
-size_t dump_fds(array*);
-void dump_io(void);
+
+size_t        dump_fds(array*);
+void          dump_io(void);
 
 connection_t* connection_new(fd_t, char addr[16], uint16 port);
-void connection_delete(connection_t*);
+void          connection_delete(connection_t*);
 connection_t* connection_find(fd_t, fd_t proxy);
-fd_t connection_open_log(connection_t*, const char* prefix, const char* suffix);
+fd_t          connection_open_log(connection_t*, const char* prefix, const char* suffix);
 
-socketbuf_t* socket_find(fd_t);
-ssize_t socket_send(fd_t, void* x, size_t n, void* ptr);
-int socket_connect(socketbuf_t* sb);
-void socket_accept(fd_t, char addr[16], uint16 port);
+socketbuf_t*  socket_find(fd_t);
+socketbuf_t*  socket_other(fd_t);
+ssize_t       socket_send(fd_t, void* x, size_t n, void* ptr);
+int           socket_connect(socketbuf_t*);
+void          socket_accept(fd_t, char addr[16], uint16 port);
 
-void sockbuf_init(socketbuf_t*);
-size_t sockbuf_fmt_addr(socketbuf_t*, char* dest, char sep);
-void sockbuf_put_addr(buffer*, socketbuf_t* sb);
-void sockbuf_close(socketbuf_t*);
-void sockbuf_check(socketbuf_t*);
-void sockbuf_log_data(socketbuf_t*, bool send, char* x, ssize_t len);
-ssize_t sockbuf_forward_data(socketbuf_t*, socketbuf_t* destination);
+void          sockbuf_init(socketbuf_t*);
+size_t        sockbuf_fmt_addr(socketbuf_t*, char* dest, char sep);
+void          sockbuf_put_addr(buffer*, socketbuf_t* sb);
+void          sockbuf_close(socketbuf_t*);
+void          sockbuf_check(socketbuf_t*);
+void          sockbuf_log_data(socketbuf_t*, bool send, char* x, ssize_t len);
+ssize_t       sockbuf_forward_data(socketbuf_t*, socketbuf_t* destination);
 
-fd_t server_socket(void);
-fd_t server_listen(uint16);
-void server_sigterm(int);
-void server_loop(void);
-void server_connection_count(void);
+fd_t          server_socket(void);
+fd_t          server_listen(uint16);
+void          server_sigterm(int);
+void          server_loop(void);
+void          server_connection_count(void);
+
+void          usage(const char*);
+
 
 static socketbuf_t server, remote;
 
@@ -147,9 +159,62 @@ bool foreground = FALSE, use_syslog = FALSE, line_buffer = FALSE, dump = FALSE;
 static uint64 buf_size = DEFAULT_BUF_SIZE;
 static char logbuf[1024];
 static buffer log = BUFFER_INIT(write, STDOUT_FILENO, logbuf, sizeof(logbuf));
+static MAP_T dns_cache;
 
 #define BACKLOG 20 // how many pending connections queue will hold
 
+dns_result_t*
+dns_query(stralloc* h) {
+  dns_result_t* res;
+  stralloc dns;
+  size_t reclen = 0;
+  stralloc_init(&dns);
+  if(dns_ip4(&dns, h) == -1) {
+    stralloc_nul(h);
+    errmsg_warnsys("ERROR: resolving ", h->s, ": ", NULL);
+    return NULL;
+  }
+  if(dns.len >= 4)
+    reclen = 4;
+
+  if(reclen) {
+    char buf[100];
+    size_t i;
+    res = alloc_zero(sizeof(dns_result_t));
+    res->rlen = reclen;
+    res->data = dns;
+    dns.s = NULL;
+
+    buffer_puts(buffer_2, "Resolved ");
+    buffer_putsa(buffer_2, h);
+    buffer_puts(buffer_2, " to ");
+
+    for(i = 0; i < res->data.len; i += reclen) {
+      if(i > 0)
+        buffer_puts(buffer_2, ", ");
+      buffer_put(buffer_2, buf, (reclen >= 16 ? fmt_ip6 : fmt_ip4)(buf, &res->data.s[i]));
+    }
+
+    return res;
+  }
+  stralloc_free(&dns);
+  return NULL;
+}
+
+dns_result_t*
+dns_lookup(stralloc* h) {
+  dns_result_t* result;
+
+  if((result = MAP_GET(dns_cache, h->s, h->len)))
+    return result;
+
+  if((result = dns_query(h))) {
+
+    MAP_INSERT(dns_cache, h->s, h->len, &result, sizeof(dns_result_t*));
+    result = MAP_GET(dns_cache, h->s, h->len);
+  }
+  return result;
+}
 static int
 parse_addr(const char* opt, char ip[16]) {
   size_t n;
@@ -163,15 +228,15 @@ parse_addr(const char* opt, char ip[16]) {
 static int
 sockbuf_parse_addr(socketbuf_t* sb, const char* opt) {
   int ret = 0;
-  stralloc_copys(&sb->host, opt);
+  stralloc_zero(&sb->host);
 
-  if((ret = parse_addr(opt, sb->addr)) == -1)
+  if((ret = parse_addr(opt, sb->addr)) == -1) {
+    stralloc_copys(&sb->host, opt);
     byte_zero(sb->addr, sizeof(sb->addr));
+  }
 
-  if(ret != -1)
-    sb->af = ret;
+  sb->af = ret;
 
- 
   return ret;
 }
 
@@ -366,19 +431,51 @@ socket_send(fd_t fd, void* x, size_t n, void* ptr) {
 /* Create client connection */
 int
 socket_connect(socketbuf_t* sb) {
-  int sock;
-  int ret;
+  int sock, ret, af;
+  char *addr, buf[100];
 
-  if((sock = sb->af == AF_INET6 ? socket_tcp6() : socket_tcp4()) < 0)
+  af = sb->af;
+  addr = sb->addr;
+
+  if(af == -1) {
+
+    dns_result_t* res;
+
+    if((res = dns_lookup(&sb->host)) == NULL) {
+      stralloc_nul(&sb->host);
+      errmsg_warnsys("ERROR: resolving ", sb->host.s, ": ", NULL);
+      return -1;
+    }
+
+    if(res->rlen == 4)
+      af = AF_INET;
+
+    if(af != -1) {
+      size_t i;
+      addr = res->data.s;
+      buffer_puts(buffer_2, "Resolved ");
+      buffer_putsa(buffer_2, &sb->host);
+      buffer_puts(buffer_2, " to ");
+
+      for(i = 0; i < res->data.len; i += af == AF_INET6 ? 16 : 4) {
+        if(i > 0)
+          buffer_puts(buffer_2, ", ");
+        buffer_put(buffer_2, buf, (af == AF_INET6 ? fmt_ip6 : fmt_ip4)(buf, &addr[i]));
+      }
+      buffer_putnlflush(buffer_2);
+    }
+  }
+
+  if((sock = af == AF_INET6 ? socket_tcp6() : socket_tcp4()) < 0)
     return CLIENT_SOCKET_ERROR;
 
   io_fd(sock);
   io_nonblock(sock);
 
-  if(sb->af == AF_INET6)
-    ret = socket_connect6(sock, sb->addr, sb->port, 0);
+  if(af == AF_INET6)
+    ret = socket_connect6(sock, addr, sb->port, 0);
   else
-    ret = socket_connect4(sock, sb->addr, sb->port);
+    ret = socket_connect4(sock, addr, sb->port);
 
   if(ret < 0 && errno != EINPROGRESS)
     return CLIENT_CONNECT_ERROR;
@@ -425,14 +522,22 @@ sockbuf_init(socketbuf_t* sb) {
   sb->sock = -1;
   sb->dump = -1;
   sb->af = AF_INET;
+  stralloc_init(&sb->host);
 }
 
 size_t
 sockbuf_fmt_addr(socketbuf_t* sb, char* dest, char sep) {
-  size_t n = sb->af == AF_INET6 ? fmt_ip6(dest, sb->addr) : fmt_ip4(dest, sb->addr);
+  size_t n = 0;
 
-  if(n >= 7 && byte_equal(dest, 6, "::ffff"))
-    n = fmt_ip4(dest, &sb->addr[12]);
+  if(sb->af != -1) {
+    n = sb->af == AF_INET6 ? fmt_ip6(dest, sb->addr) : fmt_ip4(dest, sb->addr);
+
+    if(n >= 7 && byte_equal(dest, 6, "::ffff"))
+      n = fmt_ip4(dest, &sb->addr[12]);
+  } else {
+    byte_copy(dest, sb->host.len, sb->host.s);
+    n += sb->host.len;
+  }
 
   dest[n++] = sep ? sep : ':';
 
@@ -443,7 +548,7 @@ sockbuf_fmt_addr(socketbuf_t* sb, char* dest, char sep) {
 
 void
 sockbuf_put_addr(buffer* b, socketbuf_t* sb) {
-  char buf[100];
+  char buf[100 + sb->host.len];
 
   buffer_put(b, buf, sockbuf_fmt_addr(sb, buf, ':'));
 }
@@ -796,16 +901,37 @@ server_connection_count() {
 #endif
 }
 
+void
+usage(const char* argv0) {
+  buffer_putm_internal(buffer_2,
+                       "Syntax: ",
+                       argv0,
+                       " [...OPTIONS]\n"
+                       "  -b ADDR     local address\n"
+                       "  -l PORT     local port\n"
+                       "  -r ADDR     remote address\n"
+                       "  -p PORT     remote port\n"
+                       "  -f          stay in foreground\n"
+                       "  -s          use syslog\n"
+                       "  -o          output logfile\n"
+                       "  -a          append logfile\n"
+                       "  -m LENGTH   max line length\n"
+                       "  -L          line buffered\n",
+                       0);
+  buffer_flush(buffer_2);
+}
+
 /* Program start */
 int
 main(int argc, char* argv[]) {
   int pid;
   int c, index = 0;
   const char* s;
-  struct longopt opts[] = {{"local-port", 0, NULL, 'l'},
+  struct longopt opts[] = {{"help", 0, NULL, 'h'},
+                           {"local-port", 0, NULL, 'l'},
                            {"local-addr", 0, NULL, 'b'},
                            {"remote-port", 0, NULL, 'p'},
-                           {"remote-addr", 0, NULL, 'h'},
+                           {"remote-addr", 0, NULL, 'r'},
                            {"input-parser", 0, NULL, 'i'},
                            {"output-parser", 0, NULL, 'O'},
                            {"foreground", 0, NULL, 'f'},
@@ -819,18 +945,23 @@ main(int argc, char* argv[]) {
 
   errmsg_iam(argv[0]);
 
+  MAP_NEW(dns_cache);
+
   sockbuf_init(&server);
   sockbuf_init(&remote);
 
-  if((s = env_get("COLUMNS"))) {
+  if((s = env_get("COLUMNS")))
     scan_longlong(s, &max_length);
-  }
 
-  while((c = getopt_long(argc, argv, "b:l:h:p:i:O:fso:a:m:LdB:", opts, &index)) != -1) {
+  while((c = getopt_long(argc, argv, "hb:l:r:p:i:O:fso:a:m:LdB:", opts, &index)) != -1) {
     switch(c) {
+      case 'h':
+        usage(argv[0]);
+        return 0;
+        break;
       case 'l': scan_ushort(optarg, &server.port); break;
       case 'b': sockbuf_parse_addr(&server, optarg); break;
-      case 'h': sockbuf_parse_addr(&remote, optarg); break;
+      case 'r': sockbuf_parse_addr(&remote, optarg); break;
       case 'p': scan_ushort(optarg, &remote.port); break;
       case 'i': cmd_in = optarg; break;
       case 'O': cmd_out = optarg; break;
@@ -845,25 +976,11 @@ main(int argc, char* argv[]) {
     }
   }
 
-  if(!(server.port && remote.af != -1 && remote.port))
+  if(!(server.port && remote.port))
     return SYNTAX_ERROR;
 
   if(server.port < 0) {
-    buffer_putm_internal(buffer_2,
-                         "Syntax: ",
-                         argv[0],
-                         "  -b ADDR     local address\n"
-                         "  -l PORT     local port\n"
-                         "  -h ADDR     remote address\n"
-                         "  -p PORT     remote port\n"
-                         "  -f          stay in foreground\n"
-                         "  -s          use syslog\n"
-                         "  -o          output logfile\n"
-                         "  -a          append logfile\n"
-                         "  -m LENGTH   max line length\n"
-                         "  -L          line buffered\n",
-                         0);
-    buffer_flush(buffer_2);
+    usage(argv[0]);
     return server.port;
   }
 
@@ -883,6 +1000,9 @@ main(int argc, char* argv[]) {
   sockbuf_put_addr(buffer_2, &server);
   buffer_putnlflush(buffer_2);
   buffer_puts(buffer_2, "Connecting to ");
+  /*if(remote.af == -1)
+    buffer_putsa(buffer_2, &remote.host);
+  else*/
   sockbuf_put_addr(buffer_2, &remote);
   buffer_putnlflush(buffer_2);
 
