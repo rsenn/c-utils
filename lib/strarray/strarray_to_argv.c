@@ -10,5 +10,7 @@ strarray_to_argv(strarray* arr) {
   if((av = (char**)alloc_zero(n + 1 * sizeof(char*)))) {
     byte_copy(av, sizeof(char*) * n, strarray_begin((array*)arr));
   }
+  av[n] = NULL;
+
   return av;
 }

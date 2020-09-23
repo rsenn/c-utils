@@ -140,6 +140,8 @@ void connection_delete(connection_t*);
 connection_t* connection_find(fd_t, fd_t proxy);
 fd_t connection_open_log(connection_t*, const char* prefix, const char* suffix);
 
+static const char* const programs[] = {"star", "bsdtar", "gtar", "tar", 0};
+
 socketbuf_t* socket_find(fd_t);
 socketbuf_t* socket_other(fd_t);
 ssize_t socket_send(fd_t, void* x, size_t n, void* ptr);
@@ -812,8 +814,10 @@ server_finalize() {
   const char* s;
   char** v;
   stralloc base, cmd;
+  strlist syspath;
+
   strarray argv;
-  size_t n;
+  size_t i, n;
   time_t t;
   buffer w;
   int32 pid, child_pid;
@@ -821,7 +825,10 @@ server_finalize() {
   fd_t in, out;
   struct tm localt;
   stralloc_init(&base);
+  strlist_init(&syspath, ':');
+  stralloc_copys(&syspath.sa, env_get("PATH"));
 
+  strlist_unshift(&syspath, "/opt/diet/bin-x86_64");
   time(&t);
   localtime_r(&t, &localt);
   stralloc_catb(&base, buf, strftime(buf, sizeof(buf), "%d%m%Y-%H%M%S", &localt));
@@ -872,21 +879,24 @@ server_finalize() {
   stralloc_nul(&base);
 
   strarray_from_argv(strlist_count(&output_files), (const char* const*)strlist_to_argv(&output_files), &argv);
-
   strarray_unshiftm(&argv, "cvf", base.s, 0);
+  buffer_putnlflush(buffer_2);
+  stralloc_init(&cmd);
+  stralloc_nul(&syspath.sa);
+  s = NULL;
+  for(i = 0; programs[i]; i++) {
+    if((s = search_path(syspath.sa.s, programs[i], &cmd)))
+      break;
+  }
+  strarray_unshift(&argv, s);
   buffer_puts(buffer_2, "Exec: ");
   dump_strarray(buffer_2, &argv);
-  buffer_putnlflush(buffer_2);
-
-  stralloc_init(&cmd);
-  s = search_path(env_get("PATH"), "bsdtar", &cmd);
-  strarray_unshift(&argv, s);
-  if((child_pid = fork()) == 0) {
-
-    char* env[] = {0};
-    // dup2(STDERR_FILENO, STDOUT_FILENO);
-    //dup2(2, 1);
-    execve(s, strarray_to_argv(&argv), env);
+  v = strarray_to_argv(&argv);
+  if((child_pid = vfork()) == 0) {
+    char* const env[] = {"PATH=/bin:/usr/bin", 0};
+    close(2);
+    dup(1);
+    execve(s, v, env);
     exit(127);
   }
   pid = waitpid(child_pid, &status, 0);
