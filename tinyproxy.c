@@ -832,7 +832,6 @@ server_finalize() {
 
   n = filename.len;
   stralloc_cats(&filename, "recv.txt");
-
   // stralloc_catb(&filename, buf, strftime(buf, sizeof(buf), "-%d%m%Y-%H%M%S", &lt));
   in = open_append(stralloc_cstr(&filename));
 
