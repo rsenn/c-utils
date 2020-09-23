@@ -4,15 +4,15 @@
 
 void
 range_rotate(range* r, int n) {
-  char* x,*y;
+  char *x, *y;
   size_t num_elements, size, bytes;
 
- num_elements = range_size(r);
+  num_elements = range_size(r);
 
   if(n < 0)
-    n = num_elements + n;   
+    n = num_elements + n;
 
-  if(n > 0  &&  n < num_elements) {
+  if(n > 0 && n < num_elements) {
     bytes = n * r->elem_size;
     size = r->end - r->start;
 

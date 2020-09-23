@@ -77,6 +77,8 @@
 #include <systemd/sd-daemon.h>
 #endif
 
+#define DNS_MAX_AGE 30
+
 #define DEFAULT_BUF_SIZE 16384
 
 #define READ 0
@@ -185,7 +187,6 @@ dns_query(stralloc* h) {
     res = alloc_zero(sizeof(dns_result_t));
     res->rlen = reclen;
     taia_now(&res->t);
-    taia_add(&res->t, &res->t, &ttl);
     res->data.start = dns.s;
     res->data.end = dns.s + dns.len;
     res->data.elem_size = reclen;
@@ -202,7 +203,7 @@ dns_print_result(buffer* b, dns_result_t* result) {
   char* x;
   size_t i = 0;
   char buf[128];
-  for(x = result->data.start; x < result->data.end; x += result->data.elem_size) {
+  range_foreach(&result->data, x) {
     if(i++ > 0)
       buffer_puts(b, ", ");
     buffer_put(b, buf, (result->data.elem_size == 16 ? fmt_ip6 : fmt_ip4)(buf, x));
@@ -214,14 +215,17 @@ dns_lookup(stralloc* h) {
   size_t i;
   bool cached = FALSE;
   dns_result_t* result;
-  tai6464 now;
+  tai6464 now, expire, diff;
 
   stralloc_nul(h);
 
   if((result = MAP_GET(dns_cache, h->s, h->len + 1)) != NULL) {
     taia_now(&now);
+    taia_add(&expire, &result->t, &ttl);
 
-    if(!taia_less(&now, &result->t)) {
+    taia_sub(&diff, &now, &result->t);
+
+    if(!taia_less(&now, &expire)) {
       buffer_puts(buffer_2, "Cache expired ");
       buffer_putsa(buffer_2, h);
       buffer_putnlflush(buffer_2);
@@ -245,10 +249,16 @@ dns_lookup(stralloc* h) {
     }
   }
 
-  range_rotate(&result->data, -1);
+  if(cached)
+    range_rotate(&result->data, -1);
 
   buffer_puts(buffer_2, cached ? "Cache hit " : "Resolved ");
   buffer_putsa(buffer_2, h);
+  if(cached) {
+     buffer_puts(buffer_2, " age ");
+     buffer_putlong(buffer_2, diff.sec.x);
+     buffer_puts(buffer_2, "s");
+  }
   buffer_puts(buffer_2, " to [");
   buffer_putulong(buffer_2, range_size(&result->data));
   buffer_puts(buffer_2, "] ");
@@ -988,7 +998,7 @@ main(int argc, char* argv[]) {
   if((s = env_get("COLUMNS")))
     scan_longlong(s, &max_length);
 
-  taia_uint(&ttl, 20);
+  taia_uint(&ttl, DNS_MAX_AGE);
 
   while((c = getopt_long(argc, argv, "hb:l:r:p:i:O:fso:a:m:LdB:T:", opts, &index)) != -1) {
     switch(c) {
