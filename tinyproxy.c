@@ -434,10 +434,10 @@ connection_open_log(connection_t* c, const char* prefix, const char* suffix) {
   int ret;
   tai6464 now;
   stralloc_init(&filename);
-   if(fileBase) 
+  if(fileBase)
     stralloc_catm_internal(&filename, fileBase, "-", 0);
-if(prefix)
-  stralloc_catm_internal(&filename, prefix, "-", 0);
+  if(prefix)
+    stralloc_catm_internal(&filename, prefix, "-", 0);
   stralloc_catb(&filename, buf, sockbuf_fmt_addr(&c->client, buf, '_'));
   stralloc_catc(&filename, '-');
   if(c->proxy.af == -1) {
@@ -822,17 +822,26 @@ server_finalize() {
   time(&t);
   localtime_r(&t, &lt);
   stralloc_init(&filename);
-  stralloc_cats(&filename, "input");
-  stralloc_cats(&filename, ".txt");
+
+  b = fileBase;
+  if(b == NULL)
+    b = path_basename(errmsg_argv0);
+
+  if(b)
+    stralloc_catm_internal(&filename, b, "-", 0);
+
+  n = filename.len;
+  stralloc_cats(&filename, "recv.txt");
 
   // stralloc_catb(&filename, buf, strftime(buf, sizeof(buf), "-%d%m%Y-%H%M%S", &lt));
   in = open_append(stralloc_cstr(&filename));
-  stralloc_replace(&filename, 0, 5, "output", 6);
+
+  stralloc_replace(&filename, n, 4, "send", 4);
   out = open_append(stralloc_cstr(&filename));
   strlist_foreach(&output_files, s, n) {
     size_t filesize;
     ssize_t ret;
-    fd_t wr = str_start(s, "in") ? in : out;
+    fd_t wr = s[str_find(s, "recv")] ? in : out;
     fd_t file = open_read(s);
     if(!(fstat(file, &st) == 0 && (filesize = st.st_size)))
       filesize = 0;
@@ -842,10 +851,7 @@ server_finalize() {
     buffer_put(&w, s, n);
     buffer_puts(&w, "' -- ");
     localtime_r(&t, &lt);
-
-    // buffer_putulong(&w, created);
     buffer_putnlflush(&w);
-
     buffer_free(&w);
     ret = io_sendfile(wr, file, 0, filesize);
     buffer_puts(buffer_2, "Output file: ");
