@@ -1,3 +1,4 @@
+
 #include "lib/path.h"
 #include "lib/uint16.h"
 #include "lib/uint64.h"
@@ -136,7 +137,7 @@ void server_connection_count(void);
 void usage(const char*);
 
 static socketbuf_t server, remote;
-
+static const char* fileBase;
 fd_t server_sock;
 int64 connections_processed = 0, max_length = -1;
 char *remote_host, *cmd_in, *cmd_out;
@@ -850,7 +851,7 @@ server_finalize() {
     buffer_putlong(buffer_2, ret);
     buffer_putnlflush(buffer_2);
   }
-  stralloc_copys(&filename, path_basename(errmsg_argv0));
+  stralloc_copys(&filename,fileBase);
   stralloc_catb(&filename, buf, strftime(buf, sizeof(buf), "-%Y%m%d_-_%H_%M_%S", &lt));
   stralloc_cats(&filename, ".tar");
 
@@ -889,7 +890,7 @@ server_tar_files(const char* cmd, const stralloc* archive, strlist* files) {
     else
       strarray_unshiftm(&argv, "-H", "ustar", 0);
 
-    if(str_equal(base, "bsdtar") ||str_start(base, "g"))
+    if(str_equal(base, "bsdtar") || str_start(base, "g"))
       strarray_unshiftm(&argv, "-f", archive->s, 0);
     else
       out = open_trunc(archive->s);
@@ -1142,10 +1143,10 @@ server_connection_count() {
 }
 
 void
-usage(const char* errmsg_argv0) {
+usage(const char* argv0) {
   buffer_putm_internal(buffer_2,
                        "Syntax: ",
-                       errmsg_argv0,
+                       argv0,
                        " [...OPTIONS]\n"
                        "  -b ADDR     local address\n"
                        "  -l PORT     local port\n"
@@ -1183,8 +1184,10 @@ main(int argc, char* argv[]) {
                            {"line-buffer", 0, NULL, 'L'},
                            {"dump", 0, NULL, 'd'},
                            {"ttl", 0, NULL, 'T'},
+                           {"basename", 0, NULL, 'n'},
                            {0}};
 
+fileBase = path_basename(argv[0]);
   errmsg_iam(argv[0]);
 
   MAP_NEW(dns_cache);
@@ -1197,7 +1200,7 @@ main(int argc, char* argv[]) {
 
   taia_uint(&ttl, DNS_MAX_AGE);
 
-  while((c = getopt_long(argc, argv, "hb:l:r:p:i:O:fso:a:m:LdB:T:", opts, &index)) != -1) {
+  while((c = getopt_long(argc, argv, "hb:l:r:p:i:O:fso:a:m:LdB:T:n:", opts, &index)) != -1) {
     switch(c) {
       case 'h':
         usage(argv[0]);
@@ -1216,6 +1219,7 @@ main(int argc, char* argv[]) {
       case 'f': foreground = TRUE; break;
       case 's': use_syslog = TRUE; break;
       case 'm': scan_longlong(optarg, &max_length); break;
+      case 'n': fileBase = optarg; break;
       case 'B': scan_ulonglong(optarg, &buf_size); break;
       case 'L': line_buffer = TRUE; break;
       case 'd': dump = TRUE; break;
