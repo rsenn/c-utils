@@ -1,39 +1,3 @@
-
-/*
- * Tiny TCP proxy server
- *
- * Author: Krzysztof Kliś <krzysztof.klis@gmail.com>
- * Fixes and improvements: Jérôme Poulin <jeromepoulin@gmail.com>
- * IPv6 support: 04/2019 Rafael Ferrari <rafaelbf@hotmail.com>
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version with the following modification:
- *
- * As a special exception, the copyright holders of this library give you
- * permission to link this library with independent modules to produce an
- * executable, regardless of the license terms of these independent modules,
- * and to copy and distribute the resulting executable under terms of your choice,
- * provided that you also meet, for each linked independent module, the terms
- * and conditions of the license of that module. An independent module is a
- * module which is not derived from or based on this library. If you modify this
- * library, you may extend this exception to your version of the library, but
- * you are not obligated to do so. If you do not wish to do so, delete this
- * exception statement from your version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
-#ifndef _GNU_SOURCE
-#define _GNU_SOURCE
-#endif
 #include "lib/path.h"
 #include "lib/uint16.h"
 #include "lib/uint64.h"
@@ -106,9 +70,9 @@ typedef struct socketbuf_s {
   fd_t sock;
   buffer buf;
   stralloc host;
-  int af;
-  char addr[16];
+  uint16 af;
   uint16 port;
+  char addr[16];
   uint32 scope_id;
   fd_t dump;
   int force_write : 1;
@@ -642,12 +606,12 @@ sockbuf_fmt_addr(socketbuf_t* sb, char* dest, char sep) {
       n = fmt_hexb(dest, sb->addr, 4) /*||  fmt_ip4(dest, sb->addr)*/;
 
     if(sb->af == AF_INET6 && byte_equal(dest, 6, "::ffff"))
-          n = fmt_hexb(dest, sb->addr, 4);
+      n = fmt_hexb(dest, sb->addr, 4);
   }
 
   dest[n++] = sep ? sep : ':';
 
-  n += fmt_xlong0(&dest[n], sb->port, 2);
+  n += fmt_xlong0(&dest[n], sb->port, 4);
   dest[n] = '\0';
   return n;
 }
