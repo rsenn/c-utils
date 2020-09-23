@@ -847,10 +847,7 @@ server_finalize() {
 
   strarray_from_argv(n, (const char* const *)v, &argv);
 
-  strarray_unshift(&argv, base.s);
-
-  strarray_unshift(&argv, "cf");
-  strarray_unshift(&argv, "tar");
+  strarray_unshiftm(&argv, "tar", "cf", base.s, 0);
 
   buffer_puts(buffer_2, "Exec: ");
 
