@@ -128,20 +128,45 @@ int strlist_push_unique_sa(strlist*, const stralloc* sa);
 void strlist_joins(const strlist*, stralloc* sa, const char* delim);
 #endif
 
-int strlist_pushb_unique(strlist* sl, const char* x, size_t n);
-int strlist_pop(strlist*);
-int strlist_pop(strlist*);
-
-int64 strlist_indexofb(strlist*, const char* x, size_t n);
+char* strlist_at(const strlist*, size_t i);
+char* strlist_at_n(const strlist*, size_t i, size_t* n);
+int strlist_cat(strlist*, const strlist* l);
+int strlist_cat_unique(strlist*, const strlist* l);
 int strlist_containsb(const strlist*, const char* x, size_t len);
+int strlist_contains(const strlist*, const char* s);
+size_t strlist_count(const strlist*);
+size_t strlist_diff(const strlist*, const strlist* b, strlist* out);
+void strlist_dump(buffer*, const strlist* sl);
+size_t strlist_filter(strlist*, strlist_filterfn_t* filter_fn, strlist* out);
+void strlist_fromb(strlist*, const char* x, size_t n, const char* delim);
+void strlist_froms(strlist*, const char* s, char delim);
+void strlist_fromv(strlist*, const char** v, int c);
+int64 strlist_indexofb(strlist*, const char* x, size_t n);
+int64 strlist_index_of(strlist*, const char* str);
+int strlist_pop(strlist*);
+int strlist_prependb(strlist*, const char* b, size_t n);
+int strlist_prepends(strlist*, const char* s);
+int strlist_pushb(strlist*, const char* s, size_t n);
+int strlist_pushb_unique(strlist*, const char* s, size_t n);
+int strlist_push(strlist*, const char* s);
+int strlist_pushm_internal(strlist*, ...);
+void strlist_push_tokens(strlist*, const char* s, const char* delim);
+int strlist_push_unique(strlist*, const char* s);
+strlist strlist_range(const strlist*, size_t from, size_t to);
+size_t strlist_remove_all(strlist*, const strlist* remove);
+int strlist_remove_at(strlist*, size_t n);
 int strlist_removeb(strlist*, const char* x, size_t n);
 int strlist_removes(strlist*, const char* s);
+int strlist_shift(strlist*, const char** strp);
+int strlist_shift_n(strlist*, size_t i);
+size_t strlist_sort(strlist*, strlist_cmpfn_t* cmp_fn);
+int strlist_sub(strlist*, const strlist* o);
+
+char** strlist_to_argv(const strlist*);
 
 int strlist_trunc(strlist*, size_t items);
-int strlist_sub(strlist*, const strlist* o);
-void strlist_fromv(strlist*, const char** v, int c);
-
-size_t strlist_filter(strlist* sl, strlist_filterfn_t* filter_fn, strlist* out);
+int strlist_unshiftb(strlist*, const char* x, size_t len);
+int strlist_unshift(strlist*, const char* s);
 
 #ifdef __cplusplus
 }

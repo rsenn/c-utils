@@ -190,8 +190,7 @@ dns_query(stralloc* h) {
   size_t reclen = 0;
   stralloc_init(&dns);
   if(dns_ip4(&dns, h) == -1) {
-    stralloc_nul(h);
-    errmsg_warnsys("ERROR: resolving ", h->s, ": ", NULL);
+    errmsg_warnsys("ERROR: resolving ", stralloc_cstr(h),  ": ", NULL);
     return NULL;
   }
   if(dns.len >= 4)
@@ -461,30 +460,26 @@ connection_find(fd_t client, fd_t proxy) {
 
 fd_t
 connection_open_log(connection_t* c, const char* prefix, const char* suffix) {
+  stralloc filename;
   char buf[1024] = {0};
-  size_t i, n;
+  size_t i;
   tai6464 now;
-
-  n = str_copy(buf, prefix);
-  buf[n++] = '-';
-
-  n += sockbuf_fmt_addr(&c->client, &buf[n], '_');
-  buf[n++] = '-';
-  n += sockbuf_fmt_addr(&c->proxy, &buf[n], '_');
-  n += str_copy(&buf[n], suffix);
-  n += '-';
+  stralloc_init(&filename);
+  stralloc_catm_internal(&filename, prefix, "-", 0);
+  stralloc_catb(&filename, buf, sockbuf_fmt_addr(&c->client, buf, "_"));
+  stralloc_catc(&filename, '-');
+  stralloc_catb(&filename, buf, sockbuf_fmt_addr(&c->proxy, buf, "_"));
+  stralloc_catm_internal(&filename, suffix, "-", 0);
   taia_now(&now);
-  n += fmt_ulonglong(&buf[n], now.sec.x);
-
-  for(i = 0; i < n; i++) {
-    char c = buf[i];
+  stralloc_catb(&filename, buf, fmt_ulonglong(buf, now.sec.x));
+  for(i = 0; i < filename.len; i++) {
+    char c = filename.s[i];
     if(c == ':') //!((c >= 'A' && c <= 'F') || (c >= 'a' && c <= 'f') || (c >= '0' && c <= '9') || c == '.'))
-      buf[i] = '+';
+      filename.s[i] = '+';
   }
-  buf[i] = '\0';
-  strlist_push_unique(&output_files, buf);
+  strlist_push_unique_sa(&output_files, &filename);
 
-  return open_trunc(buf);
+  return open_trunc(stralloc_cstr(&filename));
 }
 
 socketbuf_t*
@@ -541,8 +536,8 @@ socket_connect(socketbuf_t* sb) {
     dns_response_t* res;
 
     if((res = dns_lookup(&sb->host)) == NULL) {
-      stralloc_nul(&sb->host);
-      errmsg_warnsys("ERROR: resolving ", sb->host.s, ": ", NULL);
+
+      errmsg_warnsys("ERROR: resolving ", stralloc_cstr(&sb->host), ": ", NULL);
       return -1;
     } else {
       if(range_size(&res->data) > 0)
@@ -803,12 +798,10 @@ search_path(const char* path, const char* what, stralloc* out) {
     stralloc_copyb(&stra, x, pos);
     stralloc_catc(&stra, '/');
     stralloc_cats(&stra, what);
-    stralloc_nul(&stra);
 
-    if(path_exists(stra.s)) {
+    if(path_exists(stralloc_cstr(&stra))) {
       stralloc_copy(out, &stra);
-      stralloc_nul(out);
-      ret = out->s;
+      ret = stralloc_cstr(out);
       break;
     }
 
@@ -843,12 +836,11 @@ server_finalize() {
   stralloc_cats(&base, ".txt");
 
   stralloc_inserts(&base, "input-", 0);
-  stralloc_nul(&base);
-  in = open_trunc(base.s);
+
+  in = open_trunc(stralloc_cstr(&base));
   stralloc_replace(&base, 0, 5, "output", 6);
 
-  stralloc_nul(&base);
-  out = open_trunc(base.s);
+  out = open_trunc(stralloc_cstr(&base));
 
   strlist_foreach(&output_files, s, n) {
     size_t filesize;
@@ -885,17 +877,15 @@ server_finalize() {
 
   stralloc_replace(&base, 0, 6, "all", 3);
   stralloc_replace(&base, base.len - 4, 4, ".tar", 4);
-  stralloc_nul(&base);
 
-  if(stat(base.s, &st) != -1)
-    unlink(base.s);
+  if(stat((s = stralloc_cstr(&base)), &st) != -1)
+    unlink(s);
 
   stralloc_init(&cmd);
-  stralloc_nul(&syspath.sa);
 
   s = NULL;
   for(i = 0; programs[i]; i++) {
-    if((s = search_path(syspath.sa.s, programs[i], &cmd)))
+    if((s = search_path(stralloc_cstr(&syspath.sa), programs[i], &cmd)))
       break;
   }
 
