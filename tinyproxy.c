@@ -454,7 +454,7 @@ connection_open_log(connection_t* c, const char* prefix, const char* suffix) {
     if(x[i] == ':' || x[i] < ' ')
       x[i] = '+';
   }
-  strlist_pushb_unique(&output_files, filename.s, filename.len);
+  strlist_pushb(&output_files, filename.s, filename.len);
 
   return open_trunc(stralloc_cstr(&filename));
 }
