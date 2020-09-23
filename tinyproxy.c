@@ -74,6 +74,7 @@
 #include <syslog.h>
 #include <unistd.h>
 #include <sys/wait.h>
+#include <sys/stat.h>
 #ifdef USE_SYSTEMD
 #include <systemd/sd-daemon.h>
 #endif
@@ -121,40 +122,46 @@ typedef struct connection_s {
   int connected;
 } connection_t;
 
-static slink* connections;
+static slink* connections; 
+
+
 dns_response_t* dns_query(stralloc*);
-void dns_print(buffer*, dns_response_t* result, size_t num_responses);
+void            dns_print(buffer*, dns_response_t* result, size_t num_responses);
 dns_response_t* dns_lookup(stralloc*);
 
-size_t dump_fds(array*);
-void dump_io(void);
+size_t          dump_fds(array*);
+void            dump_io(void);
 
-connection_t* connection_new(fd_t, char addr[16], uint16 port);
-void connection_delete(connection_t*);
-connection_t* connection_find(fd_t, fd_t proxy);
-fd_t connection_open_log(connection_t*, const char* prefix, const char* suffix);
+connection_t*   connection_new(fd_t, char addr[16], uint16 port);
+void            connection_delete(connection_t*);
+connection_t*   connection_find(fd_t, fd_t proxy);
+fd_t            connection_open_log(connection_t*, const char* prefix, const char* suffix);
 
-socketbuf_t* socket_find(fd_t);
-socketbuf_t* socket_other(fd_t);
-ssize_t socket_send(fd_t, void* x, size_t n, void* ptr);
-int socket_connect(socketbuf_t*);
-void socket_accept(fd_t, char addr[16], uint16 port);
+socketbuf_t*    socket_find(fd_t);
+socketbuf_t*    socket_other(fd_t);
+ssize_t         socket_send(fd_t, void* x, size_t n, void* ptr);
+int             socket_connect(socketbuf_t*);
+void            socket_accept(fd_t, char addr[16], uint16 port);
 
-void sockbuf_init(socketbuf_t*);
-size_t sockbuf_fmt_addr(socketbuf_t*, char* dest, char sep);
-void sockbuf_put_addr(buffer*, socketbuf_t* sb);
-void sockbuf_close(socketbuf_t*);
-void sockbuf_check(socketbuf_t*);
-void sockbuf_log_data(socketbuf_t*, bool send, char* x, ssize_t len);
-ssize_t sockbuf_forward_data(socketbuf_t*, socketbuf_t* destination);
+void            sockbuf_init(socketbuf_t*);
+size_t          sockbuf_fmt_addr(socketbuf_t*, char* dest, char sep);
+void            sockbuf_put_addr(buffer*, socketbuf_t* sb);
+void            sockbuf_close(socketbuf_t*);
+void            sockbuf_check(socketbuf_t*);
+void            sockbuf_log_data(socketbuf_t*, bool send, char* x, ssize_t len);
+ssize_t         sockbuf_forward_data(socketbuf_t*, socketbuf_t* destination);
 
-fd_t server_socket(void);
-fd_t server_listen(uint16);
-void server_exit(int);
-void server_sigint(int);
-void server_sigterm(int);
-void server_loop(void);
-void server_connection_count(void);
+fd_t            server_socket(void);
+fd_t            server_listen(uint16);
+void            server_finalize(void);
+void            server_exit(int);
+void            server_sigint(int);
+void            server_sigterm(int);
+void            server_loop(void);
+void            server_connection_count(void);
+
+void            usage(const char*);
+
 
 void usage(const char*);
 
@@ -515,7 +522,6 @@ socket_connect(socketbuf_t* sb) {
     } else {
       if(range_size(&res->data) > 0)
         addr = res->data.start;
-
     }
 
     if(addr != sb->addr)
@@ -758,9 +764,71 @@ server_listen(uint16 port) {
 }
 
 void
+server_finalize() {
+  char buf[100];
+  const char* s;
+  char** v;
+  size_t n;
+  buffer w;
+
+  fd_t in = open_trunc("input.txt");
+  fd_t out = open_trunc("output.txt");
+
+  strlist_foreach(&output_files, s, n) {
+    struct stat st;
+    size_t filesize;
+    time_t created;
+    struct tm localt;
+    ssize_t ret;
+    fd_t wr = str_start(s, "in") ? in : out;
+
+    fd_t file = open_read(s);
+    if(!(fstat(file, &st) == 0 && (filesize = st.st_size)))
+      filesize = 0;
+
+    created = st.st_ctime;
+
+    buffer_init_free(&w, (buffer_op_proto*)&write, wr, alloc(1024), 1024);
+
+    buffer_puts(&w, "\n-- File '");
+    buffer_put(&w, s, n);
+    buffer_puts(&w, "' -- ");
+    localtime_r(&created, &localt);
+    buffer_put(&w, buf, strftime(buf, sizeof(buf), "%d.%m.%Y %H:%M:%S", &localt));
+    // buffer_putulong(&w, created);
+    buffer_putnlflush(&w);
+    buffer_free(&w);
+
+    ret = io_sendfile(wr, file, 0, filesize);
+
+    buffer_puts(buffer_2, "Output file: ");
+    buffer_put(buffer_2, s, n);
+
+    buffer_puts(buffer_2, " ret =");
+    buffer_putlong(buffer_2, ret);
+    buffer_putnlflush(buffer_2);
+  }
+
+  strlist_unshift(&output_files, "all.tar");
+  strlist_unshift(&output_files, "cf");
+  strlist_unshift(&output_files, "tar");
+
+  if((v = strlist_to_argv(&output_files))) {
+    int32 pid;
+    int status;
+    if((pid = fork()) > 0) {
+      execve("/bin/tar", v, NULL);
+
+      exit(127);
+    }
+
+    waitpid(pid, &status, WNOHANG);
+  }
+}
+
+void
 server_exit(int code) {
-  buffer_puts(buffer_2, "Output files: ");
-  strlist_dump(buffer_2, &output_files);
+  server_finalize();
   buffer_putnlflush(buffer_2);
   exit(code);
 }
@@ -826,7 +894,6 @@ server_loop() {
 
         remote.af == AF_INET6 ? socket_local6(sock, c->proxy.addr, &c->proxy.port, &c->proxy.scope_id)
                               : socket_local4(sock, c->proxy.addr, &c->proxy.port);
-
         io_dontwantwrite(sock);
         io_wantread(sock);
       } else if((sb = socket_find(sock))) {
