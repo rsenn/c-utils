@@ -435,6 +435,7 @@ connection_open_log(connection_t* c, const char* prefix, const char* suffix) {
   size_t i, n;
 
   n = str_copy(buf, prefix);
+  buf[n++] = '-';
 
   n += sockbuf_fmt_addr(&c->client, &buf[n], '_');
   buf[n++] = '-';
@@ -482,7 +483,7 @@ socket_send(fd_t fd, void* x, size_t n, void* ptr) {
     if(dump) {
       if(sb->dump == -1) {
         connection_t* c = connection_find(fd, fd);
-        sb->dump = connection_open_log(c, c->client.sock == fd ? "recv-" : "send-", ".txt");
+        sb->dump = connection_open_log(c, c->client.sock == fd ? "-> client" : "-> remote", ".txt");
       }
       write(sb->dump, x, n);
     }
