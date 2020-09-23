@@ -473,7 +473,6 @@ socket_find(fd_t sock) {
   return NULL;
 }
 
-
 socketbuf_t*
 socket_other(fd_t sock) {
   connection_t* c;
@@ -823,22 +822,19 @@ server_finalize() {
   time(&t);
   localtime_r(&t, &lt);
   stralloc_init(&filename);
-
   b = fileBase;
   if(b == NULL)
     b = path_basename(errmsg_argv0);
-
   if(b)
     stralloc_catm_internal(&filename, b, "-", 0);
-
+  stralloc_catb(&filename, buf, strftime(buf, sizeof(buf), "%Y%m%d-%H%M%S-", &lt));
   n = filename.len;
-   stralloc_catb(&filename, buf, strftime(buf, sizeof(buf), "-%Y%m%d-%H%M%S-", &lt));
-
+  stralloc_cats(&filename, "recv");
   stralloc_cats(&filename, ".log");
   in = open_append(stralloc_cstr(&filename));
-
   stralloc_replace(&filename, n, 4, "send", 4);
   out = open_append(stralloc_cstr(&filename));
+
   strlist_foreach(&output_files, s, n) {
     size_t filesize;
     ssize_t ret;
