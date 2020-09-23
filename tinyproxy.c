@@ -193,12 +193,22 @@ dns_query(stralloc* h) {
   return NULL;
 }
 
+void
+dns_print_result(buffer* b, dns_result_t* result) {
+  size_t i;
+  char buf[128];
+  for(i = 0; i < result->data.len; i += result->rlen) {
+    if(i > 0)
+      buffer_puts(b, ", ");
+    buffer_put(b, buf, (result->rlen == 16 ? fmt_ip6 : fmt_ip4)(buf, &result->data.s[i]));
+  }
+}
+
 dns_result_t*
 dns_lookup(stralloc* h) {
   size_t i;
   bool cached = FALSE;
-  char buf[128];
-  dns_result_t **rptr, *result;
+  dns_result_t* result;
   tai6464 now;
 
   stralloc_nul(h);
@@ -210,7 +220,7 @@ dns_lookup(stralloc* h) {
       buffer_puts(buffer_2, "Cache expired ");
       buffer_putsa(buffer_2, h);
       buffer_putnlflush(buffer_2);
-      
+
       MAP_DELETE(dns_cache, h->s, h->len + 1);
       result = NULL;
     } else {
@@ -234,15 +244,10 @@ dns_lookup(stralloc* h) {
   buffer_putsa(buffer_2, h);
   buffer_puts(buffer_2, " to [");
   buffer_putulong(buffer_2, result->data.len / result->rlen);
-
   buffer_puts(buffer_2, "] ");
-
-  for(i = 0; i < result->data.len; i += result->rlen) {
-    if(i > 0)
-      buffer_puts(buffer_2, ", ");
-    buffer_put(buffer_2, buf, (result->rlen == 16 ? fmt_ip6 : fmt_ip4)(buf, &result->data.s[i]));
-  }
+  dns_print_result(buffer_2, result);
   buffer_putnlflush(buffer_2);
+
   return result;
 }
 
