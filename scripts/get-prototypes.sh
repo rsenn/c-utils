@@ -92,6 +92,10 @@ get_prototypes() {
       -a | --pad-args* | -*args*) PAD_ARGS=true; shift ;;
       -r=* | --remove*=* | -R=*) REMOVE_NAMES=${1#*=}; shift ;;
       -r | --remove* | -R) REMOVE_NAMES=true; shift ;;
+      -s | --sort) SORT='sort -t"|" -k2 |' ; shift ;;
+      -S | --no-sort) SORT=''; shift ;;
+      -m | --main) MAIN=true; shift ;;
+      -M | --no-main) MAIN=false; shift ;;
       -c | --copy* | --xclip*) XCLIP=true; shift ;;
       -E | --ellips* | --empty*) EMPTY=true; shift ;;
       -e | --expr) EXPR="${EXPR:+$EXPR ;; }$2"; shift 2 ;;
@@ -115,16 +119,22 @@ get_prototypes() {
     adjust_length FNAME
     adjust_length ARGS
   done <<<"$CPROTO_OUT"
-
+FILTER="$SORT sed 's:|::g'"
  (TEMP=`mktemp`
   trap 'rm -f "$TEMP"' EXIT 
   [ "$PAD_ARGS" = true ] && PAD_A2="-$((FNAME_MAXLEN))"
   while read_proto; do
+    if [ "$MAIN" != true -a "$FNAME" = "main" ]; then
+      continue
+    fi
+    if [ -n "$PREV_FNAME" -a "${FNAME%%_*}" != "${PREV_FNAME%%_*}" ]; then
+      echo 
+    fi
     set -- "$TYPE" "$FNAME" "$ARGS"
     printf "%-$((TYPE_MAXLEN))s |%${PAD_A2}s|%s\n" "$1" "$2" "$(clean_args "$3");"
+    PREV_FNAME=$FNAME
   done <<<"$CPROTO_OUT" | 
-      sort -t'|' -k2 -f |
-      sed "s,|,,g" >"$TEMP"
+      eval "$FILTER" >"$TEMP"
 
   [ "$XCLIP" = true ] && xclip -selection clipboard -in <"$TEMP"
   cat "$TEMP"
