@@ -115,7 +115,7 @@ int stralloc_diffs(const stralloc* a, const char* b) __pure__;
 
 int stralloc_nul(stralloc* sa);
 
-static inline const char*
+static inline char*
 stralloc_cstr(stralloc* sa) {
   stralloc_nul(sa);
   return sa->s;

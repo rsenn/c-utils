@@ -1,3 +1,4 @@
+
 /*
  * Tiny TCP proxy server
  *
@@ -126,6 +127,7 @@ typedef struct connection_s {
 } connection_t;
 
 static slink* connections;
+
 dns_response_t* dns_query(stralloc*);
 void dns_print(buffer*, dns_response_t* result, size_t num_responses);
 dns_response_t* dns_lookup(stralloc*);
@@ -142,6 +144,7 @@ fd_t connection_open_log(connection_t*, const char* prefix, const char* suffix);
 socketbuf_t* socket_find(fd_t);
 socketbuf_t* socket_other(fd_t);
 ssize_t socket_send(fd_t, void* x, size_t n, void* ptr);
+int socket_getlocal_addr(fd_t, int af, char ip[16], uint16* port, uint32* scope_id);
 int socket_connect(socketbuf_t*);
 void socket_accept(fd_t, char addr[16], uint16 port);
 
@@ -461,23 +464,28 @@ connection_find(fd_t client, fd_t proxy) {
 fd_t
 connection_open_log(connection_t* c, const char* prefix, const char* suffix) {
   stralloc filename;
-  char *x, buf[1024]  ;
+  char *x, buf[1024];
   size_t i, n;
+  int ret;
   tai6464 now;
   stralloc_init(&filename);
   stralloc_catm_internal(&filename, prefix, "-", 0);
   stralloc_catb(&filename, buf, sockbuf_fmt_addr(&c->client, buf, '_'));
   stralloc_catc(&filename, '-');
+  if(c->proxy.af == -1) {
+    socketbuf_t* sb = &c->proxy;
+    if((ret = socket_local6(sb->sock, sb->addr, &sb->port, &sb->scope_id)) == 0)
+      sb->af = AF_INET6;
+    else if((ret = socket_local4(sb->sock, sb->addr, &sb->port)) == 0)
+      sb->af = AF_INET;
+  }
   stralloc_catb(&filename, buf, sockbuf_fmt_addr(&c->proxy, buf, '_'));
-  stralloc_catm_internal(&filename, "-", 0);
-
-  taia_now(&now);
-  stralloc_catb(&filename, buf, fmt_ulonglong(buf, now.sec.x));
+  /*  stralloc_catm_internal(&filename, "-", 0);
+    taia_now(&now);
+    stralloc_catb(&filename, buf, fmt_ulonglong(buf, now.sec.x));*/
   stralloc_cats(&filename, suffix);
-
   x = filename.s;
   n = filename.len;
-
   for(i = 0; i < n; i++) {
     if(x[i] == ':' || x[i] < ' ')
       x[i] = '+';
@@ -525,7 +533,13 @@ socket_send(fd_t fd, void* x, size_t n, void* ptr) {
   if(r == -1 && errno == EWOULDBLOCK)
     r = 0;
   return r;
-}
+} /*
+
+ int
+ socket_getlocal_addr(fd_t sock, int af, char ip[16], uint16* port, uint32* scope_id) {
+   int ret = af == AF_INET6 ? socket_local6(sock, ip, port, scope_id) : socket_local4(sock, ip, port);
+   return ret;
+ }*/
 
 /* Create client connection */
 int
@@ -622,15 +636,18 @@ sockbuf_fmt_addr(socketbuf_t* sb, char* dest, char sep) {
     byte_copy(dest, sb->host.len, sb->host.s);
     n += sb->host.len;
   } else if(sb->af != -1) {
-    n = sb->af == AF_INET6 ? fmt_ip6(dest, sb->addr) : fmt_ip4(dest, sb->addr);
+    if(sb->af == AF_INET6)
+      n = fmt_ip6(dest, sb->addr);
+    else
+      n = fmt_hexb(dest, sb->addr, 4) /*||  fmt_ip4(dest, sb->addr)*/;
 
-    if(n >= 7 && byte_equal(dest, 6, "::ffff"))
-      n = fmt_ip4(dest, &sb->addr[12]);
+    /*    if(sb->af == AF_INET6 && byte_equal(dest, 6, "::ffff"))
+          n = fmt_hexb(dest, sb->addr, 4);*/
   }
 
   dest[n++] = sep ? sep : ':';
 
-  n += fmt_ulong(&dest[n], sb->port);
+  n += fmt_xlong0(&dest[n], sb->port, 2);
   dest[n] = '\0';
   return n;
 }
@@ -1027,8 +1044,6 @@ server_loop() {
 
         c->proxy.dump = -1;
 
-        remote.af == AF_INET6 ? socket_local6(sock, c->proxy.addr, &c->proxy.port, &c->proxy.scope_id)
-                              : socket_local4(sock, c->proxy.addr, &c->proxy.port);
         io_dontwantwrite(sock);
         io_wantread(sock);
       } else if((sb = socket_find(sock))) {

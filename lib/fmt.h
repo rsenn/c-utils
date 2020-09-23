@@ -158,6 +158,9 @@ char fmt_tohex(char c);
 size_t fmt_repeat(char* dest, const char* src, int n);
 
 size_t fmt_escapecharxml(char*, unsigned int ch);
+
+size_t fmt_xlong0(char*, size_t num, int n);
+
 #ifdef __cplusplus
 }
 #endif
