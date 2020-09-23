@@ -40,6 +40,7 @@
 #include "lib/ip4.h"
 #include "lib/ip6.h"
 #include "lib/open.h"
+#include "lib/env.h"
 #include "lib/str.h"
 #include "lib/io.h"
 #include "lib/io_internal.h"
@@ -72,7 +73,7 @@
 #include <systemd/sd-daemon.h>
 #endif
 
-#define BUF_SIZE 512
+#define DEFAULT_BUF_SIZE 16384
 
 #define READ 0
 #define WRITE 1
@@ -142,7 +143,7 @@ fd_t server_sock, remote_sock;
 int64 connections_processed = 0, max_length = -1;
 char *remote_host, *cmd_in, *cmd_out;
 bool foreground = FALSE, use_syslog = FALSE, line_buffer = FALSE, dump = FALSE;
-
+static uint64 buf_size = DEFAULT_BUF_SIZE;
 static char logbuf[1024];
 static buffer log = BUFFER_INIT(write, STDOUT_FILENO, logbuf, sizeof(logbuf));
 
@@ -462,7 +463,7 @@ sockbuf_check(socketbuf_t* sb) {
 void
 sockbuf_log_data(socketbuf_t* sb, bool send, char* x, ssize_t len) {
   while(len > 0) {
-    size_t end, n;
+    size_t maxlen, pos, end, n;
     bool escape = !line_buffer;
 
     end = n = line_buffer ? byte_chrs(x, len, "\r\n", 2) : len;
@@ -473,10 +474,6 @@ sockbuf_log_data(socketbuf_t* sb, bool send, char* x, ssize_t len) {
     }
     if(!line_buffer)
       end = n;
-    /*
-
-    if(max_length > 0 && max_length < end)
-      end = max_length;*/
 
     buffer_puts(&log, send ? "Sent " : "Received ");
     if(line_buffer) {
@@ -501,13 +498,25 @@ sockbuf_log_data(socketbuf_t* sb, bool send, char* x, ssize_t len) {
         }
       }
     }
+    pos = byte_rchr(log.x, log.p, '\n');
+    if(pos == log.p)
+      pos = 0;
 
-    (escape ? buffer_put_escaped : buffer_put)(&log, x, end);
+    maxlen = max_length > 0 ? (max_length - (log.p - pos)) : -1;
 
-    if(max_length > 0 && max_length < end)
+    pos = log.p;
+
+    (escape ? buffer_put_escaped : buffer_put)(&log, x, maxlen > 0 && maxlen < end ? maxlen : end);
+
+    if(maxlen > 0 && maxlen < end)
       buffer_puts(&log, "<shortened> ...");
 
     buffer_puts(&log, "'");
+
+    if(max_length > 0) {
+      if(log.p > max_length)
+        log.p = max_length;
+    }
     buffer_putnlflush(&log);
 
     x += n;
@@ -520,9 +529,9 @@ ssize_t
 sockbuf_forward_data(socketbuf_t* source, socketbuf_t* destination) {
   ssize_t n;
   size_t written = 0;
-  char buffer[BUF_SIZE];
+  char* buffer = alloca(buf_size);
 
-  if((n = recv(source->sock, buffer, sizeof(buffer), 0)) > 0) { // read data from input socket
+  if((n = recv(source->sock, buffer, buf_size, 0)) > 0) { // read data from input socket
 
     buffer_put(&destination->buf, buffer, n); // send data to output socket
     written += n;
@@ -638,30 +647,31 @@ server_loop() {
 #endif
 
         while(sb->buf.p > 0) {
-/*
-          if(line_buffer && !buffer_is_binary(&sb->buf) && !sb->force_write) {
-            size_t num_lines, end_pos;
-            socketbuf_t* other;
-            if((num_lines = buffer_numlines(&sb->buf, &end_pos)) > 0) {
-              ssize_t r = socket_send(sb->sock, sb->buf.x, end_pos, 0);
-              if(r > 0) {
-                buffer* b = &sb->buf;
-                if(r < b->p) {
-                  byte_copyr(b->x, b->p - r, &b->x[r]);
-                  b->p -= r;
+          /*
+                    if(line_buffer && !buffer_is_binary(&sb->buf) && !sb->force_write) {
+                      size_t num_lines, end_pos;
+                      socketbuf_t* other;
+                      if((num_lines = buffer_numlines(&sb->buf, &end_pos)) > 0) {
+                        ssize_t r = socket_send(sb->sock, sb->buf.x, end_pos, 0);
+                        if(r > 0) {
+                          buffer* b = &sb->buf;
+                          if(r < b->p) {
+                            byte_copyr(b->x, b->p - r, &b->x[r]);
+                            b->p -= r;
 
-                  if(b->p) {
-                    other = socket_other(sb->sock);
-                    r = io_tryread(other->sock, &b->x[b->p], b->a - b->p);
-                    if(r > 0) {
-                      b->p += r;
-                      continue;
-                    }
-                  }
-                }
-              }
-            }
-          } else*/ {
+                            if(b->p) {
+                              other = socket_other(sb->sock);
+                              r = io_tryread(other->sock, &b->x[b->p], b->a - b->p);
+                              if(r > 0) {
+                                b->p += r;
+                                continue;
+                              }
+                            }
+                          }
+                        }
+                      }
+                    } else*/
+          {
             buffer_flush(&sb->buf);
             sb->force_write = 0;
             break;
@@ -776,6 +786,7 @@ int
 main(int argc, char* argv[]) {
   int pid;
   int c, index = 0;
+  const char* s;
   struct longopt opts[] = {{"local-port", 0, NULL, 'l'},
                            {"local-addr", 0, NULL, 'b'},
                            {"remote-port", 0, NULL, 'p'},
@@ -796,7 +807,11 @@ main(int argc, char* argv[]) {
   sockbuf_init(&server);
   sockbuf_init(&remote);
 
-  while((c = getopt_long(argc, argv, "b:l:h:p:i:O:fso:a:m:Ld", opts, &index)) != -1) {
+  if((s = env_get("COLUMNS"))) {
+    scan_longlong(s, &max_length);
+  }
+
+  while((c = getopt_long(argc, argv, "b:l:h:p:i:O:fso:a:m:LdB:", opts, &index)) != -1) {
     switch(c) {
       case 'l': scan_ushort(optarg, &server.port); break;
       case 'b': server.af = parse_addr(optarg, server.addr); break;
@@ -807,6 +822,7 @@ main(int argc, char* argv[]) {
       case 'f': foreground = TRUE; break;
       case 's': use_syslog = TRUE; break;
       case 'm': scan_longlong(optarg, &max_length); break;
+      case 'B': scan_ulonglong(optarg, &buf_size); break;
       case 'L': line_buffer = TRUE; break;
       case 'd': dump = TRUE; break;
       case 'a': log.fd = open_append(optarg); break;

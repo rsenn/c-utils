@@ -1804,6 +1804,7 @@ add_program(
   tai)
 add_program(
   tinyproxy
+  env
   ndelay
   buffer
   stralloc
