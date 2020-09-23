@@ -1802,7 +1802,7 @@ add_program(
   buffer
   taia
   tai)
-add_program(tinyproxy wait range dns taia tai hmap env ndelay buffer strarray array strlist stralloc errmsg sig socket fmt scan io uint32)
+add_program(tinyproxy path wait range dns taia tai hmap env ndelay buffer strarray array strlist stralloc errmsg sig socket fmt scan io uint32)
 if(NOT WIN32)
   add_program(tcpproxy http io errmsg buffer open)
 endif(NOT WIN32)

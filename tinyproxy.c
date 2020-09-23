@@ -125,46 +125,44 @@ typedef struct connection_s {
 } connection_t;
 
 static slink* connections;
-void            dump_strarray(buffer*, const strarray* a);
+void dump_strarray(buffer*, const strarray* a);
 
 dns_response_t* dns_query(stralloc*);
-void            dns_print(buffer*, dns_response_t* result, size_t num_responses);
+void dns_print(buffer*, dns_response_t* result, size_t num_responses);
 dns_response_t* dns_lookup(stralloc*);
 
-size_t          dump_fds(array*);
-void            dump_io(void);
+size_t dump_fds(array*);
+void dump_io(void);
 
-connection_t*   connection_new(fd_t, char addr[16], uint16 port);
-void            connection_delete(connection_t*);
-connection_t*   connection_find(fd_t, fd_t proxy);
-fd_t            connection_open_log(connection_t*, const char* prefix, const char* suffix);
+connection_t* connection_new(fd_t, char addr[16], uint16 port);
+void connection_delete(connection_t*);
+connection_t* connection_find(fd_t, fd_t proxy);
+fd_t connection_open_log(connection_t*, const char* prefix, const char* suffix);
 
-socketbuf_t*    socket_find(fd_t);
-socketbuf_t*    socket_other(fd_t);
-ssize_t         socket_send(fd_t, void* x, size_t n, void* ptr);
-int             socket_connect(socketbuf_t*);
-void            socket_accept(fd_t, char addr[16], uint16 port);
+socketbuf_t* socket_find(fd_t);
+socketbuf_t* socket_other(fd_t);
+ssize_t socket_send(fd_t, void* x, size_t n, void* ptr);
+int socket_connect(socketbuf_t*);
+void socket_accept(fd_t, char addr[16], uint16 port);
 
-void            sockbuf_init(socketbuf_t*);
-size_t          sockbuf_fmt_addr(socketbuf_t*, char* dest, char sep);
-void            sockbuf_put_addr(buffer*, socketbuf_t* sb);
-void            sockbuf_close(socketbuf_t*);
-void            sockbuf_check(socketbuf_t*);
-void            sockbuf_log_data(socketbuf_t*, bool send, char* x, ssize_t len);
-ssize_t         sockbuf_forward_data(socketbuf_t*, socketbuf_t* destination);
+void sockbuf_init(socketbuf_t*);
+size_t sockbuf_fmt_addr(socketbuf_t*, char* dest, char sep);
+void sockbuf_put_addr(buffer*, socketbuf_t* sb);
+void sockbuf_close(socketbuf_t*);
+void sockbuf_check(socketbuf_t*);
+void sockbuf_log_data(socketbuf_t*, bool send, char* x, ssize_t len);
+ssize_t sockbuf_forward_data(socketbuf_t*, socketbuf_t* destination);
 
-fd_t            server_socket(void);
-fd_t            server_listen(uint16);
-void            server_finalize(void);
-void            server_exit(int);
-void            server_sigint(int);
-void            server_sigterm(int);
-void            server_loop(void);
-void            server_connection_count(void);
+fd_t server_socket(void);
+fd_t server_listen(uint16);
+void server_finalize(void);
+void server_exit(int);
+void server_sigint(int);
+void server_sigterm(int);
+void server_loop(void);
+void server_connection_count(void);
 
-void            usage(const char*);
-
-
+void usage(const char*);
 
 static socketbuf_t server, remote;
 
@@ -346,13 +344,14 @@ void
 dump_strarray(buffer* b, const strarray* a) {
   const char* s;
   size_t i, len = strarray_size(a);
-
+  buffer_puts(b, "[\n '");
   for(i = 0; i < len; i++) {
     if(i)
-      buffer_puts(b, "],\n[");
+      buffer_puts(b, "'\n '");
     buffer_puts(b, strarray_at(a, i));
   }
-};
+  buffer_puts(b, "'\n]");
+}
 
 size_t
 dump_fds(array* arr) {
@@ -776,17 +775,47 @@ server_listen(uint16 port) {
   return sock;
 }
 
+char*
+search_path(const char* path, const char* what, stralloc* out) {
+  const char* x;
+  char* ret = 0;
+  size_t pos;
+  stralloc stra;
+
+  stralloc_init(&stra);
+
+  for(x = path; *x; x += pos) {
+    pos = str_chr(x, ':');
+
+    stralloc_copyb(&stra, x, pos);
+    stralloc_catc(&stra, '/');
+    stralloc_cats(&stra, what);
+    stralloc_nul(&stra);
+
+    if(path_exists(stra.s)) {
+      stralloc_copy(out, &stra);
+      stralloc_nul(out);
+      ret = out->s;
+      break;
+    }
+
+    pos++;
+  }
+  stralloc_free(&stra);
+  return ret;
+}
+
 void
 server_finalize() {
   char buf[100];
   const char* s;
   char** v;
-  stralloc base;
+  stralloc base, cmd;
   strarray argv;
   size_t n;
   time_t t;
   buffer w;
-  int32 pid;
+  int32 pid, child_pid;
   int status;
   fd_t in, out;
   struct tm localt;
@@ -839,36 +868,29 @@ server_finalize() {
   }
   stralloc_replace(&base, 0, 6, "all", 3);
   stralloc_replace(&base, base.len - 4, 4, ".tar", 4);
-
   stralloc_nul(&base);
 
-  v = strlist_to_argv(&output_files);
-  n = strlist_count(&output_files);
-
-  strarray_from_argv(n, (const char* const *)v, &argv);
-
+  strarray_from_argv(strlist_count(&output_files), (const char* const*)strlist_to_argv(&output_files), &argv);
   strarray_unshiftm(&argv, "tar", "cf", base.s, 0);
-
   buffer_puts(buffer_2, "Exec: ");
-
   dump_strarray(buffer_2, &argv);
   buffer_putnlflush(buffer_2);
 
-  if((pid = fork()) > 0) {
-    execve("/bin/tar", strarray_to_argv(&argv), NULL);
+  stralloc_init(&cmd);
+  s = search_path(env_get("PATH"), "tar", &cmd);
 
+  if((child_pid = fork()) == 0) {
+
+    execve(s, strarray_to_argv(&argv), NULL);
     exit(127);
   }
-
-  if((pid = wait_nointr(&status)) != -1) {
-    /*if(WEXITSTATUS(status) == 0) */ {
-
-      buffer_puts(buffer_2, "tar (");
-      buffer_putlong(buffer_2, pid);
-      buffer_puts(buffer_2, ") exit code = ");
-      buffer_putlong(buffer_2, WEXITSTATUS(status));
-      buffer_putnlflush(buffer_2);
-    }
+  pid = waitpid(child_pid, &status, 0);
+  if(pid != -1) {
+    buffer_puts(buffer_2, "tar (");
+    buffer_putlong(buffer_2, pid);
+    buffer_puts(buffer_2, ") exit code = ");
+    buffer_putlong(buffer_2, WEXITSTATUS(status));
+    buffer_putnlflush(buffer_2);
   }
 
   stralloc_free(&base);
