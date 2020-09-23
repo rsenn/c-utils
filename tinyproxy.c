@@ -883,9 +883,9 @@ server_finalize() {
   strarray_unshift(&argv, s);
   if((child_pid = fork()) == 0) {
 
-    char* const* env = (char* const*)environ;
-
-    dup2(STDERR_FILENO, STDOUT_FILENO);
+    char* env[] = {0};
+    // dup2(STDERR_FILENO, STDOUT_FILENO);
+    //dup2(2, 1);
     execve(s, strarray_to_argv(&argv), env);
     exit(127);
   }
