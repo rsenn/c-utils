@@ -851,7 +851,7 @@ server_finalize() {
     buffer_putlong(buffer_2, ret);
     buffer_putnlflush(buffer_2);
   }
-  stralloc_copys(&filename,fileBase);
+  stralloc_copys(&filename, fileBase);
   stralloc_catb(&filename, buf, strftime(buf, sizeof(buf), "-%Y%m%d_-_%H_%M_%S", &lt));
   stralloc_cats(&filename, ".tar");
 
@@ -1187,7 +1187,7 @@ main(int argc, char* argv[]) {
                            {"basename", 0, NULL, 'n'},
                            {0}};
 
-fileBase = path_basename(argv[0]);
+  fileBase = path_basename(argv[0]);
   errmsg_iam(argv[0]);
 
   MAP_NEW(dns_cache);
