@@ -434,6 +434,9 @@ connection_open_log(connection_t* c, const char* prefix, const char* suffix) {
   int ret;
   tai6464 now;
   stralloc_init(&filename);
+   if(fileBase) 
+    stralloc_catm_internal(&filename, fileBase, "-", 0);
+if(prefix)
   stralloc_catm_internal(&filename, prefix, "-", 0);
   stralloc_catb(&filename, buf, sockbuf_fmt_addr(&c->client, buf, '_'));
   stralloc_catc(&filename, '-');
@@ -490,7 +493,7 @@ socket_send(fd_t fd, void* x, size_t n, void* ptr) {
     if(dump) {
       if(sb->dump == -1) {
         connection_t* c = connection_find(fd, fd);
-        sb->dump = connection_open_log(c, c->client.sock == fd ? "input" : "output", ".txt");
+        sb->dump = connection_open_log(c, c->client.sock == fd ? "recv" : "send", ".txt");
       }
       write(sb->dump, x, n);
     }
