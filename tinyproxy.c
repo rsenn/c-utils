@@ -839,7 +839,14 @@ server_finalize() {
       exit(127);
     }
 
-    waitpid(pid, &status, WNOHANG);
+    if(waitpid(pid, &status, WNOHANG) != -1) {
+      if(WEXITSTATUS(status) == 0) {
+
+        buffer_puts(buffer_2, "tar exit code = ");
+        buffer_putlong(buffer_2, WEXITSTATUS(status));
+        buffer_putnlflush(buffer_2);
+      }
+    }
   }
   stralloc_free(&base);
 }
