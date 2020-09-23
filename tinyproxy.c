@@ -106,10 +106,10 @@ typedef struct socketbuf_s {
   fd_t sock;
   buffer buf;
   stralloc host;
+  int af;
   char addr[16];
   uint16 port;
   uint32 scope_id;
-  int af;
   fd_t dump;
   int force_write : 1;
 } socketbuf_t;
