@@ -851,7 +851,7 @@ server_finalize() {
     buffer_putnlflush(buffer_2);
   }
   stralloc_copys(&filename, path_basename(errmsg_argv0));
-  stralloc_catb(&filename, buf, strftime(buf, sizeof(buf), "-%Y%m%d-%H%M%S", &lt));
+  stralloc_catb(&filename, buf, strftime(buf, sizeof(buf), "-%Y%m%d_-_%H_%M_%S", &lt));
   stralloc_cats(&filename, ".tar");
 
   if(stat((s = stralloc_cstr(&filename)), &st) != -1)
