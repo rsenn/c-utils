@@ -817,37 +817,23 @@ server_finalize() {
   strlist_unshift(&syspath, "/opt/diet/bin-x86_64");
   time(&t);
   localtime_r(&t, &lt);
-
-
-    stralloc_init(&filename);
-
-stralloc_cats(&filename, "input");
+  stralloc_init(&filename);
+  stralloc_cats(&filename, "input");
   stralloc_cats(&filename, ".txt");
 
-
-/*  stralloc_catb(&filename, buf, strftime(buf, sizeof(buf), "%d%m%Y-%H%M%S", &lt):
-  stralloc_inserts(&filename, "input-", 0);*/
-
+  //stralloc_catb(&filename, buf, strftime(buf, sizeof(buf), "-%d%m%Y-%H%M%S", &lt));
   in = open_append(stralloc_cstr(&filename));
-
-
   stralloc_replace(&filename, 0, 5, "output", 6);
-
   out = open_append(stralloc_cstr(&filename));
-
   strlist_foreach(&output_files, s, n) {
     size_t filesize;
     ssize_t ret;
     fd_t wr = str_start(s, "in") ? in : out;
-
     fd_t file = open_read(s);
     if(!(fstat(file, &st) == 0 && (filesize = st.st_size)))
       filesize = 0;
-
     t = st.st_ctime;
-
     buffer_init_free(&w, (buffer_op_proto*)&write, wr, alloc(1024), 1024);
-
     buffer_puts(&w, "\n-- File '");
     buffer_put(&w, s, n);
     buffer_puts(&w, "' -- ");
@@ -857,36 +843,27 @@ stralloc_cats(&filename, "input");
     buffer_putnlflush(&w);
 
     buffer_free(&w);
-
     ret = io_sendfile(wr, file, 0, filesize);
-
     buffer_puts(buffer_2, "Output file: ");
     buffer_put(buffer_2, s, n);
-
     buffer_puts(buffer_2, " ret =");
     buffer_putlong(buffer_2, ret);
     buffer_putnlflush(buffer_2);
   }
-
   stralloc_replace(&filename, 0, 6, "all", 3);
   stralloc_replace(&filename, filename.len - 4, 4, ".tar", 4);
-
   if(stat((s = stralloc_cstr(&filename)), &st) != -1)
     unlink(s);
-
   stralloc_init(&cmd);
-
   s = NULL;
   for(i = 0; programs[i]; i++) {
     if((s = search_path(stralloc_cstr(&syspath.sa), programs[i], &cmd)))
       break;
   }
-
   server_tar_files(s, &filename, &output_files);
-
   stralloc_free(&filename);
-
-  strlist_foreach_s(&output_files, s) { unlink(s); }
+  strlist_foreach_s(&output_files, s) {
+    unlink(s); }
 }
 
 void
