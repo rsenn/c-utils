@@ -190,7 +190,7 @@ dns_query(stralloc* h) {
   size_t reclen = 0;
   stralloc_init(&dns);
   if(dns_ip4(&dns, h) == -1) {
-    errmsg_warnsys("ERROR: resolving ", stralloc_cstr(h),  ": ", NULL);
+    errmsg_warnsys("ERROR: resolving ", stralloc_cstr(h), ": ", NULL);
     return NULL;
   }
   if(dns.len >= 4)
@@ -461,23 +461,28 @@ connection_find(fd_t client, fd_t proxy) {
 fd_t
 connection_open_log(connection_t* c, const char* prefix, const char* suffix) {
   stralloc filename;
-  char buf[1024] = {0};
-  size_t i;
+  char *x, buf[1024];
+  size_t i, n;
   tai6464 now;
   stralloc_init(&filename);
   stralloc_catm_internal(&filename, prefix, "-", 0);
-  stralloc_catb(&filename, buf, sockbuf_fmt_addr(&c->client, buf, "_"));
+  stralloc_catb(&filename, buf, sockbuf_fmt_addr(&c->client, buf, '_'));
   stralloc_catc(&filename, '-');
-  stralloc_catb(&filename, buf, sockbuf_fmt_addr(&c->proxy, buf, "_"));
-  stralloc_catm_internal(&filename, suffix, "-", 0);
+  stralloc_catb(&filename, buf, sockbuf_fmt_addr(&c->proxy, buf, '_'));
+  stralloc_catm_internal(&filename, "-", 0);
+
   taia_now(&now);
   stralloc_catb(&filename, buf, fmt_ulonglong(buf, now.sec.x));
-  for(i = 0; i < filename.len; i++) {
-    char c = filename.s[i];
-    if(c == ':') //!((c >= 'A' && c <= 'F') || (c >= 'a' && c <= 'f') || (c >= '0' && c <= '9') || c == '.'))
-      filename.s[i] = '+';
+  stralloc_cats(&filename, suffix);
+
+  x = filename.s;
+  n = filename.len;
+
+  for(i = 0; i < n; i++) {
+    if(x[i] == ':' || x[i] < ' ')
+      x[i] = '+';
   }
-  strlist_push_unique_sa(&output_files, &filename);
+  strlist_pushb_unique(&output_files, filename.s, filename.len);
 
   return open_trunc(stralloc_cstr(&filename));
 }
