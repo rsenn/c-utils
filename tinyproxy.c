@@ -126,11 +126,11 @@ typedef struct connection_s {
 } connection_t;
 
 static slink* connections;
-
 dns_response_t* dns_query(stralloc*);
 void dns_print(buffer*, dns_response_t* result, size_t num_responses);
 dns_response_t* dns_lookup(stralloc*);
 
+void dump_strarray(buffer*, const strarray* a, const char* quote, const char* sep);
 size_t dump_fds(array*);
 void dump_io(void);
 
@@ -152,6 +152,11 @@ void sockbuf_close(socketbuf_t*);
 void sockbuf_check(socketbuf_t*);
 void sockbuf_log_data(socketbuf_t*, bool send, char* x, ssize_t len);
 ssize_t sockbuf_forward_data(socketbuf_t*, socketbuf_t* destination);
+
+fd_t server_socket(void);
+fd_t server_listen(uint16);
+
+char* search_path(const char*, const char* what, stralloc* out);
 
 void server_finalize(void);
 void server_tar_files(const char*, const stralloc* archive, strlist* files);
