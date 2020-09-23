@@ -112,7 +112,7 @@ typedef struct dns_result_s {
   range data;
   size_t rlen;
   tai6464 t;
-} dns_result_t;
+} dns_response_t;
 
 typedef struct connection_s {
   slink link;
@@ -167,9 +167,9 @@ static tai6464 ttl;
 
 #define BACKLOG 20 // how many pending connections queue will hold
 
-dns_result_t*
+dns_response_t*
 dns_query(stralloc* h) {
-  dns_result_t* res;
+  dns_response_t* res;
   stralloc dns;
   size_t reclen = 0;
   stralloc_init(&dns);
@@ -184,7 +184,7 @@ dns_query(stralloc* h) {
   if(reclen && dns.len >= reclen) {
     char buf[100];
     size_t i;
-    res = alloc_zero(sizeof(dns_result_t));
+    res = alloc_zero(sizeof(dns_response_t));
     res->rlen = reclen;
     taia_now(&res->t);
     res->data.start = dns.s;
@@ -199,7 +199,7 @@ dns_query(stralloc* h) {
 }
 
 void
-dns_print_result(buffer* b, dns_result_t* result) {
+dns_print(buffer* b, dns_response_t* result, size_t num_responses) {
   char* x;
   size_t i = 0;
   char buf[128];
@@ -207,14 +207,15 @@ dns_print_result(buffer* b, dns_result_t* result) {
     if(i++ > 0)
       buffer_puts(b, ", ");
     buffer_put(b, buf, (result->data.elem_size == 16 ? fmt_ip6 : fmt_ip4)(buf, x));
-  }
+  if(i == num_responses) break;
+}
 }
 
-dns_result_t*
+dns_response_t*
 dns_lookup(stralloc* h) {
   size_t i;
   bool cached = FALSE;
-  dns_result_t* result;
+  dns_response_t* result;
   tai6464 now, expire, diff;
 
   stralloc_nul(h);
@@ -242,10 +243,10 @@ dns_lookup(stralloc* h) {
 
   if(result == NULL && (result = dns_query(h))) {
     if(result->data.end > result->data.start && result->data.elem_size) {
-      MAP_INSERT(dns_cache, h->s, h->len + 1, result, sizeof(dns_result_t));
+      MAP_INSERT(dns_cache, h->s, h->len + 1, result, sizeof(dns_response_t));
       alloc_free(result);
 
-      result = (dns_result_t*)MAP_GET(dns_cache, h->s, h->len + 1);
+      result = (dns_response_t*)MAP_GET(dns_cache, h->s, h->len + 1);
     }
   }
 
@@ -262,7 +263,7 @@ dns_lookup(stralloc* h) {
   buffer_puts(buffer_2, " to [");
   buffer_putulong(buffer_2, range_size(&result->data));
   buffer_puts(buffer_2, "] ");
-  dns_print_result(buffer_2, result);
+  dns_print(buffer_2, result, cached ? 1 : range_size(&result->data));
   buffer_putnlflush(buffer_2);
 
   return result;
@@ -492,7 +493,7 @@ socket_connect(socketbuf_t* sb) {
 
   if(af == -1) {
 
-    dns_result_t* res;
+    dns_response_t* res;
 
     if((res = dns_lookup(&sb->host)) == NULL) {
       stralloc_nul(&sb->host);
