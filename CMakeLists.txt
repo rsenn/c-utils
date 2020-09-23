@@ -1729,7 +1729,7 @@ add_program(
   buffer
   taia
   tai)
-# add_program(tinyproxy http io)
+  add_program(tinyproxy ndelay errmsg sig socket fmt scan buffer io)
 if(NOT WIN32)
   add_program(tcpproxy http io errmsg buffer open)
 endif(NOT WIN32)

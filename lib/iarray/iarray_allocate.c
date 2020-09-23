@@ -1,37 +1,16 @@
-#ifdef __POCC__
-#define NOWINBASEINTERLOCK 1
-#define _NTOS_ 1
-long __stdcall InterlockedCompareExchange(long volatile*, long, long);
-void* __stdcall InterlockedCompareExchangePointer(void* volatile*, void*, void*);
-#endif
-
-#include "../windoze.h"
-#include "../byte.h"
-#include "../iarray.h"
-
-#if defined(__STDC__)
-#if __STDC_VERSION__ >= 201112L && !defined(__EMSCRIPTEN__) && !defined(__ANDROID__)
-#include <stdatomic.h>
-#endif
-#endif
-
+#include "likely.h"
+#include <stdlib.h>
+#ifndef __MINGW32__
 #include <fcntl.h>
-
-#include "../cas.h"
-
-#if !WINDOWS_NATIVE
-#include <unistd.h>
 #include <sys/mman.h>
+#include <unistd.h>
 #endif
-
-#ifndef MAP_ANONYMOUS
-#define MAP_ANONYMOUS 0x20
-
-#endif
+#include "../iarray.h"
+#include "../cas.h"
 
 static iarray_page*
 new_page(size_t pagesize) {
-#if WINDOWS_NATIVE
+#ifdef __MINGW32__
   void* x = malloc(pagesize);
   if(x == 0)
     return 0;
@@ -40,7 +19,6 @@ new_page(size_t pagesize) {
   if(x == MAP_FAILED)
     return 0;
 #endif
-  byte_zero(x, pagesize);
   return (iarray_page*)x;
 }
 
@@ -64,7 +42,7 @@ iarray_allocate(iarray* ia, size_t pos) {
       if(!newpage)
         if(!(newpage = new_page(ia->bytesperpage)))
           return 0;
-      if(__CAS_PTR((long*)p, (long)0, (long)newpage) == 0)
+      if(__CAS(p, 0, newpage) == 0)
         newpage = 0;
     }
     if(index + ia->elemperpage > pos)
@@ -72,16 +50,17 @@ iarray_allocate(iarray* ia, size_t pos) {
     p = &(*p)->next;
   }
   if(newpage)
-#if WINDOWS_NATIVE
+#ifdef __MINGW32__
     free(newpage);
 #else
     munmap(newpage, ia->bytesperpage);
 #endif
   {
     size_t l;
+    size_t newlen = realpos + 1;
     do {
-      l = (size_t)__CAS((long*)&ia->len, prevlen, realpos);
-    } while(l < realpos);
+      l = __CAS(&ia->len, prevlen, newlen);
+    } while(l < newlen);
   }
-  return &iarray_data(*p)[(pos - index) * ia->elemsize];
+  return &(*p)->data[(pos - index) * ia->elemsize];
 }

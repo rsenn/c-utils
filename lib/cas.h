@@ -5,23 +5,47 @@
 #if defined(__dietlibc__)
 
 #include <sys/atomic.h>
+#elif defined(__STDC__) && (__STDC_VERSION__ >= 201112L) && !defined(__EMSCRIPTEN__)
 
-#elif(defined(__i386__) || defined(__x86_64__)) && defined(__TINYC__)
-int __inline__ __sync_val_compare_and_swap(volatile unsigned int* ptr, int cmp, int new) {
-  unsigned char ret;
-  __asm__ __volatile__(" lock\n"
-                       " cmpxchgl %2,%1\n"
-                       " sete %0\n"
-                       : "=q"(ret), "=m"(*ptr)
-                       : "r"(new), "m"(*ptr), "a"(cmp)
-                       : "memory");
-  return (int)ret;
-}
+#include <stdatomic.h>
+
+static __inline long
+__atomic_compare_and_swap(long* ptr, long oldval, long newval) {
+#if defined(__ORANGEC__)
+  atomic_compare_swap(ptr, &oldval, newval);
+#else
+  __atomic_compare_exchange_n(ptr, &oldval, newval, 0, __ATOMIC_SEQ_CST, __ATOMIC_SEQ_CST);
 #endif
+  return oldval;
+}
 
+#define __CAS __atomic_compare_and_swap
+#define __CAS_PTR __atomic_compare_and_swap
+
+#elif(defined(__i386__) || defined(__x86_64__)) && (defined(__TINYC__) || defined(__GNUC__))
+#ifdef __GNUC__
+#warning GNUC
+#undef __sync_val_compare_and_swap
+//#define __sync_val_compare_and_swap  __CAS
+#else
+#endif
 #undef __CAS
-
-#ifdef __arm__
+#define __CAS __compare_and_swap
+static __inline__ long
+__compare_and_swap(long* ptr, long cmp, long new) {
+  unsigned long prev;
+  __asm__ volatile("lock;"
+#if defined(__x86_64__)
+                   "cmpxchgq %1, %2;"
+#else
+                   "cmpxchgl %1, %2;"
+#endif
+                   : "=a"(prev)
+                   : "q"(new), "m"(*ptr), "a"(cmp)
+                   : "memory");
+  return prev;
+}
+#elif defined(__arm__)
 typedef long(_cmpxchg_t)(long oldval, long newval, long* ptr);
 static inline long
 __CAS(long* ptr, long oldval, long newval) {
@@ -39,22 +63,6 @@ __CAS(long* ptr, long oldval, long newval) {
       return oldval;
   }
 }
-#elif defined(__STDC__) && (__STDC_VERSION__ >= 201112L) && !defined(__EMSCRIPTEN__)
-
-#include <stdatomic.h>
-
-static __inline long
-__atomic_compare_and_swap(long* ptr, long oldval, long newval) {
-#if defined(__ORANGEC__)
-  atomic_compare_swap(ptr, &oldval, newval);
-#else
-  __atomic_compare_exchange_n(ptr, &oldval, newval, 0, __ATOMIC_SEQ_CST, __ATOMIC_SEQ_CST);
-#endif
-  return oldval;
-}
-
-#define __CAS __atomic_compare_and_swap
-#define __CAS_PTR __atomic_compare_and_swap
 
 #elif WINDOWS_NATIVE || (defined(__CYGWIN__) && __MSYS__ == 1) || defined(__POCC__)
 #include <windows.h>

@@ -1,12 +1,19 @@
 #include <stdlib.h>
+#ifndef __MINGW32__
+#include <sys/mman.h>
+#endif
+#include <unistd.h>
 #include "../iarray.h"
-#include "../mmap.h"
 
 static void
 freechain(iarray_page* p, size_t pagesize) {
   while(p) {
     iarray_page* n = p->next;
-    mmap_unmap((char*)p, pagesize);
+#ifdef __MINGW32__
+    free(p);
+#else
+    munmap(p, pagesize);
+#endif
     p = n;
   }
 }

@@ -33,8 +33,25 @@
 #ifndef _GNU_SOURCE
 #define _GNU_SOURCE
 #endif
-//#include <arpa/inet.h>
+#include "lib/uint16.h"
+#include "lib/uint64.h"
+#include "lib/buffer.h"
+#include "lib/ip4.h"
+#include "lib/ip6.h"
+#include "lib/io.h"
+#include "lib/io_internal.h"
+#include "lib/socket.h"
+#include "lib/ndelay.h"
+#include "lib/fmt.h"
+#include "lib/scan.h"
+#include "lib/getopt.h"
+#include "lib/errmsg.h"
+#include "lib/sig.h"
+#include "lib/array.h"
+#include "lib/slist.h"
+#include <arpa/inet.h>
 //#include <netdb.h>
+#include <netinet/in.h>
 //#include <resolv.h>
 //#include <sys/socket.h>
 #include <errno.h>
@@ -45,9 +62,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-//#include <syslog.h>
-//#include <unistd.h>
-//#include <sys/wait.h>
+#include <syslog.h>
+#include <unistd.h>
+#include <sys/wait.h>
 #ifdef USE_SYSTEMD
 #include <systemd/sd-daemon.h>
 #endif
@@ -69,52 +86,246 @@
 #define SYNTAX_ERROR -10
 
 typedef enum { TRUE = 1, FALSE = 0 } bool;
+typedef struct socketbuf_s {
+
+  fd_t sock;
+  buffer buf;
+
+} socketbuf_t;
+
+typedef struct connection_s {
+  slink link;
+  socketbuf_t client;
+  socketbuf_t proxy;
+  int connected;
+} connection_t;
+
+static slink* connections;
 
 int check_ipversion(char* address);
 int create_socket(int port);
 void sigchld_handler(int signal);
 void sigterm_handler(int signal);
 void server_loop();
-void handle_client(int client_sock, struct sockaddr_storage client_addr);
-void forward_data(int source_sock, int destination_sock);
-void forward_data_ext(int source_sock, int destination_sock, char* cmd);
+
+void handle_client(fd_t client_sock, char client_addr[16]);
+ssize_t forward_data(socketbuf_t* source, socketbuf_t* destination);
+void forward_data_ext(fd_t source_sock, fd_t destination_sock, char* cmd);
 int create_connection();
 int parse_options(int argc, char* argv[]);
 void plog(int priority, const char* format, ...);
 
-int server_sock, client_sock, remote_sock, remote_port = 0;
-int connections_processed = 0;
-char *bind_addr, *remote_host, *cmd_in, *cmd_out;
-bool foreground = FALSE;
+fd_t server_sock, remote_sock;
+uint16 remote_port = 0, local_port = 0;
+uint64 connections_processed = 0;
+char *remote_host, *cmd_in, *cmd_out;
+static char bind_addr[16], connect_addr[16];
+static int bind_af = AF_INET, connect_af = AF_INET;
+bool foreground = TRUE;
 bool use_syslog = FALSE;
 
 #define BACKLOG 20 // how many pending connections queue will hold
 
+size_t
+get_fds(array* arr) {
+  slink* sl;
+  array_catb(arr, &server_sock, sizeof(fd_t));
+  for(sl = connections; sl; sl = sl->next) {
+    connection_t* c = (connection_t*)sl;
+    array_catb(arr, &c->client.sock, sizeof(fd_t));
+    array_catb(arr, &c->proxy.sock, sizeof(fd_t));
+  }
+  return array_length(arr, sizeof(fd_t));
+}
+
+void
+iarray_dump(iarray* ia) {
+  size_t i, n = iarray_length(ia);
+
+  for(i = 0; i <= n; i++) {
+
+    buffer_puts(buffer_2, "Entry #");
+    buffer_putulong(buffer_2, i);
+    buffer_puts(buffer_2, ": ");
+    buffer_putptr(buffer_2, iarray_get(ia, i));
+    buffer_putnlflush(buffer_2);
+  }
+}
+void
+io_dump() {
+  array fds;
+  size_t num_fds, i;
+  array_init(&fds);
+
+  num_fds = get_fds(&fds);
+  for(i = 0; i < num_fds; i++) {
+    fd_t fd = *(fd_t*)array_get(&fds, sizeof(fd_t), i);
+
+    io_entry* e = io_getentry(fd);
+
+    buffer_puts(buffer_2, "FD #");
+    buffer_putulong(buffer_2, fd);
+    if(fd == server_sock)
+      buffer_puts(buffer_2, " (listen) ");
+
+    buffer_puts(buffer_2, " want:");
+    if(e->wantread)
+      buffer_puts(buffer_2, " read");
+    if(e->wantwrite)
+      buffer_puts(buffer_2, " write");
+    buffer_puts(buffer_2, " can:");
+    if(e->canread)
+      buffer_puts(buffer_2, " read");
+    if(e->canwrite)
+      buffer_puts(buffer_2, " write");
+    buffer_putnlflush(buffer_2);
+  }
+}
+
+ssize_t
+socket_send(fd_t fd, void* x, size_t n, void* ptr) {
+  //  if(io_fd_canwrite(fd))
+  return send(fd, x, n, 0);
+  return -1;
+}
+
+connection_t*
+alloc_connection(fd_t client_sock) {
+  connection_t* c = alloc_zero(sizeof(connection_t));
+  slink_insert(&connections, &c->link);
+  c->client.sock = client_sock;
+
+  return c;
+}
+
+void
+delete_connection(connection_t* c) {
+
+  connection_t** ptr;
+  slink_foreach(&connections, ptr) {
+    if(*ptr == c)
+      break;
+  }
+  *ptr = (connection_t*)c->link.next;
+  alloc_free(c);
+}
+
+connection_t*
+find_client(fd_t sock) {
+  slink* sl;
+  for(sl = connections; sl; sl = sl->next) {
+    connection_t* c = (connection_t*)sl;
+    if(c->client.sock == sock)
+      return c;
+  }
+  return NULL;
+}
+connection_t*
+find_proxy(fd_t sock) {
+  slink* sl;
+  for(sl = connections; sl; sl = sl->next) {
+    connection_t* c = (connection_t*)sl;
+    if(c->proxy.sock == sock)
+      return c;
+  }
+  return NULL;
+}
+connection_t*
+find_connection(fd_t sock) {
+  connection_t* c;
+  if((c = find_client(sock)) == NULL)
+    c = find_proxy(sock);
+  return c;
+}
+socketbuf_t*
+find_socket(fd_t sock) {
+  connection_t* c;
+  if((c = find_client(sock)))
+    return &c->client;
+  if((c = find_proxy(sock)))
+    return &c->proxy;
+  return NULL;
+}
+
+void
+check_socket(socketbuf_t* sb) {
+  int wantwrite = (sb->buf.n < sb->buf.p);
+  if(wantwrite) {
+    buffer_puts(buffer_2, "Socket want write ");
+    buffer_putulong(buffer_2, sb->buf.fd);
+    buffer_putnlflush(buffer_2);
+    io_wantwrite(sb->buf.fd);
+  }
+
+  else
+    io_dontwantwrite(sb->buf.fd);
+
+  io_wantread(sb->buf.fd);
+}
+
+int
+parse_addr(const char* opt, char ip[16]) {
+  size_t n;
+
+  if((n = scan_ip6(opt, ip)))
+    return AF_INET6;
+  if((n = scan_ip4(opt, ip)))
+    return AF_INET;
+  return -1;
+}
+
+int
+bind_socket() {
+  int s = bind_af == AF_INET ? socket_tcp4() : socket_tcp6();
+  if(s == -1)
+    return s;
+
+  io_fd(s);
+
+  if(bind_af == AF_INET6) {
+    if(socket_bind6_reuse(s, bind_addr, local_port, 0) == 0)
+      return s;
+  } else {
+    if(socket_bind4_reuse(s, bind_addr, local_port) == 0)
+      return s;
+  }
+
+  io_close(s);
+  return -1;
+}
+
 /* Program start */
 int
 main(int argc, char* argv[]) {
-  int local_port;
   int pid;
-
-  bind_addr = NULL;
+  errmsg_iam(argv[0]);
 
   local_port = parse_options(argc, argv);
 
   if(local_port < 0) {
-    printf("Syntax: %s [-b bind_address] -l local_port -h remote_host -p remote_port [-i \"input parser\"] [-o "
-           "\"output parser\"] [-f (stay in foreground)] [-s (use syslog)]\n",
-           argv[0]);
+    buffer_putm_internal(buffer_2,
+                         "Syntax: ",
+                         argv[0],
+                         " [-b bind_address] -l local_port -h remote_host -p remote_port [-i \"input parser\"] [-o "
+                         "\"output parser\"] [-f (stay in foreground)] [-s (use syslog)]\n",
+                         0);
+    buffer_flush(buffer_2);
     return local_port;
   }
   /*
     if(use_syslog)
       openlog("proxy", LOG_PID, LOG_DAEMON);
       */
+  sig_block(SIGPIPE);
 
   if((server_sock = create_socket(local_port)) < 0) { // start server
-    ////plog(LOG_CRIT, "Cannot run server: %m");
+    errmsg_warn("Cannot run server:", 0);
+
     return server_sock;
   }
+
+  io_fd(server_sock);
+  io_wantread(server_sock);
 
   // signal(SIGCHLD, sigchld_handler); // prevent ended children from becoming zombies
   // signal(SIGTERM, sigterm_handler); // handle KILL signal
@@ -143,13 +354,22 @@ main(int argc, char* argv[]) {
 /* Parse command line options */
 int
 parse_options(int argc, char* argv[]) {
-  int c, local_port = 0;
+  int c, index = 0;
+  struct longopt opts[] = {{"local-port", 0, NULL, 'l'},
+                           {"local-addr", 0, NULL, 'b'},
+                           {"remote-port", 0, NULL, 'p'},
+                           {"remote-addr", 0, NULL, 'h'},
+                           {"input-parser", 0, NULL, 'i'},
+                           {"output-parser", 0, NULL, 'o'},
+                           {"foreground", 0, NULL, 'f'},
+                           {"syslog", 0, NULL, 's'},
+                           {0}};
 
-  while((c = getopt(argc, argv, "b:l:h:p:i:o:fs")) != -1) {
+  while((c = getopt_long(argc, argv, "b:l:h:p:i:o:fs", opts, &index)) != -1) {
     switch(c) {
       case 'l': local_port = atoi(optarg); break;
-      case 'b': bind_addr = optarg; break;
-      case 'h': remote_host = optarg; break;
+      case 'b': bind_af = parse_addr(optarg, bind_addr); break;
+      case 'h': connect_af = parse_addr(optarg, connect_addr); break;
       case 'p': remote_port = atoi(optarg); break;
       case 'i': cmd_in = optarg; break;
       case 'o': cmd_out = optarg; break;
@@ -158,7 +378,7 @@ parse_options(int argc, char* argv[]) {
     }
   }
 
-  if(local_port && remote_host && remote_port) {
+  if(local_port && connect_af != -1 && remote_port) {
     return local_port;
   } else {
     return SYNTAX_ERROR;
@@ -186,74 +406,43 @@ int
 create_socket(int port) {
   int server_sock, optval = 1;
   int validfamily = 0;
-  struct addrinfo hints, *res = NULL;
   char portstr[12];
 
-  memset(&hints, 0x00, sizeof(hints));
   server_sock = -1;
 
-  hints.ai_flags = AI_NUMERICSERV; /* numeric service number, not resolve */
-  hints.ai_family = AF_UNSPEC;
-  hints.ai_socktype = SOCK_STREAM;
+  portstr[fmt_ulong(portstr, port)] = '\0';
 
-  /* prepare to bind on specified numeric address */
-  if(bind_addr != NULL) {
-    /* check for numeric IP to specify IPv6 or IPv4 socket */
-    if((validfamily = check_ipversion(bind_addr))) {
-      hints.ai_family = validfamily;
-      hints.ai_flags |= AI_NUMERICHOST; /* bind_addr is a valid numeric ip, skip resolve */
-    }
-  } else {
-    /* if bind_address is NULL, will bind to IPv6 wildcard */
-    hints.ai_family = AF_INET6;   /* Specify IPv6 socket, also allow ipv4 clients */
-    hints.ai_flags |= AI_PASSIVE; /* Wildcard address */
-  }
-
-  sprintf(portstr, "%d", port);
-
-  /* Check if specified socket is valid. Try to resolve address if bind_address is a hostname */
-  if(getaddrinfo(bind_addr, portstr, &hints, &res) != 0) {
-    return CLIENT_RESOLVE_ERROR;
-  }
-
-  if((server_sock = socket(res->ai_family, res->ai_socktype, res->ai_protocol)) < 0) {
-    return SERVER_SOCKET_ERROR;
-  }
-
-  if(setsockopt(server_sock, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(optval)) < 0) {
-    return SERVER_SETSOCKOPT_ERROR;
-  }
-
-  if(bind(server_sock, res->ai_addr, res->ai_addrlen) == -1) {
-    close(server_sock);
+  if((server_sock = bind_socket()) == -1)
     return SERVER_BIND_ERROR;
-  }
 
-  if(listen(server_sock, BACKLOG) < 0) {
+  if(socket_listen(server_sock, BACKLOG) < 0)
     return SERVER_LISTEN_ERROR;
-  }
-
-  if(res != NULL)
-    freeaddrinfo(res);
 
   return server_sock;
 }
 
 /* Send log message to stderr or syslog */
 void
-    // plog(int priority, const char* format, ...) {
-    va_list ap;
+plog(int priority, const char* format, ...) {
+  va_list ap;
 
-va_start(ap, format);
+  va_start(ap, format);
 
-if(use_syslog)
-  vsyslog(priority, format, ap);
-else {
-  vfprintf(stderr, format, ap);
-  fprintf(stderr, "\n");
-}
+  if(use_syslog)
+    vsyslog(priority, format, ap);
+  else {
+    int r = 0;
+    const char* s;
+    while((s = va_arg(ap, const char*)))
+      if(buffer_puts(buffer_2, s) == -1) {
+        r = -1;
+        break;
+      }
+    va_end(ap);
+    buffer_putnlflush(buffer_2);
+  }
 
-va_end(ap);
+  va_end(ap);
 }
 
 /* Update systemd status with connection count */
@@ -274,16 +463,21 @@ sigchld_handler(int signal) {
 /* Handle term signal */
 void
 sigterm_handler(int signal) {
-  close(client_sock);
-  close(server_sock);
+  io_close(server_sock);
   exit(0);
 }
 
 /* Main server loop */
 void
 server_loop() {
-  struct sockaddr_storage client_addr;
+  char client_addr[16];
+  uint16 client_port;
   socklen_t addrlen = sizeof(client_addr);
+  int sock;
+  connection_t* c;
+  socketbuf_t* sb;
+  uint64 iteration = 0;
+  ssize_t n;
 
 #ifdef USE_SYSTEMD
   sd_notify(0, "READY=1\n");
@@ -291,92 +485,170 @@ server_loop() {
 
   while(TRUE) {
     update_connection_count();
-    client_sock = accept(server_sock, (struct sockaddr*)&client_addr, &addrlen);
-    if(fork() == 0) { // handle client connection in a separate process
-      close(server_sock);
-      handle_client(client_sock, client_addr);
-      exit(0);
-    } else
-      connections_processed++;
 
-    close(client_sock);
+    slist_foreach(connections, c) {
+      check_socket(&c->client);
+      check_socket(&c->proxy);
+    }
+    io_waituntil2(1000 * 100);
+    buffer_puts(buffer_2, "Loop #");
+    buffer_putulonglong(buffer_2, iteration++);
+    buffer_putnlflush(buffer_2);
+
+    io_dump();
+    //  iarray_dump(io_getfds());
+
+    while((sock = io_canwrite()) != -1) {
+      if((c = find_proxy(sock)) && !c->connected) {
+        buffer_puts(buffer_2, "Socket #");
+        buffer_putulong(buffer_2, sock);
+        buffer_puts(buffer_2, " connected!");
+        buffer_putnlflush(buffer_2);
+        c->connected = 1;
+        io_dontwantwrite(sock);
+        io_wantread(sock);
+      } else if((sb = find_socket(sock))) {
+        buffer_puts(buffer_2, "Flush socket ");
+        buffer_putulong(buffer_2, sock);
+        buffer_puts(buffer_2, " p=");
+        buffer_putulong(buffer_2, sb->buf.p);
+        buffer_puts(buffer_2, " n=");
+        buffer_putulong(buffer_2, sb->buf.n);
+
+        buffer_putnlflush(buffer_2);
+
+        if(sb->buf.n < sb->buf.p) {
+          buffer_flush(&sb->buf);
+          io_dontwantwrite(sock);
+        }
+      } else {
+        buffer_puts(buffer_2, "No such fd: ");
+        buffer_putulong(buffer_2, sock);
+        buffer_putnlflush(buffer_2);
+
+        exit(2);
+      }
+    }
+
+    while((sock = io_canread()) != -1) {
+      if(sock == server_sock) {
+        fd_t client_sock;
+
+        client_sock = connect_af ? socket_accept4(server_sock, client_addr, &client_port)
+                                 : socket_accept6(server_sock, client_addr, &client_port, 0);
+
+        if(client_sock == -1) {
+          errmsg_warn("Accept error: ", strerror(errno), 0);
+          exit(2);
+        }
+
+        handle_client(client_sock, client_addr);
+
+        connections_processed++;
+
+      } else {
+
+        if((c = find_client(sock))) {
+
+          n = forward_data(&c->client, &c->proxy);
+          if(n > 0) {
+            buffer_puts(buffer_2, "Client socket #");
+            buffer_putulong(buffer_2, sock);
+            buffer_puts(buffer_2, " forwarded ");
+            buffer_putlonglong(buffer_2, n);
+            buffer_puts(buffer_2, " bytes");
+            buffer_putnlflush(buffer_2);
+          }
+        } else if((c = find_proxy(sock))) {
+
+          n = forward_data(&c->proxy, &c->client);
+
+          if(n > 0) {
+            buffer_puts(buffer_2, "Proxy socket #");
+            buffer_putulong(buffer_2, sock);
+            buffer_puts(buffer_2, " forwarded ");
+            buffer_putlonglong(buffer_2, n);
+            buffer_puts(buffer_2, " bytes");
+            buffer_putnlflush(buffer_2);
+          }
+        } else {
+          buffer_puts(buffer_2, "No such fd: ");
+          buffer_putulong(buffer_2, sock);
+          buffer_putnlflush(buffer_2);
+
+          exit(2);
+        }
+
+        if(n == 0 || (n < 0 && errno != EAGAIN && errno != EWOULDBLOCK)) {
+          connection_t* c = find_connection(sock);
+          buffer_puts(buffer_2, "Connection #");
+          buffer_putulong(buffer_2, c->client.sock);
+          buffer_puts(buffer_2, " <-> ");
+          buffer_putulong(buffer_2, c->proxy.sock);
+          if(n == 0) {
+            buffer_puts(buffer_2, " closed");
+          } else {
+            buffer_puts(buffer_2, " error: ");
+            buffer_puts(buffer_2, strerror(errno));
+            buffer_puts(buffer_2, " errno: ");
+            buffer_putlong(buffer_2, errno);
+          }
+          buffer_putnlflush(buffer_2);
+
+          buffer_close(&c->client.buf);
+          buffer_close(&c->proxy.buf);
+
+          io_close(c->client.sock);
+          io_close(c->proxy.sock);
+
+          delete_connection(c);
+        }
+      }
+    }
   }
 }
-
 /* Handle client connection */
 void
-handle_client(int client_sock, struct sockaddr_storage client_addr) {
+handle_client(fd_t client_sock, char client_addr[16]) {
 
-  if((remote_sock = create_connection()) < 0) {
+  connection_t* c = alloc_connection(client_sock);
+
+  if((c->proxy.sock = create_connection()) < 0)
     // plog(LOG_ERR, "Cannot connect to host: %m");
     goto cleanup;
-  }
 
-  if(fork() == 0) { // a process forwarding data from client to remote socket
-    if(cmd_out) {
-      forward_data_ext(client_sock, remote_sock, cmd_out);
-    } else {
-      forward_data(client_sock, remote_sock);
-    }
-    exit(0);
-  }
+  buffer_init_free(&c->client.buf, socket_send, c->client.sock, alloc_zero(1024), 1024);
+  buffer_init_free(&c->proxy.buf, socket_send, c->proxy.sock, alloc_zero(1024), 1024);
 
-  if(fork() == 0) { // a process forwarding data from remote socket to client
-    if(cmd_in) {
-      forward_data_ext(remote_sock, client_sock, cmd_in);
-    } else {
-      forward_data(remote_sock, client_sock);
-    }
-    exit(0);
-  }
+  io_fd(c->client.sock);
+  io_nonblock(c->client.sock);
+  io_wantread(c->client.sock);
+
+  return;
 
 cleanup:
-  close(remote_sock);
-  close(client_sock);
+  io_close(c->proxy.sock);
+  io_close(c->client.sock);
 }
 
 /* Forward data between sockets */
-void
-forward_data(int source_sock, int destination_sock) {
+ssize_t
+forward_data(socketbuf_t* source, socketbuf_t* destination) {
   ssize_t n;
+  size_t written = 0;
+  char buffer[1024];
 
-#ifdef USE_SPLICE
-  int buf_pipe[2];
-
-  if(pipe(buf_pipe) == -1) {
-    // plog(LOG_ERR, "pipe: %m");
-    exit(CREATE_PIPE_ERROR);
+  while((n = recv(source->sock, buffer, sizeof(buffer), 0)) > 0) { // read data from input socket
+    buffer_put(&destination->buf, buffer, n);                      // send data to output socket
+    written += n;
   }
+  if(written > 0) {
+    io_wantwrite(destination->buf.fd);
 
-  while((n = splice(source_sock, NULL, buf_pipe[WRITE], NULL, SSIZE_MAX, SPLICE_F_NONBLOCK | SPLICE_F_MOVE)) > 0) {
-    if(splice(buf_pipe[READ], NULL, destination_sock, NULL, SSIZE_MAX, SPLICE_F_MOVE) < 0) {
-      // plog(LOG_ERR, "write: %m");
-      exit(BROKEN_PIPE_ERROR);
-    }
+    if(n == -1 && errno == EAGAIN)
+      return written;
   }
-#else
-  char buffer[BUF_SIZE];
-
-  while((n = recv(source_sock, buffer, BUF_SIZE, 0)) > 0) { // read data from input socket
-    send(destination_sock, buffer, n, 0);                   // send data to output socket
-  }
-#endif
-
-  if(n < 0) {
-    // plog(LOG_ERR, "read: %m");
-    exit(BROKEN_PIPE_ERROR);
-  }
-
-#ifdef USE_SPLICE
-  close(buf_pipe[0]);
-  close(buf_pipe[1]);
-#endif
-
-  shutdown(destination_sock, SHUT_RDWR); // stop other processes from using socket
-  close(destination_sock);
-
-  shutdown(source_sock, SHUT_RDWR); // stop other processes from using socket
-  close(source_sock);
+  return n <= 0 ? n : written;
 }
 
 /* Forward data between sockets through external command */
@@ -385,10 +657,9 @@ forward_data_ext(int source_sock, int destination_sock, char* cmd) {
   char buffer[BUF_SIZE];
   int n, i, pipe_in[2], pipe_out[2];
 
-  if(pipe(pipe_in) < 0 || pipe(pipe_out) < 0) { // create command input and output pipes
+  if(pipe(pipe_in) < 0 || pipe(pipe_out) < 0) // create command input and output pipes
     // plog(LOG_CRIT, "Cannot create pipe: %m");
     exit(CREATE_PIPE_ERROR);
-  }
 
   if(fork() == 0) {
     dup2(pipe_in[READ], STDIN_FILENO);    // replace standard input with input part of pipe_in
@@ -411,52 +682,57 @@ forward_data_ext(int source_sock, int destination_sock, char* cmd) {
       }
     }
 
-    shutdown(destination_sock, SHUT_RDWR); // stop other processes from using socket
-    close(destination_sock);
+    io_close(destination_sock);
 
-    shutdown(source_sock, SHUT_RDWR); // stop other processes from using socket
-    close(source_sock);
+    io_close(source_sock);
   }
 }
 
 /* Create client connection */
 int
 create_connection() {
-  struct addrinfo hints, *res = NULL;
+  struct addrinfo /*hints, */* res = NULL;
   int sock;
   int validfamily = 0;
+  int ret;
   char portstr[12];
+  /*
+    memset(&hints, 0x00, sizeof(hints));
 
-  memset(&hints, 0x00, sizeof(hints));
+    hints.ai_flags = AI_NUMERICSERV;  // numeric service number, not resolve
+    hints.ai_family = AF_UNSPEC;
+    hints.ai_socktype = SOCK_STREAM;*/
 
-  hints.ai_flags = AI_NUMERICSERV; /* numeric service number, not resolve */
-  hints.ai_family = AF_UNSPEC;
-  hints.ai_socktype = SOCK_STREAM;
-
-  sprintf(portstr, "%d", remote_port);
+  portstr[fmt_ulong(portstr, remote_port)] = '\0';
 
   /* check for numeric IP to specify IPv6 or IPv4 socket */
-  if((validfamily = check_ipversion(remote_host))) {
-    hints.ai_family = validfamily;
-    hints.ai_flags |= AI_NUMERICHOST; /* remote_host is a valid numeric ip, skip resolve */
-  }
+  /* if((validfamily = check_ipversion(remote_host))) {
+     hints.ai_family = validfamily;
+     hints.ai_flags |= AI_NUMERICHOST; // remote_host is a valid numeric ip, skip resolve
+   }*/
 
   /* Check if specified host is valid. Try to resolve address if remote_host is a hostname */
-  if(getaddrinfo(remote_host, portstr, &hints, &res) != 0) {
-    errno = EFAULT;
-    return CLIENT_RESOLVE_ERROR;
-  }
+  /*  if(getaddrinfo(remote_host, portstr, &hints, &res) != 0) {
+      errno = EFAULT;
+      return CLIENT_RESOLVE_ERROR;
+    }*/
 
-  if((sock = socket(res->ai_family, res->ai_socktype, res->ai_protocol)) < 0) {
+  if((sock = connect_af == AF_INET6 ? socket_tcp6() : socket_tcp4()) < 0)
     return CLIENT_SOCKET_ERROR;
-  }
 
-  if(connect(sock, res->ai_addr, res->ai_addrlen) < 0) {
+  io_fd(sock);
+  io_nonblock(sock);
+
+  if(connect_af == AF_INET6)
+    ret = socket_connect6(sock, connect_addr, remote_port, 0);
+  else
+    ret = socket_connect4(sock, connect_addr, remote_port);
+
+  if(ret < 0 && errno != EINPROGRESS)
     return CLIENT_CONNECT_ERROR;
-  }
 
-  if(res != NULL)
-    freeaddrinfo(res);
+  io_wantwrite(sock);
+  // io_wantread(sock);
 
   return sock;
 }

@@ -14,11 +14,17 @@ strlist_count(const strlist* sl) {
   while(n > 0) {
     p = byte_chr(x, n, sl->sep);
 
+    if(p == n)
+      break;
+
     if(p < n) {
       char c = x[p];
 
-      if(c == sl->sep)
+      if(c == sl->sep) {
         p++;
+        if(p == n)
+          break;
+      }
     }
 
     l++;

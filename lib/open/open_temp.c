@@ -41,17 +41,16 @@ open_temp(const char** pt) {
   unsigned int random;
   char* tmp;
   const char* tmpl = pt && *pt ? *pt : default_tmpl;
+  size_t pos;
 
-  if(!tmpl) {
+  if(!tmpl)
     tmpl = (const char*)default_tmpl;
-    tmp = (char*)&tmpl[5];
-  } else {
-    /* str_copy(default_tmpl, tmpl);
-     tmpl = default_tmpl;*/
-    tmp = (char*)tmpl + str_chr(tmpl, 'X');
-    if(tmp < tmpl)
-      goto error;
-  }
+
+  pos = str_chr(tmpl, 'X');
+
+  tmp = (char*)tmpl + pos;
+  if(tmp < tmpl)
+    goto error;
 
   if(pt && tmpl)
     *pt = tmpl;
@@ -63,6 +62,9 @@ open_temp(const char** pt) {
       return -1;
     }
   }
+
+  *pt = str_dup(tmpl);
+  tmp = *pt + pos;
 
   for(;;) {
     random = uint32_random();

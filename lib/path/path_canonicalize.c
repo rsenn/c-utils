@@ -151,10 +151,9 @@ start:
     path += n;
     /* now stat() the thing to verify it */
     byte_zero(&st, sizeof(st));
-    if(stat_fn(sa->s, &st) == -1)
-      return 0;
+
     /* is it a symbolic link? */
-    if(is_link(sa->s)) {
+    if(stat_fn(sa->s, &st) != -1 && is_link(sa->s)) {
       ret++;
       /* read the link, return if failed and then nul-terminate the buffer */
       if((ssize_t)(n = readlink(sa->s, buf, PATH_MAX)) == (ssize_t)-1)

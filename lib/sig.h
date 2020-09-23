@@ -78,7 +78,7 @@ extern struct sigaction const sig_ign;
 int sig_action(int, struct sigaction const*, struct sigaction*);
 void sig_blocknone(void);
 void sig_blockset(const sigset_t* set);
-void sig_block(void);
+void sig_block(int sig);
 int sig_catch(int sig, sighandler_t_ref f);
 int sigfpe(void);
 char const* sig_name(int sig);

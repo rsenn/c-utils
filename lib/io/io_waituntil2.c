@@ -124,10 +124,12 @@ io_waituntil2(int64 milliseconds) {
     fd_t maxfd = -1;
     io_entry* e;
     struct timeval tv;
+    iarray* fds = io_getfds();
+    size_t nfds = iarray_length(fds);
     FD_ZERO(&rfds);
     FD_ZERO(&wfds);
-    for(i = r = 0; (size_t)i <= iarray_length((iarray*)io_getfds()); ++i) {
-      if(!(e = (io_entry*)iarray_get((iarray*)io_getfds(), i)))
+    for(i = r = 0; i <= nfds; ++i) {
+      if(!(e = (io_entry*)iarray_get(fds, i)))
         continue;
       e->canread = e->canwrite = 0;
       if(e->wantread || e->wantwrite) {
