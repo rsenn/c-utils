@@ -140,7 +140,7 @@ void connection_delete(connection_t*);
 connection_t* connection_find(fd_t, fd_t proxy);
 fd_t connection_open_log(connection_t*, const char* prefix, const char* suffix);
 
-static const char* const programs[] = {"gtar", "star", "bsdtar", "tar", 0};
+static const char* const programs[] = {"bsdtar", "star", "gtar",  "tar", 0};
 
 socketbuf_t* socket_find(fd_t);
 socketbuf_t* socket_other(fd_t);
@@ -894,7 +894,9 @@ server_finalize() {
   //  strarray_unshift(&argv, base.s);
   if(str_equal(b, "star"))
     strarray_unshift(&argv, "artype=pax");
-  strarray_unshiftm(&argv, b, "-c", "-vv", "-n", 0);
+  else if(str_equal(b, "bsdtar"))
+    strarray_unshiftm(&argv, "-f", base.s, 0);
+  strarray_unshiftm(&argv, b, "-c", "-vv",  0);
 
   out = open_trunc(base.s);
 
