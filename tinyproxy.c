@@ -461,7 +461,7 @@ connection_find(fd_t client, fd_t proxy) {
 fd_t
 connection_open_log(connection_t* c, const char* prefix, const char* suffix) {
   stralloc filename;
-  char *x, buf[1024];
+  char *x, buf[1024]  ;
   size_t i, n;
   tai6464 now;
   stralloc_init(&filename);
