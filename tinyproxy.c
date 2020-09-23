@@ -321,7 +321,7 @@ dump_strarray(buffer* b, const strarray* a, const char* quote, const char* sep) 
   if(!sep)
     sep = ", ";
 
-n  = len > 10 ? 10 : len;
+  n = len > 10 ? 10 : len;
 
   for(i = 0; i < n; i++) {
     if(i)
@@ -333,9 +333,9 @@ n  = len > 10 ? 10 : len;
     else
       buffer_puts(b, s);
   }
-  if(n < len) 
+  if(n < len)
     buffer_putm_internal(b, s, " ", "...", " ", "more", 0);
-  
+
   buffer_flush(b);
 }
 
@@ -525,56 +525,42 @@ socket_connect(socketbuf_t* sb) {
   addr = sb->addr;
 
   if(af == -1) {
-
     dns_response_t* res;
-
     if((res = dns_lookup(&sb->host)) == NULL) {
-
       errmsg_warnsys("ERROR: resolving ", stralloc_cstr(&sb->host), ": ", NULL);
       return -1;
     } else {
       if(range_size(&res->data) > 0)
         addr = res->data.start;
     }
-
     if(addr != sb->addr)
       byte_copy(sb->addr, res->data.elem_size, addr);
-
     af = res->data.elem_size == 16 ? AF_INET6 : AF_INET;
   }
 
   if((sock = af == AF_INET6 ? socket_tcp6() : socket_tcp4()) < 0)
     return CLIENT_SOCKET_ERROR;
-
   io_fd(sock);
   io_nonblock(sock);
-
   if(af == AF_INET6)
     ret = socket_connect6(sock, addr, sb->port, 0);
   else
     ret = socket_connect4(sock, addr, sb->port);
-
   if(ret < 0 && errno != EINPROGRESS)
     return CLIENT_CONNECT_ERROR;
-
   io_wantwrite(sock);
-
   return sock;
 }
 
 /* Handle client connection */
 void
 socket_accept(fd_t sock, char addr[16], uint16 port) {
-
   connection_t* c = connection_new(sock, addr, port);
-
   if((c->proxy.sock = socket_connect(&remote)) < 0)
     goto cleanup;
-
   byte_copy(c->proxy.addr, remote.af == AF_INET6 ? 16 : 4, remote.addr);
   c->proxy.port = remote.port;
   c->proxy.af = remote.af;
-
   buffer_init_free(&c->client.buf, socket_send, c->client.sock, alloc_zero(1024), 1024);
   buffer_init_free(&c->proxy.buf, socket_send, c->proxy.sock, alloc_zero(1024), 1024);
 
@@ -614,13 +600,10 @@ sockbuf_fmt_addr(socketbuf_t* sb, char* dest, char sep) {
       n = fmt_ip6(dest, sb->addr);
     else
       n = fmt_hexb(dest, sb->addr, 4) /*||  fmt_ip4(dest, sb->addr)*/;
-
     if(sb->af == AF_INET6 && byte_equal(dest, 6, "::ffff"))
       n = fmt_hexb(dest, sb->addr, 4);
   }
-
   dest[n++] = sep ? sep : ':';
-
   n += fmt_xlong0(&dest[n], sb->port, 4);
   dest[n] = '\0';
   return n;
@@ -629,7 +612,6 @@ sockbuf_fmt_addr(socketbuf_t* sb, char* dest, char sep) {
 void
 sockbuf_put_addr(buffer* b, socketbuf_t* sb) {
   char buf[100 + sb->host.len];
-
   buffer_put(b, buf, sockbuf_fmt_addr(sb, buf, ':'));
 }
 
