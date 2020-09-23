@@ -108,30 +108,32 @@ typedef struct connection_s {
 
 static slink* connections;
 
-size_t dump_fds(array*);
-void dump_io(void);
+size_t        dump_fds(array*);
+void          dump_io(void);
 
 connection_t* connection_new(fd_t, char addr[16], uint16 port);
-void connection_delete(connection_t*);
-connection_t* connection_find(fd_t client, fd_t proxy);
+void          connection_delete(connection_t*);
+connection_t* connection_find(fd_t, fd_t proxy);
 
-socketbuf_t* socket_find(fd_t);
-ssize_t socket_send(fd_t, void* x, size_t n, void* ptr);
-int socket_connect(void);
-void socket_accept(fd_t, char addr[16], uint16 port);
+socketbuf_t*  socket_find(fd_t);
+ssize_t       socket_send(fd_t, void* x, size_t n, void* ptr);
+int           socket_connect(void);
+void          socket_accept(fd_t, char addr[16], uint16 port);
 
-size_t sockbuf_fmt_addr(socketbuf_t*, char* dest, char sep);
-fd_t sockbuf_open_log(socketbuf_t*, const char* prefix, const char* suffix);
-void sockbuf_put_addr(buffer*, socketbuf_t* sb);
-void sockbuf_close(socketbuf_t*);
-void sockbuf_check(socketbuf_t*);
-void sockbuf_log_data(socketbuf_t*, bool send, char* x, ssize_t len);
-ssize_t sockbuf_forward_data(socketbuf_t*, socketbuf_t* destination);
+void          sockbuf_init(socketbuf_t*);
+size_t        sockbuf_fmt_addr(socketbuf_t*, char* dest, char sep);
+fd_t          sockbuf_open_log(socketbuf_t*, const char* prefix, const char* suffix);
+void          sockbuf_put_addr(buffer*, socketbuf_t* sb);
+void          sockbuf_close(socketbuf_t*);
+void          sockbuf_check(socketbuf_t*);
+void          sockbuf_log_data(socketbuf_t*, bool send, char* x, ssize_t len);
+ssize_t       sockbuf_forward_data(socketbuf_t*, socketbuf_t* destination);
 
-fd_t server_socket(void);
-fd_t server_listen(uint16);
-void server_loop(void);
-void server_connection_count(void);
+fd_t          server_socket(void);
+fd_t          server_listen(uint16);
+void          server_loop(void);
+void          server_connection_count(void);
+
 
 fd_t server_sock, remote_sock;
 uint16 connect_port = 0, local_port = 0;
@@ -235,13 +237,16 @@ dump_io() {
 connection_t*
 connection_new(fd_t sock, char addr[16], uint16 port) {
   connection_t* c = alloc_zero(sizeof(connection_t));
+  sockbuf_init(&c->client);
+  sockbuf_init(&c->proxy);
+
   slink_insert(&connections, &c->link);
+
   c->client.sock = sock;
   c->client.port = port;
   c->client.af = bind_af;
-  byte_copy(c->client.addr, 16, addr);
+  byte_copy(c->client.addr, bind_af == AF_INET6 ? 16 : 4, addr);
 
-  c->client.dump = -1;
   return c;
 }
 
@@ -267,6 +272,27 @@ connection_find(fd_t client, fd_t proxy) {
   return NULL;
 }
 
+fd_t
+connection_open_log(connection_t* c, const char* prefix, const char* suffix) {
+  char buf[1024] = {0};
+   size_t i, n;
+
+  n = str_copy(buf, prefix);
+
+  n += sockbuf_fmt_addr(&c->client, &buf[n], '_');
+  buf[n++] = '-';
+  n += sockbuf_fmt_addr(&c->proxy, &buf[n], '_');
+  n += str_copy(&buf[n], suffix);
+
+  for(i = 0; i < n; i++) {
+    char c = buf[i];
+    if(c == ':') //!((c >= 'A' && c <= 'F') || (c >= 'a' && c <= 'f') || (c >= '0' && c <= '9') || c == '.'))
+      buf[i] = '+';
+  }
+  buf[i] = '\0';
+return open_trunc(buf); 
+}
+
 socketbuf_t*
 socket_find(fd_t sock) {
   connection_t* c;
@@ -287,7 +313,7 @@ socket_send(fd_t fd, void* x, size_t n, void* ptr) {
     if(dump) {
       if(sb->dump == -1) {
         connection_t* c = connection_find(fd, fd);
-        sb->dump = sockbuf_open_log(&c->client, c->client.sock == fd ? "recv-" : "send-", ".txt");
+        sb->dump = connection_open_log(c, c->client.sock == fd ? "recv-" : "send-", ".txt");
       }
       write(sb->dump, x, n);
     }
@@ -353,35 +379,27 @@ cleanup:
   io_close(c->client.sock);
 }
 
+void
+sockbuf_init(socketbuf_t* sb ) {
+  byte_zero(sb, sizeof(socketbuf_t));
+  sb->sock = -1;
+  sb->dump = -1;
+  sb->af = AF_INET;
+}
+
 size_t
 sockbuf_fmt_addr(socketbuf_t* sb, char* dest, char sep) {
   size_t n = sb->af == AF_INET6 ? fmt_ip6(dest, sb->addr) : fmt_ip4(dest, sb->addr);
+
+
+  if(n >= 7 && byte_equal(dest, 6,"::ffff")) 
+  n = fmt_ip4(dest, &sb->addr[12]);
+  
   dest[n++] = sep ? sep : ':';
 
   n += fmt_ulong(&dest[n], sb->port);
+  dest[n] = '\0';
   return n;
-}
-
-fd_t
-sockbuf_open_log(socketbuf_t* sb, const char* prefix, const char* suffix) {
-  char buf[256] = {0};
-  fd_t fd;
-  size_t i, n;
-
-  n = str_copy(buf, prefix);
-
-  n += sockbuf_fmt_addr(sb, &buf[n], '-');
-  n += str_copy(&buf[n], suffix);
-
-  for(i = 0; i < n; i++) {
-    char c = buf[i];
-    if(c == ':') //!((c >= 'A' && c <= 'F') || (c >= 'a' && c <= 'f') || (c >= '0' && c <= '9') || c == '.'))
-      buf[i] = '_';
-  }
-  buf[i] = '\0';
-  fd = open_trunc(buf);
-
-  return fd;
 }
 
 void
@@ -480,7 +498,7 @@ sockbuf_forward_data(socketbuf_t* source, socketbuf_t* destination) {
 
 fd_t
 server_socket() {
-  fd_t s = bind_af == AF_INET ? socket_tcp4() : socket_tcp6();
+  fd_t s = bind_af == AF_INET6 ?socket_tcp6() : socket_tcp4();
   if(s == -1)
     return s;
 
