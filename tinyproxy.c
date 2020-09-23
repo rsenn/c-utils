@@ -902,6 +902,10 @@ server_finalize() {
     if(str_equal(b, "star"))
       strarray_unshift(&argv, "artype=pax");
 
+    else if(str_start(b, "g"))
+      strarray_unshiftm(&argv, "-H", "pax", 0);
+    else if(str_start(b, "bsd"))
+      strarray_unshiftm(&argv, "--format", "pax", 0);
     out = STDOUT_FILENO;
     if(str_equal(b, "bsdtar"))
       strarray_unshiftm(&argv, "-f", base.s, 0);
