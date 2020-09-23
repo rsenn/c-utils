@@ -126,7 +126,6 @@ typedef struct connection_s {
 } connection_t;
 
 static slink* connections;
-void dump_strarray(buffer*, const strarray* a);
 
 dns_response_t* dns_query(stralloc*);
 void dns_print(buffer*, dns_response_t* result, size_t num_responses);
@@ -342,16 +341,25 @@ buffer_is_binary(buffer* b) {
 }
 
 void
-dump_strarray(buffer* b, const strarray* a) {
+dump_strarray(buffer* b, const strarray* a, const char* quote, const char* sep) {
+  static char quote_chars[] = {' ', '"', '\'', '`', '(', ')', 0};
   const char* s;
   size_t i, len = strarray_size(a);
-  buffer_puts(b, "[\n '");
+  if(!quote)
+    quote = "\"";
+  if(!sep)
+    sep = ", ";
   for(i = 0; i < len; i++) {
     if(i)
-      buffer_puts(b, "'\n '");
-    buffer_puts(b, strarray_at(a, i));
+      buffer_putm_internal(b, sep, 0);
+    s = strarray_at(a, i);
+    if(s[str_chrs(s, quote_chars, str_len(quote_chars))])
+
+      buffer_putm_internal(b, quote, s, quote, 0);
+    else
+      buffer_puts(b, s);
   }
-  buffer_puts(b, "'\n]");
+  buffer_flush(b);
 }
 
 size_t
@@ -813,7 +821,7 @@ server_finalize() {
   const char *s, *b;
   char** v;
   stralloc base, cmd;
-  static const char* const programs[] = {"gtar", "bsdtar", "star", "tar", "7z", "7za", 0};
+  static const char* const programs[] = {"bsdtar", "star", "gtar", "tar", "7z", "7za", 0};
   strlist syspath;
 
   strarray argv;
@@ -905,11 +913,11 @@ server_finalize() {
       strarray_unshiftm(&argv, "-f", base.s, 0);
     else
       out = open_trunc(base.s);
-    strarray_unshiftm(&argv, "-c", "-vv", 0);
+    strarray_unshiftm(&argv, "-c", 0);
   }
   strarray_unshift(&argv, b);
   buffer_puts(buffer_1, "Exec: ");
-  dump_strarray(buffer_1, &argv);
+  dump_strarray(buffer_1, &argv, "'", " ");
   buffer_putnlflush(buffer_1);
   v = strarray_to_argv(&argv);
   if((child_pid = vfork()) == 0) {
@@ -930,7 +938,7 @@ server_finalize() {
   if(pid != -1) {
 
     buffer_puts(buffer_2, s);
-    dump_strarray(buffer_2, &argv);
+    dump_strarray(buffer_2, &argv, "'", " ");
     buffer_puts(buffer_2, " (");
     buffer_putlong(buffer_2, pid);
     buffer_puts(buffer_2, ") exit code = ");
@@ -939,6 +947,10 @@ server_finalize() {
   }
 
   stralloc_free(&base);
+  
+    strlist_foreach_s(&output_files, s) {
+      unlink(s);
+    }
 }
 
 void
