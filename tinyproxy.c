@@ -35,9 +35,11 @@
 #endif
 #include "lib/uint16.h"
 #include "lib/uint64.h"
+#include "lib/stralloc.h"
 #include "lib/buffer.h"
 #include "lib/ip4.h"
 #include "lib/ip6.h"
+#include "lib/open.h"
 #include "lib/io.h"
 #include "lib/io_internal.h"
 #include "lib/socket.h"
@@ -114,6 +116,7 @@ void forward_data_ext(fd_t source_sock, fd_t destination_sock, char* cmd);
 int create_connection();
 int parse_options(int argc, char* argv[]);
 void plog(int priority, const char* format, ...);
+void log_data(fd_t sock, bool send, void* buffer, size_t len);
 
 fd_t server_sock, remote_sock;
 uint16 remote_port = 0, local_port = 0;
@@ -123,6 +126,9 @@ static char bind_addr[16], connect_addr[16];
 static int bind_af = AF_INET, connect_af = AF_INET;
 bool foreground = TRUE;
 bool use_syslog = FALSE;
+
+static char logbuf[1024];
+static buffer log = BUFFER_INIT(write, STDOUT_FILENO, logbuf, sizeof(logbuf));
 
 #define BACKLOG 20 // how many pending connections queue will hold
 
@@ -185,8 +191,15 @@ io_dump() {
 ssize_t
 socket_send(fd_t fd, void* x, size_t n, void* ptr) {
   //  if(io_fd_canwrite(fd))
-  return send(fd, x, n, 0);
-  return -1;
+  ssize_t r;
+  r = send(fd, x, n, 0);
+
+  if(r > 0)
+    log_data(fd, TRUE, x, n);
+  if(r == -1 && errno == EWOULDBLOCK)
+    r = 0;
+
+  return r;
 }
 
 connection_t*
@@ -249,18 +262,18 @@ find_socket(fd_t sock) {
 
 void
 check_socket(socketbuf_t* sb) {
-  int wantwrite = (sb->buf.n < sb->buf.p);
+  int wantwrite = sb->buf.p > 0;
+  io_entry* e = io_getentry(sb->sock);
+
   if(wantwrite) {
-    buffer_puts(buffer_2, "Socket want write ");
-    buffer_putulong(buffer_2, sb->buf.fd);
-    buffer_putnlflush(buffer_2);
-    io_wantwrite(sb->buf.fd);
+    buffer_puts(&log, "Socket want write ");
+    buffer_putulong(&log, sb->sock);
+    buffer_putnlflush(&log);
+    io_wantwrite(sb->sock);
+   } else  {
+    io_wantread(sb->sock);
   }
 
-  else
-    io_dontwantwrite(sb->buf.fd);
-
-  io_wantread(sb->buf.fd);
 }
 
 int
@@ -360,21 +373,23 @@ parse_options(int argc, char* argv[]) {
                            {"remote-port", 0, NULL, 'p'},
                            {"remote-addr", 0, NULL, 'h'},
                            {"input-parser", 0, NULL, 'i'},
-                           {"output-parser", 0, NULL, 'o'},
+                           {"output-parser", 0, NULL, 'O'},
                            {"foreground", 0, NULL, 'f'},
                            {"syslog", 0, NULL, 's'},
+                           {"logfile", 0, NULL, 'o'},
                            {0}};
 
-  while((c = getopt_long(argc, argv, "b:l:h:p:i:o:fs", opts, &index)) != -1) {
+  while((c = getopt_long(argc, argv, "b:l:h:p:i:O:fso:", opts, &index)) != -1) {
     switch(c) {
       case 'l': local_port = atoi(optarg); break;
       case 'b': bind_af = parse_addr(optarg, bind_addr); break;
       case 'h': connect_af = parse_addr(optarg, connect_addr); break;
       case 'p': remote_port = atoi(optarg); break;
       case 'i': cmd_in = optarg; break;
-      case 'o': cmd_out = optarg; break;
+      case 'O': cmd_out = optarg; break;
       case 'f': foreground = TRUE; break;
       case 's': use_syslog = TRUE; break;
+      case 'o': log.fd = open_append(optarg); break;
     }
   }
 
@@ -491,24 +506,22 @@ server_loop() {
       check_socket(&c->proxy);
     }
     io_waituntil2(1000 * 100);
-#ifdef DEBUG_OUTPUT_
+#ifdef DEBUG_OUTPUT
     buffer_puts(buffer_2, "Loop #");
     buffer_putulonglong(buffer_2, iteration++);
     buffer_putnlflush(buffer_2);
 #endif
-#ifdef DEBUG_OUTPUT_
+#ifdef DEBUG_OUTPUT
     io_dump();
 #endif
-    //  iarray_dump(io_getfds());
+      iarray_dump(io_getfds());
 
     while((sock = io_canwrite()) != -1) {
       if((c = find_proxy(sock)) && !c->connected) {
-#ifdef DEBUG_OUTPUT_
-        buffer_puts(buffer_2, "Socket #");
-        buffer_putulong(buffer_2, sock);
-        buffer_puts(buffer_2, " connected!");
-        buffer_putnlflush(buffer_2);
-#endif
+        buffer_puts(&log, "Socket #");
+        buffer_putulong(&log, sock);
+        buffer_puts(&log, " connected!");
+        buffer_putnlflush(&log);
         c->connected = 1;
         io_dontwantwrite(sock);
         io_wantread(sock);
@@ -522,7 +535,7 @@ server_loop() {
         buffer_putulong(buffer_2, sb->buf.n);
         buffer_putnlflush(buffer_2);
 #endif
-        if(sb->buf.n < sb->buf.p) {
+        if(sb->buf.p > 0) {
           buffer_flush(&sb->buf);
           io_dontwantwrite(sock);
         }
@@ -640,6 +653,18 @@ cleanup:
   io_close(c->client.sock);
 }
 
+void
+log_data(fd_t sock, bool send, void* buffer, size_t len) {
+
+  buffer_puts(&log, send ? "Sent " : "Received ");
+  buffer_putulong(&log, len);
+  buffer_puts(&log, send ? " bytes to #" : " bytes from #");
+  buffer_putlong(&log, sock);
+  buffer_puts(&log, ": '");
+  buffer_put_escaped(&log, buffer, len);
+  buffer_puts(&log, "'");
+  buffer_putnlflush(&log);
+}
 /* Forward data between sockets */
 ssize_t
 forward_data(socketbuf_t* source, socketbuf_t* destination) {
@@ -648,11 +673,15 @@ forward_data(socketbuf_t* source, socketbuf_t* destination) {
   char buffer[1024];
 
   while((n = recv(source->sock, buffer, sizeof(buffer), 0)) > 0) { // read data from input socket
-    buffer_put(&destination->buf, buffer, n);                      // send data to output socket
+
+    buffer_put(&destination->buf, buffer, n); // send data to output socket
     written += n;
+
+    log_data(source->sock, FALSE, buffer, n);
+    //   log_data(destination->sock, TRUE, buffer, n);
   }
   if(written > 0) {
-    io_wantwrite(destination->buf.fd);
+    //  io_wantwrite(destination->sock);
 
     if(n == -1 && errno == EAGAIN)
       return written;

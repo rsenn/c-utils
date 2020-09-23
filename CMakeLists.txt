@@ -496,9 +496,54 @@ endif(
   OR WIN64
   OR MSVC)
 
-if(USE_SELECT)
+set(CMAKE_REQUIRED_DEFINITIONS)
+set(CMAKE_REQUIRED_INCLUDES "poll.h")
+set(CMAKE_REQUIRED_FLAGS)
+set(CMAKE_REQUIRED_LINK_OPTIONS)
+set(CMAKE_REQUIRED_LIBRARIES)
+
+check_library_exists("" poll "" HAVE_POLL)
+# check_function_exists(poll HAVE_POLL)
+check_function_exists(select HAVE_SELECT)
+
+if(HAVE_POLL)
+  list(APPEND MUX_METHODS POLL)
+endif(HAVE_POLL)
+if(HAVE_SELECT)
+  list(APPEND MUX_METHODS SELECT)
+endif(HAVE_SELECT)
+
+if(LIBMSWSOCK)
+  list(APPEND CMAKE_REQUIRED_LIBRARIES ${LIBMSWSOCK})
+endif(LIBMSWSOCK)
+
+if(UNIX OR LINUX)
+  list(APPEND MUX_METHODS KQUEUE)
+  list(APPEND MUX_METHODS EPOLL)
+  list(APPEND MUX_METHODS SIGIO)
+endif(UNIX OR LINUX)
+
+message("Available MUX methods: ${MUX_METHODS}")
+
+if(NOT MUX)
+  set(MUX "SELECT")
+endif(NOT MUX)
+option(MUX_METHOD "I/O Multiplexer method" "${MUX}")
+
+if(MUX_METHOD STREQUAL SELECT)
   add_definitions(-DUSE_SELECT=1)
-endif(USE_SELECT)
+endif(MUX_METHOD STREQUAL SELECT)
+
+if(MUX_METHOD STREQUAL KQUEUE)
+  add_definitions(-DHAVE_KQUEUE=1)
+endif(MUX_METHOD STREQUAL KQUEUE)
+
+if(MUX_METHOD STREQUAL EPOLL)
+  add_definitions(-DHAVE_EPOLL=1)
+endif(MUX_METHOD STREQUAL EPOLL)
+if(MUX_METHOD STREQUAL SIGIO)
+  add_definitions(-DHAVE_SIGIO=1)
+endif(MUX_METHOD STREQUAL SIGIO)
 
 if(WIN32 OR MSVC)
   if(USE_WIDECHAR)
@@ -1729,7 +1774,17 @@ add_program(
   buffer
   taia
   tai)
-  add_program(tinyproxy ndelay errmsg sig socket fmt scan buffer io)
+add_program(
+  tinyproxy
+  ndelay
+  buffer
+  stralloc
+  errmsg
+  sig
+  socket
+  fmt
+  scan
+  io)
 if(NOT WIN32)
   add_program(tcpproxy http io errmsg buffer open)
 endif(NOT WIN32)

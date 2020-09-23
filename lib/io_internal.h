@@ -126,7 +126,7 @@ typedef struct ioent {
   unsigned int kernelwantread : 1; /* did we tell the kernel we want to read/write? */
   unsigned int kernelwantwrite : 1;
   unsigned int epolladded : 1;
-#if WINDOWS_NATIVE && !defined(USE_SELECT)
+#if WINDOWS_NATIVE //&& !defined(USE_SELECT)
   unsigned int readqueued : 2;
   unsigned int writequeued : 2;
   unsigned int acceptqueued : 2;
@@ -142,7 +142,7 @@ typedef struct ioent {
   uint64 mapofs;
 #if WINDOWS_NATIVE
   HANDLE /* fd, */ mh;
-#ifndef USE_SELECT
+#if 1
   OVERLAPPED or, ow, os; /* overlapped for read+accept, write+connect, sendfile */
   char inbuf[8192];
   int bytes_read, bytes_written;
