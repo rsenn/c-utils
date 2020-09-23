@@ -802,7 +802,7 @@ server_finalize() {
   char buf[100];
   struct stat st;
   const char *s, *b;
-  stralloc base, cmd;
+  stralloc filename, cmd;
   static const char* const programs[] = {"bsdtar", "star", "gtar", "tar", "7z", "7za", 0};
   strlist syspath;
 
@@ -810,23 +810,30 @@ server_finalize() {
   time_t t;
   buffer w;
   fd_t in, out;
-  struct tm localt;
-  stralloc_init(&base);
+  struct tm lt;
   strlist_init(&syspath, ':');
   stralloc_copys(&syspath.sa, env_get("PATH"));
 
   strlist_unshift(&syspath, "/opt/diet/bin-x86_64");
   time(&t);
-  localtime_r(&t, &localt);
-  stralloc_catb(&base, buf, strftime(buf, sizeof(buf), "%d%m%Y-%H%M%S", &localt));
-  stralloc_cats(&base, ".txt");
+  localtime_r(&t, &lt);
 
-  stralloc_inserts(&base, "input-", 0);
 
-  in = open_trunc(stralloc_cstr(&base));
-  stralloc_replace(&base, 0, 5, "output", 6);
+    stralloc_init(&filename);
 
-  out = open_trunc(stralloc_cstr(&base));
+stralloc_cats(&filename, "input");
+  stralloc_cats(&filename, ".txt");
+
+
+/*  stralloc_catb(&filename, buf, strftime(buf, sizeof(buf), "%d%m%Y-%H%M%S", &lt):
+  stralloc_inserts(&filename, "input-", 0);*/
+
+  in = open_append(stralloc_cstr(&filename));
+
+
+  stralloc_replace(&filename, 0, 5, "output", 6);
+
+  out = open_append(stralloc_cstr(&filename));
 
   strlist_foreach(&output_files, s, n) {
     size_t filesize;
@@ -844,8 +851,8 @@ server_finalize() {
     buffer_puts(&w, "\n-- File '");
     buffer_put(&w, s, n);
     buffer_puts(&w, "' -- ");
-    localtime_r(&t, &localt);
-    buffer_put(&w, buf, strftime(buf, sizeof(buf), "%d.%m.%Y %H:%M:%S", &localt));
+    localtime_r(&t, &lt);
+    buffer_put(&w, buf, strftime(buf, sizeof(buf), "%d.%m.%Y %H:%M:%S", &lt));
     // buffer_putulong(&w, created);
     buffer_putnlflush(&w);
 
@@ -861,10 +868,10 @@ server_finalize() {
     buffer_putnlflush(buffer_2);
   }
 
-  stralloc_replace(&base, 0, 6, "all", 3);
-  stralloc_replace(&base, base.len - 4, 4, ".tar", 4);
+  stralloc_replace(&filename, 0, 6, "all", 3);
+  stralloc_replace(&filename, filename.len - 4, 4, ".tar", 4);
 
-  if(stat((s = stralloc_cstr(&base)), &st) != -1)
+  if(stat((s = stralloc_cstr(&filename)), &st) != -1)
     unlink(s);
 
   stralloc_init(&cmd);
@@ -875,9 +882,9 @@ server_finalize() {
       break;
   }
 
-  server_tar_files(s, &base, &output_files);
+  server_tar_files(s, &filename, &output_files);
 
-  stralloc_free(&base);
+  stralloc_free(&filename);
 
   strlist_foreach_s(&output_files, s) { unlink(s); }
 }
