@@ -93,6 +93,7 @@ typedef enum { TRUE = 1, FALSE = 0 } bool;
 typedef struct socketbuf_s {
   fd_t sock;
   buffer buf;
+  stralloc host;
   char addr[16];
   uint16 port;
   uint32 scope_id;
@@ -120,7 +121,7 @@ fd_t connection_open_log(connection_t*, const char* prefix, const char* suffix);
 
 socketbuf_t* socket_find(fd_t);
 ssize_t socket_send(fd_t, void* x, size_t n, void* ptr);
-int socket_connect(void);
+int socket_connect(socketbuf_t* sb);
 void socket_accept(fd_t, char addr[16], uint16 port);
 
 void sockbuf_init(socketbuf_t*);
@@ -152,12 +153,26 @@ static buffer log = BUFFER_INIT(write, STDOUT_FILENO, logbuf, sizeof(logbuf));
 static int
 parse_addr(const char* opt, char ip[16]) {
   size_t n;
-
   if((n = scan_ip6(opt, ip)))
     return AF_INET6;
   if((n = scan_ip4(opt, ip)))
     return AF_INET;
   return -1;
+}
+
+static int
+sockbuf_parse_addr(socketbuf_t* sb, const char* opt) {
+  int ret = 0;
+  stralloc_copys(&sb->host, opt);
+
+  if((ret = parse_addr(opt, sb->addr)) == -1)
+    byte_zero(sb->addr, sizeof(sb->addr));
+
+  if(ret != -1)
+    sb->af = ret;
+
+ 
+  return ret;
 }
 
 static size_t
@@ -350,20 +365,20 @@ socket_send(fd_t fd, void* x, size_t n, void* ptr) {
 
 /* Create client connection */
 int
-socket_connect() {
+socket_connect(socketbuf_t* sb) {
   int sock;
   int ret;
 
-  if((sock = remote.af == AF_INET6 ? socket_tcp6() : socket_tcp4()) < 0)
+  if((sock = sb->af == AF_INET6 ? socket_tcp6() : socket_tcp4()) < 0)
     return CLIENT_SOCKET_ERROR;
 
   io_fd(sock);
   io_nonblock(sock);
 
-  if(remote.af == AF_INET6)
-    ret = socket_connect6(sock, remote.addr, remote.port, 0);
+  if(sb->af == AF_INET6)
+    ret = socket_connect6(sock, sb->addr, sb->port, 0);
   else
-    ret = socket_connect4(sock, remote.addr, remote.port);
+    ret = socket_connect4(sock, sb->addr, sb->port);
 
   if(ret < 0 && errno != EINPROGRESS)
     return CLIENT_CONNECT_ERROR;
@@ -379,7 +394,7 @@ socket_accept(fd_t sock, char addr[16], uint16 port) {
 
   connection_t* c = connection_new(sock, addr, port);
 
-  if((c->proxy.sock = socket_connect()) < 0)
+  if((c->proxy.sock = socket_connect(&remote)) < 0)
     goto cleanup;
 
   byte_copy(c->proxy.addr, remote.af == AF_INET6 ? 16 : 4, remote.addr);
@@ -814,8 +829,8 @@ main(int argc, char* argv[]) {
   while((c = getopt_long(argc, argv, "b:l:h:p:i:O:fso:a:m:LdB:", opts, &index)) != -1) {
     switch(c) {
       case 'l': scan_ushort(optarg, &server.port); break;
-      case 'b': server.af = parse_addr(optarg, server.addr); break;
-      case 'h': remote.af = parse_addr(optarg, remote.addr); break;
+      case 'b': sockbuf_parse_addr(&server, optarg); break;
+      case 'h': sockbuf_parse_addr(&remote, optarg); break;
       case 'p': scan_ushort(optarg, &remote.port); break;
       case 'i': cmd_in = optarg; break;
       case 'O': cmd_out = optarg; break;

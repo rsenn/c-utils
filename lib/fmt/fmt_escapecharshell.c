@@ -6,7 +6,7 @@ void fmt_oct3(char* dest, unsigned char w);
 
 size_t
 fmt_escapecharshell(char* dest, uint32 ch) {
-  //*char c;
+  char c;
   if(ch > 0xff)
     return 0;
   switch(ch) {
@@ -30,10 +30,10 @@ fmt_escapecharshell(char* dest, uint32 ch) {
       }
       return 2;
     default:
-    if(ch >= 32/* && ch < 127*/) {
-      dest[0] = ch;
-      return 1;
-    }
+      if(ch >= 32 /* && ch < 127*/) {
+        dest[0] = ch;
+        return 1;
+      }
       if(dest) {
         dest[0] = '\\';
         dest[1] = 'x';
