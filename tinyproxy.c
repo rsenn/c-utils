@@ -811,7 +811,8 @@ search_path(const char* path, const char* what, stralloc* out) {
 void
 server_finalize() {
   char buf[100];
-  const char* s;
+  struct stat st;
+  const char *s, *b;
   char** v;
   stralloc base, cmd;
   strlist syspath;
@@ -843,7 +844,6 @@ server_finalize() {
   out = open_trunc(base.s);
 
   strlist_foreach(&output_files, s, n) {
-    struct stat st;
     size_t filesize;
     ssize_t ret;
     fd_t wr = str_start(s, "in") ? in : out;
@@ -878,8 +878,9 @@ server_finalize() {
   stralloc_replace(&base, base.len - 4, 4, ".tar", 4);
   stralloc_nul(&base);
 
-  strarray_from_argv(strlist_count(&output_files), (const char* const*)strlist_to_argv(&output_files), &argv);
-  strarray_unshiftm(&argv, "cvf", base.s, 0);
+  if(stat(base.s, &st) != -1)
+    unlink(base.s);
+
   buffer_putnlflush(buffer_2);
   stralloc_init(&cmd);
   stralloc_nul(&syspath.sa);
@@ -888,14 +889,21 @@ server_finalize() {
     if((s = search_path(syspath.sa.s, programs[i], &cmd)))
       break;
   }
-  strarray_unshift(&argv, s);
-  buffer_puts(buffer_2, "Exec: ");
-  dump_strarray(buffer_2, &argv);
+  b = path_basename(s);
+  strarray_from_argv(strlist_count(&output_files), (const char* const*)strlist_to_argv(&output_files), &argv);
+  strarray_unshift(&argv, base.s);
+  if(str_equal(b, "star"))
+    strarray_unshift(&argv, "artype=pax");
+  strarray_unshiftm(&argv, b, "-c" , "-v", 0);
+
+  buffer_puts(buffer_1, "Exec: ");
+  dump_strarray(buffer_1, &argv);
+  buffer_putnlflush(buffer_1);
   v = strarray_to_argv(&argv);
   if((child_pid = vfork()) == 0) {
     char* const env[] = {"PATH=/bin:/usr/bin", 0};
     close(2);
-    dup(1);
+    dup2(1, 2);
     execve(s, v, env);
     exit(127);
   }
