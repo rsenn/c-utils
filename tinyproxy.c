@@ -827,7 +827,7 @@ server_finalize() {
     b = path_basename(errmsg_argv0);
   if(b)
     stralloc_catm_internal(&filename, b, "-", 0);
-  stralloc_catb(&filename, buf, strftime(buf, sizeof(buf), "%Y%m%d-%H%M%S-", &lt));
+ // stralloc_catb(&filename, buf, strftime(buf, sizeof(buf), "%Y%m%d-%H%M%S-", &lt));
   n = filename.len;
   stralloc_cats(&filename, "recv");
   stralloc_cats(&filename, ".log");
