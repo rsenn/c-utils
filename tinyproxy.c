@@ -433,6 +433,7 @@ fd_t
 connection_open_log(connection_t* c, const char* prefix, const char* suffix) {
   char buf[1024] = {0};
   size_t i, n;
+  tai6464 now;
 
   n = str_copy(buf, prefix);
   buf[n++] = '-';
@@ -442,7 +443,9 @@ connection_open_log(connection_t* c, const char* prefix, const char* suffix) {
   n += sockbuf_fmt_addr(&c->proxy, &buf[n], '_');
   n += str_copy(&buf[n], suffix);
   n += '-';
-  n += fmt_ulonglong(&buf[n], time(NULL));
+  taia_now(&now);
+  n += fmt_ulonglong(&buf[n], now.sec.x);
+  
 
   for(i = 0; i < n; i++) {
     char c = buf[i];
