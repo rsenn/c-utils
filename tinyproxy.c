@@ -641,8 +641,8 @@ sockbuf_fmt_addr(socketbuf_t* sb, char* dest, char sep) {
     else
       n = fmt_hexb(dest, sb->addr, 4) /*||  fmt_ip4(dest, sb->addr)*/;
 
-    /*    if(sb->af == AF_INET6 && byte_equal(dest, 6, "::ffff"))
-          n = fmt_hexb(dest, sb->addr, 4);*/
+    if(sb->af == AF_INET6 && byte_equal(dest, 6, "::ffff"))
+          n = fmt_hexb(dest, sb->addr, 4);
   }
 
   dest[n++] = sep ? sep : ':';
