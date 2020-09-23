@@ -140,7 +140,7 @@ void connection_delete(connection_t*);
 connection_t* connection_find(fd_t, fd_t proxy);
 fd_t connection_open_log(connection_t*, const char* prefix, const char* suffix);
 
-static const char* const programs[] = {"star", "bsdtar", "gtar", "tar", 0};
+static const char* const programs[] = {"gtar", "star", "bsdtar", "tar", 0};
 
 socketbuf_t* socket_find(fd_t);
 socketbuf_t* socket_other(fd_t);
@@ -891,10 +891,12 @@ server_finalize() {
   }
   b = path_basename(s);
   strarray_from_argv(strlist_count(&output_files), (const char* const*)strlist_to_argv(&output_files), &argv);
-  strarray_unshift(&argv, base.s);
+  //  strarray_unshift(&argv, base.s);
   if(str_equal(b, "star"))
     strarray_unshift(&argv, "artype=pax");
-  strarray_unshiftm(&argv, b, "-c" , "-v", 0);
+  strarray_unshiftm(&argv, b, "-c", "-vv", "-n", 0);
+
+  out = open_trunc(base.s);
 
   buffer_puts(buffer_1, "Exec: ");
   dump_strarray(buffer_1, &argv);
@@ -904,9 +906,15 @@ server_finalize() {
     char* const env[] = {"PATH=/bin:/usr/bin", 0};
     close(2);
     dup2(1, 2);
+
+    close(1);
+    dup2(out, 1);
+
     execve(s, v, env);
     exit(127);
   }
+  close(out);
+
   pid = waitpid(child_pid, &status, 0);
   if(pid != -1) {
 
