@@ -803,7 +803,7 @@ server_finalize() {
   struct stat st;
   const char *s, *b;
   stralloc filename, cmd;
-  static const char* const programs[] = {"bsdtar", "star", "gtar", "tar", "7z", "7za", 0};
+  static const char* const programs[] = {"gtar", "star", "bsdtar", "tar", "7z", "7za", 0};
   strlist syspath;
 
   size_t i, n;
@@ -821,7 +821,7 @@ server_finalize() {
   stralloc_cats(&filename, "input");
   stralloc_cats(&filename, ".txt");
 
-  //stralloc_catb(&filename, buf, strftime(buf, sizeof(buf), "-%d%m%Y-%H%M%S", &lt));
+  // stralloc_catb(&filename, buf, strftime(buf, sizeof(buf), "-%d%m%Y-%H%M%S", &lt));
   in = open_append(stralloc_cstr(&filename));
   stralloc_replace(&filename, 0, 5, "output", 6);
   out = open_append(stralloc_cstr(&filename));
@@ -838,7 +838,7 @@ server_finalize() {
     buffer_put(&w, s, n);
     buffer_puts(&w, "' -- ");
     localtime_r(&t, &lt);
-    buffer_put(&w, buf, strftime(buf, sizeof(buf), "%d.%m.%Y %H:%M:%S", &lt));
+
     // buffer_putulong(&w, created);
     buffer_putnlflush(&w);
 
@@ -850,8 +850,10 @@ server_finalize() {
     buffer_putlong(buffer_2, ret);
     buffer_putnlflush(buffer_2);
   }
-  stralloc_replace(&filename, 0, 6, "all", 3);
-  stralloc_replace(&filename, filename.len - 4, 4, ".tar", 4);
+  stralloc_copys(&filename, "all");
+  stralloc_catb(&filename, buf, strftime(buf, sizeof(buf), "-%Y%m%d-%H%M%S", &lt));
+  stralloc_cats(&filename, ".tar");
+
   if(stat((s = stralloc_cstr(&filename)), &st) != -1)
     unlink(s);
   stralloc_init(&cmd);
@@ -862,8 +864,7 @@ server_finalize() {
   }
   server_tar_files(s, &filename, &output_files);
   stralloc_free(&filename);
-  strlist_foreach_s(&output_files, s) {
-    unlink(s); }
+  strlist_foreach_s(&output_files, s) { unlink(s); }
 }
 
 void
@@ -882,19 +883,19 @@ server_tar_files(const char* cmd, const stralloc* archive, strlist* files) {
     strarray_unshiftm(&argv, "a", "-ssc", archive->s, 0);
   } else {
     if(str_equal(base, "star"))
-      strarray_unshift(&argv, "artype=pax");
+      strarray_unshift(&argv, "artype=ustar");
     else if(str_start(base, "g") || str_start(base, "bsd"))
-      strarray_unshiftm(&argv, "--format=pax", 0);
+      strarray_unshiftm(&argv, "--format=ustar", 0);
     else
-      strarray_unshiftm(&argv, "-H", "pax", 0);
+      strarray_unshiftm(&argv, "-H", "ustar", 0);
 
-    if(str_equal(base, "bsdtar"))
+    if(str_equal(base, "bsdtar") ||str_start(base, "g"))
       strarray_unshiftm(&argv, "-f", archive->s, 0);
     else
       out = open_trunc(archive->s);
     strarray_unshiftm(&argv, "-c", 0);
   }
-  strarray_unshift(&argv, base);
+  strarray_unshift(&argv, cmd);
   buffer_puts(buffer_1, "Exec: ");
   dump_strarray(buffer_1, &argv, "'", " ");
   buffer_putnlflush(buffer_1);
