@@ -97,6 +97,7 @@ typedef struct socketbuf_s {
   uint32 scope_id;
   int af;
   fd_t dump;
+  int force_write : 1;
 } socketbuf_t;
 
 typedef struct connection_s {
@@ -114,6 +115,7 @@ void dump_io(void);
 connection_t* connection_new(fd_t, char addr[16], uint16 port);
 void connection_delete(connection_t*);
 connection_t* connection_find(fd_t, fd_t proxy);
+fd_t connection_open_log(connection_t*, const char* prefix, const char* suffix);
 
 socketbuf_t* socket_find(fd_t);
 ssize_t socket_send(fd_t, void* x, size_t n, void* ptr);
@@ -122,7 +124,6 @@ void socket_accept(fd_t, char addr[16], uint16 port);
 
 void sockbuf_init(socketbuf_t*);
 size_t sockbuf_fmt_addr(socketbuf_t*, char* dest, char sep);
-fd_t sockbuf_open_log(socketbuf_t*, const char* prefix, const char* suffix);
 void sockbuf_put_addr(buffer*, socketbuf_t* sb);
 void sockbuf_close(socketbuf_t*);
 void sockbuf_check(socketbuf_t*);
@@ -131,16 +132,16 @@ ssize_t sockbuf_forward_data(socketbuf_t*, socketbuf_t* destination);
 
 fd_t server_socket(void);
 fd_t server_listen(uint16);
+void server_sigterm(int);
 void server_loop(void);
 void server_connection_count(void);
 
+static socketbuf_t server, remote;
+
 fd_t server_sock, remote_sock;
-uint16 connect_port = 0, local_port = 0;
 int64 connections_processed = 0, max_length = -1;
 char *remote_host, *cmd_in, *cmd_out;
-static char bind_addr[16], connect_addr[16];
-static int bind_af = AF_INET, connect_af = AF_INET;
-bool foreground = TRUE, use_syslog = FALSE, line_buffer = FALSE, dump = FALSE;
+bool foreground = FALSE, use_syslog = FALSE, line_buffer = FALSE, dump = FALSE;
 
 static char logbuf[1024];
 static buffer log = BUFFER_INIT(write, STDOUT_FILENO, logbuf, sizeof(logbuf));
@@ -160,22 +161,36 @@ parse_addr(const char* opt, char ip[16]) {
 
 static size_t
 byte_numlines(char* x, size_t p, size_t* end_ptr) {
-  size_t pos, i, n = 0;
-  pos = byte_rchr(x, p, '\n');
-  if(pos < p)
-    for(i = 0; i < pos; i++)
-      if(x[i] == '\n')
-        n++;
-      else
-        pos = 0;
-  if(end_ptr)
-    *end_ptr = pos;
+  size_t i, n = 0, y;
+
+  for(i = 0; i < p; i++) {
+    if(x[i] == '\n') {
+      n++;
+      y = i + 1;
+    }
+  }
+  if(end_ptr && n > 0)
+    *end_ptr = y;
   return n;
+}
+
+static bool
+byte_is_binary(char* x, size_t n) {
+  for(size_t i = 0; i < n; i++)
+    if(x[i] < ' ' || x[i] >= 127)
+      return TRUE;
+
+  return FALSE;
 }
 
 static size_t
 buffer_numlines(buffer* b, size_t* end_ptr) {
   return byte_numlines(b->x, b->p, end_ptr);
+}
+
+static bool
+buffer_is_binary(buffer* b) {
+  return byte_is_binary(b->x, b->p);
 }
 
 size_t
@@ -243,8 +258,8 @@ connection_new(fd_t sock, char addr[16], uint16 port) {
 
   c->client.sock = sock;
   c->client.port = port;
-  c->client.af = bind_af;
-  byte_copy(c->client.addr, bind_af == AF_INET6 ? 16 : 4, addr);
+  c->client.af = server.af;
+  byte_copy(c->client.addr, server.af == AF_INET6 ? 16 : 4, addr);
 
   return c;
 }
@@ -302,6 +317,16 @@ socket_find(fd_t sock) {
   return NULL;
 }
 
+socketbuf_t*
+socket_other(fd_t sock) {
+  connection_t* c;
+  if((c = connection_find(sock, -1)))
+    return &c->proxy;
+  if((c = connection_find(-1, sock)))
+    return &c->client;
+  return NULL;
+}
+
 ssize_t
 socket_send(fd_t fd, void* x, size_t n, void* ptr) {
   ssize_t r = send(fd, x, n, 0);
@@ -328,16 +353,16 @@ socket_connect() {
   int sock;
   int ret;
 
-  if((sock = connect_af == AF_INET6 ? socket_tcp6() : socket_tcp4()) < 0)
+  if((sock = remote.af == AF_INET6 ? socket_tcp6() : socket_tcp4()) < 0)
     return CLIENT_SOCKET_ERROR;
 
   io_fd(sock);
   io_nonblock(sock);
 
-  if(connect_af == AF_INET6)
-    ret = socket_connect6(sock, connect_addr, connect_port, 0);
+  if(remote.af == AF_INET6)
+    ret = socket_connect6(sock, remote.addr, remote.port, 0);
   else
-    ret = socket_connect4(sock, connect_addr, connect_port);
+    ret = socket_connect4(sock, remote.addr, remote.port);
 
   if(ret < 0 && errno != EINPROGRESS)
     return CLIENT_CONNECT_ERROR;
@@ -356,9 +381,9 @@ socket_accept(fd_t sock, char addr[16], uint16 port) {
   if((c->proxy.sock = socket_connect()) < 0)
     goto cleanup;
 
-  byte_copy(c->proxy.addr, connect_af == AF_INET6 ? 16 : 4, connect_addr);
-  c->proxy.port = connect_port;
-  c->proxy.af = connect_af;
+  byte_copy(c->proxy.addr, remote.af == AF_INET6 ? 16 : 4, remote.addr);
+  c->proxy.port = remote.port;
+  c->proxy.af = remote.af;
 
   buffer_init_free(&c->client.buf, socket_send, c->client.sock, alloc_zero(1024), 1024);
   buffer_init_free(&c->proxy.buf, socket_send, c->proxy.sock, alloc_zero(1024), 1024);
@@ -420,7 +445,8 @@ sockbuf_close(socketbuf_t* sb) {
 
 void
 sockbuf_check(socketbuf_t* sb) {
-  int wantwrite = /*line_buffer ? data_numlines(&sb->buf, NULL) > 0 :*/ sb->buf.p > 0;
+  int wantwrite = (line_buffer && !buffer_is_binary(&sb->buf) && !sb->force_write) ? buffer_numlines(&sb->buf, NULL) > 0
+                                                                                   : sb->buf.p > 0;
   io_entry* e = io_getentry(sb->sock);
 
   if(wantwrite) {
@@ -437,6 +463,7 @@ void
 sockbuf_log_data(socketbuf_t* sb, bool send, char* x, ssize_t len) {
   while(len > 0) {
     size_t end, n;
+    bool escape = !line_buffer;
 
     end = n = line_buffer ? byte_chrs(x, len, "\r\n", 2) : len;
     while(n < len && byte_chr("\r\n", 2, x[n]) < 2) {
@@ -446,6 +473,10 @@ sockbuf_log_data(socketbuf_t* sb, bool send, char* x, ssize_t len) {
     }
     if(!line_buffer)
       end = n;
+    /*
+
+    if(max_length > 0 && max_length < end)
+      end = max_length;*/
 
     buffer_puts(&log, send ? "Sent " : "Received ");
     if(line_buffer) {
@@ -460,7 +491,18 @@ sockbuf_log_data(socketbuf_t* sb, bool send, char* x, ssize_t len) {
     sockbuf_put_addr(&log, sb);
     buffer_puts(&log, " '");
 
-    (line_buffer ? buffer_put : buffer_put_escaped)(&log, x, max_length > 0 && max_length < end ? max_length : end);
+    if(line_buffer) {
+      size_t i;
+      for(i = 0; i < n; i++) {
+        if((unsigned)x[i] < ' ') {
+          escape = TRUE;
+          end = n;
+          break;
+        }
+      }
+    }
+
+    (escape ? buffer_put_escaped : buffer_put)(&log, x, end);
 
     if(max_length > 0 && max_length < end)
       buffer_puts(&log, "<shortened> ...");
@@ -496,17 +538,17 @@ sockbuf_forward_data(socketbuf_t* source, socketbuf_t* destination) {
 
 fd_t
 server_socket() {
-  fd_t s = bind_af == AF_INET6 ? socket_tcp6() : socket_tcp4();
+  fd_t s = server.af == AF_INET6 ? socket_tcp6() : socket_tcp4();
   if(s == -1)
     return s;
 
   io_fd(s);
 
-  if(bind_af == AF_INET6) {
-    if(socket_bind6_reuse(s, bind_addr, local_port, 0) == 0)
+  if(server.af == AF_INET6) {
+    if(socket_bind6_reuse(s, server.addr, server.port, 0) == 0)
       return s;
   } else {
-    if(socket_bind4_reuse(s, bind_addr, local_port) == 0)
+    if(socket_bind4_reuse(s, server.addr, server.port) == 0)
       return s;
   }
 
@@ -526,6 +568,14 @@ server_listen(uint16 port) {
     return SERVER_LISTEN_ERROR;
 
   return sock;
+}
+
+void
+server_sigterm(int sig) {
+  buffer_puts(&log, "SIGTERM received");
+  buffer_putnlflush(&log);
+  buffer_close(&log);
+  exit(1);
 }
 
 /* Main server loop */
@@ -571,8 +621,8 @@ server_loop() {
 
         c->proxy.dump = -1;
 
-        connect_af == AF_INET6 ? socket_local6(sock, c->proxy.addr, &c->proxy.port, &c->proxy.scope_id)
-                               : socket_local4(sock, c->proxy.addr, &c->proxy.port);
+        remote.af == AF_INET6 ? socket_local6(sock, c->proxy.addr, &c->proxy.port, &c->proxy.scope_id)
+                              : socket_local4(sock, c->proxy.addr, &c->proxy.port);
 
         io_dontwantwrite(sock);
         io_wantread(sock);
@@ -587,25 +637,39 @@ server_loop() {
         buffer_putnlflush(buffer_2);
 #endif
 
-        /*   if(line_buffer) {
-             size_t num_lines, end_pos;
+        while(sb->buf.p > 0) {
+/*
+          if(line_buffer && !buffer_is_binary(&sb->buf) && !sb->force_write) {
+            size_t num_lines, end_pos;
+            socketbuf_t* other;
+            if((num_lines = buffer_numlines(&sb->buf, &end_pos)) > 0) {
+              ssize_t r = socket_send(sb->sock, sb->buf.x, end_pos, 0);
+              if(r > 0) {
+                buffer* b = &sb->buf;
+                if(r < b->p) {
+                  byte_copyr(b->x, b->p - r, &b->x[r]);
+                  b->p -= r;
 
-             if((num_lines = data_numlines(&sb->buf, &end_pos)) > 0) {
-               ssize_t r = socket_send(sb->sock, sb->buf.x, end_pos, 0);
-               if(r > 0) {
-                 buffer* b = &sb->buf;
-                 if(r < b->p)
-                   byte_copyr(b->x, b->p - r, &b->x[r]);
-                 b->p -= r;
-               }
-             }
-
-           } else */
-        if(sb->buf.p > 0) {
-          buffer_flush(&sb->buf);
-
-          io_dontwantwrite(sock);
+                  if(b->p) {
+                    other = socket_other(sb->sock);
+                    r = io_tryread(other->sock, &b->x[b->p], b->a - b->p);
+                    if(r > 0) {
+                      b->p += r;
+                      continue;
+                    }
+                  }
+                }
+              }
+            }
+          } else*/ {
+            buffer_flush(&sb->buf);
+            sb->force_write = 0;
+            break;
+          }
+          if(sb->buf.p)
+            sb->force_write = 1;
         }
+
       } else {
         buffer_puts(buffer_2, "No such fd: ");
         buffer_putulong(buffer_2, sock);
@@ -621,15 +685,12 @@ server_loop() {
         char addr[16];
         uint16 port;
         socklen_t addrlen = sizeof(addr);
-
-        sock = bind_af ? socket_accept4(server_sock, addr, &port) : socket_accept6(server_sock, addr, &port, 0);
-
+        sock = server.af ? socket_accept4(server_sock, addr, &port) : socket_accept6(server_sock, addr, &port, 0);
         if(sock == -1) {
           errmsg_warn("Accept error: ", strerror(errno), 0);
           exit(2);
         }
         socket_accept(sock, addr, port);
-
         connections_processed++;
 
       } else {
@@ -731,12 +792,16 @@ main(int argc, char* argv[]) {
                            {0}};
 
   errmsg_iam(argv[0]);
+
+  sockbuf_init(&server);
+  sockbuf_init(&remote);
+
   while((c = getopt_long(argc, argv, "b:l:h:p:i:O:fso:a:m:Ld", opts, &index)) != -1) {
     switch(c) {
-      case 'l': scan_ushort(optarg, &local_port); break;
-      case 'b': bind_af = parse_addr(optarg, bind_addr); break;
-      case 'h': connect_af = parse_addr(optarg, connect_addr); break;
-      case 'p': scan_ushort(optarg, &connect_port); break;
+      case 'l': scan_ushort(optarg, &server.port); break;
+      case 'b': server.af = parse_addr(optarg, server.addr); break;
+      case 'h': remote.af = parse_addr(optarg, remote.addr); break;
+      case 'p': scan_ushort(optarg, &remote.port); break;
       case 'i': cmd_in = optarg; break;
       case 'O': cmd_out = optarg; break;
       case 'f': foreground = TRUE; break;
@@ -749,10 +814,10 @@ main(int argc, char* argv[]) {
     }
   }
 
-  if(!(local_port && connect_af != -1 && connect_port))
+  if(!(server.port && remote.af != -1 && remote.port))
     return SYNTAX_ERROR;
 
-  if(local_port < 0) {
+  if(server.port < 0) {
     buffer_putm_internal(buffer_2,
                          "Syntax: ",
                          argv[0],
@@ -768,22 +833,33 @@ main(int argc, char* argv[]) {
                          "  -L          line buffered\n",
                          0);
     buffer_flush(buffer_2);
-    return local_port;
+    return server.port;
   }
 
   if(use_syslog)
     openlog("proxy", LOG_PID, LOG_DAEMON);
 
   sig_block(SIGPIPE);
+  sig_catch(SIGTERM, &server_sigterm);
 
-  if((server_sock = server_listen(local_port)) < 0) { // start server
+  if((server_sock = server_listen(server.port)) < 0) { // start server
     errmsg_warn("Cannot run server:", 0);
 
     return server_sock;
   }
 
+  buffer_puts(buffer_2, "Listening to ");
+  sockbuf_put_addr(buffer_2, &server);
+  buffer_putnlflush(buffer_2);
+  buffer_puts(buffer_2, "Connecting to ");
+  sockbuf_put_addr(buffer_2, &remote);
+  buffer_putnlflush(buffer_2);
+
   io_fd(server_sock);
   io_wantread(server_sock);
+
+  if(!foreground)
+    daemon(1, 0);
 
   server_loop();
 
