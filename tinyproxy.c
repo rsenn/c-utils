@@ -255,9 +255,9 @@ dns_lookup(stralloc* h) {
   buffer_puts(buffer_2, cached ? "Cache hit " : "Resolved ");
   buffer_putsa(buffer_2, h);
   if(cached) {
-     buffer_puts(buffer_2, " age ");
-     buffer_putlong(buffer_2, diff.sec.x);
-     buffer_puts(buffer_2, "s");
+    buffer_puts(buffer_2, " age ");
+    buffer_putlong(buffer_2, diff.sec.x);
+    buffer_puts(buffer_2, "s");
   }
   buffer_puts(buffer_2, " to [");
   buffer_putulong(buffer_2, range_size(&result->data));
