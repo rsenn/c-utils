@@ -441,6 +441,8 @@ connection_open_log(connection_t* c, const char* prefix, const char* suffix) {
   buf[n++] = '-';
   n += sockbuf_fmt_addr(&c->proxy, &buf[n], '_');
   n += str_copy(&buf[n], suffix);
+  n += '-';
+  n += fmt_ulonglong(&buf[n], time(NULL));
 
   for(i = 0; i < n; i++) {
     char c = buf[i];
@@ -483,7 +485,7 @@ socket_send(fd_t fd, void* x, size_t n, void* ptr) {
     if(dump) {
       if(sb->dump == -1) {
         connection_t* c = connection_find(fd, fd);
-        sb->dump = connection_open_log(c, c->client.sock == fd ? "-> client" : "-> remote", ".txt");
+        sb->dump = connection_open_log(c, c->client.sock == fd ? "input" : "output", ".txt");
       }
       write(sb->dump, x, n);
     }
@@ -584,14 +586,14 @@ size_t
 sockbuf_fmt_addr(socketbuf_t* sb, char* dest, char sep) {
   size_t n = 0;
 
-  if(sb->af != -1) {
+  if(sb->host.len > 0) {
+    byte_copy(dest, sb->host.len, sb->host.s);
+    n += sb->host.len;
+  } else if(sb->af != -1) {
     n = sb->af == AF_INET6 ? fmt_ip6(dest, sb->addr) : fmt_ip4(dest, sb->addr);
 
     if(n >= 7 && byte_equal(dest, 6, "::ffff"))
       n = fmt_ip4(dest, &sb->addr[12]);
-  } else {
-    byte_copy(dest, sb->host.len, sb->host.s);
-    n += sb->host.len;
   }
 
   dest[n++] = sep ? sep : ':';
