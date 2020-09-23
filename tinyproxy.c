@@ -43,6 +43,7 @@
 #include "lib/env.h"
 #include "lib/str.h"
 #include "lib/io.h"
+#include "lib/range.h"
 #include "lib/io_internal.h"
 #include "lib/socket.h"
 #include "lib/ndelay.h"
@@ -106,7 +107,7 @@ typedef struct socketbuf_s {
 } socketbuf_t;
 
 typedef struct dns_result_s {
-  stralloc data;
+  range data;
   size_t rlen;
   tai6464 t;
 } dns_result_t;
@@ -185,7 +186,10 @@ dns_query(stralloc* h) {
     res->rlen = reclen;
     taia_now(&res->t);
     taia_add(&res->t, &res->t, &ttl);
-    stralloc_move(&res->data, &dns);
+    res->data.start = dns.s;
+    res->data.end = dns.s + dns.len;
+    res->data.elem_size = reclen;
+    stralloc_init(&dns);
 
     return res;
   }
@@ -195,12 +199,13 @@ dns_query(stralloc* h) {
 
 void
 dns_print_result(buffer* b, dns_result_t* result) {
-  size_t i;
+  char* x;
+  size_t i = 0;
   char buf[128];
-  for(i = 0; i < result->data.len; i += result->rlen) {
-    if(i > 0)
+  for(x = result->data.start; x < result->data.end; x += result->data.elem_size) {
+    if(i++ > 0)
       buffer_puts(b, ", ");
-    buffer_put(b, buf, (result->rlen == 16 ? fmt_ip6 : fmt_ip4)(buf, &result->data.s[i]));
+    buffer_put(b, buf, (result->data.elem_size == 16 ? fmt_ip6 : fmt_ip4)(buf, x));
   }
 }
 
@@ -232,7 +237,7 @@ dns_lookup(stralloc* h) {
     cached = FALSE;
 
   if(result == NULL && (result = dns_query(h))) {
-    if(result->data.len > 0 && result->rlen > 0) {
+    if(result->data.end > result->data.start && result->data.elem_size) {
       MAP_INSERT(dns_cache, h->s, h->len + 1, result, sizeof(dns_result_t));
       alloc_free(result);
 
@@ -240,10 +245,12 @@ dns_lookup(stralloc* h) {
     }
   }
 
+  range_rotate(&result->data, -1);
+
   buffer_puts(buffer_2, cached ? "Cache hit " : "Resolved ");
   buffer_putsa(buffer_2, h);
   buffer_puts(buffer_2, " to [");
-  buffer_putulong(buffer_2, result->data.len / result->rlen);
+  buffer_putulong(buffer_2, range_size(&result->data));
   buffer_puts(buffer_2, "] ");
   dns_print_result(buffer_2, result);
   buffer_putnlflush(buffer_2);
@@ -488,7 +495,7 @@ socket_connect(socketbuf_t* sb) {
 
     if(af != -1) {
       size_t i;
-      addr = res->data.s;
+      addr = res->data.start;
     }
   }
 
