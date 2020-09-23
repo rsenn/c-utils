@@ -897,7 +897,7 @@ server_tar_files(const char* cmd, const stralloc* archive, strlist* files) {
       strarray_unshiftm(&argv, "-H", "ustar", 0);
 
     if(str_equal(base, "bsdtar") || str_start(base, "g"))
-      strarray_unshiftm(&argv, "-f", archive->s, 0);
+      strarray_unshiftm(&argv, "-v", "-f", archive->s, 0);
     else
       out = open_trunc(archive->s);
     strarray_unshiftm(&argv, "-c", 0);
