@@ -33,6 +33,7 @@
 #ifndef _GNU_SOURCE
 #define _GNU_SOURCE
 #endif
+#include "lib/path.h"
 #include "lib/uint16.h"
 #include "lib/uint64.h"
 #include "lib/stralloc.h"
@@ -871,22 +872,29 @@ server_finalize() {
   stralloc_nul(&base);
 
   strarray_from_argv(strlist_count(&output_files), (const char* const*)strlist_to_argv(&output_files), &argv);
-  strarray_unshiftm(&argv, "tar", "cf", base.s, 0);
+
+  strarray_unshiftm(&argv, "cvf", base.s, 0);
   buffer_puts(buffer_2, "Exec: ");
   dump_strarray(buffer_2, &argv);
   buffer_putnlflush(buffer_2);
 
   stralloc_init(&cmd);
-  s = search_path(env_get("PATH"), "tar", &cmd);
-
+  s = search_path(env_get("PATH"), "bsdtar", &cmd);
+  strarray_unshift(&argv, s);
   if((child_pid = fork()) == 0) {
 
-    execve(s, strarray_to_argv(&argv), NULL);
+    char* const* env = (char* const*)environ;
+
+    dup2(STDERR_FILENO, STDOUT_FILENO);
+    execve(s, strarray_to_argv(&argv), env);
     exit(127);
   }
   pid = waitpid(child_pid, &status, 0);
   if(pid != -1) {
-    buffer_puts(buffer_2, "tar (");
+
+    buffer_puts(buffer_2, s);
+    dump_strarray(buffer_2, &argv);
+    buffer_puts(buffer_2, " (");
     buffer_putlong(buffer_2, pid);
     buffer_puts(buffer_2, ") exit code = ");
     buffer_putlong(buffer_2, WEXITSTATUS(status));
