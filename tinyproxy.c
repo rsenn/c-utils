@@ -123,41 +123,41 @@ typedef struct connection_s {
 } connection_t;
 
 static slink* connections;
- dns_response_t* dns_query(stralloc*);
-void            dns_print(buffer*, dns_response_t* result, size_t num_responses);
+dns_response_t* dns_query(stralloc*);
+void dns_print(buffer*, dns_response_t* result, size_t num_responses);
 dns_response_t* dns_lookup(stralloc*);
 
-size_t          dump_fds(array*);
-void            dump_io(void);
+size_t dump_fds(array*);
+void dump_io(void);
 
-connection_t*   connection_new(fd_t, char addr[16], uint16 port);
-void            connection_delete(connection_t*);
-connection_t*   connection_find(fd_t, fd_t proxy);
-fd_t            connection_open_log(connection_t*, const char* prefix, const char* suffix);
+connection_t* connection_new(fd_t, char addr[16], uint16 port);
+void connection_delete(connection_t*);
+connection_t* connection_find(fd_t, fd_t proxy);
+fd_t connection_open_log(connection_t*, const char* prefix, const char* suffix);
 
-socketbuf_t*    socket_find(fd_t);
-socketbuf_t*    socket_other(fd_t);
-ssize_t         socket_send(fd_t, void* x, size_t n, void* ptr);
-int             socket_connect(socketbuf_t*);
-void            socket_accept(fd_t, char addr[16], uint16 port);
+socketbuf_t* socket_find(fd_t);
+socketbuf_t* socket_other(fd_t);
+ssize_t socket_send(fd_t, void* x, size_t n, void* ptr);
+int socket_connect(socketbuf_t*);
+void socket_accept(fd_t, char addr[16], uint16 port);
 
-void            sockbuf_init(socketbuf_t*);
-size_t          sockbuf_fmt_addr(socketbuf_t*, char* dest, char sep);
-void            sockbuf_put_addr(buffer*, socketbuf_t* sb);
-void            sockbuf_close(socketbuf_t*);
-void            sockbuf_check(socketbuf_t*);
-void            sockbuf_log_data(socketbuf_t*, bool send, char* x, ssize_t len);
-ssize_t         sockbuf_forward_data(socketbuf_t*, socketbuf_t* destination);
+void sockbuf_init(socketbuf_t*);
+size_t sockbuf_fmt_addr(socketbuf_t*, char* dest, char sep);
+void sockbuf_put_addr(buffer*, socketbuf_t* sb);
+void sockbuf_close(socketbuf_t*);
+void sockbuf_check(socketbuf_t*);
+void sockbuf_log_data(socketbuf_t*, bool send, char* x, ssize_t len);
+ssize_t sockbuf_forward_data(socketbuf_t*, socketbuf_t* destination);
 
-fd_t            server_socket(void);
-fd_t            server_listen(uint16);
-void            server_exit(int);
-void            server_sigint(int);
-void            server_sigterm(int);
-void            server_loop(void);
-void            server_connection_count(void);
+fd_t server_socket(void);
+fd_t server_listen(uint16);
+void server_exit(int);
+void server_sigint(int);
+void server_sigterm(int);
+void server_loop(void);
+void server_connection_count(void);
 
-void            usage(const char*);
+void usage(const char*);
 
 static socketbuf_t server, remote;
 
@@ -171,7 +171,6 @@ static buffer log = BUFFER_INIT(write, STDOUT_FILENO, logbuf, sizeof(logbuf));
 static MAP_T dns_cache;
 static tai6464 ttl;
 static strlist output_files;
-
 
 #define BACKLOG 20 // how many pending connections queue will hold
 
@@ -215,8 +214,9 @@ dns_print(buffer* b, dns_response_t* result, size_t num_responses) {
     if(i++ > 0)
       buffer_puts(b, ", ");
     buffer_put(b, buf, (result->data.elem_size == 16 ? fmt_ip6 : fmt_ip4)(buf, x));
-  if(i == num_responses) break;
-}
+    if(i == num_responses)
+      break;
+  }
 }
 
 dns_response_t*
@@ -755,17 +755,18 @@ server_listen(uint16 port) {
 
 void
 server_exit(int code) {
-  buffer_puts(&log, "Output files: ");
-  strlist_dump( &log, &output_files);
-  buffer_putnlflush(&log);
-  buffer_close(&log);
-  exit(code);
+  buffer_puts(buffer_2, "Output files: ");
+  strlist_dump(buffer_2, &output_files);
+  buffer_putnlflush(buffer_2);
+   exit(code);
 }
 
 void
 server_sigint(int sig) {
+
   buffer_puts(&log, "SIGINT received");
   buffer_putnlflush(&log);
+   buffer_close(&log);
   server_exit(1);
 }
 void
@@ -773,7 +774,7 @@ server_sigterm(int sig) {
   buffer_puts(&log, "SIGTERM received");
   buffer_putnlflush(&log);
   buffer_close(&log);
-  exit(1);
+  server_exit(0);
 }
 
 /* Main server loop */
@@ -1065,9 +1066,10 @@ main(int argc, char* argv[]) {
     openlog("proxy", LOG_PID, LOG_DAEMON);
 
   sig_block(SIGPIPE);
-  sig_catch(SIGTERM, &server_sigterm);
-sig_catch(SIGINT, &server_sigint);
-
+  //    sig_block(SIGINT);
+  sig_push(SIGTERM, &server_sigterm);
+  sig_push(SIGINT, &server_sigint);
+    
   if((server_sock = server_listen(server.port)) < 0) { // start server
     errmsg_warn("Cannot run server:", 0);
 
