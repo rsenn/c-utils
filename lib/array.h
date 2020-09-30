@@ -46,6 +46,7 @@ void array_chop(array* x, uint64 membersize, uint64 members);
 
 #define array_init(ns) byte_zero((ns), sizeof(array))
 #define array_failed(x) (array_bytes(x) == -1)
+#define array_empty(x) (array_bytes(x) == 0)
 #define array_unallocated(x) (array_bytes(x) == 0)
 
 #define array_foreach_t(a, p) for((p) = array_start(a); (char*)(p) < (char*)array_end(a); ++(p))

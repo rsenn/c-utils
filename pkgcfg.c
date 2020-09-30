@@ -44,6 +44,7 @@ typedef enum {
   PRINT_PATH = 16,
   LIST_ALL = 32,
   LIST_PATH = 64,
+  LIST_FILE = 128,
   ATLEAST_PKGCONFIG_VERSION = 1024
 } id;
 typedef enum { OP_EQ = 0, OP_NE, OP_GT, OP_GE, OP_LT, OP_LE } op_code;
@@ -52,8 +53,9 @@ typedef enum { LIBS_ONLY_L = 64, LIBS_ONLY_OTHER = 128 } libs_mode_t;
 
 typedef enum { CFLAGS_ONLY_I = 256, CFLAGS_ONLY_OTHER = 512 } cflags_mode_t;
 
-static struct {
-  id code;
+static array cmds;
+
+static struct cmd_s {
   strlist path;
   stralloc self;
   stralloc host;
@@ -91,6 +93,11 @@ static int sorted = 1;
 static int verbose = 0;
 static int show_version = 0;
 static int atleast_version = 0;
+
+void
+add_cmd(id cmd) {
+  array_catb(&cmds, &cmd, sizeof(id));
+}
 
 int
 get_field_index(int flags) {
@@ -226,6 +233,16 @@ pkg_get(pkg* pf, const char* key) {
   char* v = NULL;
   size_t len;
   MAP_T map = isupper(key[0]) ? pf->fields : pf->vars;
+
+#ifdef DEBUG_OUTPUT_
+  if(str_diff(key, "Description")) {
+    buffer_puts(buffer_2, "Get: ");
+    buffer_putsa(buffer_2, &pf->name);
+    buffer_puts(buffer_2, " key: ");
+    buffer_puts(buffer_2, key);
+    buffer_putnlflush(buffer_2);
+  }
+#endif
   v = MAP_GET(map, (char*)key, str_len(key) + 1);
   return v;
 }
@@ -544,7 +561,7 @@ pkgcfg_sort_compare(const char** a, const char** b) {
  * @brief pkg_list List all packages
  */
 void
-pkg_list() {
+pkg_list(id code) {
   slink *pkgs, **it, *item;
   stralloc path, line;
   const char* s;
@@ -593,9 +610,13 @@ pkg_list() {
             i++;
           n = path.len - i - 3;
 
-          stralloc_catb(&line, path.s + i, n);
+          if(code == LIST_FILE)
+            stralloc_cat(&line, &path);
+          else
+            stralloc_catb(&line, path.s + i, n);
 
-          if(cmd.code == LIST_PATH) {
+          if(code == LIST_PATH) {
+
             if(verbose == 1)
               stralloc_zero(&line);
             else if(line.len > 0)
@@ -761,13 +782,17 @@ static cond condition;
  * @param pkgname   Package name
  */
 int
-pkg_conf(strarray* modules, int mode) {
+pkg_conf(strarray* modules, id code, int mode) {
   int i, do_cond;
   size_t n, pos;
+  const char* x;
+  size_t len;
   stralloc name, cond, value;
+  strlist require;
   stralloc_init(&name);
   stralloc_init(&cond);
   stralloc_init(&value);
+  strlist_init(&require, ' ');
 
   for(i = 0; i < strarray_size(modules); ++i) {
     const char* pkgname = strarray_at(modules, i);
@@ -822,27 +847,43 @@ pkg_conf(strarray* modules, int mode) {
     pkg_dump(buffer_2, &pf);
 #endif
 
-    if(cmd.code == PRINT_PATH) {
+    stralloc_zero(&value);
+    pkg_expand(&pf, "Requires", &value);
+    strlist_zero(&require);
+    strlist_fromb(&require, value.s, value.len, " ,\r\n\t");
+
+    strlist_foreach(&require, x, len) {
+#ifdef DEBUG_OUTPUT_
+      buffer_puts(buffer_2, "Require: ");
+      buffer_put(buffer_2, x, len);
+      buffer_putnlflush(buffer_2);
+#endif
+      strarray_pushb_unique(modules, x, len);
+    }
+
+    if(code == PRINT_PATH) {
       if(value.len)
         stralloc_catc(&value, '\n');
       stralloc_cat(&value, &pf.name);
     } else {
-      int fi = cmd.code != 0 ? get_field_index(cmd.code) : -1;
+      int fi = code != 0 ? get_field_index(code) : -1;
       const char* fn = fi == -1 ? NULL : field_names[fi];
 
       pkg_set(&pf);
-      // stralloc_zero(&value);
+      stralloc_zero(&value);
+
       if(fn) {
+
         if(!pkg_expand(&pf, fn, &value)) {
-          buffer_flush(buffer_1);
-          buffer_flush(buffer_2);
-          errmsg_warn("Expanding ", pkgname, "::", fn, NULL);
-          pkg_unset(&pf);
-          pkg_free(&pf);
-          return 0;
+          /*   buffer_flush(buffer_1);
+             buffer_flush(buffer_2);
+             errmsg_warn("Expanding ", pkgname, "::", fn, NULL);*/
+          /*     pkg_unset(&pf);
+               pkg_free(&pf);
+               return 0;*/
         }
       }
-      if((cmd.code == PRINT_LIBS && libs_mode) || (cmd.code == PRINT_CFLAGS && cflags_mode)) {
+      if((code == PRINT_LIBS && libs_mode) || (code == PRINT_CFLAGS && cflags_mode)) {
         strlist sl;
         const char* s;
         strlist_init(&sl, '\0');
@@ -851,12 +892,12 @@ pkg_conf(strarray* modules, int mode) {
         stralloc_zero(&value);
 
         strlist_foreach_s(&sl, s) {
-          if((cmd.code == PRINT_LIBS) && libs_mode) {
+          if((code == PRINT_LIBS) && libs_mode) {
             int flag = (/* str_start(s, "-L") ||  */ str_start(s, "-l"));
             if((libs_mode == LIBS_ONLY_L) ^ (flag != 0))
               continue;
           }
-          if((cmd.code == PRINT_CFLAGS) && libs_mode) {
+          if((code == PRINT_CFLAGS) && libs_mode) {
             int flag = !!(str_start(s, "-I"));
             if((libs_mode == CFLAGS_ONLY_I) ^ (flag != 0))
               continue;
@@ -874,8 +915,6 @@ pkg_conf(strarray* modules, int mode) {
   }
 
   if(!(mode & PKGCFG_EXISTS)) {
-    /*
-     */
     buffer_putsa(buffer_1, &value);
     buffer_putnlflush(buffer_1);
   }
@@ -1019,8 +1058,11 @@ usage(char* progname) {
   buffer_puts(buffer_1, "  --path                            show the exact filenames for any matching .pc files\n");
   buffer_puts(buffer_1, "  --modversion                      print the specified module's version to stdout\n");
   buffer_puts(buffer_1, "  --list-all                        list all known packages\n");
+  buffer_puts(buffer_1, "  --list-path                       list path of all known packages\n");
   buffer_puts(buffer_1, "  --verbose                         increase verbosity\n");
   buffer_puts(buffer_1, "  --debug                           show verbose debug information\n");
+  buffer_puts(buffer_1, "  --sorted                          sorted list output\n");
+  buffer_puts(buffer_1, "  --unsorted                        unsorted list output (default)\n");
   buffer_putnlflush(buffer_1);
 }
 
@@ -1030,6 +1072,7 @@ static strlist args;
 int
 main(int argc, char* argv[]) {
   int c;
+  id* code;
   int index = 0;
   int mode = 0;
   struct longopt opts[] = {
@@ -1043,6 +1086,7 @@ main(int argc, char* argv[]) {
       {"variable", 1, NULL, 'V'},
       {"list-all", 0, NULL, 'l'},
       {"list-path", 0, NULL, 'L'},
+      {"list-file", 0, NULL, 'F'},
       {"print-errors", 0, NULL, 'P'},
       {"short-errors", 0, NULL, 'S'},
       {"exists", 0, NULL, 'E'},
@@ -1083,7 +1127,7 @@ main(int argc, char* argv[]) {
   strlist_init(&args, '\t');
   strlist_fromv(&args, (const char**)argv, argc);
 
-#if DEBUG_OUTPUT
+#if DEBUG_OUTPUT_
   buffer_puts(buffer_2, "pkgcfg args = ");
   buffer_putsa(buffer_2, &args.sa);
   buffer_putnlflush(buffer_2);
@@ -1095,7 +1139,7 @@ main(int argc, char* argv[]) {
   opterr = 0;
 
   for(;;) {
-    c = getopt_long(argc, argv, "hmilLpaPSvV:", opts, &index);
+    c = getopt_long(argc, argv, "hmilLpaPSvV:F", opts, &index);
     if(c == -1 || opterr /* || argv[optind] == 0 */)
       break;
     if(c == 0)
@@ -1114,30 +1158,24 @@ main(int argc, char* argv[]) {
         show_version = 1;
         goto getopt_end;
       }
+      case 'F':
       case 'L':
-      case 'l':
-        if(!cmd.code)
-          cmd.code = c == 'l' ? LIST_ALL : LIST_PATH;
-        break;
+      case 'l': add_cmd(c == 'F' ? LIST_FILE : c == 'l' ? LIST_ALL : LIST_PATH); break;
       case LIBS_ONLY_L:
       case LIBS_ONLY_OTHER:
-        cmd.code |= PRINT_LIBS;
+        add_cmd(PRINT_LIBS);
         libs_mode = c;
         break;
       case CFLAGS_ONLY_I:
       case CFLAGS_ONLY_OTHER:
-        cmd.code |= PRINT_CFLAGS;
+        add_cmd(PRINT_CFLAGS);
         cflags_mode = c;
         break;
 
       case PRINT_VERSION:
       case PRINT_CFLAGS:
       case PRINT_LIBS:
-      case PRINT_PATH:
-
-        if(!cmd.code)
-          cmd.code |= c;
-        break;
+      case PRINT_PATH: add_cmd(c); break;
 
       case 'P': mode |= PKGCFG_PRINT_ERR; break;
       case 'S': mode |= PKGCFG_SHORT_ERR; break;
@@ -1148,7 +1186,7 @@ main(int argc, char* argv[]) {
 
         if(!str_diffn(arg, "--libs", 6) || !str_diffn(arg, "--cflags", 8)) {
           int i = arg[2] == 'l' ? PRINT_LIBS : PRINT_CFLAGS;
-          cmd.code |= i;
+          add_cmd(i);
           if(i == PRINT_LIBS)
             libs_mode = arg[str_find(arg, "only")] ? (arg[str_find(arg, "other")] ? LIBS_ONLY_OTHER : LIBS_ONLY_L) : 0;
           else
@@ -1178,7 +1216,7 @@ main(int argc, char* argv[]) {
 getopt_end:
 
   if(argv[optind - 1] && str_equal(argv[optind - 1], "--list-all")) {
-    cmd.code = LIST_ALL;
+    add_cmd(LIST_ALL);
   }
 
   if(show_version) {
@@ -1190,9 +1228,9 @@ getopt_end:
     return 0;
   }
   if(libs_mode)
-    cmd.code |= PRINT_LIBS;
+    add_cmd(PRINT_LIBS);
   if(cflags_mode)
-    cmd.code |= PRINT_CFLAGS;
+    add_cmd(PRINT_CFLAGS);
 
   sysroot = env_get("PKG_CONFIG_SYSROOT");
 
@@ -1227,17 +1265,19 @@ getopt_end:
     strlist_dump(buffer_2, &cmd.path);
     buffer_putnlflush(buffer_2);
   }
-
-  if(cmd.code == LIST_ALL || cmd.code == LIST_PATH) {
-    pkg_list();
-    exit(0);
-  } else if(optind < argc) {
-    strarray modules;
-    strarray_from_argv(argc - optind, (const char* const*)&argv[optind], &modules);
-    return pkg_conf(&modules, mode);
-  } else {
+  if(array_empty(&cmds)) {
     buffer_puts(buffer_2, "Must specify package names on the command line");
     buffer_putnlflush(buffer_2);
     return 1;
+  }
+  array_foreach_t(&cmds, code) {
+
+    if(*code == LIST_ALL || *code == LIST_PATH || *code == LIST_FILE) {
+      pkg_list(*code);
+    } else if(optind < argc) {
+      strarray modules;
+      strarray_from_argv(argc - optind, (const char* const*)&argv[optind], &modules);
+      pkg_conf(&modules, *code, mode);
+    }
   }
 }
