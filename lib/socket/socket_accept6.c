@@ -1,9 +1,24 @@
-#define USE_WS2_32 1
-#include "../socket_internal.h"
-#include "../io_internal.h"
-#include "../ip6.h"
-#include "../uint64.h"
-#include "../byte.h"
+#include <sys/param.h>
+#include <sys/types.h>
+#ifndef __MINGW32__
+#include <sys/socket.h>
+#include <netinet/in.h>
+#endif
+#include "windoze.h"
+#include "byte.h"
+#include "socket.h"
+#include "ip6.h"
+#include "haveip6.h"
+#include "havesl.h"
+#include "havescope.h"
+
+#ifdef __MINGW32__
+#include <windows.h>
+#include <mswsock.h>
+#include <errno.h>
+#include <stdio.h>
+#include "io_internal.h"
+#endif
 
 int
 socket_accept6(int s, char* ip, uint16* port, uint32* scope_id) {
@@ -13,10 +28,10 @@ socket_accept6(int s, char* ip, uint16* port, uint32* scope_id) {
   struct sockaddr_in sa;
 #endif
   socklen_t dummy = sizeof sa;
-  int64 fd;
+  int fd;
 
-#if WINDOWS_NATIVE && !defined(USE_SELECT)
-  io_entry* e = array_get(io_getfds(), sizeof(io_entry), s);
+#ifdef __MINGW32__
+  io_entry* e = array_get(&io_fds, sizeof(io_entry), s);
   if(e && e->inuse) {
     int sa2len;
     fd = -1;
@@ -32,16 +47,16 @@ socket_accept6(int s, char* ip, uint16* port, uint32* scope_id) {
         GetAcceptExSockaddrs(e->inbuf, 0, 200, 200, &x, &sa2len, &y, &dummy);
         if(dummy > sizeof(sa))
           dummy = sizeof(sa);
-        byte_copy(&sa, dummy, y);
+        memcpy(&sa, y, dummy);
       }
       fd = e->next_accept;
       e->next_accept = 0;
       if(e->nonblock) {
         if(io_fd(fd)) {
-          io_entry* f = array_get(io_getfds(), sizeof(io_entry), fd);
+          io_entry* f = array_get(&io_fds, sizeof(io_entry), fd);
           if(f) {
             f->nonblock = 1;
-            /*      printf("setting fd %lu to non-blocking\n",(int64)fd); */
+            //	    printf("setting fd %lu to non-blocking\n",(int)fd);
           }
         }
       }
@@ -50,7 +65,7 @@ socket_accept6(int s, char* ip, uint16* port, uint32* scope_id) {
     /* no accept queued, queue one now. */
     if(e->next_accept == 0) {
       e->next_accept = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-      if(e == INVALID_HANDLE_VALUE)
+      if(e == -1)
         return winsock2errno(-1);
     }
     if(AcceptEx(s, e->next_accept, e->inbuf, 0, 200, 200, &e->errorcode, &e->or))
@@ -68,12 +83,12 @@ socket_accept6(int s, char* ip, uint16* port, uint32* scope_id) {
     fd = accept(s, (struct sockaddr*)&sa, &dummy);
     if(fd == -1)
       return winsock2errno(-1);
-#if WINDOWS_NATIVE && !defined(USE_SELECT)
+#ifdef __MINGW32__
   }
 #endif
 
 #ifdef LIBC_HAS_IP6
-  if(noipv6 || sa.sin6_family == AF_INET || sa.sin6_family == PF_INET) {
+  if(noipv6 || sa.sin6_family == AF_INET || sa.sin6_family == AF_INET) {
     struct sockaddr_in* sa4 = (struct sockaddr_in*)&sa;
     if(ip) {
       byte_copy(ip, 12, V4mappedprefix);

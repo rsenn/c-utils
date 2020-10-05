@@ -1,13 +1,16 @@
-#define USE_WS2_32 1
-
-#if WINDOWS_NATIVE
-#define _WINSOCKAPI_
-#endif
-
-#include "../socket_internal.h"
+#include <sys/param.h>
 #include <sys/types.h>
-#include "../byte.h"
-#include "../ip6.h"
+#ifndef __MINGW32__
+#include <sys/socket.h>
+#include <netinet/in.h>
+#endif
+#include "windoze.h"
+#include "byte.h"
+#include "socket.h"
+#include "ip6.h"
+#include "haveip6.h"
+#include "havesl.h"
+#include "havescope.h"
 
 ssize_t
 socket_recv6(int s, char* buf, size_t len, char ip[16], uint16* port, uint32* scope_id) {
@@ -24,7 +27,7 @@ socket_recv6(int s, char* buf, size_t len, char ip[16], uint16* port, uint32* sc
     return winsock2errno(-1);
 
 #ifdef LIBC_HAS_IP6
-  if(noipv6 || si.sin6_family == AF_INET || si.sin6_family == PF_INET) {
+  if(noipv6 || si.sin6_family == AF_INET || si.sin6_family == AF_INET) {
     struct sockaddr_in* si4 = (struct sockaddr_in*)&si;
     if(ip) {
       byte_copy(ip, 12, V4mappedprefix);
@@ -45,7 +48,6 @@ socket_recv6(int s, char* buf, size_t len, char ip[16], uint16* port, uint32* sc
   if(scope_id)
     *scope_id = 0;
 #endif
-
 #else
   if(ip) {
     byte_copy(ip, 12, (char*)V4mappedprefix);

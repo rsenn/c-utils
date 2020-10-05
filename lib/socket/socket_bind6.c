@@ -1,17 +1,17 @@
-#define USE_WS2_32 1
-
-#if WINDOWS_NATIVE
-#define _WINSOCKAPI_
-#endif
-
-#include "../socket_internal.h"
-#include "../byte.h"
-#include "../ip6.h"
-
 #include <errno.h>
+#include "haveip6.h"
+#include <sys/types.h>
+#ifndef __MINGW32__
+#include <sys/socket.h>
+#include <netinet/in.h>
+#endif
+#include "windoze.h"
+#include "ip6.h"
+#include "byte.h"
+#include "socket.h"
 
 int
-socket_bind6(int s, const char* ip, uint16 port, uint32 scope_id) {
+socket_bind6(int s, const char ip[16], uint16 port, uint32 scope_id) {
 #ifdef LIBC_HAS_IP6
   struct sockaddr_in6 sa;
 #endif

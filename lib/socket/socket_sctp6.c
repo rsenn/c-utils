@@ -1,11 +1,6 @@
-#define USE_WS2_32 1
-
-#if WINDOWS_NATIVE
-#define _WINSOCKAPI_
-#endif
-
-#include "../socket_internal.h"
-#include "../ndelay.h"
+#include <unistd.h>
+#include "socket.h"
+#include "ndelay.h"
 
 int
 socket_sctp6(void) {
@@ -13,7 +8,7 @@ socket_sctp6(void) {
   if(s == -1)
     return -1;
   if(ndelay_on(s) == -1) {
-    closesocket(s);
+    close(s);
     return -1;
   }
   return s;

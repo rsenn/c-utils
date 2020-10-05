@@ -37,15 +37,19 @@
 #include "lib/stralloc.h"
 #include "lib/dns.h"
 #include "lib/ip4.h"
-#include "lib/map.h"
+#include "lib/ip6.h"
 #include "lib/safemult.h"
 #include "lib/str.h"
 #include "lib/mmap.h"
 #include "lib/scan.h"
+#include "lib/byte.h"
 #include "lib/uint32.h"
 
 #include <stdlib.h>
+#include <stdbool.h>
 #include <errno.h>
+
+#include "map.h"
 
 #if WINDOWS_NATIVE
 #include <io.h>
@@ -58,7 +62,13 @@
 #define HOSTS_FILE "/etc/hosts"
 #endif
 
-static map_t(uint32) hosts_db;
+typedef struct {
+  bool ip6;
+  uint32 scope_id;
+  char ip[16];
+} address_t;
+
+static MAP_T hosts_db;
 static char ipbuf[IP4_FMT];
 
 void
@@ -68,13 +78,39 @@ usage(char* prog) {
   buffer_putnlflush(buffer_2);
 }
 
+size_t
+scan_address(const char* x, address_t* addr) {
+  size_t i;
+  byte_zero(addr, sizeof(address_t));
+
+  if((i = scan_ip4(x, addr->ip)) == 0) {
+    if((i = scan_ip6if(x, addr->ip, &addr->scope_id)))
+      addr->ip6 = true;
+  } else {
+    addr->ip6 = false;
+  }
+  return i;
+}
+
+size_t
+fmt_address(char* x, const address_t* addr) {
+  size_t n;
+
+  if(addr->ip6)
+    n = fmt_ip6if(x, addr->ip, addr->scope_id);
+  else
+    n = fmt_ip4(x, addr->ip);
+  return n;
+}
+
 int
 read_hosts(const char* file) {
   const char* p;
   size_t s, l, e, i;
   char* x;
   size_t n;
-  char ip[4];
+  bool ip6;
+  address_t addr;
   stralloc hostname;
   stralloc_init(&hostname);
 
@@ -92,8 +128,11 @@ read_hosts(const char* file) {
     if(p[s] == '#')
       continue;
 
-    if((i = scan_ip4(&p[s], ip))) {
+    i = scan_address(&p[s], &addr);
+
+    if(i) {
       size_t hlen;
+
       s += i;
       s += scan_whitenskip(&p[s], l - s);
 
@@ -104,7 +143,7 @@ read_hosts(const char* file) {
 
 #ifdef DEBUG_OUTPUT_
         buffer_puts(buffer_1, "IP: ");
-        buffer_put(buffer_1, ipbuf, ip4_fmt(ipbuf, ip));
+        buffer_put(buffer_1, ipbuf, fmt_address(ipbuf, &addr));
 
         buffer_puts(buffer_1, ", Hostname: ");
         buffer_putsa(buffer_1, &hostname);
@@ -112,7 +151,7 @@ read_hosts(const char* file) {
 #endif
         stralloc_nul(&hostname);
 
-        map_set(&hosts_db, hostname.s, *(uint32*)ip);
+        MAP_INSERT(hosts_db, hostname.s, hostname.len + 1, &addr, sizeof(addr));
 
         s += hlen;
         s += scan_whitenskip(&p[s], l - s);
@@ -124,14 +163,29 @@ read_hosts(const char* file) {
 }
 
 int
-lookup_hosts(stralloc* name, stralloc* ips) {
-  void* ptr;
+lookup_hosts(stralloc* name, address_t* addr) {
+  address_t* ptr;
   stralloc_nul(name);
-  if((ptr = map_get(&hosts_db, name->s))) {
-    stralloc_copyb(ips, ptr, 4);
+  if((ptr = MAP_GET(hosts_db, name->s, name->len + 1))) {
+    byte_copy(addr, sizeof(address_t), ptr);
     return 1;
   }
   return 0;
+}
+
+void
+dump_hosts() {
+  char buf[256];
+  MAP_PAIR_T ptr;
+  MAP_FOREACH(hosts_db, ptr) {
+    const char* host = MAP_KEY(ptr);
+    address_t* addr = MAP_DATA(ptr);
+
+    buffer_put(buffer_2, buf, fmt_address(buf, addr));
+    buffer_putspace(buffer_2);
+    buffer_puts(buffer_2, host);
+    buffer_putnlflush(buffer_2);
+  }
 }
 
 int
@@ -147,6 +201,7 @@ main(int argc, char* argv[]) {
   stralloc host, ips;
   tai6464 now, deadline, timeout;
   static char seed[128];
+  address_t addr;
 
   errmsg_iam(argv[0]);
 
@@ -174,25 +229,33 @@ main(int argc, char* argv[]) {
 
   dns_random_init(seed);
 
+  MAP_NEW(hosts_db);
   read_hosts(HOSTS_FILE);
 
-  sock = socket_tcp4();
+  dump_hosts();
 
   stralloc_init(&ips);
 
   stralloc_init(&host);
   stralloc_copys(&host, argv[optind]);
 
-  if(!lookup_hosts(&host, &ips)) {
-    if(dns_ip4(&ips, &host) == -1) {
-      errmsg_warnsys("unable to find IP address for ", argv[optind], 0);
-      return 111;
+  if(!lookup_hosts(&host, &addr)) {
+    if(dns_ip6(&ips, &ips) == -1) {
+      if(dns_ip4(&ips, &ips) == -1) {
+        errmsg_warnsys("unable to find IP address for ", argv[optind], 0);
+        return 111;
+      } else {
+        addr.ip6 = false;
+      }
+    } else {
+      addr.ip6 = true;
     }
+    byte_copy(addr.ip, addr.ip6 ? 16 : 4, ips.s);
   }
 
-#ifdef DEBUG_OUTPUT
+#ifdef DEBUG_OUTPUT_
   buffer_putm_internal(buffer_1, "IP address for ", argv[optind], ": ", NULL);
-  buffer_put(buffer_1, ipbuf, ip4_fmt(ipbuf, ips.s));
+  buffer_put(buffer_1, ipbuf, ip6 ? ip6_fmt(ipbuf, ips.s) : ip4_fmt(ipbuf, ips.s));
   buffer_putnlflush(buffer_1);
 #endif
 
@@ -206,9 +269,12 @@ main(int argc, char* argv[]) {
     return 105;
   }
 
+  sock = addr.ip6 ? socket_tcp6() : socket_tcp4();
+
   io_fd(sock);
 
-  if((ret = socket_connect4(sock, ips.s, port)) != 0) {
+  if((ret = addr.ip6 ? socket_connect6(sock, addr.ip, port, addr.scope_id) : socket_connect4(sock, addr.ip, port)) !=
+     0) {
     if(errno != EINPROGRESS) {
 #if 1 // def HAVE_SOLARIS
       /* solaris immediately returns ECONNREFUSED on local ports */
@@ -235,9 +301,11 @@ main(int argc, char* argv[]) {
 
     taia_now(&now);
 
+#ifdef DEBUG_OUTPUT_
     buffer_puts(buffer_2, "Now: ");
     buffer_puttai(buffer_2, &now.sec);
     buffer_putnlflush(buffer_2);
+#endif
 
     taia_uint(&timeout, timeout_sec + timeout_usec / 1000000);
     umult64(timeout_usec % 1000000, 1000, &result);
@@ -245,9 +313,11 @@ main(int argc, char* argv[]) {
     timeout.nano = result;
     taia_add(&deadline, &now, &timeout);
 
+#ifdef DEBUG_OUTPUT_
     buffer_puts(buffer_2, "Deadline: ");
     buffer_puttai(buffer_2, &deadline.sec);
     buffer_putnlflush(buffer_2);
+#endif
 
     io_waituntil(deadline);
 

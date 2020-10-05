@@ -1,18 +1,15 @@
-#define USE_WS2_32 1
-
-#if WINDOWS_NATIVE
-#define _WINSOCKAPI_
+#include <sys/types.h>
+#include <sys/param.h>
+#ifndef __MINGW32__
+#include <sys/socket.h>
+#include <netinet/in.h>
 #endif
-
-#include "../socket_internal.h"
-#include "../byte.h"
-#include "../ip6.h"
-#include <errno.h>
-
-#ifdef IPV6_JOIN_GROUP
-#undef LIBC_HAS_IP6
-#define LIBC_HAS_IP6
-#endif
+#include "windoze.h"
+#include "socket.h"
+#include "byte.h"
+#include "haveip6.h"
+#include "ip6.h"
+#include "errno.h"
 
 #ifndef IPV6_ADD_MEMBERSHIP
 #ifdef IPV6_JOIN_GROUP
@@ -20,7 +17,6 @@
 #else
 #undef LIBC_HAS_IP6
 #endif
-
 #endif
 
 int
@@ -33,7 +29,7 @@ socket_mcjoin6(int s, const char ip[16], int _interface) {
 #ifdef LIBC_HAS_IP6
   byte_copy(&opt.ipv6mr_multiaddr, 16, ip);
   opt.ipv6mr_interface = _interface;
-  return winsock2errno(setsockopt(s, IPPROTO_IPV6, IPV6_ADD_MEMBERSHIP, (void*)&opt, sizeof opt));
+  return winsock2errno(setsockopt(s, IPPROTO_IPV6, IPV6_ADD_MEMBERSHIP, &opt, sizeof opt));
 #else
   errno = EPROTONOSUPPORT;
   return -1;

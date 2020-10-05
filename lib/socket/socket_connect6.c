@@ -1,15 +1,18 @@
-#define USE_WS2_32 1
-
-#if WINDOWS_NATIVE
-#define _WINSOCKAPI_
+#include <sys/param.h>
+#include <sys/types.h>
+#ifndef __MINGW32__
+#include <sys/socket.h>
+#include <netinet/in.h>
 #endif
-
-#include "../socket_internal.h"
-#include "../ip6.h"
-#include "../uint16.h"
-#include "../uint32.h"
-#include "../byte.h"
+#include "windoze.h"
 #include <errno.h>
+#include "byte.h"
+#include "socket.h"
+#include "ip6.h"
+#include "haveip6.h"
+#include "uint32.h"
+#include "ip4.h"
+#include "havescope.h"
 
 int
 socket_connect6(int s, const char ip[16], uint16 port, uint32 scope_id) {
@@ -20,12 +23,12 @@ socket_connect6(int s, const char ip[16], uint16 port, uint32 scope_id) {
 #endif
     if(ip6_isv4mapped(ip))
       return winsock2errno(socket_connect4(s, ip + 12, port));
-    if(byte_equal(ip, 16, socket_ip6loopback()))
-      return winsock2errno(socket_connect4(s, socket_ip4loopback(), port));
+    if(byte_equal(ip, 16, V6loopback))
+      return winsock2errno(socket_connect4(s, ip4loopback, port));
 #ifdef LIBC_HAS_IP6
   }
   byte_zero(&sa, sizeof sa);
-  sa.sin6_family = PF_INET6;
+  sa.sin6_family = AF_INET6;
   uint16_pack_big((char*)&sa.sin6_port, port);
   sa.sin6_flowinfo = 0;
 #ifdef LIBC_HAS_SCOPE_ID

@@ -33,7 +33,7 @@ socket_sctp6b(void) {
   __winsock_init();
   if(noipv6)
     goto compat;
-  s = winsock2errno(socket(PF_INET6, SOCK_STREAM, IPPROTO_SCTP));
+  s = winsock2errno(socket(AF_INET6, SOCK_STREAM, IPPROTO_SCTP));
   if(s == -1) {
     if(errno == EINVAL || errno == EAFNOSUPPORT || errno == EPFNOSUPPORT || errno == EPROTONOSUPPORT) {
     compat:

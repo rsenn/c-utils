@@ -8,7 +8,7 @@ int
 socket_udp4b(void) {
   int s;
   __winsock_init();
-  s = winsock2errno(socket(PF_INET, SOCK_DGRAM, IPPROTO_UDP));
+  s = winsock2errno(socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP));
   return s;
 }
 

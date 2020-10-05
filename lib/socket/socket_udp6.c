@@ -1,17 +1,21 @@
-#define USE_WS2_32 1
-#include "../socket_internal.h"
 #include <sys/types.h>
-#include "../ndelay.h"
+#ifndef __MINGW32__
+#include <unistd.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#endif
+#include "windoze.h"
 #include <errno.h>
+#include "haveip6.h"
+#include "socket.h"
+#include "ndelay.h"
 
 #ifndef EAFNOSUPPORT
 #define EAFNOSUPPORT EINVAL
 #endif
-
 #ifndef EPFNOSUPPORT
 #define EPFNOSUPPORT EAFNOSUPPORT
 #endif
-
 #ifndef EPROTONOSUPPORT
 #define EPROTONOSUPPORT EAFNOSUPPORT
 #endif
@@ -24,19 +28,16 @@ socket_udp6b(void) {
   __winsock_init();
   if(noipv6)
     goto compat;
-  s = winsock2errno(socket(PF_INET6, SOCK_DGRAM, 0));
+  s = winsock2errno(socket(AF_INET6, SOCK_DGRAM, 0));
   if(s == -1) {
-#ifndef __CYGWIN__
-    if(!(errno == EINVAL || errno == EAFNOSUPPORT || errno == EPFNOSUPPORT || errno == EPROTONOSUPPORT))
-      return -1;
-#endif
-    {
+    if(errno == EINVAL || errno == EAFNOSUPPORT || errno == EPFNOSUPPORT || errno == EPROTONOSUPPORT) {
     compat:
       s = winsock2errno(socket(AF_INET, SOCK_DGRAM, 0));
       noipv6 = 1;
       if(s == -1)
         return -1;
-    }
+    } else
+      return -1;
   }
 #ifdef IPV6_V6ONLY
   {
@@ -54,7 +55,7 @@ int
 socket_udp6(void) {
   int s = socket_udp6b();
   if(s != -1 && ndelay_on(s) == -1) {
-    closesocket(s);
+    close(s);
     return -1;
   }
   return s;

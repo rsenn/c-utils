@@ -20,10 +20,10 @@ scan_ip6if(const char* src, char* ip, uint32* scope_id) {
     for(j = i + 1; isalnum(src[j]); ++j)
       ;
     if(!src[j])
-      tmp = (char*)src + i + 1;
+      tmp = (char*)&src[i + 1];
     else {
       tmp = malloc(j - i);
-      byte_copy(tmp, j - (i + 1), src + i + 1);
+      byte_copy(tmp, j - (i + 1), &src[i + 1]);
       tmp[j - (i + 1)] = 0;
     }
     if(tmp) {
