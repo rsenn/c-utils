@@ -4,20 +4,20 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #endif
-#include "windoze.h"
-#include "byte.h"
-#include "socket.h"
-#include "ip6.h"
-#include "haveip6.h"
-#include "havesl.h"
-#include "havescope.h"
+#include "../windoze.h"
+#include "../byte.h"
+#include "../socket_internal.h"
+#include "../ip6.h"
+/*#include "haveip6.h"*/
+/*#include "havesl.h"*/
+/*#include "havescope.h"*/
 
 #ifdef __MINGW32__
 #include <windows.h>
 #include <mswsock.h>
 #include <errno.h>
 #include <stdio.h>
-#include "io_internal.h"
+#include "../io_internal.h"
 #endif
 
 int

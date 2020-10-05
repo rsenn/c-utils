@@ -1,7 +1,7 @@
-#include "fmt.h"
-#include "byte.h"
-#include "ip4.h"
-#include "ip6.h"
+#include "../fmt.h"
+#include "../byte.h"
+#include "../ip4.h"
+#include "../ip6.h"
 
 size_t
 fmt_ip6(char* s, const char ip[16]) {

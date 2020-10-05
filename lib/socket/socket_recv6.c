@@ -4,13 +4,13 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #endif
-#include "windoze.h"
-#include "byte.h"
-#include "socket.h"
-#include "ip6.h"
-#include "haveip6.h"
-#include "havesl.h"
-#include "havescope.h"
+#include "../windoze.h"
+#include "../byte.h"
+#include "../socket_internal.h"
+#include "../ip6.h"
+/*#include "haveip6.h"*/
+/*#include "havesl.h"*/
+/*#include "havescope.h"*/
 
 ssize_t
 socket_recv6(int s, char* buf, size_t len, char ip[16], uint16* port, uint32* scope_id) {

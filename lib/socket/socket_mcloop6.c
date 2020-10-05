@@ -4,9 +4,9 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #endif
-#include "windoze.h"
-#include "socket.h"
-#include "haveip6.h"
+#include "../windoze.h"
+#include "../socket_internal.h"
+/*#include "haveip6.h"*/
 
 int
 socket_mcloop6(int s, char loop) {

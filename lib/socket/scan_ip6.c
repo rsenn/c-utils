@@ -1,6 +1,6 @@
-#include "scan.h"
-#include "ip4.h"
-#include "ip6.h"
+#include "../scan.h"
+#include "../ip4.h"
+#include "../ip6.h"
 
 /*
  * IPv6 addresses are really ugly to parse.

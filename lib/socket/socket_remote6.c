@@ -4,14 +4,14 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #endif
-#include "windoze.h"
-#include "byte.h"
-#include "socket.h"
-#include "ip6.h"
-#include "haveip6.h"
-#include "uint32.h"
-#include "havesl.h"
-#include "havescope.h"
+#include "../windoze.h"
+#include "../byte.h"
+#include "../socket_internal.h"
+#include "../ip6.h"
+/*#include "haveip6.h"*/
+#include "../uint32.h"
+/*#include "havesl.h"*/
+/*#include "havescope.h"*/
 
 int
 socket_remote6(int s, char ip[16], uint16* port, uint32* scope_id) {

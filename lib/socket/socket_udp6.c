@@ -4,11 +4,11 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #endif
-#include "windoze.h"
+#include "../windoze.h"
 #include <errno.h>
-#include "haveip6.h"
-#include "socket.h"
-#include "ndelay.h"
+/*#include "haveip6.h"*/
+#include "../socket_internal.h"
+#include "../ndelay.h"
 
 #ifndef EAFNOSUPPORT
 #define EAFNOSUPPORT EINVAL

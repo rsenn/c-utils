@@ -232,25 +232,30 @@ main(int argc, char* argv[]) {
   MAP_NEW(hosts_db);
   read_hosts(HOSTS_FILE);
 
+#ifdef DEBUG_OUTPUT_
   dump_hosts();
+#endif
 
   stralloc_init(&ips);
 
   stralloc_init(&host);
   stralloc_copys(&host, argv[optind]);
+  stralloc_nul(&host);
 
-  if(!lookup_hosts(&host, &addr)) {
-    if(dns_ip6(&ips, &ips) == -1) {
-      if(dns_ip4(&ips, &ips) == -1) {
-        errmsg_warnsys("unable to find IP address for ", argv[optind], 0);
-        return 111;
+  if(!scan_address(host.s, &addr)) {
+    if(!lookup_hosts(&host, &addr)) {
+      if(dns_ip6(&ips, &ips) == -1) {
+        if(dns_ip4(&ips, &ips) == -1) {
+          errmsg_warnsys("unable to find IP address for ", argv[optind], 0);
+          return 111;
+        } else {
+          addr.ip6 = false;
+        }
       } else {
-        addr.ip6 = false;
+        addr.ip6 = true;
       }
-    } else {
-      addr.ip6 = true;
+      byte_copy(addr.ip, addr.ip6 ? 16 : 4, ips.s);
     }
-    byte_copy(addr.ip, addr.ip6 ? 16 : 4, ips.s);
   }
 
 #ifdef DEBUG_OUTPUT_

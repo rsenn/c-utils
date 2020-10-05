@@ -1,14 +1,14 @@
 #include <errno.h>
-#include "haveip6.h"
+/*#include "haveip6.h"*/
 #include <sys/types.h>
 #ifndef __MINGW32__
 #include <sys/socket.h>
 #include <netinet/in.h>
 #endif
-#include "windoze.h"
-#include "ip6.h"
-#include "byte.h"
-#include "socket.h"
+#include "../windoze.h"
+#include "../ip6.h"
+#include "../byte.h"
+#include "../socket_internal.h"
 
 int
 socket_bind6(int s, const char ip[16], uint16 port, uint32 scope_id) {

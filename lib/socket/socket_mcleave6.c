@@ -4,12 +4,12 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #endif
-#include "windoze.h"
-#include "socket.h"
-#include "byte.h"
-#include "haveip6.h"
-#include "errno.h"
-#include "ip6.h"
+#include "../windoze.h"
+#include "../socket_internal.h"
+#include "../byte.h"
+/*#include "haveip6.h"*/
+#include "../errno.h"
+#include "../ip6.h"
 
 #ifndef IPV6_DROP_MEMBERSHIP
 #ifdef IPV6_LEAVE_GROUP
