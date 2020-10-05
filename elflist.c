@@ -13,6 +13,7 @@
 #include "lib/fmt.h"
 #include "lib/strlist.h"
 #include <stdlib.h>
+#include <stdbool.h>
 
 void elf_dump_dynamic(range map);
 void elf_dump_sections(range map);
@@ -89,6 +90,7 @@ usage(char* av0) {
                        "  -D, --defined           List defined symbols\n",
                        "  -U, --undefined         List undefined symbols\n",
                        "  -F, --file-header       Dump file header\n",
+                       "  -S, --sections          Dump sections\n",
                        "\n",
                        0);
   buffer_flush(buffer_1);
@@ -98,7 +100,7 @@ int
 main(int argc, char** argv) {
   static range map;
   size_t filesize;
-  static int dump_file_header = 0;
+  static bool dump_file_header = false, dump_sections = false;
 
   int c, index = 0;
 
@@ -106,6 +108,7 @@ main(int argc, char** argv) {
                            {"defined", 0, &list_defined, 'D'},
                            {"undefined", 0, &list_undefined, 'U'},
                            {"file-header", 0, 0, 'F'},
+                           {"sections", 0, 0, 'S'},
                            {0, 0, 0, 0}};
 
   for(;;) {
@@ -119,7 +122,8 @@ main(int argc, char** argv) {
       case 'h': usage(argv[0]); return 0;
       case 'D': list_defined = 1; break;
       case 'U': list_undefined = 1; break;
-      case 'F': dump_file_header = 1; break;
+      case 'F': dump_file_header = true; break;
+      case 'S': dump_sections = true; break;
       default: {
         usage(argv[0]);
         return 1;
@@ -153,7 +157,8 @@ main(int argc, char** argv) {
 
     interp = elf_get_section(map.start, ".interp", NULL);
 
-    elf_dump_sections(map);
+    if(dump_sections)
+      elf_dump_sections(map);
     elf_dump_segments(map);
     elf_dump_dynamic(map);
 

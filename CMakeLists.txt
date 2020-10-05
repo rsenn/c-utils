@@ -144,20 +144,20 @@ if(NOT HAVE_SOCKLEN_T)
   add_definitions(-Dsocklen_t=int)
 endif(NOT HAVE_SOCKLEN_T)
 
-check_compile(HAVE___INLINE "static __inline int\nfoo(int bar) {\n  return bar + 1;\n}\n")
-if(HAVE___INLINE)
+check_compile(HAVE___INLINE__ "static __inline__ int\nfoo(int bar) {\n  return bar + 1;\n}\n")
+if(HAVE___INLINE__)
   add_definitions(-Dinline=__inline)
-else(HAVE___INLINE)
-  check_compile(HAVE___INLINE__ "static __inline__ int\nfoo(int bar) {\n  return bar + 1;\n}\n")
-  if(HAVE___INLINE__)
-    add_definitions(-Dinline=__inline__)
-  else(HAVE___INLINE__)
+else(HAVE___INLINE__)
+  check_compile(HAVE___INLINE "static __inline int\nfoo(int bar) {\n  return bar + 1;\n}\n")
+  if(HAVE___INLINE)
+    add_definitions(-Dinline=__inline)
+  else(HAVE___INLINE)
     check_compile(HAVE_INLINE "static inline int\nfoo(int bar) {\n  return bar + 1;\n}\n")
     if(NOT HAVE_INLINE)
       add_definitions(-Dinline=)
     endif(NOT HAVE_INLINE)
-  endif(HAVE___INLINE__)
-endif(HAVE___INLINE)
+  endif(HAVE___INLINE)
+endif(HAVE___INLINE__)
 
 check_compile(HAVE_UINT128 "__uint128_t tmp;\n")
 
@@ -1237,6 +1237,7 @@ set(COMMON_LIBS
     open
     fmt)
 file(GLOB MODHEADERS lib/*.h)
+
 function(add_program PROG)
   unset(INCLUDES)
   unset(LIBS)
@@ -1267,6 +1268,7 @@ function(add_program PROG)
     set_target_properties(${PROG} PROPERTIES SUFFIX ".${EMSCRIPTEN_EXE_SUFFIX}")
   endif(EMSCRIPTEN)
 endfunction(add_program PROG)
+
 function(add_module MOD SRC)
   unset(INCLUDES)
   #[[ foreach(DEP ${ARGN})
@@ -1791,30 +1793,9 @@ add_program(
   strarray
   strlist
   stralloc)
-add_program(
-  tcping
-  hmap
-  unix
-  dns
-  case
-  io
-  array
-  socket
-  ndelay
-  errmsg
-  taia
-  tai
-  buffer
-  stralloc
-  mmap
-  open
-  fmt
-  scan
-  str
-  byte
-  uint16
-  ${LIBMSWSOCK}
-  ${LIBIPHLPAPI})
+add_program(tcping hmap unix dns case io array socket ndelay errmsg taia tai buffer stralloc mmap open fmt scan str byte uint16 ${LIBMSWSOCK} ${LIBIPHLPAPI})
+set(dnscache_SOURCES cache.c cache.h log.c log.h query.c query.h response.c response.h   roots.c roots.h  )
+add_program(dnscache  dns  errmsg dir stralloc alloc env byte uint16 ${LIBMSWSOCK} ${LIBIPHLPAPI})
 add_program(crc errmsg buffer mmap open ${ZLIB_LIBRARY})
 add_program(
   cmake-run
