@@ -66,7 +66,6 @@ macro(show_result RESULT_VAR)
   else(${${RESULT_VAR}})
     set(RESULT_VALUE no)
   endif(${${RESULT_VAR}})
-  message("${RESULT_VAR}: ${RESULT_VALUE}")
 endmacro(show_result RESULT_VAR)
 
 macro(check_compile RESULT_VAR SOURCE)
@@ -90,8 +89,7 @@ macro(check_compile RESULT_VAR SOURCE)
     string(REPLACE "\n" ";" OUTPUT "${OUTPUT}")
     list(FILTER OUTPUT INCLUDE REGEX "error")
 
-    message("Check ${RESULT_VAR} failed")
-    # message("Source:\n${SOURCE}") message("Output:\n${OUTPUT}")
+    # message("Check ${RESULT_VAR} failed") message("Source:\n${SOURCE}") message("Output:\n${OUTPUT}")
   endif(${${RESULT_VAR}})
 
   show_result(${RESULT_VAR})
@@ -130,6 +128,40 @@ if(NOT USE_SELECT)
 endif(NOT USE_SELECT)
 
 check_compile(HAVE_N2I "#include <sys/types.h>\n#include <sys/socket.h>\n#include <net/if.h>\n\nint\nmain() {\n  static char ifname[IFNAMSIZ];\n  char* tmp = if_indextoname(0, ifname);\n  (void)tmp;\n  return 0;\n}\n")
+
+check_compile(
+  HAVE_BSDSENDFILE
+  "/* for macos X, don't ask */\n#define SENDFILE 1\n\n#include <sys/types.h>\n#include <sys/socket.h>\n#include <sys/uio.h>\n#include <errno.h>\n#include <netinet/in.h>\n#include <netinet/tcp.h>\n\nint\nmain() {\n  struct sf_hdtr hdr;\n  struct iovec v[17 + 23];\n  int r, fd = 1;\n  off_t sbytes;\n  hdr.headers = v;\n  hdr.hdr_cnt = 17;\n  hdr.trailers = v + 17;\n  hdr.trl_cnt = 23;\n  r = sendfile(0, 1, 37, 42, &hdr, &sbytes, 0);\n  (void)r;\n  return 0;\n}\n"
+)
+
+check_compile(
+  HAVE_SENDFILE
+  "#ifdef __hpux__\n#include <sys/types.h>\n#include <sys/uio.h>\n#include <sys/socket.h>\n#include <stdio.h>\n\nint\nmain() {\n  /*\n        sbsize_t sendfile(int s, int fd, off_t offset, bsize_t nbytes,\n                      const struct iovec *hdtrl, int flags);\n  */\n  struct iovec x[2];\n  int fd = open(\"havesendfile.c\", 0);\n  x[0].iov_base = \"header\";\n  x[0].iov_len = 6;\n  x[1].iov_base = \"footer\";\n  x[1].iov_len = 6;\n  sendfile(1 /* dest socket */, fd /* src file */, 0 /* offset */, 23 /* nbytes */, x, 0);\n  perror(\"sendfile\");\n  return 0;\n}\n#elif defined(__sun__) && defined(__svr4__)\n#include <sys/types.h>\n#include <sys/socket.h>\n#include <sys/sendfile.h>\n#include <stdio.h>\n\nint\nmain() {\n  off_t o;\n  o = 0;\n  sendfile(1 /* dest */, 0 /* src */, &o, 23 /* nbytes */);\n  perror(\"sendfile\");\n  return 0;\n}\n#elif defined(_AIX)\n\n#define _FILE_OFFSET_BITS 64\n#include <sys/types.h>\n#include <sys/socket.h>\n#include <unistd.h>\n#include <stdio.h>\n\nint\nmain() {\n  int fd = open(\"havesendfile.c\", 0);\n  struct sf_parms p;\n  int destfd = 1;\n  p.header_data = \"header\";\n  p.header_length = 6;\n  p.file_descriptor = fd;\n  p.file_offset = 0;\n  p.file_bytes = 23;\n  p.trailer_data = \"footer\";\n  p.trailer_length = 6;\n  if(send_file(&destfd, &p, 0) >= 0)\n    printf(\"sent %lu bytes.\\\\n\", p.bytes_sent);\n  return 0;\n}\n#elif defined(__linux__)\n\n#define _FILE_OFFSET_BITS 64\n#include <sys/types.h>\n#include <unistd.h>\n#if defined(__GLIBC__)\n#include <sys/sendfile.h>\n#elif defined(__dietlibc__)\n#include <sys/sendfile.h>\n#else\n#include <linux/unistd.h>\n_syscall4(int, sendfile, int, out, int, in, long*, offset, unsigned long, count)\n#endif\n#include <stdio.h>\n\nint\nmain() {\n  int fd = open(\"havesendfile.c\", 0);\n  off_t o = 0;\n  off_t r = sendfile(1, fd, &o, 23);\n  if(r != -1)\n    printf(\"sent %llu bytes.\\\\n\", r);\n  return 0;\n}\n\n#else\n#error unsupported architecture\n/* stupid fucking IRIX c99 does not signal #error via a non-zero exit\n * code!  ARGH!  So insert a parse error */\n#include rumpelstilzchen\n)\n#endif\n"
+)
+
+check_compile(HAVE_SOCKLEN_T "#include <sys/types.h>\n#ifdef __MINGW32__\n#include <winsock2.h>\n#include <ws2tcpip.h>\n#else\n#include <sys/socket.h>\n#include <netinet/in.h>\n#endif\n\nint\nmain() {\n  socklen_t t;\n  (void)t;\n  return 0;\n}\n")
+if(NOT HAVE_SOCKLEN_T)
+  add_definitions(-Dsocklen_t=int)
+endif(NOT HAVE_SOCKLEN_T)
+
+check_compile(HAVE___INLINE "static __inline int\nfoo(int bar) {\n  return bar + 1;\n}\n")
+if(HAVE___INLINE)
+  add_definitions(-Dinline=__inline)
+else(HAVE___INLINE)
+  check_compile(HAVE___INLINE__ "static __inline__ int\nfoo(int bar) {\n  return bar + 1;\n}\n")
+  if(HAVE___INLINE__)
+    add_definitions(-Dinline=__inline__)
+  else(HAVE___INLINE__)
+    check_compile(HAVE_INLINE "static inline int\nfoo(int bar) {\n  return bar + 1;\n}\n")
+    if(NOT HAVE_INLINE)
+      add_definitions(-Dinline=)
+    endif(NOT HAVE_INLINE)
+  endif(HAVE___INLINE__)
+endif(HAVE___INLINE)
+
+check_compile(HAVE_UINT128 "__uint128_t tmp;\n")
+
+check_compile(HAVE_ALLOCA "#include <stdlib.h>\n#ifdef A\n#include <alloca.h>\n#else\n#include <malloc.h>\n#endif\n\nint\nmain() {\n  char* c = alloca(23);\n  (void)c;\n  return 0;\n}\n")
 
 check_include_file(alloca.h HAVE_ALLOCA_H)
 if(HAVE_ALLOCA_H)
@@ -389,9 +421,7 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${DEFINES_H} -DHAVE_CONFIG_H=1")
 
 # message(INFO "Checking for epoll()...") check_function_exists(epoll_wait HAVE_EPOLL) if(HAVE_EPOLL) message(INFO "Checking for epoll()... OK") set(USE_EPOLL ON) set(USE_SELECT OFF) else(HAVE_EPOLL) message(INFO "Checking for epoll()... NOT FOUND") set(USE_EPOLL OFF) endif(HAVE_EPOLL)
 
-#if(USE_EPOLL STREQUAL ON)
-#  add_definitions(-DHAVE_EPOLL=1)
-#endif()
+# if(USE_EPOLL STREQUAL ON) add_definitions(-DHAVE_EPOLL=1) endif()
 
 check_library_exists(compat syscall "" HAVE_COMPAT_LIB)
 if(HAVE_COMPAT_LIB)
@@ -433,7 +463,7 @@ foreach(CompilerFlag ${CompilerFlags})
   set(${CompilerFlag}
       "${FLAG}"
       CACHE STRING "Compiler flags ${CompilerFlag}")
-  message("${CompilerFlag}: ${${CompilerFlag}}")
+  # message("${CompilerFlag}: ${${CompilerFlag}}")
 endforeach()
 
 include(${CMAKE_SOURCE_DIR}/build/cmake/Werror.cmake)
@@ -588,8 +618,7 @@ else()
   unset(OPENSSL_SSL_LIBRARY CACHE)
   unset(OPENSSL_INCLUDE_DIR CACHE)
 endif()
-# link_libraries( ${ZLIB_LIBRARY} ${BZIP2_LIBRARY} ${LIBLZMA_LIBRARY} ${CRYPTO_LIBRARIES} )
-add_definitions(-Dinline=__inline)
+# link_libraries( ${ZLIB_LIBRARY} ${BZIP2_LIBRARY} ${LIBLZMA_LIBRARY} ${CRYPTO_LIBRARIES} ) add_definitions(-Dinline=__inline)
 
 if(MINGW
    OR WIN32
@@ -718,7 +747,7 @@ message("MUX method: ${MUX_METHOD}")
 if(MUX_METHOD STREQUAL "SELECT")
   set(io_COMPILE_FLAGS -DUSE_SELECT=1)
 else()
-  set (io_COMPILE_FLAGS -DHAVE_${MUX_METHOD}=1)
+  set(io_COMPILE_FLAGS -DHAVE_${MUX_METHOD}=1)
 endif()
 
 if(WIN32 OR MSVC)
