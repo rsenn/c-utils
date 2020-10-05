@@ -16,8 +16,8 @@ option(USE_BZIP "bzip2 compression" ON)
 option(USE_ZLIB "zlib compression" ON)
 option(USE_SSL "ssl encryption" ON)
 
-#[[option(USE_SELECT "Use select() syscall" ON)
-option(USE_POLL "Use poll() syscall" OFF)
+option(USE_SELECT "Use select() syscall" ON)
+#[[option(USE_POLL "Use poll() syscall" OFF)
 option(USE_EPOLL "Use epoll() syscall" OFF)]]
 option(BUILD_SHARED_LIBS "Build shared libs" ON)
 option(LINK_STATIC "Link libraries static" OFF)
@@ -103,28 +103,31 @@ endmacro(
 
 check_compile(LIBC_HAS_IP6 "#include <sys/types.h>\n#include <sys/socket.h>\n#include <netinet/in.h>\n\nint main() {\n  struct sockaddr_in6 sa;\n  sa.sin6_family = PF_INET6;\n  (void)sa;\n  return 0;\n}\n")
 check_compile(LIBC_HAS_SCOPE_ID "#include <sys/types.h>\n#include <sys/socket.h>\n#include <netinet/in.h>\n\nint main() {\n  struct sockaddr_in6 sa;\n  sa.sin6_family = PF_INET6;\n  sa.sin6_scope_id = 23;\n  (void)sa;\n  return 0;\n}\n")
-check_compile(
-  HAVE_DEVPOLL
-  "#include <stdio.h>\n#include <stdlib.h>\n#include <poll.h>\n#include <netdb.h>\n#include <unistd.h>\n#include <fcntl.h>\n#include <strings.h>\n#include <sys/types.h>\n#include <sys/socket.h>\n#include <sys/errno.h>\n#include <netinet/in.h>\n#include <sys/devpoll.h>\n\nmain() {\n  int fd = open(\"/dev/poll\", O_RDWR);\n  struct pollfd p[100];\n  int i, r;\n  dvpoll_t timeout;\n  p[0].fd = 0;\n  p[0].events = POLLIN;\n  write(fd, p, sizeof(struct pollfd));\n  timeout.dp_timeout = 100; /* milliseconds? */\n  timeout.dp_nfds = 1;\n  timeout.dp_fds = p;\n  r = ioctl(fd, DP_POLL, &timeout);\n  for(i = 0; i < r; ++i) printf(\"event %d on fd #%d\\\\n\", p[i].revents, p[i].fd);\n}\n"
-)
 
-check_compile(
-  HAVE_EPOLL
-  "#include <inttypes.h>\n#include <sys/epoll.h>\n#include <stdio.h>\n\nint\nmain() {\n  int efd = epoll_create(10);\n  struct epoll_event x;\n  if(efd == -1)\n    return 111;\n  x.events = EPOLLIN;\n  x.data.fd = 0;\n  if(epoll_ctl(efd, EPOLL_CTL_ADD, 0 /* fd */, &x) == -1)\n    return 111;\n  {\n    int n;\n    struct epoll_event y[100];\n    if((n = epoll_wait(efd, y, 100, 1000)) == -1)\n      return 111;\n    if(n > 0)\n      printf(\"event %d on fd #%d\\\\n\", y[0].events, y[0].data.fd);\n  }\n  return 0;\n}\n"
-)
-check_compile(
-  HAVE_KQUEUE
-  "#include <sys/types.h>\n#include <sys/event.h>\n#include <sys/time.h>\n\nint\nmain() {\n  int kq = kqueue();\n  struct kevent kev;\n  struct timespec ts;\n  if(kq == -1)\n    return 111;\n  EV_SET(&kev, 0 /* fd */, EVFILT_READ, EV_ADD | EV_ENABLE, 0, 0, 0);\n  ts.tv_sec = 0;\n  ts.tv_nsec = 0;\n  if(kevent(kq, &kev, 1, 0, 0, &ts) == -1)\n    return 111;\n\n  {\n    struct kevent events[100];\n    int i, n;\n    ts.tv_sec = 1;\n    ts.tv_nsec = 0;\n    switch(n = kevent(kq, 0, 0, events, 100, &ts)) {\n      case -1: return 111;\n      case 0: puts(\"no data on fd #0\"); break;\n    }\n    for(i = 0; i < n; ++i) {\n      printf(\"ident %d, filter %d, flags %d, fflags %d, data %d\\\\n\",\n             events[i].ident,\n             events[i].filter,\n             events[i].flags,\n             events[i].fflags,\n             events[i].data);\n    }\n  }\n  return 0;\n}\n"
-)
+if(NOT USE_SELECT)
+  check_compile(
+    HAVE_DEVPOLL
+    "#include <stdio.h>\n#include <stdlib.h>\n#include <poll.h>\n#include <netdb.h>\n#include <unistd.h>\n#include <fcntl.h>\n#include <strings.h>\n#include <sys/types.h>\n#include <sys/socket.h>\n#include <sys/errno.h>\n#include <netinet/in.h>\n#include <sys/devpoll.h>\n\nmain() {\n  int fd = open(\"/dev/poll\", O_RDWR);\n  struct pollfd p[100];\n  int i, r;\n  dvpoll_t timeout;\n  p[0].fd = 0;\n  p[0].events = POLLIN;\n  write(fd, p, sizeof(struct pollfd));\n  timeout.dp_timeout = 100; /* milliseconds? */\n  timeout.dp_nfds = 1;\n  timeout.dp_fds = p;\n  r = ioctl(fd, DP_POLL, &timeout);\n  for(i = 0; i < r; ++i) printf(\"event %d on fd #%d\\\\n\", p[i].revents, p[i].fd);\n}\n"
+  )
 
-check_compile(
-  HAVE_SIGIO
-  "#define _GNU_SOURCE\n#include <sys/types.h>\n#include <sys/poll.h>\n#include <signal.h>\n#include <fcntl.h>\n#include <stdio.h>\n\nint\nmain() {\n  int signum = SIGRTMIN + 1;\n  sigset_t ss;\n  sigemptyset(&ss);\n  sigaddset(&ss, signum);\n  sigaddset(&ss, SIGIO);\n  sigprocmask(SIG_BLOCK, &ss, 0);\n\n  fcntl(0 /* fd */, F_SETOWN, getpid());\n  fcntl(0 /* fd */, F_SETSIG, signum);\n#if defined(O_ONESIGFD) && defined(F_SETAUXFL)\n  fcntl(0 /* fd */, F_SETAUXFL, O_ONESIGFD);\n#endif\n  fcntl(0 /* fd */, F_SETFL, fcntl(0 /* fd */, F_GETFL) | O_NONBLOCK | O_ASYNC);\n\n  {\n    siginfo_t info;\n    struct timespec timeout;\n    int r;\n    timeout.tv_sec = 1;\n    timeout.tv_nsec = 0;\n    switch((r = sigtimedwait(&ss, &info, &timeout))) {\n      case SIGIO:\n        /* signal queue overflow */\n        signal(signum, SIG_DFL);\n        /* do poll */\n        break;\n      default:\n        if(r == signum) {\n          printf(\"event %c%c on fd #%d\\\\n\",\n                 info.si_band & POLLIN ? 'r' : '-',\n                 info.si_band & POLLOUT ? 'w' : '-',\n                 info.si_fd);\n        }\n    }\n  }\n  return 0;\n}\n"
-)
-check_compile(
-  HAVE_POLL
-  "#include <sys/types.h>\n#include <fcntl.h>\n#include <poll.h>\n\nint\nmain() {\n  struct pollfd x;\n\n  x.fd = open(\"trypoll.c\", O_RDONLY);\n  if(x.fd == -1)\n    _exit(111);\n  x.events = POLLIN;\n  if(poll(&x, 1, 10) == -1)\n    _exit(1);\n  if(x.revents != POLLIN)\n    _exit(1);\n\n  /* XXX: try to detect and avoid poll() imitation libraries */\n\n  _exit(0);\n}\n"
-)
+  check_compile(
+    HAVE_EPOLL
+    "#include <inttypes.h>\n#include <sys/epoll.h>\n#include <stdio.h>\n\nint\nmain() {\n  int efd = epoll_create(10);\n  struct epoll_event x;\n  if(efd == -1)\n    return 111;\n  x.events = EPOLLIN;\n  x.data.fd = 0;\n  if(epoll_ctl(efd, EPOLL_CTL_ADD, 0 /* fd */, &x) == -1)\n    return 111;\n  {\n    int n;\n    struct epoll_event y[100];\n    if((n = epoll_wait(efd, y, 100, 1000)) == -1)\n      return 111;\n    if(n > 0)\n      printf(\"event %d on fd #%d\\\\n\", y[0].events, y[0].data.fd);\n  }\n  return 0;\n}\n"
+  )
+  check_compile(
+    HAVE_KQUEUE
+    "#include <sys/types.h>\n#include <sys/event.h>\n#include <sys/time.h>\n\nint\nmain() {\n  int kq = kqueue();\n  struct kevent kev;\n  struct timespec ts;\n  if(kq == -1)\n    return 111;\n  EV_SET(&kev, 0 /* fd */, EVFILT_READ, EV_ADD | EV_ENABLE, 0, 0, 0);\n  ts.tv_sec = 0;\n  ts.tv_nsec = 0;\n  if(kevent(kq, &kev, 1, 0, 0, &ts) == -1)\n    return 111;\n\n  {\n    struct kevent events[100];\n    int i, n;\n    ts.tv_sec = 1;\n    ts.tv_nsec = 0;\n    switch(n = kevent(kq, 0, 0, events, 100, &ts)) {\n      case -1: return 111;\n      case 0: puts(\"no data on fd #0\"); break;\n    }\n    for(i = 0; i < n; ++i) {\n      printf(\"ident %d, filter %d, flags %d, fflags %d, data %d\\\\n\",\n             events[i].ident,\n             events[i].filter,\n             events[i].flags,\n             events[i].fflags,\n             events[i].data);\n    }\n  }\n  return 0;\n}\n"
+  )
+
+  check_compile(
+    HAVE_SIGIO
+    "#define _GNU_SOURCE\n#include <sys/types.h>\n#include <sys/poll.h>\n#include <signal.h>\n#include <fcntl.h>\n#include <stdio.h>\n\nint\nmain() {\n  int signum = SIGRTMIN + 1;\n  sigset_t ss;\n  sigemptyset(&ss);\n  sigaddset(&ss, signum);\n  sigaddset(&ss, SIGIO);\n  sigprocmask(SIG_BLOCK, &ss, 0);\n\n  fcntl(0 /* fd */, F_SETOWN, getpid());\n  fcntl(0 /* fd */, F_SETSIG, signum);\n#if defined(O_ONESIGFD) && defined(F_SETAUXFL)\n  fcntl(0 /* fd */, F_SETAUXFL, O_ONESIGFD);\n#endif\n  fcntl(0 /* fd */, F_SETFL, fcntl(0 /* fd */, F_GETFL) | O_NONBLOCK | O_ASYNC);\n\n  {\n    siginfo_t info;\n    struct timespec timeout;\n    int r;\n    timeout.tv_sec = 1;\n    timeout.tv_nsec = 0;\n    switch((r = sigtimedwait(&ss, &info, &timeout))) {\n      case SIGIO:\n        /* signal queue overflow */\n        signal(signum, SIG_DFL);\n        /* do poll */\n        break;\n      default:\n        if(r == signum) {\n          printf(\"event %c%c on fd #%d\\\\n\",\n                 info.si_band & POLLIN ? 'r' : '-',\n                 info.si_band & POLLOUT ? 'w' : '-',\n                 info.si_fd);\n        }\n    }\n  }\n  return 0;\n}\n"
+  )
+  check_compile(
+    HAVE_POLL
+    "#include <sys/types.h>\n#include <fcntl.h>\n#include <poll.h>\n\nint\nmain() {\n  struct pollfd x;\n\n  x.fd = open(\"trypoll.c\", O_RDONLY);\n  if(x.fd == -1)\n    _exit(111);\n  x.events = POLLIN;\n  if(poll(&x, 1, 10) == -1)\n    _exit(1);\n  if(x.revents != POLLIN)\n    _exit(1);\n\n  /* XXX: try to detect and avoid poll() imitation libraries */\n\n  _exit(0);\n}\n"
+  )
+endif(NOT USE_SELECT)
 
 check_compile(HAVE_N2I "#include <sys/types.h>\n#include <sys/socket.h>\n#include <net/if.h>\n\nint\nmain() {\n  static char ifname[IFNAMSIZ];\n  char* tmp = if_indextoname(0, ifname);\n  (void)tmp;\n  return 0;\n}\n")
 
@@ -247,10 +250,10 @@ macro(check_function_def FUNC)
   else(ARGC EQUAL 1)
     set(RESULT_VAR "${ARGN}")
   endif(ARGC EQUAL 1)
-  #message("FUNC: ${FUNC} RESULT_VAR: ${RESULT_VAR}")
+  # message("FUNC: ${FUNC} RESULT_VAR: ${RESULT_VAR}")
   check_function_exists("${FUNC}" "${RESULT_VAR}")
   if(${${RESULT_VAR}})
-    #message("${RESULT_VAR}: yes")
+    # message("${RESULT_VAR}: yes")
     add_definitions(-D${RESULT_VAR})
   endif(${${RESULT_VAR}})
 endmacro(
@@ -386,9 +389,9 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${DEFINES_H} -DHAVE_CONFIG_H=1")
 
 # message(INFO "Checking for epoll()...") check_function_exists(epoll_wait HAVE_EPOLL) if(HAVE_EPOLL) message(INFO "Checking for epoll()... OK") set(USE_EPOLL ON) set(USE_SELECT OFF) else(HAVE_EPOLL) message(INFO "Checking for epoll()... NOT FOUND") set(USE_EPOLL OFF) endif(HAVE_EPOLL)
 
-if(USE_EPOLL STREQUAL ON)
-  add_definitions(-DHAVE_EPOLL=1)
-endif()
+#if(USE_EPOLL STREQUAL ON)
+#  add_definitions(-DHAVE_EPOLL=1)
+#endif()
 
 check_library_exists(compat syscall "" HAVE_COMPAT_LIB)
 if(HAVE_COMPAT_LIB)
@@ -623,25 +626,40 @@ if(NOT MUX_METHODS)
       ""
       CACHE STRING "available I/O multiplexing methods")
 endif(NOT MUX_METHODS)
-check_library_exists("" poll "" HAVE_POLL)
-if(NOT HAVE_POLL)
-  check_function_exists(poll HAVE_POLL)
-endif(NOT HAVE_POLL)
 
-check_library_exists("" epoll_create "" HAVE_EPOLL)
-if(NOT HAVE_EPOLL)
-  check_function_exists(epoll_create HAVE_EPOLL)
-endif(NOT HAVE_EPOLL)
+if(NOT USE_SELECT)
+  if(NOT USE_POLL)
 
-check_library_exists("" kqueue "" HAVE_KQUEUE)
-if(NOT HAVE_KQUEUE)
-  check_function_exists(kqueue HAVE_KQUEUE)
-endif(NOT HAVE_KQUEUE)
+    if(HAVE_POLL STREQUAL "")
+      check_library_exists("" poll "" HAVE_POLL)
+      if(NOT HAVE_POLL)
+        check_function_exists(poll HAVE_POLL)
+      endif(NOT HAVE_POLL)
+    endif(HAVE_POLL STREQUAL "")
 
-check_library_exists("${LIBMSWSOCK}" select "" HAVE_SELECT)
-if(NOT HAVE_SELECT)
-  check_function_exists(select HAVE_SELECT)
-endif(NOT HAVE_SELECT)
+    if(HAVE_EPOLL STREQUAL "")
+      check_library_exists("" epoll_create "" HAVE_EPOLL)
+      if(NOT HAVE_EPOLL)
+        check_function_exists(epoll_create HAVE_EPOLL)
+      endif(NOT HAVE_EPOLL)
+    endif(HAVE_EPOLL STREQUAL "")
+
+    if(HAVE_KQUEUE STREQUAL "")
+      check_library_exists("" kqueue "" HAVE_KQUEUE)
+      if(NOT HAVE_KQUEUE)
+        check_function_exists(kqueue HAVE_KQUEUE)
+      endif(NOT HAVE_KQUEUE)
+    endif(HAVE_KQUEUE STREQUAL "")
+
+  endif(NOT USE_POLL)
+endif(NOT USE_SELECT)
+
+if(HAVE_SELECT STREQUAL "")
+  check_library_exists("${LIBMSWSOCK}" select "" HAVE_SELECT)
+  if(NOT HAVE_SELECT)
+    check_function_exists(select HAVE_SELECT)
+  endif(NOT HAVE_SELECT)
+endif(HAVE_SELECT STREQUAL "")
 
 foreach(METHOD KQUEUE DEVPOLL EPOLL SIGIO POLL SELECT)
   if(HAVE_${METHOD})
@@ -656,6 +674,25 @@ endif(LIBMSWSOCK)
 message("Available MUX methods: ${MUX_METHODS}")
 
 list(GET MUX_METHODS 0 MUX)
+
+if(USE_DEVPOLL)
+  set(MUX DEVPOLL)
+endif(USE_DEVPOLL)
+if(USE_SIGIO)
+  set(MUX SIGIO)
+endif(USE_SIGIO)
+if(USE_KQUEUE)
+  set(MUX KQUEUE)
+endif(USE_KQUEUE)
+if(USE_EPOLL)
+  set(MUX EPOLL)
+endif(USE_EPOLL)
+if(USE_POLL)
+  set(MUX POLL)
+endif(USE_POLL)
+if(USE_SELECT)
+  set(MUX SELECT)
+endif(USE_SELECT)
 
 if(NOT MUX AND HAVE_KQUEUE)
   set(MUX KQUEUE)
@@ -679,9 +716,9 @@ set(MUX_METHOD
 message("MUX method: ${MUX_METHOD}")
 
 if(MUX_METHOD STREQUAL "SELECT")
-  add_definitions(-DUSE_SELECT=1)
+  set(io_COMPILE_FLAGS -DUSE_SELECT=1)
 else()
-  add_definitions(-DHAVE_${MUX_METHOD}=1)
+  set (io_COMPILE_FLAGS -DHAVE_${MUX_METHOD}=1)
 endif()
 
 if(WIN32 OR MSVC)
@@ -1038,7 +1075,7 @@ foreach(LIBNAME ${MODSUBDIRS})
     add_library("${LIBNAME}-shared" SHARED ${MODSOURCES} ${MODHEADERS})
     set_target_properties("${LIBNAME}-shared" PROPERTIES PREFIX "lib" COMPILE_FLAGS "${WARN_C_COMPILER_FLAGS} -fPIC")
   endif(BUILD_SHARED_LIBS)
-  set_target_properties("${LIBNAME}" PROPERTIES PREFIX "" COMPILE_FLAGS "${WARN_C_COMPILER_FLAGS}")
+  set_target_properties("${LIBNAME}" PROPERTIES PREFIX "" COMPILE_FLAGS "${WARN_C_COMPILER_FLAGS} ${${LIBNAME}_COMPILE_FLAGS}")
 
 endforeach(LIBNAME)
 

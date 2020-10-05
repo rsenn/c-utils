@@ -62,6 +62,9 @@
 #define HOSTS_FILE "/etc/hosts"
 #endif
 
+#define max(a,b) ((a) > (b) ? (a) : (b))
+#define min(a,b) ((a) < (b) ? (a) : (b))
+
 typedef struct {
   bool ip6;
   uint32 scope_id;
@@ -69,7 +72,6 @@ typedef struct {
 } address_t;
 
 static MAP_T hosts_db;
-static char ipbuf[IP4_FMT];
 
 void
 usage(char* prog) {
@@ -104,12 +106,33 @@ fmt_address(char* x, const address_t* addr) {
 }
 
 int
+lookup_address(stralloc* name, address_t* addr) {
+  stralloc ips;
+  stralloc_init(&ips);
+  stralloc_ready(&ips, 16);
+  byte_zero(addr, sizeof(address_t));
+
+  if(dns_ip6(name, &ips) == -1) {
+    if(dns_ip4(name, &ips) == -1) {
+      errmsg_warnsys("unable to find IP address for ", name->s, 0);
+      return 0;
+    } else {
+      addr->ip6 = false;
+    }
+  } else {
+    addr->ip6 = true;
+  }
+  byte_copy(addr->ip, min(addr->ip6 ? 16 : 4, ips.len), ips.s);
+  stralloc_free(&ips);
+  return 1;
+}
+
+int
 read_hosts(const char* file) {
   const char* p;
   size_t s, l, e, i;
   char* x;
   size_t n;
-  bool ip6;
   address_t addr;
   stralloc hostname;
   stralloc_init(&hostname);
@@ -192,7 +215,7 @@ int
 main(int argc, char* argv[]) {
   fd_t sock;
   int error = 0;
-  int ret;
+  int ret = 0;
   int verbose = 1;
   int c;
   uint64 timeout_sec = 10, timeout_usec = 0;
@@ -220,6 +243,8 @@ main(int argc, char* argv[]) {
         }
         break;
       case 'u':
+        timeout_sec = 0;
+
         if(scan_ulonglong(optarg, &timeout_usec) == 0)
           usage(argv[0]);
         break;
@@ -242,20 +267,9 @@ main(int argc, char* argv[]) {
   stralloc_copys(&host, argv[optind]);
   stralloc_nul(&host);
 
-  if(!scan_address(host.s, &addr)) {
-    if(!lookup_hosts(&host, &addr)) {
-      if(dns_ip6(&ips, &ips) == -1) {
-        if(dns_ip4(&ips, &ips) == -1) {
-          errmsg_warnsys("unable to find IP address for ", argv[optind], 0);
-          return 111;
-        } else {
-          addr.ip6 = false;
-        }
-      } else {
-        addr.ip6 = true;
-      }
-      byte_copy(addr.ip, addr.ip6 ? 16 : 4, ips.s);
-    }
+  if(!scan_address(host.s, &addr) && !lookup_hosts(&host, &addr) && !lookup_address(&host, &addr)) {
+    ret = 111;
+    goto fail;
   }
 
 #ifdef DEBUG_OUTPUT_
@@ -333,7 +347,8 @@ main(int argc, char* argv[]) {
         buffer_putm_internal(buffer_1, argv[optind], " port ", argv[optind + 1], " user timeout.", NULL);
         buffer_putnlflush(buffer_1);
       }
-      return 2;
+      ret = 2;
+      goto fail;
     }
 
     if(io_canread() == sock || io_canwrite() == sock) {
@@ -344,7 +359,8 @@ main(int argc, char* argv[]) {
           buffer_putnlflush(buffer_2);
         }
         closesocket(sock);
-        return error;
+        ret = error;
+        goto fail;
       }
       if(error != 0) {
         if(verbose) {
@@ -355,12 +371,16 @@ main(int argc, char* argv[]) {
           buffer_putnlflush(buffer_1);
         }
         closesocket(sock);
-        return 1;
+        ret = 1;
+        goto fail;
       }
     } else {
-      if(verbose)
-        errmsg_warn("error: select: sock not set", 0);
-      return 3;
+      if(verbose) {
+        buffer_puts(buffer_1, "timeout");
+        buffer_putnlflush(buffer_1);
+      }
+      ret = 3;
+      goto fail;
     }
   }
   /* OK, connection established */
@@ -369,5 +389,9 @@ main(int argc, char* argv[]) {
     buffer_putm_internal(buffer_1, argv[optind], " port ", argv[optind + 1], " open.", NULL);
     buffer_putnlflush(buffer_1);
   }
-  return 0;
+fail:
+  MAP_DESTROY(hosts_db);
+  stralloc_free(&ips);
+  stralloc_free(&host);
+  return ret;
 }
