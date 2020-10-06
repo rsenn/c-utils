@@ -15,7 +15,7 @@ socket_is4(int s) {
 #ifdef LIBC_HAS_IP6
   if(noipv6)
     return 1;
- 
+
   return si.sin6_family == AF_INET;
 #endif
   return 1;

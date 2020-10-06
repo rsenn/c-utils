@@ -545,6 +545,7 @@ endif(NOT LINK_STATIC)
 # include(${CMAKE_SOURCE_DIR}/FindZlib.cmake) include(${CMAKE_SOURCE_DIR}/FindBZip2.cmake) include(${CMAKE_SOURCE_DIR}/FindLibLZMA.cmake)
 
 include(${CMAKE_SOURCE_DIR}/build/cmake/CheckInline.cmake)
+include(${CMAKE_SOURCE_DIR}/build/cmake/Profile.cmake)
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
   add_definitions(-D_DEBUG=1 -DDEBUG_OUTPUT=1)
@@ -1178,6 +1179,7 @@ set(MODSUBDIRS
     safemult
     scan
     seek
+    set
     sig
     slist
     socket
@@ -1544,6 +1546,7 @@ add_program(
 add_program(elfwrsec buffer alloc elf mmap)
 add_program(
   genmakefile
+  set
   case
   errmsg
   strarray

@@ -21,6 +21,7 @@
 #include "lib/dir.h"
 #include "lib/range.h"
 #include "lib/case.h"
+#include "lib/set.h"
 #include "map.h"
 
 typedef enum { OS_WIN, OS_MAC, OS_LINUX } os_type;
@@ -66,7 +67,7 @@ typedef struct {
   int has_main;
   strlist includes;
   strlist deps;
-  strlist pptoks;
+  set_t pptoks;
 } sourcefile;
 
 typedef struct {
@@ -136,8 +137,8 @@ void deps_for_libs(void);
 void deps_indirect(strlist*, const strlist*);
 char* dirname_alloc(const char*);
 int extract_build_type(const stralloc*);
-void extract_pptok(const char*, size_t, strlist*);
-void extract_tokens(const char*, size_t, strlist*);
+void extract_pptok(const char*, size_t, set_t*);
+void extract_tokens(const char*, size_t, set_t*);
 int filter_pptoks(const void*, size_t);
 void format_linklib_dummy(const char*, stralloc*);
 void format_linklib_lib(const char*, stralloc*);

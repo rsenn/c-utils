@@ -7,7 +7,7 @@
 #include "lib/unix.h"
 
 extern buffer* unix_optbuf;
-static const char tok_charset[] = {'_', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O',
+static const char tok_charset[] = {'_', 'A', 'B', 'LANG_C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O',
                                    'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'a', 'b', 'c', 'd', 'e',
                                    'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u',
                                    'v', 'w', 'x', 'y', 'z', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
@@ -83,9 +83,9 @@ debug_stra(const char* name, const strarray* stra) {
 void
 debug_str(const char* name, const char* s) {
   buffer_puts(buffer_2, name);
-  buffer_puts(buffer_2, ": ");
-  buffer_puts(buffer_2, s);
-  buffer_putnlflush(buffer_2);
+  buffer_puts(buffer_2, s ? ": '" : ": ");
+  buffer_puts(buffer_2, s ? s : "NULL");
+  buffer_putsflush(buffer_2, s ? "'\n" : "\n");
 }
 
 void
@@ -387,7 +387,7 @@ extract_build_type(const stralloc* s) {
 }
 
 void
-extract_tokens(const char* x, size_t n, strlist* tokens) {
+extract_tokens(const char* x, size_t n, set_t* tokens) {
   while(n) {
     size_t i;
     if(*x == '\r' || *x == '\n')
@@ -401,7 +401,7 @@ extract_tokens(const char* x, size_t n, strlist* tokens) {
     i = scan_charsetnskip(x, tok_charset, n);
     if(i > 0 && !(i == 7 && byte_equal(x, 7, "defined")))
       if(!(*x >= '0' && *x <= '9'))
-        if(strlist_pushb_unique(tokens, x, i)) {
+        if(set_add(tokens, x, i)) {
           // debug_byte("added tok", x, i);
         }
     if(i == n)
@@ -419,7 +419,7 @@ extract_tokens(const char* x, size_t n, strlist* tokens) {
  * @param sys
  */
 void
-extract_pptok(const char* x, size_t n, strlist* tokens) {
+extract_pptok(const char* x, size_t n, set_t* tokens) {
   while(n) {
     size_t i;
     if((i = scan_charsetnskip(x, " \t\r\n", n)) == n)
@@ -1039,7 +1039,7 @@ rule_add_deps(target* t, const strlist* deps) {
  */
 void
 rule_dump(target* rule) {
-#ifdef DEBUG
+#ifdef DEBUG_OUTPUT
   buffer_putm_internal(buffer_2, "Rule '", rule->name, "'\n", NULL);
   if(rule->prereq.sa.len) {
     stralloc_nul(&rule->prereq.sa);
@@ -1170,7 +1170,7 @@ is_source(const char* filename) {
     return 1;
   if(cfg.lang != LANG_CXX)
     return 0;
-  if(str_end(filename, ".C"))
+  if(str_end(filename, ".LANG_C"))
     return 1;
   if(str_end(filename, ".cc"))
     return 1;
@@ -1286,18 +1286,18 @@ sources_new(const char* name) {
  */
 int
 sources_add(const char* filename) {
-  if(is_source(filename) || is_include(filename)) {
-    return strarray_push_unique(&srcs, filename);
-  }
-  return 0;
+  return sources_add_b(filename, str_len(filename));
 }
 
 int
 sources_add_b(const char* x, size_t len) {
+  int ret = 0;
   if(is_source_b(x, len) || is_include_b(x, len)) {
-    int64 i = strarray_index_of_b(&srcs, x, len);
-    if(i < 0)
-      return strarray_pushb(&srcs, x, len);
+    ret = strarray_pushb_unique(&srcs, x, len);
+#ifdef DEBUG_OUTPUT_
+    if(ret)
+      debug_byte("sources_add", x, len);
+#endif
   }
   return 0;
 }
@@ -2451,6 +2451,7 @@ target*
 gen_srcdir_compile_rules(sourcedir* sdir, const char* dir) {
   sourcefile* src;
   target* rule = 0;
+  MAP_PAIR_T t;
   stralloc target, srcs, obj;
   size_t len;
   strlist pptoks;
@@ -2484,19 +2485,16 @@ gen_srcdir_compile_rules(sourcedir* sdir, const char* dir) {
 
   slink_foreach(&sdir->sources, src) {
     const char* ext = 0;
-
-#ifdef DEBUG_OUTPUT_
-    buffer_puts(buffer_2, "Adding source '");
-    buffer_puts(buffer_2, src->name);
-    buffer_putc(buffer_2, '\'');
-    buffer_putnlflush(buffer_2);
-#endif
-
-    if(!src->name)
-      continue;
+    /*
+      if(!src->name)
+        continue;*/
 
     if(!is_source(src->name) /*&& !is_include(src->name)*/)
       continue;
+
+#ifdef DEBUG_OUTPUT_
+    debug_str("Adding source", src->name);
+#endif
 
     // s = str_basename(src->name);
 
@@ -2523,8 +2521,7 @@ gen_srcdir_compile_rules(sourcedir* sdir, const char* dir) {
     if(!rule)
       rule = rule_get_sa(&target);
 
-    {
-
+    if(rule) {
       stralloc_copy(&rule->vars.sa, &defines);
 
       if(rule->recipe.s == 0) {
@@ -2576,8 +2573,11 @@ gen_srcdir_compile_rules(sourcedir* sdir, const char* dir) {
   stralloc_free(&target);
   stralloc_free(&defines);
 
-#ifdef DEBUG_OUTPUT_
-  rule_dump(rule);
+#ifdef DEBUG_OUTPUT
+  MAP_FOREACH(rules, t) {
+    rule = MAP_DATA(t);
+    rule_dump(rule);
+  }
 #endif
 
   return rule;
@@ -3865,7 +3865,7 @@ set_make_type() {
 
   } else if(str_start(tools.make, "bmake") || str_start(tools.make, "borland")) {
 
-    /* Borland C++ Builder Make */
+    /* Borland LANG_C++ Builder Make */
     pathsep_make = '\\';
     make_begin_inline = "@&&|\r\n ";
     make_sep_inline = " ";
@@ -3952,7 +3952,7 @@ set_compiler_type(const char* compiler) {
   //  var_push("DEFS", "-DHAVE_ERRNO_H=1");
 
   /*
-   * Visual C++ compiler
+   * Visual LANG_C++ compiler
    */
   if(str_start(compiler, "msvc") || str_start(compiler, "icl") || str_start(compiler, "vs20") ||
      str_start(compiler, "vc") || compiler[str_find(compiler, "-cl")]) {
@@ -3986,7 +3986,7 @@ set_compiler_type(const char* compiler) {
     //    stralloc_copys(&lib_command, "$(LIB) /OUT:$@ @<<\n\t\t$^\n<<");
 
     /*
-     * Intel C++ compiler
+     * Intel LANG_C++ compiler
      */
     if(str_start(compiler, "icl")) {
       var_set("CC", "icl -nologo");
@@ -4099,7 +4099,7 @@ set_compiler_type(const char* compiler) {
     format_linklib_fn = &format_linklib_switch;
 
     /*
-     * Borland C++ Builder
+     * Borland LANG_C++ Builder
      */
   } else if(str_start(compiler, "bcc")) {
 
@@ -4121,7 +4121,7 @@ set_compiler_type(const char* compiler) {
     if(cfg.build_type == BUILD_TYPE_MINSIZEREL)
       var_push("CFLAGS", "-d -a-");
 
-    /* Embracadero C++ */
+    /* Embracadero LANG_C++ */
     if(str_find(compiler, "55") == str_len(compiler) && str_find(compiler, "60") == str_len(compiler)) {
       var_set("CC", "bcc32c");
       var_set("CXX", "bcc32x");
@@ -4137,7 +4137,7 @@ set_compiler_type(const char* compiler) {
       */
       set_command(&link_command, "$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) -o $@ ", "$^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
 
-      /* Borland C++ Builder 5.5 */
+      /* Borland LANG_C++ Builder 5.5 */
     } else {
       var_set("CC", "bcc32");
       var_set("CXX", "bcc32");
@@ -4308,9 +4308,9 @@ set_compiler_type(const char* compiler) {
 
     // var_push("CFLAGS", "-fp:precise");
 
-    var_push("CFLAGS", "-Ze"); /* Activates Microsoft's extensions to C */
-    // var_push("CFLAGS", "-Zx"); /* Activates Pelle's extensions to C */
-    var_push("CFLAGS", "-Go"); /* Accepts 'old' names for C runtime functions */
+    var_push("CFLAGS", "-Ze"); /* Activates Microsoft's extensions to LANG_C */
+    // var_push("CFLAGS", "-Zx"); /* Activates Pelle's extensions to LANG_C */
+    var_push("CFLAGS", "-Go"); /* Accepts 'old' names for LANG_C runtime functions */
     // var_push("CFLAGS", "-Gz"); /* default to __stdcall */
 
     var_push("CPPFLAGS", "-D__POCC__");
@@ -4659,28 +4659,28 @@ usage(char* errmsg_argv0) {
                        "\n"
 
                        "     gcc         GNU make\n"
-                       "     bcc55       Borland C++ Builder 5.5\n"
-                       "     bcc         Borland C++ Builder >= 6.0\n"
+                       "     bcc55       Borland LANG_C++ Builder 5.5\n"
+                       "     bcc         Borland LANG_C++ Builder >= 6.0\n"
                        "     lcc         lcc\n"
                        "     tcc         TinyCC\n"
-                       "     msvc        Visual C++\n"
-                       "     icl         Intel C++\n"
+                       "     msvc        Visual LANG_C++\n"
+                       "     icl         Intel LANG_C++\n"
                        "     clang       LLVM\n"
                        "     occ         OrangeC\n"
-                       "     dmc         Digital Mars C++\n"
-                       "     pocc        Pelles-C\n"
+                       "     dmc         Digital Mars LANG_C++\n"
+                       "     pocc        Pelles-LANG_C\n"
                        "     zapcc[-cl]  ZapCC\n"
                        "     zapcc[-cl]  ZapCC\n"
-                       "     htc         Hi-Tech C for PIC or PIC18\n"
-                       "     xc8         Microchip C Compiler for 8-bit PIC\n"
-                       "     sdcc        Small Device C Compiler\n"
+                       "     htc         Hi-Tech LANG_C for PIC or PIC18\n"
+                       "     xc8         Microchip LANG_C Compiler for 8-bit PIC\n"
+                       "     sdcc        Small Device LANG_C Compiler\n"
                        "\n"
                        "  -m, --make-type TYPE      make program type, one of:\n"
                        "     nmake       Microsoft NMake\n"
                        "     borland     Borland Make\n"
                        "     gmake       GNU Make\n"
                        "     omake       OrangeCC Make\n"
-                       "     pomake      Pelles-C Make\n"
+                       "     pomake      Pelles-LANG_C Make\n"
                        "     make        Other make\n"
                        "     batch       Windows batch (.bat .cmd)\n"
                        "     ninja       Ninja build\n"
@@ -4802,7 +4802,7 @@ main(int argc, char* argv[]) {
   strlist_fromv(&cmdline, (const char**)argv, argc);
 
   for(;;) {
-    c = unix_getopt_long(argc, argv, "ho:O:B:L:d:t:m:n:a:D:l:I:c:s:p:P:S:if:C", opts, &index);
+    c = unix_getopt_long(argc, argv, "ho:O:B:L:d:t:m:n:a:D:l:I:c:s:p:P:S:if:LANG_C", opts, &index);
     if(c == -1)
       break;
     if(c == 0)
@@ -4813,7 +4813,7 @@ main(int argc, char* argv[]) {
         usage(argv[0]);
         ret = 0;
         goto quit;
-      case 'C': cfg.lang = LANG_C; break;
+      case 'LANG_C': cfg.lang = LANG_C; break;
       case 'c': cross_compile = unix_optarg; break;
       case 'o': outfile = unix_optarg; break;
       case 'O': exts.obj = unix_optarg; break;
