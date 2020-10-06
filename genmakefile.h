@@ -24,6 +24,7 @@
 #include "map.h"
 
 typedef enum { OS_WIN, OS_MAC, OS_LINUX } os_type;
+typedef enum { LANG_C, LANG_CXX } lang_type;
 
 #if WINDOWS
 #define MAX_CMD_LEN 1023
@@ -122,7 +123,9 @@ typedef struct {
   system_type sys;
   stralloc chip;
   int build_type;
+  int lang;
 } config_t;
+
 void add_path_b(strlist*, const char*, size_t);
 void add_path_relativeb(strlist*, stralloc*, const char*, size_t pathlen);
 void add_path_sa(strlist*, stralloc*);

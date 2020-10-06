@@ -3,13 +3,13 @@
 #ifndef __MINGW32__
 #include <sys/socket.h>
 #include <netinet/in.h>
+#include <errno.h>
 #endif
 #include "../windoze.h"
 #include "../socket_internal.h"
 #include "../byte.h"
 /*#include "haveip6.h"*/
 #include "../ip6.h"
-#include "../errno.h"
 
 #ifndef IPV6_ADD_MEMBERSHIP
 #ifdef IPV6_JOIN_GROUP

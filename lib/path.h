@@ -41,6 +41,8 @@ void path_getcwd(stralloc* sa);
 char* path_gethome(int uid);
 int path_getsep(const char* path);
 int path_is_absolute(const char* p);
+int path_is_absolute_b(const char*, size_t);
+int path_is_absolute_sa(const stralloc*);
 int path_is_directory(const char* p);
 int path_is_separator(char c);
 size_t path_len(const char* s, size_t n);

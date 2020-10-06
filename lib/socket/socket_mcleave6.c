@@ -3,12 +3,12 @@
 #ifndef __MINGW32__
 #include <sys/socket.h>
 #include <netinet/in.h>
+#include <errno.h>
 #endif
 #include "../windoze.h"
 #include "../socket_internal.h"
 #include "../byte.h"
 /*#include "haveip6.h"*/
-#include "../errno.h"
 #include "../ip6.h"
 
 #ifndef IPV6_DROP_MEMBERSHIP
