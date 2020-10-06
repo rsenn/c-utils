@@ -3,43 +3,38 @@
 	{
 		"selected_items":
 		[
+			[
+				"IP",
+				"IPV6_V6ONLY"
+			]
 		]
 	},
 	"buffers":
 	[
 		{
-			"contents": "OutlineCommand(WindowCommand)\n   run(…)\nOutlineCloseSidebarCommand(WindowCommand)\n   run(…)\n  removeParen(…)\nOutlineRefreshCommand(TextCommand)\n   run(…)\nOutlineToggleSortCommand(TextCommand)\n   run(…)\nOutlineEventHandler(EventListener)\n   on_selection_modified(…)\n   on_activated(…)\n   on_pre_save(…)",
+			"contents": "   ⒡  debug_int ( ) ; — function declaration\n   ⒡  debug_sa ( ) ; — function declaration\n   ⒡  debug_sl ( ) ; — function declaration\n   ⒡  debug_str ( ) ; — function declaration\n—Ⓕ– debug_sa ( ) { … } — function\n—Ⓕ– debug_stra ( ) { … } — function\n—Ⓕ– debug_str ( ) { … } — function\n—Ⓕ– debug_byte ( ) { … } — function\n—Ⓕ– debug_target ( ) { … } — function\n—Ⓕ– debug_sl ( ) { … } — function\n—Ⓕ– debug_int ( ) { … } — function\n—Ⓜ– debug_sa ( ) … — macro function\n—Ⓜ– debug_sl ( ) … — macro function\n—Ⓜ– debug_str ( ) … — macro function\n—Ⓜ– debug_int ( ) … — macro function\n   Ⓜ  _mkdir … — macro object\n—Ⓕ– mkdir_sa ( ) { … } — function\n—Ⓕ– mkdir_components ( ) { … } — function\n—Ⓕ– stralloc_weak ( ) { … } — function\n—Ⓕ– put_newline ( ) { … } — function\n—Ⓕ– set_command ( ) { … } — function\n—Ⓕ– strarray_dump ( ) { … } — function\n—Ⓕ– path_prefix_b ( ) { … } — function\n—Ⓕ– path_prefix_s ( ) { … } — function\n—Ⓕ– path_prefix_sa ( ) { … } — function\n—Ⓕ– path_extension ( ) { … } — function\n—Ⓕ– path_output ( ) { … } — function\n—Ⓕ– path_wildcard ( ) { … } — function\n—Ⓕ– path_mmap_read ( ) { … } — function\n—Ⓕ– extract_build_type ( ) { … } — function\n—Ⓕ– extract_tokens ( ) { … } — function\n—Ⓕ– extract_pptok ( ) { … } — function\n—Ⓕ– format_linklib_lib ( ) { … } — function\n—Ⓕ– format_linklib_switch ( ) { … } — function\n—Ⓕ– format_linklib_dummy ( ) { … } — function\n—Ⓕ– skip_comment ( ) { … } — function\n—Ⓕ– main_scan ( ) { … } — function\n—Ⓕ– main_present ( ) { … } — function\n—Ⓕ– includes_cppflags ( ) { … } — function\n—Ⓕ– includes_extract ( ) { … } — function\n—Ⓕ– includes_get ( ) { … } — function\n—Ⓕ– includes_add ( ) { … } — function\n—Ⓕ– includes_to_libs ( ) { … } — function\n—Ⓕ– var_subst ( ) { … } — function\n—Ⓕ– rule_get ( ) { … } — function\n—Ⓕ– rule_get_sa ( ) { … } — function\n—Ⓕ– rule_find ( ) { … } — function\n—Ⓕ– rule_rename ( ) { … } — function\n—Ⓕ– rule_find_sa ( ) { … } — function\n—Ⓕ– rule_find_b ( ) { … } — function\n—Ⓕ– rule_match ( ) { … } — function\n—Ⓕ– rule_command_subst ( ) { … } — function\n—Ⓕ– rule_command ( ) { … } — function\n—Ⓕ– rule_add_dep ( ) { … } — function\n—Ⓕ– rule_add_deps ( ) { … } — function\n—Ⓕ– rule_dump ( ) { … } — function\n—Ⓕ– add_path_b ( ) { … } — function\n—Ⓕ– add_path ( ) { … } — function\n—Ⓕ– add_srcpath ( ) { … } — function\n—Ⓕ– add_path_sa ( ) { … } — function\n—Ⓕ– add_path_relativeb ( ) { … } — function\n—Ⓕ– is_b ( ) { … } — function\n—Ⓕ– count_b ( ) { … } — function\n—Ⓕ– is_source ( ) { … } — function\n—Ⓕ– is_source_sa ( ) { … } — function\n—Ⓕ– is_source_b ( ) { … } — function\n—Ⓕ– is_filename ( ) { … } — function\n—Ⓕ– is_filename_sa ( ) { … } — function\n—Ⓕ– is_filename_b ( ) { … } — function\n—Ⓕ– is_include ( ) { … } — function\n—Ⓕ– is_include_sa ( ) { … } — function\n—Ⓕ– is_include_b ( ) { … } — function\n—Ⓕ– is_object ( ) { … } — function\n—Ⓕ– is_object_sa ( ) { … } — function\n—Ⓕ– sources_new ( ) { … } — function\n—Ⓕ– sources_add ( ) { … } — function\n—Ⓕ– sources_add_b ( ) { … } — function\n—Ⓕ– sources_sort ( ) { … } — function\n—Ⓕ– sources_get ( ) { … } — function\n—Ⓕ– sources_find ( ) { … } — function\n—Ⓕ– sources_deps ( ) { … } — function\n—Ⓕ– sources_readdir ( ) { … } — function\n—Ⓕ– sources_addincludes ( ) { … } — function\n—Ⓕ– var_isset ( ) { … } — function\n—Ⓕ– var_list ( ) { … } — function\n—Ⓕ– var_get ( ) { … } — function\n—Ⓕ– var_set ( ) { … } — function\n—Ⓕ– var_unset ( ) { … } — function\n—Ⓕ– var_push ( ) { … } — function\n—Ⓕ– var_push_sa ( ) { … } — function\n—Ⓕ– push_lib ( ) { … } — function\n—Ⓕ– with_lib ( ) { … } — function\n—Ⓕ– push_define ( ) { … } — function\n—Ⓕ– get_rules_by_cmd ( ) { … } — function\n—Ⓕ– dirname_alloc ( ) { … } — function\n—Ⓕ– sourcedir_find ( ) { … } — function\n—Ⓕ– sourcedir_find_sa ( ) { … } — function\n—Ⓕ– sourcedir_findb ( ) { … } — function\n—Ⓕ– sourcedir_get_b ( ) { … } — function\n—Ⓕ– sourcedir_get_sa ( ) { … } — function\n—Ⓕ– sourcedir_addsource ( ) { … } — function\n—Ⓕ– sourcedir_populate ( ) { … } — function\n—Ⓕ– sourcedir_dump_all ( ) { … } — function\n—Ⓕ– sourcedir_dep_recursive ( ) { … } — function\n—Ⓕ– sourcedir_deps ( ) { … } — function\n—Ⓕ– sourcedir_deps_s ( ) { … } — function\n—Ⓕ– sourcedir_deps_b ( ) { … } — function\n—Ⓕ– sourcedir_printdeps ( ) { … } — function\n—Ⓕ– rule_dep_list_recursive ( ) { … } — function\n—Ⓕ– rule_dep_list ( ) { … } — function\n—Ⓕ– rule_deps_indirect ( ) { … } — function\n—Ⓕ– deps_indirect ( ) { … } — function\n—Ⓕ– deps_direct ( ) { … } — function\n—Ⓕ– print_rule_deps_r ( ) { … } — function\n—Ⓕ– print_rule_deps ( ) { … } — function\n—Ⓕ– remove_indirect_deps_recursive ( ) { … } — function\n—Ⓕ– remove_indirect_deps ( ) { … } — function\n—Ⓕ– deps_for_libs ( ) { … } — function\n—Ⓕ– target_ptrs ( ) { … } — function\n—Ⓕ– gen_single_rule ( ) { … } — function\n—Ⓕ– gen_clean_rule ( ) { … } — function\n—Ⓕ– filter_pptoks ( ) { … } — function\n—Ⓕ– gen_srcdir_compile_rules ( ) { … } — function\n—Ⓕ– gen_simple_compile_rules ( ) { … } — function\n—Ⓕ– gen_srcdir_lib_rule ( ) { … } — function\n—Ⓕ– gen_srcdir_rule ( ) { … } — function\n—Ⓕ– gen_lib_rules ( ) { … } — function\n—Ⓕ– gen_link_rules ( ) { … } — function\n—Ⓕ– output_build_rules ( ) { … } — function\n—Ⓕ– gen_install_rules ( ) { … } — function\n—Ⓕ– get_keys ( ) { … } — function\n—Ⓕ– input_command ( ) { … } — function\n—Ⓕ– input_command_line ( ) { … } — function\n—Ⓕ– get_ref_vars ( ) { … } — function\n—Ⓕ– var_output ( ) { … } — function\n—Ⓕ– output_all_vars ( ) { … } — function\n—Ⓕ– output_make_rule ( ) { … } — function\n—Ⓕ– output_ninja_rule ( ) { … } — function\n—Ⓕ– output_all_rules ( ) { … } — function\n—Ⓕ– output_script ( ) { … } — function\n—Ⓕ– set_machine ( ) { … } — function\n—Ⓕ– set_chip ( ) { … } — function\n—Ⓕ– set_system ( ) { … } — function\n—Ⓕ– set_make_type ( ) { … } — function\n—Ⓕ– set_compiler_type ( ) { … } — function\n—Ⓕ– usage ( ) { … } — function\n—Ⓕ– main ( ) { … } — function",
 			"settings":
 			{
-				"buffer_size": 301,
+				"buffer_size": 5748,
 				"line_ending": "Unix",
 				"name": "𝌆 Outline",
 				"scratch": true
 			}
 		},
 		{
-			"file": "/home/roman/.config/sublime-text-3/Packages/Outline/common.py",
+			"file": "genmakefile.c",
 			"settings":
 			{
-				"buffer_size": 20366,
+				"buffer_size": 140776,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "/home/roman/.config/sublime-text-3/Packages/Outline/outline.py",
+			"file": "genmakefile.h",
 			"settings":
 			{
-				"buffer_size": 4843,
-				"encoding": "UTF-8",
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "/home/roman/.config/sublime-text-3/Packages/Outline/show.py",
-			"settings":
-			{
-				"buffer_size": 5459,
+				"buffer_size": 7604,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
@@ -137,148 +132,154 @@
 	},
 	"expanded_folders":
 	[
-		"/home/roman/Dokumente/Sources/c-utils"
+		"/home/roman/Dokumente/Sources/c-utils",
+		"/home/roman/Dokumente/Sources/c-utils/lib",
+		"/home/roman/Dokumente/Sources/c-utils/lib/byte",
+		"/home/roman/Dokumente/Sources/c-utils/lib/str",
+		"/home/roman/Dokumente/Sources/c-utils/lib/strlist"
 	],
 	"file_history":
 	[
-		"/home/roman/Dokumente/Sources/c-utils/tinyproxy.c",
-		"/home/roman/Dokumente/Sources/c-utils/pkgcfg.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/array.h",
-		"/home/roman/Dokumente/Sources/c-utils/lib/strarray/strarray_pushb_unique.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/strlist.h",
-		"/home/roman/Dokumente/Sources/c-utils/lib/strlist/strlist_froms.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/strlist/strlist_push_tokens.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/fmt/fmt_xlong0.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/strarray.h",
-		"/home/roman/Dokumente/Sources/c-utils/cmake-run.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/errmsg/errmsg_iam.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/errmsg.h",
-		"/home/roman/Dokumente/Sources/schily-2020-05-25/star/acltext.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/buffer/buffer_putxlong0.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/fmt/fmt_ulong0.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/fmt.h",
-		"/home/roman/Dokumente/Sources/c-utils/lib/fmt/fmt_xlong.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/socket.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/str/str_start.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/set/set_iterator_value.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/set.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/set/set_init.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/set/set_add.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/set/set_free.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/set/set_has.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/set/set_hashfunc.c",
+		"/home/roman/Dokumente/Sources/c-utils/genmakefile.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/set/set_iterator_next.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/set/set_iterator_init.c",
+		"/home/roman/Dokumente/Sources/c-utils/genmakefile.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/set/hash_set_clear.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/set/set_clear.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/set/set_insert.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/set/set_exists.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/set/set_dump.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/strlist/strlist_pushb_unique.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/strlist/strlist_push_unique.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/strlist/strlist_push_unique_sa.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/strarray/strarray_pushb_unique.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/unix/getopt.c",
 		"/home/roman/Dokumente/Sources/c-utils/CMakeLists.txt",
-		"/home/roman/Dokumente/Sources/c-utils/lib/strarray/strarray_unshift.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/strarray/strarray_pushb.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/strarray/strarray_unshiftb.c",
-		"/home/roman/Dokumente/Sources/schily-2020-05-25/star/star.h",
-		"/home/roman/Dokumente/Sources/c-utils/lib/strarray/strarray_to_argv.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/strarray/strarray_unshiftm.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/array/array_splice.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/socket/socket_local4.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/stralloc.h",
-		"/home/roman/Dokumente/Sources/schily-2020-05-25/star/acl_unix.c",
-		"/home/roman/Dokumente/Sources/schily-2020-05-25/star/CMakeLists.txt",
-		"/home/roman/Dokumente/Sources/c-utils/lib/path/path_basename.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/str/str_chrs.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/buffer/strarray_unshiftm.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/buffer/buffer_putm_internal.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/stralloc/stralloc_prepends.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/stralloc/stralloc_prependb.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/strarray/strarray_prepends.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/strarray/strarray_unshiftn.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/strarray/strarray_joins.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/strarray/strarray_push.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/strlist/strlist_dump.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/strarray/strarray_from_argv.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/strlist/strlist_to_argv.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/wait/wait_nointr.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/process/process_create.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/buffer/buffer_init_free.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/buffer/buffer_free.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/buffer.h",
-		"/home/roman/Dokumente/Sources/c-utils/lib/str.h",
-		"/home/roman/Dokumente/Sources/c-utils/setuidgid.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/mmap/mmap_rw_fd.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/io/io_sendfile.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/sig.h",
-		"/home/roman/Dokumente/Sources/c-utils/lib/taia.h",
-		"/home/roman/Dokumente/Sources/c-utils/lib/tai.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/set/set_dump_free.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/set/set_it.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/set/set_free_array.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/set/set_realloc.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/set/set_st.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/unix.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/unix/getdelim.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/strlist.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/path.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/path/path_is_absolute.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/path/path_is_absolute_sa.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/path/path_is_absolute_b.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/path/path_absolute_sa.c",
+		"/home/roman/Dokumente/Sources/c-utils/query.c",
+		"/home/roman/Sources/c-utils/query.c",
+		"/home/roman/Dokumente/Sources/c-utils/query.h",
+		"/home/roman/Sources/c-utils/dnscache.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/dns/dns_domain.c",
+		"/home/roman/Dokumente/Sources/c-utils/gen-mk.sh",
+		"/home/roman/Dokumente/Sources/c-utils/names.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/dns/dns_dtda.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/array.h",
+		"/home/roman/Dokumente/Sources/c-utils/names.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/dns.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/dns/dns_packet.c",
+		"/home/roman/Sources/c-utils/response.c",
+		"/home/roman/Dokumente/Sources/c-utils/response.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/case.h",
 		"/home/roman/Dokumente/Sources/c-utils/lib/range.h",
-		"/home/roman/Dokumente/Sources/c-utils/lib/range/range_rotate.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/uint32/uint32_random.c",
-		"/home/roman/Dokumente/Sources/c-utils/3rdparty/openssl/doc/man1/s_time.pod",
-		"/home/roman/Dokumente/Sources/c-utils/lib/stralloc/stralloc_move.c",
-		"/home/roman/Dokumente/Sources/c-utils/map.h",
-		"/home/roman/Dokumente/Sources/c-utils/lib/http/http_get.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/fmt/fmt_escapecharshell.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/stralloc/buffer_put_escaped.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/fmt/fmt_escapecharc.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/textcode/fmt_cescape.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/byte/byte_rchr.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/io.h",
-		"/home/roman/Dokumente/Sources/c-utils/httptest.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/http/http_read.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/http/http_ssl_read.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/http/http_ssl_connect.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/byte/byte_copyr.c",
+		"/home/roman/Dokumente/Sources/c-utils/cache.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/sig.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/stralloc.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/socket/socket_tcp6b.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/socket/socket_v6only.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/socket/socket_sctp6b.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/socket/socket_udp6.c",
+		"/home/roman/Dokumente/Sources/c-utils/response.c",
+		"/home/roman/Dokumente/Sources/c-utils/log.c",
+		"/home/roman/Dokumente/Sources/c-utils/dnscache.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/dns/dns_transmit.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/dns/dns_random.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/dns/dns_dfd.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/dns/dns_ip4.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/dns/dns_ip6.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/dns/dns_name.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/socket/socket_bind6_reuse.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/socket/socket_bind6.c",
+		"/home/roman/Dokumente/Sources/c-utils/cache.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/socket/socket_is6.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/socket/socket_is4.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/socket.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/fmt/fmt_octal.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/fmt.h",
+		"/home/roman/Dokumente/Sources/c-utils/log.h",
 		"/home/roman/Dokumente/Sources/c-utils/lib/byte.h",
-		"/home/roman/Dokumente/Sources/c-utils/lib/io/io_waituntil2.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/iopause.h",
-		"/home/roman/Dokumente/Sources/c-utils/lib/str/str_cat.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/fmt/fmt_ulong.c",
-		"/home/roman/Dokumente/Sources/c-utils/examples/fmt_ip6_example.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/socket/fmt_ip6.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/buffer/buffer_put.c",
-		"/home/roman/Dokumente/Sources/c-utils/logserial.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/iarray/iarray_allocate.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/scan.h",
-		"/home/roman/.config/sublime-text-3/Packages/DoxyDoc/DoxyDoc.sublime-settings",
-		"/home/roman/Dokumente/Sources/c-utils/lib/io/io_fd.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/iarray/iarray_length.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/buffer/buffer_stubborn.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/buffer/buffer_flush.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/io_internal.h",
-		"/home/roman/Dokumente/Sources/c-utils/lib/io/io_eagain_read.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/iarray/iarray_init.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/iarray.h",
-		"/home/roman/Dokumente/Sources/libowfat-rsenn/t.c",
-		"/home/roman/Dokumente/Sources/c-utils/tests/test_iarray.c",
-		"/home/roman/Dokumente/Sources/c-utils/tests/test_strlist.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/strlist/strlist_count.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/path/path_canonicalize.c",
-		"/home/roman/Dokumente/Sources/c-utils/tests/unit_test_runner.c",
-		"/home/roman/Dokumente/Sources/c-utils/tests/CMakeLists.txt",
-		"/home/roman/Dokumente/Sources/c-utils/tests/unit_test.h",
-		"/home/roman/Dokumente/Sources/c-utils/tests/test_stralloc.c",
-		"/home/roman/Dokumente/Sources/c-utils/tests/unit_test.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/open/open_temp.c",
-		"/home/roman/Dokumente/Sources/c-utils/tests/all_tests.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/cas.h",
-		"/home/roman/Dokumente/Sources/c-utils/lib/slist.h",
-		"/home/roman/Dokumente/Sources/c-utils/lib/ndelay.h",
-		"/home/roman/Dokumente/Sources/c-utils/lib/iarray/iarray_get.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/iarray/iarray_free.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/io/io_wait.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/io/io_wantwrite.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/io/io_dontwantwrite.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/io/io_wantread.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/io/io_dontwantread.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/buffer/buffer_init.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/buffer/buffer_feed.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/buffer/buffer_stubborn2.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/sig/sig_block.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/sig/sig_blockset.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/sig/sig_shield.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/sig/sig_blocknone.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/socket/socket_listen.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/socket/socket_accept4.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/socket/socket_accept6.c"
+		"/home/roman/Dokumente/Sources/c-utils/lib/open/open_rw.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/open/open_rwsync.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/mmap/mmap_shared_fd.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/open.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/ip4.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/uint16.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/fmt/fmt_8long.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/socket/socket_recv6.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/socket/socket_send6.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/ip6.h",
+		"/home/roman/Dokumente/Sources/c-utils/dnsip.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/dns/dns_rcip.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/socket/scan_ip6if.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/socket/socket_getifidx.c",
+		"/home/roman/Dokumente/Sources/c-utils/roots.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/socket/socket_tcp6.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/socket/socket_tcp4b.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/socket/scan_ip6.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/stralloc/openreadclose.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/stralloc/readclose.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/uint32/uint32_seed.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/uint32/uint32_random.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/mmap.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/socket/socket_tcp4.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/socket/socket_bind4_reuse.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/socket/socket_broadcast.c",
+		"/home/roman/Dokumente/Sources/c-utils/roots.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/socket/scan_ip4.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/socket/socket_v4mappedprefix.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/socket/socket_connect6.c",
+		"/home/roman/Dokumente/Sources/c-utils/tcping.c",
+		"/home/roman/Dokumente/Sources/libowfat-rsenn/GNUmakefile",
+		"/home/roman/Dokumente/Sources/c-utils/map.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/socket/socket_bind4.c",
+		"/home/roman/Dokumente/Sources/c-utils/droproot.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/dir.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/dir/dir_open.c",
+		"/home/roman/Sources/c-utils/dnsname.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/open/open_trunc.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/open/open_append.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/taia/taia_uint.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/taia/taia_now.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/mmap/mmap_shared.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/mmap/mmap_rw_fd.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/mmap/mmap_private_fd.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/env/env_set.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/env/env_put.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/uint32.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/uint32/uint32_pack.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/mmap/mmap_private.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/mmap/mmap_anon.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/mmap/mmap_read_fd.c"
 	],
 	"find":
 	{
-		"height": 51.0
+		"height": 49.0
 	},
 	"find_in_files":
 	{
 		"height": 142.0,
 		"where_history":
 		[
+			"/home/roman/Sources/c-utils/lib,*.c,*.h,*.txt,/home/roman/Sources/c-utils,*.c,*.h,-*/3rdparty/*",
+			"/home/roman/Sources/c-utils/lib,*.c,*.h,*.txt,/home/roman/Sources/c-utils,*.c,*.h",
 			"/home/roman/Dokumente/Sources/c-utils/lib,*.c,*.h,*.txt",
 			"/home/roman/Dokumente/Sources/c-utils/lib,*.c,*.h",
 			"/home/roman/Dokumente/Sources/c-utils,*.c,*.h",
@@ -290,134 +291,134 @@
 		"case_sensitive": true,
 		"find_history":
 		[
-			"cmd\\.code",
-			"mode",
-			"push",
-			"cmd;",
-			"cmd,",
-			"cmd, ",
-			"cmd",
-			"cmd;",
-			"Expanding",
-			"args =",
-			"Must ",
-			"getopt",
-			"LIST_PATH",
-			".txt",
-			"\\.txt",
-			"open_log",
-			"\\.txt",
-			"dump_strarray",
-			"array_truncate",
-			"array_truncatwe",
-			"array_trunc",
-			"array-trunc",
-			"trunc",
-			"Exec:",
-			"Output file",
-			"-f",
-			"-v",
-			"-v\"",
-			"%Y",
-			"\"send",
-			"strf",
-			"fmt_add",
-			"fmt_buf",
-			"_'",
-			"_\"",
-			"_",
-			"\"input\"",
-			"io_send",
-			"\"output\"",
-			"open_log",
-			"\"send\"",
-			"output\"",
-			"errmsg_a",
-			"path_base",
-			"static",
-			"usage",
-			"_argv0",
-			"argv0",
-			"base",
-			"static",
-			"'B'",
-			"Y",
-			"argv0",
-			"iam",
-			"_tar",
-			"argv0",
-			"errmsg_iam",
-			"\"all\"",
-			"errmsg_iam",
-			"\"all\"",
-			"\"g\"",
-			"_unique",
-			"\"-f\"",
-			"\"-f",
-			"\"g\"",
-			"\"gtar",
-			"\"gter",
-			"gtar\"",
-			"bsdtar",
-			"pax",
-			"=pax",
-			"Exec",
-			"all\"",
-			"all",
-			"strft",
-			"sendfile",
-			"\"output\"",
-			"fmt_xlong0",
-			"xlong0",
-			"(\\.|->)addr",
-			"(\\.|->)port",
-			"(\\.|->port)",
-			"\\.port",
-			"addr",
-			"_xl",
-			"unsigned long",
-			"sockbuf_fmt_addr",
-			"fmt_",
-			"local6",
-			"_af",
-			"getlocal_addr",
-			"scope",
-			"sockbuf_fmt_addr",
-			"sockbuf_log_data",
-			"getlocal_addr",
-			"socket_local6",
-			"open_log",
-			"fmt_addr",
-			"_now",
-			"taia",
-			"\"-\"",
-			"fmt_add",
-			"fmt_addr",
-			"':'",
-			"suffix",
-			"\".txt",
-			"open_log",
-			"input\"",
-			"programs",
-			"nul",
-			"_nul\\(",
-			"_nul(",
-			"_nul\\(",
-			"_null",
-			"ing",
-			"_nul",
-			"nul",
-			"_nul",
-			"nul",
-			"^[^(]*char\\s*\\*",
-			"^.*char\\s*\\*",
-			"^.*char\\*",
-			"^.*char",
-			"^:*char",
-			"^char",
-			"push_uniq",
+			"filter_pptoks",
+			"pptoks",
+			"sourcedir",
+			"srcdir",
+			"srcdir =",
+			"srcdir",
+			"^sourcefile",
+			"sourcefile",
+			"deps",
+			"deps =",
+			"pptok",
+			"set_forea",
+			"set_fora",
+			"LANG_C",
+			"4819",
+			"LANG_C",
+			"4819",
+			"bool",
+			"extract_pptok",
+			"unique.*tok",
+			"unique.*pptoks",
+			"pptoks",
 			"strlist",
-			"output_files"
+			"pptoks",
+			"pptok",
+			"extract_pptok",
+			"extract_tokens",
+			"unique.*tok",
+			"unique",
+			"preproc",
+			"genmake",
+			"set_realloc",
+			"set_free_array",
+			"uint32_t",
+			"create-",
+			"cmd_bins",
+			"create-bin",
+			"FOREACH",
+			"gen_srcdir_compile_rules",
+			"rule_dump",
+			"Adding",
+			"\"sources_add",
+			"sources_add",
+			"path_output",
+			"is_source",
+			"unix_optind",
+			"[^a-z]opt[a-z]+",
+			"[^a-z]opt[a-z]*",
+			"[^a-z]opt",
+			"opt",
+			"getopt_long",
+			"genmakefile",
+			"builddir",
+			"\"build",
+			"build",
+			"\"%",
+			"foreach",
+			"strarray_dump",
+			"strlist_dump",
+			"strlist_dumpü",
+			" \\.chip",
+			"\\.chip",
+			"LANG_C",
+			"to LANG_C",
+			"LANG_C",
+			"LANG_C\\+\\+",
+			"LANG_C",
+			"!= CXX",
+			"getopt",
+			"lang !",
+			"cfg",
+			"^main",
+			"main",
+			"cfg\\.",
+			"getopt",
+			"enum",
+			"hpp",
+			"strarray_dump",
+			"\"sourcedir",
+			"sourcedir",
+			"sourcedir\"",
+			"sourcedir",
+			"debug_",
+			"\"dir\"",
+			"deps =",
+			"\"dir:",
+			"dir:",
+			"p->len",
+			"p->s",
+			"absolute",
+			"pathsep_make =",
+			"pathsep_ma",
+			"error open",
+			"ERROR open",
+			"names_",
+			"response_query",
+			"[^a-z]names_",
+			"names_",
+			"unable to bind UDP",
+			"unable to bind",
+			"failed to bind",
+			"names_",
+			"arr =",
+			"equal",
+			"names",
+			"sort",
+			"dnscache",
+			"qsort",
+			"sort",
+			"names",
+			"cache_get",
+			"dns_packet_skipname",
+			"#include \"lib/alloc.h\"\n",
+			"init",
+			"_rstart",
+			"response",
+			"udp_respond",
+			"udp_new",
+			"udp_respond",
+			"send6",
+			"send",
+			"send\\(",
+			"send",
+			"send\\(",
+			"response_",
+			"response",
+			"dnscache_droproot",
+			"\\*d"
 		],
 		"highlight": false,
 		"in_selection": false,
@@ -425,6 +426,24 @@
 		"regex": true,
 		"replace_history":
 		[
+			"C",
+			"uint32",
+			"C",
+			"to C",
+			"C++",
+			"n",
+			"x",
+			"resp->len",
+			"og_string(\"udp\");",
+			"",
+			"errstr()",
+			"111, FATAL, \"",
+			"",
+			"data->",
+			"diesys(111, fatal,",
+			"die(111, fatal,",
+			"die(111, ",
+			"diesys(111, ",
 			"code",
 			"ustar",
 			"\\1addr.ip",
@@ -466,7 +485,7 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 301,
+						"buffer_size": 5748,
 						"regions":
 						{
 						},
@@ -476,78 +495,748 @@
 						"settings":
 						{
 							"color_scheme": "Packages/Outline/outline.hidden-tmTheme",
-							"current_file": "/home/roman/.config/sublime-text-3/Packages/Outline/outline.py",
+							"current_file": "/home/roman/Dokumente/Sources/c-utils/genmakefile.c",
 							"outline_rename_mode": false,
 							"symkeys":
 							[
 								[
-									235,
-									271
+									633,
+									642
 								],
 								[
-									272,
-									367
+									674,
+									682
 								],
 								[
-									454,
-									502
+									721,
+									729
 								],
 								[
-									503,
-									518
+									789,
+									798
 								],
 								[
-									741,
-									762
+									2132,
+									2140
 								],
 								[
-									802,
-									843
+									2306,
+									2316
 								],
 								[
-									844,
-									933
+									2665,
+									2674
 								],
 								[
-									2214,
-									2258
+									2881,
+									2891
 								],
 								[
-									2259,
-									2280
+									3068,
+									3080
 								],
 								[
-									2569,
-									2610
+									3493,
+									3501
 								],
 								[
-									2611,
-									2650
+									4007,
+									4016
 								],
 								[
-									3435,
-									3465
+									4185,
+									4193
 								],
 								[
-									4081,
-									4110
+									4208,
+									4216
+								],
+								[
+									4236,
+									4245
+								],
+								[
+									4260,
+									4269
+								],
+								[
+									4306,
+									4312
+								],
+								[
+									4331,
+									4339
+								],
+								[
+									4568,
+									4584
+								],
+								[
+									4971,
+									4984
+								],
+								[
+									5185,
+									5196
+								],
+								[
+									5361,
+									5372
+								],
+								[
+									5993,
+									6006
+								],
+								[
+									6624,
+									6637
+								],
+								[
+									7160,
+									7173
+								],
+								[
+									7313,
+									7327
+								],
+								[
+									7675,
+									7689
+								],
+								[
+									7999,
+									8010
+								],
+								[
+									8485,
+									8498
+								],
+								[
+									8913,
+									8927
+								],
+								[
+									9306,
+									9324
+								],
+								[
+									9514,
+									9528
+								],
+								[
+									10211,
+									10224
+								],
+								[
+									11816,
+									11834
+								],
+								[
+									12084,
+									12105
+								],
+								[
+									12319,
+									12339
+								],
+								[
+									12386,
+									12398
+								],
+								[
+									12593,
+									12602
+								],
+								[
+									13554,
+									13566
+								],
+								[
+									13758,
+									13775
+								],
+								[
+									14618,
+									14634
+								],
+								[
+									15701,
+									15713
+								],
+								[
+									15939,
+									15951
+								],
+								[
+									16460,
+									16476
+								],
+								[
+									17689,
+									17698
+								],
+								[
+									18310,
+									18318
+								],
+								[
+									19238,
+									19249
+								],
+								[
+									19385,
+									19394
+								],
+								[
+									19748,
+									19759
+								],
+								[
+									20160,
+									20172
+								],
+								[
+									20318,
+									20329
+								],
+								[
+									20636,
+									20646
+								],
+								[
+									21108,
+									21126
+								],
+								[
+									22472,
+									22484
+								],
+								[
+									24079,
+									24091
+								],
+								[
+									24418,
+									24431
+								],
+								[
+									24757,
+									24766
+								],
+								[
+									25654,
+									25664
+								],
+								[
+									26003,
+									26011
+								],
+								[
+									26156,
+									26167
+								],
+								[
+									26633,
+									26644
+								],
+								[
+									26726,
+									26744
+								],
+								[
+									27047,
+									27051
+								],
+								[
+									27273,
+									27280
+								],
+								[
+									27463,
+									27472
+								],
+								[
+									27962,
+									27974
+								],
+								[
+									28041,
+									28052
+								],
+								[
+									28120,
+									28131
+								],
+								[
+									28436,
+									28450
+								],
+								[
+									28519,
+									28532
+								],
+								[
+									28602,
+									28612
+								],
+								[
+									28968,
+									28981
+								],
+								[
+									29049,
+									29061
+								],
+								[
+									29130,
+									29139
+								],
+								[
+									29209,
+									29221
+								],
+								[
+									29387,
+									29398
+								],
+								[
+									29964,
+									29975
+								],
+								[
+									30060,
+									30073
+								],
+								[
+									30322,
+									30334
+								],
+								[
+									30939,
+									30950
+								],
+								[
+									31653,
+									31665
+								],
+								[
+									32560,
+									32572
+								],
+								[
+									33496,
+									33511
+								],
+								[
+									34356,
+									34375
+								],
+								[
+									37822,
+									37831
+								],
+								[
+									37993,
+									38001
+								],
+								[
+									38412,
+									38419
+								],
+								[
+									38607,
+									38614
+								],
+								[
+									38778,
+									38787
+								],
+								[
+									38973,
+									38981
+								],
+								[
+									39158,
+									39169
+								],
+								[
+									39350,
+									39358
+								],
+								[
+									39628,
+									39636
+								],
+								[
+									40124,
+									40135
+								],
+								[
+									40432,
+									40448
+								],
+								[
+									40792,
+									40805
+								],
+								[
+									41186,
+									41200
+								],
+								[
+									41465,
+									41482
+								],
+								[
+									41803,
+									41818
+								],
+								[
+									42007,
+									42022
+								],
+								[
+									42352,
+									42368
+								],
+								[
+									42463,
+									42482
+								],
+								[
+									44578,
+									44596
+								],
+								[
+									45622,
+									45640
+								],
+								[
+									46134,
+									46157
+								],
+								[
+									46720,
+									46734
+								],
+								[
+									46871,
+									46887
+								],
+								[
+									47050,
+									47066
+								],
+								[
+									47238,
+									47257
+								],
+								[
+									47955,
+									47978
+								],
+								[
+									48541,
+									48554
+								],
+								[
+									48932,
+									48950
+								],
+								[
+									49331,
+									49344
+								],
+								[
+									49740,
+									49751
+								],
+								[
+									50017,
+									50034
+								],
+								[
+									51063,
+									51078
+								],
+								[
+									51750,
+									51780
+								],
+								[
+									52283,
+									52303
+								],
+								[
+									52659,
+									52672
+								],
+								[
+									54089,
+									54100
+								],
+								[
+									54553,
+									54568
+								],
+								[
+									55082,
+									55096
+								],
+								[
+									57338,
+									57351
+								],
+								[
+									57698,
+									57722
+								],
+								[
+									61337,
+									61361
+								],
+								[
+									62873,
+									62892
+								],
+								[
+									64633,
+									64648
+								],
+								[
+									65669,
+									65682
+								],
+								[
+									66856,
+									66870
+								],
+								[
+									72440,
+									72458
+								],
+								[
+									73022,
+									73039
+								],
+								[
+									75059,
+									75067
+								],
+								[
+									75179,
+									75192
+								],
+								[
+									79944,
+									79962
+								],
+								[
+									80894,
+									80906
+								],
+								[
+									81365,
+									81375
+								],
+								[
+									82926,
+									82941
+								],
+								[
+									83235,
+									83251
+								],
+								[
+									85860,
+									85877
+								],
+								[
+									86902,
+									86918
+								],
+								[
+									87479,
+									87492
+								],
+								[
+									89439,
+									89450
+								],
+								[
+									89978,
+									89986
+								],
+								[
+									90425,
+									90435
+								],
+								[
+									91148,
+									91161
+								],
+								[
+									93075,
+									93092
+								],
+								[
+									115498,
+									115503
+								],
+								[
+									119589,
+									119593
 								]
 							],
 							"symlist":
 							[
-								"OutlineCommand(WindowCommand)",
-								"\trun(…)",
-								"OutlineCloseSidebarCommand(WindowCommand)",
-								"\trun(…)",
-								"  removeParen(…)",
-								"OutlineRefreshCommand(TextCommand)",
-								"\trun(…)",
-								"OutlineToggleSortCommand(TextCommand)",
-								"\trun(…)",
-								"OutlineEventHandler(EventListener)",
-								"\ton_selection_modified(…)",
-								"\ton_activated(…)",
-								"\ton_pre_save(…)"
+								"\t⒡  debug_int ( ) ; — function declaration",
+								"\t⒡  debug_sa ( ) ; — function declaration",
+								"\t⒡  debug_sl ( ) ; — function declaration",
+								"\t⒡  debug_str ( ) ; — function declaration",
+								"—Ⓕ– debug_sa ( ) { … } — function",
+								"—Ⓕ– debug_stra ( ) { … } — function",
+								"—Ⓕ– debug_str ( ) { … } — function",
+								"—Ⓕ– debug_byte ( ) { … } — function",
+								"—Ⓕ– debug_target ( ) { … } — function",
+								"—Ⓕ– debug_sl ( ) { … } — function",
+								"—Ⓕ– debug_int ( ) { … } — function",
+								"—Ⓜ– debug_sa ( ) … — macro function",
+								"—Ⓜ– debug_sl ( ) … — macro function",
+								"—Ⓜ– debug_str ( ) … — macro function",
+								"—Ⓜ– debug_int ( ) … — macro function",
+								"\tⓂ  _mkdir … — macro object",
+								"—Ⓕ– mkdir_sa ( ) { … } — function",
+								"—Ⓕ– mkdir_components ( ) { … } — function",
+								"—Ⓕ– stralloc_weak ( ) { … } — function",
+								"—Ⓕ– put_newline ( ) { … } — function",
+								"—Ⓕ– set_command ( ) { … } — function",
+								"—Ⓕ– strarray_dump ( ) { … } — function",
+								"—Ⓕ– path_prefix_b ( ) { … } — function",
+								"—Ⓕ– path_prefix_s ( ) { … } — function",
+								"—Ⓕ– path_prefix_sa ( ) { … } — function",
+								"—Ⓕ– path_extension ( ) { … } — function",
+								"—Ⓕ– path_output ( ) { … } — function",
+								"—Ⓕ– path_wildcard ( ) { … } — function",
+								"—Ⓕ– path_mmap_read ( ) { … } — function",
+								"—Ⓕ– extract_build_type ( ) { … } — function",
+								"—Ⓕ– extract_tokens ( ) { … } — function",
+								"—Ⓕ– extract_pptok ( ) { … } — function",
+								"—Ⓕ– format_linklib_lib ( ) { … } — function",
+								"—Ⓕ– format_linklib_switch ( ) { … } — function",
+								"—Ⓕ– format_linklib_dummy ( ) { … } — function",
+								"—Ⓕ– skip_comment ( ) { … } — function",
+								"—Ⓕ– main_scan ( ) { … } — function",
+								"—Ⓕ– main_present ( ) { … } — function",
+								"—Ⓕ– includes_cppflags ( ) { … } — function",
+								"—Ⓕ– includes_extract ( ) { … } — function",
+								"—Ⓕ– includes_get ( ) { … } — function",
+								"—Ⓕ– includes_add ( ) { … } — function",
+								"—Ⓕ– includes_to_libs ( ) { … } — function",
+								"—Ⓕ– var_subst ( ) { … } — function",
+								"—Ⓕ– rule_get ( ) { … } — function",
+								"—Ⓕ– rule_get_sa ( ) { … } — function",
+								"—Ⓕ– rule_find ( ) { … } — function",
+								"—Ⓕ– rule_rename ( ) { … } — function",
+								"—Ⓕ– rule_find_sa ( ) { … } — function",
+								"—Ⓕ– rule_find_b ( ) { … } — function",
+								"—Ⓕ– rule_match ( ) { … } — function",
+								"—Ⓕ– rule_command_subst ( ) { … } — function",
+								"—Ⓕ– rule_command ( ) { … } — function",
+								"—Ⓕ– rule_add_dep ( ) { … } — function",
+								"—Ⓕ– rule_add_deps ( ) { … } — function",
+								"—Ⓕ– rule_dump ( ) { … } — function",
+								"—Ⓕ– add_path_b ( ) { … } — function",
+								"—Ⓕ– add_path ( ) { … } — function",
+								"—Ⓕ– add_srcpath ( ) { … } — function",
+								"—Ⓕ– add_path_sa ( ) { … } — function",
+								"—Ⓕ– add_path_relativeb ( ) { … } — function",
+								"—Ⓕ– is_b ( ) { … } — function",
+								"—Ⓕ– count_b ( ) { … } — function",
+								"—Ⓕ– is_source ( ) { … } — function",
+								"—Ⓕ– is_source_sa ( ) { … } — function",
+								"—Ⓕ– is_source_b ( ) { … } — function",
+								"—Ⓕ– is_filename ( ) { … } — function",
+								"—Ⓕ– is_filename_sa ( ) { … } — function",
+								"—Ⓕ– is_filename_b ( ) { … } — function",
+								"—Ⓕ– is_include ( ) { … } — function",
+								"—Ⓕ– is_include_sa ( ) { … } — function",
+								"—Ⓕ– is_include_b ( ) { … } — function",
+								"—Ⓕ– is_object ( ) { … } — function",
+								"—Ⓕ– is_object_sa ( ) { … } — function",
+								"—Ⓕ– sources_new ( ) { … } — function",
+								"—Ⓕ– sources_add ( ) { … } — function",
+								"—Ⓕ– sources_add_b ( ) { … } — function",
+								"—Ⓕ– sources_sort ( ) { … } — function",
+								"—Ⓕ– sources_get ( ) { … } — function",
+								"—Ⓕ– sources_find ( ) { … } — function",
+								"—Ⓕ– sources_deps ( ) { … } — function",
+								"—Ⓕ– sources_readdir ( ) { … } — function",
+								"—Ⓕ– sources_addincludes ( ) { … } — function",
+								"—Ⓕ– var_isset ( ) { … } — function",
+								"—Ⓕ– var_list ( ) { … } — function",
+								"—Ⓕ– var_get ( ) { … } — function",
+								"—Ⓕ– var_set ( ) { … } — function",
+								"—Ⓕ– var_unset ( ) { … } — function",
+								"—Ⓕ– var_push ( ) { … } — function",
+								"—Ⓕ– var_push_sa ( ) { … } — function",
+								"—Ⓕ– push_lib ( ) { … } — function",
+								"—Ⓕ– with_lib ( ) { … } — function",
+								"—Ⓕ– push_define ( ) { … } — function",
+								"—Ⓕ– get_rules_by_cmd ( ) { … } — function",
+								"—Ⓕ– dirname_alloc ( ) { … } — function",
+								"—Ⓕ– sourcedir_find ( ) { … } — function",
+								"—Ⓕ– sourcedir_find_sa ( ) { … } — function",
+								"—Ⓕ– sourcedir_findb ( ) { … } — function",
+								"—Ⓕ– sourcedir_get_b ( ) { … } — function",
+								"—Ⓕ– sourcedir_get_sa ( ) { … } — function",
+								"—Ⓕ– sourcedir_addsource ( ) { … } — function",
+								"—Ⓕ– sourcedir_populate ( ) { … } — function",
+								"—Ⓕ– sourcedir_dump_all ( ) { … } — function",
+								"—Ⓕ– sourcedir_dep_recursive ( ) { … } — function",
+								"—Ⓕ– sourcedir_deps ( ) { … } — function",
+								"—Ⓕ– sourcedir_deps_s ( ) { … } — function",
+								"—Ⓕ– sourcedir_deps_b ( ) { … } — function",
+								"—Ⓕ– sourcedir_printdeps ( ) { … } — function",
+								"—Ⓕ– rule_dep_list_recursive ( ) { … } — function",
+								"—Ⓕ– rule_dep_list ( ) { … } — function",
+								"—Ⓕ– rule_deps_indirect ( ) { … } — function",
+								"—Ⓕ– deps_indirect ( ) { … } — function",
+								"—Ⓕ– deps_direct ( ) { … } — function",
+								"—Ⓕ– print_rule_deps_r ( ) { … } — function",
+								"—Ⓕ– print_rule_deps ( ) { … } — function",
+								"—Ⓕ– remove_indirect_deps_recursive ( ) { … } — function",
+								"—Ⓕ– remove_indirect_deps ( ) { … } — function",
+								"—Ⓕ– deps_for_libs ( ) { … } — function",
+								"—Ⓕ– target_ptrs ( ) { … } — function",
+								"—Ⓕ– gen_single_rule ( ) { … } — function",
+								"—Ⓕ– gen_clean_rule ( ) { … } — function",
+								"—Ⓕ– filter_pptoks ( ) { … } — function",
+								"—Ⓕ– gen_srcdir_compile_rules ( ) { … } — function",
+								"—Ⓕ– gen_simple_compile_rules ( ) { … } — function",
+								"—Ⓕ– gen_srcdir_lib_rule ( ) { … } — function",
+								"—Ⓕ– gen_srcdir_rule ( ) { … } — function",
+								"—Ⓕ– gen_lib_rules ( ) { … } — function",
+								"—Ⓕ– gen_link_rules ( ) { … } — function",
+								"—Ⓕ– output_build_rules ( ) { … } — function",
+								"—Ⓕ– gen_install_rules ( ) { … } — function",
+								"—Ⓕ– get_keys ( ) { … } — function",
+								"—Ⓕ– input_command ( ) { … } — function",
+								"—Ⓕ– input_command_line ( ) { … } — function",
+								"—Ⓕ– get_ref_vars ( ) { … } — function",
+								"—Ⓕ– var_output ( ) { … } — function",
+								"—Ⓕ– output_all_vars ( ) { … } — function",
+								"—Ⓕ– output_make_rule ( ) { … } — function",
+								"—Ⓕ– output_ninja_rule ( ) { … } — function",
+								"—Ⓕ– output_all_rules ( ) { … } — function",
+								"—Ⓕ– output_script ( ) { … } — function",
+								"—Ⓕ– set_machine ( ) { … } — function",
+								"—Ⓕ– set_chip ( ) { … } — function",
+								"—Ⓕ– set_system ( ) { … } — function",
+								"—Ⓕ– set_make_type ( ) { … } — function",
+								"—Ⓕ– set_compiler_type ( ) { … } — function",
+								"—Ⓕ– usage ( ) { … } — function",
+								"—Ⓕ– main ( ) { … } — function"
 							],
 							"syntax": "Packages/Outline/outline.hidden-tmLanguage",
 							"tab_size": 3,
@@ -557,102 +1246,73 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 3,
+					"stack_index": 2,
 					"type": "text"
 				}
 			]
 		},
 		{
-			"selected": 1,
+			"selected": 0,
 			"sheets":
 			[
 				{
 					"buffer": 1,
-					"file": "/home/roman/.config/sublime-text-3/Packages/Outline/common.py",
+					"file": "genmakefile.c",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 20366,
+						"buffer_size": 140776,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								0,
-								0
+								58135,
+								58135
 							]
 						],
 						"settings":
 						{
-							"syntax": "Packages/Python/Python.sublime-syntax",
-							"tab_size": 4,
+							"syntax": "Packages/C Improved/C Improved.tmLanguage",
+							"tab_size": 2,
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 3393.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 1,
-					"type": "text"
-				},
-				{
-					"buffer": 2,
-					"file": "/home/roman/.config/sublime-text-3/Packages/Outline/outline.py",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 4843,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								1375,
-								1375
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Python/Python.sublime-syntax",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 783.0,
+						"translation.y": 68115.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 0,
 					"type": "text"
 				},
 				{
-					"buffer": 3,
-					"file": "/home/roman/.config/sublime-text-3/Packages/Outline/show.py",
+					"buffer": 2,
+					"file": "genmakefile.h",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 5459,
+						"buffer_size": 7604,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								0,
-								0
+								1509,
+								1509
 							]
 						],
 						"settings":
 						{
-							"syntax": "Packages/Python/Python.sublime-syntax",
-							"tab_size": 4,
+							"syntax": "Packages/C11/C11.tmLanguage",
+							"tab_size": 2,
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 4960.0,
+						"translation.y": 1749.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 2,
+					"stack_index": 1,
 					"type": "text"
 				}
 			]
@@ -660,7 +1320,7 @@
 	],
 	"incremental_find":
 	{
-		"height": 38.0
+		"height": 36.0
 	},
 	"input":
 	{
@@ -687,7 +1347,7 @@
 		[
 			0.0,
 			0.2,
-			0.8,
+			0.680898903972,
 			1.0
 		],
 		"rows":
@@ -714,7 +1374,7 @@
 	"project": "c-utils.sublime-project",
 	"replace":
 	{
-		"height": 93.0
+		"height": 89.0
 	},
 	"save_all_on_build": true,
 	"select_file":
@@ -724,8 +1384,276 @@
 		"selected_items":
 		[
 			[
+				"genmake",
+				"genmakefile.h"
+			],
+			[
+				"set.h",
+				"lib/set.h"
+			],
+			[
+				"genma",
+				"genmakefile.c"
+			],
+			[
+				"genmakefile.h",
+				"genmakefile.h"
+			],
+			[
+				"cmakeli",
+				"CMakeLists.txt"
+			],
+			[
+				"unix.h",
+				"lib/unix.h"
+			],
+			[
+				"cmakelists",
+				"CMakeLists.txt"
+			],
+			[
+				"strlist.h",
+				"lib/strlist.h"
+			],
+			[
+				"genmak",
+				"genmakefile.h"
+			],
+			[
+				"path_is",
+				"lib/path/path_is_absolute.c"
+			],
+			[
+				"absolute_sa",
+				"lib/path/path_absolute_sa.c"
+			],
+			[
+				"path.h",
+				"lib/path.h"
+			],
+			[
+				"query.h",
+				"query.h"
+			],
+			[
+				"names.c",
+				"names.c"
+			],
+			[
+				"names.h",
+				"names.h"
+			],
+			[
+				"dns.h",
+				"lib/dns.h"
+			],
+			[
+				"case.h",
+				"lib/case.h"
+			],
+			[
+				"query.c",
+				"query.c"
+			],
+			[
 				"array.h",
 				"lib/array.h"
+			],
+			[
+				"respone.h",
+				"response.h"
+			],
+			[
+				"range.h",
+				"lib/range.h"
+			],
+			[
+				"cache.c",
+				"cache.c"
+			],
+			[
+				"sig.h",
+				"lib/sig.h"
+			],
+			[
+				"CMAKEList",
+				"CMakeLists.txt"
+			],
+			[
+				"stralloc.h",
+				"lib/stralloc.h"
+			],
+			[
+				"response.h",
+				"response.h"
+			],
+			[
+				"v6only",
+				"lib/socket/socket_v6only.c"
+			],
+			[
+				"response",
+				"response.h"
+			],
+			[
+				"log.c",
+				"log.c"
+			],
+			[
+				"dnscache",
+				"dnscache.c"
+			],
+			[
+				"cache.h",
+				"cache.h"
+			],
+			[
+				"socket.h",
+				"lib/socket.h"
+			],
+			[
+				"uint16",
+				"lib/uint16.h"
+			],
+			[
+				"fmt.h",
+				"lib/fmt.h"
+			],
+			[
+				"log.h",
+				"log.h"
+			],
+			[
+				"ip6.h",
+				"lib/ip6.h"
+			],
+			[
+				"byte.h",
+				"lib/byte.h"
+			],
+			[
+				"open_rw",
+				"lib/open/open_rw.c"
+			],
+			[
+				"open.h",
+				"lib/open.h"
+			],
+			[
+				"ip4",
+				"lib/ip4.h"
+			],
+			[
+				"scan_ip",
+				"lib/socket/scan_ip6if.c"
+			],
+			[
+				"dnsip.c",
+				"dnsip.c"
+			],
+			[
+				"roots.c",
+				"roots.c"
+			],
+			[
+				"mmap.h",
+				"lib/mmap.h"
+			],
+			[
+				"ip6",
+				"lib/ip6.h"
+			],
+			[
+				"roots.h",
+				"roots.h"
+			],
+			[
+				"response.c",
+				"response.c"
+			],
+			[
+				"log",
+				"log.c"
+			],
+			[
+				"respn",
+				"response.c"
+			],
+			[
+				"uint32.h",
+				"lib/uint32.h"
+			],
+			[
+				"uint32_pack",
+				"lib/uint32/uint32_pack.c"
+			],
+			[
+				"uint32",
+				"lib/uint32/uint32_unpack.c"
+			],
+			[
+				"mmap_",
+				"lib/mmap/mmap_shared.c"
+			],
+			[
+				"cache",
+				"cache.c"
+			],
+			[
+				"droproot",
+				"droproot.c"
+			],
+			[
+				"dir_open",
+				"lib/dir/dir_open.c"
+			],
+			[
+				"dir.h",
+				"lib/dir.h"
+			],
+			[
+				"root",
+				"roots.c"
+			],
+			[
+				"elflist",
+				"elflist.c"
+			],
+			[
+				"elf64list",
+				"elf64list.c"
+			],
+			[
+				"map.h",
+				"map.h"
+			],
+			[
+				"str_copy",
+				"lib/str/str_copy.c"
+			],
+			[
+				"fmt_str",
+				"lib/fmt/fmt_str.c"
+			],
+			[
+				"fmt_ip",
+				"lib/socket/fmt_ip6if.c"
+			],
+			[
+				"cmakelits",
+				"CMakeLists.txt"
+			],
+			[
+				"io_close",
+				"lib/io/io_close.c"
+			],
+			[
+				"taia.h",
+				"lib/taia.h"
+			],
+			[
+				"tcping",
+				"tcping.c"
 			],
 			[
 				"pkgcfg",
@@ -764,24 +1692,12 @@
 				"lib/fmt/fmt_xlong0.c"
 			],
 			[
-				"fmt.h",
-				"lib/fmt.h"
-			],
-			[
 				"tiny",
 				"tinyproxy.c"
 			],
 			[
-				"stralloc.h",
-				"lib/stralloc.h"
-			],
-			[
 				"socket_loca",
 				"lib/socket/socket_local4.c"
-			],
-			[
-				"socket.h",
-				"lib/socket.h"
 			],
 			[
 				"local4",
@@ -806,10 +1722,6 @@
 			[
 				"tinypro",
 				"tinyproxy.c"
-			],
-			[
-				"cmakelists",
-				"CMakeLists.txt"
 			],
 			[
 				"splice",
@@ -846,10 +1758,6 @@
 			[
 				"to_arg",
 				"lib/strarray/strarray_to_argv.c"
-			],
-			[
-				"cmakeli",
-				"CMakeLists.txt"
 			],
 			[
 				"splice.c",
@@ -920,10 +1828,6 @@
 				"lib/process/process_create.c"
 			],
 			[
-				"strlist.h",
-				"lib/strlist.h"
-			],
-			[
 				"buffer.h",
 				"lib/buffer.h"
 			],
@@ -952,16 +1856,8 @@
 				"lib/uint32/uint32_random.c"
 			],
 			[
-				"sig.h",
-				"lib/sig.h"
-			],
-			[
 				"tai",
 				"lib/tai.h"
-			],
-			[
-				"taia.h",
-				"lib/taia.h"
 			],
 			[
 				"range",
@@ -998,242 +1894,6 @@
 			[
 				"fmt_esca",
 				"lib/textcode/fmt_cescape.c"
-			],
-			[
-				"put_esca",
-				"lib/stralloc/buffer_put_escaped.c"
-			],
-			[
-				"fmt_escape",
-				"lib/textcode/fmt_cescape.c"
-			],
-			[
-				"byte_rchr",
-				"lib/byte/byte_rchr.c"
-			],
-			[
-				"io.h",
-				"lib/io.h"
-			],
-			[
-				"http_re",
-				"lib/http/http_read.c"
-			],
-			[
-				"httptest",
-				"httptest.c"
-			],
-			[
-				"byte_copyr",
-				"lib/byte/byte_copyr.c"
-			],
-			[
-				"byte.h",
-				"lib/byte.h"
-			],
-			[
-				"str_cat",
-				"lib/str/str_cat.c"
-			],
-			[
-				"fmt_ulong",
-				"lib/fmt/fmt_ulong.c"
-			],
-			[
-				"fmt_ip",
-				"lib/socket/fmt_ip6.c"
-			],
-			[
-				"fmt_ip6",
-				"examples/fmt_ip6_example.c"
-			],
-			[
-				"buffer_put",
-				"lib/buffer/buffer_put.c"
-			],
-			[
-				"iarray_all",
-				"lib/iarray/iarray_allocate.c"
-			],
-			[
-				"logser",
-				"logserial.c"
-			],
-			[
-				"scan.h",
-				"lib/scan.h"
-			],
-			[
-				"tinyp",
-				"tinyproxy.c"
-			],
-			[
-				"waitunt",
-				"lib/io/io_waituntil2.c"
-			],
-			[
-				"io_in",
-				"lib/io_internal.h"
-			],
-			[
-				"putesca",
-				"lib/stralloc/buffer_put_escaped.c"
-			],
-			[
-				"strlist_count",
-				"lib/strlist/strlist_count.c"
-			],
-			[
-				"open_temp",
-				"lib/open/open_temp.c"
-			],
-			[
-				"iarray_ini",
-				"lib/iarray/iarray_init.c"
-			],
-			[
-				"iarray.h",
-				"lib/iarray.h"
-			],
-			[
-				"iarra",
-				"lib/iarray.h"
-			],
-			[
-				"waitun",
-				"lib/io/io_waituntil2.c"
-			],
-			[
-				"cas",
-				"lib/cas.h"
-			],
-			[
-				"io_fd",
-				"lib/io/io_fd.c"
-			],
-			[
-				"cas.h",
-				"lib/cas.h"
-			],
-			[
-				"io_wait",
-				"lib/io/io_wantwrite.c"
-			],
-			[
-				"io_",
-				"lib/io/io_wait.c"
-			],
-			[
-				"slist.h",
-				"lib/slist.h"
-			],
-			[
-				"ndelay",
-				"lib/ndelay.h"
-			],
-			[
-				"stubb",
-				"lib/buffer/buffer_stubborn2.c"
-			],
-			[
-				"buffer_ini",
-				"lib/buffer/buffer_init_free.c"
-			],
-			[
-				"sig_block",
-				"lib/sig/sig_block.c"
-			],
-			[
-				"sig_",
-				"lib/sig/sig_shield.c"
-			],
-			[
-				"block",
-				"lib/sig/sig_blockset.c"
-			],
-			[
-				"blocknon",
-				"lib/sig/sig_blocknone.c"
-			],
-			[
-				"socket_listen",
-				"lib/socket/socket_listen.c"
-			],
-			[
-				"socket_acc",
-				"lib/socket/socket_accept6.c"
-			],
-			[
-				"accept",
-				"lib/socket/socket_accept4.c"
-			],
-			[
-				"fmt_ulon",
-				"lib/fmt/fmt_ulong.c"
-			],
-			[
-				"connect6",
-				"lib/socket/socket_connect6.c"
-			],
-			[
-				"socket_conn",
-				"lib/socket/socket_connect4.c"
-			],
-			[
-				"bind_",
-				"lib/socket/socket_bind6_reuse.c"
-			],
-			[
-				"pkgcf",
-				"pkgcfg.c"
-			],
-			[
-				"fmt_u",
-				"lib/fmt/fmt_ulong.c"
-			],
-			[
-				"socket_tcp",
-				"lib/socket/socket_tcp4.c"
-			],
-			[
-				"ip6",
-				"lib/socket/scan_ip6.c"
-			],
-			[
-				"ip4",
-				"lib/socket/scan_ip4.c"
-			],
-			[
-				"reuse",
-				"lib/socket/socket_bind4_reuse.c"
-			],
-			[
-				"tcpp",
-				"tcpproxy.c"
-			],
-			[
-				"httppr",
-				"httpproxy.c"
-			],
-			[
-				"proxy",
-				"tinyproxy.c"
-			],
-			[
-				"seria",
-				"serial.c"
-			],
-			[
-				"case",
-				"lib/case.h"
-			],
-			[
-				"-parser",
-				"mediathek-parser.c"
-			],
-			[
-				"ediathek-li",
-				"mediathek-list.c"
 			]
 		],
 		"width": 0.0

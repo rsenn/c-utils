@@ -7,7 +7,7 @@
 #include "lib/unix.h"
 
 extern buffer* unix_optbuf;
-static const char tok_charset[] = {'_', 'A', 'B', 'LANG_C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O',
+static const char tok_charset[] = {'_', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O',
                                    'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'a', 'b', 'c', 'd', 'e',
                                    'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u',
                                    'v', 'w', 'x', 'y', 'z', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
@@ -401,8 +401,10 @@ extract_tokens(const char* x, size_t n, set_t* tokens) {
     i = scan_charsetnskip(x, tok_charset, n);
     if(i > 0 && !(i == 7 && byte_equal(x, 7, "defined")))
       if(!(*x >= '0' && *x <= '9'))
-        if(set_add(tokens, x, i)) {
-          // debug_byte("added tok", x, i);
+        if(set_add(tokens, x, i) == 1) {
+#ifdef DEBUG_OUTPUT_
+          debug_byte("added tok", x, i);
+#endif
         }
     if(i == n)
       break;
@@ -686,14 +688,14 @@ includes_add(const char* dir) {
  * @param libs
  */
 void
-includes_to_libs(const strlist* includes, strlist* libs) {
+includes_to_libs(const set_t* includes, strlist* libs) {
   const char* s;
   size_t n;
   stralloc sa, lib;
   stralloc_init(&sa);
   stralloc_init(&lib);
   stralloc_zero(&libs->sa);
-  strlist_foreach(includes, s, n) {
+  set_foreach(includes, s, n) {
     target* rule;
     stralloc_zero(&sa);
     path_append(s, n, &sa);
@@ -1170,7 +1172,7 @@ is_source(const char* filename) {
     return 1;
   if(cfg.lang != LANG_CXX)
     return 0;
-  if(str_end(filename, ".LANG_C"))
+  if(str_end(filename, ".C"))
     return 1;
   if(str_end(filename, ".cc"))
     return 1;
@@ -1273,6 +1275,7 @@ sources_new(const char* name) {
     if(ret->main_present)
       debug_str("Source has main()", ret->name);
 #endif
+    set_init(&ret->pptoks, 0);
     // slist_pushb(&sources, &ret, sizeof(ret));
     return ret;
   }
@@ -1787,7 +1790,9 @@ sourcedir_get_b(const char* x, size_t n) {
     sourcedir newdir;
     MAP_NODE_T found;
     byte_zero(&newdir, sizeof(newdir));
-    strlist_init(&newdir.pptoks, '\0');
+    set_init(&newdir.pptoks, 0);
+    set_init(&newdir.includes, 0);
+
     MAP_INSERT(sourcedirs, x, n + 1, &newdir, sizeof(newdir));
     s = MAP_GET(sourcedirs, x, n + 1);
   }
@@ -1807,6 +1812,8 @@ sourcedir_addsource(const char* source, strarray* srcs) {
   strlist l;
   size_t i, n, dlen;
   const char *x, *s;
+  set_iterator_t it;
+  set_t* set;
   sourcedir* srcdir;
   sourcefile* file = sources_new(source);
   stralloc_init(&dir);
@@ -1837,9 +1844,11 @@ sourcedir_addsource(const char* source, strarray* srcs) {
       strlist_pushb_unique(&srcdir->deps, s, i);
       sourcedir_deps_b(s, i, &srcdir->deps);
     }*/
-  strlist_foreach(&file->pptoks, x, n) {
-    if(str_start(x, "USE_") || str_start(x, "HAVE_"))
-      strlist_pushb_unique(&srcdir->pptoks, x, n);
+  set_foreach_it(&file->pptoks, it) {
+    x = set_iterator_value(&it, &n);
+    if(n >= 5 && (byte_equal(x, 4, "USE_") || byte_equal(x, 5, "HAVE_")))
+
+      set_add(&srcdir->pptoks, x, n);
   }
   /*
     strlist_dump(buffer_2, &srcdir->pptoks);
@@ -1858,7 +1867,8 @@ sourcedir_addsource(const char* source, strarray* srcs) {
     stralloc_nul(&dir);
     stralloc_copy(&r, &dir);
     path_canonical_sa(&r);
-    strlist_push_unique_sa(&srcdir->includes, &r);
+
+    set_add_sa(&srcdir->includes, &r);
   }
   dir.len = dlen;
   // debug_sa("srcdir", &dir);
@@ -2469,7 +2479,12 @@ gen_srcdir_compile_rules(sourcedir* sdir, const char* dir) {
   stralloc_init(&obj);
 
   strlist_init(&pptoks, '\0');
-  strlist_filter(&sdir->pptoks, &filter_pptoks, &pptoks);
+
+  strlist_foreach(&pptoks, tok, len) {
+    if(filter_pptoks(tok, len))
+      strlist_pushb(&pptoks, tok, len);
+  }
+  // strlist_filter(&sdir->pptoks, &filter_pptoks, &pptoks);
   stralloc_init(&defines);
 
   if(strlist_count(&pptoks) > 0) {
@@ -2828,11 +2843,12 @@ gen_link_rules(/*strarray* sources*/) {
   const char *x, *link_lib;
   char **p, *srcfile;
   size_t n;
-  strlist incs, libs, deps, indir;
+  set_t incs;
+  strlist libs, deps, indir;
   stralloc dir, ppsrc, obj, bin;
   slink* source;
 
-  strlist_init(&incs, ' ');
+  set_init(&incs, 0);
   strlist_init(&libs, ' ');
   strlist_init(&deps, ' ');
   strlist_init(&indir, ' ');
@@ -2847,7 +2863,7 @@ gen_link_rules(/*strarray* sources*/) {
     sourcefile* file = *(sourcefile**)((slink*)source + 1);
     srcfile = (char*)file->name;
 
-    strlist_zero(&incs);
+    set_clear(&incs);
     strlist_zero(&libs);
     strlist_zero(&deps);
     strlist_zero(&indir);
@@ -3019,7 +3035,7 @@ gen_link_rules(/*strarray* sources*/) {
     }
   }
 
-  strlist_free(&incs);
+  set_free(&incs);
   strlist_free(&libs);
   strlist_free(&deps);
   strlist_free(&indir);
@@ -3952,7 +3968,7 @@ set_compiler_type(const char* compiler) {
   //  var_push("DEFS", "-DHAVE_ERRNO_H=1");
 
   /*
-   * Visual LANG_C++ compiler
+   * Visual C++ compiler
    */
   if(str_start(compiler, "msvc") || str_start(compiler, "icl") || str_start(compiler, "vs20") ||
      str_start(compiler, "vc") || compiler[str_find(compiler, "-cl")]) {
@@ -3986,7 +4002,7 @@ set_compiler_type(const char* compiler) {
     //    stralloc_copys(&lib_command, "$(LIB) /OUT:$@ @<<\n\t\t$^\n<<");
 
     /*
-     * Intel LANG_C++ compiler
+     * Intel C++ compiler
      */
     if(str_start(compiler, "icl")) {
       var_set("CC", "icl -nologo");
@@ -4099,7 +4115,7 @@ set_compiler_type(const char* compiler) {
     format_linklib_fn = &format_linklib_switch;
 
     /*
-     * Borland LANG_C++ Builder
+     * Borland C++ Builder
      */
   } else if(str_start(compiler, "bcc")) {
 
@@ -4121,7 +4137,7 @@ set_compiler_type(const char* compiler) {
     if(cfg.build_type == BUILD_TYPE_MINSIZEREL)
       var_push("CFLAGS", "-d -a-");
 
-    /* Embracadero LANG_C++ */
+    /* Embracadero C++ */
     if(str_find(compiler, "55") == str_len(compiler) && str_find(compiler, "60") == str_len(compiler)) {
       var_set("CC", "bcc32c");
       var_set("CXX", "bcc32x");
@@ -4137,7 +4153,7 @@ set_compiler_type(const char* compiler) {
       */
       set_command(&link_command, "$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) -o $@ ", "$^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
 
-      /* Borland LANG_C++ Builder 5.5 */
+      /* Borland C++ Builder 5.5 */
     } else {
       var_set("CC", "bcc32");
       var_set("CXX", "bcc32");
@@ -4239,7 +4255,7 @@ set_compiler_type(const char* compiler) {
 
     var_push("CPPFLAGS", "-Dinline=__inline");
     // var_push("LDFLAGS", "/Wcm");
-    var_push("CFLAGS", "-LANG_C+? +1 -v -E-36 -E-39");
+    var_push("CFLAGS", "-C+? +1 -v -E-36 -E-39");
 
     if(cfg.build_type == BUILD_TYPE_DEBUG || cfg.build_type == BUILD_TYPE_RELWITHDEBINFO) {
       var_push("CFLAGS", "+v");
@@ -4308,9 +4324,9 @@ set_compiler_type(const char* compiler) {
 
     // var_push("CFLAGS", "-fp:precise");
 
-    var_push("CFLAGS", "-Ze"); /* Activates Microsoft's extensions to LANG_C */
-    // var_push("CFLAGS", "-Zx"); /* Activates Pelle's extensions to LANG_C */
-    var_push("CFLAGS", "-Go"); /* Accepts 'old' names for LANG_C runtime functions */
+    var_push("CFLAGS", "-Ze"); /* Activates Microsoft's extensions to C */
+    // var_push("CFLAGS", "-Zx"); /* Activates Pelle's extensions to C */
+    var_push("CFLAGS", "-Go"); /* Accepts 'old' names for C runtime functions */
     // var_push("CFLAGS", "-Gz"); /* default to __stdcall */
 
     var_push("CPPFLAGS", "-D__POCC__");
@@ -4659,28 +4675,28 @@ usage(char* errmsg_argv0) {
                        "\n"
 
                        "     gcc         GNU make\n"
-                       "     bcc55       Borland LANG_C++ Builder 5.5\n"
-                       "     bcc         Borland LANG_C++ Builder >= 6.0\n"
+                       "     bcc55       Borland C++ Builder 5.5\n"
+                       "     bcc         Borland C++ Builder >= 6.0\n"
                        "     lcc         lcc\n"
                        "     tcc         TinyCC\n"
-                       "     msvc        Visual LANG_C++\n"
-                       "     icl         Intel LANG_C++\n"
+                       "     msvc        Visual C++\n"
+                       "     icl         Intel C++\n"
                        "     clang       LLVM\n"
                        "     occ         OrangeC\n"
-                       "     dmc         Digital Mars LANG_C++\n"
-                       "     pocc        Pelles-LANG_C\n"
+                       "     dmc         Digital Mars C++\n"
+                       "     pocc        Pelles-C\n"
                        "     zapcc[-cl]  ZapCC\n"
                        "     zapcc[-cl]  ZapCC\n"
-                       "     htc         Hi-Tech LANG_C for PIC or PIC18\n"
-                       "     xc8         Microchip LANG_C Compiler for 8-bit PIC\n"
-                       "     sdcc        Small Device LANG_C Compiler\n"
+                       "     htc         Hi-Tech C for PIC or PIC18\n"
+                       "     xc8         Microchip C Compiler for 8-bit PIC\n"
+                       "     sdcc        Small Device C Compiler\n"
                        "\n"
                        "  -m, --make-type TYPE      make program type, one of:\n"
                        "     nmake       Microsoft NMake\n"
                        "     borland     Borland Make\n"
                        "     gmake       GNU Make\n"
                        "     omake       OrangeCC Make\n"
-                       "     pomake      Pelles-LANG_C Make\n"
+                       "     pomake      Pelles-C Make\n"
                        "     make        Other make\n"
                        "     batch       Windows batch (.bat .cmd)\n"
                        "     ninja       Ninja build\n"
@@ -4710,7 +4726,7 @@ main(int argc, char* argv[]) {
   int c;
   int ret = 0, index = 0;
   const char *outfile = NULL, *infile = NULL, *dir = NULL;
-  strlist toks;
+  set_t toks;
   strarray args;
   strlist cmdline;
   static strarray libs, includes;
@@ -4802,7 +4818,7 @@ main(int argc, char* argv[]) {
   strlist_fromv(&cmdline, (const char**)argv, argc);
 
   for(;;) {
-    c = unix_getopt_long(argc, argv, "ho:O:B:L:d:t:m:n:a:D:l:I:c:s:p:P:S:if:LANG_C", opts, &index);
+    c = unix_getopt_long(argc, argv, "ho:O:B:L:d:t:m:n:a:D:l:I:c:s:p:P:S:if:C", opts, &index);
     if(c == -1)
       break;
     if(c == 0)
@@ -4813,7 +4829,7 @@ main(int argc, char* argv[]) {
         usage(argv[0]);
         ret = 0;
         goto quit;
-      case 'LANG_C': cfg.lang = LANG_C; break;
+      case 'C': cfg.lang = LANG_C; break;
       case 'c': cross_compile = unix_optarg; break;
       case 'o': outfile = unix_optarg; break;
       case 'O': exts.obj = unix_optarg; break;
@@ -4953,17 +4969,25 @@ main(int argc, char* argv[]) {
 
   // debug_sa("dirs.build"", &dirs.build.sa);
 
-  strlist_init(&toks, '\0');
-  strlist_foreach(&dirs.build, s, n) { strlist_pushb_unique(&toks, s, n); }
-  if(outfile) {
-    stralloc_catb(&toks.sa, "\0", 1);
-    stralloc_cats(&toks.sa, outfile);
-  }
-  stralloc_replacec(&toks.sa, '/', '\0');
-  stralloc_replacec(&toks.sa, '-', '\0');
-  stralloc_replacec(&toks.sa, '-', '\0');
+  set_init(&toks, 0);
 
-  strlist_foreach_s(&toks, s) {
+  {
+    strlist tmp;
+    strlist_init(&tmp, '\0');
+    stralloc_copy(&tmp.sa, &dirs.build.sa);
+    if(outfile)
+      strlist_push(&tmp, outfile);
+    stralloc_replacec(&tmp.sa, '/', '\0');
+    stralloc_replacec(&tmp.sa, '-', '\0');
+    stralloc_replacec(&tmp.sa, '.', '\0');
+
+    strlist_foreach(&tmp, s, n) { set_add(&toks, s, n); }
+
+    buffer_puts(buffer_2, "toks: ");
+    set_dump(buffer_2, &toks);
+  }
+
+  set_foreach(&toks, s, n) {
     size_t i;
 
     if(set_compiler_type(s)) {
@@ -5383,7 +5407,7 @@ main(int argc, char* argv[]) {
     MAP_FOREACH(sourcedirs, t) {
       sourcedir* srcdir = MAP_VALUE(t);
 
-      strlist_sort(&srcdir->pptoks, (strlist_cmpfn_t*)&case_diffs);
+      //  strlist_sort(&srcdir->pptoks, (strlist_cmpfn_t*)&case_diffs);
       // debug_sl(t->key, &srcdir->pptoks, ", ");
     }
   }

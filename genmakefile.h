@@ -73,9 +73,9 @@ typedef struct {
 typedef struct {
   int n_sources;
   slink* sources;
-  strlist includes;
+  set_t includes;
   array rules;
-  strlist pptoks;
+  set_t pptoks;
   strlist deps;
   uint32 serial;
 } sourcedir;
@@ -159,7 +159,7 @@ void includes_add(const char*);
 void includes_cppflags(void);
 void includes_extract(const char*, size_t, strlist*, int sys);
 int includes_get(const char*, strlist*, int);
-void includes_to_libs(const strlist*, strlist*);
+void includes_to_libs(const set_t*, strlist*);
 int input_command_line(const char*, size_t);
 int is_filename_b(const char*, size_t);
 int is_filename(const char*);
