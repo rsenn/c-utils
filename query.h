@@ -23,7 +23,6 @@ struct query {
   char type[2];
   char class[2];
   struct response response;
-  uint32 tctarget, dpos;
   struct dns_transmit dt;
 };
 

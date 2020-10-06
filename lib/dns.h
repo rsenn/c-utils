@@ -56,6 +56,7 @@ int dns_domain_copy(char**, const char*);
 int dns_domain_copysa(stralloc*, const char*);
 unsigned int dns_domain_length(const char*);
 int dns_domain_equal(const char*, const char*);
+int dns_domain_diff(const char*, const char*);
 int dns_domain_suffix(const char*, const char*);
 unsigned int dns_domain_suffixpos(const char*, const char*);
 int dns_domain_fromdot(char**, const char*, size_t);

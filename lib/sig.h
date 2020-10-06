@@ -77,7 +77,7 @@ extern struct sigaction const sig_ign;
 
 int sig_action(int, struct sigaction const*, struct sigaction*);
 void sig_blocknone(void);
-void sig_blockset(const sigset_t* set);
+void sig_blockset(const void* set);
 void sig_block(int sig);
 int sig_catch(int sig, sighandler_t_ref f);
 int sigfpe(void);
@@ -87,7 +87,7 @@ void sig_pause(void);
 int sig_pop(int sig);
 int sig_pusha(int sig, struct sigaction const* ssa);
 int sig_push(int sig, sighandler_t_ref f);
-void sig_restoreto(sigset_t const* set, unsigned int n);
+void sig_restoreto(const void* set, unsigned int n);
 int sigsegv(void);
 void sig_shield(void);
 void sig_unshield(void);

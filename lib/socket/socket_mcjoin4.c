@@ -1,5 +1,5 @@
 #define _GNU_SOURCE
-#define _DEFAULT_SOURCE 
+#define _DEFAULT_SOURCE
 #define USE_WS2_32 1
 
 #if WINDOWS_NATIVE

@@ -23,9 +23,7 @@ unsigned int
 dns_packet_skipname(const char* buf, unsigned int len, unsigned int pos) {
   unsigned char ch;
 
-  for(;;) {
-    if(pos >= len)
-      break;
+  for(; pos < len; pos += ch) {
     ch = buf[pos++];
     if(ch >= 192)
       return pos + 1;
@@ -33,7 +31,6 @@ dns_packet_skipname(const char* buf, unsigned int len, unsigned int pos) {
       break;
     if(!ch)
       return pos;
-    pos += ch;
   }
 
   errno = EINVAL;

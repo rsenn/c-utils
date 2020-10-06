@@ -97,6 +97,21 @@ response_rfinish(response* resp, int x) {
     ++resp->buf[x];
 }
 
+char*
+response_getdata(response* resp, size_t* size_ptr) {
+  uint32 pos;
+  char* x;
+
+  x = &resp->buf[resp->dpos];
+  *size_ptr = resp->pos - resp->dpos;
+  return x;
+}
+
+int
+response_send(response* resp, int fd, char ip[], uint16 port) {
+  return socket_send6(fd, resp->buf, resp->pos, ip, port, 0);
+}
+
 int
 response_cname(response* resp, const char* c, const char* d, uint32 ttl) {
   if(!response_rstart(resp, c, DNS_T_CNAME, ttl))

@@ -1,3 +1,6 @@
+#define _GNU_SOURCE
+#include <stdlib.h>
+
 #include "lib/case.h"
 #include "lib/byte.h"
 #include "lib/dns.h"
@@ -7,6 +10,9 @@
 #include "lib/ip4.h"
 #include "lib/ip6.h"
 #include "lib/alloc.h"
+#include "lib/array.h"
+#include "lib/buffer.h"
+#include "lib/case.h"
 
 #include <stdbool.h>
 #include <errno.h>
@@ -16,6 +22,7 @@
 #include "cache.h"
 #include "response.h"
 #include "query.h"
+#include "names.h"
 
 static int flagforwardonly = 0;
 
@@ -198,7 +205,7 @@ query_aliases(struct query* z) {
 
   for(i = QUERY_MAXALIAS - 1; i >= 0; --i)
     if(z->alias[i]) {
-      if(!(z->tctarget = response_query(&z->response, z->alias[i], z->type, z->class)))
+      if(!response_query(&z->response, z->alias[i], z->type, z->class))
         return 0;
       while(i > 0) {
         if(!response_cname(&z->response, z->alias[i], z->alias[i - 1], z->aliasttl[i]))
@@ -210,7 +217,7 @@ query_aliases(struct query* z) {
       return 1;
     }
 
-  if(!(z->tctarget = response_query(&z->response, z->name[0], z->type, z->class)))
+  if(!response_query(&z->response, z->name[0], z->type, z->class))
     return 0;
   return 1;
 }
@@ -316,6 +323,11 @@ new_name:
         if(!query_aliases(z))
           goto fail;
         pos = 0;
+        /*        {
+               names_shuffle(cached, cachedlen);
+                array arr = names_array(cached, cachedlen);
+                names_print(&arr);
+              }*/
         while(pos = dns_packet_getname(cached, cachedlen, pos, &t2)) {
           if(!response_rstart(&z->response, d, DNS_T_NS, ttl))
             goto fail;

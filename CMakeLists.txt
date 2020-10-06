@@ -2,6 +2,9 @@ set(CMAKE_LEGACY_CYGWIN_WIN32 0)
 cmake_minimum_required(VERSION 3.2)
 set(CMAKE_WARN_VS8 OFF)
 
+
+set(CMAKE_C_STANDARD 11)
+
 project(c-utils C)
 if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
   set(CMAKE_INSTALL_PREFIX
@@ -1928,13 +1931,16 @@ set(dnscache_SOURCES
     response.c
     response.h
     roots.c
-    roots.h)
+    roots.h
+    names.c
+    names.h)
 add_program(
   dnscache
   dns
   path
   errmsg
   dir
+  array
   stralloc
   alloc
   env

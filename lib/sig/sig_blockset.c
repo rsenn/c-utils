@@ -3,6 +3,6 @@
 #include <signal.h>
 
 void
-sig_blockset(sigset_t const* set) {
+sig_blockset(const void* set) {
   sigprocmask(SIG_SETMASK, set, 0);
 }

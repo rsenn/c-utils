@@ -189,8 +189,8 @@ udp_respond(int j) {
   response_id(resp, u[j].id);
   if(resp->pos > 512)
     response_tc(resp);
-  socket_send6(udp53, resp->buf, resp->pos, u[j].ip, u[j].port, 0);
 
+  response_send(resp, udp53, u[j].ip, u[j].port);
   log_querydone(&u[j].active, u[j].ip, u[j].port, udp53, u[j].id, resp->pos);
 
   u[j].active = 0;

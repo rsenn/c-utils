@@ -1,10 +1,12 @@
-#include "../dns.h"
-#include "../stralloc.h"
+#include "stralloc.h"
+#include "dns.h"
 
 int
 dns_domain_todot_cat(stralloc* out, const char* d) {
-  char ch, ch2, buf[4];
+  char ch;
+  char ch2;
   unsigned char ch3;
+  char buf[4];
 
   if(!*d)
     return stralloc_append(out, ".");

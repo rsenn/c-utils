@@ -31,6 +31,8 @@ int response_addname(response*, const char*);
 int response_query(response*, const char*, const char[2], const char[2]);
 int response_rstart(response*, const char*, const char[2], uint32);
 void response_rfinish(response*, int);
+char* response_getdata(response*, size_t*);
+int response_send(response*, int, char[], uint16);
 int response_cname(response*, const char*, const char*, uint32);
 void response_nxdomain(response*);
 void response_servfail(response*);
