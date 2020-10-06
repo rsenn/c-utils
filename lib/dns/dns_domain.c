@@ -50,7 +50,7 @@ dns_domain_equal(const char* dn1, const char* dn2) {
   unsigned int len;
 
   len = dns_domain_length(dn1);
-  if(len !=  dns_domain_length(dn2))
+  if(len != dns_domain_length(dn2))
     return 0;
 
   if(case_diffb(dn1, len, dn2))
@@ -60,7 +60,7 @@ dns_domain_equal(const char* dn1, const char* dn2) {
 
 int
 dns_domain_diff(const char* dn1, const char* dn2) {
-   unsigned int len1,len2;
+  unsigned int len1, len2;
 
   len1 = dns_domain_length(dn1);
   len2 = dns_domain_length(dn2);

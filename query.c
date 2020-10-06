@@ -323,11 +323,11 @@ new_name:
         if(!query_aliases(z))
           goto fail;
         pos = 0;
-        /*        {
-               names_shuffle(cached, cachedlen);
-                array arr = names_array(cached, cachedlen);
-                names_print(&arr);
-              }*/
+        {
+          names_shuffle(cached, cachedlen);
+          array arr = names_array(cached, cachedlen);
+          names_print(&arr);
+        }
         while(pos = dns_packet_getname(cached, cachedlen, pos, &t2)) {
           if(!response_rstart(&z->response, d, DNS_T_NS, ttl))
             goto fail;
