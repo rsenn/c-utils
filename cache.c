@@ -28,6 +28,8 @@ static uint32 writer;
 static uint32 oldest;
 static uint32 unused;
 
+static uint32 top;
+
 /*
 100 <= size <= 1000000000.
 4 <= hsize <= size/16.
@@ -62,14 +64,21 @@ cache_impossible(void) {
   exit(111);
 }
 
-static void
+static inline void
 set4(uint32 pos, uint32 u) {
   if(pos > size - 4)
     cache_impossible();
   uint32_pack(x + pos, u);
+  top = pos + 4;
 }
 
-static uint32
+static inline void
+setb(uint32 pos, size_t len, const void* b) {
+  byte_copy(&x[pos], len, b);
+  top = pos + len;
+}
+
+static inline uint32
 get4(uint32 pos) {
   uint32 result;
   if(pos > size - 4)
@@ -203,8 +212,8 @@ cache_set(const char* key, unsigned int keylen, const char* data, unsigned int d
   set4(writer + 4, keylen);
   set4(writer + 8, datalen);
   tai_pack(x + writer + 12, &expire);
-  byte_copy(x + writer + 20, keylen, key);
-  byte_copy(x + writer + 20 + keylen, datalen, data);
+  setb(writer + 20, keylen, key);
+  setb(writer + 20 + keylen, datalen, data);
 
   set4(keyhash, writer);
   writer += entrylen;
@@ -222,7 +231,8 @@ cache_update() {
     uint32_pack((char*)&data->oldest, oldest);
     uint32_pack((char*)&data->unused, unused);
 
-    msync(data,  sizeof(uint32) * 3 + max(oldest, max(unused, writer)), MS_SYNC);
+    msync(data, sizeof(uint32) * 3 + top, MS_SYNC);
+    top = 0;
   }
 }
 

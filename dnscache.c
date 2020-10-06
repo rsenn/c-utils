@@ -188,7 +188,9 @@ udp_respond(int j) {
   if(response_len > 512)
     response_tc();
   socket_send6(udp53, response, response_len, u[j].ip, u[j].port, 0);
-  log_querydone(&u[j].active, response_len);
+
+  log_querydone(&u[j].active, u[j].ip, u[j].port, udp53, u[j].id, response_len);
+
   u[j].active = 0;
   --uactive;
 }
@@ -235,7 +237,7 @@ udp_new(void) {
 
   x->active = ++numqueries;
   ++uactive;
-  log_query(&x->active, x->ip, x->port, x->id, q, qtype);
+  log_query(&x->active, x->ip, x->port, udp53, x->id, q, qtype);
   switch(query_start(&x->q, q, qtype, qclass, sendaddr)) {
     case -1: udp_drop(j); return;
     case 1: udp_respond(j);
@@ -273,8 +275,10 @@ tcp_close(int j) {
   if(!t[j].active)
     return;
   tcp_free(j);
-  log_tcpclose(t[j].ip, t[j].port);
+  errno = 0;
+  log_tcpclose(t[j].ip, t[j].port, t[j].tcp);
   close(t[j].tcp);
+
   t[j].active = 0;
   --tactive;
 }
@@ -290,7 +294,7 @@ void
 tcp_respond(int j) {
   if(!t[j].active)
     return;
-  log_querydone(&t[j].active, response_len);
+  log_querydone(&t[j].active, t[j].ip, t[j].port, t[j].tcp, t[j].id, response_len);
   response_id(t[j].id);
   t[j].len = response_len + 2;
   tcp_free(j);
@@ -376,7 +380,7 @@ tcp_rw(int j) {
   }
 
   x->active = ++numqueries;
-  log_query(&x->active, x->ip, x->port, x->id, q, qtype);
+  log_query(&x->active, x->ip, x->port, x->tcp, x->id, q, qtype);
   switch(query_start(&x->q, q, qtype, qclass, sendaddr)) {
     case -1: tcp_drop(j); return;
     case 1: tcp_respond(j); return;
@@ -432,7 +436,7 @@ tcp_new(void) {
   x->state = 1;
   tcp_timeout(j);
 
-  log_tcpopen(x->ip, x->port);
+  log_tcpopen(x->ip, x->port, x->tcp);
 }
 
 void

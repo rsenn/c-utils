@@ -69,7 +69,7 @@ clean_args() {
     ARG=${ARG//" *"/"* "}
    
     if [ "$REMOVE_NAMES" = true ] || [ -n "$REMOVE_NAMES" -a "$REMOVE_NAMES" -ge "$I" ] 2>/dev/null; then
-      echo "ARG='$ARG'" 1>&2
+      #echo "ARG='$ARG'" 1>&2
       BRACKET=${ARG%"["*}
       if [ "$ARG" != "$BRACKET" ]; then
         BRACKET=${ARG#"$BRACKET"}
