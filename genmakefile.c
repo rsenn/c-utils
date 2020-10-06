@@ -1756,12 +1756,12 @@ sourcedir_find(const char* path) {
 }
 
 /**
- * @brief sourcedir_find_sa Searches for a source directory
+ * @brief sourcedir_findsa Searches for a source directory
  * @param path             Path stralloc
  * @return                 Pointer to sourcedir structure or NULL
  */
 sourcedir*
-sourcedir_find_sa(stralloc* path) {
+sourcedir_findsa(stralloc* path) {
   stralloc_nul(path);
   return MAP_GET(sourcedirs, path->s, path->len + 1);
 }
@@ -1778,31 +1778,31 @@ sourcedir_findb(const char* x, size_t n) {
   stralloc p;
   stralloc_init(&p);
   stralloc_copyb(&p, x, n);
-  ret = sourcedir_find_sa(&p);
+  ret = sourcedir_findsa(&p);
   stralloc_free(&p);
   return ret;
 }
 
 sourcedir*
-sourcedir_get_b(const char* x, size_t n) {
+sourcedir_getb(const char* x, size_t n) {
   sourcedir* s;
   if(!(s = sourcedir_findb(x, n))) {
     sourcedir newdir;
     MAP_NODE_T found;
-    byte_zero(&newdir, sizeof(newdir));
+    byte_zero(&newdir, sizeof(sourcedir));
     set_init(&newdir.pptoks, 0);
     // set_init(&newdir.includes, 0);
 
-    MAP_INSERT(sourcedirs, x, n + 1, &newdir, sizeof(newdir));
+    MAP_INSERT(sourcedirs, x, n + 1, &newdir, sizeof(sourcedir));
     s = MAP_GET(sourcedirs, x, n + 1);
   }
   return s;
 }
 
 sourcedir*
-sourcedir_get_sa(stralloc* path) {
+sourcedir_getsa(stralloc* path) {
   stralloc_nul(path);
-  return sourcedir_get_b(path->s, path->len);
+  return sourcedir_getb(path->s, path->len);
 }
 
 void
@@ -1826,7 +1826,7 @@ sourcedir_addsource(const char* source, strarray* srcs) {
   dlen = dir.len;
   /*debug_str("source", source);
   debug_sa("dir", &dir);*/
-  srcdir = sourcedir_get_sa(&dir);
+  srcdir = sourcedir_getsa(&dir);
   slist_add(&srcdir->sources, &file->link);
   slist_pushb(&sources, &file, sizeof(sourcefile*));
   ++srcdir->n_sources;
@@ -1860,10 +1860,10 @@ sourcedir_addsource(const char* source, strarray* srcs) {
        path_concat(thisdir.sa.s, thisdir.sa.len, )
       }*/
   stralloc_replacec(&l.sa, PATHSEP_C == '\\' ? '/' : '\\', PATHSEP_C);
-  strlist_foreach_s(&l, s) {
+  strlist_foreach(&l, s, n) {
     dir.len = dlen;
     stralloc_catc(&dir, PATHSEP_C);
-    stralloc_cats(&dir, s);
+    stralloc_catb(&dir, s, n);
     stralloc_nul(&dir);
     stralloc_copy(&r, &dir);
     path_canonical_sa(&r);
@@ -1986,7 +1986,7 @@ sourcedir_deps(sourcedir* srcdir, strlist* out) {
 
 void
 sourcedir_deps_s(const char* srcdir, strlist* out) {
-  sourcedir* sdir = sourcedir_get_b(srcdir, str_len(srcdir) + 1);
+  sourcedir* sdir = sourcedir_getb(srcdir, str_len(srcdir) + 1);
   assert(sdir);
   return sourcedir_deps(sdir, out);
 }
@@ -2484,20 +2484,22 @@ gen_srcdir_compile_rules(sourcedir* sdir, const char* dir) {
     if(filter_pptoks(tok, len))
       strlist_pushb(&pptoks, tok, len);
   }
-  debug_sl("pptoks", &pptoks, ",\n");
+  buffer_puts(buffer_2, "pptoks: ");
+  strlist_dump(buffer_2, &pptoks);
+  strlist_free(&pptoks);
   // strlist_filter(&sdir->pptoks, &filter_pptoks, &pptoks);
   stralloc_init(&defines);
 
-  if(strlist_count(&pptoks) > 0) {
+  if(set_size(&sdir->pptoks) > 0) {
     stralloc_copys(&defines, "DEFS +=");
-    strlist_foreach_s(&pptoks, tok) {
-      stralloc_cats(&defines, " -D");
-      stralloc_cats(&defines, tok);
-      stralloc_cats(&defines, "=1");
+    set_foreach(&sdir->pptoks, tok, len) {
+      if(filter_pptoks(tok, len)) {
+        stralloc_cats(&defines, " -D");
+        stralloc_catb(&defines, tok, len);
+        stralloc_cats(&defines, "=1");
+      }
     }
   }
-
-  strlist_free(&pptoks);
 
   slink_foreach(&sdir->sources, src) {
     const char* ext = 0;
@@ -2505,12 +2507,12 @@ gen_srcdir_compile_rules(sourcedir* sdir, const char* dir) {
       if(!src->name)
         continue;*/
 
+#ifdef DEBUG_OUTPUT
+    debug_str("Adding source", src->name);
+#endif
     if(!is_source(src->name) /*&& !is_include(src->name)*/)
       continue;
 
-#ifdef DEBUG_OUTPUT_
-    debug_str("Adding source", src->name);
-#endif
 
     // s = str_basename(src->name);
 
@@ -2679,12 +2681,13 @@ gen_srcdir_lib_rule(sourcedir* srcdir, const char* name) {
 
   stralloc_cats(&sa, exts.lib);
 
-#if DEBUG_OUTPUT_
+#if DEBUG_OUTPUT
   debug_str("gen_srcdir_lib_rule", name);
   debug_sa("gen_srcdir_lib_rule", &sa);
 #endif
 
   if((str_start(tools.make, "g") || batchmode) && cfg.mach.arch != PIC) {
+    debug_str("gen_srcdir_compile_rules", name);
     dep = gen_srcdir_compile_rules(srcdir, name);
   } else {
     /* if(0 && tools.preproc) {
@@ -2875,7 +2878,7 @@ gen_link_rules(/*strarray* sources*/) {
     if(is_source(srcfile) && main_present(srcfile)) {
 
       path_dirname(srcfile, &dir);
-      srcdir = sourcedir_get_sa(&dir);
+      srcdir = sourcedir_getsa(&dir);
 
       //      gen_compile_rules(srcdir, dir.s);
       if(tools.preproc) {
