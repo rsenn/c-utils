@@ -222,7 +222,7 @@ cache_update() {
     uint32_pack((char*)&data->oldest, oldest);
     uint32_pack((char*)&data->unused, unused);
 
-    msync(data, max(sizeof(uint32) * 3, writer), MS_SYNC);
+    msync(data,  sizeof(uint32) * 3 + max(oldest, max(unused, writer)), MS_SYNC);
   }
 }
 
