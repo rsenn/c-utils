@@ -7,7 +7,7 @@ set_iterator_next(set_iterator_t* it) {
   const bucket_t* b;
   uint32 index;
 
-  if(!it || !(b = it->current))
+  if(!(b = it->current))
     return 0;
 
   // check if there are overflowed buckets in our current position in the array

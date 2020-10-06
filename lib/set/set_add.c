@@ -45,6 +45,7 @@ set_realloc(set_t* set) {
 int
 set_add(set_t* set, const void* val, const size_t size) {
   uint32 hash, index;
+  bucket_t* b;
 
   if(set->entries == 0 && set->len == 0 && set->array == 0 && set->hash_fp == 0)
     set_init(set, 0);
@@ -57,26 +58,27 @@ set_add(set_t* set, const void* val, const size_t size) {
 
   hash = set->hash_fp(val, size);
   index = hash & (set->len - 1);
+  b = &(set->array[index]);
 
-  if(!set->array[index].value) {
-    set->array[index].hash = hash;
-    set->array[index].value = malloc(size);
-    assert(set->array[index].value);
-    memcpy(set->array[index].value, val, size);
-    set->array[index].size = size;
+  if(!b->value) {
+    b->hash = hash;
+    b->value = malloc(size);
+    assert(b->value);
+    memcpy(b->value, val, size);
+    b->size = size;
   } else {
-    if(set->array[index].next == NULL) {
-      set->array[index].next = malloc(sizeof(bucket_t));
-      assert(set->array[index].next);
-      set->array[index].next->hash = hash;
-      set->array[index].next->next = NULL;
-      set->array[index].next->value = malloc(size);
-      assert(set->array[index].next->value);
-      memcpy(set->array[index].next->value, val, size);
-      set->array[index].next->size = size;
+    if(b->next == NULL) {
+      b->next = malloc(sizeof(bucket_t));
+      assert(b->next);
+      b->next->hash = hash;
+      b->next->next = NULL;
+      b->next->value = malloc(size);
+      assert(b->next->value);
+      memcpy(b->next->value, val, size);
+      b->next->size = size;
       ++set->overflow;
     } else {
-      bucket_t* b = set->array[index].next;
+      //    bucket_t* b = set->array[index].next;
       while(b->next) b = b->next;
 
       b->next = malloc(sizeof(bucket_t));

@@ -2,7 +2,7 @@
 #include "../buffer.h"
 
 void
-set_dump(buffer* b, const set_t* set) {
+buffer_putset(buffer* b, const set_t* set) {
   char* x;
   size_t i = 0, n;
   buffer_puts(b, "{ ");

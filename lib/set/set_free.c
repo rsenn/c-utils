@@ -26,5 +26,4 @@ set_free(set_t* set) {
     return;
 
   set_free_array(set);
-  free(set);
 }
