@@ -5,8 +5,8 @@
 
 typedef struct bucket {
   struct bucket* next;
-   void* value;
- size_t size;
+  void* value;
+  size_t size;
   uint32 hash;
 } bucket_t;
 
@@ -30,7 +30,7 @@ size_t fmt_set(char*, const set_t*, const char*);
 int set_add(set_t*, const void*, const size_t);
 int set_adds(set_t*, const char*);
 void set_clear(set_t*);
-int       set_delete(set_t*, const void*, const size_t);
+int set_delete(set_t*, const void*, const size_t);
 void set_free_array(set_t*);
 void set_free(set_t*);
 int set_has(const set_t*, const void*, const size_t);
@@ -38,7 +38,7 @@ uint32 set_hashfunc(const void*, size_t);
 void set_init(set_t*, uint32 (*const)(const void*, size_t));
 int set_cat(set_t*, const set_t*);
 
-int set_sub(const set_t* a, const set_t* b, set_t* c );
+int set_sub(const set_t* a, const set_t* b, set_t* c);
 int set_iterator_erase(set_iterator_t*);
 int set_iterator_find(set_iterator_t*, const void*, size_t);
 int set_iterator_init(set_iterator_t*, const set_t*);
