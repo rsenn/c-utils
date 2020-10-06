@@ -4,15 +4,9 @@
 
 size_t
 stralloc_catset(stralloc* sa, const set_t* set, const char* separator) {
-  char* x;
-  size_t i = 0, n, slen = str_len(separator);
-  set_foreach(set, x, n) {
-    if(i++ > 0) {
-      stralloc_catb(sa, separator, slen);
-      i += slen;
-    }
-    stralloc_catb(sa, x, n);
-    i += n;
-  }
-  return i;
+  size_t n;
+  n = fmt_set(0, set, separator);
+  stralloc_readyplus(sa, n);
+  sa->len += (n = fmt_set(&sa->s[sa->len], set, separator));
+  return n;
 }

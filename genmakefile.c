@@ -731,14 +731,14 @@ includes_to_libs(const set_t* includes, strlist* libs) {
       path_concat(libpfx, str_len(libpfx), sa.s, sa.len, &sa);
     }
     path_concat(dirs.this.sa.s, dirs.this.sa.len, sa.s, sa.len, &sa);
-    debug_sa("include", &sa);
+    //  debug_sa("include", &sa);
     stralloc_zero(&lib);
     stralloc_copys(&lib, path_basename(sa.s));
     if(stralloc_endb(&lib, ".h", 2))
       lib.len -= 2;
 
     stralloc_cats(&lib, exts.lib);
-    debug_sa("includes_to_libs", &lib);
+    // debug_sa("includes_to_libs", &lib);
     if((rule = rule_find_sa(&lib))) {
 #if DEBUG_OUTPUT_
       debug_str("lib", rule->name);
@@ -795,7 +795,6 @@ rule_get(const char* name) {
     set_init(&tgt.output, 0);
     set_adds(&tgt.output, name);
     set_init(&tgt.prereq, 0);
-    //    hmap_add(&rules, name, len + 1, 1, HMAP_DATA_TYPE_CUSTOM, ret, sizeof(struct target_s));
     MAP_INSERT(rules, name, len + 1, &tgt, ((sizeof(struct target_s) + 3) / 4) * 4);
     (MAP_SEARCH(rules, name, len + 1, &t));
     // ret = MAP_VALUE(t);
@@ -2185,7 +2184,7 @@ deps_direct(set_t* s, const target* t) {
  * @param depth
  */
 void
-print_rule_deps_r(buffer* b, target* t, strlist* deplist, strlist* hierlist, int depth) {
+print_rule_deps_r(buffer* b, target* t, set_t* deplist, strlist* hierlist, int depth) {
   target** ptr;
   size_t l = hierlist->sa.len;
 
@@ -2213,7 +2212,7 @@ print_rule_deps_r(buffer* b, target* t, strlist* deplist, strlist* hierlist, int
       buffer_puts(b, str_basename(name));
       put_newline(b, 1);
 
-      if(strlist_push_unique(deplist, name))
+      if(set_adds(deplist, name))
         print_rule_deps_r(b, (*ptr), deplist, hierlist, depth + 1);
     }
   }
@@ -2231,18 +2230,19 @@ void
 print_rule_deps(buffer* b, target* t) {
   const char* s;
   size_t n, nb;
-  strlist deplist, hierlist;
-  strlist_init(&deplist, ' ');
-  strlist_init(&hierlist, ',');
+  set_t deplist;
+  strlist hierlist;
+  set_init(&deplist, 0);
+  strlist_init(&hierlist, 0);
 
-  strlist_push(&deplist, t->name);
+  set_adds(&deplist, t->name);
 
   buffer_putm_internal(b, "# Dependencies for '", t->name, "':", NULL);
   buffer_putnlflush(b);
 
   print_rule_deps_r(b, t, &deplist, &hierlist, 0);
 
-  strlist_free(&deplist);
+  set_free(&deplist);
   strlist_free(&hierlist);
 }
 
@@ -2336,17 +2336,16 @@ deps_for_libs() {
       set_clear(&indir);
       deps_indirect(&indir, &libs);
 
-      debug_set("indir", &indir, " ");
+      //  debug_set("indir", &indir, " ");
       /*  strlist_sub(&indir, &libs);
 
-        strlist_sub(&libs, &indir);
-  */
-      /*#if DEBUG_OUTPUT_
-            buffer_putm_internal(buffer_2, "Deps for library '", lib->name, "': ", NULL);
-            buffer_putsa(buffer_2, &libs.sa);
-            buffer_putnlflush(buffer_2);
-      #endif
-      */
+        strlist_sub(&libs, &indir);*/
+#if DEBUG_OUTPUT_
+      buffer_putm_internal(buffer_2, "Deps for library '", lib->name, "': ", NULL);
+      buffer_putsa(buffer_2, &libs.sa);
+      buffer_putnlflush(buffer_2);
+#endif
+
       target_ptrs(&libs, &lib->deps);
 
       // print_rule_deps(buffer_2, lib);
@@ -2508,7 +2507,7 @@ gen_srcdir_compile_rules(sourcedir* sdir, const char* dir) {
   target* rule = 0;
   MAP_PAIR_T t;
   stralloc target, srcs, obj;
-  size_t len;
+  size_t len, tlen;
   strlist pptoks;
   const char* tok;
   stralloc defines;
@@ -2516,13 +2515,9 @@ gen_srcdir_compile_rules(sourcedir* sdir, const char* dir) {
   stralloc_init(&target);
   path_output("%", &target, exts.obj);
   stralloc_cats(&target, ": ");
-
   stralloc_init(&srcs);
-
-  len = target.len;
-
+  tlen = target.len;
   stralloc_init(&obj);
-
   strlist_init(&pptoks, '\0');
 
   set_foreach(&sdir->pptoks, tok, len) {
@@ -2559,8 +2554,7 @@ gen_srcdir_compile_rules(sourcedir* sdir, const char* dir) {
       continue;
 
     // s = str_basename(src->name);
-
-    target.len = len;
+    target.len = tlen;
 
     stralloc_zero(&srcs);
     path_prefix_s(&srcdir, src->name, &srcs);
@@ -2578,7 +2572,7 @@ gen_srcdir_compile_rules(sourcedir* sdir, const char* dir) {
       stralloc_catm_internal(&target, "{", dir, "}", ext, "{", dirs.work.sa.s, "}", exts.obj, ":", 0);
     } else {
     }
-    stralloc_replacec(&target, pathsep_make == '/' ? '\\' : '/', pathsep_make);
+    // stralloc_replacec(&target, pathsep_make == '/' ? '\\' : '/', pathsep_make);
 
     if(!rule)
       rule = rule_get_sa(&target);
@@ -3485,89 +3479,93 @@ output_all_vars(buffer* b, MAP_T* vars, strlist* varnames) {
  * @param b
  * @param rule
  */
+#define YELLOW "\x1b[1;33m"
+#define RED "\x1b[1;31m"
+#define NC "\x1b[0m"
 void
 output_make_rule(buffer* b, target* rule) {
   const char* x;
-  static stralloc sa;
-  size_t n;
-  size_t num_deps = set_size(&rule->prereq);
-  debug_nl = " ";
-  debug_str("rule->name", rule->name);
-  debug_int("num_deps", num_deps);
+  static stralloc output, sa, name;
+  size_t n, num_prereqs, num_outputs;
+
+  num_prereqs = set_size(&rule->prereq);
+  num_outputs = set_size(&rule->output);
+  debug_nl = "\n";
+  stralloc_zero(&name);
+  stralloc_copys(&name, rule->name);
+  if(str_end(rule->name, ".a") || rule->name[str_chr(rule->name, '%')]) {
+    const char* color = str_end(rule->name, ".a") ? YELLOW : RED;
+
+    buffer_puts(buffer_2, color);
+    debug_str("rule->name" NC, rule->name);
+    if(num_outputs <= 1) {
+      buffer_puts(buffer_2, color);
+      debug_set("rule->output" NC, &rule->output, " ");
+    }
+    buffer_puts(buffer_2, color);
+    debug_int("num_outputs" NC, num_outputs);
+    if(num_prereqs <= 1) {
+      buffer_puts(buffer_2, color);
+      debug_set("rule->prereq" NC, &rule->prereq, " ");
+    }
+    buffer_puts(buffer_2, color);
+    debug_int("num_prereqs" NC, num_prereqs);
+  }
 
   /* if(array_length(&rule->deps, sizeof(target*)))
      print_rule_deps(b, rule);
   */
 
-  if(num_deps == 0 && str_diffn(rule->name, dirs.work.sa.s, dirs.work.sa.len) &&
+  if(num_prereqs == 0 && str_diffn(rule->name, dirs.work.sa.s, dirs.work.sa.len) &&
      !rule->name[str_chr(rule->name, pathsep_make)] && str_end(rule->name, ":")) {
     buffer_putm_internal(b, ".PHONY: ", rule->name, newline, NULL);
   }
 
-  strlist_foreach(&rule->vars, x, n) {
-    stralloc_zero(&sa);
-    stralloc_catset(&sa, &rule->output, " ");
-    buffer_putsa(b, &sa);
+  stralloc_zero(&sa);
+  stralloc_catset(&sa, &rule->output, " \\\n");
 
+  strlist_foreach(&rule->vars, x, n) {
+    // buffer_puts(b, "output: ");
+    buffer_putsa(b, &sa);
     buffer_puts(b, ": ");
     buffer_put(b, x, n);
-    buffer_putnlflush(b);
+    buffer_puts(b, "\n\n");
   }
-  /*
-    if(set_size(&rule->output) == 1 && set_has(&rule->output, rule->name, str_len(rule->name))) */
-  {
+  stralloc_zero(&output);
 
-    buffer_putset(b, &rule->output, " ", 1);
-    buffer_puts(b, ": ");
+  if(sa.len > 0)
+    stralloc_cat(&output, &sa);
+
+  if(stralloc_diffs(&sa, rule->name)) {
+    size_t outlen;
+
+    if((outlen = output.len))
+      stralloc_cats(&output, ": \\\n");
+    stralloc_cat(&output, &name);
+    if(!outlen)
+      stralloc_cats(&output, ": ");
+  } else {
+    stralloc_cats(&output, ": ");
   }
-  /*  if(rule->name[str_chr(rule->name, '%')]) {
-    stralloc prefix;
-    stralloc_init(&prefix);
-    if(str_end(rule->name, ".c")) {
-      const char* s;
-      size_t n;
-      set_foreach(&rule->prereq, s, n) {
-        size_t l;
-        if(prefix.len)
-          stralloc_cats(&prefix, " \\\n");
 
-        if((l = byte_rchr(s, n, pathsep_make)) < n) {
-          s += l + 1, n -= l + 1;
-        }
-        path_prefix_b(&dirs.work.sa, s, byte_rchr(s, n, '.'), &prefix);
-        stralloc_cats(&prefix, exts.obj);
-      }
-      stralloc_cats(&prefix, ": ");
+  if(num_prereqs) {
+    const char* str;
+    size_t len;
 
-      path_prefix_s(&dirs.work.sa, path_basename(rule->name), &prefix);
-      prefix.len = byte_rchr(prefix.s, prefix.len, '.');
-      stralloc_cats(&prefix, exts.obj);
-      stralloc_cats(&prefix, ": ");
-      buffer_putsa(b, &prefix);
-      num_deps = 0;
+    set_foreach(&rule->prereq, str, len) {
+      if(stralloc_endsb(&output, str, len))
+        continue;
+
+      stralloc_catc(&output, ' ');
+      stralloc_catb(&output, str, len);
     }
-  }*/ /*else {
- 
-  buffer_puts(b, rule->name);
 
-  if(!rule->name[str_chr(rule->name, '%')])
-    buffer_putc(b, ':');
-    }
-   */
-  if(num_deps) {
-    strlist prereq;
-    strlist_init(&prereq, ' ');
-
-    set_foreach(&rule->prereq, x, n) { strlist_pushb(&prereq, x, n); }
-
-    stralloc_replacec(&prereq.sa, pathsep_make == '/' ? '\\' : '/', pathsep_make);
-
-    if(!str_end(rule->name, ":")) {
-      buffer_putspace(b);
-      buffer_putsa(b, &prereq.sa);
-    }
-    strlist_free(&prereq);
+    // stralloc_replacec(&output, pathsep_make == '/' ? '\\' : '/', pathsep_make);
   }
+
+  buffer_putsa(b, &output);
+  buffer_flush(b);
+  // stralloc_zero(&output);
 
   if(rule->recipe.s) {
     stralloc cmd;
