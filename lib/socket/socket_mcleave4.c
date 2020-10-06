@@ -1,3 +1,4 @@
+#define _GNU_SOURCE
 #define USE_WS2_32 1
 
 #if WINDOWS_NATIVE
@@ -5,8 +6,10 @@
 #endif
 
 #include "../socket_internal.h"
-#include <sys/types.h>
 #include "../byte.h"
+
+#include <sys/types.h>
+#include <netinet/in.h>
 
 int
 socket_mcleave4(int s, const char ip[4]) {

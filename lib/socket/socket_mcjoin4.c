@@ -1,3 +1,5 @@
+#define _GNU_SOURCE
+#define _DEFAULT_SOURCE 
 #define USE_WS2_32 1
 
 #if WINDOWS_NATIVE
@@ -7,6 +9,8 @@
 #include "../socket_internal.h"
 #include "../ip4.h"
 #include "../byte.h"
+
+#include <netinet/in.h>
 
 int
 socket_mcjoin4(int s, const char ip[4], const char _interface[4]) {

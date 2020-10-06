@@ -1,5 +1,5 @@
 set(CMAKE_LEGACY_CYGWIN_WIN32 0)
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 3.2)
 set(CMAKE_WARN_VS8 OFF)
 
 project(c-utils C)
@@ -60,6 +60,8 @@ include(CheckLibraryExists)
 include(CheckIncludeFile)
 include(CheckCCompilerFlag)
 include(CheckTypeSize)
+include(CheckSymbolExists)
+
 macro(show_result RESULT_VAR)
   if(${${RESULT_VAR}})
     set(RESULT_VALUE yes)
@@ -77,25 +79,71 @@ macro(check_compile RESULT_VAR SOURCE)
   string(REPLACE "\\" "\\\\" SOURCE "${SOURCE}")
   file(WRITE "${C_SOURCE}" "${SOURCE}")
   try_compile(
-    "${RESULT_VAR}" "${CMAKE_CURRENT_BINARY_DIR}"
+    COMPILE_RESULT "${CMAKE_CURRENT_BINARY_DIR}"
     "${C_SOURCE}"
     OUTPUT_VARIABLE "OUTPUT")
   file(REMOVE "${C_SOURCE}")
 
-  if(${${RESULT_VAR}})
+  if(COMPILE_RESULT)
     add_definitions(-D${RESULT_VAR})
-
-  else(${${RESULT_VAR}})
+  else(COMPILE_RESULT)
     string(REPLACE "\n" ";" OUTPUT "${OUTPUT}")
     list(FILTER OUTPUT INCLUDE REGEX "error")
+  endif(COMPILE_RESULT)
 
-    # message("Check ${RESULT_VAR} failed") message("Source:\n${SOURCE}") message("Output:\n${OUTPUT}")
-  endif(${${RESULT_VAR}})
+  set("${RESULT_VAR}" "${COMPILE_RESULT}")
 
   show_result(${RESULT_VAR})
-
 endmacro(
   check_compile
+  RESULT_VAR
+  SOURCE)
+macro(check_run RESULT_VAR SOURCE)
+  string(
+    RANDOM
+    LENGTH 6
+    ALPHABET "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789" C_SOURCE)
+  set(C_SOURCE "${CMAKE_CURRENT_BINARY_DIR}/try-${C_SOURCE}.c")
+  string(REPLACE "\\" "\\\\" SOURCE "${SOURCE}")
+  file(WRITE "${C_SOURCE}" "${SOURCE}")
+  try_run(
+    RUN_RESULT COMPILE_RESULT "${CMAKE_CURRENT_BINARY_DIR}" "${C_SOURCE}"
+    RUN_OUTPUT_VARIABLE RUN_OUTPUT
+    COMPILE_OUTPUT_VARIABLE COMPILE_OUTPUT)
+
+  if("${RUN_RESULT}" STREQUAL 0)
+    set(RUN_OK TRUE)
+  else("${RUN_RESULT}" STREQUAL 0)
+    set(RUN_OK FALSE)
+  endif("${RUN_RESULT}" STREQUAL 0)
+
+  # message("Run result: ${RUN_OK} output: ${RUN_OUTPUT}") message("Compile result: ${COMPILE_RESULT}")
+
+  file(REMOVE "${C_SOURCE}")
+
+  if(NOT COMPILE_RESULT)
+    set("${RESULT_VAR}" "${COMPILE_RESULT}")
+    set(RUN_RESULT FALSE)
+  else(NOT COMPILE_RESULT)
+    set("${RESULT_VAR}" "${RUN_RESULT}")
+  endif(NOT COMPILE_RESULT)
+
+  if(RUN_OK)
+    add_definitions(-D${RESULT_VAR})
+  else(RUN_OK)
+    string(REPLACE "\n" ";" OUTPUT "${OUTPUT}")
+    list(FILTER OUTPUT INCLUDE REGEX "error")
+  endif(RUN_OK)
+
+  if(ARGN)
+    set("${ARGN}"
+        "${RUN_OUTPUT}"
+        PARENT_SCOPE)
+  endif(ARGN)
+
+  show_result(${RESULT_VAR})
+endmacro(
+  check_run
   RESULT_VAR
   SOURCE)
 
@@ -162,6 +210,57 @@ endif(HAVE___INLINE__)
 check_compile(HAVE_UINT128 "__uint128_t tmp;\n")
 
 check_compile(HAVE_ALLOCA "#include <stdlib.h>\n#ifdef A\n#include <alloca.h>\n#else\n#include <malloc.h>\n#endif\n\nint\nmain() {\n  char* c = alloca(23);\n  (void)c;\n  return 0;\n}\n")
+
+check_include_file(signal.h HAVE_SIGNAL_H)
+if(HAVE_SIGNAL_H)
+  add_definitions(-DHAVE_SIGNAL_H)
+  set(CMAKE_EXTRA_INCLUDE_FILES signal.h ${CMAKE_EXTRA_INCLUDE_FILES})
+endif(HAVE_SIGNAL_H)
+
+check_include_file(sys/types.h HAVE_SYS_TYPES_H)
+if(HAVE_SYS_TYPES_H)
+  add_definitions(-DHAVE_SYS_TYPES_H)
+  set(CMAKE_EXTRA_INCLUDE_FILES sys/types.h ${CMAKE_EXTRA_INCLUDE_FILES})
+endif(HAVE_SYS_TYPES_H)
+
+check_include_file(unistd.h HAVE_UNISTD_H)
+if(HAVE_UNISTD_H)
+  add_definitions(-DHAVE_UNISTD_H)
+  set(CMAKE_EXTRA_INCLUDE_FILES unistd.h ${CMAKE_EXTRA_INCLUDE_FILES})
+endif(HAVE_UNISTD_H)
+
+message("extra includes = ${CMAKE_EXTRA_INCLUDE_FILES}")
+
+check_type_size(sigset_t SIGSET_T_SIZE)
+
+# message("sigset_t size = ${SIGSET_T_SIZE}")
+if(SIGSET_T_SIZE)
+  set(HAVE_SIGSET_TYPE
+      TRUE
+      CACHE BOOL "Define this if you have the sigset_t type")
+else(SIGSET_T_SIZE)
+  check_symbol_exists(sigset_t "signal.h" HAVE_SIGSET_T)
+endif(SIGSET_T_SIZE)
+
+if(NOT HAVE_SIGSET_T OR NOT SIZEOF_SIGSET_T)
+
+  check_run(HAVE_SIGSET_T 
+    "#define _GNU_SOURCE\n#include <sys/types.h>\n#include <signal.h>\n#include <fcntl.h>\n#include <stdio.h>\n\nint main() {\n  sigset_t ss;\nprintf(\"%lu\\\\n\", sizeof(ss));\n  return 0;\n}\n"
+                           SIZEOF_SIGSET_T
+                           )
+   message("SIZEOF_SIGSET_T = ${SIZEOF_SIGSET_T}")
+endif(NOT HAVE_SIGSET_T OR NOT SIZEOF_SIGSET_T)
+
+if(HAVE_SIGSET_T)
+  add_definitions(-DHAVE_SIGSET_T)
+endif(HAVE_SIGSET_T)
+
+# set(SIZEOF_SIGSET_TYPE "${SIZEOF_SIGSET_T}" CACHE STRING "Size of 'sigset_t' type")
+message("size of sigset_t = ${SIZEOF_SIGSET_T}")
+
+if(SIZEOF_SIGSET_T)
+  add_definitions(-DSIZEOF_SIGSET_T=${SIZEOF_SIGSET_T})
+endif(SIZEOF_SIGSET_T)
 
 check_include_file(alloca.h HAVE_ALLOCA_H)
 if(HAVE_ALLOCA_H)
@@ -702,7 +801,9 @@ endif(LIBMSWSOCK)
 
 message("Available MUX methods: ${MUX_METHODS}")
 
+if(MUX_METHODS)
 list(GET MUX_METHODS 0 MUX)
+endif(MUX_METHODS)
 
 if(USE_DEVPOLL)
   set(MUX DEVPOLL)
@@ -1793,9 +1894,54 @@ add_program(
   strarray
   strlist
   stralloc)
-add_program(tcping hmap unix dns case io array socket ndelay errmsg taia tai buffer stralloc mmap open fmt scan str byte uint16 ${LIBMSWSOCK} ${LIBIPHLPAPI})
-set(dnscache_SOURCES cache.c cache.h log.c log.h query.c query.h response.c response.h   roots.c roots.h  )
-add_program(dnscache  dns path errmsg dir stralloc alloc env byte uint16 ${LIBMSWSOCK} ${LIBIPHLPAPI})
+add_program(
+  tcping
+  hmap
+  unix
+  dns
+  case
+  io
+  array
+  socket
+  ndelay
+  errmsg
+  taia
+  tai
+  buffer
+  stralloc
+  mmap
+  open
+  fmt
+  scan
+  str
+  byte
+  uint16
+  ${LIBMSWSOCK}
+  ${LIBIPHLPAPI})
+set(dnscache_SOURCES
+    cache.c
+    cache.h
+    log.c
+    log.h
+    query.c
+    query.h
+    response.c
+    response.h
+    roots.c
+    roots.h)
+add_program(
+  dnscache
+  dns
+  path
+  errmsg
+  dir
+  stralloc
+  alloc
+  env
+  byte
+  uint16
+  ${LIBMSWSOCK}
+  ${LIBIPHLPAPI})
 add_program(crc errmsg buffer mmap open ${ZLIB_LIBRARY})
 add_program(
   cmake-run

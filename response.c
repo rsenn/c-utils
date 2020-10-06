@@ -18,15 +18,15 @@ static struct names name;
 int response_hidettl = 0;
 
 int
-response_addbytes(stralloc* resp, const char* buf, size_t len) {
-  if(len > 65535 - resp->len)
+response_addbytes(response* resp, const char* buf, size_t len) {
+  if(len > 65535 - resp->pos)
     return 0;
-  stralloc_catb(resp, buf, len);
+  stralloc_catb(&resp->stra, buf, len);
   return 1;
 }
 
 int
-response_addname(stralloc* resp, const char* d) {
+response_addname(response* resp, const char* d) {
   unsigned int dlen, i;
   char buf[2];
 
@@ -41,7 +41,7 @@ response_addname(stralloc* resp, const char* d) {
     if(dlen <= 128)
       if(name.num < NAMES) {
         byte_copy(name.str[name.num], dlen, d);
-        name.ptr[name.num] = resp->len;
+        name.ptr[name.num] = resp->pos;
         ++name.num;
       }
     i = (unsigned char)*d;
@@ -55,8 +55,8 @@ response_addname(stralloc* resp, const char* d) {
 }
 
 int
-response_query(stralloc* resp, const char* q, const char qtype[2], const char qclass[2]) {
-  stralloc_zero(resp);
+response_query(response* resp, const char* q, const char qtype[2], const char qclass[2]) {
+  stralloc_zero(&resp->stra);
   name.num = 0;
   if(!response_addbytes(resp, "\0\0\201\200\0\1\0\0\0\0\0\0", 12))
     return 0;
@@ -66,12 +66,12 @@ response_query(stralloc* resp, const char* q, const char qtype[2], const char qc
     return 0;
   if(!response_addbytes(resp, qclass, 2))
     return 0;
-  // tctarget =;
-  return resp->len;
+  resp->tctarget = resp->pos;
+  return 1;
 }
 
 int
-response_rstart(stralloc* resp, const char* d, const char type[2], uint32 ttl) {
+response_rstart(response* resp, const char* d, const char type[2], uint32 ttl) {
   char ttlstr[4];
   if(!response_addname(resp, d))
     return 0;
@@ -84,56 +84,55 @@ response_rstart(stralloc* resp, const char* d, const char type[2], uint32 ttl) {
     return 0;
   if(!response_addbytes(resp, "\0\0", 2))
     return 0;
-  // dpos = resp->len;
-  return resp->len;
+  resp->dpos = resp->pos;
+  return 1;
 }
 
 void
-response_rfinish(stralloc* resp, int x, uint32 dpos) {
-  char* response = resp->s;
-  size_t response_len = resp->len;
-  uint16_pack_big(response + dpos - 2, response_len - dpos);
-  if(!++response[x + 1])
-    ++response[x];
+response_rfinish(response* resp, int x) {
+  assert(resp->pos > x + 1);
+
+  uint16_pack_big(&resp->buf[resp->dpos - 2], resp->pos - resp->dpos);
+  if(!++resp->buf[x + 1])
+    ++resp->buf[x];
 }
 
 int
-response_cname(stralloc* resp, const char* c, const char* d, uint32 ttl) {
-  int dpos;
-  if(!(dpos = response_rstart(resp, c, DNS_T_CNAME, ttl)))
+response_cname(response* resp, const char* c, const char* d, uint32 ttl) {
+  if(!response_rstart(resp, c, DNS_T_CNAME, ttl))
     return 0;
   if(!response_addname(resp, d))
     return 0;
-  response_rfinish(resp, RESPONSE_ANSWER, dpos);
-  return dpos;
+  response_rfinish(resp, RESPONSE_ANSWER);
+  return 1;
 }
 
 void
-response_nxdomain(stralloc* resp) {
-  char* response = resp->s;
-  assert(resp->len > 3);
+response_nxdomain(response* resp) {
+  char* response = resp->buf;
+  assert(resp->pos > 3);
 
   response[3] |= 3;
   response[2] |= 4;
 }
 
 void
-response_servfail(stralloc* resp) {
-  char* response = resp->s;
-  assert(resp->len > 3);
+response_servfail(response* resp) {
+  char* response = resp->buf;
+  assert(resp->pos > 3);
   response[3] |= 2;
 }
 
 void
-response_id(stralloc* resp, const char id[2]) {
-  if(resp->len < 2)
-    stralloc_ready(resp, 2);
-  byte_copy(resp->s, 2, id);
+response_id(response* resp, const char id[2]) {
+  if(resp->pos < 2)
+    stralloc_ready(&resp->stra, 2);
+  byte_copy(resp->buf, 2, id);
 }
 
 void
-response_tc(stralloc* resp, int tctarget) {
-  assert(resp->len > 2);
-  resp->s[2] |= 2;
-  resp->len = tctarget;
+response_tc(response* resp) {
+  assert(resp->pos > 2);
+  resp->buf[2] |= 2;
+  resp->pos = resp->tctarget;
 }

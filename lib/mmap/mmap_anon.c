@@ -1,3 +1,4 @@
+#define _GNU_SOURCE
 #include <sys/types.h>
 #ifdef _WIN32
 #include <windows.h>
@@ -33,7 +34,7 @@ mmap_anon(size_t size) {
 #else
   char* map;
 
-  map = (char*)mmap(0, size, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+  map = (char*)mmap(0, size, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANON, -1, 0);
   if(map == (char*)-1)
     map = 0;
   return map;

@@ -22,7 +22,7 @@ struct query {
   char localip[16];
   char type[2];
   char class[2];
-  stralloc response;
+  struct response response;
   uint32 tctarget, dpos;
   struct dns_transmit dt;
 };

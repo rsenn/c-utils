@@ -19,9 +19,9 @@
 #include <unistd.h>
 #include <sys/stat.h>
 
+#include "response.h"
 #include "roots.h"
 #include "query.h"
-#include "response.h"
 #include "cache.h"
 #include "log.h"
 
@@ -182,16 +182,16 @@ udp_drop(int j) {
 
 void
 udp_respond(int j) {
-  stralloc* resp;
+  response* resp;
   if(!u[j].active)
     return;
   resp = &u[j].q.response;
   response_id(resp, u[j].id);
-  if(resp->len > 512)
-    response_tc(resp, u[j].q.tctarget);
-  socket_send6(udp53, resp->s, resp->len, u[j].ip, u[j].port, 0);
+  if(resp->pos > 512)
+    response_tc(resp);
+  socket_send6(udp53, resp->buf, resp->pos, u[j].ip, u[j].port, 0);
 
-  log_querydone(&u[j].active, u[j].ip, u[j].port, udp53, u[j].id, resp->len);
+  log_querydone(&u[j].active, u[j].ip, u[j].port, udp53, u[j].id, resp->pos);
 
   u[j].active = 0;
   --uactive;
@@ -290,21 +290,21 @@ tcp_drop(int j) {
 
 void
 tcp_respond(int j) {
-  stralloc* resp;
+  response* resp;
   if(!t[j].active)
     return;
   resp = &t[j].q.response;
-  log_querydone(&t[j].active, t[j].ip, t[j].port, t[j].tcp, t[j].id, resp->len);
+  log_querydone(&t[j].active, t[j].ip, t[j].port, t[j].tcp, t[j].id, resp->pos);
   response_id(resp, t[j].id);
-  t[j].len = resp->len + 2;
+  t[j].len = resp->pos + 2;
   tcp_free(j);
-  t[j].buf = alloc(resp->len + 2);
+  t[j].buf = alloc(resp->pos + 2);
   if(!t[j].buf) {
     tcp_close(j);
     return;
   }
-  uint16_pack_big(t[j].buf, resp->len);
-  byte_copy(t[j].buf + 2, resp->len, resp->s);
+  uint16_pack_big(t[j].buf, resp->pos);
+  byte_copy(t[j].buf + 2, resp->pos, resp->buf);
   t[j].pos = 0;
   t[j].state = -1;
 }
