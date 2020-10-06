@@ -566,7 +566,7 @@ main(int argc, char* argv[]) {
   y = env_get("CACHEFILE");
   if(y) {
     if(!cache_open(y, cachesize))
-      die(111, FATAL, "unable to open cache file ", y);
+      diesys(111, FATAL, "unable to open cache file ", y);
 
   } else {
     if(!cache_init(cachesize))
