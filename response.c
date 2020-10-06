@@ -2,26 +2,23 @@
 #include "lib/byte.h"
 #include "lib/uint16.h"
 
-#include <assert.h>
-
 #include "response.h"
 
-/*char response[65535];
-unsigned int response_len = 0;  */
+#include <assert.h>
 
 #define NAMES 100
 
 struct names {
- char str[NAMES][128];
- unsigned int ptr[NAMES];
- unsigned int num;
+  char str[NAMES][128];
+  uint32 ptr[NAMES];
+  uint32 num;
 };
 
-static struct names name; 
+static struct names name;
 int response_hidettl = 0;
 
 int
-response_addbytes(stralloc* resp, const char* buf, unsigned int len) {
+response_addbytes(stralloc* resp, const char* buf, size_t len) {
   if(len > 65535 - resp->len)
     return 0;
   stralloc_catb(resp, buf, len);
@@ -73,7 +70,6 @@ response_query(stralloc* resp, const char* q, const char qtype[2], const char qc
   return resp->len;
 }
 
-
 int
 response_rstart(stralloc* resp, const char* d, const char type[2], uint32 ttl) {
   char ttlstr[4];
@@ -93,7 +89,7 @@ response_rstart(stralloc* resp, const char* d, const char type[2], uint32 ttl) {
 }
 
 void
-response_rfinish(stralloc* resp, int x, unsigned int dpos) {
+response_rfinish(stralloc* resp, int x, uint32 dpos) {
   char* response = resp->s;
   size_t response_len = resp->len;
   uint16_pack_big(response + dpos - 2, response_len - dpos);
