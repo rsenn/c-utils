@@ -2,16 +2,13 @@
 #include "../buffer.h"
 
 void
-buffer_putset(buffer* b, const set_t* set) {
+buffer_putset(buffer* b, const set_t* set, const char* sep, size_t seplen) {
   char* x;
   size_t i = 0, n;
-  buffer_puts(b, "{ ");
   set_foreach(set, x, n) {
-
+    while(n > 0 && x[n - 1] == '\0') n--;
     if(i++ > 0)
-      buffer_puts(b, ", ");
-
+      buffer_put(b, sep, seplen);
     buffer_put(b, x, n);
   }
-  buffer_putsflush(b, " }\n");
 }

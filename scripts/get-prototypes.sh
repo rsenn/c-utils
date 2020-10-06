@@ -2,12 +2,64 @@
 ME=`basename "$0" .sh`
 THISDIR=`dirname "$0"`
 BASEDIR=`cd "$THISDIR"/.. && pwd`
-
+nl="
+"
 filter() { 
  (PATTERN="$1"; shift; OUT=; for ARG; do case "$ARG" in 
    $PATTERN) OUT="${OUT:+$OUT${IFS:0:1}}$ARG" ;;
   esac; done; echo "$OUT")
 }
+str_escape () 
+{ 
+  local s=$*;
+  case $s in 
+    *[$cr$lf$ht$vt'�']*)
+      s=${s//'\'/'\\'};
+'/'\r'};${s//'
+      s=${s//'
+'/'\n'};
+      s=${s//'  '/'\t'};
+      s=${s//'
+              '/'\v'};
+      s=${s//\'/'\047'};
+      s=${s//''/'\001'};
+      s=${s//'�'/'\200'}
+    ;;
+    *$sq*)
+      s=${s//"\\"/'\\'};
+      s=${s//"\""/'\"'};
+      s=${s//"\$"/'\$'};
+      s=${s//"\`"/'\`'}
+    ;;
+  esac;
+  echo "$s"
+}
+str_quote () 
+{ 
+  case "$**" in 
+    *["$cr$lf$ht$vt"]*)
+      echo "\$'`str_escape "$*"`'"
+    ;;
+    *"$squote"*)
+      echo "'`str_escape "$*"`'"
+    ;;
+    *)
+      echo "'$*'"
+    ;;
+  esac
+}
+
+# var_dump <name>
+# -------------------------------------------------------------------------
+var_dump()
+{
+ (for N; do
+    N=${N%%=*}
+    O=${O:+$O${var_s-${IFS%${IFS#?}}}}$N=`eval 'str_quote "${'$N'}"'`
+  done
+  echo "$O")
+}
+
 
 read_proto() {
   read -r LINE || return $?
@@ -93,6 +145,34 @@ clean_args() {
   echo "($OUT)"
 }
 
+output_line() {
+  O="$1"
+  if [ ! -z "$O" ]; then
+    case "$O:$PREV_OUTPUT" in
+      *stralloc*:*stralloc*) ;;
+      *stralloc*:*) PREPEND="${PREPEND:+$PREPEND$nl}#ifdef HAVE_STRALLOC_H" ;;
+      *:*stralloc* ) PREPEND="#endif /* HAVE_STRALLOC_H */${PREPEND:+$nl$PREPEND}" ;;
+    esac
+    case "$O:$PREV_OUTPUT" in
+      *buffer*:*buffer*) ;;
+      *buffer*:*) PREPEND="${PREPEND:+$PREPEND$nl}#ifdef HAVE_BUFFER_H" ;;
+      *:*buffer* )  PREPEND="#endif /* HAVE_BUFFER_H */${PREPEND:+$nl$PREPEND}" ;;
+    esac
+    PREV_OUTPUT=$O
+  fi
+ #var_dump PREPEND O APPEND 1>&2
+  LINES="${PREPEND:+$nl$PREPEND$nl}$O${APPEND:+$APPEND}"
+ (IFS="$nl"
+  I=0
+   while read -r LINE; do 
+   
+  #   [  "$LINE" -o "$I" -gt 0 ] &&
+     echo "$LINE"
+    
+      I=$((I+1))
+  done) <<<"$LINES"
+}
+
 get_prototypes() {
   : ${PAD_ARGS=false}
   while :; do
@@ -108,6 +188,7 @@ get_prototypes() {
       -M | --no-main) MAIN=false; shift ;;
       -c | --copy* | --xclip*) XCLIP=true; shift ;;
       -E | --ellips* | --empty*) EMPTY=true; shift ;;
+      -D | --defin* | --ifdef*) OUTPUT_FN=echo ; shift ;;
       -e | --expr) EXPR="${EXPR:+$EXPR ;; }$2"; shift 2 ;;
       -e=* | --expr=*) EXPR="${EXPR:+$EXPR ;; }$2"; shift ;;
       -e* ) EXPR="${1#-e}"; shift ;;
@@ -137,13 +218,19 @@ FILTER="$SORT sed 's:|::g'"
     if [ "$MAIN" != true -a "$FNAME" = "main" ]; then
       continue
     fi
+    APPEND="" PREPEND=""
     if [ -n "$PREV_FNAME" -a "${FNAME%%_*}" != "${PREV_FNAME%%_*}" ]; then
-      echo 
+      output_line  ""
+
     fi
     set -- "$TYPE" "$FNAME" "$ARGS"
-    printf "%-$((TYPE_MAXLEN))s |%${PAD_A2}s|%s\n" "$1" "$2" "$(clean_args "$3");"
+  OUTPUT=$(printf "%-$((TYPE_MAXLEN))s |%${PAD_A2}s|%s\n" "$1" "$2" "$(clean_args "$3");")
+
+
+${OUTPUT_FN:-output_line}  "$OUTPUT"
+  
     PREV_FNAME=$FNAME
-  done <<<"$CPROTO_OUT" | 
+ done <<<"$CPROTO_OUT" | 
       eval "$FILTER" >"$TEMP"
 
   [ "$XCLIP" = true ] && xclip -selection clipboard -in <"$TEMP"
