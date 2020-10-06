@@ -4,8 +4,9 @@
 #include "genmakefile.h"
 #include "map.h"
 #include "mplab.h"
+#include "lib/unix.h"
 
-extern buffer* optbuf;
+extern buffer* unix_optbuf;
 static const char tok_charset[] = {'_', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O',
                                    'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'a', 'b', 'c', 'd', 'e',
                                    'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u',
@@ -4764,7 +4765,7 @@ main(int argc, char* argv[]) {
   errmsg_iam(argv[0]);
   uint32_seed(NULL, 0);
 #ifdef _MSC_VER
-  optbuf = buffer_1;
+  unix_optbuf = buffer_1;
 #endif
 
   byte_zero(&cfg, sizeof(cfg));
@@ -4801,9 +4802,9 @@ main(int argc, char* argv[]) {
   strlist_fromv(&cmdline, (const char**)argv, argc);
 
   for(;;) {
-    c = getopt_long(argc, argv, "ho:O:B:L:d:t:m:n:a:D:l:I:c:s:p:P:S:if:C", opts, &index);
-     if(c == -1)
-      continue; 
+    c = unix_getopt_long(argc, argv, "ho:O:B:L:d:t:m:n:a:D:l:I:c:s:p:P:S:if:C", opts, &index);
+    if(c == -1)
+      break;
     if(c == 0)
       continue;
 
@@ -4813,37 +4814,37 @@ main(int argc, char* argv[]) {
         ret = 0;
         goto quit;
       case 'C': cfg.lang = LANG_C; break;
-      case 'c': cross_compile = optarg; break;
-      case 'o': outfile = optarg; break;
-      case 'O': exts.obj = optarg; break;
-      case 'B': exts.bin = optarg; break;
-      case 'S': strlist_push(&build_as_lib, optarg ? optarg : argv[optind]); break;
-      case 'X': exts.lib = optarg; break;
-      case 'd': dir = optarg; break;
-      case 't': tools.toolchain = tools.compiler = optarg; break;
-      case 'm': tools.make = optarg; break;
-      case 'P': tools.preproc = optarg; break;
-      case 'a': set_machine(optarg); break;
-      case 's': set_system(optarg); break;
-      case 'n': stralloc_copys(&output_name, optarg); break;
+      case 'c': cross_compile = unix_optarg; break;
+      case 'o': outfile = unix_optarg; break;
+      case 'O': exts.obj = unix_optarg; break;
+      case 'B': exts.bin = unix_optarg; break;
+      case 'S': strlist_push(&build_as_lib, unix_optarg ? unix_optarg : argv[unix_optind]); break;
+      case 'X': exts.lib = unix_optarg; break;
+      case 'd': dir = unix_optarg; break;
+      case 't': tools.toolchain = tools.compiler = unix_optarg; break;
+      case 'm': tools.make = unix_optarg; break;
+      case 'P': tools.preproc = unix_optarg; break;
+      case 'a': set_machine(unix_optarg); break;
+      case 's': set_system(unix_optarg); break;
+      case 'n': stralloc_copys(&output_name, unix_optarg); break;
       case 'p':
-        if(optarg)
-          set_chip(optarg);
+        if(unix_optarg)
+          set_chip(unix_optarg);
         break;
-      case 'f': infile = optarg; break;
-      case 'l': strarray_push(&libs, optarg); break;
+      case 'f': infile = unix_optarg; break;
+      case 'l': strarray_push(&libs, unix_optarg); break;
       case 'I': {
         buffer_puts(buffer_2, "Add -I: ");
-        buffer_puts(buffer_2, optarg);
+        buffer_puts(buffer_2, unix_optarg);
         buffer_putnlflush(buffer_2);
-        strarray_push(&includes, optarg);
+        strarray_push(&includes, unix_optarg);
         break;
       }
       case 'i':
         inst_bins = 1;
         inst_libs = 1;
         break;
-      case 'D': push_define(optarg); break;
+      case 'D': push_define(unix_optarg); break;
 
       default:
         buffer_puts(buffer_2, "No such option '");
@@ -5165,10 +5166,10 @@ main(int argc, char* argv[]) {
     }
   }
 
-  while(optind < argc) {
+  while(unix_optind < argc) {
     stralloc arg;
     stralloc_init(&arg);
-    stralloc_copys(&arg, argv[optind]);
+    stralloc_copys(&arg, argv[unix_optind]);
     stralloc_nul(&arg);
 
     if(stralloc_contains(&arg, "=")) {
@@ -5181,7 +5182,7 @@ main(int argc, char* argv[]) {
       v = &arg.s[eqpos];
       var_set(arg.s, v);
 
-      ++optind;
+      ++unix_optind;
       continue;
     }
 
@@ -5189,13 +5190,13 @@ main(int argc, char* argv[]) {
     stralloc_nul(&arg);
 
 #if WINDOWS_NATIVE && !MINGW
-    if(str_rchrs(argv[optind], "*?", 2) < str_len(argv[optind]))
+    if(str_rchrs(argv[unix_optind], "*?", 2) < str_len(argv[unix_optind]))
       strarray_glob(&args, arg.s);
     else
 #endif
 
       strarray_push(&args, arg.s);
-    ++optind;
+    ++unix_optind;
   }
 
   /* No arguments given */

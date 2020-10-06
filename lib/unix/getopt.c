@@ -6,7 +6,8 @@
  * Released under the MIT license
  * https://github.com/takamin/win-c/blob/master/LICENSE
  */
-#if !defined(HAVE_GETOPT) || !defined(HAVE_GETOPT_LONG)
+
+#if 1 //! defined(HAVE_GETOPT) || !defined(HAVE_GETOPT_LONG)
 
 #include "../getopt.h"
 #include "../buffer.h"
@@ -14,6 +15,17 @@
 
 #include <stdio.h>
 #include <string.h>
+
+#if 1 // def HAVE_GETOPT
+#define getopt unix_getopt
+#define getopt_long unix_getopt_long
+#define getopt_real unix_getopt_real
+#define optind unix_optind
+#define optarg unix_optarg
+#define opterr unix_opterr
+#define optopt unix_optopt
+#define optbuf unix_optbuf
+#endif
 
 char* optarg = 0;
 int optind = 1;
@@ -48,7 +60,7 @@ postpone_noopt(int argc, char* const argv[], int index) {
 }
 
 static int
-_getopt_(int argc, char* const argv[], const char* optstring, const struct longopt* longopts, int* longindex) {
+getopt_real(int argc, char* const argv[], const char* optstring, const struct longopt* longopts, int* longindex) {
   if(optbuf == NULL)
     optbuf = buffer_2;
   while(1) {
@@ -214,17 +226,17 @@ _getopt_(int argc, char* const argv[], const char* optstring, const struct longo
   return -1;
 }
 
-#ifndef HAVE_GETOPT
+#if 1 // ndef HAVE_GETOPT
 int
 getopt(int argc, char* const argv[], const char* optstring) {
-  return _getopt_(argc, argv, optstring, 0, 0);
+  return getopt_real(argc, argv, optstring, 0, 0);
 }
 #endif
 
-#ifndef HAVE_GETOPT_LONG
+#if 1 // ndef HAVE_GETOPT_LONG
 int
 getopt_long(int argc, char* const argv[], const char* optstring, const struct longopt* longopts, int* longindex) {
-  return _getopt_(argc, argv, optstring, longopts, longindex);
+  return getopt_real(argc, argv, optstring, longopts, longindex);
 }
 #endif
 
