@@ -2494,7 +2494,7 @@ gen_srcdir_compile_rules(sourcedir* sdir, const char* dir) {
     if(!src->name)
       continue;
 
-    if(!is_source(src->name) && !is_include(src->name))
+    if(!is_source(src->name) /*&& !is_include(src->name)*/)
       continue;
 
     // s = str_basename(src->name);
@@ -2826,6 +2826,7 @@ gen_link_rules(/*strarray* sources*/) {
   target *all, *preprocess, *compile, *link;
   const char *x, *link_lib;
   char **p, *srcfile;
+  size_t n;
   strlist incs, libs, deps, indir;
   stralloc dir, ppsrc, obj, bin;
   slink* source;
@@ -2979,8 +2980,8 @@ gen_link_rules(/*strarray* sources*/) {
         strlist_zero(&deps);
         rule_dep_list(link, &deps);
 
-        strlist_foreach_s(&link_libraries, link_lib) {
-          target* lib = rule_find(link_lib);
+        strlist_foreach(&link_libraries, link_lib, n) {
+          target* lib = rule_find_b(link_lib, n);
           strlist_cat(&deps, &lib->prereq);
           add_path(&all->prereq, lib->name);
           //          strlist_push(&deps, link_lib);
@@ -4801,8 +4802,8 @@ main(int argc, char* argv[]) {
 
   for(;;) {
     c = getopt_long(argc, argv, "ho:O:B:L:d:t:m:n:a:D:l:I:c:s:p:P:S:if:C", opts, &index);
-    if(c == -1)
-      break;
+     if(c == -1)
+      continue; 
     if(c == 0)
       continue;
 
@@ -4845,8 +4846,8 @@ main(int argc, char* argv[]) {
       case 'D': push_define(optarg); break;
 
       default:
-        buffer_puts(buffer_2, "No such option '-");
-        buffer_putc(buffer_2, c);
+        buffer_puts(buffer_2, "No such option '");
+        buffer_putlong(buffer_2, c);
         buffer_putsflush(buffer_2, "'\n");
         // usage(argv[0]);
         ret = 1;
