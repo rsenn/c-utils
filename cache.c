@@ -103,13 +103,8 @@ hash(const char* key, unsigned int keylen) {
 }
 
 char*
-cache_get(const char* key, unsigned int keylen, unsigned int* datalen, uint32* ttl) {
-  struct tai expire;
-  struct tai now;
-  uint32 pos;
-  uint32 prevpos;
-  uint32 nextpos;
-  uint32 u;
+cache_find(const char* key, unsigned int keylen, unsigned int* datalen, struct tai* expire) {
+  uint32 pos, prevpos, nextpos, u;
   unsigned int loop;
   double d;
 
@@ -127,16 +122,7 @@ cache_get(const char* key, unsigned int keylen, unsigned int* datalen, uint32* t
       if(pos + 20 + keylen > size)
         cache_impossible();
       if(byte_equal(key, keylen, x + pos + 20)) {
-        tai_unpack(x + pos + 12, &expire);
-        tai_now(&now);
-        if(tai_less(&expire, &now))
-          return 0;
-
-        tai_sub(&expire, &expire, &now);
-        d = tai_approx(&expire);
-        if(d > 604800)
-          d = 604800;
-        *ttl = d;
+        tai_unpack(x + pos + 12, expire);
 
         u = get4(pos + 8);
         if(u > size - pos - 20 - keylen)
@@ -153,6 +139,27 @@ cache_get(const char* key, unsigned int keylen, unsigned int* datalen, uint32* t
       return 0; /* to protect against hash flooding */
   }
 
+  return 0;
+}
+
+char*
+cache_get(const char* key, unsigned int keylen, unsigned int* datalen, uint32* ttl) {
+  struct tai expire, now;
+  double d;
+  char* data;
+
+  if((data = cache_find(key, keylen, datalen, &expire))) {
+    tai_now(&now);
+    if(tai_less(&expire, &now))
+      return 0;
+
+    tai_sub(&expire, &expire, &now);
+    d = tai_approx(&expire);
+    if(d > 604800)
+      d = 604800;
+    *ttl = d;
+    return data;
+  }
   return 0;
 }
 

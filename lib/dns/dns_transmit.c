@@ -115,11 +115,11 @@ dns_transmit_free(struct dns_transmit* d) {
 static int
 randombind(struct dns_transmit* d) {
   int j;
-  int v4mapped = ip6_isv4mapped(d->localip);
+  int v4mapped = 0 /*ip6_isv4mapped(d->localip)*/;
   char* ip = v4mapped ? &d->localip[12] : d->localip;
 
   for(j = 0; j < 10; ++j) {
-    if(v4mapped) {
+    if(v4mapped && socket_is4(d->s1)) {
       if(socket_bind4(d->s1 - 1, d->localip + 12, 1025 + dns_random(64510)) == 0)
         return 0;
     } else {
@@ -127,7 +127,7 @@ randombind(struct dns_transmit* d) {
         return 0;
     }
   }
-  if(v4mapped) {
+  if(v4mapped && socket_is4(d->s1)) {
     if(socket_bind4(d->s1 - 1, d->localip + 12, 0) == 0)
       return 0;
   } else {

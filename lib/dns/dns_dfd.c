@@ -5,12 +5,9 @@
 
 int
 dns_domain_fromdot(char** out, const char* buf, size_t n) {
-  char label[63];
-  unsigned int labellen = 0; /* <= sizeof label */
-  char name[255];
-  unsigned int namelen = 0; /* <= sizeof name */
-  char ch;
-  char* x;
+  char label[63], name[255];
+  unsigned int labellen = 0, namelen = 0;
+  char ch, *x;
 
   errno = EINVAL;
 
@@ -68,8 +65,7 @@ dns_domain_fromdot(char** out, const char* buf, size_t n) {
     return 0;
   name[namelen++] = 0;
 
-  x = malloc(namelen);
-  if(!x)
+  if(!(x = malloc(namelen)))
     return 0;
   byte_copy(x, namelen, name);
 

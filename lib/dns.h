@@ -53,6 +53,7 @@ void dns_sortip6(char*, unsigned int);
 
 void dns_domain_free(char**);
 int dns_domain_copy(char**, const char*);
+int dns_domain_copysa(stralloc*, const char*);
 unsigned int dns_domain_length(const char*);
 int dns_domain_equal(const char*, const char*);
 int dns_domain_suffix(const char*, const char*);

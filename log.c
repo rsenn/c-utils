@@ -74,6 +74,11 @@ log_space(void) {
 }
 
 void
+log_separator(void) {
+  log_string("|");
+}
+
+void
 log_ip(const char* x, size_t iplen) {
   char buf[FMT_IP6];
 
@@ -104,11 +109,10 @@ log_fd(int fd) {
   int type = 0;
   socklen_t length = sizeof(type);
   getsockopt(fd, SOL_SOCKET, SO_TYPE, &type, &length);
-  log_number(fd);
-  log_string("[");
   log_string(type == SOCK_STREAM ? "tcp" : type == SOCK_DGRAM ? "udp" : "sock");
-  log_string(socket_is6(fd) ? "6" : "4");
-  log_string("]");
+  // log_string(socket_is6(fd) ? "6" : "4");
+  log_string("/");
+  log_number(fd);
 }
 
 void
@@ -304,7 +308,7 @@ log_cachedanswer(const char* q, const char type[2], const char* cached, size_t c
       uint16_unpack_big(&cached[i], &prio);
 
       if(i > 0)
-        log_space();
+        log_separator();
 
       log_number(prio);
       log_space();
@@ -315,7 +319,7 @@ log_cachedanswer(const char* q, const char type[2], const char* cached, size_t c
   } else if(byte_equal(type, 2, DNS_T_NS)) {
     for(i = 0; i < cachedlen;) {
       if(i > 0)
-        log_space();
+        log_separator();
       i += log_name(&cached[i]);
     }
   } else {

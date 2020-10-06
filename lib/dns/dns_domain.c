@@ -27,14 +27,22 @@ dns_domain_copy(char** out, const char* in) {
   char* x;
 
   len = dns_domain_length(in);
-  x = malloc(len);
-  if(!x)
+  if(!(x = malloc(len)))
     return 0;
   byte_copy(x, len, in);
   if(*out)
     free(*out);
   *out = x;
-  return 1;
+  return len;
+}
+
+int
+dns_domain_copysa(stralloc* sa, const char* in) {
+  unsigned int len;
+
+  len = dns_domain_length(in);
+  stralloc_copyb(sa, in, len);
+  return len;
 }
 
 int
@@ -57,8 +65,7 @@ dns_domain_suffix(const char* big, const char* little) {
   for(;;) {
     if(dns_domain_equal(big, little))
       return 1;
-    c = *big++;
-    if(!c)
+    if(!(c = *big++))
       return 0;
     big += c;
   }
@@ -72,8 +79,7 @@ dns_domain_suffixpos(const char* big, const char* little) {
   for(;;) {
     if(dns_domain_equal(big, little))
       return big - orig;
-    c = *big++;
-    if(!c)
+    if(!(c = *big++))
       return 0;
     big += c;
   }

@@ -182,14 +182,16 @@ udp_drop(int j) {
 
 void
 udp_respond(int j) {
+  stralloc* resp;
   if(!u[j].active)
     return;
-  response_id(u[j].id);
-  if(response_len > 512)
-    response_tc();
-  socket_send6(udp53, response, response_len, u[j].ip, u[j].port, 0);
+  resp = &u[j].q.response;
+  response_id(resp, u[j].id);
+  if(resp->len > 512)
+    response_tc(resp, u[j].q.tctarget);
+  socket_send6(udp53, resp->s, resp->len, u[j].ip, u[j].port, 0);
 
-  log_querydone(&u[j].active, u[j].ip, u[j].port, udp53, u[j].id, response_len);
+  log_querydone(&u[j].active, u[j].ip, u[j].port, udp53, u[j].id, resp->len);
 
   u[j].active = 0;
   --uactive;
@@ -197,13 +199,9 @@ udp_respond(int j) {
 
 void
 udp_new(void) {
-  int j;
-  int i;
+  int j, i, len;
   struct udpclient* x;
-  int len;
-  static char* q = 0;
-  char qtype[2];
-  char qclass[2];
+  char *q = 0, qtype[2], qclass[2];
 
   for(j = 0; j < MAXUDP; ++j)
     if(!u[j].active)
@@ -221,8 +219,7 @@ udp_new(void) {
   x = u + j;
   taia_now(&x->start);
 
-  len = socket_recv6(udp53, buf, sizeof buf, x->ip, &x->port, &x->scope_id);
-  if(len == -1)
+  if((len = socket_recv6(udp53, buf, sizeof buf, x->ip, &x->port, &x->scope_id)) == -1)
     return;
   if(len >= sizeof buf)
     return;
@@ -238,6 +235,7 @@ udp_new(void) {
   x->active = ++numqueries;
   ++uactive;
   log_query(&x->active, x->ip, x->port, udp53, x->id, q, qtype);
+
   switch(query_start(&x->q, q, qtype, qclass, sendaddr)) {
     case -1: udp_drop(j); return;
     case 1: udp_respond(j);
@@ -292,19 +290,21 @@ tcp_drop(int j) {
 
 void
 tcp_respond(int j) {
+  stralloc* resp;
   if(!t[j].active)
     return;
-  log_querydone(&t[j].active, t[j].ip, t[j].port, t[j].tcp, t[j].id, response_len);
-  response_id(t[j].id);
-  t[j].len = response_len + 2;
+  resp = &t[j].q.response;
+  log_querydone(&t[j].active, t[j].ip, t[j].port, t[j].tcp, t[j].id, resp->len);
+  response_id(resp, t[j].id);
+  t[j].len = resp->len + 2;
   tcp_free(j);
-  t[j].buf = alloc(response_len + 2);
+  t[j].buf = alloc(resp->len + 2);
   if(!t[j].buf) {
     tcp_close(j);
     return;
   }
-  uint16_pack_big(t[j].buf, response_len);
-  byte_copy(t[j].buf + 2, response_len, response);
+  uint16_pack_big(t[j].buf, resp->len);
+  byte_copy(t[j].buf + 2, resp->len, resp->s);
   t[j].pos = 0;
   t[j].state = -1;
 }
@@ -380,6 +380,7 @@ tcp_rw(int j) {
   }
 
   x->active = ++numqueries;
+  log_query(&x->active, x->ip, x->port, x->tcp, x->id, q, qtype);
   log_query(&x->active, x->ip, x->port, x->tcp, x->id, q, qtype);
   switch(query_start(&x->q, q, qtype, qclass, sendaddr)) {
     case -1: tcp_drop(j); return;
@@ -467,6 +468,7 @@ dnscache_run(void) {
         u[j].io = io + iolen++;
         query_io(&u[j].q, u[j].io, &deadline);
       }
+
     for(j = 0; j < MAXTCP; ++j)
       if(t[j].active) {
         t[j].io = io + iolen++;
@@ -578,7 +580,8 @@ main(int argc, char* argv[]) {
   }
 
   if(env_get("HIDETTL"))
-    response_hidettl();
+    response_hidettl = 1;
+
   if(env_get("FORWARDONLY"))
     query_forwardonly();
 

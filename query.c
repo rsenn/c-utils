@@ -198,19 +198,19 @@ query_aliases(struct query* z) {
 
   for(i = QUERY_MAXALIAS - 1; i >= 0; --i)
     if(z->alias[i]) {
-      if(!response_query(z->alias[i], z->type, z->class))
+      if(!(z->tctarget = response_query(&z->response, z->alias[i], z->type, z->class)))
         return 0;
       while(i > 0) {
-        if(!response_cname(z->alias[i], z->alias[i - 1], z->aliasttl[i]))
+        if(!(z->dpos = response_cname(&z->response, z->alias[i], z->alias[i - 1], z->aliasttl[i])))
           return 0;
         --i;
       }
-      if(!response_cname(z->alias[0], z->name[0], z->aliasttl[0]))
+      if(!(z->dpos = response_cname(&z->response, z->alias[0], z->name[0], z->aliasttl[0])))
         return 0;
       return 1;
     }
 
-  if(!response_query(z->name[0], z->type, z->class))
+  if(!(z->tctarget = response_query(&z->response, z->name[0], z->type, z->class)))
     return 0;
   return 1;
 }
@@ -253,11 +253,11 @@ new_name:
     if(!query_aliases(z))
       goto fail;
     if(typematch(DNS_T_A, dtype)) {
-      if(!response_rstart(d, DNS_T_A, 655360))
+      if(!(z->dpos = response_rstart(&z->response, d, DNS_T_A, 655360)))
         goto fail;
-      if(!response_addbytes(misc, 4))
+      if(!response_addbytes(&z->response, misc, 4))
         goto fail;
-      response_rfinish(RESPONSE_ANSWER);
+      response_rfinish(&z->response, RESPONSE_ANSWER, z->dpos);
     }
     query_cleanup(z);
     return 1;
@@ -269,11 +269,11 @@ new_name:
     if(!query_aliases(z))
       goto fail;
     if(typematch(DNS_T_PTR, dtype)) {
-      if(!response_rstart(d, DNS_T_PTR, 655360))
+      if(!(z->dpos = response_rstart(&z->response, d, DNS_T_PTR, 655360)))
         goto fail;
-      if(!response_addname("\011localhost\0"))
+      if(!response_addname(&z->response, "\011localhost\0"))
         goto fail;
-      response_rfinish(RESPONSE_ANSWER);
+      response_rfinish(&z->response, RESPONSE_ANSWER, z->dpos);
     }
     query_cleanup(z);
     log_stats();
@@ -297,7 +297,7 @@ new_name:
         log_cachedanswer(d, DNS_T_CNAME, cached, cachedlen);
         if(!query_aliases(z))
           goto fail;
-        if(!response_cname(z->name[0], cached, ttl))
+        if(!(z->dpos = response_cname(&z->response, z->name[0], cached, ttl)))
           goto fail;
         query_cleanup(z);
         return 1;
@@ -317,11 +317,11 @@ new_name:
           goto fail;
         pos = 0;
         while(pos = dns_packet_getname(cached, cachedlen, pos, &t2)) {
-          if(!response_rstart(d, DNS_T_NS, ttl))
+          if(!(z->dpos = response_rstart(&z->response, d, DNS_T_NS, ttl)))
             goto fail;
-          if(!response_addname(t2))
+          if(!response_addname(&z->response, t2))
             goto fail;
-          response_rfinish(RESPONSE_ANSWER);
+          response_rfinish(&z->response, RESPONSE_ANSWER, z->dpos);
         }
         query_cleanup(z);
         return 1;
@@ -337,11 +337,11 @@ new_name:
           goto fail;
         pos = 0;
         while(pos = dns_packet_getname(cached, cachedlen, pos, &t2)) {
-          if(!response_rstart(d, DNS_T_PTR, ttl))
+          if(!(z->dpos = response_rstart(&z->response, d, DNS_T_PTR, ttl)))
             goto fail;
-          if(!response_addname(t2))
+          if(!response_addname(&z->response, t2))
             goto fail;
-          response_rfinish(RESPONSE_ANSWER);
+          response_rfinish(&z->response, RESPONSE_ANSWER, z->dpos);
         }
         query_cleanup(z);
         return 1;
@@ -360,13 +360,13 @@ new_name:
           pos = dns_packet_getname(cached, cachedlen, pos, &t2);
           if(!pos)
             break;
-          if(!response_rstart(d, DNS_T_MX, ttl))
+          if(!(z->dpos = response_rstart(&z->response, d, DNS_T_MX, ttl)))
             goto fail;
-          if(!response_addbytes(misc, 2))
+          if(!response_addbytes(&z->response, misc, 2))
             goto fail;
-          if(!response_addname(t2))
+          if(!response_addname(&z->response, t2))
             goto fail;
-          response_rfinish(RESPONSE_ANSWER);
+          response_rfinish(&z->response, RESPONSE_ANSWER, z->dpos);
         }
         query_cleanup(z);
         return 1;
@@ -395,11 +395,11 @@ new_name:
         if(!query_aliases(z))
           goto fail;
         while(cachedlen >= 4) {
-          if(!response_rstart(d, DNS_T_A, ttl))
+          if(!(z->dpos = response_rstart(&z->response, d, DNS_T_A, ttl)))
             goto fail;
-          if(!response_addbytes(cached, 4))
+          if(!response_addbytes(&z->response, cached, 4))
             goto fail;
-          response_rfinish(RESPONSE_ANSWER);
+          response_rfinish(&z->response, RESPONSE_ANSWER, z->dpos);
           cached += 4;
           cachedlen -= 4;
         }
@@ -423,11 +423,11 @@ new_name:
           cachedlen -= 2;
           if(datalen > cachedlen)
             goto fail;
-          if(!response_rstart(d, dtype, ttl))
+          if(!(z->dpos = response_rstart(&z->response, d, dtype, ttl)))
             goto fail;
-          if(!response_addbytes(cached, datalen))
+          if(!response_addbytes(&z->response, cached, datalen))
             goto fail;
-          response_rfinish(RESPONSE_ANSWER);
+          response_rfinish(&z->response, RESPONSE_ANSWER, z->dpos);
           cached += datalen;
           cachedlen -= datalen;
         }
@@ -858,7 +858,7 @@ have_packet:
       goto lower_level;
     if(!query_aliases(z))
       goto fail;
-    response_nxdomain();
+    response_nxdomain(&z->response);
     query_cleanup(z);
     return 1;
   }
@@ -916,48 +916,48 @@ have_packet:
       if(dns_domain_equal(t1, d))
         if(byte_equal(header + 2, 2, DNS_C_IN)) /* should always be true */
           if(typematch(header, dtype)) {
-            if(!response_rstart(t1, header, ttl))
+            if(!(z->dpos = response_rstart(&z->response, t1, header, ttl)))
               goto fail;
 
             if(typematch(header, DNS_T_NS) || typematch(header, DNS_T_CNAME) || typematch(header, DNS_T_PTR)) {
               if(!dns_packet_getname(buf, len, pos, &t2))
                 goto fail;
-              if(!response_addname(t2))
+              if(!response_addname(&z->response, t2))
                 goto fail;
             } else if(typematch(header, DNS_T_MX)) {
               pos2 = dns_packet_copy(buf, len, pos, misc, 2);
               if(!pos2)
                 goto fail;
-              if(!response_addbytes(misc, 2))
+              if(!response_addbytes(&z->response, misc, 2))
                 goto fail;
               if(!dns_packet_getname(buf, len, pos2, &t2))
                 goto fail;
-              if(!response_addname(t2))
+              if(!response_addname(&z->response, t2))
                 goto fail;
             } else if(typematch(header, DNS_T_SOA)) {
               pos2 = dns_packet_getname(buf, len, pos, &t2);
               if(!pos2)
                 goto fail;
-              if(!response_addname(t2))
+              if(!response_addname(&z->response, t2))
                 goto fail;
               pos2 = dns_packet_getname(buf, len, pos2, &t3);
               if(!pos2)
                 goto fail;
-              if(!response_addname(t3))
+              if(!response_addname(&z->response, t3))
                 goto fail;
               pos2 = dns_packet_copy(buf, len, pos2, misc, 20);
               if(!pos2)
                 goto fail;
-              if(!response_addbytes(misc, 20))
+              if(!response_addbytes(&z->response, misc, 20))
                 goto fail;
             } else {
               if(pos + datalen > len)
                 goto fail;
-              if(!response_addbytes(buf + pos, datalen))
+              if(!response_addbytes(&z->response, buf + pos, datalen))
                 goto fail;
             }
 
-            response_rfinish(RESPONSE_ANSWER);
+            response_rfinish(&z->response, RESPONSE_ANSWER, z->dpos);
           }
 
       pos += datalen;
@@ -1000,7 +1000,7 @@ serv_fail:
     goto lower_level;
   if(!query_aliases(z))
     goto fail;
-  response_servfail();
+  response_servfail(&z->response);
   query_cleanup(z);
   return 1;
 
@@ -1014,7 +1014,7 @@ fail:
 }
 
 int
-query_start(struct query* z, char* dn, char type[2], char class[2], char localip[4]) {
+query_start(struct query* z, char* dn, char type[], char class[], char localip[]) {
   if(byte_equal(type, 2, DNS_T_AXFR)) {
     errno = EPERM;
     return -1;
@@ -1028,7 +1028,7 @@ query_start(struct query* z, char* dn, char type[2], char class[2], char localip
     return -1;
   byte_copy(z->type, 2, type);
   byte_copy(z->class, 2, class);
-  byte_copy(z->localip, 4, localip);
+  byte_copy(z->localip, 16, localip);
 
   return query_run(z, 0);
 }

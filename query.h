@@ -22,6 +22,8 @@ struct query {
   char localip[16];
   char type[2];
   char class[2];
+  stralloc response;
+  uint32 tctarget, dpos;
   struct dns_transmit dt;
 };
 
@@ -29,7 +31,7 @@ void query_forwardonly(void);
 void query_cleanup(struct query*);
 int query_aliases(struct query*);
 int query_run(struct query*, int);
-int query_start(struct query*, char*, char[2], char[2], char[4]);
+int query_start(struct query*, char*, char[], char[], char[]);
 int query_get(struct query*, iopause_fd*, struct taia*);
 void query_io(struct query*, iopause_fd*, struct taia*);
 
