@@ -13,7 +13,7 @@ socket_is4(int s) {
     return winsock2errno(-1);
 
 #ifdef LIBC_HAS_IP6
-  if(noipv6) 
+  if(noipv6)
     return 1;
 #endif
 

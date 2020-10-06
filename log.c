@@ -8,6 +8,7 @@
 #include "lib/errmsg.h"
 #include "lib/fmt.h"
 #include "lib/dns.h"
+#include "lib/socket.h"
 
 #include "log.h"
 
@@ -102,14 +103,12 @@ void
 log_fd(int fd) {
   int type = 0;
   socklen_t length = sizeof(type);
-  if(fd != -1) {
-    getsockopt(fd, SOL_SOCKET, SO_TYPE, &type, &length);
-  }
-  else
-    type = SOCK_DGRAM;
+  getsockopt(fd, SOL_SOCKET, SO_TYPE, &type, &length);
+  log_number(fd);
+  log_string("[");
   log_string(type == SOCK_STREAM ? "tcp" : type == SOCK_DGRAM ? "udp" : "sock");
-  if(fd != -1)
-    log_number(fd);
+  log_string(socket_is6(fd) ? "6" : "4");
+  log_string("]");
 }
 
 void
