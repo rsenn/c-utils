@@ -1,12 +1,16 @@
-#ifndef CACHE_H
-#define CACHE_H
+#ifndef DNSCACHE_CACHE_H
+#define DNSCACHE_CACHE_H
 
-#include "uint32.h"
-#include "uint64.h"
+#include "lib/uint32.h"
+#include "lib/uint64.h"
 
 extern uint64 cache_motion;
-extern int cache_init(unsigned int);
-extern void cache_set(const char*, unsigned int, const char*, unsigned int, uint32);
-extern char* cache_get(const char*, unsigned int, unsigned int*, uint32*);
+
+char* cache_get(const char*, unsigned int, unsigned int*, uint32*);
+void cache_set(const char*, unsigned int, const char*, unsigned int, uint32);
+void cache_update(void);
+void cache_free(void);
+int cache_init(size_t);
+int cache_open(const char*, size_t);
 
 #endif

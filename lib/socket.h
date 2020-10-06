@@ -116,6 +116,8 @@ int socket_error(fd_t, int* error);
 #endif
 #endif
 
+int socket_v6only(int fd, int enable);
+
 #ifdef __cplusplus
 }
 #endif

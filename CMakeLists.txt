@@ -1795,7 +1795,7 @@ add_program(
   stralloc)
 add_program(tcping hmap unix dns case io array socket ndelay errmsg taia tai buffer stralloc mmap open fmt scan str byte uint16 ${LIBMSWSOCK} ${LIBIPHLPAPI})
 set(dnscache_SOURCES cache.c cache.h log.c log.h query.c query.h response.c response.h   roots.c roots.h  )
-add_program(dnscache  dns  errmsg dir stralloc alloc env byte uint16 ${LIBMSWSOCK} ${LIBIPHLPAPI})
+add_program(dnscache  dns path errmsg dir stralloc alloc env byte uint16 ${LIBMSWSOCK} ${LIBIPHLPAPI})
 add_program(crc errmsg buffer mmap open ${ZLIB_LIBRARY})
 add_program(
   cmake-run

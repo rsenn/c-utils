@@ -76,7 +76,7 @@ read_hosts(const char* file) {
 
 #ifdef DEBUG_OUTPUT
         buffer_puts(buffer_1, "IP: ");
-        buffer_put(buffer_1, ipbuf, ip4_fmt(ipbuf, ip));
+        buffer_put(buffer_1, ipbuf, fmt_ip4(ipbuf, ip));
 
         buffer_puts(buffer_1, ", Hostname: ");
         buffer_putsa(buffer_1, &hostname);
@@ -161,7 +161,7 @@ main(int argc, char* argv[]) {
 
 #ifdef DEBUG_OUTPUT
   buffer_putm_internal(buffer_1, "IP address for ", argv[optind], ": ", NULL);
-  buffer_put(buffer_1, ipbuf, ip4_fmt(ipbuf, ips.s));
+  buffer_put(buffer_1, ipbuf, fmt_ip4(ipbuf, ips.s));
   buffer_putnlflush(buffer_1);
 #endif
 

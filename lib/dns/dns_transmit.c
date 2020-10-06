@@ -115,12 +115,26 @@ dns_transmit_free(struct dns_transmit* d) {
 static int
 randombind(struct dns_transmit* d) {
   int j;
+  int v4mapped = ip6_isv4mapped(d->localip);
+  char* ip = v4mapped ? &d->localip[12] : d->localip;
 
-  for(j = 0; j < 10; ++j)
-    if(socket_bind6(d->s1 - 1, d->localip, 1025 + dns_random(64510), d->scope_id) == 0)
+  for(j = 0; j < 10; ++j) {
+    if(v4mapped) {
+      if(socket_bind4(d->s1 - 1, d->localip + 12, 1025 + dns_random(64510)) == 0)
+        return 0;
+    } else {
+      if(socket_bind6(d->s1 - 1, d->localip, 1025 + dns_random(64510), d->scope_id) == 0)
+        return 0;
+    }
+  }
+  if(v4mapped) {
+    if(socket_bind4(d->s1 - 1, d->localip + 12, 0) == 0)
       return 0;
-  if(socket_bind6(d->s1 - 1, d->localip, 0, d->scope_id) == 0)
-    return 0;
+  } else {
+    if(socket_bind6(d->s1 - 1, d->localip, 0, d->scope_id) == 0)
+      return 0;
+  }
+
   return -1;
 }
 
@@ -129,6 +143,7 @@ static const int timeouts[4] = {1, 3, 11, 45};
 static int
 thisudp(struct dns_transmit* d) {
   const char* ip;
+  int v4mapped;
 
   socketfree(d);
 
@@ -148,6 +163,7 @@ thisudp(struct dns_transmit* d) {
           dns_transmit_free(d);
           return -1;
         }
+        v4mapped = ip6_isv4mapped(ip);
 
         if(socket_connect6(d->s1 - 1, ip, 53, d->scope_id) == 0)
           if(send(d->s1 - 1, d->query + 2, d->querylen - 2, 0) == (long)d->querylen - 2) {

@@ -29,6 +29,7 @@ main(int argc, char* argv[]) {
   (void)argc;
 
   dns_random_init(seed);
+
   if(*argv)
     ++argv;
   while(*argv) {
@@ -44,7 +45,7 @@ main(int argc, char* argv[]) {
     for(i = 0; i + 4 <= out.len; i += 4) {
       if(i)
         buffer_puts(buffer_1, " ");
-      buffer_put(buffer_1, str, ip4_fmt(str, out.s + i));
+      buffer_put(buffer_1, str, fmt_ip4(str, out.s + i));
     }
     buffer_puts(buffer_1, "\n");
     ++argv;

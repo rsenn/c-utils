@@ -274,7 +274,7 @@ main(int argc, char* argv[]) {
 
 #ifdef DEBUG_OUTPUT_
   buffer_putm_internal(buffer_1, "IP address for ", argv[optind], ": ", NULL);
-  buffer_put(buffer_1, ipbuf, ip6 ? ip6_fmt(ipbuf, ips.s) : ip4_fmt(ipbuf, ips.s));
+  buffer_put(buffer_1, ipbuf, ip6 ? fmt_ip6(ipbuf, ips.s) : fmt_ip4(ipbuf, ips.s));
   buffer_putnlflush(buffer_1);
 #endif
 

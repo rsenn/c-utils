@@ -13,6 +13,9 @@ static char name[NAMES][128];
 static unsigned int name_ptr[NAMES]; /* each < 16384 */
 static unsigned int name_num;
 
+static unsigned int dpos;
+static int flaghidettl = 0;
+
 int
 response_addbytes(const char* buf, unsigned int len) {
   if(len > 65535 - response_len)
@@ -67,10 +70,6 @@ response_query(const char* q, const char qtype[2], const char qclass[2]) {
   tctarget = response_len;
   return 1;
 }
-
-static unsigned int dpos;
-
-static int flaghidettl = 0;
 
 void
 response_hidettl(void) {

@@ -2,8 +2,14 @@
 #include "lib/byte.h"
 #include "lib/uint32.h"
 #include "lib/tai.h"
+#include "lib/mmap.h"
+#include "lib/open.h"
+#include "lib/path.h"
 
 #include <stdlib.h>
+#include <stdbool.h>
+#include <unistd.h>
+#include <sys/mman.h>
 
 #include "cache.h"
 
@@ -45,7 +51,7 @@ the positions of the adjacent items in the list.
 Entries are always inserted immediately after the head and removed at the tail.
 
 Each entry contains the following information:
-4-byte link; 4-byte keylen; 4-byte datalen; 8-byte expire time; key; data.
+4-byte link; 4-byte keylen; 4-byte datalen; 8-byte expire time; key; data->
 */
 
 #define MAXKEYLEN 1000
@@ -203,14 +209,38 @@ cache_set(const char* key, unsigned int keylen, const char* data, unsigned int d
   set4(keyhash, writer);
   writer += entrylen;
   cache_motion += entrylen;
+
+  cache_update();
+}
+
+#define max(a, b) ((a) > (b) ? (a) : (b))
+
+void
+cache_update() {
+  if(data) {
+    uint32_pack((char*)&data->writer, writer);
+    uint32_pack((char*)&data->oldest, oldest);
+    uint32_pack((char*)&data->unused, unused);
+
+    msync(data, max(sizeof(uint32) * 3, writer), MS_SYNC);
+  }
+}
+
+void
+cache_free() {
+  if(x != NULL && data == NULL)
+    alloc_free(x);
+
+  if(x != NULL && data != NULL)
+    mmap_unmap((void*)data, size + sizeof(uint32) * 3);
+
+  x = 0;
+  data = 0;
 }
 
 int
-cache_init(unsigned int cachesize) {
-  if(x) {
-    alloc_free(x);
-    x = 0;
-  }
+cache_init(size_t cachesize) {
+  cache_free();
 
   if(cachesize > 1000000000)
     cachesize = 1000000000;
@@ -221,10 +251,9 @@ cache_init(unsigned int cachesize) {
   hsize = 4;
   while(hsize <= (size >> 5)) hsize <<= 1;
 
-  x = alloc(size);
+  x = alloc_zero(size);
   if(!x)
     return 0;
-  byte_zero(x, size);
 
   writer = hsize;
   oldest = size;
@@ -234,13 +263,10 @@ cache_init(unsigned int cachesize) {
 }
 
 int
-cache_open(const char* file, unsigned int cachesize) {
+cache_open(const char* file, size_t cachesize) {
   int fd;
   bool exists;
-  if(x) {
-    alloc_free(x);
-    x = 0;
-  }
+  cache_free();
 
   if(cachesize > 1000000000)
     cachesize = 1000000000;
@@ -249,36 +275,41 @@ cache_open(const char* file, unsigned int cachesize) {
 
   exists = path_exists(file);
 
-  fd = open_rw(file);
-  if(!exists)
-    ftruncate(fd, cachesize + sizeof(uint32) * 3);
+  if(!exists) {
+    if((fd = open_trunc(file)) == -1)
+      return 0;
 
-  if(!(data = mmap_shared_fd(fd, &cachesize)))
+    if(ftruncate(fd, cachesize + sizeof(uint32) * 3) == -1)
+      return 0;
+    close(fd);
+  }
+
+  if((fd = open_rwsync(file)) == -1)
     return 0;
 
-  x = data.x;
-  size = cachesize - sizeof(uint32) * 3
+  if(!(data = (void*)mmap_shared_fd(fd, &cachesize)))
+    return 0;
 
-                         if(exists) {
-    uint32_unpack(&data.writer, &writer);
-    uint32_unpack(&data.oldest, &oldest);
-    uint32_unpack(&data.unused, &unused);
-  }
-  else {
+  x = data->x;
+  size = cachesize - sizeof(uint32) * 3;
 
-    hsize = 4;
-    while(hsize <= (size >> 5)) hsize <<= 1;
+  hsize = 4;
+  while(hsize <= (size >> 5)) hsize <<= 1;
+
+  if(exists) {
+    uint32_unpack((const char*)&data->writer, &writer);
+    uint32_unpack((const char*)&data->oldest, &oldest);
+    uint32_unpack((const char*)&data->unused, &unused);
+  } else {
 
     // byte_zero(x, size);
 
     writer = hsize;
     oldest = size;
     unused = size;
-   uint32_pack(&data.writer, writer);
-    uint32_pack(&data.oldest, oldest);
-    uint32_pack(&data.unused, unused);
 
-     }
+    cache_update();
+  }
 
   return 1;
 }

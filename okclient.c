@@ -14,7 +14,7 @@ okclient(char ip[4]) {
   fn[0] = 'i';
   fn[1] = 'p';
   fn[2] = '/';
-  fn[3 + ip4_fmt(fn + 3, ip)] = 0;
+  fn[3 + fmt_ip4(fn + 3, ip)] = 0;
 
   for(;;) {
     if(stat(fn, &st) == 0)

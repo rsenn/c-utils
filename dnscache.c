@@ -2,6 +2,7 @@
 #include "lib/scan.h"
 #include "lib/errmsg.h"
 #include "lib/ip4.h"
+#include "lib/ip6.h"
 #include "lib/uint16.h"
 #include "lib/uint64.h"
 #include "lib/socket.h"
@@ -14,6 +15,7 @@
 #include "lib/ndelay.h"
 #include "lib/str.h"
 
+#include <stdbool.h>
 #include <unistd.h>
 #include <sys/stat.h>
 
@@ -23,17 +25,76 @@
 #include "cache.h"
 #include "log.h"
 
-static char fn[3 + IP4_FMT];
+#define FATAL "dnscache: fatal: "
+
+static char fn[3 + IP6_FMT];
+
+static char sendaddr[16], bindaddr[16];
+static uint32 bindscope;
+static char buf[1024];
+uint64 numqueries = 0;
+
+static int udp53, tcp53;
+
+#define MAXUDP 200
+#define MAXTCP 20
+
+iopause_fd io[3 + MAXUDP + MAXTCP];
+iopause_fd *udp53io, *tcp53io;
+
+struct tcpclient {
+  struct query q;
+  struct taia start;
+  struct taia timeout;
+  uint64 active; /* query number or 1, if active; otherwise 0 */
+  iopause_fd* io;
+  char ip[16]; /* send response to this address */
+  uint16 port; /* send response to this port */
+  uint32 scope_id;
+  char id[2];
+  int tcp; /* open TCP socket, if active */
+  int state;
+  char* buf; /* 0, or dynamically allocated of length len */
+  unsigned int len;
+  unsigned int pos;
+};
+
+struct udpclient {
+  struct query q;
+  struct taia start;
+  uint64 active; /* query number, if active; otherwise 0 */
+  iopause_fd* io;
+  char ip[16];
+  uint16 port;
+  uint32 scope_id;
+  char id[2];
+};
+
+static struct udpclient u[MAXUDP];
+int uactive = 0;
+
+static struct tcpclient t[MAXTCP];
+int tactive = 0;
+
+union {
+  char u8[128];
+  uint32 u32[32];
+} seed;
 
 int
-okclient(char ip[4]) {
+dnscache_okclient(char ip[16], bool ip6) {
   struct stat st;
   int i;
+
+  if(ip6 && ip6_isv4mapped(ip)) {
+    if(dnscache_okclient(&ip[12], false))
+      return 1;
+  }
 
   fn[0] = 'i';
   fn[1] = 'p';
   fn[2] = '/';
-  fn[3 + ip4_fmt(fn + 3, ip)] = 0;
+  fn[3 + (ip6 ? fmt_ip6 : fmt_ip4)(fn + 3, ip)] = 0;
 
   for(;;) {
     if(stat(fn, &st) == 0)
@@ -47,7 +108,7 @@ okclient(char ip[4]) {
 }
 
 void
-droproot(const char* fatal) {
+dnscache_droproot(const char* fatal) {
   const char* x;
   unsigned long id;
 
@@ -110,26 +171,6 @@ packetquery(char* buf, unsigned int len, char** q, char qtype[2], char qclass[2]
   return 1;
 }
 
-static char myipoutgoing[4];
-static char myipincoming[4];
-static char buf[1024];
-uint64 numqueries = 0;
-
-static int udp53;
-
-#define MAXUDP 200
-static struct udpclient {
-  struct query q;
-  struct taia start;
-  uint64 active; /* query number, if active; otherwise 0 */
-  iopause_fd* io;
-  char ip[4];
-  uint16 port;
-  char id[2];
-} u[MAXUDP];
-
-int uactive = 0;
-
 void
 udp_drop(int j) {
   if(!u[j].active)
@@ -146,7 +187,7 @@ udp_respond(int j) {
   response_id(u[j].id);
   if(response_len > 512)
     response_tc();
-  socket_send4(udp53, response, response_len, u[j].ip, u[j].port);
+  socket_send6(udp53, response, response_len, u[j].ip, u[j].port, 0);
   log_querydone(&u[j].active, response_len);
   u[j].active = 0;
   --uactive;
@@ -178,7 +219,7 @@ udp_new(void) {
   x = u + j;
   taia_now(&x->start);
 
-  len = socket_recv4(udp53, buf, sizeof buf, x->ip, &x->port);
+  len = socket_recv6(udp53, buf, sizeof buf, x->ip, &x->port, &x->scope_id);
   if(len == -1)
     return;
   if(len >= sizeof buf)
@@ -186,7 +227,7 @@ udp_new(void) {
   if(x->port < 1024)
     if(x->port != 53)
       return;
-  if(!okclient(x->ip))
+  if(!dnscache_okclient(x->ip, true))
     return;
 
   if(!packetquery(buf, len, &q, qtype, qclass, x->id))
@@ -195,31 +236,11 @@ udp_new(void) {
   x->active = ++numqueries;
   ++uactive;
   log_query(&x->active, x->ip, x->port, x->id, q, qtype);
-  switch(query_start(&x->q, q, qtype, qclass, myipoutgoing)) {
+  switch(query_start(&x->q, q, qtype, qclass, sendaddr)) {
     case -1: udp_drop(j); return;
     case 1: udp_respond(j);
   }
 }
-
-static int tcp53;
-
-#define MAXTCP 20
-struct tcpclient {
-  struct query q;
-  struct taia start;
-  struct taia timeout;
-  uint64 active; /* query number or 1, if active; otherwise 0 */
-  iopause_fd* io;
-  char ip[4];  /* send response to this address */
-  uint16 port; /* send response to this port */
-  char id[2];
-  int tcp; /* open TCP socket, if active */
-  int state;
-  char* buf; /* 0, or dynamically allocated of length len */
-  unsigned int len;
-  unsigned int pos;
-} t[MAXTCP];
-int tactive = 0;
 
 /*
 state 1: buf 0; normal state at beginning of TCP connection
@@ -356,7 +377,7 @@ tcp_rw(int j) {
 
   x->active = ++numqueries;
   log_query(&x->active, x->ip, x->port, x->id, q, qtype);
-  switch(query_start(&x->q, q, qtype, qclass, myipoutgoing)) {
+  switch(query_start(&x->q, q, qtype, qclass, sendaddr)) {
     case -1: tcp_drop(j); return;
     case 1: tcp_respond(j); return;
   }
@@ -389,7 +410,7 @@ tcp_new(void) {
   x = t + j;
   taia_now(&x->start);
 
-  x->tcp = socket_accept4(tcp53, x->ip, &x->port);
+  x->tcp = socket_accept6(tcp53, x->ip, &x->port, &x->scope_id);
   if(x->tcp == -1)
     return;
   if(x->port < 1024)
@@ -397,7 +418,7 @@ tcp_new(void) {
       close(x->tcp);
       return;
     }
-  if(!okclient(x->ip)) {
+  if(!dnscache_okclient(x->ip, true)) {
     close(x->tcp);
     return;
   }
@@ -414,12 +435,8 @@ tcp_new(void) {
   log_tcpopen(x->ip, x->port);
 }
 
-iopause_fd io[3 + MAXUDP + MAXTCP];
-iopause_fd* udp53io;
-iopause_fd* tcp53io;
-
-static void
-doit(void) {
+void
+dnscache_run(void) {
   int j;
   struct taia deadline;
   struct taia stamp;
@@ -494,54 +511,67 @@ doit(void) {
   }
 }
 
-#define FATAL "dnscache: fatal: "
-
-char seed[128];
-
 int
-main() {
-  const char* x;
+main(int argc, char* argv[]) {
+  const char *x, *y;
   unsigned long cachesize;
+  int i;
+  int v6only_prev;
+
+  uint32_seed(NULL, 0);
+
+  for(i = 1; i < argc; i++) env_put(argv[i]);
 
   x = env_get("IP");
   if(!x)
-    die(111, "$IP not set");
-  if(!ip4_scan(x, myipincoming))
-    die(111, "unable to parse IP address ", x);
+    die(111, FATAL, "$IP not set");
+  if(!scan_ip6if(x, bindaddr, &bindscope))
+    die(111, FATAL, "unable to parse IP address ", x);
 
-  udp53 = socket_udp();
+  udp53 = socket_udp6();
+  /// v6only_prev = socket_v6only(udp53, 0);
+
   if(udp53 == -1)
-    diesys(111, "unable to create UDP socket: ");
-  if(socket_bind4_reuse(udp53, myipincoming, 53) == -1)
-    diesys(111, "unable to bind UDP socket: ");
+    diesys(111, FATAL, "unable to create UDP socket: ");
+  if(socket_bind6_reuse(udp53, bindaddr, 53, bindscope) == -1)
+    diesys(111, FATAL, "unable to bind UDP socket: ");
 
-  tcp53 = socket_tcp();
+  tcp53 = socket_tcp6();
+  // v6only_prev = socket_v6only(udp53, 0);
+
   if(tcp53 == -1)
-    diesys(111, "unable to create TCP socket: ");
-  if(socket_bind4_reuse(tcp53, myipincoming, 53) == -1)
-    diesys(111, "unable to bind TCP socket: ");
+    diesys(111, FATAL, "unable to create TCP socket: ");
+  if(socket_bind6_reuse(tcp53, bindaddr, 53, bindscope) == -1)
+    diesys(111, FATAL, "unable to bind TCP socket: ");
 
-  droproot(FATAL);
+  dnscache_droproot(FATAL);
 
   socket_tryreservein(udp53, 131072);
 
-  byte_zero(seed, sizeof seed);
-  read(0, seed, sizeof seed);
-  dns_random_init(seed);
-  close(0);
+  for(i = 0; i < 32; i++) seed.u32[i] = uint32_random();
+
+  dns_random_init(seed.u8);
 
   x = env_get("IPSEND");
   if(!x)
-    die(111, "$IPSEND not set");
-  if(!ip4_scan(x, myipoutgoing))
-    die(111, "unable to parse IP address ", x);
+    die(111, FATAL, "$IPSEND not set");
+  if(!scan_ip6(x, sendaddr))
+    die(111, FATAL, "unable to parse IP address ", x);
 
   x = env_get("CACHESIZE");
   if(!x)
-    die(111, "$CACHESIZE not set");
+    die(111, FATAL, "$CACHESIZE not set");
   scan_ulong(x, &cachesize);
-  if(!cache_init(cachesize))
-    die(111, "not enough memory for cache of size ", x);
+
+  y = env_get("CACHEFILE");
+  if(y) {
+    if(!cache_open(y, cachesize))
+      die(111, FATAL, "unable to open cache file ", y);
+
+  } else {
+    if(!cache_init(cachesize))
+      die(111, FATAL, "not enough memory for cache of size ", x);
+  }
 
   if(env_get("HIDETTL"))
     response_hidettl();
@@ -549,11 +579,11 @@ main() {
     query_forwardonly();
 
   if(!roots_init())
-    diesys(111, "unable to read servers: ");
+    diesys(111, FATAL, "unable to read servers: ");
 
   if(socket_listen(tcp53, 20) == -1)
-    diesys(111, "unable to listen on TCP socket: ");
+    diesys(111, FATAL, "unable to listen on TCP socket: ");
 
   log_startup();
-  doit();
+  dnscache_run();
 }

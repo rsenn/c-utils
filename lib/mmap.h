@@ -46,6 +46,7 @@ int mmap_filename(void* map, stralloc* sa);
 #endif
 
 char* mmap_anon(size_t size);
+char* mmap_rw_fd(fd_t, size_t*);
 
 #ifdef __cplusplus
 }

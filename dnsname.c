@@ -30,7 +30,7 @@ main(int argc, char** argv) {
     ++argv;
 
   while(*argv) {
-    if(!ip4_scan(*argv, ip)) {
+    if(!scan_ip4(*argv, ip)) {
       errmsg_warnsys("unable to parse IP address ", *argv, 0);
       return 111;
     }

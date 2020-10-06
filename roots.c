@@ -1,28 +1,29 @@
+#include "lib/stralloc.h"
 #include "lib/open.h"
 #include "lib/str.h"
 #include "lib/byte.h"
 #include "lib/dir.h"
 #include "lib/ip4.h"
+#include "lib/ip6.h"
 #include "lib/dns.h"
 
 #include <unistd.h>
 #include <errno.h>
+#include <stdbool.h>
 
-#include "error.h"
-#include "openreadclose.h"
 #include "roots.h"
 
 static stralloc data;
 
-static int
+int
 roots_find(char* q) {
   int i;
   int j;
 
   i = 0;
   while(i < data.len) {
-    j = dns_domain_length(data.s + i);
-    if(dns_domain_equal(data.s + i, q))
+    j = dns_domain_length(&data.s[i]);
+    if(dns_domain_equal(&data.s[i], q))
       return i + j;
     i += j;
     i += 64;
@@ -30,7 +31,7 @@ roots_find(char* q) {
   return -1;
 }
 
-static int
+int
 roots_search(char* q) {
   int r;
 
@@ -60,12 +61,14 @@ roots_same(char* q, char* q2) {
   return roots_search(q) == roots_search(q2);
 }
 
-static int
-init2(dir_t* dir) {
+int
+roots_init2(dir_t* dir, bool ip6) {
   char* d;
   const char* fqdn;
   static char* q;
   static stralloc text;
+  int iplen = ip6 ? 16 : 4;
+
   char servers[64];
   int serverslen;
   int i;
@@ -81,7 +84,7 @@ init2(dir_t* dir) {
     }
 
     if(d[0] != '.') {
-      if(openreadclose(d, &text, 32) != 1)
+      if(openreadclose(d, &text, 1024) != 1)
         return 0;
       if(!stralloc_append(&text, "\n"))
         return 0;
@@ -96,23 +99,23 @@ init2(dir_t* dir) {
       j = 0;
       for(i = 0; i < text.len; ++i)
         if(text.s[i] == '\n') {
-          if(serverslen <= 60)
-            if(ip4_scan(text.s + j, servers + serverslen))
-              serverslen += 4;
+          if(serverslen <= sizeof(servers) - iplen)
+            if((ip6 ? scan_ip6 : scan_ip4)(text.s + j, servers + serverslen))
+              serverslen += iplen;
           j = i + 1;
         }
-      byte_zero(servers + serverslen, 64 - serverslen);
+      byte_zero(servers + serverslen, sizeof(servers) - serverslen);
 
       if(!stralloc_catb(&data, q, dns_domain_length(q)))
         return 0;
-      if(!stralloc_catb(&data, servers, 64))
+      if(!stralloc_catb(&data, servers, sizeof(servers)))
         return 0;
     }
   }
 }
 
-static int
-init1(void) {
+int
+roots_init1(void) {
   dir_t dir;
   int r;
 
@@ -120,7 +123,7 @@ init1(void) {
     return 0;
   if(dir_open(&dir, "."))
     return 0;
-  r = init2(&dir);
+  r = roots_init2(&dir, false);
   dir_close(&dir);
   return r;
 }
@@ -136,7 +139,7 @@ roots_init(void) {
   fddir = open_read(".");
   if(fddir == -1)
     return 0;
-  r = init1();
+  r = roots_init1();
   if(fchdir(fddir) == -1)
     r = 0;
   close(fddir);

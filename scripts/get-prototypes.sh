@@ -68,9 +68,19 @@ clean_args() {
     ARG=${ARG//" **"/"** "}
     ARG=${ARG//" *"/"* "}
    
-    if [ "$REMOVE_NAMES" = true ] || [ -n "$REMOVE_NAMES" -a "$REMOVE_NAMES" -ge "$I" ] 2>/dev/null; then 
+    if [ "$REMOVE_NAMES" = true ] || [ -n "$REMOVE_NAMES" -a "$REMOVE_NAMES" -ge "$I" ] 2>/dev/null; then
+      echo "ARG='$ARG'" 1>&2
+      BRACKET=${ARG%"["*}
+      if [ "$ARG" != "$BRACKET" ]; then
+        BRACKET=${ARG#"$BRACKET"}
+      else
+        BRACKET=
+      fi
       ARG=${ARG%" "[[:alpha:]]*}
       ARG=${ARG%" "}
+      ARG=${ARG}${BRACKET}
+
+      #ARG=$(echo "$ARG" | sed 's,\s*[[:alpha:]_][[:alnum:]_]*,,') 
     fi
 
     [ "$EMPTY" = true -a -n "$ARG2" ] && ARG2="()"
