@@ -1,4 +1,3 @@
-
 #ifndef SET_H
 #define SET_H
 
@@ -30,15 +29,20 @@ void set_init(set_t*, uint32 (*const)(const void*, size_t));
 
 uint32 set_hashfunc(const void* x, size_t len);
 
+void set_clear(set_t*);
+char** set_toarray(const set_t*);
+void set_free(set_t*);
+int set_has(const set_t*, const void*, const size_t);
 int set_add(set_t*, const void*, const size_t);
 int set_adds(set_t*, const char*);
 #ifdef STRALLOC_H
 int set_add_sa(set_t*, const stralloc*);
 #endif
-void set_clear(set_t*);
-char** set_toarray(const set_t*);
-void set_free(set_t*);
-int set_has(const set_t*, const void*, const size_t);
+
+static inline uint32
+set_size(const set_t* s) {
+  return s->entries;
+}
 
 int set_iterator_init(set_iterator_t*, const set_t*);
 int set_iterator_next(set_iterator_t*);

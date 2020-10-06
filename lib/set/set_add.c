@@ -44,17 +44,16 @@ set_realloc(set_t* set) {
 
 int
 set_add(set_t* set, const void* val, const size_t size) {
-  uint32 hash,index;
+  uint32 hash, index;
 
-if(set->entries == 0 && set->len == 0 && set->array == 0 && set->hash_fp == 0)
-  set_init(set, 0);
+  if(set->entries == 0 && set->len == 0 && set->array == 0 && set->hash_fp == 0)
+    set_init(set, 0);
 
   if(set_has(set, val, size))
     return 2;
 
-  if((set->entries - set->overflow) > (set->len * .75)) {
+  if((set->entries - set->overflow) > (set->len * .75))
     assert(set_realloc(set) == 1);
-  }
 
   hash = set->hash_fp(val, size);
   index = hash & (set->len - 1);
@@ -78,9 +77,7 @@ if(set->entries == 0 && set->len == 0 && set->array == 0 && set->hash_fp == 0)
       ++set->overflow;
     } else {
       bucket_t* b = set->array[index].next;
-      while(b->next) {
-        b = b->next;
-      }
+      while(b->next) b = b->next;
 
       b->next = malloc(sizeof(bucket_t));
       assert(b->next);

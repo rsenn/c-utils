@@ -1791,7 +1791,7 @@ sourcedir_get_b(const char* x, size_t n) {
     MAP_NODE_T found;
     byte_zero(&newdir, sizeof(newdir));
     set_init(&newdir.pptoks, 0);
-    set_init(&newdir.includes, 0);
+    // set_init(&newdir.includes, 0);
 
     MAP_INSERT(sourcedirs, x, n + 1, &newdir, sizeof(newdir));
     s = MAP_GET(sourcedirs, x, n + 1);
@@ -2480,10 +2480,11 @@ gen_srcdir_compile_rules(sourcedir* sdir, const char* dir) {
 
   strlist_init(&pptoks, '\0');
 
-  strlist_foreach(&pptoks, tok, len) {
+  set_foreach(&sdir->pptoks, tok, len) {
     if(filter_pptoks(tok, len))
       strlist_pushb(&pptoks, tok, len);
   }
+  debug_sl("pptoks", &pptoks, ",\n");
   // strlist_filter(&sdir->pptoks, &filter_pptoks, &pptoks);
   stralloc_init(&defines);
 
