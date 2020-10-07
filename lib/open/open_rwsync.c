@@ -14,6 +14,7 @@ int
 open_rwsync(const char* filename) {
   int fd = open_rw(filename);
 
+#ifdef F_GETFL
   int flags = fcntl(fd, F_GETFL);
 
   if(fcntl(fd, F_SETFL, flags | O_SYNC | O_DIRECT) == -1 && fcntl(fd, F_SETFL, flags | O_SYNC) == -1 &&
@@ -21,5 +22,6 @@ open_rwsync(const char* filename) {
     close(fd);
     return -1;
   }
+#endif
   return fd;
 }
