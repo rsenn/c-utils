@@ -1,5 +1,6 @@
 #include "../open.h"
 #include <fcntl.h>
+#include <unistd.h>
 
 #ifndef O_SYNC
 #define O_SYNC 0x101000
