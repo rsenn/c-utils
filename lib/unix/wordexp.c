@@ -1,4 +1,7 @@
 #define _GNU_SOURCE
+#ifdef __dietlibc__
+#define __DEFINED_size_t 1
+#endif
 #include <unistd.h>
 #include <wordexp.h>
 #include <stdio.h>
@@ -12,7 +15,7 @@
 #include <fcntl.h>
 #include <pthread.h>
 
-#define restrict __restrict
+//#define restrict __restrict
 
 static void
 reap(pid_t pid) {
