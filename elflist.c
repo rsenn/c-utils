@@ -163,7 +163,7 @@ main(int argc, char** argv) {
     elf_dump_dynamic(map);
 
     if(interp) {
-      buffer_putm_2(buffer_1, "Interpreter: ", interp);
+      buffer_putm_internal(buffer_1, "Interpreter: ", interp, 0);
       buffer_putnlflush(buffer_1);
     }
     /*    elf_dump_imports(map.start);*/

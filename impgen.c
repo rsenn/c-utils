@@ -63,10 +63,10 @@ main(int argc, char* argv[]) {
 
     buffer_puts(buffer_1, "EXPORTS\n");
     (void)dll_name;
-    /* buffer_putm_3(buffer_1, "LIBRARY ", dll_name, "\n"); */
+    /* buffer_putm_internal(buffer_1, "LIBRARY ", dll_name, "\n", 0); */
 
     for(i = 0; i < nexp; i++) {
-      buffer_putm_3(buffer_1, "  ", pe_rva2ptr(dll, uint32_get(&name_rvas[i])), " @ ");
+      buffer_putm_internal(buffer_1, "  ", pe_rva2ptr(dll, uint32_get(&name_rvas[i])), " @ ", 0);
       buffer_putulong(buffer_1, 1 + i);
       buffer_putnlflush(buffer_1);
     }

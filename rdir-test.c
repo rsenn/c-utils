@@ -13,7 +13,7 @@ main(int argc, char* argv[]) {
   int r = rdir_open(&rd, argc > 1 ? argv[1] : "build");
 
   while((s = rdir_read(&rd))) {
-    buffer_putm_2(buffer_1, s, "\n");
+    buffer_putm_internal(buffer_1, s, "\n", 0);
     buffer_flush(buffer_1);
   }
   rdir_close(&rd);

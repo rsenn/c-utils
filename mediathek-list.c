@@ -547,9 +547,9 @@ print_entry(buffer* b, const mediathek_entry_t* e) {
   buffer_putm_internal(b, "Dauer:\t", format_time(e->dr), sep, NULL);
   buffer_putm_internal(b, "Grösse:\t", format_num(e->mbytes), "MB", sep, NULL);
 
-  /* buffer_putm_3(b, "URL:\t", url , sep);
-   buffer_putm_5(b, "URL lo:\t", make_url(url, strlist_at(sl, 13)), sep);
-   buffer_putm_5(b, "URL hi:\t", make_url(url, strlist_at(sl, 15)), sep);*/
+  /* buffer_putm_internal(b, "URL:\t", url , sep, 0);
+   buffer_putm_internal(b, "URL lo:\t", make_url(url, strlist_at(sl, 13)), sep, 0);
+   buffer_putm_internal(b, "URL hi:\t", make_url(url, strlist_at(sl, 15)), sep, 0);*/
 
   buffer_putnlflush(b);
 }

@@ -355,7 +355,7 @@ get_entry(cbmap_t map, const char* key) {
 }
 void
 print_base(buffer* b) {
-  buffer_putm_2(b, base, ": ");
+  buffer_putm_internal(b, base, ": ", 0);
 }
 
 /**
@@ -365,7 +365,7 @@ void
 print_name_value(buffer* b, const char* name, const char* value) {
   print_base(b);
   if(name)
-    buffer_putm_2(b, name, ": ");
+    buffer_putm_internal(b, name, ": ", 0);
   buffer_puts(b, value ? value : "(null)");
 }
 
@@ -980,7 +980,7 @@ dump_net(const void* key, size_t key_len, const void* value, size_t value_len, v
  */
 void
 node_print(xmlnode* node) {
-  buffer_putm_2(buffer_1, "<", node->name);
+  buffer_putm_internal(buffer_1, "<", node->name, 0);
   print_element_attrs(node);
   buffer_puts(buffer_1, ">");
   buffer_putnlflush(buffer_1);
@@ -1044,11 +1044,11 @@ print_element_name(xmlnode* a_node) {
     return;
 
   if(str_diff(name, "eagle") && str_diff(name, "drawing")) {
-    buffer_putm_2(buffer_1, a_node->parent ? "/" : "", name);
+    buffer_putm_internal(buffer_1, a_node->parent ? "/" : "", name, 0);
     if(!(name = xml_get_attribute(a_node, "name")))
       return;
     if(str_len(name))
-      buffer_putm_3(buffer_1, "[@name='", name, "']");
+      buffer_putm_internal(buffer_1, "[@name='", name, "']", 0);
   }
 }
 
@@ -1061,7 +1061,7 @@ print_attrs(HMAP_DB* a) {
 
   for(t = a->list_tuple; t; t = t->next) {
     char* v = t->vals.val_chars;
-    buffer_putm_5(buffer_1, " ", t->key, str_isdoublenum(v) ? "=" : "=\"", v, str_isdoublenum(v) ? "" : "\"");
+    buffer_putm_internal(buffer_1, " ", t->key, str_isdoublenum(v) ? "=" : "=\"", v, str_isdoublenum(v) ? "" : "\"", 0);
     if(t->next == a->list_tuple)
       break;
   }
@@ -1081,7 +1081,7 @@ print_element_content(xmlnode* node) {
     if(str_isspace(s))
       s = "";
     if(str_len(s))
-      buffer_putm_3(buffer_1, " \"", s, "\"");
+      buffer_putm_internal(buffer_1, " \"", s, "\"", 0);
   }
 }
 
@@ -1135,7 +1135,7 @@ void
 print_xy(buffer* b, const char* name, double x, double y) {
   if(name) {
     print_base(b);
-    buffer_putm_2(b, name, " ");
+    buffer_putm_internal(b, name, " ", 0);
   }
   buffer_puts(b, "(");
   buffer_putdouble(b, x / 10, 4);
@@ -1162,7 +1162,7 @@ void
 print_rect(buffer* b, const char* name, const rect* r) {
   if(name) {
     print_base(b);
-    buffer_putm_2(b, name, " ");
+    buffer_putm_internal(b, name, " ", 0);
   }
   print_vertex(b, r->a);
   buffer_putspace(b);
@@ -1252,7 +1252,7 @@ print_script(buffer* b, xmlnode* e) {
   if(xml_has_attribute(e, "layer")) {
     int layer = get_layer(xml_get_attribute(e, "layer"));
     if(layer != -1 && layer != active_layer) {
-      buffer_putm_3(b, "Layer ", layer_name(layer), "; ");
+      buffer_putm_internal(b, "Layer ", layer_name(layer), "; ", 0);
       active_layer = layer;
     }
   }
@@ -1269,7 +1269,7 @@ print_script(buffer* b, xmlnode* e) {
         if(!stralloc_case_equal(&align, &current_alignment)) {
           stralloc_copy(&current_alignment, &align);
           stralloc_nul(&current_alignment);
-          buffer_putm_3(b, "CHANGE ALIGN ", current_alignment.s, "; ");
+          buffer_putm_internal(b, "CHANGE ALIGN ", current_alignment.s, "; ", 0);
         }
       }
     }
@@ -1289,16 +1289,16 @@ print_script(buffer* b, xmlnode* e) {
 
     buffer_putsa(b, &cmd);
     if(current_signal)
-      buffer_putm_3(b, "'", current_signal, "' ");
-    buffer_putm_2(b, xml_get_attribute(e, "width"), " ");
+      buffer_putm_internal(b, "'", current_signal, "' ", 0);
+    buffer_putm_internal(b, xml_get_attribute(e, "width"), " ", 0);
 
     print_xml_rect(b, e);
   } else if(str_equal(e->name, "via")) {
     buffer_putsa(b, &cmd);
     if(current_signal)
-      buffer_putm_3(b, "'", current_signal, "' ");
+      buffer_putm_internal(b, "'", current_signal, "' ", 0);
 
-    buffer_putm_4(b, xml_get_attribute(e, "extent"), " ", xml_get_attribute(e, "shape"), " ");
+    buffer_putm_internal(b, xml_get_attribute(e, "extent"), " ", xml_get_attribute(e, "shape"), " ", 0);
     print_xml_xy(b, e);
   } else if(str_equal(e->name, "pad")) {
     buffer_putm_internal(b,
@@ -1316,22 +1316,22 @@ print_script(buffer* b, xmlnode* e) {
                          0);
     print_xml_xy(b, e);
   } else if(str_equal(e->name, "hole")) {
-    buffer_putm_3(b, cmd.s, xml_get_attribute(e, "diameter"), " ");
+    buffer_putm_internal(b, cmd.s, xml_get_attribute(e, "diameter"), " ", 0);
     print_xml_xy(b, e);
   } else if(str_equal(e->name, "circle")) {
-    buffer_putm_3(b, cmd.s, xml_get_attribute(e, "width"), " ");
+    buffer_putm_internal(b, cmd.s, xml_get_attribute(e, "width"), " ", 0);
     print_xml_xy(b, e);
   } else if(str_equal(e->name, "rectangle")) {
-    buffer_putm_3(b, cmd.s, xml_get_attribute(e, "orientation"), " ");
+    buffer_putm_internal(b, cmd.s, xml_get_attribute(e, "orientation"), " ", 0);
     print_xml_rect(b, e);
   } else if(str_equal(e->name, "text")) {
 
-    buffer_putm_6(b, cmd.s, "'", xml_content(e), "' ", xml_get_attribute(e, "orientation"), " ");
+    buffer_putm_internal(b, cmd.s, "'", xml_content(e), "' ", xml_get_attribute(e, "orientation"), " ", 0);
 
     print_xml_xy(b, e);
   } else {
 #ifdef DEBUG_OUTPUT
-    buffer_putm_2(buffer_2, "No such element: ", e->name);
+    buffer_putm_internal(buffer_2, "No such element: ", e->name, 0);
     buffer_putnlflush(buffer_2);
 #endif /* defined DEBUG_OUTPUT */
     return;
@@ -1498,7 +1498,7 @@ draw_measures(xmlnode* doc) {
 
 void
 usage(char* progname) {
-  buffer_putm_3(buffer_1, "Usage: ", progname, " [OPTIONS] [PACKAGES...]\n");
+  buffer_putm_internal(buffer_1, "Usage: ", progname, " [OPTIONS] [PACKAGES...]\n", 0);
   buffer_puts(buffer_1, "Options\n");
   buffer_puts(buffer_1, "  --help, -h                        show this help\n");
   buffer_puts(buffer_1, "  --layer, -l NUM       Layer name/number\n");
@@ -1621,7 +1621,7 @@ main(int argc, char* argv[]) {
     /*    buffer_puts(buffer_2, "layer "); */
     /*    buffer_putlong(buffer_2, i); */
     /*    const char* name = *(char**)array_get(&layers.a, sizeof(char*), i); */
-    /*    buffer_putm_3(buffer_2, " \"", name ? name : "", "\""); */
+    /*    buffer_putm_internal(buffer_2, " \"", name ? name : "", "\"", 0); */
     /*    buffer_putnlflush(buffer_2); */
     /*  } */
 
@@ -1652,7 +1652,7 @@ main(int argc, char* argv[]) {
       stralloc_nul(&layer_str);
 
       print_base(buffer_2);
-      buffer_putm_2(buffer_2, "layer str: ", layer_str.s);
+      buffer_putm_internal(buffer_2, "layer str: ", layer_str.s, 0);
       buffer_putnlflush(buffer_2);
 
       byte_zero(&extent, sizeof(extent));

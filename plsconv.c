@@ -41,8 +41,8 @@ static void
 playlist_process(playlist* pl, stralloc* title, stralloc* location, uint32 length) {
   playlist_entry e;
   (void)pl;
-  /*  buffer_putm_3(buffer_2, "Title: ", title->s, "\n");
-    buffer_putm_3(buffer_2, "Location: ", location->s, "\n");
+  /*  buffer_putm_internal(buffer_2, "Title: ", title->s, "\n", 0);
+    buffer_putm_internal(buffer_2, "Location: ", location->s, "\n", 0);
     buffer_puts(buffer_2, "Duration: ");
     buffer_putulong(buffer_2, length);
     buffer_putnlflush(buffer_2);
@@ -95,7 +95,7 @@ main(int argc, char* argv[]) {
           outtype = XSPF;
         break;
       case 'h': usage(str_basename(argv[0])); exit(EXIT_SUCCESS);
-      default: /* '?' */ buffer_putm_3(buffer_2, "Usage: ", argv[0], "[-t TYPE] [file]\n"); exit(EXIT_FAILURE);
+      default: /* '?' */ buffer_putm_internal(buffer_2, "Usage: ", argv[0], "[-t TYPE] [file]\n", 0); exit(EXIT_FAILURE);
     }
   }
 
@@ -106,7 +106,7 @@ main(int argc, char* argv[]) {
     if(!str_diff(in_file, "-")) {
       in_fd = STDIN_FILENO;
     } else if(in_file == NULL || (in_fd = open_read(in_file)) == -1) {
-      buffer_putm_3(buffer_2, "No such file: ", in_file ? in_file : "(null)", "\n");
+      buffer_putm_internal(buffer_2, "No such file: ", in_file ? in_file : "(null)", "\n", 0);
       buffer_flush(buffer_2);
       exit(1);
     }
@@ -140,7 +140,7 @@ main(int argc, char* argv[]) {
     if(out_file != NULL) {
       out_fd = open_trunc(out_file);
       if(out_fd == -1) {
-        buffer_putm_3(buffer_2, "Error writing: ", out_file ? out_file : "(null)", "\n");
+        buffer_putm_internal(buffer_2, "Error writing: ", out_file ? out_file : "(null)", "\n", 0);
         buffer_flush(buffer_2);
         exit(1);
       }

@@ -115,7 +115,7 @@ getopt_real(int argc, char* const argv[], const char* optstring, const struct lo
             if(str_diffn(spec_long, longopts->name, spec_len) == 0) {
               if(optdef != 0) {
                 if(opterr) {
-                  buffer_putm_2(optbuf, "ambiguous option: ", spec_long);
+                  buffer_putm_internal(optbuf, "ambiguous option: ", spec_long, 0);
                   buffer_putnlflush(optbuf);
                 }
                 return '?';
@@ -128,7 +128,7 @@ getopt_real(int argc, char* const argv[], const char* optstring, const struct lo
           }
           if(optdef == 0) {
             if(opterr) {
-              buffer_putm_2(optbuf, "no such option: ", spec_long);
+              buffer_putm_internal(optbuf, "no such option: ", spec_long, 0);
               buffer_putnlflush(optbuf);
             }
             return '?';
@@ -138,7 +138,7 @@ getopt_real(int argc, char* const argv[], const char* optstring, const struct lo
               optarg = 0;
               if(pos_eq != 0) {
                 if(opterr) {
-                  buffer_putm_2(optbuf, "no argument for ", optdef->name);
+                  buffer_putm_internal(optbuf, "no argument for ", optdef->name, 0);
                   buffer_putnlflush(optbuf);
                 }
                 return '?';
@@ -171,7 +171,7 @@ getopt_real(int argc, char* const argv[], const char* optstring, const struct lo
     if(optptr == NULL) {
       optopt = c;
       if(opterr) {
-        buffer_putm_2(optbuf, argv[0], ": invalid option -- ");
+        buffer_putm_internal(optbuf, argv[0], ": invalid option -- ", 0);
         buffer_PUTC(optbuf, (char)c);
         buffer_putnlflush(optbuf);
       }
@@ -196,7 +196,7 @@ getopt_real(int argc, char* const argv[], const char* optstring, const struct lo
         } else {
           optopt = c;
           if(opterr) {
-            buffer_putm_2(optbuf, argv[0], ": option requires an argument -- ");
+            buffer_putm_internal(optbuf, argv[0], ": option requires an argument -- ", 0);
             buffer_PUTC(optbuf, (char)c);
             buffer_putnlflush(optbuf);
           }

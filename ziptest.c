@@ -110,7 +110,7 @@ main(int argc, char* argv[]) {
       case 'o': out_filename = optarg; break;
       case 'h': usage(str_basename(argv[0])); exit(EXIT_SUCCESS);
       default: /* '?' */
-        buffer_putm_3(buffer_2, "Usage: ", argv[0], "[-t TYPE] [-o OUTPUT] [file]\n");
+        buffer_putm_internal(buffer_2, "Usage: ", argv[0], "[-t TYPE] [-o OUTPUT] [file]\n", 0);
         exit(EXIT_FAILURE);
     }
   }
@@ -122,7 +122,7 @@ main(int argc, char* argv[]) {
     input = buffer_0;
   } else {
     if(buffer_mmapprivate(&infile, in_filename) < 0) {
-      buffer_putm_2(buffer_2, "ERROR opening: ", in_filename);
+      buffer_putm_internal(buffer_2, "ERROR opening: ", in_filename, 0);
       buffer_putnlflush(buffer_2);
       return 1;
     }
@@ -138,7 +138,7 @@ main(int argc, char* argv[]) {
     output = buffer_1;
   } else {
     if(buffer_truncfile(&outfile, out_filename) < 0) {
-      buffer_putm_2(buffer_2, "ERROR opening: ", out_filename);
+      buffer_putm_internal(buffer_2, "ERROR opening: ", out_filename, 0);
       buffer_putnlflush(buffer_2);
       return 1;
     }
@@ -183,7 +183,7 @@ main(int argc, char* argv[]) {
     /*      buffer_lzma(&cbuf, decompress ? input : output, decompress ? 0 : level); */
     /*      break; */
     default:
-      buffer_putm_2(buffer_2, "ERROR: Unable to detect compression type from ", in_filename);
+      buffer_putm_internal(buffer_2, "ERROR: Unable to detect compression type from ", in_filename, 0);
       buffer_putnlflush(buffer_2);
       exit(EXIT_FAILURE);
   }

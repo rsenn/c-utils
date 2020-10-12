@@ -824,7 +824,7 @@ end:
 static ssize_t
 io_err_check(ssize_t ret) {
   if(ret == -1) {
-    buffer_putm_3(buffer_2, "ERROR: ", strerror(errno), "\n");
+    buffer_putm_internal(buffer_2, "ERROR: ", strerror(errno), "\n", 0);
     buffer_flush(buffer_2);
     exit(errno);
     /* return -1; */
@@ -836,7 +836,7 @@ static ssize_t
 write_err_check(int fd, const void* buf, size_t len) {
   int ret = write(fd, buf, len);
   if(ret == -1) {
-    buffer_putm_3(buffer_2, "ERROR: ", strerror(errno), "\n");
+    buffer_putm_internal(buffer_2, "ERROR: ", strerror(errno), "\n", 0);
     buffer_flush(buffer_2);
     exit(errno);
     /* return -1; */

@@ -350,7 +350,7 @@ main(int argc, char* argv[]) {
         } while(n > 1);
 
       } else {
-        buffer_putm_3(buffer_2, "ERROR: ", spec, "\n");
+        buffer_putm_internal(buffer_2, "ERROR: ", spec, "\n", 0);
         buffer_putnlflush(buffer_2);
         return 2;
       }

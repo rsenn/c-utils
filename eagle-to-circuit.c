@@ -210,7 +210,7 @@ get_entry(MAP_T map, const char* key) {
  */
 void
 print_name_value(buffer* b, const char* name, const char* value) {
-  buffer_putm_3(b, name, ": ", value ? value : "(null)");
+  buffer_putm_internal(b, name, ": ", value ? value : "(null)", 0);
 }
 
 int
@@ -835,11 +835,11 @@ print_element_name(xmlnode* a_node) {
     return;
 
   if(str_diff(name, "eagle") && str_diff(name, "drawing")) {
-    buffer_putm_2(buffer_2, a_node->parent ? "/" : "", name);
+    buffer_putm_internal(buffer_2, a_node->parent ? "/" : "", name, 0);
     if(!(name = xml_get_attribute(a_node, "name")))
       return;
     if(str_len(name))
-      buffer_putm_3(buffer_2, "[@name='", name, "']");
+      buffer_putm_internal(buffer_2, "[@name='", name, "']", 0);
   }
 }
 
@@ -852,7 +852,7 @@ print_attrs(HMAP_DB* a) {
 
   for(t = a->list_tuple; t; t = t->next) {
     char* v = t->vals.val_chars;
-    buffer_putm_5(buffer_2, " ", t->key, str_isdoublenum(v) ? "=" : "=\"", v, str_isdoublenum(v) ? "" : "\"");
+    buffer_putm_internal(buffer_2, " ", t->key, str_isdoublenum(v) ? "=" : "=\"", v, str_isdoublenum(v) ? "" : "\"", 0);
     if(t->next == a->list_tuple)
       break;
   }
@@ -872,7 +872,7 @@ print_element_content(xmlnode* node) {
     if(str_isspace(s))
       s = "";
     if(str_len(s))
-      buffer_putm_3(buffer_2, " \"", s, "\"");
+      buffer_putm_internal(buffer_2, " \"", s, "\"", 0);
   }
 }
 

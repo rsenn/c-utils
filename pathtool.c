@@ -84,7 +84,7 @@ pathtool(const char* arg, stralloc* sa) {
   stralloc_init(sa);
 
 #ifdef DEBUG_OUTPUT
-  buffer_putm_2(buffer_2, "arg: ", arg);
+  buffer_putm_internal(buffer_2, "arg: ", arg, 0);
   buffer_putnlflush(buffer_2);
 #endif
   if(absolute) {
