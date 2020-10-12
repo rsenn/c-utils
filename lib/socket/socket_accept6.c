@@ -31,7 +31,7 @@ socket_accept6(int s, char* ip, uint16* port, uint32* scope_id) {
   int fd;
 
 #ifdef __MINGW32__
-  io_entry* e = array_get(&io_fds, sizeof(io_entry), s);
+  io_entry* e = iarray_get((iarray*)io_getfds(), s);
   if(e && e->inuse) {
     int sa2len;
     fd = -1;
@@ -53,7 +53,7 @@ socket_accept6(int s, char* ip, uint16* port, uint32* scope_id) {
       e->next_accept = 0;
       if(e->nonblock) {
         if(io_fd(fd)) {
-          io_entry* f = array_get(&io_fds, sizeof(io_entry), fd);
+          io_entry* f = iarray_get((iarray*)io_getfds(), fd);
           if(f) {
             f->nonblock = 1;
             //	    printf("setting fd %lu to non-blocking\n",(int)fd);

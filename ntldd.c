@@ -406,7 +406,7 @@ try_map_and_load(char* name, char* path, pe_loaded_image* loaded_image, int requ
   if(!path_exists(sa.s))
     return success;
 */
-#ifdef DEBUG_OUTPUT
+#ifdef DEBUG_OUTPUT_
   buffer_puts(buffer_2, "Filename: ");
   buffer_puts(buffer_2, sa.s);
   buffer_putnlflush(buffer_2);
@@ -855,8 +855,8 @@ main(int argc, char** argv) {
 
       case 'V': printversion(); break;
       default:
-        buffer_putm_4(
-            buffer_2, "Unrecognized option `", argv[optind], "'\n", "Try `ntldd --help' for more information");
+        buffer_putm_internal(
+            buffer_2, "Unrecognized option `", argv[optind], "'\n", "Try `ntldd --help' for more information",0);
         buffer_putnlflush(buffer_2);
         return 1;
     }
@@ -866,9 +866,10 @@ main(int argc, char** argv) {
   files_start = optind;
   {
     const char* pathenv = getenv("PATH");
-
-    buffer_putm_2(buffer_2, "PATH=", pathenv);
+#ifdef DEBUG_OUTPUT_
+    buffer_putm_internal(buffer_2, "PATH=", pathenv, 0);
     buffer_putnlflush(buffer_2);
+#endif
 
     if(pathenv)
       add_path(&sp, pathenv);

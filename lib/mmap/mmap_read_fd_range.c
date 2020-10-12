@@ -19,7 +19,7 @@ mmap_read_fd_range(fd_t fd, size_t* size, size_t offset, size_t len) {
   HANDLE h = (HANDLE)_get_osfhandle((int)fd);
   HANDLE m;
   char* map;
-  m = CreateFileMapping(h, p, PAGE_READONLY, 0, 0, NULL);
+  m = CreateFileMapping(h, offset, PAGE_READONLY, 0, 0, NULL);
   map = 0;
   if(m) {
     DWORD lo = offset;
