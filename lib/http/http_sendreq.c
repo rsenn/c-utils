@@ -12,6 +12,7 @@ do_send(fd_t s, const void* buf, size_t len) {
 
 int
 http_sendreq(http* h) {
+  int ret;
   buffer* out = &h->q.out;
   if(h->request == NULL)
     return 0;
@@ -46,10 +47,10 @@ http_sendreq(http* h) {
   }
   buffer_flush(buffer_2);
 #endif
-  buffer_flush(out);
-  h->sent = 1;
-  io_dontwantwrite(h->sock);
-  io_wantread(h->sock);
+  ret = buffer_flush(out);
 
-  return 1;
+  if(ret != -1)
+    h->sent = 1;
+
+  return ret;
 }

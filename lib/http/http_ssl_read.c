@@ -9,17 +9,18 @@ ssize_t
 http_ssl_read(fd_t fd, void* buf, size_t len, void* b) {
   http* h = ((buffer*)b)->cookie;
   char* msg = 0;
-  int err = 0;
   ssize_t ret = 0;
-  errno = 0;
   assert(h->tls);
   assert(h->connected);
   // do_read:
-  if((ret = SSL_read(h->ssl, buf, len)) <= 0) {
-    if(http_ssl_io_again(h, ret))
-      return -1;
-    else if((err = http_ssl_error(h, ret)))
-      return http_ssl_io_errhandle(h, err);
+  ret = http_ssl2errno(h->ssl, SSL_read(h->ssl, buf, len));
+
+  if(ret == 0) {
+    ssize_t sret;
+    sret = http_ssl2errno(h->ssl, SSL_shutdown(h->ssl));
+
+    if(sret == 1)
+      SSL_clear(h->ssl);
   }
 #if DEBUG_OUTPUT_
   buffer_puts(buffer_2, "http_ssl_read ");
@@ -27,7 +28,7 @@ http_ssl_read(fd_t fd, void* buf, size_t len, void* b) {
   buffer_putlong(buffer_2, ret);
   if(ret <= 0) {
     buffer_puts(buffer_2, " err=");
-    buffer_puts(buffer_2, http_ssl_errflag(err));
+    buffer_puts(buffer_2, http_ssl_errflag(SSL_get_error(h->ssl, ret)));
   }
   buffer_putnlflush(buffer_2);
 #endif

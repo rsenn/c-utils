@@ -10,6 +10,7 @@
 #include "lib/byte.h"
 #include "lib/errmsg.h"
 #include "lib/stralloc.h"
+#include "lib/scan.h"
 #include <assert.h>
 #include <stdlib.h>
 
@@ -119,13 +120,6 @@ pe_print_data_directories(buffer* b, uint8* base, pe_data_directory* data_dirs, 
   }
 }
 
-char*
-pe_dllname(uint8* base) {
-  pe_data_directory* data_dir = &pe_header_datadir(base)[PE_DIRECTORY_ENTRY_EXPORT];
-  pe_export_directory* export_dir = pe_rva2ptr(base, data_dir->virtual_address);
-  return pe_rva2ptr(base, uint32_get(&export_dir->name));
-}
-
 void
 pe_print_export_directory(buffer* b, uint8* base, pe_export_directory* export_dir) {
   const char* name = pe_rva2ptr(base, uint32_get(&export_dir->name));
@@ -189,13 +183,13 @@ pe_dump_exports(uint8* base) {
   buffer_puts(buffer_1, "EXPORTS\n");
 
   for(i = 0; i < uint32_get(&exports->number_of_names); i++) {
-   const char* s;
+    const char* s;
     uint16 ordinal = uint16_get(&ordptr[i]);
     fnaddr = fnptr[ordinal];
     buffer_puts(buffer_1, "  ");
 
-   /* if(mintextptr < fnaddr && fnaddr < maxtextptr)*/ {
-    s = pe_rva2ptr(base, uint32_get(&nameptr[i])); //pe_rva2ptr(base, pe_thunk(base, nameptr, i));
+    /* if(mintextptr < fnaddr && fnaddr < maxtextptr)*/ {
+      s = pe_rva2ptr(base, uint32_get(&nameptr[i])); // pe_rva2ptr(base, pe_thunk(base, nameptr, i));
       buffer_puts(buffer_1, s ? s : "<null>");
     }
 

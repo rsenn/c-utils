@@ -26,11 +26,12 @@ int
 http_socket(http* h, int nonblock) {
   if((h->sock = socket_tcp4()) == -1)
     return -1;
+  io_fd(h->sock);
   if(nonblock)
     ndelay_on(h->sock);
-  else
-    ndelay_off(h->sock);
-  io_fd(h->sock);
+    /*  else
+        ndelay_off(h->sock);*/
+
 #ifdef HAVE_OPENSSL
   if(h->tls) {
     http_ssl_socket(h);

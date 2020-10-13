@@ -70,7 +70,7 @@ http_io_handler(http* h, buffer* out) {
   int nr = 0, nw = 0;
   while((w = io_canwrite()) != -1) {
     if(h->sock == w) {
-      http_writeable(h);
+      http_on_writeable(h, &io_wantread);
       nw++;
     }
   }

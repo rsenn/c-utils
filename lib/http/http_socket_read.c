@@ -10,33 +10,36 @@
 
 ssize_t
 http_socket_read(fd_t fd, void* buf, size_t len, void* b) {
-  ssize_t ret;
+  ssize_t ret = -1;
   http* h = (http*)((buffer*)b)->cookie;
   http_response* r = h->response;
-  // s = winsock2errno(recv(fd, buf, len, 0));
+#if DEBUG_OUTPUT
+  buffer_putsflush(buffer_2, "http_socket_read\n");
+#endif
+// s = winsock2errno(recv(fd, buf, len, 0));
 #ifdef HAVE_OPENSSL
   if(h->ssl) {
     if(!h->connected) {
       ret = http_ssl_connect(h);
-      if(http_ssl_io_again(h, ret) || ret == -1)
-        return -1;
-      if(!io_canread(h->sock))
-        return http_ssl_io_errhandle(h, EAGAIN);
+      if(h->connected) {
+        if((ret = http_sendreq(h)) > 0)
+          ret = 0;
+      }
     }
-    ret = http_ssl_read(h->sock, buf, len, b);
+    if(h->connected || ret == 0)
+      ret = http_ssl_read(h->sock, buf, len, b);
   } else
 #endif
     ret = io_tryread(fd, (char*)buf, len);
   if(ret == 0) {
-    closesocket(h->sock);
+    // closesocket(h->sock);
+    http_close(h);
     h->q.in.fd = h->q.out.fd = h->sock = -1;
     r->status = HTTP_STATUS_CLOSED;
   } else if(ret == -1) {
     r->err = errno;
     if(errno != EWOULDBLOCK && errno != EAGAIN)
       r->status = HTTP_STATUS_ERROR;
-    else
-      return ret;
   }
   if(ret > 0) {
     size_t n = h->q.in.n;
@@ -44,7 +47,16 @@ http_socket_read(fd_t fd, void* buf, size_t len, void* b) {
     ret = http_read_internal(h, (char*)buf, ret);
     h->q.in.n = n;
   }
-  // putnum("http_socket_read", s);
-  // putnum("err", r->err);
+#if DEBUG_OUTPUT
+  buffer_puts(buffer_2, "http_socket_read ");
+  buffer_puts(buffer_2, " ret=");
+  buffer_putlong(buffer_2, ret);
+  if(ret <= 0) {
+    buffer_puts(buffer_2, " errno=");
+    buffer_putlong(buffer_2, errno);
+  }
+  buffer_putnlflush(buffer_2);
+#endif
+
   return ret;
 }

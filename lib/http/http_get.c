@@ -96,6 +96,6 @@ http_get(http* h, const char* location) {
     }
   }
 
-  io_wantwrite(h->sock);
+  // io_wantwrite(h->sock);
   return ret == 0;
 }

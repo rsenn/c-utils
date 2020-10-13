@@ -40,7 +40,7 @@ void taia_add(tai6464* dest, const tai6464* source1, const tai6464* source2);
 void taia_addsec(tai6464* dest, const tai6464* source, long secs);
 /* subtract source2 from source1 modulo 2^64 and put the result in dest.
  * The inputs and output may overlap */
-void taia_sub(tai6464*, const tai6464*, const tai6464*);
+void taia_sub(tai6464* dest, const tai6464* source1, const tai6464* source2);
 /* divide source by 2, rouding down to a multiple of 10^-18, and put the
  * result into dest.  The input and output may overlap */
 void taia_half(tai6464* dest, const tai6464* source);

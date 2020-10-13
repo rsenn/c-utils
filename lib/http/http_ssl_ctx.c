@@ -27,10 +27,10 @@ http_ssl_ctx(void) {
   }
   if(!SSL_CTX_use_RSAPrivateKey_file(ctx, "../c-utils/http.key", SSL_FILETYPE_PEM) ||
      !SSL_CTX_use_certificate_file(ctx, "../c-utils/http.crt", SSL_FILETYPE_PEM) || !SSL_CTX_check_private_key(ctx)) {
-    SSL_CTX_free(ctx);
     buffer_putm_internal(buffer_2, "certificate error: ", NULL);
     buffer_putnlflush(buffer_2);
-    return NULL;
+    /* SSL_CTX_free(ctx);
+   return NULL;*/
   }
   return ctx;
 }

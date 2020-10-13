@@ -192,6 +192,7 @@ get_prototypes() {
       -e | --expr) EXPR="${EXPR:+$EXPR ;; }$2"; shift 2 ;;
       -e=* | --expr=*) EXPR="${EXPR:+$EXPR ;; }$2"; shift ;;
       -e* ) EXPR="${1#-e}"; shift ;;
+      -p | --print*  ) PRINT_CMD=true;  shift ;;
       *) break ;;
     esac
   done
@@ -201,8 +202,12 @@ get_prototypes() {
   else
     exec 7>/dev/null
   fi
-
-  CPROTO_OUT=`cproto -D_Noreturn= -D__{value,x,y}= -p "$@"  | sed "\\|^/|d ;; $EXPR"`
+  CPROTO_CMD='cproto -D_Noreturn= -D__{value,x,y}= -p "$@"'
+  if [ "$PRINT_CMD" = true ]; then
+    eval "echo \"${CPROTO_CMD}\""
+    exit 0
+  fi
+  CPROTO_OUT=`eval "$CPROTO_CMD"  | sed "\\|^/|d ;; $EXPR"`
  
   IFS=" "
   while read_proto; do

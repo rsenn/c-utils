@@ -135,13 +135,6 @@ debug_sl(const char* name, const strlist* l, const char* sep) {
   stralloc_free(&tmp);
 }
 
-void
-debug_set(const char* name, const set_t* s, const char* sep) {
-  buffer_putm_internal(buffer_2, name, ": ", 0);
-  buffer_putset(buffer_2, s, sep, str_len(sep));
-  buffer_putsflush(buffer_2, debug_nl);
-}
-
 /**
  * @brief debug_int
  * @param name
@@ -164,6 +157,13 @@ debug_int(const char* name, int i) {
 #ifndef _WIN32
 #define _mkdir mkdir
 #endif
+
+void
+debug_set(const char* name, const set_t* s, const char* sep) {
+  buffer_putm_internal(buffer_2, name, ": ", 0);
+  buffer_putset(buffer_2, s, sep, str_len(sep));
+  buffer_putsflush(buffer_2, debug_nl);
+}
 
 int
 mkdir_sa(const stralloc* dir, int mode) {

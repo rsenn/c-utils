@@ -74,6 +74,7 @@ const char* mediathek_url = "https://verteiler1.mediathekview.de/Filmliste-akt.x
 static unsigned long min_length;
 static int debug;
 static strlist include, exclude;
+static buffer output;
 
 /**
  * @brief count_field_lengths
@@ -166,10 +167,11 @@ read_mediathek_list(const char* url, buffer* b) {
   static buffer in;
 
   http_init(&h, 0, 0);
-  h.nonblocking = 0;
   h.keepalive = 1;
 
   http_get(&h, url);
+
+  io_onlywantwrite(h.sock);
 
   buffer_init(&in, (buffer_op_proto*)&http_read, (fd_t)(size_t)(void*)&h, malloc(8192), 8192);
   in.cookie = &h;
@@ -186,7 +188,7 @@ read_mediathek_list(const char* url, buffer* b) {
       if(h.sock != fd)
         continue;
 
-      if(http_sendreq(&h) == -1) {
+      if(http_on_writeable(&h, &io_onlywantread) == -1) {
         errmsg_warnsys("send error: ", 0);
         return 2;
       }
@@ -590,27 +592,25 @@ output_entry(buffer* b, strlist* sl) {
  * @return
  */
 int
-parse_mediathek_list(buffer* inbuf) {
+parse_mediathek_list(buffer* inbuf, buffer* outbuf) {
   int count = 0;
-  char buf[1024];
-  static char buf2[BUFSIZE];
+  char buf2[BUFSIZE];
+  static strlist prev, prevout, sl;
   size_t matched = 0, total = 0;
   ssize_t ret, ret2;
-  strlist prev, prevout, sl;
   mediathek_entry_t* e = 0;
 
-  strlist_init(&sl, '\0');
-  strlist_init(&prev, '\0');
-  strlist_init(&prevout, '\0');
-
-  buffer_put(buffer_1, "{\n", 2);
+  /*  strlist_init(&sl, '\0');
+    strlist_init(&prev, '\0');
+    strlist_init(&prevout, '\0');
+  */
 
   while((ret = buffer_get_token(inbuf, buf2, sizeof(buf2), "]", 1)) > 0) {
-
-    // buffer_puts(buffer_2, "Read ");
-    // buffer_putlong(buffer_2, ret);
-    // buffer_putsflush(buffer_2, " bytes.\n");
-
+#ifdef DEBUG_OUTPUT
+    buffer_puts(buffer_2, "Read ");
+    buffer_putlong(buffer_2, ret);
+    buffer_putsflush(buffer_2, " bytes.\n");
+#endif
     for(;;) {
       ret2 = 0;
       if(ret + 1 >= BUFSIZE)
@@ -642,46 +642,45 @@ parse_mediathek_list(buffer* inbuf) {
         matched++;
 
         if(strlist_count(&prevout)) {
-          buffer_put(buffer_1, ",\n", 2);
-          buffer_flush(buffer_1);
+          buffer_put(outbuf, ",\n", 2);
+          buffer_flush(outbuf);
         }
 
-        output_entry(buffer_1, &sl);
+        output_entry(outbuf, &sl);
         strlist_copy(&prevout, &sl);
         ++count;
       }
+      delete_mediathek_entry(e);
+      e = NULL;
     }
 
     strlist_copy(&prev, &sl);
   }
 
-  if(e)
-    delete_mediathek_entry(e);
-  e = 0;
-
-  buffer_flush(buffer_1);
-
   if(h.response->err) {
     errno = h.response->err;
-    errmsg_warn("Read error: ", 0);
+    errmsg_warnsys("Read error", 0);
   } else if(ret == 0) {
     char status[FMT_ULONG + 1];
     status[fmt_ulong(status, h.response->status)] = '\0';
     errmsg_warn("STATUS: ", status, " EOF: ", 0);
   }
 
-  if(debug) {
-    buffer_puts(buffer_2, "\nprocessed ");
-    buffer_putulong(buffer_2, matched);
-    buffer_puts(buffer_2, "/");
-    buffer_putulong(buffer_2, total);
-    buffer_puts(buffer_2, " entries.");
-    buffer_putnlflush(buffer_2);
-  }
+  if(ret == 0) {
 
-  strlist_free(&sl);
-  strlist_free(&prev);
-  strlist_free(&prevout);
+    if(debug) {
+      buffer_puts(buffer_2, "\nprocessed ");
+      buffer_putulong(buffer_2, matched);
+      buffer_puts(buffer_2, "/");
+      buffer_putulong(buffer_2, total);
+      buffer_puts(buffer_2, " entries.");
+      buffer_putnlflush(buffer_2);
+    }
+
+    strlist_free(&sl);
+    strlist_free(&prev);
+    strlist_free(&prevout);
+  }
 
   return count;
 }
@@ -719,7 +718,7 @@ usage(char* errmsg_argv0) {
 int
 main(int argc, char* argv[]) {
 
-  int opt;
+  int opt, ret;
   static buffer in;
   static const char* outfile;
 
@@ -727,7 +726,7 @@ main(int argc, char* argv[]) {
 
   errmsg_iam(argv[0]);
 
-  while((opt = getopt(argc, argv, "u:F:dt:i:x:h")) != -1) {
+  while((opt = getopt(argc, argv, "u:F:dt:i:x:ho:")) != -1) {
     switch(opt) {
       case 'h': usage(argv[0]); return 0;
       case 'F': dt_fmt = optarg; break;
@@ -745,6 +744,11 @@ main(int argc, char* argv[]) {
 
     strlist_push(&include, argv[optind++]);
   }
+
+  if(outfile)
+    buffer_truncfile(&output, outfile);
+  else
+    buffer_write_fd(&output, STDOUT_FILENO);
 
   /* if(strlist_count(&include) == 0)
      strlist_push(&include, "");*/
@@ -777,12 +781,42 @@ main(int argc, char* argv[]) {
   if(errmsg_argv0[str_rchr(errmsg_argv0, '/')] != '\0')
     errmsg_argv0 += str_rchr(errmsg_argv0, '/') + 1;
 
-  if(!read_mediathek_list(mediathek_url, &in)) {
-    int n = parse_mediathek_list(&in);
+  ret = read_mediathek_list(mediathek_url, &in);
+  if(!ret) {
+    int n = 0;
+    fd_t fd;
+
+    buffer_puts(&output, "{\n");
+
+    for(;;) {
+      io_waituntil2(1000);
+
+      while((fd = io_canwrite()) != -1) {
+        if(fd == h.sock)
+          http_on_writeable(&h, &io_onlywantread);
+      }
+
+      while((fd = io_canread()) != -1) {
+        if(fd == h.sock) {
+          if(!h.sent)
+            http_on_readable(&h, &io_onlywantwrite);
+          else
+            n += parse_mediathek_list(&in, &output);
+        }
+      }
+    }
+
+    buffer_puts(&output, "\n}");
+    buffer_flush(&output);
 
     buffer_puts(buffer_2, "Processed ");
     buffer_putlong(buffer_2, n);
     buffer_putsflush(buffer_2, " entries.\n");
+  } else {
+    errmsg_warnsys("Read failed", 0);
+    buffer_puts(buffer_2, "Read = ");
+    buffer_putlong(buffer_2, ret);
+    buffer_putnlflush(buffer_2);
   }
   return 1;
 }

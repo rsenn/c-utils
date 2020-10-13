@@ -15,7 +15,7 @@
 #endif
 
 ssize_t
-http_writeable(http* h) {
+http_on_writeable(http* h, void (*wantread)(fd_t)) {
   ssize_t ret = 0;
 #if DEBUG_OUTPUT
   buffer_puts(buffer_2, "http_writable ");
@@ -37,7 +37,10 @@ http_writeable(http* h) {
 #ifdef HAVE_OPENSSL
   if(h->ssl) {
     if(!h->connected) {
-      ret = http_ssl_connect(h);
+      ret = http_ssl2want(h, http_ssl_connect(h), wantread, 0);
+      if(ret == -1 && errno == EAGAIN)
+        ret = 0;
+
       if(ret != 1)
         return ret;
     }
@@ -45,8 +48,12 @@ http_writeable(http* h) {
 #endif
   // request:
   if(h->connected && h->sent == 0) {
-    http_sendreq(h);
-    h->sent = 1;
+    ret = http_ssl2want(h, http_sendreq(h), wantread, 0);
+
+    if(ret == -1 && errno == EAGAIN)
+      ret = 0;
+    else if(h->sent)
+      wantread(h->sock);
   }
   return ret;
 }

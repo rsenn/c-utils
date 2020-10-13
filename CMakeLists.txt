@@ -155,28 +155,38 @@ check_compile(LIBC_HAS_SCOPE_ID "#include <sys/types.h>\n#include <sys/socket.h>
 
 if(NOT USE_SELECT)
   check_compile(
-    HAVE_DEVPOLL
+    SUPPORT_DEVPOLL
     "#include <stdio.h>\n#include <stdlib.h>\n#include <poll.h>\n#include <netdb.h>\n#include <unistd.h>\n#include <fcntl.h>\n#include <strings.h>\n#include <sys/types.h>\n#include <sys/socket.h>\n#include <sys/errno.h>\n#include <netinet/in.h>\n#include <sys/devpoll.h>\n\nmain() {\n  int fd = open(\"/dev/poll\", O_RDWR);\n  struct pollfd p[100];\n  int i, r;\n  dvpoll_t timeout;\n  p[0].fd = 0;\n  p[0].events = POLLIN;\n  write(fd, p, sizeof(struct pollfd));\n  timeout.dp_timeout = 100; /* milliseconds? */\n  timeout.dp_nfds = 1;\n  timeout.dp_fds = p;\n  r = ioctl(fd, DP_POLL, &timeout);\n  for(i = 0; i < r; ++i) printf(\"event %d on fd #%d\\\\n\", p[i].revents, p[i].fd);\n}\n"
   )
 
+
   check_compile(
-    HAVE_EPOLL
+    SUPPORT_EPOLL
     "#include <inttypes.h>\n#include <sys/epoll.h>\n#include <stdio.h>\n\nint\nmain() {\n  int efd = epoll_create(10);\n  struct epoll_event x;\n  if(efd == -1)\n    return 111;\n  x.events = EPOLLIN;\n  x.data.fd = 0;\n  if(epoll_ctl(efd, EPOLL_CTL_ADD, 0 /* fd */, &x) == -1)\n    return 111;\n  {\n    int n;\n    struct epoll_event y[100];\n    if((n = epoll_wait(efd, y, 100, 1000)) == -1)\n      return 111;\n    if(n > 0)\n      printf(\"event %d on fd #%d\\\\n\", y[0].events, y[0].data.fd);\n  }\n  return 0;\n}\n"
   )
   check_compile(
-    HAVE_KQUEUE
+    SUPPORT_KQUEUE
     "#include <sys/types.h>\n#include <sys/event.h>\n#include <sys/time.h>\n\nint\nmain() {\n  int kq = kqueue();\n  struct kevent kev;\n  struct timespec ts;\n  if(kq == -1)\n    return 111;\n  EV_SET(&kev, 0 /* fd */, EVFILT_READ, EV_ADD | EV_ENABLE, 0, 0, 0);\n  ts.tv_sec = 0;\n  ts.tv_nsec = 0;\n  if(kevent(kq, &kev, 1, 0, 0, &ts) == -1)\n    return 111;\n\n  {\n    struct kevent events[100];\n    int i, n;\n    ts.tv_sec = 1;\n    ts.tv_nsec = 0;\n    switch(n = kevent(kq, 0, 0, events, 100, &ts)) {\n      case -1: return 111;\n      case 0: puts(\"no data on fd #0\"); break;\n    }\n    for(i = 0; i < n; ++i) {\n      printf(\"ident %d, filter %d, flags %d, fflags %d, data %d\\\\n\",\n             events[i].ident,\n             events[i].filter,\n             events[i].flags,\n             events[i].fflags,\n             events[i].data);\n    }\n  }\n  return 0;\n}\n"
   )
 
   check_compile(
-    HAVE_SIGIO
+    SUPPORT_SIGIO
     "#define _GNU_SOURCE\n#include <sys/types.h>\n#include <sys/poll.h>\n#include <signal.h>\n#include <fcntl.h>\n#include <stdio.h>\n\nint\nmain() {\n  int signum = SIGRTMIN + 1;\n  sigset_t ss;\n  sigemptyset(&ss);\n  sigaddset(&ss, signum);\n  sigaddset(&ss, SIGIO);\n  sigprocmask(SIG_BLOCK, &ss, 0);\n\n  fcntl(0 /* fd */, F_SETOWN, getpid());\n  fcntl(0 /* fd */, F_SETSIG, signum);\n#if defined(O_ONESIGFD) && defined(F_SETAUXFL)\n  fcntl(0 /* fd */, F_SETAUXFL, O_ONESIGFD);\n#endif\n  fcntl(0 /* fd */, F_SETFL, fcntl(0 /* fd */, F_GETFL) | O_NONBLOCK | O_ASYNC);\n\n  {\n    siginfo_t info;\n    struct timespec timeout;\n    int r;\n    timeout.tv_sec = 1;\n    timeout.tv_nsec = 0;\n    switch((r = sigtimedwait(&ss, &info, &timeout))) {\n      case SIGIO:\n        /* signal queue overflow */\n        signal(signum, SIG_DFL);\n        /* do poll */\n        break;\n      default:\n        if(r == signum) {\n          printf(\"event %c%c on fd #%d\\\\n\",\n                 info.si_band & POLLIN ? 'r' : '-',\n                 info.si_band & POLLOUT ? 'w' : '-',\n                 info.si_fd);\n        }\n    }\n  }\n  return 0;\n}\n"
   )
   check_compile(
-    HAVE_POLL
+    SUPPORT_POLL
     "#include <sys/types.h>\n#include <fcntl.h>\n#include <poll.h>\n\nint\nmain() {\n  struct pollfd x;\n\n  x.fd = open(\"trypoll.c\", O_RDONLY);\n  if(x.fd == -1)\n    _exit(111);\n  x.events = POLLIN;\n  if(poll(&x, 1, 10) == -1)\n    _exit(1);\n  if(x.revents != POLLIN)\n    _exit(1);\n\n  /* XXX: try to detect and avoid poll() imitation libraries */\n\n  _exit(0);\n}\n"
   )
+  set(MUX_METHODS )
+  foreach(METHOD DEVPOLL EPOLL KQUEUE SIGIO POLL)
+    if(SUPPORT_${METHOD})
+      list(APPEND MUX_METHODS ${METHOD})
+    endif(SUPPORT_${METHOD})
+  endforeach(METHOD DEVPOLL EPOLL KQUEUE SIGIO POLL)
+
+  message("Mux methods: ${MUX_METHODS}")
 endif(NOT USE_SELECT)
+
 
 check_compile(HAVE_N2I "#include <sys/types.h>\n#include <sys/socket.h>\n#include <net/if.h>\n\nint\nmain() {\n  static char ifname[IFNAMSIZ];\n  char* tmp = if_indextoname(0, ifname);\n  (void)tmp;\n  return 0;\n}\n")
 
@@ -416,7 +426,9 @@ check_functions(
   sendfile
   sigaddset
   sigemptyset
-  sigprocmask)
+  sigprocmask
+  strerror_r
+)
 
 check_function_exists(lseek64 HAVE_LSEEK64)
 if(NOT HAVE_LSEEK64)
@@ -437,15 +449,15 @@ endif(NOT HAVE_LSEEK64)
 
 if(USE_POLL STREQUAL "OFF" AND NOT USE_SELECT STREQUAL "ON")
   message(INFO "Checking for poll()...")
-  check_function_exists(poll_wait HAVE_POLL)
-  if(HAVE_POLL)
+  check_function_exists(poll_wait SUPPORT_POLL)
+  if(SUPPORT_POLL)
     message(INFO "Checking for poll()... OK")
     set(USE_POLL TRUE)
     set(USE_SELECT FALSE)
-  else(HAVE_POLL)
+  else(SUPPORT_POLL)
     message(INFO "Checking for poll()... NOT FOUND")
     set(USE_POLL TRUE)
-  endif(HAVE_POLL)
+  endif(SUPPORT_POLL)
 endif(USE_POLL STREQUAL "OFF" AND NOT USE_SELECT STREQUAL "ON")
 
 check_function_exists(daemon HAVE_DAEMON)
@@ -521,7 +533,7 @@ endforeach()
 # message(DEFINES_H: ${DEFINES_H}) add_definitions(${DEFINES_H})
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${DEFINES_H} -DHAVE_CONFIG_H=1")
 
-# message(INFO "Checking for epoll()...") check_function_exists(epoll_wait HAVE_EPOLL) if(HAVE_EPOLL) message(INFO "Checking for epoll()... OK") set(USE_EPOLL ON) set(USE_SELECT OFF) else(HAVE_EPOLL) message(INFO "Checking for epoll()... NOT FOUND") set(USE_EPOLL OFF) endif(HAVE_EPOLL)
+# message(INFO "Checking for epoll()...") check_function_exists(epoll_wait SUPPORT_EPOLL) if(SUPPORT_EPOLL) message(INFO "Checking for epoll()... OK") set(USE_EPOLL ON) set(USE_SELECT OFF) else(SUPPORT_EPOLL) message(INFO "Checking for epoll()... NOT FOUND") set(USE_EPOLL OFF) endif(SUPPORT_EPOLL)
 
 # if(USE_EPOLL STREQUAL ON) add_definitions(-DHAVE_EPOLL=1) endif()
 
@@ -753,50 +765,54 @@ set(CMAKE_REQUIRED_FLAGS)
 set(CMAKE_REQUIRED_LINK_OPTIONS)
 set(CMAKE_REQUIRED_LIBRARIES)
 
-if(NOT MUX_METHODS)
-  set(MUX_METHODS
-      ""
-      CACHE STRING "available I/O multiplexing methods")
-endif(NOT MUX_METHODS)
-
 if(NOT USE_SELECT)
   if(NOT USE_POLL)
 
-    if(HAVE_POLL STREQUAL "")
-      check_library_exists("" poll "" HAVE_POLL)
-      if(NOT HAVE_POLL)
-        check_function_exists(poll HAVE_POLL)
-      endif(NOT HAVE_POLL)
-    endif(HAVE_POLL STREQUAL "")
+    if(SUPPORT_POLL STREQUAL "")
+      check_library_exists("" poll "" SUPPORT_POLL)
+      if(NOT SUPPORT_POLL)
+        check_function_exists(poll SUPPORT_POLL)
+      endif(NOT SUPPORT_POLL)
+    endif(SUPPORT_POLL STREQUAL "")
 
-    if(HAVE_EPOLL STREQUAL "")
-      check_library_exists("" epoll_create "" HAVE_EPOLL)
-      if(NOT HAVE_EPOLL)
-        check_function_exists(epoll_create HAVE_EPOLL)
-      endif(NOT HAVE_EPOLL)
-    endif(HAVE_EPOLL STREQUAL "")
+    if(SUPPORT_EPOLL STREQUAL "")
+      check_library_exists("" epoll_create "" SUPPORT_EPOLL)
+      if(NOT SUPPORT_EPOLL)
+        check_function_exists(epoll_create SUPPORT_EPOLL)
+      endif(NOT SUPPORT_EPOLL)
+    endif(SUPPORT_EPOLL STREQUAL "")
 
-    if(HAVE_KQUEUE STREQUAL "")
-      check_library_exists("" kqueue "" HAVE_KQUEUE)
-      if(NOT HAVE_KQUEUE)
-        check_function_exists(kqueue HAVE_KQUEUE)
-      endif(NOT HAVE_KQUEUE)
-    endif(HAVE_KQUEUE STREQUAL "")
+    if(SUPPORT_KQUEUE STREQUAL "")
+      check_library_exists("" kqueue "" SUPPORT_KQUEUE)
+      if(NOT SUPPORT_KQUEUE)
+        check_function_exists(kqueue SUPPORT_KQUEUE)
+      endif(NOT SUPPORT_KQUEUE)
+    endif(SUPPORT_KQUEUE STREQUAL "")
 
   endif(NOT USE_POLL)
 endif(NOT USE_SELECT)
 
-if(HAVE_SELECT STREQUAL "")
-  check_library_exists("${LIBMSWSOCK}" select "" HAVE_SELECT)
-  if(NOT HAVE_SELECT)
-    check_function_exists(select HAVE_SELECT)
-  endif(NOT HAVE_SELECT)
-endif(HAVE_SELECT STREQUAL "")
+if(SUPPORT_SELECT STREQUAL "")
+  check_library_exists("${LIBMSWSOCK}" select "" SUPPORT_SELECT)
+  if(NOT SUPPORT_SELECT)
+    check_function_exists(select SUPPORT_SELECT)
+  endif(NOT SUPPORT_SELECT)
+endif(SUPPORT_SELECT STREQUAL "")
 
+   set(MUX_METHODS
+      ""
+      CACHE STRING "available I/O multiplexing methods")
+    set(MUX 
+      ""
+      CACHE STRING "selected I/O multiplexing method")
+ 
 foreach(METHOD KQUEUE DEVPOLL EPOLL SIGIO POLL SELECT)
-  if(HAVE_${METHOD})
+  if(SUPPORT_${METHOD})
     list(APPEND MUX_METHODS "${METHOD}")
-  endif(HAVE_${METHOD})
+    if(NOT MUX)
+      set(MUX_METHOD ${METHOD})
+    endif(NOT MUX)
+  endif(SUPPORT_${METHOD})
 endforeach()
 
 if(LIBMSWSOCK)
@@ -804,45 +820,42 @@ if(LIBMSWSOCK)
 endif(LIBMSWSOCK)
 
 message("Available MUX methods: ${MUX_METHODS}")
+ 
+  if(USE_DEVPOLL)
+    set(MUX DEVPOLL)
+  endif(USE_DEVPOLL)
+  if(USE_SIGIO)
+    set(MUX SIGIO)
+  endif(USE_SIGIO)
+  if(USE_KQUEUE)
+    set(MUX KQUEUE)
+  endif(USE_KQUEUE)
+  if(USE_EPOLL)
+    set(MUX EPOLL)
+  endif(USE_EPOLL)
+  if(USE_POLL)
+    set(MUX POLL)
+  endif(USE_POLL)
+  if(USE_SELECT)
+    set(MUX SELECT)
+  endif(USE_SELECT)
 
-if(MUX_METHODS)
-list(GET MUX_METHODS 0 MUX)
-endif(MUX_METHODS)
 
-if(USE_DEVPOLL)
-  set(MUX DEVPOLL)
-endif(USE_DEVPOLL)
-if(USE_SIGIO)
-  set(MUX SIGIO)
-endif(USE_SIGIO)
-if(USE_KQUEUE)
+if(NOT MUX AND SUPPORT_KQUEUE)
   set(MUX KQUEUE)
-endif(USE_KQUEUE)
-if(USE_EPOLL)
-  set(MUX EPOLL)
-endif(USE_EPOLL)
-if(USE_POLL)
-  set(MUX POLL)
-endif(USE_POLL)
-if(USE_SELECT)
-  set(MUX SELECT)
-endif(USE_SELECT)
-
-if(NOT MUX AND HAVE_KQUEUE)
-  set(MUX KQUEUE)
-endif(NOT MUX AND HAVE_KQUEUE)
-if(NOT MUX AND HAVE_SIGIO)
+endif(NOT MUX AND SUPPORT_KQUEUE)
+if(NOT MUX AND SUPPORT_SIGIO)
   set(MUX SIGIO)
-endif(NOT MUX AND HAVE_SIGIO)
-if(NOT MUX AND HAVE_EPOLL)
+endif(NOT MUX AND SUPPORT_SIGIO)
+if(NOT MUX AND SUPPORT_EPOLL)
   set(MUX EPOLL)
-endif(NOT MUX AND HAVE_EPOLL)
-if(NOT MUX AND HAVE_POLL)
+endif(NOT MUX AND SUPPORT_EPOLL)
+if(NOT MUX AND SUPPORT_POLL)
   set(MUX POLL)
-endif(NOT MUX AND HAVE_POLL)
-if(NOT MUX AND HAVE_SELECT)
+endif(NOT MUX AND SUPPORT_POLL)
+if(NOT MUX AND SUPPORT_SELECT)
   set(MUX SELECT)
-endif(NOT MUX AND HAVE_SELECT)
+endif(NOT MUX AND SUPPORT_SELECT)
 
 set(MUX_METHOD
     "${MUX}"
@@ -1314,6 +1327,10 @@ set(genmakefile_SOURCES mplab.c ini.c ini.h genmakefile.h)
 
 if(OPENSSL_LIB_DIR)
   set(CMAKE_EXE_LINKER_FLAGS "-L${OPENSSL_LIB_DIR}")
+endif()
+
+if(CMAKE_BUILD_TYPE STREQUAL "")
+  set(CMAKE_BUILD_TYPE Debug)
 endif()
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")

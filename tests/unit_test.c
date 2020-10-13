@@ -25,6 +25,7 @@
 #include "../lib/open.h"
 #include "../lib/io_internal.h"
 #include "../lib/errmsg.h"
+#include "../lib/alloc.h"
 #include "unit_test.h"
 
 #ifndef UNIT_TEST_STATIC_FUNCTIONS

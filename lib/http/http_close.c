@@ -1,4 +1,6 @@
 #include "../http.h"
+#include "../io.h"
+#include "../socket.h"
 #include "../windoze.h"
 #if WINDOWS_NATIVE
 #include <io.h>
@@ -17,14 +19,30 @@ void
 http_close(http* h) {
 #ifdef HAVE_OPENSSL
   if(h->ssl) {
-    SSL_shutdown(h->ssl);
-    h->ssl = NULL;
-  } else
+    if(SSL_shutdown(h->ssl) == 1) {
+      SSL_free(h->ssl);
+      h->ssl = NULL;
+    } else {
+      return;
+    }
+  }
 #endif
-      if(h->sock != -1) {
-    close(h->sock);
+
+  if(h->sock != -1) {
+    int ret;
+    ret = socket_close(h->sock);
+    io_close(h->sock);
+
+#if DEBUG_OUTPUT
+    buffer_puts(buffer_2, "http_close ");
+    buffer_puts(buffer_2, " sock=");
+    buffer_putlong(buffer_2, h->sock);
+    buffer_puts(buffer_2, " ret=");
+    buffer_putlong(buffer_2, ret);
+
+    buffer_putnlflush(buffer_2);
+#endif
+
     h->sock = -1;
   }
-
-  h->sock = -1;
 }

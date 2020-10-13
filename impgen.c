@@ -34,7 +34,7 @@ main(int argc, char* argv[]) {
     char *base, *filename, *dll_name;
     size_t dllsz;
     uint32 i, *name_rvas, nexp, num_entries;
-    uint16 *ord_rvas;
+    uint16* ord_rvas;
     pe_data_directory* datadir;
     pe_export_directory* exports;
     pe32_opt_header* opt_hdr_32;
@@ -46,7 +46,9 @@ main(int argc, char* argv[]) {
     if(base == NULL)
       return 1;
 
-    dll_name = str_basename(filename);
+    dll_name = pe_dllname(base);
+    if(dll_name == NULL)
+      dll_name = str_basename(filename);
 
     opt_hdr_32 = pe_header_opt(base);
 
@@ -61,15 +63,16 @@ main(int argc, char* argv[]) {
 
     nexp = uint32_get(&exports->number_of_names);
     name_rvas = pe_rva2ptr(base, uint32_get(&exports->address_of_names));
-  ord_rvas = pe_rva2ptr(base, uint32_get(&exports->address_of_name_ordinals));
+    ord_rvas = pe_rva2ptr(base, uint32_get(&exports->address_of_name_ordinals));
 
+    buffer_putm_internal(buffer_1, "LIBRARY ", dll_name, "\n", 0);
     buffer_puts(buffer_1, "EXPORTS\n");
     (void)dll_name;
     /* buffer_putm_internal(buffer_1, "LIBRARY ", dll_name, "\n", 0); */
 
     for(i = 0; i < nexp; i++) {
       buffer_putm_internal(buffer_1, "  ", pe_rva2ptr(base, uint32_get(&name_rvas[i])), " @ ", 0);
-      buffer_putulong(buffer_1,  uint16_get(&ord_rvas[i]));
+      buffer_putulong(buffer_1, uint16_get(&ord_rvas[i]));
       buffer_putnlflush(buffer_1);
     }
     mmap_unmap(base, dllsz);

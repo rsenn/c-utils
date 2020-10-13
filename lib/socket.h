@@ -120,6 +120,8 @@ int socket_v6only(int fd, int enable);
 int socket_is4(int);
 int socket_is6(int);
 
+int socket_close(fd_t);
+
 #ifdef __cplusplus
 }
 #endif
