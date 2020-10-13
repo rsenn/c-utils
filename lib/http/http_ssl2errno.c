@@ -17,8 +17,10 @@ http_ssl2errno(http* h, ssize_t ret) {
 
     switch(sslerr) {
       case SSL_ERROR_WANT_READ: errno = EAGAIN; break;
-      case SSL_ERROR_WANT_WRITE: errno = EWOULDBLOCK; break;
-    //  case SSL_ERROR_SYSCALL: errno = EIO; break;
+      case SSL_ERROR_WANT_WRITE:
+        errno = EWOULDBLOCK;
+        break;
+        //  case SSL_ERROR_SYSCALL: errno = EIO; break;
       case SSL_ERROR_ZERO_RETURN: errno = EIO; break;
       case SSL_ERROR_SSL: errno = EIO; break;
       case SSL_ERROR_NONE: errno = 0; break;

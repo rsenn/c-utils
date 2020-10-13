@@ -1,7 +1,7 @@
 #include "../windoze.h"
-#if WINDOWS_NATIVE
 #include "../io_internal.h"
-#else
+
+#if !WINDOWS_NATIVE
 #include <unistd.h>
 #endif
 

@@ -1,9 +1,8 @@
 #include "../windoze.h"
 #include "../buffer.h"
+#include "../io_internal.h"
 
-#if WINDOWS_NATIVE
-#include <io.h>
-#else
+#if !WINDOWS_NATIVE
 #include <unistd.h>
 #endif
 

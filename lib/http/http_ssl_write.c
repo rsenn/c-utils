@@ -14,7 +14,7 @@ http_ssl_write(fd_t fd, const void* buf, size_t n, void* b) {
   // do_write:
   ret = http_ssl2errno(h, SSL_write(h->ssl, buf, n));
 
-#if DEBUG_OUTPUT
+#if DEBUG_HTTP
   buffer_puts(buffer_2, "http_ssl_write ");
   buffer_puts(buffer_2, " ret=");
   buffer_putulong(buffer_2, ret);

@@ -2,7 +2,7 @@
 #include "../str.h"
 #include "../uint64.h"
 
-#if WINDOWS
+#if WINDOWS || !defined(HAVE_WRITEV) || defined(_DEBUG)
 void
 errmsg_puts(int64 fd, const char* s) {
   write(fd, s, str_len(s));

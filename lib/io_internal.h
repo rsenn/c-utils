@@ -228,4 +228,19 @@ extern int close();
 #define DEBUG_MSG(msg, fd)
 #endif
 
+#ifdef HAVE_SYSCALL
+#warning "sys_write"
+#include <sys/syscall.h>
+
+static inline ssize_t
+sys_write(int fd, const void* buf, size_t n) {
+  return syscall(SYS_write, fd, buf, n);
+}
+#define write sys_write
+
+#elif defined(HAVE___WRITE)
+ssize_t __write(int, const void*, size_t);
+#define write __write
+#endif
+
 #endif

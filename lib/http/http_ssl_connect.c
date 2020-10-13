@@ -15,9 +15,11 @@ http_ssl_connect(http* h) {
 
   if(ret == 1) {
     h->connected = 1;
+#if DEBUG_HTTP
     buffer_putsflush(buffer_2, "http_ssl_connect done!\n");
+#endif
   }
-#if DEBUG_OUTPUT
+#if DEBUG_HTTP
   buffer_puts(buffer_2, "http_ssl_connect ");
   buffer_puts(buffer_2, "ret=");
   buffer_putlong(buffer_2, ret);

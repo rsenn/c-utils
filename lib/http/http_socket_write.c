@@ -12,7 +12,7 @@ ssize_t
 http_socket_write(fd_t fd, void* buf, size_t len, void* b) {
   http* h = (http*)((buffer*)b)->cookie;
   ssize_t ret = 0;
-#if DEBUG_OUTPUT
+#if DEBUG_HTTP
   buffer_putsflush(buffer_2, "http_socket_write\n");
 #endif
 #ifdef HAVE_OPENSSL
@@ -27,7 +27,7 @@ http_socket_write(fd_t fd, void* buf, size_t len, void* b) {
 #endif
     ret = winsock2errno(send(fd, buf, len, 0));
 
-#if DEBUG_OUTPUT
+#if DEBUG_HTTP
   buffer_puts(buffer_2, "http_socket_write ");
   buffer_puts(buffer_2, " ret=");
   buffer_putlong(buffer_2, ret);

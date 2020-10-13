@@ -27,7 +27,7 @@ http_sendreq(http* h) {
     buffer_putm_internal(out, "Connection: ", h->keepalive ? "keep-alive" : "close", "\r\n", NULL);
   buffer_puts(out, "Accept: */*\r\n");
   buffer_puts(out, "\r\n");
-#if DEBUG_OUTPUT
+#if DEBUG_HTTP
   {
     const char* x = out->x;
     ssize_t i, n = out->p;

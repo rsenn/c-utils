@@ -25,7 +25,17 @@ option(USE_EPOLL "Use epoll() syscall" OFF)]]
 option(BUILD_SHARED_LIBS "Build shared libs" ON)
 option(LINK_STATIC "Link libraries static" OFF)
 option(ENABLE_WERROR "Enable -Werror (warnings are errors)" OFF)
-option(DEBUG_IO "Debug I/O code" OFF)
+
+macro(debug_option NAME DESC)
+  option(DEBUG_${NAME} "${DESC}" OFF)
+  if(DEBUG_${NAME})
+    add_definitions(-DDEBUG_${NAME}=1)
+  endif(DEBUG_${NAME})
+endmacro(debug_option NAME DESC)
+
+
+debug_option(DEBUG_IO "Debug I/O code")
+debug_option(DEBUG_HTTP "Debug HTTP code")
 
 if(DEBUG_IO)
   add_definitions(-DDEBUG_IO=1)
@@ -152,6 +162,9 @@ endmacro(
 
 check_compile(LIBC_HAS_IP6 "#include <sys/types.h>\n#include <sys/socket.h>\n#include <netinet/in.h>\n\nint main() {\n  struct sockaddr_in6 sa;\n  sa.sin6_family = PF_INET6;\n  (void)sa;\n  return 0;\n}\n")
 check_compile(LIBC_HAS_SCOPE_ID "#include <sys/types.h>\n#include <sys/socket.h>\n#include <netinet/in.h>\n\nint main() {\n  struct sockaddr_in6 sa;\n  sa.sin6_family = PF_INET6;\n  sa.sin6_scope_id = 23;\n  (void)sa;\n  return 0;\n}\n")
+check_compile(HAVE_SYSCALL
+  "#define _GNU_SOURCE\n#include <unistd.h>\n#include <sys/syscall.h>\n\nstatic inline ssize_t\nsys_write(int fd, const void* buf, size_t n) {\n  return syscall(SYS_write, fd, buf, n);\n}\n\nint\nmain() {\n  return sys_write(1, \"test\\\\n\", 5);\n}\n"
+  )
 
 if(NOT USE_SELECT)
   check_compile(
@@ -428,6 +441,8 @@ check_functions(
   sigemptyset
   sigprocmask
   strerror_r
+  __write
+  writev
 )
 
 check_function_exists(lseek64 HAVE_LSEEK64)

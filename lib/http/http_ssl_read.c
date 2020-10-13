@@ -22,7 +22,7 @@ http_ssl_read(fd_t fd, void* buf, size_t len, void* b) {
     if(sret == 1)
       SSL_clear(h->ssl);
   }
-#if DEBUG_OUTPUT_
+#if DEBUG_HTTP
   buffer_puts(buffer_2, "http_ssl_read ");
   buffer_puts(buffer_2, " ret=");
   buffer_putlong(buffer_2, ret);

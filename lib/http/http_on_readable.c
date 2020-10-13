@@ -24,7 +24,7 @@
 ssize_t
 http_on_readable(http* h, void (*wantwrite)(fd_t)) {
   ssize_t ret = 0;
-#if DEBUG_OUTPUT
+#if DEBUG_HTTP
   buffer_puts(buffer_2, "http_on_readable ");
   buffer_putlong(buffer_2, h->sock);
   buffer_puts(buffer_2, " tls=");
@@ -44,11 +44,8 @@ http_on_readable(http* h, void (*wantwrite)(fd_t)) {
     if(!h->connected) {
       ret = http_ssl_connect(h);
 
-      if(ret == -1 && errno == EAGAIN)
-        ret = 0;
-
       if(ret != 1)
-        return ret;
+        goto fail;
     }
   }
 #endif
@@ -59,5 +56,17 @@ http_on_readable(http* h, void (*wantwrite)(fd_t)) {
     if(h->sent)
       ret = 1;
   }
+fail:
+  if(ret == -1 && h->response->err == EAGAIN)
+    ret = 0;
+#if DEBUG_HTTP
+  buffer_puts(buffer_2, "http_on_readable ");
+  buffer_puts(buffer_2, " ret=");
+  buffer_putlong(buffer_2, ret);
+  buffer_puts(buffer_2, " err=");
+  buffer_putlong(buffer_2, h->response->err);
+  buffer_putnlflush(buffer_2);
+#endif
+
   return ret;
 }

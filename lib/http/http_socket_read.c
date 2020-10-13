@@ -13,7 +13,7 @@ http_socket_read(fd_t fd, void* buf, size_t len, void* b) {
   ssize_t ret = -1;
   http* h = (http*)((buffer*)b)->cookie;
   http_response* r = h->response;
-#if DEBUG_OUTPUT_
+#if DEBUG_HTTP
   buffer_putsflush(buffer_2, "http_socket_read\n");
 #endif
 // s = winsock2errno(recv(fd, buf, len, 0));
@@ -35,6 +35,7 @@ http_socket_read(fd_t fd, void* buf, size_t len, void* b) {
     // closesocket(h->sock);
     http_close(h);
     h->q.in.fd = h->q.out.fd = h->sock = -1;
+    h->connected = 0;
     r->status = HTTP_STATUS_CLOSED;
   } else if(ret == -1) {
     r->err = errno;
@@ -49,7 +50,7 @@ http_socket_read(fd_t fd, void* buf, size_t len, void* b) {
     ret = http_read_internal(h, (char*)buf, ret);
     h->q.in.n = n;
   }
-#if DEBUG_OUTPUT_
+#if DEBUG_HTTP
   buffer_puts(buffer_2, "http_socket_read ");
   buffer_puts(buffer_2, " ret=");
   buffer_putlong(buffer_2, ret);

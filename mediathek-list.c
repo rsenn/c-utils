@@ -74,7 +74,7 @@ const char* mediathek_url = "https://verteiler1.mediathekview.de/Filmliste-akt.x
 static unsigned long min_length;
 static int debug;
 static strlist include, exclude;
-static buffer output;
+static buffer output, *console;
 
 /**
  * @brief count_field_lengths
@@ -145,15 +145,15 @@ void
 process_status(void) {
   /* display interesting process IDs  */
 #if !(defined(_WIN32) || defined(_WIN64))
-  buffer_putm_internal(buffer_2, "process ", errmsg_argv0, ": pid=", NULL);
-  buffer_putlong(buffer_2, getpid());
-  buffer_puts(buffer_2, ", ppid=");
-  buffer_putlong(buffer_2, getppid());
-  buffer_puts(buffer_2, ", pgrp=");
-  buffer_putlong(buffer_2, getpgrp());
-  buffer_puts(buffer_2, ", tcpgrp=");
-  buffer_putlong(buffer_2, tcgetpgrp(STDIN_FILENO));
-  buffer_putnlflush(buffer_2);
+  buffer_putm_internal(console, "process ", errmsg_argv0, ": pid=", NULL);
+  buffer_putlong(console, getpid());
+  buffer_puts(console, ", ppid=");
+  buffer_putlong(console, getppid());
+  buffer_puts(console, ", pgrp=");
+  buffer_putlong(console, getpgrp());
+  buffer_puts(console, ", tcpgrp=");
+  buffer_putlong(console, tcgetpgrp(STDIN_FILENO));
+  buffer_putnlflush(console);
 #endif
 }
 
@@ -282,6 +282,63 @@ format_time(time_t ti) {
   return buf;
 }
 
+void
+mktime_r(struct tm* const t, time_t* ret) {
+  time_t day;
+  time_t i;
+  time_t years = t->tm_year - 70;
+  if(t->tm_sec > 60) {
+    t->tm_min += t->tm_sec / 60;
+    t->tm_sec %= 60;
+  }
+  if(t->tm_min > 60) {
+    t->tm_hour += t->tm_min / 60;
+    t->tm_min %= 60;
+  }
+  if(t->tm_hour > 60) {
+    t->tm_mday += t->tm_hour / 60;
+    t->tm_hour %= 60;
+  }
+  if(t->tm_mon > 12) {
+    t->tm_year += t->tm_mon / 12;
+    t->tm_mon %= 12;
+  }
+  if(t->tm_mon < 0)
+    t->tm_mon = 0;
+  while(t->tm_mday > __spm[1 + t->tm_mon]) {
+    if(t->tm_mon == 1 && __isleap(t->tm_year + 1900)) {
+      if(t->tm_mon == 31 + 29)
+        break;
+      --t->tm_mday;
+    }
+    t->tm_mday -= __spm[t->tm_mon];
+    ++t->tm_mon;
+    if(t->tm_mon > 11) {
+      t->tm_mon = 0;
+      ++t->tm_year;
+    }
+  }
+  if(t->tm_year < 70) {
+    *ret = -1;
+    return;
+  }
+  day = years * 365 + (years + 1) / 4;
+  if((years -= 131) >= 0) {
+    years /= 100;
+    day -= (years >> 2) * 3 + 1;
+    if((years &= 3) == 3)
+      years--;
+    day -= years;
+  }
+  day += t->tm_yday = __spm[t->tm_mon] + t->tm_mday - 1 + (__isleap(t->tm_year + 1900) & (t->tm_mon > 1));
+  i = 7;
+  t->tm_wday = (day + 4) % i;
+  i = 24;
+  day *= i;
+  i = 60;
+  *ret = ((day + t->tm_hour) * i + t->tm_min) * i + t->tm_sec;
+}
+
 /**
  * @brief parse_datetime
  * @param s
@@ -291,10 +348,11 @@ format_time(time_t ti) {
 time_t
 parse_datetime(const char* s, const char* fmt) {
   struct tm tm_s;
+  time_t t;
   byte_zero(&tm_s, sizeof(struct tm));
   if(str_ptime(s, fmt, &tm_s) == s)
     return 0;
-  return mktime(&tm_s);
+  mktime_r(&tm_s, &t);
 }
 
 /**
@@ -381,9 +439,9 @@ typedef struct mediathek_entry {
 mediathek_entry_t*
 new_mediathek_entry() {
   mediathek_entry_t* e = alloc_zero(sizeof(mediathek_entry_t));
-/*  if(e == 0)
-    return 0;
-  byte_zero(e, sizeof(mediathek_entry_t));*/
+  /*  if(e == 0)
+      return 0;
+    byte_zero(e, sizeof(mediathek_entry_t));*/
   return e;
 }
 
@@ -431,10 +489,10 @@ match_tokens(char* toks, const char* x, size_t n) {
   }
 
   if(ret && debug > 1) {
-    buffer_putm_internal(buffer_2, "token list '", toks, "' matched '", NULL);
-    buffer_put(buffer_2, x, n);
-    buffer_puts(buffer_2, "'.");
-    buffer_putnlflush(buffer_2);
+    buffer_putm_internal(console, "token list '", toks, "' matched '", NULL);
+    buffer_put(console, x, n);
+    buffer_puts(console, "'.");
+    buffer_putnlflush(console);
   }
 
   return ret;
@@ -481,7 +539,7 @@ match_toklists(strlist* sl) {
 mediathek_entry_t*
 parse_entry(strlist* sl) {
 
-    mediathek_entry_t* e = 0;
+  mediathek_entry_t* e = 0;
   time_t dt = parse_anydate(strlist_at(sl, 3));
 
   time_t tm = parse_time(strlist_at(sl, 4));
@@ -597,7 +655,7 @@ parse_mediathek_list(buffer* inbuf, buffer* outbuf) {
   char buf2[BUFSIZE];
   static strlist prev, prevout, sl;
   size_t matched = 0, total = 0;
-  ssize_t ret, ret2, read_bytes= 0;
+  ssize_t ret, ret2, read_bytes = 0;
   mediathek_entry_t* e = 0;
 
   /*  strlist_init(&sl, '\0');
@@ -633,7 +691,7 @@ parse_mediathek_list(buffer* inbuf, buffer* outbuf) {
     if((e = parse_entry(&sl))) {
       total++;
       if(debug > 2)
-        print_entry(buffer_2, e);
+        print_entry(console, e);
 
       if(match_toklists(&sl)) {
         matched++;
@@ -654,39 +712,39 @@ parse_mediathek_list(buffer* inbuf, buffer* outbuf) {
     strlist_copy(&prev, &sl);
   }
 
-#ifdef DEBUG_OUTPUT
-    buffer_puts(buffer_2, "Read ");
-    buffer_putlong(buffer_2, read_bytes);
-    buffer_putsflush(buffer_2, " bytes.\n");
+#ifdef DEBUG_OUTPUT_
+  buffer_puts(console, "Read ");
+  buffer_putlong(console, read_bytes);
+  buffer_putsflush(console, " bytes.\n");
 #endif
-
 
   if(h.response->err) {
     if(h.response->err != EAGAIN) {
-      buffer_puts(buffer_2, "Return value: ");
-      buffer_putlong(buffer_2, ret);
-      buffer_puts(buffer_2, " ");
-      buffer_flush(buffer_2)
-;      errno = h.response->err;
+      buffer_puts(console, "Return value: ");
+      buffer_putlong(console, ret);
+      buffer_puts(console, " ");
+      buffer_flush(console);
+      errno = h.response->err;
       errmsg_warnsys("Read error", 0);
     }
-  } 
+  }
 
-   if(ret == 0) {
-    char status[FMT_ULONG + 1];
+  if(ret == 0 && h.response->err != EAGAIN) {
+    char status[FMT_ULONG + 1], error[1024];
     status[fmt_ulong(status, h.response->status)] = '\0';
-    errmsg_warn("STATUS: ", status, " EOF: ", 0);
+    http_errstr(h.response->err, error, sizeof(error));
+    errmsg_warn("STATUS: ", status, " error: ", error,  " connected: ", h.connected ? "1" : "0", 0);
   }
 
   if(ret == 0) {
 
     if(debug) {
-      buffer_puts(buffer_2, "\nprocessed ");
-      buffer_putulong(buffer_2, matched);
-      buffer_puts(buffer_2, "/");
-      buffer_putulong(buffer_2, total);
-      buffer_puts(buffer_2, " entries.");
-      buffer_putnlflush(buffer_2);
+      buffer_puts(console, "\nprocessed ");
+      buffer_putulong(console, matched);
+      buffer_puts(console, "/");
+      buffer_putulong(console, total);
+      buffer_puts(console, " entries.");
+      buffer_putnlflush(console);
     }
 
     strlist_free(&sl);
@@ -757,24 +815,27 @@ main(int argc, char* argv[]) {
     strlist_push(&include, argv[optind++]);
   }
 
-  if(outfile)
+  if(outfile) {
     buffer_truncfile(&output, outfile);
-  else
+    console = buffer_1;
+  } else {
     buffer_write_fd(&output, STDOUT_FILENO);
+    console = buffer_2;
+  }
 
   /* if(strlist_count(&include) == 0)
      strlist_push(&include, "");*/
 
-  strlist_dump(buffer_2, &include);
-  strlist_dump(buffer_2, &exclude);
+  strlist_dump(console, &include);
+  strlist_dump(console, &exclude);
 
   /*  stralloc sa;
     stralloc_init(&sa);
 
     strlist_join(&include, &sa, ',');
 
-    buffer_putsa(buffer_2, &sa);
-    buffer_putnlflush(buffer_2);*/
+    buffer_putsa(console, &sa);
+    buffer_putnlflush(console);*/
   /*
     fprintf(stderr, "%p\n", str_istr("blah", ""));
     fprintf(stderr, "%p\n", str_istr("[", "blah"));
@@ -821,14 +882,14 @@ main(int argc, char* argv[]) {
     buffer_puts(&output, "\n}");
     buffer_flush(&output);
 
-    buffer_puts(buffer_2, "Processed ");
-    buffer_putlong(buffer_2, n);
-    buffer_putsflush(buffer_2, " entries.\n");
+    buffer_puts(console, "Processed ");
+    buffer_putlong(console, n);
+    buffer_putsflush(console, " entries.\n");
   } else {
     errmsg_warnsys("Read failed", 0);
-    buffer_puts(buffer_2, "Read = ");
-    buffer_putlong(buffer_2, ret);
-    buffer_putnlflush(buffer_2);
+    buffer_puts(console, "Read = ");
+    buffer_putlong(console, ret);
+    buffer_putnlflush(console);
   }
   return 1;
 }

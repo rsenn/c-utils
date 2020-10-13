@@ -41,7 +41,7 @@ http_readable(http* h, int freshen) {
   ssize_t ret = 0;
   int err;
   http_response* r;
-#if DEBUG_OUTPUT
+#if DEBUG_HTTP
   buffer_puts(buffer_2, "http_readable ");
   buffer_putlong(buffer_2, h->sock);
   buffer_putnlflush(buffer_2);
