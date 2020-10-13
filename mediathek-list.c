@@ -380,10 +380,10 @@ typedef struct mediathek_entry {
  */
 mediathek_entry_t*
 new_mediathek_entry() {
-  mediathek_entry_t* e = malloc(sizeof(mediathek_entry_t));
-  if(e == 0)
+  mediathek_entry_t* e = alloc_zero(sizeof(mediathek_entry_t));
+/*  if(e == 0)
     return 0;
-  byte_zero(e, sizeof(mediathek_entry_t));
+  byte_zero(e, sizeof(mediathek_entry_t));*/
   return e;
 }
 
@@ -403,7 +403,7 @@ delete_mediathek_entry(mediathek_entry_t* e) {
   stralloc_free(&e->desc);
   stralloc_free(&e->url);
   stralloc_free(&e->link);
-  free(e);
+  alloc_free(e);
 }
 
 /**
@@ -481,7 +481,7 @@ match_toklists(strlist* sl) {
 mediathek_entry_t*
 parse_entry(strlist* sl) {
 
-  static mediathek_entry_t* e;
+    mediathek_entry_t* e = 0;
   time_t dt = parse_anydate(strlist_at(sl, 3));
 
   time_t tm = parse_time(strlist_at(sl, 4));
@@ -597,7 +597,7 @@ parse_mediathek_list(buffer* inbuf, buffer* outbuf) {
   char buf2[BUFSIZE];
   static strlist prev, prevout, sl;
   size_t matched = 0, total = 0;
-  ssize_t ret, ret2;
+  ssize_t ret, ret2, read_bytes= 0;
   mediathek_entry_t* e = 0;
 
   /*  strlist_init(&sl, '\0');
@@ -605,12 +605,9 @@ parse_mediathek_list(buffer* inbuf, buffer* outbuf) {
     strlist_init(&prevout, '\0');
   */
 
-  while((ret = buffer_get_token(inbuf, buf2, sizeof(buf2), "]", 1)) > 0) {
-#ifdef DEBUG_OUTPUT
-    buffer_puts(buffer_2, "Read ");
-    buffer_putlong(buffer_2, ret);
-    buffer_putsflush(buffer_2, " bytes.\n");
-#endif
+  if((ret = buffer_get_token(inbuf, buf2, sizeof(buf2), "]", 1)) > 0) {
+    read_bytes += ret;
+
     for(;;) {
       ret2 = 0;
       if(ret + 1 >= BUFSIZE)
@@ -657,10 +654,25 @@ parse_mediathek_list(buffer* inbuf, buffer* outbuf) {
     strlist_copy(&prev, &sl);
   }
 
+#ifdef DEBUG_OUTPUT
+    buffer_puts(buffer_2, "Read ");
+    buffer_putlong(buffer_2, read_bytes);
+    buffer_putsflush(buffer_2, " bytes.\n");
+#endif
+
+
   if(h.response->err) {
-    errno = h.response->err;
-    errmsg_warnsys("Read error", 0);
-  } else if(ret == 0) {
+    if(h.response->err != EAGAIN) {
+      buffer_puts(buffer_2, "Return value: ");
+      buffer_putlong(buffer_2, ret);
+      buffer_puts(buffer_2, " ");
+      buffer_flush(buffer_2)
+;      errno = h.response->err;
+      errmsg_warnsys("Read error", 0);
+    }
+  } 
+
+   if(ret == 0) {
     char status[FMT_ULONG + 1];
     status[fmt_ulong(status, h.response->status)] = '\0';
     errmsg_warn("STATUS: ", status, " EOF: ", 0);

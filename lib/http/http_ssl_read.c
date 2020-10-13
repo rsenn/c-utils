@@ -13,11 +13,11 @@ http_ssl_read(fd_t fd, void* buf, size_t len, void* b) {
   assert(h->tls);
   assert(h->connected);
   // do_read:
-  ret = http_ssl2errno(h->ssl, SSL_read(h->ssl, buf, len));
+  ret = http_ssl2errno(h, SSL_read(h->ssl, buf, len));
 
   if(ret == 0) {
     ssize_t sret;
-    sret = http_ssl2errno(h->ssl, SSL_shutdown(h->ssl));
+    sret = http_ssl2errno(h, SSL_shutdown(h->ssl));
 
     if(sret == 1)
       SSL_clear(h->ssl);

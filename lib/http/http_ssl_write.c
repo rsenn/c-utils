@@ -12,7 +12,7 @@ http_ssl_write(fd_t fd, const void* buf, size_t n, void* b) {
   assert(h->tls);
   assert(h->connected);
   // do_write:
-  ret = http_ssl2errno(h->ssl, SSL_write(h->ssl, buf, n));
+  ret = http_ssl2errno(h, SSL_write(h->ssl, buf, n));
 
 #if DEBUG_OUTPUT
   buffer_puts(buffer_2, "http_ssl_write ");

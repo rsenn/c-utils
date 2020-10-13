@@ -11,7 +11,7 @@ http_ssl_connect(http* h) {
   ssize_t ret;
   char* msg = 0;
   assert(!h->connected);
-  ret = http_ssl2errno(h->ssl, SSL_connect(h->ssl));
+  ret = http_ssl2errno(h, SSL_connect(h->ssl));
 
   if(ret == 1) {
     h->connected = 1;

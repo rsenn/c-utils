@@ -98,7 +98,7 @@ int http_socket(http*, int);
 ssize_t http_socket_read(fd_t, void*, size_t, void*);
 ssize_t http_socket_write(fd_t, void*, size_t, void*);
 #ifdef HAVE_OPENSSL
-ssize_t http_ssl2errno(void*, ssize_t);
+ssize_t http_ssl2errno(http*, ssize_t);
 ssize_t http_ssl2want(http*, ssize_t, void (*)(fd_t), void (*)(fd_t));
 
 ssize_t http_ssl_connect(http*);

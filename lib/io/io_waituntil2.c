@@ -532,8 +532,11 @@ dopoll :
         return -1;
     }
   }
+#ifdef DEBUG_IO
   p = (struct pollfd*)array_start(&io_pollfds);
-  buffer_puts(buffer_2, "io_wait() ");
+  buffer_puts(buffer_2, "io_waituntil2(");
+  buffer_putulonglong(buffer_2, milliseconds);
+  buffer_puts(buffer_2, ") ");
   buffer_putlong(buffer_2, r);
   buffer_putsflush(buffer_2, " fds\n");
   for(i = 0; i < r; ++i) {
@@ -551,8 +554,10 @@ dopoll :
     buffer_puts(buffer_2, "}");
     buffer_putnlflush(buffer_2);
   }
+#endif
   if((i = poll((struct pollfd*)array_start(&io_pollfds), r, milliseconds)) < 1)
     return -1;
+#ifdef DEBUG_IO
   for(i = 0; i < r; ++i) {
     buffer_puts(buffer_2, "pollfd[");
     buffer_putlong(buffer_2, i);
@@ -568,6 +573,7 @@ dopoll :
     buffer_puts(buffer_2, "}");
     buffer_putnlflush(buffer_2);
   }
+#endif
   for(j = r - 1; j >= 0; --j) {
     io_entry* e = (io_entry*)iarray_get((iarray*)io_getfds(), p->fd);
     if(p->revents & (POLLERR | POLLHUP | POLLNVAL)) {
