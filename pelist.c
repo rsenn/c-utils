@@ -9,17 +9,63 @@
 #include "lib/fmt.h"
 #include "lib/byte.h"
 #include "lib/errmsg.h"
+#include "lib/stralloc.h"
 #include <assert.h>
 #include <stdlib.h>
 
 int list_imports, list_exports, list_deps, list_sections;
-static int print_export_dir, print_data_dir, print_opt_header;
+static int print_export_dir, print_data_dir, print_opt_header, print_offset_rva, print_rva_offset, print_range,
+    print_as_rva;
+static uint64 offset, rva;
+static stralloc search;
 
 void pe_dump_sections(uint8* base);
 
 #define PE_DUMP_FIELD(base, ptr, st, field)                                                                            \
   buffer_putspad(b, #field, 30), buffer_puts(b, " 0x"),                                                                \
       buffer_putxlonglong0(b, PE_GET(base, ptr, st, field), PE_SIZE(base, st, field) * 2), buffer_putnlflush(b)
+
+size_t
+pe_end_offset(uint8* base) {
+  uint16 i, n;
+  pe_section_header* sections = pe_header_sections(base, &n);
+  size_t start, length;
+
+  start = uint32_get(&sections[n - 1].pointer_to_raw_data);
+  length = uint32_get(&sections[n - 1].size_of_raw_data);
+
+  return start + length;
+}
+
+size_t
+pe_search_sections(uint8* base, const char* x, size_t len) {
+  uint16 i, n;
+  pe_section_header* sections = pe_header_sections(base, &n);
+  size_t start, length, j, ret = 0;
+
+  for(i = 0; i < n; i++) {
+    start = uint32_get(&sections[i].pointer_to_raw_data);
+    length = uint32_get(&sections[i].size_of_raw_data);
+    j = 0;
+
+    while(j < length) {
+      j += byte_findb(base + start + j, length - j, x, len);
+      if(j < length) {
+        uint64 offset = start + j;
+
+        if(print_as_rva)
+          offset = pe_offset2rva(base, offset);
+
+        buffer_puts(buffer_1, "0x");
+        buffer_putxlonglong0(buffer_1, offset, offset > 0xffffffff ? 16 : 8);
+        buffer_putnlflush(buffer_1);
+        ret++;
+        j++;
+      }
+    }
+  }
+  return ret;
+}
 
 void
 pe_dump_opthdr(buffer* b, uint8* base) {
@@ -73,6 +119,13 @@ pe_print_data_directories(buffer* b, uint8* base, pe_data_directory* data_dirs, 
   }
 }
 
+char*
+pe_dllname(uint8* base) {
+  pe_data_directory* data_dir = &pe_header_datadir(base)[PE_DIRECTORY_ENTRY_EXPORT];
+  pe_export_directory* export_dir = pe_rva2ptr(base, data_dir->virtual_address);
+  return pe_rva2ptr(base, uint32_get(&export_dir->name));
+}
+
 void
 pe_print_export_directory(buffer* b, uint8* base, pe_export_directory* export_dir) {
   const char* name = pe_rva2ptr(base, uint32_get(&export_dir->name));
@@ -114,6 +167,7 @@ pe_dump_exports(uint8* base) {
   pe_section_header* text;
   uint32 fnaddr, *nameptr, *fnptr, mintextptr, maxtextptr;
   uint16* ordptr;
+  char* dllname;
 
   pe_export_directory* exports = pe_rva2ptr(base, uint32_get(&export_dir->virtual_address));
   // pe_print_export_directory(buffer_1, exports);
@@ -129,18 +183,25 @@ pe_dump_exports(uint8* base) {
 
   mintextptr = uint32_get(&text->virtual_address);
   maxtextptr = mintextptr + uint32_get(&text->size_of_raw_data);
+  if((dllname = pe_dllname(base)))
+    buffer_putm_internal(buffer_1, "LIBRARY ", dllname, "\n", 0);
 
   buffer_puts(buffer_1, "EXPORTS\n");
 
   for(i = 0; i < uint32_get(&exports->number_of_names); i++) {
+   const char* s;
     uint16 ordinal = uint16_get(&ordptr[i]);
     fnaddr = fnptr[ordinal];
+    buffer_puts(buffer_1, "  ");
 
-    if(mintextptr < fnaddr && fnaddr < maxtextptr) {
-      buffer_puts(buffer_1, "  ");
-      buffer_puts(buffer_1, pe_rva2ptr(base, pe_thunk(base, nameptr, i)));
-      buffer_putnlflush(buffer_1);
+   /* if(mintextptr < fnaddr && fnaddr < maxtextptr)*/ {
+    s = pe_rva2ptr(base, uint32_get(&nameptr[i])); //pe_rva2ptr(base, pe_thunk(base, nameptr, i));
+      buffer_puts(buffer_1, s ? s : "<null>");
     }
+
+    buffer_puts(buffer_1, " @ ");
+    buffer_putulong(buffer_1, ordinal);
+    buffer_putnlflush(buffer_1);
   }
 }
 
@@ -213,6 +274,45 @@ pe_dump_imports(uint8* base) {
   }
 }
 
+int
+parse_offset(const char* arg, uint64* dest) {
+  int ret = 0;
+  if(str_start(arg, "0x"))
+    ret = scan_xlonglong(arg + 2, dest) > 0;
+  if(!ret)
+    ret = scan_ulonglong(arg, dest) > 0;
+
+  return ret;
+}
+
+int
+parse_search(const char* arg, stralloc* dest) {
+  int ret = 0;
+  uint64 n;
+  ret = scan_xlonglong(str_start(arg, "0x") ? arg + 2 : arg, &n);
+  if(ret > 0) {
+    ret = (ret + 1) / 2;
+    stralloc_ready(dest, 16);
+    uint64_pack(dest->s, n);
+    dest->len = ret;
+  } else {
+    stralloc_copys(dest, arg);
+    ret = dest->len;
+  }
+  return ret;
+}
+
+int
+put_search(buffer* b, const stralloc* search) {
+
+  size_t i;
+  for(i = 0; i < search->len; i++) {
+    if(i > 0)
+      buffer_putspace(b);
+    buffer_putxlong0(b, search->s[i], 2);
+  }
+}
+
 void
 usage(char* av0) {
   buffer_putm_internal(buffer_1,
@@ -230,6 +330,11 @@ usage(char* av0) {
                        "  -E, --export-directory  Print export directory\n",
                        "  -D, --data-directory    Print data directory\n",
                        "  -O, --optional-header   Print optional header\n",
+                       "  -r, --range             Print sections as ranges\n",
+                       "  -o, --offset-rva        Print RVA of given offset\n",
+                       "  -a, --rva-offset        Print offset of given RVA\n",
+                       "  -S, --search BYTES      Search data\n",
+                       "  -R, --rva               Search result as RVA\n",
                        "\n",
                        0);
   buffer_flush(buffer_1);
@@ -250,16 +355,23 @@ main(int argc, char** argv) {
                                         {"export-directory", 0, &print_export_dir, 'E'},
                                         {"data-directory", 0, &print_data_dir, 'D'},
                                         {"optional-header", 0, &print_opt_header, 'O'},
+                                        {"range", 0, &print_range, 'r'},
+                                        {"offset-rva", 0, NULL, 'o'},
+                                        {"rva-offset", 0, NULL, 'a'},
+                                        {"search", 0, NULL, 'S'},
+                                        {"rva", 0, &print_as_rva, 'R'},
                                         {0, 0, 0, 0}};
 
   errmsg_iam(argv[0]);
 
+#ifdef DEBUG_OUTPUT_
   buffer_puts(buffer_1, "Number of arguments: ");
   buffer_putlong(buffer_1, argc);
   buffer_putnlflush(buffer_1);
+#endif
 
   for(;;) {
-    c = getopt_long(argc, argv, "hiedsEDO", opts, &index);
+    c = getopt_long(argc, argv, "hiedsEDOo:ra:S:R", opts, &index);
     if(c == -1)
       break;
     if(c == '\0')
@@ -274,6 +386,11 @@ main(int argc, char** argv) {
       case 'E': print_export_dir = 1; break;
       case 'D': print_data_dir = 1; break;
       case 'O': print_opt_header = 1; break;
+      case 'r': print_range = 1; break;
+      case 'o': print_offset_rva = parse_offset(optarg, &offset); break;
+      case 'a': print_rva_offset = parse_offset(optarg, &rva); break;
+      case 'S': parse_search(optarg, &search); break;
+      case 'R': print_as_rva = 1; break;
       default: {
         usage(argv[0]);
         return 1;
@@ -293,6 +410,36 @@ main(int argc, char** argv) {
       if(nt_headers->signature != PE_NT_SIGNATURE) {
         buffer_putsflush(buffer_2, "not PE\n");
         return -1;
+      }
+
+      if(print_offset_rva) {
+        uint64 rva = pe_offset2rva(base, offset);
+
+        buffer_puts(buffer_1, "0x");
+
+        buffer_putxlonglong0(buffer_1, rva, rva > 0xffffffff ? 16 : 8);
+        buffer_putnlflush(buffer_1);
+        continue;
+      }
+      if(print_rva_offset) {
+        uint64 offset = pe_rva2offset(base, rva);
+
+        buffer_puts(buffer_1, "0x");
+
+        buffer_putxlonglong0(buffer_1, offset, offset > 0xffffffff ? 16 : 8);
+        buffer_putnlflush(buffer_1);
+        continue;
+      }
+
+      if(search.len) {
+        uint64 num = pe_search_sections(base, search.s, search.len);
+
+        if(num == 0) {
+          buffer_puts(buffer_1, "Not found: ");
+          put_search(buffer_1, &search);
+          buffer_putnlflush(buffer_1);
+        }
+        continue;
       }
 
       // if(!(nt_headers->coff_header.characteristics & PE_FILE_DLL)) {
@@ -343,27 +490,55 @@ pe_dump_sections(uint8* base) {
 
   buffer_putspad(buffer_1, "section name", 16);
   buffer_putspace(buffer_1);
-  buffer_putspad(buffer_1, "vsize", sizeof(sections[i].physical_address) * 2);
-  buffer_putnspace(buffer_1, 3);
+  if(!print_range) {
+    buffer_putspad(buffer_1, "vsize", sizeof(sections[i].physical_address) * 2);
+    buffer_putnspace(buffer_1, 3);
+  }
   buffer_putspad(buffer_1, "rva", sizeof(sections[i].virtual_address) * 2);
   buffer_putnspace(buffer_1, 3);
-  buffer_putspad(buffer_1, "rawsize", sizeof(sections[i].size_of_raw_data) * 2);
-  buffer_putnspace(buffer_1, 3);
+  if(print_range) {
+    buffer_putspad(buffer_1, "vend", sizeof(sections[i].physical_address) * 2);
+    buffer_putnspace(buffer_1, 3);
+  }
+  if(!print_range) {
+    buffer_putspad(buffer_1, "rawsize", sizeof(sections[i].size_of_raw_data) * 2);
+    buffer_putnspace(buffer_1, 3);
+  }
   buffer_putspad(buffer_1, "pointer", sizeof(sections[i].pointer_to_raw_data) * 2);
+  if(print_range) {
+    buffer_putnspace(buffer_1, 3);
+    buffer_putspad(buffer_1, "raw end", sizeof(sections[i].size_of_raw_data) * 2);
+  }
   buffer_putnlflush(buffer_1);
 
   for(i = 0; i < n; i++) {
     buffer_putspad(buffer_1, sections[i].name, 16);
-    buffer_puts(buffer_1, " 0x");
-    buffer_putxlong0(buffer_1, uint32_get(&sections[i].physical_address), sizeof(sections[i].physical_address) * 2);
+    if(!print_range) {
+      buffer_puts(buffer_1, " 0x");
+      buffer_putxlong0(buffer_1, uint32_get(&sections[i].physical_address), sizeof(sections[i].physical_address) * 2);
+    }
     buffer_puts(buffer_1, " 0x");
     buffer_putxlong0(buffer_1, uint32_get(&sections[i].virtual_address), sizeof(sections[i].virtual_address) * 2);
-    buffer_puts(buffer_1, " 0x");
-    buffer_putxlong0(buffer_1, uint32_get(&sections[i].size_of_raw_data), sizeof(sections[i].size_of_raw_data) * 2);
+    if(print_range) {
+      buffer_puts(buffer_1, " 0x");
+      buffer_putxlong0(buffer_1,
+                       uint32_get(&sections[i].virtual_address) + uint32_get(&sections[i].physical_address),
+                       sizeof(sections[i].physical_address) * 2);
+    }
+    if(!print_range) {
+      buffer_puts(buffer_1, " 0x");
+      buffer_putxlong0(buffer_1, uint32_get(&sections[i].size_of_raw_data), sizeof(sections[i].size_of_raw_data) * 2);
+    }
     buffer_puts(buffer_1, " 0x");
     buffer_putxlong0(buffer_1,
                      uint32_get(&sections[i].pointer_to_raw_data),
                      sizeof(sections[i].pointer_to_raw_data) * 2);
+    if(print_range) {
+      buffer_puts(buffer_1, " 0x");
+      buffer_putxlong0(buffer_1,
+                       uint32_get(&sections[i].pointer_to_raw_data) + uint32_get(&sections[i].size_of_raw_data),
+                       sizeof(sections[i].size_of_raw_data) * 2);
+    }
     buffer_putnlflush(buffer_1);
   }
 }

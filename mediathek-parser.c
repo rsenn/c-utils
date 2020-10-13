@@ -482,7 +482,9 @@ main(int argc, char* argv[]) {
         break;
       }
       case 'f': datetime_format = optarg; break;
-      default: /* '?' */ buffer_putm_internal(buffer_2, "Usage: ", argv[0], "[-d] [-l] <file>\n", 0); exit(EXIT_FAILURE);
+      default: /* '?' */
+        buffer_putm_internal(buffer_2, "Usage: ", argv[0], "[-d] [-l] <file>\n", 0);
+        exit(EXIT_FAILURE);
     }
   }
 

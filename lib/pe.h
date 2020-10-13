@@ -31,6 +31,144 @@ typedef struct __unaligned {
 }
 pe_export_directory;
 
+typedef struct __unaligned {
+  uint32 characteristics;
+  uint32 time_date_stamp;
+  uint16 major_version;
+  uint16 minor_version;
+  uint16 number_of_named_entries;
+}
+pe_resource_directory;
+
+typedef struct __unaligned {
+  union {
+    struct {
+      uint32 name_offset : 31;
+      uint32 name_is_string : 1;
+    };
+    uint32 name;
+    uint16 id;
+  };
+  union {
+    uint32 offset_to_data;
+    struct {
+      uint32 offset_to_directory : 31;
+      uint32 data_is_directory : 1;
+    };
+  };
+}
+pe_resource_directory_entry;
+
+typedef struct __unaligned {
+  uint16 length;
+  char name_string[1];
+}
+pe_resource_directory_string;
+
+typedef struct __unaligned {
+  uint16 length;
+  uint16 name_string[1];
+}
+pe_resource_dir_string_u;
+
+typedef struct __unaligned {
+  uint32 offset_to_data;
+  uint32 size;
+  uint32 code_page;
+  uint32 reserved;
+}
+pe_resource_data_entry;
+
+typedef struct __unaligned {
+  uint32 size;
+  uint32 time_date_stamp;
+  uint16 major_version;
+  uint16 minor_version;
+  uint32 global_flags_clear;
+  uint32 global_flags_set;
+  uint32 critical_section_default_timeout;
+  uint32 de_commit_free_block_threshold;
+  uint32 de_commit_total_free_threshold;
+  uint32 lock_prefix_table;
+  uint32 maximum_allocation_size;
+  uint32 virtual_memory_threshold;
+  uint32 process_heap_flags;
+  uint32 process_affinity_mask;
+  uint16 csd_version;
+  uint16 reserved1;
+  uint32 edit_list;
+  uint32 security_cookie;
+  uint32 se_handler_table;
+  uint32 se_handler_count;
+}
+pe32_load_config_directory;
+
+typedef struct __unaligned {
+  uint32 size;
+  uint32 time_date_stamp;
+  uint16 major_version;
+  uint16 minor_version;
+  uint32 global_flags_clear;
+  uint32 global_flags_set;
+  uint32 critical_section_default_timeout;
+  uint64 de_commit_free_block_threshold;
+  uint64 de_commit_total_free_threshold;
+  uint64 lock_prefix_table;
+  uint64 maximum_allocation_size;
+  uint64 virtual_memory_threshold;
+  uint64 process_affinity_mask;
+  uint32 process_heap_flags;
+  uint16 csd_version;
+  uint16 reserved1;
+  uint64 edit_list;
+  uint64 security_cookie;
+  uint64 se_handler_table;
+  uint64 se_handler_count;
+}
+pe64_load_config_directory;
+
+typedef struct __unaligned {
+  uint32 characteristics;
+  uint32 time_date_stamp;
+  uint16 major_version;
+  uint16 minor_version;
+  uint16 number_of_named_entries;
+  uint16 number_of_id_entries;
+}
+image_resource_directory;
+
+typedef struct __unaligned {
+  uint32 characteristics;
+  uint32 time_date_stamp;
+  uint16 major_version;
+  uint16 minor_version;
+  uint32 type;
+  uint32 size_of_data;
+  uint32 address_of_raw_data;
+  uint32 pointer_to_raw_data;
+}
+pe_debug_directory;
+
+typedef struct __unaligned {
+  uint64 start_address_of_raw_data;
+  uint64 end_address_of_raw_data;
+  uint64 address_of_index;
+  uint64 address_of_call_backs;
+  uint32 size_of_zero_fill;
+  uint32 characteristics;
+}
+pe64_tls_directory;
+
+typedef struct __unaligned {
+  uint32 start_address_of_raw_data;
+  uint32 end_address_of_raw_data;
+  uint32 address_of_index;
+  uint32 address_of_call_backs;
+  uint32 size_of_zero_fill;
+  uint32 characteristics;
+}
+pe32_tls_directory;
+
 typedef struct {
   union {
     uint32 characteristics;

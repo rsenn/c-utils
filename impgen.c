@@ -31,46 +31,48 @@ main(int argc, char* argv[]) {
   int optarg;
 
   for(optarg = 1; optarg < argc; ++optarg) {
-    char *dll, *filename, *dll_name;
+    char *base, *filename, *dll_name;
     size_t dllsz;
     uint32 i, *name_rvas, nexp, num_entries;
+    uint16 *ord_rvas;
     pe_data_directory* datadir;
-    pe_export_directory* expdata;
+    pe_export_directory* exports;
     pe32_opt_header* opt_hdr_32;
     pe_type type;
 
     filename = argv[optarg];
 
-    dll = (char*)mmap_read(filename, &dllsz);
-    if(dll == NULL)
+    base = (char*)mmap_read(filename, &dllsz);
+    if(base == NULL)
       return 1;
 
     dll_name = str_basename(filename);
 
-    opt_hdr_32 = pe_header_opt(dll);
+    opt_hdr_32 = pe_header_opt(base);
 
     type = uint16_get(&opt_hdr_32->magic);
 
-    datadir = pe_get_datadir(dll, &num_entries);
+    datadir = pe_get_datadir(base, &num_entries);
 
     if(num_entries < 1) /* no exports */
       return 1;
 
-    expdata = pe_rva2ptr(dll, uint32_get(&datadir->virtual_address));
+    exports = pe_rva2ptr(base, uint32_get(&datadir->virtual_address));
 
-    nexp = uint32_get(&expdata->number_of_names);
-    name_rvas = pe_rva2ptr(dll, uint32_get(&expdata->address_of_names));
+    nexp = uint32_get(&exports->number_of_names);
+    name_rvas = pe_rva2ptr(base, uint32_get(&exports->address_of_names));
+  ord_rvas = pe_rva2ptr(base, uint32_get(&exports->address_of_name_ordinals));
 
     buffer_puts(buffer_1, "EXPORTS\n");
     (void)dll_name;
     /* buffer_putm_internal(buffer_1, "LIBRARY ", dll_name, "\n", 0); */
 
     for(i = 0; i < nexp; i++) {
-      buffer_putm_internal(buffer_1, "  ", pe_rva2ptr(dll, uint32_get(&name_rvas[i])), " @ ", 0);
-      buffer_putulong(buffer_1, 1 + i);
+      buffer_putm_internal(buffer_1, "  ", pe_rva2ptr(base, uint32_get(&name_rvas[i])), " @ ", 0);
+      buffer_putulong(buffer_1,  uint16_get(&ord_rvas[i]));
       buffer_putnlflush(buffer_1);
     }
-    mmap_unmap(dll, dllsz);
+    mmap_unmap(base, dllsz);
   }
 
   return 0;

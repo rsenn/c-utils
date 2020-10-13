@@ -559,7 +559,10 @@ Written by LRN.");
 
 void
 printhelp(char* argv0) {
-  buffer_putm(buffer_1, "Usage: ", argv0, " [OPTION]... FILE...\n\
+  buffer_putm(buffer_1,
+              "Usage: ",
+              argv0,
+              " [OPTION]... FILE...\n\
 OPTIONS:\n\
 --version         Displays version\n\
 -v, --verbose         Does not work\n\
@@ -575,7 +578,8 @@ OPTIONS:\n\
 \n\
 Use -- option to pass filenames that start with `--' or `-'\n\
 For bug reporting instructions, please see:\n\
-<somewhere>.", 0);
+<somewhere>.",
+              0);
   buffer_putnlflush(buffer_1);
 }
 
@@ -605,7 +609,8 @@ print_image_links(int first,
       buffer_putspad(buffer_1, item->name, 16);
       buffer_puts(buffer_1, " (0x");
       buffer_putxlonglong0(buffer_1, item->address_offset, 8);
-      buffer_putm_internal(buffer_1, item->forward_str ? " ->" : "", item->forward_str ? item->forward_str : "", " <", 0);
+      buffer_putm_internal(
+          buffer_1, item->forward_str ? " ->" : "", item->forward_str ? item->forward_str : "", " <", 0);
       buffer_putulong(buffer_1, item->section_index);
       buffer_puts(buffer_1, ">");
       buffer_putnlflush(buffer_1);
@@ -856,7 +861,7 @@ main(int argc, char** argv) {
       case 'V': printversion(); break;
       default:
         buffer_putm_internal(
-            buffer_2, "Unrecognized option `", argv[optind], "'\n", "Try `ntldd --help' for more information",0);
+            buffer_2, "Unrecognized option `", argv[optind], "'\n", "Try `ntldd --help' for more information", 0);
         buffer_putnlflush(buffer_2);
         return 1;
     }

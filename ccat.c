@@ -27,12 +27,13 @@ buffer_copy(buffer* out, buffer* in) {
 void
 usage(char* argv0) {
   buffer_putm_internal(buffer_1,
-                "Usage: ",
-                argv0,
-                " [-o output] [infile or stdin]\n\n",
-                "  -1 ... -9           compression level; default is 3\n",
-                "\n",
-                "Supported types are:", 0);
+                       "Usage: ",
+                       argv0,
+                       " [-o output] [infile or stdin]\n\n",
+                       "  -1 ... -9           compression level; default is 3\n",
+                       "\n",
+                       "Supported types are:",
+                       0);
 #if HAVE_ZLIB
   buffer_puts(buffer_1, " gz");
 #endif
