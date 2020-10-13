@@ -733,7 +733,7 @@ parse_mediathek_list(buffer* inbuf, buffer* outbuf) {
     char status[FMT_ULONG + 1], error[1024];
     status[fmt_ulong(status, h.response->status)] = '\0';
     http_errstr(h.response->err, error, sizeof(error));
-    errmsg_warn("STATUS: ", status, " error: ", error,  " connected: ", h.connected ? "1" : "0", 0);
+    errmsg_warn("STATUS: ", status, " error: ", error, " connected: ", h.connected ? "1" : "0", 0);
   }
 
   if(ret == 0) {
