@@ -575,6 +575,7 @@ dopoll :
   }
 #endif
   for(j = r - 1; j >= 0; --j) {
+    p = array_get(&io_pollfds, sizeof(struct pollfd), j);
     io_entry* e = (io_entry*)iarray_get((iarray*)io_getfds(), p->fd);
     if(p->revents & (POLLERR | POLLHUP | POLLNVAL)) {
       /* error; signal whatever app is looking for */

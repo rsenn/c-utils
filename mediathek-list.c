@@ -306,7 +306,7 @@ mktime_r(struct tm* const t, time_t* ret) {
   if(t->tm_mon < 0)
     t->tm_mon = 0;
   while(t->tm_mday > __spm[1 + t->tm_mon]) {
-    if(t->tm_mon == 1 && __isleap(t->tm_year + 1900)) {
+    if(t->tm_mon == 1 && isleap(t->tm_year + 1900)) {
       if(t->tm_mon == 31 + 29)
         break;
       --t->tm_mday;
@@ -330,7 +330,7 @@ mktime_r(struct tm* const t, time_t* ret) {
       years--;
     day -= years;
   }
-  day += t->tm_yday = __spm[t->tm_mon] + t->tm_mday - 1 + (__isleap(t->tm_year + 1900) & (t->tm_mon > 1));
+  day += t->tm_yday = __spm[t->tm_mon] + t->tm_mday - 1 + (isleap(t->tm_year + 1900) & (t->tm_mon > 1));
   i = 7;
   t->tm_wday = (day + 4) % i;
   i = 24;

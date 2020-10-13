@@ -175,8 +175,7 @@ cleanup_text(char** t) {
   stralloc_replaces(&out, ": ", " - ");
   stralloc_replaces(&out, " - ...", "...");
 
-  while(out.len > 0 && !isalnum(out.s[out.len-1]))
-    out.len--;
+  while(out.len > 0 && !isalnum(out.s[out.len - 1])) out.len--;
 
   stralloc_nul(&out);
 
@@ -401,7 +400,12 @@ output_wget_entry(const char* sender,
                   const char* description) {
   int skipSender = str_start(thema, sender);
   int multiline = 0;
-  buffer_putm_internal(&output_buf, prefix_cmd ? prefix_cmd : "", prefix_cmd  ? " " : "", multiline ? "wget \\\n  -c " : "wget -c ", url, 0);
+  buffer_putm_internal(&output_buf,
+                       prefix_cmd ? prefix_cmd : "",
+                       prefix_cmd ? " " : "",
+                       multiline ? "wget \\\n  -c " : "wget -c ",
+                       url,
+                       0);
   buffer_putm_internal(&output_buf, multiline ? " \\\n  -O '" : " -O '", 0);
 
   if(!skipSender) {
@@ -413,8 +417,8 @@ output_wget_entry(const char* sender,
   buffer_puts(&output_buf, " - ");
   buffer_puts_escaped(&output_buf, title, &fmt_escapecharquotedshell);
 
-  buffer_putm_internal(&output_buf, ".mp4'","\ntouch -c -d '", datetime, "' '",    0);
-   if(!skipSender) {
+  buffer_putm_internal(&output_buf, ".mp4'", "\ntouch -c -d '", datetime, "' '", 0);
+  if(!skipSender) {
     buffer_puts_escaped(&output_buf, sender, &fmt_escapecharquotedshell);
     buffer_puts(&output_buf, " - ");
   }
@@ -422,7 +426,7 @@ output_wget_entry(const char* sender,
   buffer_puts_escaped(&output_buf, thema, &fmt_escapecharquotedshell);
   buffer_puts(&output_buf, " - ");
   buffer_puts_escaped(&output_buf, title, &fmt_escapecharquotedshell);
-  buffer_putm_internal(&output_buf, ".mp4'",0);
+  buffer_putm_internal(&output_buf, ".mp4'", 0);
   buffer_putnlflush(&output_buf);
 }
 
