@@ -688,7 +688,8 @@ sockbuf_log_data(socketbuf_t* sb, bool send, char* x, ssize_t len) {
 
     pos = log.p;
 
-    (escape ? buffer_put_escaped : buffer_put)(&log, x, maxlen > 0 && maxlen < end ? maxlen : end);
+    (escape ? buffer_put_escaped(&log, x, maxlen > 0 && maxlen < end ? maxlen : end, &fmt_escapecharshell)
+            : buffer_put(&log, x, maxlen > 0 && maxlen < end ? maxlen : end));
 
     if(maxlen > 0 && maxlen < end)
       buffer_puts(&log, "<shortened> ...");

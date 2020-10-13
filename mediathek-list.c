@@ -167,7 +167,7 @@ read_mediathek_list(const char* url, buffer* b) {
   static buffer in;
 
   http_init(&h, 0, 0);
-  h.keepalive = 1;
+  // h.keepalive = 1;
 
   http_get(&h, url);
 

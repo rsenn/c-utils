@@ -198,8 +198,8 @@ int buffer_putxlong0(buffer*, unsigned long l, int pad);
 int buffer_skipspace(buffer* b);
 int buffer_skip_pred(buffer*, int (*pred)(int));
 
-int buffer_put_escaped(buffer*, const char* x, size_t len);
-int buffer_puts_escaped(buffer*, const char* x);
+int buffer_put_escaped(buffer*, const char* x, size_t len, size_t (*)(char*, int));
+int buffer_puts_escaped(buffer*, const char* x, size_t (*)(char*, int));
 
 int buffer_freshen(buffer* b);
 

@@ -1711,6 +1711,8 @@ add_program(
   case
   ucs
   errmsg
+  strarray
+  strlist
   stralloc
   buffer
   array

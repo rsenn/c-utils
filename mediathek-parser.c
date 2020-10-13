@@ -6,6 +6,7 @@
 #include "lib/iarray.h"
 #include "lib/open.h"
 #include "lib/str.h"
+#include "lib/strarray.h"
 #include "lib/stralloc.h"
 #include "lib/strlist.h"
 #include "lib/fmt.h"
@@ -32,6 +33,8 @@ static int lowq = 0, debug = 0;
 static const char* datetime_format = "%d.%m.%Y %H:%M:%S";
 static int csv = 0;
 static format_t output_format = M3U;
+static buffer output_buf;
+static const char* prefix_cmd;
 
 char* str_ptime(const char* s, const char* format, struct tm* tm);
 
@@ -151,14 +154,15 @@ get_domain(const char* url, stralloc* d) {
  * @param t
  */
 void
-cleanup_text(char* t) {
+cleanup_text(char** t) {
   int i;
-  char c;
-  char prev = 'x';
+  size_t len = str_len(*t);
+  char c, prev = 'x';
   stralloc out;
   stralloc_init(&out);
 
-  for(i = 0; (c = t[i]); ++i) {
+  for(i = 0; i < len; ++i) {
+    c = (*t)[i];
     if(isdelim(c) && isdelim(prev))
       continue;
 
@@ -167,12 +171,24 @@ cleanup_text(char* t) {
     stralloc_append(&out, &c);
     prev = c;
   }
+  stralloc_replaces(&out, "/", " - ");
+  stralloc_replaces(&out, ": ", " - ");
+  stralloc_replaces(&out, " - ...", "...");
 
-  byte_copy(t, out.len, out.s);
+  while(out.len > 0 && !isalnum(out.s[out.len-1]))
+    out.len--;
 
-  t[out.len] = '\0';
-  str_utf8_latin1(t);
-  stralloc_free(&out);
+  stralloc_nul(&out);
+
+  free(*t);
+  *t = out.s;
+
+  /*  byte_copy(t, len < out.len ? len : out.len, out.s);
+
+    if(out.len < len)
+      t[out.len] = '\0';
+  */  // str_utf8_latin1(t);
+  //  stralloc_free(&out);
 }
 
 /**
@@ -222,12 +238,22 @@ process_entry(char** av, int ac) {
     stralloc datetime;
     struct tm tm;
     time_t t;
-    unsigned d;
-
-    char *sender = av[1], *thema = av[2], *title = av[3], *duration = av[6], *description = av[8], *url = av[9],
-         *url_klein = av[13];
-
     stralloc url_lo;
+    unsigned d;
+    char *sender, *thema, *title, *duration, *description, *url, *url_klein;
+
+    cleanup_text(&av[2]);
+    cleanup_text(&av[3]);
+    cleanup_text(&av[8]);
+
+    sender = av[1];
+    thema = av[2];
+    title = av[3];
+    duration = av[6];
+    description = av[8];
+    url = av[9];
+    url_klein = av[13];
+
     stralloc_init(&url_lo);
 
     if(str_len(url_klein)) {
@@ -261,9 +287,7 @@ process_entry(char** av, int ac) {
     if(d < 20 * 60)
       return 1;
 
-    cleanup_text(thema);
-    cleanup_text(title);
-    cleanup_text(description);
+    // dump_pair(buffer_2, "title", title);
 
     if(str_len(sender) == 0) {
       stralloc s;
@@ -273,8 +297,9 @@ process_entry(char** av, int ac) {
     }
 
     /*dump_pair(buffer_2, "sender", sender);
-    dump_pair(buffer_2, "thema", thema);
-    dump_pair(buffer_2, "title", title);*/
+    dump_pair(buffer_2, "thema", thema);*/
+
+    // dump_pair(buffer_2, "description", description);
     /*
       dump_long(buffer_2, "d", d);
       dump_pair(buffer_2, "duration", duration);
@@ -301,16 +326,16 @@ process_entry(char** av, int ac) {
  */
 void
 put_quoted_string(const char* str) {
-  buffer_putc(buffer_1, '"');
+  buffer_putc(&output_buf, '"');
   while(*str) {
     char c = *str++;
     if(c == '"' || c == '\\') {
-      buffer_puts(buffer_1, c == '\\' ? "\\\\" : "\"\"");
+      buffer_puts(&output_buf, c == '\\' ? "\\\\" : "\"\"");
     } else {
-      buffer_PUTC(buffer_1, c);
+      buffer_PUTC(&output_buf, c);
     }
   }
-  buffer_putc(buffer_1, '"');
+  buffer_putc(&output_buf, '"');
 }
 
 /**
@@ -333,38 +358,38 @@ output_m3u_entry(const char* sender,
                  const char* description) {
 
   if(csv == 0) {
-    buffer_puts(buffer_1, "#EXTINF:");
-    buffer_putulong(buffer_1, duration);
-    buffer_put(buffer_1, ",|", 2);
-    buffer_put(buffer_1, datetime, str_len(datetime));
-    buffer_puts(buffer_1, "|");
-    buffer_puts(buffer_1, sender);
-    buffer_puts(buffer_1, "|");
-    buffer_puts(buffer_1, thema);
-    buffer_puts(buffer_1, "|");
-    buffer_puts(buffer_1, title);
-    buffer_puts(buffer_1, "|");
-    buffer_puts(buffer_1, description);
-    buffer_put(buffer_1, "\r\n", 2);
-    buffer_puts(buffer_1, "#EXTVLCOPT:network-caching=2500\r\n");
-    buffer_puts(buffer_1, url);
+    buffer_puts(&output_buf, "#EXTINF:");
+    buffer_putulong(&output_buf, duration);
+    buffer_put(&output_buf, ",|", 2);
+    buffer_put(&output_buf, datetime, str_len(datetime));
+    buffer_puts(&output_buf, "|");
+    buffer_puts(&output_buf, sender);
+    buffer_puts(&output_buf, "|");
+    buffer_puts(&output_buf, thema);
+    buffer_puts(&output_buf, "|");
+    buffer_puts(&output_buf, title);
+    buffer_puts(&output_buf, "|");
+    buffer_puts(&output_buf, description);
+    buffer_put(&output_buf, "\r\n", 2);
+    buffer_puts(&output_buf, "#EXTVLCOPT:network-caching=2500\r\n");
+    buffer_puts(&output_buf, url);
   } else {
     put_quoted_string(sender);
-    buffer_puts(buffer_1, ",");
+    buffer_puts(&output_buf, ",");
     put_quoted_string(thema);
-    buffer_puts(buffer_1, ",");
+    buffer_puts(&output_buf, ",");
     put_quoted_string(title);
-    buffer_puts(buffer_1, ",");
-    buffer_put(buffer_1, datetime, str_len(datetime));
-    buffer_puts(buffer_1, ",");
-    buffer_putulong(buffer_1, duration);
-    buffer_puts(buffer_1, ",");
+    buffer_puts(&output_buf, ",");
+    buffer_put(&output_buf, datetime, str_len(datetime));
+    buffer_puts(&output_buf, ",");
+    buffer_putulong(&output_buf, duration);
+    buffer_puts(&output_buf, ",");
     put_quoted_string(description);
-    buffer_puts(buffer_1, ",");
+    buffer_puts(&output_buf, ",");
     put_quoted_string(url);
   }
-  buffer_put(buffer_1, "\r\n", 2);
-  buffer_flush(buffer_1);
+  buffer_put(&output_buf, "\r\n", 2);
+  buffer_flush(&output_buf);
 }
 void
 output_wget_entry(const char* sender,
@@ -374,10 +399,31 @@ output_wget_entry(const char* sender,
                   const char* datetime,
                   const char* url,
                   const char* description) {
+  int skipSender = str_start(thema, sender);
+  int multiline = 0;
+  buffer_putm_internal(&output_buf, prefix_cmd ? prefix_cmd : "", prefix_cmd  ? " " : "", multiline ? "wget \\\n  -c " : "wget -c ", url, 0);
+  buffer_putm_internal(&output_buf, multiline ? " \\\n  -O '" : " -O '", 0);
 
-  buffer_putm_internal(buffer_1, "wget -c ", url, 0);
-  buffer_putm_internal(buffer_1, " -O '", sender, " - ", thema, " - ", title, ".mp4'", 0);
-  buffer_putnlflush(buffer_1);
+  if(!skipSender) {
+    buffer_puts_escaped(&output_buf, sender, &fmt_escapecharquotedshell);
+    buffer_puts(&output_buf, " - ");
+  }
+
+  buffer_puts_escaped(&output_buf, thema, &fmt_escapecharquotedshell);
+  buffer_puts(&output_buf, " - ");
+  buffer_puts_escaped(&output_buf, title, &fmt_escapecharquotedshell);
+
+  buffer_putm_internal(&output_buf, ".mp4'","\ntouch -c -d '", datetime, "' '",    0);
+   if(!skipSender) {
+    buffer_puts_escaped(&output_buf, sender, &fmt_escapecharquotedshell);
+    buffer_puts(&output_buf, " - ");
+  }
+
+  buffer_puts_escaped(&output_buf, thema, &fmt_escapecharquotedshell);
+  buffer_puts(&output_buf, " - ");
+  buffer_puts_escaped(&output_buf, title, &fmt_escapecharquotedshell);
+  buffer_putm_internal(&output_buf, ".mp4'",0);
+  buffer_putnlflush(&output_buf);
 }
 
 void
@@ -389,12 +435,12 @@ output_curl_entry(const char* sender,
                   const char* url,
                   const char* description) {
 
-  buffer_putm_internal(buffer_1, "curl -L -k ", url, 0);
-  buffer_putm_internal(buffer_1, " -o '", sender, " - ", thema, " - ", title, ".mp4'", 0);
-  /*    buffer_puts(buffer_1, "|");
-      buffer_puts(buffer_1, description);*/
+  buffer_putm_internal(&output_buf, "curl -L -k ", url, 0);
+  buffer_putm_internal(&output_buf, " -o '", sender, " - ", thema, " - ", title, ".mp4'", 0);
+  /*    buffer_puts(&output_buf, "|");
+      buffer_puts(&output_buf, description);*/
 
-  buffer_putnlflush(buffer_1);
+  buffer_putnlflush(&output_buf);
 }
 
 /**
@@ -412,7 +458,7 @@ process_input(buffer* input) {
   strlist_init(&fields, '\0');
 
   if(csv == 0 && output_format == M3U)
-    buffer_puts(buffer_1, "#EXTM3U\r\n");
+    buffer_puts(&output_buf, "#EXTM3U\r\n");
 
   for(stralloc_init(&sa); buffer_getline_sa(input, &sa); stralloc_zero(&sa)) {
     ++line;
@@ -429,11 +475,17 @@ process_input(buffer* input) {
     */
 
     if(fields.sa.s) {
+      strarray arr;
+
       char** v = strlist_to_argv(&fields);
       int c = strlist_count(&fields);
+      strarray_init(&arr);
+      strarray_from_argv(c > 21 ? 21 : c, v, &arr);
 
-      if(!process_entry(v, c))
+      if(!process_entry(strarray_begin(&arr), strarray_size(&arr)))
         strlist_dump(buffer_2, &fields);
+
+      strarray_free(&arr);
 
       free(v);
     }
@@ -441,6 +493,27 @@ process_input(buffer* input) {
 
   buffer_close(input);
   return ret;
+}
+
+void
+usage(const char* argv0) {
+  buffer_putm_internal(buffer_2,
+                       "Usage: ",
+                       argv0,
+                       "[OPTIONS] <file>\n",
+                       "\n",
+                       "  -h, --help                  Show this help\n",
+                       "  -c, --csv                   Output as CSV\n",
+                       "  -d, --debug                 Debug mode\n",
+                       "  -l, --low                   Low quality\n",
+                       "  -o, --output FILE           Output file\n",
+                       "  -F, --format FMT            Output format\n",
+                       "\n",
+                       "Valid formats:\n",
+                       "  wget, curl, m3u\n",
+                       0);
+
+  buffer_putnlflush(buffer_2);
 }
 
 /**
@@ -454,23 +527,33 @@ main(int argc, char* argv[]) {
   int opt, index = 0;
   char inbuf[8192];
   buffer b;
+  const char* output_file = 0;
 
   struct longopt opts[] = {
+      {"help", 0, NULL, 'h'},
       {"csv", 0, NULL, 'c'},
       {"debug", 0, NULL, 'd'},
       {"low", 0, NULL, 'l'},
       {"format", 1, NULL, 'F'},
+      {"output", 1, NULL, 'o'},
+      {"prefix-cmd", 1, NULL, 'P'},
       {0, 0, 0, 0},
   };
 
-  while((opt = getopt_long(argc, argv, "cdf:t:i:x:lF:", opts, &index)) != -1) {
+  while((opt = getopt_long(argc, argv, "hcdf:t:i:x:lF:o:P:", opts, &index)) != -1) {
     if(opt == 0)
       continue;
 
     switch(opt) {
+      case 'h':
+        usage(argv[0]);
+        return 0;
+        break;
       case 'c': csv = 1; break;
       case 'd': debug++; break;
       case 'l': lowq++; break;
+      case 'o': output_file = optarg; break;
+      case 'P': prefix_cmd = optarg; break;
       case 'F': {
         if(case_equals(optarg, "wget"))
           output_format = WGET;
@@ -482,11 +565,14 @@ main(int argc, char* argv[]) {
         break;
       }
       case 'f': datetime_format = optarg; break;
-      default: /* '?' */
-        buffer_putm_internal(buffer_2, "Usage: ", argv[0], "[-d] [-l] <file>\n", 0);
-        exit(EXIT_FAILURE);
+      default: /* '?' */ usage(argv[0]); exit(EXIT_FAILURE);
     }
   }
+
+  if(output_file)
+    buffer_truncfile(&output_buf, output_file);
+  else
+    buffer_write_fd(&output_buf, STDOUT_FILENO);
 
   if(optind == argc) {
     ++argc;

@@ -9,10 +9,10 @@
 #include <assert.h>
 
 static inline void
-putline(const char* what, const char* b, ssize_t l,  int i) {
+putline(const char* what, const char* b, ssize_t l, int i) {
   buffer_puts(buffer_2, what);
   buffer_puts(buffer_2, "[");
-  buffer_putulong(buffer_2, i); //l <= 0 ? -l : l);
+  buffer_putulong(buffer_2, i); // l <= 0 ? -l : l);
   buffer_puts(buffer_2, "]");
   buffer_puts(buffer_2, ": ");
   if(l <= 0)
@@ -53,14 +53,14 @@ http_read_header(http* h, stralloc* sa, http_response* r) {
       break;
     }
 
-#if 1  || DEBUG_HTTP
+#if 1 || DEBUG_HTTP
     putline("Header", x, n, byte_count(sa->s, sa->len, '\n'));
 #endif
- /*   buffer_putm_internal(buffer_2, "x:", x, 0);
-    buffer_puts(buffer_2, "n:");
-    buffer_putulong(buffer_2, n);
-    //  buffer_putm_internal(buffer_2, "\nsa:", sa->s, 0);
-    buffer_putnlflush(buffer_2);*/
+    /*   buffer_putm_internal(buffer_2, "x:", x, 0);
+       buffer_puts(buffer_2, "n:");
+       buffer_putulong(buffer_2, n);
+       //  buffer_putm_internal(buffer_2, "\nsa:", sa->s, 0);
+       buffer_putnlflush(buffer_2);*/
 
     if(str_start(x, "Content-Type: multipart")) {
       size_t p = str_find(x, "boundary=");

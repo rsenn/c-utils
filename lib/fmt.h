@@ -146,6 +146,7 @@ size_t fmt_xmlescape(char* dest, unsigned int ch);
 size_t fmt_escapecharc(char* dest, uint32 ch);
 
 size_t fmt_escapecharshell(char* dest, uint32 ch);
+size_t fmt_escapecharquotedshell(char*, uint32 ch);
 size_t fmt_escapecharjson(char* dest, uint32 ch, char quote);
 #endif
 
