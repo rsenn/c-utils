@@ -8,11 +8,11 @@
 #include <errno.h>
 #include <assert.h>
 
-static void
-putline(const char* what, const char* b, ssize_t l, buffer* buf) {
+static inline void
+putline(const char* what, const char* b, ssize_t l,  int i) {
   buffer_puts(buffer_2, what);
   buffer_puts(buffer_2, "[");
-  buffer_putulong(buffer_2, l <= 0 ? -l : l);
+  buffer_putulong(buffer_2, i); //l <= 0 ? -l : l);
   buffer_puts(buffer_2, "]");
   buffer_puts(buffer_2, ": ");
   if(l <= 0)
@@ -28,41 +28,54 @@ putline(const char* what, const char* b, ssize_t l, buffer* buf) {
 }
 
 ssize_t
-http_read_header(http* h, http_response* r) {
+http_read_header(http* h, stralloc* sa, http_response* r) {
   ssize_t ret = 0, bytesread = 0;
+  size_t start, n;
+  const char* x;
   buffer* in = &h->q.in;
   while(r->status == HTTP_RECV_HEADER) {
     size_t bytesavail = in->n - in->p;
     h->q.in.op = NULL;
-    if((ret = buffer_getline_sa(&h->q.in, &r->data)) <= 0)
+    start = sa->len;
+
+    if((ret = buffer_getline_sa(&h->q.in, sa)) <= 0)
       break;
     bytesread += bytesavail - (in->n - in->p);
-    stralloc_trimr(&r->data, "\r\n", 2);
-    stralloc_nul(&r->data);
-    //  putline("Header", r->data.s, -r->data.len, &h->q.in);
-    // putnum("data.len", r->data.len);
-    if(r->data.len == 0) {
+    //  stralloc_trimr(sa, "\r\n", 2);
+    stralloc_nul(sa);
+
+    x = &sa->s[start];
+    n = byte_trimr(x, sa->len - start, "\r\n", 2);
+    if(n == 0) {
       r->ptr = in->p;
       r->status = HTTP_RECV_DATA;
       ret = 1;
       break;
     }
-    putline("Header", r->data.s, -r->data.len, in);
-    if(stralloc_startb(&r->data, "Content-Type: multipart", 23)) {
-      size_t p = str_find(r->data.s, "boundary=");
-      if(r->data.s[p]) {
-        stralloc_copys(&r->boundary, &r->data.s[p + str_len("boundary=")]);
+
+#if 1  || DEBUG_HTTP
+    putline("Header", x, n, byte_count(sa->s, sa->len, '\n'));
+#endif
+ /*   buffer_putm_internal(buffer_2, "x:", x, 0);
+    buffer_puts(buffer_2, "n:");
+    buffer_putulong(buffer_2, n);
+    //  buffer_putm_internal(buffer_2, "\nsa:", sa->s, 0);
+    buffer_putnlflush(buffer_2);*/
+
+    if(str_start(x, "Content-Type: multipart")) {
+      size_t p = str_find(x, "boundary=");
+      if(x[p]) {
+        stralloc_copys(&r->boundary, &x[p + str_len("boundary=")]);
       }
       r->transfer = HTTP_TRANSFER_BOUNDARY;
-    } else if(stralloc_startb(&r->data, "Content-Length:", 15)) {
-      scan_ulonglong(&r->data.s[16], &r->content_length);
+    } else if(str_start(x, "Content-Length:")) {
+      scan_ulonglong(&sa->s[16], &r->content_length);
       r->transfer = HTTP_TRANSFER_LENGTH;
       // putnum("content length", r->content_length);
-    } else if(stralloc_starts(&r->data, "Transfer-Encoding:") && stralloc_contains(&r->data, "chunked")) {
+    } else if(str_start(x, "Transfer-Encoding:") && str_contains(x, "chunked")) {
       r->chunk_length = 0;
       r->transfer = HTTP_TRANSFER_CHUNKED;
     }
-    stralloc_zero(&r->data);
   }
   // putnum("http_read_header", r->status);
   h->q.in.op = (buffer_op_proto*)&http_socket_read;

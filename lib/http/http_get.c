@@ -26,9 +26,10 @@ http_get(http* h, const char* location) {
   size_t len = str_len(location);
   h->tls = len >= 5 && !byte_diff(location, 5, "https");
 
+#if DEBUG_HTTP
   buffer_putm_internal(buffer_2, "http_get ", location, "\n", NULL);
-
   buffer_flush(buffer_2);
+#endif
 
   if(location[0] != '/') {
     size_t len;
@@ -57,12 +58,14 @@ http_get(http* h, const char* location) {
 
   byte_copy(&h->addr, sizeof(ipv4addr), &a->iaddr);
 
+#if DEBUG_HTTP
+  buffer_puts(buffer_2, "http_get resolved ");
   buffer_putsa(buffer_2, &h->host);
-  buffer_puts(buffer_2, " (");
+  buffer_puts(buffer_2, " to (");
   buffer_put(buffer_2, ip, fmt_ip4(ip, (const char*)a->addr));
   buffer_puts(buffer_2, ")");
   buffer_putnlflush(buffer_2);
-
+#endif
   http_socket(h, h->nonblocking);
 
   if(h->request) {

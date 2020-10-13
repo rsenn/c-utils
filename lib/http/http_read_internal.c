@@ -24,7 +24,7 @@ http_read_internal(http* h, char* buf, size_t len) {
   if((r = h->response) == NULL)
     return len;
   if(r->status == HTTP_RECV_HEADER) {
-    if(http_read_header(h, r) > 0)
+    if(http_read_header(h, &r->data, r) > 0)
       r->ptr = 0;
   }
   if(r->status == HTTP_RECV_DATA) {

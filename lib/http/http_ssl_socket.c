@@ -3,7 +3,9 @@
 #ifdef HAVE_OPENSSL
 #include <openssl/ssl.h>
 #include <openssl/err.h>
+
 static void* http_sslctx;
+
 int
 http_ssl_socket(http* h) {
   if(!h->tls)

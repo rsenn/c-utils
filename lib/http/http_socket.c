@@ -35,7 +35,9 @@ http_socket(http* h, int nonblock) {
 #ifdef HAVE_OPENSSL
   if(h->tls) {
     http_ssl_socket(h);
+#if DEBUG_HTTP
     buffer_putsflush(buffer_2, "ssl socket\n");
+#endif
   }
 #endif
   buffer_init_free(&h->q.in, (buffer_op_proto*)&http_socket_read, h->sock, (char*)alloc(BUFFER_INSIZE), BUFFER_INSIZE);

@@ -12,6 +12,7 @@
 extern "C" {
 #endif
 
+struct http_s;
 struct http_request_s;
 
 typedef enum { GET = 0, POST } http_req_t;
@@ -59,10 +60,11 @@ typedef struct http_response_s {
   };
   stralloc boundary;
   int err;
+  int (*header)(struct http_s*, const char*, size_t);
   //  buffer rbuf;
 } http_response;
 
-typedef struct {
+typedef struct http_s {
   fd_t sock;
   struct {
     buffer out;
@@ -91,7 +93,7 @@ ssize_t http_on_readable(http*, void (*)(fd_t));
 ssize_t http_on_writeable(http*, void (*)(fd_t));
 ssize_t http_readable(http*, int);
 ssize_t http_read(fd_t, char*, size_t, void*);
-ssize_t http_read_header(http*, http_response*);
+ssize_t http_read_header(http*, stralloc*, http_response*);
 size_t http_read_internal(http*, char*, size_t);
 int http_sendreq(http*);
 int http_socket(http*, int);
