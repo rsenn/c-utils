@@ -528,6 +528,14 @@ rect_zero(rect* r) {
 }
 
 void
+rect_init(rect* r, double d) {
+  r->x1 = d;
+  r->y1 = d;
+  r->x2 = d;
+  r->y2 = d;
+}
+
+void
 wire_zero(wire* r) {
   r->x1 = 0;
   r->y1 = 0;
@@ -1512,6 +1520,7 @@ int
 main(int argc, char* argv[]) {
   int c;
   int index = 0;
+  rect extent, extent2;
   struct longopt opts[] = {{"help", 0, NULL, 'h'},
                            {"layer", 1, NULL, 'l'},
                            {"layers", 0, NULL, 'L'},
@@ -1641,7 +1650,6 @@ main(int argc, char* argv[]) {
       xmlnodeset_iter_t it, e;
       xmlnodeset ns;
       stralloc layer_str;
-      rect extent;
       int num_aligned = 0;
 
       // libraries = xml_find_element(doc, "libraries");
@@ -1655,7 +1663,8 @@ main(int argc, char* argv[]) {
       buffer_putm_internal(buffer_2, "layer str: ", layer_str.s, 0);
       buffer_putnlflush(buffer_2);
 
-      byte_zero(&extent, sizeof(extent));
+      rect_zero(&extent);
+      rect_init(&extent2, DBL_MAX);
       // ns = xml_find_with_attrs(doc, "x|y|x1|y1|x2|y2");
 
       nodes.elements = xml_find_element(doc, "elements");
@@ -1689,8 +1698,15 @@ main(int argc, char* argv[]) {
             num_aligned += node_align(node);
         }
 
-        rect_update(&extent, get_double(node, "x1"), get_double(node, "y1"));
-        rect_update(&extent, get_double(node, "x2"), get_double(node, "y2"));
+        if(xml_has_attribute(node, "x1") && xml_has_attribute(node, "y1"))
+          rect_update(&extent, get_double(node, "x1"), get_double(node, "y1"));
+        if(xml_has_attribute(node, "x2") && xml_has_attribute(node, "x2"))
+          rect_update(&extent, get_double(node, "x2"), get_double(node, "x2"));
+
+        if(str_equal(node->name, "element")) {
+          if(xml_has_attribute(node, "x") && xml_has_attribute(node, "y"))
+            rect_update(&extent2, get_double(node, "x"), get_double(node, "y"));
+        }
 
         {
           xmlnode* named = node;
@@ -1781,6 +1797,7 @@ main(int argc, char* argv[]) {
 
     // print_rect(buffer_2, "Wire", &wire_bounds);
 
+    buffer_puts(buffer_1, "--- WIRE BOUNDS ---\n");
     buffer_puts(buffer_1, "\nLayer Measures;\n");
     print_bounds(buffer_1, wire_bounds, ";\n");
     buffer_putsflush(buffer_1, ";\n\n");
@@ -1795,6 +1812,13 @@ main(int argc, char* argv[]) {
 
     print_rect(buffer_2, "bounds", &bounds);
 
+    rect_mult(&extent2, 1 / 2.54);
+    rect_round(&extent2, 0.05);
+
+    buffer_puts(buffer_1, "--- ELEMENT BOUNDS ---\n");
+    buffer_puts(buffer_1, "\nLayer Measures;\n");
+    print_bounds(buffer_1, extent2, ";\n");
+    buffer_putsflush(buffer_1, ";\n\n");
     // print_bounds(buffer_1, bounds);
 
     /*

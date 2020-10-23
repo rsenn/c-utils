@@ -371,8 +371,7 @@ path_mmap_read(const char* path, size_t* n) {
   stralloc_init(&sa);
   if(dirs.this.sa.s)
     path_prefix_s(&dirs.this.sa, path, &sa);
-  x = mmap_read(sa.s, n);
-  if(x == NULL) {
+  if((x = mmap_read(sa.s, n)) == NULL) {
     errmsg_warnsys("error opening '", sa.s, "'", 0);
     buffer_putnlflush(buffer_2);
   }
@@ -1407,8 +1406,13 @@ int
 sources_add_b(const char* x, size_t len) {
   int ret = 0;
   if(is_source_b(x, len) || is_include_b(x, len)) {
+    if(len > dirs.this.sa.len && byte_startb(x, len, dirs.this.sa.s, dirs.this.sa.len)) {
+      size_t dirlen = dirs.this.sa.len + 1;
+      x += dirlen;
+      len -= dirlen;
+    }
     ret = strarray_pushb_unique(&srcs, x, len);
-#ifdef DEBUG_OUTPUT_
+#ifdef DEBUG_OUTPUT
     if(ret)
       debug_byte("sources_add", x, len);
 #endif
@@ -1943,8 +1947,8 @@ sourcedir_addsource(const char* source, strarray* srcs) {
   path_dirname(source, &dir);
   stralloc_nul(&dir);
   dlen = dir.len;
-  /*debug_str("source", source);
-  debug_sa("dir", &dir);*/
+  debug_str("source", source);
+  /*debug_sa("dir", &dir);*/
   srcdir = sourcedir_getsa(&dir);
   slist_add(&srcdir->sources, &file->link);
   slist_pushb(&sources, &file, sizeof(sourcefile*));
@@ -5272,7 +5276,7 @@ main(int argc, char* argv[]) {
 
   strarray_sort(&srcs, &sources_sort);
 
-#ifdef DEBUG_OUTPUT_
+#ifdef DEBUG_OUTPUT
   buffer_puts(buffer_2, "strarray srcs:");
   strarray_dump(buffer_2, &srcs);
   buffer_putnlflush(buffer_2);
