@@ -1578,6 +1578,7 @@ add_program(
 add_program(elfwrsec buffer alloc elf mmap)
 add_program(
   genmakefile
+  sig
   set
   case
   errmsg

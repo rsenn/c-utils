@@ -44,8 +44,10 @@ size_t str_rchr(const char* haystack, char needle) __pure__;
 size_t str_rchrs(const char* haystack, char needles[], size_t);
 
 /* str_start returns 1 if the b is a prefix of a, 0 otherwise */
-int str_start(const char* a, const char* b) __pure__;
-int str_end(const char* a, const char* b);
+int str_endb(const char*, const char*, size_t);
+int str_end(const char*, const char*);
+int str_startb(const char*, const char*, size_t);
+int str_start(const char*, const char*);
 
 char* str_istr(char* s, char* find);
 char* str_tok(char* s, const char* delim, char** ptrptr);
@@ -76,9 +78,6 @@ struct tm;
 char* str_ptime(const char* s, const char* format, struct tm* tm);
 
 char* str_basename(const char* s);
-
-int str_endb(const char* a, const char* x, size_t n);
-int str_startb(const char* a, const char* x, size_t len);
 
 int str_is(const char* s, int (*pred)());
 

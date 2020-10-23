@@ -7,6 +7,7 @@
 #include "map.h"
 #include "mplab.h"
 #include "lib/unix.h"
+#include "lib/sig.h"
 
 extern buffer* unix_optbuf;
 static const char tok_charset[] = {'_', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O',
@@ -365,6 +366,34 @@ path_wildcard(stralloc* sa, const char* wildchar) {
 }
 
 const char*
+path_clean_s(const char* path) {
+  if(str_startb(path, dirs.this.sa.s, dirs.this.sa.len)) {
+    path += dirs.this.sa.len;
+    if(path[0] == PATHSEP_C)
+      path++;
+  }
+  while(str_start(path, "./")) path += 2;
+  return path;
+}
+
+const char*
+path_clean_b(const char* path, size_t* len) {
+  if(byte_startb(path, *len, dirs.this.sa.s, dirs.this.sa.len)) {
+    path += dirs.this.sa.len;
+    *len -= dirs.this.sa.len;
+    if(*len > 0 && path[0] == PATHSEP_C) {
+      path++;
+      (*len)--;
+    }
+  }
+  while(byte_starts(path, *len, "./")) {
+    path += 2;
+    (*len) -= 2;
+  }
+  return path;
+}
+
+const char*
 path_mmap_read(const char* path, size_t* n) {
   const char* x;
   stralloc sa;
@@ -372,7 +401,7 @@ path_mmap_read(const char* path, size_t* n) {
   if(dirs.this.sa.s)
     path_prefix_s(&dirs.this.sa, path, &sa);
   if((x = mmap_read(sa.s, n)) == NULL) {
-    errmsg_warnsys("error opening '", sa.s, "'", 0);
+    errmsg_warnsys("error opening '", path, "'", 0);
     buffer_putnlflush(buffer_2);
   }
   return x;
@@ -1947,12 +1976,21 @@ sourcedir_addsource(const char* source, strarray* srcs) {
   path_dirname(source, &dir);
   stralloc_nul(&dir);
   dlen = dir.len;
+
+  source = path_clean_s(source);
+
   debug_str("source", source);
   /*debug_sa("dir", &dir);*/
   srcdir = sourcedir_getsa(&dir);
   slist_add(&srcdir->sources, &file->link);
   slist_pushb(&sources, &file, sizeof(sourcefile*));
   ++srcdir->n_sources;
+
+  if(!path_exists(source)) {
+
+    asm("int3");
+  }
+
   if((x = path_mmap_read(source, &n)) != 0) {
     includes_extract(x, n, &l, 0);
     extract_pptok(x, n, &file->pptoks);
@@ -4752,6 +4790,8 @@ main(int argc, char* argv[]) {
   target *rule, *all, *compile;
   char** arg;
   MAP_PAIR_T t;
+
+  sig_ignore(SIGTRAP);
 
   struct longopt opts[] = {{"help", 0, NULL, 'h'},
                            {"objext", 1, NULL, 'O'},

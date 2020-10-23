@@ -75,21 +75,20 @@ extern struct sigaction const sig_ign;
 #define sig_catcha(sig, ac) sig_action(sig, (ac), 0)
 #define sig_restore(sig) sig_action((sig), &sig_dfl, 0)
 
-int sig_action(int, struct sigaction const*, struct sigaction*);
-void sig_blocknone(void);
-void sig_blockset(const void* set);
-void sig_block(int sig);
-int sig_catch(int sig, sighandler_t_ref f);
-int sigfpe(void);
-char const* sig_name(int sig);
-int sig_number(char const* name);
-void sig_pause(void);
-int sig_pop(int sig);
-int sig_pusha(int sig, struct sigaction const* ssa);
-int sig_push(int sig, sighandler_t_ref f);
-void sig_restoreto(const void* set, unsigned int n);
-int sigsegv(void);
-void sig_shield(void);
-void sig_unshield(void);
+void        sig_block(int);
+void        sig_blocknone(void);
+void        sig_blockset(const void*);
+int         sig_catch(int, sighandler_t_ref);
+int         sigfpe(void);
+int         sig_ignore(int);
+char const* sig_name(int);
+int         sig_number(char const*);
+void        sig_pause(void);
+int         sig_push(int, sighandler_t_ref);
+void        sig_restoreto(const void*, unsigned int);
+int         sigsegv(void);
+void        sig_shield(void);
+void        sig_unshield(void);
+
 
 #endif
