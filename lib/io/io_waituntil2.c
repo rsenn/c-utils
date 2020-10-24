@@ -259,8 +259,7 @@ io_waituntil2(int64 milliseconds) {
       return 1;
     }
   }
-#else
-#ifdef HAVE_EPOLL
+#elif defined(HAVE_EPOLL)
   if(io_waitmode == EPOLL) {
     int n;
     struct epoll_event y[100];
@@ -376,9 +375,7 @@ io_waituntil2(int64 milliseconds) {
     }
     return n;
   }
-#endif
-
-#ifdef HAVE_KQUEUE
+#elif defined(HAVE_KQUEUE)
   if(io_waitmode == KQUEUE) {
     struct kevent y[100];
     int n;
@@ -414,9 +411,7 @@ io_waituntil2(int64 milliseconds) {
     }
     return n;
   }
-#endif
-
-#ifdef HAVE_DEVPOLL
+#elif defined(HAVE_DEVPOLL)
   if(io_waitmode == DEVPOLL) {
     dvpoll_t timeout;
     struct pollfd y[100];
@@ -457,9 +452,7 @@ io_waituntil2(int64 milliseconds) {
     }
     return n;
   }
-#endif
-
-#ifdef HAVE_SIGIO
+#elif defined(HAVE_SIGIO)
   if(io_waitmode == _SIGIO) {
     siginfo_t info;
     struct timespec ts;
@@ -514,8 +507,13 @@ io_waituntil2(int64 milliseconds) {
     }
     return 1;
   }
-dopoll :
+#else
+#if !defined(HAVE_POLL)
+#warning Poll fallback
 #endif
+#endif
+dopoll :
+
 {
   struct pollfd* p;
   for(i = r = 0; (size_t)i <= iarray_length((iarray*)io_getfds()); ++i) {
@@ -598,5 +596,4 @@ dopoll :
   }
   return i;
 }
-#endif
 }

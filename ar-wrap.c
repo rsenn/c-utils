@@ -474,15 +474,15 @@ main(int argc, char* argv[]) {
     return 1;
   }
 
-st = process_wait(ret);
+  st = process_wait(ret);
 
-    buffer_puts(buffer_2, "waitpid = ");
-    buffer_putlong(buffer_2, i);
-    buffer_puts(buffer_2, " status = ");
-    buffer_putlong(buffer_2, st);
-    buffer_puts(buffer_2, " ");
-    buffer_flush(buffer_2);
-    errmsg_warnsys("child terminated:", 0);
+  buffer_puts(buffer_2, "waitpid = ");
+  buffer_putlong(buffer_2, i);
+  buffer_puts(buffer_2, " status = ");
+  buffer_putlong(buffer_2, st);
+  buffer_puts(buffer_2, " ");
+  buffer_flush(buffer_2);
+  errmsg_warnsys("child terminated:", 0);
 
   return 0;
 }

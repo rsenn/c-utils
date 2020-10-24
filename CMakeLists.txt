@@ -884,8 +884,9 @@ message("MUX method: ${MUX_METHOD}")
 if(MUX_METHOD STREQUAL "SELECT")
   set(io_COMPILE_FLAGS -DUSE_SELECT=1)
 else()
-  set(io_COMPILE_FLAGS -DHAVE_${MUX_METHOD}=1)
+  set(io_COMPILE_FLAGS "-DHAVE_${MUX_METHOD}=1")
 endif()
+add_definitions( "-DHAVE_${MUX_METHOD}=1" "-DHAVE_${MUX}=1" )
 
 if(WIN32 OR MSVC)
   if(USE_WIDECHAR)
@@ -932,10 +933,7 @@ macro(invert INVAR OUTVAR)
   else(${${INVAR}})
     set("${OUTVAR}" TRUE)
   endif(${${INVAR}})
-endmacro(
-  invert
-  INVAR
-  OUTVAR)
+endmacro(invert INVAR OUTVAR)
 
 macro(invoption VAR DESC INVAR)
   if(${${INVAR}})
