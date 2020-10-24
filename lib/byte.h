@@ -26,6 +26,7 @@ size_t byte_chrs(const char*, size_t, char needle[], size_t nl);
 /* byte_rchr returns the largest integer i between 0 and len-1 inclusive
  * such that one[i] equals needle, or len if not found. */
 size_t byte_rchr(const void* haystack, size_t len, char needle) __pure__;
+size_t byte_rchrs(const void*, size_t, const char*, size_t);
 
 /* byte_copy copies in[0] to out[0], in[1] to out[1], ... and in[len-1]
  * to out[len-1]. */

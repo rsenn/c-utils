@@ -11,7 +11,7 @@ json_default_printer(jsonfmt* p, jsonval* v, int depth, int index) {
 };
 
 void
-json_tosa(jsonval val, stralloc* sa, void (*p)(jsonfmt*, jsonval*, int, int)) {
+json_tosa(jsonval val, stralloc* sa, json_print_fn* p) {
   buffer b;
   char buf[1024];
 
@@ -21,5 +21,5 @@ json_tosa(jsonval val, stralloc* sa, void (*p)(jsonfmt*, jsonval*, int, int)) {
   buffer_init(&b, (ssize_t(*)(fd_t, void*, size_t, void*)) & stralloc_write, -1, buf, sizeof(buf));
   b.cookie = sa;
 
-  json_print(val, &b, (void*)p);
+  json_print(val, &b, p);
 }

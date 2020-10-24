@@ -24,7 +24,7 @@ typedef array strarray;
 #define strarray_begin(l) (char**)array_start((l))
 #define strarray_end(l) (strarray_begin(l) + strarray_size(l))
 
-#define strarray_at(l, pos) (*(char**)array_get((l), sizeof(char*), pos))
+#define strarray_at(l, pos) (((char**)((l)->p))[(pos)])
 
 #define strarray_foreach(a, ptr) for((ptr) = (char**)strarray_begin(a); ((char**)(ptr)) < strarray_end(a); ++ptr)
 

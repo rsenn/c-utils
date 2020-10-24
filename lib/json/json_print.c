@@ -80,7 +80,7 @@ json_default_printer(jsonfmt* p, jsonval* v, int depth, int index, char quote) {
   p->index = index;
 };
 
-static void json_print_val(jsonval* val, buffer* b, int depth, void (*p)(jsonfmt*, jsonval*, int, int));
+static void json_print_val(jsonval* val, buffer* b, int depth, json_print_fn*);
 
 static int
 byte_fullfils_predicate(const char* x, size_t len, int (*pred)(int)) {
@@ -136,24 +136,24 @@ json_print_str(buffer* b, const char* x, size_t len, const jsonfmt* fmt) {
 }
 
 static void
-json_print_object(jsonval* val, buffer* b, int depth, void (*p)(jsonfmt*, jsonval*, int, int)) {
+json_print_object(jsonval* val, buffer* b, int depth, json_print_fn* p) {
   TUPLE* t;
   int index = 0;
   jsonfmt printer;
-  p(&printer, val, depth + 1, index);
+  p(&printer, val, depth + 1, index, 0);
   if(val->dictv == NULL) {
     buffer_puts(b, "null");
     return;
   }
   buffer_puts(b, "{");
-  p(&printer, val, depth + 1, index);
+  p(&printer, val, depth + 1, index, 0);
 
   json_print_separator(val, b, JSON_FMT_NEWLINE, &printer);
   if(val->dictv && val->dictv->list_tuple) {
     hmap_foreach(val->dictv, t) {
       int last = hmap_next(val->dictv, t) == NULL;
       ++index;
-      p(&printer, 0, depth + 1, index);
+      p(&printer, 0, depth + 1, index, 0);
       json_print_key(b, t->key, t->key_len, &printer);
       buffer_puts(b, ":");
       json_print_separator(t->vals.val_custom, b, JSON_FMT_SPACING, &printer);
@@ -162,14 +162,14 @@ json_print_object(jsonval* val, buffer* b, int depth, void (*p)(jsonfmt*, jsonva
         json_print_separator(t->vals.val_custom, b, JSON_FMT_SEPARATOR, &printer);
       }
     }
-    p(&printer, val, depth + 1, -2);
+    p(&printer, val, depth + 1, -2, 0);
     json_print_separator(val, b, JSON_FMT_NEWLINE, &printer);
   }
   buffer_puts(b, "}");
 }
 
 static void
-json_print_array(jsonval* val, buffer* b, int depth, void (*p)(jsonfmt*, jsonval*, int, int)) {
+json_print_array(jsonval* val, buffer* b, int depth, json_print_fn* p) {
   jsonfmt printer;
   union {
     slink* ptr;
@@ -185,11 +185,11 @@ json_print_array(jsonval* val, buffer* b, int depth, void (*p)(jsonfmt*, jsonval
   }
   // buffer_puts(b, printer.spacing);
   //
-  p(&printer, val, depth + 1, index);
+  p(&printer, val, depth + 1, index, 0);
   json_print_separator(val, b, JSON_FMT_NEWLINE, &printer);
 
   slink_foreach(val->listv, it.iter) {
-    p(&printer, val, depth + 1, index);
+    p(&printer, val, depth + 1, index, 0);
     if(index > 0)
       json_print_separator(val, b, JSON_FMT_SEPARATOR, &printer);
 
@@ -197,16 +197,16 @@ json_print_array(jsonval* val, buffer* b, int depth, void (*p)(jsonfmt*, jsonval
     ++index;
     // if(!!slist_next(it.ptr)) json_print_separator(val, b, JSON_FMT_SEPARATOR, &printer);
   }
-  p(&printer, val, depth + 1, -2);
+  p(&printer, val, depth + 1, -2, 0);
 
   json_print_separator(val, b, JSON_FMT_NEWLINE, &printer);
   buffer_puts(b, "]");
 }
 
 static void
-json_print_val(jsonval* val, buffer* b, int depth, void (*p)(jsonfmt*, jsonval*, int, int)) {
+json_print_val(jsonval* val, buffer* b, int depth, json_print_fn* p) {
   jsonfmt printer;
-  p(&printer, val, depth, 0);
+  p(&printer, val, depth, 0, 0);
 
   /*if(depth > 0)
     buffer_puts(b, printer.spacing);*/
@@ -229,7 +229,7 @@ json_print(jsonval val, buffer* b, json_print_fn* p) {
   if(p == NULL)
     p = &json_default_printer;
   p(&printer, &val, 0, -1, '"');
-  json_print_val(&val, b, 0, (void*)p);
+  json_print_val(&val, b, 0, p);
   buffer_puts(b, printer.newline);
   buffer_flush(b);
 }

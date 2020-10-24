@@ -11,9 +11,10 @@ int
 json_parse_getsa(charbuf* b, stralloc* out) {
   char ch;
   int quoted = 0;
+  size_t i;
   stralloc sa;
   stralloc_init(&sa);
-  charbuf_skip_pred(b, &isspace);
+  charbuf_skip_pred(b, isspace);
   quoted = charbuf_skip_ifeq(b, '"');
 
   for(;; charbuf_skip(b)) {
@@ -33,7 +34,7 @@ json_parse_getsa(charbuf* b, stralloc* out) {
 
     stralloc_append(&sa, &ch);
   }
-  for(size_t i = 0; i < sa.len; i++) {
+  for(i = 0; i < sa.len; i++) {
     size_t r;
     unsigned int n;
     if((r = scan_utf8(&sa.s[i], sa.len - i, &n)) > 1) {

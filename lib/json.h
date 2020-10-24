@@ -87,7 +87,7 @@ jsonval* json_push(jsonval* arr, jsonval item);
 int64 json_length(jsonval);
 
 void json_print(jsonval, buffer* b, json_print_fn* p);
-void json_tosa(jsonval, stralloc* sa, void (*p)(jsonfmt*, jsonval*, int, int));
+void json_tosa(jsonval, stralloc* sa, json_print_fn* p);
 
 double json_todouble(jsonval);
 int64 json_toint(jsonval);

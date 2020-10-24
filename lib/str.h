@@ -71,8 +71,6 @@ size_t str_rfindb(const char* s1, const char* x, size_t n);
 size_t str_rfind(const void* s, const void* what);
 void str_lower(void* str);
 
-#define str_contains(str, what) (str)[str_find((str), (what))]
-
 struct tm;
 
 char* str_ptime(const char* s, const char* format, struct tm* tm);
@@ -91,6 +89,8 @@ char* str_triml(char*, const char* charset, unsigned int charsetlen);
 #define str_foreach(s, ptr) for((ptr) = (void*)(s); *(const char*)(ptr); (ptr) = ((const char*)(ptr)) + 1)
 #define str_foreach_skip(s, ptr, skipcall)                                                                             \
   for((ptr) = (void*)(s); *(const char*)(ptr); (ptr) = ((const char*)(ptr)) + (skipcall))
+
+#define str_contains(s, needle) (((s)[str_find((s), (needle))]) != 0  )
 
 #ifdef __cplusplus
 }

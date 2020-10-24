@@ -295,6 +295,6 @@ void usage(char*);
 extern exts_t exts;
 extern config_t cfg;
 extern dirs_t dirs;
-extern strarray srcs;
+extern set_t srcs;
 extern tools_t tools;
 #endif
