@@ -40,7 +40,9 @@
 #include <string.h>
 #include <unistd.h>
 #include <sys/stat.h>
-//#include <syslog.h>
+#if !WINDOWS_NATIVE
+#include <syslog.h>
+#endif
 #ifdef USE_SYSTEMD
 #include <systemd/sd-daemon.h>
 #endif
@@ -63,7 +65,7 @@
 #define BROKEN_PIPE_ERROR -9
 #define SYNTAX_ERROR -10
 
-//typedef enum { TRUE = 1, FALSE = 0 } bool;
+//typedef enum { true = 1, false = 0 } bool;
 typedef struct socketbuf_s {
   fd_t sock;
   buffer buf;
@@ -138,7 +140,7 @@ static const char* fileBase;
 fd_t server_sock;
 int64 connections_processed = 0, max_length = -1;
 char *remote_host, *cmd_in, *cmd_out;
-bool foreground = FALSE, use_syslog = FALSE, line_buffer = FALSE, dump = FALSE;
+bool foreground = false, use_syslog = false, line_buffer = false, dump = false;
 static uint64 buf_size = DEFAULT_BUF_SIZE;
 static char logbuf[1024];
 static buffer log = BUFFER_INIT(write, STDOUT_FILENO, logbuf, sizeof(logbuf));
@@ -194,7 +196,7 @@ dns_print(buffer* b, dns_response_t* result, size_t num_responses) {
 dns_response_t*
 dns_lookup(stralloc* h) {
   size_t i;
-  bool cached = FALSE;
+  bool cached = false;
   dns_response_t* result;
   tai6464 now, expire, diff;
 
@@ -214,12 +216,12 @@ dns_lookup(stralloc* h) {
       MAP_DELETE(dns_cache, h->s, h->len + 1);
       result = NULL;
     } else {
-      cached = TRUE;
+      cached = true;
     }
   }
 
   if(result == NULL)
-    cached = FALSE;
+    cached = false;
 
   if(result == NULL && (result = dns_query(h))) {
     if(result->data.end > result->data.start && result->data.elem_size) {
@@ -293,9 +295,9 @@ static bool
 byte_is_binary(char* x, size_t n) {
   for(size_t i = 0; i < n; i++)
     if(x[i] < ' ' || x[i] >= 127)
-      return TRUE;
+      return true;
 
-  return FALSE;
+  return false;
 }
 
 static size_t
@@ -492,7 +494,7 @@ socket_send(fd_t fd, void* x, size_t n, void* ptr) {
 
   if(r > 0) {
     socketbuf_t* sb = socket_find(fd);
-    sockbuf_log_data(sb, TRUE, x, n);
+    sockbuf_log_data(sb, true, x, n);
     if(dump) {
       if(sb->dump == -1) {
         connection_t* c = connection_find(fd, fd);
@@ -671,7 +673,7 @@ sockbuf_log_data(socketbuf_t* sb, bool send, char* x, ssize_t len) {
       size_t i;
       for(i = 0; i < n; i++) {
         if((unsigned)x[i] < ' ') {
-          escape = TRUE;
+          escape = true;
           end = n;
           break;
         }
@@ -716,7 +718,7 @@ sockbuf_forward_data(socketbuf_t* source, socketbuf_t* destination) {
     buffer_put(&destination->buf, buffer, n); // send data to output socket
     written += n;
 
-    sockbuf_log_data(source, FALSE, buffer, n);
+    sockbuf_log_data(source, false, buffer, n);
   }
   if(written > 0) {
     if(n == -1 && errno == EAGAIN)
@@ -960,7 +962,7 @@ server_loop() {
   sd_notify(0, "READY=1\n");
 #endif
 
-  while(TRUE) {
+  while(true) {
     server_connection_count();
 
     slist_foreach(connections, c) {
@@ -1211,13 +1213,13 @@ main(int argc, char* argv[]) {
       case 'p': scan_ushort(optarg, &remote.port); break;
       case 'i': cmd_in = optarg; break;
       case 'O': cmd_out = optarg; break;
-      case 'f': foreground = TRUE; break;
-      case 's': use_syslog = TRUE; break;
+      case 'f': foreground = true; break;
+      case 's': use_syslog = true; break;
       case 'm': scan_longlong(optarg, &max_length); break;
       case 'n': fileBase = optarg; break;
       case 'B': scan_ulonglong(optarg, &buf_size); break;
-      case 'L': line_buffer = TRUE; break;
-      case 'd': dump = TRUE; break;
+      case 'L': line_buffer = true; break;
+      case 'd': dump = true; break;
       case 'a': log.fd = open_append(optarg); break;
       case 'o': log.fd = open_trunc(optarg); break;
     }
