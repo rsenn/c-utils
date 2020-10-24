@@ -1,8 +1,9 @@
+#include "../windoze.h"
 #include <stdlib.h>
-#ifn WINDOWS_NATIVE
+#if !WINDOWS_NATIVE
 #include <sys/mman.h>
-#endif
 #include <unistd.h>
+#endif
 #include "../iarray.h"
 
 static void

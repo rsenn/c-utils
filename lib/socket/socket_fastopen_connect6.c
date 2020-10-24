@@ -9,9 +9,10 @@
 #endif
 #include <errno.h>
 #include "../typedefs.h"
+#include "../uint32.h"
 
 int
-socket_fastopen_connect6(int s, const char* ip, uint16 port, uint32_t scope_id, const char* buf, size_t len) {
+socket_fastopen_connect6(int s, const char* ip, uint16 port, uint32 scope_id, const char* buf, size_t len) {
 #ifndef MSG_FASTOPEN
   int r;
   {

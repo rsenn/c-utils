@@ -96,8 +96,8 @@ int socket_quickack(int s, int value);
 
 /* For client-side TCP fast open, connect and sending the first data is
  * just one step, so we need an API to do it in one step */
-ssize_t socket_fastopen_connect4(int s, const char* ip, uint16 port, const char* buf, size_t len);
-ssize_t socket_fastopen_connect6(int s, const char* ip, uint16 port, uint32 scope_id, const char* buf, size_t len);
+int socket_fastopen_connect4(int s, const char* ip, uint16 port, const char* buf, size_t len);
+int socket_fastopen_connect6(int s, const char* ip, uint16 port, uint32 scope_id, const char* buf, size_t len);
 
 const char* socket_ip6loopback();
 const char* socket_ip4loopback();

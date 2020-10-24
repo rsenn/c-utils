@@ -62,5 +62,5 @@ iarray_allocate(iarray* ia, size_t pos) {
       l = __CAS(&ia->len, prevlen, newlen);
     } while(l < newlen);
   }
-  return &(*p)->data[(pos - index) * ia->elemsize];
+  return &(iarray_pagedata(*p)[(pos - index) * ia->elemsize]);
 }

@@ -15,11 +15,11 @@ char mmap_empty[] = {0};
 
 char*
 mmap_read_fd_range(fd_t fd, size_t* size, size_t offset, size_t len) {
-#if WINDOWS_NATIVE
-  HANDLE h = (HANDLE)_get_osfhandle((int)fd);
-  HANDLE m;
   char* map;
-  m = CreateFileMapping(h, offset, PAGE_READONLY, 0, 0, NULL);
+#if WINDOWS_NATIVE
+  /*HANDLE h = (HANDLE)_get_osfhandle((int)fd);
+  HANDLE m;
+  m = CreateFileMapping(h, 0, PAGE_READONLY, 0, 0, NULL);
   map = 0;
   if(m) {
     DWORD lo = offset;
@@ -29,11 +29,10 @@ mmap_read_fd_range(fd_t fd, size_t* size, size_t offset, size_t len) {
 
     map = MapViewOfFile(m, FILE_MAP_READ, hi, lo, *size);
   }
-  CloseHandle(m);
-  return map;
+  CloseHandle(m);*/
 #else
   struct stat st;
-  char* map = mmap_empty;
+   map = mmap_empty;
 
   if(fstat(fd, &st) == 0 && (*size = st.st_size)) {
     if(*size > len)
@@ -43,6 +42,6 @@ mmap_read_fd_range(fd_t fd, size_t* size, size_t offset, size_t len) {
     if(map == (char*)-1)
       map = 0;
   }
-  return map;
 #endif
+  return map;
 }

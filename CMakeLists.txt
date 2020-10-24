@@ -2,7 +2,6 @@ set(CMAKE_LEGACY_CYGWIN_WIN32 0)
 cmake_minimum_required(VERSION 3.2)
 set(CMAKE_WARN_VS8 OFF)
 
-
 set(CMAKE_C_STANDARD 11)
 
 project(c-utils C)
@@ -31,8 +30,10 @@ macro(debug_option NAME DESC)
   if(DEBUG_${NAME})
     add_definitions(-DDEBUG_${NAME}=1)
   endif(DEBUG_${NAME})
-endmacro(debug_option NAME DESC)
-
+endmacro(
+  debug_option
+  NAME
+  DESC)
 
 debug_option(DEBUG_IO "Debug I/O code")
 debug_option(DEBUG_HTTP "Debug HTTP code")
@@ -162,16 +163,13 @@ endmacro(
 
 check_compile(LIBC_HAS_IP6 "#include <sys/types.h>\n#include <sys/socket.h>\n#include <netinet/in.h>\n\nint main() {\n  struct sockaddr_in6 sa;\n  sa.sin6_family = PF_INET6;\n  (void)sa;\n  return 0;\n}\n")
 check_compile(LIBC_HAS_SCOPE_ID "#include <sys/types.h>\n#include <sys/socket.h>\n#include <netinet/in.h>\n\nint main() {\n  struct sockaddr_in6 sa;\n  sa.sin6_family = PF_INET6;\n  sa.sin6_scope_id = 23;\n  (void)sa;\n  return 0;\n}\n")
-check_compile(HAVE_SYSCALL
-  "#define _GNU_SOURCE\n#include <unistd.h>\n#include <sys/syscall.h>\n\nstatic inline ssize_t\nsys_write(int fd, const void* buf, size_t n) {\n  return syscall(SYS_write, fd, buf, n);\n}\n\nint\nmain() {\n  return sys_write(1, \"test\\\\n\", 5);\n}\n"
-  )
+check_compile(HAVE_SYSCALL "#define _GNU_SOURCE\n#include <unistd.h>\n#include <sys/syscall.h>\n\nstatic inline ssize_t\nsys_write(int fd, const void* buf, size_t n) {\n  return syscall(SYS_write, fd, buf, n);\n}\n\nint\nmain() {\n  return sys_write(1, \"test\\\\n\", 5);\n}\n")
 
 if(NOT USE_SELECT)
   check_compile(
     SUPPORT_DEVPOLL
     "#include <stdio.h>\n#include <stdlib.h>\n#include <poll.h>\n#include <netdb.h>\n#include <unistd.h>\n#include <fcntl.h>\n#include <strings.h>\n#include <sys/types.h>\n#include <sys/socket.h>\n#include <sys/errno.h>\n#include <netinet/in.h>\n#include <sys/devpoll.h>\n\nmain() {\n  int fd = open(\"/dev/poll\", O_RDWR);\n  struct pollfd p[100];\n  int i, r;\n  dvpoll_t timeout;\n  p[0].fd = 0;\n  p[0].events = POLLIN;\n  write(fd, p, sizeof(struct pollfd));\n  timeout.dp_timeout = 100; /* milliseconds? */\n  timeout.dp_nfds = 1;\n  timeout.dp_fds = p;\n  r = ioctl(fd, DP_POLL, &timeout);\n  for(i = 0; i < r; ++i) printf(\"event %d on fd #%d\\\\n\", p[i].revents, p[i].fd);\n}\n"
   )
-
 
   check_compile(
     SUPPORT_EPOLL
@@ -190,7 +188,7 @@ if(NOT USE_SELECT)
     SUPPORT_POLL
     "#include <sys/types.h>\n#include <fcntl.h>\n#include <poll.h>\n\nint\nmain() {\n  struct pollfd x;\n\n  x.fd = open(\"trypoll.c\", O_RDONLY);\n  if(x.fd == -1)\n    _exit(111);\n  x.events = POLLIN;\n  if(poll(&x, 1, 10) == -1)\n    _exit(1);\n  if(x.revents != POLLIN)\n    _exit(1);\n\n  /* XXX: try to detect and avoid poll() imitation libraries */\n\n  _exit(0);\n}\n"
   )
-  set(MUX_METHODS )
+  set(MUX_METHODS)
   foreach(METHOD DEVPOLL EPOLL KQUEUE SIGIO POLL)
     if(SUPPORT_${METHOD})
       list(APPEND MUX_METHODS ${METHOD})
@@ -199,7 +197,6 @@ if(NOT USE_SELECT)
 
   message("Mux methods: ${MUX_METHODS}")
 endif(NOT USE_SELECT)
-
 
 check_compile(HAVE_N2I "#include <sys/types.h>\n#include <sys/socket.h>\n#include <net/if.h>\n\nint\nmain() {\n  static char ifname[IFNAMSIZ];\n  char* tmp = if_indextoname(0, ifname);\n  (void)tmp;\n  return 0;\n}\n")
 
@@ -270,11 +267,8 @@ endif(SIGSET_T_SIZE)
 
 if(NOT HAVE_SIGSET_T OR NOT SIZEOF_SIGSET_T)
 
-  check_run(HAVE_SIGSET_T 
-    "#define _GNU_SOURCE\n#include <sys/types.h>\n#include <signal.h>\n#include <fcntl.h>\n#include <stdio.h>\n\nint main() {\n  sigset_t ss;\nprintf(\"%lu\\\\n\", sizeof(ss));\n  return 0;\n}\n"
-                           SIZEOF_SIGSET_T
-                           )
-   message("SIZEOF_SIGSET_T = ${SIZEOF_SIGSET_T}")
+  check_run(HAVE_SIGSET_T "#define _GNU_SOURCE\n#include <sys/types.h>\n#include <signal.h>\n#include <fcntl.h>\n#include <stdio.h>\n\nint main() {\n  sigset_t ss;\nprintf(\"%lu\\\\n\", sizeof(ss));\n  return 0;\n}\n" SIZEOF_SIGSET_T)
+  message("SIZEOF_SIGSET_T = ${SIZEOF_SIGSET_T}")
 endif(NOT HAVE_SIGSET_T OR NOT SIZEOF_SIGSET_T)
 
 if(HAVE_SIGSET_T)
@@ -442,8 +436,7 @@ check_functions(
   sigprocmask
   strerror_r
   __write
-  writev
-)
+  writev)
 
 check_function_exists(lseek64 HAVE_LSEEK64)
 if(NOT HAVE_LSEEK64)
@@ -814,13 +807,13 @@ if(SUPPORT_SELECT STREQUAL "")
   endif(NOT SUPPORT_SELECT)
 endif(SUPPORT_SELECT STREQUAL "")
 
-   set(MUX_METHODS
-      ""
-      CACHE STRING "available I/O multiplexing methods")
-    set(MUX 
-      ""
-      CACHE STRING "selected I/O multiplexing method")
- 
+set(MUX_METHODS
+    ""
+    CACHE STRING "available I/O multiplexing methods")
+set(MUX
+    ""
+    CACHE STRING "selected I/O multiplexing method")
+
 foreach(METHOD KQUEUE DEVPOLL EPOLL SIGIO POLL SELECT)
   if(SUPPORT_${METHOD})
     list(APPEND MUX_METHODS "${METHOD}")
@@ -835,26 +828,25 @@ if(LIBMSWSOCK)
 endif(LIBMSWSOCK)
 
 message("Available MUX methods: ${MUX_METHODS}")
- 
-  if(USE_DEVPOLL)
-    set(MUX DEVPOLL)
-  endif(USE_DEVPOLL)
-  if(USE_SIGIO)
-    set(MUX SIGIO)
-  endif(USE_SIGIO)
-  if(USE_KQUEUE)
-    set(MUX KQUEUE)
-  endif(USE_KQUEUE)
-  if(USE_EPOLL)
-    set(MUX EPOLL)
-  endif(USE_EPOLL)
-  if(USE_POLL)
-    set(MUX POLL)
-  endif(USE_POLL)
-  if(USE_SELECT)
-    set(MUX SELECT)
-  endif(USE_SELECT)
 
+if(USE_DEVPOLL)
+  set(MUX DEVPOLL)
+endif(USE_DEVPOLL)
+if(USE_SIGIO)
+  set(MUX SIGIO)
+endif(USE_SIGIO)
+if(USE_KQUEUE)
+  set(MUX KQUEUE)
+endif(USE_KQUEUE)
+if(USE_EPOLL)
+  set(MUX EPOLL)
+endif(USE_EPOLL)
+if(USE_POLL)
+  set(MUX POLL)
+endif(USE_POLL)
+if(USE_SELECT)
+  set(MUX SELECT)
+endif(USE_SELECT)
 
 if(NOT MUX AND SUPPORT_KQUEUE)
   set(MUX KQUEUE)

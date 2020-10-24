@@ -12,10 +12,10 @@
 	"buffers":
 	[
 		{
-			"contents": "   ⒡  debug_int ( ) ; — function declaration\n   ⒡  debug_sa ( ) ; — function declaration\n   ⒡  debug_sl ( ) ; — function declaration\n   ⒡  debug_str ( ) ; — function declaration\n—Ⓕ– debug_sa ( ) { … } — function\n—Ⓕ– debug_stra ( ) { … } — function\n—Ⓕ– debug_str ( ) { … } — function\n—Ⓕ– debug_byte ( ) { … } — function\n—Ⓕ– debug_target ( ) { … } — function\n—Ⓕ– debug_sl ( ) { … } — function\n—Ⓕ– debug_int ( ) { … } — function\n—Ⓜ– debug_sa ( ) … — macro function\n—Ⓜ– debug_sl ( ) … — macro function\n—Ⓜ– debug_str ( ) … — macro function\n—Ⓜ– debug_int ( ) … — macro function\n   Ⓜ  _mkdir … — macro object\n—Ⓕ– debug_set ( ) { … } — function\n—Ⓕ– mkdir_sa ( ) { … } — function\n—Ⓕ– mkdir_components ( ) { … } — function\n—Ⓕ– stralloc_weak ( ) { … } — function\n—Ⓕ– put_newline ( ) { … } — function\n—Ⓕ– set_command ( ) { … } — function\n—Ⓕ– strarray_dump ( ) { … } — function\n—Ⓕ– path_prefix_b ( ) { … } — function\n—Ⓕ– path_prefix_s ( ) { … } — function\n—Ⓕ– path_prefix_sa ( ) { … } — function\n—Ⓕ– path_extension ( ) { … } — function\n—Ⓕ– path_output ( ) { … } — function\n—Ⓕ– path_wildcard ( ) { … } — function\n—Ⓕ– path_clean_s ( ) { … } — function\n—Ⓕ– path_clean_b ( ) { … } — function\n—Ⓕ– path_mmap_read ( ) { … } — function\n—Ⓕ– extract_build_type ( ) { … } — function\n—Ⓕ– extract_tokens ( ) { … } — function\n—Ⓕ– extract_pptok ( ) { … } — function\n—Ⓕ– extract_vars ( ) { … } — function\n—Ⓕ– format_linklib_lib ( ) { … } — function\n—Ⓕ– format_linklib_switch ( ) { … } — function\n—Ⓕ– format_linklib_dummy ( ) { … } — function\n—Ⓕ– skip_comment ( ) { … } — function\n—Ⓕ– main_scan ( ) { … } — function\n—Ⓕ– main_present ( ) { … } — function\n—Ⓕ– includes_cppflags ( ) { … } — function\n—Ⓕ– includes_extract ( ) { … } — function\n—Ⓕ– includes_get ( ) { … } — function\n—Ⓕ– includes_add ( ) { … } — function\n—Ⓕ– includes_to_libs ( ) { … } — function\n—Ⓕ– var_subst ( ) { … } — function\n—Ⓕ– rule_get ( ) { … } — function\n—Ⓕ– rule_get_sa ( ) { … } — function\n—Ⓕ– rule_find ( ) { … } — function\n—Ⓕ– rule_rename ( ) { … } — function\n—Ⓕ– rule_find_sa ( ) { … } — function\n—Ⓕ– rule_find_b ( ) { … } — function\n—Ⓕ– rule_match ( ) { … } — function\n—Ⓕ– rule_command_subst ( ) { … } — function\n—Ⓕ– rule_command ( ) { … } — function\n—Ⓕ– rule_add_dep ( ) { … } — function\n—Ⓕ– rule_add_deps ( ) { … } — function\n—Ⓕ– rule_dep_list_recursive ( ) { … } — function\n—Ⓕ– rule_dep_list ( ) { … } — function\n—Ⓕ– rule_deps_indirect ( ) { … } — function\n—Ⓕ– rule_dump ( ) { … } — function\n—Ⓕ– add_path_b ( ) { … } — function\n—Ⓕ– add_path ( ) { … } — function\n—Ⓕ– add_srcpath ( ) { … } — function\n—Ⓕ– add_source ( ) { … } — function\n—Ⓕ– add_path_sa ( ) { … } — function\n—Ⓕ– add_path_relativeb ( ) { … } — function\n—Ⓕ– is_b ( ) { … } — function\n—Ⓕ– is_s ( ) { … } — function\n—Ⓕ– is_sa ( ) { … } — function\n—Ⓕ– count_b ( ) { … } — function\n—Ⓕ– is_source_b ( ) { … } — function\n—Ⓕ– is_source_sa ( ) { … } — function\n—Ⓕ– is_source ( ) { … } — function\n—Ⓕ– is_filename_b ( ) { … } — function\n—Ⓕ– is_filename_sa ( ) { … } — function\n—Ⓕ– is_filename ( ) { … } — function\n—Ⓕ– is_include_b ( ) { … } — function\n—Ⓕ– is_include_sa ( ) { … } — function\n—Ⓕ– is_include ( ) { … } — function\n—Ⓕ– is_object_b ( ) { … } — function\n—Ⓕ– is_object_sa ( ) { … } — function\n—Ⓕ– is_object ( ) { … } — function\n—Ⓕ– sources_new ( ) { … } — function\n—Ⓕ– sources_add ( ) { … } — function\n—Ⓕ– sources_add_b ( ) { … } — function\n—Ⓕ– sources_sort ( ) { … } — function\n—Ⓕ– sources_get ( ) { … } — function\n—Ⓕ– sources_find ( ) { … } — function\n—Ⓕ– sources_deps ( ) { … } — function\n—Ⓕ– sources_readdir ( ) { … } — function\n—Ⓕ– sources_addincludes ( ) { … } — function\n—Ⓕ– var_isset ( ) { … } — function\n—Ⓕ– var_list ( ) { … } — function\n—Ⓕ– var_get ( ) { … } — function\n—Ⓕ– var_set ( ) { … } — function\n—Ⓕ– var_unset ( ) { … } — function\n—Ⓕ– var_push ( ) { … } — function\n—Ⓕ– var_push_sa ( ) { … } — function\n—Ⓕ– push_lib ( ) { … } — function\n—Ⓕ– with_lib ( ) { … } — function\n—Ⓕ– push_define ( ) { … } — function\n—Ⓕ– get_rules_by_cmd ( ) { … } — function\n—Ⓕ– dirname_alloc ( ) { … } — function\n—Ⓕ– sourcedir_addsource ( ) { … } — function\n—Ⓕ– sourcedir_find ( ) { … } — function\n—Ⓕ– sourcedir_findsa ( ) { … } — function\n—Ⓕ– sourcedir_findb ( ) { … } — function\n—Ⓕ– sourcedir_getb ( ) { … } — function\n—Ⓕ– sourcedir_getsa ( ) { … } — function\n—Ⓕ– sourcedir_populate ( ) { … } — function\n—Ⓕ– sourcedir_dump_all ( ) { … } — function\n—Ⓕ– sourcedir_dep_recursive ( ) { … } — function\n—Ⓕ– sourcedir_deps ( ) { … } — function\n—Ⓕ– sourcedir_deps_s ( ) { … } — function\n—Ⓕ– sourcedir_deps_b ( ) { … } — function\n—Ⓕ– sourcedir_printdeps ( ) { … } — function\n—Ⓕ– deps_indirect ( ) { … } — function\n—Ⓕ– deps_direct ( ) { … } — function\n—Ⓕ– print_rule_deps_r ( ) { … } — function\n—Ⓕ– print_rule_deps ( ) { … } — function\n—Ⓕ– remove_indirect_deps_recursive ( ) { … } — function\n—Ⓕ– remove_indirect_deps ( ) { … } — function\n—Ⓕ– deps_for_libs ( ) { … } — function\n—Ⓕ– target_ptrs ( ) { … } — function\n—Ⓕ– gen_single_rule ( ) { … } — function\n—Ⓕ– gen_clean_rule ( ) { … } — function\n—Ⓕ– filter_pptoks ( ) { … } — function\n—Ⓕ– gen_srcdir_compile_rules ( ) { … } — function\n—Ⓕ– gen_simple_compile_rules ( ) { … } — function\n—Ⓕ– gen_srcdir_lib_rule ( ) { … } — function\n—Ⓕ– gen_srcdir_rule ( ) { … } — function\n—Ⓕ– gen_lib_rules ( ) { … } — function\n—Ⓕ– gen_link_rules ( ) { … } — function\n—Ⓕ– gen_install_rules ( ) { … } — function\n—Ⓕ– get_keys ( ) { … } — function\n—Ⓕ– input_command ( ) { … } — function\n—Ⓕ– input_command_line ( ) { … } — function\n—Ⓕ– output_var ( ) { … } — function\n—Ⓕ– output_all_vars ( ) { … } — function\n   Ⓜ  YELLOW … — macro object\n   Ⓜ  RED … — macro object\n   Ⓜ  NC … — macro object\n—Ⓕ– output_make_rule ( ) { … } — function\n—Ⓕ– output_ninja_rule ( ) { … } — function\n—Ⓕ– output_all_rules ( ) { … } — function\n—Ⓕ– output_build_rules ( ) { … } — function\n—Ⓕ– output_script ( ) { … } — function\n—Ⓕ– set_machine ( ) { … } — function\n—Ⓕ– set_chip ( ) { … } — function\n—Ⓕ– set_system ( ) { … } — function\n—Ⓕ– set_make_type ( ) { … } — function\n—Ⓕ– set_compiler_type ( ) { … } — function\n—Ⓕ– usage ( ) { … } — function\n—Ⓕ– main ( ) { … } — function",
+			"contents": "",
 			"settings":
 			{
-				"buffer_size": 6073,
+				"buffer_size": 0,
 				"line_ending": "Unix",
 				"name": "𝌆 Outline",
 				"scratch": true
@@ -25,7 +25,7 @@
 			"file": "lib/str.h",
 			"settings":
 			{
-				"buffer_size": 3646,
+				"buffer_size": 3644,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
@@ -51,8 +51,89 @@
 			"file": "genmakefile.c",
 			"settings":
 			{
-				"buffer_size": 143287,
+				"buffer_size": 144309,
 				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/unix/wordexp.c",
+			"settings":
+			{
+				"buffer_size": 2950,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/typedefs.h",
+			"settings":
+			{
+				"buffer_size": 2312,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/process/process_create.c",
+			"settings":
+			{
+				"buffer_size": 4000,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/unix/pipe2.c",
+			"settings":
+			{
+				"buffer_size": 3560,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/str/str_chrs.c",
+			"settings":
+			{
+				"buffer_size": 283,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/str/str_chr.c",
+			"settings":
+			{
+				"buffer_size": 213,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/stralloc/stralloc_replace.c",
+			"settings":
+			{
+				"buffer_size": 595,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "CMakeLists.txt",
+			"settings":
+			{
+				"buffer_size": 63057,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "3rdparty/openssl/external/perl/Text-Template-1.46/t/02-hash.t",
+			"settings":
+			{
+				"buffer_size": 3215,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/path.h",
+			"settings":
+			{
+				"buffer_size": 2612,
 				"line_ending": "Unix"
 			}
 		},
@@ -92,7 +173,7 @@
 			"file": "lib/set.h",
 			"settings":
 			{
-				"buffer_size": 2318,
+				"buffer_size": 2303,
 				"line_ending": "Unix"
 			}
 		},
@@ -213,13 +294,11 @@
 	},
 	"expanded_folders":
 	[
-		"/home/roman/Dokumente/Sources/c-utils",
-		"/home/roman/Dokumente/Sources/c-utils/lib",
-		"/home/roman/Dokumente/Sources/c-utils/lib/str",
-		"/home/roman/Dokumente/Sources/c-utils/lib/stralloc"
+		"/home/roman/Dokumente/Sources/c-utils"
 	],
 	"file_history":
 	[
+		"/home/roman/Dokumente/Sources/c-utils/lib/stralloc.h",
 		"/home/roman/Dokumente/Sources/c-utils/genmakefile.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/str/str_diff.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/str/str_rchrs.c",
@@ -346,8 +425,7 @@
 		"/home/roman/Dokumente/Sources/c-utils/lib/buffer/buffer_lzma.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/ndelay/ndelay_on.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/io/io_block.c",
-		"/home/roman/Sources/c-utils/lib/io/io_nonblock.c",
-		"/home/roman/Dokumente/Sources/plot-cv/CMakeLists.txt"
+		"/home/roman/Sources/c-utils/lib/io/io_nonblock.c"
 	],
 	"find":
 	{
@@ -372,6 +450,84 @@
 		"case_sensitive": true,
 		"find_history":
 		[
+			"\"bcc",
+			"\"po",
+			"set_iterator_it",
+			"set_foreach\\(",
+			"it,",
+			"it",
+			"set_foreach\\(",
+			"set_foreach",
+			"^concat_q",
+			"'@'",
+			"\n    ",
+			"concat_quoted",
+			"quoted",
+			"quote",
+			"rule_command_subst",
+			"concat_quoted",
+			"contains",
+			"concat_qu",
+			"\"\\$\\(LIB",
+			"concat_quoted",
+			"case '\\^'",
+			"case '^'",
+			"'<'",
+			"\\$<",
+			"\\$",
+			"\"bcc",
+			"-o\\$",
+			"quote_args =",
+			"\"bcc",
+			"\"bcc\"",
+			"\"bcc",
+			"tlib",
+			"'\\^'",
+			"'^'",
+			"\"\\$\\^\"",
+			"\"\\$^\"",
+			"\"$^\"",
+			"pathsep_args",
+			"pathsep",
+			"\"bcc",
+			"pathsep_args",
+			"-Fo ",
+			"-Fo",
+			"^set_make",
+			"set_make",
+			"\"po",
+			"^\\s*pathsep_args =",
+			"pathsep_args =",
+			"\"bcc",
+			"\"bc",
+			"pathsep_make =",
+			"pathsep_make",
+			"cfg.sys.os",
+			"cfg.sys.os ",
+			"\"mkdir",
+			"\"gen_srcdir",
+			"\"num_outputs",
+			"num_outputs",
+			"_replace",
+			"^path_prefix_s",
+			"path_prefix_s",
+			"error op",
+			"pathsep_make",
+			"pelles",
+			"pocc",
+			"COMPILE_DEF",
+			"DEFINI",
+			"PREFIX",
+			"PREFIX=",
+			"-DPREFIX",
+			"-D",
+			"PREFIX",
+			"target_comp",
+			"target_prop",
+			"target",
+			"target_def",
+			"add_prog",
+			"error open",
 			"pelles",
 			"-q",
 			"sources_add\"",
@@ -421,85 +577,7 @@
 			"\"source\"",
 			"\" src",
 			"strarray_push.*srcs",
-			"strarray_push",
-			"src\"",
-			"src:",
-			"src",
-			"src:",
-			"src:\"",
-			"\"src:",
-			"\"src\"",
-			"\"source\"",
-			"addsource.*\\*p",
-			"\\*p.*add",
-			"\\*p",
-			"sourcedir_addsou",
-			"int3",
-			"sources_add",
-			"strarray_size",
-			"strarray_foreach",
-			"sourcedir",
-			"path_exists",
-			"genmakefile",
-			"path_mmap_read",
-			"error open",
-			"path_clean",
-			"start",
-			"\"source\"",
-			"\"source:",
-			"source:",
-			"start",
-			"endb",
-			"start",
-			"dirs.this",
-			"\\&srcs",
-			"srcs",
-			"rect_update",
-			"extent",
-			"isleap",
-			"leap",
-			"__isleap",
-			"cleanup",
-			"process_entry",
-			"cleanup_text",
-			"from_argv",
-			"process_entry",
-			"puts_esca",
-			"put_esca",
-			"shell",
-			"pair",
-			"usage",
-			"buffer_1",
-			"title",
-			"cleanup.*title",
-			"cleanup",
-			"dump_pair",
-			"dump",
-			"title",
-			"keep",
-			"cleanup_text",
-			"utf",
-			"contain",
-			"http_read_internal",
-			"sa\\.s",
-			"ssl socket",
-			"DEBUG_IO",
-			"STATUS",
-			"\"pollfd",
-			"parse_datetime",
-			"return",
-			"Read =",
-			"buffer_putflush",
-			"^",
-			"SUPPORT_",
-			"\\(write,",
-			"\"io_wa",
-			"parse_mediathek_lis",
-			"parse_mediathek_list",
-			"ssl2err",
-			"http_ssl2errno\\(h->ssl,",
-			"ssl2errno",
-			"parse_entry"
+			"strarray_push"
 		],
 		"highlight": false,
 		"in_selection": false,
@@ -507,6 +585,7 @@
 		"regex": true,
 		"replace_history":
 		[
+			"set_iterator_t",
 			"end",
 			"isleap",
 			"&sa->s",
@@ -583,809 +662,22 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 6073,
+						"buffer_size": 0,
 						"regions":
 						{
 						},
 						"selection":
 						[
+							[
+								0,
+								0
+							]
 						],
 						"settings":
 						{
 							"color_scheme": "Packages/Outline/outline.hidden-tmTheme",
-							"current_file": "/home/roman/Dokumente/Sources/c-utils/genmakefile.c",
+							"current_file": "/home/roman/Dokumente/Sources/c-utils/lib/typedefs.h",
 							"outline_rename_mode": false,
-							"symkeys":
-							[
-								[
-									704,
-									713
-								],
-								[
-									745,
-									753
-								],
-								[
-									792,
-									800
-								],
-								[
-									860,
-									869
-								],
-								[
-									2240,
-									2248
-								],
-								[
-									2423,
-									2433
-								],
-								[
-									2782,
-									2791
-								],
-								[
-									2998,
-									3008
-								],
-								[
-									3194,
-									3206
-								],
-								[
-									3640,
-									3648
-								],
-								[
-									4154,
-									4163
-								],
-								[
-									4341,
-									4349
-								],
-								[
-									4364,
-									4372
-								],
-								[
-									4392,
-									4401
-								],
-								[
-									4416,
-									4425
-								],
-								[
-									4462,
-									4468
-								],
-								[
-									4488,
-									4497
-								],
-								[
-									4696,
-									4704
-								],
-								[
-									4933,
-									4949
-								],
-								[
-									5336,
-									5349
-								],
-								[
-									5550,
-									5561
-								],
-								[
-									5726,
-									5737
-								],
-								[
-									6358,
-									6371
-								],
-								[
-									6989,
-									7002
-								],
-								[
-									7525,
-									7538
-								],
-								[
-									7678,
-									7692
-								],
-								[
-									8040,
-									8054
-								],
-								[
-									8364,
-									8375
-								],
-								[
-									8850,
-									8863
-								],
-								[
-									9272,
-									9284
-								],
-								[
-									9514,
-									9526
-								],
-								[
-									9883,
-									9897
-								],
-								[
-									10273,
-									10291
-								],
-								[
-									10481,
-									10495
-								],
-								[
-									11206,
-									11219
-								],
-								[
-									12711,
-									12723
-								],
-								[
-									13159,
-									13177
-								],
-								[
-									13427,
-									13448
-								],
-								[
-									13662,
-									13682
-								],
-								[
-									13729,
-									13741
-								],
-								[
-									13936,
-									13945
-								],
-								[
-									14897,
-									14909
-								],
-								[
-									15101,
-									15118
-								],
-								[
-									15961,
-									15977
-								],
-								[
-									17037,
-									17049
-								],
-								[
-									17275,
-									17287
-								],
-								[
-									17692,
-									17708
-								],
-								[
-									18764,
-									18773
-								],
-								[
-									19385,
-									19393
-								],
-								[
-									20193,
-									20204
-								],
-								[
-									20340,
-									20349
-								],
-								[
-									20703,
-									20714
-								],
-								[
-									21133,
-									21145
-								],
-								[
-									21291,
-									21302
-								],
-								[
-									21609,
-									21619
-								],
-								[
-									22077,
-									22095
-								],
-								[
-									23441,
-									23453
-								],
-								[
-									25044,
-									25056
-								],
-								[
-									25384,
-									25397
-								],
-								[
-									25901,
-									25924
-								],
-								[
-									26446,
-									26459
-								],
-								[
-									26832,
-									26850
-								],
-								[
-									27201,
-									27210
-								],
-								[
-									28058,
-									28068
-								],
-								[
-									28219,
-									28227
-								],
-								[
-									28364,
-									28375
-								],
-								[
-									28638,
-									28648
-								],
-								[
-									28946,
-									28957
-								],
-								[
-									29031,
-									29049
-								],
-								[
-									29344,
-									29348
-								],
-								[
-									29445,
-									29449
-								],
-								[
-									29551,
-									29556
-								],
-								[
-									29664,
-									29671
-								],
-								[
-									29863,
-									29874
-								],
-								[
-									30439,
-									30451
-								],
-								[
-									30509,
-									30518
-								],
-								[
-									30575,
-									30588
-								],
-								[
-									30926,
-									30940
-								],
-								[
-									31000,
-									31011
-								],
-								[
-									31070,
-									31082
-								],
-								[
-									31492,
-									31505
-								],
-								[
-									31564,
-									31574
-								],
-								[
-									31632,
-									31643
-								],
-								[
-									31732,
-									31744
-								],
-								[
-									31802,
-									31811
-								],
-								[
-									31963,
-									31974
-								],
-								[
-									32540,
-									32551
-								],
-								[
-									32630,
-									32643
-								],
-								[
-									33152,
-									33164
-								],
-								[
-									33769,
-									33780
-								],
-								[
-									34483,
-									34495
-								],
-								[
-									35362,
-									35374
-								],
-								[
-									36290,
-									36305
-								],
-								[
-									37150,
-									37169
-								],
-								[
-									40838,
-									40847
-								],
-								[
-									41009,
-									41017
-								],
-								[
-									41428,
-									41435
-								],
-								[
-									41623,
-									41630
-								],
-								[
-									41794,
-									41803
-								],
-								[
-									41989,
-									41997
-								],
-								[
-									42174,
-									42185
-								],
-								[
-									42366,
-									42374
-								],
-								[
-									42644,
-									42652
-								],
-								[
-									43140,
-									43151
-								],
-								[
-									43448,
-									43464
-								],
-								[
-									43808,
-									43821
-								],
-								[
-									43981,
-									44000
-								],
-								[
-									46206,
-									46220
-								],
-								[
-									46536,
-									46552
-								],
-								[
-									46925,
-									46940
-								],
-								[
-									47128,
-									47142
-								],
-								[
-									47561,
-									47576
-								],
-								[
-									47789,
-									47807
-								],
-								[
-									48956,
-									48974
-								],
-								[
-									49482,
-									49505
-								],
-								[
-									50060,
-									50074
-								],
-								[
-									50211,
-									50227
-								],
-								[
-									50389,
-									50405
-								],
-								[
-									50577,
-									50596
-								],
-								[
-									51122,
-									51135
-								],
-								[
-									51529,
-									51540
-								],
-								[
-									51800,
-									51817
-								],
-								[
-									52833,
-									52848
-								],
-								[
-									53512,
-									53542
-								],
-								[
-									54045,
-									54065
-								],
-								[
-									54421,
-									54434
-								],
-								[
-									55838,
-									55849
-								],
-								[
-									56302,
-									56317
-								],
-								[
-									56917,
-									56931
-								],
-								[
-									59247,
-									59260
-								],
-								[
-									59607,
-									59631
-								],
-								[
-									63471,
-									63495
-								],
-								[
-									65004,
-									65023
-								],
-								[
-									66799,
-									66814
-								],
-								[
-									67823,
-									67836
-								],
-								[
-									69024,
-									69038
-								],
-								[
-									74681,
-									74698
-								],
-								[
-									76714,
-									76722
-								],
-								[
-									76834,
-									76847
-								],
-								[
-									81605,
-									81623
-								],
-								[
-									82537,
-									82547
-								],
-								[
-									83918,
-									83933
-								],
-								[
-									84230,
-									84236
-								],
-								[
-									84258,
-									84261
-								],
-								[
-									84283,
-									84285
-								],
-								[
-									84301,
-									84317
-								],
-								[
-									87183,
-									87200
-								],
-								[
-									88187,
-									88203
-								],
-								[
-									88783,
-									88801
-								],
-								[
-									89364,
-									89377
-								],
-								[
-									91320,
-									91331
-								],
-								[
-									91859,
-									91867
-								],
-								[
-									92306,
-									92316
-								],
-								[
-									93029,
-									93042
-								],
-								[
-									94956,
-									94973
-								],
-								[
-									117377,
-									117382
-								],
-								[
-									121468,
-									121472
-								]
-							],
-							"symlist":
-							[
-								"\t⒡  debug_int ( ) ; — function declaration",
-								"\t⒡  debug_sa ( ) ; — function declaration",
-								"\t⒡  debug_sl ( ) ; — function declaration",
-								"\t⒡  debug_str ( ) ; — function declaration",
-								"—Ⓕ– debug_sa ( ) { … } — function",
-								"—Ⓕ– debug_stra ( ) { … } — function",
-								"—Ⓕ– debug_str ( ) { … } — function",
-								"—Ⓕ– debug_byte ( ) { … } — function",
-								"—Ⓕ– debug_target ( ) { … } — function",
-								"—Ⓕ– debug_sl ( ) { … } — function",
-								"—Ⓕ– debug_int ( ) { … } — function",
-								"—Ⓜ– debug_sa ( ) … — macro function",
-								"—Ⓜ– debug_sl ( ) … — macro function",
-								"—Ⓜ– debug_str ( ) … — macro function",
-								"—Ⓜ– debug_int ( ) … — macro function",
-								"\tⓂ  _mkdir … — macro object",
-								"—Ⓕ– debug_set ( ) { … } — function",
-								"—Ⓕ– mkdir_sa ( ) { … } — function",
-								"—Ⓕ– mkdir_components ( ) { … } — function",
-								"—Ⓕ– stralloc_weak ( ) { … } — function",
-								"—Ⓕ– put_newline ( ) { … } — function",
-								"—Ⓕ– set_command ( ) { … } — function",
-								"—Ⓕ– strarray_dump ( ) { … } — function",
-								"—Ⓕ– path_prefix_b ( ) { … } — function",
-								"—Ⓕ– path_prefix_s ( ) { … } — function",
-								"—Ⓕ– path_prefix_sa ( ) { … } — function",
-								"—Ⓕ– path_extension ( ) { … } — function",
-								"—Ⓕ– path_output ( ) { … } — function",
-								"—Ⓕ– path_wildcard ( ) { … } — function",
-								"—Ⓕ– path_clean_s ( ) { … } — function",
-								"—Ⓕ– path_clean_b ( ) { … } — function",
-								"—Ⓕ– path_mmap_read ( ) { … } — function",
-								"—Ⓕ– extract_build_type ( ) { … } — function",
-								"—Ⓕ– extract_tokens ( ) { … } — function",
-								"—Ⓕ– extract_pptok ( ) { … } — function",
-								"—Ⓕ– extract_vars ( ) { … } — function",
-								"—Ⓕ– format_linklib_lib ( ) { … } — function",
-								"—Ⓕ– format_linklib_switch ( ) { … } — function",
-								"—Ⓕ– format_linklib_dummy ( ) { … } — function",
-								"—Ⓕ– skip_comment ( ) { … } — function",
-								"—Ⓕ– main_scan ( ) { … } — function",
-								"—Ⓕ– main_present ( ) { … } — function",
-								"—Ⓕ– includes_cppflags ( ) { … } — function",
-								"—Ⓕ– includes_extract ( ) { … } — function",
-								"—Ⓕ– includes_get ( ) { … } — function",
-								"—Ⓕ– includes_add ( ) { … } — function",
-								"—Ⓕ– includes_to_libs ( ) { … } — function",
-								"—Ⓕ– var_subst ( ) { … } — function",
-								"—Ⓕ– rule_get ( ) { … } — function",
-								"—Ⓕ– rule_get_sa ( ) { … } — function",
-								"—Ⓕ– rule_find ( ) { … } — function",
-								"—Ⓕ– rule_rename ( ) { … } — function",
-								"—Ⓕ– rule_find_sa ( ) { … } — function",
-								"—Ⓕ– rule_find_b ( ) { … } — function",
-								"—Ⓕ– rule_match ( ) { … } — function",
-								"—Ⓕ– rule_command_subst ( ) { … } — function",
-								"—Ⓕ– rule_command ( ) { … } — function",
-								"—Ⓕ– rule_add_dep ( ) { … } — function",
-								"—Ⓕ– rule_add_deps ( ) { … } — function",
-								"—Ⓕ– rule_dep_list_recursive ( ) { … } — function",
-								"—Ⓕ– rule_dep_list ( ) { … } — function",
-								"—Ⓕ– rule_deps_indirect ( ) { … } — function",
-								"—Ⓕ– rule_dump ( ) { … } — function",
-								"—Ⓕ– add_path_b ( ) { … } — function",
-								"—Ⓕ– add_path ( ) { … } — function",
-								"—Ⓕ– add_srcpath ( ) { … } — function",
-								"—Ⓕ– add_source ( ) { … } — function",
-								"—Ⓕ– add_path_sa ( ) { … } — function",
-								"—Ⓕ– add_path_relativeb ( ) { … } — function",
-								"—Ⓕ– is_b ( ) { … } — function",
-								"—Ⓕ– is_s ( ) { … } — function",
-								"—Ⓕ– is_sa ( ) { … } — function",
-								"—Ⓕ– count_b ( ) { … } — function",
-								"—Ⓕ– is_source_b ( ) { … } — function",
-								"—Ⓕ– is_source_sa ( ) { … } — function",
-								"—Ⓕ– is_source ( ) { … } — function",
-								"—Ⓕ– is_filename_b ( ) { … } — function",
-								"—Ⓕ– is_filename_sa ( ) { … } — function",
-								"—Ⓕ– is_filename ( ) { … } — function",
-								"—Ⓕ– is_include_b ( ) { … } — function",
-								"—Ⓕ– is_include_sa ( ) { … } — function",
-								"—Ⓕ– is_include ( ) { … } — function",
-								"—Ⓕ– is_object_b ( ) { … } — function",
-								"—Ⓕ– is_object_sa ( ) { … } — function",
-								"—Ⓕ– is_object ( ) { … } — function",
-								"—Ⓕ– sources_new ( ) { … } — function",
-								"—Ⓕ– sources_add ( ) { … } — function",
-								"—Ⓕ– sources_add_b ( ) { … } — function",
-								"—Ⓕ– sources_sort ( ) { … } — function",
-								"—Ⓕ– sources_get ( ) { … } — function",
-								"—Ⓕ– sources_find ( ) { … } — function",
-								"—Ⓕ– sources_deps ( ) { … } — function",
-								"—Ⓕ– sources_readdir ( ) { … } — function",
-								"—Ⓕ– sources_addincludes ( ) { … } — function",
-								"—Ⓕ– var_isset ( ) { … } — function",
-								"—Ⓕ– var_list ( ) { … } — function",
-								"—Ⓕ– var_get ( ) { … } — function",
-								"—Ⓕ– var_set ( ) { … } — function",
-								"—Ⓕ– var_unset ( ) { … } — function",
-								"—Ⓕ– var_push ( ) { … } — function",
-								"—Ⓕ– var_push_sa ( ) { … } — function",
-								"—Ⓕ– push_lib ( ) { … } — function",
-								"—Ⓕ– with_lib ( ) { … } — function",
-								"—Ⓕ– push_define ( ) { … } — function",
-								"—Ⓕ– get_rules_by_cmd ( ) { … } — function",
-								"—Ⓕ– dirname_alloc ( ) { … } — function",
-								"—Ⓕ– sourcedir_addsource ( ) { … } — function",
-								"—Ⓕ– sourcedir_find ( ) { … } — function",
-								"—Ⓕ– sourcedir_findsa ( ) { … } — function",
-								"—Ⓕ– sourcedir_findb ( ) { … } — function",
-								"—Ⓕ– sourcedir_getb ( ) { … } — function",
-								"—Ⓕ– sourcedir_getsa ( ) { … } — function",
-								"—Ⓕ– sourcedir_populate ( ) { … } — function",
-								"—Ⓕ– sourcedir_dump_all ( ) { … } — function",
-								"—Ⓕ– sourcedir_dep_recursive ( ) { … } — function",
-								"—Ⓕ– sourcedir_deps ( ) { … } — function",
-								"—Ⓕ– sourcedir_deps_s ( ) { … } — function",
-								"—Ⓕ– sourcedir_deps_b ( ) { … } — function",
-								"—Ⓕ– sourcedir_printdeps ( ) { … } — function",
-								"—Ⓕ– deps_indirect ( ) { … } — function",
-								"—Ⓕ– deps_direct ( ) { … } — function",
-								"—Ⓕ– print_rule_deps_r ( ) { … } — function",
-								"—Ⓕ– print_rule_deps ( ) { … } — function",
-								"—Ⓕ– remove_indirect_deps_recursive ( ) { … } — function",
-								"—Ⓕ– remove_indirect_deps ( ) { … } — function",
-								"—Ⓕ– deps_for_libs ( ) { … } — function",
-								"—Ⓕ– target_ptrs ( ) { … } — function",
-								"—Ⓕ– gen_single_rule ( ) { … } — function",
-								"—Ⓕ– gen_clean_rule ( ) { … } — function",
-								"—Ⓕ– filter_pptoks ( ) { … } — function",
-								"—Ⓕ– gen_srcdir_compile_rules ( ) { … } — function",
-								"—Ⓕ– gen_simple_compile_rules ( ) { … } — function",
-								"—Ⓕ– gen_srcdir_lib_rule ( ) { … } — function",
-								"—Ⓕ– gen_srcdir_rule ( ) { … } — function",
-								"—Ⓕ– gen_lib_rules ( ) { … } — function",
-								"—Ⓕ– gen_link_rules ( ) { … } — function",
-								"—Ⓕ– gen_install_rules ( ) { … } — function",
-								"—Ⓕ– get_keys ( ) { … } — function",
-								"—Ⓕ– input_command ( ) { … } — function",
-								"—Ⓕ– input_command_line ( ) { … } — function",
-								"—Ⓕ– output_var ( ) { … } — function",
-								"—Ⓕ– output_all_vars ( ) { … } — function",
-								"\tⓂ  YELLOW … — macro object",
-								"\tⓂ  RED … — macro object",
-								"\tⓂ  NC … — macro object",
-								"—Ⓕ– output_make_rule ( ) { … } — function",
-								"—Ⓕ– output_ninja_rule ( ) { … } — function",
-								"—Ⓕ– output_all_rules ( ) { … } — function",
-								"—Ⓕ– output_build_rules ( ) { … } — function",
-								"—Ⓕ– output_script ( ) { … } — function",
-								"—Ⓕ– set_machine ( ) { … } — function",
-								"—Ⓕ– set_chip ( ) { … } — function",
-								"—Ⓕ– set_system ( ) { … } — function",
-								"—Ⓕ– set_make_type ( ) { … } — function",
-								"—Ⓕ– set_compiler_type ( ) { … } — function",
-								"—Ⓕ– usage ( ) { … } — function",
-								"—Ⓕ– main ( ) { … } — function"
-							],
 							"syntax": "Packages/Outline/outline.hidden-tmLanguage",
 							"tab_size": 3,
 							"translate_tabs_to_spaces": true
@@ -1394,13 +686,13 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 12,
+					"stack_index": 22,
 					"type": "text"
 				}
 			]
 		},
 		{
-			"selected": 3,
+			"selected": 5,
 			"sheets":
 			[
 				{
@@ -1409,7 +701,7 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 3646,
+						"buffer_size": 3644,
 						"regions":
 						{
 						},
@@ -1428,7 +720,7 @@
 						"translation.y": 1224.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 3,
+					"stack_index": 13,
 					"type": "text"
 				},
 				{
@@ -1456,7 +748,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 2,
+					"stack_index": 9,
 					"type": "text"
 				},
 				{
@@ -1486,7 +778,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 1,
+					"stack_index": 8,
 					"type": "text"
 				},
 				{
@@ -1495,15 +787,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 143287,
+						"buffer_size": 144309,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								106850,
-								106850
+								103741,
+								103741
 							]
 						],
 						"settings":
@@ -1513,14 +805,308 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 74040.0,
+						"translation.y": 71592.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 4,
+					"type": "text"
+				},
+				{
+					"buffer": 5,
+					"file": "lib/unix/wordexp.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2950,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								772,
+								772
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C Improved/C Improved.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 6,
+					"file": "lib/typedefs.h",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2312,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1004,
+								1004
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C11/C11.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 8.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 0,
 					"type": "text"
 				},
 				{
-					"buffer": 5,
+					"buffer": 7,
+					"file": "lib/process/process_create.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 4000,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1192,
+								1192
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C Improved/C Improved.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 153.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 8,
+					"file": "lib/unix/pipe2.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 3560,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C Improved/C Improved.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 306.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 3,
+					"type": "text"
+				},
+				{
+					"buffer": 9,
+					"file": "lib/str/str_chrs.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 283,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C Improved/C Improved.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 6,
+					"type": "text"
+				},
+				{
+					"buffer": 10,
+					"file": "lib/str/str_chr.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 213,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C Improved/C Improved.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 5,
+					"type": "text"
+				},
+				{
+					"buffer": 11,
+					"file": "lib/stralloc/stralloc_replace.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 595,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C Improved/C Improved.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 7,
+					"type": "text"
+				},
+				{
+					"buffer": 12,
+					"file": "CMakeLists.txt",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 63057,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								46474,
+								46474
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/CMakeEditor/CMakeEditor.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 1530.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 12,
+					"type": "text"
+				},
+				{
+					"buffer": 13,
+					"file": "3rdparty/openssl/external/perl/Text-Template-1.46/t/02-hash.t",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 3215,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Perl/Perl.sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 11,
+					"type": "text"
+				},
+				{
+					"buffer": 14,
+					"file": "lib/path.h",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2612,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								174,
+								174
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C11/C11.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 10,
+					"type": "text"
+				},
+				{
+					"buffer": 15,
 					"file": "lib/stralloc/stralloc_ends.c",
 					"semi_transient": false,
 					"settings":
@@ -1544,11 +1130,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 4,
+					"stack_index": 14,
 					"type": "text"
 				},
 				{
-					"buffer": 6,
+					"buffer": 16,
 					"file": "lib/stralloc/stralloc_endb.c",
 					"semi_transient": false,
 					"settings":
@@ -1572,11 +1158,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 5,
+					"stack_index": 15,
 					"type": "text"
 				},
 				{
-					"buffer": 7,
+					"buffer": 17,
 					"file": "lib/stralloc/stralloc_endsb.c",
 					"semi_transient": false,
 					"settings":
@@ -1600,11 +1186,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 6,
+					"stack_index": 16,
 					"type": "text"
 				},
 				{
-					"buffer": 8,
+					"buffer": 18,
 					"file": "genmakefile.h",
 					"semi_transient": false,
 					"settings":
@@ -1630,16 +1216,16 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 8,
+					"stack_index": 18,
 					"type": "text"
 				},
 				{
-					"buffer": 9,
+					"buffer": 19,
 					"file": "lib/set.h",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 2318,
+						"buffer_size": 2303,
 						"regions":
 						{
 						},
@@ -1660,11 +1246,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 9,
+					"stack_index": 19,
 					"type": "text"
 				},
 				{
-					"buffer": 10,
+					"buffer": 20,
 					"file": "lib/set/set_adds.c",
 					"semi_transient": false,
 					"settings":
@@ -1688,11 +1274,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 10,
+					"stack_index": 20,
 					"type": "text"
 				},
 				{
-					"buffer": 11,
+					"buffer": 21,
 					"file": "lib/set/set_add.c",
 					"semi_transient": false,
 					"settings":
@@ -1718,11 +1304,11 @@
 						"translation.y": 612.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 11,
+					"stack_index": 21,
 					"type": "text"
 				},
 				{
-					"buffer": 12,
+					"buffer": 22,
 					"file": "lib/strarray.h",
 					"semi_transient": false,
 					"settings":
@@ -1746,7 +1332,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 7,
+					"stack_index": 17,
 					"type": "text"
 				}
 			]
@@ -1818,6 +1404,30 @@
 		"selected_items":
 		[
 			[
+				"typedef",
+				"lib/typedefs.h"
+			],
+			[
+				"stralloc.h",
+				"lib/stralloc.h"
+			],
+			[
+				"stralloc_repl",
+				"lib/stralloc/stralloc_replace.c"
+			],
+			[
+				"path.h",
+				"lib/path.h"
+			],
+			[
+				"apth.h",
+				"3rdparty/openssl/external/perl/Text-Template-1.46/t/02-hash.t"
+			],
+			[
+				"cmake",
+				"CMakeLists.txt"
+			],
+			[
 				"genma",
 				"genmakefile.c"
 			],
@@ -1852,10 +1462,6 @@
 			[
 				"path_ex",
 				"lib/path/path_exists.c"
-			],
-			[
-				"cmake",
-				"CMakeLists.txt"
 			],
 			[
 				"sig.h",
@@ -2094,16 +1700,8 @@
 				"lib/strlist/strlist_push_unique_sa.c"
 			],
 			[
-				"stralloc.h",
-				"lib/stralloc.h"
-			],
-			[
 				"replacec",
 				"lib/stralloc/stralloc_replacec.c"
-			],
-			[
-				"stralloc_repl",
-				"lib/stralloc/stralloc_replace_non_printable.c"
 			],
 			[
 				"stralloc_replace",
@@ -2124,10 +1722,6 @@
 			[
 				"absolute_sa",
 				"lib/path/path_absolute_sa.c"
-			],
-			[
-				"path.h",
-				"lib/path.h"
 			],
 			[
 				"query.h",
@@ -2320,14 +1914,6 @@
 			[
 				"cmakelits",
 				"CMakeLists.txt"
-			],
-			[
-				"tcping",
-				"tcping.c"
-			],
-			[
-				"pkgcfg",
-				"pkgcfg.c"
 			]
 		],
 		"width": 0.0

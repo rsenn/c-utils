@@ -44,6 +44,8 @@ typedef struct _iarray_page {
 #endif
 } iarray_page;
 
+#define iarray_pagedata(page) ((char*)(page)+sizeof(iarray_page))
+
 typedef struct {
   iarray_page* pages[16];
   size_t elemsize, elemperpage, bytesperpage;

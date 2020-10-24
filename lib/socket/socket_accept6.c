@@ -1,6 +1,7 @@
 #include "../windoze.h"
 #include "../byte.h"
 #include "../socket_internal.h"
+#include "../io_internal.h"
 #include "../ip6.h"
 #include <sys/types.h>
 #if !WINDOWS_NATIVE
