@@ -1,9 +1,13 @@
+#include "../windoze.h"
 #include "../sig.h"
 
 #include <signal.h>
 #include "sig-internal.h"
 
-sigtable_t const sigtable[] = {{SIGABRT, "ABRT"},
+sigtable_t const sigtable[] = {
+#if !WINDOWS_NATIVE
+  
+  {SIGABRT, "ABRT"},
                                {SIGALRM, "ALRM"},
                                {SIGBUS, "BUS"},
                                {SIGCHLD, "CHLD"},
@@ -76,5 +80,6 @@ sigtable_t const sigtable[] = {{SIGABRT, "ABRT"},
 #endif
 #ifdef SIGUNUSED
                                {SIGUNUSED, "UNUSED"},
+#endif
 #endif
                                {0, 0}};
