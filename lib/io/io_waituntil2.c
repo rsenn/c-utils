@@ -512,6 +512,8 @@ io_waituntil2(int64 milliseconds) {
 #warning Poll fallback
 #endif
 #endif
+
+#ifdef HAVE_POLL
 dopoll :
 
 {
@@ -596,4 +598,5 @@ dopoll :
   }
   return i;
 }
+#endif /* HAVE_POLL */
 }

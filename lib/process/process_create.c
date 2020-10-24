@@ -6,6 +6,8 @@
 #include "../env.h"
 #include "../errmsg.h"
 #include "../wait.h"
+#include "../str.h"
+#include "../uint32.h"
 
 #if WINDOWS_NATIVE
 #include <windows.h>
@@ -55,7 +57,7 @@ last_error_str() {
 int
 process_create(const char* filename, const char* argv[], fd_t std[3], const char* cwd) {
   fd_t fds[3];
-  pid_t pid;
+  int32 pid;
   int status = 0;
 
   if(std) {
