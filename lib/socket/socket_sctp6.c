@@ -1,4 +1,3 @@
-#include <unistd.h>
 #include "../socket_internal.h"
 #include "../ndelay.h"
 

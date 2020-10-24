@@ -106,11 +106,10 @@ getopt_real(int argc, char* const argv[], const char* optstring, const struct lo
           char const* spec_long = argv[optind] + 2;
           size_t pos_eq = str_chr(spec_long, '=');
           ssize_t spec_len = pos_eq;
+          int index_search = 0, index_found = -1;
+          const struct longopt* optdef = 0;
           if(spec_long[pos_eq] == '\0')
             pos_eq = 0;
-          int index_search = 0;
-          int index_found = -1;
-          const struct longopt* optdef = 0;
           while(longopts->name != 0) {
             if(str_diffn(spec_long, longopts->name, spec_len) == 0) {
               if(optdef != 0) {

@@ -1,15 +1,15 @@
-#include <sys/types.h>
-#include <sys/param.h>
-#ifndef __MINGW32__
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <errno.h>
-#endif
 #include "../windoze.h"
 #include "../socket_internal.h"
 #include "../byte.h"
 /*#include "haveip6.h"*/
 #include "../ip6.h"
+#include <sys/types.h>
+#if !WINDOWS_NATIVE
+#include <sys/param.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <errno.h>
+#endif
 
 #ifndef IPV6_DROP_MEMBERSHIP
 #ifdef IPV6_LEAVE_GROUP

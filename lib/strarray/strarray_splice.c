@@ -8,12 +8,13 @@
 
 int64
 strarray_splice(strarray* a, uint64 start, uint64 del, uint64 insert, const char** x) {
+  char** s;
+  uint64 i, len, newlen;
   if(strarray_begin(a) == NULL) {
     array_allocate(a, sizeof(char*), 0);
     array_trunc(a);
   }
-  char** s = (char**)array_get(a, sizeof(char*), start);
-  uint64 i, len, newlen;
+  s = (char**)array_get(a, sizeof(char*), start);
   len = strarray_size(a);
   if(start + del > len)
     del = len - start;

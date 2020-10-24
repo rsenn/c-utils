@@ -1167,6 +1167,9 @@ endif(USE_SSL)
 
 link_directories(AFTER "${CMAKE_BINARY_DIR}")
 
+file(TO_NATIVE_PATH "/" PATH_SEPARATOR)
+message("The systems's path separator is '${PATH_SEPARATOR}'")
+
 set(MODSUBDIRS
     alloc
     array

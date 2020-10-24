@@ -5,7 +5,7 @@
 extern "C" {
 #endif
 
-#include <features.h>
+//#include <features.h>
 
 #define __NEED_size_t
 
@@ -31,7 +31,7 @@ typedef struct {
 #define WRDE_CMDSUB 4
 #define WRDE_SYNTAX 5
 
-int wordexp(const char* __restrict, wordexp_t* __restrict, int);
+int wordexp(const char*, wordexp_t*, int);
 void wordfree(wordexp_t*);
 
 #ifdef __cplusplus

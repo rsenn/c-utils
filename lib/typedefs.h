@@ -60,6 +60,13 @@ typedef __PTRDIFF_TYPE__ ssize_t;
 typedef ptrdiff_t ssize_t;
 #endif
 
+#if !defined(_SSIZE_T_DEFINED) && !defined(_SSIZE_T_)
+#define _SSIZE_T_DEFINED 1
+#define _SSIZE_T_ 1
+#warning ssize_T
+typedef long ssize_t;
+#endif
+
 #if !defined(__dietlibc__) && !defined(_INTTYPES_H) && !defined(__clang__) || defined(__BCPLUSPLUS__)
 #ifdef __INTPTR_TYPE__
 typedef __INTPTR_TYPE__ intptr_t;

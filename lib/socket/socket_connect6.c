@@ -1,10 +1,10 @@
-#include <sys/param.h>
+#include "../windoze.h"
 #include <sys/types.h>
-#ifndef __MINGW32__
+#if !WINDOWS_NATIVE
+#include <sys/param.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #endif
-#include "../windoze.h"
 #include <errno.h>
 #include "../byte.h"
 #include "../socket_internal.h"

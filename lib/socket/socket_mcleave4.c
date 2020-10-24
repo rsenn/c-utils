@@ -9,7 +9,7 @@
 #include "../byte.h"
 
 #include <sys/types.h>
-#include <netinet/in.h>
+//#include <netinet/in.h>
 
 int
 socket_mcleave4(int s, const char ip[4]) {

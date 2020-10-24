@@ -1,6 +1,12 @@
+#include "../windoze.h"
 #include "../open.h"
+
 #include <fcntl.h>
+#if WINDOWS_NATIVE
+#include <io.h>
+#else
 #include <unistd.h>
+#endif
 
 #ifndef O_SYNC
 #define O_SYNC 0x101000

@@ -1,5 +1,5 @@
 #include <stdlib.h>
-#ifndef __MINGW32__
+#ifn WINDOWS_NATIVE
 #include <sys/mman.h>
 #endif
 #include <unistd.h>
@@ -9,7 +9,7 @@ static void
 freechain(iarray_page* p, size_t pagesize) {
   while(p) {
     iarray_page* n = p->next;
-#ifdef __MINGW32__
+#if WINDOWS_NATIVE
     free(p);
 #else
     munmap(p, pagesize);

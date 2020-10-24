@@ -29,7 +29,7 @@
 #define ENOSYS 1052
 #endif /* ENOSYS */
 
-#ifdef __MINGW32__
+#if WINDOWS_NATIVE
 typedef struct _CLIENT_ID {
   PVOID UniqueProcess;
   PVOID UniqueThread;

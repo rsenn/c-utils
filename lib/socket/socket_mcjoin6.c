@@ -1,11 +1,11 @@
+#include "../windoze.h"
 #include <sys/types.h>
+#if !WINDOWS_NATIVE
 #include <sys/param.h>
-#ifndef __MINGW32__
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <errno.h>
 #endif
-#include "../windoze.h"
 #include "../socket_internal.h"
 #include "../byte.h"
 /*#include "haveip6.h"*/

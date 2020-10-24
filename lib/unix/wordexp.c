@@ -1,208 +1,126 @@
-#define _GNU_SOURCE
-#ifdef __dietlibc__
-#define __DEFINED_size_t 1
-#endif
-#include <unistd.h>
-#include <wordexp.h>
-#include <stdio.h>
-#include <string.h>
-#include <limits.h>
-#include <stdint.h>
-#include <stdlib.h>
-#include <sys/wait.h>
-#include <signal.h>
-#include <errno.h>
+#include "../windoze.h"
+#include <sys/types.h>
+#include <assert.h>
 #include <fcntl.h>
-#include <pthread.h>
-
-//#define restrict __restrict
-
-static void
-reap(pid_t pid) {
-  int status;
-  while(waitpid(pid, &status, 0) < 0 && errno == EINTR)
-    ;
-}
-
-static char*
-getword(FILE* f) {
-  char* s = 0;
-  return getdelim(&s, (size_t[1]){0}, 0, f) < 0 ? 0 : s;
-}
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#if WINDOWS_NATIVE
+#include <io.h>
+#else
+#include <unistd.h>
+#endif
+#include "../wordexp.h"
+#include "../glob.h"
 
 static int
-do_wordexp(const char* s, wordexp_t* we, int flags) {
-  size_t i, l;
-  int sq = 0, dq = 0;
-  size_t np = 0;
-  char *w, **tmp;
-  char* redir = (flags & WRDE_SHOWERR) ? "" : "2>/dev/null";
-  int err = 0;
-  FILE* f;
-  size_t wc = 0;
-  char** wv = 0;
-  int p[2];
-  pid_t pid;
-  sigset_t set;
-
-  if(flags & WRDE_REUSE)
-    wordfree(we);
-
-  if(flags & WRDE_NOCMD)
-    for(i = 0; s[i]; i++) switch(s[i]) {
-        case '\\':
-          if(!sq && !s[++i])
-            return WRDE_SYNTAX;
-          break;
-        case '\'':
-          if(!dq)
-            sq ^= 1;
-          break;
-        case '"':
-          if(!sq)
-            dq ^= 1;
-          break;
-        case '(':
-          if(np) {
-            np++;
-            break;
-          }
-        case ')':
-          if(np) {
-            np--;
-            break;
-          }
-        case '\n':
-        case '|':
-        case '&':
-        case ';':
-        case '<':
-        case '>':
-        case '{':
-        case '}':
-          if(!(sq | dq | np))
-            return WRDE_BADCHAR;
-          break;
-        case '$':
-          if(sq)
-            break;
-          if(s[i + 1] == '(' && s[i + 2] == '(') {
-            i += 2;
-            np += 2;
-            break;
-          } else if(s[i + 1] != '(')
-            break;
-        case '`':
-          if(sq)
-            break;
-          return WRDE_CMDSUB;
-      }
-
-  if(flags & WRDE_APPEND) {
-    wc = we->we_wordc;
-    wv = we->we_wordv;
-  }
-
-  i = wc;
-  if(flags & WRDE_DOOFFS) {
-    if(we->we_offs > SIZE_MAX / sizeof(void*) / 4)
-      goto nospace;
-    i += we->we_offs;
-  } else {
-    we->we_offs = 0;
-  }
-
-  if(pipe2(p, O_CLOEXEC) < 0)
-    goto nospace;
-  //__block_all_sigs(&set);
-  pid = fork();
-  //__restore_sigs(&set);
-  if(pid < 0) {
-    close(p[0]);
-    close(p[1]);
-    goto nospace;
-  }
-  if(!pid) {
-    if(p[1] == 1)
-      fcntl(1, F_SETFD, 0);
-    else
-      dup2(p[1], 1);
-    execl("/bin/sh", "sh", "-c", "eval \"printf %s\\\\\\\\0 x $1 $2\"", "sh", s, redir, (char*)0);
-    _exit(1);
-  }
-  close(p[1]);
-
-  f = fdopen(p[0], "r");
-  if(!f) {
-    close(p[0]);
-    kill(pid, SIGKILL);
-    reap(pid);
-    goto nospace;
-  }
-
-  l = wv ? i + 1 : 0;
-
-  free(getword(f));
-  if(feof(f)) {
-    fclose(f);
-    reap(pid);
-    return WRDE_SYNTAX;
-  }
-
-  while((w = getword(f))) {
-    if(i + 1 >= l) {
-      l += l / 2 + 10;
-      tmp = realloc(wv, l * sizeof(char*));
-      if(!tmp)
-        break;
-      wv = tmp;
-    }
-    wv[i++] = w;
-    wv[i] = 0;
-  }
-  if(!feof(f))
-    err = WRDE_NOSPACE;
-
-  fclose(f);
-  reap(pid);
-
-  if(!wv)
-    wv = calloc(i + 1, sizeof *wv);
-
-  we->we_wordv = wv;
-  we->we_wordc = i;
-
-  if(flags & WRDE_DOOFFS) {
-    if(wv)
-      for(i = we->we_offs; i; i--) we->we_wordv[i - 1] = 0;
-    we->we_wordc -= we->we_offs;
-  }
-  return err;
-
-nospace:
-  if(!(flags & WRDE_APPEND)) {
-    we->we_wordc = 0;
-    we->we_wordv = 0;
-  }
-  return WRDE_NOSPACE;
+is_valid_variable_char(char c, int pos) {
+  if((pos && c >= '0' && c <= '9') || c == '_' || (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z'))
+    return 1;
+  return 0;
 }
 
+/*
+ * @brief replace all names of $NAME ${NAME}
+ * with the corresponding environment variable
+ * @ param in: the string to be checked
+ * @ return the expanded string or a copy of the existing string
+ * must be free() by the calling function
+ */
+static char*
+expand_variables(const char* in) {
+  char *var, *pos, *ret = strdup(in);
+  char *val, *str;
+  pos = ret;
+  while((var = strchr(pos, '$'))) {
+    char *name, *begin = var + 1;
+    int npos = 0, bpos = 0, slen, elen;
+    *var = '\0';
+    if(var[1] == '{') {
+      begin++;
+      while(begin[npos]) {
+        bpos = npos;
+        if(begin[npos++] == '}')
+          break;
+      }
+    } else {
+      while(is_valid_variable_char(begin[npos], npos)) npos++;
+      bpos = npos;
+    }
+    name = strdup(begin);
+    name[bpos] = '\0';
+    val = getenv(name);
+    free(name);
+    if(!val)
+      val = "";
+    slen = strlen(ret) + strlen(val);
+    elen = strlen(begin + npos);
+    str = malloc(slen + elen + 1);
+    strcpy(str, ret);
+    strcat(str, val);
+    strcat(str, begin + npos);
+    free(ret);
+    ret = str;
+    pos = ret + slen;
+  }
+  return ret;
+}
+
+/*
+ * @brief minimal realization of wordexp according to IEEE standard
+ * shall perform word expansion as described in the Shell
+ * expansion of ´$NAME´ or ´${NAME}´
+ * expansion of ´*´ and ´?´
+ * @param words: pointer to a string containing one or more words to be expanded
+ * but here only one word supported
+ */
 int
-wordexp(const char* restrict s, wordexp_t* restrict we, int flags) {
-  int r, cs;
-  // pthread_setcancelstate(PTHREAD_CANCEL_DISABLE, &cs);
-  r = do_wordexp(s, we, flags);
-  // pthread_setcancelstate(cs, 0);
-  return r;
+wordexp(const char* words, wordexp_t* we, int flags) {
+  int i;
+  int error = 0;
+  char* words_expanded;
+#ifdef HAVE_API_WIN32_BASE
+  glob_t pglob;
+#endif
+
+  assert(we != NULL);
+  assert(words != NULL);
+
+  /* expansion of ´$NAME´ or ´${NAME}´ */
+  words_expanded = expand_variables(words);
+#ifdef HAVE_API_WIN32_BASE
+  /* expansion of ´*´, ´?´ */
+  error = glob(words_expanded, 0, NULL, &pglob);
+  if(!error) {
+    /* copy the content of struct of glob into struct of wordexp */
+    we->we_wordc = pglob.gl_pathc;
+    we->we_offs = pglob.gl_offs;
+    we->we_wordv = malloc(we->we_wordc * sizeof(char*));
+    for(i = 0; i < we->we_wordc; i++) {
+      we->we_wordv[i] = strdup(pglob.gl_pathv[i]);
+    }
+    globfree(&pglob);
+    free(words_expanded);
+  } else {
+#endif
+    we->we_wordc = 1;
+    we->we_wordv = malloc(sizeof(char*));
+    we->we_wordv[0] = words_expanded;
+#ifdef HAVE_API_WIN32_BASE
+  }
+#endif
+
+  return error;
 }
 
 void
 wordfree(wordexp_t* we) {
-  size_t i;
-  if(!we->we_wordv)
-    return;
-  for(i = 0; i < we->we_wordc; i++) free(we->we_wordv[we->we_offs + i]);
+  int i;
+
+  for(i = 0; i < we->we_wordc; i++) {
+    free(we->we_wordv[i]);
+  }
+
   free(we->we_wordv);
-  we->we_wordv = 0;
   we->we_wordc = 0;
 }

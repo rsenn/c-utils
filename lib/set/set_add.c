@@ -7,6 +7,9 @@ void set_free_array(set_t* set);
 
 static int
 set_realloc(set_t* set) {
+  int set_index;
+  bucket_t* b;
+
   // allocate new set
   set_t new_set;
 
@@ -18,9 +21,6 @@ set_realloc(set_t* set) {
   assert(new_set.array);
 
   // copy over old set
-  int set_index;
-  bucket_t* b;
-
   for(set_index = 0; set_index < set->len; ++set_index) {
     b = &(set->array[set_index]);
 

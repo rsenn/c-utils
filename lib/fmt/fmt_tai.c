@@ -4,5 +4,8 @@
 size_t
 fmt_tai(char* dest, const struct tai* ta) {
   time_t t = (time_t)ta->x;
-  return fmt_iso8601(dest, t & (~(1ll << 62)));
+  uint64 mask = 1;
+  mask <<= 62;
+  mask = ~mask;
+  return fmt_iso8601(dest, t & mask);
 }

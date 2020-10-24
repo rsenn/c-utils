@@ -1,8 +1,8 @@
-#include "../io.h"
+//#include "../io.h"
 #define USE_WS2_32 1
 #define WINDOWS_OVERRIDE 1
-#include "../windoze.h"
 #include "../socket_internal.h"
+#include "../windoze.h"
 
 #if WINDOWS && !defined(__ORANGEC__)
 #include <mswsock.h>

@@ -1,5 +1,6 @@
 #include <stdlib.h>
-#ifndef __MINGW32__
+#include "../windoze.h"
+#if !WINDOWS_NATIVE
 #include <fcntl.h>
 #include <sys/mman.h>
 #include <unistd.h>
@@ -9,7 +10,7 @@
 
 static iarray_page*
 new_page(size_t pagesize) {
-#ifdef __MINGW32__
+#if WINDOWS_NATIVE
   void* x = malloc(pagesize);
   if(x == 0)
     return 0;
@@ -49,7 +50,7 @@ iarray_allocate(iarray* ia, size_t pos) {
     p = &(*p)->next;
   }
   if(newpage)
-#ifdef __MINGW32__
+#if WINDOWS_NATIVE
     free(newpage);
 #else
     munmap(newpage, ia->bytesperpage);

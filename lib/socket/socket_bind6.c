@@ -1,17 +1,17 @@
+#include "../windoze.h"
 #include <errno.h>
 /*#include "haveip6.h"*/
 #include <sys/types.h>
-#ifndef __MINGW32__
+#if !WINDOWS_NATIVE
 #include <sys/socket.h>
 #include <netinet/in.h>
 #endif
-#include "../windoze.h"
 #include "../ip6.h"
 #include "../byte.h"
 #include "../socket_internal.h"
 
 int
-socket_bind6(int s, const char ip[16], uint16 port, uint32 scope_id) {
+socket_bind6(int s, const char* ip, uint16 port, uint32 scope_id) {
 #ifdef LIBC_HAS_IP6
   struct sockaddr_in6 sa;
 #endif

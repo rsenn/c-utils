@@ -1,6 +1,12 @@
 #define _GNU_SOURCE
 #include <fcntl.h>
+
+#include "../windoze.h"
+#if WINDOWS_NATIVE
+#include <io.h>
+#else
 #include <unistd.h>
+#endif
 
 #ifndef HAVE_DAEMON
 

@@ -1,8 +1,8 @@
-#include "../io.h"
 #define _LARGEFILE64_SOURCE
 #define USE_WS2_32 1
 
 #include "../socket_internal.h"
+//#include "../io.h"
 #include "../select.h"
 #include "../io_internal.h"
 #include "../iopause.h"

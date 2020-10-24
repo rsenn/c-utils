@@ -1,10 +1,11 @@
-#include "../io.h"
+//#include "../io.h"
 #define USE_WS2_32 1
 /*#if defined(_WIN32) || defined(_WIN64)
 #define _CYGWIN_IF_H_
 #define _WINSOCKAPI_
 #define __INSIDE_CYGWIN_NET__ 1
 #endif*/
+#define USE_WS2_32 1
 #include "../socket_internal.h"
 #include "../io_internal.h"
 

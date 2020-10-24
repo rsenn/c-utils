@@ -1,5 +1,6 @@
+#include "../windoze.h"
 #include <sys/types.h>
-#ifndef __MINGW32__
+#if !WINDOWS_NATIVE
 #include <unistd.h>
 #include <sys/socket.h>
 #include <netinet/in.h>

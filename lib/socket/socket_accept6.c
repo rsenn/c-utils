@@ -1,18 +1,15 @@
-#include <sys/param.h>
-#include <sys/types.h>
-#ifndef __MINGW32__
-#include <sys/socket.h>
-#include <netinet/in.h>
-#endif
 #include "../windoze.h"
 #include "../byte.h"
 #include "../socket_internal.h"
 #include "../ip6.h"
-/*#include "haveip6.h"*/
-/*#include "havesl.h"*/
-/*#include "havescope.h"*/
+#include <sys/types.h>
+#if !WINDOWS_NATIVE
+#include <sys/param.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#endif
 
-#ifdef __MINGW32__
+#if 0 //def WINDOWS_NATIVE
 #include <windows.h>
 #include <mswsock.h>
 #include <errno.h>
@@ -30,7 +27,7 @@ socket_accept6(int s, char* ip, uint16* port, uint32* scope_id) {
   socklen_t dummy = sizeof sa;
   int fd;
 
-#ifdef __MINGW32__
+#if WINDOWS_NATIVE
   io_entry* e = iarray_get((iarray*)io_getfds(), s);
   if(e && e->inuse) {
     int sa2len;
@@ -83,7 +80,7 @@ socket_accept6(int s, char* ip, uint16* port, uint32* scope_id) {
     fd = accept(s, (struct sockaddr*)&sa, &dummy);
     if(fd == -1)
       return winsock2errno(-1);
-#ifdef __MINGW32__
+#if WINDOWS_NATIVE
   }
 #endif
 

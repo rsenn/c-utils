@@ -1,4 +1,4 @@
-#include "../io.h"
+//#include "../io.h"
 #define USE_WS2_32 1
 
 #include "../socket_internal.h"
