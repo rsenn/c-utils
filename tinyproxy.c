@@ -28,6 +28,7 @@
 #include "lib/socket_internal.h"
 #include "lib/dns.h"
 #include "lib/wait.h"
+#include "lib/process.h"
 #include "map.h"
 #include <errno.h>
 #include <fcntl.h>
@@ -899,6 +900,13 @@ server_tar_files(const char* cmd, const stralloc* archive, strlist* files) {
   buffer_putnlflush(buffer_1);
 
   v = strarray_to_argv(&argv);
+
+
+if(process_create(&child_pid, v, NULL, NULL) == -1) {
+  errmsg_warnsys("process_create", 0);
+  exit(1);
+}
+/*
   if((child_pid = vfork()) == 0) {
     char* const env[] = {"PATH=/bin:/usr/bin", 0};
     close(2);
@@ -912,7 +920,7 @@ server_tar_files(const char* cmd, const stralloc* archive, strlist* files) {
     exit(127);
   }
   close(out);
-
+*/
   pid = wait_pid(child_pid, &status);
   if(pid != -1) {
 

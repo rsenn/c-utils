@@ -15,6 +15,10 @@
 #include <unistd.h>
 #endif
 
+#if POSIX_SPAWN
+#include <spawn.h>
+#endif
+
 #if WINDOWS_NATIVE
 #define PROCESS_STATUS_ERROR -1 // process has entered an erroneous state
 
@@ -51,7 +55,7 @@ last_error_str() {
 int
 process_create(const char* filename, const char* argv[], fd_t std[3], const char* cwd) {
   fd_t fds[3];
-  int64 pid;
+  pid_t pid;
   int status = 0;
 
   if(std) {
@@ -63,8 +67,24 @@ process_create(const char* filename, const char* argv[], fd_t std[3], const char
     fds[1] = 1;
     fds[2] = 2;
   }
+#if POSIX_SPAWN
+  {
+    posix_spawn_file_actions_t actions;
+    posix_spawnattr_t attr;
 
-#if WINDOWS_NATIVE
+    posix_spawnattr_setflags(&attr, 0);
+    posix_spawn_file_actions_init(&actions);
+    posix_spawn_file_actions_adddup2(&actions, std[0], 0);
+    posix_spawn_file_actions_adddup2(&actions, std[1], 1);
+    posix_spawn_file_actions_adddup2(&actions, std[2], 2);
+
+    if(posix_spawnp(&pid, filename, &actions, &attr, argv, NULL)) {
+      errmsg_warnsys("execvpe error: ", 0);
+      exit(1);
+    }
+  }
+
+#elif WINDOWS_NATIVE
   {
     size_t i;
     stralloc joined_argv;

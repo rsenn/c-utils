@@ -404,8 +404,8 @@ macro(check_function_def FUNC)
   # message("FUNC: ${FUNC} RESULT_VAR: ${RESULT_VAR}")
   check_function_exists("${FUNC}" "${RESULT_VAR}")
   if(${${RESULT_VAR}})
-    # message("${RESULT_VAR}: yes")
-    add_definitions(-D${RESULT_VAR})
+     #add_definitions(-D${RESULT_VAR})
+     message("${RESULT_VAR} ${${RESULT_VAR}}")
   endif(${${RESULT_VAR}})
 endmacro(
   check_function_def
@@ -436,7 +436,17 @@ check_functions(
   sigprocmask
   strerror_r
   __write
-  writev)
+  writev
+  posix_spawnattr_setflags
+posix_spawn_file_actions_init
+posix_spawn_file_actions_adddup2
+posix_spawnp
+
+
+)
+if(HAVE_POSIX_SPAWNATTR_SETFLAGS AND HAVE_POSIX_SPAWN_FILE_ACTIONS_INIT AND HAVE_POSIX_SPAWN_FILE_ACTIONS_ADDDUP2 AND HAVE_POSIX_SPAWNP)
+  add_definitions(-DPOSIX_SPAWN=1)
+endif()
 
 check_function_exists(lseek64 HAVE_LSEEK64)
 if(NOT HAVE_LSEEK64)
@@ -2044,6 +2054,7 @@ add_program(
   tai)
 add_program(
   tinyproxy
+  process
   unix
   path
   wait
