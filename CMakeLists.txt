@@ -1220,7 +1220,8 @@ set(MODSUBDIRS
     unix
     wait
     xml
-    ucs)
+    ucs
+utf8)
 
 foreach(LIBNAME ${MODSUBDIRS})
   file(GLOB MODHEADERS lib/${LIBNAME}.h lib/${LIBNAME}_*.h)

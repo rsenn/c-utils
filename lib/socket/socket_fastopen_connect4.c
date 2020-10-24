@@ -7,7 +7,7 @@
 #include "../socket_internal.h"
 #include <errno.h>
 
-ssize_t
+int
 socket_fastopen_connect4(int s, const char* ip, uint16 port, const char* buf, size_t len) {
 #ifndef MSG_FASTOPEN
   int r;
