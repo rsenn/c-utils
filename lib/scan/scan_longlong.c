@@ -1,6 +1,8 @@
 #include "../scan.h"
 
+#ifndef MAXLONG
 #define MAXLONG (((unsigned long)-1) >> 1)
+#endif
 
 size_t
 scan_longlong(const char* src, int64* dest) {

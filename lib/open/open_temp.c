@@ -64,7 +64,7 @@ open_temp(const char** pt) {
   }
 
   *pt = str_dup(tmpl);
-  tmp = *pt + pos;
+  tmp = *(char**)pt + pos;
 
   for(;;) {
     random = uint32_random();

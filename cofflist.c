@@ -45,6 +45,9 @@ coff_print_func(buffer* b, void* coff, coff_symtab_entry* fn) {
   coff_symtab_entry* aux = coff_index_symtab(coff, uint32_get(&fn->func.tag_index));
   coff_symtab_entry* bfef = coff_index_symtab(coff, uint32_get(&fn->func.tag_index) + 1);
   coff_section_header* shdr = coff_get_section(coff, aux->e.scnum);
+
+  if(shdr == NULL)
+    return; 
   range ln = coff_line_numbers(coff, shdr);
   coff_line_number* p;
   const char* strtab = coff_get_strtab(coff, NULL);
@@ -211,15 +214,15 @@ coff_list_symbols(buffer* b, void* coff) {
           buffer_putnlflush(b);
 
         } else if(e->e.type & 0x20 && e->e.scnum > 0 && e->e.sclass == COFF_C_EXT) {
-          buffer_puts(b, "Aux function def: ");
-          buffer_puts(b, ".bf_tag_index: ");
+          buffer_puts(b, "\t\t\tAux function def: ");
+          buffer_puts(b, "\n\t\t\t.bf_tag_index: ");
           buffer_putulong(b, aux->func.tag_index);
 
-          buffer_puts(b, ", .code_size: ");
+          buffer_puts(b, "\n\t\t\t.code_size: ");
           buffer_putulong(b, aux->func.code_size);
-          buffer_puts(b, ", .pointer_to_line_number: 0x");
+          buffer_puts(b, "\n\t\t\t.pointer_to_line_number: 0x");
           buffer_putxlong0(b, aux->func.pointer_to_line_number, 8);
-          buffer_puts(b, ", .pointer_to_next_function: ");
+          buffer_puts(b, "\n\t\t\t.pointer_to_next_function: ");
           buffer_putulong(b, aux->func.pointer_to_next_function);
           buffer_putnlflush(b);
 
@@ -234,18 +237,18 @@ coff_list_symbols(buffer* b, void* coff) {
           buffer_putnlflush(b);
         } else if(e->e.sclass == COFF_C_FILE) {
         } else if(e->e.sclass == COFF_C_STATIC) {
-          buffer_puts(b, "Aux section def: ");
-          buffer_puts(b, ".length: ");
+          buffer_puts(b, "\n\t\t\tAux section def:");
+          buffer_puts(b, "\n\t\t\t.length:\t\t");
           buffer_putulong(b, aux->section.length);
-          buffer_puts(b, ", .number_of_relocations: ");
+          buffer_puts(b, "\n\t\t\t.number_of_relocations:\t");
           buffer_putulong(b, aux->section.number_of_relocations);
-          buffer_puts(b, ", .number_of_line_numbers: ");
+          buffer_puts(b, "\n\t\t\t.number_of_line_numbers:");
           buffer_putulong(b, aux->section.number_of_line_numbers);
-          buffer_puts(b, ", .check_sum: ");
+          buffer_puts(b, "\n\t\t\t.check_sum:\t\t");
           buffer_putxlong0(b, aux->section.check_sum, sizeof(aux->section.check_sum) * 2);
-          buffer_puts(b, ", .number: ");
+          buffer_puts(b, "\n\t\t\t.number:\t\t");
           buffer_putulong(b, aux->section.number);
-          buffer_puts(b, ", .selection: ");
+          buffer_puts(b, "\n\t\t\t.selection:\t\t");
           buffer_putulong(b, aux->section.selection);
           buffer_putnlflush(b);
         }

@@ -45,8 +45,8 @@ last_error_str() {
 
   byte_copy(tmpbuf, 7, "ERROR: ");
   len = strlen(err);
-  if(len > sizeof(tmpbuf - 8))
-    len = tmpbuf - 8;
+  if(len > sizeof(tmpbuf) - 8)
+    len = sizeof(tmpbuf) - 8;
   byte_copy(tmpbuf + 7, len, err);
 
   LocalFree(err);

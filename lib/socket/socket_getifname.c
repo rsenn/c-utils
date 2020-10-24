@@ -5,7 +5,7 @@
 #if WINDOWS_NATIVE
 //#define _WINSOCKAPI_
 #define HAVE_N2I
-/*#undef WS2TCPIP_INLINE 
+/*#undef WS2TCPIP_INLINE
 #define WS2TCPIP_INLINE static inline
 #define IN6_ADDR_EQUAL IN6_ADDR_EQUAL_2
 #include <netioapi.h>*/
@@ -19,9 +19,10 @@
 #endif
 
 #if WINDOWS_NATIVE
-static const char* if_indextoname(uint32 idx, const char*name) {
+static char*
+if_indextoname(uint32 idx, const char* name) {
 
-  typedef const char*(WINAPI idx2ifn_fn)(uint32, const char*);
+  typedef char*(WINAPI idx2ifn_fn)(uint32, const char*);
   static idx2ifn_fn* idx2ifn;
 
   if(idx2ifn == 0) {
@@ -29,7 +30,7 @@ static const char* if_indextoname(uint32 idx, const char*name) {
 
     if(iphlpapi != INVALID_HANDLE_VALUE) {
       if((idx2ifn = (idx2ifn_fn*)GetProcAddress(iphlpapi, "if_indextoname")) == 0)
-        return -1;
+        return 0;
     }
   }
   if(idx2ifn)
@@ -37,7 +38,6 @@ static const char* if_indextoname(uint32 idx, const char*name) {
   return 0;
 }
 #endif
-
 
 static char ifname[IF_NAMESIZE];
 

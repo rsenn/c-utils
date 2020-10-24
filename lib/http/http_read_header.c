@@ -31,7 +31,7 @@ ssize_t
 http_read_header(http* h, stralloc* sa, http_response* r) {
   ssize_t ret = 0, bytesread = 0;
   size_t start, n;
-  const char* x;
+  char* x;
   buffer* in = &h->q.in;
   while(r->status == HTTP_RECV_HEADER) {
     size_t bytesavail = in->n - in->p;
