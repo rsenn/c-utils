@@ -32,7 +32,7 @@ mmap_read_fd_range(fd_t fd, size_t* size, size_t offset, size_t len) {
   CloseHandle(m);*/
 #else
   struct stat st;
-   map = mmap_empty;
+  map = mmap_empty;
 
   if(fstat(fd, &st) == 0 && (*size = st.st_size)) {
     if(*size > len)

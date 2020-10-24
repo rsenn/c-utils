@@ -474,7 +474,8 @@ main(int argc, char* argv[]) {
     return 1;
   }
 
-  if((i = wait_pid(ret, &st)) != -1) {
+st = process_wait(ret);
+
     buffer_puts(buffer_2, "waitpid = ");
     buffer_putlong(buffer_2, i);
     buffer_puts(buffer_2, " status = ");
@@ -482,7 +483,6 @@ main(int argc, char* argv[]) {
     buffer_puts(buffer_2, " ");
     buffer_flush(buffer_2);
     errmsg_warnsys("child terminated:", 0);
-  }
 
   return 0;
 }

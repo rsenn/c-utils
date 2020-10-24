@@ -210,10 +210,7 @@ host_arch(const char* compiler, stralloc* out) {
 
   close(p[1]);
 
-#ifndef __dietlibc__
-
-  wait_pid(pid, &ws, WNOHANG);
-#endif
+  wait_pid(pid, &ws);
 
   readclose_append(p[0], out, 1024);
 

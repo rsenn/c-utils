@@ -42,7 +42,7 @@ wait_pid(int pid, int* wstat) {
   return -1;
 
 #else
-   int r;
+  int r;
   do {
     r = waitpid(pid, wstat, 0);
   } while((r == (int)-1) && (errno == EINTR));
