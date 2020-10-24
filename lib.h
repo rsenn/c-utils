@@ -1132,7 +1132,7 @@
 #include "lib/wait/waitn_reap.c"
 #include "lib/wait/wait_pids_nohang.c"
 #include "lib/wait/wait_reap.c"
-#include "lib/wait/waitpid_nointr.c"
+#include "lib/wait/wait_pid.c"
 #include "lib/wait/wait_nointr.c"
 #include "lib/wait/wait_pid.c"
 #include "lib/wait/wait_pid_nohang.c"

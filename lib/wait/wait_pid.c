@@ -7,6 +7,7 @@
 #else
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <errno.h>
 #endif
 
 int
@@ -41,6 +42,10 @@ wait_pid(int pid, int* wstat) {
   return -1;
 
 #else
-  return waitpid_nointr(pid, wstat, 0);
+   int r;
+  do {
+    r = waitpid(pid, wstat, 0);
+  } while((r == (int)-1) && (errno == EINTR));
+  return r;
 #endif
 }

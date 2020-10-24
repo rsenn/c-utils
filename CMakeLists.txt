@@ -747,20 +747,22 @@ if(MINGW
    OR WIN32
    OR WIN64
    OR MSVC)
-  check_library_exists(ws2_32 select "" HAVE_WS2_32_LIB)
-  if(HAVE_WS2_32_LIB)
-    set(LIBMSWSOCK ws2_32)
-  else(HAVE_WS2_32_LIB)
-    check_library_exists(wsock32 select "" HAVE_WSOCK32_LIB)
-    if(HAVE_WSOCK32_LIB)
-      set(LIBMSWSOCK wsock32)
-    else(HAVE_WSOCK32_LIB)
-      check_library_exists(mswsock select "" HAVE_MSWSOCK_LIB)
-      if(HAVE_MSWSOCK_LIB)
-        set(LIBMSWSOCK mswsock)
-      endif(HAVE_MSWSOCK_LIB)
-    endif(HAVE_WSOCK32_LIB)
-  endif(HAVE_WS2_32_LIB)
+
+  check_library_exists(wsock32 select "" HAVE_WSOCK32_LIB)
+  if(HAVE_WSOCK32_LIB)
+    set(LIBMSWSOCK wsock32)
+  else(HAVE_WSOCK32_LIB)
+    check_library_exists(mswsock select "" HAVE_MSWSOCK_LIB)
+    if(HAVE_MSWSOCK_LIB)
+      set(LIBMSWSOCK mswsock)
+    else(HAVE_MSWSOCK_LIB)
+      check_library_exists(ws2_32 select "" HAVE_WS2_32_LIB)
+      if(HAVE_WS2_32_LIB)
+        set(LIBMSWSOCK ws2_32)
+      endif(HAVE_WS2_32_LIB)
+
+    endif(HAVE_MSWSOCK_LIB)
+  endif(HAVE_WSOCK32_LIB)
 endif(
   MINGW
   OR WIN32
@@ -2064,6 +2066,7 @@ add_program(
   scan
   io
   uint32)
+target_link_libraries(tinyproxy ${LIBMSWSOCK})
 if(NOT WIN32)
   add_program(tcpproxy http io errmsg buffer open)
 endif(NOT WIN32)

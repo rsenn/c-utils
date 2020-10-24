@@ -797,16 +797,16 @@ server_finalize() {
   strlist syspath;
 
   size_t i, n;
-  time_t t;
+  //time_t t;
   buffer w;
   fd_t in, out;
-  struct tm lt;
+  //struct tm lt;
   strlist_init(&syspath, ':');
   stralloc_copys(&syspath.sa, env_get("PATH"));
 
   strlist_unshift(&syspath, "/opt/diet/bin-x86_64");
-  time(&t);
-  localtime_r(&t, &lt);
+ // time(&t);
+//  localtime_r(&t, &lt);
   stralloc_init(&filename);
   b = fileBase;
   if(b == NULL)
@@ -828,12 +828,12 @@ server_finalize() {
     fd_t file = open_read(s);
     if(!(fstat(file, &st) == 0 && (filesize = st.st_size)))
       filesize = 0;
-    t = st.st_ctime;
+//    t = st.st_ctime;
     buffer_init_free(&w, (buffer_op_proto*)&write, wr, alloc(1024), 1024);
     buffer_puts(&w, "\n-- File '");
     buffer_put(&w, s, n);
     buffer_puts(&w, "' -- ");
-    localtime_r(&t, &lt);
+  //  localtime_r(&t, &lt);
     buffer_putnlflush(&w);
     buffer_free(&w);
     ret = io_sendfile(wr, file, 0, filesize);
@@ -846,7 +846,7 @@ server_finalize() {
 #endif
   }
   stralloc_copys(&filename, fileBase);
-  stralloc_catb(&filename, buf, strftime(buf, sizeof(buf), "-%Y%m%d-%H%M%S", &lt));
+ // stralloc_catb(&filename, buf, strftime(buf, sizeof(buf), "-%Y%m%d-%H%M%S", &lt));
   stralloc_cats(&filename, ".tar");
 
   if(stat((s = stralloc_cstr(&filename)), &st) != -1)
@@ -911,7 +911,7 @@ server_tar_files(const char* cmd, const stralloc* archive, strlist* files) {
   }
   close(out);
 
-  pid = waitpid_nointr(child_pid, &status, 0);
+  pid = wait_pid(child_pid, &status);
   if(pid != -1) {
 
     buffer_puts(buffer_2, cmd);
@@ -919,7 +919,7 @@ server_tar_files(const char* cmd, const stralloc* archive, strlist* files) {
     buffer_puts(buffer_2, " (");
     buffer_putlong(buffer_2, pid);
     buffer_puts(buffer_2, ") exit code = ");
-    buffer_putlong(buffer_2, WEXITSTATUS(status));
+    buffer_putlong(buffer_2,  status);
     buffer_putnlflush(buffer_2);
   }
 }
@@ -1258,13 +1258,17 @@ main(int argc, char* argv[]) {
   io_fd(server_sock);
   io_wantread(server_sock);
 
+#if !WINDOWS_NATIVE
   if(!foreground)
     daemon(1, 0);
+#endif
 
   server_loop();
 
+#if !WINDOWS_NATIVE
   if(use_syslog)
     closelog();
+#endif
 
   return EXIT_SUCCESS;
 }

@@ -1,6 +1,8 @@
 #ifndef PROCESS_H
 #define PROCESS_H
 
+#include "../io.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif

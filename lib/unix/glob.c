@@ -182,7 +182,7 @@ glob(char const* pattern, int flags, int (*errfunc)(char const*, int), glob_t* p
 
         new_cbAlloc = (new_cbAlloc + 31) & ~(31);
 
-        new_buffer = (char*)alloc_re(buffer, new_cbAlloc);
+        new_buffer = (char*)realloc(buffer, new_cbAlloc);
 
         if(new_buffer == NULL) {
           result = GLOB_NOSPACE;
@@ -207,7 +207,7 @@ glob(char const* pattern, int flags, int (*errfunc)(char const*, int), glob_t* p
     if(result == 0) {
       /* Now expand the buffer, to fit in all the pointers. */
       size_t cbPointers = (1 + cMatches + pglob->gl_offs) * sizeof(char*);
-      char* new_buffer = (char*)alloc_re(buffer, cbAlloc + cbPointers);
+      char* new_buffer = (char*)realloc(buffer, cbAlloc + cbPointers);
 
       if(new_buffer == NULL) {
         result = GLOB_NOSPACE;
@@ -276,7 +276,7 @@ glob(char const* pattern, int flags, int (*errfunc)(char const*, int), glob_t* p
       result = GLOB_NOMATCH;
     } else if(bNoMagic || (flags & GLOB_NOCHECK)) {
       size_t cbNeeded = ((2 + pglob->gl_offs) * sizeof(char*)) + (1 + strlen(effectivePattern));
-      char** pp = (char**)alloc_re(buffer, cbNeeded);
+      char** pp = (char**)realloc(buffer, cbNeeded);
 
       if(NULL == pp) {
         result = GLOB_NOSPACE;

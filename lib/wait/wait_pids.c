@@ -7,7 +7,7 @@
 #endif
 
 int
-waitn(int* pids, unsigned int n) {
+wait_pids(int* pids, unsigned int n) {
   while(n) {
     int wstat;
     unsigned int i = 0;

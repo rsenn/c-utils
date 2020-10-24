@@ -7,16 +7,16 @@
 extern "C" {
 #endif
 
-int waitn_reap(int* pids, unsigned int len);
-int waitn(int* pids, unsigned int n);
-int waitpid_nointr(int pid, int* wstat, int flags);
-int wait_nohang(int* wstat);
-int wait_nointr(int* wstat);
-int wait_pids_nohang(int const* pids, unsigned int len, int* wstat);
-int wait_pid_nohang(int pid, int* wstat);
+int          wait_nohang(int*);
+int          wait_nointr(int*);
 unsigned int wait_reap(void);
 
-int wait_pid(int pid, int* wstat);
+int          wait_pid(int, int*);
+int          wait_pid_nohang(int, int*);
+
+int          wait_pids(int*, unsigned int);
+int          wait_pids_nohang(int const*, unsigned int, int*);
+int          wait_pids_reap(int*, unsigned int);
 
 #ifdef __cplusplus
 }

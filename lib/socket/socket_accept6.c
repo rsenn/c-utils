@@ -1,22 +1,13 @@
+#define USE_WS2_32 1
 #include "../windoze.h"
-#include "../byte.h"
+#if WINDOWS_NATIVE
+#include <winsock.h>
+#endif
 #include "../socket_internal.h"
+#include "../byte.h"
 #include "../io_internal.h"
 #include "../ip6.h"
 #include <sys/types.h>
-#if !WINDOWS_NATIVE
-#include <sys/param.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#endif
-
-#if 0 //def WINDOWS_NATIVE
-#include <windows.h>
-#include <mswsock.h>
-#include <errno.h>
-#include <stdio.h>
-#include "../io_internal.h"
-#endif
 
 int
 socket_accept6(int s, char* ip, uint16* port, uint32* scope_id) {

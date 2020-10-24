@@ -7,7 +7,7 @@
 #endif
 
 int
-waitn_reap(int* pids, unsigned int len) {
+wait_pids_reap(int* pids, unsigned int len) {
   unsigned int n = 0;
   while(len) {
     int w;
