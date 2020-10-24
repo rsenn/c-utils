@@ -16,6 +16,7 @@ cfg() {
       i686-pc-*) host="$host" builddir=build/${host} prefix=/usr ;;
     esac
   fi
+
   : ${prefix:=/usr/local}
   : ${libdir:=$prefix/lib}
   [ -d "$libdir/$host" ] && libdir=$libdir/$host
@@ -28,8 +29,11 @@ cfg() {
   else
    : ${builddir=build/$host}
   fi
-  test -n "$builddir" && builddir=`echo $builddir | sed 's|-pc-|-|g'`
-
+  case "$host" in
+    *msys*) ;;
+    *) test -n "$builddir" && builddir=`echo $builddir | sed 's|-pc-|-|g'` ;;
+  esac
+  
   case $(uname -o) in
    # MSys|MSYS|Msys) SYSTEM="MSYS" ;;
     *) SYSTEM="Unix" ;;
@@ -49,7 +53,7 @@ cfg() {
   cd "${builddir:-.}"
   ${CMAKE:-cmake} -Wno-dev \
     -G "$generator" \
-    ${VERBOSE+:-DCMAKE_VERBOSE_MAKEFILE=${VERBOSE:-ON}} \
+    ${VERBOSE:+-DCMAKE_VERBOSE_MAKEFILE=${VERBOSE:-ON}} \
     -DCMAKE_BUILD_TYPE="${TYPE:-Debug}" \
     -DBUILD_SHARED_LIBS=ON \
     ${CC:+-DCMAKE_C_COMPILER="$CC"} \
@@ -265,25 +269,41 @@ cfg-musl32() {
 }
 
 cfg-msys() {
- (build=$(gcc -dumpmachine | sed 's|-pc-|-|g')
+ (echo "host: $host"
+  build=$(gcc -dumpmachine)
   : ${host=${build%%-*}-pc-msys}
-  : ${prefix=/usr/$host/sys-root/msys}
+  : ${prefix=/usr/$host/sysroot/usr}
+echo "host: $host"
+  : ${PKG_CONFIG_PATH=/usr/${host}/sysroot/usr/lib/pkgconfig}
+
+  export PKG_CONFIG_PATH
+
+  case "$host" in
+    x86_64*) TOOLCHAIN=/opt/cmake-toolchains/msys64.cmake ;;
+   *) TOOLCHAIN=/opt/cmake-toolchains/msys32.cmake ;;
+  esac
+  export TOOLCHAIN
+  echo "builddir: $builddir"
 
   builddir=build/$host \
   bindir=$prefix/bin \
   libdir=$prefix/lib \
-  CC="$host-gcc" \
+  host=$host \
+  build=$build \
   cfg \
-    -DCMAKE_CROSSCOMPILING=TRUE \
     "$@")
 }
 
 cfg-msys32() {
- (build=$(gcc -dumpmachine | sed 's|-pc-|-|g')
-  host=${build%%-*}-pc-msys
-  host=i686-${host#*-}
-  cfg-msys "$@")
+  host=i686-pc-msys \
+    cfg-msys "$@"
 }
+
+cfg-msys64() {
+  host=x86_64-pc-msys \
+    cfg-msys "$@"
+}
+
 
 cfg-termux()
 {
@@ -319,28 +339,6 @@ cfg-wasm() {
     -DCMAKE_EXECUTABLE_SUFFIX_INIT=".html" \
     -DUSE_{ZLIB,BZIP,LZMA,SSL}=OFF \
   "$@")
-}
-
-cfg-msys32() {
- (build=$(gcc -dumpmachine | sed 's|-pc-|-|g')
-  host=${build%%-*}-pc-msys
-  host=i686-${host#*-}
-  cfg-msys "$@")
-}
-
-cfg-msys() {
- (build=$(gcc -dumpmachine | sed 's|-pc-|-|g')
-  : ${host=${build%%-*}-pc-msys}
-  : ${prefix=/usr/$host/sys-root/msys}
-
-  builddir=build/$host \
-  bindir=$prefix/bin \
-  libdir=$prefix/lib \
-  
-  CC="$host-gcc" \
-  cfg \
-    -DCMAKE_CROSSCOMPILING=TRUE \
-    "$@")
 }
 
 cfg-tcc() {

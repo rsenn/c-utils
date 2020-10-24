@@ -56,7 +56,7 @@ omf_record_next(omf_record* rec, void* ptr) {
     }
 
     /* OMF_SEGDEF */
-    case OMF_SEGDEF +:
+    case OMF_SEGDEF + 1:
     case OMF_SEGDEF: break;
 
     /* OMF_GRPDEF */

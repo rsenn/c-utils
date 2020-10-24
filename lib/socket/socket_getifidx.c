@@ -1,14 +1,18 @@
 #define USE_WS2_32 1
-
-#if WINDOWS_NATIVE
-#define _WINSOCKAPI_
-#endif
-
 #include "../socket_internal.h"
 #include <sys/types.h>
 
-#if !defined(WINDOWS) && !defined(__wasi__)
+#if WINDOWS_NATIVE
+//#define _WINSOCKAPI_
+#define HAVE_N2I
+#undef WS2TCPIP_INLINE 
+#define WS2TCPIP_INLINE static inline
+#include <netioapi.h>
+#else
 #include <net/if.h>
+#endif
+
+#if !defined(__wasi__)
 
 uint32
 socket_getifidx(const char* ifname) {

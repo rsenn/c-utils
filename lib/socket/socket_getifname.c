@@ -1,15 +1,18 @@
 #define USE_WS2_32 1
-
-#if WINDOWS_NATIVE
-#define _WINSOCKAPI_
-#endif
-
 #include "../socket_internal.h"
 #include <sys/types.h>
 
-#if !WINDOWS_NATIVE
+#if WINDOWS_NATIVE
+//#define _WINSOCKAPI_
+#define HAVE_N2I
+#undef WS2TCPIP_INLINE 
+#define WS2TCPIP_INLINE static inline
+#define IN6_ADDR_EQUAL IN6_ADDR_EQUAL_2
+#include <netioapi.h>
+#else
 #include <net/if.h>
 #endif
+
 
 #ifdef HAVE_N2I
 /* legacy BSD name */

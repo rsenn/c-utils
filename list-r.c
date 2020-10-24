@@ -700,7 +700,7 @@ list_dir_internal(stralloc* dir, char type, long depth) {
 #if USE_READDIR
     if(!is_dir) {
       size = dir_size(&d); /* dir_INTERNAL(&d)->dir_entry->d_name); */
-      mtime = dir_time(&d);
+      mtime = dir_time(&d, D_TIME_MODIFICATION);
     } else {
       mtime = 0;
       size = 0;

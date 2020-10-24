@@ -4864,7 +4864,9 @@ main(int argc, char* argv[]) {
   strarray sources;
   strarray_init(&sources);
 
+#if !WINDOWS_NATIVE
   sig_ignore(SIGTRAP);
+#endif
 
   struct longopt opts[] = {{"help", 0, NULL, 'h'},
                            {"objext", 1, NULL, 'O'},
