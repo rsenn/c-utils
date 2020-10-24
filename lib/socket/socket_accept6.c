@@ -1,8 +1,5 @@
 #define USE_WS2_32 1
 #include "../windoze.h"
-#if WINDOWS_NATIVE
-#include <winsock.h>
-#endif
 #include "../socket_internal.h"
 #include "../byte.h"
 #include "../io_internal.h"
