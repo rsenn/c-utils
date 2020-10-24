@@ -1,4 +1,4 @@
-
+#define USE_WS2_32 1 
 #include "lib/path.h"
 #include "lib/uint16.h"
 #include "lib/uint64.h"
@@ -25,13 +25,10 @@
 #include "lib/array.h"
 #include "lib/slist.h"
 #include "lib/taia.h"
+#include "lib/socket_internal.h"
 #include "lib/dns.h"
+#include "lib/wait.h"
 #include "map.h"
-#include <arpa/inet.h>
-//#include <netdb.h>
-#include <netinet/in.h>
-//#include <resolv.h>
-//#include <sys/socket.h>
 #include <errno.h>
 #include <fcntl.h>
 #include <libgen.h>
@@ -39,11 +36,11 @@
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include <string.h>
-#include <syslog.h>
 #include <unistd.h>
-#include <sys/wait.h>
 #include <sys/stat.h>
+//#include <syslog.h>
 #ifdef USE_SYSTEMD
 #include <systemd/sd-daemon.h>
 #endif
@@ -66,7 +63,7 @@
 #define BROKEN_PIPE_ERROR -9
 #define SYNTAX_ERROR -10
 
-typedef enum { TRUE = 1, FALSE = 0 } bool;
+//typedef enum { TRUE = 1, FALSE = 0 } bool;
 typedef struct socketbuf_s {
   fd_t sock;
   buffer buf;
@@ -914,7 +911,7 @@ server_tar_files(const char* cmd, const stralloc* archive, strlist* files) {
   }
   close(out);
 
-  pid = waitpid(child_pid, &status, 0);
+  pid = waitpid_nointr(child_pid, &status, 0);
   if(pid != -1) {
 
     buffer_puts(buffer_2, cmd);
@@ -1233,14 +1230,17 @@ main(int argc, char* argv[]) {
     usage(argv[0]);
     return server.port;
   }
-
+#if !WINDOWS_NATIVE
   if(use_syslog)
     openlog("proxy", LOG_PID, LOG_DAEMON);
+#endif
 
+#if !WINDOWS_NATIVE
   sig_block(SIGPIPE);
   //    sig_block(SIGINT);
   sig_push(SIGTERM, &server_sigterm);
   sig_push(SIGINT, &server_sigint);
+#endif
 
   if((server_sock = server_listen(server.port)) < 0) { // start server
     errmsg_warn("Cannot run server:", 0);

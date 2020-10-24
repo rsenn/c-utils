@@ -1,4 +1,3 @@
-#include "../dir.h"
 #include "../dir_internal.h"
 
 #if USE_READDIR
@@ -10,6 +9,10 @@
 typedef struct stat stat_t;
 #else
 typedef struct stat stat_t;
+#endif
+
+#ifndef SEC_TO_UNIX_EPOCH
+#define SEC_TO_UNIX_EPOCH 11644473600
 #endif
 
 #if !USE_READDIR && WINDOWS
@@ -34,11 +37,11 @@ dir_time(struct dir_s* d, int type) {
     case D_TIME_ACCESS: r = st.st_atime; break;
     case D_TIME_MODIFICATION: r = st.st_mtime; break;
   }
-#elif WINDOWS
+#else
   switch(type) {
-    case D_TIME_CREATION: r = filetime_to_unix(&dir_INTERNAL(&d)->dir_finddata.ftCreationTime); break;
-    case D_TIME_ACCESS: r = filetime_to_unix(&dir_INTERNAL(&d)->dir_finddata.ftLastAccessTime); break;
-    case D_TIME_MODIFICATION: r = filetime_to_unix(&dir_INTERNAL(&d)->dir_finddata.ftLastWriteTime); break;
+    case D_TIME_CREATION: r = filetime_to_unix(&dir_INTERNAL(d)->dir_finddata.ftCreationTime); break;
+    case D_TIME_ACCESS: r = filetime_to_unix(&dir_INTERNAL(d)->dir_finddata.ftLastAccessTime); break;
+    case D_TIME_MODIFICATION: r = filetime_to_unix(&dir_INTERNAL(d)->dir_finddata.ftLastWriteTime); break;
   }
 #endif
 

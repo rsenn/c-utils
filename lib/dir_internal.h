@@ -1,32 +1,28 @@
 #ifndef _DIR_INTERNAL_H__
 #define _DIR_INTERNAL_H__
 
-#include "dir.h"
+#include "windoze.h"
 
-#define _POSIX_ 1
-
-#if 0 // def _MSC_VER
-#include <crtdefs.h>
-#endif /* _MSC_VER */
-
-#ifndef USE_READDIR
-#ifdef __unix__
+#if WINDOWS_NATIVE
+#undef USE_READDIR
+#else
 #define USE_READDIR 1
-#endif
 #endif
 
 #ifndef USE_READDIR
 #define USE_READDIR 0
 #endif
 
+#include "dir.h"
+
+#define _POSIX_ 1
+
 #if USE_READDIR
 #include <dirent.h>
-#else
-#if defined(_WIN32) || defined(__MSYS__)
+#elif WINDOWS_NATIVE
 #include <windows.h>
 #endif
 #include <limits.h>
-#endif
 
 #include <sys/stat.h>
 #include <limits.h>
