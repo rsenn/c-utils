@@ -850,6 +850,7 @@ foreach(METHOD KQUEUE DEVPOLL EPOLL SIGIO POLL SELECT)
     if(NOT MUX)
       set(MUX_METHOD ${METHOD})
     endif(NOT MUX)
+    add_definitions("-DHAVE_${METHOD}=1")
   endif(SUPPORT_${METHOD})
 endforeach()
 

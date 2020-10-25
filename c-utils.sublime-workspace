@@ -12,89 +12,20 @@
 	"buffers":
 	[
 		{
-			"contents": "",
+			"contents": "   Ⓜ  USE_WS2_32 … — macro object\n   Ⓜ  HAVE_N2I … — macro object\n   Ⓜ  IF_NAMESIZE … — macro object\n—Ⓕ– if_indextoname ( ) { … } — function\n—Ⓕ– socket_getifname ( ) { … } — function\n—Ⓕ– socket_getifname ( ) { … } — function",
 			"settings":
 			{
-				"buffer_size": 0,
+				"buffer_size": 224,
 				"line_ending": "Unix",
 				"name": "𝌆 Outline",
 				"scratch": true
 			}
 		},
 		{
-			"file": "tinyproxy.c",
+			"file": "lib/socket/socket_getifname.c",
 			"settings":
 			{
-				"buffer_size": 32957,
-				"encoding": "UTF-8",
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "/home/roman/Sources/c-utils/ar-wrap.c",
-			"settings":
-			{
-				"buffer_size": 10242,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/wait.h",
-			"settings":
-			{
-				"buffer_size": 403,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "pkgcfg.c",
-			"settings":
-			{
-				"buffer_size": 30227,
-				"encoding": "UTF-8",
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "CMakeLists.txt",
-			"settings":
-			{
-				"buffer_size": 63425,
-				"encoding": "UTF-8",
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "/home/roman/Dokumente/Sources/plot-cv/PeterUndCharlie2_orig.svg",
-			"settings":
-			{
-				"buffer_size": 10642,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/process/process_create.c",
-			"settings":
-			{
-				"buffer_size": 4534,
-				"encoding": "UTF-8",
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/process.h",
-			"settings":
-			{
-				"buffer_size": 253,
-				"encoding": "UTF-8",
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/wait/wait_pid.c",
-			"settings":
-			{
-				"buffer_size": 872,
+				"buffer_size": 1107,
 				"line_ending": "Unix"
 			}
 		}
@@ -111,10 +42,6 @@
 		"selected_items":
 		[
 			[
-				"svgo",
-				"SVGO: Minify SVG"
-			],
-			[
 				"install pa",
 				"Package Control: Install Package"
 			],
@@ -125,6 +52,10 @@
 			[
 				"install",
 				"Package Control: Install Package"
+			],
+			[
+				"svgo",
+				"SVGO: Prettify SVG"
 			],
 			[
 				"ctag",
@@ -191,13 +122,34 @@
 	},
 	"expanded_folders":
 	[
-		"/home/roman/Dokumente/Sources/c-utils",
-		"/home/roman/Dokumente/Sources/c-utils/lib",
-		"/home/roman/Dokumente/Sources/c-utils/lib/process"
+		"/home/roman/Dokumente/Sources/c-utils"
 	],
 	"file_history":
 	[
-		"/home/roman/Dokumente/PeterUndCharlie2_orig.svg",
+		"/home/roman/Dokumente/Sources/c-utils/CMakeLists.txt",
+		"/home/roman/Dokumente/Sources/c-utils/lib/socket/socket_getifidx.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/process/process_create.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/io/io_waituntil2.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/io_internal.h",
+		"/home/roman/Sources/c-utils/lib/socket_internal.h",
+		"/home/roman/Dokumente/Sources/c-utils/cofflist.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/coff/coff_line_numbers.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/socket/socket_getifname.c",
+		"/home/roman/Dokumente/Sources/c-utils/scripts/gen-pro-template.sh",
+		"/home/roman/Dokumente/Sources/c-utils/cfg.sh",
+		"/home/roman/Dokumente/Sources/c-utils/tinyproxy.c",
+		"/home/roman/Sources/c-utils/ar-wrap.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/wait.h",
+		"/home/roman/Dokumente/Sources/c-utils/pkgcfg.c",
+		"/home/roman/Downloads/gcode (4).gcode",
+		"/home/roman/Dokumente/Sources/c-utils/lib/omf.h",
+		"/home/roman/Dokumente/Sources/c-utils/omflist.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/omf/omf_record_next.c",
+		"/home/roman/Dokumente/Sources/shish/cfg-cmake.sh",
+		"/home/roman/Dokumente/Sources/c-utils/lib/process.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/wait/wait_pid.c",
+		"/home/roman/Sources/c-utils/lib/socket/socket_getifidx.c",
+		"/home/roman/Dokumente/Sources/c-utils/omf.h",
 		"/home/roman/Dokumente/Sources/c-utils/ar-wrap.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/str.h",
 		"/home/roman/Dokumente/Sources/c-utils/lib/str/str_find.c",
@@ -210,14 +162,10 @@
 		"/home/roman/Sources/c-utils/lib/dir_internal.h",
 		"/home/roman/Dokumente/Sources/c-utils/lib/dir_internal.h",
 		"/home/roman/Dokumente/Sources/c-utils/lib/dir/dir_time.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/process/process_create.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/process/process_wait.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/process.h",
 		"/home/roman/Dokumente/Sources/c-utils/lib/unix/glob.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/wait/wait_nohang.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/wait.h",
 		"/home/roman/Dokumente/Sources/c-utils/lib/wait/waitn_reap.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/wait/wait_pid.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/wait/wait_pid_nohang.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/wait/waitn.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/dir.h",
@@ -225,7 +173,6 @@
 		"/home/roman/Dokumente/Sources/c-utils/lib/str/str_chrs.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/str/str_chr.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/stralloc/stralloc_replace.c",
-		"/home/roman/Dokumente/Sources/c-utils/CMakeLists.txt",
 		"/home/roman/Dokumente/Sources/c-utils/build/cmake/config.h.cmake",
 		"/home/roman/Dokumente/Sources/c-utils/3rdparty/openssl/external/perl/Text-Template-1.46/t/02-hash.t",
 		"/home/roman/Dokumente/Sources/c-utils/lib/path.h",
@@ -290,7 +237,6 @@
 		"/home/roman/Dokumente/Sources/c-utils/lib/buffer.h",
 		"/home/roman/Dokumente/Sources/c-utils/lib/fmt/fmt_escapecharshell.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/stralloc/buffer_put_escaped.c",
-		"/home/roman/Dokumente/Sources/c-utils/tinyproxy.c",
 		"/home/roman/Dokumente/Sources/c-utils/pipeinfo.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/strlist/strlist_to_argv.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/array/array_allocate.c",
@@ -301,30 +247,13 @@
 		"/home/roman/Dokumente/Sources/c-utils/mediathek-list.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/stralloc/stralloc_fmt.c",
 		"/home/roman/Sources/c-utils/lib/http/http_socket.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/io/io_waituntil2.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/buffer/buffer_puts.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/taia/taia_half.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/http/http_on_writeable.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/http/http_on_readable.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/io_internal.h",
 		"/home/roman/Dokumente/Sources/c-utils/lib/buffer/buffer_1.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/buffer/buffer_2.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/buffer/buffer_1small.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/buffer/buffer_putflush.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/errmsg/errmsg_puts.c",
-		"/home/roman/Sources/c-utils/lib/buffer.h",
-		"/home/roman/Dokumente/Sources/c-utils/lib/buffer/buffer_dump.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/buffer/buffer_truncfile.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/buffer/buffer_write.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/buffer/buffer_write_fd.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/http/http_ssl2errno.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/buffer/buffer_put.c",
-		"/home/roman/Sources/c-utils/lib/buffer/buffer_1small.c",
-		"/home/roman/Sources/c-utils/lib/http/http_ssl_connect.c",
-		"/home/roman/Sources/c-utils/lib/http/http_ssl_read.c",
-		"/home/roman/Sources/c-utils/lib/http/http_ssl_write.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/http/http_ssl_io.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/http/http_ssl_read.c"
+		"/home/roman/Dokumente/Sources/c-utils/lib/buffer/buffer_1small.c"
 	],
 	"find":
 	{
@@ -349,6 +278,44 @@
 		"case_sensitive": true,
 		"find_history":
 		[
+			"MUX_",
+			" EPOLL",
+			"HAVE_EPOLL",
+			"EPOLL",
+			"Aux se",
+			"define\\s+USE_SELECT",
+			"define.*USE_SELECT",
+			"USE_SELE",
+			"USE_SEL",
+			"ifn2idx",
+			"if_nametoindex",
+			"VERBOSE_MAK",
+			"unistd.h",
+			"echo.*host",
+			"cfg-msys",
+			"^\\s*message\\(",
+			"check_type",
+			"type_size",
+			"check_size",
+			"CROSS",
+			"CMAKE_CROSS",
+			"cfg-msys",
+			"IPHLP",
+			"HAVE_N2I",
+			"TOOLCHAIN",
+			"HAVE.*MUX",
+			"MUX_METHOD",
+			"EPOLL",
+			"io_wanted_fds",
+			"USE_SELECT",
+			"wanted_fd",
+			"wanted",
+			"MUX_METHOD",
+			" POLL\\)",
+			"\\(POLL",
+			"POLL",
+			"HAVE_POLL",
+			"HAVE_",
 			"tinyprox",
 			"process_cr",
 			"spawn",
@@ -438,45 +405,7 @@
 			"path_prefix_s",
 			"error op",
 			"pathsep_make",
-			"pelles",
-			"pocc",
-			"COMPILE_DEF",
-			"DEFINI",
-			"PREFIX",
-			"PREFIX=",
-			"-DPREFIX",
-			"-D",
-			"PREFIX",
-			"target_comp",
-			"target_prop",
-			"target",
-			"target_def",
-			"add_prog",
-			"error open",
-			"pelles",
-			"-q",
-			"sources_add\"",
-			"sources_add",
-			"55\"",
-			"bcc55",
-			"set_compiler_type",
-			"\"bcc",
-			"count_b",
-			"^path_clean",
-			"path_clean",
-			"foreach.*\\(\\&sources",
-			"foreach.*sources",
-			"slist.*sources",
-			"slink.*sources",
-			"sources",
-			"sources_sort",
-			"srcs",
-			"sources_addincludes",
-			"sourcedir_addsource",
-			"sources_addincludes",
-			"sources_readdir",
-			"strarray_foreach",
-			"addsource"
+			"pelles"
 		],
 		"highlight": false,
 		"in_selection": false,
@@ -484,6 +413,8 @@
 		"regex": true,
 		"replace_history":
 		[
+			"idx2ifn",
+			"ifn2idx",
 			"set_iterator_t",
 			"end",
 			"isleap",
@@ -561,7 +492,7 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 0,
+						"buffer_size": 224,
 						"regions":
 						{
 						},
@@ -571,8 +502,44 @@
 						"settings":
 						{
 							"color_scheme": "Packages/Outline/outline.hidden-tmTheme",
-							"current_file": "/home/roman/Dokumente/Sources/plot-cv/PeterUndCharlie2_orig.svg",
+							"current_file": "/home/roman/Dokumente/Sources/c-utils/lib/socket/socket_getifname.c",
 							"outline_rename_mode": false,
+							"symkeys":
+							[
+								[
+									8,
+									18
+								],
+								[
+									127,
+									135
+								],
+								[
+									341,
+									352
+								],
+								[
+									396,
+									410
+								],
+								[
+									873,
+									889
+								],
+								[
+									1038,
+									1054
+								]
+							],
+							"symlist":
+							[
+								"\tⓂ  USE_WS2_32 … — macro object",
+								"\tⓂ  HAVE_N2I … — macro object",
+								"\tⓂ  IF_NAMESIZE … — macro object",
+								"—Ⓕ– if_indextoname ( ) { … } — function",
+								"—Ⓕ– socket_getifname ( ) { … } — function",
+								"—Ⓕ– socket_getifname ( ) { … } — function"
+							],
 							"syntax": "Packages/Outline/outline.hidden-tmLanguage",
 							"tab_size": 3,
 							"translate_tabs_to_spaces": true
@@ -581,30 +548,30 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 9,
+					"stack_index": 1,
 					"type": "text"
 				}
 			]
 		},
 		{
-			"selected": 5,
+			"selected": 0,
 			"sheets":
 			[
 				{
 					"buffer": 1,
-					"file": "tinyproxy.c",
+					"file": "lib/socket/socket_getifname.c",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 32957,
+						"buffer_size": 1107,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								22665,
-								22665
+								5,
+								5
 							]
 						],
 						"settings":
@@ -612,246 +579,12 @@
 							"syntax": "Packages/C Improved/C Improved.tmLanguage",
 							"tab_size": 2,
 							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 15254.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 2,
-					"type": "text"
-				},
-				{
-					"buffer": 2,
-					"file": "/home/roman/Sources/c-utils/ar-wrap.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 10242,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								9258,
-								9258
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C Improved/C Improved.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 7599.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 5,
-					"type": "text"
-				},
-				{
-					"buffer": 3,
-					"file": "lib/wait.h",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 403,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								338,
-								338
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C11/C11.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 7,
-					"type": "text"
-				},
-				{
-					"buffer": 4,
-					"file": "pkgcfg.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 30227,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								684,
-								684
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C Improved/C Improved.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 1428.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 3,
-					"type": "text"
-				},
-				{
-					"buffer": 5,
-					"file": "CMakeLists.txt",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 63425,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								62643,
-								62643
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/CMakeEditor/CMakeEditor.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 37201.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 1,
-					"type": "text"
-				},
-				{
-					"buffer": 6,
-					"file": "/home/roman/Dokumente/Sources/plot-cv/PeterUndCharlie2_orig.svg",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 10642,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/XML/XML.sublime-syntax"
 						},
 						"translation.x": 0.0,
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 0,
-					"type": "text"
-				},
-				{
-					"buffer": 7,
-					"file": "lib/process/process_create.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 4534,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								1899,
-								1899
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C Improved/C Improved.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 816.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 4,
-					"type": "text"
-				},
-				{
-					"buffer": 8,
-					"file": "lib/process.h",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 253,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								253,
-								253
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C11/C11.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 6,
-					"type": "text"
-				},
-				{
-					"buffer": 9,
-					"file": "lib/wait/wait_pid.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 872,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C Improved/C Improved.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 8,
 					"type": "text"
 				}
 			]
@@ -913,7 +646,7 @@
 	"project": "c-utils.sublime-project",
 	"replace":
 	{
-		"height": 48.0
+		"height": 71.0
 	},
 	"save_all_on_build": true,
 	"select_file":
@@ -922,6 +655,66 @@
 		"last_filter": "",
 		"selected_items":
 		[
+			[
+				"cmakeli",
+				"CMakeLists.txt"
+			],
+			[
+				"coff_li",
+				"lib/coff/coff_line_numbers.c"
+			],
+			[
+				"cofflist",
+				"cofflist.c"
+			],
+			[
+				"io_inter",
+				"lib/io_internal.h"
+			],
+			[
+				"io_waituntil2",
+				"lib/io/io_waituntil2.c"
+			],
+			[
+				"process_crea",
+				"lib/process/process_create.c"
+			],
+			[
+				"cfg.sh",
+				"cfg.sh"
+			],
+			[
+				"cmakelis",
+				"CMakeLists.txt"
+			],
+			[
+				"getifname",
+				"lib/socket/socket_getifname.c"
+			],
+			[
+				"socket_getif",
+				"lib/socket/socket_getifidx.c"
+			],
+			[
+				"socket_",
+				"lib/socket/socket_getifidx.c"
+			],
+			[
+				"ifidx.",
+				"lib/socket/socket_getifidx.c"
+			],
+			[
+				"omf.h",
+				"lib/omf.h"
+			],
+			[
+				"omflist",
+				"omflist.c"
+			],
+			[
+				" io_waituntil2 ",
+				"lib/io/io_waituntil2.c"
+			],
 			[
 				"cmakelist",
 				"CMakeLists.txt"
@@ -997,10 +790,6 @@
 			[
 				"config.h",
 				"build/cmake/config.h.cmake"
-			],
-			[
-				"cmakeli",
-				"CMakeLists.txt"
 			],
 			[
 				"typedef",
@@ -1129,10 +918,6 @@
 			[
 				"errmsg_puts",
 				"lib/errmsg/errmsg_puts.c"
-			],
-			[
-				"io_inter",
-				"lib/io_internal.h"
 			],
 			[
 				"io_internal",
@@ -1381,58 +1166,6 @@
 			[
 				"uint16",
 				"lib/uint16.h"
-			],
-			[
-				"log.h",
-				"log.h"
-			],
-			[
-				"ip6.h",
-				"lib/ip6.h"
-			],
-			[
-				"open_rw",
-				"lib/open/open_rw.c"
-			],
-			[
-				"open.h",
-				"lib/open.h"
-			],
-			[
-				"ip4",
-				"lib/ip4.h"
-			],
-			[
-				"scan_ip",
-				"lib/socket/scan_ip6if.c"
-			],
-			[
-				"dnsip.c",
-				"dnsip.c"
-			],
-			[
-				"roots.c",
-				"roots.c"
-			],
-			[
-				"mmap.h",
-				"lib/mmap.h"
-			],
-			[
-				"ip6",
-				"lib/ip6.h"
-			],
-			[
-				"roots.h",
-				"roots.h"
-			],
-			[
-				"response.c",
-				"response.c"
-			],
-			[
-				"log",
-				"log.c"
 			]
 		],
 		"width": 0.0
