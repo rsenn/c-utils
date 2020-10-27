@@ -513,7 +513,7 @@ io_waituntil2(int64 milliseconds) {
 #endif
 #endif
 
-#ifdef HAVE_POLL
+#if defined(HAVE_POLL) || defined(SUPPORT_POLL)
 dopoll :
 
 {

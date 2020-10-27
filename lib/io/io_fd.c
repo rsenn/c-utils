@@ -115,8 +115,12 @@ io_fd_internal(fd_t d, int flags) {
       __asm__("" : : : "memory");
 #endif
     } while(io_fds_inited != 1);
-  if(!(e = (io_entry*)iarray_allocate(&io_fds, (size_t)d)))
-    return 0;
+  if(d >= iarray_length(&io_fds)) {
+    if(!(e = (io_entry*)iarray_allocate(&io_fds, (size_t)d)))
+      return 0;
+  } else {
+    e = iarray_get(&io_fds, d);
+  }
   if(e->inuse)
     return e;
   byte_zero(e, sizeof(io_entry));

@@ -415,8 +415,7 @@ macro(check_function_def FUNC)
   # message("FUNC: ${FUNC} RESULT_VAR: ${RESULT_VAR}")
   check_function_exists("${FUNC}" "${RESULT_VAR}")
   if(${${RESULT_VAR}})
-     #add_definitions(-D${RESULT_VAR})
-     #message("${RESULT_VAR} ${${RESULT_VAR}}")
+    # add_definitions(-D${RESULT_VAR}) message("${RESULT_VAR} ${${RESULT_VAR}}")
   endif(${${RESULT_VAR}})
 endmacro(
   check_function_def
@@ -449,13 +448,13 @@ check_functions(
   __write
   writev
   posix_spawnattr_setflags
-posix_spawn_file_actions_init
-posix_spawn_file_actions_adddup2
-posix_spawnp
-
-
-)
-if(HAVE_POSIX_SPAWNATTR_SETFLAGS AND HAVE_POSIX_SPAWN_FILE_ACTIONS_INIT AND HAVE_POSIX_SPAWN_FILE_ACTIONS_ADDDUP2 AND HAVE_POSIX_SPAWNP)
+  posix_spawn_file_actions_init
+  posix_spawn_file_actions_adddup2
+  posix_spawnp)
+if(HAVE_POSIX_SPAWNATTR_SETFLAGS
+   AND HAVE_POSIX_SPAWN_FILE_ACTIONS_INIT
+   AND HAVE_POSIX_SPAWN_FILE_ACTIONS_ADDDUP2
+   AND HAVE_POSIX_SPAWNP)
   add_definitions(-DPOSIX_SPAWN=1)
 endif()
 
@@ -589,7 +588,12 @@ include(${CMAKE_SOURCE_DIR}/build/cmake/CheckInline.cmake)
 include(${CMAKE_SOURCE_DIR}/build/cmake/Profile.cmake)
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-  add_definitions(-D_DEBUG=1 -DDEBUG_OUTPUT=1)
+  option(DEBUG_OUTPUT "Output verbose messages" OFF)
+  add_definitions(-D_DEBUG=1)
+
+  if(DEBUG_OUTPUT)
+    add_definitions(-DDEBUG_OUTPUT=1)
+  endif(DEBUG_OUTPUT)
 endif(CMAKE_BUILD_TYPE STREQUAL "Debug")
 
 set(CompilerFlags CMAKE_C_FLAGS CMAKE_C_FLAGS_DEBUG CMAKE_C_FLAGS_RELEASE CMAKE_C_FLAGS_RELWITHDEBINFO CMAKE_C_FLAGS_MINSIZEREL)
@@ -844,16 +848,31 @@ set(MUX
     ""
     CACHE STRING "selected I/O multiplexing method")
 
-foreach(METHOD KQUEUE DEVPOLL EPOLL SIGIO POLL SELECT)
+set(MUX_DEFS "")
+set(MUX_ALL
+    KQUEUE DEVPOLL EPOLL
+    # SIGIO
+    POLL SELECT)
+set(MUX_USE
+    KQUEUE DEVPOLL
+    # EPOLL SIGIO
+    POLL SELECT)
+foreach(METHOD ${MUX_USE})
   if(SUPPORT_${METHOD})
     list(APPEND MUX_METHODS "${METHOD}")
     if(NOT MUX)
       set(MUX_METHOD ${METHOD})
     endif(NOT MUX)
-    add_definitions("-DHAVE_${METHOD}=1")
+    set(MUX_DEFS "${MUX_DEFS} -DHAVE_${METHOD}=1")
   endif(SUPPORT_${METHOD})
 endforeach()
+foreach(METHOD ${MUX_ALL})
+  if(SUPPORT_${METHOD})
 
+    set(MUX_DEFS "${MUX_DEFS} -DSUPPORT_${METHOD}=1")
+  endif(SUPPORT_${METHOD})
+endforeach()
+message("MUX definitions: ${MUX_DEFS}")
 if(LIBMSWSOCK)
   list(APPEND CMAKE_REQUIRED_LIBRARIES ${LIBMSWSOCK})
 endif(LIBMSWSOCK)
@@ -905,7 +924,7 @@ if(MUX_METHOD STREQUAL "SELECT")
 else()
   set(io_COMPILE_FLAGS "-DHAVE_${MUX_METHOD}=1")
 endif()
-add_definitions( "-DHAVE_${MUX_METHOD}=1" "-DHAVE_${MUX}=1" )
+add_definitions("-DHAVE_${MUX_METHOD}=1" "-DHAVE_${MUX}=1")
 
 if(WIN32 OR MSVC)
   if(USE_WIDECHAR)
@@ -952,7 +971,10 @@ macro(invert INVAR OUTVAR)
   else(${${INVAR}})
     set("${OUTVAR}" TRUE)
   endif(${${INVAR}})
-endmacro(invert INVAR OUTVAR)
+endmacro(
+  invert
+  INVAR
+  OUTVAR)
 
 macro(invoption VAR DESC INVAR)
   if(${${INVAR}})
@@ -1266,6 +1288,8 @@ foreach(LIBNAME ${MODSUBDIRS})
   set_target_properties("${LIBNAME}" PROPERTIES PREFIX "" COMPILE_FLAGS "${WARN_C_COMPILER_FLAGS} ${${LIBNAME}_COMPILE_FLAGS}")
 
 endforeach(LIBNAME)
+
+set_target_properties(io PROPERTIES COMPILE_FLAGS "${MUX_DEFS}")
 
 foreach(NETLIB dns http io ndelay socket)
   target_link_libraries(${NETLIB} ${LIBMSWSOCK})

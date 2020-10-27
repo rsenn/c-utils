@@ -23,6 +23,7 @@
 #include "lib/slist.h"
 #include "lib/sig.h"
 #include "lib/charbuf.h"
+#include "lib/mmap.h"
 #include <stdlib.h>
 #include <unistd.h>
 #include <ctype.h>
@@ -43,12 +44,14 @@ typedef struct link {
 
 static strarray ports;
 // static fd_t term_buf.fd = 0;
-static charbuf term_buf = CHARBUF_INIT((void*)&read, STDIN_FILENO);
+static buffer term_buf;
 static stralloc serial_buf;
 static int verbose, rawmode;
 static MAP_T port_map;
 static link_t* port_list;
 static jmp_buf context;
+static const char* send_file = 0;
+static buffer send_buf;
 volatile int running;
 fd_t serial_fd;
 
@@ -334,19 +337,14 @@ term_restore(fd_t fd, const struct termios* state) {
  *
  * @return     { description_of_the_return_value }
  */
-ssize_t
+/*ssize_t
 term_process(char* ch) {
 
   ssize_t ret = charbuf_getc(&term_buf, ch);
 
-  /* if(ret > 0) {
-     if(*ch == '\n')
-       write(term_buf.fd, "\r\n", 2);
-     *ch = '\r';
-   }*/
   return ret;
 }
-
+*/
 /**
  * @brief      { function_description }
  *
@@ -358,6 +356,7 @@ ssize_t
 process_serial(fd_t serial_fd) {
   char x[1024];
   ssize_t ret;
+  size_t bytes = 0;
   if((ret = read(serial_fd, x, 1)) > 0) {
 
     /*  if(x[0] == '\r' || x[0] == '\n')
@@ -389,9 +388,10 @@ process_serial(fd_t serial_fd) {
       io_close(serial_fd);
     }
   }
+
   return ret;
 }
-
+#define max(a, b) ((a) > (b) ? (a) : (b))
 /**
  * @brief      { function_description }
  *
@@ -404,10 +404,41 @@ process_loop(fd_t serial_fd, int64 timeout) {
   char x[1024];
   char ch;
   ssize_t ret;
+  int queue = 0, sent = 0;
   tai6464 t, deadline, msecs, diff;
   taia_now(&t);
   taia_uint(&msecs, timeout / 1000);
   msecs.nano = (timeout % 1000) * 1000000;
+
+  buffer_free(&send_buf);
+  buffer_free(&term_buf);
+  buffer_write_fd(&send_buf, serial_fd);
+  buffer_read_fd(&term_buf, STDIN_FILENO);
+
+  io_fd(serial_fd);
+  io_nonblock(serial_fd);
+  io_wantread(serial_fd);
+
+  io_fd(STDIN_FILENO);
+  io_nonblock(STDIN_FILENO);
+  io_wantread(STDIN_FILENO);
+
+  if(send_file) {
+    size_t n;
+    char* x;
+
+    if((x = mmap_read(send_file, &n))) {
+      buffer_init_free(&send_buf, (buffer_op_proto*)&write, serial_fd, alloc_zero(max(n, 1024)), max(n, 1024));
+      buffer_put(&send_buf, x, n);
+      mmap_unmap(x, n);
+    }
+
+    io_wantwrite(serial_fd);
+    queue = 1;
+  } else {
+    buffer_write_fd(&send_buf, serial_fd);
+  }
+
   for(;;) {
     taia_now(&t);
     taia_add(&deadline, &t, &msecs);
@@ -418,12 +449,17 @@ process_loop(fd_t serial_fd, int64 timeout) {
       wait_msecs = 0;
     fd_t read_fd, write_fd;
     //
-    // io_wantread(serial_fd);
-    /* if(wait_msecs > 0) {
-      buffer_puts(buffer_2, "wait msecs: ");
-      buffer_putlonglong(buffer_2, wait_msecs);
-      buffer_putnlflush(buffer_2);
-    } */
+    /*
+       io_wantread(STDIN_FILENO);*/
+
+    io_wantread(serial_fd);
+#ifdef DEBUG_OUTPUT
+    buffer_puts(buffer_2, "wait until ");
+    buffer_putlonglong(buffer_2, wait_msecs);
+    buffer_putnlflush(buffer_2);
+
+    io_dump(buffer_2);
+#endif
     if((ret = io_waituntil2(wait_msecs)) < 0) {
       errmsg_warnsys("wait error: ", 0);
       break;
@@ -432,12 +468,25 @@ process_loop(fd_t serial_fd, int64 timeout) {
     }
     while((write_fd = io_canwrite()) != -1) {
       if(write_fd == serial_fd) {
-        if(ch == '\r' || ch == '\n')
-          write(serial_fd, "\r\n", 2);
-        else
-          write(serial_fd, &ch, 1);
+        ssize_t bytes;
+        /* if(queue) */ {
+          bytes = send_buf.p;
+          buffer_flush(&send_buf);
 
-        io_dontwantwrite(serial_fd);
+          if(!sent) {
+#ifdef DEBUG_OUTPUT
+            buffer_puts(buffer_2, "Sent ");
+            buffer_putulong(buffer_2, bytes);
+            buffer_putsflush(buffer_2, " bytes\n");
+#endif
+            sent = 1;
+          }
+
+          /* if(send_buf.p == 0) */ {
+            queue = 0;
+            io_dontwantwrite(serial_fd);
+          }
+        }
       }
     }
     while((read_fd = io_canread()) != -1) {
@@ -448,8 +497,30 @@ process_loop(fd_t serial_fd, int64 timeout) {
         }
       }
       if(read_fd == term_buf.fd) {
-        if((ret = term_process(&ch)) > 0)
+        size_t bytes = 0;
+        while((ret = read(STDIN_FILENO, &ch, 1)) > 0) {
+#ifdef DEBUG_OUTPUT
+          buffer_puts(buffer_2, "Read char '");
+          buffer_putulong(buffer_2, (unsigned long)(unsigned char)ch);
+          buffer_putsflush(buffer_2, "'\n");
+#endif
+          if(ch == '\r' || ch == '\n')
+            buffer_puts(&send_buf, "\r\n");
+          else
+            buffer_putc(&send_buf, ch);
+          bytes++;
+        }
+        if(bytes && queue == 0) {
+          queue = 1;
           io_wantwrite(serial_fd);
+
+#ifdef DEBUG_OUTPUT
+          buffer_puts(buffer_2, "Queued ");
+          buffer_putulong(buffer_2, bytes);
+          buffer_puts(buffer_2, " bytes to serial port");
+          buffer_putnlflush(buffer_2);
+#endif
+        }
       }
     }
     if(stralloc_length(&serial_buf)) {
@@ -472,7 +543,8 @@ usage(char* progname) {
   buffer_puts(buffer_1, "  --version                         print program version\n");
 
   buffer_puts(buffer_1, "  --verbose                         increase verbosity\n");
-  buffer_puts(buffer_1, "  --debug                           show verbose debug information\n");
+  buffer_puts(buffer_1, "  --send, -i FILE                   send file\n");
+  buffer_puts(buffer_1, "  --debug         +                  show verbose debug information\n");
   buffer_putnlflush(buffer_1);
 }
 
@@ -505,6 +577,7 @@ main(int argc, char* argv[]) {
   struct longopt opts[] = {
       {"help", 0, NULL, 'h'},
       {"verbose", 0, NULL, 'v'},
+      {"send", 1, NULL, 'i'},
       {"raw", 0, NULL, 'r'},
 
       {0, 0, 0, 0},
@@ -521,7 +594,7 @@ main(int argc, char* argv[]) {
   opterr = 0;
 
   for(;;) {
-    c = getopt_long(argc, argv, "hvr", opts, &index);
+    c = getopt_long(argc, argv, "hvri:", opts, &index);
     if(c == -1 || opterr /* || argv[optind] == 0 */)
       break;
     if(c == 0)
@@ -531,6 +604,7 @@ main(int argc, char* argv[]) {
 
       case 'h': usage(argv[0]); return 0;
       case 'v': verbose++; break;
+      case 'i': send_file = optarg; break;
       case 'r': rawmode = 1; break;
 
       default:
@@ -601,8 +675,6 @@ getopt_end:
     buffer_puts(buffer_2, portname);
     buffer_putnlflush(buffer_2);
     // buffer_read_fd(&serial, serial_fd);
-    io_fd(serial_fd);
-    io_wantread(serial_fd);
 
     // serial.op = &read;
     if((ret = process_loop(serial_fd, 30000)) > 0)

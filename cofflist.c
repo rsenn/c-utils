@@ -47,7 +47,7 @@ coff_print_func(buffer* b, void* coff, coff_symtab_entry* fn) {
   coff_section_header* shdr = coff_get_section(coff, aux->e.scnum);
 
   if(shdr == NULL)
-    return; 
+    return;
   range ln = coff_line_numbers(coff, shdr);
   coff_line_number* p;
   const char* strtab = coff_get_strtab(coff, NULL);
