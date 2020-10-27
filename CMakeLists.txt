@@ -35,8 +35,8 @@ endmacro(
   NAME
   DESC)
 
-debug_option(DEBUG_IO "Debug I/O code")
-debug_option(DEBUG_HTTP "Debug HTTP code")
+debug_option(IO "Debug I/O code")
+debug_option(HTTP "Debug HTTP code")
 
 if(DEBUG_IO)
   add_definitions(-DDEBUG_IO=1)
@@ -588,7 +588,7 @@ include(${CMAKE_SOURCE_DIR}/build/cmake/CheckInline.cmake)
 include(${CMAKE_SOURCE_DIR}/build/cmake/Profile.cmake)
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-  option(DEBUG_OUTPUT "Output verbose messages" OFF)
+  debug_option(OUTPUT "Output verbose messages")
   add_definitions(-D_DEBUG=1)
 
   if(DEBUG_OUTPUT)

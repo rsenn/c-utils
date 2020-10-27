@@ -21,7 +21,7 @@ int
 response_addbytes(response* resp, const char* buf, size_t len) {
   if(len > 65535 - resp->pos)
     return 0;
-  stralloc_catb(&resp->stra, buf, len);
+  stralloc_catb((stralloc*)resp, buf, len);
   return 1;
 }
 
@@ -56,7 +56,7 @@ response_addname(response* resp, const char* d) {
 
 int
 response_query(response* resp, const char* q, const char qtype[2], const char qclass[2]) {
-  stralloc_zero(&resp->stra);
+  stralloc_zero((stralloc*)resp);
   name.num = 0;
   if(!response_addbytes(resp, "\0\0\201\200\0\1\0\0\0\0\0\0", 12))
     return 0;
@@ -141,7 +141,7 @@ response_servfail(response* resp) {
 void
 response_id(response* resp, const char id[2]) {
   if(resp->pos < 2)
-    stralloc_ready(&resp->stra, 2);
+    stralloc_ready((stralloc*)resp, 2);
   byte_copy(resp->buf, 2, id);
 }
 

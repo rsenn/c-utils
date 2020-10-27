@@ -46,7 +46,7 @@ static strarray ports;
 // static fd_t term_buf.fd = 0;
 static buffer term_buf;
 static stralloc serial_buf;
-static int verbose, rawmode;
+static int verbose, rawmode, debugmode;
 static MAP_T port_map;
 static link_t* port_list;
 static jmp_buf context;
@@ -453,13 +453,13 @@ process_loop(fd_t serial_fd, int64 timeout) {
        io_wantread(STDIN_FILENO);*/
 
     io_wantread(serial_fd);
-#ifdef DEBUG_OUTPUT
-    buffer_puts(buffer_2, "wait until ");
-    buffer_putlonglong(buffer_2, wait_msecs);
-    buffer_putnlflush(buffer_2);
+    if(debugmode) {
+      buffer_puts(buffer_2, "wait until ");
+      buffer_putlonglong(buffer_2, wait_msecs);
+      buffer_putnlflush(buffer_2);
 
-    io_dump(buffer_2);
-#endif
+      io_dump(buffer_2);
+    }
     if((ret = io_waituntil2(wait_msecs)) < 0) {
       errmsg_warnsys("wait error: ", 0);
       break;
@@ -474,11 +474,11 @@ process_loop(fd_t serial_fd, int64 timeout) {
           buffer_flush(&send_buf);
 
           if(!sent) {
-#ifdef DEBUG_OUTPUT
-            buffer_puts(buffer_2, "Sent ");
-            buffer_putulong(buffer_2, bytes);
-            buffer_putsflush(buffer_2, " bytes\n");
-#endif
+            if(debugmode) {
+              buffer_puts(buffer_2, "Sent ");
+              buffer_putulong(buffer_2, bytes);
+              buffer_putsflush(buffer_2, " bytes\n");
+            }
             sent = 1;
           }
 
@@ -499,11 +499,11 @@ process_loop(fd_t serial_fd, int64 timeout) {
       if(read_fd == term_buf.fd) {
         size_t bytes = 0;
         while((ret = read(STDIN_FILENO, &ch, 1)) > 0) {
-#ifdef DEBUG_OUTPUT
-          buffer_puts(buffer_2, "Read char '");
-          buffer_putulong(buffer_2, (unsigned long)(unsigned char)ch);
-          buffer_putsflush(buffer_2, "'\n");
-#endif
+          if(debugmode) {
+            buffer_puts(buffer_2, "Read char '");
+            buffer_putulong(buffer_2, (unsigned long)(unsigned char)ch);
+            buffer_putsflush(buffer_2, "'\n");
+          }
           if(ch == '\r' || ch == '\n')
             buffer_puts(&send_buf, "\r\n");
           else
@@ -514,12 +514,12 @@ process_loop(fd_t serial_fd, int64 timeout) {
           queue = 1;
           io_wantwrite(serial_fd);
 
-#ifdef DEBUG_OUTPUT
-          buffer_puts(buffer_2, "Queued ");
-          buffer_putulong(buffer_2, bytes);
-          buffer_puts(buffer_2, " bytes to serial port");
-          buffer_putnlflush(buffer_2);
-#endif
+          if(debugmode) {
+            buffer_puts(buffer_2, "Queued ");
+            buffer_putulong(buffer_2, bytes);
+            buffer_puts(buffer_2, " bytes to serial port");
+            buffer_putnlflush(buffer_2);
+          }
         }
       }
     }
@@ -579,6 +579,7 @@ main(int argc, char* argv[]) {
       {"verbose", 0, NULL, 'v'},
       {"send", 1, NULL, 'i'},
       {"raw", 0, NULL, 'r'},
+      {"debug", 0, NULL, 'x'},
 
       {0, 0, 0, 0},
   };
@@ -594,7 +595,7 @@ main(int argc, char* argv[]) {
   opterr = 0;
 
   for(;;) {
-    c = getopt_long(argc, argv, "hvri:", opts, &index);
+    c = getopt_long(argc, argv, "hvri:x", opts, &index);
     if(c == -1 || opterr /* || argv[optind] == 0 */)
       break;
     if(c == 0)
@@ -606,6 +607,7 @@ main(int argc, char* argv[]) {
       case 'v': verbose++; break;
       case 'i': send_file = optarg; break;
       case 'r': rawmode = 1; break;
+      case 'x': debugmode = 1; break;
 
       default:
         buffer_puts(buffer_2, "WARNING: Invalid argument -");

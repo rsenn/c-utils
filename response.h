@@ -11,7 +11,7 @@
 extern int response_hidettl;
 
 typedef struct response {
-#if __STDC_VERSION__ >= 201103L
+#if __STDC_VERSION__ >= 201103L && !defined(__TINYC__)
   union {
     stralloc stra;
     struct {
@@ -19,7 +19,7 @@ typedef struct response {
       char* buf;
       size_t pos;
       size_t len;
-#if __STDC_VERSION__ >= 201103L
+#if __STDC_VERSION__ >= 201103L && !defined(__TINYC__)
     };
   };
 #endif
