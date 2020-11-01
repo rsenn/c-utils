@@ -23,11 +23,11 @@ debug_int(const char* name, int i) {
 }
 
 void
-debug_long(buffer* b, const char* name, long value) {
-  buffer_puts(b, name);
-  buffer_puts(b, ": ");
-  buffer_putlong(b, value);
-  buffer_putnlflush(b);
+debug_long( const char* name, long value) {
+  buffer_puts(buffer_2, name);
+  buffer_puts(buffer_2, ": ");
+  buffer_putlong(buffer_2, value);
+  buffer_putnlflush(buffer_2);
 }
 
 

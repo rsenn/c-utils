@@ -5,7 +5,7 @@ extern const char* debug_nl;
 
 void debug_byte(const char*, const char*, size_t);
 void debug_int(const char*, int);
-void debug_long(buffer* b, const char* name, long value);
+void debug_long(const char* name, long value);
 #ifdef STRALLOC_H
 void debug_sa(const char*, stralloc*);
 #endif
