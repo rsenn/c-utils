@@ -1,15 +1,16 @@
 #define _POSIX_C_SOURCE 1
 #define _GNU_SOURCE 1
-#include "serial.h"
-#include "serial.c"
+#include "lib/uint64.h"
+#include "lib/taia.h"
+#include "lib/tai.h"
+#include "lib/buffer.h"
+#include "lib/io.h"
 #include "lib/str.h"
 #include "lib/alloc.h"
 #include "lib/strlist.h"
 #include "lib/strarray.h"
-#include "lib/buffer.h"
 #include "lib/errmsg.h"
 #include "lib/uint64.h"
-#include "lib/io.h"
 #include "lib/ndelay.h"
 #include "lib/tai.h"
 #include "lib/taia.h"
@@ -18,8 +19,6 @@
 #include "lib/path.h"
 #include "lib/getopt.h"
 #include "lib/scan.h"
-#include "lib/taia.h"
-#include "lib/tai.h"
 #include "lib/slist.h"
 #include "lib/sig.h"
 #include "lib/charbuf.h"
@@ -29,6 +28,8 @@
 #include <ctype.h>
 #include <setjmp.h>
 #include "map.h"
+#include "serial.h"
+#include "serial.c"
 
 typedef struct port {
   struct taia time;
@@ -87,13 +88,16 @@ find_port(const char* name) {
 
 void
 remove_port(const char* name) {
-  struct link** it = find_port(name);
-  struct link* l = *it;
+  struct link** it;
 
-  *it = (*it)->next;
+  if((it = find_port(name))) {
+    struct link* l = *it;
 
-  free((char*)l->name);
-  alloc_free((void*)l);
+    *it = (*it)->next;
+
+    free((char*)l->name);
+    alloc_free((void*)l);
+  }
 }
 
 void
@@ -357,21 +361,11 @@ process_serial(fd_t serial_fd) {
   char x[1024];
   ssize_t ret;
   size_t bytes = 0;
-  if((ret = read(serial_fd, x, 1)) > 0) {
+  if((ret = read(serial_fd, x, sizeof(x))) > 0) {
 
-    /*  if(x[0] == '\r' || x[0] == '\n')
-        buffer_puts(buffer_1, "\r\n");
-      else*/
     buffer_put(buffer_1, x, ret);
-
     buffer_flush(buffer_1);
 
-    /*    stralloc_catb(&serial_buf, x, ret);
-        if(stralloc_contains(&serial_buf, "\n")) {
-          buffer_putsa(buffer_1, &serial_buf);
-          buffer_flush(buffer_1);
-          stralloc_zero(&serial_buf);
-        }*/
   } else if(ret == 0) {
     errmsg_warn("serial closed", 0);
     io_dontwantread(serial_fd);
@@ -453,7 +447,7 @@ process_loop(fd_t serial_fd, int64 timeout) {
        io_wantread(STDIN_FILENO);*/
 
     io_wantread(serial_fd);
-    if(debugmode) {
+    if(debugmode > 1) {
       buffer_puts(buffer_2, "wait until ");
       buffer_putlonglong(buffer_2, wait_msecs);
       buffer_putnlflush(buffer_2);
@@ -543,6 +537,7 @@ usage(char* progname) {
   buffer_puts(buffer_1, "  --version                         print program version\n");
 
   buffer_puts(buffer_1, "  --verbose                         increase verbosity\n");
+  buffer_puts(buffer_1, "  --baud, -b RATE                   baud rate\n");
   buffer_puts(buffer_1, "  --send, -i FILE                   send file\n");
   buffer_puts(buffer_1, "  --debug         +                  show verbose debug information\n");
   buffer_putnlflush(buffer_1);
@@ -577,6 +572,7 @@ main(int argc, char* argv[]) {
   struct longopt opts[] = {
       {"help", 0, NULL, 'h'},
       {"verbose", 0, NULL, 'v'},
+      {"baud", 1, NULL, 'b'},
       {"send", 1, NULL, 'i'},
       {"raw", 0, NULL, 'r'},
       {"debug", 0, NULL, 'x'},
@@ -595,7 +591,7 @@ main(int argc, char* argv[]) {
   opterr = 0;
 
   for(;;) {
-    c = getopt_long(argc, argv, "hvri:x", opts, &index);
+    c = getopt_long(argc, argv, "b:hvri:x", opts, &index);
     if(c == -1 || opterr /* || argv[optind] == 0 */)
       break;
     if(c == 0)
@@ -607,7 +603,8 @@ main(int argc, char* argv[]) {
       case 'v': verbose++; break;
       case 'i': send_file = optarg; break;
       case 'r': rawmode = 1; break;
-      case 'x': debugmode = 1; break;
+      case 'b': scan_uint(optarg, &baudrate); break;
+      case 'x': debugmode++; break;
 
       default:
         buffer_puts(buffer_2, "WARNING: Invalid argument -");
@@ -664,6 +661,9 @@ getopt_end:
     }
 
     buffer_puts(buffer_2, "portname: ");
+    buffer_putnlflush(buffer_2);
+    buffer_puts(buffer_2, "baud rate: ");
+    buffer_putulong(buffer_2, baudrate);
     buffer_putnlflush(buffer_2);
     serial_fd = serial_open(portname, baudrate);
     io_nonblock(serial_fd);

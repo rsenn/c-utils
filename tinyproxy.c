@@ -30,6 +30,7 @@
 #include "lib/wait.h"
 #include "lib/process.h"
 #include "map.h"
+#include "debug.h"
 #include <errno.h>
 #include <fcntl.h>
 #include <libgen.h>
@@ -633,9 +634,12 @@ sockbuf_check(socketbuf_t* sb) {
   io_entry* e = io_getentry(sb->sock);
 
   if(wantwrite) {
+#ifdef DEBUG_OUTPUT_
+
     buffer_puts(&log, "Socket want write ");
     buffer_putulong(&log, sb->sock);
     buffer_putnlflush(&log);
+#endif
     io_wantwrite(sb->sock);
   } else {
     io_wantread(sb->sock);

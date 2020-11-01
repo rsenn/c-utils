@@ -52,55 +52,8 @@ dirs_t dirs;
 tools_t tools;
 config_t cfg = {.mach = {0, 0}, .sys = {0, 0}, .chip = {0, 0, 0}, .build_type = 1, .lang = LANG_CXX};
 
-static const char* debug_nl = "\n";
-
 #ifdef _DEBUG
-/**
- * @brief debug_sa
- * @param name
- * @param sa
- */
-void
-debug_sa(const char* name, stralloc* sa) {
-  buffer_puts(buffer_2, name);
-  buffer_puts(buffer_2, ": ");
-  buffer_putsa(buffer_2, sa);
-  buffer_putsflush(buffer_2, debug_nl);
-}
-
-void
-debug_stra(const char* name, const strarray* stra) {
-  char** s;
-  buffer_puts(buffer_2, name);
-  buffer_puts(buffer_2, "[\n");
-  strarray_foreach(stra, s) {
-    buffer_puts(buffer_2, "  ");
-    buffer_puts(buffer_2, *s);
-    buffer_putc(buffer_2, '\n');
-  }
-  buffer_putsflush(buffer_2, "]\n");
-}
-
-/**
- * @brief debug_str
- * @param name
- * @param s
- */
-void
-debug_str(const char* name, const char* s) {
-  buffer_puts(buffer_2, name);
-  buffer_puts(buffer_2, s ? ": '" : ": ");
-  buffer_puts(buffer_2, s ? s : "NULL");
-  buffer_putsflush(buffer_2, s ? "'\n" : "\n");
-}
-
-void
-debug_byte(const char* name, const char* x, size_t n) {
-  buffer_puts(buffer_2, name);
-  buffer_puts(buffer_2, ": ");
-  buffer_put(buffer_2, x, n);
-  buffer_putsflush(buffer_2, debug_nl);
-}
+#include "debug.h"
 
 void
 debug_target(const target* t) {
@@ -111,42 +64,6 @@ debug_target(const target* t) {
   buffer_putset(buffer_2, &t->prereq, " ", 1);
   buffer_puts(buffer_2, "\nrecipe: ");
   buffer_putsa(buffer_2, &t->recipe);
-  buffer_putsflush(buffer_2, debug_nl);
-}
-
-/**
- * @brief debug_sl
- * @param name
- * @param l
- */
-void
-debug_sl(const char* name, const strlist* l, const char* sep) {
-  size_t pos, n;
-  const char* x;
-  stralloc tmp;
-  stralloc_init(&tmp);
-  strlist_foreach(l, x, n) {
-    if(tmp.len)
-      stralloc_cats(&tmp, sep ? sep : "\n");
-    if((pos = byte_rchr(x, n, '/')) < n || (pos = byte_rchr(x, n, '\\')) < n)
-      stralloc_catb(&tmp, x + pos + 1, n - pos - 1);
-    else
-      stralloc_catb(&tmp, x, n);
-  }
-  debug_sa(name, &tmp);
-  stralloc_free(&tmp);
-}
-
-/**
- * @brief debug_int
- * @param name
- * @param i
- */
-void
-debug_int(const char* name, int i) {
-  buffer_puts(buffer_2, name);
-  buffer_puts(buffer_2, ": ");
-  buffer_putlong(buffer_2, i);
   buffer_putsflush(buffer_2, debug_nl);
 }
 
@@ -180,14 +97,6 @@ concat_quoted(stralloc* sa, const char* x, size_t len) {
     j += k + 1;
   }
 }
-
-void
-debug_set(const char* name, const set_t* s, const char* sep) {
-  buffer_putm_internal(buffer_2, name, ": ", 0);
-  buffer_putset(buffer_2, s, sep, str_len(sep));
-  buffer_putsflush(buffer_2, debug_nl);
-}
-
 int
 mkdir_sa(const stralloc* dir, int mode) {
   stralloc sa;
@@ -752,7 +661,7 @@ void
 includes_add(const char* dir) {
   static stralloc abs;
   stralloc_zero(&abs);
-  path_absolute(dir, &abs);
+  path_canonical(dir, &abs);
   if(strlist_push_unique_sa(&include_dirs, &abs)) {
 #ifdef DEBUG_OUTPUT
     buffer_puts(buffer_2, "Added to include_dirs: ");
@@ -1963,6 +1872,12 @@ sourcedir_addsource(const char* source, strarray* srcs) {
   ++srcdir->n_sources;
 
   if(!path_exists(source)) {
+#ifdef DEBUG_OUTPUT
+    buffer_puts(buffer_2, "Path doesn't exist: ");
+    buffer_puts(buffer_2, source);
+    buffer_putnlflush(buffer_2);
+#endif
+    return;
 
     asm("int3");
   }
@@ -5111,9 +5026,10 @@ main(int argc, char* argv[]) {
     stralloc_replacec(&tmp.sa, '.', '\0');
 
     strlist_foreach(&tmp, s, n) { set_add(&toks, s, n); }
-
+#ifdef DEBUG_OUTPUT_
     buffer_puts(buffer_2, "toks: ");
     buffer_putset(buffer_2, &toks, " ", 1);
+#endif
   }
 
   {
@@ -5404,7 +5320,7 @@ main(int argc, char* argv[]) {
     strarray_sort(&sources, &sources_sort);
   }
 
-#ifdef DEBUG_OUTPUT
+#ifdef DEBUG_OUTPUT_
   buffer_puts(buffer_2, "strarray sources:");
   strarray_dump(buffer_2, &sources);
   buffer_putnlflush(buffer_2);

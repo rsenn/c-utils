@@ -1387,7 +1387,7 @@ target_link_libraries(process wait errmsg)
 target_link_libraries(ihex scan byte)
 target_link_libraries(uint32 taia tai)
 
-set(genmakefile_SOURCES mplab.c ini.c ini.h genmakefile.h)
+set(genmakefile_SOURCES mplab.c ini.c ini.h genmakefile.h debug.c debug.h)
 
 if(OPENSSL_LIB_DIR)
   set(CMAKE_EXE_LINKER_FLAGS "-L${OPENSSL_LIB_DIR}")
