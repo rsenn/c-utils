@@ -938,7 +938,8 @@ server_tar_files(const char* cmd, const stralloc* archive, strlist* files) {
 }
 void
 server_exit(int code) {
-  server_finalize();
+  if(dump)
+    server_finalize();
   buffer_putnlflush(buffer_2);
   exit(code);
 }
@@ -982,9 +983,7 @@ server_loop() {
     }
     io_waituntil2(1000 * 100);
 #ifdef DEBUG_OUTPUT_
-    buffer_puts(buffer_2, "Loop #");
-    buffer_putulonglong(buffer_2, iteration++);
-    buffer_putnlflush(buffer_2);
+    debug_long("Loop #", iteration++);
 #endif
 #ifdef DEBUG_OUTPUT_
     dump_io();
@@ -1236,8 +1235,10 @@ main(int argc, char* argv[]) {
     }
   }
 
-  if(!(server.port && remote.port))
-    return SYNTAX_ERROR;
+  if(!(server.port && remote.port)) {
+    usage(argv[0]);
+    return -SYNTAX_ERROR;
+  }
 
   if(server.port < 0) {
     usage(argv[0]);

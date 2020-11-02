@@ -68,7 +68,7 @@ ssize_t buffer_putsflush(buffer*, const char* x);
 int buffer_putm_internal(buffer* b, ...);
 int buffer_putm_internal_flush(buffer* b, ...);
 
-#ifdef __BORLANDC__
+#if defined(__BORLANDC__) || defined(__LCC__)
 #define buffer_putm(b, args) buffer_putm_internal(b, args, (char*)0)
 #define buffer_putmflush(b, args) buffer_putm_internal_flush(b, args, (char*)0)
 #else
@@ -198,8 +198,8 @@ int buffer_putxlong0(buffer*, unsigned long l, int pad);
 int buffer_skipspace(buffer* b);
 int buffer_skip_pred(buffer*, int (*pred)(int));
 
-int buffer_put_escaped(buffer*, const char* x, size_t len, size_t (*)(char*, int));
-int buffer_puts_escaped(buffer*, const char* x, size_t (*)(char*, int));
+int buffer_put_escaped(buffer*, const char* x, size_t len, size_t (*)(char*, unsigned int));
+int buffer_puts_escaped(buffer*, const char* x, size_t (*)(char*, unsigned int));
 
 int buffer_freshen(buffer* b);
 

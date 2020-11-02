@@ -5,6 +5,7 @@
 #include "lib/buffer.h"
 #include "genmakefile.h"
 #include "map.h"
+#include "debug.h"
 #include "mplab.h"
 #include "lib/unix.h"
 #include "lib/sig.h"

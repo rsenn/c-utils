@@ -23,13 +23,12 @@ debug_int(const char* name, int i) {
 }
 
 void
-debug_long( const char* name, long value) {
+debug_long(const char* name, long value) {
   buffer_puts(buffer_2, name);
   buffer_puts(buffer_2, ": ");
   buffer_putlong(buffer_2, value);
   buffer_putnlflush(buffer_2);
 }
-
 
 void
 debug_str(const char* name, const char* s) {
@@ -47,7 +46,6 @@ debug_sa(const char* name, stralloc* sa) {
   buffer_putnlflush(buffer_2);
 }
 
-
 void
 debug_set(const char* name, const set_t* s, const char* sep) {
   buffer_putm_internal(buffer_2, name, ": ", 0);
@@ -55,33 +53,36 @@ debug_set(const char* name, const set_t* s, const char* sep) {
   buffer_putsflush(buffer_2, debug_nl);
 }
 
-
 void
 debug_sl(const char* name, const strlist* l, const char* sep) {
   size_t pos, n;
   const char* x;
-  stralloc tmp;
-  stralloc_init(&tmp);
+  buffer_puts(buffer_2, name);
+  buffer_puts(buffer_2, ":\n  ");
   strlist_foreach(l, x, n) {
-    if(tmp.len)
-      stralloc_cats(&tmp, sep ? sep : "\n");
-    if((pos = byte_rchr(x, n, '/')) < n || (pos = byte_rchr(x, n, '\\')) < n)
-      stralloc_catb(&tmp, x + pos + 1, n - pos - 1);
-    else
-      stralloc_catb(&tmp, x, n);
+    if(n)
+      buffer_puts(buffer_2, sep);
+    buffer_puts(buffer_2, "#");
+    buffer_putulong(buffer_2, n++);
+    buffer_puts(buffer_2, ": ");
+    buffer_put(buffer_2, x, n);
   }
-  debug_sa(name, &tmp);
-  stralloc_free(&tmp);
+  buffer_putnlflush(buffer_2);
 }
 
 void
-debug_strarray(const char* name, strarray* stra) {
-  stralloc sa;
-  stralloc_init(&sa);
-  strarray_joins(stra, &sa, ",\n  ");
+debug_strarray(const char* name, const strarray* stra) {
+  char** p;
+  size_t n = 0;
   buffer_puts(buffer_2, name);
   buffer_puts(buffer_2, ":\n  ");
-  buffer_putsa(buffer_2, &sa);
+  strarray_foreach(stra, p) {
+    if(n)
+      buffer_puts(buffer_2, ", ");
+    buffer_puts(buffer_2, "#");
+    buffer_putulong(buffer_2, n++);
+    buffer_puts(buffer_2, ": ");
+    buffer_puts(buffer_2, *p ? *p : "(null)");
+  }
   buffer_putnlflush(buffer_2);
-  stralloc_free(&sa);
 }

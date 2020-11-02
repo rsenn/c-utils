@@ -33,8 +33,7 @@ imult64(int64 a, int64 b, int64* c) {
 
 #else
 
-#if defined(__GNUC__) && (defined(__x86_64__) || defined(__ia64__) || defined(__powerpc64__) || defined(__alpha__) ||  \
-                          defined(__mips64__) || defined(__sparc64__))
+#if defined(HAVE_INT128)
 
 int
 imult64(int64 a, int64 b, int64* c) {

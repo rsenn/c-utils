@@ -231,6 +231,7 @@ else(HAVE___INLINE__)
 endif(HAVE___INLINE__)
 
 check_compile(HAVE_UINT128 "__uint128_t tmp;\n")
+check_compile(HAVE_INT128 "__int128_t tmp;\n")
 
 check_compile(HAVE_ALLOCA "#include <stdlib.h>\n#ifdef A\n#include <alloca.h>\n#else\n#include <malloc.h>\n#endif\n\nint\nmain() {\n  char* c = alloca(23);\n  (void)c;\n  return 0;\n}\n")
 

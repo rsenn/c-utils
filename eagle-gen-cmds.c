@@ -1181,13 +1181,19 @@ print_rect(buffer* b, const char* name, const rect* r) {
 
 void
 print_bounds(buffer* b, const rect r, const char* sep) {
-  const xy point[4] = {vec(r.x1, r.y1), vec(r.x2, r.y1), vec(r.x2, r.y2), vec(r.x1, r.y2)};
-
-  const wire w[4] = {line(point[0], point[1]),
-                     line(point[1], point[2]),
-                     line(point[2], point[3]),
-                     line(point[3], point[0])};
+  xy point[4];
+  wire w[4];
   int i;
+
+  point[0] = vec(r.x1, r.y1);
+  point[1] = vec(r.x2, r.y1);
+  point[2] = vec(r.x2, r.y2);
+  point[3] = vec(r.x1, r.y2);
+
+  w[0] = line(point[0], point[1]);
+  w[1] = line(point[1], point[2]);
+  w[2] = line(point[2], point[3]);
+  w[3] = line(point[3], point[0]);
 
   for(i = 0; i < 4; i++) {
     if(i > 0)

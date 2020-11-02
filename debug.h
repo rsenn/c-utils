@@ -14,11 +14,10 @@ void debug_set(const char*, const set_t*, const char*);
 #endif
 #ifdef STRLIST_H
 
-void
-debug_sl(const char* name, const strlist* l, const char* sep);
+void debug_sl(const char* name, const strlist* l, const char* sep);
 #endif
 #ifdef STRARRAY_H
-void debug_strarray(const char*, strarray*);
+void debug_strarray(const char*, const strarray*);
 #endif
 
 #endif

@@ -10,13 +10,13 @@
 extern "C" {
 #endif
 
-#pragma pack(push, 1)
+/*#pragma pack(push, 1)*/
 typedef struct __unaligned {
   uint8 type;
   uint16 length;
 }
 omf_record;
-#pragma pack(pop)
+/*#pragma pack(pop)*/
 
 #define OMF_LNAME_FLAT 0x01  // Default group name
 #define OMF_LNAME_CODE 0x02  // Default class for code

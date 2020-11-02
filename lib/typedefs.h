@@ -63,7 +63,6 @@ typedef ptrdiff_t ssize_t;
 #if !defined(_SSIZE_T_DEFINED) && !defined(_SSIZE_T_)
 #define _SSIZE_T_DEFINED 1
 #define _SSIZE_T_ 1
-#warning ssize_T
 typedef long ssize_t;
 #endif
 

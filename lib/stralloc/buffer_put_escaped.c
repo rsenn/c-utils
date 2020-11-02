@@ -14,7 +14,7 @@ escaped_pred(int c) {
 }*/
 
 int
-buffer_put_escaped(buffer* b, const char* x, size_t len, size_t (*escape)(char*, int)) {
+buffer_put_escaped(buffer* b, const char* x, size_t len, size_t (*escape)(char*, unsigned int)) {
   int ret;
   stralloc e;
   stralloc_init(&e);

@@ -228,8 +228,7 @@ extern int close();
 #define DEBUG_MSG(msg, fd)
 #endif
 
-#ifdef HAVE_SYSCALL
-#warning "sys_write"
+#if defined(HAVE_SYSCALL) && !WINDOWS
 #include <sys/syscall.h>
 
 static inline ssize_t
