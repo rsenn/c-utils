@@ -18,7 +18,12 @@ option(USE_BZIP "bzip2 compression" ON)
 option(USE_ZLIB "zlib compression" ON)
 option(USE_SSL "ssl encryption" ON)
 
-option(USE_SELECT "Use select() syscall" ON)
+if(WIN32 OR WINDOWS)
+  option(USE_SELECT "Use select() syscall" ON)
+else(WIN32 OR WINDOWS)
+option(USE_SELECT "Use select() syscall" OFF)
+endif(WIN32 OR WINDOWS)
+
 #[[option(USE_POLL "Use poll() syscall" OFF)
 option(USE_EPOLL "Use epoll() syscall" OFF)]]
 option(BUILD_SHARED_LIBS "Build shared libs" ON)

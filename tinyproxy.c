@@ -406,6 +406,7 @@ connection_new(fd_t sock, char addr[16], uint16 port) {
   c->client.sock = sock;
   c->client.port = port;
   c->client.af = server.af;
+  byte_zero(c->client.addr, 16);
   byte_copy(c->client.addr, server.af == AF_INET6 ? 16 : 4, addr);
 
   return c;
@@ -602,7 +603,7 @@ sockbuf_fmt_addr(socketbuf_t* sb, char* dest, char sep) {
     else
       n = fmt_hexb(dest, sb->addr, 4) /*||  fmt_ip4(dest, sb->addr)*/;
     if(sb->af == AF_INET6 && byte_equal(dest, 6, "::ffff"))
-      n = fmt_hexb(dest, sb->addr, 4);
+      n = fmt_hexb(dest, &sb->addr[12], 4);
   }
   dest[n++] = sep ? sep : ':';
   n += fmt_xlong0(&dest[n], sb->port, 4);
@@ -660,7 +661,7 @@ sockbuf_log_data(socketbuf_t* sb, bool send, char* x, ssize_t len) {
     }
     if(!line_buffer)
       end = n;
-
+#ifdef DEBUG_OUTPUT_
     buffer_puts(&log, send ? "Sent " : "Received ");
     if(line_buffer) {
       buffer_puts(&log, end == n ? "data" : "line");
@@ -673,7 +674,7 @@ sockbuf_log_data(socketbuf_t* sb, bool send, char* x, ssize_t len) {
     buffer_puts(&log, " ");
     sockbuf_put_addr(&log, sb);
     buffer_puts(&log, " '");
-
+#endif
     if(line_buffer) {
       size_t i;
       for(i = 0; i < n; i++) {
@@ -692,6 +693,7 @@ sockbuf_log_data(socketbuf_t* sb, bool send, char* x, ssize_t len) {
 
     pos = log.p;
 
+#ifdef DEBUG_OUTPUT_
     (escape ? buffer_put_escaped(&log, x, maxlen > 0 && maxlen < end ? maxlen : end, &fmt_escapecharshell)
             : buffer_put(&log, x, maxlen > 0 && maxlen < end ? maxlen : end));
 
@@ -705,7 +707,7 @@ sockbuf_log_data(socketbuf_t* sb, bool send, char* x, ssize_t len) {
         log.p = max_length;
     }
     buffer_putnlflush(&log);
-
+#endif
     x += n;
     len -= n;
   }
@@ -1063,11 +1065,13 @@ server_loop() {
         char addr[16];
         uint16 port;
         socklen_t addrlen = sizeof(addr);
-        sock = server.af ? socket_accept4(server_sock, addr, &port) : socket_accept6(server_sock, addr, &port, 0);
+        sock = server.af == AF_INET ? socket_accept4(server_sock, addr, &port)
+                                    : socket_accept6(server_sock, addr, &port, 0);
         if(sock == -1) {
           errmsg_warn("Accept error: ", strerror(errno), 0);
           exit(2);
         }
+        server.af == AF_INET ? socket_remote4(sock, addr, &port) : socket_remote6(sock, addr, &port, 0);
         socket_accept(sock, addr, port);
         connections_processed++;
 

@@ -84,7 +84,7 @@
 
 static void print_strarray(buffer* b, array* a);
 static int fnmatch_strarray(buffer* b, array* a, const char* string, int flags);
-static strlist exclude_masks;
+static strlist exclude_masks, include_masks;
 static char opt_separator = DIRSEP_C;
 
 static int opt_list = 0, opt_numeric = 0, opt_relative = 0, opt_deref = 0, opt_samedev = 1, opt_crc = 0;
@@ -614,7 +614,7 @@ list_dir_internal(stralloc* dir, char type, long depth) {
   int is_dir, is_symlink;
   size_t len;
   uint32 crc;
-  const char* exclude;
+  const char* pattern;
 #if !WINDOWS_NATIVE
   static dev_t root_dev;
 #endif
@@ -732,10 +732,23 @@ list_dir_internal(stralloc* dir, char type, long depth) {
       s += 2;
     }
 
-    strlist_foreach_s(&exclude_masks, exclude) {
-      int has_slash = !!exclude[str_chr(exclude, '/')];
+    if(strlist_count(&include_masks) > 0) {
+      match = 0;
+      strlist_foreach_s(&include_masks, pattern) {
+        int has_slash = !!pattern[str_chr(pattern, '/')];
+        if(fnmatch(pattern, has_slash ? s : name, FNM_PATHNAME) == 0) {
+          match = 1;
+          break;
+        }
+      }
+      if(!match)
+        continue;
+    }
 
-      if(fnmatch(exclude, has_slash ? s : name, FNM_PATHNAME) == 0) {
+    match = 0;
+    strlist_foreach_s(&exclude_masks, pattern) {
+      int has_slash = !!pattern[str_chr(pattern, '/')];
+      if(fnmatch(pattern, has_slash ? s : name, FNM_PATHNAME) == 0) {
         match = 1;
         break;
       }
@@ -859,6 +872,7 @@ usage(char* argv0) {
                        "  -n, --numeric             numeric user/group\n",
                        "  -r, --relative            relative path\n",
                        "  -o, --output     FILE     write output to FILE\n",
+                       "  -î, --include    PATTERN  include entries matching PATTERN\n",
                        "  -x, --exclude    PATTERN  exclude entries matching PATTERN\n",
                        "  -t, --time-style FORMAT   format time according to FORMAT\n",
                        "  -m, --min-size   BYTES    minimum file size\n",
@@ -891,6 +905,7 @@ main(int argc, char* argv[]) {
     {"numeric", 0, &opt_numeric, 1},
     {"relative", 0, &opt_relative, 1},
     {"output", 1, 0, 'o'},
+    {"include", 1, 0, 'i'},
     {"exclude", 1, 0, 'x'},
     {"time-style", 1, 0, 't'},
     {"dereference", 0, &opt_deref, 1},
@@ -913,7 +928,7 @@ main(int argc, char* argv[]) {
   strlist_init(&exclude_masks, '\0');
 
   for(;;) {
-    c = getopt_long(argc, argv, "hlLnro:x:t:m:cd:f:CD", opts, &index);
+    c = getopt_long(argc, argv, "hlLnro:i:x:t:m:cd:f:CD", opts, &index);
     if(c == -1)
       break;
     if(c == 0)
@@ -922,6 +937,7 @@ main(int argc, char* argv[]) {
     switch(c) {
       case 'h': usage(argv[0]); return 0;
       case 'x': strlist_push(&exclude_masks, optarg); break;
+      case 'i': strlist_push(&include_masks, optarg); break;
       case 'o': {
         buffer_1->fd = io_err_check(open_trunc(optarg));
         break;

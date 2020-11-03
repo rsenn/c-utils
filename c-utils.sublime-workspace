@@ -34,7 +34,8 @@
 			"file": "tinyproxy.c",
 			"settings":
 			{
-				"buffer_size": 32985,
+				"buffer_size": 33221,
+				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
 		},
@@ -140,8 +141,9 @@
 	"expanded_folders":
 	[
 		"/home/roman/Dokumente/Sources/c-utils",
+		"/home/roman/Dokumente/Sources/c-utils/ip",
 		"/home/roman/Dokumente/Sources/c-utils/lib",
-		"/home/roman/Dokumente/Sources/c-utils/lib/stralloc"
+		"/home/roman/Dokumente/Sources/c-utils/lib/socket"
 	],
 	"file_history":
 	[
@@ -297,6 +299,21 @@
 		"case_sensitive": true,
 		"find_history":
 		[
+			"New conn",
+			"sockbuf_put_addr",
+			"socket_accept",
+			"socket_accept$",
+			"socket_accept",
+			"connection_new",
+			"from \"",
+			"sockbuf_put_addr",
+			"sockbuf_fmt_addr",
+			"sockbuf_put_addr",
+			"\"Sent ",
+			"Sent ",
+			"_ERROR",
+			"SERVER_SOCKET_ERROR",
+			"SYNTAX_ERROR",
 			"server_finalize",
 			"dump",
 			"^main",
@@ -409,22 +426,7 @@
 			"type_size",
 			"check_size",
 			"CROSS",
-			"CMAKE_CROSS",
-			"cfg-msys",
-			"IPHLP",
-			"HAVE_N2I",
-			"TOOLCHAIN",
-			"HAVE.*MUX",
-			"MUX_METHOD",
-			"EPOLL",
-			"io_wanted_fds",
-			"USE_SELECT",
-			"wanted_fd",
-			"wanted",
-			"MUX_METHOD",
-			" POLL\\)",
-			"\\(POLL",
-			"POLL"
+			"CMAKE_CROSS"
 		],
 		"highlight": false,
 		"in_selection": false,
@@ -523,7 +525,7 @@
 						{
 							"color_scheme": "Packages/Outline/outline.hidden-tmTheme",
 							"current_file": "/home/roman/Dokumente/Sources/c-utils/tinyproxy.c",
-							"function_name_status_row": 87,
+							"function_name_status_row": 95,
 							"outline_rename_mode": false,
 							"symkeys":
 							[
@@ -804,112 +806,112 @@
 									9477
 								],
 								[
-									9836,
-									9853
+									9869,
+									9886
 								],
 								[
-									10039,
-									10054
+									10072,
+									10087
 								],
 								[
-									10283,
-									10302
+									10316,
+									10335
 								],
 								[
-									11472,
-									11483
+									11505,
+									11516
 								],
 								[
-									11668,
-									11680
+									11701,
+									11713
 								],
 								[
-									11860,
-									11871
+									11893,
+									11904
 								],
 								[
-									12588,
-									12602
+									12621,
+									12635
 								],
 								[
-									13530,
-									13543
+									13563,
+									13576
 								],
 								[
-									14299,
-									14311
+									14332,
+									14344
 								],
 								[
-									14461,
-									14477
+									14494,
+									14510
 								],
 								[
-									15015,
-									15031
+									15053,
+									15069
 								],
 								[
-									15156,
-									15169
+									15194,
+									15207
 								],
 								[
-									15315,
-									15328
+									15353,
+									15366
 								],
 								[
-									15845,
-									15861
+									15883,
+									15899
 								],
 								[
-									17476,
-									17496
+									17567,
+									17587
 								],
 								[
-									17974,
-									17987
+									18065,
+									18078
 								],
 								[
-									18366,
-									18379
+									18457,
+									18470
 								],
 								[
-									18573,
-									18584
+									18664,
+									18675
 								],
 								[
-									19078,
-									19093
+									19169,
+									19184
 								],
 								[
-									21317,
-									21333
+									21408,
+									21424
 								],
 								[
-									23093,
-									23104
+									23184,
+									23195
 								],
 								[
-									23202,
-									23215
+									23295,
+									23308
 								],
 								[
-									23342,
-									23356
+									23435,
+									23449
 								],
 								[
-									23507,
-									23518
+									23600,
+									23611
 								],
 								[
-									28767,
-									28790
+									28978,
+									29001
 								],
 								[
-									28914,
-									28919
+									29125,
+									29130
 								],
 								[
-									29763,
-									29767
+									29974,
+									29978
 								]
 							],
 							"symlist":
@@ -1015,7 +1017,7 @@
 							"tab_size": 3,
 							"translate_tabs_to_spaces": true
 						},
-						"translation.x": 0.0,
+						"translation.x": 1.0,
 						"translation.y": 9.0,
 						"zoom_level": 1.0
 					},
@@ -1065,26 +1067,26 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 32985,
+						"buffer_size": 33221,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								22691,
-								22691
+								14920,
+								14920
 							]
 						],
 						"settings":
 						{
-							"function_name_status_row": 920,
+							"function_name_status_row": 605,
 							"syntax": "Packages/C Improved/C Improved.tmLanguage",
 							"tab_size": 2,
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 15560.0,
+						"translation.y": 9865.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 0,
