@@ -248,7 +248,7 @@ int stralloc_catdouble(stralloc*, double d, int prec);
 size_t stralloc_chr(const stralloc* sa, char c);
 size_t stralloc_rchr(const stralloc* sa, char c);
 
-#if 1 //def _WCHAR_H
+#if 1 // def _WCHAR_H
 int stralloc_copywcb(stralloc* sa, const wchar_t* buf, size_t len);
 int stralloc_copywcs(stralloc* sa, const wchar_t* buf);
 

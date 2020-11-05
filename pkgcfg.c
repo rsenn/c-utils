@@ -45,13 +45,14 @@ typedef enum {
   LIST_ALL = 32,
   LIST_PATH = 64,
   LIST_FILE = 128,
-  ATLEAST_PKGCONFIG_VERSION = 1024
+  ATLEAST_PKGCONFIG_VERSION = 4096,
+  CHECK_EXISTS = 8192,
 } id;
 typedef enum { OP_EQ = 0, OP_NE, OP_GT, OP_GE, OP_LT, OP_LE } op_code;
 
-typedef enum { LIBS_ONLY_L = 64, LIBS_ONLY_OTHER = 128 } libs_mode_t;
+typedef enum { LIBS_ONLY_L = 64, LIBS_ONLY_LIBPATH = 128, LIBS_ONLY_OTHER = 256 } libs_mode_t;
 
-typedef enum { CFLAGS_ONLY_I = 256, CFLAGS_ONLY_OTHER = 512 } cflags_mode_t;
+typedef enum { CFLAGS_ONLY_I = 512, CFLAGS_ONLY_OTHER = 1024 } cflags_mode_t;
 
 static array cmds;
 
@@ -101,7 +102,7 @@ add_cmd(id cmd) {
 
 int
 get_field_index(int flags) {
-  if(flags & (PRINT_LIBS | LIBS_ONLY_L | LIBS_ONLY_OTHER))
+  if(flags & (PRINT_LIBS | LIBS_ONLY_L | LIBS_ONLY_LIBPATH | LIBS_ONLY_OTHER))
     return 2;
   if(flags & (PRINT_CFLAGS | CFLAGS_ONLY_I | CFLAGS_ONLY_OTHER))
     return 1;
@@ -890,8 +891,11 @@ pkg_conf(strarray* modules, id code, int mode) {
 
         strlist_foreach_s(&sl, s) {
           if((code == PRINT_LIBS) && libs_mode) {
-            int flag = (/* str_start(s, "-L") ||  */ str_start(s, "-l"));
-            if((libs_mode == LIBS_ONLY_L) ^ (flag != 0))
+            if((libs_mode == LIBS_ONLY_L) && !str_start(s, "-l"))
+              continue;
+            if((libs_mode == LIBS_ONLY_LIBPATH) && !str_start(s, "-L"))
+              continue;
+            if((libs_mode == LIBS_ONLY_OTHER) && str_case_start(s, "-l"))
               continue;
           }
           if((code == PRINT_CFLAGS) && libs_mode) {
@@ -914,6 +918,8 @@ pkg_conf(strarray* modules, id code, int mode) {
   if(!(mode & PKGCFG_EXISTS)) {
     buffer_putsa(buffer_1, &value);
     buffer_putnlflush(buffer_1);
+  } else {
+    return 1;
   }
   return 0;
 }
@@ -1088,6 +1094,7 @@ main(int argc, char* argv[]) {
       {"short-errors", 0, NULL, 'S'},
       {"exists", 0, NULL, 'E'},
       {"libs-only-l", 0, &libs_mode, LIBS_ONLY_L},
+      {"libs-only-L", 0, &libs_mode, LIBS_ONLY_LIBPATH},
       {"libs-only-other", 0, &libs_mode, LIBS_ONLY_OTHER},
       {"libs", 0, NULL, PRINT_LIBS},
       {"cflags-only-I", 0, &cflags_mode, CFLAGS_ONLY_I},
@@ -1159,6 +1166,7 @@ main(int argc, char* argv[]) {
       case 'L':
       case 'l': add_cmd(c == 'F' ? LIST_FILE : c == 'l' ? LIST_ALL : LIST_PATH); break;
       case LIBS_ONLY_L:
+      case LIBS_ONLY_LIBPATH:
       case LIBS_ONLY_OTHER:
         add_cmd(PRINT_LIBS);
         libs_mode = c;
@@ -1185,7 +1193,10 @@ main(int argc, char* argv[]) {
           int i = arg[2] == 'l' ? PRINT_LIBS : PRINT_CFLAGS;
           add_cmd(i);
           if(i == PRINT_LIBS)
-            libs_mode = arg[str_find(arg, "only")] ? (arg[str_find(arg, "other")] ? LIBS_ONLY_OTHER : LIBS_ONLY_L) : 0;
+            libs_mode = arg[str_find(arg, "only")] ? (arg[str_find(arg, "other")]
+                                                          ? LIBS_ONLY_OTHER
+                                                          : (arg[str_find(arg, "L")] ? LIBS_ONLY_LIBPATH : LIBS_ONLY_L))
+                                                   : 0;
           else
             cflags_mode =
                 arg[str_find(arg, "only")] ? (arg[str_find(arg, "other")] ? CFLAGS_ONLY_OTHER : CFLAGS_ONLY_I) : 0;
@@ -1262,11 +1273,14 @@ getopt_end:
     strlist_dump(buffer_2, &cmd.path);
     buffer_putnlflush(buffer_2);
   }
-  if(array_empty(&cmds)) {
+  if(mode & PKGCFG_EXISTS) {
+    add_cmd(CHECK_EXISTS);
+  } else if(array_empty(&cmds) && !(mode & PKGCFG_EXISTS)) {
     buffer_puts(buffer_2, "Must specify package names on the command line");
     buffer_putnlflush(buffer_2);
     return 1;
   }
+
   array_foreach_t(&cmds, code) {
 
     if(*code == LIST_ALL || *code == LIST_PATH || *code == LIST_FILE) {
@@ -1274,7 +1288,7 @@ getopt_end:
     } else if(optind < argc) {
       strarray modules;
       strarray_from_argv(argc - optind, (const char* const*)&argv[optind], &modules);
-      pkg_conf(&modules, *code, mode);
+      return pkg_conf(&modules, *code, mode);
     }
   }
 }
