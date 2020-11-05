@@ -2174,7 +2174,7 @@ add_program(
   uint16
   ${LIBMSWSOCK}
   ${LIBIPHLPAPI})
-set(dnscache_SOURCES
+set(nscache_SOURCES
     cache.c
     cache.h
     log.c

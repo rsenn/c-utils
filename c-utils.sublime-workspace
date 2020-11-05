@@ -22,11 +22,88 @@
 			}
 		},
 		{
+			"contents": "#include \"lib/env.h\"\n#include \"lib/scan.h\"\n#include \"lib/errmsg.h\"\n#include \"lib/ip4.h\"\n#include \"lib/ip6.h\"\n#include \"lib/uint16.h\"\n#include \"lib/uint64.h\"\n#include \"lib/socket.h\"\n#include \"lib/dns.h\"\n#include \"lib/taia.h\"\n#include \"lib/byte.h\"\n#include \"lib/fmt.h\"\n#include \"lib/iopause.h\"\n#include \"lib/alloc.h\"\n#include \"lib/ndelay.h\"\n#include \"lib/str.h\"\n\n#include <stdbool.h>\n#include <unistd.h>\n#include <sys/stat.h>\n\n#include \"response.h\"\n#include \"roots.h\"\n#include \"query.h\"\n#include \"cache.h\"\n#include \"log.h\"\n\n#define FATAL \"dnscache: fatal: \"\n\nstatic char fn[3 + IP6_FMT];\n\nstatic char sendaddr[16], bindaddr[16];\nstatic uint32 bindscope;\nstatic char buf[1024];\nuint64 numqueries = 0;\n\nstatic int udp53, tcp53;\n\n#define MAXUDP 200\n#define MAXTCP 20\n\niopause_fd io[3 + MAXUDP + MAXTCP];\niopause_fd *udp53io, *tcp53io;\n\nstruct tcpclient {\n  struct query q;\n  struct taia start;\n  struct taia timeout;\n  uint64 active; /* query number or 1, if active; otherwise 0 */\n  iopause_fd* io;\n  char ip[16]; /* send response to this address */\n  uint16 port; /* send response to this port */\n  uint32 scope_id;\n  char id[2];\n  int tcp; /* open TCP socket, if active */\n  int state;\n  char* buf; /* 0, or dynamically allocated of length len */\n  unsigned int len;\n  unsigned int pos;\n};\n\nstruct udpclient {\n  struct query q;\n  struct taia start;\n  uint64 active; /* query number, if active; otherwise 0 */\n  iopause_fd* io;\n  char ip[16];\n  uint16 port;\n  uint32 scope_id;\n  char id[2];\n};\n\nstatic struct udpclient u[MAXUDP];\nint uactive = 0;\n\nstatic struct tcpclient t[MAXTCP];\nint tactive = 0;\n\nunion {\n  char u8[128];\n  uint32 u32[32];\n} seed;\n\nint\ndnscache_okclient(char ip[16], bool ip6) {\n  struct stat st;\n  int i;\n\n  if(ip6 && ip6_isv4mapped(ip)) {\n    if(dnscache_okclient(&ip[12], false))\n      return 1;\n  }\n\n  fn[0] = 'i';\n  fn[1] = 'p';\n  fn[2] = '/';\n  fn[3 + (ip6 ? fmt_ip6 : fmt_ip4)(fn + 3, ip)] = 0;\n\n  for(;;) {\n    if(stat(fn, &st) == 0)\n      return 1;\n    /* treat temporary error as rejection */\n    i = str_rchr(fn, '.');\n    if(!fn[i])\n      return 0;\n    fn[i] = 0;\n  }\n}\n\nvoid\ndnscache_droproot(const char* fatal) {\n  const char* x;\n  unsigned long id;\n\n  x = env_get(\"ROOT\");\n  if(!x)\n    die(111, fatal, \"$ROOT not set\");\n  if(chdir(x) == -1)\n    diesys(111, fatal, \"unable to chdir to \", x, \": \");\n  if(chroot(\".\") == -1)\n    diesys(111, fatal, \"unable to chroot to \", x, \": \");\n\n  x = env_get(\"GID\");\n  if(!x)\n    die(111, fatal, \"$GID not set\");\n  scan_ulong(x, &id);\n  if(setgid((int)id) == -1)\n    diesys(111, fatal, \"unable to setgid: \");\n\n  x = env_get(\"UID\");\n  if(!x)\n    die(111, fatal, \"$UID not set\");\n  scan_ulong(x, &id);\n  if(setuid((int)id) == -1)\n    diesys(111, fatal, \"unable to setuid: \");\n}\n\nstatic int\npacketquery(char* buf, unsigned int len, char** q, char qtype[2], char qclass[2], char id[2]) {\n  unsigned int pos;\n  char header[12];\n\n  errno = EPROTO;\n  pos = dns_packet_copy(buf, len, 0, header, 12);\n  if(!pos)\n    return 0;\n  if(header[2] & 128)\n    return 0; /* must not respond to responses */\n  if(!(header[2] & 1))\n    return 0; /* do not respond to non-recursive queries */\n  if(header[2] & 120)\n    return 0;\n  if(header[2] & 2)\n    return 0;\n  if(byte_diff(header + 4, 2, \"\\0\\1\"))\n    return 0;\n\n  pos = dns_packet_getname(buf, len, pos, q);\n  if(!pos)\n    return 0;\n  pos = dns_packet_copy(buf, len, pos, qtype, 2);\n  if(!pos)\n    return 0;\n  pos = dns_packet_copy(buf, len, pos, qclass, 2);\n  if(!pos)\n    return 0;\n  if(byte_diff(qclass, 2, DNS_C_IN) && byte_diff(qclass, 2, DNS_C_ANY))\n    return 0;\n\n  byte_copy(id, 2, header);\n  return 1;\n}\n\nvoid\nudp_drop(int j) {\n  if(!u[j].active)\n    return;\n  log_querydrop(&u[j].active);\n  u[j].active = 0;\n  --uactive;\n}\n\nvoid\nudp_respond(int j) {\n  response* resp;\n  if(!u[j].active)\n    return;\n  resp = &u[j].q.response;\n  response_id(resp, u[j].id);\n  if(resp->pos > 512)\n    response_tc(resp);\n\n  response_send(resp, udp53, u[j].ip, u[j].port);\n  log_querydone(&u[j].active, u[j].ip, u[j].port, udp53, u[j].id, resp->pos);\n\n  u[j].active = 0;\n  --uactive;\n}\n\nvoid\nudp_new(void) {\n  int j, i, len;\n  struct udpclient* x;\n  char *q = 0, qtype[2], qclass[2];\n\n  for(j = 0; j < MAXUDP; ++j)\n    if(!u[j].active)\n      break;\n\n  if(j >= MAXUDP) {\n    j = 0;\n    for(i = 1; i < MAXUDP; ++i)\n      if(taia_less(&u[i].start, &u[j].start))\n        j = i;\n    errno = ETIMEDOUT;\n    udp_drop(j);\n  }\n\n  x = u + j;\n  taia_now(&x->start);\n\n  if((len = socket_recv6(udp53, buf, sizeof buf, x->ip, &x->port, &x->scope_id)) == -1)\n    return;\n  if(len >= sizeof buf)\n    return;\n  if(x->port < 1024)\n    if(x->port != 53)\n      return;\n  if(!dnscache_okclient(x->ip, true))\n    return;\n\n  if(!packetquery(buf, len, &q, qtype, qclass, x->id))\n    return;\n\n  x->active = ++numqueries;\n  ++uactive;\n  log_query(&x->active, x->ip, x->port, udp53, x->id, q, qtype);\n\n  switch(query_start(&x->q, q, qtype, qclass, sendaddr)) {\n    case -1: udp_drop(j); return;\n    case 1: udp_respond(j);\n  }\n}\n\n/*\nstate 1: buf 0; normal state at beginning of TCP connection\nstate 2: buf 0; have read 1 byte of query packet length into len\nstate 3: buf allocated; have read pos bytes of buf\nstate 0: buf 0; handling query in q\nstate -1: buf allocated; have written pos bytes\n*/\n\nvoid\ntcp_free(int j) {\n  if(!t[j].buf)\n    return;\n  alloc_free(t[j].buf);\n  t[j].buf = 0;\n}\n\nvoid\ntcp_timeout(int j) {\n  struct taia now;\n  if(!t[j].active)\n    return;\n  taia_now(&now);\n  taia_uint(&t[j].timeout, 10);\n  taia_add(&t[j].timeout, &t[j].timeout, &now);\n}\n\nvoid\ntcp_close(int j) {\n  if(!t[j].active)\n    return;\n  tcp_free(j);\n  errno = 0;\n  log_tcpclose(t[j].ip, t[j].port, t[j].tcp);\n  close(t[j].tcp);\n\n  t[j].active = 0;\n  --tactive;\n}\n\nvoid\ntcp_drop(int j) {\n  log_querydrop(&t[j].active);\n  errno = EPIPE;\n  tcp_close(j);\n}\n\nvoid\ntcp_respond(int j) {\n  response* resp;\n  if(!t[j].active)\n    return;\n  resp = &t[j].q.response;\n  log_querydone(&t[j].active, t[j].ip, t[j].port, t[j].tcp, t[j].id, resp->pos);\n  response_id(resp, t[j].id);\n  t[j].len = resp->pos + 2;\n  tcp_free(j);\n  t[j].buf = alloc(resp->pos + 2);\n  if(!t[j].buf) {\n    tcp_close(j);\n    return;\n  }\n  uint16_pack_big(t[j].buf, resp->pos);\n  byte_copy(t[j].buf + 2, resp->pos, resp->buf);\n  t[j].pos = 0;\n  t[j].state = -1;\n}\n\nvoid\ntcp_rw(int j) {\n  struct tcpclient* x;\n  char ch;\n  static char* q = 0;\n  char qtype[2];\n  char qclass[2];\n  int r;\n\n  x = t + j;\n  if(x->state == -1) {\n    r = write(x->tcp, x->buf + x->pos, x->len - x->pos);\n    if(r <= 0) {\n      tcp_close(j);\n      return;\n    }\n    x->pos += r;\n    if(x->pos == x->len) {\n      tcp_free(j);\n      x->state = 1; /* could drop connection immediately */\n    }\n    return;\n  }\n\n  r = read(x->tcp, &ch, 1);\n  if(r == 0) {\n    errno = EPIPE;\n    tcp_close(j);\n    return;\n  }\n  if(r < 0) {\n    tcp_close(j);\n    return;\n  }\n\n  if(x->state == 1) {\n    x->len = (unsigned char)ch;\n    x->len <<= 8;\n    x->state = 2;\n    return;\n  }\n  if(x->state == 2) {\n    x->len += (unsigned char)ch;\n    if(!x->len) {\n      errno = EPROTO;\n      tcp_close(j);\n      return;\n    }\n    x->buf = alloc(x->len);\n    if(!x->buf) {\n      tcp_close(j);\n      return;\n    }\n    x->pos = 0;\n    x->state = 3;\n    return;\n  }\n\n  if(x->state != 3)\n    return; /* impossible */\n\n  x->buf[x->pos++] = ch;\n  if(x->pos < x->len)\n    return;\n\n  if(!packetquery(x->buf, x->len, &q, qtype, qclass, x->id)) {\n    tcp_close(j);\n    return;\n  }\n\n  x->active = ++numqueries;\n  log_query(&x->active, x->ip, x->port, x->tcp, x->id, q, qtype);\n  log_query(&x->active, x->ip, x->port, x->tcp, x->id, q, qtype);\n  switch(query_start(&x->q, q, qtype, qclass, sendaddr)) {\n    case -1: tcp_drop(j); return;\n    case 1: tcp_respond(j); return;\n  }\n  tcp_free(j);\n  x->state = 0;\n}\n\nvoid\ntcp_new(void) {\n  int i;\n  int j;\n  struct tcpclient* x;\n\n  for(j = 0; j < MAXTCP; ++j)\n    if(!t[j].active)\n      break;\n\n  if(j >= MAXTCP) {\n    j = 0;\n    for(i = 1; i < MAXTCP; ++i)\n      if(taia_less(&t[i].start, &t[j].start))\n        j = i;\n    errno = ETIMEDOUT;\n    if(t[j].state == 0)\n      tcp_drop(j);\n    else\n      tcp_close(j);\n  }\n\n  x = t + j;\n  taia_now(&x->start);\n\n  x->tcp = socket_accept6(tcp53, x->ip, &x->port, &x->scope_id);\n  if(x->tcp == -1)\n    return;\n  if(x->port < 1024)\n    if(x->port != 53) {\n      close(x->tcp);\n      return;\n    }\n  if(!dnscache_okclient(x->ip, true)) {\n    close(x->tcp);\n    return;\n  }\n  if(ndelay_on(x->tcp) == -1) {\n    close(x->tcp);\n    return;\n  } /* Linux bug */\n\n  x->active = 1;\n  ++tactive;\n  x->state = 1;\n  tcp_timeout(j);\n\n  log_tcpopen(x->ip, x->port, x->tcp);\n}\n\nvoid\ndnscache_run(void) {\n  int j;\n  struct taia deadline;\n  struct taia stamp;\n  int iolen;\n  int r;\n\n  for(;;) {\n    taia_now(&stamp);\n    taia_uint(&deadline, 120);\n    taia_add(&deadline, &deadline, &stamp);\n\n    iolen = 0;\n\n    udp53io = io + iolen++;\n    udp53io->fd = udp53;\n    udp53io->events = IOPAUSE_READ;\n\n    tcp53io = io + iolen++;\n    tcp53io->fd = tcp53;\n    tcp53io->events = IOPAUSE_READ;\n\n    for(j = 0; j < MAXUDP; ++j)\n      if(u[j].active) {\n        u[j].io = io + iolen++;\n        query_io(&u[j].q, u[j].io, &deadline);\n      }\n\n    for(j = 0; j < MAXTCP; ++j)\n      if(t[j].active) {\n        t[j].io = io + iolen++;\n        if(t[j].state == 0)\n          query_io(&t[j].q, t[j].io, &deadline);\n        else {\n          if(taia_less(&t[j].timeout, &deadline))\n            deadline = t[j].timeout;\n          t[j].io->fd = t[j].tcp;\n          t[j].io->events = (t[j].state > 0) ? IOPAUSE_READ : IOPAUSE_WRITE;\n        }\n      }\n\n    iopause(io, iolen, &deadline, &stamp);\n\n    for(j = 0; j < MAXUDP; ++j)\n      if(u[j].active) {\n        r = query_get(&u[j].q, u[j].io, &stamp);\n        if(r == -1)\n          udp_drop(j);\n        if(r == 1)\n          udp_respond(j);\n      }\n\n    for(j = 0; j < MAXTCP; ++j)\n      if(t[j].active) {\n        if(t[j].io->revents)\n          tcp_timeout(j);\n        if(t[j].state == 0) {\n          r = query_get(&t[j].q, t[j].io, &stamp);\n          if(r == -1)\n            tcp_drop(j);\n          if(r == 1)\n            tcp_respond(j);\n        } else if(t[j].io->revents || taia_less(&t[j].timeout, &stamp))\n          tcp_rw(j);\n      }\n\n    if(udp53io)\n      if(udp53io->revents)\n        udp_new();\n\n    if(tcp53io)\n      if(tcp53io->revents)\n        tcp_new();\n  }\n}\n\nint\nmain(int argc, char* argv[]) {\n  const char *x, *y;\n  unsigned long cachesize;\n  int i;\n  int v6only_prev;\n\n  uint32_seed(NULL, 0);\n\n  for(i = 1; i < argc; i++) env_put(argv[i]);\n\n  x = env_get(\"IP\");\n  if(!x)\n    die(111, FATAL, \"$IP not set\");\n  if(!scan_ip6if(x, bindaddr, &bindscope))\n    die(111, FATAL, \"unable to parse IP address \", x);\n\n  udp53 = socket_udp6();\n  /// v6only_prev = socket_v6only(udp53, 0);\n\n  if(udp53 == -1)\n    diesys(111, FATAL, \"unable to create UDP socket: \");\n  if(socket_bind6_reuse(udp53, bindaddr, 53, bindscope) == -1)\n    diesys(111, FATAL, \"unable to bind UDP socket: \");\n\n  tcp53 = socket_tcp6();\n  // v6only_prev = socket_v6only(udp53, 0);\n\n  if(tcp53 == -1)\n    diesys(111, FATAL, \"unable to create TCP socket: \");\n  if(socket_bind6_reuse(tcp53, bindaddr, 53, bindscope) == -1)\n    diesys(111, FATAL, \"unable to bind TCP socket: \");\n\n  dnscache_droproot(FATAL);\n\n  socket_tryreservein(udp53, 131072);\n\n  for(i = 0; i < 32; i++) seed.u32[i] = uint32_random();\n\n  dns_random_init(seed.u8);\n\n  x = env_get(\"IPSEND\");\n  if(!x)\n    die(111, FATAL, \"$IPSEND not set\");\n  if(!scan_ip6(x, sendaddr))\n    die(111, FATAL, \"unable to parse IP address \", x);\n\n  x = env_get(\"CACHESIZE\");\n  if(!x)\n    die(111, FATAL, \"$CACHESIZE not set\");\n  scan_ulong(x, &cachesize);\n\n  y = env_get(\"CACHEFILE\");\n  if(y) {\n    if(!cache_open(y, cachesize))\n      diesys(111, FATAL, \"unable to open cache file \", y);\n\n  } else {\n    if(!cache_init(cachesize))\n      die(111, FATAL, \"not enough memory for cache of size \", x);\n  }\n\n  if(env_get(\"HIDETTL\"))\n    response_hidettl = 1;\n\n  if(env_get(\"FORWARDONLY\"))\n    query_forwardonly();\n\n  if(!roots_init())\n    diesys(111, FATAL, \"unable to read servers: \");\n\n  if(socket_listen(tcp53, 20) == -1)\n    diesys(111, FATAL, \"unable to listen on TCP socket: \");\n\n  log_startup();\n  dnscache_run();\n}\n",
+			"file": "dnscache.c",
+			"file_size": 12167,
+			"file_write_time": 132480129231217408,
+			"settings":
+			{
+				"buffer_size": 12167,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"contents": "Searching 3108 files for \"AAAA\" (regex, case sensitive)\n\n/home/roman/Sources/c-utils/lib/dns.h:\n   25  #define DNS_T_SIG \"\\0\\30\"\n   26  #define DNS_T_KEY \"\\0\\31\"\n   27: #define DNS_T_AAAA \"\\0\\34\"\n   28  #define DNS_T_AXFR \"\\0\\374\"\n   29  #define DNS_T_ANY \"\\0\\377\"\n\n/home/roman/Sources/c-utils/lib/dns/dns_ip6.c:\n   30        return -1;\n   31      uint16_unpack_big(header + 8, &datalen);\n   32:     if(byte_equal(header, 2, DNS_T_AAAA)) {\n   33        if(byte_equal(header + 2, 2, DNS_C_IN))\n   34          if(datalen == 16) {\n   ..\n  106      if(!stralloc_copys(out, \"\"))\n  107        return -1;\n  108:     if(dns_resolve(q, DNS_T_AAAA) != -1)\n  109        if(dns_ip6_packet_add(out, dns_resolve_tx.packet, dns_resolve_tx.packetlen) != -1) {\n  110          dns_transmit_free(&dns_resolve_tx);\n\n/home/roman/Sources/c-utils/lib/dns.h:\n   25  #define DNS_T_SIG \"\\0\\30\"\n   26  #define DNS_T_KEY \"\\0\\31\"\n   27: #define DNS_T_AAAA \"\\0\\34\"\n   28  #define DNS_T_AXFR \"\\0\\374\"\n   29  #define DNS_T_ANY \"\\0\\377\"\n\n/home/roman/Sources/c-utils/lib/dns/dns_ip6.c:\n   30        return -1;\n   31      uint16_unpack_big(header + 8, &datalen);\n   32:     if(byte_equal(header, 2, DNS_T_AAAA)) {\n   33        if(byte_equal(header + 2, 2, DNS_C_IN))\n   34          if(datalen == 16) {\n   ..\n  106      if(!stralloc_copys(out, \"\"))\n  107        return -1;\n  108:     if(dns_resolve(q, DNS_T_AAAA) != -1)\n  109        if(dns_ip6_packet_add(out, dns_resolve_tx.packet, dns_resolve_tx.packetlen) != -1) {\n  110          dns_transmit_free(&dns_resolve_tx);\n\n/home/roman/Sources/c-utils/libc-resolv-override.h:\n   55  #define DNS_T_SIG \"\\0\\30\"\n   56  #define DNS_T_KEY \"\\0\\31\"\n   57: #define DNS_T_AAAA \"\\0\\34\"\n   58  #define DNS_T_AXFR \"\\0\\374\"\n   59  #define DNS_T_ANY \"\\0\\377\"\n\n/home/roman/Sources/c-utils/log.c:\n  155    else if(byte_equal(type, 2, DNS_T_KEY))\n  156      log_string(\"key\");\n  157:   else if(byte_equal(type, 2, DNS_T_AAAA))\n  158      log_string(\"aaaa\");\n  159    else if(byte_equal(type, 2, DNS_T_AXFR))\n  ...\n  301    if(byte_equal(type, 2, DNS_T_A)) {\n  302      log_iplist(cached, cachedlen, 4);\n  303:   } else if(byte_equal(type, 2, DNS_T_AAAA)) {\n  304      log_iplist(cached, cachedlen, 16);\n  305    } else if(byte_equal(type, 2, DNS_T_MX)) {\n\n/home/roman/Sources/c-utils/wapm_packages/_/clang@0.1.0/sysroot/include/arpa/nameser.h:\n  422  #define\tT_PX\t\tns_t_px\n  423  #define\tT_GPOS\t\tns_t_gpos\n  424: #define\tT_AAAA\t\tns_t_aaaa\n  425  #define\tT_LOC\t\tns_t_loc\n  426  #define\tT_NXT\t\tns_t_nxt\n\n/home/roman/Sources/c-utils/wapm_packages/_/clang@0.1.0/sysroot/share/wasm32-wasi/predefined-macros.txt:\n 2334  #define T_A ns_t_a\n 2335  #define T_A6 ns_t_a6\n 2336: #define T_AAAA ns_t_aaaa\n 2337  #define T_AFSDB ns_t_afsdb\n 2338  #define T_ANY ns_t_any\n\n/home/roman/Sources/c-utils/wapm_packages/syrusakbary/clang@0.0.1/sysroot2/include/arpa/nameser.h:\n  422  #define\tT_PX\t\tns_t_px\n  423  #define\tT_GPOS\t\tns_t_gpos\n  424: #define\tT_AAAA\t\tns_t_aaaa\n  425  #define\tT_LOC\t\tns_t_loc\n  426  #define\tT_NXT\t\tns_t_nxt\n\n12 matches across 9 files\n\n\nSearching 3108 files for \"\"rr\" (regex, case sensitive)\n\n/home/roman/Sources/c-utils/log.c:\n  419    int i;\n  420  \n  421:   log_string(\"rr \");\n  422    log_ip(server, 4);\n  423    log_space();\n  ...\n  441  void\n  442  log_rrns(const char server[], const char* q, const char* data, unsigned int ttl) {\n  443:   log_string(\"rr \");\n  444    log_ip(server, 4);\n  445    log_space();\n  ...\n  454  void\n  455  log_rrcname(const char server[], const char* q, const char* data, unsigned int ttl) {\n  456:   log_string(\"rr \");\n  457    log_ip(server, 4);\n  458    log_space();\n  ...\n  467  void\n  468  log_rrptr(const char server[], const char* q, const char* data, unsigned int ttl) {\n  469:   log_string(\"rr \");\n  470    log_ip(server, 4);\n  471    log_space();\n  ...\n  482    uint16 u;\n  483  \n  484:   log_string(\"rr \");\n  485    log_ip(server, 4);\n  486    log_space();\n  ...\n  501    int i;\n  502  \n  503:   log_string(\"rr \");\n  504    log_ip(server, 4);\n  505    log_space();\n\n6 matches in 1 file\n\n\nSearching 3108 files for \"log_rr\" (regex, case sensitive)\n\n/home/roman/Sources/c-utils/log.c:\n  416  \n  417  void\n  418: log_rr(const char server[], const char* q, const char type[2], const char* buf, unsigned int len, unsigned int ttl) {\n  419    int i;\n  420  \n  ...\n  440  \n  441  void\n  442: log_rrns(const char server[], const char* q, const char* data, unsigned int ttl) {\n  443    log_string(\"rr \");\n  444    log_ip(server, 4);\n  ...\n  453  \n  454  void\n  455: log_rrcname(const char server[], const char* q, const char* data, unsigned int ttl) {\n  456    log_string(\"rr \");\n  457    log_ip(server, 4);\n  ...\n  466  \n  467  void\n  468: log_rrptr(const char server[], const char* q, const char* data, unsigned int ttl) {\n  469    log_string(\"rr \");\n  470    log_ip(server, 4);\n  ...\n  479  \n  480  void\n  481: log_rrmx(const char server[], const char* q, const char* mx, const char pref[2], unsigned int ttl) {\n  482    uint16 u;\n  483  \n  ...\n  497  \n  498  void\n  499: log_rrsoa(const char server[], const char* q, const char* n1, const char* n2, const char misc[20], unsigned int ttl) {\n  500    uint32 u;\n  501    int i;\n\n/home/roman/Sources/c-utils/log.h:\n   32  void log_lame(const char[], const char*, const char*);\n   33  void log_servfail(const char*);\n   34: void log_rr(const char[], const char*, const char[2], const char*, unsigned int, unsigned int);\n   35: void log_rrns(const char[], const char*, const char*, unsigned int);\n   36: void log_rrcname(const char[], const char*, const char*, unsigned int);\n   37: void log_rrptr(const char[], const char*, const char*, unsigned int);\n   38: void log_rrmx(const char[], const char*, const char*, const char[2], unsigned int);\n   39: void log_rrsoa(const char[], const char*, const char*, const char*, const char[20], unsigned int);\n   40  void log_stats(void);\n   41  \n\n/home/roman/Sources/c-utils/query.c:\n  742            goto fail;\n  743          if(records[i] < posauthority)\n  744:           log_rrsoa(whichserver, t1, t2, t3, misc, ttl);\n  745          ++i;\n  746        }\n  ...\n  752        if(!pos)\n  753          goto fail;\n  754:       log_rrcname(whichserver, t1, t2, ttl);\n  755        cachegeneric(DNS_T_CNAME, t1, t2, dns_domain_length(t2), ttl);\n  756      } else if(byte_equal(type, 2, DNS_T_PTR)) {\n  ...\n  763          if(!pos)\n  764            goto fail;\n  765:         log_rrptr(whichserver, t1, t2, ttl);\n  766          save_data(t2, dns_domain_length(t2));\n  767          ++i;\n  ...\n  777          if(!pos)\n  778            goto fail;\n  779:         log_rrns(whichserver, t1, t2, ttl);\n  780          save_data(t2, dns_domain_length(t2));\n  781          ++i;\n  ...\n  794          if(!pos)\n  795            goto fail;\n  796:         log_rrmx(whichserver, t1, t2, misc, ttl);\n  797          save_data(misc, 2);\n  798          save_data(t2, dns_domain_length(t2));\n  ...\n  814              goto fail;\n  815            save_data(header, 4);\n  816:           log_rr(whichserver, t1, DNS_T_A, header, 4, ttl);\n  817          }\n  818          ++i;\n  ...\n  833          save_data(header + 8, 2);\n  834          save_data(buf + pos, datalen);\n  835:         log_rr(whichserver, t1, type, buf + pos, datalen, ttl);\n  836          ++i;\n  837        }\n\n19 matches across 3 files\n",
+			"settings":
+			{
+				"buffer_size": 7291,
+				"line_ending": "Unix",
+				"name": "Find Results",
+				"scratch": true
+			}
+		},
+		{
+			"file": "/home/roman/Sources/c-utils/log.c",
+			"settings":
+			{
+				"buffer_size": 10296,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "cache.c",
+			"settings":
+			{
+				"buffer_size": 6609,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/errmsg.h",
+			"settings":
+			{
+				"buffer_size": 1924,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/errmsg/errmsg_warn.c",
+			"settings":
+			{
+				"buffer_size": 237,
+				"line_ending": "Unix"
+			}
+		},
+		{
 			"file": "CMakeLists.txt",
 			"settings":
 			{
-				"buffer_size": 66454,
-				"encoding": "UTF-8",
+				"buffer_size": 66776,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "cfg.sh",
+			"settings":
+			{
+				"buffer_size": 11755,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "response.c",
+			"settings":
+			{
+				"buffer_size": 3254,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "query.c",
+			"settings":
+			{
+				"buffer_size": 28131,
 				"line_ending": "Unix"
 			}
 		}
@@ -130,19 +207,12 @@
 	],
 	"file_history":
 	[
-		"/home/roman/Dokumente/Sources/c-utils/query.c",
-		"/home/roman/Dokumente/Sources/c-utils/response.c",
-		"/home/roman/Dokumente/Sources/c-utils/nscache.c",
-		"/home/roman/Dokumente/Sources/c-utils/cache.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/errmsg.h",
-		"/home/roman/Dokumente/Sources/c-utils/lib/errmsg/errmsg_warn.c",
-		"/home/roman/Dokumente/Sources/c-utils/CMakeLists.txt",
-		"/home/roman/Dokumente/Sources/circuit-schematic/smarterboard-nn/README.md",
 		"/home/roman/Dokumente/Sources/c-utils/tryselect.c",
 		"/home/roman/Dokumente/Sources/c-utils/genmakefile.c",
 		"/home/roman/Dokumente/Sources/c-utils/tinyproxy.c",
 		"/home/roman/Dokumente/Sources/c-utils/list-r.c",
 		"/home/roman/Dokumente/Sources/c-utils/debug.h",
+		"/home/roman/Dokumente/Sources/c-utils/CMakeLists.txt",
 		"/home/roman/Dokumente/Sources/c-utils/lib/io/io_wantread.c",
 		"/home/roman/Dokumente/Sources/c-utils/logserial.c",
 		"/home/roman/Dokumente/Sources/c-utils/debug.c",
@@ -154,6 +224,7 @@
 		"/home/roman/Dokumente/Sources/c-utils/lib/buffer.h",
 		"/home/roman/Sources/c-utils/debug.h",
 		"/home/roman/Sources/c-utils/genmakefile.c",
+		"/home/roman/Dokumente/Sources/c-utils/response.c",
 		"/home/roman/Dokumente/Sources/c-utils/response.h",
 		"/home/roman/Dokumente/Sources/c-utils/lib/io/io_dump.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/io/io_waituntil2.c",
@@ -257,7 +328,13 @@
 		"/home/roman/Dokumente/Sources/c-utils/lib/http/http_socket_write.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/http/http_socket_read.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/http/http_read_internal.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/http.h"
+		"/home/roman/Dokumente/Sources/c-utils/lib/http.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/buffer/buffer_getline.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/stralloc/buffer_getline_sa.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/byte/byte_trimr.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/stralloc/stralloc_trimr.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/byte/byte_count.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/http/http_read_header.c"
 	],
 	"find":
 	{
@@ -282,36 +359,15 @@
 		"case_sensitive": true,
 		"find_history":
 		[
-			"add_def",
-			"defini.*SUPPORT_",
-			"SUPPORT_",
-			"^",
-			"MUX_METHOD ",
-			"SIGIO",
-			"set\\(MUX",
-			"MUX ",
-			"MUX_LIST",
-			"DEFINE",
-			"DEFINED",
-			"MUX_METHODS",
-			"Available",
-			"^",
-			"MUX_METHODS",
-			"set\\(BZIP",
-			"set\\(BZ",
+			"log_rr",
+			"\"rr",
+			"log_logtype",
+			"\"a\"",
+			"\"rr",
+			"rr",
+			"AAAA",
+			"include_dir",
 			"add_lib",
-			"BUILD_BZ",
-			"check_include_file",
-			"CheckInc",
-			"check_include_file",
-			"SYS_TYPES_H",
-			"HAVE_.*_H",
-			"HAVE_",
-			"found:",
-			"found",
-			"BZIP2_LI",
-			"BZIP2_INC",
-			"bzip2",
 			"bzip",
 			"libbzip",
 			"bz",
@@ -409,7 +465,28 @@
 			"want rea",
 			"debug",
 			"^debug",
-			"want "
+			"want ",
+			"remove_port",
+			"^includes_add",
+			"includes",
+			"'I'",
+			"\"CPPFLAGS",
+			"doesn't",
+			"[^a-z]int3[^a-z0-9]",
+			"[^a-z]int3",
+			"int3",
+			"sources:",
+			"\"toks",
+			"toks",
+			"toks:",
+			"baudrate",
+			"57600",
+			"io_dump",
+			"debugmode",
+			"io_dump",
+			"#ifdef DEBUG_OUTPUT([^#]*)#endif",
+			"DEBUG_OUTPUT",
+			"debugmode"
 		],
 		"highlight": false,
 		"in_selection": false,
@@ -417,7 +494,6 @@
 		"regex": true,
 		"replace_history":
 		[
-			"#",
 			"\\1#\\2",
 			"\\nint main() {",
 			"\\nint main() { ",
@@ -512,7 +588,7 @@
 						{
 							"color_scheme": "Packages/Outline/outline.hidden-tmTheme",
 							"current_file": "/home/roman/Dokumente/Sources/c-utils/CMakeLists.txt",
-							"function_name_status_row": -1,
+							"function_name_status_row": 0,
 							"outline_rename_mode": false,
 							"syntax": "Packages/Outline/outline.hidden-tmLanguage",
 							"tab_size": 3,
@@ -522,44 +598,480 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 1,
+					"stack_index": 10,
 					"type": "text"
 				}
 			]
 		},
 		{
-			"selected": 0,
+			"selected": 6,
 			"sheets":
 			[
 				{
 					"buffer": 1,
-					"file": "CMakeLists.txt",
+					"file": "dnscache.c",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 66454,
+						"buffer_size": 12167,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								3313,
-								3313
+								424,
+								424
 							]
 						],
 						"settings":
 						{
-							"function_name_status_row": 116,
+							"function_name_status_row": 20,
+							"syntax": "Packages/C Improved/C Improved.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 5076.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 4,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 7291,
+						"regions":
+						{
+							"match":
+							{
+								"flags": 112,
+								"regions":
+								[
+									[
+										183,
+										187
+									],
+									[
+										431,
+										435
+									],
+									[
+										633,
+										637
+									],
+									[
+										922,
+										926
+									],
+									[
+										1170,
+										1174
+									],
+									[
+										1372,
+										1376
+									],
+									[
+										1674,
+										1678
+									],
+									[
+										1914,
+										1918
+									],
+									[
+										2142,
+										2146
+									],
+									[
+										2417,
+										2421
+									],
+									[
+										2672,
+										2676
+									],
+									[
+										2930,
+										2934
+									],
+									[
+										3172,
+										3175
+									],
+									[
+										3358,
+										3361
+									],
+									[
+										3547,
+										3550
+									],
+									[
+										3734,
+										3737
+									],
+									[
+										3845,
+										3848
+									],
+									[
+										3953,
+										3956
+									],
+									[
+										4155,
+										4161
+									],
+									[
+										4330,
+										4336
+									],
+									[
+										4502,
+										4508
+									],
+									[
+										4677,
+										4683
+									],
+									[
+										4850,
+										4856
+									],
+									[
+										5011,
+										5017
+									],
+									[
+										5314,
+										5320
+									],
+									[
+										5417,
+										5423
+									],
+									[
+										5493,
+										5499
+									],
+									[
+										5572,
+										5578
+									],
+									[
+										5649,
+										5655
+									],
+									[
+										5740,
+										5746
+									],
+									[
+										5999,
+										6005
+									],
+									[
+										6148,
+										6154
+									],
+									[
+										6391,
+										6397
+									],
+									[
+										6574,
+										6580
+									],
+									[
+										6756,
+										6762
+									],
+									[
+										6978,
+										6984
+									],
+									[
+										7173,
+										7179
+									]
+								],
+								"scope": ""
+							}
+						},
+						"selection":
+						[
+							[
+								4034,
+								4034
+							]
+						],
+						"settings":
+						{
+							"detect_indentation": false,
+							"function_name_status_row": 128,
+							"line_numbers": false,
+							"output_tag": 3,
+							"result_base_dir": "",
+							"result_file_regex": "^([^ \t].*):$",
+							"result_line_regex": "^ +([0-9]+):",
+							"scroll_past_end": true,
+							"syntax": "Packages/Default/Find Results.hidden-tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 3150.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 7,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "/home/roman/Sources/c-utils/log.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 10296,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								8022,
+								8022
+							]
+						],
+						"settings":
+						{
+							"function_name_status_row": 417,
+							"syntax": "Packages/C Improved/C Improved.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 7284.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 6,
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "cache.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 6609,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1690,
+								1690
+							]
+						],
+						"settings":
+						{
+							"function_name_status_row": 73,
+							"syntax": "Packages/C Improved/C Improved.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 696.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 5,
+					"type": "text"
+				},
+				{
+					"buffer": 5,
+					"file": "lib/errmsg.h",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1924,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								473,
+								473
+							]
+						],
+						"settings":
+						{
+							"function_name_status_row": 20,
+							"syntax": "Packages/C++/C++.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 9,
+					"type": "text"
+				},
+				{
+					"buffer": 6,
+					"file": "lib/errmsg/errmsg_warn.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 237,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								135,
+								135
+							]
+						],
+						"settings":
+						{
+							"function_name_status_row": 7,
+							"syntax": "Packages/C Improved/C Improved.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 8,
+					"type": "text"
+				},
+				{
+					"buffer": 7,
+					"file": "CMakeLists.txt",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 66776,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								35610,
+								35610
+							]
+						],
+						"settings":
+						{
+							"function_name_status_row": 1019,
 							"syntax": "Packages/CMakeEditor/CMakeEditor.tmLanguage",
 							"tab_size": 2,
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 1392.0,
+						"translation.y": 12.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 8,
+					"file": "cfg.sh",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 11755,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								11309,
+								11309
+							]
+						],
+						"settings":
+						{
+							"function_name_status_row": 398,
+							"syntax": "Packages/ShellScript/Bash.sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 5922.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 3,
+					"type": "text"
+				},
+				{
+					"buffer": 9,
+					"file": "response.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 3254,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2652,
+								2652
+							]
+						],
+						"settings":
+						{
+							"function_name_status_row": 118,
+							"syntax": "Packages/C Improved/C Improved.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 10,
+					"file": "query.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 28131,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2645,
+								2645
+							]
+						],
+						"settings":
+						{
+							"function_name_status_row": 143,
+							"syntax": "Packages/C Improved/C Improved.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 5536.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
 					"type": "text"
 				}
 			]
@@ -594,7 +1106,7 @@
 		[
 			0.0,
 			0.2,
-			0.750261799928,
+			0.739693706503,
 			1.0
 		],
 		"rows":
@@ -631,8 +1143,8 @@
 		"selected_items":
 		[
 			[
-				"cmake",
-				"CMakeLists.txt"
+				"cfg.sh",
+				"cfg.sh"
 			],
 			[
 				"errmsg_",
@@ -659,8 +1171,12 @@
 				"response.c"
 			],
 			[
-				"nscache",
-				"nscache.c"
+				"dnscache",
+				"dnscache.c"
+			],
+			[
+				"cmake",
+				"CMakeLists.txt"
 			],
 			[
 				"list-r",
@@ -785,10 +1301,6 @@
 			[
 				"process_crea",
 				"lib/process/process_create.c"
-			],
-			[
-				"cfg.sh",
-				"cfg.sh"
 			],
 			[
 				"cmakelis",
