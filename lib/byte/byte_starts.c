@@ -1,4 +1,5 @@
 #include "../byte.h"
+#include "../str.h"
 
 int
 byte_starts(const void* x, size_t n, const char* s) {

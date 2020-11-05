@@ -1378,7 +1378,7 @@ sources_add_b(const char* x, size_t len) {
   int ret = 0;
 
   if(byte_chr(x, len, '/') == len && byte_ends(x, len, "strlist_shift.c"))
-    asm("int3");
+    raise(SIGTRAP);
 
   if(is_source_b(x, len) || is_include_b(x, len)) {
     if(len > dirs.this.sa.len && byte_startb(x, len, dirs.this.sa.s, dirs.this.sa.len)) {
@@ -1603,7 +1603,7 @@ sources_addincludes(sourcefile* file, sourcedir* sdir, const strlist* includes, 
     {
       const char* s = "strlist_shift.c";
       if(stralloc_endsb(&real, s, str_len(s)))
-        asm("int3");
+        raise(SIGTRAP);
     }
 
 #if DEBUG_OUTPUT_

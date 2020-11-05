@@ -12,38 +12,21 @@
 	"buffers":
 	[
 		{
-			"contents": "   Ⓜ  USE_WS2_32 … — macro object\n   Ⓜ  DNS_MAX_AGE … — macro object\n   Ⓜ  DEFAULT_BUF_SIZE … — macro object\n   Ⓜ  READ … — macro object\n   Ⓜ  WRITE … — macro object\n   Ⓜ  SERVER_SOCKET_ERROR … — macro object\n   Ⓜ  SERVER_SETSOCKOPT_ERROR … — macro object\n   Ⓜ  SERVER_BIND_ERROR … — macro object\n   Ⓜ  SERVER_LISTEN_ERROR … — macro object\n   Ⓜ  CLIENT_SOCKET_ERROR … — macro object\n   Ⓜ  CLIENT_RESOLVE_ERROR … — macro object\n   Ⓜ  CLIENT_CONNECT_ERROR … — macro object\n   Ⓜ  CREATE_PIPE_ERROR … — macro object\n   Ⓜ  BROKEN_PIPE_ERROR … — macro object\n   Ⓜ  SYNTAX_ERROR … — macro object\n—Ⓒ– socketbuf_s { … } ; — type\n   Ⓣ  socketbuf_t ; — typedef\n—Ⓒ– dns_result_s { … } ; — type\n   Ⓣ  dns_response_t ; — typedef\n—Ⓒ– connection_s { … } ; — type\n   Ⓣ  connection_t ; — typedef\n   ⒡  dns_query ( ) ; — function declaration\n   ⒡  dns_print ( ) ; — function declaration\n   ⒡  dns_lookup ( ) ; — function declaration\n   ⒡  dump_strarray ( ) ; — function declaration\n   ⒡  dump_fds ( ) ; — function declaration\n   ⒡  dump_io ( ) ; — function declaration\n   ⒡  connection_new ( ) ; — function declaration\n   ⒡  connection_delete ( ) ; — function declaration\n   ⒡  connection_find ( ) ; — function declaration\n   ⒡  connection_open_log ( ) ; — function declaration\n   ⒡  socket_find ( ) ; — function declaration\n   ⒡  socket_other ( ) ; — function declaration\n   ⒡  socket_send ( ) ; — function declaration\n   ⒡  socket_getlocal_addr ( ) ; — function declaration\n   ⒡  socket_connect ( ) ; — function declaration\n   ⒡  socket_accept ( ) ; — function declaration\n   ⒡  sockbuf_init ( ) ; — function declaration\n   ⒡  sockbuf_fmt_addr ( ) ; — function declaration\n   ⒡  sockbuf_put_addr ( ) ; — function declaration\n   ⒡  sockbuf_close ( ) ; — function declaration\n   ⒡  sockbuf_check ( ) ; — function declaration\n   ⒡  sockbuf_log_data ( ) ; — function declaration\n   ⒡  sockbuf_forward_data ( ) ; — function declaration\n   ⒡  server_socket ( ) ; — function declaration\n   ⒡  server_listen ( ) ; — function declaration\n   ⒡  search_path ( ) ; — function declaration\n   ⒡  server_finalize ( ) ; — function declaration\n   ⒡  server_tar_files ( ) ; — function declaration\n   ⒡  server_exit ( ) ; — function declaration\n   ⒡  server_sigint ( ) ; — function declaration\n   ⒡  server_sigterm ( ) ; — function declaration\n   ⒡  server_loop ( ) ; — function declaration\n   ⒡  server_connection_count ( ) ; — function declaration\n   ⒡  usage ( ) ; — function declaration\n   Ⓜ  BACKLOG … — macro object\n—Ⓕ– dns_query ( ) { … } — function\n—Ⓕ– dns_print ( ) { … } — function\n—Ⓕ– dns_lookup ( ) { … } — function\n—Ⓕ– parse_addr ( ) { … } — function\n—Ⓕ– sockbuf_parse_addr ( ) { … } — function\n—Ⓕ– byte_numlines ( ) { … } — function\n—Ⓕ– byte_is_binary ( ) { … } — function\n—Ⓕ– buffer_numlines ( ) { … } — function\n—Ⓕ– buffer_is_binary ( ) { … } — function\n—Ⓕ– dump_strarray ( ) { … } — function\n—Ⓕ– dump_fds ( ) { … } — function\n—Ⓕ– dump_io ( ) { … } — function\n—Ⓕ– connection_new ( ) { … } — function\n—Ⓕ– connection_delete ( ) { … } — function\n—Ⓕ– connection_find ( ) { … } — function\n—Ⓕ– connection_open_log ( ) { … } — function\n—Ⓕ– socket_find ( ) { … } — function\n—Ⓕ– socket_other ( ) { … } — function\n—Ⓕ– socket_send ( ) { … } — function\n—Ⓕ– socket_connect ( ) { … } — function\n—Ⓕ– socket_accept ( ) { … } — function\n—Ⓕ– sockbuf_init ( ) { … } — function\n—Ⓕ– sockbuf_fmt_addr ( ) { … } — function\n—Ⓕ– sockbuf_put_addr ( ) { … } — function\n—Ⓕ– sockbuf_close ( ) { … } — function\n—Ⓕ– sockbuf_check ( ) { … } — function\n—Ⓕ– sockbuf_log_data ( ) { … } — function\n—Ⓕ– sockbuf_forward_data ( ) { … } — function\n—Ⓕ– server_socket ( ) { … } — function\n—Ⓕ– server_listen ( ) { … } — function\n—Ⓕ– search_path ( ) { … } — function\n—Ⓕ– server_finalize ( ) { … } — function\n—Ⓕ– server_tar_files ( ) { … } — function\n—Ⓕ– server_exit ( ) { … } — function\n—Ⓕ– server_sigint ( ) { … } — function\n—Ⓕ– server_sigterm ( ) { … } — function\n—Ⓕ– server_loop ( ) { … } — function\n—Ⓕ– server_connection_count ( ) { … } — function\n—Ⓕ– usage ( ) { … } — function\n—Ⓕ– main ( ) { … } — function",
+			"contents": "",
 			"settings":
 			{
-				"buffer_size": 4048,
+				"buffer_size": 0,
 				"line_ending": "Unix",
 				"name": "𝌆 Outline",
 				"scratch": true
 			}
 		},
 		{
-			"file": "genmakefile.c",
+			"file": "CMakeLists.txt",
 			"settings":
 			{
-				"buffer_size": 142560,
+				"buffer_size": 66454,
 				"encoding": "UTF-8",
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "tinyproxy.c",
-			"settings":
-			{
-				"buffer_size": 33221,
-				"encoding": "UTF-8",
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "debug.h",
-			"settings":
-			{
-				"buffer_size": 511,
 				"line_ending": "Unix"
 			}
 		}
@@ -143,15 +126,26 @@
 		"/home/roman/Dokumente/Sources/c-utils",
 		"/home/roman/Dokumente/Sources/c-utils/ip",
 		"/home/roman/Dokumente/Sources/c-utils/lib",
-		"/home/roman/Dokumente/Sources/c-utils/lib/socket"
+		"/home/roman/Dokumente/Sources/c-utils/lib/strlist"
 	],
 	"file_history":
 	[
+		"/home/roman/Dokumente/Sources/c-utils/query.c",
+		"/home/roman/Dokumente/Sources/c-utils/response.c",
+		"/home/roman/Dokumente/Sources/c-utils/nscache.c",
+		"/home/roman/Dokumente/Sources/c-utils/cache.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/errmsg.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/errmsg/errmsg_warn.c",
+		"/home/roman/Dokumente/Sources/c-utils/CMakeLists.txt",
+		"/home/roman/Dokumente/Sources/circuit-schematic/smarterboard-nn/README.md",
+		"/home/roman/Dokumente/Sources/c-utils/tryselect.c",
+		"/home/roman/Dokumente/Sources/c-utils/genmakefile.c",
+		"/home/roman/Dokumente/Sources/c-utils/tinyproxy.c",
+		"/home/roman/Dokumente/Sources/c-utils/list-r.c",
+		"/home/roman/Dokumente/Sources/c-utils/debug.h",
 		"/home/roman/Dokumente/Sources/c-utils/lib/io/io_wantread.c",
 		"/home/roman/Dokumente/Sources/c-utils/logserial.c",
-		"/home/roman/Dokumente/Sources/c-utils/tinyproxy.c",
 		"/home/roman/Dokumente/Sources/c-utils/debug.c",
-		"/home/roman/Dokumente/Sources/c-utils/debug.h",
 		"/home/roman/Dokumente/Sources/c-utils/genmakefile.h",
 		"/home/roman/Dokumente/Sources/c-utils/lib/path.h",
 		"/home/roman/Dokumente/Sources/c-utils/lib/fmt.h",
@@ -160,8 +154,6 @@
 		"/home/roman/Dokumente/Sources/c-utils/lib/buffer.h",
 		"/home/roman/Sources/c-utils/debug.h",
 		"/home/roman/Sources/c-utils/genmakefile.c",
-		"/home/roman/Dokumente/Sources/c-utils/CMakeLists.txt",
-		"/home/roman/Dokumente/Sources/c-utils/response.c",
 		"/home/roman/Dokumente/Sources/c-utils/response.h",
 		"/home/roman/Dokumente/Sources/c-utils/lib/io/io_dump.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/io/io_waituntil2.c",
@@ -206,7 +198,6 @@
 		"/home/roman/Dokumente/Sources/c-utils/lib/str.h",
 		"/home/roman/Dokumente/Sources/c-utils/lib/str/str_find.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/str/str_findb.c",
-		"/home/roman/Dokumente/Sources/c-utils/genmakefile.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/unix/wordexp.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/typedefs.h",
 		"/home/roman/Dokumente/Sources/c-utils/lib/dir/dir_open.c",
@@ -266,19 +257,11 @@
 		"/home/roman/Dokumente/Sources/c-utils/lib/http/http_socket_write.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/http/http_socket_read.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/http/http_read_internal.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/http.h",
-		"/home/roman/Dokumente/Sources/c-utils/lib/buffer/buffer_getline.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/stralloc/buffer_getline_sa.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/byte/byte_trimr.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/stralloc/stralloc_trimr.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/byte/byte_count.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/http/http_read_header.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/http/http_read.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/http/http_errstr.c"
+		"/home/roman/Dokumente/Sources/c-utils/lib/http.h"
 	],
 	"find":
 	{
-		"height": 40.0
+		"height": 39.0
 	},
 	"find_in_files":
 	{
@@ -299,6 +282,91 @@
 		"case_sensitive": true,
 		"find_history":
 		[
+			"add_def",
+			"defini.*SUPPORT_",
+			"SUPPORT_",
+			"^",
+			"MUX_METHOD ",
+			"SIGIO",
+			"set\\(MUX",
+			"MUX ",
+			"MUX_LIST",
+			"DEFINE",
+			"DEFINED",
+			"MUX_METHODS",
+			"Available",
+			"^",
+			"MUX_METHODS",
+			"set\\(BZIP",
+			"set\\(BZ",
+			"add_lib",
+			"BUILD_BZ",
+			"check_include_file",
+			"CheckInc",
+			"check_include_file",
+			"SYS_TYPES_H",
+			"HAVE_.*_H",
+			"HAVE_",
+			"found:",
+			"found",
+			"BZIP2_LI",
+			"BZIP2_INC",
+			"bzip2",
+			"bzip",
+			"libbzip",
+			"bz",
+			"Checking for one",
+			"Checking for",
+			"Checking",
+			"Checknig",
+			"imposs",
+			"dump of",
+			"dump f",
+			"check_comp",
+			"ALLOCA",
+			"^(\\s*)(message\\(\"[A-Z][A-Z])",
+			"message\\(\"[A-Z][A-Z]",
+			"message\\(\"[A-Z]",
+			"message\\(\"",
+			"message(",
+			"message\\(",
+			"Trying",
+			"APPEND MUX",
+			"APPEND",
+			"ws2_32",
+			"LINK_LIB",
+			"LIBS",
+			"SUPPORT_SELECT",
+			"try_com",
+			"SUPPORT_POLL",
+			"rumpel",
+			"\\nint\\nmain() {\\n ",
+			"\\nint\\nmain() {\\n",
+			"check_compile",
+			"HAVE_UINT",
+			"check_com.*INLIN",
+			"INLINE",
+			"sys.errno",
+			"sys.erro",
+			"SUPPORT_POLL",
+			"check_com",
+			"message\\(",
+			"MUX_METHOD",
+			"size",
+			"set4",
+			"imposs",
+			"dtype",
+			"DNS_T_AAA",
+			"response_addname",
+			"AAAA",
+			"DNS_AAA",
+			"opt.*USE_SEL",
+			"USE_SEL",
+			"pattern",
+			"usage",
+			"exclude_masks",
+			"\".*exclude",
+			"exclude",
 			"New conn",
 			"sockbuf_put_addr",
 			"socket_accept",
@@ -341,92 +409,7 @@
 			"want rea",
 			"debug",
 			"^debug",
-			"want ",
-			"remove_port",
-			"^includes_add",
-			"includes",
-			"'I'",
-			"\"CPPFLAGS",
-			"doesn't",
-			"[^a-z]int3[^a-z0-9]",
-			"[^a-z]int3",
-			"int3",
-			"sources:",
-			"\"toks",
-			"toks",
-			"toks:",
-			"baudrate",
-			"57600",
-			"io_dump",
-			"debugmode",
-			"io_dump",
-			"#ifdef DEBUG_OUTPUT([^#]*)#endif",
-			"DEBUG_OUTPUT",
-			"debugmode",
-			"rawmode",
-			"stralloc",
-			"resp",
-			"response_addbytes",
-			"debug_opt",
-			"DEBUG_HTTP",
-			"DEBUG",
-			"debug_option",
-			"DEBUG_OUTPUT",
-			"DEBUG_IO",
-			"DEBUG_DEBUG",
-			"DEBUG_OUTPUT",
-			"io_dump",
-			"Read ",
-			"io_dum",
-			"iarray_",
-			"iarray",
-			"iarray_allocate\\(",
-			"iarray_allocate",
-			"SUPPORT_\\$",
-			"SUPPORT_",
-			"entry",
-			"for.*get",
-			"i <= s",
-			"->want",
-			"DEBUG_OUT",
-			"EPOLL",
-			"HAVE_EPOLL",
-			"epoll_wait",
-			"io_want",
-			"charbuf_getc",
-			"io_fd",
-			"Read ",
-			"putlong",
-			"send_file, ",
-			"send_file",
-			"queue =",
-			"write_fd",
-			"usage",
-			"stubborn",
-			"ch =",
-			"ch;",
-			"main",
-			"MUX_",
-			" EPOLL",
-			"HAVE_EPOLL",
-			"EPOLL",
-			"Aux se",
-			"define\\s+USE_SELECT",
-			"define.*USE_SELECT",
-			"USE_SELE",
-			"USE_SEL",
-			"ifn2idx",
-			"if_nametoindex",
-			"VERBOSE_MAK",
-			"unistd.h",
-			"echo.*host",
-			"cfg-msys",
-			"^\\s*message\\(",
-			"check_type",
-			"type_size",
-			"check_size",
-			"CROSS",
-			"CMAKE_CROSS"
+			"want "
 		],
 		"highlight": false,
 		"in_selection": false,
@@ -434,6 +417,10 @@
 		"regex": true,
 		"replace_history":
 		[
+			"#",
+			"\\1#\\2",
+			"\\nint main() {",
+			"\\nint main() { ",
 			"if(debugmode) {\\1}",
 			"idx2ifn",
 			"ifn2idx",
@@ -514,7 +501,7 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 4048,
+						"buffer_size": 0,
 						"regions":
 						{
 						},
@@ -524,534 +511,11 @@
 						"settings":
 						{
 							"color_scheme": "Packages/Outline/outline.hidden-tmTheme",
-							"current_file": "/home/roman/Dokumente/Sources/c-utils/tinyproxy.c",
-							"function_name_status_row": 95,
+							"current_file": "/home/roman/Dokumente/Sources/c-utils/CMakeLists.txt",
+							"function_name_status_row": -1,
 							"outline_rename_mode": false,
-							"symkeys":
-							[
-								[
-									8,
-									18
-								],
-								[
-									1090,
-									1101
-								],
-								[
-									1114,
-									1130
-								],
-								[
-									1146,
-									1150
-								],
-								[
-									1161,
-									1166
-								],
-								[
-									1178,
-									1197
-								],
-								[
-									1209,
-									1232
-								],
-								[
-									1244,
-									1261
-								],
-								[
-									1273,
-									1292
-								],
-								[
-									1304,
-									1323
-								],
-								[
-									1335,
-									1355
-								],
-								[
-									1367,
-									1387
-								],
-								[
-									1399,
-									1416
-								],
-								[
-									1428,
-									1445
-								],
-								[
-									1457,
-									1469
-								],
-								[
-									1536,
-									1547
-								],
-								[
-									1696,
-									1707
-								],
-								[
-									1725,
-									1737
-								],
-								[
-									1769,
-									1783
-								],
-								[
-									1801,
-									1813
-								],
-								[
-									1892,
-									1904
-								],
-								[
-									1951,
-									1960
-								],
-								[
-									1978,
-									1987
-								],
-								[
-									2060,
-									2070
-								],
-								[
-									2089,
-									2102
-								],
-								[
-									2175,
-									2183
-								],
-								[
-									2198,
-									2205
-								],
-								[
-									2228,
-									2242
-								],
-								[
-									2283,
-									2300
-								],
-								[
-									2331,
-									2346
-								],
-								[
-									2371,
-									2390
-								],
-								[
-									2461,
-									2472
-								],
-								[
-									2493,
-									2505
-								],
-								[
-									2521,
-									2532
-								],
-								[
-									2574,
-									2594
-								],
-								[
-									2659,
-									2673
-								],
-								[
-									2694,
-									2707
-								],
-								[
-									2749,
-									2761
-								],
-								[
-									2784,
-									2800
-								],
-								[
-									2843,
-									2859
-								],
-								[
-									2892,
-									2905
-								],
-								[
-									2926,
-									2939
-								],
-								[
-									2960,
-									2976
-								],
-								[
-									3033,
-									3053
-								],
-								[
-									3101,
-									3114
-								],
-								[
-									3127,
-									3140
-								],
-								[
-									3157,
-									3168
-								],
-								[
-									3222,
-									3237
-								],
-								[
-									3250,
-									3266
-								],
-								[
-									3327,
-									3338
-								],
-								[
-									3350,
-									3363
-								],
-								[
-									3375,
-									3389
-								],
-								[
-									3401,
-									3412
-								],
-								[
-									3425,
-									3448
-								],
-								[
-									3462,
-									3467
-								],
-								[
-									3963,
-									3970
-								],
-								[
-									4039,
-									4048
-								],
-								[
-									4636,
-									4645
-								],
-								[
-									4976,
-									4986
-								],
-								[
-									6449,
-									6459
-								],
-								[
-									6632,
-									6650
-								],
-								[
-									6911,
-									6924
-								],
-								[
-									7142,
-									7156
-								],
-								[
-									7297,
-									7312
-								],
-								[
-									7403,
-									7419
-								],
-								[
-									7478,
-									7491
-								],
-								[
-									8124,
-									8132
-								],
-								[
-									8741,
-									8748
-								],
-								[
-									9463,
-									9477
-								],
-								[
-									9869,
-									9886
-								],
-								[
-									10072,
-									10087
-								],
-								[
-									10316,
-									10335
-								],
-								[
-									11505,
-									11516
-								],
-								[
-									11701,
-									11713
-								],
-								[
-									11893,
-									11904
-								],
-								[
-									12621,
-									12635
-								],
-								[
-									13563,
-									13576
-								],
-								[
-									14332,
-									14344
-								],
-								[
-									14494,
-									14510
-								],
-								[
-									15053,
-									15069
-								],
-								[
-									15194,
-									15207
-								],
-								[
-									15353,
-									15366
-								],
-								[
-									15883,
-									15899
-								],
-								[
-									17567,
-									17587
-								],
-								[
-									18065,
-									18078
-								],
-								[
-									18457,
-									18470
-								],
-								[
-									18664,
-									18675
-								],
-								[
-									19169,
-									19184
-								],
-								[
-									21408,
-									21424
-								],
-								[
-									23184,
-									23195
-								],
-								[
-									23295,
-									23308
-								],
-								[
-									23435,
-									23449
-								],
-								[
-									23600,
-									23611
-								],
-								[
-									28978,
-									29001
-								],
-								[
-									29125,
-									29130
-								],
-								[
-									29974,
-									29978
-								]
-							],
-							"symlist":
-							[
-								"\tⓂ  USE_WS2_32 … — macro object",
-								"\tⓂ  DNS_MAX_AGE … — macro object",
-								"\tⓂ  DEFAULT_BUF_SIZE … — macro object",
-								"\tⓂ  READ … — macro object",
-								"\tⓂ  WRITE … — macro object",
-								"\tⓂ  SERVER_SOCKET_ERROR … — macro object",
-								"\tⓂ  SERVER_SETSOCKOPT_ERROR … — macro object",
-								"\tⓂ  SERVER_BIND_ERROR … — macro object",
-								"\tⓂ  SERVER_LISTEN_ERROR … — macro object",
-								"\tⓂ  CLIENT_SOCKET_ERROR … — macro object",
-								"\tⓂ  CLIENT_RESOLVE_ERROR … — macro object",
-								"\tⓂ  CLIENT_CONNECT_ERROR … — macro object",
-								"\tⓂ  CREATE_PIPE_ERROR … — macro object",
-								"\tⓂ  BROKEN_PIPE_ERROR … — macro object",
-								"\tⓂ  SYNTAX_ERROR … — macro object",
-								"—Ⓒ– socketbuf_s { … } ; — type",
-								"\tⓉ  socketbuf_t ; — typedef",
-								"—Ⓒ– dns_result_s { … } ; — type",
-								"\tⓉ  dns_response_t ; — typedef",
-								"—Ⓒ– connection_s { … } ; — type",
-								"\tⓉ  connection_t ; — typedef",
-								"\t⒡  dns_query ( ) ; — function declaration",
-								"\t⒡  dns_print ( ) ; — function declaration",
-								"\t⒡  dns_lookup ( ) ; — function declaration",
-								"\t⒡  dump_strarray ( ) ; — function declaration",
-								"\t⒡  dump_fds ( ) ; — function declaration",
-								"\t⒡  dump_io ( ) ; — function declaration",
-								"\t⒡  connection_new ( ) ; — function declaration",
-								"\t⒡  connection_delete ( ) ; — function declaration",
-								"\t⒡  connection_find ( ) ; — function declaration",
-								"\t⒡  connection_open_log ( ) ; — function declaration",
-								"\t⒡  socket_find ( ) ; — function declaration",
-								"\t⒡  socket_other ( ) ; — function declaration",
-								"\t⒡  socket_send ( ) ; — function declaration",
-								"\t⒡  socket_getlocal_addr ( ) ; — function declaration",
-								"\t⒡  socket_connect ( ) ; — function declaration",
-								"\t⒡  socket_accept ( ) ; — function declaration",
-								"\t⒡  sockbuf_init ( ) ; — function declaration",
-								"\t⒡  sockbuf_fmt_addr ( ) ; — function declaration",
-								"\t⒡  sockbuf_put_addr ( ) ; — function declaration",
-								"\t⒡  sockbuf_close ( ) ; — function declaration",
-								"\t⒡  sockbuf_check ( ) ; — function declaration",
-								"\t⒡  sockbuf_log_data ( ) ; — function declaration",
-								"\t⒡  sockbuf_forward_data ( ) ; — function declaration",
-								"\t⒡  server_socket ( ) ; — function declaration",
-								"\t⒡  server_listen ( ) ; — function declaration",
-								"\t⒡  search_path ( ) ; — function declaration",
-								"\t⒡  server_finalize ( ) ; — function declaration",
-								"\t⒡  server_tar_files ( ) ; — function declaration",
-								"\t⒡  server_exit ( ) ; — function declaration",
-								"\t⒡  server_sigint ( ) ; — function declaration",
-								"\t⒡  server_sigterm ( ) ; — function declaration",
-								"\t⒡  server_loop ( ) ; — function declaration",
-								"\t⒡  server_connection_count ( ) ; — function declaration",
-								"\t⒡  usage ( ) ; — function declaration",
-								"\tⓂ  BACKLOG … — macro object",
-								"—Ⓕ– dns_query ( ) { … } — function",
-								"—Ⓕ– dns_print ( ) { … } — function",
-								"—Ⓕ– dns_lookup ( ) { … } — function",
-								"—Ⓕ– parse_addr ( ) { … } — function",
-								"—Ⓕ– sockbuf_parse_addr ( ) { … } — function",
-								"—Ⓕ– byte_numlines ( ) { … } — function",
-								"—Ⓕ– byte_is_binary ( ) { … } — function",
-								"—Ⓕ– buffer_numlines ( ) { … } — function",
-								"—Ⓕ– buffer_is_binary ( ) { … } — function",
-								"—Ⓕ– dump_strarray ( ) { … } — function",
-								"—Ⓕ– dump_fds ( ) { … } — function",
-								"—Ⓕ– dump_io ( ) { … } — function",
-								"—Ⓕ– connection_new ( ) { … } — function",
-								"—Ⓕ– connection_delete ( ) { … } — function",
-								"—Ⓕ– connection_find ( ) { … } — function",
-								"—Ⓕ– connection_open_log ( ) { … } — function",
-								"—Ⓕ– socket_find ( ) { … } — function",
-								"—Ⓕ– socket_other ( ) { … } — function",
-								"—Ⓕ– socket_send ( ) { … } — function",
-								"—Ⓕ– socket_connect ( ) { … } — function",
-								"—Ⓕ– socket_accept ( ) { … } — function",
-								"—Ⓕ– sockbuf_init ( ) { … } — function",
-								"—Ⓕ– sockbuf_fmt_addr ( ) { … } — function",
-								"—Ⓕ– sockbuf_put_addr ( ) { … } — function",
-								"—Ⓕ– sockbuf_close ( ) { … } — function",
-								"—Ⓕ– sockbuf_check ( ) { … } — function",
-								"—Ⓕ– sockbuf_log_data ( ) { … } — function",
-								"—Ⓕ– sockbuf_forward_data ( ) { … } — function",
-								"—Ⓕ– server_socket ( ) { … } — function",
-								"—Ⓕ– server_listen ( ) { … } — function",
-								"—Ⓕ– search_path ( ) { … } — function",
-								"—Ⓕ– server_finalize ( ) { … } — function",
-								"—Ⓕ– server_tar_files ( ) { … } — function",
-								"—Ⓕ– server_exit ( ) { … } — function",
-								"—Ⓕ– server_sigint ( ) { … } — function",
-								"—Ⓕ– server_sigterm ( ) { … } — function",
-								"—Ⓕ– server_loop ( ) { … } — function",
-								"—Ⓕ– server_connection_count ( ) { … } — function",
-								"—Ⓕ– usage ( ) { … } — function",
-								"—Ⓕ– main ( ) { … } — function"
-							],
 							"syntax": "Packages/Outline/outline.hidden-tmLanguage",
 							"tab_size": 3,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 1.0,
-						"translation.y": 9.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 3,
-					"type": "text"
-				}
-			]
-		},
-		{
-			"selected": 1,
-			"sheets":
-			[
-				{
-					"buffer": 1,
-					"file": "genmakefile.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 142560,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								115,
-								115
-							]
-						],
-						"settings":
-						{
-							"function_name_status_row": 5,
-							"syntax": "Packages/C Improved/C Improved.tmLanguage",
-							"tab_size": 2,
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
@@ -1060,65 +524,42 @@
 					},
 					"stack_index": 1,
 					"type": "text"
-				},
+				}
+			]
+		},
+		{
+			"selected": 0,
+			"sheets":
+			[
 				{
-					"buffer": 2,
-					"file": "tinyproxy.c",
+					"buffer": 1,
+					"file": "CMakeLists.txt",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 33221,
+						"buffer_size": 66454,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								14920,
-								14920
+								3313,
+								3313
 							]
 						],
 						"settings":
 						{
-							"function_name_status_row": 605,
-							"syntax": "Packages/C Improved/C Improved.tmLanguage",
+							"function_name_status_row": 116,
+							"syntax": "Packages/CMakeEditor/CMakeEditor.tmLanguage",
 							"tab_size": 2,
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 9865.0,
+						"translation.y": 1392.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 0,
-					"type": "text"
-				},
-				{
-					"buffer": 3,
-					"file": "debug.h",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 511,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"function_name_status_row": 0,
-							"syntax": "Packages/C++/C++.sublime-syntax"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 2,
 					"type": "text"
 				}
 			]
@@ -1180,7 +621,7 @@
 	"project": "c-utils.sublime-project",
 	"replace":
 	{
-		"height": 71.0
+		"height": 70.0
 	},
 	"save_all_on_build": true,
 	"select_file":
@@ -1189,6 +630,42 @@
 		"last_filter": "",
 		"selected_items":
 		[
+			[
+				"cmake",
+				"CMakeLists.txt"
+			],
+			[
+				"errmsg_",
+				"lib/errmsg/errmsg_warn.c"
+			],
+			[
+				"errmsg",
+				"lib/errmsg.h"
+			],
+			[
+				"cmakelist",
+				"CMakeLists.txt"
+			],
+			[
+				"cache.c",
+				"cache.c"
+			],
+			[
+				"query.c",
+				"query.c"
+			],
+			[
+				"response.c",
+				"response.c"
+			],
+			[
+				"nscache",
+				"nscache.c"
+			],
+			[
+				"list-r",
+				"list-r.c"
+			],
 			[
 				"tinypro",
 				"tinyproxy.c"
@@ -1232,10 +709,6 @@
 			[
 				"response",
 				"response.c"
-			],
-			[
-				"cmake",
-				"CMakeLists.txt"
 			],
 			[
 				"io_dump",
@@ -1348,10 +821,6 @@
 			[
 				" io_waituntil2 ",
 				"lib/io/io_waituntil2.c"
-			],
-			[
-				"cmakelist",
-				"CMakeLists.txt"
 			],
 			[
 				"tinyproxy",
@@ -1672,34 +1141,6 @@
 			[
 				"strlist.h",
 				"lib/strlist.h"
-			],
-			[
-				"strlist_push",
-				"lib/strlist/strlist_push_unique_sa.c"
-			],
-			[
-				"replacec",
-				"lib/stralloc/stralloc_replacec.c"
-			],
-			[
-				"stralloc_replace",
-				"lib/stralloc/stralloc_replace.c"
-			],
-			[
-				"str_end",
-				"lib/str/str_end.c"
-			],
-			[
-				"unix.h",
-				"lib/unix.h"
-			],
-			[
-				"path_is",
-				"lib/path/path_is_absolute.c"
-			],
-			[
-				"absolute_sa",
-				"lib/path/path_absolute_sa.c"
 			]
 		],
 		"width": 0.0

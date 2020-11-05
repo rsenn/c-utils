@@ -1,6 +1,7 @@
 #include "../array.h"
 #include "../str.h"
 #include "../strarray.h"
+#include <stdlib.h>
 
 int
 strarray_setb(strarray* arr, size_t index, const char* s, size_t n) {

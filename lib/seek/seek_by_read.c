@@ -4,13 +4,16 @@
 #include "../seek.h"
 #include "../io.h"
 #include "../alloc.h"
-#include <stdio.h>
+#include <fcntl.h>
 #include <errno.h>
 #if WINDOWS_NATIVE
 #include <io.h>
 #else
 #include <unistd.h>
 #include <sys/types.h>
+#endif
+#ifdef HAVE_ALLOCA
+#include <alloca.h>
 #endif
 
 /*  If we are reading through a pipe, or from stdin then we can't io_seek,

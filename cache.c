@@ -61,6 +61,7 @@ Each entry contains the following information:
 
 static void
 cache_impossible(void) {
+  errmsg_warn("Cache impossible", 0);
   exit(111);
 }
 

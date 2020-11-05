@@ -25,7 +25,7 @@
 #include "cache.h"
 #include "log.h"
 
-#define FATAL "dnscache: fatal: "
+#define FATAL "nscache: fatal: "
 
 static char fn[3 + IP6_FMT];
 

@@ -1,4 +1,5 @@
 #include "../process.h"
+#include "../wait.h"
 
 int
 process_wait(int pid) {

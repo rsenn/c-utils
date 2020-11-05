@@ -1,5 +1,6 @@
 #include "../fmt.h"
 #include "../uint32.h"
+#include "../str.h"
 #include <sys/types.h>
 
 void fmt_oct3(char* dest, unsigned char w);

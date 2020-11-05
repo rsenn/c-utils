@@ -12,6 +12,7 @@
 #include <unistd.h>
 #endif
 
+#include <stdio.h>
 #include <assert.h>
 #include <ctype.h>
 #include <sys/types.h>

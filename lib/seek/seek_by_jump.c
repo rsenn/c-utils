@@ -4,7 +4,7 @@
 #include "../seek.h"
 #include "../io.h"
 #include "../errmsg.h"
-#include <stdio.h>
+//#include <fcntl.h>
 #include <errno.h>
 #if WINDOWS_NATIVE
 #include <io.h>

@@ -45,6 +45,8 @@ cfg() {
       -DENABLE_PIC=OFF ;;
   esac
 
+  [ -n "$PKG_CONFIG_PATH" ] && echo "PKG_CONFIG_PATH=$PKG_CONFIG_PATH" 1>&2
+
   : ${generator:="CodeLite - Unix Makefiles"}
 
  (mkdir -p $builddir
@@ -94,6 +96,7 @@ cfg-diet() {
   : ${bindir=/opt/diet/bin-${host%%-*}}
 
   : ${CC="diet-gcc"}
+
   export CC
 
   if type pkgconf >/dev/null; then
@@ -132,9 +135,12 @@ cfg-diet64() {
 
   export prefix=/opt/diet
 
+  export PKG_CONFIG_PATH=/opt/diet/lib-x86_64/pkgconfig
+
   builddir=build/$host \
   CC="diet-gcc" \
   cfg-diet \
+    -DCMAKE_SYSTEM_LIBRARY_PATH=/opt/diet/lib-x86_64 \
   "$@")
 }
 
@@ -155,9 +161,13 @@ cfg-diet32() {
     CFLAGS="-m32"
     export CC launcher CFLAGS
   fi
+  
+  export PKG_CONFIG_PATH=/opt/diet/lib-i386/pkgconfig
 
   builddir=build/$host \
-  cfg-diet  "$@")
+  cfg-diet \
+    -DCMAKE_SYSTEM_LIBRARY_PATH=/opt/diet/lib-i386 \
+    "$@")
 }
 
 cfg-mingw() {
@@ -370,4 +380,32 @@ cfg-android64 ()
 { 
     ( : ${builddir=build/android64};
     cfg -DCMAKE_INSTALL_PREFIX=/opt/aarch64-linux-android64eabi/sysroot/usr -DCMAKE_VERBOSE_MAKEFILE=TRUE -DCMAKE_TOOLCHAIN_FILE=${TOOLCHAIN:-/opt/android64-cmake/android64.cmake} -DANDROID_NATIVE_API_LEVEL=21 -DPKG_CONFIG_EXECUTABLE=aarch64-linux-android64eabi-pkg-config -DCMAKE_PREFIX_PATH=/opt/aarch64-linux-android64eabi/sysroot/usr -DCMAKE_MAKE_PROGRAM=/usr/bin/make -DCMAKE_MODULE_PATH="/opt/OpenCV-3.4.1-android64-sdk/sdk/native/jni/abi-armeabi-v7a" -DOpenCV_DIR="/opt/OpenCV-3.4.1-android64-sdk/sdk/native/jni/abi-armeabi-v7a" "$@" )
+}
+
+cfg-emscripten() {
+  (build=$(cc -dumpmachine | sed 's|-pc-|-|g')
+  host=$(emcc -dumpmachine)
+  : ${builddir=build/${host%-*}-emscripten}
+  : ${prefix=$EMSCRIPTEN/system}
+  : ${libdir=$prefix/lib}
+  : ${bindir=$prefix/bin}
+  : ${EMSCRIPTEN=$EMSDK/upstream/emscripten}
+  export TOOLCHAIN="${EMSCRIPTEN}/cmake/Modules/Platform/Emscripten.cmake"
+
+PREFIX_PATH=$(set -- /opt/*-wasm;  IFS=";"; echo "$*") 
+LIBRARY_PATH=$(set -- /opt/*-wasm/lib ;  IFS=";"; echo "$*") 
+  PKG_CONFIG_PATH=$(set -- /opt/*-wasm/lib/pkgconfig; IFS=":"; echo "$*") #${PKG_CONFIG_PATH:+:$PKG_CONFIG_PATH}
+  PKG_CONFIG_PATH="${PKG_CONFIG_PATH:+$PKG_CONFIG_PATH:}${EMSCRIPTEN}/system/lib/pkgconfig"
+  export PKG_CONFIG_PATH
+  echo PKG_CONFIG_PATH="${PKG_CONFIG_PATH}"
+  CC="emcc" CXX="em++" TYPE="Release" VERBOSE="TRUE" \
+    CFLAGS="'-sWASM=1 -sUSE_PTHREADS=0 -sLLD_REPORT_UNDEFINED'" \
+    CXXFLAGS="'-sWASM=1 -sUSE_PTHREADS=0 -sLLD_REPORT_UNDEFINED'" \
+    CMAKE_WRAPPER="emcmake" \
+    prefix=/opt/${PWD##*/}-wasm \
+    cfg \
+    -DCMAKE_PREFIX_PATH="$PREFIX_PATH" \
+    -DCMAKE_LIBRARY_PATH="$LIBRARY_PATH" \
+    -DENABLE_PIC=FALSE \
+    "$@")
 }

@@ -3,7 +3,7 @@
 #define _LARGEFILE64_SOURCE 1
 #include "../seek.h"
 #include "../io.h"
-#include <stdio.h>
+#include <fcntl.h>
 #include <errno.h>
 #if WINDOWS_NATIVE
 #include <io.h>
