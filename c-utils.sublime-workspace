@@ -12,10 +12,10 @@
 	"buffers":
 	[
 		{
-			"contents": "",
+			"contents": "   Ⓜ  FATAL … — macro object\n   Ⓜ  MAXUDP … — macro object\n   Ⓜ  MAXTCP … — macro object\n—Ⓒ– tcpclient { … } ; — type\n—Ⓒ– udpclient { … } ; — type\n—Ⓕ– dnscache_okclient ( ) { … } — function\n—Ⓕ– dnscache_droproot ( ) { … } — function\n—Ⓕ– packetquery ( ) { … } — function\n—Ⓕ– udp_drop ( ) { … } — function\n—Ⓕ– udp_respond ( ) { … } — function\n—Ⓕ– udp_new ( ) { … } — function\n—Ⓕ– tcp_free ( ) { … } — function\n—Ⓕ– tcp_timeout ( ) { … } — function\n—Ⓕ– tcp_close ( ) { … } — function\n—Ⓕ– tcp_drop ( ) { … } — function\n—Ⓕ– tcp_respond ( ) { … } — function\n—Ⓕ– tcp_rw ( ) { … } — function\n—Ⓕ– tcp_new ( ) { … } — function\n—Ⓕ– dnscache_run ( ) { … } — function\n—Ⓕ– main ( ) { … } — function",
 			"settings":
 			{
-				"buffer_size": 0,
+				"buffer_size": 683,
 				"line_ending": "Unix",
 				"name": "𝌆 Outline",
 				"scratch": true
@@ -80,6 +80,47 @@
 			"settings":
 			{
 				"buffer_size": 66776,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "pkgcfg.c",
+			"settings":
+			{
+				"buffer_size": 30851,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "tinyproxy.c",
+			"settings":
+			{
+				"buffer_size": 33260,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/stralloc/stralloc_fmt.c",
+			"settings":
+			{
+				"buffer_size": 353,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/fmt/fmt_escapecharshell.c",
+			"settings":
+			{
+				"buffer_size": 1083,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/strarray/strarray_from_argv.c",
+			"settings":
+			{
+				"buffer_size": 214,
 				"line_ending": "Unix"
 			}
 		},
@@ -203,7 +244,9 @@
 		"/home/roman/Dokumente/Sources/c-utils",
 		"/home/roman/Dokumente/Sources/c-utils/ip",
 		"/home/roman/Dokumente/Sources/c-utils/lib",
-		"/home/roman/Dokumente/Sources/c-utils/lib/strlist"
+		"/home/roman/Dokumente/Sources/c-utils/lib/buffer",
+		"/home/roman/Dokumente/Sources/c-utils/lib/fmt",
+		"/home/roman/Dokumente/Sources/c-utils/lib/stralloc"
 	],
 	"file_history":
 	[
@@ -338,7 +381,7 @@
 	],
 	"find":
 	{
-		"height": 39.0
+		"height": 57.0
 	},
 	"find_in_files":
 	{
@@ -359,6 +402,19 @@
 		"case_sensitive": true,
 		"find_history":
 		[
+			"DEBUG_OUTPUT\n",
+			"DEBUG_OUTPUT",
+			"\"Read",
+			"ATLEAST",
+			"LIBS_ONLY",
+			"libs_mode",
+			"LIBS_ONLY",
+			"LIBS_ONLY_L",
+			"--libs\"",
+			"_EXISTS",
+			"'E'",
+			"exists",
+			"sorted",
 			"log_rr",
 			"\"rr",
 			"log_logtype",
@@ -473,20 +529,7 @@
 			"\"CPPFLAGS",
 			"doesn't",
 			"[^a-z]int3[^a-z0-9]",
-			"[^a-z]int3",
-			"int3",
-			"sources:",
-			"\"toks",
-			"toks",
-			"toks:",
-			"baudrate",
-			"57600",
-			"io_dump",
-			"debugmode",
-			"io_dump",
-			"#ifdef DEBUG_OUTPUT([^#]*)#endif",
-			"DEBUG_OUTPUT",
-			"debugmode"
+			"[^a-z]int3"
 		],
 		"highlight": false,
 		"in_selection": false,
@@ -577,7 +620,7 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 0,
+						"buffer_size": 683,
 						"regions":
 						{
 						},
@@ -587,9 +630,115 @@
 						"settings":
 						{
 							"color_scheme": "Packages/Outline/outline.hidden-tmTheme",
-							"current_file": "/home/roman/Dokumente/Sources/c-utils/CMakeLists.txt",
-							"function_name_status_row": 0,
+							"current_file": "/home/roman/Dokumente/Sources/c-utils/dnscache.c",
+							"function_name_status_row": 41,
 							"outline_rename_mode": false,
+							"symkeys":
+							[
+								[
+									530,
+									535
+								],
+								[
+									733,
+									739
+								],
+								[
+									752,
+									758
+								],
+								[
+									838,
+									847
+								],
+								[
+									1296,
+									1305
+								],
+								[
+									1653,
+									1670
+								],
+								[
+									2105,
+									2122
+								],
+								[
+									2754,
+									2765
+								],
+								[
+									3619,
+									3627
+								],
+								[
+									3739,
+									3750
+								],
+								[
+									4081,
+									4088
+								],
+								[
+									5264,
+									5272
+								],
+								[
+									5358,
+									5369
+								],
+								[
+									5535,
+									5544
+								],
+								[
+									5719,
+									5727
+								],
+								[
+									5809,
+									5820
+								],
+								[
+									6279,
+									6285
+								],
+								[
+									7755,
+									7762
+								],
+								[
+									8592,
+									8604
+								],
+								[
+									10309,
+									10313
+								]
+							],
+							"symlist":
+							[
+								"\tⓂ  FATAL … — macro object",
+								"\tⓂ  MAXUDP … — macro object",
+								"\tⓂ  MAXTCP … — macro object",
+								"—Ⓒ– tcpclient { … } ; — type",
+								"—Ⓒ– udpclient { … } ; — type",
+								"—Ⓕ– dnscache_okclient ( ) { … } — function",
+								"—Ⓕ– dnscache_droproot ( ) { … } — function",
+								"—Ⓕ– packetquery ( ) { … } — function",
+								"—Ⓕ– udp_drop ( ) { … } — function",
+								"—Ⓕ– udp_respond ( ) { … } — function",
+								"—Ⓕ– udp_new ( ) { … } — function",
+								"—Ⓕ– tcp_free ( ) { … } — function",
+								"—Ⓕ– tcp_timeout ( ) { … } — function",
+								"—Ⓕ– tcp_close ( ) { … } — function",
+								"—Ⓕ– tcp_drop ( ) { … } — function",
+								"—Ⓕ– tcp_respond ( ) { … } — function",
+								"—Ⓕ– tcp_rw ( ) { … } — function",
+								"—Ⓕ– tcp_new ( ) { … } — function",
+								"—Ⓕ– dnscache_run ( ) { … } — function",
+								"—Ⓕ– main ( ) { … } — function"
+							],
 							"syntax": "Packages/Outline/outline.hidden-tmLanguage",
 							"tab_size": 3,
 							"translate_tabs_to_spaces": true
@@ -598,13 +747,13 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 10,
+					"stack_index": 15,
 					"type": "text"
 				}
 			]
 		},
 		{
-			"selected": 6,
+			"selected": 0,
 			"sheets":
 			[
 				{
@@ -620,22 +769,22 @@
 						"selection":
 						[
 							[
-								424,
-								424
+								739,
+								740
 							]
 						],
 						"settings":
 						{
-							"function_name_status_row": 20,
+							"function_name_status_row": -1,
 							"syntax": "Packages/C Improved/C Improved.tmLanguage",
 							"tab_size": 2,
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 5076.0,
+						"translation.y": 288.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 4,
+					"stack_index": 0,
 					"type": "text"
 				},
 				{
@@ -824,10 +973,10 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 3150.0,
+						"translation.y": 504.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 7,
+					"stack_index": 1,
 					"type": "text"
 				},
 				{
@@ -855,10 +1004,10 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 7284.0,
+						"translation.y": 570.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 6,
+					"stack_index": 2,
 					"type": "text"
 				},
 				{
@@ -886,10 +1035,10 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 696.0,
+						"translation.y": 318.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 5,
+					"stack_index": 3,
 					"type": "text"
 				},
 				{
@@ -918,7 +1067,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 9,
+					"stack_index": 14,
 					"type": "text"
 				},
 				{
@@ -947,7 +1096,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 8,
+					"stack_index": 4,
 					"type": "text"
 				},
 				{
@@ -963,13 +1112,13 @@
 						"selection":
 						[
 							[
-								35610,
-								35610
+								435,
+								435
 							]
 						],
 						"settings":
 						{
-							"function_name_status_row": 1019,
+							"function_name_status_row": 15,
 							"syntax": "Packages/CMakeEditor/CMakeEditor.tmLanguage",
 							"tab_size": 2,
 							"translate_tabs_to_spaces": true
@@ -978,11 +1127,162 @@
 						"translation.y": 12.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 0,
+					"stack_index": 9,
 					"type": "text"
 				},
 				{
 					"buffer": 8,
+					"file": "pkgcfg.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 30851,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								28261,
+								28261
+							]
+						],
+						"settings":
+						{
+							"function_name_status_row": 1197,
+							"syntax": "Packages/C Improved/C Improved.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 9439.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 8,
+					"type": "text"
+				},
+				{
+					"buffer": 9,
+					"file": "tinyproxy.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 33260,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								17216,
+								17216
+							]
+						],
+						"settings":
+						{
+							"function_name_status_row": 697,
+							"syntax": "Packages/C Improved/C Improved.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 11950.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 10,
+					"type": "text"
+				},
+				{
+					"buffer": 10,
+					"file": "lib/stralloc/stralloc_fmt.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 353,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								353,
+								353
+							]
+						],
+						"settings":
+						{
+							"function_name_status_row": 14,
+							"syntax": "Packages/C Improved/C Improved.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 11,
+					"type": "text"
+				},
+				{
+					"buffer": 11,
+					"file": "lib/fmt/fmt_escapecharshell.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1083,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								9,
+								9
+							]
+						],
+						"settings":
+						{
+							"function_name_status_row": 0,
+							"syntax": "Packages/C Improved/C Improved.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 5,
+					"type": "text"
+				},
+				{
+					"buffer": 12,
+					"file": "lib/strarray/strarray_from_argv.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 214,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								30,
+								30
+							]
+						],
+						"settings":
+						{
+							"function_name_status_row": 3,
+							"syntax": "Packages/C Improved/C Improved.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 6,
+					"type": "text"
+				},
+				{
+					"buffer": 13,
 					"file": "cfg.sh",
 					"semi_transient": false,
 					"settings":
@@ -1006,14 +1306,14 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 5922.0,
+						"translation.y": 288.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 3,
+					"stack_index": 7,
 					"type": "text"
 				},
 				{
-					"buffer": 9,
+					"buffer": 14,
 					"file": "response.c",
 					"semi_transient": false,
 					"settings":
@@ -1040,11 +1340,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 2,
+					"stack_index": 13,
 					"type": "text"
 				},
 				{
-					"buffer": 10,
+					"buffer": 15,
 					"file": "query.c",
 					"semi_transient": false,
 					"settings":
@@ -1071,7 +1371,7 @@
 						"translation.y": 5536.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 1,
+					"stack_index": 12,
 					"type": "text"
 				}
 			]
@@ -1142,6 +1442,14 @@
 		"last_filter": "",
 		"selected_items":
 		[
+			[
+				"tinypr",
+				"tinyproxy.c"
+			],
+			[
+				"pkgc",
+				"pkgcfg.c"
+			],
 			[
 				"cfg.sh",
 				"cfg.sh"
@@ -1645,14 +1953,6 @@
 			[
 				"path_abs",
 				"lib/path/path_absolute.c"
-			],
-			[
-				"636",
-				"build/x86_64-linux-gnu/try-33vNky.c"
-			],
-			[
-				"strlist.h",
-				"lib/strlist.h"
 			]
 		],
 		"width": 0.0

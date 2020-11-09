@@ -661,7 +661,7 @@ sockbuf_log_data(socketbuf_t* sb, bool send, char* x, ssize_t len) {
     }
     if(!line_buffer)
       end = n;
-#ifdef DEBUG_OUTPUT_
+#ifdef DEBUG_OUTPUT
     buffer_puts(&log, send ? "Sent " : "Received ");
     if(line_buffer) {
       buffer_puts(&log, end == n ? "data" : "line");
@@ -693,9 +693,9 @@ sockbuf_log_data(socketbuf_t* sb, bool send, char* x, ssize_t len) {
 
     pos = log.p;
 
-#ifdef DEBUG_OUTPUT_
-    (escape ? buffer_put_escaped(&log, x, maxlen > 0 && maxlen < end ? maxlen : end, &fmt_escapecharshell)
-            : buffer_put(&log, x, maxlen > 0 && maxlen < end ? maxlen : end));
+#ifdef DEBUG_OUTPUT
+    (escape ? buffer_put_escaped(&log, x, /*maxlen > 0 && maxlen < end ? maxlen :*/ end, &fmt_escapecharshell)
+            : buffer_put(&log, x, /*maxlen > 0 && maxlen < end ? maxlen :*/ end));
 
     if(maxlen > 0 && maxlen < end)
       buffer_puts(&log, "<shortened> ...");
@@ -846,7 +846,7 @@ server_finalize() {
     buffer_putnlflush(&w);
     buffer_free(&w);
     ret = io_sendfile(wr, file, 0, filesize);
-#ifdef DEBUG_OUTPUT_
+#ifdef DEBUG_OUTPUT
     buffer_puts(buffer_2, "Output file: ");
     buffer_put(buffer_2, s, n);
     buffer_puts(buffer_2, " ret =");

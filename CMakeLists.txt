@@ -1885,6 +1885,7 @@ add_program(
   open)
 add_program(
   list-r
+  path
   strarray
   strlist
   stralloc
