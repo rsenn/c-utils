@@ -149,7 +149,7 @@ main(int argc, char* argv[]) {
   int c;
   int index = 0;
   int out_fd = 1;
-  const char* out_file = 0;
+  char* out_file = 0;
 
   struct longopt opts[] = {{"help", 0, NULL, 'h'},
                            {"single-quote", 0, NULL, 's'},

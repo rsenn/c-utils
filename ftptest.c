@@ -206,7 +206,7 @@ handle_data(ftp_client* ftp, stralloc* data) {
 
 ssize_t
 ftp_read(int fd, void* b, size_t len) {
- return recv(fd, b, len, 0);
+  return recv(fd, b, len, 0);
 }
 
 ssize_t
@@ -219,7 +219,7 @@ ftp_write(int fd, void* b, size_t len) {
   buffer_put(buffer_1, b, len);
   buffer_putnlflush(buffer_1);
 #endif
- return send(fd, b, len, 0);
+  return send(fd, b, len, 0);
 }
 void
 handle_ftp(ftp_client* ftp, stralloc* line) {
@@ -265,7 +265,6 @@ handle_ftp(ftp_client* ftp, stralloc* line) {
 
       buffer_init_free(&ftp->data, ftp_read, ftp->data_sock, alloc(1024), 1024);
 
-
       break;
     }
   }
@@ -276,7 +275,6 @@ handle_ftp(ftp_client* ftp, stralloc* line) {
   buffer_putnlflush(buffer_1);
 #endif
 }
-
 
 void
 list_ftp(ftp_client* ftp) {
@@ -298,9 +296,9 @@ list_ftp(ftp_client* ftp) {
         io_dontwantwrite(ftp->data_sock);
         io_wantread(ftp->data_sock);
 
-  ftp->state = PASSIVE;
-  io_wantwrite(ftp->control_sock);
-break;
+        ftp->state = PASSIVE;
+        io_wantwrite(ftp->control_sock);
+        break;
       }
       if(w == ftp->control_sock /*|| w == ftp->data_sock*/) {
 
@@ -315,8 +313,8 @@ break;
             io_dontwantwrite(ftp->control_sock);
             break;
           }
-                  case PASSIVE: {
-          ftplib_write_cmd_s(&out, "LIST");
+          case PASSIVE: {
+            ftplib_write_cmd_s(&out, "LIST");
             ftp->state = TRANSFERRING;
             break;
           }

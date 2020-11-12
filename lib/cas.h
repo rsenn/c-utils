@@ -26,7 +26,8 @@ __atomic_compare_and_swap(long* ptr, long oldval, long newval) {
 #define __CAS __atomic_compare_and_swap
 #define __CAS_PTR __atomic_compare_and_swap
 
-#elif (defined(__i386__) || defined(__x86_64__)) && (defined(__TINYC__) ||defined(TCC) || defined(__GNUC__) || USE_INLINE_COMPARE_AND_SWAP)
+#elif(defined(__i386__) || defined(__x86_64__)) &&                                                                     \
+    (defined(__TINYC__) || defined(TCC) || defined(__GNUC__) || USE_INLINE_COMPARE_AND_SWAP)
 #warning x86
 #ifdef __TINYC__
 #warning TCC
@@ -53,24 +54,24 @@ __sync_val_compare_and_swap(long* ptr, long cmp, long new) {
                    : "memory");
   return prev;
 }
-#elif (defined(__aarch64__) || defined(__ARM_ARCH_8A__)) && !defined(__TINYC__)
+#elif(defined(__aarch64__) || defined(__ARM_ARCH_8A__)) && !defined(__TINYC__)
 
-static inline long __atomic_compare_and_swap(void *ptr, long old, long new) {
-    long oldval;
-    long *lptr = ptr;
-    unsigned long res;
-    __asm__ __volatile__(
-                 "1: ldxr %1, %2\n"
-                 " cmp %1, %3\n"
-                 " b.ne 2f\n"
-                 " stxr %w0, %4, %2\n"
-                 " cbnz %w0, 1b\n"
-                 "2:"
-                 : "=&r"(res), "=&r"(oldval), "+Q"(ptr)
-                 : "Ir"(old), "r"(new)
-                 : "cc");
-    return oldval;
-  }
+static inline long
+__atomic_compare_and_swap(void* ptr, long old, long new) {
+  long oldval;
+  long* lptr = ptr;
+  unsigned long res;
+  __asm__ __volatile__("1: ldxr %1, %2\n"
+                       " cmp %1, %3\n"
+                       " b.ne 2f\n"
+                       " stxr %w0, %4, %2\n"
+                       " cbnz %w0, 1b\n"
+                       "2:"
+                       : "=&r"(res), "=&r"(oldval), "+Q"(ptr)
+                       : "Ir"(old), "r"(new)
+                       : "cc");
+  return oldval;
+}
 
 #define __sync_val_compare_and_swap __atomic_compare_and_swap
 #elif defined(__arm__)
