@@ -1,6 +1,6 @@
-#include "stralloc.h"
-#include "buffer.h"
-#include "byte.h"
+#include "../stralloc.h"
+#include "../buffer.h"
+#include "../byte.h"
 
 int
 buffer_getln(buffer* b, stralloc* sa, int* gotit, int termchar) {
