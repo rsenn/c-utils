@@ -115,11 +115,7 @@ macro(check_compile RESULT_VAR SOURCE)
     file(REMOVE "${C_SOURCE}")
 
     if(COMPILE_RESULT)
-<<<<<<< HEAD
       message(STATUS "ok")
-=======
-      message(CHECK_PASS "ok")
->>>>>>> 25dae34aba858799f9601cacd2ce55b8c6de95c5
       # add_definitions(-D${RESULT_VAR})
     else(COMPILE_RESULT)
       set(COMPILE_LOG "${CMAKE_CURRENT_BINARY_DIR}/compile-${C_NAME}.log")
@@ -276,19 +272,6 @@ if(NOT USE_SELECT)
     ITEM
     OUTPUT_VAR)
 
-<<<<<<< HEAD
-  # set(MUX_LIST "") foreach(METHOD DEVPOLL EPOLL KQUEUE SIGIO POLL)
-  # if(SUPPORT_${METHOD}) list_contains("${MUX_LIST}" "${METHOD}"
-  # CONTAINS_METHOD) if(NOT CONTAINS_METHOD) list(APPEND MUX_LIST ${METHOD})
-  # endif(NOT CONTAINS_METHOD) endif(SUPPORT_${METHOD}) endforeach(METHOD
-=======
-  # set(MUX_LIST "") foreach(METHOD DEVPOLL EPOLL KQUEUE SIGIO POLL) if(SUPPORT_${METHOD})
-  # list_contains("${MUX_LIST}" "${METHOD}" CONTAINS_METHOD) if(NOT CONTAINS_METHOD) list(APPEND
-  # MUX_LIST ${METHOD}) endif(NOT CONTAINS_METHOD) endif(SUPPORT_${METHOD}) endforeach(METHOD
->>>>>>> 25dae34aba858799f9601cacd2ce55b8c6de95c5
-  # DEVPOLL EPOLL KQUEUE SIGIO POLL)
-  #
-  # message("Mux methods: ${MUX_LIST}")
 endif(NOT USE_SELECT)
 
 check_compile(
@@ -1102,14 +1085,9 @@ if(BUILD_ZLIB)
       3rdparty/zlib/uncompr.c
       3rdparty/zlib/zutil.c)
   add_library(z ${ZLIB_SOURCES})
-<<<<<<< HEAD
   set_target_properties(
     z PROPERTIES ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/zlib"
                  LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/zlib")
-=======
-  set_target_properties(z PROPERTIES ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/zlib"
-                                     LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/zlib")
->>>>>>> 25dae34aba858799f9601cacd2ce55b8c6de95c5
   link_directories(BEFORE "${CMAKE_BINARY_DIR}/zlib")
   set(ZLIB_LIBRARY_DEBUG
       z
@@ -1136,14 +1114,9 @@ if(BUILD_BZIP)
       3rdparty/bzip2/huffman.c
       3rdparty/bzip2/randtable.c)
   add_library(bz2 ${LIBBZ2_SOURCES})
-<<<<<<< HEAD
   set_target_properties(
     bz2 PROPERTIES ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bzip2"
                    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bzip2")
-=======
-  set_target_properties(bz2 PROPERTIES ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bzip2"
-                                       LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bzip2")
->>>>>>> 25dae34aba858799f9601cacd2ce55b8c6de95c5
   link_directories(BEFORE "${CMAKE_BINARY_DIR}/bzip2")
 
   set(BZIP2_LIBRARY_DEBUG
@@ -1310,7 +1283,6 @@ if(BUILD_LZMA)
     3rdparty/xz/src/liblzma/simple/*.c)
   # list(FILTER LIBLZMA_SOURCES EXCLUDE REGEX ".*_mt\\..*")
 
-<<<<<<< HEAD
   if(LIBLZMA_SOURCES)
     add_library(lzma ${LIBLZMA_SOURCES})
     set_target_properties(
@@ -1348,40 +1320,6 @@ if(BUILD_LZMA)
                       INCLUDE_DIRECTORIES "${LIBLZMA_INCLUDE_DIRS}")
   endif(LIBLZMA_SOURCES)
 
-=======
-  add_library(lzma ${LIBLZMA_SOURCES})
-  set_target_properties(lzma PROPERTIES ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/xz"
-                                        LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/xz")
-  set(LZMA_SOURCE_DIR "${CMAKE_SOURCE_DIR}/3rdparty/xz")
-  set(LIBLZMA_INCLUDE_DIRS
-      ${LZMA_SOURCE_DIR}/src/common
-      ${LZMA_SOURCE_DIR}/src/liblzma/lzma
-      ${LZMA_SOURCE_DIR}/src/liblzma/lz
-      ${LZMA_SOURCE_DIR}/src/liblzma/check
-      ${LZMA_SOURCE_DIR}/src/liblzma/simple
-      ${LZMA_SOURCE_DIR}/src/liblzma/delta
-      ${LZMA_SOURCE_DIR}/src/liblzma/rangecoder
-      ${LZMA_SOURCE_DIR}/src/liblzma/common
-      ${LZMA_SOURCE_DIR}/src/liblzma/api
-      ${CMAKE_BINARY_DIR}/3rdparty/xz)
-  define_have(
-    LIBLZMA_DEFS
-    HAVE_STDINT_H
-    HAVE_STDLIB_H
-    HAVE_STDBOOL_H
-    HAVE_INTTYPES_H
-    HAVE_LIMITS_H
-    HAVE_STRING_H
-    HAVE_STRINGS_H
-    HAVE_MEMORY_H
-    HAVE_SYS_PARAM_H
-    HAVE_SYS_TIME_H
-    HAVE_SYS_TYPES_H
-    HAVE_LZMA_H)
-  # message("LIBLZMA_DEFS: ${LIBLZMA_DEFS}")
-  set_target_properties(lzma PROPERTIES COMPILE_DEFINITIONS "${LIBLZMA_DEFS}"
-                                        INCLUDE_DIRECTORIES "${LIBLZMA_INCLUDE_DIRS}")
->>>>>>> 25dae34aba858799f9601cacd2ce55b8c6de95c5
   link_directories(BEFORE "${CMAKE_BINARY_DIR}/xz")
   set(LIBLZMA_LIBRARY
       lzma
@@ -1467,11 +1405,8 @@ message("LIBLZMA_INCLUDE_DIRS: ${LIBLZMA_INCLUDE_DIRS}")
 message("OPENSSL_INCLUDE_DIR: ${OPENSSL_INCLUDE_DIR}")
 message("ZLIB_INCLUDE_DIR: ${ZLIB_INCLUDE_DIR}")
 
-<<<<<<< HEAD
 set(iarray_SOURCES lib/cas.S)
 
-=======
->>>>>>> 25dae34aba858799f9601cacd2ce55b8c6de95c5
 set(MODSUBDIRS
     alloc
     array
