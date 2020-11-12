@@ -91,7 +91,7 @@ static bool ip6, no_ip6 = false;
 static char ipbuf[IP6_FMT];
 static struct {
   address_t addr;
-  uint16 port
+  uint16 port;
 } passive;
 
 void
