@@ -1879,8 +1879,9 @@ sourcedir_addsource(const char* source, strarray* srcs) {
     buffer_putnlflush(buffer_2);
 #endif
     return;
-
+#if defined(__x86_64__) || defined(__i386__)
     asm("int3");
+#endif
   }
 
   if((x = path_mmap_read(source, &n)) != 0) {

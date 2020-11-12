@@ -81,7 +81,7 @@ my_extern intptr_t io_comport;
 #define _XOPEN_SOURCE
 #endif
 
-#include "../byte.h"
+#include "byte.h"
 #include <inttypes.h>
 #include <sys/epoll.h>
 

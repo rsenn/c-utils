@@ -4,7 +4,7 @@ set(CMAKE_WARN_VS8 OFF)
 
 set(CMAKE_C_STANDARD 11)
 
-project(c-utils C)
+project(c-utils C ASM)
 if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
   set(CMAKE_INSTALL_PREFIX
       "/usr/local"
@@ -61,7 +61,8 @@ set(CPACK_SOURCE_IGNORE_FILES ${ignored_files})
 set(CPACK_SOURCE_PACKAGE_FILE_NAME dirlist-${DIRLIST_VERSION})
 set(CPACK_PACKAGE_NAME dirlist)
 set(CPACK_RESOURCE_FILE_README ${PROJECT_SOURCE_DIR}/README)
-set(CPACK_INSTALL_CMAKE_PROJECTS ${CMAKE_CURRENT_BINARY_DIR};${CMAKE_PROJECT_NAME};ALL)
+set(CPACK_INSTALL_CMAKE_PROJECTS
+    ${CMAKE_CURRENT_BINARY_DIR};${CMAKE_PROJECT_NAME};ALL)
 
 # if(EXISTS "${CMAKE_SOURCE_DIR}/3rdparty/openssl/CMakeLists.txt")
 # add_subdirectory(3rdparty/openssl) endif()
@@ -97,14 +98,15 @@ macro(check_compile RESULT_VAR SOURCE)
     string(
       RANDOM
       LENGTH 6
-      ALPHABET "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789" C_NAME)
+      ALPHABET "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+               C_NAME)
     string(REPLACE SUPPORT_ "" NAME "${RESULT_VAR}")
     string(REPLACE _ - NAME "${NAME}")
     string(TOLOWER "${NAME}" C_NAME)
     set(C_SOURCE "${CMAKE_CURRENT_BINARY_DIR}/try-${C_NAME}.c")
     string(REPLACE "\\" "\\\\" SOURCE "${SOURCE}")
     file(WRITE "${C_SOURCE}" "${SOURCE}")
-    message(CHECK_START "Trying to compile try-${C_NAME}.c ... ")
+    message(STATUS "Trying to compile try-${C_NAME}.c ... ")
     try_compile(
       COMPILE_RESULT "${CMAKE_CURRENT_BINARY_DIR}"
       "${C_SOURCE}"
@@ -113,11 +115,11 @@ macro(check_compile RESULT_VAR SOURCE)
     file(REMOVE "${C_SOURCE}")
 
     if(COMPILE_RESULT)
-      message(CHECK_PASS "ok")
-      #add_definitions(-D${RESULT_VAR})
+      message(STATUS "ok")
+      # add_definitions(-D${RESULT_VAR})
     else(COMPILE_RESULT)
       set(COMPILE_LOG "${CMAKE_CURRENT_BINARY_DIR}/compile-${C_NAME}.log")
-      message(CHECK_FAIL "fail: ${COMPILE_LOG}")
+      message(STATUS "fail: ${COMPILE_LOG}")
       file(WRITE "${COMPILE_LOG}" "${OUTPUT}")
       string(REPLACE "\n" ";" OUTPUT "${OUTPUT}")
       list(FILTER OUTPUT INCLUDE REGEX "error")
@@ -136,7 +138,8 @@ macro(check_run RESULT_VAR SOURCE)
   string(
     RANDOM
     LENGTH 6
-    ALPHABET "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789" C_SOURCE)
+    ALPHABET "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+             C_SOURCE)
   set(C_SOURCE "${CMAKE_CURRENT_BINARY_DIR}/try-${C_SOURCE}.c")
   string(REPLACE "\\" "\\\\" SOURCE "${SOURCE}")
   file(WRITE "${C_SOURCE}" "${SOURCE}")
@@ -151,8 +154,8 @@ macro(check_run RESULT_VAR SOURCE)
     set(RUN_OK FALSE)
   endif("${RUN_RESULT}" STREQUAL 0)
 
-  # message("Run result: ${RUN_OK} output: ${RUN_OUTPUT}") message("Compile result:
-  # ${COMPILE_RESULT}")
+  # message("Run result: ${RUN_OK} output: ${RUN_OUTPUT}") message("Compile
+  # result: ${COMPILE_RESULT}")
 
   file(REMOVE "${C_SOURCE}")
 
@@ -269,17 +272,13 @@ if(NOT USE_SELECT)
     ITEM
     OUTPUT_VAR)
 
-#  set(MUX_LIST "")
-#  foreach(METHOD DEVPOLL EPOLL KQUEUE SIGIO POLL)
-#    if(SUPPORT_${METHOD})
-#      list_contains("${MUX_LIST}" "${METHOD}" CONTAINS_METHOD)
-#      if(NOT CONTAINS_METHOD)
-#        list(APPEND MUX_LIST ${METHOD})
-#      endif(NOT CONTAINS_METHOD)
-#    endif(SUPPORT_${METHOD})
-#  endforeach(METHOD DEVPOLL EPOLL KQUEUE SIGIO POLL)
-#
-#  message("Mux methods: ${MUX_LIST}")
+  # set(MUX_LIST "") foreach(METHOD DEVPOLL EPOLL KQUEUE SIGIO POLL)
+  # if(SUPPORT_${METHOD}) list_contains("${MUX_LIST}" "${METHOD}"
+  # CONTAINS_METHOD) if(NOT CONTAINS_METHOD) list(APPEND MUX_LIST ${METHOD})
+  # endif(NOT CONTAINS_METHOD) endif(SUPPORT_${METHOD}) endforeach(METHOD
+  # DEVPOLL EPOLL KQUEUE SIGIO POLL)
+  #
+  # message("Mux methods: ${MUX_LIST}")
 endif(NOT USE_SELECT)
 
 check_compile(
@@ -307,19 +306,22 @@ endif(NOT HAVE_SOCKLEN_T)
 
 check_compile(
   HAVE___INLINE__
-  "static __inline__ int\nfoo(int bar) {\n  return bar + 1;\n}\nint main() { return foo(42); }\n")
+  "static __inline__ int\nfoo(int bar) {\n  return bar + 1;\n}\nint main() { return foo(42); }\n"
+)
 if(HAVE___INLINE__)
   add_definitions(-Dinline=__inline)
 else(HAVE___INLINE__)
   check_compile(
     HAVE___INLINE
-    "static __inline int\nfoo(int bar) {\n  return bar + 1;\n}\nint main() { return foo(42); }\n")
+    "static __inline int\nfoo(int bar) {\n  return bar + 1;\n}\nint main() { return foo(42); }\n"
+  )
   if(HAVE___INLINE)
     add_definitions(-Dinline=__inline)
   else(HAVE___INLINE)
     check_compile(
       HAVE_INLINE
-      "static inline int\nfoo(int bar) {\n  return bar + 1;\n}\nint main() { return foo(42); }\n")
+      "static inline int\nfoo(int bar) {\n  return bar + 1;\n}\nint main() { return foo(42); }\n"
+    )
     if(NOT HAVE_INLINE)
       add_definitions(-Dinline=)
     endif(NOT HAVE_INLINE)
@@ -365,6 +367,45 @@ if(NOT CROSS)
 endif(NOT CROSS)
 # message("CROSS = ${CROSS}")
 
+# check_symbol_exists(__sync_val_compare_and_swap ""
+# HAVE___SYNC_VAL_COMPARE_AND_SWAP)
+
+check_compile(
+  INTRINSIC_CAS
+  "#include <stdlib.h>\n\nint main() {\n  long v;\n  __sync_val_compare_and_swap(&v, 1, 0);\n  return 0;\n}"
+)
+
+if(NOT INTRINSIC_CAS)
+  add_definitions(-DUSE_INLINE_COMPARE_AND_SWAP=1)
+endif()
+
+
+function(DUMP VAR)
+  string(REGEX REPLACE "[;\n]" " " A "${ARGV}")
+  message("\n\nVariable dump of: ${A}\n")
+
+  foreach(VAR ${ARGV})
+    message("\t${VAR} = ${${VAR}}")
+  endforeach(VAR ${ARGV})
+  message("\n")
+endfunction(DUMP VAR)
+
+
+#DUMP(CMAKE_C_COMPILER_ID)
+
+if(CMAKE_C_COMPILER_ID STREQUAL TinyCC)
+  set(COMPILER_TCC TRUE)
+else(CMAKE_C_COMPILER_ID STREQUAL TinyCC)
+  check_symbol_exists(__TINYC__ "" COMPILER_TCC)
+endif(CMAKE_C_COMPILER_ID STREQUAL TinyCC)
+  
+if(COMPILER_TCC)
+  message(STATUS "Compiler is TinyCC")
+  add_definitions(-DTCC=1)
+
+  unset(CMAKE_ASM_COMPILER)
+  set(CMAKE_ASM_COMPILER cc)
+endif(COMPILER_TCC)
 # message("sigset_t size = ${SIGSET_T_SIZE}")
 if(SIGSET_T_SIZE)
   set(HAVE_SIGSET_TYPE
@@ -387,7 +428,8 @@ if(HAVE_SIGSET_T)
   # add_definitions(-DHAVE_SIGSET_T)
 endif(HAVE_SIGSET_T)
 
-# set(SIZEOF_SIGSET_TYPE "${SIZEOF_SIGSET_T}" CACHE STRING "Size of 'sigset_t' type")
+# set(SIZEOF_SIGSET_TYPE "${SIZEOF_SIGSET_T}" CACHE STRING "Size of 'sigset_t'
+# type")
 message("size of sigset_t = ${SIZEOF_SIGSET_T}")
 
 if(SIZEOF_SIGSET_T)
@@ -420,6 +462,17 @@ if(NOT CROSS)
   check_type_size(uint64_t UINT64_T)
   check_type_size(uintmax_t UINTMAX_T)
 
+
+  check_type_size(ptrdiff_t PTRDIFF_T_SIZE)
+  check_type_size(size_t SIZE_T_SIZE)
+  check_type_size(long LONG_SIZE)
+  check_type_size("void*" VOIDP_T_SIZE)
+
+  #DUMP(PTRDIFF_T_SIZE)
+  #DUMP(SIZE_T_SIZE)
+  #DUMP(LONG_SIZE)
+  #DUMP(VOIDP_T_SIZE)
+
   check_type_size("short" SIZE_OF_SHORT)
   check_type_size("int" SIZE_OF_INT)
   check_type_size("long" SIZE_OF_LONG)
@@ -444,22 +497,14 @@ if(NOT CROSS)
   endif()
 endif(NOT CROSS)
 
-function(DUMP VAR)
-  string(REGEX REPLACE "[;\n]" " " A "${ARGV}")
-  message("\n\nVariable dump of: ${A}\n")
-
-  foreach(VAR ${ARGV})
-    message("\t${VAR} = ${${VAR}}")
-  endforeach(VAR ${ARGV})
-  message("\n")
-endfunction(DUMP VAR)
 string(REGEX REPLACE ".*/" "" COMPILER_NAME "${CMAKE_C_COMPILER}")
 
 if(COMPILER_NAME MATCHES "em.*")
   set(EMSCRIPTEN TRUE)
-  dump(EMSCRIPTEN EMCC_SUFFIX EMSCRIPTEN_PREFIX EMSCRIPTEN_TOOLCHAIN_PATH COMPILER_NAME
-       CMAKE_EXE_LINKER_FLAGS)
-  # foreach(LIB BZIP ZLIB LZMA SSL) set("USE_${LIB}" OFF) endforeach(LIB BZIP ZLIB LZMA SSL)
+  dump(EMSCRIPTEN EMCC_SUFFIX EMSCRIPTEN_PREFIX EMSCRIPTEN_TOOLCHAIN_PATH
+       COMPILER_NAME CMAKE_EXE_LINKER_FLAGS)
+  # foreach(LIB BZIP ZLIB LZMA SSL) set("USE_${LIB}" OFF) endforeach(LIB BZIP
+  # ZLIB LZMA SSL)
   set(EMSCRIPTEN_EXE_SUFFIX "html")
 endif(COMPILER_NAME MATCHES "em.*")
 
@@ -653,10 +698,10 @@ endforeach()
 # message(DEFINES_H: ${DEFINES_H}) add_definitions(${DEFINES_H})
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${DEFINES_H} -DHAVE_CONFIG_H=1")
 
-# message(INFO "Checking for epoll()...") check_function_exists(epoll_wait SUPPORT_EPOLL)
-# if(SUPPORT_EPOLL) message(INFO "Checking for epoll()... OK") set(USE_EPOLL ON) set(USE_SELECT OFF)
-# else(SUPPORT_EPOLL) message(INFO "Checking for epoll()... NOT FOUND") set(USE_EPOLL OFF)
-# endif(SUPPORT_EPOLL)
+# message(INFO "Checking for epoll()...") check_function_exists(epoll_wait
+# SUPPORT_EPOLL) if(SUPPORT_EPOLL) message(INFO "Checking for epoll()... OK")
+# set(USE_EPOLL ON) set(USE_SELECT OFF) else(SUPPORT_EPOLL) message(INFO
+# "Checking for epoll()... NOT FOUND") set(USE_EPOLL OFF) endif(SUPPORT_EPOLL)
 
 # if(USE_EPOLL STREQUAL ON) add_definitions(-DHAVE_EPOLL=1) endif()
 
@@ -677,7 +722,8 @@ if(NOT LINK_STATIC)
   endif()
 endif(NOT LINK_STATIC)
 
-# include(${CMAKE_SOURCE_DIR}/FindZlib.cmake) include(${CMAKE_SOURCE_DIR}/FindBZip2.cmake)
+# include(${CMAKE_SOURCE_DIR}/FindZlib.cmake)
+# include(${CMAKE_SOURCE_DIR}/FindBZip2.cmake)
 # include(${CMAKE_SOURCE_DIR}/FindLibLZMA.cmake)
 
 include(${CMAKE_SOURCE_DIR}/build/cmake/CheckInline.cmake)
@@ -714,12 +760,12 @@ endforeach()
 include(${CMAKE_SOURCE_DIR}/build/cmake/Werror.cmake)
 
 if(USE_LZMA)
-  # ################################################################################################
+  # ############################################################################
   # Check LibLZMA
-  # ################################################################################################
-  # pkg_search_module(LIBLZMA liblzma lzma) if(LIBLZMA_FOUND) if(pkgcfg_lib_LIBLZMA_lzma)
-  # set(LIBLZMA_LIBRARY ${pkgcfg_lib_LIBLZMA_lzma} CACHE FILEPATH "") endif(pkgcfg_lib_LIBLZMA_lzma)
-  # endif(LIBLZMA_FOUND)
+  # ############################################################################
+  # pkg_search_module(LIBLZMA liblzma lzma) if(LIBLZMA_FOUND)
+  # if(pkgcfg_lib_LIBLZMA_lzma) set(LIBLZMA_LIBRARY ${pkgcfg_lib_LIBLZMA_lzma}
+  # CACHE FILEPATH "") endif(pkgcfg_lib_LIBLZMA_lzma) endif(LIBLZMA_FOUND)
   #
   # if(NOT LIBLZMA_FOUND) include(FindLibLZMA) endif(NOT LIBLZMA_FOUND)
 
@@ -746,9 +792,9 @@ endif(USE_LZMA)
 
 if(USE_ZLIB)
 
-  # ################################################################################################
+  # ############################################################################
   # Check Zlib
-  # ################################################################################################
+  # ############################################################################
   message(STATUS "Checking for libz")
   find_library(ZLIB z)
 
@@ -797,9 +843,9 @@ else(USE_ZLIB)
 endif(USE_ZLIB)
 
 if(USE_BZIP)
-  # ################################################################################################
+  # ############################################################################
   # Check BZip2
-  # ################################################################################################
+  # ############################################################################
   pkg_search_module(BZIP2 libbz2 bzip2)
   if(NOT BZIP2_FOUND OR "${BZIP2_FOUND}" STREQUAL "")
     message(STATUS "bzip2 package config not found")
@@ -809,9 +855,9 @@ if(USE_BZIP)
   endif(NOT ${BZIP2_FOUND})
 endif(USE_BZIP)
 
-# ##################################################################################################
+# ##############################################################################
 # Check OpenSSL
-# ##################################################################################################
+# ##############################################################################
 if(USE_SSL AND NOT BUILD_SSL)
   # message("OPENSSL_ROOT = $ENV{OPENSSL_ROOT}")
   if(NOT OPENSSL_ROOT_DIR)
@@ -871,8 +917,8 @@ else()
   unset(OPENSSL_SSL_LIBRARY CACHE)
   unset(OPENSSL_INCLUDE_DIR CACHE)
 endif()
-# link_libraries( ${ZLIB_LIBRARY} ${BZIP2_LIBRARY} ${LIBLZMA_LIBRARY} ${CRYPTO_LIBRARIES} )
-# add_definitions(-Dinline=__inline)
+# link_libraries( ${ZLIB_LIBRARY} ${BZIP2_LIBRARY} ${LIBLZMA_LIBRARY}
+# ${CRYPTO_LIBRARIES} ) add_definitions(-Dinline=__inline)
 
 set(CMAKE_REQUIRED_DEFINITIONS)
 set(CMAKE_REQUIRED_INCLUDES "poll.h")
@@ -914,17 +960,13 @@ if(SUPPORT_SELECT STREQUAL "")
   endif(NOT SUPPORT_SELECT)
 endif(SUPPORT_SELECT STREQUAL "")
 
-
 set(MUX "")
 set(MUX_DEFS "")
 set(MUX_ALL
     KQUEUE DEVPOLL EPOLL
     # SIGIO
     POLL SELECT)
-set(MUX_USE
-    KQUEUE 
-    EPOLL DEVPOLL SIGIO
-    POLL SELECT)
+set(MUX_USE KQUEUE EPOLL DEVPOLL SIGIO POLL SELECT)
 foreach(METHOD ${MUX_USE})
   if(SUPPORT_${METHOD})
     list_contains("${MUX_LIST}" "${METHOD}" CONTAINS_METHOD)
@@ -948,48 +990,23 @@ set(MUX_METHODS
 
 message("Available MUX methods: ${MUX_METHODS}")
 
-#message("MUX definitions: ${MUX_DEFS}")
-
+# message("MUX definitions: ${MUX_DEFS}")
 
 if(LIBMSWSOCK)
   list(APPEND CMAKE_REQUIRED_LIBRARIES ${LIBMSWSOCK})
 endif(LIBMSWSOCK)
 
-
-#if(USE_EPOLL)
-#  set(MUX EPOLL)
-#endif(USE_EPOLL)
-#if(USE_DEVPOLL)
-#  set(MUX DEVPOLL)
-#endif(USE_DEVPOLL)
-#if(USE_SIGIO)
-#  set(MUX SIGIO)
-#endif(USE_SIGIO)
-#if(USE_KQUEUE)
-#  set(MUX KQUEUE)
-#endif(USE_KQUEUE)
-#if(USE_POLL)
-#  set(MUX POLL)
-#endif(USE_POLL)
-#if(USE_SELECT)
-#  set(MUX SELECT)
-#endif(USE_SELECT)
+# if(USE_EPOLL) set(MUX EPOLL) endif(USE_EPOLL) if(USE_DEVPOLL) set(MUX DEVPOLL)
+# endif(USE_DEVPOLL) if(USE_SIGIO) set(MUX SIGIO) endif(USE_SIGIO)
+# if(USE_KQUEUE) set(MUX KQUEUE) endif(USE_KQUEUE) if(USE_POLL) set(MUX POLL)
+# endif(USE_POLL) if(USE_SELECT) set(MUX SELECT) endif(USE_SELECT)
 #
-#if(NOT MUX AND SUPPORT_KQUEUE)
-#  set(MUX KQUEUE)
-#endif(NOT MUX AND SUPPORT_KQUEUE)
-#if(NOT MUX AND SUPPORT_SIGIO)
-#  set(MUX SIGIO)
-#endif(NOT MUX AND SUPPORT_SIGIO)
-#if(NOT MUX AND SUPPORT_EPOLL)
-#  set(MUX EPOLL)
-#endif(NOT MUX AND SUPPORT_EPOLL)
-#if(NOT MUX AND SUPPORT_POLL)
-#  set(MUX POLL)
-#endif(NOT MUX AND SUPPORT_POLL)
-#if(NOT MUX AND SUPPORT_SELECT)
-#  set(MUX SELECT)
-#endif(NOT MUX AND SUPPORT_SELECT)
+# if(NOT MUX AND SUPPORT_KQUEUE) set(MUX KQUEUE) endif(NOT MUX AND
+# SUPPORT_KQUEUE) if(NOT MUX AND SUPPORT_SIGIO) set(MUX SIGIO) endif(NOT MUX AND
+# SUPPORT_SIGIO) if(NOT MUX AND SUPPORT_EPOLL) set(MUX EPOLL) endif(NOT MUX AND
+# SUPPORT_EPOLL) if(NOT MUX AND SUPPORT_POLL) set(MUX POLL) endif(NOT MUX AND
+# SUPPORT_POLL) if(NOT MUX AND SUPPORT_SELECT) set(MUX SELECT) endif(NOT MUX AND
+# SUPPORT_SELECT)
 
 set(MUX_METHOD
     "${MUX}"
@@ -1015,8 +1032,8 @@ if(NOT ZLIB_FOUND OR NOT EXISTS "${ZLIB_LIBRARY}")
 endif()
 
 if(USE_ZLIB)
-  # message("ZLIB_LIBRARY: ${ZLIB_LIBRARY} ZLIB_FOUND: ${ZLIB_FOUND}") if(ZLIB_INCLUDE_DIR)
-  # link_libraries(${ZLIB_LIBRARY})
+  # message("ZLIB_LIBRARY: ${ZLIB_LIBRARY} ZLIB_FOUND: ${ZLIB_FOUND}")
+  # if(ZLIB_INCLUDE_DIR) link_libraries(${ZLIB_LIBRARY})
   include_directories(${ZLIB_INCLUDE_DIR})
   # endif(ZLIB_INCLUDE_DIR)
 
@@ -1026,19 +1043,22 @@ if(USE_ZLIB)
 endif(USE_ZLIB)
 
 if(USE_BZIP)
-  # message("BZIP2_LIBRARY: ${BZIP2_LIBRARY} BZIP2_FOUND: ${BZIP2_FOUND}") if(BZIP2_LIBRARY)
+  # message("BZIP2_LIBRARY: ${BZIP2_LIBRARY} BZIP2_FOUND: ${BZIP2_FOUND}")
+  # if(BZIP2_LIBRARY)
   add_definitions(-DHAVE_LIBBZ2=1)
   include_directories(${BZIP2_INCLUDE_DIR})
   # else(BZIP2_LIBRARY) add_definitions(-DHAVE_LIBBZ2=0) endif(BZIP2_LIBRARY)
 endif(USE_BZIP)
 
 if(USE_LZMA)
-  # message("LIBLZMA_LIBRARY: ${LIBLZMA_LIBRARY} LIBLZMA_FOUND: ${LIBLZMA_FOUND}")
-  # if(LIBLZMA_INCLUDE_DIR) link_libraries(${LIBLZMA_LIBRARY})
+  # message("LIBLZMA_LIBRARY: ${LIBLZMA_LIBRARY} LIBLZMA_FOUND:
+  # ${LIBLZMA_FOUND}") if(LIBLZMA_INCLUDE_DIR)
+  # link_libraries(${LIBLZMA_LIBRARY})
   include_directories(${LIBLZMA_INCLUDE_DIR})
   # endif(LIBLZMA_INCLUDE_DIR) if(LIBLZMA_LIBRARY)
   add_definitions(-DHAVE_LIBLZMA=1 -DLZMA_API_STATIC=1)
-  # else(LIBLZMA_LIBRARY) add_definitions(-DHAVE_LIBLZMA=0) endif(LIBLZMA_LIBRARY)
+  # else(LIBLZMA_LIBRARY) add_definitions(-DHAVE_LIBLZMA=0)
+  # endif(LIBLZMA_LIBRARY)
 endif(USE_LZMA)
 
 macro(invert INVAR OUTVAR)
@@ -1084,10 +1104,11 @@ if(BUILD_ZLIB)
       3rdparty/zlib/uncompr.c
       3rdparty/zlib/zutil.c)
   add_library(z ${ZLIB_SOURCES})
-  set_target_properties(z PROPERTIES ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/zlib"
-                                       LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/zlib")
-link_directories(BEFORE  "${CMAKE_BINARY_DIR}/zlib")
- set(ZLIB_LIBRARY_DEBUG
+  set_target_properties(
+    z PROPERTIES ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/zlib"
+                 LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/zlib")
+  link_directories(BEFORE "${CMAKE_BINARY_DIR}/zlib")
+  set(ZLIB_LIBRARY_DEBUG
       z
       CACHE FILEPATH "" FORCE)
   set(ZLIB_LIBRARY_RELEASE
@@ -1112,9 +1133,10 @@ if(BUILD_BZIP)
       3rdparty/bzip2/huffman.c
       3rdparty/bzip2/randtable.c)
   add_library(bz2 ${LIBBZ2_SOURCES})
-  set_target_properties(bz2 PROPERTIES ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bzip2"
-                                       LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bzip2")
- link_directories(BEFORE  "${CMAKE_BINARY_DIR}/bzip2")
+  set_target_properties(
+    bz2 PROPERTIES ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bzip2"
+                   LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bzip2")
+  link_directories(BEFORE "${CMAKE_BINARY_DIR}/bzip2")
 
   set(BZIP2_LIBRARY_DEBUG
       bz2
@@ -1146,82 +1168,106 @@ endfunction(DEFINE_HAVE)
 
 if(BUILD_LZMA)
   message("Building liblzma from 3rdparty/xz")
-  # file(WRITE "${CMAKE_BINARY_DIR}/lzma-config.h.cmake" "\n/*\n * Ensure we have C99-style int64_t,
-  # etc, all defined.\n */\n\n/* First, we need to know if the system has already defined them.
-  # */\n#cmakedefine HAVE_INT16_T\n#cmakedefine HAVE_INT32_T\n#cmakedefine
-  # HAVE_INT64_T\n#cmakedefine HAVE_INTMAX_T\n\n#cmakedefine HAVE_UINT8_T\n#cmakedefine
-  # HAVE_UINT16_T\n#cmakedefine HAVE_UINT32_T\n#cmakedefine HAVE_UINT64_T\n#cmakedefine
-  # HAVE_UINTMAX_T\n\n/* We might have the types we want under other spellings. */\n#cmakedefine
-  # HAVE___INT64\n#cmakedefine HAVE_U_INT64_T\n#cmakedefine HAVE_UNSIGNED___INT64\n\n/* The sizes of
-  # various standard integer types.
+  # file(WRITE "${CMAKE_BINARY_DIR}/lzma-config.h.cmake" "\n/*\n * Ensure we
+  # have C99-style int64_t, etc, all defined.\n */\n\n/* First, we need to know
+  # if the system has already defined them. */\n#cmakedefine
+  # HAVE_INT16_T\n#cmakedefine HAVE_INT32_T\n#cmakedefine
+  # HAVE_INT64_T\n#cmakedefine HAVE_INTMAX_T\n\n#cmakedefine
+  # HAVE_UINT8_T\n#cmakedefine HAVE_UINT16_T\n#cmakedefine
+  # HAVE_UINT32_T\n#cmakedefine HAVE_UINT64_T\n#cmakedefine HAVE_UINTMAX_T\n\n/*
+  # We might have the types we want under other spellings. */\n#cmakedefine
+  # HAVE___INT64\n#cmakedefine HAVE_U_INT64_T\n#cmakedefine
+  # HAVE_UNSIGNED___INT64\n\n/* The sizes of various standard integer types.
   # */\n@SIZE_OF_SHORT_CODE@\n@SIZE_OF_INT_CODE@\n@SIZE_OF_LONG_CODE@\n@SIZE_OF_LONG_LONG_CODE@\n@SIZE_OF_UNSIGNED_SHORT_CODE@\n@SIZE_OF_UNSIGNED_CODE@\n@SIZE_OF_UNSIGNED_LONG_CODE@\n@SIZE_OF_UNSIGNED_LONG_LONG_CODE@\n@SIZE_OF_SIZE_T_CODE@\n\n/*\n
-  # * If we lack int64_t, define it to the first of __int64, int, long, and long long\n * that
-  # exists and is the right size.\n */\n#if !defined(HAVE_INT64_T) && defined(HAVE___INT64)\ntypedef
-  # __int64 int64_t;\n#define HAVE_INT64_T\n#endif\n\n#if !defined(HAVE_INT64_T) && SIZE_OF_INT ==
-  # 8\ntypedef int int64_t;\n#define HAVE_INT64_T\n#endif\n\n#if !defined(HAVE_INT64_T) &&
-  # SIZE_OF_LONG == 8\ntypedef long int64_t;\n#define HAVE_INT64_T\n#endif\n\n#if
-  # !defined(HAVE_INT64_T) && SIZE_OF_LONG_LONG == 8\ntypedef long long int64_t;\n#define
-  # HAVE_INT64_T\n#endif\n\n#if !defined(HAVE_INT64_T)\n#error No 64-bit integer type was
-  # found.\n#endif\n\n/*\n * Similarly for int32_t\n */\n#if !defined(HAVE_INT32_T) && SIZE_OF_INT
-  # == 4\ntypedef int int32_t;\n#define HAVE_INT32_T\n#endif\n\n#if !defined(HAVE_INT32_T) &&
-  # SIZE_OF_LONG == 4\ntypedef long int32_t;\n#define HAVE_INT32_T\n#endif\n\n#if
-  # !defined(HAVE_INT32_T)\n#error No 32-bit integer type was found.\n#endif\n\n/*\n * Similarly for
-  # int16_t\n */\n#if !defined(HAVE_INT16_T) && SIZE_OF_INT == 2\ntypedef int int16_t;\n#define
-  # HAVE_INT16_T\n#endif\n\n#if !defined(HAVE_INT16_T) && SIZE_OF_SHORT == 2\ntypedef short
-  # int16_t;\n#define HAVE_INT16_T\n#endif\n\n#if !defined(HAVE_INT16_T)\n#error No 16-bit integer
-  # type was found.\n#endif\n\n/*\n * Similarly for uint64_t\n */\n#if !defined(HAVE_UINT64_T) &&
-  # defined(HAVE_UNSIGNED___INT64)\ntypedef unsigned __int64 uint64_t;\n#define
-  # HAVE_UINT64_T\n#endif\n\n#if !defined(HAVE_UINT64_T) && SIZE_OF_UNSIGNED == 8\ntypedef unsigned
-  # uint64_t;\n#define HAVE_UINT64_T\n#endif\n\n#if !defined(HAVE_UINT64_T) && SIZE_OF_UNSIGNED_LONG
-  # == 8\ntypedef unsigned long uint64_t;\n#define HAVE_UINT64_T\n#endif\n\n#if
-  # !defined(HAVE_UINT64_T) && SIZE_OF_UNSIGNED_LONG_LONG == 8\ntypedef unsigned long long
-  # uint64_t;\n#define HAVE_UINT64_T\n#endif\n\n#if !defined(HAVE_UINT64_T)\n#error No 64-bit
-  # unsigned integer type was found.\n#endif\n\n/*\n * Similarly for uint32_t\n */\n#if
-  # !defined(HAVE_UINT32_T) && SIZE_OF_UNSIGNED == 4\ntypedef unsigned uint32_t;\n#define
-  # HAVE_UINT32_T\n#endif\n\n#if !defined(HAVE_UINT32_T) && SIZE_OF_UNSIGNED_LONG == 4\ntypedef
-  # unsigned long uint32_t;\n#define HAVE_UINT32_T\n#endif\n\n#if !defined(HAVE_UINT32_T)\n#error No
-  # 32-bit unsigned integer type was found.\n#endif\n\n/*\n * Similarly for uint16_t\n */\n#if
-  # !defined(HAVE_UINT16_T) && SIZE_OF_UNSIGNED == 2\ntypedef unsigned uint16_t;\n#define
-  # HAVE_UINT16_T\n#endif\n\n#if !defined(HAVE_UINT16_T) && SIZE_OF_UNSIGNED_SHORT == 2\ntypedef
-  # unsigned short uint16_t;\n#define HAVE_UINT16_T\n#endif\n\n#if !defined(HAVE_UINT16_T)\n#error
-  # No 16-bit unsigned integer type was found.\n#endif\n\n/*\n * Similarly for uint8_t\n */\n#if
-  # !defined(HAVE_UINT8_T)\ntypedef unsigned char uint8_t;\n#define HAVE_UINT8_T\n#endif\n\n#if
-  # !defined(HAVE_UINT16_T)\n#error No 8-bit unsigned integer type was found.\n#endif\n\n/* Define
-  # intmax_t and uintmax_t if they are not already defined. */\n#if !defined(HAVE_INTMAX_T)\ntypedef
-  # int64_t intmax_t;\n#define INTMAX_MIN INT64_MIN\n#define INTMAX_MAX INT64_MAX\n#endif\n\n#if
-  # !defined(HAVE_UINTMAX_T)\ntypedef uint64_t uintmax_t;\n#endif\n\n\n#cmakedefine uintptr_t
-  # @uintptr_t@\n\n\n#cmakedefine HAVE_RESTRICT\n#cmakedefine HAVE___RESTRICT\n\n#cmakedefine
-  # HAVE_INLINE\n#cmakedefine HAVE___INLINE\n\n#ifndef HAVE_RESTRICT\n#  ifdef HAVE___RESTRICT\n#
-  # define LZMA_RESTRICT __restrict\n#  else\n#    define LZMA_RESTRICT\n#  endif\n#else\n#  define
-  # LZMA_RESTRICT restrict\n#endif /* HAVE_RESTRICT */\n\n#if defined(HAVE_INLINE)\n# define
-  # LZMA_INLINE inline\n#else\n# if defined(HAVE___INLINE)\n#  define LZMA_INLINE __inline\n#
-  # else\n#  define LZMA_INLINE\n# endif\n#endif\n\n#cmakedefine WORDS_BIGENDIAN 1\n\n#cmakedefine
-  # HAVE_BYTESWAP_H 1\n#cmakedefine HAVE_BSWAP_16 1\n#cmakedefine HAVE_BSWAP_32 1\n#cmakedefine
-  # HAVE_BSWAP_64 1\n\n\n#define HAVE_CHECK_CRC32 1\n#define HAVE_CHECK_CRC64 1\n#define
-  # HAVE_CHECK_SHA256 1\n\n#define HAVE_DECODER_ARM 1\n#define HAVE_DECODER_ARMTHUMB 1\n#define
-  # HAVE_DECODER_DELTA 1\n#define HAVE_DECODER_IA64 1\n#define HAVE_DECODER_LZMA1 1\n#define
-  # HAVE_DECODER_LZMA2 1\n#define HAVE_DECODER_POWERPC 1\n#define HAVE_DECODER_SPARC 1\n#define
-  # HAVE_DECODER_X86 1\n\n#define HAVE_ENCODER_ARM 1\n#define HAVE_ENCODER_ARMTHUMB 1\n#define
-  # HAVE_ENCODER_DELTA 1\n#define HAVE_ENCODER_IA64 1\n#define HAVE_ENCODER_LZMA1 1\n#define
-  # HAVE_ENCODER_LZMA2 1\n#define HAVE_ENCODER_POWERPC 1\n#define HAVE_ENCODER_SPARC 1\n#define
-  # HAVE_ENCODER_X86 1\n\n#define HAVE_MF_BT2 1\n#define HAVE_MF_BT3 1\n#define HAVE_MF_BT4
-  # 1\n#define HAVE_MF_HC3 1\n#define HAVE_MF_HC4 1\n\n/* Define to 1 if you have the <inttypes.h>
-  # header file. */\n#cmakedefine HAVE_INTTYPES_H 1\n\n/* Define to 1 if you have the <limits.h>
-  # header file. */\n#cmakedefine HAVE_LIMITS_H 1\n\n/* Define to 1 if you have the <memory.h>
-  # header file. */\n#cmakedefine HAVE_MEMORY_H 1\n\n/* Define to 1 if stdbool.h conforms to C99.
-  # */\n#cmakedefine HAVE_STDBOOL_H 1\n\n/* Define to 1 if you have the <stdint.h> header file.
-  # */\n#cmakedefine HAVE_STDINT_H 1\n\n/* Define to 1 if you have the <strings.h> header file.
-  # */\n#cmakedefine HAVE_STRINGS_H 1\n\n/* Define to 1 if you have the <string.h> header file.
-  # */\n#cmakedefine HAVE_STRING_H 1\n\n/* Define to 1 if you have the <sys/byteorder.h> header
-  # file. */\n#cmakedefine HAVE_SYS_BYTEORDER_H 1\n\n/* Define to 1 if you have the <sys/endian.h>
-  # header file. */\n#cmakedefine HAVE_SYS_ENDIAN_H 1\n\n/* Define to 1 or 0, depending whether the
-  # compiler supports simple visibility\n   declarations. */\n#cmakedefine HAVE_VISIBILITY 1\n\n/*
-  # Define to 1 if the system has the type `_Bool'. */\n#cmakedefine HAVE__BOOL 1\n\n/* Define to 1
-  # if the system supports fast unaligned access to 16-bit and\n 32-bit integers. */\n#if
-  # defined(__i386) || defined(__i386__) || defined(_M_IX86) \\n || defined(__x86_64) ||
-  # defined(__x86_64__) || defined(_M_X64) \\n || defined(__amd64) || defined(__amd64__) \\n ||
-  # defined(__powerpc) || defined(__powerpc__) \\n || defined(__ppc) || defined(__ppc__) ||
-  # defined(__POWERPC__)\n# define TUKLIB_FAST_UNALIGNED_ACCESS 1\n#endif")
+  # * If we lack int64_t, define it to the first of __int64, int, long, and long
+  # long\n * that exists and is the right size.\n */\n#if !defined(HAVE_INT64_T)
+  # && defined(HAVE___INT64)\ntypedef __int64 int64_t;\n#define
+  # HAVE_INT64_T\n#endif\n\n#if !defined(HAVE_INT64_T) && SIZE_OF_INT ==
+  # 8\ntypedef int int64_t;\n#define HAVE_INT64_T\n#endif\n\n#if
+  # !defined(HAVE_INT64_T) && SIZE_OF_LONG == 8\ntypedef long int64_t;\n#define
+  # HAVE_INT64_T\n#endif\n\n#if !defined(HAVE_INT64_T) && SIZE_OF_LONG_LONG ==
+  # 8\ntypedef long long int64_t;\n#define HAVE_INT64_T\n#endif\n\n#if
+  # !defined(HAVE_INT64_T)\n#error No 64-bit integer type was
+  # found.\n#endif\n\n/*\n * Similarly for int32_t\n */\n#if
+  # !defined(HAVE_INT32_T) && SIZE_OF_INT == 4\ntypedef int int32_t;\n#define
+  # HAVE_INT32_T\n#endif\n\n#if !defined(HAVE_INT32_T) && SIZE_OF_LONG ==
+  # 4\ntypedef long int32_t;\n#define HAVE_INT32_T\n#endif\n\n#if
+  # !defined(HAVE_INT32_T)\n#error No 32-bit integer type was
+  # found.\n#endif\n\n/*\n * Similarly for int16_t\n */\n#if
+  # !defined(HAVE_INT16_T) && SIZE_OF_INT == 2\ntypedef int int16_t;\n#define
+  # HAVE_INT16_T\n#endif\n\n#if !defined(HAVE_INT16_T) && SIZE_OF_SHORT ==
+  # 2\ntypedef short int16_t;\n#define HAVE_INT16_T\n#endif\n\n#if
+  # !defined(HAVE_INT16_T)\n#error No 16-bit integer type was
+  # found.\n#endif\n\n/*\n * Similarly for uint64_t\n */\n#if
+  # !defined(HAVE_UINT64_T) && defined(HAVE_UNSIGNED___INT64)\ntypedef unsigned
+  # __int64 uint64_t;\n#define HAVE_UINT64_T\n#endif\n\n#if
+  # !defined(HAVE_UINT64_T) && SIZE_OF_UNSIGNED == 8\ntypedef unsigned
+  # uint64_t;\n#define HAVE_UINT64_T\n#endif\n\n#if !defined(HAVE_UINT64_T) &&
+  # SIZE_OF_UNSIGNED_LONG == 8\ntypedef unsigned long uint64_t;\n#define
+  # HAVE_UINT64_T\n#endif\n\n#if !defined(HAVE_UINT64_T) &&
+  # SIZE_OF_UNSIGNED_LONG_LONG == 8\ntypedef unsigned long long
+  # uint64_t;\n#define HAVE_UINT64_T\n#endif\n\n#if
+  # !defined(HAVE_UINT64_T)\n#error No 64-bit unsigned integer type was
+  # found.\n#endif\n\n/*\n * Similarly for uint32_t\n */\n#if
+  # !defined(HAVE_UINT32_T) && SIZE_OF_UNSIGNED == 4\ntypedef unsigned
+  # uint32_t;\n#define HAVE_UINT32_T\n#endif\n\n#if !defined(HAVE_UINT32_T) &&
+  # SIZE_OF_UNSIGNED_LONG == 4\ntypedef unsigned long uint32_t;\n#define
+  # HAVE_UINT32_T\n#endif\n\n#if !defined(HAVE_UINT32_T)\n#error No 32-bit
+  # unsigned integer type was found.\n#endif\n\n/*\n * Similarly for uint16_t\n
+  # */\n#if !defined(HAVE_UINT16_T) && SIZE_OF_UNSIGNED == 2\ntypedef unsigned
+  # uint16_t;\n#define HAVE_UINT16_T\n#endif\n\n#if !defined(HAVE_UINT16_T) &&
+  # SIZE_OF_UNSIGNED_SHORT == 2\ntypedef unsigned short uint16_t;\n#define
+  # HAVE_UINT16_T\n#endif\n\n#if !defined(HAVE_UINT16_T)\n#error No 16-bit
+  # unsigned integer type was found.\n#endif\n\n/*\n * Similarly for uint8_t\n
+  # */\n#if !defined(HAVE_UINT8_T)\ntypedef unsigned char uint8_t;\n#define
+  # HAVE_UINT8_T\n#endif\n\n#if !defined(HAVE_UINT16_T)\n#error No 8-bit
+  # unsigned integer type was found.\n#endif\n\n/* Define intmax_t and uintmax_t
+  # if they are not already defined. */\n#if !defined(HAVE_INTMAX_T)\ntypedef
+  # int64_t intmax_t;\n#define INTMAX_MIN INT64_MIN\n#define INTMAX_MAX
+  # INT64_MAX\n#endif\n\n#if !defined(HAVE_UINTMAX_T)\ntypedef uint64_t
+  # uintmax_t;\n#endif\n\n\n#cmakedefine uintptr_t @uintptr_t@\n\n\n#cmakedefine
+  # HAVE_RESTRICT\n#cmakedefine HAVE___RESTRICT\n\n#cmakedefine
+  # HAVE_INLINE\n#cmakedefine HAVE___INLINE\n\n#ifndef HAVE_RESTRICT\n#  ifdef
+  # HAVE___RESTRICT\n# define LZMA_RESTRICT __restrict\n#  else\n#    define
+  # LZMA_RESTRICT\n#  endif\n#else\n#  define LZMA_RESTRICT restrict\n#endif /*
+  # HAVE_RESTRICT */\n\n#if defined(HAVE_INLINE)\n# define LZMA_INLINE
+  # inline\n#else\n# if defined(HAVE___INLINE)\n#  define LZMA_INLINE
+  # __inline\n# else\n#  define LZMA_INLINE\n# endif\n#endif\n\n#cmakedefine
+  # WORDS_BIGENDIAN 1\n\n#cmakedefine HAVE_BYTESWAP_H 1\n#cmakedefine
+  # HAVE_BSWAP_16 1\n#cmakedefine HAVE_BSWAP_32 1\n#cmakedefine HAVE_BSWAP_64
+  # 1\n\n\n#define HAVE_CHECK_CRC32 1\n#define HAVE_CHECK_CRC64 1\n#define
+  # HAVE_CHECK_SHA256 1\n\n#define HAVE_DECODER_ARM 1\n#define
+  # HAVE_DECODER_ARMTHUMB 1\n#define HAVE_DECODER_DELTA 1\n#define
+  # HAVE_DECODER_IA64 1\n#define HAVE_DECODER_LZMA1 1\n#define
+  # HAVE_DECODER_LZMA2 1\n#define HAVE_DECODER_POWERPC 1\n#define
+  # HAVE_DECODER_SPARC 1\n#define HAVE_DECODER_X86 1\n\n#define HAVE_ENCODER_ARM
+  # 1\n#define HAVE_ENCODER_ARMTHUMB 1\n#define HAVE_ENCODER_DELTA 1\n#define
+  # HAVE_ENCODER_IA64 1\n#define HAVE_ENCODER_LZMA1 1\n#define
+  # HAVE_ENCODER_LZMA2 1\n#define HAVE_ENCODER_POWERPC 1\n#define
+  # HAVE_ENCODER_SPARC 1\n#define HAVE_ENCODER_X86 1\n\n#define HAVE_MF_BT2
+  # 1\n#define HAVE_MF_BT3 1\n#define HAVE_MF_BT4 1\n#define HAVE_MF_HC3
+  # 1\n#define HAVE_MF_HC4 1\n\n/* Define to 1 if you have the <inttypes.h>
+  # header file. */\n#cmakedefine HAVE_INTTYPES_H 1\n\n/* Define to 1 if you
+  # have the <limits.h> header file. */\n#cmakedefine HAVE_LIMITS_H 1\n\n/*
+  # Define to 1 if you have the <memory.h> header file. */\n#cmakedefine
+  # HAVE_MEMORY_H 1\n\n/* Define to 1 if stdbool.h conforms to C99.
+  # */\n#cmakedefine HAVE_STDBOOL_H 1\n\n/* Define to 1 if you have the
+  # <stdint.h> header file. */\n#cmakedefine HAVE_STDINT_H 1\n\n/* Define to 1
+  # if you have the <strings.h> header file. */\n#cmakedefine HAVE_STRINGS_H
+  # 1\n\n/* Define to 1 if you have the <string.h> header file. */\n#cmakedefine
+  # HAVE_STRING_H 1\n\n/* Define to 1 if you have the <sys/byteorder.h> header
+  # file. */\n#cmakedefine HAVE_SYS_BYTEORDER_H 1\n\n/* Define to 1 if you have
+  # the <sys/endian.h> header file. */\n#cmakedefine HAVE_SYS_ENDIAN_H 1\n\n/*
+  # Define to 1 or 0, depending whether the compiler supports simple
+  # visibility\n   declarations. */\n#cmakedefine HAVE_VISIBILITY 1\n\n/* Define
+  # to 1 if the system has the type `_Bool'. */\n#cmakedefine HAVE__BOOL 1\n\n/*
+  # Define to 1 if the system supports fast unaligned access to 16-bit and\n
+  # 32-bit integers. */\n#if defined(__i386) || defined(__i386__) ||
+  # defined(_M_IX86) \\n || defined(__x86_64) || defined(__x86_64__) ||
+  # defined(_M_X64) \\n || defined(__amd64) || defined(__amd64__) \\n ||
+  # defined(__powerpc) || defined(__powerpc__) \\n || defined(__ppc) ||
+  # defined(__ppc__) || defined(__POWERPC__)\n# define
+  # TUKLIB_FAST_UNALIGNED_ACCESS 1\n#endif")
 
   configure_file("${CMAKE_SOURCE_DIR}/3rdparty/lzma-config.h.cmake"
                  "${CMAKE_BINARY_DIR}/3rdparty/xz/config.h")
@@ -1256,40 +1302,45 @@ if(BUILD_LZMA)
     3rdparty/xz/src/liblzma/simple/*.c)
   # list(FILTER LIBLZMA_SOURCES EXCLUDE REGEX ".*_mt\\..*")
 
-  add_library(lzma ${LIBLZMA_SOURCES})
-  set_target_properties(lzma PROPERTIES ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/xz"
-                                       LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/xz")
-  set(LZMA_SOURCE_DIR "${CMAKE_SOURCE_DIR}/3rdparty/xz")
-  set(LIBLZMA_INCLUDE_DIRS
-      ${LZMA_SOURCE_DIR}/src/common
-      ${LZMA_SOURCE_DIR}/src/liblzma/lzma
-      ${LZMA_SOURCE_DIR}/src/liblzma/lz
-      ${LZMA_SOURCE_DIR}/src/liblzma/check
-      ${LZMA_SOURCE_DIR}/src/liblzma/simple
-      ${LZMA_SOURCE_DIR}/src/liblzma/delta
-      ${LZMA_SOURCE_DIR}/src/liblzma/rangecoder
-      ${LZMA_SOURCE_DIR}/src/liblzma/common
-      ${LZMA_SOURCE_DIR}/src/liblzma/api
-      ${CMAKE_BINARY_DIR}/3rdparty/xz)
-  define_have(
-    LIBLZMA_DEFS
-    HAVE_STDINT_H
-    HAVE_STDLIB_H
-    HAVE_STDBOOL_H
-    HAVE_INTTYPES_H
-    HAVE_LIMITS_H
-    HAVE_STRING_H
-    HAVE_STRINGS_H
-    HAVE_MEMORY_H
-    HAVE_SYS_PARAM_H
-    HAVE_SYS_TIME_H
-    HAVE_SYS_TYPES_H
-    HAVE_LZMA_H)
-  # message("LIBLZMA_DEFS: ${LIBLZMA_DEFS}")
-  set_target_properties(lzma PROPERTIES COMPILE_DEFINITIONS "${LIBLZMA_DEFS}"
-                                        INCLUDE_DIRECTORIES "${LIBLZMA_INCLUDE_DIRS}")
-  link_directories(BEFORE  "${CMAKE_BINARY_DIR}/xz")
-set(LIBLZMA_LIBRARY
+  if(LIBLZMA_SOURCES)
+    add_library(lzma ${LIBLZMA_SOURCES})
+    set_target_properties(
+      lzma PROPERTIES ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/xz"
+                      LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/xz")
+    set(LZMA_SOURCE_DIR "${CMAKE_SOURCE_DIR}/3rdparty/xz")
+    set(LIBLZMA_INCLUDE_DIRS
+        ${LZMA_SOURCE_DIR}/src/common
+        ${LZMA_SOURCE_DIR}/src/liblzma/lzma
+        ${LZMA_SOURCE_DIR}/src/liblzma/lz
+        ${LZMA_SOURCE_DIR}/src/liblzma/check
+        ${LZMA_SOURCE_DIR}/src/liblzma/simple
+        ${LZMA_SOURCE_DIR}/src/liblzma/delta
+        ${LZMA_SOURCE_DIR}/src/liblzma/rangecoder
+        ${LZMA_SOURCE_DIR}/src/liblzma/common
+        ${LZMA_SOURCE_DIR}/src/liblzma/api
+        ${CMAKE_BINARY_DIR}/3rdparty/xz)
+    define_have(
+      LIBLZMA_DEFS
+      HAVE_STDINT_H
+      HAVE_STDLIB_H
+      HAVE_STDBOOL_H
+      HAVE_INTTYPES_H
+      HAVE_LIMITS_H
+      HAVE_STRING_H
+      HAVE_STRINGS_H
+      HAVE_MEMORY_H
+      HAVE_SYS_PARAM_H
+      HAVE_SYS_TIME_H
+      HAVE_SYS_TYPES_H
+      HAVE_LZMA_H)
+    # message("LIBLZMA_DEFS: ${LIBLZMA_DEFS}")
+    set_target_properties(
+      lzma PROPERTIES COMPILE_DEFINITIONS "${LIBLZMA_DEFS}"
+                      INCLUDE_DIRECTORIES "${LIBLZMA_INCLUDE_DIRS}")
+  endif(LIBLZMA_SOURCES)
+
+  link_directories(BEFORE "${CMAKE_BINARY_DIR}/xz")
+  set(LIBLZMA_LIBRARY
       lzma
       CACHE FILEPATH "" FORCE)
   set(LIBLZMA_INCLUDE_DIR
@@ -1314,7 +1365,8 @@ if(BUILD_SSL)
     exec_program("${TAR}" ARGS -C "${CMAKE_SOURCE_DIR}/3rdparty/openssl" -xzf
                                "${CMAKE_SOURCE_DIR}/openssl-cmake.tar.gz")
 
-    # file(READ "${CMAKE_SOURCE_DIR}/build/cmake/BuildOpenSSL.cmake" OPENSSL_CMAKELISTS) file(WRITE
+    # file(READ "${CMAKE_SOURCE_DIR}/build/cmake/BuildOpenSSL.cmake"
+    # OPENSSL_CMAKELISTS) file(WRITE
     # "${CMAKE_SOURCE_DIR}/3rdparty/openssl/CMakeLists.txt"
     # "${OPENSSL_CMAKELISTS}")
     #
@@ -1324,11 +1376,13 @@ if(BUILD_SSL)
     )
 
     # file(WRITE "${CMAKE_BINARY_DIR}/openssl-poly1305_ieee754.patch" "---
-    # 3rdparty/openssl/crypto/poly1305/poly1305_ieee754.corig     2020-02-13 09:37:58.389826334
-    # +0100\n+++ 3rdparty/openssl/crypto/poly1305/poly1305_ieee754.c    2020-02-13
-    # 09:33:12.801691620 +0100\n@@ -104,7 +104,7 @@\n #elif defined(__mips__)\n static const u32
-    # fcsr = 1;\n #else\n-#error \"unrecognized platform\"\n+#warning \"unrecognized platform\"\n
-    # #endif\n \n int poly1305_init(void *ctx, const unsigned char key[16])")
+    # 3rdparty/openssl/crypto/poly1305/poly1305_ieee754.corig     2020-02-13
+    # 09:37:58.389826334 +0100\n+++
+    # 3rdparty/openssl/crypto/poly1305/poly1305_ieee754.c    2020-02-13
+    # 09:33:12.801691620 +0100\n@@ -104,7 +104,7 @@\n #elif defined(__mips__)\n
+    # static const u32 fcsr = 1;\n #else\n-#error \"unrecognized
+    # platform\"\n+#warning \"unrecognized platform\"\n #endif\n \n int
+    # poly1305_init(void *ctx, const unsigned char key[16])")
 
     exec_program(patch "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/openssl"
                  ARGS -p0 -i "${CMAKE_BINARY_DIR}/openssl-pthread.patch")
@@ -1349,7 +1403,8 @@ endif()
 if(USE_SSL)
   add_definitions(-DHAVE_OPENSSL=1 -DOPENSSL_API_COMPAT=0x10200000L)
   if(OPENSSL_INCLUDE_DIR)
-    include_directories(${CMAKE_BINARY_DIR}/3rdparty/openssl/include ${OPENSSL_INCLUDE_DIR})
+    include_directories(${CMAKE_BINARY_DIR}/3rdparty/openssl/include
+                        ${OPENSSL_INCLUDE_DIR})
   endif()
 
   # if(NOT OPENSSL_LIBRARIES) if(OPENSSL_CRYPTO_LIBRARY OR OPENSSL_SSL_LIBRARY)
@@ -1369,6 +1424,7 @@ message("LIBLZMA_INCLUDE_DIRS: ${LIBLZMA_INCLUDE_DIRS}")
 message("OPENSSL_INCLUDE_DIR: ${OPENSSL_INCLUDE_DIR}")
 message("ZLIB_INCLUDE_DIR: ${ZLIB_INCLUDE_DIR}")
 
+set(iarray_SOURCES lib/cas.S)
 
 set(MODSUBDIRS
     alloc
@@ -1437,15 +1493,21 @@ foreach(LIBNAME ${MODSUBDIRS})
   if(NOT MODSOURCES)
     file(GLOB MODSOURCES lib/${LIBNAME}_*.c)
   endif()
-  add_library("${LIBNAME}" STATIC ${MODSOURCES} ${MODHEADERS})
+  set(EXTRA_SOURCES ${${LIBNAME}_SOURCES})
+  if(EXTRA_SOURCES)
+    message(STATUS "${LIBNAME} extra sources: ${EXTRA_SOURCES}")
+  endif(EXTRA_SOURCES)
+  add_library("${LIBNAME}" STATIC ${MODSOURCES} ${MODHEADERS} ${EXTRA_SOURCES})
   if(BUILD_SHARED_LIBS)
-    add_library("${LIBNAME}-shared" SHARED ${MODSOURCES} ${MODHEADERS})
-    set_target_properties("${LIBNAME}-shared"
-                          PROPERTIES PREFIX "lib" COMPILE_FLAGS "${WARN_C_COMPILER_FLAGS} -fPIC")
+    add_library("${LIBNAME}-shared" SHARED ${MODSOURCES} ${MODHEADERS} ${EXTRA_SOURCES})
+    set_target_properties(
+      "${LIBNAME}-shared"
+      PROPERTIES PREFIX "lib" COMPILE_FLAGS "${WARN_C_COMPILER_FLAGS} -fPIC")
   endif(BUILD_SHARED_LIBS)
   set_target_properties(
-    "${LIBNAME}" PROPERTIES PREFIX "" COMPILE_FLAGS
-                                      "${WARN_C_COMPILER_FLAGS} ${${LIBNAME}_COMPILE_FLAGS}")
+    "${LIBNAME}"
+    PROPERTIES PREFIX "" COMPILE_FLAGS
+                         "${WARN_C_COMPILER_FLAGS} ${${LIBNAME}_COMPILE_FLAGS}")
 
 endforeach(LIBNAME)
 
@@ -1589,30 +1651,33 @@ function(add_program PROG)
   unset(INCLUDES)
   unset(LIBS)
   foreach(DEP ${ARGN})
-    if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${DEP}" AND NOT IS_DIRECTORY
-                                                       "${CMAKE_CURRENT_SOURCE_DIR}/${DEP}")
+    if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${DEP}"
+       AND NOT IS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/${DEP}")
       list(APPEND "${PROG}_SOURCES" "${DEP}")
-    else(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${DEP}" AND NOT IS_DIRECTORY
-                                                         "${CMAKE_CURRENT_SOURCE_DIR}/${DEP}")
+    else(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${DEP}"
+         AND NOT IS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/${DEP}")
       list(FIND MODSUBDIRS "${DEP}" I)
       if(I GREATER -1)
         list(APPEND INCLUDES "lib/${DEP}.h")
       endif(I GREATER -1)
       list(APPEND DEPS ${DEP})
-    endif(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${DEP}" AND NOT IS_DIRECTORY
-                                                          "${CMAKE_CURRENT_SOURCE_DIR}/${DEP}")
+    endif(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${DEP}"
+          AND NOT IS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/${DEP}")
   endforeach(DEP ${ARGN})
   # message("Program '${PROG}' dependencies: ${INCLUDES}")
   add_executable(${PROG} ${PROG}.c ${${PROG}_SOURCES} ${INCLUDES})
-  target_link_libraries(${PROG} ${DEPS} ${ELECTRICFENCE_LIBRARY} ${EXTRA_LIBRARIES})
+  target_link_libraries(${PROG} ${DEPS} ${ELECTRICFENCE_LIBRARY}
+                        ${EXTRA_LIBRARIES})
   install(TARGETS ${PROG} DESTINATION bin)
   if(NOT EMSCRIPTEN
      AND OPENSSL_FOUND
      AND USE_SSL)
     set_target_properties(
       ${PROG}
-      PROPERTIES LINK_FLAGS "-L${OPENSSL_LIB_DIR} -Wl,-rpath=${OPENSSL_LIB_DIR} ${EXE_LINKER_FLAGS}"
-                 COMPILE_FLAGS "")
+      PROPERTIES
+        LINK_FLAGS
+        "-L${OPENSSL_LIB_DIR} -Wl,-rpath=${OPENSSL_LIB_DIR} ${EXE_LINKER_FLAGS}"
+        COMPILE_FLAGS "")
   endif(
     NOT EMSCRIPTEN
     AND OPENSSL_FOUND
@@ -1642,7 +1707,8 @@ function(add_module MOD SRC)
     target_link_libraries(${MOD} ${LIBS} ${EXTRA_LIBRARIES})
     install(TARGETS ${MOD} DESTINATION libexec)
     if(BUILD_SHARED_LIBS)
-      set_target_properties(${MOD} PROPERTIES EXE_LINKER_FLAGS "-L${OPENSSL_LIB_DIR} -shared")
+      set_target_properties(${MOD} PROPERTIES EXE_LINKER_FLAGS
+                                              "-L${OPENSSL_LIB_DIR} -shared")
     endif(BUILD_SHARED_LIBS)
     target_compile_options(${MOD} PUBLIC -fPIC)
   endif(NOT EMSCRIPTEN)

@@ -718,7 +718,7 @@ ssize_t
 sockbuf_forward_data(socketbuf_t* source, socketbuf_t* destination) {
   ssize_t n;
   size_t written = 0;
-  char* buffer = alloca(buf_size);
+  char buffer[buf_size];
 
   if((n = recv(source->sock, buffer, buf_size, 0)) > 0) { // read data from input socket
 
