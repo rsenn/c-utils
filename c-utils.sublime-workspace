@@ -12,10 +12,10 @@
 	"buffers":
 	[
 		{
-			"contents": "",
+			"contents": "  variable: PATH\n  expansion: $PATH\n  variable: PATH\n  variable: HERE\n  expansion: `dirname $0`\n  variable: INDENT\n  variable: INDENT\n  expansion: $#\n  expansion: $0\n  variable: VERBOSE\n  variable: DONT\n  variable: STOPARGS\n  variable: COMMENTS\n  variable: CHANGED\n  variable: DEBUG\n  variable: INDENT_PROFILE\n  expansion: $HERE\n  variable: INDENT_PROFILE\n  expansion: $INDENT_PROFILE\n  expansion: $0\n  variable: INDENT_ARGS\n  expansion: $STOPARGS\n  expansion: $i\n  variable: STOPARGS\n  variable: DONT\n  variable: VERBOSE\n  expansion: $INDENT_PROFILE\n  variable: COMMENTS\n  variable: INDENT_ARGS\n  variable: COMMENTS\n  variable: DEBUG\n  expansion: $i\n  variable: LIST\n  expansion: `find \"$i\" -name '*.[ch]' -print`\n  expansion: $i\n  expansion: $0\n  expansion: $i\n  variable: LIST\n  expansion: $i\n  expansion: $LIST\n  expansion: $i\n  expansion: $j\n  expansion: $DONT\n  variable: tmp\n  expansion: $(mktemp /tmp/indent.XXXXXX)\n  expansion: `basename $j`\n  expansion: $j\n  expansion: $COMMENTS\n  expansion: $j\n  expansion: $DEBUG\n  expansion: $INDENT\n  expansion: $INDENT_ARGS\n  expansion: $INDENT\n  expansion: $HERE\n  expansion: $tmp\n  expansion: $j\n  expansion: $INDENT\n  expansion: $INDENT_ARGS\n  expansion: $tmp\n  expansion: $tmp\n  expansion: $j\n  expansion: $VERBOSE\n  expansion: $j\n  expansion: $tmp\n  expansion: $VERBOSE\n  expansion: $j\n  variable: CHANGED\n  expansion: $tmp\n  expansion: $j\n  expansion: $VERBOSE\n  expansion: $CHANGED",
 			"settings":
 			{
-				"buffer_size": 0,
+				"buffer_size": 1437,
 				"line_ending": "Unix",
 				"name": "𝌆 Outline",
 				"scratch": true
@@ -29,6 +29,31 @@
 			"settings":
 			{
 				"buffer_size": 12167,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "list-r.c",
+			"settings":
+			{
+				"buffer_size": 28369,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/path.h",
+			"settings":
+			{
+				"buffer_size": 2612,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/dir.h",
+			"settings":
+			{
+				"buffer_size": 1057,
 				"line_ending": "Unix"
 			}
 		},
@@ -79,7 +104,49 @@
 			"file": "CMakeLists.txt",
 			"settings":
 			{
-				"buffer_size": 66776,
+				"buffer_size": 66783,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "pkgcfg.c",
+			"settings":
+			{
+				"buffer_size": 30851,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "tinyproxy.c",
+			"settings":
+			{
+				"buffer_size": 33260,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/stralloc/stralloc_fmt.c",
+			"settings":
+			{
+				"buffer_size": 353,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/fmt/fmt_escapecharshell.c",
+			"settings":
+			{
+				"buffer_size": 1083,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/strarray/strarray_from_argv.c",
+			"settings":
+			{
+				"buffer_size": 214,
 				"line_ending": "Unix"
 			}
 		},
@@ -203,14 +270,14 @@
 		"/home/roman/Dokumente/Sources/c-utils",
 		"/home/roman/Dokumente/Sources/c-utils/ip",
 		"/home/roman/Dokumente/Sources/c-utils/lib",
-		"/home/roman/Dokumente/Sources/c-utils/lib/strlist"
+		"/home/roman/Dokumente/Sources/c-utils/lib/stralloc"
 	],
 	"file_history":
 	[
+		"/home/roman/Dokumente/Sources/c-utils/list-r.c",
 		"/home/roman/Dokumente/Sources/c-utils/tryselect.c",
 		"/home/roman/Dokumente/Sources/c-utils/genmakefile.c",
 		"/home/roman/Dokumente/Sources/c-utils/tinyproxy.c",
-		"/home/roman/Dokumente/Sources/c-utils/list-r.c",
 		"/home/roman/Dokumente/Sources/c-utils/debug.h",
 		"/home/roman/Dokumente/Sources/c-utils/CMakeLists.txt",
 		"/home/roman/Dokumente/Sources/c-utils/lib/io/io_wantread.c",
@@ -359,6 +426,32 @@
 		"case_sensitive": true,
 		"find_history":
 		[
+			"[^d]type",
+			"buffer_1",
+			"list-r",
+			"continue;",
+			"list_dir_internal",
+			"stat\\(",
+			"stat\\($",
+			"stat\\(",
+			"stat",
+			"strlist_dump",
+			"strlist_",
+			"strlist",
+			"strlist_",
+			"DEBUG_OUTPUT\n",
+			"DEBUG_OUTPUT",
+			"\"Read",
+			"ATLEAST",
+			"LIBS_ONLY",
+			"libs_mode",
+			"LIBS_ONLY",
+			"LIBS_ONLY_L",
+			"--libs\"",
+			"_EXISTS",
+			"'E'",
+			"exists",
+			"sorted",
 			"log_rr",
 			"\"rr",
 			"log_logtype",
@@ -460,33 +553,7 @@
 			"debug_set",
 			"debug_sl",
 			"debug_nl",
-			"DEBUG_OUT",
-			"want",
-			"want rea",
-			"debug",
-			"^debug",
-			"want ",
-			"remove_port",
-			"^includes_add",
-			"includes",
-			"'I'",
-			"\"CPPFLAGS",
-			"doesn't",
-			"[^a-z]int3[^a-z0-9]",
-			"[^a-z]int3",
-			"int3",
-			"sources:",
-			"\"toks",
-			"toks",
-			"toks:",
-			"baudrate",
-			"57600",
-			"io_dump",
-			"debugmode",
-			"io_dump",
-			"#ifdef DEBUG_OUTPUT([^#]*)#endif",
-			"DEBUG_OUTPUT",
-			"debugmode"
+			"DEBUG_OUT"
 		],
 		"highlight": false,
 		"in_selection": false,
@@ -577,7 +644,7 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 0,
+						"buffer_size": 1437,
 						"regions":
 						{
 						},
@@ -587,9 +654,370 @@
 						"settings":
 						{
 							"color_scheme": "Packages/Outline/outline.hidden-tmTheme",
-							"current_file": "/home/roman/Dokumente/Sources/c-utils/CMakeLists.txt",
-							"function_name_status_row": 0,
+							"current_file": "/home/roman/Dokumente/Sources/c-utils/3rdparty/openssl/util/openssl-format-source",
+							"function_name_status_row": 40,
 							"outline_rename_mode": false,
+							"symkeys":
+							[
+								[
+									843,
+									847
+								],
+								[
+									877,
+									882
+								],
+								[
+									890,
+									894
+								],
+								[
+									895,
+									899
+								],
+								[
+									901,
+									913
+								],
+								[
+									924,
+									930
+								],
+								[
+									1006,
+									1012
+								],
+								[
+									1027,
+									1029
+								],
+								[
+									1059,
+									1061
+								],
+								[
+									1122,
+									1129
+								],
+								[
+									1136,
+									1140
+								],
+								[
+									1147,
+									1155
+								],
+								[
+									1162,
+									1170
+								],
+								[
+									1177,
+									1184
+								],
+								[
+									1191,
+									1196
+								],
+								[
+									1329,
+									1343
+								],
+								[
+									1345,
+									1350
+								],
+								[
+									1370,
+									1384
+								],
+								[
+									1396,
+									1411
+								],
+								[
+									1429,
+									1431
+								],
+								[
+									1549,
+									1560
+								],
+								[
+									1581,
+									1590
+								],
+								[
+									1619,
+									1621
+								],
+								[
+									1635,
+									1643
+								],
+								[
+									1673,
+									1677
+								],
+								[
+									1707,
+									1714
+								],
+								[
+									1747,
+									1762
+								],
+								[
+									1789,
+									1797
+								],
+								[
+									1815,
+									1826
+								],
+								[
+									1874,
+									1882
+								],
+								[
+									1915,
+									1920
+								],
+								[
+									1983,
+									1985
+								],
+								[
+									1999,
+									2003
+								],
+								[
+									2004,
+									2037
+								],
+								[
+									2060,
+									2062
+								],
+								[
+									2084,
+									2086
+								],
+								[
+									2111,
+									2113
+								],
+								[
+									2143,
+									2147
+								],
+								[
+									2149,
+									2151
+								],
+								[
+									2170,
+									2175
+								],
+								[
+									2333,
+									2335
+								],
+								[
+									2360,
+									2362
+								],
+								[
+									2410,
+									2415
+								],
+								[
+									2441,
+									2444
+								],
+								[
+									2445,
+									2473
+								],
+								[
+									2530,
+									2543
+								],
+								[
+									2736,
+									2738
+								],
+								[
+									2759,
+									2768
+								],
+								[
+									3352,
+									3354
+								],
+								[
+									4478,
+									4484
+								],
+								[
+									4485,
+									4492
+								],
+								[
+									4493,
+									4505
+								],
+								[
+									4641,
+									4648
+								],
+								[
+									4883,
+									4888
+								],
+								[
+									4915,
+									4919
+								],
+								[
+									4942,
+									4944
+								],
+								[
+									4948,
+									4955
+								],
+								[
+									4956,
+									4968
+								],
+								[
+									4972,
+									4976
+								],
+								[
+									4999,
+									5003
+								],
+								[
+									5006,
+									5008
+								],
+								[
+									5027,
+									5035
+								],
+								[
+									5067,
+									5069
+								],
+								[
+									5098,
+									5102
+								],
+								[
+									5123,
+									5131
+								],
+								[
+									5163,
+									5165
+								],
+								[
+									5188,
+									5195
+								],
+								[
+									5210,
+									5214
+								],
+								[
+									5217,
+									5219
+								],
+								[
+									5271,
+									5279
+								],
+								[
+									5313,
+									5321
+								]
+							],
+							"symlist":
+							[
+								"  variable: PATH",
+								"  expansion: $PATH",
+								"  variable: PATH",
+								"  variable: HERE",
+								"  expansion: `dirname $0`",
+								"  variable: INDENT",
+								"  variable: INDENT",
+								"  expansion: $#",
+								"  expansion: $0",
+								"  variable: VERBOSE",
+								"  variable: DONT",
+								"  variable: STOPARGS",
+								"  variable: COMMENTS",
+								"  variable: CHANGED",
+								"  variable: DEBUG",
+								"  variable: INDENT_PROFILE",
+								"  expansion: $HERE",
+								"  variable: INDENT_PROFILE",
+								"  expansion: $INDENT_PROFILE",
+								"  expansion: $0",
+								"  variable: INDENT_ARGS",
+								"  expansion: $STOPARGS",
+								"  expansion: $i",
+								"  variable: STOPARGS",
+								"  variable: DONT",
+								"  variable: VERBOSE",
+								"  expansion: $INDENT_PROFILE",
+								"  variable: COMMENTS",
+								"  variable: INDENT_ARGS",
+								"  variable: COMMENTS",
+								"  variable: DEBUG",
+								"  expansion: $i",
+								"  variable: LIST",
+								"  expansion: `find \"$i\" -name '*.[ch]' -print`",
+								"  expansion: $i",
+								"  expansion: $0",
+								"  expansion: $i",
+								"  variable: LIST",
+								"  expansion: $i",
+								"  expansion: $LIST",
+								"  expansion: $i",
+								"  expansion: $j",
+								"  expansion: $DONT",
+								"  variable: tmp",
+								"  expansion: $(mktemp /tmp/indent.XXXXXX)",
+								"  expansion: `basename $j`",
+								"  expansion: $j",
+								"  expansion: $COMMENTS",
+								"  expansion: $j",
+								"  expansion: $DEBUG",
+								"  expansion: $INDENT",
+								"  expansion: $INDENT_ARGS",
+								"  expansion: $INDENT",
+								"  expansion: $HERE",
+								"  expansion: $tmp",
+								"  expansion: $j",
+								"  expansion: $INDENT",
+								"  expansion: $INDENT_ARGS",
+								"  expansion: $tmp",
+								"  expansion: $tmp",
+								"  expansion: $j",
+								"  expansion: $VERBOSE",
+								"  expansion: $j",
+								"  expansion: $tmp",
+								"  expansion: $VERBOSE",
+								"  expansion: $j",
+								"  variable: CHANGED",
+								"  expansion: $tmp",
+								"  expansion: $j",
+								"  expansion: $VERBOSE",
+								"  expansion: $CHANGED"
+							],
 							"syntax": "Packages/Outline/outline.hidden-tmLanguage",
 							"tab_size": 3,
 							"translate_tabs_to_spaces": true
@@ -598,13 +1026,12 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 10,
+					"stack_index": 18,
 					"type": "text"
 				}
 			]
 		},
 		{
-			"selected": 6,
 			"sheets":
 			[
 				{
@@ -620,19 +1047,19 @@
 						"selection":
 						[
 							[
-								424,
-								424
+								740,
+								740
 							]
 						],
 						"settings":
 						{
-							"function_name_status_row": 20,
+							"function_name_status_row": 38,
 							"syntax": "Packages/C Improved/C Improved.tmLanguage",
 							"tab_size": 2,
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 5076.0,
+						"translation.y": 144.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 4,
@@ -640,6 +1067,97 @@
 				},
 				{
 					"buffer": 2,
+					"file": "list-r.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 28369,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								21295,
+								21295
+							]
+						],
+						"settings":
+						{
+							"function_name_status_row": 818,
+							"syntax": "Packages/C Improved/C Improved.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 14191.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "lib/path.h",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2612,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1003,
+								1003
+							]
+						],
+						"settings":
+						{
+							"function_name_status_row": 35,
+							"syntax": "Packages/C++/C++.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "lib/dir.h",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1057,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								655,
+								655
+							]
+						],
+						"settings":
+						{
+							"function_name_status_row": 37,
+							"syntax": "Packages/C++/C++.sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 3,
+					"type": "text"
+				},
+				{
+					"buffer": 5,
 					"semi_transient": false,
 					"settings":
 					{
@@ -824,14 +1342,14 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 3150.0,
+						"translation.y": 504.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 7,
+					"stack_index": 5,
 					"type": "text"
 				},
 				{
-					"buffer": 3,
+					"buffer": 6,
 					"file": "/home/roman/Sources/c-utils/log.c",
 					"semi_transient": false,
 					"settings":
@@ -855,14 +1373,14 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 7284.0,
+						"translation.y": 570.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 6,
 					"type": "text"
 				},
 				{
-					"buffer": 4,
+					"buffer": 7,
 					"file": "cache.c",
 					"semi_transient": false,
 					"settings":
@@ -886,14 +1404,14 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 696.0,
+						"translation.y": 318.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 5,
+					"stack_index": 7,
 					"type": "text"
 				},
 				{
-					"buffer": 5,
+					"buffer": 8,
 					"file": "lib/errmsg.h",
 					"semi_transient": false,
 					"settings":
@@ -918,11 +1436,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 9,
+					"stack_index": 17,
 					"type": "text"
 				},
 				{
-					"buffer": 6,
+					"buffer": 9,
 					"file": "lib/errmsg/errmsg_warn.c",
 					"semi_transient": false,
 					"settings":
@@ -951,38 +1469,189 @@
 					"type": "text"
 				},
 				{
-					"buffer": 7,
+					"buffer": 10,
 					"file": "CMakeLists.txt",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 66776,
+						"buffer_size": 66783,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								35610,
-								35610
+								62337,
+								62337
 							]
 						],
 						"settings":
 						{
-							"function_name_status_row": 1019,
+							"function_name_status_row": 1903,
 							"syntax": "Packages/CMakeEditor/CMakeEditor.tmLanguage",
 							"tab_size": 2,
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 12.0,
+						"translation.y": 33938.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 0,
+					"stack_index": 2,
 					"type": "text"
 				},
 				{
-					"buffer": 8,
+					"buffer": 11,
+					"file": "pkgcfg.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 30851,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								28261,
+								28261
+							]
+						],
+						"settings":
+						{
+							"function_name_status_row": 1197,
+							"syntax": "Packages/C Improved/C Improved.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 547.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 12,
+					"type": "text"
+				},
+				{
+					"buffer": 12,
+					"file": "tinyproxy.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 33260,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								17216,
+								17216
+							]
+						],
+						"settings":
+						{
+							"function_name_status_row": 697,
+							"syntax": "Packages/C Improved/C Improved.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 11950.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 13,
+					"type": "text"
+				},
+				{
+					"buffer": 13,
+					"file": "lib/stralloc/stralloc_fmt.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 353,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								353,
+								353
+							]
+						],
+						"settings":
+						{
+							"function_name_status_row": 14,
+							"syntax": "Packages/C Improved/C Improved.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 14,
+					"type": "text"
+				},
+				{
+					"buffer": 14,
+					"file": "lib/fmt/fmt_escapecharshell.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1083,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								9,
+								9
+							]
+						],
+						"settings":
+						{
+							"function_name_status_row": 0,
+							"syntax": "Packages/C Improved/C Improved.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 9,
+					"type": "text"
+				},
+				{
+					"buffer": 15,
+					"file": "lib/strarray/strarray_from_argv.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 214,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								30,
+								30
+							]
+						],
+						"settings":
+						{
+							"function_name_status_row": 3,
+							"syntax": "Packages/C Improved/C Improved.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 10,
+					"type": "text"
+				},
+				{
+					"buffer": 16,
 					"file": "cfg.sh",
 					"semi_transient": false,
 					"settings":
@@ -1006,14 +1675,14 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 5922.0,
+						"translation.y": 288.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 3,
+					"stack_index": 11,
 					"type": "text"
 				},
 				{
-					"buffer": 9,
+					"buffer": 17,
 					"file": "response.c",
 					"semi_transient": false,
 					"settings":
@@ -1040,11 +1709,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 2,
+					"stack_index": 16,
 					"type": "text"
 				},
 				{
-					"buffer": 10,
+					"buffer": 18,
 					"file": "query.c",
 					"semi_transient": false,
 					"settings":
@@ -1071,7 +1740,7 @@
 						"translation.y": 5536.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 1,
+					"stack_index": 15,
 					"type": "text"
 				}
 			]
@@ -1143,6 +1812,30 @@
 		"selected_items":
 		[
 			[
+				"cmakelists",
+				"CMakeLists.txt"
+			],
+			[
+				"path.h",
+				"lib/path.h"
+			],
+			[
+				"dir.h",
+				"lib/dir.h"
+			],
+			[
+				"list-r",
+				"list-r.c"
+			],
+			[
+				"tinypr",
+				"tinyproxy.c"
+			],
+			[
+				"pkgc",
+				"pkgcfg.c"
+			],
+			[
 				"cfg.sh",
 				"cfg.sh"
 			],
@@ -1179,10 +1872,6 @@
 				"CMakeLists.txt"
 			],
 			[
-				"list-r",
-				"list-r.c"
-			],
-			[
 				"tinypro",
 				"tinyproxy.c"
 			],
@@ -1211,10 +1900,6 @@
 				"lib/io/io_wantread.c"
 			],
 			[
-				"path.h",
-				"lib/path.h"
-			],
-			[
 				"genma",
 				"genmakefile.c"
 			],
@@ -1233,10 +1918,6 @@
 			[
 				"logser",
 				"logserial.c"
-			],
-			[
-				"cmakelists",
-				"CMakeLists.txt"
 			],
 			[
 				"io_waitun",
@@ -1641,18 +2322,6 @@
 			[
 				"genm",
 				"genmakefile.c"
-			],
-			[
-				"path_abs",
-				"lib/path/path_absolute.c"
-			],
-			[
-				"636",
-				"build/x86_64-linux-gnu/try-33vNky.c"
-			],
-			[
-				"strlist.h",
-				"lib/strlist.h"
 			]
 		],
 		"width": 0.0

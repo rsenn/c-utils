@@ -178,6 +178,8 @@ void buffer_fromsa(buffer*, const stralloc* sa); /* read from sa */
 int buffer_tosa(buffer* b, stralloc* sa);        /* write to sa,  auto-growing it */
 
 int buffer_gettok_sa(buffer*, stralloc* sa, const char* charset, size_t setlen);
+
+int buffer_getln(buffer*, stralloc*, int*, int);
 #endif
 
 void buffer_frombuf(buffer*, const char* x, size_t l); /* buffer reads from static buffer */
