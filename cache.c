@@ -55,6 +55,7 @@ Entries are always inserted immediately after the head and removed at the tail.
 Each entry contains the following information:
 4-byte link; 4-byte keylen; 4-byte datalen; 8-byte expire time; key; data->
 */
+#include "lib/errmsg.h"
 
 #define MAXKEYLEN 1000
 #define MAXDATALEN 1000000

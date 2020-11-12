@@ -1,6 +1,7 @@
 #include "lib/dns.h"
 #include "lib/byte.h"
 #include "lib/uint16.h"
+#include "lib/socket.h"
 
 #include "response.h"
 
