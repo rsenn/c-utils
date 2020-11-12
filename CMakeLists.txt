@@ -114,7 +114,7 @@ macro(check_compile RESULT_VAR SOURCE)
 
     if(COMPILE_RESULT)
       message(CHECK_PASS "ok")
-      #add_definitions(-D${RESULT_VAR})
+      # add_definitions(-D${RESULT_VAR})
     else(COMPILE_RESULT)
       set(COMPILE_LOG "${CMAKE_CURRENT_BINARY_DIR}/compile-${C_NAME}.log")
       message(CHECK_FAIL "fail: ${COMPILE_LOG}")
@@ -269,17 +269,12 @@ if(NOT USE_SELECT)
     ITEM
     OUTPUT_VAR)
 
-#  set(MUX_LIST "")
-#  foreach(METHOD DEVPOLL EPOLL KQUEUE SIGIO POLL)
-#    if(SUPPORT_${METHOD})
-#      list_contains("${MUX_LIST}" "${METHOD}" CONTAINS_METHOD)
-#      if(NOT CONTAINS_METHOD)
-#        list(APPEND MUX_LIST ${METHOD})
-#      endif(NOT CONTAINS_METHOD)
-#    endif(SUPPORT_${METHOD})
-#  endforeach(METHOD DEVPOLL EPOLL KQUEUE SIGIO POLL)
-#
-#  message("Mux methods: ${MUX_LIST}")
+  # set(MUX_LIST "") foreach(METHOD DEVPOLL EPOLL KQUEUE SIGIO POLL) if(SUPPORT_${METHOD})
+  # list_contains("${MUX_LIST}" "${METHOD}" CONTAINS_METHOD) if(NOT CONTAINS_METHOD) list(APPEND
+  # MUX_LIST ${METHOD}) endif(NOT CONTAINS_METHOD) endif(SUPPORT_${METHOD}) endforeach(METHOD
+  # DEVPOLL EPOLL KQUEUE SIGIO POLL)
+  #
+  # message("Mux methods: ${MUX_LIST}")
 endif(NOT USE_SELECT)
 
 check_compile(
@@ -914,17 +909,13 @@ if(SUPPORT_SELECT STREQUAL "")
   endif(NOT SUPPORT_SELECT)
 endif(SUPPORT_SELECT STREQUAL "")
 
-
 set(MUX "")
 set(MUX_DEFS "")
 set(MUX_ALL
     KQUEUE DEVPOLL EPOLL
     # SIGIO
     POLL SELECT)
-set(MUX_USE
-    KQUEUE 
-    EPOLL DEVPOLL SIGIO
-    POLL SELECT)
+set(MUX_USE KQUEUE EPOLL DEVPOLL SIGIO POLL SELECT)
 foreach(METHOD ${MUX_USE})
   if(SUPPORT_${METHOD})
     list_contains("${MUX_LIST}" "${METHOD}" CONTAINS_METHOD)
@@ -948,48 +939,21 @@ set(MUX_METHODS
 
 message("Available MUX methods: ${MUX_METHODS}")
 
-#message("MUX definitions: ${MUX_DEFS}")
-
+# message("MUX definitions: ${MUX_DEFS}")
 
 if(LIBMSWSOCK)
   list(APPEND CMAKE_REQUIRED_LIBRARIES ${LIBMSWSOCK})
 endif(LIBMSWSOCK)
 
-
-#if(USE_EPOLL)
-#  set(MUX EPOLL)
-#endif(USE_EPOLL)
-#if(USE_DEVPOLL)
-#  set(MUX DEVPOLL)
-#endif(USE_DEVPOLL)
-#if(USE_SIGIO)
-#  set(MUX SIGIO)
-#endif(USE_SIGIO)
-#if(USE_KQUEUE)
-#  set(MUX KQUEUE)
-#endif(USE_KQUEUE)
-#if(USE_POLL)
-#  set(MUX POLL)
-#endif(USE_POLL)
-#if(USE_SELECT)
-#  set(MUX SELECT)
-#endif(USE_SELECT)
+# if(USE_EPOLL) set(MUX EPOLL) endif(USE_EPOLL) if(USE_DEVPOLL) set(MUX DEVPOLL) endif(USE_DEVPOLL)
+# if(USE_SIGIO) set(MUX SIGIO) endif(USE_SIGIO) if(USE_KQUEUE) set(MUX KQUEUE) endif(USE_KQUEUE)
+# if(USE_POLL) set(MUX POLL) endif(USE_POLL) if(USE_SELECT) set(MUX SELECT) endif(USE_SELECT)
 #
-#if(NOT MUX AND SUPPORT_KQUEUE)
-#  set(MUX KQUEUE)
-#endif(NOT MUX AND SUPPORT_KQUEUE)
-#if(NOT MUX AND SUPPORT_SIGIO)
-#  set(MUX SIGIO)
-#endif(NOT MUX AND SUPPORT_SIGIO)
-#if(NOT MUX AND SUPPORT_EPOLL)
-#  set(MUX EPOLL)
-#endif(NOT MUX AND SUPPORT_EPOLL)
-#if(NOT MUX AND SUPPORT_POLL)
-#  set(MUX POLL)
-#endif(NOT MUX AND SUPPORT_POLL)
-#if(NOT MUX AND SUPPORT_SELECT)
-#  set(MUX SELECT)
-#endif(NOT MUX AND SUPPORT_SELECT)
+# if(NOT MUX AND SUPPORT_KQUEUE) set(MUX KQUEUE) endif(NOT MUX AND SUPPORT_KQUEUE) if(NOT MUX AND
+# SUPPORT_SIGIO) set(MUX SIGIO) endif(NOT MUX AND SUPPORT_SIGIO) if(NOT MUX AND SUPPORT_EPOLL)
+# set(MUX EPOLL) endif(NOT MUX AND SUPPORT_EPOLL) if(NOT MUX AND SUPPORT_POLL) set(MUX POLL)
+# endif(NOT MUX AND SUPPORT_POLL) if(NOT MUX AND SUPPORT_SELECT) set(MUX SELECT) endif(NOT MUX AND
+# SUPPORT_SELECT)
 
 set(MUX_METHOD
     "${MUX}"
@@ -1085,9 +1049,9 @@ if(BUILD_ZLIB)
       3rdparty/zlib/zutil.c)
   add_library(z ${ZLIB_SOURCES})
   set_target_properties(z PROPERTIES ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/zlib"
-                                       LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/zlib")
-link_directories(BEFORE  "${CMAKE_BINARY_DIR}/zlib")
- set(ZLIB_LIBRARY_DEBUG
+                                     LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/zlib")
+  link_directories(BEFORE "${CMAKE_BINARY_DIR}/zlib")
+  set(ZLIB_LIBRARY_DEBUG
       z
       CACHE FILEPATH "" FORCE)
   set(ZLIB_LIBRARY_RELEASE
@@ -1114,7 +1078,7 @@ if(BUILD_BZIP)
   add_library(bz2 ${LIBBZ2_SOURCES})
   set_target_properties(bz2 PROPERTIES ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bzip2"
                                        LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bzip2")
- link_directories(BEFORE  "${CMAKE_BINARY_DIR}/bzip2")
+  link_directories(BEFORE "${CMAKE_BINARY_DIR}/bzip2")
 
   set(BZIP2_LIBRARY_DEBUG
       bz2
@@ -1258,7 +1222,7 @@ if(BUILD_LZMA)
 
   add_library(lzma ${LIBLZMA_SOURCES})
   set_target_properties(lzma PROPERTIES ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/xz"
-                                       LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/xz")
+                                        LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/xz")
   set(LZMA_SOURCE_DIR "${CMAKE_SOURCE_DIR}/3rdparty/xz")
   set(LIBLZMA_INCLUDE_DIRS
       ${LZMA_SOURCE_DIR}/src/common
@@ -1288,8 +1252,8 @@ if(BUILD_LZMA)
   # message("LIBLZMA_DEFS: ${LIBLZMA_DEFS}")
   set_target_properties(lzma PROPERTIES COMPILE_DEFINITIONS "${LIBLZMA_DEFS}"
                                         INCLUDE_DIRECTORIES "${LIBLZMA_INCLUDE_DIRS}")
-  link_directories(BEFORE  "${CMAKE_BINARY_DIR}/xz")
-set(LIBLZMA_LIBRARY
+  link_directories(BEFORE "${CMAKE_BINARY_DIR}/xz")
+  set(LIBLZMA_LIBRARY
       lzma
       CACHE FILEPATH "" FORCE)
   set(LIBLZMA_INCLUDE_DIR
@@ -1368,7 +1332,6 @@ message("LIBLZMA_INCLUDE_DIR: ${LIBLZMA_INCLUDE_DIR}")
 message("LIBLZMA_INCLUDE_DIRS: ${LIBLZMA_INCLUDE_DIRS}")
 message("OPENSSL_INCLUDE_DIR: ${OPENSSL_INCLUDE_DIR}")
 message("ZLIB_INCLUDE_DIR: ${ZLIB_INCLUDE_DIR}")
-
 
 set(MODSUBDIRS
     alloc
@@ -2151,6 +2114,7 @@ add_program(
   strarray
   strlist
   stralloc)
+set(tcping_SOURCES address.c)
 add_program(
   tcping
   hmap
@@ -2175,6 +2139,33 @@ add_program(
   uint16
   ${LIBMSWSOCK}
   ${LIBIPHLPAPI})
+set(ftptest_SOURCES address.c ftplib.c)
+add_program(
+  ftptest
+  hmap
+  unix
+  dns
+  case
+  io
+  array
+  socket
+  ndelay
+  errmsg
+  taia
+  tai
+  stralloc
+  buffer
+  mmap
+  open
+  fmt
+  scan
+  str
+  byte
+  uint16
+  ${LIBMSWSOCK}
+  ${LIBIPHLPAPI})
+
+
 set(nscache_SOURCES
     cache.c
     cache.h
@@ -2302,6 +2293,13 @@ add_program(
   open
   scan
   str)
+
+#[[add_program(ftpcopy io)
+add_program(ftpls io)
+
+set(ftpcopy_SOURCES ftpparse.c ftplib.c ftp_read_lis.c)
+set(ftpls_SOURCES ftpparse.c ftplib.c ftp_read_lis.c)]]
+
 # add_program(libc-resolv-override dns errmsg  mmap open scan str)
 
 if(ENABLE_SHARED AND BUILD_SHARED_LIBS)

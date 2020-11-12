@@ -35,21 +35,21 @@
 #include "lib/unix.h"
 #include "lib/errmsg.h"
 #include "lib/stralloc.h"
-#include "lib/dns.h"
-#include "lib/ip4.h"
-#include "lib/ip6.h"
 #include "lib/safemult.h"
 #include "lib/str.h"
 #include "lib/mmap.h"
 #include "lib/scan.h"
 #include "lib/byte.h"
 #include "lib/uint32.h"
+#include "lib/io.h"
+#include "lib/dns.h"
 
 #include <stdlib.h>
 #include <stdbool.h>
 #include <errno.h>
 
 #include "map.h"
+#include "address.h"
 
 #if WINDOWS_NATIVE
 #include <io.h>
@@ -62,15 +62,6 @@
 #define HOSTS_FILE "/etc/hosts"
 #endif
 
-#define max(a, b) ((a) > (b) ? (a) : (b))
-#define min(a, b) ((a) < (b) ? (a) : (b))
-
-typedef struct {
-  bool ip6;
-  uint32 scope_id;
-  char ip[16];
-} address_t;
-
 static MAP_T hosts_db;
 
 void
@@ -78,53 +69,6 @@ usage(char* prog) {
   buffer_putm_internal(
       buffer_2, "Usage: ", str_basename(prog), " [-q] [-t timeout_sec] [-u timeout_usec] <host> <port>", NULL);
   buffer_putnlflush(buffer_2);
-}
-
-size_t
-scan_address(const char* x, address_t* addr) {
-  size_t i;
-  byte_zero(addr, sizeof(address_t));
-
-  if((i = scan_ip4(x, addr->ip)) == 0) {
-    if((i = scan_ip6if(x, addr->ip, &addr->scope_id)))
-      addr->ip6 = true;
-  } else {
-    addr->ip6 = false;
-  }
-  return i;
-}
-
-size_t
-fmt_address(char* x, const address_t* addr) {
-  size_t n;
-
-  if(addr->ip6)
-    n = fmt_ip6if(x, addr->ip, addr->scope_id);
-  else
-    n = fmt_ip4(x, addr->ip);
-  return n;
-}
-
-int
-lookup_address(stralloc* name, address_t* addr) {
-  stralloc ips;
-  stralloc_init(&ips);
-  stralloc_ready(&ips, 16);
-  byte_zero(addr, sizeof(address_t));
-
-  if(dns_ip6(name, &ips) == -1) {
-    if(dns_ip4(name, &ips) == -1) {
-      errmsg_warnsys("unable to find IP address for ", name->s, 0);
-      return 0;
-    } else {
-      addr->ip6 = false;
-    }
-  } else {
-    addr->ip6 = true;
-  }
-  byte_copy(addr->ip, min(addr->ip6 ? 16 : 4, ips.len), ips.s);
-  stralloc_free(&ips);
-  return 1;
 }
 
 int
@@ -151,7 +95,7 @@ read_hosts(const char* file) {
     if(p[s] == '#')
       continue;
 
-    i = scan_address(&p[s], &addr);
+    i = address_scan(&p[s], &addr);
 
     if(i) {
       size_t hlen;
@@ -166,7 +110,7 @@ read_hosts(const char* file) {
 
 #ifdef DEBUG_OUTPUT_
         buffer_puts(buffer_1, "IP: ");
-        buffer_put(buffer_1, ipbuf, fmt_address(ipbuf, &addr));
+        buffer_put(buffer_1, ipbuf, address_fmt(ipbuf, &addr));
 
         buffer_puts(buffer_1, ", Hostname: ");
         buffer_putsa(buffer_1, &hostname);
@@ -204,7 +148,7 @@ dump_hosts() {
     const char* host = MAP_KEY(ptr);
     address_t* addr = MAP_DATA(ptr);
 
-    buffer_put(buffer_2, buf, fmt_address(buf, addr));
+    buffer_put(buffer_2, buf, address_fmt(buf, addr));
     buffer_putspace(buffer_2);
     buffer_puts(buffer_2, host);
     buffer_putnlflush(buffer_2);
@@ -267,7 +211,7 @@ main(int argc, char* argv[]) {
   stralloc_copys(&host, argv[optind]);
   stralloc_nul(&host);
 
-  if(!scan_address(host.s, &addr) && !lookup_hosts(&host, &addr) && !lookup_address(&host, &addr)) {
+  if(!address_scan(host.s, &addr) && !lookup_hosts(&host, &addr) && !address_lookup(&host, &addr, false)) {
     ret = 111;
     goto fail;
   }
