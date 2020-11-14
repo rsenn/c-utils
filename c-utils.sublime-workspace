@@ -12,166 +12,13 @@
 	"buffers":
 	[
 		{
-			"contents": "  variable: PATH\n  expansion: $PATH\n  variable: PATH\n  variable: HERE\n  expansion: `dirname $0`\n  variable: INDENT\n  variable: INDENT\n  expansion: $#\n  expansion: $0\n  variable: VERBOSE\n  variable: DONT\n  variable: STOPARGS\n  variable: COMMENTS\n  variable: CHANGED\n  variable: DEBUG\n  variable: INDENT_PROFILE\n  expansion: $HERE\n  variable: INDENT_PROFILE\n  expansion: $INDENT_PROFILE\n  expansion: $0\n  variable: INDENT_ARGS\n  expansion: $STOPARGS\n  expansion: $i\n  variable: STOPARGS\n  variable: DONT\n  variable: VERBOSE\n  expansion: $INDENT_PROFILE\n  variable: COMMENTS\n  variable: INDENT_ARGS\n  variable: COMMENTS\n  variable: DEBUG\n  expansion: $i\n  variable: LIST\n  expansion: `find \"$i\" -name '*.[ch]' -print`\n  expansion: $i\n  expansion: $0\n  expansion: $i\n  variable: LIST\n  expansion: $i\n  expansion: $LIST\n  expansion: $i\n  expansion: $j\n  expansion: $DONT\n  variable: tmp\n  expansion: $(mktemp /tmp/indent.XXXXXX)\n  expansion: `basename $j`\n  expansion: $j\n  expansion: $COMMENTS\n  expansion: $j\n  expansion: $DEBUG\n  expansion: $INDENT\n  expansion: $INDENT_ARGS\n  expansion: $INDENT\n  expansion: $HERE\n  expansion: $tmp\n  expansion: $j\n  expansion: $INDENT\n  expansion: $INDENT_ARGS\n  expansion: $tmp\n  expansion: $tmp\n  expansion: $j\n  expansion: $VERBOSE\n  expansion: $j\n  expansion: $tmp\n  expansion: $VERBOSE\n  expansion: $j\n  variable: CHANGED\n  expansion: $tmp\n  expansion: $j\n  expansion: $VERBOSE\n  expansion: $CHANGED",
+			"contents": "",
 			"settings":
 			{
-				"buffer_size": 1437,
+				"buffer_size": 0,
 				"line_ending": "Unix",
 				"name": "𝌆 Outline",
 				"scratch": true
-			}
-		},
-		{
-			"contents": "#include \"lib/env.h\"\n#include \"lib/scan.h\"\n#include \"lib/errmsg.h\"\n#include \"lib/ip4.h\"\n#include \"lib/ip6.h\"\n#include \"lib/uint16.h\"\n#include \"lib/uint64.h\"\n#include \"lib/socket.h\"\n#include \"lib/dns.h\"\n#include \"lib/taia.h\"\n#include \"lib/byte.h\"\n#include \"lib/fmt.h\"\n#include \"lib/iopause.h\"\n#include \"lib/alloc.h\"\n#include \"lib/ndelay.h\"\n#include \"lib/str.h\"\n\n#include <stdbool.h>\n#include <unistd.h>\n#include <sys/stat.h>\n\n#include \"response.h\"\n#include \"roots.h\"\n#include \"query.h\"\n#include \"cache.h\"\n#include \"log.h\"\n\n#define FATAL \"dnscache: fatal: \"\n\nstatic char fn[3 + IP6_FMT];\n\nstatic char sendaddr[16], bindaddr[16];\nstatic uint32 bindscope;\nstatic char buf[1024];\nuint64 numqueries = 0;\n\nstatic int udp53, tcp53;\n\n#define MAXUDP 200\n#define MAXTCP 20\n\niopause_fd io[3 + MAXUDP + MAXTCP];\niopause_fd *udp53io, *tcp53io;\n\nstruct tcpclient {\n  struct query q;\n  struct taia start;\n  struct taia timeout;\n  uint64 active; /* query number or 1, if active; otherwise 0 */\n  iopause_fd* io;\n  char ip[16]; /* send response to this address */\n  uint16 port; /* send response to this port */\n  uint32 scope_id;\n  char id[2];\n  int tcp; /* open TCP socket, if active */\n  int state;\n  char* buf; /* 0, or dynamically allocated of length len */\n  unsigned int len;\n  unsigned int pos;\n};\n\nstruct udpclient {\n  struct query q;\n  struct taia start;\n  uint64 active; /* query number, if active; otherwise 0 */\n  iopause_fd* io;\n  char ip[16];\n  uint16 port;\n  uint32 scope_id;\n  char id[2];\n};\n\nstatic struct udpclient u[MAXUDP];\nint uactive = 0;\n\nstatic struct tcpclient t[MAXTCP];\nint tactive = 0;\n\nunion {\n  char u8[128];\n  uint32 u32[32];\n} seed;\n\nint\ndnscache_okclient(char ip[16], bool ip6) {\n  struct stat st;\n  int i;\n\n  if(ip6 && ip6_isv4mapped(ip)) {\n    if(dnscache_okclient(&ip[12], false))\n      return 1;\n  }\n\n  fn[0] = 'i';\n  fn[1] = 'p';\n  fn[2] = '/';\n  fn[3 + (ip6 ? fmt_ip6 : fmt_ip4)(fn + 3, ip)] = 0;\n\n  for(;;) {\n    if(stat(fn, &st) == 0)\n      return 1;\n    /* treat temporary error as rejection */\n    i = str_rchr(fn, '.');\n    if(!fn[i])\n      return 0;\n    fn[i] = 0;\n  }\n}\n\nvoid\ndnscache_droproot(const char* fatal) {\n  const char* x;\n  unsigned long id;\n\n  x = env_get(\"ROOT\");\n  if(!x)\n    die(111, fatal, \"$ROOT not set\");\n  if(chdir(x) == -1)\n    diesys(111, fatal, \"unable to chdir to \", x, \": \");\n  if(chroot(\".\") == -1)\n    diesys(111, fatal, \"unable to chroot to \", x, \": \");\n\n  x = env_get(\"GID\");\n  if(!x)\n    die(111, fatal, \"$GID not set\");\n  scan_ulong(x, &id);\n  if(setgid((int)id) == -1)\n    diesys(111, fatal, \"unable to setgid: \");\n\n  x = env_get(\"UID\");\n  if(!x)\n    die(111, fatal, \"$UID not set\");\n  scan_ulong(x, &id);\n  if(setuid((int)id) == -1)\n    diesys(111, fatal, \"unable to setuid: \");\n}\n\nstatic int\npacketquery(char* buf, unsigned int len, char** q, char qtype[2], char qclass[2], char id[2]) {\n  unsigned int pos;\n  char header[12];\n\n  errno = EPROTO;\n  pos = dns_packet_copy(buf, len, 0, header, 12);\n  if(!pos)\n    return 0;\n  if(header[2] & 128)\n    return 0; /* must not respond to responses */\n  if(!(header[2] & 1))\n    return 0; /* do not respond to non-recursive queries */\n  if(header[2] & 120)\n    return 0;\n  if(header[2] & 2)\n    return 0;\n  if(byte_diff(header + 4, 2, \"\\0\\1\"))\n    return 0;\n\n  pos = dns_packet_getname(buf, len, pos, q);\n  if(!pos)\n    return 0;\n  pos = dns_packet_copy(buf, len, pos, qtype, 2);\n  if(!pos)\n    return 0;\n  pos = dns_packet_copy(buf, len, pos, qclass, 2);\n  if(!pos)\n    return 0;\n  if(byte_diff(qclass, 2, DNS_C_IN) && byte_diff(qclass, 2, DNS_C_ANY))\n    return 0;\n\n  byte_copy(id, 2, header);\n  return 1;\n}\n\nvoid\nudp_drop(int j) {\n  if(!u[j].active)\n    return;\n  log_querydrop(&u[j].active);\n  u[j].active = 0;\n  --uactive;\n}\n\nvoid\nudp_respond(int j) {\n  response* resp;\n  if(!u[j].active)\n    return;\n  resp = &u[j].q.response;\n  response_id(resp, u[j].id);\n  if(resp->pos > 512)\n    response_tc(resp);\n\n  response_send(resp, udp53, u[j].ip, u[j].port);\n  log_querydone(&u[j].active, u[j].ip, u[j].port, udp53, u[j].id, resp->pos);\n\n  u[j].active = 0;\n  --uactive;\n}\n\nvoid\nudp_new(void) {\n  int j, i, len;\n  struct udpclient* x;\n  char *q = 0, qtype[2], qclass[2];\n\n  for(j = 0; j < MAXUDP; ++j)\n    if(!u[j].active)\n      break;\n\n  if(j >= MAXUDP) {\n    j = 0;\n    for(i = 1; i < MAXUDP; ++i)\n      if(taia_less(&u[i].start, &u[j].start))\n        j = i;\n    errno = ETIMEDOUT;\n    udp_drop(j);\n  }\n\n  x = u + j;\n  taia_now(&x->start);\n\n  if((len = socket_recv6(udp53, buf, sizeof buf, x->ip, &x->port, &x->scope_id)) == -1)\n    return;\n  if(len >= sizeof buf)\n    return;\n  if(x->port < 1024)\n    if(x->port != 53)\n      return;\n  if(!dnscache_okclient(x->ip, true))\n    return;\n\n  if(!packetquery(buf, len, &q, qtype, qclass, x->id))\n    return;\n\n  x->active = ++numqueries;\n  ++uactive;\n  log_query(&x->active, x->ip, x->port, udp53, x->id, q, qtype);\n\n  switch(query_start(&x->q, q, qtype, qclass, sendaddr)) {\n    case -1: udp_drop(j); return;\n    case 1: udp_respond(j);\n  }\n}\n\n/*\nstate 1: buf 0; normal state at beginning of TCP connection\nstate 2: buf 0; have read 1 byte of query packet length into len\nstate 3: buf allocated; have read pos bytes of buf\nstate 0: buf 0; handling query in q\nstate -1: buf allocated; have written pos bytes\n*/\n\nvoid\ntcp_free(int j) {\n  if(!t[j].buf)\n    return;\n  alloc_free(t[j].buf);\n  t[j].buf = 0;\n}\n\nvoid\ntcp_timeout(int j) {\n  struct taia now;\n  if(!t[j].active)\n    return;\n  taia_now(&now);\n  taia_uint(&t[j].timeout, 10);\n  taia_add(&t[j].timeout, &t[j].timeout, &now);\n}\n\nvoid\ntcp_close(int j) {\n  if(!t[j].active)\n    return;\n  tcp_free(j);\n  errno = 0;\n  log_tcpclose(t[j].ip, t[j].port, t[j].tcp);\n  close(t[j].tcp);\n\n  t[j].active = 0;\n  --tactive;\n}\n\nvoid\ntcp_drop(int j) {\n  log_querydrop(&t[j].active);\n  errno = EPIPE;\n  tcp_close(j);\n}\n\nvoid\ntcp_respond(int j) {\n  response* resp;\n  if(!t[j].active)\n    return;\n  resp = &t[j].q.response;\n  log_querydone(&t[j].active, t[j].ip, t[j].port, t[j].tcp, t[j].id, resp->pos);\n  response_id(resp, t[j].id);\n  t[j].len = resp->pos + 2;\n  tcp_free(j);\n  t[j].buf = alloc(resp->pos + 2);\n  if(!t[j].buf) {\n    tcp_close(j);\n    return;\n  }\n  uint16_pack_big(t[j].buf, resp->pos);\n  byte_copy(t[j].buf + 2, resp->pos, resp->buf);\n  t[j].pos = 0;\n  t[j].state = -1;\n}\n\nvoid\ntcp_rw(int j) {\n  struct tcpclient* x;\n  char ch;\n  static char* q = 0;\n  char qtype[2];\n  char qclass[2];\n  int r;\n\n  x = t + j;\n  if(x->state == -1) {\n    r = write(x->tcp, x->buf + x->pos, x->len - x->pos);\n    if(r <= 0) {\n      tcp_close(j);\n      return;\n    }\n    x->pos += r;\n    if(x->pos == x->len) {\n      tcp_free(j);\n      x->state = 1; /* could drop connection immediately */\n    }\n    return;\n  }\n\n  r = read(x->tcp, &ch, 1);\n  if(r == 0) {\n    errno = EPIPE;\n    tcp_close(j);\n    return;\n  }\n  if(r < 0) {\n    tcp_close(j);\n    return;\n  }\n\n  if(x->state == 1) {\n    x->len = (unsigned char)ch;\n    x->len <<= 8;\n    x->state = 2;\n    return;\n  }\n  if(x->state == 2) {\n    x->len += (unsigned char)ch;\n    if(!x->len) {\n      errno = EPROTO;\n      tcp_close(j);\n      return;\n    }\n    x->buf = alloc(x->len);\n    if(!x->buf) {\n      tcp_close(j);\n      return;\n    }\n    x->pos = 0;\n    x->state = 3;\n    return;\n  }\n\n  if(x->state != 3)\n    return; /* impossible */\n\n  x->buf[x->pos++] = ch;\n  if(x->pos < x->len)\n    return;\n\n  if(!packetquery(x->buf, x->len, &q, qtype, qclass, x->id)) {\n    tcp_close(j);\n    return;\n  }\n\n  x->active = ++numqueries;\n  log_query(&x->active, x->ip, x->port, x->tcp, x->id, q, qtype);\n  log_query(&x->active, x->ip, x->port, x->tcp, x->id, q, qtype);\n  switch(query_start(&x->q, q, qtype, qclass, sendaddr)) {\n    case -1: tcp_drop(j); return;\n    case 1: tcp_respond(j); return;\n  }\n  tcp_free(j);\n  x->state = 0;\n}\n\nvoid\ntcp_new(void) {\n  int i;\n  int j;\n  struct tcpclient* x;\n\n  for(j = 0; j < MAXTCP; ++j)\n    if(!t[j].active)\n      break;\n\n  if(j >= MAXTCP) {\n    j = 0;\n    for(i = 1; i < MAXTCP; ++i)\n      if(taia_less(&t[i].start, &t[j].start))\n        j = i;\n    errno = ETIMEDOUT;\n    if(t[j].state == 0)\n      tcp_drop(j);\n    else\n      tcp_close(j);\n  }\n\n  x = t + j;\n  taia_now(&x->start);\n\n  x->tcp = socket_accept6(tcp53, x->ip, &x->port, &x->scope_id);\n  if(x->tcp == -1)\n    return;\n  if(x->port < 1024)\n    if(x->port != 53) {\n      close(x->tcp);\n      return;\n    }\n  if(!dnscache_okclient(x->ip, true)) {\n    close(x->tcp);\n    return;\n  }\n  if(ndelay_on(x->tcp) == -1) {\n    close(x->tcp);\n    return;\n  } /* Linux bug */\n\n  x->active = 1;\n  ++tactive;\n  x->state = 1;\n  tcp_timeout(j);\n\n  log_tcpopen(x->ip, x->port, x->tcp);\n}\n\nvoid\ndnscache_run(void) {\n  int j;\n  struct taia deadline;\n  struct taia stamp;\n  int iolen;\n  int r;\n\n  for(;;) {\n    taia_now(&stamp);\n    taia_uint(&deadline, 120);\n    taia_add(&deadline, &deadline, &stamp);\n\n    iolen = 0;\n\n    udp53io = io + iolen++;\n    udp53io->fd = udp53;\n    udp53io->events = IOPAUSE_READ;\n\n    tcp53io = io + iolen++;\n    tcp53io->fd = tcp53;\n    tcp53io->events = IOPAUSE_READ;\n\n    for(j = 0; j < MAXUDP; ++j)\n      if(u[j].active) {\n        u[j].io = io + iolen++;\n        query_io(&u[j].q, u[j].io, &deadline);\n      }\n\n    for(j = 0; j < MAXTCP; ++j)\n      if(t[j].active) {\n        t[j].io = io + iolen++;\n        if(t[j].state == 0)\n          query_io(&t[j].q, t[j].io, &deadline);\n        else {\n          if(taia_less(&t[j].timeout, &deadline))\n            deadline = t[j].timeout;\n          t[j].io->fd = t[j].tcp;\n          t[j].io->events = (t[j].state > 0) ? IOPAUSE_READ : IOPAUSE_WRITE;\n        }\n      }\n\n    iopause(io, iolen, &deadline, &stamp);\n\n    for(j = 0; j < MAXUDP; ++j)\n      if(u[j].active) {\n        r = query_get(&u[j].q, u[j].io, &stamp);\n        if(r == -1)\n          udp_drop(j);\n        if(r == 1)\n          udp_respond(j);\n      }\n\n    for(j = 0; j < MAXTCP; ++j)\n      if(t[j].active) {\n        if(t[j].io->revents)\n          tcp_timeout(j);\n        if(t[j].state == 0) {\n          r = query_get(&t[j].q, t[j].io, &stamp);\n          if(r == -1)\n            tcp_drop(j);\n          if(r == 1)\n            tcp_respond(j);\n        } else if(t[j].io->revents || taia_less(&t[j].timeout, &stamp))\n          tcp_rw(j);\n      }\n\n    if(udp53io)\n      if(udp53io->revents)\n        udp_new();\n\n    if(tcp53io)\n      if(tcp53io->revents)\n        tcp_new();\n  }\n}\n\nint\nmain(int argc, char* argv[]) {\n  const char *x, *y;\n  unsigned long cachesize;\n  int i;\n  int v6only_prev;\n\n  uint32_seed(NULL, 0);\n\n  for(i = 1; i < argc; i++) env_put(argv[i]);\n\n  x = env_get(\"IP\");\n  if(!x)\n    die(111, FATAL, \"$IP not set\");\n  if(!scan_ip6if(x, bindaddr, &bindscope))\n    die(111, FATAL, \"unable to parse IP address \", x);\n\n  udp53 = socket_udp6();\n  /// v6only_prev = socket_v6only(udp53, 0);\n\n  if(udp53 == -1)\n    diesys(111, FATAL, \"unable to create UDP socket: \");\n  if(socket_bind6_reuse(udp53, bindaddr, 53, bindscope) == -1)\n    diesys(111, FATAL, \"unable to bind UDP socket: \");\n\n  tcp53 = socket_tcp6();\n  // v6only_prev = socket_v6only(udp53, 0);\n\n  if(tcp53 == -1)\n    diesys(111, FATAL, \"unable to create TCP socket: \");\n  if(socket_bind6_reuse(tcp53, bindaddr, 53, bindscope) == -1)\n    diesys(111, FATAL, \"unable to bind TCP socket: \");\n\n  dnscache_droproot(FATAL);\n\n  socket_tryreservein(udp53, 131072);\n\n  for(i = 0; i < 32; i++) seed.u32[i] = uint32_random();\n\n  dns_random_init(seed.u8);\n\n  x = env_get(\"IPSEND\");\n  if(!x)\n    die(111, FATAL, \"$IPSEND not set\");\n  if(!scan_ip6(x, sendaddr))\n    die(111, FATAL, \"unable to parse IP address \", x);\n\n  x = env_get(\"CACHESIZE\");\n  if(!x)\n    die(111, FATAL, \"$CACHESIZE not set\");\n  scan_ulong(x, &cachesize);\n\n  y = env_get(\"CACHEFILE\");\n  if(y) {\n    if(!cache_open(y, cachesize))\n      diesys(111, FATAL, \"unable to open cache file \", y);\n\n  } else {\n    if(!cache_init(cachesize))\n      die(111, FATAL, \"not enough memory for cache of size \", x);\n  }\n\n  if(env_get(\"HIDETTL\"))\n    response_hidettl = 1;\n\n  if(env_get(\"FORWARDONLY\"))\n    query_forwardonly();\n\n  if(!roots_init())\n    diesys(111, FATAL, \"unable to read servers: \");\n\n  if(socket_listen(tcp53, 20) == -1)\n    diesys(111, FATAL, \"unable to listen on TCP socket: \");\n\n  log_startup();\n  dnscache_run();\n}\n",
-			"file": "dnscache.c",
-			"file_size": 12167,
-			"file_write_time": 132480129231217408,
-			"settings":
-			{
-				"buffer_size": 12167,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "list-r.c",
-			"settings":
-			{
-				"buffer_size": 28369,
-				"encoding": "UTF-8",
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/path.h",
-			"settings":
-			{
-				"buffer_size": 2612,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/dir.h",
-			"settings":
-			{
-				"buffer_size": 1057,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"contents": "Searching 3108 files for \"AAAA\" (regex, case sensitive)\n\n/home/roman/Sources/c-utils/lib/dns.h:\n   25  #define DNS_T_SIG \"\\0\\30\"\n   26  #define DNS_T_KEY \"\\0\\31\"\n   27: #define DNS_T_AAAA \"\\0\\34\"\n   28  #define DNS_T_AXFR \"\\0\\374\"\n   29  #define DNS_T_ANY \"\\0\\377\"\n\n/home/roman/Sources/c-utils/lib/dns/dns_ip6.c:\n   30        return -1;\n   31      uint16_unpack_big(header + 8, &datalen);\n   32:     if(byte_equal(header, 2, DNS_T_AAAA)) {\n   33        if(byte_equal(header + 2, 2, DNS_C_IN))\n   34          if(datalen == 16) {\n   ..\n  106      if(!stralloc_copys(out, \"\"))\n  107        return -1;\n  108:     if(dns_resolve(q, DNS_T_AAAA) != -1)\n  109        if(dns_ip6_packet_add(out, dns_resolve_tx.packet, dns_resolve_tx.packetlen) != -1) {\n  110          dns_transmit_free(&dns_resolve_tx);\n\n/home/roman/Sources/c-utils/lib/dns.h:\n   25  #define DNS_T_SIG \"\\0\\30\"\n   26  #define DNS_T_KEY \"\\0\\31\"\n   27: #define DNS_T_AAAA \"\\0\\34\"\n   28  #define DNS_T_AXFR \"\\0\\374\"\n   29  #define DNS_T_ANY \"\\0\\377\"\n\n/home/roman/Sources/c-utils/lib/dns/dns_ip6.c:\n   30        return -1;\n   31      uint16_unpack_big(header + 8, &datalen);\n   32:     if(byte_equal(header, 2, DNS_T_AAAA)) {\n   33        if(byte_equal(header + 2, 2, DNS_C_IN))\n   34          if(datalen == 16) {\n   ..\n  106      if(!stralloc_copys(out, \"\"))\n  107        return -1;\n  108:     if(dns_resolve(q, DNS_T_AAAA) != -1)\n  109        if(dns_ip6_packet_add(out, dns_resolve_tx.packet, dns_resolve_tx.packetlen) != -1) {\n  110          dns_transmit_free(&dns_resolve_tx);\n\n/home/roman/Sources/c-utils/libc-resolv-override.h:\n   55  #define DNS_T_SIG \"\\0\\30\"\n   56  #define DNS_T_KEY \"\\0\\31\"\n   57: #define DNS_T_AAAA \"\\0\\34\"\n   58  #define DNS_T_AXFR \"\\0\\374\"\n   59  #define DNS_T_ANY \"\\0\\377\"\n\n/home/roman/Sources/c-utils/log.c:\n  155    else if(byte_equal(type, 2, DNS_T_KEY))\n  156      log_string(\"key\");\n  157:   else if(byte_equal(type, 2, DNS_T_AAAA))\n  158      log_string(\"aaaa\");\n  159    else if(byte_equal(type, 2, DNS_T_AXFR))\n  ...\n  301    if(byte_equal(type, 2, DNS_T_A)) {\n  302      log_iplist(cached, cachedlen, 4);\n  303:   } else if(byte_equal(type, 2, DNS_T_AAAA)) {\n  304      log_iplist(cached, cachedlen, 16);\n  305    } else if(byte_equal(type, 2, DNS_T_MX)) {\n\n/home/roman/Sources/c-utils/wapm_packages/_/clang@0.1.0/sysroot/include/arpa/nameser.h:\n  422  #define\tT_PX\t\tns_t_px\n  423  #define\tT_GPOS\t\tns_t_gpos\n  424: #define\tT_AAAA\t\tns_t_aaaa\n  425  #define\tT_LOC\t\tns_t_loc\n  426  #define\tT_NXT\t\tns_t_nxt\n\n/home/roman/Sources/c-utils/wapm_packages/_/clang@0.1.0/sysroot/share/wasm32-wasi/predefined-macros.txt:\n 2334  #define T_A ns_t_a\n 2335  #define T_A6 ns_t_a6\n 2336: #define T_AAAA ns_t_aaaa\n 2337  #define T_AFSDB ns_t_afsdb\n 2338  #define T_ANY ns_t_any\n\n/home/roman/Sources/c-utils/wapm_packages/syrusakbary/clang@0.0.1/sysroot2/include/arpa/nameser.h:\n  422  #define\tT_PX\t\tns_t_px\n  423  #define\tT_GPOS\t\tns_t_gpos\n  424: #define\tT_AAAA\t\tns_t_aaaa\n  425  #define\tT_LOC\t\tns_t_loc\n  426  #define\tT_NXT\t\tns_t_nxt\n\n12 matches across 9 files\n\n\nSearching 3108 files for \"\"rr\" (regex, case sensitive)\n\n/home/roman/Sources/c-utils/log.c:\n  419    int i;\n  420  \n  421:   log_string(\"rr \");\n  422    log_ip(server, 4);\n  423    log_space();\n  ...\n  441  void\n  442  log_rrns(const char server[], const char* q, const char* data, unsigned int ttl) {\n  443:   log_string(\"rr \");\n  444    log_ip(server, 4);\n  445    log_space();\n  ...\n  454  void\n  455  log_rrcname(const char server[], const char* q, const char* data, unsigned int ttl) {\n  456:   log_string(\"rr \");\n  457    log_ip(server, 4);\n  458    log_space();\n  ...\n  467  void\n  468  log_rrptr(const char server[], const char* q, const char* data, unsigned int ttl) {\n  469:   log_string(\"rr \");\n  470    log_ip(server, 4);\n  471    log_space();\n  ...\n  482    uint16 u;\n  483  \n  484:   log_string(\"rr \");\n  485    log_ip(server, 4);\n  486    log_space();\n  ...\n  501    int i;\n  502  \n  503:   log_string(\"rr \");\n  504    log_ip(server, 4);\n  505    log_space();\n\n6 matches in 1 file\n\n\nSearching 3108 files for \"log_rr\" (regex, case sensitive)\n\n/home/roman/Sources/c-utils/log.c:\n  416  \n  417  void\n  418: log_rr(const char server[], const char* q, const char type[2], const char* buf, unsigned int len, unsigned int ttl) {\n  419    int i;\n  420  \n  ...\n  440  \n  441  void\n  442: log_rrns(const char server[], const char* q, const char* data, unsigned int ttl) {\n  443    log_string(\"rr \");\n  444    log_ip(server, 4);\n  ...\n  453  \n  454  void\n  455: log_rrcname(const char server[], const char* q, const char* data, unsigned int ttl) {\n  456    log_string(\"rr \");\n  457    log_ip(server, 4);\n  ...\n  466  \n  467  void\n  468: log_rrptr(const char server[], const char* q, const char* data, unsigned int ttl) {\n  469    log_string(\"rr \");\n  470    log_ip(server, 4);\n  ...\n  479  \n  480  void\n  481: log_rrmx(const char server[], const char* q, const char* mx, const char pref[2], unsigned int ttl) {\n  482    uint16 u;\n  483  \n  ...\n  497  \n  498  void\n  499: log_rrsoa(const char server[], const char* q, const char* n1, const char* n2, const char misc[20], unsigned int ttl) {\n  500    uint32 u;\n  501    int i;\n\n/home/roman/Sources/c-utils/log.h:\n   32  void log_lame(const char[], const char*, const char*);\n   33  void log_servfail(const char*);\n   34: void log_rr(const char[], const char*, const char[2], const char*, unsigned int, unsigned int);\n   35: void log_rrns(const char[], const char*, const char*, unsigned int);\n   36: void log_rrcname(const char[], const char*, const char*, unsigned int);\n   37: void log_rrptr(const char[], const char*, const char*, unsigned int);\n   38: void log_rrmx(const char[], const char*, const char*, const char[2], unsigned int);\n   39: void log_rrsoa(const char[], const char*, const char*, const char*, const char[20], unsigned int);\n   40  void log_stats(void);\n   41  \n\n/home/roman/Sources/c-utils/query.c:\n  742            goto fail;\n  743          if(records[i] < posauthority)\n  744:           log_rrsoa(whichserver, t1, t2, t3, misc, ttl);\n  745          ++i;\n  746        }\n  ...\n  752        if(!pos)\n  753          goto fail;\n  754:       log_rrcname(whichserver, t1, t2, ttl);\n  755        cachegeneric(DNS_T_CNAME, t1, t2, dns_domain_length(t2), ttl);\n  756      } else if(byte_equal(type, 2, DNS_T_PTR)) {\n  ...\n  763          if(!pos)\n  764            goto fail;\n  765:         log_rrptr(whichserver, t1, t2, ttl);\n  766          save_data(t2, dns_domain_length(t2));\n  767          ++i;\n  ...\n  777          if(!pos)\n  778            goto fail;\n  779:         log_rrns(whichserver, t1, t2, ttl);\n  780          save_data(t2, dns_domain_length(t2));\n  781          ++i;\n  ...\n  794          if(!pos)\n  795            goto fail;\n  796:         log_rrmx(whichserver, t1, t2, misc, ttl);\n  797          save_data(misc, 2);\n  798          save_data(t2, dns_domain_length(t2));\n  ...\n  814              goto fail;\n  815            save_data(header, 4);\n  816:           log_rr(whichserver, t1, DNS_T_A, header, 4, ttl);\n  817          }\n  818          ++i;\n  ...\n  833          save_data(header + 8, 2);\n  834          save_data(buf + pos, datalen);\n  835:         log_rr(whichserver, t1, type, buf + pos, datalen, ttl);\n  836          ++i;\n  837        }\n\n19 matches across 3 files\n",
-			"settings":
-			{
-				"buffer_size": 7291,
-				"line_ending": "Unix",
-				"name": "Find Results",
-				"scratch": true
-			}
-		},
-		{
-			"file": "/home/roman/Sources/c-utils/log.c",
-			"settings":
-			{
-				"buffer_size": 10296,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "cache.c",
-			"settings":
-			{
-				"buffer_size": 6609,
-				"encoding": "UTF-8",
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/errmsg.h",
-			"settings":
-			{
-				"buffer_size": 1924,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/errmsg/errmsg_warn.c",
-			"settings":
-			{
-				"buffer_size": 237,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "CMakeLists.txt",
-			"settings":
-			{
-				"buffer_size": 66783,
-				"encoding": "UTF-8",
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "pkgcfg.c",
-			"settings":
-			{
-				"buffer_size": 30851,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "tinyproxy.c",
-			"settings":
-			{
-				"buffer_size": 33260,
-				"encoding": "UTF-8",
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/stralloc/stralloc_fmt.c",
-			"settings":
-			{
-				"buffer_size": 353,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/fmt/fmt_escapecharshell.c",
-			"settings":
-			{
-				"buffer_size": 1083,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/strarray/strarray_from_argv.c",
-			"settings":
-			{
-				"buffer_size": 214,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "cfg.sh",
-			"settings":
-			{
-				"buffer_size": 11755,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "response.c",
-			"settings":
-			{
-				"buffer_size": 3254,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "query.c",
-			"settings":
-			{
-				"buffer_size": 28131,
-				"line_ending": "Unix"
 			}
 		}
 	],
@@ -267,31 +114,65 @@
 	},
 	"expanded_folders":
 	[
-		"/home/roman/Dokumente/Sources/c-utils",
-		"/home/roman/Dokumente/Sources/c-utils/ip",
-		"/home/roman/Dokumente/Sources/c-utils/lib",
-		"/home/roman/Dokumente/Sources/c-utils/lib/stralloc"
+		"/home/roman/Dokumente/Sources/c-utils"
 	],
 	"file_history":
 	[
+		"/home/roman/Dokumente/Sources/c-utils/lib/buffer.h",
+		"/home/roman/Dokumente/Sources/c-utils/ftptest.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/socket.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/io/io_nonblock.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/uint16.h",
+		"/home/roman/Dokumente/Sources/c-utils/address.h",
+		"/home/roman/Dokumente/Sources/c-utils/address.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/stralloc.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/buffer/buffer_getline.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/stralloc/buffer_getln.c",
+		"/home/roman/Dokumente/Sources/c-utils/ftplib.c",
+		"/home/roman/Dokumente/Sources/c-utils/tcping.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/dns/dns_ip4.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/dns/dns_ip6.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/stralloc/stralloc_zero.c",
+		"/home/roman/Dokumente/Sources/c-utils/httptest.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/io.h",
+		"/home/roman/Dokumente/Sources/c-utils/ftplib.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/buffer/buffer_feed.c",
+		"/home/roman/Dokumente/Sources/ftpcopy-0.6.7/src/host_connect64.c",
+		"/home/roman/Dokumente/Sources/c-utils/ftp_read_lis.c",
+		"/home/roman/Dokumente/Sources/c-utils/CMakeLists.txt",
+		"/home/roman/Dokumente/Sources/c-utils/dnscache.c",
+		"/home/roman/Dokumente/Sources/c-utils/ftpcopy.c",
+		"/home/roman/Dokumente/Sources/c-utils/ftpcopy.h",
+		"/home/roman/Dokumente/Sources/c-utils/ftpls.c",
+		"/home/roman/Dokumente/Sources/c-utils/ftpparse.c",
+		"/home/roman/Dokumente/Sources/c-utils/ftpparse.h",
 		"/home/roman/Dokumente/Sources/c-utils/list-r.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/path.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/dir.h",
+		"/home/roman/Sources/c-utils/log.c",
+		"/home/roman/Dokumente/Sources/c-utils/cache.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/errmsg.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/errmsg/errmsg_warn.c",
+		"/home/roman/Dokumente/Sources/c-utils/pkgcfg.c",
+		"/home/roman/Dokumente/Sources/c-utils/tinyproxy.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/stralloc/stralloc_fmt.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/fmt/fmt_escapecharshell.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/strarray/strarray_from_argv.c",
+		"/home/roman/Dokumente/Sources/c-utils/cfg.sh",
+		"/home/roman/Dokumente/Sources/c-utils/response.c",
+		"/home/roman/Dokumente/Sources/c-utils/query.c",
 		"/home/roman/Dokumente/Sources/c-utils/tryselect.c",
 		"/home/roman/Dokumente/Sources/c-utils/genmakefile.c",
-		"/home/roman/Dokumente/Sources/c-utils/tinyproxy.c",
 		"/home/roman/Dokumente/Sources/c-utils/debug.h",
-		"/home/roman/Dokumente/Sources/c-utils/CMakeLists.txt",
 		"/home/roman/Dokumente/Sources/c-utils/lib/io/io_wantread.c",
 		"/home/roman/Dokumente/Sources/c-utils/logserial.c",
 		"/home/roman/Dokumente/Sources/c-utils/debug.c",
 		"/home/roman/Dokumente/Sources/c-utils/genmakefile.h",
-		"/home/roman/Dokumente/Sources/c-utils/lib/path.h",
 		"/home/roman/Dokumente/Sources/c-utils/lib/fmt.h",
 		"/home/roman/Sources/c-utils/lib/stralloc/buffer_put_escaped.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/stralloc/buffer_puts_escaped.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/buffer.h",
 		"/home/roman/Sources/c-utils/debug.h",
 		"/home/roman/Sources/c-utils/genmakefile.c",
-		"/home/roman/Dokumente/Sources/c-utils/response.c",
 		"/home/roman/Dokumente/Sources/c-utils/response.h",
 		"/home/roman/Dokumente/Sources/c-utils/lib/io/io_dump.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/io/io_waituntil2.c",
@@ -303,8 +184,6 @@
 		"/home/roman/Dokumente/Sources/c-utils/lib/socket/socket_getifname.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/io/io_wantwrite.c",
 		"/home/roman/Sources/c-utils/cc-wrap.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/io.h",
-		"/home/roman/Dokumente/Sources/c-utils/lib/io/io_nonblock.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/buffer/buffer_get.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/buffer/buffer_putc.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/io_internal.h",
@@ -319,10 +198,8 @@
 		"/home/roman/Dokumente/Sources/c-utils/cofflist.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/coff/coff_line_numbers.c",
 		"/home/roman/Dokumente/Sources/c-utils/scripts/gen-pro-template.sh",
-		"/home/roman/Dokumente/Sources/c-utils/cfg.sh",
 		"/home/roman/Sources/c-utils/ar-wrap.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/wait.h",
-		"/home/roman/Dokumente/Sources/c-utils/pkgcfg.c",
 		"/home/roman/Downloads/gcode (4).gcode",
 		"/home/roman/Dokumente/Sources/c-utils/lib/omf.h",
 		"/home/roman/Dokumente/Sources/c-utils/omflist.c",
@@ -349,7 +226,6 @@
 		"/home/roman/Dokumente/Sources/c-utils/lib/wait/waitn_reap.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/wait/wait_pid_nohang.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/wait/waitn.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/dir.h",
 		"/home/roman/Dokumente/Sources/c-utils/lib/unix/pipe2.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/str/str_chrs.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/str/str_chr.c",
@@ -364,44 +240,12 @@
 		"/home/roman/Dokumente/Sources/c-utils/lib/set/set_add.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/strarray.h",
 		"/home/roman/Dokumente/Sources/c-utils/lib/wait/waitpid_nointr.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/stralloc.h",
 		"/home/roman/Dokumente/Sources/c-utils/lib/str/str_diff.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/str/str_rchrs.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/byte/byte_chrs.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/byte/byte_rchrs.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/byte.h",
-		"/home/roman/Dokumente/Sources/c-utils/lib/byte/byte_findb.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/strarray/strarray_pushb_unique.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/strarray/strarray_pushb.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/strarray/strarray_index_of.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/path/path_exists.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/sig.h",
-		"/home/roman/Dokumente/Sources/c-utils/lib/str/str_start.c",
-		"/home/roman/Dokumente/Sources/c-utils/eagle-gen-cmds.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/byte/byte_equal.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/byte/byte_starts.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/byte/byte_ends.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/byte/byte_startb.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/byte/byte_endb.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/byte/byte_diff.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/byte/byte_finds.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/str/str_end.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/str/str_endb.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/str/str_startb.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/str/str_rfindb.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/xml.h",
-		"/home/roman/Dokumente/Sources/c-utils/lib/xml/xml_has_attribute.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/byte/byte_skip.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/http/http_socket_write.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/http/http_socket_read.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/http/http_read_internal.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/http.h",
-		"/home/roman/Dokumente/Sources/c-utils/lib/buffer/buffer_getline.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/stralloc/buffer_getline_sa.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/byte/byte_trimr.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/stralloc/stralloc_trimr.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/byte/byte_count.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/http/http_read_header.c"
+		"/home/roman/Dokumente/Sources/c-utils/lib/byte/byte_findb.c"
 	],
 	"find":
 	{
@@ -426,6 +270,44 @@
 		"case_sensitive": true,
 		"find_history":
 		[
+			"read",
+			"getline_sa",
+			"line",
+			"nonblock",
+			"non",
+			"ndela",
+			"state",
+			"sock",
+			"stralloc_find",
+			"stralloc",
+			"state",
+			"trim",
+			"cc",
+			"IP add",
+			"lookup",
+			"lookup_hosts",
+			"ipbuf",
+			"canrea",
+			"io_wait",
+			"wait",
+			"waitread",
+			"meld",
+			"trywr",
+			"io_wai",
+			"getln",
+			"xhost",
+			"getln",
+			"STRALLOC_INI",
+			"buffer_all",
+			"tcping",
+			"seed",
+			"min",
+			"tcping",
+			"dns_",
+			"COMMON_OPT_user",
+			"myopts",
+			"uoge",
+			"tinypr",
 			"[^d]type",
 			"buffer_1",
 			"list-r",
@@ -515,45 +397,7 @@
 			"usage",
 			"exclude_masks",
 			"\".*exclude",
-			"exclude",
-			"New conn",
-			"sockbuf_put_addr",
-			"socket_accept",
-			"socket_accept$",
-			"socket_accept",
-			"connection_new",
-			"from \"",
-			"sockbuf_put_addr",
-			"sockbuf_fmt_addr",
-			"sockbuf_put_addr",
-			"\"Sent ",
-			"Sent ",
-			"_ERROR",
-			"SERVER_SOCKET_ERROR",
-			"SYNTAX_ERROR",
-			"server_finalize",
-			"dump",
-			"^main",
-			"dump",
-			"connection_open_log",
-			"log",
-			".txt",
-			"server_tar_files",
-			"server_finalize",
-			"\"tar",
-			"want ",
-			"want read",
-			"put_esca",
-			"buffer_put_escaped",
-			"dump_strarray",
-			"buffer_2",
-			"debug_long",
-			"debug_",
-			"debug_str",
-			"debug_set",
-			"debug_sl",
-			"debug_nl",
-			"DEBUG_OUT"
+			"exclude"
 		],
 		"highlight": false,
 		"in_selection": false,
@@ -561,6 +405,8 @@
 		"regex": true,
 		"replace_history":
 		[
+			"client->state",
+			"client->control_sock",
 			"\\1#\\2",
 			"\\nint main() {",
 			"\\nint main() { ",
@@ -644,7 +490,7 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 1437,
+						"buffer_size": 0,
 						"regions":
 						{
 						},
@@ -654,379 +500,18 @@
 						"settings":
 						{
 							"color_scheme": "Packages/Outline/outline.hidden-tmTheme",
-							"current_file": "/home/roman/Dokumente/Sources/c-utils/3rdparty/openssl/util/openssl-format-source",
-							"function_name_status_row": 40,
+							"current_file": null,
+							"function_name_status_row": -1,
 							"outline_rename_mode": false,
-							"symkeys":
-							[
-								[
-									843,
-									847
-								],
-								[
-									877,
-									882
-								],
-								[
-									890,
-									894
-								],
-								[
-									895,
-									899
-								],
-								[
-									901,
-									913
-								],
-								[
-									924,
-									930
-								],
-								[
-									1006,
-									1012
-								],
-								[
-									1027,
-									1029
-								],
-								[
-									1059,
-									1061
-								],
-								[
-									1122,
-									1129
-								],
-								[
-									1136,
-									1140
-								],
-								[
-									1147,
-									1155
-								],
-								[
-									1162,
-									1170
-								],
-								[
-									1177,
-									1184
-								],
-								[
-									1191,
-									1196
-								],
-								[
-									1329,
-									1343
-								],
-								[
-									1345,
-									1350
-								],
-								[
-									1370,
-									1384
-								],
-								[
-									1396,
-									1411
-								],
-								[
-									1429,
-									1431
-								],
-								[
-									1549,
-									1560
-								],
-								[
-									1581,
-									1590
-								],
-								[
-									1619,
-									1621
-								],
-								[
-									1635,
-									1643
-								],
-								[
-									1673,
-									1677
-								],
-								[
-									1707,
-									1714
-								],
-								[
-									1747,
-									1762
-								],
-								[
-									1789,
-									1797
-								],
-								[
-									1815,
-									1826
-								],
-								[
-									1874,
-									1882
-								],
-								[
-									1915,
-									1920
-								],
-								[
-									1983,
-									1985
-								],
-								[
-									1999,
-									2003
-								],
-								[
-									2004,
-									2037
-								],
-								[
-									2060,
-									2062
-								],
-								[
-									2084,
-									2086
-								],
-								[
-									2111,
-									2113
-								],
-								[
-									2143,
-									2147
-								],
-								[
-									2149,
-									2151
-								],
-								[
-									2170,
-									2175
-								],
-								[
-									2333,
-									2335
-								],
-								[
-									2360,
-									2362
-								],
-								[
-									2410,
-									2415
-								],
-								[
-									2441,
-									2444
-								],
-								[
-									2445,
-									2473
-								],
-								[
-									2530,
-									2543
-								],
-								[
-									2736,
-									2738
-								],
-								[
-									2759,
-									2768
-								],
-								[
-									3352,
-									3354
-								],
-								[
-									4478,
-									4484
-								],
-								[
-									4485,
-									4492
-								],
-								[
-									4493,
-									4505
-								],
-								[
-									4641,
-									4648
-								],
-								[
-									4883,
-									4888
-								],
-								[
-									4915,
-									4919
-								],
-								[
-									4942,
-									4944
-								],
-								[
-									4948,
-									4955
-								],
-								[
-									4956,
-									4968
-								],
-								[
-									4972,
-									4976
-								],
-								[
-									4999,
-									5003
-								],
-								[
-									5006,
-									5008
-								],
-								[
-									5027,
-									5035
-								],
-								[
-									5067,
-									5069
-								],
-								[
-									5098,
-									5102
-								],
-								[
-									5123,
-									5131
-								],
-								[
-									5163,
-									5165
-								],
-								[
-									5188,
-									5195
-								],
-								[
-									5210,
-									5214
-								],
-								[
-									5217,
-									5219
-								],
-								[
-									5271,
-									5279
-								],
-								[
-									5313,
-									5321
-								]
-							],
-							"symlist":
-							[
-								"  variable: PATH",
-								"  expansion: $PATH",
-								"  variable: PATH",
-								"  variable: HERE",
-								"  expansion: `dirname $0`",
-								"  variable: INDENT",
-								"  variable: INDENT",
-								"  expansion: $#",
-								"  expansion: $0",
-								"  variable: VERBOSE",
-								"  variable: DONT",
-								"  variable: STOPARGS",
-								"  variable: COMMENTS",
-								"  variable: CHANGED",
-								"  variable: DEBUG",
-								"  variable: INDENT_PROFILE",
-								"  expansion: $HERE",
-								"  variable: INDENT_PROFILE",
-								"  expansion: $INDENT_PROFILE",
-								"  expansion: $0",
-								"  variable: INDENT_ARGS",
-								"  expansion: $STOPARGS",
-								"  expansion: $i",
-								"  variable: STOPARGS",
-								"  variable: DONT",
-								"  variable: VERBOSE",
-								"  expansion: $INDENT_PROFILE",
-								"  variable: COMMENTS",
-								"  variable: INDENT_ARGS",
-								"  variable: COMMENTS",
-								"  variable: DEBUG",
-								"  expansion: $i",
-								"  variable: LIST",
-								"  expansion: `find \"$i\" -name '*.[ch]' -print`",
-								"  expansion: $i",
-								"  expansion: $0",
-								"  expansion: $i",
-								"  variable: LIST",
-								"  expansion: $i",
-								"  expansion: $LIST",
-								"  expansion: $i",
-								"  expansion: $j",
-								"  expansion: $DONT",
-								"  variable: tmp",
-								"  expansion: $(mktemp /tmp/indent.XXXXXX)",
-								"  expansion: `basename $j`",
-								"  expansion: $j",
-								"  expansion: $COMMENTS",
-								"  expansion: $j",
-								"  expansion: $DEBUG",
-								"  expansion: $INDENT",
-								"  expansion: $INDENT_ARGS",
-								"  expansion: $INDENT",
-								"  expansion: $HERE",
-								"  expansion: $tmp",
-								"  expansion: $j",
-								"  expansion: $INDENT",
-								"  expansion: $INDENT_ARGS",
-								"  expansion: $tmp",
-								"  expansion: $tmp",
-								"  expansion: $j",
-								"  expansion: $VERBOSE",
-								"  expansion: $j",
-								"  expansion: $tmp",
-								"  expansion: $VERBOSE",
-								"  expansion: $j",
-								"  variable: CHANGED",
-								"  expansion: $tmp",
-								"  expansion: $j",
-								"  expansion: $VERBOSE",
-								"  expansion: $CHANGED"
-							],
 							"syntax": "Packages/Outline/outline.hidden-tmLanguage",
-							"tab_size": 3,
+							"tab_size": 2,
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 18,
+					"stack_index": 0,
 					"type": "text"
 				}
 			]
@@ -1034,721 +519,12 @@
 		{
 			"sheets":
 			[
-				{
-					"buffer": 1,
-					"file": "dnscache.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 12167,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								740,
-								740
-							]
-						],
-						"settings":
-						{
-							"function_name_status_row": 38,
-							"syntax": "Packages/C Improved/C Improved.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 144.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 4,
-					"type": "text"
-				},
-				{
-					"buffer": 2,
-					"file": "list-r.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 28369,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								21295,
-								21295
-							]
-						],
-						"settings":
-						{
-							"function_name_status_row": 818,
-							"syntax": "Packages/C Improved/C Improved.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 14191.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 0,
-					"type": "text"
-				},
-				{
-					"buffer": 3,
-					"file": "lib/path.h",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 2612,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								1003,
-								1003
-							]
-						],
-						"settings":
-						{
-							"function_name_status_row": 35,
-							"syntax": "Packages/C++/C++.sublime-syntax"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 1,
-					"type": "text"
-				},
-				{
-					"buffer": 4,
-					"file": "lib/dir.h",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 1057,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								655,
-								655
-							]
-						],
-						"settings":
-						{
-							"function_name_status_row": 37,
-							"syntax": "Packages/C++/C++.sublime-syntax",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 3,
-					"type": "text"
-				},
-				{
-					"buffer": 5,
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 7291,
-						"regions":
-						{
-							"match":
-							{
-								"flags": 112,
-								"regions":
-								[
-									[
-										183,
-										187
-									],
-									[
-										431,
-										435
-									],
-									[
-										633,
-										637
-									],
-									[
-										922,
-										926
-									],
-									[
-										1170,
-										1174
-									],
-									[
-										1372,
-										1376
-									],
-									[
-										1674,
-										1678
-									],
-									[
-										1914,
-										1918
-									],
-									[
-										2142,
-										2146
-									],
-									[
-										2417,
-										2421
-									],
-									[
-										2672,
-										2676
-									],
-									[
-										2930,
-										2934
-									],
-									[
-										3172,
-										3175
-									],
-									[
-										3358,
-										3361
-									],
-									[
-										3547,
-										3550
-									],
-									[
-										3734,
-										3737
-									],
-									[
-										3845,
-										3848
-									],
-									[
-										3953,
-										3956
-									],
-									[
-										4155,
-										4161
-									],
-									[
-										4330,
-										4336
-									],
-									[
-										4502,
-										4508
-									],
-									[
-										4677,
-										4683
-									],
-									[
-										4850,
-										4856
-									],
-									[
-										5011,
-										5017
-									],
-									[
-										5314,
-										5320
-									],
-									[
-										5417,
-										5423
-									],
-									[
-										5493,
-										5499
-									],
-									[
-										5572,
-										5578
-									],
-									[
-										5649,
-										5655
-									],
-									[
-										5740,
-										5746
-									],
-									[
-										5999,
-										6005
-									],
-									[
-										6148,
-										6154
-									],
-									[
-										6391,
-										6397
-									],
-									[
-										6574,
-										6580
-									],
-									[
-										6756,
-										6762
-									],
-									[
-										6978,
-										6984
-									],
-									[
-										7173,
-										7179
-									]
-								],
-								"scope": ""
-							}
-						},
-						"selection":
-						[
-							[
-								4034,
-								4034
-							]
-						],
-						"settings":
-						{
-							"detect_indentation": false,
-							"function_name_status_row": 128,
-							"line_numbers": false,
-							"output_tag": 3,
-							"result_base_dir": "",
-							"result_file_regex": "^([^ \t].*):$",
-							"result_line_regex": "^ +([0-9]+):",
-							"scroll_past_end": true,
-							"syntax": "Packages/Default/Find Results.hidden-tmLanguage",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 504.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 5,
-					"type": "text"
-				},
-				{
-					"buffer": 6,
-					"file": "/home/roman/Sources/c-utils/log.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 10296,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								8022,
-								8022
-							]
-						],
-						"settings":
-						{
-							"function_name_status_row": 417,
-							"syntax": "Packages/C Improved/C Improved.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 570.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 6,
-					"type": "text"
-				},
-				{
-					"buffer": 7,
-					"file": "cache.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 6609,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								1690,
-								1690
-							]
-						],
-						"settings":
-						{
-							"function_name_status_row": 73,
-							"syntax": "Packages/C Improved/C Improved.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 318.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 7,
-					"type": "text"
-				},
-				{
-					"buffer": 8,
-					"file": "lib/errmsg.h",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 1924,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								473,
-								473
-							]
-						],
-						"settings":
-						{
-							"function_name_status_row": 20,
-							"syntax": "Packages/C++/C++.sublime-syntax"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 17,
-					"type": "text"
-				},
-				{
-					"buffer": 9,
-					"file": "lib/errmsg/errmsg_warn.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 237,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								135,
-								135
-							]
-						],
-						"settings":
-						{
-							"function_name_status_row": 7,
-							"syntax": "Packages/C Improved/C Improved.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 8,
-					"type": "text"
-				},
-				{
-					"buffer": 10,
-					"file": "CMakeLists.txt",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 66783,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								62337,
-								62337
-							]
-						],
-						"settings":
-						{
-							"function_name_status_row": 1903,
-							"syntax": "Packages/CMakeEditor/CMakeEditor.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 33938.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 2,
-					"type": "text"
-				},
-				{
-					"buffer": 11,
-					"file": "pkgcfg.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 30851,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								28261,
-								28261
-							]
-						],
-						"settings":
-						{
-							"function_name_status_row": 1197,
-							"syntax": "Packages/C Improved/C Improved.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 547.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 12,
-					"type": "text"
-				},
-				{
-					"buffer": 12,
-					"file": "tinyproxy.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 33260,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								17216,
-								17216
-							]
-						],
-						"settings":
-						{
-							"function_name_status_row": 697,
-							"syntax": "Packages/C Improved/C Improved.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 11950.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 13,
-					"type": "text"
-				},
-				{
-					"buffer": 13,
-					"file": "lib/stralloc/stralloc_fmt.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 353,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								353,
-								353
-							]
-						],
-						"settings":
-						{
-							"function_name_status_row": 14,
-							"syntax": "Packages/C Improved/C Improved.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 14,
-					"type": "text"
-				},
-				{
-					"buffer": 14,
-					"file": "lib/fmt/fmt_escapecharshell.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 1083,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								9,
-								9
-							]
-						],
-						"settings":
-						{
-							"function_name_status_row": 0,
-							"syntax": "Packages/C Improved/C Improved.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 9,
-					"type": "text"
-				},
-				{
-					"buffer": 15,
-					"file": "lib/strarray/strarray_from_argv.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 214,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								30,
-								30
-							]
-						],
-						"settings":
-						{
-							"function_name_status_row": 3,
-							"syntax": "Packages/C Improved/C Improved.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 10,
-					"type": "text"
-				},
-				{
-					"buffer": 16,
-					"file": "cfg.sh",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 11755,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								11309,
-								11309
-							]
-						],
-						"settings":
-						{
-							"function_name_status_row": 398,
-							"syntax": "Packages/ShellScript/Bash.sublime-syntax",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 288.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 11,
-					"type": "text"
-				},
-				{
-					"buffer": 17,
-					"file": "response.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 3254,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								2652,
-								2652
-							]
-						],
-						"settings":
-						{
-							"function_name_status_row": 118,
-							"syntax": "Packages/C Improved/C Improved.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 16,
-					"type": "text"
-				},
-				{
-					"buffer": 18,
-					"file": "query.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 28131,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								2645,
-								2645
-							]
-						],
-						"settings":
-						{
-							"function_name_status_row": 143,
-							"syntax": "Packages/C Improved/C Improved.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 5536.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 15,
-					"type": "text"
-				}
 			]
 		}
 	],
 	"incremental_find":
 	{
-		"height": 27.0
+		"height": 29.0
 	},
 	"input":
 	{
@@ -1812,6 +588,106 @@
 		"selected_items":
 		[
 			[
+				"buffer.h",
+				"lib/buffer.h"
+			],
+			[
+				"io_non",
+				"lib/io/io_nonblock.c"
+			],
+			[
+				"socket.h",
+				"lib/socket.h"
+			],
+			[
+				"address",
+				"address.c"
+			],
+			[
+				"uint16",
+				"lib/uint16.h"
+			],
+			[
+				"stralloc.h",
+				"lib/stralloc.h"
+			],
+			[
+				"address.h",
+				"address.h"
+			],
+			[
+				"ftpli",
+				"ftplib.c"
+			],
+			[
+				"buffer_getln",
+				"lib/stralloc/buffer_getln.c"
+			],
+			[
+				"ftplib",
+				"ftplib.c"
+			],
+			[
+				"tcping",
+				"tcping.c"
+			],
+			[
+				"add",
+				"address.h"
+			],
+			[
+				"dns_ip",
+				"lib/dns/dns_ip4.c"
+			],
+			[
+				"stralloc_zer",
+				"lib/stralloc/stralloc_zero.c"
+			],
+			[
+				"httptest",
+				"httptest.c"
+			],
+			[
+				"ftpl",
+				"ftplib.c"
+			],
+			[
+				"io.h",
+				"lib/io.h"
+			],
+			[
+				"cmakelis",
+				"CMakeLists.txt"
+			],
+			[
+				"buffer_fee",
+				"lib/buffer/buffer_feed.c"
+			],
+			[
+				"ftplib.h",
+				"ftplib.h"
+			],
+			[
+				"cmake",
+				"CMakeLists.txt"
+			],
+			[
+				"ftptest",
+				"ftptest.c"
+			],
+			[
+				"addres",
+				"address.h"
+			],
+			[
+				"ftpcop",
+				"ftpcopy.h"
+			],
+			[
+				"ftpc",
+				"ftpcopy.c"
+			],
+			[
 				"cmakelists",
 				"CMakeLists.txt"
 			],
@@ -1868,20 +744,12 @@
 				"dnscache.c"
 			],
 			[
-				"cmake",
-				"CMakeLists.txt"
-			],
-			[
 				"tinypro",
 				"tinyproxy.c"
 			],
 			[
 				"debug.h",
 				"debug.h"
-			],
-			[
-				"buffer.h",
-				"lib/buffer.h"
 			],
 			[
 				"debug.c",
@@ -1936,10 +804,6 @@
 				"lib/io_internal.h"
 			],
 			[
-				"io.h",
-				"lib/io.h"
-			],
-			[
 				"io_wantwr",
 				"lib/io/io_wantwrite.c"
 			],
@@ -1950,10 +814,6 @@
 			[
 				"io_waituntil2",
 				"lib/io/io_waituntil2.c"
-			],
-			[
-				"io_non",
-				"lib/io/io_nonblock.c"
 			],
 			[
 				"buffer_get",
@@ -1982,10 +842,6 @@
 			[
 				"process_crea",
 				"lib/process/process_create.c"
-			],
-			[
-				"cmakelis",
-				"CMakeLists.txt"
 			],
 			[
 				"getifname",
@@ -2086,10 +942,6 @@
 			[
 				"typedef",
 				"lib/typedefs.h"
-			],
-			[
-				"stralloc.h",
-				"lib/stralloc.h"
 			],
 			[
 				"stralloc_repl",
@@ -2200,10 +1052,6 @@
 				"mediathek-list.c"
 			],
 			[
-				"httptest",
-				"httptest.c"
-			],
-			[
 				"winsock2err",
 				"lib/socket/winsock2errno.c"
 			],
@@ -2244,84 +1092,12 @@
 				"lib/ndelay/ndelay_on.c"
 			],
 			[
-				"socket.h",
-				"lib/socket.h"
-			],
-			[
 				"io_close",
 				"lib/io/io_close.c"
 			],
 			[
 				"pe.h",
 				"lib/pe.h"
-			],
-			[
-				"impgen",
-				"impgen.c"
-			],
-			[
-				"pelist",
-				"pelist.c"
-			],
-			[
-				"scan.h",
-				"lib/scan.h"
-			],
-			[
-				"pelist.c",
-				"pelist.c"
-			],
-			[
-				"parse.c",
-				"parse.c"
-			],
-			[
-				"mediathek-parser",
-				"mediathek-parser.c"
-			],
-			[
-				"plsconv",
-				"plsconv.c"
-			],
-			[
-				"ntldd",
-				"ntldd.c"
-			],
-			[
-				"ready",
-				"lib/stralloc/stralloc_ready.c"
-			],
-			[
-				"genmak",
-				"genmakefile.h"
-			],
-			[
-				"umul",
-				"lib/safemult/umult16.c"
-			],
-			[
-				"umult",
-				"lib/safemult/umult64.c"
-			],
-			[
-				"et.h",
-				"lib/set.h"
-			],
-			[
-				"get-pro",
-				"scripts/get-prototypes.sh"
-			],
-			[
-				"str_ndup",
-				"lib/str/str_ndup.c"
-			],
-			[
-				"set_find",
-				"lib/set/set_find.c"
-			],
-			[
-				"genm",
-				"genmakefile.c"
 			]
 		],
 		"width": 0.0

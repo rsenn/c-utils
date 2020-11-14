@@ -314,7 +314,7 @@ list_ftp(ftp_client* ftp) {
             break;
           }
           case PASSIVE: {
-            ftplib_write_cmd_s(&out, "LIST");
+            ftplib_write_cmd_s(&out, "LIST /");
             ftp->state = TRANSFERRING;
             break;
           }
