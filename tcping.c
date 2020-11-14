@@ -64,13 +64,6 @@
 
 static MAP_T hosts_db;
 
-void
-usage(char* prog) {
-  buffer_putm_internal(
-      buffer_2, "Usage: ", str_basename(prog), " [-q] [-t timeout_sec] [-u timeout_usec] <host> <port>", NULL);
-  buffer_putnlflush(buffer_2);
-}
-
 int
 read_hosts(const char* file) {
   const char* p;
@@ -155,6 +148,13 @@ dump_hosts() {
   }
 }
 
+void
+usage(char* prog) {
+  buffer_putm_internal(
+      buffer_2, "Usage: ", str_basename(prog), " [-4q] [-t timeout_sec] [-u timeout_usec] <host> <port>", NULL);
+  buffer_putnlflush(buffer_2);
+}
+
 int
 main(int argc, char* argv[]) {
   fd_t sock;
@@ -169,6 +169,7 @@ main(int argc, char* argv[]) {
   tai6464 now, deadline, timeout;
   static char seed[128];
   address_t addr;
+  bool no_ip6 = false;
 
   errmsg_iam(argv[0]);
 
@@ -177,8 +178,9 @@ main(int argc, char* argv[]) {
     return 109;
   }
 
-  while((c = getopt(argc, argv, "qt:u:")) != -1) {
+  while((c = getopt(argc, argv, "4qt:u:")) != -1) {
     switch(c) {
+      case '4': no_ip6 = true; break;
       case 'q': verbose = 0; break;
       case 't':
         if(scan_ulonglong(optarg, &timeout_sec) == 0) {
@@ -211,7 +213,7 @@ main(int argc, char* argv[]) {
   stralloc_copys(&host, argv[optind]);
   stralloc_nul(&host);
 
-  if(!address_scan(host.s, &addr) && !lookup_hosts(&host, &addr) && !address_lookup(&host, &addr, false)) {
+  if(!address_scan(host.s, &addr) && !lookup_hosts(&host, &addr) && !address_lookup(&host, &addr, no_ip6)) {
     ret = 111;
     goto fail;
   }
