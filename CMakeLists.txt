@@ -843,9 +843,9 @@ if(USE_BZIP)
   if(NOT BZIP2_FOUND OR "${BZIP2_FOUND}" STREQUAL "")
     message(STATUS "bzip2 package config not found")
     include(FindBZip2)
-  else(NOT ${BZIP2_FOUND})
+  else(NOT BZIP2_FOUND OR "${BZIP2_FOUND}" STREQUAL "")
     set(BZIP2_LIBRARY ${pkgcfg_lib_BZIP2_bz2})
-  endif(NOT ${BZIP2_FOUND})
+  endif(NOT BZIP2_FOUND OR "${BZIP2_FOUND}" STREQUAL "")
 endif(USE_BZIP)
 
 # ##############################################################################
