@@ -252,7 +252,7 @@ main(int argc, char* argv[]) {
 #endif
       {
         if(verbose)
-          errmsg_warn("error: ", argv[optind], " port ", argv[optind + 1], ": ", 0);
+          errmsg_warnsys("error: ", argv[optind], " port ", argv[optind + 1], ": ", 0);
 
         return 4;
       }
