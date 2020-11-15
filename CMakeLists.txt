@@ -255,23 +255,6 @@ if(NOT USE_SELECT)
     SUPPORT_SELECT
     "#include <sys/types.h>\n#include <sys/time.h>\n#if defined(_WIN32) || defined(__MINGW32__)\n#include <winsock2.h>\n#else\n#include <sys/select.h>\n#include <unistd.h>\n#endif\n\nint\nmain() {\n  struct timeval tv;\n  fd_set rfds;\n  int fd = 0;\n  FD_ZERO(&rfds);\n  FD_SET(fd, &rfds);\n  tv.tv_sec = tv.tv_usec = 0;\n  select(fd + 1, &rfds, 0, 0, &tv);\n}\n"
     ${LIBMSWSOCK})
-
-  function(list_contains LIST ITEM OUTPUT_VAR)
-    set(RESULT FALSE)
-    foreach(IT ${LIST})
-      if("${IT}" STREQUAL "${ITEM}")
-        set(RESULT TRUE)
-      endif("${IT}" STREQUAL "${ITEM}")
-    endforeach(IT ${LIST})
-    set("${OUTPUT_VAR}"
-        ${RESULT}
-        PARENT_SCOPE)
-  endfunction(
-    list_contains
-    LIST
-    ITEM
-    OUTPUT_VAR)
-
 endif(NOT USE_SELECT)
 
 check_compile(
@@ -967,6 +950,23 @@ if(SUPPORT_SELECT STREQUAL "")
     check_function_exists(select SUPPORT_SELECT)
   endif(NOT SUPPORT_SELECT)
 endif(SUPPORT_SELECT STREQUAL "")
+
+
+function(list_contains LIST ITEM OUTPUT_VAR)
+  set(RESULT FALSE)
+  foreach(IT ${LIST})
+    if("${IT}" STREQUAL "${ITEM}")
+      set(RESULT TRUE)
+    endif("${IT}" STREQUAL "${ITEM}")
+  endforeach(IT ${LIST})
+  set("${OUTPUT_VAR}"
+      ${RESULT}
+      PARENT_SCOPE)
+endfunction(
+  list_contains
+  LIST
+  ITEM
+  OUTPUT_VAR)
 
 set(MUX "")
 set(MUX_DEFS "")
