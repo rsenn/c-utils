@@ -112,7 +112,7 @@ macro(check_compile RESULT_VAR SOURCE)
       "${C_SOURCE}"
       OUTPUT_VARIABLE "OUTPUT"
       LINK_LIBRARIES "${ARGN}")
-    file(REMOVE "${C_SOURCE}")
+    #file(REMOVE "${C_SOURCE}")
 
     if(COMPILE_RESULT)
       message(STATUS "ok")
