@@ -848,7 +848,7 @@ if(USE_BZIP)
       set(BZIP2_LIBRARY ${BZIP2_LIBRARIES})
       set(BZIP2_INCLUDE_DIR ${BZIP2_INCLUDE_DIRS})
     endif(BZIP2_FOUND)]]
-    find_library(BZIP2_LIBRARY bzip2)
+    find_library(BZIP2_LIBRARY NAMES bz2)
         if(BZIP2_LIBRARY)
         message(STATUS "bzip2 library found: ${BZIP2_LIBRARY}")
     endif(BZIP2_LIBRARY)
