@@ -17,6 +17,7 @@ http_socket_read(fd_t fd, void* buf, size_t len, void* b) {
   buffer_putsflush(buffer_2, "http_socket_read ");
   buffer_puts(buffer_2, "sock=");
   buffer_putlong(buffer_2, h->sock);
+  buffer_putnlflush(buffer_2);
 #endif
 // s = winsock2errno(recv(fd, buf, len, 0));
 #ifdef HAVE_OPENSSL
