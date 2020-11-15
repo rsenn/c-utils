@@ -160,18 +160,21 @@ main(int argc, char* argv[]) {
     int ret = http_get(&h, argv[argi]);
     for(;;) {
 
-      int doread = 0;
+      int doread = 1;
+      fd_t sock;
 
-      buffer_putsflush(buffer_2, "io_waituntil2\n");
+      buffer_putsflush(buffer_2, "io_wait\n");
 
-      if(io_waituntil2(-1) == -1) {
+      io_wait();
+
+      /*if(io_waituntil2(-1) == -1) {
         errmsg_warnsys("wait error: ", 0);
         return 3;
-      }
+      }*/
 
       http_io_handler(&h, &out);
 
-      //      buffer_dump(buffer_1, &h.q.in);
+      // buffer_dump(buffer_1, &h.q.in);
       if(h.response->status >= HTTP_STATUS_CLOSED) {
         buffer_putsflush(buffer_2, "HTTP_STATUS_CLOSED\n");
         break;

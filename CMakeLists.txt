@@ -256,7 +256,7 @@ if(NOT USE_SELECT)
     "#include <sys/types.h>\n#include <sys/time.h>\n#if defined(_WIN32) || defined(__MINGW32__)\n#include <winsock2.h>\n#else\n#include <sys/select.h>\n#include <unistd.h>\n#endif\n\nint\nmain() {\n  struct timeval tv;\n  fd_set rfds;\n  int fd = 0;\n  FD_ZERO(&rfds);\n  FD_SET(fd, &rfds);\n  tv.tv_sec = tv.tv_usec = 0;\n  select(fd + 1, &rfds, 0, 0, &tv);\n}\n"
     ${LIBMSWSOCK})
 
-  function(LIST_CONTAINS LIST ITEM OUTPUT_VAR)
+  function(list_contains LIST ITEM OUTPUT_VAR)
     set(RESULT FALSE)
     foreach(IT ${LIST})
       if("${IT}" STREQUAL "${ITEM}")
@@ -267,7 +267,7 @@ if(NOT USE_SELECT)
         ${RESULT}
         PARENT_SCOPE)
   endfunction(
-    LIST_CONTAINS
+    list_contains
     LIST
     ITEM
     OUTPUT_VAR)
