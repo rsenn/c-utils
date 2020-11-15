@@ -14,7 +14,9 @@ http_socket_read(fd_t fd, void* buf, size_t len, void* b) {
   http* h = (http*)((buffer*)b)->cookie;
   http_response* r = h->response;
 #if DEBUG_HTTP
-  buffer_putsflush(buffer_2, "http_socket_read\n");
+  buffer_putsflush(buffer_2, "http_socket_read ");
+  buffer_puts(buffer_2, "sock=");
+  buffer_putlong(buffer_2, h->sock);
 #endif
 // s = winsock2errno(recv(fd, buf, len, 0));
 #ifdef HAVE_OPENSSL
@@ -52,6 +54,8 @@ http_socket_read(fd_t fd, void* buf, size_t len, void* b) {
   }
 #if DEBUG_HTTP
   buffer_puts(buffer_2, "http_socket_read ");
+  buffer_puts(buffer_2, "sock=");
+  buffer_putlong(buffer_2, h->sock);
   buffer_puts(buffer_2, " ret=");
   buffer_putlong(buffer_2, ret);
   if(ret <= 0) {

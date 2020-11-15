@@ -16,6 +16,8 @@ http_ssl_write(fd_t fd, const void* buf, size_t n, void* b) {
 
 #if DEBUG_HTTP
   buffer_puts(buffer_2, "http_ssl_write ");
+  buffer_puts(buffer_2, "sock=");
+  buffer_putulong(buffer_2, h->sock);
   buffer_puts(buffer_2, " ret=");
   buffer_putulong(buffer_2, ret);
   if(ret <= 0) {

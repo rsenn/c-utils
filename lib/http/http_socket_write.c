@@ -29,6 +29,8 @@ http_socket_write(fd_t fd, void* buf, size_t len, void* b) {
 
 #if DEBUG_HTTP
   buffer_puts(buffer_2, "http_socket_write ");
+  buffer_puts(buffer_2, "sock=");
+  buffer_putlong(buffer_2, h->sock);
   buffer_puts(buffer_2, " ret=");
   buffer_putlong(buffer_2, ret);
   if(ret <= 0) {

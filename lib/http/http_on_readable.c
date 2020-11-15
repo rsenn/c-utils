@@ -26,6 +26,7 @@ http_on_readable(http* h, void (*wantwrite)(fd_t)) {
   ssize_t ret = 0;
 #if DEBUG_HTTP
   buffer_puts(buffer_2, "http_on_readable ");
+  buffer_puts(buffer_2, "sock=");
   buffer_putlong(buffer_2, h->sock);
   buffer_puts(buffer_2, " tls=");
   buffer_putlong(buffer_2, !!h->tls);
@@ -61,6 +62,8 @@ fail:
     ret = 0;
 #if DEBUG_HTTP
   buffer_puts(buffer_2, "http_on_readable ");
+  buffer_puts(buffer_2, "sock=");
+  buffer_putlong(buffer_2, h->sock);
   buffer_puts(buffer_2, " ret=");
   buffer_putlong(buffer_2, ret);
   buffer_puts(buffer_2, " err=");
