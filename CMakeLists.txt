@@ -112,7 +112,7 @@ macro(check_compile RESULT_VAR SOURCE)
       "${C_SOURCE}"
       OUTPUT_VARIABLE "OUTPUT"
       LINK_LIBRARIES "${ARGN}")
-    #file(REMOVE "${C_SOURCE}")
+    # file(REMOVE "${C_SOURCE}")
 
     if(COMPILE_RESULT)
       message(STATUS "ok")
@@ -355,7 +355,6 @@ if(NOT INTRINSIC_CAS)
   add_definitions(-DUSE_INLINE_COMPARE_AND_SWAP=1)
 endif()
 
-
 function(DUMP VAR)
   string(REGEX REPLACE "[;\n]" " " A "${ARGV}")
   message("\n\nVariable dump of: ${A}\n")
@@ -366,15 +365,14 @@ function(DUMP VAR)
   message("\n")
 endfunction(DUMP VAR)
 
-
-#DUMP(CMAKE_C_COMPILER_ID)
+# DUMP(CMAKE_C_COMPILER_ID)
 
 if(CMAKE_C_COMPILER_ID STREQUAL TinyCC)
   set(COMPILER_TCC TRUE)
 else(CMAKE_C_COMPILER_ID STREQUAL TinyCC)
   check_symbol_exists(__TINYC__ "" COMPILER_TCC)
 endif(CMAKE_C_COMPILER_ID STREQUAL TinyCC)
-  
+
 if(COMPILER_TCC)
   message(STATUS "Compiler is TinyCC")
   add_definitions(-DTCC=1)
@@ -428,40 +426,29 @@ if(HAVE_SYS_WAIT_H)
 endif(HAVE_SYS_WAIT_H)
 
 if(NOT CROSS)
-  #check_type_size(int16_t INT16_T)
-  #check_type_size(int32_t INT32_T)
-  #check_type_size(int64_t INT64_T)
-  #check_type_size(intmax_t INTMAX_T)
-  #check_type_size(uint8_t UINT8_T)
-  #check_type_size(uint16_t UINT16_T)
-  #check_type_size(uint32_t UINT32_T)
-  #check_type_size(uint64_t UINT64_T)
-  #check_type_size(uintmax_t UINTMAX_T)
+  # check_type_size(int16_t INT16_T) check_type_size(int32_t INT32_T)
+  # check_type_size(int64_t INT64_T) check_type_size(intmax_t INTMAX_T)
+  # check_type_size(uint8_t UINT8_T) check_type_size(uint16_t UINT16_T)
+  # check_type_size(uint32_t UINT32_T) check_type_size(uint64_t UINT64_T)
+  # check_type_size(uintmax_t UINTMAX_T)
 
+  # check_type_size(ptrdiff_t PTRDIFF_T_SIZE) check_type_size(size_t
+  # SIZE_T_SIZE) check_type_size(long LONG_SIZE) check_type_size("void*"
+  # VOIDP_T_SIZE)
 
-  #check_type_size(ptrdiff_t PTRDIFF_T_SIZE)
-  #check_type_size(size_t SIZE_T_SIZE)
-  #check_type_size(long LONG_SIZE)
-  #check_type_size("void*" VOIDP_T_SIZE)
+  # DUMP(PTRDIFF_T_SIZE) DUMP(SIZE_T_SIZE) DUMP(LONG_SIZE) DUMP(VOIDP_T_SIZE)
 
-  #DUMP(PTRDIFF_T_SIZE)
-  #DUMP(SIZE_T_SIZE)
-  #DUMP(LONG_SIZE)
-  #DUMP(VOIDP_T_SIZE)
+  # check_type_size("short" SIZE_OF_SHORT) check_type_size("int" SIZE_OF_INT)
+  # check_type_size("long" SIZE_OF_LONG) check_type_size("long long"
+  # SIZE_OF_LONG_LONG)
 
-  #check_type_size("short" SIZE_OF_SHORT)
-  #check_type_size("int" SIZE_OF_INT)
-  #check_type_size("long" SIZE_OF_LONG)
-  #check_type_size("long long" SIZE_OF_LONG_LONG)
+  # check_type_size("unsigned short" SIZE_OF_UNSIGNED_SHORT)
+  # check_type_size("unsigned" SIZE_OF_UNSIGNED) check_type_size("unsigned long"
+  # SIZE_OF_UNSIGNED_LONG) check_type_size("unsigned long long"
+  # SIZE_OF_UNSIGNED_LONG_LONG) check_type_size("size_t" SIZE_OF_SIZE_T)
 
-  #check_type_size("unsigned short" SIZE_OF_UNSIGNED_SHORT)
-  #check_type_size("unsigned" SIZE_OF_UNSIGNED)
-  #check_type_size("unsigned long" SIZE_OF_UNSIGNED_LONG)
-  #check_type_size("unsigned long long" SIZE_OF_UNSIGNED_LONG_LONG)
-  #check_type_size("size_t" SIZE_OF_SIZE_T)
-
-  #check_type_size("__int64" __INT64)
-  #check_type_size("unsigned __int64" UNSIGNED___INT64)
+  # check_type_size("__int64" __INT64) check_type_size("unsigned __int64"
+  # UNSIGNED___INT64)
 
   check_type_size(uintptr_t UINTPTR_T)
   if(NOT HAVE_UINTPTR_T)
@@ -825,20 +812,23 @@ if(USE_BZIP)
   pkg_search_module(BZIP2 libbz2 bzip2)
   if(NOT BZIP2_FOUND OR "${BZIP2_FOUND}" STREQUAL "")
     message(STATUS "bzip2 package config not found")
-  #[[  include(FindBZip2)
+    #[[  include(FindBZip2)
 
     if(BZIP2_FOUND)
       set(BZIP2_LIBRARY ${BZIP2_LIBRARIES})
       set(BZIP2_INCLUDE_DIR ${BZIP2_INCLUDE_DIRS})
     endif(BZIP2_FOUND)]]
     find_library(BZIP2_LIBRARY NAMES bz2)
-        if(BZIP2_LIBRARY)
-        message(STATUS "bzip2 library found: ${BZIP2_LIBRARY}")
+    if(BZIP2_LIBRARY)
+      message(STATUS "bzip2 library found: ${BZIP2_LIBRARY}")
     endif(BZIP2_LIBRARY)
 
   else(NOT BZIP2_FOUND OR "${BZIP2_FOUND}" STREQUAL "")
-    message(STATUS "bzip2 package found: ${BZIP2_PREFIX} ${BZIP2_LIBRARY_DIRS} ${BZIP2_LIBRARIES}")
-    #pkg_get_variable(BZIP2_LIBRARY "${BZIP2_MODULE_NAME}")
+    message(
+      STATUS
+        "bzip2 package found: ${BZIP2_PREFIX} ${BZIP2_LIBRARY_DIRS} ${BZIP2_LIBRARIES}"
+    )
+    # pkg_get_variable(BZIP2_LIBRARY "${BZIP2_MODULE_NAME}")
     set(BZIP2_LIBRARY ${BZIP2_LIBRARIES})
     set(BZIP2_LINK_LIBRARY ${BZIP2_LINK_LIBRARIES})
     set(BZIP2_INCLUDE_DIR ${BZIP2_INCLUDE_DIRS})
@@ -950,7 +940,6 @@ if(SUPPORT_SELECT STREQUAL "")
     check_function_exists(select SUPPORT_SELECT)
   endif(NOT SUPPORT_SELECT)
 endif(SUPPORT_SELECT STREQUAL "")
-
 
 function(list_contains LIST ITEM OUTPUT_VAR)
   set(RESULT FALSE)
@@ -1495,7 +1484,8 @@ foreach(LIBNAME ${MODSUBDIRS})
   endif(EXTRA_SOURCES)
   add_library("${LIBNAME}" STATIC ${MODSOURCES} ${MODHEADERS} ${EXTRA_SOURCES})
   if(BUILD_SHARED_LIBS)
-    add_library("${LIBNAME}-shared" SHARED ${MODSOURCES} ${MODHEADERS} ${EXTRA_SOURCES})
+    add_library("${LIBNAME}-shared" SHARED ${MODSOURCES} ${MODHEADERS}
+                                           ${EXTRA_SOURCES})
     set_target_properties(
       "${LIBNAME}-shared"
       PROPERTIES PREFIX "lib" COMPILE_FLAGS "${WARN_C_COMPILER_FLAGS} -fPIC")
@@ -2264,7 +2254,6 @@ add_program(
   ${LIBMSWSOCK}
   ${LIBIPHLPAPI})
 
-
 set(nscache_SOURCES
     cache.c
     cache.h
@@ -2392,6 +2381,7 @@ add_program(
   open
   scan
   str)
+add_program(lsproc strlist mmap buffer unix dir)
 
 #[[add_program(ftpcopy io)
 add_program(ftpls io)
