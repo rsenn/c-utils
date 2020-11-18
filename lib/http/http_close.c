@@ -34,7 +34,7 @@ http_close(http* h) {
     io_close(h->sock);
 
 #if DEBUG_HTTP
-    buffer_puts(buffer_2, "http_close ");
+    buffer_putspad(buffer_2, "http_close ", 18);
     buffer_puts(buffer_2, " sock=");
     buffer_putlong(buffer_2, h->sock);
     buffer_puts(buffer_2, " ret=");

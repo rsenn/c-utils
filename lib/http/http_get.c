@@ -59,7 +59,7 @@ http_get(http* h, const char* location) {
   byte_copy(&h->addr, sizeof(ipv4addr), &a->iaddr);
 
 #if DEBUG_HTTP
-  buffer_puts(buffer_2, "http_get resolved ");
+  buffer_putspad(buffer_2, "http_get resolved ", 18);
   buffer_putsa(buffer_2, &h->host);
   buffer_puts(buffer_2, " to (");
   buffer_put(buffer_2, ip, fmt_ip4(ip, (const char*)a->addr));

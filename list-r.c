@@ -625,6 +625,7 @@ list_file(stralloc* path, const char* name, dir_type_t dtype, long depth, dev_t 
   byte_zero(&st, sizeof(st));
 #endif
 
+  is_dir = !!(dtype & D_DIRECTORY);
   is_symlink = !!(dtype & D_SYMLINK);
 
   if(dtype & D_SYMLINK)
@@ -844,9 +845,8 @@ list_dir_internal(stralloc* dir, int type, long depth) {
     dtype = dir_type(&d);
     dir_name(&d);
     dir->len = l;
-    if(str_equal(name, "") || str_equal(name, ".") || str_equal(name, "..")) {
-      return 0;
-    }
+    if(str_equal(name, "") || str_equal(name, ".") || str_equal(name, ".."))
+      continue;
     stralloc_readyplus(dir, str_len(name) + 1);
     str_copy(dir->s + dir->len, name);
     dir->len += str_len(name);

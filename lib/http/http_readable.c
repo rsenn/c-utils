@@ -42,7 +42,7 @@ http_readable(http* h, int freshen) {
   int err;
   http_response* r;
 #if DEBUG_HTTP
-  buffer_puts(buffer_2, "http_readable ");
+  buffer_putspad(buffer_2, "http_readable ", 18);
   buffer_puts(buffer_2, "sock=");
   buffer_putlong(buffer_2, h->sock);
   buffer_putnlflush(buffer_2);

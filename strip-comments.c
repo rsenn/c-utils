@@ -8,6 +8,7 @@
 #include "lib/stralloc.h"
 #include "lib/buffer.h"
 #include "lib/mmap.h"
+#include "lib/path.h"
 #include <ctype.h>
 
 #if WINDOWS_NATIVE
@@ -238,6 +239,14 @@ main(int argc, char* argv[]) {
 
 again:
   if(in_place) {
+    stralloc_zero(&tmp);
+    path_dirname(in_path, &tmp);
+    stralloc_catc(&tmp, '/');
+
+    stralloc_cats(&tmp, "strip-comments.XXXXXX");
+    stralloc_nul(&tmp);
+    tmpl = tmp.s;
+
     if(out_fd == STDOUT_FILENO) {
       out_fd = open_temp(&tmpl);
       out_path = tmpl;

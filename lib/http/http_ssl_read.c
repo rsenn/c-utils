@@ -23,7 +23,7 @@ http_ssl_read(fd_t fd, void* buf, size_t len, void* b) {
       SSL_clear(h->ssl);
   }
 #if DEBUG_HTTP
-  buffer_puts(buffer_2, "http_ssl_read ");
+  buffer_putspad(buffer_2, "http_ssl_read ", 18);
   buffer_puts(buffer_2, "sock=");
   buffer_putlong(buffer_2, h->sock);
   buffer_puts(buffer_2, " ret=");

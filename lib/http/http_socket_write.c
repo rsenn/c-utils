@@ -28,7 +28,7 @@ http_socket_write(fd_t fd, void* buf, size_t len, void* b) {
     ret = winsock2errno(send(fd, buf, len, 0));
 
 #if DEBUG_HTTP
-  buffer_puts(buffer_2, "http_socket_write ");
+  buffer_putspad(buffer_2, "http_socket_write ", 18);
   buffer_puts(buffer_2, "sock=");
   buffer_putlong(buffer_2, h->sock);
   buffer_puts(buffer_2, " ret=");

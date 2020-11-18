@@ -74,8 +74,8 @@ open_temp(const char** pt) {
       tmp[i] = hexdigit > 9 ? hexdigit + 'A' - 10 : hexdigit + '0';
     }
 
-    unlink(tmpl);
-    res = open(tmpl,
+    unlink(*pt);
+    res = open(*pt,
                O_RDWR | O_CREAT | O_TRUNC | O_BINARY
 #if !WINDOWS_NATIVE
                ,

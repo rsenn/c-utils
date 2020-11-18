@@ -20,10 +20,10 @@ http_ssl_connect(http* h) {
 #endif
   }
 #if DEBUG_HTTP
-  buffer_puts(buffer_2, "http_ssl_connect ");
-  buffer_puts(buffer_2, " sock=");
+  buffer_putspad(buffer_2, "http_ssl_connect ", 18);
+  buffer_puts(buffer_2, "sock=");
   buffer_putlong(buffer_2, h->sock);
-  buffer_puts(buffer_2, "ret=");
+  buffer_puts(buffer_2, " ret=");
   buffer_putlong(buffer_2, ret);
 
   if(errno) {
