@@ -2381,7 +2381,7 @@ add_program(
   open
   scan
   str)
-add_program(lsproc strlist mmap buffer unix dir)
+add_program(lsproc strlist errmsg mmap buffer unix dir)
 
 #[[add_program(ftpcopy io)
 add_program(ftpls io)
