@@ -42,7 +42,7 @@ iarray_allocate(iarray* ia, size_t pos) {
       if(!newpage)
         if(!(newpage = new_page(ia->bytesperpage)))
           return 0;
-      if(__CAS(p, 0, newpage) == 0)
+      if(__CAS((long*)p, 0, (long)newpage) == 0)
         newpage = 0;
     }
     if(index + ia->elemperpage > pos)
@@ -59,7 +59,7 @@ iarray_allocate(iarray* ia, size_t pos) {
     size_t l;
     size_t newlen = realpos + 1;
     do {
-      l = __CAS(&ia->len, prevlen, newlen);
+      l = __CAS((long*)&ia->len, prevlen, newlen);
     } while(l < newlen);
   }
   return &(iarray_pagedata(*p)[(pos - index) * ia->elemsize]);

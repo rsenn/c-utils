@@ -5,10 +5,15 @@
 #else
 #include <sys/types.h>
 #include <sys/time.h>
+#include <time.h>
 #endif
 
 #include "../taia.h"
 #include "../tai.h"
+
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
 
 void
 taia_now(struct taia* t) {
@@ -31,6 +36,12 @@ taia_now(struct taia* t) {
   fnord.l -= ((int64)(1970 - 1601)) * 365 * 24 * 60 * 60;
   t->sec.x = fnord.l / 10000000;
   t->nano = ((fnord.l + 5) / 10) % 1000000;
+  t->atto = 0;
+#elif defined(HAVE_CLOCK_GETTIME)
+  struct timespec now = {0, 0};
+  clock_gettime(CLOCK_REALTIME, &now);
+  tai_unix(&t->sec, now.tv_sec);
+  t->nano = now.tv_nsec;
   t->atto = 0;
 #else
   struct timeval now;

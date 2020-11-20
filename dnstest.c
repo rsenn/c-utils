@@ -13,6 +13,7 @@
 #include "lib/dns.h"
 #include "lib/errmsg.h"
 #include "lib/ip4.h"
+#include <errno.h>
 
 int
 main(int argc, char* argv[]) {

@@ -481,7 +481,7 @@ process_input(buffer* input) {
     if(fields.sa.s) {
       strarray arr;
 
-      char** v = strlist_to_argv(&fields);
+      const char** v = strlist_to_argv(&fields);
       int c = strlist_count(&fields);
       strarray_init(&arr);
       strarray_from_argv(c > 21 ? 21 : c, v, &arr);

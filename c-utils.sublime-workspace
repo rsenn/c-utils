@@ -12,13 +12,170 @@
 	"buffers":
 	[
 		{
-			"contents": "",
+			"contents": "—Ⓕ– errstr ( ) { … } — function\n—Ⓕ– log_number ( ) { … } — function\n—Ⓕ– log_hex ( ) { … } — function\n—Ⓕ– log_port ( ) { … } — function\n—Ⓕ– log_octal ( ) { … } — function\n—Ⓕ– log_string ( ) { … } — function\n—Ⓕ– log_line ( ) { … } — function\n—Ⓕ– log_space ( ) { … } — function\n—Ⓕ– log_separator ( ) { … } — function\n—Ⓕ– log_ip ( ) { … } — function\n—Ⓕ– log_iplist ( ) { … } — function\n—Ⓕ– log_fd ( ) { … } — function\n—Ⓕ– log_peer ( ) { … } — function\n—Ⓕ– log_logid ( ) { … } — function\n—Ⓕ– log_logtype ( ) { … } — function\n—Ⓕ– log_name ( ) { … } — function\n—Ⓕ– log_startup ( ) { … } — function\n—Ⓕ– log_query ( ) { … } — function\n—Ⓕ– log_querydone ( ) { … } — function\n—Ⓕ– log_querydrop ( ) { … } — function\n—Ⓕ– log_tcpopen ( ) { … } — function\n—Ⓕ– log_tcpclose ( ) { … } — function\n—Ⓕ– log_tx ( ) { … } — function\n—Ⓕ– log_cachedanswer ( ) { … } — function\n—Ⓕ– log_cachedcname ( ) { … } — function\n—Ⓕ– log_cachedns ( ) { … } — function\n—Ⓕ– log_cachednxdomain ( ) { … } — function\n—Ⓕ– log_nxdomain ( ) { … } — function\n—Ⓕ– log_nodata ( ) { … } — function\n—Ⓕ– log_lame ( ) { … } — function\n—Ⓕ– log_servfail ( ) { … } — function\n—Ⓕ– log_rr ( ) { … } — function\n—Ⓕ– log_rrns ( ) { … } — function\n—Ⓕ– log_rrcname ( ) { … } — function\n—Ⓕ– log_rrptr ( ) { … } — function\n—Ⓕ– log_rrmx ( ) { … } — function\n—Ⓕ– log_rrsoa ( ) { … } — function\n—Ⓕ– log_stats ( ) { … } — function",
 			"settings":
 			{
-				"buffer_size": 0,
+				"buffer_size": 1363,
 				"line_ending": "Unix",
 				"name": "𝌆 Outline",
 				"scratch": true
+			}
+		},
+		{
+			"file": "list-r.c",
+			"settings":
+			{
+				"buffer_size": 28397,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/dir.h",
+			"settings":
+			{
+				"buffer_size": 1057,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lsproc.c",
+			"settings":
+			{
+				"buffer_size": 3298,
+				"line_ending": "Unix",
+				"name": "#include \"lib/strlist.h\""
+			}
+		},
+		{
+			"file": "nscache.c",
+			"settings":
+			{
+				"buffer_size": 12227,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "query.c",
+			"settings":
+			{
+				"buffer_size": 28139,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "log.c",
+			"settings":
+			{
+				"buffer_size": 10316,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/dns/dns_transmit.c",
+			"settings":
+			{
+				"buffer_size": 9567,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/errmsg.h",
+			"settings":
+			{
+				"buffer_size": 1924,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/process.h",
+			"settings":
+			{
+				"buffer_size": 277,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/stralloc.h",
+			"settings":
+			{
+				"buffer_size": 12217,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/strlist/strlist_dump.c",
+			"settings":
+			{
+				"buffer_size": 864,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/strlist/strlist_dump_named.c",
+			"settings":
+			{
+				"buffer_size": 816,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/strlist.h",
+			"settings":
+			{
+				"buffer_size": 7066,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/strlist/strlist_froms.c",
+			"settings":
+			{
+				"buffer_size": 473,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/strlist/strlist_fromv.c",
+			"settings":
+			{
+				"buffer_size": 163,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/map/map_iter.c",
+			"settings":
+			{
+				"buffer_size": 138,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "CMakeLists.txt",
+			"settings":
+			{
+				"buffer_size": 68429,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/unix.h",
+			"settings":
+			{
+				"buffer_size": 750,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/getopt.h",
+			"settings":
+			{
+				"buffer_size": 1311,
+				"line_ending": "Unix"
 			}
 		}
 	],
@@ -122,7 +279,8 @@
 	},
 	"expanded_folders":
 	[
-		"/home/roman/Dokumente/Sources/c-utils"
+		"/home/roman/Dokumente/Sources/c-utils",
+		"/home/roman/Dokumente/Sources/c-utils/lib"
 	],
 	"file_history":
 	[
@@ -278,6 +436,15 @@
 		"case_sensitive": true,
 		"find_history":
 		[
+			"trimr",
+			"trim",
+			"dump",
+			"is[a-z]*(",
+			"is[a-z]*\\(",
+			"isdig",
+			"dir_open",
+			"dir_s",
+			"is_dir",
 			"http_ssl2want",
 			"BZIP2_INC",
 			"bz2",
@@ -396,16 +563,7 @@
 			"sys.errno",
 			"sys.erro",
 			"SUPPORT_POLL",
-			"check_com",
-			"message\\(",
-			"MUX_METHOD",
-			"size",
-			"set4",
-			"imposs",
-			"dtype",
-			"DNS_T_AAA",
-			"response_addname",
-			"AAAA"
+			"check_com"
 		],
 		"highlight": false,
 		"in_selection": false,
@@ -498,20 +656,413 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 0,
+						"buffer_size": 1363,
 						"regions":
 						{
 						},
 						"selection":
 						[
+							[
+								811,
+								811
+							]
 						],
 						"settings":
 						{
 							"color_scheme": "Packages/Outline/outline.hidden-tmTheme",
-							"current_file": null,
-							"function_name_status_row": -1,
+							"current_file": "/home/roman/Dokumente/Sources/c-utils/log.c",
+							"function_name_status_row": 22,
 							"outline_rename_mode": false,
+							"symkeys":
+							[
+								[
+									414,
+									420
+								],
+								[
+									515,
+									525
+								],
+								[
+									582,
+									589
+								],
+								[
+									770,
+									778
+								],
+								[
+									906,
+									915
+								],
+								[
+									1038,
+									1048
+								],
+								[
+									1102,
+									1110
+								],
+								[
+									1158,
+									1167
+								],
+								[
+									1203,
+									1216
+								],
+								[
+									1252,
+									1258
+								],
+								[
+									1561,
+									1571
+								],
+								[
+									1764,
+									1770
+								],
+								[
+									2058,
+									2066
+								],
+								[
+									2180,
+									2189
+								],
+								[
+									2254,
+									2265
+								],
+								[
+									3418,
+									3426
+								],
+								[
+									3824,
+									3835
+								],
+								[
+									3892,
+									3901
+								],
+								[
+									4291,
+									4304
+								],
+								[
+									4576,
+									4589
+								],
+								[
+									4733,
+									4744
+								],
+								[
+									4873,
+									4885
+								],
+								[
+									5088,
+									5094
+								],
+								[
+									5521,
+									5537
+								],
+								[
+									6716,
+									6731
+								],
+								[
+									6868,
+									6880
+								],
+								[
+									7022,
+									7040
+								],
+								[
+									7131,
+									7143
+								],
+								[
+									7334,
+									7344
+								],
+								[
+									7591,
+									7599
+								],
+								[
+									7805,
+									7817
+								],
+								[
+									8016,
+									8022
+								],
+								[
+									8439,
+									8447
+								],
+								[
+									8690,
+									8701
+								],
+								[
+									8947,
+									8956
+								],
+								[
+									9200,
+									9208
+								],
+								[
+									9543,
+									9552
+								],
+								[
+									9990,
+									9999
+								]
+							],
+							"symlist":
+							[
+								"—Ⓕ– errstr ( ) { … } — function",
+								"—Ⓕ– log_number ( ) { … } — function",
+								"—Ⓕ– log_hex ( ) { … } — function",
+								"—Ⓕ– log_port ( ) { … } — function",
+								"—Ⓕ– log_octal ( ) { … } — function",
+								"—Ⓕ– log_string ( ) { … } — function",
+								"—Ⓕ– log_line ( ) { … } — function",
+								"—Ⓕ– log_space ( ) { … } — function",
+								"—Ⓕ– log_separator ( ) { … } — function",
+								"—Ⓕ– log_ip ( ) { … } — function",
+								"—Ⓕ– log_iplist ( ) { … } — function",
+								"—Ⓕ– log_fd ( ) { … } — function",
+								"—Ⓕ– log_peer ( ) { … } — function",
+								"—Ⓕ– log_logid ( ) { … } — function",
+								"—Ⓕ– log_logtype ( ) { … } — function",
+								"—Ⓕ– log_name ( ) { … } — function",
+								"—Ⓕ– log_startup ( ) { … } — function",
+								"—Ⓕ– log_query ( ) { … } — function",
+								"—Ⓕ– log_querydone ( ) { … } — function",
+								"—Ⓕ– log_querydrop ( ) { … } — function",
+								"—Ⓕ– log_tcpopen ( ) { … } — function",
+								"—Ⓕ– log_tcpclose ( ) { … } — function",
+								"—Ⓕ– log_tx ( ) { … } — function",
+								"—Ⓕ– log_cachedanswer ( ) { … } — function",
+								"—Ⓕ– log_cachedcname ( ) { … } — function",
+								"—Ⓕ– log_cachedns ( ) { … } — function",
+								"—Ⓕ– log_cachednxdomain ( ) { … } — function",
+								"—Ⓕ– log_nxdomain ( ) { … } — function",
+								"—Ⓕ– log_nodata ( ) { … } — function",
+								"—Ⓕ– log_lame ( ) { … } — function",
+								"—Ⓕ– log_servfail ( ) { … } — function",
+								"—Ⓕ– log_rr ( ) { … } — function",
+								"—Ⓕ– log_rrns ( ) { … } — function",
+								"—Ⓕ– log_rrcname ( ) { … } — function",
+								"—Ⓕ– log_rrptr ( ) { … } — function",
+								"—Ⓕ– log_rrmx ( ) { … } — function",
+								"—Ⓕ– log_rrsoa ( ) { … } — function",
+								"—Ⓕ– log_stats ( ) { … } — function"
+							],
 							"syntax": "Packages/Outline/outline.hidden-tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 19,
+					"type": "text"
+				}
+			]
+		},
+		{
+			"selected": 5,
+			"sheets":
+			[
+				{
+					"buffer": 1,
+					"file": "list-r.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 28397,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								22448,
+								22448
+							]
+						],
+						"settings":
+						{
+							"function_name_status_row": 855,
+							"syntax": "Packages/C Improved/C Improved.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 13800.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 8,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "lib/dir.h",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1057,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								535,
+								535
+							]
+						],
+						"settings":
+						{
+							"function_name_status_row": 27,
+							"syntax": "Packages/C++/C++.sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 204.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 9,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "lsproc.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 3298,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1980,
+								1980
+							]
+						],
+						"settings":
+						{
+							"auto_name": "#include \"lib/strlist.h\"",
+							"function_name_status_row": 64,
+							"syntax": "Packages/C Improved/C Improved.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 1463.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 5,
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "nscache.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 12227,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								9657,
+								9657
+							]
+						],
+						"settings":
+						{
+							"function_name_status_row": 488,
+							"syntax": "Packages/C Improved/C Improved.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 7871.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 3,
+					"type": "text"
+				},
+				{
+					"buffer": 5,
+					"file": "query.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 28139,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								3565,
+								3565
+							]
+						],
+						"settings":
+						{
+							"function_name_status_row": 189,
+							"syntax": "Packages/C Improved/C Improved.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 2788.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 6,
+					"file": "log.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 10316,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								5513,
+								5513
+							]
+						],
+						"settings":
+						{
+							"function_name_status_row": 287,
+							"syntax": "Packages/C Improved/C Improved.tmLanguage",
 							"tab_size": 2,
 							"translate_tabs_to_spaces": true
 						},
@@ -521,18 +1072,402 @@
 					},
 					"stack_index": 0,
 					"type": "text"
+				},
+				{
+					"buffer": 7,
+					"file": "lib/dns/dns_transmit.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 9567,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								6298,
+								6314
+							]
+						],
+						"settings":
+						{
+							"function_name_status_row": 312,
+							"syntax": "Packages/C Improved/C Improved.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 4981.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 8,
+					"file": "lib/errmsg.h",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1924,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1285,
+								1285
+							]
+						],
+						"settings":
+						{
+							"function_name_status_row": 34,
+							"syntax": "Packages/C++/C++.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 4,
+					"type": "text"
+				},
+				{
+					"buffer": 9,
+					"file": "lib/process.h",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 277,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								192,
+								192
+							]
+						],
+						"settings":
+						{
+							"function_name_status_row": 10,
+							"syntax": "Packages/C++/C++.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 6,
+					"type": "text"
+				},
+				{
+					"buffer": 10,
+					"file": "lib/stralloc.h",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 12217,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								5749,
+								5749
+							]
+						],
+						"settings":
+						{
+							"function_name_status_row": 143,
+							"syntax": "Packages/C++/C++.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 2007.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 7,
+					"type": "text"
+				},
+				{
+					"buffer": 11,
+					"file": "lib/strlist/strlist_dump.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 864,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								864,
+								864
+							]
+						],
+						"settings":
+						{
+							"function_name_status_row": 36,
+							"syntax": "Packages/C Improved/C Improved.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 12,
+					"type": "text"
+				},
+				{
+					"buffer": 12,
+					"file": "lib/strlist/strlist_dump_named.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 816,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								22,
+								22
+							]
+						],
+						"settings":
+						{
+							"function_name_status_row": 0,
+							"syntax": "Packages/C Improved/C Improved.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 10,
+					"type": "text"
+				},
+				{
+					"buffer": 13,
+					"file": "lib/strlist.h",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 7066,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1548,
+								1548
+							]
+						],
+						"settings":
+						{
+							"function_name_status_row": 46,
+							"syntax": "Packages/C++/C++.sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 340.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 11,
+					"type": "text"
+				},
+				{
+					"buffer": 14,
+					"file": "lib/strlist/strlist_froms.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 473,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"function_name_status_row": 0,
+							"syntax": "Packages/C Improved/C Improved.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 13,
+					"type": "text"
+				},
+				{
+					"buffer": 15,
+					"file": "lib/strlist/strlist_fromv.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 163,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"function_name_status_row": 0,
+							"syntax": "Packages/C Improved/C Improved.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 14,
+					"type": "text"
+				},
+				{
+					"buffer": 16,
+					"file": "lib/map/map_iter.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 138,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"function_name_status_row": 0,
+							"syntax": "Packages/C Improved/C Improved.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 15,
+					"type": "text"
+				},
+				{
+					"buffer": 17,
+					"file": "CMakeLists.txt",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 68429,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								67552,
+								67552
+							]
+						],
+						"settings":
+						{
+							"function_name_status_row": 2383,
+							"syntax": "Packages/CMakeEditor/CMakeEditor.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 43890.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 16,
+					"type": "text"
+				},
+				{
+					"buffer": 18,
+					"file": "lib/unix.h",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 750,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"function_name_status_row": 0,
+							"syntax": "Packages/C++/C++.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 17,
+					"type": "text"
+				},
+				{
+					"buffer": 19,
+					"file": "lib/getopt.h",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1311,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"function_name_status_row": 0,
+							"syntax": "Packages/C++/C++.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 18,
+					"type": "text"
 				}
-			]
-		},
-		{
-			"sheets":
-			[
 			]
 		}
 	],
 	"incremental_find":
 	{
-		"height": 30.0
+		"height": 26.0
 	},
 	"input":
 	{
@@ -590,7 +1525,7 @@
 	"project": "c-utils.sublime-project",
 	"replace":
 	{
-		"height": 70.0
+		"height": 71.0
 	},
 	"save_all_on_build": true,
 	"select_file":
@@ -599,6 +1534,42 @@
 		"last_filter": "",
 		"selected_items":
 		[
+			[
+				"nscach",
+				"nscache.c"
+			],
+			[
+				"stralloc.h",
+				"lib/stralloc.h"
+			],
+			[
+				"process.h",
+				"lib/process.h"
+			],
+			[
+				"strlist",
+				"lib/strlist.h"
+			],
+			[
+				"dir.h",
+				"lib/dir.h"
+			],
+			[
+				"cmake",
+				"CMakeLists.txt"
+			],
+			[
+				"getopt",
+				"lib/getopt.h"
+			],
+			[
+				"unix",
+				"lib/unix.h"
+			],
+			[
+				"list-r",
+				"list-r.c"
+			],
 			[
 				"path_dirnae",
 				"lib/path/path_dirname.c"
@@ -610,10 +1581,6 @@
 			[
 				"httptest",
 				"httptest.c"
-			],
-			[
-				"cmake",
-				"CMakeLists.txt"
 			],
 			[
 				"cmakeli",
@@ -642,10 +1609,6 @@
 			[
 				"uint16",
 				"lib/uint16.h"
-			],
-			[
-				"stralloc.h",
-				"lib/stralloc.h"
 			],
 			[
 				"address.h",
@@ -722,14 +1685,6 @@
 			[
 				"path.h",
 				"lib/path.h"
-			],
-			[
-				"dir.h",
-				"lib/dir.h"
-			],
-			[
-				"list-r",
-				"list-r.c"
 			],
 			[
 				"tinypr",
@@ -916,10 +1871,6 @@
 				"lib/wait.h"
 			],
 			[
-				"process.h",
-				"lib/process.h"
-			],
-			[
 				"ar-wrap",
 				"ar-wrap.c"
 			],
@@ -1094,22 +2045,6 @@
 			[
 				"taia.h",
 				"lib/taia.h"
-			],
-			[
-				"waituntil",
-				"lib/io/io_waituntil.c"
-			],
-			[
-				"waitunt",
-				"lib/io/io_waituntil2.c"
-			],
-			[
-				"mediathek-list.c",
-				"mediathek-list.c"
-			],
-			[
-				"ndelay_on",
-				"lib/ndelay/ndelay_on.c"
 			]
 		],
 		"width": 0.0

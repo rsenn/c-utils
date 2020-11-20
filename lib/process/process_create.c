@@ -55,7 +55,7 @@ last_error_str() {
 #endif
 
 int
-process_create(const char* filename, const char* argv[], fd_t std[3], const char* cwd) {
+process_create(const char* filename, char* const argv[], fd_t std[3], const char* cwd) {
   fd_t fds[3];
   int32 pid;
   int status = 0;

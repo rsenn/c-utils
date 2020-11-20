@@ -70,6 +70,9 @@
 /* Define this if you have the localtime_r() function */
 #cmakedefine HAVE_LOCALTIME_R_FUNC 1
 
+/* Define this if you have the clock_gettime() function */
+#cmakedefine HAVE_CLOCK_GETTIME 1
+
 /* Define this if you have the malloc() function */
 #cmakedefine HAVE_MALLOC_FUNC 1
 

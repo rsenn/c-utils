@@ -4,7 +4,7 @@
 #include <ctype.h>
 
 void
-strlist_dump(buffer* out, const strlist* sl) {
+strlist_dump_named(buffer* out, const strlist* sl, const char* names[]) {
   const char *x, *end;
   size_t i = 0, n, count = strlist_count(sl);
   buffer_puts(out, "strlist[");
@@ -22,10 +22,9 @@ strlist_dump(buffer* out, const strlist* sl) {
     size_t p = byte_chr(x, end - x, sl->sep);
 
     buffer_puts(out, "  ");
-    buffer_putulong(out, i);
+    buffer_puts(out, names[i]);
     buffer_puts(out, " = \"");
-    buffer_put(out, x, p); //, &chrs[sizeof(chrs) - 1]  - p);
-    //    buffer_puts(out, strlist_dumpx);
+    buffer_put(out, x, p);
     buffer_putsflush(out, "\"\n");
     if(p + x < end && x[p] == sl->sep)
       p++;

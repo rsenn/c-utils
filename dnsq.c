@@ -1,0 +1,266 @@
+#include "lib/errmsg.h"
+#include "lib/uint16.h"
+#include "lib/buffer.h"
+#include "lib/scan.h"
+#include "lib/str.h"
+#include "lib/byte.h"
+#include "lib/ip4.h"
+#include "lib/iopause.h"
+#include "lib/dns.h"
+#include "lib/ip6.h"
+#include "lib/case.h"
+#include <errno.h>
+
+#define FATAL "dnsq: fatal: "
+
+void
+usage(void) {
+  die(100, "dnsq: usage: dnsq type name server", 0);
+}
+void
+oops(void) {
+  diesys(111, FATAL, "unable to parse: ", 0);
+}
+
+static struct dns_transmit tx;
+
+int
+resolve(char* q, char qtype[2], char servers[256]) {
+  struct taia stamp;
+  struct taia deadline;
+  iopause_fd x[1];
+  int r;
+
+  if(dns_transmit_start(&tx, servers, 0, q, qtype, V6any) == -1)
+    return -1;
+
+  for(;;) {
+    taia_now(&stamp);
+    taia_uint(&deadline, 120);
+    taia_add(&deadline, &deadline, &stamp);
+    dns_transmit_io(&tx, x, &deadline);
+    iopause(x, 1, &deadline, &stamp);
+    r = dns_transmit_get(&tx, x, &stamp);
+    if(r == -1)
+      return -1;
+    if(r == 1)
+      break;
+  }
+
+  return 0;
+}
+
+char servers[256];
+static stralloc ip;
+static stralloc fqdn;
+
+char type[2];
+static char* q;
+
+static stralloc out;
+
+static char seed[128];
+
+#define X(s)                                                                                                           \
+  if(!stralloc_cats(out, s))                                                                                           \
+    return 0;
+#define NUM(u)                                                                                                         \
+  if(!stralloc_catulong0(out, u, 0))                                                                                   \
+    return 0;
+
+unsigned int
+printpacket_cat(stralloc* out, char* buf, unsigned int len) {
+  uint16 numqueries;
+  uint16 numanswers;
+  uint16 numauthority;
+  uint16 numglue;
+  unsigned int pos;
+  char data[12];
+  uint16 type;
+
+  pos = dns_packet_copy(buf, len, 0, data, 12);
+  if(!pos)
+    return 0;
+
+  uint16_unpack_big(data + 4, &numqueries);
+  uint16_unpack_big(data + 6, &numanswers);
+  uint16_unpack_big(data + 8, &numauthority);
+  uint16_unpack_big(data + 10, &numglue);
+
+  NUM(len)
+  X(" bytes, ")
+  NUM(numqueries)
+  X("+")
+  NUM(numanswers)
+  X("+")
+  NUM(numauthority)
+  X("+")
+  NUM(numglue)
+  X(" records")
+
+  if(data[2] & 128)
+    X(", response")
+  if(data[2] & 120)
+    X(", weird op")
+  if(data[2] & 4)
+    X(", authoritative")
+  if(data[2] & 2)
+    X(", truncated")
+  if(data[2] & 1)
+    X(", weird rd")
+  if(data[3] & 128)
+    X(", weird ra")
+  switch(data[3] & 15) {
+    case 0: X(", noerror"); break;
+    case 3: X(", nxdomain"); break;
+    case 4: X(", notimp"); break;
+    case 5: X(", refused"); break;
+    default: X(", weird rcode");
+  }
+  if(data[3] & 112)
+    X(", weird z")
+
+  X("\n")
+
+  while(numqueries) {
+    --numqueries;
+    X("query: ")
+
+    pos = dns_packet_getname(buf, len, pos, &d);
+    if(!pos)
+      return 0;
+    pos = dns_packet_copy(buf, len, pos, data, 4);
+    if(!pos)
+      return 0;
+
+    if(byte_diff(data + 2, 2, DNS_C_IN)) {
+      X("weird class")
+    } else {
+      uint16_unpack_big(data, &type);
+      NUM(type)
+      X(" ")
+      if(!dns_domain_todot_cat(out, d))
+        return 0;
+    }
+    X("\n")
+  }
+
+  for(;;) {
+    if(numanswers) {
+      --numanswers;
+      X("answer: ")
+    } else if(numauthority) {
+      --numauthority;
+      X("authority: ")
+    } else if(numglue) {
+      --numglue;
+      X("additional: ")
+    } else
+      break;
+
+    pos = printrecord_cat(out, buf, len, pos, 0, 0);
+    if(!pos)
+      return 0;
+  }
+
+  if(pos != len) {
+    errno = error_proto;
+    return 0;
+  }
+  return 1;
+}
+
+int
+parsetype(char* s, char type[2]) {
+  unsigned long u;
+
+  if(!s[scan_ulong(s, &u)])
+    uint16_pack_big(type, u);
+  else if(case_equals(s, "any"))
+    byte_copy(type, 2, DNS_T_ANY);
+  else if(case_equals(s, "a"))
+    byte_copy(type, 2, DNS_T_A);
+  else if(case_equals(s, "ns"))
+    byte_copy(type, 2, DNS_T_NS);
+  else if(case_equals(s, "mx"))
+    byte_copy(type, 2, DNS_T_MX);
+  else if(case_equals(s, "ptr"))
+    byte_copy(type, 2, DNS_T_PTR);
+  else if(case_equals(s, "txt"))
+    byte_copy(type, 2, DNS_T_TXT);
+  else if(case_equals(s, "cname"))
+    byte_copy(type, 2, DNS_T_CNAME);
+  else if(case_equals(s, "soa"))
+    byte_copy(type, 2, DNS_T_SOA);
+  else if(case_equals(s, "hinfo"))
+    byte_copy(type, 2, DNS_T_HINFO);
+  else if(case_equals(s, "rp"))
+    byte_copy(type, 2, DNS_T_RP);
+  else if(case_equals(s, "sig"))
+    byte_copy(type, 2, DNS_T_SIG);
+  else if(case_equals(s, "key"))
+    byte_copy(type, 2, DNS_T_KEY);
+  else if(case_equals(s, "aaaa"))
+    byte_copy(type, 2, DNS_T_AAAA);
+  else if(case_equals(s, "axfr"))
+    byte_copy(type, 2, DNS_T_AXFR);
+  else
+    return 0;
+
+  return 1;
+}
+
+int
+main(int argc, char** argv) {
+  uint16 u16;
+
+  dns_random_init(seed);
+
+  if(!*argv)
+    usage();
+  if(!*++argv)
+    usage();
+  if(!parsetype(*argv, type))
+    usage();
+
+  if(!*++argv)
+    usage();
+  if(!dns_domain_fromdot(&q, *argv, str_len(*argv)))
+    oops();
+
+  if(!*++argv)
+    usage();
+  if(!stralloc_copys(&out, *argv))
+    oops();
+  if(dns_ip6_qualify(&ip, &fqdn, &out) == -1)
+    oops();
+  if(ip.len >= 256)
+    ip.len = 256;
+  byte_zero(servers, 256);
+  byte_copy(servers, ip.len, ip.s);
+
+  if(!stralloc_copys(&out, ""))
+    oops();
+  uint16_unpack_big(type, &u16);
+  if(!stralloc_catulong0(&out, u16, 0))
+    oops();
+  if(!stralloc_cats(&out, " "))
+    oops();
+  if(!dns_domain_todot_cat(&out, q))
+    oops();
+  if(!stralloc_cats(&out, ":\n"))
+    oops();
+
+  if(resolve(q, type, servers) == -1) {
+    if(!stralloc_cats(&out, strerror(errno)))
+      oops();
+    if(!stralloc_cats(&out, "\n"))
+      oops();
+  } else {
+    if(!printpacket_cat(&out, tx.packet, tx.packetlen))
+      oops();
+  }
+
+  buffer_putflush(buffer_1, out.s, out.len);
+  _exit(0);
+}

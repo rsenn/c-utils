@@ -205,12 +205,12 @@ handle_data(ftp_client* ftp, stralloc* data) {
 }
 
 ssize_t
-ftp_read(int fd, void* b, size_t len) {
+ftp_read(int fd, void* b, size_t len, void* arg) {
   return recv(fd, b, len, 0);
 }
 
 ssize_t
-ftp_write(int fd, void* b, size_t len) {
+ftp_write(int fd, void* b, size_t len, void* arg) {
 
 #ifdef DEBUG_OUTPUT
   buffer_puts(buffer_1, "Write ");
@@ -263,7 +263,7 @@ handle_ftp(ftp_client* ftp, stralloc* line) {
       socket_connect4(ftp->data_sock, passive.addr.ip, passive.port);
       io_wantwrite(ftp->data_sock);
 
-      buffer_init_free(&ftp->data, ftp_read, ftp->data_sock, alloc(1024), 1024);
+      buffer_init_free(&ftp->data, (buffer_op_proto*)&ftp_read, ftp->data_sock, alloc(1024), 1024);
 
       break;
     }

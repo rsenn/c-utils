@@ -180,6 +180,10 @@ void* io_getfds(void);
 #define STDERR_FILENO 2
 #endif
 
+#ifdef HAVE_POLL
+#define IOPAUSE_POLL
+#endif
+
 #ifdef BUFFER_H
 void io_dump(buffer*);
 #endif

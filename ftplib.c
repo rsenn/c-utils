@@ -19,7 +19,7 @@
 #include "lib/byte.h"
 
 static int
-ftplib_write_escaped(buffer* out, const unsigned char* s) {
+ftplib_write_escaped(buffer* out, const char* s) {
   while(*s) {
     if(*s == 255)
       if(-1 == buffer_put(out, s, 1))
@@ -31,7 +31,7 @@ ftplib_write_escaped(buffer* out, const unsigned char* s) {
 }
 
 int
-ftplib_write_cmd_s(buffer* out, const unsigned char* s1) {
+ftplib_write_cmd_s(buffer* out, const char* s1) {
   if(ftplib_write_escaped(out, s1))
     return -1;
   if(-1 == buffer_puts(out, "\r\n"))
@@ -40,7 +40,7 @@ ftplib_write_cmd_s(buffer* out, const unsigned char* s1) {
 }
 
 int
-ftplib_write_cmd_ss(buffer* out, const unsigned char* s1, const unsigned char* s2) {
+ftplib_write_cmd_ss(buffer* out, const char* s1, const char* s2) {
   if(-1 == ftplib_write_escaped(out, s1))
     return -1;
   if(-1 == ftplib_write_escaped(out, s2))

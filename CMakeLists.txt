@@ -563,7 +563,8 @@ check_functions(
   posix_spawnattr_setflags
   posix_spawn_file_actions_init
   posix_spawn_file_actions_adddup2
-  posix_spawnp)
+  posix_spawnp
+  clock_gettime)
 if(HAVE_POSIX_SPAWNATTR_SETFLAGS
    AND HAVE_POSIX_SPAWN_FILE_ACTIONS_INIT
    AND HAVE_POSIX_SPAWN_FILE_ACTIONS_ADDDUP2
@@ -1621,6 +1622,10 @@ if(USE_EFENCE)
   endif(DIET)
 endif(USE_EFENCE)
 
+add_definitions(-DHAVE_CONFIG_H=1)
+include_directories("${CMAKE_CURRENT_BINARY_DIR}")
+configure_file("${CMAKE_CURRENT_SOURCE_DIR}/build/cmake/config.h.cmake" "${CMAKE_CURRENT_BINARY_DIR}/config.h")
+
 set(COMMON_LIBS
     strlist
     array
@@ -1754,23 +1759,18 @@ add_program(
   io
   open
   str)
-add_program(
-  dnsip
-  dns
-  stralloc
-  buffer
-  errmsg
-  socket
-  ${LIBIPHLPAPI})
+add_program(dnsip dns stralloc buffer errmsg socket ${LIBIPHLPAPI})
 add_program(dnsname dns stralloc buffer errmsg ${LIBIPHLPAPI})
-add_program(
-  dnstest
-  dns
-  stralloc
-  buffer
-  errmsg
-  ${LIBIPHLPAPI}
-  ${LIBMSWSOCK})
+add_program(dnstest dns stralloc buffer errmsg ${LIBIPHLPAPI} ${LIBMSWSOCK})
+add_program(dnsip6 dns stralloc buffer errmsg socket ${LIBIPHLPAPI} ${LIBMSWSOCK})
+add_program(dnsip6q dns stralloc buffer errmsg socket ${LIBIPHLPAPI} ${LIBMSWSOCK})
+add_program(dnsipq dns stralloc buffer errmsg socket ${LIBIPHLPAPI} ${LIBMSWSOCK})
+add_program(dnsmx dns stralloc buffer errmsg socket ${LIBIPHLPAPI} ${LIBMSWSOCK})
+#[[add_program(dnsq dns case stralloc buffer errmsg socket ${LIBIPHLPAPI} ${LIBMSWSOCK})
+add_program(dnsqr dns stralloc buffer errmsg socket ${LIBIPHLPAPI} ${LIBMSWSOCK})
+add_program(dnstrace dns stralloc buffer errmsg socket ${LIBIPHLPAPI} ${LIBMSWSOCK})]]
+add_program(dnstxt dns stralloc buffer errmsg socket ${LIBIPHLPAPI} ${LIBMSWSOCK})
+
 add_program(
   eagle-gen-cmds
   xml
@@ -2266,7 +2266,33 @@ set(nscache_SOURCES
     roots.c
     roots.h
     names.c
-    names.h)
+    names.h
+    lib/alloc.h
+    lib/array.h
+    lib/buffer.h
+    lib/byte.h
+    lib/case.h
+    lib/dir.h
+    lib/dns.h
+    lib/env.h
+    lib/errmsg.h
+    lib/fmt.h
+    lib/iopause.h
+    lib/ip4.h
+    lib/ip6.h
+    lib/mmap.h
+    lib/ndelay.h
+    lib/open.h
+    lib/path.h
+    lib/scan.h
+    lib/socket.h
+    lib/str.h
+    lib/stralloc.h
+    lib/tai.h
+    lib/taia.h
+    lib/uint16.h
+    lib/uint32.h
+    lib/uint64.h)
 add_program(
   nscache
   dns
@@ -2381,7 +2407,14 @@ add_program(
   open
   scan
   str)
-add_program(lsproc strlist errmsg mmap buffer unix dir)
+add_program(
+  lsproc
+  strlist
+  errmsg
+  mmap
+  buffer
+  unix
+  dir)
 
 #[[add_program(ftpcopy io)
 add_program(ftpls io)

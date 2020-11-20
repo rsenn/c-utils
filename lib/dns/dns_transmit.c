@@ -110,28 +110,30 @@ dns_transmit_free(struct dns_transmit* d) {
   queryfree(d);
   socketfree(d);
   packetfree(d);
+  if(d->iplen == 0)
+    d->iplen = 16;
 }
 
 static int
 randombind(struct dns_transmit* d) {
   int j;
-  int v4mapped = 0 /*ip6_isv4mapped(d->localip)*/;
+  int v4mapped = d->iplen == 16 && ip6_isv4mapped(d->localip);
   char* ip = v4mapped ? &d->localip[12] : d->localip;
 
   for(j = 0; j < 10; ++j) {
-    if(v4mapped && socket_is4(d->s1)) {
-      if(socket_bind4(d->s1 - 1, d->localip + 12, 1025 + dns_random(64510)) == 0)
+    if((v4mapped || d->iplen != 16) && socket_is4(d->s1 - 1)) {
+      if(socket_bind4(d->s1 - 1, ip, 1025 + dns_random(64510)) == 0)
         return 0;
     } else {
-      if(socket_bind6(d->s1 - 1, d->localip, 1025 + dns_random(64510), d->scope_id) == 0)
+      if(socket_bind6(d->s1 - 1, ip, 1025 + dns_random(64510), d->scope_id) == 0)
         return 0;
     }
   }
-  if(v4mapped && socket_is4(d->s1)) {
-    if(socket_bind4(d->s1 - 1, d->localip + 12, 0) == 0)
+  if((v4mapped || d->iplen != 16) && socket_is4(d->s1 - 1)) {
+    if(socket_bind4(d->s1 - 1, ip, 0) == 0)
       return 0;
   } else {
-    if(socket_bind6(d->s1 - 1, d->localip, 0, d->scope_id) == 0)
+    if(socket_bind6(d->s1 - 1, ip, 0, d->scope_id) == 0)
       return 0;
   }
 
@@ -143,18 +145,20 @@ static const int timeouts[4] = {1, 3, 11, 45};
 static int
 thisudp(struct dns_transmit* d) {
   const char* ip;
-  int v4mapped;
+  //  int v4mapped;
+  int ret = 0, err = 0;
 
   socketfree(d);
 
   while(d->udploop < 4) {
     for(; d->curserver < 16; ++d->curserver) {
-      ip = d->servers + 16 * d->curserver;
-      if(byte_diff(ip, 16, V6any)) {
+      ip = d->servers + d->iplen * d->curserver;
+      if(byte_diff(ip, d->iplen, V6any)) {
         d->query[2] = dns_random(256);
         d->query[3] = dns_random(256);
 
-        d->s1 = 1 + socket_udp6();
+        d->s1 = 1 + (d->iplen == 16 ? socket_udp6() : socket_udp4());
+        err = errno;
         if(!d->s1) {
           dns_transmit_free(d);
           return -1;
@@ -163,9 +167,14 @@ thisudp(struct dns_transmit* d) {
           dns_transmit_free(d);
           return -1;
         }
-        v4mapped = ip6_isv4mapped(ip);
-
-        if(socket_connect6(d->s1 - 1, ip, 53, d->scope_id) == 0)
+        err = errno;
+        // v4mapped = ip6_isv4mapped(ip);
+        if(d->iplen == 16)
+          ret = socket_connect6(d->s1 - 1, ip, 53, d->scope_id);
+        else
+          ret = socket_connect4(d->s1 - 1, ip, 53);
+        err = errno;
+        if(ret == 0)
           if(send(d->s1 - 1, d->query + 2, d->querylen - 2, 0) == (long)d->querylen - 2) {
             struct taia now;
             taia_now(&now);
@@ -203,17 +212,18 @@ static int
 thistcp(struct dns_transmit* d) {
   struct taia now;
   const char* ip;
+  int ret;
 
   socketfree(d);
   packetfree(d);
 
   for(; d->curserver < 16; ++d->curserver) {
-    ip = d->servers + 16 * d->curserver;
-    if(byte_diff(ip, 16, V6any)) {
+    ip = d->servers + d->iplen * d->curserver;
+    if(byte_diff(ip, d->iplen, V6any)) {
       d->query[2] = dns_random(256);
       d->query[3] = dns_random(256);
 
-      d->s1 = 1 + socket_tcp6();
+      d->s1 = 1 + (d->iplen == 16 ? socket_tcp6() : socket_tcp4());
       if(!d->s1) {
         dns_transmit_free(d);
         return -1;
@@ -226,7 +236,13 @@ thistcp(struct dns_transmit* d) {
       taia_now(&now);
       taia_uint(&d->deadline, 10);
       taia_add(&d->deadline, &d->deadline, &now);
-      if(socket_connect6(d->s1 - 1, ip, 53, d->scope_id) == 0) {
+
+      if(d->iplen == 16)
+        ret = socket_connect6(d->s1 - 1, ip, 53, d->scope_id);
+      else
+        ret = socket_connect4(d->s1 - 1, ip, 53);
+
+      if(ret == 0) {
         d->tcpstate = 2;
         return 0;
       }
@@ -282,7 +298,7 @@ dns_transmit_start(struct dns_transmit* d,
   byte_copy(d->query + 16 + len, 2, DNS_C_IN);
 
   byte_copy(d->qtype, 2, qtype);
-  d->servers = servers;
+  d->servers = (char*)servers;
   byte_copy(d->localip, 16, localip);
 
   d->udploop = flagrecursive ? 1 : 0;

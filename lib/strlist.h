@@ -44,6 +44,7 @@ int strlist_contains(const strlist*, const char* s);
 int strlist_copyat(const strlist*, size_t i, stralloc* out);
 size_t strlist_count(const strlist*);
 void strlist_dump(buffer*, const strlist* sl);
+void strlist_dump_named(buffer*, const strlist*, const char*[]);
 void strlist_fromb(strlist*, const char* x, size_t n, const char* delim);
 void strlist_froms(strlist*, const char* s, char delim);
 void strlist_fromv(strlist*, const char** v, int c);

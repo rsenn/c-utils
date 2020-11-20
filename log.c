@@ -19,6 +19,8 @@
 #include <sys/socket.h>
 #include <sys/types.h>
 
+static int iphex = 0;
+
 static const char*
 errstr() {
   const char* s;
@@ -80,17 +82,19 @@ log_separator(void) {
 
 void
 log_ip(const char* x, size_t iplen) {
-  char buf[FMT_IP6];
+  if(!iphex) {
+    char buf[FMT_IP6];
 
-  if(iplen == 16 && ip6_isv4mapped(x)) {
-    log_ip(&x[12], 4);
-    return;
+    if(iplen == 16 && ip6_isv4mapped(x)) {
+      log_ip(&x[12], 4);
+      return;
+    }
+
+    buffer_put(buffer_2, buf, (iplen == 4 ? fmt_ip4 : fmt_ip6)(buf, x));
+  } else {
+    int j;
+    for(j = ip6_isv4mapped(x) ? 12 : 0; j < 16; j++) log_hex(x[j]);
   }
-
-  buffer_put(buffer_2, buf, (iplen == 4 ? fmt_ip4 : fmt_ip6)(buf, x));
-  return;
-  /*int j;
-  for(j = ip6_isv4mapped(x) ? 12 : 0; j < 16; j++) log_hex(x[j]);*/
 }
 
 void
@@ -116,7 +120,7 @@ log_fd(int fd) {
 }
 
 void
-log_peer(const char ip[], uint16 port, int fd) {
+log_peer(const char ip[16], uint16 port, int fd) {
   log_ip(ip, 16);
   log_port(port);
   log_space();
@@ -368,7 +372,7 @@ log_cachednxdomain(const char* dn) {
 }
 
 void
-log_nxdomain(const char server[], const char* q, unsigned int ttl) {
+log_nxdomain(const char server[16], const char* q, unsigned int ttl) {
   log_string("nxdomain ");
   log_ip(server, 4);
   log_space();
@@ -379,7 +383,7 @@ log_nxdomain(const char server[], const char* q, unsigned int ttl) {
 }
 
 void
-log_nodata(const char server[], const char* q, const char qtype[2], unsigned int ttl) {
+log_nodata(const char server[16], const char* q, const char qtype[2], unsigned int ttl) {
   log_string("nodata ");
   log_ip(server, 4);
   log_space();
@@ -392,7 +396,7 @@ log_nodata(const char server[], const char* q, const char qtype[2], unsigned int
 }
 
 void
-log_lame(const char server[], const char* control, const char* referral) {
+log_lame(const char server[16], const char* control, const char* referral) {
   log_string("lame ");
   log_ip(server, 4);
   log_space();
@@ -415,7 +419,7 @@ log_servfail(const char* dn) {
 }
 
 void
-log_rr(const char server[], const char* q, const char type[2], const char* buf, unsigned int len, unsigned int ttl) {
+log_rr(const char server[16], const char* q, const char type[2], const char* buf, unsigned int len, unsigned int ttl) {
   int i;
 
   log_string("rr ");
@@ -428,18 +432,22 @@ log_rr(const char server[], const char* q, const char type[2], const char* buf, 
   log_name(q);
   log_space();
 
-  for(i = 0; i < len; ++i) {
-    log_hex(buf[i]);
-    if(i > 30) {
-      log_string("...");
-      break;
+  if(len == 4 || len == 16) {
+    log_ip(buf, len);
+  } else {
+    for(i = 0; i < len; ++i) {
+      log_hex(buf[i]);
+      if(i > 30) {
+        log_string("...");
+        break;
+      }
     }
   }
   log_line();
 }
 
 void
-log_rrns(const char server[], const char* q, const char* data, unsigned int ttl) {
+log_rrns(const char server[16], const char* q, const char* data, unsigned int ttl) {
   log_string("rr ");
   log_ip(server, 4);
   log_space();
@@ -452,7 +460,7 @@ log_rrns(const char server[], const char* q, const char* data, unsigned int ttl)
 }
 
 void
-log_rrcname(const char server[], const char* q, const char* data, unsigned int ttl) {
+log_rrcname(const char server[16], const char* q, const char* data, unsigned int ttl) {
   log_string("rr ");
   log_ip(server, 4);
   log_space();
@@ -465,7 +473,7 @@ log_rrcname(const char server[], const char* q, const char* data, unsigned int t
 }
 
 void
-log_rrptr(const char server[], const char* q, const char* data, unsigned int ttl) {
+log_rrptr(const char server[16], const char* q, const char* data, unsigned int ttl) {
   log_string("rr ");
   log_ip(server, 4);
   log_space();
@@ -478,7 +486,7 @@ log_rrptr(const char server[], const char* q, const char* data, unsigned int ttl
 }
 
 void
-log_rrmx(const char server[], const char* q, const char* mx, const char pref[2], unsigned int ttl) {
+log_rrmx(const char server[16], const char* q, const char* mx, const char pref[2], unsigned int ttl) {
   uint16 u;
 
   log_string("rr ");
@@ -496,7 +504,7 @@ log_rrmx(const char server[], const char* q, const char* mx, const char pref[2],
 }
 
 void
-log_rrsoa(const char server[], const char* q, const char* n1, const char* n2, const char misc[20], unsigned int ttl) {
+log_rrsoa(const char server[16], const char* q, const char* n1, const char* n2, const char misc[20], unsigned int ttl) {
   uint32 u;
   int i;
 

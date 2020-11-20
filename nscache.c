@@ -26,6 +26,7 @@
 #include "log.h"
 
 #define FATAL "nscache: fatal: "
+#define WARN "nscache: warning: "
 
 static char fn[3 + IP6_FMT];
 
@@ -82,12 +83,12 @@ union {
 } seed;
 
 int
-dnscache_okclient(char ip[16], bool ip6) {
+nscache_okclient(char ip[16], bool ip6) {
   struct stat st;
   int i;
 
   if(ip6 && ip6_isv4mapped(ip)) {
-    if(dnscache_okclient(&ip[12], false))
+    if(nscache_okclient(&ip[12], false))
       return 1;
   }
 
@@ -108,31 +109,34 @@ dnscache_okclient(char ip[16], bool ip6) {
 }
 
 void
-dnscache_droproot(const char* fatal) {
+nscache_droproot(const char* fatal) {
   const char* x;
   unsigned long id;
 
-  x = env_get("ROOT");
-  if(!x)
-    die(111, fatal, "$ROOT not set");
-  if(chdir(x) == -1)
-    diesys(111, fatal, "unable to chdir to ", x, ": ");
-  if(chroot(".") == -1)
-    diesys(111, fatal, "unable to chroot to ", x, ": ");
+  if((x = env_get("ROOT"))) {
+    if(chdir(x) == -1)
+      diesys(111, fatal, "unable to chdir to ", x, ": ");
+    if(getuid() == 0 && chroot(".") == -1)
+      carpsys(WARN, "unable to chroot to ", x, ": ");
+  } else {
+    msg(WARN, "$ROOT not set");
+  }
 
-  x = env_get("GID");
-  if(!x)
-    die(111, fatal, "$GID not set");
-  scan_ulong(x, &id);
-  if(setgid((int)id) == -1)
-    diesys(111, fatal, "unable to setgid: ");
+  if((x = env_get("GID"))) {
+    scan_ulong(x, &id);
+    if(setgid((int)id) == -1)
+      diesys(111, fatal, "unable to setgid: ");
+  } else {
+    msg(WARN, "$GID not set");
+  }
 
-  x = env_get("UID");
-  if(!x)
-    die(111, fatal, "$UID not set");
-  scan_ulong(x, &id);
-  if(setuid((int)id) == -1)
-    diesys(111, fatal, "unable to setuid: ");
+  if((x = env_get("UID"))) {
+    scan_ulong(x, &id);
+    if(setuid((int)id) == -1)
+      diesys(111, fatal, "unable to setuid: ");
+  } else {
+    msg(WARN, "$UID not set");
+  }
 }
 
 static int
@@ -168,6 +172,7 @@ packetquery(char* buf, unsigned int len, char** q, char qtype[2], char qclass[2]
     return 0;
 
   byte_copy(id, 2, header);
+  errno = 0;
   return 1;
 }
 
@@ -226,7 +231,7 @@ udp_new(void) {
   if(x->port < 1024)
     if(x->port != 53)
       return;
-  if(!dnscache_okclient(x->ip, true))
+  if(!nscache_okclient(x->ip, true))
     return;
 
   if(!packetquery(buf, len, &q, qtype, qclass, x->id))
@@ -237,7 +242,10 @@ udp_new(void) {
   log_query(&x->active, x->ip, x->port, udp53, x->id, q, qtype);
 
   switch(query_start(&x->q, q, qtype, qclass, sendaddr)) {
-    case -1: udp_drop(j); return;
+    case -1: {
+      udp_drop(j);
+      return;
+    }
     case 1: udp_respond(j);
   }
 }
@@ -423,7 +431,7 @@ tcp_new(void) {
       close(x->tcp);
       return;
     }
-  if(!dnscache_okclient(x->ip, true)) {
+  if(!nscache_okclient(x->ip, true)) {
     close(x->tcp);
     return;
   }
@@ -441,7 +449,7 @@ tcp_new(void) {
 }
 
 void
-dnscache_run(void) {
+nscache_run(void) {
   int j;
   struct taia deadline;
   struct taia stamp;
@@ -550,7 +558,7 @@ main(int argc, char* argv[]) {
   if(socket_bind6_reuse(tcp53, bindaddr, 53, bindscope) == -1)
     diesys(111, FATAL, "unable to bind TCP socket: ");
 
-  dnscache_droproot(FATAL);
+  nscache_droproot(FATAL);
 
   socket_tryreservein(udp53, 131072);
 
@@ -592,5 +600,5 @@ main(int argc, char* argv[]) {
     diesys(111, FATAL, "unable to listen on TCP socket: ");
 
   log_startup();
-  dnscache_run();
+  nscache_run();
 }

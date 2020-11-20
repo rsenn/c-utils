@@ -14,8 +14,8 @@
  *  0: ok.
  * -1: error
  */
-int ftplib_write_cmd_s(buffer* io, const unsigned char* s1);
-int ftplib_write_cmd_ss(buffer* io, const unsigned char* s1, const unsigned char* s2);
+int ftplib_write_cmd_s(buffer* io, const char* s1);
+int ftplib_write_cmd_ss(buffer* io, const char* s1, const char* s2);
 /*
  *  1: ok.
  *  0: EOF.

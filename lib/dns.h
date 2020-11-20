@@ -39,10 +39,11 @@ struct dns_transmit {
   unsigned int curserver;
   struct taia deadline;
   unsigned int pos;
-  const char* servers;
+  char* servers;
   char localip[16];
   unsigned int scope_id;
   char qtype[2];
+  unsigned int iplen;
 };
 
 void dns_random_init(const char*);

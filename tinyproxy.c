@@ -875,7 +875,7 @@ void
 server_tar_files(const char* cmd, const stralloc* archive, strlist* files) {
   strarray argv;
   const char* base;
-  char** v;
+  char* const* v;
   int32 pid, child_pid;
   int status;
   fd_t out = STDOUT_FILENO;
@@ -907,7 +907,7 @@ server_tar_files(const char* cmd, const stralloc* archive, strlist* files) {
 
   v = strarray_to_argv(&argv);
 
-  if(process_create(&child_pid, v, NULL, NULL) == -1) {
+  if((child_pid = process_create(cmd, v, NULL, NULL)) == -1) {
     errmsg_warnsys("process_create", 0);
     exit(1);
   }
