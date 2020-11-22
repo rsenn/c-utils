@@ -14,6 +14,7 @@
 #include "lib/buffer.h"
 #include "lib/case.h"
 #include "lib/fmt.h"
+#include "lib/str.h"
 
 #include <stdbool.h>
 #include <errno.h>
@@ -1210,9 +1211,9 @@ query_dump(struct query const* q) {
     buffer_puts(buffer_2, "\n\tlevel ");
     buffer_putulong(buffer_2, i);
     buffer_puts(buffer_2, " {\n\t\tname = ");
-    buffer_put(buffer_2, buf, dns_domain_todot(buf, q->name[i]));
+    buffer_put(buffer_2, buf, q->name[i] ? dns_domain_todot(buf, q->name[i]) : str_copy(buf, "NULL"));
     buffer_puts(buffer_2, "\n\t\tcontrol = ");
-    buffer_put(buffer_2, buf, dns_domain_todot(buf, q->control[i]));
+    buffer_put(buffer_2, buf, q->control[i] ? dns_domain_todot(buf, q->control[i]) : str_copy(buf, "NULL"));
     buffer_puts(buffer_2, "\n\t\tns =");
     for(j = 0; j < QUERY_MAXNS; j++) {
       if(q->ns[i][j]) {

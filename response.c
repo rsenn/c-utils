@@ -98,6 +98,10 @@ response_rfinish(response* resp, int x) {
   uint16_pack_big(&resp->buf[resp->dpos - 2], resp->pos - resp->dpos);
   if(!++resp->buf[x + 1])
     ++resp->buf[x];
+
+  buffer_puts(buffer_2, "response ");
+  response_dump(resp);
+  buffer_putnlflush(buffer_2);
 }
 
 char*
@@ -161,8 +165,7 @@ response_dump(response const* resp) {
   buffer_puts(buffer_2, "len = ");
   buffer_putulong(buffer_2, resp->stra.len);
 
-  buffer_puts(buffer_2, " = ");
-  buffer_putulong(buffer_2, resp->stra.len);
+  buffer_puts(buffer_2, " data = ");
 
   for(i = 0; i < resp->stra.len; i++) {
     uint8 ch = resp->stra.s[i];
