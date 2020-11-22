@@ -1182,15 +1182,16 @@ int tcp_num(const void* ptr);
 void
 query_dump(struct query const* q) {
   char buf[1024];
-  unsigned int i, j, tcp, udp;
+  unsigned int i, j;
+  int tcp, udp;
   buffer_puts(buffer_2, "query ");
 
   if((udp = udp_num(q)) != -1) {
-    buffer_puts(buffer_2, " udp#");
+    buffer_puts(buffer_2, "udp#");
     buffer_putulong(buffer_2, udp);
   }
   if((tcp = tcp_num(q)) != -1) {
-    buffer_puts(buffer_2, " tcp#");
+    buffer_puts(buffer_2, "tcp#");
     buffer_putulong(buffer_2, tcp);
   }
 
@@ -1219,7 +1220,41 @@ query_dump(struct query const* q) {
         buffer_put(buffer_2, buf, dns_domain_todot(buf, q->ns[i][j]));
       }
     }
+    buffer_puts(buffer_2, "\n\t\tservers =");
+
+    for(j = 0; j < QUERY_MAXNS; j++) {
+      if(byte_diff(&q->servers[i][j * 4], 4, "\0\0\0\0")) {
+        buffer_putspace(buffer_2);
+        buffer_put(buffer_2, buf, fmt_hexb(buf, &q->servers[i][j * 4], 4));
+      }
+    }
+    buffer_puts(buffer_2, "\n\t\tservers6 =");
+    for(j = 0; j < QUERY_MAXNS; j++) {
+      if(byte_diff(&q->servers6[i][j * 16], 16, V6any)) {
+        buffer_putspace(buffer_2);
+        buffer_put(buffer_2, buf, fmt_hexb(buf, &q->servers6[i][j * 16], 16));
+      }
+    }
+
     buffer_puts(buffer_2, "\n\t}");
   }
+  buffer_puts(buffer_2, "\n\talias =");
+  for(j = 0; j < QUERY_MAXALIAS; j++) {
+    if(q->alias[j]) {
+      buffer_putspace(buffer_2);
+      buffer_put(buffer_2, buf, dns_domain_todot(buf, q->alias[j]));
+    }
+  }
+  buffer_puts(buffer_2, "\n\taliasttl =");
+  for(j = 0; j < QUERY_MAXALIAS; j++) {
+    if(q->aliasttl[j]) {
+      buffer_putspace(buffer_2);
+      buffer_putulong(buffer_2, q->aliasttl[j]);
+    }
+  }
+  buffer_puts(buffer_2, "\n\tresponse = ");
+  response_dump(&q->response);
+
+  buffer_puts(buffer_2, "\n}");
   buffer_putnlflush(buffer_2);
 }

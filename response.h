@@ -38,5 +38,6 @@ void response_nxdomain(response*);
 void response_servfail(response*);
 void response_id(response*, const char[2]);
 void response_tc(response*);
+void response_dump(response const*);
 
 #endif

@@ -24,9 +24,10 @@ static int iphex = 0;
 static const char*
 errstr() {
   const char* s;
-  assert(errno);
-  s = strerror(errno);
+  int error = errno;
   errno = 0;
+  // assert(error);
+  s = strerror(error);
   return s;
 }
 

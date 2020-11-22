@@ -1,7 +1,9 @@
 #include "lib/dns.h"
 #include "lib/byte.h"
+#include "lib/uint8.h"
 #include "lib/uint16.h"
 #include "lib/socket.h"
+#include "lib/buffer.h"
 
 #include "response.h"
 
@@ -151,4 +153,25 @@ response_tc(response* resp) {
   assert(resp->pos > 2);
   resp->buf[2] |= 2;
   resp->pos = resp->tctarget;
+}
+
+void
+response_dump(response const* resp) {
+  size_t i;
+  buffer_puts(buffer_2, "len = ");
+  buffer_putulong(buffer_2, resp->stra.len);
+
+  buffer_puts(buffer_2, " = ");
+  buffer_putulong(buffer_2, resp->stra.len);
+
+  for(i = 0; i < resp->stra.len; i++) {
+    uint8 ch = resp->stra.s[i];
+
+    if(ch >= 'a' && ch <= 'z')
+      buffer_putc(buffer_2, ch);
+    else {
+      buffer_putc(buffer_2, '\\');
+      buffer_put8long(buffer_2, ch);
+    }
+  }
 }

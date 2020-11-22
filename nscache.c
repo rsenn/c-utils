@@ -511,13 +511,12 @@ nscache_run(void) {
     for(j = 0; j < MAXUDP; ++j)
       if(u[j].active) {
 
-        query_dump(&u[j].q);
-
         r = query_get(&u[j].q, u[j].io, &stamp);
         if(r == -1)
           udp_drop(j);
         if(r == 1)
           udp_respond(j);
+        query_dump(&u[j].q);
       }
 
     for(j = 0; j < MAXTCP; ++j)
@@ -532,6 +531,7 @@ nscache_run(void) {
             tcp_respond(j);
         } else if(t[j].io->revents || taia_less(&t[j].timeout, &stamp))
           tcp_rw(j);
+        query_dump(&t[j].q);
       }
 
     if(udp53io)
