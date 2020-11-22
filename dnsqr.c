@@ -1,3 +1,4 @@
+#include <stdlib.h>
 #include "lib/errmsg.h"
 #include "lib/uint16.h"
 #include "lib/buffer.h"
@@ -223,5 +224,5 @@ main(int argc, char** argv) {
   }
 
   buffer_putflush(buffer_1, out.s, out.len);
-  _exit(0);
+  exit(0);
 }

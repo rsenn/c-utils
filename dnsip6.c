@@ -1,3 +1,4 @@
+#include <stdlib.h>
 #include "lib/buffer.h"
 #include "lib/ip6.h"
 #include "lib/dns.h"
@@ -37,5 +38,5 @@ main(int argc, char** argv) {
   }
 
   buffer_flush(buffer_1);
-  _exit(0);
+  exit(0);
 }

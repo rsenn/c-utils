@@ -97,7 +97,7 @@ fnmatch(const char* pattern, const char* string, int flags) {
 
       case '[': {
         /* Nonzero if the sense of the character class is inverted.  */
-        int not;
+        int not ;
 
         if(*n == '\0')
           return FNM_NOMATCH;
@@ -106,7 +106,7 @@ fnmatch(const char* pattern, const char* string, int flags) {
           return FNM_NOMATCH;
 
         not = (*p == '!' || *p == '^');
-        if(not)
+        if(not )
           ++p;
 
         c = *p++;
@@ -144,7 +144,7 @@ fnmatch(const char* pattern, const char* string, int flags) {
           if(c == ']')
             break;
         }
-        if(!not)
+        if(!not )
           return FNM_NOMATCH;
         break;
 
@@ -158,7 +158,7 @@ fnmatch(const char* pattern, const char* string, int flags) {
           if(!(flags & FNM_NOESCAPE) && c == '\\') /* XXX 1003.2d11 is unclear if this is right.  */
             ++p;
         }
-        if(not)
+        if(not )
           return FNM_NOMATCH;
       } break;
 

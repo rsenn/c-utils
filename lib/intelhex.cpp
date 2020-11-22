@@ -20,7 +20,8 @@ namespace intelhex {
 #define INH32M_HEADER ":020000040000FA"
 
 /* Array access operator */
-value_type& hex_data::operator[](address_type address) {
+value_type&
+hex_data::operator[](address_type address) {
   /* Start at the end of the list and find the first (last) block with an address */
   /*  less than addr */
   reverse_iterator i = blocks.rbegin();

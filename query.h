@@ -33,5 +33,6 @@ int query_run(struct query*, int);
 int query_start(struct query*, char*, char[], char[], char[]);
 int query_get(struct query*, iopause_fd*, struct taia*);
 void query_io(struct query*, iopause_fd*, struct taia*);
+void query_dump(struct query const*);
 
 #endif

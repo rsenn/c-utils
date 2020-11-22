@@ -2,6 +2,7 @@
 #include "lib/dns.h"
 #include "lib/errmsg.h"
 #include <errno.h>
+#include <stdlib.h>
 
 #define FATAL "dnstxt: fatal: "
 
@@ -30,5 +31,5 @@ main(int argc, char** argv) {
   }
 
   buffer_flush(buffer_1);
-  _exit(0);
+  exit(0);
 }

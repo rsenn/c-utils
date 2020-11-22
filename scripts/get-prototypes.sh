@@ -86,8 +86,9 @@ clean_args() {
     ARG=${ARG//" *"/"* "}
    
     if [ "$REMOVE_NAMES" = true ] || [ -n "$REMOVE_NAMES" -a "$REMOVE_NAMES" -ge "$I" ] 2>/dev/null; then 
-      ARG=${ARG%" "[[:alpha:]]*}
-      ARG=${ARG%" "}
+      ARGLIST=$(set -f; echo "$ARG" | sed 's|\s\+|\n|g ;; s|\([^_A-Za-z0-9()]\)\([_A-Za-z0-9()]\)|\1\n\2|g ;; s|\([_A-Za-z0-9()]\)\([^_A-Za-z0-9()]\)|\1\n\2|g ;; s|\[\s*|[|g ;; s|\s*\]|]|g')
+      ARG=$(set -f; IFS="
+"; set -- $(echo "$ARGLIST"); IFS=" "; echo "$*")
     fi
 
     [ "$EMPTY" = true -a -n "$ARG2" ] && ARG2="()"

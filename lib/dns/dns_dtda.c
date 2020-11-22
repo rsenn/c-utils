@@ -38,3 +38,39 @@ dns_domain_todot_cat(stralloc* out, const char* d) {
       return 0;
   }
 }
+
+unsigned int
+dns_domain_todot_inline(char* x) {
+  char ch, *d;
+
+  for(d = x; *d; d++) {
+    ch = *d;
+    *d = '.';
+
+    while(ch--) {
+      ++d;
+      if((*d >= 'A') && (*d <= 'Z'))
+        *d = (char)(*d + 32);
+    }
+  }
+  return d - x;
+}
+
+unsigned int
+dns_domain_todot(char* out, const char* in) {
+  const char* x;
+  char* y;
+  unsigned char c;
+
+  x = in;
+  y = out;
+  while((c = *x++)) {
+    byte_copy(y, c, x);
+    y += c;
+    x += c;
+
+    if(*x)
+      *y++ = '.';
+  }
+  return y - out;
+}

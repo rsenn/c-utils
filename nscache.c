@@ -44,31 +44,31 @@ iopause_fd io[3 + MAXUDP + MAXTCP];
 iopause_fd *udp53io, *tcp53io;
 
 struct tcpclient {
-  struct query q;
-  struct taia start;
-  struct taia timeout;
   uint64 active; /* query number or 1, if active; otherwise 0 */
   iopause_fd* io;
-  char ip[16]; /* send response to this address */
-  uint16 port; /* send response to this port */
+  char* buf; /* 0, or dynamically allocated of length len */
+  struct taia start;
+  struct taia timeout;
+  struct query q;
   uint32 scope_id;
-  char id[2];
   int tcp; /* open TCP socket, if active */
   int state;
-  char* buf; /* 0, or dynamically allocated of length len */
   unsigned int len;
   unsigned int pos;
+  uint16 port; /* send response to this port */
+  char id[2];
+  char ip[16]; /* send response to this address */
 };
 
 struct udpclient {
-  struct query q;
-  struct taia start;
   uint64 active; /* query number, if active; otherwise 0 */
   iopause_fd* io;
-  char ip[16];
-  uint16 port;
+  struct taia start;
+  struct query q;
   uint32 scope_id;
+  uint16 port;
   char id[2];
+  char ip[16];
 };
 
 static struct udpclient u[MAXUDP];
@@ -248,6 +248,14 @@ udp_new(void) {
     }
     case 1: udp_respond(j);
   }
+}
+
+int
+udp_num(const void* ptr) {
+  size_t n = ((size_t)ptr - (size_t)u) / sizeof(struct udpclient);
+  if(n >= MAXUDP)
+    return -1;
+  return n;
 }
 
 /*
@@ -448,6 +456,14 @@ tcp_new(void) {
   log_tcpopen(x->ip, x->port, x->tcp);
 }
 
+int
+tcp_num(const void* ptr) {
+  size_t n = ((size_t)ptr - (size_t)t) / sizeof(struct tcpclient);
+  if(n >= MAXTCP)
+    return -1;
+  return n;
+}
+
 void
 nscache_run(void) {
   int j;
@@ -494,6 +510,9 @@ nscache_run(void) {
 
     for(j = 0; j < MAXUDP; ++j)
       if(u[j].active) {
+
+        query_dump(&u[j].q);
+
         r = query_get(&u[j].q, u[j].io, &stamp);
         if(r == -1)
           udp_drop(j);

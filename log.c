@@ -263,12 +263,12 @@ log_tcpopen(const char client[], unsigned int port, int fd) {
 
 void
 log_tcpclose(const char client[], unsigned int port, int fd) {
-  /// const char* x = errstr();
+  const char* x = errno ? errstr() : "Success";
   log_string("tcpclose ");
   log_peer(client, port, fd);
 
-  /*  log_space();
-    log_string(x);*/
+  log_space();
+  log_string(x);
   log_line();
 }
 

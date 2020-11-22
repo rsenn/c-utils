@@ -61,7 +61,9 @@ int dns_domain_diff(const char*, const char*);
 int dns_domain_suffix(const char*, const char*);
 unsigned int dns_domain_suffixpos(const char*, const char*);
 int dns_domain_fromdot(char**, const char*, size_t);
-int dns_domain_todot_cat(stralloc*, const char*);
+int dns_domain_todot_cat(stralloc* out, const char* d);
+unsigned int dns_domain_todot(char* out, const char* in);
+unsigned int dns_domain_todot_inline(char* x);
 
 unsigned int dns_packet_copy(const char*, unsigned int, unsigned int, char*, unsigned int);
 unsigned int dns_packet_getname(const char*, unsigned int, unsigned int, char**);

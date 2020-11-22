@@ -35,7 +35,10 @@ public:
     return !(*this == other);
   }
 
-  const string& operator*() const { return m_buffer; }
+  const string&
+  operator*() const {
+    return m_buffer;
+  }
 
   handle_type
   handle() const {

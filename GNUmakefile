@@ -1747,6 +1747,12 @@ ifeq ($(BUILDDIR),)
 .c.o:
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(EXTRA_CPPFLAGS) -c $<
 
+.c.s:
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(EXTRA_CPPFLAGS) -S $<
+
+%.s: %.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(EXTRA_CPPFLAGS) -S $<
+
 %.o: %.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(EXTRA_CPPFLAGS) -c $<
 
@@ -1764,6 +1770,9 @@ $(BUILDDIR)%.o: lib/%.c
 
 $(BUILDDIR)%.o: %.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(INCLUDES) -c $(EXTRA_CPPFLAGS) -o $(BUILDDIR)$(patsubst %.c,%.o,$<) $<
+
+$(BUILDDIR)%.s: %.c
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(INCLUDES) -S $(EXTRA_CPPFLAGS) -o $(BUILDDIR)$(patsubst %.c,%.s,$<) $<
 
 .cpp.o:
 	$(CROSS_COMPILE)$(CXX) $(CXXOPTS) $(CXXFLAGS) $(EXTRA_CPPFLAGS) -c $<

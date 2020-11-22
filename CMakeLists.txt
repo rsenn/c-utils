@@ -6,9 +6,7 @@ set(CMAKE_C_STANDARD 11)
 
 project(c-utils C ASM)
 if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
-  set(CMAKE_INSTALL_PREFIX
-      "/usr/local"
-      CACHE PATH "Installation prefix" FORCE)
+  set(CMAKE_INSTALL_PREFIX "/usr/local" CACHE PATH "Installation prefix" FORCE)
 endif()
 set(PROJECT_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/3rdparty)
 set(PROJECT_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/3rdparty)
@@ -35,10 +33,7 @@ macro(debug_option NAME DESC)
   if(DEBUG_${NAME})
     add_definitions(-DDEBUG_${NAME}=1)
   endif(DEBUG_${NAME})
-endmacro(
-  debug_option
-  NAME
-  DESC)
+endmacro(debug_option NAME DESC)
 
 debug_option(IO "Debug I/O code")
 debug_option(HTTP "Debug HTTP code")
@@ -61,11 +56,9 @@ set(CPACK_SOURCE_IGNORE_FILES ${ignored_files})
 set(CPACK_SOURCE_PACKAGE_FILE_NAME dirlist-${DIRLIST_VERSION})
 set(CPACK_PACKAGE_NAME dirlist)
 set(CPACK_RESOURCE_FILE_README ${PROJECT_SOURCE_DIR}/README)
-set(CPACK_INSTALL_CMAKE_PROJECTS
-    ${CMAKE_CURRENT_BINARY_DIR};${CMAKE_PROJECT_NAME};ALL)
+set(CPACK_INSTALL_CMAKE_PROJECTS ${CMAKE_CURRENT_BINARY_DIR};${CMAKE_PROJECT_NAME};ALL)
 
-# if(EXISTS "${CMAKE_SOURCE_DIR}/3rdparty/openssl/CMakeLists.txt")
-# add_subdirectory(3rdparty/openssl) endif()
+# if(EXISTS "${CMAKE_SOURCE_DIR}/3rdparty/openssl/CMakeLists.txt") add_subdirectory(3rdparty/openssl) endif()
 
 set(BUILD_SHARED_LIBS FALSE)
 
@@ -95,11 +88,7 @@ macro(check_compile RESULT_VAR SOURCE)
   set(RESULT "${${RESULT_VAR}}")
   # message("${RESULT_VAR} = ${RESULT}" )
   if(RESULT STREQUAL "")
-    string(
-      RANDOM
-      LENGTH 6
-      ALPHABET "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
-               C_NAME)
+    string(RANDOM LENGTH 6 ALPHABET "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789" C_NAME)
     string(REPLACE SUPPORT_ "" NAME "${RESULT_VAR}")
     string(REPLACE _ - NAME "${NAME}")
     string(TOLOWER "${NAME}" C_NAME)
@@ -107,11 +96,7 @@ macro(check_compile RESULT_VAR SOURCE)
     string(REPLACE "\\" "\\\\" SOURCE "${SOURCE}")
     file(WRITE "${C_SOURCE}" "${SOURCE}")
     message(STATUS "Trying to compile try-${C_NAME}.c ... ")
-    try_compile(
-      COMPILE_RESULT "${CMAKE_CURRENT_BINARY_DIR}"
-      "${C_SOURCE}"
-      OUTPUT_VARIABLE "OUTPUT"
-      LINK_LIBRARIES "${ARGN}")
+    try_compile(COMPILE_RESULT "${CMAKE_CURRENT_BINARY_DIR}" "${C_SOURCE}" OUTPUT_VARIABLE "OUTPUT" LINK_LIBRARIES "${ARGN}")
     # file(REMOVE "${C_SOURCE}")
 
     if(COMPILE_RESULT)
@@ -125,28 +110,16 @@ macro(check_compile RESULT_VAR SOURCE)
       list(FILTER OUTPUT INCLUDE REGEX "error")
     endif(COMPILE_RESULT)
 
-    set("${RESULT_VAR}"
-        "${COMPILE_RESULT}"
-        CACHE BOOL "Support ${NAME}")
+    set("${RESULT_VAR}" "${COMPILE_RESULT}" CACHE BOOL "Support ${NAME}")
   endif(RESULT STREQUAL "")
   show_result(${RESULT_VAR})
-endmacro(
-  check_compile
-  RESULT_VAR
-  SOURCE)
+endmacro(check_compile RESULT_VAR SOURCE)
 macro(check_run RESULT_VAR SOURCE)
-  string(
-    RANDOM
-    LENGTH 6
-    ALPHABET "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
-             C_SOURCE)
+  string(RANDOM LENGTH 6 ALPHABET "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789" C_SOURCE)
   set(C_SOURCE "${CMAKE_CURRENT_BINARY_DIR}/try-${C_SOURCE}.c")
   string(REPLACE "\\" "\\\\" SOURCE "${SOURCE}")
   file(WRITE "${C_SOURCE}" "${SOURCE}")
-  try_run(
-    RUN_RESULT COMPILE_RESULT "${CMAKE_CURRENT_BINARY_DIR}" "${C_SOURCE}"
-    RUN_OUTPUT_VARIABLE RUN_OUTPUT
-    COMPILE_OUTPUT_VARIABLE COMPILE_OUTPUT)
+  try_run(RUN_RESULT COMPILE_RESULT "${CMAKE_CURRENT_BINARY_DIR}" "${C_SOURCE}" RUN_OUTPUT_VARIABLE RUN_OUTPUT COMPILE_OUTPUT_VARIABLE COMPILE_OUTPUT)
 
   if("${RUN_RESULT}" STREQUAL 0)
     set(RUN_OK TRUE)
@@ -154,8 +127,7 @@ macro(check_run RESULT_VAR SOURCE)
     set(RUN_OK FALSE)
   endif("${RUN_RESULT}" STREQUAL 0)
 
-  # message("Run result: ${RUN_OK} output: ${RUN_OUTPUT}") message("Compile
-  # result: ${COMPILE_RESULT}")
+  # message("Run result: ${RUN_OK} output: ${RUN_OUTPUT}") message("Compile result: ${COMPILE_RESULT}")
 
   file(REMOVE "${C_SOURCE}")
 
@@ -174,21 +146,13 @@ macro(check_run RESULT_VAR SOURCE)
   endif(RUN_OK)
 
   if(ARGN)
-    set("${ARGN}"
-        "${RUN_OUTPUT}"
-        PARENT_SCOPE)
+    set("${ARGN}" "${RUN_OUTPUT}" PARENT_SCOPE)
   endif(ARGN)
 
   show_result(${RESULT_VAR})
-endmacro(
-  check_run
-  RESULT_VAR
-  SOURCE)
+endmacro(check_run RESULT_VAR SOURCE)
 
-if(MINGW
-   OR WIN32
-   OR WIN64
-   OR MSVC)
+if(MINGW OR WIN32 OR WIN64 OR MSVC)
   check_library_exists(wsock32 select "" HAVE_WSOCK32_LIB)
   if(HAVE_WSOCK32_LIB)
     set(LIBMSWSOCK wsock32)
@@ -209,24 +173,11 @@ if(MINGW
   if(HAVE_IPHLPAPI_LIB)
     set(LIBIPHLPAPI iphlpapi)
   endif(HAVE_IPHLPAPI_LIB)
-endif(
-  MINGW
-  OR WIN32
-  OR WIN64
-  OR MSVC)
+endif(MINGW OR WIN32 OR WIN64 OR MSVC)
 
-check_compile(
-  LIBC_HAS_IP6
-  "#include <sys/types.h>\n#include <sys/socket.h>\n#include <netinet/in.h>\n\nint main() {\n  struct sockaddr_in6 sa;\n  sa.sin6_family = PF_INET6;\n  (void)sa;\n  return 0;\n}\n"
-)
-check_compile(
-  LIBC_HAS_SCOPE_ID
-  "#include <sys/types.h>\n#include <sys/socket.h>\n#include <netinet/in.h>\n\nint main() {\n  struct sockaddr_in6 sa;\n  sa.sin6_family = PF_INET6;\n  sa.sin6_scope_id = 23;\n  (void)sa;\n  return 0;\n}\n"
-)
-check_compile(
-  HAVE_SYSCALL
-  "#define _GNU_SOURCE\n#include <unistd.h>\n#include <sys/syscall.h>\n\nstatic inline ssize_t\nsys_write(int fd, const void* buf, size_t n) {\n  return syscall(SYS_write, fd, buf, n);\n}\n\nint main() { return sys_write(1, \"test\\\\n\", 5);\n}\n"
-)
+check_compile(LIBC_HAS_IP6 "#include <sys/types.h>\n#include <sys/socket.h>\n#include <netinet/in.h>\n\nint main() {\n  struct sockaddr_in6 sa;\n  sa.sin6_family = PF_INET6;\n  (void)sa;\n  return 0;\n}\n")
+check_compile(LIBC_HAS_SCOPE_ID "#include <sys/types.h>\n#include <sys/socket.h>\n#include <netinet/in.h>\n\nint main() {\n  struct sockaddr_in6 sa;\n  sa.sin6_family = PF_INET6;\n  sa.sin6_scope_id = 23;\n  (void)sa;\n  return 0;\n}\n")
+check_compile(HAVE_SYSCALL "#define _GNU_SOURCE\n#include <unistd.h>\n#include <sys/syscall.h>\n\nstatic inline ssize_t\nsys_write(int fd, const void* buf, size_t n) {\n  return syscall(SYS_write, fd, buf, n);\n}\n\nint main() { return sys_write(1, \"test\\\\n\", 5);\n}\n")
 
 if(NOT USE_SELECT)
   check_compile(
@@ -249,18 +200,12 @@ if(NOT USE_SELECT)
   )
   check_compile(
     SUPPORT_POLL
-    "#include <sys/types.h>\n#include <fcntl.h>\n#include <unistd.h>\n#include <poll.h>\n\nint main() { struct pollfd x;\n\n  x.fd = open(\"trypoll.c\", O_RDONLY);\n  if(x.fd == -1)\n    _exit(111);\n  x.events = POLLIN;\n  if(poll(&x, 1, 10) == -1)\n    _exit(1);\n  if(x.revents != POLLIN)\n    _exit(1);\n\n  /* XXX: try to detect and avoid poll() imitation libraries */\n\n  _exit(0);\n}\n"
-  )
-  check_compile(
-    SUPPORT_SELECT
-    "#include <sys/types.h>\n#include <sys/time.h>\n#if defined(_WIN32) || defined(__MINGW32__)\n#include <winsock2.h>\n#else\n#include <sys/select.h>\n#include <unistd.h>\n#endif\n\nint\nmain() {\n  struct timeval tv;\n  fd_set rfds;\n  int fd = 0;\n  FD_ZERO(&rfds);\n  FD_SET(fd, &rfds);\n  tv.tv_sec = tv.tv_usec = 0;\n  select(fd + 1, &rfds, 0, 0, &tv);\n}\n"
-    ${LIBMSWSOCK})
+    "#include <sys/types.h>\n#include <fcntl.h>\n#include <unistd.h>\n#include <poll.h>\n\nint main() { struct pollfd x;\n\n  x.fd = open(\"trypoll.c\", O_RDONLY);\n  if(x.fd == -1)\n    _exit(111);\n  x.events = POLLIN;\n  if(poll(&x, 1, 10) == -1)\n    _exit(1);\n  if(x.revents != POLLIN)\n    _exit(1);\n\n  /* XXX: try to detect and avoid poll() imitation libraries */\n\n  _exit(0);\n}\n")
+  check_compile(SUPPORT_SELECT "#include <sys/types.h>\n#include <sys/time.h>\n#if defined(_WIN32) || defined(__MINGW32__)\n#include <winsock2.h>\n#else\n#include <sys/select.h>\n#include <unistd.h>\n#endif\n\nint\nmain() {\n  struct timeval tv;\n  fd_set rfds;\n  int fd = 0;\n  FD_ZERO(&rfds);\n  FD_SET(fd, &rfds);\n  tv.tv_sec = tv.tv_usec = 0;\n  select(fd + 1, &rfds, 0, 0, &tv);\n}\n"
+                ${LIBMSWSOCK})
 endif(NOT USE_SELECT)
 
-check_compile(
-  HAVE_N2I
-  "#include <sys/types.h>\n#include <sys/socket.h>\n#include <net/if.h>\n\nint main() { static char ifname[IFNAMSIZ];\n  char* tmp = if_indextoname(0, ifname);\n  (void)tmp;\n  return 0;\n}\n"
-)
+check_compile(HAVE_N2I "#include <sys/types.h>\n#include <sys/socket.h>\n#include <net/if.h>\n\nint main() { static char ifname[IFNAMSIZ];\n  char* tmp = if_indextoname(0, ifname);\n  (void)tmp;\n  return 0;\n}\n")
 
 check_compile(
   HAVE_BSDSENDFILE
@@ -272,32 +217,20 @@ check_compile(
   "#ifdef __hpux__\n#include <sys/types.h>\n#include <sys/uio.h>\n#include <sys/socket.h>\n#include <stdio.h>\n\nint main() { /*\n        sbsize_t sendfile(int s, int fd, off_t offset, bsize_t nbytes,\n                      const struct iovec *hdtrl, int flags);\n  */\n  struct iovec x[2];\n  int fd = open(\"havesendfile.c\", 0);\n  x[0].iov_base = \"header\";\n  x[0].iov_len = 6;\n  x[1].iov_base = \"footer\";\n  x[1].iov_len = 6;\n  sendfile(1 /* dest socket */, fd /* src file */, 0 /* offset */, 23 /* nbytes */, x, 0);\n  perror(\"sendfile\");\n  return 0;\n}\n#elif defined(__sun__) && defined(__svr4__)\n#include <sys/types.h>\n#include <sys/socket.h>\n#include <sys/sendfile.h>\n#include <stdio.h>\n\nint main() { off_t o;\n  o = 0;\n  sendfile(1 /* dest */, 0 /* src */, &o, 23 /* nbytes */);\n  perror(\"sendfile\");\n  return 0;\n}\n#elif defined(_AIX)\n\n#define _FILE_OFFSET_BITS 64\n#include <sys/types.h>\n#include <sys/socket.h>\n#include <unistd.h>\n#include <stdio.h>\n\nint main() { int fd = open(\"havesendfile.c\", 0);\n  struct sf_parms p;\n  int destfd = 1;\n  p.header_data = \"header\";\n  p.header_length = 6;\n  p.file_descriptor = fd;\n  p.file_offset = 0;\n  p.file_bytes = 23;\n  p.trailer_data = \"footer\";\n  p.trailer_length = 6;\n  if(send_file(&destfd, &p, 0) >= 0)\n    printf(\"sent %lu bytes.\\\\n\", p.bytes_sent);\n  return 0;\n}\n#elif defined(__linux__)\n\n#define _FILE_OFFSET_BITS 64\n#include <sys/types.h>\n#include <unistd.h>\n#if defined(__GLIBC__)\n#include <sys/sendfile.h>\n#elif defined(__dietlibc__)\n#include <sys/sendfile.h>\n#else\n#include <linux/unistd.h>\n_syscall4(int, sendfile, int, out, int, in, long*, offset, unsigned long, count)\n#endif\n#include <stdio.h>\n\nint main() { int fd = open(\"havesendfile.c\", 0);\n  off_t o = 0;\n  off_t r = sendfile(1, fd, &o, 23);\n  if(r != -1)\n    printf(\"sent %llu bytes.\\\\n\", r);\n  return 0;\n}\n\n#else\n#error unsupported architecture\n/* stupid fucking IRIX c99 does not signal #error via a non-zero exit\n * code!  ARGH!  So insert a parse error */\n#include rumpelstilzchen\n)\n#endif\n"
 )
 
-check_compile(
-  HAVE_SOCKLEN_T
-  "#include <sys/types.h>\n#ifdef __MINGW32__\n#include <winsock2.h>\n#include <ws2tcpip.h>\n#else\n#include <sys/socket.h>\n#include <netinet/in.h>\n#endif\n\nint main() { socklen_t t;\n  (void)t;\n  return 0;\n}\n"
-)
+check_compile(HAVE_SOCKLEN_T "#include <sys/types.h>\n#ifdef __MINGW32__\n#include <winsock2.h>\n#include <ws2tcpip.h>\n#else\n#include <sys/socket.h>\n#include <netinet/in.h>\n#endif\n\nint main() { socklen_t t;\n  (void)t;\n  return 0;\n}\n")
 if(NOT HAVE_SOCKLEN_T)
   add_definitions(-Dsocklen_t=int)
 endif(NOT HAVE_SOCKLEN_T)
 
-check_compile(
-  HAVE___INLINE__
-  "static __inline__ int\nfoo(int bar) {\n  return bar + 1;\n}\nint main() { return foo(42); }\n"
-)
+check_compile(HAVE___INLINE__ "static __inline__ int\nfoo(int bar) {\n  return bar + 1;\n}\nint main() { return foo(42); }\n")
 if(HAVE___INLINE__)
   add_definitions(-Dinline=__inline)
 else(HAVE___INLINE__)
-  check_compile(
-    HAVE___INLINE
-    "static __inline int\nfoo(int bar) {\n  return bar + 1;\n}\nint main() { return foo(42); }\n"
-  )
+  check_compile(HAVE___INLINE "static __inline int\nfoo(int bar) {\n  return bar + 1;\n}\nint main() { return foo(42); }\n")
   if(HAVE___INLINE)
     add_definitions(-Dinline=__inline)
   else(HAVE___INLINE)
-    check_compile(
-      HAVE_INLINE
-      "static inline int\nfoo(int bar) {\n  return bar + 1;\n}\nint main() { return foo(42); }\n"
-    )
+    check_compile(HAVE_INLINE "static inline int\nfoo(int bar) {\n  return bar + 1;\n}\nint main() { return foo(42); }\n")
     if(NOT HAVE_INLINE)
       add_definitions(-Dinline=)
     endif(NOT HAVE_INLINE)
@@ -307,10 +240,7 @@ endif(HAVE___INLINE__)
 check_compile(HAVE_UINT128 "int main() { __uint128_t tmp; }\n")
 check_compile(HAVE_INT128 "int main() { __int128_t tmp; }\n")
 
-check_compile(
-  HAVE_ALLOCA
-  "#include <stdlib.h>\n#ifdef A\n#include <alloca.h>\n#else\n#include <malloc.h>\n#endif\n\nint main() { char* c = alloca(23);\n  (void)c;\n  return 0;\n}\n"
-)
+check_compile(HAVE_ALLOCA "#include <stdlib.h>\n#ifdef A\n#include <alloca.h>\n#else\n#include <malloc.h>\n#endif\n\nint main() { char* c = alloca(23);\n  (void)c;\n  return 0;\n}\n")
 
 check_include_file(signal.h HAVE_SIGNAL_H)
 if(HAVE_SIGNAL_H)
@@ -343,13 +273,9 @@ if(NOT CROSS)
 endif(NOT CROSS)
 # message("CROSS = ${CROSS}")
 
-# check_symbol_exists(__sync_val_compare_and_swap ""
-# HAVE___SYNC_VAL_COMPARE_AND_SWAP)
+# check_symbol_exists(__sync_val_compare_and_swap "" HAVE___SYNC_VAL_COMPARE_AND_SWAP)
 
-check_compile(
-  INTRINSIC_CAS
-  "#include <stdlib.h>\n\nint main() {\n  long v;\n  __sync_val_compare_and_swap(&v, 1, 0);\n  return 0;\n}"
-)
+check_compile(INTRINSIC_CAS "#include <stdlib.h>\n\nint main() {\n  long v;\n  __sync_val_compare_and_swap(&v, 1, 0);\n  return 0;\n}")
 
 if(NOT INTRINSIC_CAS)
   add_definitions(-DUSE_INLINE_COMPARE_AND_SWAP=1)
@@ -382,19 +308,14 @@ if(COMPILER_TCC)
 endif(COMPILER_TCC)
 # message("sigset_t size = ${SIGSET_T_SIZE}")
 if(SIGSET_T_SIZE)
-  set(HAVE_SIGSET_TYPE
-      TRUE
-      CACHE BOOL "Define this if you have the sigset_t type")
+  set(HAVE_SIGSET_TYPE TRUE CACHE BOOL "Define this if you have the sigset_t type")
 else(SIGSET_T_SIZE)
   check_symbol_exists(sigset_t "signal.h" HAVE_SIGSET_T)
 endif(SIGSET_T_SIZE)
 
 if(NOT HAVE_SIGSET_T OR NOT SIZEOF_SIGSET_T)
 
-  check_run(
-    HAVE_SIGSET_T
-    "#define _GNU_SOURCE\n#include <sys/types.h>\n#include <signal.h>\n#include <fcntl.h>\n#include <stdio.h>\n\nint main() {\n  sigset_t ss;\nprintf(\"%lu\\\\n\", sizeof(ss));\n  return 0;\n}\n"
-    SIZEOF_SIGSET_T)
+  check_run(HAVE_SIGSET_T "#define _GNU_SOURCE\n#include <sys/types.h>\n#include <signal.h>\n#include <fcntl.h>\n#include <stdio.h>\n\nint main() {\n  sigset_t ss;\nprintf(\"%lu\\\\n\", sizeof(ss));\n  return 0;\n}\n" SIZEOF_SIGSET_T)
   # message("SIZEOF_SIGSET_T = ${SIZEOF_SIGSET_T}")
 endif(NOT HAVE_SIGSET_T OR NOT SIZEOF_SIGSET_T)
 
@@ -402,8 +323,7 @@ if(HAVE_SIGSET_T)
   # add_definitions(-DHAVE_SIGSET_T)
 endif(HAVE_SIGSET_T)
 
-# set(SIZEOF_SIGSET_TYPE "${SIZEOF_SIGSET_T}" CACHE STRING "Size of 'sigset_t'
-# type")
+# set(SIZEOF_SIGSET_TYPE "${SIZEOF_SIGSET_T}" CACHE STRING "Size of 'sigset_t' type")
 message("size of sigset_t = ${SIZEOF_SIGSET_T}")
 
 if(SIZEOF_SIGSET_T)
@@ -426,29 +346,17 @@ if(HAVE_SYS_WAIT_H)
 endif(HAVE_SYS_WAIT_H)
 
 if(NOT CROSS)
-  # check_type_size(int16_t INT16_T) check_type_size(int32_t INT32_T)
-  # check_type_size(int64_t INT64_T) check_type_size(intmax_t INTMAX_T)
-  # check_type_size(uint8_t UINT8_T) check_type_size(uint16_t UINT16_T)
-  # check_type_size(uint32_t UINT32_T) check_type_size(uint64_t UINT64_T)
-  # check_type_size(uintmax_t UINTMAX_T)
+  # check_type_size(int16_t INT16_T) check_type_size(int32_t INT32_T) check_type_size(int64_t INT64_T) check_type_size(intmax_t INTMAX_T) check_type_size(uint8_t UINT8_T) check_type_size(uint16_t UINT16_T) check_type_size(uint32_t UINT32_T) check_type_size(uint64_t UINT64_T) check_type_size(uintmax_t UINTMAX_T)
 
-  # check_type_size(ptrdiff_t PTRDIFF_T_SIZE) check_type_size(size_t
-  # SIZE_T_SIZE) check_type_size(long LONG_SIZE) check_type_size("void*"
-  # VOIDP_T_SIZE)
+  # check_type_size(ptrdiff_t PTRDIFF_T_SIZE) check_type_size(size_t SIZE_T_SIZE) check_type_size(long LONG_SIZE) check_type_size("void*" VOIDP_T_SIZE)
 
   # DUMP(PTRDIFF_T_SIZE) DUMP(SIZE_T_SIZE) DUMP(LONG_SIZE) DUMP(VOIDP_T_SIZE)
 
-  # check_type_size("short" SIZE_OF_SHORT) check_type_size("int" SIZE_OF_INT)
-  # check_type_size("long" SIZE_OF_LONG) check_type_size("long long"
-  # SIZE_OF_LONG_LONG)
+  # check_type_size("short" SIZE_OF_SHORT) check_type_size("int" SIZE_OF_INT) check_type_size("long" SIZE_OF_LONG) check_type_size("long long" SIZE_OF_LONG_LONG)
 
-  # check_type_size("unsigned short" SIZE_OF_UNSIGNED_SHORT)
-  # check_type_size("unsigned" SIZE_OF_UNSIGNED) check_type_size("unsigned long"
-  # SIZE_OF_UNSIGNED_LONG) check_type_size("unsigned long long"
-  # SIZE_OF_UNSIGNED_LONG_LONG) check_type_size("size_t" SIZE_OF_SIZE_T)
+  # check_type_size("unsigned short" SIZE_OF_UNSIGNED_SHORT) check_type_size("unsigned" SIZE_OF_UNSIGNED) check_type_size("unsigned long" SIZE_OF_UNSIGNED_LONG) check_type_size("unsigned long long" SIZE_OF_UNSIGNED_LONG_LONG) check_type_size("size_t" SIZE_OF_SIZE_T)
 
-  # check_type_size("__int64" __INT64) check_type_size("unsigned __int64"
-  # UNSIGNED___INT64)
+  # check_type_size("__int64" __INT64) check_type_size("unsigned __int64" UNSIGNED___INT64)
 
   check_type_size(uintptr_t UINTPTR_T)
   if(NOT HAVE_UINTPTR_T)
@@ -464,10 +372,8 @@ string(REGEX REPLACE ".*/" "" COMPILER_NAME "${CMAKE_C_COMPILER}")
 
 if(COMPILER_NAME MATCHES "em.*")
   set(EMSCRIPTEN TRUE)
-  dump(EMSCRIPTEN EMCC_SUFFIX EMSCRIPTEN_PREFIX EMSCRIPTEN_TOOLCHAIN_PATH
-       COMPILER_NAME CMAKE_EXE_LINKER_FLAGS)
-  # foreach(LIB BZIP ZLIB LZMA SSL) set("USE_${LIB}" OFF) endforeach(LIB BZIP
-  # ZLIB LZMA SSL)
+  dump(EMSCRIPTEN EMCC_SUFFIX EMSCRIPTEN_PREFIX EMSCRIPTEN_TOOLCHAIN_PATH COMPILER_NAME CMAKE_EXE_LINKER_FLAGS)
+  # foreach(LIB BZIP ZLIB LZMA SSL) set("USE_${LIB}" OFF) endforeach(LIB BZIP ZLIB LZMA SSL)
   set(EMSCRIPTEN_EXE_SUFFIX "html")
 endif(COMPILER_NAME MATCHES "em.*")
 
@@ -530,10 +436,7 @@ macro(check_function_def FUNC)
   if(${${RESULT_VAR}})
     # add_definitions(-D${RESULT_VAR}) message("${RESULT_VAR} ${${RESULT_VAR}}")
   endif(${${RESULT_VAR}})
-endmacro(
-  check_function_def
-  FUNC
-  RESULT_VAR)
+endmacro(check_function_def FUNC RESULT_VAR)
 function(check_functions)
   foreach(FUNC ${ARGN})
     string(TOUPPER "HAVE_${FUNC}" RESULT_VAR)
@@ -541,34 +444,8 @@ function(check_functions)
   endforeach(FUNC ${ARGN})
 endfunction(check_functions)
 
-check_functions(
-  lstat
-  waitpid
-  aligned_alloc
-  fnmatch
-  getdelim
-  getopt
-  getopt_long
-  pipe2
-  popen
-  posix_memalign
-  pread
-  sendfile
-  sigaddset
-  sigemptyset
-  sigprocmask
-  strerror_r
-  __write
-  writev
-  posix_spawnattr_setflags
-  posix_spawn_file_actions_init
-  posix_spawn_file_actions_adddup2
-  posix_spawnp
-  clock_gettime)
-if(HAVE_POSIX_SPAWNATTR_SETFLAGS
-   AND HAVE_POSIX_SPAWN_FILE_ACTIONS_INIT
-   AND HAVE_POSIX_SPAWN_FILE_ACTIONS_ADDDUP2
-   AND HAVE_POSIX_SPAWNP)
+check_functions(lstat waitpid aligned_alloc fnmatch getdelim getopt getopt_long pipe2 popen posix_memalign pread sendfile sigaddset sigemptyset sigprocmask strerror_r __write writev posix_spawnattr_setflags posix_spawn_file_actions_init posix_spawn_file_actions_adddup2 posix_spawnp clock_gettime)
+if(HAVE_POSIX_SPAWNATTR_SETFLAGS AND HAVE_POSIX_SPAWN_FILE_ACTIONS_INIT AND HAVE_POSIX_SPAWN_FILE_ACTIONS_ADDDUP2 AND HAVE_POSIX_SPAWNP)
   add_definitions(-DPOSIX_SPAWN=1)
 endif()
 
@@ -611,14 +488,9 @@ check_function_exists(opendir HAVE_OPENDIR)
 check_function_exists(readdir HAVE_READDIR)
 check_function_exists(closedir HAVE_CLOSEDIR)
 
-if(HAVE_OPENDIR
-   AND HAVE_READDIR
-   AND HAVE_CLOSEDIR)
+if(HAVE_OPENDIR AND HAVE_READDIR AND HAVE_CLOSEDIR)
   add_definitions(-DUSE_READDIR=1)
-endif(
-  HAVE_OPENDIR
-  AND HAVE_READDIR
-  AND HAVE_CLOSEDIR)
+endif(HAVE_OPENDIR AND HAVE_READDIR AND HAVE_CLOSEDIR)
 
 check_function_exists(wordexp HAVE_WORDEXP)
 
@@ -662,10 +534,7 @@ endforeach()
 # message(DEFINES_H: ${DEFINES_H}) add_definitions(${DEFINES_H})
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${DEFINES_H} -DHAVE_CONFIG_H=1")
 
-# message(INFO "Checking for epoll()...") check_function_exists(epoll_wait
-# SUPPORT_EPOLL) if(SUPPORT_EPOLL) message(INFO "Checking for epoll()... OK")
-# set(USE_EPOLL ON) set(USE_SELECT OFF) else(SUPPORT_EPOLL) message(INFO
-# "Checking for epoll()... NOT FOUND") set(USE_EPOLL OFF) endif(SUPPORT_EPOLL)
+# message(INFO "Checking for epoll()...") check_function_exists(epoll_wait SUPPORT_EPOLL) if(SUPPORT_EPOLL) message(INFO "Checking for epoll()... OK") set(USE_EPOLL ON) set(USE_SELECT OFF) else(SUPPORT_EPOLL) message(INFO "Checking for epoll()... NOT FOUND") set(USE_EPOLL OFF) endif(SUPPORT_EPOLL)
 
 # if(USE_EPOLL STREQUAL ON) add_definitions(-DHAVE_EPOLL=1) endif()
 
@@ -686,9 +555,7 @@ if(NOT LINK_STATIC)
   endif()
 endif(NOT LINK_STATIC)
 
-# include(${CMAKE_SOURCE_DIR}/FindZlib.cmake)
-# include(${CMAKE_SOURCE_DIR}/FindBZip2.cmake)
-# include(${CMAKE_SOURCE_DIR}/FindLibLZMA.cmake)
+# include(${CMAKE_SOURCE_DIR}/FindZlib.cmake) include(${CMAKE_SOURCE_DIR}/FindBZip2.cmake) include(${CMAKE_SOURCE_DIR}/FindLibLZMA.cmake)
 
 include(${CMAKE_SOURCE_DIR}/build/cmake/CheckInline.cmake)
 include(${CMAKE_SOURCE_DIR}/build/cmake/Profile.cmake)
@@ -702,8 +569,7 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
   endif(DEBUG_OUTPUT)
 endif(CMAKE_BUILD_TYPE STREQUAL "Debug")
 
-set(CompilerFlags CMAKE_C_FLAGS CMAKE_C_FLAGS_DEBUG CMAKE_C_FLAGS_RELEASE
-                  CMAKE_C_FLAGS_RELWITHDEBINFO CMAKE_C_FLAGS_MINSIZEREL)
+set(CompilerFlags CMAKE_C_FLAGS CMAKE_C_FLAGS_DEBUG CMAKE_C_FLAGS_RELEASE CMAKE_C_FLAGS_RELWITHDEBINFO CMAKE_C_FLAGS_MINSIZEREL)
 foreach(CompilerFlag ${CompilerFlags})
   unset(FLAG)
   string(REPLACE "/MD" "/MT" FLAG "${${CompilerFlag}}")
@@ -715,21 +581,17 @@ foreach(CompilerFlag ${CompilerFlags})
   list(REMOVE_DUPLICATES FLAG)
   string(REPLACE ";" " " FLAG "${FLAG}")
   unset(${CompilerFlag} CACHE)
-  set(${CompilerFlag}
-      "${FLAG}"
-      CACHE STRING "Compiler flags ${CompilerFlag}")
+  set(${CompilerFlag} "${FLAG}" CACHE STRING "Compiler flags ${CompilerFlag}")
   # message("${CompilerFlag}: ${${CompilerFlag}}")
 endforeach()
 
 include(${CMAKE_SOURCE_DIR}/build/cmake/Werror.cmake)
 
 if(USE_LZMA)
-  # ############################################################################
+  # ############################################################################################################################################################################################################################################################################################################################################################################################################
   # Check LibLZMA
-  # ############################################################################
-  # pkg_search_module(LIBLZMA liblzma lzma) if(LIBLZMA_FOUND)
-  # if(pkgcfg_lib_LIBLZMA_lzma) set(LIBLZMA_LIBRARY ${pkgcfg_lib_LIBLZMA_lzma}
-  # CACHE FILEPATH "") endif(pkgcfg_lib_LIBLZMA_lzma) endif(LIBLZMA_FOUND)
+  # ############################################################################################################################################################################################################################################################################################################################################################################################################
+  # pkg_search_module(LIBLZMA liblzma lzma) if(LIBLZMA_FOUND) if(pkgcfg_lib_LIBLZMA_lzma) set(LIBLZMA_LIBRARY ${pkgcfg_lib_LIBLZMA_lzma} CACHE FILEPATH "") endif(pkgcfg_lib_LIBLZMA_lzma) endif(LIBLZMA_FOUND)
   #
   # if(NOT LIBLZMA_FOUND) include(FindLibLZMA) endif(NOT LIBLZMA_FOUND)
 
@@ -756,9 +618,9 @@ endif(USE_LZMA)
 
 if(USE_ZLIB)
 
-  # ############################################################################
+  # ############################################################################################################################################################################################################################################################################################################################################################################################################
   # Check Zlib
-  # ############################################################################
+  # ############################################################################################################################################################################################################################################################################################################################################################################################################
   message(STATUS "Checking for libz")
   find_library(ZLIB z)
 
@@ -771,15 +633,9 @@ if(USE_ZLIB)
     if(ZLIB STREQUAL "")
       set(ZLIB z)
     endif(ZLIB STREQUAL "")
-    set(ZLIB_LIBARY_RELEASE
-        "${ZLIB}"
-        CACHE FILEPATH "")
-    set(ZLIB_LIBARY_DEBUG
-        "${ZLIB}"
-        CACHE FILEPATH "")
-    set(ZLIB_LIBARY
-        "${ZLIB}"
-        CACHE FILEPATH "")
+    set(ZLIB_LIBARY_RELEASE "${ZLIB}" CACHE FILEPATH "")
+    set(ZLIB_LIBARY_DEBUG "${ZLIB}" CACHE FILEPATH "")
+    set(ZLIB_LIBARY "${ZLIB}" CACHE FILEPATH "")
   endif(ZLIB)
 
   if(NOT ZLIB_FOUND)
@@ -787,12 +643,8 @@ if(USE_ZLIB)
     pkg_search_module(ZLIB zlib libz z)
     if(ZLIB_FOUND)
       if(pkgcfg_lib_ZLIB_z)
-        set(ZLIB_LIBRARY_RELEASE
-            "${pkgcfg_lib_ZLIB_z}"
-            CACHE FILEPATH "")
-        set(ZLIB_LIBRARY_DEBUG
-            "${pkgcfg_lib_ZLIB_z}"
-            CACHE FILEPATH "")
+        set(ZLIB_LIBRARY_RELEASE "${pkgcfg_lib_ZLIB_z}" CACHE FILEPATH "")
+        set(ZLIB_LIBRARY_DEBUG "${pkgcfg_lib_ZLIB_z}" CACHE FILEPATH "")
       endif(pkgcfg_lib_ZLIB_z)
     else(ZLIB_FOUND)
       # include(FindZlib)
@@ -807,9 +659,9 @@ else(USE_ZLIB)
 endif(USE_ZLIB)
 
 if(USE_BZIP)
-  # ############################################################################
+  # ############################################################################################################################################################################################################################################################################################################################################################################################################
   # Check BZip2
-  # ############################################################################
+  # ############################################################################################################################################################################################################################################################################################################################################################################################################
   pkg_search_module(BZIP2 libbz2 bzip2)
   if(NOT BZIP2_FOUND OR "${BZIP2_FOUND}" STREQUAL "")
     message(STATUS "bzip2 package config not found")
@@ -825,10 +677,7 @@ if(USE_BZIP)
     endif(BZIP2_LIBRARY)
 
   else(NOT BZIP2_FOUND OR "${BZIP2_FOUND}" STREQUAL "")
-    message(
-      STATUS
-        "bzip2 package found: ${BZIP2_PREFIX} ${BZIP2_LIBRARY_DIRS} ${BZIP2_LIBRARIES}"
-    )
+    message(STATUS "bzip2 package found: ${BZIP2_PREFIX} ${BZIP2_LIBRARY_DIRS} ${BZIP2_LIBRARIES}")
     # pkg_get_variable(BZIP2_LIBRARY "${BZIP2_MODULE_NAME}")
     set(BZIP2_LIBRARY ${BZIP2_LIBRARIES})
     set(BZIP2_LINK_LIBRARY ${BZIP2_LINK_LIBRARIES})
@@ -837,20 +686,16 @@ if(USE_BZIP)
   endif(NOT BZIP2_FOUND OR "${BZIP2_FOUND}" STREQUAL "")
 endif(USE_BZIP)
 
-# ##############################################################################
+# ##############################################################################################################################################################################################################################################################################################################################################################################################################
 # Check OpenSSL
-# ##############################################################################
+# ##############################################################################################################################################################################################################################################################################################################################################################################################################
 if(USE_SSL AND NOT BUILD_SSL)
   # message("OPENSSL_ROOT = $ENV{OPENSSL_ROOT}")
   if(NOT OPENSSL_ROOT_DIR)
     if("$ENV{OPENSSL_ROOT}")
-      set(OPENSSL_ROOT_DIR
-          "$ENV{OPENSSL_ROOT}"
-          CACHE FILEPATH "OpenSSL root directory")
+      set(OPENSSL_ROOT_DIR "$ENV{OPENSSL_ROOT}" CACHE FILEPATH "OpenSSL root directory")
     else("$ENV{OPENSSL_ROOT}")
-      set(OPENSSL_ROOT_DIR
-          "${CMAKE_INSTALL_PREFIX}"
-          CACHE FILEPATH "OpenSSL root directory")
+      set(OPENSSL_ROOT_DIR "${CMAKE_INSTALL_PREFIX}" CACHE FILEPATH "OpenSSL root directory")
     endif("$ENV{OPENSSL_ROOT}")
   endif(NOT OPENSSL_ROOT_DIR)
 
@@ -888,10 +733,7 @@ if(USE_SSL AND NOT BUILD_SSL)
     set(BUILD_SSL TRUE)
   endif(OPENSSL_FOUND)
 
-  message(
-    STATUS
-      "OPENSSL_FOUND=${OPENSSL_FOUND}\n   OPENSSL_INCLUDE_DIR=${OPENSSL_LIB_DIR}\n   OPENSSL_LIB_DIR=${OPENSSL_INCLUDE_DIR}\n   OPENSSL_ROOT_DIR=${OPENSSL_ROOT_DIR}\n   OPENSSL_CRYPTO_LIBRARY=${OPENSSL_CRYPTO_LIBRARY}\n   OPENSSL_SSL_LIBRARY=${OPENSSL_SSL_LIBRARY}"
-  )
+  message(STATUS "OPENSSL_FOUND=${OPENSSL_FOUND}\n   OPENSSL_INCLUDE_DIR=${OPENSSL_LIB_DIR}\n   OPENSSL_LIB_DIR=${OPENSSL_INCLUDE_DIR}\n   OPENSSL_ROOT_DIR=${OPENSSL_ROOT_DIR}\n   OPENSSL_CRYPTO_LIBRARY=${OPENSSL_CRYPTO_LIBRARY}\n   OPENSSL_SSL_LIBRARY=${OPENSSL_SSL_LIBRARY}")
 
 else()
   unset(OPENSSL_LIBRARIES CACHE)
@@ -899,8 +741,7 @@ else()
   unset(OPENSSL_SSL_LIBRARY CACHE)
   unset(OPENSSL_INCLUDE_DIR CACHE)
 endif()
-# link_libraries( ${ZLIB_LIBRARY} ${BZIP2_LIBRARY} ${LIBLZMA_LIBRARY}
-# ${CRYPTO_LIBRARIES} ) add_definitions(-Dinline=__inline)
+# link_libraries( ${ZLIB_LIBRARY} ${BZIP2_LIBRARY} ${LIBLZMA_LIBRARY} ${CRYPTO_LIBRARIES} ) add_definitions(-Dinline=__inline)
 
 set(CMAKE_REQUIRED_DEFINITIONS)
 set(CMAKE_REQUIRED_INCLUDES "poll.h")
@@ -949,14 +790,8 @@ function(list_contains LIST ITEM OUTPUT_VAR)
       set(RESULT TRUE)
     endif("${IT}" STREQUAL "${ITEM}")
   endforeach(IT ${LIST})
-  set("${OUTPUT_VAR}"
-      ${RESULT}
-      PARENT_SCOPE)
-endfunction(
-  list_contains
-  LIST
-  ITEM
-  OUTPUT_VAR)
+  set("${OUTPUT_VAR}" ${RESULT} PARENT_SCOPE)
+endfunction(list_contains LIST ITEM OUTPUT_VAR)
 
 set(MUX "")
 set(MUX_DEFS "")
@@ -982,9 +817,7 @@ foreach(METHOD ${MUX_ALL})
     set(MUX_DEFS "${MUX_DEFS} -DSUPPORT_${METHOD}=1")
   endif(SUPPORT_${METHOD})
 endforeach()
-set(MUX_METHODS
-    "${MUX_LIST}"
-    CACHE STRING "available I/O multiplexing methods")
+set(MUX_METHODS "${MUX_LIST}" CACHE STRING "available I/O multiplexing methods")
 
 message("Available MUX methods: ${MUX_METHODS}")
 
@@ -994,9 +827,7 @@ if(LIBMSWSOCK)
   list(APPEND CMAKE_REQUIRED_LIBRARIES ${LIBMSWSOCK})
 endif(LIBMSWSOCK)
 
-set(MUX_METHOD
-    "${MUX}"
-    CACHE STRING "I/O Multiplexer method")
+set(MUX_METHOD "${MUX}" CACHE STRING "I/O Multiplexer method")
 message("MUX method: ${MUX_METHOD}")
 
 if(MUX_METHOD STREQUAL "SELECT")
@@ -1018,8 +849,7 @@ if(NOT ZLIB_FOUND OR NOT EXISTS "${ZLIB_LIBRARY}")
 endif()
 
 if(USE_ZLIB)
-  # message("ZLIB_LIBRARY: ${ZLIB_LIBRARY} ZLIB_FOUND: ${ZLIB_FOUND}")
-  # if(ZLIB_INCLUDE_DIR) link_libraries(${ZLIB_LIBRARY})
+  # message("ZLIB_LIBRARY: ${ZLIB_LIBRARY} ZLIB_FOUND: ${ZLIB_FOUND}") if(ZLIB_INCLUDE_DIR) link_libraries(${ZLIB_LIBRARY})
   include_directories(${ZLIB_INCLUDE_DIR})
   # endif(ZLIB_INCLUDE_DIR)
 
@@ -1029,22 +859,18 @@ if(USE_ZLIB)
 endif(USE_ZLIB)
 
 if(USE_BZIP)
-  # message("BZIP2_LIBRARY: ${BZIP2_LIBRARY} BZIP2_FOUND: ${BZIP2_FOUND}")
-  # if(BZIP2_LIBRARY)
+  # message("BZIP2_LIBRARY: ${BZIP2_LIBRARY} BZIP2_FOUND: ${BZIP2_FOUND}") if(BZIP2_LIBRARY)
   add_definitions(-DHAVE_LIBBZ2=1)
   include_directories(${BZIP2_INCLUDE_DIR})
   # else(BZIP2_LIBRARY) add_definitions(-DHAVE_LIBBZ2=0) endif(BZIP2_LIBRARY)
 endif(USE_BZIP)
 
 if(USE_LZMA)
-  # message("LIBLZMA_LIBRARY: ${LIBLZMA_LIBRARY} LIBLZMA_FOUND:
-  # ${LIBLZMA_FOUND}") if(LIBLZMA_INCLUDE_DIR)
-  # link_libraries(${LIBLZMA_LIBRARY})
+  # message("LIBLZMA_LIBRARY: ${LIBLZMA_LIBRARY} LIBLZMA_FOUND: ${LIBLZMA_FOUND}") if(LIBLZMA_INCLUDE_DIR) link_libraries(${LIBLZMA_LIBRARY})
   include_directories(${LIBLZMA_INCLUDE_DIR})
   # endif(LIBLZMA_INCLUDE_DIR) if(LIBLZMA_LIBRARY)
   add_definitions(-DHAVE_LIBLZMA=1 -DLZMA_API_STATIC=1)
-  # else(LIBLZMA_LIBRARY) add_definitions(-DHAVE_LIBLZMA=0)
-  # endif(LIBLZMA_LIBRARY)
+  # else(LIBLZMA_LIBRARY) add_definitions(-DHAVE_LIBLZMA=0) endif(LIBLZMA_LIBRARY)
 endif(USE_LZMA)
 
 macro(invert INVAR OUTVAR)
@@ -1053,10 +879,7 @@ macro(invert INVAR OUTVAR)
   else(${${INVAR}})
     set("${OUTVAR}" TRUE)
   endif(${${INVAR}})
-endmacro(
-  invert
-  INVAR
-  OUTVAR)
+endmacro(invert INVAR OUTVAR)
 
 macro(invoption VAR DESC INVAR)
   if(${${INVAR}})
@@ -1064,11 +887,7 @@ macro(invoption VAR DESC INVAR)
   else(${${INVAR}})
     option("${VAR}" "${DESC}" ON)
   endif(${${INVAR}})
-endmacro(
-  invoption
-  VAR
-  DESC
-  INVAR)
+endmacro(invoption VAR DESC INVAR)
 
 invoption(BUILD_LZMA "build 3rdparty liblzma" LIBLZMA_FOUND)
 invoption(BUILD_BZIP "build 3rdparty libbz2" BZIP2_FOUND)
@@ -1077,65 +896,27 @@ invoption(BUILD_SSL "build 3rdparty openssl" OPENSSL_FOUND)
 
 if(BUILD_ZLIB)
   message("Building zlib from 3rdparty/zlib")
-  set(ZLIB_SOURCES
-      3rdparty/zlib/adler32.c
-      3rdparty/zlib/compress.c
-      3rdparty/zlib/crc32.c
-      3rdparty/zlib/deflate.c
-      3rdparty/zlib/infback.c
-      3rdparty/zlib/inffast.c
-      3rdparty/zlib/inflate.c
-      3rdparty/zlib/inftrees.c
-      3rdparty/zlib/trees.c
-      3rdparty/zlib/uncompr.c
-      3rdparty/zlib/zutil.c)
+  set(ZLIB_SOURCES 3rdparty/zlib/adler32.c 3rdparty/zlib/compress.c 3rdparty/zlib/crc32.c 3rdparty/zlib/deflate.c 3rdparty/zlib/infback.c 3rdparty/zlib/inffast.c 3rdparty/zlib/inflate.c 3rdparty/zlib/inftrees.c 3rdparty/zlib/trees.c 3rdparty/zlib/uncompr.c 3rdparty/zlib/zutil.c)
   add_library(z ${ZLIB_SOURCES})
-  set_target_properties(
-    z PROPERTIES ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/zlib"
-                 LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/zlib")
+  set_target_properties(z PROPERTIES ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/zlib" LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/zlib")
   link_directories(BEFORE "${CMAKE_BINARY_DIR}/zlib")
-  set(ZLIB_LIBRARY_DEBUG
-      z
-      CACHE FILEPATH "" FORCE)
-  set(ZLIB_LIBRARY_RELEASE
-      z
-      CACHE FILEPATH "" FORCE)
-  set(ZLIB_LIBRARY
-      z
-      CACHE FILEPATH "" FORCE)
-  set(ZLIB_INCLUDE_DIR
-      ${CMAKE_SOURCE_DIR}/3rdparty/zlib
-      CACHE PATH "" FORCE)
+  set(ZLIB_LIBRARY_DEBUG z CACHE FILEPATH "" FORCE)
+  set(ZLIB_LIBRARY_RELEASE z CACHE FILEPATH "" FORCE)
+  set(ZLIB_LIBRARY z CACHE FILEPATH "" FORCE)
+  set(ZLIB_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/3rdparty/zlib CACHE PATH "" FORCE)
 endif(BUILD_ZLIB)
 
 if(BUILD_BZIP)
   message("Building libbz2 from 3rdparty/bzip2")
-  set(LIBBZ2_SOURCES
-      3rdparty/bzip2/blocksort.c
-      3rdparty/bzip2/bzlib.c
-      3rdparty/bzip2/compress.c
-      3rdparty/bzip2/crctable.c
-      3rdparty/bzip2/decompress.c
-      3rdparty/bzip2/huffman.c
-      3rdparty/bzip2/randtable.c)
+  set(LIBBZ2_SOURCES 3rdparty/bzip2/blocksort.c 3rdparty/bzip2/bzlib.c 3rdparty/bzip2/compress.c 3rdparty/bzip2/crctable.c 3rdparty/bzip2/decompress.c 3rdparty/bzip2/huffman.c 3rdparty/bzip2/randtable.c)
   add_library(bz2 ${LIBBZ2_SOURCES})
-  set_target_properties(
-    bz2 PROPERTIES ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bzip2"
-                   LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bzip2")
+  set_target_properties(bz2 PROPERTIES ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bzip2" LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bzip2")
   link_directories(BEFORE "${CMAKE_BINARY_DIR}/bzip2")
 
-  set(BZIP2_LIBRARY_DEBUG
-      bz2
-      CACHE FILEPATH "" FORCE)
-  set(BZIP2_LIBRARY_RELEASE
-      bz2
-      CACHE FILEPATH "" FORCE)
-  set(BZIP2_LIBRARY
-      bz2
-      CACHE FILEPATH "" FORCE)
-  set(BZIP2_INCLUDE_DIR
-      ${CMAKE_SOURCE_DIR}/3rdparty/bzip2
-      CACHE PATH "" FORCE)
+  set(BZIP2_LIBRARY_DEBUG bz2 CACHE FILEPATH "" FORCE)
+  set(BZIP2_LIBRARY_RELEASE bz2 CACHE FILEPATH "" FORCE)
+  set(BZIP2_LIBRARY bz2 CACHE FILEPATH "" FORCE)
+  set(BZIP2_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/3rdparty/bzip2 CACHE PATH "" FORCE)
 endif(BUILD_BZIP)
 
 function(DEFINE_HAVE OUTVAR)
@@ -1146,117 +927,33 @@ function(DEFINE_HAVE OUTVAR)
       list(APPEND OUT "${DEF}=1")
     endif(${DEF} STREQUAL 1)
   endforeach(DEF ${ARGN})
-  set("${OUTVAR}"
-      "${OUT}"
-      PARENT_SCOPE)
+  set("${OUTVAR}" "${OUT}" PARENT_SCOPE)
 
 endfunction(DEFINE_HAVE)
 
 if(BUILD_LZMA)
   message("Building liblzma from 3rdparty/xz")
-  # file(WRITE "${CMAKE_BINARY_DIR}/lzma-config.h.cmake" "\n/*\n * Ensure we
-  # have C99-style int64_t, etc, all defined.\n */\n\n/* First, we need to know
-  # if the system has already defined them. */\n#cmakedefine
-  # HAVE_INT16_T\n#cmakedefine HAVE_INT32_T\n#cmakedefine
-  # HAVE_INT64_T\n#cmakedefine HAVE_INTMAX_T\n\n#cmakedefine
-  # HAVE_UINT8_T\n#cmakedefine HAVE_UINT16_T\n#cmakedefine
-  # HAVE_UINT32_T\n#cmakedefine HAVE_UINT64_T\n#cmakedefine HAVE_UINTMAX_T\n\n/*
-  # We might have the types we want under other spellings. */\n#cmakedefine
-  # HAVE___INT64\n#cmakedefine HAVE_U_INT64_T\n#cmakedefine
-  # HAVE_UNSIGNED___INT64\n\n/* The sizes of various standard integer types.
-  # */\n@SIZE_OF_SHORT_CODE@\n@SIZE_OF_INT_CODE@\n@SIZE_OF_LONG_CODE@\n@SIZE_OF_LONG_LONG_CODE@\n@SIZE_OF_UNSIGNED_SHORT_CODE@\n@SIZE_OF_UNSIGNED_CODE@\n@SIZE_OF_UNSIGNED_LONG_CODE@\n@SIZE_OF_UNSIGNED_LONG_LONG_CODE@\n@SIZE_OF_SIZE_T_CODE@\n\n/*\n
-  # * If we lack int64_t, define it to the first of __int64, int, long, and long
-  # long\n * that exists and is the right size.\n */\n#if !defined(HAVE_INT64_T)
-  # && defined(HAVE___INT64)\ntypedef __int64 int64_t;\n#define
-  # HAVE_INT64_T\n#endif\n\n#if !defined(HAVE_INT64_T) && SIZE_OF_INT ==
-  # 8\ntypedef int int64_t;\n#define HAVE_INT64_T\n#endif\n\n#if
-  # !defined(HAVE_INT64_T) && SIZE_OF_LONG == 8\ntypedef long int64_t;\n#define
-  # HAVE_INT64_T\n#endif\n\n#if !defined(HAVE_INT64_T) && SIZE_OF_LONG_LONG ==
-  # 8\ntypedef long long int64_t;\n#define HAVE_INT64_T\n#endif\n\n#if
-  # !defined(HAVE_INT64_T)\n#error No 64-bit integer type was
-  # found.\n#endif\n\n/*\n * Similarly for int32_t\n */\n#if
-  # !defined(HAVE_INT32_T) && SIZE_OF_INT == 4\ntypedef int int32_t;\n#define
-  # HAVE_INT32_T\n#endif\n\n#if !defined(HAVE_INT32_T) && SIZE_OF_LONG ==
-  # 4\ntypedef long int32_t;\n#define HAVE_INT32_T\n#endif\n\n#if
-  # !defined(HAVE_INT32_T)\n#error No 32-bit integer type was
-  # found.\n#endif\n\n/*\n * Similarly for int16_t\n */\n#if
-  # !defined(HAVE_INT16_T) && SIZE_OF_INT == 2\ntypedef int int16_t;\n#define
-  # HAVE_INT16_T\n#endif\n\n#if !defined(HAVE_INT16_T) && SIZE_OF_SHORT ==
-  # 2\ntypedef short int16_t;\n#define HAVE_INT16_T\n#endif\n\n#if
-  # !defined(HAVE_INT16_T)\n#error No 16-bit integer type was
-  # found.\n#endif\n\n/*\n * Similarly for uint64_t\n */\n#if
-  # !defined(HAVE_UINT64_T) && defined(HAVE_UNSIGNED___INT64)\ntypedef unsigned
-  # __int64 uint64_t;\n#define HAVE_UINT64_T\n#endif\n\n#if
-  # !defined(HAVE_UINT64_T) && SIZE_OF_UNSIGNED == 8\ntypedef unsigned
-  # uint64_t;\n#define HAVE_UINT64_T\n#endif\n\n#if !defined(HAVE_UINT64_T) &&
-  # SIZE_OF_UNSIGNED_LONG == 8\ntypedef unsigned long uint64_t;\n#define
-  # HAVE_UINT64_T\n#endif\n\n#if !defined(HAVE_UINT64_T) &&
-  # SIZE_OF_UNSIGNED_LONG_LONG == 8\ntypedef unsigned long long
-  # uint64_t;\n#define HAVE_UINT64_T\n#endif\n\n#if
-  # !defined(HAVE_UINT64_T)\n#error No 64-bit unsigned integer type was
-  # found.\n#endif\n\n/*\n * Similarly for uint32_t\n */\n#if
-  # !defined(HAVE_UINT32_T) && SIZE_OF_UNSIGNED == 4\ntypedef unsigned
-  # uint32_t;\n#define HAVE_UINT32_T\n#endif\n\n#if !defined(HAVE_UINT32_T) &&
-  # SIZE_OF_UNSIGNED_LONG == 4\ntypedef unsigned long uint32_t;\n#define
-  # HAVE_UINT32_T\n#endif\n\n#if !defined(HAVE_UINT32_T)\n#error No 32-bit
-  # unsigned integer type was found.\n#endif\n\n/*\n * Similarly for uint16_t\n
-  # */\n#if !defined(HAVE_UINT16_T) && SIZE_OF_UNSIGNED == 2\ntypedef unsigned
-  # uint16_t;\n#define HAVE_UINT16_T\n#endif\n\n#if !defined(HAVE_UINT16_T) &&
-  # SIZE_OF_UNSIGNED_SHORT == 2\ntypedef unsigned short uint16_t;\n#define
-  # HAVE_UINT16_T\n#endif\n\n#if !defined(HAVE_UINT16_T)\n#error No 16-bit
-  # unsigned integer type was found.\n#endif\n\n/*\n * Similarly for uint8_t\n
-  # */\n#if !defined(HAVE_UINT8_T)\ntypedef unsigned char uint8_t;\n#define
-  # HAVE_UINT8_T\n#endif\n\n#if !defined(HAVE_UINT16_T)\n#error No 8-bit
-  # unsigned integer type was found.\n#endif\n\n/* Define intmax_t and uintmax_t
-  # if they are not already defined. */\n#if !defined(HAVE_INTMAX_T)\ntypedef
-  # int64_t intmax_t;\n#define INTMAX_MIN INT64_MIN\n#define INTMAX_MAX
-  # INT64_MAX\n#endif\n\n#if !defined(HAVE_UINTMAX_T)\ntypedef uint64_t
-  # uintmax_t;\n#endif\n\n\n#cmakedefine uintptr_t @uintptr_t@\n\n\n#cmakedefine
-  # HAVE_RESTRICT\n#cmakedefine HAVE___RESTRICT\n\n#cmakedefine
-  # HAVE_INLINE\n#cmakedefine HAVE___INLINE\n\n#ifndef HAVE_RESTRICT\n#  ifdef
-  # HAVE___RESTRICT\n# define LZMA_RESTRICT __restrict\n#  else\n#    define
-  # LZMA_RESTRICT\n#  endif\n#else\n#  define LZMA_RESTRICT restrict\n#endif /*
-  # HAVE_RESTRICT */\n\n#if defined(HAVE_INLINE)\n# define LZMA_INLINE
-  # inline\n#else\n# if defined(HAVE___INLINE)\n#  define LZMA_INLINE
-  # __inline\n# else\n#  define LZMA_INLINE\n# endif\n#endif\n\n#cmakedefine
-  # WORDS_BIGENDIAN 1\n\n#cmakedefine HAVE_BYTESWAP_H 1\n#cmakedefine
-  # HAVE_BSWAP_16 1\n#cmakedefine HAVE_BSWAP_32 1\n#cmakedefine HAVE_BSWAP_64
-  # 1\n\n\n#define HAVE_CHECK_CRC32 1\n#define HAVE_CHECK_CRC64 1\n#define
-  # HAVE_CHECK_SHA256 1\n\n#define HAVE_DECODER_ARM 1\n#define
-  # HAVE_DECODER_ARMTHUMB 1\n#define HAVE_DECODER_DELTA 1\n#define
-  # HAVE_DECODER_IA64 1\n#define HAVE_DECODER_LZMA1 1\n#define
-  # HAVE_DECODER_LZMA2 1\n#define HAVE_DECODER_POWERPC 1\n#define
-  # HAVE_DECODER_SPARC 1\n#define HAVE_DECODER_X86 1\n\n#define HAVE_ENCODER_ARM
-  # 1\n#define HAVE_ENCODER_ARMTHUMB 1\n#define HAVE_ENCODER_DELTA 1\n#define
-  # HAVE_ENCODER_IA64 1\n#define HAVE_ENCODER_LZMA1 1\n#define
-  # HAVE_ENCODER_LZMA2 1\n#define HAVE_ENCODER_POWERPC 1\n#define
-  # HAVE_ENCODER_SPARC 1\n#define HAVE_ENCODER_X86 1\n\n#define HAVE_MF_BT2
-  # 1\n#define HAVE_MF_BT3 1\n#define HAVE_MF_BT4 1\n#define HAVE_MF_HC3
-  # 1\n#define HAVE_MF_HC4 1\n\n/* Define to 1 if you have the <inttypes.h>
-  # header file. */\n#cmakedefine HAVE_INTTYPES_H 1\n\n/* Define to 1 if you
-  # have the <limits.h> header file. */\n#cmakedefine HAVE_LIMITS_H 1\n\n/*
-  # Define to 1 if you have the <memory.h> header file. */\n#cmakedefine
-  # HAVE_MEMORY_H 1\n\n/* Define to 1 if stdbool.h conforms to C99.
-  # */\n#cmakedefine HAVE_STDBOOL_H 1\n\n/* Define to 1 if you have the
-  # <stdint.h> header file. */\n#cmakedefine HAVE_STDINT_H 1\n\n/* Define to 1
-  # if you have the <strings.h> header file. */\n#cmakedefine HAVE_STRINGS_H
-  # 1\n\n/* Define to 1 if you have the <string.h> header file. */\n#cmakedefine
-  # HAVE_STRING_H 1\n\n/* Define to 1 if you have the <sys/byteorder.h> header
-  # file. */\n#cmakedefine HAVE_SYS_BYTEORDER_H 1\n\n/* Define to 1 if you have
-  # the <sys/endian.h> header file. */\n#cmakedefine HAVE_SYS_ENDIAN_H 1\n\n/*
-  # Define to 1 or 0, depending whether the compiler supports simple
-  # visibility\n   declarations. */\n#cmakedefine HAVE_VISIBILITY 1\n\n/* Define
-  # to 1 if the system has the type `_Bool'. */\n#cmakedefine HAVE__BOOL 1\n\n/*
-  # Define to 1 if the system supports fast unaligned access to 16-bit and\n
-  # 32-bit integers. */\n#if defined(__i386) || defined(__i386__) ||
-  # defined(_M_IX86) \\n || defined(__x86_64) || defined(__x86_64__) ||
-  # defined(_M_X64) \\n || defined(__amd64) || defined(__amd64__) \\n ||
-  # defined(__powerpc) || defined(__powerpc__) \\n || defined(__ppc) ||
-  # defined(__ppc__) || defined(__POWERPC__)\n# define
-  # TUKLIB_FAST_UNALIGNED_ACCESS 1\n#endif")
+  # file(WRITE "${CMAKE_BINARY_DIR}/lzma-config.h.cmake" "\n/*\n * Ensure we have C99-style int64_t, etc, all defined.\n */\n\n/* First, we need to know if the system has already defined them. */\n#cmakedefine HAVE_INT16_T\n#cmakedefine HAVE_INT32_T\n#cmakedefine HAVE_INT64_T\n#cmakedefine HAVE_INTMAX_T\n\n#cmakedefine HAVE_UINT8_T\n#cmakedefine HAVE_UINT16_T\n#cmakedefine
+  # HAVE_UINT32_T\n#cmakedefine HAVE_UINT64_T\n#cmakedefine HAVE_UINTMAX_T\n\n/* We might have the types we want under other spellings. */\n#cmakedefine HAVE___INT64\n#cmakedefine HAVE_U_INT64_T\n#cmakedefine HAVE_UNSIGNED___INT64\n\n/* The sizes of various standard integer types.
+  # */\n@SIZE_OF_SHORT_CODE@\n@SIZE_OF_INT_CODE@\n@SIZE_OF_LONG_CODE@\n@SIZE_OF_LONG_LONG_CODE@\n@SIZE_OF_UNSIGNED_SHORT_CODE@\n@SIZE_OF_UNSIGNED_CODE@\n@SIZE_OF_UNSIGNED_LONG_CODE@\n@SIZE_OF_UNSIGNED_LONG_LONG_CODE@\n@SIZE_OF_SIZE_T_CODE@\n\n/*\n * If we lack int64_t, define it to the first of __int64, int, long, and long long\n * that exists and is the right size.\n */\n#if
+  # !defined(HAVE_INT64_T) && defined(HAVE___INT64)\ntypedef __int64 int64_t;\n#define HAVE_INT64_T\n#endif\n\n#if !defined(HAVE_INT64_T) && SIZE_OF_INT == 8\ntypedef int int64_t;\n#define HAVE_INT64_T\n#endif\n\n#if !defined(HAVE_INT64_T) && SIZE_OF_LONG == 8\ntypedef long int64_t;\n#define HAVE_INT64_T\n#endif\n\n#if !defined(HAVE_INT64_T) && SIZE_OF_LONG_LONG == 8\ntypedef long long
+  # int64_t;\n#define HAVE_INT64_T\n#endif\n\n#if !defined(HAVE_INT64_T)\n#error No 64-bit integer type was found.\n#endif\n\n/*\n * Similarly for int32_t\n */\n#if !defined(HAVE_INT32_T) && SIZE_OF_INT == 4\ntypedef int int32_t;\n#define HAVE_INT32_T\n#endif\n\n#if !defined(HAVE_INT32_T) && SIZE_OF_LONG == 4\ntypedef long int32_t;\n#define HAVE_INT32_T\n#endif\n\n#if
+  # !defined(HAVE_INT32_T)\n#error No 32-bit integer type was found.\n#endif\n\n/*\n * Similarly for int16_t\n */\n#if !defined(HAVE_INT16_T) && SIZE_OF_INT == 2\ntypedef int int16_t;\n#define HAVE_INT16_T\n#endif\n\n#if !defined(HAVE_INT16_T) && SIZE_OF_SHORT == 2\ntypedef short int16_t;\n#define HAVE_INT16_T\n#endif\n\n#if !defined(HAVE_INT16_T)\n#error No 16-bit integer type was
+  # found.\n#endif\n\n/*\n * Similarly for uint64_t\n */\n#if !defined(HAVE_UINT64_T) && defined(HAVE_UNSIGNED___INT64)\ntypedef unsigned __int64 uint64_t;\n#define HAVE_UINT64_T\n#endif\n\n#if !defined(HAVE_UINT64_T) && SIZE_OF_UNSIGNED == 8\ntypedef unsigned uint64_t;\n#define HAVE_UINT64_T\n#endif\n\n#if !defined(HAVE_UINT64_T) && SIZE_OF_UNSIGNED_LONG == 8\ntypedef unsigned long
+  # uint64_t;\n#define HAVE_UINT64_T\n#endif\n\n#if !defined(HAVE_UINT64_T) && SIZE_OF_UNSIGNED_LONG_LONG == 8\ntypedef unsigned long long uint64_t;\n#define HAVE_UINT64_T\n#endif\n\n#if !defined(HAVE_UINT64_T)\n#error No 64-bit unsigned integer type was found.\n#endif\n\n/*\n * Similarly for uint32_t\n */\n#if !defined(HAVE_UINT32_T) && SIZE_OF_UNSIGNED == 4\ntypedef unsigned uint32_t;\n#define
+  # HAVE_UINT32_T\n#endif\n\n#if !defined(HAVE_UINT32_T) && SIZE_OF_UNSIGNED_LONG == 4\ntypedef unsigned long uint32_t;\n#define HAVE_UINT32_T\n#endif\n\n#if !defined(HAVE_UINT32_T)\n#error No 32-bit unsigned integer type was found.\n#endif\n\n/*\n * Similarly for uint16_t\n */\n#if !defined(HAVE_UINT16_T) && SIZE_OF_UNSIGNED == 2\ntypedef unsigned uint16_t;\n#define HAVE_UINT16_T\n#endif\n\n#if
+  # !defined(HAVE_UINT16_T) && SIZE_OF_UNSIGNED_SHORT == 2\ntypedef unsigned short uint16_t;\n#define HAVE_UINT16_T\n#endif\n\n#if !defined(HAVE_UINT16_T)\n#error No 16-bit unsigned integer type was found.\n#endif\n\n/*\n * Similarly for uint8_t\n */\n#if !defined(HAVE_UINT8_T)\ntypedef unsigned char uint8_t;\n#define HAVE_UINT8_T\n#endif\n\n#if !defined(HAVE_UINT16_T)\n#error No 8-bit unsigned
+  # integer type was found.\n#endif\n\n/* Define intmax_t and uintmax_t if they are not already defined. */\n#if !defined(HAVE_INTMAX_T)\ntypedef int64_t intmax_t;\n#define INTMAX_MIN INT64_MIN\n#define INTMAX_MAX INT64_MAX\n#endif\n\n#if !defined(HAVE_UINTMAX_T)\ntypedef uint64_t uintmax_t;\n#endif\n\n\n#cmakedefine uintptr_t @uintptr_t@\n\n\n#cmakedefine HAVE_RESTRICT\n#cmakedefine
+  # HAVE___RESTRICT\n\n#cmakedefine HAVE_INLINE\n#cmakedefine HAVE___INLINE\n\n#ifndef HAVE_RESTRICT\n#  ifdef HAVE___RESTRICT\n# define LZMA_RESTRICT __restrict\n#  else\n# define LZMA_RESTRICT\n#  endif\n#else\n#  define LZMA_RESTRICT restrict\n#endif /* HAVE_RESTRICT */\n\n#if defined(HAVE_INLINE)\n# define LZMA_INLINE inline\n#else\n# if defined(HAVE___INLINE)\n#  define LZMA_INLINE
+  # __inline\n# else\n#  define LZMA_INLINE\n# endif\n#endif\n\n#cmakedefine WORDS_BIGENDIAN 1\n\n#cmakedefine HAVE_BYTESWAP_H 1\n#cmakedefine HAVE_BSWAP_16 1\n#cmakedefine HAVE_BSWAP_32 1\n#cmakedefine HAVE_BSWAP_64 1\n\n\n#define HAVE_CHECK_CRC32 1\n#define HAVE_CHECK_CRC64 1\n#define HAVE_CHECK_SHA256 1\n\n#define HAVE_DECODER_ARM 1\n#define HAVE_DECODER_ARMTHUMB 1\n#define HAVE_DECODER_DELTA
+  # 1\n#define HAVE_DECODER_IA64 1\n#define HAVE_DECODER_LZMA1 1\n#define HAVE_DECODER_LZMA2 1\n#define HAVE_DECODER_POWERPC 1\n#define HAVE_DECODER_SPARC 1\n#define HAVE_DECODER_X86 1\n\n#define HAVE_ENCODER_ARM 1\n#define HAVE_ENCODER_ARMTHUMB 1\n#define HAVE_ENCODER_DELTA 1\n#define HAVE_ENCODER_IA64 1\n#define HAVE_ENCODER_LZMA1 1\n#define HAVE_ENCODER_LZMA2 1\n#define HAVE_ENCODER_POWERPC
+  # 1\n#define HAVE_ENCODER_SPARC 1\n#define HAVE_ENCODER_X86 1\n\n#define HAVE_MF_BT2 1\n#define HAVE_MF_BT3 1\n#define HAVE_MF_BT4 1\n#define HAVE_MF_HC3 1\n#define HAVE_MF_HC4 1\n\n/* Define to 1 if you have the <inttypes.h> header file. */\n#cmakedefine HAVE_INTTYPES_H 1\n\n/* Define to 1 if you have the <limits.h> header file. */\n#cmakedefine HAVE_LIMITS_H 1\n\n/* Define to 1 if you have the
+  # <memory.h> header file. */\n#cmakedefine HAVE_MEMORY_H 1\n\n/* Define to 1 if stdbool.h conforms to C99. */\n#cmakedefine HAVE_STDBOOL_H 1\n\n/* Define to 1 if you have the <stdint.h> header file. */\n#cmakedefine HAVE_STDINT_H 1\n\n/* Define to 1 if you have the <strings.h> header file. */\n#cmakedefine HAVE_STRINGS_H 1\n\n/* Define to 1 if you have the <string.h> header file.
+  # */\n#cmakedefine HAVE_STRING_H 1\n\n/* Define to 1 if you have the <sys/byteorder.h> header file. */\n#cmakedefine HAVE_SYS_BYTEORDER_H 1\n\n/* Define to 1 if you have the <sys/endian.h> header file. */\n#cmakedefine HAVE_SYS_ENDIAN_H 1\n\n/* Define to 1 or 0, depending whether the compiler supports simple visibility\n   declarations. */\n#cmakedefine HAVE_VISIBILITY 1\n\n/* Define to 1 if the
+  # system has the type `_Bool'. */\n#cmakedefine HAVE__BOOL 1\n\n/* Define to 1 if the system supports fast unaligned access to 16-bit and\n 32-bit integers. */\n#if defined(__i386) || defined(__i386__) || defined(_M_IX86) \\n || defined(__x86_64) || defined(__x86_64__) || defined(_M_X64) \\n || defined(__amd64) || defined(__amd64__) \\n || defined(__powerpc) || defined(__powerpc__) \\n ||
+  # defined(__ppc) || defined(__ppc__) || defined(__POWERPC__)\n# define TUKLIB_FAST_UNALIGNED_ACCESS 1\n#endif")
 
-  configure_file("${CMAKE_SOURCE_DIR}/3rdparty/lzma-config.h.cmake"
-                 "${CMAKE_BINARY_DIR}/3rdparty/xz/config.h")
+  configure_file("${CMAKE_SOURCE_DIR}/3rdparty/lzma-config.h.cmake" "${CMAKE_BINARY_DIR}/3rdparty/xz/config.h")
 
   file(
     GLOB
@@ -1290,48 +987,17 @@ if(BUILD_LZMA)
 
   if(LIBLZMA_SOURCES)
     add_library(lzma ${LIBLZMA_SOURCES})
-    set_target_properties(
-      lzma PROPERTIES ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/xz"
-                      LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/xz")
+    set_target_properties(lzma PROPERTIES ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/xz" LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/xz")
     set(LZMA_SOURCE_DIR "${CMAKE_SOURCE_DIR}/3rdparty/xz")
-    set(LIBLZMA_INCLUDE_DIRS
-        ${LZMA_SOURCE_DIR}/src/common
-        ${LZMA_SOURCE_DIR}/src/liblzma/lzma
-        ${LZMA_SOURCE_DIR}/src/liblzma/lz
-        ${LZMA_SOURCE_DIR}/src/liblzma/check
-        ${LZMA_SOURCE_DIR}/src/liblzma/simple
-        ${LZMA_SOURCE_DIR}/src/liblzma/delta
-        ${LZMA_SOURCE_DIR}/src/liblzma/rangecoder
-        ${LZMA_SOURCE_DIR}/src/liblzma/common
-        ${LZMA_SOURCE_DIR}/src/liblzma/api
-        ${CMAKE_BINARY_DIR}/3rdparty/xz)
-    define_have(
-      LIBLZMA_DEFS
-      HAVE_STDINT_H
-      HAVE_STDLIB_H
-      HAVE_STDBOOL_H
-      HAVE_INTTYPES_H
-      HAVE_LIMITS_H
-      HAVE_STRING_H
-      HAVE_STRINGS_H
-      HAVE_MEMORY_H
-      HAVE_SYS_PARAM_H
-      HAVE_SYS_TIME_H
-      HAVE_SYS_TYPES_H
-      HAVE_LZMA_H)
+    set(LIBLZMA_INCLUDE_DIRS ${LZMA_SOURCE_DIR}/src/common ${LZMA_SOURCE_DIR}/src/liblzma/lzma ${LZMA_SOURCE_DIR}/src/liblzma/lz ${LZMA_SOURCE_DIR}/src/liblzma/check ${LZMA_SOURCE_DIR}/src/liblzma/simple ${LZMA_SOURCE_DIR}/src/liblzma/delta ${LZMA_SOURCE_DIR}/src/liblzma/rangecoder ${LZMA_SOURCE_DIR}/src/liblzma/common ${LZMA_SOURCE_DIR}/src/liblzma/api ${CMAKE_BINARY_DIR}/3rdparty/xz)
+    define_have(LIBLZMA_DEFS HAVE_STDINT_H HAVE_STDLIB_H HAVE_STDBOOL_H HAVE_INTTYPES_H HAVE_LIMITS_H HAVE_STRING_H HAVE_STRINGS_H HAVE_MEMORY_H HAVE_SYS_PARAM_H HAVE_SYS_TIME_H HAVE_SYS_TYPES_H HAVE_LZMA_H)
     # message("LIBLZMA_DEFS: ${LIBLZMA_DEFS}")
-    set_target_properties(
-      lzma PROPERTIES COMPILE_DEFINITIONS "${LIBLZMA_DEFS}"
-                      INCLUDE_DIRECTORIES "${LIBLZMA_INCLUDE_DIRS}")
+    set_target_properties(lzma PROPERTIES COMPILE_DEFINITIONS "${LIBLZMA_DEFS}" INCLUDE_DIRECTORIES "${LIBLZMA_INCLUDE_DIRS}")
   endif(LIBLZMA_SOURCES)
 
   link_directories(BEFORE "${CMAKE_BINARY_DIR}/xz")
-  set(LIBLZMA_LIBRARY
-      lzma
-      CACHE FILEPATH "" FORCE)
-  set(LIBLZMA_INCLUDE_DIR
-      "${CMAKE_SOURCE_DIR}/3rdparty/xz/src/liblzma/api"
-      CACHE FILEPATH "" FORCE)
+  set(LIBLZMA_LIBRARY lzma CACHE FILEPATH "" FORCE)
+  set(LIBLZMA_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/3rdparty/xz/src/liblzma/api" CACHE FILEPATH "" FORCE)
 endif(BUILD_LZMA)
 
 find_program(TAR NAMES bsdtar tar gtar gnutar star)
@@ -1340,20 +1006,14 @@ if(BUILD_SSL)
   if(NOT EXISTS "${CMAKE_SOURCE_DIR}/3rdparty/openssl/CMakeLists.txt")
     if(NOT EXISTS "${CMAKE_SOURCE_DIR}/openssl.tar.gz")
       file(REMOVE_RECURSE "${CMAKE_SOURCE_DIR}/3rdparty/openssl")
-      file(DOWNLOAD "https://www.openssl.org/source/openssl-1.1.1f.tar.gz"
-           "${CMAKE_SOURCE_DIR}/openssl.tar.gz" SHOW_PROGRESS)
+      file(DOWNLOAD "https://www.openssl.org/source/openssl-1.1.1f.tar.gz" "${CMAKE_SOURCE_DIR}/openssl.tar.gz" SHOW_PROGRESS)
     endif()
 
-    exec_program("${TAR}" ARGS -C "${CMAKE_SOURCE_DIR}/3rdparty" -xzf
-                               "${CMAKE_SOURCE_DIR}/openssl.tar.gz")
-    file(RENAME "${CMAKE_SOURCE_DIR}/3rdparty/openssl-1.1.1f"
-         "${CMAKE_SOURCE_DIR}/3rdparty/openssl")
-    exec_program("${TAR}" ARGS -C "${CMAKE_SOURCE_DIR}/3rdparty/openssl" -xzf
-                               "${CMAKE_SOURCE_DIR}/openssl-cmake.tar.gz")
+    exec_program("${TAR}" ARGS -C "${CMAKE_SOURCE_DIR}/3rdparty" -xzf "${CMAKE_SOURCE_DIR}/openssl.tar.gz")
+    file(RENAME "${CMAKE_SOURCE_DIR}/3rdparty/openssl-1.1.1f" "${CMAKE_SOURCE_DIR}/3rdparty/openssl")
+    exec_program("${TAR}" ARGS -C "${CMAKE_SOURCE_DIR}/3rdparty/openssl" -xzf "${CMAKE_SOURCE_DIR}/openssl-cmake.tar.gz")
 
-    # file(READ "${CMAKE_SOURCE_DIR}/build/cmake/BuildOpenSSL.cmake"
-    # OPENSSL_CMAKELISTS) file(WRITE
-    # "${CMAKE_SOURCE_DIR}/3rdparty/openssl/CMakeLists.txt"
+    # file(READ "${CMAKE_SOURCE_DIR}/build/cmake/BuildOpenSSL.cmake" OPENSSL_CMAKELISTS) file(WRITE "${CMAKE_SOURCE_DIR}/3rdparty/openssl/CMakeLists.txt"
     # "${OPENSSL_CMAKELISTS}")
     #
     file(
@@ -1361,36 +1021,24 @@ if(BUILD_SSL)
       "diff -w -r -u -- crypto/threads_pthread.c crypto/threads_pthread.c\n--- crypto/threads_pthread.c\n2020-04-11 06:10:13.642470720 +0200\n+++ crypto/threads_pthread.c\n2020-04-11 06:10:21.212373541 +0200\n@@ -45,7 +45,7 @@\n     }\n \n     pthread_mutexattr_init(&attr);\n-    pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE);\n+    pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE_NP);\n \n     if (pthread_mutex_init(lock, &attr) != 0) {\n         pthread_mutexattr_destroy(&attr);\n"
     )
 
-    # file(WRITE "${CMAKE_BINARY_DIR}/openssl-poly1305_ieee754.patch" "---
-    # 3rdparty/openssl/crypto/poly1305/poly1305_ieee754.corig     2020-02-13
-    # 09:37:58.389826334 +0100\n+++
-    # 3rdparty/openssl/crypto/poly1305/poly1305_ieee754.c    2020-02-13
-    # 09:33:12.801691620 +0100\n@@ -104,7 +104,7 @@\n #elif defined(__mips__)\n
-    # static const u32 fcsr = 1;\n #else\n-#error \"unrecognized
-    # platform\"\n+#warning \"unrecognized platform\"\n #endif\n \n int
-    # poly1305_init(void *ctx, const unsigned char key[16])")
+    # file(WRITE "${CMAKE_BINARY_DIR}/openssl-poly1305_ieee754.patch" "--- 3rdparty/openssl/crypto/poly1305/poly1305_ieee754.corig     2020-02-13 09:37:58.389826334 +0100\n+++ 3rdparty/openssl/crypto/poly1305/poly1305_ieee754.c    2020-02-13 09:33:12.801691620 +0100\n@@ -104,7 +104,7 @@\n #elif defined(__mips__)\n static const u32 fcsr = 1;\n #else\n-#error \"unrecognized platform\"\n+#warning
+    # \"unrecognized platform\"\n #endif\n \n int poly1305_init(void *ctx, const unsigned char key[16])")
 
-    exec_program(patch "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/openssl"
-                 ARGS -p0 -i "${CMAKE_BINARY_DIR}/openssl-pthread.patch")
+    exec_program(patch "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/openssl" ARGS -p0 -i "${CMAKE_BINARY_DIR}/openssl-pthread.patch")
   endif()
 
   add_definitions(-DOPENSSL_NO_UI_CONSOLE=1)
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DOPENSSL_NO_UI_CONSOLE=1")
   add_subdirectory(3rdparty/openssl)
 
-  set(OPENSSL_LIBRARIES
-      ssl crypto
-      CACHE STRING "" FORCE)
-  set(OPENSSL_INCLUDE_DIR
-      "${CMAKE_SOURCE_DIR}/3rdparty/openssl/include"
-      CACHE FILEPATH "" FORCE)
+  set(OPENSSL_LIBRARIES ssl crypto CACHE STRING "" FORCE)
+  set(OPENSSL_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/3rdparty/openssl/include" CACHE FILEPATH "" FORCE)
 endif()
 
 if(USE_SSL)
   add_definitions(-DHAVE_OPENSSL=1 -DOPENSSL_API_COMPAT=0x10200000L)
   if(OPENSSL_INCLUDE_DIR)
-    include_directories(${CMAKE_BINARY_DIR}/3rdparty/openssl/include
-                        ${OPENSSL_INCLUDE_DIR})
+    include_directories(${CMAKE_BINARY_DIR}/3rdparty/openssl/include ${OPENSSL_INCLUDE_DIR})
   endif()
 
   # if(NOT OPENSSL_LIBRARIES) if(OPENSSL_CRYPTO_LIBRARY OR OPENSSL_SSL_LIBRARY)
@@ -1412,66 +1060,7 @@ message("ZLIB_INCLUDE_DIR: ${ZLIB_INCLUDE_DIR}")
 
 set(iarray_SOURCES lib/cas.S)
 
-set(MODSUBDIRS
-    alloc
-    array
-    binfmt
-    buffer
-    byte
-    case
-    cb
-    cbmap
-    charbuf
-    coff
-    dir
-    dns
-    elf
-    env
-    errmsg
-    fmt
-    gpio
-    hashmap
-    hmap
-    http
-    iarray
-    ihex
-    io
-    json
-    list
-    map
-    mmap
-    ndelay
-    omf
-    open
-    path
-    pe
-    playlist
-    process
-    range
-    rdir
-    safemult
-    scan
-    seek
-    set
-    sig
-    slist
-    socket
-    str
-    stralloc
-    strarray
-    strlist
-    tai
-    taia
-    textbuf
-    textcode
-    uint16
-    uint32
-    uint64
-    unix
-    wait
-    xml
-    ucs
-    utf8)
+set(MODSUBDIRS alloc array binfmt buffer byte case cb cbmap charbuf coff dir dns elf env errmsg fmt gpio hashmap hmap http iarray ihex io json list map mmap ndelay omf open path pe playlist process range rdir safemult scan seek set sig slist socket str stralloc strarray strlist tai taia textbuf textcode uint16 uint32 uint64 unix wait xml ucs utf8)
 
 foreach(LIBNAME ${MODSUBDIRS})
   file(GLOB MODHEADERS lib/${LIBNAME}.h lib/${LIBNAME}_*.h)
@@ -1485,16 +1074,10 @@ foreach(LIBNAME ${MODSUBDIRS})
   endif(EXTRA_SOURCES)
   add_library("${LIBNAME}" STATIC ${MODSOURCES} ${MODHEADERS} ${EXTRA_SOURCES})
   if(BUILD_SHARED_LIBS)
-    add_library("${LIBNAME}-shared" SHARED ${MODSOURCES} ${MODHEADERS}
-                                           ${EXTRA_SOURCES})
-    set_target_properties(
-      "${LIBNAME}-shared"
-      PROPERTIES PREFIX "lib" COMPILE_FLAGS "${WARN_C_COMPILER_FLAGS} -fPIC")
+    add_library("${LIBNAME}-shared" SHARED ${MODSOURCES} ${MODHEADERS} ${EXTRA_SOURCES})
+    set_target_properties("${LIBNAME}-shared" PROPERTIES PREFIX "lib" COMPILE_FLAGS "${WARN_C_COMPILER_FLAGS} -fPIC")
   endif(BUILD_SHARED_LIBS)
-  set_target_properties(
-    "${LIBNAME}"
-    PROPERTIES PREFIX "" COMPILE_FLAGS
-                         "${WARN_C_COMPILER_FLAGS} ${${LIBNAME}_COMPILE_FLAGS}")
+  set_target_properties("${LIBNAME}" PROPERTIES PREFIX "" COMPILE_FLAGS "${WARN_C_COMPILER_FLAGS} ${${LIBNAME}_COMPILE_FLAGS}")
 
 endforeach(LIBNAME)
 
@@ -1507,64 +1090,18 @@ endforeach()
 target_link_libraries(unix stralloc buffer ndelay)
 target_link_libraries(array safemult byte str)
 target_link_libraries(binfmt mmap byte)
-target_link_libraries(
-  buffer
-  alloc
-  byte
-  fmt
-  mmap
-  open
-  str
-  ${ZLIB_LIBRARY})
+target_link_libraries(buffer alloc byte fmt mmap open str ${ZLIB_LIBRARY})
 target_link_libraries(cb str)
 target_link_libraries(cbmap str)
-target_link_libraries(
-  dns
-  byte
-  case
-  fmt
-  io
-  open
-  socket
-  str
-  taia
-  uint16
-  ${LIBIPHLPAPI})
+target_link_libraries(dns byte case fmt io open socket str taia uint16 ${LIBIPHLPAPI})
 target_link_libraries(dir stralloc)
 target_link_libraries(errmsg str)
-target_link_libraries(
-  elf
-  byte
-  str
-  range
-  mmap
-  uint64
-  uint32
-  uint16)
+target_link_libraries(elf byte str range mmap uint64 uint32 uint16)
 target_link_libraries(fmt byte str uint64 uint32)
 target_link_libraries(gpio mmap)
 target_link_libraries(hmap str)
-target_link_libraries(
-  http
-  dns
-  errmsg
-  byte
-  io
-  scan
-  socket
-  stralloc
-  str
-  ${OPENSSL_LIBARRIES})
-target_link_libraries(
-  io
-  buffer
-  iarray
-  array
-  byte
-  fmt
-  open
-  taia
-  ${LIBMSWSOCK})
+target_link_libraries(http dns errmsg byte io scan socket stralloc str ${OPENSSL_LIBARRIES})
+target_link_libraries(io buffer iarray array byte fmt open taia ${LIBMSWSOCK})
 target_link_libraries(json charbuf hmap scan)
 target_link_libraries(map str)
 target_link_libraries(mmap seek open scan ${LIBPSAPI})
@@ -1574,14 +1111,7 @@ target_link_libraries(pe uint64 uint32 uint16)
 target_link_libraries(playlist byte fmt scan str xml)
 target_link_libraries(rdir dir)
 target_link_libraries(scan byte str)
-target_link_libraries(
-  socket
-  byte
-  fmt
-  ndelay
-  scan
-  uint16
-  ${LIBMSWSOCK})
+target_link_libraries(socket byte fmt ndelay scan uint16 ${LIBMSWSOCK})
 target_link_libraries(str byte)
 target_link_libraries(stralloc alloc open byte fmt str)
 target_link_libraries(strarray array)
@@ -1626,53 +1156,30 @@ add_definitions(-DHAVE_CONFIG_H=1)
 include_directories("${CMAKE_CURRENT_BINARY_DIR}")
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/build/cmake/config.h.cmake" "${CMAKE_CURRENT_BINARY_DIR}/config.h")
 
-set(COMMON_LIBS
-    strlist
-    array
-    safemult
-    scan
-    str
-    byte
-    mmap
-    open
-    fmt)
+set(COMMON_LIBS strlist array safemult scan str byte mmap open fmt)
 file(GLOB MODHEADERS lib/*.h)
 
 function(add_program PROG)
   unset(INCLUDES)
   unset(LIBS)
   foreach(DEP ${ARGN})
-    if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${DEP}"
-       AND NOT IS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/${DEP}")
+    if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${DEP}" AND NOT IS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/${DEP}")
       list(APPEND "${PROG}_SOURCES" "${DEP}")
-    else(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${DEP}"
-         AND NOT IS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/${DEP}")
+    else(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${DEP}" AND NOT IS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/${DEP}")
       list(FIND MODSUBDIRS "${DEP}" I)
       if(I GREATER -1)
         list(APPEND INCLUDES "lib/${DEP}.h")
       endif(I GREATER -1)
       list(APPEND DEPS ${DEP})
-    endif(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${DEP}"
-          AND NOT IS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/${DEP}")
+    endif(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${DEP}" AND NOT IS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/${DEP}")
   endforeach(DEP ${ARGN})
   # message("Program '${PROG}' dependencies: ${INCLUDES}")
   add_executable(${PROG} ${PROG}.c ${${PROG}_SOURCES} ${INCLUDES})
-  target_link_libraries(${PROG} ${DEPS} ${ELECTRICFENCE_LIBRARY}
-                        ${EXTRA_LIBRARIES})
+  target_link_libraries(${PROG} ${DEPS} ${ELECTRICFENCE_LIBRARY} ${EXTRA_LIBRARIES})
   install(TARGETS ${PROG} DESTINATION bin)
-  if(NOT EMSCRIPTEN
-     AND OPENSSL_FOUND
-     AND USE_SSL)
-    set_target_properties(
-      ${PROG}
-      PROPERTIES
-        LINK_FLAGS
-        "-L${OPENSSL_LIB_DIR} -Wl,-rpath=${OPENSSL_LIB_DIR} ${EXE_LINKER_FLAGS}"
-        COMPILE_FLAGS "")
-  endif(
-    NOT EMSCRIPTEN
-    AND OPENSSL_FOUND
-    AND USE_SSL)
+  if(NOT EMSCRIPTEN AND OPENSSL_FOUND AND USE_SSL)
+    set_target_properties(${PROG} PROPERTIES LINK_FLAGS "-L${OPENSSL_LIB_DIR} -Wl,-rpath=${OPENSSL_LIB_DIR} ${EXE_LINKER_FLAGS}" COMPILE_FLAGS "")
+  endif(NOT EMSCRIPTEN AND OPENSSL_FOUND AND USE_SSL)
   if(EMSCRIPTEN)
     set_target_properties(${PROG} PROPERTIES SUFFIX ".${EMSCRIPTEN_EXE_SUFFIX}")
   endif(EMSCRIPTEN)
@@ -1698,8 +1205,7 @@ function(add_module MOD SRC)
     target_link_libraries(${MOD} ${LIBS} ${EXTRA_LIBRARIES})
     install(TARGETS ${MOD} DESTINATION libexec)
     if(BUILD_SHARED_LIBS)
-      set_target_properties(${MOD} PROPERTIES EXE_LINKER_FLAGS
-                                              "-L${OPENSSL_LIB_DIR} -shared")
+      set_target_properties(${MOD} PROPERTIES EXE_LINKER_FLAGS "-L${OPENSSL_LIB_DIR} -shared")
     endif(BUILD_SHARED_LIBS)
     target_compile_options(${MOD} PUBLIC -fPIC)
   endif(NOT EMSCRIPTEN)
@@ -1717,48 +1223,13 @@ endif(OPENSSL_LIBRARIES)
 
 add_program(binfmttest binfmt)
 if(USE_BZIP)
-  add_program(
-    bsdiffcat
-    path
-    errmsg
-    buffer
-    array
-    safemult
-    str
-    byte
-    errmsg
-    uint32
-    uint64
-    ${COMPRESSION_LIBRARIES})
+  add_program(bsdiffcat path errmsg buffer array safemult str byte errmsg uint32 uint64 ${COMPRESSION_LIBRARIES})
   add_program(ccat buffer open str unix ${COMPRESSION_LIBRARIES})
 endif(USE_BZIP)
-add_program(
-  buffertest
-  stralloc
-  buffer
-  array
-  case
-  mmap
-  ${COMPRESSION_LIBRARIES})
-add_program(
-  compiler-wrapper
-  stralloc
-  buffer
-  byte
-  fmt
-  str
-  strlist
-  dir)
+add_program(buffertest stralloc buffer array case mmap ${COMPRESSION_LIBRARIES})
+add_program(compiler-wrapper stralloc buffer byte fmt str strlist dir)
 add_program(count-depth buffer fmt)
-add_program(
-  decode-ls-lR
-  stralloc
-  buffer
-  byte
-  fmt
-  io
-  open
-  str)
+add_program(decode-ls-lR stralloc buffer byte fmt io open str)
 add_program(dnsip dns stralloc buffer errmsg socket ${LIBIPHLPAPI})
 add_program(dnsname dns stralloc buffer errmsg ${LIBIPHLPAPI})
 add_program(dnstest dns stralloc buffer errmsg ${LIBIPHLPAPI} ${LIBMSWSOCK})
@@ -1771,625 +1242,71 @@ add_program(dnsqr dns stralloc buffer errmsg socket ${LIBIPHLPAPI} ${LIBMSWSOCK}
 add_program(dnstrace dns stralloc buffer errmsg socket ${LIBIPHLPAPI} ${LIBMSWSOCK})]]
 add_program(dnstxt dns stralloc buffer errmsg socket ${LIBIPHLPAPI} ${LIBMSWSOCK})
 
-add_program(
-  eagle-gen-cmds
-  xml
-  stralloc
-  buffer
-  strarray
-  array
-  byte
-  cb
-  cbmap
-  errmsg
-  fmt
-  hmap
-  mmap
-  scan
-  str
-  unix
-  ${LIBMATH})
-add_program(
-  eagle-init-brd
-  xml
-  stralloc
-  buffer
-  hmap
-  strlist
-  scan
-  str
-  ${LIBMATH})
-add_program(
-  eagle-to-circuit
-  xml
-  stralloc
-  buffer
-  strlist
-  array
-  byte
-  cb
-  cbmap
-  fmt
-  hashmap
-  hmap
-  mmap
-  scan
-  str
-  ${LIBMATH})
-add_program(
-  eagle-to-svg
-  xml
-  stralloc
-  buffer
-  strlist
-  array
-  byte
-  cb
-  cbmap
-  fmt
-  hashmap
-  hmap
-  mmap
-  scan
-  str)
+add_program(eagle-gen-cmds xml stralloc buffer strarray array byte cb cbmap errmsg fmt hmap mmap scan str unix ${LIBMATH})
+add_program(eagle-init-brd xml stralloc buffer hmap strlist scan str ${LIBMATH})
+add_program(eagle-to-circuit xml stralloc buffer strlist array byte cb cbmap fmt hashmap hmap mmap scan str ${LIBMATH})
+add_program(eagle-to-svg xml stralloc buffer strlist array byte cb cbmap fmt hashmap hmap mmap scan str)
 add_program(elf64list elf mmap uint16 uint32 uint64)
-add_program(
-  elflist
-  buffer
-  alloc
-  errmsg
-  unix
-  elf
-  mmap
-  str)
+add_program(elflist buffer alloc errmsg unix elf mmap str)
 add_program(elfwrsec buffer alloc elf mmap)
-add_program(
-  genmakefile
-  sig
-  set
-  case
-  errmsg
-  strarray
-  slist
-  rdir
-  dir
-  path
-  strlist
-  hashmap
-  hmap
-  stralloc
-  buffer
-  mmap
-  unix
-  open
-  scan
-  fmt
-  byte
-  str
-  array
-  safemult
-  alloc)
-add_program(
-  piccfg
-  ihex
-  errmsg
-  strarray
-  slist
-  rdir
-  dir
-  path
-  strlist
-  hashmap
-  hmap
-  stralloc
-  buffer
-  mmap
-  unix
-  open
-  scan
-  fmt
-  byte
-  str
-  array
-  safemult
-  alloc)
-add_program(
-  hexedit
-  stralloc
-  buffer
-  array
-  io
-  errmsg
-  mmap
-  open
-  path
-  scan
-  uint64
-  unix
-  ${ZLIB_LIBRARY})
-add_program(
-  httptest
-  http
-  dns
-  stralloc
-  buffer
-  errmsg
-  byte
-  io
-  socket
-  alloc
-  taia
-  ${LIBMSWSOCK}
-  ${CRYPTO_LIBRARIES}
-  ${LIBDL}
-  pthread)
+add_program(genmakefile sig set case errmsg strarray slist rdir dir path strlist hashmap hmap stralloc buffer mmap unix open scan fmt byte str array safemult alloc)
+add_program(piccfg ihex errmsg strarray slist rdir dir path strlist hashmap hmap stralloc buffer mmap unix open scan fmt byte str array safemult alloc)
+add_program(hexedit stralloc buffer array io errmsg mmap open path scan uint64 unix ${ZLIB_LIBRARY})
+add_program(httptest http dns stralloc buffer errmsg byte io socket alloc taia ${LIBMSWSOCK} ${CRYPTO_LIBRARIES} ${LIBDL} pthread)
 add_program(impgen pe buffer byte mmap open)
-add_program(
-  jsontest
-  json
-  stralloc
-  buffer
-  byte
-  charbuf
-  fmt
-  hmap
-  mmap
-  open)
-add_program(
-  list-r
-  path
-  strarray
-  strlist
-  stralloc
-  buffer
-  array
-  unix
-  dir
-  array
-  fmt
-  open
-  str
-  uint64
-  ${LIBADVAPI32})
+add_program(jsontest json stralloc buffer byte charbuf fmt hmap mmap open)
+add_program(list-r path strarray strlist stralloc buffer array unix dir array fmt open str uint64 ${LIBADVAPI32})
 add_program(macho32list mmap uint32)
 if(USE_LZMA)
-  add_program(
-    mediathek-list
-    errmsg
-    stralloc
-    buffer
-    alloc
-    byte
-    fmt
-    http
-    scan
-    slist
-    str
-    unix
-    strarray
-    strlist
-    ${LIBLZMA_LIBRARY}
-    ${OPENSSL_LIBRARIES}
-    ${CRYPTO_LIBRARIES}
-    ${LIBDL}
-    pthread)
+  add_program(mediathek-list errmsg stralloc buffer alloc byte fmt http scan slist str unix strarray strlist ${LIBLZMA_LIBRARY} ${OPENSSL_LIBRARIES} ${CRYPTO_LIBRARIES} ${LIBDL} pthread)
 endif(USE_LZMA)
 
-add_program(
-  mediathek-parser
-  case
-  ucs
-  errmsg
-  strarray
-  strlist
-  stralloc
-  buffer
-  array
-  byte
-  open
-  str
-  unix
-  strlist)
-add_program(
-  ntldd
-  stralloc
-  buffer
-  pe
-  strlist
-  byte
-  path
-  str
-  unix
-  uint64)
+add_program(mediathek-parser case ucs errmsg strarray strlist stralloc buffer array byte open str unix strlist)
+add_program(ntldd stralloc buffer pe strlist byte path str unix uint64)
 add_program(opensearch-dump xml stralloc buffer)
-add_program(
-  pathtool
-  stralloc
-  buffer
-  errmsg
-  path
-  strlist
-  unix)
-add_program(
-  pelist
-  buffer
-  errmsg
-  mmap
-  pe
-  str
-  unix)
-add_program(
-  omflist
-  stralloc
-  buffer
-  errmsg
-  omf
-  mmap
-  str
-  unix)
-add_program(
-  pkgcfg
-  wait
-  path
-  unix
-  hashmap
-  hmap
-  stralloc
-  buffer
-  byte
-  cbmap
-  dir
-  env
-  errmsg
-  slist
-  case
-  str
-  strarray
-  strlist)
-add_program(
-  plsconv
-  stralloc
-  buffer
-  byte
-  open
-  playlist
-  str
-  unix)
+add_program(pathtool stralloc buffer errmsg path strlist unix)
+add_program(pelist buffer errmsg mmap pe str unix)
+add_program(omflist stralloc buffer errmsg omf mmap str unix)
+add_program(pkgcfg wait path unix hashmap hmap stralloc buffer byte cbmap dir env errmsg slist case str strarray strlist)
+add_program(plsconv stralloc buffer byte open playlist str unix)
 add_program(rdir-test rdir stralloc buffer)
-add_program(
-  reg2cmd
-  stralloc
-  buffer
-  byte
-  fmt
-  open
-  scan
-  str
-  uint64)
-add_program(
-  regfilter
-  stralloc
-  buffer
-  byte
-  fmt
-  open
-  scan
-  str
-  uint64)
-add_program(
-  sln
-  unix
-  stralloc
-  buffer
-  byte
-  errmsg
-  path)
-add_program(
-  pipeinfo
-  slist
-  seek
-  unix
-  stralloc
-  buffer
-  array
-  byte
-  errmsg
-  path)
-add_program(
-  strarraytest
-  xml
-  dns
-  stralloc
-  buffer
-  mmap
-  strarray
-  unix)
-add_program(
-  torrent-progress
-  stralloc
-  buffer
-  io
-  mmap
-  open
-  uint64)
-add_program(
-  xmlpp
-  errmsg
-  xml
-  stralloc
-  buffer
-  hmap
-  io
-  unix)
-add_program(
-  xmltest
-  xml
-  stralloc
-  buffer
-  byte
-  fmt
-  hmap)
-add_program(
-  xmltest2
-  xml
-  stralloc
-  buffer
-  byte
-  fmt
-  hmap)
-add_program(
-  xmltest3
-  xml
-  stralloc
-  buffer
-  byte
-  fmt
-  hmap)
-add_program(
-  xmltest4
-  xml
-  stralloc
-  buffer
-  array
-  byte
-  cb
-  cbmap
-  fmt
-  hmap
-  mmap
-  scan
-  str
-  strlist)
+add_program(reg2cmd stralloc buffer byte fmt open scan str uint64)
+add_program(regfilter stralloc buffer byte fmt open scan str uint64)
+add_program(sln unix stralloc buffer byte errmsg path)
+add_program(pipeinfo slist seek unix stralloc buffer array byte errmsg path)
+add_program(strarraytest xml dns stralloc buffer mmap strarray unix)
+add_program(torrent-progress stralloc buffer io mmap open uint64)
+add_program(xmlpp errmsg xml stralloc buffer hmap io unix)
+add_program(xmltest xml stralloc buffer byte fmt hmap)
+add_program(xmltest2 xml stralloc buffer byte fmt hmap)
+add_program(xmltest3 xml stralloc buffer byte fmt hmap)
+add_program(xmltest4 xml stralloc buffer array byte cb cbmap fmt hmap mmap scan str strlist)
 # add_program(ziptest buffer str unix ${COMPRESSION_LIBRARIES})
-add_program(
-  cc-wrap
-  errmsg
-  env
-  buffer
-  path
-  dir
-  strarray
-  strlist
-  stralloc
-  fmt)
-add_program(
-  ar-wrap
-  path
-  process
-  errmsg
-  env
-  buffer
-  dir
-  strarray
-  strlist
-  stralloc
-  fmt
-  alloc)
-add_program(
-  cofflist
-  coff
-  unix
-  errmsg
-  stralloc
-  buffer
-  mmap)
-add_program(
-  msys-shell
-  unix
-  errmsg
-  env
-  buffer
-  path
-  strarray
-  strlist
-  stralloc)
+add_program(cc-wrap errmsg env buffer path dir strarray strlist stralloc fmt)
+add_program(ar-wrap path process errmsg env buffer dir strarray strlist stralloc fmt alloc)
+add_program(cofflist coff unix errmsg stralloc buffer mmap)
+add_program(msys-shell unix errmsg env buffer path strarray strlist stralloc)
 set(tcping_SOURCES address.c)
-add_program(
-  tcping
-  hmap
-  unix
-  dns
-  case
-  io
-  array
-  socket
-  ndelay
-  errmsg
-  taia
-  tai
-  buffer
-  stralloc
-  mmap
-  open
-  fmt
-  scan
-  str
-  byte
-  uint16
-  ${LIBMSWSOCK}
-  ${LIBIPHLPAPI})
+add_program(tcping hmap unix dns case io array socket ndelay errmsg taia tai buffer stralloc mmap open fmt scan str byte uint16 ${LIBMSWSOCK} ${LIBIPHLPAPI})
 set(ftptest_SOURCES address.c ftplib.c)
-add_program(
-  ftptest
-  hmap
-  unix
-  dns
-  case
-  io
-  array
-  socket
-  ndelay
-  errmsg
-  taia
-  tai
-  stralloc
-  buffer
-  mmap
-  open
-  fmt
-  scan
-  str
-  byte
-  uint16
-  ${LIBMSWSOCK}
-  ${LIBIPHLPAPI})
+add_program(ftptest hmap unix dns case io array socket ndelay errmsg taia tai stralloc buffer mmap open fmt scan str byte uint16 ${LIBMSWSOCK} ${LIBIPHLPAPI})
 
-set(nscache_SOURCES
-    cache.c
-    cache.h
-    log.c
-    log.h
-    query.c
-    query.h
-    response.c
-    response.h
-    roots.c
-    roots.h
-    names.c
-    names.h
-    lib/alloc.h
-    lib/array.h
-    lib/buffer.h
-    lib/byte.h
-    lib/case.h
-    lib/dir.h
-    lib/dns.h
-    lib/env.h
-    lib/errmsg.h
-    lib/fmt.h
-    lib/iopause.h
-    lib/ip4.h
-    lib/ip6.h
-    lib/mmap.h
-    lib/ndelay.h
-    lib/open.h
-    lib/path.h
-    lib/scan.h
-    lib/socket.h
-    lib/str.h
-    lib/stralloc.h
-    lib/tai.h
-    lib/taia.h
-    lib/uint16.h
-    lib/uint32.h
-    lib/uint64.h)
-add_program(
-  nscache
-  dns
-  path
-  errmsg
-  dir
-  array
-  stralloc
-  alloc
-  env
-  byte
-  uint16
-  ${LIBMSWSOCK}
-  ${LIBIPHLPAPI})
+set(nscache_SOURCES cache.c cache.h log.c log.h query.c query.h response.c response.h roots.c roots.h names.c names.h lib/alloc.h lib/array.h lib/buffer.h lib/byte.h lib/case.h lib/dir.h lib/dns.h lib/env.h lib/errmsg.h lib/fmt.h lib/iopause.h lib/ip4.h lib/ip6.h lib/mmap.h lib/ndelay.h lib/open.h lib/path.h lib/scan.h lib/socket.h lib/str.h lib/stralloc.h lib/tai.h lib/taia.h lib/uint16.h
+                    lib/uint32.h lib/uint64.h)
+add_program(nscache dns path errmsg dir array stralloc alloc env byte uint16 ${LIBMSWSOCK} ${LIBIPHLPAPI})
 add_program(crc errmsg buffer mmap open ${ZLIB_LIBRARY})
-add_program(
-  cmake-run
-  errmsg
-  env
-  buffer
-  path
-  dir
-  strarray
-  strlist
-  stralloc
-  fmt)
+add_program(cmake-run errmsg env buffer path dir strarray strlist stralloc fmt)
 
 add_program(jsonpp json errmsg unix)
 add_program(xml2json json xml errmsg unix)
 add_program(xml2moon xml textcode errmsg)
-add_program(
-  strip-comments
-  errmsg
-  env
-  charbuf
-  buffer
-  path
-  dir
-  strarray
-  strlist
-  stralloc
-  fmt)
+add_program(strip-comments errmsg env charbuf buffer path dir strarray strlist stralloc fmt)
 
 add_program(httpproxy http io map)
-add_program(
-  testini
-  ini.c
-  ini.h
-  hmap
-  stralloc
-  buffer
-  mmap
-  open
-  uint16)
+add_program(testini ini.c ini.h hmap stralloc buffer mmap open uint16)
 # add_program(montty io map)
-add_program(
-  logserial
-  sig
-  charbuf
-  hmap
-  path
-  unix
-  rdir
-  dir
-  errmsg
-  io
-  ndelay
-  strarray
-  stralloc
-  buffer
-  taia
-  tai)
-add_program(
-  tinyproxy
-  process
-  unix
-  path
-  wait
-  range
-  dns
-  taia
-  tai
-  hmap
-  env
-  ndelay
-  buffer
-  strarray
-  array
-  strlist
-  stralloc
-  errmsg
-  sig
-  socket
-  fmt
-  scan
-  io
-  uint32)
+add_program(logserial sig charbuf hmap path unix rdir dir errmsg io ndelay strarray stralloc buffer taia tai)
+add_program(tinyproxy process unix path wait range dns taia tai hmap env ndelay buffer strarray array strlist stralloc errmsg sig socket fmt scan io uint32)
 target_link_libraries(tinyproxy ${LIBMSWSOCK})
 if(NOT WIN32)
   add_program(tcpproxy http io errmsg buffer open)
@@ -2398,23 +1315,8 @@ endif(NOT WIN32)
 
 add_program(parse strlist errmsg)
 add_program(testihex ihex stralloc buffer alloc mmap)
-add_program(
-  setuidgid
-  errmsg
-  path
-  stralloc
-  mmap
-  open
-  scan
-  str)
-add_program(
-  lsproc
-  strlist
-  errmsg
-  mmap
-  buffer
-  unix
-  dir)
+add_program(setuidgid errmsg path stralloc mmap open scan str)
+add_program(lsproc strlist errmsg mmap buffer unix dir)
 
 #[[add_program(ftpcopy io)
 add_program(ftpls io)

@@ -1,3 +1,4 @@
+#include <stdlib.h>
 #include "lib/errmsg.h"
 #include "lib/buffer.h"
 #include "lib/uint16.h"
@@ -65,5 +66,5 @@ main(int argc, char** argv) {
   }
 
   buffer_flush(buffer_1);
-  _exit(0);
+  exit(0);
 }

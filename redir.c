@@ -532,14 +532,14 @@ ftp_clean(int send, char* buf, ssize_t* bytes, int ftpsrv) {
      the success command never arrive the client.*/
 
   switch(fork()) {
-    case -1: /* Error */ syslog(LOG_ERR, "Failed calling fork(): %s", strerror(errno)); _exit(1);
+    case -1: /* Error */ syslog(LOG_ERR, "Failed calling fork(): %s", strerror(errno)); exit(1);
 
     case 0: /* Child */
       /* turn off ftp checking while the data connection is active */
       ftp = 0;
       client_accept(sd, &newsession);
       close(sd);
-      _exit(0);
+      exit(0);
 
     default: /* Parent */ close(sd); break;
   }
@@ -827,17 +827,17 @@ client_accept(int sd, struct sockaddr_in* target) {
 
   /* We are now the first child. Fork again and exit */
   switch(fork()) {
-    case -1: /* Error */ syslog(LOG_ERR, "Failed duoble fork(): %s", strerror(errno)); _exit(1);
+    case -1: /* Error */ syslog(LOG_ERR, "Failed duoble fork(): %s", strerror(errno)); exit(1);
 
     case 0: /* Child */ break;
 
-    default: /* Parent */ _exit(0);
+    default: /* Parent */ exit(0);
   }
 
   /* We are now the grandchild */
   sd = target_connect(client, target);
   if(sd < 0)
-    _exit(1);
+    exit(1);
 
   /* do proxy stuff */
   if(connect_str)
@@ -978,7 +978,7 @@ daemonize(int nochdir, int noclose) {
   switch(fork()) {
     case 0: break;
     case -1: return -1;
-    default: _exit(0);
+    default: exit(0);
   }
 
   if(setsid() < 0)
@@ -987,7 +987,7 @@ daemonize(int nochdir, int noclose) {
   switch(fork()) {
     case 0: break;
     case -1: return -1;
-    default: _exit(0);
+    default: exit(0);
   }
 
   return 0;

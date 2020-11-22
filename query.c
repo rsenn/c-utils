@@ -13,6 +13,7 @@
 #include "lib/array.h"
 #include "lib/buffer.h"
 #include "lib/case.h"
+#include "lib/fmt.h"
 
 #include <stdbool.h>
 #include <errno.h>
@@ -1173,4 +1174,52 @@ query_get(struct query* z, iopause_fd* x, struct taia* stamp) {
 void
 query_io(struct query* z, iopause_fd* x, struct taia* deadline) {
   dns_transmit_io(&z->dt, x, deadline);
+}
+
+int udp_num(const void* ptr);
+int tcp_num(const void* ptr);
+
+void
+query_dump(struct query const* q) {
+  char buf[1024];
+  unsigned int i, j, tcp, udp;
+  buffer_puts(buffer_2, "query ");
+
+  if((udp = udp_num(q)) != -1) {
+    buffer_puts(buffer_2, " udp#");
+    buffer_putulong(buffer_2, udp);
+  }
+  if((tcp = tcp_num(q)) != -1) {
+    buffer_puts(buffer_2, " tcp#");
+    buffer_putulong(buffer_2, tcp);
+  }
+
+  buffer_puts(buffer_2, " {");
+  buffer_puts(buffer_2, "\n\tloop = ");
+  buffer_put(buffer_2, buf, fmt_uint(buf, q->loop));
+  buffer_puts(buffer_2, "\n\tlevel = ");
+  buffer_put(buffer_2, buf, fmt_uint(buf, q->level));
+  buffer_puts(buffer_2, "\n\tlocalip = ");
+  buffer_put(buffer_2, buf, fmt_ip6(buf, q->localip));
+  buffer_puts(buffer_2, "\n\ttype = ");
+  buffer_putxlong0(buffer_2, uint16_read_big(q->type), 4);
+  buffer_puts(buffer_2, "\n\tclass = ");
+  buffer_putxlong0(buffer_2, uint16_read_big(q->class), 4);
+  for(i = 0; i <= q->level; i++) {
+    buffer_puts(buffer_2, "\n\tlevel ");
+    buffer_putulong(buffer_2, i);
+    buffer_puts(buffer_2, " {\n\t\tname = ");
+    buffer_put(buffer_2, buf, dns_domain_todot(buf, q->name[i]));
+    buffer_puts(buffer_2, "\n\t\tcontrol = ");
+    buffer_put(buffer_2, buf, dns_domain_todot(buf, q->control[i]));
+    buffer_puts(buffer_2, "\n\t\tns =");
+    for(j = 0; j < QUERY_MAXNS; j++) {
+      if(q->ns[i][j]) {
+        buffer_putspace(buffer_2);
+        buffer_put(buffer_2, buf, dns_domain_todot(buf, q->ns[i][j]));
+      }
+    }
+    buffer_puts(buffer_2, "\n\t}");
+  }
+  buffer_putnlflush(buffer_2);
 }
