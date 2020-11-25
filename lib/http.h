@@ -31,21 +31,9 @@ typedef struct http_return_s {
 } http_return_value;
 
 struct http_response_s;
-typedef enum {
-  HTTP_TRANSFER_UNDEF = 0,
-  HTTP_TRANSFER_CHUNKED,
-  HTTP_TRANSFER_LENGTH,
-  HTTP_TRANSFER_BOUNDARY
-} http_transfer_type;
+typedef enum { HTTP_TRANSFER_UNDEF = 0, HTTP_TRANSFER_CHUNKED, HTTP_TRANSFER_LENGTH, HTTP_TRANSFER_BOUNDARY } http_transfer_type;
 
-typedef enum {
-  HTTP_RECV_HEADER = 0,
-  HTTP_RECV_DATA,
-  HTTP_STATUS_CLOSED,
-  HTTP_STATUS_ERROR,
-  HTTP_STATUS_BUSY,
-  HTTP_STATUS_FINISH
-} http_status;
+typedef enum { HTTP_RECV_HEADER = 0, HTTP_RECV_DATA, HTTP_STATUS_CLOSED, HTTP_STATUS_ERROR, HTTP_STATUS_BUSY, HTTP_STATUS_FINISH } http_status;
 
 typedef struct http_response_s {
   http_transfer_type transfer;

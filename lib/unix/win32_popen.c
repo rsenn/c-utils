@@ -258,8 +258,7 @@ FILE* __cdecl popen(const char* cmdstring, const char* type) {
      */
     save_errno = errno;
     if(_taccess_s(cmdexe, 0) == 0) {
-      childstatus = CreateProcess(
-          (LPTSTR)cmdexe, (LPTSTR)CommandLine, NULL, NULL, TRUE, 0, NULL, NULL, &StartupInfo, &ProcessInfo);
+      childstatus = CreateProcess((LPTSTR)cmdexe, (LPTSTR)CommandLine, NULL, NULL, TRUE, 0, NULL, NULL, &StartupInfo, &ProcessInfo);
     } else {
       TCHAR* envPath = NULL;
       size_t envPathSize = 0;
@@ -313,8 +312,7 @@ FILE* __cdecl popen(const char* cmdstring, const char* type) {
          * again.
          */
         if(_taccess_s(buf, 0) == 0) {
-          childstatus =
-              CreateProcess((LPTSTR)buf, CommandLine, NULL, NULL, TRUE, 0, NULL, NULL, &StartupInfo, &ProcessInfo);
+          childstatus = CreateProcess((LPTSTR)buf, CommandLine, NULL, NULL, TRUE, 0, NULL, NULL, &StartupInfo, &ProcessInfo);
           break;
         }
       }
@@ -505,8 +503,7 @@ static IDpair* __cdecl idtab(FILE* pstream) {
    * the extra entries as being free (i.e., set their stream fields to
    * to NULL).
    */
-  if((pstream != NULL) || ((__idtabsiz + 1) < __idtabsiz) || ((__idtabsiz + 1) >= (SIZE_MAX / sizeof(IDpair))) ||
-     ((newptr = (IDpair*)_recalloc_crt((void*)__idpairs, (__idtabsiz + 1), sizeof(IDpair))) == NULL))
+  if((pstream != NULL) || ((__idtabsiz + 1) < __idtabsiz) || ((__idtabsiz + 1) >= (SIZE_MAX / sizeof(IDpair))) || ((newptr = (IDpair*)_recalloc_crt((void*)__idpairs, (__idtabsiz + 1), sizeof(IDpair))) == NULL))
     /* either pstream was non-NULL or the attempt to create/expand
      * the table failed. in either case, return a NULL to indicate
      * failure.

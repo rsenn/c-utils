@@ -65,18 +65,7 @@ dump_hex(buffer* b, const char* x, const char* y, size_t offset) {
 
 void
 usage(char* av0) {
-  buffer_putm_internal(buffer_1,
-                       "Usage: ",
-                       str_basename(av0),
-                       " [OPTIONS] <file...>\n",
-                       "\n",
-                       "Options:\n",
-                       "\n",
-                       "  -h, --help              Show this help\n",
-                       "  -i, --imports           List imports\n",
-                       "  -e, --exports           List exports\n",
-                       "\n",
-                       NULL);
+  buffer_putm_internal(buffer_1, "Usage: ", str_basename(av0), " [OPTIONS] <file...>\n", "\n", "Options:\n", "\n", "  -h, --help              Show this help\n", "  -i, --imports           List imports\n", "  -e, --exports           List exports\n", "\n", NULL);
   buffer_flush(buffer_1);
 }
 

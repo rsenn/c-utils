@@ -31,9 +31,7 @@ void list_unshift(list*, node*);
 /* n is set to the current node and n->next is backupped
    into m before loop body for safe walk-throught when
    links get deleted */
-#define list_foreach_down_safe(list, n, m)                                                                             \
-  for((n) = (void*)(list)->head, (m) = (void*)((node*)n) != NULL ? (void*)((node*)n)->next : NULL; (n) != NULL;        \
-      (n) = (void*)((node*)m), (m) = (void*)((node*)n) != NULL ? (void*)((node*)n)->next : NULL)
+#define list_foreach_down_safe(list, n, m) for((n) = (void*)(list)->head, (m) = (void*)((node*)n) != NULL ? (void*)((node*)n)->next : NULL; (n) != NULL; (n) = (void*)((node*)m), (m) = (void*)((node*)n) != NULL ? (void*)((node*)n)->next : NULL)
 
 /*
  * Macros to walk through a list list from tail to head.                     *
@@ -44,9 +42,7 @@ void list_unshift(list*, node*);
 /* n is set to the current node and n->prev is backupped
    into m before loop body for safe walk-throught when
    links get deleted */
-#define list_foreach_up_safe(list, n, m)                                                                               \
-  for((n) = (void*)(list)->tail, (m) = (void*)((node*)n) != NULL ? (void*)((node*)n)->prev : NULL; (n) != NULL;        \
-      (n) = (void*)((node*)m), (m) = (void*)((node*)n) != NULL ? (void*)((node*)n)->prev : NULL)
+#define list_foreach_up_safe(list, n, m) for((n) = (void*)(list)->tail, (m) = (void*)((node*)n) != NULL ? (void*)((node*)n)->prev : NULL; (n) != NULL; (n) = (void*)((node*)m), (m) = (void*)((node*)n) != NULL ? (void*)((node*)n)->prev : NULL)
 
 /* aliases for backwards compatibility */
 #define list_foreach list_foreach_down

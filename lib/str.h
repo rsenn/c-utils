@@ -87,8 +87,7 @@ char* str_triml(char*, const char* charset, unsigned int charsetlen);
 #define str_equal(s, t) (!str_diff((s), (t)))
 
 #define str_foreach(s, ptr) for((ptr) = (void*)(s); *(const char*)(ptr); (ptr) = ((const char*)(ptr)) + 1)
-#define str_foreach_skip(s, ptr, skipcall)                                                                             \
-  for((ptr) = (void*)(s); *(const char*)(ptr); (ptr) = ((const char*)(ptr)) + (skipcall))
+#define str_foreach_skip(s, ptr, skipcall) for((ptr) = (void*)(s); *(const char*)(ptr); (ptr) = ((const char*)(ptr)) + (skipcall))
 
 #define str_contains(s, needle) (((s)[str_find((s), (needle))]) != 0)
 

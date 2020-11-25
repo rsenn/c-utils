@@ -405,8 +405,7 @@ download(struct ftpparse* x, stralloc* r_dir, stralloc* l_dir) {
   {
     char nb[FMT_ULONG];
     tmpfn.len--; /* \0 */
-    if(!stralloc_catb(&tmpfn, ".", 1) || !stralloc_catb(&tmpfn, nb, fmt_uint64(nb, mtime)) ||
-       !stralloc_catb(&tmpfn, ".", 1) || !stralloc_catb(&tmpfn, nb, fmt_uint64(nb, x->size)) || !stralloc_0(&tmpfn))
+    if(!stralloc_catb(&tmpfn, ".", 1) || !stralloc_catb(&tmpfn, nb, fmt_uint64(nb, mtime)) || !stralloc_catb(&tmpfn, ".", 1) || !stralloc_catb(&tmpfn, nb, fmt_uint64(nb, x->size)) || !stralloc_0(&tmpfn))
       if(!o_no_rest)
         unlink(tmpfn.s);
   }
@@ -1680,15 +1679,7 @@ static uogetopt2 myopts[] = {
      "  * the remote directory is /, and\n"
      "  * and /private/file/0/mirror/cr.yp.to is the local directory.",
      0},
-    {0,
-     "author",
-     uogo_print_help,
-     UOGO_NOARG | UOGO_HIDDEN | UOGO_EXIT | UOGO_NOLHD,
-     0,
-     0,
-     "Show author.",
-     "Uwe Ohse, <uwe@ohse.de>.",
-     0},
+    {0, "author", uogo_print_help, UOGO_NOARG | UOGO_HIDDEN | UOGO_EXIT | UOGO_NOLHD, 0, 0, "Show author.", "Uwe Ohse, <uwe@ohse.de>.", 0},
     {0,
      "copyright",
      uogo_print_help,

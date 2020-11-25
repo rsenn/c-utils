@@ -323,9 +323,7 @@ get_cfgdat(const char* chip) {
   if(path.len == 0) {
     dir_t d;
     const char *dir = 0, *subdir;
-    static const char* const search_dirs[] = {"/opt/microchip",
-                                              "C:\\Program Files\\Microchip",
-                                              "C:\\Program Files (x86)\\Microchip"};
+    static const char* const search_dirs[] = {"/opt/microchip", "C:\\Program Files\\Microchip", "C:\\Program Files (x86)\\Microchip"};
     for(i = 0; i < sizeof(search_dirs) / sizeof(search_dirs[0]); i++) {
       dir = search_dirs[i];
       if(path_exists(dir))
@@ -488,13 +486,7 @@ main(int argc, char* argv[]) {
   int c, index = 0;
   const char *cfgdata = 0, *hexfile = 0;
 
-  struct longopt opts[] = {{"help", 0, NULL, 'h'},
-                           {"oneline", 0, &oneline, 1},
-                           {"default", 0, &nodefault, 0},
-                           {"no-comments", 0, &comments, 0},
-                           {"name", 0, &output_name, 1},
-                           {"verbose", 0, &verbose, 1},
-                           {0, 0, 0, 0}};
+  struct longopt opts[] = {{"help", 0, NULL, 'h'}, {"oneline", 0, &oneline, 1}, {"default", 0, &nodefault, 0}, {"no-comments", 0, &comments, 0}, {"name", 0, &output_name, 1}, {"verbose", 0, &verbose, 1}, {0, 0, 0, 0}};
 
   for(;;) {
     c = getopt_long(argc, argv, "hodCnv", opts, &index);

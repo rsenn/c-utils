@@ -133,8 +133,7 @@ get_ports(strarray* ports) {
     size_t i = str_rchr(port, '/');
     if(port[i]) {
       i++;
-      if(/*str_start(&port[i], "tnt") ||*/ str_start(&port[i], "ttyACM") ||
-         str_start(&port[i], "ttyUSB") /*||   port[i + 3] == 'S'*/) {
+      if(/*str_start(&port[i], "tnt") ||*/ str_start(&port[i], "ttyACM") || str_start(&port[i], "ttyUSB") /*||   port[i + 3] == 'S'*/) {
         if(access(port, R_OK)) {
           if(errno != ENOENT && errno != ENODEV && errno != EACCES)
             errmsg_warnsys(port, 0);
@@ -313,8 +312,7 @@ term_init(fd_t fd, struct termios* state) {
     return;
   }
 
-  if(actual.c_iflag != raw.c_iflag || actual.c_oflag != raw.c_oflag || actual.c_cflag != raw.c_cflag ||
-     actual.c_lflag != raw.c_lflag) {
+  if(actual.c_iflag != raw.c_iflag || actual.c_oflag != raw.c_oflag || actual.c_cflag != raw.c_cflag || actual.c_lflag != raw.c_lflag) {
     /* Try restoring the old settings! */
     tcsetattr(fd, TCSANOW, &old);
   }

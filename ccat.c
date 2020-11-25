@@ -7,6 +7,7 @@
 #include "lib/byte.h"
 #include "lib/iarray.h"
 #include "lib/io.h"
+#include "lib/getopt.h"
 
 #include <stdlib.h>
 
@@ -24,36 +25,7 @@ buffer_copy(buffer* out, buffer* in) {
   return n;
 }
 
-void
-usage(char* argv0) {
-  buffer_putm_internal(buffer_1,
-                       "Usage: ",
-                       argv0,
-                       " [-o output] [infile or stdin]\n\n",
-                       "  -1 ... -9           compression level; default is 3\n",
-                       "\n",
-                       "Supported types are:",
-                       0);
-#if HAVE_ZLIB
-  buffer_puts(buffer_1, " gz");
-#endif
-#if HAVE_LIBBZ2
-  buffer_puts(buffer_1, " bz2");
-#endif
-#if HAVE_LIBLZMA
-  buffer_puts(buffer_1, " lzma xz");
-#endif
-  buffer_putnlflush(buffer_1);
-  exit(0);
-}
-
-typedef enum compression_type {
-  C_UNKNOWN = 0,
-  C_GZ,
-  C_BZ2,
-  C_LZMA,
-  C_XZ,
-} compression_type;
+typedef enum compression_type { C_UNKNOWN = 0, C_GZ, C_BZ2, C_LZMA, C_XZ, C_BROTLI } compression_type;
 
 compression_type
 compression_from_ext(const char* ext) {
@@ -69,6 +41,9 @@ compression_from_ext(const char* ext) {
   if(str_case_equal(ext, "lzma"))
     return C_LZMA;
 
+  if(str_case_equal(ext, "br"))
+    return C_BROTLI;
+
   return C_UNKNOWN;
 }
 
@@ -80,20 +55,47 @@ compression_from_filename(const char* fn) {
   return C_UNKNOWN;
 }
 
+void
+usage(char* argv0) {
+  buffer_putm_internal(buffer_1, "Usage: ", argv0, " [-o output] [infile or stdin]\n\n", "  -1 ... -11           compression level; default is 3\n", "\n", "Supported types are:", 0);
+#if HAVE_ZLIB
+  buffer_puts(buffer_1, " gz");
+#endif
+#if HAVE_LIBBZ2
+  buffer_puts(buffer_1, " bz2");
+#endif
+#if HAVE_LIBLZMA
+  buffer_puts(buffer_1, " lzma xz");
+#endif
+#if HAVE_BROTLI
+  buffer_puts(buffer_1, " br");
+#endif
+  buffer_putnlflush(buffer_1);
+  exit(0);
+}
 int
 main(int argc, char* argv[]) {
-  int opt;
-  int level = 3;
-  int decompress = 0;
-  const char* in_filename = "-";
-  const char* out_filename = "-";
-  compression_type in_type = C_UNKNOWN;
-  compression_type out_type = C_UNKNOWN;
+  int opt, index = 0;
+  int level = 10;
+  int decompress = -1;
+  const char *in_filename = "-", *out_filename = "-";
+  compression_type type = C_UNKNOWN, in_type = C_UNKNOWN, out_type = C_UNKNOWN;
   buffer infile, outfile;
   buffer *input, *output;
 
-  while((opt = getopt(argc, argv, "123456789dt:o:h")) != -1) {
+  struct longopt opts[] = {{"help", 0, NULL, 'h'},
+                           {"10", 0, NULL, 10},
+                           {"11", 0, NULL, 11},
+                           {"compress", 0, NULL, 'c'},
+                           {"decompress", 0, NULL, 'd'},
+                           {"type", 1, NULL, 't'},
+                           {"output", 1, NULL, 'o'},
+
+                           {0, 0, 0, 0}};
+
+  while((opt = unix_getopt_long(argc, argv, "123456789cdt:o:h", opts, &index)) != -1) {
     switch(opt) {
+        // case '0':
       case '1':
       case '2':
       case '3':
@@ -103,18 +105,19 @@ main(int argc, char* argv[]) {
       case '7':
       case '8':
       case '9': level = opt - '0'; break;
+      case 10: level = opt; break;
+      case 11: level = opt; break;
+      case 'c': decompress = 0; break;
       case 'd': decompress = 1; break;
-      case 't': in_type = compression_from_ext(optarg); break;
-      case 'o': out_filename = optarg; break;
+      case 't': type = compression_from_ext(unix_optarg); break;
+      case 'o': out_filename = unix_optarg; break;
       case 'h': usage(str_basename(argv[0])); exit(EXIT_SUCCESS);
-      default: /* '?' */
-        buffer_putm_internal(buffer_2, "Usage: ", argv[0], "[-t TYPE] [-o OUTPUT] [file]\n", 0);
-        exit(EXIT_FAILURE);
+      default: /* '?' */ buffer_putm_internal(buffer_2, "Usage: ", argv[0], "[-t TYPE] [-o OUTPUT] [file]\n", 0); exit(EXIT_FAILURE);
     }
   }
 
-  if(argv[optind])
-    in_filename = argv[optind];
+  if(argv[unix_optind])
+    in_filename = argv[unix_optind];
 
   if(str_equal(in_filename, "-")) {
     input = buffer_0;
@@ -127,7 +130,7 @@ main(int argc, char* argv[]) {
     input = &infile;
     if(in_type == C_UNKNOWN) {
       in_type = compression_from_filename(in_filename);
-      if(in_type != C_UNKNOWN)
+      if(in_type != C_UNKNOWN && decompress == -1)
         decompress = 1;
     }
   }
@@ -143,6 +146,15 @@ main(int argc, char* argv[]) {
     output = &outfile;
     if(out_type == C_UNKNOWN)
       out_type = compression_from_filename(out_filename);
+    if(out_type != C_UNKNOWN && decompress == -1)
+      decompress = 0;
+  }
+
+  if(type != C_UNKNOWN) {
+    if(in_type == C_UNKNOWN && decompress == 1)
+      in_type = type;
+    if(out_type == C_UNKNOWN && decompress == 0)
+      out_type = type;
   }
 
   {
@@ -159,6 +171,7 @@ main(int argc, char* argv[]) {
       case C_BZ2: buffer_bz2(&cbuf, decompress ? input : output, decompress ? 0 : level); break;
       case C_XZ:
       case C_LZMA: buffer_lzma(&cbuf, decompress ? input : output, decompress ? 0 : level); break;
+      case C_BROTLI: buffer_brotli(&cbuf, decompress ? input : output, decompress ? 0 : level); break;
       default:
         buffer_putm_internal(buffer_2, "ERROR: Unable to detect compression type from ", in_filename, 0);
         buffer_putnlflush(buffer_2);
@@ -172,11 +185,11 @@ main(int argc, char* argv[]) {
 
     if(decompress) {
       buffer_copy(output, &cbuf);
-      buffer_flush(output);
     } else {
       buffer_copy(&cbuf, input);
       buffer_flush(&cbuf);
     }
+    buffer_flush(output);
   }
 
   return 0;

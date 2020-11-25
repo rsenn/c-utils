@@ -13,8 +13,7 @@ io_canwrite() {
 #if defined(HAVE_SIGIO)
   {
     if(alt_firstwrite >= 0 && (e = (io_entry*)iarray_get((iarray*)io_getfds(), alt_firstwrite)) && e->canwrite) {
-      debug_printf(("io_canwrite: normal write queue is empty, swapping in alt write queue (starting with %ld)\n",
-                    alt_firstwrite));
+      debug_printf(("io_canwrite: normal write queue is empty, swapping in alt write queue (starting with %ld)\n", alt_firstwrite));
       first_writeable = alt_firstwrite;
       alt_firstwrite = -1;
     } else

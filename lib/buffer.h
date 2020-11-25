@@ -24,9 +24,9 @@ typedef struct buffer {
   fd_t fd;             /* passed as first argument to op */
 } buffer;
 
-#define BUFFER_INIT(op, fd, buf, len)                                                                                  \
+#define BUFFER_INIT(op, fd, buf, len)                                                                                                                                                                                                                                                                      \
   { (buf), 0, 0, (len), (buffer_op_proto*)(void*)(op), NULL, NULL, (fd) }
-#define BUFFER_INIT_FREE(op, fd, buf, len)                                                                             \
+#define BUFFER_INIT_FREE(op, fd, buf, len)                                                                                                                                                                                                                                                                 \
   { (buf), 0, 0, (len), (buffer_op_proto*)(void*)(op), NULL, buffer_free, (fd) }
 #define BUFFER_INIT_READ(op, fd, buf, len) BUFFER_INIT(op, fd, buf, len) /*obsolete*/
 #define BUFFER_INSIZE 65535
@@ -61,8 +61,7 @@ ssize_t buffer_putsflush(buffer*, const char* x);
  * constant string,  where we know its length at compile-time,  call
  * buffer_put with the known length instead */
 #define buffer_puts(b, s) (__builtin_constant_p(s) ? buffer_put(b, s, __builtin_strlen(s)) : buffer_puts(b, s))
-#define buffer_putsflush(b, s)                                                                                         \
-  (__builtin_constant_p(s) ? buffer_putflush(b, s, __builtin_strlen(s)) : buffer_putsflush(b, s))
+#define buffer_putsflush(b, s) (__builtin_constant_p(s) ? buffer_putflush(b, s, __builtin_strlen(s)) : buffer_putsflush(b, s))
 #endif
 
 int buffer_putm_internal(buffer* b, ...);
@@ -119,8 +118,7 @@ int buffer_prefetch(buffer*, size_t n);
 #define buffer_PEEK(s) ((s)->x + (s)->p)
 #define buffer_SEEK(s, len) ((s)->p += (len))
 
-#define buffer_GETC(s, c)                                                                                              \
-  (((s)->p < (s)->n) ? (*(c) = *buffer_PEEK(s), buffer_SEEK((s), 1), 1) : buffer_get((s), (c), 1))
+#define buffer_GETC(s, c) (((s)->p < (s)->n) ? (*(c) = *buffer_PEEK(s), buffer_SEEK((s), 1), 1) : buffer_get((s), (c), 1))
 
 int buffer_putulong(buffer*, unsigned long int l);
 int buffer_put8long(buffer*, unsigned long int l);
@@ -209,6 +207,7 @@ int buffer_truncfile(buffer*, const char* fn);
 
 int buffer_lzma(buffer*, buffer*, int compress);
 int buffer_bz2(buffer*, buffer*, int compress);
+int buffer_brotli(buffer*, buffer*, int compress);
 
 int buffer_putnc(buffer*, char c, int ntimes);
 int buffer_putns(buffer*, const char* s, int ntimes);

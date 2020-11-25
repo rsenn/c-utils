@@ -218,15 +218,7 @@ main(int argc, char* argv[]) {
   int digit_optind = 0;
   const char* rel_to = NULL;
   int index = 0;
-  struct longopt opts[] = {{"help", 0, NULL, 'h'},
-                           {"relative-to", 1, NULL, 'r'},
-                           {"separator", 1, NULL, 's'},
-                           {"mixed", 0, NULL, 'm'},
-                           {"unix", 0, NULL, 'u'},
-                           {"windows", 0, NULL, 'w'},
-                           {"absolute", 0, NULL, 'a'},
-                           {"canonicalize", 0, NULL, 'f'},
-                           {0, 0, 0, 0}};
+  struct longopt opts[] = {{"help", 0, NULL, 'h'}, {"relative-to", 1, NULL, 'r'}, {"separator", 1, NULL, 's'}, {"mixed", 0, NULL, 'm'}, {"unix", 0, NULL, 'u'}, {"windows", 0, NULL, 'w'}, {"absolute", 0, NULL, 'a'}, {"canonicalize", 0, NULL, 'f'}, {0, 0, 0, 0}};
 
   errmsg_iam(argv[0]);
 

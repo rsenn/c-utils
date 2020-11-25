@@ -141,17 +141,7 @@ sln(const char* path) {
 
 void
 usage(char* av0) {
-  buffer_putm_internal(buffer_1,
-                       "Usage: ",
-                       str_basename(av0),
-                       " [OPTIONS] <FILE.list | TARGET LINK>\n",
-                       "\n",
-                       "Options:\n",
-                       "\n",
-                       "  -h, --help              Show this help\n",
-                       "  -v, --verbose           Be verbose\n",
-                       "\n",
-                       NULL);
+  buffer_putm_internal(buffer_1, "Usage: ", str_basename(av0), " [OPTIONS] <FILE.list | TARGET LINK>\n", "\n", "Options:\n", "\n", "  -h, --help              Show this help\n", "  -v, --verbose           Be verbose\n", "\n", NULL);
   buffer_flush(buffer_1);
 }
 

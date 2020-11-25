@@ -175,15 +175,7 @@ main(int argc, char* argv[]) {
   int index = 0;
   const char* input_file;
   const char* tmpl = 0;
-  struct longopt opts[] = {{"help", 0, NULL, 'h'},
-                           {"single-quote", 0, &quote_char, '\''},
-                           {"double-quote", 0, &quote_char, '"'},
-                           {"one-line", 0, NULL, 'o'},
-                           {"compact", 0, NULL, 'c'},
-                           {"indent", 0, NULL, 'l'},
-                           {"inplace", 0, NULL, 'i'},
-                           {"terminate", 0, NULL, 't'},
-                           {0, 0, 0, 0}};
+  struct longopt opts[] = {{"help", 0, NULL, 'h'}, {"single-quote", 0, &quote_char, '\''}, {"double-quote", 0, &quote_char, '"'}, {"one-line", 0, NULL, 'o'}, {"compact", 0, NULL, 'c'}, {"indent", 0, NULL, 'l'}, {"inplace", 0, NULL, 'i'}, {"terminate", 0, NULL, 't'}, {0, 0, 0, 0}};
 
   errmsg_iam(argv[0]);
   output = buffer_1;

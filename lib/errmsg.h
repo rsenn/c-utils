@@ -27,15 +27,15 @@ void errmsg_infosys(const char* message, ...);
 #ifndef __BORLANDC__
 #define carp(...) errmsg_warn(__VA_ARGS__, (char*)0)
 #define carpsys(...) errmsg_warnsys(__VA_ARGS__, (char*)0)
-#define die(n, ...)                                                                                                    \
-  do {                                                                                                                 \
-    errmsg_warn(__VA_ARGS__, (char*)0);                                                                                \
-    exit(n);                                                                                                           \
+#define die(n, ...)                                                                                                                                                                                                                                                                                        \
+  do {                                                                                                                                                                                                                                                                                                     \
+    errmsg_warn(__VA_ARGS__, (char*)0);                                                                                                                                                                                                                                                                    \
+    exit(n);                                                                                                                                                                                                                                                                                               \
   } while(0)
-#define diesys(n, ...)                                                                                                 \
-  do {                                                                                                                 \
-    errmsg_warnsys(__VA_ARGS__, (char*)0);                                                                             \
-    exit(n);                                                                                                           \
+#define diesys(n, ...)                                                                                                                                                                                                                                                                                     \
+  do {                                                                                                                                                                                                                                                                                                     \
+    errmsg_warnsys(__VA_ARGS__, (char*)0);                                                                                                                                                                                                                                                                 \
+    exit(n);                                                                                                                                                                                                                                                                                               \
   } while(0)
 #define msg(...) errmsg_info(__VA_ARGS__, (char*)0);
 #define msgsys(...) errmsg_infosys(__VA_ARGS__, (char*)0);

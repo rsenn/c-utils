@@ -212,9 +212,7 @@ main(int argc, char* argv[]) {
       case 'f': in_type = optarg; break;
 
       case 'h': usage(str_basename(argv[0])); exit(EXIT_SUCCESS);
-      default: /* '?' */
-        buffer_putm_internal(buffer_2, "Usage: ", argv[0], "[-t TYPE] [file]\n", 0);
-        exit(EXIT_FAILURE);
+      default: /* '?' */ buffer_putm_internal(buffer_2, "Usage: ", argv[0], "[-t TYPE] [file]\n", 0); exit(EXIT_FAILURE);
     }
   }
 
