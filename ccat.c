@@ -8,8 +8,11 @@
 #include "lib/iarray.h"
 #include "lib/io.h"
 #include "lib/getopt.h"
+#include "lib/path.h"
+#include "lib/case.h"
 
 #include <stdlib.h>
+#include <stdbool.h>
 
 int
 buffer_copy(buffer* out, buffer* in) {
@@ -29,19 +32,19 @@ typedef enum compression_type { C_UNKNOWN = 0, C_GZ, C_BZ2, C_LZMA, C_XZ, C_BROT
 
 compression_type
 compression_from_ext(const char* ext) {
-  if(str_case_equal(ext, "gz") || str_case_equal(ext, "tgz"))
+  if(case_equals(ext, "gz") || case_equals(ext, "tgz"))
     return C_GZ;
 
-  if(str_case_equal(ext, "bz2") || str_case_equal(ext, "tbz2") || str_case_equal(ext, "tbz"))
+  if(case_equals(ext, "bz2") || case_equals(ext, "tbz2") || case_equals(ext, "tbz"))
     return C_BZ2;
 
-  if(str_case_equal(ext, "xz") || str_case_equal(ext, "txz"))
+  if(case_equals(ext, "xz") || case_equals(ext, "txz"))
     return C_XZ;
 
-  if(str_case_equal(ext, "lzma"))
+  if(case_equals(ext, "lzma"))
     return C_LZMA;
 
-  if(str_case_equal(ext, "br"))
+  if(case_equals(ext, "br"))
     return C_BROTLI;
 
   return C_UNKNOWN;
@@ -78,6 +81,7 @@ main(int argc, char* argv[]) {
   int opt, index = 0;
   int level = 10;
   int decompress = -1;
+  bool force = false;
   const char *in_filename = "-", *out_filename = "-";
   compression_type type = C_UNKNOWN, in_type = C_UNKNOWN, out_type = C_UNKNOWN;
   buffer infile, outfile;
@@ -90,10 +94,11 @@ main(int argc, char* argv[]) {
                            {"decompress", 0, NULL, 'd'},
                            {"type", 1, NULL, 't'},
                            {"output", 1, NULL, 'o'},
+                           {"force", 0, NULL, 'f'},
 
                            {0, 0, 0, 0}};
 
-  while((opt = unix_getopt_long(argc, argv, "123456789cdt:o:h", opts, &index)) != -1) {
+  while((opt = unix_getopt_long(argc, argv, "123456789cdt:o:hf", opts, &index)) != -1) {
     switch(opt) {
         // case '0':
       case '1':
@@ -107,6 +112,7 @@ main(int argc, char* argv[]) {
       case '9': level = opt - '0'; break;
       case 10: level = opt; break;
       case 11: level = opt; break;
+      case 'f': force = true; break;
       case 'c': decompress = 0; break;
       case 'd': decompress = 1; break;
       case 't': type = compression_from_ext(unix_optarg); break;
@@ -138,6 +144,12 @@ main(int argc, char* argv[]) {
   if(str_equal(out_filename, "-")) {
     output = buffer_1;
   } else {
+    if(!force && path_exists(out_filename)) {
+      buffer_putm_internal(buffer_2, "ERROR already exists (use -f): ", out_filename, 0);
+      buffer_putnlflush(buffer_2);
+      return 1;
+    }
+
     if(buffer_truncfile(&outfile, out_filename) < 0) {
       buffer_putm_internal(buffer_2, "ERROR opening: ", out_filename, 0);
       buffer_putnlflush(buffer_2);
@@ -189,6 +201,7 @@ main(int argc, char* argv[]) {
       buffer_copy(&cbuf, input);
       buffer_flush(&cbuf);
     }
+    buffer_close(&cbuf);
     buffer_flush(output);
   }
 
