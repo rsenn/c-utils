@@ -169,7 +169,7 @@ consume_output(stralloc* sa, buffer* out) {
 
 static inline bool
 do_quote(int ch) {
-   return byte_chr(quote_chars.s, quote_chars.len, ch) < quote_chars.len;
+  return byte_chr(quote_chars.s, quote_chars.len, ch) < quote_chars.len;
 }
 
 void
@@ -179,7 +179,7 @@ add_output(const char* x, size_t len, buffer* out) {
 
   for(i = 0; i < len; i++) {
     unsigned int chlen = 0;
-   chlen = fmt_utf8(0, x[i]);
+    chlen = fmt_utf8(0, x[i]);
 
     if(do_quote(x[i]) || chlen > 1 || fmt_call != fmt_default) {
       n = fmt_call(tmp, x[i], 0);
@@ -187,7 +187,13 @@ add_output(const char* x, size_t len, buffer* out) {
       tmp[0] = x[i];
       n = 1;
     }
-    buffer_put(out, tmp, n);
+
+    if(quote_newline && n == 1 && tmp[0] == '\n')
+      buffer_puts(out, "\\n");
+    else if(quote_tabs && n == 1 && tmp[0] == '\t')
+      buffer_puts(out, "\\t");
+    else
+      buffer_put(out, tmp, n);
   }
 }
 
@@ -223,9 +229,9 @@ run_quote(charbuf* in, buffer* out) {
       c = '\t';
       stralloc_zero(&buf);
     }
- 
-      stralloc_catc(&buf, c);
-   
+
+    stralloc_catc(&buf, c);
+
     n++;
     col++;
 
@@ -279,16 +285,18 @@ main(int argc, char* argv[]) {
 
   struct longopt opts[] = {{"help", 0, NULL, 'h'},
                            {"in-place", 0, NULL, 'i'},
-                           {"quote-chars", 1, NULL, 'q'},
                            {"add-quotes", 1, NULL, 'a'},
                            {"tab-size", 1, NULL, 't'},
-                           {"quote-newline", 1, NULL, 'n'},
-                           {"quote-tabs", 1, NULL, 9},
+                           {"quote-chars", 1, NULL, 'q'},
+                           {"quote-newline", 0, NULL, 'n'},
+                           {"quote-tabs", 0, NULL, 9},
+                           {"no-quote-newline", 0, &quote_newline, false},
+                           {"no-quote-tabs", 0, &quote_tabs, false},
                            {"escape-cmake", 1, NULL, 'C'},
                            {"escape-shell", 0, NULL, 'S'},
                            {"escape-doublequoted-shell", 0, NULL, 'D'},
-                                                  {"escape-quoted-shell", 0, NULL, 'Q'},
-    {"escape-c", 0, NULL, 'c'},
+                           {"escape-quoted-shell", 0, NULL, 'Q'},
+                           {"escape-c", 0, NULL, 'c'},
                            {"escape-xml", 0, NULL, 'X'},
                            {"escape-json", 0, NULL, 'J'},
                            {"escape-printable", 0, NULL, 'P'},
@@ -323,6 +331,7 @@ main(int argc, char* argv[]) {
         //    case 'S': stralloc_copys(&quote_chars, "\"$`"); break;
       case 'C':
         add_quotes = "\"";
+        tab_size = 2;
         quote_newline = quote_tabs = true;
         stralloc_copys(&quote_chars, "$");
         break;
