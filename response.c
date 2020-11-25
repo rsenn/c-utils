@@ -163,12 +163,12 @@ void
 response_dump(response const* resp) {
   size_t i;
   buffer_puts(buffer_2, "len = ");
-  buffer_putulong(buffer_2, resp->stra.len);
+  buffer_putulong(buffer_2, resp->len);
 
   buffer_puts(buffer_2, " data = ");
 
-  for(i = 0; i < resp->stra.len; i++) {
-    uint8 ch = resp->stra.s[i];
+  for(i = 0; i < resp->len; i++) {
+    uint8 ch = resp->buf[i];
 
     if(ch >= 'a' && ch <= 'z')
       buffer_putc(buffer_2, ch);

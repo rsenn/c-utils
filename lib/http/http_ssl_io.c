@@ -7,7 +7,9 @@
 #include <assert.h>
 #include <errno.h>
 
-const struct { int want_read, want_write, ssl; } http_ssl_error_code = {SSL_ERROR_WANT_READ, SSL_ERROR_WANT_WRITE, SSL_ERROR_SSL};
+const struct {
+  int want_read, want_write, ssl;
+} http_ssl_error_code = {SSL_ERROR_WANT_READ, SSL_ERROR_WANT_WRITE, SSL_ERROR_SSL};
 
 const struct { int eagain, ewouldblock; } http_ssl_errno_code = {EAGAIN, EWOULDBLOCK};
 /*

@@ -134,17 +134,18 @@ process_create(const char* filename, char* const argv[], fd_t std[3], const char
 
     /* Create the child process */
 
-    retval = CreateProcessA(filename,
-                            joined_argv.s,
-                            &saAttr, // process security attributes
-                            NULL,    // primary thread security attributes
-                            TRUE,    // handles are inherited
-                            /*(TODO: set CREATE_NEW CONSOLE/PROCESS_GROUP to make GetExitCodeProcess() work?) */
-                            CREATE_NO_WINDOW, // creation flags
-                            NULL,
-                            cwd,             // use parent's current directory
-                            &siStartInfo,    // STARTUPINFO pointer
-                            &piProcessInfo); // receives PROCESS_INFORMATION
+    retval = CreateProcessA(
+        filename,
+        joined_argv.s,
+        &saAttr, // process security attributes
+        NULL,    // primary thread security attributes
+        TRUE,    // handles are inherited
+        /*(TODO: set CREATE_NEW CONSOLE/PROCESS_GROUP to make GetExitCodeProcess() work?) */
+        CREATE_NO_WINDOW, // creation flags
+        NULL,
+        cwd,             // use parent's current directory
+        &siStartInfo,    // STARTUPINFO pointer
+        &piProcessInfo); // receives PROCESS_INFORMATION
 
     if(retval == FALSE) {
       int error = GetLastError();

@@ -10,7 +10,8 @@ xml_find_all_predicate(xmlnode* node, array* a, xml_pred_t* pred, const void* vp
 
     if(pred(node, vptr[0], vptr[1], vptr[2])) {
       xmlnode** nptr;
-      if(!(nptr = (xmlnode**)array_allocate(a, sizeof(xmlnode*), array_length(a, sizeof(xmlnode*)))))
+      if(!(nptr =
+               (xmlnode**)array_allocate(a, sizeof(xmlnode*), array_length(a, sizeof(xmlnode*)))))
         return 0;
       *nptr = node;
     }

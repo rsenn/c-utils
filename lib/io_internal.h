@@ -223,7 +223,8 @@ extern int close();
 #define debug_printf(x)
 
 #ifdef DEBUG
-#define DEBUG_MSG(msg, fd) buffer_puts(buffer_2, msg), buffer_putlong(buffer_2, fd), buffer_putnlflush(buffer_2)
+#define DEBUG_MSG(msg, fd)                                                                         \
+  buffer_puts(buffer_2, msg), buffer_putlong(buffer_2, fd), buffer_putnlflush(buffer_2)
 #else
 #define DEBUG_MSG(msg, fd)
 #endif

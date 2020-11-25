@@ -44,7 +44,6 @@ http_on_writeable(http* h, void (*wantread)(fd_t)) {
         goto fail;
     }
   }
-#endif
   // request:
   if(h->connected && h->sent == 0) {
     ret = http_ssl2want(h, http_sendreq(h), wantread, 0);
@@ -52,6 +51,7 @@ http_on_writeable(http* h, void (*wantread)(fd_t)) {
     if(h->sent)
       wantread(h->sock);
   }
+#endif
 
 fail:
   if(ret == -1 && h->response->err == EAGAIN)

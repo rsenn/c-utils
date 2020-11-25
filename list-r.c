@@ -87,7 +87,8 @@ static int fnmatch_strarray(buffer* b, array* a, const char* string, int flags);
 static strlist exclude_masks, include_masks;
 static char opt_separator = DIRSEP_C;
 
-static int opt_list = 0, opt_numeric = 0, opt_relative = 0, opt_deref = 0, opt_samedev = 1, opt_crc = 0;
+static int opt_list = 0, opt_numeric = 0, opt_relative = 0, opt_deref = 0, opt_samedev = 1,
+           opt_crc = 0;
 static int64 opt_minsize = -1;
 static long opt_depth = -1;
 static uint32 opt_types = (uint32)(int32)-1;
@@ -131,7 +132,13 @@ get_file_size(char* path) {
   typedef LONG(WINAPI getfilesizeex_fn)(HANDLE, PLARGE_INTEGER);
   static getfilesizeex_fn* api_fn;
 
-  HANDLE hFile = CreateFileA(path, GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
+  HANDLE hFile = CreateFileA(path,
+                             GENERIC_READ,
+                             FILE_SHARE_READ | FILE_SHARE_WRITE,
+                             0,
+                             OPEN_EXISTING,
+                             FILE_ATTRIBUTE_NORMAL,
+                             0);
   if(hFile == INVALID_HANDLE_VALUE)
     return -1; /* error condition, could call GetLastError to find out more */
 
@@ -149,7 +156,8 @@ get_file_size(char* path) {
     return -1; /* error condition, could call GetLastError to find out more */
   }
   CloseHandle(hFile);
-  /*  fprintf(stderr, "get_file_size: %s = %"PRIi64" [%s]\n", path, (int64)size.QuadPart, last_error()); */
+  /*  fprintf(stderr, "get_file_size: %s = %"PRIi64" [%s]\n", path, (int64)size.QuadPart,
+   * last_error()); */
   return size.QuadPart;
 }
 
@@ -157,7 +165,13 @@ uint64
 get_file_time(const char* path) {
   FILETIME c, la, lw;
   int64 t;
-  HANDLE hFile = CreateFileA(path, GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
+  HANDLE hFile = CreateFileA(path,
+                             GENERIC_READ,
+                             FILE_SHARE_READ | FILE_SHARE_WRITE,
+                             0,
+                             OPEN_EXISTING,
+                             FILE_ATTRIBUTE_NORMAL,
+                             0);
   if(hFile == INVALID_HANDLE_VALUE)
     return -1; /* error condition, could call GetLastError to find out more */
   if(!GetFileTime(hFile, &c, &la, &lw)) {
@@ -168,7 +182,8 @@ get_file_time(const char* path) {
   if((t = filetime_to_unix(&lw)) <= 0)
     if((t = filetime_to_unix(&c)) <= 0)
       t = filetime_to_unix(&la);
-  /*  fprintf(stderr, "get_file_size: %s = %"PRIi64" [%s]\n", path, (int64)size.QuadPart, last_error()); */
+  /*  fprintf(stderr, "get_file_size: %s = %"PRIi64" [%s]\n", path, (int64)size.QuadPart,
+   * last_error()); */
   return t;
 }
 
@@ -202,11 +217,13 @@ get_file_owner(const char* path) {
   PSECURITY_DESCRIPTOR pSD = 0;
   LPSTR strsid = 0;
   DWORD dwErrorCode = 0;
-  static DWORD(WINAPI * get_security_info)(HANDLE, DWORD, SECURITY_INFORMATION, PSID*, PSID*, PACL*, PACL*, PSECURITY_DESCRIPTOR*);
+  static DWORD(WINAPI * get_security_info)(
+      HANDLE, DWORD, SECURITY_INFORMATION, PSID*, PSID*, PACL*, PACL*, PSECURITY_DESCRIPTOR*);
   static BOOL(WINAPI * convert_sid_to_string_sid_a)(PSID, LPSTR*);
   tmpbuf[0] = '\0';
   /* Get the handle of the file object. */
-  hFile = CreateFileA(path, GENERIC_READ, FILE_SHARE_READ, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
+  hFile =
+      CreateFileA(path, GENERIC_READ, FILE_SHARE_READ, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
   /* Check GetLastError for CreateFile error code. */
   if(hFile == INVALID_HANDLE_VALUE) {
     dwErrorCode = GetLastError();
@@ -219,7 +236,8 @@ get_file_owner(const char* path) {
     return 0;
 
   /* Get the owner SID of the file. */
-  dwRtnCode = get_security_info(hFile, SE_FILE_OBJECT, OWNER_SECURITY_INFORMATION, &pSidOwner, 0, 0, 0, &pSD);
+  dwRtnCode = get_security_info(
+      hFile, SE_FILE_OBJECT, OWNER_SECURITY_INFORMATION, &pSidOwner, 0, 0, 0, &pSD);
   /* Check GetLastError for GetSecurityInfo error condition. */
   if(dwRtnCode != ERROR_SUCCESS) {
     dwErrorCode = GetLastError();
@@ -301,7 +319,8 @@ is_junction_point(const char* fn) {
       /* Tag values come from */
       /* http://msdn.microsoft.com/en-us/library/dd541667(prot.20).aspx */
       switch(FindFileData.dwReserved0) {
-        case IO_REPARSE_TAG_MOUNT_POINT: /* ocb.error_filename(fn, "Junction point, skipping"); */ break;
+        case IO_REPARSE_TAG_MOUNT_POINT: /* ocb.error_filename(fn, "Junction point, skipping"); */
+          break;
         case IO_REPARSE_TAG_SYMLINK:
           /* TODO: Maybe have the option to follow symbolic links? */
           /* ocb.error_filename(fn, "Symbolic link, skipping"); */
@@ -319,7 +338,8 @@ is_junction_point(const char* fn) {
           break;
         case IO_REPARSE_TAG_SIS:
           /* Single Instance Storage */
-          /* "is a system's ability to keep one copy of content that multiple users or computers share" */
+          /* "is a system's ability to keep one copy of content that multiple users or computers
+           * share" */
           /* http://blogs.technet.com/b/filecab/archive/2006/02/03/single-instance-store-sis-in-windows-storage-server-r2.aspx
            */
           status = 0;

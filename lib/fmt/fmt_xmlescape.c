@@ -1,9 +1,10 @@
 #include "../fmt.h"
 
 size_t
-fmt_xmlescape(char* dest, unsigned int ch) {
+fmt_xmlescape(char* dest,  int c) {
   char* x;
   size_t n;
+  unsigned int ch = c;
   /*
   From http://en.wikipedia.org/wiki/XML#Valid_characters
 

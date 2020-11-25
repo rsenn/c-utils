@@ -114,7 +114,8 @@ main(int argc, char** argv) {
       info = symbol->st_info;
       section_header_index = symbol->st_shndx;
 
-      if((info & ELF_STT_FUNC) && (ELF_ELF64_ST_BIND(info) & ELF_STB_GLOBAL) && (section_header_index == text_section_header_index)) {
+      if((info & ELF_STT_FUNC) && (ELF_ELF64_ST_BIND(info) & ELF_STB_GLOBAL) &&
+         (section_header_index == text_section_header_index)) {
         const char* name;
 
         name = content + name_section_offset + name_index;

@@ -33,7 +33,8 @@ xspf_process(playlist* pl, track* t, const char* tag, stralloc* value) {
 }
 
 static int
-xspf_xml_callback(xmlreader* reader, xmlnodeid id, stralloc* name, stralloc* value, HMAP_DB** attrs) {
+xspf_xml_callback(
+    xmlreader* reader, xmlnodeid id, stralloc* name, stralloc* value, HMAP_DB** attrs) {
   track* t = (track*)reader->data;
   playlist* pl = t->pl;
 

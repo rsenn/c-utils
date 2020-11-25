@@ -108,12 +108,14 @@ output_mplab_project(buffer* b, MAP_T* _rules, MAP_T* vars, const strlist* inclu
                               .managed_stack = 1,
                               .program_default_config_words = 0,
                               .link_in_peripheral_library = 0,
-                              .additional_command_line_options = "--output=default,-inhx032 --output=+mcof,-elf",
+                              .additional_command_line_options =
+                                  "--output=default,-inhx032 --output=+mcof,-elf",
                               .memory_model = 1,
                               .size_of_double = 1,
                               .size_of_float = 1};
 
-  ini_section_t *ini, *section, *cat_subfolders, *file_subfolders, *generated_files, *other_files, *file_info, *active_file_settings, *tool_settings;
+  ini_section_t *ini, *section, *cat_subfolders, *file_subfolders, *generated_files, *other_files,
+      *file_info, *active_file_settings, *tool_settings;
 
   stralloc_init(&sa);
   stralloc_init(&file);
@@ -311,14 +313,14 @@ output_mplab_project(buffer* b, MAP_T* _rules, MAP_T* vars, const strlist* inclu
   set_int(toolcfg, "D7", mplab_cfg.preprocess_assembler); //!< preprocess assembler
   set_int(toolcfg, "DC", 9);
 
-  set_int(toolcfg, "FE", mplab_cfg.debugger);                      //!< debugger: 39 = PicKit3, 31 = Auto
-  set_int(toolcfg, "EC", mplab_cfg.clear_bss);                     //!< clear BSS
-  set_int(toolcfg, "F0", mplab_cfg.keep_generated_startup_as);     //!< keep generated startup.as
-  set_int(toolcfg, "EF", mplab_cfg.initialize_data);               //!< initialize data
-  set_int(toolcfg, "F8", mplab_cfg.calibrate_oscillator);          //!< calibrate oscillator
-  set_int(toolcfg, "F9", mplab_cfg.backup_reset_condition_flags);  //!< backup reset co ndition flags
-  set_int(toolcfg, "FA", mplab_cfg.format_hex_file_for_download);  //!< format hex file for download
-  set_int(toolcfg, "C1", mplab_cfg.managed_stack);                 //!< managed stack
+  set_int(toolcfg, "FE", mplab_cfg.debugger);  //!< debugger: 39 = PicKit3, 31 = Auto
+  set_int(toolcfg, "EC", mplab_cfg.clear_bss); //!< clear BSS
+  set_int(toolcfg, "F0", mplab_cfg.keep_generated_startup_as);    //!< keep generated startup.as
+  set_int(toolcfg, "EF", mplab_cfg.initialize_data);              //!< initialize data
+  set_int(toolcfg, "F8", mplab_cfg.calibrate_oscillator);         //!< calibrate oscillator
+  set_int(toolcfg, "F9", mplab_cfg.backup_reset_condition_flags); //!< backup reset co ndition flags
+  set_int(toolcfg, "FA", mplab_cfg.format_hex_file_for_download); //!< format hex file for download
+  set_int(toolcfg, "C1", mplab_cfg.managed_stack);                //!< managed stack
   set_int(toolcfg, "10E", mplab_cfg.program_default_config_words); //!< program default config words
   set_int(toolcfg, "110", mplab_cfg.link_in_peripheral_library);   //!< link in peripheral library
   set_int(toolcfg, "11E", 0);

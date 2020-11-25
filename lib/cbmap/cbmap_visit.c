@@ -20,7 +20,11 @@ cbmap_visit(unsigned char* top, cbmap_visitor visitor_fn, void* user_data) {
 }
 
 int
-cbmap_visit_prefix(cbmap_t map, unsigned char* key_prefix, size_t key_prefix_len, cbmap_visitor visitor_fn, void* user_data) {
+cbmap_visit_prefix(cbmap_t map,
+                   unsigned char* key_prefix,
+                   size_t key_prefix_len,
+                   cbmap_visitor visitor_fn,
+                   void* user_data) {
   unsigned char* p = (unsigned char*)map->root;
   unsigned char* top;
   struct cbmap_data_node* data;

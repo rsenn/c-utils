@@ -164,9 +164,8 @@ strip_comments(charbuf* in, buffer* out) {
     n++;
     if(c == '\n') {
       /*      p = scan_charsetnskip(line.s, " \t\r\v", line.len);
-          is_empty = line.len == 0 || p == line.len || (line.s[line.len - 1] == '\n' && p == line.len - 1);
-           if(is_empty)
-               continue;*/
+          is_empty = line.len == 0 || p == line.len || (line.s[line.len - 1] == '\n' && p ==
+         line.len - 1); if(is_empty) continue;*/
       put_line(&queue, line.s, line.len);
       stralloc_zero(&line);
       continue;

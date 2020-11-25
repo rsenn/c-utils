@@ -56,7 +56,8 @@ pretty_printer(jsonfmt* p, jsonval* v, int depth, int index, char q) {
   static char quote[2] = {0, 0};
   quote[0] = q;
 
-  p->newline = valdepth > 1 ? "\n" : " "; // (!one_line && valdepth > 1 && ((index > -1) || index < -2) && index > 0) ? "\n" : "";
+  p->newline = valdepth > 1 ? "\n" : " "; // (!one_line && valdepth > 1 && ((index > -1) || index <
+                                          // -2) && index > 0) ? "\n" : "";
   p->indent = indent_str.s;
   p->spacing = " ";
   p->separat = valdepth > 1 ? ",\n" : ", ";
@@ -178,7 +179,8 @@ hmap_to_jsonobj(HMAP_DB* db, jsonval* obj) {
  */
 static jsonval
 xml_to_json_obj(xmlnode* node) {
-  /*  static const char* const node_types[] = {"(null)", "XML_DOCUMENT", "XML_ELEMENT", "XML_ATTRIBUTE", "XML_TEXT" };
+  /*  static const char* const node_types[] = {"(null)", "XML_DOCUMENT", "XML_ELEMENT",
+     "XML_ATTRIBUTE", "XML_TEXT" };
       buffer_putm_internal(buffer_2, node_types[(int)node->type], " ", node->name, "\n", 0);*/
   if(node->type == XML_ELEMENT) {
     jsonval obj = json_object();

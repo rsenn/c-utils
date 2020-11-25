@@ -53,7 +53,8 @@ typedef struct xmlnodeset {
 
 #define node_is_closing(n) ((n)->type == XML_ELEMENT && (n)->name[0] == '/')
 
-typedef int(xml_read_callback_fn)(xmlreader* r, xmlnodeid id, stralloc* name, stralloc* value, HMAP_DB** attrs);
+typedef int(xml_read_callback_fn)(
+    xmlreader* r, xmlnodeid id, stralloc* name, stralloc* value, HMAP_DB** attrs);
 
 typedef int(xml_pred_t)(xmlnode*, const void*, const void*, const void*);
 typedef void xml_print_fmt_t(xmlnode*, buffer*, int, char ch, int n);
@@ -92,7 +93,8 @@ xmlnode* xml_element(const char* name);
 size_t xml_escape(const char* s, size_t n, stralloc* out);
 xmlnodeset xml_find_all_1(xmlnode* node, xml_pred_t*, const void* a1);
 xmlnodeset xml_find_all_2(xmlnode* node, xml_pred_t*, const void* a1, const void* a2);
-xmlnodeset xml_find_all_3(xmlnode* node, xml_pred_t*, const void* a1, const void* a2, const void* a3);
+xmlnodeset
+xml_find_all_3(xmlnode* node, xml_pred_t*, const void* a1, const void* a2, const void* a3);
 xmlnodeset xml_find_all_attrs(xmlnode* node, const char* attrs);
 xmlnode* xml_find_attr(xmlnode* node, const char* attr);
 xmlnode* xml_find_element_attr(xmlnode* node, const char* tag, const char* attr, const char* value);
@@ -100,11 +102,13 @@ xmlnode* xml_find_element(xmlnode* node, const char* tag);
 xmlnode* xml_find_parent_attr(xmlnode* node, const char* attrs);
 xmlnode* xml_find_parent_pred_1(xmlnode* node, xml_pred_t*, const void* arg);
 xmlnode* xml_find_parent_pred_2(xmlnode* node, xml_pred_t*, const void* a0, const void* a1);
-xmlnode* xml_find_parent_pred_3(xmlnode* node, xml_pred_t*, const void* a0, const void* a1, const void* a2);
+xmlnode*
+xml_find_parent_pred_3(xmlnode* node, xml_pred_t*, const void* a0, const void* a1, const void* a2);
 xmlnode* xml_find_parent(xmlnode* node, const char* tag);
 xmlnode* xml_find_pred_1(xmlnode* node, xml_pred_t*, const void* arg);
 xmlnode* xml_find_pred_2(xmlnode* node, xml_pred_t*, const void* a0, const void* a1);
-xmlnode* xml_find_pred_3(xmlnode* node, xml_pred_t*, const void* a0, const void* a1, const void* a2);
+xmlnode*
+xml_find_pred_3(xmlnode* node, xml_pred_t*, const void* a0, const void* a1, const void* a2);
 xmlnode* xml_find_pred_n(xmlnode* node, xml_pred_t*, int n, ...);
 xmlnode* xml_find_with_attrs(xmlnode* node, const char* attrs);
 void xml_free(xmlnode* node);
@@ -123,7 +127,8 @@ int xml_path_relative(const xmlnode* node, stralloc* out);
 xmlnodeset xml_pfind_all(xmlnode* node, xml_pred_t*, const void* ptr[4]);
 xmlnode* xml_pfind_parent(xmlnode* node, xml_pred_t*, const void* ptr[]);
 xmlnode* xml_pfind_pred(xmlnode* node, xml_pred_t*, const void* ptr[]);
-void xml_print_attributes(HMAP_DB* db, buffer* b, const char* sep, const char* eq, const char* quot);
+void
+xml_print_attributes(HMAP_DB* db, buffer* b, const char* sep, const char* eq, const char* quot);
 void xml_print_nodeset(const xmlnodeset* ns, buffer* b);
 void xml_print(xmlnode* node, buffer* b, xml_print_fmt_t* fmt);
 void xml_read_callback(xmlreader* r, xml_read_callback_fn* fn);
@@ -166,7 +171,8 @@ xmlnode* xml_child_element(const char*, xmlnode*);
 
 #define xmlnodeset_clear(ns) byte_zero((ns), sizeof(xmlnodeset))
 
-#define xmlnodeset_foreach(ns, it) for((it) = &(ns)->nodes[0]; (it) != &(ns)->nodes[(ns)->size]; ++(it))
+#define xmlnodeset_foreach(ns, it)                                                                 \
+  for((it) = &(ns)->nodes[0]; (it) != &(ns)->nodes[(ns)->size]; ++(it))
 
 __inl xmlnode**
 xmlnodeset_begin(const xmlnodeset* ns) {
@@ -237,7 +243,8 @@ xmlnodeset xml_find_all_attrs(xmlnode*, const char* attrs);
 xmlnode* xml_find_parent_attr(xmlnode*, const char* attrs);
 xmlnode* xml_find_parent_pred_1(xmlnode*, xml_pred_t*, const void* arg);
 xmlnode* xml_find_parent_pred_2(xmlnode*, xml_pred_t*, const void* a0, const void* a1);
-xmlnode* xml_find_parent_pred_3(xmlnode*, xml_pred_t*, const void* a0, const void* a1, const void* a2);
+xmlnode*
+xml_find_parent_pred_3(xmlnode*, xml_pred_t*, const void* a0, const void* a1, const void* a2);
 xmlnode* xml_find_parent(xmlnode*, const char* tag);
 
 void xml_walk(xmlnode*, int (*)());

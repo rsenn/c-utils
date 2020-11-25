@@ -15,7 +15,8 @@ extern "C" {
 
 /**
  * Comparator function to determine whether `*l` and `*r` are equal.
- * @return Negative if `*l` is less than `*r`; zero if `*l` is equal to `*r`; positive if `*l` is greater than `*r`.
+ * @return Negative if `*l` is less than `*r`; zero if `*l` is equal to `*r`; positive if `*l` is
+ * greater than `*r`.
  */
 typedef int (*hashmap_comparator)(const void* l, const void* r);
 
@@ -62,7 +63,10 @@ typedef struct {
  * @param comparator key comparator function
  * @param hash_func key hash function
  */
-void hashmap_init(hashmap* map, size_t capacity, hashmap_comparator comparator, hashmap_hash_func hash_func);
+void hashmap_init(hashmap* map,
+                  size_t capacity,
+                  hashmap_comparator comparator,
+                  hashmap_hash_func hash_func);
 
 /**
  * Free the hash map.

@@ -79,7 +79,8 @@ int stralloc_catm_internal(stralloc* sa, ...);
 #define stralloc_copym(sa, args) (stralloc_zero(sa), stralloc_catm_internal(sa, args, (char*)0))
 #else
 #define stralloc_catm(sa, ...) stralloc_catm_internal(sa, __VA_ARGS__, (char*)0)
-#define stralloc_copym(sa, ...) (stralloc_zero(sa), stralloc_catm_internal(sa, __VA_ARGS__, (char*)0))
+#define stralloc_copym(sa, ...)                                                                    \
+  (stralloc_zero(sa), stralloc_catm_internal(sa, __VA_ARGS__, (char*)0))
 #endif
 
 /* stralloc_cat is analogous to stralloc_copy */
@@ -198,7 +199,9 @@ void buffer_fromsa(buffer* b, const stralloc* sa);
 int stralloc_write(int fd, const char* buf, size_t len, buffer* b);
 #endif
 
-size_t stralloc_scan(stralloc* out, const stralloc* in, size_t (*scan_function)(const char*, char*));
+size_t stralloc_scan(stralloc* out,
+                     const stralloc* in,
+                     size_t (*scan_function)(const char*, char*));
 
 #ifdef __BORLANDC__
 #define stralloc_length(sa) (sa)->len
@@ -228,7 +231,10 @@ stralloc_iterator_equal(char** it1, char** it2) {
 }
 
 #ifdef BYTE_H
-size_t byte_scan(const char* in, size_t in_len, stralloc* out, size_t (*scan_function)(const char*, char*));
+size_t byte_scan(const char* in,
+                 size_t in_len,
+                 stralloc* out,
+                 size_t (*scan_function)(const char*, char*));
 #endif
 
 int stralloc_insertb(stralloc* sa, const char* s, size_t pos, size_t n);
@@ -237,10 +243,15 @@ int stralloc_insert(stralloc* sa, const stralloc* other, size_t pos);
 
 int stralloc_subst(stralloc* out, const char* b, size_t len, const char* from, const char* to);
 
-typedef size_t(stralloc_fmt_fn)(char*, unsigned int);
+typedef size_t(stralloc_fmt_fn)(char*, int, int);
 size_t stralloc_fmt_call(stralloc*, stralloc_fmt_fn*, void* av[4]);
-size_t stralloc_fmt_pred(stralloc*, const char* in, size_t in_len, size_t (*fmt_function)(char*, unsigned int ch), int (*pred)(int));
-size_t stralloc_fmt(stralloc*, const char* in, size_t in_len, size_t (*fmt_function)());
+size_t stralloc_fmt_pred(stralloc*,
+                         const char* in,
+                         size_t in_len,
+                         size_t (*fmt_function)(char*, int, int),
+                         int (*pred)(int));
+size_t
+stralloc_fmt(stralloc*, const char* in, size_t in_len, size_t (*fmt_function)(char*, int, int));
 
 int stralloc_catdouble(stralloc*, double d, int prec);
 
@@ -287,7 +298,9 @@ size_t stralloc_erase(stralloc*);
 void stralloc_lower(stralloc*);
 void stralloc_move(stralloc*, stralloc* from);
 int stralloc_ready_tuned(stralloc*, size_t n, size_t base, size_t a, size_t b);
-void stralloc_remove_all(stralloc*, register const char* delchars, register unsigned int delcharslen);
+void stralloc_remove_all(stralloc*,
+                         register const char* delchars,
+                         register unsigned int delcharslen);
 void stralloc_replace_non_printable(stralloc*, char ch);
 void stralloc_reverse_blocks(stralloc*, size_t size);
 void stralloc_reverse(stralloc*);

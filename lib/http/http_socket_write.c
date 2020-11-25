@@ -36,7 +36,11 @@ http_socket_write(fd_t fd, void* buf, size_t len, void* b) {
   if(ret <= 0) {
     buffer_puts(buffer_2, " errno=");
     buffer_putlong(buffer_2, errno);
-    buffer_putm_internal(buffer_2, " (", errno == EAGAIN ? "EAGAIN" : errno == EWOULDBLOCK ? "EWOULDBLOCK" : "?", ")", 0);
+    buffer_putm_internal(buffer_2,
+                         " (",
+                         errno == EAGAIN ? "EAGAIN" : errno == EWOULDBLOCK ? "EWOULDBLOCK" : "?",
+                         ")",
+                         0);
   }
   buffer_putnlflush(buffer_2);
 #endif

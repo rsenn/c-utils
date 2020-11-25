@@ -12,8 +12,9 @@ fmt_oct3(char* dest, unsigned char w) {
 }
 
 size_t
-fmt_escapecharc(char* dest, uint32 ch) {
+fmt_escapecharc(char* dest, int chr) {
   char c;
+  uint32 ch = chr;
   if(ch > 0xff)
     return 0;
   switch(ch) {

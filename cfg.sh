@@ -10,10 +10,10 @@ cfg() {
   if [ -z "$host" -a -z "$builddir" ]; then
     host=$build
     case "$host" in
-      x86_64-w64-mingw32) host="$host" builddir=build/$host prefix=/mingw64 ;;
-      i686-w64-mingw32) host="$host" builddir=build/$host prefix=/mingw32 ;;
-      x86_64-pc-*) host="$host" builddir=build/${host} prefix=/usr ;;
-      i686-pc-*) host="$host" builddir=build/${host} prefix=/usr ;;
+      x86_64-w64-mingw32) host="$host"; : ${builddir=build/$host}; : ${prefix=/mingw64} ;;
+      i686-w64-mingw32) host="$host"; : ${builddir=build/$host}; : ${prefix=/mingw32} ;;
+      x86_64-pc-*) host="$host"; : ${builddir=build/$host}; : ${prefix=/usr} ;;
+      i686-pc-*) host="$host"; : ${builddir=build/$host}; : ${prefix=/usr} ;;
     esac
   fi
 
@@ -55,7 +55,8 @@ cfg() {
   cd "${builddir:-.}"
   ${CMAKE:-cmake} -Wno-dev \
     -G "$generator" \
-    ${VERBOSE:+-DCMAKE_VERBOSE_MAKEFILE=${VERBOSE:-ON}} \
+    ${prefix:+-DCMAKE_INSTALL_PREFIX="$prefix"} \
+    ${VERBOSE:+-DCMAKE_VERBOSE_MAKEFILE=${VERBOSE:-OFF}} \
     -DCMAKE_BUILD_TYPE="${TYPE:-Debug}" \
     -DBUILD_SHARED_LIBS=ON \
     ${CC:+-DCMAKE_C_COMPILER="$CC"} \
@@ -76,7 +77,7 @@ cfg-android ()
   (: ${builddir=build/android}
     cfg \
   -DCMAKE_INSTALL_PREFIX=/opt/arm-linux-androideabi/sysroot/usr \
-  -DCMAKE_VERBOSE_MAKEFILE=TRUE \
+  \
   -DCMAKE_TOOLCHAIN_FILE=${TOOLCHAIN:-/opt/android-cmake/android.cmake} \
   -DANDROID_NATIVE_API_LEVEL=21 \
   -DPKG_CONFIG_EXECUTABLE=arm-linux-androideabi-pkg-config \
@@ -119,7 +120,6 @@ cfg-diet() {
     -DENABLE_STATIC=ON \
     -DSHARED_LIBS=OFF \
     -DBUILD_SHARED_LIBS=OFF \
-    -DCMAKE_VERBOSE_MAKEFILE=ON \
     -DCMAKE_FIND_ROOT_PATH="$prefix" \
     -DCMAKE_SYSTEM_LIBRARY_PATH="$prefix/lib-${host%%-*}" \
     -D{CMAKE_INSTALL_LIBDIR=,INSTALL_LIB_DIR=$prefix/}"lib-${host%%-*}" \
@@ -214,7 +214,6 @@ cfg-emscripten() {
     -DENABLE_STATIC=ON \
     -DSHARED_LIBS=OFF \
     -DBUILD_SHARED_LIBS=OFF \
-    -DCMAKE_VERBOSE_MAKEFILE=ON \
     "$@")
 }
 
@@ -229,7 +228,6 @@ cfg-tcc() {
 
   CC=${TCC:-tcc} \
   cfg \
-    -DCMAKE_VERBOSE_MAKEFILE=ON \
     "$@")
 }
 
@@ -237,12 +235,12 @@ cfg-musl() {
  (: ${build=$(${CC:-gcc} -dumpmachine | sed 's|-pc-|-|g')}
   : ${host=${build%-*}-musl}
 
- : ${prefix=/usr}
- : ${includedir=/usr/include/$host}
- : ${libdir=/usr/lib/$host}
- : ${bindir=/usr/bin/$host}
+ : ${prefix=/opt/musl}
+ : ${includedir=$prefix/include/$host}
+ : ${libdir=$prefix/lib/$host}
+ : ${bindir=$prefix/bin/$host}
+  : ${builddir=build/$host}
 
-  builddir=build/$host \
   CC=musl-gcc \
   PKG_CONFIG=musl-pkg-config \
   cfg \
@@ -250,7 +248,6 @@ cfg-musl() {
     -DENABLE_STATIC=ON \
     -DSHARED_LIBS=OFF \
     -DBUILD_SHARED_LIBS=OFF \
-    -DCMAKE_VERBOSE_MAKEFILE=ON \
     "$@")
 }
 
@@ -260,7 +257,8 @@ cfg-musl64() {
   host=${build%%-*}-linux-musl
   host=x86_64-${host#*-}
 
-  builddir=build/$host \
+  : ${builddir=build/$host}
+  
   CFLAGS="-m64" \
   cfg-musl \
   -DCMAKE_C_COMPILER="musl-gcc" \
@@ -271,7 +269,8 @@ cfg-musl32() {
  (build=$(gcc -dumpmachine | sed 's|-pc-|-|g')
   host=$(echo "$build" | sed "s|x86_64|i686| ; s|-gnu|-musl|")
 
-  builddir=build/$host \
+  : ${builddir=build/$host}
+
   CFLAGS="-m32" \
   cfg-musl \
   -DCMAKE_C_COMPILER="musl-gcc" \
@@ -295,7 +294,8 @@ echo "host: $host"
   export TOOLCHAIN
   echo "builddir: $builddir"
 
-  builddir=build/$host \
+  : ${builddir=build/$host}
+
   bindir=$prefix/bin \
   libdir=$prefix/lib \
   host=$host \
@@ -317,10 +317,10 @@ cfg-msys64() {
 
 cfg-termux()
 {
-  (builddir=build/termux
+  (: ${builddir=build/termux}
     cfg \
   -DCMAKE_INSTALL_PREFIX=/data/data/com.termux/files/usr \
-  -DCMAKE_VERBOSE_MAKEFILE=TRUE \
+  \
   -DCMAKE_TOOLCHAIN_FILE=${TOOLCHAIN:-/opt/android-cmake/android.cmake} \
   -DANDROID_NATIVE_API_LEVEL=21 \
   -DPKG_CONFIG_EXECUTABLE=arm-linux-androideabi-pkg-config \
@@ -339,7 +339,8 @@ cfg-wasm() {
   test '!' -f "$TOOLCHAIN" && TOOLCHAIN=$(find "$EMSCRIPTEN" -iname emscripten.cmake);
   test -f "$TOOLCHAIN" || unset TOOLCHAIN;
   : ${prefix:="$EMSCRIPTEN"}
-  builddir=build/emscripten-wasm \
+  : ${builddir=build/emscripten-wasm}
+
   CC="$EMCC" \
   cfg \
     -DEMSCRIPTEN_PREFIX="$EMSCRIPTEN" \
@@ -354,7 +355,7 @@ cfg-wasm() {
 cfg-tcc() {
  (build=$(cc -dumpmachine | sed 's|-pc-|-|g')
   host=${build/-gnu/-tcc}
-  builddir=build/$host
+  : ${builddir=build/$host}
   prefix=/usr
   includedir=/usr/lib/$build/tcc/include
   libdir=/usr/lib/$build/tcc/
@@ -362,24 +363,23 @@ cfg-tcc() {
 
   CC=${TCC:-tcc} \
   cfg \
-    -DCMAKE_VERBOSE_MAKEFILE=ON \
     "$@")
 }
   
 cfg-rpi4 () 
 { 
-    ( builddir=build/rpi4;
+    ( : ${builddir=build/rpi4}
     : ${host=aarch64-linux-gnu};
     : ${build=aarch64-linux-gnu};
     : ${CC=aarch64-linux-gnu-gcc};
     : ${CXX=aarch64-linux-gnu-g++};
     prefix=/usr/aarch64-linux-gnu/sysroot/usr;
-    cfg -DCMAKE_INSTALL_PREFIX=$prefix -DCMAKE_VERBOSE_MAKEFILE=TRUE -DCMAKE_TOOLCHAIN_FILE=${TOOLCHAIN:-/opt/cmake-toolchains/aarch64-linux-gnu.toolchain.cmake} -DANDROID_NATIVE_API_LEVEL=21 -DPKG_CONFIG_EXECUTABLE=/usr/bin/aarch64-linux-gnu-pkg-config -DCMAKE_PREFIX_PATH=$prefix -DCMAKE_SYSROOT=${prefix%/usr} -DCMAKE_MAKE_PROGRAM=/usr/bin/make -DCMAKE_MODULE_PATH="$prefix/lib/cmake" "$@" )
+    cfg -DCMAKE_INSTALL_PREFIX=$prefix -DCMAKE_TOOLCHAIN_FILE=${TOOLCHAIN:-/opt/cmake-toolchains/aarch64-linux-gnu.toolchain.cmake} -DANDROID_NATIVE_API_LEVEL=21 -DPKG_CONFIG_EXECUTABLE=/usr/bin/aarch64-linux-gnu-pkg-config -DCMAKE_PREFIX_PATH=$prefix -DCMAKE_SYSROOT=${prefix%/usr} -DCMAKE_MAKE_PROGRAM=/usr/bin/make -DCMAKE_MODULE_PATH="$prefix/lib/cmake" "$@" )
 }
 cfg-android64 () 
 { 
     ( : ${builddir=build/android64};
-    cfg -DCMAKE_INSTALL_PREFIX=/opt/aarch64-linux-android64eabi/sysroot/usr -DCMAKE_VERBOSE_MAKEFILE=TRUE -DCMAKE_TOOLCHAIN_FILE=${TOOLCHAIN:-/opt/android64-cmake/android64.cmake} -DANDROID_NATIVE_API_LEVEL=21 -DPKG_CONFIG_EXECUTABLE=aarch64-linux-android64eabi-pkg-config -DCMAKE_PREFIX_PATH=/opt/aarch64-linux-android64eabi/sysroot/usr -DCMAKE_MAKE_PROGRAM=/usr/bin/make -DCMAKE_MODULE_PATH="/opt/OpenCV-3.4.1-android64-sdk/sdk/native/jni/abi-armeabi-v7a" -DOpenCV_DIR="/opt/OpenCV-3.4.1-android64-sdk/sdk/native/jni/abi-armeabi-v7a" "$@" )
+    cfg -DCMAKE_INSTALL_PREFIX=/opt/aarch64-linux-android64eabi/sysroot/usr -DCMAKE_TOOLCHAIN_FILE=${TOOLCHAIN:-/opt/android64-cmake/android64.cmake} -DANDROID_NATIVE_API_LEVEL=21 -DPKG_CONFIG_EXECUTABLE=aarch64-linux-android64eabi-pkg-config -DCMAKE_PREFIX_PATH=/opt/aarch64-linux-android64eabi/sysroot/usr -DCMAKE_MAKE_PROGRAM=/usr/bin/make -DCMAKE_MODULE_PATH="/opt/OpenCV-3.4.1-android64-sdk/sdk/native/jni/abi-armeabi-v7a" -DOpenCV_DIR="/opt/OpenCV-3.4.1-android64-sdk/sdk/native/jni/abi-armeabi-v7a" "$@" )
 }
 
 cfg-emscripten() {
@@ -398,7 +398,7 @@ LIBRARY_PATH=$(set -- /opt/*-wasm/lib ;  IFS=";"; echo "$*")
   PKG_CONFIG_PATH="${PKG_CONFIG_PATH:+$PKG_CONFIG_PATH:}${EMSCRIPTEN}/system/lib/pkgconfig"
   export PKG_CONFIG_PATH
   echo PKG_CONFIG_PATH="${PKG_CONFIG_PATH}"
-  CC="emcc" CXX="em++" TYPE="Release" VERBOSE="TRUE" \
+  CC="emcc" CXX="em++" TYPE="Release" \
     CFLAGS="'-sWASM=1 -sUSE_PTHREADS=0 -sLLD_REPORT_UNDEFINED'" \
     CXXFLAGS="'-sWASM=1 -sUSE_PTHREADS=0 -sLLD_REPORT_UNDEFINED'" \
     CMAKE_WRAPPER="emcmake" \

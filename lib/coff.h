@@ -89,12 +89,13 @@ typedef struct __unaligned {
 }
 coff_section_header;
 
-#define COFF_SECTION_UNDEF ((int16)0)       // external symbol
-#define COFF_SECTION_ABSOLUTE ((int16)-1)   // value of symbol is absolute
-#define COFF_SECTION_DEBUG ((int16)-2)      // debugging symbol - value is meaningless
-#define COFF_SECTION_N_TV ((int16)-3)       // indicates symbol needs preload transfer vector
-#define COFF_SECTION_P_TV ((int16)-4)       // indicates symbol needs postload transfer vector
-#define COFF_SECTION_REMOVE_ME ((int16)-99) // Specific for objconv program: Debug or exception section being removed
+#define COFF_SECTION_UNDEF ((int16)0)     // external symbol
+#define COFF_SECTION_ABSOLUTE ((int16)-1) // value of symbol is absolute
+#define COFF_SECTION_DEBUG ((int16)-2)    // debugging symbol - value is meaningless
+#define COFF_SECTION_N_TV ((int16)-3)     // indicates symbol needs preload transfer vector
+#define COFF_SECTION_P_TV ((int16)-4)     // indicates symbol needs postload transfer vector
+#define COFF_SECTION_REMOVE_ME                                                                     \
+  ((int16)-99) // Specific for objconv program: Debug or exception section being removed
 
 typedef struct __unaligned {
   uint16 magic;

@@ -1,4 +1,4 @@
-set(CMAKE_LEGACY_CYGWIN_WIN32 0)
+ set(CMAKE_LEGACY_CYGWIN_WIN32 0)
 cmake_minimum_required(VERSION 3.2)
 set(CMAKE_WARN_VS8 OFF)
 
@@ -16,6 +16,11 @@ option(USE_BZIP "bzip2 compression" ON)
 option(USE_ZLIB "zlib compression" ON)
 option(USE_BROTLI "brotli compression" ON)
 option(USE_SSL "ssl encryption" ON)
+
+if(CMAKE_C_COMPILER MATCHES "-musl")
+  set(MUSL TRUE)
+endif(CMAKE_C_COMPILER MATCHES "-musl")
+
 
 if(WIN32 OR WINDOWS)
   option(USE_SELECT "Use select() syscall" ON)
@@ -76,6 +81,16 @@ include(CheckIncludeFile)
 include(CheckCCompilerFlag)
 include(CheckTypeSize)
 include(CheckSymbolExists)
+
+if(NOT DIETLIBC)
+check_symbol_exists(__dietlibc__ "" DIETLIBC)
+endif(NOT DIETLIBC)
+
+if(NOT MUSL)
+  check_symbol_exists(__musl__ "" MUSL)
+endif(NOT MUSL)
+
+
 
 macro(show_result RESULT_VAR)
   if(${${RESULT_VAR}})
@@ -347,17 +362,41 @@ if(HAVE_SYS_WAIT_H)
 endif(HAVE_SYS_WAIT_H)
 
 if(NOT CROSS)
-  # check_type_size(int16_t INT16_T) check_type_size(int32_t INT32_T) check_type_size(int64_t INT64_T) check_type_size(intmax_t INTMAX_T) check_type_size(uint8_t UINT8_T) check_type_size(uint16_t UINT16_T) check_type_size(uint32_t UINT32_T) check_type_size(uint64_t UINT64_T) check_type_size(uintmax_t UINTMAX_T)
+  if(BUILD_LZMA)
+    check_type_size(int16_t INT16_T) 
+    check_type_size(int32_t INT32_T) 
+    check_type_size(int64_t INT64_T) 
+    check_type_size(intmax_t INTMAX_T) 
+    check_type_size(uint8_t UINT8_T) 
+    check_type_size(uint16_t UINT16_T) 
+    check_type_size(uint32_t UINT32_T) 
+    check_type_size(uint64_t UINT64_T) 
+    check_type_size(uintmax_t UINTMAX_T)
 
-  # check_type_size(ptrdiff_t PTRDIFF_T_SIZE) check_type_size(size_t SIZE_T_SIZE) check_type_size(long LONG_SIZE) check_type_size("void*" VOIDP_T_SIZE)
+    # 
+    check_type_size(ptrdiff_t PTRDIFF_T_SIZE) 
+    check_type_size(size_t SIZE_T_SIZE) 
+    check_type_size(long LONG_SIZE) 
+    check_type_size("void*" VOIDP_T_SIZE)
 
-  # DUMP(PTRDIFF_T_SIZE) DUMP(SIZE_T_SIZE) DUMP(LONG_SIZE) DUMP(VOIDP_T_SIZE)
+    # DUMP(PTRDIFF_T_SIZE) DUMP(SIZE_T_SIZE) DUMP(LONG_SIZE) DUMP(VOIDP_T_SIZE)
 
-  # check_type_size("short" SIZE_OF_SHORT) check_type_size("int" SIZE_OF_INT) check_type_size("long" SIZE_OF_LONG) check_type_size("long long" SIZE_OF_LONG_LONG)
+    # 
+    check_type_size("short" SIZE_OF_SHORT) 
+    check_type_size("int" SIZE_OF_INT) 
+    check_type_size("long" SIZE_OF_LONG) 
+    check_type_size("long long" SIZE_OF_LONG_LONG)
 
-  # check_type_size("unsigned short" SIZE_OF_UNSIGNED_SHORT) check_type_size("unsigned" SIZE_OF_UNSIGNED) check_type_size("unsigned long" SIZE_OF_UNSIGNED_LONG) check_type_size("unsigned long long" SIZE_OF_UNSIGNED_LONG_LONG) check_type_size("size_t" SIZE_OF_SIZE_T)
-
-  # check_type_size("__int64" __INT64) check_type_size("unsigned __int64" UNSIGNED___INT64)
+    # 
+    check_type_size("unsigned short" SIZE_OF_UNSIGNED_SHORT) 
+    check_type_size("unsigned" SIZE_OF_UNSIGNED) 
+    check_type_size("unsigned long" SIZE_OF_UNSIGNED_LONG) 
+    check_type_size("unsigned long long" SIZE_OF_UNSIGNED_LONG_LONG) 
+    check_type_size("size_t" SIZE_OF_SIZE_T)
+  endif(BUILD_LZMA)
+  # 
+  check_type_size("__int64" __INT64) 
+  check_type_size("unsigned __int64" UNSIGNED___INT64)
 
   check_type_size(uintptr_t UINTPTR_T)
   if(NOT HAVE_UINTPTR_T)
@@ -713,6 +752,8 @@ if(USE_BROTLI)
     set(BROTLI_LIBRARY_DIR ${BROTLICOMMON_LIBRARY_DIRS})
     set(BROTLI_FOUND TRUE)
   endif(NOT BROTLICOMMON_FOUND OR "${BROTLICOMMON_FOUND}" STREQUAL "")
+
+
 endif(USE_BROTLI)
 
 # ##############################################################################################################################################################################################################################################################################################################################################################################################################
@@ -738,7 +779,13 @@ if(USE_SSL AND NOT BUILD_SSL)
       list(APPEND OPENSSL_LIBRARIES ${pkgcfg_lib_OPENSSL_crypto})
     endif(pkgcfg_lib_OPENSSL_crypto)
     if(pkgcfg_lib_OPENSSL_ssl)
+
+    if(pkgcfg_lib_OPENSSL_ssl)
       set(OPENSSL_SSL_LIBRARY "${pkgcfg_lib_OPENSSL_ssl}")
+    else(pkgcfg_lib_OPENSSL_ssl)
+      string(REPLACE "libcrypto" "libssl" OPENSSL_SSL_LIBRARY "${OPENSSL_CRYPTO_LIBRARY}")
+    endif(pkgcfg_lib_OPENSSL_ssl)
+
 
       list(APPEND OPENSSL_LIBRARIES ${pkgcfg_lib_OPENSSL_ssl})
     endif(pkgcfg_lib_OPENSSL_ssl)
@@ -771,6 +818,14 @@ else()
   unset(OPENSSL_INCLUDE_DIR CACHE)
 endif()
 # link_libraries( ${ZLIB_LIBRARY} ${BZIP2_LIBRARY} ${LIBLZMA_LIBRARY} ${CRYPTO_LIBRARIES} ) add_definitions(-Dinline=__inline)
+ if(NOT OPENSSL_SSL_LIBRARY OR OPENSSL_SSL_LIBRARY STREQUAL "")
+
+ message("OPENSSL_CRYPTO_LIBRARY: ${OPENSSL_CRYPTO_LIBRARY}")
+       string(REPLACE "libcrypto" "libssl" OPENSSL_SSL_LIBRARY "${OPENSSL_CRYPTO_LIBRARY}")
+ message("OPENSSL_SSL_LIBRARY: ${OPENSSL_SSL_LIBRARY}")
+ endif(NOT OPENSSL_SSL_LIBRARY OR OPENSSL_SSL_LIBRARY STREQUAL "")
+
+
 
 set(CMAKE_REQUIRED_DEFINITIONS)
 set(CMAKE_REQUIRED_INCLUDES "poll.h")
@@ -846,9 +901,15 @@ foreach(METHOD ${MUX_ALL})
     set(MUX_DEFS "${MUX_DEFS} -DSUPPORT_${METHOD}=1")
   endif(SUPPORT_${METHOD})
 endforeach()
-set(MUX_METHODS "${MUX_LIST}" CACHE STRING "available I/O multiplexing methods")
+set(MUX_METHODS "${MUX_LIST}")
 
 message("Available MUX methods: ${MUX_METHODS}")
+  string(REGEX REPLACE "[;\n ]" ";" __MUX_METHODS "${MUX_METHODS}")
+unset(MUX_METHODS)
+set(MUX_METHOD SELECT CACHE STRING "multiplex methods")
+
+set_property(CACHE MUX_METHOD PROPERTY STRINGS ${__MUX_METHODS}) 
+
 
 # message("MUX definitions: ${MUX_DEFS}")
 
@@ -968,6 +1029,8 @@ endfunction(DEFINE_HAVE)
 
 if(BUILD_LZMA)
   message("Building liblzma from 3rdparty/xz")
+  configure_file("${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/xz-config.h.cmake" "${CMAKE_CURRENT_BINARY_DIR}/3rdparty/xz/config.h")
+
   # file(WRITE "${CMAKE_BINARY_DIR}/lzma-config.h.cmake" "\n/*\n * Ensure we have C99-style int64_t, etc, all defined.\n */\n\n/* First, we need to know if the system has already defined them. */\n#cmakedefine HAVE_INT16_T\n#cmakedefine HAVE_INT32_T\n#cmakedefine HAVE_INT64_T\n#cmakedefine HAVE_INTMAX_T\n\n#cmakedefine HAVE_UINT8_T\n#cmakedefine HAVE_UINT16_T\n#cmakedefine
   # HAVE_UINT32_T\n#cmakedefine HAVE_UINT64_T\n#cmakedefine HAVE_UINTMAX_T\n\n/* We might have the types we want under other spellings. */\n#cmakedefine HAVE___INT64\n#cmakedefine HAVE_U_INT64_T\n#cmakedefine HAVE_UNSIGNED___INT64\n\n/* The sizes of various standard integer types.
   # */\n@SIZE_OF_SHORT_CODE@\n@SIZE_OF_INT_CODE@\n@SIZE_OF_LONG_CODE@\n@SIZE_OF_LONG_LONG_CODE@\n@SIZE_OF_UNSIGNED_SHORT_CODE@\n@SIZE_OF_UNSIGNED_CODE@\n@SIZE_OF_UNSIGNED_LONG_CODE@\n@SIZE_OF_UNSIGNED_LONG_LONG_CODE@\n@SIZE_OF_SIZE_T_CODE@\n\n/*\n * If we lack int64_t, define it to the first of __int64, int, long, and long long\n * that exists and is the right size.\n */\n#if
@@ -1038,6 +1101,9 @@ endif(BUILD_LZMA)
 find_program(TAR NAMES bsdtar tar gtar gnutar star)
 
 if(BUILD_SSL)
+if(MUSL)
+add_definitions(-DOPENSSL_NO_SECURE_MEMORY=1)
+endif(MUSL)
   if(NOT EXISTS "${CMAKE_SOURCE_DIR}/3rdparty/openssl/CMakeLists.txt")
     if(NOT EXISTS "${CMAKE_SOURCE_DIR}/openssl.tar.gz")
       file(REMOVE_RECURSE "${CMAKE_SOURCE_DIR}/3rdparty/openssl")
@@ -1080,6 +1146,20 @@ if(USE_SSL)
   set(OPENSSL_LIBARRIES ${OPENSSL_SSL_LIBRARY} ${OPENSSL_CRYPTO_LIBRARY})
   # endif() endif()
 endif(USE_SSL)
+
+if(USE_BROTLI AND NOT BROTLI_FOUND)
+  set(BUILD_BROTLI ON)
+endif(USE_BROTLI AND NOT BROTLI_FOUND)
+
+if(BUILD_BROTLI)
+  file(READ "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/brotli.cmake.txt" BROTLI_CMAKELISTS_TXT)
+  file(WRITE  "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/brotli/CMakeLists.txt"  "${BROTLI_CMAKELISTS_TXT}")
+
+
+#file(GENERATE OUTPUT  "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/brotli/CMakeLists.txt" INPUT "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/brotli.cmake.txt")
+
+  add_subdirectory(3rdparty/brotli)
+endif(BUILD_BROTLI)
 
 link_directories(AFTER "${CMAKE_BINARY_DIR}")
 
@@ -1336,6 +1416,7 @@ add_program(jsonpp json errmsg unix)
 add_program(xml2json json xml errmsg unix)
 add_program(xml2moon xml textcode errmsg)
 add_program(strip-comments errmsg env charbuf buffer path dir strarray strlist stralloc fmt)
+add_program(quote textcode unix errmsg env charbuf buffer path dir strarray strlist stralloc fmt)
 
 add_program(httpproxy http io map)
 add_program(testini ini.c ini.h hmap stralloc buffer mmap open uint16)

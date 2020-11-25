@@ -2,7 +2,11 @@
 #include "../cb_internal.h"
 
 static int
-cb_foreach_i(void* ptr, const void* key, size_t keylen, int (*match_cb)(const void* match, const void* key, size_t keylen, void*), void* data) {
+cb_foreach_i(void* ptr,
+             const void* key,
+             size_t keylen,
+             int (*match_cb)(const void* match, const void* key, size_t keylen, void*),
+             void* data) {
   int result = 0;
 
   if(decode_pointer(&ptr) == INTERNAL_NODE) {
@@ -25,7 +29,11 @@ cb_foreach_i(void* ptr, const void* key, size_t keylen, int (*match_cb)(const vo
 }
 
 int
-cb_foreach(critbit_tree* cb, const void* key, size_t keylen, int (*match_cb)(const void* match, const void* key, size_t keylen, void*), void* data) {
+cb_foreach(critbit_tree* cb,
+           const void* key,
+           size_t keylen,
+           int (*match_cb)(const void* match, const void* key, size_t keylen, void*),
+           void* data) {
   void* top = cb_find_top_i(cb, key, keylen);
   if(top) {
     /* recursively add all children except the ones from [0-offset) of top to the results */

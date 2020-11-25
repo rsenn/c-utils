@@ -293,7 +293,10 @@ parse_args(int argc, char* argv[]) {
 #define SHAPER_OPTS ""
 #endif
   const char* prognm = progname(argv[0]);
-  while((opt = getopt_long(argc, argv, "b:hiI:l:npst:vx:" FTP_OPTS SHAPER_OPTS, long_options, NULL)) != -1) {
+  while(
+      (opt =
+           getopt_long(argc, argv, "b:hiI:l:npst:vx:" FTP_OPTS SHAPER_OPTS, long_options, NULL)) !=
+      -1) {
     switch(opt) {
       case 'b': bind_addr = optarg; break;
 
@@ -451,7 +454,14 @@ ftp_clean(int send, char* buf, ssize_t* bytes, int ftpsrv) {
     /* parse the old address out of the buffer */
     port_start = strchr(buf, ' ');
 
-    sscanf(port_start, " %d,%d,%d,%d,%d,%d", &remip[0], &remip[1], &remip[2], &remip[3], &rporthi, &rportlo);
+    sscanf(port_start,
+           " %d,%d,%d,%d,%d,%d",
+           &remip[0],
+           &remip[1],
+           &remip[2],
+           &remip[3],
+           &rporthi,
+           &rportlo);
   } else {
     /* is this a passive mode return ? */
     if(strncmp(buf, "227", 3)) {
@@ -462,7 +472,14 @@ ftp_clean(int send, char* buf, ssize_t* bytes, int ftpsrv) {
     /* parse the old address out of the buffer */
     port_start = strchr(buf, '(');
 
-    sscanf(port_start, "(%d,%d,%d,%d,%d,%d", &remip[0], &remip[1], &remip[2], &remip[3], &rporthi, &rportlo);
+    sscanf(port_start,
+           "(%d,%d,%d,%d,%d,%d",
+           &remip[0],
+           &remip[1],
+           &remip[2],
+           &remip[3],
+           &rporthi,
+           &rportlo);
   }
 
   /* get the outside interface so we can listen */
@@ -493,10 +510,24 @@ ftp_clean(int send, char* buf, ssize_t* bytes, int ftpsrv) {
 
   if(ftpsrv == 0) {
     /* send the new port and ipaddress to the server */
-    (*bytes) = sprintf(buf, "PORT %d,%d,%d,%d,%d,%d\n", sockname.sin_addr.s_addr & 0xff, (sockname.sin_addr.s_addr >> 8) & 0xff, (sockname.sin_addr.s_addr >> 16) & 0xff, sockname.sin_addr.s_addr >> 24, lporthi, lportlo);
+    (*bytes) = sprintf(buf,
+                       "PORT %d,%d,%d,%d,%d,%d\n",
+                       sockname.sin_addr.s_addr & 0xff,
+                       (sockname.sin_addr.s_addr >> 8) & 0xff,
+                       (sockname.sin_addr.s_addr >> 16) & 0xff,
+                       sockname.sin_addr.s_addr >> 24,
+                       lporthi,
+                       lportlo);
   } else {
     /* send the new port and ipaddress to the client */
-    (*bytes) = sprintf(buf, "227 Entering Passive Mode (%d,%d,%d,%d,%d,%d)\n", sockname.sin_addr.s_addr & 0xff, (sockname.sin_addr.s_addr >> 8) & 0xff, (sockname.sin_addr.s_addr >> 16) & 0xff, sockname.sin_addr.s_addr >> 24, lporthi, lportlo);
+    (*bytes) = sprintf(buf,
+                       "227 Entering Passive Mode (%d,%d,%d,%d,%d,%d)\n",
+                       sockname.sin_addr.s_addr & 0xff,
+                       (sockname.sin_addr.s_addr >> 8) & 0xff,
+                       (sockname.sin_addr.s_addr >> 16) & 0xff,
+                       sockname.sin_addr.s_addr >> 24,
+                       lporthi,
+                       lportlo);
   }
   newsession.sin_port = htons(rport);
   newsession.sin_family = AF_INET;
@@ -623,7 +654,11 @@ no_mem:
   close(insock);
   close(outsock);
   end_time = (unsigned int)time(NULL);
-  syslog(LOG_INFO, "Disconnect after %d sec, %ld bytes in, %ld bytes out", (end_time - start_time), bytes_in, bytes_out);
+  syslog(LOG_INFO,
+         "Disconnect after %d sec, %ld bytes in, %ld bytes out",
+         (end_time - start_time),
+         bytes_in,
+         bytes_out);
 }
 
 void
@@ -752,12 +787,20 @@ target_connect(int client, struct sockaddr_in* target) {
   }
 
   if(connect(sd, (struct sockaddr*)target, sizeof(*target)) < 0) {
-    syslog(LOG_ERR, "Failed connecting to target %s: %s", inet_ntoa(target->sin_addr), strerror(errno));
+    syslog(LOG_ERR,
+           "Failed connecting to target %s: %s",
+           inet_ntoa(target->sin_addr),
+           strerror(errno));
     close(sd);
     return -1;
   }
 
-  syslog(LOG_INFO, "Connecting %s:%d to %s:%d", inet_ntoa(peer.sin_addr), ntohs(peer.sin_port), inet_ntoa(target->sin_addr), ntohs(target->sin_port));
+  syslog(LOG_INFO,
+         "Connecting %s:%d to %s:%d",
+         inet_ntoa(peer.sin_addr),
+         ntohs(peer.sin_port),
+         inet_ntoa(target->sin_addr),
+         ntohs(target->sin_port));
 
   return sd;
 }

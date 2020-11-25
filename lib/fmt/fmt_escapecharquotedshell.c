@@ -3,7 +3,8 @@
 #include <sys/types.h>
 
 size_t
-fmt_escapecharquotedshell(char* dest, uint32 ch) {
+fmt_escapecharquotedshell(char* dest, int chr) {
+  uint32 ch = chr;
   char c;
   switch(ch) {
     case '\'':

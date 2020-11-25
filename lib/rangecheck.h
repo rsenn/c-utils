@@ -98,12 +98,14 @@ range_validbuf2(const void* Min, const void* Max) {
 /* is buf2[0..len2-1] inside buf1[0..len-1]? */
 __static inline __gnuinline int
 range_bufinbuf(const void* buf1, size_t len1, const void* buf2, size_t len2) {
-  return range_validbuf(buf1, len1) && range_validbuf(buf2, len2) && __likely(buf1 <= buf2 && (ptrdiff_t)buf1 + len1 >= (ptrdiff_t)buf2 + len2);
+  return range_validbuf(buf1, len1) && range_validbuf(buf2, len2) &&
+         __likely(buf1 <= buf2 && (ptrdiff_t)buf1 + len1 >= (ptrdiff_t)buf2 + len2);
 }
 
 /* does an array of "elements" members of size "membersize" starting at
  * "arraystart" lie inside buf1[0..len-1]? */
-int range_arrayinbuf(const void* buf, size_t len, const void* arraystart, size_t elements, size_t membersize);
+int range_arrayinbuf(
+    const void* buf, size_t len, const void* arraystart, size_t elements, size_t membersize);
 
 /* does an ASCIIZ string starting at "ptr" lie in buf[0..len-1]? */
 int range_strinbuf(const void* buf, size_t len, const void* stringstart);
@@ -146,11 +148,11 @@ int range_str4inbuf(const void* buf, size_t len, const void* stringstart);
 #define __MIN(type) ((type)-1 < 1 ? __MIN_SIGNED(type) : (type)0)
 #define __MAX(type) ((type)~__MIN(type))
 
-#define assign(type, dest, src)                                                                                                                                                                                                                                                                            \
-  {                                                                                                                                                                                                                                                                                                        \
-    type __x = (src);                                                                                                                                                                                                                                                                                      \
-    type __y = __x;                                                                                                                                                                                                                                                                                        \
-    (__x == __y && ((__x < 1) == (__y < 1)) ? (void)((dest) = __y), 0 : 1);                                                                                                                                                                                                                                \
+#define assign(type, dest, src)                                                                    \
+  {                                                                                                \
+    type __x = (src);                                                                              \
+    type __y = __x;                                                                                \
+    (__x == __y && ((__x < 1) == (__y < 1)) ? (void)((dest) = __y), 0 : 1);                        \
   }
 
 /* gcc 5 now has nice builtins we can use instead */
@@ -167,18 +169,20 @@ int range_str4inbuf(const void* buf, size_t len, const void* stringstart);
 
 /* if a+b is defined and does not have an integer overflow, do c=a+b and
  * return 0.  Otherwise, return 1. */
-#define add_of(result, type, c, a, b)                                                                                                                                                                                                                                                                      \
-  {                                                                                                                                                                                                                                                                                                        \
-    type __a = a;                                                                                                                                                                                                                                                                                          \
-    type __b = b;                                                                                                                                                                                                                                                                                          \
-    result = (__b) < 1 ? ((__MIN(type) - (__b) <= (__a)) ? assign(type, c, __a + __b) : 1) : ((__MAX(type) - (__b) >= (__a)) ? assign(type, c, __a + __b) : 1);                                                                                                                                            \
+#define add_of(result, type, c, a, b)                                                              \
+  {                                                                                                \
+    type __a = a;                                                                                  \
+    type __b = b;                                                                                  \
+    result = (__b) < 1 ? ((__MIN(type) - (__b) <= (__a)) ? assign(type, c, __a + __b) : 1)         \
+                       : ((__MAX(type) - (__b) >= (__a)) ? assign(type, c, __a + __b) : 1);        \
   }
 
-#define sub_of(c, a, b)                                                                                                                                                                                                                                                                                    \
-  {                                                                                                                                                                                                                                                                                                        \
-    typeof(a) __a = a;                                                                                                                                                                                                                                                                                     \
-    typeof(b) __b = b;                                                                                                                                                                                                                                                                                     \
-    (__b) < 1 ? ((__MAX(typeof(a + b)) + __b >= __a) ? assign(c, __a - __b) : 1) : ((__MIN(typeof(c)) + __b <= __a) ? assign(c, __a - __b) : 1);                                                                                                                                                           \
+#define sub_of(c, a, b)                                                                            \
+  {                                                                                                \
+    typeof(a) __a = a;                                                                             \
+    typeof(b) __b = b;                                                                             \
+    (__b) < 1 ? ((__MAX(typeof(a + b)) + __b >= __a) ? assign(c, __a - __b) : 1)                   \
+              : ((__MIN(typeof(c)) + __b <= __a) ? assign(c, __a - __b) : 1);                      \
   }
 
 #endif

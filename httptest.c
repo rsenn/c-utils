@@ -40,7 +40,8 @@ set_timeouts(int seconds) {
  */
 
 /* https://github.com/rsenn/lc-meter/raw/master/doc/LCmeter0-LCD-8pinlcd-PIC_COMP.pdf */
-static const char default_url[] = "https://raw.githubusercontent.com/rsenn/lc-meter/master/doc/LCmeter0-LCD-8pinlcd-PIC_COMP.pdf";
+static const char default_url[] =
+    "https://raw.githubusercontent.com/rsenn/lc-meter/master/doc/LCmeter0-LCD-8pinlcd-PIC_COMP.pdf";
 static const char* const url_host = "127.0.0.1";
 static const char* const url_location = "/login";
 static const uint16 url_port = 8080;

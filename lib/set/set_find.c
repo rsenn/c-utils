@@ -31,8 +31,8 @@ set_find(const set_t* set, const void* val, const size_t size) {
   /*
 
 
-    for(it.current = &set->array[it.index]; (it.current && it.current->value); it.current = it.current->next) {
-      if(size == it.current->size && it.current->hash == hash)
+    for(it.current = &set->array[it.index]; (it.current && it.current->value); it.current =
+    it.current->next) { if(size == it.current->size && it.current->hash == hash)
         if(memcmp(it.current->value, val, size) == 0)
           return it;
     }

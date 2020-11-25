@@ -2,7 +2,10 @@
 #include "../stralloc.h"
 
 size_t
-byte_fmt(const char* in, size_t in_len, stralloc* out, size_t (*fmt_function)(char*, unsigned int ch)) {
+byte_fmt(const char* in,
+         size_t in_len,
+         stralloc* out,
+         size_t (*fmt_function)(char*, unsigned int ch)) {
   size_t i;
   stralloc_zero(out);
   for(i = 0; i < in_len; ++i) {

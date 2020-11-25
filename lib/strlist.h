@@ -82,9 +82,14 @@ size_t strlist_remove_all(strlist*, const strlist*);
 
 #define strlist_end(sl) ((sl)->sa.s + (sl)->sa.len)
 
-#define strlist_foreach(sl, str, n) for((str) = (sl)->sa.s; ((str) < strlist_end(sl) && ((n) = byte_chr((str), strlist_end(sl) - (str), (sl)->sep)) > 0); (str) += (n) + 1)
+#define strlist_foreach(sl, str, n)                                                                \
+  for((str) = (sl)->sa.s; ((str) < strlist_end(sl) &&                                              \
+                           ((n) = byte_chr((str), strlist_end(sl) - (str), (sl)->sep)) > 0);       \
+      (str) += (n) + 1)
 
-#define strlist_foreach_s(sl, str) for(str = (sl)->sa.s; str < strlist_end(sl); str += byte_chr((str), strlist_end(sl) - str, (sl)->sep) + 1)
+#define strlist_foreach_s(sl, str)                                                                 \
+  for(str = (sl)->sa.s; str < strlist_end(sl);                                                     \
+      str += byte_chr((str), strlist_end(sl) - str, (sl)->sep) + 1)
 
 #define strlist_len(sl, ptr) (byte_chr(ptr, strlist_end((sl)) - (ptr), (sl)->sep))
 

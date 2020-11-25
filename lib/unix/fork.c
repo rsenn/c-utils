@@ -66,7 +66,12 @@ typedef struct _RTL_USER_PROCESS_INFORMATION {
 
 #endif
 
-typedef NTSTATUS (*RtlCloneUserProcess_f)(ULONG ProcessFlags, PSECURITY_DESCRIPTOR ProcessSecurityDescriptor /* optional */, PSECURITY_DESCRIPTOR ThreadSecurityDescriptor /* optional */, HANDLE DebugPort /* optional */, PRTL_USER_PROCESS_INFORMATION ProcessInformation);
+typedef NTSTATUS (*RtlCloneUserProcess_f)(
+    ULONG ProcessFlags,
+    PSECURITY_DESCRIPTOR ProcessSecurityDescriptor /* optional */,
+    PSECURITY_DESCRIPTOR ThreadSecurityDescriptor /* optional */,
+    HANDLE DebugPort /* optional */,
+    PRTL_USER_PROCESS_INFORMATION ProcessInformation);
 
 pid_t
 fork(void) {
@@ -84,7 +89,12 @@ fork(void) {
     return -ENOSYS;
 
   /* lets do this */
-  result = clone_p(RTL_CLONE_PROCESS_FLAGS_CREATE_SUSPENDED | RTL_CLONE_PROCESS_FLAGS_INHERIT_HANDLES, NULL, NULL, NULL, &process_info);
+  result =
+      clone_p(RTL_CLONE_PROCESS_FLAGS_CREATE_SUSPENDED | RTL_CLONE_PROCESS_FLAGS_INHERIT_HANDLES,
+              NULL,
+              NULL,
+              NULL,
+              &process_info);
 
   if(result == RTL_CLONE_PARENT) {
     HANDLE me = GetCurrentProcess();

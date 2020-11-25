@@ -80,7 +80,8 @@ xml_print_node(xmlnode* node, buffer* b, int depth, xml_print_fmt_t* fmt) {
 
   //  if(node->next && depth == 0) {
   //    xmlnode* next = node->next;
-  //    if(node_is_closing(next) && !str_diff(&next->name[1], node->name)) return xml_print_node(next, b, depth);
+  //    if(node_is_closing(next) && !str_diff(&next->name[1], node->name)) return
+  //    xml_print_node(next, b, depth);
   //  }
   if(closing)
     fmt(node->parent, b, depth, '\n', 1);

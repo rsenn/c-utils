@@ -29,11 +29,11 @@ typedef struct {
   map_node_t* node;
 } map_iter_t;
 
-#define map_t(T)                                                                                                                                                                                                                                                                                           \
-  struct {                                                                                                                                                                                                                                                                                                 \
-    map_base_t base;                                                                                                                                                                                                                                                                                       \
-    T* ref;                                                                                                                                                                                                                                                                                                \
-    T tmp;                                                                                                                                                                                                                                                                                                 \
+#define map_t(T)                                                                                   \
+  struct {                                                                                         \
+    map_base_t base;                                                                               \
+    T* ref;                                                                                        \
+    T tmp;                                                                                         \
   }
 
 #define map_init(m) byte_zero(m, sizeof(*(m)))
@@ -42,10 +42,10 @@ typedef struct {
 
 #define map_get(m, key) ((m)->ref = map_get_(&(m)->base, (key)))
 
-#define map_set(m, key, value)                                                                                                                                                                                                                                                                             \
-  do {                                                                                                                                                                                                                                                                                                     \
-    (m)->tmp = (value);                                                                                                                                                                                                                                                                                    \
-    map_set_(&(m)->base, key, (void*)&(m)->tmp, sizeof((m)->tmp));                                                                                                                                                                                                                                         \
+#define map_set(m, key, value)                                                                     \
+  do {                                                                                             \
+    (m)->tmp = (value);                                                                            \
+    map_set_(&(m)->base, key, (void*)&(m)->tmp, sizeof((m)->tmp));                                 \
   } while(0)
 
 #define map_remove(m, key) map_remove_(&(m)->base, key)

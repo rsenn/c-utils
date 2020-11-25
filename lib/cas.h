@@ -1,5 +1,6 @@
 #ifdef __DMC__
-#define InterlockedCompareExchange(p, n, o) InterlockedCompareExchange((void**)p, (void*)n, (void*)o)
+#define InterlockedCompareExchange(p, n, o)                                                        \
+  InterlockedCompareExchange((void**)p, (void*)n, (void*)o)
 #endif
 
 #ifdef __TINYC__
@@ -26,7 +27,8 @@ __atomic_compare_and_swap(long* ptr, long oldval, long newval) {
 #define __CAS __atomic_compare_and_swap
 #define __CAS_PTR __atomic_compare_and_swap
 
-#elif(defined(__i386__) || defined(__x86_64__)) && (defined(__TINYC__) || defined(TCC) || defined(__GNUC__) || USE_INLINE_COMPARE_AND_SWAP)
+#elif(defined(__i386__) || defined(__x86_64__)) &&                                                 \
+    (defined(__TINYC__) || defined(TCC) || defined(__GNUC__) || USE_INLINE_COMPARE_AND_SWAP)
 #warning x86
 #ifdef __TINYC__
 #warning TCC
@@ -38,6 +40,17 @@ __atomic_compare_and_swap(long* ptr, long oldval, long newval) {
 #else
 #endif
 #undef __CAS
+#ifdef __TINYC__
+static inline uint64_t
+__compare_and_swap(uint64_t* ptr, uint64_t new_val, uint64_t old_val) {
+  uint64_t out;
+
+  // newline after `lock' for the work around of apple's gas(?) bug.
+  asm volatile("lock cmpxchgq %2,%1" : "=a"(out), "+m"(*ptr) : "q"(new_val), "0"(old_val) : "cc");
+
+  return out;
+}
+#endif
 #define __CAS __compare_and_swap
 static __inline__ long
 __sync_val_compare_and_swap(long* ptr, long cmp, long new) {
@@ -94,7 +107,8 @@ __CAS(long* ptr, long oldval, long newval) {
 
 #elif WINDOWS_NATIVE || (defined(__CYGWIN__) && __MSYS__ == 1) || defined(__POCC__)
 #include <windows.h>
-#define __CAS(ptr, oldval, newval) InterlockedCompareExchange((LONG*)ptr, (LONG)newval, (LONG)oldval)
+#define __CAS(ptr, oldval, newval)                                                                 \
+  InterlockedCompareExchange((LONG*)ptr, (LONG)newval, (LONG)oldval)
 #else
 #define __CAS(ptr, oldval, newval) __sync_val_compare_and_swap(ptr, oldval, newval)
 #endif
