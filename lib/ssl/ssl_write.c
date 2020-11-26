@@ -13,8 +13,11 @@ ssl_write(fd_t fd, const void* data, size_t len) {
   assert(i->ssl);
 
   if(!SSL_is_init_finished(i->ssl)) {
-    if((ret = ssl_instance_handshake(i)) != 1)
+    if((ret = ssl_instance_handshake(i)) != 1) {
+
+      errno = ssl_instance_errno(i);
       return ret;
+    }
   }
 
   if((ret = ssl_instance_return(i, SSL_write(i->ssl, data, len))) <= 0)

@@ -12,6 +12,11 @@ endif()
 set(PROJECT_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/3rdparty)
 set(PROJECT_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/3rdparty)
 
+
+SET(CMAKE_BUILD_TYPE "Debug" CACHE STRING "build type")
+
+SET_PROPERTY(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS Debug Release MinSizeRel RelWithDebInfo) 
+
 option(USE_LZMA "lzma compression" ON)
 option(USE_BZIP "bzip2 compression" ON)
 option(USE_ZLIB "zlib compression" ON)
@@ -815,10 +820,10 @@ if(USE_SSL AND NOT BUILD_SSL)
 
   if(OPENSSL_FOUND)
     check_include_file(openssl/ssl.h HAVE_OPENSSL_SSL_H)
-    if(pkgcfg_lib_OPENSSL_crypto)
+    if(pkgcfg_lib_OPENSSL_crypto AND NOT OPENSSL_CRYPTO_LIBRARY)
       set(OPENSSL_CRYPTO_LIBRARY "${pkgcfg_lib_OPENSSL_crypto}")
       list(APPEND OPENSSL_LIBRARIES ${pkgcfg_lib_OPENSSL_crypto})
-    endif(pkgcfg_lib_OPENSSL_crypto)
+    endif(pkgcfg_lib_OPENSSL_cryptoAND NOT OPENSSL_CRYPTO_LIBRARY)
     if(pkgcfg_lib_OPENSSL_ssl)
 
       if(pkgcfg_lib_OPENSSL_ssl)
@@ -858,6 +863,10 @@ if(USE_SSL AND NOT BUILD_SSL)
   endif(OPENSSL_SSL_LIBRARY STREQUAL "" OR NOT OPENSSL_SSL_LIBRARY)
 
   # message(STATUS "OPENSSL_FOUND=${OPENSSL_FOUND}\n   OPENSSL_INCLUDE_DIR=${OPENSSL_LIB_DIR}\n   OPENSSL_LIB_DIR=${OPENSSL_INCLUDE_DIR}\n   OPENSSL_ROOT_DIR=${OPENSSL_ROOT_DIR}\n   OPENSSL_CRYPTO_LIBRARY=${OPENSSL_CRYPTO_LIBRARY}\n   OPENSSL_SSL_LIBRARY=${OPENSSL_SSL_LIBRARY}")
+
+  if(OPENSSL_SSL_LIBRARY AND NOT OPENSSL_CRYPTO_LIBRARY)
+    string(REPLACE "libssl" "libcrypto" OPENSSL_CRYPTO_LIBRARY "${OPENSSL_SSL_LIBRARY}")
+  endif(OPENSSL_SSL_LIBRARY AND NOT OPENSSL_CRYPTO_LIBRARY)
 
 else()
   unset(OPENSSL_LIBRARIES CACHE)
@@ -1487,7 +1496,7 @@ add_program(piccfg ihex errmsg strarray slist rdir dir path strlist hashmap hmap
 add_program(hexedit stralloc buffer array io errmsg mmap open path scan uint64 unix ${ZLIB_LIBRARY})
 add_program(httptest http ssl dns stralloc buffer errmsg byte io socket alloc taia ${LIBSSL} ${LIBMSWSOCK} ${LIBDL} pthread)
 set(ssltest_SOURCES address.c address.h)
-add_program(ssltest unix ssl dns stralloc buffer errmsg byte io socket alloc taia ${LIBSSL} ${LIBMSWSOCK} ${LIBDL} pthread)
+add_program(ssltest strlist unix ssl dns stralloc buffer errmsg byte io socket alloc taia ${LIBSSL} ${LIBMSWSOCK} ${LIBDL} pthread)
 add_program(impgen pe buffer byte mmap open)
 add_program(jsontest json stralloc buffer byte charbuf fmt hmap mmap open)
 add_program(list-r path strarray strlist stralloc buffer array unix dir array fmt open str uint64 ${LIBADVAPI32})

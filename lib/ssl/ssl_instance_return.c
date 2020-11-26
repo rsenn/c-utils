@@ -11,14 +11,14 @@ ssl_instance_return(ssl_instance* i, int ret) {
   if(ret <= 0) {
     i->error = SSL_get_error(i->ssl, ret);
     if(i->error == SSL_ERROR_WANT_WRITE) {
-#ifdef DEBUG_OUTPUT
+#ifdef DEBUG_OUTPUT_
       ssl_instance_debug(i);
       buffer_putsflush(buffer_2, " wants write\n");
 #endif
       if(i->wantwrite)
         i->wantwrite(SSL_get_fd(i->ssl));
     } else if(i->error == SSL_ERROR_WANT_READ) {
-#ifdef DEBUG_OUTPUT
+#ifdef DEBUG_OUTPUT_
       ssl_instance_debug(i);
       buffer_putsflush(buffer_2, " wants read\n");
 #endif
