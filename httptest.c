@@ -120,7 +120,7 @@ main(int argc, char* argv[]) {
   fd_t fd, outfile;
   int c, index;
   const char* outname = 0;
-  const char* tmpl = "output-XXXXXX.txt";
+  char* tmpl = "output-XXXXXX.txt";
   struct longopt opts[] = {{"help", 0, NULL, 'h'}, {"output", 0, NULL, 'o'}, {0, 0, 0, 0}};
 
   errmsg_iam(argv[0]);
@@ -150,7 +150,7 @@ main(int argc, char* argv[]) {
     errmsg_warnsys("open error: ", outname, 0);
     return 126;
   }
-  buffer_init(&out, (buffer_op_proto*)&write, outfile, outbuf, sizeof(outbuf));
+  buffer_init(&out, (buffer_op_sys*)(void*)&write, outfile, outbuf, sizeof(outbuf));
   http_init(&h, url_host, url_port);
   h.nonblocking = 1;
   h.keepalive = 0;

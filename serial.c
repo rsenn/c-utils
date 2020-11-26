@@ -244,7 +244,7 @@ serial_write_raw(int fd, const char* d, unsigned int len) {
   unsigned int processed = 0;
   time_t start = time(NULL);
 
-  while((processed < len) && (difftime(time(NULL), start) < TIMEOUT)) {
+  while((processed < len) && (time(NULL) - start < TIMEOUT)) {
     int t = write(fd, (d + processed), (len - processed));
     if(t == -1) {
       fprintf(stderr, "Error while writing: %s\n", strerror(errno));
@@ -262,7 +262,7 @@ serial_read_raw(int fd, char* d, unsigned int len) {
   unsigned int processed = 0;
   time_t start = time(NULL);
 
-  while((processed < len) && (difftime(time(NULL), start) < TIMEOUT)) {
+  while((processed < len) && (time(NULL) - start < TIMEOUT)) {
     int t = read(fd, (d + processed), (len - processed));
     if(t == -1) {
       fprintf(stderr, "Error while reading: %s\n", strerror(errno));

@@ -16,7 +16,7 @@ char str[IP6_FMT];
 
 int
 main(int argc, char** argv) {
-  int i;
+  size_t i;
 
   dns_random_init(seed);
 

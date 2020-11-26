@@ -810,6 +810,7 @@ list_file(stralloc* path, const char* name, dir_type_t dtype, long depth, dev_t 
     if(opt_depth == -1 || depth + 1 < opt_depth)
       list_dir_internal(path, 0, depth + 1);
   }
+  return 1;
 }
 
 int

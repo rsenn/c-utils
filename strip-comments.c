@@ -197,7 +197,7 @@ main(int argc, char* argv[]) {
   stralloc data;
   size_t n;
   const char* x;
-  const char* tmpl = "/tmp/strip-comments.XXXXXX";
+  char* tmpl = "/tmp/strip-comments.XXXXXX";
 
   struct longopt opts[] = {{"help", 0, NULL, 'h'}, {"in-place", 0, NULL, 'i'}, {0, 0, 0, 0}};
 

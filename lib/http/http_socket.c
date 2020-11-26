@@ -41,13 +41,13 @@ http_socket(http* h, int nonblock) {
   }
 #endif
   buffer_init_free(&h->q.in,
-                   (buffer_op_proto*)&http_socket_read,
+                   (buffer_op_sys*)(void*)&http_socket_read,
                    h->sock,
                    (char*)alloc(BUFFER_INSIZE),
                    BUFFER_INSIZE);
   h->q.in.cookie = (void*)h;
   buffer_init_free(&h->q.out,
-                   (buffer_op_proto*)&http_socket_write,
+                   (buffer_op_sys*)(void*)&http_socket_write,
                    h->sock,
                    (char*)alloc(BUFFER_OUTSIZE),
                    BUFFER_OUTSIZE);

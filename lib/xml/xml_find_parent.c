@@ -89,6 +89,9 @@ xml_find_parent_attr(xmlnode* node, const char* attrs) {
   sl.sa.a = 0;
   sl.sep = ',';
 
-  return xml_find_parent_pred_2(
-      node, (int (*)(xmlnode*, const void*, const void*, const void*))(void*)&xml_has_attr, NULL, &sl);
+  return xml_find_parent_pred_2(node,
+                                (int (*)(xmlnode*, const void*, const void*, const void*))(
+                                    void*)&xml_has_attr,
+                                NULL,
+                                &sl);
 }

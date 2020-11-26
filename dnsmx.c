@@ -24,8 +24,7 @@ char strnum[FMT_ULONG];
 
 int
 main(int argc, char** argv) {
-  int i;
-  int j;
+  size_t i, j;
   uint16 pref;
 
   dns_random_init(seed);

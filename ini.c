@@ -82,7 +82,7 @@ ini_write(buffer* b, ini_section_t* ini, int utf16) {
   MAP_PAIR_T t;
   buffer out;
   char x[1024];
-  buffer_init(&out, &buffer_write_utf16le, 0, x, sizeof(x));
+  buffer_init(&out, (buffer_op_sys*)(void*)&buffer_write_utf16le, 0, x, sizeof(x));
   out.cookie = b;
   if(utf16) {
     buffer_putsflush(b, "\377\376");

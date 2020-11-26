@@ -3665,7 +3665,6 @@ output_ninja_rule(buffer* b, target* rule) {
     buffer_puts(b, " ");
 
     stralloc_zero(&path);
-#warning rule->prereq.sa
 
     stralloc_catset(&path, &rule->prereq, " ");
 

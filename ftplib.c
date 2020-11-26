@@ -21,7 +21,7 @@
 static int
 ftplib_write_escaped(buffer* out, const char* s) {
   while(*s) {
-    if(*s == 255)
+    if(*(unsigned char*)s == 255)
       if(-1 == buffer_put(out, s, 1))
         return -1;
     if(-1 == buffer_put(out, s++, 1))
@@ -64,7 +64,7 @@ ftplib_read_oneline(buffer* io, stralloc* ret) {
 
   p = ret->s;
   l = ret->len;
-  for(q = p, e = p + l, w = p; q != e;) {
+  for(q = (unsigned char*)p, e = (unsigned char*)p + l, w = (unsigned char*)p; q != e;) {
     if(*q == 255 && q != e - 1)
       q++;
     *w++ = *q++;
@@ -117,11 +117,9 @@ ftplib_pasv(buffer* in,
             stralloc* meld,
             unsigned int retries) {
   stralloc x;
-  char* p;
-  char* q;
-  char* r;
+  char *p, *q, *r;
   unsigned i;
-  int sock;
+  int sock = -1;
   char ip[4];
   unsigned long p1 = 0, p2 = 0; /* keep compiler quiet */
   stralloc_init(&x);

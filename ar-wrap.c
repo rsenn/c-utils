@@ -466,7 +466,7 @@ main(int argc, char* argv[]) {
   av = strlist_to_argv(&opts);
 
   errno = 0;
-  ret = process_create(realcmd.s, (const char**)av, 0, 0);
+  ret = process_create((const char*)realcmd.s, (char**)av, 0, 0);
   // ret = execve(realcmd.s, av);
 
   if(ret == -1) {

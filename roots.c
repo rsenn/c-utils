@@ -17,7 +17,7 @@ static stralloc data;
 
 int
 roots_find(char* q) {
-  size_t i,j;
+  size_t i, j;
 
   i = 0;
   while(i < data.len) {
@@ -70,7 +70,7 @@ roots_init2(dir_t* dir, bool ip6) {
 
   char servers[64];
   size_t serverslen;
-  size_t i,j;
+  size_t i, j;
 
   for(;;) {
     errno = 0;

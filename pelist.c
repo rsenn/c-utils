@@ -298,9 +298,8 @@ parse_search(const char* arg, stralloc* dest) {
   return ret;
 }
 
-int
+void
 put_search(buffer* b, const stralloc* search) {
-
   size_t i;
   for(i = 0; i < search->len; i++) {
     if(i > 0)

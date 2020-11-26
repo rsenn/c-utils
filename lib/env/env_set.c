@@ -11,6 +11,7 @@ env_set(const char* name, const char* value) {
 #if WINDOWS_NATIVE
   return SetEnvironmentVariable(name, value);
 #else
-  return setenv(name, value, 1) == 0;
+  return env_put2(name, value);
+//  return setenv(name, value, 1) == 0;
 #endif
 }

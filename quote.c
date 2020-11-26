@@ -300,7 +300,7 @@ main(int argc, char* argv[]) {
   stralloc data;
   size_t n;
   const char* x;
-   char* tmpl = "/tmp/quote.XXXXXX";
+  char* tmpl = "/tmp/quote.XXXXXX";
 
   struct longopt opts[] = {{"help", 0, NULL, 'h'},
                            {"in-place", 0, NULL, 'i'},
@@ -400,7 +400,7 @@ main(int argc, char* argv[]) {
     unix_optind++;
   }
 
-  buffer_init_free(&input, (buffer_op_proto*)(void*)&read, in_fd, alloc(1024), 1024);
+  buffer_init_free(&input, (buffer_op_sys*)(void*)&read, in_fd, alloc(1024), 1024);
 
 again:
   if(in_place) {

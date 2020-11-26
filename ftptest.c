@@ -266,7 +266,8 @@ handle_ftp(ftp_client* ftp, stralloc* line) {
       socket_connect4(ftp->data_sock, passive.addr.ip, passive.port);
       io_wantwrite(ftp->data_sock);
 
-      buffer_init_free(&ftp->data, (buffer_op_proto*)&ftp_read, ftp->data_sock, alloc(1024), 1024);
+      buffer_init_free(
+          &ftp->data, (buffer_op_sys*)(void*)&ftp_read, ftp->data_sock, alloc(1024), 1024);
 
       break;
     }
@@ -286,8 +287,8 @@ list_ftp(ftp_client* ftp) {
   stralloc meld;
   stralloc_init(&meld);
   stralloc_ready(&meld, 256);
-  buffer_init_free(&in, ftp_read, ftp->control_sock, alloc(1024), 1024);
-  buffer_init_free(&out, ftp_write, ftp->control_sock, alloc(1024), 1024);
+  buffer_init_free(&in, (buffer_op_sys*)(void*)&ftp_read, ftp->control_sock, alloc(1024), 1024);
+  buffer_init_free(&out, (buffer_op_sys*)(void*)&ftp_write, ftp->control_sock, alloc(1024), 1024);
 
   for(;;) {
     io_wait();

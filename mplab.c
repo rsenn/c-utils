@@ -85,11 +85,11 @@ static void set_debug(MAP_T map);
 
 void
 output_mplab_project(buffer* b, MAP_T* _rules, MAP_T* vars, const strlist* include_dirs) {
- MAP_PAIR_T it;
+  MAP_PAIR_T it;
   MAP_T toolcfg;
   strlist incdirs, srcdirs;
   const char *dir, *s;
-  char** p=0;
+  char** p = 0;
   size_t n;
   stralloc sa, file, dirname;
   mplab_config_t mplab_cfg = {.warning_level = (is_debug() ? 3 : -3),
@@ -197,53 +197,53 @@ output_mplab_project(buffer* b, MAP_T* _rules, MAP_T* vars, const strlist* inclu
   section = ini_new(&section->next, "FILE_INFO");
   unsigned int i = 0, num_sources = 0;
   {
-  set_iterator_t it;
-  const char* x ;
+    set_iterator_t it;
+    const char* x;
 
-  /*  buffer_puts(b, "; Number of rules: ");
-    buffer_putuint(b, hmap_count(rules));
-    buffer_putsflush(b, "\r\n");*/
+    /*  buffer_puts(b, "; Number of rules: ");
+      buffer_putuint(b, hmap_count(rules));
+      buffer_putsflush(b, "\r\n");*/
 
-  stralloc_zero(&incdirs.sa);
+    stralloc_zero(&incdirs.sa);
 
-   set_foreach(&srcs, it, x, n) {
-    s = x;
-    if(!is_source(s) && num_sources == 0)
-      num_sources = i;
-    stralloc_zero(&sa);
-    stralloc_copy(&sa, &dirs.this.sa);
-    stralloc_catc(&sa, '/');
-    stralloc_catb(&sa, x, n);
-    stralloc_nul(&sa);
-    stralloc_zero(&dirname);
-    path_dirname(s, &dirname);
-    stralloc_nul(&dirname);
-    s = dirname.s;
-    n = str_rchrs(dirname.s, "/\\", 2);
-    if(s[n])
-      s += n;
-    while(s[0] == '.' && s[1] == '.' && (s[2] == '/' || s[2] == '\\')) s += 3;
+    set_foreach(&srcs, it, x, n) {
+      s = x;
+      if(!is_source(s) && num_sources == 0)
+        num_sources = i;
+      stralloc_zero(&sa);
+      stralloc_copy(&sa, &dirs.this.sa);
+      stralloc_catc(&sa, '/');
+      stralloc_catb(&sa, x, n);
+      stralloc_nul(&sa);
+      stralloc_zero(&dirname);
+      path_dirname(s, &dirname);
+      stralloc_nul(&dirname);
+      s = dirname.s;
+      n = str_rchrs(dirname.s, "/\\", 2);
+      if(s[n])
+        s += n;
+      while(s[0] == '.' && s[1] == '.' && (s[2] == '/' || s[2] == '\\')) s += 3;
 
-    if(!str_equal(s, ".")) {
-      strlist_push_unique(is_source(*p) ? &srcdirs : &incdirs, s);
+      if(!str_equal(s, ".")) {
+        strlist_push_unique(is_source(*p) ? &srcdirs : &incdirs, s);
+      }
+      // debug_sa("sa", &sa);
+      // debug_sa("dirs.build", &dirs.build.sa);
+      // debug_sa("dirs.work", &dirs.work.sa);
+      // debug_sa("dirs.out", &dirs.out.sa);
+      path_relative(sa.s, dirs.out.sa.s, &file);
+      // debug_sa("file", &file);
+      stralloc_replacec(&file, '/', '\\');
+      stralloc_nul(&file);
+      make_fileno(&sa, i++);
+      ini_set(generated_files, sa.s, "no");
+      ini_set(other_files, sa.s, "no");
+      ini_set_sa(section, &sa, &file);
+      stralloc_zero(&file);
+      path_dirname(*p, &file);
+      ini_set_sa(file_subfolders, &sa, &file);
+      stralloc_free(&file);
     }
-    // debug_sa("sa", &sa);
-    // debug_sa("dirs.build", &dirs.build.sa);
-    // debug_sa("dirs.work", &dirs.work.sa);
-    // debug_sa("dirs.out", &dirs.out.sa);
-    path_relative(sa.s, dirs.out.sa.s, &file);
-    // debug_sa("file", &file);
-    stralloc_replacec(&file, '/', '\\');
-    stralloc_nul(&file);
-    make_fileno(&sa, i++);
-    ini_set(generated_files, sa.s, "no");
-    ini_set(other_files, sa.s, "no");
-    ini_set_sa(section, &sa, &file);
-    stralloc_zero(&file);
-    path_dirname(*p, &file);
-    ini_set_sa(file_subfolders, &sa, &file);
-    stralloc_free(&file);
-  }
   }
   stralloc_nul(&incdirs.sa);
   stralloc_nul(&srcdirs.sa);

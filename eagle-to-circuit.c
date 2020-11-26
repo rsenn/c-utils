@@ -694,7 +694,7 @@ part_unconnected() {
   MAP_PAIR_T t;
   MAP_FOREACH(parts, t) {
     struct part* part = MAP_VALUE(t);
-    for(size_t i = 0; i < part->num_pins; i++) {
+    for(int i = 0; i < part->num_pins; i++) {
       struct net* pin = &part->pins[i];
       buffer_puts(buffer_2, "Part ");
       buffer_putsa(buffer_2, &part->name);

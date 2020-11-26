@@ -25,8 +25,12 @@ io_passfd(fd_t sock, fd_t fd) {
 #pragma warning _XOPEN_SOURCE defined, please send me an email so I can remove this.
 #pragma warning _XOPEN_SOURCE needs to be defined for this to work on Solaris.
 #else
+#ifndef _XOPEN_SOURCE
 #define _XOPEN_SOURCE
+#endif
+#ifndef _XOPEN_SOURCE_EXTENDED
 #define _XOPEN_SOURCE_EXTENDED 1
+#endif
 #endif
 #include "../io_internal.h"
 #include "../typedefs.h"

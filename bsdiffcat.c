@@ -84,7 +84,7 @@ buffer_getint64(buffer* b, int64* i) {
 
 void
 buffer_offset(buffer* from, buffer* to, int64 offset) {
-  buffer_init(to, from->op, from->fd, from->x, from->a);
+  buffer_init(to, (buffer_op_sys*)(void*)from->op, from->fd, from->x, from->a);
   to->n = from->n;
   to->p = from->p + offset;
 }

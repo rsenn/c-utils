@@ -11,7 +11,7 @@
  */
 void
 path_getcwd(stralloc* sa) {
-  char *p,sep;
+  char *p, sep;
   stralloc_zero(sa);
   /* reserve some space */
   stralloc_ready(sa, PATH_MAX);

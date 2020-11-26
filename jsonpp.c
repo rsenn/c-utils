@@ -44,7 +44,7 @@ get_depth(const jsonval* v) {
 }
 
 static void
-compact_printer(jsonfmt* p, jsonval* v, int depth, int index) {
+compact_printer(jsonfmt* p, jsonval* v, int depth, int index, char q) {
 
   int valdepth = v ? get_depth(v) : 0;
   int pretty = depth < 4 && valdepth > 1;
@@ -74,7 +74,7 @@ compact_printer(jsonfmt* p, jsonval* v, int depth, int index) {
 };
 
 static void
-default_printer(jsonfmt* p, jsonval* v, int depth, int index) {
+default_printer(jsonfmt* p, jsonval* v, int depth, int index, char q) {
   int pretty = v && get_depth(v) > 1;
   p->indent = depth > depth_arg ? "" : "  "; // depth <= 1 ? "  " : depth > 3 ? "  " : " ";
   p->spacing = spacing ? spacing : " ";
@@ -207,7 +207,7 @@ main(int argc, char* argv[]) {
 
     fd = in_file ? open_read(in_file) : 0;
 
-    charbuf_init(&in_buf, (read_fn*)&read, fd);
+    charbuf_init(&in_buf, (read_fn*)(void*)&read, fd);
 
     if(out_fd > 2)
       close(out_fd);

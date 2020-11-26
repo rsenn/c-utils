@@ -1,10 +1,7 @@
 #include "../stralloc.h"
 
 size_t
-stralloc_fmt(stralloc* out,
-             const char* in,
-             size_t in_len,
-             size_t (*fmt_function)()) {
+stralloc_fmt(stralloc* out, const char* in, size_t in_len, size_t (*fmt_function)()) {
   size_t i;
   // stralloc_zero(out);
   for(i = 0; i < in_len; ++i) {

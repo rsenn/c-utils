@@ -245,13 +245,9 @@ int stralloc_subst(stralloc* out, const char* b, size_t len, const char* from, c
 
 typedef size_t(stralloc_fmt_fn)(char*, int);
 size_t stralloc_fmt_call(stralloc*, stralloc_fmt_fn*, void* av[4]);
-size_t stralloc_fmt_pred(stralloc*,
-                         const char* in,
-                         size_t in_len,
-                         size_t (*fmt_function)(),
-                         int (*pred)(int));
-size_t
-stralloc_fmt(stralloc*, const char* in, size_t in_len, size_t (*fmt_function)());
+size_t stralloc_fmt_pred(
+    stralloc*, const char* in, size_t in_len, size_t (*fmt_function)(), int (*pred)(int));
+size_t stralloc_fmt(stralloc*, const char* in, size_t in_len, size_t (*fmt_function)());
 
 int stralloc_catdouble(stralloc*, double d, int prec);
 

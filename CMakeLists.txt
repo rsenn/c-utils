@@ -1486,6 +1486,8 @@ add_program(genmakefile sig set case errmsg strarray slist rdir dir path strlist
 add_program(piccfg ihex errmsg strarray slist rdir dir path strlist hashmap hmap stralloc buffer mmap unix open scan fmt byte str array safemult alloc)
 add_program(hexedit stralloc buffer array io errmsg mmap open path scan uint64 unix ${ZLIB_LIBRARY})
 add_program(httptest http ssl dns stralloc buffer errmsg byte io socket alloc taia ${LIBSSL} ${LIBMSWSOCK} ${LIBDL} pthread)
+set(ssltest_SOURCES address.c address.h)
+add_program(ssltest unix ssl dns stralloc buffer errmsg byte io socket alloc taia ${LIBSSL} ${LIBMSWSOCK} ${LIBDL} pthread)
 add_program(impgen pe buffer byte mmap open)
 add_program(jsontest json stralloc buffer byte charbuf fmt hmap mmap open)
 add_program(list-r path strarray strlist stralloc buffer array unix dir array fmt open str uint64 ${LIBADVAPI32})

@@ -374,7 +374,7 @@ main(int argc, char* argv[]) {
     qsort(array_start(&pipes),
           array_length(&pipes, sizeof(pipe_t)),
           sizeof(pipe_t),
-          (int (*)(const void*,const void*))(void*)&compare_pipes);
+          (int (*)(const void*, const void*))(void*)&compare_pipes);
   }
 
   if(verbose) {

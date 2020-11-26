@@ -5,6 +5,8 @@
 #include "stralloc.h"
 #include "str.h"
 
+#include <limits.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif

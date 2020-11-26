@@ -487,7 +487,7 @@ process_input(buffer* input) {
       char** v = strlist_to_argv(&fields);
       int c = strlist_count(&fields);
       strarray_init(&arr);
-      strarray_from_argv(c > 21 ? 21 : c, v, &arr);
+      strarray_from_argv(c > 21 ? 21 : c, (const char**)v, &arr);
 
       if(!process_entry(strarray_begin(&arr), strarray_size(&arr)))
         strlist_dump(buffer_2, &fields);
@@ -601,7 +601,7 @@ main(int argc, char* argv[]) {
         buffer_putnlflush(buffer_2);
       }
     } else {
-      buffer_init(&b, (buffer_op_proto*)&read, STDIN_FILENO, inbuf, sizeof(inbuf));
+      buffer_init(&b, (buffer_op_sys*)(void*)&read, STDIN_FILENO, inbuf, sizeof(inbuf));
     }
     process_input(&b);
     ++optind;

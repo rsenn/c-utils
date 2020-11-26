@@ -3,6 +3,7 @@
 
 #include <stdbool.h>
 #include "lib/uint32.h"
+#include "lib/stralloc.h"
 
 typedef struct {
   char ip[16];
