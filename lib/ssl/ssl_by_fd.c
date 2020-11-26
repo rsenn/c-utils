@@ -6,10 +6,10 @@
 #include <openssl/err.h>
 
 ssl_t*
-ssl_get_fd(fd_t fd) {
-  ssl_instance* inst = iarray_get(&ssl_list, fd);
-  assert(inst);
-  assert(inst->ssl);
-  return inst->ssl;
+ssl_by_fd(fd_t fd) {
+  ssl_instance* i = iarray_get(&ssl_list, fd);
+  assert(i);
+  assert(i->ssl);
+  return i->ssl;
 }
 #endif

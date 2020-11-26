@@ -7,11 +7,11 @@
 
 void
 ssl_free(fd_t fd) {
-  ssl_instance* inst = iarray_get(&ssl_list, fd);
-  assert(inst);
-  assert(inst->ssl);
+  ssl_instance* i = iarray_get(&ssl_list, fd);
+  assert(i);
+  assert(i->ssl);
 
-  SSL_free(inst->ssl);
-  inst->ssl = 0;
+  SSL_free(i->ssl);
+  i->ssl = 0;
 }
 #endif

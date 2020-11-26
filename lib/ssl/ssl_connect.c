@@ -7,10 +7,10 @@
 
 int
 ssl_connect(fd_t fd) {
-  ssl_instance* inst = iarray_get(&ssl_list, fd);
-  assert(inst);
-  assert(inst->ssl);
+  ssl_instance* i = iarray_get(&ssl_list, fd);
+  assert(i);
+  assert(i->ssl);
 
-  return ssl_instance_return(inst, SSL_connect(inst->ssl));
+  return ssl_instance_return(i, SSL_connect(i->ssl));
 }
 #endif

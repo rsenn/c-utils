@@ -4,10 +4,10 @@
 
 ssl_instance*
 ssl_instance_new(fd_t fd) {
-  ssl_instance* ret;
-  if((ret = iarray_allocate(&ssl_list, fd))) {
-    assert(ret->ssl == 0);
-    byte_zero(ret, sizeof(ssl_instance));
+  ssl_instance* i;
+  if((i = iarray_allocate(&ssl_list, fd))) {
+    assert(i->ssl == 0);
+    byte_zero(i, sizeof(ssl_instance));
   }
-  return ret;
+  return i;
 }

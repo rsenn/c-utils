@@ -8,11 +8,11 @@
 ssize_t
 ssl_write(fd_t fd, const void* data, size_t len) {
   ssize_t ret;
-  ssl_instance* inst = iarray_get(&ssl_list, fd);
-  assert(inst);
-  assert(inst->ssl);
+  ssl_instance* i = iarray_get(&ssl_list, fd);
+  assert(i);
+  assert(i->ssl);
 
-  ret = ssl_instance_return(inst, SSL_write(inst->ssl, data, len));
+  ret = ssl_instance_return(i, SSL_write(i->ssl, data, len));
 
   return ret;
 }

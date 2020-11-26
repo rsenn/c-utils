@@ -63,9 +63,11 @@ ssltest_loop(fd_t s) {
 
     while((fd = io_canread()) != -1) {
       if(fd == s) {
+#ifdef DEBUG_OUTPUT_
         buffer_puts(buffer_2, "can read: ");
         buffer_putlong(buffer_2, fd);
         buffer_putnlflush(buffer_2);
+#endif
 
         if((ret = buffer_feed(&in)) > 0) {
           buffer_puts(buffer_2, "data: ");
@@ -90,7 +92,15 @@ ssltest_loop(fd_t s) {
         buffer_putlong(buffer_2, fd);
         buffer_putnlflush(buffer_2);
 
-        ssl_connect(s);
+        if(ssl_connect(s) == 1) {
+
+          buffer_puts(buffer_2, "handshare complete");
+          buffer_putnlflush(buffer_2);
+
+          buffer_puts(&out, "USER x x x :Roman Senn\r\n");
+          buffer_puts(&out, "NICK roman\r\n");
+          buffer_flush(&out);
+        }
 
         //     io_onlywantread(fd);
       }

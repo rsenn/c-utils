@@ -24,9 +24,9 @@ ssl_verify(int ok, X509_STORE_CTX* cert) {
   return 1;
 }
 
-SSL_CTX*
-ssl_context(SSL_METHOD const* method) {
-  SSL_CTX* ctx;
+ssl_ctx_t*
+ssl_context(ssl_method_t const* method) {
+  ssl_ctx_t* ctx;
 
   ctx = SSL_CTX_new(method);
   if(ctx == NULL) {

@@ -16,7 +16,7 @@ iarray ssl_list = {.pages = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
 #include <openssl/err.h>
 
 static ssl_t*
-ssl_new(SSL_CTX* ctx, fd_t fd) {
+ssl_new(ssl_ctx_t* ctx, fd_t fd) {
   SSL* ssl;
   if(ctx == 0) {
     buffer_putsflush(buffer_2, "ERROR ssl_new ctx=0\n");
@@ -26,9 +26,9 @@ ssl_new(SSL_CTX* ctx, fd_t fd) {
         buffer_2, "ERROR ssl_new ssl=0 : ", ERR_lib_error_string(ERR_get_error()), NULL);
     buffer_putnlflush(buffer_2);
   } else {
-    ssl_instance* inst = ssl_instance_new(fd);
+    ssl_instance* i = ssl_instance_new(fd);
     SSL_set_fd(ssl, fd);
-    inst->ssl = ssl;
+    i->ssl = ssl;
   }
   return ssl;
 }
