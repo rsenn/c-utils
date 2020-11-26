@@ -13,5 +13,6 @@ set_iterator_find(set_iterator_t* it, const void* x, size_t n) {
     return 0;
 
   for(; b; b = (bucket_t*)b->next) {
+
   }
 }

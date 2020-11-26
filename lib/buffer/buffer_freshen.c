@@ -9,8 +9,8 @@ ssize_t buffer_stubborn_read(ssize_t (*)(), int, void*, size_t, void*);
 int
 buffer_freshen(buffer* b) {
   size_t bytes;
-  assert(b->op != (buffer_op_proto*)&buffer_dummyread);
-  assert(b->op != (buffer_op_proto*)&buffer_dummyreadmmap);
+  assert((void*)b->op != (void*)&buffer_dummyread);
+  assert((void*)b->op != (void*)&buffer_dummyreadmmap);
 
   bytes = b->n - b->p;
   if(b->p > 0 && bytes) {

@@ -48,7 +48,8 @@
 				"CMakeFiles",
 				".*",
 				"3rdparty/xz",
-				"*3rdparty/xz*"
+				"*3rdparty/xz*",
+				"*3rdparty/*/*"
 			],
 			"path": "."
 		}

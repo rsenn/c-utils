@@ -12,4 +12,5 @@ set_iterator_erase(set_iterator_t* it) {
     return 0;
 
   i = it->index;
+  return 1;
 }

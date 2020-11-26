@@ -64,8 +64,8 @@ buffer_brotli_write(fd_t fd, void* data, size_t n, buffer* b) {
   buffer* other = ctx->b;
   const uint8* next_in;
   uint8* next_out;
-  ssize_t r, a;
-  size_t pos, avail_in, avail_out;
+  ssize_t r; 
+  size_t a, pos, avail_in, avail_out;
   BROTLI_BOOL ret;
 
   r = 0;
@@ -102,15 +102,15 @@ static void
 buffer_brotli_close(buffer* b) {
   brotli_ctx* ctx = b->cookie;
   buffer* other = ctx->b;
-  ssize_t r, a;
+  ssize_t r;
   int eof = 0;
   const uint8* next_in;
   uint8* next_out;
-  size_t avail_in, avail_out;
+  size_t a, avail_in, avail_out;
   BROTLI_BOOL ret;
 
   r = 0;
-  next_in = &b->x[b->p];
+  next_in = (const uint8*)&b->x[b->p];
   avail_in = b->n - b->p;
   a = other->a - other->p;
   next_out = (uint8*)&other->x[other->p];

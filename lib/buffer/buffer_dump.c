@@ -61,11 +61,11 @@ buffer_dump(buffer* out, buffer* b) {
   buffer_puts(out, ", op=");
   /* buffer_putspace(out); */
 
-  if(b->op == (buffer_op_proto*)&read)
+  if((void*)b->op == (void*)&read)
     buffer_puts(out, "<read>  ");
-  else if(b->op == (buffer_op_proto*)&write)
+  else if((void*)b->op == (void*)&write)
     buffer_puts(out, "<write> ");
-  else if(b->op == (buffer_op_proto*)&buffer_dummyreadmmap)
+  else if((void*)b->op == (void*)&buffer_dummyreadmmap)
     buffer_puts(out, "<mmap>  ");
   /*  else if(b->op == (void*)&stralloc_write)
       buffer_puts(out, "<sa-wr> ");*/

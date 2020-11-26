@@ -2,7 +2,7 @@
 #include "../stralloc.h"
 
 size_t
-stralloc_catxlong0(stralloc* sa, unsigned long n, int pad) {
+stralloc_catxlong0(stralloc* sa, unsigned long n, unsigned int pad) {
   unsigned int i, j;
   i = fmt_xlong(FMT_LEN, n);
   if(!stralloc_readyplus(sa, i > pad ? i : pad))

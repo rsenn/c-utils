@@ -353,7 +353,7 @@ main(int argc, char* argv[]) {
         //    case 'S': stralloc_copys(&quote_chars, "\"$`"); break;
       case 'C':
         add_quotes = "\"";
-       // tab_size = 2;
+        // tab_size = 2;
         quote_newline = quote_tabs = true;
         stralloc_copys(&quote_chars, "$\t");
         break;

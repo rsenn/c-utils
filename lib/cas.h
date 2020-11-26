@@ -15,7 +15,7 @@
 #include <stdatomic.h>
 
 static __inline long
-__atomic_compare_and_swap(long* ptr, long oldval, long newval) {
+__atomic_compare_and_swap(volatile long* ptr, long oldval, long newval) {
 #if defined(__ORANGEC__)
   atomic_compare_swap(ptr, &oldval, newval);
 #else

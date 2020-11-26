@@ -118,9 +118,9 @@ main(int argc, char* argv[]) {
     strlist_dump_named(buffer_1, &stat, stat_fields);
     buffer_putnlflush(buffer_1);
 
-    stralloc_zero(&cmdline);
+    stralloc_zero(&cmdline.sa);
 
-    if(!proc_openreadclose(pid, "cmdline", &cmdline))
+    if(!proc_openreadclose(pid, "cmdline", &cmdline.sa))
       exit(1);
 
     strlist_dump(buffer_1, &cmdline);

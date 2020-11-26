@@ -16,113 +16,45 @@
 	"buffers":
 	[
 		{
-			"contents": "",
+			"contents": "—Ⓕ– ssl_new ( ) { … } — function",
 			"settings":
 			{
-				"buffer_size": 0,
+				"buffer_size": 32,
 				"line_ending": "Unix",
 				"name": "𝌆 Outline",
 				"scratch": true
 			}
 		},
 		{
-			"file": "ccat.c",
+			"file": "lib/ssl.h",
 			"settings":
 			{
-				"buffer_size": 6053,
+				"buffer_size": 157,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "lib/str/str_case_diff.c",
+			"file": "lib/ssl/ssl_new.c",
 			"settings":
 			{
-				"buffer_size": 435,
+				"buffer_size": 342,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "lib/str/str_case_equal.c",
+			"file": "lib/iarray/iarray_init.c",
 			"settings":
 			{
-				"buffer_size": 112,
+				"buffer_size": 506,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "lib/case.h",
+			"file": "lib/iarray.h",
 			"settings":
 			{
-				"buffer_size": 929,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "CMakeLists.txt",
-			"settings":
-			{
-				"buffer_size": 96689,
-				"encoding": "UTF-8",
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/http/http_ssl2want.c",
-			"settings":
-			{
-				"buffer_size": 543,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/http/http_ssl_ctx.c",
-			"settings":
-			{
-				"buffer_size": 1226,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/http/http_ssl_connect.c",
-			"settings":
-			{
-				"buffer_size": 865,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/http/http_on_writeable.c",
-			"settings":
-			{
-				"buffer_size": 1774,
-				"encoding": "UTF-8",
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/buffer/buffer_brotli.c",
-			"settings":
-			{
-				"buffer_size": 4105,
-				"encoding": "UTF-8",
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "/tmp/editor-1223047020.txt",
-			"settings":
-			{
-				"buffer_size": 19,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/http/http_sendreq.c",
-			"settings":
-			{
-				"buffer_size": 1254,
-				"encoding": "UTF-8",
+				"buffer_size": 2070,
 				"line_ending": "Unix"
 			}
 		}
@@ -227,10 +159,36 @@
 	},
 	"expanded_folders":
 	[
-		"/home/roman/Dokumente/Sources/c-utils"
+		"/home/roman/Dokumente/Sources/c-utils",
+		"/home/roman/Dokumente/Sources/c-utils/lib",
+		"/home/roman/Dokumente/Sources/c-utils/lib/byte",
+		"/home/roman/Dokumente/Sources/c-utils/lib/iarray",
+		"/home/roman/Dokumente/Sources/c-utils/lib/ssl",
+		"/home/roman/Dokumente/Sources/c-utils/node_modules"
 	],
 	"file_history":
 	[
+		"/home/roman/Dokumente/Sources/c-utils/quote.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/fmt/fmt_8long.c",
+		"/home/roman/Dokumente/Sources/c-utils/CMakeLists.txt",
+		"/home/roman/Dokumente/Sources/c-utils/lib/ssl/ssl_new.c",
+		"/home/roman/Dokumente/Sources/c-utils/httptest.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/iarray/iarray_init.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/iarray.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/http.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/buffer.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/buffer/buffer_getc.c",
+		"/home/roman/Dokumente/Sources/c-utils/ccat.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/str/str_case_diff.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/str/str_case_equal.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/case.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/http/http_ssl2want.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/http/http_ssl_ctx.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/http/http_ssl_connect.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/http/http_on_writeable.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/buffer/buffer_brotli.c",
+		"/tmp/editor-1223047020.txt",
+		"/home/roman/Dokumente/Sources/c-utils/lib/http/http_sendreq.c",
 		"/home/roman/Sources/c-utils/lib/cb_internal.h",
 		"/home/roman/Sources/c-utils/lib/buffer/buffer_flush.c",
 		"/home/roman/Sources/c-utils/lib/buffer/buffer_copy.c",
@@ -298,12 +256,8 @@
 		"/home/roman/Dokumente/Sources/c-utils/lib/http/http_read_internal.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/path/path_dirname.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/open/open_temp.c",
-		"/home/roman/Dokumente/Sources/c-utils/CMakeLists.txt",
 		"/home/roman/Dokumente/Sources/c-utils/build/cmake/config.h.cmake",
-		"/home/roman/Dokumente/Sources/c-utils/httptest.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/http/http_ssl_connect.c",
 		"/home/roman/Sources/c-utils/lib/http/http_on_readable.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/http/http_on_writeable.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/http/http_on_readable.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/http/http_readable.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/http/http_socket_read.c",
@@ -322,7 +276,6 @@
 		"/home/roman/Dokumente/Sources/c-utils/lpNumberOfBytesRead,",
 		"/home/roman/Dokumente/Sources/c-utils/LPOVERLAPPED",
 		"/home/roman/Dokumente/Sources/c-utils/lpOverlapped);",
-		"/home/roman/Dokumente/Sources/c-utils/lib/buffer.h",
 		"/home/roman/Dokumente/Sources/c-utils/ftptest.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/socket.h",
 		"/home/roman/Dokumente/Sources/c-utils/lib/io/io_nonblock.c",
@@ -342,23 +295,7 @@
 		"/home/roman/Dokumente/Sources/c-utils/lib/buffer/buffer_feed.c",
 		"/home/roman/Dokumente/Sources/ftpcopy-0.6.7/src/host_connect64.c",
 		"/home/roman/Dokumente/Sources/c-utils/ftp_read_lis.c",
-		"/home/roman/Dokumente/Sources/c-utils/dnscache.c",
-		"/home/roman/Dokumente/Sources/c-utils/ftpcopy.c",
-		"/home/roman/Dokumente/Sources/c-utils/ftpcopy.h",
-		"/home/roman/Dokumente/Sources/c-utils/ftpls.c",
-		"/home/roman/Dokumente/Sources/c-utils/ftpparse.c",
-		"/home/roman/Dokumente/Sources/c-utils/ftpparse.h",
-		"/home/roman/Dokumente/Sources/c-utils/list-r.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/path.h",
-		"/home/roman/Dokumente/Sources/c-utils/lib/dir.h",
-		"/home/roman/Dokumente/Sources/c-utils/cache.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/errmsg.h",
-		"/home/roman/Dokumente/Sources/c-utils/lib/errmsg/errmsg_warn.c",
-		"/home/roman/Dokumente/Sources/c-utils/pkgcfg.c",
-		"/home/roman/Dokumente/Sources/c-utils/tinyproxy.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/stralloc/stralloc_fmt.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/fmt/fmt_escapecharshell.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/strarray/strarray_from_argv.c"
+		"/home/roman/Dokumente/Sources/c-utils/dnscache.c"
 	],
 	"find":
 	{
@@ -383,6 +320,42 @@
 		"case_sensitive": true,
 		"find_history":
 		[
+			"BUILD_SSL",
+			"httptest",
+			"http ",
+			"http",
+			"BUILD_LZ",
+			"set.MUSL",
+			"set.DIET",
+			"set.MUSL",
+			"set\\(DIET",
+			"set(DIET",
+			"BUILD_BZ",
+			"\\(TAR ",
+			"\\(TAR",
+			"BUILD_BZ",
+			"://",
+			"BUILD_BZ",
+			"BUILD_ZLIB",
+			"BUILD_ZLI$",
+			"BUILD_ZLI",
+			"include.*openssl",
+			"BUILD_LZMA",
+			"RENAME",
+			"bsdtar",
+			"TAR",
+			"TAR}",
+			"TAR",
+			"bsdtar",
+			"BUILD_SSL",
+			"\\\\0",
+			"cmake.tar",
+			"\\\\",
+			"\\\\0",
+			"://",
+			"quote_newline",
+			"charbuf",
+			"nul",
 			"add_sub",
 			"USE_BROT",
 			"MUX",
@@ -474,43 +447,7 @@
 			"strlist_",
 			"strlist",
 			"strlist_",
-			"DEBUG_OUTPUT\n",
-			"DEBUG_OUTPUT",
-			"\"Read",
-			"ATLEAST",
-			"LIBS_ONLY",
-			"libs_mode",
-			"LIBS_ONLY",
-			"LIBS_ONLY_L",
-			"--libs\"",
-			"_EXISTS",
-			"'E'",
-			"exists",
-			"sorted",
-			"log_rr",
-			"\"rr",
-			"log_logtype",
-			"\"a\"",
-			"\"rr",
-			"rr",
-			"AAAA",
-			"include_dir",
-			"add_lib",
-			"bzip",
-			"libbzip",
-			"bz",
-			"Checking for one",
-			"Checking for",
-			"Checking",
-			"Checknig",
-			"imposs",
-			"dump of",
-			"dump f",
-			"check_comp",
-			"ALLOCA",
-			"^(\\s*)(message\\(\"[A-Z][A-Z])",
-			"message\\(\"[A-Z][A-Z]",
-			"message\\(\"[A-Z]"
+			"DEBUG_OUTPUT\n"
 		],
 		"highlight": false,
 		"in_selection": false,
@@ -604,7 +541,7 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 0,
+						"buffer_size": 32,
 						"regions":
 						{
 						},
@@ -614,14 +551,19 @@
 						"settings":
 						{
 							"color_scheme": "Packages/Outline/outline.hidden-tmTheme",
-							"current_file": "/home/roman/Dokumente/Sources/c-utils/CMakeLists.txt",
-							"function_name_status_row": 150,
+							"current_file": "/home/roman/Dokumente/Sources/c-utils/lib/ssl/ssl_new.c",
+							"function_name_status_row": 8,
 							"outline_rename_mode": false,
 							"symkeys":
 							[
+								[
+									175,
+									182
+								]
 							],
 							"symlist":
 							[
+								"—Ⓕ– ssl_new ( ) { … } — function"
 							],
 							"syntax": "Packages/Outline/outline.hidden-tmLanguage",
 							"tab_size": 2,
@@ -631,219 +573,36 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 12,
+					"stack_index": 4,
 					"type": "text"
 				}
 			]
 		},
 		{
-			"selected": 4,
+			"selected": 1,
 			"sheets":
 			[
 				{
 					"buffer": 1,
-					"file": "ccat.c",
+					"file": "lib/ssl.h",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 6053,
+						"buffer_size": 157,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								263,
-								263
+								98,
+								98
 							]
 						],
 						"settings":
 						{
-							"function_name_status_row": 11,
-							"syntax": "Packages/C Improved/C Improved.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 8,
-					"type": "text"
-				},
-				{
-					"buffer": 2,
-					"file": "lib/str/str_case_diff.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 435,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"function_name_status_row": 0,
-							"syntax": "Packages/C Improved/C Improved.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 7,
-					"type": "text"
-				},
-				{
-					"buffer": 3,
-					"file": "lib/str/str_case_equal.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 112,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"function_name_status_row": 0,
-							"syntax": "Packages/C Improved/C Improved.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 6,
-					"type": "text"
-				},
-				{
-					"buffer": 4,
-					"file": "lib/case.h",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 929,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								644,
-								644
-							]
-						],
-						"settings":
-						{
-							"function_name_status_row": 25,
+							"function_name_status_row": 7,
 							"syntax": "Packages/C++/C++.sublime-syntax"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 5,
-					"type": "text"
-				},
-				{
-					"buffer": 5,
-					"file": "CMakeLists.txt",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 96689,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								93,
-								93
-							]
-						],
-						"settings":
-						{
-							"function_name_status_row": 2,
-							"syntax": "Packages/CMakeEditor/CMakeEditor.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 0,
-					"type": "text"
-				},
-				{
-					"buffer": 6,
-					"file": "lib/http/http_ssl2want.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 543,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								543,
-								543
-							]
-						],
-						"settings":
-						{
-							"function_name_status_row": 26,
-							"syntax": "Packages/C Improved/C Improved.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 2,
-					"type": "text"
-				},
-				{
-					"buffer": 7,
-					"file": "lib/http/http_ssl_ctx.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 1226,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C Improved/C Improved.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
 						"translation.y": 0.0,
@@ -853,25 +612,54 @@
 					"type": "text"
 				},
 				{
-					"buffer": 8,
-					"file": "lib/http/http_ssl_connect.c",
+					"buffer": 2,
+					"file": "lib/ssl/ssl_new.c",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 865,
+						"buffer_size": 342,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								414,
-								414
+								340,
+								340
 							]
 						],
 						"settings":
 						{
-							"function_name_status_row": 22,
+							"function_name_status_row": 11,
+							"syntax": "Packages/C Improved/C Improved.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "lib/iarray/iarray_init.c",
+					"semi_transient": true,
+					"settings":
+					{
+						"buffer_size": 506,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"function_name_status_row": 0,
 							"syntax": "Packages/C Improved/C Improved.tmLanguage",
 							"tab_size": 2,
 							"translate_tabs_to_spaces": true
@@ -884,74 +672,12 @@
 					"type": "text"
 				},
 				{
-					"buffer": 9,
-					"file": "lib/http/http_on_writeable.c",
+					"buffer": 4,
+					"file": "lib/iarray.h",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 1774,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								1366,
-								1366
-							]
-						],
-						"settings":
-						{
-							"function_name_status_row": 54,
-							"syntax": "Packages/C Improved/C Improved.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 357.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 4,
-					"type": "text"
-				},
-				{
-					"buffer": 10,
-					"file": "lib/buffer/buffer_brotli.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 4105,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								2890,
-								2890
-							]
-						],
-						"settings":
-						{
-							"function_name_status_row": 114,
-							"syntax": "Packages/C Improved/C Improved.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 1326.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 9,
-					"type": "text"
-				},
-				{
-					"buffer": 11,
-					"file": "/tmp/editor-1223047020.txt",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 19,
+						"buffer_size": 2070,
 						"regions":
 						{
 						},
@@ -965,44 +691,13 @@
 						"settings":
 						{
 							"function_name_status_row": 0,
-							"syntax": "Packages/Text/Plain text.tmLanguage"
+							"syntax": "Packages/C++/C++.sublime-syntax"
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 459.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 11,
-					"type": "text"
-				},
-				{
-					"buffer": 12,
-					"file": "lib/http/http_sendreq.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 1254,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								697,
-								697
-							]
-						],
-						"settings":
-						{
-							"function_name_status_row": 28,
-							"syntax": "Packages/C Improved/C Improved.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 10,
+					"stack_index": 2,
 					"type": "text"
 				}
 			]
@@ -1078,6 +773,42 @@
 		"selected_items":
 		[
 			[
+				"iarray",
+				"lib/iarray.h"
+			],
+			[
+				"httptest",
+				"httptest.c"
+			],
+			[
+				"iarray.h",
+				"lib/iarray.h"
+			],
+			[
+				"http.h",
+				"lib/http.h"
+			],
+			[
+				"ssl.h",
+				"lib/ssl.h"
+			],
+			[
+				"fmt_8lon",
+				"lib/fmt/fmt_8long.c"
+			],
+			[
+				"cmakeli",
+				"CMakeLists.txt"
+			],
+			[
+				"buffer.h",
+				"lib/buffer.h"
+			],
+			[
+				"quote.c",
+				"quote.c"
+			],
+			[
 				"case.h",
 				"lib/case.h"
 			],
@@ -1112,10 +843,6 @@
 			[
 				"array.h",
 				"lib/array.h"
-			],
-			[
-				"cmakeli",
-				"CMakeLists.txt"
 			],
 			[
 				"reverse",
@@ -1192,14 +919,6 @@
 			[
 				"strip-com",
 				"strip-comments.c"
-			],
-			[
-				"httptest",
-				"httptest.c"
-			],
-			[
-				"buffer.h",
-				"lib/buffer.h"
 			],
 			[
 				"io_non",
@@ -1564,30 +1283,6 @@
 			[
 				"str_find",
 				"lib/str/str_find.c"
-			],
-			[
-				"str_dup",
-				"lib/str/str_dup.c"
-			],
-			[
-				"pipeinf",
-				"pipeinfo.c"
-			],
-			[
-				"puts_esca",
-				"lib/stralloc/buffer_puts_escaped.c"
-			],
-			[
-				"fmt.h",
-				"lib/fmt.h"
-			],
-			[
-				"utf8_latin",
-				"lib/ucs/str_utf8_latin.c"
-			],
-			[
-				"mediathek-par",
-				"mediathek-parser.c"
 			]
 		],
 		"width": 0.0
