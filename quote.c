@@ -5,13 +5,16 @@
 #include "lib/scan.h"
 #include "lib/getopt.h"
 #include "lib/unix.h"
-#include "lib/charbuf.h"
 #include "lib/stralloc.h"
 #include "lib/buffer.h"
 #include "lib/mmap.h"
 #include "lib/path.h"
 #include "lib/scan.h"
 #include "lib/textcode.h"
+#include "lib/alloc.h"
+#include "lib/byte.h"
+#include "lib/uint8.h"
+
 #include <ctype.h>
 #include <stdbool.h>
 
@@ -27,14 +30,17 @@ static stralloc indent_str, queue, quote_chars;
 static buffer output;
 static const char* add_quotes = 0;
 static int tab_size = -1;
-static bool quote_newline = false, quote_tabs = false;
+static int quote_newline = false, quote_tabs = false, quote_nul = false;
 
 typedef size_t fmt_function(char*, int, int);
 
 size_t
 fmt_default(char* dest, int c, int quote) {
-  size_t n = 0;
-  if(byte_chr(quote_chars.s, quote_chars.len, c) < quote_chars.len) {
+  size_t n;
+  uint8 ch = c;
+
+  if(byte_chr(quote_chars.s, quote_chars.len, ch) < quote_chars.len) {
+    n = 0;
     if(dest)
       dest[n] = '\\';
     if(c == '\t')
@@ -51,9 +57,12 @@ fmt_default(char* dest, int c, int quote) {
     n++;
   }
 
-  if(dest)
-    dest[n] = c;
-  n++;
+  if(n < 2) {
+    if(dest)
+      dest[n] = c;
+    n++;
+  }
+
   return n;
 }
 
@@ -178,11 +187,20 @@ add_output(const char* x, size_t len, buffer* out) {
   char tmp[32];
 
   for(i = 0; i < len; i++) {
-    unsigned int chlen = 0;
-    chlen = fmt_utf8(0, x[i]);
+    uint8 ch = x[i];
+    unsigned int chlen = fmt_utf8(0, x[i]);
 
     if(do_quote(x[i]) || chlen > 1 || fmt_call != fmt_default) {
       n = fmt_call(tmp, x[i], 0);
+    } else if(iscntrl(ch) || ch > 127) {
+      n = 0;
+      tmp[n++] = '\\';
+      if(ch <= 63)
+        tmp[n++] = '0';
+      if(ch <= 7)
+        tmp[n++] = '0';
+
+      n += fmt_8long(&tmp[n],ch);
     } else {
       tmp[0] = x[i];
       n = 1;
@@ -192,13 +210,15 @@ add_output(const char* x, size_t len, buffer* out) {
       buffer_puts(out, "\\n");
     else if(quote_tabs && n == 1 && tmp[0] == '\t')
       buffer_puts(out, "\\t");
+    else if(quote_nul && n == 1 && tmp[0] == '\0')
+      buffer_puts(out, "\\0");
     else
       buffer_put(out, tmp, n);
   }
 }
 
 int
-run_quote(charbuf* in, buffer* out) {
+run_quote(buffer* in, buffer* out) {
   int c, prev_c, is_empty;
   const char* x;
   size_t p, n, line, col;
@@ -212,8 +232,8 @@ run_quote(charbuf* in, buffer* out) {
 
   if(add_quotes)
     buffer_puts(out, add_quotes);
-
-  while((c = charbuf_get(in)) > 0) {
+  c = 0;
+  while(buffer_getc(in, (char*)&c) > 0) {
 
     if(c == ' ' && prev_c != ' ') {
       add_output(buf.s, buf.len, out);
@@ -249,7 +269,6 @@ run_quote(charbuf* in, buffer* out) {
     buffer_putc(out, '\n');
 
   buffer_flush(out);
-  charbuf_close(in);
   stralloc_free(&buf);
   return 0;
 }
@@ -277,7 +296,7 @@ main(int argc, char* argv[]) {
   char buf[16384];
   buffer temp;
   int in_place = 0;
-  charbuf input;
+  buffer input;
   stralloc data;
   size_t n;
   const char* x;
@@ -290,8 +309,10 @@ main(int argc, char* argv[]) {
                            {"quote-chars", 1, NULL, 'q'},
                            {"quote-newline", 0, NULL, 'n'},
                            {"quote-tabs", 0, NULL, 9},
+                           {"quote-nul", 0, NULL, '0'},
                            {"no-quote-newline", 0, &quote_newline, false},
                            {"no-quote-tabs", 0, &quote_tabs, false},
+                           {"no-quote-nul", 0, &quote_nul, false},
                            {"escape-cmake", 1, NULL, 'C'},
                            {"escape-shell", 0, NULL, 'S'},
                            {"escape-doublequoted-shell", 0, NULL, 'D'},
@@ -308,7 +329,7 @@ main(int argc, char* argv[]) {
   errmsg_iam(argv[0]);
 
   for(;;) {
-    c = unix_getopt_long(argc, argv, "a:CcDhiJq:nPQSt:X", opts, &index);
+    c = unix_getopt_long(argc, argv, "0a:CcDhiJq:nPQSt:X", opts, &index);
     if(c == -1)
       break;
     if(c == 0)
@@ -325,8 +346,9 @@ main(int argc, char* argv[]) {
         scan_cescape(unix_optarg, quote_chars.s, &quote_chars.len);
         break;
       case 'n': quote_newline = true; break;
-      case 9:
-        quote_tabs = true;
+      case 9: quote_tabs = true; break;
+      case '0':
+        quote_nul = true;
         break;
         //    case 'S': stralloc_copys(&quote_chars, "\"$`"); break;
       case 'C':
@@ -378,7 +400,7 @@ main(int argc, char* argv[]) {
     unix_optind++;
   }
 
-  charbuf_init(&input, (read_fn*)&read, in_fd);
+  buffer_init_free(&input, (buffer_op_proto*)&read, in_fd, alloc(1024), 1024);
 
 again:
   if(in_place) {
@@ -421,7 +443,7 @@ again:
       mmap_unmap(x, n);
     } */
 
-  charbuf_close(&input);
+  buffer_close(&input);
 
   if(in_place) {
     // buffer inplace;

@@ -29,7 +29,7 @@
 			"file": "ccat.c",
 			"settings":
 			{
-				"buffer_size": 5761,
+				"buffer_size": 6053,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
@@ -62,7 +62,7 @@
 			"file": "CMakeLists.txt",
 			"settings":
 			{
-				"buffer_size": 70250,
+				"buffer_size": 96689,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
@@ -79,7 +79,7 @@
 			"file": "lib/http/http_ssl_ctx.c",
 			"settings":
 			{
-				"buffer_size": 1216,
+				"buffer_size": 1226,
 				"line_ending": "Unix"
 			}
 		},
@@ -104,7 +104,7 @@
 			"file": "lib/buffer/buffer_brotli.c",
 			"settings":
 			{
-				"buffer_size": 4020,
+				"buffer_size": 4105,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
@@ -227,11 +227,7 @@
 	},
 	"expanded_folders":
 	[
-		"/home/roman/Sources/c-utils",
-		"/home/roman/Sources/c-utils/lib",
-		"/home/roman/Sources/c-utils/lib/case",
-		"/home/roman/Sources/c-utils/lib/http",
-		"/home/roman/Sources/c-utils/lib/safemult"
+		"/home/roman/Dokumente/Sources/c-utils"
 	],
 	"file_history":
 	[
@@ -618,7 +614,7 @@
 						"settings":
 						{
 							"color_scheme": "Packages/Outline/outline.hidden-tmTheme",
-							"current_file": "/home/roman/Sources/c-utils/CMakeLists.txt",
+							"current_file": "/home/roman/Dokumente/Sources/c-utils/CMakeLists.txt",
 							"function_name_status_row": 150,
 							"outline_rename_mode": false,
 							"symkeys":
@@ -650,7 +646,7 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 5761,
+						"buffer_size": 6053,
 						"regions":
 						{
 						},
@@ -770,26 +766,26 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 70250,
+						"buffer_size": 96689,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								56004,
-								56004
+								93,
+								93
 							]
 						],
 						"settings":
 						{
-							"function_name_status_row": 1099,
+							"function_name_status_row": 2,
 							"syntax": "Packages/CMakeEditor/CMakeEditor.tmLanguage",
 							"tab_size": 2,
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 20978.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 0,
@@ -829,10 +825,10 @@
 				{
 					"buffer": 7,
 					"file": "lib/http/http_ssl_ctx.c",
-					"semi_transient": true,
+					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 1216,
+						"buffer_size": 1226,
 						"regions":
 						{
 						},
@@ -924,7 +920,7 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 4020,
+						"buffer_size": 4105,
 						"regions":
 						{
 						},
@@ -1014,7 +1010,7 @@
 	],
 	"incremental_find":
 	{
-		"height": 26.0
+		"height": 27.0
 	},
 	"input":
 	{
