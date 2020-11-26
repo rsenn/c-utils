@@ -120,7 +120,8 @@ getchar_utf16(buffer* b, int* ptr) {
   return ret;
 }
 
-int static getchar_utf8(buffer* b, int* ptr) {
+static int
+getchar_utf8(buffer* b, int* ptr) {
   char c;
   int ret = buffer_get(b, &c, 1);
   if(ret == 1)

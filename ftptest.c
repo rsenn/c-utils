@@ -321,6 +321,9 @@ list_ftp(ftp_client* ftp) {
             ftp->state = TRANSFERRING;
             break;
           }
+          case TRANSFERRING: {
+            break;
+          }
         }
         if(in.p == 0 && ftp->state >= TRANSFERRING)
           io_dontwantwrite(ftp->control_sock);

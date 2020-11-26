@@ -339,7 +339,7 @@ main(int argc, char* argv[]) {
       case 'i': in_place = 1; break;
       case 'h': usage(argv[0]); return 0;
       case 'a': add_quotes = argv[unix_optind]; break;
-      case 't': scan_uint(argv[unix_optind], &tab_size); break;
+      case 't': scan_int(argv[unix_optind], &tab_size); break;
       case 'q':
         stralloc_ready(&quote_chars, str_len(argv[unix_optind]) * 3 + 1);
         quote_chars.len = quote_chars.a;

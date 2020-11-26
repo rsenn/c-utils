@@ -46,7 +46,7 @@ main(int argc, char* argv[]) {
     if(base == NULL)
       return 1;
 
-    dll_name = pe_dllname(base);
+    dll_name = pe_dllname((uint8*)base);
     if(dll_name == NULL)
       dll_name = str_basename(filename);
 

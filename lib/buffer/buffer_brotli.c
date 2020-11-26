@@ -64,7 +64,7 @@ buffer_brotli_write(fd_t fd, void* data, size_t n, buffer* b) {
   buffer* other = ctx->b;
   const uint8* next_in;
   uint8* next_out;
-  ssize_t r; 
+  ssize_t r;
   size_t a, pos, avail_in, avail_out;
   BROTLI_BOOL ret;
 

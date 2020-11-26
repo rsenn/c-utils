@@ -189,7 +189,7 @@ log_name(const char* name) {
     log_string(".");
     return 1;
   }
-  while(state = *q++) {
+  while((state = *q++)) {
     while(state) {
       ch = *q++;
       --state;

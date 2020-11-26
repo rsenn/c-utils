@@ -682,8 +682,8 @@ getopt_end:
     // buffer_read_fd(&serial, serial_fd);
 
     // serial.op = &read;
-    if((ret = process_loop(serial_fd, 30000)) > 0)
-      ;
+    if((ret = process_loop(serial_fd, 30000)) > 0) {
+     }
 
     io_dontwantread(serial_fd);
     io_close(serial_fd);
