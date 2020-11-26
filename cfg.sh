@@ -46,7 +46,10 @@ cfg() {
   esac
 
   [ -n "$PKG_CONFIG_PATH" ] && echo "PKG_CONFIG_PATH=$PKG_CONFIG_PATH" 1>&2
-
+  [ -n "$PKG_CONFIG" ] && case "$PKG_CONFIG" in
+     */*) ;;
+     *) PKG_CONFIG=$(which "$PKG_CONFIG") ;; 
+  esac
   : ${generator:="CodeLite - Unix Makefiles"}
 
  (mkdir -p $builddir
@@ -65,8 +68,8 @@ cfg() {
     ${TOOLCHAIN:+-DCMAKE_TOOLCHAIN_FILE="$TOOLCHAIN"} \
     ${CC:+-DCMAKE_C_COMPILER="$CC"} \
     ${CXX:+-DCMAKE_CXX_COMPILER="$CXX"} \
-    -DCMAKE_{C,CXX}_FLAGS_DEBUG="-g -ggdb3" \
-    -DCMAKE_{C,CXX}_FLAGS_RELWITHDEBINFO="-Os -g -ggdb3 -DNDEBUG" \
+    -DCMAKE_{C,CXX}_FLAGS_DEBUG="-g3 -ggdb3 -O0" \
+    -DCMAKE_{C,CXX}_FLAGS_RELWITHDEBINFO="-g3 -ggdb3 -Os -DNDEBUG" \
     ${MAKE:+-DCMAKE_MAKE_PROGRAM="$MAKE"} \
     "$@" \
     $relsrcdir 2>&1 ) |tee "${builddir##*/}.log"
@@ -96,7 +99,7 @@ cfg-diet() {
   : ${libdir=/opt/diet/lib-${host%%-*}}
   : ${bindir=/opt/diet/bin-${host%%-*}}
 
-  : ${CC="diet-gcc"}
+  CC="diet-gcc"
 
   export CC
 
@@ -117,12 +120,10 @@ cfg-diet() {
     -DBUILD_SSL=OFF \
     -DBUILD_SHARED_LIBS=OFF \
     -DENABLE_SHARED=OFF \
-    -DENABLE_STATIC=ON \
     -DSHARED_LIBS=OFF \
     -DBUILD_SHARED_LIBS=OFF \
     -DCMAKE_FIND_ROOT_PATH="$prefix" \
     -DCMAKE_SYSTEM_LIBRARY_PATH="$prefix/lib-${host%%-*}" \
-    -D{CMAKE_INSTALL_LIBDIR=,INSTALL_LIB_DIR=$prefix/}"lib-${host%%-*}" \
       ${launcher:+-DCMAKE_C_COMPILER_LAUNCHER="$launcher"} \
   -DPKG_CONFIG_EXECUTABLE="$PKG_CONFIG" \
     "$@")
@@ -211,7 +212,6 @@ cfg-emscripten() {
   cfg \
     -DCMAKE_INSTALL_PREFIX="$prefix" \
     -DENABLE_SHARED=OFF \
-    -DENABLE_STATIC=ON \
     -DSHARED_LIBS=OFF \
     -DBUILD_SHARED_LIBS=OFF \
     "$@")
@@ -245,7 +245,6 @@ cfg-musl() {
   PKG_CONFIG=musl-pkg-config \
   cfg \
     -DENABLE_SHARED=OFF \
-    -DENABLE_STATIC=ON \
     -DSHARED_LIBS=OFF \
     -DBUILD_SHARED_LIBS=OFF \
     "$@")

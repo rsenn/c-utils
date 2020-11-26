@@ -1,9 +1,9 @@
 #include "../fmt.h"
 
 size_t
-fmt_escapecharquotedprintableutf8(char* dest,  int c) {
+fmt_escapecharquotedprintableutf8(char* dest, int c) {
   char buf[FMT_UTF8];
-    unsigned int ch = c;
+  unsigned int ch = c;
 
   size_t i, o, j = fmt_utf8(buf, ch);
   if(!dest)

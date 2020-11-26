@@ -8,7 +8,7 @@ stralloc_fmt(stralloc* out,
   size_t i;
   // stralloc_zero(out);
   for(i = 0; i < in_len; ++i) {
-    //size_t n = fmt_function(NULL, (unsigned int)(unsigned char)in[i], 0);
+    // size_t n = fmt_function(NULL, (unsigned int)(unsigned char)in[i], 0);
     if(!stralloc_readyplus(out, 10))
       return 0;
     out->len += fmt_function(&out->s[out->len], (unsigned int)(unsigned char)in[i], 0);

@@ -18,10 +18,53 @@ option(USE_ZLIB "zlib compression" ON)
 option(USE_BROTLI "brotli compression" ON)
 option(USE_SSL "ssl encryption" ON)
 
+function(DUMP VAR)
+  string(REGEX REPLACE "[;\n]" " " A "${ARGV}")
+  message("\n\nVariable dump of: ${A}\n")
+
+  foreach(VAR ${ARGV})
+    message("\t${VAR} = ${${VAR}}")
+  endforeach(VAR ${ARGV})
+  message("\n")
+endfunction(DUMP VAR)
+
 if(CMAKE_C_COMPILER MATCHES "-musl")
   set(MUSL TRUE)
 endif(CMAKE_C_COMPILER MATCHES "-musl")
 
+if(CMAKE_C_COMPILER MATCHES diet)
+  set(DIET TRUE)
+endif()
+include(CheckSymbolExists)
+
+if(NOT DIETLIBC)
+  check_symbol_exists(__dietlibc__ "" DIETLIBC)
+  if(DIETLIBC)
+    set(DIET TRUE)
+  endif(DIETLIBC)
+endif(NOT DIETLIBC)
+
+if(NOT MUSL)
+  check_symbol_exists(__musl__ "" MUSL)
+endif(NOT MUSL)
+
+if(DIET)
+  set(TOOLCHAIN "diet")
+else(DIET)
+  if(MUSL)
+    set(TOOLCHAIN "musl")
+  endif(MUSL)
+endif(DIET)
+
+if(TOOLCHAIN STREQUAL "diet" OR TOOLCHAIN STREQUAL "musl")
+  set(STATIC_LINK ON)
+  set(SHARED_LIBS OFF)
+else(TOOLCHAIN STREQUAL "diet" OR TOOLCHAIN STREQUAL "musl")
+  set(STATIC_LINK OFF)
+  set(SHARED_LIBS ON)
+endif(TOOLCHAIN STREQUAL "diet" OR TOOLCHAIN STREQUAL "musl")
+
+message("Toolchain: ${TOOLCHAIN}")
 if(WIN32 OR WINDOWS)
   option(USE_SELECT "Use select() syscall" ON)
 else(WIN32 OR WINDOWS)
@@ -30,8 +73,8 @@ endif(WIN32 OR WINDOWS)
 
 #[[option(USE_POLL "Use poll() syscall" OFF)
 option(USE_EPOLL "Use epoll() syscall" OFF)]]
-option(BUILD_SHARED_LIBS "Build shared libs" ON)
-option(LINK_STATIC "Link libraries static" OFF)
+option(BUILD_SHARED_LIBS "Build shared libs" "${SHARED_LIBS}")
+option(LINK_STATIC "Link libraries static" "${STATIC_LINK}")
 option(ENABLE_WERROR "Enable -Werror (warnings are errors)" OFF)
 
 macro(debug_option NAME DESC)
@@ -54,6 +97,10 @@ endif(ENABLE_WERROR)
 
 if(LINK_STATIC)
   set(DSO_NONE TRUE)
+  set(CMAKE_SKIP_BUILD_RPATH TRUE)
+  set(CMAKE_SKIP_INSTALL_RPATH TRUE)
+  set(CMAKE_SKIP_RPATH TRUE)
+  set(CMAKE_ENABLE_EXPORTS FALSE)
 endif(LINK_STATIC)
 
 set(DIRLIST_VERSION 1.0)
@@ -80,15 +127,6 @@ include(CheckLibraryExists)
 include(CheckIncludeFile)
 include(CheckCCompilerFlag)
 include(CheckTypeSize)
-include(CheckSymbolExists)
-
-if(NOT DIETLIBC)
-  check_symbol_exists(__dietlibc__ "" DIETLIBC)
-endif(NOT DIETLIBC)
-
-if(NOT MUSL)
-  check_symbol_exists(__musl__ "" MUSL)
-endif(NOT MUSL)
 
 macro(show_result RESULT_VAR)
   if(${${RESULT_VAR}})
@@ -109,16 +147,16 @@ macro(check_compile RESULT_VAR SOURCE)
     set(C_SOURCE "${CMAKE_CURRENT_BINARY_DIR}/try-${C_NAME}.c")
     string(REPLACE "\\" "\\\\" SOURCE "${SOURCE}")
     file(WRITE "${C_SOURCE}" "${SOURCE}")
-    message(STATUS "Trying to compile try-${C_NAME}.c ... ")
+    message(CHECK_START "Trying to compile try-${C_NAME}.c ... ")
     try_compile(COMPILE_RESULT "${CMAKE_CURRENT_BINARY_DIR}" "${C_SOURCE}" OUTPUT_VARIABLE "OUTPUT" LINK_LIBRARIES "${ARGN}")
     # file(REMOVE "${C_SOURCE}")
 
     if(COMPILE_RESULT)
-      message(STATUS "ok")
+      message(CHECK_PASS "ok")
       # add_definitions(-D${RESULT_VAR})
     else(COMPILE_RESULT)
       set(COMPILE_LOG "${CMAKE_CURRENT_BINARY_DIR}/compile-${C_NAME}.log")
-      message(STATUS "fail: ${COMPILE_LOG}")
+      message(CHECK_FAIL "fail: ${COMPILE_LOG}")
       file(WRITE "${COMPILE_LOG}" "${OUTPUT}")
       string(REPLACE "\n" ";" OUTPUT "${OUTPUT}")
       list(FILTER OUTPUT INCLUDE REGEX "error")
@@ -295,16 +333,6 @@ if(NOT INTRINSIC_CAS)
   add_definitions(-DUSE_INLINE_COMPARE_AND_SWAP=1)
 endif()
 
-function(DUMP VAR)
-  string(REGEX REPLACE "[;\n]" " " A "${ARGV}")
-  message("\n\nVariable dump of: ${A}\n")
-
-  foreach(VAR ${ARGV})
-    message("\t${VAR} = ${${VAR}}")
-  endforeach(VAR ${ARGV})
-  message("\n")
-endfunction(DUMP VAR)
-
 # DUMP(CMAKE_C_COMPILER_ID)
 
 if(CMAKE_C_COMPILER_ID STREQUAL TinyCC)
@@ -457,10 +485,14 @@ if(ENABLE_LTO)
   set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -flto")
 endif(ENABLE_LTO)
 
-if(NOT LINK_STATIC STREQUAL OFF)
+if(LINK_STATIC)
   set(EXE_LINKER_FLAGS "${EXE_LINKER_FLAGS} -static")
   set(CHK_DLFCN FALSE)
-endif(NOT LINK_STATIC STREQUAL OFF)
+else(LINK_STATIC)
+  set(EXE_LINKER_FLAGS "-Wl,-rpath=${OPENSSL_LIB_DIR}"=)
+  set(CHK_DLFCN TRUE)
+endif(LINK_STATIC)
+
 set(CMAKE_STATIC_LINKER_FLAGS "")
 
 macro(check_function_def FUNC)
@@ -778,9 +810,12 @@ if(USE_SSL AND NOT BUILD_SSL)
     if(pkgcfg_lib_OPENSSL_ssl)
 
       if(pkgcfg_lib_OPENSSL_ssl)
-        set(OPENSSL_SSL_LIBRARY "${pkgcfg_lib_OPENSSL_ssl}")
+        if(NOT OPENSSL_SSL_LIBRARY)
+          set(OPENSSL_SSL_LIBRARY "${pkgcfg_lib_OPENSSL_ssl}")
+        endif(NOT OPENSSL_SSL_LIBRARY)    
       else(pkgcfg_lib_OPENSSL_ssl)
-        string(REPLACE "libcrypto" "libssl" OPENSSL_SSL_LIBRARY "${OPENSSL_CRYPTO_LIBRARY}")
+        string(REPLACE "libcrypto" "libssl" OPENSSL_SSL_LIB  "${OPENSSL_CRYPTO_LIBRARY}")
+        set(OPENSSL_SSL_LIBRARY "${OPENSSL_SSL_LIB}" CACHE STRING "SSL library" FORCE)
       endif(pkgcfg_lib_OPENSSL_ssl)
 
       list(APPEND OPENSSL_LIBRARIES ${pkgcfg_lib_OPENSSL_ssl})
@@ -805,6 +840,12 @@ if(USE_SSL AND NOT BUILD_SSL)
     set(BUILD_SSL TRUE)
   endif(OPENSSL_FOUND)
 
+if(OPENSSL_SSL_LIBRARY STREQUAL "" OR NOT OPENSSL_SSL_LIBRARY)
+        string(REPLACE "libcrypto" "libssl" OPENSSL_SSL_LIB  "${OPENSSL_CRYPTO_LIBRARY}")
+        set(OPENSSL_SSL_LIBRARY "${OPENSSL_SSL_LIB}" CACHE FILEPATH "SSL library" FORCE)
+endif(OPENSSL_SSL_LIBRARY STREQUAL "" OR NOT OPENSSL_SSL_LIBRARY)
+
+
   message(STATUS "OPENSSL_FOUND=${OPENSSL_FOUND}\n   OPENSSL_INCLUDE_DIR=${OPENSSL_LIB_DIR}\n   OPENSSL_LIB_DIR=${OPENSSL_INCLUDE_DIR}\n   OPENSSL_ROOT_DIR=${OPENSSL_ROOT_DIR}\n   OPENSSL_CRYPTO_LIBRARY=${OPENSSL_CRYPTO_LIBRARY}\n   OPENSSL_SSL_LIBRARY=${OPENSSL_SSL_LIBRARY}")
 
 else()
@@ -813,7 +854,7 @@ else()
   unset(OPENSSL_SSL_LIBRARY CACHE)
   unset(OPENSSL_INCLUDE_DIR CACHE)
 endif()
-# link_libraries( ${ZLIB_LIBRARY} ${BZIP2_LIBRARY} ${LIBLZMA_LIBRARY} ${CRYPTO_LIBRARIES} ) add_definitions(-Dinline=__inline)
+# link_libraries( ${ZLIB_LIBRARY} ${BZIP2_LIBRARY} ${LIBLZMA_LIBRARY} ${LIBSSL} ) add_definitions(-Dinline=__inline)
 if(NOT OPENSSL_SSL_LIBRARY OR OPENSSL_SSL_LIBRARY STREQUAL "")
 
   message("OPENSSL_CRYPTO_LIBRARY: ${OPENSSL_CRYPTO_LIBRARY}")
@@ -978,15 +1019,31 @@ macro(invoption VAR DESC INVAR)
 endmacro(invoption VAR DESC INVAR)
 
 invoption(BUILD_LZMA "build 3rdparty liblzma" LIBLZMA_FOUND)
-invoption(BUILD_BZIP "build 3rdparty libbz2" BZIP2_FOUND)
+invoption(BUILD_BZIP2 "build 3rdparty libbz2" BZIP2_FOUND)
 invoption(BUILD_ZLIB "build 3rdparty libz" ZLIB_FOUND)
 invoption(BUILD_BROTLI "build 3rdparty brotli" BROTLI_FOUND)
 invoption(BUILD_SSL "build 3rdparty openssl" OPENSSL_FOUND)
 
-if(BUILD_ZLIB)
-    include("${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/zlib.cmake")
+find_program(TAR NAMES bsdtar tar gtar gnutar star)
 
+if(BUILD_ZLIB)
   message("Building zlib from 3rdparty/zlib")
+  set(ZLIB_VERSION "1.2.11")
+  set(ZLIB_DISABLE_TESTS TRUE)
+  set(ZLIB_STATIC TRUE)
+  set(ZLIB_NO_INSTALL TRUE)
+
+  if(NOT EXISTS "${CMAKE_SOURCE_DIR}/3rdparty/zlib/CMakeLists.txt")
+    if(NOT EXISTS "${CMAKE_SOURCE_DIR}/zlib-${ZLIB_VERSION}.tar.gz")
+      file(REMOVE_RECURSE "${CMAKE_SOURCE_DIR}/3rdparty/zlib")
+      file(DOWNLOAD "https://zlib.net/zlib-${ZLIB_VERSION}.tar.gz" "${CMAKE_SOURCE_DIR}/3rdparty/zlib-${ZLIB_VERSION}.tar.gz" SHOW_PROGRESS)
+    endif()
+
+    exec_program("${TAR}" ARGS -C "${CMAKE_SOURCE_DIR}/3rdparty" -xzf "${CMAKE_SOURCE_DIR}/3rdparty/zlib-${ZLIB_VERSION}.tar.gz")
+    file(RENAME "${CMAKE_SOURCE_DIR}/3rdparty/zlib-${ZLIB_VERSION}" "${CMAKE_SOURCE_DIR}/3rdparty/zlib")
+
+  endif()
+  include("${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/zlib.cmake")
   set(ZLIB_SOURCES 3rdparty/zlib/adler32.c 3rdparty/zlib/compress.c 3rdparty/zlib/crc32.c 3rdparty/zlib/deflate.c 3rdparty/zlib/infback.c 3rdparty/zlib/inffast.c 3rdparty/zlib/inflate.c 3rdparty/zlib/inftrees.c 3rdparty/zlib/trees.c 3rdparty/zlib/uncompr.c 3rdparty/zlib/zutil.c)
   add_library(z ${ZLIB_SOURCES})
   set_target_properties(z PROPERTIES ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/zlib" LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/zlib")
@@ -997,9 +1054,24 @@ if(BUILD_ZLIB)
   set(ZLIB_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/3rdparty/zlib CACHE PATH "" FORCE)
 endif(BUILD_ZLIB)
 
-if(BUILD_BZIP)
-     include("${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/bzip2.cmake")
- message("Building libbz2 from 3rdparty/bzip2")
+if(BUILD_BZIP2)
+  message("Building libbz2 from 3rdparty/bzip2")
+  set(BZIP2_VERSION "1.0.8")
+  set(BZIP2_DISABLE_TESTS TRUE)
+  set(BZIP2_STATIC TRUE)
+  set(BZIP2_NO_INSTALL TRUE)
+  if(NOT EXISTS "${CMAKE_SOURCE_DIR}/3rdparty/bzip2/CMakeLists.txt")
+    if(NOT EXISTS "${CMAKE_SOURCE_DIR}/bzip2-${BZIP2_VERSION}.tar.gz")
+      file(REMOVE_RECURSE "${CMAKE_SOURCE_DIR}/3rdparty/bzip2")
+      file(DOWNLOAD "https://sourceware.org/pub/bzip2/bzip2-${BZIP2_VERSION}.tar.gz" "${CMAKE_SOURCE_DIR}/3rdparty/bzip2-${BZIP2_VERSION}.tar.gz" SHOW_PROGRESS)
+    endif()
+
+    exec_program("${TAR}" ARGS -C "${CMAKE_SOURCE_DIR}/3rdparty" -xzf "${CMAKE_SOURCE_DIR}/3rdparty/bzip2-${BZIP2_VERSION}.tar.gz")
+    file(RENAME "${CMAKE_SOURCE_DIR}/3rdparty/bzip2-${BZIP2_VERSION}" "${CMAKE_SOURCE_DIR}/3rdparty/bzip2")
+
+  endif()
+  include("${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/bzip2.cmake")
+
   set(LIBBZ2_SOURCES 3rdparty/bzip2/blocksort.c 3rdparty/bzip2/bzlib.c 3rdparty/bzip2/compress.c 3rdparty/bzip2/crctable.c 3rdparty/bzip2/decompress.c 3rdparty/bzip2/huffman.c 3rdparty/bzip2/randtable.c)
   add_library(bz2 ${LIBBZ2_SOURCES})
   set_target_properties(bz2 PROPERTIES ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bzip2" LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bzip2")
@@ -1009,7 +1081,7 @@ if(BUILD_BZIP)
   set(BZIP2_LIBRARY_RELEASE bz2 CACHE FILEPATH "" FORCE)
   set(BZIP2_LIBRARY bz2 CACHE FILEPATH "" FORCE)
   set(BZIP2_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/3rdparty/bzip2 CACHE PATH "" FORCE)
-endif(BUILD_BZIP)
+endif(BUILD_BZIP2)
 
 function(DEFINE_HAVE OUTVAR)
   set(OUT "")
@@ -1024,36 +1096,26 @@ function(DEFINE_HAVE OUTVAR)
 endfunction(DEFINE_HAVE)
 
 if(BUILD_LZMA)
-     include("${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/xz.cmake")
+  message("Building xz from 3rdparty/xz")
+  set(LZMA_VERSION "5.2.5")
+  set(LZMA_DISABLE_TESTS TRUE)
+  set(LZMA_STATIC TRUE)
+  set(LZMA_NO_INSTALL TRUE)
+  if(NOT EXISTS "${CMAKE_SOURCE_DIR}/3rdparty/xz/CMakeLists.txt")
+    if(NOT EXISTS "${CMAKE_SOURCE_DIR}/xz-${LZMA_VERSION}.tar.gz")
+      file(REMOVE_RECURSE "${CMAKE_SOURCE_DIR}/3rdparty/xz")
+      file(DOWNLOAD "https://distfiles.macports.org/xz/xz-${LZMA_VERSION}.tar.bz2" "${CMAKE_SOURCE_DIR}/3rdparty/xz-${LZMA_VERSION}.tar.bz2" SHOW_PROGRESS)
+    endif()
 
-  message("Building liblzma from 3rdparty/xz")
-  configure_file("${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/xz-config.h.cmake" "${CMAKE_CURRENT_BINARY_DIR}/3rdparty/xz/config.h")
+    exec_program("${TAR}" ARGS -C "${CMAKE_SOURCE_DIR}/3rdparty" -xjf "${CMAKE_SOURCE_DIR}/3rdparty/xz-${LZMA_VERSION}.tar.bz2")
+    file(RENAME "${CMAKE_SOURCE_DIR}/3rdparty/xz-${LZMA_VERSION}" "${CMAKE_SOURCE_DIR}/3rdparty/xz")
 
-  # file(WRITE "${CMAKE_BINARY_DIR}/lzma-config.h.cmake" "\n/*\n * Ensure we have C99-style int64_t, etc, all defined.\n */\n\n/* First, we need to know if the system has already defined them. */\n#cmakedefine HAVE_INT16_T\n#cmakedefine HAVE_INT32_T\n#cmakedefine HAVE_INT64_T\n#cmakedefine HAVE_INTMAX_T\n\n#cmakedefine HAVE_UINT8_T\n#cmakedefine HAVE_UINT16_T\n#cmakedefine
-  # HAVE_UINT32_T\n#cmakedefine HAVE_UINT64_T\n#cmakedefine HAVE_UINTMAX_T\n\n/* We might have the types we want under other spellings. */\n#cmakedefine HAVE___INT64\n#cmakedefine HAVE_U_INT64_T\n#cmakedefine HAVE_UNSIGNED___INT64\n\n/* The sizes of various standard integer types.
-  # */\n@SIZE_OF_SHORT_CODE@\n@SIZE_OF_INT_CODE@\n@SIZE_OF_LONG_CODE@\n@SIZE_OF_LONG_LONG_CODE@\n@SIZE_OF_UNSIGNED_SHORT_CODE@\n@SIZE_OF_UNSIGNED_CODE@\n@SIZE_OF_UNSIGNED_LONG_CODE@\n@SIZE_OF_UNSIGNED_LONG_LONG_CODE@\n@SIZE_OF_SIZE_T_CODE@\n\n/*\n * If we lack int64_t, define it to the first of __int64, int, long, and long long\n * that exists and is the right size.\n */\n#if
-  # !defined(HAVE_INT64_T) && defined(HAVE___INT64)\ntypedef __int64 int64_t;\n#define HAVE_INT64_T\n#endif\n\n#if !defined(HAVE_INT64_T) && SIZE_OF_INT == 8\ntypedef int int64_t;\n#define HAVE_INT64_T\n#endif\n\n#if !defined(HAVE_INT64_T) && SIZE_OF_LONG == 8\ntypedef long int64_t;\n#define HAVE_INT64_T\n#endif\n\n#if !defined(HAVE_INT64_T) && SIZE_OF_LONG_LONG == 8\ntypedef long long
-  # int64_t;\n#define HAVE_INT64_T\n#endif\n\n#if !defined(HAVE_INT64_T)\n#error No 64-bit integer type was found.\n#endif\n\n/*\n * Similarly for int32_t\n */\n#if !defined(HAVE_INT32_T) && SIZE_OF_INT == 4\ntypedef int int32_t;\n#define HAVE_INT32_T\n#endif\n\n#if !defined(HAVE_INT32_T) && SIZE_OF_LONG == 4\ntypedef long int32_t;\n#define HAVE_INT32_T\n#endif\n\n#if
-  # !defined(HAVE_INT32_T)\n#error No 32-bit integer type was found.\n#endif\n\n/*\n * Similarly for int16_t\n */\n#if !defined(HAVE_INT16_T) && SIZE_OF_INT == 2\ntypedef int int16_t;\n#define HAVE_INT16_T\n#endif\n\n#if !defined(HAVE_INT16_T) && SIZE_OF_SHORT == 2\ntypedef short int16_t;\n#define HAVE_INT16_T\n#endif\n\n#if !defined(HAVE_INT16_T)\n#error No 16-bit integer type was
-  # found.\n#endif\n\n/*\n * Similarly for uint64_t\n */\n#if !defined(HAVE_UINT64_T) && defined(HAVE_UNSIGNED___INT64)\ntypedef unsigned __int64 uint64_t;\n#define HAVE_UINT64_T\n#endif\n\n#if !defined(HAVE_UINT64_T) && SIZE_OF_UNSIGNED == 8\ntypedef unsigned uint64_t;\n#define HAVE_UINT64_T\n#endif\n\n#if !defined(HAVE_UINT64_T) && SIZE_OF_UNSIGNED_LONG == 8\ntypedef unsigned long
-  # uint64_t;\n#define HAVE_UINT64_T\n#endif\n\n#if !defined(HAVE_UINT64_T) && SIZE_OF_UNSIGNED_LONG_LONG == 8\ntypedef unsigned long long uint64_t;\n#define HAVE_UINT64_T\n#endif\n\n#if !defined(HAVE_UINT64_T)\n#error No 64-bit unsigned integer type was found.\n#endif\n\n/*\n * Similarly for uint32_t\n */\n#if !defined(HAVE_UINT32_T) && SIZE_OF_UNSIGNED == 4\ntypedef unsigned uint32_t;\n#define
-  # HAVE_UINT32_T\n#endif\n\n#if !defined(HAVE_UINT32_T) && SIZE_OF_UNSIGNED_LONG == 4\ntypedef unsigned long uint32_t;\n#define HAVE_UINT32_T\n#endif\n\n#if !defined(HAVE_UINT32_T)\n#error No 32-bit unsigned integer type was found.\n#endif\n\n/*\n * Similarly for uint16_t\n */\n#if !defined(HAVE_UINT16_T) && SIZE_OF_UNSIGNED == 2\ntypedef unsigned uint16_t;\n#define HAVE_UINT16_T\n#endif\n\n#if
-  # !defined(HAVE_UINT16_T) && SIZE_OF_UNSIGNED_SHORT == 2\ntypedef unsigned short uint16_t;\n#define HAVE_UINT16_T\n#endif\n\n#if !defined(HAVE_UINT16_T)\n#error No 16-bit unsigned integer type was found.\n#endif\n\n/*\n * Similarly for uint8_t\n */\n#if !defined(HAVE_UINT8_T)\ntypedef unsigned char uint8_t;\n#define HAVE_UINT8_T\n#endif\n\n#if !defined(HAVE_UINT16_T)\n#error No 8-bit unsigned
-  # integer type was found.\n#endif\n\n/* Define intmax_t and uintmax_t if they are not already defined. */\n#if !defined(HAVE_INTMAX_T)\ntypedef int64_t intmax_t;\n#define INTMAX_MIN INT64_MIN\n#define INTMAX_MAX INT64_MAX\n#endif\n\n#if !defined(HAVE_UINTMAX_T)\ntypedef uint64_t uintmax_t;\n#endif\n\n\n#cmakedefine uintptr_t @uintptr_t@\n\n\n#cmakedefine HAVE_RESTRICT\n#cmakedefine
-  # HAVE___RESTRICT\n\n#cmakedefine HAVE_INLINE\n#cmakedefine HAVE___INLINE\n\n#ifndef HAVE_RESTRICT\n#  ifdef HAVE___RESTRICT\n# define LZMA_RESTRICT __restrict\n#  else\n# define LZMA_RESTRICT\n#  endif\n#else\n#  define LZMA_RESTRICT restrict\n#endif /* HAVE_RESTRICT */\n\n#if defined(HAVE_INLINE)\n# define LZMA_INLINE inline\n#else\n# if defined(HAVE___INLINE)\n#  define LZMA_INLINE
-  # __inline\n# else\n#  define LZMA_INLINE\n# endif\n#endif\n\n#cmakedefine WORDS_BIGENDIAN 1\n\n#cmakedefine HAVE_BYTESWAP_H 1\n#cmakedefine HAVE_BSWAP_16 1\n#cmakedefine HAVE_BSWAP_32 1\n#cmakedefine HAVE_BSWAP_64 1\n\n\n#define HAVE_CHECK_CRC32 1\n#define HAVE_CHECK_CRC64 1\n#define HAVE_CHECK_SHA256 1\n\n#define HAVE_DECODER_ARM 1\n#define HAVE_DECODER_ARMTHUMB 1\n#define HAVE_DECODER_DELTA
-  # 1\n#define HAVE_DECODER_IA64 1\n#define HAVE_DECODER_LZMA1 1\n#define HAVE_DECODER_LZMA2 1\n#define HAVE_DECODER_POWERPC 1\n#define HAVE_DECODER_SPARC 1\n#define HAVE_DECODER_X86 1\n\n#define HAVE_ENCODER_ARM 1\n#define HAVE_ENCODER_ARMTHUMB 1\n#define HAVE_ENCODER_DELTA 1\n#define HAVE_ENCODER_IA64 1\n#define HAVE_ENCODER_LZMA1 1\n#define HAVE_ENCODER_LZMA2 1\n#define HAVE_ENCODER_POWERPC
-  # 1\n#define HAVE_ENCODER_SPARC 1\n#define HAVE_ENCODER_X86 1\n\n#define HAVE_MF_BT2 1\n#define HAVE_MF_BT3 1\n#define HAVE_MF_BT4 1\n#define HAVE_MF_HC3 1\n#define HAVE_MF_HC4 1\n\n/* Define to 1 if you have the <inttypes.h> header file. */\n#cmakedefine HAVE_INTTYPES_H 1\n\n/* Define to 1 if you have the <limits.h> header file. */\n#cmakedefine HAVE_LIMITS_H 1\n\n/* Define to 1 if you have the
-  # <memory.h> header file. */\n#cmakedefine HAVE_MEMORY_H 1\n\n/* Define to 1 if stdbool.h conforms to C99. */\n#cmakedefine HAVE_STDBOOL_H 1\n\n/* Define to 1 if you have the <stdint.h> header file. */\n#cmakedefine HAVE_STDINT_H 1\n\n/* Define to 1 if you have the <strings.h> header file. */\n#cmakedefine HAVE_STRINGS_H 1\n\n/* Define to 1 if you have the <string.h> header file.
-  # */\n#cmakedefine HAVE_STRING_H 1\n\n/* Define to 1 if you have the <sys/byteorder.h> header file. */\n#cmakedefine HAVE_SYS_BYTEORDER_H 1\n\n/* Define to 1 if you have the <sys/endian.h> header file. */\n#cmakedefine HAVE_SYS_ENDIAN_H 1\n\n/* Define to 1 or 0, depending whether the compiler supports simple visibility\n   declarations. */\n#cmakedefine HAVE_VISIBILITY 1\n\n/* Define to 1 if the
-  # system has the type `_Bool'. */\n#cmakedefine HAVE__BOOL 1\n\n/* Define to 1 if the system supports fast unaligned access to 16-bit and\n 32-bit integers. */\n#if defined(__i386) || defined(__i386__) || defined(_M_IX86) \\n || defined(__x86_64) || defined(__x86_64__) || defined(_M_X64) \\n || defined(__amd64) || defined(__amd64__) \\n || defined(__powerpc) || defined(__powerpc__) \\n ||
-  # defined(__ppc) || defined(__ppc__) || defined(__POWERPC__)\n# define TUKLIB_FAST_UNALIGNED_ACCESS 1\n#endif")
+  endif()
+  include("${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/xz.cmake")
 
-  configure_file("${CMAKE_SOURCE_DIR}/3rdparty/lzma-config.h.cmake" "${CMAKE_BINARY_DIR}/3rdparty/xz/config.h")
-  file(
-    WRITE "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/xz/CMakeLists.txt"
-    "cmake_minimum_required(VERSION 2.8)\n\nproject(lzma C)\n\nset(lzma_SOURCES\n\t\tsrc/common/tuklib_cpucores.c\n\t\tsrc/common/tuklib_physmem.c\n\t\tsrc/liblzma/check/check.c\n\t\tsrc/liblzma/check/crc32_fast.c\n\t\tsrc/liblzma/check/crc32_table.c\n\t\tsrc/liblzma/check/crc64_fast.c\n\t\tsrc/liblzma/check/crc64_table.c\n\t\tsrc/liblzma/check/sha256.c\n\t\tsrc/liblzma/common/alone_decoder.c\n\t\tsrc/liblzma/common/alone_encoder.c\n\t\tsrc/liblzma/common/auto_decoder.c\n\t\tsrc/liblzma/common/block_buffer_decoder.c\n\t\tsrc/liblzma/common/block_buffer_encoder.c\n\t\tsrc/liblzma/common/block_decoder.c\n\t\tsrc/liblzma/common/block_encoder.c\n\t\tsrc/liblzma/common/block_header_decoder.c\n\t\tsrc/liblzma/common/block_header_encoder.c\n\t\tsrc/liblzma/common/block_util.c\n\t\tsrc/liblzma/common/common.c\n\t\tsrc/liblzma/common/easy_buffer_encoder.c\n\t\tsrc/liblzma/common/easy_decoder_memusage.c\n\t\tsrc/liblzma/common/easy_encoder.c\n\t\tsrc/liblzma/common/easy_encoder_memusage.c\n\t\tsrc/liblzma/common/easy_preset.c\n\t\tsrc/liblzma/common/filter_buffer_decoder.c\n\t\tsrc/liblzma/common/filter_buffer_encoder.c\n\t\tsrc/liblzma/common/filter_common.c\n\t\tsrc/liblzma/common/filter_decoder.c\n\t\tsrc/liblzma/common/filter_encoder.c\n\t\tsrc/liblzma/common/filter_flags_decoder.c\n\t\tsrc/liblzma/common/filter_flags_encoder.c\n\t\tsrc/liblzma/common/hardware_cputhreads.c\n\t\tsrc/liblzma/common/hardware_physmem.c\n\t\tsrc/liblzma/common/index.c\n\t\tsrc/liblzma/common/index_decoder.c\n\t\tsrc/liblzma/common/index_encoder.c\n\t\tsrc/liblzma/common/index_hash.c\n\t\tsrc/liblzma/common/outqueue.c\n\t\tsrc/liblzma/common/stream_buffer_decoder.c\n\t\tsrc/liblzma/common/stream_buffer_encoder.c\n\t\tsrc/liblzma/common/stream_decoder.c\n\t\tsrc/liblzma/common/stream_encoder.c\n\t\tsrc/liblzma/common/stream_encoder_mt.c\n\t\tsrc/liblzma/common/stream_flags_common.c\n\t\tsrc/liblzma/common/stream_flags_decoder.c\n\t\tsrc/liblzma/common/stream_flags_encoder.c\n\t\tsrc/liblzma/common/vli_decoder.c\n\t\tsrc/liblzma/common/vli_encoder.c\n\t\tsrc/liblzma/common/vli_size.c\n\t\tsrc/liblzma/delta/delta_common.c\n\t\tsrc/liblzma/delta/delta_decoder.c\n\t\tsrc/liblzma/delta/delta_encoder.c\n\t\tsrc/liblzma/lz/lz_decoder.c\n\t\tsrc/liblzma/lz/lz_encoder.c\n\t\tsrc/liblzma/lz/lz_encoder_mf.c\n\t\tsrc/liblzma/lzma/fastpos_table.c\n\t\tsrc/liblzma/lzma/lzma2_decoder.c\n\t\tsrc/liblzma/lzma/lzma2_encoder.c\n\t\tsrc/liblzma/lzma/lzma_decoder.c\n\t\tsrc/liblzma/lzma/lzma_encoder.c\n\t\tsrc/liblzma/lzma/lzma_encoder_optimum_fast.c\n\t\tsrc/liblzma/lzma/lzma_encoder_optimum_normal.c\n\t\tsrc/liblzma/lzma/lzma_encoder_presets.c\n\t\tsrc/liblzma/rangecoder/price_table.c\n\t\tsrc/liblzma/simple/arm.c\n\t\tsrc/liblzma/simple/armthumb.c\n\t\tsrc/liblzma/simple/ia64.c\n\t\tsrc/liblzma/simple/powerpc.c\n\t\tsrc/liblzma/simple/simple_coder.c\n\t\tsrc/liblzma/simple/simple_decoder.c\n\t\tsrc/liblzma/simple/simple_encoder.c\n\t\tsrc/liblzma/simple/sparc.c\n\t\tsrc/liblzma/simple/x86.c)\n\nset(lzma_HEADERS\n\t\tsrc/common/mythread.h\n\t\tsrc/common/sysdefs.h\n\t\tsrc/common/tuklib_common.h\n\t\tsrc/common/tuklib_config.h\n\t\tsrc/common/tuklib_cpucores.h\n\t\tsrc/common/tuklib_integer.h\n\t\tsrc/common/tuklib_physmem.h\n\t\tsrc/liblzma/api/lzma.h\n\t\tsrc/liblzma/api/lzma/base.h\n\t\tsrc/liblzma/api/lzma/bcj.h\n\t\tsrc/liblzma/api/lzma/block.h\n\t\tsrc/liblzma/api/lzma/check.h\n\t\tsrc/liblzma/api/lzma/container.h\n\t\tsrc/liblzma/api/lzma/delta.h\n\t\tsrc/liblzma/api/lzma/filter.h\n\t\tsrc/liblzma/api/lzma/hardware.h\n\t\tsrc/liblzma/api/lzma/index.h\n\t\tsrc/liblzma/api/lzma/index_hash.h\n\t\tsrc/liblzma/api/lzma/lzma12.h\n\t\tsrc/liblzma/api/lzma/stream_flags.h\n\t\tsrc/liblzma/api/lzma/version.h\n\t\tsrc/liblzma/api/lzma/vli.h\n\t\tsrc/liblzma/check/check.h\n\t\tsrc/liblzma/check/crc32_table_be.h\n\t\tsrc/liblzma/check/crc32_table_le.h\n\t\tsrc/liblzma/check/crc64_table_be.h\n\t\tsrc/liblzma/check/crc64_table_le.h\n\t\tsrc/liblzma/check/crc_macros.h\n\t\tsrc/liblzma/common/alone_decoder.h\n\t\tsrc/liblzma/common/block_buffer_encoder.h\n\t\tsrc/liblzma/common/block_decoder.h\n\t\tsrc/liblzma/common/block_encoder.h\n\t\tsrc/liblzma/common/common.h\n\t\tsrc/liblzma/common/easy_preset.h\n\t\tsrc/liblzma/common/filter_common.h\n\t\tsrc/liblzma/common/filter_decoder.h\n\t\tsrc/liblzma/common/filter_encoder.h\n\t\tsrc/liblzma/common/index.h\n\t\tsrc/liblzma/common/index_encoder.h\n\t\tsrc/liblzma/common/memcmplen.h\n\t\tsrc/liblzma/common/outqueue.h\n\t\tsrc/liblzma/common/stream_decoder.h\n\t\tsrc/liblzma/common/stream_flags_common.h\n\t\tsrc/liblzma/delta/delta_common.h\n\t\tsrc/liblzma/delta/delta_decoder.h\n\t\tsrc/liblzma/delta/delta_encoder.h\n\t\tsrc/liblzma/delta/delta_private.h\n\t\tsrc/liblzma/lz/lz_decoder.h\n\t\tsrc/liblzma/lz/lz_encoder.h\n\t\tsrc/liblzma/lz/lz_encoder_hash.h\n\t\tsrc/liblzma/lz/lz_encoder_hash_table.h\n\t\tsrc/liblzma/lzma/fastpos.h\n\t\tsrc/liblzma/lzma/lzma2_decoder.h\n\t\tsrc/liblzma/lzma/lzma2_encoder.h\n\t\tsrc/liblzma/lzma/lzma_common.h\n\t\tsrc/liblzma/lzma/lzma_decoder.h\n\t\tsrc/liblzma/lzma/lzma_encoder.h\n\t\tsrc/liblzma/lzma/lzma_encoder_private.h\n\t\tsrc/liblzma/rangecoder/price.h\n\t\tsrc/liblzma/rangecoder/range_common.h\n\t\tsrc/liblzma/rangecoder/range_decoder.h\n\t\tsrc/liblzma/rangecoder/range_encoder.h\n\t\tsrc/liblzma/simple/simple_coder.h\n\t\tsrc/liblzma/simple/simple_decoder.h\n\t\tsrc/liblzma/simple/simple_encoder.h\n\t\tsrc/liblzma/simple/simple_private.h)\n\ninclude_directories(src/common src/liblzma/api src/liblzma/check src/liblzma/common src/liblzma/delta src/liblzma/lz src/liblzma/lzma src/liblzma/rangecoder src/liblzma/simple)\n\nif(MSVC)\n\tadd_definitions(-DHAVE_CONFIG_H)\n\tinclude_directories(windows)\nendif()\n\n# Static library\nadd_library(liblzma STATIC \${lzma_SOURCES} \${lzma_HEADERS})\ntarget_compile_definitions(liblzma PRIVATE LZMA_API_STATIC)\nset_target_properties(liblzma PROPERTIES PREFIX \"\") # We already have lib in the target name.\nif(NOT LZMA_NO_INSTALL)\n\tinstall(TARGETS liblzma DESTINATION lib)\nendif(NOT LZMA_NO_INSTALL)\n\nif(NOT LZMA_NO_SHARED)\n\t# Shared library\n\tif(WIN32)\n\t\tlist(APPEND lzma_SOURCES src/liblzma/liblzma_w32res.rc)\n\tendif()\n\tadd_library(lzma SHARED \${lzma_SOURCES} \${lzma_HEADERS})\n\ttarget_compile_definitions(lzma PRIVATE DLL_EXPORT)\n\tinstall(TARGETS lzma DESTINATION lib)\nendif(NOT LZMA_NO_SHARED)\n\nif(NOT LZMA_NO_INSTALL)\n\tinstall(DIRECTORY src/liblzma/api/ DESTINATION \"include\" FILES_MATCHING PATTERN \"*.h\")\nendif(NOT LZMA_NO_INSTALL)\n"
-  )
+  # configure_file("${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/xz-config.h.cmake" "${CMAKE_CURRENT_BINARY_DIR}/3rdparty/xz/config.h")
+
+  # configure_file("${CMAKE_SOURCE_DIR}/3rdparty/lzma-config.h.cmake" "${CMAKE_CURRENT_BINARY_DIR}/3rdparty/xz/config.h")
 
   file(
     GLOB
@@ -1100,28 +1162,37 @@ if(BUILD_LZMA)
   set(LIBLZMA_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/3rdparty/xz/src/liblzma/api" CACHE FILEPATH "" FORCE)
 endif(BUILD_LZMA)
 
-find_program(TAR NAMES bsdtar tar gtar gnutar star)
-
 if(BUILD_SSL)
   if(MUSL)
     add_definitions(-DOPENSSL_NO_SECURE_MEMORY=1)
   endif(MUSL)
+  if(DIET OR MUSL)
+    set(CHK_DLFCN FALSE)
+    set(DSO_NONE ON)
+  endif(DIET OR MUSL)
+  set(WITH_APPS FALSE)
+  set(OPENSSL_NO_INSTALL TRUE)
+  set(OPENSSL_VERSION "1.1.1h")
   if(NOT EXISTS "${CMAKE_SOURCE_DIR}/3rdparty/openssl/CMakeLists.txt")
-    if(NOT EXISTS "${CMAKE_SOURCE_DIR}/openssl-1.1.1h.tar.gz")
+    if(NOT EXISTS "${CMAKE_SOURCE_DIR}/openssl-${OPENSSL_VERSION}.tar.gz")
       file(REMOVE_RECURSE "${CMAKE_SOURCE_DIR}/3rdparty/openssl")
-      file(DOWNLOAD "https://www.openssl.org/source/openssl-1.1.1h.tar.gz" "${CMAKE_SOURCE_DIR}/openssl-1.1.1h.tar.gz" SHOW_PROGRESS)
+      file(DOWNLOAD "https://www.openssl.org/source/openssl-${OPENSSL_VERSION}.tar.gz" "${CMAKE_SOURCE_DIR}/3rdparty/openssl-${OPENSSL_VERSION}.tar.gz" SHOW_PROGRESS)
     endif()
 
-    exec_program("${TAR}" ARGS -C "${CMAKE_SOURCE_DIR}/3rdparty" -xzf "${CMAKE_SOURCE_DIR}/openssl-1.1.1h.tar.gz")
-    file(RENAME "${CMAKE_SOURCE_DIR}/3rdparty/openssl-1.1.1h" "${CMAKE_SOURCE_DIR}/3rdparty/openssl")
-    exec_program("${TAR}" ARGS -C "${CMAKE_SOURCE_DIR}/3rdparty/openssl" -xvzf "${CMAKE_SOURCE_DIR}/3rdparty/openssl-cmake.tar.gz")
+    exec_program("${TAR}" ARGS -C "${CMAKE_SOURCE_DIR}/3rdparty" -xzf "${CMAKE_SOURCE_DIR}/3rdparty/openssl-${OPENSSL_VERSION}.tar.gz")
+
+    file(
+      WRITE "${CMAKE_SOURCE_DIR}/3rdparty/openssl-1.1.1h-getrandom.patch"
+      "--- openssl-1.1.1h/crypto/rand/rand_unix.c\t2020-11-26 05:33:41.120118386 +0100\n+++ openssl-1.1.1h/crypto/rand/rand_unix.c\t2020-11-26 05:41:04.273390735 +0100\n@@ -387,7 +387,9 @@\n #  endif\n \n     /* Linux supports this since version 3.17 */\n-#  if defined(__linux) && defined(__NR_getrandom)\n+#  if defined(__dietlibc__)\n+    return getrandom(buf, buflen, 0);\n+#  elif defined(__linux) && defined(__NR_getrandom)\n     return syscall(__NR_getrandom, buf, buflen, 0);\n #  elif (defined(__FreeBSD__) || defined(__NetBSD__)) && defined(KERN_ARND)\n     return sysctl_random(buf, buflen);\n" #
+    )
+    execute_process(COMMAND patch -p0 INPUT_FILE "${CMAKE_SOURCE_DIR}/3rdparty/openssl-1.1.1h-getrandom.patch" WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/3rdparty")
+
+    file(RENAME "${CMAKE_SOURCE_DIR}/3rdparty/openssl-${OPENSSL_VERSION}" "${CMAKE_SOURCE_DIR}/3rdparty/openssl")
+    # exec_program("${TAR}" ARGS -C "${CMAKE_SOURCE_DIR}/3rdparty/openssl" -xvzf "${CMAKE_SOURCE_DIR}/3rdparty/openssl-cmake.tar.gz")
+
+    exec_program("${TAR}" ARGS -C "${CMAKE_SOURCE_DIR}/3rdparty" -xzf "${CMAKE_SOURCE_DIR}/3rdparty/openssl-${OPENSSL_VERSION}.tar.gz")
 
     include("${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/openssl.cmake")
-
-    # file( WRITE "${CMAKE_BINARY_DIR}/openssl-pthread.patch" "diff -w -r -u -- crypto/threads_pthread.c crypto/threads_pthread.c\n--- crypto/threads_pthread.c\n2020-04-11 06:10:13.642470720 +0200\n+++ crypto/threads_pthread.c\n2020-04-11 06:10:21.212373541 +0200\n@@ -45,7 +45,7 @@\n     }\n \n     pthread_mutexattr_init(&attr);\n-    pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE);\n+
-    # pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE_NP);\n \n     if (pthread_mutex_init(lock, &attr) != 0) {\n         pthread_mutexattr_destroy(&attr);\n" )
-
-    # exec_program(patch "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/openssl" ARGS -p0 -i "${CMAKE_BINARY_DIR}/openssl-pthread.patch")
 
   endif()
 
@@ -1133,6 +1204,11 @@ if(BUILD_SSL)
 
   set(OPENSSL_LIBRARIES ssl crypto CACHE STRING "" FORCE)
   set(OPENSSL_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/3rdparty/openssl/include" CACHE FILEPATH "" FORCE)
+
+  # set(OPENSSL_SSL_LIBRARY "${CMAKE_BINARY_DIR}/3rdparty/openssl/ssl/libssl.a" CACHE  FILEPATH "SSL library") set(OPENSSL_CRYPTO_LIBRARY "${CMAKE_BINARY_DIR}/3rdparty/openssl/crypto/libcrypto.a" CACHE  FILEPATH "Cryptography library")
+  set(OPENSSL_SSL_LIBRARY libssl CACHE STRING "SSL library" FORCE)
+  set(OPENSSL_CRYPTO_LIBRARY libcrypto CACHE FILEPATH "Cryptography library" FORCE)
+
 endif()
 
 if(USE_SSL)
@@ -1151,14 +1227,24 @@ if(USE_BROTLI AND NOT BROTLI_FOUND)
 endif(USE_BROTLI AND NOT BROTLI_FOUND)
 
 if(BUILD_BROTLI)
-  # file(READ "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/brotli.cmake.txt" BROTLI_CMAKELISTS_TXT) file(WRITE  "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/brotli/CMakeLists.txt"  "${BROTLI_CMAKELISTS_TXT}")
+  message("Building brotli from 3rdparty/brotli")
+  set(BROTLI_VERSION "1.0.9")
+  set(BROTLI_DISABLE_TESTS TRUE)
   set(BROTLI_STATIC TRUE)
   set(BROTLI_NO_INSTALL TRUE)
 
-  file(
-    WRITE "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/brotli/CMakeLists.txt"
-    "# Ubuntu 12.04 LTS has CMake 2.8.7, and is an important target since several CI\n# services, such as Travis and Drone, use it.\tSolaris 11 has 2.8.6, and it's\n# not difficult to support if you already have to support 2.8.7.\ncmake_minimum_required(VERSION 2.8.6)\n\nproject(brotli C)\n\nif(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)\n\tmessage(STATUS \"Setting build type to Release as none was specified.\")\n\tset(CMAKE_BUILD_TYPE\n\t\t\t\"Release\"\n\t\t\tCACHE STRING \"Choose the type of build.\" FORCE)\nelse()\n\tmessage(STATUS \"Build type is '\${CMAKE_BUILD_TYPE}'\")\nendif()\n\ninclude(CheckCSourceCompiles)\ncheck_c_source_compiles(\n\t\"#if defined(__EMSCRIPTEN__)\n\t int main() {return 0;}\n\t #endif\" BROTLI_EMSCRIPTEN)\nif(BROTLI_EMSCRIPTEN)\n\tmessage(\"-- Compiler is EMSCRIPTEN\")\nelse()\n\tmessage(\"-- Compiler is not EMSCRIPTEN\")\nendif()\n\n# If Brotli is being bundled in another project, we don't want to install\n# anything.\tHowever, we want to let people override this, so we'll use the\n# BROTLI_BUNDLED_MODE variable to let them do that; just set it to OFF in your\n# project before you add_subdirectory(brotli).\nget_directory_property(BROTLI_PARENT_DIRECTORY PARENT_DIRECTORY)\nif(NOT DEFINED BROTLI_BUNDLED_MODE)\n\t# Bundled mode hasn't been set one way or the other, set the default depending\n\t# on whether or not we are the top-level project.\n\tif(BROTLI_PARENT_DIRECTORY)\n\t\tset(BROTLI_BUNDLED_MODE ON)\n\telse()\n\t\tset(BROTLI_BUNDLED_MODE OFF)\n\tendif()\nendif()\nmark_as_advanced(BROTLI_BUNDLED_MODE)\n\ninclude(GNUInstallDirs)\n\n# Parse version information from common/version.h. Normally we would define\n# these values here and write them out to configuration file(s) (i.e.,\n# config.h), but in this case we parse them from common/version.h to be less\n# intrusive.\nfunction(hex_to_dec HEXADECIMAL DECIMAL)\n\tstring(TOUPPER \"\${HEXADECIMAL}\" _tail)\n\tset(_decimal 0)\n\tstring(LENGTH \"\${_tail}\" _tail_length)\n\twhile(_tail_length GREATER 0)\n\t\tmath(EXPR _decimal \"\${_decimal} * 16\")\n\t\tstring(SUBSTRING \"\${_tail}\" 0 1 _digit)\n\t\tstring(SUBSTRING \"\${_tail}\" 1 -1 _tail)\n\t\tif(_digit STREQUAL \"A\")\n\t\t\tmath(EXPR _decimal \"\${_decimal} + 10\")\n\t\telseif(_digit STREQUAL \"B\")\n\t\t\tmath(EXPR _decimal \"\${_decimal} + 11\")\n\t\telseif(_digit STREQUAL \"C\")\n\t\t\tmath(EXPR _decimal \"\${_decimal} + 12\")\n\t\telseif(_digit STREQUAL \"D\")\n\t\t\tmath(EXPR _decimal \"\${_decimal} + 13\")\n\t\telseif(_digit STREQUAL \"E\")\n\t\t\tmath(EXPR _decimal \"\${_decimal} + 14\")\n\t\telseif(_digit STREQUAL \"F\")\n\t\t\tmath(EXPR _decimal \"\${_decimal} + 15\")\n\t\telse()\n\t\t\tmath(EXPR _decimal \"\${_decimal} + \${_digit}\")\n\t\tendif()\n\t\tstring(LENGTH \"\${_tail}\" _tail_length)\n\tendwhile()\n\tset(\${DECIMAL}\n\t\t\t\${_decimal}\n\t\t\tPARENT_SCOPE)\nendfunction(hex_to_dec)\n\n# Version information\nfile(STRINGS \"c/common/version.h\" _brotli_version_line\n\t\t REGEX \"^#define BROTLI_VERSION (0x[0-9a-fA-F]+)\$\")\nstring(REGEX REPLACE \"^#define BROTLI_VERSION 0x([0-9a-fA-F]+)\$\" \"\\\\1\"\n\t\t\t\t\t\t\t\t\t\t _brotli_version_hex \"\${_brotli_version_line}\")\nhex_to_dec(\"\${_brotli_version_hex}\" _brotli_version)\nmath(EXPR BROTLI_VERSION_MAJOR \"\${_brotli_version} >> 24\")\nmath(EXPR BROTLI_VERSION_MINOR \"(\${_brotli_version} >> 12) & 4095\")\nmath(EXPR BROTLI_VERSION_PATCH \"\${_brotli_version} & 4095\")\nset(BROTLI_VERSION\n\t\t\"\${BROTLI_VERSION_MAJOR}.\${BROTLI_VERSION_MINOR}.\${BROTLI_VERSION_PATCH}\")\nmark_as_advanced(BROTLI_VERSION BROTLI_VERSION_MAJOR BROTLI_VERSION_MINOR\n\t\t\t\t\t\t\t\t BROTLI_VERSION_PATCH)\n\n# ABI Version information\nfile(STRINGS \"c/common/version.h\" _brotli_abi_info_line\n\t\t REGEX \"^#define BROTLI_ABI_VERSION (0x[0-9a-fA-F]+)\$\")\nstring(REGEX REPLACE \"^#define BROTLI_ABI_VERSION 0x([0-9a-fA-F]+)\$\" \"\\\\1\"\n\t\t\t\t\t\t\t\t\t\t _brotli_abi_info_hex \"\${_brotli_abi_info_line}\")\nhex_to_dec(\"\${_brotli_abi_info_hex}\" _brotli_abi_info)\nmath(EXPR BROTLI_ABI_CURRENT \"\${_brotli_abi_info} >> 24\")\nmath(EXPR BROTLI_ABI_REVISION \"(\${_brotli_abi_info} >> 12) & 4095\")\nmath(EXPR BROTLI_ABI_AGE \"\${_brotli_abi_info} & 4095\")\nmath(EXPR BROTLI_ABI_COMPATIBILITY \"\${BROTLI_ABI_CURRENT} - \${BROTLI_ABI_AGE}\")\nmark_as_advanced(BROTLI_ABI_CURRENT BROTLI_ABI_REVISION BROTLI_ABI_AGE\n\t\t\t\t\t\t\t\t BROTLI_ABI_COMPATIBILITY)\n\nif(ENABLE_SANITIZER)\n\tset(CMAKE_C_FLAGS \" \${CMAKE_C_FLAGS} -fsanitize=\${ENABLE_SANITIZER}\")\n\tset(CMAKE_CXX_FLAGS \" \${CMAKE_CXX_FLAGS} -fsanitize=\${ENABLE_SANITIZER}\")\n\tset(CMAKE_EXE_LINKER_FLAGS\n\t\t\t\"\${CMAKE_EXE_LINKER_FLAGS} -fsanitize=\${ENABLE_SANITIZER}\")\n\n\t# By default, brotli depends on undefined behavior, but setting\n\t# BROTLI_BUILD_PORTABLE should result in a build which does not.\n\tif(ENABLE_SANITIZER STREQUAL \"undefined\")\n\t\tadd_definitions(-DBROTLI_BUILD_PORTABLE)\n\tendif()\nendif()\n\ninclude(CheckFunctionExists)\nset(LIBM_LIBRARY)\ncheck_function_exists(log2 LOG2_RES)\nif(NOT LOG2_RES)\n\tset(orig_req_libs \"\${CMAKE_REQUIRED_LIBRARIES}\")\n\tset(CMAKE_REQUIRED_LIBRARIES \"\${CMAKE_REQUIRED_LIBRARIES};m\")\n\tcheck_function_exists(log2 LOG2_LIBM_RES)\n\tif(LOG2_LIBM_RES)\n\t\tset(LIBM_LIBRARY \"m\")\n\t\tadd_definitions(-DBROTLI_HAVE_LOG2=1)\n\telse()\n\t\tadd_definitions(-DBROTLI_HAVE_LOG2=0)\n\tendif()\n\n\tset(CMAKE_REQUIRED_LIBRARIES \"\${orig_req_libs}\")\n\tunset(LOG2_LIBM_RES)\n\tunset(orig_req_libs)\nelse()\n\tadd_definitions(-DBROTLI_HAVE_LOG2=1)\nendif()\nunset(LOG2_RES)\n\nset(BROTLI_INCLUDE_DIRS \"\${CMAKE_CURRENT_SOURCE_DIR}/c/include\")\nmark_as_advanced(BROTLI_INCLUDE_DIRS)\n\nif(BROTLI_STATIC)\n\tset(BROTLI_LIBRARIES_CORE brotlienc-static brotlidec-static\n\t\t\t\t\t\t\t\t\t\t\t\t\t\tbrotlicommon-static)\nelse(BROTLI_STATIC)\n\tset(BROTLI_LIBRARIES_CORE brotlienc brotlidec brotlicommon)\nendif(BROTLI_STATIC)\nset(BROTLI_LIBRARIES \${BROTLI_LIBRARIES_CORE} \${LIBM_LIBRARY})\nmark_as_advanced(BROTLI_LIBRARIES)\n\nset(BROTLI_LIBRARIES_CORE_STATIC brotlienc-static brotlidec-static\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t brotlicommon-static)\nset(BROTLI_LIBRARIES_STATIC \${BROTLI_LIBRARIES_CORE_STATIC} \${LIBM_LIBRARY})\nmark_as_advanced(BROTLI_LIBRARIES_STATIC)\n\nif(\${CMAKE_SYSTEM_NAME} MATCHES \"Linux\")\n\tadd_definitions(-DOS_LINUX)\nelseif(\${CMAKE_SYSTEM_NAME} MATCHES \"FreeBSD\")\n\tadd_definitions(-DOS_FREEBSD)\nelseif(\${CMAKE_SYSTEM_NAME} MATCHES \"Darwin\")\n\tadd_definitions(-DOS_MACOSX)\nendif()\n\nfunction(transform_sources_list INPUT_FILE OUTPUT_FILE)\n\tfile(READ \${INPUT_FILE} TEXT)\n\tstring(REGEX REPLACE \"\\\\\\\\\\n\" \"~continuation~\" TEXT \${TEXT})\n\tstring(REGEX REPLACE \"([a-zA-Z_][a-zA-Z0-9_]*)[\\t ]*=[\\t ]*([^\\n]*)\"\n\t\t\t\t\t\t\t\t\t\t\t \"SET(\\\\1 \\\\2)\" TEXT \${TEXT})\n\tstring(REPLACE \"~continuation~\" \"\\n\" TEXT \${TEXT})\n\tfile(WRITE \${OUTPUT_FILE} \${TEXT})\nendfunction()\n\ntransform_sources_list(\"scripts/sources.lst\"\n\t\t\t\t\t\t\t\t\t\t\t \"\${CMAKE_CURRENT_BINARY_DIR}/sources.lst.cmake\")\ninclude(\"\${CMAKE_CURRENT_BINARY_DIR}/sources.lst.cmake\")\n\nif(BROTLI_EMSCRIPTEN OR BROTLI_STATIC)\n\tset(BROTLI_SHARED_LIBS \"\")\nelse()\n\tset(BROTLI_SHARED_LIBS brotlicommon brotlidec brotlienc)\n\tadd_library(brotlicommon SHARED \${BROTLI_COMMON_C})\n\tadd_library(brotlidec SHARED \${BROTLI_DEC_C})\n\tadd_library(brotlienc SHARED \${BROTLI_ENC_C})\nendif()\n\nset(BROTLI_STATIC_LIBS brotlicommon-static brotlidec-static brotlienc-static)\nadd_library(brotlicommon-static STATIC \${BROTLI_COMMON_C})\nadd_library(brotlidec-static STATIC \${BROTLI_DEC_C})\nadd_library(brotlienc-static STATIC \${BROTLI_ENC_C})\nset_target_properties(brotlicommon-static PROPERTIES OUTPUT_NAME brotlicommon)\nset_target_properties(brotlidec-static PROPERTIES OUTPUT_NAME brotlidec)\nset_target_properties(brotlienc-static PROPERTIES OUTPUT_NAME brotlienc)\n\n# Older CMake versions does not understand INCLUDE_DIRECTORIES property.\ninclude_directories(\${BROTLI_INCLUDE_DIRS})\n\nforeach(lib IN LISTS BROTLI_SHARED_LIBS)\n\ttarget_compile_definitions(\${lib} PUBLIC \"BROTLI_SHARED_COMPILATION\")\n\tstring(TOUPPER \"\${lib}\" LIB)\n\tset_target_properties(\${lib} PROPERTIES DEFINE_SYMBOL\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\"\${LIB}_SHARED_COMPILATION\")\nendforeach()\n\nforeach(lib IN LISTS BROTLI_SHARED_LIBS BROTLI_STATIC_LIBS)\n\ttarget_link_libraries(\${lib} \${LIBM_LIBRARY})\n\tset_property(\n\t\tTARGET \${lib}\n\t\tAPPEND\n\t\tPROPERTY INCLUDE_DIRECTORIES \${BROTLI_INCLUDE_DIRS})\n\tset_target_properties(\n\t\t\${lib}\n\t\tPROPERTIES\n\t\t\tVERSION\n\t\t\t\"\${BROTLI_ABI_COMPATIBILITY}.\${BROTLI_ABI_AGE}.\${BROTLI_ABI_REVISION}\"\n\t\t\tSOVERSION \"\${BROTLI_ABI_COMPATIBILITY}\")\n\tif(NOT BROTLI_EMSCRIPTEN)\n\t\tset_target_properties(\${lib} PROPERTIES POSITION_INDEPENDENT_CODE TRUE)\n\tendif()\n\tset_property(\n\t\tTARGET \${lib}\n\t\tAPPEND\n\t\tPROPERTY INTERFACE_INCLUDE_DIRECTORIES \"\${BROTLI_INCLUDE_DIRS}\")\nendforeach()\n\nif(NOT BROTLI_EMSCRIPTEN AND NOT BROTLI_STATIC)\n\ttarget_link_libraries(brotlidec brotlicommon)\n\ttarget_link_libraries(brotlienc brotlicommon)\nendif()\n\ntarget_link_libraries(brotlidec-static brotlicommon-static)\ntarget_link_libraries(brotlienc-static brotlicommon-static)\n\n# For projects stuck on older versions of CMake, this will set the\n# BROTLI_INCLUDE_DIRS and BROTLI_LIBRARIES variables so they still have a\n# relatively easy way to use Brotli:\n#\n# include_directories(\${BROTLI_INCLUDE_DIRS}) target_link_libraries(foo\n# \${BROTLI_LIBRARIES})\nif(BROTLI_PARENT_DIRECTORY)\n\tset(BROTLI_INCLUDE_DIRS\n\t\t\t\"\${BROTLI_INCLUDE_DIRS}\"\n\t\t\tPARENT_SCOPE)\n\tset(BROTLI_LIBRARIES\n\t\t\t\"\${BROTLI_LIBRARIES}\"\n\t\t\tPARENT_SCOPE)\nendif()\n\n# Build the brotli executable\nadd_executable(brotli \${BROTLI_CLI_C})\ntarget_link_libraries(brotli \${BROTLI_STATIC_LIBS})\n\nif(NOT BROTLI_NO_INSTALL)\n\tinstall(TARGETS brotli DESTINATION bin)\n\tinstall(TARGETS \${BROTLI_STATIC_LIBS} DESTINATION lib)\n\n\tinstall(FILES c/include/brotli/decode.h c/include/brotli/encode.h\n\t\t\t\t\t\t\t\tc/include/brotli/port.h c/include/brotli/types.h\n\t\t\t\t\tDESTINATION include/brotli)\n\tinstall(\n\t\tFILES \${CMAKE_CURRENT_BINARY_DIR}/libbrotlicommon.pc\n\t\t\t\t\t\${CMAKE_CURRENT_BINARY_DIR}/libbrotlidec.pc\n\t\t\t\t\t\${CMAKE_CURRENT_BINARY_DIR}/libbrotlienc.pc DESTINATION lib/pkgconfig)\nendif()\n\n# Installation\nif(NOT BROTLI_EMSCRIPTEN)\n\tif(NOT BROTLI_BUNDLED_MODE)\n\t\tinstall(TARGETS brotli RUNTIME DESTINATION \"\${CMAKE_INSTALL_BINDIR}\")\n\n\t\tinstall(\n\t\t\tTARGETS \${BROTLI_LIBRARIES_CORE}\n\t\t\tARCHIVE DESTINATION \"\${CMAKE_INSTALL_LIBDIR}\"\n\t\t\tLIBRARY DESTINATION \"\${CMAKE_INSTALL_LIBDIR}\"\n\t\t\tRUNTIME DESTINATION \"\${CMAKE_INSTALL_BINDIR}\")\n\n\t\tinstall(\n\t\t\tTARGETS \${BROTLI_LIBRARIES_CORE_STATIC}\n\t\t\tARCHIVE DESTINATION \"\${CMAKE_INSTALL_LIBDIR}\"\n\t\t\tLIBRARY DESTINATION \"\${CMAKE_INSTALL_LIBDIR}\"\n\t\t\tRUNTIME DESTINATION \"\${CMAKE_INSTALL_BINDIR}\")\n\n\t\tinstall(DIRECTORY \${BROTLI_INCLUDE_DIRS}/brotli\n\t\t\t\t\t\tDESTINATION \"\${CMAKE_INSTALL_INCLUDEDIR}\")\n\tendif() # BROTLI_BUNDLED_MODE\nendif() # BROTLI_EMSCRIPTEN\n\n# Tests\n\n# If we're targeting Windows but not running on Windows, we need Wine to run the\n# tests...\nif(NOT BROTLI_DISABLE_TESTS)\n\tif(WIN32 AND NOT CMAKE_HOST_WIN32)\n\t\tfind_program(BROTLI_WRAPPER NAMES wine)\n\n\t\tif(NOT BROTLI_WRAPPER)\n\t\t\tmessage(STATUS \"wine not found, disabling tests\")\n\t\t\tset(BROTLI_DISABLE_TESTS TRUE)\n\t\tendif()\n\tendif()\nendif()\n\n# If our compiler is a cross-compiler that we know about (arm/aarch64), then we\n# need to use qemu to execute the tests.\nif(NOT BROTLI_DISABLE_TESTS)\n\tif(\"\${CMAKE_C_COMPILER}\" MATCHES \"^.*/arm-linux-gnueabihf-.*\$\")\n\t\tmessage(STATUS \"Detected arm-linux-gnueabihf cross-compilation\")\n\t\tset(BROTLI_WRAPPER \"qemu-arm\")\n\t\tset(BROTLI_WRAPPER_LD_PREFIX \"/usr/arm-linux-gnueabihf\")\n\tendif()\n\n\tif(\"\${CMAKE_C_COMPILER}\" MATCHES \"^.*/arm-linux-gnueabi-.*\$\")\n\t\tmessage(STATUS \"Detected arm-linux-gnueabi cross-compilation\")\n\t\tset(BROTLI_WRAPPER \"qemu-arm\")\n\t\tset(BROTLI_WRAPPER_LD_PREFIX \"/usr/arm-linux-gnueabi\")\n\tendif()\n\n\tif(\"\${CMAKE_C_COMPILER}\" MATCHES \"^.*/aarch64-linux-gnu-.*\$\")\n\t\tmessage(STATUS \"Detected aarch64-linux-gnu cross-compilation\")\n\t\tset(BROTLI_WRAPPER \"qemu-aarch64\")\n\t\tset(BROTLI_WRAPPER_LD_PREFIX \"/usr/aarch64-linux-gnu\")\n\tendif()\nendif()\n\nif(NOT BROTLI_DISABLE_TESTS)\n\tinclude(CTest)\n\tenable_testing()\n\n\tset(ROUNDTRIP_INPUTS\n\t\t\ttests/testdata/alice29.txt\n\t\t\ttests/testdata/asyoulik.txt\n\t\t\ttests/testdata/lcet10.txt\n\t\t\ttests/testdata/plrabn12.txt\n\t\t\tc/enc/encode.c\n\t\t\tc/common/dictionary.h\n\t\t\tc/dec/decode.c)\n\n\tforeach(INPUT \${ROUNDTRIP_INPUTS})\n\t\tget_filename_component(OUTPUT_NAME \"\${INPUT}\" NAME)\n\n\t\tset(OUTPUT_FILE \"\${CMAKE_CURRENT_BINARY_DIR}/\${OUTPUT_NAME}\")\n\t\tset(INPUT_FILE \"\${CMAKE_CURRENT_SOURCE_DIR}/\${INPUT}\")\n\n\t\tif(EXISTS \"\${INPUT_FILE}\")\n\t\t\tforeach(quality 1 6 9 11)\n\t\t\t\tadd_test(\n\t\t\t\t\tNAME \"\${BROTLI_TEST_PREFIX}roundtrip/\${INPUT}/\${quality}\"\n\t\t\t\t\tCOMMAND\n\t\t\t\t\t\t\"\${CMAKE_COMMAND}\" -DBROTLI_WRAPPER=\${BROTLI_WRAPPER}\n\t\t\t\t\t\t-DBROTLI_WRAPPER_LD_PREFIX=\${BROTLI_WRAPPER_LD_PREFIX}\n\t\t\t\t\t\t-DBROTLI_CLI=\$<TARGET_FILE:brotli> -DQUALITY=\${quality}\n\t\t\t\t\t\t-DINPUT=\${INPUT_FILE} -DOUTPUT=\${OUTPUT_FILE}.\${quality} -P\n\t\t\t\t\t\t\${CMAKE_CURRENT_SOURCE_DIR}/tests/run-roundtrip-test.cmake)\n\t\t\tendforeach()\n\t\telse()\n\t\t\tmessage(WARNING \"Test file \${INPUT} does not exist.\")\n\t\tendif()\n\tendforeach()\n\n\tfile(\n\t\tGLOB_RECURSE COMPATIBILITY_INPUTS\n\t\tRELATIVE \${CMAKE_CURRENT_SOURCE_DIR}\n\t\ttests/testdata/*.compressed*)\n\n\tforeach(INPUT \${COMPATIBILITY_INPUTS})\n\t\tadd_test(\n\t\t\tNAME \"\${BROTLI_TEST_PREFIX}compatibility/\${INPUT}\"\n\t\t\tCOMMAND\n\t\t\t\t\"\${CMAKE_COMMAND}\" -DBROTLI_WRAPPER=\${BROTLI_WRAPPER}\n\t\t\t\t-DBROTLI_WRAPPER_LD_PREFIX=\${BROTLI_WRAPPER_LD_PREFIX}\n\t\t\t\t-DBROTLI_CLI=\$<TARGET_FILE:brotli>\n\t\t\t\t-DINPUT=\${CMAKE_CURRENT_SOURCE_DIR}/\${INPUT} -P\n\t\t\t\t\${CMAKE_CURRENT_SOURCE_DIR}/tests/run-compatibility-test.cmake)\n\tendforeach()\nendif()\n\n# Generate a pkg-config files\n\nfunction(generate_pkg_config_path outvar path)\n\tstring(LENGTH \"\${path}\" path_length)\n\n\tset(path_args \${ARGV})\n\tlist(REMOVE_AT path_args 0 1)\n\tlist(LENGTH path_args path_args_remaining)\n\n\tset(\"\${outvar}\" \"\${path}\")\n\n\twhile(path_args_remaining GREATER 1)\n\t\tlist(GET path_args 0 name)\n\t\tlist(GET path_args 1 value)\n\n\t\tget_filename_component(value_full \"\${value}\" ABSOLUTE)\n\t\tstring(LENGTH \"\${value}\" value_length)\n\n\t\tif(path_length EQUAL value_length AND path STREQUAL value)\n\t\t\tset(\"\${outvar}\" \"\\\${\${name}}\")\n\t\t\tbreak()\n\t\telseif(path_length GREATER value_length)\n\t\t\t# We might be in a subdirectory of the value, but we have to be careful\n\t\t\t# about a prefix matching but not being a subdirectory (for example,\n\t\t\t# /usr/lib64 is not a subdirectory of /usr/lib). We'll do this by making\n\t\t\t# sure the next character is a directory separator.\n\t\t\tstring(SUBSTRING \"\${path}\" \${value_length} 1 sep)\n\t\t\tif(sep STREQUAL \"/\")\n\t\t\t\tstring(SUBSTRING \"\${path}\" 0 \${value_length} s)\n\t\t\t\tif(s STREQUAL value)\n\t\t\t\t\tstring(SUBSTRING \"\${path}\" \"\${value_length}\" -1 suffix)\n\t\t\t\t\tset(\"\${outvar}\" \"\\\${\${name}}\${suffix}\")\n\t\t\t\t\tbreak()\n\t\t\t\tendif()\n\t\t\tendif()\n\t\tendif()\n\n\t\tlist(REMOVE_AT path_args 0 1)\n\t\tlist(LENGTH path_args path_args_remaining)\n\tendwhile()\n\n\tset(\"\${outvar}\"\n\t\t\t\"\${\${outvar}}\"\n\t\t\tPARENT_SCOPE)\nendfunction(generate_pkg_config_path)\n\nfunction(transform_pc_file INPUT_FILE OUTPUT_FILE VERSION)\n\tfile(READ \${INPUT_FILE} TEXT)\n\n\tset(PREFIX \"\${CMAKE_INSTALL_PREFIX}\")\n\tstring(REGEX REPLACE \"@prefix@\" \"\${PREFIX}\" TEXT \${TEXT})\n\tstring(REGEX REPLACE \"@exec_prefix@\" \"\${PREFIX}\" TEXT \${TEXT})\n\n\tgenerate_pkg_config_path(LIBDIR \"\${CMAKE_INSTALL_FULL_LIBDIR}\" prefix\n\t\t\t\t\t\t\t\t\t\t\t\t\t \"\${PREFIX}\")\n\tstring(REGEX REPLACE \"@libdir@\" \"\${LIBDIR}\" TEXT \${TEXT})\n\n\tgenerate_pkg_config_path(INCLUDEDIR \"\${CMAKE_INSTALL_FULL_INCLUDEDIR}\" prefix\n\t\t\t\t\t\t\t\t\t\t\t\t\t \"\${PREFIX}\")\n\tstring(REGEX REPLACE \"@includedir@\" \"\${INCLUDEDIR}\" TEXT \${TEXT})\n\n\tstring(REGEX REPLACE \"@PACKAGE_VERSION@\" \"\${VERSION}\" TEXT \${TEXT})\n\n\tfile(WRITE \${OUTPUT_FILE} \${TEXT})\nendfunction()\n\ntransform_pc_file(\n\t\"scripts/libbrotlicommon.pc.in\"\n\t\"\${CMAKE_CURRENT_BINARY_DIR}/libbrotlicommon.pc\" \"\${BROTLI_VERSION}\")\n\ntransform_pc_file(\n\t\"scripts/libbrotlidec.pc.in\" \"\${CMAKE_CURRENT_BINARY_DIR}/libbrotlidec.pc\"\n\t\"\${BROTLI_VERSION}\")\n\ntransform_pc_file(\n\t\"scripts/libbrotlienc.pc.in\" \"\${CMAKE_CURRENT_BINARY_DIR}/libbrotlienc.pc\"\n\t\"\${BROTLI_VERSION}\")\n\nif(NOT BROTLI_EMSCRIPTEN)\n\tif(NOT BROTLI_BUNDLED_MODE)\n\t\tinstall(FILES \"\${CMAKE_CURRENT_BINARY_DIR}/libbrotlicommon.pc\"\n\t\t\t\t\t\tDESTINATION \"\${CMAKE_INSTALL_LIBDIR}/pkgconfig\")\n\t\tinstall(FILES \"\${CMAKE_CURRENT_BINARY_DIR}/libbrotlidec.pc\"\n\t\t\t\t\t\tDESTINATION \"\${CMAKE_INSTALL_LIBDIR}/pkgconfig\")\n\t\tinstall(FILES \"\${CMAKE_CURRENT_BINARY_DIR}/libbrotlienc.pc\"\n\t\t\t\t\t\tDESTINATION \"\${CMAKE_INSTALL_LIBDIR}/pkgconfig\")\n\tendif() # BROTLI_BUNDLED_MODE\nendif() # BROTLI_EMSCRIPTEN\n\nif(ENABLE_COVERAGE STREQUAL \"yes\")\n\tsetup_target_for_coverage(coverage test coverage)\nendif()\n"
-  )
+  if(NOT EXISTS "${CMAKE_SOURCE_DIR}/3rdparty/brotli/CMakeLists.txt")
+    if(NOT EXISTS "${CMAKE_SOURCE_DIR}/brotli-${BROTLI_VERSION}.tar.gz")
+      file(REMOVE_RECURSE "${CMAKE_SOURCE_DIR}/3rdparty/brotli")
+      file(DOWNLOAD "https://github.com/google/brotli/archive/v${BROTLI_VERSION}.tar.gz" "${CMAKE_SOURCE_DIR}/3rdparty/brotli-${BROTLI_VERSION}.tar.gz" SHOW_PROGRESS)
+    endif()
+
+    exec_program("${TAR}" ARGS -C "${CMAKE_SOURCE_DIR}/3rdparty" -xzf "${CMAKE_SOURCE_DIR}/3rdparty/brotli-${BROTLI_VERSION}.tar.gz")
+    file(RENAME "${CMAKE_SOURCE_DIR}/3rdparty/brotli-${BROTLI_VERSION}" "${CMAKE_SOURCE_DIR}/3rdparty/brotli")
+
+  endif() # file(READ "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/brotli.cmake.txt" BROTLI_CMAKELISTS_TXT) file(WRITE  "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/brotli/CMakeLists.txt"  "${BROTLI_CMAKELISTS_TXT}")
+  set(BROTLI_STATIC TRUE)
+  set(BROTLI_NO_INSTALL TRUE)
 
   add_subdirectory(3rdparty/brotli)
 endif(BUILD_BROTLI)
@@ -1177,7 +1263,7 @@ message("ZLIB_INCLUDE_DIR: ${ZLIB_INCLUDE_DIR}")
 
 set(iarray_SOURCES lib/cas.S)
 
-set(MODSUBDIRS alloc array binfmt buffer byte case cb cbmap charbuf coff dir dns elf env errmsg fmt gpio hashmap hmap http iarray ihex io json list map mmap ndelay omf open path pe playlist process range rdir safemult scan seek set sig slist socket str stralloc strarray strlist tai taia textbuf textcode uint16 uint32 uint64 unix wait xml ucs utf8)
+set(MODSUBDIRS alloc array binfmt buffer byte case cb cbmap charbuf coff dir dns elf env errmsg fmt gpio hashmap hmap http iarray ihex io json list map mmap ndelay omf open path pe playlist process range rdir safemult scan seek set sig slist socket ssl str stralloc strarray strlist tai taia textbuf textcode uint16 uint32 uint64 unix wait xml ucs utf8)
 
 foreach(LIBNAME ${MODSUBDIRS})
   file(GLOB MODHEADERS lib/${LIBNAME}.h lib/${LIBNAME}_*.h)
@@ -1204,6 +1290,12 @@ foreach(NETLIB dns http io ndelay socket)
   target_link_libraries(${NETLIB} ${LIBMSWSOCK})
 endforeach()
 
+if(BUILD_SSL)
+  set(LIBSSL libssl libcrypto)
+else(BUILD_SSL)
+  set(LIBSSL ${OPENSSL_SSL_LIBRARY} ${OPENSSL_CRYPTO_LIBRARY})
+endif(BUILD_SSL)
+
 target_link_libraries(unix stralloc buffer ndelay)
 target_link_libraries(array safemult byte str)
 target_link_libraries(binfmt mmap byte)
@@ -1217,7 +1309,7 @@ target_link_libraries(elf byte str range mmap uint64 uint32 uint16)
 target_link_libraries(fmt byte str uint64 uint32)
 target_link_libraries(gpio mmap)
 target_link_libraries(hmap str)
-target_link_libraries(http dns errmsg byte io scan socket stralloc str ${OPENSSL_LIBARRIES})
+target_link_libraries(http dns errmsg byte io scan socket stralloc str ${LIBSSL})
 target_link_libraries(io buffer iarray array byte fmt open taia ${LIBMSWSOCK})
 target_link_libraries(json charbuf hmap scan)
 target_link_libraries(map str)
@@ -1242,11 +1334,12 @@ target_link_libraries(ndelay socket)
 target_link_libraries(process wait errmsg)
 target_link_libraries(ihex scan byte)
 target_link_libraries(uint32 taia tai)
+target_link_libraries(ssl iarray)
 
 set(genmakefile_SOURCES mplab.c ini.c ini.h genmakefile.h debug.c debug.h)
 
 if(OPENSSL_LIB_DIR)
-  set(CMAKE_EXE_LINKER_FLAGS "-L${OPENSSL_LIB_DIR}")
+  set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -L${OPENSSL_LIB_DIR}")
 endif()
 
 if(CMAKE_BUILD_TYPE STREQUAL "")
@@ -1255,10 +1348,6 @@ endif()
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
   option(USE_EFENCE "Enable electric fence" OFF)
-endif()
-
-if(CMAKE_C_COMPILER MATCHES diet)
-  set(DIET TRUE)
 endif()
 
 if(USE_EFENCE)
@@ -1295,7 +1384,7 @@ function(add_program PROG)
   target_link_libraries(${PROG} ${DEPS} ${ELECTRICFENCE_LIBRARY} ${EXTRA_LIBRARIES})
   install(TARGETS ${PROG} DESTINATION bin)
   if(NOT EMSCRIPTEN AND OPENSSL_FOUND AND USE_SSL)
-    set_target_properties(${PROG} PROPERTIES LINK_FLAGS "-L${OPENSSL_LIB_DIR} -Wl,-rpath=${OPENSSL_LIB_DIR} ${EXE_LINKER_FLAGS}" COMPILE_FLAGS "")
+    set_target_properties(${PROG} PROPERTIES LINK_FLAGS "-L${OPENSSL_LIB_DIR} ${EXE_LINKER_FLAGS}" COMPILE_FLAGS "")
   endif(NOT EMSCRIPTEN AND OPENSSL_FOUND AND USE_SSL)
   if(EMSCRIPTEN)
     set_target_properties(${PROG} PROPERTIES SUFFIX ".${EMSCRIPTEN_EXE_SUFFIX}")
@@ -1332,11 +1421,19 @@ if(NOT LIBLZMA_LIBRARY)
   set(LIBLZMA_LIBRARY "${LIBLZMA_LIBRARY}")
 endif(NOT LIBLZMA_LIBRARY)
 
-set(COMPRESSION_LIBRARIES ${LIBLZMA_LIBRARY} ${ZLIB_LIBRARY} ${BZIP2_LIBRARY} ${BROTLI_LIBRARY})
+set(COMPRESSION_LIBRARIES ${LIBLZMA_LIBRARY} ${ZLIB_LIBRARY} ${BZIP2_LIBRARY} ${BROTLI_LIBRARY} ${LIBMATH})
 
 if(OPENSSL_LIBRARIES)
   set(CRYPTO_LIBRARIES ${OPENSSL_LIBRARIES} pthread ${LIBCOMPAT})
 endif(OPENSSL_LIBRARIES)
+
+if(LINK_STATIC)
+  message(STATUS "Static linking")
+  if(NOT CMAKE_EXE_LINKER_FLAGS MATCHES "-static")
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -static" CACHE STRING "Executable linker flags" FORCE)
+  endif(NOT CMAKE_EXE_LINKER_FLAGS MATCHES "-static")
+  dump(CMAKE_EXE_LINKER_FLAGS)
+endif(LINK_STATIC)
 
 add_program(binfmttest binfmt)
 if(USE_BZIP)
@@ -1369,13 +1466,13 @@ add_program(elfwrsec buffer alloc elf mmap)
 add_program(genmakefile sig set case errmsg strarray slist rdir dir path strlist hashmap hmap stralloc buffer mmap unix open scan fmt byte str array safemult alloc)
 add_program(piccfg ihex errmsg strarray slist rdir dir path strlist hashmap hmap stralloc buffer mmap unix open scan fmt byte str array safemult alloc)
 add_program(hexedit stralloc buffer array io errmsg mmap open path scan uint64 unix ${ZLIB_LIBRARY})
-add_program(httptest http dns stralloc buffer errmsg byte io socket alloc taia ${LIBMSWSOCK} ${CRYPTO_LIBRARIES} ${LIBDL} pthread)
+add_program(httptest http ssl dns stralloc buffer errmsg byte io socket alloc taia ${LIBSSL} ${LIBMSWSOCK} ${LIBDL} pthread)
 add_program(impgen pe buffer byte mmap open)
 add_program(jsontest json stralloc buffer byte charbuf fmt hmap mmap open)
 add_program(list-r path strarray strlist stralloc buffer array unix dir array fmt open str uint64 ${LIBADVAPI32})
 add_program(macho32list mmap uint32)
 if(USE_LZMA)
-  add_program(mediathek-list errmsg stralloc buffer alloc byte fmt http scan slist str unix strarray strlist ${LIBLZMA_LIBRARY} ${OPENSSL_LIBRARIES} ${CRYPTO_LIBRARIES} ${LIBDL} pthread)
+  add_program(mediathek-list errmsg stralloc buffer alloc byte fmt http scan slist str unix strarray strlist ${LIBLZMA_LIBRARY} ${LIBSSL} ${LIBDL} pthread)
 endif(USE_LZMA)
 
 add_program(mediathek-parser case ucs errmsg strarray strlist stralloc buffer array byte open str unix strlist)
@@ -1426,10 +1523,7 @@ add_program(testini ini.c ini.h hmap stralloc buffer mmap open uint16)
 add_program(logserial sig charbuf hmap path unix rdir dir errmsg io ndelay strarray stralloc buffer taia tai)
 add_program(tinyproxy process unix path wait range dns taia tai hmap env ndelay buffer strarray array strlist stralloc errmsg sig socket fmt scan io uint32)
 target_link_libraries(tinyproxy ${LIBMSWSOCK})
-if(NOT WIN32)
-  add_program(tcpproxy http io errmsg buffer open)
-endif(NOT WIN32)
-# add_program(redir http io ${LIBCOMPAT})
+# if(NOT WIN32) add_program(tcpproxy http io errmsg buffer open ) endif(NOT WIN32) add_program(redir http io ${LIBCOMPAT})
 
 add_program(parse strlist errmsg)
 add_program(testihex ihex stralloc buffer alloc mmap)

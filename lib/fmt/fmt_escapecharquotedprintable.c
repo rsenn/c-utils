@@ -1,7 +1,7 @@
 #include "../fmt.h"
 
 size_t
-fmt_escapecharquotedprintable(char* dest,   int c) {
+fmt_escapecharquotedprintable(char* dest, int c) {
   unsigned int ch = c;
   if(ch > 0xff)
     return 0;

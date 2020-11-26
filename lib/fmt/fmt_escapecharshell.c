@@ -7,7 +7,7 @@ void fmt_oct3(char* dest, unsigned char w);
 
 size_t
 fmt_escapecharshell(char* dest, int chr) {
-    unsigned int ch = chr;
+  unsigned int ch = chr;
 
   char c;
   if(ch > 0xff)

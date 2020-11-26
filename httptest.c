@@ -17,6 +17,8 @@
 #include "lib/case.h"
 #include "lib/buffer.h"
 #include "lib/getopt.h"
+#include "lib/ssl.h"
+
 #include <errno.h>
 #include <signal.h>
 #ifdef __ORANGEC__
@@ -125,6 +127,8 @@ main(int argc, char* argv[]) {
 #if !WINDOWS_NATIVE
   signal(SIGPIPE, SIG_IGN);
 #endif
+  ssl_init(0,0);
+  ssl_new_client(0);
 
   for(;;) {
     c = getopt_long(argc, argv, "ho:", opts, &index);

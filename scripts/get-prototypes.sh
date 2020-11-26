@@ -106,6 +106,8 @@ get_prototypes() {
   while :; do
     case "$1" in
       -[dx] | --debug) DEBUG=true; shift ;;
+      -D | --define) DEFS=${DEFS:+$DEFS }-D$2; shift 2 ;;
+      -D*) DEFS=${DEFS:+$DEFS }$1; shift ;;
       -A | --no-pad-args* | -*no*args*) PAD_ARGS=false; shift ;;
       -a | --pad-args* | -*args*) PAD_ARGS=true; shift ;;
       -r=* | --remove*=* | -R=*) REMOVE_NAMES=${1#*=}; shift ;;
@@ -124,6 +126,7 @@ get_prototypes() {
   add_arg() {
     CPROTO_ARGS="$CPROTO_ARGS$NL$*"
    }
+   add_arg $DEFS
   if [ "$DEBUG" = true ]; then
     exec 7>&2
   else
