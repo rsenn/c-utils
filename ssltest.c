@@ -72,8 +72,10 @@ ssltest_loop(fd_t s) {
           buffer_copy(buffer_2, &in);
           buffer_putnlflush(buffer_2);
         } else if(ret == -1) {
-          errmsg_warnsys("socket read error: ", 0);
-          return;
+          if(errno != EAGAIN) {
+            errmsg_warnsys("socket read error: ", 0);
+            return;
+          }
         } else {
           errmsg_warn("socket eof", 0);
           return;
