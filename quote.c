@@ -338,12 +338,12 @@ main(int argc, char* argv[]) {
     switch(c) {
       case 'i': in_place = 1; break;
       case 'h': usage(argv[0]); return 0;
-      case 'a': add_quotes = unix_optarg; break;
-      case 't': scan_uint(unix_optarg, &tab_size); break;
+      case 'a': add_quotes = argv[unix_optind]; break;
+      case 't': scan_uint(argv[unix_optind], &tab_size); break;
       case 'q':
-        stralloc_ready(&quote_chars, str_len(unix_optarg) * 3 + 1);
+        stralloc_ready(&quote_chars, str_len(argv[unix_optind]) * 3 + 1);
         quote_chars.len = quote_chars.a;
-        scan_cescape(unix_optarg, quote_chars.s, &quote_chars.len);
+        scan_cescape(argv[unix_optind], quote_chars.s, &quote_chars.len);
         break;
       case 'n': quote_newline = true; break;
       case 9: quote_tabs = true; break;
@@ -355,7 +355,7 @@ main(int argc, char* argv[]) {
         add_quotes = "\"";
        // tab_size = 2;
         quote_newline = quote_tabs = true;
-        stralloc_copys(&quote_chars, "$");
+        stralloc_copys(&quote_chars, "$\t");
         break;
       case 'c': stralloc_copys(&quote_chars, "\""); break;
       case 'J': fmt_call = (fmt_function*)&fmt_escapecharjson; break;
