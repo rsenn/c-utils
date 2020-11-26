@@ -300,7 +300,7 @@ log_tx(const char* q,
 
 void
 log_cachedanswer(const char* q, const char type[2], const char* cached, size_t cachedlen) {
-  int i;
+  size_t i;
   log_string("cached ");
   log_logtype(type);
   log_space();
@@ -431,7 +431,7 @@ log_rr(const char server[16],
        const char* buf,
        unsigned int len,
        unsigned int ttl) {
-  int i;
+  size_t i;
 
   log_string("rr ");
   log_ip(server, 4);

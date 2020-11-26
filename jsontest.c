@@ -47,7 +47,7 @@ main(int argc, char* argv[]) {
 
   // buffer_mmapprivate(&infile, argc > 1 ? argv[1] : "../dirlist/test.json");
   //
-  charbuf_init(&infile, (read_fn*)&read, fd);
+  charbuf_init(&infile, (read_fn*)(void*)&read, fd);
 
   doc = json_read_tree(&infile);
 

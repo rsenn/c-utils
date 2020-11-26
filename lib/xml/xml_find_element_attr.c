@@ -27,7 +27,7 @@ xml_find_element_attr(xmlnode* node, const char* tag, const char* attr, const ch
 
 xmlnode*
 xml_find_with_attrs_l(xmlnode* node, const strlist* attrs) {
-  return xml_find_pred_1(node, (pred_fn_t*)&xml_has_attr, attrs);
+  return xml_find_pred_1(node, (xml_pred_t*)(void*)&xml_has_attr, attrs);
 }
 
 xmlnode*
@@ -50,7 +50,7 @@ xml_find_all_attrs(xmlnode* node, const char* attrs) {
   // strlist_froms(&attrlist, attrs, '|');
   stralloc_copys(&attrlist.sa, attrs);
 
-  r = xml_find_all_2(node, (xml_pred_t*)&xml_has_attr, NULL, &attrlist);
+  r = xml_find_all_2(node, (xml_pred_t*)(void*)&xml_has_attr, NULL, &attrlist);
   strlist_free(&attrlist);
   return r;
 }

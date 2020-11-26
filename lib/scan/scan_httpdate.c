@@ -1,13 +1,10 @@
+#define _GNU_SOURCE
 #include "../windoze.h"
 
-//#undef _ATTRIBUTE
-//#define _ATTRIBUTE(x)
 #include <stdlib.h>
-//#include <stdio.h>
 #include <time.h>
 
 #include "../byte.h"
-//#define __deprecated__(x)
 #include "../byte.h"
 #include "../case.h"
 #include "../scan.h"
@@ -98,10 +95,10 @@ scan_httpdate(const char* in, time_t* t) {
   }
 done:
   x.tm_wday = x.tm_yday = x.tm_isdst = 0;
-#if defined(__dietlibc__) || defined(__GLIBC__)
-  *t = timegm(&x);
-#elif WINDOWS
+#if WINDOWS || __unix__
   *t = mktime(&x);
+#elif defined(__dietlibc__) || defined(__GLIBC__)
+  *t = timegm(&x);
 #else
   {
 #ifdef sgi

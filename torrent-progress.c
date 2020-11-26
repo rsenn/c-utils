@@ -168,7 +168,7 @@ static int verbose = 0, fraction = 1, space = 1;
 int
 main(int argc, char* argv[]) {
   int ai;
-  infile.op = (buffer_op_proto*)&read;
+  infile.op = (buffer_op_proto*)(void*)&read;
   for(ai = 1; ai < argc; ++ai) {
     char* av = argv[ai];
 

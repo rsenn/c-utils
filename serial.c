@@ -240,7 +240,7 @@ serial_wait_until_sent(int fd) {
 }
 
 unsigned int
-serial_write_raw(int fd, const char* d, int len) {
+serial_write_raw(int fd, const char* d, unsigned int len) {
   unsigned int processed = 0;
   time_t start = time(NULL);
 
@@ -258,7 +258,7 @@ serial_write_raw(int fd, const char* d, int len) {
 }
 
 unsigned int
-serial_read_raw(int fd, char* d, int len) {
+serial_read_raw(int fd, char* d, unsigned int len) {
   unsigned int processed = 0;
   time_t start = time(NULL);
 

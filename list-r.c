@@ -429,7 +429,7 @@ read_etc(strarray* out, const char* path) {
 static char*
 resolve_etc(const strarray* arr, uint32 id) {
   uint64 len = array_length(arr, sizeof(char*));
-  if(id >= 0 && id < len)
+  if(id < len)
     return *(char**)array_get(arr, sizeof(char*), id);
   return 0;
 }
@@ -738,7 +738,7 @@ list_file(stralloc* path, const char* name, dir_type_t dtype, long depth, dev_t 
   if(match)
     return 0;
 
-  if(!is_dir && (opt_minsize != -1 && size < opt_minsize))
+  if(!is_dir && (opt_minsize != -1 && size < (uint64)opt_minsize))
     show = 0;
 
   if(dtype && (dtype & opt_types) == 0)

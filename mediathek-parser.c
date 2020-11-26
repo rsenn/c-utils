@@ -157,7 +157,7 @@ get_domain(const char* url, stralloc* d) {
  */
 void
 cleanup_text(char** t) {
-  int i;
+  size_t i;
   size_t len = str_len(*t);
   char c, prev = 'x';
   stralloc out;
@@ -484,7 +484,7 @@ process_input(buffer* input) {
     if(fields.sa.s) {
       strarray arr;
 
-      const char** v = strlist_to_argv(&fields);
+      char** v = strlist_to_argv(&fields);
       int c = strlist_count(&fields);
       strarray_init(&arr);
       strarray_from_argv(c > 21 ? 21 : c, v, &arr);

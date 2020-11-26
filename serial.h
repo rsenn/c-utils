@@ -86,7 +86,7 @@ char** get_serial_ports(void);
  * \param length maximum number of bytes to read
  * \returns number of bytes really read
  */
-unsigned int serial_read_raw(int fd, char* data, int length);
+unsigned int serial_read_raw(int fd, char* data, unsigned int length);
 
 /*!
  * \brief write to an open serial port
@@ -95,7 +95,7 @@ unsigned int serial_read_raw(int fd, char* data, int length);
  * \param length number of bytes to write
  * \returns number of bytes really written
  */
-unsigned int serial_write_raw(int fd, const char* data, int length);
+unsigned int serial_write_raw(int fd, const char* data, unsigned int length);
 
 /*!
  * \brief wait until data is sent

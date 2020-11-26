@@ -176,7 +176,7 @@ main(int argc, char* argv[]) {
   int c;
   int index = 0;
   const char* input_file;
-  const char* tmpl = 0;
+  char* tmpl = 0;
   struct longopt opts[] = {{"help", 0, NULL, 'h'},
                            {"single-quote", 0, &quote_char, '\''},
                            {"double-quote", 0, &quote_char, '"'},

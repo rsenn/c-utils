@@ -81,7 +81,7 @@ eat_line(const char** s, size_t n, buffer* out) {
   size_t p, q;
   const char* x = *s;
   p = scan_noncharsetnskip(x, "\n\r", n);
-  if(p >= 0) {
+  if(p < n) {
     q = scan_charsetnskip(&x[p], "\n\r", n - p);
     if(p == 0 && q == n)
       return p;
@@ -234,7 +234,7 @@ main(int argc, char* argv[]) {
     optind++;
   }
 
-  charbuf_init(&input, (read_fn*)&read, in_fd);
+  charbuf_init(&input, (read_fn*)(void*)&read, in_fd);
 
 again:
   if(in_place) {

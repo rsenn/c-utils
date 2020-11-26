@@ -9,7 +9,7 @@
 
 struct indent_write {
   buffer_op_proto* realop;
-  int level;
+  size_t level;
   const char* indent;
 };
 

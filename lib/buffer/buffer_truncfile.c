@@ -27,7 +27,7 @@ buffer_truncfile(buffer* b, const char* fn) {
   b->n = 0;
   b->a = BUFFER_OUTSIZE;
   b->x = (char*)alloc(b->a);
-  b->op = (buffer_op_proto*)&write;
+  b->op = (buffer_op_proto*)(void*)&write;
   b->deinit = (void (*)()) & buffer_free;
   return 0;
 }

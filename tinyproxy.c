@@ -119,7 +119,7 @@ size_t sockbuf_fmt_addr(socketbuf_t*, char* dest, char sep);
 void sockbuf_put_addr(buffer*, socketbuf_t* sb);
 void sockbuf_close(socketbuf_t*);
 void sockbuf_check(socketbuf_t*);
-void sockbuf_log_data(socketbuf_t*, bool send, char* x, ssize_t len);
+void sockbuf_log_data(socketbuf_t*, bool send, char* x, size_t len);
 ssize_t sockbuf_forward_data(socketbuf_t*, socketbuf_t* destination);
 
 fd_t server_socket(void);
@@ -448,7 +448,7 @@ connection_open_log(connection_t* c, const char* prefix, const char* suffix) {
     stralloc_catm_internal(&filename, prefix, "-", 0);
   stralloc_catb(&filename, buf, sockbuf_fmt_addr(&c->client, buf, '-'));
   stralloc_catc(&filename, '-');
-  if(c->proxy.af == -1) {
+  if(c->proxy.af == 0) {
     socketbuf_t* sb = &c->proxy;
     if((ret = socket_local6(sb->sock, sb->addr, &sb->port, &sb->scope_id)) == 0)
       sb->af = AF_INET6;
@@ -526,7 +526,7 @@ socket_connect(socketbuf_t* sb) {
   af = sb->af;
   addr = sb->addr;
 
-  if(af == -1) {
+  if(af == 0) {
     dns_response_t* res;
     if((res = dns_lookup(&sb->host)) == NULL) {
       errmsg_warnsys("ERROR: resolving ", stralloc_cstr(&sb->host), ": ", NULL);
@@ -597,7 +597,7 @@ sockbuf_fmt_addr(socketbuf_t* sb, char* dest, char sep) {
   if(sb->host.len > 0) {
     byte_copy(dest, sb->host.len, sb->host.s);
     n += sb->host.len;
-  } else if(sb->af != -1) {
+  } else if(sb->af ) {
     if(sb->af == AF_INET6)
       n = fmt_ip6(dest, sb->addr);
     else
@@ -649,12 +649,12 @@ sockbuf_check(socketbuf_t* sb) {
 }
 
 void
-sockbuf_log_data(socketbuf_t* sb, bool send, char* x, ssize_t len) {
+sockbuf_log_data(socketbuf_t* sb, bool send, char* x, size_t len) {
   while(len > 0) {
     size_t maxlen, pos, end, n;
     bool escape = !line_buffer;
 
-    end = n = line_buffer ? byte_chrs(x, len, "\r\n", 2) : len;
+    end = n = line_buffer ? byte_chrs(x, len, "\r\n", 2) : (size_t)len;
     while(n < len && byte_chr("\r\n", 2, x[n]) < 2) {
       n++;
       if(x[n - 1] == '\n')
@@ -690,7 +690,7 @@ sockbuf_log_data(socketbuf_t* sb, bool send, char* x, ssize_t len) {
     if(pos == log.p)
       pos = 0;
 
-    maxlen = max_length > 0 ? (max_length - (log.p - pos)) : -1;
+    maxlen = max_length > 0 ? (max_length - (log.p - pos)) : (size_t)-1;
 
     pos = log.p;
 
@@ -733,7 +733,7 @@ sockbuf_forward_data(socketbuf_t* source, socketbuf_t* destination) {
     if(n == -1 && errno == EAGAIN)
       return written;
   }
-  return n <= 0 ? n : written;
+  return n <= 0 ? n : (ssize_t)written;
 }
 
 fd_t
@@ -840,7 +840,7 @@ server_finalize() {
     if(!(fstat(file, &st) == 0 && (filesize = st.st_size)))
       filesize = 0;
     //    t = st.st_ctime;
-    buffer_init_free(&w, (buffer_op_proto*)&write, wr, alloc(1024), 1024);
+    buffer_init_free(&w, (buffer_op_proto*)(void*)&write, wr, alloc(1024), 1024);
     buffer_puts(&w, "\n-- File '");
     buffer_put(&w, s, n);
     buffer_puts(&w, "' -- ");
@@ -1247,7 +1247,7 @@ main(int argc, char* argv[]) {
     return -SYNTAX_ERROR;
   }
 
-  if(server.port < 0) {
+  if(server.port == 0) {
     usage(argv[0]);
     return server.port;
   }

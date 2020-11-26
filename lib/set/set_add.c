@@ -7,7 +7,7 @@ void set_free_array(set_t* set);
 
 static int
 set_realloc(set_t* set) {
-  int set_index;
+  uint32 set_index;
   bucket_t* b;
 
   // allocate new set

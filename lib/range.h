@@ -55,7 +55,7 @@ range_add(range* r, void** ptr, size_t n) {
 #define range_foreach(r, var)                                                                      \
   for(var = range_start(r); var != range_end(r); var = range_next(r, var))
 
-void range_rotate(range*, size_t n);
+void range_rotate(range*, ssize_t n);
 
 #ifdef __cplusplus
 }

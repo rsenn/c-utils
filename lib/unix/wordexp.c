@@ -115,7 +115,7 @@ wordexp(const char* words, wordexp_t* we, int flags) {
 
 void
 wordfree(wordexp_t* we) {
-  int i;
+  size_t i;
 
   for(i = 0; i < we->we_wordc; i++) {
     free(we->we_wordv[i]);

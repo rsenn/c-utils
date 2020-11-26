@@ -4,7 +4,7 @@
 
 char**
 set_toarray(const set_t* set) {
-  int index, i = 0;
+  uint32 index, i = 0;
   bucket_t* b;
   char** array = malloc(sizeof(void*) * (set->entries + 1));
   assert(array);

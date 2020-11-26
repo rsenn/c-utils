@@ -129,7 +129,7 @@ eat_line(const char** s, size_t n, buffer* out) {
   size_t p, q;
   const char* x = *s;
   p = scan_noncharsetnskip(x, "\n\r", n);
-  if(p >= 0) {
+  if(p < n) {
     q = scan_charsetnskip(&x[p], "\n\r", n - p);
     if(p == 0 && q == n)
       return p;
@@ -245,7 +245,7 @@ run_quote(buffer* in, buffer* out) {
         ws = false;
     }
 
-    if(ws && tab_size > 0 && buf.len == tab_size - 1) {
+    if(ws && tab_size > 0 && buf.len == (size_t)(tab_size - 1)) {
       c = '\t';
       stralloc_zero(&buf);
     }
@@ -300,7 +300,7 @@ main(int argc, char* argv[]) {
   stralloc data;
   size_t n;
   const char* x;
-  const char* tmpl = "/tmp/quote.XXXXXX";
+   char* tmpl = "/tmp/quote.XXXXXX";
 
   struct longopt opts[] = {{"help", 0, NULL, 'h'},
                            {"in-place", 0, NULL, 'i'},
@@ -358,12 +358,12 @@ main(int argc, char* argv[]) {
         stralloc_copys(&quote_chars, "$\t");
         break;
       case 'c': stralloc_copys(&quote_chars, "\""); break;
-      case 'J': fmt_call = (fmt_function*)&fmt_escapecharjson; break;
-      case 'P': fmt_call = (fmt_function*)&fmt_escapecharquotedprintable; break;
-      case 'S': fmt_call = (fmt_function*)&fmt_escapecharshell; break;
-      case 'Q': fmt_call = (fmt_function*)&fmt_escapecharquotedshell; break;
-      case 'D': fmt_call = (fmt_function*)&fmt_escapechardoublequotedshell; break;
-      case 'X': fmt_call = (fmt_function*)&fmt_escapecharxml; break;
+      case 'J': fmt_call = (fmt_function*)(void*)&fmt_escapecharjson; break;
+      case 'P': fmt_call = (fmt_function*)(void*)&fmt_escapecharquotedprintable; break;
+      case 'S': fmt_call = (fmt_function*)(void*)&fmt_escapecharshell; break;
+      case 'Q': fmt_call = (fmt_function*)(void*)&fmt_escapecharquotedshell; break;
+      case 'D': fmt_call = (fmt_function*)(void*)&fmt_escapechardoublequotedshell; break;
+      case 'X': fmt_call = (fmt_function*)(void*)&fmt_escapecharxml; break;
 
       default: usage(argv[0]); return 1;
     }
@@ -400,7 +400,7 @@ main(int argc, char* argv[]) {
     unix_optind++;
   }
 
-  buffer_init_free(&input, (buffer_op_proto*)&read, in_fd, alloc(1024), 1024);
+  buffer_init_free(&input, (buffer_op_proto*)(void*)&read, in_fd, alloc(1024), 1024);
 
 again:
   if(in_place) {

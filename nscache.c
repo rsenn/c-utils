@@ -204,7 +204,8 @@ udp_respond(int j) {
 
 void
 udp_new(void) {
-  int j, i, len;
+  size_t j, i, len;
+  ssize_t ret;
   struct udpclient* x;
   char *q = 0, qtype[2], qclass[2];
 
@@ -224,8 +225,9 @@ udp_new(void) {
   x = u + j;
   taia_now(&x->start);
 
-  if((len = socket_recv6(udp53, buf, sizeof buf, x->ip, &x->port, &x->scope_id)) == -1)
+  if((ret = socket_recv6(udp53, buf, sizeof buf, x->ip, &x->port, &x->scope_id)) == -1)
     return;
+  len = (size_t)ret;
   if(len >= sizeof buf)
     return;
   if(x->port < 1024)

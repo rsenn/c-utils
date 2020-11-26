@@ -331,7 +331,7 @@ term_restore(fd_t fd, const struct termios* state) {
 
   /* Restore terminal state. */
   do {
-    result = tcsetattr(fd, TCSAFLUSH, state);
+    result = tcsetattr(fd, TCSAFLUSH, (struct termios*)state);
   } while(result == -1 && errno == EINTR);
 }
 
@@ -424,7 +424,7 @@ process_loop(fd_t serial_fd, int64 timeout) {
 
     if((x = mmap_read(send_file, &n))) {
       buffer_init_free(
-          &send_buf, (buffer_op_proto*)&write, serial_fd, alloc_zero(max(n, 1024)), max(n, 1024));
+          &send_buf, (buffer_op_proto*)(void*)&write, serial_fd, alloc_zero(max(n, 1024)), max(n, 1024));
       buffer_put(&send_buf, x, n);
       mmap_unmap(x, n);
     }

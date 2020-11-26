@@ -3,7 +3,7 @@
 #include "../byte.h"
 
 void
-range_rotate(range* r, size_t n) {
+range_rotate(range* r, ssize_t n) {
   char *x, *y;
   size_t num_elements, size, bytes;
 
@@ -12,7 +12,7 @@ range_rotate(range* r, size_t n) {
   if(n < 0)
     n = num_elements + n;
 
-  if(n > 0 && n < num_elements) {
+  if((size_t)n > 0 && (size_t)n < num_elements) {
     bytes = n * r->elem_size;
     size = r->end - r->start;
 

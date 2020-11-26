@@ -115,7 +115,7 @@ unit_test_tmpfile(buffer* b, char** tmpl) {
     exit(EXIT_FAILURE);
   }
   buffer_free(b);
-  buffer_init(b, (buffer_op_proto*)&write, fd, malloc(1024), 1024);
+  buffer_init(b, (buffer_op_proto*)(void*)&write, fd, malloc(1024), 1024);
   b->deinit = &unit_test_closetemp;
   return b;
 }

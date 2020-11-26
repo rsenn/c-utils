@@ -2,6 +2,7 @@
 #include "ini.h"
 #include "map.h"
 #include "mplab.h"
+#include "lib/set.h"
 
 static void
 make_fileno(stralloc* sa, int i) {
@@ -84,11 +85,11 @@ static void set_debug(MAP_T map);
 
 void
 output_mplab_project(buffer* b, MAP_T* _rules, MAP_T* vars, const strlist* include_dirs) {
-  MAP_PAIR_T it;
+ MAP_PAIR_T it;
   MAP_T toolcfg;
   strlist incdirs, srcdirs;
   const char *dir, *s;
-  char** p;
+  char** p=0;
   size_t n;
   stralloc sa, file, dirname;
   mplab_config_t mplab_cfg = {.warning_level = (is_debug() ? 3 : -3),
@@ -195,6 +196,9 @@ output_mplab_project(buffer* b, MAP_T* _rules, MAP_T* vars, const strlist* inclu
 
   section = ini_new(&section->next, "FILE_INFO");
   unsigned int i = 0, num_sources = 0;
+  {
+  set_iterator_t it;
+  const char* x ;
 
   /*  buffer_puts(b, "; Number of rules: ");
     buffer_putuint(b, hmap_count(rules));
@@ -202,17 +206,17 @@ output_mplab_project(buffer* b, MAP_T* _rules, MAP_T* vars, const strlist* inclu
 
   stralloc_zero(&incdirs.sa);
 
-  strarray_foreach(&srcs, p) {
-    s = *p;
+   set_foreach(&srcs, it, x, n) {
+    s = x;
     if(!is_source(s) && num_sources == 0)
       num_sources = i;
     stralloc_zero(&sa);
     stralloc_copy(&sa, &dirs.this.sa);
     stralloc_catc(&sa, '/');
-    stralloc_cats(&sa, *p);
+    stralloc_catb(&sa, x, n);
     stralloc_nul(&sa);
     stralloc_zero(&dirname);
-    path_dirname(*p, &dirname);
+    path_dirname(s, &dirname);
     stralloc_nul(&dirname);
     s = dirname.s;
     n = str_rchrs(dirname.s, "/\\", 2);
@@ -240,7 +244,7 @@ output_mplab_project(buffer* b, MAP_T* _rules, MAP_T* vars, const strlist* inclu
     ini_set_sa(file_subfolders, &sa, &file);
     stralloc_free(&file);
   }
-
+  }
   stralloc_nul(&incdirs.sa);
   stralloc_nul(&srcdirs.sa);
 

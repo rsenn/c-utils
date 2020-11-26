@@ -93,11 +93,11 @@ response_rstart(response* resp, const char* d, const char type[2], uint32 ttl) {
 
 void
 response_rfinish(response* resp, int x) {
-  assert(resp->pos > x + 1);
+  assert(resp->pos > (unsigned)x + 1);
 
   uint16_pack_big(&resp->buf[resp->dpos - 2], resp->pos - resp->dpos);
-  if(!++resp->buf[x + 1])
-    ++resp->buf[x];
+  if(!++resp->buf[(unsigned)x + 1])
+    ++resp->buf[(unsigned)x];
 
   buffer_puts(buffer_2, "response ");
   response_dump(resp);
