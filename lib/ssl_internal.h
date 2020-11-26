@@ -15,6 +15,7 @@ typedef struct {
   /* EVP_PKEY* key;
    X509* certificate;*/
   want_func *wantread, *wantwrite;
+  char errstr[32];
 } ssl_instance;
 
 extern const char *ssl_key, *ssl_certificate;
@@ -28,6 +29,9 @@ ssl_instance* ssl_instance_get(fd_t fd);
 ssl_instance* ssl_instance_new(fd_t fd);
 ssize_t ssl_instance_return(ssl_instance* i, int ret);
 ssl_ctx_t* ssl_context(ssl_method_t const* method);
-const char*   ssl_instance_error(ssl_instance* i);
+const char* ssl_instance_error(ssl_instance* i);
+int ssl_instance_errno(ssl_instance* i);
+void ssl_instance_debug(ssl_instance* i);
+int ssl_instance_handshake(ssl_instance* i);
 
 #endif

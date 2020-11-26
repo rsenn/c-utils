@@ -13,7 +13,7 @@ SSL_CTX *ssl_client_ctx = 0, *ssl_server_ctx = 0;
 
 int
 ssl_verify(int ok, X509_STORE_CTX* cert) {
-  buffer_puts(buffer_2, "ssl_verify callback ok=");
+  buffer_puts(buffer_2, "verify callback ok=");
   buffer_putlong(buffer_2, ok);
   buffer_puts(buffer_2, " cert=");
   buffer_putptr(buffer_2, cert);
@@ -63,16 +63,20 @@ ssl_context(ssl_method_t const* method) {
 
 int
 ssl_init(const char* key_file, const char* cert_file) {
+
 #if OPENSSL_API_COMPAT >= 0x10100000L
   const OPENSSL_INIT_SETTINGS* settings = OPENSSL_INIT_new();
-  OPENSSL_init_ssl(OPENSSL_INIT_LOAD_SSL_STRINGS | OPENSSL_INIT_LOAD_CRYPTO_STRINGS, settings);
+  OPENSSL_init_ssl(OPENSSL_INIT_LOAD_SSL_STRINGS | OPENSSL_INIT_LOAD_CRYPTO_STRINGS |
+                       OPENSSL_INIT_ADD_ALL_CIPHERS,
+                   settings);
 #else
   SSL_library_init();
-  OpenSSL_add_all_algorithms();
+  ERR_load_crypto_strings();
   SSL_load_error_strings();
+  OpenSSL_add_all_algorithms();
 #endif
   /* method = SSLv23_client_method();
-  method = TLSv1_2_client_method();*/
+   method = TLSv1_2_client_method();*/
   ssl_client_method = TLS_client_method();
   ssl_server_method = TLS_server_method();
 

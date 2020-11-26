@@ -75,6 +75,9 @@ void io_dontwantwrite(fd_t d);
 void io_onlywantread(fd_t);
 void io_onlywantwrite(fd_t);
 
+int io_get_wantread(fd_t d);
+int io_get_wantwrite(fd_t d);
+
 void io_wait();
 void io_waituntil(tai6464 t);
 int64 io_waituntil2(int64 milliseconds);

@@ -11,6 +11,10 @@ ssl_accept(fd_t fd) {
   assert(i);
   assert(i->ssl);
 
-  return ssl_instance_return(i, SSL_accept(i->ssl));
+  if(ssl_instance_return(i, SSL_accept(i->ssl)) == 1)
+    return 1;
+  if((errno = ssl_instance_errno(i)))
+    return -1;
+  return 0;
 }
 #endif

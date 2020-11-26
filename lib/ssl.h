@@ -24,6 +24,7 @@ ssize_t ssl_read(fd_t fd, void* data, size_t len);
 ssl_t* ssl_server(fd_t fd);
 int ssl_verify(int ok, ssl_cert_t* cert);
 ssize_t ssl_write(fd_t fd, const void* data, size_t len);
+int ssl_established(fd_t fd);
 
 #ifdef __cplusplus
 }

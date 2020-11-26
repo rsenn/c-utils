@@ -6,15 +6,11 @@
 #include <openssl/err.h>
 
 int
-ssl_connect(fd_t fd) {
+ssl_established(fd_t fd) {
   ssl_instance* i = iarray_get(&ssl_list, fd);
   assert(i);
   assert(i->ssl);
 
-  if(ssl_instance_return(i, SSL_connect(i->ssl)) == 1)
-    return 1;
-  if((errno = ssl_instance_errno(i)))
-    return -1;
-  return 0;
+  return SSL_is_init_finished(i->ssl);
 }
 #endif

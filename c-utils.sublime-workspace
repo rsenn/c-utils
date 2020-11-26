@@ -29,7 +29,7 @@
 			"file": "lib/ssl.h",
 			"settings":
 			{
-				"buffer_size": 157,
+				"buffer_size": 750,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
@@ -38,7 +38,7 @@
 			"file": "lib/ssl/ssl_new.c",
 			"settings":
 			{
-				"buffer_size": 342,
+				"buffer_size": 1211,
 				"line_ending": "Unix"
 			}
 		},
@@ -547,6 +547,10 @@
 						},
 						"selection":
 						[
+							[
+								0,
+								0
+							]
 						],
 						"settings":
 						{
@@ -588,15 +592,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 157,
+						"buffer_size": 750,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								98,
-								98
+								0,
+								0
 							]
 						],
 						"settings":
@@ -617,21 +621,23 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 342,
+						"buffer_size": 1211,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								340,
-								340
+								0,
+								0
 							]
 						],
 						"settings":
 						{
-							"function_name_status_row": 11,
-							"syntax": "Packages/C Improved/C Improved.tmLanguage"
+							"function_name_status_row": -1,
+							"syntax": "Packages/C Improved/C Improved.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
 						"translation.y": 0.0,

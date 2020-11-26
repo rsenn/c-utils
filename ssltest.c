@@ -1,3 +1,4 @@
+#include "lib/stralloc.h"
 #include "lib/buffer.h"
 #include "lib/unix.h"
 #include "lib/errmsg.h"
@@ -9,6 +10,8 @@
 #include "lib/socket.h"
 #include "lib/ndelay.h"
 #include "lib/alloc.h"
+#include "lib/fmt.h"
+#include "lib/textcode.h"
 
 #include "address.h"
 #include <signal.h>
@@ -50,6 +53,8 @@ ssltest_loop(fd_t s) {
   fd_t fd;
   ssize_t ret;
   ssl_t* ssl;
+  bool login_sent = false;
+  size_t iter = 0;
 
   buffer_init_free(&in, (buffer_op_sys*)(void*)&ssl_read, s, alloc(1024), 1024);
   buffer_init_free(&out, (buffer_op_sys*)(void*)&ssl_write, s, alloc(1024), 1024);
@@ -58,12 +63,18 @@ ssltest_loop(fd_t s) {
 
   ssl_io(s);
 
-  for(;;) {
+  for(;; iter++) {
+#ifdef DEBUG_OUTPUT
+    buffer_puts(buffer_2, "iteration #");
+    buffer_putulong(buffer_2, iter);
+    buffer_putnlflush(buffer_2);
+#endif
+
     io_wait();
 
     while((fd = io_canread()) != -1) {
       if(fd == s) {
-#ifdef DEBUG_OUTPUT_
+#ifdef DEBUG_OUTPUT
         buffer_puts(buffer_2, "can read: ");
         buffer_putlong(buffer_2, fd);
         buffer_putnlflush(buffer_2);
@@ -87,23 +98,39 @@ ssltest_loop(fd_t s) {
 
     while((fd = io_canwrite()) != -1) {
       if(fd == s) {
-
-        buffer_puts(buffer_2, "can write: ");
+#ifdef DEBUG_OUTPUT
+        buffer_puts(buffer_2, "can write #");
         buffer_putlong(buffer_2, fd);
+        buffer_putspace(buffer_2);
+        buffer_putlong(buffer_2, out.p);
+        buffer_puts(buffer_2, ": ");
+        buffer_put_escaped(buffer_2, out.x, out.p, &fmt_escapecharquotedshell);
         buffer_putnlflush(buffer_2);
+#endif
+        buffer_flush(&out);
 
-        if(ssl_connect(s) == 1) {
-
-          buffer_puts(buffer_2, "handshare complete");
-          buffer_putnlflush(buffer_2);
-
-          buffer_puts(&out, "USER x x x :Roman Senn\r\n");
-          buffer_puts(&out, "NICK roman\r\n");
-          buffer_flush(&out);
-        }
-
-        //     io_onlywantread(fd);
+        if(out.p == 0)
+          io_onlywantread(s);
       }
+    }
+
+    ret = 0;
+
+    if(!ssl_established(s)) {
+
+      ret = ssl_connect(s);
+    }
+
+    if((ret == 1 || ssl_established(s)) && !login_sent) {
+
+      buffer_puts(buffer_2, "handshake complete");
+      buffer_putnlflush(buffer_2);
+
+      buffer_puts(&out, "USER x x x :Roman Senn\r\n");
+      buffer_puts(&out, "NICK roman\r\n");
+
+      login_sent = true;
+      io_onlywantwrite(s);
     }
   }
 }
