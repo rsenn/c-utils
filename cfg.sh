@@ -56,7 +56,8 @@ cfg() {
   : ${relsrcdir=`realpath --relative-to "$builddir" .`}
   set -x
   cd "${builddir:-.}"
-  ${CMAKE:-cmake} -Wno-dev \
+  IFS="$IFS "
+ set -- -Wno-dev \
     -G "$generator" \
     ${prefix:+-DCMAKE_INSTALL_PREFIX="$prefix"} \
     ${VERBOSE:+-DCMAKE_VERBOSE_MAKEFILE=${VERBOSE:-OFF}} \
@@ -72,7 +73,9 @@ cfg() {
     -DCMAKE_{C,CXX}_FLAGS_RELWITHDEBINFO="-g3 -ggdb3 -Os -DNDEBUG" \
     ${MAKE:+-DCMAKE_MAKE_PROGRAM="$MAKE"} \
     "$@" \
-    $relsrcdir 2>&1 ) |tee "${builddir##*/}.log"
+    $relsrcdir 
+  eval "${CMAKE:-cmake} \"\$@\""
+ ) 2>&1 |tee "${builddir##*/}.log"
 }
 
 cfg-android ()
@@ -241,7 +244,7 @@ cfg-musl() {
  : ${bindir=$prefix/bin/$host}
   : ${builddir=build/$host}
 
-  CC=musl-gcc \
+  CC=/usr/bin/musl-gcc \
   PKG_CONFIG=musl-pkg-config \
   cfg \
     -DENABLE_SHARED=OFF \

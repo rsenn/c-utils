@@ -12,6 +12,6 @@ env_set(const char* name, const char* value) {
   return SetEnvironmentVariable(name, value);
 #else
   return env_put2(name, value);
-//  return setenv(name, value, 1) == 0;
+   return setenv(name, value, 1) == 0;
 #endif
 }

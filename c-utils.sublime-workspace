@@ -20,60 +20,46 @@
 	"buffers":
 	[
 		{
-			"contents": "",
+			"contents": "—Ⓕ– env_set ( ) { … } — function",
 			"settings":
 			{
-				"buffer_size": 0,
+				"buffer_size": 32,
 				"line_ending": "Unix",
 				"name": "𝌆 Outline",
 				"scratch": true
 			}
 		},
 		{
-			"contents": "tab",
+			"file": "CMakeLists.txt",
 			"settings":
 			{
-				"buffer_size": 3,
-				"line_ending": "Unix",
-				"name": "tab"
+				"buffer_size": 104255,
+				"line_ending": "Unix"
 			}
 		},
 		{
-			"contents": "Package Control Messages\n========================\n\nChromeREPL\n----------\n\n  # Chrome REPL 1.4.0\n\n  ## 🚨 Security 🚨\n\n  When Chrome starts it will use a new Chrome user profile. This is because the Chrome DevTools protocol (that is used for communication) opens a port for communication, but also exposes your cookies. To prevent people on your network from sniffing your important cookies (e.g. website logins), a temporary Chrome user profile is used by default.\n\n  You *can choose* to use your default Chrome profile, but you should only do so if you are not connected to a network.\n\nTerminalView\n------------\n\n  0.5.0\n  -----\n  TerminalView was just updated with the following changes:\n\n  * Improved support for fish, zsh and other shells\n  * Integration with the Sublime Text build system\n  * Settings can now be accessed through the command palette\n  * Settings now include an option for adjusting terminal margins (this can be used to avoid scrollbars)\n  * Improved run-loop with less CPU usage at idle\n  * Support for bracketed paste mode\n  * The ST3 cursor can now be snapped back to position by pressing the escape key\n  * Support for other plugins sending data to terminal views\n  * Fix for tab stops which improves the output of e.g. 'ls' on macOS\n  0.4.2\n  -----\n  TerminalView was just updated with the following changes:\n\n  * Keybindings, settings, etc. are now available through the command palette\n  * Fix for ST3 text wrapping error\n  0.4.1\n  -----\n  TerminalView was just updated with the following changes:\n\n  * Fix for package control messages\n  0.4.0\n  -----\n  TerminalView was just updated with the following changes:\n\n  * TerminalView sessions are now restarted upon ST3 startup\n  * TerminalView sessions are now restarted when switching projects (cannot resume unfortunately)\n  * Improved resizing functionality (no more cursor reset on resize due to e.g. panel)\n  * Dynamic colors (colors set by the shell) are now enabled by default\n  * ST3 viewport is now reset when terminal is updated (scolls back to original position)\n  * Improved color support (256 color support is still in development)\n  * Package control messages are now included with every update\n  * Various minor tweaks and fixes\n\n  Check out the README for details. Enjoy!\n  0.3.0\n  -----\n  TerminalView was just updated with the following changes:\n\n  * Support for copying selection in terminal into clipboard\n  * Support for pasting contents from clipboard into terminal\n  * Keybindings for moving ST3 cursor to facilitate keyboard-driven selection\n  * Keybindings for scrolling with mouse wheel\n  * Support for syntax highlighting using user-provided syntax file\n\n  Check out the README for details. Enjoy!\n  0.2.0\n  -----\n  TerminalView was just updated with the following changes:\n\n  * Support for scrolling\n  * Pyte update to 0.5.2\n  * Fix for #12\n  * Various optimizations\n\n  Check out the README for details. Enjoy!",
+			"file": "pkgcfg.c",
 			"settings":
 			{
-				"buffer_size": 2912,
-				"line_ending": "Unix",
-				"name": "Package Control Messages",
-				"read_only": true,
-				"scratch": true
+				"buffer_size": 30901,
+				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "ssltest.c",
+			"file": "lib/env/env_put.c",
 			"settings":
 			{
-				"buffer_size": 6884,
+				"buffer_size": 4354,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "/home/roman/.config/sublime-text-3/Packages/TabNine/TabNine.sublime-settings",
+			"file": "lib/env/env_set.c",
 			"settings":
 			{
-				"buffer_size": 417,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"contents": "",
-			"file": "/home/roman/.config/sublime-text-3/Packages/User/TabNine.sublime-settings",
-			"file_size": -1,
-			"file_write_time": -1,
-			"settings":
-			{
-				"buffer_size": 0,
+				"buffer_size": 296,
+				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
 		}
@@ -180,15 +166,45 @@
 	[
 		"/home/roman/Dokumente/Sources/c-utils",
 		"/home/roman/Dokumente/Sources/c-utils/lib",
-		"/home/roman/Dokumente/Sources/c-utils/lib/buffer",
-		"/home/roman/Dokumente/Sources/c-utils/lib/strlist",
+		"/home/roman/Dokumente/Sources/c-utils/lib/env",
 		"/home/roman/Dokumente/Sources/c-utils/node_modules"
 	],
 	"file_history":
 	[
-		"/home/roman/Dokumente/Sources/c-utils/lib/scan.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/tls_internal.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/http.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/tls.h",
 		"/home/roman/Dokumente/Sources/c-utils/CMakeLists.txt",
+		"/home/roman/Dokumente/Sources/c-utils/lib/ssl/ssl_accept.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/http/http_ssl_socket.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/http/http_ssl_read.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/http/https_ssl_ctx.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/http/https_error.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/http/https_socket.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/http/http_ssl_io.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/http/http_ssl_errstr.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/http/http_ssl2errno.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/http/http_socket_write.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/http/http_ssl_ctx.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/http/http_ssl_error.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/http/http_ssl_connect.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/http/http_ssl2want.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/http/http_socket_read.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/http/http_socket.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/http/http_sendreq.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/http/http_read_internal.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/http/http_readable.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/http/http_read_header.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/http/http_read.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/http/http_on_writeable.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/http/http_on_readable.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/http/http_get.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/http/http_close.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/http/http_ssl_write.c",
 		"/home/roman/Dokumente/Sources/c-utils/ssltest.c",
+		"/home/roman/.config/sublime-text-3/Packages/TabNine/TabNine.sublime-settings",
+		"/home/roman/.config/sublime-text-3/Packages/User/TabNine.sublime-settings",
+		"/home/roman/Dokumente/Sources/c-utils/lib/scan.h",
 		"/home/roman/Dokumente/Sources/c-utils/lib/ssl.h",
 		"/home/roman/Dokumente/Sources/c-utils/lib/ssl/ssl_new.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/buffer/buffer_getline.c",
@@ -205,20 +221,14 @@
 		"/home/roman/Dokumente/Sources/c-utils/lib/fmt/fmt_8long.c",
 		"/home/roman/Dokumente/Sources/c-utils/httptest.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/iarray/iarray_init.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/http.h",
 		"/home/roman/Dokumente/Sources/c-utils/lib/buffer.h",
 		"/home/roman/Dokumente/Sources/c-utils/lib/buffer/buffer_getc.c",
 		"/home/roman/Dokumente/Sources/c-utils/ccat.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/str/str_case_diff.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/str/str_case_equal.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/case.h",
-		"/home/roman/Dokumente/Sources/c-utils/lib/http/http_ssl2want.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/http/http_ssl_ctx.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/http/http_ssl_connect.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/http/http_on_writeable.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/buffer/buffer_brotli.c",
 		"/tmp/editor-1223047020.txt",
-		"/home/roman/Dokumente/Sources/c-utils/lib/http/http_sendreq.c",
 		"/home/roman/Sources/c-utils/lib/cb_internal.h",
 		"/home/roman/Sources/c-utils/lib/buffer/buffer_flush.c",
 		"/home/roman/Sources/c-utils/lib/buffer/buffer_copy.c",
@@ -276,44 +286,19 @@
 		"/usr/x86_64-w64-mingw32/include/windows.h",
 		"/usr/x86_64-w64-mingw32/include/io.h",
 		"/usr/x86_64-pc-msys/include/io.h",
-		"/home/roman/Dokumente/Sources/c-utils/lib/http/http_ssl_write.c",
 		"/home/roman/.cache/.fr-X7rJzj/code/trampoline.c",
 		"/home/roman/.cache/.fr-UnsUQ6/code/sighandler.c",
 		"/home/roman/.cache/.fr-vjEsVG/code/cat.c",
 		"/home/roman/.cache/.fr-lFf5x5/code/B9.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/http/http_ssl_read.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/http/http_socket_write.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/http/http_read_internal.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/path/path_dirname.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/open/open_temp.c",
 		"/home/roman/Dokumente/Sources/c-utils/build/cmake/config.h.cmake",
 		"/home/roman/Sources/c-utils/lib/http/http_on_readable.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/http/http_on_readable.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/http/http_readable.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/http/http_socket_read.c",
 		"/home/roman/Dokumente/Sources/c-utils/strip-comments.c",
 		"/home/roman/Dokumente/Sources/c-utils/WINBASEAPI",
 		"/home/roman/Dokumente/Sources/c-utils/WINBOOL",
 		"/home/roman/Dokumente/Sources/c-utils/WINAPI",
-		"/home/roman/Dokumente/Sources/c-utils/ReadFile",
-		"/home/roman/Dokumente/Sources/c-utils/(HANDLE",
-		"/home/roman/Dokumente/Sources/c-utils/hFile,",
-		"/home/roman/Dokumente/Sources/c-utils/LPVOID",
-		"/home/roman/Dokumente/Sources/c-utils/lpBuffer,",
-		"/home/roman/Dokumente/Sources/c-utils/DWORD",
-		"/home/roman/Dokumente/Sources/c-utils/nNumberOfBytesToRead,",
-		"/home/roman/Dokumente/Sources/c-utils/LPDWORD",
-		"/home/roman/Dokumente/Sources/c-utils/lpNumberOfBytesRead,",
-		"/home/roman/Dokumente/Sources/c-utils/LPOVERLAPPED",
-		"/home/roman/Dokumente/Sources/c-utils/lpOverlapped);",
-		"/home/roman/Dokumente/Sources/c-utils/ftptest.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/socket.h",
-		"/home/roman/Dokumente/Sources/c-utils/lib/io/io_nonblock.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/uint16.h",
-		"/home/roman/Dokumente/Sources/c-utils/address.h",
-		"/home/roman/Dokumente/Sources/c-utils/address.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/stralloc.h",
-		"/home/roman/Dokumente/Sources/c-utils/lib/stralloc/buffer_getln.c"
+		"/home/roman/Dokumente/Sources/c-utils/ReadFile"
 	],
 	"find":
 	{
@@ -338,6 +323,22 @@
 		"case_sensitive": true,
 		"find_history":
 		[
+			"Found",
+			"USE_",
+			"libssl",
+			"\"lib",
+			"--lib",
+			"LIBSSL ",
+			"ssltest",
+			"MUX_METHOD",
+			"set\\(MUX_METHOD ",
+			"set\\(MUX ",
+			"set\\(MUX",
+			"MUX_MET",
+			"EPOLL",
+			"BUILD_TYP",
+			"OPENSSL_ROOT",
+			"http_ssl_*ctx",
 			"ssltest",
 			"whitens",
 			"}\n",
@@ -449,23 +450,7 @@
 			"STRALLOC_INI",
 			"buffer_all",
 			"tcping",
-			"seed",
-			"min",
-			"tcping",
-			"dns_",
-			"COMMON_OPT_user",
-			"myopts",
-			"uoge",
-			"tinypr",
-			"[^d]type",
-			"buffer_1",
-			"list-r",
-			"continue;",
-			"list_dir_internal",
-			"stat\\(",
-			"stat\\($",
-			"stat\\(",
-			"stat"
+			"seed"
 		],
 		"highlight": false,
 		"in_selection": false,
@@ -559,7 +544,7 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 0,
+						"buffer_size": 32,
 						"regions":
 						{
 						},
@@ -569,14 +554,19 @@
 						"settings":
 						{
 							"color_scheme": "Packages/Outline/outline.hidden-tmTheme",
-							"current_file": "/home/roman/.config/sublime-text-3/Packages/User/TabNine.sublime-settings",
-							"function_name_status_row": -1,
+							"current_file": "/home/roman/Dokumente/Sources/c-utils/lib/env/env_set.c",
+							"function_name_status_row": 0,
 							"outline_rename_mode": false,
 							"symkeys":
 							[
+								[
+									98,
+									105
+								]
 							],
 							"symlist":
 							[
+								"—Ⓕ– env_set ( ) { … } — function"
 							],
 							"syntax": "Packages/Outline/outline.hidden-tmLanguage",
 							"tab_size": 2,
@@ -586,156 +576,129 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 5,
+					"stack_index": 4,
 					"type": "text"
 				}
 			]
 		},
 		{
-			"selected": 4,
+			"selected": 3,
 			"sheets":
 			[
 				{
 					"buffer": 1,
+					"file": "CMakeLists.txt",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 3,
+						"buffer_size": 104255,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								3,
-								3
+								37048,
+								37048
 							]
 						],
 						"settings":
 						{
-							"auto_name": "tab",
-							"function_name_status_row": 0,
-							"syntax": "Packages/Text/Plain text.tmLanguage"
+							"function_name_status_row": 827,
+							"syntax": "Packages/CMakeEditor/CMakeEditor.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 4,
-					"type": "text"
-				},
-				{
-					"buffer": 2,
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 2912,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								356,
-								356
-							]
-						],
-						"settings":
-						{
-							"auto_indent": false,
-							"function_name_status_row": 10,
-							"syntax": "Packages/Text/Plain text.tmLanguage",
-							"tab_width": 2,
-							"word_wrap": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 15558.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 3,
 					"type": "text"
 				},
 				{
-					"buffer": 3,
-					"file": "ssltest.c",
+					"buffer": 2,
+					"file": "pkgcfg.c",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 6884,
+						"buffer_size": 30901,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								6884,
-								6884
+								9702,
+								9702
 							]
 						],
 						"settings":
 						{
-							"function_name_status_row": 308,
+							"function_name_status_row": 474,
 							"syntax": "Packages/C Improved/C Improved.tmLanguage",
 							"tab_size": 2,
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 7636.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 2,
 					"type": "text"
 				},
 				{
-					"buffer": 4,
-					"file": "/home/roman/.config/sublime-text-3/Packages/TabNine/TabNine.sublime-settings",
+					"buffer": 3,
+					"file": "lib/env/env_put.c",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 417,
+						"buffer_size": 4354,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								0,
-								0
+								2000,
+								2000
 							]
 						],
 						"settings":
 						{
-							"function_name_status_row": 0,
-							"syntax": "Packages/JavaScriptNext - ES6 Syntax/JSON (JavaScriptNext).tmLanguage"
+							"function_name_status_row": 107,
+							"syntax": "Packages/C Improved/C Improved.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 1326.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 1,
 					"type": "text"
 				},
 				{
-					"buffer": 5,
-					"file": "/home/roman/.config/sublime-text-3/Packages/User/TabNine.sublime-settings",
+					"buffer": 4,
+					"file": "lib/env/env_set.c",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 0,
+						"buffer_size": 296,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								0,
-								0
+								218,
+								218
 							]
 						],
 						"settings":
 						{
-							"function_name_status_row": 0,
-							"syntax": "Packages/JavaScriptNext - ES6 Syntax/JSON (JavaScriptNext).tmLanguage"
+							"function_name_status_row": 13,
+							"syntax": "Packages/C Improved/C Improved.tmLanguage"
 						},
 						"translation.x": 0.0,
 						"translation.y": 0.0,
@@ -817,12 +780,40 @@
 		"selected_items":
 		[
 			[
-				"ssltest",
-				"ssltest.c"
+				"env_set",
+				"lib/env/env_set.c"
+			],
+			[
+				"pkgcf",
+				"pkgcfg.c"
 			],
 			[
 				"cmake",
 				"CMakeLists.txt"
+			],
+			[
+				"cmakeli",
+				"CMakeLists.txt"
+			],
+			[
+				"tls_in",
+				"lib/tls_internal.h"
+			],
+			[
+				"tls.h",
+				"lib/tls.h"
+			],
+			[
+				"http.h",
+				"lib/http.h"
+			],
+			[
+				"ssl_",
+				"lib/ssl/ssl_accept.c"
+			],
+			[
+				"ssltest",
+				"ssltest.c"
 			],
 			[
 				"can.h",
@@ -849,20 +840,12 @@
 				"lib/iarray.h"
 			],
 			[
-				"http.h",
-				"lib/http.h"
-			],
-			[
 				"ssl.h",
 				"lib/ssl.h"
 			],
 			[
 				"fmt_8lon",
 				"lib/fmt/fmt_8long.c"
-			],
-			[
-				"cmakeli",
-				"CMakeLists.txt"
 			],
 			[
 				"buffer.h",
@@ -1307,26 +1290,6 @@
 			[
 				"str_diff",
 				"lib/str/str_diff.c"
-			],
-			[
-				"byte.h",
-				"lib/byte.h"
-			],
-			[
-				"genmakefile.h",
-				"genmakefile.h"
-			],
-			[
-				"path_ex",
-				"lib/path/path_exists.c"
-			],
-			[
-				"sig.h",
-				"lib/sig.h"
-			],
-			[
-				"str_strat",
-				"lib/str/str_start.c"
 			]
 		],
 		"width": 0.0

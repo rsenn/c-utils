@@ -105,7 +105,7 @@ env_unsetlen(const char* s, size_t len) {
   int i;
 
   for(i = (int)en - 1; i >= 0; --i) {
-    if(!str_diffn(s, environ[i], len)) {
+    if(environ[i] && !str_diffn(s, environ[i], len)) {
       if(environ[i][len] == '=') {
         env_goodbye((size_t)i);
       }
