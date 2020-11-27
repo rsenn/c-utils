@@ -1,4 +1,4 @@
-#include "../ssl_internal.h"
+#include "../tls_internal.h"
 #include <assert.h>
 
 #ifdef HAVE_OPENSSL
@@ -6,8 +6,8 @@
 #include <openssl/err.h>
 
 void
-ssl_free(fd_t fd) {
-  ssl_instance* i = iarray_get(&ssl_list, fd);
+tls_free(fd_t fd) {
+  tls_instance* i = iarray_get(&tls_list, fd);
   assert(i);
   assert(i->ssl);
 

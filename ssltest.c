@@ -2,7 +2,7 @@
 #include "lib/buffer.h"
 #include "lib/unix.h"
 #include "lib/errmsg.h"
-#include "lib/ssl.h"
+#include "lib/tls.h"
 #include "lib/uint16.h"
 #include "lib/scan.h"
 #include "lib/str.h"
@@ -163,15 +163,15 @@ ssltest_loop(fd_t s) {
   buffer in, out;
   fd_t fd;
   ssize_t ret;
-  ssl_t* ssl;
+  tls_t* ssl;
   bool login_sent = false;
   size_t iter = 0;
   stralloc line;
   stralloc_init(&line);
-  buffer_init_free(&in, (buffer_op_sys*)(void*)&ssl_read, s, alloc(1024), 1024);
-  buffer_init_free(&out, (buffer_op_sys*)(void*)&ssl_write, s, alloc(1024), 1024);
-  ssl = ssl_client(s);
-  ssl_io(s);
+  buffer_init_free(&in, (buffer_op_sys*)(void*)&tls_read, s, alloc(1024), 1024);
+  buffer_init_free(&out, (buffer_op_sys*)(void*)&tls_write, s, alloc(1024), 1024);
+  ssl = tls_client(s);
+  tls_io(s);
   for(;; iter++) {
 #ifdef DEBUG_OUTPUT_
     buffer_puts(buffer_2, "Iteration ");
@@ -229,10 +229,10 @@ ssltest_loop(fd_t s) {
       }
     }
     ret = 0;
-    if(!ssl_established(s)) {
-      ret = ssl_connect(s);
+    if(!tls_established(s)) {
+      ret = tls_connect(s);
     }
-    if((ret == 1 || ssl_established(s)) && !login_sent) {
+    if((ret == 1 || tls_established(s)) && !login_sent) {
       buffer_puts(buffer_2, "Handshake complete.");
       buffer_putnlflush(buffer_2);
       sendline_m(&out, "USER x x x :Roman Senn\r\nNICK roman\r\n", 0);
@@ -266,8 +266,8 @@ main(int argc, char* argv[]) {
 #if !WINDOWS_NATIVE
   signal(SIGPIPE, SIG_IGN);
 #endif
-  ssl_init(0, 0);
-  // ssl_new_client(0);
+  tls_init(0, 0);
+  // tls_new_client(0);
 
   for(;;) {
     c = unix_getopt_long(argc, argv, "ho:", opts, &index);
@@ -282,7 +282,7 @@ main(int argc, char* argv[]) {
       default: usage(argv[0]); return 1;
     }
   }
-  ssl_init("http.key", "http.crt");
+  tls_init("http.key", "http.crt");
 
   if(unix_optind < argc) {
     if(!address_scan(argv[unix_optind++], &host))

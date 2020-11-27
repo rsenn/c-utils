@@ -6,7 +6,7 @@
 #include <openssl/err.h>
 
 const char*
-http_ssl_errflag(int i) {
+https_errflag(int i) {
   switch(i) {
     case SSL_ERROR_NONE: return "NONE";
     case SSL_ERROR_SSL: return "SSL";

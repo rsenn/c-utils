@@ -27,22 +27,18 @@ http_close(http* h) {
     }
   }
 #endif
-
   if(h->sock != -1) {
     int ret;
     ret = socket_close(h->sock);
     io_close(h->sock);
-
 #if DEBUG_HTTP
     buffer_putspad(buffer_2, "http_close ", 18);
     buffer_puts(buffer_2, " sock=");
     buffer_putlong(buffer_2, h->sock);
     buffer_puts(buffer_2, " ret=");
     buffer_putlong(buffer_2, ret);
-
     buffer_putnlflush(buffer_2);
 #endif
-
     h->sock = -1;
   }
 }

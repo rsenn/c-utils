@@ -16,9 +16,7 @@
 
 /**
  * @brief      Handle socket getting readable
- *
  * @param      h     HTTP client
- *
  * @return     -1 on error
  */
 ssize_t
@@ -43,17 +41,14 @@ http_on_readable(http* h, void (*wantwrite)(fd_t)) {
 #ifdef HAVE_OPENSSL
   if(h->ssl) {
     if(!h->connected) {
-      ret = http_ssl_connect(h);
-
+      ret = https_connect(h);
       if(ret != 1)
         goto fail;
     }
   }
 #endif
-  // request:
   if(h->connected && h->sent == 0) {
-    ret = http_ssl2want(h, http_sendreq(h), 0, wantwrite);
-
+    ret = https_tls2want(h, http_sendreq(h), 0, wantwrite);
     if(h->sent)
       ret = 1;
   }
@@ -70,6 +65,5 @@ fail:
   buffer_putlong(buffer_2, h->response->err);
   buffer_putnlflush(buffer_2);
 #endif
-
   return ret;
 }

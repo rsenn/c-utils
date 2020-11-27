@@ -7,20 +7,20 @@
 #include <assert.h>
 
 ssize_t
-http_ssl_connect(http* h) {
+https_connect(http* h) {
   ssize_t ret;
   char* msg = 0;
   assert(!h->connected);
-  ret = http_ssl2errno(h, SSL_connect(h->ssl));
+  ret = https_tls2errno(h, SSL_connect(h->ssl));
 
   if(ret == 1) {
     h->connected = 1;
 #if DEBUG_HTTP
-    buffer_putsflush(buffer_2, "http_ssl_connect done!\n");
+    buffer_putsflush(buffer_2, "https_connect done!\n");
 #endif
   }
 #if DEBUG_HTTP
-  buffer_putspad(buffer_2, "http_ssl_connect ", 18);
+  buffer_putspad(buffer_2, "https_connect ", 18);
   buffer_puts(buffer_2, "sock=");
   buffer_putlong(buffer_2, h->sock);
   buffer_puts(buffer_2, " ret=");
@@ -31,7 +31,7 @@ http_ssl_connect(http* h) {
     buffer_putlong(buffer_2, errno);
   }
   buffer_puts(buffer_2, " err=");
-  buffer_puts(buffer_2, http_ssl_errflag(SSL_get_error(h->ssl, ret)));
+  buffer_puts(buffer_2, https_errflag(SSL_get_error(h->ssl, ret)));
   buffer_putnlflush(buffer_2);
 
 #endif

@@ -7,7 +7,6 @@
 #include "../byte.h"
 #include <errno.h>
 #include <assert.h>
-
 ssize_t
 http_socket_read(fd_t fd, void* buf, size_t len, void* b) {
   ssize_t ret = -1;
@@ -19,23 +18,21 @@ http_socket_read(fd_t fd, void* buf, size_t len, void* b) {
   buffer_putlong(buffer_2, h->sock);
   buffer_putnlflush(buffer_2);
 #endif
-// s = winsock2errno(recv(fd, buf, len, 0));
 #ifdef HAVE_OPENSSL
   if(h->ssl) {
     if(!h->connected) {
-      ret = http_ssl_connect(h);
+      ret = https_connect(h);
       if(h->connected) {
         if((ret = http_sendreq(h)) > 0)
           ret = 0;
       }
     }
     if(h->connected || ret == 0)
-      ret = http_ssl_read(h->sock, buf, len, b);
+      ret = https_read(h->sock, buf, len, b);
   } else
 #endif
     ret = io_tryread(fd, (char*)buf, len);
   if(ret == 0) {
-    // closesocket(h->sock);
     http_close(h);
     h->q.in.fd = h->q.out.fd = h->sock = -1;
     h->connected = 0;
@@ -44,8 +41,6 @@ http_socket_read(fd_t fd, void* buf, size_t len, void* b) {
     r->err = errno;
     if(errno != EWOULDBLOCK && errno != EAGAIN)
       r->status = HTTP_STATUS_ERROR;
-    /*  else
-        return ret;*/
   }
   if(ret > 0) {
     size_t n = h->q.in.n;
@@ -65,6 +60,5 @@ http_socket_read(fd_t fd, void* buf, size_t len, void* b) {
   }
   buffer_putnlflush(buffer_2);
 #endif
-
   return ret;
 }

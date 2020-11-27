@@ -1,4 +1,4 @@
-#include "../ssl_internal.h"
+#include "../tls_internal.h"
 #include "../buffer.h"
 #include "../str.h"
 
@@ -7,7 +7,7 @@
 #include <openssl/err.h>
 
 const char*
-ssl_instance_error(ssl_instance* i) {
+tls_instance_error(tls_instance* i) {
   switch(i->error) {
     case SSL_ERROR_WANT_READ: str_copy(i->errstr, "want read"); break;
     case SSL_ERROR_WANT_WRITE: str_copy(i->errstr, "want write"); break;

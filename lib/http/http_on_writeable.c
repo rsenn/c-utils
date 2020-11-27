@@ -23,8 +23,6 @@ http_on_writeable(http* h, void (*wantread)(fd_t)) {
   buffer_putlong(buffer_2, h->sock);
   buffer_puts(buffer_2, " tls=");
   buffer_putlong(buffer_2, !!h->tls);
-  /*  buffer_puts(buffer_2, " ssl=");
-    buffer_putptr(buffer_2, h->ssl);*/
   buffer_puts(buffer_2, " connected=");
   buffer_putlong(buffer_2, !!h->connected);
   buffer_puts(buffer_2, " keepalive=");
@@ -38,21 +36,17 @@ http_on_writeable(http* h, void (*wantread)(fd_t)) {
 #ifdef HAVE_OPENSSL
   if(h->ssl) {
     if(!h->connected) {
-      ret = http_ssl2want(h, http_ssl_connect(h), wantread, 0);
-
+      ret = https_tls2want(h, https_connect(h), wantread, 0);
       if(ret != 1)
         goto fail;
     }
   }
-  // request:
   if(h->connected && h->sent == 0) {
-    ret = http_ssl2want(h, http_sendreq(h), wantread, 0);
-
+    ret = https_tls2want(h, http_sendreq(h), wantread, 0);
     if(h->sent)
       wantread(h->sock);
   }
 #endif
-
 fail:
   if(ret == -1 && h->response->err == EAGAIN)
     ret = 0;
@@ -66,6 +60,5 @@ fail:
   buffer_putlong(buffer_2, h->response->err);
   buffer_putnlflush(buffer_2);
 #endif
-
   return ret;
 }

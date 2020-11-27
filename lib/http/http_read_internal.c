@@ -18,8 +18,8 @@
 size_t
 http_read_internal(http* h, char* buf, size_t len) {
   buffer* in = &h->q.in;
-  char* x = buffer_PEEK(in); /* buffer read pos */
-  char* y = buf + len;       /* buffer write pos + len */
+  char* x = buffer_PEEK(in);
+  char* y = buf + len;
   http_response* r;
   if((r = h->response) == NULL)
     return len;
@@ -38,7 +38,6 @@ http_read_internal(http* h, char* buf, size_t len) {
             in->p += skip;
             r->chunk_length = 0;
           }
-          // putnum("chunk end", r->ptr);
         }
         if(r->chunk_length == 0) {
           size_t i, bytes = in->n - in->p;
@@ -49,9 +48,7 @@ http_read_internal(http* h, char* buf, size_t len) {
               in->p += i;
             r->ptr = 0;
             if(r->chunk_length) {
-              // putnum("chunk begin", r->chunk_length);
             } else {
-              // putnum("transfer end", 0);
               r->status = HTTP_STATUS_FINISH;
             }
           }
@@ -65,6 +62,5 @@ http_read_internal(http* h, char* buf, size_t len) {
       }
     }
   }
-  // putnum("http_read_internal", r->status);
   return len;
 }

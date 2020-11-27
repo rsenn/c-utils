@@ -25,12 +25,10 @@ http_get(http* h, const char* location) {
   uint32 serial = 0;
   size_t len = str_len(location);
   h->tls = len >= 5 && !byte_diff(location, 5, "https");
-
 #if DEBUG_HTTP
   buffer_putm_internal(buffer_2, "http_get ", location, "\n", NULL);
   buffer_flush(buffer_2);
 #endif
-
   if(location[0] != '/') {
     size_t len;
     len = str_findb(location, "://", 3);
@@ -46,18 +44,14 @@ http_get(http* h, const char* location) {
     }
     location += len;
   }
-
   stralloc_nul(&h->host);
   stralloc_init(&dns);
   if(dns_ip4(&dns, &h->host) == -1) {
     errmsg_warnsys("ERROR: resolving ", h->host.s, ": ", NULL);
     return 0;
   }
-
   a = (ipv4addr*)dns.s;
-
   byte_copy(&h->addr, sizeof(ipv4addr), &a->iaddr);
-
 #if DEBUG_HTTP
   buffer_putspad(buffer_2, "http_get resolved ", 18);
   buffer_putsa(buffer_2, &h->host);
@@ -67,7 +61,6 @@ http_get(http* h, const char* location) {
   buffer_putnlflush(buffer_2);
 #endif
   http_socket(h, h->nonblocking);
-
   if(h->request) {
     serial = h->request->serial + 1;
     free(h->request);
@@ -85,20 +78,16 @@ http_get(http* h, const char* location) {
     (*r) = (http_response*)alloc_zero(sizeof(http_response));
     stralloc_init(&((*r)->data));
     stralloc_init(&((*r)->boundary));
-
     (*r)->content_length = (uint64)-1;
   }
   ret = socket_connect4(h->sock, (const char*)h->addr.addr, h->port);
   h->connected = 0;
-
   if(ret == -1) {
-
     if(errno == EINPROGRESS) {
       ret = 0;
       errno = 0;
     }
   }
-
   io_wantwrite(h->sock);
   return ret == 0;
 }

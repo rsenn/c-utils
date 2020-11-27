@@ -22,7 +22,6 @@ http_sendreq(http* h) {
   buffer_puts(out, "Host: ");
   buffer_putsa(out, &h->host);
   buffer_puts(out, "\r\n");
-
   if(!h->keepalive)
     buffer_putm_internal(out, "Connection: ", h->keepalive ? "keep-alive" : "close", "\r\n", NULL);
   buffer_puts(out, "Accept: */*\r\n");
@@ -32,7 +31,6 @@ http_sendreq(http* h) {
   {
     const char* x = out->x;
     ssize_t i, n = out->p;
-
     while(n > 0) {
       i = byte_chr(x, n, '\r');
       buffer_puts(buffer_2, "Header: ");
@@ -49,9 +47,7 @@ http_sendreq(http* h) {
   buffer_flush(buffer_2);
 #endif
   ret = buffer_flush(out);
-
   if(ret != -1)
     h->sent = 1;
-
   return ret;
 }

@@ -100,19 +100,19 @@ int http_socket(http*, int);
 ssize_t http_socket_read(fd_t, void*, size_t, void*);
 ssize_t http_socket_write(fd_t, void*, size_t, void*);
 #ifdef HAVE_OPENSSL
-ssize_t http_ssl2errno(http*, ssize_t);
-ssize_t http_ssl2want(http*, ssize_t, void (*)(fd_t), void (*)(fd_t));
+ssize_t https_tls2errno(http*, ssize_t);
+ssize_t https_tls2want(http*, ssize_t, void (*)(fd_t), void (*)(fd_t));
 
-ssize_t http_ssl_connect(http*);
-void* http_ssl_ctx(void);
-const char* http_ssl_errflag(int);
-size_t http_ssl_errstr(int, char*, size_t);
-int http_ssl_errno(int);
-ssize_t http_ssl_io_errhandle(http*, int);
-ssize_t http_ssl_io_want(http*, int);
-ssize_t http_ssl_read(fd_t, void*, size_t, void*);
-int http_ssl_socket(http*);
-ssize_t http_ssl_write(fd_t, const void*, size_t, void*);
+ssize_t https_connect(http*);
+void* https_ssl_ctx(void);
+const char* https_errflag(int);
+size_t https_errstr(int, char*, size_t);
+int https_errno(int);
+ssize_t https_io_errhandle(http*, int);
+ssize_t https_io_want(http*, int);
+ssize_t https_read(fd_t, void*, size_t, void*);
+int https_socket(http*);
+ssize_t https_write(fd_t, const void*, size_t, void*);
 #endif
 
 #ifdef __cplusplus

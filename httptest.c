@@ -17,7 +17,7 @@
 #include "lib/case.h"
 #include "lib/buffer.h"
 #include "lib/getopt.h"
-#include "lib/ssl.h"
+#include "lib/tls.h"
 
 #include <errno.h>
 #include <signal.h>
@@ -84,7 +84,7 @@ http_io_handler(http* h, buffer* out) {
       buffer_putlong(buffer_2, ret);
 #if HAVE_OPENSSL
       buffer_puts(buffer_2, "  err=");
-      buffer_puts(buffer_2, http_ssl_errflag(h->err));
+      buffer_puts(buffer_2, https_errflag(h->err));
 #endif
       buffer_putnlflush(buffer_2);
 
@@ -127,8 +127,8 @@ main(int argc, char* argv[]) {
 #if !WINDOWS_NATIVE
   signal(SIGPIPE, SIG_IGN);
 #endif
-  ssl_init(0, 0);
-  // ssl_new_client(0);
+  tls_init(0, 0);
+  // tls_new_client(0);
 
   for(;;) {
     c = getopt_long(argc, argv, "ho:", opts, &index);

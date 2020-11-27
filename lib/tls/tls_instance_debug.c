@@ -1,4 +1,4 @@
-#include "../ssl_internal.h"
+#include "../tls_internal.h"
 #include "../buffer.h"
 #include <assert.h>
 
@@ -7,11 +7,11 @@
 #include <openssl/err.h>
 
 void
-ssl_instance_debug(ssl_instance* i) {
+tls_instance_debug(tls_instance* i) {
   int server, init;
   assert(i);
   assert(i->ssl);
-  server = SSL_get_ssl_method(i->ssl) == ssl_server_method;
+  server = SSL_get_ssl_method(i->ssl) == tls_server_method;
   init = SSL_in_init(i->ssl);
 
   buffer_putm_internal(buffer_2, "ssl ", server ? "server" : "client", "#", 0);

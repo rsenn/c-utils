@@ -1,9 +1,9 @@
-#include "../ssl_internal.h"
+#include "../tls_internal.h"
 #include <errno.h>
 
 #ifdef HAVE_OPENSSL
 int
-ssl_instance_errno(ssl_instance* i) {
+tls_instance_errno(tls_instance* i) {
   int ret;
   switch(i->error) {
     case SSL_ERROR_WANT_WRITE: ret = EWOULDBLOCK; break;

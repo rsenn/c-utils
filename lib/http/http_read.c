@@ -53,7 +53,6 @@ http_read(fd_t fd, char* buf, size_t len, void* ptr) {
     if(r->ptr == r->content_length && b->n - b->p > 0) {
       http_read_internal(h, &b->x[b->p], b->n - b->p);
       if(r->status == HTTP_STATUS_FINISH) {
-        // io_dontwantread(h->sock);
         break;
       }
     }

@@ -50,7 +50,7 @@ http_readable(http* h, int freshen) {
 #ifdef HAVE_OPENSSL
   if(h->ssl) {
     if(!h->connected) {
-      if((ret = http_ssl_connect(h)) == 1) {
+      if((ret = https_connect(h)) == 1) {
         errno = EWOULDBLOCK;
         io_dontwantread(h->sock);
         io_wantwrite(h->sock);
@@ -59,21 +59,16 @@ http_readable(http* h, int freshen) {
     }
   }
 #endif
-
-  // do_read:
   if(freshen)
     buffer_freshen(&h->q.in);
-
   if((r = h->response) == NULL) {
     return ret;
   }
-
   while(r->status == HTTP_RECV_HEADER) {
     if((ret = buffer_getline_sa(&h->q.in, &r->data)) <= 0)
       break;
     stralloc_trimr(&r->data, "\r\n", 2);
     stralloc_nul(&r->data);
-    // putline("Header", r->data.s, -r->data.len, &h->q.in);
     if(r->data.len == 0) {
       r->ptr = 0;
       r->status = HTTP_RECV_DATA;
@@ -101,22 +96,6 @@ http_readable(http* h, int freshen) {
   }
   if(r->status == HTTP_RECV_DATA) {
     ret = 1;
-    /*
-        if(r->content_length) {
-          size_t a;
-          if(r->content_length < (a = r->data.a - r->data.len))
-            a = r->content_length;
-          if(a > 1024)
-            a = 1024;
-          stralloc_readyplus(&r->data, 1024);
-          if((ret = buffer_get(&h->q.in, &r->data.s[r->data.len], r->data.a - r->data.len)) <= 0)
-            break;
-          putline("data", &r->data.s[r->data.len], 1, &h->q.in);
-          r->data.len += ret;
-          r->content_length -= ret;
-          continue;
-        }
-        r->status = HTTP_STATUS_FINISH;*/
   }
   if(ret == -1) {
     err = errno;

@@ -7,8 +7,7 @@
 #include <errno.h>
 
 ssize_t
-http_ssl2want(http* h, ssize_t ret, void (*wantread)(fd_t), void (*wantwrite)(fd_t)) {
-
+https_tls2want(http* h, ssize_t ret, void (*wantread)(fd_t), void (*wantwrite)(fd_t)) {
   if(ret <= 0) {
     switch(SSL_get_error(h->ssl, ret)) {
       case SSL_ERROR_WANT_READ:
@@ -25,3 +24,4 @@ http_ssl2want(http* h, ssize_t ret, void (*wantread)(fd_t), void (*wantwrite)(fd
   return ret;
 }
 #endif
+  
