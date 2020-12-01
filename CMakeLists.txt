@@ -1564,7 +1564,9 @@ add_program(testini ini.c ini.h hmap stralloc buffer mmap open uint16)
 add_program(logserial sig charbuf hmap path unix rdir dir errmsg io ndelay strarray stralloc buffer taia tai)
 add_program(tinyproxy process unix path wait range dns taia tai hmap env ndelay buffer strarray array strlist stralloc errmsg sig socket fmt scan io uint32)
 target_link_libraries(tinyproxy ${LIBMSWSOCK})
-# if(NOT WIN32) add_program(tcpproxy http io errmsg buffer open ) endif(NOT WIN32) add_program(redir http io ${LIBCOMPAT})
+# if(NOT WIN32) add_program(tcpproxy http io errmsg buffer open ) endif(NOT WIN32)
+
+#add_program(redir http io ${LIBCOMPAT})
 
 add_program(parse strlist errmsg)
 add_program(testihex ihex stralloc buffer alloc mmap)

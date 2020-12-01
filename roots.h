@@ -2,7 +2,7 @@
 #define DNSCACHE_ROOTS_H
 
 #include "lib/dir.h"
-#include <stdbool.h>
+#include "lib/bool.h"
 
 int roots_find(char*);
 int roots_search(char*);

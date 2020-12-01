@@ -1,7 +1,7 @@
 #ifndef _ADDRESS_H
 #define _ADDRESS_H
 
-#include <stdbool.h>
+#include "lib/bool.h"
 #include "lib/uint32.h"
 #include "lib/stralloc.h"
 

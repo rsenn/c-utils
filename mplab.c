@@ -92,6 +92,7 @@ output_mplab_project(buffer* b, MAP_T* _rules, MAP_T* vars, const strlist* inclu
   char** p = 0;
   size_t n;
   stralloc sa, file, dirname;
+  strlist defines, tcfg, *vdefs;
   mplab_config_t mplab_cfg = {.warning_level = (is_debug() ? 3 : -3),
                               .verbose_messages = 1,
                               .optimize_global = opt_size() || opt_speed(),
@@ -273,7 +274,6 @@ output_mplab_project(buffer* b, MAP_T* _rules, MAP_T* vars, const strlist* inclu
   ini_set(section, "suite_state", "");
 
   MAP_NEW(toolcfg);
-  strlist defines, tcfg, *vdefs;
 
   strlist_init(&defines, ',');
   strlist_init(&tcfg, ',');

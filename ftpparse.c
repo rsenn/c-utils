@@ -17,11 +17,9 @@
  */
 
 #include <time.h> /* gmtime, time_t, time() */
-//#include "ftpparse.h"
-//#include "bailout.h"
 #include "lib/str.h"
 #include "lib/case.h"
-//#include "utcdate2tai.h"
+#include "lib/uint64.h"
 
 static int
 my_byte_equal(const char* s, unsigned int n, const char* t) {
@@ -31,6 +29,7 @@ my_byte_equal(const char* s, unsigned int n, const char* t) {
       return 0;
   return 1;
 }
+
 static int
 fix_year(unsigned long* year) {
   if(*year < 70)

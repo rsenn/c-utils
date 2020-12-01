@@ -41,39 +41,38 @@ extern "C" {
 #define _SSIZE_T_DEFINED 1
 #endif
 
+#if !defined(__LCC__)
 #if defined(__SSIZE_TYPE__) && !defined(_SSIZE_T_DEFINED) && !defined(_SSIZE_T_)
 #define _SSIZE_T_DEFINED 1
 #define _SSIZE_T_ 1
 typedef __SSIZE_TYPE__ ssize_t;
-#endif
 
-#ifndef __MSYS__
-#if defined(__PTRDIFF_TYPE__) && !defined(_SSIZE_T_DEFINED) && !defined(_SSIZE_T_)
+#elif !defined(MSYS) && defined(__PTRDIFF_TYPE__) && !defined(_SSIZE_T_DEFINED) && !defined(_SSIZE_T_)
 #define _SSIZE_T_DEFINED 1
 #define _SSIZE_T_ 1
 typedef __PTRDIFF_TYPE__ ssize_t;
-#endif
-#endif
 
-#if !(defined(_SYS_TYPES_H) && defined(__MSYS__)) && !defined(_SSIZE_T_DEFINED) &&                 \
+#elif !(defined(_SYS_TYPES_H) && defined(__MSYS__)) && !defined(_SSIZE_T_DEFINED) &&                 \
     !defined(_SSIZE_T_)
 #define _SSIZE_T_DEFINED 1
 #define _SSIZE_T_ 1
-typedef ptrdiff_t ssize_t;
-#endif
+typedef __PTRDIFF_TYPE__ ssize_t;
 
-#if !defined(_SSIZE_T_DEFINED) && !defined(_SSIZE_T_)
+#elif !defined(_SSIZE_T_DEFINED) && !defined(_SSIZE_T_)
 #define _SSIZE_T_DEFINED 1
 #define _SSIZE_T_ 1
 typedef long ssize_t;
 #endif
+#endif
 
 #if !defined(__dietlibc__) && !defined(_INTTYPES_H) && !defined(__clang__) ||                      \
     defined(__BCPLUSPLUS__)
+#ifndef __LCC__
 #ifdef __INTPTR_TYPE__
 typedef __INTPTR_TYPE__ intptr_t;
 #elif defined(__BORLANDC__) || defined(__POCC__) || (defined(_SYS_TYPES_H) && defined(__MSYS__))
 typedef ptrdiff_t intptr_t;
+#endif
 #endif
 #endif
 

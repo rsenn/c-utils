@@ -2,16 +2,21 @@
 #ifndef UINT16_H
 #define UINT16_H
 
-#if defined(__BORLANDC__)
+#if __STDC_VERSION__ >= 199901L
+#include <stdint.h>
+#elif defined(__BORLANDC__)
 #include <systypes.h>
 #elif defined(__LCC__)
 #include <stdint.h>
-#elif !defined(_MSC_VER) && !defined(__MSYS__) && !defined(__CYGWIN__)
+/*#elif !defined(_MSC_VER) && !defined(__MSYS__) && !defined(__CYGWIN__)
 #include <inttypes.h>
-#include <stdint.h>
-#else
+#include <stdint.h>*/
+#elif defined(_WIN32)
 #define __MS_types__
 #include <sys/types.h>
+#else
+typedef unsigned short uint16_t;
+typedef short int16_t;
 #endif
 
 #include <stddef.h>

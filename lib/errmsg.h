@@ -24,7 +24,7 @@ void errmsg_warnsys(const char* message, ...);
 void errmsg_info(const char* message, ...);
 void errmsg_infosys(const char* message, ...);
 
-#ifndef __BORLANDC__
+#if !defined(__BORLANDC__) && !defined(__LCC__)
 #define carp(...) errmsg_warn(__VA_ARGS__, (char*)0)
 #define carpsys(...) errmsg_warnsys(__VA_ARGS__, (char*)0)
 #define die(n, ...)                                                                                \

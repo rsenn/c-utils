@@ -12,7 +12,7 @@
 #include "lib/case.h"
 
 #include <stdlib.h>
-#include <stdbool.h>
+#include "lib/bool.h"
 
 int
 buffer_copy(buffer* out, buffer* in) {

@@ -28,7 +28,7 @@ typedef struct strlist_s {
 #define strlist_free(l) stralloc_free(&(l)->sa)
 #define strlist_copy(d, s) (d)->sep = (s)->sep, stralloc_copy(&(d)->sa, &(s)->sa)
 
-#ifdef __BORLANDC__
+#if defined(__BORLANDC__) || defined(__LCC__)
 #define strlist_pushm(sa, args) strlist_pushm_internal(sa, args, (char*)0)
 #else
 #define strlist_pushm(sa, ...) strlist_pushm_internal(sa, __VA_ARGS__, (char*)0)

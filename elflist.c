@@ -13,7 +13,7 @@
 #include "lib/fmt.h"
 #include "lib/strlist.h"
 #include <stdlib.h>
-#include <stdbool.h>
+#include "lib/bool.h"
 
 void elf_dump_dynamic(range map);
 void elf_dump_sections(range map);

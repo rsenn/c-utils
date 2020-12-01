@@ -15,7 +15,7 @@
 #include "lib/ndelay.h"
 #include "lib/str.h"
 
-#include <stdbool.h>
+#include "lib/bool.h"
 #include <unistd.h>
 #include <sys/stat.h>
 

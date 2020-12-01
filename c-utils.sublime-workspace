@@ -20,47 +20,13 @@
 	"buffers":
 	[
 		{
-			"contents": "—Ⓕ– env_set ( ) { … } — function",
+			"contents": "",
 			"settings":
 			{
-				"buffer_size": 32,
+				"buffer_size": 0,
 				"line_ending": "Unix",
 				"name": "𝌆 Outline",
 				"scratch": true
-			}
-		},
-		{
-			"file": "CMakeLists.txt",
-			"settings":
-			{
-				"buffer_size": 104255,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "pkgcfg.c",
-			"settings":
-			{
-				"buffer_size": 30901,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/env/env_put.c",
-			"settings":
-			{
-				"buffer_size": 4354,
-				"encoding": "UTF-8",
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/env/env_set.c",
-			"settings":
-			{
-				"buffer_size": 296,
-				"encoding": "UTF-8",
-				"line_ending": "Unix"
 			}
 		}
 	],
@@ -171,10 +137,13 @@
 	],
 	"file_history":
 	[
+		"/home/roman/Dokumente/Sources/c-utils/CMakeLists.txt",
+		"/home/roman/Dokumente/Sources/c-utils/pkgcfg.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/env/env_put.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/env/env_set.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/tls_internal.h",
 		"/home/roman/Dokumente/Sources/c-utils/lib/http.h",
 		"/home/roman/Dokumente/Sources/c-utils/lib/tls.h",
-		"/home/roman/Dokumente/Sources/c-utils/CMakeLists.txt",
 		"/home/roman/Dokumente/Sources/c-utils/lib/ssl/ssl_accept.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/http/http_ssl_socket.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/http/http_ssl_read.c",
@@ -295,10 +264,7 @@
 		"/home/roman/Dokumente/Sources/c-utils/build/cmake/config.h.cmake",
 		"/home/roman/Sources/c-utils/lib/http/http_on_readable.c",
 		"/home/roman/Dokumente/Sources/c-utils/strip-comments.c",
-		"/home/roman/Dokumente/Sources/c-utils/WINBASEAPI",
-		"/home/roman/Dokumente/Sources/c-utils/WINBOOL",
-		"/home/roman/Dokumente/Sources/c-utils/WINAPI",
-		"/home/roman/Dokumente/Sources/c-utils/ReadFile"
+		"/home/roman/Dokumente/Sources/c-utils/WINBASEAPI"
 	],
 	"find":
 	{
@@ -544,7 +510,7 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 32,
+						"buffer_size": 0,
 						"regions":
 						{
 						},
@@ -554,19 +520,14 @@
 						"settings":
 						{
 							"color_scheme": "Packages/Outline/outline.hidden-tmTheme",
-							"current_file": "/home/roman/Dokumente/Sources/c-utils/lib/env/env_set.c",
-							"function_name_status_row": 0,
+							"current_file": null,
+							"function_name_status_row": -1,
 							"outline_rename_mode": false,
 							"symkeys":
 							[
-								[
-									98,
-									105
-								]
 							],
 							"symlist":
 							[
-								"—Ⓕ– env_set ( ) { … } — function"
 							],
 							"syntax": "Packages/Outline/outline.hidden-tmLanguage",
 							"tab_size": 2,
@@ -576,137 +537,14 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 4,
+					"stack_index": 0,
 					"type": "text"
 				}
 			]
 		},
 		{
-			"selected": 3,
 			"sheets":
 			[
-				{
-					"buffer": 1,
-					"file": "CMakeLists.txt",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 104255,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								37048,
-								37048
-							]
-						],
-						"settings":
-						{
-							"function_name_status_row": 827,
-							"syntax": "Packages/CMakeEditor/CMakeEditor.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 15558.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 3,
-					"type": "text"
-				},
-				{
-					"buffer": 2,
-					"file": "pkgcfg.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 30901,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								9702,
-								9702
-							]
-						],
-						"settings":
-						{
-							"function_name_status_row": 474,
-							"syntax": "Packages/C Improved/C Improved.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 7636.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 2,
-					"type": "text"
-				},
-				{
-					"buffer": 3,
-					"file": "lib/env/env_put.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 4354,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								2000,
-								2000
-							]
-						],
-						"settings":
-						{
-							"function_name_status_row": 107,
-							"syntax": "Packages/C Improved/C Improved.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 1326.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 1,
-					"type": "text"
-				},
-				{
-					"buffer": 4,
-					"file": "lib/env/env_set.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 296,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								218,
-								218
-							]
-						],
-						"settings":
-						{
-							"function_name_status_row": 13,
-							"syntax": "Packages/C Improved/C Improved.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 0,
-					"type": "text"
-				}
 			]
 		}
 	],

@@ -45,7 +45,7 @@
 #include "lib/dns.h"
 
 #include <stdlib.h>
-#include <stdbool.h>
+#include "lib/bool.h"
 #include <errno.h>
 
 #include "map.h"

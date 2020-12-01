@@ -54,7 +54,7 @@ cfg() {
 
  (mkdir -p $builddir
   : ${relsrcdir=`realpath --relative-to "$builddir" .`}
-  set -x
+  : set -x
   cd "${builddir:-.}"
   IFS="$IFS "
  set -- -Wno-dev \

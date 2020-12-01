@@ -101,7 +101,7 @@ size_t fmt_asn1dertag(char* dest,
 /* internal functions, may be independently useful */
 char fmt_tohex(char c);
 
-#ifdef __BORLANDC__
+#if defined(__BORLANDC__) || defined(__LCC__)
 #define fmt_strm(b, args) fmt_strm_internal(b, args, (char*)0)
 #else
 #define fmt_strm(b, ...) fmt_strm_internal(b, __VA_ARGS__, (char*)0)
@@ -113,7 +113,7 @@ size_t fmt_strm_internal(char* dest, ...);
 #define MAX_ALLOCA 100000
 #endif
 
-#ifdef __BORLANDC__
+#if defined(__BORLANDC__) || defined(__LCC__)
 #define fmt_strm_alloca(a, args)                                                                   \
   ({                                                                                               \
     size_t len = fmt_strm((char*)0, a, args) + 1;                                                  \

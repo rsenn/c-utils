@@ -40,7 +40,7 @@ typedef struct _REPARSE_DATA_BUFFER {
     struct {
       BYTE DataBuffer[1];
     } GenericReparseBuffer;
-  };
+  } u;
 } REPARSE_DATA_BUFFER, *PREPARSE_DATA_BUFFER;
 
 #define REPARSE_DATA_BUFFER_HEADER_SIZE FIELD_OFFSET(REPARSE_DATA_BUFFER, GenericReparseBuffer)

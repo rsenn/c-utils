@@ -9,7 +9,7 @@
 
 #include <unistd.h>
 #include <errno.h>
-#include <stdbool.h>
+#include "lib/bool.h"
 
 #include "roots.h"
 

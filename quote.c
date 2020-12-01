@@ -16,7 +16,7 @@
 #include "lib/uint8.h"
 
 #include <ctype.h>
-#include <stdbool.h>
+#include "lib/bool.h"
 
 #if WINDOWS_NATIVE
 #include <io.h>

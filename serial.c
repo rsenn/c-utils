@@ -309,7 +309,7 @@ char**
 get_serial_ports(void) {
   DIR* dir;
   struct dirent* ent;
-
+  char** files;
   int size = 0;
   dir = opendir("/dev/");
   while((ent = readdir(dir)) != NULL) {
@@ -320,7 +320,7 @@ get_serial_ports(void) {
   }
   closedir(dir);
 
-  char** files = (char**)malloc((size + 1) * sizeof(char*));
+  files = (char**)malloc((size + 1) * sizeof(char*));
 
   int i = 0;
   dir = opendir("/dev/");

@@ -16,7 +16,7 @@
 #include "lib/fmt.h"
 #include "lib/str.h"
 
-#include <stdbool.h>
+#include "lib/bool.h"
 #include <errno.h>
 
 #include "roots.h"

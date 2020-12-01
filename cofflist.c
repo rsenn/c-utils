@@ -41,6 +41,11 @@ put_value(buffer* b, const char* name, uint32 v) {
 
 void
 coff_print_func(buffer* b, void* coff, coff_symtab_entry* fn) {
+ range ln;
+ coff_line_number* p;
+   const char* strtab;
+int i;
+ uint16 line_number;
 
   coff_symtab_entry* aux = coff_index_symtab(coff, uint32_get(&fn->func.tag_index));
   coff_symtab_entry* bfef = coff_index_symtab(coff, uint32_get(&fn->func.tag_index) + 1);
@@ -48,12 +53,11 @@ coff_print_func(buffer* b, void* coff, coff_symtab_entry* fn) {
 
   if(shdr == NULL)
     return;
-  range ln = coff_line_numbers(coff, shdr);
-  coff_line_number* p;
-  const char* strtab = coff_get_strtab(coff, NULL);
-  int i = 0;
+  ln = coff_line_numbers(coff, shdr);
+  strtab = coff_get_strtab(coff, NULL);
+  i = 0;
 
-  uint16 line_number = bfef->bfef.source_line_number;
+  line_number = bfef->bfef.source_line_number;
 
   buffer_putnlflush(b);
   buffer_puts(b, "Line number entries: ");

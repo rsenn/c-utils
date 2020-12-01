@@ -7,7 +7,7 @@
 #include "lib/path.h"
 
 #include <stdlib.h>
-#include <stdbool.h>
+#include "lib/bool.h"
 #include <unistd.h>
 #include <sys/mman.h>
 
