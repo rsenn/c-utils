@@ -29,12 +29,12 @@ __atomic_compare_and_swap(volatile long* ptr, long oldval, long newval) {
 
 #elif(defined(__i386__) || defined(__x86_64__)) &&                                                 \
     (defined(__TINYC__) || defined(TCC) || defined(__GNUC__) || USE_INLINE_COMPARE_AND_SWAP)
-#warning x86
+//#warning x86
 #ifdef __TINYC__
-#warning TCC
+//#warning TCC
 #endif
 #ifdef __GNUC__
-#warning GNUC
+//#warning GNUC
 #undef __sync_val_compare_and_swap
 //#define __sync_val_compare_and_swap  __CAS
 #else
@@ -52,7 +52,7 @@ __compare_and_swap(uint64_t* ptr, uint64_t new_val, uint64_t old_val) {
 }
 #endif
 #define __CAS __compare_and_swap
-static __inline__ long
+static inline long
 __sync_val_compare_and_swap(long* ptr, long cmp, long new) {
   unsigned long prev;
   __asm__ volatile("lock;"

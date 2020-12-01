@@ -76,6 +76,15 @@ else(WIN32 OR WINDOWS)
   option(USE_SELECT "Use select() syscall" OFF)
 endif(WIN32 OR WINDOWS)
 
+if(CMAKE_C_COMPILER_ID STREQUAL "Clang")
+  set(CLANG TRUE CACHE BOOL "Clang compiler type" FORCE)
+endif(CMAKE_C_COMPILER_ID STREQUAL "Clang")
+
+if(CLANG)
+  set(CMAKE_C_CLANG_TIDY clang-tidy -checks=-*,readability-*)
+  message(STATUS "Clang tidy checks: ${CMAKE_C_CLANG_TIDY}")
+endif(CLANG)
+
 #[[option(USE_POLL "Use poll() syscall" OFF)
 option(USE_EPOLL "Use epoll() syscall" OFF)]]
 option(BUILD_SHARED_LIBS "Build shared libs" "${SHARED_LIBS}")

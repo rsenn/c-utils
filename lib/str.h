@@ -77,7 +77,7 @@ char* str_ptime(const char* s, const char* format, struct tm* tm);
 
 char* str_basename(const char* s);
 
-int str_is(const char* s, int (*pred)());
+int str_is(const char* s, int (*pred)(int));
 
 size_t str_camelize(char*);
 
