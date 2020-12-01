@@ -503,7 +503,7 @@ if(LINK_STATIC)
   set(EXE_LINKER_FLAGS "${EXE_LINKER_FLAGS} -static")
   set(CHK_DLFCN FALSE)
 else(LINK_STATIC)
-  set(EXE_LINKER_FLAGS "-Wl,-rpath=${OPENSSL_LIB_DIR}"=)
+  set(EXE_LINKER_FLAGS "-Wl,-rpath=${OPENSSL_LIB_DIR}")
   set(CHK_DLFCN TRUE)
 endif(LINK_STATIC)
 
