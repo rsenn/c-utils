@@ -180,6 +180,7 @@ macro(check_compile RESULT_VAR SOURCE)
   endif(RESULT STREQUAL "")
   show_result(${RESULT_VAR})
 endmacro(check_compile RESULT_VAR SOURCE)
+
 macro(check_run RESULT_VAR SOURCE)
   string(RANDOM LENGTH 6 ALPHABET "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789" C_SOURCE)
   set(C_SOURCE "${CMAKE_CURRENT_BINARY_DIR}/try-${C_SOURCE}.c")
@@ -371,7 +372,7 @@ endif(SIGSET_T_SIZE)
 
 if(NOT HAVE_SIGSET_T OR NOT SIZEOF_SIGSET_T)
 
-  check_run(HAVE_SIGSET_T "#define _GNU_SOURCE\n#include <sys/types.h>\n#include <signal.h>\n#include <fcntl.h>\n#include <stdio.h>\n\nint main() {\n  sigset_t ss;\nprintf(\"%lu\\\\n\", sizeof(ss));\n  return 0;\n}\n" SIZEOF_SIGSET_T)
+  check_compile(HAVE_SIGSET_T "#define _GNU_SOURCE\n#include <sys/types.h>\n#include <signal.h>\n#include <fcntl.h>\n#include <stdio.h>\n\nint main() {\n  sigset_t ss;\nprintf(\"%lu\\\\n\", sizeof(ss));\n  return 0;\n}\n" SIZEOF_SIGSET_T)
   # message("SIZEOF_SIGSET_T = ${SIZEOF_SIGSET_T}")
 endif(NOT HAVE_SIGSET_T OR NOT SIZEOF_SIGSET_T)
 
