@@ -20,13 +20,29 @@
 	"buffers":
 	[
 		{
-			"contents": "",
+			"contents": "  Ⓜ  VERSION … — macro object\n  Ⓜ  HOSTS_FILE … — macro object\n  Ⓜ  closesocket … — macro object\n  Ⓜ  HOSTS_FILE … — macro object\n—Ⓕ– read_hosts ( ) { … } — function\n—Ⓕ– lookup_hosts ( ) { … } — function\n—Ⓕ– dump_hosts ( ) { … } — function\n—Ⓕ– usage ( ) { … } — function\n—Ⓕ– main ( ) { … } — function",
 			"settings":
 			{
-				"buffer_size": 0,
+				"buffer_size": 300,
 				"line_ending": "Unix",
 				"name": "𝌆 Outline",
 				"scratch": true
+			}
+		},
+		{
+			"file": "cfg.sh",
+			"settings":
+			{
+				"buffer_size": 11224,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "tcping.c",
+			"settings":
+			{
+				"buffer_size": 8982,
+				"line_ending": "Unix"
 			}
 		}
 	],
@@ -130,73 +146,73 @@
 	},
 	"expanded_folders":
 	[
-		"/home/roman/Dokumente/Sources/c-utils",
-		"/home/roman/Dokumente/Sources/c-utils/lib",
-		"/home/roman/Dokumente/Sources/c-utils/lib/env",
-		"/home/roman/Dokumente/Sources/c-utils/node_modules"
+		"/home/roman/Sources/c-utils",
+		"/home/roman/Sources/c-utils/lib",
+		"/home/roman/Sources/c-utils/lib/env",
+		"/home/roman/Sources/c-utils/node_modules"
 	],
 	"file_history":
 	[
-		"/home/roman/Dokumente/Sources/c-utils/CMakeLists.txt",
-		"/home/roman/Dokumente/Sources/c-utils/pkgcfg.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/env/env_put.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/env/env_set.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/tls_internal.h",
-		"/home/roman/Dokumente/Sources/c-utils/lib/http.h",
-		"/home/roman/Dokumente/Sources/c-utils/lib/tls.h",
-		"/home/roman/Dokumente/Sources/c-utils/lib/ssl/ssl_accept.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/http/http_ssl_socket.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/http/http_ssl_read.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/http/https_ssl_ctx.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/http/https_error.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/http/https_socket.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/http/http_ssl_io.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/http/http_ssl_errstr.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/http/http_ssl2errno.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/http/http_socket_write.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/http/http_ssl_ctx.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/http/http_ssl_error.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/http/http_ssl_connect.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/http/http_ssl2want.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/http/http_socket_read.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/http/http_socket.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/http/http_sendreq.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/http/http_read_internal.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/http/http_readable.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/http/http_read_header.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/http/http_read.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/http/http_on_writeable.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/http/http_on_readable.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/http/http_get.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/http/http_close.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/http/http_ssl_write.c",
-		"/home/roman/Dokumente/Sources/c-utils/ssltest.c",
+		"/home/roman/Sources/c-utils/CMakeLists.txt",
+		"/home/roman/Sources/c-utils/pkgcfg.c",
+		"/home/roman/Sources/c-utils/lib/env/env_put.c",
+		"/home/roman/Sources/c-utils/lib/env/env_set.c",
+		"/home/roman/Sources/c-utils/lib/tls_internal.h",
+		"/home/roman/Sources/c-utils/lib/http.h",
+		"/home/roman/Sources/c-utils/lib/tls.h",
+		"/home/roman/Sources/c-utils/lib/ssl/ssl_accept.c",
+		"/home/roman/Sources/c-utils/lib/http/http_ssl_socket.c",
+		"/home/roman/Sources/c-utils/lib/http/http_ssl_read.c",
+		"/home/roman/Sources/c-utils/lib/http/https_ssl_ctx.c",
+		"/home/roman/Sources/c-utils/lib/http/https_error.c",
+		"/home/roman/Sources/c-utils/lib/http/https_socket.c",
+		"/home/roman/Sources/c-utils/lib/http/http_ssl_io.c",
+		"/home/roman/Sources/c-utils/lib/http/http_ssl_errstr.c",
+		"/home/roman/Sources/c-utils/lib/http/http_ssl2errno.c",
+		"/home/roman/Sources/c-utils/lib/http/http_socket_write.c",
+		"/home/roman/Sources/c-utils/lib/http/http_ssl_ctx.c",
+		"/home/roman/Sources/c-utils/lib/http/http_ssl_error.c",
+		"/home/roman/Sources/c-utils/lib/http/http_ssl_connect.c",
+		"/home/roman/Sources/c-utils/lib/http/http_ssl2want.c",
+		"/home/roman/Sources/c-utils/lib/http/http_socket_read.c",
+		"/home/roman/Sources/c-utils/lib/http/http_socket.c",
+		"/home/roman/Sources/c-utils/lib/http/http_sendreq.c",
+		"/home/roman/Sources/c-utils/lib/http/http_read_internal.c",
+		"/home/roman/Sources/c-utils/lib/http/http_readable.c",
+		"/home/roman/Sources/c-utils/lib/http/http_read_header.c",
+		"/home/roman/Sources/c-utils/lib/http/http_read.c",
+		"/home/roman/Sources/c-utils/lib/http/http_on_writeable.c",
+		"/home/roman/Sources/c-utils/lib/http/http_on_readable.c",
+		"/home/roman/Sources/c-utils/lib/http/http_get.c",
+		"/home/roman/Sources/c-utils/lib/http/http_close.c",
+		"/home/roman/Sources/c-utils/lib/http/http_ssl_write.c",
+		"/home/roman/Sources/c-utils/ssltest.c",
 		"/home/roman/.config/sublime-text-3/Packages/TabNine/TabNine.sublime-settings",
 		"/home/roman/.config/sublime-text-3/Packages/User/TabNine.sublime-settings",
-		"/home/roman/Dokumente/Sources/c-utils/lib/scan.h",
-		"/home/roman/Dokumente/Sources/c-utils/lib/ssl.h",
-		"/home/roman/Dokumente/Sources/c-utils/lib/ssl/ssl_new.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/buffer/buffer_getline.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/stralloc/buffer_getline_sa.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/ssl/ssl_instance_return.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/stralloc/stralloc_trimr.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/stralloc/buffer_getnewline_sa.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/ssl/ssl_write.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/fmt/fmt_escapechardoublequotedshell.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/ssl/ssl_read.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/stralloc/stralloc_fmt.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/iarray.h",
-		"/home/roman/Dokumente/Sources/c-utils/quote.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/fmt/fmt_8long.c",
-		"/home/roman/Dokumente/Sources/c-utils/httptest.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/iarray/iarray_init.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/buffer.h",
-		"/home/roman/Dokumente/Sources/c-utils/lib/buffer/buffer_getc.c",
-		"/home/roman/Dokumente/Sources/c-utils/ccat.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/str/str_case_diff.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/str/str_case_equal.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/case.h",
-		"/home/roman/Dokumente/Sources/c-utils/lib/buffer/buffer_brotli.c",
+		"/home/roman/Sources/c-utils/lib/scan.h",
+		"/home/roman/Sources/c-utils/lib/ssl.h",
+		"/home/roman/Sources/c-utils/lib/ssl/ssl_new.c",
+		"/home/roman/Sources/c-utils/lib/buffer/buffer_getline.c",
+		"/home/roman/Sources/c-utils/lib/stralloc/buffer_getline_sa.c",
+		"/home/roman/Sources/c-utils/lib/ssl/ssl_instance_return.c",
+		"/home/roman/Sources/c-utils/lib/stralloc/stralloc_trimr.c",
+		"/home/roman/Sources/c-utils/lib/stralloc/buffer_getnewline_sa.c",
+		"/home/roman/Sources/c-utils/lib/ssl/ssl_write.c",
+		"/home/roman/Sources/c-utils/lib/fmt/fmt_escapechardoublequotedshell.c",
+		"/home/roman/Sources/c-utils/lib/ssl/ssl_read.c",
+		"/home/roman/Sources/c-utils/lib/stralloc/stralloc_fmt.c",
+		"/home/roman/Sources/c-utils/lib/iarray.h",
+		"/home/roman/Sources/c-utils/quote.c",
+		"/home/roman/Sources/c-utils/lib/fmt/fmt_8long.c",
+		"/home/roman/Sources/c-utils/httptest.c",
+		"/home/roman/Sources/c-utils/lib/iarray/iarray_init.c",
+		"/home/roman/Sources/c-utils/lib/buffer.h",
+		"/home/roman/Sources/c-utils/lib/buffer/buffer_getc.c",
+		"/home/roman/Sources/c-utils/ccat.c",
+		"/home/roman/Sources/c-utils/lib/str/str_case_diff.c",
+		"/home/roman/Sources/c-utils/lib/str/str_case_equal.c",
+		"/home/roman/Sources/c-utils/lib/case.h",
+		"/home/roman/Sources/c-utils/lib/buffer/buffer_brotli.c",
 		"/tmp/editor-1223047020.txt",
 		"/home/roman/Sources/c-utils/lib/cb_internal.h",
 		"/home/roman/Sources/c-utils/lib/buffer/buffer_flush.c",
@@ -259,12 +275,12 @@
 		"/home/roman/.cache/.fr-UnsUQ6/code/sighandler.c",
 		"/home/roman/.cache/.fr-vjEsVG/code/cat.c",
 		"/home/roman/.cache/.fr-lFf5x5/code/B9.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/path/path_dirname.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/open/open_temp.c",
-		"/home/roman/Dokumente/Sources/c-utils/build/cmake/config.h.cmake",
+		"/home/roman/Sources/c-utils/lib/path/path_dirname.c",
+		"/home/roman/Sources/c-utils/lib/open/open_temp.c",
+		"/home/roman/Sources/c-utils/build/cmake/config.h.cmake",
 		"/home/roman/Sources/c-utils/lib/http/http_on_readable.c",
-		"/home/roman/Dokumente/Sources/c-utils/strip-comments.c",
-		"/home/roman/Dokumente/Sources/c-utils/WINBASEAPI"
+		"/home/roman/Sources/c-utils/strip-comments.c",
+		"/home/roman/Sources/c-utils/WINBASEAPI"
 	],
 	"find":
 	{
@@ -278,9 +294,9 @@
 			"/home/roman/Sources/c-utils/lib,*.c,*.h,*.txt,/home/roman/Sources/c-utils,*.c,*.h,-*/3rdparty/*,-*/build/*",
 			"/home/roman/Sources/c-utils/lib,*.c,*.h,*.txt,/home/roman/Sources/c-utils,*.c,*.h,-*/3rdparty/*",
 			"/home/roman/Sources/c-utils/lib,*.c,*.h,*.txt,/home/roman/Sources/c-utils,*.c,*.h",
-			"/home/roman/Dokumente/Sources/c-utils/lib,*.c,*.h,*.txt",
-			"/home/roman/Dokumente/Sources/c-utils/lib,*.c,*.h",
-			"/home/roman/Dokumente/Sources/c-utils,*.c,*.h",
+			"/home/roman/Sources/c-utils/lib,*.c,*.h,*.txt",
+			"/home/roman/Sources/c-utils/lib,*.c,*.h",
+			"/home/roman/Sources/c-utils,*.c,*.h",
 			""
 		]
 	},
@@ -289,6 +305,7 @@
 		"case_sensitive": true,
 		"find_history":
 		[
+			"open",
 			"Found",
 			"USE_",
 			"libssl",
@@ -415,8 +432,7 @@
 			"getln",
 			"STRALLOC_INI",
 			"buffer_all",
-			"tcping",
-			"seed"
+			"tcping"
 		],
 		"highlight": false,
 		"in_selection": false,
@@ -510,7 +526,7 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 0,
+						"buffer_size": 300,
 						"regions":
 						{
 						},
@@ -520,14 +536,59 @@
 						"settings":
 						{
 							"color_scheme": "Packages/Outline/outline.hidden-tmTheme",
-							"current_file": null,
+							"current_file": "/home/roman/Sources/c-utils/tcping.c",
 							"function_name_status_row": -1,
 							"outline_rename_mode": false,
 							"symkeys":
 							[
+								[
+									950,
+									957
+								],
+								[
+									1511,
+									1521
+								],
+								[
+									1621,
+									1632
+								],
+								[
+									1654,
+									1664
+								],
+								[
+									1714,
+									1724
+								],
+								[
+									2889,
+									2901
+								],
+								[
+									3118,
+									3128
+								],
+								[
+									3438,
+									3443
+								],
+								[
+									3718,
+									3722
+								]
 							],
 							"symlist":
 							[
+								"\tⓂ  VERSION … — macro object",
+								"\tⓂ  HOSTS_FILE … — macro object",
+								"\tⓂ  closesocket … — macro object",
+								"\tⓂ  HOSTS_FILE … — macro object",
+								"—Ⓕ– read_hosts ( ) { … } — function",
+								"—Ⓕ– lookup_hosts ( ) { … } — function",
+								"—Ⓕ– dump_hosts ( ) { … } — function",
+								"—Ⓕ– usage ( ) { … } — function",
+								"—Ⓕ– main ( ) { … } — function"
 							],
 							"syntax": "Packages/Outline/outline.hidden-tmLanguage",
 							"tab_size": 2,
@@ -537,14 +598,77 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 0,
+					"stack_index": 2,
 					"type": "text"
 				}
 			]
 		},
 		{
+			"selected": 1,
 			"sheets":
 			[
+				{
+					"buffer": 1,
+					"file": "cfg.sh",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 11224,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								10888,
+								10888
+							]
+						],
+						"settings":
+						{
+							"function_name_status_row": 400,
+							"syntax": "Packages/ShellScript/Bash.sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 6748.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "tcping.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 8982,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								8036,
+								8036
+							]
+						],
+						"settings":
+						{
+							"function_name_status_row": 346,
+							"syntax": "Packages/C Improved/C Improved.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 10.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				}
 			]
 		}
 	],
@@ -617,6 +741,14 @@
 		"last_filter": "",
 		"selected_items":
 		[
+			[
+				"tcping",
+				"tcping.c"
+			],
+			[
+				"cfg",
+				"cfg.sh"
+			],
 			[
 				"env_set",
 				"lib/env/env_set.c"
@@ -832,10 +964,6 @@
 			[
 				"ftplib",
 				"ftplib.c"
-			],
-			[
-				"tcping",
-				"tcping.c"
 			],
 			[
 				"add",
@@ -1124,10 +1252,6 @@
 			[
 				"set.h",
 				"lib/set.h"
-			],
-			[
-				"str_diff",
-				"lib/str/str_diff.c"
 			]
 		],
 		"width": 0.0

@@ -41,6 +41,8 @@
 #include "lib/scan.h"
 #include "lib/byte.h"
 #include "lib/uint32.h"
+#include "lib/uint64.h"
+#include "lib/fmt.h"
 #include "lib/io.h"
 #include "lib/dns.h"
 
@@ -158,6 +160,30 @@ usage(char* prog) {
   buffer_putnlflush(buffer_2);
 }
 
+size_t
+fmt_taia(char* dest, const struct taia* t) {
+  size_t i = 0;
+  uint64 secs = t->sec.x;
+  double frac = taia_frac(t);
+
+  if(secs > 0) {
+    i += fmt_ulonglong(&dest[i], secs);
+    dest[i++] = 's';
+    dest[i++] = ' ';
+  }
+
+  i+= fmt_uint(&dest[i], (int)(frac*1000));
+  i += str_copy(&dest[i], "ms");
+  return i;
+}
+
+void
+put_taia(buffer* b, const struct taia* t) {
+  char buf[512];
+
+  buffer_put(b, buf, fmt_taia(buf, t));
+}
+
 int
 main(int argc, char* argv[]) {
   fd_t sock;
@@ -169,7 +195,7 @@ main(int argc, char* argv[]) {
   uint64 result;
   int port = 0;
   stralloc host, ips;
-  tai6464 now, deadline, timeout;
+  tai6464 now, start,deadline, timeout;
   static char seed[128];
   address_t addr;
   bool no_ip6 = false;
@@ -270,6 +296,7 @@ main(int argc, char* argv[]) {
     io_wantwrite(sock);
 
     taia_now(&now);
+    start = now;
 
 #ifdef DEBUG_OUTPUT_
     buffer_puts(buffer_2, "Now: ");
@@ -338,8 +365,18 @@ main(int argc, char* argv[]) {
   }
   /* OK, connection established */
   closesocket(sock);
+  ret = 0;
+
+  taia_now(&now);
+  taia_sub(&timeout, &now, &start);
+
   if(verbose) {
-    buffer_putm_internal(buffer_1, argv[optind], " port ", argv[optind + 1], " open.", NULL);
+    double duration = taia_approx(&timeout);
+    buffer_putm_internal(buffer_1, argv[optind], " port ", argv[optind + 1], " open", 0);
+    buffer_puts(buffer_1, " (");
+    put_taia(buffer_1, &timeout);
+    buffer_puts(buffer_1, ")");
+
     buffer_putnlflush(buffer_1);
   }
 fail:
