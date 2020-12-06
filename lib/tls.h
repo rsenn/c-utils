@@ -26,13 +26,13 @@ int tls_verify(int ok, tls_cert_t* cert);
 ssize_t tls_write(fd_t fd, const void* data, size_t len);
 int tls_established(fd_t fd);
 struct tls_instance_st* tls_instance_get(fd_t fd);
-const char* tls_strerror(fd_t, int);
+const char* tls_strerror(fd_t);
 fd_t tls_get_fd(tls_t* tls);
 
 #define tls_instance(fd) tls_instance_get((fd))
 #define is_tls(fd) !!tls_instance_get((fd))
 
-#define tls_error(fd) (tls_instance_get((fd))->error)
+//#define tls_error(fd) (tls_instance_get((fd))->error)
 #define tls_errno(fd) (tls_instance_errno(tls_instance_get((fd))))
 int tls_want(fd_t fd, void (*)(fd_t), void (*)(fd_t));
 

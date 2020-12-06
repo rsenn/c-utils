@@ -8,6 +8,7 @@ void io_wantwrite_really(fd_t d, io_entry* e);
 
 int64
 io_canwrite() {
+  ssize_t ret = -1;
   io_entry* e;
   if(first_writeable == -1)
 #if defined(HAVE_SIGIO)
@@ -53,8 +54,16 @@ io_canwrite() {
         e->canwrite = 0;
       if(!e->kernelwantwrite)
         io_wantwrite_really(r, e);
-      return r;
+      ret = r;
+      break;
     }
   }
-  return -1;
+
+#ifdef DEBUG_IO
+  buffer_putspad(buffer_2, "io_canwrite ", 30);
+  buffer_puts(buffer_2, "ret=");
+  buffer_putlong(buffer_2, ret);
+  buffer_putnlflush(buffer_2);
+#endif
+  return ret;
 }

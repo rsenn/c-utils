@@ -296,3 +296,7 @@ io_getevents(aio_context_t ctx,
 #endif /* defined __dietlibc__ */
 #endif
 #endif
+
+#ifdef DEBUG_IO
+#include "../buffer.h"
+#endif

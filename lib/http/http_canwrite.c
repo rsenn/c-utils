@@ -13,7 +13,7 @@ ssize_t
 http_canwrite(http* h, void (*wantread)(fd_t)) {
   ssize_t ret = 0;
 #ifdef DEBUG_HTTP
-  buffer_putspad(buffer_2, "http_canwrite ", 18);
+  buffer_putspad(buffer_2, "http_canwrite ", 30);
   buffer_puts(buffer_2, "sock=");
   buffer_putlong(buffer_2, h->sock);
   buffer_puts(buffer_2, " tls=");
@@ -59,17 +59,23 @@ fail:
     tls_want(h->sock, wantread, 0);
 
 #ifdef DEBUG_HTTP
-  buffer_putspad(buffer_2, "http_canwrite ", 18);
+  buffer_putspad(buffer_2, "http_canwrite ", 30);
   buffer_puts(buffer_2, "sock=");
   buffer_putlong(buffer_2, h->sock);
-  buffer_puts(buffer_2, " tls=");
-  buffer_putlong(buffer_2, !!h->tls);
-  buffer_puts(buffer_2, " connected=");
-  buffer_putlong(buffer_2, !!h->connected);
   buffer_puts(buffer_2, " ret=");
   buffer_putlong(buffer_2, ret);
-  buffer_puts(buffer_2, " err=");
-  buffer_puts(buffer_2, http_strerror(h, ret));
+  if(ret < 0) {
+    buffer_puts(buffer_2, " err=");
+    buffer_putstr(buffer_2, http_strerror(h, ret));
+  }
+  /* buffer_puts(buffer_2, " tls=");
+    buffer_putlong(buffer_2, !!h->tls);
+    buffer_puts(buffer_2, " connected=");
+    buffer_putlong(buffer_2, !!h->connected);*/
+  if(h->response->code != -1) {
+    buffer_puts(buffer_2, " code=");
+    buffer_putlong(buffer_2, h->response->code);
+  }
   buffer_puts(buffer_2, " status=");
   buffer_puts(buffer_2,
               ((const char* const[]){"-1",

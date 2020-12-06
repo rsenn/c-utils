@@ -4,6 +4,9 @@
 #include "iarray.h"
 #include "tls.h"
 
+#include <errno.h>
+#include <string.h>
+
 #ifdef HAVE_OPENSSL
 #include <openssl/ssl.h>
 #include <openssl/x509.h>
@@ -11,7 +14,13 @@
 
 typedef void want_func(fd_t);
 
-typedef enum { TLS_OP_WRITE, TLS_OP_READ, TLS_OP_ACCEPT, TLS_OP_CONNECT, TLS_OP_SHUTDOWN } tls_op_t;
+typedef enum {
+  TLS_OP_WRITE = 0,
+  TLS_OP_READ,
+  TLS_OP_ACCEPT,
+  TLS_OP_CONNECT,
+  TLS_OP_SHUTDOWN
+} tls_op_t;
 
 typedef struct bio_method_st {
   int type;

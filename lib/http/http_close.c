@@ -31,13 +31,13 @@ http_close(http* h) {
     tls_want(h->sock, io_wantread, io_wantwrite);
 
 #ifdef DEBUG_HTTP
-  buffer_putspad(buffer_2, "http_close ", 18);
+  buffer_putspad(buffer_2, "http_close ", 30);
   buffer_puts(buffer_2, "sock=");
   buffer_putlong(buffer_2, h->sock);
   buffer_puts(buffer_2, " ret=");
   buffer_putlong(buffer_2, ret);
   buffer_puts(buffer_2, " err=");
-  buffer_puts(buffer_2, http_strerror(h, ret));
+  buffer_putstr(buffer_2, http_strerror(h, ret));
   buffer_putnlflush(buffer_2);
 #endif
 }

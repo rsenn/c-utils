@@ -28,22 +28,7 @@ http_canread(http* h, void (*wantwrite)(fd_t)) {
   http_response* r;
   int err;
   ssize_t ret = 0;
-#ifdef DEBUG_HTTP
-  buffer_putspad(buffer_2, "http_canread ", 18);
-  buffer_puts(buffer_2, "sock=");
-  buffer_putlong(buffer_2, h->sock);
-  buffer_puts(buffer_2, " tls=");
-  buffer_putlong(buffer_2, !!h->tls);
-  buffer_puts(buffer_2, " connected=");
-  buffer_putlong(buffer_2, !!h->connected);
-  buffer_puts(buffer_2, " keepalive=");
-  buffer_putlong(buffer_2, !!h->keepalive);
-  buffer_puts(buffer_2, " nonblocking=");
-  buffer_putlong(buffer_2, !!h->nonblocking);
-  buffer_puts(buffer_2, " sent=");
-  buffer_putlong(buffer_2, !!h->sent);
-  buffer_putsflush(buffer_2, "\n");
-#endif
+
   if(h->tls) {
     if(!h->connected) {
       if((ret = tls_connect(h->sock)) != 1)
@@ -107,17 +92,17 @@ http_canread(http* h, void (*wantwrite)(fd_t)) {
       stralloc_readyplus(&h->response->data, ret);
       buffer_get(&h->q.in, &h->response->data.s[h->response->data.len], ret);
       h->response->data.len += ret;
-
-#ifdef DEBUG_HTTP
-      buffer_putspad(buffer_2, "http_canread DATA ", 18);
-      buffer_puts(buffer_2, "sock=");
-      buffer_putlong(buffer_2, h->sock);
-      buffer_puts(buffer_2, " ret=");
-      buffer_putlong(buffer_2, ret);
-      buffer_puts(buffer_2, " data.len=");
-      buffer_putlong(buffer_2, h->response->data.len);
-      buffer_putnlflush(buffer_2);
-#endif
+      /*
+      #ifdef DEBUG_HTTP
+            buffer_putspad(buffer_2, "http_canread DATA ", 30);
+            buffer_puts(buffer_2, "sock=");
+            buffer_putlong(buffer_2, h->sock);
+            buffer_puts(buffer_2, " ret=");
+            buffer_putlong(buffer_2, ret);
+            buffer_puts(buffer_2, " data.len=");
+            buffer_putlong(buffer_2, h->response->data.len);
+            buffer_putnlflush(buffer_2);
+      #endif*/
     }
   }
 
@@ -135,9 +120,21 @@ fail:
     tls_want(h->sock, 0, wantwrite);
 
 #ifdef DEBUG_HTTP
-  buffer_putspad(buffer_2, "http_canread ", 18);
+  buffer_putspad(buffer_2, "http_canread ", 30);
   buffer_puts(buffer_2, "sock=");
   buffer_putlong(buffer_2, h->sock);
+  buffer_puts(buffer_2, " ret=");
+  buffer_putlong(buffer_2, ret);
+  buffer_puts(buffer_2, " tls=");
+  buffer_putlong(buffer_2, !!h->tls);
+  if(ret < 0) {
+    buffer_puts(buffer_2, " err=");
+    buffer_putstr(buffer_2, http_strerror(h, ret));
+  }
+  if(h->response->code != -1) {
+    buffer_puts(buffer_2, " code=");
+    buffer_putlong(buffer_2, h->response->code);
+  }
   buffer_puts(buffer_2, " status=");
   buffer_puts(buffer_2,
               ((const char* const[]){"-1",
@@ -148,10 +145,6 @@ fail:
                                      "HTTP_STATUS_BUSY",
                                      "HTTP_STATUS_FINISH",
                                      0})[h->response->status + 1]);
-  buffer_puts(buffer_2, " ret=");
-  buffer_putlong(buffer_2, ret);
-  buffer_puts(buffer_2, " err=");
-  buffer_puts(buffer_2, http_strerror(h, ret));
   buffer_putnlflush(buffer_2);
 #endif
 

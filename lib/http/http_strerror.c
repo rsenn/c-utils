@@ -9,7 +9,7 @@ http_strerror(http* h, int ret) {
 
   if(ret == -1) {
     if(h->tls)
-      err = tls_strerror(h->sock, ret);
+      err = tls_strerror(h->sock);
     else
       err = strerror(errno);
   }

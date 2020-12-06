@@ -196,7 +196,14 @@ io_fd_internal(fd_t d, int flags) {
 
 int
 io_fd(fd_t d) {
-  io_entry* e = io_fd_internal(d, 0);
+  io_entry* e;
+#ifdef DEBUG_IO
+  buffer_putspad(buffer_2, "io_fd", 30);
+  buffer_puts(buffer_2, " d=");
+  buffer_putlonglong(buffer_2, d);
+  buffer_putnlflush(buffer_2);
+#endif
+  e = io_fd_internal(d, 0);
   return !!e;
 }
 

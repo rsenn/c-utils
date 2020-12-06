@@ -1,6 +1,8 @@
 #include "../io.h"
 #include "../windoze.h"
-
+#ifdef DEBUG_IO
+#include "../buffer.h"
+#endif
 #if WINDOWS_NATIVE
 #else
 #endif
@@ -12,6 +14,7 @@ void io_wantread_really(fd_t d, io_entry* e);
 
 int64
 io_canread() {
+  ssize_t ret = -1;
   io_entry* e;
   if(first_readable == -1)
 #if defined(HAVE_SIGIO)
@@ -58,8 +61,16 @@ io_canread() {
         e->canread = 0;
       if(!e->kernelwantread)
         io_wantread_really(r, e);
-      return r;
+      ret = r;
+      break;
     }
   }
-  return -1;
+
+#ifdef DEBUG_IO
+  buffer_putspad(buffer_2, "io_canread ", 30);
+  buffer_puts(buffer_2, "ret=");
+  buffer_putlong(buffer_2, ret);
+  buffer_putnlflush(buffer_2);
+#endif
+  return ret;
 }

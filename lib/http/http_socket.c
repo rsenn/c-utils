@@ -15,6 +15,7 @@
 #include <unistd.h>
 #endif
 #include <errno.h>
+#include <string.h>
 #include <stdio.h>
 
 ssize_t http_socket_read(fd_t fd, void* buf, size_t len, void* b);
@@ -58,15 +59,23 @@ http_socket_read(fd_t fd, void* buf, size_t len, void* b) {
   ssize_t ret = -1;
   http* h = (http*)((buffer*)b)->cookie;
   http_response* r = h->response;
+  int connected = h->connected;
 
   if(h->tls) {
-    int connected = h->connected;
 
     ret = tls_read(h->sock, buf, len);
     if(!connected && tls_established(h->sock))
       h->connected = 1;
-  } else
+  } else {
+    if(!connected)
+      h->connected = 1;
     ret = io_tryread(fd, (char*)buf, len);
+  }
+  if(!connected && h->connected) {
+    //    if(h->response->status <= HTTP_RECV_HEADER)
+    h->response->status = HTTP_RECV_HEADER;
+  }
+
   if(ret == 0) {
     h->connected = 0;
     r->status = HTTP_STATUS_CLOSED;
@@ -86,14 +95,14 @@ http_socket_read(fd_t fd, void* buf, size_t len, void* b) {
     io_dontwantread(fd);
   }
 #if DEBUG_HTTP
-  buffer_putspad(buffer_2, "http_socket_read ", 18);
-  buffer_puts(buffer_2, " sock=");
+  buffer_putspad(buffer_2, "http_socket_read", 30);
+  buffer_puts(buffer_2, "sock=");
   buffer_putlong(buffer_2, h->sock);
   buffer_puts(buffer_2, " ret=");
   buffer_putlong(buffer_2, ret);
-  if(ret <= 0) {
-    buffer_puts(buffer_2, " err=");
-    buffer_puts(buffer_2, http_strerror(h, ret));
+  if(ret < 0) {
+    buffer_puts(buffer_2, " errno=");
+    buffer_putstr(buffer_2, strerror(errno));
   }
   buffer_putnlflush(buffer_2);
 #endif
@@ -104,29 +113,33 @@ ssize_t
 http_socket_write(fd_t fd, void* buf, size_t len, void* b) {
   http* h = (http*)((buffer*)b)->cookie;
   ssize_t ret = 0;
+  int connected = h->connected;
 
   if(h->tls) {
-    int connected = h->connected;
     ret = tls_write(h->sock, buf, len);
     if(!connected && tls_established(h->sock))
       h->connected = 1;
-  } else
+  } else {
+    if(!connected)
+      h->connected = 1;
+
     ret = winsock2errno(send(fd, buf, len, 0));
+  }
+  if(!connected && h->connected) {
+    //    if(h->response->status <= HTTP_RECV_HEADER)
+    h->response->status = HTTP_RECV_HEADER;
+  }
+
 #ifdef DEBUG_HTTP
-  buffer_putspad(buffer_2, "http_socket_write ", 18);
-  buffer_puts(buffer_2, " sock=");
+  buffer_putspad(buffer_2, "http_socket_write ", 30);
+  buffer_puts(buffer_2, "sock=");
   buffer_putlong(buffer_2, h->sock);
 
   buffer_puts(buffer_2, " ret=");
   buffer_putlong(buffer_2, ret);
-  if(ret <= 0) {
-    buffer_puts(buffer_2, " err=");
-    buffer_puts(buffer_2, http_strerror(h, ret));
-    buffer_putm_internal(buffer_2,
-                         " (",
-                         errno == EAGAIN ? "EAGAIN" : errno == EWOULDBLOCK ? "EWOULDBLOCK" : "?",
-                         ")",
-                         0);
+  if(ret < 0) {
+    buffer_puts(buffer_2, " errno=");
+    buffer_putstr(buffer_2, strerror(errno));
   }
   buffer_putnlflush(buffer_2);
 #endif

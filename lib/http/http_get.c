@@ -26,7 +26,6 @@ http_get(http* h, const char* location) {
   stralloc dns;
   uint32 serial = 0;
   size_t len = byte_chrs(location, str_len(location), "\r\n\0", 3);
-  h->tls = len >= 5 && !byte_diff(location, 5, "https");
 #ifdef DEBUG_HTTP
   buffer_puts(buffer_2, "http_get ");
 
@@ -38,8 +37,10 @@ http_get(http* h, const char* location) {
   if(location[0] != '/') {
     size_t pos;
     pos = str_findb(location, "://", 3);
-    if(location[pos])
+    if(location[pos]) {
+      h->tls = len >= 5 && !byte_diff(location, 5, "https");
       location += pos + 3;
+    }
     pos = str_chrs(location, "/:", 2);
     stralloc_copyb(&h->host, location, pos);
     if(location[pos] == ':') {
@@ -61,7 +62,7 @@ http_get(http* h, const char* location) {
     a = (ipv4addr*)dns.s;
     byte_copy(&h->addr, sizeof(ipv4addr), &a->iaddr);
 #ifdef DEBUG_HTTP
-    buffer_putspad(buffer_2, "http_get resolved ", 18);
+    buffer_putspad(buffer_2, "http_get resolved ", 30);
     buffer_putsa(buffer_2, &h->host);
     buffer_puts(buffer_2, " to (");
     buffer_put(buffer_2, ip, fmt_ip4(ip, (const char*)&h->addr));

@@ -78,15 +78,21 @@ http_read_header(http* h, stralloc* sa, http_response* r) {
   h->q.in.op = (buffer_op_proto*)&http_socket_read;
 
 #ifdef DEBUG_HTTP
-  buffer_putspad(buffer_2, "http_read_header ", 18);
+  buffer_putspad(buffer_2, "http_read_header ", 30);
   buffer_puts(buffer_2, "sock=");
   buffer_putlong(buffer_2, h->sock);
+
   buffer_puts(buffer_2, " ret=");
   buffer_putlong(buffer_2, ret);
-  buffer_puts(buffer_2, " err=");
-  buffer_puts(buffer_2, http_strerror(h, ret));
-  buffer_puts(buffer_2, " code=");
-  buffer_putlong(buffer_2, h->response->code);
+  if(ret < 0) {
+    buffer_puts(buffer_2, " err=");
+    buffer_putstr(buffer_2, http_strerror(h, ret));
+  }
+
+  if(h->response->code != -1) {
+    buffer_puts(buffer_2, " code=");
+    buffer_putlong(buffer_2, h->response->code);
+  }
   buffer_puts(buffer_2, " status=");
   buffer_puts(buffer_2,
               ((const char* const[]){"-1",

@@ -96,7 +96,8 @@ http_io_handler(http* h, buffer* out) {
       if(nb > 0)
         ret += nb;
 
-      buffer_puts(buffer_2, "http_canread ret=");
+      buffer_putspad(buffer_2, "http_io_handler CANREAD", 30);
+      buffer_puts(buffer_2, "ret=");
       buffer_putlong(buffer_2, ret);
 #if HAVE_OPENSSL
       buffer_puts(buffer_2, "  err=");
@@ -109,7 +110,8 @@ http_io_handler(http* h, buffer* out) {
         ssize_t n;
 
         if((n = http_read(h->sock, buf, sizeof(buf), &h->q.in)) > 0) {
-          buffer_puts(buffer_2, "http_read ret=");
+          buffer_putspad(buffer_2, "http_io_handler READ", 30);
+          buffer_puts(buffer_2, "             ret=");
           buffer_putlong(buffer_2, n);
           buffer_puts(buffer_2, " err=");
           buffer_puts(buffer_2, http_strerror(h, n));
@@ -224,7 +226,7 @@ main(int argc, char* argv[]) {
       int doread = 1;
       fd_t sock;
       ;
-      buffer_putsflush(buffer_2, "io_wait\n");
+      buffer_putsflush(buffer_2, "httptest start loop\n");
 
       io_wait();
 
@@ -242,13 +244,16 @@ main(int argc, char* argv[]) {
         buffer_putnlflush(buffer_2);
       }
 
-      buffer_puts(buffer_2, "http_io_handler ret=");
+      buffer_putspad(buffer_2, "httptest", 30);
+      buffer_puts(buffer_2, "ret=");
       buffer_putlong(buffer_2, ret);
 
       buffer_puts(buffer_2, " err=");
       buffer_puts(buffer_2, http_strerror(&h, ret));
-      buffer_puts(buffer_2, " code=");
-      buffer_putlong(buffer_2, h.response->code);
+      if(h.response->code != -1) {
+        buffer_puts(buffer_2, " code=");
+        buffer_putlong(buffer_2, h.response->code);
+      }
 
       buffer_puts(buffer_2, " status=");
       buffer_puts(buffer_2,

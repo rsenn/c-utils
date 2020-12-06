@@ -18,8 +18,7 @@ if [ "$COMPRESS" = true ]; then
   DEFS="  DHAVE_{ZLIB,LIBBZ2,LIBLZMA}=1"
 fi
 
-[ $# -eq 0 ] && 
-set -- lcc32 lcc64 tcc32 tcc64 bcc55 bcc101
+[ $# -eq 0 ] &&  set -- lcc32 lcc64 tcc32 tcc64 bcc55 bcc101
 
 echo "MODULES=$MODULES" 1>&2
 #set -- 

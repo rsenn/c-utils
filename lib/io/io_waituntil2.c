@@ -120,6 +120,12 @@ io_waituntil2(int64 milliseconds) {
   if(!io_wanted_fds)
     return 0;
 
+#ifdef DEBUG_IO
+  buffer_putspad(buffer_2, "io_waituntil2", 30);
+  buffer_puts(buffer_2, "milliseconds=");
+  buffer_putlonglong(buffer_2, milliseconds);
+  buffer_putnlflush(buffer_2);
+#endif
 #ifdef USE_LINUX_AIO
 #warning USE_LINUX_AIO
   {

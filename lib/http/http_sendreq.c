@@ -55,15 +55,20 @@ http_sendreq(http* h) {
   }
 #ifdef DEBUG_HTTP
 
-  buffer_putspad(buffer_2, "http_sendreq ", 18);
+  buffer_putspad(buffer_2, "http_sendreq ", 30);
   buffer_puts(buffer_2, "location=");
   buffer_putsa(buffer_2, &h->request->location);
+
   buffer_puts(buffer_2, " ret=");
   buffer_putlong(buffer_2, ret);
-  buffer_puts(buffer_2, " err=");
-  buffer_puts(buffer_2, http_strerror(h, ret));
-  buffer_puts(buffer_2, " code=");
-  buffer_putlong(buffer_2, h->response->code);
+  if(ret < 0) {
+    buffer_puts(buffer_2, " err=");
+    buffer_putstr(buffer_2, http_strerror(h, ret));
+  }
+  if(h->response->code != -1) {
+    buffer_puts(buffer_2, " code=");
+    buffer_putlong(buffer_2, h->response->code);
+  }
   buffer_puts(buffer_2, " status=");
   buffer_puts(buffer_2,
               ((const char* const[]){"-1",

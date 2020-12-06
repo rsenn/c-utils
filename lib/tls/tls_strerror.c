@@ -9,12 +9,12 @@
 #include <openssl/err.h>
 
 const char*
-tls_strerror(fd_t fd, int ret) {
+tls_strerror(fd_t fd) {
   int err;
   const char* str;
   tls_instance* i = iarray_get(&tls_list, fd);
 
-  switch((err = SSL_get_error(i->ssl, ret))) {
+  switch(i->error) {
     case SSL_ERROR_WANT_READ: str_copy(i->errstr, "want read"); break;
     case SSL_ERROR_WANT_WRITE: str_copy(i->errstr, "want write"); break;
     case SSL_ERROR_WANT_CONNECT: str_copy(i->errstr, "want connect"); break;
