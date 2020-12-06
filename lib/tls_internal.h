@@ -48,13 +48,15 @@ typedef struct tls_instance_st {
   tls_t* ssl;
   tls_op_t op;
   tls_bio_t* bio;
+  int retval;
   int error;
   want_func *wantread, *wantwrite;
-  char errstr[32];
+  char errstr[128];
 } tls_instance;
 
 extern const char *tls_key, *tls_certificate;
 extern iarray tls_list;
+extern int tls_initialized;
 
 extern tls_method_t const *tls_client_method, *tls_server_method;
 extern tls_ctx_t *tls_client_ctx, *tls_server_ctx;

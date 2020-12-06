@@ -25,7 +25,14 @@ buffer_copy(buffer* out, buffer* in) {
 
 void
 usage(char* argv0) {
-  buffer_putm_internal(buffer_1, "Usage: ", argv0, " [-o output] [infile or stdin]\n\n", "  -1 ... -9           compression level; default is 3\n", "\n", "Supported types are:", NULL);
+  buffer_putm_internal(buffer_1,
+                       "Usage: ",
+                       argv0,
+                       " [-o output] [infile or stdin]\n\n",
+                       "  -1 ... -9           compression level; default is 3\n",
+                       "\n",
+                       "Supported types are:",
+                       NULL);
 #ifdef HAVE_ZLIB
   buffer_puts(buffer_1, " gz");
 #endif
@@ -102,7 +109,9 @@ main(int argc, char* argv[]) {
       case 't': in_type = compression_from_ext(optarg); break;
       case 'o': out_filename = optarg; break;
       case 'h': usage(str_basename(argv[0])); exit(EXIT_SUCCESS);
-      default: /* '?' */ buffer_putm_internal(buffer_2, "Usage: ", argv[0], "[-t TYPE] [-o OUTPUT] [file]\n", 0); exit(EXIT_FAILURE);
+      default: /* '?' */
+        buffer_putm_internal(buffer_2, "Usage: ", argv[0], "[-t TYPE] [-o OUTPUT] [file]\n", 0);
+        exit(EXIT_FAILURE);
     }
   }
 
@@ -174,7 +183,10 @@ main(int argc, char* argv[]) {
     /*      buffer_lzma(&cbuf, decompress ? input : output, decompress ? 0 : level); */
     /*      break; */
     default:
-      buffer_putm_internal(buffer_2, "ERROR: Unable to detect compression type from ", in_filename, 0);
+      buffer_putm_internal(buffer_2,
+                           "ERROR: Unable to detect compression type from ",
+                           in_filename,
+                           0);
       buffer_putnlflush(buffer_2);
       exit(EXIT_FAILURE);
   }

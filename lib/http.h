@@ -32,13 +32,26 @@ typedef struct http_return_s {
 } http_return_value;
 
 struct http_response_s;
-typedef enum { HTTP_TRANSFER_UNDEF = 0, HTTP_TRANSFER_CHUNKED, HTTP_TRANSFER_LENGTH, HTTP_TRANSFER_BOUNDARY } http_transfer_type;
+typedef enum {
+  HTTP_TRANSFER_UNDEF = 0,
+  HTTP_TRANSFER_CHUNKED,
+  HTTP_TRANSFER_LENGTH,
+  HTTP_TRANSFER_BOUNDARY
+} http_transfer_type;
 
-typedef enum { HTTP_RECV_HEADER = 0, HTTP_RECV_DATA, HTTP_STATUS_CLOSED, HTTP_STATUS_ERROR, HTTP_STATUS_BUSY, HTTP_STATUS_FINISH } http_status;
+typedef enum {
+  HTTP_RECV_HEADER = 0,
+  HTTP_RECV_DATA,
+  HTTP_STATUS_CLOSED,
+  HTTP_STATUS_ERROR,
+  HTTP_STATUS_BUSY,
+  HTTP_STATUS_FINISH
+} http_status;
 
 typedef struct http_response_s {
   http_transfer_type transfer;
   http_status status;
+  int code;
   stralloc data;
   size_t ptr;
   size_t chnk;
@@ -74,33 +87,28 @@ typedef struct http_s {
   int sent : 1;
 } http;
 
-void http_close(http*);
-size_t http_errstr(int, char*, size_t);
-int http_get(http*, const char*);
-void http_init(http*, const char*, uint16);
-ssize_t http_on_readable(http*, void (*)(fd_t));
-ssize_t http_on_writeable(http*, void (*)(fd_t));
-ssize_t http_readable(http*, int);
-ssize_t http_read(fd_t, char*, size_t, void*);
-ssize_t http_read_header(http*, stralloc*, http_response*);
-size_t http_read_internal(http*, char*, size_t);
-int http_sendreq(http*);
-int http_socket(http*, int);
-ssize_t http_socket_read(fd_t, void*, size_t, void*);
-ssize_t http_socket_write(fd_t, void*, size_t, void*);
-#ifdef HAVE_OPENSSL
-ssize_t https_tls2errno(http*, ssize_t);
-ssize_t https_tls2want(http*, ssize_t, void (*)(fd_t), void (*)(fd_t));
+void http_close(http* h);
+int http_get(http* h, const char* location);
+void http_init(http* h, const char* host, uint16 port);
+ssize_t http_canwrite(http* h, void (*wantread)(fd_t));
+ssize_t http_readable(http* h, int freshen);
+ssize_t http_read(fd_t fd, char* buf, size_t len, void* ptr);
+ssize_t http_read_header(http* h, stralloc* sa, http_response* r);
+size_t http_read_internal(fd_t, char* buf, size_t len, buffer* b);
+int http_sendreq(http* h);
+int http_socket(http* h, int nonblock);
+const char* http_strerror(http* h, int ret);
 
-ssize_t https_connect(http*);
-const char* https_strerror(http* h, int ret);
-int https_errno(int);
-ssize_t https_io_errhandle(http*, int);
-ssize_t https_io_want(http*, int);
-ssize_t https_read(fd_t, void*, size_t, void*);
-int https_socket(http*);
-ssize_t https_write(fd_t, const void*, size_t, void*);
+http_response* http_response_new();
+
+ssize_t http_canread(http* h, void (*wantwrite)(fd_t));
+ssize_t http_canwrite(http* h, void (*wantread)(fd_t));
+
+#ifdef HAVE_OPENSSL
+ssize_t https_tls2want(http* h, ssize_t ret, void (*wantread)(fd_t), void (*wantwrite)(fd_t));
+ssize_t https_connect(http* h);
 #endif
+const char* http_get_header(http* h, const char* name);
 
 #ifdef __cplusplus
 }

@@ -113,8 +113,8 @@ enum io_fd_flags {
 #endif
 
 /* put d on internal data structure, return 1 on success, 0 on error */
-int io_fd(fd_t d);                  /* use this for sockets before you called connect() or accept() */
-int io_fd_canwrite(fd_t d);         /* use this for connected sockets (assumes socket is writable) */
+int io_fd(fd_t d);          /* use this for sockets before you called connect() or accept() */
+int io_fd_canwrite(fd_t d); /* use this for connected sockets (assumes socket is writable) */
 int io_fd_flags(fd_t d, int flags); /* can be used to tell io_fd to skip one syscall */
 
 void io_setcookie(fd_t d, void* cookie);

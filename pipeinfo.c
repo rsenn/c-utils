@@ -50,7 +50,17 @@ static stralloc procfd, procfdinfo;
 
 void
 usage(char* av0) {
-  buffer_putm_internal(buffer_1, "Usage: ", str_basename(av0), " [OPTIONS] <FILE.list | TARGET LINK>\n", "\n", "Options:\n", "\n", "  -h, --help              Show this help\n", "  -v, --verbose           Be verbose\n", "\n", NULL);
+  buffer_putm_internal(buffer_1,
+                       "Usage: ",
+                       str_basename(av0),
+                       " [OPTIONS] <FILE.list | TARGET LINK>\n",
+                       "\n",
+                       "Options:\n",
+                       "\n",
+                       "  -h, --help              Show this help\n",
+                       "  -v, --verbose           Be verbose\n",
+                       "\n",
+                       NULL);
   buffer_flush(buffer_1);
 }
 
@@ -71,7 +81,9 @@ get_pipe(int64 id) {
 void
 print_number_nonl_base(const char* property, int64 num, int base) {
   buffer_putm_internal(buffer_1, property, "=", base == 8 ? "0" : base == 16 ? "0x" : "", 0);
-  (base == 8 ? buffer_put8long(buffer_1, num) : base == 16 ? buffer_putxlonglong0(buffer_1, num, 2) : buffer_putlonglong(buffer_1, num));
+  (base == 8
+       ? buffer_put8long(buffer_1, num)
+       : base == 16 ? buffer_putxlonglong0(buffer_1, num, 2) : buffer_putlonglong(buffer_1, num));
 }
 
 void
@@ -329,7 +341,9 @@ int
 main(int argc, char* argv[]) {
   int index = 0, c, i, prev;
   const pipe_t* p;
-  static const struct longopt opts[] = {{"help", 0, NULL, 'h'}, {"verbose", 0, 0, 'v'}, {0, 0, 0, 0}};
+  static const struct longopt opts[] = {{"help", 0, NULL, 'h'},
+                                        {"verbose", 0, 0, 'v'},
+                                        {0, 0, 0, 0}};
 
   errmsg_iam(argv[0]);
 
@@ -357,7 +371,10 @@ main(int argc, char* argv[]) {
 
   if(0) {
     read_proc();
-    qsort(array_start(&pipes), array_length(&pipes, sizeof(pipe_t)), sizeof(pipe_t), (int (*)(const void*, const void*))(void*)&compare_pipes);
+    qsort(array_start(&pipes),
+          array_length(&pipes, sizeof(pipe_t)),
+          sizeof(pipe_t),
+          (int (*)(const void*, const void*))(void*)&compare_pipes);
   }
 
   if(verbose) {

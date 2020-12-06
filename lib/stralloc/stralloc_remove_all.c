@@ -2,7 +2,9 @@
 #include "../stralloc.h"
 
 void
-stralloc_remove_all(stralloc* sa, register const char* delchars, register unsigned int delcharslen) {
+stralloc_remove_all(stralloc* sa,
+                    register const char* delchars,
+                    register unsigned int delcharslen) {
   register size_t i;
   register char *x, *t;
 

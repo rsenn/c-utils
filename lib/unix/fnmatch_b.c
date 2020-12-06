@@ -8,7 +8,7 @@
 
 #define NOTFIRST 128
 
-#define STRUCT_CHARCLASS(c)                                                                                                                                                                                                                                                                                                                                                                                    \
+#define STRUCT_CHARCLASS(c)                                                                        \
   { #c, is##c }
 
 static struct charclass {

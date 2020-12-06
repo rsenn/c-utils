@@ -104,18 +104,17 @@ cfg-diet() {
 
   export CC
 
-  if type pkgconf >/dev/null; then
-    export PKG_CONFIG=`type pkgconf 2>&1 |sed 's,.* is ,,'`
+  if type pkgcfg >/dev/null; then
+    export PKG_CONFIG=`type pkgcfg 2>&1 |sed 's,.* is ,,'`
   elif type pkg-config >/dev/null; then
     export PKG_CONFIG=`type pkg-config 2>&1 |sed 's,.* is ,,'`
   fi
 
-  : ${PKG_CONFIG_PATH="$libdir/pkgconfig"}; export PKG_CONFIG_PATH
-  
   : ${builddir=build/${host%-*}-diet}
   prefix=/opt/diet
 
   export builddir prefix
+  PKG_CONFIG_PATH=/opt/diet/lib-x86_64/pkgconfig:/opt/diet/lib/pkgconfig:/usr/lib/diet/lib/pkgconfig \
   cfg \
     -DCMAKE_INSTALL_PREFIX="$prefix" \
     -DBUILD_SSL=OFF \
@@ -137,9 +136,9 @@ cfg-diet64() {
 
   export prefix=/opt/diet
 
-  export PKG_CONFIG_PATH=/opt/diet/lib-x86_64/pkgconfig
 
   builddir=build/$host \
+  PKG_CONFIG_PATH=/opt/diet/lib-x86_64/pkgconfig:/usr/lib/diet/lib-x86_64/pkgconfig \
   CC="diet-gcc" \
   cfg-diet \
     -DCMAKE_SYSTEM_LIBRARY_PATH=/opt/diet/lib-x86_64 \
@@ -164,9 +163,8 @@ cfg-diet32() {
     export CC launcher CFLAGS
   fi
   
-  export PKG_CONFIG_PATH=/opt/diet/lib-i386/pkgconfig
-
   builddir=build/$host \
+  PKG_CONFIG_PATH=/opt/diet/lib-i386/pkgconfig:/usr/lib/diet/lib-i386/pkgconfig \
   cfg-diet \
     -DCMAKE_SYSTEM_LIBRARY_PATH=/opt/diet/lib-i386 \
     "$@")
@@ -244,7 +242,7 @@ cfg-musl() {
 
   CC=/usr/bin/musl-gcc \
   PKG_CONFIG=musl-pkg-config \
-  PKG_CONFIG_PATH=/opt/musl/lib/pkgconfig:/usr/lib/x86_64-linux-musl/pkgconfig \
+  PKG_CONFIG_PATH=/opt/musl/lib/pkgconfig:/usr/lib/${host%%-*}-linux-musl/pkgconfig \
   cfg \
     -DENABLE_SHARED=OFF \
     -DSHARED_LIBS=OFF \

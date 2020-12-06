@@ -109,7 +109,8 @@ hmap_count(HMAP_DB* hmap_db) {
 #define hmap_last(hmap_db, tuple) ((hmap_db)->list_tuple == (tuple)->next)
 #define hmap_next(hmap_db, tuple) (hmap_last(hmap_db, tuple) ? NULL : (tuple)->next)
 
-#define hmap_foreach(hmap_db, tuple) for(tuple = hmap_begin(hmap_db); tuple; tuple = hmap_next(hmap_db, tuple))
+#define hmap_foreach(hmap_db, tuple)                                                               \
+  for(tuple = hmap_begin(hmap_db); tuple; tuple = hmap_next(hmap_db, tuple))
 
 inline static TUPLE*
 hmap_begin(HMAP_DB* hmap) {

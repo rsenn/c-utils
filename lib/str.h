@@ -64,6 +64,8 @@ int str_case_diffn(const void* p1, const void* p2, size_t n);
 size_t str_case_equal(const void* s, const void* t);
 size_t str_case_start(const void* p1, const void* p2);
 size_t str_cat(void* p1, const void* p2);
+size_t str_catn(void* p1, const void* p2, size_t max);
+
 size_t str_copyb(void* p1, const void* p2, size_t max);
 size_t str_find(const void* s, const void* what);
 size_t str_findb(const char*, const char* x, size_t n);
@@ -86,8 +88,10 @@ char* str_triml(char*, const char* charset, unsigned int charsetlen);
 /* convenience shortcut to test for string equality */
 #define str_equal(s, t) (!str_diff((s), (t)))
 
-#define str_foreach(s, ptr) for((ptr) = (void*)(s); *(const char*)(ptr); (ptr) = ((const char*)(ptr)) + 1)
-#define str_foreach_skip(s, ptr, skipcall) for((ptr) = (void*)(s); *(const char*)(ptr); (ptr) = ((const char*)(ptr)) + (skipcall))
+#define str_foreach(s, ptr)                                                                        \
+  for((ptr) = (void*)(s); *(const char*)(ptr); (ptr) = ((const char*)(ptr)) + 1)
+#define str_foreach_skip(s, ptr, skipcall)                                                         \
+  for((ptr) = (void*)(s); *(const char*)(ptr); (ptr) = ((const char*)(ptr)) + (skipcall))
 
 #define str_contains(s, needle) (((s)[str_find((s), (needle))]) != 0)
 

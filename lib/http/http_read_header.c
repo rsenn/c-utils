@@ -8,6 +8,8 @@
 #include <errno.h>
 #include <assert.h>
 
+ssize_t http_socket_read(fd_t fd, void* buf, size_t len, void* b);
+
 static inline void
 putline(const char* what, const char* b, ssize_t l, int i) {
   buffer_puts(buffer_2, what);
@@ -31,7 +33,7 @@ http_read_header(http* h, stralloc* sa, http_response* r) {
   buffer* in = &h->q.in;
   while(r->status == HTTP_RECV_HEADER) {
     size_t bytesavail = in->n - in->p;
-    h->q.in.op = NULL;
+    // h->q.in.op = NULL;
     start = sa->len;
     if((ret = buffer_getline_sa(&h->q.in, sa)) <= 0)
       break;
@@ -45,9 +47,20 @@ http_read_header(http* h, stralloc* sa, http_response* r) {
       ret = 1;
       break;
     }
-#if 1 || DEBUG_HTTP
+#if DEBUG_HTTP
     putline("Header", x, n, byte_count(sa->s, sa->len, '\n'));
 #endif
+    if(r->code == -1) {
+
+      if(str_start(sa->s, "HTTP")) {
+        unsigned int code;
+        size_t p = scan_nonwhitenskip(sa->s, sa->len);
+        p += scan_whitenskip(&sa->s[p], sa->len - p);
+        if(scan_uint(&sa->s[p], &code) > 0)
+          r->code = code;
+      }
+    }
+
     if(str_start(x, "Content-Type: multipart")) {
       size_t p = str_find(x, "boundary=");
       if(x[p]) {

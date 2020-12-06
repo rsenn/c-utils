@@ -272,7 +272,8 @@ io_waituntil2(int64 milliseconds) {
     if(first_readable != -1 || first_writeable != -1) {
       return 1;
     }
-    if(GetQueuedCompletionStatus(io_comport, &numberofbytes, &x, &o, milliseconds == -1 ? INFINITE : milliseconds)) {
+    if(GetQueuedCompletionStatus(
+           io_comport, &numberofbytes, &x, &o, milliseconds == -1 ? INFINITE : milliseconds)) {
       io_entry* e = (io_entry*)iarray_get((iarray*)io_getfds(), x);
       if(!e)
         return 0;
@@ -330,7 +331,8 @@ io_waituntil2(int64 milliseconds) {
         e->bytes_read = -1;
         e->next_read = first_readable;
         first_readable = x;
-      } else if((o == &e->ow || o == &e->os) && (e->writequeued || e->connectqueued || e->sendfilequeued)) {
+      } else if((o == &e->ow || o == &e->os) &&
+                (e->writequeued || e->connectqueued || e->sendfilequeued)) {
         if(o == &e->ow) {
           if(e->writequeued)
             e->writequeued = 2;
@@ -545,9 +547,11 @@ io_waituntil2(int64 milliseconds) {
     struct timespec ts;
     int r;
     io_entry* e;
-    if(alt_firstread >= 0 && (e = (io_entry*)iarray_get((iarray*)io_getfds(), alt_firstread)) && e->canread)
+    if(alt_firstread >= 0 && (e = (io_entry*)iarray_get((iarray*)io_getfds(), alt_firstread)) &&
+       e->canread)
       return 1;
-    if(alt_firstwrite >= 0 && (e = (io_entry*)iarray_get((iarray*)io_getfds(), alt_firstwrite)) && e->canwrite)
+    if(alt_firstwrite >= 0 && (e = (io_entry*)iarray_get((iarray*)io_getfds(), alt_firstwrite)) &&
+       e->canwrite)
       return 1;
     if(milliseconds == -1)
       r = sigwaitinfo(&io_ss, &info);
@@ -573,13 +577,17 @@ io_waituntil2(int64 milliseconds) {
                 info.si_band |= POLLOUT;
             }
             if(info.si_band & POLLIN && !e->canread) {
-              debug_printf(("io_waituntil2: enqueueing %ld in normal read queue before %ld\n", info.si_fd, first_readable));
+              debug_printf(("io_waituntil2: enqueueing %ld in normal read queue before %ld\n",
+                            info.si_fd,
+                            first_readable));
               e->canread = 1;
               e->next_read = first_readable;
               first_readable = info.si_fd;
             }
             if(info.si_band & POLLOUT && !e->canwrite) {
-              debug_printf(("io_waituntil2: enqueueing %ld in normal write queue before %ld\n", info.si_fd, first_writeable));
+              debug_printf(("io_waituntil2: enqueueing %ld in normal write queue before %ld\n",
+                            info.si_fd,
+                            first_writeable));
               e->canwrite = 1;
               e->next_write = first_writeable;
               first_writeable = info.si_fd;

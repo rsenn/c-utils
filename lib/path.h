@@ -38,7 +38,8 @@ size_t path_collapse_sa(stralloc*);
 char* path_dirname(const char* path, stralloc* dir);
 int path_exists(const char* p);
 int path_find(const char* path, const char* name, stralloc* out);
-int path_fnmatch(const char* pattern, unsigned int plen, const char* string, unsigned int slen, int flags);
+int path_fnmatch(
+    const char* pattern, unsigned int plen, const char* string, unsigned int slen, int flags);
 void path_getcwd(stralloc* sa);
 char* path_gethome(int uid);
 int path_getsep(const char* path);

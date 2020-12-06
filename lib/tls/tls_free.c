@@ -12,8 +12,8 @@ tls_free(fd_t fd) {
   assert(i->ssl);
   assert(i->bio);
   SSL_free(i->ssl);
-     i->ssl = 0;
- BIO_free(i->bio);
+  i->ssl = 0;
+  BIO_free(i->bio);
   i->bio = 0;
 }
 #endif

@@ -906,7 +906,8 @@ tree_topleft(xmlnode* elem, const char* elems, double* x, double* y) {
 }
 
 int
-dump_package(const void* key, size_t key_len, const void* value, size_t value_len, void* user_data) {
+dump_package(
+    const void* key, size_t key_len, const void* value, size_t value_len, void* user_data) {
   int64 i;
   const struct package* pkg = value;
   buffer_puts(buffer_1, "dump_package: ");
@@ -1069,7 +1070,13 @@ print_attrs(HMAP_DB* a) {
 
   for(t = a->list_tuple; t; t = t->next) {
     char* v = t->vals.val_chars;
-    buffer_putm_internal(buffer_1, " ", t->key, str_isdoublenum(v) ? "=" : "=\"", v, str_isdoublenum(v) ? "" : "\"", 0);
+    buffer_putm_internal(buffer_1,
+                         " ",
+                         t->key,
+                         str_isdoublenum(v) ? "=" : "=\"",
+                         v,
+                         str_isdoublenum(v) ? "" : "\"",
+                         0);
     if(t->next == a->list_tuple)
       break;
   }
@@ -1222,7 +1229,17 @@ print_xml_rect(buffer* b, xmlnode* e) {
   y1 = xml_get_attribute(e, "y1");
   x2 = xml_get_attribute(e, "x2");
   y2 = xml_get_attribute(e, "y2");
-  buffer_putm_internal(b, "(", x1 ? x1 : "<null>", " ", y1 ? y1 : "<null>", ") (", x2 ? x2 : "<null>", " ", y2 ? y2 : "<null>", ")", NULL);
+  buffer_putm_internal(b,
+                       "(",
+                       x1 ? x1 : "<null>",
+                       " ",
+                       y1 ? y1 : "<null>",
+                       ") (",
+                       x2 ? x2 : "<null>",
+                       " ",
+                       y2 ? y2 : "<null>",
+                       ")",
+                       NULL);
   buffer_flush(b);
 }
 
@@ -1302,10 +1319,23 @@ print_script(buffer* b, xmlnode* e) {
     if(current_signal)
       buffer_putm_internal(b, "'", current_signal, "' ", 0);
 
-    buffer_putm_internal(b, xml_get_attribute(e, "extent"), " ", xml_get_attribute(e, "shape"), " ", 0);
+    buffer_putm_internal(
+        b, xml_get_attribute(e, "extent"), " ", xml_get_attribute(e, "shape"), " ", 0);
     print_xml_xy(b, e);
   } else if(str_equal(e->name, "pad")) {
-    buffer_putm_internal(b, cmd.s, "'", xml_get_attribute(e, "name"), "'", " ", xml_get_attribute(e, "diameter"), " ", xml_get_attribute(e, "shape"), " ", xml_get_attribute(e, "orientation"), " ", 0);
+    buffer_putm_internal(b,
+                         cmd.s,
+                         "'",
+                         xml_get_attribute(e, "name"),
+                         "'",
+                         " ",
+                         xml_get_attribute(e, "diameter"),
+                         " ",
+                         xml_get_attribute(e, "shape"),
+                         " ",
+                         xml_get_attribute(e, "orientation"),
+                         " ",
+                         0);
     print_xml_xy(b, e);
   } else if(str_equal(e->name, "hole")) {
     buffer_putm_internal(b, cmd.s, xml_get_attribute(e, "diameter"), " ", 0);
@@ -1318,7 +1348,8 @@ print_script(buffer* b, xmlnode* e) {
     print_xml_rect(b, e);
   } else if(str_equal(e->name, "text")) {
 
-    buffer_putm_internal(b, cmd.s, "'", xml_content(e), "' ", xml_get_attribute(e, "orientation"), " ", 0);
+    buffer_putm_internal(
+        b, cmd.s, "'", xml_content(e), "' ", xml_get_attribute(e, "orientation"), " ", 0);
 
     print_xml_xy(b, e);
   } else {
@@ -1480,12 +1511,12 @@ draw_measures(xmlnode* doc) {
 /**
  * Executes XPath query and for every resulting element calls a function
  */
-#define match_foreach(doc, q, fn)                                                                                                                                                                                                                                                                                                                                                                              \
-  do {                                                                                                                                                                                                                                                                                                                                                                                                         \
-    xmlnodeset ns = getnodeset(doc, q);                                                                                                                                                                                                                                                                                                                                                                        \
-    if(xmlnodeset_size(&ns)) {                                                                                                                                                                                                                                                                                                                                                                                 \
-      for_set(&ns, fn);                                                                                                                                                                                                                                                                                                                                                                                        \
-    }                                                                                                                                                                                                                                                                                                                                                                                                          \
+#define match_foreach(doc, q, fn)                                                                  \
+  do {                                                                                             \
+    xmlnodeset ns = getnodeset(doc, q);                                                            \
+    if(xmlnodeset_size(&ns)) {                                                                     \
+      for_set(&ns, fn);                                                                            \
+    }                                                                                              \
   } while(0);
 
 void
@@ -1505,7 +1536,14 @@ main(int argc, char* argv[]) {
   int c;
   int index = 0;
   rect extent, extent2;
-  struct longopt opts[] = {{"help", 0, NULL, 'h'}, {"layer", 1, NULL, 'l'}, {"layers", 0, NULL, 'L'}, {"draw", 0, NULL, 'd'}, {"align", 0, NULL, 'a'}, {"align-by", 0, NULL, 'A'}, {"comments", 0, NULL, 'c'}, {0, 0, 0, 0}};
+  struct longopt opts[] = {{"help", 0, NULL, 'h'},
+                           {"layer", 1, NULL, 'l'},
+                           {"layers", 0, NULL, 'L'},
+                           {"draw", 0, NULL, 'd'},
+                           {"align", 0, NULL, 'a'},
+                           {"align-by", 0, NULL, 'A'},
+                           {"comments", 0, NULL, 'c'},
+                           {0, 0, 0, 0}};
 
   for(;;) {
     c = getopt_long(argc, argv, "LdhaA:l:c", opts, &index);

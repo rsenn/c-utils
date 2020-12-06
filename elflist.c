@@ -24,16 +24,19 @@ void elf_print_prefix(buffer* b);
 static int list_defined, list_undefined;
 static const char* filename;
 
-#define RANGE_CHECK(ptr)                                                                                                                                                                                                                                                                                                                                                                                       \
-  do {                                                                                                                                                                                                                                                                                                                                                                                                         \
-    if(!range_ptrinbuf2(map.start, map.end, ptr)) {                                                                                                                                                                                                                                                                                                                                                            \
-      buffer_puts(buffer_2, "OUT of range: " #ptr);                                                                                                                                                                                                                                                                                                                                                            \
-      buffer_putnlflush(buffer_2);                                                                                                                                                                                                                                                                                                                                                                             \
-      exit(120);                                                                                                                                                                                                                                                                                                                                                                                               \
-    }                                                                                                                                                                                                                                                                                                                                                                                                          \
+#define RANGE_CHECK(ptr)                                                                           \
+  do {                                                                                             \
+    if(!range_ptrinbuf2(map.start, map.end, ptr)) {                                                \
+      buffer_puts(buffer_2, "OUT of range: " #ptr);                                                \
+      buffer_putnlflush(buffer_2);                                                                 \
+      exit(120);                                                                                   \
+    }                                                                                              \
   } while(0)
 
-#define ELF_DUMP_FIELD(base, ptr, st, field) buffer_putspad(b, #field, 30), buffer_puts(b, " 0x"), buffer_putxlonglong0(b, ELF_GET(base, ptr, st, field), ELF_SIZE(base, st, field) * 2), buffer_putnlflush(b)
+#define ELF_DUMP_FIELD(base, ptr, st, field)                                                       \
+  buffer_putspad(b, #field, 30), buffer_puts(b, " 0x"),                                            \
+      buffer_putxlonglong0(b, ELF_GET(base, ptr, st, field), ELF_SIZE(base, st, field) * 2),       \
+      buffer_putnlflush(b)
 
 void
 elf_print_prefix(buffer* b) {
@@ -41,14 +44,14 @@ elf_print_prefix(buffer* b) {
     buffer_putm_internal(b, filename, ":", NULL);
 }
 
-#define MACHINES                                                                                                                                                                                                                                                                                                                                                                                               \
-  "NONE\0M32\0SPARC\0386\068K\088K\0860\0MIPS\0S370\0PARISC\0VPP500\0SPARC32PLUS\0960\0PPC\0PPC64"                                                                                                                                                                                                                                                                                                             \
-  "\0S390\0V800\0FR20\0"                                                                                                                                                                                                                                                                                                                                                                                       \
-  "RH32\0RCE\0ARM\0FAKE_ALPHA\0SH\0SPARCV9\0TRICORE\0ARC\0H8_300\0H8_300H\0H8S\0H8_500\0IA_"                                                                                                                                                                                                                                                                                                                   \
-  "64\0COLDFIRE\068HC12\0MMA\0PCP\0NCPU\0NDR1\0STARCORE\0ME16\0ST100\0TINYJ\0X86_"                                                                                                                                                                                                                                                                                                                             \
-  "64\0PDSP\0FX66\0ST9PLUS\0ST7\068HC16\068HC11\068HC08\068HC05\0SVX\0ST19\0VAX\0CRIS\0JAVELIN\0F"                                                                                                                                                                                                                                                                                                             \
-  "IREPATH\0ZSP\0MMIX\0"                                                                                                                                                                                                                                                                                                                                                                                       \
-  "HUANY\0PRISM\0AVR\0FR30\0D10V\0D30V\0V850\0M32R\0MN10300\0MN10200\0PJ\0OPENRISC\0ARC_"                                                                                                                                                                                                                                                                                                                      \
+#define MACHINES                                                                                   \
+  "NONE\0M32\0SPARC\0386\068K\088K\0860\0MIPS\0S370\0PARISC\0VPP500\0SPARC32PLUS\0960\0PPC\0PPC64" \
+  "\0S390\0V800\0FR20\0"                                                                           \
+  "RH32\0RCE\0ARM\0FAKE_ALPHA\0SH\0SPARCV9\0TRICORE\0ARC\0H8_300\0H8_300H\0H8S\0H8_500\0IA_"       \
+  "64\0COLDFIRE\068HC12\0MMA\0PCP\0NCPU\0NDR1\0STARCORE\0ME16\0ST100\0TINYJ\0X86_"                 \
+  "64\0PDSP\0FX66\0ST9PLUS\0ST7\068HC16\068HC11\068HC08\068HC05\0SVX\0ST19\0VAX\0CRIS\0JAVELIN\0F" \
+  "IREPATH\0ZSP\0MMIX\0"                                                                           \
+  "HUANY\0PRISM\0AVR\0FR30\0D10V\0D30V\0V850\0M32R\0MN10300\0MN10200\0PJ\0OPENRISC\0ARC_"          \
   "A5\0XTENSA\0ALPHA"
 #define TYPES "NONE\0REL\0EXEC\0DYN\0CORE\0"
 
@@ -80,7 +83,20 @@ elf_dump_header(buffer* b, range map) {
  */
 void
 usage(char* av0) {
-  buffer_putm_internal(buffer_1, "Usage: ", str_basename(av0), " [OPTIONS] <file...>\n", "\n", "Options:\n", "\n", "  -h, --help              Show this help\n", "  -D, --defined           List defined symbols\n", "  -U, --undefined         List undefined symbols\n", "  -F, --file-header       Dump file header\n", "  -S, --sections          Dump sections\n", "\n", 0);
+  buffer_putm_internal(buffer_1,
+                       "Usage: ",
+                       str_basename(av0),
+                       " [OPTIONS] <file...>\n",
+                       "\n",
+                       "Options:\n",
+                       "\n",
+                       "  -h, --help              Show this help\n",
+                       "  -D, --defined           List defined symbols\n",
+                       "  -U, --undefined         List undefined symbols\n",
+                       "  -F, --file-header       Dump file header\n",
+                       "  -S, --sections          Dump sections\n",
+                       "\n",
+                       0);
   buffer_flush(buffer_1);
 }
 
@@ -92,7 +108,12 @@ main(int argc, char** argv) {
 
   int c, index = 0;
 
-  struct longopt opts[] = {{"help", 0, NULL, 'h'}, {"defined", 0, &list_defined, 'D'}, {"undefined", 0, &list_undefined, 'U'}, {"file-header", 0, 0, 'F'}, {"sections", 0, 0, 'S'}, {0, 0, 0, 0}};
+  struct longopt opts[] = {{"help", 0, NULL, 'h'},
+                           {"defined", 0, &list_defined, 'D'},
+                           {"undefined", 0, &list_undefined, 'U'},
+                           {"file-header", 0, 0, 'F'},
+                           {"sections", 0, 0, 'S'},
+                           {0, 0, 0, 0}};
 
   for(;;) {
     c = getopt_long(argc, argv, "hDUF", opts, &index);
@@ -174,8 +195,13 @@ elf_dump_dynamic(range map) {
   range dyn;
   void* entry;
   const char* dynstrtab = NULL;
-  static const char* const dynamic_types[] = {"NULL", "NEEDED", "PLTRELSZ", "PLTGOT", "HASH",  "STRTAB",  "SYMTAB", "RELA",     "RELASZ",     "RELAENT",    "STRSZ",        "SYMENT",       "INIT",    "FINI",  "SONAME",   "RPATH",         "SYMBOLIC",
-                                              "REL",  "RELSZ",  "RELENT",   "PLTREL", "DEBUG", "TEXTREL", "JMPREL", "BIND_NOW", "INIT_ARRAY", "FINI_ARRAY", "INIT_ARRAYSZ", "FINI_ARRAYSZ", "RUNPATH", "FLAGS", "ENCODING", "PREINIT_ARRAY", "PREINIT_ARRAYSZ"};
+  static const char* const dynamic_types[] = {
+      "NULL",     "NEEDED",     "PLTRELSZ",      "PLTGOT",         "HASH",         "STRTAB",
+      "SYMTAB",   "RELA",       "RELASZ",        "RELAENT",        "STRSZ",        "SYMENT",
+      "INIT",     "FINI",       "SONAME",        "RPATH",          "SYMBOLIC",     "REL",
+      "RELSZ",    "RELENT",     "PLTREL",        "DEBUG",          "TEXTREL",      "JMPREL",
+      "BIND_NOW", "INIT_ARRAY", "FINI_ARRAY",    "INIT_ARRAYSZ",   "FINI_ARRAYSZ", "RUNPATH",
+      "FLAGS",    "ENCODING",   "PREINIT_ARRAY", "PREINIT_ARRAYSZ"};
 
   if(di == -1)
     return;
@@ -244,7 +270,8 @@ elf_dump_symbols(range map, range section, range text, const char* stname, int b
   int si = elf_section_find(map.start, stname);
   const char* strtab = elf_section_offset(map.start, si);
   static const char* const binding_types[] = {"LOCAL", "GLOBAL", "WEAK"};
-  static const char* const symbol_types[] = {"NOTYPE", "OBJECT", "FUNC", "SECTION", "FILE", "COMMON", "TLS"};
+  static const char* const symbol_types[] = {
+      "NOTYPE", "OBJECT", "FUNC", "SECTION", "FILE", "COMMON", "TLS"};
   range symtab = section;
   symtab.elem_size = ELF_BITS(map.start) == 64 ? sizeof(elf64_sym) : sizeof(elf32_sym);
 
@@ -412,7 +439,12 @@ elf_dump_segments(range map) {
     buffer_putxlonglong0(buffer_1, filesz, ELF_BITS(map.start) / 4);
     buffer_puts(buffer_1, " 0x");
     buffer_putxlonglong0(buffer_1, memsz, ELF_BITS(map.start) / 4);
-    buffer_putm_internal(buffer_1, " ", (flags & ELF_PF_R) ? "r" : "-", (flags & ELF_PF_W) ? "w" : "-", (flags & ELF_PF_W) ? "x" : "-", NULL);
+    buffer_putm_internal(buffer_1,
+                         " ",
+                         (flags & ELF_PF_R) ? "r" : "-",
+                         (flags & ELF_PF_W) ? "w" : "-",
+                         (flags & ELF_PF_W) ? "x" : "-",
+                         NULL);
     buffer_putnlflush(buffer_1);
   }
 }

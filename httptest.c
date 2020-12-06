@@ -43,7 +43,8 @@ set_timeouts(int seconds) {
  */
 
 /* https://github.com/rsenn/lc-meter/raw/master/doc/LCmeter0-LCD-8pinlcd-PIC_COMP.pdf */
-static const char default_url[] = "https://www.google.com/search?q=SSL_bio"; //"https://raw.githubusercontent.com/rsenn/lc-meter/master/doc/LCmeter0-LCD-8pinlcd-PIC_COMP.pdf";
+static const char default_url[] =
+    "https://www.google.com/search?q=SSL_bio"; //"https://raw.githubusercontent.com/rsenn/lc-meter/master/doc/LCmeter0-LCD-8pinlcd-PIC_COMP.pdf";
 static const char* const url_host = "127.0.0.1";
 static const char* const url_location = "/login";
 static const uint16 url_port = 8080;
@@ -70,21 +71,29 @@ static int
 http_io_handler(http* h, buffer* out) {
   fd_t r, w;
   int nr = 0, nw = 0;
+  ssize_t ret = 0;
   while((w = io_canwrite()) != -1) {
     if(h->sock == w) {
-      http_on_writeable(h, &io_wantread);
+      if((ret = http_canwrite(h, io_wantread)) <= 0)
+        goto fail;
+
+      if(ret > 0) {
+        io_onlywantread(w);
+      }
       nw++;
     }
   }
 
   while((r = io_canread()) != -1) {
     if(h->sock == r) {
-      ssize_t ret = http_readable(h, 0);
-      buffer_puts(buffer_2, "readable ret=");
+      if((ret = http_canread(h, io_wantwrite)) <= 0)
+        goto fail;
+
+      buffer_puts(buffer_2, "http_canread ret=");
       buffer_putlong(buffer_2, ret);
 #if HAVE_OPENSSL
       buffer_puts(buffer_2, "  err=");
-      buffer_puts(buffer_2, https_strerror(h, ret));
+      buffer_puts(buffer_2, http_strerror(h, ret));
 #endif
       buffer_putnlflush(buffer_2);
 
@@ -102,13 +111,26 @@ http_io_handler(http* h, buffer* out) {
             return 1;
           }
         }
+
+        buffer_puts(buffer_2, "h->response->status = ");
+        buffer_putlong(buffer_2, h->response->status);
+        buffer_putnlflush(buffer_2);
       }
 
       nr++;
     }
   }
-  return nr + nw;
+fail:
+  return ret;
 }
+
+static const char* const status_strings[] = {"HTTP_RECV_HEADER",
+                                             "HTTP_RECV_DATA",
+                                             "HTTP_STATUS_CLOSED",
+                                             "HTTP_STATUS_ERROR",
+                                             "HTTP_STATUS_BUSY",
+                                             "HTTP_STATUS_FINISH",
+                                             0};
 
 int
 main(int argc, char* argv[]) {
@@ -119,7 +141,7 @@ main(int argc, char* argv[]) {
   static char outbuf[256 * 1024];
   fd_t fd, outfile;
   int c, index;
-  const char* outname = 0;
+  const char *s, *outname = 0;
   char* tmpl = "output-XXXXXX.txt";
   struct longopt opts[] = {{"help", 0, NULL, 'h'}, {"output", 0, NULL, 'o'}, {0, 0, 0, 0}};
 
@@ -167,7 +189,7 @@ main(int argc, char* argv[]) {
 
       int doread = 1;
       fd_t sock;
-
+      ;
       buffer_putsflush(buffer_2, "io_wait\n");
 
       io_wait();
@@ -177,14 +199,32 @@ main(int argc, char* argv[]) {
         return 3;
       }*/
 
-      http_io_handler(&h, &out);
+      ret = http_io_handler(&h, &out);
+
+      buffer_puts(buffer_2, "http_io_handler ret=");
+      buffer_putlong(buffer_2, ret);
+
+      buffer_puts(buffer_2, " err=");
+      buffer_puts(buffer_2, http_strerror(&h, ret));
+      buffer_puts(buffer_2, " status=");
+      buffer_puts(buffer_2, status_strings[h.response->status]);
+      buffer_putnlflush(buffer_2);
 
       // buffer_dump(buffer_1, &h.q.in);
-      if(h.response->status >= HTTP_STATUS_CLOSED) {
-        buffer_putsflush(buffer_2, "HTTP_STATUS_CLOSED\n");
-        break;
+      if(h.response->data.len) {
+        buffer_puts(buffer_2, "response: ");
+        buffer_putsa(buffer_2, &h.response->data);
+        buffer_putnlflush(buffer_2);
       }
+      if(h.response->status == HTTP_STATUS_FINISH || h.response->status == HTTP_STATUS_CLOSED)
+        break;
     }
+
+    s = http_get_header(&h, "location");
+    buffer_puts(buffer_2, "location: ");
+    buffer_put(buffer_2, s, str_chrs(s, "\r\n", 2));
+    buffer_putnlflush(buffer_2);
+
     buffer_flush(&out);
     /* buffer_putsa(buffer_1, &h.response->data);*/
     buffer_putnlflush(buffer_1);

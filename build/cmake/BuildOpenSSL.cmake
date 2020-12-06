@@ -137,6 +137,7 @@ configure_file(
 
 
 add_library(crypto ${LIBCRYPTO_SOURCES})
+target_link_libraries(crypto ${LIBPTHREAD})
 
 if(LINUX)
   target_compile_definitions(crypto PRIVATE  OPENSSL_SYS_LINUX )

@@ -21,6 +21,12 @@ extern "C" {
  * OpenSSL was configured with the following options:
  */
 
+#ifndef OPENSSL_SYS_UNIX
+#ifdef __unix__
+#define OPENSSL_SYS_UNIX 1
+#endif
+#endif
+
 #ifndef OPENSSL_NO_MD2
 # define OPENSSL_NO_MD2
 #endif
@@ -28,7 +34,7 @@ extern "C" {
 # define OPENSSL_NO_RC5
 #endif
 #ifndef OPENSSL_THREADS
-# define OPENSSL_THREADS
+ #define OPENSSL_THREADS
 #endif
 #ifndef OPENSSL_RAND_SEED_OS
 # define OPENSSL_RAND_SEED_OS

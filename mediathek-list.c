@@ -188,7 +188,7 @@ read_mediathek_list(const char* url, buffer* b) {
       if(h.sock != fd)
         continue;
 
-      if(http_on_writeable(&h, &io_onlywantread) == -1) {
+      if(http_canwrite(&h, &io_onlywantread) == -1) {
         errmsg_warnsys("send error: ", 0);
         return 2;
       }
@@ -330,7 +330,8 @@ mktime_r(struct tm* const t, time_t* ret) {
       years--;
     day -= years;
   }
-  day += t->tm_yday = __spm[t->tm_mon] + t->tm_mday - 1 + (isleap(t->tm_year + 1900) & (t->tm_mon > 1));
+  day += t->tm_yday =
+      __spm[t->tm_mon] + t->tm_mday - 1 + (isleap(t->tm_year + 1900) & (t->tm_mon > 1));
   i = 7;
   t->tm_wday = (day + 4) % i;
   i = 24;
@@ -600,8 +601,10 @@ print_entry(buffer* b, const mediathek_entry_t* e) {
 
   const char* sep = ", ";
 
-  buffer_putm_internal(b, "Kanal:\t", e->channel.s ? e->channel.s : "<null>" /*strlist_at(sl, 1)*/, sep, NULL);
-  buffer_putm_internal(b, "Thema:\t", e->topic.s ? e->topic.s : "<null>" /*strlist_at(sl, 2)*/, sep, NULL);
+  buffer_putm_internal(
+      b, "Kanal:\t", e->channel.s ? e->channel.s : "<null>" /*strlist_at(sl, 1)*/, sep, NULL);
+  buffer_putm_internal(
+      b, "Thema:\t", e->topic.s ? e->topic.s : "<null>" /*strlist_at(sl, 2)*/, sep, NULL);
   buffer_putm_internal(b, "Titel:\t", e->title.s /*strlist_at(sl, 3)*/, sep, NULL);
 
   buffer_putm_internal(b, "Datum:\t", format_datetime(e->tm, dt_fmt), sep, NULL);
@@ -733,7 +736,7 @@ parse_mediathek_list(buffer* inbuf, buffer* outbuf) {
   if(ret == 0 && h.response->err != EAGAIN) {
     char status[FMT_ULONG + 1], error[1024];
     status[fmt_ulong(status, h.response->status)] = '\0';
-    http_errstr(h.response->err, error, sizeof(error));
+    http_strerror(&h, ret);
     errmsg_warn("STATUS: ", status, " error: ", error, " connected: ", h.connected ? "1" : "0", 0);
   }
 
@@ -867,13 +870,13 @@ main(int argc, char* argv[]) {
 
       while((fd = io_canwrite()) != -1) {
         if(fd == h.sock)
-          http_on_writeable(&h, &io_onlywantread);
+          http_canwrite(&h, &io_onlywantread);
       }
 
       while((fd = io_canread()) != -1) {
         if(fd == h.sock) {
           if(!h.sent)
-            http_on_readable(&h, &io_onlywantwrite);
+            http_canread(&h, &io_onlywantwrite);
           else
             n += parse_mediathek_list(&in, &output);
         }

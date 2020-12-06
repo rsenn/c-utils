@@ -4,7 +4,8 @@
 struct cbmap_internal_node*
 cbmap_internal_node_new(void) {
   struct cbmap_internal_node* node;
-  int fail = CBM_MEMALIGN((void**)&node, sizeof(unsigned char*), sizeof(struct cbmap_internal_node));
+  int fail =
+      CBM_MEMALIGN((void**)&node, sizeof(unsigned char*), sizeof(struct cbmap_internal_node));
   if(fail) {
     return NULL;
   }

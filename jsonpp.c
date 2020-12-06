@@ -151,7 +151,18 @@ main(int argc, char* argv[]) {
   int out_fd = 1;
   char* out_file = 0;
 
-  struct longopt opts[] = {{"help", 0, NULL, 'h'}, {"single-quote", 0, NULL, 's'}, {"double-quote", 0, NULL, 'd'}, {"depth", 0, NULL, 'D'}, {"separator", 0, NULL, 'S'}, {"spacing", 0, NULL, 'W'}, {"one-line", 0, NULL, 'o'}, {"compact", 0, NULL, 'c'}, {"compliant", 0, NULL, 'C'}, {"inplace", 0, NULL, 'i'}, {"indent", 0, NULL, 'l'}, {0, 0, 0, 0}};
+  struct longopt opts[] = {{"help", 0, NULL, 'h'},
+                           {"single-quote", 0, NULL, 's'},
+                           {"double-quote", 0, NULL, 'd'},
+                           {"depth", 0, NULL, 'D'},
+                           {"separator", 0, NULL, 'S'},
+                           {"spacing", 0, NULL, 'W'},
+                           {"one-line", 0, NULL, 'o'},
+                           {"compact", 0, NULL, 'c'},
+                           {"compliant", 0, NULL, 'C'},
+                           {"inplace", 0, NULL, 'i'},
+                           {"indent", 0, NULL, 'l'},
+                           {0, 0, 0, 0}};
 
   errmsg_iam(argv[0]);
 

@@ -268,7 +268,18 @@ main(int argc, char* argv[]) {
   int c;
   int index = 0;
 
-  struct longopt opts[] = {{"help", 0, NULL, 'h'}, {"single-quote", 0, NULL, 's'}, {"double-quote", 0, NULL, 'd'}, {"one-line", 0, NULL, 'o'}, {"compact", 0, NULL, 'c'}, {"indent", 0, NULL, 'l'}, {"numbers", 0, NULL, 'n'}, {"no-quote", 0, NULL, 'Q'}, {"tag", 0, NULL, 'T'}, {"children", 0, NULL, 'C'}, {"class", 0, NULL, 'N'}, {0, 0, 0, 0}};
+  struct longopt opts[] = {{"help", 0, NULL, 'h'},
+                           {"single-quote", 0, NULL, 's'},
+                           {"double-quote", 0, NULL, 'd'},
+                           {"one-line", 0, NULL, 'o'},
+                           {"compact", 0, NULL, 'c'},
+                           {"indent", 0, NULL, 'l'},
+                           {"numbers", 0, NULL, 'n'},
+                           {"no-quote", 0, NULL, 'Q'},
+                           {"tag", 0, NULL, 'T'},
+                           {"children", 0, NULL, 'C'},
+                           {"class", 0, NULL, 'N'},
+                           {0, 0, 0, 0}};
 
   errmsg_iam(argv[0]);
 

@@ -104,6 +104,7 @@ endmacro(debug_option NAME DESC)
 debug_option(IO "Debug I/O code")
 debug_option(HTTP "Debug HTTP code")
 debug_option(TLS "Debug TLS code")
+debug_option(OUTPUT "Debug output")
 
 if(ENABLE_WERROR)
   add_definitions(-Wall -Werror -Wno-unused)
@@ -286,7 +287,7 @@ check_compile(
 )
 
 set(TRY_LINUX_AIO
-    "#include <fcntl.h>\n#include <linux/aio_abi.h>\n#include <stdint.h>\n#include <stdio.h>\n#include <stdlib.h>\n#include <sys/syscall.h>\n#include <unistd.h>\n\n#define PFATAL(x...) \\\\\n  do { \\\\\n    fprintf(stderr, \"[-] SYSTEM ERROR : \" x); \\\\\n    fprintf(stderr, \"\\\\n\\\\tLocation : %s(), %s:%u\\\\n\", __FUNCTION__, __FILE__, __LINE__); \\\\\n    perror(\"      OS message \"); \\\\\n    fprintf(stderr, \"\\\\n\"); \\\\\n    exit(EXIT_FAILURE); \\\\\n  } while(0)\n\ninline static int\nio_setup(unsigned nr, aio_context_t* ctxp) {\n  return syscall(__NR_io_setup, nr, ctxp);\n}\n\ninline static int\nio_destroy(aio_context_t ctx) {\n  return syscall(__NR_io_destroy, ctx);\n}\n\ninline static int\nio_submit(aio_context_t ctx, long nr, struct iocb** iocbpp) {\n  return syscall(__NR_io_submit, ctx, nr, iocbpp);\n}\n\ninline static int\nio_getevents(aio_context_t ctx, long min_nr, long max_nr, struct io_event* events, struct timespec* timeout) {\n  // This might be improved.\n  return syscall(__NR_io_getevents, ctx, min_nr, max_nr, events, timeout);\n}\n\n#define BUF_SZ (4096)\n\nint\nmain() {\n  int fd = open(\"/etc/passwd\", O_RDONLY);\n  if(fd < 0) {\n    PFATAL(\"open(/etc/passwd)\");\n  }\n\n  aio_context_t ctx = 0;\n  int r = io_setup(128, &ctx);\n  if(r < 0) {\n    PFATAL(\"io_setup()\");\n  }\n\n  char buf[BUF_SZ];\n  struct iocb cb = {.aio_fildes = fd, .aio_lio_opcode = IOCB_CMD_PREAD, .aio_buf = (uint64_t)&buf[0], .aio_nbytes = BUF_SZ};\n  struct iocb* list_of_iocb[1] = {&cb};\n\n  r = io_submit(ctx, 1, list_of_iocb);\n  if(r != 1) {\n    PFATAL(\"io_submit()\");\n  }\n\n  struct io_event events[1] = {};\n  r = io_getevents(ctx, 1, 1, events, NULL);\n  if(r != 1) {\n    PFATAL(\"io_getevents()\");\n  }\n\n  printf(\"read %lld bytes from /etc/passwd\\\\n\", events[0].res);\n  io_destroy(ctx);\n  close(fd);\n  return 0;\n}\n"
+    "#include <fcntl.h>\n#include <linux/aio_abi.h>\n#include <stdint.h>\n#include <stdio.h>\n#include <stdlib.h>\n#include <sys/syscall.h>\n#include <unistd.h>\n\n#define PFATAL(x...) \\\\\n  do { \\\\\n    fprintf(stderr, \"[-] SYSTEM ERROR : \" x); \\\\\n    fprintf(stderr, \"\\\\n\\tLocation : %s(), %s:%u\\\\n\", __FUNCTION__, __FILE__, __LINE__); \\\\\n    perror(\"      OS message \"); \\\\\n    fprintf(stderr, \"\\\\n\"); \\\\\n    exit(EXIT_FAILURE); \\\\\n  } while(0)\n\n#ifdef __dietlibc__\n#include <bits/syscall.h>\n#else\ninline static int\nio_setup(unsigned nr, aio_context_t* ctxp) {\n  return syscall(__NR_io_setup, nr, ctxp);\n}\n\ninline static int\nio_destroy(aio_context_t ctx) {\n  return syscall(__NR_io_destroy, ctx);\n}\n\ninline static int\nio_submit(aio_context_t ctx, long nr, struct iocb** iocbpp) {\n  return syscall(__NR_io_submit, ctx, nr, iocbpp);\n}\n\ninline static int\nio_getevents(aio_context_t ctx,\n             long min_nr,\n             long max_nr,\n             struct io_event* events,\n             struct timespec* timeout) {\n  // This might be improved.\n  return syscall(__NR_io_getevents, ctx, min_nr, max_nr, events, timeout);\n}\n#endif\n\n#define BUF_SZ (4096)\n\nint\nmain() {\n  int fd = open(\"/etc/passwd\", O_RDONLY);\n  if(fd < 0) {\n    PFATAL(\"open(/etc/passwd)\");\n  }\n\n  aio_context_t ctx = 0;\n  int r = io_setup(128, &ctx);\n  if(r < 0) {\n    PFATAL(\"io_setup()\");\n  }\n\n  char buf[BUF_SZ];\n  struct iocb cb = {.aio_fildes = fd,\n                    .aio_lio_opcode = IOCB_CMD_PREAD,\n                    .aio_buf = (uint64_t)&buf[0],\n                    .aio_nbytes = BUF_SZ};\n  struct iocb* list_of_iocb[1] = {&cb};\n\n  r = io_submit(ctx, 1, list_of_iocb);\n  if(r != 1) {\n    PFATAL(\"io_submit()\");\n  }\n\n  struct io_event events[1] = {};\n  r = io_getevents(ctx, 1, 1, events, NULL);\n  if(r != 1) {\n    PFATAL(\"io_getevents()\");\n  }\n\n  printf(\"read %ld bytes from /etc/passwd\\\\n\", events[0].res);\n  io_destroy(ctx);\n  close(fd);\n  return 0;\n}\n"
 )
 check_compile(HAVE_LINUX_AIO "${TRY_LINUX_AIO}")
 if(HAVE_LINUX_AIO)
@@ -555,9 +556,9 @@ if(HAVE_LINUX_AIO_ABI_H)
   check_symbol_exists(io_submit "linux/aio_abi.h" HAVE_IO_SUBMIT)
   check_symbol_exists(io_getevents "linux/aio_abi.h" HAVE_IO_GETEVENTS)
 
-  foreach(H HAVE_IO_SETUP HAVE_IO_DESTROY HAVE_IO_SUBMIT HAVE_IO_GETEVENTS)
+  #[[foreach(H HAVE_IO_SETUP HAVE_IO_DESTROY HAVE_IO_SUBMIT HAVE_IO_GETEVENTS)
     add_definitions(-D"${H}=1")
-  endforeach()
+  endforeach()]]
 endif(HAVE_LINUX_AIO_ABI_H)
 
 if(HAVE_POSIX_SPAWNATTR_SETFLAGS AND HAVE_POSIX_SPAWN_FILE_ACTIONS_INIT AND HAVE_POSIX_SPAWN_FILE_ACTIONS_ADDDUP2 AND HAVE_POSIX_SPAWNP)
@@ -668,6 +669,12 @@ check_library_exists(compat syscall "" HAVE_COMPAT_LIB)
 if(HAVE_COMPAT_LIB)
   set(LIBCOMPAT compat)
 endif()
+
+check_library_exists(pthread pthread_create "" HAVE_PTHREAD_LIB)
+if(HAVE_PTHREAD_LIB)
+  set(LIBPTHREAD pthread)
+endif()
+message(STATUS "LIBPTHREAD = ${LIBPTHREAD}")
 
 check_library_exists(m roundf "" HAVE_MATH_LIB)
 if(HAVE_MATH_LIB)
@@ -1020,7 +1027,7 @@ foreach(METHOD ${MUX_USE})
       message(STATUS "Setting MUX method to ${METHOD}")
       set(MUX "${METHOD}" CACHE STRING "I/O multiplex method" FORCE)
     endif(MUX STREQUAL "")
-    set(MUX_DEFS "${MUX_DEFS} -DHAVE_${METHOD}=1")
+   # set(MUX_DEFS "${MUX_DEFS} -DHAVE_${METHOD}=1")
   endif(SUPPORT_${METHOD})
 endforeach()
 #[[foreach(METHOD ${MUX_ALL})
@@ -1043,17 +1050,11 @@ if(LIBMSWSOCK)
   list(APPEND CMAKE_REQUIRED_LIBRARIES ${LIBMSWSOCK})
 endif(LIBMSWSOCK)
 
-# set(MUX_METHOD "${MUX}" CACHE STRING "I/O Multiplexer method")
-message(STATUS "MUX method: ${MUX_METHOD}")
-
-#[[if(MUX_METHOD STREQUAL "SELECT")
-  set(io_COMPILE_FLAGS -DUSE_SELECT=1)
-else()]]
+ message(STATUS "MUX method: ${MUX_METHOD}")
+ 
 add_definitions("-DHAVE_${MUX_METHOD}=1" "-DUSE_${MUX_METHOD}=1")
-set(io_COMPILE_FLAGS "-DHAVE_${MUX_METHOD}=1 -DUSE_${MUX_METHOD}=1")
-#[[endif()
-add_definitions("-DHAVE_${MUX_METHOD}=1" "-DHAVE_${MUX}=1")
-]]
+set(io_COMPILE_FLAGS "-DMUX_METHOD=${MUX_METHOD} -DHAVE_${MUX_METHOD}=1 -DUSE_${MUX_METHOD}=1")
+ 
 if(WIN32 OR MSVC)
   if(USE_WIDECHAR)
     add_definitions(-DUSE_WIDECHAR=1)
@@ -1268,9 +1269,14 @@ if(BUILD_LZMA)
 endif(BUILD_LZMA)
 
 if(BUILD_SSL)
+    add_definitions(-DOPENSSL_THREADS=1)
+
   if(MUSL)
     add_definitions(-DOPENSSL_NO_SECURE_MEMORY=1)
-  endif(MUSL)
+  endif(MUSL) 
+   #[[if(UNIX OR LINUX)
+    add_definitions(-DOPENSSL_SYS_UNIX=1)
+  endif(UNIX OR LINUX)]]
   if(DIET OR MUSL)
     set(CHK_DLFCN FALSE)
     set(DSO_NONE ON)
@@ -1327,13 +1333,18 @@ if(USE_SSL)
   # endif() endif()
 endif(USE_SSL)
 
+if(NOT OPENSSL_STATIC_LIBRARIES MATCHES ssl)
+set(OPENSSL_STATIC_LIBRARIES "ssl;${OPENSSL_STATIC_LIBRARIES}")
+endif(NOT OPENSSL_STATIC_LIBRARIES MATCHES ssl)
+dump(OPENSSL_STATIC_LIBRARIES)
+
 if(BUILD_SSL)
-  set(LIBSSL ${OPENSSL_LIBRARIES} CACHE PATH "OpenSSL library" FORCE)
+  set(LIBSSL "${OPENSSL_LIBRARIES}" CACHE PATH "OpenSSL library" FORCE)
 else(BUILD_SSL)
   if(LINK_STATIC)
-    set(LIBSSL ${OPENSSL_STATIC_LIBRARIES} CACHE PATH "OpenSSL library" FORCE)
+    set(LIBSSL "${OPENSSL_STATIC_LIBRARIES}" CACHE PATH "OpenSSL library" FORCE)
   else(LINK_STATIC)
-    set(LIBSSL ${OPENSSL_SSL_LIBRARY} ${OPENSSL_CRYPTO_LIBRARY} CACHE PATH "OpenSSL library" FORCE)
+    set(LIBSSL "${OPENSSL_SSL_LIBRARY};${OPENSSL_CRYPTO_LIBRARY}" CACHE PATH "OpenSSL library" FORCE)
   endif(LINK_STATIC)
 endif(BUILD_SSL)
 
@@ -1527,15 +1538,17 @@ add_program(elfwrsec buffer alloc elf mmap)
 add_program(genmakefile sig set case errmsg strarray slist rdir dir path strlist hashmap hmap stralloc buffer mmap unix open scan fmt byte str array safemult alloc)
 add_program(piccfg ihex errmsg strarray slist rdir dir path strlist hashmap hmap stralloc buffer mmap unix open scan fmt byte str array safemult alloc)
 add_program(hexedit stralloc buffer array io errmsg mmap open path scan uint64 unix ${ZLIB_LIBRARY})
-add_program(httptest sig http tls dns stralloc buffer errmsg byte io socket alloc taia ${LIBSSL} ${LIBMSWSOCK} ${LIBDL} pthread)
-set(ssltest_SOURCES address.c address.h)
-add_program(ssltest strlist unix tls dns stralloc buffer errmsg byte io socket alloc taia ${LIBSSL} ${LIBMSWSOCK} ${LIBDL} pthread)
+add_program(httptest sig http c dns stralloc buffer errmsg byte io socket alloc taia ${LIBSSL} ${LIBMSWSOCK} ${LIBDL} pthread)
+#add_program(ssltest strlist unix dns stralloc buffer errmsg byte io  tls socket alloc taia ${LIBSSL} ${LIBMSWSOCK} ${LIBDL} pthread)
+
+#set(ssltest_SOURCES address.c address.h)
+
 add_program(impgen pe buffer byte mmap open)
 add_program(jsontest json stralloc buffer byte charbuf fmt hmap mmap open)
 add_program(list-r path strarray strlist stralloc buffer array unix dir array fmt open str uint64 ${LIBADVAPI32})
 add_program(macho32list mmap uint32)
 if(USE_LZMA)
-  add_program(mediathek-list errmsg stralloc buffer alloc byte fmt http scan slist str unix strarray strlist ${LIBLZMA_LIBRARY} ${LIBSSL} ${LIBDL} pthread)
+  add_program(mediathek-list errmsg stralloc buffer alloc byte fmt http tls scan slist str unix strarray strlist ${LIBLZMA_LIBRARY} ${LIBSSL} ${LIBDL} pthread)
 endif(USE_LZMA)
 
 add_program(mediathek-parser case ucs errmsg strarray strlist stralloc buffer array byte open str unix strlist)

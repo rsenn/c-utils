@@ -235,7 +235,8 @@ extern int close();
 #define debug_printf(x)
 
 #ifdef DEBUG
-#define DEBUG_MSG(msg, fd) buffer_puts(buffer_2, msg), buffer_putlong(buffer_2, fd), buffer_putnlflush(buffer_2)
+#define DEBUG_MSG(msg, fd)                                                                         \
+  buffer_puts(buffer_2, msg), buffer_putlong(buffer_2, fd), buffer_putnlflush(buffer_2)
 #else
 #define DEBUG_MSG(msg, fd)
 #endif
@@ -257,29 +258,41 @@ ssize_t __write(int, const void*, size_t);
 #ifdef HAVE_LINUX_AIO
 #include <linux/aio_abi.h>
 #include <sys/syscall.h>
+#ifdef __dietlibc__
+#include <bits/syscall.h>
+#endif
 
 #define IOCB_CMD_PREADX 4
 #define IOCB_CMD_POLL 5
-
+#ifndef __dietlibc__
+#ifndef HAVE_IO_SETUP
 static inline int
 io_setup(unsigned nr, aio_context_t* ctxp) {
   return syscall(__NR_io_setup, nr, ctxp);
 }
-
+#endif
+#ifndef HAVE_IO_DESTROY
 static inline int
 io_destroy(aio_context_t ctx) {
   return syscall(__NR_io_destroy, ctx);
 }
-
+#endif
+#ifndef HAVE_IO_SUBMIT
 static inline int
 io_submit(aio_context_t ctx, long nr, struct iocb** iocbpp) {
   return syscall(__NR_io_submit, ctx, nr, iocbpp);
 }
-
+#endif
+#ifndef HAVE_IO_GETEVENTS
 static inline int
-io_getevents(aio_context_t ctx, long min_nr, long max_nr, struct io_event* events, struct timespec* timeout) {
-  // This might be improved.
+io_getevents(aio_context_t ctx,
+             long min_nr,
+             long max_nr,
+             struct io_event* events,
+             struct timespec* timeout) {
   return syscall(__NR_io_getevents, ctx, min_nr, max_nr, events, timeout);
 }
+#endif
+#endif /* defined __dietlibc__ */
 #endif
 #endif

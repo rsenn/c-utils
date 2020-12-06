@@ -98,7 +98,8 @@ unittest_main() {
   assert(scan_cescape("test\\1\");", buf, &dl) == 6 && dl == 5 && !memcmp(buf, "test\1", 5));
   /* check unicode */
   assert(scan_cescape("test\\u000a\");", buf, &dl) == 10 && dl == 5 && !memcmp(buf, "test\n", 5));
-  assert(scan_cescape("test\\U0000000a\");", buf, &dl) == 14 && dl == 5 && !memcmp(buf, "test\n", 5));
+  assert(scan_cescape("test\\U0000000a\");", buf, &dl) == 14 && dl == 5 &&
+         !memcmp(buf, "test\n", 5));
   /* check that short sequences are rejected */
   assert(scan_cescape("test\\Ua\");", buf, &dl) == 4 && dl == 4 && !memcmp(buf, "test", 4));
 }

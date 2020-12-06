@@ -63,7 +63,8 @@ init(char ip[256]) {
     HANDLE iphlpapi = LoadLibraryA("iphlpapi.dll");
 
     if(iphlpapi != INVALID_HANDLE_VALUE) {
-      if((get_network_params = (get_network_params_fn*)GetProcAddress(iphlpapi, "GetNetworkParams")) == 0)
+      if((get_network_params =
+              (get_network_params_fn*)GetProcAddress(iphlpapi, "GetNetworkParams")) == 0)
         return -1;
     }
   }

@@ -11,7 +11,8 @@ extern "C" {
 #ifdef IOPAUSE_POLL
 
 /* sysdep: +poll */
-#define IOPAUSE_POLL
+#undef IOPAUSE_POLL
+#define IOPAUSE_POLL 1
 
 #include <sys/types.h>
 #include <poll.h>

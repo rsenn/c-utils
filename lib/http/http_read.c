@@ -27,7 +27,11 @@ http_read(fd_t fd, char* buf, size_t len, void* ptr) {
     int st = r->status;
     bytes = b->n - b->p;
     if((n = buffer_freshen(b)) <= 0) {
-      if((int)r->status == st) {
+      if(n == 0) {
+        r->status = HTTP_STATUS_CLOSED;
+        ret = n;
+        break;
+      } else if((int)r->status == st) {
         if(ret == 0 && r->err != 0) {
           errno = r->err;
           ret = -1;
@@ -51,7 +55,7 @@ http_read(fd_t fd, char* buf, size_t len, void* ptr) {
       b->p = b->n = 0;
     r->ptr += n;
     if(r->ptr == r->content_length && b->n - b->p > 0) {
-      http_read_internal(h, &b->x[b->p], b->n - b->p);
+      http_read_internal(h->sock, &b->x[b->p], b->n - b->p, &h->q.in);
       if(r->status == HTTP_STATUS_FINISH) {
         break;
       }

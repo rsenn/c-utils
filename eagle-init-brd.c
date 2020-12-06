@@ -32,7 +32,8 @@ void after_element(const char*);
 void on_attribute_decl(void*, const char*, const char*, int, int, const char*);
 void on_characters(void*, const char*, int);
 void on_end_element(void*, const char*);
-void on_start_element_ns(void*, const char*, const char*, const char*, int, const char**, int, int, const char**);
+void on_start_element_ns(
+    void*, const char*, const char*, const char*, int, const char**, int, int, const char**);
 void on_start_element(void*, const char*, HMAP_DB**);
 int xml_callback(xmlreader* r, xmlnodeid id, stralloc* name, stralloc* value, HMAP_DB** attrs);
 int xml_read_node(xmlreader* r, xmlnodeid id, stralloc* name, stralloc* value, HMAP_DB** attrs);
@@ -77,7 +78,18 @@ typedef struct instance {
 /* ----------------------------------------------------------------------- */
 void
 dump_part(part_t const* p) {
-  buffer_putm_internal(buffer_2, "dump_part{name=", p->name, ",library=", p->library, ",deviceset", p->deviceset, ",device=", p->device, ",value=", p->value, NULL);
+  buffer_putm_internal(buffer_2,
+                       "dump_part{name=",
+                       p->name,
+                       ",library=",
+                       p->library,
+                       ",deviceset",
+                       p->deviceset,
+                       ",device=",
+                       p->device,
+                       ",value=",
+                       p->value,
+                       NULL);
 
   buffer_puts(buffer_2, ",x=");
   buffer_putdouble(buffer_2, p->x, 1);
@@ -198,7 +210,11 @@ create_instance(const char* part, const char* gate, double x, double y, double r
 
 /* ----------------------------------------------------------------------- */
 part_t*
-create_part(const char* name, const char* library, const char* deviceset, const char* device, const char* value) {
+create_part(const char* name,
+            const char* library,
+            const char* deviceset,
+            const char* device,
+            const char* value) {
   part_t* p;
   if(value == NULL)
     value = "";
@@ -317,7 +333,13 @@ process_instance(xmlnode* e) {
   y /= unit_factor;*/
   /*x *= scale_factor;
   y *= scale_factor;*/
-  { instance_t* newinst = create_instance(part.s, gate.s, round_to_mil(x * scale_factor / unit_factor, grid_mils), round_to_mil(y * scale_factor / unit_factor, grid_mils), rotate); }
+  {
+    instance_t* newinst = create_instance(part.s,
+                                          gate.s,
+                                          round_to_mil(x * scale_factor / unit_factor, grid_mils),
+                                          round_to_mil(y * scale_factor / unit_factor, grid_mils),
+                                          rotate);
+  }
 }
 
 /* ----------------------------------------------------------------------- */

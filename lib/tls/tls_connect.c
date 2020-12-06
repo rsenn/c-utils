@@ -7,14 +7,13 @@
 
 int
 tls_connect(fd_t fd) {
+  int ret;
   tls_instance* i = iarray_get(&tls_list, fd);
   assert(i);
   assert(i->ssl);
 
-  if(tls_instance_return(i, TLS_OP_CONNECT, SSL_connect(i->ssl)) == 1)
-    return 1;
-  if((errno = tls_instance_errno(i)))
-    return -1;
-  return 0;
+  if((ret = tls_instance_return(i, TLS_OP_CONNECT, SSL_connect(i->ssl))) < 0)
+    errno = tls_instance_errno(i);
+  return ret;
 }
 #endif

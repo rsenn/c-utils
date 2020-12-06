@@ -25,7 +25,7 @@ http_get(http* h, const char* location) {
   uint32 serial = 0;
   size_t len = str_len(location);
   h->tls = len >= 5 && !byte_diff(location, 5, "https");
-#if DEBUG_HTTP
+#ifdef DEBUG_HTTP
   buffer_putm_internal(buffer_2, "http_get ", location, "\n", NULL);
   buffer_flush(buffer_2);
 #endif
@@ -52,7 +52,7 @@ http_get(http* h, const char* location) {
   }
   a = (ipv4addr*)dns.s;
   byte_copy(&h->addr, sizeof(ipv4addr), &a->iaddr);
-#if DEBUG_HTTP
+#ifdef DEBUG_HTTP
   buffer_putspad(buffer_2, "http_get resolved ", 18);
   buffer_putsa(buffer_2, &h->host);
   buffer_puts(buffer_2, " to (");
@@ -73,13 +73,8 @@ http_get(http* h, const char* location) {
     stralloc_init(&(req->location));
     stralloc_copys(&(req->location), location);
   }
-  {
-    http_response** r = &h->response;
-    (*r) = (http_response*)alloc_zero(sizeof(http_response));
-    stralloc_init(&((*r)->data));
-    stralloc_init(&((*r)->boundary));
-    (*r)->content_length = (uint64)-1;
-  }
+  h->response = http_response_new();
+
   ret = socket_connect4(h->sock, (const char*)h->addr.addr, h->port);
   h->connected = 0;
   if(ret == -1) {

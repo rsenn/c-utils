@@ -275,31 +275,32 @@ add_chars(const char* x, size_t len) {
 
 void
 usage(char* av0) {
-  buffer_putm_internal(buffer_1,
-                       "Usage: ",
-                       str_basename(av0),
-                       " [OPTIONS] [FILES...]\n"
-                       "\n"
-                       "Options:\n"
-                       "\n"
-                       "  -h, --help                       Show this help\n"
-                       "  -i, --in-place                   Write to input file\n"
-                       "  -q, --quote-chars CHARS          Characters to quote\n"
-                       "  -n, --quote-newline              Quote newline (\\n)\n"
-                       "      --quote-tabs                 Quote tabs (\\t)\n"
-                       "      --quote-nul                  Quote nul (\\0)\n"
-                       "  -b, --quote-backslash            Quote backslash (\\)\n"
-                       "  -c, --escape-c                   Escape characters for C strings\n"
-                       "  -C, --escape-cmake               Escape characters for CMake strings\n"
-                       "  -S, --escape-shell               Escape characters for shell strings\n"
-                       "  -D, --escape-doublequoted-shell  Escape characters for double-quoted shell strings\n"
-                       "  -Q, --escape-quoted-shell        Escape characters for single-quoted shell strings\n"
-                       "  -X, --escape-xml                 Escape characters for XML\n"
-                       "  -J, --escape-json                Escape characters for JSON\n"
-                       "  -P, --escape-printable           Escape non-printable characters\n"
-                       "  -a, --add-quotes QUOTE           Add quotes of type\n"
-                       "\n",
-                       NULL);
+  buffer_putm_internal(
+      buffer_1,
+      "Usage: ",
+      str_basename(av0),
+      " [OPTIONS] [FILES...]\n"
+      "\n"
+      "Options:\n"
+      "\n"
+      "  -h, --help                       Show this help\n"
+      "  -i, --in-place                   Write to input file\n"
+      "  -q, --quote-chars CHARS          Characters to quote\n"
+      "  -n, --quote-newline              Quote newline (\\n)\n"
+      "      --quote-tabs                 Quote tabs (\\t)\n"
+      "      --quote-nul                  Quote nul (\\0)\n"
+      "  -b, --quote-backslash            Quote backslash (\\)\n"
+      "  -c, --escape-c                   Escape characters for C strings\n"
+      "  -C, --escape-cmake               Escape characters for CMake strings\n"
+      "  -S, --escape-shell               Escape characters for shell strings\n"
+      "  -D, --escape-doublequoted-shell  Escape characters for double-quoted shell strings\n"
+      "  -Q, --escape-quoted-shell        Escape characters for single-quoted shell strings\n"
+      "  -X, --escape-xml                 Escape characters for XML\n"
+      "  -J, --escape-json                Escape characters for JSON\n"
+      "  -P, --escape-printable           Escape non-printable characters\n"
+      "  -a, --add-quotes QUOTE           Add quotes of type\n"
+      "\n",
+      NULL);
   buffer_flush(buffer_1);
 }
 
