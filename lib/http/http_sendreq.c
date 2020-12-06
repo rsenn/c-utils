@@ -47,7 +47,9 @@ http_sendreq(http* h) {
   buffer_flush(buffer_2);
 #endif
   ret = buffer_flush(out);
-  if(ret != -1)
+  if(ret != -1) {
     h->sent = 1;
+    h->response->status = HTTP_RECV_HEADER;
+  }
   return ret;
 }
