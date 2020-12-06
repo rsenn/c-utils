@@ -20,54 +20,357 @@
 	"buffers":
 	[
 		{
-			"contents": "  __atomic_compare_and_swap\n  __atomic_compare_and_swap\n  weak\n  __sync_val_compare_and_swap\n  __sync_val_compare_and_swap\n  ldxr\n2f\n  stxr\n1b",
+			"contents": "",
 			"settings":
 			{
-				"buffer_size": 142,
+				"buffer_size": 0,
 				"line_ending": "Unix",
 				"name": "𝌆 Outline",
 				"scratch": true
 			}
 		},
 		{
-			"file": "cfg.sh",
+			"file": "lib/tls/tls_read.c",
 			"settings":
 			{
-				"buffer_size": 11224,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "tcping.c",
-			"settings":
-			{
-				"buffer_size": 8982,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/cas.S",
-			"settings":
-			{
-				"buffer_size": 346,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "CMakeLists.txt",
-			"settings":
-			{
-				"buffer_size": 104822,
+				"buffer_size": 2173,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "lib/CMakeLists.txt",
+			"file": "lib/http/http_read_header.c",
 			"settings":
 			{
-				"buffer_size": 3656,
+				"buffer_size": 3322,
 				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/tls/tls_error.c",
+			"settings":
+			{
+				"buffer_size": 233,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/tls.h",
+			"settings":
+			{
+				"buffer_size": 1427,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/tls_internal.h",
+			"settings":
+			{
+				"buffer_size": 2137,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/tls/tls_bio_method.c",
+			"settings":
+			{
+				"buffer_size": 2771,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/http/http_read.c",
+			"settings":
+			{
+				"buffer_size": 3759,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/buffer/buffer_freshen.c",
+			"settings":
+			{
+				"buffer_size": 692,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/buffer/buffer_feed.c",
+			"settings":
+			{
+				"buffer_size": 347,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/buffer/buffer_stubborn2.c",
+			"settings":
+			{
+				"buffer_size": 401,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/typedefs.h",
+			"settings":
+			{
+				"buffer_size": 2440,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"contents": "#define USE_WS2_32 1\n#include \"../socket_internal.h\"\n#include \"../stralloc.h\"\n#include \"../buffer.h\"\n#include \"../http.h\"\n#include \"../byte.h\"\n#include \"../io.h\"\n#include \"../fmt.h\"\n\nstatic ssize_t\ndo_send(fd_t s, const void* buf, size_t len) {\n  return send(s, buf, len, 0);\n}\n\nint\nhttp_sendreq(http* h) {\n  int ret;\n  size_t len;\n  buffer* out = &h->q.out;\n  if(h->request == NULL)\n    return 0;\n  buffer_puts(out, \"GET \");\n  buffer_putsa(out, &h->request->location);\n  buffer_puts(out, \" HTTP/1.1\\r\\n\");\n  buffer_puts(out, \"Host: \");\n  buffer_putsa(out, &h->host);\n  buffer_puts(out, \"\\r\\n\");\n  if(!h->keepalive)\n    buffer_putm_internal(out, \"Connection: \", h->keepalive ? \"keep-alive\" : \"close\", \"\\r\\n\", NULL);\n  buffer_puts(out, \"Accept: */*\\r\\n\");\n // buffer_puts(out, \"Accept-Encoding: br, xz, lzma, bzip2, gzip, deflate\\r\\n\");\n  buffer_puts(out, \"\\r\\n\");\n#if DEBUG_HTTP\n  {\n    const char* x = out->x;\n    ssize_t i, n = out->p;\n    while(n > 0) {\n      i = byte_chr(x, n, '\\r');\n      buffer_puts(buffer_2, \"Request: \");\n      buffer_put(buffer_2, x, i);\n      buffer_putnlflush(buffer_2);\n      x += i + 1;\n      n -= i + 1;\n      if(*x == '\\n') {\n        x++;\n        n--;\n      }\n    }\n  }\n  buffer_flush(buffer_2);\n#endif\n  len = out->p;\n#ifdef DEBUG_HTTP\n\n  buffer_putspad(buffer_2, \"http_sendreq \", 30);\n  buffer_puts(buffer_2, \"location=\");\n  buffer_putsa(buffer_2, &h->request->location);\n\n  if(h->response->code != -1) {\n    buffer_puts(buffer_2, \" code=\");\n    buffer_putlong(buffer_2, h->response->code);\n  }\n  if(len > 0) {\n    buffer_puts(buffer_2, \" len=\");\n    buffer_putlong(buffer_2, len);\n  }\n  if(out->n > out->p) {\n    buffer_puts(buffer_2, \" code=\");\n    buffer_put_escaped(buffer_2, out->x, out->p, &fmt_escapecharshell);\n  }\n  buffer_puts(buffer_2, \" status=\");\n  buffer_puts(buffer_2,\n              ((const char* const[]){\"-1\",\n                                     \"HTTP_RECV_HEADER\",\n                                     \"HTTP_RECV_DATA\",\n                                     \"HTTP_STATUS_CLOSED\",\n                                     \"HTTP_STATUS_ERROR\",\n                                     \"HTTP_STATUS_BUSY\",\n                                     \"HTTP_STATUS_FINISH\",\n                                     0})[h->response->status + 1]);\n  buffer_putnlflush(buffer_2);\n  buffer_flush(buffer_2);\n#endif\n  buffer_flush(out);\n  ret = len;\n\n#ifdef DEBUG_HTTP\n  buffer_putspad(buffer_2, \"http_sendreq \", 30);\n  buffer_puts(buffer_2, \"ret=\");\n  buffer_putlong(buffer_2, ret);\n  if(ret < 0) {\n    buffer_puts(buffer_2, \" err=\");\n    buffer_putstr(buffer_2, http_strerror(h, ret));\n  }\n  buffer_putnlflush(buffer_2);\n#endif\n  if(ret != -1) {\n    h->sent = 1;\n    h->response->status = HTTP_RECV_HEADER;\n\n    io_onlywantread(h->sock);\n  }\n  return ret;\n}",
+			"file": "lib/http/http_sendreq.c",
+			"file_size": 2782,
+			"file_write_time": 132517336320009798,
+			"settings":
+			{
+				"buffer_size": 2782,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "mediathek-list.c",
+			"settings":
+			{
+				"buffer_size": 18950,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/io/io_onlywantread.c",
+			"settings":
+			{
+				"buffer_size": 287,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"contents": "#include \"../io.h\"\n#include \"../buffer.h\"\n\nvoid\nio_onlywantwrite(fd_t d) {\n#ifdef DEBUG_IO\n  buffer_putspad(buffer_2, \"io_onlywantwrite\", 30);\n  buffer_puts(buffer_2, \"d=\");\n  buffer_putlonglong(buffer_2, d);\n  buffer_putnlflush(buffer_2);\n#endif  io_dontwantread(d);\n  io_wantwrite(d);\n}",
+			"file": "lib/io/io_onlywantwrite.c",
+			"file_size": 288,
+			"file_write_time": 132517335161157606,
+			"settings":
+			{
+				"buffer_size": 288,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/io/io_wantread.c",
+			"settings":
+			{
+				"buffer_size": 3120,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/tls/tls_instance_error.c",
+			"settings":
+			{
+				"buffer_size": 903,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/tls/tls_instance_return.c",
+			"settings":
+			{
+				"buffer_size": 666,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/tls/tls_instance_new.c",
+			"settings":
+			{
+				"buffer_size": 259,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "httptest.c",
+			"settings":
+			{
+				"buffer_size": 8542,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/scan/scan_whitenskip.c",
+			"settings":
+			{
+				"buffer_size": 208,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/scan/scan_ansiskip.c",
+			"settings":
+			{
+				"buffer_size": 321,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/buffer/buffer_putspad.c",
+			"settings":
+			{
+				"buffer_size": 322,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/scan/str_ansilen.c",
+			"settings":
+			{
+				"buffer_size": 315,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/scan.h",
+			"settings":
+			{
+				"buffer_size": 4575,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/str.h",
+			"settings":
+			{
+				"buffer_size": 3794,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/http/http_socket.c",
+			"settings":
+			{
+				"buffer_size": 5725,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/http/http_get.c",
+			"settings":
+			{
+				"buffer_size": 3363,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/http/http_canwrite.c",
+			"settings":
+			{
+				"buffer_size": 3144,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "hexedit.c",
+			"settings":
+			{
+				"buffer_size": 17682,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"contents": "                     X-COM: Terror from the Deep\n                      Hacking Guide version 1.0\n                             By: whatever\n                     aizen_myouou@zdnetonebox.com\n\n----------------------------------------------------------------------\nTable of Content\n  1. Introduction\n  2. Money\n  3. Soldiers\n  4. Items and Facilities\n  5. Weapons\n  6. Credits\n  7. Copyright Statement\n\n\n----------------------------------------------------------------------\n1. Introduction\n----------------------------------------------------------------------\nThis guide is written to help you hack into X-COM: Terror from the\nDeep. Basically, this is CHEATING, so don't read further unless you \nwant to spoil the fun.\n\nIf you really want to, you'll need the 4 things below to proceed:\n    1. X-COM: Terror from the Deep game\n    2. The save game you want to tamper\n    3. Hex Editor\n    4. Knowledge of Hexadecimal\n    (Optional) Scientific Calculator\n\nThe game provides 10 slots of save games you can use. Each of the slot\nis saved in a separate directory named \"Game_\" appended with the slot \nnumber. In Example: You saved your game in the third slot, your save \ngame is inside \"Game_3\" directory. \n\nBelow are some basic conversions from decimal to hexadecimal:\n\n--------------------------------------\nDecimal                   Hexadecimal\n--------------------------------------\n1                         01\n2                         02\n3                         03\n4                         04\n5                         05\n6                         06\n7                         07\n8                         08\n9                         09\n10                        0A\n11                        0B\n12                        0C\n13                        0D\n14                        0E\n15                        0F\n16                        10\n100                       64\n255                       FF\n65,535                    FF FF\n99,999,999                FF E0 F5 05\n--------------------------------------\n\nNOTE: Don't forget to back up the file you want to edit.\n\n\n----------------------------------------------------------------------\n2. Money\n----------------------------------------------------------------------\nOpen the file \"lilglob.dat\" with your Hex Editor. Change the first 4\nbytes value to your needs. The recommended value is FF E0 F5 05. This\nwill give you 99,999,999, more than enough to finish the game. You can\ngo up to 2 billions, but I'm not responsible if you ruin your save\ngame.\n\n\n----------------------------------------------------------------------\n3. Soldiers\n----------------------------------------------------------------------\nThe soldiers data are saved in the file \"soldier.dat\". Browsing \nthrough this file is somehow easy, since the soldier name is saved \nthere as well. The stats for each soldier are located above the name.\nThe total number of soldiers you may have is variable but there is a\nlimit. Thus, it's impossible to list all the offset here. I will use \nthe first soldier as reference for the next soldiers.\n\nThis is the stats table for the first soldier:\n\n@1a=fafafafa @21=fa64 @40=01fa @43=fa @45=fa\n\n\n------------------------------------------------------------\nStats                  Offset       Size           Max Value\n------------------------------------------------------------\nTime Unit              001A         1 Byte         FF\nHealth                 001B         1 Byte         FF\nStamina                001C         1 Byte         FF\nThrowing Accuracy      001D         1 Byte         FF\nFiring Accuracy        0021         1 Byte         FF\nStrength               0022         1 Byte         64\nBravery                0040         1 Byte         01\nMC Skill               0041         1 Byte         FF\nMC Strength            0043         1 Byte         FF\nReaction               0045         1 Byte         FF\n------------------------------------------------------------\n\nNOTE: If you give Strength above 64, the soldier won't be able to\n      throw anything.\n      Bravery uses the formula below to calculate:\n                           110 - Bravery \n               Hex Value = -------------\n                                10\n      I.e.: If your soldier has Bravery 70 points, the hex value is:\n                           110 - 70\n                           -------- = 04\n                              10\n\nTo calculate the stat offset for the second soldier, just add 46 to \nthe offset of the first soldier. For the third soldier add (46 x 2)\nto the offset of the first soldier(The calculation is done in \nHexadecimal, you might need a scientific calculator to do so).\n\nExample:\n   The Strength offset for the second soldier will be:\n        002E + 46 = 0074\n   The Stamina offset for the 11th soldier will be:\n        002C + (46 x A) = 2E8\n                        = 02E8\n\n\n----------------------------------------------------------------------\n4. Items\n----------------------------------------------------------------------\nItems data can be found inside the file \"base.dat\" in your save game\ndirectory. The offset for each item is fixed, just key in the amount\nof item you want. Just like the soldiers data, I'll use the first base\nas reference for the next bases.\n\n-----------------------------------------------------\nItem Name                        Offset       Size\n-----------------------------------------------------\nAjax Launcher                    0010         2 Bytes\nD.U.P. Head Launcher             0012         2 Bytes\nCraft Gas Cannon                 0014         2 Bytes\nP.W.T. Cannon                    0016         2 Bytes\nGauss Cannon                     0018         2 Bytes\nSonic Oscillator                 001A         2 Bytes\nAjax Torpedoes                   001C         2 Bytes\nD.U.P. Head Torpedoes            001E         2 Bytes\nGas Rounds(x50)                  0020         2 Bytes\nP.W.T. Ammo                      0022         2 Bytes\nCoelacanth/ G. Cannon            0024         2 Bytes\nCoelacanth/ Aquajet              0026         2 Bytes\nCoelacanth/ Gauss                0028         2 Bytes\nDisplacer/ Sonic                 002A         2 Bytes\nDisplacer/ P.W.T.                002C         2 Bytes\nDart Gun                         002E         2 Bytes\nDart Clip                        0030         2 Bytes\nJet Harpoon                      0032         2 Bytes\nHarpoon Clip                     0034         2 Bytes\nGas Cannon                       0036         2 Bytes\nGC-AP Bolts                      0038         2 Bytes\nGC-HE Bolts                      003A         2 Bytes\nGC-Phosphorous Bolts             003C         2 Bytes\nHidro-Jet Cannon                 003E         2 Bytes\nHJ-AP Ammo                       0040         2 Bytes\nHJ-HE Ammo                       0042         2 Bytes\nHJ-P Ammo                        0044         2 Bytes\nTorpedo Launcher                 0046         2 Bytes\nSmall Torpedo                    0048         2 Bytes\nLarge Torpedo                    004A         2 Bytes\nPhosphorous Torpedo              004C         2 Bytes\nGauss Pistol                     004E         2 Bytes\nGauss Rifle                      0050         2 Bytes\nHeavy Gauss                      0052         2 Bytes\nMagna Blast Grenade              0054         2 Bytes\nDye Grenade                      0056         2 Bytes\nParticle Disturbance Grenade     0058         2 Bytes\nMagna-Pack Explosive             005A         2 Bytes\nParticle Disturbance Sensor      005C         2 Bytes\nMedi-Kit                         005E         2 Bytes\nMC Disruptor                     0060         2 Bytes\nThermal Tazer                    0062         2 Bytes\nChemical-Flare                   0064         2 Bytes\nVibro Blade                      0066         2 Bytes\nThermic Lance                    0068         2 Bytes\nHeavy Thermic Lance              006A         2 Bytes\nSonic Cannon                     0072         2 Bytes\nCannon Power Clip                0074         2 Bytes\nSonic Blasta Rifle               0076         2 Bytes\nBlasta Power Clip                0078         2 Bytes\nSonic Pistol                     007A         2 Bytes\nPistol Power Clip                007C         2 Bytes\nDisruptor Pulse Cannon           007E         2 Bytes\nDisruptor Ammo                   0080         2 Bytes\nThermal Shok Launcher            0082         2 Bytes\nThermal Shok Bomb                0084         2 Bytes\nSonic Pulser                     0086         2 Bytes\nZrbite                           0088         2 Bytes\nMC Reader                        008A         2 Bytes\nGauss Pistol Clip                008C         2 Bytes\nGauss Rifle Clip                 008E         2 Bytes\nHeavy Gauss Clip                 0090         2 Bytes\nAquatoid Corpse                  0092         2 Bytes\nGillman Corpse                   0094         2 Bytes\nLobsterman Corpse                0096         2 Bytes\nTasoth Corpse                    0098         2 Bytes\nCalcinite Corpse                 009A         2 Bytes\nDeep One Corpse                  009C         2 Bytes\nBio-Drone Corpse                 009E         2 Bytes\nTentaculat Corpse                00A0         2 Bytes\nTriscene Corpse                  00A2         2 Bytes\nHallucinoid Corpse               00A4         2 Bytes\nXarquid Corpse                   00A6         2 Bytes\nIon-Beam Accelerators            00B0         2 Bytes\nMagnetic Navigation              00B2         2 Bytes\nAlien Sub Construction           00B4         2 Bytes\nAlien Cryogenics                 00B6         2 Bytes\nAlien Cloning                    00B8         2 Bytes\nAlien Learning Arrays            00BA         2 Bytes\nAlien Implanter                  00BC         2 Bytes\nExamination Room                 00BE         2 Bytes\nAqua Plastics                    00C0         2 Bytes\nAlien Re-animation Zone          00C2         2 Bytes\nPlastic Aqua-Armour              00C4         2 Bytes\nIon Armour                       00C6         2 Bytes\nMag. Ion Armour                  00C8         2 Bytes\nTechnician                       0122         1 Byte\nScientist                        0123         1 Byte\n-----------------------------------------------------\n\nThe table above is only for first base. To get the next base offsets\njust add 128 to the previous base offsets. The calculation is still\nin hexadecimal.\n\nExample:\n   To calculate the Engineer offset for base number 2:\n           005E + 128 = 186\n                      = 0186\n   To calculate Ion Armour offset for base number 4:\n           00C6 + (128 x 3) = 43E\n                            = 043E\n\nAnother easy trick is to change the item amount is the first base and\njust transfer them to other base. But this method will consume some\ntime to complete. But it is easier than actually changing the item \namount in the particular base.\n\nBelow is the hex code for all base facilities.\n------------------------------\nHex      Facility Name\n------------------------------\n00       Air Lock\n01       Living Quarters\n02       Laboratory\n03       Workshop\n04       Standard Sonar\n05       Wide Array Sonar\n06       Torpedo Defense\n07       General Stores\n08       Alien Containment\n09       Gauss Defense\n0A       Sonic Defense\n0B       PWT Defense\n0C       Bombardment Shield\n0D       MC Generator\n0F       Transmission Resolver\n10       Subpen(Top Left)\n11       Subpen(Top Right)\n12       Subpen(Bottom Left)\n13       Subpen(Bottom Right)\n------------------------------\n\nAll facilities use 1 block of space except Subpen, which takes 4. This\nis how the Subpen placement looks like:\n\n/---------\\\n| 10 | 11 |\n|    |    |\n|---------|\n| 12 | 13 |\n|    |    |\n\\---------/\n\nThe base layout will look like this:\n\n/-----------------------------------------\\\n| 00DA | 00DB | 00DC | 00DD | 00DE | 00DF |\n|      |      |      |      |      |      |\n|-----------------------------------------|\n| 00E0 | 00E1 | 00E2 | 00E3 | 00E4 | 00E5 |\n|      |      |      |      |      |      |\n|-----------------------------------------|\n| 00E6 | 00E7 | 00E8 | 00E9 | 00EA | 00EB |\n|      |      |      |      |      |      |\n|-----------------------------------------| \n| 00EC | 00ED | 00EE | 00EF | 00F0 | 00F1 |\n|      |      |      |      |      |      |\n|-----------------------------------------|\n| 00F2 | 00F3 | 00F4 | 00F5 | 00F6 | 00F7 |\n|      |      |      |      |      |      |\n|-----------------------------------------|\n| 00F8 | 00F9 | 00FA | 00FB | 00FC | 00FD |\n|      |      |      |      |      |      |\n\\-----------------------------------------/\n\nThe default value is FF (nothing is built on the block), change it to\nwhatever value you desire.\n\nThe next layout determines how many days left to finish the facility.\nEach byte corresponds to a block. If nothing is built on, the value is\nFF. To finish the facility change the value to 00.\n\n/-----------------------------------------\\\n| 00FE | 00FF | 0100 | 0101 | 0102 | 0103 |\n|      |      |      |      |      |      |\n|-----------------------------------------|\n| 0104 | 0105 | 0106 | 0107 | 0108 | 0109 |\n|      |      |      |      |      |      |\n|-----------------------------------------|\n| 010A | 010B | 010C | 010D | 010E | 010F |\n|      |      |      |      |      |      |\n|-----------------------------------------|\n| 0110 | 0111 | 0112 | 0113 | 0114 | 0115 |\n|      |      |      |      |      |      |\n|-----------------------------------------|\n| 0116 | 0117 | 0118 | 0119 | 011A | 011B |\n|      |      |      |      |      |      |\n|-----------------------------------------|\n| 011C | 011D | 011E | 011F | 0120 | 0121 |\n|      |      |      |      |      |      |\n\\-----------------------------------------/\n\nNOTE: To get the offset of the next base layout, just use the same\n      calculation in item section, above.\n\n\n----------------------------------------------------------------------\n5. Weapons\n----------------------------------------------------------------------\nWARNING: This section completely tamper with the game setting. This\n         section is not recommended at all. The changes will affect \n         the whole game, not only a particular save game. Any mistake\n         might screw up the whole game, leaving you no choice but to\n         re-install the game.\n\nThe weapons data can be found in directory \"\\Geodata\", with file named\n\"Obdata.dat\".\n\nI separate them into 2 parts: human & alien technology. Be very\ncareful when editing alien technology. \n\nRecommended byte values:\n  Accuracy(in percentage)                         64\n  Time Unit Consumption Rate(in percentage)       01\n  Power                                           FF\n  Rounds                                          FF\n\nHuman Technology:\n\n1. Dart Gun\n   Accuracy:\n       Auto Shot      0020        1 Byte\n       Snap Shot      0021        1 Byte\n       Aimed Shot     0022        1 Byte\n   Time Unit Consumption Rate:\n       Auto Shot      0023        1 Byte\n       Snap Shot      0024        1 Byte\n       Aimed Shot     0025        1 Byte\n\n2. Dart Clip\n       Power          004C        1 Byte\n       Rounds         005C        1 Byte\n\n3. Jet Harpoon\n   Accuracy:\n       Auto Shot      008C        1 Byte\n       Snap Shot      008D        1 Byte\n       Aimed Shot     008E        1 Byte\n   Time Unit Consumption Rate:\n       Auto Shot      008F        1 Byte\n       Snap Shot      0090        1 Byte\n       Aimed Shot     0091        1 Byte\n\n4. Harpoon Clip\n       Power          00B8        1 Byte\n       Rounds         00C8        1 Byte\n\n5. Gas Cannon\n   Accuracy:\n       Auto Shot      00F8        1 Byte\n       Snap Shot      00F9        1 Byte\n       Aimed Shot     00FA        1 Byte\n   Time Unit Consumption Rate:\n       Auto Shot      00FB        1 Byte\n       Snap Shot      00FC        1 Byte\n       Aimed Shot     00FD        1 Byte\n\n6. GC-AP Bolts\n       Power          0124        1 Byte\n       Rounds         0134        1 Byte\n\n7. GC-HE Bolts\n       Power          015A        1 Byte\n       Rounds         016A        1 Byte\n\n\n8. GC-Phosphorous Ammo\n       Power          0190        1 Byte\n       Rounds         01A0        1 Byte\n\n9. Hydro-Jet Cannon\n   Accuracy:\n       Auto Shot      01D0        1 Byte\n       Snap Shot      01D1        1 Byte\n       Aimed Shot     01D2        1 Byte\n   Time Unit Consumption Rate:\n       Auto Shot      01D3        1 Byte\n       Snap Shot      01D4        1 Byte\n       Aimed Shot     01D5        1 Byte\n\n10. HJ-AP Ammo\n       Power          01FC        1 Byte\n       Rounds         020C        1 Byte\n\n11. HJ-HE Ammo\n       Power          0232        1 Byte\n       Rounds         0242        1 Byte \n\n12. HJ-P Ammo\n       Power          0268        1 Byte\n       Rounds         0278        1 Byte\n\n13. Torpedo Launcher\n    Accuracy:\n       Auto Shot      02A8        1 Byte\n       Snap Shot      02A9        1 Byte\n       Aimed Shot     02AA        1 Byte\n    Time Unit Consumption Rate:\n       Auto Shot      02AB        1 Byte\n       Snap Shot      02AC        1 Byte\n       Aimed Shot     02AD        1 Byte\n\n14. Small Torpedo\n       Power          02D4        1 Byte\n       Rounds         02E4        1 Byte\n\n15. Large Torpedo\n       Power          030A        1 Byte\n       Rounds         031A        1 Byte\n\n16. Phosphorous Torpedo\n       Power          0340        1 Byte\n       Rounds         0350        1 Byte\n\n17. Gauss Pistol\n    Accuracy:\n       Auto Shot      0380        1 Byte\n       Snap Shot      0381        1 Byte\n       Aimed Shot     0382        1 Byte\n    Time Unit Consumption Rate:\n       Auto Shot      0383        1 Byte\n       Snap Shot      0384        1 Byte\n       Aimed Shot     0385        1 Byte\n\n18. Gauss Pistol Clip\n       Power          0A00        1 Byte\n       Rounds         0A10        1 Byte\n\n19. Gauss Rifle\n    Accuracy:\n       Auto Shot      03B6        1 Byte\n       Snap Shot      03B7        1 Byte\n       Aimed Shot     03B8        1 Byte\n    Time Unit Consumption Rate:\n       Auto Shot      03B9        1 Byte\n       Snap Shot      03BA        1 Byte\n       Aimed Shot     03BB        1 Byte\n\n20. Gauss Rifle Clip\n       Power          0A36        1 Byte\n       Rounds         0A46        1 Byte\n\n21. Heavy Gauss\n    Accuracy:\n       Auto Shot      03EC        1 Byte\n       Snap Shot      03ED        1 Byte\n       Aimed Shot     03EE        1 Byte\n    Time Unit Consumption Rate:\n       Auto Shot      03EF        1 Byte\n       Snap Shot      03F0        1 Byte\n       Aimed Shot     03F1        1 Byte\n\n22. Heavy Gauss Clip\n       Power          0A6C        1 Byte\n       Rounds         0A7C        1 Byte\n\n23. Magna Blast Grenade\n       Power          0418        1 Byte\n\n24. Dye Grenade\n       Power          044E        1 Byte\n\n25. Particle Disturbance Grenade\n       Power          0484        1 Byte\n\n26. Magna-Pack Explosive\n       Power          04BA        1 Byte\n\n27. Thermal Tazer\n       Power          05A2        1 Byte\n    Time Unit Consumption Rate:\n       Stun           05A5        1 Byte\n\n28. Medi-Kit\n    Time Unit Consumption:\n       Use            0536        1 Byte\n\nAlien Technology:\n\n1. Sonic Pistol\n   Accuracy:\n       Auto Shot      0824        1 Byte\n       Snap Shot      0825        1 Byte\n       Aimed Shot     0826        1 Byte\n   Time Unit Consumption Rate:\n       Auto Shot      0827        1 Byte\n       Snap Shot      0828        1 Byte\n       Aimed Shot     0829        1 Byte\n\n2. Pistol Power Clip\n       Power          0850        1 Byte\n       Rounds         0860        1 Byte\n\n3. Sonic Blasta Rifle\n   Accuracy:\n       Auto Shot      07B8        1 Byte\n       Snap Shot      07B9        1 Byte\n       Aimed Shot     07BA        1 Byte\n   Time Unit Consumption Rate:\n       Auto Shot      07BB        1 Byte\n       Snap Shot      07BC        1 Byte\n       Aimed Shot     07BD        1 Byte\n\n4. Blasta Power Clip\n       Power          07E4        1 Byte\n       Rounds         07F4        1 Byte\n\n5. Sonic Cannon\n   Accuracy:\n       Auto Shot      074C        1 Byte\n       Snap Shot      074D        1 Byte\n       Aimed Shot     074E        1 Byte\n   Time Unit Consumption Rate:\n       Auto Shot      074F        1 Byte\n       Snap Shot      0750        1 Byte\n       Aimed Shot     0751        1 Byte\n\n6. Cannon Power Clip\n       Power          0778        1 Byte\n       Rounds         0788        1 Byte\n\n7. Disrupter Pulse Cannon\n   Accuracy:\n       Auto Shot      0890        1 Byte\n       Snap Shot      0891        1 Byte\n       Aimed Shot     0892        1 Byte\n   Time Unit Consumption Rate:\n       Auto Shot      0893        1 Byte\n       Snap Shot      0894        1 Byte\n       Aimed Shot     0895        1 Byte\n\n8. Disrupter Ammo\n       Power          08BC        1 Byte\n       Rounds         08CC        1 Byte\n\n9. Thermal Shok Launcher\n   Accuracy:\n       Auto Shot      08FC        1 Byte\n       Snap Shot      08FD        1 Byte\n       Aimed Shot     08FE        1 Byte\n   Time Unit Consumption Rate:\n       Auto Shot      08FF        1 Byte\n       Snap Shot      0900        1 Byte\n       Aimed Shot     0901        1 Byte\n\n10. Thermal Shok Bomb\n       Power          0928        1 Byte\n       Rounds         0938        1 Byte\n\n11. Sonic Pulser\n       Power          095E        1 Byte\n\n12. MC Reader\n    Time Unit Consumption Rate:\n       Use            09DD        1 Byte\n\n13. Vibro Blade\n       Power          060E        1 Byte\n\n14. Thermic Lance\n       Power          0644        1 Byte\n\n15. Heavy Thermic Lance\n       Power          067A        1 Byte\n\nI have found some anomalies when altering weapon data. If you had \nchanged the soldier firing accuracy to 255 and the weapon accuracy to\n255 as well, it'll result a negative accuracy. So, if you change the \nsoldier firing accuracy to 255, don't set the weapon accuracy for more\nthan 64 (100% Accuracy).\n\nShooting mode for weapon can be added or removed. To add a shooting\nmode, just change the Accuracy and Time Unit Consumption value at the\ncorresponding offset. To remove a shooting mode, just change both \nvalues to 00.\n\n\n----------------------------------------------------------------------\n6. Credit\n----------------------------------------------------------------------\nSpecial thanks to:\n  -MicroProse, for making such a great tactical game series.\n  -Benjamin Peterson, for writing Advance HeX Editor.\n\n\n----------------------------------------------------------------------\n7. Copyright Statement\n----------------------------------------------------------------------\nThis document is copyright of Agus Kurniawan, 2001. This document is \nintended to be posted only on GameFAQs and may not be posted on other \nsite. X-COM Colector Series is a trademark of MicroProse Entertainment\n1999. Advance HeX Editor is copyright of Benjamin Peterson, 1998.\n",
+			"file": "/home/roman/Downloads/tftdhack.txt",
+			"file_size": 23316,
+			"file_write_time": 132517390277896818,
+			"settings":
+			{
+				"buffer_size": 22734,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "lib/http/http_canread.c",
+			"settings":
+			{
+				"buffer_size": 5008,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/fmt/fmt_escapecharshell.c",
+			"settings":
+			{
+				"buffer_size": 1135,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/stralloc/buffer_put_escaped.c",
+			"settings":
+			{
+				"buffer_size": 405,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/stralloc/stralloc_fmt.c",
+			"settings":
+			{
+				"buffer_size": 592,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"contents": "Searching 3381 files for \"http_canread\" (regex, case sensitive)\n\n/home/roman/Sources/c-utils/lib/http.h:\n   89  } http;\n   90  \n   91: ssize_t http_canread(http* h, void (*wantwrite)(fd_t));\n   92  ssize_t http_canwrite(http* h, void (*wantread)(fd_t));\n   93  void http_close(http* h);\n\n/home/roman/Sources/c-utils/lib/http/http_canread.c:\n   25   */\n   26  ssize_t\n   27: http_canread(http* h, void (*wantwrite)(fd_t)) {\n   28    http_response* r;\n   29    int err;\n   ..\n   95        /*\n   96        #ifdef DEBUG_HTTP\n   97:             buffer_putspad(buffer_2, \"http_canread DATA \", 30);\n   98              buffer_puts(buffer_2, \"sock=\");\n   99              buffer_putlong(buffer_2, h->sock);\n  ...\n  121  \n  122  #ifdef DEBUG_HTTP\n  123:   buffer_putspad(buffer_2, \"http_canread \", 30);\n  124    buffer_puts(buffer_2, \"sock=\");\n  125    buffer_putlong(buffer_2, h->sock);\n\n/home/roman/Sources/c-utils/httptest.c:\n   99  #endif\n  100      if(h->sock == r) {\n  101:       nb = http_canread(h, io_wantwrite);\n  102  \n  103  #ifdef DEBUG_OUTPUT\n  104:       buffer_putspad(buffer_2, \"\\x1b[1;31mhttp_canread\\x1b[0m\", 30);\n  105        buffer_puts(buffer_2, \"nb=\");\n  106        buffer_putlong(buffer_2, nb);\n\n/home/roman/Sources/c-utils/lib/http.h:\n   89  } http;\n   90  \n   91: ssize_t http_canread(http* h, void (*wantwrite)(fd_t));\n   92  ssize_t http_canwrite(http* h, void (*wantread)(fd_t));\n   93  void http_close(http* h);\n\n/home/roman/Sources/c-utils/lib/http/http_canread.c:\n   25   */\n   26  ssize_t\n   27: http_canread(http* h, void (*wantwrite)(fd_t)) {\n   28    http_response* r;\n   29    int err;\n   ..\n   95        /*\n   96        #ifdef DEBUG_HTTP\n   97:             buffer_putspad(buffer_2, \"http_canread DATA \", 30);\n   98              buffer_puts(buffer_2, \"sock=\");\n   99              buffer_putlong(buffer_2, h->sock);\n  ...\n  121  \n  122  #ifdef DEBUG_HTTP\n  123:   buffer_putspad(buffer_2, \"http_canread \", 30);\n  124    buffer_puts(buffer_2, \"sock=\");\n  125    buffer_putlong(buffer_2, h->sock);\n\n/home/roman/Sources/c-utils/mediathek-list.c:\n  879          if(fd == h.sock) {\n  880            if(!h.sent)\n  881:             http_canread(&h, &io_onlywantwrite);\n  882            else\n  883              n += parse_mediathek_list(&in, &output);\n\n11 matches across 6 files\n\n\nSearching 3391 files for \"fd_t;\" (regex, case sensitive)\n\n/home/roman/Sources/c-utils/lib/typedefs.h:\n   80  #if defined(_WIN32) || defined(__MINGW32__) ||                                                     \\\n   81      defined(_WIN64) && !(defined(__CYGWIN__) || defined(__MSYS__))\n   82: typedef intptr_t fd_t;\n   83  #else\n   84: typedef int fd_t;\n   85  #endif\n   86  \n\n/home/roman/Sources/c-utils/lib/typedefs.h:\n   80  #if defined(_WIN32) || defined(__MINGW32__) ||                                                     \\\n   81      defined(_WIN64) && !(defined(__CYGWIN__) || defined(__MSYS__))\n   82: typedef intptr_t fd_t;\n   83  #else\n   84: typedef int fd_t;\n   85  #endif\n   86  \n\n/home/roman/Sources/c-utils/pipeinfo.c:\n   38    struct stat st;\n   39    stralloc info;\n   40: } procfd_t;\n   41  \n   42  typedef struct {\n\n5 matches across 3 files\n\n\nSearching 3404 files for \"http_read_header\" (regex, case sensitive)\n\n/home/roman/Sources/c-utils/lib/CMakeFiles/http.dir/link.txt:\n    1: /usr/bin/ar qc http.a CMakeFiles/http.dir/http/http_close.c.o CMakeFiles/http.dir/http/http_errstr.c.o CMakeFiles/http.dir/http/http_get.c.o CMakeFiles/http.dir/http/http_init.c.o CMakeFiles/http.dir/http/http_on_readable.c.o CMakeFiles/http.dir/http/http_on_writeable.c.o CMakeFiles/http.dir/http/http_read.c.o CMakeFiles/http.dir/http/http_read_header.c.o CMakeFiles/http.dir/http/http_read_internal.c.o CMakeFiles/http.dir/http/http_readable.c.o CMakeFiles/http.dir/http/http_sendreq.c.o CMakeFiles/http.dir/http/http_socket.c.o CMakeFiles/http.dir/http/http_socket_read.c.o CMakeFiles/http.dir/http/http_socket_write.c.o CMakeFiles/http.dir/http/http_ssl2want.c.o CMakeFiles/http.dir/http/https_connect.c.o CMakeFiles/http.dir/http/https_errstr.c.o CMakeFiles/http.dir/http/https_io.c.o CMakeFiles/http.dir/http/https_read.c.o CMakeFiles/http.dir/http/https_socket.c.o CMakeFiles/http.dir/http/https_ssl_ctx.c.o CMakeFiles/http.dir/http/https_strerror.c.o CMakeFiles/http.dir/http/https_tls2errno.c.o CMakeFiles/http.dir/http/https_tls2want.c.o CMakeFiles/http.dir/http/https_write.c.o\n    2  /usr/bin/ranlib http.a\n    3  \n\n/home/roman/Sources/c-utils/lib/http.h:\n   96  void http_init(http* h, const char* host, uint16 port);\n   97  ssize_t http_read(fd_t fd, char* buf, size_t len, void* ptr);\n   98: ssize_t http_read_header(http* h, stralloc* sa, http_response* r);\n   99  size_t http_read_internal(fd_t fd, char* buf, size_t len, buffer* b);\n  100  void http_response_free(http_response* r);\n\n/home/roman/Sources/c-utils/lib/http/http_read_header.c:\n   27  \n   28  ssize_t\n   29: http_read_header(http* h, stralloc* sa, http_response* r) {\n   30    ssize_t ret = 0, bytesread = 0;\n   31    size_t start, n;\n   ..\n   79  \n   80  #ifdef DEBUG_HTTP\n   81:   buffer_putspad(buffer_2, \"\\x1b[1;33mhttp_read_header\\x1b[0m\", 30);\n   82    buffer_puts(buffer_2, \"sock=\");\n   83    buffer_putlong(buffer_2, h->sock);\n\n/home/roman/Sources/c-utils/lib/http/http_read_internal.c:\n   29    if((r = h->response)) {\n   30  \n   31:     while(r->status == HTTP_RECV_HEADER && http_read_header(h, &r->data, r) > 0) {\n   32        r->ptr = 0;\n   33      }\n\n/home/roman/Sources/c-utils/lib/http/http_socket.c:\n   38  \n   39    buffer_init_free(&h->q.in,\n   40:                    (buffer_op_sys*)(void*)&http_read_header,\n   41                     h->sock,\n   42                     h->q.in.x ? h->q.in.x : (char*)alloc(BUFFER_INSIZE),\n\n/home/roman/Sources/c-utils/lib.h:\n  251  #include \"lib/http/http_close.c\"\n  252  #include \"lib/http/http_writeable.c\"\n  253: #include \"lib/http/http_read_header.c\"\n  254  #include \"lib/http/https_error.c\"\n  255  #include \"lib/http/http_get.c\"\n\n/home/roman/Sources/c-utils/lib/CMakeFiles/http.dir/link.txt:\n    1: /usr/bin/ar qc http.a CMakeFiles/http.dir/http/http_close.c.o CMakeFiles/http.dir/http/http_errstr.c.o CMakeFiles/http.dir/http/http_get.c.o CMakeFiles/http.dir/http/http_init.c.o CMakeFiles/http.dir/http/http_on_readable.c.o CMakeFiles/http.dir/http/http_on_writeable.c.o CMakeFiles/http.dir/http/http_read.c.o CMakeFiles/http.dir/http/http_read_header.c.o CMakeFiles/http.dir/http/http_read_internal.c.o CMakeFiles/http.dir/http/http_readable.c.o CMakeFiles/http.dir/http/http_sendreq.c.o CMakeFiles/http.dir/http/http_socket.c.o CMakeFiles/http.dir/http/http_socket_read.c.o CMakeFiles/http.dir/http/http_socket_write.c.o CMakeFiles/http.dir/http/http_ssl2want.c.o CMakeFiles/http.dir/http/https_connect.c.o CMakeFiles/http.dir/http/https_errstr.c.o CMakeFiles/http.dir/http/https_io.c.o CMakeFiles/http.dir/http/https_read.c.o CMakeFiles/http.dir/http/https_socket.c.o CMakeFiles/http.dir/http/https_ssl_ctx.c.o CMakeFiles/http.dir/http/https_strerror.c.o CMakeFiles/http.dir/http/https_tls2errno.c.o CMakeFiles/http.dir/http/https_tls2want.c.o CMakeFiles/http.dir/http/https_write.c.o\n    2  /usr/bin/ranlib http.a\n    3  \n\n/home/roman/Sources/c-utils/lib/http.h:\n   96  void http_init(http* h, const char* host, uint16 port);\n   97  ssize_t http_read(fd_t fd, char* buf, size_t len, void* ptr);\n   98: ssize_t http_read_header(http* h, stralloc* sa, http_response* r);\n   99  size_t http_read_internal(fd_t fd, char* buf, size_t len, buffer* b);\n  100  void http_response_free(http_response* r);\n\n/home/roman/Sources/c-utils/lib/http/http_read_header.c:\n   27  \n   28  ssize_t\n   29: http_read_header(http* h, stralloc* sa, http_response* r) {\n   30    ssize_t ret = 0, bytesread = 0;\n   31    size_t start, n;\n   ..\n   79  \n   80  #ifdef DEBUG_HTTP\n   81:   buffer_putspad(buffer_2, \"\\x1b[1;33mhttp_read_header\\x1b[0m\", 30);\n   82    buffer_puts(buffer_2, \"sock=\");\n   83    buffer_putlong(buffer_2, h->sock);\n\n/home/roman/Sources/c-utils/lib/http/http_read_internal.c:\n   29    if((r = h->response)) {\n   30  \n   31:     while(r->status == HTTP_RECV_HEADER && http_read_header(h, &r->data, r) > 0) {\n   32        r->ptr = 0;\n   33      }\n\n/home/roman/Sources/c-utils/lib/http/http_socket.c:\n   38  \n   39    buffer_init_free(&h->q.in,\n   40:                    (buffer_op_sys*)(void*)&http_read_header,\n   41                     h->sock,\n   42                     h->q.in.x ? h->q.in.x : (char*)alloc(BUFFER_INSIZE),\n\n13 matches across 11 files\n\n\nSearching 3414 files for \"http_read_header\" (regex, case sensitive)\n\n/home/roman/Sources/c-utils/lib/CMakeFiles/http.dir/link.txt:\n    1: /usr/bin/ar qc http.a CMakeFiles/http.dir/http/http_close.c.o CMakeFiles/http.dir/http/http_errstr.c.o CMakeFiles/http.dir/http/http_get.c.o CMakeFiles/http.dir/http/http_init.c.o CMakeFiles/http.dir/http/http_on_readable.c.o CMakeFiles/http.dir/http/http_on_writeable.c.o CMakeFiles/http.dir/http/http_read.c.o CMakeFiles/http.dir/http/http_read_header.c.o CMakeFiles/http.dir/http/http_read_internal.c.o CMakeFiles/http.dir/http/http_readable.c.o CMakeFiles/http.dir/http/http_sendreq.c.o CMakeFiles/http.dir/http/http_socket.c.o CMakeFiles/http.dir/http/http_socket_read.c.o CMakeFiles/http.dir/http/http_socket_write.c.o CMakeFiles/http.dir/http/http_ssl2want.c.o CMakeFiles/http.dir/http/https_connect.c.o CMakeFiles/http.dir/http/https_errstr.c.o CMakeFiles/http.dir/http/https_io.c.o CMakeFiles/http.dir/http/https_read.c.o CMakeFiles/http.dir/http/https_socket.c.o CMakeFiles/http.dir/http/https_ssl_ctx.c.o CMakeFiles/http.dir/http/https_strerror.c.o CMakeFiles/http.dir/http/https_tls2errno.c.o CMakeFiles/http.dir/http/https_tls2want.c.o CMakeFiles/http.dir/http/https_write.c.o\n    2  /usr/bin/ranlib http.a\n    3  \n\n/home/roman/Sources/c-utils/lib/http.h:\n   96  void http_init(http* h, const char* host, uint16 port);\n   97  ssize_t http_read(fd_t fd, char* buf, size_t len, void* ptr);\n   98: ssize_t http_read_header(http* h, stralloc* sa, http_response* r);\n   99  size_t http_read_internal(fd_t fd, char* buf, size_t len, buffer* b);\n  100  void http_response_free(http_response* r);\n\n/home/roman/Sources/c-utils/lib/http/http_read_header.c:\n   27  \n   28  ssize_t\n   29: http_read_header(http* h, stralloc* sa, http_response* r) {\n   30    ssize_t ret = 0, bytesread = 0;\n   31    size_t start, n;\n   ..\n   79  \n   80  #ifdef DEBUG_HTTP\n   81:   buffer_putspad(buffer_2, \"\\x1b[1;33mhttp_read_header\\x1b[0m\", 30);\n   82    buffer_puts(buffer_2, \"sock=\");\n   83    buffer_putlong(buffer_2, h->sock);\n\n/home/roman/Sources/c-utils/lib/http/http_read_internal.c:\n   29    if((r = h->response)) {\n   30  \n   31:     while(r->status == HTTP_RECV_HEADER && http_read_header(h, &r->data, r) > 0) {\n   32        r->ptr = 0;\n   33      }\n\n/home/roman/Sources/c-utils/lib.h:\n  251  #include \"lib/http/http_close.c\"\n  252  #include \"lib/http/http_writeable.c\"\n  253: #include \"lib/http/http_read_header.c\"\n  254  #include \"lib/http/https_error.c\"\n  255  #include \"lib/http/http_get.c\"\n\n/home/roman/Sources/c-utils/lib/CMakeFiles/http.dir/link.txt:\n    1: /usr/bin/ar qc http.a CMakeFiles/http.dir/http/http_close.c.o CMakeFiles/http.dir/http/http_errstr.c.o CMakeFiles/http.dir/http/http_get.c.o CMakeFiles/http.dir/http/http_init.c.o CMakeFiles/http.dir/http/http_on_readable.c.o CMakeFiles/http.dir/http/http_on_writeable.c.o CMakeFiles/http.dir/http/http_read.c.o CMakeFiles/http.dir/http/http_read_header.c.o CMakeFiles/http.dir/http/http_read_internal.c.o CMakeFiles/http.dir/http/http_readable.c.o CMakeFiles/http.dir/http/http_sendreq.c.o CMakeFiles/http.dir/http/http_socket.c.o CMakeFiles/http.dir/http/http_socket_read.c.o CMakeFiles/http.dir/http/http_socket_write.c.o CMakeFiles/http.dir/http/http_ssl2want.c.o CMakeFiles/http.dir/http/https_connect.c.o CMakeFiles/http.dir/http/https_errstr.c.o CMakeFiles/http.dir/http/https_io.c.o CMakeFiles/http.dir/http/https_read.c.o CMakeFiles/http.dir/http/https_socket.c.o CMakeFiles/http.dir/http/https_ssl_ctx.c.o CMakeFiles/http.dir/http/https_strerror.c.o CMakeFiles/http.dir/http/https_tls2errno.c.o CMakeFiles/http.dir/http/https_tls2want.c.o CMakeFiles/http.dir/http/https_write.c.o\n    2  /usr/bin/ranlib http.a\n    3  \n\n/home/roman/Sources/c-utils/lib/http.h:\n   96  void http_init(http* h, const char* host, uint16 port);\n   97  ssize_t http_read(fd_t fd, char* buf, size_t len, void* ptr);\n   98: ssize_t http_read_header(http* h, stralloc* sa, http_response* r);\n   99  size_t http_read_internal(fd_t fd, char* buf, size_t len, buffer* b);\n  100  void http_response_free(http_response* r);\n\n/home/roman/Sources/c-utils/lib/http/http_read_header.c:\n   27  \n   28  ssize_t\n   29: http_read_header(http* h, stralloc* sa, http_response* r) {\n   30    ssize_t ret = 0, bytesread = 0;\n   31    size_t start, n;\n   ..\n   79  \n   80  #ifdef DEBUG_HTTP\n   81:   buffer_putspad(buffer_2, \"\\x1b[1;33mhttp_read_header\\x1b[0m\", 30);\n   82    buffer_puts(buffer_2, \"sock=\");\n   83    buffer_putlong(buffer_2, h->sock);\n\n/home/roman/Sources/c-utils/lib/http/http_read_internal.c:\n   29    if((r = h->response)) {\n   30  \n   31:     while(r->status == HTTP_RECV_HEADER && http_read_header(h, &r->data, r) > 0) {\n   32        r->ptr = 0;\n   33      }\n\n11 matches across 9 files\n\n\nSearching 3450 files for \" = HTTP_STATUS_ERROR\" (regex, case sensitive)\n\n/home/roman/Sources/c-utils/lib/http/http_canread.c:\n  116  fail:\n  117    if(ret == -1 && !(errno == EAGAIN || errno == EWOULDBLOCK))\n  118:     r->status = HTTP_STATUS_ERROR;\n  119    if(ret == -1 && (errno == EAGAIN || errno == EWOULDBLOCK))\n  120      tls_want(h->sock, 0, wantwrite);\n\n/home/roman/Sources/c-utils/lib/http/http_canwrite.c:\n   39    if(ret == -1 && !(errno == EAGAIN || errno == EWOULDBLOCK))\n   40      if(h->response)\n   41:       h->response->status = HTTP_STATUS_ERROR;\n   42    if(ret == -1 && (errno == EAGAIN || errno == EWOULDBLOCK))\n   43      tls_want(h->sock, wantread, 0);\n\n/home/roman/Sources/c-utils/lib/http/http_socket.c:\n   89      r->err = errno;\n   90      if(errno != EWOULDBLOCK && errno != EAGAIN)\n   91:       r->status = HTTP_STATUS_ERROR;\n   92    }\n   93    if(ret > 0) {\n\n/home/roman/Sources/c-utils/lib/http/http_canread.c:\n  116  fail:\n  117    if(ret == -1 && !(errno == EAGAIN || errno == EWOULDBLOCK))\n  118:     r->status = HTTP_STATUS_ERROR;\n  119    if(ret == -1 && (errno == EAGAIN || errno == EWOULDBLOCK))\n  120      tls_want(h->sock, 0, wantwrite);\n\n/home/roman/Sources/c-utils/lib/http/http_canwrite.c:\n   39    if(ret == -1 && !(errno == EAGAIN || errno == EWOULDBLOCK))\n   40      if(h->response)\n   41:       h->response->status = HTTP_STATUS_ERROR;\n   42    if(ret == -1 && (errno == EAGAIN || errno == EWOULDBLOCK))\n   43      tls_want(h->sock, wantread, 0);\n\n/home/roman/Sources/c-utils/lib/http/http_socket.c:\n   89      r->err = errno;\n   90      if(errno != EWOULDBLOCK && errno != EAGAIN)\n   91:       r->status = HTTP_STATUS_ERROR;\n   92    }\n   93    if(ret > 0) {\n\n6 matches across 6 files\n\n\nSearching 3461 files for \"= HTTP_STATUS_CLOSED\" (regex, case sensitive)\n\n/home/roman/Sources/c-utils/lib/http/http_read.c:\n   39      if((n = buffer_freshen(b)) <= 0) {\n   40        if(n == 0) {\n   41:         r->status = HTTP_STATUS_CLOSED;\n   42          ret = n;\n   43        } else if((int)r->status == st) {\n   ..\n   74        }\n   75      }\n   76:     if((r->status == HTTP_STATUS_CLOSED) || r->status == HTTP_STATUS_FINISH)\n   77        break;\n   78    }\n   79  \n   80:   /*if(r->status == HTTP_STATUS_FINISH || r->status == HTTP_STATUS_CLOSED) */ {}\n   81  \n   82    if(r->code == 302) {\n   ..\n   96      }\n   97    }\n   98:   if(r->status == HTTP_STATUS_CLOSED) {\n   99      http_close(h);\n  100      ret = 0;\n\n/home/roman/Sources/c-utils/lib/http/http_read_internal.c:\n   69      if(r->status == HTTP_STATUS_ERROR) {\n   70        n = -1;\n   71:     } else if(r->status == HTTP_STATUS_CLOSED) {\n   72        io_dontwantread(h->sock);\n   73        io_dontwantwrite(h->sock);\n\n/home/roman/Sources/c-utils/lib/http/http_socket.c:\n   93  } else  if(ret == 0 || (h->tls && tlserr== 5)) {\n   94      h->connected = 0;\n   95:     r->status = HTTP_STATUS_CLOSED;\n   96      ret = 0;\n   97    } else if(ret == -1 && (!h->tls || tls_error(h->sock) != 5)) {\n\n/home/roman/Sources/c-utils/httptest.c:\n  295          buffer_putnlflush(buffer_2);\n  296        }\n  297:       if(h.response->status == HTTP_STATUS_FINISH || h.response->status == HTTP_STATUS_CLOSED)\n  298          break;\n  299      }\n\n/home/roman/Sources/c-utils/lib/http/http_read.c:\n   39      if((n = buffer_freshen(b)) <= 0) {\n   40        if(n == 0) {\n   41:         r->status = HTTP_STATUS_CLOSED;\n   42          ret = n;\n   43        } else if((int)r->status == st) {\n   ..\n   74        }\n   75      }\n   76:     if((r->status == HTTP_STATUS_CLOSED) || r->status == HTTP_STATUS_FINISH)\n   77        break;\n   78    }\n   79  \n   80:   /*if(r->status == HTTP_STATUS_FINISH || r->status == HTTP_STATUS_CLOSED) */ {}\n   81  \n   82    if(r->code == 302) {\n   ..\n   96      }\n   97    }\n   98:   if(r->status == HTTP_STATUS_CLOSED) {\n   99      http_close(h);\n  100      ret = 0;\n\n/home/roman/Sources/c-utils/lib/http/http_read_internal.c:\n   69      if(r->status == HTTP_STATUS_ERROR) {\n   70        n = -1;\n   71:     } else if(r->status == HTTP_STATUS_CLOSED) {\n   72        io_dontwantread(h->sock);\n   73        io_dontwantwrite(h->sock);\n\n/home/roman/Sources/c-utils/lib/http/http_socket.c:\n   93  } else  if(ret == 0 || (h->tls && tlserr== 5)) {\n   94      h->connected = 0;\n   95:     r->status = HTTP_STATUS_CLOSED;\n   96      ret = 0;\n   97    } else if(ret == -1 && (!h->tls || tls_error(h->sock) != 5)) {\n\n13 matches across 7 files\n\n\nSearching 3462 files for \"http_close\" (regex, case sensitive)\n\n/home/roman/Sources/c-utils/lib/CMakeFiles/http.dir/link.txt:\n    1: /usr/bin/ar qc http.a CMakeFiles/http.dir/http/http_close.c.o CMakeFiles/http.dir/http/http_errstr.c.o CMakeFiles/http.dir/http/http_get.c.o CMakeFiles/http.dir/http/http_init.c.o CMakeFiles/http.dir/http/http_on_readable.c.o CMakeFiles/http.dir/http/http_on_writeable.c.o CMakeFiles/http.dir/http/http_read.c.o CMakeFiles/http.dir/http/http_read_header.c.o CMakeFiles/http.dir/http/http_read_internal.c.o CMakeFiles/http.dir/http/http_readable.c.o CMakeFiles/http.dir/http/http_sendreq.c.o CMakeFiles/http.dir/http/http_socket.c.o CMakeFiles/http.dir/http/http_socket_read.c.o CMakeFiles/http.dir/http/http_socket_write.c.o CMakeFiles/http.dir/http/http_ssl2want.c.o CMakeFiles/http.dir/http/https_connect.c.o CMakeFiles/http.dir/http/https_errstr.c.o CMakeFiles/http.dir/http/https_io.c.o CMakeFiles/http.dir/http/https_read.c.o CMakeFiles/http.dir/http/https_socket.c.o CMakeFiles/http.dir/http/https_ssl_ctx.c.o CMakeFiles/http.dir/http/https_strerror.c.o CMakeFiles/http.dir/http/https_tls2errno.c.o CMakeFiles/http.dir/http/https_tls2want.c.o CMakeFiles/http.dir/http/https_write.c.o\n    2  /usr/bin/ranlib http.a\n    3  \n\n/home/roman/Sources/c-utils/lib/http.h:\n   91  ssize_t http_canread(http* h, void (*wantwrite)(fd_t));\n   92  ssize_t http_canwrite(http* h, void (*wantread)(fd_t));\n   93: void http_close(http* h);\n   94  const char* http_get_header(http* h, const char* name);\n   95  int http_get(http* h, const char* location);\n\n/home/roman/Sources/c-utils/lib/http/http_close.c:\n   12  \n   13  void\n   14: http_close(http* h) {\n   15    ssize_t ret;\n   16  \n   ..\n   32  \n   33  #ifdef DEBUG_HTTP\n   34:   buffer_putspad(buffer_2, \"http_close \", 30);\n   35    buffer_puts(buffer_2, \"sock=\");\n   36    buffer_putlong(buffer_2, h->sock);\n\n/home/roman/Sources/c-utils/lib/http/http_read.c:\n   97    }\n   98    if(r->status == HTTP_STATUS_CLOSED) {\n   99:     http_close(h);\n  100      ret = 0;\n  101    }\n\n/home/roman/Sources/c-utils/lib.h:\n  249  #include \"lib/http/https_connect.c\"\n  250  #include \"lib/http/http_socket.c\"\n  251: #include \"lib/http/http_close.c\"\n  252  #include \"lib/http/http_writeable.c\"\n  253  #include \"lib/http/http_read_header.c\"\n\n/home/roman/Sources/c-utils/lib/CMakeFiles/http.dir/link.txt:\n    1: /usr/bin/ar qc http.a CMakeFiles/http.dir/http/http_close.c.o CMakeFiles/http.dir/http/http_errstr.c.o CMakeFiles/http.dir/http/http_get.c.o CMakeFiles/http.dir/http/http_init.c.o CMakeFiles/http.dir/http/http_on_readable.c.o CMakeFiles/http.dir/http/http_on_writeable.c.o CMakeFiles/http.dir/http/http_read.c.o CMakeFiles/http.dir/http/http_read_header.c.o CMakeFiles/http.dir/http/http_read_internal.c.o CMakeFiles/http.dir/http/http_readable.c.o CMakeFiles/http.dir/http/http_sendreq.c.o CMakeFiles/http.dir/http/http_socket.c.o CMakeFiles/http.dir/http/http_socket_read.c.o CMakeFiles/http.dir/http/http_socket_write.c.o CMakeFiles/http.dir/http/http_ssl2want.c.o CMakeFiles/http.dir/http/https_connect.c.o CMakeFiles/http.dir/http/https_errstr.c.o CMakeFiles/http.dir/http/https_io.c.o CMakeFiles/http.dir/http/https_read.c.o CMakeFiles/http.dir/http/https_socket.c.o CMakeFiles/http.dir/http/https_ssl_ctx.c.o CMakeFiles/http.dir/http/https_strerror.c.o CMakeFiles/http.dir/http/https_tls2errno.c.o CMakeFiles/http.dir/http/https_tls2want.c.o CMakeFiles/http.dir/http/https_write.c.o\n    2  /usr/bin/ranlib http.a\n    3  \n\n/home/roman/Sources/c-utils/lib/http.h:\n   91  ssize_t http_canread(http* h, void (*wantwrite)(fd_t));\n   92  ssize_t http_canwrite(http* h, void (*wantread)(fd_t));\n   93: void http_close(http* h);\n   94  const char* http_get_header(http* h, const char* name);\n   95  int http_get(http* h, const char* location);\n\n/home/roman/Sources/c-utils/lib/http/http_close.c:\n   12  \n   13  void\n   14: http_close(http* h) {\n   15    ssize_t ret;\n   16  \n   ..\n   32  \n   33  #ifdef DEBUG_HTTP\n   34:   buffer_putspad(buffer_2, \"http_close \", 30);\n   35    buffer_puts(buffer_2, \"sock=\");\n   36    buffer_putlong(buffer_2, h->sock);\n\n/home/roman/Sources/c-utils/lib/http/http_read.c:\n   97    }\n   98    if(r->status == HTTP_STATUS_CLOSED) {\n   99:     http_close(h);\n  100      ret = 0;\n  101    }\n\n11 matches across 9 files\n\n\nSearching 3462 files for \"HTTP_STATUS_CLOSED\" (regex, case sensitive)\n\n/home/roman/Sources/c-utils/lib/http.h:\n   43    HTTP_RECV_HEADER = 0,\n   44    HTTP_RECV_DATA,\n   45:   HTTP_STATUS_CLOSED,\n   46    HTTP_STATUS_ERROR,\n   47    HTTP_STATUS_BUSY,\n\n/home/roman/Sources/c-utils/lib/http/http_canread.c:\n  163                                       \"HTTP_RECV_HEADER\",\n  164                                       \"HTTP_RECV_DATA\",\n  165:                                      \"HTTP_STATUS_CLOSED\",\n  166                                       \"HTTP_STATUS_ERROR\",\n  167                                       \"HTTP_STATUS_BUSY\",\n\n/home/roman/Sources/c-utils/lib/http/http_canwrite.c:\n   95                                       \"HTTP_RECV_HEADER\",\n   96                                       \"HTTP_RECV_DATA\",\n   97:                                      \"HTTP_STATUS_CLOSED\",\n   98                                       \"HTTP_STATUS_ERROR\",\n   99                                       \"HTTP_STATUS_BUSY\",\n\n/home/roman/Sources/c-utils/lib/http/http_read.c:\n   39      if((n = buffer_freshen(b)) <= 0) {\n   40        if(n == 0) {\n   41:         r->status = HTTP_STATUS_CLOSED;\n   42          ret = n;\n   43        } else if((int)r->status == st) {\n   ..\n   74        }\n   75      }\n   76:     if((r->status == HTTP_STATUS_CLOSED) || r->status == HTTP_STATUS_FINISH)\n   77        break;\n   78    }\n   79  \n   80:   /*if(r->status == HTTP_STATUS_FINISH || r->status == HTTP_STATUS_CLOSED) */ {}\n   81  \n   82    if(r->code == 302) {\n   ..\n   96      }\n   97    }\n   98:   if(r->status == HTTP_STATUS_CLOSED) {\n   99      http_close(h);\n  100      ret = 0;\n  ...\n  125                                       \"HTTP_RECV_HEADER\",\n  126                                       \"HTTP_RECV_DATA\",\n  127:                                      \"HTTP_STATUS_CLOSED\",\n  128                                       \"HTTP_STATUS_ERROR\",\n  129                                       \"HTTP_STATUS_BUSY\",\n\n/home/roman/Sources/c-utils/lib/http/http_read_header.c:\n  103                                       \"HTTP_RECV_HEADER\",\n  104                                       \"HTTP_RECV_DATA\",\n  105:                                      \"HTTP_STATUS_CLOSED\",\n  106                                       \"HTTP_STATUS_ERROR\",\n  107                                       \"HTTP_STATUS_BUSY\",\n\n/home/roman/Sources/c-utils/lib/http/http_read_internal.c:\n   69      if(r->status == HTTP_STATUS_ERROR) {\n   70        n = -1;\n   71:     } else if(r->status == HTTP_STATUS_CLOSED) {\n   72        io_dontwantread(h->sock);\n   73        io_dontwantwrite(h->sock);\n   ..\n  100                                       \"HTTP_RECV_HEADER\",\n  101                                       \"HTTP_RECV_DATA\",\n  102:                                      \"HTTP_STATUS_CLOSED\",\n  103                                       \"HTTP_STATUS_ERROR\",\n  104                                       \"HTTP_STATUS_BUSY\",\n\n/home/roman/Sources/c-utils/lib/http/http_sendreq.c:\n   75                                       \"HTTP_RECV_HEADER\",\n   76                                       \"HTTP_RECV_DATA\",\n   77:                                      \"HTTP_STATUS_CLOSED\",\n   78                                       \"HTTP_STATUS_ERROR\",\n   79                                       \"HTTP_STATUS_BUSY\",\n\n/home/roman/Sources/c-utils/lib/http/http_socket.c:\n   93  } else  if(ret == 0 || (h->tls && tlserr== 5)) {\n   94      h->connected = 0;\n   95:     r->status = HTTP_STATUS_CLOSED;\n   96      ret = 0;\n   97    } else if(ret == -1 && (!h->tls || tlserr != 5)) {\n   ..\n  126                                       \"HTTP_RECV_HEADER\",\n  127                                       \"HTTP_RECV_DATA\",\n  128:                                      \"HTTP_STATUS_CLOSED\",\n  129                                       \"HTTP_STATUS_ERROR\",\n  130                                       \"HTTP_STATUS_BUSY\",\n  ...\n  173                                       \"HTTP_RECV_HEADER\",\n  174                                       \"HTTP_RECV_DATA\",\n  175:                                      \"HTTP_STATUS_CLOSED\",\n  176                                       \"HTTP_STATUS_ERROR\",\n  177                                       \"HTTP_STATUS_BUSY\",\n\n/home/roman/Sources/c-utils/httptest.c:\n  137                                               \"HTTP_RECV_HEADER\",\n  138                                               \"HTTP_RECV_DATA\",\n  139:                                              \"HTTP_STATUS_CLOSED\",\n  140                                               \"HTTP_STATUS_ERROR\",\n  141                                               \"HTTP_STATUS_BUSY\",\n  ...\n  279                                           \"HTTP_RECV_HEADER\",\n  280                                           \"HTTP_RECV_DATA\",\n  281:                                          \"HTTP_STATUS_CLOSED\",\n  282                                           \"HTTP_STATUS_ERROR\",\n  283                                           \"HTTP_STATUS_BUSY\",\n  ...\n  295          buffer_putnlflush(buffer_2);\n  296        }\n  297:       if(h.response->status == HTTP_STATUS_FINISH || h.response->status == HTTP_STATUS_CLOSED)\n  298          break;\n  299      }\n\n/home/roman/Sources/c-utils/lib/http.h:\n   43    HTTP_RECV_HEADER = 0,\n   44    HTTP_RECV_DATA,\n   45:   HTTP_STATUS_CLOSED,\n   46    HTTP_STATUS_ERROR,\n   47    HTTP_STATUS_BUSY,\n\n/home/roman/Sources/c-utils/lib/http/http_canread.c:\n  163                                       \"HTTP_RECV_HEADER\",\n  164                                       \"HTTP_RECV_DATA\",\n  165:                                      \"HTTP_STATUS_CLOSED\",\n  166                                       \"HTTP_STATUS_ERROR\",\n  167                                       \"HTTP_STATUS_BUSY\",\n\n/home/roman/Sources/c-utils/lib/http/http_canwrite.c:\n   95                                       \"HTTP_RECV_HEADER\",\n   96                                       \"HTTP_RECV_DATA\",\n   97:                                      \"HTTP_STATUS_CLOSED\",\n   98                                       \"HTTP_STATUS_ERROR\",\n   99                                       \"HTTP_STATUS_BUSY\",\n\n/home/roman/Sources/c-utils/lib/http/http_read.c:\n   39      if((n = buffer_freshen(b)) <= 0) {\n   40        if(n == 0) {\n   41:         r->status = HTTP_STATUS_CLOSED;\n   42          ret = n;\n   43        } else if((int)r->status == st) {\n   ..\n   74        }\n   75      }\n   76:     if((r->status == HTTP_STATUS_CLOSED) || r->status == HTTP_STATUS_FINISH)\n   77        break;\n   78    }\n   79  \n   80:   /*if(r->status == HTTP_STATUS_FINISH || r->status == HTTP_STATUS_CLOSED) */ {}\n   81  \n   82    if(r->code == 302) {\n   ..\n   96      }\n   97    }\n   98:   if(r->status == HTTP_STATUS_CLOSED) {\n   99      http_close(h);\n  100      ret = 0;\n  ...\n  125                                       \"HTTP_RECV_HEADER\",\n  126                                       \"HTTP_RECV_DATA\",\n  127:                                      \"HTTP_STATUS_CLOSED\",\n  128                                       \"HTTP_STATUS_ERROR\",\n  129                                       \"HTTP_STATUS_BUSY\",\n\n/home/roman/Sources/c-utils/lib/http/http_read_header.c:\n  103                                       \"HTTP_RECV_HEADER\",\n  104                                       \"HTTP_RECV_DATA\",\n  105:                                      \"HTTP_STATUS_CLOSED\",\n  106                                       \"HTTP_STATUS_ERROR\",\n  107                                       \"HTTP_STATUS_BUSY\",\n\n/home/roman/Sources/c-utils/lib/http/http_read_internal.c:\n   69      if(r->status == HTTP_STATUS_ERROR) {\n   70        n = -1;\n   71:     } else if(r->status == HTTP_STATUS_CLOSED) {\n   72        io_dontwantread(h->sock);\n   73        io_dontwantwrite(h->sock);\n   ..\n  100                                       \"HTTP_RECV_HEADER\",\n  101                                       \"HTTP_RECV_DATA\",\n  102:                                      \"HTTP_STATUS_CLOSED\",\n  103                                       \"HTTP_STATUS_ERROR\",\n  104                                       \"HTTP_STATUS_BUSY\",\n\n/home/roman/Sources/c-utils/lib/http/http_sendreq.c:\n   75                                       \"HTTP_RECV_HEADER\",\n   76                                       \"HTTP_RECV_DATA\",\n   77:                                      \"HTTP_STATUS_CLOSED\",\n   78                                       \"HTTP_STATUS_ERROR\",\n   79                                       \"HTTP_STATUS_BUSY\",\n\n/home/roman/Sources/c-utils/lib/http/http_socket.c:\n   93  } else  if(ret == 0 || (h->tls && tlserr== 5)) {\n   94      h->connected = 0;\n   95:     r->status = HTTP_STATUS_CLOSED;\n   96      ret = 0;\n   97    } else if(ret == -1 && (!h->tls || tlserr != 5)) {\n   ..\n  126                                       \"HTTP_RECV_HEADER\",\n  127                                       \"HTTP_RECV_DATA\",\n  128:                                      \"HTTP_STATUS_CLOSED\",\n  129                                       \"HTTP_STATUS_ERROR\",\n  130                                       \"HTTP_STATUS_BUSY\",\n  ...\n  173                                       \"HTTP_RECV_HEADER\",\n  174                                       \"HTTP_RECV_DATA\",\n  175:                                      \"HTTP_STATUS_CLOSED\",\n  176                                       \"HTTP_STATUS_ERROR\",\n  177                                       \"HTTP_STATUS_BUSY\",\n\n33 matches across 17 files\n\n\nSearching 3466 files for \"put_esc\" (regex, case sensitive)\n\n/home/roman/Sources/c-utils/lib/buffer.h:\n  205  int buffer_skip_pred(buffer*, int (*pred)(int));\n  206  \n  207: int buffer_put_escaped(buffer*, const char* x, size_t len, size_t (*)(char*, int));\n  208  int buffer_puts_escaped(buffer*, const char* x, size_t (*)(char*, int));\n  209  \n\n/home/roman/Sources/c-utils/lib/buffer/buffer_dump.c:\n   48    buffer_puts(out, \"\\\"\");\n   49    //  buffer_puts(out, \"...\");\n   50:   // buffer_put_escaped(out, &b->x[n], 32);\n   51    buffer_puts(out, \"\\\"\");\n   52  \n\n/home/roman/Sources/c-utils/lib/CMakeFiles/stralloc.dir/link.txt:\n    1: /usr/bin/ar qc stralloc.a CMakeFiles/stralloc.dir/stralloc/buffer_get_new_token_sa.c.o CMakeFiles/stralloc.dir/stralloc/buffer_get_new_token_sa_pred.c.o CMakeFiles/stralloc.dir/stralloc/buffer_get_token_sa.c.o CMakeFiles/stralloc.dir/stralloc/buffer_get_token_sa_pred.c.o CMakeFiles/stralloc.dir/stralloc/buffer_getline_sa.c.o CMakeFiles/stralloc.dir/stralloc/buffer_getln.c.o CMakeFiles/stralloc.dir/stralloc/buffer_getnewline_sa.c.o CMakeFiles/stralloc.dir/stralloc/buffer_gettok_sa.c.o CMakeFiles/stralloc.dir/stralloc/buffer_put_escaped.c.o CMakeFiles/stralloc.dir/stralloc/buffer_puts_escaped.c.o CMakeFiles/stralloc.dir/stralloc/buffer_tosa.c.o CMakeFiles/stralloc.dir/stralloc/mmap_filename.c.o CMakeFiles/stralloc.dir/stralloc/open_filename.c.o CMakeFiles/stralloc.dir/stralloc/openreadclose.c.o CMakeFiles/stralloc.dir/stralloc/readclose.c.o CMakeFiles/stralloc.dir/stralloc/str_decamelize.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_0.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_append.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_case_diff.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_case_diffs.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_case_end.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_case_equal.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_case_equals.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_case_start.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_case_starts.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_cat.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_catb.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_catc.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_catdouble.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_cathexb.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_catint.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_catint0.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_catlong.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_catlong0.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_catm_internal.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_cats.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_catuint.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_catuint0.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_catulong.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_catulong0.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_catwcb.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_catwcs.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_catxlong.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_catxlong0.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_chomp.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_chop.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_chr.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_contains.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_copy.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_copyb.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_copys.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_copywcb.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_copywcs.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_count.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_decamelize.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_diff.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_diffb.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_diffs.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_endb.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_ends.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_endsb.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_equal.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_equalb.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_equals.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_erase.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_expand.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_find.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_findb.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_finds.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_fmt.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_fmt_call.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_fmt_pred.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_free.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_init.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_insert.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_insertb.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_inserts.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_lower.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_move.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_nul.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_prepend.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_prependb.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_prepends.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_rchr.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_ready.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_ready_tuned.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_readyplus.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_remove.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_remove_all.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_removesuffixb.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_removesuffixs.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_replace.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_replace_non_printable.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_replacec.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_replaces.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_reverse.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_reverse_blocks.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_scan.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_shrink.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_start.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_startb.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_starts.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_subst.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_trimr.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_trunc.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_upper.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_write.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_zero.c.o\n    2  /usr/bin/ranlib stralloc.a\n    3  \n\n/home/roman/Sources/c-utils/lib/http/http_read_internal.c:\n   84    buffer_putlong(buffer_2, n);\n   85    buffer_puts(buffer_2, \" buf=\");\n   86:   buffer_put_escaped(buffer_2, buf, len, &fmt_escapecharshell);\n   87    buffer_puts(buffer_2, \" len=\");\n   88    buffer_putlong(buffer_2, len);\n\n/home/roman/Sources/c-utils/lib/stralloc/buffer_put_escaped.c:\n   15  \n   16  int\n   17: buffer_put_escaped(buffer* b, const char* x, size_t len, size_t (*escape)(char*, int)) {\n   18    int ret;\n   19    stralloc e;\n\n/home/roman/Sources/c-utils/lib/stralloc/buffer_puts_escaped.c:\n    7    if(escape == NULL)\n    8      escape = &fmt_escapecharshell;\n    9:   return buffer_put_escaped(b, x, str_len(x), escape);\n   10  }\n   11  \n\n/home/roman/Sources/c-utils/lib/tls/tls_read.c:\n   60    if(ret > 0) {\n   61      buffer_puts(buffer_2, \" data=\");\n   62:     buffer_put_escaped(buffer_2, data, ret, &fmt_escapecharshell);\n   63    }\n   64    buffer_putnlflush(buffer_2);\n\n/home/roman/Sources/c-utils/lib/tls/tls_write.c:\n   58    if(ret > 0) {\n   59      buffer_puts(buffer_2, \" data=\");\n   60:     buffer_put_escaped(buffer_2, data, ret, &fmt_escapecharshell);\n   61    }\n   62    buffer_putnlflush(buffer_2);\n\n/home/roman/Sources/c-utils/httptest.c:\n  143                                               0})[h->response->status + 1]);\n  144            buffer_puts(buffer_2, \" data='\");\n  145:           buffer_put_escaped(buffer_2, buf, n, &fmt_escapecharshell);\n  146            buffer_putnlflush(buffer_2);\n  147  \n  ...\n  289        if(h.response->data.len) {\n  290          buffer_puts(buffer_2, \"response: \");\n  291:         buffer_put_escaped(buffer_2,\n  292                             h.response->data.s,\n  293                             h.response->data.len,\n\n/home/roman/Sources/c-utils/lib.h:\n 1079  #include \"lib/stralloc/stralloc_fmt_call.c\"\n 1080  #include \"lib/stralloc/buffer_get_token_sa_pred.c\"\n 1081: #include \"lib/stralloc/buffer_put_escaped.c\"\n 1082  #include \"lib/stralloc/stralloc_prepends.c\"\n 1083  #include \"lib/stralloc/stralloc_inserts.c\"\n\n/home/roman/Sources/c-utils/lib/buffer.h:\n  205  int buffer_skip_pred(buffer*, int (*pred)(int));\n  206  \n  207: int buffer_put_escaped(buffer*, const char* x, size_t len, size_t (*)(char*, int));\n  208  int buffer_puts_escaped(buffer*, const char* x, size_t (*)(char*, int));\n  209  \n\n/home/roman/Sources/c-utils/lib/buffer/buffer_dump.c:\n   48    buffer_puts(out, \"\\\"\");\n   49    //  buffer_puts(out, \"...\");\n   50:   // buffer_put_escaped(out, &b->x[n], 32);\n   51    buffer_puts(out, \"\\\"\");\n   52  \n\n/home/roman/Sources/c-utils/lib/CMakeFiles/stralloc.dir/link.txt:\n    1: /usr/bin/ar qc stralloc.a CMakeFiles/stralloc.dir/stralloc/buffer_get_new_token_sa.c.o CMakeFiles/stralloc.dir/stralloc/buffer_get_new_token_sa_pred.c.o CMakeFiles/stralloc.dir/stralloc/buffer_get_token_sa.c.o CMakeFiles/stralloc.dir/stralloc/buffer_get_token_sa_pred.c.o CMakeFiles/stralloc.dir/stralloc/buffer_getline_sa.c.o CMakeFiles/stralloc.dir/stralloc/buffer_getln.c.o CMakeFiles/stralloc.dir/stralloc/buffer_getnewline_sa.c.o CMakeFiles/stralloc.dir/stralloc/buffer_gettok_sa.c.o CMakeFiles/stralloc.dir/stralloc/buffer_put_escaped.c.o CMakeFiles/stralloc.dir/stralloc/buffer_puts_escaped.c.o CMakeFiles/stralloc.dir/stralloc/buffer_tosa.c.o CMakeFiles/stralloc.dir/stralloc/mmap_filename.c.o CMakeFiles/stralloc.dir/stralloc/open_filename.c.o CMakeFiles/stralloc.dir/stralloc/openreadclose.c.o CMakeFiles/stralloc.dir/stralloc/readclose.c.o CMakeFiles/stralloc.dir/stralloc/str_decamelize.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_0.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_append.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_case_diff.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_case_diffs.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_case_end.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_case_equal.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_case_equals.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_case_start.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_case_starts.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_cat.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_catb.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_catc.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_catdouble.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_cathexb.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_catint.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_catint0.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_catlong.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_catlong0.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_catm_internal.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_cats.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_catuint.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_catuint0.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_catulong.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_catulong0.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_catwcb.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_catwcs.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_catxlong.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_catxlong0.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_chomp.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_chop.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_chr.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_contains.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_copy.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_copyb.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_copys.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_copywcb.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_copywcs.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_count.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_decamelize.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_diff.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_diffb.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_diffs.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_endb.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_ends.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_endsb.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_equal.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_equalb.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_equals.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_erase.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_expand.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_find.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_findb.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_finds.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_fmt.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_fmt_call.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_fmt_pred.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_free.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_init.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_insert.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_insertb.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_inserts.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_lower.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_move.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_nul.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_prepend.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_prependb.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_prepends.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_rchr.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_ready.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_ready_tuned.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_readyplus.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_remove.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_remove_all.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_removesuffixb.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_removesuffixs.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_replace.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_replace_non_printable.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_replacec.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_replaces.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_reverse.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_reverse_blocks.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_scan.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_shrink.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_start.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_startb.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_starts.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_subst.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_trimr.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_trunc.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_upper.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_write.c.o CMakeFiles/stralloc.dir/stralloc/stralloc_zero.c.o\n    2  /usr/bin/ranlib stralloc.a\n    3  \n\n/home/roman/Sources/c-utils/lib/http/http_read_internal.c:\n   84    buffer_putlong(buffer_2, n);\n   85    buffer_puts(buffer_2, \" buf=\");\n   86:   buffer_put_escaped(buffer_2, buf, len, &fmt_escapecharshell);\n   87    buffer_puts(buffer_2, \" len=\");\n   88    buffer_putlong(buffer_2, len);\n\n/home/roman/Sources/c-utils/lib/stralloc/buffer_put_escaped.c:\n   15  \n   16  int\n   17: buffer_put_escaped(buffer* b, const char* x, size_t len, size_t (*escape)(char*, int)) {\n   18    int ret;\n   19    stralloc e;\n\n/home/roman/Sources/c-utils/lib/stralloc/buffer_puts_escaped.c:\n    7    if(escape == NULL)\n    8      escape = &fmt_escapecharshell;\n    9:   return buffer_put_escaped(b, x, str_len(x), escape);\n   10  }\n   11  \n\n/home/roman/Sources/c-utils/lib/tls/tls_read.c:\n   60    if(ret > 0) {\n   61      buffer_puts(buffer_2, \" data=\");\n   62:     buffer_put_escaped(buffer_2, data, ret, &fmt_escapecharshell);\n   63    }\n   64    buffer_putnlflush(buffer_2);\n\n/home/roman/Sources/c-utils/lib/tls/tls_write.c:\n   58    if(ret > 0) {\n   59      buffer_puts(buffer_2, \" data=\");\n   60:     buffer_put_escaped(buffer_2, data, ret, &fmt_escapecharshell);\n   61    }\n   62    buffer_putnlflush(buffer_2);\n\n/home/roman/Sources/c-utils/pipeinfo.c:\n  333    }\n  334    buffer_puts(buffer_1, \" info='\");\n  335:   buffer_put_escaped(buffer_1, pfd->info.s, pfd->info.len, &fmt_escapecharshell);\n  336    buffer_puts(buffer_1, \"'\");\n  337    //      print_stralloc(\" info\", &pfd->info);\n\n/home/roman/Sources/c-utils/ssltest.c:\n  221              buffer_put(buffer_2, buf, fmt_escapecharc(buf, out.x[i]));\n  222          }\n  223:         //   buffer_put_escaped(buffer_2, out.x, out.p, &fmt_escapecharquotedshell);\n  224          buffer_putnlflush(buffer_2);\n  225  #endif\n\n/home/roman/Sources/c-utils/tinyproxy.c:\n  698  \n  699  #ifdef DEBUG_OUTPUT\n  700:     (escape ? buffer_put_escaped(\n  701                    &log, x, /*maxlen > 0 && maxlen < end ? maxlen :*/ end, &fmt_escapecharshell)\n  702              : buffer_put(&log, x, /*maxlen > 0 && maxlen < end ? maxlen :*/ end));\n\n22 matches across 21 files\n\n\nSearching 3501 files for \"dontwant\" (regex, case sensitive)\n\n/home/roman/Sources/c-utils/lib/CMakeFiles/io.dir/link.txt:\n    1: /usr/bin/ar qc io.a CMakeFiles/io.dir/io/io_appendfile.c.o CMakeFiles/io.dir/io/io_block.c.o CMakeFiles/io.dir/io/io_canread.c.o CMakeFiles/io.dir/io/io_canwrite.c.o CMakeFiles/io.dir/io/io_check.c.o CMakeFiles/io.dir/io/io_close.c.o CMakeFiles/io.dir/io/io_closeonexec.c.o CMakeFiles/io.dir/io/io_createfile.c.o CMakeFiles/io.dir/io/io_debugstring.c.o CMakeFiles/io.dir/io/io_dontwantread.c.o CMakeFiles/io.dir/io/io_dontwantwrite.c.o CMakeFiles/io.dir/io/io_dump.c.o CMakeFiles/io.dir/io/io_dup.c.o CMakeFiles/io.dir/io/io_eagain.c.o CMakeFiles/io.dir/io/io_eagain_read.c.o CMakeFiles/io.dir/io/io_eagain_write.c.o CMakeFiles/io.dir/io/io_fd.c.o CMakeFiles/io.dir/io/io_finishandshutdown.c.o CMakeFiles/io.dir/io/io_get_wantread.c.o CMakeFiles/io.dir/io/io_get_wantwrite.c.o CMakeFiles/io.dir/io/io_getcookie.c.o CMakeFiles/io.dir/io/io_mmapwritefile.c.o CMakeFiles/io.dir/io/io_nonblock.c.o CMakeFiles/io.dir/io/io_onlywantread.c.o CMakeFiles/io.dir/io/io_onlywantwrite.c.o CMakeFiles/io.dir/io/io_passfd.c.o CMakeFiles/io.dir/io/io_pipe.c.o CMakeFiles/io.dir/io/io_readfile.c.o CMakeFiles/io.dir/io/io_readwritefile.c.o CMakeFiles/io.dir/io/io_sendfile.c.o CMakeFiles/io.dir/io/io_setcookie.c.o CMakeFiles/io.dir/io/io_sigpipe.c.o CMakeFiles/io.dir/io/io_socketpair.c.o CMakeFiles/io.dir/io/io_timedout.c.o CMakeFiles/io.dir/io/io_timeout.c.o CMakeFiles/io.dir/io/io_timeouted.c.o CMakeFiles/io.dir/io/io_tryread.c.o CMakeFiles/io.dir/io/io_tryreadtimeout.c.o CMakeFiles/io.dir/io/io_trywrite.c.o CMakeFiles/io.dir/io/io_trywritetimeout.c.o CMakeFiles/io.dir/io/io_wait.c.o CMakeFiles/io.dir/io/io_waitread.c.o CMakeFiles/io.dir/io/io_waituntil.c.o CMakeFiles/io.dir/io/io_waituntil2.c.o CMakeFiles/io.dir/io/io_waitwrite.c.o CMakeFiles/io.dir/io/io_wantread.c.o CMakeFiles/io.dir/io/io_wantwrite.c.o CMakeFiles/io.dir/io/iopause.c.o\n    2  /usr/bin/ranlib io.a\n    3  \n\n/home/roman/Sources/c-utils/lib/http/http_read_internal.c:\n   70        n = -1;\n   71      } else if(r->status == HTTP_STATUS_CLOSED) {\n   72:       io_dontwantread(h->sock);\n   73:       io_dontwantwrite(h->sock);\n   74        n = 0;\n   75      } else {\n\n/home/roman/Sources/c-utils/lib/http/http_socket.c:\n  107    }\n  108    if(ret == 0) {\n  109:     io_dontwantwrite(fd);\n  110:     io_dontwantread(fd);\n  111    }\n  112  #if DEBUG_HTTP\n\n/home/roman/Sources/c-utils/lib/io.h:\n   70  void io_wantread(fd_t d);\n   71  void io_wantwrite(fd_t d);\n   72: void io_dontwantread(fd_t d);\n   73: void io_dontwantwrite(fd_t d);\n   74  \n   75  void io_onlywantread(fd_t);\n\n/home/roman/Sources/c-utils/lib/io/io_close.c:\n   13  #include \"../io_internal.h\"\n   14  \n   15: extern void io_dontwantread_really(fd_t d, io_entry* e);\n   16: extern void io_dontwantwrite_really(fd_t d, io_entry* e);\n   17  \n   18  void\n   ..\n   30      e->cookie = 0;\n   31      if(e->kernelwantread)\n   32:       io_dontwantread_really(d, e);\n   33      if(e->kernelwantwrite)\n   34:       io_dontwantwrite_really(d, e);\n   35      if(e->mmapped) {\n   36  #if WINDOWS_NATIVE\n\n/home/roman/Sources/c-utils/lib/io/io_dontwantread.c:\n   17  \n   18  void\n   19: io_dontwantread_really(fd_t d, io_entry* e) {\n   20    int64 newfd;\n   21    (void)d;\n   ..\n   51  \n   52  void\n   53: io_dontwantread(fd_t d) {\n   54    io_entry* e;\n   55  #ifdef DEBUG_IO\n   56:   buffer_putspad(buffer_2, \"io_dontwantread\", 30);\n   57    buffer_puts(buffer_2, \"d=\");\n   58    buffer_putlonglong(buffer_2, d);\n   ..\n   62    if(e) {\n   63      if(e->canread)\n   64:       io_dontwantread_really(d, e);\n   65      e->wantread = 0;\n   66    }\n\n/home/roman/Sources/c-utils/lib/io/io_dontwantwrite.c:\n   16  #endif\n   17  \n   18: /* IDEA: if someone calls io_dontwantwrite, do not do the syscall to\n   19   * tell the kernel about it.  Only when a write event comes in and the\n   20   * user has told us he does not want them, THEN tell the kernel we are\n   ..\n   23  \n   24  void\n   25: io_dontwantwrite_really(fd_t d, io_entry* e) {\n   26    int64 newfd;\n   27    (void)d;\n   ..\n   57  \n   58  void\n   59: io_dontwantwrite(fd_t d) {\n   60    io_entry* e;\n   61  #ifdef DEBUG_IO\n   62:   buffer_putspad(buffer_2, \"io_dontwantwrite\", 30);\n   63    buffer_puts(buffer_2, \"d=\");\n   64    buffer_putlonglong(buffer_2, d);\n   ..\n   68    if(e) {\n   69      if(e->canwrite)\n   70:       io_dontwantwrite_really(d, e);\n   71      e->wantwrite = 0;\n   72    }\n\n/home/roman/Sources/c-utils/lib/io/io_onlywantread.c:\n    3  void\n    4  io_onlywantread(fd_t d) {\n    5:   io_dontwantwrite(d);\n    6    io_wantread(d);\n    7  }\n\n/home/roman/Sources/c-utils/lib/io/io_onlywantwrite.c:\n    3  void\n    4  io_onlywantwrite(fd_t d) {\n    5:   io_dontwantread(d);\n    6    io_wantwrite(d);\n    7  }\n\n/home/roman/Sources/c-utils/lib/io/io_waituntil2.c:\n  429            } else {\n  430              /* If !e->wantwrite: The laziness optimization in\n  431:              * io_dontwantwrite hit.  We did not tell the kernel that we\n  432               * are no longer interested in writing to save the syscall.\n  433               * Now we know we could write if we wanted; remember that\n\n/home/roman/Sources/c-utils/lib/io/io_wantwrite.c:\n   12  #endif\n   13  \n   14: /* IDEA: if someone calls io_dontwantwrite, do not do the syscall to\n   15   * tell the kernel about it.  Only when a write event comes in and the\n   16   * user has told us he does not want them, THEN tell the kernel we are\n\n/home/roman/Sources/c-utils/lib/io_internal.h:\n  113   * we don't tell the kernel straight away.  The rationale is that the\n  114   * typical protocol consists of interleaved reading and writing, so\n  115:  * after each read you'd call io_dontwantread, io_wantwrite, io_wait,\n  116:  * io_dontwantwrite, io_wantread, and in the regular case there is no\n  117:  * incoming data between io_dontwantread and io_wantread, so we might as\n  118   * well optimistically not do those syscalls and then handle the\n  119   * complexity if there is more incoming data. */\n\n/home/roman/Sources/c-utils/examples/httpd.c:\n  191      }\n  192    }\n  193:   io_dontwantread(s);\n  194    io_wantwrite(s);\n  195  }\n  ...\n  287              httperror(h, \"500 Server Error\", \"request too long.\");\n  288            emerge:\n  289:             io_dontwantread(i);\n  290              io_wantwrite(i);\n  291            } else if(array_bytes(&h->r) > 8192) {\n  ...\n  309          h->hdrbuf = 0;\n  310          if(h->keepalive) {\n  311:           io_dontwantwrite(i);\n  312            io_wantread(i);\n  313          } else {\n\n/home/roman/Sources/c-utils/examples/io2.c:\n   25      io_wait();\n   26      if(!flageof && readpos < (int64)sizeof(buf))\n   27:       io_dontwantread(0);\n   28      if(writepos < readpos)\n   29:       io_dontwantwrite(1);\n   30  \n   31      if(!flageof && readpos < (int64)sizeof(buf)) {\n\n/home/roman/Sources/c-utils/ftptest.c:\n  298          buffer_puts(buffer_1, \"data connection\");\n  299          buffer_putnlflush(buffer_1);\n  300:         io_dontwantwrite(ftp->data_sock);\n  301          io_wantread(ftp->data_sock);\n  302  \n  ...\n  315            case LOGGED_IN: {\n  316              ftplib_pasv(&in, &out, 1000, &allowed_ips, &meld, 3);\n  317:             io_dontwantwrite(ftp->control_sock);\n  318              break;\n  319            }\n  ...\n  328          }\n  329          if(in.p == 0 && ftp->state >= TRANSFERRING)\n  330:           io_dontwantwrite(ftp->control_sock);\n  331        }\n  332      }\n\n/home/roman/Sources/c-utils/lib.h:\n  116  #include \"lib/io/io_waitwrite.c\"\n  117  #include \"lib/io/io_sendfile.c\"\n  118: #include \"lib/io/io_dontwantwrite.c\"\n  119  #include \"lib/io/io_fd.c\"\n  120  #include \"lib/io/io_waitread.c\"\n  ...\n  137  #include \"lib/io/io_socketpair.c\"\n  138  #include \"lib/io/io_readfile.c\"\n  139: #include \"lib/io/io_dontwantread.c\"\n  140  #include \"lib/io/io_waituntil2.c\"\n  141  #include \"lib/io/io_nonblock.c\"\n\n/home/roman/Sources/c-utils/lib/CMakeFiles/io.dir/link.txt:\n    1: /usr/bin/ar qc io.a CMakeFiles/io.dir/io/io_appendfile.c.o CMakeFiles/io.dir/io/io_block.c.o CMakeFiles/io.dir/io/io_canread.c.o CMakeFiles/io.dir/io/io_canwrite.c.o CMakeFiles/io.dir/io/io_check.c.o CMakeFiles/io.dir/io/io_close.c.o CMakeFiles/io.dir/io/io_closeonexec.c.o CMakeFiles/io.dir/io/io_createfile.c.o CMakeFiles/io.dir/io/io_debugstring.c.o CMakeFiles/io.dir/io/io_dontwantread.c.o CMakeFiles/io.dir/io/io_dontwantwrite.c.o CMakeFiles/io.dir/io/io_dump.c.o CMakeFiles/io.dir/io/io_dup.c.o CMakeFiles/io.dir/io/io_eagain.c.o CMakeFiles/io.dir/io/io_eagain_read.c.o CMakeFiles/io.dir/io/io_eagain_write.c.o CMakeFiles/io.dir/io/io_fd.c.o CMakeFiles/io.dir/io/io_finishandshutdown.c.o CMakeFiles/io.dir/io/io_get_wantread.c.o CMakeFiles/io.dir/io/io_get_wantwrite.c.o CMakeFiles/io.dir/io/io_getcookie.c.o CMakeFiles/io.dir/io/io_mmapwritefile.c.o CMakeFiles/io.dir/io/io_nonblock.c.o CMakeFiles/io.dir/io/io_onlywantread.c.o CMakeFiles/io.dir/io/io_onlywantwrite.c.o CMakeFiles/io.dir/io/io_passfd.c.o CMakeFiles/io.dir/io/io_pipe.c.o CMakeFiles/io.dir/io/io_readfile.c.o CMakeFiles/io.dir/io/io_readwritefile.c.o CMakeFiles/io.dir/io/io_sendfile.c.o CMakeFiles/io.dir/io/io_setcookie.c.o CMakeFiles/io.dir/io/io_sigpipe.c.o CMakeFiles/io.dir/io/io_socketpair.c.o CMakeFiles/io.dir/io/io_timedout.c.o CMakeFiles/io.dir/io/io_timeout.c.o CMakeFiles/io.dir/io/io_timeouted.c.o CMakeFiles/io.dir/io/io_tryread.c.o CMakeFiles/io.dir/io/io_tryreadtimeout.c.o CMakeFiles/io.dir/io/io_trywrite.c.o CMakeFiles/io.dir/io/io_trywritetimeout.c.o CMakeFiles/io.dir/io/io_wait.c.o CMakeFiles/io.dir/io/io_waitread.c.o CMakeFiles/io.dir/io/io_waituntil.c.o CMakeFiles/io.dir/io/io_waituntil2.c.o CMakeFiles/io.dir/io/io_waitwrite.c.o CMakeFiles/io.dir/io/io_wantread.c.o CMakeFiles/io.dir/io/io_wantwrite.c.o CMakeFiles/io.dir/io/iopause.c.o\n    2  /usr/bin/ranlib io.a\n    3  \n\n/home/roman/Sources/c-utils/lib/http/http_read_internal.c:\n   70        n = -1;\n   71      } else if(r->status == HTTP_STATUS_CLOSED) {\n   72:       io_dontwantread(h->sock);\n   73:       io_dontwantwrite(h->sock);\n   74        n = 0;\n   75      } else {\n\n/home/roman/Sources/c-utils/lib/http/http_socket.c:\n  107    }\n  108    if(ret == 0) {\n  109:     io_dontwantwrite(fd);\n  110:     io_dontwantread(fd);\n  111    }\n  112  #if DEBUG_HTTP\n\n/home/roman/Sources/c-utils/lib/io.h:\n   70  void io_wantread(fd_t d);\n   71  void io_wantwrite(fd_t d);\n   72: void io_dontwantread(fd_t d);\n   73: void io_dontwantwrite(fd_t d);\n   74  \n   75  void io_onlywantread(fd_t);\n\n/home/roman/Sources/c-utils/lib/io/io_close.c:\n   13  #include \"../io_internal.h\"\n   14  \n   15: extern void io_dontwantread_really(fd_t d, io_entry* e);\n   16: extern void io_dontwantwrite_really(fd_t d, io_entry* e);\n   17  \n   18  void\n   ..\n   30      e->cookie = 0;\n   31      if(e->kernelwantread)\n   32:       io_dontwantread_really(d, e);\n   33      if(e->kernelwantwrite)\n   34:       io_dontwantwrite_really(d, e);\n   35      if(e->mmapped) {\n   36  #if WINDOWS_NATIVE\n\n/home/roman/Sources/c-utils/lib/io/io_dontwantread.c:\n   17  \n   18  void\n   19: io_dontwantread_really(fd_t d, io_entry* e) {\n   20    int64 newfd;\n   21    (void)d;\n   ..\n   51  \n   52  void\n   53: io_dontwantread(fd_t d) {\n   54    io_entry* e;\n   55  #ifdef DEBUG_IO\n   56:   buffer_putspad(buffer_2, \"io_dontwantread\", 30);\n   57    buffer_puts(buffer_2, \"d=\");\n   58    buffer_putlonglong(buffer_2, d);\n   ..\n   62    if(e) {\n   63      if(e->canread)\n   64:       io_dontwantread_really(d, e);\n   65      e->wantread = 0;\n   66    }\n\n/home/roman/Sources/c-utils/lib/io/io_dontwantwrite.c:\n   16  #endif\n   17  \n   18: /* IDEA: if someone calls io_dontwantwrite, do not do the syscall to\n   19   * tell the kernel about it.  Only when a write event comes in and the\n   20   * user has told us he does not want them, THEN tell the kernel we are\n   ..\n   23  \n   24  void\n   25: io_dontwantwrite_really(fd_t d, io_entry* e) {\n   26    int64 newfd;\n   27    (void)d;\n   ..\n   57  \n   58  void\n   59: io_dontwantwrite(fd_t d) {\n   60    io_entry* e;\n   61  #ifdef DEBUG_IO\n   62:   buffer_putspad(buffer_2, \"io_dontwantwrite\", 30);\n   63    buffer_puts(buffer_2, \"d=\");\n   64    buffer_putlonglong(buffer_2, d);\n   ..\n   68    if(e) {\n   69      if(e->canwrite)\n   70:       io_dontwantwrite_really(d, e);\n   71      e->wantwrite = 0;\n   72    }\n\n/home/roman/Sources/c-utils/lib/io/io_onlywantread.c:\n    3  void\n    4  io_onlywantread(fd_t d) {\n    5:   io_dontwantwrite(d);\n    6    io_wantread(d);\n    7  }\n\n/home/roman/Sources/c-utils/lib/io/io_onlywantwrite.c:\n    3  void\n    4  io_onlywantwrite(fd_t d) {\n    5:   io_dontwantread(d);\n    6    io_wantwrite(d);\n    7  }\n\n/home/roman/Sources/c-utils/lib/io/io_waituntil2.c:\n  429            } else {\n  430              /* If !e->wantwrite: The laziness optimization in\n  431:              * io_dontwantwrite hit.  We did not tell the kernel that we\n  432               * are no longer interested in writing to save the syscall.\n  433               * Now we know we could write if we wanted; remember that\n\n/home/roman/Sources/c-utils/lib/io/io_wantwrite.c:\n   12  #endif\n   13  \n   14: /* IDEA: if someone calls io_dontwantwrite, do not do the syscall to\n   15   * tell the kernel about it.  Only when a write event comes in and the\n   16   * user has told us he does not want them, THEN tell the kernel we are\n\n/home/roman/Sources/c-utils/lib/io_internal.h:\n  113   * we don't tell the kernel straight away.  The rationale is that the\n  114   * typical protocol consists of interleaved reading and writing, so\n  115:  * after each read you'd call io_dontwantread, io_wantwrite, io_wait,\n  116:  * io_dontwantwrite, io_wantread, and in the regular case there is no\n  117:  * incoming data between io_dontwantread and io_wantread, so we might as\n  118   * well optimistically not do those syscalls and then handle the\n  119   * complexity if there is more incoming data. */\n\n/home/roman/Sources/c-utils/logserial.c:\n  370    } else if(ret == 0) {\n  371      errmsg_warn(\"serial closed\", 0);\n  372:     io_dontwantread(serial_fd);\n  373      io_close(serial_fd);\n  374  \n  ...\n  380      } else {\n  381        errmsg_warnsys(\"serial error\", 0);\n  382:       io_dontwantread(serial_fd);\n  383        io_close(serial_fd);\n  384      }\n  ...\n  484            /* if(send_buf.p == 0) */ {\n  485              queue = 0;\n  486:             io_dontwantwrite(serial_fd);\n  487            }\n  488          }\n  ...\n  689      }\n  690  \n  691:     io_dontwantread(serial_fd);\n  692      io_close(serial_fd);\n  693      remove_port(portname);\n\n/home/roman/Sources/c-utils/tinyproxy.c:\n 1008          c->proxy.dump = -1;\n 1009  \n 1010:         io_dontwantwrite(sock);\n 1011          io_wantread(sock);\n 1012        } else if((sb = socket_find(sock))) {\n\n71 matches across 30 files\n\n\nSearching 3501 files for \"onlywantread\" (regex, case sensitive)\n\n/home/roman/Sources/c-utils/lib/CMakeFiles/io.dir/link.txt:\n    1: /usr/bin/ar qc io.a CMakeFiles/io.dir/io/io_appendfile.c.o CMakeFiles/io.dir/io/io_block.c.o CMakeFiles/io.dir/io/io_canread.c.o CMakeFiles/io.dir/io/io_canwrite.c.o CMakeFiles/io.dir/io/io_check.c.o CMakeFiles/io.dir/io/io_close.c.o CMakeFiles/io.dir/io/io_closeonexec.c.o CMakeFiles/io.dir/io/io_createfile.c.o CMakeFiles/io.dir/io/io_debugstring.c.o CMakeFiles/io.dir/io/io_dontwantread.c.o CMakeFiles/io.dir/io/io_dontwantwrite.c.o CMakeFiles/io.dir/io/io_dump.c.o CMakeFiles/io.dir/io/io_dup.c.o CMakeFiles/io.dir/io/io_eagain.c.o CMakeFiles/io.dir/io/io_eagain_read.c.o CMakeFiles/io.dir/io/io_eagain_write.c.o CMakeFiles/io.dir/io/io_fd.c.o CMakeFiles/io.dir/io/io_finishandshutdown.c.o CMakeFiles/io.dir/io/io_get_wantread.c.o CMakeFiles/io.dir/io/io_get_wantwrite.c.o CMakeFiles/io.dir/io/io_getcookie.c.o CMakeFiles/io.dir/io/io_mmapwritefile.c.o CMakeFiles/io.dir/io/io_nonblock.c.o CMakeFiles/io.dir/io/io_onlywantread.c.o CMakeFiles/io.dir/io/io_onlywantwrite.c.o CMakeFiles/io.dir/io/io_passfd.c.o CMakeFiles/io.dir/io/io_pipe.c.o CMakeFiles/io.dir/io/io_readfile.c.o CMakeFiles/io.dir/io/io_readwritefile.c.o CMakeFiles/io.dir/io/io_sendfile.c.o CMakeFiles/io.dir/io/io_setcookie.c.o CMakeFiles/io.dir/io/io_sigpipe.c.o CMakeFiles/io.dir/io/io_socketpair.c.o CMakeFiles/io.dir/io/io_timedout.c.o CMakeFiles/io.dir/io/io_timeout.c.o CMakeFiles/io.dir/io/io_timeouted.c.o CMakeFiles/io.dir/io/io_tryread.c.o CMakeFiles/io.dir/io/io_tryreadtimeout.c.o CMakeFiles/io.dir/io/io_trywrite.c.o CMakeFiles/io.dir/io/io_trywritetimeout.c.o CMakeFiles/io.dir/io/io_wait.c.o CMakeFiles/io.dir/io/io_waitread.c.o CMakeFiles/io.dir/io/io_waituntil.c.o CMakeFiles/io.dir/io/io_waituntil2.c.o CMakeFiles/io.dir/io/io_waitwrite.c.o CMakeFiles/io.dir/io/io_wantread.c.o CMakeFiles/io.dir/io/io_wantwrite.c.o CMakeFiles/io.dir/io/iopause.c.o\n    2  /usr/bin/ranlib io.a\n    3  \n\n/home/roman/Sources/c-utils/lib/http/http_sendreq.c:\n   99      h->response->status = HTTP_RECV_HEADER;\n  100  \n  101:     io_onlywantread(h->sock);\n  102    }\n  103    return ret;\n\n/home/roman/Sources/c-utils/lib/io.h:\n   73  void io_dontwantwrite(fd_t d);\n   74  \n   75: void io_onlywantread(fd_t);\n   76  void io_onlywantwrite(fd_t);\n   77  \n\n/home/roman/Sources/c-utils/lib/io/io_onlywantread.c:\n    2  \n    3  void\n    4: io_onlywantread(fd_t d) {\n    5    io_dontwantwrite(d);\n    6    io_wantread(d);\n\n/home/roman/Sources/c-utils/lib/tls/tls_io.c:\n    9    assert(i);\n   10  \n   11:   i->wantread = &io_onlywantread;\n   12    i->wantwrite = &io_onlywantwrite;\n   13  }\n\n/home/roman/Sources/c-utils/lib/CMakeFiles/io.dir/link.txt:\n    1: /usr/bin/ar qc io.a CMakeFiles/io.dir/io/io_appendfile.c.o CMakeFiles/io.dir/io/io_block.c.o CMakeFiles/io.dir/io/io_canread.c.o CMakeFiles/io.dir/io/io_canwrite.c.o CMakeFiles/io.dir/io/io_check.c.o CMakeFiles/io.dir/io/io_close.c.o CMakeFiles/io.dir/io/io_closeonexec.c.o CMakeFiles/io.dir/io/io_createfile.c.o CMakeFiles/io.dir/io/io_debugstring.c.o CMakeFiles/io.dir/io/io_dontwantread.c.o CMakeFiles/io.dir/io/io_dontwantwrite.c.o CMakeFiles/io.dir/io/io_dump.c.o CMakeFiles/io.dir/io/io_dup.c.o CMakeFiles/io.dir/io/io_eagain.c.o CMakeFiles/io.dir/io/io_eagain_read.c.o CMakeFiles/io.dir/io/io_eagain_write.c.o CMakeFiles/io.dir/io/io_fd.c.o CMakeFiles/io.dir/io/io_finishandshutdown.c.o CMakeFiles/io.dir/io/io_get_wantread.c.o CMakeFiles/io.dir/io/io_get_wantwrite.c.o CMakeFiles/io.dir/io/io_getcookie.c.o CMakeFiles/io.dir/io/io_mmapwritefile.c.o CMakeFiles/io.dir/io/io_nonblock.c.o CMakeFiles/io.dir/io/io_onlywantread.c.o CMakeFiles/io.dir/io/io_onlywantwrite.c.o CMakeFiles/io.dir/io/io_passfd.c.o CMakeFiles/io.dir/io/io_pipe.c.o CMakeFiles/io.dir/io/io_readfile.c.o CMakeFiles/io.dir/io/io_readwritefile.c.o CMakeFiles/io.dir/io/io_sendfile.c.o CMakeFiles/io.dir/io/io_setcookie.c.o CMakeFiles/io.dir/io/io_sigpipe.c.o CMakeFiles/io.dir/io/io_socketpair.c.o CMakeFiles/io.dir/io/io_timedout.c.o CMakeFiles/io.dir/io/io_timeout.c.o CMakeFiles/io.dir/io/io_timeouted.c.o CMakeFiles/io.dir/io/io_tryread.c.o CMakeFiles/io.dir/io/io_tryreadtimeout.c.o CMakeFiles/io.dir/io/io_trywrite.c.o CMakeFiles/io.dir/io/io_trywritetimeout.c.o CMakeFiles/io.dir/io/io_wait.c.o CMakeFiles/io.dir/io/io_waitread.c.o CMakeFiles/io.dir/io/io_waituntil.c.o CMakeFiles/io.dir/io/io_waituntil2.c.o CMakeFiles/io.dir/io/io_waitwrite.c.o CMakeFiles/io.dir/io/io_wantread.c.o CMakeFiles/io.dir/io/io_wantwrite.c.o CMakeFiles/io.dir/io/iopause.c.o\n    2  /usr/bin/ranlib io.a\n    3  \n\n/home/roman/Sources/c-utils/lib/http/http_sendreq.c:\n   99      h->response->status = HTTP_RECV_HEADER;\n  100  \n  101:     io_onlywantread(h->sock);\n  102    }\n  103    return ret;\n\n/home/roman/Sources/c-utils/lib/io.h:\n   73  void io_dontwantwrite(fd_t d);\n   74  \n   75: void io_onlywantread(fd_t);\n   76  void io_onlywantwrite(fd_t);\n   77  \n\n/home/roman/Sources/c-utils/lib/io/io_onlywantread.c:\n    2  \n    3  void\n    4: io_onlywantread(fd_t d) {\n    5    io_dontwantwrite(d);\n    6    io_wantread(d);\n\n/home/roman/Sources/c-utils/lib/tls/tls_io.c:\n    9    assert(i);\n   10  \n   11:   i->wantread = &io_onlywantread;\n   12    i->wantwrite = &io_onlywantwrite;\n   13  }\n\n/home/roman/Sources/c-utils/mediathek-list.c:\n  189          continue;\n  190  \n  191:       if(http_canwrite(&h, &io_onlywantread) == -1) {\n  192          if(errno == EWOULDBLOCK)\n  193            break;\n  ...\n  873        while((fd = io_canwrite()) != -1) {\n  874          if(fd == h.sock)\n  875:           http_canwrite(&h, &io_onlywantread);\n  876        }\n  877  \n\n/home/roman/Sources/c-utils/ssltest.c:\n  226          buffer_flush(&out);\n  227          if(out.p == 0)\n  228:           io_onlywantread(s);\n  229        }\n  230      }\n\n13 matches across 12 files\n\n\nSearching 3501 files for \"onlywantread\" (regex, case sensitive)\n\n/home/roman/Sources/c-utils/lib/CMakeFiles/io.dir/link.txt:\n    1: /usr/bin/ar qc io.a CMakeFiles/io.dir/io/io_appendfile.c.o CMakeFiles/io.dir/io/io_block.c.o CMakeFiles/io.dir/io/io_canread.c.o CMakeFiles/io.dir/io/io_canwrite.c.o CMakeFiles/io.dir/io/io_check.c.o CMakeFiles/io.dir/io/io_close.c.o CMakeFiles/io.dir/io/io_closeonexec.c.o CMakeFiles/io.dir/io/io_createfile.c.o CMakeFiles/io.dir/io/io_debugstring.c.o CMakeFiles/io.dir/io/io_dontwantread.c.o CMakeFiles/io.dir/io/io_dontwantwrite.c.o CMakeFiles/io.dir/io/io_dump.c.o CMakeFiles/io.dir/io/io_dup.c.o CMakeFiles/io.dir/io/io_eagain.c.o CMakeFiles/io.dir/io/io_eagain_read.c.o CMakeFiles/io.dir/io/io_eagain_write.c.o CMakeFiles/io.dir/io/io_fd.c.o CMakeFiles/io.dir/io/io_finishandshutdown.c.o CMakeFiles/io.dir/io/io_get_wantread.c.o CMakeFiles/io.dir/io/io_get_wantwrite.c.o CMakeFiles/io.dir/io/io_getcookie.c.o CMakeFiles/io.dir/io/io_mmapwritefile.c.o CMakeFiles/io.dir/io/io_nonblock.c.o CMakeFiles/io.dir/io/io_onlywantread.c.o CMakeFiles/io.dir/io/io_onlywantwrite.c.o CMakeFiles/io.dir/io/io_passfd.c.o CMakeFiles/io.dir/io/io_pipe.c.o CMakeFiles/io.dir/io/io_readfile.c.o CMakeFiles/io.dir/io/io_readwritefile.c.o CMakeFiles/io.dir/io/io_sendfile.c.o CMakeFiles/io.dir/io/io_setcookie.c.o CMakeFiles/io.dir/io/io_sigpipe.c.o CMakeFiles/io.dir/io/io_socketpair.c.o CMakeFiles/io.dir/io/io_timedout.c.o CMakeFiles/io.dir/io/io_timeout.c.o CMakeFiles/io.dir/io/io_timeouted.c.o CMakeFiles/io.dir/io/io_tryread.c.o CMakeFiles/io.dir/io/io_tryreadtimeout.c.o CMakeFiles/io.dir/io/io_trywrite.c.o CMakeFiles/io.dir/io/io_trywritetimeout.c.o CMakeFiles/io.dir/io/io_wait.c.o CMakeFiles/io.dir/io/io_waitread.c.o CMakeFiles/io.dir/io/io_waituntil.c.o CMakeFiles/io.dir/io/io_waituntil2.c.o CMakeFiles/io.dir/io/io_waitwrite.c.o CMakeFiles/io.dir/io/io_wantread.c.o CMakeFiles/io.dir/io/io_wantwrite.c.o CMakeFiles/io.dir/io/iopause.c.o\n    2  /usr/bin/ranlib io.a\n    3  \n\n/home/roman/Sources/c-utils/lib/http/http_sendreq.c:\n   99      h->response->status = HTTP_RECV_HEADER;\n  100  \n  101:     io_onlywantread(h->sock);\n  102    }\n  103    return ret;\n\n/home/roman/Sources/c-utils/lib/io.h:\n   73  void io_dontwantwrite(fd_t d);\n   74  \n   75: void io_onlywantread(fd_t);\n   76  void io_onlywantwrite(fd_t);\n   77  \n\n/home/roman/Sources/c-utils/lib/io/io_onlywantread.c:\n    2  \n    3  void\n    4: io_onlywantread(fd_t d) {\n    5    io_dontwantwrite(d);\n    6    io_wantread(d);\n\n/home/roman/Sources/c-utils/lib/tls/tls_io.c:\n    9    assert(i);\n   10  \n   11:   i->wantread = &io_onlywantread;\n   12    i->wantwrite = &io_onlywantwrite;\n   13  }\n\n/home/roman/Sources/c-utils/lib/CMakeFiles/io.dir/link.txt:\n    1: /usr/bin/ar qc io.a CMakeFiles/io.dir/io/io_appendfile.c.o CMakeFiles/io.dir/io/io_block.c.o CMakeFiles/io.dir/io/io_canread.c.o CMakeFiles/io.dir/io/io_canwrite.c.o CMakeFiles/io.dir/io/io_check.c.o CMakeFiles/io.dir/io/io_close.c.o CMakeFiles/io.dir/io/io_closeonexec.c.o CMakeFiles/io.dir/io/io_createfile.c.o CMakeFiles/io.dir/io/io_debugstring.c.o CMakeFiles/io.dir/io/io_dontwantread.c.o CMakeFiles/io.dir/io/io_dontwantwrite.c.o CMakeFiles/io.dir/io/io_dump.c.o CMakeFiles/io.dir/io/io_dup.c.o CMakeFiles/io.dir/io/io_eagain.c.o CMakeFiles/io.dir/io/io_eagain_read.c.o CMakeFiles/io.dir/io/io_eagain_write.c.o CMakeFiles/io.dir/io/io_fd.c.o CMakeFiles/io.dir/io/io_finishandshutdown.c.o CMakeFiles/io.dir/io/io_get_wantread.c.o CMakeFiles/io.dir/io/io_get_wantwrite.c.o CMakeFiles/io.dir/io/io_getcookie.c.o CMakeFiles/io.dir/io/io_mmapwritefile.c.o CMakeFiles/io.dir/io/io_nonblock.c.o CMakeFiles/io.dir/io/io_onlywantread.c.o CMakeFiles/io.dir/io/io_onlywantwrite.c.o CMakeFiles/io.dir/io/io_passfd.c.o CMakeFiles/io.dir/io/io_pipe.c.o CMakeFiles/io.dir/io/io_readfile.c.o CMakeFiles/io.dir/io/io_readwritefile.c.o CMakeFiles/io.dir/io/io_sendfile.c.o CMakeFiles/io.dir/io/io_setcookie.c.o CMakeFiles/io.dir/io/io_sigpipe.c.o CMakeFiles/io.dir/io/io_socketpair.c.o CMakeFiles/io.dir/io/io_timedout.c.o CMakeFiles/io.dir/io/io_timeout.c.o CMakeFiles/io.dir/io/io_timeouted.c.o CMakeFiles/io.dir/io/io_tryread.c.o CMakeFiles/io.dir/io/io_tryreadtimeout.c.o CMakeFiles/io.dir/io/io_trywrite.c.o CMakeFiles/io.dir/io/io_trywritetimeout.c.o CMakeFiles/io.dir/io/io_wait.c.o CMakeFiles/io.dir/io/io_waitread.c.o CMakeFiles/io.dir/io/io_waituntil.c.o CMakeFiles/io.dir/io/io_waituntil2.c.o CMakeFiles/io.dir/io/io_waitwrite.c.o CMakeFiles/io.dir/io/io_wantread.c.o CMakeFiles/io.dir/io/io_wantwrite.c.o CMakeFiles/io.dir/io/iopause.c.o\n    2  /usr/bin/ranlib io.a\n    3  \n\n/home/roman/Sources/c-utils/lib/http/http_sendreq.c:\n   99      h->response->status = HTTP_RECV_HEADER;\n  100  \n  101:     io_onlywantread(h->sock);\n  102    }\n  103    return ret;\n\n/home/roman/Sources/c-utils/lib/io.h:\n   73  void io_dontwantwrite(fd_t d);\n   74  \n   75: void io_onlywantread(fd_t);\n   76  void io_onlywantwrite(fd_t);\n   77  \n\n/home/roman/Sources/c-utils/lib/io/io_onlywantread.c:\n    2  \n    3  void\n    4: io_onlywantread(fd_t d) {\n    5    io_dontwantwrite(d);\n    6    io_wantread(d);\n\n/home/roman/Sources/c-utils/lib/tls/tls_io.c:\n    9    assert(i);\n   10  \n   11:   i->wantread = &io_onlywantread;\n   12    i->wantwrite = &io_onlywantwrite;\n   13  }\n\n/home/roman/Sources/c-utils/mediathek-list.c:\n  189          continue;\n  190  \n  191:       if(http_canwrite(&h, &io_onlywantread) == -1) {\n  192          if(errno == EWOULDBLOCK)\n  193            break;\n  ...\n  873        while((fd = io_canwrite()) != -1) {\n  874          if(fd == h.sock)\n  875:           http_canwrite(&h, &io_onlywantread);\n  876        }\n  877  \n\n/home/roman/Sources/c-utils/ssltest.c:\n  226          buffer_flush(&out);\n  227          if(out.p == 0)\n  228:           io_onlywantread(s);\n  229        }\n  230      }\n\n13 matches across 12 files\n",
+			"settings":
+			{
+				"buffer_size": 75172,
+				"line_ending": "Unix",
+				"name": "Find Results",
+				"scratch": true
+			}
+		},
+		{
+			"file": "lib/http.h",
+			"settings":
+			{
+				"buffer_size": 2653,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/http/http_read_internal.c",
+			"settings":
+			{
+				"buffer_size": 3282,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/tls/tls_strerror.c",
+			"settings":
+			{
+				"buffer_size": 1098,
 				"line_ending": "Unix"
 			}
 		}
@@ -83,6 +386,10 @@
 		"last_filter": "",
 		"selected_items":
 		[
+			[
+				"install ",
+				"Package Control: Install Package"
+			],
 			[
 				"install",
 				"Package Control: Install Package"
@@ -174,143 +481,147 @@
 	[
 		"/home/roman/Sources/c-utils",
 		"/home/roman/Sources/c-utils/lib",
-		"/home/roman/Sources/c-utils/lib/env",
+		"/home/roman/Sources/c-utils/lib/binfmt",
+		"/home/roman/Sources/c-utils/lib/http",
+		"/home/roman/Sources/c-utils/lib/iarray",
+		"/home/roman/Sources/c-utils/lib/json",
+		"/home/roman/Sources/c-utils/lib/tls",
 		"/home/roman/Sources/c-utils/node_modules"
 	],
 	"file_history":
 	[
-		"/home/roman/Sources/c-utils/CMakeLists.txt",
-		"/home/roman/Sources/c-utils/pkgcfg.c",
-		"/home/roman/Sources/c-utils/lib/env/env_put.c",
-		"/home/roman/Sources/c-utils/lib/env/env_set.c",
-		"/home/roman/Sources/c-utils/lib/tls_internal.h",
-		"/home/roman/Sources/c-utils/lib/http.h",
-		"/home/roman/Sources/c-utils/lib/tls.h",
-		"/home/roman/Sources/c-utils/lib/ssl/ssl_accept.c",
-		"/home/roman/Sources/c-utils/lib/http/http_ssl_socket.c",
-		"/home/roman/Sources/c-utils/lib/http/http_ssl_read.c",
-		"/home/roman/Sources/c-utils/lib/http/https_ssl_ctx.c",
-		"/home/roman/Sources/c-utils/lib/http/https_error.c",
-		"/home/roman/Sources/c-utils/lib/http/https_socket.c",
-		"/home/roman/Sources/c-utils/lib/http/http_ssl_io.c",
-		"/home/roman/Sources/c-utils/lib/http/http_ssl_errstr.c",
-		"/home/roman/Sources/c-utils/lib/http/http_ssl2errno.c",
-		"/home/roman/Sources/c-utils/lib/http/http_socket_write.c",
-		"/home/roman/Sources/c-utils/lib/http/http_ssl_ctx.c",
-		"/home/roman/Sources/c-utils/lib/http/http_ssl_error.c",
-		"/home/roman/Sources/c-utils/lib/http/http_ssl_connect.c",
-		"/home/roman/Sources/c-utils/lib/http/http_ssl2want.c",
-		"/home/roman/Sources/c-utils/lib/http/http_socket_read.c",
-		"/home/roman/Sources/c-utils/lib/http/http_socket.c",
-		"/home/roman/Sources/c-utils/lib/http/http_sendreq.c",
-		"/home/roman/Sources/c-utils/lib/http/http_read_internal.c",
-		"/home/roman/Sources/c-utils/lib/http/http_readable.c",
-		"/home/roman/Sources/c-utils/lib/http/http_read_header.c",
-		"/home/roman/Sources/c-utils/lib/http/http_read.c",
-		"/home/roman/Sources/c-utils/lib/http/http_on_writeable.c",
-		"/home/roman/Sources/c-utils/lib/http/http_on_readable.c",
+		"/home/roman/Sources/c-utils/hexedit.c",
+		"/home/roman/Sources/c-utils/lib/str/str_ansilen.c",
 		"/home/roman/Sources/c-utils/lib/http/http_get.c",
-		"/home/roman/Sources/c-utils/lib/http/http_close.c",
-		"/home/roman/Sources/c-utils/lib/http/http_ssl_write.c",
-		"/home/roman/Sources/c-utils/ssltest.c",
-		"/home/roman/.config/sublime-text-3/Packages/TabNine/TabNine.sublime-settings",
-		"/home/roman/.config/sublime-text-3/Packages/User/TabNine.sublime-settings",
-		"/home/roman/Sources/c-utils/lib/scan.h",
-		"/home/roman/Sources/c-utils/lib/ssl.h",
-		"/home/roman/Sources/c-utils/lib/ssl/ssl_new.c",
-		"/home/roman/Sources/c-utils/lib/buffer/buffer_getline.c",
-		"/home/roman/Sources/c-utils/lib/stralloc/buffer_getline_sa.c",
-		"/home/roman/Sources/c-utils/lib/ssl/ssl_instance_return.c",
-		"/home/roman/Sources/c-utils/lib/stralloc/stralloc_trimr.c",
-		"/home/roman/Sources/c-utils/lib/stralloc/buffer_getnewline_sa.c",
-		"/home/roman/Sources/c-utils/lib/ssl/ssl_write.c",
-		"/home/roman/Sources/c-utils/lib/fmt/fmt_escapechardoublequotedshell.c",
-		"/home/roman/Sources/c-utils/lib/ssl/ssl_read.c",
-		"/home/roman/Sources/c-utils/lib/stralloc/stralloc_fmt.c",
-		"/home/roman/Sources/c-utils/lib/iarray.h",
-		"/home/roman/Sources/c-utils/quote.c",
-		"/home/roman/Sources/c-utils/lib/fmt/fmt_8long.c",
-		"/home/roman/Sources/c-utils/httptest.c",
-		"/home/roman/Sources/c-utils/lib/iarray/iarray_init.c",
-		"/home/roman/Sources/c-utils/lib/buffer.h",
-		"/home/roman/Sources/c-utils/lib/buffer/buffer_getc.c",
-		"/home/roman/Sources/c-utils/ccat.c",
-		"/home/roman/Sources/c-utils/lib/str/str_case_diff.c",
-		"/home/roman/Sources/c-utils/lib/str/str_case_equal.c",
-		"/home/roman/Sources/c-utils/lib/case.h",
-		"/home/roman/Sources/c-utils/lib/buffer/buffer_brotli.c",
-		"/tmp/editor-1223047020.txt",
-		"/home/roman/Sources/c-utils/lib/cb_internal.h",
-		"/home/roman/Sources/c-utils/lib/buffer/buffer_flush.c",
-		"/home/roman/Sources/c-utils/lib/buffer/buffer_copy.c",
-		"/home/roman/Sources/c-utils/lib/buffer/buffer_put.c",
-		"/home/roman/Sources/c-utils/lib/buffer/buffer_peek.c",
-		"/home/roman/Sources/c-utils/lib/unix/getopt.c",
-		"/home/roman/Sources/c-utils/genmakefile.c",
-		"/home/roman/Sources/c-utils/lib/getopt.h",
-		"/home/roman/Sources/c-utils/lib/buffer/buffer_brotli.c",
-		"/home/roman/Sources/c-utils/lib/buffer/buffer_lzma.c",
-		"/home/roman/Sources/c-utils/lib/buffer/buffer_get.c",
-		"/home/roman/Sources/c-utils/lib/buffer/buffer_feed.c",
-		"/home/roman/Sources/c-utils/lib/buffer/buffer_gzip.c",
-		"/home/roman/Sources/c-utils/lib/buffer.h",
-		"/home/roman/Sources/c-utils/lib/alloc/alloc_re.c",
-		"/home/roman/Sources/c-utils/lib/buffer/buffer_bzip.c",
-		"/home/roman/Sources/c-utils/lib/buffer/buffer_init_free.c",
-		"/home/roman/Sources/c-utils/lib/buffer/buffer_init.c",
-		"/home/roman/Sources/c-utils/lib/buffer/buffer_free.c",
-		"/home/roman/Sources/c-utils/lib/cbmap_internal.h",
-		"/home/roman/Sources/c-utils/dnstrace.c",
-		"/home/roman/Sources/c-utils/lib/array.h",
+		"/home/roman/Sources/c-utils/lib/http/http_read_header.c",
+		"/home/roman/Sources/c-utils/lib/http/http_read_internal.c",
+		"/home/roman/Sources/c-utils/lib/http/http_sendreq.c",
+		"/home/roman/Sources/c-utils/lib/http/http_canread.c",
+		"/home/roman/Sources/c-utils/lib/io/io_wantread.c",
+		"/home/roman/Sources/c-utils/lib/io/io_dontwantread.c",
+		"/home/roman/Sources/c-utils/lib/io/io_dontwantwrite.c",
+		"/home/roman/Sources/c-utils/lib/io/io_canread.c",
+		"/home/roman/Sources/c-utils/lib/io_internal.h",
+		"/home/roman/Sources/c-utils/lib/io/io_waituntil2.c",
+		"/home/roman/Sources/c-utils/lib/io/io_fd.c",
+		"/home/roman/Sources/c-utils/lib/io/io_wantwrite.c",
+		"/home/roman/Sources/c-utils/lib/io/io_nonblock.c",
+		"/home/roman/Sources/c-utils/lib/io/io_canwrite.c",
+		"/home/roman/Sources/c-utils/lib/io/io_close.c",
 		"/home/roman/Sources/c-utils/CMakeLists.txt",
-		"/home/roman/Sources/c-utils/genmakefile.h",
-		"/home/roman/Sources/c-utils/lib/unix.h",
-		"/home/roman/Sources/c-utils/lib/dns.h",
-		"/home/roman/Sources/c-utils/lib/dns/dns_dtda.c",
-		"/home/roman/Sources/c-utils/lib/map/map_iter.c",
-		"/home/roman/Sources/c-utils/lib/strlist/strlist_fromv.c",
-		"/home/roman/Sources/c-utils/lib/strlist/strlist_froms.c",
-		"/home/roman/Sources/c-utils/lib/strlist.h",
-		"/home/roman/Sources/c-utils/lib/strlist/strlist_dump_named.c",
-		"/home/roman/Sources/c-utils/lib/strlist/strlist_dump.c",
-		"/home/roman/Sources/c-utils/lib/stralloc.h",
-		"/home/roman/Sources/c-utils/lib/process.h",
-		"/home/roman/Sources/c-utils/lib/errmsg.h",
-		"/home/roman/Sources/c-utils/lib/dns/dns_transmit.c",
-		"/home/roman/Sources/c-utils/lib/safemult/range_str4inbuf.c",
-		"/home/roman/Sources/c-utils/elflist.c",
-		"/home/roman/Sources/c-utils/lib/dns/dns_nd6.c",
-		"/home/roman/Sources/c-utils/lib/cbmap/cbmap_delete.c",
-		"/home/roman/Sources/c-utils/lib/cbmap/cbmap_get.c",
-		"/home/roman/Sources/c-utils/lib/cb/cb_new_kv.c",
-		"/home/roman/Sources/c-utils/lib/safemult/range_arrayinbuf.c",
-		"/home/roman/Sources/c-utils/log.c",
-		"/home/roman/Sources/c-utils/lib/ip6.h",
-		"/home/roman/Sources/c-utils/list-r.c",
-		"/home/roman/Sources/c-utils/lib/dir.h",
-		"/home/roman/Sources/c-utils/lsproc.c",
-		"/home/roman/Sources/c-utils/nscache.c",
-		"/home/roman/Sources/c-utils/query.c",
+		"/home/roman/Sources/c-utils/lib/http/http_socket.c",
+		"/home/roman/Sources/c-utils/lib/http.h",
+		"/home/roman/Sources/c-utils/httptest.c",
+		"/home/roman/Sources/c-utils/lib/http/http_read.c",
+		"/home/roman/Sources/c-utils/lib/tls/tls_method.c",
+		"/home/roman/Sources/c-utils/lib/tls/tls_write.c",
+		"/home/roman/Sources/c-utils/lib/tls_internal.h",
+		"/home/roman/Sources/c-utils/lib/tls/tls_strerror.c",
+		"/home/roman/Sources/c-utils/lib/tls/tls_accept.c",
+		"/home/roman/Sources/c-utils/lib/tls/tls_close.c",
+		"/home/roman/Sources/c-utils/lib/tls/tls_connect.c",
+		"/home/roman/Sources/c-utils/lib/tls/tls_established.c",
+		"/home/roman/Sources/c-utils/lib/CMakeLists.txt",
+		"/home/roman/Sources/c-utils/lib/tls/tls_want.c",
+		"/home/roman/Sources/c-utils/lib/tls.h",
+		"/home/roman/Sources/c-utils/lib/http/http_strerror.c",
+		"/home/roman/Sources/c-utils/lib/tls/tls_instance_return.c",
+		"/home/roman/Sources/c-utils/lib/tls/tls_instance_error.c",
+		"/home/roman/Sources/c-utils/lib/tls/tls_instance_errno.c",
+		"/home/roman/Sources/c-utils/lib/http/http_canwrite.c",
+		"/home/roman/Sources/c-utils/lib/fmt.h",
 		"/home/roman/Sources/c-utils/lib/ip4.h",
-		"/home/roman/Sources/c-utils/lib/stralloc/stralloc_reverse.c",
-		"/usr/x86_64-w64-mingw32/include/fileapi.h",
-		"/usr/x86_64-w64-mingw32/include/windows.h",
-		"/usr/x86_64-w64-mingw32/include/io.h",
-		"/usr/x86_64-pc-msys/include/io.h",
-		"/home/roman/.cache/.fr-X7rJzj/code/trampoline.c",
-		"/home/roman/.cache/.fr-UnsUQ6/code/sighandler.c",
-		"/home/roman/.cache/.fr-vjEsVG/code/cat.c",
-		"/home/roman/.cache/.fr-lFf5x5/code/B9.c",
-		"/home/roman/Sources/c-utils/lib/path/path_dirname.c",
-		"/home/roman/Sources/c-utils/lib/open/open_temp.c",
-		"/home/roman/Sources/c-utils/build/cmake/config.h.cmake",
+		"/home/roman/Sources/c-utils/lib/http/http_response_new.c",
+		"/home/roman/Sources/c-utils/lib/http/http_response_free.c",
+		"/home/roman/Sources/c-utils/uri.h",
+		"/home/roman/Sources/c-utils/lib/buffer/buffer_putstr.c",
+		"/home/roman/Sources/c-utils/lib/http/http_close.c",
+		"/home/roman/Sources/c-utils/lib/byte/byte_finds.c",
+		"/home/roman/Sources/c-utils/lib/case.h",
+		"/home/roman/Sources/c-utils/lib/buffer.h",
+		"/home/roman/Sources/c-utils/lib/fmt/fmt_str.c",
+		"/home/roman/Sources/c-utils/lib/str.h",
+		"/home/roman/Sources/c-utils/lib/http/http_get_header.c",
+		"/home/roman/Sources/c-utils/lib/stralloc/buffer_getline_sa.c",
+		"/home/roman/Sources/c-utils/uri.c",
+		"/home/roman/Sources/c-utils/lib/str/str_ndup.c",
+		"/home/roman/Sources/c-utils/lib/stralloc/buffer_put_escaped.c",
+		"/home/roman/Sources/c-utils/lib/stralloc/buffer_puts_escaped.c",
+		"/home/roman/Sources/c-utils/lib/stralloc/stralloc_fmt.c",
+		"/home/roman/Sources/c-utils/lib/stralloc.h",
+		"/home/roman/Sources/c-utils/lib/http/http_init.c",
+		"/home/roman/Sources/c-utils/mediathek-list.c",
+		"/home/roman/Sources/c-utils/lib/http/http_readable.c",
+		"/home/roman/Sources/c-utils/lib/tls/tls_instance_strerror.c",
+		"/home/roman/Sources/c-utils/lib/str/str_cat.c",
+		"/home/roman/Sources/c-utils/lib/str/str_copyn.c",
+		"/home/roman/Sources/c-utils/lib/str/str_catn.c",
+		"/home/roman/Sources/c-utils/lib/buffer/buffer_freshen.c",
+		"/home/roman/Sources/c-utils/lib/scan.h",
+		"/home/roman/Sources/c-utils/lib/tls/tls_new.c",
+		"/home/roman/Sources/c-utils/lib/tls/tls_io.c",
+		"/home/roman/Sources/c-utils/lib/tls/tls_read.c",
+		"/home/roman/Sources/c-utils/lib/http/https_tls2want.c",
+		"/home/roman/Sources/c-utils/build/cmake/BuildOpenSSL.cmake",
+		"/home/roman/Sources/c-utils/ssltest.c",
+		"/home/roman/Sources/c-utils/build/cmake/Checks.cmake",
+		"/home/roman/Sources/c-utils/examples/byte_copy_example.c",
 		"/home/roman/Sources/c-utils/lib/http/http_on_readable.c",
-		"/home/roman/Sources/c-utils/strip-comments.c",
-		"/home/roman/Sources/c-utils/WINBASEAPI"
+		"/home/roman/Sources/c-utils/lib/http/http_socket_read.c",
+		"/home/roman/Sources/c-utils/lib/http/http_socket_write.c",
+		"/home/roman/Sources/c-utils/lib/tls/tls_init.c",
+		"/home/roman/Sources/c-utils/lib/buffer/buffer_putptr.c",
+		"/home/roman/Sources/c-utils/lib/http/https_connect.c",
+		"/home/roman/Sources/c-utils/lib/http/http_on_writeable.c",
+		"/home/roman/Sources/c-utils/lib/tls/tls_instance_handshake.c",
+		"/home/roman/Sources/c-utils/lib/tls/tls_instance_new.c",
+		"/home/roman/Sources/c-utils/lib/tls/tls_instance_get.c",
+		"/home/roman/Sources/c-utils/lib/tls/tls_free.c",
+		"/home/roman/Sources/c-utils/lib/iopause.h",
+		"/home/roman/Sources/c-utils/3rdparty/xz-config.h.cmake",
+		"/home/roman/Sources/c-utils/lib/byte.h",
+		"/home/roman/Sources/c-utils/lib/byte/byte_copy.c",
+		"/home/roman/Sources/c-utils/lib/byte/byte_fill.c",
+		"/home/roman/Sources/c-utils/lib/iarray.h",
+		"/home/roman/Sources/c-utils/lib/iarray/iarray_get.c",
+		"/home/roman/Sources/c-utils/lib/io/io_tryread.c",
+		"/home/roman/Sources/c-utils/lib/io/iopause.c",
+		"/home/roman/Sources/c-utils/lib/io/io_get_wantread.c",
+		"/home/roman/Sources/c-utils/lib/tls/tls_get_fd.c",
+		"/home/roman/Sources/c-utils/lib/http/https_socket.c",
+		"/home/roman/Sources/c-utils/lib/tls/tls_bio_method.c",
+		"/home/roman/Sources/c-utils/3rdparty/openssl/crypto/bio/bss_sock.c",
+		"/home/roman/Sources/c-utils/c-utils.sublime-project",
+		"/home/roman/Sources/c-utils/3rdparty/openssl/include/internal/sockets.h",
+		"/home/roman/Sources/c-utils/lib/tls/tls_bio_socket.c",
+		"/home/roman/Sources/c-utils/lib/http/https_strerror.c",
+		"/home/roman/Sources/c-utils/lib/byte/byte_copyr.c",
+		"/home/roman/Sources/c-utils/lib/http/http_ssl2want.c",
+		"/home/roman/Sources/c-utils/lib/http/https_ssl_ctx.c",
+		"/home/roman/Sources/c-utils/lib/http/https_read.c",
+		"/home/roman/Sources/c-utils/lib/http/https_errstr.c",
+		"/home/roman/Sources/c-utils/lib/ssl/ssl_accept.c",
+		"/home/roman/Sources/c-utils/lib/http/https_write.c",
+		"/home/roman/Sources/c-utils/lib/io.h",
+		"/opt/openssl-x86_64/include/openssl/bio.h",
+		"/home/roman/Sources/c-utils/lib/tls/tls_instance_debug.c",
+		"/home/roman/Sources/c-utils/lib/iarray/iarray_allocate.c",
+		"/home/roman/Sources/c-utils/lib/http/https_tls2errno.c",
+		"/home/roman/Sources/c-utils/lib/http/https_error.c",
+		"/home/roman/Sources/c-utils/lib/io/io_tryreadtimeout.c",
+		"/home/roman/Sources/c-utils/lib/io/io_wait.c",
+		"/home/roman/Sources/c-utils/lib/io/io_waituntil.c",
+		"/home/roman/Sources/c-utils/cfg.sh",
+		"/home/roman/Sources/c-utils/tcping.c",
+		"/home/roman/Sources/c-utils/aio_passwd.c",
+		"/home/roman/Sources/c-utils/quote.c",
+		"/home/roman/Sources/c-utils/build/x86_64-linux-clang/try-aio.c",
+		"/home/roman/Sources/c-utils/pkgcfg.c",
+		"/home/roman/Sources/c-utils/lib/env/env_put.c"
 	],
 	"find":
 	{
-		"height": 47.0
+		"height": 44.0
 	},
 	"find_in_files":
 	{
@@ -331,134 +642,134 @@
 		"case_sensitive": true,
 		"find_history":
 		[
-			"lib/",
-			" *.",
-			"lib/",
-			"^",
-			"open",
-			"Found",
-			"USE_",
-			"libssl",
-			"\"lib",
-			"--lib",
-			"LIBSSL ",
-			"ssltest",
-			"MUX_METHOD",
-			"set\\(MUX_METHOD ",
-			"set\\(MUX ",
-			"set\\(MUX",
-			"MUX_MET",
-			"EPOLL",
-			"BUILD_TYP",
-			"OPENSSL_ROOT",
-			"http_ssl_*ctx",
-			"ssltest",
-			"whitens",
-			"}\n",
-			"data",
-			"OPENSSL_SSL",
-			"BUILD_SSL",
+			"lzma",
+			"lzm",
+			"http_read",
+			"onlywantread",
+			"dontwant",
+			"put_esc",
+			"HTTP_STATUS_CLOSED",
+			"http_close",
+			"= HTTP_STATUS_CLOSED",
+			" = HTTP_STATUS_ERROR",
+			"return",
+			"http_read_header",
+			"fd_t;",
+			"http_canread",
+			"outbuf",
+			"inbuf",
+			"return",
+			"http_read",
+			"return",
+			"escape",
+			"\"io_wait",
+			"debug_opt",
+			"DEBUG_OU",
+			"DEBUG",
+			"err=\"",
+			"code=",
+			"\"http_canread",
+			"http_canread",
+			"debug_opt",
+			"debug_op",
+			"debug",
+			"io_",
+			"debug",
+			"return",
+			"_str",
+			"putnum",
+			"ret=\"",
+			"ret =",
+			"\"http_read",
+			"len =",
+			"len =?",
+			"putsa",
 			"httptest",
-			"http ",
-			"http",
-			"BUILD_LZ",
-			"set.MUSL",
-			"set.DIET",
-			"set.MUSL",
-			"set\\(DIET",
-			"set(DIET",
-			"BUILD_BZ",
-			"\\(TAR ",
-			"\\(TAR",
-			"BUILD_BZ",
-			"://",
-			"BUILD_BZ",
-			"BUILD_ZLIB",
-			"BUILD_ZLI$",
-			"BUILD_ZLI",
-			"include.*openssl",
-			"BUILD_LZMA",
-			"RENAME",
-			"bsdtar",
-			"TAR",
-			"TAR}",
-			"TAR",
-			"bsdtar",
-			"BUILD_SSL",
-			"\\\\0",
-			"cmake.tar",
-			"\\\\",
-			"\\\\0",
-			"://",
-			"quote_newline",
-			"charbuf",
-			"nul",
-			"add_sub",
-			"USE_BROT",
-			"MUX",
-			"REGEX RE",
-			"REGEX",
-			"\\(MUX",
-			"MUX",
-			"str_case_equal",
-			"ccat",
-			"Won",
-			"getopt_long",
-			"BROTLI_FOUND",
-			"COMPRESSION_LIBRARIES",
-			"ccat",
-			"dnstrace",
-			"USE_LZMA",
-			"USE_BZ",
-			"HAVE_",
-			"HAVE_BZ",
-			"dnstrace",
-			"nscache",
-			"domain_to",
-			"endfunc",
-			"trimr",
-			"trim",
-			"dump",
-			"is[a-z]*(",
-			"is[a-z]*\\(",
-			"isdig",
-			"dir_open",
-			"dir_s",
-			"is_dir",
-			"http_ssl2want",
-			"BZIP2_INC",
-			"bz2",
-			"onfigure_file",
-			"intptr_t",
-			"intptr_t;",
-			"intptr_t",
-			"intptr_t;",
-			"read",
-			"getline_sa",
-			"line",
-			"nonblock",
+			"str_find",
+			"strerr",
+			"fmt_fn",
+			"fnt_fn",
+			"fmt_escape",
+			"read_mediathek_list",
+			"HAVE_IO",
+			"LINUX_AIO",
+			"http_read_internal",
+			"$$",
+			"http_read_internal",
+			"tls_strerror",
+			"str_cat",
+			"copyn",
+			"str_cat",
+			"ret:",
 			"non",
-			"ndela",
-			"state",
-			"sock",
-			"stralloc_find",
-			"stralloc",
-			"state",
-			"trim",
-			"cc",
-			"IP add",
-			"lookup",
-			"lookup_hosts",
-			"ipbuf",
-			"canrea",
-			"io_wait",
-			"wait",
-			"waitread",
-			"meld",
-			"trywr",
-			"io_wai",
-			"getln",
-			"xhost"
+			"HTTP_RECV_HEADER",
+			"readable",
+			"debug",
+			"HTTP_STATUS_CLOSE",
+			"http_read_internal",
+			"\"readable",
+			"HTTP_STATUS_CLOSED",
+			"canwr",
+			"on_writa",
+			"read_header",
+			"http_read_internal",
+			"http_read_header",
+			"debug_",
+			"debug",
+			"IO",
+			"DEBUG_",
+			"\\(LIBSSL",
+			" LIBSSL ",
+			"set.LIBSSL",
+			"LIBSSL ",
+			"mediathek-list",
+			"mediathek-list$",
+			"mediathek-list",
+			"LIBPT",
+			"BUILD_SSL",
+			"check_lib",
+			"set.LIB",
+			"PTHREAD",
+			"LIBPTHREA",
+			"SYS_UNIX",
+			"ssltest",
+			"BUILD_SSL",
+			"BUILD_OPENSSL",
+			"openssl-cnf",
+			"_SOURCES",
+			"_SOURCSE",
+			"PROG",
+			"ssltest_SOURCES",
+			"ssltest",
+			"tls2want",
+			"ssltest",
+			"http_readable",
+			"socket_rea",
+			"https_connect",
+			"io_[[:upper:]]",
+			"io_[[:upper:]",
+			"io_COMPILE_FLAGS",
+			"io_",
+			"HAVE_\\${MUX",
+			"HAVE_",
+			"HAVE_EPOLL",
+			"HAVE_",
+			"MUX_DEFS",
+			"MUX_METHOD",
+			"tls_client_method",
+			"httptest",
+			"mediathek-list",
+			"https_str",
+			"http_strerr",
+			"SSL_FOUND",
+			"SSL_",
+			"byte_diff",
+			"xz-conf",
+			"LIBLZMA_DEFS",
+			"BUILD_LZMA",
+			"lzma",
+			"ssl = 0",
+			"SSL_is_init_finished"
 		],
 		"highlight": false,
 		"in_selection": false,
@@ -466,6 +777,10 @@
 		"regex": true,
 		"replace_history":
 		[
+			"\"linux/aio_abi.h\"",
+			"str =",
+			"static inline",
+			"\\\\\\\\\\\\\\\\n",
 			"${CMAKE_CURRENT_SOURCE_DIR}/",
 			"#",
 			"case_equals",
@@ -554,7 +869,7 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 142,
+						"buffer_size": 0,
 						"regions":
 						{
 						},
@@ -564,59 +879,14 @@
 						"settings":
 						{
 							"color_scheme": "Packages/Outline/outline.hidden-tmTheme",
-							"current_file": "/home/roman/Sources/c-utils/lib/cas.S",
-							"function_name_status_row": 0,
+							"current_file": "/home/roman/Downloads/tftdhack.txt",
+							"function_name_status_row": 17,
 							"outline_rename_mode": false,
 							"symkeys":
 							[
-								[
-									27,
-									52
-								],
-								[
-									53,
-									78
-								],
-								[
-									81,
-									85
-								],
-								[
-									86,
-									113
-								],
-								[
-									114,
-									141
-								],
-								[
-									231,
-									235
-								],
-								[
-									269,
-									271
-								],
-								[
-									276,
-									280
-								],
-								[
-									309,
-									311
-								]
 							],
 							"symlist":
 							[
-								"  __atomic_compare_and_swap",
-								"  __atomic_compare_and_swap",
-								"  weak",
-								"  __sync_val_compare_and_swap",
-								"  __sync_val_compare_and_swap",
-								"  ldxr",
-								"2f",
-								"  stxr",
-								"1b"
 							],
 							"syntax": "Packages/Outline/outline.hidden-tmLanguage",
 							"tab_size": 2,
@@ -626,84 +896,297 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 5,
+					"stack_index": 39,
 					"type": "text"
 				}
 			]
 		},
 		{
-			"selected": 2,
+			"selected": 30,
 			"sheets":
 			[
 				{
 					"buffer": 1,
-					"file": "cfg.sh",
+					"file": "lib/tls/tls_read.c",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 11224,
+						"buffer_size": 2173,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								10888,
-								10888
+								576,
+								576
 							]
 						],
 						"settings":
 						{
-							"function_name_status_row": 400,
-							"syntax": "Packages/ShellScript/Bash.sublime-syntax",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 1398.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 4,
-					"type": "text"
-				},
-				{
-					"buffer": 2,
-					"file": "tcping.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 8982,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								8036,
-								8036
-							]
-						],
-						"settings":
-						{
-							"function_name_status_row": 346,
+							"function_name_status_row": 27,
 							"syntax": "Packages/C Improved/C Improved.tmLanguage",
 							"tab_size": 2,
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 685.0,
+						"translation.y": 180.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 3,
+					"stack_index": 19,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "lib/http/http_read_header.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 3322,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2193,
+								2193
+							]
+						],
+						"settings":
+						{
+							"function_name_status_row": 78,
+							"syntax": "Packages/C Improved/C Improved.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 1254.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 15,
 					"type": "text"
 				},
 				{
 					"buffer": 3,
-					"file": "lib/cas.S",
-					"semi_transient": true,
+					"file": "lib/tls/tls_error.c",
+					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 346,
+						"buffer_size": 233,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								69,
+								69
+							]
+						],
+						"settings":
+						{
+							"function_name_status_row": 2,
+							"syntax": "Packages/C Improved/C Improved.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 24,
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "lib/tls.h",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1427,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								351,
+								351
+							]
+						],
+						"settings":
+						{
+							"function_name_status_row": 18,
+							"syntax": "Packages/C++/C++.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 25,
+					"type": "text"
+				},
+				{
+					"buffer": 5,
+					"file": "lib/tls_internal.h",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2137,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2137,
+								2137
+							]
+						],
+						"settings":
+						{
+							"function_name_status_row": 83,
+							"syntax": "Packages/C++/C++.sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 26,
+					"type": "text"
+				},
+				{
+					"buffer": 6,
+					"file": "lib/tls/tls_bio_method.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2771,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2640,
+								2640
+							]
+						],
+						"settings":
+						{
+							"function_name_status_row": 125,
+							"syntax": "Packages/C Improved/C Improved.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 2060.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 27,
+					"type": "text"
+				},
+				{
+					"buffer": 7,
+					"file": "lib/http/http_read.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 3759,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1241,
+								1241
+							]
+						],
+						"settings":
+						{
+							"function_name_status_row": 56,
+							"syntax": "Packages/C Improved/C Improved.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 924.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 13,
+					"type": "text"
+				},
+				{
+					"buffer": 8,
+					"file": "lib/buffer/buffer_freshen.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 692,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								22,
+								22
+							]
+						],
+						"settings":
+						{
+							"function_name_status_row": 0,
+							"syntax": "Packages/C Improved/C Improved.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 21,
+					"type": "text"
+				},
+				{
+					"buffer": 9,
+					"file": "lib/buffer/buffer_feed.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 347,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								215,
+								215
+							]
+						],
+						"settings":
+						{
+							"function_name_status_row": 8,
+							"syntax": "Packages/C Improved/C Improved.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 29,
+					"type": "text"
+				},
+				{
+					"buffer": 10,
+					"file": "lib/buffer/buffer_stubborn2.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 401,
 						"regions":
 						{
 						},
@@ -717,68 +1200,216 @@
 						"settings":
 						{
 							"function_name_status_row": 0,
-							"syntax": "Packages/ARM Assembly/Syntaxes/ARM Assembly.tmLanguage"
+							"syntax": "Packages/C Improved/C Improved.tmLanguage"
 						},
 						"translation.x": 0.0,
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 0,
+					"stack_index": 28,
 					"type": "text"
 				},
 				{
-					"buffer": 4,
-					"file": "CMakeLists.txt",
+					"buffer": 11,
+					"file": "lib/typedefs.h",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 104822,
+						"buffer_size": 2440,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								91704,
-								91704
+								2210,
+								2210
 							]
 						],
 						"settings":
 						{
-							"function_name_status_row": 1369,
-							"syntax": "Packages/CMakeEditor/CMakeEditor.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true,
-							"word_wrap": false
+							"function_name_status_row": 80,
+							"syntax": "Packages/C++/C++.sublime-syntax"
 						},
 						"translation.x": 0.0,
-						"translation.y": 23213.0,
+						"translation.y": 1250.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 2,
+					"stack_index": 30,
 					"type": "text"
 				},
 				{
-					"buffer": 5,
-					"file": "lib/CMakeLists.txt",
+					"buffer": 12,
+					"file": "lib/http/http_sendreq.c",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 3656,
+						"buffer_size": 2782,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								1016,
-								1016
+								758,
+								758
 							]
 						],
 						"settings":
 						{
-							"function_name_status_row": 16,
-							"syntax": "Packages/CMakeEditor/CMakeEditor.tmLanguage",
+							"function_name_status_row": 30,
+							"syntax": "Packages/C Improved/C Improved.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 321.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 4,
+					"type": "text"
+				},
+				{
+					"buffer": 13,
+					"file": "mediathek-list.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 18950,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								4132,
+								4132
+							]
+						],
+						"settings":
+						{
+							"function_name_status_row": 194,
+							"syntax": "Packages/C Improved/C Improved.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 4364.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 3,
+					"type": "text"
+				},
+				{
+					"buffer": 14,
+					"file": "lib/io/io_onlywantread.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 287,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								42,
+								42
+							]
+						],
+						"settings":
+						{
+							"function_name_status_row": 2,
+							"syntax": "Packages/C Improved/C Improved.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 7,
+					"type": "text"
+				},
+				{
+					"buffer": 15,
+					"file": "lib/io/io_onlywantwrite.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 288,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								42,
+								42
+							]
+						],
+						"settings":
+						{
+							"function_name_status_row": 2,
+							"syntax": "Packages/C Improved/C Improved.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 8,
+					"type": "text"
+				},
+				{
+					"buffer": 16,
+					"file": "lib/io/io_wantread.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 3120,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2791,
+								2791
+							]
+						],
+						"settings":
+						{
+							"function_name_status_row": 124,
+							"syntax": "Packages/C Improved/C Improved.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 2376.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 9,
+					"type": "text"
+				},
+				{
+					"buffer": 17,
+					"file": "lib/tls/tls_instance_error.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 903,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								903,
+								903
+							]
+						],
+						"settings":
+						{
+							"function_name_status_row": 24,
+							"syntax": "Packages/C Improved/C Improved.tmLanguage",
 							"tab_size": 2,
 							"translate_tabs_to_spaces": true
 						},
@@ -786,7 +1417,1581 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
+					"stack_index": 38,
+					"type": "text"
+				},
+				{
+					"buffer": 18,
+					"file": "lib/tls/tls_instance_return.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 666,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								638,
+								638
+							]
+						],
+						"settings":
+						{
+							"function_name_status_row": 26,
+							"syntax": "Packages/C Improved/C Improved.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 5,
+					"type": "text"
+				},
+				{
+					"buffer": 19,
+					"file": "lib/tls/tls_instance_new.c",
+					"semi_transient": true,
+					"settings":
+					{
+						"buffer_size": 259,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"function_name_status_row": 0,
+							"syntax": "Packages/C Improved/C Improved.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 6,
+					"type": "text"
+				},
+				{
+					"buffer": 20,
+					"file": "httptest.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 8542,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2982,
+								2982
+							]
+						],
+						"settings":
+						{
+							"function_name_status_row": 116,
+							"syntax": "Packages/C Improved/C Improved.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 2044.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 23,
+					"type": "text"
+				},
+				{
+					"buffer": 21,
+					"file": "lib/scan/scan_whitenskip.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 208,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								20,
+								20
+							]
+						],
+						"settings":
+						{
+							"function_name_status_row": 0,
+							"syntax": "Packages/C Improved/C Improved.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 34,
+					"type": "text"
+				},
+				{
+					"buffer": 22,
+					"file": "lib/scan/scan_ansiskip.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 321,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								47,
+								47
+							]
+						],
+						"settings":
+						{
+							"function_name_status_row": 3,
+							"syntax": "Packages/C Improved/C Improved.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 31,
+					"type": "text"
+				},
+				{
+					"buffer": 23,
+					"file": "lib/buffer/buffer_putspad.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 322,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								280,
+								280
+							]
+						],
+						"settings":
+						{
+							"function_name_status_row": 11,
+							"syntax": "Packages/C Improved/C Improved.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 32,
+					"type": "text"
+				},
+				{
+					"buffer": 24,
+					"file": "lib/scan/str_ansilen.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 315,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								253,
+								253
+							]
+						],
+						"settings":
+						{
+							"function_name_status_row": 12,
+							"syntax": "Packages/C Improved/C Improved.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 33,
+					"type": "text"
+				},
+				{
+					"buffer": 25,
+					"file": "lib/scan.h",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 4575,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								4575,
+								4575
+							]
+						],
+						"settings":
+						{
+							"function_name_status_row": 119,
+							"syntax": "Packages/C++/C++.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 1957.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 36,
+					"type": "text"
+				},
+				{
+					"buffer": 26,
+					"file": "lib/str.h",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 3794,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								3758,
+								3758
+							]
+						],
+						"settings":
+						{
+							"function_name_status_row": 98,
+							"syntax": "Packages/C++/C++.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 1637.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 35,
+					"type": "text"
+				},
+				{
+					"buffer": 27,
+					"file": "lib/http/http_socket.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 5725,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2849,
+								2849
+							]
+						],
+						"settings":
+						{
+							"function_name_status_row": 109,
+							"syntax": "Packages/C Improved/C Improved.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 1584.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 11,
+					"type": "text"
+				},
+				{
+					"buffer": 28,
+					"file": "lib/http/http_get.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 3363,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2186,
+								2186
+							]
+						],
+						"settings":
+						{
+							"function_name_status_row": 82,
+							"syntax": "Packages/C Improved/C Improved.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 1800.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 20,
+					"type": "text"
+				},
+				{
+					"buffer": 29,
+					"file": "lib/http/http_canwrite.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 3144,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1171,
+								1171
+							]
+						],
+						"settings":
+						{
+							"function_name_status_row": 51,
+							"syntax": "Packages/C Improved/C Improved.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 776.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 30,
+					"file": "hexedit.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 17682,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								7794,
+								7794
+							]
+						],
+						"settings":
+						{
+							"function_name_status_row": 356,
+							"syntax": "Packages/C Improved/C Improved.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 7216.0,
+						"zoom_level": 1.0
+					},
 					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 31,
+					"file": "/home/roman/Downloads/tftdhack.txt",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 22734,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								10336,
+								10336
+							]
+						],
+						"settings":
+						{
+							"function_name_status_row": 231,
+							"syntax": "Packages/Text/Plain text.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 3128.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 32,
+					"file": "lib/http/http_canread.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 5008,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								781,
+								781
+							]
+						],
+						"settings":
+						{
+							"function_name_status_row": 37,
+							"syntax": "Packages/C Improved/C Improved.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 264.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 14,
+					"type": "text"
+				},
+				{
+					"buffer": 33,
+					"file": "lib/fmt/fmt_escapecharshell.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1135,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								284,
+								284
+							]
+						],
+						"settings":
+						{
+							"function_name_status_row": 15,
+							"syntax": "Packages/C Improved/C Improved.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 66.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 16,
+					"type": "text"
+				},
+				{
+					"buffer": 34,
+					"file": "lib/stralloc/buffer_put_escaped.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 405,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								292,
+								292
+							]
+						],
+						"settings":
+						{
+							"function_name_status_row": 14,
+							"syntax": "Packages/C Improved/C Improved.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 18,
+					"type": "text"
+				},
+				{
+					"buffer": 35,
+					"file": "lib/stralloc/stralloc_fmt.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 592,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								231,
+								231
+							]
+						],
+						"settings":
+						{
+							"function_name_status_row": 6,
+							"syntax": "Packages/C Improved/C Improved.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 17,
+					"type": "text"
+				},
+				{
+					"buffer": 36,
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 75172,
+						"regions":
+						{
+							"match":
+							{
+								"flags": 112,
+								"regions":
+								[
+									[
+										143,
+										155
+									],
+									[
+										374,
+										386
+									],
+									[
+										566,
+										578
+									],
+									[
+										771,
+										783
+									],
+									[
+										980,
+										992
+									],
+									[
+										1095,
+										1107
+									],
+									[
+										1287,
+										1299
+									],
+									[
+										1518,
+										1530
+									],
+									[
+										1710,
+										1722
+									],
+									[
+										1915,
+										1927
+									],
+									[
+										2150,
+										2162
+									],
+									[
+										2606,
+										2611
+									],
+									[
+										2644,
+										2649
+									],
+									[
+										2923,
+										2928
+									],
+									[
+										2961,
+										2966
+									],
+									[
+										3092,
+										3097
+									],
+									[
+										3633,
+										3649
+									],
+									[
+										4612,
+										4628
+									],
+									[
+										4886,
+										4902
+									],
+									[
+										5097,
+										5113
+									],
+									[
+										5364,
+										5380
+									],
+									[
+										5589,
+										5605
+									],
+									[
+										5867,
+										5883
+									],
+									[
+										6373,
+										6389
+									],
+									[
+										7352,
+										7368
+									],
+									[
+										7626,
+										7642
+									],
+									[
+										7837,
+										7853
+									],
+									[
+										8104,
+										8120
+									],
+									[
+										8329,
+										8345
+									],
+									[
+										8966,
+										8982
+									],
+									[
+										9945,
+										9961
+									],
+									[
+										10219,
+										10235
+									],
+									[
+										10430,
+										10446
+									],
+									[
+										10697,
+										10713
+									],
+									[
+										10921,
+										10937
+									],
+									[
+										11427,
+										11443
+									],
+									[
+										12406,
+										12422
+									],
+									[
+										12680,
+										12696
+									],
+									[
+										12891,
+										12907
+									],
+									[
+										13158,
+										13174
+									],
+									[
+										13493,
+										13513
+									],
+									[
+										13810,
+										13830
+									],
+									[
+										14100,
+										14120
+									],
+									[
+										14312,
+										14332
+									],
+									[
+										14629,
+										14649
+									],
+									[
+										14919,
+										14939
+									],
+									[
+										15223,
+										15243
+									],
+									[
+										15376,
+										15396
+									],
+									[
+										15533,
+										15553
+									],
+									[
+										15652,
+										15672
+									],
+									[
+										15883,
+										15903
+									],
+									[
+										16145,
+										16165
+									],
+									[
+										16439,
+										16459
+									],
+									[
+										16644,
+										16664
+									],
+									[
+										16797,
+										16817
+									],
+									[
+										16954,
+										16974
+									],
+									[
+										17073,
+										17093
+									],
+									[
+										17304,
+										17324
+									],
+									[
+										17566,
+										17586
+									],
+									[
+										17888,
+										17898
+									],
+									[
+										19148,
+										19158
+									],
+									[
+										19363,
+										19373
+									],
+									[
+										19489,
+										19499
+									],
+									[
+										19713,
+										19723
+									],
+									[
+										19905,
+										19915
+									],
+									[
+										20126,
+										20136
+									],
+									[
+										21386,
+										21396
+									],
+									[
+										21601,
+										21611
+									],
+									[
+										21727,
+										21737
+									],
+									[
+										21951,
+										21961
+									],
+									[
+										22202,
+										22220
+									],
+									[
+										22502,
+										22520
+									],
+									[
+										22878,
+										22896
+									],
+									[
+										23178,
+										23196
+									],
+									[
+										23331,
+										23349
+									],
+									[
+										23488,
+										23506
+									],
+									[
+										23607,
+										23625
+									],
+									[
+										23852,
+										23870
+									],
+									[
+										24231,
+										24249
+									],
+									[
+										24544,
+										24562
+									],
+									[
+										24822,
+										24840
+									],
+									[
+										25197,
+										25215
+									],
+									[
+										25508,
+										25526
+									],
+									[
+										25785,
+										25803
+									],
+									[
+										26112,
+										26130
+									],
+									[
+										26498,
+										26516
+									],
+									[
+										26853,
+										26871
+									],
+									[
+										27158,
+										27176
+									],
+									[
+										27319,
+										27337
+									],
+									[
+										27619,
+										27637
+									],
+									[
+										27995,
+										28013
+									],
+									[
+										28295,
+										28313
+									],
+									[
+										28448,
+										28466
+									],
+									[
+										28605,
+										28623
+									],
+									[
+										28724,
+										28742
+									],
+									[
+										28969,
+										28987
+									],
+									[
+										29348,
+										29366
+									],
+									[
+										29661,
+										29679
+									],
+									[
+										29939,
+										29957
+									],
+									[
+										30314,
+										30332
+									],
+									[
+										30625,
+										30643
+									],
+									[
+										30902,
+										30920
+									],
+									[
+										31229,
+										31247
+									],
+									[
+										31593,
+										31600
+									],
+									[
+										31899,
+										31906
+									],
+									[
+										32575,
+										32582
+									],
+									[
+										38085,
+										38092
+									],
+									[
+										38318,
+										38325
+									],
+									[
+										38597,
+										38604
+									],
+									[
+										38787,
+										38794
+									],
+									[
+										39027,
+										39034
+									],
+									[
+										39331,
+										39338
+									],
+									[
+										39558,
+										39565
+									],
+									[
+										39872,
+										39879
+									],
+									[
+										40113,
+										40120
+									],
+									[
+										40419,
+										40426
+									],
+									[
+										41095,
+										41102
+									],
+									[
+										46605,
+										46612
+									],
+									[
+										46838,
+										46845
+									],
+									[
+										47117,
+										47124
+									],
+									[
+										47307,
+										47314
+									],
+									[
+										47547,
+										47554
+									],
+									[
+										47763,
+										47770
+									],
+									[
+										48089,
+										48096
+									],
+									[
+										48317,
+										48324
+									],
+									[
+										49058,
+										49066
+									],
+									[
+										49099,
+										49107
+									],
+									[
+										50708,
+										50716
+									],
+									[
+										50747,
+										50755
+									],
+									[
+										50913,
+										50921
+									],
+									[
+										50946,
+										50954
+									],
+									[
+										51118,
+										51126
+									],
+									[
+										51155,
+										51163
+									],
+									[
+										51334,
+										51342
+									],
+									[
+										51398,
+										51406
+									],
+									[
+										51542,
+										51550
+									],
+									[
+										51619,
+										51627
+									],
+									[
+										51786,
+										51794
+									],
+									[
+										51905,
+										51913
+									],
+									[
+										52011,
+										52019
+									],
+									[
+										52176,
+										52184
+									],
+									[
+										52356,
+										52364
+									],
+									[
+										52588,
+										52596
+									],
+									[
+										52708,
+										52716
+									],
+									[
+										52815,
+										52823
+									],
+									[
+										52982,
+										52990
+									],
+									[
+										53162,
+										53170
+									],
+									[
+										53328,
+										53336
+									],
+									[
+										53553,
+										53561
+									],
+									[
+										53874,
+										53882
+									],
+									[
+										54310,
+										54318
+									],
+									[
+										54360,
+										54368
+									],
+									[
+										54459,
+										54467
+									],
+									[
+										54715,
+										54723
+									],
+									[
+										54894,
+										54902
+									],
+									[
+										55093,
+										55101
+									],
+									[
+										55307,
+										55315
+									],
+									[
+										55374,
+										55382
+									],
+									[
+										55617,
+										55625
+									],
+									[
+										55836,
+										55844
+									],
+									[
+										56017,
+										56025
+									],
+									[
+										56221,
+										56229
+									],
+									[
+										56423,
+										56431
+									],
+									[
+										56964,
+										56972
+									],
+									[
+										57005,
+										57013
+									],
+									[
+										58614,
+										58622
+									],
+									[
+										58653,
+										58661
+									],
+									[
+										58819,
+										58827
+									],
+									[
+										58852,
+										58860
+									],
+									[
+										59024,
+										59032
+									],
+									[
+										59061,
+										59069
+									],
+									[
+										59240,
+										59248
+									],
+									[
+										59304,
+										59312
+									],
+									[
+										59448,
+										59456
+									],
+									[
+										59525,
+										59533
+									],
+									[
+										59692,
+										59700
+									],
+									[
+										59811,
+										59819
+									],
+									[
+										59917,
+										59925
+									],
+									[
+										60082,
+										60090
+									],
+									[
+										60262,
+										60270
+									],
+									[
+										60494,
+										60502
+									],
+									[
+										60614,
+										60622
+									],
+									[
+										60721,
+										60729
+									],
+									[
+										60888,
+										60896
+									],
+									[
+										61068,
+										61076
+									],
+									[
+										61234,
+										61242
+									],
+									[
+										61459,
+										61467
+									],
+									[
+										61780,
+										61788
+									],
+									[
+										62216,
+										62224
+									],
+									[
+										62266,
+										62274
+									],
+									[
+										62365,
+										62373
+									],
+									[
+										62669,
+										62677
+									],
+									[
+										62824,
+										62832
+									],
+									[
+										62999,
+										63007
+									],
+									[
+										63102,
+										63110
+									],
+									[
+										63296,
+										63304
+									],
+									[
+										64482,
+										64494
+									],
+									[
+										65565,
+										65577
+									],
+									[
+										65720,
+										65732
+									],
+									[
+										65869,
+										65881
+									],
+									[
+										66049,
+										66061
+									],
+									[
+										67101,
+										67113
+									],
+									[
+										68184,
+										68196
+									],
+									[
+										68339,
+										68351
+									],
+									[
+										68488,
+										68500
+									],
+									[
+										68668,
+										68680
+									],
+									[
+										68852,
+										68864
+									],
+									[
+										69065,
+										69077
+									],
+									[
+										69228,
+										69240
+									],
+									[
+										70353,
+										70365
+									],
+									[
+										71436,
+										71448
+									],
+									[
+										71591,
+										71603
+									],
+									[
+										71740,
+										71752
+									],
+									[
+										71920,
+										71932
+									],
+									[
+										72972,
+										72984
+									],
+									[
+										74055,
+										74067
+									],
+									[
+										74210,
+										74222
+									],
+									[
+										74359,
+										74371
+									],
+									[
+										74539,
+										74551
+									],
+									[
+										74723,
+										74735
+									],
+									[
+										74936,
+										74948
+									],
+									[
+										75099,
+										75111
+									]
+								],
+								"scope": ""
+							}
+						},
+						"selection":
+						[
+							[
+								74065,
+								74065
+							]
+						],
+						"settings":
+						{
+							"detect_indentation": false,
+							"function_name_status_row": 1344,
+							"line_numbers": false,
+							"output_tag": 12,
+							"result_base_dir": "",
+							"result_file_regex": "^([^ \t].*):$",
+							"result_line_regex": "^ +([0-9]+):",
+							"scroll_past_end": true,
+							"syntax": "Packages/Default/Find Results.hidden-tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 28930.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 10,
+					"type": "text"
+				},
+				{
+					"buffer": 37,
+					"file": "lib/http.h",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2653,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"function_name_status_row": 0,
+							"syntax": "Packages/C++/C++.sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 594.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 22,
+					"type": "text"
+				},
+				{
+					"buffer": 38,
+					"file": "lib/http/http_read_internal.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 3282,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								981,
+								981
+							]
+						],
+						"settings":
+						{
+							"function_name_status_row": 38,
+							"syntax": "Packages/C Improved/C Improved.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 330.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 12,
+					"type": "text"
+				},
+				{
+					"buffer": 39,
+					"file": "lib/tls/tls_strerror.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1098,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"function_name_status_row": 0,
+							"syntax": "Packages/C Improved/C Improved.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 37,
 					"type": "text"
 				}
 			]
@@ -794,7 +2999,7 @@
 	],
 	"incremental_find":
 	{
-		"height": 34.0
+		"height": 31.0
 	},
 	"input":
 	{
@@ -852,7 +3057,7 @@
 	"project": "c-utils.sublime-project",
 	"replace":
 	{
-		"height": 85.0
+		"height": 79.0
 	},
 	"save_all_on_build": true,
 	"select_file":
@@ -862,8 +3067,256 @@
 		"selected_items":
 		[
 			[
+				"hexed",
+				"hexedit.c"
+			],
+			[
+				"hexedit",
+				"hexedit.c"
+			],
+			[
+				"mediathek-list",
+				"mediathek-list.c"
+			],
+			[
+				"httptest",
+				"httptest.c"
+			],
+			[
+				"typedef",
+				"lib/typedefs.h"
+			],
+			[
+				"http.h",
+				"lib/http.h"
+			],
+			[
+				"http_get",
+				"lib/http/http_get.c"
+			],
+			[
+				"str.h",
+				"lib/str.h"
+			],
+			[
+				"scan.h",
+				"lib/scan.h"
+			],
+			[
+				"tls_inter",
+				"lib/tls_internal.h"
+			],
+			[
+				"tls_interna",
+				"lib/tls_internal.h"
+			],
+			[
+				"tls.h",
+				"lib/tls.h"
+			],
+			[
+				"fmt.h",
+				"lib/fmt.h"
+			],
+			[
 				"cmake",
 				"CMakeLists.txt"
+			],
+			[
+				"http_strer",
+				"lib/http/http_strerror.c"
+			],
+			[
+				"tls_in",
+				"lib/tls_internal.h"
+			],
+			[
+				"accept",
+				"lib/tls/tls_accept.c"
+			],
+			[
+				"lib/cma",
+				"lib/CMakeLists.txt"
+			],
+			[
+				"http_sock",
+				"lib/http/http_socket.c"
+			],
+			[
+				"lib/CM",
+				"lib/CMakeLists.txt"
+			],
+			[
+				"ip4",
+				"lib/ip4.h"
+			],
+			[
+				"byte_finds",
+				"lib/byte/byte_finds.c"
+			],
+			[
+				"case.h",
+				"lib/case.h"
+			],
+			[
+				"buffer.h",
+				"lib/buffer.h"
+			],
+			[
+				"uri.c",
+				"uri.c"
+			],
+			[
+				"uri",
+				"uri.c"
+			],
+			[
+				"str_ndup",
+				"lib/str/str_ndup.c"
+			],
+			[
+				"uri.h",
+				"uri.h"
+			],
+			[
+				"stralloc.h",
+				"lib/stralloc.h"
+			],
+			[
+				"io_interna",
+				"lib/io_internal.h"
+			],
+			[
+				"cmakelists",
+				"CMakeLists.txt"
+			],
+			[
+				"str_copyn",
+				"lib/str/str_copyn.c"
+			],
+			[
+				"str_cat",
+				"lib/str/str_cat.c"
+			],
+			[
+				"tls_",
+				"lib/tls_internal.h"
+			],
+			[
+				"buildOp",
+				"build/cmake/BuildOpenSSL.cmake"
+			],
+			[
+				"ssltest",
+				"ssltest.c"
+			],
+			[
+				".cmake",
+				"build/cmake/Checks.cmake"
+			],
+			[
+				"cmakeli",
+				"CMakeLists.txt"
+			],
+			[
+				"tls_internal",
+				"lib/tls_internal.h"
+			],
+			[
+				"httptest.c",
+				"httptest.c"
+			],
+			[
+				"mediathe",
+				"mediathek-list.c"
+			],
+			[
+				"iopause.h",
+				"lib/iopause.h"
+			],
+			[
+				"byte.h",
+				"lib/byte.h"
+			],
+			[
+				"xz-conf",
+				"3rdparty/xz-config.h.cmake"
+			],
+			[
+				"byte_fill",
+				"lib/byte/byte_fill.c"
+			],
+			[
+				"byte_cop",
+				"lib/byte/byte_copyr.c"
+			],
+			[
+				"cmakelist",
+				"CMakeLists.txt"
+			],
+			[
+				"byte_copy",
+				"lib/byte/byte_copy.c"
+			],
+			[
+				"http_socket",
+				"lib/http/http_socket_read.c"
+			],
+			[
+				"iarray.h",
+				"lib/iarray.h"
+			],
+			[
+				"io_internal.h",
+				"lib/io_internal.h"
+			],
+			[
+				"sockets.h",
+				"3rdparty/openssl/include/internal/sockets.h"
+			],
+			[
+				"waituntil2",
+				"lib/io/io_waituntil2.c"
+			],
+			[
+				"http_so",
+				"lib/http/http_socket.c"
+			],
+			[
+				"io.h",
+				"lib/io.h"
+			],
+			[
+				"io_inter",
+				"lib/io_internal.h"
+			],
+			[
+				"waituntil",
+				"lib/io/io_waituntil2.c"
+			],
+			[
+				"CMakelists",
+				"lib/CMakeLists.txt"
+			],
+			[
+				"openssl",
+				"build/cmake/BuildOpenSSL.cmake"
+			],
+			[
+				"tls_strer",
+				"lib/tls/tls_strerror.c"
+			],
+			[
+				"cmakeList",
+				"CMakeLists.txt"
+			],
+			[
+				"quote.c",
+				"quote.c"
+			],
+			[
+				"aio",
+				"aio_passwd.c"
 			],
 			[
 				"tcping",
@@ -882,28 +3335,8 @@
 				"pkgcfg.c"
 			],
 			[
-				"cmakeli",
-				"CMakeLists.txt"
-			],
-			[
-				"tls_in",
-				"lib/tls_internal.h"
-			],
-			[
-				"tls.h",
-				"lib/tls.h"
-			],
-			[
-				"http.h",
-				"lib/http.h"
-			],
-			[
 				"ssl_",
 				"lib/ssl/ssl_accept.c"
-			],
-			[
-				"ssltest",
-				"ssltest.c"
 			],
 			[
 				"can.h",
@@ -922,36 +3355,12 @@
 				"lib/iarray.h"
 			],
 			[
-				"httptest",
-				"httptest.c"
-			],
-			[
-				"iarray.h",
-				"lib/iarray.h"
-			],
-			[
 				"ssl.h",
 				"lib/ssl.h"
 			],
 			[
 				"fmt_8lon",
 				"lib/fmt/fmt_8long.c"
-			],
-			[
-				"buffer.h",
-				"lib/buffer.h"
-			],
-			[
-				"quote.c",
-				"quote.c"
-			],
-			[
-				"case.h",
-				"lib/case.h"
-			],
-			[
-				"cmakelists",
-				"CMakeLists.txt"
 			],
 			[
 				"genmake",
@@ -1016,10 +3425,6 @@
 			[
 				"nscach",
 				"nscache.c"
-			],
-			[
-				"stralloc.h",
-				"lib/stralloc.h"
 			],
 			[
 				"process.h",
@@ -1102,10 +3507,6 @@
 				"ftplib.c"
 			],
 			[
-				"io.h",
-				"lib/io.h"
-			],
-			[
 				"cmakelis",
 				"CMakeLists.txt"
 			],
@@ -1158,10 +3559,6 @@
 				"lib/errmsg.h"
 			],
 			[
-				"cmakelist",
-				"CMakeLists.txt"
-			],
-			[
 				"cache.c",
 				"cache.c"
 			],
@@ -1180,198 +3577,6 @@
 			[
 				"debug.h",
 				"debug.h"
-			],
-			[
-				"debug.c",
-				"debug.c"
-			],
-			[
-				"tiny",
-				"tinyproxy.c"
-			],
-			[
-				"response.h",
-				"response.h"
-			],
-			[
-				"response",
-				"response.c"
-			],
-			[
-				"io_dump",
-				"lib/io/io_dump.c"
-			],
-			[
-				"logser",
-				"logserial.c"
-			],
-			[
-				"io_waitun",
-				"lib/io/io_waituntil2.c"
-			],
-			[
-				"io_wantread",
-				"lib/io/io_wantread.c"
-			],
-			[
-				"io_du",
-				"lib/io/io_dump.c"
-			],
-			[
-				"io_in",
-				"lib/io_internal.h"
-			],
-			[
-				"io_wantwr",
-				"lib/io/io_wantwrite.c"
-			],
-			[
-				"io_waituntil2",
-				"lib/io/io_waituntil2.c"
-			],
-			[
-				"buffer_get",
-				"lib/buffer/buffer_get.c"
-			],
-			[
-				"buffer_putc",
-				"lib/buffer/buffer_putc.c"
-			],
-			[
-				"logserial",
-				"logserial.c"
-			],
-			[
-				"coff_li",
-				"lib/coff/coff_line_numbers.c"
-			],
-			[
-				"cofflist",
-				"cofflist.c"
-			],
-			[
-				"io_inter",
-				"lib/io_internal.h"
-			],
-			[
-				"process_crea",
-				"lib/process/process_create.c"
-			],
-			[
-				"getifname",
-				"lib/socket/socket_getifname.c"
-			],
-			[
-				"socket_getif",
-				"lib/socket/socket_getifidx.c"
-			],
-			[
-				"socket_",
-				"lib/socket/socket_getifidx.c"
-			],
-			[
-				"ifidx.",
-				"lib/socket/socket_getifidx.c"
-			],
-			[
-				"omf.h",
-				"lib/omf.h"
-			],
-			[
-				"omflist",
-				"omflist.c"
-			],
-			[
-				" io_waituntil2 ",
-				"lib/io/io_waituntil2.c"
-			],
-			[
-				"tinyproxy",
-				"tinyproxy.c"
-			],
-			[
-				"tinyp",
-				"tinyproxy.c"
-			],
-			[
-				"tinypox",
-				"tinyproxy.c"
-			],
-			[
-				"pkgcfg.c",
-				"pkgcfg.c"
-			],
-			[
-				"ar-wr",
-				"ar-wrap.c"
-			],
-			[
-				"wait.h",
-				"lib/wait.h"
-			],
-			[
-				"ar-wrap",
-				"ar-wrap.c"
-			],
-			[
-				"inypro",
-				"tinyproxy.c"
-			],
-			[
-				"wait_pid",
-				"lib/wait/wait_pid.c"
-			],
-			[
-				"glob.c",
-				"lib/unix/glob.c"
-			],
-			[
-				"dir_inter",
-				"lib/dir_internal.h"
-			],
-			[
-				"dir_time.c",
-				"lib/dir/dir_time.c"
-			],
-			[
-				"dir_in",
-				"lib/dir_internal.h"
-			],
-			[
-				"dir_type",
-				"lib/dir/dir_type.c"
-			],
-			[
-				"dir_open",
-				"lib/dir/dir_open.c"
-			],
-			[
-				"config.h",
-				"build/cmake/config.h.cmake"
-			],
-			[
-				"typedef",
-				"lib/typedefs.h"
-			],
-			[
-				"stralloc_repl",
-				"lib/stralloc/stralloc_replace.c"
-			],
-			[
-				"apth.h",
-				"3rdparty/openssl/external/perl/Text-Template-1.46/t/02-hash.t"
-			],
-			[
-				"str.h",
-				"lib/str.h"
-			],
-			[
-				"strarray.h",
-				"lib/strarray.h"
-			],
-			[
-				"set.h",
-				"lib/set.h"
 			]
 		],
 		"width": 0.0
