@@ -33,7 +33,7 @@ http_sendreq(http* h) {
     ssize_t i, n = out->p;
     while(n > 0) {
       i = byte_chr(x, n, '\r');
-      buffer_puts(buffer_2, "Requst: ");
+      buffer_puts(buffer_2, "Request: ");
       buffer_put(buffer_2, x, i);
       buffer_putnlflush(buffer_2);
       x += i + 1;

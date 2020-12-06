@@ -14,6 +14,8 @@
 
 #include <errno.h>
 #include <stdlib.h>
+#define max(a, b) ((a) > (b) ? (a) : (b))
+#define min(a, b) ((a) < (b) ? (a) : (b))
 
 int
 http_get(http* h, const char* location) {
@@ -23,70 +25,90 @@ http_get(http* h, const char* location) {
   char ip[FMT_IP4];
   stralloc dns;
   uint32 serial = 0;
-  size_t len = byte_chrs(location, str_len(location), "\r\n", 2);
+  size_t len = byte_chrs(location, str_len(location), "\r\n\0", 3);
   h->tls = len >= 5 && !byte_diff(location, 5, "https");
 #ifdef DEBUG_HTTP
-  buffer_putm_internal(buffer_2, "http_get ", location, "\n", NULL);
-  buffer_flush(buffer_2);
+  buffer_puts(buffer_2, "http_get ");
+
+  buffer_put(buffer_2, location, len);
+  buffer_puts(buffer_2, " host=");
+  buffer_putsa(buffer_2, &h->host);
+  buffer_putnlflush(buffer_2);
 #endif
   if(location[0] != '/') {
-    size_t len;
-    len = str_findb(location, "://", 3);
-    if(location[len])
-      location += len + 3;
-    len = str_chrs(location, "/:", 2);
-    stralloc_copyb(&h->host, location, len);
-    if(location[len] == ':') {
-      len += 1;
-      len += scan_ushort(&location[len], &h->port);
+    size_t pos;
+    pos = str_findb(location, "://", 3);
+    if(location[pos])
+      location += pos + 3;
+    pos = str_chrs(location, "/:", 2);
+    stralloc_copyb(&h->host, location, pos);
+    if(location[pos] == ':') {
+      pos += 1;
+      pos += scan_ushort(&location[pos], &h->port);
     } else {
       h->port = h->tls ? 443 : 80;
     }
-    location += len;
+    location += pos;
   }
-  stralloc_nul(&h->host);
-  stralloc_init(&dns);
-  if(dns_ip4(&dns, &h->host) == -1) {
-    errmsg_warnsys("ERROR: resolving ", h->host.s, ": ", NULL);
-    return 0;
-  }
-  a = (ipv4addr*)dns.s;
-  byte_copy(&h->addr, sizeof(ipv4addr), &a->iaddr);
+
+  if(byte_equal(&h->addr, sizeof(ipv4addr), &IPV4ADDR_ANY)) {
+    stralloc_nul(&h->host);
+    stralloc_init(&dns);
+    if(dns_ip4(&dns, &h->host) == -1) {
+      errmsg_warnsys("ERROR: resolving ", h->host.s, ": ", NULL);
+      return 0;
+    }
+    a = (ipv4addr*)dns.s;
+    byte_copy(&h->addr, sizeof(ipv4addr), &a->iaddr);
 #ifdef DEBUG_HTTP
-  buffer_putspad(buffer_2, "http_get resolved ", 18);
-  buffer_putsa(buffer_2, &h->host);
-  buffer_puts(buffer_2, " to (");
-  buffer_put(buffer_2, ip, fmt_ip4(ip, (const char*)a->addr));
-  buffer_puts(buffer_2, ")");
-  buffer_putnlflush(buffer_2);
+    buffer_putspad(buffer_2, "http_get resolved ", 18);
+    buffer_putsa(buffer_2, &h->host);
+    buffer_puts(buffer_2, " to (");
+    buffer_put(buffer_2, ip, fmt_ip4(ip, (const char*)&h->addr));
+    buffer_puts(buffer_2, ")");
+    buffer_putnlflush(buffer_2);
 #endif
-  http_socket(h, h->nonblocking);
-  if(h->request) {
-    serial = h->request->serial + 1;
-    free(h->request);
-    h->request = NULL;
   }
+  http_socket(h, h->nonblocking);
+  /*  if(h->request) {
+      serial = h->request->serial + 1;
+      free(h->request);
+      h->request = NULL;
+    }
+  */
   {
-    http_request* req = h->request = (http_request*)alloc_zero(sizeof(http_request));
+    http_request* req = (http_request*)alloc_zero(sizeof(http_request));
     req->serial = serial;
     req->type = GET;
-    stralloc_init(&(req->location));
-    stralloc_copys(&(req->location), location);
+
+    stralloc_init(&req->location);
+    stralloc_catb(&req->location, location, min(len, str_len(location)));
+    stralloc_nul(&req->location);
+    stralloc_init(&req->headers);
+
+    req->next = h->request;
+    h->request = req;
   }
 
-  if(h->response)
-    http_response_free(h->response);
+  {
+    http_response* res = http_response_new();
+    res->next = h->response;
+    res->status = -1;
+    res->code = -1;
 
-  h->response = http_response_new();
+    h->response = res;
+  }
 
-  ret = socket_connect4(h->sock, (const char*)h->addr.addr, h->port);
   h->connected = 0;
+  h->sent = 0;
+
+  ret = socket_connect4(h->sock, (const char*)&h->addr, h->port);
   if(ret == -1) {
     if(errno == EINPROGRESS) {
       ret = 0;
       errno = 0;
     }
   }
-  io_wantwrite(h->sock);
+  io_onlywantwrite(h->sock);
   return ret == 0;
 }

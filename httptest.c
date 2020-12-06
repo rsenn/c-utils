@@ -53,13 +53,6 @@ static const uint16 url_port = 8080;
 static io_entry* g_iofd;
 static http h;
 
-static const char* const status_strings[] = {"HTTP_RECV_HEADER",
-                                             "HTTP_RECV_DATA",
-                                             "HTTP_STATUS_CLOSED",
-                                             "HTTP_STATUS_ERROR",
-                                             "HTTP_STATUS_BUSY",
-                                             "HTTP_STATUS_FINISH",
-                                             0};
 void
 usage(char* av0) {
   buffer_putm_internal(buffer_1,
@@ -88,6 +81,7 @@ http_io_handler(http* h, buffer* out) {
 
       if(ret > 0) {
         io_onlywantread(w);
+        return ret;
       }
       nw++;
     }
@@ -110,13 +104,21 @@ http_io_handler(http* h, buffer* out) {
         char buf[8192];
         ssize_t n;
 
-        while((n = http_read(h->sock, buf, sizeof(buf), &h->q.in)) > 0) {
+        if((n = http_read(h->sock, buf, sizeof(buf), &h->q.in)) > 0) {
           buffer_puts(buffer_2, "http_read ret=");
           buffer_putlong(buffer_2, n);
           buffer_puts(buffer_2, " err=");
           buffer_puts(buffer_2, http_strerror(h, n));
           buffer_puts(buffer_2, " status=");
-          buffer_puts(buffer_2, status_strings[h->response->status]);
+          buffer_puts(buffer_2,
+                      ((const char* const[]){"-1",
+                                             "HTTP_RECV_HEADER",
+                                             "HTTP_RECV_DATA",
+                                             "HTTP_STATUS_CLOSED",
+                                             "HTTP_STATUS_ERROR",
+                                             "HTTP_STATUS_BUSY",
+                                             "HTTP_STATUS_FINISH",
+                                             0})[h->response->status + 1]);
           buffer_puts(buffer_2, " data='");
           buffer_put_escaped(buffer_2, buf, n, &fmt_escapecharshell);
           buffer_putnlflush(buffer_2);
@@ -134,6 +136,7 @@ http_io_handler(http* h, buffer* out) {
         buffer_puts(buffer_2, "h->response->status = ");
         buffer_putlong(buffer_2, h->response->status);
         buffer_putnlflush(buffer_2);
+        return n;
       }
 
       nr++;
@@ -240,8 +243,19 @@ main(int argc, char* argv[]) {
 
       buffer_puts(buffer_2, " err=");
       buffer_puts(buffer_2, http_strerror(&h, ret));
+      buffer_puts(buffer_2, " code=");
+      buffer_putlong(buffer_2, h.response->code);
+
       buffer_puts(buffer_2, " status=");
-      buffer_puts(buffer_2, status_strings[h.response->status]);
+      buffer_puts(buffer_2,
+                  ((const char* const[]){"-1",
+                                         "HTTP_RECV_HEADER",
+                                         "HTTP_RECV_DATA",
+                                         "HTTP_STATUS_CLOSED",
+                                         "HTTP_STATUS_ERROR",
+                                         "HTTP_STATUS_BUSY",
+                                         "HTTP_STATUS_FINISH",
+                                         0})[h.response->status + 1]);
       buffer_putnlflush(buffer_2);
 
       // buffer_dump(buffer_1, &h.q.in);

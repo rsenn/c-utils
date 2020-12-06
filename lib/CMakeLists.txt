@@ -1,12 +1,11 @@
-
-    message("CMAKE_SOURCE_DIR: ${CMAKE_SOURCE_DIR}")
-    message("CMAKE_CURRENT_SOURCE_DIR: ${CMAKE_CURRENT_SOURCE_DIR}")
-    message("CMAKE_BINARY_DIR: ${CMAKE_BINARY_DIR}")
-    message("CMAKE_CURRENT_BINARY_DIR: ${CMAKE_CURRENT_BINARY_DIR}")
+message("CMAKE_SOURCE_DIR: ${CMAKE_SOURCE_DIR}")
+message("CMAKE_CURRENT_SOURCE_DIR: ${CMAKE_CURRENT_SOURCE_DIR}")
+message("CMAKE_BINARY_DIR: ${CMAKE_BINARY_DIR}")
+message("CMAKE_CURRENT_BINARY_DIR: ${CMAKE_CURRENT_BINARY_DIR}")
 
 set(iarray_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/cas.S)
 
-set(MODSUBDIRS alloc array binfmt buffer byte case cb cbmap charbuf coff dir dns elf env errmsg fmt gpio hashmap hmap http iarray ihex io json list map mmap ndelay omf open path pe playlist process range rdir safemult scan seek set sig slist socket  str stralloc strarray strlist tai taia textbuf textcode tls uint16 uint32 uint64 unix wait xml ucs utf8)
+set(MODSUBDIRS alloc array binfmt buffer byte case cb cbmap charbuf coff dir dns elf env errmsg fmt gpio hashmap hmap http iarray ihex io json list map mmap ndelay omf open path pe playlist process range rdir safemult scan seek set sig slist socket str stralloc strarray strlist tai taia textbuf textcode tls uint16 uint32 uint64 unix wait xml ucs utf8)
 file(GLOB MODHEADERS ${CMAKE_CURRENT_SOURCE_DIR}/*.h)
 
 foreach(LIBNAME ${MODSUBDIRS})
@@ -33,8 +32,6 @@ set_target_properties(io PROPERTIES COMPILE_FLAGS "${MUX_DEFS}")
 foreach(NETLIB dns http io ndelay socket)
   target_link_libraries(${NETLIB} ${LIBMSWSOCK})
 endforeach()
-
-
 
 target_link_libraries(unix stralloc buffer ndelay)
 target_link_libraries(array safemult byte str)

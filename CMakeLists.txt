@@ -630,16 +630,16 @@ if(USE_SELECT STREQUAL "ON")
   add_definitions(-DUSE_SELECT=1 -DIOPAUSE_SELECT=1)
 endif()
 ]]
-  set(IOPAUSE_MUX "" CACHE STRING "iopause() multiplex call")
+set(IOPAUSE_MUX "" CACHE STRING "iopause() multiplex call")
 
-if(HAVE_LINUX_AIO) 
+if(HAVE_LINUX_AIO)
   set(IOPAUSE_MUX LINUX_AIO CACHE STRING "iopause() multiplex call" FORCE)
 elseif(SUPPORT_POLL)
   set(IOPAUSE_MUX POLL CACHE STRING "iopause() multiplex call" FORCE)
 else()
   set(IOPAUSE_MUX SELECT CACHE STRING "iopause() multiplex call" FORCE)
 endif()
-  add_definitions(-DIOPAUSE_${IOPAUSE_MUX}=1)
+add_definitions(-DIOPAUSE_${IOPAUSE_MUX}=1)
 
 check_include_file(stdint.h HAVE_STDINT_H)
 check_include_file(stdlib.h HAVE_STDLIB_H)
@@ -1027,7 +1027,7 @@ foreach(METHOD ${MUX_USE})
       message(STATUS "Setting MUX method to ${METHOD}")
       set(MUX "${METHOD}" CACHE STRING "I/O multiplex method" FORCE)
     endif(MUX STREQUAL "")
-   # set(MUX_DEFS "${MUX_DEFS} -DHAVE_${METHOD}=1")
+    # set(MUX_DEFS "${MUX_DEFS} -DHAVE_${METHOD}=1")
   endif(SUPPORT_${METHOD})
 endforeach()
 #[[foreach(METHOD ${MUX_ALL})
@@ -1050,11 +1050,11 @@ if(LIBMSWSOCK)
   list(APPEND CMAKE_REQUIRED_LIBRARIES ${LIBMSWSOCK})
 endif(LIBMSWSOCK)
 
- message(STATUS "MUX method: ${MUX_METHOD}")
- 
+message(STATUS "MUX method: ${MUX_METHOD}")
+
 add_definitions("-DHAVE_${MUX_METHOD}=1" "-DUSE_${MUX_METHOD}=1")
 set(io_COMPILE_FLAGS "-DMUX_METHOD=${MUX_METHOD} -DHAVE_${MUX_METHOD}=1 -DUSE_${MUX_METHOD}=1")
- 
+
 if(WIN32 OR MSVC)
   if(USE_WIDECHAR)
     add_definitions(-DUSE_WIDECHAR=1)
@@ -1211,10 +1211,7 @@ if(BUILD_LZMA)
   endif()
   include("${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/xz.cmake")
 
-   configure_file(
-    "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/xz-config.h.cmake" 
-    "${CMAKE_CURRENT_BINARY_DIR}/3rdparty/xz/config.h"
-    )
+  configure_file("${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/xz-config.h.cmake" "${CMAKE_CURRENT_BINARY_DIR}/3rdparty/xz/config.h")
 
   # configure_file("${CMAKE_SOURCE_DIR}/3rdparty/lzma-config.h.cmake" "${CMAKE_CURRENT_BINARY_DIR}/3rdparty/xz/config.h")
 
@@ -1254,13 +1251,10 @@ if(BUILD_LZMA)
     set(LZMA_SOURCE_DIR "${CMAKE_SOURCE_DIR}/3rdparty/xz")
     set(LIBLZMA_INCLUDE_DIRS ${LZMA_SOURCE_DIR}/src/common ${LZMA_SOURCE_DIR}/src/liblzma/lzma ${LZMA_SOURCE_DIR}/src/liblzma/lz ${LZMA_SOURCE_DIR}/src/liblzma/check ${LZMA_SOURCE_DIR}/src/liblzma/simple ${LZMA_SOURCE_DIR}/src/liblzma/delta ${LZMA_SOURCE_DIR}/src/liblzma/rangecoder ${LZMA_SOURCE_DIR}/src/liblzma/common ${LZMA_SOURCE_DIR}/src/liblzma/api ${CMAKE_BINARY_DIR}/3rdparty/xz)
     define_have(LIBLZMA_DEFS HAVE_STDINT_H HAVE_STDLIB_H HAVE_STDBOOL_H HAVE_INTTYPES_H HAVE_LIMITS_H HAVE_STRING_H HAVE_STRINGS_H HAVE_MEMORY_H HAVE_SYS_PARAM_H HAVE_SYS_TIME_H HAVE_SYS_TYPES_H HAVE_LZMA_H)
-    list(APPEND LIBLZMA_DEFS 
-      HAVE_CONFIG_H
-      )
+    list(APPEND LIBLZMA_DEFS HAVE_CONFIG_H)
 
     # message("LIBLZMA_DEFS: ${LIBLZMA_DEFS}")
-    set_target_properties(lzma PROPERTIES COMPILE_DEFINITIONS "${LIBLZMA_DEFS}"
-     INCLUDE_DIRECTORIES "${LIBLZMA_INCLUDE_DIRS};${CMAKE_SOURCE_DIR}/lib;${CMAKE_CURRENT_BINARY_DIR}/3rdparty/xz")
+    set_target_properties(lzma PROPERTIES COMPILE_DEFINITIONS "${LIBLZMA_DEFS}" INCLUDE_DIRECTORIES "${LIBLZMA_INCLUDE_DIRS};${CMAKE_SOURCE_DIR}/lib;${CMAKE_CURRENT_BINARY_DIR}/3rdparty/xz")
   endif(LIBLZMA_SOURCES)
 
   link_directories(BEFORE "${CMAKE_BINARY_DIR}/xz")
@@ -1269,12 +1263,12 @@ if(BUILD_LZMA)
 endif(BUILD_LZMA)
 
 if(BUILD_SSL)
-    add_definitions(-DOPENSSL_THREADS=1)
+  add_definitions(-DOPENSSL_THREADS=1)
 
   if(MUSL)
     add_definitions(-DOPENSSL_NO_SECURE_MEMORY=1)
-  endif(MUSL) 
-   #[[if(UNIX OR LINUX)
+  endif(MUSL)
+  #[[if(UNIX OR LINUX)
     add_definitions(-DOPENSSL_SYS_UNIX=1)
   endif(UNIX OR LINUX)]]
   if(DIET OR MUSL)
@@ -1334,7 +1328,7 @@ if(USE_SSL)
 endif(USE_SSL)
 
 if(NOT OPENSSL_STATIC_LIBRARIES MATCHES ssl)
-set(OPENSSL_STATIC_LIBRARIES "ssl;${OPENSSL_STATIC_LIBRARIES}")
+  set(OPENSSL_STATIC_LIBRARIES "ssl;${OPENSSL_STATIC_LIBRARIES}")
 endif(NOT OPENSSL_STATIC_LIBRARIES MATCHES ssl)
 dump(OPENSSL_STATIC_LIBRARIES)
 
@@ -1538,11 +1532,11 @@ add_program(elfwrsec buffer alloc elf mmap)
 add_program(genmakefile sig set case errmsg strarray slist rdir dir path strlist hashmap hmap stralloc buffer mmap unix open scan fmt byte str array safemult alloc)
 add_program(piccfg ihex errmsg strarray slist rdir dir path strlist hashmap hmap stralloc buffer mmap unix open scan fmt byte str array safemult alloc)
 add_program(hexedit stralloc buffer array io errmsg mmap open path scan uint64 unix ${ZLIB_LIBRARY})
- set(httptest_SOURCES uri.c uri.h)
+set(httptest_SOURCES uri.c uri.h)
 add_program(httptest sig http c dns stralloc buffer errmsg byte io socket alloc taia ${LIBSSL} ${LIBMSWSOCK} ${LIBDL} pthread)
-#add_program(ssltest strlist unix dns stralloc buffer errmsg byte io  tls socket alloc taia ${LIBSSL} ${LIBMSWSOCK} ${LIBDL} pthread)
+# add_program(ssltest strlist unix dns stralloc buffer errmsg byte io  tls socket alloc taia ${LIBSSL} ${LIBMSWSOCK} ${LIBDL} pthread)
 
-#set(ssltest_SOURCES address.c address.h)
+# set(ssltest_SOURCES address.c address.h)
 
 add_program(impgen pe buffer byte mmap open)
 add_program(jsontest json stralloc buffer byte charbuf fmt hmap mmap open)

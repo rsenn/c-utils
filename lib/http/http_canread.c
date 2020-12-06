@@ -119,7 +119,15 @@ fail:
   buffer_puts(buffer_2, "sock=");
   buffer_putlong(buffer_2, h->sock);
   buffer_puts(buffer_2, " status=");
-  buffer_puts(buffer_2, status_strings[r->status]);
+  buffer_puts(buffer_2,
+              ((const char* const[]){"-1",
+                                     "HTTP_RECV_HEADER",
+                                     "HTTP_RECV_DATA",
+                                     "HTTP_STATUS_CLOSED",
+                                     "HTTP_STATUS_ERROR",
+                                     "HTTP_STATUS_BUSY",
+                                     "HTTP_STATUS_FINISH",
+                                     0})[h->response->status + 1]);
   buffer_puts(buffer_2, " ret=");
   buffer_putlong(buffer_2, ret);
   buffer_puts(buffer_2, " err=");

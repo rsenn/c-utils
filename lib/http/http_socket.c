@@ -81,12 +81,14 @@ http_socket_read(fd_t fd, void* buf, size_t len, void* b) {
     ret = http_read_internal(fd, (char*)buf, ret, &h->q.in);
     h->q.in.n = n;
   }
+  if(ret == 0) {
+    io_dontwantwrite(fd);
+    io_dontwantread(fd);
+  }
 #if DEBUG_HTTP
   buffer_putspad(buffer_2, "http_socket_read ", 18);
   buffer_puts(buffer_2, " sock=");
   buffer_putlong(buffer_2, h->sock);
-  buffer_puts(buffer_2, " connected=");
-  buffer_putlong(buffer_2, h->connected ? 1 : 0);
   buffer_puts(buffer_2, " ret=");
   buffer_putlong(buffer_2, ret);
   if(ret <= 0) {
@@ -117,8 +119,6 @@ http_socket_write(fd_t fd, void* buf, size_t len, void* b) {
 
   buffer_puts(buffer_2, " ret=");
   buffer_putlong(buffer_2, ret);
-  buffer_puts(buffer_2, " connected=");
-  buffer_putlong(buffer_2, h->connected ? 1 : 0);
   if(ret <= 0) {
     buffer_puts(buffer_2, " err=");
     buffer_puts(buffer_2, http_strerror(h, ret));

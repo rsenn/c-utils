@@ -64,6 +64,7 @@ typedef struct http_response_s {
   int err;
   int (*header)(struct http_s*, const char*, size_t);
   //  buffer rbuf;
+  struct http_response_s* next;
 } http_response;
 
 typedef struct http_s {
