@@ -50,6 +50,8 @@ http_sendreq(http* h) {
   if(ret != -1) {
     h->sent = 1;
     h->response->status = HTTP_RECV_HEADER;
+
+    io_onlywantread(h->sock);
   }
   return ret;
 }

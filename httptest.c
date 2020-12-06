@@ -73,24 +73,28 @@ static int
 http_io_handler(http* h, buffer* out) {
   fd_t r, w;
   int nr = 0, nw = 0;
-  ssize_t ret = 0;
+  ssize_t nb, ret = 0;
   while((w = io_canwrite()) != -1) {
     if(h->sock == w) {
-      if((ret = http_canwrite(h, io_wantread)) <= 0)
-        goto fail;
-
-      if(ret > 0) {
-        io_onlywantread(w);
-        return ret;
+      if((nb = http_canwrite(h, io_wantread)) <= 0) {
+        ret = nb;
+        continue;
       }
+
+      if(nb > 0)
+        ret += nb;
       nw++;
     }
   }
 
   while((r = io_canread()) != -1) {
     if(h->sock == r) {
-      if((ret = http_canread(h, io_wantwrite)) <= 0)
-        goto fail;
+      if((nb = http_canread(h, io_wantwrite)) <= 0) {
+        ret = nb;
+        continue;
+      }
+      if(nb > 0)
+        ret += nb;
 
       buffer_puts(buffer_2, "http_canread ret=");
       buffer_putlong(buffer_2, ret);

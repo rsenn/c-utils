@@ -58,7 +58,7 @@ http_canread(http* h, void (*wantwrite)(fd_t)) {
 
   /*if(h->q.in.p == h->q.in.n)*/ {
     if((ret = buffer_freshen(&h->q.in)) == 0)
-      return 0;
+      goto fail;
   }
 #ifdef DEBUG_HTTP
   buffer_puts(buffer_2, "buffer_freshen ret=");
@@ -67,7 +67,7 @@ http_canread(http* h, void (*wantwrite)(fd_t)) {
 #endif
 
   if((r = h->response) == NULL)
-    return ret;
+    goto fail;
 
   while(r->status == HTTP_RECV_HEADER) {
     size_t pos = r->data.len;
@@ -101,6 +101,26 @@ http_canread(http* h, void (*wantwrite)(fd_t)) {
     }
     stralloc_zero(&r->data);
   }
+
+  if(r->status == HTTP_RECV_DATA) {
+    /*    if(ret > 0)*/ {
+      stralloc_readyplus(&h->response->data, ret);
+      buffer_get(&h->q.in, &h->response->data.s[h->response->data.len], ret);
+      h->response->data.len += ret;
+
+#ifdef DEBUG_HTTP
+      buffer_putspad(buffer_2, "http_canread DATA ", 18);
+      buffer_puts(buffer_2, "sock=");
+      buffer_putlong(buffer_2, h->sock);
+      buffer_puts(buffer_2, " ret=");
+      buffer_putlong(buffer_2, ret);
+      buffer_puts(buffer_2, " data.len=");
+      buffer_putlong(buffer_2, h->response->data.len);
+      buffer_putnlflush(buffer_2);
+#endif
+    }
+  }
+
   if(ret == -1) {
     err = errno;
     errno = 0;
@@ -134,5 +154,6 @@ fail:
   buffer_puts(buffer_2, http_strerror(h, ret));
   buffer_putnlflush(buffer_2);
 #endif
+
   return ret;
 }
