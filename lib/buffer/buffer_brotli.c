@@ -77,14 +77,13 @@ buffer_brotli_write(fd_t fd, void* data, size_t n, buffer* b) {
   avail_out = a;
 
   do {
-    ret = BrotliEncoderCompressStream(
-        ctx->state,
-        /*n < b->a ? BROTLI_OPERATION_FINISH :*/ BROTLI_OPERATION_PROCESS,
-        &avail_in,
-        &next_in,
-        &avail_out,
-        &next_out,
-        0);
+    ret = BrotliEncoderCompressStream(ctx->state,
+                                      /*n < b->a ? BROTLI_OPERATION_FINISH :*/ BROTLI_OPERATION_PROCESS,
+                                      &avail_in,
+                                      &next_in,
+                                      &avail_out,
+                                      &next_out,
+                                      0);
   } while(avail_in > 0 && avail_out > 0 && ret != BROTLI_FALSE);
 
   ret = BrotliEncoderHasMoreOutput(ctx->state);
@@ -119,16 +118,14 @@ buffer_brotli_close(buffer* b) {
   if(b->op == (buffer_op_proto*)&buffer_brotli_write) {
 
     do {
-      ret = BrotliEncoderCompressStream(
-          ctx->state, BROTLI_OPERATION_FINISH, &avail_in, &next_in, &avail_out, &next_out, 0);
+      ret = BrotliEncoderCompressStream(ctx->state, BROTLI_OPERATION_FINISH, &avail_in, &next_in, &avail_out, &next_out, 0);
     } while(ret != BROTLI_FALSE && avail_in > 0);
 
     BrotliEncoderDestroyInstance(ctx->state);
   } else {
     do {
 
-      ret =
-          BrotliDecoderDecompressStream(ctx->state, &avail_in, &next_in, &avail_out, &next_out, 0);
+      ret = BrotliDecoderDecompressStream(ctx->state, &avail_in, &next_in, &avail_out, &next_out, 0);
     } while(ret != BROTLI_FALSE && avail_in > 0);
     BrotliDecoderDestroyInstance(ctx->state);
   }
@@ -163,11 +160,7 @@ buffer_brotli(buffer* b, buffer* other, int compress) {
 
   ctx->b = other;
 
-  buffer_init(b,
-              (buffer_op_sys*)(void*)(compress ? &buffer_brotli_write : &buffer_brotli_read),
-              -1,
-              buf,
-              1024);
+  buffer_init(b, (buffer_op_sys*)(void*)(compress ? &buffer_brotli_write : &buffer_brotli_read), -1, buf, 1024);
   b->cookie = ctx;
   b->deinit = &buffer_brotli_close;
 

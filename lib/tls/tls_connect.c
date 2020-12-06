@@ -11,7 +11,7 @@ tls_connect(fd_t fd) {
   assert(i);
   assert(i->ssl);
 
-  if(tls_instance_return(i, SSL_connect(i->ssl)) == 1)
+  if(tls_instance_return(i, TLS_OP_CONNECT, SSL_connect(i->ssl)) == 1)
     return 1;
   if((errno = tls_instance_errno(i)))
     return -1;

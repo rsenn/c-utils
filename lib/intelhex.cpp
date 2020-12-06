@@ -507,8 +507,7 @@ compare(hex_data& hex1, hex_data& hex2, value_type mask, address_type begin, add
   for(hex_data::iterator i = hex1.begin(); i != hex1.end(); ++i) {
     // Walk the block
     address_type addr(i->first);
-    for(hex_data::data_container::iterator j = i->second.begin(); j != i->second.end();
-        ++j, ++addr) {
+    for(hex_data::data_container::iterator j = i->second.begin(); j != i->second.end(); ++j, ++addr) {
       if((addr < begin) || (addr > end))
         continue;
 

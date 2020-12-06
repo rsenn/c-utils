@@ -82,14 +82,9 @@ size_t scan_base85(const char* src, char* dest, size_t* destlen);
 /* WARNING: these functions _append_ to the stralloc, not overwrite! */
 /* stralloc wrappers; return 1 on success, 0 on failure */
 /* arg 1 is one of the fmt_* functions from above */
-int
-fmt_to_sa(size_t (*func)(char*, const char*, size_t), stralloc* sa, const char* src, size_t len);
+int fmt_to_sa(size_t (*func)(char*, const char*, size_t), stralloc* sa, const char* src, size_t len);
 
-int fmt_to_sa2(size_t (*func)(char*, const char*, size_t, const char*),
-               stralloc* sa,
-               const char* src,
-               size_t len,
-               const char* escapeme);
+int fmt_to_sa2(size_t (*func)(char*, const char*, size_t, const char*), stralloc* sa, const char* src, size_t len, const char* escapeme);
 
 /* arg 1 is one of the scan_* functions from above */
 /* return number of bytes scanned */
@@ -107,10 +102,8 @@ size_t scan_to_sa(size_t (*func)(const char*, char*, size_t*), const char* src, 
 #define fmt_ldapescape_sa(sa, src, len) fmt_to_sa(fmt_ldapescape, sa, src, len)
 #define fmt_jsonescape_sa(sa, src, len) fmt_to_sa(fmt_jsonescape, sa, src, len)
 
-#define fmt_quotedprintable2_sa(sa, src, len, escapeme)                                            \
-  fmt_to_sa2(fmt_quotedprintable2, sa, src, len, escapeme)
-#define fmt_urlencoded2_sa(sa, src, len, escapeme)                                                 \
-  fmt_to_sa2(fmt_urlencoded2, sa, src, len, escapeme)
+#define fmt_quotedprintable2_sa(sa, src, len, escapeme) fmt_to_sa2(fmt_quotedprintable2, sa, src, len, escapeme)
+#define fmt_urlencoded2_sa(sa, src, len, escapeme) fmt_to_sa2(fmt_urlencoded2, sa, src, len, escapeme)
 #define fmt_cescape2_sa(sa, src, len, escapeme) fmt_to_sa2(fmt_cescape2, sa, src, len, escapeme)
 
 #define scan_uuencoded_sa(src, sa) scan_to_sa(scan_uuencoded, src, sa)
@@ -127,21 +120,13 @@ size_t scan_to_sa(size_t (*func)(const char*, char*, size_t*), const char* src, 
 #endif
 
 #ifdef ARRAY_H
-void
-fmt_to_array(size_t (*func)(char*, const char*, size_t), array* a, const char* src, size_t len);
+void fmt_to_array(size_t (*func)(char*, const char*, size_t), array* a, const char* src, size_t len);
 
 void fmt_tofrom_array(size_t (*func)(char*, const char*, size_t), array* dest, array* src);
 
-void fmt_to_array2(size_t (*func)(char*, const char*, size_t, const char*),
-                   array* a,
-                   const char* src,
-                   size_t len,
-                   const char* escapeme);
+void fmt_to_array2(size_t (*func)(char*, const char*, size_t, const char*), array* a, const char* src, size_t len, const char* escapeme);
 
-void fmt_tofrom_array2(size_t (*func)(char*, const char*, size_t, const char*),
-                       array* dest,
-                       array* src,
-                       const char* escapeme);
+void fmt_tofrom_array2(size_t (*func)(char*, const char*, size_t, const char*), array* dest, array* src, const char* escapeme);
 
 size_t scan_to_array(size_t (*func)(const char*, char*, size_t*), const char* src, array* dest);
 

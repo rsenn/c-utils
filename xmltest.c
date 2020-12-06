@@ -20,8 +20,7 @@ void
 put_str_escaped(buffer* b, const char* str) {
   stralloc esc;
   stralloc_init(&esc);
-  stralloc_fmt_pred(
-      &esc, str, str_len(str), (stralloc_fmt_fn*)&fmt_escapecharc, (int (*)()) & iscntrl);
+  stralloc_fmt_pred(&esc, str, str_len(str), (stralloc_fmt_fn*)&fmt_escapecharc, (int (*)()) & iscntrl);
   buffer_putsa(b, &esc);
 }
 
@@ -105,8 +104,7 @@ xml_dump(xmlnode* n, buffer* b, const char* parent, int depth) {
       if(n->children) {
         if(/*!text_children &&
             */
-           ((n->children->type == XML_ELEMENT) ||
-            (!chained_attributes && !text_children && name.s))) {
+           ((n->children->type == XML_ELEMENT) || (!chained_attributes && !text_children && name.s))) {
           if(!strlist_contains(&vars, name.s)) {
             buffer_puts(b, "xmlnode*");
             newline_indent(b, depth);
@@ -126,8 +124,7 @@ xml_dump(xmlnode* n, buffer* b, const char* parent, int depth) {
         chained_attributes = 0;
 
       if(parent)
-        buffer_putm_internal(
-            b, "xml_child_element", attrs_str, "(\"", n->name, "\", ", parent, NULL);
+        buffer_putm_internal(b, "xml_child_element", attrs_str, "(\"", n->name, "\", ", parent, NULL);
       else
         buffer_putm_internal(b, "xml_element", attrs_str, "(\"", n->name, NULL);
       buffer_flush(b);
@@ -170,8 +167,7 @@ xml_dump(xmlnode* n, buffer* b, const char* parent, int depth) {
             if(1)
               newline_indent(b, depth + 1);
 
-            buffer_putm_internal(
-                b, i == 0 ? "\"" : "\"", t->key, "\", \"", t->vals.val_chars, "\",", NULL);
+            buffer_putm_internal(b, i == 0 ? "\"" : "\"", t->key, "\", \"", t->vals.val_chars, "\",", NULL);
             ++i;
           }
           newline_indent(b, depth);
@@ -179,15 +175,7 @@ xml_dump(xmlnode* n, buffer* b, const char* parent, int depth) {
         } else {
           hmap_foreach(n->attributes, t) {
             newline_indent(b, depth);
-            buffer_putm_internal(b,
-                                 "xml_set_attribute(",
-                                 name.s,
-                                 ", \"",
-                                 t->key,
-                                 "\", \"",
-                                 t->vals.val_chars,
-                                 "\")",
-                                 NULL);
+            buffer_putm_internal(b, "xml_set_attribute(", name.s, ", \"", t->key, "\", \"", t->vals.val_chars, "\")", NULL);
           }
         }
       }

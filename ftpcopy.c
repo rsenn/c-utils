@@ -250,9 +250,7 @@ identical_time(time_t there, int theretype, time_t here) {
     case FTPPARSE_MTIME_LOCAL: /* time is correct */ allowed = 0; break;
     case FTPPARSE_MTIME_REMOTEMINUTE: /* time zone and secs are unknown */ allowed = 60; break;
     case FTPPARSE_MTIME_UNKNOWN:
-    case FTPPARSE_MTIME_REMOTEDAY: /* time zone and time of day are unknown */
-      allowed = 86400;
-      break;
+    case FTPPARSE_MTIME_REMOTEDAY: /* time zone and time of day are unknown */ allowed = 86400; break;
   }
   if(here > there)
     d = here - there;
@@ -300,8 +298,7 @@ download(struct ftpparse* x, stralloc* r_dir, stralloc* l_dir) {
       slash = cc;
   if(*slash == '/')
     slash++;
-  if(!stralloc_copys(&tmpfn, ".tmp.") ||
-     !stralloc_catb(&tmpfn, slash, e - slash)) /* l_dir has \0 */
+  if(!stralloc_copys(&tmpfn, ".tmp.") || !stralloc_catb(&tmpfn, slash, e - slash)) /* l_dir has \0 */
     oom();
 
   mtime = TAI2UNIX(&x->mtime);
@@ -408,9 +405,7 @@ download(struct ftpparse* x, stralloc* r_dir, stralloc* l_dir) {
   {
     char nb[FMT_ULONG];
     tmpfn.len--; /* \0 */
-    if(!stralloc_catb(&tmpfn, ".", 1) || !stralloc_catb(&tmpfn, nb, fmt_uint64(nb, mtime)) ||
-       !stralloc_catb(&tmpfn, ".", 1) || !stralloc_catb(&tmpfn, nb, fmt_uint64(nb, x->size)) ||
-       !stralloc_0(&tmpfn))
+    if(!stralloc_catb(&tmpfn, ".", 1) || !stralloc_catb(&tmpfn, nb, fmt_uint64(nb, mtime)) || !stralloc_catb(&tmpfn, ".", 1) || !stralloc_catb(&tmpfn, nb, fmt_uint64(nb, x->size)) || !stralloc_0(&tmpfn))
       if(!o_no_rest)
         unlink(tmpfn.s);
   }
@@ -954,8 +949,7 @@ skip_listing:
   }
   parsed = parsethem(&dirdata, is_mlsx, &count);
   for(i = 0; i < count; i++) {
-    if(parsed[i].name[0] == '.' &&
-       (parsed[i].namelen == 1 || (parsed[i].namelen == 2 && parsed[i].name[1] == '.'))) {
+    if(parsed[i].name[0] == '.' && (parsed[i].namelen == 1 || (parsed[i].namelen == 2 && parsed[i].name[1] == '.'))) {
       if(o_loglevel > 1) {
         do_log2(l_dir->s, "/");
         if(o_tolower)
@@ -1685,15 +1679,7 @@ static uogetopt2 myopts[] = {
      "  * the remote directory is /, and\n"
      "  * and /private/file/0/mirror/cr.yp.to is the local directory.",
      0},
-    {0,
-     "author",
-     uogo_print_help,
-     UOGO_NOARG | UOGO_HIDDEN | UOGO_EXIT | UOGO_NOLHD,
-     0,
-     0,
-     "Show author.",
-     "Uwe Ohse, <uwe@ohse.de>.",
-     0},
+    {0, "author", uogo_print_help, UOGO_NOARG | UOGO_HIDDEN | UOGO_EXIT | UOGO_NOLHD, 0, 0, "Show author.", "Uwe Ohse, <uwe@ohse.de>.", 0},
     {0,
      "copyright",
      uogo_print_help,
@@ -1787,26 +1773,25 @@ onedirpair(stralloc* remote, stralloc* local) {
   }
   return 1;
 }
-static uogetopt_env optenv = {
-    0,
-    PACKAGE,
-    VERSION,
-    "usage: ftpcopy [options] host[:port] remotedir [localdir]\n"
-    "   or: ftpcopy [options] ftp://host[:port]/remotedir [localdir]",
-    "create and maintain a ftp mirror.",
-    "ftpcopy copies a FTP site recursivly. It afterwards deletes all files in "
-    "the local directory tree which were not found on the remote site.\n\n"
-    "local-directory defaults to `.' - the current working directory - if the "
-    "--no-delete option is used. local-directory is not needed if the "
-    "--interactive option is used.\n"
-    "Otherwise you must provide a local-directory argument.\n",
-    COMMON_BUGREPORT_INFO,
-    0,
-    0,
-    0,
-    0,
-    uogetopt_out,
-    myopts};
+static uogetopt_env optenv = {0,
+                              PACKAGE,
+                              VERSION,
+                              "usage: ftpcopy [options] host[:port] remotedir [localdir]\n"
+                              "   or: ftpcopy [options] ftp://host[:port]/remotedir [localdir]",
+                              "create and maintain a ftp mirror.",
+                              "ftpcopy copies a FTP site recursivly. It afterwards deletes all files in "
+                              "the local directory tree which were not found on the remote site.\n\n"
+                              "local-directory defaults to `.' - the current working directory - if the "
+                              "--no-delete option is used. local-directory is not needed if the "
+                              "--interactive option is used.\n"
+                              "Otherwise you must provide a local-directory argument.\n",
+                              COMMON_BUGREPORT_INFO,
+                              0,
+                              0,
+                              0,
+                              0,
+                              uogetopt_out,
+                              myopts};
 
 int
 main(int argc, char** argv) {

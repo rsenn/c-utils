@@ -7,12 +7,10 @@ fmt_humank(char* dest, uint64 l) {
   if(l < 1000)
     return fmt_ulong(dest, l);
   if(l > (uint64)1024 * (uint64)1024 * (uint64)1024 * (uint64)1024) {
-    l = (l + ((uint64)1024 * (uint64)1024 * (uint64)1024 * (uint64)1024 / 20)) /
-        ((uint64)1024 * (uint64)1024 * (uint64)1024 * (uint64)1024 / 10);
+    l = (l + ((uint64)1024 * (uint64)1024 * (uint64)1024 * (uint64)1024 / 20)) / ((uint64)1024 * (uint64)1024 * (uint64)1024 * (uint64)1024 / 10);
     unit = 'T';
   } else if(l > (uint64)1024 * (uint64)1024 * (uint64)1024) {
-    l = (l + ((uint64)1024 * (uint64)1024 * (uint64)1024 / 20)) /
-        ((uint64)1024 * (uint64)1024 * (uint64)1024 / 10);
+    l = (l + ((uint64)1024 * (uint64)1024 * (uint64)1024 / 20)) / ((uint64)1024 * (uint64)1024 * (uint64)1024 / 10);
     unit = 'G';
   } else if(l > (uint64)1024 * (uint64)1024) {
     l = (l + ((uint64)1024 * (uint64)1024 / 20)) / ((uint64)1024 * (uint64)1024 / 10);

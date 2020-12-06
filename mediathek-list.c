@@ -330,8 +330,7 @@ mktime_r(struct tm* const t, time_t* ret) {
       years--;
     day -= years;
   }
-  day += t->tm_yday =
-      __spm[t->tm_mon] + t->tm_mday - 1 + (isleap(t->tm_year + 1900) & (t->tm_mon > 1));
+  day += t->tm_yday = __spm[t->tm_mon] + t->tm_mday - 1 + (isleap(t->tm_year + 1900) & (t->tm_mon > 1));
   i = 7;
   t->tm_wday = (day + 4) % i;
   i = 24;
@@ -601,10 +600,8 @@ print_entry(buffer* b, const mediathek_entry_t* e) {
 
   const char* sep = ", ";
 
-  buffer_putm_internal(
-      b, "Kanal:\t", e->channel.s ? e->channel.s : "<null>" /*strlist_at(sl, 1)*/, sep, NULL);
-  buffer_putm_internal(
-      b, "Thema:\t", e->topic.s ? e->topic.s : "<null>" /*strlist_at(sl, 2)*/, sep, NULL);
+  buffer_putm_internal(b, "Kanal:\t", e->channel.s ? e->channel.s : "<null>" /*strlist_at(sl, 1)*/, sep, NULL);
+  buffer_putm_internal(b, "Thema:\t", e->topic.s ? e->topic.s : "<null>" /*strlist_at(sl, 2)*/, sep, NULL);
   buffer_putm_internal(b, "Titel:\t", e->title.s /*strlist_at(sl, 3)*/, sep, NULL);
 
   buffer_putm_internal(b, "Datum:\t", format_datetime(e->tm, dt_fmt), sep, NULL);

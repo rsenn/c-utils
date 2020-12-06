@@ -1053,19 +1053,13 @@ pkgcfg_init(const char* errmsg_argv0, const char* pkgcfg_path) {
 
 void
 usage(char* progname) {
-  buffer_putm_internal(
-      buffer_1, "Usage: ", path_basename(progname), " [OPTIONS] [PACKAGES...]\n", 0);
+  buffer_putm_internal(buffer_1, "Usage: ", path_basename(progname), " [OPTIONS] [PACKAGES...]\n", 0);
   buffer_puts(buffer_1, "Options\n");
   buffer_puts(buffer_1, "  --help, -h                        show this help\n");
   buffer_puts(buffer_1, "  --cflags                          print required CFLAGS to stdout\n");
-  buffer_puts(buffer_1,
-              "  --libs                            print required linker flags to stdout\n");
-  buffer_puts(
-      buffer_1,
-      "  --path                            show the exact filenames for any matching .pc files\n");
-  buffer_puts(
-      buffer_1,
-      "  --modversion                      print the specified module's version to stdout\n");
+  buffer_puts(buffer_1, "  --libs                            print required linker flags to stdout\n");
+  buffer_puts(buffer_1, "  --path                            show the exact filenames for any matching .pc files\n");
+  buffer_puts(buffer_1, "  --modversion                      print the specified module's version to stdout\n");
   buffer_puts(buffer_1, "  --list-all                        list all known packages\n");
   buffer_puts(buffer_1, "  --list-path                       list path of all known packages\n");
   buffer_puts(buffer_1, "  --verbose                         increase verbosity\n");
@@ -1199,15 +1193,9 @@ main(int argc, char* argv[]) {
           int i = arg[2] == 'l' ? PRINT_LIBS : PRINT_CFLAGS;
           add_cmd(i);
           if(i == PRINT_LIBS)
-            libs_mode = arg[str_find(arg, "only")]
-                            ? (arg[str_find(arg, "other")]
-                                   ? LIBS_ONLY_OTHER
-                                   : (arg[str_find(arg, "L")] ? LIBS_ONLY_LIBPATH : LIBS_ONLY_L))
-                            : 0;
+            libs_mode = arg[str_find(arg, "only")] ? (arg[str_find(arg, "other")] ? LIBS_ONLY_OTHER : (arg[str_find(arg, "L")] ? LIBS_ONLY_LIBPATH : LIBS_ONLY_L)) : 0;
           else
-            cflags_mode = arg[str_find(arg, "only")]
-                              ? (arg[str_find(arg, "other")] ? CFLAGS_ONLY_OTHER : CFLAGS_ONLY_I)
-                              : 0;
+            cflags_mode = arg[str_find(arg, "only")] ? (arg[str_find(arg, "other")] ? CFLAGS_ONLY_OTHER : CFLAGS_ONLY_I) : 0;
 
           argv[optind] = "-";
           /*           for(i = optind; argv[i]; i++)

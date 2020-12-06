@@ -12,14 +12,13 @@ endif()
 set(PROJECT_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/3rdparty)
 set(PROJECT_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/3rdparty)
 
-
-SET(CMAKE_BUILD_TYPE "Debug" CACHE STRING "build type")
+set(CMAKE_BUILD_TYPE "Debug" CACHE STRING "build type")
 
 if(CMAKE_BUILD_TYPE STREQUAL "")
   set(CMAKE_BUILD_TYPE Debug)
 endif()
 
-SET_PROPERTY(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS Debug Release MinSizeRel RelWithDebInfo)
+set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS Debug Release MinSizeRel RelWithDebInfo)
 
 option(USE_LZMA "lzma compression" ON)
 option(USE_BZIP "bzip2 compression" ON)
@@ -84,11 +83,11 @@ if(CMAKE_C_COMPILER_ID STREQUAL "Clang")
   set(CLANG TRUE CACHE BOOL "Clang compiler type" FORCE)
 endif(CMAKE_C_COMPILER_ID STREQUAL "Clang")
 
-if(CLANG)
+#[[if(CLANG)
   set(CMAKE_C_CLANG_TIDY clang-tidy -checks=-*,readability-*)
   message(STATUS "Clang tidy checks: ${CMAKE_C_CLANG_TIDY}")
 endif(CLANG)
-
+]]
 #[[option(USE_POLL "Use poll() syscall" OFF)
 option(USE_EPOLL "Use epoll() syscall" OFF)]]
 option(BUILD_SHARED_LIBS "Build shared libs" "${SHARED_LIBS}")
@@ -104,10 +103,7 @@ endmacro(debug_option NAME DESC)
 
 debug_option(IO "Debug I/O code")
 debug_option(HTTP "Debug HTTP code")
-
-if(DEBUG_IO)
-  add_definitions(-DDEBUG_IO=1)
-endif(DEBUG_IO)
+debug_option(TLS "Debug TLS code")
 
 if(ENABLE_WERROR)
   add_definitions(-Wall -Werror -Wno-unused)
@@ -198,7 +194,8 @@ macro(check_run RESULT_VAR SOURCE)
     set(RUN_OK FALSE)
   endif("${RUN_RESULT}" STREQUAL 0)
 
-  # message("Run result: ${RUN_OK} output: ${RUN_OUTPUT}") message("Compile result: ${COMPILE_RESULT}")
+  message("Run result: ${RUN_OK} output: ${RUN_OUTPUT}")
+  message("Compile result: ${COMPILE_RESULT}")
 
   file(REMOVE "${C_SOURCE}")
 
@@ -206,11 +203,11 @@ macro(check_run RESULT_VAR SOURCE)
     set("${RESULT_VAR}" "${COMPILE_RESULT}")
     set(RUN_RESULT FALSE)
   else(NOT COMPILE_RESULT)
-    set("${RESULT_VAR}" "${RUN_RESULT}")
+    set("${RESULT_VAR}" "${RUN_OK}")
   endif(NOT COMPILE_RESULT)
 
   if(RUN_OK)
-    add_definitions(-D${RESULT_VAR})
+    # add_definitions(-D${RESULT_VAR})
   else(RUN_OK)
     string(REPLACE "\n" ";" OUTPUT "${OUTPUT}")
     list(FILTER OUTPUT INCLUDE REGEX "error")
@@ -287,6 +284,19 @@ check_compile(
   HAVE_SENDFILE
   "#ifdef __hpux__\n#include <sys/types.h>\n#include <sys/uio.h>\n#include <sys/socket.h>\n#include <stdio.h>\n\nint main() { /*\n        sbsize_t sendfile(int s, int fd, off_t offset, bsize_t nbytes,\n                      const struct iovec *hdtrl, int flags);\n  */\n  struct iovec x[2];\n  int fd = open(\"havesendfile.c\", 0);\n  x[0].iov_base = \"header\";\n  x[0].iov_len = 6;\n  x[1].iov_base = \"footer\";\n  x[1].iov_len = 6;\n  sendfile(1 /* dest socket */, fd /* src file */, 0 /* offset */, 23 /* nbytes */, x, 0);\n  perror(\"sendfile\");\n  return 0;\n}\n#elif defined(__sun__) && defined(__svr4__)\n#include <sys/types.h>\n#include <sys/socket.h>\n#include <sys/sendfile.h>\n#include <stdio.h>\n\nint main() { off_t o;\n  o = 0;\n  sendfile(1 /* dest */, 0 /* src */, &o, 23 /* nbytes */);\n  perror(\"sendfile\");\n  return 0;\n}\n#elif defined(_AIX)\n\n#define _FILE_OFFSET_BITS 64\n#include <sys/types.h>\n#include <sys/socket.h>\n#include <unistd.h>\n#include <stdio.h>\n\nint main() { int fd = open(\"havesendfile.c\", 0);\n  struct sf_parms p;\n  int destfd = 1;\n  p.header_data = \"header\";\n  p.header_length = 6;\n  p.file_descriptor = fd;\n  p.file_offset = 0;\n  p.file_bytes = 23;\n  p.trailer_data = \"footer\";\n  p.trailer_length = 6;\n  if(send_file(&destfd, &p, 0) >= 0)\n    printf(\"sent %lu bytes.\\\\n\", p.bytes_sent);\n  return 0;\n}\n#elif defined(__linux__)\n\n#define _FILE_OFFSET_BITS 64\n#include <sys/types.h>\n#include <unistd.h>\n#if defined(__GLIBC__)\n#include <sys/sendfile.h>\n#elif defined(__dietlibc__)\n#include <sys/sendfile.h>\n#else\n#include <linux/unistd.h>\n_syscall4(int, sendfile, int, out, int, in, long*, offset, unsigned long, count)\n#endif\n#include <stdio.h>\n\nint main() { int fd = open(\"havesendfile.c\", 0);\n  off_t o = 0;\n  off_t r = sendfile(1, fd, &o, 23);\n  if(r != -1)\n    printf(\"sent %llu bytes.\\\\n\", r);\n  return 0;\n}\n\n#else\n#error unsupported architecture\n/* stupid fucking IRIX c99 does not signal #error via a non-zero exit\n * code!  ARGH!  So insert a parse error */\n#include rumpelstilzchen\n)\n#endif\n"
 )
+
+set(TRY_LINUX_AIO
+    "#include <fcntl.h>\n#include <linux/aio_abi.h>\n#include <stdint.h>\n#include <stdio.h>\n#include <stdlib.h>\n#include <sys/syscall.h>\n#include <unistd.h>\n\n#define PFATAL(x...) \\\\\n  do { \\\\\n    fprintf(stderr, \"[-] SYSTEM ERROR : \" x); \\\\\n    fprintf(stderr, \"\\\\n\\\\tLocation : %s(), %s:%u\\\\n\", __FUNCTION__, __FILE__, __LINE__); \\\\\n    perror(\"      OS message \"); \\\\\n    fprintf(stderr, \"\\\\n\"); \\\\\n    exit(EXIT_FAILURE); \\\\\n  } while(0)\n\ninline static int\nio_setup(unsigned nr, aio_context_t* ctxp) {\n  return syscall(__NR_io_setup, nr, ctxp);\n}\n\ninline static int\nio_destroy(aio_context_t ctx) {\n  return syscall(__NR_io_destroy, ctx);\n}\n\ninline static int\nio_submit(aio_context_t ctx, long nr, struct iocb** iocbpp) {\n  return syscall(__NR_io_submit, ctx, nr, iocbpp);\n}\n\ninline static int\nio_getevents(aio_context_t ctx, long min_nr, long max_nr, struct io_event* events, struct timespec* timeout) {\n  // This might be improved.\n  return syscall(__NR_io_getevents, ctx, min_nr, max_nr, events, timeout);\n}\n\n#define BUF_SZ (4096)\n\nint\nmain() {\n  int fd = open(\"/etc/passwd\", O_RDONLY);\n  if(fd < 0) {\n    PFATAL(\"open(/etc/passwd)\");\n  }\n\n  aio_context_t ctx = 0;\n  int r = io_setup(128, &ctx);\n  if(r < 0) {\n    PFATAL(\"io_setup()\");\n  }\n\n  char buf[BUF_SZ];\n  struct iocb cb = {.aio_fildes = fd, .aio_lio_opcode = IOCB_CMD_PREAD, .aio_buf = (uint64_t)&buf[0], .aio_nbytes = BUF_SZ};\n  struct iocb* list_of_iocb[1] = {&cb};\n\n  r = io_submit(ctx, 1, list_of_iocb);\n  if(r != 1) {\n    PFATAL(\"io_submit()\");\n  }\n\n  struct io_event events[1] = {};\n  r = io_getevents(ctx, 1, 1, events, NULL);\n  if(r != 1) {\n    PFATAL(\"io_getevents()\");\n  }\n\n  printf(\"read %lld bytes from /etc/passwd\\\\n\", events[0].res);\n  io_destroy(ctx);\n  close(fd);\n  return 0;\n}\n"
+)
+check_compile(HAVE_LINUX_AIO "${TRY_LINUX_AIO}")
+if(HAVE_LINUX_AIO)
+  check_run(SUPPORT_LINUX_AIO "${TRY_LINUX_AIO}")
+endif(HAVE_LINUX_AIO)
+
+if(HAVE_LINUX_AIO)
+  message(STATUS "Support Linux AIO: ${SUPPORT_LINUX_AIO}")
+  add_definitions(-DHAVE_LINUX_AIO=1)
+endif(HAVE_LINUX_AIO)
 
 check_compile(HAVE_SOCKLEN_T "#include <sys/types.h>\n#ifdef __MINGW32__\n#include <winsock2.h>\n#include <ws2tcpip.h>\n#else\n#include <sys/socket.h>\n#include <netinet/in.h>\n#endif\n\nint main() { socklen_t t;\n  (void)t;\n  return 0;\n}\n")
 if(NOT HAVE_SOCKLEN_T)
@@ -534,6 +544,22 @@ function(check_functions)
 endfunction(check_functions)
 
 check_functions(lstat waitpid aligned_alloc fnmatch getdelim getopt getopt_long pipe2 popen posix_memalign pread sendfile sigaddset sigemptyset sigprocmask strerror_r __write writev posix_spawnattr_setflags posix_spawn_file_actions_init posix_spawn_file_actions_adddup2 posix_spawnp clock_gettime)
+
+check_include_file(linux/aio_abi.h HAVE_LINUX_AIO_ABI_H)
+
+if(HAVE_LINUX_AIO_ABI_H)
+  message(STATUS "Have Linux AIO ABI header")
+  # list(APPEND CMAKE_REQUIRED_INCLUDES  "linux/aio_abi.h" )
+  check_symbol_exists(io_setup "linux/aio_abi.h" HAVE_IO_SETUP)
+  check_symbol_exists(io_destroy "linux/aio_abi.h" HAVE_IO_DESTROY)
+  check_symbol_exists(io_submit "linux/aio_abi.h" HAVE_IO_SUBMIT)
+  check_symbol_exists(io_getevents "linux/aio_abi.h" HAVE_IO_GETEVENTS)
+
+  foreach(H HAVE_IO_SETUP HAVE_IO_DESTROY HAVE_IO_SUBMIT HAVE_IO_GETEVENTS)
+    add_definitions(-D"${H}=1")
+  endforeach()
+endif(HAVE_LINUX_AIO_ABI_H)
+
 if(HAVE_POSIX_SPAWNATTR_SETFLAGS AND HAVE_POSIX_SPAWN_FILE_ACTIONS_INIT AND HAVE_POSIX_SPAWN_FILE_ACTIONS_ADDDUP2 AND HAVE_POSIX_SPAWNP)
   add_definitions(-DPOSIX_SPAWN=1)
 endif()
@@ -603,6 +629,17 @@ if(USE_SELECT STREQUAL "ON")
   add_definitions(-DUSE_SELECT=1 -DIOPAUSE_SELECT=1)
 endif()
 ]]
+  set(IOPAUSE_MUX "" CACHE STRING "iopause() multiplex call")
+
+if(HAVE_LINUX_AIO) 
+  set(IOPAUSE_MUX LINUX_AIO CACHE STRING "iopause() multiplex call" FORCE)
+elseif(SUPPORT_POLL)
+  set(IOPAUSE_MUX POLL CACHE STRING "iopause() multiplex call" FORCE)
+else()
+  set(IOPAUSE_MUX SELECT CACHE STRING "iopause() multiplex call" FORCE)
+endif()
+  add_definitions(-DIOPAUSE_${IOPAUSE_MUX}=1)
+
 check_include_file(stdint.h HAVE_STDINT_H)
 check_include_file(stdlib.h HAVE_STDLIB_H)
 check_include_file(stdbool.h HAVE_STDBOOL_H)
@@ -824,50 +861,31 @@ if(USE_SSL AND NOT BUILD_SSL)
   if(NOT OPENSSL_ROOT_DIR)
     if("$ENV{OPENSSL_ROOT}")
       set(OPENSSL_ROOT_DIR "$ENV{OPENSSL_ROOT}" CACHE FILEPATH "OpenSSL root directory")
-   # else("$ENV{OPENSSL_ROOT}")
-   #   set(OPENSSL_ROOT_DIR "${CMAKE_INSTALL_PREFIX}" CACHE FILEPATH "OpenSSL root directory")
+      # else("$ENV{OPENSSL_ROOT}") set(OPENSSL_ROOT_DIR "${CMAKE_INSTALL_PREFIX}" CACHE FILEPATH "OpenSSL root directory")
     endif("$ENV{OPENSSL_ROOT}")
   endif(NOT OPENSSL_ROOT_DIR)
- set(PKG_CONFIG_USE_CMAKE_PREFIX_PATH ON)
- #unset(OPENSSL_FOUND CACHE)
-    message(STATUS "Searching pkgconfig database for openssl...")
-    pkg_search_module(OPENSSL openssl libssl)
+  set(PKG_CONFIG_USE_CMAKE_PREFIX_PATH ON)
+  # unset(OPENSSL_FOUND CACHE)
+  message(STATUS "Searching pkgconfig database for openssl...")
+  pkg_search_module(OPENSSL openssl libssl)
 
-message(STATUS "pkg_search_module(OPENSSL openssl)")
-message(STATUS "  OPENSSL_LIBRARY = ${OPENSSL_LIBRARY}")
-message(STATUS "  OPENSSL_LIBRARIES = ${OPENSSL_LIBRARIES}")
-message(STATUS "  OPENSSL_INCLUDE_DIRS = ${OPENSSL_INCLUDE_DIRS}")
-message(STATUS "  pkgcfg_lib_OPENSSL_crypto = ${pkgcfg_lib_OPENSSL_crypto}")
-message(STATUS "  pkgcfg_lib_OPENSSL_ssl = ${pkgcfg_lib_OPENSSL_ssl}")
-message(STATUS "  PKG_CONFIG_EXECUTABLE = ${PKG_CONFIG_EXECUTABLE}")
+  message(STATUS "pkg_search_module(OPENSSL openssl)")
+  message(STATUS "  OPENSSL_LIBRARY = ${OPENSSL_LIBRARY}")
+  message(STATUS "  OPENSSL_LIBRARIES = ${OPENSSL_LIBRARIES}")
+  message(STATUS "  OPENSSL_INCLUDE_DIRS = ${OPENSSL_INCLUDE_DIRS}")
+  message(STATUS "  pkgcfg_lib_OPENSSL_crypto = ${pkgcfg_lib_OPENSSL_crypto}")
+  message(STATUS "  pkgcfg_lib_OPENSSL_ssl = ${pkgcfg_lib_OPENSSL_ssl}")
+  message(STATUS "  PKG_CONFIG_EXECUTABLE = ${PKG_CONFIG_EXECUTABLE}")
   if(OPENSSL_FOUND)
-      message(STATUS "Found openssl at ${OPENSSL_LIBRARY_DIRS}...")
-  check_include_file(openssl/ssl.h HAVE_OPENSSL_SSL_H)
-    if(pkgcfg_lib_OPENSSL_crypto AND NOT OPENSSL_CRYPTO_LIBRARY)
-      set(OPENSSL_CRYPTO_LIBRARY "${pkgcfg_lib_OPENSSL_crypto}")
-      list(APPEND OPENSSL_LIBRARIES ${pkgcfg_lib_OPENSSL_crypto})
-    endif(pkgcfg_lib_OPENSSL_crypto AND NOT OPENSSL_CRYPTO_LIBRARY)
-    if(pkgcfg_lib_OPENSSL_ssl)
+    message(STATUS "Found openssl at ${OPENSSL_LIBRARY_DIRS}...")
+    check_include_file(openssl/ssl.h HAVE_OPENSSL_SSL_H)
 
-      if(pkgcfg_lib_OPENSSL_ssl)
-        if(NOT OPENSSL_SSL_LIBRARY)
-          set(OPENSSL_SSL_LIBRARY "${pkgcfg_lib_OPENSSL_ssl}")
-        endif(NOT OPENSSL_SSL_LIBRARY)
-      else(pkgcfg_lib_OPENSSL_ssl)
-        string(REPLACE "libcrypto" "libssl" OPENSSL_SSL_LIB "${OPENSSL_CRYPTO_LIBRARY}")
-        set(OPENSSL_SSL_LIBRARY "${OPENSSL_SSL_LIB}" CACHE STRING "SSL library" FORCE)
-      endif(pkgcfg_lib_OPENSSL_ssl)
-
-      list(APPEND OPENSSL_LIBRARIES ${pkgcfg_lib_OPENSSL_ssl})
-    endif(pkgcfg_lib_OPENSSL_ssl)
   else(OPENSSL_FOUND)
-     message(STATUS "Searching for openssl using FindOpenSSL.cmake script...")
-   include(FindOpenSSL)
+    message(STATUS "Searching for openssl using FindOpenSSL.cmake script...")
+    include(FindOpenSSL)
   endif(OPENSSL_FOUND)
 
-  #if(NOT HAVE_OPENSSL_SSL_H)
-  #  set(OPENSSL_FOUND FALSE)
-  #endif(NOT HAVE_OPENSSL_SSL_H)
+  # if(NOT HAVE_OPENSSL_SSL_H) set(OPENSSL_FOUND FALSE) endif(NOT HAVE_OPENSSL_SSL_H)
 
   message(OPENSSL_FOUND: ${OPENSSL_FOUND})
   if(OPENSSL_FOUND)
@@ -880,11 +898,6 @@ message(STATUS "  PKG_CONFIG_EXECUTABLE = ${PKG_CONFIG_EXECUTABLE}")
   else(OPENSSL_FOUND)
     set(BUILD_SSL TRUE)
   endif(OPENSSL_FOUND)
-
-  if(OPENSSL_SSL_LIBRARY STREQUAL "" OR NOT OPENSSL_SSL_LIBRARY)
-    string(REPLACE "libcrypto" "libssl" OPENSSL_SSL_LIB "${OPENSSL_CRYPTO_LIBRARY}")
-    set(OPENSSL_SSL_LIBRARY "${OPENSSL_SSL_LIB}" CACHE FILEPATH "SSL library" FORCE)
-  endif(OPENSSL_SSL_LIBRARY STREQUAL "" OR NOT OPENSSL_SSL_LIBRARY)
 
   # message(STATUS "OPENSSL_FOUND=${OPENSSL_FOUND}\n   OPENSSL_INCLUDE_DIR=${OPENSSL_LIB_DIR}\n   OPENSSL_LIB_DIR=${OPENSSL_INCLUDE_DIR}\n   OPENSSL_ROOT_DIR=${OPENSSL_ROOT_DIR}\n   OPENSSL_CRYPTO_LIBRARY=${OPENSSL_CRYPTO_LIBRARY}\n   OPENSSL_SSL_LIBRARY=${OPENSSL_SSL_LIBRARY}")
 
@@ -905,6 +918,40 @@ if(NOT OPENSSL_SSL_LIBRARY OR OPENSSL_SSL_LIBRARY STREQUAL "")
   string(REPLACE "libcrypto" "libssl" OPENSSL_SSL_LIBRARY "${OPENSSL_CRYPTO_LIBRARY}")
   # message("OPENSSL_SSL_LIBRARY: ${OPENSSL_SSL_LIBRARY}")
 endif(NOT OPENSSL_SSL_LIBRARY OR OPENSSL_SSL_LIBRARY STREQUAL "")
+
+if(OPENSSL_FOUND)
+  dump(pkgcfg_lib_OPENSSL_ssl pkgcfg_lib_OPENSSL_crypto)
+
+  if(pkgcfg_lib_OPENSSL_crypto)
+    # if(NOT pkgcfg_lib_OPENSSL_ssl OR "${pkgcfg_lib_OPENSSL_ssl}" STREQUAL "")
+    string(REPLACE "libcrypto" "libssl" pkgcfg_lib_OPENSSL_ssl "${pkgcfg_lib_OPENSSL_crypto}")
+    # endif(NOT pkgcfg_lib_OPENSSL_ssl OR "${pkgcfg_lib_OPENSSL_ssl}" STREQUAL "")
+  endif(pkgcfg_lib_OPENSSL_crypto)
+  if(pkgcfg_lib_OPENSSL_ssl)
+    set(OPENSSL_SSL_LIBRARY "${pkgcfg_lib_OPENSSL_ssl}")
+  else(pkgcfg_lib_OPENSSL_ssl)
+    string(REPLACE "libcrypto" "libssl" OPENSSL_SSL_LIB "${OPENSSL_CRYPTO_LIBRARY}")
+    set(OPENSSL_SSL_LIBRARY "${OPENSSL_SSL_LIB}" CACHE STRING "SSL library" FORCE)
+  endif(pkgcfg_lib_OPENSSL_ssl)
+
+  if(OPENSSL_SSL_LIBRARY STREQUAL "" OR NOT OPENSSL_SSL_LIBRARY)
+    string(REPLACE "libcrypto" "libssl" OPENSSL_SSL_LIB "${OPENSSL_CRYPTO_LIBRARY}")
+    set(OPENSSL_SSL_LIBRARY "${OPENSSL_SSL_LIB}" CACHE FILEPATH "SSL library" FORCE)
+  endif(OPENSSL_SSL_LIBRARY STREQUAL "" OR NOT OPENSSL_SSL_LIBRARY)
+
+  if(OPENSSL_CRYPTO_LIBRARY STREQUAL "" OR NOT OPENSSL_CRYPTO_LIBRARY)
+    string(REPLACE "libssl" "libcrypto" OPENSSL_CRYPTO_LIB "${OPENSSL_SSL_LIBRARY}")
+    set(OPENSSL_CRYPTO_LIBRARY "${OPENSSL_CRYPTO_LIB}" CACHE FILEPATH "SSL library" FORCE)
+  endif(OPENSSL_CRYPTO_LIBRARY STREQUAL "" OR NOT OPENSSL_CRYPTO_LIBRARY)
+
+  if(OPENSSL_SSL_LIBRARY)
+    list(APPEND OPENSSL_LIBRARIES ${OPENSSL_SSL_LIBRARY})
+  endif(OPENSSL_SSL_LIBRARY)
+
+  if(OPENSSL_CRYPTO_LIBRARY)
+    list(APPEND OPENSSL_LIBRARIES ${OPENSSL_CRYPTO_LIBRARY})
+  endif(OPENSSL_CRYPTO_LIBRARY)
+endif(OPENSSL_FOUND)
 
 set(CMAKE_REQUIRED_DEFINITIONS)
 set(CMAKE_REQUIRED_INCLUDES "poll.h")
@@ -959,10 +1006,10 @@ endfunction(list_contains LIST ITEM OUTPUT_VAR)
 set(MUX "")
 set(MUX_DEFS "")
 set(MUX_ALL
-    KQUEUE DEVPOLL EPOLL
+    LINUX_AIO KQUEUE DEVPOLL EPOLL
     # SIGIO
     POLL SELECT)
-set(MUX_USE KQUEUE EPOLL DEVPOLL SIGIO POLL SELECT)
+set(MUX_USE LINUX_AIO KQUEUE EPOLL DEVPOLL SIGIO POLL SELECT)
 foreach(METHOD ${MUX_USE})
   if(SUPPORT_${METHOD})
     list_contains("${MUX_LIST}" "${METHOD}" CONTAINS_METHOD)
@@ -970,22 +1017,22 @@ foreach(METHOD ${MUX_USE})
       list(APPEND MUX_LIST ${METHOD})
     endif(NOT CONTAINS_METHOD)
     if(MUX STREQUAL "")
-    message(STATUS "Setting MUX method to ${METHOD}")
+      message(STATUS "Setting MUX method to ${METHOD}")
       set(MUX "${METHOD}" CACHE STRING "I/O multiplex method" FORCE)
     endif(MUX STREQUAL "")
     set(MUX_DEFS "${MUX_DEFS} -DHAVE_${METHOD}=1")
   endif(SUPPORT_${METHOD})
 endforeach()
-foreach(METHOD ${MUX_ALL})
+#[[foreach(METHOD ${MUX_ALL})
   if(SUPPORT_${METHOD})
     set(MUX_DEFS "${MUX_DEFS} -DSUPPORT_${METHOD}=1")
   endif(SUPPORT_${METHOD})
-endforeach()
+endforeach()]]
 set(MUX_METHODS "${MUX_LIST}")
 
 message(STATUS "Available MUX methods: ${MUX_METHODS}")
 string(REGEX REPLACE "[;\n ]" ";" __MUX_METHODS "${MUX_METHODS}")
-#unset(MUX_METHODS)
+# unset(MUX_METHODS)
 set(MUX_METHOD "${MUX}" CACHE STRING "multiplex methods")
 
 set_property(CACHE MUX_METHOD PROPERTY STRINGS ${__MUX_METHODS})
@@ -996,16 +1043,17 @@ if(LIBMSWSOCK)
   list(APPEND CMAKE_REQUIRED_LIBRARIES ${LIBMSWSOCK})
 endif(LIBMSWSOCK)
 
-#set(MUX_METHOD "${MUX}" CACHE STRING "I/O Multiplexer method")
+# set(MUX_METHOD "${MUX}" CACHE STRING "I/O Multiplexer method")
 message(STATUS "MUX method: ${MUX_METHOD}")
 
-if(MUX_METHOD STREQUAL "SELECT")
+#[[if(MUX_METHOD STREQUAL "SELECT")
   set(io_COMPILE_FLAGS -DUSE_SELECT=1)
-else()
-  set(io_COMPILE_FLAGS "-DHAVE_${MUX_METHOD}=1")
-endif()
+else()]]
+add_definitions("-DHAVE_${MUX_METHOD}=1" "-DUSE_${MUX_METHOD}=1")
+set(io_COMPILE_FLAGS "-DHAVE_${MUX_METHOD}=1 -DUSE_${MUX_METHOD}=1")
+#[[endif()
 add_definitions("-DHAVE_${MUX_METHOD}=1" "-DHAVE_${MUX}=1")
-
+]]
 if(WIN32 OR MSVC)
   if(USE_WIDECHAR)
     add_definitions(-DUSE_WIDECHAR=1)
@@ -1162,7 +1210,10 @@ if(BUILD_LZMA)
   endif()
   include("${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/xz.cmake")
 
-  # configure_file("${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/xz-config.h.cmake" "${CMAKE_CURRENT_BINARY_DIR}/3rdparty/xz/config.h")
+   configure_file(
+    "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/xz-config.h.cmake" 
+    "${CMAKE_CURRENT_BINARY_DIR}/3rdparty/xz/config.h"
+    )
 
   # configure_file("${CMAKE_SOURCE_DIR}/3rdparty/lzma-config.h.cmake" "${CMAKE_CURRENT_BINARY_DIR}/3rdparty/xz/config.h")
 
@@ -1202,8 +1253,13 @@ if(BUILD_LZMA)
     set(LZMA_SOURCE_DIR "${CMAKE_SOURCE_DIR}/3rdparty/xz")
     set(LIBLZMA_INCLUDE_DIRS ${LZMA_SOURCE_DIR}/src/common ${LZMA_SOURCE_DIR}/src/liblzma/lzma ${LZMA_SOURCE_DIR}/src/liblzma/lz ${LZMA_SOURCE_DIR}/src/liblzma/check ${LZMA_SOURCE_DIR}/src/liblzma/simple ${LZMA_SOURCE_DIR}/src/liblzma/delta ${LZMA_SOURCE_DIR}/src/liblzma/rangecoder ${LZMA_SOURCE_DIR}/src/liblzma/common ${LZMA_SOURCE_DIR}/src/liblzma/api ${CMAKE_BINARY_DIR}/3rdparty/xz)
     define_have(LIBLZMA_DEFS HAVE_STDINT_H HAVE_STDLIB_H HAVE_STDBOOL_H HAVE_INTTYPES_H HAVE_LIMITS_H HAVE_STRING_H HAVE_STRINGS_H HAVE_MEMORY_H HAVE_SYS_PARAM_H HAVE_SYS_TIME_H HAVE_SYS_TYPES_H HAVE_LZMA_H)
+    list(APPEND LIBLZMA_DEFS 
+      HAVE_CONFIG_H
+      )
+
     # message("LIBLZMA_DEFS: ${LIBLZMA_DEFS}")
-    set_target_properties(lzma PROPERTIES COMPILE_DEFINITIONS "${LIBLZMA_DEFS}" INCLUDE_DIRECTORIES "${LIBLZMA_INCLUDE_DIRS}")
+    set_target_properties(lzma PROPERTIES COMPILE_DEFINITIONS "${LIBLZMA_DEFS}"
+     INCLUDE_DIRECTORIES "${LIBLZMA_INCLUDE_DIRS};${CMAKE_SOURCE_DIR}/lib;${CMAKE_CURRENT_BINARY_DIR}/3rdparty/xz")
   endif(LIBLZMA_SOURCES)
 
   link_directories(BEFORE "${CMAKE_BINARY_DIR}/xz")
@@ -1272,7 +1328,7 @@ if(USE_SSL)
 endif(USE_SSL)
 
 if(BUILD_SSL)
-  set(LIBSSL libssl libcrypto CACHE PATH "OpenSSL library" FORCE)
+  set(LIBSSL ${OPENSSL_LIBRARIES} CACHE PATH "OpenSSL library" FORCE)
 else(BUILD_SSL)
   if(LINK_STATIC)
     set(LIBSSL ${OPENSSL_STATIC_LIBRARIES} CACHE PATH "OpenSSL library" FORCE)
@@ -1280,7 +1336,6 @@ else(BUILD_SSL)
     set(LIBSSL ${OPENSSL_SSL_LIBRARY} ${OPENSSL_CRYPTO_LIBRARY} CACHE PATH "OpenSSL library" FORCE)
   endif(LINK_STATIC)
 endif(BUILD_SSL)
-
 
 if(OPENSSL_LIB_DIR)
   set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -L${OPENSSL_LIB_DIR}")
@@ -1317,7 +1372,6 @@ link_directories(AFTER "${CMAKE_BINARY_DIR}")
 
 file(TO_NATIVE_PATH "/" PATH_SEPARATOR)
 message("The systems's path separator is '${PATH_SEPARATOR}'")
-
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
   option(USE_EFENCE "Enable electric fence" OFF)
@@ -1356,90 +1410,35 @@ add_definitions(-DHAVE_CONFIG_H=1)
 include_directories("${CMAKE_CURRENT_BINARY_DIR}")
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/build/cmake/config.h.cmake" "${CMAKE_CURRENT_BINARY_DIR}/config.h")
 
-#------------------------------------------------------------------------------------------------------------------------------------------
-#------------------------------------------------------------------------------------------------------------------------------------------
-##############################################
-####                                      ####
-####  END OF CHECKS, NOW COME THE TARGETS ####
-####                                      ####
-##############################################
+# ------------------------------------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------------------------------------
+# ##############################################################################################################################################################################################################################################################################################################################################################################################################
+# #### END OF CHECKS, NOW COME THE TARGETS #### ####
+# ##############################################################################################################################################################################################################################################################################################################################################################################################################
 
 dump(CMAKE_EXE_LINKER_FLAGS LIBSSL)
 
-include(lib/CMakeLists.txt)
+add_subdirectory(lib ${CMAKE_BINARY_DIR}/lib)
 #
-#set(iarray_SOURCES lib/cas.S)
+# set(iarray_SOURCES lib/cas.S)
 #
-#set(MODSUBDIRS alloc array binfmt buffer byte case cb cbmap charbuf coff dir dns elf env errmsg fmt gpio hashmap hmap http iarray ihex io json list map mmap ndelay omf open path pe playlist process range rdir safemult scan seek set sig slist socket  str stralloc strarray strlist tai taia textbuf textcode tls uint16 uint32 uint64 unix wait xml ucs utf8)
-#file(GLOB MODHEADERS lib/*.h)
+# set(MODSUBDIRS alloc array binfmt buffer byte case cb cbmap charbuf coff dir dns elf env errmsg fmt gpio hashmap hmap http iarray ihex io json list map mmap ndelay omf open path pe playlist process range rdir safemult scan seek set sig slist socket  str stralloc strarray strlist tai taia textbuf textcode tls uint16 uint32 uint64 unix wait xml ucs utf8) file(GLOB MODHEADERS lib/*.h)
 #
-#foreach(LIBNAME ${MODSUBDIRS})
-#  file(GLOB MODHEADERS lib/${LIBNAME}.h lib/${LIBNAME}_*.h)
-#  file(GLOB MODSOURCES lib/${LIBNAME}/*.c)
-#  if(NOT MODSOURCES)
-#    file(GLOB MODSOURCES lib/${LIBNAME}_*.c)
-#  endif()
-#  set(EXTRA_SOURCES ${${LIBNAME}_SOURCES})
-#  if(EXTRA_SOURCES)
-#    message(STATUS "${LIBNAME} extra sources: ${EXTRA_SOURCES}")
-#  endif(EXTRA_SOURCES)
-#  add_library("${LIBNAME}" STATIC ${MODSOURCES} ${MODHEADERS} ${EXTRA_SOURCES})
-#  if(BUILD_SHARED_LIBS)
-#    add_library("${LIBNAME}-shared" SHARED ${MODSOURCES} ${MODHEADERS} ${EXTRA_SOURCES})
-#    set_target_properties("${LIBNAME}-shared" PROPERTIES PREFIX "lib" COMPILE_FLAGS "${WARN_C_COMPILER_FLAGS} -fPIC")
-#  endif(BUILD_SHARED_LIBS)
-#  set_target_properties("${LIBNAME}" PROPERTIES PREFIX "" COMPILE_FLAGS "${WARN_C_COMPILER_FLAGS} ${${LIBNAME}_COMPILE_FLAGS}")
+# foreach(LIBNAME ${MODSUBDIRS}) file(GLOB MODHEADERS lib/${LIBNAME}.h lib/${LIBNAME}_*.h) file(GLOB MODSOURCES lib/${LIBNAME}/*.c) if(NOT MODSOURCES) file(GLOB MODSOURCES lib/${LIBNAME}_*.c) endif() set(EXTRA_SOURCES ${${LIBNAME}_SOURCES}) if(EXTRA_SOURCES) message(STATUS "${LIBNAME} extra sources: ${EXTRA_SOURCES}") endif(EXTRA_SOURCES) add_library("${LIBNAME}" STATIC ${MODSOURCES} ${MODHEADERS}
+# ${EXTRA_SOURCES}) if(BUILD_SHARED_LIBS) add_library("${LIBNAME}-shared" SHARED ${MODSOURCES} ${MODHEADERS} ${EXTRA_SOURCES}) set_target_properties("${LIBNAME}-shared" PROPERTIES PREFIX "lib" COMPILE_FLAGS "${WARN_C_COMPILER_FLAGS} -fPIC") endif(BUILD_SHARED_LIBS) set_target_properties("${LIBNAME}" PROPERTIES PREFIX "" COMPILE_FLAGS "${WARN_C_COMPILER_FLAGS} ${${LIBNAME}_COMPILE_FLAGS}")
 #
-#endforeach(LIBNAME)
+# endforeach(LIBNAME)
 #
-#set_target_properties(io PROPERTIES COMPILE_FLAGS "${MUX_DEFS}")
+# set_target_properties(io PROPERTIES COMPILE_FLAGS "${MUX_DEFS}")
 #
-#foreach(NETLIB dns http io ndelay socket)
-#  target_link_libraries(${NETLIB} ${LIBMSWSOCK})
-#endforeach()
+# foreach(NETLIB dns http io ndelay socket) target_link_libraries(${NETLIB} ${LIBMSWSOCK}) endforeach()
 #
+# target_link_libraries(unix stralloc buffer ndelay) target_link_libraries(array safemult byte str) target_link_libraries(binfmt mmap byte) target_link_libraries(buffer alloc byte fmt mmap open str ${ZLIB_LIBRARY}) target_link_libraries(cb str) target_link_libraries(cbmap str) target_link_libraries(dns byte case fmt io open socket str taia uint16 ${LIBIPHLPAPI}) target_link_libraries(dir stralloc)
+# target_link_libraries(errmsg str) target_link_libraries(elf byte str range mmap uint64 uint32 uint16) target_link_libraries(fmt byte str uint64 uint32) target_link_libraries(gpio mmap) target_link_libraries(hmap str) target_link_libraries(http dns errmsg byte io scan socket stralloc str ${LIBSSL}) target_link_libraries(io buffer iarray array byte fmt open taia ${LIBMSWSOCK})
+# target_link_libraries(json charbuf hmap scan) target_link_libraries(map str) target_link_libraries(mmap seek open scan ${LIBPSAPI}) target_link_libraries(open str uint32) target_link_libraries(path dir strlist) target_link_libraries(pe uint64 uint32 uint16) target_link_libraries(playlist byte fmt scan str xml) target_link_libraries(rdir dir) target_link_libraries(scan byte str)
+# target_link_libraries(socket byte fmt ndelay scan uint16 ${LIBMSWSOCK}) target_link_libraries(str byte) target_link_libraries(stralloc alloc open byte fmt str) target_link_libraries(strarray array) target_link_libraries(strlist stralloc buffer) target_link_libraries(taia tai) target_link_libraries(textbuf byte playlist) target_link_libraries(uint64 uint32) target_link_libraries(xml buffer array
+# strlist hmap alloc) target_link_libraries(json slist hmap stralloc buffer alloc) target_link_libraries(ndelay socket) target_link_libraries(process wait errmsg) target_link_libraries(ihex scan byte) target_link_libraries(uint32 taia tai) target_link_libraries(tls iarray)
 #
-#
-#target_link_libraries(unix stralloc buffer ndelay)
-#target_link_libraries(array safemult byte str)
-#target_link_libraries(binfmt mmap byte)
-#target_link_libraries(buffer alloc byte fmt mmap open str ${ZLIB_LIBRARY})
-#target_link_libraries(cb str)
-#target_link_libraries(cbmap str)
-#target_link_libraries(dns byte case fmt io open socket str taia uint16 ${LIBIPHLPAPI})
-#target_link_libraries(dir stralloc)
-#target_link_libraries(errmsg str)
-#target_link_libraries(elf byte str range mmap uint64 uint32 uint16)
-#target_link_libraries(fmt byte str uint64 uint32)
-#target_link_libraries(gpio mmap)
-#target_link_libraries(hmap str)
-#target_link_libraries(http dns errmsg byte io scan socket stralloc str ${LIBSSL})
-#target_link_libraries(io buffer iarray array byte fmt open taia ${LIBMSWSOCK})
-#target_link_libraries(json charbuf hmap scan)
-#target_link_libraries(map str)
-#target_link_libraries(mmap seek open scan ${LIBPSAPI})
-#target_link_libraries(open str uint32)
-#target_link_libraries(path dir strlist)
-#target_link_libraries(pe uint64 uint32 uint16)
-#target_link_libraries(playlist byte fmt scan str xml)
-#target_link_libraries(rdir dir)
-#target_link_libraries(scan byte str)
-#target_link_libraries(socket byte fmt ndelay scan uint16 ${LIBMSWSOCK})
-#target_link_libraries(str byte)
-#target_link_libraries(stralloc alloc open byte fmt str)
-#target_link_libraries(strarray array)
-#target_link_libraries(strlist stralloc buffer)
-#target_link_libraries(taia tai)
-#target_link_libraries(textbuf byte playlist)
-#target_link_libraries(uint64 uint32)
-#target_link_libraries(xml buffer array strlist hmap alloc)
-#target_link_libraries(json slist hmap stralloc buffer alloc)
-#target_link_libraries(ndelay socket)
-#target_link_libraries(process wait errmsg)
-#target_link_libraries(ihex scan byte)
-#target_link_libraries(uint32 taia tai)
-#target_link_libraries(tls iarray)
-##
 
 set(COMMON_LIBS strlist array safemult scan str byte mmap open fmt)
 
@@ -1495,9 +1494,7 @@ function(add_module MOD SRC)
   endif(NOT EMSCRIPTEN)
 endfunction(add_module MOD)
 
-
 set(genmakefile_SOURCES mplab.c ini.c ini.h genmakefile.h debug.c debug.h)
-
 
 add_program(binfmttest binfmt)
 if(USE_BZIP)
@@ -1530,7 +1527,7 @@ add_program(elfwrsec buffer alloc elf mmap)
 add_program(genmakefile sig set case errmsg strarray slist rdir dir path strlist hashmap hmap stralloc buffer mmap unix open scan fmt byte str array safemult alloc)
 add_program(piccfg ihex errmsg strarray slist rdir dir path strlist hashmap hmap stralloc buffer mmap unix open scan fmt byte str array safemult alloc)
 add_program(hexedit stralloc buffer array io errmsg mmap open path scan uint64 unix ${ZLIB_LIBRARY})
-add_program(httptest http tls dns stralloc buffer errmsg byte io socket alloc taia ${LIBSSL} ${LIBMSWSOCK} ${LIBDL} pthread)
+add_program(httptest sig http tls dns stralloc buffer errmsg byte io socket alloc taia ${LIBSSL} ${LIBMSWSOCK} ${LIBDL} pthread)
 set(ssltest_SOURCES address.c address.h)
 add_program(ssltest strlist unix tls dns stralloc buffer errmsg byte io socket alloc taia ${LIBSSL} ${LIBMSWSOCK} ${LIBDL} pthread)
 add_program(impgen pe buffer byte mmap open)
@@ -1591,7 +1588,7 @@ add_program(tinyproxy process unix path wait range dns taia tai hmap env ndelay 
 target_link_libraries(tinyproxy ${LIBMSWSOCK})
 # if(NOT WIN32) add_program(tcpproxy http io errmsg buffer open ) endif(NOT WIN32)
 
-#add_program(redir http io ${LIBCOMPAT})
+# add_program(redir http io ${LIBCOMPAT})
 
 add_program(parse strlist errmsg)
 add_program(testihex ihex stralloc buffer alloc mmap)

@@ -264,9 +264,7 @@ parseit(stralloc* r_dir, stralloc* dirdata, int dirlines) {
     if(!ok) {
       if(!str_start(p, "total") && !str_start(p, "Total"))
         do_log3("cannot parse LIST line: ", p, "\r\n");
-    } else if(parsed[ind].name[0] == '.' &&
-              (parsed[ind].namelen == 1 ||
-               (parsed[ind].namelen == 2 && parsed[ind].name[1] == '.'))) {
+    } else if(parsed[ind].name[0] == '.' && (parsed[ind].namelen == 1 || (parsed[ind].namelen == 2 && parsed[ind].name[1] == '.'))) {
       if(o_loglevel > 1) {
         do_log2(r_dir->s, "/");
         do_logmem(parsed[ind].name, parsed[ind].namelen);
@@ -405,15 +403,7 @@ static uogetopt2 myopts[] = {
      "all the directories and files it files. A top level directories content "
      "will be printed completely before the sub directories will be traversed.",
      0},
-    {0,
-     "raw",
-     uogo_flag,
-     UOGO_NOARG,
-     &o_raw,
-     1,
-     "Raw output in original format.",
-     "This will preserve the original format and sort order.",
-     0},
+    {0, "raw", uogo_flag, UOGO_NOARG, &o_raw, 1, "Raw output in original format.", "This will preserve the original format and sort order.", 0},
     {0,
      "max-depth",
      uogo_ulong,
@@ -498,15 +488,7 @@ static uogetopt2 myopts[] = {
      "  ftp://serak.ohse.de/uwe/cvs-trees \\\n"
      "  > SOMEWHERE/cvs-trees/index-by-date.html\n",
      0},
-    {0,
-     "author",
-     uogo_print_help,
-     UOGO_NOARG | UOGO_HIDDEN | UOGO_EXIT | UOGO_NOLHD,
-     0,
-     0,
-     "Show author.",
-     "Uwe Ohse, <uwe@ohse.de>.",
-     0},
+    {0, "author", uogo_print_help, UOGO_NOARG | UOGO_HIDDEN | UOGO_EXIT | UOGO_NOLHD, 0, 0, "Show author.", "Uwe Ohse, <uwe@ohse.de>.", 0},
     {0,
      "copyright",
      uogo_print_help,
@@ -520,15 +502,7 @@ static uogetopt2 myopts[] = {
      "version 2. Later versions of the GPL may or may not apply, see "
      "http://www.ohse.de/uwe/licenses/\n",
      0},
-    {0,
-     "see-also",
-     uogo_print_help,
-     UOGO_NOARG | UOGO_EXIT | UOGO_NOLHD,
-     0,
-     0,
-     "Where to find related information.",
-     "ftpcopy(1) creates and maintains ftp mirrors.\n" COMMON_RELATED_INFO,
-     0},
+    {0, "see-also", uogo_print_help, UOGO_NOARG | UOGO_EXIT | UOGO_NOLHD, 0, 0, "Where to find related information.", "ftpcopy(1) creates and maintains ftp mirrors.\n" COMMON_RELATED_INFO, 0},
 
     {0, 0, 0, 0, 0, 0, 0, 0, 0} /* --help and --version */
 };
@@ -575,23 +549,22 @@ onelisting(stralloc* d) {
   return 0;
 }
 
-static uogetopt_env optenv = {
-    0,
-    PACKAGE,
-    VERSION,
-    "usage: ftpls [options] host[:port] [remotedir]\n"
-    "   or: ftpls [options] URL",
-    "generate a ftp directory listing.",
-    "ftpls generates a listing of files and directories in a FTP directory. "
-    "By default it prints a human readable ascii output, but may also create "
-    "HTML and machine parsable output.",
-    COMMON_BUGREPORT_INFO,
-    0,
-    0,
-    0,
-    0,
-    uogetopt_out,
-    myopts};
+static uogetopt_env optenv = {0,
+                              PACKAGE,
+                              VERSION,
+                              "usage: ftpls [options] host[:port] [remotedir]\n"
+                              "   or: ftpls [options] URL",
+                              "generate a ftp directory listing.",
+                              "ftpls generates a listing of files and directories in a FTP directory. "
+                              "By default it prints a human readable ascii output, but may also create "
+                              "HTML and machine parsable output.",
+                              COMMON_BUGREPORT_INFO,
+                              0,
+                              0,
+                              0,
+                              0,
+                              uogetopt_out,
+                              myopts};
 
 int
 main(int argc, char** argv) {

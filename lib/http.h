@@ -7,6 +7,7 @@
 #include "stralloc.h"
 #include "buffer.h"
 #include "ip4.h"
+#include "tls.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -31,21 +32,9 @@ typedef struct http_return_s {
 } http_return_value;
 
 struct http_response_s;
-typedef enum {
-  HTTP_TRANSFER_UNDEF = 0,
-  HTTP_TRANSFER_CHUNKED,
-  HTTP_TRANSFER_LENGTH,
-  HTTP_TRANSFER_BOUNDARY
-} http_transfer_type;
+typedef enum { HTTP_TRANSFER_UNDEF = 0, HTTP_TRANSFER_CHUNKED, HTTP_TRANSFER_LENGTH, HTTP_TRANSFER_BOUNDARY } http_transfer_type;
 
-typedef enum {
-  HTTP_RECV_HEADER = 0,
-  HTTP_RECV_DATA,
-  HTTP_STATUS_CLOSED,
-  HTTP_STATUS_ERROR,
-  HTTP_STATUS_BUSY,
-  HTTP_STATUS_FINISH
-} http_status;
+typedef enum { HTTP_RECV_HEADER = 0, HTTP_RECV_DATA, HTTP_STATUS_CLOSED, HTTP_STATUS_ERROR, HTTP_STATUS_BUSY, HTTP_STATUS_FINISH } http_status;
 
 typedef struct http_response_s {
   http_transfer_type transfer;
@@ -76,7 +65,7 @@ typedef struct http_s {
   ipv4port port;
   http_request* request;
   http_response* response;
-  void* ssl;
+  tls_t* ssl;
   int err;
   int nonblocking : 1;
   int keepalive : 1;
@@ -104,9 +93,7 @@ ssize_t https_tls2errno(http*, ssize_t);
 ssize_t https_tls2want(http*, ssize_t, void (*)(fd_t), void (*)(fd_t));
 
 ssize_t https_connect(http*);
-void* https_ssl_ctx(void);
-const char* https_errflag(int);
-size_t https_errstr(int, char*, size_t);
+const char* https_strerror(http* h, int ret);
 int https_errno(int);
 ssize_t https_io_errhandle(http*, int);
 ssize_t https_io_want(http*, int);

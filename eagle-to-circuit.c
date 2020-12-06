@@ -107,8 +107,7 @@ int str_isfloat(const char* s);
 int str_isspace(const char* s);
 void print_attrs(HMAP_DB* a_node);
 void print_element_attrs(xmlnode* a_node);
-int
-output_net(const void* key, size_t key_len, const void* value, size_t value_len, void* user_data);
+int output_net(const void* key, size_t key_len, const void* value, size_t value_len, void* user_data);
 MAP_T devicesets;
 MAP_T packages;
 MAP_T parts;
@@ -353,10 +352,7 @@ build_reflist(xmlnode* node, struct net* n, int* index) {
     print_element_attrs(node);
     buffer_putnlflush(buffer_2);
   }
-  qsort(array_start(&n->contacts),
-        array_length(&n->contacts, sizeof(struct ref)),
-        sizeof(struct ref),
-        (cmp_fn_t*)&compare_ref);
+  qsort(array_start(&n->contacts), array_length(&n->contacts, sizeof(struct ref)), sizeof(struct ref), (cmp_fn_t*)&compare_ref);
 }
 
 /**
@@ -514,8 +510,7 @@ clean_pkgname(stralloc* pkgname, const struct package* pkg) {
   stralloc_copy(pkgname, &pkg->name);
   stralloc_lower(pkgname);
 
-  if(pkgname->len > 4 && pkgname->s[0] == '0' && isdigit(pkgname->s[1]) && isdigit(pkgname->s[2]) &&
-     isdigit(pkgname->s[3]) && pkgname->s[4] == '/') {
+  if(pkgname->len > 4 && pkgname->s[0] == '0' && isdigit(pkgname->s[1]) && isdigit(pkgname->s[2]) && isdigit(pkgname->s[3]) && pkgname->s[4] == '/') {
     // stralloc_remove(pkgname, 0, 1);
     pkgname->s[0] = 'r';
     pkgname->s[1] = 'e';
@@ -543,8 +538,7 @@ clean_pkgname(stralloc* pkgname, const struct package* pkg) {
 }
 
 int
-dump_package(
-    const void* key, size_t key_len, const void* value, size_t value_len, void* user_data) {
+dump_package(const void* key, size_t key_len, const void* value, size_t value_len, void* user_data) {
   int64 i;
   double x, y;
   const struct package* pkg = value;
@@ -561,10 +555,7 @@ dump_package(
 
   first = array_start(&pkg->pads);
 
-  qsort(first,
-        array_length(&pkg->pads, sizeof(struct pad)),
-        sizeof(struct pad),
-        (cmp_fn_t*)&compare_pads);
+  qsort(first, array_length(&pkg->pads, sizeof(struct pad)), sizeof(struct pad), (cmp_fn_t*)&compare_pads);
 
   x = first->x;
   y = first->y;
@@ -857,13 +848,7 @@ print_attrs(HMAP_DB* a) {
 
   for(t = a->list_tuple; t; t = t->next) {
     char* v = t->vals.val_chars;
-    buffer_putm_internal(buffer_2,
-                         " ",
-                         t->key,
-                         str_isdoublenum(v) ? "=" : "=\"",
-                         v,
-                         str_isdoublenum(v) ? "" : "\"",
-                         0);
+    buffer_putm_internal(buffer_2, " ", t->key, str_isdoublenum(v) ? "=" : "=\"", v, str_isdoublenum(v) ? "" : "\"", 0);
     if(t->next == a->list_tuple)
       break;
   }
@@ -1053,9 +1038,7 @@ main(int argc, char* argv[]) {
               "component pin 0>\n\n");
   MAP_VISIT_ALL(parts, output_part, "part");
 
-  buffer_puts(
-      &output,
-      "\n# Connections\n# <from component name>.<pin index> <to component name>.<pin index>\n\n");
+  buffer_puts(&output, "\n# Connections\n# <from component name>.<pin index> <to component name>.<pin index>\n\n");
 
   MAP_VISIT_ALL(parts, dump_part, "part");
   MAP_VISIT_ALL(nets, dump_net, 0);

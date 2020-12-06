@@ -30,9 +30,7 @@ strarray_splice(strarray* a, uint64 start, uint64 del, uint64 insert, const char
       // move = s + del;
     }
     if(nmove) {
-      (insert > del ? byte_copyr : byte_copy)(&s[insert],
-                                              nmove * sizeof(char*),
-                                              array_get(a, sizeof(char*), movepos));
+      (insert > del ? byte_copyr : byte_copy)(&s[insert], nmove * sizeof(char*), array_get(a, sizeof(char*), movepos));
     }
   }
   for(i = 0; i < insert; ++i) s[i] = str_dup(x[i]);

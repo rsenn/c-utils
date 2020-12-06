@@ -14,8 +14,7 @@ pls_reader(playlist* pl) {
   if((ret = buffer_getline_sa(inbuf, &line))) {
     size_t index2, index;
     index2 = index = 0;
-    while(line.len > 1 && (line.s[line.len - 1] == '\r' || line.s[line.len - 1] == '\n'))
-      line.len--;
+    while(line.len > 1 && (line.s[line.len - 1] == '\r' || line.s[line.len - 1] == '\n')) line.len--;
     stralloc_0(&line);
     if(!str_diffn(&line.s[index], "Number", 6)) {
     } else if(line.s[index] == '[') {

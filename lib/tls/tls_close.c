@@ -11,6 +11,6 @@ tls_close(fd_t fd) {
   assert(i);
   assert(i->ssl);
 
-  return tls_instance_return(i, SSL_shutdown(i->ssl));
+  return tls_instance_return(i, TLS_OP_SHUTDOWN, SSL_shutdown(i->ssl));
 }
 #endif

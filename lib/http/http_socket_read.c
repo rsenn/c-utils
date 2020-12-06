@@ -7,6 +7,7 @@
 #include "../byte.h"
 #include <errno.h>
 #include <assert.h>
+
 ssize_t
 http_socket_read(fd_t fd, void* buf, size_t len, void* b) {
   ssize_t ret = -1;
@@ -20,15 +21,15 @@ http_socket_read(fd_t fd, void* buf, size_t len, void* b) {
 #endif
 #ifdef HAVE_OPENSSL
   if(h->ssl) {
-    if(!h->connected) {
-      ret = https_connect(h);
-      if(h->connected) {
-        if((ret = http_sendreq(h)) > 0)
-          ret = 0;
-      }
-    }
-    if(h->connected || ret == 0)
-      ret = https_read(h->sock, buf, len, b);
+    /* if(!h->connected) {
+       ret = https_connect(h);*/
+    /*   if(h->connected) {
+         if((ret = http_sendreq(h)) > 0)
+           ret = 0;
+       }
+     }*/
+    // if(h->connected || ret == 0)
+    ret = tls_read(h->sock, buf, len);
   } else
 #endif
     ret = io_tryread(fd, (char*)buf, len);

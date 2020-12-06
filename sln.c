@@ -141,26 +141,14 @@ sln(const char* path) {
 
 void
 usage(char* av0) {
-  buffer_putm_internal(buffer_1,
-                       "Usage: ",
-                       str_basename(av0),
-                       " [OPTIONS] <FILE.list | TARGET LINK>\n",
-                       "\n",
-                       "Options:\n",
-                       "\n",
-                       "  -h, --help              Show this help\n",
-                       "  -v, --verbose           Be verbose\n",
-                       "\n",
-                       NULL);
+  buffer_putm_internal(buffer_1, "Usage: ", str_basename(av0), " [OPTIONS] <FILE.list | TARGET LINK>\n", "\n", "Options:\n", "\n", "  -h, --help              Show this help\n", "  -v, --verbose           Be verbose\n", "\n", NULL);
   buffer_flush(buffer_1);
 }
 
 int
 main(int argc, char* argv[]) {
   int index = 0, c;
-  static const struct longopt opts[] = {{"help", 0, NULL, 'h'},
-                                        {"verbose", 0, 0, 'v'},
-                                        {0, 0, 0, 0}};
+  static const struct longopt opts[] = {{"help", 0, NULL, 'h'}, {"verbose", 0, 0, 'v'}, {0, 0, 0, 0}};
 
   errmsg_iam(argv[0]);
 

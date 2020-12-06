@@ -18,6 +18,10 @@
 
 extern void* io_getfds();
 
+#ifdef HAVE_LINUX_AIO
+#include <linux/aio_abi.h>
+#endif
+
 #if WINDOWS_NATIVE
 #ifdef _MSC_VER
 #define _CRT_INTERNAL_NONSTDC_NAMES 1
@@ -93,7 +97,9 @@ my_extern intptr_t io_comport;
 #define EPOLLRDNORM 0
 #endif
 #endif
-
+#if USE_LINUX_AIO
+#include <setjmp.h>
+#endif
 #if defined(__MINGW32__) || defined(__MINGW64__)
 int write();
 int read();
@@ -140,15 +146,21 @@ typedef struct ioent {
   void* mmapped;
   long maplen;
   uint64 mapofs;
+#if USE_LINUX_AIO
+  struct iocb cb;
+  jmp_buf jmp;
+#endif
 #if WINDOWS_NATIVE
   HANDLE /* fd, */ mh;
 #if 1
   OVERLAPPED or, ow, os; /* overlapped for read+accept, write+connect, sendfile */
-  char inbuf[8192];
   int bytes_read, bytes_written;
   DWORD errorcode;
   int64 next_accept;
 #endif
+#endif
+#if defined(USE_LINUX_AIO) || WINDOWS_NATIVE
+  char inbuf[8192];
 #endif
 } io_entry;
 
@@ -223,8 +235,7 @@ extern int close();
 #define debug_printf(x)
 
 #ifdef DEBUG
-#define DEBUG_MSG(msg, fd)                                                                         \
-  buffer_puts(buffer_2, msg), buffer_putlong(buffer_2, fd), buffer_putnlflush(buffer_2)
+#define DEBUG_MSG(msg, fd) buffer_puts(buffer_2, msg), buffer_putlong(buffer_2, fd), buffer_putnlflush(buffer_2)
 #else
 #define DEBUG_MSG(msg, fd)
 #endif
@@ -243,4 +254,32 @@ ssize_t __write(int, const void*, size_t);
 #define write __write
 #endif
 
+#ifdef HAVE_LINUX_AIO
+#include <linux/aio_abi.h>
+#include <sys/syscall.h>
+
+#define IOCB_CMD_PREADX 4
+#define IOCB_CMD_POLL 5
+
+static inline int
+io_setup(unsigned nr, aio_context_t* ctxp) {
+  return syscall(__NR_io_setup, nr, ctxp);
+}
+
+static inline int
+io_destroy(aio_context_t ctx) {
+  return syscall(__NR_io_destroy, ctx);
+}
+
+static inline int
+io_submit(aio_context_t ctx, long nr, struct iocb** iocbpp) {
+  return syscall(__NR_io_submit, ctx, nr, iocbpp);
+}
+
+static inline int
+io_getevents(aio_context_t ctx, long min_nr, long max_nr, struct io_event* events, struct timespec* timeout) {
+  // This might be improved.
+  return syscall(__NR_io_getevents, ctx, min_nr, max_nr, events, timeout);
+}
+#endif
 #endif

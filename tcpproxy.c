@@ -95,10 +95,7 @@ main(int argc, char** argv) {
     forward_port = proxy_port;
   }
 
-  printf("proxy listening on 127.0.0.1:%d forward to %s:%d\n",
-         proxy_port,
-         forward_addr,
-         forward_port);
+  printf("proxy listening on 127.0.0.1:%d forward to %s:%d\n", proxy_port, forward_addr, forward_port);
 
   int opt_val = 1;
   unsigned int addrlen;

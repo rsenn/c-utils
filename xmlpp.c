@@ -31,8 +31,7 @@ static stralloc indent_str;
 buffer* output;
 
 int
-xml_read_function(
-    xmlreader* reader, xmlnodeid id, stralloc* name, stralloc* value, HMAP_DB** attrs) {
+xml_read_function(xmlreader* reader, xmlnodeid id, stralloc* name, stralloc* value, HMAP_DB** attrs) {
   static int newline_written = 0;
   switch(id) {
     case XML_TEXT: {
@@ -56,8 +55,7 @@ xml_read_function(
         --depth;
       }
 
-      if(!(reader->closing && !prev_closing && stralloc_equal(&prev_element, name)) &&
-         stralloc_length(&prev_element)) {
+      if(!(reader->closing && !prev_closing && stralloc_equal(&prev_element, name)) && stralloc_length(&prev_element)) {
 
         if(!newline_written && !one_line) {
           buffer_puts(output, "\n");
@@ -177,15 +175,7 @@ main(int argc, char* argv[]) {
   int index = 0;
   const char* input_file;
   char* tmpl = 0;
-  struct longopt opts[] = {{"help", 0, NULL, 'h'},
-                           {"single-quote", 0, &quote_char, '\''},
-                           {"double-quote", 0, &quote_char, '"'},
-                           {"one-line", 0, NULL, 'o'},
-                           {"compact", 0, NULL, 'c'},
-                           {"indent", 0, NULL, 'l'},
-                           {"inplace", 0, NULL, 'i'},
-                           {"terminate", 0, NULL, 't'},
-                           {0, 0, 0, 0}};
+  struct longopt opts[] = {{"help", 0, NULL, 'h'}, {"single-quote", 0, &quote_char, '\''}, {"double-quote", 0, &quote_char, '"'}, {"one-line", 0, NULL, 'o'}, {"compact", 0, NULL, 'c'}, {"indent", 0, NULL, 'l'}, {"inplace", 0, NULL, 'i'}, {"terminate", 0, NULL, 't'}, {0, 0, 0, 0}};
 
   errmsg_iam(argv[0]);
   output = buffer_1;

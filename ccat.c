@@ -28,14 +28,7 @@ buffer_copy(buffer* out, buffer* in) {
   return n;
 }
 
-typedef enum compression_type {
-  C_UNKNOWN = 0,
-  C_GZ,
-  C_BZ2,
-  C_LZMA,
-  C_XZ,
-  C_BROTLI
-} compression_type;
+typedef enum compression_type { C_UNKNOWN = 0, C_GZ, C_BZ2, C_LZMA, C_XZ, C_BROTLI } compression_type;
 
 compression_type
 compression_from_ext(const char* ext) {
@@ -67,14 +60,7 @@ compression_from_filename(const char* fn) {
 
 void
 usage(char* argv0) {
-  buffer_putm_internal(buffer_1,
-                       "Usage: ",
-                       argv0,
-                       " [-o output] [infile or stdin]\n\n",
-                       "  -1 ... -11           compression level; default is 3\n",
-                       "\n",
-                       "Supported types are:",
-                       0);
+  buffer_putm_internal(buffer_1, "Usage: ", argv0, " [-o output] [infile or stdin]\n\n", "  -1 ... -11           compression level; default is 3\n", "\n", "Supported types are:", 0);
 #if HAVE_ZLIB
   buffer_puts(buffer_1, " gz");
 #endif
@@ -132,9 +118,7 @@ main(int argc, char* argv[]) {
       case 't': type = compression_from_ext(unix_optarg); break;
       case 'o': out_filename = unix_optarg; break;
       case 'h': usage(str_basename(argv[0])); exit(EXIT_SUCCESS);
-      default: /* '?' */
-        buffer_putm_internal(buffer_2, "Usage: ", argv[0], "[-t TYPE] [-o OUTPUT] [file]\n", 0);
-        exit(EXIT_FAILURE);
+      default: /* '?' */ buffer_putm_internal(buffer_2, "Usage: ", argv[0], "[-t TYPE] [-o OUTPUT] [file]\n", 0); exit(EXIT_FAILURE);
     }
   }
 
@@ -199,14 +183,9 @@ main(int argc, char* argv[]) {
       case C_BZ2: buffer_bz2(&cbuf, decompress ? input : output, decompress ? 0 : level); break;
       case C_XZ:
       case C_LZMA: buffer_lzma(&cbuf, decompress ? input : output, decompress ? 0 : level); break;
-      case C_BROTLI:
-        buffer_brotli(&cbuf, decompress ? input : output, decompress ? 0 : level);
-        break;
+      case C_BROTLI: buffer_brotli(&cbuf, decompress ? input : output, decompress ? 0 : level); break;
       default:
-        buffer_putm_internal(buffer_2,
-                             "ERROR: Unable to detect compression type from ",
-                             in_filename,
-                             0);
+        buffer_putm_internal(buffer_2, "ERROR: Unable to detect compression type from ", in_filename, 0);
         buffer_putnlflush(buffer_2);
         exit(EXIT_FAILURE);
     }

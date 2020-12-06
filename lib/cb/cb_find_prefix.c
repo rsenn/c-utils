@@ -2,13 +2,7 @@
 #include "../cb_internal.h"
 
 static int
-cb_find_prefix_i(void* ptr,
-                 const void* key,
-                 size_t keylen,
-                 void** results,
-                 int numresults,
-                 int* offset,
-                 int next) {
+cb_find_prefix_i(void* ptr, const void* key, size_t keylen, void** results, int numresults, int* offset, int next) {
   assert(next <= numresults);
   if(next == numresults) {
     return next;
@@ -38,12 +32,7 @@ cb_find_prefix_i(void* ptr,
 }
 
 int
-cb_find_prefix(const critbit_tree* cb,
-               const void* key,
-               size_t keylen,
-               void** results,
-               int numresults,
-               int offset) {
+cb_find_prefix(const critbit_tree* cb, const void* key, size_t keylen, void** results, int numresults, int offset) {
   if(numresults > 0) {
     void* top = cb_find_top_i(cb, key, keylen);
     if(top) {

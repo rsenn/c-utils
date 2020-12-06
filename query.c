@@ -85,8 +85,7 @@ query_forwardonly(void) {
 }
 
 static void
-cachegeneric(
-    const char type[2], const char* d, const char* data, unsigned int datalen, uint32 ttl) {
+cachegeneric(const char type[2], const char* d, const char* data, unsigned int datalen, uint32 ttl) {
   unsigned int len;
   char key[257];
 
@@ -505,10 +504,7 @@ new_name:
       }
     }
 
-    if(!typematch(DNS_T_ANY, dtype) && !typematch(DNS_T_AXFR, dtype) &&
-       !typematch(DNS_T_CNAME, dtype) && !typematch(DNS_T_NS, dtype) &&
-       !typematch(DNS_T_PTR, dtype) && !typematch(DNS_T_A, dtype) && !typematch(DNS_T_MX, dtype) &&
-       !typematch(DNS_T_SOA, dtype)) {
+    if(!typematch(DNS_T_ANY, dtype) && !typematch(DNS_T_AXFR, dtype) && !typematch(DNS_T_CNAME, dtype) && !typematch(DNS_T_NS, dtype) && !typematch(DNS_T_PTR, dtype) && !typematch(DNS_T_A, dtype) && !typematch(DNS_T_MX, dtype) && !typematch(DNS_T_SOA, dtype)) {
       byte_copy(key, 2, dtype);
       cached = cache_get(key, dlen + 2, &cachedlen, &ttl);
       if(cached && (cachedlen || byte_diff(dtype, 2, DNS_T_ANY))) {
@@ -605,9 +601,7 @@ have_ns:
 
     log_tx(z->name[z->level], DNS_T_A, z->control[z->level], z->servers[z->level], z->level);
 
-    if(dns_transmit_start(
-           &z->dt, z->servers[z->level], flagforwardonly, z->name[z->level], DNS_T_A, z->localip) ==
-       -1)
+    if(dns_transmit_start(&z->dt, z->servers[z->level], flagforwardonly, z->name[z->level], DNS_T_A, z->localip) == -1)
       goto die;
   } else {
     /* if(bl.map && cdb_find(&bl, z->name[0], dns_domain_length(z->name[0])) > 0) {
@@ -617,8 +611,7 @@ have_ns:
 
     log_tx(z->name[0], z->type, z->control[0], z->servers[0], 0);
 
-    if(dns_transmit_start(
-           &z->dt, z->servers[0], flagforwardonly, z->name[0], z->type, z->localip) == -1)
+    if(dns_transmit_start(&z->dt, z->servers[0], flagforwardonly, z->name[0], z->type, z->localip) == -1)
       goto die;
   }
   return 0;
@@ -1049,8 +1042,7 @@ have_packet:
             if(!response_rstart(&z->response, t1, header, ttl))
               goto die;
 
-            if(typematch(header, DNS_T_NS) || typematch(header, DNS_T_CNAME) ||
-               typematch(header, DNS_T_PTR)) {
+            if(typematch(header, DNS_T_NS) || typematch(header, DNS_T_CNAME) || typematch(header, DNS_T_PTR)) {
               if(!dns_packet_getname(buf, len, pos, &t2))
                 goto die;
               if(!response_addname(&z->response, t2))
@@ -1217,13 +1209,9 @@ query_dump(struct query const* q) {
     buffer_puts(buffer_2, "\n\tlevel ");
     buffer_putulong(buffer_2, i);
     buffer_puts(buffer_2, " {\n\t\tname = ");
-    buffer_put(buffer_2,
-               buf,
-               q->name[i] ? dns_domain_todot(buf, q->name[i]) : str_copy(buf, "NULL"));
+    buffer_put(buffer_2, buf, q->name[i] ? dns_domain_todot(buf, q->name[i]) : str_copy(buf, "NULL"));
     buffer_puts(buffer_2, "\n\t\tcontrol = ");
-    buffer_put(buffer_2,
-               buf,
-               q->control[i] ? dns_domain_todot(buf, q->control[i]) : str_copy(buf, "NULL"));
+    buffer_put(buffer_2, buf, q->control[i] ? dns_domain_todot(buf, q->control[i]) : str_copy(buf, "NULL"));
     buffer_puts(buffer_2, "\n\t\tns =");
     for(j = 0; j < QUERY_MAXNS; j++) {
       if(q->ns[i][j]) {

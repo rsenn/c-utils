@@ -1,8 +1,5 @@
 #include "../http.h"
-
-#ifdef HAVE_OPENSSL
-#include <openssl/ssl.h>
-#include <openssl/err.h>
+#include "../tls.h"
 #include <assert.h>
 
 ssize_t
@@ -11,7 +8,7 @@ https_write(fd_t fd, const void* buf, size_t n, void* b) {
   ssize_t ret;
   assert(h->tls);
   assert(h->connected);
-  ret = https_tls2errno(h, SSL_write(h->ssl, buf, n));
+  ret = tls_write(fd, buf, n);
 #if DEBUG_HTTP
   buffer_putspad(buffer_2, "https_write ", 18);
   buffer_puts(buffer_2, "sock=");
@@ -20,10 +17,9 @@ https_write(fd_t fd, const void* buf, size_t n, void* b) {
   buffer_putulong(buffer_2, ret);
   if(ret <= 0) {
     buffer_puts(buffer_2, " err=");
-    buffer_puts(buffer_2, https_errflag(SSL_get_error(h->ssl, ret)));
+    buffer_puts(buffer_2, https_strerror(h, ret)));
   }
   buffer_putnlflush(buffer_2);
 #endif
   return ret;
 }
-#endif

@@ -7,6 +7,8 @@
 #include "../io_internal.h"
 #include "../iopause.h"
 #include "../taia.h"
+#include "../alloc.h"
+#include <alloca.h>
 
 void
 iopause(iopause_fd* x, unsigned int len, struct taia* deadline, struct taia* stamp) {
@@ -28,7 +30,57 @@ iopause(iopause_fd* x, unsigned int len, struct taia* deadline, struct taia* sta
 
   for(i = 0; i < len; ++i) x[i].revents = 0;
 
-#ifdef IOPAUSE_POLL
+#ifdef IOPAUSE_LINUX_AIO
+  {
+    struct iocb* cblist;
+    struct iocb** ptrlist = alloca(sizeof(struct iocb*) * len);
+    struct io_event* evlist = 0;
+    aio_context_t ctx = 0;
+    struct timespec ts;
+    int j, r;
+
+    if((cblist = alloc_zero(sizeof(struct iocb) * len)) == 0)
+      goto aio_fail;
+
+    for(i = 0; i < len; ++i) {
+      struct iocb* cb = &cblist[i];
+      cb->aio_fildes = x[i].fd;
+      cb->aio_lio_opcode = IOCB_CMD_POLL;
+      cb->aio_buf = x[i].events;
+
+      ptrlist[i] = cb;
+    }
+    if((r = io_setup(len, &ctx)) == -1)
+      goto aio_fail;
+
+    if((r = io_submit(ctx, len, ptrlist)) == -1)
+      goto aio_fail;
+
+    ts.tv_sec = millisecs / 1000;
+    ts.tv_nsec = (millisecs % 1000ull) * 1000000ull;
+
+    if((evlist = alloc_zero(sizeof(struct io_event) * len)) == 0)
+      goto aio_fail;
+
+    if((r = io_getevents(ctx, 1, len, evlist, millisecs == -1 ? 0 : &ts)) == -1)
+      goto aio_fail;
+
+    for(i = 0; i < len; ++i) {
+      struct io_event* ev = &evlist[i];
+      struct iocb* cb = (struct iocb*)(uintptr_t)ev->obj;
+
+      x[i].revents = ev->res;
+    }
+  aio_fail:
+
+    if(ctx)
+      io_destroy(ctx);
+    alloc_free(cblist);
+    if(evlist)
+      alloc_free(evlist);
+  }
+
+#elif defined(IOPAUSE_POLL)
 
   poll(x, len, millisecs);
   /* XXX: some kernels apparently need x[0] even if len is 0 */

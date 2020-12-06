@@ -244,6 +244,7 @@ cfg-musl() {
 
   CC=/usr/bin/musl-gcc \
   PKG_CONFIG=musl-pkg-config \
+  PKG_CONFIG_PATH=/opt/musl/lib/pkgconfig:/usr/lib/x86_64-linux-musl/pkgconfig \
   cfg \
     -DENABLE_SHARED=OFF \
     -DSHARED_LIBS=OFF \

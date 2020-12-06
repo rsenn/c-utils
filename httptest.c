@@ -18,6 +18,7 @@
 #include "lib/buffer.h"
 #include "lib/getopt.h"
 #include "lib/tls.h"
+#include "lib/sig.h"
 
 #include <errno.h>
 #include <signal.h>
@@ -42,8 +43,7 @@ set_timeouts(int seconds) {
  */
 
 /* https://github.com/rsenn/lc-meter/raw/master/doc/LCmeter0-LCD-8pinlcd-PIC_COMP.pdf */
-static const char default_url[] =
-    "https://raw.githubusercontent.com/rsenn/lc-meter/master/doc/LCmeter0-LCD-8pinlcd-PIC_COMP.pdf";
+static const char default_url[] = "https://www.google.com/search?q=SSL_bio"; //"https://raw.githubusercontent.com/rsenn/lc-meter/master/doc/LCmeter0-LCD-8pinlcd-PIC_COMP.pdf";
 static const char* const url_host = "127.0.0.1";
 static const char* const url_location = "/login";
 static const uint16 url_port = 8080;
@@ -84,7 +84,7 @@ http_io_handler(http* h, buffer* out) {
       buffer_putlong(buffer_2, ret);
 #if HAVE_OPENSSL
       buffer_puts(buffer_2, "  err=");
-      buffer_puts(buffer_2, https_errflag(h->err));
+      buffer_puts(buffer_2, https_strerror(h, ret));
 #endif
       buffer_putnlflush(buffer_2);
 
@@ -125,8 +125,9 @@ main(int argc, char* argv[]) {
 
   errmsg_iam(argv[0]);
 #if !WINDOWS_NATIVE
-  signal(SIGPIPE, SIG_IGN);
+  // signal(SIGPIPE, SIG_IGN);
 #endif
+  // sig_block(SIGPIPE);
   tls_init(0, 0);
   // tls_new_client(0);
 
@@ -160,7 +161,7 @@ main(int argc, char* argv[]) {
     // argv[1] = "http://127.0.0.1:5555/show";
     argv[optind] = 0;
   }
-  for(; argi <= argc; ++argi) {
+  for(; argv[argi]; ++argi) {
     int ret = http_get(&h, argv[argi]);
     for(;;) {
 

@@ -171,8 +171,7 @@ print(unsigned char* p, size_t i, unsigned char from, unsigned char to) {
 
 patch_t*
 patch_new(const char* name, size_t file_size, uint32 crc32) {
-  patch_t* patch =
-      array_allocate(&patches, sizeof(patch_t), array_length(&patches, sizeof(patch_t)));
+  patch_t* patch = array_allocate(&patches, sizeof(patch_t), array_length(&patches, sizeof(patch_t)));
 
   patch->name = name;
   patch->file_size = file_size;
@@ -183,11 +182,8 @@ patch_new(const char* name, size_t file_size, uint32 crc32) {
 
 void
 patch(size_t i, unsigned char from, unsigned char to) {
-  patch_t* patch =
-      array_get(&patches, sizeof(patch_t), array_length(&patches, sizeof(patch_t)) - 1);
-  record_t* rec = array_allocate(&patch->records,
-                                 sizeof(record_t),
-                                 array_length(&patch->records, sizeof(record_t)));
+  patch_t* patch = array_get(&patches, sizeof(patch_t), array_length(&patches, sizeof(patch_t)) - 1);
+  record_t* rec = array_allocate(&patch->records, sizeof(record_t), array_length(&patch->records, sizeof(record_t)));
 
   rec->offset = i;
   rec->from = from;

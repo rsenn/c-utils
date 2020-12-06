@@ -166,8 +166,7 @@ cache_get(const char* key, unsigned int keylen, unsigned int* datalen, uint32* t
 }
 
 void
-cache_set(
-    const char* key, unsigned int keylen, const char* data, unsigned int datalen, uint32 ttl) {
+cache_set(const char* key, unsigned int keylen, const char* data, unsigned int datalen, uint32 ttl) {
   struct tai now;
   struct tai expire;
   unsigned int entrylen;

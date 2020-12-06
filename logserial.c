@@ -133,8 +133,7 @@ get_ports(strarray* ports) {
     size_t i = str_rchr(port, '/');
     if(port[i]) {
       i++;
-      if(/*str_start(&port[i], "tnt") ||*/ str_start(&port[i], "ttyACM") ||
-         str_start(&port[i], "ttyUSB") /*||   port[i + 3] == 'S'*/) {
+      if(/*str_start(&port[i], "tnt") ||*/ str_start(&port[i], "ttyACM") || str_start(&port[i], "ttyUSB") /*||   port[i + 3] == 'S'*/) {
         if(access(port, R_OK)) {
           if(errno != ENOENT && errno != ENODEV && errno != EACCES)
             errmsg_warnsys(port, 0);
@@ -176,8 +175,7 @@ serial_ports(strarray* ports) {
     struct stat st;
     struct taia t;
 
-    if(!str_start(*port, "/dev/ttyA") && !str_start(*port, "/dev/ttyUSB") &&
-       !str_start(*port, "/dev/tnt"))
+    if(!str_start(*port, "/dev/ttyA") && !str_start(*port, "/dev/ttyUSB") && !str_start(*port, "/dev/tnt"))
       continue;
 
     byte_zero(&st, sizeof(st));
@@ -314,8 +312,7 @@ term_init(fd_t fd, struct termios* state) {
     return;
   }
 
-  if(actual.c_iflag != raw.c_iflag || actual.c_oflag != raw.c_oflag ||
-     actual.c_cflag != raw.c_cflag || actual.c_lflag != raw.c_lflag) {
+  if(actual.c_iflag != raw.c_iflag || actual.c_oflag != raw.c_oflag || actual.c_cflag != raw.c_cflag || actual.c_lflag != raw.c_lflag) {
     /* Try restoring the old settings! */
     tcsetattr(fd, TCSANOW, &old);
   }
@@ -423,11 +420,7 @@ process_loop(fd_t serial_fd, int64 timeout) {
     char* x;
 
     if((x = mmap_read(send_file, &n))) {
-      buffer_init_free(&send_buf,
-                       (buffer_op_sys*)(void*)&write,
-                       serial_fd,
-                       alloc_zero(max(n, 1024)),
-                       max(n, 1024));
+      buffer_init_free(&send_buf, (buffer_op_sys*)(void*)&write, serial_fd, alloc_zero(max(n, 1024)), max(n, 1024));
       buffer_put(&send_buf, x, n);
       mmap_unmap(x, n);
     }
@@ -536,8 +529,7 @@ end:
 
 void
 usage(char* progname) {
-  buffer_putm_internal(
-      buffer_1, "Usage: ", path_basename(progname), " [OPTIONS] [PORT] [BAUDRATE]\n", 0);
+  buffer_putm_internal(buffer_1, "Usage: ", path_basename(progname), " [OPTIONS] [PORT] [BAUDRATE]\n", 0);
   buffer_puts(buffer_1, "Options\n");
   buffer_puts(buffer_1, "  --help, -h                        show this help\n");
   buffer_puts(buffer_1, "  --version                         print program version\n");

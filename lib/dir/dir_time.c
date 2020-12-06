@@ -39,15 +39,9 @@ dir_time(struct dir_s* d, int type) {
   }
 #else
   switch(type) {
-    case D_TIME_CREATION:
-      r = filetime_to_unix(&dir_INTERNAL(d)->dir_finddata.ftCreationTime);
-      break;
-    case D_TIME_ACCESS:
-      r = filetime_to_unix(&dir_INTERNAL(d)->dir_finddata.ftLastAccessTime);
-      break;
-    case D_TIME_MODIFICATION:
-      r = filetime_to_unix(&dir_INTERNAL(d)->dir_finddata.ftLastWriteTime);
-      break;
+    case D_TIME_CREATION: r = filetime_to_unix(&dir_INTERNAL(d)->dir_finddata.ftCreationTime); break;
+    case D_TIME_ACCESS: r = filetime_to_unix(&dir_INTERNAL(d)->dir_finddata.ftLastAccessTime); break;
+    case D_TIME_MODIFICATION: r = filetime_to_unix(&dir_INTERNAL(d)->dir_finddata.ftLastWriteTime); break;
   }
 #endif
 

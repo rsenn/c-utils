@@ -11,7 +11,7 @@ tls_accept(fd_t fd) {
   assert(i);
   assert(i->ssl);
 
-  if(tls_instance_return(i, SSL_accept(i->ssl)) == 1)
+  if(tls_instance_return(i, TLS_OP_ACCEPT, SSL_accept(i->ssl)) == 1)
     return 1;
   if((errno = tls_instance_errno(i)))
     return -1;

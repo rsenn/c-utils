@@ -4,6 +4,8 @@
 #include "../socket_internal.h"
 #include "../io_internal.h"
 #include "../buffer.h"
+#include "../alloc.h"
+#include "../byte.h"
 
 #if WINDOWS_NATIVE
 #include <windows.h>
@@ -118,7 +120,92 @@ io_waituntil2(int64 milliseconds) {
   if(!io_wanted_fds)
     return 0;
 
-#ifdef USE_SELECT
+#ifdef USE_LINUX_AIO
+#warning USE_LINUX_AIO
+  {
+    iarray* fds = io_getfds();
+    size_t nfds = iarray_length(fds);
+    aio_context_t ctx = 0;
+    struct timespec ts;
+    struct io_event* evlist = 0;
+    struct iocb* cblist = alloc_zero(sizeof(struct iocb) * (nfds + 1));
+    struct iocb** ptrlist = alloc_zero(sizeof(struct iocb*) * (nfds + 1));
+
+    for(i = j = r = 0; i <= nfds; ++i) {
+      io_entry* e;
+      struct iocb* cb = 0;
+      if(!(e = (io_entry*)iarray_get(fds, i)))
+        continue;
+      if(e->cb.aio_lio_opcode) {
+        cb = &e->cb;
+        cb->aio_fildes = i;
+      } else if(e->wantread || e->wantwrite) {
+        int events = 0;
+        cb = &cblist[j++];
+        ;
+        if(e->wantread)
+          events |= POLLIN;
+        if(e->wantwrite)
+          events |= POLLOUT;
+        cb->aio_fildes = i;
+        cb->aio_lio_opcode = IOCB_CMD_POLL;
+        cb->aio_buf = events;
+      } else {
+        continue;
+      }
+      ptrlist[r++] = cb;
+    }
+
+    if((r = io_setup(j, &ctx)) == -1)
+      goto fail;
+
+    if((r = io_submit(ctx, j, ptrlist)) == -1)
+      goto fail;
+
+    evlist = alloc_zero(sizeof(struct io_event) * j);
+    byte_zero(&ts, sizeof(ts));
+    ts.tv_sec = milliseconds / 1000;
+    ts.tv_nsec = (milliseconds % 1000ull) * 1000000ull;
+    if((r = io_getevents(ctx, 1, j, evlist, milliseconds == -1 ? 0 : &ts)) == -1)
+      goto fail;
+
+    for(i = 0; i < r; ++i) {
+      struct io_event* ev = &evlist[i];
+      struct iocb* cb = (struct iocb*)(uintptr_t)ev->obj;
+      io_entry* e = iarray_get(fds, cb->aio_fildes);
+      int revents = ev->res;
+
+      if(ev->res & (POLLERR | POLLHUP | POLLNVAL)) {
+        /* error; signal whatever app is looking for */
+        if(e->wantread)
+          revents |= POLLIN;
+        if(e->wantwrite)
+          revents |= POLLOUT;
+      }
+      if(!e->canread && (ev->res & POLLIN)) {
+        e->canread = 1;
+        e->next_read = first_readable;
+        first_readable = cb->aio_fildes;
+      }
+      if(!e->canwrite && (ev->res & POLLOUT)) {
+        e->canwrite = 1;
+        e->next_write = first_writeable;
+        first_writeable = cb->aio_fildes;
+      }
+      p++;
+    }
+  fail:
+    if(ctx)
+      io_destroy(ctx);
+
+    alloc_free(cblist);
+    alloc_free(ptrlist);
+    if(evlist)
+      alloc_free(evlist);
+
+    return r;
+  }
+#elif defined(USE_SELECT)
   {
     fd_set rfds, wfds;
     fd_t maxfd = -1;
@@ -185,8 +272,7 @@ io_waituntil2(int64 milliseconds) {
     if(first_readable != -1 || first_writeable != -1) {
       return 1;
     }
-    if(GetQueuedCompletionStatus(
-           io_comport, &numberofbytes, &x, &o, milliseconds == -1 ? INFINITE : milliseconds)) {
+    if(GetQueuedCompletionStatus(io_comport, &numberofbytes, &x, &o, milliseconds == -1 ? INFINITE : milliseconds)) {
       io_entry* e = (io_entry*)iarray_get((iarray*)io_getfds(), x);
       if(!e)
         return 0;
@@ -244,8 +330,7 @@ io_waituntil2(int64 milliseconds) {
         e->bytes_read = -1;
         e->next_read = first_readable;
         first_readable = x;
-      } else if((o == &e->ow || o == &e->os) &&
-                (e->writequeued || e->connectqueued || e->sendfilequeued)) {
+      } else if((o == &e->ow || o == &e->os) && (e->writequeued || e->connectqueued || e->sendfilequeued)) {
         if(o == &e->ow) {
           if(e->writequeued)
             e->writequeued = 2;
@@ -460,11 +545,9 @@ io_waituntil2(int64 milliseconds) {
     struct timespec ts;
     int r;
     io_entry* e;
-    if(alt_firstread >= 0 && (e = (io_entry*)iarray_get((iarray*)io_getfds(), alt_firstread)) &&
-       e->canread)
+    if(alt_firstread >= 0 && (e = (io_entry*)iarray_get((iarray*)io_getfds(), alt_firstread)) && e->canread)
       return 1;
-    if(alt_firstwrite >= 0 && (e = (io_entry*)iarray_get((iarray*)io_getfds(), alt_firstwrite)) &&
-       e->canwrite)
+    if(alt_firstwrite >= 0 && (e = (io_entry*)iarray_get((iarray*)io_getfds(), alt_firstwrite)) && e->canwrite)
       return 1;
     if(milliseconds == -1)
       r = sigwaitinfo(&io_ss, &info);
@@ -490,17 +573,13 @@ io_waituntil2(int64 milliseconds) {
                 info.si_band |= POLLOUT;
             }
             if(info.si_band & POLLIN && !e->canread) {
-              debug_printf(("io_waituntil2: enqueueing %ld in normal read queue before %ld\n",
-                            info.si_fd,
-                            first_readable));
+              debug_printf(("io_waituntil2: enqueueing %ld in normal read queue before %ld\n", info.si_fd, first_readable));
               e->canread = 1;
               e->next_read = first_readable;
               first_readable = info.si_fd;
             }
             if(info.si_band & POLLOUT && !e->canwrite) {
-              debug_printf(("io_waituntil2: enqueueing %ld in normal write queue before %ld\n",
-                            info.si_fd,
-                            first_writeable));
+              debug_printf(("io_waituntil2: enqueueing %ld in normal write queue before %ld\n", info.si_fd, first_writeable));
               e->canwrite = 1;
               e->next_write = first_writeable;
               first_writeable = info.si_fd;

@@ -61,15 +61,7 @@ setup_env() {
  */
 void
 usage(char* errmsg_argv0) {
-  buffer_putm_internal(buffer_1,
-                       "Usage: ",
-                       str_basename(errmsg_argv0),
-                       " [sources...]\n",
-                       "\n",
-                       "Options\n",
-                       "  -h, --help                show this help\n",
-                       "\n",
-                       NULL);
+  buffer_putm_internal(buffer_1, "Usage: ", str_basename(errmsg_argv0), " [sources...]\n", "\n", "Options\n", "  -h, --help                show this help\n", "\n", NULL);
   buffer_putnlflush(buffer_1);
 }
 
@@ -83,11 +75,7 @@ main(int argc, char* argv[], char* envp[]) {
   int ret;
   const char* pathstr;
   static int index, c, verbose;
-  const struct longopt opts[] = {{"help", 0, 0, 'h'},
-                                 {"verbose", 0, &verbose, 'v'},
-                                 {"exec", 0, 0, 'e'},
-                                 {"root", 0, 0, 'r'},
-                                 {0, 0, 0, 0}};
+  const struct longopt opts[] = {{"help", 0, 0, 'h'}, {"verbose", 0, &verbose, 'v'}, {"exec", 0, 0, 'e'}, {"root", 0, 0, 'r'}, {0, 0, 0, 0}};
   strlist_init(&args, '\0');
 
   errmsg_iam(argv[0]);
@@ -106,13 +94,7 @@ main(int argc, char* argv[], char* envp[]) {
       case 'e': stralloc_copys(&execbin, optarg); break;
 
       default:
-        buffer_putm_internal(buffer_2,
-                             "Unrecognized option `",
-                             argv[optind],
-                             "'\n",
-                             "Try `",
-                             argv[0],
-                             "\" --help' for more information");
+        buffer_putm_internal(buffer_2, "Unrecognized option `", argv[optind], "'\n", "Try `", argv[0], "\" --help' for more information");
         buffer_putnlflush(buffer_2);
         return 1;
     }

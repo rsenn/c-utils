@@ -1,4 +1,5 @@
-
+#ifndef _XZ_CONFIG_H
+#define _XZ_CONFIG_H
 /*
  * Ensure we have C99-style int64_t, etc, all defined.
  */
@@ -287,4 +288,16 @@ typedef uint64_t uintmax_t;
  || defined(__powerpc) || defined(__powerpc__) \
  || defined(__ppc) || defined(__ppc__) || defined(__POWERPC__)
 # define TUKLIB_FAST_UNALIGNED_ACCESS 1
+
+//#include "byte.h"
+#undef memcpy
+#define memcpy(dst,src,len) byte_copy(dst,len,src)
+#undef memmove
+#define memmove(dst,src,len) byte_copyr(dst,len,src)
+#undef memset
+#define memset(dst,ch,len) byte_fill(dst,len,ch)
+#endif
+#undef memcmp
+#define memcmp(dst,src,len) byte_diff(dst,len,src)
+
 #endif

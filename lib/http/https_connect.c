@@ -1,9 +1,5 @@
 #include "../http.h"
-#include "../io.h"
-
-#ifdef HAVE_OPENSSL
-#include <openssl/ssl.h>
-#include <openssl/err.h>
+#include "../tls.h"
 #include <assert.h>
 
 ssize_t
@@ -11,7 +7,7 @@ https_connect(http* h) {
   ssize_t ret;
   char* msg = 0;
   assert(!h->connected);
-  ret = https_tls2errno(h, SSL_connect(h->ssl));
+  ret = tls_connect(h->sock);
 
   if(ret == 1) {
     h->connected = 1;
@@ -31,10 +27,9 @@ https_connect(http* h) {
     buffer_putlong(buffer_2, errno);
   }
   buffer_puts(buffer_2, " err=");
-  buffer_puts(buffer_2, https_errflag(SSL_get_error(h->ssl, ret)));
+  buffer_puts(buffer_2, https_strerror(h, ret));
   buffer_putnlflush(buffer_2);
 
 #endif
   return ret;
 }
-#endif

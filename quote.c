@@ -30,19 +30,17 @@ static stralloc indent_str, queue, quote_chars;
 static buffer output;
 static const char* add_quotes = 0;
 static int tab_size = -1;
-static int quote_newline = false, quote_tabs = false, quote_nul = false;
+static int quote_newline = 0, quote_tabs = 0, quote_nul = 0, quote_backslash = 0;
 
 typedef size_t fmt_function(char*, int, int);
 
 size_t
 fmt_default(char* dest, int c, int quote) {
-  size_t n;
+  size_t i, n = 0, q = 1;
   uint8 ch = c;
 
   if(byte_chr(quote_chars.s, quote_chars.len, ch) < quote_chars.len) {
-    n = 0;
-    if(dest)
-      dest[n] = '\\';
+
     if(c == '\t')
       c = 't';
     else if(c == '\n')
@@ -53,11 +51,17 @@ fmt_default(char* dest, int c, int quote) {
       c = 'v';
     else if(c == '\b')
       c = 'b';
+    else if(c == '\\')
+      q = quote_backslash;
 
-    n++;
+    for(i = 0; i < q; i++) {
+      if(dest)
+        dest[n] = '\\';
+      n++;
+    }
   }
 
-  if(n < 2) {
+  if(n - q < 2) {
     if(dest)
       dest[n] = c;
     n++;
@@ -75,24 +79,6 @@ put_str_escaped(buffer* b, const char* str) {
   stralloc_init(&esc);
   stralloc_fmt_pred(&esc, str, str_len(str), (stralloc_fmt_fn*)&fmt_escapecharc, iscntrl);
   buffer_putsa(b, &esc);
-}
-
-void
-usage(char* av0) {
-  buffer_putm_internal(buffer_1,
-                       "Usage: ",
-                       str_basename(av0),
-                       " [OPTIONS] [FILES...]\n"
-                       "\n"
-                       "Options:\n"
-                       "\n"
-                       "  -h, --help              Show this help\n"
-                       "  -i, --in-place          Write to input file\n"
-                       "  -q, --quote-chars CHARS Characters to quote\n"
-                       "  -a, --add-quotes QUOTE  Add quotes of type\n"
-                       "\n",
-                       NULL);
-  buffer_flush(buffer_1);
 }
 
 void
@@ -286,6 +272,37 @@ add_chars(const char* x, size_t len) {
   }
   return n;
 }
+
+void
+usage(char* av0) {
+  buffer_putm_internal(buffer_1,
+                       "Usage: ",
+                       str_basename(av0),
+                       " [OPTIONS] [FILES...]\n"
+                       "\n"
+                       "Options:\n"
+                       "\n"
+                       "  -h, --help                       Show this help\n"
+                       "  -i, --in-place                   Write to input file\n"
+                       "  -q, --quote-chars CHARS          Characters to quote\n"
+                       "  -n, --quote-newline              Quote newline (\\n)\n"
+                       "      --quote-tabs                 Quote tabs (\\t)\n"
+                       "      --quote-nul                  Quote nul (\\0)\n"
+                       "  -b, --quote-backslash            Quote backslash (\\)\n"
+                       "  -c, --escape-c                   Escape characters for C strings\n"
+                       "  -C, --escape-cmake               Escape characters for CMake strings\n"
+                       "  -S, --escape-shell               Escape characters for shell strings\n"
+                       "  -D, --escape-doublequoted-shell  Escape characters for double-quoted shell strings\n"
+                       "  -Q, --escape-quoted-shell        Escape characters for single-quoted shell strings\n"
+                       "  -X, --escape-xml                 Escape characters for XML\n"
+                       "  -J, --escape-json                Escape characters for JSON\n"
+                       "  -P, --escape-printable           Escape non-printable characters\n"
+                       "  -a, --add-quotes QUOTE           Add quotes of type\n"
+                       "\n",
+                       NULL);
+  buffer_flush(buffer_1);
+}
+
 int
 main(int argc, char* argv[]) {
   int in_fd = STDIN_FILENO, out_fd = STDOUT_FILENO;
@@ -310,6 +327,7 @@ main(int argc, char* argv[]) {
                            {"quote-newline", 0, NULL, 'n'},
                            {"quote-tabs", 0, NULL, 9},
                            {"quote-nul", 0, NULL, '0'},
+                           {"quote-backslash", 0, NULL, 'b'},
                            {"no-quote-newline", 0, &quote_newline, false},
                            {"no-quote-tabs", 0, &quote_tabs, false},
                            {"no-quote-nul", 0, &quote_nul, false},
@@ -337,8 +355,10 @@ main(int argc, char* argv[]) {
 
     switch(c) {
       case 'i': in_place = 1; break;
+
       case 'h': usage(argv[0]); return 0;
       case 'a': add_quotes = argv[unix_optind]; break;
+      case 'b': quote_backslash++; break;
       case 't': scan_int(argv[unix_optind], &tab_size); break;
       case 'q':
         stralloc_ready(&quote_chars, str_len(argv[unix_optind]) * 3 + 1);
@@ -355,9 +375,10 @@ main(int argc, char* argv[]) {
         add_quotes = "\"";
         // tab_size = 2;
         quote_newline = quote_tabs = true;
+        quote_backslash = 3;
         stralloc_copys(&quote_chars, "$\t");
         break;
-      case 'c': stralloc_copys(&quote_chars, "\""); break;
+      case 'c': stralloc_copys(&quote_chars, "\"\n\\"); break;
       case 'J': fmt_call = (fmt_function*)(void*)&fmt_escapecharjson; break;
       case 'P': fmt_call = (fmt_function*)(void*)&fmt_escapecharquotedprintable; break;
       case 'S': fmt_call = (fmt_function*)(void*)&fmt_escapecharshell; break;
@@ -377,8 +398,11 @@ main(int argc, char* argv[]) {
   if(quote_tabs)
     add_chars("\t", 1);
 
-  if(quote_chars.len > 0)
+  if(quote_chars.len > 0) {
     add_chars("\\", 1);
+    if(quote_backslash == 0)
+      quote_backslash++;
+  }
 
   stralloc_init(&tmp);
   //  stralloc_init(&data);

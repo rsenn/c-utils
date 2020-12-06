@@ -1,10 +1,10 @@
 #include "../http.h"
+#include <assert.h>
+#include <errno.h>
 
 #ifdef HAVE_OPENSSL
 #include <openssl/ssl.h>
 #include <openssl/err.h>
-#include <assert.h>
-#include <errno.h>
 
 ssize_t
 https_tls2want(http* h, ssize_t ret, void (*wantread)(fd_t), void (*wantwrite)(fd_t)) {
@@ -24,4 +24,3 @@ https_tls2want(http* h, ssize_t ret, void (*wantread)(fd_t), void (*wantwrite)(f
   return ret;
 }
 #endif
-  

@@ -20,10 +20,10 @@
 	"buffers":
 	[
 		{
-			"contents": "  Ⓜ  VERSION … — macro object\n  Ⓜ  HOSTS_FILE … — macro object\n  Ⓜ  closesocket … — macro object\n  Ⓜ  HOSTS_FILE … — macro object\n—Ⓕ– read_hosts ( ) { … } — function\n—Ⓕ– lookup_hosts ( ) { … } — function\n—Ⓕ– dump_hosts ( ) { … } — function\n—Ⓕ– usage ( ) { … } — function\n—Ⓕ– main ( ) { … } — function",
+			"contents": "  __atomic_compare_and_swap\n  __atomic_compare_and_swap\n  weak\n  __sync_val_compare_and_swap\n  __sync_val_compare_and_swap\n  ldxr\n2f\n  stxr\n1b",
 			"settings":
 			{
-				"buffer_size": 300,
+				"buffer_size": 142,
 				"line_ending": "Unix",
 				"name": "𝌆 Outline",
 				"scratch": true
@@ -42,6 +42,32 @@
 			"settings":
 			{
 				"buffer_size": 8982,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/cas.S",
+			"settings":
+			{
+				"buffer_size": 346,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "CMakeLists.txt",
+			"settings":
+			{
+				"buffer_size": 104822,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/CMakeLists.txt",
+			"settings":
+			{
+				"buffer_size": 3656,
+				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
 		}
@@ -284,7 +310,7 @@
 	],
 	"find":
 	{
-		"height": 40.0
+		"height": 47.0
 	},
 	"find_in_files":
 	{
@@ -305,6 +331,10 @@
 		"case_sensitive": true,
 		"find_history":
 		[
+			"lib/",
+			" *.",
+			"lib/",
+			"^",
 			"open",
 			"Found",
 			"USE_",
@@ -428,11 +458,7 @@
 			"trywr",
 			"io_wai",
 			"getln",
-			"xhost",
-			"getln",
-			"STRALLOC_INI",
-			"buffer_all",
-			"tcping"
+			"xhost"
 		],
 		"highlight": false,
 		"in_selection": false,
@@ -440,6 +466,8 @@
 		"regex": true,
 		"replace_history":
 		[
+			"${CMAKE_CURRENT_SOURCE_DIR}/",
+			"#",
 			"case_equals",
 			"client->state",
 			"client->control_sock",
@@ -526,7 +554,7 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 300,
+						"buffer_size": 142,
 						"regions":
 						{
 						},
@@ -536,59 +564,59 @@
 						"settings":
 						{
 							"color_scheme": "Packages/Outline/outline.hidden-tmTheme",
-							"current_file": "/home/roman/Sources/c-utils/tcping.c",
-							"function_name_status_row": -1,
+							"current_file": "/home/roman/Sources/c-utils/lib/cas.S",
+							"function_name_status_row": 0,
 							"outline_rename_mode": false,
 							"symkeys":
 							[
 								[
-									950,
-									957
+									27,
+									52
 								],
 								[
-									1511,
-									1521
+									53,
+									78
 								],
 								[
-									1621,
-									1632
+									81,
+									85
 								],
 								[
-									1654,
-									1664
+									86,
+									113
 								],
 								[
-									1714,
-									1724
+									114,
+									141
 								],
 								[
-									2889,
-									2901
+									231,
+									235
 								],
 								[
-									3118,
-									3128
+									269,
+									271
 								],
 								[
-									3438,
-									3443
+									276,
+									280
 								],
 								[
-									3718,
-									3722
+									309,
+									311
 								]
 							],
 							"symlist":
 							[
-								"\tⓂ  VERSION … — macro object",
-								"\tⓂ  HOSTS_FILE … — macro object",
-								"\tⓂ  closesocket … — macro object",
-								"\tⓂ  HOSTS_FILE … — macro object",
-								"—Ⓕ– read_hosts ( ) { … } — function",
-								"—Ⓕ– lookup_hosts ( ) { … } — function",
-								"—Ⓕ– dump_hosts ( ) { … } — function",
-								"—Ⓕ– usage ( ) { … } — function",
-								"—Ⓕ– main ( ) { … } — function"
+								"  __atomic_compare_and_swap",
+								"  __atomic_compare_and_swap",
+								"  weak",
+								"  __sync_val_compare_and_swap",
+								"  __sync_val_compare_and_swap",
+								"  ldxr",
+								"2f",
+								"  stxr",
+								"1b"
 							],
 							"syntax": "Packages/Outline/outline.hidden-tmLanguage",
 							"tab_size": 2,
@@ -598,13 +626,13 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 2,
+					"stack_index": 5,
 					"type": "text"
 				}
 			]
 		},
 		{
-			"selected": 1,
+			"selected": 2,
 			"sheets":
 			[
 				{
@@ -632,10 +660,10 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 6748.0,
+						"translation.y": 1398.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 1,
+					"stack_index": 4,
 					"type": "text"
 				},
 				{
@@ -663,10 +691,102 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 10.0,
+						"translation.y": 685.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 3,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "lib/cas.S",
+					"semi_transient": true,
+					"settings":
+					{
+						"buffer_size": 346,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"function_name_status_row": 0,
+							"syntax": "Packages/ARM Assembly/Syntaxes/ARM Assembly.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "CMakeLists.txt",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 104822,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								91704,
+								91704
+							]
+						],
+						"settings":
+						{
+							"function_name_status_row": 1369,
+							"syntax": "Packages/CMakeEditor/CMakeEditor.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true,
+							"word_wrap": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 23213.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 5,
+					"file": "lib/CMakeLists.txt",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 3656,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1016,
+								1016
+							]
+						],
+						"settings":
+						{
+							"function_name_status_row": 16,
+							"syntax": "Packages/CMakeEditor/CMakeEditor.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
 					"type": "text"
 				}
 			]
@@ -674,7 +794,7 @@
 	],
 	"incremental_find":
 	{
-		"height": 27.0
+		"height": 34.0
 	},
 	"input":
 	{
@@ -732,7 +852,7 @@
 	"project": "c-utils.sublime-project",
 	"replace":
 	{
-		"height": 71.0
+		"height": 85.0
 	},
 	"save_all_on_build": true,
 	"select_file":
@@ -741,6 +861,10 @@
 		"last_filter": "",
 		"selected_items":
 		[
+			[
+				"cmake",
+				"CMakeLists.txt"
+			],
 			[
 				"tcping",
 				"tcping.c"
@@ -756,10 +880,6 @@
 			[
 				"pkgcf",
 				"pkgcfg.c"
-			],
-			[
-				"cmake",
-				"CMakeLists.txt"
 			],
 			[
 				"cmakeli",

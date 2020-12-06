@@ -6,11 +6,7 @@
 #include "../http.h"
 #include "../io.h"
 #include "../ndelay.h"
-
-#ifdef HAVE_OPENSSL
-#include <openssl/ssl.h>
-#include <openssl/err.h>
-#endif
+#include "../tls.h"
 
 #if WINDOWS_NATIVE
 #include <io.h>
@@ -26,28 +22,22 @@ int
 http_socket(http* h, int nonblock) {
   if((h->sock = socket_tcp4()) == -1)
     return -1;
+
+  if(h->tls) {
+    if((h->ssl = tls_client(h->sock)) == 0)
+      return -1;
+  }
   io_fd(h->sock);
   if(nonblock)
     ndelay_on(h->sock);
-#ifdef HAVE_OPENSSL
-  if(h->tls) {
-    https_socket(h);
+
 #if DEBUG_HTTP
-    buffer_putsflush(buffer_2, "ssl socket\n");
+  buffer_putsflush(buffer_2, "ssl socket\n");
 #endif
-  }
-#endif
-  buffer_init_free(&h->q.in,
-                   (buffer_op_sys*)(void*)&http_socket_read,
-                   h->sock,
-                   (char*)alloc(BUFFER_INSIZE),
-                   BUFFER_INSIZE);
+
+  buffer_init_free(&h->q.in, (buffer_op_sys*)(void*)&http_socket_read, h->sock, (char*)alloc(BUFFER_INSIZE), BUFFER_INSIZE);
   h->q.in.cookie = (void*)h;
-  buffer_init_free(&h->q.out,
-                   (buffer_op_sys*)(void*)&http_socket_write,
-                   h->sock,
-                   (char*)alloc(BUFFER_OUTSIZE),
-                   BUFFER_OUTSIZE);
+  buffer_init_free(&h->q.out, (buffer_op_sys*)(void*)&http_socket_write, h->sock, (char*)alloc(BUFFER_OUTSIZE), BUFFER_OUTSIZE);
   h->q.out.cookie = (void*)h;
   return 0;
 }

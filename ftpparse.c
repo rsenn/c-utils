@@ -154,8 +154,7 @@ getmod(struct tai* t, const unsigned char* p, unsigned int l) {
   return 1;
 }
 
-static const char* months[12] = {
-    "jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"};
+static const char* months[12] = {"jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"};
 
 static int
 get_month(char* buf, unsigned int len) {
@@ -223,12 +222,7 @@ parse_eplf(struct ftpparse* f, char* buf, unsigned int len) {
 }
 
 static int
-scan_time(const char* buf,
-          const unsigned int len,
-          unsigned long* h,
-          unsigned long* m,
-          unsigned long* s,
-          int* type) {
+scan_time(const char* buf, const unsigned int len, unsigned long* h, unsigned long* m, unsigned long* s, int* type) {
   /* 11:48:54 */
   /* 01:48:54 */
   /*  1:48:54 */
@@ -657,8 +651,7 @@ parse_unix(struct ftpparse* f, char* buf, int len, char* p[], int l[], unsigned 
   if('l' == *buf) {
     unsigned int j;
     for(j = 1; j < f->namelen - 4; j++) /* 1, -4: no empty names, please */
-      if(f->name[j] == ' ' && f->name[j + 1] == '-' && f->name[j + 2] == '>' &&
-         f->name[j + 3] == ' ') {
+      if(f->name[j] == ' ' && f->name[j + 1] == '-' && f->name[j + 2] == '>' && f->name[j + 3] == ' ') {
         f->symlink = f->name + j + 4;
         f->symlinklen = f->namelen - j - 4;
         f->namelen = j;
@@ -798,23 +791,23 @@ parse_os2(struct ftpparse* f, char* p[], int l[], unsigned int count) {
   return 1;
 }
 
-#define SETUP()                                                                                    \
-  do {                                                                                             \
-    fp->name = 0;                                                                                  \
-    fp->namelen = 0;                                                                               \
-    fp->flagtrycwd = 0;                                                                            \
-    fp->flagtryretr = 0;                                                                           \
-    fp->sizetype = FTPPARSE_SIZE_UNKNOWN;                                                          \
-    fp->size = 0;                                                                                  \
-    fp->mtimetype = FTPPARSE_MTIME_UNKNOWN;                                                        \
-    tai_uint(&fp->mtime, 0);                                                                       \
-    fp->idtype = FTPPARSE_ID_UNKNOWN;                                                              \
-    fp->id = 0;                                                                                    \
-    fp->idlen = 0;                                                                                 \
-    fp->format = FTPPARSE_FORMAT_UNKNOWN;                                                          \
-    fp->flagbrokenmlsx = 0;                                                                        \
-    fp->symlink = 0;                                                                               \
-    fp->symlinklen = 0;                                                                            \
+#define SETUP()                                                                                                                                                                                                                                                                                                                                                                                                \
+  do {                                                                                                                                                                                                                                                                                                                                                                                                         \
+    fp->name = 0;                                                                                                                                                                                                                                                                                                                                                                                              \
+    fp->namelen = 0;                                                                                                                                                                                                                                                                                                                                                                                           \
+    fp->flagtrycwd = 0;                                                                                                                                                                                                                                                                                                                                                                                        \
+    fp->flagtryretr = 0;                                                                                                                                                                                                                                                                                                                                                                                       \
+    fp->sizetype = FTPPARSE_SIZE_UNKNOWN;                                                                                                                                                                                                                                                                                                                                                                      \
+    fp->size = 0;                                                                                                                                                                                                                                                                                                                                                                                              \
+    fp->mtimetype = FTPPARSE_MTIME_UNKNOWN;                                                                                                                                                                                                                                                                                                                                                                    \
+    tai_uint(&fp->mtime, 0);                                                                                                                                                                                                                                                                                                                                                                                   \
+    fp->idtype = FTPPARSE_ID_UNKNOWN;                                                                                                                                                                                                                                                                                                                                                                          \
+    fp->id = 0;                                                                                                                                                                                                                                                                                                                                                                                                \
+    fp->idlen = 0;                                                                                                                                                                                                                                                                                                                                                                                             \
+    fp->format = FTPPARSE_FORMAT_UNKNOWN;                                                                                                                                                                                                                                                                                                                                                                      \
+    fp->flagbrokenmlsx = 0;                                                                                                                                                                                                                                                                                                                                                                                    \
+    fp->symlink = 0;                                                                                                                                                                                                                                                                                                                                                                                           \
+    fp->symlinklen = 0;                                                                                                                                                                                                                                                                                                                                                                                        \
   } while(0)
 
 int

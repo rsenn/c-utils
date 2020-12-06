@@ -41,11 +41,11 @@ put_value(buffer* b, const char* name, uint32 v) {
 
 void
 coff_print_func(buffer* b, void* coff, coff_symtab_entry* fn) {
- range ln;
- coff_line_number* p;
-   const char* strtab;
-int i;
- uint16 line_number;
+  range ln;
+  coff_line_number* p;
+  const char* strtab;
+  int i;
+  uint16 line_number;
 
   coff_symtab_entry* aux = coff_index_symtab(coff, uint32_get(&fn->func.tag_index));
   coff_symtab_entry* bfef = coff_index_symtab(coff, uint32_get(&fn->func.tag_index) + 1);
@@ -90,22 +90,7 @@ int i;
   buffer_putnlflush(b);
 }
 
-static const char* coff_symtab_mchp_types[] = {"null",
-                                               "void",
-                                               "character",
-                                               "short integer",
-                                               "integer",
-                                               "long integer",
-                                               "floating point",
-                                               "double length floating point",
-                                               "structure",
-                                               "union",
-                                               "enumeration",
-                                               "member of enumeration",
-                                               "unsigned character",
-                                               "unsigned short",
-                                               "unsigned integer",
-                                               "unsigned long"};
+static const char* coff_symtab_mchp_types[] = {"null", "void", "character", "short integer", "integer", "long integer", "floating point", "double length floating point", "structure", "union", "enumeration", "member of enumeration", "unsigned character", "unsigned short", "unsigned integer", "unsigned long"};
 
 void
 coff_list_symbols(buffer* b, void* coff) {
@@ -113,8 +98,7 @@ coff_list_symbols(buffer* b, void* coff) {
   const char* strtab = coff_get_strtab(coff, NULL);
   coff_file_header* fhdr = coff_header_file(coff);
 
-  char microchip = (fhdr->machine == COFF_FILE_MACHINE_MICROCHIP_V1 ||
-                    fhdr->machine == COFF_FILE_MACHINE_MICROCHIP_V2);
+  char microchip = (fhdr->machine == COFF_FILE_MACHINE_MICROCHIP_V1 || fhdr->machine == COFF_FILE_MACHINE_MICROCHIP_V2);
   coff_symtab_entry* e;
   long i = 0;
 
@@ -164,9 +148,7 @@ coff_list_symbols(buffer* b, void* coff) {
       buffer_puts(b, "0x");
       buffer_putxlong0(b, (long)(uint16)entry->scnum, 4);
       buffer_putspace(b);
-      buffer_putspad(b,
-                     coff_symtab_mchp_types[entry->type] ? coff_symtab_mchp_types[entry->type] : "",
-                     16);
+      buffer_putspad(b, coff_symtab_mchp_types[entry->type] ? coff_symtab_mchp_types[entry->type] : "", 16);
       buffer_putspace(b);
       buffer_putlong0(b, (long)(uint32)entry->numaux, 2);
 
@@ -234,8 +216,7 @@ coff_list_symbols(buffer* b, void* coff) {
           buffer_putnlflush(b);
 
           coff_print_func(b, coff, aux);
-        } else if(e->e.sclass == COFF_C_EXT && e->e.scnum == COFF_SECTION_UNDEF &&
-                  e->e.value == 0) {
+        } else if(e->e.sclass == COFF_C_EXT && e->e.scnum == COFF_SECTION_UNDEF && e->e.value == 0) {
           buffer_puts(b, "Aux weak def: ");
           buffer_puts(b, ".tag_index: ");
           buffer_putulong(b, aux->weak.tag_index);
@@ -298,15 +279,7 @@ main(int argc, char** argv) {
 
   int c, index = 0;
 
-  struct longopt opts[] = {{"help", 0, NULL, 'h'},
-                           {"imports", 0, &list_imports, 'i'},
-                           {"exports", 0, &list_exports, 'e'},
-                           {"deps", 0, &list_deps, 'd'},
-                           {"sections", 0, &list_sections, 's'},
-                           {"export-directory", 0, &print_export_dir, 'E'},
-                           {"data-directory", 0, &print_data_dir, 'D'},
-                           {"optional-header", 0, &print_opt_header, 'O'},
-                           {0, 0, 0, 0}};
+  struct longopt opts[] = {{"help", 0, NULL, 'h'}, {"imports", 0, &list_imports, 'i'}, {"exports", 0, &list_exports, 'e'}, {"deps", 0, &list_deps, 'd'}, {"sections", 0, &list_sections, 's'}, {"export-directory", 0, &print_export_dir, 'E'}, {"data-directory", 0, &print_data_dir, 'D'}, {"optional-header", 0, &print_opt_header, 'O'}, {0, 0, 0, 0}};
 
   errmsg_iam(argv[0]);
 
@@ -355,9 +328,7 @@ main(int argc, char** argv) {
 
       buffer_putnlflush(buffer_2);
 
-      if(header->machine != COFF_FILE_MACHINE_I386 && header->machine != COFF_FILE_MACHINE_AMD64 &&
-         header->machine != COFF_FILE_MACHINE_MICROCHIP_V1 &&
-         header->machine != COFF_FILE_MACHINE_MICROCHIP_V2) {
+      if(header->machine != COFF_FILE_MACHINE_I386 && header->machine != COFF_FILE_MACHINE_AMD64 && header->machine != COFF_FILE_MACHINE_MICROCHIP_V1 && header->machine != COFF_FILE_MACHINE_MICROCHIP_V2) {
         buffer_putsflush(buffer_2, "not COFF\n");
         return -1;
       }

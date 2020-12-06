@@ -56,8 +56,7 @@ static int i, n;
 
 static compiler_type type;
 static operation_mode mode = COMPILE_ASSEMBLE_LINK;
-static int debug = 0, warn = 0, fltbits = 0, dblbits = 0, ident_len = 127, optlevel = 0,
-           optsize = 0;
+static int debug = 0, warn = 0, fltbits = 0, dblbits = 0, ident_len = 127, optlevel = 0, optsize = 0;
 static strlist defines, includedirs, opts, longopts, params;
 static stralloc output_dir, output_file;
 static stralloc map_file, chip, optimization, runtime, debugger;
@@ -334,8 +333,7 @@ read_arguments() {
     stralloc_cats(&compiler, compiler_strs[type]);
 
   dump_stralloc("compiler", &compiler);
-  if(output_file.len == 0 &&
-     (mode == COMPILE_AND_ASSEMBLE || mode == COMPILE || mode == PREPROCESS)) {
+  if(output_file.len == 0 && (mode == COMPILE_AND_ASSEMBLE || mode == COMPILE || mode == PREPROCESS)) {
     size_t n;
     stralloc_copys(&output_file, str_basename(strlist_at(&params, 0)));
 
@@ -365,12 +363,12 @@ read_arguments() {
       optlevel = 9;
   }
 
-#define DUMP_LIST(buf, n, sep, q)                                                                  \
-  buffer_puts(buf, #n);                                                                            \
+#define DUMP_LIST(buf, n, sep, q)                                                                                                                                                                                                                                                                                                                                                                              \
+  buffer_puts(buf, #n);                                                                                                                                                                                                                                                                                                                                                                                        \
   print_strlist(buf, &n, sep, q);
-#define DUMP_VALUE(n, fn, v)                                                                       \
-  buffer_puts(debug_buf, n ": ");                                                                  \
-  fn(debug_buf, v);                                                                                \
+#define DUMP_VALUE(n, fn, v)                                                                                                                                                                                                                                                                                                                                                                                   \
+  buffer_puts(debug_buf, n ": ");                                                                                                                                                                                                                                                                                                                                                                              \
+  fn(debug_buf, v);                                                                                                                                                                                                                                                                                                                                                                                            \
   buffer_putnlflush(debug_buf);
 
   DUMP_LIST(debug_buf, defines, "\n\t", "");
@@ -449,12 +447,7 @@ execute_cmd() {
 
       if(optlevel) {
         nbuf[fmt_ulong(nbuf, optlevel)] = '\0';
-        strlist_pushm_internal(&cmd,
-                               "--opt=default,+asm,",
-                               debug ? "+debug," : "",
-                               optsize ? "-speed,+space," : "-space,+speed,",
-                               nbuf,
-                               NULL);
+        strlist_pushm_internal(&cmd, "--opt=default,+asm,", debug ? "+debug," : "", optsize ? "-speed,+space," : "-space,+speed,", nbuf, NULL);
       }
 
       if(warn) {

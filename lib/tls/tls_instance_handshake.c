@@ -21,13 +21,13 @@ tls_instance_handshake(tls_instance* i) {
 #endif
     sslfn = server ? SSL_accept : SSL_connect;
 
-    ret = tls_instance_return(i, sslfn(i->ssl));
+    ret = tls_instance_return(i, server ? TLS_OP_ACCEPT : TLS_OP_CONNECT, sslfn(i->ssl));
 #ifdef DEBUG_OUTPUT
     tls_instance_debug(i);
     buffer_puts(buffer_2, " resumed handshake: ");
     buffer_putlong(buffer_2, ret);
     if(ret == -1)
-      buffer_putm_internal(buffer_2, " (", tls_instance_error(i), ")", 0);
+      buffer_putm_internal(buffer_2, " (", tls_instance_strerror(i), ")", 0);
 
     buffer_putnlflush(buffer_2);
 #endif

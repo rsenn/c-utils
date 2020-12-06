@@ -10,8 +10,10 @@ tls_free(fd_t fd) {
   tls_instance* i = iarray_get(&tls_list, fd);
   assert(i);
   assert(i->ssl);
-
+  assert(i->bio);
   SSL_free(i->ssl);
-  i->ssl = 0;
+     i->ssl = 0;
+ BIO_free(i->bio);
+  i->bio = 0;
 }
 #endif

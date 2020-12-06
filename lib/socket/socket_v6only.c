@@ -14,4 +14,3 @@ socket_v6only(int fd, int enable) {
 #endif
   return prevstate;
 }
-

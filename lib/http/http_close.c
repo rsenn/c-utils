@@ -17,16 +17,11 @@
 
 void
 http_close(http* h) {
-#ifdef HAVE_OPENSSL
-  if(h->ssl) {
-    if(SSL_shutdown(h->ssl) == 1) {
-      SSL_free(h->ssl);
-      h->ssl = NULL;
-    } else {
-      return;
-    }
+  if(h->tls) {
+    tls_close(h->sock);
+    h->ssl = NULL;
   }
-#endif
+
   if(h->sock != -1) {
     int ret;
     ret = socket_close(h->sock);

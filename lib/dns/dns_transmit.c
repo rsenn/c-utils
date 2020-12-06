@@ -272,12 +272,7 @@ nexttcp(struct dns_transmit* d) {
 }
 
 int
-dns_transmit_start(struct dns_transmit* d,
-                   const char servers[256],
-                   int flagrecursive,
-                   const char* q,
-                   const char qtype[2],
-                   const char localip[16]) {
+dns_transmit_start(struct dns_transmit* d, const char servers[256], int flagrecursive, const char* q, const char qtype[2], const char localip[16]) {
   unsigned int len;
 
   dns_transmit_free(d);
@@ -290,10 +285,7 @@ dns_transmit_start(struct dns_transmit* d,
     return -1;
 
   uint16_pack_big(d->query, len + 16);
-  byte_copy(d->query + 2,
-            12,
-            flagrecursive ? "\0\0\1\0\0\1\0\0\0\0\0\0"
-                          : "\0\0\0\0\0\1\0\0\0\0\0\0gcc-bug-workaround");
+  byte_copy(d->query + 2, 12, flagrecursive ? "\0\0\1\0\0\1\0\0\0\0\0\0" : "\0\0\0\0\0\1\0\0\0\0\0\0gcc-bug-workaround");
   byte_copy(d->query + 14, len, q);
   byte_copy(d->query + 14 + len, 2, qtype);
   byte_copy(d->query + 16 + len, 2, DNS_C_IN);

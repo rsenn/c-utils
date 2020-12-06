@@ -1,6 +1,7 @@
 #include "../tls_internal.h"
 #include "../buffer.h"
 #include <assert.h>
+#include <errno.h>
 
 #ifdef HAVE_OPENSSL
 #include <openssl/ssl.h>
@@ -15,12 +16,13 @@ tls_read(fd_t fd, void* data, size_t len) {
 
   if(!SSL_is_init_finished(i->ssl)) {
     if((ret = tls_instance_handshake(i)) != 1) {
-      errno = tls_instance_errno(i);
+      if(ret < 0)
+        errno = tls_instance_errno(i);
       return ret;
     }
   }
 
-  if((ret = tls_instance_return(i, SSL_read(i->ssl, data, len))) <= 0)
+  if((ret = tls_instance_return(i, TLS_OP_READ, SSL_read(i->ssl, data, len))) < 0)
     errno = tls_instance_errno(i);
 
   return ret;
