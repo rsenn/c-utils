@@ -3,6 +3,7 @@
 #include "../alloc.h"
 //#define USE_WS2_32 1
 #include "../socket_internal.h"
+#include "../uint64.h"
 #include "../buffer.h"
 #include "../http.h"
 #include "../io.h"
@@ -35,23 +36,26 @@ http_socket(http* h, int nonblock) {
   if(nonblock)
     ndelay_on(h->sock);
 
-#if DEBUG_HTTP
-  buffer_putsflush(buffer_2, "ssl socket\n");
-#endif
-
   buffer_init_free(&h->q.in,
                    (buffer_op_sys*)(void*)&http_socket_read,
                    h->sock,
-                   (char*)alloc(BUFFER_INSIZE),
-                   BUFFER_INSIZE);
+                   h->q.in.x ? h->q.in.x : (char*)alloc(BUFFER_INSIZE),
+                   h->q.in.a ? h->q.in.a : BUFFER_INSIZE);
   h->q.in.cookie = (void*)h;
   buffer_init_free(&h->q.out,
                    (buffer_op_sys*)(void*)&http_socket_write,
                    h->sock,
-                   (char*)alloc(BUFFER_OUTSIZE),
-                   BUFFER_OUTSIZE);
+                   h->q.out.x ? h->q.out.x : (char*)alloc(BUFFER_OUTSIZE),
+                   h->q.out.a ? h->q.out.a : BUFFER_OUTSIZE);
   h->q.out.cookie = (void*)h;
-  return 0;
+
+#if DEBUG_HTTP
+  buffer_putspad(buffer_2, "http_socket", 30);
+  buffer_puts(buffer_2, "h->sock=");
+  buffer_putlonglong(buffer_2, h->sock);
+  buffer_putnlflush(buffer_2);
+#endif
+  return h->sock;
 }
 
 ssize_t

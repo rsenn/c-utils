@@ -27,7 +27,7 @@ tls_read(fd_t fd, void* data, size_t len) {
 
   if((ret = tls_instance_return(i, TLS_OP_READ, SSL_read(i->ssl, data, len))) < 0)
     errno = tls_instance_errno(i);
-  
+
 #ifdef DEBUG_TLS
   buffer_putspad(buffer_2, "tls_read ", 30);
   buffer_puts(buffer_2, "fd=");

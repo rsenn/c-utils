@@ -23,6 +23,7 @@
 #include "uri.h"
 
 #include <errno.h>
+#include <string.h>
 #include <signal.h>
 #ifdef __ORANGEC__
 #include <sockets.h>
@@ -52,6 +53,7 @@ static const char* const url_location = "/login";
 static const uint16 url_port = 8080;
 static io_entry* g_iofd;
 static http h;
+static buffer in, out;
 
 void
 usage(char* av0) {
@@ -88,33 +90,46 @@ http_io_handler(http* h, buffer* out) {
   }
 
   while((r = io_canread()) != -1) {
+#ifdef DEBUG_OUTPUT
+    buffer_putspad(buffer_2, "io_canread", 30);
+    buffer_puts(buffer_2, "r=");
+    buffer_putlong(buffer_2, r);
+
+    buffer_putnlflush(buffer_2);
+#endif
     if(h->sock == r) {
-      if((nb = http_canread(h, io_wantwrite)) <= 0) {
+      nb = http_canread(h, io_wantwrite);
+
+#ifdef DEBUG_OUTPUT
+      buffer_putspad(buffer_2, "\x1b[1;31mhttp_canread\x1b[0m", 30);
+      buffer_puts(buffer_2, "nb=");
+      buffer_putlong(buffer_2, nb);
+      buffer_puts(buffer_2, " connected=");
+      buffer_putlong(buffer_2, !!h->connected);
+      buffer_puts(buffer_2, " sent=");
+      buffer_putlong(buffer_2, !!h->sent);
+      if(nb < 0) {
+        buffer_puts(buffer_2, "  errno=");
+        buffer_puts(buffer_2, strerror(errno));
+      }
+      buffer_putnlflush(buffer_2);
+#endif
+      if(nb <= 0) {
         ret = nb;
         continue;
       }
       if(nb > 0)
         ret += nb;
-
-      buffer_putspad(buffer_2, "http_io_handler CANREAD", 30);
-      buffer_puts(buffer_2, "ret=");
-      buffer_putlong(buffer_2, ret);
-#if HAVE_OPENSSL
-      buffer_puts(buffer_2, "  err=");
-      buffer_puts(buffer_2, http_strerror(h, ret));
-#endif
-      buffer_putnlflush(buffer_2);
-
-      /*  if(h->connected && h->sent)*/ {
+      if(h->connected && h->sent) {
         char buf[8192];
         ssize_t n;
 
-        if((n = http_read(h->sock, buf, sizeof(buf), &h->q.in)) > 0) {
-          buffer_putspad(buffer_2, "http_io_handler READ", 30);
-          buffer_puts(buffer_2, "             ret=");
+        if((n = buffer_get(&in, buf, sizeof(buf))) > 0) {
+          buffer_putspad(buffer_2, "\x1b[1;31mbuffer_get\x1b[0m", 30);
+          buffer_puts(buffer_2, "             n=");
           buffer_putlong(buffer_2, n);
-          buffer_puts(buffer_2, " err=");
-          buffer_puts(buffer_2, http_strerror(h, n));
+          buffer_puts(buffer_2, " errno=");
+          buffer_puts(buffer_2, strerror(errno));
           buffer_puts(buffer_2, " status=");
           buffer_puts(buffer_2,
                       ((const char* const[]){"-1",
@@ -156,7 +171,6 @@ int
 main(int argc, char* argv[]) {
   int argi;
   iopause_fd iop;
-  static buffer in, out;
   static char inbuf[128 * 1024];
   static char outbuf[256 * 1024];
   fd_t fd, outfile;
@@ -194,6 +208,7 @@ main(int argc, char* argv[]) {
     return 126;
   }
   buffer_init(&out, (buffer_op_sys*)(void*)&write, outfile, outbuf, sizeof(outbuf));
+  buffer_init(&in, (buffer_op_sys*)(void*)&http_read, (uintptr_t)&h, inbuf, sizeof(inbuf));
   http_init(&h, url_host, url_port);
   h.nonblocking = 1;
   h.keepalive = 0;

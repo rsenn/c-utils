@@ -43,6 +43,33 @@ again:
         break;
       }
     }
+
+#ifdef DEBUG_HTTP
+    buffer_putspad(buffer_2, "http_read ", 30);
+    buffer_puts(buffer_2, "n=");
+    buffer_putlong(buffer_2, n);
+    buffer_puts(buffer_2, " ret=");
+    buffer_putlong(buffer_2, ret);
+    if(h->response->code == 302) {
+      buffer_puts(buffer_2, "location=");
+      buffer_put(buffer_2, &location[pos], end - pos);
+    }
+    if(h->response->code != -1) {
+      buffer_puts(buffer_2, " code=");
+      buffer_putulong(buffer_2, h->response->code);
+    }
+    buffer_puts(buffer_2, " status=");
+    buffer_puts(buffer_2,
+                ((const char* const[]){"-1",
+                                       "HTTP_RECV_HEADER",
+                                       "HTTP_RECV_DATA",
+                                       "HTTP_STATUS_CLOSED",
+                                       "HTTP_STATUS_ERROR",
+                                       "HTTP_STATUS_BUSY",
+                                       "HTTP_STATUS_FINISH",
+                                       0})[h->response->status + 1]);
+    buffer_putnlflush(buffer_2);
+#endif
     if(b->n - b->p > (unsigned long)bytes)
       if(h->response->status != HTTP_RECV_DATA)
         break;
@@ -67,7 +94,6 @@ again:
   }
 
   if(r->status == HTTP_STATUS_FINISH || r->status == HTTP_STATUS_CLOSED) {
- 
 
     if(r->code == 302) {
       location = http_get_header(h, "Location");
@@ -89,27 +115,6 @@ again:
       }
     }
   }
-#ifdef DEBUG_HTTP
-  buffer_putspad(buffer_2, "http_read ", 30);
-  if(h->response->code == 302) {
-    buffer_puts(buffer_2, "location=");
-    buffer_put(buffer_2, &location[pos], end - pos);
-  }
-  if(h->response->code != -1) {
-    buffer_puts(buffer_2, " code=");
-    buffer_putulong(buffer_2, h->response->code);
-  }
-  buffer_puts(buffer_2, " status=");
-  buffer_puts(buffer_2,
-              ((const char* const[]){"-1",
-                                     "HTTP_RECV_HEADER",
-                                     "HTTP_RECV_DATA",
-                                     "HTTP_STATUS_CLOSED",
-                                     "HTTP_STATUS_ERROR",
-                                     "HTTP_STATUS_BUSY",
-                                     "HTTP_STATUS_FINISH",
-                                     0})[h->response->status + 1]);
-  buffer_putnlflush(buffer_2);
-#endif
+
   return ret;
 }

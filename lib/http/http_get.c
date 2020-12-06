@@ -111,5 +111,11 @@ http_get(http* h, const char* location) {
     }
   }
   io_onlywantwrite(h->sock);
+#ifdef DEBUG_HTTP
+  buffer_putspad(buffer_2, "http_get", 30);
+  buffer_puts(buffer_2, "ret=");
+  buffer_putlong(buffer_2, ret);
+  buffer_putnlflush(buffer_2);
+#endif
   return ret == 0;
 }

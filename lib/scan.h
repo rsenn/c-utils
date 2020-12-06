@@ -110,6 +110,7 @@ size_t scan_xmlescape(const char* src, char* dest);
 size_t scan_utf8_sem(const char* in, size_t len, uint32* num);
 
 size_t scan_eolskip(const char* s, size_t limit);
+size_t scan_ansiskip(const char* s, size_t limit);
 
 #ifdef __cplusplus
 }

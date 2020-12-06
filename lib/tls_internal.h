@@ -70,16 +70,14 @@ extern int tls_initialized;
 extern tls_method_t const *tls_client_method, *tls_server_method;
 extern tls_ctx_t *tls_client_ctx, *tls_server_ctx;
 
-tls_ctx_t* tls_context(tls_method_t const* method);
-tls_instance* tls_instance_new(fd_t fd);
-ssize_t tls_instance_return(tls_instance* i, tls_op_t, int ret);
-tls_ctx_t* tls_context(tls_method_t const* method);
-const char* tls_instance_strerror(tls_instance* i);
-int tls_instance_errno(tls_instance* i);
 void tls_instance_debug(tls_instance* i);
+int tls_instance_errno(tls_instance* i);
+tls_instance* tls_instance_get(fd_t fd);
 int tls_instance_handshake(tls_instance* i);
-const bio_method_t* tls_bio_method(void);
-tls_bio_t* tls_bio_socket(fd_t fd);
+tls_instance* tls_instance_new(fd_t fd);
+ssize_t tls_instance_return(tls_instance* i, tls_op_t op, int ret);
+const char* tls_instance_strerror(tls_instance* i);
+const char* tls_instance_strerror(tls_instance* i);
 
 #endif
 #endif

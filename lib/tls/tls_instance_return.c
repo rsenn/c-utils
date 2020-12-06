@@ -12,7 +12,7 @@ tls_instance_return(tls_instance* i, tls_op_t op, int ret) {
   i->error = 0;
   i->retval = ret;
 
- /* if(ret <= 0)*/ {
+  /* if(ret <= 0)*/ {
     i->error = SSL_get_error(i->ssl, ret);
     if(i->error == SSL_ERROR_WANT_WRITE) {
       if(i->wantwrite) {

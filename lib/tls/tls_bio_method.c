@@ -92,7 +92,7 @@ tls_bio_send(tls_bio_t* b, const char* in, size_t inl, size_t* lptr) {
   return ret;
 }
 
-long
+static long
 tls_bio_ctrl(tls_bio_t* b, int cmd, long num, void* ptr) {
   long ret = 1;
   int* ip;
