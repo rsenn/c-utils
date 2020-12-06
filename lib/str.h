@@ -94,7 +94,7 @@ char* str_triml(char*, const char* charset, unsigned int charsetlen);
   for((ptr) = (void*)(s); *(const char*)(ptr); (ptr) = ((const char*)(ptr)) + (skipcall))
 
 #define str_contains(s, needle) (((s)[str_find((s), (needle))]) != 0)
-size_t str_ansilen(const char * in);
+size_t str_ansilen(const char* in);
 
 #ifdef __cplusplus
 }

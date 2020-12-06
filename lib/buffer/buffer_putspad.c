@@ -3,7 +3,7 @@
 
 int
 buffer_putspad(buffer* b, const char* x, size_t pad) {
-  size_t len = str_len(x);
+  size_t len = str_ansilen(x);
   if(len > 0) {
     if(buffer_put(b, x, len) < 0)
       return -1;
