@@ -6,10 +6,18 @@
 #include "../byte.h"
 #include "../errmsg.h"
 #include "../socket.h"
+#include "../case.h"
 #include "../tls.h"
 #include <errno.h>
 #include <assert.h>
 
+static const char* const status_strings[] = (const char* const[]){"HTTP_RECV_HEADER",
+                                                                  "HTTP_RECV_DATA",
+                                                                  "HTTP_STATUS_CLOSED",
+                                                                  "HTTP_STATUS_ERROR",
+                                                                  "HTTP_STATUS_BUSY",
+                                                                  "HTTP_STATUS_FINISH",
+                                                                  0};
 /**
  * @brief      Handle socket getting readable
  * @param      h     HTTP client
@@ -62,6 +70,8 @@ http_canread(http* h, void (*wantwrite)(fd_t)) {
     return ret;
 
   while(r->status == HTTP_RECV_HEADER) {
+    size_t pos = r->data.len;
+
     if((ret = buffer_getline_sa(&h->q.in, &r->data)) <= 0)
       break;
     stralloc_trimr(&r->data, "\r\n", 2);
@@ -77,14 +87,14 @@ http_canread(http* h, void (*wantwrite)(fd_t)) {
       }
       break;
     }
-    if(stralloc_startb(&r->data, "Content-Type: multipart", 23)) {
-      size_t p = str_find(r->data.s, "boundary=");
+    if(case_starts(&r->data.s[pos], "Content-Type: multipart")) {
+      size_t p = pos + str_find(&r->data.s[pos], "boundary=");
       if(r->data.s[p]) {
         stralloc_copys(&r->boundary, &r->data.s[p + str_len("boundary=")]);
       }
       r->transfer = HTTP_TRANSFER_BOUNDARY;
-    } else if(stralloc_startb(&r->data, "Content-Length:", 15)) {
-      scan_ulonglong(&r->data.s[16], &r->content_length);
+    } else if(case_starts(&r->data.s[pos], "Content-Length: ")) {
+      scan_ulonglong(&r->data.s[pos + 16], &r->content_length);
       r->transfer = HTTP_TRANSFER_LENGTH;
     } else {
       r->transfer = HTTP_TRANSFER_CHUNKED;
@@ -108,6 +118,8 @@ fail:
   buffer_putspad(buffer_2, "http_canread ", 18);
   buffer_puts(buffer_2, "sock=");
   buffer_putlong(buffer_2, h->sock);
+  buffer_puts(buffer_2, " status=");
+  buffer_puts(buffer_2, status_strings[r->status]);
   buffer_puts(buffer_2, " ret=");
   buffer_putlong(buffer_2, ret);
   buffer_puts(buffer_2, " err=");

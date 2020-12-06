@@ -20,6 +20,8 @@
 #include "lib/tls.h"
 #include "lib/sig.h"
 
+#include "uri.h"
+
 #include <errno.h>
 #include <signal.h>
 #ifdef __ORANGEC__
@@ -193,7 +195,23 @@ main(int argc, char* argv[]) {
     argv[optind] = 0;
   }
   for(; argv[argi]; ++argi) {
-    int ret = http_get(&h, argv[argi]);
+    int ret;
+    uri_t uri;
+    char* str;
+    uri_init(&uri);
+
+    uri_scan(argv[argi], &uri);
+    uri_dump(buffer_2, &uri);
+
+    // uri.port = 443;
+
+    str = uri_str(&uri);
+
+    buffer_puts(buffer_2, "URI: ");
+    buffer_puts(buffer_2, str);
+    buffer_putnlflush(buffer_2);
+    free(str);
+    ret = http_get(&h, argv[argi]);
     for(;;) {
 
       int doread = 1;

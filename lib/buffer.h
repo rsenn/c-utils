@@ -249,6 +249,7 @@ int buffer_putxlonglong0(buffer*, uint64 l, int pad);
 int buffer_puttai(buffer*, const struct tai*);
 #endif
 int buffer_copy(buffer* out, buffer* in);
+void buffer_putstr(buffer* b, const char* x);
 
 #ifdef __cplusplus
 }

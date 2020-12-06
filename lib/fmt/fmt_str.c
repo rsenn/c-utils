@@ -3,5 +3,7 @@
 
 size_t
 fmt_str(char* out, const char* in) {
-  return str_copy(out, in);
+  if(out)
+    return str_copy(out, in);
+  return str_len(in);
 }

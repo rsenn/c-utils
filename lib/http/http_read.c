@@ -22,6 +22,7 @@ http_read(fd_t fd, char* buf, size_t len, void* ptr) {
   http_response* r;
   http* h = (http*)((buffer*)ptr)->cookie;
   buffer* b = &h->q.in;
+again:
   r = h->response;
   while(len) {
     int st = r->status;
@@ -60,6 +61,40 @@ http_read(fd_t fd, char* buf, size_t len, void* ptr) {
       if(r->status == HTTP_STATUS_FINISH) {
         break;
       }
+    }
+  }
+
+  if(r->status == HTTP_STATUS_FINISH || r->status == HTTP_STATUS_CLOSED) {
+#ifdef DEBUG_HTTP
+
+    buffer_putspad(buffer_2, "http_read FINISH ", 18);
+    buffer_puts(buffer_2, "code=");
+    buffer_putlong(buffer_2, r->code);
+    buffer_putnlflush(buffer_2);
+#endif
+
+    if(r->code == 302) {
+      const char* location = http_get_header(h, "Location");
+      size_t pos, len, end;
+      pos = 0;
+      end = len = str_chrs(location, "\r\n\0", 3);
+
+      if(pos = byte_finds(location, len, "://")) {
+        pos += 3;
+        len -= pos;
+      }
+
+      pos += byte_chr(&location[pos], len, '/');
+#ifdef DEBUG_HTTP
+
+      buffer_putspad(buffer_2, "http_read REDIRECT ", 18);
+      buffer_puts(buffer_2, "location=");
+      buffer_put(buffer_2, &location[pos], end - pos);
+      buffer_putnlflush(buffer_2);
+#endif
+
+      if(http_get(h, &location[pos]))
+        goto again;
     }
   }
   return ret;

@@ -87,22 +87,22 @@ typedef struct http_s {
   int sent : 1;
 } http;
 
-void http_close(http* h);
-int http_get(http* h, const char* location);
-void http_init(http* h, const char* host, uint16 port);
-ssize_t http_canwrite(http* h, void (*wantread)(fd_t));
-ssize_t http_readable(http* h, int freshen);
-ssize_t http_read(fd_t fd, char* buf, size_t len, void* ptr);
-ssize_t http_read_header(http* h, stralloc* sa, http_response* r);
-size_t http_read_internal(fd_t, char* buf, size_t len, buffer* b);
-int http_sendreq(http* h);
-int http_socket(http* h, int nonblock);
-const char* http_strerror(http* h, int ret);
-
-http_response* http_response_new();
-
 ssize_t http_canread(http* h, void (*wantwrite)(fd_t));
 ssize_t http_canwrite(http* h, void (*wantread)(fd_t));
+void http_close(http* h);
+const char* http_get_header(http* h, const char* name);
+int http_get(http* h, const char* location);
+void http_init(http* h, const char* host, uint16 port);
+ssize_t http_read(fd_t fd, char* buf, size_t len, void* ptr);
+ssize_t http_read_header(http* h, stralloc* sa, http_response* r);
+size_t http_read_internal(fd_t fd, char* buf, size_t len, buffer* b);
+void http_response_free(http_response* r);
+http_response* http_response_new(void);
+int http_sendreq(http* h);
+int http_socket(http* h, int nonblock);
+ssize_t http_socket_read(fd_t fd, void* buf, size_t len, void* b);
+ssize_t http_socket_write(fd_t fd, void* buf, size_t len, void* b);
+const char* http_strerror(http* h, int ret);
 
 #ifdef HAVE_OPENSSL
 ssize_t https_tls2want(http* h, ssize_t ret, void (*wantread)(fd_t), void (*wantwrite)(fd_t));

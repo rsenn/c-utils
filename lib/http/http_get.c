@@ -23,7 +23,7 @@ http_get(http* h, const char* location) {
   char ip[FMT_IP4];
   stralloc dns;
   uint32 serial = 0;
-  size_t len = str_len(location);
+  size_t len = byte_chrs(location, str_len(location), "\r\n", 2);
   h->tls = len >= 5 && !byte_diff(location, 5, "https");
 #ifdef DEBUG_HTTP
   buffer_putm_internal(buffer_2, "http_get ", location, "\n", NULL);
@@ -73,6 +73,10 @@ http_get(http* h, const char* location) {
     stralloc_init(&(req->location));
     stralloc_copys(&(req->location), location);
   }
+
+  if(h->response)
+    http_response_free(h->response);
+
   h->response = http_response_new();
 
   ret = socket_connect4(h->sock, (const char*)h->addr.addr, h->port);

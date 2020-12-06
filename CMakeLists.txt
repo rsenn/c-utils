@@ -1538,6 +1538,7 @@ add_program(elfwrsec buffer alloc elf mmap)
 add_program(genmakefile sig set case errmsg strarray slist rdir dir path strlist hashmap hmap stralloc buffer mmap unix open scan fmt byte str array safemult alloc)
 add_program(piccfg ihex errmsg strarray slist rdir dir path strlist hashmap hmap stralloc buffer mmap unix open scan fmt byte str array safemult alloc)
 add_program(hexedit stralloc buffer array io errmsg mmap open path scan uint64 unix ${ZLIB_LIBRARY})
+ set(httptest_SOURCES uri.c uri.h)
 add_program(httptest sig http c dns stralloc buffer errmsg byte io socket alloc taia ${LIBSSL} ${LIBMSWSOCK} ${LIBDL} pthread)
 #add_program(ssltest strlist unix dns stralloc buffer errmsg byte io  tls socket alloc taia ${LIBSSL} ${LIBMSWSOCK} ${LIBDL} pthread)
 
