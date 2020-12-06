@@ -26,14 +26,7 @@ http_get(http* h, const char* location) {
   stralloc dns;
   uint32 serial = 0;
   size_t len = byte_chrs(location, str_len(location), "\r\n\0", 3);
-#ifdef DEBUG_HTTP
-  buffer_puts(buffer_2, "http_get ");
 
-  buffer_put(buffer_2, location, len);
-  buffer_puts(buffer_2, " host=");
-  buffer_putsa(buffer_2, &h->host);
-  buffer_putnlflush(buffer_2);
-#endif
   if(location[0] != '/') {
     size_t pos;
     pos = str_findb(location, "://", 3);
@@ -70,23 +63,14 @@ http_get(http* h, const char* location) {
     buffer_putnlflush(buffer_2);
 #endif
   }
-  http_socket(h, h->nonblocking);
-  /*  if(h->request) {
-      serial = h->request->serial + 1;
-      free(h->request);
-      h->request = NULL;
-    }
-  */
   {
     http_request* req = (http_request*)alloc_zero(sizeof(http_request));
     req->serial = serial;
     req->type = GET;
-
     stralloc_init(&req->location);
     stralloc_catb(&req->location, location, min(len, str_len(location)));
     stralloc_nul(&req->location);
     stralloc_init(&req->headers);
-
     req->next = h->request;
     h->request = req;
   }
@@ -96,12 +80,24 @@ http_get(http* h, const char* location) {
     res->next = h->response;
     res->status = -1;
     res->code = -1;
-
     h->response = res;
   }
 
   h->connected = 0;
   h->sent = 0;
+#ifdef DEBUG_HTTP
+  buffer_putspad(buffer_2, "\x1b[1;34mhttp_get\x1b[0m", 30);
+  buffer_puts(buffer_2, "location=");
+  buffer_putsa(buffer_2, &h->request->location);
+  buffer_puts(buffer_2, " host=");
+  buffer_putsa(buffer_2, &h->host);
+  buffer_puts(buffer_2, " addr=");
+  buffer_put(buffer_2, ip, fmt_ip4(ip, (const char*)&h->addr));
+  buffer_puts(buffer_2, " port=");
+  buffer_putulong(buffer_2, h->port);
+  buffer_putnlflush(buffer_2);
+#endif
+  http_socket(h, h->nonblocking);
 
   ret = socket_connect4(h->sock, (const char*)&h->addr, h->port);
   if(ret == -1) {
@@ -112,9 +108,15 @@ http_get(http* h, const char* location) {
   }
   io_onlywantwrite(h->sock);
 #ifdef DEBUG_HTTP
-  buffer_putspad(buffer_2, "http_get", 30);
-  buffer_puts(buffer_2, "ret=");
+  buffer_putspad(buffer_2, "\x1b[32mhttp_get\x1b[0m", 30);
+  buffer_puts(buffer_2, "sock=");
+  buffer_putlong(buffer_2, h->sock);
+  buffer_puts(buffer_2, " ret=");
   buffer_putlong(buffer_2, ret);
+  buffer_puts(buffer_2, " addr=");
+  buffer_put(buffer_2, ip, fmt_ip4(ip, (const char*)&h->addr));
+  buffer_puts(buffer_2, " port=");
+  buffer_putulong(buffer_2, h->port);
   buffer_putnlflush(buffer_2);
 #endif
   return ret == 0;

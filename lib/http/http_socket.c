@@ -53,6 +53,7 @@ http_socket(http* h, int nonblock) {
   buffer_putspad(buffer_2, "http_socket", 30);
   buffer_puts(buffer_2, "h->sock=");
   buffer_putlonglong(buffer_2, h->sock);
+
   buffer_putnlflush(buffer_2);
 #endif
   return h->sock;
@@ -60,10 +61,11 @@ http_socket(http* h, int nonblock) {
 
 ssize_t
 http_socket_read(fd_t fd, void* buf, size_t len, void* b) {
-  ssize_t ret = -1;
+  ssize_t ret = -1, iret = -1;
   http* h = (http*)((buffer*)b)->cookie;
   http_response* r = h->response;
   int connected = h->connected;
+  int tlserr;
 
   if(h->tls) {
 
@@ -80,18 +82,27 @@ http_socket_read(fd_t fd, void* buf, size_t len, void* b) {
     h->response->status = HTTP_RECV_HEADER;
   }
 
-  if(ret == 0) {
+  tlserr = tls_error(h->sock);
+
+  if(h->tls && ret < 0 && tlserr == 2) {
+    errno = EAGAIN;
+    ret = -1;
+  } else if(h->tls && ret < 0 && tlserr == 3) {
+    errno = EWOULDBLOCK;
+    ret = -1;
+  } else if(ret == 0 || (h->tls && tlserr == 5)) {
     h->connected = 0;
     r->status = HTTP_STATUS_CLOSED;
-  } else if(ret == -1) {
+    ret = 0;
+  } else if(ret == -1 && (!h->tls || tlserr != 5)) {
     r->err = errno;
-    if(errno != EWOULDBLOCK && errno != EAGAIN)
+    if(h->tls ? (tlserr != 2 && tlserr != 3) : (errno != EWOULDBLOCK && errno != EAGAIN))
       r->status = HTTP_STATUS_ERROR;
   }
   if(ret > 0) {
     size_t n = h->q.in.n;
     h->q.in.n += ret;
-    ret = http_read_internal(fd, (char*)buf, ret, &h->q.in);
+ iret = http_read_internal(fd, (char*)buf, ret, &h->q.in);
     h->q.in.n = n;
   }
   if(ret == 0) {
@@ -108,6 +119,16 @@ http_socket_read(fd_t fd, void* buf, size_t len, void* b) {
     buffer_puts(buffer_2, " errno=");
     buffer_putstr(buffer_2, strerror(errno));
   }
+  buffer_puts(buffer_2, " status=");
+  buffer_puts(buffer_2,
+              ((const char* const[]){"-1",
+                                     "HTTP_RECV_HEADER",
+                                     "HTTP_RECV_DATA",
+                                     "HTTP_STATUS_CLOSED",
+                                     "HTTP_STATUS_ERROR",
+                                     "HTTP_STATUS_BUSY",
+                                     "HTTP_STATUS_FINISH",
+                                     0})[h->response->status + 1]);
   buffer_putnlflush(buffer_2);
 #endif
   return ret;
@@ -116,8 +137,9 @@ http_socket_read(fd_t fd, void* buf, size_t len, void* b) {
 ssize_t
 http_socket_write(fd_t fd, void* buf, size_t len, void* b) {
   http* h = (http*)((buffer*)b)->cookie;
+  http_response* r = h->response;
   ssize_t ret = 0;
-  int connected = h->connected;
+  int tlserr, connected = h->connected;
 
   if(h->tls) {
     ret = tls_write(h->sock, buf, len);
@@ -134,6 +156,23 @@ http_socket_write(fd_t fd, void* buf, size_t len, void* b) {
     h->response->status = HTTP_RECV_HEADER;
   }
 
+  tlserr = tls_error(h->sock);
+
+  if(h->tls && ret < 0 && tlserr == 2) {
+    errno = EAGAIN;
+    ret = -1;
+  } else if(h->tls && ret < 0 && tlserr == 3) {
+    errno = EWOULDBLOCK;
+    ret = -1;
+  } else if(ret == 0 || (h->tls && tlserr == 5)) {
+    h->connected = 0;
+    r->status = HTTP_STATUS_CLOSED;
+    ret = 0;
+  } else if(ret == -1 && (!h->tls || tlserr != 5)) {
+    r->err = errno;
+    if(h->tls ? (tlserr != 2 && tlserr != 3) : (errno != EWOULDBLOCK && errno != EAGAIN))
+      r->status = HTTP_STATUS_ERROR;
+  }
 #ifdef DEBUG_HTTP
   buffer_putspad(buffer_2, "http_socket_write ", 30);
   buffer_puts(buffer_2, "sock=");
@@ -145,6 +184,16 @@ http_socket_write(fd_t fd, void* buf, size_t len, void* b) {
     buffer_puts(buffer_2, " errno=");
     buffer_putstr(buffer_2, strerror(errno));
   }
+  buffer_puts(buffer_2, " status=");
+  buffer_puts(buffer_2,
+              ((const char* const[]){"-1",
+                                     "HTTP_RECV_HEADER",
+                                     "HTTP_RECV_DATA",
+                                     "HTTP_STATUS_CLOSED",
+                                     "HTTP_STATUS_ERROR",
+                                     "HTTP_STATUS_BUSY",
+                                     "HTTP_STATUS_FINISH",
+                                     0})[h->response->status + 1]);
   buffer_putnlflush(buffer_2);
 #endif
   return ret;

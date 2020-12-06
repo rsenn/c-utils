@@ -101,7 +101,7 @@ http_io_handler(http* h, buffer* out) {
       nb = http_canread(h, io_wantwrite);
 
 #ifdef DEBUG_OUTPUT
-      buffer_putspad(buffer_2, "\x1b[1;31mhttp_canread\x1b[0m", 30);
+      buffer_putspad(buffer_2, "\x1b[1;31mhttp_io_handler canread\x1b[0m", 30);
       buffer_puts(buffer_2, "nb=");
       buffer_putlong(buffer_2, nb);
       buffer_puts(buffer_2, " connected=");
@@ -114,13 +114,14 @@ http_io_handler(http* h, buffer* out) {
       }
       buffer_putnlflush(buffer_2);
 #endif
-      if(nb <= 0) {
-        ret = nb;
-        continue;
-      }
-      if(nb > 0)
-        ret += nb;
-      if(h->connected && h->sent) {
+      /* if(nb <= 0) {
+         ret = nb;
+         continue;
+       }
+       if(nb > 0)
+         ret += nb;
+       if(h->connected && h->sent)*/
+      {
         char buf[8192];
         ssize_t n;
 
@@ -209,6 +210,8 @@ main(int argc, char* argv[]) {
   }
   buffer_init(&out, (buffer_op_sys*)(void*)&write, outfile, outbuf, sizeof(outbuf));
   buffer_init(&in, (buffer_op_sys*)(void*)&http_read, (uintptr_t)&h, inbuf, sizeof(inbuf));
+  in.cookie = &h;
+
   http_init(&h, url_host, url_port);
   h.nonblocking = 1;
   h.keepalive = 0;

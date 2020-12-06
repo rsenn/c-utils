@@ -13,7 +13,7 @@ fmt_escapecharshell(char* dest, int chr) {
   if(ch > 0xff)
     return 0;
   switch(ch) {
-    case 0: str_copy(dest, "\\x00"); return 4;
+    case 0: if(dest) str_copy(dest, "\\x00"); return 4;
     case '"': c = '"'; goto doescape;
     case '$': c = '$'; goto doescape;
     case '\a': c = 'a'; goto doescape;
@@ -34,7 +34,8 @@ fmt_escapecharshell(char* dest, int chr) {
       return 2;
     default:
       if(ch >= 32 /* && ch < 127*/) {
-        dest[0] = ch;
+        if(dest)
+          dest[0] = ch;
         return 1;
       }
       if(dest) {

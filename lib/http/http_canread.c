@@ -2,6 +2,8 @@
 #include "../scan.h"
 #include "../str.h"
 #include "../stralloc.h"
+#include "../buffer.h"
+#include "../fmt.h"
 #include "../io.h"
 #include "../byte.h"
 #include "../errmsg.h"
@@ -10,14 +12,8 @@
 #include "../tls.h"
 #include <errno.h>
 #include <assert.h>
+#include <string.h>
 
-static const char* const status_strings[] = (const char* const[]){"HTTP_RECV_HEADER",
-                                                                  "HTTP_RECV_DATA",
-                                                                  "HTTP_STATUS_CLOSED",
-                                                                  "HTTP_STATUS_ERROR",
-                                                                  "HTTP_STATUS_BUSY",
-                                                                  "HTTP_STATUS_FINISH",
-                                                                  0};
 /**
  * @brief      Handle socket getting readable
  * @param      h     HTTP client
@@ -114,8 +110,8 @@ http_canread(http* h, void (*wantwrite)(fd_t)) {
   }
 
 fail:
-  if(ret == -1 && !(errno == EAGAIN || errno == EWOULDBLOCK))
-    r->status = HTTP_STATUS_ERROR;
+  /*  if(ret == -1 && !(errno == EAGAIN || errno == EWOULDBLOCK))
+      r->status = HTTP_STATUS_ERROR;*/
   if(ret == -1 && (errno == EAGAIN || errno == EWOULDBLOCK))
     tls_want(h->sock, 0, wantwrite);
 
@@ -123,6 +119,34 @@ fail:
   buffer_putspad(buffer_2, "http_canread ", 30);
   buffer_puts(buffer_2, "sock=");
   buffer_putlong(buffer_2, h->sock);
+  if(h->tls) {
+    buffer_puts(buffer_2, " tls=");
+    buffer_putlong(buffer_2, !!h->tls);
+  }
+  if(h->connected) {
+    buffer_puts(buffer_2, " connected=");
+    buffer_putlong(buffer_2, !!h->connected);
+  }
+  if(h->keepalive) {
+    buffer_puts(buffer_2, " keepalive=");
+    buffer_putlong(buffer_2, !!h->keepalive);
+  }
+  if(h->nonblocking) {
+    buffer_puts(buffer_2, " nonblocking=");
+    buffer_putlong(buffer_2, !!h->nonblocking);
+  }
+  if(h->sent) {
+    buffer_puts(buffer_2, " sent=");
+    buffer_putlong(buffer_2, !!h->sent);
+  }
+  if(h->response->code != -1) {
+    buffer_puts(buffer_2, " code=");
+    buffer_putlong(buffer_2, h->response->code);
+  }
+  if(r->data.len > 0) {
+    buffer_puts(buffer_2, " data=");
+    buffer_put_escaped(buffer_2, r->data.s, r->data.len, &fmt_escapecharshell);
+  }
   buffer_puts(buffer_2, " ret=");
   buffer_putlong(buffer_2, ret);
   buffer_puts(buffer_2, " tls=");
@@ -130,6 +154,10 @@ fail:
   if(ret < 0) {
     buffer_puts(buffer_2, " err=");
     buffer_putstr(buffer_2, http_strerror(h, ret));
+  }
+  if(ret < 0) {
+    buffer_puts(buffer_2, " errno=");
+    buffer_putstr(buffer_2, strerror(errno));
   }
   if(h->response->code != -1) {
     buffer_puts(buffer_2, " code=");

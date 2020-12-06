@@ -8,9 +8,10 @@ scan_ansiskip(const char* s, size_t limit) {
 
   if(*t == 0x1b) {
     ++t;
-    if( t < u && *t == '[') {
-    //  ++t;
+    if(t < u && *t == '[') {
+      //  ++t;
       while(t < u && !isalpha(*t)) ++t;
+      ++t;
       return (size_t)(t - s);
     }
   }

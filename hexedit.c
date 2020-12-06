@@ -20,6 +20,7 @@
 #include <windows.h>
 #endif
 
+#include <ctype.h>
 #include <fcntl.h>
 #include <stdio.h>
 
@@ -307,6 +308,7 @@ main(int argc, char* argv[]) {
   unsigned char* x;
   buffer file;
   int fd;
+    uint64 offset = 0;
 
   errmsg_iam(argv[0]);
 
@@ -324,7 +326,7 @@ main(int argc, char* argv[]) {
   n = file.n;
   // x = (unsigned char*)mmap_shared(argv[index], &n);
 
-  // patch_new("command line", file.n, 0);
+  patch_new("command line", file.n, 0);
 
   while(++index < argc) {
     uint64 addr = 0;
@@ -336,28 +338,45 @@ main(int argc, char* argv[]) {
 
     while((sym = *spec++)) {
       size_t n = 0;
-      if(sym == '@') {
+      if(sym == '@'  && isdigit(*spec)) {
         n = scan_xlonglong(spec, &addr);
-      } else if(sym == '?') {
-      } else if(sym == '=') {
+spec += n;
+ continue;
+      } 
+      if(sym == '\0')
+        break;
+      if(sym == '?') {
+      }  
+      if((sym == '+' || sym == '*') && isdigit(*spec)) {
+        int64 num;
+        n = scan_xlonglong(spec, &num);
+        if(n > 0) {
+          if(sym == '+')
+            offset += num;
+          if(sym == '*')
+            offset *= num;
+        }
+spec += n;
+ continue;
+      } 
+       if(sym == '=') {
         uint8 ch = 0;
         do {
-          n = (scan_xchar(spec, &ch) + 1);
+          n =  scan_xchar(spec, &ch);
           if(n >= 1) {
-            patch(addr, file.x[addr], ch);
+            patch(offset+addr, file.x[offset+addr], ch);
           }
-          if(n > 2)
-            n = 2;
+          
           addr++;
           spec += n;
 
-        } while(n > 1);
+        } while(*spec);
 
-      } else {
+      } /*else {
         buffer_putm_internal(buffer_2, "ERROR: ", spec, "\n", 0);
         buffer_putnlflush(buffer_2);
         return 2;
-      }
+      }*/
       if(n == 0)
         break;
       spec += n;

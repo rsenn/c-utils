@@ -1,9 +1,11 @@
 #define USE_WS2_32 1
 #include "../socket_internal.h"
+#include "../stralloc.h"
 #include "../buffer.h"
 #include "../http.h"
 #include "../byte.h"
 #include "../io.h"
+#include "../fmt.h"
 
 static ssize_t
 do_send(fd_t s, const void* buf, size_t len) {
@@ -13,6 +15,7 @@ do_send(fd_t s, const void* buf, size_t len) {
 int
 http_sendreq(http* h) {
   int ret;
+  size_t len;
   buffer* out = &h->q.out;
   if(h->request == NULL)
     return 0;
@@ -25,7 +28,7 @@ http_sendreq(http* h) {
   if(!h->keepalive)
     buffer_putm_internal(out, "Connection: ", h->keepalive ? "keep-alive" : "close", "\r\n", NULL);
   buffer_puts(out, "Accept: */*\r\n");
-  buffer_puts(out, "Accept-Encoding: br, xz, lzma, bzip2, gzip, deflate\r\n");
+ // buffer_puts(out, "Accept-Encoding: br, xz, lzma, bzip2, gzip, deflate\r\n");
   buffer_puts(out, "\r\n");
 #if DEBUG_HTTP
   {
@@ -46,28 +49,24 @@ http_sendreq(http* h) {
   }
   buffer_flush(buffer_2);
 #endif
-  ret = buffer_flush(out);
-  if(ret != -1) {
-    h->sent = 1;
-    h->response->status = HTTP_RECV_HEADER;
-
-    io_onlywantread(h->sock);
-  }
+  len = out->p;
 #ifdef DEBUG_HTTP
 
   buffer_putspad(buffer_2, "http_sendreq ", 30);
   buffer_puts(buffer_2, "location=");
   buffer_putsa(buffer_2, &h->request->location);
 
-  buffer_puts(buffer_2, " ret=");
-  buffer_putlong(buffer_2, ret);
-  if(ret < 0) {
-    buffer_puts(buffer_2, " err=");
-    buffer_putstr(buffer_2, http_strerror(h, ret));
-  }
   if(h->response->code != -1) {
     buffer_puts(buffer_2, " code=");
     buffer_putlong(buffer_2, h->response->code);
+  }
+  if(len > 0) {
+    buffer_puts(buffer_2, " len=");
+    buffer_putlong(buffer_2, len);
+  }
+  if(out->n > out->p) {
+    buffer_puts(buffer_2, " code=");
+    buffer_put_escaped(buffer_2, out->x, out->p, &fmt_escapecharshell);
   }
   buffer_puts(buffer_2, " status=");
   buffer_puts(buffer_2,
@@ -80,6 +79,26 @@ http_sendreq(http* h) {
                                      "HTTP_STATUS_FINISH",
                                      0})[h->response->status + 1]);
   buffer_putnlflush(buffer_2);
+  buffer_flush(buffer_2);
 #endif
+  buffer_flush(out);
+  ret = len;
+
+#ifdef DEBUG_HTTP
+  buffer_putspad(buffer_2, "http_sendreq ", 30);
+  buffer_puts(buffer_2, "ret=");
+  buffer_putlong(buffer_2, ret);
+  if(ret < 0) {
+    buffer_puts(buffer_2, " err=");
+    buffer_putstr(buffer_2, http_strerror(h, ret));
+  }
+  buffer_putnlflush(buffer_2);
+#endif
+  if(ret != -1) {
+    h->sent = 1;
+    h->response->status = HTTP_RECV_HEADER;
+
+    io_onlywantread(h->sock);
+  }
   return ret;
 }

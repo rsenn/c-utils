@@ -78,7 +78,7 @@ http_read_header(http* h, stralloc* sa, http_response* r) {
   h->q.in.op = (buffer_op_proto*)&http_socket_read;
 
 #ifdef DEBUG_HTTP
-  buffer_putspad(buffer_2, "http_read_header ", 30);
+  buffer_putspad(buffer_2, "\x1b[1;33mhttp_read_header\x1b[0m", 30);
   buffer_puts(buffer_2, "sock=");
   buffer_putlong(buffer_2, h->sock);
 
@@ -89,9 +89,13 @@ http_read_header(http* h, stralloc* sa, http_response* r) {
     buffer_putstr(buffer_2, http_strerror(h, ret));
   }
 
-  if(h->response->code != -1) {
+  if(r->code != -1) {
     buffer_puts(buffer_2, " code=");
-    buffer_putlong(buffer_2, h->response->code);
+    buffer_putlong(buffer_2, r->code);
+  }
+  if(r->content_length > 0) {
+    buffer_puts(buffer_2, " content_length=");
+    buffer_putlong(buffer_2, r->content_length);
   }
   buffer_puts(buffer_2, " status=");
   buffer_puts(buffer_2,
@@ -102,7 +106,7 @@ http_read_header(http* h, stralloc* sa, http_response* r) {
                                      "HTTP_STATUS_ERROR",
                                      "HTTP_STATUS_BUSY",
                                      "HTTP_STATUS_FINISH",
-                                     0})[h->response->status + 1]);
+                                     0})[r->status + 1]);
   buffer_putnlflush(buffer_2);
 #endif
   return ret;
