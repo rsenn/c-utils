@@ -68,7 +68,7 @@ http_read_header(http* h, stralloc* sa, http_response* r) {
       }
       r->transfer = HTTP_TRANSFER_BOUNDARY;
     } else if(str_start(x, "Content-Length:")) {
-      scan_ulonglong(&sa->s[16], &r->content_length);
+      scan_ulonglong(&x[16], &r->content_length);
       r->transfer = HTTP_TRANSFER_LENGTH;
     } else if(str_start(x, "Transfer-Encoding:") && str_contains(x, "chunked")) {
       r->chunk_length = 0;

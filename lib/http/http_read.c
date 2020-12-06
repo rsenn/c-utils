@@ -27,11 +27,12 @@ http_read(fd_t fd, char* buf, size_t len, void* ptr) {
     int st = r->status;
     bytes = b->n - b->p;
     if((n = buffer_freshen(b)) <= 0) {
-      if(n == 0) {
-        r->status = HTTP_STATUS_CLOSED;
-        ret = n;
-        break;
-      } else if((int)r->status == st) {
+      /* if(n == 0) {
+         r->status = HTTP_STATUS_CLOSED;
+         ret = n;
+         break;
+       } else*/
+      if((int)r->status == st) {
         if(ret == 0 && r->err != 0) {
           errno = r->err;
           ret = -1;

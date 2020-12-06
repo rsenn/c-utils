@@ -189,6 +189,8 @@ read_mediathek_list(const char* url, buffer* b) {
         continue;
 
       if(http_canwrite(&h, &io_onlywantread) == -1) {
+        if(errno == EWOULDBLOCK)
+          break;
         errmsg_warnsys("send error: ", 0);
         return 2;
       }

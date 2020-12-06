@@ -51,6 +51,13 @@ static const uint16 url_port = 8080;
 static io_entry* g_iofd;
 static http h;
 
+static const char* const status_strings[] = {"HTTP_RECV_HEADER",
+                                             "HTTP_RECV_DATA",
+                                             "HTTP_STATUS_CLOSED",
+                                             "HTTP_STATUS_ERROR",
+                                             "HTTP_STATUS_BUSY",
+                                             "HTTP_STATUS_FINISH",
+                                             0};
 void
 usage(char* av0) {
   buffer_putm_internal(buffer_1,
@@ -97,11 +104,21 @@ http_io_handler(http* h, buffer* out) {
 #endif
       buffer_putnlflush(buffer_2);
 
-      if(h->connected && h->sent) {
+      /*  if(h->connected && h->sent)*/ {
         char buf[8192];
         ssize_t n;
 
         while((n = http_read(h->sock, buf, sizeof(buf), &h->q.in)) > 0) {
+          buffer_puts(buffer_2, "http_read ret=");
+          buffer_putlong(buffer_2, n);
+          buffer_puts(buffer_2, " err=");
+          buffer_puts(buffer_2, http_strerror(h, n));
+          buffer_puts(buffer_2, " status=");
+          buffer_puts(buffer_2, status_strings[h->response->status]);
+          buffer_puts(buffer_2, " data='");
+          buffer_put_escaped(buffer_2, buf, n, &fmt_escapecharshell);
+          buffer_putnlflush(buffer_2);
+
           if(buffer_put(out, buf, n)) {
             errmsg_warnsys("write error: ", 0);
             return 2;
@@ -123,14 +140,6 @@ http_io_handler(http* h, buffer* out) {
 fail:
   return ret;
 }
-
-static const char* const status_strings[] = {"HTTP_RECV_HEADER",
-                                             "HTTP_RECV_DATA",
-                                             "HTTP_STATUS_CLOSED",
-                                             "HTTP_STATUS_ERROR",
-                                             "HTTP_STATUS_BUSY",
-                                             "HTTP_STATUS_FINISH",
-                                             0};
 
 int
 main(int argc, char* argv[]) {
@@ -201,6 +210,13 @@ main(int argc, char* argv[]) {
 
       ret = http_io_handler(&h, &out);
 
+      if(h.response->code == 302) {
+        s = http_get_header(&h, "Location");
+        buffer_puts(buffer_2, "Location: ");
+        buffer_put(buffer_2, s, str_chrs(s, "\r\n", 2));
+        buffer_putnlflush(buffer_2);
+      }
+
       buffer_puts(buffer_2, "http_io_handler ret=");
       buffer_putlong(buffer_2, ret);
 
@@ -213,18 +229,15 @@ main(int argc, char* argv[]) {
       // buffer_dump(buffer_1, &h.q.in);
       if(h.response->data.len) {
         buffer_puts(buffer_2, "response: ");
-        buffer_putsa(buffer_2, &h.response->data);
+        buffer_put_escaped(buffer_2,
+                           h.response->data.s,
+                           h.response->data.len,
+                           &fmt_escapecharshell);
         buffer_putnlflush(buffer_2);
       }
       if(h.response->status == HTTP_STATUS_FINISH || h.response->status == HTTP_STATUS_CLOSED)
         break;
     }
-
-    s = http_get_header(&h, "location");
-    buffer_puts(buffer_2, "location: ");
-    buffer_put(buffer_2, s, str_chrs(s, "\r\n", 2));
-    buffer_putnlflush(buffer_2);
-
     buffer_flush(&out);
     /* buffer_putsa(buffer_1, &h.response->data);*/
     buffer_putnlflush(buffer_1);
