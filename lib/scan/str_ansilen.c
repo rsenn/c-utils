@@ -12,7 +12,7 @@ str_ansilen(const char* in) {
       i += p;
       continue;
     }
-
+    ++i;
     ++len;
   }
   return len;
