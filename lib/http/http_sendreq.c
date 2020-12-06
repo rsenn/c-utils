@@ -53,5 +53,28 @@ http_sendreq(http* h) {
 
     io_onlywantread(h->sock);
   }
+#ifdef DEBUG_HTTP
+
+  buffer_putspad(buffer_2, "http_sendreq ", 18);
+  buffer_puts(buffer_2, "location=");
+  buffer_putsa(buffer_2, &h->request->location);
+  buffer_puts(buffer_2, " ret=");
+  buffer_putlong(buffer_2, ret);
+  buffer_puts(buffer_2, " err=");
+  buffer_puts(buffer_2, http_strerror(h, ret));
+  buffer_puts(buffer_2, " code=");
+  buffer_putlong(buffer_2, h->response->code);
+  buffer_puts(buffer_2, " status=");
+  buffer_puts(buffer_2,
+              ((const char* const[]){"-1",
+                                     "HTTP_RECV_HEADER",
+                                     "HTTP_RECV_DATA",
+                                     "HTTP_STATUS_CLOSED",
+                                     "HTTP_STATUS_ERROR",
+                                     "HTTP_STATUS_BUSY",
+                                     "HTTP_STATUS_FINISH",
+                                     0})[h->response->status + 1]);
+  buffer_putnlflush(buffer_2);
+#endif
   return ret;
 }
