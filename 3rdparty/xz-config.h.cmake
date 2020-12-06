@@ -296,8 +296,9 @@ typedef uint64_t uintmax_t;
 #define memmove(dst,src,len) byte_copyr(dst,len,src)
 #undef memset
 #define memset(dst,ch,len) byte_fill(dst,len,ch)
-#endif
 #undef memcmp
 #define memcmp(dst,src,len) byte_diff(dst,len,src)
+
+#endif
 
 #endif
