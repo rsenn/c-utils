@@ -20,10 +20,10 @@
 	"buffers":
 	[
 		{
-			"contents": "—Ⓕ– is_whitespace ( ) { … } — function\n—Ⓕ– putsa ( ) { … } — function\n—Ⓕ– xml_read_callback ( ) { … } — function",
+			"contents": "Contrib repository\nHeaders layout\nAlgorithm interfaces\nChanged modules\n#include \"opencv2/features2d/features2d.hpp\"\n#include \"opencv2/features2d.hpp\"\n#include \"opencv2/xfeatures2d.hpp\"\nSource code\n#include \"opencv2/core/version.hpp\"\n#if CV_MAJOR_VERSION == 2\n#elif CV_MAJOR_VERSION == 3\n#endif\nBuild system\n  use 2.4 modules\n  use 3.x modules",
 			"settings":
 			{
-				"buffer_size": 112,
+				"buffer_size": 342,
 				"line_ending": "Unix",
 				"name": "𝌆 Outline",
 				"scratch": true
@@ -104,6 +104,30 @@
 			"settings":
 			{
 				"buffer_size": 3279,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"contents": "#include \"lib/open.h\"\n#include \"lib/fmt.h\"\n#include \"lib/errmsg.h\"\n#include \"lib/str.h\"\n#include \"lib/scan.h\"\n#include \"lib/getopt.h\"\n#include \"lib/unix.h\"\n#include \"lib/stralloc.h\"\n#include \"lib/buffer.h\"\n#include \"lib/mmap.h\"\n#include \"lib/path.h\"\n#include \"lib/scan.h\"\n#include \"lib/textcode.h\"\n#include \"lib/alloc.h\"\n#include \"lib/byte.h\"\n#include \"lib/uint8.h\"\n\n#include <ctype.h>\n#include \"lib/bool.h\"\n\n#if WINDOWS_NATIVE\n#include <io.h>\n#else\n#include <unistd.h>\n#endif\n\nstatic char quote[4] = {'\"', 0};\nstatic int one_line, indent = 2, compact;\nstatic stralloc indent_str, queue, quote_chars;\nstatic buffer output;\nstatic const char* add_quotes = 0;\nstatic int tab_size = -1;\nstatic int quote_newline = 0, quote_tabs = 0, quote_nul = 0, quote_backslash = 0;\n\ntypedef size_t fmt_function(char*, int, int);\n\nsize_t\nfmt_default(char* dest, int c, int quote) {\n  size_t i, n = 0, q = 1;\n  uint8 ch = c;\n\n  if(byte_chr(quote_chars.s, quote_chars.len, ch) < quote_chars.len) {\n\n    if(c == '\\t')\n      c = 't';\n    else if(c == '\\n')\n      c = 'n';\n    else if(c == 0x1b)\n      c = 'e';\n    else if(c == '\\v')\n      c = 'v';\n    else if(c == '\\b')\n      c = 'b';\n    else if(c == '\\\\')\n      q = quote_backslash;\n\n    for(i = 0; i < q; i++) {\n      if(dest)\n        dest[n] = '\\\\';\n      n++;\n    }\n  }\n\n  if(n - q < 2) {\n    if(dest)\n      dest[n] = c;\n    n++;\n  }\n\n  return n;\n}\n\nstatic fmt_function* fmt_call = (void*)fmt_default;\n\nsize_t consume_output(stralloc* sa, buffer* out);\nvoid\nput_str_escaped(buffer* b, const char* str) {\n  stralloc esc;\n  stralloc_init(&esc);\n  stralloc_fmt_pred(&esc, str, str_len(str), (stralloc_fmt_fn*)&fmt_escapecharc, iscntrl);\n  buffer_putsa(b, &esc);\n}\n\nvoid\nput_line(stralloc* sa, const char* x, ssize_t len) {\n  if(len > 1) {\n    if((x[len - 1] == '\\n' || x[len - 1] == '\\r'))\n\n      len--;\n    while(len >= 1 && isspace(x[len - 1])) len--;\n  }\n\n  if(len > 0) {\n#ifdef DEBUG_OUTPUT_\n    buffer_puts(buffer_2, \"put_line(\");\n    buffer_dump(buffer_2, b);\n    buffer_puts(buffer_2, \", \");\n    buffer_putptr(buffer_2, x);\n    buffer_puts(buffer_2, \", \");\n    buffer_putlong(buffer_2, len);\n    buffer_puts(buffer_2, \");\");\n    buffer_putnlflush(buffer_2);\n#endif\n    stralloc_catb(sa, x, len);\n  }\n  stralloc_catb(sa, \"\\n\", 1);\n\n  if(len > 0) {\n    consume_output(sa, &output);\n  }\n}\n\nsize_t\neat_line(const char** s, size_t n, buffer* out) {\n  size_t p, q;\n  const char* x = *s;\n  p = scan_noncharsetnskip(x, \"\\n\\r\", n);\n  if(p < n) {\n    q = scan_charsetnskip(&x[p], \"\\n\\r\", n - p);\n    if(p == 0 && q == n)\n      return p;\n    buffer_put(out, x, p + (q > 2 ? 2 : q));\n    x += p + q;\n    n -= p + q;\n  }\n  *s = x;\n  return p;\n}\n\nsize_t\nconsume_output(stralloc* sa, buffer* out) {\n  size_t prevlen = -1;\n  const char* s = sa->s;\n  const char* e = s + sa->len;\n\n  while(s < e) {\n    size_t r = eat_line(&s, e - s, out);\n    if(r == 0) {\n      if(prevlen)\n        break;\n      //      buffer_puts(out, \"\\n\");\n      //  break;\n    }\n#ifdef DEBUG_OUTPUT_\n    buffer_puts(buffer_2, \"eat_line() = \");\n    buffer_putlong(buffer_2, r);\n    buffer_putnlflush(buffer_2);\n#endif\n    prevlen = r;\n  }\n\n  if(s > sa->s && s < e) {\n    stralloc_remove(sa, 0, s - sa->s);\n  } else {\n    stralloc_zero(sa);\n  }\n#ifdef DEBUG_OUTPUT_\n  buffer_puts(buffer_2, \"remaining \");\n  buffer_putlong(buffer_2, e - s);\n  buffer_putnlflush(buffer_2);\n#endif\n  return s - sa->s;\n}\n\nstatic inline bool\ndo_quote(int ch) {\n  return byte_chr(quote_chars.s, quote_chars.len, ch) < quote_chars.len;\n}\n\nvoid\nadd_output(const char* x, size_t len, buffer* out) {\n  size_t i, n;\n  char tmp[32];\n\n  for(i = 0; i < len; i++) {\n    uint8 ch = x[i];\n    unsigned int chlen = fmt_utf8(0, x[i]);\n\n    if(do_quote(x[i])) {\n      if(chlen > 1 || fmt_call != fmt_default) {\n      n = fmt_call(tmp, x[i], 0);\n    } else/* if(iscntrl(ch) || ch > 127) */{\n      n = 0;\n      tmp[n++] = '\\\\';\n      if(ch <= 63)\n        tmp[n++] = '0';\n      if(ch <= 7)\n        tmp[n++] = '0';\n\n      n += fmt_8long(&tmp[n], ch);\n    } \n  }else {\n      tmp[0] = x[i];\n      n = 1;\n    }\n\n    if(quote_newline && n == 1 && tmp[0] == '\\n')\n      buffer_puts(out, \"\\\\n\");\n    else if(quote_tabs && n == 1 && tmp[0] == '\\t')\n      buffer_puts(out, \"\\\\t\");\n    else if(quote_nul && n == 1 && tmp[0] == '\\0')\n      buffer_puts(out, \"\\\\0\");\n    else\n      buffer_put(out, tmp, n);\n  }\n}\n\nint\nrun_quote(buffer* in, buffer* out) {\n  int c, prev_c, is_empty;\n  const char* x;\n  size_t p, n, line, col;\n  bool ws = false;\n  stralloc buf;\n  stralloc_init(&buf);\n  n = 0;\n  line = 0;\n  col = 0;\n  prev_c = '\\0';\n\n  if(add_quotes)\n    buffer_puts(out, add_quotes);\n  c = 0;\n  while(buffer_getc(in, (char*)&c) > 0) {\n\n    if(c == ' ' && prev_c != ' ') {\n      add_output(buf.s, buf.len, out);\n      stralloc_zero(&buf);\n      ws = true;\n    }\n    if(c != ' ') {\n      if(ws)\n        ws = false;\n    }\n\n    if(ws && tab_size > 0 && buf.len == (size_t)(tab_size - 1)) {\n      c = '\\t';\n      stralloc_zero(&buf);\n    }\n\n    stralloc_catc(&buf, c);\n\n    n++;\n    col++;\n\n    prev_c = c;\n  }\n\n  if(buf.len > 0) {\n    add_output(buf.s, buf.len, out);\n    stralloc_zero(&buf);\n  }\n  if(add_quotes)\n    buffer_puts(out, add_quotes);\n\n  if(c != '\\n')\n    buffer_putc(out, '\\n');\n\n  buffer_flush(out);\n  stralloc_free(&buf);\n  return 0;\n}\n\nint\nadd_chars(const char* x, size_t len) {\n  size_t i;\n  int n = 0;\n\n  for(i = 0; i < len; i++) {\n    if(byte_chr(quote_chars.s, quote_chars.len, x[i]) == quote_chars.len) {\n      stralloc_catb(&quote_chars, &x[i], 1);\n      n++;\n    }\n  }\n  return n;\n}\n\nvoid\nusage(char* av0) {\n  buffer_putm_internal(\n      buffer_1,\n      \"Usage: \",\n      str_basename(av0),\n      \" [OPTIONS] [FILES...]\\n\"\n      \"\\n\"\n      \"Options:\\n\"\n      \"\\n\"\n      \"  -h, --help                       Show this help\\n\"\n      \"  -i, --in-place                   Write to input file\\n\"\n      \"  -q, --quote-chars CHARS          Characters to quote\\n\"\n      \"  -n, --quote-newline              Quote newline (\\\\n)\\n\"\n      \"      --quote-tabs                 Quote tabs (\\\\t)\\n\"\n      \"      --quote-nul                  Quote nul (\\\\0)\\n\"\n      \"  -b, --quote-backslash            Quote backslash (\\\\)\\n\"\n      \"  -c, --escape-c                   Escape characters for C strings\\n\"\n      \"  -C, --escape-cmake               Escape characters for CMake strings\\n\"\n      \"  -S, --escape-shell               Escape characters for shell strings\\n\"\n      \"  -D, --escape-doublequoted-shell  Escape characters for double-quoted shell strings\\n\"\n      \"  -Q, --escape-quoted-shell        Escape characters for single-quoted shell strings\\n\"\n      \"  -X, --escape-xml                 Escape characters for XML\\n\"\n      \"  -J, --escape-json                Escape characters for JSON\\n\"\n      \"  -P, --escape-printable           Escape non-printable characters\\n\"\n      \"  -a, --add-quotes QUOTE           Add quotes of type\\n\"\n      \"\\n\",\n      NULL);\n  buffer_flush(buffer_1);\n}\n\nint\nmain(int argc, char* argv[]) {\n  int in_fd = STDIN_FILENO, out_fd = STDOUT_FILENO;\n  stralloc tmp;\n  int c;\n  const char *in_path = 0, *out_path = 0;\n  int index = 0;\n  char buf[16384];\n  buffer temp;\n  int in_place = 0;\n  buffer input;\n  stralloc data;\n  size_t n;\n  const char* x;\n  char* tmpl = \"/tmp/quote.XXXXXX\";\n\n  struct longopt opts[] = {{\"help\", 0, NULL, 'h'},\n                           {\"in-place\", 0, NULL, 'i'},\n                           {\"add-quotes\", 1, NULL, 'a'},\n                           {\"tab-size\", 1, NULL, 't'},\n                           {\"quote-chars\", 1, NULL, 'q'},\n                           {\"quote-newline\", 0, NULL, 'n'},\n                           {\"quote-tabs\", 0, NULL, 9},\n                           {\"quote-nul\", 0, NULL, '0'},\n                           {\"quote-backslash\", 0, NULL, 'b'},\n                           {\"no-quote-newline\", 0, &quote_newline, false},\n                           {\"no-quote-tabs\", 0, &quote_tabs, false},\n                           {\"no-quote-nul\", 0, &quote_nul, false},\n                           {\"escape-cmake\", 1, NULL, 'C'},\n                           {\"escape-shell\", 0, NULL, 'S'},\n                           {\"escape-doublequoted-shell\", 0, NULL, 'D'},\n                           {\"escape-quoted-shell\", 0, NULL, 'Q'},\n                           {\"escape-c\", 0, NULL, 'c'},\n                           {\"escape-xml\", 0, NULL, 'X'},\n                           {\"escape-json\", 0, NULL, 'J'},\n                           {\"escape-printable\", 0, NULL, 'P'},\n                           {0, 0, 0, 0}};\n\n  stralloc_init(&quote_chars);\n  stralloc_ready(&quote_chars, 4);\n\n  errmsg_iam(argv[0]);\n\n  for(;;) {\n    c = unix_getopt_long(argc, argv, \"0a:CcDhiJq:nPQSt:X\", opts, &index);\n    if(c == -1)\n      break;\n    if(c == 0)\n      continue;\n\n    switch(c) {\n      case 'i': in_place = 1; break;\n\n      case 'h': usage(argv[0]); return 0;\n      case 'a': add_quotes = argv[unix_optind]; break;\n      case 'b': quote_backslash++; break;\n      case 't': scan_int(argv[unix_optind], &tab_size); break;\n      case 'q':\n        stralloc_ready(&quote_chars, str_len(argv[unix_optind]) * 3 + 1);\n        quote_chars.len = quote_chars.a;\n        scan_cescape(argv[unix_optind], quote_chars.s, &quote_chars.len);\n        break;\n      case 'n': quote_newline = true; break;\n      case 9: quote_tabs = true; break;\n      case '0':\n        quote_nul = true;\n        break;\n        //    case 'S': stralloc_copys(&quote_chars, \"\\\"$`\"); break;\n      case 'C':\n        add_quotes = \"\\\"\";\n        // tab_size = 2;\n        quote_newline = quote_tabs = true;\n        quote_backslash = 3;\n        stralloc_copys(&quote_chars, \"$\\t\");\n        break;\n      case 'c': stralloc_copys(&quote_chars, \"\\\"\\n\\\\\"); break;\n      case 'J': fmt_call = (fmt_function*)(void*)&fmt_escapecharjson; break;\n      case 'P': fmt_call = (fmt_function*)(void*)&fmt_escapecharquotedprintable; break;\n      case 'S': fmt_call = (fmt_function*)(void*)&fmt_escapecharshell; break;\n      case 'Q': fmt_call = (fmt_function*)(void*)&fmt_escapecharquotedshell; break;\n      case 'D': fmt_call = (fmt_function*)(void*)&fmt_escapechardoublequotedshell; break;\n      case 'X': fmt_call = (fmt_function*)(void*)&fmt_escapecharxml; break;\n\n      default: usage(argv[0]); return 1;\n    }\n  }\n\n  if(add_quotes)\n    add_chars(add_quotes, str_len(add_quotes));\n\n  if(quote_newline)\n    add_chars(\"\\n\", 1);\n  if(quote_tabs)\n    add_chars(\"\\t\", 1);\n\n  if(quote_chars.len > 0) {\n    add_chars(\"\\\\\", 1);\n    if(quote_backslash == 0)\n      quote_backslash++;\n  }\n#ifdef DEBUG_OUTPUT\n    buffer_puts(buffer_2, \"Chars to quote '\");\n    buffer_putsa(buffer_2, &quote_chars);\n    buffer_puts(buffer_2, \"'\");\n    buffer_putnlflush(buffer_2);\n#endif\n  stralloc_init(&tmp);\n \n  if(unix_optind < argc) {\n#ifdef DEBUG_OUTPUT\n    buffer_putm_internal(buffer_2, \"Opening input file '\", argv[unix_optind], \"'...\", NULL);\n    buffer_putnlflush(buffer_2);\n#endif\n    in_fd = open_read((in_path = argv[unix_optind]));\n    unix_optind++;\n  }\n  if(unix_optind < argc) {\n#ifdef DEBUG_OUTPUT\n    buffer_putm_internal(buffer_2, \"Opening output file '\", argv[unix_optind], \"'...\", NULL);\n    buffer_putnlflush(buffer_2);\n#endif\n    out_fd = open_trunc((out_path = argv[unix_optind]));\n    unix_optind++;\n  }\n\n  buffer_init_free(&input, (buffer_op_sys*)(void*)&read, in_fd, alloc(1024), 1024);\n\nagain:\n  if(in_place) {\n    stralloc_zero(&tmp);\n    path_dirname(in_path, &tmp);\n    stralloc_catc(&tmp, '/');\n\n    stralloc_cats(&tmp, \"quote.XXXXXX\");\n    stralloc_nul(&tmp);\n    tmpl = tmp.s;\n\n    if(out_fd == STDOUT_FILENO) {\n      out_fd = open_temp(&tmpl);\n      out_path = tmpl;\n    }\n  }\n  buffer_write_fd(&output, out_fd);\n  run_quote(&input, &output);\n\n  buffer_flush(&output);\n  close(output.fd);\n\n  if(tmpl) {\n    buffer_puts(buffer_1, \"tmpl: \");\n    buffer_puts(buffer_1, tmpl);\n    buffer_putnlflush(buffer_1);\n  }\n  if(out_path) {\n    buffer_puts(buffer_1, \"out_path: \");\n    buffer_puts(buffer_1, out_path);\n    buffer_putnlflush(buffer_1);\n  }\n  /*\n    if((x = mmap_read(out_path, &n)) && n > 1) {\n\n      buffer_puts(buffer_1, \"out: \");\n      buffer_put(buffer_1, x, n);\n      buffer_putnlflush(buffer_1);\n\n      mmap_unmap(x, n);\n    } */\n\n  buffer_close(&input);\n\n  if(in_place) {\n    // buffer inplace;\n    if(unlink(in_path) != 0)\n      errmsg_warnsys(\"unlink: \", in_path, 0);\n\n    if(link(tmpl, in_path) == 0) {\n      unlink(tmpl);\n    } else {\n      errmsg_warnsys(\"unlink: \", tmpl, 0);\n    }\n\n    /*    buffer_truncfile(&inplace, out_path);\n        buffer_put(&inplace, tmp.s, tmp.len);\n        buffer_flush(&inplace);\n        buffer_close(&inplace);\n    */\n\n    if(out_path == 0) {\n      in_path = argv[unix_optind++];\n      in_fd = open_read(in_path);\n      goto again;\n    }\n  }\n}\n",
+			"file": "quote.c",
+			"file_size": 12723,
+			"file_write_time": 132518713218455058,
+			"settings":
+			{
+				"buffer_size": 12723,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"contents": "Transition guide {#tutorial_transition_guide}\n================\n\n@prev_tutorial{tutorial_documentation}\n@next_tutorial{tutorial_cross_referencing}\n\n|    |    |\n| -: | :- |\n| Original author | Maksim Shabunin |\n| Compatibility | OpenCV >= 3.0 |\n\n@tableofcontents\n\nChanges overview {#tutorial_transition_overview}\n================\nThis document is intended to software developers who want to migrate their code to OpenCV 3.0.\n\nOpenCV 3.0 introduced many new algorithms and features comparing to version 2.4. Some modules have been rewritten, some have been reorganized. Although most of the algorithms from 2.4 are still present, the interfaces can differ.\n\nThis section describes most notable changes in general, all details and examples of transition actions are in the next part of the document.\n\n##### Contrib repository\n<https://github.com/opencv/opencv_contrib>\n\nThis is a place for all new, experimental and non-free algorithms. It does not receive so much attention from the support team comparing to main repository, but the community makes an effort to keep it in a good shape.\n\nTo build OpenCV with _contrib_ repository, add the following option to your cmake command:\n@code{.sh}\n-DOPENCV_EXTRA_MODULES_PATH=<path-to-opencv_contrib>/modules\n@endcode\n\n##### Headers layout\nIn 2.4 all headers are located in corresponding module subfolder (_opencv2/\\<module\\>/\\<module\\>.hpp_), in 3.0 there are top-level module headers containing the most of the module functionality: _opencv2/\\<module\\>.hpp_ and all C-style API definitions have been moved to separate headers (for example opencv2/core/core_c.h).\n\n##### Algorithm interfaces\nGeneral algorithm usage pattern has changed: now it must be created on heap wrapped in smart pointer cv::Ptr. Version 2.4 allowed both stack and heap allocations, directly or via smart pointer.\n\n_get_ and _set_ methods have been removed from the cv::Algorithm class along with _CV_INIT_ALGORITHM_ macro. In 3.0 all properties have been converted to the pairs of _getProperty/setProperty_ pure virtual methods. As a result it is __not__ possible to create and use cv::Algorithm instance by name (using generic _Algorithm::create(String)_ method), one should call corresponding factory method explicitly.\n\n##### Changed modules\n-   _ml_ module has been rewritten\n-   _highgui_ module has been split into parts: _imgcodecs_, _videoio_ and _highgui_ itself\n-   _features2d_ module have been reorganized (some feature detectors has been moved to _opencv_contrib/xfeatures2d_ module)\n-   _legacy_, _nonfree_ modules have been removed. Some algorithms have been moved to different locations and some have been completely rewritten or removed\n-   CUDA API has been updated (_gpu_ module -> several _cuda_ modules, namespace _gpu_ -> namespace _cuda_)\n-   OpenCL API has changed (_ocl_ module has been removed, separate _ocl::_ implementations -> Transparent API)\n-   Some other methods and classes have been relocated\n\nTransition hints {#tutorial_transition_hints}\n================\nThis section describes concrete actions with examples.\n\nPrepare 2.4 {#tutorial_transition_hints_24}\n-----------\nSome changes made in the latest 2.4.11 OpenCV version allow you to prepare current codebase to migration:\n\n- cv::makePtr function is now available\n- _opencv2/\\<module\\>.hpp_ headers have been created\n\nNew headers layout {#tutorial_transition_hints_headers}\n------------------\n__Note:__\nChanges intended to ease the migration have been made in OpenCV 3.0, thus the following instructions are not necessary, but recommended.\n\n1. Replace inclusions of old module headers:\n@code{.cpp}\n// old header\n#include \"opencv2/<module>/<module>.hpp\"\n// new header\n#include \"opencv2/<module>.hpp\"\n@endcode\n\nModern way to use algorithm {#tutorial_transition_algorithm}\n---------------------------\n1.  Algorithm instances must be created with cv::makePtr function or corresponding static factory method if available:\n    @code{.cpp}\n    // good ways\n    Ptr<SomeAlgo> algo = makePtr<SomeAlgo>(...);\n    Ptr<SomeAlgo> algo = SomeAlgo::create(...);\n    @endcode\n    Other ways are deprecated:\n    @code{.cpp}\n    // bad ways\n    Ptr<SomeAlgo> algo = new SomeAlgo(...);\n    SomeAlgo * algo = new SomeAlgo(...);\n    SomeAlgo algo(...);\n    Ptr<SomeAlgo> algo = Algorithm::create<SomeAlgo>(\"name\");\n    @endcode\n\n2.  Algorithm properties should be accessed via corresponding virtual methods, _getSomeProperty/setSomeProperty_, generic _get/set_ methods have been removed:\n    @code{.cpp}\n    // good way\n    double clipLimit = clahe->getClipLimit();\n    clahe->setClipLimit(clipLimit);\n    // bad way\n    double clipLimit = clahe->getDouble(\"clipLimit\");\n    clahe->set(\"clipLimit\", clipLimit);\n    clahe->setDouble(\"clipLimit\", clipLimit);\n    @endcode\n\n\n3.  Remove `initModule_<moduleName>()` calls\n\nMachine learning module {#tutorial_transition_hints_ml}\n-----------------------\nSince this module has been rewritten, it will take some effort to adapt your software to it. All algorithms are located in separate _ml_ namespace along with their base class _StatModel_. Separate _SomeAlgoParams_ classes have been replaced with a sets of corresponding _getProperty/setProperty_ methods.\n\nThe following table illustrates correspondence between 2.4 and 3.0 machine learning classes.\n\n|       2.4 | 3.0       |\n| --------- | --------- |\n| CvStatModel | cv::ml::StatModel |\n| CvNormalBayesClassifier | cv::ml::NormalBayesClassifier |\n| CvKNearest | cv::ml::KNearest |\n| CvSVM | cv::ml::SVM |\n| CvDTree | cv::ml::DTrees |\n| CvBoost | cv::ml::Boost |\n| CvGBTrees | _Not implemented_ |\n| CvRTrees | cv::ml::RTrees |\n| CvERTrees | _Not implemented_ |\n| EM | cv::ml::EM |\n| CvANN_MLP | cv::ml::ANN_MLP |\n| _Not implemented_ | cv::ml::LogisticRegression |\n| CvMLData | cv::ml::TrainData |\n\nAlthough rewritten _ml_ algorithms in 3.0 allow you to load old trained models from _xml/yml_ file, deviations in prediction process are possible.\n\nThe following code snippets from the `points_classifier.cpp` example illustrate differences in model training process:\n@code{.cpp}\nusing namespace cv;\n// ======== version 2.4 ========\nMat trainSamples, trainClasses;\nprepare_train_data( trainSamples, trainClasses );\nCvBoost  boost;\nMat var_types( 1, trainSamples.cols + 1, CV_8UC1, Scalar(CV_VAR_ORDERED) );\nvar_types.at<uchar>( trainSamples.cols ) = CV_VAR_CATEGORICAL;\nCvBoostParams  params( CvBoost::DISCRETE, // boost_type\n                       100, // weak_count\n                       0.95, // weight_trim_rate\n                       2, // max_depth\n                       false, //use_surrogates\n                       0 // priors\n                     );\nboost.train( trainSamples, CV_ROW_SAMPLE, trainClasses, Mat(), Mat(), var_types, Mat(), params );\n\n// ======== version 3.0 ========\nPtr<Boost> boost = Boost::create();\nboost->setBoostType(Boost::DISCRETE);\nboost->setWeakCount(100);\nboost->setWeightTrimRate(0.95);\nboost->setMaxDepth(2);\nboost->setUseSurrogates(false);\nboost->setPriors(Mat());\nboost->train(prepare_train_data()); // 'prepare_train_data' returns an instance of ml::TrainData class\n@endcode\n\nFeatures detect {#tutorial_transition_hints_features}\n---------------\nSome algorithms (FREAK, BRIEF, SIFT, SURF) has been moved to _opencv_contrib_ repository, to _xfeatures2d_ module, _xfeatures2d_ namespace. Their interface has been also changed (inherit from `cv::Feature2D` base class).\n\nList of _xfeatures2d_ module classes:\n\n- cv::xfeatures2d::BriefDescriptorExtractor - Class for computing BRIEF descriptors (2.4 location: _features2d_)\n- cv::xfeatures2d::FREAK - Class implementing the FREAK (Fast Retina Keypoint) keypoint descriptor (2.4 location: _features2d_)\n- cv::xfeatures2d::StarDetector - The class implements the  CenSurE detector (2.4 location: _features2d_)\n- cv::xfeatures2d::SIFT - Class for extracting keypoints and computing descriptors using the Scale Invariant Feature Transform (SIFT) algorithm (2.4 location: _nonfree_)\n- cv::xfeatures2d::SURF - Class for extracting Speeded Up Robust Features from an image (2.4 location: _nonfree_)\n\nFollowing steps are needed:\n1. Add _opencv_contrib_ to compilation process\n2. Include `opencv2/xfeatures2d.h` header\n3. Use namespace `xfeatures2d`\n4. Replace `operator()` calls with `detect`, `compute` or `detectAndCompute` if needed\n\nSome classes now use general methods `detect`, `compute` or `detectAndCompute` provided by `Feature2D` base class instead of custom `operator()`\n\nFollowing code snippets illustrate the difference (from `video_homography.cpp` example):\n@code{.cpp}\nusing namespace cv;\n// ====== 2.4 =======\n#include \"opencv2/features2d/features2d.hpp\"\nBriefDescriptorExtractor brief(32);\nGridAdaptedFeatureDetector detector(new FastFeatureDetector(10, true), DESIRED_FTRS, 4, 4);\n// ...\ndetector.detect(gray, query_kpts); //Find interest points\nbrief.compute(gray, query_kpts, query_desc); //Compute brief descriptors at each keypoint location\n// ====== 3.0 =======\n#include \"opencv2/features2d.hpp\"\n#include \"opencv2/xfeatures2d.hpp\"\nusing namespace cv::xfeatures2d;\nPtr<BriefDescriptorExtractor> brief = BriefDescriptorExtractor::createdte(32);\nPtr<FastFeatureDetector> detector = FastFeatureDetector::create(10, true);\n// ...\ndetector->detect(gray, query_kpts); //Find interest points\nbrief->compute(gray, query_kpts, query_desc); //Compute brief descriptors at each keypoint location\n@endcode\n\nOpenCL {#tutorial_transition_hints_opencl}\n------\nAll specialized `ocl` implementations has been hidden behind general C++ algorithm interface. Now the function execution path can be selected dynamically at runtime: CPU or OpenCL; this mechanism is also called \"Transparent API\".\n\nNew class cv::UMat is intended to hide data exchange with OpenCL device in a convenient way.\n\nFollowing example illustrate API modifications (from [OpenCV site](http://opencv.org/platforms/opencl.html)):\n\n-   OpenCL-aware code OpenCV-2.x\n@code{.cpp}\n// initialization\nVideoCapture vcap(...);\nocl::OclCascadeClassifier fd(\"haar_ff.xml\");\nocl::oclMat frame, frameGray;\nMat frameCpu;\nvector<Rect> faces;\nfor(;;){\n    // processing loop\n    vcap >> frameCpu;\n    frame = frameCpu;\n    ocl::cvtColor(frame, frameGray, BGR2GRAY);\n    ocl::equalizeHist(frameGray, frameGray);\n    fd.detectMultiScale(frameGray, faces, ...);\n    // draw rectangles …\n    // show image …\n}\n@endcode\n-   OpenCL-aware code OpenCV-3.x\n@code{.cpp}\n// initialization\nVideoCapture vcap(...);\nCascadeClassifier fd(\"haar_ff.xml\");\nUMat frame, frameGray; // the only change from plain CPU version\nvector<Rect> faces;\nfor(;;){\n    // processing loop\n    vcap >> frame;\n    cvtColor(frame, frameGray, BGR2GRAY);\n    equalizeHist(frameGray, frameGray);\n    fd.detectMultiScale(frameGray, faces, ...);\n    // draw rectangles …\n    // show image …\n}\n@endcode\n\nCUDA {#tutorial_transition_hints_cuda}\n----\n\nCUDA modules has been moved into opencv_contrib repository.\n\n@cond CUDA_MODULES\n- _cuda_ - @ref cuda\n- _cudaarithm_ - @ref cudaarithm\n- _cudabgsegm_ - @ref cudabgsegm\n- _cudacodec_ - @ref cudacodec\n- _cudafeatures2d_ - @ref cudafeatures2d\n- _cudafilters_ - @ref cudafilters\n- _cudaimgproc_ - @ref cudaimgproc\n- _cudalegacy_ - @ref cudalegacy\n- _cudaoptflow_ - @ref cudaoptflow\n- _cudastereo_ - @ref cudastereo\n- _cudawarping_ - @ref cudawarping\n- _cudev_ - @ref cudev\n@endcond\n\nDocumentation format {#tutorial_transition_docs}\n--------------------\nDocumentation has been converted to Doxygen format. You can find updated documentation writing guide in _Tutorials_ section of _OpenCV_ reference documentation (@ref tutorial_documentation).\n\nSupport both versions {#tutorial_transition_both}\n---------------------\nIn some cases it is possible to support both versions of OpenCV.\n\n### Source code\n\nTo check library major version in your application source code, the following method should be used:\n@code{.cpp}\n#include \"opencv2/core/version.hpp\"\n#if CV_MAJOR_VERSION == 2\n// do opencv 2 code\n#elif CV_MAJOR_VERSION == 3\n// do opencv 3 code\n#endif\n@endcode\n\n@note Do not use __CV_VERSION_MAJOR__, it has different meaning for 2.4 and 3.x branches!\n\n### Build system\n\nIt is possible to link different modules or enable/disable some of the features in your application by checking library version in the build system. Standard cmake or pkg-config variables can be used for this:\n- `OpenCV_VERSION` for cmake will contain full version: \"2.4.11\" or \"3.0.0\" for example\n- `OpenCV_VERSION_MAJOR` for cmake will contain only major version number: 2 or 3\n- pkg-config file has standard field `Version`\n\nExample:\n@code{.cmake}\nif(OpenCV_VERSION VERSION_LESS \"3.0\")\n# use 2.4 modules\nelse()\n# use 3.x modules\nendif()\n@endcode\n",
+			"file": "/home/roman/Sources/opencv/doc/tutorials/introduction/transition_guide/transition_guide.markdown",
+			"file_size": 12638,
+			"file_write_time": 132486306737249310,
+			"settings":
+			{
+				"buffer_size": 12633,
+				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
 		}
@@ -222,6 +246,8 @@
 	],
 	"file_history":
 	[
+		"/home/roman/Sources/opencv-scandoc/ScannerLite/scannerLite.cpp",
+		"/home/roman/Sources/c-utils/lib/CMakeLists.txt",
 		"/home/roman/Sources/c-utils/lib/buffer/buffer_stubborn2.c",
 		"/home/roman/Sources/c-utils/lib/buffer/buffer_truncfile.c",
 		"/home/roman/Sources/c-utils/lib/buffer/buffer_readfile.c",
@@ -295,7 +321,6 @@
 		"/home/roman/Sources/c-utils/lib/tls/tls_close.c",
 		"/home/roman/Sources/c-utils/lib/tls/tls_connect.c",
 		"/home/roman/Sources/c-utils/lib/tls/tls_established.c",
-		"/home/roman/Sources/c-utils/lib/CMakeLists.txt",
 		"/home/roman/Sources/c-utils/lib/tls/tls_want.c",
 		"/home/roman/Sources/c-utils/lib/http/http_strerror.c",
 		"/home/roman/Sources/c-utils/lib/tls/tls_instance_errno.c",
@@ -348,8 +373,7 @@
 		"/home/roman/Sources/c-utils/lib/iarray/iarray_get.c",
 		"/home/roman/Sources/c-utils/lib/io/io_tryread.c",
 		"/home/roman/Sources/c-utils/lib/io/iopause.c",
-		"/home/roman/Sources/c-utils/lib/io/io_get_wantread.c",
-		"/home/roman/Sources/c-utils/lib/tls/tls_get_fd.c"
+		"/home/roman/Sources/c-utils/lib/io/io_get_wantread.c"
 	],
 	"find":
 	{
@@ -374,6 +398,12 @@
 		"case_sensitive": true,
 		"find_history":
 		[
+			"GridAdap",
+			"ReaddirRec",
+			"\"Found ",
+			"\"Library",
+			"fmt_call ",
+			"fmt_esca",
 			"truncfile",
 			"lzma",
 			"lzm",
@@ -495,13 +525,7 @@
 			"https_str",
 			"http_strerr",
 			"SSL_FOUND",
-			"SSL_",
-			"byte_diff",
-			"xz-conf",
-			"LIBLZMA_DEFS",
-			"BUILD_LZMA",
-			"lzma",
-			"ssl = 0"
+			"SSL_"
 		],
 		"highlight": false,
 		"in_selection": false,
@@ -601,7 +625,7 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 112,
+						"buffer_size": 342,
 						"regions":
 						{
 						},
@@ -611,29 +635,89 @@
 						"settings":
 						{
 							"color_scheme": "Packages/Outline/outline.hidden-tmTheme",
-							"current_file": "/home/roman/Sources/c-utils/lib/xml/xml_read_callback.c",
+							"current_file": "/home/roman/Sources/opencv/doc/tutorials/introduction/transition_guide/transition_guide.markdown",
 							"function_name_status_row": -1,
 							"outline_rename_mode": false,
 							"symkeys":
 							[
 								[
-									118,
-									131
+									797,
+									821
 								],
 								[
-									293,
-									298
+									1259,
+									1279
 								],
 								[
-									721,
-									738
+									1606,
+									1632
+								],
+								[
+									2237,
+									2258
+								],
+								[
+									8583,
+									8627
+								],
+								[
+									8942,
+									8975
+								],
+								[
+									8976,
+									9010
+								],
+								[
+									11695,
+									11710
+								],
+								[
+									11825,
+									11860
+								],
+								[
+									11861,
+									11886
+								],
+								[
+									11907,
+									11934
+								],
+								[
+									11955,
+									11961
+								],
+								[
+									12063,
+									12079
+								],
+								[
+									12570,
+									12587
+								],
+								[
+									12595,
+									12612
 								]
 							],
 							"symlist":
 							[
-								"—Ⓕ– is_whitespace ( ) { … } — function",
-								"—Ⓕ– putsa ( ) { … } — function",
-								"—Ⓕ– xml_read_callback ( ) { … } — function"
+								"Contrib repository",
+								"Headers layout",
+								"Algorithm interfaces",
+								"Changed modules",
+								"#include \"opencv2/features2d/features2d.hpp\"",
+								"#include \"opencv2/features2d.hpp\"",
+								"#include \"opencv2/xfeatures2d.hpp\"",
+								"Source code",
+								"#include \"opencv2/core/version.hpp\"",
+								"#if CV_MAJOR_VERSION == 2",
+								"#elif CV_MAJOR_VERSION == 3",
+								"#endif",
+								"Build system",
+								"  use 2.4 modules",
+								"  use 3.x modules"
 							],
 							"syntax": "Packages/Outline/outline.hidden-tmLanguage",
 							"tab_size": 2,
@@ -643,13 +727,13 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 9,
+					"stack_index": 11,
 					"type": "text"
 				}
 			]
 		},
 		{
-			"selected": 8,
+			"selected": 10,
 			"sheets":
 			[
 				{
@@ -680,7 +764,7 @@
 						"translation.y": 330.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 4,
+					"stack_index": 6,
 					"type": "text"
 				},
 				{
@@ -711,7 +795,7 @@
 						"translation.y": 3264.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 5,
+					"stack_index": 7,
 					"type": "text"
 				},
 				{
@@ -734,13 +818,15 @@
 						"settings":
 						{
 							"function_name_status_row": 5,
-							"syntax": "Packages/C Improved/C Improved.tmLanguage"
+							"syntax": "Packages/C Improved/C Improved.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 7,
+					"stack_index": 9,
 					"type": "text"
 				},
 				{
@@ -769,7 +855,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 6,
+					"stack_index": 8,
 					"type": "text"
 				},
 				{
@@ -798,7 +884,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 2,
+					"stack_index": 4,
 					"type": "text"
 				},
 				{
@@ -829,7 +915,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 8,
+					"stack_index": 10,
 					"type": "text"
 				},
 				{
@@ -860,7 +946,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 3,
+					"stack_index": 5,
 					"type": "text"
 				},
 				{
@@ -891,7 +977,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 1,
+					"stack_index": 3,
 					"type": "text"
 				},
 				{
@@ -922,6 +1008,68 @@
 						"translation.y": 1295.0,
 						"zoom_level": 1.0
 					},
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 10,
+					"file": "quote.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 12723,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								43,
+								43
+							]
+						],
+						"settings":
+						{
+							"function_name_status_row": 2,
+							"syntax": "Packages/C Improved/C Improved.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 11,
+					"file": "/home/roman/Sources/opencv/doc/tutorials/introduction/transition_guide/transition_guide.markdown",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 12633,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								11714,
+								11714
+							]
+						],
+						"settings":
+						{
+							"function_name_status_row": 271,
+							"syntax": "Packages/Markdown/Markdown.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 4648.0,
+						"zoom_level": 1.0
+					},
 					"stack_index": 0,
 					"type": "text"
 				}
@@ -930,7 +1078,7 @@
 	],
 	"incremental_find":
 	{
-		"height": 31.0
+		"height": 26.0
 	},
 	"input":
 	{
@@ -988,7 +1136,7 @@
 	"project": "c-utils.sublime-project",
 	"replace":
 	{
-		"height": 79.0
+		"height": 48.0
 	},
 	"save_all_on_build": true,
 	"select_file":
@@ -997,6 +1145,14 @@
 		"last_filter": "",
 		"selected_items":
 		[
+			[
+				"lib/CM",
+				"lib/CMakeLists.txt"
+			],
+			[
+				"quote",
+				"quote.c"
+			],
 			[
 				"xml_read",
 				"lib/xml/xml_read_callback.c"
@@ -1108,10 +1264,6 @@
 			[
 				"http_sock",
 				"lib/http/http_socket.c"
-			],
-			[
-				"lib/CM",
-				"lib/CMakeLists.txt"
 			],
 			[
 				"ip4",
@@ -1504,10 +1656,6 @@
 			[
 				"pkgc",
 				"pkgcfg.c"
-			],
-			[
-				"cfg.sh",
-				"cfg.sh"
 			]
 		],
 		"width": 0.0
