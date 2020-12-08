@@ -70,7 +70,7 @@ fmt_default(char* dest, int c, int quote) {
   return n;
 }
 
-static fmt_function* fmt_call = fmt_default;
+static fmt_function* fmt_call = (void*)fmt_default;
 
 size_t consume_output(stralloc* sa, buffer* out);
 void
@@ -176,9 +176,10 @@ add_output(const char* x, size_t len, buffer* out) {
     uint8 ch = x[i];
     unsigned int chlen = fmt_utf8(0, x[i]);
 
-    if(do_quote(x[i]) || chlen > 1 || fmt_call != fmt_default) {
+    if(do_quote(x[i])) {
+      if(chlen > 1 || fmt_call != fmt_default) {
       n = fmt_call(tmp, x[i], 0);
-    } else if(iscntrl(ch) || ch > 127) {
+    } else/* if(iscntrl(ch) || ch > 127) */{
       n = 0;
       tmp[n++] = '\\';
       if(ch <= 63)
@@ -187,7 +188,8 @@ add_output(const char* x, size_t len, buffer* out) {
         tmp[n++] = '0';
 
       n += fmt_8long(&tmp[n], ch);
-    } else {
+    } 
+  }else {
       tmp[0] = x[i];
       n = 1;
     }
@@ -404,10 +406,14 @@ main(int argc, char* argv[]) {
     if(quote_backslash == 0)
       quote_backslash++;
   }
-
+#ifdef DEBUG_OUTPUT
+    buffer_puts(buffer_2, "Chars to quote '");
+    buffer_putsa(buffer_2, &quote_chars);
+    buffer_puts(buffer_2, "'");
+    buffer_putnlflush(buffer_2);
+#endif
   stralloc_init(&tmp);
-  //  stralloc_init(&data);
-
+ 
   if(unix_optind < argc) {
 #ifdef DEBUG_OUTPUT
     buffer_putm_internal(buffer_2, "Opening input file '", argv[unix_optind], "'...", NULL);

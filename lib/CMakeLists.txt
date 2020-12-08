@@ -17,7 +17,7 @@ foreach(LIBNAME ${MODSUBDIRS})
   set(EXTRA_SOURCES ${${LIBNAME}_SOURCES})
   set(EXTRA_DEFS "${${LIBNAME}_DEFS}")
 
-  message("Library ${LIBNAME} EXTRA_DEFS = ${EXTRA_DEFS}")
+  # message("Library ${LIBNAME} EXTRA_DEFS = ${EXTRA_DEFS}")
   if(EXTRA_SOURCES)
     message(STATUS "${LIBNAME} extra sources: ${EXTRA_SOURCES}")
   endif(EXTRA_SOURCES)
