@@ -109,10 +109,9 @@ xml_read_callback(xmlreader* r, xml_read_callback_fn* fn) {
       buffer_skipc(b);
 
     fn(r, XML_ELEMENT, &tag, NULL, &r->attrmap);
-    if(b->n - b->p <= 1)
-      break;
     buffer_skipspace(b);
-    s = buffer_peek(b);
+    if(!(s = buffer_peek(b)))
+      break;
 
     if(*s != '<' && !(r->closing || r->self_closing)) {
       stralloc_zero(&tag);

@@ -308,7 +308,7 @@ main(int argc, char* argv[]) {
   unsigned char* x;
   buffer file;
   int fd;
-    uint64 offset = 0;
+  uint64 offset = 0;
 
   errmsg_iam(argv[0]);
 
@@ -338,15 +338,15 @@ main(int argc, char* argv[]) {
 
     while((sym = *spec++)) {
       size_t n = 0;
-      if(sym == '@'  && isdigit(*spec)) {
+      if(sym == '@' && isdigit(*spec)) {
         n = scan_xlonglong(spec, &addr);
-spec += n;
- continue;
-      } 
+        spec += n;
+        continue;
+      }
       if(sym == '\0')
         break;
       if(sym == '?') {
-      }  
+      }
       if((sym == '+' || sym == '*') && isdigit(*spec)) {
         int64 num;
         n = scan_xlonglong(spec, &num);
@@ -356,17 +356,17 @@ spec += n;
           if(sym == '*')
             offset *= num;
         }
-spec += n;
- continue;
-      } 
-       if(sym == '=') {
+        spec += n;
+        continue;
+      }
+      if(sym == '=') {
         uint8 ch = 0;
         do {
-          n =  scan_xchar(spec, &ch);
+          n = scan_xchar(spec, &ch);
           if(n >= 1) {
-            patch(offset+addr, file.x[offset+addr], ch);
+            patch(offset + addr, file.x[offset + addr], ch);
           }
-          
+
           addr++;
           spec += n;
 

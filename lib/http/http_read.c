@@ -54,7 +54,7 @@ again:
       if((ret = http_read_header(h, &r->data, r)) <= 0)
         goto end;
     }
-   if(b->n - b->p > (unsigned long)bytes && st == HTTP_RECV_DATA) {
+    if(b->n - b->p > (unsigned long)bytes && st == HTTP_RECV_DATA) {
       if(n + r->ptr > r->content_length)
         n = r->content_length - r->ptr;
       if(n >= (ssize_t)len)
@@ -73,7 +73,7 @@ again:
           goto end;
         }
       }
-    } 
+    }
     if((r->status == HTTP_STATUS_CLOSED) || r->status == HTTP_STATUS_FINISH)
       goto end;
   }

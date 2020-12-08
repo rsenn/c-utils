@@ -48,8 +48,8 @@ fail:
 #ifdef DEBUG_HTTP
   buffer_putspad(buffer_2, "http_canwrite ", 30);
   buffer_puts(buffer_2, "sock=");
-   buffer_putlong(buffer_2, h->sock);
- if(h->tls) {
+  buffer_putlong(buffer_2, h->sock);
+  if(h->tls) {
     buffer_puts(buffer_2, " tls=");
     buffer_putlong(buffer_2, !!h->tls);
   }

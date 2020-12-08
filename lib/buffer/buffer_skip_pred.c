@@ -2,11 +2,14 @@
 
 int
 buffer_skip_pred(buffer* b, int (*pred)(int)) {
-  char c;
   int n = 0;
   for(;;) {
-    if(buffer_peekc(b, &c) < 0)
-      return -1;
+    ssize_t r;
+    char c;
+    if((r = buffer_peekc(b, &c)) <= 0) {
+      n = r;
+      break;
+    }
     if(!pred(c))
       break;
     buffer_skipc(b);

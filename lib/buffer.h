@@ -209,7 +209,10 @@ int buffer_puts_escaped(buffer*, const char* x, size_t (*)(char*, int));
 
 int buffer_freshen(buffer* b);
 
-int buffer_truncfile(buffer*, const char* fn);
+int buffer_appendfile(buffer* b, const char* fn);
+int buffer_readfile(buffer* b, const char* fn);
+int buffer_truncfile(buffer* b, const char* fn);
+int buffer_writefile(buffer* b, const char* fn);
 
 int buffer_lzma(buffer*, buffer*, int compress);
 int buffer_bz2(buffer*, buffer*, int compress);

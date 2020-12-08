@@ -1,14 +1,24 @@
-#define _LARGEFILE64_SOURCE
 #include "../windoze.h"
-#include "../alloc.h"
 #include "../buffer.h"
+#include "../open.h"
 #include "../io_internal.h"
 
-#if !WINDOWS_NATIVE
+#if WINDOWS_NATIVE
+#ifdef _MSC_VER
+#define _CRT_INTERNAL_NONSTDC_NAMES 1
+#endif
+#if !defined(__LCC__) && !defined(__MINGW32__)
+#define read _read
+#define write _write
+#define open _open
+#define close _close
+#endif
+#include <io.h>
+#else
 #include <unistd.h>
 #endif
-
 #include <stdlib.h>
+#include "../alloc.h"
 
 int
 buffer_write_fd(buffer* b, fd_t fd) {

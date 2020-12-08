@@ -13,7 +13,10 @@ fmt_escapecharshell(char* dest, int chr) {
   if(ch > 0xff)
     return 0;
   switch(ch) {
-    case 0: if(dest) str_copy(dest, "\\x00"); return 4;
+    case 0:
+      if(dest)
+        str_copy(dest, "\\x00");
+      return 4;
     case '"': c = '"'; goto doescape;
     case '$': c = '$'; goto doescape;
     case '\a': c = 'a'; goto doescape;

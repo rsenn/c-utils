@@ -102,7 +102,7 @@ http_socket_read(fd_t fd, void* buf, size_t len, void* b) {
   if(ret > 0) {
     size_t n = h->q.in.n;
     h->q.in.n += ret;
- iret = http_read_internal(fd, (char*)buf, ret, &h->q.in);
+    iret = http_read_internal(fd, (char*)buf, ret, &h->q.in);
     h->q.in.n = n;
   }
   if(ret == 0) {

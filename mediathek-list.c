@@ -192,20 +192,19 @@ read_mediathek_list(const char* url, buffer* b) {
         if(errno == EWOULDBLOCK)
           continue;
         errmsg_warnsys("send error: ", 0);
-         return 2;
+        return 2;
       }
     }
 
     while((fd = io_canread()) != -1) {
       if(h.sock == fd) {
 
-              if(http_canread(&h, &io_onlywantwrite) == -1) {
- if(errno == EAGAIN)
-          continue;
-        errmsg_warnsys("send error: ", 0);
-        return 2;
-      } 
-
+        if(http_canread(&h, &io_onlywantwrite) == -1) {
+          if(errno == EAGAIN)
+            continue;
+          errmsg_warnsys("send error: ", 0);
+          return 2;
+        }
 
         doread = 1;
         return 0;

@@ -8,7 +8,7 @@
 #include "lib/fmt.h"
 #include "lib/mmap.h"
 #include "lib/str.h"
-#include "lib/getopt.h"
+#include "lib/unix.h"
 #include "lib/errmsg.h"
 #include "lib/scan.h"
 #include "lib/open.h"
@@ -191,7 +191,7 @@ main(int argc, char* argv[]) {
   output = buffer_1;
 
   for(;;) {
-    c = getopt_long(argc, argv, "hsdol:cti", opts, &index);
+    c = unix_getopt_long(argc, argv, "hsdol:cti", opts, &index);
     if(c == -1)
       break;
     if(c == 0)
@@ -205,13 +205,13 @@ main(int argc, char* argv[]) {
       case 'c': compact = 1; break;
       case 't': terminate = 1; break;
       case 'i': inplace = 1; break;
-      case 'l': scan_int(optarg, &indent); break;
+      case 'l': scan_int(unix_optarg, &indent); break;
       default: usage(argv[0]); return 1;
     }
   }
 
-  if(optind < argc)
-    ret = buffer_mmapprivate(&infile, (input_file = argv[optind]));
+  if(unix_optind < argc)
+    ret = buffer_readfile(&infile, (input_file = argv[optind]));
   else
     ret = buffer_read_fd(&infile, 0);
 
