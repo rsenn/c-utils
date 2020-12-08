@@ -686,8 +686,9 @@ print_image_links(int first,
       buffer_puts(buffer_1, item->mapped ? "" : "<UNRESOLVED>");
       buffer_putspace(buffer_1);
       buffer_puts(buffer_1,
-                  item->dll == 0 ? "<MODULE MISSING>"
-                                 : item->dll->module ? item->dll->module : "<0>");
+                  item->dll == 0      ? "<MODULE MISSING>"
+                  : item->dll->module ? item->dll->module
+                                      : "<0>");
       buffer_putnlflush(buffer_1);
       /*printf("\t%*s%llx %llx %3d %s %s %s\n",
              depth,
