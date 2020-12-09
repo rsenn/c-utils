@@ -5,6 +5,7 @@
 #include "lib/stralloc.h"
 #include "lib/strlist.h"
 #include "lib/fmt.h"
+#include "lib/errmsg.h"
 #include <ctype.h>
 
 static buffer infile;
@@ -41,8 +42,13 @@ main(int argc, char* argv[]) {
   xmlscanner s;
   char* x;
   size_t len;
+  const char* path = argc > 1 ? argv[1] : "3rdparty/zlib/treebuild.xml";
+  errmsg_iam(argv[0]);
 
-  buffer_mmapprivate(&infile, argc > 1 ? argv[1] : "3rdparty/zlib/treebuild.xml");
+  if(buffer_readfile(&infile, path)) {
+    errmsg_warnsys("Error opening file ", path, ":", 0);
+    return 127;
+  }
 
   xml_scanner(&s, &infile);
 
