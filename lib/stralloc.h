@@ -231,10 +231,7 @@ stralloc_iterator_equal(char** it1, char** it2) {
 }
 
 #ifdef BYTE_H
-size_t byte_scan(const char* in,
-                 size_t in_len,
-                 stralloc* out,
-                 size_t (*scan_function)(), ...);
+size_t byte_scan(const char* in, size_t in_len, stralloc* out, size_t (*scan_function)(), ...);
 #endif
 
 int stralloc_insertb(stralloc* sa, const char* s, size_t pos, size_t n);
