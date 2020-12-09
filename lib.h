@@ -698,7 +698,7 @@
 #include "lib/xml/xml_find_element.c"
 #include "lib/xml/xml_add_child.c"
 #include "lib/xml/xml_remove.c"
-#include "lib/xml/xml_reader_init.c"
+#include "lib/xml/xml_reader.c"
 #include "lib/xml/xml_get_text.c"
 #include "lib/xml/xml_walk.c"
 #include "lib/xml/xml_find_pred.c"

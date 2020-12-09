@@ -230,7 +230,7 @@ main(int argc, char* argv[]) {
     return errno == ENOENT ? 127 : 1;
   }
 
-  // xml_reader_init(&r, &infile);
+  // xml_reader(&r, &infile);
   doc = xml_read_tree(&infile);
 
   xml_print(doc, output, xmlpp_fmt);

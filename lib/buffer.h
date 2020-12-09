@@ -120,11 +120,15 @@ int buffer_skipn(buffer*, size_t n);
 
 int buffer_prefetch(buffer*, size_t n);
 
-#define buffer_PEEK(s) ((s)->x + (s)->p)
-#define buffer_SEEK(s, len) ((s)->p += (len))
+#define buffer_PEEK(b) ((b)->x + (b)->p)
+#define buffer_LEN(b) ((b)->n - (b)->p)
+#define buffer_SEEK(b, len) ((b)->p += (len))
 
-#define buffer_GETC(s, c)                                                                          \
-  (((s)->p < (s)->n) ? (*(c) = *buffer_PEEK(s), buffer_SEEK((s), 1), 1) : buffer_get((s), (c), 1))
+#define buffer_GETC(b, c)                                                                          \
+  (((b)->p < (b)->n) ? (*(c) = *buffer_PEEK(b), buffer_SEEK((b), 1), 1) : buffer_get((b), (c), 1))
+
+#define buffer_BEGIN(b) buffer_PEEK(b)
+#define buffer_END(b) ((b)->x + (b)->n)
 
 int buffer_putulong(buffer*, unsigned long int l);
 int buffer_put8long(buffer*, unsigned long int l);

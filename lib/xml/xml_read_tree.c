@@ -119,7 +119,7 @@ xml_read_node(xmlreader* r, xmlnodeid id, stralloc* name, stralloc* value, HMAP_
 xmlnode*
 xml_read_tree(buffer* b) {
   xmlreader r;
-  xml_reader_init(&r, b);
+  xml_reader(&r, b);
 
   xml_read_callback(&r, xml_read_node);
   return r.doc;

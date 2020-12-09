@@ -223,7 +223,7 @@ main(int argc, char* argv[1]) {
   xmlreader r;
   xmlnode* doc;
   buffer_mmapprivate(&infile, argc > 1 ? argv[1] : "../dirlist/test.xml");
-  /* xml_reader_init(&r, &infile);
+  /* xml_reader(&r, &infile);
    xml_read_callback(&r, xml_read_function);
  */
   strlist_init(&vars, '\0');

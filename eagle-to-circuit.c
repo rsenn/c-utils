@@ -43,34 +43,40 @@ struct pad {
   stralloc name;
   double x, y;
 };
+
 struct package {
   stralloc name;
   array pads; /**< list of struct pad */
 };
-//};
+
 struct pin {
   stralloc name;
   double x, y, r;
   int visible;
   int used;
 };
+
 struct symbol {
   stralloc name;
   array pins; /**< list of struct pin */
 };
+
 struct pinmapping {
   struct package* pkg;
   array map;
 };
+
 struct gate {
   stralloc name;
   stralloc symbol;
 };
+
 struct deviceset {
   stralloc name;
   array gates;   /**< list of struct gate */
   MAP_T devices; /**< map of struct pinmapping */
 };
+
 struct part {
   stralloc name;
   stralloc value;
@@ -81,6 +87,7 @@ struct part {
   int num_pins;
   double x, y;
 };
+
 struct ref {
   struct part* part;
   int gate;
@@ -89,10 +96,12 @@ struct ref {
     int pin;
   };
 };
+
 struct net {
   stralloc name;
   array contacts; /**<  list of struct ref */
 };
+
 struct part_ref {
   strlist* list;
   struct part* part;
@@ -109,6 +118,7 @@ void print_attrs(HMAP_DB* a_node);
 void print_element_attrs(xmlnode* a_node);
 int
 output_net(const void* key, size_t key_len, const void* value, size_t value_len, void* user_data);
+
 MAP_T devicesets;
 MAP_T packages;
 MAP_T parts;
@@ -116,11 +126,22 @@ MAP_T nets;
 MAP_T symbols;
 strlist connections;
 buffer input, output;
+
 static struct {
   struct {
     int x, y;
   } min, max;
 } bounds;
+
+static inline double
+round_double(double num) {
+  return (int64)(num + 0.5);
+}
+
+static inline float
+round_float(float num) {
+  return (int64)(num + 0.5);
+}
 
 /**
  * Reads a real-number value from the element/attribute given
@@ -259,7 +280,7 @@ build_part(xmlnode* part) {
   p.x = get_double(part, "x");
   p.y = get_double(part, "y");
 
-  update_bounds(roundf(p.x / 2.54), roundf(p.y / 2.54));
+  update_bounds(round_float(p.x / 2.54), round_float(p.y / 2.54));
 
   if(pkgname && str_len(pkgname)) {
     p.pkg = get_entry(packages, pkgname);
@@ -576,8 +597,8 @@ dump_package(
     if(i > 0)
       buffer_putspace(&output);
 
-    ix = roundf((p->x - x) / 2.54);
-    iy = roundf((p->y - y) / 2.54);
+    ix = round_float((p->x - x) / 2.54);
+    iy = round_float((p->y - y) / 2.54);
 
     buffer_putlong(&output, -iy);
     buffer_putc(&output, ',');
@@ -616,8 +637,8 @@ output_part(const void* key, size_t key_len, const void* value, size_t value_len
   stralloc_nul(&name);
   buffer_putspad(&output, name.s, 18);
 
-  x = roundf((ptr->x + pad1->x) / 2.54);
-  y = roundf((ptr->y + pad1->y) / 2.54);
+  x = round_float((ptr->x + pad1->x) / 2.54);
+  y = round_float((ptr->y + pad1->y) / 2.54);
 
   buffer_putlong(&output, y + 10);
   buffer_putc(&output, ',');

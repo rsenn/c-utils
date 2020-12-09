@@ -18,6 +18,19 @@ extern "C" {
 #define __inl static inline
 #endif
 
+typedef enum xmltokid {
+  XML_TAG_NAME = 1,
+  XML_TAG_CLOSE = 2,
+  XML_ATTR_NAME = 3,
+  XML_ATTR_VALUE = 4,
+  XML_DATA = 5,
+} xmltokid;
+
+typedef struct xmlscanner {
+  buffer* b;
+  xmltokid tok;
+} xmlscanner;
+
 typedef enum xmlnodeid {
   XML_DOCUMENT = 1,
   XML_ELEMENT = 2,
@@ -132,7 +145,7 @@ xml_print_attributes(HMAP_DB* db, buffer* b, const char* sep, const char* eq, co
 void xml_print_nodeset(const xmlnodeset* ns, buffer* b);
 void xml_print(xmlnode* node, buffer* b, xml_print_fmt_t* fmt);
 void xml_read_callback(xmlreader* r, xml_read_callback_fn* fn);
-void xml_reader_init(xmlreader* r, buffer* b);
+void xml_reader(xmlreader* r, buffer* b);
 xmlnode* xml_read_tree(buffer* b);
 xmlnode* xml_remove(xmlnode** nptr);
 xmlnode* xml_root_element(xmlnode* node);
@@ -253,6 +266,9 @@ char* xml_get_text(xmlnode* node, stralloc* out);
 xmlnode* xml_element_attrs(const char* name, const char* arg, ...);
 xmlnode* xml_child_element_attrs(const char* name, xmlnode* parent, const char* arg, ...);
 xmlnode* xml_child_element_text(const char* name, xmlnode* parent, const char* text);
+
+void xml_scanner(xmlscanner* s, buffer* b);
+char* xml_read_token(xmlscanner* s, size_t* szptr);
 
 #ifdef __cplusplus
 }
