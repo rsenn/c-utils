@@ -4,7 +4,8 @@
 
 void
 http_response_dump(http_response* r) {
-
+  size_t len;
+  const char* x;
 #ifdef DEBUG_HTTP
   buffer_putspad(buffer_2, "\x1b[38;5;69mhttp_response\x1b[0m ", 30);
   buffer_putspad(buffer_2, "\n\ttransfer", 18);
@@ -24,12 +25,13 @@ http_response_dump(http_response* r) {
     buffer_putspad(buffer_2, "\n\tboundary", 18);
     buffer_putsa(buffer_2, &r->boundary);
   }
-  if(stralloc_length(&r->data) > 0) {
+  if((len = stralloc_length(&r->data)) > 0) {
+    x = stralloc_begin(&r->data);
     buffer_putspad(buffer_2, "\n\tdata", 18);
     buffer_puts(buffer_2, "len: ");
-    buffer_putulonglong(buffer_2, stralloc_length(&r->data));
+    buffer_putulonglong(buffer_2, len);
     buffer_puts(buffer_2, " \"");
-    buffer_put_escaped(buffer_1, stralloc_begin(&r->data), stralloc_length(&r->data), &fmt_escapecharnonprintable);
+    buffer_put_escaped(buffer_1, x, len, &fmt_escapecharnonprintable);
     buffer_puts(buffer_2, " \"");
   }
   buffer_putnlflush(buffer_2);
