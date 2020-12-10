@@ -7,6 +7,7 @@
 #include "hmap.h"
 #include "stralloc.h"
 #include "textbuf.h"
+#include "uint32.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -19,12 +20,20 @@ extern "C" {
 #endif
 
 typedef enum xmltokid {
+  XML_EOF = -1,
+  XML_DATA = 0,
   XML_TAG_NAME = 1,
   XML_TAG_CLOSE = 2,
   XML_ATTR_NAME = 3,
   XML_ATTR_VALUE = 4,
-  XML_DATA = 5,
+  XML_COMMENT = 5
 } xmltokid;
+
+typedef struct {
+  char* x;
+  uint32 len;
+  xmltokid id;
+} xmltoken;
 
 typedef struct xmlscanner {
   buffer* b;
@@ -267,8 +276,13 @@ xmlnode* xml_element_attrs(const char* name, const char* arg, ...);
 xmlnode* xml_child_element_attrs(const char* name, xmlnode* parent, const char* arg, ...);
 xmlnode* xml_child_element_text(const char* name, xmlnode* parent, const char* text);
 
+size_t xml_scan_comment(const char* x, size_t len);
+size_t xml_scan_tag(const char* x, size_t len, size_t* toklen);
+size_t xml_scan_attrname(const char* x, size_t len, size_t* toklen);
+size_t xml_scan_attrvalue(const char* x, size_t len, size_t* toklen);
+
 void xml_scanner(xmlscanner* s, buffer* b);
-char* xml_read_token(xmlscanner* s, size_t* szptr);
+xmltoken xml_read_token(xmlscanner* s);
 
 #ifdef __cplusplus
 }

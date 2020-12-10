@@ -21,7 +21,9 @@ putnum(const char* what, ssize_t n) {
 
 ssize_t
 http_read(fd_t fd, char* buf, size_t len, void* ptr) {
-  ssize_t bytes, pos = 0, end, n, ret = 0;
+  size_t bytes, received;
+  size_t pos = 0, end;
+  ssize_t n, ret = 0;
   http_response* r;
   const char* location = 0;
   http* h = ((buffer*)ptr)->cookie;
@@ -36,7 +38,7 @@ again:
 
   if(len) {
     int st = r->status;
-    bytes = b->n - b->p;
+    bytes = buffer_LEN(b);
     if(bytes > 0 || (n = buffer_freshen(b)) <= 0) {
       if(n == 0) {
         r->status = HTTP_STATUS_CLOSED;
@@ -49,6 +51,8 @@ again:
         }
       }
     }
+    received = buffer_LEN(b) - bytes;
+
     if(r->status == HTTP_RECV_HEADER) {
 
       if((ret = http_read_header(h, &r->data, r)) <= 0)
@@ -59,7 +63,7 @@ again:
         n = r->content_length - r->ptr;
       if(n >= (ssize_t)len)
         n = (ssize_t)len;
-      byte_copy(buf, (size_t)n, b->x + b->p);
+      byte_copy(buf, (size_t)n, buffer_BEGIN(b));
       len -= (size_t)n;
       buf += n;
       ret += n;
@@ -67,8 +71,9 @@ again:
       if(b->p == b->n)
         b->p = b->n = 0;
       r->ptr += n;
-      if(r->ptr == r->content_length && b->n - b->p > 0) {
-        http_read_internal(h->sock, &b->x[b->p], b->n - b->p, &h->q.in);
+      if(r->ptr == r->content_length && buffer_LEN(b) > 0) {
+
+        http_read_internal(h->sock, buffer_BEGIN(b), buffer_LEN(b), &h->q.in);
         if(r->status == HTTP_STATUS_FINISH) {
           goto end;
         }
@@ -104,7 +109,7 @@ end:
 
 #ifdef DEBUG_HTTP
   buffer_putspad(buffer_2, "http_read ", 30);
-  buffer_puts(buffer_2, "sock=");
+  buffer_puts(buffer_2, "s=");
 
   buffer_putlong(buffer_2, h->sock);
   buffer_puts(buffer_2, " ret=");
@@ -121,9 +126,13 @@ end:
     buffer_puts(buffer_2, " code=");
     buffer_putlong(buffer_2, r->code);
   }
-  if(r->data.len > 0) {
-    buffer_puts(buffer_2, " data=");
-    buffer_put_escaped(buffer_2, r->data.s, r->data.len, &fmt_escapecharshell);
+  if(received > 0) {
+    buffer_puts(buffer_2, " received=");
+    buffer_putlong(buffer_2, received);
+    buffer_puts(buffer_2, " data:len=");
+    buffer_putlong(buffer_2, r->data.len);
+    buffer_puts(buffer_2, " buf=");
+    buffer_put_escaped(buffer_2, stralloc_end(&r->data) - received, received, &fmt_escapecharshell);
   }
   buffer_puts(buffer_2, " status=");
   buffer_puts(buffer_2,

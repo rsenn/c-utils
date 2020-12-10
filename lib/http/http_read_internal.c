@@ -78,7 +78,7 @@ http_read_internal(fd_t fd, char* buf, size_t len, buffer* b) {
   }
 #ifdef DEBUG_HTTP
   buffer_putspad(buffer_2, "http_read_internal ", 30);
-  buffer_puts(buffer_2, "sock=");
+  buffer_puts(buffer_2, "s=");
   buffer_putlong(buffer_2, h->sock);
   buffer_puts(buffer_2, " ret=");
   buffer_putlong(buffer_2, n);

@@ -91,7 +91,7 @@ http_canread(http* h, void (*wantwrite)(fd_t)) {
       /*
       #ifdef DEBUG_HTTP
             buffer_putspad(buffer_2, "http_canread DATA ", 30);
-            buffer_puts(buffer_2, "sock=");
+            buffer_puts(buffer_2, "s=");
             buffer_putlong(buffer_2, h->sock);
             buffer_puts(buffer_2, " ret=");
             buffer_putlong(buffer_2, ret);
@@ -117,7 +117,7 @@ fail:
 
 #ifdef DEBUG_HTTP
   buffer_putspad(buffer_2, "http_canread ", 30);
-  buffer_puts(buffer_2, "sock=");
+  buffer_puts(buffer_2, "s=");
   buffer_putlong(buffer_2, h->sock);
   if(h->tls) {
     buffer_puts(buffer_2, " tls=");

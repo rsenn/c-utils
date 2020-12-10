@@ -19,6 +19,7 @@
 #include "lib/getopt.h"
 #include "lib/tls.h"
 #include "lib/sig.h"
+#include "lib/xml.h"
 
 #include "uri.h"
 
@@ -55,6 +56,16 @@ static io_entry* g_iofd;
 static http h;
 static buffer in, out;
 
+const char* token_types[] = {"XML_EOF",
+                             "XML_DATA",
+                             "XML_TAG_NAME",
+                             "XML_TAG_CLOSE",
+                             "XML_ATTR_NAME",
+                             "XML_ATTR_VALUE",
+                             "XML_COMMENT"};
+const char* token_colors[] = {
+    "\x1b[1;37m", "\x1b[1;31m", "\x1b[1;35m", "\x1b[1;33m", "\x1b[1;36m", "\x1b[1;32m"};
+
 void
 usage(char* av0) {
   buffer_putm_internal(buffer_1,
@@ -71,6 +82,22 @@ usage(char* av0) {
   buffer_flush(buffer_1);
 }
 
+static void
+put_escaped(buffer* b, const char* x, size_t len) {
+  size_t i;
+  char buf[32];
+
+  for(i = 0; i < len; i++) {
+    char c = x[i];
+
+    if(c >= 0x20) {
+      buffer_putc(b, c);
+    } else {
+      /*buffer_putc(b, '\\'); */
+      buffer_put(b, buf, fmt_escapecharc(buf, (uint64)(unsigned char)c));
+    }
+  }
+}
 static int
 http_io_handler(http* h, buffer* out) {
   fd_t r, w;
@@ -123,12 +150,10 @@ http_io_handler(http* h, buffer* out) {
        if(h->connected && h->sent)*/
       {
         char buf[8192];
-        ssize_t n;
+        ssize_t len;
 
-        if((n = buffer_get(&in, buf, sizeof(buf))) > 0) {
+        if((len = buffer_get(&in, buf, sizeof(buf))) > 0) {
           buffer_putspad(buffer_2, "\x1b[1;31mbuffer_get\x1b[0m", 30);
-          buffer_puts(buffer_2, "             n=");
-          buffer_putlong(buffer_2, n);
           buffer_puts(buffer_2, " errno=");
           buffer_puts(buffer_2, strerror(errno));
           buffer_puts(buffer_2, " status=");
@@ -141,15 +166,17 @@ http_io_handler(http* h, buffer* out) {
                                              "HTTP_STATUS_BUSY",
                                              "HTTP_STATUS_FINISH",
                                              0})[h->response->status + 1]);
+          buffer_puts(buffer_2, " len=");
+          buffer_putlong(buffer_2, len);
           buffer_puts(buffer_2, " data='");
-          buffer_put_escaped(buffer_2, buf, n, &fmt_escapecharshell);
+          put_escaped(buffer_2, buf, len);
           buffer_putnlflush(buffer_2);
 
-          if(buffer_put(out, buf, n)) {
+          if(buffer_put(out, buf, len)) {
             errmsg_warnsys("write error: ", 0);
             return 2;
           }
-          if(n == -1 || h->response->status == HTTP_STATUS_ERROR) {
+          if(len == -1 || h->response->status == HTTP_STATUS_ERROR) {
             errmsg_warnsys("read error: ", 0);
             return 1;
           }
@@ -158,7 +185,7 @@ http_io_handler(http* h, buffer* out) {
         buffer_puts(buffer_2, "h->response->status = ");
         buffer_putlong(buffer_2, h->response->status);
         buffer_putnlflush(buffer_2);
-        return n;
+        return len;
       }
 
       nr++;
@@ -169,6 +196,39 @@ fail:
 }
 
 int
+process_xml(buffer* data) {
+  xmlscanner s;
+  xmltoken tok;
+
+  xml_scanner(&s, data);
+
+  do {
+    tok = xml_read_token(&s);
+
+    buffer_puts(buffer_2, token_colors[tok.id]);
+    buffer_putspad(buffer_2, token_types[tok.id + 1], 16);
+    put_escaped(buffer_2, tok.x, tok.len);
+    buffer_puts(buffer_2, "\x1b[0m");
+    /*  buffer_puts(buffer_2, "\nXML token length = ");
+          buffer_putulong(buffer_2, tok.len);*/
+    buffer_putnlflush(buffer_2);
+  } while(tok.id != XML_EOF);
+}
+
+void
+http_dump(http* h) {
+
+  const char* type = http_get_header(h, "Content-Type");
+  buffer_puts(buffer_2, "type: ");
+  buffer_put(buffer_2, type, str_chrs(type, "\r\n\0", 3));
+  buffer_putnlflush(buffer_2);
+
+  buffer_puts(buffer_2, "response: ");
+  put_escaped(buffer_2, h->response->data.s, h->response->data.len);
+  buffer_putnlflush(buffer_2);
+}
+
+int
 main(int argc, char* argv[]) {
   int argi;
   iopause_fd iop;
@@ -176,6 +236,7 @@ main(int argc, char* argv[]) {
   static char outbuf[256 * 1024];
   fd_t fd, outfile;
   int c, index;
+  buffer data;
   const char *s, *outname = 0;
   char* tmpl = "output-XXXXXX.txt";
   struct longopt opts[] = {{"help", 0, NULL, 'h'}, {"output", 0, NULL, 'o'}, {0, 0, 0, 0}};
@@ -287,16 +348,18 @@ main(int argc, char* argv[]) {
 
       // buffer_dump(buffer_1, &h.q.in);
       if(h.response->data.len) {
-        buffer_puts(buffer_2, "response: ");
-        buffer_put_escaped(buffer_2,
-                           h.response->data.s,
-                           h.response->data.len,
-                           &fmt_escapecharshell);
-        buffer_putnlflush(buffer_2);
       }
       if(h.response->status == HTTP_STATUS_FINISH || h.response->status == HTTP_STATUS_CLOSED)
         break;
     }
+    buffer_putsa(buffer_1, &h.response->data);
+
+    buffer_fromsa(&data, &h.response->data);
+
+    http_dump(&h);
+    //  process_xml(&data);
+
+    // buffer_putsa(&out, &h.response->data);
     buffer_flush(&out);
     /* buffer_putsa(buffer_1, &h.response->data);*/
     buffer_putnlflush(buffer_1);

@@ -79,7 +79,7 @@ http_read_header(http* h, stralloc* sa, http_response* r) {
 
 #ifdef DEBUG_HTTP
   buffer_putspad(buffer_2, "\x1b[1;33mhttp_read_header\x1b[0m", 30);
-  buffer_puts(buffer_2, "sock=");
+  buffer_puts(buffer_2, "s=");
   buffer_putlong(buffer_2, h->sock);
 
   buffer_puts(buffer_2, " ret=");

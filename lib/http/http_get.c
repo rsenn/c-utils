@@ -109,7 +109,7 @@ http_get(http* h, const char* location) {
   io_onlywantwrite(h->sock);
 #ifdef DEBUG_HTTP
   buffer_putspad(buffer_2, "\x1b[32mhttp_get\x1b[0m", 30);
-  buffer_puts(buffer_2, "sock=");
+  buffer_puts(buffer_2, "s=");
   buffer_putlong(buffer_2, h->sock);
   buffer_puts(buffer_2, " ret=");
   buffer_putlong(buffer_2, ret);

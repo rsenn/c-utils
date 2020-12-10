@@ -51,7 +51,7 @@ http_socket(http* h, int nonblock) {
 
 #if DEBUG_HTTP
   buffer_putspad(buffer_2, "http_socket", 30);
-  buffer_puts(buffer_2, "h->sock=");
+  buffer_puts(buffer_2, "h->s=");
   buffer_putlonglong(buffer_2, h->sock);
 
   buffer_putnlflush(buffer_2);
@@ -111,7 +111,7 @@ http_socket_read(fd_t fd, void* buf, size_t len, void* b) {
   }
 #if DEBUG_HTTP
   buffer_putspad(buffer_2, "http_socket_read", 30);
-  buffer_puts(buffer_2, "sock=");
+  buffer_puts(buffer_2, "s=");
   buffer_putlong(buffer_2, h->sock);
   buffer_puts(buffer_2, " ret=");
   buffer_putlong(buffer_2, ret);
@@ -175,7 +175,7 @@ http_socket_write(fd_t fd, void* buf, size_t len, void* b) {
   }
 #ifdef DEBUG_HTTP
   buffer_putspad(buffer_2, "http_socket_write ", 30);
-  buffer_puts(buffer_2, "sock=");
+  buffer_puts(buffer_2, "s=");
   buffer_putlong(buffer_2, h->sock);
 
   buffer_puts(buffer_2, " ret=");

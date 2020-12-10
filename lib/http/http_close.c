@@ -32,7 +32,7 @@ http_close(http* h) {
 
 #ifdef DEBUG_HTTP
   buffer_putspad(buffer_2, "http_close ", 30);
-  buffer_puts(buffer_2, "sock=");
+  buffer_puts(buffer_2, "s=");
   buffer_putlong(buffer_2, h->sock);
   buffer_puts(buffer_2, " ret=");
   buffer_putlong(buffer_2, ret);

@@ -201,8 +201,7 @@ macro(check_run RESULT_VAR SOURCE)
     set(RUN_OK FALSE)
   endif("${RUN_RESULT}" STREQUAL 0)
 
-  #message("Run result: ${RUN_OK} output: ${RUN_OUTPUT}")
-  #message("Compile result: ${COMPILE_RESULT}")
+  # message("Run result: ${RUN_OK} output: ${RUN_OUTPUT}") message("Compile result: ${COMPILE_RESULT}")
 
   file(REMOVE "${C_SOURCE}")
 
@@ -489,16 +488,19 @@ string(REGEX REPLACE ".*/" "" COMPILER_NAME "${CMAKE_C_COMPILER}")
 
 if(COMPILER_NAME MATCHES "em.*")
   set(EMSCRIPTEN TRUE)
-  #dump(EMSCRIPTEN EMCC_SUFFIX EMSCRIPTEN_PREFIX EMSCRIPTEN_TOOLCHAIN_PATH COMPILER_NAME CMAKE_EXE_LINKER_FLAGS)
-  # foreach(LIB BZIP ZLIB LZMA SSL) set("USE_${LIB}" OFF) endforeach(LIB BZIP ZLIB LZMA SSL)
+  # dump(EMSCRIPTEN EMCC_SUFFIX EMSCRIPTEN_PREFIX EMSCRIPTEN_TOOLCHAIN_PATH COMPILER_NAME CMAKE_EXE_LINKER_FLAGS) foreach(LIB BZIP ZLIB LZMA SSL) set("USE_${LIB}" OFF) endforeach(LIB BZIP ZLIB LZMA SSL)
   set(EMSCRIPTEN_EXE_SUFFIX "html")
 endif(COMPILER_NAME MATCHES "em.*")
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
   check_c_compiler_flag("-O0" O_OPT_NONE)
   if(O_OPT_NONE)
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O0")
+    set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -O0")
   endif(O_OPT_NONE)
+  check_c_compiler_flag("-ggdb" G_OPT_GDB)
+  if(G_OPT_GDB)
+    set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -ggdb")
+  endif(G_OPT_GDB)
 endif(CMAKE_BUILD_TYPE STREQUAL "Debug")
 
 check_c_compiler_flag("-flto" F_LTO)
@@ -699,10 +701,7 @@ message(STATUS "LIBPTHREAD = ${LIBPTHREAD}")
 
 include(${CMAKE_SOURCE_DIR}/build/cmake/FindStandardMathLibrary.cmake)
 
-#check_library_exists(m log2 "" HAVE_MATH_LIB)
-#if(HAVE_MATH_LIB)
-#  set(LIBMATH m CACHE STRING "Math library" FORCE)
-#endif()
+# check_library_exists(m log2 "" HAVE_MATH_LIB) if(HAVE_MATH_LIB) set(LIBMATH m CACHE STRING "Math library" FORCE) endif()
 message(STATUS "LIBMATH = ${LIBMATH}")
 
 if(NOT LINK_STATIC)
@@ -951,7 +950,7 @@ if(NOT OPENSSL_SSL_LIBRARY OR OPENSSL_SSL_LIBRARY STREQUAL "")
 endif(NOT OPENSSL_SSL_LIBRARY OR OPENSSL_SSL_LIBRARY STREQUAL "")
 
 if(OPENSSL_FOUND)
-  #dump(pkgcfg_lib_OPENSSL_ssl pkgcfg_lib_OPENSSL_crypto)
+  # dump(pkgcfg_lib_OPENSSL_ssl pkgcfg_lib_OPENSSL_crypto)
 
   if(pkgcfg_lib_OPENSSL_crypto)
     # if(NOT pkgcfg_lib_OPENSSL_ssl OR "${pkgcfg_lib_OPENSSL_ssl}" STREQUAL "")
@@ -1354,7 +1353,7 @@ endif(USE_SSL)
 if(NOT OPENSSL_STATIC_LIBRARIES MATCHES ssl)
   set(OPENSSL_STATIC_LIBRARIES "ssl;${OPENSSL_STATIC_LIBRARIES}")
 endif(NOT OPENSSL_STATIC_LIBRARIES MATCHES ssl)
-#dump(OPENSSL_STATIC_LIBRARIES)
+# dump(OPENSSL_STATIC_LIBRARIES)
 
 if(BUILD_SSL)
   set(LIBSSL "${OPENSSL_LIBRARIES}" CACHE PATH "OpenSSL library" FORCE)
@@ -1400,7 +1399,7 @@ endif(BUILD_BROTLI)
 link_directories(AFTER "${CMAKE_BINARY_DIR}")
 
 file(TO_NATIVE_PATH "/" PATH_SEPARATOR)
-#message("The systems's path separator is '${PATH_SEPARATOR}'")
+# message("The systems's path separator is '${PATH_SEPARATOR}'")
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
   option(USE_EFENCE "Enable electric fence" OFF)
@@ -1419,7 +1418,7 @@ if(NOT LIBLZMA_LIBRARY)
 endif(NOT LIBLZMA_LIBRARY)
 
 set(COMPRESSION_LIBRARIES ${LIBLZMA_LIBRARY} ${ZLIB_LIBRARY} ${BZIP2_LIBRARY} ${BROTLI_LIBRARY} ${LIBMATH} CACHE STRING "Compression libraries" FORCE)
-#dump(COMPRESSION_LIBRARIES)
+# dump(COMPRESSION_LIBRARIES)
 if(OPENSSL_LIBRARIES)
   if(LINK_STATIC)
     set(CRYPTO_LIBRARIES ${OPENSSL_STATIC_LIBRARIES} pthread ${LIBCOMPAT})
@@ -1445,7 +1444,7 @@ configure_file("${CMAKE_CURRENT_SOURCE_DIR}/build/cmake/config.h.cmake" "${CMAKE
 # #### END OF CHECKS, NOW COME THE TARGETS #### ####
 # ##############################################################################################################################################################################################################################################################################################################################################################################################################
 
-#dump(CMAKE_EXE_LINKER_FLAGS LIBSSL)
+# dump(CMAKE_EXE_LINKER_FLAGS LIBSSL)
 
 add_subdirectory(lib ${CMAKE_BINARY_DIR}/lib)
 #
@@ -1479,13 +1478,13 @@ function(add_program PROG)
       list(APPEND "${PROG}_SOURCES" "${DEP}")
     else(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${DEP}" AND NOT IS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/${DEP}")
       list(FIND MODSUBDIRS "${DEP}" I)
-      if(I GREATER -1 OR IS_DIRECTORY  "${CMAKE_SOURCE_DIR}/lib/${DEP}")
+      if(I GREATER -1 OR IS_DIRECTORY "${CMAKE_SOURCE_DIR}/lib/${DEP}")
         list(APPEND INCLUDES "lib/${DEP}.h")
-      endif(I GREATER -1 OR IS_DIRECTORY  "${CMAKE_SOURCE_DIR}/lib/${DEP}")
+      endif(I GREATER -1 OR IS_DIRECTORY "${CMAKE_SOURCE_DIR}/lib/${DEP}")
       list(APPEND DEPS ${DEP})
     endif(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${DEP}" AND NOT IS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/${DEP}")
   endforeach(DEP ${ARGN})
-  #message("Program '${PROG}' INCLUDES: ${INCLUDES}")
+  # message("Program '${PROG}' INCLUDES: ${INCLUDES}")
   add_executable(${PROG} ${PROG}.c ${${PROG}_SOURCES} ${INCLUDES})
   target_link_libraries(${PROG} ${DEPS} ${ELECTRICFENCE_LIBRARY} ${EXTRA_LIBRARIES})
   install(TARGETS ${PROG} DESTINATION bin)
@@ -1557,7 +1556,7 @@ add_program(genmakefile sig set case errmsg strarray slist rdir dir path strlist
 add_program(piccfg ihex errmsg strarray slist rdir dir path strlist hashmap hmap stralloc buffer mmap unix open scan fmt byte str array safemult alloc)
 add_program(hexedit stralloc buffer array io errmsg mmap open path scan uint64 unix ${ZLIB_LIBRARY})
 set(httptest_SOURCES uri.c uri.h)
-add_program(httptest sig http c dns stralloc buffer errmsg byte io socket alloc taia ${LIBSSL} ${LIBMSWSOCK} ${LIBDL} pthread)
+add_program(httptest xml sig http c dns stralloc buffer errmsg byte io socket alloc taia ${LIBSSL} ${LIBMSWSOCK} ${LIBDL} pthread)
 # add_program(ssltest strlist unix dns stralloc buffer errmsg byte io  tls socket alloc taia ${LIBSSL} ${LIBMSWSOCK} ${LIBDL} pthread)
 
 # set(ssltest_SOURCES address.c address.h)
