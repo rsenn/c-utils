@@ -33,7 +33,7 @@ iopause(iopause_fd* x, unsigned int len, struct taia* deadline, struct taia* sta
 #ifdef IOPAUSE_LINUX_AIO
   {
     struct iocb* cblist;
-    struct iocb** ptrlist = alloca(sizeof(struct iocb*) * len);
+    struct iocb** ptrlist[len]; // = alloca(sizeof(struct iocb*) * len);
     struct io_event* evlist = 0;
     aio_context_t ctx = 0;
     struct timespec ts;
