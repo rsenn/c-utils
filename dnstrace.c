@@ -23,7 +23,10 @@ nomem(void) {
 }
 void
 usage(void) {
-  die(100, "dnstrace: usage: dnstrace type name rootip ...", 0);
+  die(100,
+      "dnstrace: usage: dnstrace type "
+      "name rootip ...",
+      0);
 }
 
 static stralloc querystr;
@@ -76,7 +79,9 @@ resolve(char* q, char qtype[2], char ip[16]) {
   taia_uint(&deadline, 1);
   if(taia_less(&deadline, &stamp)) {
     buffer_put(buffer_1, querystr.s, querystr.len);
-    buffer_puts(buffer_1, "ALERT:took more than 1 second\n");
+    buffer_puts(buffer_1,
+                "ALERT:took more than "
+                "1 second\n");
   }
 
   return 0;
@@ -87,54 +92,27 @@ struct address {
   char ip[16];
 };
 
-GEN_ALLOC_typedef(address_alloc, struct address, s, len, a) GEN_ALLOC_readyplus(
-    address_alloc, struct address, s, len, a, i, n, x, 30, address_alloc_readyplus)
-    GEN_ALLOC_append(address_alloc,
-                     struct address,
-                     s,
-                     len,
-                     a,
-                     i,
-                     n,
-                     x,
-                     30,
-                     address_alloc_readyplus,
-                     address_alloc_append)
+GEN_ALLOC_typedef(address_alloc, struct address, s, len, a) GEN_ALLOC_readyplus(address_alloc, struct address, s, len, a, i, n, x, 30, address_alloc_readyplus) GEN_ALLOC_append(address_alloc, struct address, s, len, a, i, n, x, 30, address_alloc_readyplus, address_alloc_append)
 
-        static address_alloc address;
+    static address_alloc address;
 
 struct ns {
   char* owner;
   char* ns;
 };
 
-GEN_ALLOC_typedef(ns_alloc, struct ns, s, len, a)
-    GEN_ALLOC_readyplus(ns_alloc, struct ns, s, len, a, i, n, x, 30, ns_alloc_readyplus)
-        GEN_ALLOC_append(
-            ns_alloc, struct ns, s, len, a, i, n, x, 30, ns_alloc_readyplus, ns_alloc_append)
+GEN_ALLOC_typedef(ns_alloc, struct ns, s, len, a) GEN_ALLOC_readyplus(ns_alloc, struct ns, s, len, a, i, n, x, 30, ns_alloc_readyplus) GEN_ALLOC_append(ns_alloc, struct ns, s, len, a, i, n, x, 30, ns_alloc_readyplus, ns_alloc_append)
 
-            static ns_alloc ns;
+    static ns_alloc ns;
 
 struct query {
   char* owner;
   char type[2];
 };
 
-GEN_ALLOC_typedef(query_alloc, struct query, s, len, a)
-    GEN_ALLOC_readyplus(query_alloc, struct query, s, len, a, i, n, x, 30, query_alloc_readyplus)
-        GEN_ALLOC_append(query_alloc,
-                         struct query,
-                         s,
-                         len,
-                         a,
-                         i,
-                         n,
-                         x,
-                         30,
-                         query_alloc_readyplus,
-                         query_alloc_append)
+GEN_ALLOC_typedef(query_alloc, struct query, s, len, a) GEN_ALLOC_readyplus(query_alloc, struct query, s, len, a, i, n, x, 30, query_alloc_readyplus) GEN_ALLOC_append(query_alloc, struct query, s, len, a, i, n, x, 30, query_alloc_readyplus, query_alloc_append)
 
-            static query_alloc query;
+    static query_alloc query;
 
 struct qt {
   char* owner;
@@ -143,12 +121,9 @@ struct qt {
   char ip[16];
 };
 
-GEN_ALLOC_typedef(qt_alloc, struct qt, s, len, a)
-    GEN_ALLOC_readyplus(qt_alloc, struct qt, s, len, a, i, n, x, 30, qt_alloc_readyplus)
-        GEN_ALLOC_append(
-            qt_alloc, struct qt, s, len, a, i, n, x, 30, qt_alloc_readyplus, qt_alloc_append)
+GEN_ALLOC_typedef(qt_alloc, struct qt, s, len, a) GEN_ALLOC_readyplus(qt_alloc, struct qt, s, len, a, i, n, x, 30, qt_alloc_readyplus) GEN_ALLOC_append(qt_alloc, struct qt, s, len, a, i, n, x, 30, qt_alloc_readyplus, qt_alloc_append)
 
-            static qt_alloc qt;
+    static qt_alloc qt;
 
 void
 qt_add(const char* q, const char type[2], const char* control, const char ip[16]) {
@@ -156,7 +131,8 @@ qt_add(const char* q, const char type[2], const char* control, const char ip[16]
   int i;
 
   if(!*q)
-    return; /* don't ask the roots about our artificial . host */
+    return; /* don't ask the roots about
+               our artificial . host */
 
   for(i = 0; i < qt.len; ++i)
     if(dns_domain_equal(qt.s[i].owner, q))
@@ -284,8 +260,7 @@ typematch(const char rtype[2], const char qtype[2]) {
 }
 
 void
-parsepacket(
-    const char* buf, unsigned int len, const char* d, const char dtype[2], const char* control) {
+parsepacket(const char* buf, unsigned int len, const char* d, const char dtype[2], const char* control) {
   char misc[20];
   char header[12];
   unsigned int pos;
@@ -365,7 +340,9 @@ parsepacket(
   if(!flagcname && !rcode && !flagout && flagreferral && !flagsoa)
     if(dns_domain_equal(referral, control) || !dns_domain_suffix(referral, control)) {
       buffer_put(buffer_1, querystr.s, querystr.len);
-      buffer_puts(buffer_1, "ALERT:lame server; refers to ");
+      buffer_puts(buffer_1,
+                  "ALERT:lame server; "
+                  "refers to ");
       printdomain(referral);
       buffer_puts(buffer_1, "\n");
       return;
@@ -444,7 +421,9 @@ parsepacket(
 DIE:
   x = strerror(errno);
   buffer_put(buffer_1, querystr.s, querystr.len);
-  buffer_puts(buffer_1, "ALERT:unable to parse response packet; ");
+  buffer_puts(buffer_1,
+              "ALERT:unable to parse "
+              "response packet; ");
   buffer_puts(buffer_1, x);
   buffer_puts(buffer_1, "\n");
 }
@@ -545,12 +524,18 @@ main(int argc, char** argv) {
 
     if(dns_domain_equal(q, "\011localhost\0")) {
       buffer_put(buffer_1, querystr.s, querystr.len);
-      buffer_puts(buffer_1, "ALERT:some caches do not handle localhost internally\n");
+      buffer_puts(buffer_1,
+                  "ALERT:some caches do not "
+                  "handle localhost "
+                  "internally\n");
       address_add(q, "\177\0\0\1");
     }
     if(dd(q, "", ip) == 4) {
       buffer_put(buffer_1, querystr.s, querystr.len);
-      buffer_puts(buffer_1, "ALERT:some caches do not handle IP addresses internally\n");
+      buffer_puts(buffer_1,
+                  "ALERT:some caches do not "
+                  "handle IP addresses "
+                  "internally\n");
       address_add(q, ip);
     }
 

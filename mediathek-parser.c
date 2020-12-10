@@ -38,20 +38,12 @@ static const char* prefix_cmd;
 
 char* str_ptime(const char* s, const char* format, struct tm* tm);
 
-typedef void output_fn(const char* sender,
-                       const char* thema,
-                       const char* title,
-                       unsigned duration,
-                       const char* datetime,
-                       const char* url,
-                       const char* description);
+typedef void output_fn(const char* sender, const char* thema, const char* title, unsigned duration, const char* datetime, const char* url, const char* description);
 typedef output_fn* output_fn_ptr;
 
 output_fn output_m3u_entry, output_wget_entry, output_curl_entry;
 
-const output_fn_ptr output_handlers[3] = {&output_m3u_entry,
-                                          &output_wget_entry,
-                                          &output_curl_entry};
+const output_fn_ptr output_handlers[3] = {&output_m3u_entry, &output_wget_entry, &output_curl_entry};
 
 /**
  * @brief read_line
@@ -184,7 +176,8 @@ cleanup_text(char** t) {
   free(*t);
   *t = out.s;
 
-  /*  byte_copy(t, len < out.len ? len : out.len, out.s);
+  /*  byte_copy(t, len < out.len ? len :
+    out.len, out.s);
 
     if(out.len < len)
       t[out.len] = '\0';
@@ -288,7 +281,8 @@ process_entry(char** av, int ac) {
     if(d < 20 * 60)
       return 1;
 
-    // dump_pair(buffer_2, "title", title);
+    // dump_pair(buffer_2, "title",
+    // title);
 
     if(str_len(sender) == 0) {
       stralloc s;
@@ -297,22 +291,25 @@ process_entry(char** av, int ac) {
       sender = cleanup_domain(&s);
     }
 
-    /*dump_pair(buffer_2, "sender", sender);
-    dump_pair(buffer_2, "thema", thema);*/
+    /*dump_pair(buffer_2, "sender",
+    sender); dump_pair(buffer_2,
+    "thema", thema);*/
 
-    // dump_pair(buffer_2, "description", description);
+    // dump_pair(buffer_2,
+    // "description", description);
     /*
       dump_long(buffer_2, "d", d);
-      dump_pair(buffer_2, "duration", duration);
-      dump_pair(buffer_2, "url", url);
-      dump_pair(buffer_2, "url_lo.n", av[13]);
-      dump_pair(buffer_2, "url_lo.s", url_lo.s);
+      dump_pair(buffer_2, "duration",
+      duration); dump_pair(buffer_2,
+      "url", url); dump_pair(buffer_2,
+      "url_lo.n", av[13]);
+      dump_pair(buffer_2, "url_lo.s",
+      url_lo.s);
     */
 
     strftime(timebuf, sizeof(timebuf), "%Y%m%d %H:%M", &tm);
 
-    output_handlers[output_format](
-        sender, thema, title, d, timebuf, lowq > 0 ? url_lo.s : url, description);
+    output_handlers[output_format](sender, thema, title, d, timebuf, lowq > 0 ? url_lo.s : url, description);
 
     (void)t;
   } else {
@@ -351,13 +348,7 @@ put_quoted_string(const char* str) {
  * @param description
  */
 void
-output_m3u_entry(const char* sender,
-                 const char* thema,
-                 const char* title,
-                 unsigned duration,
-                 const char* datetime,
-                 const char* url,
-                 const char* description) {
+output_m3u_entry(const char* sender, const char* thema, const char* title, unsigned duration, const char* datetime, const char* url, const char* description) {
 
   if(csv == 0) {
     buffer_puts(&output_buf, "#EXTINF:");
@@ -373,7 +364,9 @@ output_m3u_entry(const char* sender,
     buffer_puts(&output_buf, "|");
     buffer_puts(&output_buf, description);
     buffer_put(&output_buf, "\r\n", 2);
-    buffer_puts(&output_buf, "#EXTVLCOPT:network-caching=2500\r\n");
+    buffer_puts(&output_buf,
+                "#EXTVLCOPT:network-"
+                "caching=2500\r\n");
     buffer_puts(&output_buf, url);
   } else {
     put_quoted_string(sender);
@@ -394,58 +387,42 @@ output_m3u_entry(const char* sender,
   buffer_flush(&output_buf);
 }
 void
-output_wget_entry(const char* sender,
-                  const char* thema,
-                  const char* title,
-                  unsigned duration,
-                  const char* datetime,
-                  const char* url,
-                  const char* description) {
+output_wget_entry(const char* sender, const char* thema, const char* title, unsigned duration, const char* datetime, const char* url, const char* description) {
   int skipSender = str_start(thema, sender);
   int multiline = 0;
-  buffer_putm_internal(&output_buf,
-                       prefix_cmd ? prefix_cmd : "",
-                       prefix_cmd ? " " : "",
-                       multiline ? "wget \\\n  -c " : "wget -c ",
-                       url,
-                       0);
+  buffer_putm_internal(&output_buf, prefix_cmd ? prefix_cmd : "", prefix_cmd ? " " : "", multiline ? "wget \\\n  -c " : "wget -c ", url, 0);
   buffer_putm_internal(&output_buf, multiline ? " \\\n  -O '" : " -O '", 0);
 
   if(!skipSender) {
-    buffer_puts_escaped(&output_buf, sender, &fmt_escapecharquotedshell);
+    buffer_puts_escaped(&output_buf, sender, &fmt_escapecharnonprintable);
     buffer_puts(&output_buf, " - ");
   }
 
-  buffer_puts_escaped(&output_buf, thema, &fmt_escapecharquotedshell);
+  buffer_puts_escaped(&output_buf, thema, &fmt_escapecharnonprintable);
   buffer_puts(&output_buf, " - ");
-  buffer_puts_escaped(&output_buf, title, &fmt_escapecharquotedshell);
+  buffer_puts_escaped(&output_buf, title, &fmt_escapecharnonprintable);
 
   buffer_putm_internal(&output_buf, ".mp4'", "\ntouch -c -d '", datetime, "' '", 0);
   if(!skipSender) {
-    buffer_puts_escaped(&output_buf, sender, &fmt_escapecharquotedshell);
+    buffer_puts_escaped(&output_buf, sender, &fmt_escapecharnonprintable);
     buffer_puts(&output_buf, " - ");
   }
 
-  buffer_puts_escaped(&output_buf, thema, &fmt_escapecharquotedshell);
+  buffer_puts_escaped(&output_buf, thema, &fmt_escapecharnonprintable);
   buffer_puts(&output_buf, " - ");
-  buffer_puts_escaped(&output_buf, title, &fmt_escapecharquotedshell);
+  buffer_puts_escaped(&output_buf, title, &fmt_escapecharnonprintable);
   buffer_putm_internal(&output_buf, ".mp4'", 0);
   buffer_putnlflush(&output_buf);
 }
 
 void
-output_curl_entry(const char* sender,
-                  const char* thema,
-                  const char* title,
-                  unsigned duration,
-                  const char* datetime,
-                  const char* url,
-                  const char* description) {
+output_curl_entry(const char* sender, const char* thema, const char* title, unsigned duration, const char* datetime, const char* url, const char* description) {
 
   buffer_putm_internal(&output_buf, "curl -L -k ", url, 0);
   buffer_putm_internal(&output_buf, " -o '", sender, " - ", thema, " - ", title, ".mp4'", 0);
   /*    buffer_puts(&output_buf, "|");
-      buffer_puts(&output_buf, description);*/
+      buffer_puts(&output_buf,
+     description);*/
 
   buffer_putnlflush(&output_buf);
 }
@@ -474,10 +451,11 @@ process_input(buffer* input) {
 
     ret = read_line(sa.s, sa.len, &fields);
 
-    /*        buffer_puts(buffer_2, "Line ");
-            buffer_putulong(buffer_2, line);
-            buffer_puts(buffer_2, ": ");
-            buffer_putsa(buffer_2, &sa);
+    /*        buffer_puts(buffer_2,
+       "Line ");
+            buffer_putulong(buffer_2,
+       line); buffer_puts(buffer_2, ":
+       "); buffer_putsa(buffer_2, &sa);
             buffer_putnlflush(buffer_2);
     */
 
@@ -509,12 +487,18 @@ usage(const char* argv0) {
                        argv0,
                        "[OPTIONS] <file>\n",
                        "\n",
-                       "  -h, --help                  Show this help\n",
-                       "  -c, --csv                   Output as CSV\n",
-                       "  -d, --debug                 Debug mode\n",
-                       "  -l, --low                   Low quality\n",
-                       "  -o, --output FILE           Output file\n",
-                       "  -F, --format FMT            Output format\n",
+                       "  -h, --help                  "
+                       "Show this help\n",
+                       "  -c, --csv                   "
+                       "Output as CSV\n",
+                       "  -d, --debug                 "
+                       "Debug mode\n",
+                       "  -l, --low                   "
+                       "Low quality\n",
+                       "  -o, --output FILE           "
+                       "Output file\n",
+                       "  -F, --format FMT            "
+                       "Output format\n",
                        "\n",
                        "Valid formats:\n",
                        "  wget, curl, m3u\n",

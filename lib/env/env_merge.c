@@ -11,12 +11,7 @@
 #endif
 
 size_t
-env_merge(const char** v,
-          size_t vmax,
-          const char* const* envp,
-          size_t envlen,
-          const char* modifs,
-          size_t modiflen) {
+env_merge(const char** v, size_t vmax, const char* const* envp, size_t envlen, const char* modifs, size_t modiflen) {
   size_t n = byte_count(modifs, modiflen, '\0');
   size_t vlen = envlen;
   size_t i = 0;

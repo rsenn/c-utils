@@ -86,12 +86,15 @@ xml_print_node(xmlnode* node, buffer* b, int depth, const char* nl) {
       stralloc_nul(&text);
       buffer_putm_internal(b, ", \"", text.s, "\"", NULL);
 
-      /*xml_print_list(node->children, b, 0, " ");
-      buffer_puts(b, "\"\n");
-      *} else if(xml_num_children(node) == 1) {
-        buffer_puts(b, ", ->\n");
-        buffer_putnspace(b, (depth + 1) * 2);
-        xml_print_list(node->children, b, 0, "");*/
+      /*xml_print_list(node->children,
+      b, 0, " "); buffer_puts(b,
+      "\"\n");
+      *} else if(xml_num_children(node)
+      == 1) { buffer_puts(b, ", ->\n");
+        buffer_putnspace(b, (depth + 1)
+      * 2);
+        xml_print_list(node->children,
+      b, 0, "");*/
     } else {
       if(node->attributes && node->attributes->tuple_count)
         buffer_puts(b, ",");
@@ -103,7 +106,8 @@ xml_print_node(xmlnode* node, buffer* b, int depth, const char* nl) {
   } else if(node->name[0] == '/' || (node->next && node_is_closing(node->next))) {
     // buffer_putc(b, '>');
   } else {
-    // buffer_puts(b, node->name[0] == '?' ? "?>" : "/>");
+    // buffer_puts(b, node->name[0] ==
+    // '?' ? "?>" : "/>");
     closing = 1;
   }
 
@@ -122,8 +126,11 @@ xml_print_list(xmlnode* node, buffer* b, int depth, const char* nl) {
 static void
 xml_print_tree(xmlnode* node, buffer* b) {
   if(node->type == XML_DOCUMENT) {
-    // buffer_puts(b, "@html\"utf-8\"?>\n")
-    //  buffer_puts(b, "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
+    // buffer_puts(b,
+    // "@html\"utf-8\"?>\n")
+    //  buffer_puts(b, "<?xml
+    //  version=\"1.0\"
+    //  encoding=\"utf-8\"?>\n");
     node = node->children;
   }
 
@@ -139,7 +146,9 @@ main(int argc, char* argv[]) {
   size_t i = 0;
 
   if(!argv[1]) {
-    argv[1] = "C:\\Users\\roman\\Desktop\\dirlist\\pelist.cbp";
+    argv[1] = "C:"
+              "\\Users\\roman\\Desktop"
+              "\\dirlist\\pelist.cbp";
   }
 
   buffer_mmapprivate(&input, argv[1]);
@@ -148,7 +157,8 @@ main(int argc, char* argv[]) {
   xml_print_tree(doc->children, buffer_1);
 
   /*
-   * Cleanup function for the XML library.
+   * Cleanup function for the XML
+   * library.
    */
   xml_free(doc);
   return (0);

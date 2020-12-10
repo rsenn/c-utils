@@ -62,7 +62,10 @@ address_lookup(stralloc* name, address_t* addr, bool no_ip6) {
 
   if(no_ip6 || dns_ip6(&ips, name) == -1) {
     if(dns_ip4(&ips, name) == -1) {
-      errmsg_warnsys("unable to find IP address for ", name->s, 0);
+      errmsg_warnsys("unable to find "
+                     "IP address for ",
+                     name->s,
+                     0);
       return 0;
     } else {
       addr->ip6 = false;

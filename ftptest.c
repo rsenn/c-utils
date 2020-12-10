@@ -1,27 +1,35 @@
 /*
  * tcping.c
  *
- * Copyright (c) 2002-2008 Marc Kirchner <mail(at)marc(dash)kirchner(dot)de>
+ * Copyright (c) 2002-2008 Marc Kirchner
+ * <mail(at)marc(dash)kirchner(dot)de>
  *
- * tcping is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
+ * tcping is free software: you can
+ * redistribute it and/or modify it
+ * under the terms of the GNU Lesser
+ * General Public License as published
+ * by the Free Software Foundation,
+ * either version 3 of the License, or
  * (at your option) any later version.
  *
- * tcping is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * tcping is distributed in the hope
+ * that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the
+ * implied warranty of MERCHANTABILITY
+ * or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU Lesser General Public
+ * License for more details.
  *
- * You should have received a copy of the GNU Lesser General Public License
- * along with ms++. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of
+ * the GNU Lesser General Public License
+ * along with ms++. If not, see
+ * <http://www.gnu.org/licenses/>.
  *
- * tcping does a nonblocking connect to test if a port is reachable.
- * Its exit codes are:
- *     -1 an error occured
- *     0  port is open
- *     1  port is closed
- *     2  user timeout
+ * tcping does a nonblocking connect to
+ * test if a port is reachable. Its exit
+ * codes are: -1 an error occured 0 port
+ * is open 1  port is closed 2  user
+ * timeout
  */
 
 #define VERSION 1.3.5
@@ -59,7 +67,10 @@
 
 #if WINDOWS_NATIVE
 #include <io.h>
-#define HOSTS_FILE "C:\\Windows\\System32\\drivers\\etc\\hosts"
+#define HOSTS_FILE                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 \
+  "C:"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             \
+  "\\Windows\\System32\\drivers\\etc"                                                                                                                                                                                                                                                                                                                                                                                                                                                                              \
+  "\\hosts"
 #else
 #include <unistd.h>
 #ifndef closesocket
@@ -99,7 +110,8 @@ usage(char* prog) {
   buffer_putm_internal(buffer_2,
                        "Usage: ",
                        str_basename(prog),
-                       " [-q] [-t timeout_sec] [-u timeout_usec] <host> <port>",
+                       " [-q] [-t timeout_sec] [-u "
+                       "timeout_usec] <host> <port>",
                        NULL);
   buffer_putnlflush(buffer_2);
 }
@@ -266,8 +278,7 @@ handle_ftp(ftp_client* ftp, stralloc* line) {
       socket_connect4(ftp->data_sock, passive.addr.ip, passive.port);
       io_wantwrite(ftp->data_sock);
 
-      buffer_init_free(
-          &ftp->data, (buffer_op_sys*)(void*)&ftp_read, ftp->data_sock, alloc(1024), 1024);
+      buffer_init_free(&ftp->data, (buffer_op_sys*)(void*)&ftp_read, ftp->data_sock, alloc(1024), 1024);
 
       break;
     }
@@ -308,7 +319,10 @@ list_ftp(ftp_client* ftp) {
 
         switch(ftp->state) {
           case CONNECTED: {
-            ftplib_write_cmd_s(&out, "USER anonymous\r\nPASS ftp@");
+            ftplib_write_cmd_s(&out,
+                               "USER "
+                               "anonymous\r\nPASS "
+                               "ftp@");
             ftp->state = LOGGED_IN;
             break;
           }
@@ -431,8 +445,7 @@ main(int argc, char* argv[]) {
   buffer_putnlflush(buffer_1);
 #endif
 
-  if(!address_scan(host.s, &addr) && !lookup_hosts(&host, &addr) &&
-     !address_lookup(&host, &addr, no_ip6)) {
+  if(!address_scan(host.s, &addr) && !lookup_hosts(&host, &addr) && !address_lookup(&host, &addr, no_ip6)) {
     ret = 111;
     goto fail;
   }
@@ -457,15 +470,14 @@ main(int argc, char* argv[]) {
 
   io_fd(sock);
 
-  if((ret = addr.ip6 ? socket_connect6(sock, addr.ip, port, addr.scope_id)
-                     : socket_connect4(sock, addr.ip, port)) != 0) {
+  if((ret = addr.ip6 ? socket_connect6(sock, addr.ip, port, addr.scope_id) : socket_connect4(sock, addr.ip, port)) != 0) {
     if(errno != EINPROGRESS) {
 #if 1 // def HAVE_SOLARIS
-      /* solaris immediately returns ECONNREFUSED on local ports */
+      /* solaris immediately returns
+       * ECONNREFUSED on local ports */
       if(errno == ECONNREFUSED) {
         if(verbose) {
-          buffer_putm_internal(
-              buffer_1, argv[optind], " port ", argv[optind + 1], " closed.", NULL);
+          buffer_putm_internal(buffer_1, argv[optind], " port ", argv[optind + 1], " closed.", NULL);
           buffer_putnlflush(buffer_1);
         }
         closesocket(sock);
@@ -510,8 +522,7 @@ main(int argc, char* argv[]) {
       /* timeout */
       closesocket(sock);
       if(verbose) {
-        buffer_putm_internal(
-            buffer_1, argv[optind], " port ", argv[optind + 1], " user timeout.", NULL);
+        buffer_putm_internal(buffer_1, argv[optind], " port ", argv[optind + 1], " user timeout.", NULL);
         buffer_putnlflush(buffer_1);
       }
       ret = 2;
@@ -535,8 +546,7 @@ main(int argc, char* argv[]) {
           if(error == EHOSTUNREACH)
             buffer_putm_internal(buffer_1, argv[optind], ": host is down", NULL);
           else
-            buffer_putm_internal(
-                buffer_1, argv[optind], " port ", argv[optind + 1], " closed.", NULL);
+            buffer_putm_internal(buffer_1, argv[optind], " port ", argv[optind + 1], " closed.", NULL);
           buffer_putnlflush(buffer_1);
         }
         closesocket(sock);

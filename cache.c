@@ -35,25 +35,34 @@ static uint32 top;
 4 <= hsize <= size/16.
 hsize is a power of 2.
 
-hsize <= writer <= oldest <= unused <= size.
-If oldest == unused then unused == size.
+hsize <= writer <= oldest <= unused <=
+size. If oldest == unused then unused ==
+size.
 
-x is a hash table with the following structure:
-x[0...hsize-1]: hsize/4 head links.
-x[hsize...writer-1]: consecutive entries, newest entry on the right.
-x[writer...oldest-1]: free space for new entries.
-x[oldest...unused-1]: consecutive entries, oldest entry on the left.
-x[unused...size-1]: unused.
+x is a hash table with the following
+structure: x[0...hsize-1]: hsize/4 head
+links. x[hsize...writer-1]: consecutive
+entries, newest entry on the right.
+x[writer...oldest-1]: free space for new
+entries. x[oldest...unused-1]:
+consecutive entries, oldest entry on the
+left. x[unused...size-1]: unused.
 
-Each hash bucket is a linked list containing the following items:
-the head link, the newest entry, the second-newest entry, etc.
-Each link is a 4-byte number giving the xor of
-the positions of the adjacent items in the list.
+Each hash bucket is a linked list
+containing the following items: the head
+link, the newest entry, the
+second-newest entry, etc. Each link is a
+4-byte number giving the xor of the
+positions of the adjacent items in the
+list.
 
-Entries are always inserted immediately after the head and removed at the tail.
+Entries are always inserted immediately
+after the head and removed at the tail.
 
-Each entry contains the following information:
-4-byte link; 4-byte keylen; 4-byte datalen; 8-byte expire time; key; data->
+Each entry contains the following
+information: 4-byte link; 4-byte keylen;
+4-byte datalen; 8-byte expire time; key;
+data->
 */
 #include "lib/errmsg.h"
 
@@ -138,7 +147,8 @@ cache_find(const char* key, unsigned int keylen, unsigned int* datalen, struct t
     prevpos = pos;
     pos = nextpos;
     if(++loop > 100)
-      return 0; /* to protect against hash flooding */
+      return 0; /* to protect against
+                   hash flooding */
   }
 
   return 0;
@@ -166,8 +176,7 @@ cache_get(const char* key, unsigned int keylen, unsigned int* datalen, uint32* t
 }
 
 void
-cache_set(
-    const char* key, unsigned int keylen, const char* data, unsigned int datalen, uint32 ttl) {
+cache_set(const char* key, unsigned int keylen, const char* data, unsigned int datalen, uint32 ttl) {
   struct tai now;
   struct tai expire;
   unsigned int entrylen;

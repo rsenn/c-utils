@@ -43,13 +43,17 @@
 
 /**
  * section: Parsing
- * synopsis: Parse an XML document in memory to a tree and free it
- * purpose: Demonstrate the use of xmlReadMemory() to read an XML file
- *          into a tree and and xml_free() to free the resulting tree
+ * synopsis: Parse an XML document in
+ * memory to a tree and free it purpose:
+ * Demonstrate the use of
+ * xmlReadMemory() to read an XML file
+ *          into a tree and and
+ * xml_free() to free the resulting tree
  * usage: parse3
  * test: parse3
  * author: Daniel Veillard
- * copy: see Copyright for the status of this software.
+ * copy: see Copyright for the status of
+ * this software.
  */
 #include "lib/str.h"
 #include <stdio.h>
@@ -83,7 +87,8 @@ struct gate {
 struct deviceset {
   stralloc name;
   array gates;     /**< list of struct gate */
-  cbmap_t devices; /**< map of struct pinmapping */
+  cbmap_t devices; /**< map of struct
+                      pinmapping */
 };
 struct part {
   stralloc name;
@@ -126,7 +131,8 @@ union vec2 {
 typedef union vec2 rect;
 struct net {
   stralloc name;
-  array contacts; /**<  list of struct ref */
+  array contacts; /**<  list of struct
+                     ref */
 };
 
 const char* document = "<doc/>";
@@ -226,7 +232,8 @@ xy_align(double* x, double* y) {
 }
 
 /**
- * Reads a real-number value from the element/attribute given
+ * Reads a real-number value from the
+ * element/attribute given
  */
 double
 get_double(xmlnode* node, const char* key) {
@@ -242,7 +249,8 @@ get_double(xmlnode* node, const char* key) {
 }
 
 /**
- * Reads an integer number value from the element/attribute given
+ * Reads an integer number value from
+ * the element/attribute given
  */
 int
 get_int(xmlnode* node, const char* key) {
@@ -386,7 +394,8 @@ int
 layer_id(const char* str) {
   int id = -1;
   if(scan_uint(str, (unsigned int*)&id)) {
-    // if(id >= 0 && id < strarray_size(&layers))
+    // if(id >= 0 && id <
+    // strarray_size(&layers))
     return id;
   }
   return -1;
@@ -594,7 +603,8 @@ check_wire(xmlnode* node) {
 }
 
 /**
- * Build structures from <part> or <element> element
+ * Build structures from <part> or
+ * <element> element
  */
 void
 build_part(xmlnode* part) {
@@ -628,7 +638,8 @@ build_part(xmlnode* part) {
 }
 
 /**
- * Build structures from <symbol> element
+ * Build structures from <symbol>
+ * element
  */
 void
 build_sym(xmlnode* part) {
@@ -662,7 +673,8 @@ build_sym(xmlnode* part) {
 }
 
 /**
- * @param node   Parent is the 'net' or 'signal' element
+ * @param node   Parent is the 'net' or
+ * 'signal' element
  */
 void
 build_reflist(xmlnode* node, struct net* n, int* index) {
@@ -707,9 +719,11 @@ build_reflist(xmlnode* node, struct net* n, int* index) {
 /**
  * Build reference list from
  *
- *      <contactref element="IC1" pad="4"/>
+ *      <contactref element="IC1"
+ * pad="4"/>
  *
- *      <pinref part="IC1" gate="B" pin="O"/>
+ *      <pinref part="IC1" gate="B"
+ * pin="O"/>
  */
 void
 build_nets(xmlnode* node) {
@@ -733,7 +747,8 @@ build_nets(xmlnode* node) {
 }
 
 /**
- * Build structures from <package> element
+ * Build structures from <package>
+ * element
  */
 void
 build_package(xmlnode* set) {
@@ -763,7 +778,8 @@ build_package(xmlnode* set) {
 }
 
 /**
- * Build structures from <deviceset> element
+ * Build structures from <deviceset>
+ * element
  */
 void
 build_deviceset(xmlnode* set) {
@@ -809,11 +825,14 @@ build_deviceset(xmlnode* set) {
     pm.pkg = pkg;
     cbmap_insert(d.devices, name, str_len(name) + 1, &pm, sizeof(struct pinmapping));
   }
-  //  cbmap_insert(devicesets, name, str_len(name) + 1, &d, sizeof(struct deviceset));
+  //  cbmap_insert(devicesets, name,
+  //  str_len(name) + 1, &d,
+  //  sizeof(struct deviceset));
 }
 
 /**
- * Run an XPath query and return a XPath object
+ * Run an XPath query and return a XPath
+ * object
  */
 xmlnodeset
 
@@ -822,7 +841,8 @@ getnodeset(void* n, const char* xpath) {
 }
 
 /**
- * Retrieve all <part> (schematic) or <element> (board) objects
+ * Retrieve all <part> (schematic) or
+ * <element> (board) objects
  */
 strlist
 
@@ -841,7 +861,8 @@ getparts(xmlnode* doc) {
 }
 
 /**
- * Iterate through a node-set, calling a functor for every item
+ * Iterate through a node-set, calling a
+ * functor for every item
  */
 void
 for_set(xmlnodeset* ns, void (*fn)(xmlnode*)) {
@@ -856,7 +877,8 @@ for_set(xmlnodeset* ns, void (*fn)(xmlnode*)) {
 }
 
 /**
- * Get the top-leftmost x and y coordinate from a set of nodes.
+ * Get the top-leftmost x and y
+ * coordinate from a set of nodes.
  */
 void
 nodeset_topleft(xmlnodeset* s, double* x, double* y) {
@@ -906,8 +928,7 @@ tree_topleft(xmlnode* elem, const char* elems, double* x, double* y) {
 }
 
 int
-dump_package(
-    const void* key, size_t key_len, const void* value, size_t value_len, void* user_data) {
+dump_package(const void* key, size_t key_len, const void* value, size_t value_len, void* user_data) {
   int64 i;
   const struct package* pkg = value;
   buffer_puts(buffer_1, "dump_package: ");
@@ -996,7 +1017,8 @@ node_print(xmlnode* node) {
 }
 
 /**
- *  hashmap_dump: Gets depth of node in hierarchy
+ *  hashmap_dump: Gets depth of node in
+ * hierarchy
  */
 int
 node_depth(xmlnode* node) {
@@ -1044,8 +1066,8 @@ print_element_name(xmlnode* a_node) {
      xmlnode* p = a_node->parent;
      const char* pn = p->name;
 
-     if(pn && !str_diffn(pn, name, str_len(name))) {
-       p = p->parent;
+     if(pn && !str_diffn(pn, name,
+   str_len(name))) { p = p->parent;
      }
      print_element_name(p);
    } */
@@ -1062,7 +1084,8 @@ print_element_name(xmlnode* a_node) {
 }
 
 /**
- *  print_element_attrs: Prints all element attributes to stdout
+ *  print_element_attrs: Prints all
+ * element attributes to stdout
  */
 void
 print_attrs(HMAP_DB* a) {
@@ -1070,13 +1093,7 @@ print_attrs(HMAP_DB* a) {
 
   for(t = a->list_tuple; t; t = t->next) {
     char* v = t->vals.val_chars;
-    buffer_putm_internal(buffer_1,
-                         " ",
-                         t->key,
-                         str_isdoublenum(v) ? "=" : "=\"",
-                         v,
-                         str_isdoublenum(v) ? "" : "\"",
-                         0);
+    buffer_putm_internal(buffer_1, " ", t->key, str_isdoublenum(v) ? "=" : "=\"", v, str_isdoublenum(v) ? "" : "\"", 0);
     if(t->next == a->list_tuple)
       break;
   }
@@ -1101,7 +1118,8 @@ print_element_content(xmlnode* node) {
 }
 
 /**
- *  print_element_children: Prints all element attributes to stdout
+ *  print_element_children: Prints all
+ * element attributes to stdout
  */
 void
 print_element_children(xmlnode* a_node) {
@@ -1122,10 +1140,12 @@ print_element_children(xmlnode* a_node) {
 
 /**
  * print_element_names:
- * @a_node: the initial xml node to consider.
+ * @a_node: the initial xml node to
+ * consider.
  *
- * Prints the names of the all the xml elements
- * that are siblings or children of a given xml node.
+ * Prints the names of the all the xml
+ * elements that are siblings or
+ * children of a given xml node.
  */
 void
 print_element_names(xmlnode* node) {
@@ -1229,17 +1249,7 @@ print_xml_rect(buffer* b, xmlnode* e) {
   y1 = xml_get_attribute(e, "y1");
   x2 = xml_get_attribute(e, "x2");
   y2 = xml_get_attribute(e, "y2");
-  buffer_putm_internal(b,
-                       "(",
-                       x1 ? x1 : "<null>",
-                       " ",
-                       y1 ? y1 : "<null>",
-                       ") (",
-                       x2 ? x2 : "<null>",
-                       " ",
-                       y2 ? y2 : "<null>",
-                       ")",
-                       NULL);
+  buffer_putm_internal(b, "(", x1 ? x1 : "<null>", " ", y1 ? y1 : "<null>", ") (", x2 ? x2 : "<null>", " ", y2 ? y2 : "<null>", ")", NULL);
   buffer_flush(b);
 }
 
@@ -1282,7 +1292,8 @@ print_script(buffer* b, xmlnode* e) {
     const char* a;
     stralloc align;
     stralloc_init(&align);
-    // xml_get_attribute_sa(e, &align, "align");
+    // xml_get_attribute_sa(e, &align,
+    // "align");
 
     if((a = xml_get_attribute(e, "align"))) {
       stralloc_subst(&align, a, str_len(a), "-", " ");
@@ -1319,23 +1330,10 @@ print_script(buffer* b, xmlnode* e) {
     if(current_signal)
       buffer_putm_internal(b, "'", current_signal, "' ", 0);
 
-    buffer_putm_internal(
-        b, xml_get_attribute(e, "extent"), " ", xml_get_attribute(e, "shape"), " ", 0);
+    buffer_putm_internal(b, xml_get_attribute(e, "extent"), " ", xml_get_attribute(e, "shape"), " ", 0);
     print_xml_xy(b, e);
   } else if(str_equal(e->name, "pad")) {
-    buffer_putm_internal(b,
-                         cmd.s,
-                         "'",
-                         xml_get_attribute(e, "name"),
-                         "'",
-                         " ",
-                         xml_get_attribute(e, "diameter"),
-                         " ",
-                         xml_get_attribute(e, "shape"),
-                         " ",
-                         xml_get_attribute(e, "orientation"),
-                         " ",
-                         0);
+    buffer_putm_internal(b, cmd.s, "'", xml_get_attribute(e, "name"), "'", " ", xml_get_attribute(e, "diameter"), " ", xml_get_attribute(e, "shape"), " ", xml_get_attribute(e, "orientation"), " ", 0);
     print_xml_xy(b, e);
   } else if(str_equal(e->name, "hole")) {
     buffer_putm_internal(b, cmd.s, xml_get_attribute(e, "diameter"), " ", 0);
@@ -1348,8 +1346,7 @@ print_script(buffer* b, xmlnode* e) {
     print_xml_rect(b, e);
   } else if(str_equal(e->name, "text")) {
 
-    buffer_putm_internal(
-        b, cmd.s, "'", xml_content(e), "' ", xml_get_attribute(e, "orientation"), " ", 0);
+    buffer_putm_internal(b, cmd.s, "'", xml_content(e), "' ", xml_get_attribute(e, "orientation"), " ", 0);
 
     print_xml_xy(b, e);
   } else {
@@ -1477,10 +1474,13 @@ draw_measures(xmlnode* doc) {
   /*  if(polygon == NULL) {
      polygon = xml_element("polygon");
 
-     xml_set_attribute(polygon, "width", "0.254");
-     xml_set_attribute(polygon, "layer", "16");
-     xml_set_attribute(polygon, "isolate", "1.27");
-     xml_set_attribute(polygon, "thermals", "yes");
+     xml_set_attribute(polygon, "width",
+   "0.254"); xml_set_attribute(polygon,
+   "layer", "16");
+     xml_set_attribute(polygon,
+   "isolate", "1.27");
+     xml_set_attribute(polygon,
+   "thermals", "yes");
 
      xml_add_child(gnd_signal, polygon);
    }
@@ -1490,44 +1490,60 @@ draw_measures(xmlnode* doc) {
    }
 
    n = xml_element("vertex");
-   xml_set_attribute_double(n, "x", bounds.x1, 3);
-   xml_set_attribute_double(n, "y", bounds.y2, 3);
-   xml_add_child(polygon, n);
-   n = xml_element("vertex");
-   xml_set_attribute_double(n, "x", bounds.x1, 3);
-   xml_set_attribute_double(n, "y", bounds.y1, 3);
-   xml_add_child(polygon, n);
-   n = xml_element("vertex");
-   xml_set_attribute_double(n, "x", bounds.x2, 3);
-   xml_set_attribute_double(n, "y", bounds.y1, 3);
-   xml_add_child(polygon, n);
-   n = xml_element("vertex");
-   xml_set_attribute_double(n, "x", bounds.x2, 3);
-   xml_set_attribute_double(n, "y", bounds.y2, 3);
-   xml_add_child(polygon, n);
+   xml_set_attribute_double(n, "x",
+   bounds.x1, 3);
+   xml_set_attribute_double(n, "y",
+   bounds.y2, 3); xml_add_child(polygon,
+   n); n = xml_element("vertex");
+   xml_set_attribute_double(n, "x",
+   bounds.x1, 3);
+   xml_set_attribute_double(n, "y",
+   bounds.y1, 3); xml_add_child(polygon,
+   n); n = xml_element("vertex");
+   xml_set_attribute_double(n, "x",
+   bounds.x2, 3);
+   xml_set_attribute_double(n, "y",
+   bounds.y1, 3); xml_add_child(polygon,
+   n); n = xml_element("vertex");
+   xml_set_attribute_double(n, "x",
+   bounds.x2, 3);
+   xml_set_attribute_double(n, "y",
+   bounds.y2, 3); xml_add_child(polygon,
+   n);
    */
 }
 
 /**
- * Executes XPath query and for every resulting element calls a function
+ * Executes XPath query and for every
+ * resulting element calls a function
  */
-#define match_foreach(doc, q, fn)                                                                  \
-  do {                                                                                             \
-    xmlnodeset ns = getnodeset(doc, q);                                                            \
-    if(xmlnodeset_size(&ns)) {                                                                     \
-      for_set(&ns, fn);                                                                            \
-    }                                                                                              \
+#define match_foreach(doc, q, fn)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  \
+  do {                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             \
+    xmlnodeset ns = getnodeset(doc, q);                                                                                                                                                                                                                                                                                                                                                                                                                                                                            \
+    if(xmlnodeset_size(&ns)) {                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     \
+      for_set(&ns, fn);                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            \
+    }                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              \
   } while(0);
 
 void
 usage(char* progname) {
   buffer_putm_internal(buffer_1, "Usage: ", progname, " [OPTIONS] [PACKAGES...]\n", 0);
   buffer_puts(buffer_1, "Options\n");
-  buffer_puts(buffer_1, "  --help, -h                        show this help\n");
-  buffer_puts(buffer_1, "  --layer, -l NUM       Layer name/number\n");
-  buffer_puts(buffer_1, "  --layers, -L          List layers\n");
-  buffer_puts(buffer_1, "  --draw, -d            Draw measures\n");
-  buffer_puts(buffer_1, "  --align-by, -A NUM    Align to (inch, mm, mil)\n");
+  buffer_puts(buffer_1,
+              "  --help, -h                    "
+              "    show this help\n");
+  buffer_puts(buffer_1,
+              "  --layer, -l NUM       "
+              "Layer name/number\n");
+  buffer_puts(buffer_1,
+              "  --layers, -L          "
+              "List layers\n");
+  buffer_puts(buffer_1,
+              "  --draw, -d            "
+              "Draw measures\n");
+  buffer_puts(buffer_1,
+              "  --align-by, -A NUM    Align "
+              "to (inch, mm, mil)\n");
   buffer_putnlflush(buffer_1);
 }
 
@@ -1536,14 +1552,7 @@ main(int argc, char* argv[]) {
   int c;
   int index = 0;
   rect extent, extent2;
-  struct longopt opts[] = {{"help", 0, NULL, 'h'},
-                           {"layer", 1, NULL, 'l'},
-                           {"layers", 0, NULL, 'L'},
-                           {"draw", 0, NULL, 'd'},
-                           {"align", 0, NULL, 'a'},
-                           {"align-by", 0, NULL, 'A'},
-                           {"comments", 0, NULL, 'c'},
-                           {0, 0, 0, 0}};
+  struct longopt opts[] = {{"help", 0, NULL, 'h'}, {"layer", 1, NULL, 'l'}, {"layers", 0, NULL, 'L'}, {"draw", 0, NULL, 'd'}, {"align", 0, NULL, 'a'}, {"align-by", 0, NULL, 'A'}, {"comments", 0, NULL, 'c'}, {0, 0, 0, 0}};
 
   for(;;) {
     c = getopt_long(argc, argv, "LdhaA:l:c", opts, &index);
@@ -1584,7 +1593,9 @@ main(int argc, char* argv[]) {
     symbols = cbmap_new();
 
     if(!argv[optind]) {
-      argv[optind] = "/home/roman/Sources/an-tronics/eagle/40106-4069-Synth.brd";
+      argv[optind] = "/home/roman/Sources/"
+                     "an-tronics/eagle/"
+                     "40106-4069-Synth.brd";
     } else if(argv[optind + 1]) {
       xq = argv[optind + 1];
     }
@@ -1638,15 +1649,26 @@ main(int argc, char* argv[]) {
     match_foreach(doc, "net|signal", build_nets);
     match_foreach(doc, "symbol", build_sym);
 
-    /* cbmap_visit_all(packages, dump_package, "package"); */
-    /* cbmap_visit_all(parts, dump_part, "part"); */
+    /* cbmap_visit_all(packages,
+     * dump_package, "package"); */
+    /* cbmap_visit_all(parts, dump_part,
+     * "part"); */
 
-    /*  for(size_t i = 0; i < array_length(&layers.a, sizeof(char*)); ++i) { */
-    /*    buffer_puts(buffer_2, "layer "); */
-    /*    buffer_putlong(buffer_2, i); */
-    /*    const char* name = *(char**)array_get(&layers.a, sizeof(char*), i); */
-    /*    buffer_putm_internal(buffer_2, " \"", name ? name : "", "\"", 0); */
-    /*    buffer_putnlflush(buffer_2); */
+    /*  for(size_t i = 0; i <
+     * array_length(&layers.a,
+     * sizeof(char*)); ++i) { */
+    /*    buffer_puts(buffer_2, "layer
+     * "); */
+    /*    buffer_putlong(buffer_2, i);
+     */
+    /*    const char* name =
+     * *(char**)array_get(&layers.a,
+     * sizeof(char*), i); */
+    /*    buffer_putm_internal(buffer_2,
+     * " \"", name ? name : "", "\"",
+     * 0); */
+    /*    buffer_putnlflush(buffer_2);
+     */
     /*  } */
 
     measures_layer = strarray_index_of(&layers, "Measures");
@@ -1667,7 +1689,9 @@ main(int argc, char* argv[]) {
       stralloc layer_str;
       int num_aligned = 0;
 
-      // libraries = xml_find_element(doc, "libraries");
+      // libraries =
+      // xml_find_element(doc,
+      // "libraries");
 
       stralloc_init(&layer_str);
 
@@ -1680,7 +1704,8 @@ main(int argc, char* argv[]) {
 
       rect_zero(&extent);
       rect_init(&extent2, DBL_MAX);
-      // ns = xml_find_with_attrs(doc, "x|y|x1|y1|x2|y2");
+      // ns = xml_find_with_attrs(doc,
+      // "x|y|x1|y1|x2|y2");
 
       nodes.elements = xml_find_element(doc, "elements");
       nodes.parts = xml_find_element(doc, "parts");
@@ -1706,7 +1731,10 @@ main(int argc, char* argv[]) {
           xml_path(node, &path);
           buffer_putsa(buffer_1, &path);
         }
-        // if(xml_has_attribute(node, "layer")) layer = xml_get_attribute(node, "layer");
+        // if(xml_has_attribute(node,
+        // "layer")) layer =
+        // xml_get_attribute(node,
+        // "layer");
 
         if(do_align_coords) {
           if(get_parent(node, "libraries") == 0)
@@ -1743,7 +1771,8 @@ main(int argc, char* argv[]) {
             }
           }
 
-          //      print_xy(buffer_2, layer, x1, y1);
+          //      print_xy(buffer_2,
+          //      layer, x1, y1);
         }
         if(print_comments)
           buffer_putsflush(buffer_1, "\n\n");
@@ -1785,20 +1814,29 @@ main(int argc, char* argv[]) {
         }
       }
 
-      /*    print_xy(buffer_2, "extent.1", extent.x1, extent.y1);
-          print_xy(buffer_2, "extent.2", extent.x2, extent.y2);
+      /*    print_xy(buffer_2,
+         "extent.1", extent.x1,
+         extent.y1); print_xy(buffer_2,
+         "extent.2", extent.x2,
+         extent.y2);
       */
-      // xml_print_nodeset(&wires, buffer_1);
+      // xml_print_nodeset(&wires,
+      // buffer_1);
 
-      //      buffer_puts(buffer_2, "top_y: ");
-      //      buffer_putdouble(buffer_2, top_y, 1);
+      //      buffer_puts(buffer_2,
+      //      "top_y: ");
+      //      buffer_putdouble(buffer_2,
+      //      top_y, 1);
       //      buffer_putnlflush(buffer_2);
-      //      buffer_puts(buffer_2, "right_x: ");
-      //      buffer_putdouble(buffer_2, right_x, 1);
+      //      buffer_puts(buffer_2,
+      //      "right_x: ");
+      //      buffer_putdouble(buffer_2,
+      //      right_x, 1);
       //      buffer_putnlflush(buffer_2);
     }
 
-    /*  cbmap_visit_all(nets, dump_net, "nets"); */
+    /*  cbmap_visit_all(nets, dump_net,
+     * "nets"); */
 
     //
     const double scale = 1.0 / 2.54;
@@ -1810,13 +1848,15 @@ main(int argc, char* argv[]) {
     rect_mult(&wire_bounds, scale);
     rect_round(&wire_bounds, 0.1);
 
-    // print_rect(buffer_2, "Wire", &wire_bounds);
+    // print_rect(buffer_2, "Wire",
+    // &wire_bounds);
 
     buffer_puts(buffer_1, "--- WIRE BOUNDS ---\n");
     buffer_puts(buffer_1, "\nLayer Measures;\n");
     print_bounds(buffer_1, wire_bounds, ";\n");
     buffer_putsflush(buffer_1, ";\n\n");
-    /*  print_wire(buffer_1, line(vec(99, 99), vec(33, 33)));
+    /*  print_wire(buffer_1,
+     line(vec(99, 99), vec(33, 33)));
      print_wire(buffer_1, line(c, d));
      print_wire(buffer_1, line(d, a));
   */
@@ -1837,12 +1877,14 @@ main(int argc, char* argv[]) {
     // print_bounds(buffer_1, bounds);
 
     /*
-     * Cleanup function for the XML library.
+     * Cleanup function for the XML
+     * library.
      */
     xml_free(doc);
   }
   /*
-   * this is to debug memory for regression tests
+   * this is to debug memory for
+   * regression tests
    */
   return (0);
 }

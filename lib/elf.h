@@ -630,10 +630,9 @@ typedef struct {
 #define ELF_DT_MOVEENT 0x6ffffdfa
 #define ELF_DT_MOVESZ 0x6ffffdfb
 #define ELF_DT_FEATURE_1 0x6ffffdfc /* Feature selection (DTF_*). */
-#define ELF_DT_POSFLAG_1                                                                           \
-  0x6ffffdfd                       /* Flags for DT_* entries, effecting the following DT_* entry. */
-#define ELF_DT_SYMINSZ 0x6ffffdfe  /* Size of syminfo table (in bytes) */
-#define ELF_DT_SYMINENT 0x6ffffdff /* Entry size of syminfo */
+#define ELF_DT_POSFLAG_1 0x6ffffdfd /* Flags for DT_* entries, effecting the following DT_* entry. */
+#define ELF_DT_SYMINSZ 0x6ffffdfe   /* Size of syminfo table (in bytes) */
+#define ELF_DT_SYMINENT 0x6ffffdff  /* Entry size of syminfo */
 #define ELF_DT_VALRNGHI 0x6ffffdff
 #define ELF_DT_VALTAGIDX(tag) (ELF_DT_VALRNGHI - (tag)) /* Reverse order! */
 #define ELF_DT_VALNUM 12
@@ -667,11 +666,11 @@ typedef struct {
 #define ELF_DT_RELCOUNT 0x6ffffffa
 
 /* These were chosen by Sun.  */
-#define ELF_DT_FLAGS_1 0x6ffffffb    /* State flags, see DF_1_* below. */
-#define ELF_DT_VERDEF 0x6ffffffc     /* Address of version definition table */
-#define ELF_DT_VERDEFNUM 0x6ffffffd  /* Number of version definitions */
-#define ELF_DT_VERNEED 0x6ffffffe    /* Address of table with needed versions */
-#define ELF_DT_VERNEEDNUM 0x6fffffff /* Number of needed versions */
+#define ELF_DT_FLAGS_1 0x6ffffffb                             /* State flags, see DF_1_* below. */
+#define ELF_DT_VERDEF 0x6ffffffc                              /* Address of version definition table */
+#define ELF_DT_VERDEFNUM 0x6ffffffd                           /* Number of version definitions */
+#define ELF_DT_VERNEED 0x6ffffffe                             /* Address of table with needed versions */
+#define ELF_DT_VERNEEDNUM 0x6fffffff                          /* Number of needed versions */
 #define ELF_DT_VERSIONTAGIDX(tag) (ELF_DT_VERNEEDNUM - (tag)) /* Reverse order! */
 #define ELF_DT_VERSIONTAGNUM 16
 
@@ -1006,11 +1005,10 @@ elf64_move;
 #define ELF_R_386_TLS_IE 15    /* Address of GOT entry for static TLS block offset */
 #define ELF_R_386_TLS_GOTIE 16 /* GOT entry for static TLS block offset */
 #define ELF_R_386_TLS_LE 17    /* Offset relative to static TLS block */
-#define ELF_R_386_TLS_GD                                                                           \
-  18 /* Direct 32 bit for GNU version of general dynamic thread local data                         \
-      */
-#define ELF_R_386_TLS_LDM                                                                          \
-  19 /* Direct 32 bit for GNU version of local dynamic thread local data in LE code */
+#define ELF_R_386_TLS_GD                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           \
+  18                         /* Direct 32 bit for GNU version of general dynamic thread local data                                                                                                                                                                                                                                                                                                                                                                                                                 \
+                              */
+#define ELF_R_386_TLS_LDM 19 /* Direct 32 bit for GNU version of local dynamic thread local data in LE code */
 #define ELF_R_386_16 20
 #define ELF_R_386_PC16 21
 #define ELF_R_386_8 22
@@ -1179,8 +1177,7 @@ typedef uint32 elf32_conflict;
 
 /* ARM-specific values for sh_flags */
 #define ELF_SHF_ARM_ENTRYSECT 0x10000000 /* Section contains an entry point */
-#define ELF_SHF_ARM_COMDEF                                                                         \
-  0x80000000 /* Section may be multiply defined in the input to a link step */
+#define ELF_SHF_ARM_COMDEF 0x80000000    /* Section may be multiply defined in the input to a link step */
 
 /* ARM-specific program header flags */
 #define ELF_PF_ARM_SB 0x10000000 /* Segment contains the location addressed by the static base */
@@ -1251,10 +1248,8 @@ typedef uint32 elf32_conflict;
 #define ELF_R_X86_64_DTPMOD64 16 /* ID of module containing symbol */
 #define ELF_R_X86_64_DTPOFF64 17 /* Offset in module's TLS block */
 #define ELF_R_X86_64_TPOFF64 18  /* Offset in initial TLS block */
-#define ELF_R_X86_64_TLSGD                                                                         \
-  19 /* 32 bit signed PC relative offset to two GOT entries for GD symbol */
-#define ELF_R_X86_64_TLSLD                                                                         \
-  20 /* 32 bit signed PC relative offset to two GOT entries for LD symbol */
+#define ELF_R_X86_64_TLSGD 19    /* 32 bit signed PC relative offset to two GOT entries for GD symbol */
+#define ELF_R_X86_64_TLSLD 20    /* 32 bit signed PC relative offset to two GOT entries for LD symbol */
 #define ELF_R_X86_64_DTPOFF32 21 /* Offset in TLS block */
 #define ELF_R_X86_64_GOTTPOFF 22 /* 32 bit signed PC relative offset to GOT entry for IE symbol */
 #define ELF_R_X86_64_TPOFF32 23  /* Offset in initial TLS block */
@@ -1268,8 +1263,7 @@ range elf_get_section_r(void*, const char* name);
 void* elf_get_section(void*, const char* name, size_t* szp);
 range elf_get_symtab_r(void*);
 void* elf_get_symtab(void*, size_t* szp);
-uint64
-elf_get_value(void*, void* ptr, unsigned off32, unsigned size32, unsigned off64, unsigned size64);
+uint64 elf_get_value(void*, void* ptr, unsigned off32, unsigned size32, unsigned off64, unsigned size64);
 uint8* elf_header_ident(void*);
 void* elf_header_sections(void*);
 range elf_program_headers(void*);
@@ -1294,22 +1288,14 @@ range elf_symbol_r(void*, void* sym);
 #define ELF_STRUCT_OFFSETS(st, field) ELF_FIELD_OFFS(elf32_##st, field), ELF_FIELD_SIZE(elf32_##st, field), ELF_FIELD_OFFS(elf64_##st, field), ELF_FIELD_SIZE(elf64_##st, field))
 #define ELF_STRUCT_SIZE(elf, st) (ELF_64(elf) ? sizeof(elf64_##st) : sizeof(elf32_##st))
 
-#define ELF_GET(elf, ptr, st, field)                                                               \
-  elf_get_value(elf,                                                                               \
-                ptr,                                                                               \
-                ELF_FIELD_OFFS(elf32_##st, field),                                                 \
-                ELF_FIELD_SIZE(elf32_##st, field),                                                 \
-                ELF_FIELD_OFFS(elf64_##st, field),                                                 \
-                ELF_FIELD_SIZE(elf64_##st, field))
+#define ELF_GET(elf, ptr, st, field) elf_get_value(elf, ptr, ELF_FIELD_OFFS(elf32_##st, field), ELF_FIELD_SIZE(elf32_##st, field), ELF_FIELD_OFFS(elf64_##st, field), ELF_FIELD_SIZE(elf64_##st, field))
 
 #define ELF_FIELD_OFFSET(type, field) ((size_t)(uint8*)&(((type*)0)->field))
 #define ELF_FIELD_SIZE(type, field) sizeof(((type*)0)->field)
 
 #define ELF_ADDR(elf, ptr, st, field) ((void*)(((char*)ptr) + ELF_OFFSET(elf, st, field)))
-#define ELF_OFFSET(elf, st, field)                                                                 \
-  (ELF_64(elf) ? ELF_FIELD_OFFSET(elf64_##st, field) : ELF_FIELD_OFFSET(elf32_##st, field))
-#define ELF_SIZE(elf, st, field)                                                                   \
-  (ELF_64(elf) ? ELF_FIELD_SIZE(elf64_##st, field) : ELF_FIELD_SIZE(elf32_##st, field))
+#define ELF_OFFSET(elf, st, field) (ELF_64(elf) ? ELF_FIELD_OFFSET(elf64_##st, field) : ELF_FIELD_OFFSET(elf32_##st, field))
+#define ELF_SIZE(elf, st, field) (ELF_64(elf) ? ELF_FIELD_SIZE(elf64_##st, field) : ELF_FIELD_SIZE(elf32_##st, field))
 
 #ifdef __cplusplus
 };

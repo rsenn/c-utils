@@ -1,33 +1,53 @@
 /* dns.c - Asynchronous DNS resolver
  *
- * partial rewrite of DNS client code from libowfat by fefe
- * (http://www.fefe.de/libowfat/), originally written and put
- * into public domain July 4 2002 (http://online.securityfocus.com/archive/1/280642)
+ * partial rewrite of DNS client code
+ * from libowfat by fefe
+ * (http://www.fefe.de/libowfat/),
+ * originally written and put into
+ * public domain July 4 2002
+ * (http://online.securityfocus.com/archive/1/280642)
  * by D.J. Bernstein (http://cr.yp.to/).
  *
- * The idea was to provide a simple async resolver API in standard libc style
- * which does not base on crappy resolver functions from ISC libresolv.
- * To keep this piece of code simple, slim and portable I decided to reimplement
- * some of the functions using libc functions/types rather than the ones from fefe.
+ * The idea was to provide a simple
+ * async resolver API in standard libc
+ * style which does not base on crappy
+ * resolver functions from ISC
+ * libresolv. To keep this piece of code
+ * simple, slim and portable I decided
+ * to reimplement some of the functions
+ * using libc functions/types rather
+ * than the ones from fefe.
  *
- * Bug reports and stuff go to <smoli@paranoya.ch>
+ * Bug reports and stuff go to
+ * <smoli@paranoya.ch>
  *
- * $Id: dns.h,v 1.1.2.1 2002/10/22 19:23:42 smoln Exp $
+ * $Id: dns.h,v 1.1.2.1 2002/10/22
+ * 19:23:42 smoln Exp $
  */
-/* This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2, or (at your option)
- * any later version.
+/* This program is free software; you
+ * can redistribute it and/or modify it
+ * under the terms of the GNU General
+ * Public License as published by the
+ * Free Software Foundation; either
+ * version 2, or (at your option) any
+ * later version.
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * This program is distributed in the
+ * hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even
+ * the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A
+ * PARTICULAR PURPOSE.  See the GNU
+ * General Public License for more
+ * details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program; see the file COPYING.
- * If not, write to the Free Software Foundation,
- * 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * You should have received a copy of
+ * the GNU General Public License along
+ * with this program; see the file
+ * COPYING. If not, write to the Free
+ * Software Foundation, 59 Temple Place
+ * - Suite 330, Boston, MA 02111-1307,
+ * USA.
  */
 
 #ifndef DNS_H_
@@ -61,7 +81,8 @@
 #define DEFAULT_TIMEOUT 20 /* 20 seconds timeout */
 
 typedef enum {
-  DNS_ALL, /* do callback on any of the events below */
+  DNS_ALL, /* do callback on any of the
+              events below */
   DNS_TIMEOUT,
   DNS_NOTFOUND,
   DNS_IP4, /* got an ipv4 address */
@@ -104,7 +125,8 @@ struct dns_resolver {
 //#define DNS_NAME6_DOMAIN (4 * 16 + 10)
 #define IP4_FMT 20
 
-/* bzero a resolver struct and set timeout to a sane value */
+/* bzero a resolver struct and set
+ * timeout to a sane value */
 static __inline__ void
 dns_zero(struct dns_resolver* dns) {
   byte_zero(dns, sizeof(struct dns_resolver));
@@ -136,26 +158,33 @@ extern int dns_name_lookup(struct dns_resolver* dns, const char* name);
 extern int dns_addr_lookup(struct dns_resolver* dns, struct in_addr address);
 
 /*
-   returns 1 when the fdset has been modified.
+   returns 1 when the fdset has been
+   modified.
  */
 extern int dns_pre_poll(struct dns_resolver* dns, struct pollfd* pfds);
 extern int dns_pre_select(struct dns_resolver* dns, fd_set* readset, fd_set* writeset);
 
 /*
-   returns 0 when lookup is in progress, -1 on error/timeout and 1 when an answer has been received.
-   pfs must point to a free location in your pollfd array.
+   returns 0 when lookup is in progress,
+   -1 on error/timeout and 1 when an
+   answer has been received. pfs must
+   point to a free location in your
+   pollfd array.
  */
 extern int dns_post_poll(struct dns_resolver* dns, const struct pollfd* pfds);
 extern int dns_post_select(struct dns_resolver* dns, const fd_set* readset, const fd_set* writeset);
 
 /*
-   when the post poll call returned 1 the answer(s) can be retrieved by these functions.
+   when the post poll call returned 1
+   the answer(s) can be retrieved by
+   these functions.
  */
 extern int dns_get_addr(struct dns_resolver* dns, struct in_addr* addr);
 extern int dns_get_name(struct dns_resolver* dns, char* buf, size_t n);
 
 /*
-   free allocated packet buffers, close socket etc.
+   free allocated packet buffers, close
+   socket etc.
  */
 extern void dns_free(struct dns_resolver* dns);
 

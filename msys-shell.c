@@ -43,9 +43,15 @@ setup_env() {
   if(!env_get("MSYS2_PATH"))
     env_set("MSYS2_PATH", "/usr/local/bin:/usr/bin:/bin");
   if(!env_get("MSYS2_PREFIX"))
-    env_set("MSYS2_PREFIX", "B:\\PortableApps\\MSYS2Portable\\App\\msys32\\usr");
+    env_set("MSYS2_PREFIX",
+            "B:"
+            "\\PortableApps\\MSYS2Porta"
+            "ble\\App\\msys32\\usr");
   if(!env_get("MSYS2_ROOT"))
-    env_set("MSYS2_ROOT", "B:\\PortableApps\\MSYS2Portable\\App\\msys32");
+    env_set("MSYS2_ROOT",
+            "B:"
+            "\\PortableApps\\MSYS2Porta"
+            "ble\\App\\msys32");
   if(!env_get("MSYSTEM"))
     env_set("MSYSTEM", "MSYS");
   if(!env_get("MSYSTEM_CARCH"))
@@ -67,7 +73,8 @@ usage(char* errmsg_argv0) {
                        " [sources...]\n",
                        "\n",
                        "Options\n",
-                       "  -h, --help                show this help\n",
+                       "  -h, --help                "
+                       "show this help\n",
                        "\n",
                        NULL);
   buffer_putnlflush(buffer_1);
@@ -83,11 +90,7 @@ main(int argc, char* argv[], char* envp[]) {
   int ret;
   const char* pathstr;
   static int index, c, verbose;
-  const struct longopt opts[] = {{"help", 0, 0, 'h'},
-                                 {"verbose", 0, &verbose, 'v'},
-                                 {"exec", 0, 0, 'e'},
-                                 {"root", 0, 0, 'r'},
-                                 {0, 0, 0, 0}};
+  const struct longopt opts[] = {{"help", 0, 0, 'h'}, {"verbose", 0, &verbose, 'v'}, {"exec", 0, 0, 'e'}, {"root", 0, 0, 'r'}, {0, 0, 0, 0}};
   strlist_init(&args, '\0');
 
   errmsg_iam(argv[0]);
@@ -112,7 +115,8 @@ main(int argc, char* argv[], char* envp[]) {
                              "'\n",
                              "Try `",
                              argv[0],
-                             "\" --help' for more information");
+                             "\" --help' for more "
+                             "information");
         buffer_putnlflush(buffer_2);
         return 1;
     }
@@ -126,9 +130,8 @@ main(int argc, char* argv[], char* envp[]) {
   errmsg_iam(argv[0]);
 
   stralloc_copys(&cmd, argv[0]);
-  /*  if(stralloc_endb(&cmd, ".exe", 4)) {
-      cmd.len -= 4;
-      ext = ".exe";
+  /*  if(stralloc_endb(&cmd, ".exe", 4))
+    { cmd.len -= 4; ext = ".exe";
     }*/
   stralloc_copy(&execbin, &cmd);
   stralloc_cats(&execbin, ".real");
@@ -163,8 +166,8 @@ main(int argc, char* argv[], char* envp[]) {
   // strarray_joins(&v, &sa, "'\n'");
 
   if(!path_exists(execbin.s)) {
-    errmsg_warnsys("exists ", execbin.s, " ('", sa.s, "''): ", 0);
-    return 127;
+    errmsg_warnsys("exists ", execbin.s,
+" ('", sa.s, "''): ", 0); return 127;
   }
 
 #if 0

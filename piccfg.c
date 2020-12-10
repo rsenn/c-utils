@@ -242,8 +242,10 @@ get_setting_value(cword* word, csetting* setting) {
   uint16 byteval = get_setting_word(word, setting);
   /*
     if(verbose) {
-      buffer_putm_internal(buffer_2, word->name, ": ", setting->name, " = ", NULL);
-      buffer_putxlong0(buffer_2, byteval, 2);
+      buffer_putm_internal(buffer_2,
+    word->name, ": ", setting->name, " =
+    ", NULL); buffer_putxlong0(buffer_2,
+    byteval, 2);
       buffer_putnlflush(buffer_2);
     }
   */
@@ -301,7 +303,10 @@ infer_chip(const char* x, size_t n) {
       if(c2 == 'l' || c2 == 'f') {
         char c1 = s[1];
         if(c1 == '2' || c1 == '6' || c1 == '8') {
-          len = scan_charsetnskip(s, "0123456789aAbBcCeEfFgGhHiIjJkKlLmMnNpPrRtTvV", len);
+          len = scan_charsetnskip(s,
+                                  "0123456789aAbBcCeEfFgGhH"
+                                  "iIjJkKlLmMnNpPrRtTvV",
+                                  len);
 
           if(len > 3) {
             stralloc_copyb(&chip, s, len);
@@ -324,8 +329,10 @@ get_cfgdat(const char* chip) {
     dir_t d;
     const char *dir = 0, *subdir;
     static const char* const search_dirs[] = {"/opt/microchip",
-                                              "C:\\Program Files\\Microchip",
-                                              "C:\\Program Files (x86)\\Microchip"};
+                                              "C:\\Program "
+                                              "Files\\Microchip",
+                                              "C:\\Program Files "
+                                              "(x86)\\Microchip"};
     for(i = 0; i < sizeof(search_dirs) / sizeof(search_dirs[0]); i++) {
       dir = search_dirs[i];
       if(path_exists(dir))
@@ -405,8 +412,7 @@ process_config(void (*callback)(strlist*, const char* key, const char* value), s
       if(value->is_default && nodefault) {
 #ifdef DEBUG_OUTPUT
         if(verbose > 1) {
-          buffer_putm_internal(
-              buffer_2, "skip default value ", value->name, " for setting ", setting->name, NULL);
+          buffer_putm_internal(buffer_2, "skip default value ", value->name, " for setting ", setting->name, NULL);
           buffer_putnlflush(buffer_2);
         }
 #endif
@@ -471,12 +477,20 @@ usage(char* argv0) {
                        " <hex-file> <cfgdata-file>\n"
                        "\n"
                        "Options\n"
-                       "  -h, --help                show this help\n"
-                       "  -o, --oneline             output oneliner\n"
-                       "  -D, --no-default          don't output settings with default value\n"
-                       "  -C, --no-comments         don't output description comments\n"
-                       "  -n, --name                output register name\n"
-                       "  -v, --verbose             show verbose messages\n"
+                       "  -h, --help                "
+                       "show this help\n"
+                       "  -o, --oneline             "
+                       "output oneliner\n"
+                       "  -D, --no-default          "
+                       "don't output settings with "
+                       "default value\n"
+                       "  -C, --no-comments         "
+                       "don't output description "
+                       "comments\n"
+                       "  -n, --name                "
+                       "output register name\n"
+                       "  -v, --verbose             "
+                       "show verbose messages\n"
                        "\n",
                        NULL);
   buffer_putnlflush(buffer_1);
@@ -489,13 +503,7 @@ main(int argc, char* argv[]) {
   int c, index = 0;
   const char *cfgdata = 0, *hexfile = 0;
 
-  struct longopt opts[] = {{"help", 0, NULL, 'h'},
-                           {"oneline", 0, &oneline, 1},
-                           {"default", 0, &nodefault, 0},
-                           {"no-comments", 0, &comments, 0},
-                           {"name", 0, &output_name, 1},
-                           {"verbose", 0, &verbose, 1},
-                           {0, 0, 0, 0}};
+  struct longopt opts[] = {{"help", 0, NULL, 'h'}, {"oneline", 0, &oneline, 1}, {"default", 0, &nodefault, 0}, {"no-comments", 0, &comments, 0}, {"name", 0, &output_name, 1}, {"verbose", 0, &verbose, 1}, {0, 0, 0, 0}};
 
   for(;;) {
     c = getopt_long(argc, argv, "hodCnv", opts, &index);
@@ -528,7 +536,10 @@ main(int argc, char* argv[]) {
   }
 
   if(!hexfile)
-    hexfile = "/home/roman/Sources/pictest/bootloaders/usb-msd-bootloader-18f2550.hex";
+    hexfile = "/home/roman/Sources/"
+              "pictest/bootloaders/"
+              "usb-msd-bootloader-"
+              "18f2550.hex";
 
   if(cfgdata) {
     if(!path_exists(cfgdata))
@@ -571,13 +582,15 @@ main(int argc, char* argv[]) {
       buffer_putnlflush(buffer_2);
     }
 
-    /*    for(i = 0; i < cfg.len; i += 2) {
-          uint16 v = uint16_read(&cfg.s[i]);
+    /*    for(i = 0; i < cfg.len; i +=
+       2) { uint16 v =
+       uint16_read(&cfg.s[i]);
 
-          buffer_putxlong0(buffer_2, baseaddr + i, 4);
+          buffer_putxlong0(buffer_2,
+       baseaddr + i, 4);
           buffer_puts(buffer_2, ": ");
-          buffer_putxlong0(buffer_2, v, 4);
-          buffer_putnlflush(buffer_2);
+          buffer_putxlong0(buffer_2, v,
+       4); buffer_putnlflush(buffer_2);
         }*/
   }
 

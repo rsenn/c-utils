@@ -265,8 +265,10 @@ main(int argc, char* argv[]) {
       debug_int("data_len", h.data_len);
       debug_int("new_size", h.new_size);
 
-      //      int64 n = bsdiff_read_ctrl(&patch, &records);
-      //      debug_int("n", n);
+      //      int64 n =
+      //      bsdiff_read_ctrl(&patch,
+      //      &records); debug_int("n",
+      //      n);
 
       bsdiff_read(&patch, &data, &extra);
 

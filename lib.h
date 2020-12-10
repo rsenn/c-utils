@@ -307,7 +307,8 @@
 #include "lib/buffer/buffer_putdouble.c"
 #include "lib/buffer/buffer_put8long.c"
 #include "lib/buffer/buffer_putulonglong.c"
-////#include "lib/buffer/buffer_skipspace.c"
+////#include
+///"lib/buffer/buffer_skipspace.c"
 #include "lib/buffer/buffer_put.c"
 #include "lib/buffer/buffer_mmapprivate.c"
 #include "lib/buffer/buffer_0small.c"
@@ -402,15 +403,22 @@
 #include "lib/mmap/mmap_read.c"
 #include "lib/mmap/mmap_shared.c"
 ////#include "lib/gpio/gpio_read.c"
-////#include "lib/gpio/gpio_set_input_pull.c"
-////#include "lib/gpio/gpio_set_pin_mode.c"
-////#include "lib/gpio/gpio_set_input_pull_up.c"
-////#include "lib/gpio/gpio_set_output.c"
+////#include
+///"lib/gpio/gpio_set_input_pull.c"
+////#include
+///"lib/gpio/gpio_set_pin_mode.c"
+////#include
+///"lib/gpio/gpio_set_input_pull_up.c"
+////#include
+///"lib/gpio/gpio_set_output.c"
 ////#include "lib/gpio/gpio_write.c"
-////#include "lib/gpio/gpio_set_input_pull_down.c"
+////#include
+///"lib/gpio/gpio_set_input_pull_down.c"
 ////#include "lib/gpio/gpio_init.c"
-////#include "lib/gpio/gpio_short_wait.c"
-////#include "lib/gpio/gpio_set_input_resistor_pull.c"
+////#include
+///"lib/gpio/gpio_short_wait.c"
+////#include
+///"lib/gpio/gpio_set_input_resistor_pull.c"
 #include "lib/scan/scan_asn1dertag.c"
 #include "lib/scan/scan_noncharsetnskip.c"
 #include "lib/scan/scan_eolskip.c"
@@ -475,23 +483,34 @@
 #include "lib/slist/slist_add_after.c"
 #include "lib/slist/slist_find_remove.c"
 ////#include "lib/elf/elf_get_symtab.c"
-////#include "lib/elf/elf_section_typename.c"
+////#include
+///"lib/elf/elf_section_typename.c"
 ////#include "lib/elf/elf_get_section.c"
 ////#include "lib/elf/elf_section.c"
-////#include "lib/elf/elf_section_headers.c"
+////#include
+///"lib/elf/elf_section_headers.c"
 ////#include "lib/elf/elf_get_value.c"
-////#include "lib/elf/elf_section_size.c"
-////#include "lib/elf/elf_section_offset.c"
-////#include "lib/elf/elf_dynamic_section.c"
+////#include
+///"lib/elf/elf_section_size.c"
+////#include
+///"lib/elf/elf_section_offset.c"
+////#include
+///"lib/elf/elf_dynamic_section.c"
 ////#include "lib/elf/elf_header.c"
-////#include "lib/elf/elf_section_index.c"
-////#include "lib/elf/elf_section_name.c"
-////#include "lib/elf/elf_get_symtab_r.c"
+////#include
+///"lib/elf/elf_section_index.c"
+////#include
+///"lib/elf/elf_section_name.c"
+////#include
+///"lib/elf/elf_get_symtab_r.c"
 ////#include "lib/elf/elf_symbol_r.c"
-////#include "lib/elf/elf_get_section_r.c"
-////#include "lib/elf/elf_program_headers.c"
+////#include
+///"lib/elf/elf_get_section_r.c"
+////#include
+///"lib/elf/elf_program_headers.c"
 ////#include "lib/elf/elf_shstrtab.c"
-////#include "lib/elf/elf_section_find.c"
+////#include
+///"lib/elf/elf_section_find.c"
 #include "lib/process/process_create.c"
 //#include "lib/cb/cb_find_prefix.c"
 //#include "lib/cb/cb_erase.c"
@@ -502,7 +521,8 @@
 //#include "lib/cb/cb_new_kv.c"
 //#include "lib/cb/cb_get_kv_ex.c"
 //#include "lib/cb/cb_foreach.c"
-////#include "lib/list/list_find_remove.c"
+////#include
+///"lib/list/list_find_remove.c"
 ////#include "lib/list/list_init.c"
 ////#include "lib/list/list_find.c"
 ////#include "lib/list/list_add_after.c"
@@ -513,7 +533,8 @@
 ////#include "lib/list/list_swap.c"
 ////#include "lib/list/list_remove.c"
 ////#include "lib/list/list_length.c"
-////#include "lib/list/list_add_before.c"
+////#include
+///"lib/list/list_add_before.c"
 //#include "lib/dns/dns_ip6.c"
 //#include "lib/dns/dns_rcip.c"
 //#include "lib/dns/dns_txt.c"
@@ -815,14 +836,17 @@
 //#include "lib/json/json_parse.c"
 //#include "lib/json/json_recurse.c"
 //#include "lib/json/json_length.c"
-//#include "lib/json/json_get_property.c"
+//#include
+//"lib/json/json_get_property.c"
 //#include "lib/json/json_newnode.c"
 //#include "lib/json/json_read_tree.c"
 //#include "lib/json/json_reader_init.c"
-//#include "lib/json/json_read_callback.c"
+//#include
+//"lib/json/json_read_callback.c"
 //#include "lib/json/json_tostring.c"
 //#include "lib/json/json_free.c"
-//#include "lib/json/json_set_property.c"
+//#include
+//"lib/json/json_set_property.c"
 #include "lib/array/array_cat.c"
 #include "lib/array/array_get.c"
 #include "lib/array/array_equal.c"

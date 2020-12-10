@@ -172,8 +172,7 @@ print(unsigned char* p, size_t i, unsigned char from, unsigned char to) {
 
 patch_t*
 patch_new(const char* name, size_t file_size, uint32 crc32) {
-  patch_t* patch =
-      array_allocate(&patches, sizeof(patch_t), array_length(&patches, sizeof(patch_t)));
+  patch_t* patch = array_allocate(&patches, sizeof(patch_t), array_length(&patches, sizeof(patch_t)));
 
   patch->name = name;
   patch->file_size = file_size;
@@ -184,11 +183,8 @@ patch_new(const char* name, size_t file_size, uint32 crc32) {
 
 void
 patch(size_t i, unsigned char from, unsigned char to) {
-  patch_t* patch =
-      array_get(&patches, sizeof(patch_t), array_length(&patches, sizeof(patch_t)) - 1);
-  record_t* rec = array_allocate(&patch->records,
-                                 sizeof(record_t),
-                                 array_length(&patch->records, sizeof(record_t)));
+  patch_t* patch = array_get(&patches, sizeof(patch_t), array_length(&patches, sizeof(patch_t)) - 1);
+  record_t* rec = array_allocate(&patch->records, sizeof(record_t), array_length(&patch->records, sizeof(record_t)));
 
   rec->offset = i;
   rec->from = from;
@@ -293,7 +289,8 @@ usage(const char* av0) {
                        av0,
                        " <file> [edit-specifier]\n"
                        "\n"
-                       "  [edit-specifier] is <address>=<value>\n"
+                       "  [edit-specifier] is "
+                       "<address>=<value>\n"
                        "\n",
                        NULL);
   buffer_putnlflush(buffer_2);
@@ -324,7 +321,8 @@ main(int argc, char* argv[]) {
 
   x = (unsigned char*)file.x;
   n = file.n;
-  // x = (unsigned char*)mmap_shared(argv[index], &n);
+  // x = (unsigned
+  // char*)mmap_shared(argv[index], &n);
 
   patch_new("command line", file.n, 0);
 
@@ -373,7 +371,8 @@ main(int argc, char* argv[]) {
         } while(*spec);
 
       } /*else {
-        buffer_putm_internal(buffer_2, "ERROR: ", spec, "\n", 0);
+        buffer_putm_internal(buffer_2,
+      "ERROR: ", spec, "\n", 0);
         buffer_putnlflush(buffer_2);
         return 2;
       }*/
@@ -425,15 +424,18 @@ main(int argc, char* argv[]) {
 
   /* Linux x64 */
   patch_new("Sublime Text 3176 Linux x64", 7235496, 0x0b9ff058);
-  patch(0xeb83, 0x00, 0x01); /* Persistent License Check */
+  patch(0xeb83, 0x00, 0x01); /* Persistent License
+                                Check */
 
   patch(0xd538, 0x38, 0x08);
   patch(0xd539, 0x00, 0x01);  /* Initial License Check */
-  patch(0x460b5, 0x53, 0xC3); /* Software Update Prompt */
+  patch(0x460b5, 0x53, 0xC3); /* Software Update Prompt
+                               */
 
   /* Windows x86 */
   patch_new("Sublime Text 3176 Windows x86", 5186160, 0xd4cff4dd);
-  patch(0xeb83, 0x00, 0x01); /* Persistent License Check */
+  patch(0xeb83, 0x00, 0x01); /* Persistent License
+                                Check */
   patch(0x267CA, 0x00, 0x01);
   patch(0x26C4F, 0x38, 0x08);
   patch(0x26C50, 0x00, 0x01);
@@ -441,10 +443,12 @@ main(int argc, char* argv[]) {
 
   /* Windows x64 */
   patch_new("Sublime Text 3176 Windows x64", 7352944, 0);
-  patch(0x3985A, 0x00, 0x01); /* Persistent License Check */
+  patch(0x3985A, 0x00, 0x01); /* Persistent License
+                                 Check */
   patch(0x3A073, 0x38, 0x08);
   patch(0x3A074, 0x00, 0x01); /* Initial License Check */
-  patch(0x792FB, 0x57, 0xC3); /* Software Update Prompt */
+  patch(0x792FB, 0x57, 0xC3); /* Software Update Prompt
+                               */
 
   /* Windows x64 */
   patch_new("Sublime Text 3193 Windows x64", 8330872, 0x879cf71d);
@@ -457,26 +461,30 @@ main(int argc, char* argv[]) {
   patch_new("Sublime Text 3200 Linux x64", 8766968, 0x94a745c1);
 
   patch(0x3BEB98, 0x84, 0x85); /* Initial License Check */
-  patch(0x477C6E, 0x75, 0x74); /* Persistent License Check */
+  patch(0x477C6E, 0x75, 0x74); /* Persistent License
+                                  Check */
 
   /* Windows x64 */
   patch_new("Sublime Text 3200 Windows x64", 8331384, 0x8261a833);
 
   patch(0x8545, 0x84, 0x85);   /* Initial License Check */
-  patch(0x192487, 0x75, 0x74); /* Persistent License Check */
+  patch(0x192487, 0x75, 0x74); /* Persistent License
+                                  Check */
   patch(0x8F6A8, 0x48, 0xC3);  /* Purchase License Nag */
 
   /* Linux x64 */
   patch_new("Sublime Text 3207 Linux x64", 8787520, 0xdafb1051);
   patch(0x3c03dc, 0x84, 0x85); /* Initial License Check */
-  patch(0x4797a0, 0x75, 0x74); /* Persistent License Check */
+  patch(0x4797a0, 0x75, 0x74); /* Persistent License
+                                  Check */
   patch(0x31d180, 0x75, 0x74); /* Purchase License Nag */
 
   /* Windows x64 */
   patch_new("Sublime Text 3207 Windows x64", 8348280, 0xd729b18a);
 
   patch(0x8545, 0x84, 0x85);   /* Initial License Check */
-  patch(0x193263, 0x75, 0x74); /* Persistent License Check */
+  patch(0x193263, 0x75, 0x74); /* Persistent License
+                                  Check */
   patch(0x90315, 0x48, 0xc3);  /* Purchase License Nag */
   patch(0xd6b6c, 0x84, 0x85);  /* Initial Update Check */
   patch(0x4d745a, 0x85, 0x84); /* Menu Update Check */

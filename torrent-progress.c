@@ -101,16 +101,19 @@ file_size(int fd) {
   sz |= ((int64)fszH) << 32;
 #else
   off_t pos, end;
-  /* if(_llseek(fd, 0, 0, &pos, SEEK_CUR) < 0)  return -1; */
+  /* if(_llseek(fd, 0, 0, &pos,
+   * SEEK_CUR) < 0)  return -1; */
   if((pos = lseek(fd, 0, SEEK_CUR)) == (off_t)-1)
     return -1;
-  /* if(_llseek(fd, 0, 0, &end, SEEK_END) < 0) return -1; */
+  /* if(_llseek(fd, 0, 0, &end,
+   * SEEK_END) < 0) return -1; */
   if((end = lseek(fd, 0, SEEK_END)) == (off_t)-1)
     return -1;
 
   sz = end;
   lseek(fd, pos, SEEK_SET);
-//_llseek(fd, pos >> 32, pos & 0xffffffff,  &pos, SEEK_SET);
+//_llseek(fd, pos >> 32, pos &
+// 0xffffffff,  &pos, SEEK_SET);
 #endif
   return sz;
 }
@@ -128,7 +131,9 @@ last_error_str() {
   if(!FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
                     NULL,
                     errCode,
-                    MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), /* default language */
+                    MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), /* default
+                                                                  language
+                                                                */
                     (LPTSTR)&err,
                     0,
                     NULL))
@@ -138,7 +143,8 @@ last_error_str() {
   stralloc_cats(&buffer, err);
   stralloc_nul(&buffer);
 
-  /* OutputDebugString(buffer);  or otherwise log it */
+  /* OutputDebugString(buffer);  or
+   * otherwise log it */
   LocalFree(err);
   return buffer.s;
 #else
@@ -197,9 +203,10 @@ next:
     fd = open_read(argv[ai]);
 
     /*
-        buffer_putm_internal(buffer_2, "open_read(", argv[ai], ") = ", NULL);
-        buffer_putlong(buffer_2, fd);
-        buffer_putnlflush(buffer_2);
+        buffer_putm_internal(buffer_2,
+       "open_read(", argv[ai], ") = ",
+       NULL); buffer_putlong(buffer_2,
+       fd); buffer_putnlflush(buffer_2);
     */
     fsize = file_size(fd);
 
@@ -219,19 +226,25 @@ next:
     }
 
     //(uint64)map_size * iterations);
-    /* mmap_private(argv[ai], &fsize); */
+    /* mmap_private(argv[ai], &fsize);
+     */
 
     /*struct stat st;
     infile.fd = open_read(argv[1]);
        buffer_puts(buffer_1, "fd #");
-       buffer_putulong(buffer_1, infile.fd);;
+       buffer_putulong(buffer_1,
+    infile.fd);;
        buffer_putnlflush(buffer_1);
             fstat(infile.fd, &st);
     fsize = st.st_size;*/
 
-    /* buffer_puts(buffer_1, "fsize #"); buffer_putulong(buffer_1, fsize);; buffer_puts(buffer_1, ",
+    /* buffer_puts(buffer_1, "fsize #");
+     * buffer_putulong(buffer_1,
+     * fsize);; buffer_puts(buffer_1, ",
      * blocks #"); */
-    /* buffer_putulong(buffer_1, blocks); buffer_putnlflush(buffer_1); */
+    /* buffer_putulong(buffer_1,
+     * blocks);
+     * buffer_putnlflush(buffer_1); */
 
     for(i = 0; i < iterations; i++) {
       size_t msz = (remain >= map_size ? map_size : (size_t)remain);
@@ -241,12 +254,7 @@ next:
       char* m = mmap_map(fd, msz, mofs);
 
       if(m == NULL) {
-        fprintf(stderr,
-                "mmap_map(%d, " FMT_SIZE_T ", " FMT_OFFS_T ") failed: %s\n",
-                fd,
-                (size_t)msz,
-                (size_t)mofs,
-                last_error_str());
+        fprintf(stderr, "mmap_map(%d, " FMT_SIZE_T ", " FMT_OFFS_T ") failed: %s\n", fd, (size_t)msz, (size_t)mofs, last_error_str());
         exit(2);
       }
 
@@ -255,20 +263,19 @@ next:
 
       all_blocks += blocks;
 
-      /* int remain = msz - (blocks * BLOCK_SIZE); */
+      /* int remain = msz - (blocks *
+       * BLOCK_SIZE); */
       for(bi = 0; bi < blocks; bi++) {
         /* get_block(m); */
 
         z += check_block_zero(&m[bi * BLOCK_SIZE], BLOCK_SIZE);
-        /* fprintf(stderr, "block #%lu\n", bi); fflush(stderr); */
+        /* fprintf(stderr, "block
+         * #%lu\n", bi); fflush(stderr);
+         */
       }
 
       if(verbose)
-        fprintf(stderr,
-                "mmap at " FMT_OFFS_T ", size " FMT_SIZE_T "%s\n",
-                (size_t)mofs,
-                (size_t)msz,
-                (z < blocks ? "" : " zero"));
+        fprintf(stderr, "mmap at " FMT_OFFS_T ", size " FMT_SIZE_T "%s\n", (size_t)mofs, (size_t)msz, (z < blocks ? "" : " zero"));
 
       zero_blocks += z;
 

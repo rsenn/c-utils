@@ -1,5 +1,6 @@
 #include "../xml.h"
 #include "../scan.h"
+#include "../byte.h"
 
 size_t
 xml_scan_attrvalue(const char* x, size_t len, size_t* toklen) {

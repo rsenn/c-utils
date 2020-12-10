@@ -93,7 +93,10 @@ ssltest_process_message(int ac, char** av, buffer* b) {
           return;
         }
         case 366: {
-          sendline_m(b, "PRIVMSG #bots :Hello, I'am an idiot.", 0);
+          sendline_m(b,
+                     "PRIVMSG #bots :Hello, "
+                     "I'am an idiot.",
+                     0);
           return;
         }
       }
@@ -220,7 +223,9 @@ ssltest_loop(fd_t s) {
           else
             buffer_put(buffer_2, buf, fmt_escapecharc(buf, out.x[i]));
         }
-        //   buffer_put_escaped(buffer_2, out.x, out.p, &fmt_escapecharquotedshell);
+        //   buffer_put_escaped(buffer_2,
+        //   out.x, out.p,
+        //   &fmt_escapecharnonprintable);
         buffer_putnlflush(buffer_2);
 #endif
         buffer_flush(&out);
@@ -235,7 +240,10 @@ ssltest_loop(fd_t s) {
     if((ret == 1 || tls_established(s)) && !login_sent) {
       buffer_puts(buffer_2, "Handshake complete.");
       buffer_putnlflush(buffer_2);
-      sendline_m(&out, "USER x x x :Roman Senn\r\nNICK roman\r\n", 0);
+      sendline_m(&out,
+                 "USER x x x :Roman "
+                 "Senn\r\nNICK roman\r\n",
+                 0);
       login_sent = true;
       //     io_onlywantwrite(s);
     }
@@ -251,7 +259,8 @@ usage(char* av0) {
                        "\n"
                        "Options:\n"
                        "\n"
-                       "  -h, --help              Show this help\n"
+                       "  -h, --help              Show "
+                       "this help\n"
                        "\n",
                        NULL);
   buffer_flush(buffer_1);

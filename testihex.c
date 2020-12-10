@@ -22,11 +22,17 @@ int
 main(int argc, char* argv[]) {
   ssize_t ret;
   static buffer input;
-  const char* filename =
-      argv[1]
-          ? argv[1]
-          : "/home/roman/Dokumente/Sources/xc8/pictest/bootloaders/18f2550-usb-hid-xc8/FIRMWARE/"
-            "PIC18F2550/18F2550-MPLAB.X/dist/default/production/18F2550-MPLAB.X.production.hex";
+  const char* filename = argv[1] ? argv[1]
+                                 : "/home/roman/Dokumente/"
+                                   "Sources/xc8/pictest/"
+                                   "bootloaders/"
+                                   "18f2550-usb-hid-xc8/"
+                                   "FIRMWARE/"
+                                   "PIC18F2550/"
+                                   "18F2550-MPLAB.X/dist/"
+                                   "default/production/"
+                                   "18F2550-MPLAB.X."
+                                   "production.hex";
   static stralloc sa;
   size_t sz = 0;
   const char* x = mmap_read(filename, &sz);

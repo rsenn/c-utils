@@ -20,10 +20,15 @@
 
 /*
 static char buffer_0_in[BUFFER_INSIZE];
-static buffer buffer_0 = BUFFER_INIT((void*)read, 0, buffer_0_in, BUFFER_INSIZE);
+static buffer buffer_0 =
+BUFFER_INIT((void*)read, 0, buffer_0_in,
+BUFFER_INSIZE);
 
-static char buffer_1_out[BUFFER_OUTSIZE];
-static buffer buffer_1 = BUFFER_INIT((void*)write, 1, buffer_1_out, BUFFER_OUTSIZE);
+static char
+buffer_1_out[BUFFER_OUTSIZE]; static
+buffer buffer_1 =
+BUFFER_INIT((void*)write, 1,
+buffer_1_out, BUFFER_OUTSIZE);
 */
 
 int
@@ -59,9 +64,10 @@ main(int argc, char* argv[]) {
   int argi = 1;
 
   while(argi < argc) {
-    /*    if(!str_diff(argv[argi], "-l") || !str_diff(argv[argi], "--list")) {
-            opt_list = 1;
-        } else*/
+    /*    if(!str_diff(argv[argi], "-l")
+       || !str_diff(argv[argi],
+       "--list")) { opt_list = 1; }
+       else*/
     { break; }
     argi++;
   }

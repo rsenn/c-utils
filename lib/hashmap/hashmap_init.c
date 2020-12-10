@@ -4,10 +4,7 @@
 #include "../hashmap.h"
 
 void
-hashmap_init(hashmap* map,
-             size_t capacity,
-             hashmap_comparator comparator,
-             hashmap_hash_func hash_func) {
+hashmap_init(hashmap* map, size_t capacity, hashmap_comparator comparator, hashmap_hash_func hash_func) {
   map->capacity = capacity;
   map->size = 0;
   map->table = (linked_list**)alloc_zero(sizeof(linked_list*) * map->capacity);

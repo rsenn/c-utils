@@ -23,9 +23,12 @@ print_attr_names(xmlnode* elm) {
       stralloc_cats(&url, content);
       sep = '&';
     }
-    /*   buffer_puts(buffer_2,  "\n  attribute name: ");
-       buffer_puts(buffer_2, attr_p->name);
-       buffer_puts(buffer_2, param ? "=" : "\n  attribute value: ");
+    /*   buffer_puts(buffer_2,  "\n
+       attribute name: ");
+       buffer_puts(buffer_2,
+       attr_p->name);
+       buffer_puts(buffer_2, param ? "="
+       : "\n  attribute value: ");
        buffer_puts(buffer_2, content);*/
     if(!str_diff((const char*)attr_p->key, "template")) {
       stralloc_copys(&templ, content);
@@ -36,10 +39,12 @@ print_attr_names(xmlnode* elm) {
 
 /**
  * print_element_names:
- * @a_node: the initial xml node to consider.
+ * @a_node: the initial xml node to
+ * consider.
  *
- * Prints the names of the all the xml elements
- * that are siblings or children of a given xml node.
+ * Prints the names of the all the xml
+ * elements that are siblings or
+ * children of a given xml node.
  */
 static void
 print_element_names(xmlnode* a_node) {
@@ -51,13 +56,17 @@ print_element_names(xmlnode* a_node) {
   for(cur_node = a_node; cur_node; cur_node = cur_node->next) {
     if(cur_node->type == XML_ELEMENT) {
       xmlnode* elm = (xmlnode*)cur_node;
-      /*    buffer_puts(buffer_2, "node type: Element, name: ");
+      /*    buffer_puts(buffer_2, "node
+         type: Element, name: ");
            if(nsStr) {
-             buffer_puts(buffer_2, nsStr);
-             buffer_put(buffer_2, ":", 1);
+             buffer_puts(buffer_2,
+         nsStr); buffer_put(buffer_2,
+         ":", 1);
            }
-           buffer_puts(buffer_2, elm->name);
-           buffer_puts(buffer_2, ", value: ");
+           buffer_puts(buffer_2,
+         elm->name);
+           buffer_puts(buffer_2, ",
+         value: ");
        */
       if(!str_diff((const char*)elm->name, "Url")) {
         xmlnode* child_node = NULL;
@@ -66,7 +75,9 @@ print_element_names(xmlnode* a_node) {
           { print_attr_names((xmlnode*)child_node); }
         }
       }
-      /*        if(!str_diff(elm->name, "Url") || !str_diff(elm->name, "Param")) {
+      /*        if(!str_diff(elm->name,
+         "Url") || !str_diff(elm->name,
+         "Param")) {
                 print_attr_names(elm);
               }*/
     }
@@ -83,8 +94,10 @@ print_element_names(xmlnode* a_node) {
       buffer_putnlflush(buffer_1);*/
     for(i = 0; i < url.len; ++i) {
       if(url.s[i] == '{') {
-        /*  buffer_put(buffer_2, &url.s[i], 13);
-          buffer_putnlflush(buffer_2); */
+        /*  buffer_put(buffer_2,
+          &url.s[i], 13);
+          buffer_putnlflush(buffer_2);
+        */
         stralloc_cats(&newurl, "%s");
         while(++i < url.len) {
           if(url.s[i] == '}') {
@@ -132,9 +145,10 @@ parse_xml(const char* filename) {
 }
 
 /**
- * Simple example to parse a file called "file.xml",
- * walk down the DOM, and print the name of the
- * xml elements nodes.
+ * Simple example to parse a file called
+ * "file.xml", walk down the DOM, and
+ * print the name of the xml elements
+ * nodes.
  */
 int
 main(int argc, char** argv) {

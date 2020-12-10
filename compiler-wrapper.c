@@ -56,8 +56,7 @@ static int i, n;
 
 static compiler_type type;
 static operation_mode mode = COMPILE_ASSEMBLE_LINK;
-static int debug = 0, warn = 0, fltbits = 0, dblbits = 0, ident_len = 127, optlevel = 0,
-           optsize = 0;
+static int debug = 0, warn = 0, fltbits = 0, dblbits = 0, ident_len = 127, optlevel = 0, optsize = 0;
 static strlist defines, includedirs, opts, longopts, params;
 static stralloc output_dir, output_file;
 static stralloc map_file, chip, optimization, runtime, debugger;
@@ -128,7 +127,8 @@ void print_strlist(buffer*, const strlist* sl, const char* sep, const char* quot
 int
 process_option(const char* optstr, const char* nextopt, int* i) {
   while(*optstr == '-') ++optstr;
-  // buffer_puts(debug_buf, "optstr: ");   buffer_puts(debug_buf, optstr);
+  // buffer_puts(debug_buf, "optstr: ");
+  // buffer_puts(debug_buf, optstr);
   // buffer_putnlflush(debug_buf);
 
   if(!str_diff(optstr, "outdir")) {
@@ -146,7 +146,8 @@ process_option(const char* optstr, const char* nextopt, int* i) {
   } else if(!str_diffn(optstr, "chip=", 5)) {
     stralloc_copys(&chip, &optstr[5]);
   } else if(!str_diffn(optstr, "mode=", 5)) {
-    // stralloc_copys(&license_mode, &optstr[5]);
+    // stralloc_copys(&license_mode,
+    // &optstr[5]);
   } else if(!str_diffn(optstr, "warn=", 5)) {
     warn = atoi(&optstr[5]);
   } else if(!str_diffn(optstr, "float=", 6)) {
@@ -314,15 +315,22 @@ read_arguments() {
   } else if(!str_case_diffn(argv0, "picc18", 6)) {
     type = PICC18;
     if(compiler.len == 0)
-      get_compiler_dir("C:/Program Files (x86)/HI-TECH Software/PICC18", &compiler);
+      get_compiler_dir("C:/Program Files "
+                       "(x86)/HI-TECH "
+                       "Software/PICC18",
+                       &compiler);
   } else if(!str_case_diffn(argv0, "picc", 4)) {
     type = PICC;
     if(compiler.len == 0)
-      get_compiler_dir("C:/Program Files (x86)/HI-TECH Software/PICC", &compiler);
+      get_compiler_dir("C:/Program Files "
+                       "(x86)/HI-TECH Software/PICC",
+                       &compiler);
   } else if(strstr(argv0, "xc8") != NULL) {
     type = XC8;
     if(compiler.len == 0)
-      get_compiler_dir("C:/Program Files (x86)/Microchip/xc8", &compiler);
+      get_compiler_dir("C:/Program Files "
+                       "(x86)/Microchip/xc8",
+                       &compiler);
   }
 
   stralloc_0(&compiler);
@@ -334,8 +342,7 @@ read_arguments() {
     stralloc_cats(&compiler, compiler_strs[type]);
 
   dump_stralloc("compiler", &compiler);
-  if(output_file.len == 0 &&
-     (mode == COMPILE_AND_ASSEMBLE || mode == COMPILE || mode == PREPROCESS)) {
+  if(output_file.len == 0 && (mode == COMPILE_AND_ASSEMBLE || mode == COMPILE || mode == PREPROCESS)) {
     size_t n;
     stralloc_copys(&output_file, str_basename(strlist_at(&params, 0)));
 
@@ -365,12 +372,12 @@ read_arguments() {
       optlevel = 9;
   }
 
-#define DUMP_LIST(buf, n, sep, q)                                                                  \
-  buffer_puts(buf, #n);                                                                            \
+#define DUMP_LIST(buf, n, sep, q)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  \
+  buffer_puts(buf, #n);                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            \
   print_strlist(buf, &n, sep, q);
-#define DUMP_VALUE(n, fn, v)                                                                       \
-  buffer_puts(debug_buf, n ": ");                                                                  \
-  fn(debug_buf, v);                                                                                \
+#define DUMP_VALUE(n, fn, v)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       \
+  buffer_puts(debug_buf, n ": ");                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  \
+  fn(debug_buf, v);                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                \
   buffer_putnlflush(debug_buf);
 
   DUMP_LIST(debug_buf, defines, "\n\t", "");
@@ -449,12 +456,7 @@ execute_cmd() {
 
       if(optlevel) {
         nbuf[fmt_ulong(nbuf, optlevel)] = '\0';
-        strlist_pushm_internal(&cmd,
-                               "--opt=default,+asm,",
-                               debug ? "+debug," : "",
-                               optsize ? "-speed,+space," : "-space,+speed,",
-                               nbuf,
-                               NULL);
+        strlist_pushm_internal(&cmd, "--opt=default,+asm,", debug ? "+debug," : "", optsize ? "-speed,+space," : "-space,+speed,", nbuf, NULL);
       }
 
       if(warn) {
@@ -564,7 +566,8 @@ execute_cmd() {
 
   stralloc_0(&compiler);
   strlist_unshift(&cmd,
-                  compiler.s); //"C:\\Program Files (x86)\\Microchip\\xc8\\v1.34\\bin\\xc8.exe");
+                  compiler.s); //"C:\\Program Files
+                               //(x86)\\Microchip\\xc8\\v1.34\\bin\\xc8.exe");
 
   strlist_cat(&cmd, &params);
   DUMP_LIST(err_buf, cmd, " ", "\"")

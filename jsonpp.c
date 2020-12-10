@@ -52,7 +52,8 @@ compact_printer(jsonfmt* p, jsonval* v, int depth, int index, char q) {
 
   if(depth < 2) {
     buffer_putnspace(buffer_2, depth*2);
-    buffer_puts(buffer_2, "json_print_separator(");
+    buffer_puts(buffer_2,
+  "json_print_separator(");
     buffer_putulong(buffer_2, depth);
     buffer_puts(buffer_2, ", ");
     buffer_putlong(buffer_2, index);
@@ -60,7 +61,8 @@ compact_printer(jsonfmt* p, jsonval* v, int depth, int index, char q) {
     buffer_putnlflush(buffer_2);
   }*/
   p->indent = one_line || depth > depth_arg ? "" : "  ";
-  // depth <= 1 ? "  " : depth > 3 ? "  " : " ";
+  // depth <= 1 ? "  " : depth > 3 ? "
+  // " : " ";
 
   p->newline = one_line ? "" : "\n";
   p->spacing = spacing ? spacing : " ";
@@ -76,7 +78,9 @@ compact_printer(jsonfmt* p, jsonval* v, int depth, int index, char q) {
 static void
 default_printer(jsonfmt* p, jsonval* v, int depth, int index, char q) {
   int pretty = v && get_depth(v) > 1;
-  p->indent = depth > depth_arg ? "" : "  "; // depth <= 1 ? "  " : depth > 3 ? "  " : " ";
+  p->indent = depth > depth_arg ? "" : "  "; // depth <= 1 ? "  " :
+                                             // depth > 3 ? "  " :
+                                             // " ";
   p->spacing = spacing ? spacing : " ";
   p->newline = one_line ? "" : depth > depth_arg ? p->spacing : "\n";
   p->separat = separator ? separator : depth > depth_arg ? ", " : ",\n";
@@ -112,15 +116,24 @@ usage(char* av0) {
                        "\n"
                        "Options:\n"
                        "\n"
-                       "  -h, --help              Show this help\n"
-                       "  -s, --single-quote      Use ' as quote\n"
-                       "  -d, --double-quote      Use \" as quote\n"
-                       "  -o, --one-line          One-line\n"
-                       "  -c, --compact           Compact\n"
-                       "  -l, --indent NUM        Indent level\n"
-                       "  -D, --depth NUM         Depth level\n"
-                       "  -S, --separator CHARS   Separator\n"
-                       "  -W, --spacing CHARS     Spacing\n"
+                       "  -h, --help              Show "
+                       "this help\n"
+                       "  -s, --single-quote      Use ' "
+                       "as quote\n"
+                       "  -d, --double-quote      Use "
+                       "\" as quote\n"
+                       "  -o, --one-line          "
+                       "One-line\n"
+                       "  -c, --compact           "
+                       "Compact\n"
+                       "  -l, --indent NUM        "
+                       "Indent level\n"
+                       "  -D, --depth NUM         Depth "
+                       "level\n"
+                       "  -S, --separator CHARS   "
+                       "Separator\n"
+                       "  -W, --spacing CHARS     "
+                       "Spacing\n"
                        "\n",
                        0);
   buffer_flush(buffer_1);
@@ -151,18 +164,7 @@ main(int argc, char* argv[]) {
   int out_fd = 1;
   char* out_file = 0;
 
-  struct longopt opts[] = {{"help", 0, NULL, 'h'},
-                           {"single-quote", 0, NULL, 's'},
-                           {"double-quote", 0, NULL, 'd'},
-                           {"depth", 0, NULL, 'D'},
-                           {"separator", 0, NULL, 'S'},
-                           {"spacing", 0, NULL, 'W'},
-                           {"one-line", 0, NULL, 'o'},
-                           {"compact", 0, NULL, 'c'},
-                           {"compliant", 0, NULL, 'C'},
-                           {"inplace", 0, NULL, 'i'},
-                           {"indent", 0, NULL, 'l'},
-                           {0, 0, 0, 0}};
+  struct longopt opts[] = {{"help", 0, NULL, 'h'}, {"single-quote", 0, NULL, 's'}, {"double-quote", 0, NULL, 'd'}, {"depth", 0, NULL, 'D'}, {"separator", 0, NULL, 'S'}, {"spacing", 0, NULL, 'W'}, {"one-line", 0, NULL, 'o'}, {"compact", 0, NULL, 'c'}, {"compliant", 0, NULL, 'C'}, {"inplace", 0, NULL, 'i'}, {"indent", 0, NULL, 'l'}, {0, 0, 0, 0}};
 
   errmsg_iam(argv[0]);
 

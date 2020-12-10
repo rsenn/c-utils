@@ -32,8 +32,7 @@ void after_element(const char*);
 void on_attribute_decl(void*, const char*, const char*, int, int, const char*);
 void on_characters(void*, const char*, int);
 void on_end_element(void*, const char*);
-void on_start_element_ns(
-    void*, const char*, const char*, const char*, int, const char**, int, int, const char**);
+void on_start_element_ns(void*, const char*, const char*, const char*, int, const char**, int, int, const char**);
 void on_start_element(void*, const char*, HMAP_DB**);
 int xml_callback(xmlreader* r, xmlnodeid id, stralloc* name, stralloc* value, HMAP_DB** attrs);
 int xml_read_node(xmlreader* r, xmlnodeid id, stralloc* name, stralloc* value, HMAP_DB** attrs);
@@ -75,21 +74,11 @@ typedef struct instance {
   double rot;
 } instance_t;
 
-/* ----------------------------------------------------------------------- */
+/* -----------------------------------------------------------------------
+ */
 void
 dump_part(part_t const* p) {
-  buffer_putm_internal(buffer_2,
-                       "dump_part{name=",
-                       p->name,
-                       ",library=",
-                       p->library,
-                       ",deviceset",
-                       p->deviceset,
-                       ",device=",
-                       p->device,
-                       ",value=",
-                       p->value,
-                       NULL);
+  buffer_putm_internal(buffer_2, "dump_part{name=", p->name, ",library=", p->library, ",deviceset", p->deviceset, ",device=", p->device, ",value=", p->value, NULL);
 
   buffer_puts(buffer_2, ",x=");
   buffer_putdouble(buffer_2, p->x, 1);
@@ -100,7 +89,8 @@ dump_part(part_t const* p) {
   buffer_putnlflush(buffer_2);
 }
 
-/* ----------------------------------------------------------------------- */
+/* -----------------------------------------------------------------------
+ */
 void
 dump_instance(instance_t const* i) {
   buffer_putm_internal(buffer_2, "dump_instance \"", i->part, ":", i->gate, "\"", 0);
@@ -113,14 +103,16 @@ dump_instance(instance_t const* i) {
   buffer_putnlflush(buffer_2);
 }
 
-/* ----------------------------------------------------------------------- */
+/* -----------------------------------------------------------------------
+ */
 double
 round_to_mil(double val, double mil) {
   double factor = (1000.0f / mil);
   return round(val * factor) / factor;
 }
 
-/* ----------------------------------------------------------------------- */
+/* -----------------------------------------------------------------------
+ */
 void
 output_move(const char* name, double x, double y) {
   stralloc cmd;
@@ -136,7 +128,8 @@ output_move(const char* name, double x, double y) {
   stralloc_free(&cmd);
 }
 
-/* ----------------------------------------------------------------------- */
+/* -----------------------------------------------------------------------
+ */
 void
 output_rotate(const char* name, long angle) {
   stralloc cmd;
@@ -150,10 +143,12 @@ output_rotate(const char* name, long angle) {
   stralloc_free(&cmd);
 }
 
-/* ----------------------------------------------------------------------- */
+/* -----------------------------------------------------------------------
+ */
 void
 each_part(part_t* p) {
-  if(1) { // p->device[0] != '\0' || p->value[0] != '\0') {
+  if(1) { // p->device[0] != '\0' ||
+          // p->value[0] != '\0') {
 
     output_move(p->name, p->x - min_x, p->y - min_y);
 
@@ -171,7 +166,8 @@ each_part(part_t* p) {
 #endif
 }
 
-/* ----------------------------------------------------------------------- */
+/* -----------------------------------------------------------------------
+ */
 part_t*
 get_part(const char* part) {
   TUPLE* ptr_tuple = NULL;
@@ -182,7 +178,8 @@ get_part(const char* part) {
   return p;
 }
 
-/* ----------------------------------------------------------------------- */
+/* -----------------------------------------------------------------------
+ */
 instance_t*
 create_instance(const char* part, const char* gate, double x, double y, double rot) {
   int ret;
@@ -208,18 +205,15 @@ create_instance(const char* part, const char* gate, double x, double y, double r
   return i;
 }
 
-/* ----------------------------------------------------------------------- */
+/* -----------------------------------------------------------------------
+ */
 part_t*
-create_part(const char* name,
-            const char* library,
-            const char* deviceset,
-            const char* device,
-            const char* value) {
+create_part(const char* name, const char* library, const char* deviceset, const char* device, const char* value) {
   part_t* p;
   if(value == NULL)
     value = "";
-  /*if(deviceset == NULL) deviceset = "";
-  if(device == NULL) device = "";*/
+  /*if(deviceset == NULL) deviceset =
+  ""; if(device == NULL) device = "";*/
   p = malloc(sizeof(*p));
   if(p == NULL)
     return NULL;
@@ -238,7 +232,8 @@ create_part(const char* name,
   return p;
 }
 
-/* ----------------------------------------------------------------------- */
+/* -----------------------------------------------------------------------
+ */
 void
 update_part(const char* name, double x, double y, double rot) {
   part_t* p = get_part(name);
@@ -271,7 +266,8 @@ update_part(const char* name, double x, double y, double rot) {
 #endif
 }
 
-/* ----------------------------------------------------------------------- */
+/* -----------------------------------------------------------------------
+ */
 void
 hmap_each(HMAP_DB* hmap, void (*foreach_fn)(void*)) {
   TUPLE* t;
@@ -285,7 +281,8 @@ hmap_each(HMAP_DB* hmap, void (*foreach_fn)(void*)) {
   }
 }
 
-/* ----------------------------------------------------------------------- */
+/* -----------------------------------------------------------------------
+ */
 int
 get_attribute_double(double* d, xmlnode* e, const char* name) {
   char* value;
@@ -294,7 +291,8 @@ get_attribute_double(double* d, xmlnode* e, const char* name) {
   return value[scan_double(value, d)] != '\0';
 }
 
-/* ----------------------------------------------------------------------- */
+/* -----------------------------------------------------------------------
+ */
 void
 cat_attributes(stralloc* sa, xmlnode* e) {
   TUPLE* a;
@@ -311,7 +309,8 @@ cat_attributes(stralloc* sa, xmlnode* e) {
   }
 }
 
-/* ----------------------------------------------------------------------- */
+/* -----------------------------------------------------------------------
+ */
 void
 process_instance(xmlnode* e) {
   double x = 0.0, y = 0.0, rotate = 0.0;
@@ -333,16 +332,11 @@ process_instance(xmlnode* e) {
   y /= unit_factor;*/
   /*x *= scale_factor;
   y *= scale_factor;*/
-  {
-    instance_t* newinst = create_instance(part.s,
-                                          gate.s,
-                                          round_to_mil(x * scale_factor / unit_factor, grid_mils),
-                                          round_to_mil(y * scale_factor / unit_factor, grid_mils),
-                                          rotate);
-  }
+  { instance_t* newinst = create_instance(part.s, gate.s, round_to_mil(x * scale_factor / unit_factor, grid_mils), round_to_mil(y * scale_factor / unit_factor, grid_mils), rotate); }
 }
 
-/* ----------------------------------------------------------------------- */
+/* -----------------------------------------------------------------------
+ */
 void
 process_part(xmlnode* e) {
   stralloc name, library, deviceset, device, value;
@@ -359,7 +353,8 @@ process_part(xmlnode* e) {
   { part_t* newpart = create_part(name.s, library.s, deviceset.s, device.s, value.s); }
 }
 
-/* ----------------------------------------------------------------------- */
+/* -----------------------------------------------------------------------
+ */
 void
 print_element_names(xmlnode* a_node) {
   xmlnode* n = NULL;
@@ -386,11 +381,13 @@ print_element_names(xmlnode* a_node) {
   }
 }
 
-/* ----------------------------------------------------------------------- */
+/* -----------------------------------------------------------------------
+ */
 int read_xmlfile(const char* filename);
 int parse_xmlfile(const char* filename, xmlnode** p_doc);
 
-/* ----------------------------------------------------------------------- */
+/* -----------------------------------------------------------------------
+ */
 const char*
 mystr_basename(const char* filename) {
   char* s1 = strrchr(filename, '\\');
@@ -402,7 +399,8 @@ mystr_basename(const char* filename) {
   return 0;
 }
 
-/* ----------------------------------------------------------------------- */
+/* -----------------------------------------------------------------------
+ */
 int
 main(int argc, char* argv[]) {
   xmlnode* root_element = NULL;

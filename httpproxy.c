@@ -21,7 +21,10 @@
 
 #if WINDOWS_NATIVE
 #include <io.h>
-#define HOSTS_FILE "C:\\Windows\\System32\\drivers\\etc\\hosts"
+#define HOSTS_FILE                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 \
+  "C:"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             \
+  "\\Windows\\System32\\drivers\\etc"                                                                                                                                                                                                                                                                                                                                                                                                                                                                              \
+  "\\hosts"
 #else
 #include <unistd.h>
 #ifndef closesocket
@@ -38,7 +41,9 @@ usage(char* prog) {
   buffer_putm_internal(buffer_2,
                        "Usage: ",
                        str_basename(prog),
-                       " [-q] [-t timeout_sec] [-u timeout_usec] <host> <port> <target>",
+                       " [-q] [-t timeout_sec] [-u "
+                       "timeout_usec] <host> <port> "
+                       "<target>",
                        NULL);
   buffer_putnlflush(buffer_2);
 }
@@ -157,7 +162,10 @@ main(int argc, char* argv[]) {
 
   if(!lookup_hosts(&host, &ips)) {
     if(dns_ip4(&ips, &host) == -1) {
-      errmsg_warnsys("unable to find IP address for ", argv[optind], 0);
+      errmsg_warnsys("unable to find "
+                     "IP address for ",
+                     argv[optind],
+                     0);
       return 111;
     }
   }
@@ -187,11 +195,11 @@ main(int argc, char* argv[]) {
   if((ret = socket_listen(sock, 16)) != 0) {
     if(errno != EINPROGRESS) {
 #if 1 // def HAVE_SOLARIS
-      /* solaris immediately returns ECONNREFUSED on local ports */
+      /* solaris immediately returns
+       * ECONNREFUSED on local ports */
       if(errno) {
         if(verbose) {
-          buffer_putm_internal(
-              buffer_1, argv[optind], " port ", argv[optind + 1], " closed.", NULL);
+          buffer_putm_internal(buffer_1, argv[optind], " port ", argv[optind + 1], " closed.", NULL);
           buffer_putnlflush(buffer_1);
         }
         closesocket(sock);
@@ -229,8 +237,7 @@ main(int argc, char* argv[]) {
       /* timeout */
       closesocket(sock);
       if(verbose) {
-        buffer_putm_internal(
-            buffer_1, argv[optind], " port ", argv[optind + 1], " user timeout.", NULL);
+        buffer_putm_internal(buffer_1, argv[optind], " port ", argv[optind + 1], " user timeout.", NULL);
         buffer_putnlflush(buffer_1);
       }
       return 2;
@@ -248,8 +255,7 @@ main(int argc, char* argv[]) {
       }
       if(error != 0) {
         if(verbose) {
-          buffer_putm_internal(
-              buffer_1, argv[optind], " port ", argv[optind + 1], " closed.", NULL);
+          buffer_putm_internal(buffer_1, argv[optind], " port ", argv[optind + 1], " closed.", NULL);
           buffer_putnlflush(buffer_1);
         }
         closesocket(sock);
@@ -257,7 +263,9 @@ main(int argc, char* argv[]) {
       }
     } else {
       if(verbose)
-        buffer_putsflush(buffer_2, "error: select: sock not set\n");
+        buffer_putsflush(buffer_2,
+                         "error: select: sock not "
+                         "set\n");
       return 3;
     }
   }

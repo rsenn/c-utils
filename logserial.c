@@ -133,8 +133,9 @@ get_ports(strarray* ports) {
     size_t i = str_rchr(port, '/');
     if(port[i]) {
       i++;
-      if(/*str_start(&port[i], "tnt") ||*/ str_start(&port[i], "ttyACM") ||
-         str_start(&port[i], "ttyUSB") /*||   port[i + 3] == 'S'*/) {
+      if(/*str_start(&port[i], "tnt")
+            ||*/
+         str_start(&port[i], "ttyACM") || str_start(&port[i], "ttyUSB") /*||   port[i + 3] == 'S'*/) {
         if(access(port, R_OK)) {
           if(errno != ENOENT && errno != ENODEV && errno != EACCES)
             errmsg_warnsys(port, 0);
@@ -142,9 +143,12 @@ get_ports(strarray* ports) {
         }
         if(!strarray_contains(ports, port)) {
           strarray_push(ports, port);
-          //          strarray_splice(ports, 0, 0, 1, &port);
-          /*       buffer_puts(buffer_2, "detected new port: ");
-                 buffer_puts(buffer_2, port);
+          //          strarray_splice(ports,
+          //          0, 0, 1, &port);
+          /*       buffer_puts(buffer_2,
+             "detected new port: ");
+                 buffer_puts(buffer_2,
+             port);
                  buffer_putnlflush(buffer_2);*/
           r++;
         }
@@ -158,7 +162,8 @@ get_ports(strarray* ports) {
 /**
  * @brief      { function_description }
  *
- * @return     { description_of_the_return_value }
+ * @return     {
+ * description_of_the_return_value }
  */
 int64
 serial_ports(strarray* ports) {
@@ -176,8 +181,7 @@ serial_ports(strarray* ports) {
     struct stat st;
     struct taia t;
 
-    if(!str_start(*port, "/dev/ttyA") && !str_start(*port, "/dev/ttyUSB") &&
-       !str_start(*port, "/dev/tnt"))
+    if(!str_start(*port, "/dev/ttyA") && !str_start(*port, "/dev/ttyUSB") && !str_start(*port, "/dev/tnt"))
       continue;
 
     byte_zero(&st, sizeof(st));
@@ -192,7 +196,8 @@ serial_ports(strarray* ports) {
       taia_now(&t);
     }
 
-    // if(strarray_index_of(&ports, *port) == -1) {
+    // if(strarray_index_of(&ports,
+    // *port) == -1) {
 
     if(!find_port(*port)) {
       port_t p;
@@ -254,7 +259,8 @@ serial_ports(strarray* ports) {
  * @param[in]  len        The length
  * @param      ptr        The pointer
  *
- * @return     { description_of_the_return_value }
+ * @return     {
+ * description_of_the_return_value }
  */
 ssize_t
 serial_read(fd_t serial_fd, char* buf, size_t len, void* ptr) {
@@ -268,7 +274,8 @@ void
 term_init(fd_t fd, struct termios* state) {
   struct termios old, raw, actual;
 
-  /* Discard all unread input and untransmitted output. */
+  /* Discard all unread input and
+   * untransmitted output. */
   tcflush(fd, TCIOFLUSH);
 
   /* Get current terminal settings. */
@@ -277,9 +284,11 @@ term_init(fd_t fd, struct termios* state) {
 
   /* Store state, if requested. */
   if(state)
-    *state = old; /* Structures can be assigned! */
+    *state = old; /* Structures can be
+                     assigned! */
 
-  /* New terminal settings are based on current ones. */
+  /* New terminal settings are based on
+   * current ones. */
   raw = old;
 
   if(rawmode) {
@@ -305,18 +314,20 @@ term_init(fd_t fd, struct termios* state) {
   if(tcsetattr(fd, TCSAFLUSH, &raw))
     return;
 
-  /* tcsetattr() is happy even if it did not set *all* settings.
+  /* tcsetattr() is happy even if it did
+   * not set *all* settings.
    * We need to verify. */
   if(tcgetattr(fd, &actual)) {
     const int saved_errno = errno;
-    /* Try restoring the old settings! */
+    /* Try restoring the old settings!
+     */
     tcsetattr(fd, TCSANOW, &old);
     return;
   }
 
-  if(actual.c_iflag != raw.c_iflag || actual.c_oflag != raw.c_oflag ||
-     actual.c_cflag != raw.c_cflag || actual.c_lflag != raw.c_lflag) {
-    /* Try restoring the old settings! */
+  if(actual.c_iflag != raw.c_iflag || actual.c_oflag != raw.c_oflag || actual.c_cflag != raw.c_cflag || actual.c_lflag != raw.c_lflag) {
+    /* Try restoring the old settings!
+     */
     tcsetattr(fd, TCSANOW, &old);
   }
 }
@@ -324,7 +335,8 @@ term_init(fd_t fd, struct termios* state) {
 void
 term_restore(fd_t fd, const struct termios* state) {
   int result;
-  /* Discard all unread input and untransmitted output. */
+  /* Discard all unread input and
+   * untransmitted output. */
   do {
     result = tcflush(fd, TCIOFLUSH);
   } while(result == -1 && errno == EINTR);
@@ -338,14 +350,17 @@ term_restore(fd_t fd, const struct termios* state) {
 /**
  * @brief      { function_description }
  *
- * @param      ch    { parameter_description }
+ * @param      ch    {
+ * parameter_description }
  *
- * @return     { description_of_the_return_value }
+ * @return     {
+ * description_of_the_return_value }
  */
 /*ssize_t
 term_process(char* ch) {
 
-  ssize_t ret = charbuf_getc(&term_buf, ch);
+  ssize_t ret = charbuf_getc(&term_buf,
+ch);
 
   return ret;
 }
@@ -355,7 +370,8 @@ term_process(char* ch) {
  *
  * @param[in]  serial_fd  The serial fd
  *
- * @return     { description_of_the_return_value }
+ * @return     {
+ * description_of_the_return_value }
  */
 ssize_t
 process_serial(fd_t serial_fd) {
@@ -392,7 +408,8 @@ process_serial(fd_t serial_fd) {
  *
  * @param[in]  serial_fd  The serial fd
  *
- * @return     { description_of_the_return_value }
+ * @return     {
+ * description_of_the_return_value }
  */
 ssize_t
 process_loop(fd_t serial_fd, int64 timeout) {
@@ -423,11 +440,7 @@ process_loop(fd_t serial_fd, int64 timeout) {
     char* x;
 
     if((x = mmap_read(send_file, &n))) {
-      buffer_init_free(&send_buf,
-                       (buffer_op_sys*)(void*)&write,
-                       serial_fd,
-                       alloc_zero(max(n, 1024)),
-                       max(n, 1024));
+      buffer_init_free(&send_buf, (buffer_op_sys*)(void*)&write, serial_fd, alloc_zero(max(n, 1024)), max(n, 1024));
       buffer_put(&send_buf, x, n);
       mmap_unmap(x, n);
     }
@@ -516,7 +529,9 @@ process_loop(fd_t serial_fd, int64 timeout) {
           if(debugmode) {
             buffer_puts(buffer_2, "Queued ");
             buffer_putulong(buffer_2, bytes);
-            buffer_puts(buffer_2, " bytes to serial port");
+            buffer_puts(buffer_2,
+                        " bytes to "
+                        "serial port");
             buffer_putnlflush(buffer_2);
           }
         }
@@ -536,16 +551,28 @@ end:
 
 void
 usage(char* progname) {
-  buffer_putm_internal(
-      buffer_1, "Usage: ", path_basename(progname), " [OPTIONS] [PORT] [BAUDRATE]\n", 0);
+  buffer_putm_internal(buffer_1, "Usage: ", path_basename(progname), " [OPTIONS] [PORT] [BAUDRATE]\n", 0);
   buffer_puts(buffer_1, "Options\n");
-  buffer_puts(buffer_1, "  --help, -h                        show this help\n");
-  buffer_puts(buffer_1, "  --version                         print program version\n");
+  buffer_puts(buffer_1,
+              "  --help, -h                    "
+              "    show this help\n");
+  buffer_puts(buffer_1,
+              "  --version                     "
+              "    print program version\n");
 
-  buffer_puts(buffer_1, "  --verbose                         increase verbosity\n");
-  buffer_puts(buffer_1, "  --baud, -b RATE                   baud rate\n");
-  buffer_puts(buffer_1, "  --send, -i FILE                   send file\n");
-  buffer_puts(buffer_1, "  --debug         +                  show verbose debug information\n");
+  buffer_puts(buffer_1,
+              "  --verbose                     "
+              "    increase verbosity\n");
+  buffer_puts(buffer_1,
+              "  --baud, -b RATE               "
+              "    baud rate\n");
+  buffer_puts(buffer_1,
+              "  --send, -i FILE               "
+              "    send file\n");
+  buffer_puts(buffer_1,
+              "  --debug         +             "
+              "     show verbose debug "
+              "information\n");
   buffer_putnlflush(buffer_1);
 }
 
@@ -613,7 +640,9 @@ main(int argc, char* argv[]) {
       case 'x': debugmode++; break;
 
       default:
-        buffer_puts(buffer_2, "WARNING: Invalid argument -");
+        buffer_puts(buffer_2,
+                    "WARNING: Invalid "
+                    "argument -");
         buffer_putc(buffer_2, isprint(c) ? c : '?');
         buffer_putm_internal(buffer_2, " '", optarg ? optarg : argv[optind], "'", NULL);
         buffer_putnlflush(buffer_2);
@@ -655,8 +684,10 @@ getopt_end:
 
       newports = get_ports(&portArr);
       serial_ports(&portArr);
-      /*buffer_puts(buffer_2, "num ports: ");
-      buffer_putlonglong(buffer_2, newports);
+      /*buffer_puts(buffer_2, "num
+      ports: ");
+      buffer_putlonglong(buffer_2,
+      newports);
       buffer_putnlflush(buffer_2);*/
       if(newports == 0) {
         usleep(250 * 1000);
@@ -682,7 +713,8 @@ getopt_end:
     buffer_puts(buffer_2, "port opened: ");
     buffer_puts(buffer_2, portname);
     buffer_putnlflush(buffer_2);
-    // buffer_read_fd(&serial, serial_fd);
+    // buffer_read_fd(&serial,
+    // serial_fd);
 
     // serial.op = &read;
     if((ret = process_loop(serial_fd, 30000)) > 0) {
@@ -695,8 +727,9 @@ getopt_end:
     int64 idx = strarray_index_of(&ports, portname);
     if(idx != -1) {
 
-      /*buffer_puts(buffer_2, "removed port: ");
-      buffer_puts(buffer_2, strarray_at(&ports, idx));
+      /*buffer_puts(buffer_2, "removed
+      port: "); buffer_puts(buffer_2,
+      strarray_at(&ports, idx));
       buffer_putnlflush(buffer_2); */
       strarray_splice(&ports, idx, 1, 0, NULL);
     }
@@ -704,12 +737,13 @@ getopt_end:
     if(ret == 0)
       continue;
     /*buffer_puts(buffer_1, "Ports (");
-    buffer_putulong(buffer_1, strarray_size(&ports));
+    buffer_putulong(buffer_1,
+    strarray_size(&ports));
     buffer_puts(buffer_1, "): "); */
-    /*for(i = 0; i < strarray_size(&ports); i++) {
-      const char* portstr = strarray_at(&ports, i);
-      if(portstr == NULL)
-        continue;
+    /*for(i = 0; i <
+    strarray_size(&ports); i++) { const
+    char* portstr = strarray_at(&ports,
+    i); if(portstr == NULL) continue;
       if(i > 0)
         buffer_puts(buffer_1, " ");
       buffer_puts(buffer_1, portstr);

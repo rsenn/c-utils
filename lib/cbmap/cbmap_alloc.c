@@ -62,13 +62,7 @@ cbmap_mem_debug_calloc(size_t count, size_t size, const char* file, int line) {
     CBM_DEBUG_ALLOCATED_BYTES += ((unsigned int)count * (unsigned int)size);
   }
 #ifdef DEBUG
-  printf("%p     CBM_MEM_CALLOC %-20s (%03d): Allocated %g x %g = %g bytes\n",
-         p,
-         file,
-         line,
-         (float)count,
-         (float)size,
-         (float)(count * size));
+  printf("%p     CBM_MEM_CALLOC %-20s (%03d): Allocated %g x %g = %g bytes\n", p, file, line, (float)count, (float)size, (float)(count * size));
 #endif
   return p;
 }
@@ -81,8 +75,7 @@ cbmap_mem_debug_strndup(const char* p, size_t size, const char* file, int line) 
     CBM_DEBUG_ALLOCATED_BYTES += size;
   }
 #ifdef DEBUG
-  printf(
-      "%p     CBM_MEM_STRNDUP %-20s (%03d): Allocated %g bytes\n", result, file, line, (float)size);
+  printf("%p     CBM_MEM_STRNDUP %-20s (%03d): Allocated %g bytes\n", result, file, line, (float)size);
 #endif
   return result;
 }
@@ -102,8 +95,7 @@ cbmap_mem_debug_strdup(const char* p, const char* file, int line) {
     CBM_DEBUG_ALLOCATED_BYTES += size;
   }
 #ifdef DEBUG
-  printf(
-      "%p     CBM_MEM_STRDUP %-20s (%03d): Allocated %g bytes\n", result, file, line, (float)size);
+  printf("%p     CBM_MEM_STRDUP %-20s (%03d): Allocated %g bytes\n", result, file, line, (float)size);
 #endif
   return result;
 }
@@ -122,8 +114,7 @@ cbmap_mem_mem_dup(const void* p, size_t size, const char* file, int line) {
     byte_copy(result, size, p);
   }
 #ifdef DEBUG
-  printf(
-      "%p     CBM_MEM_DUP    %-20s (%03d): Allocated %g bytes\n", result, file, line, (float)size);
+  printf("%p     CBM_MEM_DUP    %-20s (%03d): Allocated %g bytes\n", result, file, line, (float)size);
 #endif
   return result;
 }
@@ -163,11 +154,7 @@ cbmap_mem_posix_memalign(void** memptr, size_t alignment, size_t size, const cha
   }
 
 #ifdef DEBUG
-  printf("%p     CBM_MEM_ALIGNED %-20s (%03d): Allocated %g bytes\n",
-         *memptr,
-         file,
-         line,
-         (float)size);
+  printf("%p     CBM_MEM_ALIGNED %-20s (%03d): Allocated %g bytes\n", *memptr, file, line, (float)size);
 #endif
   return result;
 }
@@ -179,12 +166,6 @@ cbmap_mem_debug_mem(const char* file, int line) {
   unsigned int check = allocations - deallocations;
 
 #ifdef DEBUG
-  printf("CBM_MEM_LOG %-20s (%d) ALLOCATIONS %d DEALLOCATIONS %d CHECK %d BYTES %d\n",
-         file,
-         line,
-         allocations,
-         deallocations,
-         check,
-         CBM_DEBUG_ALLOCATED_BYTES);
+  printf("CBM_MEM_LOG %-20s (%d) ALLOCATIONS %d DEALLOCATIONS %d CHECK %d BYTES %d\n", file, line, allocations, deallocations, check, CBM_DEBUG_ALLOCATED_BYTES);
 #endif
 }

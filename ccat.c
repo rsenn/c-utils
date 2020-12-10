@@ -28,14 +28,7 @@ buffer_copy(buffer* out, buffer* in) {
   return n;
 }
 
-typedef enum compression_type {
-  C_UNKNOWN = 0,
-  C_GZ,
-  C_BZ2,
-  C_LZMA,
-  C_XZ,
-  C_BROTLI
-} compression_type;
+typedef enum compression_type { C_UNKNOWN = 0, C_GZ, C_BZ2, C_LZMA, C_XZ, C_BROTLI } compression_type;
 
 compression_type
 compression_from_ext(const char* ext) {
@@ -70,8 +63,11 @@ usage(char* argv0) {
   buffer_putm_internal(buffer_1,
                        "Usage: ",
                        argv0,
-                       " [-o output] [infile or stdin]\n\n",
-                       "  -1 ... -11           compression level; default is 3\n",
+                       " [-o output] [infile or "
+                       "stdin]\n\n",
+                       "  -1 ... -11           "
+                       "compression level; default is "
+                       "3\n",
                        "\n",
                        "Supported types are:",
                        0);
@@ -133,7 +129,12 @@ main(int argc, char* argv[]) {
       case 'o': out_filename = unix_optarg; break;
       case 'h': usage(str_basename(argv[0])); exit(EXIT_SUCCESS);
       default: /* '?' */
-        buffer_putm_internal(buffer_2, "Usage: ", argv[0], "[-t TYPE] [-o OUTPUT] [file]\n", 0);
+        buffer_putm_internal(buffer_2,
+                             "Usage: ",
+                             argv[0],
+                             "[-t TYPE] [-o OUTPUT] "
+                             "[file]\n",
+                             0);
         exit(EXIT_FAILURE);
     }
   }
@@ -161,7 +162,11 @@ main(int argc, char* argv[]) {
     output = buffer_1;
   } else {
     if(!force && path_exists(out_filename)) {
-      buffer_putm_internal(buffer_2, "ERROR already exists (use -f): ", out_filename, 0);
+      buffer_putm_internal(buffer_2,
+                           "ERROR already exists (use "
+                           "-f): ",
+                           out_filename,
+                           0);
       buffer_putnlflush(buffer_2);
       return 1;
     }
@@ -199,12 +204,11 @@ main(int argc, char* argv[]) {
       case C_BZ2: buffer_bz2(&cbuf, decompress ? input : output, decompress ? 0 : level); break;
       case C_XZ:
       case C_LZMA: buffer_lzma(&cbuf, decompress ? input : output, decompress ? 0 : level); break;
-      case C_BROTLI:
-        buffer_brotli(&cbuf, decompress ? input : output, decompress ? 0 : level);
-        break;
+      case C_BROTLI: buffer_brotli(&cbuf, decompress ? input : output, decompress ? 0 : level); break;
       default:
         buffer_putm_internal(buffer_2,
-                             "ERROR: Unable to detect compression type from ",
+                             "ERROR: Unable to detect "
+                             "compression type from ",
                              in_filename,
                              0);
         buffer_putnlflush(buffer_2);
@@ -212,7 +216,10 @@ main(int argc, char* argv[]) {
     }
 
     if(decompress == 0 && output == buffer_1) {
-      buffer_putsflush(buffer_2, "ERROR: Won't write compressed data to a terminal\n");
+      buffer_putsflush(buffer_2,
+                       "ERROR: Won't write "
+                       "compressed data to a "
+                       "terminal\n");
       exit(EXIT_FAILURE);
     }
 

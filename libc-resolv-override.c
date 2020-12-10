@@ -45,8 +45,7 @@ dns_domain_todot(char* out, const char* d, size_t n) {
       if((ch2 >= 'A') && (ch2 <= 'Z'))
         ch2 += 0x20;
 
-      if(((ch2 >= 'a') && (ch2 <= 'z')) || ((ch2 >= '0') && (ch2 <= '9')) || (ch2 == '-') ||
-         (ch2 == '_')) {
+      if(((ch2 >= 'a') && (ch2 <= 'z')) || ((ch2 >= '0') && (ch2 <= '9')) || (ch2 == '-') || (ch2 == '_')) {
         out[idx++] = ch2;
 
         if(idx == n)
@@ -55,10 +54,10 @@ dns_domain_todot(char* out, const char* d, size_t n) {
       /*          else
                   {
                     ch3 = ch2;
-                    buf[3] = '0' + (ch3 & 7); ch3 >>= 3;
-                    buf[2] = '0' + (ch3 & 7); ch3 >>= 3;
-                    buf[1] = '0' + (ch3 & 7);
-                    buf[0] = '\\';
+                    buf[3] = '0' + (ch3
+         & 7); ch3 >>= 3; buf[2] = '0' +
+         (ch3 & 7); ch3 >>= 3; buf[1] =
+         '0' + (ch3 & 7); buf[0] = '\\';
                   }*/
     }
 
@@ -208,32 +207,36 @@ dns_event(struct dns_resolver* d) {
 #endif
 /*
 static int
-dns_get_addr(struct dns_resolver* dns, struct in_addr* addr) {
-  int ret;
+dns_get_addr(struct dns_resolver* dns,
+struct in_addr* addr) { int ret;
   stralloc_zero(&dns->result);
-  ret = dns_ip4_packet(&dns->result, dns->t.packet, dns->t.packetlen);
+  ret = dns_ip4_packet(&dns->result,
+dns->t.packet, dns->t.packetlen);
   dns->ans = dns->result.len / 4;
   return ret;
 }
 
 static int
-dns_get_name(struct dns_resolver* dns, char* out, size_t len) {
-  unsigned int pos;
-  char header[12];
-  unsigned short numanswers;
-  unsigned short datalen;
+dns_get_name(struct dns_resolver* dns,
+char* out, size_t len) { unsigned int
+pos; char header[12]; unsigned short
+numanswers; unsigned short datalen;
   char* name;
 
   stralloc_zero(&dns->result);
 
-  pos = dns_packet_copy(dns->t.packet, dns->t.packetlen, 0, header, 12);
+  pos = dns_packet_copy(dns->t.packet,
+dns->t.packetlen, 0, header, 12);
 
   if(!pos)
     return -1;
 
-  uint16_unpack_big(header + 6, &numanswers);
+  uint16_unpack_big(header + 6,
+&numanswers);
 
-  pos = dns_packet_skipname(dns->t.packet, dns->t.packetlen, pos);
+  pos =
+dns_packet_skipname(dns->t.packet,
+dns->t.packetlen, pos);
 
   if(!pos)
     return -1;
@@ -241,25 +244,31 @@ dns_get_name(struct dns_resolver* dns, char* out, size_t len) {
   pos += 4;
 
   while(numanswers--) {
-    pos = dns_packet_skipname(dns->t.packet, dns->t.packetlen, pos);
+    pos =
+dns_packet_skipname(dns->t.packet,
+dns->t.packetlen, pos);
 
     if(!pos)
       return -1;
 
-    pos = dns_packet_copy(dns->t.packet, dns->t.packetlen, pos, header, 10);
+    pos = dns_packet_copy(dns->t.packet,
+dns->t.packetlen, pos, header, 10);
 
     if(!pos)
       return -1;
 
-    uint16_unpack_big(header + 8, &datalen);
+    uint16_unpack_big(header + 8,
+&datalen);
 
     if(byte_equal(header, 2, DNS_T_PTR))
-      if(byte_equal(header + 2, 2, DNS_C_IN)) {
-        if(!dns_packet_getname(dns->t.packet, dns->t.packetlen, pos, &name))
-          return -1;
+      if(byte_equal(header + 2, 2,
+DNS_C_IN)) {
+        if(!dns_packet_getname(dns->t.packet,
+dns->t.packetlen, pos, &name)) return
+-1;
 
-        if(!dns_domain_todot(out, name, len))
-          return -1;
+        if(!dns_domain_todot(out, name,
+len)) return -1;
 
         return 1;
       }
@@ -271,24 +280,26 @@ dns_get_name(struct dns_resolver* dns, char* out, size_t len) {
 }
 
 static int
-dns_name_lookup(struct dns_resolver* dns, const char* name) {
-  char* domain = 0;
+dns_name_lookup(struct dns_resolver*
+dns, const char* name) { char* domain =
+0;
 
   dns_domain_fromdot(&domain, name, 64);
 
   if(dns_resolvconfip(ip) == -1)
     return -1;
 
-  if(dns_transmit_start(&dns->t, ip, 1, domain, DNS_T_A, (char*)&in6addr_any) == -1)
-    return -1;
+  if(dns_transmit_start(&dns->t, ip, 1,
+domain, DNS_T_A, (char*)&in6addr_any) ==
+-1) return -1;
 
   return 0;
 }
 */
 /*
 static int
-dns_post_poll(struct dns_resolver* d, const struct pollfd* x) {
-  int fd;
+dns_post_poll(struct dns_resolver* d,
+const struct pollfd* x) { int fd;
 
   if(!d->s1)
     return 0;
@@ -309,20 +320,20 @@ dns_post_poll(struct dns_resolver* d, const struct pollfd* x) {
 }
 
 static int
-dns_post_select(struct dns_resolver* d, const fd_set* readset, const fd_set* writeset) {
-  int fd;
+dns_post_select(struct dns_resolver* d,
+const fd_set* readset, const fd_set*
+writeset) { int fd;
 
   if(!d->s1)
     return 0;
 
   fd = d->s1 - 1;
 
-  if(!FD_ISSET(fd, readset) && !FD_ISSET(fd, writeset)) {
-    if(time(0) < d->deadline)
-      return 0;
-    errno = ETIMEDOUT;
-    if(d->tcpstate == 0)
-      return nextudp(d);
+  if(!FD_ISSET(fd, readset) &&
+!FD_ISSET(fd, writeset)) { if(time(0) <
+d->deadline) return 0; errno =
+ETIMEDOUT; if(d->tcpstate == 0) return
+nextudp(d);
 
     return nexttcp(d);
   }
@@ -331,17 +342,17 @@ dns_post_select(struct dns_resolver* d, const fd_set* readset, const fd_set* wri
 }
 
 static int
-dns_pre_poll(struct dns_resolver* dns, struct pollfd* pfd) {
-  if(dns->s1) {
+dns_pre_poll(struct dns_resolver* dns,
+struct pollfd* pfd) { if(dns->s1) {
     pfd->fd = dns->s1 - 1;
 
     switch(dns->tcpstate) {
       case 0:
       case 3:
       case 4:
-      case 5: pfd->events = POLLIN; break;
-      case 1:
-      case 2: pfd->events = POLLOUT; break;
+      case 5: pfd->events = POLLIN;
+break; case 1: case 2: pfd->events =
+POLLOUT; break;
     }
 
     return 1;
@@ -351,8 +362,9 @@ dns_pre_poll(struct dns_resolver* dns, struct pollfd* pfd) {
 }
 
 static int
-dns_pre_select(struct dns_resolver* dns, fd_set* readset, fd_set* writeset) {
-  int fd;
+dns_pre_select(struct dns_resolver* dns,
+fd_set* readset, fd_set* writeset) { int
+fd;
 
   if(dns->s1) {
     fd = dns->s1 - 1;
@@ -361,9 +373,9 @@ dns_pre_select(struct dns_resolver* dns, fd_set* readset, fd_set* writeset) {
       case 0:
       case 3:
       case 4:
-      case 5: FD_SET(fd, readset); break;
-      case 1:
-      case 2: FD_SET(fd, writeset); break;
+      case 5: FD_SET(fd, readset);
+break; case 1: case 2: FD_SET(fd,
+writeset); break;
     }
 
     return 1;
@@ -372,7 +384,8 @@ dns_pre_select(struct dns_resolver* dns, fd_set* readset, fd_set* writeset) {
   return 0;
 } */
 
-/* converts unsigned int to string. returns length of the string. */
+/* converts unsigned int to string.
+ * returns length of the string. */
 static unsigned int
 utoa(char* buf, unsigned int i) {
   register char* p = buf;
@@ -438,24 +451,31 @@ dns_init() {
       const char* rcf;
       stralloc tmp;
       stralloc_init(&tmp);
-      if((rcf = env_get("RESOLVCONF")) == NULL)
-        rcf = "/etc/resolv.conf";
+      if((rcf = env_get("RESOLVCONF"))
+    == NULL) rcf = "/etc/resolv.conf";
       openreadclose(rcf, &tmp, 1024);
       stralloc_nul(&tmp);
       do {
-        p += case_finds(&tmp.s[p], tmp.len - p, "nameserver");
-        if(p + 10 <= tmp.len)
-          p += 10;
-      } while(p < tmp.len && !(tmp.s[p] == ' ' || tmp.s[p] == '\t'));
-       p += scan_whitenskip(&tmp.s[p], tmp.len - p);
-      n = scan_nonwhitenskip(&tmp.s[p], tmp.len - p);
-      stralloc_copyb(&ns, &tmp.s[p], n);
+        p += case_finds(&tmp.s[p],
+    tmp.len - p, "nameserver"); if(p +
+    10 <= tmp.len) p += 10; } while(p <
+    tmp.len && !(tmp.s[p] == ' ' ||
+    tmp.s[p] == '\t')); p +=
+    scan_whitenskip(&tmp.s[p], tmp.len -
+    p); n =
+    scan_nonwhitenskip(&tmp.s[p],
+    tmp.len - p); stralloc_copyb(&ns,
+    &tmp.s[p], n);
     } */
   dns_random_init(seed);
 
   n = dns_resolvconfip(ns);
 
-  for(i = 0; byte_diff(ns + i, 16, "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"); i += 16) {
+  for(i = 0; byte_diff(ns + i,
+                       16,
+                       "\0\0\0\0\0\0\0\0\0\0\0"
+                       "\0\0\0\0\0");
+      i += 16) {
     b[fmt_ip6(b, ns + i)] = '\0';
     errmsg_info("nameserver: ", b, 0);
   }
@@ -475,7 +495,10 @@ main(int argc, char* argv[]) {
       return 111;
     }
     if(dns_ip4(&out, &fqdn) == -1) {
-      errmsg_warnsys("unable to find IP address for ", *argv, 0);
+      errmsg_warnsys("unable to find "
+                     "IP address for ",
+                     *argv,
+                     0);
       return 111;
     }
 
@@ -507,7 +530,10 @@ resolve_ip6(const char* name, int* nptr) {
   }
 
   if(dns_ip6(&out, &fqdn) == -1) {
-    errmsg_warnsys("unable to find IP address for ", name, 0);
+    errmsg_warnsys("unable to find IP "
+                   "address for ",
+                   name,
+                   0);
     return 0;
   }
 
@@ -540,10 +566,7 @@ gethostbyname(const char* name) {
 }
 
 int
-getaddrinfo(const char* node,
-            const char* service,
-            const struct addrinfo* hints,
-            struct addrinfo** res) {
+getaddrinfo(const char* node, const char* service, const struct addrinfo* hints, struct addrinfo** res) {
 
   struct hostent* h = gethostbyname(node);
   static struct addrinfo r;
@@ -555,12 +578,16 @@ getaddrinfo(const char* node,
 
   r.ai_family = h->h_addrtype;
   // r.ai_protocol = PF_INET6;
-  // r.ai_addr = sin = alloc_zero(r.ai_addrlen = sizeof(struct sockaddr_in6));
+  // r.ai_addr = sin =
+  // alloc_zero(r.ai_addrlen =
+  // sizeof(struct sockaddr_in6));
   r.ai_addrlen = sizeof(struct sockaddr_in6);
 
   r.ai_addr = h->h_addr_list[0];
 
-  //  byte_copy(&sin->sin6_addr, sizeof(sin->sin6_addr), h->h_addr_list[0]);
+  //  byte_copy(&sin->sin6_addr,
+  //  sizeof(sin->sin6_addr),
+  //  h->h_addr_list[0]);
   info = malloc(sizeof(struct addrinfo));
   byte_copy(info, (sizeof(struct addrinfo)), &r);
   *res = info;

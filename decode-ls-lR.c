@@ -77,7 +77,8 @@ decode_ls_lR() {
 
     if(len == 0 && buffer[0] != '\n') {
       buffer_close(buffer_0);
-      // buffer_puts(buffer_2, "len == 0!!!\n");
+      // buffer_puts(buffer_2, "len ==
+      // 0!!!\n");
       // buffer_flush(buffer_2);
       break;
     }
@@ -122,7 +123,9 @@ usage(char* arg0) {
   buffer_puts(buffer_2, "Usage: ");
   buffer_puts(buffer_2, str_basename(arg0));
   buffer_puts(buffer_2, " [Options]\n");
-  buffer_puts(buffer_2, " -s num   Skip <num> Number of fields\n");
+  buffer_puts(buffer_2,
+              " -s num   Skip <num> "
+              "Number of fields\n");
   buffer_flush(buffer_2);
   exit(1);
 }

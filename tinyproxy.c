@@ -67,7 +67,8 @@
 #define BROKEN_PIPE_ERROR -9
 #define SYNTAX_ERROR -10
 
-// typedef enum { true = 1, false = 0 } bool;
+// typedef enum { true = 1, false = 0 }
+// bool;
 typedef struct socketbuf_s {
   fd_t sock;
   buffer buf;
@@ -150,7 +151,9 @@ static MAP_T dns_cache;
 static tai6464 ttl;
 static strlist output_files;
 
-#define BACKLOG 20 // how many pending connections queue will hold
+#define BACKLOG                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    \
+  20 // how many pending connections
+     // queue will hold
 
 dns_response_t*
 dns_query(stralloc* h) {
@@ -359,7 +362,8 @@ iarray_dump(iarray* ia) {
     buffer_puts(buffer_2, "Entry #");
     buffer_putulong(buffer_2, i);
     buffer_puts(buffer_2, ": ");
-    buffer_putptr(buffer_2, iarray_get(ia, i));
+    buffer_putptr(buffer_2,
+iarray_get(ia, i));
     buffer_putnlflush(buffer_2);
   }
 }
@@ -456,9 +460,10 @@ connection_open_log(connection_t* c, const char* prefix, const char* suffix) {
       sb->af = AF_INET;
   }
   stralloc_catb(&filename, buf, sockbuf_fmt_addr(&c->proxy, buf, '-'));
-  /*  stralloc_catm_internal(&filename, "-", 0);
-    taia_now(&now);
-    stralloc_catb(&filename, buf, fmt_ulonglong(buf, now.sec.x));*/
+  /*  stralloc_catm_internal(&filename,
+    "-", 0); taia_now(&now);
+    stralloc_catb(&filename, buf,
+    fmt_ulonglong(buf, now.sec.x));*/
   stralloc_cats(&filename, suffix);
   x = filename.s;
   n = filename.len;
@@ -512,9 +517,12 @@ socket_send(fd_t fd, void* x, size_t n, void* ptr) {
 } /*
 
  int
- socket_getlocal_addr(fd_t sock, int af, char ip[16], uint16* port, uint32* scope_id) {
-   int ret = af == AF_INET6 ? socket_local6(sock, ip, port, scope_id) : socket_local4(sock, ip,
- port); return ret;
+ socket_getlocal_addr(fd_t sock, int af,
+ char ip[16], uint16* port, uint32*
+ scope_id) { int ret = af == AF_INET6 ?
+ socket_local6(sock, ip, port, scope_id)
+ : socket_local4(sock, ip, port); return
+ ret;
  }*/
 
 /* Create client connection */
@@ -563,10 +571,8 @@ socket_accept(fd_t sock, char addr[16], uint16 port) {
   byte_copy(c->proxy.addr, remote.af == AF_INET6 ? 16 : 4, remote.addr);
   c->proxy.port = remote.port;
   c->proxy.af = remote.af;
-  buffer_init_free(
-      &c->client.buf, (buffer_op_sys*)(void*)&socket_send, c->client.sock, alloc_zero(1024), 1024);
-  buffer_init_free(
-      &c->proxy.buf, (buffer_op_sys*)(void*)&socket_send, c->proxy.sock, alloc_zero(1024), 1024);
+  buffer_init_free(&c->client.buf, (buffer_op_sys*)(void*)&socket_send, c->client.sock, alloc_zero(1024), 1024);
+  buffer_init_free(&c->proxy.buf, (buffer_op_sys*)(void*)&socket_send, c->proxy.sock, alloc_zero(1024), 1024);
 
   io_fd(c->client.sock);
   io_nonblock(c->client.sock);
@@ -603,7 +609,9 @@ sockbuf_fmt_addr(socketbuf_t* sb, char* dest, char sep) {
     if(sb->af == AF_INET6)
       n = fmt_ip6(dest, sb->addr);
     else
-      n = fmt_hexb(dest, sb->addr, 4) /*||  fmt_ip4(dest, sb->addr)*/;
+      n = fmt_hexb(dest, sb->addr, 4) /*|| fmt_ip4(dest,
+                                         sb->addr)*/
+          ;
     if(sb->af == AF_INET6 && byte_equal(dest, 6, "::ffff"))
       n = fmt_hexb(dest, &sb->addr[12], 4);
   }
@@ -632,9 +640,7 @@ sockbuf_close(socketbuf_t* sb) {
 
 void
 sockbuf_check(socketbuf_t* sb) {
-  int wantwrite = (line_buffer && !buffer_is_binary(&sb->buf) && !sb->force_write)
-                      ? buffer_numlines(&sb->buf, NULL) > 0
-                      : sb->buf.p > 0;
+  int wantwrite = (line_buffer && !buffer_is_binary(&sb->buf) && !sb->force_write) ? buffer_numlines(&sb->buf, NULL) > 0 : sb->buf.p > 0;
   io_entry* e = io_getentry(sb->sock);
 
   if(wantwrite) {
@@ -697,9 +703,17 @@ sockbuf_log_data(socketbuf_t* sb, bool send, char* x, size_t len) {
     pos = log.p;
 
 #ifdef DEBUG_OUTPUT
-    (escape ? buffer_put_escaped(
-                  &log, x, /*maxlen > 0 && maxlen < end ? maxlen :*/ end, &fmt_escapecharshell)
-            : buffer_put(&log, x, /*maxlen > 0 && maxlen < end ? maxlen :*/ end));
+    (escape ? buffer_put_escaped(&log,
+                                 x,
+                                 /*maxlen > 0 && maxlen <
+                                    end ? maxlen :*/
+                                 end,
+                                 &fmt_escapecharnonprintable)
+            : buffer_put(&log,
+                         x,
+                         /*maxlen > 0 && maxlen <
+                            end ? maxlen :*/
+                         end));
 
     if(maxlen > 0 && maxlen < end)
       buffer_puts(&log, "<shortened> ...");
@@ -724,9 +738,13 @@ sockbuf_forward_data(socketbuf_t* source, socketbuf_t* destination) {
   size_t written = 0;
   char buffer[buf_size];
 
-  if((n = recv(source->sock, buffer, buf_size, 0)) > 0) { // read data from input socket
+  if((n = recv(source->sock, buffer, buf_size,
+               0)) > 0) { // read data from input socket
 
-    buffer_put(&destination->buf, buffer, n); // send data to output socket
+    buffer_put(&destination->buf,
+               buffer,
+               n); // send data to
+                   // output socket
     written += n;
 
     sockbuf_log_data(source, false, buffer, n);
@@ -826,7 +844,9 @@ server_finalize() {
     b = path_basename(errmsg_argv0);
   if(b)
     stralloc_catm_internal(&filename, b, "-", 0);
-  // stralloc_catb(&filename, buf, strftime(buf, sizeof(buf), "%Y%m%d-%H%M%S-", &lt));
+  // stralloc_catb(&filename, buf,
+  // strftime(buf, sizeof(buf),
+  // "%Y%m%d-%H%M%S-", &lt));
   n = filename.len;
   stralloc_cats(&filename, "recv");
   stralloc_cats(&filename, ".log");
@@ -859,7 +879,9 @@ server_finalize() {
 #endif
   }
   stralloc_copys(&filename, fileBase);
-  // stralloc_catb(&filename, buf, strftime(buf, sizeof(buf), "-%Y%m%d-%H%M%S", &lt));
+  // stralloc_catb(&filename, buf,
+  // strftime(buf, sizeof(buf),
+  // "-%Y%m%d-%H%M%S", &lt));
   stralloc_cats(&filename, ".tar");
 
   if(stat((s = stralloc_cstr(&filename)), &st) != -1)
@@ -917,8 +939,8 @@ server_tar_files(const char* cmd, const stralloc* archive, strlist* files) {
   }
   /*
     if((child_pid = vfork()) == 0) {
-      char* const env[] = {"PATH=/bin:/usr/bin", 0};
-      close(2);
+      char* const env[] =
+    {"PATH=/bin:/usr/bin", 0}; close(2);
       dup2(1, 2);
 
       if(out != STDOUT_FILENO) {
@@ -1022,23 +1044,30 @@ server_loop() {
 
         while(sb->buf.p > 0) {
           /*
-                    if(line_buffer && !buffer_is_binary(&sb->buf) && !sb->force_write) {
-                      size_t num_lines, end_pos;
-                      socketbuf_t* other;
-                      if((num_lines = buffer_numlines(&sb->buf, &end_pos)) > 0) {
-                        ssize_t r = socket_send(sb->sock, sb->buf.x, end_pos, 0);
+                    if(line_buffer &&
+             !buffer_is_binary(&sb->buf)
+             && !sb->force_write) {
+                      size_t num_lines,
+             end_pos; socketbuf_t*
+             other; if((num_lines =
+             buffer_numlines(&sb->buf,
+             &end_pos)) > 0) { ssize_t r
+             = socket_send(sb->sock,
+             sb->buf.x, end_pos, 0);
                         if(r > 0) {
-                          buffer* b = &sb->buf;
-                          if(r < b->p) {
-                            byte_copyr(b->x, b->p - r, &b->x[r]);
-                            b->p -= r;
+                          buffer* b =
+             &sb->buf; if(r < b->p) {
+                            byte_copyr(b->x,
+             b->p - r, &b->x[r]); b->p
+             -= r;
 
                             if(b->p) {
-                              other = socket_other(sb->sock);
-                              r = io_tryread(other->sock, &b->x[b->p], b->a - b->p);
-                              if(r > 0) {
-                                b->p += r;
-                                continue;
+                              other =
+             socket_other(sb->sock); r =
+             io_tryread(other->sock,
+             &b->x[b->p], b->a - b->p);
+                              if(r > 0)
+             { b->p += r; continue;
                               }
                             }
                           }
@@ -1069,14 +1098,12 @@ server_loop() {
         char addr[16];
         uint16 port;
         socklen_t addrlen = sizeof(addr);
-        sock = server.af == AF_INET ? socket_accept4(server_sock, addr, &port)
-                                    : socket_accept6(server_sock, addr, &port, 0);
+        sock = server.af == AF_INET ? socket_accept4(server_sock, addr, &port) : socket_accept6(server_sock, addr, &port, 0);
         if(sock == -1) {
           errmsg_warn("Accept error: ", strerror(errno), 0);
           exit(2);
         }
-        server.af == AF_INET ? socket_remote4(sock, addr, &port)
-                             : socket_remote6(sock, addr, &port, 0);
+        server.af == AF_INET ? socket_remote4(sock, addr, &port) : socket_remote6(sock, addr, &port, 0);
         socket_accept(sock, addr, port);
         connections_processed++;
 
@@ -1150,11 +1177,15 @@ server_loop() {
   }
 }
 
-/* Update systemd status with connection count */
+/* Update systemd status with connection
+ * count */
 void
 server_connection_count() {
 #ifdef USE_SYSTEMD
-  sd_notifyf(0, "STATUS=Ready. %d connections processed.\n", connections_processed);
+  sd_notifyf(0,
+             "STATUS=Ready. %d "
+             "connections processed.\n",
+             connections_processed);
 #endif
 }
 
@@ -1168,7 +1199,8 @@ usage(const char* argv0) {
                        "  -l PORT     local port\n"
                        "  -r ADDR     remote address\n"
                        "  -p PORT     remote port\n"
-                       "  -f          stay in foreground\n"
+                       "  -f          stay in "
+                       "foreground\n"
                        "  -s          use syslog\n"
                        "  -o          output logfile\n"
                        "  -a          append logfile\n"
@@ -1185,23 +1217,7 @@ main(int argc, char* argv[]) {
   int pid;
   int c, index = 0;
   const char* s;
-  struct longopt opts[] = {{"help", 0, NULL, 'h'},
-                           {"local-port", 0, NULL, 'l'},
-                           {"local-addr", 0, NULL, 'b'},
-                           {"remote-port", 0, NULL, 'p'},
-                           {"remote-addr", 0, NULL, 'r'},
-                           {"input-parser", 0, NULL, 'i'},
-                           {"output-parser", 0, NULL, 'O'},
-                           {"foreground", 0, NULL, 'f'},
-                           {"syslog", 0, NULL, 's'},
-                           {"logfile", 0, NULL, 'o'},
-                           {"append", 0, NULL, 'a'},
-                           {"max-length", 0, NULL, 'm'},
-                           {"line-buffer", 0, NULL, 'L'},
-                           {"dump", 0, NULL, 'd'},
-                           {"ttl", 0, NULL, 'T'},
-                           {"basename", 0, NULL, 'n'},
-                           {0}};
+  struct longopt opts[] = {{"help", 0, NULL, 'h'}, {"local-port", 0, NULL, 'l'}, {"local-addr", 0, NULL, 'b'}, {"remote-port", 0, NULL, 'p'}, {"remote-addr", 0, NULL, 'r'}, {"input-parser", 0, NULL, 'i'}, {"output-parser", 0, NULL, 'O'}, {"foreground", 0, NULL, 'f'}, {"syslog", 0, NULL, 's'}, {"logfile", 0, NULL, 'o'}, {"append", 0, NULL, 'a'}, {"max-length", 0, NULL, 'm'}, {"line-buffer", 0, NULL, 'L'}, {"dump", 0, NULL, 'd'}, {"ttl", 0, NULL, 'T'}, {"basename", 0, NULL, 'n'}, {0}};
 
   fileBase = path_basename(argv[0]);
   errmsg_iam(argv[0]);
@@ -1216,7 +1232,12 @@ main(int argc, char* argv[]) {
 
   taia_uint(&ttl, DNS_MAX_AGE);
 
-  while((c = getopt_long(argc, argv, "hb:l:r:p:i:O:fso:a:m:LdB:T:n:", opts, &index)) != -1) {
+  while((c = getopt_long(argc,
+                         argv,
+                         "hb:l:r:p:i:O:fso:a:m:LdB:"
+                         "T:n:",
+                         opts,
+                         &index)) != -1) {
     switch(c) {
       case 'h':
         usage(argv[0]);

@@ -383,7 +383,8 @@ main(int argc, char* argv[]) {
 
         strarray_splice(&v, i, 1, array_length(&a, sizeof(char*)), array_start(&a));
 
-        // debug_strarray("new args", &v);
+        // debug_strarray("new args",
+        // &v);
 
         --i;
         continue;

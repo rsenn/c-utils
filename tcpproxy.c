@@ -26,7 +26,9 @@ static int forward_port = -1;
 
 void
 usage(void) {
-  buffer_puts(buffer_2, "proxy [-l <listening port>] -f <forward ip>:<forward port>");
+  buffer_puts(buffer_2,
+              "proxy [-l <listening port>] -f "
+              "<forward ip>:<forward port>");
   buffer_putnlflush(buffer_2);
 
   exit(0);
@@ -95,7 +97,8 @@ main(int argc, char** argv) {
     forward_port = proxy_port;
   }
 
-  printf("proxy listening on 127.0.0.1:%d forward to %s:%d\n",
+  printf("proxy listening on 127.0.0.1:%d "
+         "forward to %s:%d\n",
          proxy_port,
          forward_addr,
          forward_port);

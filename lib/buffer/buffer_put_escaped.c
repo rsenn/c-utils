@@ -6,14 +6,12 @@
 
 int
 buffer_put_escaped(buffer* b, const char* x, size_t len, size_t (*escape)(char*, int)) {
-  int ret;
-  stralloc e;
-  if(len == 0)
-    return 0;
-
-  stralloc_init(&e);
-  stralloc_fmt(&e, x, len, (stralloc_fmt_fn*)(void*)escape);
-  ret = buffer_putsa(b, &e);
-  stralloc_free(&e);
-  return ret;
+  char buf[16];
+  size_t i, n, r = 0;
+  for(i = 0; i < len; i++) {
+    n = escape(buf, x[i]);
+    buffer_put(b, buf, n);
+    r += n;
+  }
+  return r;
 }

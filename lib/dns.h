@@ -69,8 +69,7 @@ unsigned int dns_packet_copy(const char*, unsigned int, unsigned int, char*, uns
 unsigned int dns_packet_getname(const char*, unsigned int, unsigned int, char**);
 unsigned int dns_packet_skipname(const char*, unsigned int, unsigned int);
 
-int
-dns_transmit_start(struct dns_transmit*, const char*, int, const char*, const char*, const char*);
+int dns_transmit_start(struct dns_transmit*, const char*, int, const char*, const char*, const char*);
 void dns_transmit_free(struct dns_transmit*);
 void dns_transmit_io(struct dns_transmit*, iopause_fd*, struct taia*);
 int dns_transmit_get(struct dns_transmit*, const iopause_fd*, const struct taia*);

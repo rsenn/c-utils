@@ -40,7 +40,11 @@ main(int argc, char** argv) {
       return 111;
     }
     if(dns_name6(&out, ip) == -1) {
-      errmsg_warnsys("unable to find host name for ", *argv, ": ", 0);
+      errmsg_warnsys("unable to find "
+                     "host name for ",
+                     *argv,
+                     ": ",
+                     0);
       return 111;
     }
 

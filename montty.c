@@ -1,7 +1,9 @@
 /*
- * Unobtrusively log data coming in on a serial device.
+ * Unobtrusively log data coming in on a
+ * serial device.
  *
- * Diomidis Spinellis, December 2001 - July 2016
+ * Diomidis Spinellis, December 2001 -
+ * July 2016
  *
  */
 
@@ -19,7 +21,8 @@
 static int lockpid;
 
 /*
- * Set terminal fd speed to s; clear non-blocking mode to make poll work
+ * Set terminal fd speed to s; clear
+ * non-blocking mode to make poll work
  */
 static void
 init_term(int fd, int s) {
@@ -157,15 +160,18 @@ main(int argc, char* argv[]) {
   char devname[1024];
   struct pollfd pfd[1];
   int n;
-  /* True when initialisation strings must be sent */
+  /* True when initialisation strings
+   * must be sent */
   int need_init = 1;
   int init_index = INIT_ARGV;
   int lockresult;
 
   if(argc < 2) {
     fprintf(stderr,
-            "usage: %s line [initialisation string] ...\n"
-            "e.g. %s ttyACM0 'ATS82=76\\r\\n'\n",
+            "usage: %s line "
+            "[initialisation string] ...\n"
+            "e.g. %s ttyACM0 "
+            "'ATS82=76\\r\\n'\n",
             argv[0],
             argv[0]);
     exit(1);
@@ -177,7 +183,10 @@ main(int argc, char* argv[]) {
   syslog(LOG_INFO, "starting up: pid %d", getpid());
   snprintf(buff, sizeof(buff), "/var/run/montty.%s.pid", argv[1]);
   if((f = fopen(buff, "w")) == NULL) {
-    syslog(LOG_ERR, "unable to open pid file %s: %m", buff);
+    syslog(LOG_ERR,
+           "unable to open pid file "
+           "%s: %m",
+           buff);
     exit(1);
   } else {
     fprintf(f, "%d\n", getpid());
@@ -185,14 +194,18 @@ main(int argc, char* argv[]) {
   }
   snprintf(devname, sizeof(devname), "/dev/%s", argv[1]);
   if((pfd[0].fd = open(devname, O_RDWR | O_NONBLOCK)) < 0) {
-    syslog(LOG_ERR, "unable to open monitor file %s: %m", devname);
+    syslog(LOG_ERR,
+           "unable to open monitor "
+           "file %s: %m",
+           devname);
     exit(1);
   }
   syslog(LOG_INFO, "monitoring %s", devname);
   pfd[0].events = POLLIN | POLLRDNORM | POLLERR;
   for(;;) {
     if(!need_init) {
-      /* No initialisation needed, just wait for input */
+      /* No initialisation needed, just
+       * wait for input */
       syslog(LOG_DEBUG, "waiting for input");
       if(poll(pfd, 1, -1) < 0) {
         syslog(LOG_ERR, "poll(INFTIM) failed: %m");
@@ -200,15 +213,17 @@ main(int argc, char* argv[]) {
       }
     }
     /*
-     * We have input, or we need to initialise the device;
-     * acquire a lock.
+     * We have input, or we need to
+     * initialise the device; acquire a
+     * lock.
      */
     switch(lockresult = uu_lock(argv[1])) {
       case UU_LOCK_OK:
         syslog(LOG_DEBUG, "acquired lock");
         /*
          * Now that we have the lock,
-         * check if we need to write the initialisation data.
+         * check if we need to write the
+         * initialisation data.
          */
         if(need_init) {
           if(init_index == INIT_ARGV) {
@@ -216,7 +231,10 @@ main(int argc, char* argv[]) {
             /* Refresh fd */
             close(pfd[0].fd);
             if((pfd[0].fd = open(devname, O_RDWR | O_NONBLOCK)) < 0) {
-              syslog(LOG_ERR, "unable to re-open monitor file %s: %m", devname);
+              syslog(LOG_ERR,
+                     "unable to re-open "
+                     "monitor file %s: %m",
+                     devname);
               exit(1);
             }
             init_term(pfd[0].fd, B115200);
@@ -235,7 +253,8 @@ main(int argc, char* argv[]) {
             need_init = 0;
           syslog(LOG_DEBUG, "sent init string");
         }
-        /* Check if there is still something to read. */
+        /* Check if there is still
+         * something to read. */
         if(poll(pfd, 1, 0) < 0) {
           syslog(LOG_ERR, "poll(0) failed: %m");
           exit(1);
@@ -258,7 +277,8 @@ main(int argc, char* argv[]) {
       case UU_LOCK_INUSE:
         syslog(LOG_DEBUG, "lock in use; sleeping");
         sleep(1);
-        /* Someone is using the device, we must re-init it */
+        /* Someone is using the device,
+         * we must re-init it */
         need_init = 1;
         init_index = INIT_ARGV;
         break;

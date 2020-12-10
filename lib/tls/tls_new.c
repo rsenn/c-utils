@@ -11,11 +11,7 @@
 #include <sys/socket.h>
 #endif
 
-iarray tls_list = {.pages = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-                   .elemsize = sizeof(tls_instance),
-                   .elemperpage = 127,
-                   .bytesperpage = 4096,
-                   .len = 0};
+iarray tls_list = {.pages = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, .elemsize = sizeof(tls_instance), .elemperpage = 127, .bytesperpage = 4096, .len = 0};
 
 #ifdef HAVE_OPENSSL
 #include <openssl/ssl.h>
@@ -31,8 +27,7 @@ tls_new(tls_ctx_t* ctx, fd_t fd) {
     buffer_putsflush(buffer_2, "ERROR tls_new ctx=0\n");
     ssl = 0;
   } else if((ssl = SSL_new(ctx)) == 0) {
-    buffer_putm_internal(
-        buffer_2, "ERROR tls_new ssl=0 : ", ERR_lib_error_string(ERR_get_error()), NULL);
+    buffer_putm_internal(buffer_2, "ERROR tls_new ssl=0 : ", ERR_lib_error_string(ERR_get_error()), NULL);
     buffer_putnlflush(buffer_2);
   } else {
     i = tls_instance_new(fd);

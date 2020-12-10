@@ -199,10 +199,11 @@ ini_read(buffer* b, ini_section_t** ptr) {
       e = byte_chr(&line.s[i], line.len - i, ']');
 
       s = ini_newb(ptr, &line.s[i], e);
-      /*      s = alloc(sizeof(ini_   section_t));
+      /*      s = alloc(sizeof(ini_
+         section_t));
             stralloc_init(&s->name);
-            stralloc_copyb(&s->name, &line.s[i], e);
-            s->next = NULL;
+            stralloc_copyb(&s->name,
+         &line.s[i], e); s->next = NULL;
             MAP_NEW(s->map);
             *ptr = s;
             ptr = &s->next;*/

@@ -32,7 +32,8 @@ max_depth_fn(jsonval* v, int* arg, int depth) {
 }
 
 /**
- * @brief      Gets depth of JSON node tree.
+ * @brief      Gets depth of JSON node
+ * tree.
  * @param      v     JSON value
  * @return     The depth.
  */
@@ -45,8 +46,10 @@ get_depth(jsonval* v) {
 
 /**
  * @brief      { function_description }
- * @param      p      { parameter_description }
- * @param      v      { parameter_description }
+ * @param      p      {
+ * parameter_description }
+ * @param      v      {
+ * parameter_description }
  * @param[in]  depth  The depth
  * @param[in]  index  The index
  */
@@ -56,8 +59,11 @@ pretty_printer(jsonfmt* p, jsonval* v, int depth, int index, char q) {
   static char quote[2] = {0, 0};
   quote[0] = q;
 
-  p->newline = valdepth > 1 ? "\n" : " "; // (!one_line && valdepth > 1 && ((index > -1) || index <
-                                          // -2) && index > 0) ? "\n" : "";
+  p->newline = valdepth > 1 ? "\n" : " "; // (!one_line &&
+                                          // valdepth > 1 &&
+                                          // ((index > -1) ||
+                                          // index < -2) && index
+                                          // > 0) ? "\n" : "";
   p->indent = indent_str.s;
   p->spacing = " ";
   p->separat = valdepth > 1 ? ",\n" : ", ";
@@ -85,7 +91,8 @@ pretty_printer(jsonfmt* p, jsonval* v, int depth, int index, char q) {
 /**
  * @brief      { function_description }
  * @param      list  The list
- * @return     { description_of_the_return_value }
+ * @return     {
+ * description_of_the_return_value }
  */
 static jsonval
 xmllist_to_jsonarray(xmlnode* list) {
@@ -175,13 +182,18 @@ hmap_to_jsonobj(HMAP_DB* db, jsonval* obj) {
 /**
  * @brief      { function_description }
  * @param      node  The node
- * @return     { description_of_the_return_value }
+ * @return     {
+ * description_of_the_return_value }
  */
 static jsonval
 xml_to_json_obj(xmlnode* node) {
-  /*  static const char* const node_types[] = {"(null)", "XML_DOCUMENT", "XML_ELEMENT",
+  /*  static const char* const
+     node_types[] = {"(null)",
+     "XML_DOCUMENT", "XML_ELEMENT",
      "XML_ATTRIBUTE", "XML_TEXT" };
-      buffer_putm_internal(buffer_2, node_types[(int)node->type], " ", node->name, "\n", 0);*/
+      buffer_putm_internal(buffer_2,
+     node_types[(int)node->type], " ",
+     node->name, "\n", 0);*/
   if(node->type == XML_ELEMENT) {
     jsonval obj = json_object();
     json_set_property(&obj, json_string(tag_property), json_string(node->name));
@@ -225,21 +237,31 @@ usage(char* av0) {
                        "\n"
                        "Options:\n"
                        "\n"
-                       "  -h, --help              Show this help\n"
-                       "  -s, --single-quote      Use ' as quote\n"
-                       "  -d, --double-quote      Use \" as quote\n"
-                       "  -o, --one-line          One-line\n"
-                       "  -c, --compact           Compact\n"
-                       "  -l, --indent NUM        Indent level\n"
-                       "  -n, --numbers           Show numbers unquoted\n"
+                       "  -h, --help              Show "
+                       "this help\n"
+                       "  -s, --single-quote      Use ' "
+                       "as quote\n"
+                       "  -d, --double-quote      Use "
+                       "\" as quote\n"
+                       "  -o, --one-line          "
+                       "One-line\n"
+                       "  -c, --compact           "
+                       "Compact\n"
+                       "  -l, --indent NUM        "
+                       "Indent level\n"
+                       "  -n, --numbers           Show "
+                       "numbers unquoted\n"
                        "\n"
-                       "  -T, --tag NAME          Name of property with tag name [",
+                       "  -T, --tag NAME          Name "
+                       "of property with tag name [",
                        tag_property,
                        "]\n"
-                       "  -C, --children NAME     Name of property with children [",
+                       "  -C, --children NAME     Name "
+                       "of property with children [",
                        children_property,
                        "]\n"
-                       "  -N, --class NAME        Name of property with classes [",
+                       "  -N, --class NAME        Name "
+                       "of property with classes [",
                        class_property,
                        "]\n"
                        "\n",
@@ -268,18 +290,7 @@ main(int argc, char* argv[]) {
   int c;
   int index = 0;
 
-  struct longopt opts[] = {{"help", 0, NULL, 'h'},
-                           {"single-quote", 0, NULL, 's'},
-                           {"double-quote", 0, NULL, 'd'},
-                           {"one-line", 0, NULL, 'o'},
-                           {"compact", 0, NULL, 'c'},
-                           {"indent", 0, NULL, 'l'},
-                           {"numbers", 0, NULL, 'n'},
-                           {"no-quote", 0, NULL, 'Q'},
-                           {"tag", 0, NULL, 'T'},
-                           {"children", 0, NULL, 'C'},
-                           {"class", 0, NULL, 'N'},
-                           {0, 0, 0, 0}};
+  struct longopt opts[] = {{"help", 0, NULL, 'h'}, {"single-quote", 0, NULL, 's'}, {"double-quote", 0, NULL, 'd'}, {"one-line", 0, NULL, 'o'}, {"compact", 0, NULL, 'c'}, {"indent", 0, NULL, 'l'}, {"numbers", 0, NULL, 'n'}, {"no-quote", 0, NULL, 'Q'}, {"tag", 0, NULL, 'T'}, {"children", 0, NULL, 'C'}, {"class", 0, NULL, 'N'}, {0, 0, 0, 0}};
 
   errmsg_iam(argv[0]);
 
@@ -322,7 +333,8 @@ main(int argc, char* argv[]) {
       json_print(root, buffer_1, pretty_printer);
     }
     /*
-     * Cleanup function for the XML library.
+     * Cleanup function for the XML
+     * library.
      */
     xml_free(doc);
 

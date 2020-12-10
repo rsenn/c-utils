@@ -74,7 +74,8 @@ struct gate {
 struct deviceset {
   stralloc name;
   array gates;   /**< list of struct gate */
-  MAP_T devices; /**< map of struct pinmapping */
+  MAP_T devices; /**< map of struct
+                    pinmapping */
 };
 
 struct part {
@@ -99,7 +100,8 @@ struct ref {
 
 struct net {
   stralloc name;
-  array contacts; /**<  list of struct ref */
+  array contacts; /**<  list of struct
+                     ref */
 };
 
 struct part_ref {
@@ -116,8 +118,7 @@ int str_isfloat(const char* s);
 int str_isspace(const char* s);
 void print_attrs(HMAP_DB* a_node);
 void print_element_attrs(xmlnode* a_node);
-int
-output_net(const void* key, size_t key_len, const void* value, size_t value_len, void* user_data);
+int output_net(const void* key, size_t key_len, const void* value, size_t value_len, void* user_data);
 
 MAP_T devicesets;
 MAP_T packages;
@@ -144,7 +145,8 @@ round_float(float num) {
 }
 
 /**
- * Reads a real-number value from the element/attribute given
+ * Reads a real-number value from the
+ * element/attribute given
  */
 double
 get_double(xmlnode* node, const char* key) {
@@ -160,7 +162,8 @@ get_double(xmlnode* node, const char* key) {
 }
 
 /**
- * Reads an integer number value from the element/attribute given
+ * Reads an integer number value from
+ * the element/attribute given
  */
 int
 get_int(xmlnode* node, const char* key) {
@@ -261,7 +264,8 @@ update_bounds(int x, int y) {
 }
 
 /**
- * Build structures from <part> or <element> element
+ * Build structures from <part> or
+ * <element> element
  */
 void
 build_part(xmlnode* part) {
@@ -297,7 +301,8 @@ build_part(xmlnode* part) {
 }
 
 /**
- * Build structures from <symbol> element
+ * Build structures from <symbol>
+ * element
  */
 void
 build_sym(xmlnode* part) {
@@ -341,7 +346,8 @@ compare_ref(const struct ref* a, const struct ref* b) {
 }
 
 /**
- * @param node   Parent is the 'net' or 'signal' element
+ * @param node   Parent is the 'net' or
+ * 'signal' element
  */
 void
 build_reflist(xmlnode* node, struct net* n, int* index) {
@@ -374,18 +380,17 @@ build_reflist(xmlnode* node, struct net* n, int* index) {
     print_element_attrs(node);
     buffer_putnlflush(buffer_2);
   }
-  qsort(array_start(&n->contacts),
-        array_length(&n->contacts, sizeof(struct ref)),
-        sizeof(struct ref),
-        (cmp_fn_t*)&compare_ref);
+  qsort(array_start(&n->contacts), array_length(&n->contacts, sizeof(struct ref)), sizeof(struct ref), (cmp_fn_t*)&compare_ref);
 }
 
 /**
  * Build reference list from
  *
- *      <contactref element="IC1" pad="4"/>
+ *      <contactref element="IC1"
+ * pad="4"/>
  *
- *      <pinref part="IC1" gate="B" pin="O"/>
+ *      <pinref part="IC1" gate="B"
+ * pin="O"/>
  */
 void
 build_nets(xmlnode* node) {
@@ -406,7 +411,8 @@ build_nets(xmlnode* node) {
 }
 
 /**
- * Build structures from <package> element
+ * Build structures from <package>
+ * element
  */
 void
 build_package(xmlnode* set) {
@@ -434,7 +440,8 @@ build_package(xmlnode* set) {
 }
 
 /**
- * Build structures from <deviceset> element
+ * Build structures from <deviceset>
+ * element
  */
 void
 build_deviceset(xmlnode* set) {
@@ -475,7 +482,9 @@ build_deviceset(xmlnode* set) {
     package = xml_get_attribute(node, "package");
     byte_zero(&pm, sizeof(struct pinmapping));
 
-    // MAP_GET(packages, package, str_len(package), (void**)&pkg, &len);
+    // MAP_GET(packages, package,
+    // str_len(package), (void**)&pkg,
+    // &len);
     pm.pkg = MAP_GET(packages, package, str_len(package));
 
     MAP_INSERT(d.devices, name, str_len(name) + 1, &pm, sizeof(struct pinmapping));
@@ -484,7 +493,8 @@ build_deviceset(xmlnode* set) {
 }
 
 /**
- * Run an XPath query and return a XPath object
+ * Run an XPath query and return a XPath
+ * object
  */
 xmlnodeset
 getnodeset(void* n, const char* xpath) {
@@ -492,7 +502,8 @@ getnodeset(void* n, const char* xpath) {
 }
 
 /**
- * Retrieve all <part> (schematic) or <element> (board) objects
+ * Retrieve all <part> (schematic) or
+ * <element> (board) objects
  */
 strlist
 getparts(xmlnode* doc) {
@@ -510,7 +521,8 @@ getparts(xmlnode* doc) {
 }
 
 /**
- * Iterate through a node-set, calling a functor for every item
+ * Iterate through a node-set, calling a
+ * functor for every item
  */
 void
 for_set(xmlnodeset* ns, void (*fn)(xmlnode*)) {
@@ -535,8 +547,7 @@ clean_pkgname(stralloc* pkgname, const struct package* pkg) {
   stralloc_copy(pkgname, &pkg->name);
   stralloc_lower(pkgname);
 
-  if(pkgname->len > 4 && pkgname->s[0] == '0' && isdigit(pkgname->s[1]) && isdigit(pkgname->s[2]) &&
-     isdigit(pkgname->s[3]) && pkgname->s[4] == '/') {
+  if(pkgname->len > 4 && pkgname->s[0] == '0' && isdigit(pkgname->s[1]) && isdigit(pkgname->s[2]) && isdigit(pkgname->s[3]) && pkgname->s[4] == '/') {
     // stralloc_remove(pkgname, 0, 1);
     pkgname->s[0] = 'r';
     pkgname->s[1] = 'e';
@@ -564,8 +575,7 @@ clean_pkgname(stralloc* pkgname, const struct package* pkg) {
 }
 
 int
-dump_package(
-    const void* key, size_t key_len, const void* value, size_t value_len, void* user_data) {
+dump_package(const void* key, size_t key_len, const void* value, size_t value_len, void* user_data) {
   int64 i;
   double x, y;
   const struct package* pkg = value;
@@ -573,7 +583,8 @@ dump_package(
   stralloc pkgname;
   clean_pkgname(&pkgname, pkg);
 
-  // buffer_puts(&output, "dump_package: ");
+  // buffer_puts(&output, "dump_package:
+  // ");
   stralloc_nul(&pkgname);
 
   buffer_putspad(&output, pkgname.s, 18);
@@ -582,10 +593,7 @@ dump_package(
 
   first = array_start(&pkg->pads);
 
-  qsort(first,
-        array_length(&pkg->pads, sizeof(struct pad)),
-        sizeof(struct pad),
-        (cmp_fn_t*)&compare_pads);
+  qsort(first, array_length(&pkg->pads, sizeof(struct pad)), sizeof(struct pad), (cmp_fn_t*)&compare_pads);
 
   x = first->x;
   y = first->y;
@@ -809,7 +817,8 @@ output_net(const void* key, size_t key_len, const void* value, size_t value_len,
   return 1;
 }
 /**
- *  hashmap_dump: Gets depth of node in hierarchy
+ *  hashmap_dump: Gets depth of node in
+ * hierarchy
  */
 int
 node_depth(xmlnode* node) {
@@ -870,7 +879,8 @@ print_element_name(xmlnode* a_node) {
 }
 
 /**
- *  print_element_attrs: Prints all element attributes to stdout
+ *  print_element_attrs: Prints all
+ * element attributes to stdout
  */
 void
 print_attrs(HMAP_DB* a) {
@@ -878,13 +888,7 @@ print_attrs(HMAP_DB* a) {
 
   for(t = a->list_tuple; t; t = t->next) {
     char* v = t->vals.val_chars;
-    buffer_putm_internal(buffer_2,
-                         " ",
-                         t->key,
-                         str_isdoublenum(v) ? "=" : "=\"",
-                         v,
-                         str_isdoublenum(v) ? "" : "\"",
-                         0);
+    buffer_putm_internal(buffer_2, " ", t->key, str_isdoublenum(v) ? "=" : "=\"", v, str_isdoublenum(v) ? "" : "\"", 0);
     if(t->next == a->list_tuple)
       break;
   }
@@ -909,7 +913,8 @@ print_element_content(xmlnode* node) {
 }
 
 /**
- *  print_element_children: Prints all element attributes to stdout
+ *  print_element_children: Prints all
+ * element attributes to stdout
  */
 void
 print_element_children(xmlnode* a_node) {
@@ -930,10 +935,12 @@ print_element_children(xmlnode* a_node) {
 
 /**
  * print_element_names:
- * @a_node: the initial xml node to consider.
+ * @a_node: the initial xml node to
+ * consider.
  *
- * Prints the names of the all the xml elements
- * that are siblings or children of a given xml node.
+ * Prints the names of the all the xml
+ * elements that are siblings or
+ * children of a given xml node.
  */
 void
 print_element_names(xmlnode* node) {
@@ -1003,7 +1010,8 @@ match_query(xmlnode* doc, const char* q) {
 }
 
 /**
- * Executes XPath query and for every resulting element calls a function
+ * Executes XPath query and for every
+ * resulting element calls a function
  */
 int
 match_foreach(xmlnode* doc, const char* q, void (*fn)(xmlnode*)) {
@@ -1020,7 +1028,8 @@ int
 main(int argc, char* argv[]) {
   xmlnode* doc;
   int argi = 1, output_fd = 1;
-  const char* input_file = "/home/roman/Sources/an-tronics/eagle/40106-4069-Synth.brd";
+  const char* input_file = "/home/roman/Sources/an-tronics/"
+                           "eagle/40106-4069-Synth.brd";
   const char* output_file = NULL;
 
   MAP_NEW(devicesets);
@@ -1059,24 +1068,33 @@ main(int argc, char* argv[]) {
   match_foreach(doc, "net|signal", build_nets);
   match_foreach(doc, "symbol", build_sym);
 
-  buffer_puts(&output, "# Stripboard\n# board <width>,<height>\n\nboard ");
+  buffer_puts(&output,
+              "# Stripboard\n# board "
+              "<width>,<height>\n\nboard ");
 
   buffer_putlong(&output, ((bounds.max.x + 9) / 10 + 2) * 10);
   buffer_putc(&output, ',');
   buffer_putlong(&output, ((bounds.max.y + 9) / 10 + 2) * 10);
   buffer_puts(&output, "\n");
 
-  buffer_puts(&output, "\n# Packages\n# <package name>   <pin coordinates relative to pin 0>\n\n");
+  buffer_puts(&output,
+              "\n# Packages\n# <package name>  "
+              " <pin coordinates relative to "
+              "pin 0>\n\n");
   MAP_VISIT_ALL(packages, dump_package, "package");
 
   buffer_puts(&output,
-              "\n# Components\n# <component name> <package name>    <absolute position of "
+              "\n# Components\n# <component "
+              "name> <package name>    "
+              "<absolute position of "
               "component pin 0>\n\n");
   MAP_VISIT_ALL(parts, output_part, "part");
 
-  buffer_puts(
-      &output,
-      "\n# Connections\n# <from component name>.<pin index> <to component name>.<pin index>\n\n");
+  buffer_puts(&output,
+              "\n# Connections\n# <from "
+              "component name>.<pin index> <to "
+              "component name>.<pin "
+              "index>\n\n");
 
   MAP_VISIT_ALL(parts, dump_part, "part");
   MAP_VISIT_ALL(nets, dump_net, 0);
@@ -1089,12 +1107,14 @@ main(int argc, char* argv[]) {
   part_unconnected();
 
   /*
-   * Cleanup function for the XML library.
+   * Cleanup function for the XML
+   * library.
    */
   xml_free(doc);
   buffer_flush(&output);
   /*
-   * this is to debug memory for regression tests
+   * this is to debug memory for
+   * regression tests
    */
   return (0);
 }

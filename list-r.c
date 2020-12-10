@@ -87,8 +87,7 @@ static int fnmatch_strarray(buffer* b, array* a, const char* string, int flags);
 static strlist exclude_masks, include_masks;
 static char opt_separator = DIRSEP_C;
 
-static int opt_list = 0, opt_numeric = 0, opt_relative = 0, opt_deref = 0, opt_samedev = 1,
-           opt_crc = 0;
+static int opt_list = 0, opt_numeric = 0, opt_relative = 0, opt_deref = 0, opt_samedev = 1, opt_crc = 0;
 static int64 opt_minsize = -1;
 static long opt_depth = -1;
 static uint32 opt_types = (uint32)(int32)-1;
@@ -111,7 +110,9 @@ last_error() {
   if(!FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
                     0,
                     errCode,
-                    MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), /* default language */
+                    MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), /* default
+                                                                  language
+                                                                */
                     (LPTSTR)&err,
                     0,
                     0))
@@ -132,15 +133,11 @@ get_file_size(char* path) {
   typedef LONG(WINAPI getfilesizeex_fn)(HANDLE, PLARGE_INTEGER);
   static getfilesizeex_fn* api_fn;
 
-  HANDLE hFile = CreateFileA(path,
-                             GENERIC_READ,
-                             FILE_SHARE_READ | FILE_SHARE_WRITE,
-                             0,
-                             OPEN_EXISTING,
-                             FILE_ATTRIBUTE_NORMAL,
-                             0);
+  HANDLE hFile = CreateFileA(path, GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
   if(hFile == INVALID_HANDLE_VALUE)
-    return -1; /* error condition, could call GetLastError to find out more */
+    return -1; /* error condition, could
+                  call GetLastError to
+                  find out more */
 
   if(!api_fn) {
     HANDLE kernel;
@@ -153,10 +150,14 @@ get_file_size(char* path) {
 
   if(!(*api_fn)(hFile, &size)) {
     CloseHandle(hFile);
-    return -1; /* error condition, could call GetLastError to find out more */
+    return -1; /* error condition, could
+                  call GetLastError to
+                  find out more */
   }
   CloseHandle(hFile);
-  /*  fprintf(stderr, "get_file_size: %s = %"PRIi64" [%s]\n", path, (int64)size.QuadPart,
+  /*  fprintf(stderr, "get_file_size: %s
+   * = %"PRIi64" [%s]\n", path,
+   * (int64)size.QuadPart,
    * last_error()); */
   return size.QuadPart;
 }
@@ -165,24 +166,24 @@ uint64
 get_file_time(const char* path) {
   FILETIME c, la, lw;
   int64 t;
-  HANDLE hFile = CreateFileA(path,
-                             GENERIC_READ,
-                             FILE_SHARE_READ | FILE_SHARE_WRITE,
-                             0,
-                             OPEN_EXISTING,
-                             FILE_ATTRIBUTE_NORMAL,
-                             0);
+  HANDLE hFile = CreateFileA(path, GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
   if(hFile == INVALID_HANDLE_VALUE)
-    return -1; /* error condition, could call GetLastError to find out more */
+    return -1; /* error condition, could
+                  call GetLastError to
+                  find out more */
   if(!GetFileTime(hFile, &c, &la, &lw)) {
     CloseHandle(hFile);
-    return -1; /* error condition, could call GetLastError to find out more */
+    return -1; /* error condition, could
+                  call GetLastError to
+                  find out more */
   }
   CloseHandle(hFile);
   if((t = filetime_to_unix(&lw)) <= 0)
     if((t = filetime_to_unix(&c)) <= 0)
       t = filetime_to_unix(&la);
-  /*  fprintf(stderr, "get_file_size: %s = %"PRIi64" [%s]\n", path, (int64)size.QuadPart,
+  /*  fprintf(stderr, "get_file_size: %s
+   * = %"PRIi64" [%s]\n", path,
+   * (int64)size.QuadPart,
    * last_error()); */
   return t;
 }
@@ -217,17 +218,19 @@ get_file_owner(const char* path) {
   PSECURITY_DESCRIPTOR pSD = 0;
   LPSTR strsid = 0;
   DWORD dwErrorCode = 0;
-  static DWORD(WINAPI * get_security_info)(
-      HANDLE, DWORD, SECURITY_INFORMATION, PSID*, PSID*, PACL*, PACL*, PSECURITY_DESCRIPTOR*);
+  static DWORD(WINAPI * get_security_info)(HANDLE, DWORD, SECURITY_INFORMATION, PSID*, PSID*, PACL*, PACL*, PSECURITY_DESCRIPTOR*);
   static BOOL(WINAPI * convert_sid_to_string_sid_a)(PSID, LPSTR*);
   tmpbuf[0] = '\0';
-  /* Get the handle of the file object. */
-  hFile =
-      CreateFileA(path, GENERIC_READ, FILE_SHARE_READ, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
-  /* Check GetLastError for CreateFile error code. */
+  /* Get the handle of the file object.
+   */
+  hFile = CreateFileA(path, GENERIC_READ, FILE_SHARE_READ, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
+  /* Check GetLastError for CreateFile
+   * error code. */
   if(hFile == INVALID_HANDLE_VALUE) {
     dwErrorCode = GetLastError();
-    /*     snprintf(tmpbuf, sizeof(tmpbuf), "CreateFile error = %d\n", dwErrorCode); */
+    /*     snprintf(tmpbuf,
+     * sizeof(tmpbuf), "CreateFile error
+     * = %d\n", dwErrorCode); */
     return 0;
   }
   if(get_win_api(&get_security_info, "advapi32", "GetSecurityInfo") == -1)
@@ -236,19 +239,22 @@ get_file_owner(const char* path) {
     return 0;
 
   /* Get the owner SID of the file. */
-  dwRtnCode = get_security_info(
-      hFile, SE_FILE_OBJECT, OWNER_SECURITY_INFORMATION, &pSidOwner, 0, 0, 0, &pSD);
-  /* Check GetLastError for GetSecurityInfo error condition. */
+  dwRtnCode = get_security_info(hFile, SE_FILE_OBJECT, OWNER_SECURITY_INFORMATION, &pSidOwner, 0, 0, 0, &pSD);
+  /* Check GetLastError for
+   * GetSecurityInfo error condition. */
   if(dwRtnCode != ERROR_SUCCESS) {
     dwErrorCode = GetLastError();
-    /*   snprintf(tmpbuf, sizeof(tmpbuf), "GetSecurityInfo error = %d\n", dwErrorCode); */
+    /*   snprintf(tmpbuf,
+     * sizeof(tmpbuf), "GetSecurityInfo
+     * error = %d\n", dwErrorCode); */
     return 0;
   }
   if(convert_sid_to_string_sid_a(pSidOwner, &strsid)) {
     str_copy(tmpbuf, strsid);
     LocalFree(strsid);
   }
-  /* First call to LookupAccountSid to get the tmpbuf sizes. */
+  /* First call to LookupAccountSid to
+   * get the tmpbuf sizes. */
   bRtnBool = LookupAccountSid(0, /* local computer */
                               pSidOwner,
                               AcctName,
@@ -256,36 +262,60 @@ get_file_owner(const char* path) {
                               DomainName,
                               (LPDWORD)&dwDomainName,
                               &eUse);
-  /* Reallocate memory for the buffers. */
+  /* Reallocate memory for the buffers.
+   */
   AcctName = (LPTSTR)GlobalAlloc(GMEM_FIXED, dwAcctName);
-  /* Check GetLastError for GlobalAlloc error condition. */
+  /* Check GetLastError for GlobalAlloc
+   * error condition. */
   if(AcctName == 0) {
     dwErrorCode = GetLastError();
-    /* snprintf(tmpbuf, sizeof(tmpbuf), "GlobalAlloc error = %d\n", dwErrorCode); */
+    /* snprintf(tmpbuf, sizeof(tmpbuf),
+     * "GlobalAlloc error = %d\n",
+     * dwErrorCode); */
     return tmpbuf;
   }
   DomainName = (LPTSTR)GlobalAlloc(GMEM_FIXED, dwDomainName);
-  /* Check GetLastError for GlobalAlloc error condition. */
+  /* Check GetLastError for GlobalAlloc
+   * error condition. */
   if(DomainName == 0) {
     dwErrorCode = GetLastError();
-    /* snprintf(tmpbuf, sizeof(tmpbuf), "GlobalAlloc error = %d\n", dwErrorCode); */
+    /* snprintf(tmpbuf, sizeof(tmpbuf),
+     * "GlobalAlloc error = %d\n",
+     * dwErrorCode); */
     return tmpbuf;
   }
-  /* Second call to LookupAccountSid to get the account name. */
-  bRtnBool = LookupAccountSid(0,                      /* name of local or remote computer */
-                              pSidOwner,              /* security identifier */
-                              AcctName,               /* account name tmpbuf */
-                              (LPDWORD)&dwAcctName,   /* size of account name tmpbuf */
+  /* Second call to LookupAccountSid to
+   * get the account name. */
+  bRtnBool = LookupAccountSid(0,                      /* name of local or remote
+                                                         computer */
+                              pSidOwner,              /* security identifier
+                                                       */
+                              AcctName,               /* account name tmpbuf
+                                                       */
+                              (LPDWORD)&dwAcctName,   /* size of
+                                                         account
+                                                         name
+                                                         tmpbuf */
                               DomainName,             /* domain name */
-                              (LPDWORD)&dwDomainName, /* size of domain name tmpbuf */
+                              (LPDWORD)&dwDomainName, /* size of
+                                                         domain
+                                                         name
+                                                         tmpbuf
+                                                       */
                               &eUse);                 /* SID type */
-  /* Check GetLastError for LookupAccountSid error condition. */
+  /* Check GetLastError for
+   * LookupAccountSid error condition.
+   */
   if(bRtnBool == FALSE) {
     dwErrorCode = GetLastError();
     if(dwErrorCode == ERROR_NONE_MAPPED)
-      str_copy(tmpbuf, "Account owner not found for specified SID.\n");
+      str_copy(tmpbuf,
+               "Account owner not found for "
+               "specified SID.\n");
     else
-      str_copy(tmpbuf, "Error in LookupAccountSid.\n");
+      str_copy(tmpbuf,
+               "Error in "
+               "LookupAccountSid.\n");
     return tmpbuf;
   } else if(bRtnBool == TRUE)
     /* Print the account name. */
@@ -313,33 +343,48 @@ is_junction_point(const char* fn) {
   hFind = FindFirstFile(fn, &FindFileData);
   if(INVALID_HANDLE_VALUE != hFind) {
     if(FindFileData.dwFileAttributes & FILE_ATTRIBUTE_REPARSE_POINT) {
-      /* We're probably going to skip this reparse point, */
-      /* but not always. (See the logic below.) */
+      /* We're probably going to skip
+       * this reparse point, */
+      /* but not always. (See the logic
+       * below.) */
       status = 1;
       /* Tag values come from */
-      /* http://msdn.microsoft.com/en-us/library/dd541667(prot.20).aspx */
+      /* http://msdn.microsoft.com/en-us/library/dd541667(prot.20).aspx
+       */
       switch(FindFileData.dwReserved0) {
-        case IO_REPARSE_TAG_MOUNT_POINT: /* ocb.error_filename(fn, "Junction point, skipping"); */
-          break;
+        case IO_REPARSE_TAG_MOUNT_POINT: /* ocb.error_filename(fn, "Junction point, skipping"); */ break;
         case IO_REPARSE_TAG_SYMLINK:
-          /* TODO: Maybe have the option to follow symbolic links? */
-          /* ocb.error_filename(fn, "Symbolic link, skipping"); */
+          /* TODO: Maybe have the option
+           * to follow symbolic links?
+           */
+          /* ocb.error_filename(fn,
+           * "Symbolic link, skipping");
+           */
           break;
-        /* TODO: Use label for deduplication reparse point */
-        /*         when the compiler supports it */
-        /*      case IO_REPARSE_TAG_DEDUP: */
+        /* TODO: Use label for
+         * deduplication reparse point
+         */
+        /*         when the compiler
+         * supports it */
+        /*      case
+         * IO_REPARSE_TAG_DEDUP: */
         case 0x80000013:
-          /* This is the reparse point for Data Deduplication */
+          /* This is the reparse point
+           * for Data Deduplication */
           /* See */
           /* http://blogs.technet.com/b/filecab/archive/2012/05/21/introduction-to-data-deduplication-in-windows-server-2012.aspx
            */
-          /* Unfortunately the compiler doesn't have this value defined yet. */
+          /* Unfortunately the compiler
+           * doesn't have this value
+           * defined yet. */
           status = 0;
           break;
         case IO_REPARSE_TAG_SIS:
           /* Single Instance Storage */
-          /* "is a system's ability to keep one copy of content that multiple users or computers
-           * share" */
+          /* "is a system's ability to
+           * keep one copy of content
+           * that multiple users or
+           * computers share" */
           /* http://blogs.technet.com/b/filecab/archive/2006/02/03/single-instance-store-sis-in-windows-storage-server-r2.aspx
            */
           status = 0;
@@ -347,7 +392,9 @@ is_junction_point(const char* fn) {
         default: break;
       }
     }
-    /* We don't error check this call as there's nothing to do differently */
+    /* We don't error check this call as
+     * there's nothing to do differently
+     */
     /* if it fails. */
     FindClose(hFind);
   }
@@ -495,8 +542,8 @@ fnmatch_strarray(buffer* b, array* a, const char* string, int flags) {
 }
 /*
 void
-make_time(stralloc* out, time_t t, size_t width) {
-  if(opt_numeric) {
+make_time(stralloc* out, time_t t,
+size_t width) { if(opt_numeric) {
     make_num(out, (size_t)t, width);
   } else {
     struct tm ltime;
@@ -508,8 +555,8 @@ make_time(stralloc* out, time_t t, size_t width) {
 #else
     ltime = *localtime(&t);
 #endif
-    sz = strftime(buf, sizeof(buf), opt_timestyle, &ltime);
-    n = width - sz;
+    sz = strftime(buf, sizeof(buf),
+opt_timestyle, &ltime); n = width - sz;
     while(n-- > 0) {
       stralloc_catb(out, " ", 1);
     }
@@ -671,7 +718,8 @@ list_file(stralloc* path, const char* name, dir_type_t dtype, long depth, dev_t 
 #else
 #if USE_READDIR
   if(!is_dir) {
-    size = dir_size(&d); /* dir_INTERNAL(&d)->dir_entry->d_name); */
+    size = dir_size(&d); /* dir_INTERNAL(&d)->dir_entry->d_name);
+                          */
     mtime = dir_time(&d, D_TIME_MODIFICATION);
   } else {
     mtime = 0;
@@ -698,9 +746,12 @@ list_file(stralloc* path, const char* name, dir_type_t dtype, long depth, dev_t 
   if(path->len > PATH_MAX) {
     buffer_puts(buffer_2, "ERROR: Directory ");
     buffer_putsa(buffer_2, path);
-    buffer_puts(buffer_2, " longer than PATH_MAX (" STRINGIFY(PATH_MAX) ")!\n");
-    /*buffer_putulong(buffer_2, PATH_MAX);
-    buffer_puts(buffer_2, ")!\n");*/
+    buffer_puts(buffer_2,
+                " longer than PATH_MAX "
+                "(" STRINGIFY(PATH_MAX) ")!\n");
+    /*buffer_putulong(buffer_2,
+    PATH_MAX); buffer_puts(buffer_2,
+    ")!\n");*/
     buffer_flush(buffer_2);
     return 1;
   }
@@ -780,10 +831,12 @@ list_file(stralloc* path, const char* name, dir_type_t dtype, long depth, dev_t 
       stralloc_catb(&pre, " ", 1);
       /* time */
       opt_numeric ? make_num(&pre, mtime, 10) : make_time(&pre, mtime, 10);
-      /*     make_time(&pre, mtime, 10); */
+      /*     make_time(&pre, mtime, 10);
+       */
       stralloc_catb(&pre, " ", 1);
     }
-    /* fprintf(stderr, "%d %08x\n", is_dir, dir_ATTRS(&d)); */
+    /* fprintf(stderr, "%d %08x\n",
+     * is_dir, dir_ATTRS(&d)); */
 
     if(pre.len > 0)
       buffer_putsa(buffer_1, &pre);
@@ -905,30 +958,52 @@ usage(char* argv0) {
   buffer_putm_internal(buffer_1,
                        "Usage: ",
                        prog,
-                       " [-o output] [infile or stdin]\n\n",
-                       "  -1 ... -9           compression level; default is 3\n",
+                       " [-o output] [infile or "
+                       "stdin]\n\n",
+                       "  -1 ... -9           "
+                       "compression level; default is "
+                       "3\n",
                        "\n",
                        "Options\n",
-                       "  -h, --help                show this help\n",
-                       "  -l, --list                long list\n",
-                       "  -n, --numeric             numeric user/group\n",
-                       "  -r, --relative            relative path\n",
-                       "  -o, --output     FILE     write output to FILE\n",
-                       "  -î, --include    PATTERN  include entries matching PATTERN\n",
-                       "  -x, --exclude    PATTERN  exclude entries matching PATTERN\n",
-                       "  -t, --time-style FORMAT   format time according to FORMAT\n",
-                       "  -m, --min-size   BYTES    minimum file size\n",
-                       "  -L, --dereference         dereference symlinks\n",
+                       "  -h, --help                "
+                       "show this help\n",
+                       "  -l, --list                "
+                       "long list\n",
+                       "  -n, --numeric             "
+                       "numeric user/group\n",
+                       "  -r, --relative            "
+                       "relative path\n",
+                       "  -o, --output     FILE     "
+                       "write output to FILE\n",
+                       "  -î, --include    PATTERN  "
+                       "include entries matching "
+                       "PATTERN\n",
+                       "  -x, --exclude    PATTERN  "
+                       "exclude entries matching "
+                       "PATTERN\n",
+                       "  -t, --time-style FORMAT   "
+                       "format time according to "
+                       "FORMAT\n",
+                       "  -m, --min-size   BYTES    "
+                       "minimum file size\n",
+                       "  -L, --dereference         "
+                       "dereference symlinks\n",
                        "      --no-dereference\n",
                        "  -D, --one-filesystem\n",
                        "  -C, --cross-filesystem\n",
-                       "  -c, --crc                 cyclic redundancy check\n",
-                       "  -d, --depth      NUM      max depth\n",
-                       "  -f, --types      TYPES    filter by type:\n"
+                       "  -c, --crc                 "
+                       "cyclic redundancy check\n",
+                       "  -d, --depth      NUM      max "
+                       "depth\n",
+                       "  -f, --types      TYPES    "
+                       "filter by type:\n"
                        "\n"
-                       "    d = directory, b = block dev s = socket\n"
-                       "    f = file,      c = char dev\n"
-                       "    l = symlink,   p = pipe (fifo)\n"
+                       "    d = directory, b = block "
+                       "dev s = socket\n"
+                       "    f = file,      c = char "
+                       "dev\n"
+                       "    l = symlink,   p = pipe "
+                       "(fifo)\n"
                        "\n",
                        0);
   buffer_putnlflush(buffer_1);
@@ -1025,19 +1100,26 @@ main(int argc, char* argv[]) {
 
   /*
     while(optind < argc) {
-      if(!str_diff(argv[optind], "-l") || !str_diff(argv[optind], "--list")) {
-        opt_list = 1;
-      } else if(!str_diff(argv[optind], "-n") || !str_diff(argv[optind], "--numeric")) {
-        opt_numeric = 1;
-      } else if(!str_diff(argv[optind], "-r") || !str_diff(argv[optind], "--relative")) {
-        relative = 1;
-      } else if(!str_diff(argv[optind], "-o") || !str_diff(argv[optind], "--output")) {
-        buffer_1->fd = io_err_check(open_trunc(argv[optind + 1]));
+      if(!str_diff(argv[optind], "-l")
+    || !str_diff(argv[optind],
+    "--list")) { opt_list = 1; } else
+    if(!str_diff(argv[optind], "-n") ||
+    !str_diff(argv[optind],
+    "--numeric")) { opt_numeric = 1; }
+    else if(!str_diff(argv[optind],
+    "-r") || !str_diff(argv[optind],
+    "--relative")) { relative = 1; }
+    else if(!str_diff(argv[optind],
+    "-o") || !str_diff(argv[optind],
+    "--output")) { buffer_1->fd =
+    io_err_check(open_trunc(argv[optind
+    + 1]));
         ++optind;
-      } else if(!str_diff(argv[optind], "--relative")) {
-        relative = 1;
-      } else if(!str_diff(argv[optind], "-t") || !str_diff(argv[optind], "--time-style")) {
-        optind++;
+      } else if(!str_diff(argv[optind],
+    "--relative")) { relative = 1; }
+    else if(!str_diff(argv[optind],
+    "-t") || !str_diff(argv[optind],
+    "--time-style")) { optind++;
         opt_timestyle = argv[optind];
       } else {
         break;
@@ -1045,7 +1127,8 @@ main(int argc, char* argv[]) {
       optind++;
     }
     */
-  // strlist_dump(buffer_2, &exclude_masks);
+  // strlist_dump(buffer_2,
+  // &exclude_masks);
   if(optind < argc) {
     while(optind < argc) {
       if(opt_relative)

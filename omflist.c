@@ -1,4 +1,5 @@
-/* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C; indent-tabs-mode: nil;
+ * c-basic-offset: 4 -*- */
 
 #include "lib/buffer.h"
 #include "lib/unix.h"
@@ -72,9 +73,12 @@ usage(char* av0) {
                        "\n",
                        "Options:\n",
                        "\n",
-                       "  -h, --help              Show this help\n",
-                       "  -i, --imports           List imports\n",
-                       "  -e, --exports           List exports\n",
+                       "  -h, --help              Show "
+                       "this help\n",
+                       "  -i, --imports           List "
+                       "imports\n",
+                       "  -e, --exports           List "
+                       "exports\n",
                        "\n",
                        NULL);
   buffer_flush(buffer_1);

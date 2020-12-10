@@ -1,4 +1,5 @@
-/* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C; indent-tabs-mode: nil;
+ * c-basic-offset: 4 -*- */
 
 #include "lib/unix.h"
 #include "lib/uint64.h"
@@ -90,22 +91,7 @@ coff_print_func(buffer* b, void* coff, coff_symtab_entry* fn) {
   buffer_putnlflush(b);
 }
 
-static const char* coff_symtab_mchp_types[] = {"null",
-                                               "void",
-                                               "character",
-                                               "short integer",
-                                               "integer",
-                                               "long integer",
-                                               "floating point",
-                                               "double length floating point",
-                                               "structure",
-                                               "union",
-                                               "enumeration",
-                                               "member of enumeration",
-                                               "unsigned character",
-                                               "unsigned short",
-                                               "unsigned integer",
-                                               "unsigned long"};
+static const char* coff_symtab_mchp_types[] = {"null", "void", "character", "short integer", "integer", "long integer", "floating point", "double length floating point", "structure", "union", "enumeration", "member of enumeration", "unsigned character", "unsigned short", "unsigned integer", "unsigned long"};
 
 void
 coff_list_symbols(buffer* b, void* coff) {
@@ -113,14 +99,15 @@ coff_list_symbols(buffer* b, void* coff) {
   const char* strtab = coff_get_strtab(coff, NULL);
   coff_file_header* fhdr = coff_header_file(coff);
 
-  char microchip = (fhdr->machine == COFF_FILE_MACHINE_MICROCHIP_V1 ||
-                    fhdr->machine == COFF_FILE_MACHINE_MICROCHIP_V2);
+  char microchip = (fhdr->machine == COFF_FILE_MACHINE_MICROCHIP_V1 || fhdr->machine == COFF_FILE_MACHINE_MICROCHIP_V2);
   coff_symtab_entry* e;
   long i = 0;
 
   symtab = coff_symbol_table(coff);
 
-  buffer_puts(b, "number of symbol table entries: ");
+  buffer_puts(b,
+              "number of symbol table "
+              "entries: ");
   buffer_putulong(b, range_size(&symtab));
   buffer_putnlflush(b);
 
@@ -164,9 +151,7 @@ coff_list_symbols(buffer* b, void* coff) {
       buffer_puts(b, "0x");
       buffer_putxlong0(b, (long)(uint16)entry->scnum, 4);
       buffer_putspace(b);
-      buffer_putspad(b,
-                     coff_symtab_mchp_types[entry->type] ? coff_symtab_mchp_types[entry->type] : "",
-                     16);
+      buffer_putspad(b, coff_symtab_mchp_types[entry->type] ? coff_symtab_mchp_types[entry->type] : "", 16);
       buffer_putspace(b);
       buffer_putlong0(b, (long)(uint32)entry->numaux, 2);
 
@@ -178,7 +163,8 @@ coff_list_symbols(buffer* b, void* coff) {
       if(e->e.zeroes != 0)
         stralloc_copyb(&name, e->e.name, sizeof(e->e.name));
       /* else
-         stralloc_copys(&name, &strtab[e->e.offset]);*/
+         stralloc_copys(&name,
+         &strtab[e->e.offset]);*/
 
       if(e->e.sclass == 0) {
         stralloc_zero(&name);
@@ -216,26 +202,36 @@ coff_list_symbols(buffer* b, void* coff) {
           buffer_puts(b, "Aux .bf/.ef def: ");
           buffer_puts(b, ".source_line_number: ");
           buffer_putulong(b, aux->bfef.source_line_number);
-          buffer_puts(b, ", .pointer_to_next_function: ");
+          buffer_puts(b,
+                      ", "
+                      ".pointer_to_next_"
+                      "function: ");
           buffer_putulong(b, aux->bfef.pointer_to_next_function);
           buffer_putnlflush(b);
 
         } else if(e->e.type & 0x20 && e->e.scnum > 0 && e->e.sclass == COFF_C_EXT) {
-          buffer_puts(b, "\t\t\tAux function def: ");
-          buffer_puts(b, "\n\t\t\t.bf_tag_index: ");
+          buffer_puts(b,
+                      "\t\t\tAux "
+                      "function def: ");
+          buffer_puts(b,
+                      "\n\t\t\t.bf_tag_"
+                      "index: ");
           buffer_putulong(b, aux->func.tag_index);
 
           buffer_puts(b, "\n\t\t\t.code_size: ");
           buffer_putulong(b, aux->func.code_size);
-          buffer_puts(b, "\n\t\t\t.pointer_to_line_number: 0x");
+          buffer_puts(b,
+                      "\n\t\t\t.pointer_to_"
+                      "line_number: 0x");
           buffer_putxlong0(b, aux->func.pointer_to_line_number, 8);
-          buffer_puts(b, "\n\t\t\t.pointer_to_next_function: ");
+          buffer_puts(b,
+                      "\n\t\t\t.pointer_to_"
+                      "next_function: ");
           buffer_putulong(b, aux->func.pointer_to_next_function);
           buffer_putnlflush(b);
 
           coff_print_func(b, coff, aux);
-        } else if(e->e.sclass == COFF_C_EXT && e->e.scnum == COFF_SECTION_UNDEF &&
-                  e->e.value == 0) {
+        } else if(e->e.sclass == COFF_C_EXT && e->e.scnum == COFF_SECTION_UNDEF && e->e.value == 0) {
           buffer_puts(b, "Aux weak def: ");
           buffer_puts(b, ".tag_index: ");
           buffer_putulong(b, aux->weak.tag_index);
@@ -245,18 +241,28 @@ coff_list_symbols(buffer* b, void* coff) {
           buffer_putnlflush(b);
         } else if(e->e.sclass == COFF_C_FILE) {
         } else if(e->e.sclass == COFF_C_STATIC) {
-          buffer_puts(b, "\n\t\t\tAux section def:");
+          buffer_puts(b,
+                      "\n\t\t\tAux "
+                      "section def:");
           buffer_puts(b, "\n\t\t\t.length:\t\t");
           buffer_putulong(b, aux->section.length);
-          buffer_puts(b, "\n\t\t\t.number_of_relocations:\t");
+          buffer_puts(b,
+                      "\n\t\t\t.number_of_"
+                      "relocations:\t");
           buffer_putulong(b, aux->section.number_of_relocations);
-          buffer_puts(b, "\n\t\t\t.number_of_line_numbers:");
+          buffer_puts(b,
+                      "\n\t\t\t.number_of_line_"
+                      "numbers:");
           buffer_putulong(b, aux->section.number_of_line_numbers);
-          buffer_puts(b, "\n\t\t\t.check_sum:\t\t");
+          buffer_puts(b,
+                      "\n\t\t\t.check_"
+                      "sum:\t\t");
           buffer_putxlong0(b, aux->section.check_sum, sizeof(aux->section.check_sum) * 2);
           buffer_puts(b, "\n\t\t\t.number:\t\t");
           buffer_putulong(b, aux->section.number);
-          buffer_puts(b, "\n\t\t\t.selection:\t\t");
+          buffer_puts(b,
+                      "\n\t\t\t."
+                      "selection:\t\t");
           buffer_putulong(b, aux->section.selection);
           buffer_putnlflush(b);
         }
@@ -278,14 +284,22 @@ usage(char* av0) {
                        "\n",
                        "Options:\n",
                        "\n",
-                       "  -h, --help              Show this help\n",
-                       "  -i, --imports           List imports\n",
-                       "  -e, --exports           List exports\n",
-                       "  -d, --deps              List DLL dependencies\n",
-                       "  -s, --sections          List PE32 sections\n",
-                       "  -E, --export-directory  Print export directory\n",
-                       "  -D, --data-directory    Print data directory\n",
-                       "  -O, --optional-header   Print optional header\n",
+                       "  -h, --help              Show "
+                       "this help\n",
+                       "  -i, --imports           List "
+                       "imports\n",
+                       "  -e, --exports           List "
+                       "exports\n",
+                       "  -d, --deps              List "
+                       "DLL dependencies\n",
+                       "  -s, --sections          List "
+                       "PE32 sections\n",
+                       "  -E, --export-directory  Print "
+                       "export directory\n",
+                       "  -D, --data-directory    Print "
+                       "data directory\n",
+                       "  -O, --optional-header   Print "
+                       "optional header\n",
                        "\n",
                        0);
   buffer_flush(buffer_1);
@@ -298,15 +312,7 @@ main(int argc, char** argv) {
 
   int c, index = 0;
 
-  struct longopt opts[] = {{"help", 0, NULL, 'h'},
-                           {"imports", 0, &list_imports, 'i'},
-                           {"exports", 0, &list_exports, 'e'},
-                           {"deps", 0, &list_deps, 'd'},
-                           {"sections", 0, &list_sections, 's'},
-                           {"export-directory", 0, &print_export_dir, 'E'},
-                           {"data-directory", 0, &print_data_dir, 'D'},
-                           {"optional-header", 0, &print_opt_header, 'O'},
-                           {0, 0, 0, 0}};
+  struct longopt opts[] = {{"help", 0, NULL, 'h'}, {"imports", 0, &list_imports, 'i'}, {"exports", 0, &list_exports, 'e'}, {"deps", 0, &list_deps, 'd'}, {"sections", 0, &list_sections, 's'}, {"export-directory", 0, &print_export_dir, 'E'}, {"data-directory", 0, &print_data_dir, 'D'}, {"optional-header", 0, &print_opt_header, 'O'}, {0, 0, 0, 0}};
 
   errmsg_iam(argv[0]);
 
@@ -355,9 +361,7 @@ main(int argc, char** argv) {
 
       buffer_putnlflush(buffer_2);
 
-      if(header->machine != COFF_FILE_MACHINE_I386 && header->machine != COFF_FILE_MACHINE_AMD64 &&
-         header->machine != COFF_FILE_MACHINE_MICROCHIP_V1 &&
-         header->machine != COFF_FILE_MACHINE_MICROCHIP_V2) {
+      if(header->machine != COFF_FILE_MACHINE_I386 && header->machine != COFF_FILE_MACHINE_AMD64 && header->machine != COFF_FILE_MACHINE_MICROCHIP_V1 && header->machine != COFF_FILE_MACHINE_MICROCHIP_V2) {
         buffer_putsflush(buffer_2, "not COFF\n");
         return -1;
       }
@@ -370,18 +374,29 @@ main(int argc, char** argv) {
 
           put_value(buffer_2, "COFF_OPT_HEADER\nmagic", uint16_get(&opthdr_mchp->magic));
           put_value(buffer_2, "vstamp", uint16_get(&opthdr_mchp->vstamp));
-          put_value(buffer_2, "proc_type", /*uint32_get*/ (opthdr_mchp->proc_type));
-          put_value(buffer_2, "rom_width_bits", /*uint32_get*/ (opthdr_mchp->rom_width_bits));
-          put_value(buffer_2, "ram_width_bits", /*uint32_get*/ (opthdr_mchp->ram_width_bits));
+          put_value(buffer_2,
+                    "proc_type",
+                    /*uint32_get*/
+                    (opthdr_mchp->proc_type));
+          put_value(buffer_2,
+                    "rom_width_bits",
+                    /*uint32_get*/
+                    (opthdr_mchp->rom_width_bits));
+          put_value(buffer_2,
+                    "ram_width_bits",
+                    /*uint32_get*/
+                    (opthdr_mchp->ram_width_bits));
         }
 
-        // if(!(nt_headers->coff_header.characteristics & COFF_FILE_DLL)) {
-        // buffer_putsflush(buffer_2, "not DLL\n");
-        // return -1;
+        // if(!(nt_headers->coff_header.characteristics
+        // & COFF_FILE_DLL)) {
+        // buffer_putsflush(buffer_2,
+        // "not DLL\n"); return -1;
         // }
         //
         /*      if(print_opt_header)
-                coff_dump_opthdr(buffer_1, base);
+                coff_dump_opthdr(buffer_1,
+           base);
         */
         if(list_sections)
           coff_dump_sections(base);
@@ -395,16 +410,24 @@ main(int argc, char** argv) {
          if(list_exports)
            coff_dump_exports(base);
         if(print_export_dir) {
-          coff_data_directory* data_dir = &coff_header_datadir(base)[COFF_DIRECTORY_ENTRY_EXPORT];
-          coff_export_directory* export_dir = coff_rva2ptr(base, data_dir->virtual_address);
+          coff_data_directory* data_dir
+        =
+        &coff_header_datadir(base)[COFF_DIRECTORY_ENTRY_EXPORT];
+          coff_export_directory*
+        export_dir = coff_rva2ptr(base,
+        data_dir->virtual_address);
 
-          coff_print_export_directory(buffer_2, base, export_dir);
+          coff_print_export_directory(buffer_2,
+        base, export_dir);
         }
         if(print_data_dir) {
           uint32 num_dirs;
-          coff_data_directory* data_dir = coff_get_datadir(base, &num_dirs);
+          coff_data_directory* data_dir
+        = coff_get_datadir(base,
+        &num_dirs);
 
-            coff_print_data_directories(buffer_2, base, data_dir, num_dirs);
+            coff_print_data_directories(buffer_2,
+        base, data_dir, num_dirs);
         }
         */
       }

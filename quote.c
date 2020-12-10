@@ -179,7 +179,9 @@ add_output(const char* x, size_t len, buffer* out) {
     if(do_quote(x[i])) {
       if(chlen > 1 || fmt_call != fmt_default) {
         n = fmt_call(tmp, x[i], 0);
-      } else /* if(iscntrl(ch) || ch > 127) */ {
+      } else /* if(iscntrl(ch) || ch >
+                127) */
+      {
         n = 0;
         tmp[n++] = '\\';
         if(ch <= 63)
@@ -277,32 +279,54 @@ add_chars(const char* x, size_t len) {
 
 void
 usage(char* av0) {
-  buffer_putm_internal(
-      buffer_1,
-      "Usage: ",
-      str_basename(av0),
-      " [OPTIONS] [FILES...]\n"
-      "\n"
-      "Options:\n"
-      "\n"
-      "  -h, --help                       Show this help\n"
-      "  -i, --in-place                   Write to input file\n"
-      "  -q, --quote-chars CHARS          Characters to quote\n"
-      "  -n, --quote-newline              Quote newline (\\n)\n"
-      "      --quote-tabs                 Quote tabs (\\t)\n"
-      "      --quote-nul                  Quote nul (\\0)\n"
-      "  -b, --quote-backslash            Quote backslash (\\)\n"
-      "  -c, --escape-c                   Escape characters for C strings\n"
-      "  -C, --escape-cmake               Escape characters for CMake strings\n"
-      "  -S, --escape-shell               Escape characters for shell strings\n"
-      "  -D, --escape-doublequoted-shell  Escape characters for double-quoted shell strings\n"
-      "  -Q, --escape-quoted-shell        Escape characters for single-quoted shell strings\n"
-      "  -X, --escape-xml                 Escape characters for XML\n"
-      "  -J, --escape-json                Escape characters for JSON\n"
-      "  -P, --escape-printable           Escape non-printable characters\n"
-      "  -a, --add-quotes QUOTE           Add quotes of type\n"
-      "\n",
-      NULL);
+  buffer_putm_internal(buffer_1,
+                       "Usage: ",
+                       str_basename(av0),
+                       " [OPTIONS] [FILES...]\n"
+                       "\n"
+                       "Options:\n"
+                       "\n"
+                       "  -h, --help                    "
+                       "   Show this help\n"
+                       "  -i, --in-place                "
+                       "   Write to input file\n"
+                       "  -q, --quote-chars CHARS       "
+                       "   Characters to quote\n"
+                       "  -n, --quote-newline           "
+                       "   Quote newline (\\n)\n"
+                       "      --quote-tabs              "
+                       "   Quote tabs (\\t)\n"
+                       "      --quote-nul               "
+                       "   Quote nul (\\0)\n"
+                       "  -b, --quote-backslash         "
+                       "   Quote backslash (\\)\n"
+                       "  -c, --escape-c                "
+                       "   Escape characters for C "
+                       "strings\n"
+                       "  -C, --escape-cmake            "
+                       "   Escape characters for CMake "
+                       "strings\n"
+                       "  -S, --escape-shell            "
+                       "   Escape characters for shell "
+                       "strings\n"
+                       "  -D, "
+                       "--escape-doublequoted-shell  "
+                       "Escape characters for "
+                       "double-quoted shell strings\n"
+                       "  -Q, --escape-quoted-shell     "
+                       "   Escape characters for "
+                       "single-quoted shell strings\n"
+                       "  -X, --escape-xml              "
+                       "   Escape characters for XML\n"
+                       "  -J, --escape-json             "
+                       "   Escape characters for JSON\n"
+                       "  -P, --escape-printable        "
+                       "   Escape non-printable "
+                       "characters\n"
+                       "  -a, --add-quotes QUOTE        "
+                       "   Add quotes of type\n"
+                       "\n",
+                       NULL);
   buffer_flush(buffer_1);
 }
 
@@ -373,7 +397,9 @@ main(int argc, char* argv[]) {
       case '0':
         quote_nul = true;
         break;
-        //    case 'S': stralloc_copys(&quote_chars, "\"$`"); break;
+        //    case 'S':
+        //    stralloc_copys(&quote_chars,
+        //    "\"$`"); break;
       case 'C':
         add_quotes = "\"";
         // tab_size = 2;
@@ -465,7 +491,8 @@ again:
     buffer_putnlflush(buffer_1);
   }
   /*
-    if((x = mmap_read(out_path, &n)) && n > 1) {
+    if((x = mmap_read(out_path, &n)) &&
+    n > 1) {
 
       buffer_puts(buffer_1, "out: ");
       buffer_put(buffer_1, x, n);
@@ -487,8 +514,9 @@ again:
       errmsg_warnsys("unlink: ", tmpl, 0);
     }
 
-    /*    buffer_truncfile(&inplace, out_path);
-        buffer_put(&inplace, tmp.s, tmp.len);
+    /*    buffer_truncfile(&inplace,
+       out_path); buffer_put(&inplace,
+       tmp.s, tmp.len);
         buffer_flush(&inplace);
         buffer_close(&inplace);
     */

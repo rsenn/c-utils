@@ -235,8 +235,7 @@ extern int close();
 #define debug_printf(x)
 
 #ifdef DEBUG
-#define DEBUG_MSG(msg, fd)                                                                         \
-  buffer_puts(buffer_2, msg), buffer_putlong(buffer_2, fd), buffer_putnlflush(buffer_2)
+#define DEBUG_MSG(msg, fd) buffer_puts(buffer_2, msg), buffer_putlong(buffer_2, fd), buffer_putnlflush(buffer_2)
 #else
 #define DEBUG_MSG(msg, fd)
 #endif
@@ -285,11 +284,7 @@ io_submit(aio_context_t ctx, long nr, struct iocb** iocbpp) {
 #endif
 #ifndef HAVE_IO_GETEVENTS
 static inline int
-io_getevents(aio_context_t ctx,
-             long min_nr,
-             long max_nr,
-             struct io_event* events,
-             struct timespec* timeout) {
+io_getevents(aio_context_t ctx, long min_nr, long max_nr, struct io_event* events, struct timespec* timeout) {
   return syscall(__NR_io_getevents, ctx, min_nr, max_nr, events, timeout);
 }
 #endif

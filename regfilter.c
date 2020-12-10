@@ -136,17 +136,19 @@ regfilter() {
     len = buffer_getline(buffer_0, buffer, sizeof(buffer));
 
     if(lineno == 1) {
-      if(((unsigned char)buffer[0] == 0xff && (unsigned char)buffer[1] == 0xfe) ||
-         (buffer[0] == 0x00 || buffer[1] == 0x00)) {
+      if(((unsigned char)buffer[0] == 0xff && (unsigned char)buffer[1] == 0xfe) || (buffer[0] == 0x00 || buffer[1] == 0x00)) {
         unicode = 1;
       }
       /*
-          buffer_puts(buffer_2, "BOM: ");
-          buffer_putulong(buffer_2, (unsigned char)buffer[0]);
+          buffer_puts(buffer_2, "BOM:
+         "); buffer_putulong(buffer_2,
+         (unsigned char)buffer[0]);
           buffer_puts(buffer_2, " ");
-          buffer_putulong(buffer_2, (unsigned char)buffer[1]);
+          buffer_putulong(buffer_2,
+         (unsigned char)buffer[1]);
           buffer_puts(buffer_2, " ");
-          buffer_putulong(buffer_2, (unsigned char)unicode);
+          buffer_putulong(buffer_2,
+         (unsigned char)unicode);
           buffer_puts(buffer_2, "\n");
           buffer_flush(buffer_2);
        */
@@ -224,7 +226,9 @@ regfilter() {
         rr = ROOT_HKCR;
       else if(KEY_EQ(key, "HKU") || KEY_EQ(key, "HKEY_USERS"))
         rr = ROOT_HKU;
-      else if(KEY_EQ(key, "HKCC") || KEY_EQ(key, "HKEY_CURRENT_CONFIG"))
+      else if(KEY_EQ(key, "HKCC") || KEY_EQ(key,
+                                            "HKEY_CURRENT_"
+                                            "CONFIG"))
         rr = ROOT_HKCC;
 
       o = strchr(key, '\\');
@@ -323,8 +327,7 @@ regfilter() {
         buffer_puts(buffer_1, "\" ");
       }
 
-      has_newline = (find_char('\n', &line.s[valuestart], valueend - valuestart) ||
-                     find_char('\r', &line.s[valuestart], valueend - valuestart));
+      has_newline = (find_char('\n', &line.s[valuestart], valueend - valuestart) || find_char('\r', &line.s[valuestart], valueend - valuestart));
 
       has_expansion = (find_char('%', &line.s[valuestart], valueend - valuestart) >= 2);
 
@@ -403,9 +406,9 @@ regfilter() {
     buffer_puts(buffer_2, "Line ");
     buffer_putulong(buffer_2, lineno);
     buffer_puts(buffer_2, ": ");
-    buffer_put(buffer_2, line.s, line.len);
-    buffer_puts(buffer_2, "\n");
-    buffer_flush(buffer_2);
+    buffer_put(buffer_2, line.s,
+    line.len); buffer_puts(buffer_2,
+    "\n"); buffer_flush(buffer_2);
 
     buffer_puts(buffer_2, "Length: ");
     buffer_putulong(buffer_2, len);
@@ -424,7 +427,9 @@ void
 usage(char* arg0) {
   buffer_puts(buffer_2, "Usage: ");
   buffer_puts(buffer_2, str_basename(arg0));
-  buffer_puts(buffer_2, " [-f] [input - file] [output - file]\n");
+  buffer_puts(buffer_2,
+              " [-f] [input - file] "
+              "[output - file]\n");
   buffer_flush(buffer_2);
   exit(1);
 }

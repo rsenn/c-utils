@@ -20,11 +20,55 @@ size_t
 http_read_internal(fd_t fd, char* buf, size_t received, buffer* b) {
   http* h = b->cookie;
   buffer* in = &h->q.in;
-  char* x = buffer_PEEK(in);
-  char* y = buf + received;
+  /*  char* x = buffer_PEEK(in);
+    char* y = buf + received;*/
   http_response* r = h->response;
   ssize_t n = received;
   int status = r->status;
+
+#ifdef DEBUG_HTTP
+  if(r->transfer == HTTP_TRANSFER_CHUNKED && (r->ptr == r->chunk_length || r->chunk_length == 0)) {
+    buffer_putspad(buffer_2, "http_read_internal ", 30);
+    buffer_puts(buffer_2, "s=");
+    buffer_putlong(buffer_2, h->sock);
+    buffer_puts(buffer_2, " ret=");
+    buffer_putlong(buffer_2, n);
+
+    if(n < 0) {
+      buffer_puts(buffer_2, " err=");
+      buffer_putstr(buffer_2, http_strerror(h, received));
+    }
+    if(h->response->code != -1) {
+      buffer_puts(buffer_2, " code=");
+      buffer_putlong(buffer_2, h->response->code);
+    }
+    buffer_puts(buffer_2, " status=");
+    buffer_puts(buffer_2, ((const char* const[]){"-1", "HTTP_RECV_HEADER", "HTTP_RECV_DATA", "HTTP_STATUS_CLOSED", "HTTP_STATUS_ERROR", "HTTP_STATUS_BUSY", "HTTP_STATUS_FINISH", 0})[status + 1]);
+    if(buffer_LEN(in) > 0) {
+      size_t len = buffer_LEN(in);
+      const char* s = buffer_BEGIN(in);
+      const char* e = buffer_END(in);
+      const char* b;
+      if(len > 30)
+        len = 30;
+      buffer_puts(buffer_2, " received=");
+      buffer_putlong(buffer_2, received);
+      buffer_puts(buffer_2, " len=");
+      buffer_putlong(buffer_2, buffer_LEN(in));
+      //  b = e - received;
+
+      buffer_puts(buffer_2, "\n  in=");
+      buffer_put_escaped(buffer_2, s, len, &fmt_escapecharnonprintable);
+
+      if(len < received) {
+        buffer_puts(buffer_2, " ... more (");
+        buffer_putulong(buffer_2, received);
+        buffer_puts(buffer_2, " bytes total) ...");
+      }
+    }
+    buffer_putnlflush(buffer_2);
+  }
+#endif
 
   if((r = h->response)) {
 
@@ -88,53 +132,5 @@ http_read_internal(fd_t fd, char* buf, size_t received, buffer* b) {
       n = received;
     }
   }
-#ifdef DEBUG_HTTP
-  buffer_putspad(buffer_2, "http_read_internal ", 30);
-  buffer_puts(buffer_2, "s=");
-  buffer_putlong(buffer_2, h->sock);
-  buffer_puts(buffer_2, " ret=");
-  buffer_putlong(buffer_2, n);
-
-  if(n < 0) {
-    buffer_puts(buffer_2, " err=");
-    buffer_putstr(buffer_2, http_strerror(h, received));
-  }
-  if(h->response->code != -1) {
-    buffer_puts(buffer_2, " code=");
-    buffer_putlong(buffer_2, h->response->code);
-  }
-  buffer_puts(buffer_2, " status=");
-  buffer_puts(buffer_2,
-              ((const char* const[]){"-1",
-                                     "HTTP_RECV_HEADER",
-                                     "HTTP_RECV_DATA",
-                                     "HTTP_STATUS_CLOSED",
-                                     "HTTP_STATUS_ERROR",
-                                     "HTTP_STATUS_BUSY",
-                                     "HTTP_STATUS_FINISH",
-                                     0})[status + 1]);
-  if(received > 0) {
-    size_t len = received;
-    const char* s = stralloc_end(&r->data) - len;
-    const char* e = stralloc_end(&r->data);
-    if(len > 30)
-      len = 30;
-    buffer_puts(buffer_2, "\n  received=");
-    buffer_putlong(buffer_2, received);
-    buffer_puts(buffer_2, " len=");
-    buffer_putlong(buffer_2, r->data.len);
-
-    buffer_puts(buffer_2, " x=");
-
-    buffer_put_escaped(buffer_2, stralloc_end(&r->data) - received, len, &fmt_escapecharshell);
-
-    if(len < received) {
-      buffer_puts(buffer_2, " ... more (");
-      buffer_putulong(buffer_2, received);
-      buffer_puts(buffer_2, " bytes total) ...");
-    }
-  }
-  buffer_putnlflush(buffer_2);
-#endif
   return n;
 }

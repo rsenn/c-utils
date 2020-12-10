@@ -1,5 +1,6 @@
 /*
- * Copyright 2012 - 2014 Thomas Buck <xythobuz@xythobuz.de>
+ * Copyright 2012 - 2014 Thomas Buck
+ * <xythobuz@xythobuz.de>
  */
 
 #include <stdio.h>
@@ -35,7 +36,11 @@ serial_open(const char* port, unsigned int baud) {
 
   int fd = open(port, O_RDWR | O_NOCTTY | O_NDELAY);
   if(fd == -1) {
-    fprintf(stderr, "Couldn't open port \"%s\": %s\n", port, strerror(errno));
+    fprintf(stderr,
+            "Couldn't open port "
+            "\"%s\": %s\n",
+            port,
+            strerror(errno));
     return -1;
   }
 
@@ -173,7 +178,9 @@ serial_open(const char* port, unsigned int baud) {
       break;
 
     default:
-      fprintf(stderr, "Warning: Baudrate not supported!\n");
+      fprintf(stderr,
+              "Warning: Baudrate not "
+              "supported!\n");
       serial_close(fd);
       return -1;
   }
@@ -190,10 +197,12 @@ serial_open(const char* port, unsigned int baud) {
   // Control Modes
   options.c_cflag |= CS8;    // 8 data bits
   options.c_cflag |= CREAD;  // Enable Receiver
-  options.c_cflag |= CLOCAL; // Ignore modem status lines
+  options.c_cflag |= CLOCAL; // Ignore modem status
+                             // lines
 
   // Local Modes
-  options.c_lflag |= IEXTEN; // Extended input character processing
+  options.c_lflag |= IEXTEN; // Extended input
+                             // character processing
 
   // Special characters
   options.c_cc[VMIN] = 0;  // Always return...
@@ -288,7 +297,10 @@ serial_read_char(int fd, char* c) {
 #ifdef XONXOFF
   if(*c == XON) {
     if(tcflow(fd, TCOON) == -1) {
-      fprintf(stderr, "Could not restart flow: %s\n", strerror(errno));
+      fprintf(stderr,
+              "Could not restart flow: "
+              "%s\n",
+              strerror(errno));
     }
     serial_read_char(fd, c);
   } else if(*c == XOFF) {

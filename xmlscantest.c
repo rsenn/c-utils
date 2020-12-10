@@ -28,15 +28,8 @@ put_escaped(buffer* b, const char* x, size_t len) {
   }
 }
 
-const char* token_types[] = {"XML_EOF",
-                             "XML_DATA",
-                             "XML_TAG_NAME",
-                             "XML_TAG_CLOSE",
-                             "XML_ATTR_NAME",
-                             "XML_ATTR_VALUE",
-                             "XML_COMMENT"};
-const char* token_colors[] = {
-    "\x1b[1;37m", "\x1b[1;31m", "\x1b[1;35m", "\x1b[1;33m", "\x1b[1;36m", "\x1b[1;32m"};
+const char* token_types[] = {"XML_EOF", "XML_DATA", "XML_TAG_NAME", "XML_TAG_CLOSE", "XML_ATTR_NAME", "XML_ATTR_VALUE", "XML_COMMENT"};
+const char* token_colors[] = {"\x1b[1;37m", "\x1b[1;31m", "\x1b[1;35m", "\x1b[1;33m", "\x1b[1;36m", "\x1b[1;32m"};
 
 static strlist vars;
 void
@@ -51,7 +44,9 @@ main(int argc, char* argv[]) {
   char* x;
   size_t len;
   xmltoken tok;
-  const char* path = argc > 1 ? argv[1] : "3rdparty/zlib/treebuild.xml";
+  const char* path = argc > 1 ? argv[1]
+                              : "3rdparty/zlib/"
+                                "treebuild.xml";
   errmsg_iam(argv[0]);
 
   if(buffer_readfile(&infile, path)) {
@@ -69,8 +64,10 @@ main(int argc, char* argv[]) {
     buffer_putspad(buffer_2, token_types[tok.id + 1], 16);
     put_escaped(buffer_2, tok.x, tok.len);
     buffer_puts(buffer_2, "\x1b[0m");
-    /*  buffer_puts(buffer_2, "\nXML token length = ");
-          buffer_putulong(buffer_2, tok.len);*/
+    /*  buffer_puts(buffer_2, "\nXML
+       token length = ");
+          buffer_putulong(buffer_2,
+       tok.len);*/
     buffer_putnlflush(buffer_2);
   } while(tok.id != XML_EOF);
 

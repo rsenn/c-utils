@@ -58,17 +58,34 @@ static http h;
 #include "lib/http.h"
 
 const char* const mediathek_urls[] = {
-    "http://download10.onlinetvrecorder.com/mediathekview/Filmliste-akt.xz",
-    "http://mediathekview.jankal.me/Filmliste-akt.xz",
-    "http://verteiler1.mediathekview.de/Filmliste-akt.xz",
-    "http://verteiler2.mediathekview.de/Filmliste-akt.xz",
-    "http://verteiler3.mediathekview.de/Filmliste-akt.xz",
-    "http://verteiler4.mediathekview.de/Filmliste-akt.xz",
-    "http://verteiler5.mediathekview.de/Filmliste-akt.xz",
-    "http://verteiler6.mediathekview.de/Filmliste-akt.xz",
+    "http://"
+    "download10.onlinetvrecorder.com/"
+    "mediathekview/Filmliste-akt.xz",
+    "http://mediathekview.jankal.me/"
+    "Filmliste-akt.xz",
+    "http://"
+    "verteiler1.mediathekview.de/"
+    "Filmliste-akt.xz",
+    "http://"
+    "verteiler2.mediathekview.de/"
+    "Filmliste-akt.xz",
+    "http://"
+    "verteiler3.mediathekview.de/"
+    "Filmliste-akt.xz",
+    "http://"
+    "verteiler4.mediathekview.de/"
+    "Filmliste-akt.xz",
+    "http://"
+    "verteiler5.mediathekview.de/"
+    "Filmliste-akt.xz",
+    "http://"
+    "verteiler6.mediathekview.de/"
+    "Filmliste-akt.xz",
 };
 
-const char* mediathek_url = "https://verteiler1.mediathekview.de/Filmliste-akt.xz";
+const char* mediathek_url = "https://"
+                            "verteiler1.mediathekview.de/"
+                            "Filmliste-akt.xz";
 //"http://127.0.0.1/Filmliste-akt.xz";
 
 static unsigned long min_length;
@@ -158,7 +175,8 @@ process_status(void) {
 }
 
 /**
- * @brief read_mediathek_list  Reads Mediathek list from HTTP server
+ * @brief read_mediathek_list  Reads
+ * Mediathek list from HTTP server
  * @param url
  * @return
  */
@@ -214,7 +232,8 @@ read_mediathek_list(const char* url, buffer* b) {
 }
 
 /**
- * @brief parse_time  Parses a time in HH:MM:SS format and returns seconds
+ * @brief parse_time  Parses a time in
+ * HH:MM:SS format and returns seconds
  * @param s
  * @return
  */
@@ -340,8 +359,7 @@ mktime_r(struct tm* const t, time_t* ret) {
       years--;
     day -= years;
   }
-  day += t->tm_yday =
-      __spm[t->tm_mon] + t->tm_mday - 1 + (isleap(t->tm_year + 1900) & (t->tm_mon > 1));
+  day += t->tm_yday = __spm[t->tm_mon] + t->tm_mday - 1 + (isleap(t->tm_year + 1900) & (t->tm_mon > 1));
   i = 7;
   t->tm_wday = (day + 4) % i;
   i = 24;
@@ -377,7 +395,8 @@ parse_anydate(const char* s) {
   const char* fmt;
   if(s) {
     size_t len = str_len(s);
-    if(len != 8) /* len - str_rchr(s, '.') == 4) */
+    if(len != 8) /* len - str_rchr(s,
+                    '.') == 4) */
       fmt = "%d.%m.%Y";
     else
       fmt = "%Y%m%d";
@@ -404,7 +423,8 @@ format_datetime(size_t t, const char* fmt) {
 
   /*size_t n =*/strftime(buf, sizeof(buf), fmt, tms);
 
-  return buf; /*  buffer_put(b, buf, n); */
+  return buf; /*  buffer_put(b, buf, n);
+               */
 }
 
 /**
@@ -453,7 +473,8 @@ new_mediathek_entry() {
   mediathek_entry_t* e = alloc_zero(sizeof(mediathek_entry_t));
   /*  if(e == 0)
       return 0;
-    byte_zero(e, sizeof(mediathek_entry_t));*/
+    byte_zero(e,
+    sizeof(mediathek_entry_t));*/
   return e;
 }
 
@@ -511,7 +532,8 @@ match_tokens(char* toks, const char* x, size_t n) {
 }
 
 /**
- * @brief match_toklists  returns 1 if any of the token lists match
+ * @brief match_toklists  returns 1 if
+ * any of the token lists match
  * @param sl
  * @return
  */
@@ -611,19 +633,34 @@ print_entry(buffer* b, const mediathek_entry_t* e) {
 
   const char* sep = ", ";
 
-  buffer_putm_internal(
-      b, "Kanal:\t", e->channel.s ? e->channel.s : "<null>" /*strlist_at(sl, 1)*/, sep, NULL);
-  buffer_putm_internal(
-      b, "Thema:\t", e->topic.s ? e->topic.s : "<null>" /*strlist_at(sl, 2)*/, sep, NULL);
+  buffer_putm_internal(b,
+                       "Kanal:\t",
+                       e->channel.s ? e->channel.s : "<null>" /*strlist_at(sl,
+                                                                 1)*/
+                       ,
+                       sep,
+                       NULL);
+  buffer_putm_internal(b,
+                       "Thema:\t",
+                       e->topic.s ? e->topic.s : "<null>" /*strlist_at(sl,
+                                                             2)*/
+                       ,
+                       sep,
+                       NULL);
   buffer_putm_internal(b, "Titel:\t", e->title.s /*strlist_at(sl, 3)*/, sep, NULL);
 
   buffer_putm_internal(b, "Datum:\t", format_datetime(e->tm, dt_fmt), sep, NULL);
   buffer_putm_internal(b, "Dauer:\t", format_time(e->dr), sep, NULL);
   buffer_putm_internal(b, "Grösse:\t", format_num(e->mbytes), "MB", sep, NULL);
 
-  /* buffer_putm_internal(b, "URL:\t", url , sep, 0);
-   buffer_putm_internal(b, "URL lo:\t", make_url(url, strlist_at(sl, 13)), sep, 0);
-   buffer_putm_internal(b, "URL hi:\t", make_url(url, strlist_at(sl, 15)), sep, 0);*/
+  /* buffer_putm_internal(b, "URL:\t",
+   url , sep, 0);
+   buffer_putm_internal(b, "URL lo:\t",
+   make_url(url, strlist_at(sl, 13)),
+   sep, 0);
+   buffer_putm_internal(b, "URL hi:\t",
+   make_url(url, strlist_at(sl, 15)),
+   sep, 0);*/
 
   buffer_putnlflush(b);
 }
@@ -781,13 +818,20 @@ usage(char* errmsg_argv0) {
                        "[OPTIONS] [KEYWORDS...]\n",
                        "\n",
                        "Options\n",
-                       "  -h, --help                show this help\n",
-                       "  -u, --url=URL             set URL\n",
-                       "  -F                        date/time format\n",
-                       "  -t HH:MM:SS               minimum length\n",
-                       "  -i KEYWORD                include entries matching\n",
-                       "  -x KEYWORD                exclude entries matching\n",
-                       "  -o FILE                   output file\n",
+                       "  -h, --help                "
+                       "show this help\n",
+                       "  -u, --url=URL             set "
+                       "URL\n",
+                       "  -F                        "
+                       "date/time format\n",
+                       "  -t HH:MM:SS               "
+                       "minimum length\n",
+                       "  -i KEYWORD                "
+                       "include entries matching\n",
+                       "  -x KEYWORD                "
+                       "exclude entries matching\n",
+                       "  -o FILE                   "
+                       "output file\n",
                        "\n",
                        0);
   buffer_putnlflush(buffer_1);
@@ -851,14 +895,17 @@ main(int argc, char* argv[]) {
     buffer_putsa(console, &sa);
     buffer_putnlflush(console);*/
   /*
-    fprintf(stderr, "%p\n", str_istr("blah", ""));
-    fprintf(stderr, "%p\n", str_istr("[", "blah"));
+    fprintf(stderr, "%p\n",
+    str_istr("blah", ""));
+    fprintf(stderr, "%p\n",
+    str_istr("[", "blah"));
     fflush(stderr);
     */
 
   /*   if(optind >= argc) {
          fprintf(stderr,
-                 "Nach den Optionen wurde ein Argument erwartet\n");
+                 "Nach den Optionen
+     wurde ein Argument erwartet\n");
          exit(EXIT_FAILURE);
      }
   */

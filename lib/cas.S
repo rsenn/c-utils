@@ -1,7 +1,5 @@
 #ifdef __aarch64__
-.global __atomic_compare_and_swap __atomic_compare_and_swap
-    :.weak __sync_val_compare_and_swap __sync_val_compare_and_swap : sub sp,
-    sp, #16 add x4, sp, 8 str x0,
+.global __atomic_compare_and_swap __atomic_compare_and_swap :.weak __sync_val_compare_and_swap __sync_val_compare_and_swap : sub sp, sp, #16 add x4, sp, 8 str x0,
     [ sp, 8 ]
     // atomic64_cmpxchg
     1 : ldxr x0,

@@ -1,4 +1,5 @@
-/* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C; indent-tabs-mode: nil;
+ * c-basic-offset: 4 -*- */
 #include "lib/elf.h"
 #include "lib/mmap.h"
 #include "lib/uint16.h"
@@ -72,17 +73,20 @@ main(int argc, char** argv) {
     }
 
     if(!dynsym) {
-      printf(".dynsym section is not found\n");
+      printf(".dynsym section is not "
+             "found\n");
       return -1;
     }
 
     if(!dynstr) {
-      printf(".dynstr section is not found\n");
+      printf(".dynstr section is not "
+             "found\n");
       return -1;
     }
 
     if(text_section_header_index == 0) {
-      printf(".text section is not found\n");
+      printf(".text section is not "
+             "found\n");
       return -1;
     }
   }
@@ -114,8 +118,7 @@ main(int argc, char** argv) {
       info = symbol->st_info;
       section_header_index = symbol->st_shndx;
 
-      if((info & ELF_STT_FUNC) && (ELF_ELF64_ST_BIND(info) & ELF_STB_GLOBAL) &&
-         (section_header_index == text_section_header_index)) {
+      if((info & ELF_STT_FUNC) && (ELF_ELF64_ST_BIND(info) & ELF_STB_GLOBAL) && (section_header_index == text_section_header_index)) {
         const char* name;
 
         name = content + name_section_offset + name_index;

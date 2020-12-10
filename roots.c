@@ -39,7 +39,8 @@ roots_search(char* q) {
     if(r >= 0)
       return r;
     if(!*q)
-      return -1; /* user misconfiguration */
+      return -1; /* user
+                    misconfiguration */
     q += *q;
     q += 1;
   }

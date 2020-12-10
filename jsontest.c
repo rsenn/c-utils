@@ -43,9 +43,13 @@ main(int argc, char* argv[]) {
 
   fd = open_read(argc > 1 ? argv[1] : "../dirlist/test.json");
   // size_t sz;
-  // char* map = mmap_private( argc > 1 ? argv[1] : "../dirlist/test.json", &sz);;
+  // char* map = mmap_private( argc > 1
+  // ? argv[1] : "../dirlist/test.json",
+  // &sz);;
 
-  // buffer_mmapprivate(&infile, argc > 1 ? argv[1] : "../dirlist/test.json");
+  // buffer_mmapprivate(&infile, argc >
+  // 1 ? argv[1] :
+  // "../dirlist/test.json");
   //
   charbuf_init(&infile, (read_fn*)(void*)&read, fd);
 

@@ -33,11 +33,7 @@ struct longopt {
 
 int getopt_long(int argc, char* const* argv, const char* optstring, const struct longopt*, int*);
 
-int getopt_long_only(int argc,
-                     char* const* argv,
-                     const char* shortopts,
-                     const struct longopt* longopts,
-                     int* indexptr);
+int getopt_long_only(int argc, char* const* argv, const char* shortopts, const struct longopt* longopts, int* indexptr);
 /****************************************************************************
     int getopt_long_only(int argc, char* const argv[],
             const char* optstring,

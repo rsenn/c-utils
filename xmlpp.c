@@ -31,8 +31,7 @@ static stralloc indent_str;
 buffer* output;
 
 int
-xml_read_function(
-    xmlreader* reader, xmlnodeid id, stralloc* name, stralloc* value, HMAP_DB** attrs) {
+xml_read_function(xmlreader* reader, xmlnodeid id, stralloc* name, stralloc* value, HMAP_DB** attrs) {
   static int newline_written = 0;
   switch(id) {
     case XML_TEXT: {
@@ -44,8 +43,8 @@ xml_read_function(
     }
     case XML_ELEMENT: {
 
-      /* buffer_puts(buffer_2, "Element: ");
-      buffer_putsa(buffer_2, name);
+      /* buffer_puts(buffer_2, "Element:
+      "); buffer_putsa(buffer_2, name);
       if(value)
         buffer_putsa(buffer_2, value);
       buffer_putnlflush(buffer_2); */
@@ -56,8 +55,7 @@ xml_read_function(
         --depth;
       }
 
-      if(!(reader->closing && !prev_closing && stralloc_equal(&prev_element, name)) &&
-         stralloc_length(&prev_element)) {
+      if(!(reader->closing && !prev_closing && stralloc_equal(&prev_element, name)) && stralloc_length(&prev_element)) {
 
         if(!newline_written && !one_line) {
           buffer_puts(output, "\n");
@@ -106,13 +104,21 @@ usage(char* av0) {
                        "\n"
                        "Options:\n"
                        "\n"
-                       "  -h, --help              Show this help\n"
-                       "  -s, --single-quote      Use ' as quote\n"
-                       "  -d, --double-quote      Use \" as quote\n"
-                       "  -o, --one-line          One-line\n"
-                       "  -c, --compact           Compact\n"
-                       "  -l, --indent NUM        Indent level\n"
-                       "  -t, --terminate         Terminate non-closed tags (img, link, br, ...)\n"
+                       "  -h, --help              Show "
+                       "this help\n"
+                       "  -s, --single-quote      Use ' "
+                       "as quote\n"
+                       "  -d, --double-quote      Use "
+                       "\" as quote\n"
+                       "  -o, --one-line          "
+                       "One-line\n"
+                       "  -c, --compact           "
+                       "Compact\n"
+                       "  -l, --indent NUM        "
+                       "Indent level\n"
+                       "  -t, --terminate         "
+                       "Terminate non-closed tags (img, "
+                       "link, br, ...)\n"
                        "\n",
                        0);
   buffer_flush(buffer_1);
@@ -177,15 +183,7 @@ main(int argc, char* argv[]) {
   int index = 0;
   const char* input_file;
   char* tmpl = 0;
-  struct longopt opts[] = {{"help", 0, NULL, 'h'},
-                           {"single-quote", 0, &quote_char, '\''},
-                           {"double-quote", 0, &quote_char, '"'},
-                           {"one-line", 0, NULL, 'o'},
-                           {"compact", 0, NULL, 'c'},
-                           {"indent", 0, NULL, 'l'},
-                           {"inplace", 0, NULL, 'i'},
-                           {"terminate", 0, NULL, 't'},
-                           {0, 0, 0, 0}};
+  struct longopt opts[] = {{"help", 0, NULL, 'h'}, {"single-quote", 0, &quote_char, '\''}, {"double-quote", 0, &quote_char, '"'}, {"one-line", 0, NULL, 'o'}, {"compact", 0, NULL, 'c'}, {"indent", 0, NULL, 'l'}, {"inplace", 0, NULL, 'i'}, {"terminate", 0, NULL, 't'}, {0, 0, 0, 0}};
 
   errmsg_iam(argv[0]);
   output = buffer_1;
@@ -234,7 +232,8 @@ main(int argc, char* argv[]) {
   doc = xml_read_tree(&infile);
 
   xml_print(doc, output, xmlpp_fmt);
-  // xml_read_callback(&r, xml_read_function);
+  // xml_read_callback(&r,
+  // xml_read_function);
   buffer_close(&infile);
 
   buffer_putnlflush(output);

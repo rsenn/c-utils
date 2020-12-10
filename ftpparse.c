@@ -1,7 +1,9 @@
-/* ftpparse.c, ftpparse.h: library for parsing FTP LIST responses
+/* ftpparse.c, ftpparse.h: library for
+ * parsing FTP LIST responses
  *
  * Written by Uwe Ohse, 2002-07-12.
- * Strongly influences by Daniel J. Bernsteins ftpparse.c.
+ * Strongly influences by Daniel J.
+ * Bernsteins ftpparse.c.
  *
  * placed in the public domain.
  */
@@ -10,10 +12,9 @@
  * Currently covered:
  * EPLF.
  * UNIX ls, with or without gid.
- * different Windows and DOS FTP servers.
- * VMS, but not CMS.
- * NetPresenz (Mac).
- * NetWare.
+ * different Windows and DOS FTP
+ * servers. VMS, but not CMS. NetPresenz
+ * (Mac). NetWare.
  */
 
 #include <time.h> /* gmtime, time_t, time() */
@@ -69,10 +70,14 @@ get_uint64(const char* p, unsigned int len, uint64* ul) {
   return i;
 }
 
-/* UNIX ls does not show the year for dates in the last six months. */
+/* UNIX ls does not show the year for
+ * dates in the last six months. */
 /* So we have to guess the year. */
-/* Apparently NetWare uses ``twelve months'' instead of ``six months''; ugh. */
-/* Some versions of ls also fail to show the year for future dates. */
+/* Apparently NetWare uses ``twelve
+ * months'' instead of ``six months'';
+ * ugh. */
+/* Some versions of ls also fail to show
+ * the year for future dates. */
 static long
 guess_year(unsigned long month, unsigned long day) {
   static long this_year;
@@ -154,8 +159,7 @@ getmod(struct tai* t, const unsigned char* p, unsigned int l) {
   return 1;
 }
 
-static const char* months[12] = {
-    "jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"};
+static const char* months[12] = {"jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"};
 
 static int
 get_month(char* buf, unsigned int len) {
@@ -170,7 +174,8 @@ get_month(char* buf, unsigned int len) {
   return -1;
 }
 
-/* see http://cr.yp.to/ftp/list/eplf.html */
+/* see
+ * http://cr.yp.to/ftp/list/eplf.html */
 static int
 parse_eplf(struct ftpparse* f, char* buf, unsigned int len) {
   unsigned int start, pos;
@@ -209,7 +214,8 @@ parse_eplf(struct ftpparse* f, char* buf, unsigned int len) {
         f->mtimetype = FTPPARSE_MTIME_LOCAL;
         break;
       case 'i':
-        /* refuse zero bytes length ids */
+        /* refuse zero bytes length ids
+         */
         if(pos - start - 1 == 0)
           return 0;
         f->idtype = FTPPARSE_ID_FULL;
@@ -223,12 +229,7 @@ parse_eplf(struct ftpparse* f, char* buf, unsigned int len) {
 }
 
 static int
-scan_time(const char* buf,
-          const unsigned int len,
-          unsigned long* h,
-          unsigned long* m,
-          unsigned long* s,
-          int* type) {
+scan_time(const char* buf, const unsigned int len, unsigned long* h, unsigned long* m, unsigned long* s, int* type) {
   /* 11:48:54 */
   /* 01:48:54 */
   /*  1:48:54 */
@@ -286,9 +287,11 @@ scan_time(const char* buf,
   return 0;
 }
 
-/* 04-27-00  09:09PM       <DIR>          licensed */
-/* 07-18-00  10:16AM       <DIR>          pub */
-/* 04-14-00  03:47PM                  589 readme.htm */
+/* 04-27-00  09:09PM       <DIR>
+ * licensed */
+/* 07-18-00  10:16AM       <DIR> pub
+ */
+/* 04-14-00  03:47PM 589 readme.htm */
 /* note the mon-day-year! */
 static int
 parse_msdos(struct ftpparse* f, char* buf, unsigned int len) {
@@ -305,7 +308,8 @@ parse_msdos(struct ftpparse* f, char* buf, unsigned int len) {
   uint64 size = 0;
   unsigned int flagtrycwd = 0;
   unsigned int flagtryretr = 0;
-  int maxspaces = 0; /* to keep leading spaces before dir/file name */
+  int maxspaces = 0; /* to keep leading spaces
+                        before dir/file name */
 
   for(state = start = pos = 0; pos < len; pos++) {
     switch(state) {
@@ -437,8 +441,10 @@ dosplit(char* buf, int len, char* p[], unsigned int l[]) {
 
 static int
 parse_multinet(struct ftpparse* f, char* p[], int l[], unsigned int count) {
-  /* "CORE.DIR;1          1  8-SEP-1996 16:09 [SYSTEM] (RWE,RWE,RE,RE)" */
-  /* "[VMSSERV.FILES]ALARM.DIR;1      1/3          5-MAR-1993 18:09:" */
+  /* "CORE.DIR;1          1  8-SEP-1996
+   * 16:09 [SYSTEM] (RWE,RWE,RE,RE)" */
+  /* "[VMSSERV.FILES]ALARM.DIR;1 1/3
+   * 5-MAR-1993 18:09:" */
   int mon;
   unsigned long day;
   unsigned long year;
@@ -518,41 +524,70 @@ parse_unix(struct ftpparse* f, char* buf, int len, char* p[], int l[], unsigned 
 
   /* the horror ... */
 
-  /* this list has been taken from Daniel Bernsteins ftpparse.c */
+  /* this list has been taken from
+   * Daniel Bernsteins ftpparse.c */
 
-  /* UNIX-style listing, without inum and without blocks */
-  /* "-rw-r--r--   1 root     other        531 Jan 29 03:26 README" */
-  /* "dr-xr-xr-x   2 root     other        512 Apr  8  1994 etc" */
-  /* "dr-xr-xr-x   2 root     512 Apr  8  1994 etc" */
-  /* "lrwxrwxrwx   1 root     other          7 Jan 25 00:17 bin -> usr/bin" */
-  /* Also produced by Microsoft's FTP servers for Windows: */
-  /* "----------   1 owner    group         1803128 Jul 10 10:18 ls-lR.Z" */
-  /* "d---------   1 owner    group               0 May  9 19:45 Softlib" */
+  /* UNIX-style listing, without inum
+   * and without blocks */
+  /* "-rw-r--r--   1 root     other
+   * 531 Jan 29 03:26 README" */
+  /* "dr-xr-xr-x   2 root     other
+   * 512 Apr  8  1994 etc" */
+  /* "dr-xr-xr-x   2 root     512 Apr  8
+   * 1994 etc" */
+  /* "lrwxrwxrwx   1 root     other 7
+   * Jan 25 00:17 bin -> usr/bin" */
+  /* Also produced by Microsoft's FTP
+   * servers for Windows: */
+  /* "----------   1 owner    group
+   * 1803128 Jul 10 10:18 ls-lR.Z" */
+  /* "d---------   1 owner    group 0
+   * May  9 19:45 Softlib" */
   /* Also WFTPD for MSDOS: */
-  /* "-rwxrwxrwx   1 noone    nogroup      322 Aug 19  1996 message.ftp" */
+  /* "-rwxrwxrwx   1 noone    nogroup
+   * 322 Aug 19  1996 message.ftp" */
   /* Also NetWare: */
-  /* "d [R----F--] supervisor            512       Jan 16 18:53    login" */
-  /* "- [R----F--] rhesus             214059       Oct 20 15:27    cx.exe" */
+  /* "d [R----F--] supervisor 512
+   * Jan 16 18:53    login" */
+  /* "- [R----F--] rhesus 214059 Oct
+   * 20 15:27    cx.exe" */
   /* Also NetPresenz for the Mac: */
-  /* "-------r--         326  1391972  1392298 Nov 22  1995 MegaPhone.sit" */
-  /* "drwxrwxr-x               folder        2 May 10  1996 network" */
+  /* "-------r--         326  1391972
+   * 1392298 Nov 22  1995 MegaPhone.sit"
+   */
+  /* "drwxrwxr-x               folder
+   * 2 May 10  1996 network" */
   /*restructured: */
-  /* -PERM   1    user  group  531      Jan  29      03:26  README           */
-  /* dPERM   2    user  group  512      Apr  8       1994   etc              */
-  /* dPERM   2    user  512    Apr      8    1994    etc                     */
-  /* lPERM   1    user  group  7        Jan  25      00:17  bin -> usr/bin   */
-  /* -PERM   1    user  group  1803128  Jul  10      10:18  ls-lR.Z          */
-  /* dPERM   1    user  group  0        May  9       19:45  Softlib          */
-  /* -PERM   1    user  group  322      Aug  19      1996   message.ftp      */
-  /* d [R----F--] user  512    Jan      16   18:53   login                   */
-  /* - [R----F--] user  214059 Oct      20   15:27   cx.exe                  */
-  /* -PERM  326   NUMB  NUMBER Nov      22   1995    MegaPhone.sit           */
-  /* dPERM  folder 2    May    10       1996 network                         */
+  /* -PERM   1    user  group  531 Jan
+   * 29      03:26  README           */
+  /* dPERM   2    user  group  512 Apr
+   * 8       1994   etc              */
+  /* dPERM   2    user  512    Apr 8
+   * 1994    etc                     */
+  /* lPERM   1    user  group  7 Jan
+   * 25      00:17  bin -> usr/bin   */
+  /* -PERM   1    user  group  1803128
+   * Jul  10      10:18  ls-lR.Z */
+  /* dPERM   1    user  group  0 May
+   * 9       19:45  Softlib          */
+  /* -PERM   1    user  group  322 Aug
+   * 19      1996   message.ftp      */
+  /* d [R----F--] user  512    Jan 16
+   * 18:53   login                   */
+  /* - [R----F--] user  214059 Oct 20
+   * 15:27   cx.exe                  */
+  /* -PERM  326   NUMB  NUMBER Nov 22
+   * 1995    MegaPhone.sit           */
+  /* dPERM  folder 2    May    10 1996
+   * network                         */
   /* handled as: */
-  /* dPERM  folder      2      May      10   1996    network                 */
-  /* 0      1     2     3      4        5    6       7       8 */
+  /* dPERM  folder      2      May 10
+   * 1996    network                 */
+  /* 0      1     2     3      4 5
+   * 6       7       8 */
 
-  /* note the date system: MON DAY [YEAR|TIME] */
+  /* note the date system: MON DAY
+   * [YEAR|TIME] */
 
   int mon = -1; /* keep gcc quiet */
   unsigned long day;
@@ -617,7 +652,8 @@ parse_unix(struct ftpparse* f, char* buf, int len, char* p[], int l[], unsigned 
     mtimetype = FTPPARSE_MTIME_REMOTEDAY;
     hour = min = sec = 0;
     /* may be this case: */
-    /* - [-RWCE-F-] mlm                   11820 Feb  3 93 12:00  drivers.doc */
+    /* - [-RWCE-F-] mlm 11820 Feb  3
+     * 93 12:00  drivers.doc */
     if(i + 2 < count) {
       x = scan_time(p[i + 1], l[i + 1], &hour, &min, &sec, &mtimetype);
       if(x != l[i + 1]) {
@@ -631,13 +667,17 @@ parse_unix(struct ftpparse* f, char* buf, int len, char* p[], int l[], unsigned 
   }
   if(++i == count)
     return 0;
-  /* note: dosplit eats spaces - but we need them here. So go back. */
+  /* note: dosplit eats spaces - but we
+   * need them here. So go back. */
   f->name = p[i];
   f->namelen = buf + len - p[i];
-  /* "-rwxrwxrwx   1 noone    nogroup      322 Aug 19  1996 message.ftp" */
-  /* "-rwxrwxrwx   1 noone    nogroup      322 Aug 19  1996   spacy" */
+  /* "-rwxrwxrwx   1 noone    nogroup
+   * 322 Aug 19  1996 message.ftp" */
+  /* "-rwxrwxrwx   1 noone    nogroup
+   * 322 Aug 19  1996   spacy" */
   /* but: */
-  /* "d [R----F--] supervisor            512       Jan 16 18:53    login" */
+  /* "d [R----F--] supervisor 512
+   * Jan 16 18:53    login" */
   if(p[0][1] != ' ') {
     while(f->name[-2] == ' ') {
       f->name--;
@@ -652,13 +692,17 @@ parse_unix(struct ftpparse* f, char* buf, int len, char* p[], int l[], unsigned 
   f->flagtrycwd = flagtrycwd;
   utcdate2tai(&f->mtime, year, mon, day, hour, min, sec);
   f->mtimetype = mtimetype;
-  f->format = FTPPARSE_FORMAT_LS; /* for programs dealing with symlinks */
+  f->format = FTPPARSE_FORMAT_LS; /* for
+                                     programs
+                                     dealing
+                                     with
+                                     symlinks */
 
   if('l' == *buf) {
     unsigned int j;
-    for(j = 1; j < f->namelen - 4; j++) /* 1, -4: no empty names, please */
-      if(f->name[j] == ' ' && f->name[j + 1] == '-' && f->name[j + 2] == '>' &&
-         f->name[j + 3] == ' ') {
+    for(j = 1; j < f->namelen - 4; j++) /* 1, -4: no empty names,
+                                           please */
+      if(f->name[j] == ' ' && f->name[j + 1] == '-' && f->name[j + 2] == '>' && f->name[j + 3] == ' ') {
         f->symlink = f->name + j + 4;
         f->symlinklen = f->namelen - j - 4;
         f->namelen = j;
@@ -680,8 +724,10 @@ parse_supertcp(struct ftpparse* f, char* p[], int l[], unsigned int count) {
   int x;
   int dir = 0;
 
-  /* CMT             <DIR>           11-21-94        10:17 */
-  /* DESIGN1.DOC          11264      05-11-95        14:20 */
+  /* CMT             <DIR> 11-21-94
+   * 10:17 */
+  /* DESIGN1.DOC          11264
+   * 05-11-95        14:20 */
 
   if(count < 4)
     return 0;
@@ -724,14 +770,16 @@ parse_supertcp(struct ftpparse* f, char* p[], int l[], unsigned int count) {
   return 1;
 }
 
-/* another bright re-invention of a broken wheel from the people, who
+/* another bright re-invention of a
+ * broken wheel from the people, who
  * made an art of it.
  */
 static int
 parse_os2(struct ftpparse* f, char* p[], int l[], unsigned int count) {
-  /*         0           DIR   04-11-95   16:26  ADDRESS
-   *       612      A          07-28-95   16:45  air_tra1.bag
-   *    310992                 06-28-94   09:56  INSTALL.EXE
+  /*         0           DIR   04-11-95
+   * 16:26  ADDRESS 612      A 07-28-95
+   * 16:45  air_tra1.bag 310992 06-28-94
+   * 09:56  INSTALL.EXE
    */
   unsigned long mon;
   unsigned long day;
@@ -798,23 +846,23 @@ parse_os2(struct ftpparse* f, char* p[], int l[], unsigned int count) {
   return 1;
 }
 
-#define SETUP()                                                                                    \
-  do {                                                                                             \
-    fp->name = 0;                                                                                  \
-    fp->namelen = 0;                                                                               \
-    fp->flagtrycwd = 0;                                                                            \
-    fp->flagtryretr = 0;                                                                           \
-    fp->sizetype = FTPPARSE_SIZE_UNKNOWN;                                                          \
-    fp->size = 0;                                                                                  \
-    fp->mtimetype = FTPPARSE_MTIME_UNKNOWN;                                                        \
-    tai_uint(&fp->mtime, 0);                                                                       \
-    fp->idtype = FTPPARSE_ID_UNKNOWN;                                                              \
-    fp->id = 0;                                                                                    \
-    fp->idlen = 0;                                                                                 \
-    fp->format = FTPPARSE_FORMAT_UNKNOWN;                                                          \
-    fp->flagbrokenmlsx = 0;                                                                        \
-    fp->symlink = 0;                                                                               \
-    fp->symlinklen = 0;                                                                            \
+#define SETUP()                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    \
+  do {                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             \
+    fp->name = 0;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  \
+    fp->namelen = 0;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               \
+    fp->flagtrycwd = 0;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            \
+    fp->flagtryretr = 0;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           \
+    fp->sizetype = FTPPARSE_SIZE_UNKNOWN;                                                                                                                                                                                                                                                                                                                                                                                                                                                                          \
+    fp->size = 0;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  \
+    fp->mtimetype = FTPPARSE_MTIME_UNKNOWN;                                                                                                                                                                                                                                                                                                                                                                                                                                                                        \
+    tai_uint(&fp->mtime, 0);                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       \
+    fp->idtype = FTPPARSE_ID_UNKNOWN;                                                                                                                                                                                                                                                                                                                                                                                                                                                                              \
+    fp->id = 0;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    \
+    fp->idlen = 0;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 \
+    fp->format = FTPPARSE_FORMAT_UNKNOWN;                                                                                                                                                                                                                                                                                                                                                                                                                                                                          \
+    fp->flagbrokenmlsx = 0;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        \
+    fp->symlink = 0;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               \
+    fp->symlinklen = 0;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            \
   } while(0)
 
 int
@@ -835,7 +883,8 @@ ftpparse_mlsx(struct ftpparse* fp, char* x, int ll, int is_mlst) {
       ll--;
       x++;
     }
-  if(ll < 2) /* empty facts, space, one-byte-filename */
+  if(ll < 2) /* empty facts, space,
+                one-byte-filename */
     return 0;
 
   for(i = 0; i < ll; i++) {
@@ -853,7 +902,8 @@ ftpparse_mlsx(struct ftpparse* fp, char* x, int ll, int is_mlst) {
     while(i + j + k < ll && x[i + j + k] != ';' && x[i + j + k] != ' ') k++;
     if(i + j + k == ll)
       return 0;
-      /* x[i+j+k] is space or semicolon, so use of getlong is safe */
+      /* x[i+j+k] is space or semicolon,
+       * so use of getlong is safe */
 #define ISFACT(name) (j == sizeof(name) - 1 && case_startb(x + i, j, name))
     if(ISFACT("size")) {
       get_uint64(x + i + j + 1, k - 1, &size);
@@ -864,9 +914,11 @@ ftpparse_mlsx(struct ftpparse* fp, char* x, int ll, int is_mlst) {
     } else if(ISFACT("type")) {
       if(k == 5 && case_startb(x + i + j + 1, 4, "file"))
         flagtryretr = 1;
-      else if(case_startb(x + i + j + 1, 3, "dir")) /* "current" */
+      else if(case_startb(x + i + j + 1, 3, "dir")) /* "current"
+                                                     */
         flagtrycwd = 1;
-      else if(case_startb(x + i + j + 1, 4, "pdir")) /* "parent" */
+      else if(case_startb(x + i + j + 1, 4, "pdir")) /* "parent"
+                                                      */
         flagtrycwd = 1;
       else if(case_startb(x + i + j + 1, 4, "cdir"))
         flagtrycwd = 1;
@@ -915,7 +967,8 @@ ftpparse_int(struct ftpparse* fp, char* buf, int len) {
 
   SETUP();
 
-  if(len < 2) /* an empty name in EPLF, with no info, could be 2 chars */
+  if(len < 2) /* an empty name in EPLF, with
+                 no info, could be 2 chars */
     return 0;
 
   /* cheap cases first */
@@ -986,7 +1039,8 @@ ftpparse(struct ftpparse* fp, char* buf, int len, int eat_leading_spaces) {
     return x;
   if(eat_leading_spaces && fp->format != FTPPARSE_FORMAT_EPLF && fp->format != FTPPARSE_FORMAT_MLSX)
     while(fp->namelen > 1 && fp->name[0] == ' ') {
-      /* leave at least a " " in the name */
+      /* leave at least a " " in the
+       * name */
       fp->name++;
       fp->namelen--;
     }

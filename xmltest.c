@@ -20,8 +20,7 @@ void
 put_str_escaped(buffer* b, const char* str) {
   stralloc esc;
   stralloc_init(&esc);
-  stralloc_fmt_pred(
-      &esc, str, str_len(str), (stralloc_fmt_fn*)&fmt_escapecharc, (int (*)()) & iscntrl);
+  stralloc_fmt_pred(&esc, str, str_len(str), (stralloc_fmt_fn*)&fmt_escapecharc, (int (*)()) & iscntrl);
   buffer_putsa(b, &esc);
 }
 
@@ -64,7 +63,14 @@ xml_dump(xmlnode* n, buffer* b, const char* parent, int depth) {
     if(n->type == XML_TEXT) {
       const char* x = xml_get_text(n, &name);
       if(x[0]) {
-        buffer_putm_internal(b, "", parent, "->children = xml_textnode(\"", x, "\");", NULL);
+        buffer_putm_internal(b,
+                             "",
+                             parent,
+                             "->children = "
+                             "xml_textnode(\"",
+                             x,
+                             "\");",
+                             NULL);
         newline_indent(b, depth);
       }
     } else if(n->type == XML_ELEMENT) {
@@ -105,8 +111,7 @@ xml_dump(xmlnode* n, buffer* b, const char* parent, int depth) {
       if(n->children) {
         if(/*!text_children &&
             */
-           ((n->children->type == XML_ELEMENT) ||
-            (!chained_attributes && !text_children && name.s))) {
+           ((n->children->type == XML_ELEMENT) || (!chained_attributes && !text_children && name.s))) {
           if(!strlist_contains(&vars, name.s)) {
             buffer_puts(b, "xmlnode*");
             newline_indent(b, depth);
@@ -126,8 +131,7 @@ xml_dump(xmlnode* n, buffer* b, const char* parent, int depth) {
         chained_attributes = 0;
 
       if(parent)
-        buffer_putm_internal(
-            b, "xml_child_element", attrs_str, "(\"", n->name, "\", ", parent, NULL);
+        buffer_putm_internal(b, "xml_child_element", attrs_str, "(\"", n->name, "\", ", parent, NULL);
       else
         buffer_putm_internal(b, "xml_element", attrs_str, "(\"", n->name, NULL);
       buffer_flush(b);
@@ -164,14 +168,15 @@ xml_dump(xmlnode* n, buffer* b, const char* parent, int depth) {
             buffer_putsa(b, &name);
           } else {
           }
-          buffer_puts(b, "->attributes = xml_attributes(");
+          buffer_puts(b,
+                      "->attributes = "
+                      "xml_attributes(");
           i = 0;
           hmap_foreach(n->attributes, t) {
             if(1)
               newline_indent(b, depth + 1);
 
-            buffer_putm_internal(
-                b, i == 0 ? "\"" : "\"", t->key, "\", \"", t->vals.val_chars, "\",", NULL);
+            buffer_putm_internal(b, i == 0 ? "\"" : "\"", t->key, "\", \"", t->vals.val_chars, "\",", NULL);
             ++i;
           }
           newline_indent(b, depth);
@@ -179,15 +184,7 @@ xml_dump(xmlnode* n, buffer* b, const char* parent, int depth) {
         } else {
           hmap_foreach(n->attributes, t) {
             newline_indent(b, depth);
-            buffer_putm_internal(b,
-                                 "xml_set_attribute(",
-                                 name.s,
-                                 ", \"",
-                                 t->key,
-                                 "\", \"",
-                                 t->vals.val_chars,
-                                 "\")",
-                                 NULL);
+            buffer_putm_internal(b, "xml_set_attribute(", name.s, ", \"", t->key, "\", \"", t->vals.val_chars, "\")", NULL);
           }
         }
       }
@@ -195,7 +192,8 @@ xml_dump(xmlnode* n, buffer* b, const char* parent, int depth) {
       if(attrs_str[1] != 't') {
         if(text_children) {
           buffer_putm_internal(b, "->children =", NULL);
-          // newline_indent(b, depth + 2)
+          // newline_indent(b, depth +
+          // 2)
           buffer_putm_internal(b, " xml_textnode(\"", n->children->name, "\");", NULL);
         }
 
@@ -224,7 +222,8 @@ main(int argc, char* argv[1]) {
   xmlnode* doc;
   buffer_mmapprivate(&infile, argc > 1 ? argv[1] : "../dirlist/test.xml");
   /* xml_reader(&r, &infile);
-   xml_read_callback(&r, xml_read_function);
+   xml_read_callback(&r,
+   xml_read_function);
  */
   strlist_init(&vars, '\0');
   buffer_skip_until(&infile, "\r\n", 2);

@@ -43,12 +43,14 @@ set_timeouts(int seconds) {
 }
 /*
  *
- *  URL: http://verteiler1.mediathekview.de/Filmliste-akt.xz
+ *  URL:
+ * http://verteiler1.mediathekview.de/Filmliste-akt.xz
  */
 
-/* https://github.com/rsenn/lc-meter/raw/master/doc/LCmeter0-LCD-8pinlcd-PIC_COMP.pdf */
-static const char default_url[] =
-    "https://www.google.com/search?q=SSL_bio"; //"https://raw.githubusercontent.com/rsenn/lc-meter/master/doc/LCmeter0-LCD-8pinlcd-PIC_COMP.pdf";
+/* https://github.com/rsenn/lc-meter/raw/master/doc/LCmeter0-LCD-8pinlcd-PIC_COMP.pdf
+ */
+static const char default_url[] = "https://www.google.com/"
+                                  "search?q=SSL_bio"; //"https://raw.githubusercontent.com/rsenn/lc-meter/master/doc/LCmeter0-LCD-8pinlcd-PIC_COMP.pdf";
 static const char* const url_host = "127.0.0.1";
 static const char* const url_location = "/login";
 static const uint16 url_port = 8080;
@@ -56,15 +58,8 @@ static io_entry* g_iofd;
 static http h;
 static buffer in, out;
 
-const char* token_types[] = {"XML_EOF",
-                             "XML_DATA",
-                             "XML_TAG_NAME",
-                             "XML_TAG_CLOSE",
-                             "XML_ATTR_NAME",
-                             "XML_ATTR_VALUE",
-                             "XML_COMMENT"};
-const char* token_colors[] = {
-    "\x1b[1;37m", "\x1b[1;31m", "\x1b[1;35m", "\x1b[1;33m", "\x1b[1;36m", "\x1b[1;32m"};
+const char* token_types[] = {"XML_EOF", "XML_DATA", "XML_TAG_NAME", "XML_TAG_CLOSE", "XML_ATTR_NAME", "XML_ATTR_VALUE", "XML_COMMENT"};
+const char* token_colors[] = {"\x1b[1;37m", "\x1b[1;31m", "\x1b[1;35m", "\x1b[1;33m", "\x1b[1;36m", "\x1b[1;32m"};
 
 void
 usage(char* av0) {
@@ -75,8 +70,10 @@ usage(char* av0) {
                        "\n"
                        "Options:\n"
                        "\n"
-                       "  -h, --help              Show this help\n"
-                       "  -o, --output FILE       Output file\n"
+                       "  -h, --help              Show "
+                       "this help\n"
+                       "  -o, --output FILE       "
+                       "Output file\n"
                        "\n",
                        NULL);
   buffer_flush(buffer_1);
@@ -94,7 +91,7 @@ put_escaped_x(buffer* b, const char* x, size_t len, int unescaped) {
       buffer_putc(b, c);
     } else {
       /*buffer_putc(b, '\\'); */
-      buffer_put(b, buf, fmt_escapecharc(buf, (uint64)(unsigned char)c));
+      buffer_put(b, buf, fmt_escapecharnonprintable(buf, (uint64)(unsigned char)c));
     }
   }
 }
@@ -135,6 +132,7 @@ put_indented(buffer* b, const char* x, size_t len) {
       buffer_putc(b, '\t');
   }
 }
+
 static void
 put_indented_n(buffer* b, const char* x, size_t len, size_t maxlen) {
   size_t n = len;
@@ -177,7 +175,10 @@ http_io_handler(http* h, buffer* out) {
       nb = http_canread(h, io_wantwrite);
 
 #ifdef DEBUG_OUTPUT
-      buffer_putspad(buffer_2, "\x1b[1;31mhttp_io_handler canread\x1b[0m", 30);
+      buffer_putspad(buffer_2,
+                     "\x1b[1;31mhttp_io_handler "
+                     "canread\x1b[0m",
+                     30);
       buffer_puts(buffer_2, "nb=");
       buffer_putlong(buffer_2, nb);
       buffer_puts(buffer_2, " connected=");
@@ -202,19 +203,14 @@ http_io_handler(http* h, buffer* out) {
         ssize_t len;
 
         if((len = buffer_get(&in, buf, sizeof(buf))) > 0) {
-          buffer_putspad(buffer_2, "\x1b[1;31mbuffer_get\x1b[0m", 30);
+          buffer_putspad(buffer_2,
+                         "\x1b[1;31mbuffer_"
+                         "get\x1b[0m",
+                         30);
           buffer_puts(buffer_2, " errno=");
           buffer_puts(buffer_2, strerror(errno));
           buffer_puts(buffer_2, " status=");
-          buffer_puts(buffer_2,
-                      ((const char* const[]){"-1",
-                                             "HTTP_RECV_HEADER",
-                                             "HTTP_RECV_DATA",
-                                             "HTTP_STATUS_CLOSED",
-                                             "HTTP_STATUS_ERROR",
-                                             "HTTP_STATUS_BUSY",
-                                             "HTTP_STATUS_FINISH",
-                                             0})[h->response->status + 1]);
+          buffer_puts(buffer_2, ((const char* const[]){"-1", "HTTP_RECV_HEADER", "HTTP_RECV_DATA", "HTTP_STATUS_CLOSED", "HTTP_STATUS_ERROR", "HTTP_STATUS_BUSY", "HTTP_STATUS_FINISH", 0})[h->response->status + 1]);
           buffer_puts(buffer_2, " len=");
           buffer_putlong(buffer_2, len);
           buffer_puts(buffer_2, " data='");
@@ -258,8 +254,10 @@ process_xml(buffer* data) {
     buffer_putspad(buffer_2, token_types[tok.id + 1], 16);
     put_escaped_x(buffer_2, tok.x, tok.len, 0x40);
     buffer_puts(buffer_2, "\x1b[0m");
-    /*  buffer_puts(buffer_2, "\nXML token length = ");
-          buffer_putulong(buffer_2, tok.len);*/
+    /*  buffer_puts(buffer_2, "\nXML
+       token length = ");
+          buffer_putulong(buffer_2,
+       tok.len);*/
     buffer_putnlflush(buffer_2);
   } while(tok.id != XML_EOF);
 }
@@ -267,8 +265,7 @@ process_xml(buffer* data) {
 void
 http_dump(http* h) {
   size_t received = h->response->data.len;
-  size_t pos =
-      http_skip_header(stralloc_begin(&h->response->data), stralloc_length(&h->response->data));
+  size_t pos = http_skip_header(stralloc_begin(&h->response->data), stralloc_length(&h->response->data));
   const char* type = http_get_header(h, "Content-Type");
   buffer_puts(buffer_2, "PTR: ");
   buffer_putulong(buffer_2, h->response->ptr);
@@ -289,17 +286,17 @@ http_dump(http* h) {
 
       if(len > 100)
         len = 100;
-      buffer_put_escaped(buffer_2, stralloc_begin(&h->response->data), len, &fmt_escapecharshell);
+      buffer_put_escaped(buffer_2,
+    stralloc_begin(&h->response->data),
+    len, &fmt_escapecharnonprintable);
       if(len < received) {
-        buffer_puts(buffer_2, " ... more (");
-        buffer_putulong(buffer_2, len);
-        buffer_puts(buffer_2, " bytes total ...");
+        buffer_puts(buffer_2, " ... more
+    ("); buffer_putulong(buffer_2, len);
+        buffer_puts(buffer_2, " bytes
+    total ...");
       }
     }*/
-  put_indented_n(buffer_2,
-                 stralloc_begin(&h->response->data) + pos,
-                 stralloc_length(&h->response->data) - pos,
-                 300);
+  put_indented_n(buffer_2, stralloc_begin(&h->response->data) + pos, stralloc_length(&h->response->data) - pos, 300);
   buffer_putnlflush(buffer_2);
 }
 
@@ -355,7 +352,8 @@ main(int argc, char* argv[]) {
   argi = optind;
   if(argv[optind] == 0) {
     argv[optind++] = (char*)default_url;
-    // argv[1] = "http://127.0.0.1:5555/show";
+    // argv[1] =
+    // "http://127.0.0.1:5555/show";
     argv[optind] = 0;
   }
   for(; argv[argi]; ++argi) {
@@ -386,8 +384,8 @@ main(int argc, char* argv[]) {
       io_wait();
 
       /*if(io_waituntil2(-1) == -1) {
-        errmsg_warnsys("wait error: ", 0);
-        return 3;
+        errmsg_warnsys("wait error: ",
+      0); return 3;
       }*/
 
       ret = http_io_handler(&h, &out);
@@ -411,15 +409,7 @@ main(int argc, char* argv[]) {
       }
 
       buffer_puts(buffer_2, " status=");
-      buffer_puts(buffer_2,
-                  ((const char* const[]){"-1",
-                                         "HTTP_RECV_HEADER",
-                                         "HTTP_RECV_DATA",
-                                         "HTTP_STATUS_CLOSED",
-                                         "HTTP_STATUS_ERROR",
-                                         "HTTP_STATUS_BUSY",
-                                         "HTTP_STATUS_FINISH",
-                                         0})[h.response->status + 1]);
+      buffer_puts(buffer_2, ((const char* const[]){"-1", "HTTP_RECV_HEADER", "HTTP_RECV_DATA", "HTTP_STATUS_CLOSED", "HTTP_STATUS_ERROR", "HTTP_STATUS_BUSY", "HTTP_STATUS_FINISH", 0})[h.response->status + 1]);
       buffer_putnlflush(buffer_2);
 
       // buffer_dump(buffer_1, &h.q.in);
@@ -434,7 +424,8 @@ main(int argc, char* argv[]) {
       s += http_skip_header(s, e - s);
 
       put_escaped_n(buffer_1, s, e - s, 300);
-      //      buffer_put(buffer_1, s, e - s);
+      //      buffer_put(buffer_1, s, e
+      //      - s);
     }
     buffer_fromsa(&data, &h.response->data);
     http_dump(&h);

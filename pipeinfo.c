@@ -53,12 +53,15 @@ usage(char* av0) {
   buffer_putm_internal(buffer_1,
                        "Usage: ",
                        str_basename(av0),
-                       " [OPTIONS] <FILE.list | TARGET LINK>\n",
+                       " [OPTIONS] <FILE.list | TARGET "
+                       "LINK>\n",
                        "\n",
                        "Options:\n",
                        "\n",
-                       "  -h, --help              Show this help\n",
-                       "  -v, --verbose           Be verbose\n",
+                       "  -h, --help              Show "
+                       "this help\n",
+                       "  -v, --verbose           Be "
+                       "verbose\n",
                        "\n",
                        NULL);
   buffer_flush(buffer_1);
@@ -81,9 +84,7 @@ get_pipe(int64 id) {
 void
 print_number_nonl_base(const char* property, int64 num, int base) {
   buffer_putm_internal(buffer_1, property, "=", base == 8 ? "0" : base == 16 ? "0x" : "", 0);
-  (base == 8    ? buffer_put8long(buffer_1, num)
-   : base == 16 ? buffer_putxlonglong0(buffer_1, num, 2)
-                : buffer_putlonglong(buffer_1, num));
+  (base == 8 ? buffer_put8long(buffer_1, num) : base == 16 ? buffer_putxlonglong0(buffer_1, num, 2) : buffer_putlonglong(buffer_1, num));
 }
 
 void
@@ -120,8 +121,9 @@ print_stat(const char* property, const struct stat* st) {
   buffer_put8long(buffer_1, st->st_mode & 07777);
   if(st->st_dev) {
     print_number_nonl_base(", dev", st->st_dev, 16); /*
-      buffer_putm_internal(buffer_1, ", dev", 0);
-      buffer_putxlong0(buffer_1, st->st_dev, 3);*/
+                     buffer_putm_internal(buffer_1, ", dev",
+                     0); buffer_putxlong0(buffer_1,
+                     st->st_dev, 3);*/
   }
   if(st->st_rdev) {
     buffer_putm_internal(buffer_1, ", rdev 0x", 0);
@@ -317,7 +319,8 @@ compare_pipes(const pipe_t* a, const pipe_t* b) {
 void
 procfd_dump(const procfd_t* pfd) {
   print_number_nonl("fd", pfd->fd);
-  // print_stralloc_nonl(" path", &pfd->path);
+  // print_stralloc_nonl(" path",
+  // &pfd->path);
   print_string_nonl(" type", type(pfd->st.st_mode));
   print_number_nonl_base(" mode", pfd->st.st_mode, 8);
   print_number_nonl(" size", pfd->st.st_size);
@@ -332,18 +335,17 @@ procfd_dump(const procfd_t* pfd) {
       print_number_nonl(" ctime", pfd->st.st_ctime);
   }
   buffer_puts(buffer_1, " info='");
-  buffer_put_escaped(buffer_1, pfd->info.s, pfd->info.len, &fmt_escapecharshell);
+  buffer_put_escaped(buffer_1, pfd->info.s, pfd->info.len, &fmt_escapecharnonprintable);
   buffer_puts(buffer_1, "'");
-  //      print_stralloc(" info", &pfd->info);
+  //      print_stralloc(" info",
+  //      &pfd->info);
 }
 
 int
 main(int argc, char* argv[]) {
   int index = 0, c, i, prev;
   const pipe_t* p;
-  static const struct longopt opts[] = {{"help", 0, NULL, 'h'},
-                                        {"verbose", 0, 0, 'v'},
-                                        {0, 0, 0, 0}};
+  static const struct longopt opts[] = {{"help", 0, NULL, 'h'}, {"verbose", 0, 0, 'v'}, {0, 0, 0, 0}};
 
   errmsg_iam(argv[0]);
 
@@ -371,10 +373,7 @@ main(int argc, char* argv[]) {
 
   if(0) {
     read_proc();
-    qsort(array_start(&pipes),
-          array_length(&pipes, sizeof(pipe_t)),
-          sizeof(pipe_t),
-          (int (*)(const void*, const void*))(void*)&compare_pipes);
+    qsort(array_start(&pipes), array_length(&pipes, sizeof(pipe_t)), sizeof(pipe_t), (int (*)(const void*, const void*))(void*)&compare_pipes);
   }
 
   if(verbose) {

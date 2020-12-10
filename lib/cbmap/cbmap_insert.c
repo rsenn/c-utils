@@ -3,10 +3,7 @@
 #include "../cbmap_internal.h"
 
 static void*
-cbmap_data_node_update_value(cbmap_allocator_t value_allocator,
-                             struct cbmap_data_node* data,
-                             void* value,
-                             size_t value_len) {
+cbmap_data_node_update_value(cbmap_allocator_t value_allocator, struct cbmap_data_node* data, void* value, size_t value_len) {
   void* new_value;
   /* If the data is the same then do not free/alloc */
   if(data->value_len == value_len && VALUE_COMPARE(data->value, value, value_len) == 0) {
@@ -30,12 +27,7 @@ cbmap_data_node_update_value(cbmap_allocator_t value_allocator,
 }
 
 static struct cbmap_data_node*
-cbmap_data_node_new(cbmap_allocator_t key_allocator,
-                    cbmap_allocator_t value_allocator,
-                    void* key,
-                    size_t key_len,
-                    void* value,
-                    size_t value_len) {
+cbmap_data_node_new(cbmap_allocator_t key_allocator, cbmap_allocator_t value_allocator, void* key, size_t key_len, void* value, size_t value_len) {
   struct cbmap_data_node* data;
 
   /* Data node (memaligned) */
@@ -75,8 +67,7 @@ cbmap_insert(cbmap_t map, void* key, size_t key_len, void* value, size_t value_l
   void** insertion_node;
 
   if(p == NULL) {
-    struct cbmap_data_node* data = cbmap_data_node_new(
-        &map->key_allocator, &map->value_allocator, key, key_len, value, value_len);
+    struct cbmap_data_node* data = cbmap_data_node_new(&map->key_allocator, &map->value_allocator, key, key_len, value, value_len);
     if(data == NULL) {
       return INSERT_OUT_OF_MEMORY;
     }
@@ -126,8 +117,7 @@ different_byte_found:
     return INSERT_OUT_OF_MEMORY;
   }
 
-  newdata = cbmap_data_node_new(
-      &map->key_allocator, &map->value_allocator, key, key_len, value, value_len);
+  newdata = cbmap_data_node_new(&map->key_allocator, &map->value_allocator, key, key_len, value, value_len);
   if(newdata == NULL) {
     cbmap_internal_node_destroy(newnode);
     return INSERT_OUT_OF_MEMORY;

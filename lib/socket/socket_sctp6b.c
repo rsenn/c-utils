@@ -35,8 +35,7 @@ socket_sctp6b(void) {
     goto compat;
   s = winsock2errno(socket(AF_INET6, SOCK_STREAM, IPPROTO_SCTP));
   if(s == -1) {
-    if(errno == EINVAL || errno == EAFNOSUPPORT || errno == EPFNOSUPPORT ||
-       errno == EPROTONOSUPPORT) {
+    if(errno == EINVAL || errno == EAFNOSUPPORT || errno == EPFNOSUPPORT || errno == EPROTONOSUPPORT) {
     compat:
       s = winsock2errno(socket(AF_INET, SOCK_STREAM, IPPROTO_SCTP));
       noipv6 = 1;

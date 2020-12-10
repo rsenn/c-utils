@@ -40,8 +40,10 @@ usage(char* av0) {
                        "\n"
                        "Options:\n"
                        "\n"
-                       "  -h, --help              Show this help\n"
-                       "  -i, --in-place          Write to input file\n"
+                       "  -h, --help              Show "
+                       "this help\n"
+                       "  -i, --in-place          Write "
+                       "to input file\n"
                        "\n",
                        NULL);
   buffer_flush(buffer_1);
@@ -264,7 +266,8 @@ again:
     buffer_putnlflush(buffer_1);
   }
   /*
-    if((x = mmap_read(out_path, &n)) && n > 1) {
+    if((x = mmap_read(out_path, &n)) &&
+    n > 1) {
 
       buffer_puts(buffer_1, "out: ");
       buffer_put(buffer_1, x, n);
@@ -286,8 +289,9 @@ again:
       errmsg_warnsys("unlink: ", tmpl, 0);
     }
 
-    /*    buffer_truncfile(&inplace, out_path);
-        buffer_put(&inplace, tmp.s, tmp.len);
+    /*    buffer_truncfile(&inplace,
+       out_path); buffer_put(&inplace,
+       tmp.s, tmp.len);
         buffer_flush(&inplace);
         buffer_close(&inplace);
     */

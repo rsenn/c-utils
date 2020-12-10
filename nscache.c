@@ -44,24 +44,30 @@ iopause_fd io[3 + MAXUDP + MAXTCP];
 iopause_fd *udp53io, *tcp53io;
 
 struct tcpclient {
-  uint64 active; /* query number or 1, if active; otherwise 0 */
+  uint64 active; /* query number or 1, if
+                    active; otherwise 0 */
   iopause_fd* io;
-  char* buf; /* 0, or dynamically allocated of length len */
+  char* buf; /* 0, or dynamically
+                allocated of length len */
   struct taia start;
   struct taia timeout;
   struct query q;
   uint32 scope_id;
-  int tcp; /* open TCP socket, if active */
+  int tcp; /* open TCP socket, if active
+            */
   int state;
   unsigned int len;
   unsigned int pos;
-  uint16 port; /* send response to this port */
+  uint16 port; /* send response to this
+                  port */
   char id[2];
-  char ip[16]; /* send response to this address */
+  char ip[16]; /* send response to this
+                  address */
 };
 
 struct udpclient {
-  uint64 active; /* query number, if active; otherwise 0 */
+  uint64 active; /* query number, if
+                    active; otherwise 0 */
   iopause_fd* io;
   struct taia start;
   struct query q;
@@ -100,7 +106,8 @@ nscache_okclient(char ip[16], bool ip6) {
   for(;;) {
     if(stat(fn, &st) == 0)
       return 1;
-    /* treat temporary error as rejection */
+    /* treat temporary error as
+     * rejection */
     i = str_rchr(fn, '.');
     if(!fn[i])
       return 0;
@@ -149,9 +156,12 @@ packetquery(char* buf, unsigned int len, char** q, char qtype[2], char qclass[2]
   if(!pos)
     return 0;
   if(header[2] & 128)
-    return 0; /* must not respond to responses */
+    return 0; /* must not respond to
+                 responses */
   if(!(header[2] & 1))
-    return 0; /* do not respond to non-recursive queries */
+    return 0; /* do not respond to
+                 non-recursive queries
+               */
   if(header[2] & 120)
     return 0;
   if(header[2] & 2)
@@ -261,11 +271,13 @@ udp_num(const void* ptr) {
 }
 
 /*
-state 1: buf 0; normal state at beginning of TCP connection
-state 2: buf 0; have read 1 byte of query packet length into len
-state 3: buf allocated; have read pos bytes of buf
-state 0: buf 0; handling query in q
-state -1: buf allocated; have written pos bytes
+state 1: buf 0; normal state at
+beginning of TCP connection state 2: buf
+0; have read 1 byte of query packet
+length into len state 3: buf allocated;
+have read pos bytes of buf state 0: buf
+0; handling query in q state -1: buf
+allocated; have written pos bytes
 */
 
 void
@@ -346,7 +358,8 @@ tcp_rw(int j) {
     x->pos += r;
     if(x->pos == x->len) {
       tcp_free(j);
-      x->state = 1; /* could drop connection immediately */
+      x->state = 1; /* could drop connection
+                       immediately */
     }
     return;
   }
@@ -564,18 +577,26 @@ main(int argc, char* argv[]) {
     die(111, FATAL, "unable to parse IP address ", x);
 
   udp53 = socket_udp6();
-  /// v6only_prev = socket_v6only(udp53, 0);
+  /// v6only_prev = socket_v6only(udp53,
+  /// 0);
 
   if(udp53 == -1)
-    diesys(111, FATAL, "unable to create UDP socket: ");
+    diesys(111,
+           FATAL,
+           "unable to create UDP "
+           "socket: ");
   if(socket_bind6_reuse(udp53, bindaddr, 53, bindscope) == -1)
     diesys(111, FATAL, "unable to bind UDP socket: ");
 
   tcp53 = socket_tcp6();
-  // v6only_prev = socket_v6only(udp53, 0);
+  // v6only_prev = socket_v6only(udp53,
+  // 0);
 
   if(tcp53 == -1)
-    diesys(111, FATAL, "unable to create TCP socket: ");
+    diesys(111,
+           FATAL,
+           "unable to create TCP "
+           "socket: ");
   if(socket_bind6_reuse(tcp53, bindaddr, 53, bindscope) == -1)
     diesys(111, FATAL, "unable to bind TCP socket: ");
 
@@ -605,7 +626,11 @@ main(int argc, char* argv[]) {
 
   } else {
     if(!cache_init(cachesize))
-      die(111, FATAL, "not enough memory for cache of size ", x);
+      die(111,
+          FATAL,
+          "not enough memory for cache "
+          "of size ",
+          x);
   }
 
   if(env_get("HIDETTL"))
@@ -618,7 +643,10 @@ main(int argc, char* argv[]) {
     diesys(111, FATAL, "unable to read servers: ");
 
   if(socket_listen(tcp53, 20) == -1)
-    diesys(111, FATAL, "unable to listen on TCP socket: ");
+    diesys(111,
+           FATAL,
+           "unable to listen on TCP "
+           "socket: ");
 
   log_startup();
   nscache_run();
