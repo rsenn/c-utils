@@ -85,23 +85,16 @@ int http_get(http* h, const char* location);
 void http_init(http* h, const char* host, uint16 port);
 ssize_t http_read(fd_t fd, char* buf, size_t len, void* ptr);
 ssize_t http_read_header(http* h, stralloc* sa, http_response* r);
-size_t http_read_internal(fd_t fd, char* buf, size_t len, buffer* b);
+size_t http_read_internal(fd_t fd, char* buf, size_t received, buffer* b);
+void http_response_dump(http_response* r);
 void http_response_free(http_response* r);
 http_response* http_response_new(void);
-void http_response_dump(http_response* r);
-
 int http_sendreq(http* h);
+size_t http_skip_header(const char* x, size_t len);
 int http_socket(http* h, int nonblock);
 ssize_t http_socket_read(fd_t fd, void* buf, size_t len, void* b);
 ssize_t http_socket_write(fd_t fd, void* buf, size_t len, void* b);
 const char* http_strerror(http* h, int ret);
-
-#ifdef HAVE_OPENSSL
-ssize_t https_tls2want(http* h, ssize_t ret, void (*wantread)(fd_t), void (*wantwrite)(fd_t));
-ssize_t https_connect(http* h);
-#endif
-const char* http_get_header(http* h, const char* name);
-size_t http_skip_header(const char* x, size_t len);
 
 #ifdef __cplusplus
 }
