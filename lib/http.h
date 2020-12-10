@@ -111,6 +111,7 @@ ssize_t https_tls2want(http* h, ssize_t ret, void (*wantread)(fd_t), void (*want
 ssize_t https_connect(http* h);
 #endif
 const char* http_get_header(http* h, const char* name);
+size_t http_skip_header(const char* x, size_t len);
 
 #ifdef __cplusplus
 }

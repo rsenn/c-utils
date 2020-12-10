@@ -119,6 +119,9 @@ fail:
   buffer_putspad(buffer_2, "http_canread ", 30);
   buffer_puts(buffer_2, "s=");
   buffer_putlong(buffer_2, h->sock);
+  buffer_puts(buffer_2, " ret=\x1b[1;36m");
+  buffer_putlong(buffer_2, ret);
+  buffer_puts(buffer_2, "\x1b");
   if(h->tls) {
     buffer_puts(buffer_2, " tls=");
     buffer_putlong(buffer_2, !!h->tls);
@@ -143,12 +146,26 @@ fail:
     buffer_puts(buffer_2, " code=");
     buffer_putlong(buffer_2, h->response->code);
   }
-  if(r->data.len > 0) {
-    buffer_puts(buffer_2, " data=");
-    buffer_put_escaped(buffer_2, r->data.s, r->data.len, &fmt_escapecharshell);
+  if(ret > 0) {
+    size_t len = ret;
+    const char* s = stralloc_end(&r->data) - len;
+    const char* e = stralloc_end(&r->data);
+    if(len > 30)
+      len = 30;
+    buffer_puts(buffer_2, " data:len=");
+    buffer_putlong(buffer_2, r->data.len);
+
+    buffer_puts(buffer_2, " buf=");
+
+    buffer_put_escaped(buffer_2, stralloc_end(&r->data) - r->data.len, len, &fmt_escapecharshell);
+
+    if(len < ret) {
+      buffer_puts(buffer_2, " ... more (");
+      buffer_putulong(buffer_2, ret);
+      buffer_puts(buffer_2, " bytes total) ...");
+    }
   }
-  buffer_puts(buffer_2, " ret=");
-  buffer_putlong(buffer_2, ret);
+
   buffer_puts(buffer_2, " tls=");
   buffer_putlong(buffer_2, !!h->tls);
   if(ret < 0) {

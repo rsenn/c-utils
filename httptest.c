@@ -100,8 +100,51 @@ put_escaped_x(buffer* b, const char* x, size_t len, int unescaped) {
 }
 
 static void
+put_abbreviate(buffer* b, size_t len) {
+
+  buffer_puts(b, " ... more (");
+  buffer_putulong(b, len);
+  buffer_puts(b, " bytes total ...");
+}
+
+static void
+put_escaped_n(buffer* b, const char* x, size_t len, size_t maxlen) {
+  size_t n = len;
+  if(n > maxlen)
+    n = maxlen;
+
+  put_escaped_x(b, x, n, 0x20);
+
+  if(n < len)
+    put_abbreviate(b, len);
+}
+
+static void
 put_escaped(buffer* b, const char* x, size_t len) {
   put_escaped_x(b, x, len, 0x20);
+}
+
+static void
+put_indented(buffer* b, const char* x, size_t len) {
+  size_t i;
+  char buf[32];
+  for(i = 0; i < len; i++) {
+    char c = x[i];
+    buffer_putc(b, c);
+    if(c == '\n')
+      buffer_putc(b, '\t');
+  }
+}
+static void
+put_indented_n(buffer* b, const char* x, size_t len, size_t maxlen) {
+  size_t n = len;
+  if(n > maxlen)
+    n = maxlen;
+
+  put_indented(b, x, n);
+
+  if(n < len)
+    put_abbreviate(b, len);
 }
 
 static int
@@ -175,7 +218,7 @@ http_io_handler(http* h, buffer* out) {
           buffer_puts(buffer_2, " len=");
           buffer_putlong(buffer_2, len);
           buffer_puts(buffer_2, " data='");
-          put_escaped_x(buffer_2, buf, len, 0x40);
+          put_escaped_n(buffer_2, buf, len, 20);
           buffer_putnlflush(buffer_2);
 
           if(buffer_put(out, buf, len)) {
@@ -223,17 +266,40 @@ process_xml(buffer* data) {
 
 void
 http_dump(http* h) {
-
+  size_t received = h->response->data.len;
+  size_t pos =
+      http_skip_header(stralloc_begin(&h->response->data), stralloc_length(&h->response->data));
   const char* type = http_get_header(h, "Content-Type");
-  buffer_puts(buffer_2, "ptr: ");
+  buffer_puts(buffer_2, "PTR: ");
   buffer_putulong(buffer_2, h->response->ptr);
   buffer_putnlflush(buffer_2);
-  buffer_puts(buffer_2, "type: ");
+  buffer_puts(buffer_2, "TYPE: ");
   buffer_put(buffer_2, type, str_chrs(type, "\r\n\0", 3));
   buffer_putnlflush(buffer_2);
+  pos--;
 
-  buffer_puts(buffer_2, "response: ");
-  put_escaped_x(buffer_2, h->response->data.s, h->response->data.len, 0x20);
+  buffer_puts(buffer_2, "HEADERS: ");
+  put_indented(buffer_2, stralloc_begin(&h->response->data), pos);
+  buffer_puts(buffer_2, "RESPONSE: ");
+  /*
+    if(received > 0) {
+
+      size_t len = received;
+      buffer_puts(buffer_2, " data=");
+
+      if(len > 100)
+        len = 100;
+      buffer_put_escaped(buffer_2, stralloc_begin(&h->response->data), len, &fmt_escapecharshell);
+      if(len < received) {
+        buffer_puts(buffer_2, " ... more (");
+        buffer_putulong(buffer_2, len);
+        buffer_puts(buffer_2, " bytes total ...");
+      }
+    }*/
+  put_indented_n(buffer_2,
+                 stralloc_begin(&h->response->data) + pos,
+                 stralloc_length(&h->response->data) - pos,
+                 300);
   buffer_putnlflush(buffer_2);
 }
 
@@ -285,7 +351,7 @@ main(int argc, char* argv[]) {
   http_init(&h, url_host, url_port);
   h.nonblocking = 1;
   h.keepalive = 0;
-  h.version = 10;
+  h.version = 11;
   argi = optind;
   if(argv[optind] == 0) {
     argv[optind++] = (char*)default_url;
@@ -315,7 +381,7 @@ main(int argc, char* argv[]) {
       int doread = 1;
       fd_t sock;
       ;
-      buffer_putsflush(buffer_2, "httptest start loop\n");
+      buffer_putsflush(buffer_2, "htttpest start loop\n");
 
       io_wait();
 
@@ -362,18 +428,17 @@ main(int argc, char* argv[]) {
       if(h.response->status == HTTP_STATUS_FINISH || h.response->status == HTTP_STATUS_CLOSED)
         break;
     }
-    buffer_put(buffer_1, stralloc_begin(&h.response->data), h.response->ptr);
-    //   put_escaped_x(buffer_1, stralloc_begin(&h.response->data),
-    //   stralloc_length(&h.response->data), 0x12);
+    {
+      const char* s = stralloc_begin(&h.response->data);
+      const char* e = stralloc_end(&h.response->data);
+      s += http_skip_header(s, e - s);
 
+      put_escaped_n(buffer_1, s, e - s, 300);
+      //      buffer_put(buffer_1, s, e - s);
+    }
     buffer_fromsa(&data, &h.response->data);
-
     http_dump(&h);
-    //  process_xml(&data);
-
-    // buffer_putsa(&out, &h.response->data);
     buffer_flush(&out);
-    /* buffer_putsa(buffer_1, &h.response->data);*/
     buffer_putnlflush(buffer_1);
   }
   return 0;

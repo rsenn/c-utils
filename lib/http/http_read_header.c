@@ -90,8 +90,9 @@ http_read_header(http* h, stralloc* sa, http_response* r) {
   }
 
   if(r->code != -1) {
-    buffer_puts(buffer_2, " code=");
+    buffer_puts(buffer_2, " code=\x1b[1;36m");
     buffer_putlong(buffer_2, r->code);
+    buffer_puts(buffer_2, "\x1b[0m");
   }
   if(r->content_length > 0) {
     buffer_puts(buffer_2, " content_length=");

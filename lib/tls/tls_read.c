@@ -3,6 +3,7 @@
 #include "../stralloc.h"
 #include "../buffer.h"
 #include "../fmt.h"
+#include "../uint64.h"
 #include <assert.h>
 #include <errno.h>
 
@@ -12,7 +13,7 @@
 
 ssize_t
 tls_read(fd_t fd, void* data, size_t len) {
-  ssize_t ret;
+  int64 ret;
   tls_instance* i = iarray_get(&tls_list, fd);
   assert(i);
   assert(i->ssl);
@@ -25,7 +26,7 @@ tls_read(fd_t fd, void* data, size_t len) {
     }
   }
 
-  if((ret = tls_instance_return(i, TLS_OP_READ, SSL_read(i->ssl, data, len))) < 0)
+  if((tls_instance_return(i, TLS_OP_READ, ret = SSL_read(i->ssl, data, len))) < 0)
     errno = tls_instance_errno(i);
 
 #ifdef DEBUG_TLS
@@ -33,7 +34,7 @@ tls_read(fd_t fd, void* data, size_t len) {
   buffer_puts(buffer_2, "fd=");
   buffer_putlong(buffer_2, fd);
   buffer_puts(buffer_2, " ret=");
-  buffer_putlong(buffer_2, ret);
+  buffer_putlonglong(buffer_2, ret);
   if(errno) {
     buffer_puts(buffer_2, " errno=");
     buffer_putstr(buffer_2, strerror(errno));
@@ -58,8 +59,18 @@ tls_read(fd_t fd, void* data, size_t len) {
                                        "SSL_ERROR_WANT_CLIENT_HELLO_CB"})[i->error]);
   }
   if(ret > 0) {
+
+    size_t len = ret;
     buffer_puts(buffer_2, " data=");
-    buffer_put_escaped(buffer_2, data, ret, &fmt_escapecharshell);
+
+    if(len > 100)
+      len = 100;
+    buffer_put_escaped(buffer_2, data, len, &fmt_escapecharshell);
+    if(len < ret) {
+      buffer_puts(buffer_2, " ... more (");
+      buffer_putulong(buffer_2, ret);
+      buffer_puts(buffer_2, " bytes total ...");
+    }
   }
   buffer_putnlflush(buffer_2);
 #endif

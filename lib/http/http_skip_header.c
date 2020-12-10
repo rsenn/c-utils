@@ -11,9 +11,11 @@ http_skip_header(const char* x, size_t len) {
       s++;
       if(s < end && (*s == '\r' || *s == '\n')) {
         while(s < end && *s != '\n') s++;
+        if(s < end)
+          s++;
         break;
       }
     }
   }
-    return s - x;
+  return s - x;
 }

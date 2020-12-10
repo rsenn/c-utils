@@ -109,7 +109,7 @@ http_socket_read(fd_t fd, void* buf, size_t len, void* b) {
     io_dontwantwrite(fd);
     io_dontwantread(fd);
   }
-#if DEBUG_HTTP
+#if DEBUG_HTTP_
   buffer_putspad(buffer_2, "http_socket_read", 30);
   buffer_puts(buffer_2, "s=");
   buffer_putlong(buffer_2, h->sock);
@@ -173,7 +173,7 @@ http_socket_write(fd_t fd, void* buf, size_t len, void* b) {
     if(h->tls ? (tlserr != 2 && tlserr != 3) : (errno != EWOULDBLOCK && errno != EAGAIN))
       r->status = HTTP_STATUS_ERROR;
   }
-#ifdef DEBUG_HTTP
+#ifdef DEBUG_HTTP_
   buffer_putspad(buffer_2, "http_socket_write ", 30);
   buffer_puts(buffer_2, "s=");
   buffer_putlong(buffer_2, h->sock);

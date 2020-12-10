@@ -127,12 +127,25 @@ end:
     buffer_putlong(buffer_2, r->code);
   }
   if(received > 0) {
+    size_t len = received;
+    if(len > 100)
+      len = 100;
+    const char* s = stralloc_end(&r->data) - len;
+    const char* e = stralloc_end(&r->data);
     buffer_puts(buffer_2, " received=");
     buffer_putlong(buffer_2, received);
     buffer_puts(buffer_2, " data:len=");
     buffer_putlong(buffer_2, r->data.len);
+
     buffer_puts(buffer_2, " buf=");
-    buffer_put_escaped(buffer_2, stralloc_end(&r->data) - received, received, &fmt_escapecharshell);
+
+    buffer_put_escaped(buffer_2, stralloc_end(&r->data) - received, len, &fmt_escapecharshell);
+
+    if(len < received) {
+      buffer_puts(buffer_2, " ... more (");
+      buffer_putulong(buffer_2, len);
+      buffer_puts(buffer_2, " bytes total ...");
+    }
   }
   buffer_puts(buffer_2, " status=");
   buffer_puts(buffer_2,
