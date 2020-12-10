@@ -83,14 +83,14 @@ usage(char* av0) {
 }
 
 static void
-put_escaped(buffer* b, const char* x, size_t len) {
+put_escaped_x(buffer* b, const char* x, size_t len, int unescaped) {
   size_t i;
   char buf[32];
 
   for(i = 0; i < len; i++) {
     char c = x[i];
 
-    if(c >= 0x20) {
+    if(c >= unescaped) {
       buffer_putc(b, c);
     } else {
       /*buffer_putc(b, '\\'); */
@@ -98,6 +98,12 @@ put_escaped(buffer* b, const char* x, size_t len) {
     }
   }
 }
+
+static void
+put_escaped(buffer* b, const char* x, size_t len) {
+  put_escaped_x(b, x, len, 0x20);
+}
+
 static int
 http_io_handler(http* h, buffer* out) {
   fd_t r, w;
@@ -169,7 +175,7 @@ http_io_handler(http* h, buffer* out) {
           buffer_puts(buffer_2, " len=");
           buffer_putlong(buffer_2, len);
           buffer_puts(buffer_2, " data='");
-          put_escaped(buffer_2, buf, len);
+          put_escaped_x(buffer_2, buf, len, 0x40);
           buffer_putnlflush(buffer_2);
 
           if(buffer_put(out, buf, len)) {
@@ -207,7 +213,7 @@ process_xml(buffer* data) {
 
     buffer_puts(buffer_2, token_colors[tok.id]);
     buffer_putspad(buffer_2, token_types[tok.id + 1], 16);
-    put_escaped(buffer_2, tok.x, tok.len);
+    put_escaped_x(buffer_2, tok.x, tok.len, 0x40);
     buffer_puts(buffer_2, "\x1b[0m");
     /*  buffer_puts(buffer_2, "\nXML token length = ");
           buffer_putulong(buffer_2, tok.len);*/
@@ -219,12 +225,15 @@ void
 http_dump(http* h) {
 
   const char* type = http_get_header(h, "Content-Type");
+  buffer_puts(buffer_2, "ptr: ");
+  buffer_putulong(buffer_2, h->response->ptr);
+  buffer_putnlflush(buffer_2);
   buffer_puts(buffer_2, "type: ");
   buffer_put(buffer_2, type, str_chrs(type, "\r\n\0", 3));
   buffer_putnlflush(buffer_2);
 
   buffer_puts(buffer_2, "response: ");
-  put_escaped(buffer_2, h->response->data.s, h->response->data.len);
+  put_escaped_x(buffer_2, h->response->data.s, h->response->data.len, 0x20);
   buffer_putnlflush(buffer_2);
 }
 
@@ -276,6 +285,7 @@ main(int argc, char* argv[]) {
   http_init(&h, url_host, url_port);
   h.nonblocking = 1;
   h.keepalive = 0;
+  h.version = 10;
   argi = optind;
   if(argv[optind] == 0) {
     argv[optind++] = (char*)default_url;
@@ -352,7 +362,9 @@ main(int argc, char* argv[]) {
       if(h.response->status == HTTP_STATUS_FINISH || h.response->status == HTTP_STATUS_CLOSED)
         break;
     }
-    buffer_putsa(buffer_1, &h.response->data);
+    buffer_put(buffer_1, stralloc_begin(&h.response->data), h.response->ptr);
+    //   put_escaped_x(buffer_1, stralloc_begin(&h.response->data),
+    //   stralloc_length(&h.response->data), 0x12);
 
     buffer_fromsa(&data, &h.response->data);
 

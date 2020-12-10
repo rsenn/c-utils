@@ -86,6 +86,7 @@ typedef struct http_s {
   int connected : 1;
   int tls : 1;
   int sent : 1;
+  uint16 version;
 } http;
 
 ssize_t http_canread(http* h, void (*wantwrite)(fd_t));

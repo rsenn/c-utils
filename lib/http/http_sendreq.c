@@ -21,7 +21,7 @@ http_sendreq(http* h) {
     return 0;
   buffer_puts(out, "GET ");
   buffer_putsa(out, &h->request->location);
-  buffer_puts(out, " HTTP/1.1\r\n");
+  buffer_puts(out, h->version == 11 ? " HTTP/1.1\r\n" : " HTTP/1.0\r\n");
   buffer_puts(out, "Host: ");
   buffer_putsa(out, &h->host);
   buffer_puts(out, "\r\n");
