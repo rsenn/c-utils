@@ -1,5 +1,6 @@
 #include "../buffer.h"
 #include "../uint32.h"
+#include "../fmt.h"
 
 int
 buffer_put_quoted(buffer* b, const char* x, size_t len) {
