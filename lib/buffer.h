@@ -203,6 +203,7 @@ int buffer_skipspace(buffer* b);
 int buffer_skip_pred(buffer*, int (*pred)(int));
 
 int buffer_put_escaped(buffer* b, const char* x, size_t len, size_t (*escape)(char*, int));
+int buffer_puts_escaped(buffer* b, const char* s, size_t (*escape)(char*, int));
 int buffer_put_quoted(buffer* b, const char* x, size_t len);
 
 int buffer_freshen(buffer* b);

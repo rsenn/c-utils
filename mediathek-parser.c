@@ -1,7 +1,7 @@
 #include "lib/unix.h"
 #include "lib/array.h"
-#include "lib/stralloc.h"
 #include "lib/buffer.h"
+#include "lib/stralloc.h"
 #include "lib/byte.h"
 #include "lib/io.h"
 #include "lib/iarray.h"

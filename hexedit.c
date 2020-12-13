@@ -49,7 +49,7 @@ crc32(uint32 crc, const char* data, size_t size) {
   const char* end = data + size;
 
   while(data < end) {
-    r ^= *data++;
+    r ^= (unsigned char)*data++;
 
     for(i = 0; i < 8; i++) {
       uint32 t = ~((r & 1) - 1);
@@ -195,9 +195,11 @@ int
 patch_check(unsigned char* x, size_t n, patch_t* p) {
   size_t i, nrec = array_length(&p->records, sizeof(record_t));
   size_t done = 0;
+  uint32 crc;
   if(p->file_size && p->file_size != n)
     return -1;
-  if(p->crc32 && p->crc32 != byte_crc32((const char*)x, n))
+  crc = byte_crc32((const char*)x, n);
+  if(p->crc32 && p->crc32 != crc)
     return -1;
 
   buffer_putm_internal(buffer_2, "Checking for '", p->name, "'...", 0);
@@ -324,61 +326,63 @@ main(int argc, char* argv[]) {
   // x = (unsigned
   // char*)mmap_shared(argv[index], &n);
 
-  patch_new("command line", file.n, 0);
+  if(index + 1 < argc) {
+    patch_new("command line", file.n, 0);
 
-  while(++index < argc) {
-    uint64 addr = 0;
-    uint64 val_cmp = 0, val_set = 0;
-    // size_t s_cmp = 0, s_set = 0;
+    while(++index < argc) {
+      uint64 addr = 0;
+      uint64 val_cmp = 0, val_set = 0;
+      // size_t s_cmp = 0, s_set = 0;
 
-    char* spec = argv[index];
-    char sym = spec[0], *s = &spec[1];
+      char* spec = argv[index];
+      char sym = spec[0], *s = &spec[1];
 
-    while((sym = *spec++)) {
-      size_t n = 0;
-      if(sym == '@' && isdigit(*spec)) {
-        n = scan_xlonglong(spec, &addr);
-        spec += n;
-        continue;
-      }
-      if(sym == '\0')
-        break;
-      if(sym == '?') {
-      }
-      if((sym == '+' || sym == '*') && isdigit(*spec)) {
-        int64 num;
-        n = scan_xlonglong(spec, &num);
-        if(n > 0) {
-          if(sym == '+')
-            offset += num;
-          if(sym == '*')
-            offset *= num;
-        }
-        spec += n;
-        continue;
-      }
-      if(sym == '=') {
-        uint8 ch = 0;
-        do {
-          n = scan_xchar(spec, &ch);
-          if(n >= 1) {
-            patch(offset + addr, file.x[offset + addr], ch);
-          }
-
-          addr++;
+      while((sym = *spec++)) {
+        size_t n = 0;
+        if(sym == '@' && isdigit(*spec)) {
+          n = scan_xlonglong(spec, &addr);
           spec += n;
+          continue;
+        }
+        if(sym == '\0')
+          break;
+        if(sym == '?') {
+        }
+        if((sym == '+' || sym == '*') && isdigit(*spec)) {
+          int64 num;
+          n = scan_xlonglong(spec, &num);
+          if(n > 0) {
+            if(sym == '+')
+              offset += num;
+            if(sym == '*')
+              offset *= num;
+          }
+          spec += n;
+          continue;
+        }
+        if(sym == '=') {
+          uint8 ch = 0;
+          do {
+            n = scan_xchar(spec, &ch);
+            if(n >= 1) {
+              patch(offset + addr, file.x[offset + addr], ch);
+            }
 
-        } while(*spec);
+            addr++;
+            spec += n;
 
-      } /*else {
-        buffer_putm_internal(buffer_2,
-      "ERROR: ", spec, "\n", 0);
-        buffer_putnlflush(buffer_2);
-        return 2;
-      }*/
-      if(n == 0)
-        break;
-      spec += n;
+          } while(*spec);
+
+        } /*else {
+          buffer_putm_internal(buffer_2,
+        "ERROR: ", spec, "\n", 0);
+          buffer_putnlflush(buffer_2);
+          return 2;
+        }*/
+        if(n == 0)
+          break;
+        spec += n;
+      }
     }
   }
 

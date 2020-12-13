@@ -1,3 +1,4 @@
+#include "../uint64.h"
 #include "../buffer.h"
 #include "../stralloc.h"
 #include "../http.h"
