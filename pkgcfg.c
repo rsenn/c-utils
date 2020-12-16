@@ -86,6 +86,11 @@ static const char* const field_names[] = {
 };
 static const char* const op_strings[] = {"==", "!=", ">", ">=", "<", "<="};
 
+#ifndef CONFIG_PREFIX
+#define CONFIG_PREFIX "/usr"
+#endif
+
+static const char* default_prefix = CONFIG_PREFIX;
 static const char* sysroot = 0;
 static int libs_mode = 0;
 static int static_libs = 0;
@@ -217,6 +222,13 @@ host_arch(const char* compiler, stralloc* out) {
 
   stralloc_trimr(out, "\r\t\v\n", 4);
   stralloc_nul(out);
+
+#ifdef DEBUG_OUTPUT
+  buffer_puts(buffer_2, "host_arch out='");
+  buffer_putsa(buffer_2, out);
+  buffer_putsflush(buffer_2, "'\n");
+#endif
+
   return out->len ? out->s : 0;
 }
 
@@ -563,10 +575,12 @@ pkg_init(pkg* pf, const char* fn) {
   byte_zero(pf, sizeof(pkg));
   stralloc_copys(&pf->name, fn);
 }
+
 int
 pkgcfg_sort_compare(const char** a, const char** b) {
   return case_diffs(*a, *b);
 }
+
 /**
  * @brief pkg_list List all packages
  */
@@ -942,8 +956,64 @@ pkg_conf(strarray* modules, id code, int mode) {
   return 0;
 }
 
+int
+add_path(const stralloc* dir) {
+
+  if(path_exists(dir->s)) {
+    strlist_push_sa(&cmd.path, dir);
+
+#ifdef DEBUG_OUTPUT
+    buffer_puts(buffer_2, "add_path exists: ");
+    buffer_putsa(buffer_2, dir);
+    buffer_putnlflush(buffer_2);
+#endif
+
+    return 1;
+  }
+  return 0;
+}
+
+int
+add_paths(const stralloc* prefix) {
+  size_t pos;
+  int n = 0;
+  stralloc dir;
+  stralloc_init(&dir);
+  stralloc_copy(&dir, prefix);
+
+  pos = dir.len;
+
+  stralloc_cats(&dir, PATHSEP_S "lib" PATHSEP_S);
+  stralloc_cat(&dir, &cmd.host);
+  stralloc_cats(&dir, PATHSEP_S "pkgconfig");
+  stralloc_nul(&dir);
+
+  n += add_path(&dir);
+
+  dir.len = pos;
+
+  stralloc_cats(&dir, PATHSEP_S "lib" PATHSEP_S "pkgconfig");
+  stralloc_nul(&dir);
+
+  n += add_path(&dir);
+
+  dir.len = pos;
+
+  stralloc_cats(&dir, PATHSEP_S "share" PATHSEP_S "pkgconfig");
+  stralloc_nul(&dir);
+
+  n += add_path(&dir);
+
+  /* dir.len = byte_rchr(dir.s, pos, PATHSEP_C);
+
+  if(dir.len < pos)
+  n += add_paths(&dir); */
+
+  return n;
+}
+
 void
-pkgcfg_init(const char* errmsg_argv0, const char* pkgcfg_path) {
+pkgcfg_init(const char* self, const char* pkgcfg_path) {
   size_t pos;
   const char* x;
   stralloc dir;
@@ -955,52 +1025,60 @@ pkgcfg_init(const char* errmsg_argv0, const char* pkgcfg_path) {
   stralloc_init(&cmd.host);
   stralloc_init(&cmd.prefix);
 
-  if(!errmsg_argv0[str_chr(errmsg_argv0, '/')]) {
+  if(!self[str_chr(self, '/')]) {
 
-    if((x = search_path(env_get("PATH"), errmsg_argv0, &dir)))
-      errmsg_argv0 = x;
+    if((x = search_path(env_get("PATH"), self, &dir)))
+      self = x;
   }
 
-  if(!errmsg_argv0[str_chr(errmsg_argv0, '/')]) {
+  if(!self[str_chr(self, '/')]) {
     path_readlink("/proc/self/exe", &dir);
     stralloc_nul(&dir);
-    errmsg_argv0 = dir.s;
+    self = dir.s;
   }
 
-  stralloc_copys(&cmd.self, path_basename(errmsg_argv0));
+  stralloc_copys(&cmd.self, path_basename(self));
 
-#ifdef DEBUG_OUTPUT_
-  buffer_puts(buffer_2, "errmsg_argv0: ");
-  buffer_puts(buffer_2, errmsg_argv0);
-  buffer_putnlflush(buffer_2);
+#ifdef DEBUG_OUTPUT
   buffer_puts(buffer_2, "self: ");
+  buffer_puts(buffer_2, self);
+  buffer_putnlflush(buffer_2);
+  buffer_puts(buffer_2, "cmd.self: ");
   buffer_putsa(buffer_2, &cmd.self);
   buffer_putnlflush(buffer_2);
 #endif
 
-  path_dirname(errmsg_argv0, &cmd.prefix);
+  if(str_contains(self, "/bin/")) {
+    path_dirname(self, &cmd.prefix);
 
-  stralloc_trunc(&cmd.prefix, stralloc_finds(&cmd.prefix, "/bin"));
+    stralloc_trunc(&cmd.prefix, stralloc_finds(&cmd.prefix, "/bin"));
+  } else {
+    stralloc_copys(&cmd.prefix, default_prefix);
+  }
 
-#ifdef DEBUG_OUTPUT_
-  buffer_puts(buffer_2, "prefix: ");
+#ifdef DEBUG_OUTPUT
+  buffer_puts(buffer_2, "cmd.prefix: ");
   buffer_putsa(buffer_2, &cmd.prefix);
   buffer_putnlflush(buffer_2);
 #endif
 
   pos = stralloc_finds(&cmd.self, "pkg");
 
-  if(pos > 0 && cmd.self.s[pos - 1] == '-') {
-    pos--;
-
-    stralloc_copyb(&cmd.host, cmd.self.s, pos);
+  if(cmd.host.len == 0) {
+    if((pos = stralloc_finds(&cmd.self, "pkg")) > 0 && byte_count(cmd.self.s, pos, '-') >= 2) {
+      stralloc_copyb(&cmd.host, cmd.self.s, pos);
+    } else {
+      if(!host_arch("cc", &cmd.host))
+        if(!host_arch("gcc", &cmd.host))
+          host_arch("clang", &cmd.host);
+    }
   }
 
-  if(cmd.host.len == 0)
-    if(!host_arch("cc", &cmd.host))
-      if(!host_arch("gcc", &cmd.host))
-        host_arch("clang", &cmd.host);
-
+#ifdef DEBUG_OUTPUT
+  buffer_puts(buffer_2, "cmd.host: ");
+  buffer_putsa(buffer_2, &cmd.host);
+  buffer_putnlflush(buffer_2);
+#endif
   stralloc_copy(&dir, &cmd.prefix);
   stralloc_cats(&dir, "/");
   stralloc_cat(&dir, &cmd.host);
@@ -1031,35 +1109,33 @@ pkgcfg_init(const char* errmsg_argv0, const char* pkgcfg_path) {
     strlist_froms(&cmd.path, pkgcfg_path, ':');
 
   } else {
-    if(sysroot)
-      stralloc_copys(&dir, sysroot);
-    else
-      stralloc_copy(&dir, &cmd.prefix);
-
-    pos = dir.len;
-
-    stralloc_cats(&dir, "/lib/");
-    stralloc_cat(&dir, &cmd.host);
-    stralloc_cats(&dir, "/pkgconfig");
+    const char* local = PATHSEP_S "local";
+    /*   if(sysroot)
+          stralloc_copys(&dir, sysroot);
+        else */
+    stralloc_copy(&dir, &cmd.prefix);
     stralloc_nul(&dir);
 
-    if(path_exists(dir.s))
-      strlist_push_sa(&cmd.path, &dir);
+    add_paths(&dir);
 
-    dir.len = pos;
-    stralloc_cats(&dir, "/lib/pkgconfig");
-    stralloc_nul(&dir);
+    if(str_end(dir.s, local)) {
+      dir.len -= str_len(local);
+      stralloc_nul(&dir);
+      add_paths(&dir);
+    }
 
-    if(path_exists(dir.s))
-      strlist_push_sa(&cmd.path, &dir);
-
-    dir.len = pos;
-    stralloc_cats(&dir, "/share/pkgconfig");
-    stralloc_nul(&dir);
-
-    if(path_exists(dir.s))
-      strlist_push_sa(&cmd.path, &dir);
+    if(str_end(dir.s, PATHSEP_S "usr")) {
+      dir.len -= 4;
+      stralloc_nul(&dir);
+      add_paths(&dir);
+    }
   }
+
+#ifdef DEBUG_OUTPUT
+  buffer_puts(buffer_2, "cmd.path: ");
+  buffer_putsa(buffer_2, &cmd.path.sa);
+  buffer_putnlflush(buffer_2);
+#endif
 
 #ifdef DEBUG_OUTPUT_
   buffer_puts(buffer_2, "full qualified host: '");
@@ -1068,6 +1144,11 @@ pkgcfg_init(const char* errmsg_argv0, const char* pkgcfg_path) {
 #endif
 
   stralloc_free(&dir);
+
+  stralloc_nul(&cmd.path.sa);
+  stralloc_nul(&cmd.prefix);
+  stralloc_nul(&cmd.host);
+  stralloc_nul(&cmd.self);
 }
 
 void
@@ -1113,7 +1194,10 @@ usage(char* progname) {
   buffer_puts(buffer_1,
               "  --unsorted                    "
               "    unsorted list output "
-              "(default)\n");
+              "(default)\n\n");
+  buffer_putm_internal(buffer_1, "Default prefix: ", cmd.prefix.s, "\n", 0);
+  buffer_putm_internal(buffer_1, "Default host: ", cmd.host.s, "\n", 0);
+  buffer_putm_internal(buffer_1, "Default search path: ", cmd.path.sa.s, "\n", 0);
   buffer_putnlflush(buffer_1);
 }
 
@@ -1132,8 +1216,7 @@ main(int argc, char* argv[]) {
       {"modversion", 0, NULL, PRINT_VERSION},
       {"cflags", 0, NULL, PRINT_CFLAGS},
       {"path", 0, NULL, PRINT_PATH},
-      {"verbose", 0, NULL, 'v'},
-      {"debug", 0, &verbose, 2},
+      {"verbose", 0, &verbose, 1},
       {"variable", 1, NULL, 'V'},
       {"list-all", 0, NULL, 'l'},
       {"list-path", 0, NULL, 'L'},
@@ -1189,6 +1272,8 @@ main(int argc, char* argv[]) {
   errmsg_iam(argv[0]);
   strlist_init(&args, '\t');
   strlist_fromv(&args, (const char**)argv, argc);
+
+  pkgcfg_init(argv[0], env_get("PKG_CONFIG_PATH"));
 
 #if DEBUG_OUTPUT_
   buffer_puts(buffer_2, "pkgcfg args = ");
@@ -1300,8 +1385,6 @@ getopt_end:
 
   sysroot = env_get("PKG_CONFIG_SYSROOT");
 
-  pkgcfg_init(argv[0], env_get("PKG_CONFIG_PATH"));
-
   if(!sysroot)
     sysroot = "";
 
@@ -1336,6 +1419,7 @@ getopt_end:
     strlist_dump(buffer_2, &cmd.path);
     buffer_putnlflush(buffer_2);
   }
+
   if(mode & PKGCFG_EXISTS) {
     add_cmd(CHECK_EXISTS);
   } else if(array_empty(&cmds) && !(mode & PKGCFG_EXISTS)) {

@@ -12,6 +12,8 @@ endif()
 set(PROJECT_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/3rdparty)
 set(PROJECT_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/3rdparty)
 
+set(CONFIG_PREFIX "${CMAKE_INSTALL_PREFIX}" CACHE PATH "Installation prefix" FORCE)
+
 set(CMAKE_BUILD_TYPE "Debug" CACHE STRING "build type")
 
 if(CMAKE_BUILD_TYPE STREQUAL "")
@@ -1487,6 +1489,7 @@ function(add_program PROG)
   # message("Program '${PROG}' INCLUDES: ${INCLUDES}")
   add_executable(${PROG} ${PROG}.c ${${PROG}_SOURCES} ${INCLUDES})
   target_link_libraries(${PROG} ${DEPS} ${ELECTRICFENCE_LIBRARY} ${EXTRA_LIBRARIES})
+  target_compile_definitions(${PROG} PRIVATE CONFIG_PREFIX="${CONFIG_PREFIX}")
   install(TARGETS ${PROG} DESTINATION bin)
   if(NOT EMSCRIPTEN AND OPENSSL_FOUND AND USE_SSL)
     set_target_properties(${PROG} PROPERTIES LINK_FLAGS "-L${OPENSSL_LIB_DIR} ${EXE_LINKER_FLAGS}" COMPILE_FLAGS "")
