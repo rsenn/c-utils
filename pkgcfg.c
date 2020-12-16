@@ -165,8 +165,26 @@ search_path(const char* path, const char* what, stralloc* out) {
   return ret;
 }
 
+void
+extract_paths(const stralloc* sa, strlist* paths) {
+  const char *s, *e;
+  size_t n;
+  s = sa->s;
+  e = sa->s + sa->len;
+  while(s < e) {
+    n = scan_whitenskip(s, e - s);
+    if((s += n) == e)
+      break;
+    n = scan_nonwhitenskip(s, e - s);
+    if(*s == PATHSEP_C) {
+      strlist_pushb(paths, s, n);
+    }
+    s += n;
+  }
+}
+
 const char*
-host_arch(const char* compiler, stralloc* out) {
+exec_program(const char* compiler, const char* arg, stralloc* out) {
   pid_t pid;
   int ws = 0;
 #ifdef POSIX_SPAWN
@@ -174,7 +192,7 @@ host_arch(const char* compiler, stralloc* out) {
   posix_spawnattr_t attr;
 #endif
   int p[2];
-  char* const argv[] = {(char*)compiler, "-dumpmachine", 0};
+  char* const argv[] = {(char*)compiler, (char*)arg, 0};
   char* const envp[1] = {0};
   const char* bin;
   stralloc dir;
@@ -192,8 +210,8 @@ host_arch(const char* compiler, stralloc* out) {
   posix_spawn_file_actions_adddup2(&actions, p[1], 1);
 
   if(posix_spawnp(&pid, compiler, &actions, &attr, argv, envp)) {
-    errmsg_warnsys("execvpe error: ", 0);
-    exit(1);
+    errmsg_warnsys("execvpe error ", compiler, ": ", 0);
+    return 0;
   }
 
 #else
@@ -223,13 +241,52 @@ host_arch(const char* compiler, stralloc* out) {
   stralloc_trimr(out, "\r\t\v\n", 4);
   stralloc_nul(out);
 
-#ifdef DEBUG_OUTPUT
+#ifdef DEBUG_OUTPUT_
   buffer_puts(buffer_2, "host_arch out='");
   buffer_putsa(buffer_2, out);
   buffer_putsflush(buffer_2, "'\n");
 #endif
 
   return out->len ? out->s : 0;
+}
+
+const char*
+host_arch(const char* compiler, stralloc* out) {
+  const char* s;
+  int tcc = str_contains(compiler, "tcc");
+
+  s = exec_program(compiler, tcc ? "-vv" : "-dumpmachine", out);
+
+  if(tcc) {
+    const char* p;
+    strlist paths;
+    strlist_init(&paths, '\0');
+    extract_paths(out, &paths);
+    strlist_foreach_s(&paths, p) {
+      if(path_exists(p)) {
+        size_t pos = str_find(p, PATHSEP_S "lib" PATHSEP_S);
+        if(p[pos]) {
+          const char* h = &p[pos + 5];
+          size_t hlen = str_chr(h, PATHSEP_C);
+
+          if(byte_count(h, hlen, '-') >= 2) {
+            stralloc_copyb(out, h, hlen);
+            stralloc_nul(out);
+            s = out->s;
+
+#ifdef DEBUG_OUTPUT
+            buffer_puts(buffer_2, "host_arch h='");
+            buffer_put(buffer_2, h, hlen);
+            buffer_putsflush(buffer_2, "'\n");
+#endif
+            goto end;
+          }
+        }
+      }
+    }
+  }
+end:
+  return s;
 }
 
 /**
@@ -499,8 +556,7 @@ visit_set(const void* key, size_t key_len, const void* value, size_t value_len, 
 }
 
 /**
- * @brief pkg_set  Set environmen for
- * package
+ * @brief pkg_set  Set environment for package
  * @param p        Package structure
  * @return         1 on success, 0 on
  * failure
@@ -1068,9 +1124,18 @@ pkgcfg_init(const char* self, const char* pkgcfg_path) {
     if((pos = stralloc_finds(&cmd.self, "pkg")) > 0 && byte_count(cmd.self.s, pos, '-') >= 2) {
       stralloc_copyb(&cmd.host, cmd.self.s, pos);
     } else {
-      if(!host_arch("cc", &cmd.host))
-        if(!host_arch("gcc", &cmd.host))
-          host_arch("clang", &cmd.host);
+      const char* compiler = env_get("CC");
+
+      if(compiler) {
+        if(!host_arch(compiler, &cmd.host)) {
+          errmsg_warnsys("Failed executing compiler ", compiler, ": ", 0);
+        }
+
+      } else {
+        if(!host_arch("cc", &cmd.host))
+          if(!host_arch("gcc", &cmd.host))
+            host_arch("clang", &cmd.host);
+      }
     }
   }
 
@@ -1206,8 +1271,21 @@ usage(char* progname) {
 extern buffer* optbuf;
 static strlist args;
 
+void
+pkgcfg_dumpenv(char* envp[]) {
+  strarray stra;
+  strarray_init(&stra);
+  strarray_from_vec(&stra, envp);
+  strarray_sort(&stra, 0);
+
+  buffer_puts(buffer_2, "Environment:\n  ");
+
+  buffer_putstra(buffer_2, &stra, "\n  ");
+  buffer_putnlflush(buffer_2);
+}
+
 int
-main(int argc, char* argv[]) {
+main(int argc, char* argv[], char* envp[]) {
   int c;
   id* code;
   int index = 0;
@@ -1271,11 +1349,13 @@ main(int argc, char* argv[]) {
       {0, 0, 0, 0},
   };
 
-  errmsg_iam(argv[0]);
+  errmsg_iam(path_basename(argv[0]));
   strlist_init(&args, '\t');
   strlist_fromv(&args, (const char**)argv, argc);
 
   pkgcfg_init(argv[0], env_get("PKG_CONFIG_PATH"));
+
+  // pkgcfg_dumpenv(envp);
 
 #if DEBUG_OUTPUT_
   buffer_puts(buffer_2, "pkgcfg args = ");

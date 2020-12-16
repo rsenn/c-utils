@@ -30,6 +30,7 @@ typedef array strarray;
 
 char** strarray_to_argv(strarray*);
 int strarray_from_argv(int argc, const char* const argv[], strarray* arr);
+int strarray_from_vec(strarray* arr, char* vec[]);
 
 #define strarray_contains(a, s) (strarray_index_of((a), (s)) != -1)
 /*#define strarray_push_unique(a, s) \
