@@ -745,245 +745,11 @@ endforeach()
 
 include(${CMAKE_SOURCE_DIR}/build/cmake/Werror.cmake)
 
-if(USE_LZMA)
-  # ############################################################################################################################################################################################################################################################################################################################################################################################################
-  # Check LibLZMA
-  # ############################################################################################################################################################################################################################################################################################################################################################################################################
-  # pkg_search_module(LIBLZMA liblzma lzma) if(LIBLZMA_FOUND) if(pkgcfg_lib_LIBLZMA_lzma) set(LIBLZMA_LIBRARY ${pkgcfg_lib_LIBLZMA_lzma} CACHE FILEPATH "") endif(pkgcfg_lib_LIBLZMA_lzma) endif(LIBLZMA_FOUND)
-  #
-  # if(NOT LIBLZMA_FOUND) include(FindLibLZMA) endif(NOT LIBLZMA_FOUND)
-
-  if(NOT LIBLZMA_FOUND)
-    check_library_exists(lzma lzma_auto_decoder "" HAVE_LIBLZMA)
-    check_include_file(lzma.h HAVE_LZMA_H)
-
-    if(HAVE_LIBLZMA AND HAVE_LZMA_H)
-      set(LIBLZMA_FOUND TRUE)
-      set(LIBLZMA_INCLUDE_DIRS "")
-      set(LIBLZMA_LIBRARY lzma)
-      message(STATUS "Found liblzma")
-      message(STATUS "  LIBLZMA_LIBRARY=${LIBLZMA_LIBRARY}")
-    endif(HAVE_LIBLZMA AND HAVE_LZMA_H)
-
-  endif(NOT LIBLZMA_FOUND)
-
-else(USE_LZMA)
-  unset(LIBLZMA_LIBRARY CACHE)
-  unset(LIBLZMA_INCLUDE_DIRS CACHE)
-  unset(LIBLZMA_FOUND CACHE)
-
-endif(USE_LZMA)
-
-if(USE_ZLIB)
-
-  # ############################################################################################################################################################################################################################################################################################################################################################################################################
-  # Check Zlib
-  # ############################################################################################################################################################################################################################################################################################################################################################################################################
-  message(STATUS "Checking for libz")
-  find_library(ZLIB z)
-
-  message(STATUS "${ZLIB}")
-
-  set(ZLIB_LIBRARY "${ZLIB}")
-
-  if(ZLIB)
-    set(ZLIB_FOUND TRUE)
-    if(ZLIB STREQUAL "")
-      set(ZLIB z)
-    endif(ZLIB STREQUAL "")
-    set(ZLIB_LIBARY_RELEASE "${ZLIB}" CACHE FILEPATH "")
-    set(ZLIB_LIBARY_DEBUG "${ZLIB}" CACHE FILEPATH "")
-    set(ZLIB_LIBARY "${ZLIB}" CACHE FILEPATH "")
-  endif(ZLIB)
-
-  if(NOT ZLIB_FOUND)
-
-    pkg_search_module(ZLIB zlib libz z)
-    if(ZLIB_FOUND)
-      if(pkgcfg_lib_ZLIB_z)
-        set(ZLIB_LIBRARY_RELEASE "${pkgcfg_lib_ZLIB_z}" CACHE FILEPATH "")
-        set(ZLIB_LIBRARY_DEBUG "${pkgcfg_lib_ZLIB_z}" CACHE FILEPATH "")
-      endif(pkgcfg_lib_ZLIB_z)
-    else(ZLIB_FOUND)
-      # include(FindZlib)
-    endif(ZLIB_FOUND)
-
-  endif(NOT ZLIB_FOUND)
-
-else(USE_ZLIB)
-  unset(ZLIB_LIBRARY_RELEASE CACHE)
-  unset(ZLIB_LIBRARY_DEBUG CACHE)
-  unset(ZLIB_LIBRARY CACHE)
-endif(USE_ZLIB)
-
-if(USE_BZIP)
-  # ############################################################################################################################################################################################################################################################################################################################################################################################################
-  # Check BZip2
-  # ############################################################################################################################################################################################################################################################################################################################################################################################################
-  pkg_search_module(BZIP2 libbz2 bzip2)
-  if(NOT BZIP2_FOUND OR "${BZIP2_FOUND}" STREQUAL "")
-    message(STATUS "bzip2 package config not found")
-    #[[  include(FindBZip2)
-
-    if(BZIP2_FOUND)
-      set(BZIP2_LIBRARY ${BZIP2_LIBRARIES})
-      set(BZIP2_INCLUDE_DIR ${BZIP2_INCLUDE_DIRS})
-    endif(BZIP2_FOUND)]]
-    find_library(BZIP2_LIBRARY NAMES bz2)
-    if(BZIP2_LIBRARY)
-      message(STATUS "bzip2 library found: ${BZIP2_LIBRARY}")
-      set(BZIP2_FOUND TRUE)
-    endif(BZIP2_LIBRARY)
-
-  else(NOT BZIP2_FOUND OR "${BZIP2_FOUND}" STREQUAL "")
-    # pkg_get_variable(BZIP2_LIBRARY "${BZIP2_MODULE_NAME}")
-    if(pkgcfg_lib_BZIP2_bz2)
-      set(BZIP2_LIBRARY ${pkgcfg_lib_BZIP2_bz2})
-    else(pkgcfg_lib_BZIP2_bz2)
-      if(BZIP2_LIBRARIES)
-        set(BZIP2_LIBRARY ${BZIP2_LIBRARIES})
-      else(BZIP2_LIBRARIES)
-        set(BZIP2_LIBRARY bz2)
-      endif(BZIP2_LIBRARIES)
-    endif(pkgcfg_lib_BZIP2_bz2)
-    set(BZIP2_LINK_LIBRARY ${pkgcfg_lib_BZIP2_bz2} ${BZIP2_LINK_LIBRARIES})
-    set(BZIP2_INCLUDE_DIR ${BZIP2_INCLUDE_DIRS})
-    set(BZIP2_LIBRARY_DIR ${BZIP2_LIBRARY_DIRS})
-    message(STATUS "bzip2 package found: ${BZIP2_INCLUDE_DIR} ${BZIP2_LIBRARY}")
-  endif(NOT BZIP2_FOUND OR "${BZIP2_FOUND}" STREQUAL "")
-
-  unset(BZIP2_LDFLAGS CACHE)
-  unset(BZIP2_STATIC_LDFLAGS CACHE)
-endif(USE_BZIP)
-
-if(USE_BROTLI)
-  pkg_search_module(BROTLIDEC libbrotlidec brotlidec)
-  pkg_search_module(BROTLIENC libbrotlienc brotlienc)
-  pkg_search_module(BROTLICOMMON libbrotlicommon brotlicommon)
-  if(NOT BROTLICOMMON_FOUND OR "${BROTLICOMMON_FOUND}" STREQUAL "")
-    message(STATUS "brotli package config not found")
-
-    find_library(BROTLIDEC_LIBRARY NAMES brotlidec)
-    find_library(BROTLIENC_LIBRARY NAMES brotlienc)
-    find_library(BROTLICOMMON_LIBRARY NAMES brotlicommon)
-    if(BROTLIDEC_LIBRARY AND BROTLIENC_LIBRARY AND BROTLICOMMON_LIBRARY)
-      message(STATUS "brotli library found: ${BROTLIDEC_LIBRARY} ${BROTLIENC_LIBRARY} ${BROTLICOMMON_LIBRARY}")
-      set(BROTLI_FOUND TRUE)
-      set(BROTLI_LIBRARY ${BROTLIDEC_LIBRARY} ${BROTLIENC_LIBRARY} ${BROTLICOMMON_LIBRARY})
-
-    endif(BROTLIDEC_LIBRARY AND BROTLIENC_LIBRARY AND BROTLICOMMON_LIBRARY)
-
-  else(NOT BROTLICOMMON_FOUND OR "${BROTLICOMMON_FOUND}" STREQUAL "")
-    message(STATUS "brotli package found: ${BROTLI_PREFIX} ${BROTLI_LIBRARY_DIRS} ${BROTLI_LIBRARIES}")
-    # pkg_get_variable(BROTLI_LIBRARY "${BROTLI_MODULE_NAME}")
-    set(BROTLI_LIBRARY ${pkgcfg_lib_BROTLIENC_brotlienc} ${pkgcfg_lib_BROTLIDEC_brotlidec} ${pkgcfg_lib_BROTLICOMMON_brotlicommon})
-    set(BROTLI_LINK_LIBRARY ${pkgcfg_lib_BROTLIENC_brotlienc} ${pkgcfg_lib_BROTLIDEC_brotlidec} ${pkgcfg_lib_BROTLICOMMON_brotlicommon})
-    set(BROTLI_INCLUDE_DIR ${BROTLICOMMON_INCLUDE_DIRS})
-    set(BROTLI_LIBRARY_DIR ${BROTLICOMMON_LIBRARY_DIRS})
-    set(BROTLI_FOUND TRUE)
-  endif(NOT BROTLICOMMON_FOUND OR "${BROTLICOMMON_FOUND}" STREQUAL "")
-
-endif(USE_BROTLI)
-
-# ##############################################################################################################################################################################################################################################################################################################################################################################################################
-# Check OpenSSL
-# ##############################################################################################################################################################################################################################################################################################################################################################################################################
-if(USE_SSL AND NOT BUILD_SSL)
-  message(STATUS "Using OpenSSL encryption")
-  if(NOT OPENSSL_ROOT_DIR)
-    if("$ENV{OPENSSL_ROOT}")
-      set(OPENSSL_ROOT_DIR "$ENV{OPENSSL_ROOT}" CACHE FILEPATH "OpenSSL root directory")
-      # else("$ENV{OPENSSL_ROOT}") set(OPENSSL_ROOT_DIR "${CMAKE_INSTALL_PREFIX}" CACHE FILEPATH "OpenSSL root directory")
-    endif("$ENV{OPENSSL_ROOT}")
-  endif(NOT OPENSSL_ROOT_DIR)
-  set(PKG_CONFIG_USE_CMAKE_PREFIX_PATH ON)
-  # unset(OPENSSL_FOUND CACHE)
-  message(STATUS "Searching pkgconfig database for openssl...")
-  pkg_search_module(OPENSSL openssl libssl)
-
-  message(STATUS "pkg_search_module(OPENSSL openssl)")
-  message(STATUS "  OPENSSL_LIBRARY = ${OPENSSL_LIBRARY}")
-  message(STATUS "  OPENSSL_LIBRARIES = ${OPENSSL_LIBRARIES}")
-  message(STATUS "  OPENSSL_INCLUDE_DIRS = ${OPENSSL_INCLUDE_DIRS}")
-  message(STATUS "  pkgcfg_lib_OPENSSL_crypto = ${pkgcfg_lib_OPENSSL_crypto}")
-  message(STATUS "  pkgcfg_lib_OPENSSL_ssl = ${pkgcfg_lib_OPENSSL_ssl}")
-  message(STATUS "  PKG_CONFIG_EXECUTABLE = ${PKG_CONFIG_EXECUTABLE}")
-  if(OPENSSL_FOUND)
-    message(STATUS "Found openssl at ${OPENSSL_LIBRARY_DIRS}...")
-    check_include_file(openssl/ssl.h HAVE_OPENSSL_SSL_H)
-
-  else(OPENSSL_FOUND)
-    message(STATUS "Searching for openssl using FindOpenSSL.cmake script...")
-    include(FindOpenSSL)
-  endif(OPENSSL_FOUND)
-
-  # if(NOT HAVE_OPENSSL_SSL_H) set(OPENSSL_FOUND FALSE) endif(NOT HAVE_OPENSSL_SSL_H)
-
-  message(OPENSSL_FOUND: ${OPENSSL_FOUND})
-  if(OPENSSL_FOUND)
-    if(NOT OPENSSL_INCLUDE_DIR)
-      set(OPENSSL_INCLUDE_DIR "${OPENSSL_ROOT_DIR}/include")
-    endif()
-    if(NOT OPENSSL_LIB_DIR)
-      set(OPENSSL_LIB_DIR "${OPENSSL_ROOT_DIR}/lib")
-    endif()
-  else(OPENSSL_FOUND)
-    set(BUILD_SSL TRUE)
-  endif(OPENSSL_FOUND)
-
-  # message(STATUS "OPENSSL_FOUND=${OPENSSL_FOUND}\n   OPENSSL_INCLUDE_DIR=${OPENSSL_LIB_DIR}\n   OPENSSL_LIB_DIR=${OPENSSL_INCLUDE_DIR}\n   OPENSSL_ROOT_DIR=${OPENSSL_ROOT_DIR}\n   OPENSSL_CRYPTO_LIBRARY=${OPENSSL_CRYPTO_LIBRARY}\n   OPENSSL_SSL_LIBRARY=${OPENSSL_SSL_LIBRARY}")
-
-  if(OPENSSL_SSL_LIBRARY AND NOT OPENSSL_CRYPTO_LIBRARY)
-    string(REPLACE "libssl" "libcrypto" OPENSSL_CRYPTO_LIBRARY "${OPENSSL_SSL_LIBRARY}")
-  endif(OPENSSL_SSL_LIBRARY AND NOT OPENSSL_CRYPTO_LIBRARY)
-
-else()
-  unset(OPENSSL_LIBRARIES CACHE)
-  unset(OPENSSL_CRYPTO_LIBRARY CACHE)
-  unset(OPENSSL_SSL_LIBRARY CACHE)
-  unset(OPENSSL_INCLUDE_DIR CACHE)
-endif()
-# link_libraries( ${ZLIB_LIBRARY} ${BZIP2_LIBRARY} ${LIBLZMA_LIBRARY} ${LIBSSL} ) add_definitions(-Dinline=__inline)
-if(NOT OPENSSL_SSL_LIBRARY OR OPENSSL_SSL_LIBRARY STREQUAL "")
-
-  # message("OPENSSL_CRYPTO_LIBRARY: ${OPENSSL_CRYPTO_LIBRARY}")
-  string(REPLACE "libcrypto" "libssl" OPENSSL_SSL_LIBRARY "${OPENSSL_CRYPTO_LIBRARY}")
-  # message("OPENSSL_SSL_LIBRARY: ${OPENSSL_SSL_LIBRARY}")
-endif(NOT OPENSSL_SSL_LIBRARY OR OPENSSL_SSL_LIBRARY STREQUAL "")
-
-if(OPENSSL_FOUND)
-  # dump(pkgcfg_lib_OPENSSL_ssl pkgcfg_lib_OPENSSL_crypto)
-
-  if(pkgcfg_lib_OPENSSL_crypto)
-    # if(NOT pkgcfg_lib_OPENSSL_ssl OR "${pkgcfg_lib_OPENSSL_ssl}" STREQUAL "")
-    string(REPLACE "libcrypto" "libssl" pkgcfg_lib_OPENSSL_ssl "${pkgcfg_lib_OPENSSL_crypto}")
-    # endif(NOT pkgcfg_lib_OPENSSL_ssl OR "${pkgcfg_lib_OPENSSL_ssl}" STREQUAL "")
-  endif(pkgcfg_lib_OPENSSL_crypto)
-  if(pkgcfg_lib_OPENSSL_ssl)
-    set(OPENSSL_SSL_LIBRARY "${pkgcfg_lib_OPENSSL_ssl}")
-  else(pkgcfg_lib_OPENSSL_ssl)
-    string(REPLACE "libcrypto" "libssl" OPENSSL_SSL_LIB "${OPENSSL_CRYPTO_LIBRARY}")
-    set(OPENSSL_SSL_LIBRARY "${OPENSSL_SSL_LIB}" CACHE STRING "SSL library" FORCE)
-  endif(pkgcfg_lib_OPENSSL_ssl)
-
-  if(OPENSSL_SSL_LIBRARY STREQUAL "" OR NOT OPENSSL_SSL_LIBRARY)
-    string(REPLACE "libcrypto" "libssl" OPENSSL_SSL_LIB "${OPENSSL_CRYPTO_LIBRARY}")
-    set(OPENSSL_SSL_LIBRARY "${OPENSSL_SSL_LIB}" CACHE FILEPATH "SSL library" FORCE)
-  endif(OPENSSL_SSL_LIBRARY STREQUAL "" OR NOT OPENSSL_SSL_LIBRARY)
-
-  if(OPENSSL_CRYPTO_LIBRARY STREQUAL "" OR NOT OPENSSL_CRYPTO_LIBRARY)
-    string(REPLACE "libssl" "libcrypto" OPENSSL_CRYPTO_LIB "${OPENSSL_SSL_LIBRARY}")
-    set(OPENSSL_CRYPTO_LIBRARY "${OPENSSL_CRYPTO_LIB}" CACHE FILEPATH "SSL library" FORCE)
-  endif(OPENSSL_CRYPTO_LIBRARY STREQUAL "" OR NOT OPENSSL_CRYPTO_LIBRARY)
-
-  if(OPENSSL_SSL_LIBRARY)
-    list(APPEND OPENSSL_LIBRARIES ${OPENSSL_SSL_LIBRARY})
-  endif(OPENSSL_SSL_LIBRARY)
-
-  if(OPENSSL_CRYPTO_LIBRARY)
-    list(APPEND OPENSSL_LIBRARIES ${OPENSSL_CRYPTO_LIBRARY})
-  endif(OPENSSL_CRYPTO_LIBRARY)
-endif(OPENSSL_FOUND)
+include(${CMAKE_SOURCE_DIR}/build/cmake/CheckLZMA.cmake)
+include(${CMAKE_SOURCE_DIR}/build/cmake/CheckZlib.cmake)
+include(${CMAKE_SOURCE_DIR}/build/cmake/CheckBZip2.cmake)
+include(${CMAKE_SOURCE_DIR}/build/cmake/CheckBrotli.cmake)
+include(${CMAKE_SOURCE_DIR}/build/cmake/CheckOpenSSL.cmake)
 
 set(CMAKE_REQUIRED_DEFINITIONS)
 set(CMAKE_REQUIRED_INCLUDES "poll.h")
@@ -1332,7 +1098,10 @@ if(BUILD_SSL)
   message(STATUS "Configuring OpenSSL...")
   add_subdirectory(3rdparty/openssl)
 
-  set(OPENSSL_LIBRARIES ssl crypto CACHE STRING "" FORCE)
+  if(NOT OPENSSL_LIBRARIES)
+
+  endif(NOT OPENSSL_LIBRARIES)
+
   set(OPENSSL_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/3rdparty/openssl/include" CACHE FILEPATH "" FORCE)
 
   # set(OPENSSL_SSL_LIBRARY "${CMAKE_BINARY_DIR}/3rdparty/openssl/ssl/libssl.a" CACHE  FILEPATH "SSL library") set(OPENSSL_CRYPTO_LIBRARY "${CMAKE_BINARY_DIR}/3rdparty/openssl/crypto/libcrypto.a" CACHE  FILEPATH "Cryptography library")
@@ -1347,29 +1116,22 @@ if(USE_SSL)
     include_directories(${CMAKE_BINARY_DIR}/3rdparty/openssl/include ${OPENSSL_INCLUDE_DIR})
   endif()
 
-  # if(NOT OPENSSL_LIBRARIES) if(OPENSSL_CRYPTO_LIBRARY OR OPENSSL_SSL_LIBRARY)
-  set(OPENSSL_LIBARRIES ${OPENSSL_SSL_LIBRARY} ${OPENSSL_CRYPTO_LIBRARY})
-  # endif() endif()
+  if(NOT OPENSSL_LIBRARIES)
+    if(OPENSSL_CRYPTO_LIBRARY OR OPENSSL_SSL_LIBRARY)
+      set(OPENSSL_LIBARRIES ${OPENSSL_SSL_LIBRARY} ${OPENSSL_CRYPTO_LIBRARY})
+    endif(OPENSSL_CRYPTO_LIBRARY OR OPENSSL_SSL_LIBRARY)
+  endif(NOT OPENSSL_LIBRARIES)
 endif(USE_SSL)
 
-if(NOT OPENSSL_STATIC_LIBRARIES MATCHES ssl)
-  set(OPENSSL_STATIC_LIBRARIES "ssl;${OPENSSL_STATIC_LIBRARIES}")
-endif(NOT OPENSSL_STATIC_LIBRARIES MATCHES ssl)
-# dump(OPENSSL_STATIC_LIBRARIES)
+# unset(TLS_LIBRARIES) unset(TLS_LIBRARIES CACHE) set(TLS_LIBRARIES "")
+#
+# if(OPENSSL_FOUND OR BUILD_OPENSSL) if(OPENSSL_LIBRARIES) set(TLS_LIBRARIES "${OPENSSL_LIBRARIES}" CACHE PATH "OpenSSL library") else(OPENSSL_LIBRARIES) if(LINK_STATIC) set(TLS_LIBRARIES "${OPENSSL_STATIC_LIBRARIES}" CACHE PATH "OpenSSL library") endif(LINK_STATIC) endif(OPENSSL_LIBRARIES)
+#
+# if(OPENSSL_LIB_DIR) set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -L${OPENSSL_LIB_DIR}") endif() if(OPENSSL_LIBRARIES) if(LINK_STATIC) set(CRYPTO_LIBRARIES ${OPENSSL_STATIC_LIBRARIES} pthread ${LIBCOMPAT}) else(LINK_STATIC) set(CRYPTO_LIBRARIES ${OPENSSL_LIBRARIES} pthread ${LIBCOMPAT}) endif(LINK_STATIC) endif(OPENSSL_LIBRARIES)
+#
+# else(OPENSSL_FOUND OR BUILD_OPENSSL) set(TLS_LIBRARIES "" CACHE PATH "OpenSSL library" FORCE) endif(OPENSSL_FOUND OR BUILD_OPENSSL)
 
-if(BUILD_SSL)
-  set(LIBSSL "${OPENSSL_LIBRARIES}" CACHE PATH "OpenSSL library" FORCE)
-else(BUILD_SSL)
-  if(LINK_STATIC)
-    set(LIBSSL "${OPENSSL_STATIC_LIBRARIES}" CACHE PATH "OpenSSL library" FORCE)
-  else(LINK_STATIC)
-    set(LIBSSL "${OPENSSL_SSL_LIBRARY};${OPENSSL_CRYPTO_LIBRARY}" CACHE PATH "OpenSSL library" FORCE)
-  endif(LINK_STATIC)
-endif(BUILD_SSL)
-
-if(OPENSSL_LIB_DIR)
-  set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -L${OPENSSL_LIB_DIR}")
-endif()
+dump(TLS_LIBRARIES)
 
 if(USE_BROTLI AND NOT BROTLI_FOUND)
   set(BUILD_BROTLI ON)
@@ -1421,13 +1183,6 @@ endif(NOT LIBLZMA_LIBRARY)
 
 set(COMPRESSION_LIBRARIES ${LIBLZMA_LIBRARY} ${ZLIB_LIBRARY} ${BZIP2_LIBRARY} ${BROTLI_LIBRARY} ${LIBMATH} CACHE STRING "Compression libraries" FORCE)
 # dump(COMPRESSION_LIBRARIES)
-if(OPENSSL_LIBRARIES)
-  if(LINK_STATIC)
-    set(CRYPTO_LIBRARIES ${OPENSSL_STATIC_LIBRARIES} pthread ${LIBCOMPAT})
-  else(LINK_STATIC)
-    set(CRYPTO_LIBRARIES ${OPENSSL_LIBRARIES} pthread ${LIBCOMPAT})
-  endif(LINK_STATIC)
-endif(OPENSSL_LIBRARIES)
 
 if(LINK_STATIC)
   message(STATUS "Static linking")
@@ -1446,7 +1201,7 @@ configure_file("${CMAKE_CURRENT_SOURCE_DIR}/build/cmake/config.h.cmake" "${CMAKE
 # #### END OF CHECKS, NOW COME THE TARGETS #### ####
 # ##############################################################################################################################################################################################################################################################################################################################################################################################################
 
-# dump(CMAKE_EXE_LINKER_FLAGS LIBSSL)
+# dump(CMAKE_EXE_LINKER_FLAGS TLS_LIBRARIES)
 
 add_subdirectory(lib ${CMAKE_BINARY_DIR}/lib)
 #
@@ -1464,7 +1219,7 @@ add_subdirectory(lib ${CMAKE_BINARY_DIR}/lib)
 # foreach(NETLIB dns http io ndelay socket) target_link_libraries(${NETLIB} ${LIBMSWSOCK}) endforeach()
 #
 # target_link_libraries(unix stralloc buffer ndelay) target_link_libraries(array safemult byte str) target_link_libraries(binfmt mmap byte) target_link_libraries(buffer alloc byte fmt mmap open str ${ZLIB_LIBRARY}) target_link_libraries(cb str) target_link_libraries(cbmap str) target_link_libraries(dns byte case fmt io open socket str taia uint16 ${LIBIPHLPAPI}) target_link_libraries(dir stralloc)
-# target_link_libraries(errmsg str) target_link_libraries(elf byte str range mmap uint64 uint32 uint16) target_link_libraries(fmt byte str uint64 uint32) target_link_libraries(gpio mmap) target_link_libraries(hmap str) target_link_libraries(http dns errmsg byte io scan socket stralloc str ${LIBSSL}) target_link_libraries(io buffer iarray array byte fmt open taia ${LIBMSWSOCK})
+# target_link_libraries(errmsg str) target_link_libraries(elf byte str range mmap uint64 uint32 uint16) target_link_libraries(fmt byte str uint64 uint32) target_link_libraries(gpio mmap) target_link_libraries(hmap str) target_link_libraries(http dns errmsg byte io scan socket stralloc str ${TLS_LIBRARIES}) target_link_libraries(io buffer iarray array byte fmt open taia ${LIBMSWSOCK})
 # target_link_libraries(json charbuf hmap scan) target_link_libraries(map str) target_link_libraries(mmap seek open scan ${LIBPSAPI}) target_link_libraries(open str uint32) target_link_libraries(path dir strlist) target_link_libraries(pe uint64 uint32 uint16) target_link_libraries(playlist byte fmt scan str xml) target_link_libraries(rdir dir) target_link_libraries(scan byte str)
 # target_link_libraries(socket byte fmt ndelay scan uint16 ${LIBMSWSOCK}) target_link_libraries(str byte) target_link_libraries(stralloc alloc open byte fmt str) target_link_libraries(strarray array) target_link_libraries(strlist stralloc buffer) target_link_libraries(taia tai) target_link_libraries(textbuf byte playlist) target_link_libraries(uint64 uint32) target_link_libraries(xml buffer array
 # strlist hmap alloc) target_link_libraries(json slist hmap stralloc buffer alloc) target_link_libraries(ndelay socket) target_link_libraries(process wait errmsg) target_link_libraries(ihex scan byte) target_link_libraries(uint32 taia tai) target_link_libraries(tls iarray)
@@ -1486,7 +1241,7 @@ function(add_program PROG)
       list(APPEND DEPS ${DEP})
     endif(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${DEP}" AND NOT IS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/${DEP}")
   endforeach(DEP ${ARGN})
-  # message("Program '${PROG}' INCLUDES: ${INCLUDES}")
+  # message("Program '${PROG}' INCLUDES: ${INCLUDES}") message("add_executable(${PROG} ${PROG}.c ${${PROG}_SOURCES} ${INCLUDES}")
   add_executable(${PROG} ${PROG}.c ${${PROG}_SOURCES} ${INCLUDES})
   target_link_libraries(${PROG} ${DEPS} ${ELECTRICFENCE_LIBRARY} ${EXTRA_LIBRARIES})
   target_compile_definitions(${PROG} PRIVATE CONFIG_PREFIX="${CONFIG_PREFIX}")
@@ -1559,8 +1314,10 @@ add_program(genmakefile sig set case errmsg strarray slist rdir dir path strlist
 add_program(piccfg ihex errmsg strarray slist rdir dir path strlist hashmap hmap stralloc buffer mmap unix open scan fmt byte str array safemult alloc)
 add_program(hexedit stralloc buffer array io errmsg mmap open path scan uint64 unix ${ZLIB_LIBRARY})
 set(httptest_SOURCES uri.c uri.h)
-add_program(httptest xml sig http c dns stralloc buffer errmsg byte io socket alloc taia ${LIBSSL} ${LIBMSWSOCK} ${LIBDL} pthread)
-# add_program(ssltest strlist unix dns stralloc buffer errmsg byte io  tls socket alloc taia ${LIBSSL} ${LIBMSWSOCK} ${LIBDL} pthread)
+
+message("TLS_LIBRARIES = ${TLS_LIBRARIES}")
+add_program(httptest xml sig http c dns stralloc buffer errmsg byte io socket alloc taia ${TLS_LIBRARIES} ${LIBMSWSOCK} ${LIBDL} pthread)
+# add_program(ssltest strlist unix dns stralloc buffer errmsg byte io  tls socket alloc taia ${TLS_LIBRARIES} ${LIBMSWSOCK} ${LIBDL} pthread)
 
 # set(ssltest_SOURCES address.c address.h)
 
@@ -1569,7 +1326,7 @@ add_program(jsontest json stralloc buffer byte charbuf fmt hmap mmap open)
 add_program(list-r path strarray strlist stralloc buffer array unix dir array fmt open str uint64 ${LIBADVAPI32})
 add_program(macho32list mmap uint32)
 if(USE_LZMA)
-  add_program(mediathek-list errmsg stralloc buffer alloc byte fmt http tls scan slist str unix strarray strlist ${LIBLZMA_LIBRARY} ${LIBSSL} ${LIBDL} pthread)
+  add_program(mediathek-list errmsg stralloc buffer alloc byte fmt http tls scan slist str unix strarray strlist ${LIBLZMA_LIBRARY} ${TLS_LIBRARIES} ${LIBDL} pthread)
 endif(USE_LZMA)
 
 add_program(mediathek-parser case ucs errmsg strarray strlist stralloc buffer array byte open str unix strlist)

@@ -12,5 +12,3 @@ endif(HAVE_DYNSTACK)
 if(HAVE_DYNSTACK)
   add_definitions(-DHAVE_DYNSTACK=1)
 endif(HAVE_DYNSTACK)
-
-

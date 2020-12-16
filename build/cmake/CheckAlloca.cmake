@@ -1,7 +1,9 @@
 include(CheckIncludeFile)
 message("Checking for alloca")
 
-file(WRITE "${CMAKE_BINARY_DIR}/try_alloca.c" "#include <alloca.h>
+file(
+  WRITE "${CMAKE_BINARY_DIR}/try_alloca.c"
+  "#include <alloca.h>
 int main() {
   char* x = alloca(1024);
 }")
@@ -18,5 +20,3 @@ check_include_file(alloca.h HAVE_ALLOCA_H)
 if(HAVE_ALLOCA AND HAVE_ALLOCA_H)
   add_definitions(-DHAVE_ALLOCA=1)
 endif(HAVE_ALLOCA AND HAVE_ALLOCA_H)
-
-

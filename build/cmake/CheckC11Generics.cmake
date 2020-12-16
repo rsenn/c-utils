@@ -1,6 +1,8 @@
 message("Checking C11 generics")
 
-file(WRITE "${CMAKE_BINARY_DIR}/try_c11generics.c" "
+file(
+  WRITE "${CMAKE_BINARY_DIR}/try_c11generics.c"
+  "
 void print_int(int n) { printf(\"%d\\n\", n); }
 void print_float(float n) { printf(\"%f\\n\", n); }
 void print_double(double n) { printf(\"%lf\\n\", n); }
