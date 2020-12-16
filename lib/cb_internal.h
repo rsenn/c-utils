@@ -13,7 +13,7 @@ struct critbit_node {
 #define EXTERNAL_NODE 0
 #define INTERNAL_NODE 1
 
-static int
+static inline int
 decode_pointer(void** ptr) {
   ptrdiff_t numvalue = (char*)*ptr - (char*)0;
   if(numvalue & 1) {
@@ -23,7 +23,7 @@ decode_pointer(void** ptr) {
   return INTERNAL_NODE;
 }
 
-static void
+static inline void
 from_external_node(void* ptr, void** key, size_t* keylen) {
   unsigned char* bytes = (unsigned char*)ptr;
 #ifndef NDEBUG
@@ -40,7 +40,7 @@ cb_less(const struct critbit_node* a, const struct critbit_node* b) {
   return a->byte < b->byte || (a->byte == b->byte && a->mask < b->mask);
 }
 
-static void*
+static inline void*
 make_external_node(const void* key, size_t keylen) {
   char* data = (char*)malloc(sizeof(size_t) + keylen);
 #ifndef NDEBUG
@@ -53,22 +53,12 @@ make_external_node(const void* key, size_t keylen) {
   return (void*)(data + 1);
 }
 
-static struct critbit_node*
+static inline struct critbit_node*
 make_internal_node(void) {
   struct critbit_node* node = (struct critbit_node*)malloc(sizeof(struct critbit_node));
   return node;
 }
 
-static void
-cb_free_node(void* ptr) {
-  if(decode_pointer(&ptr) == INTERNAL_NODE) {
-    struct critbit_node* node = (struct critbit_node*)ptr;
-    cb_free_node(node->child[0]);
-    cb_free_node(node->child[1]);
-    free(node);
-  } else {
-    free(ptr);
-  }
-}
+void cb_free_node(void* ptr);
 
 void* cb_find_top_i(const critbit_tree* cb, const void* key, size_t keylen);

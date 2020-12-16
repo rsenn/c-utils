@@ -1,4 +1,5 @@
 #include "../cb_internal.h"
+
 void
 cb_clear(critbit_tree* cb) {
   if(cb->root) {

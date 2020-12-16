@@ -2,6 +2,8 @@
 
 int
 cb_insert(critbit_tree* cb, const void* key, size_t keylen) {
+  struct critbit_node* node;
+  unsigned char* bytes = (unsigned char*)key;
   assert(cb);
   assert(key);
   if(!cb->root) {
@@ -13,13 +15,12 @@ cb_insert(critbit_tree* cb, const void* key, size_t keylen) {
     for(;;) {
       void* ptr = *iter;
       if(decode_pointer(&ptr) == INTERNAL_NODE) {
-        struct critbit_node* node = (struct critbit_node*)ptr;
-        unsigned char* bytes = (unsigned char*)key;
+        node = (struct critbit_node*)ptr;
         int branch = (keylen <= node->byte) ? 0 : ((1 + ((bytes[node->byte] | node->mask) & 0xFF)) >> 8);
         iter = &node->child[branch];
         prev = node;
       } else {
-        unsigned char *iptr, *bytes = (unsigned char*)key, *ikey = bytes;
+        unsigned char *iptr, *ikey = bytes;
         void* vptr;
         unsigned int mask, byte = 0;
         int branch;
@@ -34,9 +35,9 @@ cb_insert(critbit_tree* cb, const void* key, size_t keylen) {
           ++byte;
         }
 
-        if(byte == keylen && byte == len) {
+        if(byte == keylen && byte == len)
           return CB_EXISTS; /* duplicate entry */
-        }
+
         node = make_internal_node();
         node->byte = byte;
         mask = *ikey ^ *iptr; /* these are all the bits that differ */
