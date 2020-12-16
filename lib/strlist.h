@@ -165,6 +165,10 @@ int strlist_trunc(strlist*, size_t items);
 int strlist_unshiftb(strlist*, const char* x, size_t len);
 int strlist_unshift(strlist*, const char* s);
 
+#ifdef BUFFER_H
+void buffer_putsl(buffer * , const strlist * , const char * separator);
+#endif
+
 #ifdef __cplusplus
 }
 #endif

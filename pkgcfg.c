@@ -1197,7 +1197,9 @@ usage(char* progname) {
               "(default)\n\n");
   buffer_putm_internal(buffer_1, "Default prefix: ", cmd.prefix.s, "\n", 0);
   buffer_putm_internal(buffer_1, "Default host: ", cmd.host.s, "\n", 0);
-  buffer_putm_internal(buffer_1, "Default search path: ", cmd.path.sa.s, "\n", 0);
+  buffer_puts(buffer_1, "Default search path:\n  ");
+
+  buffer_putsl(buffer_1, &cmd.path, "\n  ");
   buffer_putnlflush(buffer_1);
 }
 
