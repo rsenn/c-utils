@@ -1,3 +1,6 @@
+#define _POSIX_C_SOURCE
+#define _GNU_SOURCE
+
 #include "lib/unix.h"
 #include "lib/algorithm.h"
 #include "lib/uint64.h"
@@ -25,6 +28,7 @@
 #include "lib/wait.h"
 #include "lib/case.h"
 #include "lib/scan.h"
+#include "lib/fnmatch.h"
 #include "map.h"
 
 #include <ctype.h>
@@ -36,18 +40,7 @@
 #define PKGCFG_PRINT_ERR 2
 #define PKGCFG_SHORT_ERR 4
 
-typedef enum {
-  PRINT_VERSION = 1,
-  PRINT_CFLAGS = 2,
-  PRINT_LIBS = 4,
-  PRINT_REQUIRES = 8,
-  PRINT_PATH = 16,
-  LIST_ALL = 32,
-  LIST_PATH = 64,
-  LIST_FILE = 128,
-  ATLEAST_PKGCONFIG_VERSION = 4096,
-  CHECK_EXISTS = 8192,
-} id;
+typedef enum { PRINT_VERSION = 1, PRINT_CFLAGS = 2, PRINT_LIBS = 4, PRINT_REQUIRES = 8, PRINT_PATH = 16, LIST_ALL = 32, LIST_PATH = 64, LIST_FILE = 128, ATLEAST_PKGCONFIG_VERSION = 4096, CHECK_EXISTS = 8192, MATCH = 0x10000 } id;
 typedef enum { OP_EQ = 0, OP_NE, OP_GT, OP_GE, OP_LT, OP_LE } op_code;
 
 typedef enum { LIBS_ONLY_L = 64, LIBS_ONLY_LIBPATH = 128, LIBS_ONLY_OTHER = 256 } libs_mode_t;
@@ -92,6 +85,7 @@ static const char* const op_strings[] = {"==", "!=", ">", ">=", "<", "<="};
 
 static const char* default_prefix = CONFIG_PREFIX;
 static const char* sysroot = 0;
+static const char* match_pattern = 0;
 static int libs_mode = 0;
 static int static_libs = 0;
 static int cflags_mode = 0;
@@ -274,7 +268,7 @@ host_arch(const char* compiler, stralloc* out) {
             stralloc_nul(out);
             s = out->s;
 
-#ifdef DEBUG_OUTPUT
+#ifdef DEBUG_OUTPUT_
             buffer_puts(buffer_2, "host_arch h='");
             buffer_put(buffer_2, h, hlen);
             buffer_putsflush(buffer_2, "'\n");
@@ -664,6 +658,7 @@ pkg_list(id code) {
       continue;
 
     while((entry = dir_read(&d))) {
+      path.len = len;
       stralloc_catm_internal(&path, "/", entry, 0);
 
       if(stralloc_endb(&path, ".pc", 3)) {
@@ -673,16 +668,20 @@ pkg_list(id code) {
 
         stralloc_init(&line);
         stralloc_nul(&path);
+
+#ifdef DEBUG_OUTPUT_
+        buffer_puts(buffer_2, "file: ");
+        buffer_putsa(buffer_2, &path);
+        buffer_putnlflush(buffer_2);
+#endif
+        if(match_pattern && fnmatch(match_pattern, path.s, FNM_CASEFOLD) == FNM_NOMATCH)
+          continue;
+
         pkg_init(&pf, path.s);
 
         if(!buffer_mmapread(&pc, path.s)) {
           stralloc_zero(&line);
 
-#ifdef DEBUG_OUTPUT_
-          buffer_puts(buffer_2, "file: ");
-          buffer_putsa(buffer_2, &path);
-          buffer_putnlflush(buffer_2);
-#endif
           i = byte_rchr(path.s, path.len, '/');
           if(i == path.len)
             i = 0;
@@ -1018,7 +1017,7 @@ add_path(const stralloc* dir) {
   if(path_exists(dir->s)) {
     strlist_push_sa(&cmd.path, dir);
 
-#ifdef DEBUG_OUTPUT
+#ifdef DEBUG_OUTPUT_
     buffer_puts(buffer_2, "add_path exists: ");
     buffer_putsa(buffer_2, dir);
     buffer_putnlflush(buffer_2);
@@ -1095,7 +1094,7 @@ pkgcfg_init(const char* self, const char* pkgcfg_path) {
 
   stralloc_copys(&cmd.self, path_basename(self));
 
-#ifdef DEBUG_OUTPUT
+#ifdef DEBUG_OUTPUT_
   buffer_puts(buffer_2, "self: ");
   buffer_puts(buffer_2, self);
   buffer_putnlflush(buffer_2);
@@ -1112,7 +1111,7 @@ pkgcfg_init(const char* self, const char* pkgcfg_path) {
     stralloc_copys(&cmd.prefix, default_prefix);
   }
 
-#ifdef DEBUG_OUTPUT
+#ifdef DEBUG_OUTPUT_
   buffer_puts(buffer_2, "cmd.prefix: ");
   buffer_putsa(buffer_2, &cmd.prefix);
   buffer_putnlflush(buffer_2);
@@ -1139,7 +1138,7 @@ pkgcfg_init(const char* self, const char* pkgcfg_path) {
     }
   }
 
-#ifdef DEBUG_OUTPUT
+#ifdef DEBUG_OUTPUT_
   buffer_puts(buffer_2, "cmd.host: ");
   buffer_putsa(buffer_2, &cmd.host);
   buffer_putnlflush(buffer_2);
@@ -1196,7 +1195,7 @@ pkgcfg_init(const char* self, const char* pkgcfg_path) {
     }
   }
 
-#ifdef DEBUG_OUTPUT
+#ifdef DEBUG_OUTPUT_
   buffer_puts(buffer_2, "cmd.path: ");
   buffer_putsa(buffer_2, &cmd.path.sa);
   buffer_putnlflush(buffer_2);
@@ -1268,7 +1267,7 @@ usage(char* progname) {
   buffer_putnlflush(buffer_1);
 }
 
-extern buffer* optbuf;
+extern buffer* unix_optbuf;
 static strlist args;
 
 void
@@ -1297,6 +1296,7 @@ main(int argc, char* argv[], char* envp[]) {
       {"cflags", 0, NULL, PRINT_CFLAGS},
       {"path", 0, NULL, PRINT_PATH},
       {"verbose", 0, &verbose, 1},
+      {"match", 0, NULL, MATCH},
       {"variable", 1, NULL, 'V'},
       {"list-all", 0, NULL, 'l'},
       {"list-path", 0, NULL, 'L'},
@@ -1364,13 +1364,13 @@ main(int argc, char* argv[], char* envp[]) {
 #endif
 
 #ifdef _MSC_VER
-  optbuf = buffer_1;
+  unix_optbuf = buffer_1;
 #endif
-  opterr = 0;
+  unix_opterr = 0;
 
   for(;;) {
-    c = getopt_long(argc, argv, "hmilLpaPSvV:F", opts, &index);
-    if(c == -1 || opterr /* || argv[optind] == 0 */)
+    c = unix_getopt_long(argc, argv, "hmilLpaPSvV:F", opts, &index);
+    if(c == -1 || unix_opterr /* || argv[unix_optind] == 0 */)
       break;
     if(c == 0)
       continue;
@@ -1408,12 +1408,14 @@ main(int argc, char* argv[], char* envp[]) {
       case PRINT_LIBS:
       case PRINT_PATH: add_cmd(c); break;
 
+      case MATCH: match_pattern = argv[unix_optind]; break;
+
       case 'P': mode |= PKGCFG_PRINT_ERR; break;
       case 'S': mode |= PKGCFG_SHORT_ERR; break;
       case 'E': mode |= PKGCFG_EXISTS; break;
       case '?': {
 
-        const char* arg = argv[optind];
+        const char* arg = argv[unix_optind];
 
         if(!str_diffn(arg, "--libs", 6) || !str_diffn(arg, "--cflags", 8)) {
           int i = arg[2] == 'l' ? PRINT_LIBS : PRINT_CFLAGS;
@@ -1423,8 +1425,8 @@ main(int argc, char* argv[], char* envp[]) {
           else
             cflags_mode = arg[str_find(arg, "only")] ? (arg[str_find(arg, "other")] ? CFLAGS_ONLY_OTHER : CFLAGS_ONLY_I) : 0;
 
-          argv[optind] = "-";
-          /*           for(i = optind;
+          argv[unix_optind] = "-";
+          /*           for(i = unix_optind;
              argv[i]; i++) argv[i] =
              argv[i+1];
            */
@@ -1439,7 +1441,7 @@ main(int argc, char* argv[], char* envp[]) {
                     "WARNING: Invalid "
                     "argument -");
         buffer_putc(buffer_2, isprint(c) ? c : '?');
-        buffer_putm_internal(buffer_2, " '", optarg ? optarg : argv[optind], "'", NULL);
+        buffer_putm_internal(buffer_2, " '", unix_optarg ? unix_optarg : argv[unix_optind], "'", NULL);
         buffer_putnlflush(buffer_2);
         usage(argv[0]);
         return 1;
@@ -1448,7 +1450,7 @@ main(int argc, char* argv[], char* envp[]) {
   }
 getopt_end:
 
-  if(argv[optind - 1] && str_equal(argv[optind - 1], "--list-all")) {
+  if(argv[unix_optind - 1] && str_equal(argv[unix_optind - 1], "--list-all")) {
     add_cmd(LIST_ALL);
   }
 
@@ -1516,9 +1518,9 @@ getopt_end:
 
     if(*code == LIST_ALL || *code == LIST_PATH || *code == LIST_FILE) {
       pkg_list(*code);
-    } else if(optind < argc) {
+    } else if(unix_optind < argc) {
       strarray modules;
-      strarray_from_argv(argc - optind, (const char* const*)&argv[optind], &modules);
+      strarray_from_argv(argc - unix_optind, (const char* const*)&argv[unix_optind], &modules);
       return pkg_conf(&modules, *code, mode);
     }
   }
