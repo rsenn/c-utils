@@ -255,6 +255,7 @@ int buffer_puttai(buffer*, const struct tai*);
 #endif
 int buffer_copy(buffer* out, buffer* in);
 void buffer_putstr(buffer* b, const char* x);
+void buffer_realloc(buffer* b, size_t ylen);
 
 #ifdef __cplusplus
 }

@@ -100,7 +100,7 @@ queue_put(void* head, const char* x) {
   uri_scan(&e->uri, x, str_len(x));
 
   slist_push(head ? (slink**)head : (slink**)&queue, (slink*)e);
-#ifdef DEBUG_OUTPUT
+#ifdef DEBUG_OUTPUT_
   buffer_putspad(buffer_2, "queue_put", 12);
   buffer_puts(buffer_2, " len=");
   buffer_putulonglong(buffer_2, slist_length((slink**)&queue));
