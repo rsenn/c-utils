@@ -5,6 +5,7 @@
 #include "lib/buffer.h"
 #include "lib/fmt.h"
 #include "lib/stralloc.h"
+#include "lib/alloc.h"
 #include "uri.h"
 #include <stdlib.h>
 #include <ctype.h>
@@ -28,15 +29,16 @@ size_t
 uri_scan_host(const char* x, size_t len) {
   const char* s = x;
 
-  buffer_putspad(buffer_2, "uri_scan_host", 32);
-  buffer_put(buffer_2, x, len);
-  buffer_putnlflush(buffer_2);
   while(len > 0) {
     if(host_delim[byte_chr(host_delim, str_len(host_delim), *s)])
       break;
     s++;
     len--;
   }
+
+  buffer_putspad(buffer_2, "\033[1;32muri_scan_host\033[0m", 32);
+  buffer_put(buffer_2, x, s - x);
+  buffer_putnlflush(buffer_2);
   return s - x;
 }
 
@@ -57,62 +59,42 @@ uri_scan(uri_t* u, const char* x, size_t len) {
     s = 0;
   }
   e = s + byte_chrs(&x[s], len - s, "/", 1);
-  if(!(s == 0 && e == 0) && !(e == len)) {
+  if(!(s == 0 && e == 0) /*&& !(e == len)*/) {
     e2 = s + byte_chr(&x[s], e - s, '@');
     u->port = 0;
-    if(u->host) {
-      free((void*)u->host);
-      u->host = 0;
-    }
-    if(u->username) {
-      free((void*)u->username);
-      u->username = 0;
-    }
-    if(u->password) {
-      free((void*)u->password);
-      u->password = 0;
-    }
+    alloc_clear(&u->host);
+    alloc_clear(&u->username);
+    alloc_clear(&u->password);
+ 
     if(e2 < e) {
       e3 = s + byte_chr(&x[s], e2 - s, ':');
       if(e3 < e2) {
         u->password = str_ndup(&x[e3 + 1], e2 - (e3 + 1));
-      }
-      u->username = str_ndup(&x[s], e3 - s);
-        s = e2+1;
-
+      }      u->username = str_ndup(&x[s], e3 - s);
+      s = e2 + 1;
     }
-    e2 = s + byte_chr(&x[s], e - s, ':');
-    if(e2 < e) {
-      if((e3 = e2 + 1+scan_ushort(&x[e2 + 1], &u->port)) == 0)
-        u->port = 0;
-    } else {
-      e3 = s + byte_chrs(&x[s], len - s, "/", 1);
-    }
-
     e2 = s + uri_scan_host(&x[s], len - s);
     if(e2 > s) {
-      /* if(!(s < len && isalnum(x[s])))
-         return 0;*/
-
       u->host = str_ndup(&x[s], e2 - s);
-
-      if(x[e] == ':') {
-        s = e + 1;
-        e += s;
+      if(x[e2] == ':') {
+        if((e3 = scan_ushort(&x[e2 + 1], &u->port)) > 0)
+          e2 += 1 + e3;
       }
-      s = e3;
+      s = e2;
     }
   } else {
     s = e;
   }
-  if(s < len) {
+  if(s == len) {
+    alloc_clear(&u->location);
+
+  } else if(s < len) {
     e2 = s + byte_chrs(&x[s], len - s, "#\r\n\t\"'\0", 7);
- /*   if(e2 < len && x[e2] != '#') {
-      if(u->location) {
-        free((void*)u->location);
-        u->location = 0;
-      }
-    }*/
+    /*   if(e2 < len && x[e2] != '#') {
+
+       }*/
+      alloc_clear(&u->location);
+ 
     if(e2 > s) {
       stralloc loc;
       stralloc_init(&loc);
@@ -121,12 +103,11 @@ uri_scan(uri_t* u, const char* x, size_t len) {
           stralloc_copyb(&loc, u->location, str_rchr(u->location, '/'));
         stralloc_catb(&loc, "/", 1);
         stralloc_catb(&loc, &x[s], e2 - s);
-        if(u->location)
-          free((void*)u->location);
+
         u->location = loc.s;
       } else {
-        if(u->location)
-          free((void*)u->location);
+        /*if(u->location)
+          free((void*)u->location);*/
         u->location = str_ndup(&x[s], e2 - s);
       }
       s = e = e2;
@@ -137,10 +118,7 @@ uri_scan(uri_t* u, const char* x, size_t len) {
     u->anchor = str_ndup(&x[s], e - s);
     //  e = len;
   } else {
-    if(u->anchor) {
-      free((void*)u->anchor);
-      u->anchor = 0;
-    }
+    alloc_clear(&u->anchor);
   }
   if(u->port == 0 && u->proto != 0) {
     if(str_equal(u->proto, "https"))

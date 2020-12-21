@@ -10,6 +10,7 @@ extern "C" {
 void* alloc(size_t n);
 void* alloc_zero(size_t n);
 void alloc_free(void* x);
+void alloc_clear(void* ptr);
 
 int alloc_re(void** x, size_t m, size_t n);
 

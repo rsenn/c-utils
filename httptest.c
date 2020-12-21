@@ -265,6 +265,7 @@ http_io_handler(http* h, buffer* out) {
 fail:
   return ret;
 }
+
 int
 process_uris(const char* x, size_t len, strlist* urls, const uri_t* uri) {
   size_t i, pos = 0;
@@ -272,7 +273,7 @@ process_uris(const char* x, size_t len, strlist* urls, const uri_t* uri) {
   uri_init(&link);
 
   while((i = pos + uri_find(&x[pos], len - pos)) < len) {
-    size_t n = byte_chrs(&x[i], len - i, "\r\n\t\"',", 6);
+    size_t n = byte_chrs(&x[i], len - i, "\r\n\t\" ',", str_len("\r\n\t\" ',"));
 
     uri_copy(&link, uri);
 
@@ -338,7 +339,7 @@ process_xml(const char* x, size_t len, strlist* urls, uri_t* uri) {
     } else if(tok.id == XML_DATA) {
 
       process_uris(tok.x, tok.len, urls, uri);
-
+#ifdef DEBUG_OUTPUT_
       buffer_puts(buffer_2,
                   tok.id < (sizeof(token_colors) / sizeof(token_colors[0]))
                       ? token_colors[tok.id]
@@ -346,12 +347,9 @@ process_xml(const char* x, size_t len, strlist* urls, uri_t* uri) {
       buffer_putspad(buffer_2, token_types[tok.id + 1], 16);
       buffer_puts(buffer_2, "\"");
       buffer_put(buffer_2, tok.x, tok.len);
-      buffer_puts(buffer_2, "\"\x1b[0m");
-      /*  buffer_puts(buffer_2, "\nXML
-         token length = ");
-            buffer_putulong(buffer_2,
-         tok.len);*/
+      buffer_puts(buffer_2, "\"\x1b[0m"); 
       buffer_putnlflush(buffer_2);
+#endif
     }
   } while(tok.id != XML_EOF);
 }
