@@ -6,18 +6,18 @@
 #include <sys/syscall.h>
 #include <unistd.h>
 
-#define PFATAL(x...)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               \
-  do {                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             \
-    fprintf(stderr, "[-] SYSTEM ERROR : " x);                                                                                                                                                                                                                                                                                                                                                                                                                                                                      \
-    fprintf(stderr,                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                \
-            "\n\tLocation : %s(), "                                                                                                                                                                                                                                                                                                                                                                                                                                                                                \
-            "%s:%u\n",                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             \
-            __FUNCTION__,                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          \
-            __FILE__,                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              \
-            __LINE__);                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             \
-    perror("      OS message ");                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   \
-    fprintf(stderr, "\n");                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         \
-    exit(EXIT_FAILURE);                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            \
+#define PFATAL(x...)                                                           \
+  do {                                                                         \
+    fprintf(stderr, "[-] SYSTEM ERROR : " x);                                  \
+    fprintf(stderr,                                                            \
+            "\n\tLocation : %s(), "                                            \
+            "%s:%u\n",                                                         \
+            __FUNCTION__,                                                      \
+            __FILE__,                                                          \
+            __LINE__);                                                         \
+    perror("      OS message ");                                               \
+    fprintf(stderr, "\n");                                                     \
+    exit(EXIT_FAILURE);                                                        \
   } while(0)
 
 inline static int
@@ -36,7 +36,11 @@ io_submit(aio_context_t ctx, long nr, struct iocb** iocbpp) {
 }
 
 inline static int
-io_getevents(aio_context_t ctx, long min_nr, long max_nr, struct io_event* events, struct timespec* timeout) {
+io_getevents(aio_context_t ctx,
+             long min_nr,
+             long max_nr,
+             struct io_event* events,
+             struct timespec* timeout) {
   // This might be improved.
   return syscall(__NR_io_getevents, ctx, min_nr, max_nr, events, timeout);
 }
@@ -57,7 +61,10 @@ main() {
   }
 
   char buf[BUF_SZ];
-  struct iocb cb = {.aio_fildes = fd, .aio_lio_opcode = IOCB_CMD_PREAD, .aio_buf = (uint64_t)&buf[0], .aio_nbytes = BUF_SZ};
+  struct iocb cb = {.aio_fildes = fd,
+                    .aio_lio_opcode = IOCB_CMD_PREAD,
+                    .aio_buf = (uint64_t)&buf[0],
+                    .aio_nbytes = BUF_SZ};
   struct iocb* list_of_iocb[1] = {&cb};
 
   r = io_submit(ctx, 1, list_of_iocb);

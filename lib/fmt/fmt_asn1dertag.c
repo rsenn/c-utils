@@ -4,7 +4,8 @@
 /* as used in ASN.1 DER tag */
 size_t
 fmt_asn1dertag(char* dest, uint64 l) {
-  /* high bit says if more bytes are coming, lower 7 bits are payload; big endian */
+  /* high bit says if more bytes are coming, lower 7 bits are payload; big
+   * endian */
   size_t n = 0, i;
   uint64 t;
   for(t = l, n = 1; t > 0x7f; t >>= 7) ++n;

@@ -50,13 +50,16 @@ unittest_main() {
   size_t i, l;
   /* check that we don't consume padding */
   byte_zero(buf, 10);
-  assert(scan_base64url("Zm5vcmQ=", buf, &l) == 7 && l == 5 && !memcmp(buf, "fnord", 6));
+  assert(scan_base64url("Zm5vcmQ=", buf, &l) == 7 && l == 5 &&
+         !memcmp(buf, "fnord", 6));
   /* check that we don't insist on the padding */
   byte_zero(buf, 10);
-  assert(scan_base64url("Zm5vcmQ", buf, &l) == 7 && l == 5 && !memcmp(buf, "fnord", 6));
+  assert(scan_base64url("Zm5vcmQ", buf, &l) == 7 && l == 5 &&
+         !memcmp(buf, "fnord", 6));
   /* check the special non-isalnum chars :) */
   byte_zero(buf, 10);
-  assert(scan_base64url("_-8=", buf, &l) == 3 && l == 2 && !memcmp(buf, "\xff\xef", 3));
+  assert(scan_base64url("_-8=", buf, &l) == 3 && l == 2 &&
+         !memcmp(buf, "\xff\xef", 3));
   return 0;
 }
 #endif

@@ -4,7 +4,10 @@
 #include <errno.h>
 
 int
-buffer_get_token_sa(buffer* b, stralloc* sa, const char* charset, size_t setlen) {
+buffer_get_token_sa(buffer* b,
+                    stralloc* sa,
+                    const char* charset,
+                    size_t setlen) {
   for(;;) {
     char x;
     if(!stralloc_readyplus(sa, 1))

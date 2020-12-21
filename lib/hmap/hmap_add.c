@@ -3,7 +3,12 @@
 #include "../hmap_internal.h"
 
 int
-hmap_add(HMAP_DB** hmap_db, const void* key, size_t k_len, int dup_flag, int data_type, ...) {
+hmap_add(HMAP_DB** hmap_db,
+         const void* key,
+         size_t k_len,
+         int dup_flag,
+         int data_type,
+         ...) {
 
   TUPLE *new_tuple = NULL, *ptr_tuple = NULL, *root_tuple = NULL;
   int r = 0;
@@ -50,7 +55,8 @@ hmap_add(HMAP_DB** hmap_db, const void* key, size_t k_len, int dup_flag, int dat
       HDB_LIST_APPEND((*hmap_db)->list_tuple, root_tuple);
 
     } else {
-      new_tuple = (TUPLE*)alloc(sizeof(TUPLE)); /* Create new recordeto store data */
+      new_tuple =
+          (TUPLE*)alloc(sizeof(TUPLE)); /* Create new recordeto store data */
       byte_zero(new_tuple, sizeof(TUPLE));
 
       if(new_tuple == NULL) {

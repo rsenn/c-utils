@@ -10,7 +10,14 @@
 
 // namespace util {
 
-file::file(const string& name, int access) : m_handle((access & append ? open_append : (access & trunc ? open_trunc : (access & read_write ? open_rw : open_read)))(name.c_str())), m_access(access), m_retcode(0) {
+file::file(const string& name, int access)
+    : m_handle((access & append
+                    ? open_append
+                    : (access & trunc
+                           ? open_trunc
+                           : (access & read_write ? open_rw : open_read)))(
+          name.c_str())),
+      m_access(access), m_retcode(0) {
   if(m_handle < 0) {
     m_retcode = m_handle;
   }

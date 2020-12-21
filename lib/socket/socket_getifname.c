@@ -29,7 +29,8 @@ if_indextoname(uint32 idx, const char* name) {
     HANDLE iphlpapi = LoadLibraryA("iphlpapi.dll");
 
     if(iphlpapi != INVALID_HANDLE_VALUE) {
-      if((idx2ifn = (idx2ifn_fn*)GetProcAddress(iphlpapi, "if_indextoname")) == 0)
+      if((idx2ifn = (idx2ifn_fn*)GetProcAddress(iphlpapi, "if_indextoname")) ==
+         0)
         return 0;
     }
   }

@@ -95,10 +95,13 @@ unittest_main() {
   assert(fmt_jsonescape(buf, "\tfnörd", 7) == 8 && !memcmp(buf, "\\tfnörd", 8));
   /* test escaping of unprintable characters */
   assert(fmt_jsonescape(buf, "\001x", 2) == 7 && !memcmp(buf, "\\u0001x", 7));
-  /* test conversion of large UTF-8 chars to UTF-16 surrogate pairs (poop emoji) */
+  /* test conversion of large UTF-8 chars to UTF-16 surrogate pairs (poop emoji)
+   */
   /* EDIT: this escaping is not actually needed, so we aren't doing it
    * anymore. This test will fail now:
-  assert(fmt_jsonescape(buf,"\xf0\x9f\x92\xa9x",5)==13 && !memcmp(buf,"\\ud83d\\udca9x",13)); */
-  assert(fmt_jsonescape(buf, "a\x81x", 3) == 4 && !memcmp(buf, "a\xc2\x81x", 4));
+  assert(fmt_jsonescape(buf,"\xf0\x9f\x92\xa9x",5)==13 &&
+  !memcmp(buf,"\\ud83d\\udca9x",13)); */
+  assert(fmt_jsonescape(buf, "a\x81x", 3) == 4 &&
+         !memcmp(buf, "a\xc2\x81x", 4));
 }
 #endif

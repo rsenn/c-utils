@@ -26,9 +26,15 @@ hmap_dump(HMAP_DB* hmap, buffer* b) {
     switch(tuple->data_type) {
       case HMAP_DATA_TYPE_INT: buffer_putlong(b, tuple->vals.val_int); break;
       case HMAP_DATA_TYPE_UINT: buffer_putulong(b, tuple->vals.val_uint); break;
-      case HMAP_DATA_TYPE_INT64: buffer_putlonglong(b, tuple->vals.val_longlong); break;
-      case HMAP_DATA_TYPE_UINT64: buffer_putulonglong(b, tuple->vals.val_ulonglong); break;
-      case HMAP_DATA_TYPE_DOUBLE: buffer_putdouble(b, tuple->vals.val_double, 15); break;
+      case HMAP_DATA_TYPE_INT64:
+        buffer_putlonglong(b, tuple->vals.val_longlong);
+        break;
+      case HMAP_DATA_TYPE_UINT64:
+        buffer_putulonglong(b, tuple->vals.val_ulonglong);
+        break;
+      case HMAP_DATA_TYPE_DOUBLE:
+        buffer_putdouble(b, tuple->vals.val_double, 15);
+        break;
       case HMAP_DATA_TYPE_CHARS: {
         const char* x = tuple->vals.val_chars;
         size_t n = tuple->data_len;
@@ -40,7 +46,9 @@ hmap_dump(HMAP_DB* hmap, buffer* b) {
         buffer_flush(b);
         break;
       }
-      case HMAP_DATA_TYPE_CUSTOM: buffer_putptr(b, tuple->vals.val_custom); break;
+      case HMAP_DATA_TYPE_CUSTOM:
+        buffer_putptr(b, tuple->vals.val_custom);
+        break;
     }
 
     if(tuple->next == hmap->list_tuple)

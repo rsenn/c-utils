@@ -28,14 +28,22 @@ buffer_copy(buffer* out, buffer* in) {
   return n;
 }
 
-typedef enum compression_type { C_UNKNOWN = 0, C_GZ, C_BZ2, C_LZMA, C_XZ, C_BROTLI } compression_type;
+typedef enum compression_type {
+  C_UNKNOWN = 0,
+  C_GZ,
+  C_BZ2,
+  C_LZMA,
+  C_XZ,
+  C_BROTLI
+} compression_type;
 
 compression_type
 compression_from_ext(const char* ext) {
   if(case_equals(ext, "gz") || case_equals(ext, "tgz"))
     return C_GZ;
 
-  if(case_equals(ext, "bz2") || case_equals(ext, "tbz2") || case_equals(ext, "tbz"))
+  if(case_equals(ext, "bz2") || case_equals(ext, "tbz2") ||
+     case_equals(ext, "tbz"))
     return C_BZ2;
 
   if(case_equals(ext, "xz") || case_equals(ext, "txz"))
@@ -108,7 +116,9 @@ main(int argc, char* argv[]) {
 
                            {0, 0, 0, 0}};
 
-  while((opt = unix_getopt_long(argc, argv, "123456789cdt:o:hf", opts, &index)) != -1) {
+  while(
+      (opt = unix_getopt_long(argc, argv, "123456789cdt:o:hf", opts, &index)) !=
+      -1) {
     switch(opt) {
         // case '0':
       case '1':
@@ -201,10 +211,18 @@ main(int argc, char* argv[]) {
         else
           buffer_deflate(&cbuf, output, level);
         break;
-      case C_BZ2: buffer_bz2(&cbuf, decompress ? input : output, decompress ? 0 : level); break;
+      case C_BZ2:
+        buffer_bz2(&cbuf, decompress ? input : output, decompress ? 0 : level);
+        break;
       case C_XZ:
-      case C_LZMA: buffer_lzma(&cbuf, decompress ? input : output, decompress ? 0 : level); break;
-      case C_BROTLI: buffer_brotli(&cbuf, decompress ? input : output, decompress ? 0 : level); break;
+      case C_LZMA:
+        buffer_lzma(&cbuf, decompress ? input : output, decompress ? 0 : level);
+        break;
+      case C_BROTLI:
+        buffer_brotli(&cbuf,
+                      decompress ? input : output,
+                      decompress ? 0 : level);
+        break;
       default:
         buffer_putm_internal(buffer_2,
                              "ERROR: Unable to detect "

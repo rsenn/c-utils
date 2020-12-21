@@ -78,7 +78,7 @@ env_put2(const char* name, const char* value) {
 #else
 static size_t env_isinit = 0; /* if env_isinit: */
 static size_t ea;             /* environ is a pointer to ea+1 char*'s. */
-static size_t en;             /* the first en of those are ALLOCATED. environ[en] is 0. */
+static size_t en; /* the first en of those are ALLOCATED. environ[en] is 0. */
 
 static inline void
 env_goodbye(size_t i) {
@@ -137,7 +137,9 @@ env_expand(void) {
     return 0;
   ea += 30;
 
-  byte_copy((char*)newenviron, (size_t)((en + 1) * sizeof(char*)), (char*)environ);
+  byte_copy((char*)newenviron,
+            (size_t)((en + 1) * sizeof(char*)),
+            (char*)environ);
   free((void*)environ);
   environ = newenviron;
   return 1;

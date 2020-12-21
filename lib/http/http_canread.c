@@ -23,8 +23,8 @@ ssize_t
 http_canread(http* h, void (*wantwrite)(fd_t)) {
   http_response* r;
   int err;
-  size_t len, received;
-  ssize_t ret = 0;
+  size_t len;
+  ssize_t ret = 0, received;
 
   if(h->tls) {
     if(!h->connected) {
@@ -40,8 +40,8 @@ http_canread(http* h, void (*wantwrite)(fd_t)) {
 
   len = buffer_LEN(&h->q.in);
 
-  /*if(h->q.in.p == h->q.in.n)*/ {
-    if((ret = buffer_freshen(&h->q.in)) == 0)
+  if((ret = buffer_freshen(&h->q.in)) <= 0) {
+    if(!(ret == -1 && errno == EAGAIN))
       goto fail;
   }
 
@@ -85,15 +85,18 @@ http_canread(http* h, void (*wantwrite)(fd_t)) {
       r->transfer = HTTP_TRANSFER_LENGTH;
     } else {
       r->transfer = HTTP_TRANSFER_CHUNKED;
+      r->content_length = 0;
+      r->chunk_length = 0;
     }
+    r->ptr = 0;
     stralloc_zero(&r->data);
   }
 
   if(r->status == HTTP_RECV_DATA) {
     /*    if(ret > 0)*/ {
-      stralloc_readyplus(&h->response->data, ret);
-      buffer_get(&h->q.in, &h->response->data.s[h->response->data.len], ret);
-      h->response->data.len += ret;
+      /*   stralloc_readyplus(&h->response->data, ret);
+         buffer_get(&h->q.in, &h->response->data.s[h->response->data.len], ret);
+         h->response->data.len += ret;*/
       /*
       #ifdef DEBUG_HTTP
             buffer_putspad(buffer_2, "http_canread DATA ", 30);
@@ -160,17 +163,20 @@ fail:
     if(len > 30)
       len = 30;
     buffer_puts(buffer_2, " data:received=");
-    buffer_putlong(buffer_2, received);
+    buffer_putlonglong(buffer_2, received);
 
     buffer_puts(buffer_2, " data:len=");
-    buffer_putlong(buffer_2, r->data.len);
+    buffer_putulonglong(buffer_2, r->data.len);
+    /*
+        buffer_puts(buffer_2, " buf=");
 
-    buffer_puts(buffer_2, " buf=");
+        buffer_put_escaped(buffer_2,
+                           stralloc_end(&r->data) - r->data.len,
+                           len,
+                           &fmt_escapecharnonprintable);
 
-    buffer_put_escaped(buffer_2, stralloc_end(&r->data) - r->data.len, len, &fmt_escapecharnonprintable);
-
-    if(len < received)
-      buffer_puts(buffer_2, " ... ");
+        if(len < received)
+          buffer_puts(buffer_2, " ... ");*/
   }
 
   buffer_puts(buffer_2, " tls=");
@@ -188,7 +194,15 @@ fail:
     buffer_putlong(buffer_2, h->response->code);
   }
   buffer_puts(buffer_2, " status=");
-  buffer_puts(buffer_2, ((const char* const[]){"-1", "HTTP_RECV_HEADER", "HTTP_RECV_DATA", "HTTP_STATUS_CLOSED", "HTTP_STATUS_ERROR", "HTTP_STATUS_BUSY", "HTTP_STATUS_FINISH", 0})[h->response->status + 1]);
+  buffer_puts(buffer_2,
+              ((const char* const[]){"-1",
+                                     "HTTP_RECV_HEADER",
+                                     "HTTP_RECV_DATA",
+                                     "HTTP_STATUS_CLOSED",
+                                     "HTTP_STATUS_ERROR",
+                                     "HTTP_STATUS_BUSY",
+                                     "HTTP_STATUS_FINISH",
+                                     0})[h->response->status + 1]);
   buffer_putnlflush(buffer_2);
 #endif
 

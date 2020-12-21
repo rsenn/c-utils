@@ -26,7 +26,9 @@ typedef array strarray;
 
 #define strarray_at(l, pos) (((char**)((l)->p))[(pos)])
 
-#define strarray_foreach(a, ptr) for((ptr) = (char**)strarray_begin(a); ((char**)(ptr)) < strarray_end(a); ++ptr)
+#define strarray_foreach(a, ptr)                                               \
+  for((ptr) = (char**)strarray_begin(a); ((char**)(ptr)) < strarray_end(a);    \
+      ++ptr)
 
 char** strarray_to_argv(strarray*);
 int strarray_from_argv(int argc, const char* const argv[], strarray* arr);
@@ -49,10 +51,10 @@ int strarray_set(strarray*, size_t index, const char* s);
 int strarray_setb(strarray*, size_t index, const char* s, size_t len);
 
 #ifdef STRALLOC_H
-#define strarray_push_sa_unique(a, sa)                                                                                                                                                                                                                                                                                                                                                                                                                                                                             \
-  do {                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             \
-    if(!strarray_contains_sa((a), (sa)))                                                                                                                                                                                                                                                                                                                                                                                                                                                                           \
-      strarray_push_sa((a), (sa));                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 \
+#define strarray_push_sa_unique(a, sa)                                         \
+  do {                                                                         \
+    if(!strarray_contains_sa((a), (sa)))                                       \
+      strarray_push_sa((a), (sa));                                             \
   } while(0)
 #define strarray_contains_sa(a, sa) (strarray_index_of_sa((a), (sa)) != -1)
 
@@ -74,14 +76,17 @@ int strarray_each(strarray* arr, void (*pred)(char**));
 
 int strarray_glob(strarray* arr, const char* pattern);
 
-int64 strarray_splice(strarray*, uint64 start, uint64 del, uint64 insert, const char** x);
+int64 strarray_splice(
+    strarray*, uint64 start, uint64 del, uint64 insert, const char** x);
 void strarray_free(strarray*);
 
 int strarray_push_unique(strarray* arr, const char* s);
 
 int strarray_pushb_unique(strarray* arr, const char* b, size_t n);
 
-void strarray_intersection(const strarray* s1, const strarray* s2, strarray* out);
+void strarray_intersection(const strarray* s1,
+                           const strarray* s2,
+                           strarray* out);
 void strarray_union(const strarray* s1, const strarray* s2, strarray* out);
 
 #ifdef BUFFER_H

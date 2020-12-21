@@ -54,7 +54,8 @@ dns_name4(stralloc* out, const char ip[4]) {
   dns_name4_domain(name, ip);
   if(dns_resolve(name, DNS_T_PTR) == -1)
     return -1;
-  if(dns_name_packet(out, dns_resolve_tx.packet, dns_resolve_tx.packetlen) == -1)
+  if(dns_name_packet(out, dns_resolve_tx.packet, dns_resolve_tx.packetlen) ==
+     -1)
     return -1;
   dns_transmit_free(&dns_resolve_tx);
   dns_domain_free(&q);
@@ -68,7 +69,8 @@ dns_name6_inner(stralloc* out, const char ip[16]) {
   dns_name6_domain(name, ip);
   if(dns_resolve(name, DNS_T_PTR) == -1)
     return -1;
-  if(dns_name_packet(out, dns_resolve_tx.packet, dns_resolve_tx.packetlen) == -1)
+  if(dns_name_packet(out, dns_resolve_tx.packet, dns_resolve_tx.packetlen) ==
+     -1)
     return -1;
   dns_transmit_free(&dns_resolve_tx);
   dns_domain_free(&q);

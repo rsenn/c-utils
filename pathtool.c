@@ -42,13 +42,16 @@ strlist_from_path(strlist* sl, const char* p) {
 #define MAX_PATH 260
 #endif
 
-#if(!defined(__MSYS__) && !defined(HAVE_CYGWIN_CONV_PATH)) || (defined(__MSYS__) && defined(__x86_64__))
+#if(!defined(__MSYS__) && !defined(HAVE_CYGWIN_CONV_PATH)) ||                  \
+    (defined(__MSYS__) && defined(__x86_64__))
 #define HAVE_CYGWIN_CONV_PATH 1
 #endif
 
 #ifdef HAVE_CYGWIN_CONV_PATH
-#define cygwin_conv_to_win32_path(from, to) cygwin_conv_path(CCP_POSIX_TO_WIN_A, (from), (to), MAX_PATH)
-#define cygwin_conv_to_posix_path(from, to) cygwin_conv_path(CCP_WIN_A_TO_POSIX, (from), (to), MAX_PATH)
+#define cygwin_conv_to_win32_path(from, to)                                    \
+  cygwin_conv_path(CCP_POSIX_TO_WIN_A, (from), (to), MAX_PATH)
+#define cygwin_conv_to_posix_path(from, to)                                    \
+  cygwin_conv_path(CCP_WIN_A_TO_POSIX, (from), (to), MAX_PATH)
 #endif
 
 void
@@ -136,7 +139,13 @@ pathtool(const char* arg, stralloc* sa) {
     stralloc_nul(&relative_to.sa);
 
 #ifdef DEBUG_OUTPUT
-    buffer_putm_internal(buffer_2, "relative(\"", path.sa.s, "\", \"", relative_to.sa.s, "\")", NULL);
+    buffer_putm_internal(buffer_2,
+                         "relative(\"",
+                         path.sa.s,
+                         "\", \"",
+                         relative_to.sa.s,
+                         "\")",
+                         NULL);
     buffer_putsa(buffer_2, sa);
     buffer_putnlflush(buffer_2);
 #endif
@@ -238,7 +247,15 @@ main(int argc, char* argv[]) {
   int digit_optind = 0;
   const char* rel_to = NULL;
   int index = 0;
-  struct longopt opts[] = {{"help", 0, NULL, 'h'}, {"relative-to", 1, NULL, 'r'}, {"separator", 1, NULL, 's'}, {"mixed", 0, NULL, 'm'}, {"unix", 0, NULL, 'u'}, {"windows", 0, NULL, 'w'}, {"absolute", 0, NULL, 'a'}, {"canonicalize", 0, NULL, 'f'}, {0, 0, 0, 0}};
+  struct longopt opts[] = {{"help", 0, NULL, 'h'},
+                           {"relative-to", 1, NULL, 'r'},
+                           {"separator", 1, NULL, 's'},
+                           {"mixed", 0, NULL, 'm'},
+                           {"unix", 0, NULL, 'u'},
+                           {"windows", 0, NULL, 'w'},
+                           {"absolute", 0, NULL, 'a'},
+                           {"canonicalize", 0, NULL, 'f'},
+                           {0, 0, 0, 0}};
 
   errmsg_iam(argv[0]);
 

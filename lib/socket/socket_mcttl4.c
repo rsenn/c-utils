@@ -13,5 +13,6 @@
 
 int
 socket_mcttl4(int s, char TTL) {
-  return winsock2errno(setsockopt(s, IPPROTO_IP, IP_MULTICAST_TTL, (void*)&TTL, sizeof TTL));
+  return winsock2errno(
+      setsockopt(s, IPPROTO_IP, IP_MULTICAST_TTL, (void*)&TTL, sizeof TTL));
 }

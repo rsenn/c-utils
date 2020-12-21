@@ -26,7 +26,8 @@ typedef struct tai {
   uint64 x;
 } tai64;
 
-#define tai_unix(t, u) ((void)((t)->x = (uint64)4611686018427387914 + (uint64)(u)))
+#define tai_unix(t, u)                                                         \
+  ((void)((t)->x = (uint64)4611686018427387914 + (uint64)(u)))
 
 /* tai_now puts the current time into t. More precisely: tai_now puts
  * into t its best guess as to the TAI64 label for the 1-second interval

@@ -22,7 +22,8 @@ namespace intelhex {
 /* Array access operator */
 value_type&
 hex_data::operator[](address_type address) {
-  /* Start at the end of the list and find the first (last) block with an address */
+  /* Start at the end of the list and find the first (last) block with an
+   * address */
   /*  less than addr */
   reverse_iterator i = blocks.rbegin();
   while(i != blocks.rend()) {
@@ -40,7 +41,8 @@ hex_data::operator[](address_type address) {
 /* Return the value at address, or _fill if not set */
 value_type
 hex_data::get(address_type address) {
-  /* Start at the end of the list and find the first (last) block with an address */
+  /* Start at the end of the list and find the first (last) block with an
+   * address */
   /*  less than addr */
   reverse_iterator i = blocks.rbegin();
   while(i != blocks.rend()) {
@@ -64,7 +66,8 @@ hex_data::set(address_type address, value_type value) {
     return;
   }
 
-  /* Start at the end of the list and find the first (last) block with an address */
+  /* Start at the end of the list and find the first (last) block with an
+   * address */
   /*  less than addr */
   reverse_iterator i = blocks.rbegin();
   while(i != blocks.rend()) {
@@ -93,7 +96,9 @@ hex_data::compact() {
 
   for(++i; i != blocks.end(); ++i) {
     if((previous->first + previous->second.size()) == i->first) {
-      previous->second.insert(previous->second.end(), i->second.begin(), i->second.end());
+      previous->second.insert(previous->second.end(),
+                              i->second.begin(),
+                              i->second.end());
       blocks.erase(i);
       i = previous;
     }
@@ -146,7 +151,8 @@ hex_data::erase(address_type first, address_type last) {
   if(first > last)
     std::swap(first, last);
 
-  for(iterator i = blocks.begin(); (i != blocks.end()) && (first <= last); ++i) {
+  for(iterator i = blocks.begin(); (i != blocks.end()) && (first <= last);
+      ++i) {
     const address_type ope = i->first + i->second.size();
     if(first >= ope) /* Ignore all blocks with addresses < first */
       continue;
@@ -189,7 +195,8 @@ hex_data::size_type
 hex_data::size() {
   size_type s = 0;
 
-  for(iterator i = blocks.begin(); i != blocks.end(); ++i) s += i->second.size();
+  for(iterator i = blocks.begin(); i != blocks.end(); ++i)
+    s += i->second.size();
 
   return s;
 }
@@ -230,14 +237,16 @@ hex_data::size_in_range(address_type lo, address_type hi) {
   return s;
 }
 
-/* Return the max address of all of the set words with addresses less than or equal to hi */
+/* Return the max address of all of the set words with addresses less than or
+ * equal to hi */
 address_type
 hex_data::max_addr_below(address_type hi) {
   address_type s = 0;
 
   for(iterator i = blocks.begin(); i != blocks.end(); ++i) {
     if(i->first <= hi) {
-      const address_type a = i->first + i->second.size() - 1; // Max address of this block
+      const address_type a =
+          i->first + i->second.size() - 1; // Max address of this block
       if(a > s)
         s = a;
     }
@@ -263,7 +272,8 @@ hex_data::max_address() const {
 // Return true if an element exists at addr
 bool
 hex_data::is_set(address_type addr) {
-  /* Start at the end of the list and find the first (last) block with an address */
+  /* Start at the end of the list and find the first (last) block with an
+   * address */
   /*  less than addr */
   reverse_iterator i = blocks.rbegin();
   while((i != blocks.rend()) && (i->first > addr)) ++i;
@@ -351,9 +361,12 @@ hex_data::read(std::istream& s) {
         for(; i != blocks.end(); ++i) /* Find a block that includes address */
         {
           address_type num = 0;
-          /* If the start of the new block is interior to an existing block... */
-          if((i->first <= address) && ((i->first + i->second.size()) > address)) {
-            /* Store the portion of the new block that overlaps the existing block */
+          /* If the start of the new block is interior to an existing block...
+           */
+          if((i->first <= address) &&
+             ((i->first + i->second.size()) > address)) {
+            /* Store the portion of the new block that overlaps the existing
+             * block */
             const size_type index = address - i->first;
             num = i->second.size() - index;
             if(num > length)
@@ -381,7 +394,9 @@ hex_data::read(std::istream& s) {
         break;
       }
       case 1: break; /* Ignore EOF record */
-      case 2: /* Segment address record (INHX32) */ segment_addr_rec = true; break;
+      case 2:        /* Segment address record (INHX32) */
+        segment_addr_rec = true;
+        break;
       case 4: /* Linear address record (INHX32) */
         if((0 == address) && (2 == length)) {
           linear_address = buffer[4];
@@ -413,11 +428,14 @@ hex_data::write(std::ostream& os) {
   if(!os) /* Bail out on bad streams */
     return;
 
-  os.setf(std::ios::hex, std::ios::basefield); // Set the stream to ouput hex instead of decimal
-  os.setf(std::ios::uppercase);                // Use uppercase hex notation
-  os.fill('0');                                // Pad with zeroes
+  os.setf(
+      std::ios::hex,
+      std::ios::basefield); // Set the stream to ouput hex instead of decimal
+  os.setf(std::ios::uppercase); // Use uppercase hex notation
+  os.fill('0');                 // Pad with zeroes
 
-  // If we already know that this is an INHX32M file, start with a segment address record
+  // If we already know that this is an INHX32M file, start with a segment
+  // address record
   /*        otherwise check all of the blocks just to make sure */
   if(linear_addr_rec) {
     os << INH32M_HEADER << std::endl;
@@ -464,7 +482,8 @@ hex_data::write(std::ostream& os) {
     checksum += static_cast<uint8_t>(i->first);      /* Low byte */
     checksum += static_cast<uint8_t>(i->first >> 8); /* High byte */
     os << "00";                                      // Record type
-    for(unsigned j = 0; j < i->second.size(); ++j)   // Store the data bytes, LSB first, ASCII HEX
+    for(unsigned j = 0; j < i->second.size();
+        ++j) // Store the data bytes, LSB first, ASCII HEX
     {
       os.width(2);
       /* OSX (or maybe GCC), seems unable to handle uint8_t */
@@ -474,7 +493,8 @@ hex_data::write(std::ostream& os) {
     }
     checksum = 0x01 + ~checksum;
     os.width(2);
-    /* OSX (or maybe GCC), seems unable to handle uint8_t arguments to a stream */
+    /* OSX (or maybe GCC), seems unable to handle uint8_t arguments to a stream
+     */
     os << static_cast<uint16_t>(checksum); /* Checksum byte */
     os << std::endl;
   }
@@ -488,7 +508,8 @@ hex_data::tidy(hex_data::size_type length) {
   for(iterator i = blocks.begin(); i != blocks.end(); i++) {
     if(i->second.size() > length) // If the block is too long...
     {
-      // Make an interator that points to the first element to copy out of i->second
+      // Make an interator that points to the first element to copy out of
+      // i->second
       data_container::iterator k(i->second.begin());
       advance(k, length);
 
@@ -500,14 +521,21 @@ hex_data::tidy(hex_data::size_type length) {
 }
 
 // Compare two sets of hex data
-/*        Return true if every word in hex1 has a corresponding, and equivalent, word in hex2 */
+/*        Return true if every word in hex1 has a corresponding, and equivalent,
+ * word in hex2 */
 bool
-compare(hex_data& hex1, hex_data& hex2, value_type mask, address_type begin, address_type end) {
+compare(hex_data& hex1,
+        hex_data& hex2,
+        value_type mask,
+        address_type begin,
+        address_type end) {
   // Walk block list from hex1
   for(hex_data::iterator i = hex1.begin(); i != hex1.end(); ++i) {
     // Walk the block
     address_type addr(i->first);
-    for(hex_data::data_container::iterator j = i->second.begin(); j != i->second.end(); ++j, ++addr) {
+    for(hex_data::data_container::iterator j = i->second.begin();
+        j != i->second.end();
+        ++j, ++addr) {
       if((addr < begin) || (addr > end))
         continue;
 

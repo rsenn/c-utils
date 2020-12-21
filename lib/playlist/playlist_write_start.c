@@ -31,8 +31,10 @@ playlist_write_start(buffer* b, playlist* pl) {
     }
     case XSPF: {
       buffer_puts(b,
-                  "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<playlist xmlns=\"http://xspf.org/ns/0/\" "
-                  "xmlns:vlc=\"http://www.videolan.org/vlc/playlist/ns/0/\" version=\"1\">\n  "
+                  "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<playlist "
+                  "xmlns=\"http://xspf.org/ns/0/\" "
+                  "xmlns:vlc=\"http://www.videolan.org/vlc/playlist/ns/0/\" "
+                  "version=\"1\">\n  "
                   "<title>Wiedergabeliste</title>\n  <trackList>\n");
       break;
     }

@@ -5,7 +5,8 @@
 /* for size_t: */
 #include "typedefs.h"
 
-#if !defined(_MSC_VER) && !defined(__MSYS__) && !defined(__CYGWIN__) && !defined(__BORLANDC__)
+#if !defined(_MSC_VER) && !defined(__MSYS__) && !defined(__CYGWIN__) &&        \
+    !defined(__BORLANDC__)
 #include <inttypes.h>
 #include <stdint.h>
 #endif
@@ -49,7 +50,9 @@ void byte_zero(void* out, size_t len);
 
 //#define byte_equal(s,n,t) (!byte_diff((s),(n),(t)))
 
-int byte_equal_notimingattack(const void* a, size_t len, const void* b) __pure__;
+int byte_equal_notimingattack(const void* a,
+                              size_t len,
+                              const void* b) __pure__;
 
 void byte_fill(void* out, size_t len, int c);
 
@@ -60,7 +63,8 @@ size_t byte_equal(const void* s, size_t n, const void* t);
 void byte_lower(void* s, size_t len);
 void byte_upper(void* s, size_t len);
 
-size_t byte_findb(const void* haystack, size_t hlen, const void* what, size_t wlen);
+size_t
+byte_findb(const void* haystack, size_t hlen, const void* what, size_t wlen);
 size_t byte_finds(const void* haystack, size_t hlen, const char* what);
 
 #if defined(__i386__) || defined(__x86_64__)
@@ -68,8 +72,15 @@ size_t byte_finds(const void* haystack, size_t hlen, const char* what);
 #endif
 
 #ifdef STRALLOC_H
-size_t byte_fmt(const char* in, size_t in_len, stralloc* out, size_t (*fmt_function)(char*, unsigned int ch));
-size_t byte_scan(const char* in, size_t in_len, stralloc* out, size_t (*scan_function)(), ...);
+size_t byte_fmt(const char* in,
+                size_t in_len,
+                stralloc* out,
+                size_t (*fmt_function)(char*, unsigned int ch));
+size_t byte_scan(const char* in,
+                 size_t in_len,
+                 stralloc* out,
+                 size_t (*scan_function)(),
+                 ...);
 
 #endif
 
@@ -77,12 +88,19 @@ void byte_replace(char* x, size_t n, char before, char after);
 size_t byte_ccopy(void* dst, size_t count, const void* src, char c);
 
 /* read only trim-left */
-const char* byte_triml(const char* x, size_t* len, const char* charset, unsigned int charsetlen);
+const char* byte_triml(const char* x,
+                       size_t* len,
+                       const char* charset,
+                       unsigned int charsetlen);
 
-size_t byte_trimr(char* x, size_t n, const char* trimchars, unsigned int trimcharslen);
+size_t
+byte_trimr(char* x, size_t n, const char* trimchars, unsigned int trimcharslen);
 
 static inline char*
-byte_trim(char* x, size_t* n, const char* trimchars, unsigned int trimcharslen) {
+byte_trim(char* x,
+          size_t* n,
+          const char* trimchars,
+          unsigned int trimcharslen) {
   x = (char*)byte_triml(x, n, trimchars, trimcharslen);
   *n = byte_trimr(x, *n, trimchars, trimcharslen);
   return x;
@@ -91,7 +109,9 @@ byte_trim(char* x, size_t* n, const char* trimchars, unsigned int trimcharslen) 
 size_t byte_camelize(char* x, size_t len);
 
 #define byte_foreach(x, n, p) byte_foreach_skip(x, n, p, 1)
-#define byte_foreach_skip(x, n, p, skip) for((p) = (void*)x; (void*)(p) != ((char*)(x) + (n)); (p) = (void*)(((char*)(p)) + (skip)))
+#define byte_foreach_skip(x, n, p, skip)                                       \
+  for((p) = (void*)x; (void*)(p) != ((char*)(x) + (n));                        \
+      (p) = (void*)(((char*)(p)) + (skip)))
 
 int byte_startb(const void*, size_t, const char*, size_t);
 int byte_starts(const void*, size_t, const char*);

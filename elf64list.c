@@ -50,7 +50,8 @@ main(int argc, char** argv) {
     section_header_size = header->e_shentsize;
     n_headers = header->e_shnum;
 
-    section_name_header_offset = header->e_shoff + (header->e_shstrndx * header->e_shentsize);
+    section_name_header_offset =
+        header->e_shoff + (header->e_shstrndx * header->e_shentsize);
     section_name_header = (elf64_shdr*)(content + section_name_header_offset);
     section_names = content + section_name_header->sh_offset;
 
@@ -118,7 +119,8 @@ main(int argc, char** argv) {
       info = symbol->st_info;
       section_header_index = symbol->st_shndx;
 
-      if((info & ELF_STT_FUNC) && (ELF_ELF64_ST_BIND(info) & ELF_STB_GLOBAL) && (section_header_index == text_section_header_index)) {
+      if((info & ELF_STT_FUNC) && (ELF_ELF64_ST_BIND(info) & ELF_STB_GLOBAL) &&
+         (section_header_index == text_section_header_index)) {
         const char* name;
 
         name = content + name_section_offset + name_index;

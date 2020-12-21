@@ -68,7 +68,8 @@ mklink(char* target, char* link) {
     return -1;
   }
 
-#if !((defined(_WIN32) || defined(_WIN64)) && !(defined(__MSYS__) || defined(__CYGWIN__)))
+#if !((defined(_WIN32) || defined(_WIN64)) &&                                  \
+      !(defined(__MSYS__) || defined(__CYGWIN__)))
   if(lstat(link, &st) != -1)
 #endif
   {
@@ -90,7 +91,8 @@ mklink_sa(stralloc* target, stralloc* link) {
   stralloc_nul(target);
   stralloc_nul(link);
 
-  if(stralloc_rchr(target, '/') == target->len && (i = stralloc_rchr(link, '/')) != link->len) {
+  if(stralloc_rchr(target, '/') == target->len &&
+     (i = stralloc_rchr(link, '/')) != link->len) {
     size_t len = i + 1;
     stralloc_insertb(target, link->s, 0, len);
   }
@@ -161,7 +163,9 @@ usage(char* av0) {
 int
 main(int argc, char* argv[]) {
   int index = 0, c;
-  static const struct longopt opts[] = {{"help", 0, NULL, 'h'}, {"verbose", 0, 0, 'v'}, {0, 0, 0, 0}};
+  static const struct longopt opts[] = {{"help", 0, NULL, 'h'},
+                                        {"verbose", 0, 0, 'v'},
+                                        {0, 0, 0, 0}};
 
   errmsg_iam(argv[0]);
 

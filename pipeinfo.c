@@ -75,7 +75,9 @@ get_pipe(int64 id) {
       return p;
   }
 
-  p = array_allocate(&pipes, sizeof(pipe_t), array_length(&pipes, sizeof(pipe_t)));
+  p = array_allocate(&pipes,
+                     sizeof(pipe_t),
+                     array_length(&pipes, sizeof(pipe_t)));
   p->id = id;
   p->list = NULL;
   return p;
@@ -83,8 +85,11 @@ get_pipe(int64 id) {
 
 void
 print_number_nonl_base(const char* property, int64 num, int base) {
-  buffer_putm_internal(buffer_1, property, "=", base == 8 ? "0" : base == 16 ? "0x" : "", 0);
-  (base == 8 ? buffer_put8long(buffer_1, num) : base == 16 ? buffer_putxlonglong0(buffer_1, num, 2) : buffer_putlonglong(buffer_1, num));
+  buffer_putm_internal(
+      buffer_1, property, "=", base == 8 ? "0" : base == 16 ? "0x" : "", 0);
+  (base == 8 ? buffer_put8long(buffer_1, num)
+             : base == 16 ? buffer_putxlonglong0(buffer_1, num, 2)
+                          : buffer_putlonglong(buffer_1, num));
 }
 
 void
@@ -115,7 +120,8 @@ void
 print_stat(const char* property, const struct stat* st) {
   const char* t = type(st->st_mode);
   buffer_putm_internal(buffer_1, property, ": ", 0);
-  t ? buffer_puts(buffer_1, t) : buffer_put8long(buffer_1, st->st_mode & S_IFMT);
+  t ? buffer_puts(buffer_1, t)
+    : buffer_put8long(buffer_1, st->st_mode & S_IFMT);
 
   buffer_putm_internal(buffer_1, " [ mode 0", 0);
   buffer_put8long(buffer_1, st->st_mode & 07777);
@@ -297,7 +303,9 @@ read_proc() {
           pfd->fd = fd;
           byte_copy(&pfd->st, sizeof(struct stat), &st);
           prev = '\0';
-          openreadclose(proc_fdinfo_path(pid, fd, &procfdinfo), &pfd->info, 1024);
+          openreadclose(proc_fdinfo_path(pid, fd, &procfdinfo),
+                        &pfd->info,
+                        1024);
         }
       }
     }
@@ -335,7 +343,10 @@ procfd_dump(const procfd_t* pfd) {
       print_number_nonl(" ctime", pfd->st.st_ctime);
   }
   buffer_puts(buffer_1, " info='");
-  buffer_put_escaped(buffer_1, pfd->info.s, pfd->info.len, &fmt_escapecharnonprintable);
+  buffer_put_escaped(buffer_1,
+                     pfd->info.s,
+                     pfd->info.len,
+                     &fmt_escapecharnonprintable);
   buffer_puts(buffer_1, "'");
   //      print_stralloc(" info",
   //      &pfd->info);
@@ -345,7 +356,9 @@ int
 main(int argc, char* argv[]) {
   int index = 0, c, i, prev;
   const pipe_t* p;
-  static const struct longopt opts[] = {{"help", 0, NULL, 'h'}, {"verbose", 0, 0, 'v'}, {0, 0, 0, 0}};
+  static const struct longopt opts[] = {{"help", 0, NULL, 'h'},
+                                        {"verbose", 0, 0, 'v'},
+                                        {0, 0, 0, 0}};
 
   errmsg_iam(argv[0]);
 
@@ -373,7 +386,10 @@ main(int argc, char* argv[]) {
 
   if(0) {
     read_proc();
-    qsort(array_start(&pipes), array_length(&pipes, sizeof(pipe_t)), sizeof(pipe_t), (int (*)(const void*, const void*))(void*)&compare_pipes);
+    qsort(array_start(&pipes),
+          array_length(&pipes, sizeof(pipe_t)),
+          sizeof(pipe_t),
+          (int (*)(const void*, const void*))(void*)&compare_pipes);
   }
 
   if(verbose) {

@@ -3,7 +3,9 @@
 #define NOWINBASEINTERLOCK 1
 #define _NTOS_ 1
 long __stdcall InterlockedCompareExchange(long volatile*, long, long);
-void* __stdcall InterlockedCompareExchangePointer(void* volatile*, void*, void*);
+void* __stdcall InterlockedCompareExchangePointer(void* volatile*,
+                                                  void*,
+                                                  void*);
 #endif
 #include "../windoze.h"
 #ifndef _POSIX_SOURCE
@@ -137,7 +139,8 @@ io_fd_internal(fd_t d, int flags) {
 #endif
 
 #if defined(HAVE_KQUEUE)
-    if(io_waitmode == UNDECIDED) { /* who knows, maybe someone supports both one day */
+    if(io_waitmode ==
+       UNDECIDED) { /* who knows, maybe someone supports both one day */
       io_master = kqueue();
       if(io_master != -1)
         io_waitmode = KQUEUE;
@@ -156,7 +159,9 @@ io_fd_internal(fd_t d, int flags) {
     alt_firstread = alt_firstwrite = -1;
     if(io_waitmode == UNDECIDED) {
       io_signum = SIGRTMIN + 1;
-      if(sigemptyset(&io_ss) == 0 && sigaddset(&io_ss, io_signum) == 0 && sigaddset(&io_ss, SIGIO) == 0 && sigprocmask(SIG_BLOCK, &io_ss, 0) == 0)
+      if(sigemptyset(&io_ss) == 0 && sigaddset(&io_ss, io_signum) == 0 &&
+         sigaddset(&io_ss, SIGIO) == 0 &&
+         sigprocmask(SIG_BLOCK, &io_ss, 0) == 0)
         io_waitmode = _SIGIO;
     }
 #endif
@@ -184,7 +189,8 @@ io_fd_internal(fd_t d, int flags) {
 
 #if WINDOWS_NATIVE && !defined(USE_SELECT)
   if(io_comport) {
-    if(CreateIoCompletionPort((HANDLE)(UINT_PTR)d, io_comport, (UINT_PTR)d, 0) == 0) {
+    if(CreateIoCompletionPort(
+           (HANDLE)(UINT_PTR)d, io_comport, (UINT_PTR)d, 0) == 0) {
       errno = EBADF;
       return 0;
     }

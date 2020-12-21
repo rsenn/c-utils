@@ -29,9 +29,11 @@ memalign_free(void* ptr) {
 
 void*
 memalign_alloc_aligned(size_t size) {
-#if defined(__x86_64__) || defined(__LP64) || defined(__IA64__) || defined(_M_X64) || defined(_WIN64)
+#if defined(__x86_64__) || defined(__LP64) || defined(__IA64__) ||             \
+    defined(_M_X64) || defined(_WIN64)
   return memalign_alloc(64, size);
-#elif defined(__i386__) || defined(__i486__) || defined(__i686__) || defined(GEKKO)
+#elif defined(__i386__) || defined(__i486__) || defined(__i686__) ||           \
+    defined(GEKKO)
   return memalign_alloc(32, size);
 #else
   return memalign_alloc(32, size);
@@ -39,5 +41,6 @@ memalign_alloc_aligned(size_t size) {
 }
 
 /*
-  void *memalign(size_t boundary, size_t size) __attribute__((weak,alias("memalign_alloc")));
+  void *memalign(size_t boundary, size_t size)
+  __attribute__((weak,alias("memalign_alloc")));
  */

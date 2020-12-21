@@ -4,7 +4,12 @@
 #include "../byte.h"
 
 ssize_t
-socket_send4_flag(int s, const char* buf, size_t len, const char ip[4], uint16 port, int flag) {
+socket_send4_flag(int s,
+                  const char* buf,
+                  size_t len,
+                  const char ip[4],
+                  uint16 port,
+                  int flag) {
   struct sockaddr_in si;
 
   byte_zero(&si, sizeof si);
@@ -15,6 +20,7 @@ socket_send4_flag(int s, const char* buf, size_t len, const char ip[4], uint16 p
 }
 
 ssize_t
-socket_send4(int s, const char* buf, size_t len, const char ip[4], uint16 port) {
+socket_send4(
+    int s, const char* buf, size_t len, const char ip[4], uint16 port) {
   return socket_send4_flag(s, buf, len, ip, port, 0);
 }

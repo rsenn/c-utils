@@ -30,7 +30,8 @@ void
 put_str_escaped(buffer* b, const char* str) {
   stralloc esc;
   stralloc_init(&esc);
-  stralloc_fmt_pred(&esc, str, str_len(str), (stralloc_fmt_fn*)&fmt_escapecharc, iscntrl);
+  stralloc_fmt_pred(
+      &esc, str, str_len(str), (stralloc_fmt_fn*)&fmt_escapecharc, iscntrl);
   buffer_putsa(b, &esc);
 }
 

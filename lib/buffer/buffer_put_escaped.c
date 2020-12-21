@@ -2,7 +2,10 @@
 #include "../uint32.h"
 
 int
-buffer_put_escaped(buffer* b, const char* x, size_t len, size_t (*escape)(char*, int)) {
+buffer_put_escaped(buffer* b,
+                   const char* x,
+                   size_t len,
+                   size_t (*escape)(char*, int)) {
   char buf[16];
   size_t i, n, r = 0;
   for(i = 0; i < len; i++) {

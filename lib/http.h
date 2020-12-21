@@ -32,22 +32,34 @@ typedef struct http_return_s {
 } http_return_value;
 
 struct http_response_s;
-typedef enum { HTTP_TRANSFER_UNDEF = 0, HTTP_TRANSFER_CHUNKED, HTTP_TRANSFER_LENGTH, HTTP_TRANSFER_BOUNDARY } http_transfer_type;
+typedef enum {
+  HTTP_TRANSFER_UNDEF = 0,
+  HTTP_TRANSFER_CHUNKED,
+  HTTP_TRANSFER_LENGTH,
+  HTTP_TRANSFER_BOUNDARY
+} http_transfer_type;
 
-typedef enum { HTTP_RECV_HEADER = 0, HTTP_RECV_DATA, HTTP_STATUS_CLOSED, HTTP_STATUS_ERROR, HTTP_STATUS_BUSY, HTTP_STATUS_FINISH } http_status;
+typedef enum {
+  HTTP_RECV_HEADER = 0,
+  HTTP_RECV_DATA,
+  HTTP_STATUS_CLOSED,
+  HTTP_STATUS_ERROR,
+  HTTP_STATUS_BUSY,
+  HTTP_STATUS_FINISH
+} http_status;
 
 typedef struct http_response_s {
   http_transfer_type transfer;
   http_status status;
   int code;
   stralloc data;
-  size_t ptr;
+  uint64 ptr;
   size_t chnk;
   size_t line;
-  union {
-    uint64 content_length;
-    uint64 chunk_length;
-  };
+  // union {
+  uint64 content_length;
+  uint64 chunk_length;
+  //};
   stralloc boundary;
   int err;
   int (*header)(struct http_s*, const char*, size_t);

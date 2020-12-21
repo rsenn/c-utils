@@ -18,7 +18,8 @@ dns_domain_todot_cat(stralloc* out, const char* d) {
       ch2 = *d++;
       if((ch2 >= 'A') && (ch2 <= 'Z'))
         ch2 = (char)(ch2 + 32);
-      if(((ch2 >= 'a') && (ch2 <= 'z')) || ((ch2 >= '0') && (ch2 <= '9')) || (ch2 == '-') || (ch2 == '_')) {
+      if(((ch2 >= 'a') && (ch2 <= 'z')) || ((ch2 >= '0') && (ch2 <= '9')) ||
+         (ch2 == '-') || (ch2 == '_')) {
         if(!stralloc_append(out, &ch2))
           return 0;
       } else {

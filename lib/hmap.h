@@ -77,8 +77,16 @@ typedef struct hmap_db {
   TUPLE* list_tuple;
 } HMAP_DB;
 
-int hmap_add_tuple_with_data(HMAP_DB** hmap_db, const void* key, size_t k_len, void* data);
-int hmap_add(HMAP_DB** hmap_db, const void* key, size_t k_len, int dup_flag, int data_type, ...);
+int hmap_add_tuple_with_data(HMAP_DB** hmap_db,
+                             const void* key,
+                             size_t k_len,
+                             void* data);
+int hmap_add(HMAP_DB** hmap_db,
+             const void* key,
+             size_t k_len,
+             int dup_flag,
+             int data_type,
+             ...);
 int hmap_delete(HMAP_DB** hmap_db, void* key, size_t k_len);
 int hmap_destroy(HMAP_DB** hmap_db);
 void hmap_dump(HMAP_DB* hmap, buffer* b);
@@ -90,8 +98,11 @@ int hmap_print_table(HMAP_DB* my_hmap_db);
 int hmap_print_tree(HMAP_DB* my_hmap_db);
 int hmap_search(HMAP_DB* hmap_db, const void* key, size_t k_len, TUPLE** data);
 int hmap_set_chars(HMAP_DB** hmap_db, const char* key, const char* data);
-int hmap_set_stralloc(HMAP_DB** hmap_db, const stralloc* key, const stralloc* data);
-int hmap_set(HMAP_DB** hmap_db, const void* key, size_t k_len, void* data, size_t d_len);
+int hmap_set_stralloc(HMAP_DB** hmap_db,
+                      const stralloc* key,
+                      const stralloc* data);
+int hmap_set(
+    HMAP_DB** hmap_db, const void* key, size_t k_len, void* data, size_t d_len);
 size_t hmap_size(HMAP_DB* my_hmap_db);
 int hmap_truncate(HMAP_DB** hmap_db);
 void* hmap_get(HMAP_DB* db, const char* key, size_t keylen);
@@ -107,9 +118,11 @@ hmap_count(HMAP_DB* hmap_db) {
 
 //#define hmap_first(hmap_db, tuple) ((hmap_db)->list_tuple)
 #define hmap_last(hmap_db, tuple) ((hmap_db)->list_tuple == (tuple)->next)
-#define hmap_next(hmap_db, tuple) (hmap_last(hmap_db, tuple) ? NULL : (tuple)->next)
+#define hmap_next(hmap_db, tuple)                                              \
+  (hmap_last(hmap_db, tuple) ? NULL : (tuple)->next)
 
-#define hmap_foreach(hmap_db, tuple) for(tuple = hmap_begin(hmap_db); tuple; tuple = hmap_next(hmap_db, tuple))
+#define hmap_foreach(hmap_db, tuple)                                           \
+  for(tuple = hmap_begin(hmap_db); tuple; tuple = hmap_next(hmap_db, tuple))
 
 inline static TUPLE*
 hmap_begin(HMAP_DB* hmap) {
@@ -130,7 +143,8 @@ hmap_iterator_dereference(TUPLE** it) {
 }
 
 //#define hmap_end(hmap_db) (&((hmap_db)->list_tuple->prev->next))
-//#define hmap_end(hmap_db) ((hmap_db)->list_tuple ? &((hmap_db)->list_tuple->prev->next) : NULL)
+//#define hmap_end(hmap_db) ((hmap_db)->list_tuple ?
+//&((hmap_db)->list_tuple->prev->next) : NULL)
 
 #define hmap_iterator_increment(it) ((it) = &(*(it))->next)
 #define hmap_iterator_decrement(it) ((it) = &(*(it))->prev)
@@ -145,10 +159,13 @@ int hmap_distance(TUPLE** it1, TUPLE** it2);
   ((it2) == NULL && (it1)->next == (it1)) || \
   hmap_iterator_distance(it1, it2) == 0)
 */
-//#define hmap_iterator_is_last(hmap_db,it)  ((hmap_db)->list_tuple == (*(it))->next)
+//#define hmap_iterator_is_last(hmap_db,it)  ((hmap_db)->list_tuple ==
+//(*(it))->next)
 
 #ifdef STRALLOC_H
-int hmap_set_stralloc(HMAP_DB** hmap_db, const stralloc* key, const stralloc* data);
+int hmap_set_stralloc(HMAP_DB** hmap_db,
+                      const stralloc* key,
+                      const stralloc* data);
 #endif
 
 #ifdef BUFFER_H

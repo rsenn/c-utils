@@ -61,7 +61,8 @@ wsa_socketpair(int af, int type, int proto, fd_t sock[2]) {
   if(getsockname(sock[1], (SOCKADDR*)&addr2, &addr2_len) == SOCKET_ERROR)
     goto error;
 
-  if(addr1_len != addr2_len || addr1.sin_addr.s_addr != addr2.sin_addr.s_addr || addr1.sin_port != addr2.sin_port)
+  if(addr1_len != addr2_len || addr1.sin_addr.s_addr != addr2.sin_addr.s_addr ||
+     addr1.sin_port != addr2.sin_port)
     goto error;
 
   closesocket(listen_sock);
@@ -93,12 +94,12 @@ error:
  * Currently supports TCP/IPv4 socket pairs only
  */
 /*int
-wsa_sync_async_socketpair(int af, int type, int proto, SOCKET* syncSocket, SOCKET* asyncSocket) {
-  SOCKET listen_sock, sock1, sock2;
-  SOCKADDR_IN addr1, addr2;
-  int err, addr1_len, addr2_len;
+wsa_sync_async_socketpair(int af, int type, int proto, SOCKET* syncSocket,
+SOCKET* asyncSocket) { SOCKET listen_sock, sock1, sock2; SOCKADDR_IN addr1,
+addr2; int err, addr1_len, addr2_len;
 
-  // assert(af == AF_INET && type == SOCK_STREAM && (proto == IPPROTO_IP || proto == IPPROTO_TCP));
+  // assert(af == AF_INET && type == SOCK_STREAM && (proto == IPPROTO_IP ||
+proto == IPPROTO_TCP));
 
   sock1 = INVALID_SOCKET;
   sock2 = INVALID_SOCKET;
@@ -137,8 +138,8 @@ wsa_sync_async_socketpair(int af, int type, int proto, SOCKET* syncSocket, SOCKE
   if(getsockname(sock2, (SOCKADDR*)&addr2, &addr2_len) == SOCKET_ERROR)
     goto error;
 
-  if(addr1_len != addr2_len || addr1.sin_addr.s_addr != addr2.sin_addr.s_addr || addr1.sin_port !=
-addr2.sin_port) goto error;
+  if(addr1_len != addr2_len || addr1.sin_addr.s_addr != addr2.sin_addr.s_addr ||
+addr1.sin_port != addr2.sin_port) goto error;
 
   closesocket(listen_sock);
 

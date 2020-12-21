@@ -22,7 +22,7 @@ typedef struct {
   };
 } charbuf;
 
-#define CHARBUF_INIT(op, fd)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       \
+#define CHARBUF_INIT(op, fd)                                                   \
   { '\0', 0, 0, 0, (op), (fd) }
 
 void charbuf_init(charbuf*, read_fn*, fd_t);

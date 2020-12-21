@@ -17,10 +17,8 @@ xml_read_token(xmlscanner* s) {
 again:
   tok = s->tok;
   r.id = tok;
-  if((buffer_feed(b) <= 0 && buffer_LEN(b) == 0) || tok == XML_EOF) {
+  if(tok == XML_EOF || buffer_EOF(b))
     r.id = XML_EOF;
-    return r;
-  }
   x = buffer_PEEK(b);
   len = buffer_LEN(b);
   i = 0;
@@ -108,6 +106,8 @@ again:
   if(len == 0)
     r.id = XML_EOF;
   if(r.id == XML_EOF) {
+    r.len = 0;
+    r.x = 0;
     s->tok = r.id;
     return r;
   }

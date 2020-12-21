@@ -45,7 +45,9 @@ map_resize(map_base_t* m, int nbuckets) {
   }
   /* Reset buckets */
   buckets = m->buckets;
-  alloc_re((void**)&buckets, sizeof(*m->buckets) * m->nbuckets, sizeof(*m->buckets) * nbuckets);
+  alloc_re((void**)&buckets,
+           sizeof(*m->buckets) * m->nbuckets,
+           sizeof(*m->buckets) * nbuckets);
   if(buckets != NULL) {
     m->buckets = buckets;
     m->nbuckets = nbuckets;

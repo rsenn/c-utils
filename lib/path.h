@@ -25,8 +25,10 @@ extern "C" {
 
 #define PATH_FNM_NOMATCH 1
 #define PATH_FNM_PATHNAME (1 << 0) /* No wildcard can ever match /'.  */
-#define PATH_FNM_NOESCAPE (1 << 1) /* Backslashes don't quote special chars.  */
-#define PATH_FNM_PERIOD (1 << 2)   /* Leading .' is matched only explicitly.  */
+#define PATH_FNM_NOESCAPE                                                      \
+  (1 << 1)                       /* Backslashes don't quote special chars.     \
+                                  */
+#define PATH_FNM_PERIOD (1 << 2) /* Leading .' is matched only explicitly.  */
 int path_absolute(const char* path, stralloc* sa);
 int path_absolute_sa(stralloc* sa);
 char* path_basename(const char* path);
@@ -38,7 +40,11 @@ size_t path_collapse_sa(stralloc*);
 char* path_dirname(const char* path, stralloc* dir);
 int path_exists(const char* p);
 int path_find(const char* path, const char* name, stralloc* out);
-int path_fnmatch(const char* pattern, unsigned int plen, const char* string, unsigned int slen, int flags);
+int path_fnmatch(const char* pattern,
+                 unsigned int plen,
+                 const char* string,
+                 unsigned int slen,
+                 int flags);
 void path_getcwd(stralloc* sa);
 char* path_gethome(int uid);
 int path_getsep(const char* path);
@@ -62,7 +68,8 @@ size_t path_skip(const char* s, size_t n);
 size_t path_skips(const char* s);
 char* path_skip_separator(const char* p);
 
-void path_concat(const char* a, size_t alen, const char* b, size_t blen, stralloc* out);
+void path_concat(
+    const char* a, size_t alen, const char* b, size_t blen, stralloc* out);
 void path_append(const char* x, size_t len, stralloc* out);
 
 #ifdef STRLIST_H

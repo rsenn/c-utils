@@ -26,7 +26,8 @@ void
 put_str_escaped(buffer* b, const char* str) {
   stralloc esc;
   stralloc_init(&esc);
-  stralloc_fmt_pred(&esc, str, str_len(str), (stralloc_fmt_fn*)&fmt_escapecharc, iscntrl);
+  stralloc_fmt_pred(
+      &esc, str, str_len(str), (stralloc_fmt_fn*)&fmt_escapecharc, iscntrl);
   buffer_putsa(b, &esc);
 }
 
@@ -164,7 +165,18 @@ main(int argc, char* argv[]) {
   int out_fd = 1;
   char* out_file = 0;
 
-  struct longopt opts[] = {{"help", 0, NULL, 'h'}, {"single-quote", 0, NULL, 's'}, {"double-quote", 0, NULL, 'd'}, {"depth", 0, NULL, 'D'}, {"separator", 0, NULL, 'S'}, {"spacing", 0, NULL, 'W'}, {"one-line", 0, NULL, 'o'}, {"compact", 0, NULL, 'c'}, {"compliant", 0, NULL, 'C'}, {"inplace", 0, NULL, 'i'}, {"indent", 0, NULL, 'l'}, {0, 0, 0, 0}};
+  struct longopt opts[] = {{"help", 0, NULL, 'h'},
+                           {"single-quote", 0, NULL, 's'},
+                           {"double-quote", 0, NULL, 'd'},
+                           {"depth", 0, NULL, 'D'},
+                           {"separator", 0, NULL, 'S'},
+                           {"spacing", 0, NULL, 'W'},
+                           {"one-line", 0, NULL, 'o'},
+                           {"compact", 0, NULL, 'c'},
+                           {"compliant", 0, NULL, 'C'},
+                           {"inplace", 0, NULL, 'i'},
+                           {"indent", 0, NULL, 'l'},
+                           {0, 0, 0, 0}};
 
   errmsg_iam(argv[0]);
 
@@ -218,7 +230,8 @@ main(int argc, char* argv[]) {
       const char tmpl[] = ".tmpXXXXXX";
       out_file = alloc(str_len(in_file) + str_len(tmpl));
 
-      str_copy(&out_file[str_copyn(out_file, in_file, str_rchr(in_file, '.'))], tmpl);
+      str_copy(&out_file[str_copyn(out_file, in_file, str_rchr(in_file, '.'))],
+               tmpl);
 
       out_fd = open_temp(&out_file);
     } else if(out_file) {
