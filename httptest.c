@@ -21,6 +21,7 @@
 #include "lib/sig.h"
 #include "lib/xml.h"
 #include "lib/strlist.h"
+#include "lib/slist.h"
 
 #include "uri.h"
 
@@ -42,6 +43,12 @@ set_timeouts(int seconds) {
   taia_uint(&deadline, seconds);
   taia_uint(&stamp, 0);
 }
+
+typedef struct {
+  struct slink link;
+  uri_t uri;
+  http* http;
+} queue_entry;
 /*
  *
  *  URL:
@@ -56,6 +63,8 @@ static const char default_url[] =
 static const char* const url_host = "127.0.0.1";
 static const char* const url_location = "/login";
 static const uint16 url_port = 8080;
+static queue_entry* queue;
+
 static io_entry* g_iofd;
 static http h;
 static buffer in, out;
@@ -90,6 +99,18 @@ usage(char* av0) {
                        "\n",
                        NULL);
   buffer_flush(buffer_1);
+}
+
+queue_entry*
+queue_put(const char* x) {
+  queue_entry* e = alloc_zero(sizeof(queue_entry));
+
+  uri_init(&e->uri);
+  uri_scan(&e->uri, x, str_len(x));
+
+slist_push((slink**)&queue, (slink*)e);
+
+  return e;
 }
 
 static void
@@ -278,12 +299,15 @@ process_uris(const char* x, size_t len, strlist* urls, const uri_t* uri) {
     uri_copy(&link, uri);
 
     n = uri_scan(&link, &x[i], n);
+
+#ifdef DEBUG_OUTPUT_
     buffer_puts(buffer_2, "uri: ");
     buffer_put(buffer_2, &x[i], n);
     buffer_puts(buffer_2, "\n");
     uri_dump(buffer_2, &link);
 
     buffer_putnlflush(buffer_2);
+#endif
     strlist_pushb_unique(urls, &x[i], n);
 
     pos = i + n;
@@ -318,22 +342,14 @@ process_xml(const char* x, size_t len, strlist* urls, uri_t* uri) {
         process_uris(tok.x + 1, tok.len - 2, urls, uri);
         ///        uri_scan(&link, tok.x + 1, tok.len - 2);
 
+#ifdef DEBUG_OUTPUT_
         buffer_puts(buffer_2, "attr: ");
         buffer_putsa(buffer_2, &attr_name);
 
         buffer_puts(buffer_2, ", token: ");
         buffer_put(buffer_2, tok.x + 1, tok.len - 2);
         buffer_putnlflush(buffer_2);
-
-        //     uri_dump(buffer_2, &link);
-        buffer_putnlflush(buffer_2);
-
-        /*   uri_clear_anchor(&link);
-
-           stralloc_ready(&url, uri_fmt(0, &link));
-           url.len = uri_fmt(url.s, &link);
-
-           strlist_push_unique_sa(urls, &url);*/
+#endif
         stralloc_free(&url);
       }
     } else if(tok.id == XML_DATA) {
@@ -347,7 +363,7 @@ process_xml(const char* x, size_t len, strlist* urls, uri_t* uri) {
       buffer_putspad(buffer_2, token_types[tok.id + 1], 16);
       buffer_puts(buffer_2, "\"");
       buffer_put(buffer_2, tok.x, tok.len);
-      buffer_puts(buffer_2, "\"\x1b[0m"); 
+      buffer_puts(buffer_2, "\"\x1b[0m");
       buffer_putnlflush(buffer_2);
 #endif
     }
@@ -546,10 +562,14 @@ main(int argc, char* argv[]) {
       //      - s);
     }
     if(h.response->data.len) {
+      const char* url;
       // buffer_fromsa(&data, &h.response->data);
       http_process(&h, &urls, &uri);
 
       strlist_sort(&urls, 0);
+
+      strlist_foreach_s(&urls, url) { queue_put(url); }
+
       strlist_dump(buffer_2, &urls);
       buffer_putnlflush(buffer_2);
     }

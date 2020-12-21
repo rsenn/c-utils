@@ -35,10 +35,11 @@ uri_scan_host(const char* x, size_t len) {
     s++;
     len--;
   }
-
+#ifdef DEBUG_OUTPUT_
   buffer_putspad(buffer_2, "\033[1;32muri_scan_host\033[0m", 32);
   buffer_put(buffer_2, x, s - x);
   buffer_putnlflush(buffer_2);
+#endif
   return s - x;
 }
 
@@ -65,12 +66,13 @@ uri_scan(uri_t* u, const char* x, size_t len) {
     alloc_clear(&u->host);
     alloc_clear(&u->username);
     alloc_clear(&u->password);
- 
+
     if(e2 < e) {
       e3 = s + byte_chr(&x[s], e2 - s, ':');
       if(e3 < e2) {
         u->password = str_ndup(&x[e3 + 1], e2 - (e3 + 1));
-      }      u->username = str_ndup(&x[s], e3 - s);
+      }
+      u->username = str_ndup(&x[s], e3 - s);
       s = e2 + 1;
     }
     e2 = s + uri_scan_host(&x[s], len - s);
@@ -87,14 +89,15 @@ uri_scan(uri_t* u, const char* x, size_t len) {
   }
   if(s == len) {
     alloc_clear(&u->location);
+    u->location = str_dup("/");
 
   } else if(s < len) {
     e2 = s + byte_chrs(&x[s], len - s, "#\r\n\t\"'\0", 7);
     /*   if(e2 < len && x[e2] != '#') {
 
        }*/
-      alloc_clear(&u->location);
- 
+    alloc_clear(&u->location);
+
     if(e2 > s) {
       stralloc loc;
       stralloc_init(&loc);
@@ -205,7 +208,7 @@ uri_dump(buffer* b, const uri_t* u) {
     buffer_putstr(b, u->anchor);
   }
   buffer_puts(b, " }");
-  buffer_putnlflush(b);
+  // buffer_putnlflush(b);
 }
 
 void
