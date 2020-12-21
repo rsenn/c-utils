@@ -65,43 +65,26 @@ http_read_internal(fd_t fd, char* buf, size_t received, buffer* b) {
     if(buffer_LEN(in) > 0 && r->chunk_length) {
       size_t len = buffer_LEN(in);
       const char* s = buffer_BEGIN(in);
-      /*      const char* e = buffer_END(in);
-            const char* b;
-            if(len > 30)
-              len = 30;
-            buffer_puts(buffer_2, " received=");
-            buffer_putlong(buffer_2, received);
-            buffer_puts(buffer_2, " len=");
-            buffer_putlong(buffer_2, buffer_LEN(in));
-            //  b = e - received;
-
-            buffer_puts(buffer_2, "\n  in=");
-            buffer_put_escaped(buffer_2, s, len, &fmt_escapecharnonprintable);
-
-            if(len < received) {
-
-              buffer_puts(buffer_2, " ... more (");
-              buffer_putulong(buffer_2, received);
-              buffer_puts(buffer_2, " bytes total) ...");
-            }*/
     }
     buffer_putnlflush(buffer_2);
   }
 #endif
+  if(r->status == HTTP_RECV_DATA) {
 
-  if(r->ptr < r->content_length) {
-    size_t len = buffer_LEN(in);
-    const char* s = buffer_BEGIN(in);
-    size_t remain = r->content_length - r->ptr;
-    size_t num = len > remain ? remain : len;
+    if(r->ptr < r->content_length) {
+      size_t len = buffer_LEN(in);
+      const char* s = buffer_BEGIN(in);
+      size_t remain = r->content_length - r->ptr;
+      size_t num = len > remain ? remain : len;
 
-    stralloc_catb(&r->data, s, num);
+      stralloc_catb(&r->data, s, num);
 
-    in->p += num;
-    r->ptr += num;
+      in->p += num;
+      r->ptr += num;
 
-    if(r->ptr >= r->content_length)
-      r->chunk_length = 0;
+      if(r->ptr >= r->content_length)
+        r->chunk_length = 0;
+    }
   }
 
   while(r->status == HTTP_RECV_HEADER && http_read_header(h, &r->data, r) > 0) {

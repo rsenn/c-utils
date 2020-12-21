@@ -44,8 +44,11 @@ set_timeouts(int seconds) {
   taia_uint(&stamp, 0);
 }
 
-typedef struct {
-  struct slink link;
+typedef struct queue_entry_s {
+  union {
+    struct queue_entry_s* next;
+    struct slink link;
+  };
   uri_t uri;
   http* http;
 } queue_entry;
@@ -102,14 +105,20 @@ usage(char* av0) {
 }
 
 queue_entry*
-queue_put(const char* x) {
+queue_put(void* head, const char* x) {
   queue_entry* e = alloc_zero(sizeof(queue_entry));
 
   uri_init(&e->uri);
   uri_scan(&e->uri, x, str_len(x));
 
-slist_push((slink**)&queue, (slink*)e);
+  slist_push(head ? (slink**)head : (slink**)&queue, (slink*)e);
+#ifdef DEBUG_OUTPUT
+  buffer_putspad(buffer_2, "queue_put", 30);
+  buffer_puts(buffer_2, "x=");
+  buffer_puts(buffer_2, x);
 
+  buffer_putnlflush(buffer_2);
+#endif
   return e;
 }
 
@@ -563,12 +572,16 @@ main(int argc, char* argv[]) {
     }
     if(h.response->data.len) {
       const char* url;
+      queue_entry** ptr = 0;
       // buffer_fromsa(&data, &h.response->data);
       http_process(&h, &urls, &uri);
 
       strlist_sort(&urls, 0);
 
-      strlist_foreach_s(&urls, url) { queue_put(url); }
+      strlist_foreach_s(&urls, url) {
+        queue_entry* entry = queue_put(ptr, url);
+        ptr = &entry->next;
+      }
 
       strlist_dump(buffer_2, &urls);
       buffer_putnlflush(buffer_2);
