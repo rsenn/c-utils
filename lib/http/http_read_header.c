@@ -67,10 +67,11 @@ http_read_header(http* h, stralloc* sa, http_response* r) {
         stralloc_copys(&r->boundary, &x[p + str_len("boundary=")]);
       }
       r->transfer = HTTP_TRANSFER_BOUNDARY;
-    } else if(sa->len - start >= 15 && !case_diffb(x, 15, "Content-Length:" )) {
+    } else if(sa->len - start >= 15 && !case_diffb(x, 15, "Content-Length:")) {
       scan_ulonglong(&x[16], &r->content_length);
       r->transfer = HTTP_TRANSFER_LENGTH;
-    } else if(sa->len - start >= 18 && case_diffb(x, 18, "Transfer-Encoding:" ) &&
+    } else if(sa->len - start >= 18 &&
+              case_diffb(x, 18, "Transfer-Encoding:") &&
               str_contains(x, "chunked")) {
       r->chunk_length = 0;
       r->content_length = 0;

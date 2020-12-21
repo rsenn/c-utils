@@ -92,14 +92,20 @@ again:
       break;
     }
     case XML_DATA: {
-      size_t j;
-      j = scan_whitenskip(x, len);
-      i = byte_chr(x, len, '<');
-      b->p += i;
-      if(j == i) {
+      size_t i2;
+      i2 = byte_chr(x, len, '<');
+      /*  i = scan_nonwhitenskip(x, len);
+        if(i == 0)
+          i = scan_whitenskip(x, len);
+
+        if(i2 < i)*/
+      i = i2;
+      if(i == i2 && i2 < len) {
         s->tok = XML_TAG_NAME;
-        goto again;
+        if(i2 == 0)
+          goto again;
       }
+      b->p += i;
       break;
     }
   }

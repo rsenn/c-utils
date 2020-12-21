@@ -22,10 +22,31 @@ uri_str(const uri_t* u) {
   s[uri_fmt(s, u)] = '\0';
   return s;
 }
+static const char* const host_delim = "\r\n:,'\"/#";
+
+size_t
+uri_scan_host(const char* x, size_t len) {
+  const char* s = x;
+
+  buffer_putspad(buffer_2, "uri_scan_host", 32);
+  buffer_put(buffer_2, x, len);
+  buffer_putnlflush(buffer_2);
+  while(len > 0) {
+    if(host_delim[byte_chr(host_delim, str_len(host_delim), *s)])
+      break;
+    s++;
+    len--;
+  }
+  return s - x;
+}
 
 size_t
 uri_scan(uri_t* u, const char* x, size_t len) {
   size_t s, e, e2, e3;
+  if(u->anchor) {
+    free((void*)u->anchor);
+    u->anchor = 0;
+  }
   e = byte_finds(x, len, "://");
   if(e < len) {
     u->proto = str_ndup(x, e);
@@ -35,33 +56,63 @@ uri_scan(uri_t* u, const char* x, size_t len) {
       u->proto = str_dup("http");
     s = 0;
   }
-  e = s + byte_chr(&x[s], len - s, '/');
+  e = s + byte_chrs(&x[s], len - s, "/", 1);
   if(!(s == 0 && e == 0) && !(e == len)) {
     e2 = s + byte_chr(&x[s], e - s, '@');
+    u->port = 0;
+    if(u->host) {
+      free((void*)u->host);
+      u->host = 0;
+    }
+    if(u->username) {
+      free((void*)u->username);
+      u->username = 0;
+    }
+    if(u->password) {
+      free((void*)u->password);
+      u->password = 0;
+    }
     if(e2 < e) {
       e3 = s + byte_chr(&x[s], e2 - s, ':');
       if(e3 < e2) {
         u->password = str_ndup(&x[e3 + 1], e2 - (e3 + 1));
       }
       u->username = str_ndup(&x[s], e3 - s);
+        s = e2+1;
+
     }
     e2 = s + byte_chr(&x[s], e - s, ':');
     if(e2 < e) {
-      if((e3 = scan_ushort(&x[e2 + 1], &u->port)) == 0)
+      if((e3 = e2 + 1+scan_ushort(&x[e2 + 1], &u->port)) == 0)
         u->port = 0;
     } else {
-      e3 = s + byte_chr(&x[s], len - s, '/');
+      e3 = s + byte_chrs(&x[s], len - s, "/", 1);
     }
-    if(e > 0 && e - s > 0)
-      u->host = str_ndup(&x[s], e - s);
-    if(x[e] == ':') {
-      s = e + 1;
-      e += s;
+
+    e2 = s + uri_scan_host(&x[s], len - s);
+    if(e2 > s) {
+      /* if(!(s < len && isalnum(x[s])))
+         return 0;*/
+
+      u->host = str_ndup(&x[s], e2 - s);
+
+      if(x[e] == ':') {
+        s = e + 1;
+        e += s;
+      }
+      s = e3;
     }
-    s = e3;
+  } else {
+    s = e;
   }
   if(s < len) {
-    e2 = s + byte_chrs(&x[s], len - s, "#\r\n\0", 4);
+    e2 = s + byte_chrs(&x[s], len - s, "#\r\n\t\"'\0", 7);
+ /*   if(e2 < len && x[e2] != '#') {
+      if(u->location) {
+        free((void*)u->location);
+        u->location = 0;
+      }
+    }*/
     if(e2 > s) {
       stralloc loc;
       stralloc_init(&loc);
@@ -74,15 +125,17 @@ uri_scan(uri_t* u, const char* x, size_t len) {
           free((void*)u->location);
         u->location = loc.s;
       } else {
+        if(u->location)
+          free((void*)u->location);
         u->location = str_ndup(&x[s], e2 - s);
       }
+      s = e = e2;
     }
-    s = e2;
   }
-  if((e = s + byte_chrs(&x[s], len - s, "#\r\n\0", 4)) < len && x[e] == '#') {
-    e2 = e + byte_chrs(&x[e], len - e, "\r\n\0", 3);
-    u->anchor = str_ndup(&x[e], e2 - e);
-    e = len;
+  if(s < len && x[s] == '#') {
+    e = s + byte_chrs(&x[s], len - s, "\r\n\t\"'\0", 7);
+    u->anchor = str_ndup(&x[s], e - s);
+    //  e = len;
   } else {
     if(u->anchor) {
       free((void*)u->anchor);
@@ -113,10 +166,14 @@ uri_fmt(char* x, const uri_t* u) {
     }
     r += fmt_str(x ? &x[r] : 0, "@");
   }
-  r += fmt_str(x ? &x[r] : 0, u->host);
+  if(u->host)
+    r += fmt_str(x ? &x[r] : 0, u->host);
   if(u->port) {
-    r += fmt_str(x ? &x[r] : 0, ":");
-    r += fmt_ulong(x ? &x[r] : 0, u->port);
+    if(!u->proto || !((str_equal(u->proto, "http") && u->port == 80) ||
+                      str_equal(u->proto, "https") && u->port == 443)) {
+      r += fmt_str(x ? &x[r] : 0, ":");
+      r += fmt_ulong(x ? &x[r] : 0, u->port);
+    }
   }
   if(u->location)
     r += fmt_str(x ? &x[r] : 0, u->location);
@@ -144,25 +201,32 @@ uri_free(uri_t* uri) {
 
 void
 uri_dump(buffer* b, const uri_t* u) {
-  buffer_puts(b, "uri {\n\tproto = ");
+  buffer_puts(b, "uri { proto = ");
   buffer_putstr(b, u->proto ? u->proto : "NULL");
-  buffer_puts(b, "\n\tusername = ");
-  buffer_putstr(b, u->username);
 
-  buffer_puts(b, "\n\tpassword = ");
-  buffer_putstr(b, u->password);
+  if(u->username) {
+    buffer_puts(b, ", username = ");
+    buffer_putstr(b, u->username);
+  }
 
-  buffer_puts(b, "\n\thost = ");
+  if(u->password) {
+    buffer_puts(b, ", password = ");
+    buffer_putstr(b, u->password);
+  }
+  buffer_puts(b, ", host = ");
   buffer_putstr(b, u->host);
 
-  buffer_puts(b, "\n\tport = ");
-  buffer_putulong(b, u->port);
-
-  buffer_puts(b, "\n\tlocation = ");
+  if(u->port) {
+    buffer_puts(b, ", port = ");
+    buffer_putulong(b, u->port);
+  }
+  buffer_puts(b, ", location = ");
   buffer_putstr(b, u->location);
-  buffer_puts(b, "\n\tanchor = ");
-  buffer_putstr(b, u->anchor);
-  buffer_puts(b, "\n}");
+  if(u->anchor) {
+    buffer_puts(b, ", anchor = ");
+    buffer_putstr(b, u->anchor);
+  }
+  buffer_puts(b, " }");
   buffer_putnlflush(b);
 }
 
@@ -186,7 +250,6 @@ uri_clear_anchor(uri_t* uri) {
     uri->anchor = 0;
   }
 }
-
 
 size_t
 uri_find(const char* x, size_t len) {

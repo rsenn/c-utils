@@ -84,23 +84,25 @@ http_read_internal(fd_t fd, char* buf, size_t received, buffer* b) {
               buffer_putulong(buffer_2, received);
               buffer_puts(buffer_2, " bytes total) ...");
             }*/
-
-      if(r->ptr < r->content_length) {
-        size_t remain = r->content_length - r->ptr;
-        size_t num = len > remain ? remain : len;
-
-        stralloc_catb(&r->data, s, num);
-
-        in->p += num;
-        r->ptr += num;
-
-        if(r->ptr >= r->content_length)
-          r->chunk_length = 0;
-      }
     }
     buffer_putnlflush(buffer_2);
   }
 #endif
+
+  if(r->ptr < r->content_length) {
+    size_t len = buffer_LEN(in);
+    const char* s = buffer_BEGIN(in);
+    size_t remain = r->content_length - r->ptr;
+    size_t num = len > remain ? remain : len;
+
+    stralloc_catb(&r->data, s, num);
+
+    in->p += num;
+    r->ptr += num;
+
+    if(r->ptr >= r->content_length)
+      r->chunk_length = 0;
+  }
 
   while(r->status == HTTP_RECV_HEADER && http_read_header(h, &r->data, r) > 0) {
     r->ptr = 0;

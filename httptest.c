@@ -265,6 +265,29 @@ http_io_handler(http* h, buffer* out) {
 fail:
   return ret;
 }
+int
+process_uris(const char* x, size_t len, strlist* urls, const uri_t* uri) {
+  size_t i, pos = 0;
+  uri_t link;
+  uri_init(&link);
+
+  while((i = pos + uri_find(&x[pos], len - pos)) < len) {
+    size_t n = byte_chrs(&x[i], len - i, "\r\n\t\"',", 6);
+
+    uri_copy(&link, uri);
+
+    n = uri_scan(&link, &x[i], n);
+    buffer_puts(buffer_2, "uri: ");
+    buffer_put(buffer_2, &x[i], n);
+    buffer_puts(buffer_2, "\n");
+    uri_dump(buffer_2, &link);
+
+    buffer_putnlflush(buffer_2);
+    strlist_pushb_unique(urls, &x[i], n);
+
+    pos = i + n;
+  }
+}
 
 int
 process_xml(const char* x, size_t len, strlist* urls, uri_t* uri) {
@@ -291,49 +314,39 @@ process_xml(const char* x, size_t len, strlist* urls, uri_t* uri) {
         uri_init(&link);
         uri_copy(&link, uri);
         stralloc_init(&url);
-        uri_scan(&link, tok.x + 1, tok.len - 2);
+        process_uris(tok.x + 1, tok.len - 2, urls, uri);
+        ///        uri_scan(&link, tok.x + 1, tok.len - 2);
 
-        buffer_puts(buffer_2, "token: ");
+        buffer_puts(buffer_2, "attr: ");
+        buffer_putsa(buffer_2, &attr_name);
+
+        buffer_puts(buffer_2, ", token: ");
         buffer_put(buffer_2, tok.x + 1, tok.len - 2);
         buffer_putnlflush(buffer_2);
 
-        uri_dump(buffer_2, &link);
+        //     uri_dump(buffer_2, &link);
         buffer_putnlflush(buffer_2);
 
-        uri_clear_anchor(&link);
+        /*   uri_clear_anchor(&link);
 
-        stralloc_ready(&url, uri_fmt(0, &link));
-        url.len = uri_fmt(url.s, &link);
+           stralloc_ready(&url, uri_fmt(0, &link));
+           url.len = uri_fmt(url.s, &link);
 
-        strlist_push_unique_sa(urls, &url);
+           strlist_push_unique_sa(urls, &url);*/
         stralloc_free(&url);
       }
     } else if(tok.id == XML_DATA) {
-      size_t i, pos = 0;
-        uri_t link;
-    uri_init(&link);
- 
-      if((i = pos + uri_find(&tok.x[pos], tok.len-pos)) < tok.len) {
-size_t len;
 
-len = uri_scan(&link, &tok.x[i], tok.len - i);
-
-
-strlist_pushb_unique(&urls, &tok.x[i], len);
-
-
-i += len;
-         pos += i;
-
-      }
+      process_uris(tok.x, tok.len, urls, uri);
 
       buffer_puts(buffer_2,
                   tok.id < (sizeof(token_colors) / sizeof(token_colors[0]))
                       ? token_colors[tok.id]
                       : "?");
       buffer_putspad(buffer_2, token_types[tok.id + 1], 16);
-      put_escaped_x(buffer_2, tok.x, tok.len, 0x20);
-      buffer_puts(buffer_2, "\x1b[0m");
+      buffer_puts(buffer_2, "\"");
+      buffer_put(buffer_2, tok.x, tok.len);
+      buffer_puts(buffer_2, "\"\x1b[0m");
       /*  buffer_puts(buffer_2, "\nXML
          token length = ");
             buffer_putulong(buffer_2,
@@ -538,6 +551,7 @@ main(int argc, char* argv[]) {
       // buffer_fromsa(&data, &h.response->data);
       http_process(&h, &urls, &uri);
 
+      strlist_sort(&urls, 0);
       strlist_dump(buffer_2, &urls);
       buffer_putnlflush(buffer_2);
     }
