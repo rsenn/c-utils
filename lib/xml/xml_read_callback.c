@@ -73,6 +73,7 @@ xml_read_callback(xmlreader* r, xml_read_callback_fn* fn) {
       char ch;
       int quoted = 0;
       const char* charset;
+      size_t setlen;
       stralloc_zero(&attr);
       stralloc_zero(&val);
       if((n = buffer_gettok_sa(b, &attr, "=", 1)) < 0)
@@ -80,13 +81,14 @@ xml_read_callback(xmlreader* r, xml_read_callback_fn* fn) {
       if(buffer_skipc(b) < 0)
         break;
 
-      if(*buffer_peek(b) == '"') {
+      if((ch = *buffer_peek(b)) == '"' || ch == '\'') {
         if(buffer_skipc(b) < 0)
           break;
         quoted = 1;
       }
-      charset = quoted ? "\"" : "/> \t\r\n\v";
-      if((n = buffer_gettok_sa(b, &val, charset, str_len(charset))) < 0)
+      charset = quoted ? &ch : "/> \t\r\n\v";
+      setlen = quoted ? 1 : str_len("/> \t\r\n\v");
+      if((n = buffer_gettok_sa(b, &val, charset, setlen)) < 0)
         break;
       if(quoted && buffer_skipc(b) < 0)
         break;

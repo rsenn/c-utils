@@ -266,7 +266,11 @@ size_t xml_scan_tag(const char* x, size_t len, size_t* toklen);
 size_t xml_scan_attrname(const char* x, size_t len, size_t* toklen);
 size_t xml_scan_attrvalue(const char* x, size_t len, size_t* toklen);
 
-void xml_scanner(xmlscanner* s, buffer* b);
+void xml_scanner_buf(xmlscanner* s, buffer* b);
+void xml_scanner(xmlscanner* s, const char* x, size_t len);
+#ifdef STRALLOC_H
+void xml_scanner_sa(xmlscanner* s, const stralloc* sa);
+#endif
 xmltoken xml_read_token(xmlscanner* s);
 
 #ifdef __cplusplus

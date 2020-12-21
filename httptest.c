@@ -91,7 +91,7 @@ put_escaped_x(buffer* b, const char* x, size_t len, int unescaped) {
       buffer_putc(b, c);
     } else {
       /*buffer_putc(b, '\\'); */
-      buffer_put(b, buf, fmt_escapecharnonprintable(buf, (uint64)(unsigned char)c));
+      buffer_put(b, buf, fmt_escapecharc(buf, (uint64)(unsigned char)c));
     }
   }
 }
@@ -241,18 +241,18 @@ fail:
 }
 
 int
-process_xml(buffer* data) {
+process_xml(const char* x, size_t len) {
   xmlscanner s;
   xmltoken tok;
 
-  xml_scanner(&s, data);
+  xml_scanner(&s, x, len);
 
   do {
     tok = xml_read_token(&s);
 
     buffer_puts(buffer_2, token_colors[tok.id]);
     buffer_putspad(buffer_2, token_types[tok.id + 1], 16);
-    put_escaped_x(buffer_2, tok.x, tok.len, 0x40);
+    put_escaped_x(buffer_2, tok.x, tok.len, 0x20);
     buffer_puts(buffer_2, "\x1b[0m");
     /*  buffer_puts(buffer_2, "\nXML
        token length = ");
@@ -267,36 +267,25 @@ http_dump(http* h) {
   size_t received = h->response->data.len;
   size_t pos = http_skip_header(stralloc_begin(&h->response->data), stralloc_length(&h->response->data));
   const char* type = http_get_header(h, "Content-Type");
+  size_t typelen = str_chrs(type, "\r\n\0", 3);
   buffer_puts(buffer_2, "PTR: ");
   buffer_putulong(buffer_2, h->response->ptr);
   buffer_putnlflush(buffer_2);
   buffer_puts(buffer_2, "TYPE: ");
-  buffer_put(buffer_2, type, str_chrs(type, "\r\n\0", 3));
+  buffer_put(buffer_2, type, typelen);
   buffer_putnlflush(buffer_2);
   pos--;
 
   buffer_puts(buffer_2, "HEADERS: ");
   put_indented(buffer_2, stralloc_begin(&h->response->data), pos);
   buffer_puts(buffer_2, "RESPONSE: ");
-  /*
-    if(received > 0) {
 
-      size_t len = received;
-      buffer_puts(buffer_2, " data=");
+  if(byte_finds(type, typelen, "html") < typelen || byte_finds(type, typelen, "xml") < typelen) {
+    process_xml(stralloc_begin(&h->response->data) + pos, stralloc_length(&h->response->data) - pos);
+  } else {
 
-      if(len > 100)
-        len = 100;
-      buffer_put_escaped(buffer_2,
-    stralloc_begin(&h->response->data),
-    len, &fmt_escapecharnonprintable);
-      if(len < received) {
-        buffer_puts(buffer_2, " ... more
-    ("); buffer_putulong(buffer_2, len);
-        buffer_puts(buffer_2, " bytes
-    total ...");
-      }
-    }*/
-  put_indented_n(buffer_2, stralloc_begin(&h->response->data) + pos, stralloc_length(&h->response->data) - pos, 300);
+    put_indented_n(buffer_2, stralloc_begin(&h->response->data) + pos, stralloc_length(&h->response->data) - pos, 1024);
+  }
   buffer_putnlflush(buffer_2);
 }
 
@@ -413,12 +402,11 @@ main(int argc, char* argv[]) {
       buffer_putnlflush(buffer_2);
 
       // buffer_dump(buffer_1, &h.q.in);
-      if(h.response->data.len) {
-      }
+
       if(h.response->status == HTTP_STATUS_FINISH || h.response->status == HTTP_STATUS_CLOSED)
         break;
     }
-    {
+    if(0) {
       const char* s = stralloc_begin(&h.response->data);
       const char* e = stralloc_end(&h.response->data);
       s += http_skip_header(s, e - s);
@@ -427,8 +415,11 @@ main(int argc, char* argv[]) {
       //      buffer_put(buffer_1, s, e
       //      - s);
     }
-    buffer_fromsa(&data, &h.response->data);
-    http_dump(&h);
+    if(h.response->data.len) {
+      // buffer_fromsa(&data, &h.response->data);
+      http_dump(&h);
+    }
+
     buffer_flush(&out);
     buffer_putnlflush(buffer_1);
   }

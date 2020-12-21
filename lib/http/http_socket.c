@@ -74,7 +74,7 @@ http_socket_read(fd_t fd, void* buf, size_t len, void* b) {
     h->response->status = HTTP_RECV_HEADER;
   }
 
-  tlserr = tls_error(h->sock);
+  tlserr = h->tls ? tls_error(h->sock) : 0;
 
   if(h->tls && ret < 0 && tlserr == 2) {
     errno = EAGAIN;
@@ -140,7 +140,7 @@ http_socket_write(fd_t fd, void* buf, size_t len, void* b) {
     h->response->status = HTTP_RECV_HEADER;
   }
 
-  tlserr = tls_error(h->sock);
+  tlserr = h->tls ? tls_error(h->sock) : 0;
 
   if(h->tls && ret < 0 && tlserr == 2) {
     errno = EAGAIN;

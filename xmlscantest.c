@@ -54,7 +54,7 @@ main(int argc, char* argv[]) {
     return 127;
   }
 
-  xml_scanner(&s, &infile);
+  xml_scanner_buf(&s, &infile);
 
   do {
     tok = xml_read_token(&s);

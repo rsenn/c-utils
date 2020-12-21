@@ -41,6 +41,10 @@ again:
           s->tok = XML_ATTR_NAME;
         }
       }
+      if(r.id == XML_TAG_NAME && x[0] == '<') {
+        x++;
+        i--;
+      }
       b->p += j;
       if(x[i] == '>')
         i++;
