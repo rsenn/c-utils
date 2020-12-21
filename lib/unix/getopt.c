@@ -60,11 +60,7 @@ postpone_noopt(int argc, char* const argv[], int index) {
 }
 
 static int
-getopt_real(int argc,
-            char* const argv[],
-            const char* optstring,
-            const struct longopt* longopts,
-            int* longindex) {
+getopt_real(int argc, char* const argv[], const char* optstring, const struct longopt* longopts, int* longindex) {
   if(optbuf == NULL)
     optbuf = buffer_2;
   while(1) {
@@ -118,8 +114,7 @@ getopt_real(int argc,
             if(str_diffn(spec_long, longopts->name, spec_len) == 0) {
               if(optdef != 0) {
                 if(opterr) {
-                  buffer_putm_internal(
-                      optbuf, "ambiguous option: ", spec_long, 0);
+                  buffer_putm_internal(optbuf, "ambiguous option: ", spec_long, 0);
                   buffer_putnlflush(optbuf);
                 }
                 return '?';
@@ -142,10 +137,7 @@ getopt_real(int argc,
               optarg = 0;
               if(pos_eq != 0) {
                 if(opterr) {
-                  buffer_putm_internal(optbuf,
-                                       "no argument for ",
-                                       optdef->name,
-                                       0);
+                  buffer_putm_internal(optbuf, "no argument for ", optdef->name, 0);
                   buffer_putnlflush(optbuf);
                 }
                 return '?';
@@ -203,16 +195,11 @@ getopt_real(int argc,
         } else {
           optopt = c;
           if(opterr) {
-            buffer_putm_internal(optbuf,
-                                 argv[0],
-                                 ": option requires an argument -- ",
-                                 0);
+            buffer_putm_internal(optbuf, argv[0], ": option requires an argument -- ", 0);
             buffer_PUTC(optbuf, (char)c);
             buffer_putnlflush(optbuf);
           }
-          if(optstring[0] == ':' ||
-             ((optstring[0] == '-' || optstring[0] == '+') &&
-              optstring[1] == ':')) {
+          if(optstring[0] == ':' || ((optstring[0] == '-' || optstring[0] == '+') && optstring[1] == ':')) {
             c = ':';
           } else {
             c = '?';
@@ -247,11 +234,7 @@ getopt(int argc, char* const argv[], const char* optstring) {
 
 #if 1 // ndef HAVE_GETOPT_LONG
 int
-getopt_long(int argc,
-            char* const argv[],
-            const char* optstring,
-            const struct longopt* longopts,
-            int* longindex) {
+getopt_long(int argc, char* const argv[], const char* optstring, const struct longopt* longopts, int* longindex) {
   return getopt_real(argc, argv, optstring, longopts, longindex);
 }
 #endif

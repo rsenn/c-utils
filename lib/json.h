@@ -58,11 +58,7 @@ enum {
   JSON_FMT_QUOTE = 4,
 };
 
-typedef int json_read_callback_fn(jsonreader* r,
-                                  jsondata id,
-                                  stralloc* name,
-                                  stralloc* value,
-                                  HMAP_DB** attrs);
+typedef int json_read_callback_fn(jsonreader* r, jsondata id, stralloc* name, stralloc* value, HMAP_DB** attrs);
 typedef void json_print_fn(jsonfmt*, jsonval*, int, int, char);
 typedef void json_format_fn(jsonfmt*, jsonval*, int, int, char);
 typedef int json_predicate_fn();

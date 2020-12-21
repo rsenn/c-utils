@@ -11,10 +11,7 @@
 #include <alloca.h>
 
 void
-iopause(iopause_fd* x,
-        unsigned int len,
-        struct taia* deadline,
-        struct taia* stamp) {
+iopause(iopause_fd* x, unsigned int len, struct taia* deadline, struct taia* stamp) {
   struct taia t;
   int millisecs;
   double d;

@@ -11,15 +11,12 @@
 
 #if ALLOC_DEBUG == 1
 
-void*
-cbmap_mem_debug_calloc(size_t count, size_t size, const char* file, int line);
+void* cbmap_mem_debug_calloc(size_t count, size_t size, const char* file, int line);
 void cbmap_mem_debug_free(const void* ptr, const char* file, int line);
 void cbmap_mem_debug_mem(const char* file, int line);
-int cbmap_mem_posix_memalign(
-    void** memptr, size_t alignment, size_t size, const char* file, int line);
+int cbmap_mem_posix_memalign(void** memptr, size_t alignment, size_t size, const char* file, int line);
 char* cbmap_mem_debug_strdup(const char* p, const char* file, int line);
-char*
-cbmap_mem_debug_strndup(const char* p, size_t size, const char* file, int line);
+char* cbmap_mem_debug_strndup(const char* p, size_t size, const char* file, int line);
 void* cbmap_mem_mem_dup(const void* p, size_t size, const char* file, int line);
 int cbmap_mem_memalign(void** p, size_t alignment, size_t size);
 double cbmap_mem_allocated(void);
@@ -31,8 +28,7 @@ double cbmap_mem_allocated(void);
 #define CBM_STRDUP(s) cbmap_mem_debug_strdup((s), __FILE__, __LINE__)
 #define CBM_STRNDUP(s, n) cbmap_mem_debug_strndup((s), (n), __FILE__, __LINE__)
 #define CBM_MEMDUP(k, v) cbmap_mem_mem_dup(k, v, __FILE__, __LINE__)
-#define CBM_MEMALIGN(p, a, s)                                                  \
-  cbmap_mem_posix_memalign((p), (a), (s), __FILE__, __LINE__)
+#define CBM_MEMALIGN(p, a, s) cbmap_mem_posix_memalign((p), (a), (s), __FILE__, __LINE__)
 #define CBM_MEM_ALLOCATED() cbmap_mem_allocated()
 
 #else

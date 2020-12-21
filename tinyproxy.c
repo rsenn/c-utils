@@ -105,8 +105,7 @@ dns_response_t* dns_query(stralloc*);
 void dns_print(buffer*, dns_response_t* result, size_t num_responses);
 dns_response_t* dns_lookup(stralloc*);
 
-void
-dump_strarray(buffer*, const strarray* a, const char* quote, const char* sep);
+void dump_strarray(buffer*, const strarray* a, const char* quote, const char* sep);
 size_t dump_fds(array*);
 void dump_io(void);
 
@@ -118,8 +117,7 @@ fd_t connection_open_log(connection_t*, const char* prefix, const char* suffix);
 socketbuf_t* socket_find(fd_t);
 socketbuf_t* socket_other(fd_t);
 ssize_t socket_send(fd_t, void* x, size_t n, void* ptr);
-int
-socket_getlocal_addr(fd_t, int af, char ip[16], uint16* port, uint32* scope_id);
+int socket_getlocal_addr(fd_t, int af, char ip[16], uint16* port, uint32* scope_id);
 int socket_connect(socketbuf_t*);
 void socket_accept(fd_t, char addr[16], uint16 port);
 
@@ -159,7 +157,7 @@ static MAP_T dns_cache;
 static tai6464 ttl;
 static strlist output_files;
 
-#define BACKLOG                                                                \
+#define BACKLOG                                                                                                                                                                                        \
   20 // how many pending connections
      // queue will hold
 
@@ -200,9 +198,7 @@ dns_print(buffer* b, dns_response_t* result, size_t num_responses) {
   range_foreach(&result->data, x) {
     if(i++ > 0)
       buffer_puts(b, ", ");
-    buffer_put(b,
-               buf,
-               (result->data.elem_size == 16 ? fmt_ip6 : fmt_ip4)(buf, x));
+    buffer_put(b, buf, (result->data.elem_size == 16 ? fmt_ip6 : fmt_ip4)(buf, x));
     if(i == num_responses)
       break;
   }
@@ -326,10 +322,7 @@ buffer_is_binary(buffer* b) {
 }
 
 void
-dump_strarray(buffer* b,
-              const strarray* a,
-              const char* quote,
-              const char* sep) {
+dump_strarray(buffer* b, const strarray* a, const char* quote, const char* sep) {
   static char quote_chars[] = {' ', '"', '\'', '`', '(', ')', 0};
   const char* s;
   size_t i, n, len = strarray_size(a);
@@ -519,9 +512,7 @@ socket_send(fd_t fd, void* x, size_t n, void* ptr) {
     if(dump) {
       if(sb->dump == -1) {
         connection_t* c = connection_find(fd, fd);
-        sb->dump = connection_open_log(c,
-                                       c->client.sock == fd ? "recv" : "send",
-                                       ".txt");
+        sb->dump = connection_open_log(c, c->client.sock == fd ? "recv" : "send", ".txt");
       }
       write(sb->dump, x, n);
     }
@@ -586,16 +577,8 @@ socket_accept(fd_t sock, char addr[16], uint16 port) {
   byte_copy(c->proxy.addr, remote.af == AF_INET6 ? 16 : 4, remote.addr);
   c->proxy.port = remote.port;
   c->proxy.af = remote.af;
-  buffer_init_free(&c->client.buf,
-                   (buffer_op_sys*)(void*)&socket_send,
-                   c->client.sock,
-                   alloc_zero(1024),
-                   1024);
-  buffer_init_free(&c->proxy.buf,
-                   (buffer_op_sys*)(void*)&socket_send,
-                   c->proxy.sock,
-                   alloc_zero(1024),
-                   1024);
+  buffer_init_free(&c->client.buf, (buffer_op_sys*)(void*)&socket_send, c->client.sock, alloc_zero(1024), 1024);
+  buffer_init_free(&c->proxy.buf, (buffer_op_sys*)(void*)&socket_send, c->proxy.sock, alloc_zero(1024), 1024);
 
   io_fd(c->client.sock);
   io_nonblock(c->client.sock);
@@ -663,10 +646,7 @@ sockbuf_close(socketbuf_t* sb) {
 
 void
 sockbuf_check(socketbuf_t* sb) {
-  int wantwrite =
-      (line_buffer && !buffer_is_binary(&sb->buf) && !sb->force_write)
-          ? buffer_numlines(&sb->buf, NULL) > 0
-          : sb->buf.p > 0;
+  int wantwrite = (line_buffer && !buffer_is_binary(&sb->buf) && !sb->force_write) ? buffer_numlines(&sb->buf, NULL) > 0 : sb->buf.p > 0;
   io_entry* e = io_getentry(sb->sock);
 
   if(wantwrite) {
@@ -764,9 +744,7 @@ sockbuf_forward_data(socketbuf_t* source, socketbuf_t* destination) {
   size_t written = 0;
   char buffer[buf_size];
 
-  if((n = recv(source->sock,
-               buffer,
-               buf_size,
+  if((n = recv(source->sock, buffer, buf_size,
                0)) > 0) { // read data from input socket
 
     buffer_put(&destination->buf,
@@ -852,8 +830,7 @@ server_finalize() {
   struct stat st;
   const char *s, *b;
   stralloc filename, cmd;
-  static const char* const programs[] = {
-      "gtar", "star", "bsdtar", "tar", "7z", "7za", 0};
+  static const char* const programs[] = {"gtar", "star", "bsdtar", "tar", "7z", "7za", 0};
   strlist syspath;
 
   size_t i, n;
@@ -936,9 +913,7 @@ server_tar_files(const char* cmd, const stralloc* archive, strlist* files) {
   fd_t out = STDOUT_FILENO;
   base = path_basename(cmd);
 
-  strarray_from_argv(strlist_count(files),
-                     (const char* const*)strlist_to_argv(files),
-                     &argv);
+  strarray_from_argv(strlist_count(files), (const char* const*)strlist_to_argv(files), &argv);
   if(str_start(base, "7z")) {
 
     strarray_unshiftm(&argv, "a", "-ssc", archive->s, 0);
@@ -1129,15 +1104,12 @@ server_loop() {
         char addr[16];
         uint16 port;
         socklen_t addrlen = sizeof(addr);
-        sock = server.af == AF_INET
-                   ? socket_accept4(server_sock, addr, &port)
-                   : socket_accept6(server_sock, addr, &port, 0);
+        sock = server.af == AF_INET ? socket_accept4(server_sock, addr, &port) : socket_accept6(server_sock, addr, &port, 0);
         if(sock == -1) {
           errmsg_warn("Accept error: ", strerror(errno), 0);
           exit(2);
         }
-        server.af == AF_INET ? socket_remote4(sock, addr, &port)
-                             : socket_remote6(sock, addr, &port, 0);
+        server.af == AF_INET ? socket_remote4(sock, addr, &port) : socket_remote6(sock, addr, &port, 0);
         socket_accept(sock, addr, port);
         connections_processed++;
 

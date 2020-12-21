@@ -54,8 +54,7 @@ socket_accept6(int s, char* ip, uint16* port, uint32* scope_id) {
       if(e->next_accept == -1)
         return winsock2errno(-1);
     }
-    if(AcceptEx(
-           s, e->next_accept, e->inbuf, 0, 200, 200, &e->errorcode, &e->or))
+    if(AcceptEx(s, e->next_accept, e->inbuf, 0, 200, 200, &e->errorcode, &e->or))
       goto incoming;
     if(WSAGetLastError() != ERROR_IO_PENDING)
       return winsock2errno(-1);

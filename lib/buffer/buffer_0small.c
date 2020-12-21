@@ -15,8 +15,5 @@ buffer_0small_read(fd_t fd, char* buf, size_t len) {
 }
 
 char buffer_0small_space[128];
-static buffer buffer_0small_it = BUFFER_INIT_READ(buffer_0small_read,
-                                                  0,
-                                                  buffer_0small_space,
-                                                  sizeof buffer_0small_space);
+static buffer buffer_0small_it = BUFFER_INIT_READ(buffer_0small_read, 0, buffer_0small_space, sizeof buffer_0small_space);
 buffer* buffer_0small = &buffer_0small_it;

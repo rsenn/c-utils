@@ -9,8 +9,7 @@
 #endif
 
 #define __wasilibc_unmodified_upstream 1
-#if USE_READDIR || defined(__wasi__) ||                                        \
-    !(defined(_WIN32) || defined(_WIN32) || defined(__MSYS__))
+#if USE_READDIR || defined(__wasi__) || !(defined(_WIN32) || defined(_WIN32) || defined(__MSYS__))
 #include <dirent.h>
 #endif
 
@@ -23,8 +22,7 @@ int
 dir_type(struct dir_s* d) {
   int r = 0;
 #if !USE_READDIR && (defined(_WIN32) || defined(_WIN32) || defined(__MSYS__))
-  if(dir_INTERNAL(d)->dir_finddata.dwFileAttributes &
-     FILE_ATTRIBUTE_REPARSE_POINT)
+  if(dir_INTERNAL(d)->dir_finddata.dwFileAttributes & FILE_ATTRIBUTE_REPARSE_POINT)
     r |= D_SYMLINK;
   else if(dir_INTERNAL(d)->dir_finddata.dwFileAttributes & 0x10)
     r |= D_DIRECTORY;

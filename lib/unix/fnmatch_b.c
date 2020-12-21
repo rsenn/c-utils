@@ -8,7 +8,7 @@
 
 #define NOTFIRST 128
 
-#define STRUCT_CHARCLASS(c)                                                    \
+#define STRUCT_CHARCLASS(c)                                                                                                                                                                            \
   { #c, is##c }
 
 static struct charclass {
@@ -96,8 +96,7 @@ fnmatch_b(const char* p, size_t plen, const char* s, size_t slen, int flags) {
           if(!(cc = charclass_lookup(p + 2)))
             goto invalidclass;
           p += str_len(cc->class) + 4;
-          if(flags & FNM_CASEFOLD &&
-             (cc->istype == isupper || cc->istype == islower)) {
+          if(flags & FNM_CASEFOLD && (cc->istype == isupper || cc->istype == islower)) {
             res = islower(tolower(s[j]));
           } else {
             res = ((*(cc->istype))(s[j]));
@@ -109,8 +108,7 @@ fnmatch_b(const char* p, size_t plen, const char* s, size_t slen, int flags) {
             if(s[j] >= p[i] && s[j] <= p[2])
               res = 1;
             if(flags & FNM_CASEFOLD) {
-              if(tolower(s[j]) >= tolower(p[i]) &&
-                 tolower(s[j]) <= tolower(p[2]))
+              if(tolower(s[j]) >= tolower(p[i]) && tolower(s[j]) <= tolower(p[2]))
                 res = 1;
             }
             p += 3;
@@ -137,8 +135,7 @@ fnmatch_b(const char* p, size_t plen, const char* s, size_t slen, int flags) {
       }
       break;
     case '*':
-      if((s[j] == '/' && flags & FNM_PATHNAME) ||
-         fnmatch_b(p, plen, s + 1, slen + 1, flags))
+      if((s[j] == '/' && flags & FNM_PATHNAME) || fnmatch_b(p, plen, s + 1, slen + 1, flags))
         return fnmatch_b(p + 1, plen - 1, s, slen - 1, flags);
       return 0;
     case 0:

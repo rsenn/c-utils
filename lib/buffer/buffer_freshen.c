@@ -18,10 +18,14 @@ buffer_freshen(buffer* b) {
     b->n -= b->p;
     b->p = 0;
   }
+  if(b->p == b->n) {
+    b->p = 0;
+    b->n = 0;
+  }
+
   if(b->n < b->a) {
     ssize_t w;
-    if((w = buffer_stubborn_read(b->op, b->fd, &b->x[b->n], b->a - b->n, b)) >
-       0)
+    if((w = buffer_stubborn_read(b->op, b->fd, &b->x[b->n], b->a - b->n, b)) > 0)
       b->n += w;
     if(w == -1)
       return -1;

@@ -17,24 +17,12 @@ hmap_print_list_tuple(HMAP_DB* hmap) {
 
     switch(t->data_type) {
       case HMAP_DATA_TYPE_INT: buffer_putlong(buffer_1, t->vals.val_int); break;
-      case HMAP_DATA_TYPE_UINT:
-        buffer_putulong(buffer_1, t->vals.val_uint);
-        break;
-      case HMAP_DATA_TYPE_INT64:
-        buffer_putlonglong(buffer_1, t->vals.val_longlong);
-        break;
-      case HMAP_DATA_TYPE_UINT64:
-        buffer_putulonglong(buffer_1, t->vals.val_ulonglong);
-        break;
-      case HMAP_DATA_TYPE_DOUBLE:
-        buffer_putdouble(buffer_1, t->vals.val_double, 15);
-        break;
-      case HMAP_DATA_TYPE_CHARS:
-        buffer_put(buffer_1, t->vals.val_chars, t->data_len);
-        break;
-      case HMAP_DATA_TYPE_CUSTOM:
-        buffer_putptr(buffer_1, t->vals.val_custom);
-        break;
+      case HMAP_DATA_TYPE_UINT: buffer_putulong(buffer_1, t->vals.val_uint); break;
+      case HMAP_DATA_TYPE_INT64: buffer_putlonglong(buffer_1, t->vals.val_longlong); break;
+      case HMAP_DATA_TYPE_UINT64: buffer_putulonglong(buffer_1, t->vals.val_ulonglong); break;
+      case HMAP_DATA_TYPE_DOUBLE: buffer_putdouble(buffer_1, t->vals.val_double, 15); break;
+      case HMAP_DATA_TYPE_CHARS: buffer_put(buffer_1, t->vals.val_chars, t->data_len); break;
+      case HMAP_DATA_TYPE_CUSTOM: buffer_putptr(buffer_1, t->vals.val_custom); break;
     }
 
     buffer_putsflush(buffer_1, "]\n");

@@ -258,9 +258,7 @@ identical_time(time_t there, int theretype, time_t here) {
                                        */
       allowed = 0;
       break;
-    case FTPPARSE_MTIME_REMOTEMINUTE: /* time zone and secs are unknown */
-      allowed = 60;
-      break;
+    case FTPPARSE_MTIME_REMOTEMINUTE: /* time zone and secs are unknown */ allowed = 60; break;
     case FTPPARSE_MTIME_UNKNOWN:
     case FTPPARSE_MTIME_REMOTEDAY: /* time
                                       zone
@@ -320,8 +318,7 @@ download(struct ftpparse* x, stralloc* r_dir, stralloc* l_dir) {
       slash = cc;
   if(*slash == '/')
     slash++;
-  if(!stralloc_copys(&tmpfn, ".tmp.") ||
-     !stralloc_catb(&tmpfn, slash, e - slash)) /* l_dir has \0 */
+  if(!stralloc_copys(&tmpfn, ".tmp.") || !stralloc_catb(&tmpfn, slash, e - slash)) /* l_dir has \0 */
     oom();
 
   mtime = TAI2UNIX(&x->mtime);
@@ -444,10 +441,7 @@ download(struct ftpparse* x, stralloc* r_dir, stralloc* l_dir) {
   {
     char nb[FMT_ULONG];
     tmpfn.len--; /* \0 */
-    if(!stralloc_catb(&tmpfn, ".", 1) ||
-       !stralloc_catb(&tmpfn, nb, fmt_uint64(nb, mtime)) ||
-       !stralloc_catb(&tmpfn, ".", 1) ||
-       !stralloc_catb(&tmpfn, nb, fmt_uint64(nb, x->size)) ||
+    if(!stralloc_catb(&tmpfn, ".", 1) || !stralloc_catb(&tmpfn, nb, fmt_uint64(nb, mtime)) || !stralloc_catb(&tmpfn, ".", 1) || !stralloc_catb(&tmpfn, nb, fmt_uint64(nb, x->size)) ||
        !stralloc_0(&tmpfn))
       if(!o_no_rest)
         unlink(tmpfn.s);
@@ -457,20 +451,10 @@ retry_open:
   fd = open_excl_mode(tmpfn.s, 0644);
   if(-1 == fd) {
     if(error_exist != errno)
-      xbailout(100,
-               errno,
-               "failed to open_excl ",
-               tmpfn.s,
-               ", temporary file for ",
-               l_dir->s);
+      xbailout(100, errno, "failed to open_excl ", tmpfn.s, ", temporary file for ", l_dir->s);
     fd = open_append(tmpfn.s);
     if(-1 == fd)
-      xbailout(100,
-               errno,
-               "failed to open_append ",
-               tmpfn.s,
-               ", temporary file for ",
-               l_dir->s);
+      xbailout(100, errno, "failed to open_append ", tmpfn.s, ", temporary file for ", l_dir->s);
     rest_flag = 1;
   }
   if(!stralloc_ready(&savemem, BUFFER_OUTSIZE))
@@ -500,12 +484,7 @@ retry_pasv:
     if(1 == rest_flag) {
       struct stat fs;
       if(-1 == fstat(fd, &fs))
-        xbailout(100,
-                 errno,
-                 "failed to fstat ",
-                 tmpfn.s,
-                 ", temporary file for ",
-                 l_dir->s);
+        xbailout(100, errno, "failed to fstat ", tmpfn.s, ", temporary file for ", l_dir->s);
       pos = fs.st_size;
       expected_bytes -= pos;
       rest_flag = 2;
@@ -524,12 +503,7 @@ retry_pasv:
       ccread();
       rest_flag = 0;
       if(-1 == unlink(tmpfn.s))
-        xbailout(100,
-                 errno,
-                 "failed to unlink ",
-                 tmpfn.s,
-                 ", temporary file for ",
-                 l_dir->s);
+        xbailout(100, errno, "failed to unlink ", tmpfn.s, ", temporary file for ", l_dir->s);
       close(fd);
       goto retry_open;
     }
@@ -556,11 +530,7 @@ retry_pasv:
     close(fd);
     return 0;
   }
-  buffer_init(&io_d,
-              (buffer_op)TIMEOUTREADFN(o_timeout),
-              data_sock,
-              io_d_mem.s,
-              BUFFER_INSIZE);
+  buffer_init(&io_d, (buffer_op)TIMEOUTREADFN(o_timeout), data_sock, io_d_mem.s, BUFFER_INSIZE);
   progress_flag = 0;
   taia_now(&last_report);
   while(1) {
@@ -594,10 +564,7 @@ retry_pasv:
         if(old_window_x != window_x) {
           while(old_window_x) {
             int written;
-            written =
-                write(2,
-                      bs,
-                      old_window_x > sizeof(bs) ? sizeof(bs) : old_window_x);
+            written = write(2, bs, old_window_x > sizeof(bs) ? sizeof(bs) : old_window_x);
             if(written <= 0) {
               write(2, "\n", 1);
               break;
@@ -765,10 +732,7 @@ handle_exclude(stralloc* ca) {
         info = ptr;
         if(o_loglevel > 3) {
           write(1, ca->s, ca->len - 1);
-          do_log4(": matched `",
-                  info,
-                  "', -> ",
-                  exclude ? "exclude" : "include");
+          do_log4(": matched `", info, "', -> ", exclude ? "exclude" : "include");
           write(1, "\n", 1);
         }
       }
@@ -893,8 +857,7 @@ handle_directory(struct ftpparse* x, stralloc* r_dir, stralloc* l_dir) {
 
     if(1 == loop(r_dir, l_dir)) {
       if(!o_dry_run)
-        if(-1 ==
-           api_utimes(l_dir->s, TAI2UNIX(&x->mtime), 0, TAI2UNIX(&x->mtime), 0))
+        if(-1 == api_utimes(l_dir->s, TAI2UNIX(&x->mtime), 0, TAI2UNIX(&x->mtime), 0))
           warning(errno,
                   "failed to call "
                   "utimes on ",
@@ -1078,9 +1041,7 @@ skip_listing:
   }
   parsed = parsethem(&dirdata, is_mlsx, &count);
   for(i = 0; i < count; i++) {
-    if(parsed[i].name[0] == '.' &&
-       (parsed[i].namelen == 1 ||
-        (parsed[i].namelen == 2 && parsed[i].name[1] == '.'))) {
+    if(parsed[i].name[0] == '.' && (parsed[i].namelen == 1 || (parsed[i].namelen == 2 && parsed[i].name[1] == '.'))) {
       if(o_loglevel > 1) {
         do_log2(l_dir->s, "/");
         if(o_tolower)
@@ -1088,9 +1049,7 @@ skip_listing:
         do_logmem(parsed[i].name, parsed[i].namelen);
         do_log1(": ignored\n");
       }
-    } else if(parsed[i]
-                  .name[byte_chr(parsed[i].name, parsed[i].namelen, '/')] ==
-              '/') {
+    } else if(parsed[i].name[byte_chr(parsed[i].name, parsed[i].namelen, '/')] == '/') {
       /* file name with a slash in it:
        * no good. Can't happen and has
        * security implications. */
@@ -1120,8 +1079,7 @@ skip_listing:
       }
 
       r_dir->s[r_dir->len - 1] = '/';
-      if(!stralloc_catb(r_dir, parsed[i].name, parsed[i].namelen) ||
-         !stralloc_0(r_dir))
+      if(!stralloc_catb(r_dir, parsed[i].name, parsed[i].namelen) || !stralloc_0(r_dir))
         oom();
       if(o_exclude.len) {
         stralloc* ca;
@@ -1157,8 +1115,7 @@ skip_listing:
       }
       if(parsed[i].flagtryretr && !done) {
         l_dir->s[l_dir->len - 1] = '/';
-        if(!stralloc_catb(l_dir, parsed[i].name, parsed[i].namelen) ||
-           !stralloc_0(l_dir))
+        if(!stralloc_catb(l_dir, parsed[i].name, parsed[i].namelen) || !stralloc_0(l_dir))
           oom();
         if(o_tolower)
           case_lowers(l_dir->s + lpos);
@@ -1233,8 +1190,7 @@ initialdirectory(stralloc* dirdata, struct ftpparse* fp, stralloc* r_dir) {
     return; /* doesn't help us. */
   if(1 != ftpparse(fp, dirdata->s, str_len(dirdata->s), o_eat_leading_spaces))
     return;
-  if(fp->namelen != r_dir->len - 1 ||
-     byte_diff(fp->name, fp->namelen, r_dir->s))
+  if(fp->namelen != r_dir->len - 1 || byte_diff(fp->name, fp->namelen, r_dir->s))
     fp->idlen = 0; /* used in onedirpair() */
 }
 /* try to find out whether the remote
@@ -1479,8 +1435,7 @@ static int
 callback_exclude(uogetopt_env* e, uogetopt2* g, char* s) {
   (void)g;
   (void)e;
-  if(!stralloc_catb(&o_exclude, "-", 1) || !stralloc_cats(&o_exclude, s) ||
-     !stralloc_0(&o_exclude))
+  if(!stralloc_catb(&o_exclude, "-", 1) || !stralloc_cats(&o_exclude, s) || !stralloc_0(&o_exclude))
     oom();
   return 0;
 }
@@ -1488,8 +1443,7 @@ static int
 callback_include(uogetopt_env* e, uogetopt2* g, char* s) {
   (void)g;
   (void)e;
-  if(!stralloc_catb(&o_exclude, "+", 1) || !stralloc_cats(&o_exclude, s) ||
-     !stralloc_0(&o_exclude))
+  if(!stralloc_catb(&o_exclude, "+", 1) || !stralloc_cats(&o_exclude, s) || !stralloc_0(&o_exclude))
     oom();
   return 0;
 }
@@ -2067,15 +2021,7 @@ static uogetopt2 myopts[] = {
      "/private/file/0/mirror/cr.yp.to "
      "is the local directory.",
      0},
-    {0,
-     "author",
-     uogo_print_help,
-     UOGO_NOARG | UOGO_HIDDEN | UOGO_EXIT | UOGO_NOLHD,
-     0,
-     0,
-     "Show author.",
-     "Uwe Ohse, <uwe@ohse.de>.",
-     0},
+    {0, "author", uogo_print_help, UOGO_NOARG | UOGO_HIDDEN | UOGO_EXIT | UOGO_NOLHD, 0, 0, "Show author.", "Uwe Ohse, <uwe@ohse.de>.", 0},
     {0,
      "copyright",
      uogo_print_help,

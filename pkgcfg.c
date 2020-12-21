@@ -55,11 +55,7 @@ typedef enum {
 } id;
 typedef enum { OP_EQ = 0, OP_NE, OP_GT, OP_GE, OP_LT, OP_LE } op_code;
 
-typedef enum {
-  LIBS_ONLY_L = 64,
-  LIBS_ONLY_LIBPATH = 128,
-  LIBS_ONLY_OTHER = 256
-} libs_mode_t;
+typedef enum { LIBS_ONLY_L = 64, LIBS_ONLY_LIBPATH = 128, LIBS_ONLY_OTHER = 256 } libs_mode_t;
 
 typedef enum { CFLAGS_ONLY_I = 512, CFLAGS_ONLY_OTHER = 1024 } cflags_mode_t;
 
@@ -539,11 +535,7 @@ fail:
 }
 
 static int
-visit_set(const void* key,
-          size_t key_len,
-          const void* value,
-          size_t value_len,
-          void* user_data) {
+visit_set(const void* key, size_t key_len, const void* value, size_t value_len, void* user_data) {
   pkg* p = user_data;
   stralloc var, v;
   stralloc_init(&var);
@@ -582,11 +574,7 @@ pkg_set(pkg* p) {
 }
 
 static int
-visit_unset(const void* key,
-            size_t key_len,
-            const void* value,
-            size_t value_len,
-            void* user_data) {
+visit_unset(const void* key, size_t key_len, const void* value, size_t value_len, void* user_data) {
   (void)key_len;
   (void)value;
   (void)value_len;
@@ -615,11 +603,7 @@ typedef struct {
 } dump_t;
 
 static int
-visit_dump(const void* key,
-           size_t key_len,
-           const void* value,
-           size_t value_len,
-           void* user_data) {
+visit_dump(const void* key, size_t key_len, const void* value, size_t value_len, void* user_data) {
   dump_t* ptr = user_data;
   buffer_put(ptr->b, ptr->m, str_len(ptr->m) - 3);
   buffer_puts(ptr->b, " ");
@@ -702,8 +686,7 @@ pkg_list(id code) {
         buffer_putsa(buffer_2, &path);
         buffer_putnlflush(buffer_2);
 #endif
-        if(match_pattern &&
-           fnmatch(match_pattern, path.s, FNM_CASEFOLD) == FNM_NOMATCH)
+        if(match_pattern && fnmatch(match_pattern, path.s, FNM_CASEFOLD) == FNM_NOMATCH)
           continue;
 
         pkg_init(&pf, path.s);
@@ -760,9 +743,7 @@ pkg_list(id code) {
 
           if(!found) {
             if(sorted) {
-              slink_foreach(&pkgs,
-                            it) if(case_diffs(line.s, *(char**)slink_data(it)) <
-                                   0) break;
+              slink_foreach(&pkgs, it) if(case_diffs(line.s, *(char**)slink_data(it)) < 0) break;
               slist_unshifts(it, line.s);
             } else {
               slist_pushs(&pkgs, line.s);
@@ -999,8 +980,7 @@ pkg_conf(strarray* modules, id code, int mode) {
                return 0;*/
         }
       }
-      if((code == PRINT_LIBS && libs_mode) ||
-         (code == PRINT_CFLAGS && cflags_mode)) {
+      if((code == PRINT_LIBS && libs_mode) || (code == PRINT_CFLAGS && cflags_mode)) {
         strlist sl;
         const char* s;
         strlist_init(&sl, '\0');
@@ -1152,8 +1132,7 @@ pkgcfg_init(const char* self, const char* pkgcfg_path) {
   pos = stralloc_finds(&cmd.self, "pkg");
 
   if(cmd.host.len == 0) {
-    if((pos = stralloc_finds(&cmd.self, "pkg")) > 0 &&
-       byte_count(cmd.self.s, pos, '-') >= 2) {
+    if((pos = stralloc_finds(&cmd.self, "pkg")) > 0 && byte_count(cmd.self.s, pos, '-') >= 2) {
       stralloc_copyb(&cmd.host, cmd.self.s, pos);
     } else {
       const char* compiler = env_get("CC");
@@ -1250,11 +1229,7 @@ pkgcfg_init(const char* self, const char* pkgcfg_path) {
 
 void
 usage(char* progname) {
-  buffer_putm_internal(buffer_1,
-                       "Usage: ",
-                       path_basename(progname),
-                       " [OPTIONS] [PACKAGES...]\n",
-                       0);
+  buffer_putm_internal(buffer_1, "Usage: ", path_basename(progname), " [OPTIONS] [PACKAGES...]\n", 0);
   buffer_puts(buffer_1, "Options\n");
   buffer_puts(buffer_1,
               "  --help, -h                    "
@@ -1427,9 +1402,7 @@ main(int argc, char* argv[], char* envp[]) {
       }
       case 'F':
       case 'L':
-      case 'l':
-        add_cmd(c == 'F' ? LIST_FILE : c == 'l' ? LIST_ALL : LIST_PATH);
-        break;
+      case 'l': add_cmd(c == 'F' ? LIST_FILE : c == 'l' ? LIST_ALL : LIST_PATH); break;
       case LIBS_ONLY_L:
       case LIBS_ONLY_LIBPATH:
       case LIBS_ONLY_OTHER:
@@ -1460,18 +1433,9 @@ main(int argc, char* argv[], char* envp[]) {
           int i = arg[2] == 'l' ? PRINT_LIBS : PRINT_CFLAGS;
           add_cmd(i);
           if(i == PRINT_LIBS)
-            libs_mode =
-                arg[str_find(arg, "only")]
-                    ? (arg[str_find(arg, "other")]
-                           ? LIBS_ONLY_OTHER
-                           : (arg[str_find(arg, "L")] ? LIBS_ONLY_LIBPATH
-                                                      : LIBS_ONLY_L))
-                    : 0;
+            libs_mode = arg[str_find(arg, "only")] ? (arg[str_find(arg, "other")] ? LIBS_ONLY_OTHER : (arg[str_find(arg, "L")] ? LIBS_ONLY_LIBPATH : LIBS_ONLY_L)) : 0;
           else
-            cflags_mode = arg[str_find(arg, "only")]
-                              ? (arg[str_find(arg, "other")] ? CFLAGS_ONLY_OTHER
-                                                             : CFLAGS_ONLY_I)
-                              : 0;
+            cflags_mode = arg[str_find(arg, "only")] ? (arg[str_find(arg, "other")] ? CFLAGS_ONLY_OTHER : CFLAGS_ONLY_I) : 0;
 
           argv[unix_optind] = "-";
           /*           for(i = unix_optind;
@@ -1489,11 +1453,7 @@ main(int argc, char* argv[], char* envp[]) {
                     "WARNING: Invalid "
                     "argument -");
         buffer_putc(buffer_2, isprint(c) ? c : '?');
-        buffer_putm_internal(buffer_2,
-                             " '",
-                             unix_optarg ? unix_optarg : argv[unix_optind],
-                             "'",
-                             NULL);
+        buffer_putm_internal(buffer_2, " '", unix_optarg ? unix_optarg : argv[unix_optind], "'", NULL);
         buffer_putnlflush(buffer_2);
         usage(argv[0]);
         return 1;
@@ -1572,9 +1532,7 @@ getopt_end:
       pkg_list(*code);
     } else if(unix_optind < argc) {
       strarray modules;
-      strarray_from_argv(argc - unix_optind,
-                         (const char* const*)&argv[unix_optind],
-                         &modules);
+      strarray_from_argv(argc - unix_optind, (const char* const*)&argv[unix_optind], &modules);
       return pkg_conf(&modules, *code, mode);
     }
   }

@@ -37,8 +37,7 @@ struct hex_data {
   typedef std::vector<value_type> data_container; // Element
                                                   // container
   typedef std::map<address_type,
-                   data_container>
-      container; // List of data blocks
+                   data_container> container; // List of data blocks
 
   typedef container::iterator iterator;
   typedef container::reverse_iterator reverse_iterator;
@@ -60,10 +59,7 @@ private:
 
 public:
   hex_data() : _fill(0), segment_addr_rec(false), linear_addr_rec(false) {}
-  hex_data(const std::string& s)
-      : _fill(0), segment_addr_rec(false), linear_addr_rec(false) {
-    load(s);
-  }
+  hex_data(const std::string& s) : _fill(0), segment_addr_rec(false), linear_addr_rec(false) { load(s); }
   iterator
   begin() {
     return blocks.begin();

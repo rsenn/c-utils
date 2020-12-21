@@ -21,9 +21,9 @@
 
 #if WINDOWS_NATIVE
 #include <io.h>
-#define HOSTS_FILE                                                             \
-  "C:"                                                                         \
-  "\\Windows\\System32\\drivers\\etc"                                          \
+#define HOSTS_FILE                                                                                                                                                                                     \
+  "C:"                                                                                                                                                                                                 \
+  "\\Windows\\System32\\drivers\\etc"                                                                                                                                                                  \
   "\\hosts"
 #else
 #include <unistd.h>
@@ -199,12 +199,7 @@ main(int argc, char* argv[]) {
        * ECONNREFUSED on local ports */
       if(errno) {
         if(verbose) {
-          buffer_putm_internal(buffer_1,
-                               argv[optind],
-                               " port ",
-                               argv[optind + 1],
-                               " closed.",
-                               NULL);
+          buffer_putm_internal(buffer_1, argv[optind], " port ", argv[optind + 1], " closed.", NULL);
           buffer_putnlflush(buffer_1);
         }
         closesocket(sock);
@@ -213,8 +208,7 @@ main(int argc, char* argv[]) {
 #endif
       {
         if(verbose)
-          errmsg_warn(
-              "error: ", argv[optind], " port ", argv[optind + 1], ": ", 0);
+          errmsg_warn("error: ", argv[optind], " port ", argv[optind + 1], ": ", 0);
 
         return 4;
       }
@@ -243,12 +237,7 @@ main(int argc, char* argv[]) {
       /* timeout */
       closesocket(sock);
       if(verbose) {
-        buffer_putm_internal(buffer_1,
-                             argv[optind],
-                             " port ",
-                             argv[optind + 1],
-                             " user timeout.",
-                             NULL);
+        buffer_putm_internal(buffer_1, argv[optind], " port ", argv[optind + 1], " user timeout.", NULL);
         buffer_putnlflush(buffer_1);
       }
       return 2;
@@ -258,12 +247,7 @@ main(int argc, char* argv[]) {
       if(socket_error(sock, &error) == 0) {
         /* getsockopt error */
         if(verbose) {
-          errmsg_warn("error: ",
-                      argv[optind],
-                      " port ",
-                      argv[optind + 1],
-                      ": getsockopt: ",
-                      0);
+          errmsg_warn("error: ", argv[optind], " port ", argv[optind + 1], ": getsockopt: ", 0);
           buffer_putnlflush(buffer_2);
         }
         closesocket(sock);
@@ -271,12 +255,7 @@ main(int argc, char* argv[]) {
       }
       if(error != 0) {
         if(verbose) {
-          buffer_putm_internal(buffer_1,
-                               argv[optind],
-                               " port ",
-                               argv[optind + 1],
-                               " closed.",
-                               NULL);
+          buffer_putm_internal(buffer_1, argv[optind], " port ", argv[optind + 1], " closed.", NULL);
           buffer_putnlflush(buffer_1);
         }
         closesocket(sock);
@@ -293,8 +272,7 @@ main(int argc, char* argv[]) {
   /* OK, connection established */
   closesocket(sock);
   if(verbose) {
-    buffer_putm_internal(
-        buffer_1, argv[optind], " port ", argv[optind + 1], " open.", NULL);
+    buffer_putm_internal(buffer_1, argv[optind], " port ", argv[optind + 1], " open.", NULL);
     buffer_putnlflush(buffer_1);
   }
   return 0;

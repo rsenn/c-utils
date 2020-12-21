@@ -37,8 +37,7 @@ last_error_str() {
   if(!FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
                     NULL,
                     errCode,
-                    MAKELANGID(LANG_NEUTRAL,
-                               SUBLANG_DEFAULT), /* default language */
+                    MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), /* default language */
                     (LPTSTR)&err,
                     0,
                     NULL))
@@ -56,10 +55,7 @@ last_error_str() {
 #endif
 
 int
-process_create(const char* filename,
-               char* const argv[],
-               fd_t std[3],
-               const char* cwd) {
+process_create(const char* filename, char* const argv[], fd_t std[3], const char* cwd) {
   fd_t fds[3];
   int32 pid;
   int status = 0;

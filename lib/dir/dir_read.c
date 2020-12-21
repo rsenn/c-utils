@@ -22,11 +22,9 @@ dir_read(struct dir_s* d) {
 #else
   if(!dir_INTERNAL(d)->first) {
 #if USE_WIDECHAR
-    if(!FindNextFileW((HANDLE)dir_INTERNAL(d)->dir_handle,
-                      &dir_INTERNAL(d)->dir_finddata))
+    if(!FindNextFileW((HANDLE)dir_INTERNAL(d)->dir_handle, &dir_INTERNAL(d)->dir_finddata))
 #else
-    if(!FindNextFileA(dir_INTERNAL(d)->dir_handle,
-                      &dir_INTERNAL(d)->dir_finddata))
+    if(!FindNextFileA(dir_INTERNAL(d)->dir_handle, &dir_INTERNAL(d)->dir_finddata))
 #endif
       return 0;
   }

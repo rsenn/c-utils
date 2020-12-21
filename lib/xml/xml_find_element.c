@@ -5,10 +5,7 @@
 int xml_has_attr(xmlnode* node, const void* n, strlist* attrs);
 
 int
-xml_tag_pred(xmlnode* node,
-             const void* arg,
-             const void* arg2,
-             const void* arg3) {
+xml_tag_pred(xmlnode* node, const void* arg, const void* arg2, const void* arg3) {
 
   //  stralloc p;
   //  stralloc_init(&p);
@@ -18,8 +15,7 @@ xml_tag_pred(xmlnode* node,
   //  buffer_putsa(buffer_2, arg);
   //  buffer_putnlflush(buffer_2);
 
-  return node && node->type == XML_ELEMENT &&
-         strlist_contains((strlist*)arg, node->name);
+  return node && node->type == XML_ELEMENT && strlist_contains((strlist*)arg, node->name);
 }
 
 xmlnode*

@@ -71,8 +71,7 @@ print_element_names(xmlnode* a_node) {
       if(!str_diff((const char*)elm->name, "Url")) {
         xmlnode* child_node = NULL;
         print_attr_names(elm);
-        for(child_node = elm->children; child_node;
-            child_node = child_node->next) {
+        for(child_node = elm->children; child_node; child_node = child_node->next) {
           {
             print_attr_names((xmlnode*)child_node);
           }

@@ -101,7 +101,6 @@ unittest_main() {
    * anymore. This test will fail now:
   assert(fmt_jsonescape(buf,"\xf0\x9f\x92\xa9x",5)==13 &&
   !memcmp(buf,"\\ud83d\\udca9x",13)); */
-  assert(fmt_jsonescape(buf, "a\x81x", 3) == 4 &&
-         !memcmp(buf, "a\xc2\x81x", 4));
+  assert(fmt_jsonescape(buf, "a\x81x", 3) == 4 && !memcmp(buf, "a\xc2\x81x", 4));
 }
 #endif

@@ -21,11 +21,7 @@ void
 put_str_escaped(buffer* b, const char* str) {
   stralloc esc;
   stralloc_init(&esc);
-  stralloc_fmt_pred(&esc,
-                    str,
-                    str_len(str),
-                    (stralloc_fmt_fn*)&fmt_escapecharc,
-                    (int (*)()) & iscntrl);
+  stralloc_fmt_pred(&esc, str, str_len(str), (stralloc_fmt_fn*)&fmt_escapecharc, (int (*)()) & iscntrl);
   buffer_putsa(b, &esc);
 }
 
@@ -60,8 +56,7 @@ main(int argc, char* argv[1]) {
     elem_name = argv[2];
   {
     xmlnode* doc = xml_read_tree(&infile);
-    xmlnodeset ns =
-        xml_find_all_1(doc, (xml_pred_t*)&xml_match_name, elem_name);
+    xmlnodeset ns = xml_find_all_1(doc, (xml_pred_t*)&xml_match_name, elem_name);
     xmlnodeset_iter_t it, e;
     size_t i = 0;
     xml_print_nodeset(&ns, buffer_1);

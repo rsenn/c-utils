@@ -30,8 +30,7 @@ fmt_uuencoded(char* dest, const char* src, size_t len) {
       len -= diff;
     }
     for(; i; --i) {
-      tmp = ((unsigned long)s[0] << 16) + ((unsigned long)s[1] << 8) +
-            ((unsigned long)s[2]);
+      tmp = ((unsigned long)s[0] << 16) + ((unsigned long)s[1] << 8) + ((unsigned long)s[2]);
       if(orig) {
         dest[0] = enc((tmp >> (3 * 6)) & 077);
         dest[1] = enc((tmp >> (2 * 6)) & 077);

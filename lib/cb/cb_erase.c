@@ -19,9 +19,7 @@ cb_erase(critbit_tree* cb, const void* key, size_t keylen) {
     if(type == INTERNAL_NODE) {
       iter = parent ? &parent->child[branch] : &cb->root;
       parent = (struct critbit_node*)ptr;
-      branch = (keylen <= parent->byte)
-                   ? 0
-                   : ((1 + ((bytes[parent->byte] | parent->mask) & 0xFF)) >> 8);
+      branch = (keylen <= parent->byte) ? 0 : ((1 + ((bytes[parent->byte] | parent->mask) & 0xFF)) >> 8);
       ptr = parent->child[branch];
     } else {
       void* str;

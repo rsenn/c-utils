@@ -264,8 +264,7 @@ void gen_clean_rule(void);
 int filter_pptoks(const void*, size_t);
 
 target* gen_srcdir_compile_rules(sourcedir*, const char*);
-target* gen_simple_compile_rules(
-    sourcedir*, const char*, const char*, const char*, stralloc*);
+target* gen_simple_compile_rules(sourcedir*, const char*, const char*, const char*, stralloc*);
 target* gen_srcdir_lib_rule(sourcedir*, const char*);
 void gen_srcdir_rule(sourcedir*, const char*);
 void gen_lib_rules(void);

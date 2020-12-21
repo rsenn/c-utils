@@ -191,11 +191,7 @@ read_mediathek_list(const char* url, buffer* b) {
 
   io_onlywantwrite(h.sock);
 
-  buffer_init(&in,
-              (buffer_op_sys*)(void*)&http_read,
-              (fd_t)(size_t)(void*)&h,
-              malloc(8192),
-              8192);
+  buffer_init(&in, (buffer_op_sys*)(void*)&http_read, (fd_t)(size_t)(void*)&h, malloc(8192), 8192);
   in.cookie = &h;
   in.deinit = &buffer_free;
   buffer_lzma(b, &in, 0);
@@ -363,8 +359,7 @@ mktime_r(struct tm* const t, time_t* ret) {
       years--;
     day -= years;
   }
-  day += t->tm_yday = __spm[t->tm_mon] + t->tm_mday - 1 +
-                      (isleap(t->tm_year + 1900) & (t->tm_mon > 1));
+  day += t->tm_yday = __spm[t->tm_mon] + t->tm_mday - 1 + (isleap(t->tm_year + 1900) & (t->tm_mon > 1));
   i = 7;
   t->tm_wday = (day + 4) % i;
   i = 24;
@@ -652,11 +647,9 @@ print_entry(buffer* b, const mediathek_entry_t* e) {
                        ,
                        sep,
                        NULL);
-  buffer_putm_internal(
-      b, "Titel:\t", e->title.s /*strlist_at(sl, 3)*/, sep, NULL);
+  buffer_putm_internal(b, "Titel:\t", e->title.s /*strlist_at(sl, 3)*/, sep, NULL);
 
-  buffer_putm_internal(
-      b, "Datum:\t", format_datetime(e->tm, dt_fmt), sep, NULL);
+  buffer_putm_internal(b, "Datum:\t", format_datetime(e->tm, dt_fmt), sep, NULL);
   buffer_putm_internal(b, "Dauer:\t", format_time(e->dr), sep, NULL);
   buffer_putm_internal(b, "Grösse:\t", format_num(e->mbytes), "MB", sep, NULL);
 
@@ -791,13 +784,7 @@ parse_mediathek_list(buffer* inbuf, buffer* outbuf) {
     char status[FMT_ULONG + 1], error[1024];
     status[fmt_ulong(status, h.response->status)] = '\0';
     http_strerror(&h, ret);
-    errmsg_warn("STATUS: ",
-                status,
-                " error: ",
-                error,
-                " connected: ",
-                h.connected ? "1" : "0",
-                0);
+    errmsg_warn("STATUS: ", status, " error: ", error, " connected: ", h.connected ? "1" : "0", 0);
   }
 
   if(ret == 0) {

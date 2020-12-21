@@ -32,11 +32,7 @@ xml_unescape(const char* x, size_t n, stralloc* out) {
 }
 
 static int
-xml_read_node(xmlreader* r,
-              xmlnodeid id,
-              stralloc* name,
-              stralloc* value,
-              HMAP_DB** attrs) {
+xml_read_node(xmlreader* r, xmlnodeid id, stralloc* name, stralloc* value, HMAP_DB** attrs) {
   xmlnode** nptr;
   stralloc text;
   stralloc_init(&text);
@@ -44,13 +40,7 @@ xml_read_node(xmlreader* r,
   switch(id) {
     case XML_ATTRIBUTE: {
 #if DEBUG_OUTPUT_
-      buffer_putm_internal(buffer_2,
-                           "reading attribute '",
-                           name->s,
-                           "' value '",
-                           value->s,
-                           "'",
-                           NULL);
+      buffer_putm_internal(buffer_2, "reading attribute '", name->s, "' value '", value->s, "'", NULL);
       buffer_putnlflush(buffer_2);
 #endif /* defined XML_DEBUG */
       break;
@@ -58,22 +48,16 @@ xml_read_node(xmlreader* r,
 
     case XML_TEXT: {
       xmlnode *pnode, *tnode, **nptr;
-      const char* x =
-          name && name->s
-              ? (const char*)name->s
-              : /* value && (const char*)value->s ? (const char*)value->s :  */
-              "";
-      size_t i, n = name && name->len
-                        ? name->len
-                        : /*  value && value->len ? value->len : */ 0;
+      const char* x = name && name->s ? (const char*)name->s : /* value && (const char*)value->s ? (const char*)value->s :  */
+                          "";
+      size_t i, n = name && name->len ? name->len : /*  value && value->len ? value->len : */ 0;
 
       i = scan_whitenskip(x, n);
 
       x += i;
       n -= i;
 
-      if(n > 0 && (pnode = r->parent) && pnode->type == XML_ELEMENT &&
-         (&r->parent->children == r->ptr)) {
+      if(n > 0 && (pnode = r->parent) && pnode->type == XML_ELEMENT && (&r->parent->children == r->ptr)) {
         tnode = xml_newnode(XML_TEXT);
 
         stralloc_zero(&text);
