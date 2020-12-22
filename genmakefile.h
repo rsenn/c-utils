@@ -22,7 +22,7 @@
 #include "lib/range.h"
 #include "lib/case.h"
 #include "lib/set.h"
-#include "map.h"
+#include "lib/map.h"
 
 typedef enum { OS_WIN, OS_MAC, OS_LINUX } os_type;
 typedef enum { LANG_C, LANG_CXX } lang_type;

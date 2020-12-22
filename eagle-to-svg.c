@@ -6,7 +6,7 @@
 #include "lib/strlist.h"
 #include "lib/xml.h"
 
-#include "map.h"
+#include "lib/map.h"
 
 static const char* palette[16] = {
     "#000000", "#0000aa", "#555555", "#5555ff", "#aa0000", "#00aa00", "#55ff55", "#aaaaaa", "#00aaaa", "#55ffff", "#ff5555", "#aa00aa", "#ff55ff", "#aa5500", "#ffff55", "#aaaaaa"};

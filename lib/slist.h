@@ -19,7 +19,7 @@ slist_add(slink** list, slink* link) {
   *list = link;
 }
 
-slink** list_find(slink**, int (*pred)(slink*));
+slink** dlist_find(slink**, int (*pred)(slink*));
 void slist_add_after(slink**, slink* p, slink* after);
 void slist_add_before(slink**, slink* p, slink* before);
 slink* slist_find_delete(slink**, int (*pred)(slink*));

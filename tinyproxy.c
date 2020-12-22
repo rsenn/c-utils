@@ -29,7 +29,7 @@
 #include "lib/dns.h"
 #include "lib/wait.h"
 #include "lib/process.h"
-#include "map.h"
+#include "lib/map.h"
 #include "debug.h"
 #include <errno.h>
 #include <fcntl.h>

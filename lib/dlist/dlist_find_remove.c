@@ -1,11 +1,11 @@
 #include "../list.h"
 
 node*
-list_find_delete(list* l, int (*pred)(void*)) {
+dlist_find_delete(list* l, int (*pred)(void*)) {
   node* p;
 
   /* Loop through all links until we find the pointer */
-  list_foreach(l, p) {
+  dlist_foreach(l, p) {
     if(pred(&p[1])) {
       /* If there is a prev node, update its next-
          reference, otherwise update the head */

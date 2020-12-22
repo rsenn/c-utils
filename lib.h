@@ -524,8 +524,8 @@
 ////#include
 ///"lib/list/list_find_remove.c"
 ////#include "lib/list/list_init.c"
-////#include "lib/list/list_find.c"
-////#include "lib/list/list_add_after.c"
+////#include "lib/list/dlist_find.c"
+////#include "lib/list/dlist_add_after.c"
 ////#include "lib/list/list_push.c"
 ////#include "lib/list/list_move_head.c"
 ////#include "lib/list/list_unshift.c"
@@ -534,7 +534,7 @@
 ////#include "lib/list/list_remove.c"
 ////#include "lib/list/list_length.c"
 ////#include
-///"lib/list/list_add_before.c"
+///"lib/list/dlist_add_before.c"
 //#include "lib/dns/dns_ip6.c"
 //#include "lib/dns/dns_rcip.c"
 //#include "lib/dns/dns_txt.c"

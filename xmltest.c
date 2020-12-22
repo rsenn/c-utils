@@ -8,7 +8,7 @@
 #include "lib/strlist.h"
 #include "lib/str.h"
 #include "lib/mmap.h"
-#include "map.h"
+#include "lib/map.h"
 #include "lib/scan.h"
 
 #include <assert.h>

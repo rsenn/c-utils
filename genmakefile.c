@@ -4,7 +4,7 @@
 #include "lib/stralloc.h"
 #include "lib/buffer.h"
 #include "genmakefile.h"
-#include "map.h"
+#include "lib/map.h"
 #include "debug.h"
 #include "mplab.h"
 #include "lib/unix.h"

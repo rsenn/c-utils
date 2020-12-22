@@ -10,7 +10,7 @@
 #include "lib/ihex.h"
 #include "lib/stralloc.h"
 #include "lib/buffer.h"
-#include "map.h"
+#include "lib/map.h"
 #include "lib/strlist.h"
 #include "lib/getopt.h"
 #include "lib/dir.h"

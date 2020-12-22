@@ -1,7 +1,7 @@
 #ifndef _INI_H
 #define _INI_H
 
-#include "map.h"
+#include "lib/map.h"
 #include "lib/byte.h"
 #include "lib/stralloc.h"
 #include "lib/buffer.h"

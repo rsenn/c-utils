@@ -1,6 +1,6 @@
 #include "genmakefile.h"
 #include "ini.h"
-#include "map.h"
+#include "lib/map.h"
 #include "mplab.h"
 #include "lib/set.h"
 

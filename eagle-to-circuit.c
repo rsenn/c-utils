@@ -27,7 +27,7 @@
 #include <libgen.h>
 #endif
 
-#include "map.h"
+#include "lib/map.h"
 
 #ifdef _MSC_VER
 #define alloca _alloca

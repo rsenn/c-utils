@@ -29,7 +29,7 @@
 #include "lib/case.h"
 #include "lib/scan.h"
 #include "lib/fnmatch.h"
-#include "map.h"
+#include "lib/map.h"
 
 #include <ctype.h>
 #include <spawn.h>

@@ -295,6 +295,8 @@ void stralloc_reverse_blocks(stralloc*, size_t size);
 void stralloc_reverse(stralloc*);
 void stralloc_upper(register stralloc*);
 
+// int stralloc_splice(stralloc*, size_t start, size_t ndel, size_t nadd, const char* x);
+
 #ifdef BUFFER_H
 void stralloc_dump(const stralloc* sa, buffer* b);
 #endif

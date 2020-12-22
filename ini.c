@@ -1,5 +1,5 @@
 #include "ini.h"
-#include "map.h"
+#include "lib/map.h"
 #include "lib/str.h"
 #include "lib/fmt.h"
 #include "lib/alloc.h"

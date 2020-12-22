@@ -39,6 +39,22 @@ read_proto() {
   #echo "TYPE=$TYPE FNAME=$FNAME ARGS=$ARGS"   1>&7
 }
 
+get_name() {
+  (NAME=${1##*[!A-Za-z0-9_]}
+  if [ "$NAME"  = "$1" ]; then
+    NAME=
+  fi
+  echo "NAME='$NAME'" 1>&2
+  echo $NAME)
+}
+
+remove_name() {
+  (NAME=`get_name "$1"`
+   ARG=${ARG%"$NAME"}
+   ARG=${ARG%" "}
+   echo "$ARG")
+}
+
 adjust_length() {
   eval "[  \${${1}_MAXLEN} -ge \${#$1} ] 2>/dev/null || ${1}_MAXLEN=\${#$1}"
 }
@@ -86,9 +102,10 @@ clean_args() {
     ARG=${ARG//" *"/"* "}
    
     if [ "$REMOVE_NAMES" = true ] || [ -n "$REMOVE_NAMES" -a "$REMOVE_NAMES" -ge "$I" ] 2>/dev/null; then 
-      ARGLIST=$(set -f; echo "$ARG" | sed 's|\s\+|\n|g ;; s|\([^_A-Za-z0-9()]\)\([_A-Za-z0-9()]\)|\1\n\2|g ;; s|\([_A-Za-z0-9()]\)\([^_A-Za-z0-9()]\)|\1\n\2|g ;; s|\[\s*|[|g ;; s|\s*\]|]|g')
-      ARG=$(set -f; IFS="
-"; set -- $(echo "$ARGLIST"); IFS=" "; echo "$*")
+  #    ARGLIST=$(set -f; echo "$ARG" | sed 's|\s\+|\n|g ;; s|\([^_A-Za-z0-9()]\)\([_A-Za-z0-9()]\)|\1\n\2|g ;; s|\([_A-Za-z0-9()]\)\([^_A-Za-z0-9()]\)|\1\n\2|g ;; s|\[\s*|[|g ;; s|\s*\]|]|g')
+  #    ARG=$(set -f; IFS="
+#"; set -- $(echo "$ARGLIST"); IFS=" "; echo "$*")
+  ARG=`remove_name "$ARG"`
     fi
 
     [ "$EMPTY" = true -a -n "$ARG2" ] && ARG2="()"

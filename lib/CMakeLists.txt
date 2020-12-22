@@ -5,7 +5,7 @@ message("CMAKE_CURRENT_BINARY_DIR: ${CMAKE_CURRENT_BINARY_DIR}")
 
 set(iarray_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/cas.S)
 
-set(MODSUBDIRS alloc array binfmt buffer byte case cb cbmap charbuf coff dir dns elf env errmsg fmt gpio hashmap hmap http iarray ihex io json list map mmap ndelay omf open path pe playlist process range rdir safemult scan seek set sig slist socket str stralloc strarray strlist tai taia textbuf textcode tls tokenizer ucs uint16 uint32 uint64 unix utf8 wait xml
+set(MODSUBDIRS alloc array binfmt buffer byte case cb cbmap charbuf coff dir dns elf env errmsg fmt gpio hashmap hmap http iarray ihex io json list map mmap ndelay omf open path pe playlist preproc process range rdir safemult scan seek set sig slist socket str stralloc strarray strlist tai taia textbuf textcode tls tokenizer ucs uint16 uint32 uint64 unix utf8 wait xml
 )
 file(GLOB MODHEADERS ${CMAKE_CURRENT_SOURCE_DIR}/*.h)
 

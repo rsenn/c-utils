@@ -1,5 +1,5 @@
 #include "ini.h"
-#include "map.h"
+#include "lib/map.h"
 #include "lib/open.h"
 
 int

@@ -34,6 +34,7 @@ typedef struct strlist_s {
 #define strlist_pushm(sa, ...) strlist_pushm_internal(sa, __VA_ARGS__, (char*)0)
 #endif
 int strlist_append_sa(strlist*, const stralloc* sa);
+size_t strlist_pos(const strlist*, size_t index);
 char* strlist_at(const strlist*, size_t i);
 char* strlist_at_n(const strlist*, size_t i, size_t* n);
 stralloc strlist_at_sa(const strlist*, size_t i);

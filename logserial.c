@@ -27,7 +27,7 @@
 #include <unistd.h>
 #include <ctype.h>
 #include <setjmp.h>
-#include "map.h"
+#include "lib/map.h"
 #include "serial.h"
 #include "serial.c"
 

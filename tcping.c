@@ -58,7 +58,7 @@
 #include "lib/bool.h"
 #include <errno.h>
 
-#include "map.h"
+#include "lib/map.h"
 #include "address.h"
 
 #if WINDOWS_NATIVE

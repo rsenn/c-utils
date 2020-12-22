@@ -1,5 +1,6 @@
 #include "lib/preproc.h"
 #include "lib/unix.h"
+#include "lib/open.h"
 #include "lib/buffer.h"
 #include "lib/errmsg.h"
 #include "lib/str.h"
@@ -29,7 +30,7 @@ main(int argc, char** argv) {
 
   cpp = cpp_new();
 
-  while((c = unix_getopt(argc, argv, "D:I:")) != EOF) switch(c) {
+  while((c = unix_getopt(argc, argv, "D:I:")) != -1) switch(c) {
       case 'I': cpp_add_includedir(cpp, unix_optarg); break;
       case 'D':
         if(*(tmp = unix_optarg + str_chr(unix_optarg, '=')) == '=')
@@ -40,7 +41,7 @@ main(int argc, char** argv) {
     }
   fn = "<stdin>";
   fd = STDIN_FILENO;
-  if(argv[optind] && strcmp(argv[optind], "-")) {
+  if(argv[optind] && str_diff(argv[optind], "-")) {
     fn = argv[optind];
     if((fd = open_read(fn)) == -1) {
       errmsg_warnsys("open_read", 0);
@@ -48,7 +49,7 @@ main(int argc, char** argv) {
     }
   }
   buffer_read_fd(&in, fd);
-  ret = cpp_run(cpp, in, stdout, fn);
+  ret = cpp_run(cpp, &in, buffer_1, fn);
   cpp_free(cpp);
   if(in.fd != STDIN_FILENO)
     buffer_close(&in);
