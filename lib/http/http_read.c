@@ -61,7 +61,7 @@ again:
 
     if(r->status <= HTTP_RECV_DATA) {
       if((ret = http_read_internal(h->sock, buf, received, &h->q.in)) > 0) {
-      h->q.in.p += min(buffer_LEN(&h->q.in), ret);
+        h->q.in.p += min(buffer_LEN(&h->q.in), ret);
       }
 
       if(ret == 0) {
