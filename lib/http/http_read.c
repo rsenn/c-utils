@@ -39,7 +39,7 @@ again:
     const char* x;
     int st = r->status;
     bytes = buffer_LEN(b);
-    if(/*bytes > 0 ||*/ (n = buffer_feed(b)) <= 0) {
+    if(/*bytes > 0 ||*/ (n = buffer_freshen(b)) <= 0) {
       if(n == 0) {
         r->status = HTTP_STATUS_CLOSED;
         goto end;
@@ -64,6 +64,9 @@ again:
     }
     if(r->status == HTTP_STATUS_FINISH) {
       goto end;
+    } else {
+      errno = EAGAIN;
+      ret = -1;
     }
     /*   } else {
          if(n + r->ptr > r->content_length)
