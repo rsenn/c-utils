@@ -2,7 +2,7 @@
 #include "../list.h"
 
 void
-list_push(list* l, node* p) {
+dlist_push(list* l, node* p) {
   /* We add to the list tail, so there's no next p */
   p->next = NULL;
 

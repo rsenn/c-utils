@@ -5,7 +5,8 @@ message("CMAKE_CURRENT_BINARY_DIR: ${CMAKE_CURRENT_BINARY_DIR}")
 
 set(iarray_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/cas.S)
 
-set(MODSUBDIRS alloc array binfmt buffer byte case cb cbmap charbuf coff dir dns elf env errmsg fmt gpio hashmap hmap http iarray ihex io json list map mmap ndelay omf open path pe playlist preproc process range rdir safemult scan seek set sig slist socket str stralloc strarray strlist tai taia textbuf textcode tls tokenizer ucs uint16 uint32 uint64 unix utf8 wait xml
+set(MODSUBDIRS alloc array binfmt bmap buffer byte case cb cbmap charbuf coff dir dlist dns elf env errmsg fmt gpio hashmap hmap http iarray ihex io json mmap ndelay omf open path pe playlist preproc process range rdir safemult scan seek set sig slist socket str stralloc strarray strlist tai taia textbuf textcode tls tokenizer ucs uint16 uint32 uint64 unix utf8 wait xml
+
 )
 file(GLOB MODHEADERS ${CMAKE_CURRENT_SOURCE_DIR}/*.h)
 
@@ -53,7 +54,7 @@ target_link_libraries(hmap str)
 target_link_libraries(http fmt dns errmsg byte io scan socket stralloc str ${TLS_LIBRARIES})
 target_link_libraries(io buffer iarray array byte fmt open taia ${LIBMSWSOCK})
 target_link_libraries(json charbuf hmap scan)
-target_link_libraries(map str)
+target_link_libraries(bmap str)
 target_link_libraries(mmap seek open scan ${LIBPSAPI})
 target_link_libraries(open str uint32)
 target_link_libraries(path dir strlist)

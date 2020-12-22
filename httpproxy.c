@@ -33,7 +33,7 @@
 #define HOSTS_FILE "/etc/hosts"
 #endif
 
-static map_t(uint32) hosts_db;
+static bmap_t(uint32) hosts_db;
 static char ipbuf[IP4_FMT];
 
 void
@@ -92,7 +92,7 @@ read_hosts(const char* file) {
 #endif
         stralloc_nul(&hostname);
 
-        map_set(&hosts_db, hostname.s, *(uint32*)ip);
+        bmap_set(&hosts_db, hostname.s, *(uint32*)ip);
 
         s += hlen;
         s += scan_whitenskip(&p[s], l - s);
@@ -107,7 +107,7 @@ int
 lookup_hosts(stralloc* name, stralloc* ips) {
   void* ptr;
   stralloc_nul(name);
-  if((ptr = map_get(&hosts_db, name->s))) {
+  if((ptr = bmap_get(&hosts_db, name->s))) {
     stralloc_copyb(ips, ptr, 4);
     return 1;
   }

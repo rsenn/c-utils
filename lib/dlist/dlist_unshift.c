@@ -2,7 +2,7 @@
 #include "../list.h"
 
 void
-list_unshift(list* l, node* p) {
+dlist_unshift(list* l, node* p) {
   /* We add to the list head, so there's no previous p */
   p->prev = NULL;
 

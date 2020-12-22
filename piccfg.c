@@ -47,7 +47,7 @@ static cword* words;
 static ihex_file hex;
 static uint32 baseaddr;
 static stralloc cfg;
-// static map_t(const char*) pragmas;
+// static bmap_t(const char*) pragmas;
 static strlist pragmas;
 static int nodefault = 1, oneline = 0, comments = 1, output_name = 0, verbose = 0;
 

@@ -2,7 +2,7 @@
 #include "../list.h"
 
 void
-list_move_tail(list* from, list* to) {
+dlist_move_tail(list* from, list* to) {
 
   if(to->tail == NULL) {
     /* Copy to to-list */

@@ -1,8 +1,8 @@
-#include "../map_internal.h"
+#include "../bmap_internal.h"
 
 void
-map_deinit_(map_base_t* m) {
-  map_node_t *next, *node;
+bmap_deinit_(bmap_base_t* m) {
+  bmap_node_t *next, *node;
   int i;
   i = m->nbuckets;
   while(i--) {

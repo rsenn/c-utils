@@ -2,7 +2,7 @@
 #include "../list.h"
 
 size_t
-list_length(list* l) {
+dlist_length(list* l) {
   node* node;
   size_t count = 0;
 

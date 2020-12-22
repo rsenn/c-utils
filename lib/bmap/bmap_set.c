@@ -1,35 +1,35 @@
 #include "../byte.h"
-#include "../map_internal.h"
+#include "../bmap_internal.h"
 #include "../alloc.h"
 
 #include <stdlib.h>
 
-static map_node_t*
-map_newnode(const char* key, void* value, int vsize) {
-  map_node_t* node;
+static bmap_node_t*
+bmap_newnode(const char* key, void* value, int vsize) {
+  bmap_node_t* node;
   int ksize = str_len(key) + 1;
   int voffset = ksize + ((sizeof(void*) - ksize) % sizeof(void*));
-  node = (map_node_t*)alloc(sizeof(*node) + voffset + vsize);
+  node = (bmap_node_t*)alloc(sizeof(*node) + voffset + vsize);
   if(!node)
     return NULL;
   byte_copy(node + 1, ksize, key);
-  node->hash = map_hash(key);
+  node->hash = bmap_hash(key);
   node->value = ((char*)(node + 1)) + voffset;
   byte_copy(node->value, vsize, value);
   return node;
 }
 
 static void
-map_addnode(map_base_t* m, map_node_t* node) {
-  int n = map_bucketidx(m, node->hash);
+bmap_addnode(bmap_base_t* m, bmap_node_t* node) {
+  int n = bmap_bucketidx(m, node->hash);
   node->next = m->buckets[n];
   m->buckets[n] = node;
 }
 
 static int
-map_resize(map_base_t* m, int nbuckets) {
-  map_node_t *nodes, *node, *next;
-  map_node_t** buckets;
+bmap_resize(bmap_base_t* m, int nbuckets) {
+  bmap_node_t *nodes, *node, *next;
+  bmap_node_t** buckets;
   int i;
   /* Chain all nodes together */
   nodes = NULL;
@@ -56,7 +56,7 @@ map_resize(map_base_t* m, int nbuckets) {
     node = nodes;
     while(node) {
       next = node->next;
-      map_addnode(m, node);
+      bmap_addnode(m, node);
       node = next;
     }
   }
@@ -65,26 +65,26 @@ map_resize(map_base_t* m, int nbuckets) {
 }
 
 int
-map_set_(map_base_t* m, const char* key, void* value, int vsize) {
+bmap_set_(bmap_base_t* m, const char* key, void* value, int vsize) {
   int n, err;
-  map_node_t **next, *node;
+  bmap_node_t **next, *node;
   /* Find & replace existing node */
-  next = map_getref(m, key);
+  next = bmap_getref(m, key);
   if(next) {
     byte_copy((*next)->value, vsize, value);
     return 0;
   }
   /* Add new node */
-  node = map_newnode(key, value, vsize);
+  node = bmap_newnode(key, value, vsize);
   if(node == NULL)
     goto fail;
   if(m->nnodes >= m->nbuckets) {
     n = (m->nbuckets > 0) ? (m->nbuckets << 1) : 1;
-    err = map_resize(m, n);
+    err = bmap_resize(m, n);
     if(err)
       goto fail;
   }
-  map_addnode(m, node);
+  bmap_addnode(m, node);
   m->nnodes++;
   return 0;
 fail:

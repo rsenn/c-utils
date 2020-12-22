@@ -55,7 +55,7 @@ main(int argc, char* argv[]) {
                                  "lib/list.h",
                                  "lib/macho.h",
                                  "lib/map.h",
-                                 "lib/map_internal.h",
+                                 "lib/bmap_internal.h",
                                  "lib/memalign.h",
                                  "lib/memory.h",
                                  "lib/mmap.h",
