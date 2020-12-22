@@ -27,24 +27,45 @@
 			"file": "lib/tokenizer/tokenizer_ftello.c",
 			"settings":
 			{
-				"buffer_size": 209,
+				"buffer_size": 208,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "lib/tokenizer/tokenizer_get_flags.c",
+			"file": "lib/tokenizer_internal.h",
 			"settings":
 			{
-				"buffer_size": 104,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/tokenizer/tokenizer_init.c",
-			"settings":
-			{
-				"buffer_size": 195,
+				"buffer_size": 6928,
 				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"contents": "#include \"../http.h\"\n#include \"../scan.h\"\n#include \"../socket_internal.h\"\n#include \"../str.h\"\n#include \"../stralloc.h\"\n#include \"../io.h\"\n#include \"../byte.h\"\n#include \"../case_diffb.h\"\n#include <errno.h>\n#include <assert.h>\n\nssize_t http_socket_read(fd_t fd, void* buf, size_t len, void* b);\n\nstatic inline void\nputline(const char* what, const char* b, ssize_t l, int i) {\n  buffer_puts(buffer_2, what);\n  buffer_puts(buffer_2, \"[\");\n  buffer_putulong(buffer_2, i);\n  buffer_puts(buffer_2, \"]\");\n  buffer_puts(buffer_2, \": \");\n  if(l <= 0)\n    buffer_puts(buffer_2, b);\n  else {\n    while(l-- > 0) buffer_put(buffer_2, b++, 1);\n  }\n  buffer_putnlflush(buffer_2);\n}\n\nssize_t\nhttp_read_header(http* h, stralloc* sa, http_response* r) {\n  ssize_t ret = 0, bytesread = 0;\n  size_t start, n;\n  char* x;\n  buffer* in = &h->q.in;\n  while(r->status == HTTP_RECV_HEADER) {\n    size_t bytesavail = in->n - in->p;\n    // h->q.in.op = NULL;\n    start = sa->len;\n    if((ret = buffer_getline_sa(&h->q.in, sa)) <= 0)\n      break;\n    bytesread += bytesavail - (in->n - in->p);\n    stralloc_nul(sa);\n    x = &sa->s[start];\n    n = byte_trimr(x, sa->len - start, \"\\r\\n\", 2);\n    if(n == 0) {\n      // r->ptr = in->p;\n      r->status = HTTP_RECV_DATA;\n      ret = 1;\n      break;\n    }\n#if DEBUG_HTTP\n    putline(\"Header\", x, n, byte_count(sa->s, sa->len, '\\n'));\n#endif\n    if(r->code == -1) {\n\n      if(str_start(sa->s, \"HTTP\")) {\n        unsigned int code;\n        size_t p = scan_nonwhitenskip(sa->s, sa->len);\n        p += scan_whitenskip(&sa->s[p], sa->len - p);\n        if(scan_uint(&sa->s[p], &code) > 0)\n          r->code = code;\n      }\n    }\n\n    if(sa->len - start >= 23 && !case_diffb(x, 23, \"Content-Type: multipart\")) {\n      size_t p = str_find(x, \"boundary=\");\n      if(x[p]) {\n        stralloc_copys(&r->boundary, &x[p + str_len(\"boundary=\")]);\n      }\n      r->transfer = HTTP_TRANSFER_BOUNDARY;\n      r->ptr = 0;\n    } else if(sa->len - start >= 15 && !case_diffb(x, 15, \"Content-Length:\")) {\n      scan_ulonglong(&x[16], &r->content_length);\n      r->transfer = HTTP_TRANSFER_LENGTH;\n      r->ptr = 0;\n    } else if(sa->len - start >= 18 && case_diffb(x, 18, \"Transfer-Encoding:\") && str_contains(x, \"chunked\")) {\n      r->ptr = 0;\n      r->chunk_length = 0;\n      r->content_length = 0;\n      r->transfer = HTTP_TRANSFER_CHUNKED;\n    }\n  }\n  h->q.in.op = (buffer_op_proto*)&http_socket_read;\n\n#ifdef DEBUG_HTTP\n  buffer_putspad(buffer_2, \"\\x1b[1;33mhttp_read_header\\x1b[0m\", 30);\n  buffer_puts(buffer_2, \"s=\");\n  buffer_putlong(buffer_2, h->sock);\n\n  buffer_puts(buffer_2, \" ret=\");\n  buffer_putlong(buffer_2, ret);\n  if(ret < 0) {\n    buffer_puts(buffer_2, \" err=\");\n    buffer_putstr(buffer_2, http_strerror(h, ret));\n  }\n\n  if(r->code != -1) {\n    buffer_puts(buffer_2, \" code=\\x1b[1;36m\");\n    buffer_putlong(buffer_2, r->code);\n    buffer_puts(buffer_2, \"\\x1b[0m\");\n  }\n  if(r->content_length > 0) {\n    buffer_puts(buffer_2, \" content_length=\");\n    buffer_putlong(buffer_2, r->content_length);\n  }\n  buffer_puts(buffer_2, \" status=\");\n  buffer_puts(buffer_2, ((const char* const[]){\"-1\", \"HTTP_RECV_HEADER\", \"HTTP_RECV_DATA\", \"HTTP_STATUS_CLOSED\", \"HTTP_STATUS_ERROR\", \"HTTP_STATUS_BUSY\", \"HTTP_STATUS_FINISH\", 0})[r->status + 1]);\n  buffer_putnlflush(buffer_2);\n#endif\n  return ret;\n}\n",
+			"file": "lib/http/http_read_header.c",
+			"file_size": 3293,
+			"file_write_time": 132531467884000726,
+			"settings":
+			{
+				"buffer_size": 3299,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/http/http_socket.c",
+			"settings":
+			{
+				"buffer_size": 6009,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "cpptest.c",
+			"settings":
+			{
+				"buffer_size": 1348,
 				"line_ending": "Unix"
 			}
 		},
@@ -52,16 +73,7 @@
 			"file": "CMakeLists.txt",
 			"settings":
 			{
-				"buffer_size": 96072,
-				"encoding": "UTF-8",
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/CMakeLists.txt",
-			"settings":
-			{
-				"buffer_size": 3915,
+				"buffer_size": 96123,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
@@ -75,100 +87,10 @@
 			}
 		},
 		{
-			"file": "lib/tokenizer.h",
+			"file": "lib/byte/byte_lower.c",
 			"settings":
 			{
-				"buffer_size": 2228,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/tokenizer_internal.h",
-			"settings":
-			{
-				"buffer_size": 7508,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/tokenizer/tokenizer_getc.c",
-			"settings":
-			{
-				"buffer_size": 507,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/tokenizer/tokenizer_peek_token.c",
-			"settings":
-			{
-				"buffer_size": 197,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/case/case_lowerc.c",
-			"settings":
-			{
-				"buffer_size": 108,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/buffer/buffer_getc.c",
-			"settings":
-			{
-				"buffer_size": 229,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/tokenizer/tokenizer_next.c",
-			"settings":
-			{
-				"buffer_size": 3329,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "cpptest.c",
-			"settings":
-			{
-				"buffer_size": 63,
-				"line_ending": "Unix",
-				"name": "#include \"lib/tokenizer.h\""
-			}
-		},
-		{
-			"file": "lib/tokenizer/tokenizer_peek.c",
-			"settings":
-			{
-				"buffer_size": 221,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/str.h",
-			"settings":
-			{
-				"buffer_size": 3726,
-				"encoding": "UTF-8",
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/tokenizer/tokenizer_skip_chars.c",
-			"settings":
-			{
-				"buffer_size": 470,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/tokenizer/tokenizer_read_until.c",
-			"settings":
-			{
-				"buffer_size": 662,
+				"buffer_size": 268,
 				"line_ending": "Unix"
 			}
 		}
@@ -284,18 +206,41 @@
 		"/home/roman/Sources/c-utils",
 		"/home/roman/Sources/c-utils/lib",
 		"/home/roman/Sources/c-utils/lib/case",
+		"/home/roman/Sources/c-utils/lib/preproc",
 		"/home/roman/Sources/c-utils/lib/tokenizer"
 	],
 	"file_history":
 	[
+		"/home/roman/Sources/c-utils/lib/tokenizer/tokenizer_get_flags.c",
+		"/home/roman/Sources/c-utils/lib/tokenizer/tokenizer_init.c",
+		"/home/roman/Sources/c-utils/CMakeLists.txt",
+		"/home/roman/Sources/c-utils/lib/CMakeLists.txt",
+		"/home/roman/Sources/c-utils/lib/byte.h",
 		"/home/roman/Sources/c-utils/lib/tokenizer.h",
+		"/home/roman/Sources/c-utils/lib/tokenizer_internal.h",
+		"/home/roman/Sources/c-utils/lib/tokenizer/tokenizer_ungetc.c",
+		"/home/roman/Sources/c-utils/lib/tokenizer/tokenizer_getc.c",
+		"/home/roman/Sources/c-utils/lib/tokenizer/tokenizer_peek_token.c",
+		"/home/roman/Sources/c-utils/lib/case/case_lowerc.c",
+		"/home/roman/Sources/c-utils/lib/buffer/buffer_getc.c",
+		"/home/roman/Sources/c-utils/lib/tokenizer/tokenizer_next.c",
+		"/home/roman/Sources/c-utils/lib/tokenizer/tokenizer_rewind.c",
+		"/home/roman/Sources/c-utils/lib/buffer/buffer_read_fd.c",
+		"/home/roman/Sources/c-utils/lib/buffer/buffer_realloc.c",
+		"/home/roman/Sources/c-utils/lib/buffer/buffer_putxlonglong0.c",
+		"/home/roman/Sources/c-utils/lib/buffer/buffer_seek.c",
+		"/home/roman/Sources/c-utils/lib/buffer/buffer_rewind.c",
+		"/home/roman/Sources/c-utils/lib/buffer.h",
+		"/home/roman/Sources/c-utils/lib/buffer/buffer_read.c",
+		"/home/roman/Sources/c-utils/cpptest.c",
+		"/home/roman/Sources/c-utils/lib/tokenizer/tokenizer_peek.c",
+		"/home/roman/Sources/c-utils/lib/str.h",
+		"/home/roman/Sources/c-utils/lib/tokenizer/tokenizer_skip_chars.c",
+		"/home/roman/Sources/c-utils/lib/tokenizer/tokenizer_read_until.c",
 		"/home/roman/Sources/c-utils/httptest.c",
 		"/home/roman/Sources/c-utils/lib/buffer/buffer_init_free.c",
-		"/home/roman/Sources/c-utils/lib/buffer/buffer_realloc.c",
-		"/home/roman/Sources/c-utils/lib/buffer.h",
 		"/home/roman/Sources/c-utils/lib/http/http_canread.c",
 		"/home/roman/Sources/c-utils/lib/cpp.h",
-		"/home/roman/Sources/c-utils/lib/tokenizer_internal.h",
 		"/home/roman/Sources/c-utils/lib/http/http_init.c",
 		"/home/roman/Sources/c-utils/lib/http/http_strerror.c",
 		"/home/roman/Sources/c-utils/lib/http/http_sendreq.c",
@@ -313,7 +258,6 @@
 		"/home/roman/Sources/c-utils/lib/buffer/buffer_feed.c",
 		"/home/roman/Sources/c-utils/lib/http/http_socket.c",
 		"/home/roman/Sources/c-utils/lib/http/http_response_free.c",
-		"/home/roman/Sources/c-utils/CMakeLists.txt",
 		"/home/roman/Sources/c-utils/lib/slist/slist_push.c",
 		"/home/roman/Sources/c-utils/lib/http.h",
 		"/home/roman/Sources/c-utils/lib/slist/slist_length.c",
@@ -378,7 +322,6 @@
 		"/home/roman/Sources/c-utils/lib/path/path_dirname.c",
 		"/home/roman/Sources/c-utils/lib/stralloc.h",
 		"/home/roman/Sources/c-utils/lib/stralloc/stralloc_trimr.c",
-		"/home/roman/Sources/c-utils/lib/str.h",
 		"/usr/include/brotli/types.h",
 		"/home/roman/Sources/c-utils/lib/buffer/buffer_brotli.c",
 		"/home/roman/Sources/c-utils/eagle-gen-cmds.c",
@@ -392,34 +335,14 @@
 		"/home/roman/Sources/c-utils/lib/fmt/fmt_escapecharnonprintable.c",
 		"/home/roman/Sources/c-utils/lib/stralloc/buffer_put_escaped.c",
 		"/home/roman/Sources/c-utils/lib/xml/xml_scan_attrvalue.c",
-		"/home/roman/Sources/c-utils/lib/CMakeLists.txt",
 		"/home/roman/Sources/c-utils/lib/xml/xml_scan_attrname.c",
 		"/home/roman/Sources/c-utils/lib/fmt/fmt_escapecharquotedprintable.c",
 		"/home/roman/Sources/c-utils/lib/fmt.h",
-		"/home/roman/Sources/c-utils/lib/fmt/fmt_escapecharc.c",
-		"/home/roman/Sources/c-utils/lib/fmt/fmt_escapecharhtml.c",
-		"/home/roman/Sources/c-utils/output-UE9EQ5.txt",
-		"/home/roman/Sources/c-utils/lib/str/str_chrs.c",
-		"/home/roman/Sources/c-utils/lib/xml/xml_attributes.c",
-		"/home/roman/Sources/c-utils/lib/xml/xml_scan_comment.c",
-		"/home/roman/Sources/c-utils/lib/fmt/fmt_octal.c",
-		"/home/roman/Sources/c-utils/3rdparty/zlib/treebuild.xml",
-		"/home/roman/Sources/c-utils/lib/scan/scan_charsetnskip.c",
-		"/home/roman/Sources/c-utils/lib/buffer/buffer_skipspace.c",
-		"/home/roman/Sources/c-utils/lib/buffer/buffer_skip_pred.c",
-		"/home/roman/Sources/c-utils/lib/byte/byte_scan.c",
-		"/home/roman/Sources/c-utils/lib/byte.h",
-		"/home/roman/Sources/c-utils/lib/buffer/buffer_prefetch.c",
-		"/home/roman/Sources/c-utils/lib/buffer/buffer_read_fd.c",
-		"/home/roman/Sources/c-utils/eagle-to-circuit.c",
-		"/home/roman/Sources/c-utils/build/cmake/FindStandardMathLibrary.cmake",
-		"/home/roman/Sources/c-utils/lib/scan/scan_noncharsetnskip.c",
-		"/home/roman/Sources/c-utils/lib/byte/byte_copy.c",
-		"/home/roman/Sources/c-utils/lib/byte/byte_chrs.c"
+		"/home/roman/Sources/c-utils/lib/fmt/fmt_escapecharc.c"
 	],
 	"find":
 	{
-		"height": 42.0
+		"height": 44.0
 	},
 	"find_in_files":
 	{
@@ -441,6 +364,9 @@
 		"case_sensitive": true,
 		"find_history":
 		[
+			"tolower",
+			"buffer_seek",
+			"strcpy",
 			"off_t",
 			"str_contains",
 			"ARRAY_SIZE",
@@ -565,10 +491,7 @@
 			"+= n",
 			"^\\s*ret .?=",
 			"ret .?=",
-			"ret =",
-			"ret ",
-			"http_read_internal",
-			"read_int"
+			"ret ="
 		],
 		"highlight": false,
 		"in_selection": false,
@@ -674,7 +597,7 @@
 			]
 		},
 		{
-			"selected": 9,
+			"selected": 4,
 			"sheets":
 			[
 				{
@@ -683,49 +606,20 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 209,
+						"buffer_size": 208,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								34,
-								34
+								191,
+								191
 							]
 						],
 						"settings":
 						{
-							"function_name_status_row": 0,
-							"syntax": "Packages/C99/C99.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 9,
-					"type": "text"
-				},
-				{
-					"buffer": 1,
-					"file": "lib/tokenizer/tokenizer_get_flags.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 104,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"function_name_status_row": 0,
+							"function_name_status_row": 10,
 							"syntax": "Packages/C99/C99.tmLanguage"
 						},
 						"translation.x": 0.0,
@@ -736,86 +630,88 @@
 					"type": "text"
 				},
 				{
-					"buffer": 2,
-					"file": "lib/tokenizer/tokenizer_init.c",
+					"buffer": 1,
+					"file": "lib/tokenizer_internal.h",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 195,
+						"buffer_size": 6928,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								195,
-								195
+								267,
+								267
 							]
 						],
 						"settings":
 						{
-							"function_name_status_row": 6,
-							"syntax": "Packages/C99/C99.tmLanguage"
+							"function_name_status_row": 9,
+							"syntax": "Packages/C++/C++.sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 7,
+					"stack_index": 5,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "lib/http/http_read_header.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 3299,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								182,
+								182
+							]
+						],
+						"settings":
+						{
+							"function_name_status_row": 7,
+							"syntax": "Packages/C99/C99.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 4,
 					"type": "text"
 				},
 				{
 					"buffer": 3,
-					"file": "CMakeLists.txt",
+					"file": "lib/http/http_socket.c",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 96072,
+						"buffer_size": 6009,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								85885,
-								85885
+								252,
+								252
 							]
 						],
 						"settings":
 						{
-							"function_name_status_row": 1205,
-							"syntax": "Packages/CMakeEditor/CMakeEditor.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 34000.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 15,
-					"type": "text"
-				},
-				{
-					"buffer": 4,
-					"file": "lib/CMakeLists.txt",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 3915,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								647,
-								647
-							]
-						],
-						"settings":
-						{
-							"function_name_status_row": 8,
-							"syntax": "Packages/CMakeEditor/CMakeEditor.tmLanguage",
+							"function_name_status_row": 10,
+							"syntax": "Packages/C99/C99.tmLanguage",
 							"tab_size": 2,
 							"translate_tabs_to_spaces": true
 						},
@@ -823,11 +719,71 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 10,
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "cpptest.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1348,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1184,
+								1201
+							]
+						],
+						"settings":
+						{
+							"function_name_status_row": 46,
+							"syntax": "Packages/C99/C99.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 594.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
 					"type": "text"
 				},
 				{
 					"buffer": 5,
+					"file": "CMakeLists.txt",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 96123,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								95687,
+								95687
+							]
+						],
+						"settings":
+						{
+							"function_name_status_row": 1368,
+							"syntax": "Packages/CMakeEditor/CMakeEditor.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 42911.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 6,
 					"file": "lib/byte.h",
 					"semi_transient": false,
 					"settings":
@@ -839,47 +795,17 @@
 						"selection":
 						[
 							[
-								1548,
-								1548
+								0,
+								0
 							]
 						],
 						"settings":
 						{
-							"function_name_status_row": 42,
+							"function_name_status_row": 0,
 							"syntax": "Packages/C++/C++.sublime-syntax"
 						},
 						"translation.x": 0.0,
-						"translation.y": 436.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 8,
-					"type": "text"
-				},
-				{
-					"buffer": 6,
-					"file": "lib/tokenizer.h",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 2228,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								1345,
-								1345
-							]
-						],
-						"settings":
-						{
-							"function_name_status_row": 74,
-							"syntax": "Packages/C++/C++.sublime-syntax",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 60.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 6,
@@ -887,55 +813,24 @@
 				},
 				{
 					"buffer": 7,
-					"file": "lib/tokenizer_internal.h",
+					"file": "lib/byte/byte_lower.c",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 7508,
+						"buffer_size": 268,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								933,
-								933
+								162,
+								162
 							]
 						],
 						"settings":
 						{
-							"function_name_status_row": 41,
-							"syntax": "Packages/C++/C++.sublime-syntax",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 360.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 5,
-					"type": "text"
-				},
-				{
-					"buffer": 8,
-					"file": "lib/tokenizer/tokenizer_getc.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 507,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								36,
-								35
-							]
-						],
-						"settings":
-						{
-							"function_name_status_row": 1,
+							"function_name_status_row": 9,
 							"syntax": "Packages/C99/C99.tmLanguage",
 							"tab_size": 2,
 							"translate_tabs_to_spaces": true
@@ -944,275 +839,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 1,
-					"type": "text"
-				},
-				{
-					"buffer": 9,
-					"file": "lib/tokenizer/tokenizer_peek_token.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 197,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"function_name_status_row": 0,
-							"syntax": "Packages/C99/C99.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 0,
-					"type": "text"
-				},
-				{
-					"buffer": 10,
-					"file": "lib/case/case_lowerc.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 108,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								108,
-								108
-							]
-						],
-						"settings":
-						{
-							"function_name_status_row": 7,
-							"syntax": "Packages/C99/C99.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 12,
-					"type": "text"
-				},
-				{
-					"buffer": 11,
-					"file": "lib/buffer/buffer_getc.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 229,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								53,
-								53
-							]
-						],
-						"settings":
-						{
-							"function_name_status_row": 4,
-							"syntax": "Packages/C99/C99.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 11,
-					"type": "text"
-				},
-				{
-					"buffer": 12,
-					"file": "lib/tokenizer/tokenizer_next.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 3329,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								36,
-								36
-							]
-						],
-						"settings":
-						{
-							"function_name_status_row": 2,
-							"syntax": "Packages/C99/C99.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 1800.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 4,
-					"type": "text"
-				},
-				{
-					"buffer": 13,
-					"file": "cpptest.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 63,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								28,
-								28
-							]
-						],
-						"settings":
-						{
-							"auto_name": "#include \"lib/tokenizer.h\"",
-							"function_name_status_row": 1,
-							"syntax": "Packages/C99/C99.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 13,
-					"type": "text"
-				},
-				{
-					"buffer": 14,
-					"file": "lib/tokenizer/tokenizer_peek.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 221,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"function_name_status_row": 0,
-							"syntax": "Packages/C99/C99.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 2,
-					"type": "text"
-				},
-				{
-					"buffer": 15,
-					"file": "lib/str.h",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 3726,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								3533,
-								3533
-							]
-						],
-						"settings":
-						{
-							"function_name_status_row": 95,
-							"syntax": "Packages/C++/C++.sublime-syntax"
-						},
-						"translation.x": 0.0,
-						"translation.y": 1496.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 14,
-					"type": "text"
-				},
-				{
-					"buffer": 16,
-					"file": "lib/tokenizer/tokenizer_skip_chars.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 470,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"function_name_status_row": 0,
-							"syntax": "Packages/C99/C99.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 17,
-					"type": "text"
-				},
-				{
-					"buffer": 17,
-					"file": "lib/tokenizer/tokenizer_read_until.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 662,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"function_name_status_row": 0,
-							"syntax": "Packages/C99/C99.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 16,
+					"stack_index": 7,
 					"type": "text"
 				}
 			]
@@ -1220,7 +847,7 @@
 	],
 	"incremental_find":
 	{
-		"height": 29.0
+		"height": 31.0
 	},
 	"input":
 	{
@@ -1278,7 +905,7 @@
 	"project": "c-utils.sublime-project",
 	"replace":
 	{
-		"height": 75.0
+		"height": 79.0
 	},
 	"save_all_on_build": true,
 	"select_file":
@@ -1287,6 +914,34 @@
 		"last_filter": "",
 		"selected_items":
 		[
+			[
+				"cmakelists",
+				"CMakeLists.txt"
+			],
+			[
+				"cpptest",
+				"cpptest.c"
+			],
+			[
+				"http_sock",
+				"lib/http/http_socket.c"
+			],
+			[
+				"http_read_hea",
+				"lib/http/http_read_header.c"
+			],
+			[
+				"byte_low",
+				"lib/byte/byte_lower.c"
+			],
+			[
+				"buffer.h",
+				"lib/buffer.h"
+			],
+			[
+				"tokenizer.h",
+				"lib/tokenizer.h"
+			],
 			[
 				"getc.c",
 				"~/Sources/c-utils/lib/tokenizer/tokenizer_getc.c"
@@ -1308,16 +963,8 @@
 				"lib/CMakeLists.txt"
 			],
 			[
-				"cmakelists",
-				"CMakeLists.txt"
-			],
-			[
 				"tokenizer",
 				"lib/tokenizer.h"
-			],
-			[
-				"buffer.h",
-				"lib/buffer.h"
 			],
 			[
 				"http.h",
@@ -1564,10 +1211,6 @@
 				"lib/tls/tls_accept.c"
 			],
 			[
-				"http_sock",
-				"lib/http/http_socket.c"
-			],
-			[
 				"ip4",
 				"lib/ip4.h"
 			],
@@ -1782,22 +1425,6 @@
 			[
 				"",
 				"lib/ip6.h"
-			],
-			[
-				"ip6",
-				"lib/ip6.h"
-			],
-			[
-				"ip4.h",
-				"lib/ip4.h"
-			],
-			[
-				"query.c",
-				"query.c"
-			],
-			[
-				"dns.h",
-				"lib/dns.h"
 			]
 		],
 		"width": 0.0
