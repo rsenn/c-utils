@@ -377,13 +377,13 @@ http_process(http* h, strlist* urls, uri_t* uri) {
   buffer_puts(buffer_2, "HEADERS: ");
   put_indented(buffer_2, stralloc_begin(&r->data), pos);
   buffer_puts(buffer_2, "RESPONSE LENGTH: ");
-  buffer_putulonglong(buffer_2, r->data.len);
+  buffer_putulonglong(buffer_2, r->data.len - r->ptr);
   buffer_puts(buffer_2, "\nRESPONSE DATA: ");
 
   if(0 && byte_finds(type, typelen, "html") < typelen || byte_finds(type, typelen, "xml") < typelen) {
     process_xml(stralloc_begin(&r->data) + pos, stralloc_length(&r->data) - pos, urls, uri);
   } else {
-    put_escaped(buffer_2, stralloc_begin(&r->data), stralloc_length(&r->data));
+    put_escaped(buffer_2, stralloc_begin(&r->data) + pos, stralloc_length(&r->data) - pos);
 
     //    put_indented_n(buffer_2, stralloc_begin(&r->data) + pos, stralloc_length(&r->data) - pos, 1024);
   }

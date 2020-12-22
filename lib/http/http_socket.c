@@ -19,6 +19,8 @@
 #include <string.h>
 #include <stdio.h>
 
+ssize_t http_read_internal(fd_t fd, char* buf, size_t received, buffer* b);
+
 ssize_t http_socket_read(fd_t fd, void* buf, size_t len, void* b);
 ssize_t http_socket_write(fd_t fd, void* buf, size_t len, void* b);
 
@@ -115,12 +117,23 @@ http_socket_read(fd_t fd, void* buf, size_t len, void* b) {
   }
   buffer_putnlflush(buffer_2);
 #endif
-    if(ret > 0) {
-      size_t n = h->q.in.n;
+  if(ret > 0) {
+    int st = h->response->status;
+    size_t n = h->q.in.n;
+    /*   buffer_realloc(&h->q.in, h->q.in.n + ret);
+
+       byte_copy(&h->q.in.x[h->q.in.n], ret, buf);*/
+    if(st == HTTP_RECV_HEADER) {
+      buffer_realloc(&h->q.in, h->q.in.n + ret);
+
+      byte_copy(&h->q.in.x[h->q.in.n], ret, buf);
       h->q.in.n += ret;
-      iret = http_read_internal(fd, (char*)buf, ret, &h->q.in);
-      h->q.in.n = n;
     }
+
+    iret = http_read_internal(fd, (char*)buf, ret, &h->q.in);
+    if(st == HTTP_RECV_HEADER)
+      h->q.in.n = n;
+  }
   if(ret == 0) {
     io_dontwantwrite(fd);
     io_dontwantread(fd);
