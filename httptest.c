@@ -380,7 +380,7 @@ http_process(http* h, strlist* urls, uri_t* uri) {
   buffer_putulonglong(buffer_2, r->data.len);
   buffer_puts(buffer_2, "\nRESPONSE DATA: ");
 
-  if(byte_finds(type, typelen, "html") < typelen || byte_finds(type, typelen, "xml") < typelen) {
+  if(0 && byte_finds(type, typelen, "html") < typelen || byte_finds(type, typelen, "xml") < typelen) {
     process_xml(stralloc_begin(&r->data) + pos, stralloc_length(&r->data) - pos, urls, uri);
   } else {
 

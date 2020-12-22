@@ -11,6 +11,9 @@
 #include <string.h>
 #include <assert.h>
 
+#define max(a, b) ((a) > (b) ? (a) : (b))
+#define min(a, b) ((a) < (b) ? (a) : (b))
+
 static void
 putnum(const char* what, ssize_t n) {
   buffer_puts(buffer_2, what);
@@ -39,9 +42,10 @@ again:
     const char* x;
     int st = r->status;
     bytes = buffer_LEN(b);
-    if(/*bytes > 0 ||*/ (n = buffer_freshen(b)) <= 0) {
+    if(/*bytes > 0 ||*/ (n = buffer_feed(b)) <= 0) {
       if(n == 0) {
         r->status = HTTP_STATUS_CLOSED;
+        ret = 0;
         goto end;
       } else if((int)r->status == st) {
         if(ret == 0 && r->err != 0) {
@@ -50,19 +54,22 @@ again:
         }
       }
     }
+
     x = buffer_BEGIN(b);
     n = buffer_LEN(b);
     received = n - bytes;
-    if(r->status == HTTP_RECV_HEADER) {
-      if((ret = http_read_header(h, &r->data, r)) <= 0)
+
+    if(r->status <= HTTP_RECV_DATA) {
+      if((ret = http_read_internal(h->sock, buf, received, &h->q.in)) > 0) {
+        h->q.in.p += min(buffer_LEN(&h->q.in), ret);
+      }
+
+      if(ret == 0) {
+        r->status = HTTP_STATUS_FINISH;
+      }
+      if(r->status == HTTP_STATUS_FINISH) {
         goto end;
-      ret = -1;
-      errno = EAGAIN;
-    }
-    if((ret = http_read_internal(h->sock, buf, received, &h->q.in)) > 0) {
-    }
-    if(r->status == HTTP_STATUS_FINISH) {
-      goto end;
+      }
     }
     /*   } else {
          if(n + r->ptr > r->content_length)

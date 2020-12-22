@@ -62,19 +62,21 @@ http_read_internal(fd_t fd, char* buf, size_t received, buffer* b) {
 #endif
   if(r->status == HTTP_RECV_DATA) {
 
-    if(r->ptr < r->content_length) {
-      size_t len = buffer_LEN(in);
-      const char* s = buffer_BEGIN(in);
-      size_t remain = r->content_length - r->ptr;
+    if(r->data.len < r->content_length) {
+      size_t len = n;
+      const char* s = buf;
+      size_t remain = r->content_length - r->data.len;
       size_t num = min(len, remain);
 
       stralloc_catb(&r->data, s, num);
 
-      in->p += num;
-      r->ptr += num;
+      // in->p += num;
+      //    r->ptr += num;
 
-      if(r->ptr >= r->content_length)
+      if(r->data.len >= r->content_length)
         r->chunk_length = 0;
+
+      n = num;
     }
   }
 
