@@ -1,3 +1,4 @@
 [submodule "xz"]
 	path = 3rdparty/xz
-	url = https://github.com/cmake-powered/xz
+  url = https://github.com/cmake-powered/xz
+  branch = master
