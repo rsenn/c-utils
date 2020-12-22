@@ -383,8 +383,9 @@ http_process(http* h, strlist* urls, uri_t* uri) {
   if(0 && byte_finds(type, typelen, "html") < typelen || byte_finds(type, typelen, "xml") < typelen) {
     process_xml(stralloc_begin(&r->data) + pos, stralloc_length(&r->data) - pos, urls, uri);
   } else {
+    put_escaped(buffer_2, stralloc_begin(&r->data), stralloc_length(&r->data));
 
-    put_indented_n(buffer_2, stralloc_begin(&r->data) + pos, stralloc_length(&r->data) - pos, 1024);
+    //    put_indented_n(buffer_2, stralloc_begin(&r->data) + pos, stralloc_length(&r->data) - pos, 1024);
   }
   buffer_putnlflush(buffer_2);
 }

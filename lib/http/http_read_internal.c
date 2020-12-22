@@ -29,46 +29,12 @@ http_read_internal(fd_t fd, char* buf, size_t received, buffer* b) {
   ssize_t n = received;
   int status = r->status;
 
-#ifdef DEBUG_HTTP
-  buffer_putspad(buffer_2, "\033[1;33mhttp_read_internal\033[0m ", 30);
-  buffer_puts(buffer_2, "s=");
-  buffer_putlong(buffer_2, h->sock);
-  buffer_puts(buffer_2, " ret=");
-  buffer_putlong(buffer_2, n);
-
-  buffer_puts(buffer_2, " ptr=");
-  buffer_putulonglong(buffer_2, r->ptr);
-  buffer_puts(buffer_2, " chunk_length=");
-  buffer_putulonglong(buffer_2, r->chunk_length);
-
-  buffer_puts(buffer_2, " content_length=");
-  buffer_putulonglong(buffer_2, r->content_length);
-
-  if(n < 0) {
-    buffer_puts(buffer_2, " err=");
-    buffer_putstr(buffer_2, http_strerror(h, received));
-  }
-  if(h->response->code != -1) {
-    buffer_puts(buffer_2, " code=");
-    buffer_putlong(buffer_2, h->response->code);
-  }
-  buffer_puts(buffer_2, " transfer=");
-  buffer_puts(buffer_2, "HTTP_TRANSFER_");
-  buffer_puts(buffer_2, ((const char* const[]){"UNDEF", "CHUNKED", "LENGTH", "BOUNDARY", 0})[r->transfer]);
-  buffer_puts(buffer_2, " status=");
-  buffer_puts(buffer_2, ((const char* const[]){"-1", "HTTP_RECV_HEADER", "HTTP_RECV_DATA", "HTTP_STATUS_CLOSED", "HTTP_STATUS_ERROR", "HTTP_STATUS_BUSY", "HTTP_STATUS_FINISH", 0})[status + 1]);
-  buffer_putnlflush(buffer_2);
-
-#endif
-  if(r->status == HTTP_RECV_DATA) {
-
+  if(r->status >= HTTP_RECV_HEADER &&  r->status <= HTTP_RECV_DATA) {
     if(r->data.len < r->content_length) {
-      size_t len = n;
-      const char* s = buf;
       size_t remain = r->content_length - r->data.len;
-      size_t num = min(len, remain);
+      size_t num = min(received, remain);
 
-      stralloc_catb(&r->data, s, num);
+      stralloc_catb(&r->data, buf, num);
 
       // in->p += num;
       //    r->ptr += num;
@@ -134,6 +100,48 @@ http_read_internal(fd_t fd, char* buf, size_t received, buffer* b) {
       }
     }
   }
+#ifdef DEBUG_HTTP
+  buffer_putspad(buffer_2, "\033[1;33mhttp_read_internal\033[0m ", 30);
+  buffer_puts(buffer_2, "s=");
+  buffer_putlong(buffer_2, h->sock);
+  buffer_puts(buffer_2, " received=");
+  buffer_putlong(buffer_2, received);
+
+  buffer_puts(buffer_2, " ptr=");
+  buffer_putulonglong(buffer_2, r->ptr);
+  buffer_puts(buffer_2, " chunk_length=");
+  buffer_putulonglong(buffer_2, r->chunk_length);
+
+  buffer_puts(buffer_2, " content_length=");
+  buffer_putulonglong(buffer_2, r->content_length);
+
+  if(n < 0) {
+    buffer_puts(buffer_2, " err=");
+    buffer_putstr(buffer_2, http_strerror(h, received));
+  }
+  if(h->response->code != -1) {
+    buffer_puts(buffer_2, " code=");
+    buffer_putlong(buffer_2, h->response->code);
+  }
+  buffer_puts(buffer_2, " transfer=");
+  buffer_puts(buffer_2, "HTTP_TRANSFER_");
+  buffer_puts(buffer_2, ((const char* const[]){"UNDEF", "CHUNKED", "LENGTH", "BOUNDARY", 0})[r->transfer]);
+  buffer_puts(buffer_2, " status=");
+  buffer_puts(buffer_2, ((const char* const[]){"-1", "HTTP_RECV_HEADER", "HTTP_RECV_DATA", "HTTP_STATUS_CLOSED", "HTTP_STATUS_ERROR", "HTTP_STATUS_BUSY", "HTTP_STATUS_FINISH", 0})[status + 1]);
+  buffer_putnlflush(buffer_2);
+  {
+    size_t len = received;
+    const char* s = stralloc_end(&r->data) - len;
+    const char* e = stralloc_end(&r->data);
+    if(len > 30)
+      len = 30;
+    buffer_puts(buffer_2, " data:received=");
+    buffer_putlonglong(buffer_2, received);
+
+    buffer_puts(buffer_2, " data:len=");
+    buffer_putulonglong(buffer_2, r->data.len);
+  }
+#endif
   if(r->status == HTTP_STATUS_ERROR) {
     n = -1;
   } else if(r->status == HTTP_STATUS_CLOSED) {

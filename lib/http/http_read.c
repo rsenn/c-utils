@@ -61,7 +61,7 @@ again:
 
     if(r->status <= HTTP_RECV_DATA) {
       if((ret = http_read_internal(h->sock, buf, received, &h->q.in)) > 0) {
-        h->q.in.p += min(buffer_LEN(&h->q.in), ret);
+        //   h->q.in.p += min(buffer_LEN(&h->q.in), ret);
       }
 
       if(ret == 0) {
@@ -71,20 +71,21 @@ again:
         goto end;
       }
     }
-    /*   } else {
-         if(n + r->ptr > r->content_length)
-           n = r->content_length - r->ptr;
-         if(n >= (ssize_t)len)
-           n = (ssize_t)len;
-         byte_copy(buf, (size_t)n, buffer_BEGIN(b));
-         len -= (size_t)n;
-         buf += n;
-         ret += n;
-         b->p += (size_t)n;
-         if(b->p >= b->n)
-           b->p = b->n = 0;
-         r->ptr += n;
-       }*/
+
+    if(r->status == HTTP_RECV_DATA) {
+      if(n + r->ptr > r->content_length)
+        n = r->content_length - r->ptr;
+      if(n >= (ssize_t)len)
+        n = (ssize_t)len;
+      byte_copy(buf, (size_t)n, buffer_BEGIN(b));
+      len -= (size_t)n;
+      buf += n;
+      ret += n;
+      b->p += (size_t)n;
+      if(b->p >= b->n)
+        b->p = b->n = 0;
+      r->ptr += n;
+    }
     if((r->status == HTTP_STATUS_CLOSED) || r->status == HTTP_STATUS_FINISH)
       goto end;
   }
