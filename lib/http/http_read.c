@@ -11,9 +11,6 @@
 #include <string.h>
 #include <assert.h>
 
-#define max(a, b) ((a) > (b) ? (a) : (b))
-#define min(a, b) ((a) < (b) ? (a) : (b))
-
 static void
 putnum(const char* what, ssize_t n) {
   buffer_puts(buffer_2, what);
@@ -42,10 +39,9 @@ again:
     const char* x;
     int st = r->status;
     bytes = buffer_LEN(b);
-    if(/*bytes > 0 ||*/ (n = buffer_feed(b)) <= 0) {
+    if(/*bytes > 0 ||*/ (n = buffer_freshen(b)) <= 0) {
       if(n == 0) {
         r->status = HTTP_STATUS_CLOSED;
-        ret = 0;
         goto end;
       } else if((int)r->status == st) {
         if(ret == 0 && r->err != 0) {
@@ -54,37 +50,37 @@ again:
         }
       }
     }
-
     x = buffer_BEGIN(b);
     n = buffer_LEN(b);
     received = n - bytes;
-
-    if(r->status <= HTTP_RECV_DATA) {
-      if((ret = http_read_internal(h->sock, buf, received, &h->q.in)) > 0) {
-        h->q.in.p += min(buffer_LEN(&h->q.in), ret);
-      }
-
-      if(ret == 0) {
-        r->status = HTTP_STATUS_FINISH;
-      }
-      if(r->status == HTTP_STATUS_FINISH) {
+    if(r->status == HTTP_RECV_HEADER) {
+      if((ret = http_read_header(h, &r->data, r)) <= 0)
         goto end;
-      }
+      ret = -1;
+      errno = EAGAIN;
     }
-
-    if(r->status == HTTP_RECV_DATA) {
-      if(n + r->ptr > r->content_length)
-        n = r->content_length - r->ptr;
-      if(n >= (ssize_t)len)
-        n = (ssize_t)len;
-      byte_copy(buf, (size_t)n, buffer_BEGIN(b));
-      len -= (size_t)n;
-      buf += n;
-      ret += n;
-      b->p += (size_t)n;
-      if(b->p >= b->n)
-        b->p = b->n = 0;
-      r->ptr += n;
+    if(r->status == HTTP_RECV_DATA /*&& received > 0*/) {
+      /*   if(buffer_LEN(b) > 0) */ {
+        /*if(r->ptr >= r->content_length) {*/
+        http_read_internal(h->sock, buf, received, &h->q.in);
+        if(r->status == HTTP_STATUS_FINISH) {
+          goto end;
+        }
+        /*   } else {
+             if(n + r->ptr > r->content_length)
+               n = r->content_length - r->ptr;
+             if(n >= (ssize_t)len)
+               n = (ssize_t)len;
+             byte_copy(buf, (size_t)n, buffer_BEGIN(b));
+             len -= (size_t)n;
+             buf += n;
+             ret += n;
+             b->p += (size_t)n;
+             if(b->p >= b->n)
+               b->p = b->n = 0;
+             r->ptr += n;
+           }*/
+      }
     }
     if((r->status == HTTP_STATUS_CLOSED) || r->status == HTTP_STATUS_FINISH)
       goto end;
@@ -115,7 +111,8 @@ end:
   }
 
 #ifdef DEBUG_HTTP
-  if(r->status == HTTP_STATUS_BUSY || r->status == HTTP_RECV_HEADER || r->status == HTTP_RECV_DATA) {
+  if(r->status == HTTP_STATUS_BUSY || r->status == HTTP_RECV_HEADER ||
+     r->status == HTTP_RECV_DATA) {
     buffer_putspad(buffer_2, "\x1b[38;5;201mhttp_read\x1b[0m ", 30);
     buffer_puts(buffer_2, "s=");
 
@@ -134,12 +131,16 @@ end:
       buffer_puts(buffer_2, " code=");
       buffer_putlong(buffer_2, r->code);
     }
-    buffer_puts(buffer_2, " transfer=");
-    buffer_puts(buffer_2, "HTTP_TRANSFER_");
-    buffer_puts(buffer_2, ((const char* const[]){"UNDEF", "CHUNKED", "LENGTH", "BOUNDARY", 0})[r->transfer]);
-
     buffer_puts(buffer_2, " status=");
-    buffer_puts(buffer_2, ((const char* const[]){"-1", "HTTP_RECV_HEADER", "HTTP_RECV_DATA", "HTTP_STATUS_CLOSED", "HTTP_STATUS_ERROR", "HTTP_STATUS_BUSY", "HTTP_STATUS_FINISH", 0})[r->status + 1]);
+    buffer_puts(buffer_2,
+                ((const char* const[]){"-1",
+                                       "HTTP_RECV_HEADER",
+                                       "HTTP_RECV_DATA",
+                                       "HTTP_STATUS_CLOSED",
+                                       "HTTP_STATUS_ERROR",
+                                       "HTTP_STATUS_BUSY",
+                                       "HTTP_STATUS_FINISH",
+                                       0})[r->status + 1]);
 
     buffer_putnlflush(buffer_2);
 

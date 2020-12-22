@@ -32,9 +32,21 @@ typedef struct http_return_s {
 } http_return_value;
 
 struct http_response_s;
-typedef enum { HTTP_TRANSFER_UNDEF = 0, HTTP_TRANSFER_CHUNKED, HTTP_TRANSFER_LENGTH, HTTP_TRANSFER_BOUNDARY } http_transfer_type;
+typedef enum {
+  HTTP_TRANSFER_UNDEF = 0,
+  HTTP_TRANSFER_CHUNKED,
+  HTTP_TRANSFER_LENGTH,
+  HTTP_TRANSFER_BOUNDARY
+} http_transfer_type;
 
-typedef enum { HTTP_RECV_HEADER = 0, HTTP_RECV_DATA, HTTP_STATUS_CLOSED, HTTP_STATUS_ERROR, HTTP_STATUS_BUSY, HTTP_STATUS_FINISH } http_status;
+typedef enum {
+  HTTP_RECV_HEADER = 0,
+  HTTP_RECV_DATA,
+  HTTP_STATUS_CLOSED,
+  HTTP_STATUS_ERROR,
+  HTTP_STATUS_BUSY,
+  HTTP_STATUS_FINISH
+} http_status;
 
 typedef struct http_response_s {
   http_transfer_type transfer;
@@ -85,7 +97,7 @@ int http_get(http* h, const char* location);
 void http_init(http* h, const char* host, uint16 port);
 ssize_t http_read(fd_t fd, char* buf, size_t len, void* ptr);
 ssize_t http_read_header(http* h, stralloc* sa, http_response* r);
-ssize_t http_read_internal(fd_t fd, char* buf, size_t received, buffer* b);
+size_t http_read_internal(fd_t fd, char* buf, size_t received, buffer* b);
 void http_response_dump(http_response* r);
 void http_response_free(http_response* r);
 http_response* http_response_new(void);
