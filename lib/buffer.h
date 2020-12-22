@@ -111,6 +111,7 @@ ssize_t buffer_get_token_pred(buffer*, char* x, size_t len, string_predicate p, 
 char* buffer_peek(buffer* b);
 int buffer_peekc(buffer*, char* c);
 void buffer_seek(buffer*, size_t len);
+void buffer_rewind(buffer* b);
 
 int buffer_skipc(buffer* b);
 int buffer_skipn(buffer*, size_t n);

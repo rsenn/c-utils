@@ -5,6 +5,7 @@
 #include "../stralloc.h"
 #include "../io.h"
 #include "../byte.h"
+#include "../case.h"
 #include <errno.h>
 #include <assert.h>
 

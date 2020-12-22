@@ -41,8 +41,8 @@ http_canread(http* h, void (*wantwrite)(fd_t)) {
   len = buffer_LEN(&h->q.in);
 
   if((ret = buffer_freshen(&h->q.in)) <= 0) {
-  //  if(!(ret == -1 && errno == EAGAIN))
-      goto fail;
+    //  if(!(ret == -1 && errno == EAGAIN))
+    goto fail;
   }
 
   received = ret > 0 ? ret - len : 0;
@@ -105,7 +105,6 @@ http_canread(http* h, void (*wantwrite)(fd_t)) {
       buffer_puts(buffer_2, " ret=");
       buffer_putlong(buffer_2, ret);
 
-
       buffer_puts(buffer_2, " data.len=");
       buffer_putulonglong(buffer_2, h->response->data.len);
       buffer_putnlflush(buffer_2);
@@ -164,14 +163,13 @@ fail:
     const char* e = stralloc_end(&r->data);
     if(len > 30)
       len = 30;
-   if(r->status <= HTTP_RECV_DATA) {
- buffer_puts(buffer_2, " data:received=");
-    buffer_putlonglong(buffer_2, received);
+    if(r->status <= HTTP_RECV_DATA) {
+      buffer_puts(buffer_2, " data:received=");
+      buffer_putlonglong(buffer_2, received);
 
- 
-     buffer_puts(buffer_2, " data:len=");
-    buffer_putlonglong(buffer_2, r->data.len);
-      }
+      buffer_puts(buffer_2, " data:len=");
+      buffer_putlonglong(buffer_2, r->data.len);
+    }
 
     /*
         buffer_puts(buffer_2, " buf=");

@@ -1,7 +1,6 @@
 #include "../typedefs.h"
 #include "../windoze.h"
 #include "../alloc.h"
-//#define USE_WS2_32 1
 #include "../socket_internal.h"
 #include "../uint64.h"
 #include "../buffer.h"
@@ -9,6 +8,7 @@
 #include "../io.h"
 #include "../ndelay.h"
 #include "../tls.h"
+#include "../byte.h"
 
 #if WINDOWS_NATIVE
 #include <io.h>
