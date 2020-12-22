@@ -29,7 +29,11 @@ http_read_internal(fd_t fd, char* buf, size_t received, buffer* b) {
   ssize_t n = received;
   int status = r->status;
 
-  if(r->status >= HTTP_RECV_HEADER &&  r->status <= HTTP_RECV_DATA) {
+  while(r->status == HTTP_RECV_HEADER && http_read_header(h, &r->data, r) > 0) {
+    r->ptr = r->data.len;
+  }
+
+  if(r->status >= HTTP_RECV_HEADER && r->status <= HTTP_RECV_DATA) {
     if(r->data.len < r->content_length) {
       size_t remain = r->content_length - r->data.len;
       size_t num = min(received, remain);
@@ -46,9 +50,6 @@ http_read_internal(fd_t fd, char* buf, size_t received, buffer* b) {
     }
   }
 
-  while(r->status == HTTP_RECV_HEADER && http_read_header(h, &r->data, r) > 0) {
-    r->ptr = 0;
-  }
   if(r->status == HTTP_RECV_DATA) {
     switch(r->transfer) {
       case HTTP_TRANSFER_UNDEF: break;
