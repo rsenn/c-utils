@@ -1,4 +1,5 @@
 #include "../buffer.h"
+#include "../seek.h"
 
 void
 buffer_rewind(buffer* b) {

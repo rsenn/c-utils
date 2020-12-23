@@ -2,9 +2,7 @@
  * @defgroup   SOCKET socket
  *
  * @brief      This file implements socket.
- *
- * @author     Roman
- * @date       2020
+ * @{
  */
 #ifndef SOCKET_H
 #define SOCKET_H
@@ -134,3 +132,4 @@ int socket_close(fd_t);
 #endif
 
 #endif
+/** @} */

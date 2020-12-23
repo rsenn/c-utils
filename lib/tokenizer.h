@@ -14,6 +14,8 @@ struct tokenizer_getc_buf {
   size_t cnt, buffered;
 };
 
+enum tokenizer_result { TOKENIZER_ERROR = -1, TOKENIZER_EOF = -2 };
+
 enum markertype { MT_SINGLELINE_COMMENT_START = 0, MT_MULTILINE_COMMENT_START = 1, MT_MULTILINE_COMMENT_END = 2, MT_MAX = MT_MULTILINE_COMMENT_END };
 
 #define MAX_CUSTOM_TOKENS 32

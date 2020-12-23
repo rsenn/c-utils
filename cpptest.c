@@ -1,11 +1,11 @@
-#include "lib/preproc.h"
+#include "lib/cpp.h"
 #include "lib/unix.h"
 #include "lib/open.h"
 #include "lib/buffer.h"
 #include "lib/errmsg.h"
 #include "lib/str.h"
 
-struct cpp* cpp;
+cpp_t* cpp;
 
 static int
 usage(char* a0) {

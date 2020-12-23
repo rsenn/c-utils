@@ -2,9 +2,7 @@
  * @defgroup   UINT64 uint 64
  *
  * @brief      This file implements uint 64.
- *
- * @author     Roman
- * @date       2020
+ * @{
  */
 #ifndef UINT64_H
 #define UINT64_H
@@ -116,3 +114,4 @@ uint64_to_double(uint64 ull) {
 #endif
 
 #endif
+/** @} */

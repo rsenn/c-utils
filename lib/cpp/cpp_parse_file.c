@@ -1,11 +1,7 @@
 #include "../cpp_internal.h"
 
-
-int cpp_parse_file(struct cpp* cpp, buffer* f, const char*, buffer* out);
-    buffer_read_fd(&in, fd);
-    ret = cpp_parse_file(cpp, &in, fn, out);
 int
-cpp_parse_file(struct cpp* cpp, buffer* f, const char* fn, buffer* out) {
+cpp_parse_file(cpp_t* cpp, buffer* f, const char* fn, buffer* out) {
   struct tokenizer_s t;
   struct token curr;
   tokenizer_init(&t, f, TF_PARSE_STRINGS);

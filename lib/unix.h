@@ -2,9 +2,7 @@
  * @defgroup   UNIX unix
  *
  * @brief      This file implements unix.
- *
- * @author     Roman
- * @date       2020
+ * @{
  */
 #ifndef UNIX_H
 #define UNIX_H 1
@@ -47,3 +45,4 @@ size_t getpagesize();
 }
 #endif
 #endif /* defined(UNIX_H) */
+/** @} */

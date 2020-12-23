@@ -2,9 +2,7 @@
  * @defgroup   UINT32 uint 32
  *
  * @brief      This file implements uint 32.
- *
- * @author     Roman
- * @date       2020
+ * @{
  */
 #ifndef UINT32_H
 #define UINT32_H
@@ -119,3 +117,4 @@ uint32 uint32_prng(uint32, uint32 seed);
 }
 #endif
 #endif
+/** @} */

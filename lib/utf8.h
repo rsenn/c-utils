@@ -2,9 +2,7 @@
  * @defgroup   UTF8 utf 8
  *
  * @brief      This file implements utf 8.
- *
- * @author     Roman
- * @date       2020
+ * @{
  */
 #ifndef UTF8_H
 #define UTF8_H
@@ -33,3 +31,4 @@ int wcu8len(const wchar_t);
 #endif
 
 #endif /* !defined(UTF8_H) */
+/** @} */

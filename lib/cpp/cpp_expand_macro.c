@@ -1,13 +1,12 @@
 #include "../cpp_internal.h"
+#include "../memstream.h"
 
-
-static int cpp_expand_macro(struct cpp* cpp, struct tokenizer_s* t, buffer* out, const char* name, unsigned rec_level, char* visited[]);
 /* rec_level -1 serves as a magic value to signal we're using
    cpp_expand_macro from the if-evaluator code, which means activating
    the "define" macro */
- int
-cpp_expand_macro(struct cpp* cpp, struct tokenizer_s* t, buffer* out, const char* name, unsigned rec_level, char* visited[]) {
-  int is_define = !strcmp(name, "defined");
+int
+cpp_expand_macro(cpp_t* cpp, tokenizer* t, buffer* out, const char* name, unsigned rec_level, char* visited[]) {
+  int is_define = !str_diff(name, "defined");
 
   struct macro* m;
   if(is_define && rec_level != -1)
@@ -28,22 +27,22 @@ cpp_expand_macro(struct cpp* cpp, struct tokenizer_s* t, buffer* out, const char
   dprintf(2, "lvl %u: expanding macro %s (%s)\n", rec_level, name, m->str_contents_buf);
 #endif
 
-  if(rec_level == 0 && strcmp(t->filename, "<macro>")) {
+  if(rec_level == 0 && str_diff(t->filename, "<macro>")) {
     cpp->last_file = t->filename;
     cpp->last_line = t->line;
   }
-  if(!strcmp(name, "__FILE__")) {
+  if(!str_diff(name, "__FILE__")) {
     buffer_puts(out, "\"");
     buffer_puts(out, cpp->last_file);
     buffer_puts(out, "\"");
     return 1;
-  } else if(!strcmp(name, "__LINE__")) {
+  } else if(!str_diff(name, "__LINE__")) {
     buffer_putlong(out, cpp->last_line);
     return 1;
   }
 
   if(visited[rec_level])
-    free(visited[rec_level]);
+    alloc_free(visited[rec_level]);
   visited[rec_level] = str_dup(name);
   cpp->tchain[rec_level] = t;
 
@@ -59,7 +58,7 @@ cpp_expand_macro(struct cpp* cpp, struct tokenizer_s* t, buffer* out, const char
     int ret;
     if((ret = tokenizer_peek(t)) != '(') {
       /* function-like macro shall not be expanded if not followed by '(' */
-      if(ret == EOF && rec_level > 0 && (ret = cpp_tchain_parens_follows(cpp, rec_level - 1)) != -1) {
+      if(ret == TOKENIZER_EOF && rec_level > 0 && (ret = cpp_tchain_parens_follows(cpp, rec_level - 1)) != -1) {
         // warning("Replacement text involved subsequent text", t, 0);
         t = cpp->tchain[ret];
       } else {
@@ -83,7 +82,7 @@ cpp_expand_macro(struct cpp* cpp, struct tokenizer_s* t, buffer* out, const char
       if(!ret)
         return 0;
       if(tok.type == TT_EOF) {
-        buffer_putsflush(buffer_2, "warning EOF\n");
+        buffer_putsflush(buffer_2, "warning TOKENIZER_EOF\n");
         break;
       }
       if(!parens && is_char(&tok, ',') && !varargs) {
@@ -159,7 +158,7 @@ cpp_expand_macro(struct cpp* cpp, struct tokenizer_s* t, buffer* out, const char
     if(tok.type == TT_IDENTIFIER) {
       flush_whitespace(output, &ws_count);
       char* id = t2.buf;
-      if(MACRO_VARIADIC(m) && !strcmp(t2.buf, "__VA_ARGS__")) {
+      if(MACRO_VARIADIC(m) && !str_diff(t2.buf, "__VA_ARGS__")) {
         id = "...";
       }
       size_t arg_nr = macro_arglist_pos(m, id);
@@ -311,14 +310,14 @@ cpp_expand_macro(struct cpp* cpp, struct tokenizer_s* t, buffer* out, const char
       tokenizer_next(&cwae.t, &tok);
       if(tok.type == TT_EOF)
         break;
-      if(tok.type == TT_IDENTIFIER && tokenizer_peek(&cwae.t) == EOF && (ma = cpp_get_macro(cpp, cwae.t.buf)) && FUNCTIONLIKE(ma) && cpp_tchain_parens_follows(cpp, rec_level) != -1) {
+      if(tok.type == TT_IDENTIFIER && tokenizer_peek(&cwae.t) == TOKENIZER_EOF && (ma = cpp_get_macro(cpp, cwae.t.buf)) && FUNCTIONLIKE(ma) && cpp_tchain_parens_follows(cpp, rec_level) != -1) {
         int ret = cpp_expand_macro(cpp, &cwae.t, out, cwae.t.buf, rec_level + 1, visited);
         if(!ret)
           return ret;
       } else
         emit_token(out, &tok, cwae.t.buf);
     }
-    free(mcs);
+    alloc_free(mcs);
   }
 
   free_file_container(&cwae);
@@ -326,8 +325,8 @@ cpp_expand_macro(struct cpp* cpp, struct tokenizer_s* t, buffer* out, const char
 cleanup:
   for(i = 0; i < num_args; i++) {
     buffer_close(argvalues[i].f);
-    free(argvalues[i].buf);
+    alloc_free(argvalues[i].buf);
   }
-  free(argvalues);
+  alloc_free(argvalues);
   return 1;
 }

@@ -1,10 +1,7 @@
 /**
  * @defgroup   XML xml
- *
  * @brief      This file implements xml.
- *
- * @author     Roman
- * @date       2020
+ * @{
  */
 #ifndef XML_H
 #define XML_H
@@ -283,4 +280,6 @@ xmltoken xml_read_token(xmlscanner* s);
 #ifdef __cplusplus
 }
 #endif
+
 #endif /* XML_H */
+       /** @} */

@@ -2,9 +2,7 @@
  * @defgroup   STR string
  *
  * @brief      This file implements string.
- *
- * @author     Roman
- * @date       2020
+ * @{
  */
 #ifndef STR_H
 #define STR_H
@@ -110,3 +108,4 @@ size_t str_ansilen(const char* in);
 #endif
 
 #endif
+/** @} */

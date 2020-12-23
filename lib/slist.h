@@ -2,9 +2,7 @@
  * @defgroup   SLIST slist
  *
  * @brief      This file implements slist.
- *
- * @author     Roman
- * @date       2020
+ * @{
  */
 #ifndef SLIST_H
 #define SLIST_H 1
@@ -186,3 +184,4 @@ slist_iterator_equal(slink** list, slink** it1, slink** it2) {
 }
 #endif
 #endif /* defined(SLIST_H) */
+/** @} */

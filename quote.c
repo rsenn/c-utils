@@ -384,7 +384,10 @@ main(int argc, char* argv[]) {
       case 'i': in_place = 1; break;
 
       case 'h': usage(argv[0]); return 0;
-      case 'a': add_quotes = argv[unix_optind]; break;
+      case 'a':
+        if(add_quotes == 0)
+          add_quotes = argv[unix_optind];
+        break;
       case 'b': quote_backslash++; break;
       case 't': scan_int(argv[unix_optind], &tab_size); break;
       case 'q':
@@ -414,8 +417,14 @@ main(int argc, char* argv[]) {
       case 'J': fmt_call = (fmt_function*)(void*)&fmt_escapecharjson; break;
       case 'P': fmt_call = (fmt_function*)(void*)&fmt_escapecharquotedprintable; break;
       case 'S': fmt_call = (fmt_function*)(void*)&fmt_escapecharshell; break;
-      case 'Q': fmt_call = (fmt_function*)(void*)&fmt_escapecharquotedshell; break;
-      case 'D': fmt_call = (fmt_function*)(void*)&fmt_escapechardoublequotedshell; break;
+      case 'Q':
+        add_quotes = "'";
+        fmt_call = (fmt_function*)(void*)&fmt_escapecharquotedshell;
+        break;
+      case 'D':
+        add_quotes = "\"";
+        fmt_call = (fmt_function*)(void*)&fmt_escapechardoublequotedshell;
+        break;
       case 'X': fmt_call = (fmt_function*)(void*)&fmt_escapecharxml; break;
 
       default: usage(argv[0]); return 1;

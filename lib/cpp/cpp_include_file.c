@@ -1,7 +1,9 @@
 #include "../cpp_internal.h"
+#include "../open.h"
+#include "../errmsg.h"
 
- int
-cpp_include_file(struct cpp* cpp, struct tokenizer_s* t, buffer* out) {
+int
+cpp_include_file(cpp_t* cpp, tokenizer* t, buffer* out) {
   static const char* inc_chars[] = {"\"", "<", 0};
   static const char* inc_chars_end[] = {"\"", ">", 0};
   struct token tok;

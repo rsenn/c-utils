@@ -2,9 +2,7 @@
  * @defgroup   WAIT wait
  *
  * @brief      This file implements wait.
- *
- * @author     Roman
- * @date       2020
+ * @{
  */
 #ifndef WAIT_H
 #define WAIT_H
@@ -31,3 +29,4 @@ int wait_pids_reap(int*, unsigned int);
 #endif
 
 #endif // WAIT_H
+/** @} */

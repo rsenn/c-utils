@@ -3,13 +3,13 @@
 
 #include "buffer.h"
 
-struct cpp;
+typedef struct cpp_s cpp_t;
 
-struct cpp* cpp_new(void);
-void cpp_free(struct cpp*);
-void cpp_add_includedir(struct cpp* cpp, const char* includedir);
-int cpp_add_define(struct cpp* cpp, const char* mdecl);
-int cpp_run(struct cpp* cpp, buffer* in, buffer* out, const char* inname);
+cpp_t* cpp_new(void);
+void cpp_free(cpp_t*);
+void cpp_add_includedir(cpp_t* cpp, const char* includedir);
+int cpp_add_define(cpp_t* cpp, const char* mdecl);
+int cpp_run(cpp_t* cpp, buffer* in, buffer* out, const char* inname);
 
 #ifdef __GNUC__
 #pragma GCC diagnostic ignored "-Wunknown-pragmas"

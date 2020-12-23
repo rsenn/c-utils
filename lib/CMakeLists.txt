@@ -5,7 +5,7 @@ message("CMAKE_CURRENT_BINARY_DIR: ${CMAKE_CURRENT_BINARY_DIR}")
 
 set(iarray_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/cas.S)
 
-set(MODSUBDIRS alloc array binfmt bmap buffer byte case cb cbmap charbuf coff dir dlist dns elf env errmsg fmt gpio hashmap hmap http iarray ihex io json mmap ndelay omf open path pe playlist preproc process range rdir safemult scan seek set sig slist socket str stralloc strarray strlist tai taia textbuf textcode tls tokenizer ucs uint16 uint32 uint64 unix utf8 wait xml)
+set(MODSUBDIRS alloc array binfmt bmap buffer byte case cb cbmap charbuf coff dir dlist dns elf env errmsg fmt gpio hashmap hmap http iarray ihex io json mmap ndelay omf open path pe playlist cpp process range rdir safemult scan seek set sig slist socket str stralloc strarray strlist tai taia textbuf textcode tls tokenizer ucs uint16 uint32 uint64 unix utf8 wait xml)
 file(GLOB MODHEADERS ${CMAKE_CURRENT_SOURCE_DIR}/*.h)
 
 foreach(LIBNAME ${MODSUBDIRS})
@@ -77,4 +77,4 @@ target_link_libraries(uint32 taia tai)
 target_link_libraries(tls io iarray buffer byte str ${TLS_LIBRARIES})
 target_link_libraries(http dns errmsg byte io scan tls socket stralloc str)
 target_link_libraries(tokenizer buffer byte str)
-target_link_libraries(preproc errmsg tokenizer strlist hmap)
+target_link_libraries(cpp errmsg tokenizer strlist hmap)

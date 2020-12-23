@@ -1,8 +1,8 @@
 #include "../cpp_internal.h"
 
-struct cpp*
+cpp_t*
 cpp_new(void) {
-  struct cpp* ret = alloc_zero(sizeof(struct cpp));
+  cpp_t* ret = alloc_zero(sizeof(struct cpp_s));
   if(!ret)
     return ret;
   LIST_NEW(ret->includedirs);

@@ -891,7 +891,7 @@ add_program(parse strlist errmsg)
 add_program(testihex ihex stralloc buffer alloc mmap)
 add_program(setuidgid errmsg path stralloc mmap open scan str)
 add_program(lsproc strlist errmsg mmap buffer unix dir)
-add_program(cpptest preproc tokenizer unix buffer open)
+add_program(cpptest cpp tokenizer unix buffer open)
 
 #[[add_program(ftpcopy io)
 add_program(ftpls io)

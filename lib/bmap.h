@@ -2,6 +2,7 @@
  * @defgroup   BMAP bmap
  *
  * @brief      This file implements bmap.
+ *  @{
  */
 #ifndef _BMAP_H
 #define _BMAP_H
@@ -70,3 +71,4 @@ typedef bmap_t(double) bmap_double_t;
 }
 #endif
 #endif
+/** @} */

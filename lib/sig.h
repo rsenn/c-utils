@@ -1,10 +1,7 @@
 /**
  * @defgroup   SIG signal
- *
  * @brief      This file implements signal.
- *
- * @author     Roman
- * @date       2020
+ * @{
  */
 #ifndef _SIG_H
 #define _SIG_H
@@ -101,3 +98,4 @@ void sig_shield(void);
 void sig_unshield(void);
 
 #endif
+/** @} */

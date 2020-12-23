@@ -2,9 +2,7 @@
  * @defgroup   UINT16 uint 16
  *
  * @brief      This file implements uint 16.
- *
- * @author     Roman
- * @date       2020
+ * @{
  */
 #ifndef UINT16_H
 #define UINT16_H
@@ -118,3 +116,4 @@ uint16 uint16_read(const char*);
 #endif
 
 #endif
+/** @} */

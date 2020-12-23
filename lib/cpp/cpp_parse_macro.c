@@ -1,7 +1,33 @@
 #include "../cpp_internal.h"
+#include "../memstream.h"
 
- int
-cpp_parse_macro(struct cpp* cpp, struct tokenizer_s* t) {
+static int
+consume_nl_and_ws(tokenizer* t, struct token* tok, int expected) {
+  if(!x_tokenizer_next(t, tok)) {
+  err:
+    error("unexpected", t, tok);
+    return 0;
+  }
+  if(expected) {
+    if(tok->type != TT_SEP || tok->value != expected)
+      goto err;
+    switch(expected) {
+      case '\\': expected = '\n'; break;
+      case '\n': expected = 0; break;
+    }
+  } else {
+    if(is_whitespace_token(tok))
+      ;
+    else if(is_char(tok, '\\'))
+      expected = '\n';
+    else
+      return 1;
+  }
+  return consume_nl_and_ws(t, tok, expected);
+}
+
+int
+cpp_parse_macro(cpp_t* cpp, tokenizer* t) {
   int ws_count;
   int ret = tokenizer_skip_chars(t, " \t", &ws_count);
   if(!ret)
@@ -22,7 +48,7 @@ cpp_parse_macro(struct cpp* cpp, struct tokenizer_s* t) {
 #endif
   int redefined = 0;
   if(cpp_get_macro(cpp, macroname)) {
-    if(!strcmp(macroname, "defined")) {
+    if(!str_diff(macroname, "defined")) {
       error("\"defined\" cannot be used as a macro name", t, &curr);
       return 0;
     }
@@ -121,7 +147,7 @@ done:
     struct macro* old = cpp_get_macro(cpp, macroname);
     char* s_old = old->str_contents_buf ? old->str_contents_buf : "";
     char* s_new = new.str_contents_buf ? new.str_contents_buf : "";
-    if(strcmp(s_old, s_new)) {
+    if(str_diff(s_old, s_new)) {
       char buf[128];
       size_t n;
       n = str_copy(buf, "redefinition of macro ");
