@@ -725,7 +725,6 @@ find_program(TAR NAMES bsdtar tar gtar gnutar star)
 include(${CMAKE_CURRENT_SOURCE_DIR}/build/cmake/BuildBrotli.cmake)
 include(${CMAKE_CURRENT_SOURCE_DIR}/build/cmake/BuildBZip2.cmake)
 include(${CMAKE_CURRENT_SOURCE_DIR}/build/cmake/BuildLZMA.cmake)
-include(${CMAKE_CURRENT_SOURCE_DIR}/build/cmake/BuildOpenSSL.cmake)
 include(${CMAKE_CURRENT_SOURCE_DIR}/build/cmake/BuildSSL.cmake)
 include(${CMAKE_CURRENT_SOURCE_DIR}/build/cmake/BuildZlib.cmake)
 
