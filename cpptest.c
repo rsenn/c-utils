@@ -26,7 +26,7 @@ main(int argc, char** argv) {
   char *tmp, *fn;
   buffer in;
   fd_t fd;
-  errmsg_iam(argv[0]);
+  errmsg_iam(str_basename(argv[0]));
 
   cpp = cpp_new();
 
