@@ -14,6 +14,22 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+typedef size_t fmt_func(char*, void*, void*, void*, void*);
+
+typedef struct {
+  fmt_func* func;
+  union {
+    struct {
+      char* x;
+      uintptr_t n;
+    };
+    struct {
+      uintptr_t c;
+      uintptr_t z;
+    };
+    void* args[4];
+  };
+} formatter;
 
 #define FMT_LONG 41        /* enough space to hold -2^127 in decimal, plus \0 */
 #define FMT_ULONG 40       /* enough space to hold 2^128 - 1 in decimal, plus \0 */

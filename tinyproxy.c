@@ -710,11 +710,11 @@ sockbuf_log_data(socketbuf_t* sb, bool send, char* x, size_t len) {
 
 #ifdef DEBUG_OUTPUT
     (escape ? buffer_putfmt(&log,
-                                 x,
-                                 /*maxlen > 0 && maxlen <
-                                    end ? maxlen :*/
-                                 end,
-                                 &fmt_escapecharnonprintable)
+                            x,
+                            /*maxlen > 0 && maxlen <
+                               end ? maxlen :*/
+                            end,
+                            &fmt_escapecharnonprintable)
             : buffer_put(&log,
                          x,
                          /*maxlen > 0 && maxlen <
