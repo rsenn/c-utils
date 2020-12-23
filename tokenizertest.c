@@ -124,7 +124,7 @@ token_dump(const tokenizer* t, const token* tok, size_t len) {
     buffer_putulong(buffer_2, len);
     buffer_puts(buffer_2, " data = ");
 
-    buffer_put_escaped(buffer_2, &t->input->x[prev], len, &fmt_escapecharnonprintable);
+    buffer_putfmt(buffer_2, &t->input->x[prev], len, &fmt_escapecharnonprintable);
   }
 
   buffer_puts(buffer_2, "▕⎹  ");

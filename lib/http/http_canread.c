@@ -174,7 +174,7 @@ fail:
     /*
         buffer_puts(buffer_2, " buf=");
 
-        buffer_put_escaped(buffer_2,
+        buffer_putfmt(buffer_2,
                            stralloc_end(&r->data) - r->data.len,
                            len,
                            &fmt_escapecharnonprintable);

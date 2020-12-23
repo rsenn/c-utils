@@ -211,8 +211,8 @@ int buffer_putxlong0(buffer*, unsigned long l, int pad);
 int buffer_skipspace(buffer* b);
 int buffer_skip_pred(buffer*, int (*pred)(int));
 
-int buffer_put_escaped_args(buffer*, const char* x, size_t len, size_t (*escape)(char*, int, void*, void*, void*, void*), void* args[]);
-int buffer_put_escaped(buffer* b, const char* x, size_t len, size_t (*escape)(char*, int), ...);
+int buffer_putfmt_args(buffer*, const char* x, size_t len, size_t (*escape)(char*, int, void*, void*, void*, void*), void* args[]);
+int buffer_putfmt(buffer* b, const char* x, size_t len, size_t (*escape)(char*, int), ...);
 int buffer_puts_escaped(buffer* b, const char* s, size_t (*escape)(char*, int));
 int buffer_put_quoted(buffer* b, const char* x, size_t len);
 

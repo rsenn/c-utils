@@ -5,7 +5,7 @@
 typedef size_t format_function(char*, int, void*, void*, void*, void*);
 
 int
-buffer_put_escaped_args(buffer* b, const char* x, size_t len, format_function* escape, void* args[]) {
+buffer_putfmt_args(buffer* b, const char* x, size_t len, format_function* escape, void* args[]) {
   char buf[16];
   size_t i, n, r = 0;
   for(i = 0; i < len; i++) {
@@ -18,24 +18,24 @@ buffer_put_escaped_args(buffer* b, const char* x, size_t len, format_function* e
 }
 
 int
-buffer_put_escaped_va(buffer* b, const char* x, size_t len, size_t (*escape)(char*, int), va_list args) {
+buffer_putfmt_va(buffer* b, const char* x, size_t len, size_t (*escape)(char*, int), va_list args) {
   const void* av[4];
   av[0] = va_arg(args, void*);
   av[1] = va_arg(args, void*);
   av[2] = va_arg(args, void*);
   av[3] = va_arg(args, void*);
 
-  return buffer_put_escaped_args(b, x, len, (format_function*)escape, av);
+  return buffer_putfmt_args(b, x, len, (format_function*)escape, av);
 }
 
 int
-buffer_put_escaped(buffer* b, const char* x, size_t len, size_t (*escape)(char*, int), ...) {
+buffer_putfmt(buffer* b, const char* x, size_t len, size_t (*escape)(char*, int), ...) {
   va_list args;
   int ret;
 
   va_start(args, escape);
 
-  ret = buffer_put_escaped_va(b, x, len, (format_function*)escape, args);
+  ret = buffer_putfmt_va(b, x, len, (format_function*)escape, args);
 
   va_end(args);
 }

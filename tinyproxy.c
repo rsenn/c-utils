@@ -709,7 +709,7 @@ sockbuf_log_data(socketbuf_t* sb, bool send, char* x, size_t len) {
     pos = log.p;
 
 #ifdef DEBUG_OUTPUT
-    (escape ? buffer_put_escaped(&log,
+    (escape ? buffer_putfmt(&log,
                                  x,
                                  /*maxlen > 0 && maxlen <
                                     end ? maxlen :*/

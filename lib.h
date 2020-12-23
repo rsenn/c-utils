@@ -1102,7 +1102,7 @@
 #include "lib/stralloc/stralloc_diffb.c"
 #include "lib/stralloc/stralloc_fmt_call.c"
 #include "lib/stralloc/buffer_get_token_sa_pred.c"
-#include "lib/stralloc/buffer_put_escaped.c"
+#include "lib/stralloc/buffer_putfmt.c"
 #include "lib/stralloc/stralloc_prepends.c"
 #include "lib/stralloc/stralloc_inserts.c"
 #include "lib/stralloc/stralloc_prepend.c"

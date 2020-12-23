@@ -223,7 +223,7 @@ ssltest_loop(fd_t s) {
           else
             buffer_put(buffer_2, buf, fmt_escapecharc(buf, out.x[i]));
         }
-        //   buffer_put_escaped(buffer_2,
+        //   buffer_putfmt(buffer_2,
         //   out.x, out.p,
         //   &fmt_escapecharnonprintable);
         buffer_putnlflush(buffer_2);

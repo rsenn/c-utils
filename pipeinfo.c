@@ -335,7 +335,7 @@ procfd_dump(const procfd_t* pfd) {
       print_number_nonl(" ctime", pfd->st.st_ctime);
   }
   buffer_puts(buffer_1, " info='");
-  buffer_put_escaped(buffer_1, pfd->info.s, pfd->info.len, &fmt_escapecharnonprintable);
+  buffer_putfmt(buffer_1, pfd->info.s, pfd->info.len, &fmt_escapecharnonprintable);
   buffer_puts(buffer_1, "'");
   //      print_stralloc(" info",
   //      &pfd->info);

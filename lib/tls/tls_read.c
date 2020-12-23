@@ -65,7 +65,7 @@ tls_read(fd_t fd, void* data, size_t len) {
 
     if(len > 16)
       len = 16;
-    buffer_put_escaped(buffer_2, data, len, &fmt_escapecharnonprintable);
+    buffer_putfmt(buffer_2, data, len, &fmt_escapecharnonprintable);
     buffer_puts(buffer_2, "\"");
     if(len < ret) {
       buffer_puts(buffer_2, "... more (");

@@ -67,7 +67,7 @@ http_sendreq(http* h) {
   }
   if(out->n > out->p) {
     buffer_puts(buffer_2, " code=");
-    buffer_put_escaped(buffer_2, out->x, out->p, &fmt_escapecharnonprintable);
+    buffer_putfmt(buffer_2, out->x, out->p, &fmt_escapecharnonprintable);
   }
   buffer_puts(buffer_2, " status=");
   buffer_puts(buffer_2,

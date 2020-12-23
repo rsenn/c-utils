@@ -22,7 +22,7 @@ tokenizer_getc(tokenizer* t) {
     if(ret >= 0) {
       buffer_puts(buffer_2, "tokenizer_getc '");
       if(ret < 0x20)
-        buffer_put_escaped(buffer_2, &ret, 1, &fmt_escapecharc);
+        buffer_putfmt(buffer_2, &ret, 1, &fmt_escapecharc);
       else
         buffer_putc(buffer_2, ret);
       if(ret >= 'A')
