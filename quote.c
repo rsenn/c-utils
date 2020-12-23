@@ -407,7 +407,10 @@ main(int argc, char* argv[]) {
         quote_backslash = 3;
         stralloc_copys(&quote_chars, "$\t");
         break;
-      case 'c': stralloc_copys(&quote_chars, "\"\n\\"); break;
+      case 'c':
+        fmt_call = (fmt_function*)(void*)&fmt_escapecharc;
+        stralloc_copys(&quote_chars, "\"\n\\");
+        break;
       case 'J': fmt_call = (fmt_function*)(void*)&fmt_escapecharjson; break;
       case 'P': fmt_call = (fmt_function*)(void*)&fmt_escapecharquotedprintable; break;
       case 'S': fmt_call = (fmt_function*)(void*)&fmt_escapecharshell; break;

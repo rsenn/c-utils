@@ -1,4 +1,11 @@
-/* this header file comes from libowfat, http://www.fefe.de / libowfat/ */
+/**
+ * @defgroup   UINT64 uint 64
+ *
+ * @brief      This file implements uint 64.
+ *
+ * @author     Roman
+ * @date       2020
+ */
 #ifndef UINT64_H
 #define UINT64_H
 

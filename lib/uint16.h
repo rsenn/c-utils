@@ -1,4 +1,11 @@
-/* this header file comes from libowfat, http://www.fefe.de / libowfat/ */
+/**
+ * @defgroup   UINT16 uint 16
+ *
+ * @brief      This file implements uint 16.
+ *
+ * @author     Roman
+ * @date       2020
+ */
 #ifndef UINT16_H
 #define UINT16_H
 

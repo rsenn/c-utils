@@ -1,10 +1,8 @@
 /**
- * Copyright (c) 2014 rxi
+ * @defgroup   BMAP bmap
  *
- * This library is free software; you can redistribute it and/or modify it
- * under the terms of the MIT license. See LICENSE for details.
+ * @brief      This file implements bmap.
  */
-
 #ifndef _BMAP_H
 #define _BMAP_H
 

@@ -1,5 +1,5 @@
-#ifndef PREPROC_H
-#define PREPROC_H
+#ifndef CPP_H
+#define CPP_H
 
 #include "buffer.h"
 
@@ -14,6 +14,6 @@ int cpp_run(struct cpp* cpp, buffer* in, buffer* out, const char* inname);
 #ifdef __GNUC__
 #pragma GCC diagnostic ignored "-Wunknown-pragmas"
 #endif
-#pragma RcB2 DEP "preproc.c"
+#pragma RcB2 DEP "cpp.c"
 
 #endif

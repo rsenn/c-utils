@@ -1,3 +1,4 @@
+
 #ifndef UCS_H
 #define UCS_H
 
@@ -25,4 +26,4 @@ size_t str_utf8_latin1(char*);
 #ifdef __cplusplus
 }
 #endif
-#endif /* defined UCS_H */
+#endif /* defined(UCS_H) */

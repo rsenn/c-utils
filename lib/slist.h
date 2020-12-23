@@ -1,3 +1,11 @@
+/**
+ * @defgroup   SLIST slist
+ *
+ * @brief      This file implements slist.
+ *
+ * @author     Roman
+ * @date       2020
+ */
 #ifndef SLIST_H
 #define SLIST_H 1
 

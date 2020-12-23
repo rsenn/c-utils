@@ -1,3 +1,11 @@
+/**
+ * @defgroup   SIG signal
+ *
+ * @brief      This file implements signal.
+ *
+ * @author     Roman
+ * @date       2020
+ */
 #ifndef _SIG_H
 #define _SIG_H
 

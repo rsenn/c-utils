@@ -1,20 +1,12 @@
-/** @file glob.h
- *
- * Contains the declarations for the glob() API.
+/**   * Contains the declarations for the glob() API.
  */
 
 #ifndef GLOB_H
 #define GLOB_H
 
-/** @weakgroup unixem Synesis Software UNIX Emulation for Win32
- * The UNIX emulation library
- */
+/** This API provides facilities for enumerating the file-system contents
 
-/** @weakgroup unixem_glob glob() API
- * @ingroup UNIXem unixem
- * This API provides facilities for enumerating the file-system contents
- * @{
- */
+*/
 
 /*
  * Constants and definitions
@@ -137,7 +129,5 @@ void globfree(glob_t* pglob);
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
-
-/** @} end of group unixem_glob */
 
 #endif /* GLOB_H */

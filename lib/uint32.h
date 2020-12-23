@@ -1,4 +1,11 @@
-/* this header file comes from libowfat, http://www.fefe.de / libowfat/ */
+/**
+ * @defgroup   UINT32 uint 32
+ *
+ * @brief      This file implements uint 32.
+ *
+ * @author     Roman
+ * @date       2020
+ */
 #ifndef UINT32_H
 #define UINT32_H
 

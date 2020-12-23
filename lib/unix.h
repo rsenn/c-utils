@@ -1,3 +1,11 @@
+/**
+ * @defgroup   UNIX unix
+ *
+ * @brief      This file implements unix.
+ *
+ * @author     Roman
+ * @date       2020
+ */
 #ifndef UNIX_H
 #define UNIX_H 1
 

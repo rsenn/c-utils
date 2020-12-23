@@ -1,4 +1,11 @@
-/* this header file comes from libowfat, http://www.fefe.de/libowfat/ */
+/**
+ * @defgroup   SOCKET socket
+ *
+ * @brief      This file implements socket.
+ *
+ * @author     Roman
+ * @date       2020
+ */
 #ifndef SOCKET_H
 #define SOCKET_H
 

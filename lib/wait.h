@@ -1,3 +1,11 @@
+/**
+ * @defgroup   WAIT wait
+ *
+ * @brief      This file implements wait.
+ *
+ * @author     Roman
+ * @date       2020
+ */
 #ifndef WAIT_H
 #define WAIT_H
 

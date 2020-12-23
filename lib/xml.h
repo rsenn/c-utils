@@ -1,5 +1,13 @@
-#ifndef LIB_XML_H_
-#define LIB_XML_H_
+/**
+ * @defgroup   XML xml
+ *
+ * @brief      This file implements xml.
+ *
+ * @author     Roman
+ * @date       2020
+ */
+#ifndef XML_H
+#define XML_H
 
 #include <sys/types.h>
 #include <assert.h>
@@ -275,4 +283,4 @@ xmltoken xml_read_token(xmlscanner* s);
 #ifdef __cplusplus
 }
 #endif
-#endif /* LIB_XML_H_ */
+#endif /* XML_H */

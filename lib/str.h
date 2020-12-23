@@ -1,4 +1,11 @@
-/* this header file comes from libowfat, http://www.fefe.de / libowfat/ */
+/**
+ * @defgroup   STR string
+ *
+ * @brief      This file implements string.
+ *
+ * @author     Roman
+ * @date       2020
+ */
 #ifndef STR_H
 #define STR_H
 
