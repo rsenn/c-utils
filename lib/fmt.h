@@ -14,10 +14,17 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-typedef size_t fmt_func(char*, void*, void*, void*, void*);
+typedef size_t fmt_call(char*,  void*, void*, void*, void*);
+typedef size_t fmt_bytes(char*, uint32, void*, void*, void*, void*);
 
 typedef struct {
-  fmt_func* func;
+  fmt_call* func;
+  enum {
+    FMT_CALL_INTEGRAL,
+    FMT_CALL_STR,
+    FMT_CALL_BYTEBUF
+  } arg;
+
   union {
     struct {
       char* x;
