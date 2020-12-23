@@ -263,6 +263,9 @@ int buffer_copy(buffer* out, buffer* in);
 void buffer_putstr(buffer* b, const char* x);
 void buffer_realloc(buffer* b, size_t ylen);
 
+#define buffer_LINE(b) byte_line((b)->x, (b)->p)
+#define buffer_COLUMN(b) byte_column((b)->x, (b)->p)
+
 #ifdef __cplusplus
 }
 #endif

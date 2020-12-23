@@ -65,6 +65,13 @@ size_t byte_equal(const void* s, size_t n, const void* t);
 void byte_lower(void* s, size_t len);
 void byte_upper(void* s, size_t len);
 
+#define byte_line(s, n) byte_count(s, n, '\n')
+static inline size_t
+byte_column(const void* s, size_t n) {
+  size_t p = byte_rchr(s, n, '\n');
+  return p == n ? n : n - p;
+}
+
 size_t byte_findb(const void* haystack, size_t hlen, const void* what, size_t wlen);
 size_t byte_finds(const void* haystack, size_t hlen, const char* what);
 

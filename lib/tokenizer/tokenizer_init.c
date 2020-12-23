@@ -1,6 +1,11 @@
 #include "../tokenizer_internal.h"
+#include "../byte.h"
 
 void
 tokenizer_init(tokenizer* t, buffer* in, int flags) {
-  *t = (tokenizer){.input = in, .line = 1, .flags = flags, .bufsize = MAX_TOK_LEN};
+  byte_zero(t, sizeof(tokenizer));
+  t->input = in;
+  t->line = 1;
+  t->flags = flags;
+  t->bufsize = MAX_TOK_LEN;
 }

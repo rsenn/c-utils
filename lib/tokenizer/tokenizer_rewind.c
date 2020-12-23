@@ -1,5 +1,5 @@
 #include "../tokenizer_internal.h"
-#include "../seek.h"
+#include "../buffer.h"
 
 int
 tokenizer_rewind(tokenizer* t) {

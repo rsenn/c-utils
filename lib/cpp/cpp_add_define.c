@@ -3,7 +3,7 @@
 
 int
 cpp_add_define(cpp_t* cpp, const char* mdecl) {
-  struct FILE_container tmp = {0};
+  struct FILE_container_s tmp = {0};
   tmp.f = memstream_open(&tmp.buf, &tmp.len);
   buffer_puts(tmp.f, mdecl);
   buffer_putnlflush(tmp.f);

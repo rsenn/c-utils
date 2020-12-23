@@ -14,10 +14,10 @@
 #include "uint32.h"
 #include "uint64.h"
 
-struct tokenizer_getc_buf {
+typedef struct tokenizer_charbuf_s {
   int buf[MAX_UNGETC];
   size_t cnt, buffered;
-};
+} tokenizer_charbuf;
 
 enum tokenizer_result { TOKENIZER_ERROR = -1, TOKENIZER_EOF = -2 };
 
@@ -46,12 +46,12 @@ enum tokentype {
 
 const char* tokentype_to_str(enum tokentype tt);
 
-struct token {
+typedef struct token_s {
   enum tokentype type;
   uint32 line;
   uint32 column;
   int value;
-};
+} token;
 
 enum tokenizer_flags {
   TF_PARSE_STRINGS = 1 << 0,
@@ -68,28 +68,28 @@ typedef struct tokenizer_s {
   const char* custom_tokens[MAX_CUSTOM_TOKENS];
   char buf[MAX_TOK_LEN];
   size_t bufsize;
-  struct tokenizer_getc_buf getc_buf;
+  tokenizer_charbuf chb;
   const char* marker[MT_MAX + 1];
   const char* filename;
-  struct token peek_token;
+  token peek_token;
 } tokenizer;
 
-int64 tokenizer_ftello(struct tokenizer_s* t);
-int tokenizer_getc(struct tokenizer_s* t);
-int tokenizer_get_flags(struct tokenizer_s* t);
-void tokenizer_init(struct tokenizer_s* t, buffer* in, int flags);
-int tokenizer_next(struct tokenizer_s* t, struct token* out);
-int tokenizer_peek(struct tokenizer_s* t);
-int tokenizer_peek_token(struct tokenizer_s* t, struct token* tok);
-int tokenizer_read_until(struct tokenizer_s* t, const char* marker, int stop_at_nl);
-void tokenizer_register_custom_token(struct tokenizer_s* t, int tokentype, const char* str);
-void tokenizer_register_marker(struct tokenizer_s* t, enum markertype mt, const char* marker);
-int tokenizer_rewind(struct tokenizer_s* t);
-void tokenizer_set_filename(struct tokenizer_s* t, const char* fn);
-void tokenizer_set_flags(struct tokenizer_s* t, int flags);
-int tokenizer_skip_chars(struct tokenizer_s* t, const char* chars, int* count);
-void tokenizer_skip_until(struct tokenizer_s* t, const char* marker);
-int tokenizer_ungetc(struct tokenizer_s* t, int c);
+int64 tokenizer_ftello(tokenizer* t);
+int tokenizer_getc(tokenizer* t);
+int tokenizer_get_flags(tokenizer* t);
+void tokenizer_init(tokenizer* t, buffer* in, int flags);
+int tokenizer_next(tokenizer* t, struct token_s* out);
+int tokenizer_peek(tokenizer* t);
+int tokenizer_peek_token(tokenizer* t, struct token_s* tok);
+int tokenizer_read_until(tokenizer* t, const char* marker, int stop_at_nl);
+void tokenizer_register_custom_token(tokenizer* t, int tokentype, const char* str);
+void tokenizer_register_marker(tokenizer* t, enum markertype mt, const char* marker);
+int tokenizer_rewind(tokenizer* t);
+void tokenizer_set_filename(tokenizer* t, const char* fn);
+void tokenizer_set_flags(tokenizer* t, int flags);
+int tokenizer_skip_chars(tokenizer* t, const char* chars, int* count);
+void tokenizer_skip_until(tokenizer* t, const char* marker);
+int tokenizer_ungetc(tokenizer* t, int c);
 
 #endif /* defined(TOKENIZER_H) */
 /** @} */

@@ -5,7 +5,7 @@ cpp_undef_macro(cpp_t* cpp, const char* name) {
   MAP_ITER_T k;
   if(!MAP_SEARCH(cpp->macros, name, str_len(name) + 1, &k))
     return 0;
-  struct macro* m = MAP_DATA(cpp->macros, k);
+  struct macro_s* m = MAP_DATA(cpp->macros, k);
   /*  alloc_free(hbmap_getkey(cpp->macros, k));*/
   if(m->str_contents)
     buffer_close(m->str_contents);

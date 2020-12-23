@@ -1,7 +1,7 @@
 #include "../tokenizer_internal.h"
 
 int
-tokenizer_next(tokenizer* t, struct token* out) {
+tokenizer_next(tokenizer* t, struct token_s* out) {
   char* s = t->buf;
   out->value = 0;
   int c = 0;

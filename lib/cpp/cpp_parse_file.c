@@ -2,8 +2,8 @@
 
 int
 cpp_parse_file(cpp_t* cpp, buffer* f, const char* fn, buffer* out) {
-  struct tokenizer_s t;
-  struct token curr;
+  tokenizer t;
+  struct token_s curr;
   tokenizer_init(&t, f, TF_PARSE_STRINGS);
   tokenizer_set_filename(&t, fn);
   tokenizer_register_marker(&t, MT_MULTILINE_COMMENT_START, "/*"); /**/
@@ -176,12 +176,23 @@ cpp_parse_file(cpp_t* cpp, buffer* f, const char* fn, buffer* out) {
         --ws_count;
       }
     }
-#if DEBUG
-    dprintf(2, "(stdin:%u,%u) ", curr.line, curr.column);
-    if(curr.type == TT_SEP)
-      dprintf(2, "separator: %c\n", curr.value == '\n' ? ' ' : curr.value);
-    else
-      dprintf(2, "%s: %s\n", tokentype_to_str(curr.type), t.buf);
+#if DEBUG_CPP
+    buffer_putm_internal(buffer_2, "(", fn ? fn : "stdin", ":", 0);
+    buffer_putulong(buffer_2, curr.line);
+    buffer_putc(buffer_2, ',');
+    buffer_putulong(buffer_2, curr.column);
+    buffer_puts(buffer_2, ") ");
+    if(curr.type == TT_SEP) {
+      unsigned char sep = curr.value == '\n' ? ' ' : curr.value;
+      buffer_puts(buffer_2, "separator: '");
+      buffer_putc(buffer_2, sep);
+      buffer_puts(buffer_2, "' 0x");
+      buffer_putxlong(buffer_2, sep);
+
+    } else {
+      buffer_putm_internal(buffer_2, tokentype_to_str(curr.type), ": ", t.buf, 0);
+    }
+    buffer_putnlflush(buffer_2);
 #endif
     if(curr.type == TT_IDENTIFIER) {
       char* visited[MAX_RECURSION] = {0};

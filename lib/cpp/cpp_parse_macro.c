@@ -2,7 +2,7 @@
 #include "../memstream.h"
 
 static int
-consume_nl_and_ws(tokenizer* t, struct token* tok, int expected) {
+consume_nl_and_ws(tokenizer* t, struct token_s* tok, int expected) {
   if(!x_tokenizer_next(t, tok)) {
   err:
     error("unexpected", t, tok);
@@ -32,7 +32,7 @@ cpp_parse_macro(cpp_t* cpp, tokenizer* t) {
   int ret = tokenizer_skip_chars(t, " \t", &ws_count);
   if(!ret)
     return ret;
-  struct token curr; // tmp = {.column = t->column, .line = t->line};
+  struct token_s curr; // tmp = {.column = t->column, .line = t->line};
   ret = tokenizer_next(t, &curr) && curr.type != TT_EOF;
   if(!ret) {
     error("parsing macro name", t, &curr);
@@ -43,8 +43,10 @@ cpp_parse_macro(cpp_t* cpp, tokenizer* t) {
     return 0;
   }
   const char* macroname = str_dup(t->buf);
-#ifdef DEBUG
-  dprintf(2, "parsing macro %s\n", macroname);
+#ifdef DEBUG_CPP
+  buffer_puts(buffer_2, "parsing macro ");
+  buffer_puts(buffer_2, macroname);
+  buffer_putnlflush(buffer_2);
 #endif
   int redefined = 0;
   if(cpp_get_macro(cpp, macroname)) {
@@ -55,7 +57,7 @@ cpp_parse_macro(cpp_t* cpp, tokenizer* t) {
     redefined = 1;
   }
 
-  struct macro new = {0};
+  struct macro_s new = {0};
   unsigned macro_flags = MACRO_FLAG_OBJECTLIKE;
   LIST_NEW(new.argnames);
 
@@ -112,7 +114,7 @@ cpp_parse_macro(cpp_t* cpp, tokenizer* t) {
     goto done;
   }
 
-  struct FILE_container {
+  struct FILE_container_s {
     buffer* f;
     char* buf;
     size_t len;
@@ -144,7 +146,7 @@ cpp_parse_macro(cpp_t* cpp, tokenizer* t) {
   new.str_contents_buf = contents.buf;
 done:
   if(redefined) {
-    struct macro* old = cpp_get_macro(cpp, macroname);
+    struct macro_s* old = cpp_get_macro(cpp, macroname);
     char* s_old = old->str_contents_buf ? old->str_contents_buf : "";
     char* s_new = new.str_contents_buf ? new.str_contents_buf : "";
     if(str_diff(s_old, s_new)) {

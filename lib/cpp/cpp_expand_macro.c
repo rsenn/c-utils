@@ -8,7 +8,7 @@ int
 cpp_expand_macro(cpp_t* cpp, tokenizer* t, buffer* out, const char* name, unsigned rec_level, char* visited[]) {
   int is_define = !str_diff(name, "defined");
 
-  struct macro* m;
+  struct macro_s* m;
   if(is_define && rec_level != -1)
     m = NULL;
   else
@@ -23,8 +23,11 @@ cpp_expand_macro(cpp_t* cpp, tokenizer* t, buffer* out, const char* name, unsign
     error("max recursion level reached", t, 0);
     return 0;
   }
-#ifdef DEBUG
-  dprintf(2, "lvl %u: expanding macro %s (%s)\n", rec_level, name, m->str_contents_buf);
+#ifdef DEBUG_CPP
+  buffer_puts(buffer_2, "lvl ");
+  buffer_putulong(buffer_2, rec_level);
+  buffer_putm_internal(buffer_2, ": expanding macro ", name, " (", m->str_contents_buf, ")", 0);
+  buffer_putnlflush(buffer_2);
 #endif
 
   if(rec_level == 0 && str_diff(t->filename, "<macro>")) {
@@ -47,9 +50,9 @@ cpp_expand_macro(cpp_t* cpp, tokenizer* t, buffer* out, const char* name, unsign
   cpp->tchain[rec_level] = t;
 
   size_t i;
-  struct token tok;
+  struct token_s tok;
   unsigned num_args = MACRO_ARGCOUNT(m);
-  struct FILE_container* argvalues = alloc_zero((MACRO_VARIADIC(m) ? num_args + 1 : num_args) * sizeof(struct FILE_container));
+  struct FILE_container_s* argvalues = alloc_zero((MACRO_VARIADIC(m) ? num_args + 1 : num_args) * sizeof(struct FILE_container_s));
 
   for(i = 0; i < num_args; i++) argvalues[i].f = memstream_open(&argvalues[i].buf, &argvalues[i].len);
 
@@ -125,8 +128,11 @@ cpp_expand_macro(cpp_t* cpp, tokenizer* t, buffer* out, const char* name, unsign
   for(i = 0; i < num_args; i++) {
     argvalues[i].f = buffer_reopen(argvalues[i].f, &argvalues[i].buf, &argvalues[i].len);
     tokenizer_from_file(&argvalues[i].t, argvalues[i].f);
-#ifdef DEBUG
-    dprintf(2, "macro argument %i: %s\n", (int)i, argvalues[i].buf);
+#ifdef DEBUG_CPP
+    buffer_puts(buffer_2, "macro argument ");
+    buffer_putlong(buffer_2, (long)i);
+    buffer_putm_internal(buffer_2, ": ", argvalues[i].buf, 0);
+    buffer_putnlflush(buffer_2);
 #endif
   }
 
@@ -140,11 +146,11 @@ cpp_expand_macro(cpp_t* cpp, tokenizer* t, buffer* out, const char* name, unsign
   if(!m->str_contents)
     goto cleanup;
 
-  struct FILE_container cwae = {0}; /* contents_with_args_expanded */
+  struct FILE_container_s cwae = {0}; /* contents_with_args_expanded */
   cwae.f = memstream_open(&cwae.buf, &cwae.len);
   buffer* output = cwae.f;
 
-  struct tokenizer_s t2;
+  tokenizer t2;
   tokenizer_from_file(&t2, m->str_contents);
   int hash_count = 0;
   int ws_count = 0;
@@ -228,8 +234,9 @@ cpp_expand_macro(cpp_t* cpp, tokenizer* t, buffer* out, const char* name, unsign
   /* we need to expand macros after the macro arguments have been inserted */
   if(1) {
     cwae.f = buffer_reopen(cwae.f, &cwae.buf, &cwae.len);
-#ifdef DEBUG
-    dprintf(2, "contents with args expanded: %s\n", cwae.buf);
+#ifdef DEBUG_CPP
+    buffer_putm_internal(buffer_2, "contents with args expanded: ", cwae.buf, 0);
+    buffer_putnlflush(buffer_2);
 #endif
     tokenizer_from_file(&cwae.t, cwae.f);
     size_t mac_cnt = 0;
@@ -244,7 +251,7 @@ cpp_expand_macro(cpp_t* cpp, tokenizer* t, buffer* out, const char* name, unsign
     }
 
     tokenizer_rewind(&cwae.t);
-    struct macro_info* mcs = alloc_zero(mac_cnt * sizeof(struct macro_info));
+    struct macro_info_s* mcs = alloc_zero(mac_cnt * sizeof(struct macro_info_s));
     {
       size_t mac_iter = 0;
       cpp_get_macro_info(cpp, &cwae.t, mcs, &mac_iter, 0, 0, "null", visited, rec_level);
@@ -260,12 +267,12 @@ cpp_expand_macro(cpp_t* cpp, tokenizer* t, buffer* out, const char* name, unsign
     while(depth > -1) {
       for(i = 0; i < mac_cnt; ++i)
         if(mcs[i].nest == depth) {
-          struct macro_info* mi = &mcs[i];
+          struct macro_info_s* mi = &mcs[i];
           tokenizer_rewind(&cwae.t);
           size_t j;
-          struct token utok;
+          struct token_s utok;
           for(j = 0; j < mi->first + 1; ++j) tokenizer_next(&cwae.t, &utok);
-          struct FILE_container t2 = {0}, tmp = {0};
+          struct FILE_container_s t2 = {0}, tmp = {0};
           t2.f = memstream_open(&t2.buf, &t2.len);
           if(!cpp_expand_macro(cpp, &cwae.t, t2.f, mi->name, rec_level + 1, visited))
             return 0;
@@ -274,22 +281,24 @@ cpp_expand_macro(cpp_t* cpp, tokenizer* t, buffer* out, const char* name, unsign
           /* manipulating the stream in case more stuff has been consumed */
           off_t cwae_pos = tokenizer_ftello(&cwae.t);
           tokenizer_rewind(&cwae.t);
-#ifdef DEBUG
-          dprintf(2, "merging %s with %s\n", cwae.buf, t2.buf);
+#ifdef DEBUG_CPP
+          buffer_putm_internal(buffer_2, "merging ", cwae.buf, " with ", t2.buf, 0);
+          buffer_putnlflush(buffer_2);
 #endif
           int diff = mem_tokenizers_join(&cwae, &t2, &tmp, mi->first, cwae_pos);
           free_file_container(&cwae);
           free_file_container(&t2);
           cwae = tmp;
-#ifdef DEBUG
-          dprintf(2, "result: %s\n", cwae.buf);
+#ifdef DEBUG_CPP
+          buffer_putm_internal(buffer_2, "result: ", cwae.buf, 0);
+          buffer_putnlflush(buffer_2);
 #endif
           if(diff == 0)
             continue;
           for(j = 0; j < mac_cnt; ++j) {
             if(j == i)
               continue;
-            struct macro_info* mi2 = &mcs[j];
+            struct macro_info_s* mi2 = &mcs[j];
             /* modified element mi can be either inside, after or before
                another macro. the after case doesn't affect us. */
             if(mi->first >= mi2->first && mi->last <= mi2->last) {
@@ -306,7 +315,7 @@ cpp_expand_macro(cpp_t* cpp, tokenizer* t, buffer* out, const char* name, unsign
     }
     tokenizer_rewind(&cwae.t);
     while(1) {
-      struct macro* ma;
+      struct macro_s* ma;
       tokenizer_next(&cwae.t, &tok);
       if(tok.type == TT_EOF)
         break;

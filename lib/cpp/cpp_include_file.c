@@ -4,9 +4,9 @@
 
 int
 cpp_include_file(cpp_t* cpp, tokenizer* t, buffer* out) {
-  static const char* inc_chars[] = {"\"", "<", 0};
-  static const char* inc_chars_end[] = {"\"", ">", 0};
-  struct token tok;
+  static const char* const inc_chars[] = {"\"", "<", 0};
+  static const char* const inc_chars_end[] = {"\"", ">", 0};
+  struct token_s tok;
   tokenizer_set_flags(t, 0); // disable string tokenization
 
   int inc1sep = expect(t, TT_SEP, inc_chars, &tok);

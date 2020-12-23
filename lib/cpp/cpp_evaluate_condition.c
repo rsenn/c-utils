@@ -32,8 +32,10 @@ do_eval(tokenizer* t, int* result) {
 
   int err = 0;
   *result = expr(t, 0, &err);
-#ifdef DEBUG
-  dprintf(2, "eval result: %d\n", *result);
+#ifdef DEBUG_CPP
+  buffer_puts(buffer_2, "eval result: ");
+  buffer_putlong(buffer_2, *result);
+  buffer_putnlflush(buffer_2);
 #endif
   return !err;
 }
@@ -41,7 +43,7 @@ do_eval(tokenizer* t, int* result) {
 int
 cpp_evaluate_condition(cpp_t* cpp, tokenizer* t, int* result, char* visited[]) {
   int ret, backslash_seen = 0;
-  struct token curr;
+  struct token_s curr;
   char* bufp;
   size_t size;
   int tflags = tokenizer_get_flags(t);
@@ -82,14 +84,18 @@ cpp_evaluate_condition(cpp_t* cpp, tokenizer* t, int* result, char* visited[]) {
     error("#(el)if with no expression", t, &curr);
     return 0;
   }
-#ifdef DEBUG
-  dprintf(2, "evaluating condition %s\n", bufp);
+#ifdef DEBUG_CPP
+  buffer_putm_internal(buffer_2, "evaluating condition ", bufp, 0);
+  buffer_putnlflush(buffer_2);
 #endif
-  struct tokenizer_s t2;
-  tokenizer_from_file(&t2, f);
-  ret = do_eval(&t2, result);
-  buffer_close(f);
-  alloc_free(bufp);
-  tokenizer_set_flags(t, tflags);
-  return ret;
+  {
+    tokenizer t2;
+
+    tokenizer_from_file(&t2, f);
+    ret = do_eval(&t2, result);
+    buffer_close(f);
+    alloc_free(bufp);
+    tokenizer_set_flags(t, tflags);
+    return ret;
+  }
 }
