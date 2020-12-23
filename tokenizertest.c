@@ -114,11 +114,14 @@ token_dump(const tokenizer* t, const token* tok, size_t len) {
                                          "TT_EOF",
                                          "TT_CUSTOM "})[tok->type]),
                  17);
-  buffer_puts(buffer_2, " value =");
-  buffer_putulong0(buffer_2, tok->value, 3);
+
+  if(tok->type >= TT_HEX_INT_LIT && tok->type <= TT_DEC_INT_LIT) {
+    buffer_puts(buffer_2, " value=");
+    buffer_putulong(buffer_2, tok->value);
+  }
   if(len > 0) {
-    buffer_puts(buffer_2, " len =");
-    buffer_putulong0(buffer_2, len, 3);
+    buffer_puts(buffer_2, " len=");
+    buffer_putulong(buffer_2, len);
     buffer_puts(buffer_2, " data = ");
 
     buffer_put_escaped(buffer_2, &t->input->x[prev], len, &fmt_escapecharnonprintable);
@@ -167,6 +170,7 @@ main(int argc, char** argv) {
       if(tok.type != TT_SEP)
         token_dump(&t, &tok, t.chb.cnt - offset);
       dump_charbuf(&t.chb);
+      buffer_dump(buffer_2, &in);
       offset = t.chb.cnt;
     }
   }

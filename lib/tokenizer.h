@@ -50,7 +50,7 @@ typedef struct token_s {
   enum tokentype type;
   uint32 line;
   uint32 column;
-  int value;
+  int64 value;
 } token;
 
 enum tokenizer_flags {
