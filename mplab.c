@@ -467,9 +467,9 @@ output_mplab_project(buffer* b, MAP_T* _rules, MAP_T* vars, const strlist* inclu
 
   MAP_FOREACH(toolcfg, it) {
     stralloc_zero(&sa);
-    stralloc_catb(&sa, MAP_KEY(it), str_len(MAP_KEY(it)));
+    stralloc_catb(&sa, MAP_ITER_KEY(it), str_len(MAP_ITER_KEY(it)));
     stralloc_catc(&sa, '=');
-    stralloc_catb(&sa, MAP_VALUE(it), str_len(MAP_VALUE(it)));
+    stralloc_catb(&sa, MAP_ITER_VALUE(it), str_len(MAP_ITER_VALUE(it)));
 
     strlist_push_sa(&tcfg, &sa);
     set_int(toolcfg, "E7", 0);

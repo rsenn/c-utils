@@ -151,8 +151,8 @@ dump_hosts() {
   char buf[256];
   MAP_PAIR_T ptr;
   MAP_FOREACH(hosts_db, ptr) {
-    const char* host = MAP_KEY(ptr);
-    address_t* addr = MAP_DATA(ptr);
+    const char* host = MAP_ITER_KEY(ptr);
+    address_t* addr = MAP_ITER_VALUE(ptr);
 
     buffer_put(buffer_2, buf, address_fmt(buf, addr));
     buffer_putspace(buffer_2);

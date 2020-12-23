@@ -164,13 +164,13 @@ main(int argc, char* argv[]) {
   }
 
   MAP_FOREACH(layers, t) {
-    const char* color = MAP_GET(colors, MAP_KEY(t), str_len(MAP_KEY(t)));
+    const char* color = MAP_GET(colors, MAP_ITER_KEY(t), str_len(MAP_ITER_KEY(t)));
     unsigned int c = 0;
     scan_uint(color, &c);
 
-    buffer_put(buffer_2, MAP_KEY(t), str_len(MAP_KEY(t)));
+    buffer_put(buffer_2, MAP_ITER_KEY(t), str_len(MAP_ITER_KEY(t)));
     buffer_puts(buffer_2, ": ");
-    buffer_put(buffer_2, MAP_VALUE(t), str_len(MAP_VALUE(t)));
+    buffer_put(buffer_2, MAP_ITER_VALUE(t), str_len(MAP_ITER_VALUE(t)));
     buffer_puts(buffer_2, ": ");
     buffer_puts(buffer_2, color);
     buffer_puts(buffer_2, ": ");

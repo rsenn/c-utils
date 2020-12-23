@@ -44,7 +44,7 @@ get_name() {
   if [ "$NAME"  = "$1" ]; then
     NAME=
   fi
-  echo "NAME='$NAME'" 1>&2
+  #echo "NAME='$NAME'" 1>&2
   echo $NAME)
 }
 
@@ -102,9 +102,6 @@ clean_args() {
     ARG=${ARG//" *"/"* "}
    
     if [ "$REMOVE_NAMES" = true ] || [ -n "$REMOVE_NAMES" -a "$REMOVE_NAMES" -ge "$I" ] 2>/dev/null; then 
-  #    ARGLIST=$(set -f; echo "$ARG" | sed 's|\s\+|\n|g ;; s|\([^_A-Za-z0-9()]\)\([_A-Za-z0-9()]\)|\1\n\2|g ;; s|\([_A-Za-z0-9()]\)\([^_A-Za-z0-9()]\)|\1\n\2|g ;; s|\[\s*|[|g ;; s|\s*\]|]|g')
-  #    ARG=$(set -f; IFS="
-#"; set -- $(echo "$ARGLIST"); IFS=" "; echo "$*")
   ARG=`remove_name "$ARG"`
     fi
 

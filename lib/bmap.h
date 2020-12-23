@@ -5,8 +5,8 @@
  * under the terms of the MIT license. See LICENSE for details.
  */
 
-#ifndef MAP_H
-#define MAP_H
+#ifndef _BMAP_H
+#define _BMAP_H
 
 #include "byte.h"
 
@@ -16,8 +16,8 @@ extern "C" {
 
 #define MAP_VERSION "0.1.0"
 
-struct bmap_node_t;
-typedef struct bmap_node_t map_node_t;
+struct bmap_node_s;
+typedef struct bmap_node_s bmap_node_t;
 
 typedef struct {
   bmap_node_t** buckets;
@@ -29,9 +29,9 @@ typedef struct {
   bmap_node_t* node;
 } bmap_iter_t;
 
-#define bmap_t(T)                                                                                                                                                                                       \
+#define bmap_t(T)                                                                                                                                                                                      \
   struct {                                                                                                                                                                                             \
-    bmap_base_t base;                                                                                                                                                                                   \
+    bmap_base_t base;                                                                                                                                                                                  \
     T* ref;                                                                                                                                                                                            \
     T tmp;                                                                                                                                                                                             \
   }
@@ -42,10 +42,10 @@ typedef struct {
 
 #define bmap_get(m, key) ((m)->ref = bmap_get_(&(m)->base, (key)))
 
-#define bmap_set(m, key, value)                                                                                                                                                                         \
+#define bmap_set(m, key, value)                                                                                                                                                                        \
   do {                                                                                                                                                                                                 \
     (m)->tmp = (value);                                                                                                                                                                                \
-    bmap_set_(&(m)->base, key, (void*)&(m)->tmp, sizeof((m)->tmp));                                                                                                                                     \
+    bmap_set_(&(m)->base, key, (void*)&(m)->tmp, sizeof((m)->tmp));                                                                                                                                    \
   } while(0)
 
 #define bmap_remove(m, key) bmap_remove_(&(m)->base, key)

@@ -1,7 +1,7 @@
-#include "../list.h"
+#include "../dlist.h"
 #include "../byte.h"
 
 void
-dlist_init(list* l) {
-  byte_zero(l, sizeof(list));
+dlist_init(dlist* l) {
+  byte_zero(l, sizeof(dlist));
 }

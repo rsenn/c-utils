@@ -1,7 +1,7 @@
-#include "../list.h"
+#include "../dlist.h"
 
 node*
-dlist_find_delete(list* l, int (*pred)(void*)) {
+dlist_find_delete(dlist* l, int (*pred)(void*)) {
   node* p;
 
   /* Loop through all links until we find the pointer */

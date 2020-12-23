@@ -6,6 +6,9 @@ set(CMAKE_C_STANDARD 11)
 
 project(c-utils C ASM)
 
+include(${CMAKE_CURRENT_SOURCE_DIR}/build/cmake/Functions.cmake)
+include(${CMAKE_CURRENT_SOURCE_DIR}/build/cmake/Macros.cmake)
+
 if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
   set(CMAKE_INSTALL_PREFIX "/usr/local" CACHE PATH "Installation prefix" FORCE)
 endif()
@@ -27,16 +30,6 @@ option(USE_BZIP "bzip2 compression" ON)
 option(USE_ZLIB "zlib compression" ON)
 option(USE_BROTLI "brotli compression" ON)
 option(USE_SSL "ssl encryption" ON)
-
-function(DUMP VAR)
-  string(REGEX REPLACE "[;\n]" " " A "${ARGV}")
-  message("\nVariable dump of: ${A}\n")
-
-  foreach(VAR ${ARGV})
-    message("  ${VAR} = ${${VAR}}")
-  endforeach(VAR ${ARGV})
-  message("")
-endfunction(DUMP VAR)
 
 if(CMAKE_C_COMPILER MATCHES "-musl")
   set(MUSL TRUE)
@@ -96,19 +89,6 @@ option(BUILD_SHARED_LIBS "Build shared libs" "${SHARED_LIBS}")
 option(LINK_STATIC "Link libraries static" "${STATIC_LINK}")
 option(ENABLE_WERROR "Enable -Werror (warnings are errors)" OFF)
 
-function(debug_option NAME DESC)
-  option(DEBUG_${NAME} "${DESC}" OFF)
-  string(TOLOWER "${NAME}" MODULE)
-  set(DEFS "${${MODULE}_DEFS}")
-  if("${DEFS}" STREQUAL "")
-    set(DEFS "MODULE_${NAME}=1")
-  endif()
-  if(DEBUG_${NAME})
-    set("${MODULE}_DEFS" "DEBUG_${NAME}=1;${DEFS}" PARENT_SCOPE)
-    add_definitions(-DDEBUG_${NAME}=1)
-  endif(DEBUG_${NAME})
-endfunction(debug_option NAME DESC)
-
 debug_option(IO "Debug I/O code")
 debug_option(HTTP "Debug HTTP code")
 debug_option(TLS "Debug TLS code")
@@ -150,83 +130,6 @@ include(CheckLibraryExists)
 include(CheckIncludeFile)
 include(CheckCCompilerFlag)
 include(CheckTypeSize)
-
-macro(show_result RESULT_VAR)
-  if(${${RESULT_VAR}})
-    set(RESULT_VALUE yes)
-  else(${${RESULT_VAR}})
-    set(RESULT_VALUE no)
-  endif(${${RESULT_VAR}})
-endmacro(show_result RESULT_VAR)
-
-macro(check_compile RESULT_VAR SOURCE)
-  set(RESULT "${${RESULT_VAR}}")
-  # message("${RESULT_VAR} = ${RESULT}" )
-  if(RESULT STREQUAL "")
-    string(RANDOM LENGTH 6 ALPHABET "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789" C_NAME)
-    string(REPLACE SUPPORT_ "" NAME "${RESULT_VAR}")
-    string(REPLACE _ - NAME "${NAME}")
-    string(TOLOWER "${NAME}" C_NAME)
-    set(C_SOURCE "${CMAKE_CURRENT_BINARY_DIR}/try-${C_NAME}.c")
-    string(REPLACE "\\" "\\\\" SOURCE "${SOURCE}")
-    file(WRITE "${C_SOURCE}" "${SOURCE}")
-    message(CHECK_START "Trying to compile try-${C_NAME}.c ... ")
-    try_compile(COMPILE_RESULT "${CMAKE_CURRENT_BINARY_DIR}" "${C_SOURCE}" OUTPUT_VARIABLE "OUTPUT" LINK_LIBRARIES "${ARGN}")
-    # file(REMOVE "${C_SOURCE}")
-
-    if(COMPILE_RESULT)
-      message(CHECK_PASS "ok")
-      # add_definitions(-D${RESULT_VAR})
-    else(COMPILE_RESULT)
-      set(COMPILE_LOG "${CMAKE_CURRENT_BINARY_DIR}/compile-${C_NAME}.log")
-      message(CHECK_FAIL "fail: ${COMPILE_LOG}")
-      file(WRITE "${COMPILE_LOG}" "${OUTPUT}")
-      string(REPLACE "\n" ";" OUTPUT "${OUTPUT}")
-      list(FILTER OUTPUT INCLUDE REGEX "error")
-    endif(COMPILE_RESULT)
-
-    set("${RESULT_VAR}" "${COMPILE_RESULT}" CACHE BOOL "Support ${NAME}")
-  endif(RESULT STREQUAL "")
-  show_result(${RESULT_VAR})
-endmacro(check_compile RESULT_VAR SOURCE)
-
-macro(check_run RESULT_VAR SOURCE)
-  string(RANDOM LENGTH 6 ALPHABET "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789" C_SOURCE)
-  set(C_SOURCE "${CMAKE_CURRENT_BINARY_DIR}/try-${C_SOURCE}.c")
-  string(REPLACE "\\" "\\\\" SOURCE "${SOURCE}")
-  file(WRITE "${C_SOURCE}" "${SOURCE}")
-  try_run(RUN_RESULT COMPILE_RESULT "${CMAKE_CURRENT_BINARY_DIR}" "${C_SOURCE}" RUN_OUTPUT_VARIABLE RUN_OUTPUT COMPILE_OUTPUT_VARIABLE COMPILE_OUTPUT)
-
-  if("${RUN_RESULT}" STREQUAL 0)
-    set(RUN_OK TRUE)
-  else("${RUN_RESULT}" STREQUAL 0)
-    set(RUN_OK FALSE)
-  endif("${RUN_RESULT}" STREQUAL 0)
-
-  # message("Run result: ${RUN_OK} output: ${RUN_OUTPUT}") message("Compile result: ${COMPILE_RESULT}")
-
-  file(REMOVE "${C_SOURCE}")
-
-  if(NOT COMPILE_RESULT)
-    set("${RESULT_VAR}" "${COMPILE_RESULT}")
-    set(RUN_RESULT FALSE)
-  else(NOT COMPILE_RESULT)
-    set("${RESULT_VAR}" "${RUN_OK}")
-  endif(NOT COMPILE_RESULT)
-
-  if(RUN_OK)
-    # add_definitions(-D${RESULT_VAR})
-  else(RUN_OK)
-    string(REPLACE "\n" ";" OUTPUT "${OUTPUT}")
-    list(FILTER OUTPUT INCLUDE REGEX "error")
-  endif(RUN_OK)
-
-  if(ARGN)
-    set("${ARGN}" "${RUN_OUTPUT}" PARENT_SCOPE)
-  endif(ARGN)
-
-  show_result(${RESULT_VAR})
-endmacro(check_run RESULT_VAR SOURCE)
 
 foreach(C_STANDARD c2x c18 c17 c1x c11 c99)
   string(REPLACE "c" "CPLUSPLUS" C_STANDARD_NUM "${C_STANDARD}")
@@ -439,53 +342,6 @@ if(HAVE_SYS_WAIT_H)
   add_definitions(-DHAVE_SYS_WAIT_H)
 endif(HAVE_SYS_WAIT_H)
 
-if(NOT CROSS)
-  if(BUILD_LZMA)
-    check_type_size(int16_t INT16_T)
-    check_type_size(int32_t INT32_T)
-    check_type_size(int64_t INT64_T)
-    check_type_size(intmax_t INTMAX_T)
-    check_type_size(uint8_t UINT8_T)
-    check_type_size(uint16_t UINT16_T)
-    check_type_size(uint32_t UINT32_T)
-    check_type_size(uint64_t UINT64_T)
-    check_type_size(uintmax_t UINTMAX_T)
-
-    #
-    check_type_size(ptrdiff_t PTRDIFF_T_SIZE)
-    check_type_size(size_t SIZE_T_SIZE)
-    check_type_size(long LONG_SIZE)
-    check_type_size("void*" VOIDP_T_SIZE)
-
-    # DUMP(PTRDIFF_T_SIZE) DUMP(SIZE_T_SIZE) DUMP(LONG_SIZE) DUMP(VOIDP_T_SIZE)
-
-    #
-    check_type_size("short" SIZE_OF_SHORT)
-    check_type_size("int" SIZE_OF_INT)
-    check_type_size("long" SIZE_OF_LONG)
-    check_type_size("long long" SIZE_OF_LONG_LONG)
-
-    #
-    check_type_size("unsigned short" SIZE_OF_UNSIGNED_SHORT)
-    check_type_size("unsigned" SIZE_OF_UNSIGNED)
-    check_type_size("unsigned long" SIZE_OF_UNSIGNED_LONG)
-    check_type_size("unsigned long long" SIZE_OF_UNSIGNED_LONG_LONG)
-    check_type_size("size_t" SIZE_OF_SIZE_T)
-  endif(BUILD_LZMA)
-  #
-  check_type_size("__int64" __INT64)
-  check_type_size("unsigned __int64" UNSIGNED___INT64)
-
-  check_type_size(uintptr_t UINTPTR_T)
-  if(NOT HAVE_UINTPTR_T)
-    if("${CMAKE_SIZEOF_VOID_P}" EQUAL 8)
-      set(uintptr_t "uint64_t")
-    else()
-      set(uintptr_t "uint32_t")
-    endif()
-  endif()
-endif(NOT CROSS)
-
 string(REGEX REPLACE ".*/" "" COMPILER_NAME "${CMAKE_C_COMPILER}")
 
 if(COMPILER_NAME MATCHES "em.*")
@@ -549,25 +405,6 @@ else(LINK_STATIC)
 endif(LINK_STATIC)
 
 set(CMAKE_STATIC_LINKER_FLAGS "")
-
-macro(check_function_def FUNC)
-  if(ARGC EQUAL 1)
-    string(TOUPPER "HAVE_${FUNC}" RESULT_VAR)
-  else(ARGC EQUAL 1)
-    set(RESULT_VAR "${ARGN}")
-  endif(ARGC EQUAL 1)
-  # message("FUNC: ${FUNC} RESULT_VAR: ${RESULT_VAR}")
-  check_function_exists("${FUNC}" "${RESULT_VAR}")
-  if(${${RESULT_VAR}})
-    # add_definitions(-D${RESULT_VAR}) message("${RESULT_VAR} ${${RESULT_VAR}}")
-  endif(${${RESULT_VAR}})
-endmacro(check_function_def FUNC RESULT_VAR)
-function(check_functions)
-  foreach(FUNC ${ARGN})
-    string(TOUPPER "HAVE_${FUNC}" RESULT_VAR)
-    check_function_def("${FUNC}" "${RESULT_VAR}")
-  endforeach(FUNC ${ARGN})
-endfunction(check_functions)
 
 check_functions(lstat waitpid aligned_alloc fnmatch getdelim getopt getopt_long pipe2 popen posix_memalign pread sendfile sigaddset sigemptyset sigprocmask strerror_r __write writev posix_spawnattr_setflags posix_spawn_file_actions_init posix_spawn_file_actions_adddup2 posix_spawnp clock_gettime)
 
@@ -638,23 +475,7 @@ check_function_exists(wordexp HAVE_WORDEXP)
 if(HAVE_WORDEXP)
   add_definitions(-DHAVE_WORDEXP=1)
 endif(HAVE_WORDEXP)
-#[[
-#message("USE_SELECT=${USE_SELECT}")
-#message("USE_POLL=${USE_POLL}")
-message("USE_EPOLL=${USE_EPOLL}")]]
-#[[if(USE_POLL STREQUAL "OFF"
-   AND USE_SELECT STREQUAL "OFF"
-   AND USE_EPOLL STREQUAL "OFF")
-  set(USE_SELECT TRUE)
-endif()
-if(USE_POLL STREQUAL "ON")
-  add_definitions(-DHAVE_POLL=1 -DIOPAUSE_POLL=1)
-endif()
 
-if(USE_SELECT STREQUAL "ON")
-  add_definitions(-DUSE_SELECT=1 -DIOPAUSE_SELECT=1)
-endif()
-]]
 set(IOPAUSE_MUX "" CACHE STRING "iopause() multiplex call")
 
 if(HAVE_LINUX_AIO)
@@ -701,7 +522,7 @@ if(HAVE_PTHREAD_LIB)
 endif()
 message(STATUS "LIBPTHREAD = ${LIBPTHREAD}")
 
-include(${CMAKE_SOURCE_DIR}/build/cmake/FindStandardMathLibrary.cmake)
+include(${CMAKE_CURRENT_SOURCE_DIR}/build/cmake/FindStandardMathLibrary.cmake)
 
 # check_library_exists(m log2 "" HAVE_MATH_LIB) if(HAVE_MATH_LIB) set(LIBMATH m CACHE STRING "Math library" FORCE) endif()
 message(STATUS "LIBMATH = ${LIBMATH}")
@@ -715,8 +536,8 @@ endif(NOT LINK_STATIC)
 
 # include(${CMAKE_SOURCE_DIR}/FindZlib.cmake) include(${CMAKE_SOURCE_DIR}/FindBZip2.cmake) include(${CMAKE_SOURCE_DIR}/FindLibLZMA.cmake)
 
-include(${CMAKE_SOURCE_DIR}/build/cmake/CheckInline.cmake)
-include(${CMAKE_SOURCE_DIR}/build/cmake/Profile.cmake)
+include(${CMAKE_CURRENT_SOURCE_DIR}/build/cmake/CheckInline.cmake)
+include(${CMAKE_CURRENT_SOURCE_DIR}/build/cmake/Profile.cmake)
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
   debug_option(OUTPUT "Output verbose messages")
@@ -743,13 +564,13 @@ foreach(CompilerFlag ${CompilerFlags})
   # message("${CompilerFlag}: ${${CompilerFlag}}")
 endforeach()
 
-include(${CMAKE_SOURCE_DIR}/build/cmake/Werror.cmake)
+include(${CMAKE_CURRENT_SOURCE_DIR}/build/cmake/Werror.cmake)
 
-include(${CMAKE_SOURCE_DIR}/build/cmake/CheckLZMA.cmake)
-include(${CMAKE_SOURCE_DIR}/build/cmake/CheckZlib.cmake)
-include(${CMAKE_SOURCE_DIR}/build/cmake/CheckBZip2.cmake)
-include(${CMAKE_SOURCE_DIR}/build/cmake/CheckBrotli.cmake)
-include(${CMAKE_SOURCE_DIR}/build/cmake/CheckOpenSSL.cmake)
+include(${CMAKE_CURRENT_SOURCE_DIR}/build/cmake/CheckBrotli.cmake)
+include(${CMAKE_CURRENT_SOURCE_DIR}/build/cmake/CheckBZip2.cmake)
+include(${CMAKE_CURRENT_SOURCE_DIR}/build/cmake/CheckLZMA.cmake)
+include(${CMAKE_CURRENT_SOURCE_DIR}/build/cmake/CheckOpenSSL.cmake)
+include(${CMAKE_CURRENT_SOURCE_DIR}/build/cmake/CheckZlib.cmake)
 
 set(CMAKE_REQUIRED_DEFINITIONS)
 set(CMAKE_REQUIRED_INCLUDES "poll.h")
@@ -790,16 +611,6 @@ if(SUPPORT_SELECT STREQUAL "")
     check_function_exists(select SUPPORT_SELECT)
   endif(NOT SUPPORT_SELECT)
 endif(SUPPORT_SELECT STREQUAL "")
-
-function(list_contains LIST ITEM OUTPUT_VAR)
-  set(RESULT FALSE)
-  foreach(IT ${LIST})
-    if("${IT}" STREQUAL "${ITEM}")
-      set(RESULT TRUE)
-    endif("${IT}" STREQUAL "${ITEM}")
-  endforeach(IT ${LIST})
-  set("${OUTPUT_VAR}" ${RESULT} PARENT_SCOPE)
-endfunction(list_contains LIST ITEM OUTPUT_VAR)
 
 set(MUX "")
 set(MUX_DEFS "")
@@ -911,217 +722,12 @@ invoption(BUILD_SSL "build 3rdparty openssl" OPENSSL_FOUND)
 
 find_program(TAR NAMES bsdtar tar gtar gnutar star)
 
-if(BUILD_ZLIB)
-  message(STATUS "Building zlib from 3rdparty/zlib")
-  set(ZLIB_VERSION "1.2.11")
-  set(ZLIB_DISABLE_TESTS TRUE)
-  set(ZLIB_STATIC TRUE)
-  set(ZLIB_NO_INSTALL TRUE)
-
-  if(NOT EXISTS "${CMAKE_SOURCE_DIR}/3rdparty/zlib/CMakeLists.txt")
-    if(NOT EXISTS "${CMAKE_SOURCE_DIR}/zlib-${ZLIB_VERSION}.tar.gz")
-      file(REMOVE_RECURSE "${CMAKE_SOURCE_DIR}/3rdparty/zlib")
-      file(DOWNLOAD "https://zlib.net/zlib-${ZLIB_VERSION}.tar.gz" "${CMAKE_SOURCE_DIR}/3rdparty/zlib-${ZLIB_VERSION}.tar.gz" SHOW_PROGRESS)
-    endif()
-
-    exec_program("${TAR}" ARGS -C "${CMAKE_SOURCE_DIR}/3rdparty" -xzf "${CMAKE_SOURCE_DIR}/3rdparty/zlib-${ZLIB_VERSION}.tar.gz")
-    file(RENAME "${CMAKE_SOURCE_DIR}/3rdparty/zlib-${ZLIB_VERSION}" "${CMAKE_SOURCE_DIR}/3rdparty/zlib")
-
-  endif()
-  include("${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/zlib.cmake")
-  set(ZLIB_SOURCES 3rdparty/zlib/adler32.c 3rdparty/zlib/compress.c 3rdparty/zlib/crc32.c 3rdparty/zlib/deflate.c 3rdparty/zlib/infback.c 3rdparty/zlib/inffast.c 3rdparty/zlib/inflate.c 3rdparty/zlib/inftrees.c 3rdparty/zlib/trees.c 3rdparty/zlib/uncompr.c 3rdparty/zlib/zutil.c)
-  add_library(z ${ZLIB_SOURCES})
-  set_target_properties(z PROPERTIES ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/zlib" LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/zlib")
-  link_directories(BEFORE "${CMAKE_BINARY_DIR}/zlib")
-  set(ZLIB_LIBRARY_DEBUG z CACHE FILEPATH "" FORCE)
-  set(ZLIB_LIBRARY_RELEASE z CACHE FILEPATH "" FORCE)
-  set(ZLIB_LIBRARY z CACHE FILEPATH "" FORCE)
-  set(ZLIB_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/3rdparty/zlib CACHE PATH "" FORCE)
-endif(BUILD_ZLIB)
-
-if(BUILD_BZIP2)
-  message(STATUS "Building libbz2 from 3rdparty/bzip2")
-  set(BZIP2_VERSION "1.0.8")
-  set(BZIP2_DISABLE_TESTS TRUE)
-  set(BZIP2_STATIC TRUE)
-  set(BZIP2_NO_INSTALL TRUE)
-  if(NOT EXISTS "${CMAKE_SOURCE_DIR}/3rdparty/bzip2/CMakeLists.txt")
-    if(NOT EXISTS "${CMAKE_SOURCE_DIR}/bzip2-${BZIP2_VERSION}.tar.gz")
-      file(REMOVE_RECURSE "${CMAKE_SOURCE_DIR}/3rdparty/bzip2")
-      file(DOWNLOAD "https://sourceware.org/pub/bzip2/bzip2-${BZIP2_VERSION}.tar.gz" "${CMAKE_SOURCE_DIR}/3rdparty/bzip2-${BZIP2_VERSION}.tar.gz" SHOW_PROGRESS)
-    endif()
-
-    exec_program("${TAR}" ARGS -C "${CMAKE_SOURCE_DIR}/3rdparty" -xzf "${CMAKE_SOURCE_DIR}/3rdparty/bzip2-${BZIP2_VERSION}.tar.gz")
-
-    file(RENAME "${CMAKE_SOURCE_DIR}/3rdparty/bzip2-${BZIP2_VERSION}" "${CMAKE_SOURCE_DIR}/3rdparty/bzip2")
-    file(
-      WRITE "${CMAKE_SOURCE_DIR}/3rdparty/bzip2/blocksort.c"
-      "\n/*-------------------------------------------------------------*/\n/*--- Block sorting machinery                               ---*/\n/*---                                           blocksort.c ---*/\n/*-------------------------------------------------------------*/\n\n/* ------------------------------------------------------------------\n   This file is part of bzip2/libbzip2, a program and library for\n   lossless, block-sorting data compression.\n\n   bzip2/libbzip2 version 1.0.6 of 6 September 2010\n   Copyright (C) 1996-2010 Julian Seward <jseward@bzip.org>\n\n   Please read the WARNING, DISCLAIMER and PATENTS sections in the \n   README file.\n\n   This program is released under the terms of the license contained\n   in the file LICENSE.\n   ------------------------------------------------------------------ */\n\n\n#include \"bzlib_private.h\"\n\n/*---------------------------------------------*/\n/*--- Fallback O(N log(N)^2) sorting        ---*/\n/*--- algorithm, for repetitive blocks      ---*/\n/*---------------------------------------------*/\n\n/*---------------------------------------------*/\nstatic \n__inline__\nvoid fallbackSimpleSort ( UInt32* fmap, \n                          UInt32* eclass, \n                          Int32   lo, \n                          Int32   hi )\n{\n   Int32 i, j, tmp;\n   UInt32 ec_tmp;\n\n   if (lo == hi) return;\n\n   if (hi - lo > 3) {\n      for ( i = hi-4; i >= lo; i-- ) {\n         tmp = fmap[i];\n         ec_tmp = eclass[tmp];\n         for ( j = i+4; j <= hi && ec_tmp > eclass[fmap[j]]; j += 4 )\n            fmap[j-4] = fmap[j];\n         fmap[j-4] = tmp;\n      }\n   }\n\n   for ( i = hi-1; i >= lo; i-- ) {\n      tmp = fmap[i];\n      ec_tmp = eclass[tmp];\n      for ( j = i+1; j <= hi && ec_tmp > eclass[fmap[j]]; j++ )\n         fmap[j-1] = fmap[j];\n      fmap[j-1] = tmp;\n   }\n}\n\n\n/*---------------------------------------------*/\n#define fswap(zz1, zz2) \\\n   { Int32 zztmp = zz1; zz1 = zz2; zz2 = zztmp; }\n\n#define fvswap(zzp1, zzp2, zzn)       \\\n{                                     \\\n   Int32 yyp1 = (zzp1);               \\\n   Int32 yyp2 = (zzp2);               \\\n   Int32 yyn  = (zzn);                \\\n   while (yyn > 0) {                  \\\n      fswap(fmap[yyp1], fmap[yyp2]);  \\\n      yyp1++; yyp2++; yyn--;          \\\n   }                                  \\\n}\n\n\n#define fmin(a,b) ((a) < (b)) ? (a) : (b)\n\n#define fpush(lz,hz) { stackLo[sp] = lz; \\\n                       stackHi[sp] = hz; \\\n                       sp++; }\n\n#define fpop(lz,hz) { sp--;              \\\n                      lz = stackLo[sp];  \\\n                      hz = stackHi[sp]; }\n\n#define FALLBACK_QSORT_SMALL_THRESH 10\n#define FALLBACK_QSORT_STACK_SIZE   100\n\n\nstatic\nvoid fallbackQSort3 ( UInt32* fmap, \n                      UInt32* eclass,\n                      Int32   loSt, \n                      Int32   hiSt )\n{\n   Int32 unLo, unHi, ltLo, gtHi, n, m;\n   Int32 sp, lo, hi;\n   UInt32 med, r, r3;\n   Int32 stackLo[FALLBACK_QSORT_STACK_SIZE];\n   Int32 stackHi[FALLBACK_QSORT_STACK_SIZE];\n\n   r = 0;\n\n   sp = 0;\n   fpush ( loSt, hiSt );\n\n   while (sp > 0) {\n\n      AssertH ( sp < FALLBACK_QSORT_STACK_SIZE - 1, 1004 );\n\n      fpop ( lo, hi );\n      if (hi - lo < FALLBACK_QSORT_SMALL_THRESH) {\n         fallbackSimpleSort ( fmap, eclass, lo, hi );\n         continue;\n      }\n\n      /* Random partitioning.  Median of 3 sometimes fails to\n         avoid bad cases.  Median of 9 seems to help but \n         looks rather expensive.  This too seems to work but\n         is cheaper.  Guidance for the magic constants \n         7621 and 32768 is taken from Sedgewick's algorithms\n         book, chapter 35.\n      */\n      r = ((r * 7621) + 1) % 32768;\n      r3 = r % 3;\n      if (r3 == 0) med = eclass[fmap[lo]]; else\n      if (r3 == 1) med = eclass[fmap[(lo+hi)>>1]]; else\n                   med = eclass[fmap[hi]];\n\n      unLo = ltLo = lo;\n      unHi = gtHi = hi;\n\n      while (1) {\n         while (1) {\n            if (unLo > unHi) break;\n            n = (Int32)eclass[fmap[unLo]] - (Int32)med;\n            if (n == 0) { \n               fswap(fmap[unLo], fmap[ltLo]); \n               ltLo++; unLo++; \n               continue; \n            };\n            if (n > 0) break;\n            unLo++;\n         }\n         while (1) {\n            if (unLo > unHi) break;\n            n = (Int32)eclass[fmap[unHi]] - (Int32)med;\n            if (n == 0) { \n               fswap(fmap[unHi], fmap[gtHi]); \n               gtHi--; unHi--; \n               continue; \n            };\n            if (n < 0) break;\n            unHi--;\n         }\n         if (unLo > unHi) break;\n         fswap(fmap[unLo], fmap[unHi]); unLo++; unHi--;\n      }\n\n      AssertD ( unHi == unLo-1, \"fallbackQSort3(2)\" );\n\n      if (gtHi < ltLo) continue;\n\n      n = fmin(ltLo-lo, unLo-ltLo); fvswap(lo, unLo-n, n);\n      m = fmin(hi-gtHi, gtHi-unHi); fvswap(unLo, hi-m+1, m);\n\n      n = lo + unLo - ltLo - 1;\n      m = hi - (gtHi - unHi) + 1;\n\n      if (n - lo > hi - m) {\n         fpush ( lo, n );\n         fpush ( m, hi );\n      } else {\n         fpush ( m, hi );\n         fpush ( lo, n );\n      }\n   }\n}\n\n#undef fmin\n#undef fpush\n#undef fpop\n#undef fswap\n#undef fvswap\n#undef FALLBACK_QSORT_SMALL_THRESH\n#undef FALLBACK_QSORT_STACK_SIZE\n\n\n/*---------------------------------------------*/\n/* Pre:\n      nblock > 0\n      eclass exists for [0 .. nblock-1]\n      ((UChar*)eclass) [0 .. nblock-1] holds block\n      ptr exists for [0 .. nblock-1]\n\n   Post:\n      ((UChar*)eclass) [0 .. nblock-1] holds block\n      All other areas of eclass destroyed\n      fmap [0 .. nblock-1] holds sorted order\n      bhtab [ 0 .. 2+(nblock/32) ] destroyed\n*/\n\n#define       SET_BH(zz)  bhtab[(zz) >> 5] |= (1 << ((zz) & 31))\n#define     CLEAR_BH(zz)  bhtab[(zz) >> 5] &= ~(1 << ((zz) & 31))\n#define     ISSET_BH(zz)  (bhtab[(zz) >> 5] & (1 << ((zz) & 31)))\n#define      WORD_BH(zz)  bhtab[(zz) >> 5]\n#define UNALIGNED_BH(zz)  ((zz) & 0x01f)\n\nstatic\nvoid fallbackSort ( UInt32* fmap, \n                    UInt32* eclass, \n                    UInt32* bhtab,\n                    Int32   nblock,\n                    Int32   verb )\n{\n   Int32 ftab[257];\n   Int32 ftabCopy[256];\n   Int32 H, i, j, k, l, r, cc, cc1;\n   Int32 nNotDone;\n   Int32 nBhtab;\n   UChar* eclass8 = (UChar*)eclass;\n\n   /*--\n      Initial 1-char radix sort to generate\n      initial fmap and initial BH bits.\n   --*/\n   if (verb >= 4)\n      VPrintf0 ( \"        bucket sorting ...\\n\" );\n   for (i = 0; i < 257;    i++) ftab[i] = 0;\n   for (i = 0; i < nblock; i++) ftab[eclass8[i]]++;\n   for (i = 0; i < 256;    i++) ftabCopy[i] = ftab[i];\n   for (i = 1; i < 257;    i++) ftab[i] += ftab[i-1];\n\n   for (i = 0; i < nblock; i++) {\n      j = eclass8[i];\n      k = ftab[j] - 1;\n      ftab[j] = k;\n      fmap[k] = i;\n   }\n\n   nBhtab = 2 + (nblock / 32);\n   for (i = 0; i < nBhtab; i++) bhtab[i] = 0;\n   for (i = 0; i < 256; i++) SET_BH(ftab[i]);\n\n   /*--\n      Inductively refine the buckets.  Kind-of an\n      \"exponential radix sort\" (!), inspired by the\n      Manber-Myers suffix array construction algorithm.\n   --*/\n\n   /*-- set sentinel bits for block-end detection --*/\n   for (i = 0; i < 32; i++) { \n      SET_BH(nblock + 2*i);\n      CLEAR_BH(nblock + 2*i + 1);\n   }\n\n   /*-- the log(N) loop --*/\n   H = 1;\n   while (1) {\n\n      if (verb >= 4) \n         VPrintf1 ( \"        depth %6d has \", H );\n\n      j = 0;\n      for (i = 0; i < nblock; i++) {\n         if (ISSET_BH(i)) j = i;\n         k = fmap[i] - H; if (k < 0) k += nblock;\n         eclass[k] = j;\n      }\n\n      nNotDone = 0;\n      r = -1;\n      while (1) {\n\n   /*-- find the next non-singleton bucket --*/\n         k = r + 1;\n         while (ISSET_BH(k) && UNALIGNED_BH(k)) k++;\n         if (ISSET_BH(k)) {\n            while (WORD_BH(k) == 0xffffffff) k += 32;\n            while (ISSET_BH(k)) k++;\n         }\n         l = k - 1;\n         if (l >= nblock) break;\n         while (!ISSET_BH(k) && UNALIGNED_BH(k)) k++;\n         if (!ISSET_BH(k)) {\n            while (WORD_BH(k) == 0x00000000) k += 32;\n            while (!ISSET_BH(k)) k++;\n         }\n         r = k - 1;\n         if (r >= nblock) break;\n\n         /*-- now [l, r] bracket current bucket --*/\n         if (r > l) {\n            nNotDone += (r - l + 1);\n            fallbackQSort3 ( fmap, eclass, l, r );\n\n            /*-- scan bucket and generate header bits-- */\n            cc = -1;\n            for (i = l; i <= r; i++) {\n               cc1 = eclass[fmap[i]];\n               if (cc != cc1) { SET_BH(i); cc = cc1; };\n            }\n         }\n      }\n\n      if (verb >= 4) \n         VPrintf1 ( \"%6d unresolved strings\\n\", nNotDone );\n\n      H *= 2;\n      if (H > nblock || nNotDone == 0) break;\n   }\n\n   /*-- \n      Reconstruct the original block in\n      eclass8 [0 .. nblock-1], since the\n      previous phase destroyed it.\n   --*/\n   if (verb >= 4)\n      VPrintf0 ( \"        reconstructing block ...\\n\" );\n   j = 0;\n   for (i = 0; i < nblock; i++) {\n      while (ftabCopy[j] == 0) j++;\n      ftabCopy[j]--;\n      eclass8[fmap[i]] = (UChar)j;\n   }\n   AssertH ( j < 256, 1005 );\n}\n\n#undef       SET_BH\n#undef     CLEAR_BH\n#undef     ISSET_BH\n#undef      WORD_BH\n#undef UNALIGNED_BH\n\n\n/*---------------------------------------------*/\n/*--- The main, O(N^2 log(N)) sorting       ---*/\n/*--- algorithm.  Faster for \"normal\"       ---*/\n/*--- non-repetitive blocks.                ---*/\n/*---------------------------------------------*/\n\n/*---------------------------------------------*/\nstatic\n__inline__\nBool mainGtU ( UInt32  i1, \n               UInt32  i2,\n               UChar*  block, \n               UInt16* quadrant,\n               UInt32  nblock,\n               Int32*  budget )\n{\n   Int32  k;\n   UChar  c1, c2;\n   UInt16 s1, s2;\n\n   AssertD ( i1 != i2, \"mainGtU\" );\n   /* 1 */\n   c1 = block[i1]; c2 = block[i2];\n   if (c1 != c2) return (c1 > c2);\n   i1++; i2++;\n   /* 2 */\n   c1 = block[i1]; c2 = block[i2];\n   if (c1 != c2) return (c1 > c2);\n   i1++; i2++;\n   /* 3 */\n   c1 = block[i1]; c2 = block[i2];\n   if (c1 != c2) return (c1 > c2);\n   i1++; i2++;\n   /* 4 */\n   c1 = block[i1]; c2 = block[i2];\n   if (c1 != c2) return (c1 > c2);\n   i1++; i2++;\n   /* 5 */\n   c1 = block[i1]; c2 = block[i2];\n   if (c1 != c2) return (c1 > c2);\n   i1++; i2++;\n   /* 6 */\n   c1 = block[i1]; c2 = block[i2];\n   if (c1 != c2) return (c1 > c2);\n   i1++; i2++;\n   /* 7 */\n   c1 = block[i1]; c2 = block[i2];\n   if (c1 != c2) return (c1 > c2);\n   i1++; i2++;\n   /* 8 */\n   c1 = block[i1]; c2 = block[i2];\n   if (c1 != c2) return (c1 > c2);\n   i1++; i2++;\n   /* 9 */\n   c1 = block[i1]; c2 = block[i2];\n   if (c1 != c2) return (c1 > c2);\n   i1++; i2++;\n   /* 10 */\n   c1 = block[i1]; c2 = block[i2];\n   if (c1 != c2) return (c1 > c2);\n   i1++; i2++;\n   /* 11 */\n   c1 = block[i1]; c2 = block[i2];\n   if (c1 != c2) return (c1 > c2);\n   i1++; i2++;\n   /* 12 */\n   c1 = block[i1]; c2 = block[i2];\n   if (c1 != c2) return (c1 > c2);\n   i1++; i2++;\n\n   k = nblock + 8;\n\n   do {\n      /* 1 */\n      c1 = block[i1]; c2 = block[i2];\n      if (c1 != c2) return (c1 > c2);\n      s1 = quadrant[i1]; s2 = quadrant[i2];\n      if (s1 != s2) return (s1 > s2);\n      i1++; i2++;\n      /* 2 */\n      c1 = block[i1]; c2 = block[i2];\n      if (c1 != c2) return (c1 > c2);\n      s1 = quadrant[i1]; s2 = quadrant[i2];\n      if (s1 != s2) return (s1 > s2);\n      i1++; i2++;\n      /* 3 */\n      c1 = block[i1]; c2 = block[i2];\n      if (c1 != c2) return (c1 > c2);\n      s1 = quadrant[i1]; s2 = quadrant[i2];\n      if (s1 != s2) return (s1 > s2);\n      i1++; i2++;\n      /* 4 */\n      c1 = block[i1]; c2 = block[i2];\n      if (c1 != c2) return (c1 > c2);\n      s1 = quadrant[i1]; s2 = quadrant[i2];\n      if (s1 != s2) return (s1 > s2);\n      i1++; i2++;\n      /* 5 */\n      c1 = block[i1]; c2 = block[i2];\n      if (c1 != c2) return (c1 > c2);\n      s1 = quadrant[i1]; s2 = quadrant[i2];\n      if (s1 != s2) return (s1 > s2);\n      i1++; i2++;\n      /* 6 */\n      c1 = block[i1]; c2 = block[i2];\n      if (c1 != c2) return (c1 > c2);\n      s1 = quadrant[i1]; s2 = quadrant[i2];\n      if (s1 != s2) return (s1 > s2);\n      i1++; i2++;\n      /* 7 */\n      c1 = block[i1]; c2 = block[i2];\n      if (c1 != c2) return (c1 > c2);\n      s1 = quadrant[i1]; s2 = quadrant[i2];\n      if (s1 != s2) return (s1 > s2);\n      i1++; i2++;\n      /* 8 */\n      c1 = block[i1]; c2 = block[i2];\n      if (c1 != c2) return (c1 > c2);\n      s1 = quadrant[i1]; s2 = quadrant[i2];\n      if (s1 != s2) return (s1 > s2);\n      i1++; i2++;\n\n      if (i1 >= nblock) i1 -= nblock;\n      if (i2 >= nblock) i2 -= nblock;\n\n      k -= 8;\n      (*budget)--;\n   }\n      while (k >= 0);\n\n   return False;\n}\n\n\n/*---------------------------------------------*/\n/*--\n   Knuth's increments seem to work better\n   than Incerpi-Sedgewick here.  Possibly\n   because the number of elems to sort is\n   usually small, typically <= 20.\n--*/\nstatic\nInt32 incs[14] = { 1, 4, 13, 40, 121, 364, 1093, 3280,\n                   9841, 29524, 88573, 265720,\n                   797161, 2391484 };\n\nstatic\nvoid mainSimpleSort ( UInt32* ptr,\n                      UChar*  block,\n                      UInt16* quadrant,\n                      Int32   nblock,\n                      Int32   lo, \n                      Int32   hi, \n                      Int32   d,\n                      Int32*  budget )\n{\n   Int32 i, j, h, bigN, hp;\n   UInt32 v;\n\n   bigN = hi - lo + 1;\n   if (bigN < 2) return;\n\n   hp = 0;\n   while (incs[hp] < bigN) hp++;\n   hp--;\n\n   for (; hp >= 0; hp--) {\n      h = incs[hp];\n\n      i = lo + h;\n      while (True) {\n\n         /*-- copy 1 --*/\n         if (i > hi) break;\n         v = ptr[i];\n         j = i;\n         while ( mainGtU ( \n                    ptr[j-h]+d, v+d, block, quadrant, nblock, budget \n                 ) ) {\n            ptr[j] = ptr[j-h];\n            j = j - h;\n            if (j <= (lo + h - 1)) break;\n         }\n         ptr[j] = v;\n         i++;\n\n         /*-- copy 2 --*/\n         if (i > hi) break;\n         v = ptr[i];\n         j = i;\n         while ( mainGtU ( \n                    ptr[j-h]+d, v+d, block, quadrant, nblock, budget \n                 ) ) {\n            ptr[j] = ptr[j-h];\n            j = j - h;\n            if (j <= (lo + h - 1)) break;\n         }\n         ptr[j] = v;\n         i++;\n\n         /*-- copy 3 --*/\n         if (i > hi) break;\n         v = ptr[i];\n         j = i;\n         while ( mainGtU ( \n                    ptr[j-h]+d, v+d, block, quadrant, nblock, budget \n                 ) ) {\n            ptr[j] = ptr[j-h];\n            j = j - h;\n            if (j <= (lo + h - 1)) break;\n         }\n         ptr[j] = v;\n         i++;\n\n         if (*budget < 0) return;\n      }\n   }\n}\n\n\n/*---------------------------------------------*/\n/*--\n   The following is an implementation of\n   an elegant 3-way quicksort for strings,\n   described in a paper \"Fast Algorithms for\n   Sorting and Searching Strings\", by Robert\n   Sedgewick and Jon L. Bentley.\n--*/\n\n#define mswap(zz1, zz2) \\\n   { Int32 zztmp = zz1; zz1 = zz2; zz2 = zztmp; }\n\n#define mvswap(zzp1, zzp2, zzn)       \\\n{                                     \\\n   Int32 yyp1 = (zzp1);               \\\n   Int32 yyp2 = (zzp2);               \\\n   Int32 yyn  = (zzn);                \\\n   while (yyn > 0) {                  \\\n      mswap(ptr[yyp1], ptr[yyp2]);    \\\n      yyp1++; yyp2++; yyn--;          \\\n   }                                  \\\n}\n\nstatic \n__inline__\nUChar mmed3 ( UChar a, UChar b, UChar c )\n{\n   UChar t;\n   if (a > b) { t = a; a = b; b = t; };\n   if (b > c) { \n      b = c;\n      if (a > b) b = a;\n   }\n   return b;\n}\n\n#define mmin(a,b) ((a) < (b)) ? (a) : (b)\n\n#define mpush(lz,hz,dz) { stackLo[sp] = lz; \\\n                          stackHi[sp] = hz; \\\n                          stackD [sp] = dz; \\\n                          sp++; }\n\n#define mpop(lz,hz,dz) { sp--;             \\\n                         lz = stackLo[sp]; \\\n                         hz = stackHi[sp]; \\\n                         dz = stackD [sp]; }\n\n\n#define mnextsize(az) (nextHi[az]-nextLo[az])\n\n#define mnextswap(az,bz)                                        \\\n   { Int32 tz;                                                  \\\n     tz = nextLo[az]; nextLo[az] = nextLo[bz]; nextLo[bz] = tz; \\\n     tz = nextHi[az]; nextHi[az] = nextHi[bz]; nextHi[bz] = tz; \\\n     tz = nextD [az]; nextD [az] = nextD [bz]; nextD [bz] = tz; }\n\n\n#define MAIN_QSORT_SMALL_THRESH 20\n#define MAIN_QSORT_DEPTH_THRESH (BZ_N_RADIX + BZ_N_QSORT)\n#define MAIN_QSORT_STACK_SIZE 100\n\nstatic\nvoid mainQSort3 ( UInt32* ptr,\n                  UChar*  block,\n                  UInt16* quadrant,\n                  Int32   nblock,\n                  Int32   loSt, \n                  Int32   hiSt, \n                  Int32   dSt,\n                  Int32*  budget )\n{\n   Int32 unLo, unHi, ltLo, gtHi, n, m, med;\n   Int32 sp, lo, hi, d;\n\n   Int32 stackLo[MAIN_QSORT_STACK_SIZE];\n   Int32 stackHi[MAIN_QSORT_STACK_SIZE];\n   Int32 stackD [MAIN_QSORT_STACK_SIZE];\n\n   Int32 nextLo[3];\n   Int32 nextHi[3];\n   Int32 nextD [3];\n\n   sp = 0;\n   mpush ( loSt, hiSt, dSt );\n\n   while (sp > 0) {\n\n      AssertH ( sp < MAIN_QSORT_STACK_SIZE - 2, 1001 );\n\n      mpop ( lo, hi, d );\n      if (hi - lo < MAIN_QSORT_SMALL_THRESH || \n          d > MAIN_QSORT_DEPTH_THRESH) {\n         mainSimpleSort ( ptr, block, quadrant, nblock, lo, hi, d, budget );\n         if (*budget < 0) return;\n         continue;\n      }\n\n      med = (Int32) \n            mmed3 ( block[ptr[ lo         ]+d],\n                    block[ptr[ hi         ]+d],\n                    block[ptr[ (lo+hi)>>1 ]+d] );\n\n      unLo = ltLo = lo;\n      unHi = gtHi = hi;\n\n      while (True) {\n         while (True) {\n            if (unLo > unHi) break;\n            n = ((Int32)block[ptr[unLo]+d]) - med;\n            if (n == 0) { \n               mswap(ptr[unLo], ptr[ltLo]); \n               ltLo++; unLo++; continue; \n            };\n            if (n >  0) break;\n            unLo++;\n         }\n         while (True) {\n            if (unLo > unHi) break;\n            n = ((Int32)block[ptr[unHi]+d]) - med;\n            if (n == 0) { \n               mswap(ptr[unHi], ptr[gtHi]); \n               gtHi--; unHi--; continue; \n            };\n            if (n <  0) break;\n            unHi--;\n         }\n         if (unLo > unHi) break;\n         mswap(ptr[unLo], ptr[unHi]); unLo++; unHi--;\n      }\n\n      AssertD ( unHi == unLo-1, \"mainQSort3(2)\" );\n\n      if (gtHi < ltLo) {\n         mpush(lo, hi, d+1 );\n         continue;\n      }\n\n      n = mmin(ltLo-lo, unLo-ltLo); mvswap(lo, unLo-n, n);\n      m = mmin(hi-gtHi, gtHi-unHi); mvswap(unLo, hi-m+1, m);\n\n      n = lo + unLo - ltLo - 1;\n      m = hi - (gtHi - unHi) + 1;\n\n      nextLo[0] = lo;  nextHi[0] = n;   nextD[0] = d;\n      nextLo[1] = m;   nextHi[1] = hi;  nextD[1] = d;\n      nextLo[2] = n+1; nextHi[2] = m-1; nextD[2] = d+1;\n\n      if (mnextsize(0) < mnextsize(1)) mnextswap(0,1);\n      if (mnextsize(1) < mnextsize(2)) mnextswap(1,2);\n      if (mnextsize(0) < mnextsize(1)) mnextswap(0,1);\n\n      AssertD (mnextsize(0) >= mnextsize(1), \"mainQSort3(8)\" );\n      AssertD (mnextsize(1) >= mnextsize(2), \"mainQSort3(9)\" );\n\n      mpush (nextLo[0], nextHi[0], nextD[0]);\n      mpush (nextLo[1], nextHi[1], nextD[1]);\n      mpush (nextLo[2], nextHi[2], nextD[2]);\n   }\n}\n\n#undef mswap\n#undef mvswap\n#undef mpush\n#undef mpop\n#undef mmin\n#undef mnextsize\n#undef mnextswap\n#undef MAIN_QSORT_SMALL_THRESH\n#undef MAIN_QSORT_DEPTH_THRESH\n#undef MAIN_QSORT_STACK_SIZE\n\n\n/*---------------------------------------------*/\n/* Pre:\n      nblock > N_OVERSHOOT\n      block32 exists for [0 .. nblock-1 +N_OVERSHOOT]\n      ((UChar*)block32) [0 .. nblock-1] holds block\n      ptr exists for [0 .. nblock-1]\n\n   Post:\n      ((UChar*)block32) [0 .. nblock-1] holds block\n      All other areas of block32 destroyed\n      ftab [0 .. 65536 ] destroyed\n      ptr [0 .. nblock-1] holds sorted order\n      if (*budget < 0), sorting was abandoned\n*/\n\n#define BIGFREQ(b) (ftab[((b)+1) << 8] - ftab[(b) << 8])\n#define SETMASK (1 << 21)\n#define CLEARMASK (~(SETMASK))\n\nstatic\nvoid mainSort ( UInt32* ptr, \n                UChar*  block,\n                UInt16* quadrant, \n                UInt32* ftab,\n                Int32   nblock,\n                Int32   verb,\n                Int32*  budget )\n{\n   Int32  i, j, k, ss, sb;\n   Int32  runningOrder[256];\n   Bool   bigDone[256];\n   Int32  copyStart[256];\n   Int32  copyEnd  [256];\n   UChar  c1;\n   Int32  numQSorted;\n   UInt16 s;\n   if (verb >= 4) VPrintf0 ( \"        main sort initialise ...\\n\" );\n\n   /*-- set up the 2-byte frequency table --*/\n   for (i = 65536; i >= 0; i--) ftab[i] = 0;\n\n   j = block[0] << 8;\n   i = nblock-1;\n   for (; i >= 3; i -= 4) {\n      quadrant[i] = 0;\n      j = (j >> 8) | ( ((UInt16)block[i]) << 8);\n      ftab[j]++;\n      quadrant[i-1] = 0;\n      j = (j >> 8) | ( ((UInt16)block[i-1]) << 8);\n      ftab[j]++;\n      quadrant[i-2] = 0;\n      j = (j >> 8) | ( ((UInt16)block[i-2]) << 8);\n      ftab[j]++;\n      quadrant[i-3] = 0;\n      j = (j >> 8) | ( ((UInt16)block[i-3]) << 8);\n      ftab[j]++;\n   }\n   for (; i >= 0; i--) {\n      quadrant[i] = 0;\n      j = (j >> 8) | ( ((UInt16)block[i]) << 8);\n      ftab[j]++;\n   }\n\n   /*-- (emphasises close relationship of block & quadrant) --*/\n   for (i = 0; i < BZ_N_OVERSHOOT; i++) {\n      block   [nblock+i] = block[i];\n      quadrant[nblock+i] = 0;\n   }\n\n   if (verb >= 4) VPrintf0 ( \"        bucket sorting ...\\n\" );\n\n   /*-- Complete the initial radix sort --*/\n   for (i = 1; i <= 65536; i++) ftab[i] += ftab[i-1];\n\n   s = block[0] << 8;\n   i = nblock-1;\n   for (; i >= 3; i -= 4) {\n      s = (s >> 8) | (block[i] << 8);\n      j = ftab[s] -1;\n      ftab[s] = j;\n      ptr[j] = i;\n      s = (s >> 8) | (block[i-1] << 8);\n      j = ftab[s] -1;\n      ftab[s] = j;\n      ptr[j] = i-1;\n      s = (s >> 8) | (block[i-2] << 8);\n      j = ftab[s] -1;\n      ftab[s] = j;\n      ptr[j] = i-2;\n      s = (s >> 8) | (block[i-3] << 8);\n      j = ftab[s] -1;\n      ftab[s] = j;\n      ptr[j] = i-3;\n   }\n   for (; i >= 0; i--) {\n      s = (s >> 8) | (block[i] << 8);\n      j = ftab[s] -1;\n      ftab[s] = j;\n      ptr[j] = i;\n   }\n\n   /*--\n      Now ftab contains the first loc of every small bucket.\n      Calculate the running order, from smallest to largest\n      big bucket.\n   --*/\n   for (i = 0; i <= 255; i++) {\n      bigDone     [i] = False;\n      runningOrder[i] = i;\n   }\n\n   {\n      Int32 vv;\n      Int32 h = 1;\n      do h = 3 * h + 1; while (h <= 256);\n      do {\n         h = h / 3;\n         for (i = h; i <= 255; i++) {\n            vv = runningOrder[i];\n            j = i;\n            while ( BIGFREQ(runningOrder[j-h]) > BIGFREQ(vv) ) {\n               runningOrder[j] = runningOrder[j-h];\n               j = j - h;\n               if (j <= (h - 1)) goto zero;\n            }\n            zero:\n            runningOrder[j] = vv;\n         }\n      } while (h != 1);\n   }\n\n   /*--\n      The main sorting loop.\n   --*/\n\n   numQSorted = 0;\n\n   for (i = 0; i <= 255; i++) {\n\n      /*--\n         Process big buckets, starting with the least full.\n         Basically this is a 3-step process in which we call\n         mainQSort3 to sort the small buckets [ss, j], but\n         also make a big effort to avoid the calls if we can.\n      --*/\n      ss = runningOrder[i];\n\n      /*--\n         Step 1:\n         Complete the big bucket [ss] by quicksorting\n         any unsorted small buckets [ss, j], for j != ss.  \n         Hopefully previous pointer-scanning phases have already\n         completed many of the small buckets [ss, j], so\n         we don't have to sort them at all.\n      --*/\n      for (j = 0; j <= 255; j++) {\n         if (j != ss) {\n            sb = (ss << 8) + j;\n            if ( ! (ftab[sb] & SETMASK) ) {\n               Int32 lo = ftab[sb]   & CLEARMASK;\n               Int32 hi = (ftab[sb+1] & CLEARMASK) - 1;\n               if (hi > lo) {\n                  if (verb >= 4)\n                     VPrintf4 ( \"        qsort [0x%x, 0x%x]   \"\n                                \"done %d   this %d\\n\",\n                                ss, j, numQSorted, hi - lo + 1 );\n                  mainQSort3 ( \n                     ptr, block, quadrant, nblock, \n                     lo, hi, BZ_N_RADIX, budget \n                  );   \n                  numQSorted += (hi - lo + 1);\n                  if (*budget < 0) return;\n               }\n            }\n            ftab[sb] |= SETMASK;\n         }\n      }\n\n      AssertH ( !bigDone[ss], 1006 );\n\n      /*--\n         Step 2:\n         Now scan this big bucket [ss] so as to synthesise the\n         sorted order for small buckets [t, ss] for all t,\n         including, magically, the bucket [ss,ss] too.\n         This will avoid doing Real Work in subsequent Step 1's.\n      --*/\n      {\n         for (j = 0; j <= 255; j++) {\n            copyStart[j] =  ftab[(j << 8) + ss]     & CLEARMASK;\n            copyEnd  [j] = (ftab[(j << 8) + ss + 1] & CLEARMASK) - 1;\n         }\n         for (j = ftab[ss << 8] & CLEARMASK; j < copyStart[ss]; j++) {\n            k = ptr[j]-1; if (k < 0) k += nblock;\n            c1 = block[k];\n            if (!bigDone[c1])\n               ptr[ copyStart[c1]++ ] = k;\n         }\n         for (j = (ftab[(ss+1) << 8] & CLEARMASK) - 1; j > copyEnd[ss]; j--) {\n            k = ptr[j]-1; if (k < 0) k += nblock;\n            c1 = block[k];\n            if (!bigDone[c1]) \n               ptr[ copyEnd[c1]-- ] = k;\n         }\n      }\n\n      AssertH ( (copyStart[ss]-1 == copyEnd[ss])\n                || \n                /* Extremely rare case missing in bzip2-1.0.0 and 1.0.1.\n                   Necessity for this case is demonstrated by compressing \n                   a sequence of approximately 48.5 million of character \n                   251; 1.0.0/1.0.1 will then die here. */\n                (copyStart[ss] == 0 && copyEnd[ss] == nblock-1),\n                1007 )\n\n      for (j = 0; j <= 255; j++) ftab[(j << 8) + ss] |= SETMASK;\n\n      /*--\n         Step 3:\n         The [ss] big bucket is now done.  Record this fact,\n         and update the quadrant descriptors.  Remember to\n         update quadrants in the overshoot area too, if\n         necessary.  The \"if (i < 255)\" test merely skips\n         this updating for the last bucket processed, since\n         updating for the last bucket is pointless.\n\n         The quadrant array provides a way to incrementally\n         cache sort orderings, as they appear, so as to \n         make subsequent comparisons in fullGtU() complete\n         faster.  For repetitive blocks this makes a big\n         difference (but not big enough to be able to avoid\n         the fallback sorting mechanism, exponential radix sort).\n\n         The precise meaning is: at all times:\n\n            for 0 <= i < nblock and 0 <= j <= nblock\n\n            if block[i] != block[j], \n\n               then the relative values of quadrant[i] and \n                    quadrant[j] are meaningless.\n\n               else {\n                  if quadrant[i] < quadrant[j]\n                     then the string starting at i lexicographically\n                     precedes the string starting at j\n\n                  else if quadrant[i] > quadrant[j]\n                     then the string starting at j lexicographically\n                     precedes the string starting at i\n\n                  else\n                     the relative ordering of the strings starting\n                     at i and j has not yet been determined.\n               }\n      --*/\n      bigDone[ss] = True;\n\n      if (i < 255) {\n         Int32 bbStart  = ftab[ss << 8] & CLEARMASK;\n         Int32 bbSize   = (ftab[(ss+1) << 8] & CLEARMASK) - bbStart;\n         Int32 shifts   = 0;\n\n         while ((bbSize >> shifts) > 65534) shifts++;\n\n         for (j = bbSize-1; j >= 0; j--) {\n            Int32 a2update     = ptr[bbStart + j];\n            UInt16 qVal        = (UInt16)(j >> shifts);\n            quadrant[a2update] = qVal;\n            if (a2update < BZ_N_OVERSHOOT)\n               quadrant[a2update + nblock] = qVal;\n         }\n         AssertH ( ((bbSize-1) >> shifts) <= 65535, 1002 );\n      }\n\n   }\n\n   if (verb >= 4)\n      VPrintf3 ( \"        %d pointers, %d sorted, %d scanned\\n\",\n                 nblock, numQSorted, nblock - numQSorted );\n}\n\n#undef BIGFREQ\n#undef SETMASK\n#undef CLEARMASK\n\n\n/*---------------------------------------------*/\n/* Pre:\n      nblock > 0\n      arr2 exists for [0 .. nblock-1 +N_OVERSHOOT]\n      ((UChar*)arr2)  [0 .. nblock-1] holds block\n      arr1 exists for [0 .. nblock-1]\n\n   Post:\n      ((UChar*)arr2) [0 .. nblock-1] holds block\n      All other areas of block destroyed\n      ftab [ 0 .. 65536 ] destroyed\n      arr1 [0 .. nblock-1] holds sorted order\n*/\nvoid BZ2_blockSort ( EState* s )\n{\n   UInt32* ptr    = s->ptr; \n   UChar*  block  = s->block;\n   UInt32* ftab   = s->ftab;\n   Int32   nblock = s->nblock;\n   Int32   verb   = s->verbosity;\n   Int32   wfact  = s->workFactor;\n   UInt16* quadrant;\n   Int32   budget;\n   Int32   budgetInit;\n   Int32   i;\n\n   if (nblock < 10000) {\n      fallbackSort ( s->arr1, s->arr2, ftab, nblock, verb );\n   } else {\n      /* Calculate the location for quadrant, remembering to get\n         the alignment right.  Assumes that &(block[0]) is at least\n         2-byte aligned -- this should be ok since block is really\n         the first section of arr2.\n      */\n      i = nblock+BZ_N_OVERSHOOT;\n      if (i & 1) i++;\n      quadrant = (UInt16*)(&(block[i]));\n\n      /* (wfact-1) / 3 puts the default-factor-30\n         transition point at very roughly the same place as \n         with v0.1 and v0.9.0.  \n         Not that it particularly matters any more, since the\n         resulting compressed stream is now the same regardless\n         of whether or not we use the main sort or fallback sort.\n      */\n      if (wfact < 1  ) wfact = 1;\n      if (wfact > 100) wfact = 100;\n      budgetInit = nblock * ((wfact-1) / 3);\n      budget = budgetInit;\n\n      mainSort ( ptr, block, quadrant, ftab, nblock, verb, &budget );\n      if (verb >= 3) \n         VPrintf3 ( \"      %d work, %d block, ratio %5.2f\\n\",\n                    budgetInit - budget,\n                    nblock, \n                    (float)(budgetInit - budget) /\n                    (float)(nblock==0 ? 1 : nblock) ); \n      if (budget < 0) {\n         if (verb >= 2) \n            VPrintf0 ( \"    too repetitive; using fallback\"\n                       \" sorting algorithm\\n\" );\n         fallbackSort ( s->arr1, s->arr2, ftab, nblock, verb );\n      }\n   }\n\n   s->origPtr = -1;\n   for (i = 0; i < s->nblock; i++)\n      if (ptr[i] == 0)\n         { s->origPtr = i; break; };\n\n   AssertH( s->origPtr != -1, 1003 );\n}\n\n\n/*-------------------------------------------------------------*/\n/*--- end                                       blocksort.c ---*/\n/*-------------------------------------------------------------*/\n"
-    )
-  endif()
-  include("${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/bzip2.cmake")
-
-  set(LIBBZ2_SOURCES 3rdparty/bzip2/blocksort.c 3rdparty/bzip2/bzlib.c 3rdparty/bzip2/compress.c 3rdparty/bzip2/crctable.c 3rdparty/bzip2/decompress.c 3rdparty/bzip2/huffman.c 3rdparty/bzip2/randtable.c)
-  add_library(bz2 ${LIBBZ2_SOURCES})
-  set_target_properties(bz2 PROPERTIES ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bzip2" LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bzip2")
-  link_directories(BEFORE "${CMAKE_BINARY_DIR}/bzip2")
-
-  set(BZIP2_LIBRARY_DEBUG bz2 CACHE FILEPATH "" FORCE)
-  set(BZIP2_LIBRARY_RELEASE bz2 CACHE FILEPATH "" FORCE)
-  set(BZIP2_LIBRARY bz2 CACHE FILEPATH "" FORCE)
-  set(BZIP2_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/3rdparty/bzip2 CACHE PATH "" FORCE)
-endif(BUILD_BZIP2)
-
-function(DEFINE_HAVE OUTVAR)
-  set(OUT "")
-  foreach(DEF ${ARGN})
-    # message("Check definition ${DEF}: ${${DEF}}")
-    if(${DEF} STREQUAL 1)
-      list(APPEND OUT "${DEF}=1")
-    endif(${DEF} STREQUAL 1)
-  endforeach(DEF ${ARGN})
-  set("${OUTVAR}" "${OUT}" PARENT_SCOPE)
-
-endfunction(DEFINE_HAVE)
-
-if(BUILD_LZMA)
-  message(STATUS "Building xz from 3rdparty/xz")
-  set(LZMA_VERSION "5.2.5")
-  set(LZMA_DISABLE_TESTS TRUE)
-  set(LZMA_STATIC TRUE)
-  set(LZMA_NO_INSTALL TRUE)
-  if(NOT EXISTS "${CMAKE_SOURCE_DIR}/3rdparty/xz/CMakeLists.txt")
-    if(NOT EXISTS "${CMAKE_SOURCE_DIR}/xz-${LZMA_VERSION}.tar.gz")
-      file(REMOVE_RECURSE "${CMAKE_SOURCE_DIR}/3rdparty/xz")
-      file(DOWNLOAD "https://distfiles.macports.org/xz/xz-${LZMA_VERSION}.tar.bz2" "${CMAKE_SOURCE_DIR}/3rdparty/xz-${LZMA_VERSION}.tar.bz2" SHOW_PROGRESS)
-    endif()
-
-    exec_program("${TAR}" ARGS -C "${CMAKE_SOURCE_DIR}/3rdparty" -xjf "${CMAKE_SOURCE_DIR}/3rdparty/xz-${LZMA_VERSION}.tar.bz2")
-    file(RENAME "${CMAKE_SOURCE_DIR}/3rdparty/xz-${LZMA_VERSION}" "${CMAKE_SOURCE_DIR}/3rdparty/xz")
-
-  endif()
-  include("${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/xz.cmake")
-
-  configure_file("${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/xz-config.h.cmake" "${CMAKE_CURRENT_BINARY_DIR}/3rdparty/xz/config.h")
-
-  # configure_file("${CMAKE_SOURCE_DIR}/3rdparty/lzma-config.h.cmake" "${CMAKE_CURRENT_BINARY_DIR}/3rdparty/xz/config.h")
-
-  file(
-    GLOB
-    LIBLZMA_SOURCES
-    # 3rdparty/xz/debug/*.c 3rdparty/xz/lib/*.c 3rdparty/xz/src/common/*.c
-    3rdparty/xz/src/liblzma/check/check.c
-    3rdparty/xz/src/liblzma/check/*_fast.c
-    3rdparty/xz/src/liblzma/check/*_table.c
-    3rdparty/xz/src/liblzma/check/sha256.c
-    # 3rdparty/xz/src/liblzma/check/*.S
-    3rdparty/xz/src/liblzma/common/*block_util.c
-    3rdparty/xz/src/liblzma/common/*coder.c
-    3rdparty/xz/src/liblzma/common/*coder_memusage.c
-    # 3rdparty/xz/src/liblzma/common/*coder_mt.c
-    3rdparty/xz/src/liblzma/common/*common.c
-    3rdparty/xz/src/liblzma/common/*easy_preset.c
-    3rdparty/xz/src/liblzma/common/*filter_common.c
-    3rdparty/xz/src/liblzma/common/*hardware_cputhreads.c
-    3rdparty/xz/src/liblzma/common/*hardware_physmem.c
-    3rdparty/xz/src/liblzma/common/*index.c
-    3rdparty/xz/src/liblzma/common/*index_hash.c
-    3rdparty/xz/src/liblzma/common/*outqueue.c
-    3rdparty/xz/src/liblzma/common/*stream_flags_common.c
-    3rdparty/xz/src/liblzma/common/*vli_size.c
-    3rdparty/xz/src/liblzma/delta/*.c
-    3rdparty/xz/src/liblzma/lz/*.c
-    3rdparty/xz/src/liblzma/lzma/*.c
-    3rdparty/xz/src/liblzma/rangecoder/*.c
-    3rdparty/xz/src/liblzma/simple/*.c)
-  # list(FILTER LIBLZMA_SOURCES EXCLUDE REGEX ".*_mt\\..*")
-
-  if(LIBLZMA_SOURCES)
-    add_library(lzma ${LIBLZMA_SOURCES})
-    set_target_properties(lzma PROPERTIES ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/xz" LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/xz")
-    set(LZMA_SOURCE_DIR "${CMAKE_SOURCE_DIR}/3rdparty/xz")
-    set(LIBLZMA_INCLUDE_DIRS ${LZMA_SOURCE_DIR}/src/common ${LZMA_SOURCE_DIR}/src/liblzma/lzma ${LZMA_SOURCE_DIR}/src/liblzma/lz ${LZMA_SOURCE_DIR}/src/liblzma/check ${LZMA_SOURCE_DIR}/src/liblzma/simple ${LZMA_SOURCE_DIR}/src/liblzma/delta ${LZMA_SOURCE_DIR}/src/liblzma/rangecoder ${LZMA_SOURCE_DIR}/src/liblzma/common ${LZMA_SOURCE_DIR}/src/liblzma/api ${CMAKE_BINARY_DIR}/3rdparty/xz)
-    define_have(LIBLZMA_DEFS HAVE_STDINT_H HAVE_STDLIB_H HAVE_STDBOOL_H HAVE_INTTYPES_H HAVE_LIMITS_H HAVE_STRING_H HAVE_STRINGS_H HAVE_MEMORY_H HAVE_SYS_PARAM_H HAVE_SYS_TIME_H HAVE_SYS_TYPES_H HAVE_LZMA_H)
-    list(APPEND LIBLZMA_DEFS HAVE_CONFIG_H)
-
-    # message("LIBLZMA_DEFS: ${LIBLZMA_DEFS}")
-    set_target_properties(lzma PROPERTIES COMPILE_DEFINITIONS "${LIBLZMA_DEFS}" INCLUDE_DIRECTORIES "${LIBLZMA_INCLUDE_DIRS};${CMAKE_SOURCE_DIR}/lib;${CMAKE_CURRENT_BINARY_DIR}/3rdparty/xz")
-  endif(LIBLZMA_SOURCES)
-
-  link_directories(BEFORE "${CMAKE_BINARY_DIR}/xz")
-  set(LIBLZMA_LIBRARY lzma CACHE FILEPATH "" FORCE)
-  set(LIBLZMA_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/3rdparty/xz/src/liblzma/api" CACHE FILEPATH "" FORCE)
-endif(BUILD_LZMA)
-
-if(BUILD_SSL)
-  add_definitions(-DOPENSSL_THREADS=1)
-
-  if(MUSL)
-    add_definitions(-DOPENSSL_NO_SECURE_MEMORY=1)
-  endif(MUSL)
-  #[[if(UNIX OR LINUX)
-    add_definitions(-DOPENSSL_SYS_UNIX=1)
-  endif(UNIX OR LINUX)]]
-  if(DIET OR MUSL)
-    set(CHK_DLFCN FALSE)
-    set(DSO_NONE ON)
-  endif(DIET OR MUSL)
-  set(WITH_APPS FALSE)
-  set(OPENSSL_NO_INSTALL TRUE)
-  set(OPENSSL_VERSION "1.1.1h")
-  if(NOT EXISTS "${CMAKE_SOURCE_DIR}/3rdparty/openssl/CMakeLists.txt")
-    if(NOT EXISTS "${CMAKE_SOURCE_DIR}/openssl-${OPENSSL_VERSION}.tar.gz")
-      file(REMOVE_RECURSE "${CMAKE_SOURCE_DIR}/3rdparty/openssl")
-      file(DOWNLOAD "https://www.openssl.org/source/openssl-${OPENSSL_VERSION}.tar.gz" "${CMAKE_SOURCE_DIR}/3rdparty/openssl-${OPENSSL_VERSION}.tar.gz" SHOW_PROGRESS)
-    endif()
-
-    exec_program("${TAR}" ARGS -C "${CMAKE_SOURCE_DIR}/3rdparty" -xzf "${CMAKE_SOURCE_DIR}/3rdparty/openssl-${OPENSSL_VERSION}.tar.gz")
-
-    file(
-      WRITE "${CMAKE_SOURCE_DIR}/3rdparty/openssl-1.1.1h-getrandom.patch"
-      "--- 3rdparty/openssl-1.1.1h/crypto/rand/rand_unix.c\t2020-09-22 14:55:07.000000000 +0200\n+++ 3rdparty/openssl/crypto/rand/rand_unix.c\t2020-11-26 06:54:18.694873358 +0100\n@@ -19,6 +19,9 @@\n #include \"crypto/rand.h\"\n #include <stdio.h>\n #include \"internal/dso.h\"\n+#ifdef __dietlibc__\n+# include <sys/random.h>\n+#endif\n #ifdef __linux\n # include <sys/syscall.h>\n # ifdef DEVRANDOM_WAIT\n@@ -389,7 +392,9 @@\n #  endif\n \n     /* Linux supports this since version 3.17 */\n-#  if defined(__linux) && defined(__NR_getrandom)\n+#  if defined(__dietlibc__)\n+    return getrandom(buf, buflen, 0);\n+#  elif defined(__linux) && defined(__NR_getrandom)\n     return syscall(__NR_getrandom, buf, buflen, 0);\n #  elif (defined(__FreeBSD__) || defined(__NetBSD__)) && defined(KERN_ARND)\n     return sysctl_random(buf, buflen);\n"
-    )
-    execute_process(COMMAND patch -p0 INPUT_FILE "${CMAKE_SOURCE_DIR}/3rdparty/openssl-1.1.1h-getrandom.patch" WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}")
-
-    file(RENAME "${CMAKE_SOURCE_DIR}/3rdparty/openssl-${OPENSSL_VERSION}" "${CMAKE_SOURCE_DIR}/3rdparty/openssl")
-    # exec_program("${TAR}" ARGS -C "${CMAKE_SOURCE_DIR}/3rdparty/openssl" -xvzf "${CMAKE_SOURCE_DIR}/3rdparty/openssl-cmake.tar.gz")
-
-    exec_program("${TAR}" ARGS -C "${CMAKE_SOURCE_DIR}/3rdparty" -xzf "${CMAKE_SOURCE_DIR}/3rdparty/openssl-${OPENSSL_VERSION}.tar.gz")
-
-    include("${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/openssl.cmake")
-
-  endif()
-
-  add_definitions(-DOPENSSL_NO_UI_CONSOLE=1)
-  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DOPENSSL_NO_UI_CONSOLE=1")
-
-  message(STATUS "Configuring OpenSSL...")
-  add_subdirectory(3rdparty/openssl)
-
-  if(NOT OPENSSL_LIBRARIES)
-
-  endif(NOT OPENSSL_LIBRARIES)
-
-  set(OPENSSL_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/3rdparty/openssl/include" CACHE FILEPATH "" FORCE)
-
-  # set(OPENSSL_SSL_LIBRARY "${CMAKE_BINARY_DIR}/3rdparty/openssl/ssl/libssl.a" CACHE  FILEPATH "SSL library") set(OPENSSL_CRYPTO_LIBRARY "${CMAKE_BINARY_DIR}/3rdparty/openssl/crypto/libcrypto.a" CACHE  FILEPATH "Cryptography library")
-  set(OPENSSL_SSL_LIBRARY libssl CACHE STRING "SSL library" FORCE)
-  set(OPENSSL_CRYPTO_LIBRARY libcrypto CACHE FILEPATH "Cryptography library" FORCE)
-
-endif()
-
-if(USE_SSL)
-  add_definitions(-DHAVE_OPENSSL=1 -DOPENSSL_API_COMPAT=0x10200000L)
-  if(OPENSSL_INCLUDE_DIR)
-    include_directories(${CMAKE_BINARY_DIR}/3rdparty/openssl/include ${OPENSSL_INCLUDE_DIR})
-  endif()
-
-  if(NOT OPENSSL_LIBRARIES)
-    if(OPENSSL_CRYPTO_LIBRARY OR OPENSSL_SSL_LIBRARY)
-      set(OPENSSL_LIBARRIES ${OPENSSL_SSL_LIBRARY} ${OPENSSL_CRYPTO_LIBRARY})
-    endif(OPENSSL_CRYPTO_LIBRARY OR OPENSSL_SSL_LIBRARY)
-  endif(NOT OPENSSL_LIBRARIES)
-endif(USE_SSL)
+include(${CMAKE_CURRENT_SOURCE_DIR}/build/cmake/BuildBrotli.cmake)
+include(${CMAKE_CURRENT_SOURCE_DIR}/build/cmake/BuildBZip2.cmake)
+include(${CMAKE_CURRENT_SOURCE_DIR}/build/cmake/BuildLZMA.cmake)
+include(${CMAKE_CURRENT_SOURCE_DIR}/build/cmake/BuildOpenSSL.cmake)
+include(${CMAKE_CURRENT_SOURCE_DIR}/build/cmake/BuildSSL.cmake)
+include(${CMAKE_CURRENT_SOURCE_DIR}/build/cmake/BuildZlib.cmake)
 
 # unset(TLS_LIBRARIES) unset(TLS_LIBRARIES CACHE) set(TLS_LIBRARIES "")
 #
@@ -1132,33 +738,6 @@ endif(USE_SSL)
 # else(OPENSSL_FOUND OR BUILD_OPENSSL) set(TLS_LIBRARIES "" CACHE PATH "OpenSSL library" FORCE) endif(OPENSSL_FOUND OR BUILD_OPENSSL)
 
 dump(TLS_LIBRARIES)
-
-if(USE_BROTLI AND NOT BROTLI_FOUND)
-  set(BUILD_BROTLI ON)
-endif(USE_BROTLI AND NOT BROTLI_FOUND)
-
-if(BUILD_BROTLI)
-  message(STATUS "Building brotli from 3rdparty/brotli")
-  set(BROTLI_VERSION "1.0.9")
-  set(BROTLI_DISABLE_TESTS TRUE)
-  set(BROTLI_STATIC TRUE)
-  set(BROTLI_NO_INSTALL TRUE)
-
-  if(NOT EXISTS "${CMAKE_SOURCE_DIR}/3rdparty/brotli/CMakeLists.txt")
-    if(NOT EXISTS "${CMAKE_SOURCE_DIR}/brotli-${BROTLI_VERSION}.tar.gz")
-      file(REMOVE_RECURSE "${CMAKE_SOURCE_DIR}/3rdparty/brotli")
-      file(DOWNLOAD "https://github.com/google/brotli/archive/v${BROTLI_VERSION}.tar.gz" "${CMAKE_SOURCE_DIR}/3rdparty/brotli-${BROTLI_VERSION}.tar.gz" SHOW_PROGRESS)
-    endif()
-
-    exec_program("${TAR}" ARGS -C "${CMAKE_SOURCE_DIR}/3rdparty" -xzf "${CMAKE_SOURCE_DIR}/3rdparty/brotli-${BROTLI_VERSION}.tar.gz")
-    file(RENAME "${CMAKE_SOURCE_DIR}/3rdparty/brotli-${BROTLI_VERSION}" "${CMAKE_SOURCE_DIR}/3rdparty/brotli")
-
-  endif() # file(READ "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/brotli.cmake.txt" BROTLI_CMAKELISTS_TXT) file(WRITE  "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/brotli/CMakeLists.txt"  "${BROTLI_CMAKELISTS_TXT}")
-  set(BROTLI_STATIC TRUE)
-  set(BROTLI_NO_INSTALL TRUE)
-
-  add_subdirectory(3rdparty/brotli)
-endif(BUILD_BROTLI)
 
 link_directories(AFTER "${CMAKE_BINARY_DIR}")
 
@@ -1206,59 +785,6 @@ configure_file("${CMAKE_CURRENT_SOURCE_DIR}/build/cmake/config.h.cmake" "${CMAKE
 add_subdirectory(lib ${CMAKE_BINARY_DIR}/lib)
 
 set(COMMON_LIBS strlist array safemult scan str byte mmap open fmt)
-
-function(add_program PROG)
-  unset(INCLUDES)
-  unset(LIBS)
-  foreach(DEP ${ARGN})
-    if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${DEP}" AND NOT IS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/${DEP}")
-      list(APPEND "${PROG}_SOURCES" "${DEP}")
-    else(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${DEP}" AND NOT IS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/${DEP}")
-      list(FIND MODSUBDIRS "${DEP}" I)
-      if(I GREATER -1 OR IS_DIRECTORY "${CMAKE_SOURCE_DIR}/lib/${DEP}")
-        list(APPEND INCLUDES "lib/${DEP}.h")
-      endif(I GREATER -1 OR IS_DIRECTORY "${CMAKE_SOURCE_DIR}/lib/${DEP}")
-      list(APPEND DEPS ${DEP})
-    endif(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${DEP}" AND NOT IS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/${DEP}")
-  endforeach(DEP ${ARGN})
-  # message("Program '${PROG}' INCLUDES: ${INCLUDES}") message("add_executable(${PROG} ${PROG}.c ${${PROG}_SOURCES} ${INCLUDES}")
-  add_executable(${PROG} ${PROG}.c ${${PROG}_SOURCES} ${INCLUDES})
-  target_link_libraries(${PROG} ${DEPS} ${ELECTRICFENCE_LIBRARY} ${EXTRA_LIBRARIES})
-  target_compile_definitions(${PROG} PRIVATE CONFIG_PREFIX="${CONFIG_PREFIX}")
-  install(TARGETS ${PROG} DESTINATION bin)
-  if(NOT EMSCRIPTEN AND OPENSSL_FOUND AND USE_SSL)
-    set_target_properties(${PROG} PROPERTIES LINK_FLAGS "-L${OPENSSL_LIB_DIR} ${EXE_LINKER_FLAGS}" COMPILE_FLAGS "")
-  endif(NOT EMSCRIPTEN AND OPENSSL_FOUND AND USE_SSL)
-  if(EMSCRIPTEN)
-    set_target_properties(${PROG} PROPERTIES SUFFIX ".${EMSCRIPTEN_EXE_SUFFIX}")
-  endif(EMSCRIPTEN)
-endfunction(add_program PROG)
-
-function(add_module MOD SRC)
-  unset(INCLUDES)
-  #[[ foreach(DEP ${ARGN})
-    list(FIND MODSUBDIRS "${DEP}" I)
-    if(I GREATER -1)
-    list(APPEND INCLUDES "lib/${DEP}.h")
-    endif(I GREATER -1)
-    endforeach(DEP ${ARGN})]]
-  # message("Program '${MOD}' dependencies: ${INCLUDES}")
-  set(LIBS "")
-  foreach(LIB ${ARGN})
-    if(BUILD_SHARED_LIBS)
-      list(APPEND LIBS "${LIB}-shared")
-    endif(BUILD_SHARED_LIBS)
-  endforeach(LIB ${ARGN})
-  if(NOT EMSCRIPTEN)
-    add_library(${MOD} SHARED ${SRC})
-    target_link_libraries(${MOD} ${LIBS} ${EXTRA_LIBRARIES})
-    install(TARGETS ${MOD} DESTINATION libexec)
-    if(BUILD_SHARED_LIBS)
-      set_target_properties(${MOD} PROPERTIES EXE_LINKER_FLAGS "-L${OPENSSL_LIB_DIR} -shared")
-    endif(BUILD_SHARED_LIBS)
-    target_compile_options(${MOD} PUBLIC -fPIC)
-  endif(NOT EMSCRIPTEN)
-endfunction(add_module MOD)
 
 set(genmakefile_SOURCES mplab.c ini.c ini.h genmakefile.h debug.c debug.h)
 
@@ -1352,9 +878,9 @@ add_program(xml2moon xml textcode errmsg)
 add_program(strip-comments errmsg env charbuf buffer path dir strarray strlist stralloc fmt)
 add_program(quote textcode unix errmsg env charbuf buffer path dir strarray strlist stralloc fmt)
 
-add_program(httpproxy http io map)
+add_program(httpproxy http io hmap)
 add_program(testini ini.c ini.h hmap stralloc buffer mmap open uint16)
-# add_program(montty io map)
+# add_program(montty io hmap)
 add_program(logserial sig charbuf hmap path unix rdir dir errmsg io ndelay strarray stralloc buffer taia tai)
 add_program(tinyproxy process unix path wait range dns taia tai hmap env ndelay buffer strarray array strlist stralloc errmsg sig socket fmt scan io uint32)
 target_link_libraries(tinyproxy ${LIBMSWSOCK})
@@ -1366,7 +892,7 @@ add_program(parse strlist errmsg)
 add_program(testihex ihex stralloc buffer alloc mmap)
 add_program(setuidgid errmsg path stralloc mmap open scan str)
 add_program(lsproc strlist errmsg mmap buffer unix dir)
-add_program(cpptest preproc tokenizer buffer open)
+add_program(cpptest preproc tokenizer unix buffer open)
 
 #[[add_program(ftpcopy io)
 add_program(ftpls io)

@@ -1,8 +1,8 @@
 #include <stdlib.h>
-#include "../list.h"
+#include "../dlist.h"
 
 void
-dlist_remove(list* l, node* p) {
+dlist_remove(dlist* l, node* p) {
   /* If there is a prev p, update its next-
      reference, otherwise update the head */
   if(p == l->head)

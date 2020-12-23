@@ -12,7 +12,7 @@
 
 typedef hashmap MAP_T;
 typedef hashmap_pair* MAP_PAIR_T;
-typedef linked_list_node* MAP_NODE_T;
+typedef linked_list_node* MAP_ITER_T;
 
 #define MAP_SIZE(map) hashmap_size(&(map))
 #define MAP_NEW(map) hashmap_init(&(map), 64, MAP_COMPARATOR, &hashfunc)
@@ -151,40 +151,47 @@ MAP_COMPARATOR(const void* l, const void* r) {
 
 typedef HMAP_DB* MAP_T;
 typedef TUPLE* MAP_PAIR_T;
-typedef TUPLE* MAP_NODE_T;
+typedef TUPLE* MAP_ITER_T;
 
 #define MAP_SIZE hmap_size
 #define MAP_NEW(map) hmap_init(MAP_BUCKET, &(map))
 #define MAP_DESTROY(map) ((map) ? hmap_destroy(&(map)) : (void)0)
-#define MAP_DATA hmap_data
 #define MAP_FOREACH(map, iter) hmap_foreach(map, iter)
-#define MAP_VALUE(iter) ((void*)((iter)->vals.val_custom))
+
+#define MAP_ITER_KEY(iter) ((const char*)((iter)->key))
+#define MAP_ITER_VALUE(iter) ((const char*)((iter)->vals.val_custom))
+
+#define MAP_KEY(map, iter) ((void*)((iter)->key))
+#define MAP_KEY_LEN(map, iter) ((iter)->key_len)
+#define MAP_DATA(map, iter) hmap_data((iter))
+#define MAP_DATA_LEN(map, iter) ((void*)((iter)->data_len))
+
 #define MAP_VISIT_ALL(map, fn, arg)                                                                                                                                                                    \
   {                                                                                                                                                                                                    \
     TUPLE* t;                                                                                                                                                                                          \
     hmap_foreach(map, t) fn(t->key, t->key_len, t->vals.val_chars, t->data_len, arg);                                                                                                                  \
   }
 #define MAP_GET(map, key, klen) hmap_get(map, key, klen)
-/*static inline void*
-MAP_GET(HMAP_DB* map, const void* key,
-size_t klen) { TUPLE* t = NULL;
-  if(hmap_search(map, key, klen, &t) ==
-HMAP_SUCCESS) { if(t->data_type ==
-HMAP_DATA_TYPE_CUSTOM) return
-t->vals.val_custom;
+
+static inline void*
+MAP_GET2(HMAP_DB* map, const void* key, size_t klen) {
+  TUPLE* t = NULL;
+  if(hmap_search(map, key, klen, &t) == HMAP_SUCCESS) {
+    if(t->data_type == HMAP_DATA_TYPE_CUSTOM)
+      return t->vals.val_custom;
 
     return t->vals.val_chars;
   }
 
   return NULL;
-}*/
+}
 
 #define MAP_DUMP hmap_dump
 #define MAP_DELETE(map, key, klen) hmap_delete(&(map), key, klen)
+#define MAP_ERASE(map, iter) MAP_DELETE((map), MAP_KEY(iter), MAP_KEY_LEN(iter))
 #define MAP_SET(map, key, value) MAP_INSERT(map, (key), str_len(key) + 1, (value), str_len(value) + 1)
 #define MAP_INSERT(map, key, klen, data, dlen) (dlen == 0 ? hmap_add(&(map), key, klen, 0, HMAP_DATA_TYPE_CUSTOM, data) : hmap_set(&(map), key, klen, data, dlen))
 #define MAP_SEARCH(map, key, klen, tuple) (hmap_search(map, key, klen, tuple) == HMAP_SUCCESS ? *(tuple) : 0)
-#define MAP_KEY(tuple) ((char*)(tuple)->key)
 
 #endif
 

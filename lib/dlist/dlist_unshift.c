@@ -1,9 +1,9 @@
 #include <stdlib.h>
-#include "../list.h"
+#include "../dlist.h"
 
 void
-dlist_unshift(list* l, node* p) {
-  /* We add to the list head, so there's no previous p */
+dlist_unshift(dlist* l, node* p) {
+  /* We add to the dlist head, so there's no previous p */
   p->prev = NULL;
 
   /* Next p is the old head */
@@ -16,6 +16,6 @@ dlist_unshift(list* l, node* p) {
   else
     l->tail = p;
 
-  /* Now put the p to list head */
+  /* Now put the p to dlist head */
   l->head = p;
 }

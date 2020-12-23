@@ -33,53 +33,6 @@ typedef struct strlist_s {
 #else
 #define strlist_pushm(sa, ...) strlist_pushm_internal(sa, __VA_ARGS__, (char*)0)
 #endif
-int strlist_append_sa(strlist*, const stralloc* sa);
-size_t strlist_pos(const strlist*, size_t index);
-char* strlist_at(const strlist*, size_t i);
-char* strlist_at_n(const strlist*, size_t i, size_t* n);
-stralloc strlist_at_sa(const strlist*, size_t i);
-int strlist_cat(strlist*, const strlist* l);
-int strlist_containsb(const strlist*, const char* x, size_t len);
-int strlist_contains_sa(strlist*, const stralloc* sa);
-int strlist_contains(const strlist*, const char* s);
-int strlist_copyat(const strlist*, size_t i, stralloc* out);
-size_t strlist_count(const strlist*);
-void strlist_dump(buffer*, const strlist* sl);
-void strlist_dump_named(buffer*, const strlist*, const char*[]);
-void strlist_fromb(strlist*, const char* x, size_t n, const char* delim);
-void strlist_froms(strlist*, const char* s, char delim);
-void strlist_fromv(strlist*, const char** v, int c);
-int64 strlist_indexofb(strlist*, const char* x, size_t n);
-int64 strlist_index_of(strlist*, const char* str);
-void strlist_join(const strlist*, stralloc* sa, char delim);
-void strlist_joins(const strlist*, stralloc* sa, const char* delim);
-int strlist_pop(strlist*);
-int strlist_prependb(strlist*, const char* b, size_t n);
-int strlist_prepend_sa(strlist*, const stralloc* sa);
-int strlist_prepends(strlist*, const char* s);
-int strlist_pushb(strlist*, const char* s, size_t n);
-int strlist_pushb_unique(strlist*, const char* s, size_t n);
-int strlist_pushm_internal(strlist*, ...);
-int strlist_push_sa(strlist*, const stralloc* sa);
-int strlist_push(strlist*, const char* s);
-void strlist_push_tokens(strlist*, const char* s, const char* delim);
-int strlist_push_unique_sa(strlist*, const stralloc* sa);
-int strlist_push_unique(strlist*, const char* s);
-strlist strlist_range(const strlist*, size_t from, size_t to);
-int strlist_remove_at(strlist*, size_t n);
-int strlist_removeb(strlist*, const char* x, size_t n);
-int strlist_removes(strlist*, const char* s);
-int strlist_shift_n(strlist*, size_t i);
-int strlist_shift(strlist*, const char** strp);
-size_t strlist_sort(strlist*, int (*)(const void*, const void*));
-int strlist_sub(strlist*, const strlist* o);
-char** strlist_to_argv(const strlist*);
-int strlist_trunc(strlist*, size_t items);
-int strlist_unshift(strlist*, const char* s);
-int strlist_unshiftb(strlist*, const char*, size_t);
-int strlist_cat_unique(strlist* sl, const strlist* l);
-size_t strlist_diff(const strlist*, const strlist*, strlist*);
-size_t strlist_remove_all(strlist*, const strlist*);
 
 #define strlist_end(sl) ((sl)->sa.s + (sl)->sa.len)
 
@@ -119,13 +72,6 @@ strlist_next_b(const strlist* sl, const char* ptr, size_t* n) {
   return 0;
 }
 
-#ifdef STRALLOC_H
-int strlist_contains_sa(strlist*, const stralloc* sa);
-int strlist_push_sa(strlist*, const stralloc* sa);
-int strlist_push_unique_sa(strlist*, const stralloc* sa);
-void strlist_joins(const strlist*, stralloc* sa, const char* delim);
-#endif
-
 char* strlist_at(const strlist*, size_t i);
 char* strlist_at_n(const strlist*, size_t i, size_t* n);
 int strlist_cat(strlist*, const strlist* l);
@@ -134,7 +80,6 @@ int strlist_containsb(const strlist*, const char* x, size_t len);
 int strlist_contains(const strlist*, const char* s);
 size_t strlist_count(const strlist*);
 size_t strlist_diff(const strlist*, const strlist* b, strlist* out);
-void strlist_dump(buffer*, const strlist* sl);
 size_t strlist_filter(strlist*, strlist_filterfn_t* filter_fn, strlist* out);
 void strlist_fromb(strlist*, const char* x, size_t n, const char* delim);
 void strlist_froms(strlist*, const char* s, char delim);
@@ -142,12 +87,13 @@ void strlist_fromv(strlist*, const char** v, int c);
 int64 strlist_indexofb(strlist*, const char* x, size_t n);
 int64 strlist_index_of(strlist*, const char* str);
 int strlist_pop(strlist*);
+int64 strlist_pos(const strlist*, size_t index);
 int strlist_prependb(strlist*, const char* b, size_t n);
 int strlist_prepends(strlist*, const char* s);
 int strlist_pushb(strlist*, const char* s, size_t n);
 int strlist_pushb_unique(strlist*, const char* s, size_t n);
-int strlist_push(strlist*, const char* s);
 int strlist_pushm_internal(strlist*, ...);
+int strlist_push(strlist*, const char* s);
 void strlist_push_tokens(strlist*, const char* s, const char* delim);
 int strlist_push_unique(strlist*, const char* s);
 strlist strlist_range(const strlist*, size_t from, size_t to);
@@ -155,19 +101,32 @@ size_t strlist_remove_all(strlist*, const strlist* remove);
 int strlist_remove_at(strlist*, size_t n);
 int strlist_removeb(strlist*, const char* x, size_t n);
 int strlist_removes(strlist*, const char* s);
-int strlist_shift(strlist*, const char** strp);
 int strlist_shift_n(strlist*, size_t i);
+int strlist_shift(strlist*, const char** strp);
 size_t strlist_sort(strlist*, strlist_cmpfn_t* cmp_fn);
 int strlist_sub(strlist*, const strlist* o);
-
 char** strlist_to_argv(const strlist*);
-
 int strlist_trunc(strlist*, size_t items);
 int strlist_unshiftb(strlist*, const char* x, size_t len);
 int strlist_unshift(strlist*, const char* s);
+int strlist_splice(strlist*, size_t pos, size_t ndelete, char* x, size_t n);
 
+#ifdef STRALLOC_H
+int strlist_append_sa(strlist*, const stralloc* sa);
+stralloc strlist_at_sa(const strlist*, size_t i);
+int strlist_contains_sa(strlist*, const stralloc* sa);
+int strlist_copyat(const strlist*, size_t i, stralloc* out);
+void strlist_join(const strlist*, stralloc* sa, char delim);
+void strlist_joins(const strlist*, stralloc* sa, const char* delim);
+int strlist_prepend_sa(strlist*, const stralloc* sa);
+int strlist_push_sa(strlist*, const stralloc* sa);
+int strlist_push_unique_sa(strlist*, const stralloc* sa);
+
+#endif
 #ifdef BUFFER_H
-void buffer_putsl(buffer*, const strlist*, const char* separator);
+void buffer_putsl(buffer*, const strlist* sl, const char* separator);
+void strlist_dump(buffer*, const strlist* sl);
+void strlist_dump_named(buffer*, const strlist* sl, const char* names[]);
 #endif
 
 #ifdef __cplusplus

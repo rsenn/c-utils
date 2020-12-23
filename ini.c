@@ -95,9 +95,9 @@ ini_write(buffer* b, ini_section_t* ini, int utf16) {
     buffer_put(b, "]\r\n", 3);
 
     MAP_FOREACH(ini->map, t) {
-      buffer_put(b, MAP_KEY(t), str_len(MAP_KEY(t)));
+      buffer_put(b, MAP_KEY(ini->map, t), str_len(MAP_KEY(ini->map, t)));
       buffer_putc(b, '=');
-      buffer_put(b, MAP_VALUE(t), str_len(MAP_VALUE(t)));
+      buffer_put(b, MAP_DATA(ini->map, t), str_len(MAP_DATA(ini->map, t)));
       buffer_puts(b, "\r\n");
     }
 

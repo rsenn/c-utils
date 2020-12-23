@@ -1,8 +1,8 @@
 #include <stdlib.h>
-#include "../list.h"
+#include "../dlist.h"
 
 node*
-dlist_find(list* l, int (*pred)(void*)) {
+dlist_find(dlist* l, int (*pred)(void*)) {
   node* p;
 
   /* Loop through all links until we find the pointer */

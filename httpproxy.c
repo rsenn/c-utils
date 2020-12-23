@@ -15,6 +15,7 @@
 #include "lib/mmap.h"
 #include "lib/scan.h"
 #include "lib/uint32.h"
+#include "lib/byte.h"
 
 #include <stdlib.h>
 #include <errno.h>
@@ -33,7 +34,7 @@
 #define HOSTS_FILE "/etc/hosts"
 #endif
 
-static bmap_t(uint32) hosts_db;
+static MAP_T hosts_db;
 static char ipbuf[IP4_FMT];
 
 void
@@ -92,7 +93,7 @@ read_hosts(const char* file) {
 #endif
         stralloc_nul(&hostname);
 
-        bmap_set(&hosts_db, hostname.s, *(uint32*)ip);
+        MAP_INSERT(hosts_db, hostname.s, hostname.len, (void*)&ip, sizeof(ip));
 
         s += hlen;
         s += scan_whitenskip(&p[s], l - s);
@@ -107,7 +108,7 @@ int
 lookup_hosts(stralloc* name, stralloc* ips) {
   void* ptr;
   stralloc_nul(name);
-  if((ptr = bmap_get(&hosts_db, name->s))) {
+  if((ptr = MAP_GET(hosts_db, name->s, name->len))) {
     stralloc_copyb(ips, ptr, 4);
     return 1;
   }

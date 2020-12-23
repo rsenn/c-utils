@@ -1,12 +1,12 @@
 #ifndef MAP_INTERNAL_H
 #define MAP_INTERNAL_H
 
-#include "map.h"
+#include "bmap.h"
 #include "str.h"
 #include <stdlib.h>
 #include <string.h>
 
-struct bmap_node_t {
+struct bmap_node_s {
   unsigned hash;
   void* value;
   bmap_node_t* next;

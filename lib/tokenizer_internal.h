@@ -7,6 +7,7 @@
 #define countof(arr) (sizeof((arr)) / sizeof((arr)[0]))
 
 #define isdigit(c) ((c) >= '0' && (c) <= '9')
+#define isspace(c) ((c) == ' ' || (c) == '\r' || (c) == '\n' || (c) == '\t' || (c) == '\v')
 #define tolower(c) ((c) >= 'A' && (c) <= 'Z' ? (c) + 0x20 : (c))
 
 #define ERROR -1
@@ -296,4 +297,22 @@ sequence_follows(tokenizer* t, int c, const char* which) {
     c = which[--i];
   }
   return 0;
+}
+
+static inline int
+ignore_until(tokenizer* t, const char* marker, int col_advance) {
+  t->column += col_advance;
+  int c;
+  do {
+    c = tokenizer_getc(t);
+    if(c == EOF)
+      return 0;
+    if(c == '\n') {
+      t->line++;
+      t->column = 0;
+    } else
+      t->column++;
+  } while(!sequence_follows(t, c, marker));
+  t->column += str_len(marker) - 1;
+  return 1;
 }

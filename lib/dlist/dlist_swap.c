@@ -1,7 +1,7 @@
-#include "../list.h"
+#include "../dlist.h"
 
 void
-dlist_swap(list* l, node* p1, node* p2) {
+dlist_swap(dlist* l, node* p1, node* p2) {
   node l1, l2;
 
   /* Return if its twice the same node */
