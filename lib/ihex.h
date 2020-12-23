@@ -1,3 +1,8 @@
+/**
+ * @defgroup   ihex
+ * @brief      IHEX module.
+ * @{
+ */
 #ifndef IHEX_H_
 #define IHEX_H_
 
@@ -30,3 +35,4 @@ ssize_t ihex_read_record(ihex_record** pihr, const char* in, size_t n);
 ihex_record* ihex_record_at(ihex_file* ihf, uint32 at, uint32* roffs);
 
 #endif /* IHEX_H_ */
+/** @} */

@@ -1,3 +1,8 @@
+/**
+ * @defgroup   tai
+ * @brief      TAI module.
+ * @{
+ */
 /* this header file comes from libowfat, http://www.fefe.de/libowfat/ */
 #ifndef TAI_H
 #define TAI_H
@@ -66,3 +71,4 @@ void tai_uint(struct tai*, unsigned int);
 #endif
 
 #endif
+/** @} */

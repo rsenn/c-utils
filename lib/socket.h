@@ -1,7 +1,6 @@
 /**
- * @defgroup   SOCKET socket
- *
- * @brief      This file implements socket.
+ * @defgroup   socket
+ * @brief      SOCKET module.
  * @{
  */
 #ifndef SOCKET_H

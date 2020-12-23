@@ -1,3 +1,8 @@
+/**
+ * @defgroup   open
+ * @brief      OPEN module.
+ * @{
+ */
 /* this header file comes from libowfat, http://www.fefe.de/libowfat/ */
 #ifndef OPEN_H
 #define OPEN_H
@@ -53,3 +58,4 @@ int open_temp(char**);
 #endif
 
 #endif
+/** @} */

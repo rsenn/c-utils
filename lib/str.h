@@ -1,7 +1,6 @@
 /**
- * @defgroup   STR string
- *
- * @brief      This file implements string.
+ * @defgroup   str
+ * @brief      STR module.
  * @{
  */
 #ifndef STR_H

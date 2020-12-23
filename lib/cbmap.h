@@ -1,3 +1,8 @@
+/**
+ * @defgroup   cbmap
+ * @brief      CBMAP module.
+ * @{
+ */
 #ifndef _CBMAP_H
 #define _CBMAP_H
 
@@ -68,3 +73,4 @@ int cbmap_visit_all(cbmap_t map, cbmap_visitor visitor_fn, void* user_data);
 }
 #endif
 #endif /* _CBMAP_H */
+/** @} */

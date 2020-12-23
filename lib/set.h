@@ -1,3 +1,8 @@
+/**
+ * @defgroup   set
+ * @brief      SET module.
+ * @{
+ */
 
 
 #ifndef SET_H
@@ -82,3 +87,4 @@ void buffer_putset(buffer*, const set_t*, const char* sep, size_t seplen);
 #endif
 
 #endif
+/** @} */

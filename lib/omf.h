@@ -1,3 +1,8 @@
+/**
+ * @defgroup   omf
+ * @brief      OMF module.
+ * @{
+ */
 #ifndef OMF_H
 #define OMF_H
 
@@ -101,3 +106,4 @@ omf_read_index(void* readptr, int16* idxptr) {
 }
 #endif
 #endif /* defined OMF_H */
+/** @} */

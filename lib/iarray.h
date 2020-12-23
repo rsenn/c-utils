@@ -1,3 +1,8 @@
+/**
+ * @defgroup   iarray
+ * @brief      IARRAY module.
+ * @{
+ */
 /* this header file comes from libowfat, http://www.fefe.de/libowfat/ */
 #ifndef IARRAY_H
 #define IARRAY_H
@@ -69,3 +74,4 @@ void iarray_free(iarray*);
 }
 #endif
 #endif
+/** @} */

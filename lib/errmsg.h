@@ -1,3 +1,8 @@
+/**
+ * @defgroup   errmsg
+ * @brief      ERRMSG module.
+ * @{
+ */
 /* this header file comes from libowfat, http://www.fefe.de/libowfat/ */
 #ifndef ERRMSG_H
 #define ERRMSG_H
@@ -46,3 +51,4 @@ void errmsg_infosys(const char* message, ...);
 #endif
 
 #endif
+/** @} */

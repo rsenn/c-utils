@@ -1,3 +1,8 @@
+/**
+ * @defgroup   http
+ * @brief      HTTP module.
+ * @{
+ */
 #ifndef HTTP_H
 #define HTTP_H 1
 
@@ -101,3 +106,4 @@ const char* http_strerror(http* h, int ret);
 #endif
 
 #endif /* defined HTTP_H */
+/** @} */

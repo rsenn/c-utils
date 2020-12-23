@@ -1,3 +1,8 @@
+/**
+ * @defgroup   array
+ * @brief      ARRAY module.
+ * @{
+ */
 /* this header file comes from libowfat, http://www.fefe.de/libowfat/ */
 #ifndef ARRAY_H
 #define ARRAY_H
@@ -81,3 +86,4 @@ int64 array_splice(array*, uint64 membersize, uint64 start, uint64 del, uint64 i
 #endif
 
 #endif
+/** @} */

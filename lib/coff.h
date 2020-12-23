@@ -1,3 +1,8 @@
+/**
+ * @defgroup   coff
+ * @brief      COFF module.
+ * @{
+ */
 #ifndef COFF_H
 #define COFF_H
 
@@ -308,3 +313,4 @@ range coff_symbol_table(void*);
 }
 #endif
 #endif /* defined COFF_H */
+/** @} */

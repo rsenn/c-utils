@@ -1,3 +1,8 @@
+/**
+ * @defgroup   tokenizer
+ * @brief      TOKENIZER module.
+ * @{
+ */
 
 #ifndef TOKENIZER_H
 #define TOKENIZER_H
@@ -87,3 +92,4 @@ void tokenizer_skip_until(struct tokenizer_s* t, const char* marker);
 int tokenizer_ungetc(struct tokenizer_s* t, int c);
 
 #endif /* defined(TOKENIZER_H) */
+/** @} */

@@ -1,3 +1,8 @@
+/**
+ * @defgroup   env
+ * @brief      ENV module.
+ * @{
+ */
 #ifndef ENV_H
 #define ENV_H
 
@@ -35,3 +40,4 @@ int env_string(stralloc* sa, const char* const* envp, size_t envlen);
 #endif
 
 #endif
+/** @} */

@@ -1,3 +1,8 @@
+/**
+ * @defgroup   scan
+ * @brief      SCAN module.
+ * @{
+ */
 /* this header file comes from libowfat, http://www.fefe.de / libowfat/ */
 #ifndef SCAN_H
 #define SCAN_H
@@ -119,3 +124,4 @@ size_t scan_ansiskip(const char* s, size_t limit);
 #endif
 
 #endif
+/** @} */

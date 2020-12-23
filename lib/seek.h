@@ -1,3 +1,8 @@
+/**
+ * @defgroup   seek
+ * @brief      SEEK module.
+ * @{
+ */
 /* Public domain. */
 
 #ifndef SEEK_H
@@ -21,3 +26,4 @@ void seek_by_jump(fd_t fd, int64 amount);
 void seek_by_read(fd_t fd, int64 amount);
 
 #endif
+/** @} */

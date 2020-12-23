@@ -1,3 +1,8 @@
+/**
+ * @defgroup   elf
+ * @brief      ELF module.
+ * @{
+ */
 #ifndef _ELF_H
 #define _ELF_H 1
 
@@ -1308,3 +1313,4 @@ range elf_symbol_r(void*, void* sym);
 #endif
 
 #endif /* elf.h */
+/** @} */

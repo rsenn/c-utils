@@ -1,3 +1,8 @@
+/**
+ * @defgroup   dns
+ * @brief      DNS module.
+ * @{
+ */
 /* this header file comes from libowfat, http://www.fefe.de/libowfat/ */
 #ifndef DNS_H
 #define DNS_H
@@ -106,3 +111,4 @@ int dns_name6(stralloc*, const char*);
 #endif
 
 #endif
+/** @} */

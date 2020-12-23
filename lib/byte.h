@@ -1,3 +1,8 @@
+/**
+ * @defgroup   byte
+ * @brief      BYTE module.
+ * @{
+ */
 /* this header file comes from libowfat, http://www.fefe.de/libowfat/ */
 #ifndef BYTE_H
 #define BYTE_H
@@ -104,3 +109,4 @@ int byte_ends(const void*, size_t, const char*);
 #endif
 
 #endif
+/** @} */

@@ -1,7 +1,6 @@
 /**
- * @defgroup   UTF8 utf 8
- *
- * @brief      This file implements utf 8.
+ * @defgroup   utf8
+ * @brief      UTF8 module.
  * @{
  */
 #ifndef UTF8_H

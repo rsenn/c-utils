@@ -1,3 +1,8 @@
+/**
+ * @defgroup   strlist
+ * @brief      STRLIST module.
+ * @{
+ */
 #ifndef STRLIST_H
 #define STRLIST_H
 
@@ -133,3 +138,4 @@ void strlist_dump_named(buffer*, const strlist* sl, const char* names[]);
 }
 #endif
 #endif /* defined(STRLIST_H) */
+/** @} */

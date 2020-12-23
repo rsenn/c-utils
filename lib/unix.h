@@ -1,7 +1,6 @@
 /**
- * @defgroup   UNIX unix
- *
- * @brief      This file implements unix.
+ * @defgroup   unix
+ * @brief      UNIX module.
  * @{
  */
 #ifndef UNIX_H

@@ -1,3 +1,8 @@
+/**
+ * @defgroup   ndelay
+ * @brief      NDELAY module.
+ * @{
+ */
 /* this header file comes from libowfat, http://www.fefe.de/libowfat/ */
 #ifndef NDELAY_H
 #define NDELAY_H
@@ -16,3 +21,4 @@ int ndelay_off(fd_t);
 #endif
 
 #endif
+/** @} */

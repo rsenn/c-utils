@@ -1,3 +1,8 @@
+/**
+ * @defgroup   safemult
+ * @brief      SAFEMULT module.
+ * @{
+ */
 /* this header file comes from libowfat, http://www.fefe.de/libowfat/ */
 #ifndef _SAFEMULT_H
 #define _SAFEMULT_H
@@ -67,3 +72,4 @@ int imult64(int64 a, int64 b, int64* c);
 #endif
 
 #endif
+/** @} */

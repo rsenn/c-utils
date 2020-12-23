@@ -1,3 +1,8 @@
+/**
+ * @defgroup   io
+ * @brief      IO module.
+ * @{
+ */
 /* this header file comes from libowfat, http://www.fefe.de/libowfat/ */
 #ifndef IO_H
 #define IO_H
@@ -196,3 +201,4 @@ void io_dump(buffer*);
 #endif
 
 #endif /* defined IO_H */
+/** @} */

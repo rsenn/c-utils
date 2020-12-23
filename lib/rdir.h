@@ -1,3 +1,8 @@
+/**
+ * @defgroup   rdir
+ * @brief      RDIR module.
+ * @{
+ */
 #ifndef _RDIR_H__
 #define _RDIR_H__
 
@@ -28,3 +33,4 @@ void rdir_close(rdir_t* d);
 #endif
 
 #endif /* _RDIR_H__ */
+/** @} */

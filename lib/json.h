@@ -1,3 +1,8 @@
+/**
+ * @defgroup   json
+ * @brief      JSON module.
+ * @{
+ */
 #ifndef JSON_H
 #define JSON_H
 
@@ -186,3 +191,4 @@ json_isnumber(jsonval v) {
 }
 #endif
 #endif /* JSON_H */
+/** @} */

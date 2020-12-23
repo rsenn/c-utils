@@ -1,7 +1,6 @@
 /**
- * @defgroup   UINT16 uint 16
- *
- * @brief      This file implements uint 16.
+ * @defgroup   uint16
+ * @brief      UINT16 module.
  * @{
  */
 #ifndef UINT16_H

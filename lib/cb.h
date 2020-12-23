@@ -1,3 +1,8 @@
+/**
+ * @defgroup   cb
+ * @brief      CB module.
+ * @{
+ */
 /*
 Copyright (c) 2012, Enno Rehling <enno@eressea.de>
 Permission to use, copy, modify, and/or distribute this software for any
@@ -54,3 +59,4 @@ void cb_get_kv_ex(void* kv, void** value);
 #endif
 
 #endif
+/** @} */

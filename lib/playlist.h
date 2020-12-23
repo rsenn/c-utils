@@ -1,3 +1,8 @@
+/**
+ * @defgroup   playlist
+ * @brief      PLAYLIST module.
+ * @{
+ */
 #ifndef PLAYLIST_H
 #define PLAYLIST_H
 
@@ -61,3 +66,4 @@ int playlist_write_finish(buffer* b, playlist* pl);
 }
 #endif
 #endif /* defined(PLAYLIST_H) */
+/** @} */

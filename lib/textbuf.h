@@ -1,3 +1,8 @@
+/**
+ * @defgroup   textbuf
+ * @brief      TEXTBUF module.
+ * @{
+ */
 #ifndef TEXTBUF_H
 #define TEXTBUF_H 1
 
@@ -26,3 +31,4 @@ ssize_t textbuf_read(fd_t, char*, size_t, void*);
 }
 #endif
 #endif /* defined TEXTBUF_H */
+/** @} */

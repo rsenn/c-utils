@@ -1,7 +1,6 @@
 /**
- * @defgroup   UINT32 uint 32
- *
- * @brief      This file implements uint 32.
+ * @defgroup   uint32
+ * @brief      UINT32 module.
  * @{
  */
 #ifndef UINT32_H

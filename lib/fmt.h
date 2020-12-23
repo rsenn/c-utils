@@ -1,3 +1,8 @@
+/**
+ * @defgroup   fmt
+ * @brief      FMT module.
+ * @{
+ */
 /* this header file comes from libowfat, http://www.fefe.de / libowfat/ */
 #ifndef FMT_H
 #define FMT_H
@@ -169,3 +174,4 @@ size_t fmt_xlong0(char*, size_t num, size_t n);
 }
 #endif
 #endif /* defined FMT_H */
+/** @} */

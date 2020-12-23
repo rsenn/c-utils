@@ -1,4 +1,9 @@
 /**
+ * @defgroup   hashmap
+ * @brief      HASHMAP module.
+ * @{
+ */
+/**
  * @file
  * Simple hash map implementation.
  */
@@ -135,3 +140,4 @@ hashmap_pair* hashmap_find(hashmap* map, void* key);
 }
 #endif
 #endif
+/** @} */

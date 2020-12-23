@@ -1,3 +1,8 @@
+/**
+ * @defgroup   dir
+ * @brief      DIR module.
+ * @{
+ */
 #ifndef _DIR_H__
 #define _DIR_H__
 
@@ -56,3 +61,4 @@ void dir_path(struct dir_s* d, stralloc* sa);
 
 #endif /* _DIR_H__ */
 /* dir_time.c */
+/** @} */

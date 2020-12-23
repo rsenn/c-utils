@@ -1,8 +1,7 @@
 /**
- * @defgroup   BMAP bmap
- *
- * @brief      This file implements bmap.
- *  @{
+ * @defgroup   bmap
+ * @brief      BMAP module.
+ * @{
  */
 #ifndef _BMAP_H
 #define _BMAP_H

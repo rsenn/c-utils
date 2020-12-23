@@ -1,3 +1,8 @@
+/**
+ * @defgroup   case
+ * @brief      CASE module.
+ * @{
+ */
 /* this header file comes from libowfat, http://www.fefe.de/libowfat/ */
 #ifndef CASE_H
 #define CASE_H
@@ -35,3 +40,4 @@ size_t case_find(const void*, const void*);
 #endif
 
 #endif
+/** @} */

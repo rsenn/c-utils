@@ -1,6 +1,6 @@
 /**
- * @defgroup   SIG signal
- * @brief      This file implements signal.
+ * @defgroup   sig
+ * @brief      SIG module.
  * @{
  */
 #ifndef _SIG_H

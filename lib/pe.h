@@ -1,3 +1,8 @@
+/**
+ * @defgroup   pe
+ * @brief      PE module.
+ * @{
+ */
 #ifndef PE_H
 #define PE_H
 
@@ -606,3 +611,4 @@ uint64 pe_get_value(void* pe, void* ptr, unsigned off32, unsigned size32, unsign
 }
 #endif
 #endif /* defined PE_H */
+/** @} */

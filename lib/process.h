@@ -1,3 +1,8 @@
+/**
+ * @defgroup   process
+ * @brief      PROCESS module.
+ * @{
+ */
 #ifndef PROCESS_H
 #define PROCESS_H
 
@@ -14,3 +19,4 @@ int process_wait(int);
 }
 #endif
 #endif /* defined(PROCESS_H) */
+/** @} */

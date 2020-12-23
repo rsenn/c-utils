@@ -1,3 +1,8 @@
+/**
+ * @defgroup   taia
+ * @brief      TAIA module.
+ * @{
+ */
 /* this header file comes from libowfat, http://www.fefe.de/libowfat/ */
 #ifndef TAIA_H
 #define TAIA_H
@@ -76,3 +81,4 @@ void taia_uint(tai6464* t, unsigned int secs);
 #endif
 
 #endif
+/** @} */

@@ -1,3 +1,8 @@
+/**
+ * @defgroup   dlist
+ * @brief      DLIST module.
+ * @{
+ */
 #ifndef DLIST_H
 #define DLIST_H
 
@@ -56,3 +61,4 @@ void dlist_unshift(dlist*, node*);
 }
 #endif
 #endif /* defined(DLIST_H) */
+/** @} */

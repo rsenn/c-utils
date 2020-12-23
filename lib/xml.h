@@ -1,6 +1,6 @@
 /**
- * @defgroup   XML xml
- * @brief      This file implements xml.
+ * @defgroup   xml
+ * @brief      XML module.
  * @{
  */
 #ifndef XML_H
@@ -282,4 +282,4 @@ xmltoken xml_read_token(xmlscanner* s);
 #endif
 
 #endif /* XML_H */
-       /** @} */
+/** @} */

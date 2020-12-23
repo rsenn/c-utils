@@ -1,7 +1,6 @@
 /**
- * @defgroup   UINT64 uint 64
- *
- * @brief      This file implements uint 64.
+ * @defgroup   uint64
+ * @brief      UINT64 module.
  * @{
  */
 #ifndef UINT64_H

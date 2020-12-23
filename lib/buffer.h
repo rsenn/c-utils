@@ -1,3 +1,8 @@
+/**
+ * @defgroup   buffer
+ * @brief      BUFFER module.
+ * @{
+ */
 /* this header file comes from libowfat,  http://www.fefe.de/libowfat/ */
 #ifndef BUFFER_H
 #define BUFFER_H
@@ -263,3 +268,4 @@ void buffer_realloc(buffer* b, size_t ylen);
 #endif
 
 #endif
+/** @} */

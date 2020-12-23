@@ -1,3 +1,8 @@
+/**
+ * @defgroup   path
+ * @brief      PATH module.
+ * @{
+ */
 #ifndef _PATH_H__
 #define _PATH_H__
 
@@ -90,3 +95,4 @@ int path_split(const char* p, strlist* sl);
 #endif
 
 #endif /* _PATH_H__ */
+/** @} */

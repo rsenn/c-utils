@@ -1,3 +1,8 @@
+/**
+ * @defgroup   binfmt
+ * @brief      BINFMT module.
+ * @{
+ */
 #ifndef BINFMT_H
 #define BINFMT_H 1
 
@@ -41,3 +46,4 @@ int binfmt_open(binfmt_file*, const char* filename);
 }
 #endif
 #endif
+/** @} */

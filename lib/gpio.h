@@ -1,3 +1,8 @@
+/**
+ * @defgroup   gpio
+ * @brief      GPIO module.
+ * @{
+ */
 #ifndef GPIO_H
 #define GPIO_H
 
@@ -39,3 +44,4 @@ void gpio_write(int const pin_nr, int const high);
  */
 
 #endif
+/** @} */

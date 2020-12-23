@@ -1,3 +1,8 @@
+/**
+ * @defgroup   hmap
+ * @brief      HMAP module.
+ * @{
+ */
 #ifndef HMAP_H
 #define HMAP_H 1
 
@@ -161,3 +166,4 @@ void hmap_dump(HMAP_DB* my_hmap_db, buffer*);
 }
 #endif
 #endif /* defined HMAP_H */
+/** @} */

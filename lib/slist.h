@@ -1,7 +1,6 @@
 /**
- * @defgroup   SLIST slist
- *
- * @brief      This file implements slist.
+ * @defgroup   slist
+ * @brief      SLIST module.
  * @{
  */
 #ifndef SLIST_H

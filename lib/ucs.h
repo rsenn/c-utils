@@ -1,3 +1,8 @@
+/**
+ * @defgroup   ucs
+ * @brief      UCS module.
+ * @{
+ */
 
 #ifndef UCS_H
 #define UCS_H
@@ -27,3 +32,4 @@ size_t str_utf8_latin1(char*);
 }
 #endif
 #endif /* defined(UCS_H) */
+/** @} */

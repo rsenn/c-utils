@@ -1,3 +1,8 @@
+/**
+ * @defgroup   charbuf
+ * @brief      CHARBUF module.
+ * @{
+ */
 #ifndef CHARBUF_H
 #define CHARBUF_H
 
@@ -61,3 +66,4 @@ void charbuf_froms(charbuf* b, char** s);
 #endif
 
 #endif /* defined CHARBUF_H */
+/** @} */

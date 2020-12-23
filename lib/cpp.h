@@ -1,3 +1,8 @@
+/**
+ * @defgroup   cpp
+ * @brief      CPP module.
+ * @{
+ */
 #ifndef CPP_H
 #define CPP_H
 
@@ -17,3 +22,4 @@ int cpp_run(cpp_t* cpp, buffer* in, buffer* out, const char* inname);
 #pragma RcB2 DEP "cpp.c"
 
 #endif
+/** @} */

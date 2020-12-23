@@ -1,3 +1,8 @@
+/**
+ * @defgroup   strarray
+ * @brief      STRARRAY module.
+ * @{
+ */
 #ifndef STRARRAY_H
 #define STRARRAY_H
 
@@ -97,3 +102,4 @@ int strarray_unshiftn(strarray*, const char* const* v, size_t n);
 }
 #endif
 #endif /* defined(STRARRAY_H) */
+/** @} */

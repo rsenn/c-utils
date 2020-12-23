@@ -1,3 +1,8 @@
+/**
+ * @defgroup   mmap
+ * @brief      MMAP module.
+ * @{
+ */
 /* this header file comes from libowfat, http://www.fefe.de/libowfat/ */
 #ifndef MMAP_H
 #define MMAP_H
@@ -53,3 +58,4 @@ char* mmap_rw_fd(fd_t, size_t*);
 #endif
 
 #endif
+/** @} */

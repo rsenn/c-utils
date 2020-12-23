@@ -1,7 +1,6 @@
 /**
- * @defgroup   WAIT wait
- *
- * @brief      This file implements wait.
+ * @defgroup   wait
+ * @brief      WAIT module.
  * @{
  */
 #ifndef WAIT_H

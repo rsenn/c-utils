@@ -1,3 +1,8 @@
+/**
+ * @defgroup   tls
+ * @brief      TLS module.
+ * @{
+ */
 #ifndef TLS_H
 #define TLS_H 1
 
@@ -49,3 +54,4 @@ int tls_want(fd_t fd, void (*)(fd_t), void (*)(fd_t));
 #endif
 
 #endif /* defined TLS_H */
+/** @} */

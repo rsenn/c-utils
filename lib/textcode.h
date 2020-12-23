@@ -1,3 +1,8 @@
+/**
+ * @defgroup   textcode
+ * @brief      TEXTCODE module.
+ * @{
+ */
 /* this header file comes from libowfat, http://www.fefe.de/libowfat/ */
 #ifndef TEXTCODE_H
 #define TEXTCODE_H
@@ -146,3 +151,4 @@ extern const char base64url[66];
 #endif
 
 #endif
+/** @} */

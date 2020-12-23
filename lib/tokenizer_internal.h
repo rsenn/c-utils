@@ -220,7 +220,7 @@ apply_coords(tokenizer* t, struct token* out, char* end, int retval) {
   return retval;
 }
 
-static inline inline char*
+static inline char*
 assign_bufchar(tokenizer* t, char* s, int c) {
   t->column++;
   *s = c;

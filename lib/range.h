@@ -1,3 +1,8 @@
+/**
+ * @defgroup   range
+ * @brief      RANGE module.
+ * @{
+ */
 #ifndef RANGE_H
 #define RANGE_H 1
 
@@ -60,3 +65,4 @@ void range_rotate(range*, ssize_t n);
 }
 #endif
 #endif /* defined RANGE_H */
+/** @} */
