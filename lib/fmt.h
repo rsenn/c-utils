@@ -14,16 +14,11 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-typedef size_t fmt_call(char*,  void*, void*, void*, void*);
-typedef size_t fmt_bytes(char*, uint32, void*, void*, void*, void*);
+/*typedef size_t fmt_function(char*, void*, void*, void*, void*);
 
 typedef struct {
-  fmt_call* func;
-  enum {
-    FMT_CALL_INTEGRAL,
-    FMT_CALL_STR,
-    FMT_CALL_BYTEBUF
-  } arg;
+  fmt_function* func;
+  enum { FMT_CALL_INTEGRAL, FMT_CALL_STR, FMT_CALL_BYTEBUF } arg;
 
   union {
     struct {
@@ -37,7 +32,7 @@ typedef struct {
     void* args[4];
   };
 } formatter;
-
+*/
 #define FMT_LONG 41        /* enough space to hold -2^127 in decimal, plus \0 */
 #define FMT_ULONG 40       /* enough space to hold 2^128 - 1 in decimal, plus \0 */
 #define FMT_8LONG 44       /* enough space to hold 2^128 - 1 in octal, plus \0 */

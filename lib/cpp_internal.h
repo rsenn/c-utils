@@ -474,11 +474,9 @@ nud(tokenizer* t, struct token_s* tok, int* err) {
       error("floating constant in preprocessor expression", t, tok);
       *err = 1;
       return 0;
-    case TT_HEX_INT_LIT:
-    case TT_OCT_INT_LIT:
-    case TT_DEC_INT_LIT:
-      if(scan_int(t->buf, &ret))
-        break;
+    case TT_HEX_INT_LIT: scan_xint(t->buf, &ret); break;
+    case TT_OCT_INT_LIT: scan_8int(t->buf, &ret); break;
+    case TT_DEC_INT_LIT: scan_int(t->buf, &ret); break;
 
     case TT_RPAREN:
 
