@@ -78,6 +78,7 @@ json_default_printer(jsonfmt* p, jsonval* v, int depth, int index, char quote) {
   p->precision = 10;
   p->depth = depth;
   p->index = index;
+  p->compliant = 1;
 };
 
 static void json_print_val(jsonval* val, buffer* b, int depth, json_print_fn*);
@@ -107,8 +108,11 @@ json_print_separator(jsonval* val, buffer* b, int what, const jsonfmt* printer) 
 static void
 json_print_key(buffer* b, const char* key, size_t key_len, const jsonfmt* fmt) {
   char quote;
-  quote = (!isdigit(key[0]) && byte_fullfils_predicate(key, key_len, json_is_identifier_char)) ? fmt->quote[1] : fmt->quote[0];
-
+  quote =  ((!isdigit(key[0]) && byte_fullfils_predicate(key, key_len, json_is_identifier_char))) ? fmt->quote[1] : fmt->quote[0];
+if(fmt->compliant) {
+  if(quote != '"')
+    quote = '"';
+}
   if(quote)
     buffer_putc(b, quote);
   buffer_put(b, key, key_len);
