@@ -48,38 +48,39 @@ compact_printer(jsonfmt* p, jsonval* v, int depth, int index, char q) {
 
   int valdepth = v ? get_depth(v) : 0;
   int pretty = depth < 4 && valdepth > 1;
-  
-  p->indent = one_line || depth > depth_arg ? "" : "  ";
-  // depth <= 1 ? "  " : depth > 3 ? "
-  // " : " ";
+    int multi_line = !one_line && depth < depth_arg;
 
-  p->newline = one_line ? "" : "\n";
+  p->indent = !multi_line || depth > depth_arg ? "" : "  ";
+   
+
+  p->newline = multi_line ? "\n" : "";
   p->spacing = spacing ? spacing : " ";
 
-  p->separat = separator ? separator : ",\n";
+  p->separat = separator ? separator :  multi_line ? ",\n" : p->spacing[0] ? ", " : ",";
   p->quote[0] = quote[0];
   p->quote[1] = quote[1];
   p->precision = 3;
   p->depth = depth;
   p->index = index;
-  p->compliant = 1;
+  p->compliant = 0;
 };
 
 static void
 default_printer(jsonfmt* p, jsonval* v, int depth, int index, char q) {
   int pretty = v && get_depth(v) > 1;
-  p->indent = depth > depth_arg ? "" : "  "; // depth <= 1 ? "  " :
-                                             // depth > 3 ? "  " :
-                                             // " ";
+    int multi_line = !one_line && depth < depth_arg;
+p->indent = depth > depth_arg ? "" : "  ";  
+
+  
   p->spacing = spacing ? spacing : " ";
-  p->newline = one_line ? "" : depth > depth_arg ? p->spacing : "\n";
-  p->separat = separator ? separator : depth > depth_arg ? ", " : ",\n";
+  p->newline = multi_line ? "\n" : p->spacing;
+  p->separat = separator ? separator :  multi_line ? ",\n" : p->spacing[0] ? ", " : ",";
   p->quote[0] = quote[0];
   p->quote[1] = quote[1];
   p->precision = 10;
   p->depth = depth - (index == -2);
   p->index = index;
-    p->compliant = 1;
+  p->compliant = 1;
 };
 
 void
@@ -185,7 +186,12 @@ main(int argc, char* argv[]) {
       case 'W': spacing = optarg; break;
       case 'D': scan_int(optarg, &depth_arg); break;
       case 'o': one_line = 1; break;
-      case 'c': compact = 1; break;
+      case 'c': {
+        if(compact)
+          spacing = "";
+        compact = 1;
+        break;
+      }
       case 'C': quote[0] = quote[1] = '"'; break;
       case 'l': scan_int(optarg, &indent); break;
       case 'i': in_place = 1; break;
@@ -238,7 +244,7 @@ main(int argc, char* argv[]) {
     doc = json_read_tree(&in_buf);
 
     json_pretty_print(*doc, &out_buf);
-    buffer_flush(&out_buf);
+    (one_line ? &buffer_putnlflush : &buffer_flush)(&out_buf);
 
     charbuf_close(&in_buf);
     buffer_close(&out_buf);

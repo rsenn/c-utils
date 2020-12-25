@@ -53,7 +53,7 @@ typedef union {
     char quote[2];
     int precision, depth, index;
   };
-  int compliant:1;
+  int compliant : 1;
 } jsonfmt;
 
 enum {

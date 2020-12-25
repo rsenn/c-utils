@@ -89,7 +89,7 @@ int buffer_putm_internal_flush(buffer* b, ...);
 #define buffer_putm_7(b, a1, a2, a3, a4, a5, a6, a7) buffer_putm_internal(b, a1, a2, a3, a4, a5, a6, a7, (char*)0)
 
 int buffer_putspace(buffer* b);
-ssize_t buffer_putnlflush(buffer* b); /* put \n and flush */
+int buffer_putnlflush(buffer* b); /* put \n and flush */
 
 #define buffer_PUTC(s, c) (((s)->a != (s)->p) ? ((s)->x[(s)->p++] = (c), 0) : buffer_putc((s), (c)))
 
