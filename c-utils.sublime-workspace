@@ -28,262 +28,85 @@
 	"buffers":
 	[
 		{
-			"contents": "",
+			"contents": "  buffer_indent_set\n  buffer_indent_write\n  buffer_indent\n  depth_fn\n  get_depth\n  json_default_printer\n  json_print_val\n  byte_fullfils_predicate\n  json_print_separator\n  json_print_key\n  json_print_str\n  json_print_object\n  json_print_array\n  json_print_val\n  json_print",
 			"settings":
 			{
-				"buffer_size": 0,
+				"buffer_size": 272,
 				"line_ending": "Unix",
 				"name": "𝌆 Outline",
 				"scratch": true
 			}
 		},
 		{
-			"file": "cpptest.c",
+			"file": "lib/json/json_print.c",
 			"settings":
 			{
-				"buffer_size": 1379,
+				"buffer_size": 5983,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "tokenizertest.c",
+			"file": "jsonpp.c",
 			"settings":
 			{
-				"buffer_size": 4845,
+				"buffer_size": 6899,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "lib/buffer/buffer_put.c",
+			"file": "/home/roman/Dokumente/Sources/opencv/samples/cpp/stitching_detailed.cpp",
 			"settings":
 			{
-				"buffer_size": 609,
+				"buffer_size": 33006,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "lib/fmt/fmt_hexb.c",
+			"file": "/home/roman/Dokumente/Sources/opencv/samples/cpp/essential_mat_reconstr.cpp",
 			"settings":
 			{
-				"buffer_size": 440,
+				"buffer_size": 15285,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "lib/fmt/fmt_escapecharhtml.c",
+			"file": "/home/roman/Dokumente/Sources/opencv/samples/cpp/cout_mat.cpp",
 			"settings":
 			{
-				"buffer_size": 144,
+				"buffer_size": 2032,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "lib/fmt/fmt_escapecharxml.c",
+			"file": "/home/roman/Dokumente/Sources/opencv/samples/cpp/mask_tmpl.cpp",
 			"settings":
 			{
-				"buffer_size": 1008,
+				"buffer_size": 2195,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "lib/fmt/fmt_longlong.c",
+			"file": "/home/roman/Dokumente/Sources/opencv/samples/cpp/create_mask.cpp",
 			"settings":
 			{
-				"buffer_size": 214,
+				"buffer_size": 2716,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "lib/fmt/fmt_long.c",
+			"file": "/home/roman/Dokumente/Sources/opencv/samples/cpp/inpaint.cpp",
 			"settings":
 			{
-				"buffer_size": 219,
+				"buffer_size": 2439,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "lib/fmt/fmt_httpdate.c",
+			"file": "/home/roman/Dokumente/Sources/opencv/samples/cpp/intelligent_scissors.cpp",
 			"settings":
 			{
-				"buffer_size": 1017,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/fmt/fmt_hexdump.c",
-			"settings":
-			{
-				"buffer_size": 485,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/buffer/buffer_dump.c",
-			"settings":
-			{
-				"buffer_size": 2042,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/tokenizer.h",
-			"settings":
-			{
-				"buffer_size": 2430,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/stralloc/buffer_puts_escaped.c",
-			"settings":
-			{
-				"buffer_size": 579,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/buffer/buffer_putstr.c",
-			"settings":
-			{
-				"buffer_size": 199,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/stralloc/buffer_gettok_sa.c",
-			"settings":
-			{
-				"buffer_size": 511,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "/home/roman/.local/share/endless-sky/saves/achmed tsingzhali~~previous-1.txt",
-			"settings":
-			{
-				"buffer_size": 69123,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "/home/roman/.local/share/endless-sky/saves/achmed tsingzhali~~previous-2.txt",
-			"settings":
-			{
-				"buffer_size": 69610,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "/home/roman/.local/share/endless-sky/saves/achmed tsingzhali~~previous-3.txt",
-			"settings":
-			{
-				"buffer_size": 71530,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "/home/roman/.local/share/endless-sky/saves/achmed tsingzhali.txt",
-			"settings":
-			{
-				"buffer_size": 74643,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"contents": "Package Control Messages\n========================\n\nCMake\n-----\n\n  - Bring back the fancy snippets",
-			"settings":
-			{
-				"buffer_size": 97,
-				"line_ending": "Unix",
-				"name": "Package Control Messages",
-				"read_only": true,
-				"scratch": true
-			}
-		},
-		{
-			"contents": "#include \"../buffer.h\"\n#include \"../uint32.h\"\n#include <stdarg.h>\n\ntypedef size_t format_function(char*, int, void*, void*, void*, void*);\n\nint\nbuffer_putfmt_args(buffer* b, const char* x, size_t len, format_function* escape, void* args[]) {\n  char buf[16];\n  size_t i, n, r = 0;\n  for(i = 0; i < len; i++) {\n    uint32 c = (unsigned int)(unsigned char)x[i];\n    n = escape(buf, c, args[0], args[1], args[2], args[3]);\n    buffer_put(b, buf, n);\n    r += n;\n  }\n  return r;\n}\n\nint\nbuffer_putfmt_va(buffer* b, const char* x, size_t len, size_t (*escape)(char*, int), va_list args) {\n  const void* av[4];\n  av[0] = va_arg(args, void*);\n  av[1] = va_arg(args, void*);\n  av[2] = va_arg(args, void*);\n  av[3] = va_arg(args, void*);\n\n  return buffer_putfmt_args(b, x, len, (format_function*)escape, av);\n}\n\nint\nbuffer_putfmt(buffer* b, const char* x, size_t len, size_t (*escape)(char*, int), ...) {\n  va_list args;\n  int ret;\n\n  va_start(args, escape);\n\n  ret = buffer_putfmt_va(b, x, len, (format_function*)escape, args);\n\n  va_end(args);\n}\n",
-			"file": "lib/buffer/buffer_put_escaped.c",
-			"file_size": 1037,
-			"file_write_time": 132531894116228288,
-			"settings":
-			{
-				"buffer_size": 1037,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/fmt.h",
-			"settings":
-			{
-				"buffer_size": 8586,
-				"encoding": "UTF-8",
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/cpp/cpp_get_macro_info.c",
-			"settings":
-			{
-				"buffer_size": 1646,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/cpp_internal.h",
-			"settings":
-			{
-				"buffer_size": 13874,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"contents": "Searching 2842 files for \"buffer_put_escaped\" (regex, case sensitive)\n\n/home/roman/Sources/c-utils/lib/buffer.h:\n  212  int buffer_skip_pred(buffer*, int (*pred)(int));\n  213  \n  214: int buffer_put_escaped(buffer* b, const char* x, size_t len, size_t (*escape)(char*, int));\n  215  int buffer_puts_escaped(buffer* b, const char* s, size_t (*escape)(char*, int));\n  216  int buffer_put_quoted(buffer* b, const char* x, size_t len);\n\n/home/roman/Sources/c-utils/lib/buffer.h.cmake:\n  201  int buffer_skip_pred(buffer *b, int (*pred)(int));\n  202  \n  203: int buffer_put_escaped(buffer *b, const char *x, size_t len);\n  204  int buffer_puts_escaped(buffer *b, const char *x);\n  205  \n\n/home/roman/Sources/c-utils/lib/buffer/buffer_dump.c:\n   48    buffer_puts(out, \"\\\"\");\n   49    //  buffer_puts(out, \"...\");\n   50:   // buffer_put_escaped(out, &b->x[n], 32);\n   51    buffer_puts(out, \"\\\"\");\n   52  \n\n/home/roman/Sources/c-utils/lib/buffer/buffer_put_escaped.c:\n    3  \n    4  int\n    5: buffer_put_escaped(buffer* b, const char* x, size_t len, size_t (*escape)(char*, int)) {\n    6    char buf[16];\n    7    size_t i, n, r = 0;\n\n/home/roman/Sources/c-utils/lib/http/http_canread.c:\n  175          buffer_puts(buffer_2, \" buf=\");\n  176  \n  177:         buffer_put_escaped(buffer_2,\n  178                             stralloc_end(&r->data) - r->data.len,\n  179                             len,\n\n/home/roman/Sources/c-utils/lib/http/http_canwrite.c:\n   76    if(h->response->data.len > 0) {\n   77      buffer_puts(buffer_2, \" data=\");\n   78:     buffer_put_escaped(buffer_2, h->response->data.s, h->response->data.len, &fmt_escapecharnonprintable);\n   79    }\n   80    buffer_puts(buffer_2, \" ret=\");\n\n/home/roman/Sources/c-utils/lib/http/http_sendreq.c:\n   68    if(out->n > out->p) {\n   69      buffer_puts(buffer_2, \" code=\");\n   70:     buffer_put_escaped(buffer_2, out->x, out->p, &fmt_escapecharnonprintable);\n   71    }\n   72    buffer_puts(buffer_2, \" status=\");\n\n/home/roman/Sources/c-utils/lib/stralloc/buffer_puts_escaped.c:\n    7    if(escape == NULL)\n    8      escape = &fmt_escapecharshell;\n    9:   return buffer_put_escaped(b, x, str_len(x), escape);\n   10  }\n   11  \n\n/home/roman/Sources/c-utils/lib/tls/tls_read.c:\n   66      if(len > 16)\n   67        len = 16;\n   68:     buffer_put_escaped(buffer_2, data, len, &fmt_escapecharnonprintable);\n   69      buffer_puts(buffer_2, \"\\\"\");\n   70      if(len < ret) {\n\n/home/roman/Sources/c-utils/lib/tls/tls_write.c:\n   58    if(ret > 0) {\n   59      buffer_puts(buffer_2, \" data=\");\n   60:     buffer_put_escaped(buffer_2, data, ret, &fmt_escapecharnonprintable);\n   61    }\n   62    buffer_putnlflush(buffer_2);\n\n/home/roman/Sources/c-utils/lib/tokenizer/tokenizer_getc.c:\n   23        buffer_puts(buffer_2, \"tokenizer_getc '\");\n   24        if(ret < 0x20)\n   25:         buffer_put_escaped(buffer_2, &ret, 1, &fmt_escapecharc);\n   26        else\n   27          buffer_putc(buffer_2, ret);\n\n/home/roman/Sources/c-utils/lib.h:\n 1103  #include \"lib/stralloc/stralloc_fmt_call.c\"\n 1104  #include \"lib/stralloc/buffer_get_token_sa_pred.c\"\n 1105: #include \"lib/stralloc/buffer_put_escaped.c\"\n 1106  #include \"lib/stralloc/stralloc_prepends.c\"\n 1107  #include \"lib/stralloc/stralloc_inserts.c\"\n\n/home/roman/Sources/c-utils/lib/buffer.h:\n  212  int buffer_skip_pred(buffer*, int (*pred)(int));\n  213  \n  214: int buffer_put_escaped(buffer* b, const char* x, size_t len, size_t (*escape)(char*, int));\n  215  int buffer_puts_escaped(buffer* b, const char* s, size_t (*escape)(char*, int));\n  216  int buffer_put_quoted(buffer* b, const char* x, size_t len);\n\n/home/roman/Sources/c-utils/lib/buffer.h.cmake:\n  201  int buffer_skip_pred(buffer *b, int (*pred)(int));\n  202  \n  203: int buffer_put_escaped(buffer *b, const char *x, size_t len);\n  204  int buffer_puts_escaped(buffer *b, const char *x);\n  205  \n\n/home/roman/Sources/c-utils/lib/buffer/buffer_dump.c:\n   48    buffer_puts(out, \"\\\"\");\n   49    //  buffer_puts(out, \"...\");\n   50:   // buffer_put_escaped(out, &b->x[n], 32);\n   51    buffer_puts(out, \"\\\"\");\n   52  \n\n/home/roman/Sources/c-utils/lib/buffer/buffer_put_escaped.c:\n    3  \n    4  int\n    5: buffer_put_escaped(buffer* b, const char* x, size_t len, size_t (*escape)(char*, int)) {\n    6    char buf[16];\n    7    size_t i, n, r = 0;\n\n/home/roman/Sources/c-utils/lib/http/http_canread.c:\n  175          buffer_puts(buffer_2, \" buf=\");\n  176  \n  177:         buffer_put_escaped(buffer_2,\n  178                             stralloc_end(&r->data) - r->data.len,\n  179                             len,\n\n/home/roman/Sources/c-utils/lib/http/http_canwrite.c:\n   76    if(h->response->data.len > 0) {\n   77      buffer_puts(buffer_2, \" data=\");\n   78:     buffer_put_escaped(buffer_2, h->response->data.s, h->response->data.len, &fmt_escapecharnonprintable);\n   79    }\n   80    buffer_puts(buffer_2, \" ret=\");\n\n/home/roman/Sources/c-utils/lib/http/http_sendreq.c:\n   68    if(out->n > out->p) {\n   69      buffer_puts(buffer_2, \" code=\");\n   70:     buffer_put_escaped(buffer_2, out->x, out->p, &fmt_escapecharnonprintable);\n   71    }\n   72    buffer_puts(buffer_2, \" status=\");\n\n/home/roman/Sources/c-utils/lib/stralloc/buffer_puts_escaped.c:\n    7    if(escape == NULL)\n    8      escape = &fmt_escapecharshell;\n    9:   return buffer_put_escaped(b, x, str_len(x), escape);\n   10  }\n   11  \n\n/home/roman/Sources/c-utils/lib/tls/tls_read.c:\n   66      if(len > 16)\n   67        len = 16;\n   68:     buffer_put_escaped(buffer_2, data, len, &fmt_escapecharnonprintable);\n   69      buffer_puts(buffer_2, \"\\\"\");\n   70      if(len < ret) {\n\n/home/roman/Sources/c-utils/lib/tls/tls_write.c:\n   58    if(ret > 0) {\n   59      buffer_puts(buffer_2, \" data=\");\n   60:     buffer_put_escaped(buffer_2, data, ret, &fmt_escapecharnonprintable);\n   61    }\n   62    buffer_putnlflush(buffer_2);\n\n/home/roman/Sources/c-utils/lib/tokenizer/tokenizer_getc.c:\n   23        buffer_puts(buffer_2, \"tokenizer_getc '\");\n   24        if(ret < 0x20)\n   25:         buffer_put_escaped(buffer_2, &ret, 1, &fmt_escapecharc);\n   26        else\n   27          buffer_putc(buffer_2, ret);\n\n/home/roman/Sources/c-utils/pipeinfo.c:\n  336    }\n  337    buffer_puts(buffer_1, \" info='\");\n  338:   buffer_put_escaped(buffer_1, pfd->info.s, pfd->info.len, &fmt_escapecharnonprintable);\n  339    buffer_puts(buffer_1, \"'\");\n  340    //      print_stralloc(\" info\",\n\n/home/roman/Sources/c-utils/ssltest.c:\n  224              buffer_put(buffer_2, buf, fmt_escapecharc(buf, out.x[i]));\n  225          }\n  226:         //   buffer_put_escaped(buffer_2,\n  227          //   out.x, out.p,\n  228          //   &fmt_escapecharnonprintable);\n\n/home/roman/Sources/c-utils/tinyproxy.c:\n  710  \n  711  #ifdef DEBUG_OUTPUT\n  712:     (escape ? buffer_put_escaped(&log,\n  713                                   x,\n  714                                   /*maxlen > 0 && maxlen <\n\n26 matches across 26 files\n\n\nSearching 2844 files for \"va_start\" (regex, case sensitive)\n\n/home/roman/Sources/c-utils/lib/buffer/buffer_put_escaped.c:\n   22  \tva_list args;\n   23  \n   24: \tva_start(args, escape)\n   25    const void* args[4] = {0, 0, 0, 0};\n   26  \n\n/home/roman/Sources/c-utils/lib/buffer/buffer_putm_internal.c:\n    7    va_list a;\n    8    const char* s;\n    9:   va_start(a, b);\n   10    while((s = va_arg(a, const char*)))\n   11      if(buffer_puts(b, s) == -1) {\n\n/home/roman/Sources/c-utils/lib/buffer/buffer_putm_internal_flush.c:\n    7    va_list a;\n    8    const char* s;\n    9:   va_start(a, b);\n   10    while((s = va_arg(a, const char*)))\n   11      if(buffer_puts(b, s) == -1) {\n\n/home/roman/Sources/c-utils/lib/byte/byte_scan.c:\n   10    va_list a;\n   11    void* v[4];\n   12:   va_start(a, scan_function);\n   13    v[0] = va_arg(a, void*);\n   14    v[1] = va_arg(a, void*);\n\n/home/roman/Sources/c-utils/lib/errmsg/errmsg_info.c:\n    8  errmsg_info(const char* message, ...) {\n    9    va_list a;\n   10:   va_start(a, message);\n   11    errmsg_write(1, 0, message, a);\n   12  }\n\n/home/roman/Sources/c-utils/lib/errmsg/errmsg_infosys.c:\n   10  errmsg_infosys(const char* message, ...) {\n   11    va_list a;\n   12:   va_start(a, message);\n   13    errmsg_write(1, strerror(errno), message, a);\n   14  }\n\n/home/roman/Sources/c-utils/lib/errmsg/errmsg_warn.c:\n    8  errmsg_warn(const char* message, ...) {\n    9    va_list a;\n   10:   va_start(a, message);\n   11    errmsg_write(2, 0, message, a);\n   12  }\n\n/home/roman/Sources/c-utils/lib/errmsg/errmsg_warnsys.c:\n   10  errmsg_warnsys(const char* message, ...) {\n   11    va_list a;\n   12:   va_start(a, message);\n   13    errmsg_write(2, strerror(errno), message, a);\n   14  }\n\n/home/roman/Sources/c-utils/lib/fmt/fmt_strm_internal.c:\n    7    va_list a;\n    8    const char* s;\n    9:   va_start(a, dest);\n   10    for(n = 0; (s = va_arg(a, const char*));) {\n   11      size_t inc = fmt_str(dest, s);\n\n/home/roman/Sources/c-utils/lib/hmap/hmap_add.c:\n   16    VALIDATE_DB(*hmap_db, key, k_len);\n   17  \n   18:   va_start(args, data_type);\n   19    r = hmap_search(*hmap_db, key, k_len, &ptr_tuple);\n   20  \n\n/home/roman/Sources/c-utils/lib/stralloc/byte_scan.c:\n   10    va_list a;\n   11    void* v[4];\n   12:   va_start(a, scan_function);\n   13    v[0] = va_arg(a, void*);\n   14    v[1] = va_arg(a, void*);\n\n/home/roman/Sources/c-utils/lib/stralloc/stralloc_catm_internal.c:\n   10    const char* s;\n   11    size_t n = 0;\n   12:   va_start(a, sa);\n   13    while((s = va_arg(a, const char*))) n += str_len(s);\n   14    va_end(a);\n   15    stralloc_readyplus(sa, n);\n   16  \n   17:   va_start(a, sa);\n   18    while((s = va_arg(a, const char*)))\n   19      if(stralloc_cats(sa, s) == 0) {\n\n/home/roman/Sources/c-utils/lib/stralloc/stralloc_fmt_call.c:\n    8  stralloc_fmt_call(stralloc* out, stralloc_fmt_fn* fmt_function, void* av[4]) {\n    9    /*  va_list args;\n   10:     va_start(args, fmt_function);\n   11      void* av[4];\n   12  \n\n/home/roman/Sources/c-utils/lib/strarray/strarray_unshiftm.c:\n    8    va_list args;\n    9    const char* s;\n   10:   va_start(args, arr);\n   11    while((s = va_arg(args, const char*))) {\n   12      if(strarray_splice(arr, i, 0, 1, &s) != -1) {\n\n/home/roman/Sources/c-utils/lib/strlist/strlist_pushm_internal.c:\n    6    va_list a;\n    7    const char* s;\n    8:   va_start(a, sl);\n    9    while((s = va_arg(a, const char*))) {\n   10      if(strlist_push(sl, s) == 0)\n\n/home/roman/Sources/c-utils/lib/xml/xml_attributes.c:\n   40    HMAP_DB* ret;\n   41    va_list args;\n   42:   va_start(args, arg);\n   43    ret = xml_vattributes(arg, args);\n   44    va_end(args);\n\n/home/roman/Sources/c-utils/lib/xml/xml_child_element_attrs.c:\n    9    va_list args;\n   10    xmlnode* node = xml_child_element(name, parent);\n   11:   va_start(args, arg);\n   12    node->attributes = xml_vattributes(arg, args);\n   13    va_end(args);\n\n/home/roman/Sources/c-utils/lib/xml/xml_element_attrs.c:\n    9    va_list args;\n   10    xmlnode* node = xml_element(name);\n   11:   va_start(args, arg);\n   12    node->attributes = xml_vattributes(arg, args);\n   13    va_end(args);\n\n/home/roman/Sources/c-utils/lib/xml/xml_find_all_pred.c:\n   76  //  xmlnodeset ret;\n   77  //  va_list args;\n   78: //  va_start(args, pred);\n   79  \n   80  //  ret = xml_vfind_all(node, pred, args);\n\n/home/roman/Sources/c-utils/lib/xml/xml_find_pred.c:\n   93    xmlnode* ret;\n   94    va_list args;\n   95:   va_start(args, n);\n   96  \n   97    ret = xml_vfind_pred_n(node, pred, n, args);\n\n/home/roman/Sources/c-utils/lib/xml/xml_set_attributes.c:\n   21    int ret;\n   22    va_list args;\n   23:   va_start(args, node);\n   24    ret = xml_vset_attributes(node, args);\n   25    va_end(args);\n\n/home/roman/Sources/c-utils/lib/buffer/buffer_put_escaped.c:\n   22  \tva_list args;\n   23  \n   24: \tva_start(args, escape)\n   25    const void* args[4] = {0, 0, 0, 0};\n   26  \n\n/home/roman/Sources/c-utils/lib/buffer/buffer_putm_internal.c:\n    7    va_list a;\n    8    const char* s;\n    9:   va_start(a, b);\n   10    while((s = va_arg(a, const char*)))\n   11      if(buffer_puts(b, s) == -1) {\n\n/home/roman/Sources/c-utils/lib/buffer/buffer_putm_internal_flush.c:\n    7    va_list a;\n    8    const char* s;\n    9:   va_start(a, b);\n   10    while((s = va_arg(a, const char*)))\n   11      if(buffer_puts(b, s) == -1) {\n\n/home/roman/Sources/c-utils/lib/byte/byte_scan.c:\n   10    va_list a;\n   11    void* v[4];\n   12:   va_start(a, scan_function);\n   13    v[0] = va_arg(a, void*);\n   14    v[1] = va_arg(a, void*);\n\n/home/roman/Sources/c-utils/lib/errmsg/errmsg_info.c:\n    8  errmsg_info(const char* message, ...) {\n    9    va_list a;\n   10:   va_start(a, message);\n   11    errmsg_write(1, 0, message, a);\n   12  }\n\n/home/roman/Sources/c-utils/lib/errmsg/errmsg_infosys.c:\n   10  errmsg_infosys(const char* message, ...) {\n   11    va_list a;\n   12:   va_start(a, message);\n   13    errmsg_write(1, strerror(errno), message, a);\n   14  }\n\n/home/roman/Sources/c-utils/lib/errmsg/errmsg_warn.c:\n    8  errmsg_warn(const char* message, ...) {\n    9    va_list a;\n   10:   va_start(a, message);\n   11    errmsg_write(2, 0, message, a);\n   12  }\n\n/home/roman/Sources/c-utils/lib/errmsg/errmsg_warnsys.c:\n   10  errmsg_warnsys(const char* message, ...) {\n   11    va_list a;\n   12:   va_start(a, message);\n   13    errmsg_write(2, strerror(errno), message, a);\n   14  }\n\n/home/roman/Sources/c-utils/lib/fmt/fmt_strm_internal.c:\n    7    va_list a;\n    8    const char* s;\n    9:   va_start(a, dest);\n   10    for(n = 0; (s = va_arg(a, const char*));) {\n   11      size_t inc = fmt_str(dest, s);\n\n/home/roman/Sources/c-utils/lib/hmap/hmap_add.c:\n   16    VALIDATE_DB(*hmap_db, key, k_len);\n   17  \n   18:   va_start(args, data_type);\n   19    r = hmap_search(*hmap_db, key, k_len, &ptr_tuple);\n   20  \n\n/home/roman/Sources/c-utils/lib/stralloc/byte_scan.c:\n   10    va_list a;\n   11    void* v[4];\n   12:   va_start(a, scan_function);\n   13    v[0] = va_arg(a, void*);\n   14    v[1] = va_arg(a, void*);\n\n/home/roman/Sources/c-utils/lib/stralloc/stralloc_catm_internal.c:\n   10    const char* s;\n   11    size_t n = 0;\n   12:   va_start(a, sa);\n   13    while((s = va_arg(a, const char*))) n += str_len(s);\n   14    va_end(a);\n   15    stralloc_readyplus(sa, n);\n   16  \n   17:   va_start(a, sa);\n   18    while((s = va_arg(a, const char*)))\n   19      if(stralloc_cats(sa, s) == 0) {\n\n/home/roman/Sources/c-utils/lib/stralloc/stralloc_fmt_call.c:\n    8  stralloc_fmt_call(stralloc* out, stralloc_fmt_fn* fmt_function, void* av[4]) {\n    9    /*  va_list args;\n   10:     va_start(args, fmt_function);\n   11      void* av[4];\n   12  \n\n/home/roman/Sources/c-utils/lib/strarray/strarray_unshiftm.c:\n    8    va_list args;\n    9    const char* s;\n   10:   va_start(args, arr);\n   11    while((s = va_arg(args, const char*))) {\n   12      if(strarray_splice(arr, i, 0, 1, &s) != -1) {\n\n/home/roman/Sources/c-utils/lib/strlist/strlist_pushm_internal.c:\n    6    va_list a;\n    7    const char* s;\n    8:   va_start(a, sl);\n    9    while((s = va_arg(a, const char*))) {\n   10      if(strlist_push(sl, s) == 0)\n\n/home/roman/Sources/c-utils/lib/xml/xml_attributes.c:\n   40    HMAP_DB* ret;\n   41    va_list args;\n   42:   va_start(args, arg);\n   43    ret = xml_vattributes(arg, args);\n   44    va_end(args);\n\n/home/roman/Sources/c-utils/lib/xml/xml_child_element_attrs.c:\n    9    va_list args;\n   10    xmlnode* node = xml_child_element(name, parent);\n   11:   va_start(args, arg);\n   12    node->attributes = xml_vattributes(arg, args);\n   13    va_end(args);\n\n/home/roman/Sources/c-utils/lib/xml/xml_element_attrs.c:\n    9    va_list args;\n   10    xmlnode* node = xml_element(name);\n   11:   va_start(args, arg);\n   12    node->attributes = xml_vattributes(arg, args);\n   13    va_end(args);\n\n/home/roman/Sources/c-utils/lib/xml/xml_find_all_pred.c:\n   76  //  xmlnodeset ret;\n   77  //  va_list args;\n   78: //  va_start(args, pred);\n   79  \n   80  //  ret = xml_vfind_all(node, pred, args);\n\n/home/roman/Sources/c-utils/lib/xml/xml_find_pred.c:\n   93    xmlnode* ret;\n   94    va_list args;\n   95:   va_start(args, n);\n   96  \n   97    ret = xml_vfind_pred_n(node, pred, n, args);\n\n/home/roman/Sources/c-utils/lib/xml/xml_set_attributes.c:\n   21    int ret;\n   22    va_list args;\n   23:   va_start(args, node);\n   24    ret = xml_vset_attributes(node, args);\n   25    va_end(args);\n\n/home/roman/Sources/c-utils/ssltest.c:\n   67    stralloc sa;\n   68    stralloc_init(&sa);\n   69:   va_start(a, b);\n   70    while((s = va_arg(a, const char*)))\n   71      if(stralloc_cats(&sa, s) == -1) {\n\n45 matches across 43 files\n\n\nSearching 2844 files for \"separator:\" (regex, case sensitive)\n\n/home/roman/Sources/c-utils/lib/cpp/cpp_parse_file.c:\n  185      if(curr.type == TT_SEP) {\n  186        unsigned char sep = curr.value == '\\n' ? ' ' : curr.value;\n  187:       buffer_puts(buffer_2, \"separator: '\");\n  188        buffer_putc(buffer_2, sep);\n  189        buffer_puts(buffer_2, \"' 0x\");\n\n/home/roman/Sources/c-utils/lib/cpp/cpp_parse_file.c:\n  185      if(curr.type == TT_SEP) {\n  186        unsigned char sep = curr.value == '\\n' ? ' ' : curr.value;\n  187:       buffer_puts(buffer_2, \"separator: '\");\n  188        buffer_putc(buffer_2, sep);\n  189        buffer_puts(buffer_2, \"' 0x\");\n\n2 matches across 2 files\n\n\nSearching 2844 files for \"error:\" (regex, case sensitive)\n\n/home/roman/Sources/c-utils/lib/open/open_temp.c:\n   58    for(i = 0; i < 6; ++i) {\n   59      if(tmp[i] != 'X') {\n   60:     error:\n   61        errno = EINVAL;\n   62        return -1;\n\n/home/roman/Sources/c-utils/lib/process/process_create.c:\n   82  \n   83      if(posix_spawnp(&pid, filename, &actions, &attr, argv, NULL)) {\n   84:       errmsg_warnsys(\"execvpe error: \", 0);\n   85        exit(1);\n   86      }\n\n/home/roman/Sources/c-utils/lib/socket/winsock_socketpair.c:\n   69    return 0;\n   70  \n   71: error:\n   72    err = WSAGetLastError();\n   73  \n   ..\n  148    return 0;\n  149  \n  150: error:\n  151    err = WSAGetLastError();\n  152  \n\n/home/roman/Sources/c-utils/lib/textcode/scan_cescape.c:\n   73      ++written;\n   74    }\n   75: error:\n   76    if(destlen)\n   77      *destlen = written;\n\n/home/roman/Sources/c-utils/lib/tls/tls_read.c:\n   41    }\n   42    if(i->error != SSL_ERROR_NONE) {\n   43:     buffer_puts(buffer_2, \" error: \");\n   44      buffer_puts(buffer_2,\n   45                  ((const char* const[]){\"SSL_ERROR_NONE\",\n\n/home/roman/Sources/c-utils/lib/unix/win32_borland_popen.c:\n  160   * Some of these operations might fail, but no harm is done.\n  161   */\n  162: error:\n  163    __close(hpipe[0]);\n  164    __close(hpipe[1]);\n\n/home/roman/Sources/c-utils/lib/utf8/u8swcslen.c:\n   19        len++;\n   20        pu += 4;\n   21:     } else /* error: add width of single byte character entity &#xFF; */ {\n   22        len += 6;\n   23        pu += 1;\n\n/home/roman/Sources/c-utils/lib/utf8/wcsu8slen.c:\n   15      else if(!(w & ~0x1fffff))\n   16        len += 4;\n   17:     else /* error: add width of null character entity &#x00; */\n   18        len += 6;\n   19    }\n\n/home/roman/Sources/c-utils/compiler-wrapper.c:\n  303  \n  304    if(err_format.len == 0)\n  305:     stralloc_copys(&err_format, \"\\n%f:%l: error: (%n) %s\");\n  306    if(warn_format.len == 0)\n  307      stralloc_copys(&warn_format, \"\\n%f:%l: warning: (%n) %s\");\n\n/home/roman/Sources/c-utils/cparser/ansi-c.tab.c:\n  919        goto yybackup;                                                                                                                                                                                   \\\n  920      } else {                                                                                                                                                                                           \\\n  921:       yyerror(&yylloc, YY_(\"syntax error: cannot back up\"));                                                                                                                                           \\\n  922        YYERROR;                                                                                                                                                                                         \\\n  923      }                                                                                                                                                                                                  \\\n\n/home/roman/Sources/c-utils/examples/client.c:\n   36      i = read(src, buf, sizeof buf);\n   37      if(i == -1)\n   38:       panic(\"client: error: read() failed\");\n   39      if(i == 0)\n   40        exit(0);\n   ..\n   42        k = write(dest, buf + j, i - j);\n   43        if(k == -1)\n   44:         panic(\"client: error: write() failed\");\n   45        if(k == 0)\n   46:         panic(\"client: error: short write\\n\");\n   47        j += k;\n   48      }\n   ..\n   66    }\n   67    if(argv[1][i = scan_ip6if(argv[1], ip, &scope_id)]) {\n   68:     __write2(\"client: error: invalid ip address!\\n\");\n   69      goto usage;\n   70    }\n   71    if(argv[2][scan_ushort(argv[2], &port)]) {\n   72:     __write2(\"client: error: invalid port number!\\n\");\n   73      goto usage;\n   74    }\n   ..\n   76      s = socket_tcp4b();\n   77      if(s == -1)\n   78:       panic(\"client: error: socket() failed\");\n   79      if(socket_connect4(s, ip + 12, port) == -1)\n   80:       panic(\"client: error: connect() failed\");\n   81    } else {\n   82      s = socket_tcp6b();\n   83      if(s == -1)\n   84:       panic(\"client: error: socket() failed\");\n   85      if(socket_connect6(s, ip, port, scope_id) == -1)\n   86:       panic(\"client: error: connect() failed\");\n   87    }\n   88    ndelay_off(s);\n   ..\n   95        int j;\n   96        if(p[0].revents & POLLERR)\n   97:         panic(\"client: error: poll() signals POLLERR\\n\");\n   98        i = read(0, buf, sizeof(buf));\n   99        if(i == 0) {\n  ...\n  104          int k = write(s, buf + j, i - j);\n  105          if(k == -1)\n  106:           panic(\"client: error: write() failed\");\n  107          if(k == 0)\n  108:           panic(\"client: error: short write!\\n\");\n  109          j += k;\n  110        }\n  ...\n  113        int j;\n  114        if(p[1].revents & POLLERR)\n  115:         panic(\"client: error: poll() signals POLLERR\\n\");\n  116        i = read(s, buf, sizeof(buf));\n  117        if(i == 0) {\n  ...\n  122          int k = write(1, buf + j, i - j);\n  123          if(k == -1)\n  124:           panic(\"client: error: write() failed\");\n  125          if(k == 0)\n  126:           panic(\"client: error: short write!\\n\");\n  127          j += k;\n  128        }\n\n/home/roman/Sources/c-utils/examples/server.c:\n   36      i = read(src, buf, sizeof buf);\n   37      if(i == -1)\n   38:       panic(\"server: error: read() failed\");\n   39      if(i == 0)\n   40        exit(0);\n   ..\n   42        k = write(dest, buf + j, i - j);\n   43        if(k == -1)\n   44:         panic(\"server: error: write() failed\");\n   45        if(k == 0)\n   46:         panic(\"server: error: short write\\n\");\n   47        j += k;\n   48      }\n   ..\n   68      byte_zero(ip, 16);\n   69    else if(argv[1][i = scan_ip6if(argv[1], ip, &scope_id)]) {\n   70:     __write2(\"server: error: invalid ip address!\\n\");\n   71      goto usage;\n   72    }\n   73    if(argv[2][scan_ushort(argv[2], &port)]) {\n   74:     __write2(\"server: error: invalid port number!\\n\");\n   75      goto usage;\n   76    }\n   ..\n   78      s = socket_tcp4b();\n   79      if(s == -1)\n   80:       panic(\"server: error: socket() failed\");\n   81      if(socket_bind4_reuse(s, ip + 12, port) == -1)\n   82:       panic(\"server: error: bind() failed\");\n   83      if(socket_listen(s, 1) == -1)\n   84:       panic(\"server: error: listen() failed\");\n   85      ndelay_off(s);\n   86      if((t = socket_accept4(s, 0, 0)) == -1)\n   87:       panic(\"server: error: accept() failed\");\n   88    } else {\n   89      s = socket_tcp6b();\n   90      if(s == -1)\n   91:       panic(\"server: error: socket() failed\");\n   92      if(socket_bind6_reuse(s, ip, port, scope_id) == -1)\n   93:       panic(\"server: error: bind() failed\");\n   94      if(socket_listen(s, 1) == -1)\n   95:       panic(\"server: error: listen() failed\");\n   96      ndelay_off(s);\n   97      if((t = socket_accept6(s, 0, 0, 0)) == -1)\n   98:       panic(\"server: error: accept() failed\");\n   99    }\n  100    close(s);\n  ...\n  107        int j;\n  108        if(p[0].revents & POLLERR)\n  109:         panic(\"server: error: poll() signals POLLERR\\n\");\n  110        i = read(0, buf, sizeof(buf));\n  111        if(i == 0) {\n  ...\n  116          int k = write(t, buf + j, i - j);\n  117          if(k == -1)\n  118:           panic(\"server: error: write() failed\");\n  119          if(k == 0)\n  120:           panic(\"server: error: short write!\\n\");\n  121          j += k;\n  122        }\n  ...\n  125        int j;\n  126        if(p[1].revents & POLLERR)\n  127:         panic(\"server: error: poll() signals POLLERR\\n\");\n  128        i = read(t, buf, sizeof(buf));\n  129        if(i == 0) {\n  ...\n  134          int k = write(1, buf + j, i - j);\n  135          if(k == -1)\n  136:           panic(\"server: error: write() failed\");\n  137          if(k == 0)\n  138:           panic(\"server: error: short write!\\n\");\n  139          j += k;\n  140        }\n\n/home/roman/Sources/c-utils/examples/uudecode.c:\n   77      fd = open_read(argv[1]);\n   78      if(fd < 0) {\n   79:       buffer_puts(buffer_2, \"error: could not open \\\"\");\n   80        buffer_puts(buffer_2, argv[1]);\n   81        buffer_putsflush(buffer_2, \"\\\"\\n\");\n   ..\n  140              ofd = open_excl(line + l);\n  141            if(ofd < 0) {\n  142:             buffer_puts(buffer_2, \"error: could not create file \\\"\");\n  143              buffer_puts(buffer_2, line + l);\n  144              buffer_putsflush(buffer_2, \"\\\" (must not exist yet)\\n\");\n  ...\n  220          ofd = open_excl(filename);\n  221          if(ofd < 0) {\n  222:           buffer_puts(buffer_2, \"error: could not create file \\\"\");\n  223            buffer_puts(buffer_2, filename);\n  224            buffer_putsflush(buffer_2, \"\\\" (must not exist yet)\\n\");\n  ...\n  328          /* ok, save block */\n  329          if(buffer_put(&fileout, out.s, out.len)) {\n  330:         writeerror:\n  331:           buffer_putmflush(buffer_1, \"write error: \", strerror(errno), \"\\n\");\n  332            return 1;\n  333          }\n\n/home/roman/Sources/c-utils/ftp_read_lis.c:\n   26      if(-1 == getln(&io, &direntry, &gotlf, '\\n')) {\n   27        int e;\n   28:     error:\n   29        e = errno;\n   30        stralloc_free(&direntry);\n\n/home/roman/Sources/c-utils/ftptest.c:\n  487        {\n  488          if(verbose)\n  489:           errmsg_warnsys(\"error: \", argv[optind], \" port \", argv[optind + 1], \": \", 0);\n  490  \n  491          return 4;\n  ...\n  534          /* getsockopt error */\n  535          if(verbose) {\n  536:           errmsg_warn(\"error: \", argv[optind], \" port \", argv[optind + 1], \": getsockopt: \", 0);\n  537            buffer_putnlflush(buffer_2);\n  538          }\n\n/home/roman/Sources/c-utils/httpproxy.c:\n  210        {\n  211          if(verbose)\n  212:           errmsg_warn(\"error: \", argv[optind], \" port \", argv[optind + 1], \": \", 0);\n  213  \n  214          return 4;\n  ...\n  249          /* getsockopt error */\n  250          if(verbose) {\n  251:           errmsg_warn(\"error: \", argv[optind], \" port \", argv[optind + 1], \": getsockopt: \", 0);\n  252            buffer_putnlflush(buffer_2);\n  253          }\n  ...\n  266        if(verbose)\n  267          buffer_putsflush(buffer_2,\n  268:                          \"error: select: sock not \"\n  269                           \"set\\n\");\n  270        return 3;\n\n/home/roman/Sources/c-utils/httptest.c:\n  258  \n  259            if(buffer_put(out, buf, len)) {\n  260:             errmsg_warnsys(\"write error: \", 0);\n  261              return 2;\n  262            }\n  263            if(len == -1 || h->response->status == HTTP_STATUS_ERROR) {\n  264:             errmsg_warnsys(\"read error: \", 0);\n  265              return 1;\n  266            }\n  ...\n  429      outfile = 1;\n  430    else if((outfile = outname ? open_trunc(outname) : open_temp(&tmpl)) == -1) {\n  431:     errmsg_warnsys(\"open error: \", outname, 0);\n  432      return 126;\n  433    }\n  ...\n  477  \n  478        /*if(io_waituntil2(-1) == -1) {\n  479:         errmsg_warnsys(\"wait error: \",\n  480        0); return 3;\n  481        }*/\n\n/home/roman/Sources/c-utils/lib/open/open_temp.c:\n   58    for(i = 0; i < 6; ++i) {\n   59      if(tmp[i] != 'X') {\n   60:     error:\n   61        errno = EINVAL;\n   62        return -1;\n\n/home/roman/Sources/c-utils/lib/process/process_create.c:\n   82  \n   83      if(posix_spawnp(&pid, filename, &actions, &attr, argv, NULL)) {\n   84:       errmsg_warnsys(\"execvpe error: \", 0);\n   85        exit(1);\n   86      }\n\n/home/roman/Sources/c-utils/lib/socket/winsock_socketpair.c:\n   69    return 0;\n   70  \n   71: error:\n   72    err = WSAGetLastError();\n   73  \n   ..\n  148    return 0;\n  149  \n  150: error:\n  151    err = WSAGetLastError();\n  152  \n\n/home/roman/Sources/c-utils/lib/textcode/scan_cescape.c:\n   73      ++written;\n   74    }\n   75: error:\n   76    if(destlen)\n   77      *destlen = written;\n\n/home/roman/Sources/c-utils/lib/tls/tls_read.c:\n   41    }\n   42    if(i->error != SSL_ERROR_NONE) {\n   43:     buffer_puts(buffer_2, \" error: \");\n   44      buffer_puts(buffer_2,\n   45                  ((const char* const[]){\"SSL_ERROR_NONE\",\n\n/home/roman/Sources/c-utils/lib/unix/win32_borland_popen.c:\n  160   * Some of these operations might fail, but no harm is done.\n  161   */\n  162: error:\n  163    __close(hpipe[0]);\n  164    __close(hpipe[1]);\n\n/home/roman/Sources/c-utils/lib/utf8/u8swcslen.c:\n   19        len++;\n   20        pu += 4;\n   21:     } else /* error: add width of single byte character entity &#xFF; */ {\n   22        len += 6;\n   23        pu += 1;\n\n/home/roman/Sources/c-utils/lib/utf8/wcsu8slen.c:\n   15      else if(!(w & ~0x1fffff))\n   16        len += 4;\n   17:     else /* error: add width of null character entity &#x00; */\n   18        len += 6;\n   19    }\n\n/home/roman/Sources/c-utils/logserial.c:\n  474      }\n  475      if((ret = io_waituntil2(wait_msecs)) < 0) {\n  476:       errmsg_warnsys(\"wait error: \", 0);\n  477        break;\n  478      } else {\n\n/home/roman/Sources/c-utils/mediathek-list.c:\n  210          if(errno == EWOULDBLOCK)\n  211            continue;\n  212:         errmsg_warnsys(\"send error: \", 0);\n  213          return 2;\n  214        }\n  ...\n  221            if(errno == EAGAIN)\n  222              continue;\n  223:           errmsg_warnsys(\"send error: \", 0);\n  224            return 2;\n  225          }\n  ...\n  785      status[fmt_ulong(status, h.response->status)] = '\\0';\n  786      http_strerror(&h, ret);\n  787:     errmsg_warn(\"STATUS: \", status, \" error: \", error, \" connected: \", h.connected ? \"1\" : \"0\", 0);\n  788    }\n  789  \n\n/home/roman/Sources/c-utils/opensearch-dump.c:\n  130  \n  131    if(doc == NULL) {\n  132:     buffer_puts(buffer_2, \"error: could not parse file \");\n  133      buffer_puts(buffer_2, filename);\n  134      buffer_putnlflush(buffer_2);\n\n/home/roman/Sources/c-utils/pkgcfg.c:\n  233  \n  234      if(execve(bin, argv, envp)) {\n  235:       errmsg_warnsys(\"execvpe error: \", 0);\n  236        exit(1);\n  237      }\n\n/home/roman/Sources/c-utils/ssltest.c:\n  198          } else if(ret == -1) {\n  199            if(errno != EAGAIN) {\n  200:             errmsg_warnsys(\"Socket read error: \", 0);\n  201              if(errno > 0)\n  202                return;\n\n/home/roman/Sources/c-utils/tcping.c:\n  296        {\n  297          if(verbose)\n  298:           errmsg_warnsys(\"error: \", argv[optind], \" port \", argv[optind + 1], \": \", 0);\n  299  \n  300          return 4;\n  ...\n  344          /* getsockopt error */\n  345          if(verbose) {\n  346:           errmsg_warn(\"error: \", argv[optind], \" port \", argv[optind + 1], \": getsockopt: \", 0);\n  347            buffer_putnlflush(buffer_2);\n  348          }\n\n/home/roman/Sources/c-utils/tinyproxy.c:\n 1107          sock = server.af == AF_INET ? socket_accept4(server_sock, addr, &port) : socket_accept6(server_sock, addr, &port, 0);\n 1108          if(sock == -1) {\n 1109:           errmsg_warn(\"Accept error: \", strerror(errno), 0);\n 1110            exit(2);\n 1111          }\n ....\n 1167              buffer_puts(&log, \" closed\");\n 1168            } else {\n 1169:             buffer_puts(&log, \" error: \");\n 1170              buffer_puts(&log, strerror(errno));\n 1171              buffer_puts(&log, \" errno: \");\n\n80 matches across 32 files\n\n\nSearching 1536 files for \"error:\" (regex, case sensitive)\n\n/home/roman/Sources/c-utils/compiler-wrapper.c:\n  303  \n  304    if(err_format.len == 0)\n  305:     stralloc_copys(&err_format, \"\\n%f:%l: error: (%n) %s\");\n  306    if(warn_format.len == 0)\n  307      stralloc_copys(&warn_format, \"\\n%f:%l: warning: (%n) %s\");\n\n/home/roman/Sources/c-utils/cparser/ansi-c.tab.c:\n  919        goto yybackup;                                                                                                                                                                                   \\\n  920      } else {                                                                                                                                                                                           \\\n  921:       yyerror(&yylloc, YY_(\"syntax error: cannot back up\"));                                                                                                                                           \\\n  922        YYERROR;                                                                                                                                                                                         \\\n  923      }                                                                                                                                                                                                  \\\n\n/home/roman/Sources/c-utils/examples/client.c:\n   36      i = read(src, buf, sizeof buf);\n   37      if(i == -1)\n   38:       panic(\"client: error: read() failed\");\n   39      if(i == 0)\n   40        exit(0);\n   ..\n   42        k = write(dest, buf + j, i - j);\n   43        if(k == -1)\n   44:         panic(\"client: error: write() failed\");\n   45        if(k == 0)\n   46:         panic(\"client: error: short write\\n\");\n   47        j += k;\n   48      }\n   ..\n   66    }\n   67    if(argv[1][i = scan_ip6if(argv[1], ip, &scope_id)]) {\n   68:     __write2(\"client: error: invalid ip address!\\n\");\n   69      goto usage;\n   70    }\n   71    if(argv[2][scan_ushort(argv[2], &port)]) {\n   72:     __write2(\"client: error: invalid port number!\\n\");\n   73      goto usage;\n   74    }\n   ..\n   76      s = socket_tcp4b();\n   77      if(s == -1)\n   78:       panic(\"client: error: socket() failed\");\n   79      if(socket_connect4(s, ip + 12, port) == -1)\n   80:       panic(\"client: error: connect() failed\");\n   81    } else {\n   82      s = socket_tcp6b();\n   83      if(s == -1)\n   84:       panic(\"client: error: socket() failed\");\n   85      if(socket_connect6(s, ip, port, scope_id) == -1)\n   86:       panic(\"client: error: connect() failed\");\n   87    }\n   88    ndelay_off(s);\n   ..\n   95        int j;\n   96        if(p[0].revents & POLLERR)\n   97:         panic(\"client: error: poll() signals POLLERR\\n\");\n   98        i = read(0, buf, sizeof(buf));\n   99        if(i == 0) {\n  ...\n  104          int k = write(s, buf + j, i - j);\n  105          if(k == -1)\n  106:           panic(\"client: error: write() failed\");\n  107          if(k == 0)\n  108:           panic(\"client: error: short write!\\n\");\n  109          j += k;\n  110        }\n  ...\n  113        int j;\n  114        if(p[1].revents & POLLERR)\n  115:         panic(\"client: error: poll() signals POLLERR\\n\");\n  116        i = read(s, buf, sizeof(buf));\n  117        if(i == 0) {\n  ...\n  122          int k = write(1, buf + j, i - j);\n  123          if(k == -1)\n  124:           panic(\"client: error: write() failed\");\n  125          if(k == 0)\n  126:           panic(\"client: error: short write!\\n\");\n  127          j += k;\n  128        }\n\n/home/roman/Sources/c-utils/examples/server.c:\n   36      i = read(src, buf, sizeof buf);\n   37      if(i == -1)\n   38:       panic(\"server: error: read() failed\");\n   39      if(i == 0)\n   40        exit(0);\n   ..\n   42        k = write(dest, buf + j, i - j);\n   43        if(k == -1)\n   44:         panic(\"server: error: write() failed\");\n   45        if(k == 0)\n   46:         panic(\"server: error: short write\\n\");\n   47        j += k;\n   48      }\n   ..\n   68      byte_zero(ip, 16);\n   69    else if(argv[1][i = scan_ip6if(argv[1], ip, &scope_id)]) {\n   70:     __write2(\"server: error: invalid ip address!\\n\");\n   71      goto usage;\n   72    }\n   73    if(argv[2][scan_ushort(argv[2], &port)]) {\n   74:     __write2(\"server: error: invalid port number!\\n\");\n   75      goto usage;\n   76    }\n   ..\n   78      s = socket_tcp4b();\n   79      if(s == -1)\n   80:       panic(\"server: error: socket() failed\");\n   81      if(socket_bind4_reuse(s, ip + 12, port) == -1)\n   82:       panic(\"server: error: bind() failed\");\n   83      if(socket_listen(s, 1) == -1)\n   84:       panic(\"server: error: listen() failed\");\n   85      ndelay_off(s);\n   86      if((t = socket_accept4(s, 0, 0)) == -1)\n   87:       panic(\"server: error: accept() failed\");\n   88    } else {\n   89      s = socket_tcp6b();\n   90      if(s == -1)\n   91:       panic(\"server: error: socket() failed\");\n   92      if(socket_bind6_reuse(s, ip, port, scope_id) == -1)\n   93:       panic(\"server: error: bind() failed\");\n   94      if(socket_listen(s, 1) == -1)\n   95:       panic(\"server: error: listen() failed\");\n   96      ndelay_off(s);\n   97      if((t = socket_accept6(s, 0, 0, 0)) == -1)\n   98:       panic(\"server: error: accept() failed\");\n   99    }\n  100    close(s);\n  ...\n  107        int j;\n  108        if(p[0].revents & POLLERR)\n  109:         panic(\"server: error: poll() signals POLLERR\\n\");\n  110        i = read(0, buf, sizeof(buf));\n  111        if(i == 0) {\n  ...\n  116          int k = write(t, buf + j, i - j);\n  117          if(k == -1)\n  118:           panic(\"server: error: write() failed\");\n  119          if(k == 0)\n  120:           panic(\"server: error: short write!\\n\");\n  121          j += k;\n  122        }\n  ...\n  125        int j;\n  126        if(p[1].revents & POLLERR)\n  127:         panic(\"server: error: poll() signals POLLERR\\n\");\n  128        i = read(t, buf, sizeof(buf));\n  129        if(i == 0) {\n  ...\n  134          int k = write(1, buf + j, i - j);\n  135          if(k == -1)\n  136:           panic(\"server: error: write() failed\");\n  137          if(k == 0)\n  138:           panic(\"server: error: short write!\\n\");\n  139          j += k;\n  140        }\n\n/home/roman/Sources/c-utils/examples/uudecode.c:\n   77      fd = open_read(argv[1]);\n   78      if(fd < 0) {\n   79:       buffer_puts(buffer_2, \"error: could not open \\\"\");\n   80        buffer_puts(buffer_2, argv[1]);\n   81        buffer_putsflush(buffer_2, \"\\\"\\n\");\n   ..\n  140              ofd = open_excl(line + l);\n  141            if(ofd < 0) {\n  142:             buffer_puts(buffer_2, \"error: could not create file \\\"\");\n  143              buffer_puts(buffer_2, line + l);\n  144              buffer_putsflush(buffer_2, \"\\\" (must not exist yet)\\n\");\n  ...\n  220          ofd = open_excl(filename);\n  221          if(ofd < 0) {\n  222:           buffer_puts(buffer_2, \"error: could not create file \\\"\");\n  223            buffer_puts(buffer_2, filename);\n  224            buffer_putsflush(buffer_2, \"\\\" (must not exist yet)\\n\");\n  ...\n  328          /* ok, save block */\n  329          if(buffer_put(&fileout, out.s, out.len)) {\n  330:         writeerror:\n  331:           buffer_putmflush(buffer_1, \"write error: \", strerror(errno), \"\\n\");\n  332            return 1;\n  333          }\n\n/home/roman/Sources/c-utils/ftp_read_lis.c:\n   26      if(-1 == getln(&io, &direntry, &gotlf, '\\n')) {\n   27        int e;\n   28:     error:\n   29        e = errno;\n   30        stralloc_free(&direntry);\n\n/home/roman/Sources/c-utils/ftptest.c:\n  487        {\n  488          if(verbose)\n  489:           errmsg_warnsys(\"error: \", argv[optind], \" port \", argv[optind + 1], \": \", 0);\n  490  \n  491          return 4;\n  ...\n  534          /* getsockopt error */\n  535          if(verbose) {\n  536:           errmsg_warn(\"error: \", argv[optind], \" port \", argv[optind + 1], \": getsockopt: \", 0);\n  537            buffer_putnlflush(buffer_2);\n  538          }\n\n/home/roman/Sources/c-utils/httpproxy.c:\n  210        {\n  211          if(verbose)\n  212:           errmsg_warn(\"error: \", argv[optind], \" port \", argv[optind + 1], \": \", 0);\n  213  \n  214          return 4;\n  ...\n  249          /* getsockopt error */\n  250          if(verbose) {\n  251:           errmsg_warn(\"error: \", argv[optind], \" port \", argv[optind + 1], \": getsockopt: \", 0);\n  252            buffer_putnlflush(buffer_2);\n  253          }\n  ...\n  266        if(verbose)\n  267          buffer_putsflush(buffer_2,\n  268:                          \"error: select: sock not \"\n  269                           \"set\\n\");\n  270        return 3;\n\n/home/roman/Sources/c-utils/httptest.c:\n  258  \n  259            if(buffer_put(out, buf, len)) {\n  260:             errmsg_warnsys(\"write error: \", 0);\n  261              return 2;\n  262            }\n  263            if(len == -1 || h->response->status == HTTP_STATUS_ERROR) {\n  264:             errmsg_warnsys(\"read error: \", 0);\n  265              return 1;\n  266            }\n  ...\n  429      outfile = 1;\n  430    else if((outfile = outname ? open_trunc(outname) : open_temp(&tmpl)) == -1) {\n  431:     errmsg_warnsys(\"open error: \", outname, 0);\n  432      return 126;\n  433    }\n  ...\n  477  \n  478        /*if(io_waituntil2(-1) == -1) {\n  479:         errmsg_warnsys(\"wait error: \",\n  480        0); return 3;\n  481        }*/\n\n/home/roman/Sources/c-utils/lib/open/open_temp.c:\n   58    for(i = 0; i < 6; ++i) {\n   59      if(tmp[i] != 'X') {\n   60:     error:\n   61        errno = EINVAL;\n   62        return -1;\n\n/home/roman/Sources/c-utils/lib/process/process_create.c:\n   82  \n   83      if(posix_spawnp(&pid, filename, &actions, &attr, argv, NULL)) {\n   84:       errmsg_warnsys(\"execvpe error: \", 0);\n   85        exit(1);\n   86      }\n\n/home/roman/Sources/c-utils/lib/socket/winsock_socketpair.c:\n   69    return 0;\n   70  \n   71: error:\n   72    err = WSAGetLastError();\n   73  \n   ..\n  148    return 0;\n  149  \n  150: error:\n  151    err = WSAGetLastError();\n  152  \n\n/home/roman/Sources/c-utils/lib/textcode/scan_cescape.c:\n   73      ++written;\n   74    }\n   75: error:\n   76    if(destlen)\n   77      *destlen = written;\n\n/home/roman/Sources/c-utils/lib/tls/tls_read.c:\n   41    }\n   42    if(i->error != SSL_ERROR_NONE) {\n   43:     buffer_puts(buffer_2, \" error: \");\n   44      buffer_puts(buffer_2,\n   45                  ((const char* const[]){\"SSL_ERROR_NONE\",\n\n/home/roman/Sources/c-utils/lib/unix/win32_borland_popen.c:\n  160   * Some of these operations might fail, but no harm is done.\n  161   */\n  162: error:\n  163    __close(hpipe[0]);\n  164    __close(hpipe[1]);\n\n/home/roman/Sources/c-utils/lib/utf8/u8swcslen.c:\n   19        len++;\n   20        pu += 4;\n   21:     } else /* error: add width of single byte character entity &#xFF; */ {\n   22        len += 6;\n   23        pu += 1;\n\n/home/roman/Sources/c-utils/lib/utf8/wcsu8slen.c:\n   15      else if(!(w & ~0x1fffff))\n   16        len += 4;\n   17:     else /* error: add width of null character entity &#x00; */\n   18        len += 6;\n   19    }\n\n/home/roman/Sources/c-utils/logserial.c:\n  474      }\n  475      if((ret = io_waituntil2(wait_msecs)) < 0) {\n  476:       errmsg_warnsys(\"wait error: \", 0);\n  477        break;\n  478      } else {\n\n/home/roman/Sources/c-utils/mediathek-list.c:\n  210          if(errno == EWOULDBLOCK)\n  211            continue;\n  212:         errmsg_warnsys(\"send error: \", 0);\n  213          return 2;\n  214        }\n  ...\n  221            if(errno == EAGAIN)\n  222              continue;\n  223:           errmsg_warnsys(\"send error: \", 0);\n  224            return 2;\n  225          }\n  ...\n  785      status[fmt_ulong(status, h.response->status)] = '\\0';\n  786      http_strerror(&h, ret);\n  787:     errmsg_warn(\"STATUS: \", status, \" error: \", error, \" connected: \", h.connected ? \"1\" : \"0\", 0);\n  788    }\n  789  \n\n/home/roman/Sources/c-utils/opensearch-dump.c:\n  130  \n  131    if(doc == NULL) {\n  132:     buffer_puts(buffer_2, \"error: could not parse file \");\n  133      buffer_puts(buffer_2, filename);\n  134      buffer_putnlflush(buffer_2);\n\n/home/roman/Sources/c-utils/pkgcfg.c:\n  233  \n  234      if(execve(bin, argv, envp)) {\n  235:       errmsg_warnsys(\"execvpe error: \", 0);\n  236        exit(1);\n  237      }\n\n/home/roman/Sources/c-utils/ssltest.c:\n  198          } else if(ret == -1) {\n  199            if(errno != EAGAIN) {\n  200:             errmsg_warnsys(\"Socket read error: \", 0);\n  201              if(errno > 0)\n  202                return;\n\n/home/roman/Sources/c-utils/tcping.c:\n  296        {\n  297          if(verbose)\n  298:           errmsg_warnsys(\"error: \", argv[optind], \" port \", argv[optind + 1], \": \", 0);\n  299  \n  300          return 4;\n  ...\n  344          /* getsockopt error */\n  345          if(verbose) {\n  346:           errmsg_warn(\"error: \", argv[optind], \" port \", argv[optind + 1], \": getsockopt: \", 0);\n  347            buffer_putnlflush(buffer_2);\n  348          }\n\n/home/roman/Sources/c-utils/tinyproxy.c:\n 1107          sock = server.af == AF_INET ? socket_accept4(server_sock, addr, &port) : socket_accept6(server_sock, addr, &port, 0);\n 1108          if(sock == -1) {\n 1109:           errmsg_warn(\"Accept error: \", strerror(errno), 0);\n 1110            exit(2);\n 1111          }\n ....\n 1167              buffer_puts(&log, \" closed\");\n 1168            } else {\n 1169:             buffer_puts(&log, \" error: \");\n 1170              buffer_puts(&log, strerror(errno));\n 1171              buffer_puts(&log, \" errno: \");\n\n71 matches across 24 files\n",
-			"settings":
-			{
-				"buffer_size": 46143,
-				"line_ending": "Unix",
-				"name": "Find Results",
-				"scratch": true
-			}
-		},
-		{
-			"file": "lib/cpp/cpp_parse_file.c",
-			"settings":
-			{
-				"buffer_size": 8863,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/buffer/buffer_putm_internal_flush.c",
-			"settings":
-			{
-				"buffer_size": 306,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/http/http_canwrite.c",
-			"settings":
-			{
-				"buffer_size": 2884,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/tokenizer/tokenizer_set_filename.c",
-			"settings":
-			{
-				"buffer_size": 118,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/byte.h",
-			"settings":
-			{
-				"buffer_size": 4063,
+				"buffer_size": 7931,
 				"line_ending": "Unix"
 			}
 		},
@@ -291,71 +114,17 @@
 			"file": "lib/buffer.h",
 			"settings":
 			{
-				"buffer_size": 11420,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/tokenizer/tokenizer_getc.c",
-			"settings":
-			{
-				"buffer_size": 900,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "/home/roman/Dokumente/Sources/c-utils/lib/tokenizer.h",
-			"settings":
-			{
-				"buffer_size": 2430,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "/home/roman/Dokumente/Sources/c-utils/lib/tokenizer_internal.h",
-			"settings":
-			{
-				"buffer_size": 7388,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "/home/roman/Dokumente/Sources/c-utils/lib/cpp.h",
-			"settings":
-			{
-				"buffer_size": 1285,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "/home/roman/Dokumente/Sources/c-utils/lib/cpp_internal.h",
-			"settings":
-			{
-				"buffer_size": 13874,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "/home/roman/Dokumente/Sources/c-utils/tokenizertest.c",
-			"settings":
-			{
-				"buffer_size": 4845,
+				"buffer_size": 11416,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "/home/roman/Dokumente/Sources/c-utils/cpptest.c",
+			"file": "lib/buffer/buffer_putnlflush.c",
 			"settings":
 			{
-				"buffer_size": 1379,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"settings":
-			{
-				"buffer_size": 0,
+				"buffer_size": 143,
+				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
 		}
@@ -475,35 +244,62 @@
 		"/home/roman/Sources/c-utils",
 		"/home/roman/Sources/c-utils/lib",
 		"/home/roman/Sources/c-utils/lib/alloc",
-		"/home/roman/Sources/c-utils/lib/cpp",
-		"/home/roman/Sources/c-utils/lib/stralloc",
-		"/home/roman/Sources/c-utils/lib/tokenizer"
+		"/home/roman/Sources/c-utils/lib/json"
 	],
 	"file_history":
 	[
-		"/home/roman/Sources/c-utils/CMakeLists.txt",
+		"/home/roman/Sources/c-utils/cpptest.c",
 		"/home/roman/Sources/c-utils/tokenizertest.c",
+		"/home/roman/Sources/c-utils/lib/buffer/buffer_put.c",
+		"/home/roman/Sources/c-utils/lib/fmt/fmt_hexb.c",
+		"/home/roman/Sources/c-utils/lib/fmt/fmt_escapecharhtml.c",
+		"/home/roman/Sources/c-utils/lib/fmt/fmt_escapecharxml.c",
+		"/home/roman/Sources/c-utils/lib/fmt/fmt_longlong.c",
+		"/home/roman/Sources/c-utils/lib/fmt/fmt_long.c",
+		"/home/roman/Sources/c-utils/lib/fmt/fmt_httpdate.c",
+		"/home/roman/Sources/c-utils/lib/fmt/fmt_hexdump.c",
+		"/home/roman/Sources/c-utils/lib/buffer/buffer_dump.c",
+		"/home/roman/Sources/c-utils/lib/tokenizer.h",
+		"/home/roman/Sources/c-utils/lib/stralloc/buffer_puts_escaped.c",
+		"/home/roman/Sources/c-utils/lib/buffer/buffer_putstr.c",
+		"/home/roman/Sources/c-utils/lib/stralloc/buffer_gettok_sa.c",
+		"/home/roman/.local/share/endless-sky/saves/achmed tsingzhali~~previous-1.txt",
+		"/home/roman/.local/share/endless-sky/saves/achmed tsingzhali~~previous-2.txt",
+		"/home/roman/.local/share/endless-sky/saves/achmed tsingzhali~~previous-3.txt",
+		"/home/roman/.local/share/endless-sky/saves/achmed tsingzhali.txt",
+		"/home/roman/Sources/c-utils/lib/json.h",
+		"/home/roman/Sources/c-utils/lib/buffer/buffer_put_escaped.c",
+		"/home/roman/Sources/c-utils/lib/fmt.h",
+		"/home/roman/Sources/c-utils/lib/cpp_internal.h",
+		"/home/roman/Sources/c-utils/lib/cpp/cpp_parse_file.c",
+		"/home/roman/Sources/c-utils/lib/buffer/buffer_putm_internal_flush.c",
+		"/home/roman/Sources/c-utils/lib/http/http_canwrite.c",
+		"/home/roman/Sources/c-utils/lib/tokenizer/tokenizer_set_filename.c",
+		"/home/roman/Sources/c-utils/lib/byte.h",
+		"/home/roman/Sources/c-utils/lib/buffer.h",
+		"/home/roman/Sources/c-utils/lib/tokenizer/tokenizer_getc.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/tokenizer.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/tokenizer_internal.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/cpp.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/cpp_internal.h",
+		"/home/roman/Dokumente/Sources/c-utils/tokenizertest.c",
+		"/home/roman/Dokumente/Sources/c-utils/cpptest.c",
+		"/home/roman/Sources/c-utils/jsonpp.c",
+		"/home/roman/Sources/c-utils/CMakeLists.txt",
 		"/home/roman/Sources/c-utils/lib/buffer/buffer_putulong0.c",
 		"/home/roman/Sources/c-utils/compiler-wrapper.c",
-		"/home/roman/Sources/c-utils/lib/tokenizer/tokenizer_getc.c",
 		"/home/roman/Sources/c-utils/lib/tokenizer/tokenizer_next.c",
 		"/home/roman/Sources/c-utils/lib/tokenizer/tokenizer_peek.c",
-		"/home/roman/Sources/c-utils/lib/tokenizer.h",
 		"/home/roman/Sources/c-utils/lib/cpp.h",
-		"/home/roman/Sources/c-utils/lib/cpp_internal.h",
 		"/home/roman/Sources/c-utils/lib/cpp/cpp_add_define.c",
 		"/home/roman/Sources/c-utils/lib/cpp/cpp_add_macro.c",
-		"/home/roman/Sources/c-utils/lib/tokenizer/tokenizer_set_filename.c",
 		"/home/roman/Sources/c-utils/lib/tokenizer/tokenizer_get_flags.c",
 		"/home/roman/Sources/c-utils/lib/cpp/cpp_get_macro_info.c",
 		"/home/roman/Sources/c-utils/lib/cpp/cpp_run.c",
-		"/home/roman/Sources/c-utils/lib/cpp/cpp_parse_file.c",
 		"/home/roman/Sources/c-utils/lib/tokenizer/tokenizer_rewind.c",
 		"/home/roman/Sources/c-utils/lib/tokenizer/tokenizer_init.c",
 		"/home/roman/Sources/c-utils/lib/cpp/cpp_evaluate_condition.c",
 		"/home/roman/Sources/c-utils/scripts/encapsulate-header.sh",
-		"/home/roman/Sources/c-utils/cpptest.c",
-		"/home/roman/Sources/c-utils/lib/buffer.h",
 		"/home/roman/Sources/c-utils/lib/seek.h",
 		"/home/roman/Sources/c-utils/lib/cpp/cpp_new.c",
 		"/home/roman/Sources/c-utils/lib/cpp/cpp_parse_macro.c",
@@ -579,40 +375,11 @@
 		"/home/roman/Dokumente/Sources/c-utils/lib/set.h",
 		"/home/roman/Dokumente/Sources/c-utils/lib/stralloc.h",
 		"/home/roman/Sources/c-utils/lib/str.h",
-		"/home/roman/Sources/c-utils/lib/utf8.h",
-		"/home/roman/Sources/c-utils/lib/preproc.h",
-		"/home/roman/Sources/c-utils/lib/preproc_internal.h",
-		"/home/roman/Sources/c-utils/scripts/get-prototypes.sh",
-		"/home/roman/Dokumente/Sources/c-utils/lib/strarray.h",
-		"/home/roman/Dokumente/Sources/c-utils/lib/strlist.h",
-		"/home/roman/Dokumente/Sources/c-utils/lib/tai.h",
-		"/home/roman/Dokumente/Sources/c-utils/lib/taia.h",
-		"/home/roman/Dokumente/Sources/c-utils/lib/textbuf.h",
-		"/home/roman/Dokumente/Sources/c-utils/lib/textcode.h",
-		"/home/roman/Dokumente/Sources/c-utils/lib/tls.h",
-		"/home/roman/Dokumente/Sources/c-utils/lib/tokenizer.h",
-		"/home/roman/Dokumente/Sources/c-utils/lib/ucs.h",
-		"/home/roman/Dokumente/Sources/c-utils/lib/sig.h",
-		"/home/roman/Dokumente/Sources/c-utils/lib/slist.h",
-		"/home/roman/Dokumente/Sources/c-utils/lib/socket.h",
-		"/home/roman/Dokumente/Sources/c-utils/lib/str.h",
-		"/home/roman/Dokumente/Sources/c-utils/lib/uint16.h",
-		"/home/roman/Dokumente/Sources/c-utils/lib/uint32.h",
-		"/home/roman/Dokumente/Sources/c-utils/lib/uint64.h",
-		"/home/roman/Dokumente/Sources/c-utils/lib/unix.h",
-		"/home/roman/Dokumente/Sources/c-utils/lib/utf8.h",
-		"/home/roman/Dokumente/Sources/c-utils/lib/wait.h",
-		"/home/roman/Dokumente/Sources/c-utils/lib/xml.h",
-		"/home/roman/Sources/c-utils/ini.c",
-		"/home/roman/Sources/c-utils/httpproxy.c",
-		"/home/roman/Sources/c-utils/lib/map.h",
-		"/home/roman/Sources/c-utils/genmakefile.c",
-		"/home/roman/Sources/c-utils/lib/bmap/bmap_deinit.c",
-		"/home/roman/Sources/c-utils/lib/strlist/strlist_splice.c"
+		"/home/roman/Sources/c-utils/lib/utf8.h"
 	],
 	"find":
 	{
-		"height": 39.0
+		"height": 49.0
 	},
 	"find_in_files":
 	{
@@ -635,6 +402,15 @@
 		"case_sensitive": true,
 		"find_history":
 		[
+			"compact",
+			"spacing",
+			"separator =",
+			"separator = ",
+			"putnlflush",
+			"buffer_flush",
+			"putnlflush",
+			"one_line",
+			"default_print",
 			"error:",
 			"separator:",
 			"va_start",
@@ -753,16 +529,7 @@
 			"NO\\s*$",
 			"GENERATE_HTMLHELP",
 			"AUTOBR",
-			"Synesis Software UNIX ",
-			"EXTRACT_",
-			"Build.*SSL",
-			"{CMAKE_SOURCE_DIR}/build/",
-			"endmac",
-			"BuildSSL",
-			"endfunc",
-			"encfu",
-			"BuildSSL",
-			"if.BUILD"
+			"Synesis Software UNIX "
 		],
 		"highlight": false,
 		"in_selection": false,
@@ -880,7 +647,7 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 0,
+						"buffer_size": 272,
 						"regions":
 						{
 						},
@@ -889,15 +656,90 @@
 						],
 						"settings":
 						{
-							"current_file": null,
-							"function_name_status_row": 12,
+							"current_file": "/home/roman/Sources/c-utils/lib/json/json_print.c",
+							"function_name_status_row": 8,
 							"outline_rename_mode": false,
-							"sorttabs_lastactivated": 1608695566.99,
+							"sorttabs_lastactivated": 1608837388.12,
 							"symkeys":
 							[
+								[
+									279,
+									296
+								],
+								[
+									424,
+									443
+								],
+								[
+									904,
+									917
+								],
+								[
+									1099,
+									1107
+								],
+								[
+									1200,
+									1209
+								],
+								[
+									1326,
+									1346
+								],
+								[
+									1760,
+									1774
+								],
+								[
+									1840,
+									1863
+								],
+								[
+									2022,
+									2042
+								],
+								[
+									2264,
+									2278
+								],
+								[
+									2680,
+									2694
+								],
+								[
+									3101,
+									3118
+								],
+								[
+									4127,
+									4143
+								],
+								[
+									5001,
+									5015
+								],
+								[
+									5740,
+									5750
+								]
 							],
 							"symlist":
 							[
+								"  buffer_indent_set",
+								"  buffer_indent_write",
+								"  buffer_indent",
+								"  depth_fn",
+								"  get_depth",
+								"  json_default_printer",
+								"  json_print_val",
+								"  byte_fullfils_predicate",
+								"  json_print_separator",
+								"  json_print_key",
+								"  json_print_str",
+								"  json_print_object",
+								"  json_print_array",
+								"  json_print_val",
+								"  json_print"
 							],
 							"syntax": "Packages/Outline/outline.hidden-tmLanguage"
 						},
@@ -905,492 +747,86 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 39,
+					"stack_index": 11,
 					"type": "text"
 				}
 			]
 		},
 		{
-			"selected": 19,
+			"selected": 0,
 			"sheets":
 			[
 				{
 					"buffer": 1,
-					"file": "cpptest.c",
+					"file": "lib/json/json_print.c",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 1379,
+						"buffer_size": 5983,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								1365,
-								1365
+								4310,
+								4310
 							]
 						],
 						"settings":
 						{
-							"function_name_status_row": 57,
-							"sorttabs_lastactivated": 1608713667.5,
+							"function_name_status_row": 183,
+							"sorttabs_lastactivated": 1608856665.1,
 							"syntax": "Packages/C99/C99.tmLanguage",
 							"tab_size": 2,
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 2549.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 29,
+					"stack_index": 0,
 					"type": "text"
 				},
 				{
 					"buffer": 2,
-					"file": "tokenizertest.c",
+					"file": "jsonpp.c",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 4845,
+						"buffer_size": 6899,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								4739,
-								4739
-							]
-						],
-						"settings":
-						{
-							"function_name_status_row": 172,
-							"sorttabs_lastactivated": 1608713668.4,
-							"syntax": "Packages/C99/C99.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 425.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 28,
-					"type": "text"
-				},
-				{
-					"buffer": 3,
-					"file": "lib/buffer/buffer_put.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 609,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"function_name_status_row": 0,
-							"sorttabs_lastactivated": 1608715167.03,
-							"syntax": "Packages/C99/C99.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 19,
-					"type": "text"
-				},
-				{
-					"buffer": 4,
-					"file": "lib/fmt/fmt_hexb.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 440,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								440,
-								440
-							]
-						],
-						"settings":
-						{
-							"function_name_status_row": 19,
-							"sorttabs_lastactivated": 1608715169.16,
-							"syntax": "Packages/C99/C99.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 18,
-					"type": "text"
-				},
-				{
-					"buffer": 5,
-					"file": "lib/fmt/fmt_escapecharhtml.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 144,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"function_name_status_row": 0,
-							"sorttabs_lastactivated": 1608715166.85,
-							"syntax": "Packages/C99/C99.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 20,
-					"type": "text"
-				},
-				{
-					"buffer": 6,
-					"file": "lib/fmt/fmt_escapecharxml.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 1008,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"function_name_status_row": 0,
-							"sorttabs_lastactivated": 1608713687.9,
-							"syntax": "Packages/C99/C99.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 27,
-					"type": "text"
-				},
-				{
-					"buffer": 7,
-					"file": "lib/fmt/fmt_longlong.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 214,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"function_name_status_row": 0,
-							"sorttabs_lastactivated": 1608713690.55,
-							"syntax": "Packages/C99/C99.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 26,
-					"type": "text"
-				},
-				{
-					"buffer": 8,
-					"file": "lib/fmt/fmt_long.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 219,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								19,
-								19
-							]
-						],
-						"settings":
-						{
-							"function_name_status_row": 0,
-							"sorttabs_lastactivated": 1608715166.67,
-							"syntax": "Packages/C99/C99.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 21,
-					"type": "text"
-				},
-				{
-					"buffer": 9,
-					"file": "lib/fmt/fmt_httpdate.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 1017,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"function_name_status_row": 0,
-							"sorttabs_lastactivated": 1608714476.77,
-							"syntax": "Packages/C99/C99.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 25,
-					"type": "text"
-				},
-				{
-					"buffer": 10,
-					"file": "lib/fmt/fmt_hexdump.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 485,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								67,
-								67
-							]
-						],
-						"settings":
-						{
-							"function_name_status_row": 4,
-							"sorttabs_lastactivated": 1608717193.58,
-							"syntax": "Packages/C99/C99.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 13,
-					"type": "text"
-				},
-				{
-					"buffer": 11,
-					"file": "lib/buffer/buffer_dump.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 2042,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								2042,
-								2042
+								1985,
+								1985
 							]
 						],
 						"settings":
 						{
 							"function_name_status_row": 79,
-							"sorttabs_lastactivated": 1608715166.3,
+							"sorttabs_lastactivated": 1608849254.77,
 							"syntax": "Packages/C99/C99.tmLanguage",
 							"tab_size": 2,
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 22,
-					"type": "text"
-				},
-				{
-					"buffer": 12,
-					"file": "lib/tokenizer.h",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 2430,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								1057,
-								1057
-							]
-						],
-						"settings":
-						{
-							"function_name_status_row": 52,
-							"sorttabs_lastactivated": 1608717176.45,
-							"syntax": "Packages/C++/C++.sublime-syntax",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 14,
-					"type": "text"
-				},
-				{
-					"buffer": 13,
-					"file": "lib/stralloc/buffer_puts_escaped.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 579,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								503,
-								503
-							]
-						],
-						"settings":
-						{
-							"function_name_status_row": 14,
-							"sorttabs_lastactivated": 1608715165.42,
-							"syntax": "Packages/C99/C99.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 23,
-					"type": "text"
-				},
-				{
-					"buffer": 14,
-					"file": "lib/buffer/buffer_putstr.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 199,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								29,
-								29
-							]
-						],
-						"settings":
-						{
-							"function_name_status_row": 3,
-							"sorttabs_lastactivated": 1608715165.41,
-							"syntax": "Packages/C99/C99.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 24,
-					"type": "text"
-				},
-				{
-					"buffer": 15,
-					"file": "lib/stralloc/buffer_gettok_sa.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 511,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"function_name_status_row": 0,
-							"sorttabs_lastactivated": 1608738483.69,
-							"syntax": "Packages/C99/C99.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 627.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 5,
 					"type": "text"
 				},
 				{
-					"buffer": 16,
-					"file": "/home/roman/.local/share/endless-sky/saves/achmed tsingzhali~~previous-1.txt",
+					"buffer": 3,
+					"file": "/home/roman/Dokumente/Sources/opencv/samples/cpp/stitching_detailed.cpp",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 69123,
+						"buffer_size": 33006,
 						"regions":
 						{
 						},
@@ -1403,8 +839,11 @@
 						],
 						"settings":
 						{
-							"syntax": "Packages/Text/Plain text.tmLanguage",
-							"translate_tabs_to_spaces": false
+							"function_name_status_row": 0,
+							"sorttabs_lastactivated": 1608849255.39,
+							"syntax": "Packages/C++/C++.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
 						"translation.y": 0.0,
@@ -1414,12 +853,12 @@
 					"type": "text"
 				},
 				{
-					"buffer": 17,
-					"file": "/home/roman/.local/share/endless-sky/saves/achmed tsingzhali~~previous-2.txt",
+					"buffer": 4,
+					"file": "/home/roman/Dokumente/Sources/opencv/samples/cpp/essential_mat_reconstr.cpp",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 69610,
+						"buffer_size": 15285,
 						"regions":
 						{
 						},
@@ -1432,8 +871,11 @@
 						],
 						"settings":
 						{
-							"syntax": "Packages/Text/Plain text.tmLanguage",
-							"translate_tabs_to_spaces": false
+							"function_name_status_row": 0,
+							"sorttabs_lastactivated": 1608849255.9,
+							"syntax": "Packages/C++/C++.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
 						"translation.y": 0.0,
@@ -1443,12 +885,12 @@
 					"type": "text"
 				},
 				{
-					"buffer": 18,
-					"file": "/home/roman/.local/share/endless-sky/saves/achmed tsingzhali~~previous-3.txt",
+					"buffer": 5,
+					"file": "/home/roman/Dokumente/Sources/opencv/samples/cpp/cout_mat.cpp",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 71530,
+						"buffer_size": 2032,
 						"regions":
 						{
 						},
@@ -1461,8 +903,11 @@
 						],
 						"settings":
 						{
-							"syntax": "Packages/Text/Plain text.tmLanguage",
-							"translate_tabs_to_spaces": false
+							"function_name_status_row": 0,
+							"sorttabs_lastactivated": 1608849256.49,
+							"syntax": "Packages/C++/C++.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
 						"translation.y": 0.0,
@@ -1472,121 +917,92 @@
 					"type": "text"
 				},
 				{
-					"buffer": 19,
-					"file": "/home/roman/.local/share/endless-sky/saves/achmed tsingzhali.txt",
+					"buffer": 6,
+					"file": "/home/roman/Dokumente/Sources/opencv/samples/cpp/mask_tmpl.cpp",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 74643,
+						"buffer_size": 2195,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								1531,
-								1531
+								0,
+								0
 							]
 						],
 						"settings":
 						{
-							"function_name_status_row": 91,
-							"sorttabs_lastactivated": 1608738503.4,
-							"syntax": "Packages/Text/Plain text.tmLanguage",
-							"translate_tabs_to_spaces": false
+							"function_name_status_row": 0,
+							"sorttabs_lastactivated": 1608849257.53,
+							"syntax": "Packages/C++/C++.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 810.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 1,
 					"type": "text"
 				},
 				{
-					"buffer": 20,
+					"buffer": 7,
+					"file": "/home/roman/Dokumente/Sources/opencv/samples/cpp/create_mask.cpp",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 97,
+						"buffer_size": 2716,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								97,
-								97
+								2390,
+								2390
 							]
 						],
 						"settings":
 						{
-							"auto_indent": false,
-							"function_name_status_row": 6,
-							"sorttabs_lastactivated": 1608739241.0,
-							"syntax": "Packages/Text/Plain text.tmLanguage",
-							"tab_width": 2,
-							"word_wrap": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 0,
-					"type": "text"
-				},
-				{
-					"buffer": 21,
-					"file": "lib/buffer/buffer_put_escaped.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 1037,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								810,
-								810
-							]
-						],
-						"settings":
-						{
-							"function_name_status_row": 31,
-							"sorttabs_lastactivated": 1608716286.01,
-							"syntax": "Packages/C99/C99.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 15,
-					"type": "text"
-				},
-				{
-					"buffer": 22,
-					"file": "lib/fmt.h",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 8586,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								598,
-								598
-							]
-						],
-						"settings":
-						{
-							"function_name_status_row": 34,
-							"sorttabs_lastactivated": 1608717444.22,
+							"function_name_status_row": 102,
+							"sorttabs_lastactivated": 1608849248.72,
 							"syntax": "Packages/C++/C++.sublime-syntax",
-							"tab_size": 2,
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 864.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 6,
+					"type": "text"
+				},
+				{
+					"buffer": 8,
+					"file": "/home/roman/Dokumente/Sources/opencv/samples/cpp/inpaint.cpp",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2439,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"function_name_status_row": 0,
+							"sorttabs_lastactivated": 1608847949.97,
+							"syntax": "Packages/C++/C++.sublime-syntax",
+							"tab_size": 4,
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
@@ -1597,1404 +1013,91 @@
 					"type": "text"
 				},
 				{
-					"buffer": 23,
-					"file": "lib/cpp/cpp_get_macro_info.c",
-					"semi_transient": true,
+					"buffer": 9,
+					"file": "/home/roman/Dokumente/Sources/opencv/samples/cpp/intelligent_scissors.cpp",
+					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 1646,
+						"buffer_size": 7931,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								358,
-								358
+								0,
+								0
 							]
 						],
 						"settings":
 						{
 							"function_name_status_row": 0,
-							"sorttabs_lastactivated": 1608717525.37,
-							"syntax": "Packages/C99/C99.tmLanguage",
-							"tab_size": 2,
+							"sorttabs_lastactivated": 1608847954.13,
+							"syntax": "Packages/C++/C++.sublime-syntax",
+							"tab_size": 4,
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 3120.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 7,
 					"type": "text"
 				},
 				{
-					"buffer": 24,
-					"file": "lib/cpp_internal.h",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 13874,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								5123,
-								5123
-							]
-						],
-						"settings":
-						{
-							"function_name_status_row": 182,
-							"sorttabs_lastactivated": 1608724000.64,
-							"syntax": "Packages/C++/C++.sublime-syntax",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 2448.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 6,
-					"type": "text"
-				},
-				{
-					"buffer": 25,
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 46143,
-						"regions":
-						{
-							"match":
-							{
-								"flags": 112,
-								"regions":
-								[
-									[
-										188,
-										206
-									],
-									[
-										558,
-										576
-									],
-									[
-										820,
-										838
-									],
-									[
-										988,
-										1006
-									],
-									[
-										1253,
-										1271
-									],
-									[
-										1544,
-										1562
-									],
-									[
-										1839,
-										1857
-									],
-									[
-										2120,
-										2138
-									],
-									[
-										2290,
-										2308
-									],
-									[
-										2555,
-										2573
-									],
-									[
-										2834,
-										2852
-									],
-									[
-										3127,
-										3145
-									],
-									[
-										3368,
-										3386
-									],
-									[
-										3738,
-										3756
-									],
-									[
-										4000,
-										4018
-									],
-									[
-										4168,
-										4186
-									],
-									[
-										4433,
-										4451
-									],
-									[
-										4724,
-										4742
-									],
-									[
-										5019,
-										5037
-									],
-									[
-										5300,
-										5318
-									],
-									[
-										5470,
-										5488
-									],
-									[
-										5735,
-										5753
-									],
-									[
-										6014,
-										6032
-									],
-									[
-										6236,
-										6254
-									],
-									[
-										6556,
-										6574
-									],
-									[
-										6767,
-										6785
-									],
-									[
-										7090,
-										7098
-									],
-									[
-										7283,
-										7291
-									],
-									[
-										7508,
-										7516
-									],
-									[
-										7711,
-										7719
-									],
-									[
-										7938,
-										7946
-									],
-									[
-										8147,
-										8155
-									],
-									[
-										8364,
-										8372
-									],
-									[
-										8573,
-										8581
-									],
-									[
-										8770,
-										8778
-									],
-									[
-										8995,
-										9003
-									],
-									[
-										9195,
-										9203
-									],
-									[
-										9415,
-										9423
-									],
-									[
-										9567,
-										9575
-									],
-									[
-										9859,
-										9867
-									],
-									[
-										10040,
-										10048
-									],
-									[
-										10288,
-										10296
-									],
-									[
-										10502,
-										10510
-									],
-									[
-										10743,
-										10751
-									],
-									[
-										10977,
-										10985
-									],
-									[
-										11198,
-										11206
-									],
-									[
-										11387,
-										11395
-									],
-									[
-										11577,
-										11585
-									],
-									[
-										11770,
-										11778
-									],
-									[
-										11963,
-										11971
-									],
-									[
-										12188,
-										12196
-									],
-									[
-										12391,
-										12399
-									],
-									[
-										12618,
-										12626
-									],
-									[
-										12827,
-										12835
-									],
-									[
-										13044,
-										13052
-									],
-									[
-										13253,
-										13261
-									],
-									[
-										13450,
-										13458
-									],
-									[
-										13675,
-										13683
-									],
-									[
-										13875,
-										13883
-									],
-									[
-										14095,
-										14103
-									],
-									[
-										14247,
-										14255
-									],
-									[
-										14539,
-										14547
-									],
-									[
-										14720,
-										14728
-									],
-									[
-										14968,
-										14976
-									],
-									[
-										15182,
-										15190
-									],
-									[
-										15423,
-										15431
-									],
-									[
-										15657,
-										15665
-									],
-									[
-										15878,
-										15886
-									],
-									[
-										16067,
-										16075
-									],
-									[
-										16257,
-										16265
-									],
-									[
-										16450,
-										16458
-									],
-									[
-										16848,
-										16858
-									],
-									[
-										17149,
-										17159
-									],
-									[
-										17463,
-										17469
-									],
-									[
-										17702,
-										17708
-									],
-									[
-										17847,
-										17853
-									],
-									[
-										17936,
-										17942
-									],
-									[
-										18083,
-										18089
-									],
-									[
-										18279,
-										18285
-									],
-									[
-										18534,
-										18540
-									],
-									[
-										18711,
-										18717
-									],
-									[
-										18947,
-										18953
-									],
-									[
-										19172,
-										19178
-									],
-									[
-										19803,
-										19809
-									],
-									[
-										20527,
-										20533
-									],
-									[
-										20702,
-										20708
-									],
-									[
-										20781,
-										20787
-									],
-									[
-										20948,
-										20954
-									],
-									[
-										21095,
-										21101
-									],
-									[
-										21250,
-										21256
-									],
-									[
-										21359,
-										21365
-									],
-									[
-										21486,
-										21492
-									],
-									[
-										21600,
-										21606
-									],
-									[
-										21758,
-										21764
-									],
-									[
-										21977,
-										21983
-									],
-									[
-										22060,
-										22066
-									],
-									[
-										22219,
-										22225
-									],
-									[
-										22438,
-										22444
-									],
-									[
-										22521,
-										22527
-									],
-									[
-										22726,
-										22732
-									],
-									[
-										22901,
-										22907
-									],
-									[
-										22980,
-										22986
-									],
-									[
-										23171,
-										23177
-									],
-									[
-										23318,
-										23324
-									],
-									[
-										23473,
-										23479
-									],
-									[
-										23585,
-										23591
-									],
-									[
-										23678,
-										23684
-									],
-									[
-										23809,
-										23815
-									],
-									[
-										23935,
-										23941
-									],
-									[
-										24052,
-										24058
-									],
-									[
-										24145,
-										24151
-									],
-									[
-										24279,
-										24285
-									],
-									[
-										24431,
-										24437
-									],
-									[
-										24650,
-										24656
-									],
-									[
-										24733,
-										24739
-									],
-									[
-										24892,
-										24898
-									],
-									[
-										25111,
-										25117
-									],
-									[
-										25194,
-										25200
-									],
-									[
-										25403,
-										25409
-									],
-									[
-										25650,
-										25656
-									],
-									[
-										25930,
-										25936
-									],
-									[
-										26209,
-										26215
-									],
-									[
-										26267,
-										26273
-									],
-									[
-										26480,
-										26486
-									],
-									[
-										26665,
-										26671
-									],
-									[
-										26863,
-										26869
-									],
-									[
-										27114,
-										27120
-									],
-									[
-										27312,
-										27318
-									],
-									[
-										27555,
-										27561
-									],
-									[
-										27785,
-										27791
-									],
-									[
-										27964,
-										27970
-									],
-									[
-										28175,
-										28181
-									],
-									[
-										28327,
-										28333
-									],
-									[
-										28508,
-										28514
-									],
-									[
-										28747,
-										28753
-									],
-									[
-										28892,
-										28898
-									],
-									[
-										28981,
-										28987
-									],
-									[
-										29128,
-										29134
-									],
-									[
-										29324,
-										29330
-									],
-									[
-										29579,
-										29585
-									],
-									[
-										29756,
-										29762
-									],
-									[
-										29992,
-										29998
-									],
-									[
-										30222,
-										30228
-									],
-									[
-										30426,
-										30432
-									],
-									[
-										30590,
-										30596
-									],
-									[
-										30799,
-										30805
-									],
-									[
-										30997,
-										31003
-									],
-									[
-										31238,
-										31244
-									],
-									[
-										31451,
-										31457
-									],
-									[
-										31641,
-										31647
-									],
-									[
-										31839,
-										31845
-									],
-									[
-										32220,
-										32226
-									],
-									[
-										32414,
-										32420
-									],
-									[
-										32757,
-										32763
-									],
-									[
-										33388,
-										33394
-									],
-									[
-										34112,
-										34118
-									],
-									[
-										34287,
-										34293
-									],
-									[
-										34366,
-										34372
-									],
-									[
-										34533,
-										34539
-									],
-									[
-										34680,
-										34686
-									],
-									[
-										34835,
-										34841
-									],
-									[
-										34944,
-										34950
-									],
-									[
-										35071,
-										35077
-									],
-									[
-										35185,
-										35191
-									],
-									[
-										35343,
-										35349
-									],
-									[
-										35562,
-										35568
-									],
-									[
-										35645,
-										35651
-									],
-									[
-										35804,
-										35810
-									],
-									[
-										36023,
-										36029
-									],
-									[
-										36106,
-										36112
-									],
-									[
-										36311,
-										36317
-									],
-									[
-										36486,
-										36492
-									],
-									[
-										36565,
-										36571
-									],
-									[
-										36756,
-										36762
-									],
-									[
-										36903,
-										36909
-									],
-									[
-										37058,
-										37064
-									],
-									[
-										37170,
-										37176
-									],
-									[
-										37263,
-										37269
-									],
-									[
-										37394,
-										37400
-									],
-									[
-										37520,
-										37526
-									],
-									[
-										37637,
-										37643
-									],
-									[
-										37730,
-										37736
-									],
-									[
-										37864,
-										37870
-									],
-									[
-										38016,
-										38022
-									],
-									[
-										38235,
-										38241
-									],
-									[
-										38318,
-										38324
-									],
-									[
-										38477,
-										38483
-									],
-									[
-										38696,
-										38702
-									],
-									[
-										38779,
-										38785
-									],
-									[
-										38988,
-										38994
-									],
-									[
-										39235,
-										39241
-									],
-									[
-										39515,
-										39521
-									],
-									[
-										39794,
-										39800
-									],
-									[
-										39852,
-										39858
-									],
-									[
-										40065,
-										40071
-									],
-									[
-										40250,
-										40256
-									],
-									[
-										40448,
-										40454
-									],
-									[
-										40699,
-										40705
-									],
-									[
-										40897,
-										40903
-									],
-									[
-										41140,
-										41146
-									],
-									[
-										41370,
-										41376
-									],
-									[
-										41549,
-										41555
-									],
-									[
-										41760,
-										41766
-									],
-									[
-										41912,
-										41918
-									],
-									[
-										42093,
-										42099
-									],
-									[
-										42332,
-										42338
-									],
-									[
-										42477,
-										42483
-									],
-									[
-										42566,
-										42572
-									],
-									[
-										42713,
-										42719
-									],
-									[
-										42909,
-										42915
-									],
-									[
-										43164,
-										43170
-									],
-									[
-										43341,
-										43347
-									],
-									[
-										43577,
-										43583
-									],
-									[
-										43807,
-										43813
-									],
-									[
-										44011,
-										44017
-									],
-									[
-										44175,
-										44181
-									],
-									[
-										44384,
-										44390
-									],
-									[
-										44582,
-										44588
-									],
-									[
-										44823,
-										44829
-									],
-									[
-										45036,
-										45042
-									],
-									[
-										45226,
-										45232
-									],
-									[
-										45424,
-										45430
-									],
-									[
-										45805,
-										45811
-									],
-									[
-										45999,
-										46005
-									]
-								],
-								"scope": ""
-							}
-						},
-						"selection":
-						[
-							[
-								32560,
-								32560
-							]
-						],
-						"settings":
-						{
-							"detect_indentation": false,
-							"function_name_status_row": 970,
-							"line_numbers": false,
-							"output_tag": 5,
-							"result_base_dir": "",
-							"result_file_regex": "^([^ \t].*):$",
-							"result_line_regex": "^ +([0-9]+):",
-							"scroll_past_end": true,
-							"sorttabs_lastactivated": 1608717345.42,
-							"syntax": "Packages/Default/Find Results.hidden-tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 22338.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 11,
-					"type": "text"
-				},
-				{
-					"buffer": 26,
-					"file": "lib/cpp/cpp_parse_file.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 8863,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								8395,
-								8395
-							]
-						],
-						"settings":
-						{
-							"function_name_status_row": 191,
-							"sorttabs_lastactivated": 1608717240.36,
-							"syntax": "Packages/C99/C99.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 2734.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 12,
-					"type": "text"
-				},
-				{
-					"buffer": 27,
-					"file": "lib/buffer/buffer_putm_internal_flush.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 306,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								146,
-								146
-							]
-						],
-						"settings":
-						{
-							"function_name_status_row": 8,
-							"sorttabs_lastactivated": 1608715592.56,
-							"syntax": "Packages/C99/C99.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 16,
-					"type": "text"
-				},
-				{
-					"buffer": 28,
-					"file": "lib/http/http_canwrite.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 2884,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								2005,
-								2005
-							]
-						],
-						"settings":
-						{
-							"function_name_status_row": 78,
-							"sorttabs_lastactivated": 1608712851.19,
-							"syntax": "Packages/C99/C99.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 881.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 30,
-					"type": "text"
-				},
-				{
-					"buffer": 29,
-					"file": "lib/tokenizer/tokenizer_set_filename.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 118,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								116,
-								116
-							]
-						],
-						"settings":
-						{
-							"function_name_status_row": 4,
-							"sorttabs_lastactivated": 1608711465.23,
-							"syntax": "Packages/C99/C99.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 31,
-					"type": "text"
-				},
-				{
-					"buffer": 30,
-					"file": "lib/byte.h",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 4063,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								2412,
-								2412
-							]
-						],
-						"settings":
-						{
-							"function_name_status_row": 69,
-							"sorttabs_lastactivated": 1608711106.33,
-							"syntax": "Packages/C++/C++.sublime-syntax"
-						},
-						"translation.x": 0.0,
-						"translation.y": 14.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 34,
-					"type": "text"
-				},
-				{
-					"buffer": 31,
+					"buffer": 10,
 					"file": "lib/buffer.h",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 11420,
+						"buffer_size": 11416,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								8567,
-								8567
+								4472,
+								4472
 							]
 						],
 						"settings":
 						{
-							"function_name_status_row": 190,
-							"sorttabs_lastactivated": 1608715547.5,
+							"function_name_status_row": 91,
+							"sorttabs_lastactivated": 1608837572.71,
 							"syntax": "Packages/C++/C++.sublime-syntax",
 							"tab_size": 2,
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 3232.0,
+						"translation.y": 1590.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 17,
+					"stack_index": 10,
 					"type": "text"
 				},
 				{
-					"buffer": 32,
-					"file": "lib/tokenizer/tokenizer_getc.c",
+					"buffer": 11,
+					"file": "lib/buffer/buffer_putnlflush.c",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 900,
+						"buffer_size": 143,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								900,
-								900
+								47,
+								47
 							]
 						],
 						"settings":
 						{
-							"function_name_status_row": 39,
-							"sorttabs_lastactivated": 1608711134.23,
-							"syntax": "Packages/C99/C99.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 33,
-					"type": "text"
-				},
-				{
-					"buffer": 33,
-					"file": "/home/roman/Dokumente/Sources/c-utils/lib/tokenizer.h",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 2430,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								1403,
-								1403
-							]
-						],
-						"settings":
-						{
-							"function_name_status_row": 70,
-							"sorttabs_lastactivated": 1608711142.21,
-							"syntax": "Packages/C++/C++.sublime-syntax",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 32,
-					"type": "text"
-				},
-				{
-					"buffer": 34,
-					"file": "/home/roman/Dokumente/Sources/c-utils/lib/tokenizer_internal.h",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 7388,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C++/C++.sublime-syntax",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 38,
-					"type": "text"
-				},
-				{
-					"buffer": 35,
-					"file": "/home/roman/Dokumente/Sources/c-utils/lib/cpp.h",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 1285,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C++/C++.sublime-syntax"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 37,
-					"type": "text"
-				},
-				{
-					"buffer": 36,
-					"file": "/home/roman/Dokumente/Sources/c-utils/lib/cpp_internal.h",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 13874,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C++/C++.sublime-syntax",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 36,
-					"type": "text"
-				},
-				{
-					"buffer": 37,
-					"file": "/home/roman/Dokumente/Sources/c-utils/tokenizertest.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 4845,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"function_name_status_row": 0,
-							"syntax": "Packages/C99/C99.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 35,
-					"type": "text"
-				},
-				{
-					"buffer": 38,
-					"file": "/home/roman/Dokumente/Sources/c-utils/cpptest.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 1379,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"function_name_status_row": 0,
-							"sorttabs_lastactivated": 1608717346.21,
-							"syntax": "Packages/C99/C99.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
+							"function_name_status_row": 3,
+							"sorttabs_lastactivated": 1608837616.82,
+							"syntax": "Packages/C99/C99.tmLanguage"
 						},
 						"translation.x": 0.0,
 						"translation.y": 0.0,
@@ -3002,42 +1105,13 @@
 					},
 					"stack_index": 9,
 					"type": "text"
-				},
-				{
-					"buffer": 39,
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 0,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"function_name_status_row": 0,
-							"sorttabs_lastactivated": 1608717345.74,
-							"syntax": "Packages/Text/Plain text.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 10,
-					"type": "text"
 				}
 			]
 		}
 	],
 	"incremental_find":
 	{
-		"height": 26.0
+		"height": 31.0
 	},
 	"input":
 	{
@@ -3105,16 +1179,24 @@
 		"selected_items":
 		[
 			[
+				"buffer_putnl",
+				"lib/buffer/buffer_putnlflush.c"
+			],
+			[
+				"buffer.h",
+				"lib/buffer.h"
+			],
+			[
+				"jsonpp",
+				"jsonpp.c"
+			],
+			[
 				"cpp_inter",
 				"lib/cpp_internal.h"
 			],
 			[
 				"fmt.h",
 				"lib/fmt.h"
-			],
-			[
-				"buffer.h",
-				"lib/buffer.h"
 			],
 			[
 				"tokenizer",
@@ -3607,14 +1689,6 @@
 			[
 				"str_ndup",
 				"lib/str/str_ndup.c"
-			],
-			[
-				"io_interna",
-				"lib/io_internal.h"
-			],
-			[
-				"str_copyn",
-				"lib/str/str_copyn.c"
 			]
 		],
 		"width": 0.0
