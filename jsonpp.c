@@ -18,7 +18,7 @@
 #include <sys/types.h>
 
 static char quote[4] = {'"', 0};
-static int one_line, indent = 2, compact, depth_arg = 3, in_place;
+static int one_line, indent = 2, compact, depth_arg = 3, in_place, no_compliant;
 static stralloc indent_str;
 static const char *spacing, *separator;
 
@@ -53,7 +53,7 @@ compact_printer(jsonfmt* p, jsonval* v, int depth, int index, char q) {
   p->indent = !multi_line || depth > depth_arg ? "" : indent_str.s;
 
   p->newline = multi_line ? "\n" : "";
-  p->spacing = spacing ? spacing : " ";
+  p->spacing = spacing ? spacing : compact ? "" : " ";
 
   p->separat = separator ? separator : multi_line ? ",\n" : p->spacing[0] ? ", " : ",";
   p->quote[0] = quote[0];
@@ -61,7 +61,7 @@ compact_printer(jsonfmt* p, jsonval* v, int depth, int index, char q) {
   p->precision = 3;
   p->depth = depth;
   p->index = index;
-  p->compliant = 0;
+  p->compliant = !no_compliant;
 };
 
 static void
@@ -70,7 +70,7 @@ default_printer(jsonfmt* p, jsonval* v, int depth, int index, char q) {
   int multi_line = !one_line && depth < depth_arg;
   p->indent = depth > depth_arg ? "" : indent_str.s;
 
-  p->spacing = spacing ? spacing : " ";
+  p->spacing = spacing ? spacing : compact ? "" : " ";
   p->newline = multi_line ? "\n" : p->spacing;
   p->separat = separator ? separator : multi_line ? ",\n" : p->spacing[0] ? ", " : ",";
   p->quote[0] = quote[0];
@@ -78,7 +78,7 @@ default_printer(jsonfmt* p, jsonval* v, int depth, int index, char q) {
   p->precision = 10;
   p->depth = depth - (index == -2);
   p->index = index;
-  p->compliant = 1;
+  p->compliant = !no_compliant;
 };
 
 void
@@ -152,7 +152,7 @@ main(int argc, char* argv[]) {
                            {"spacing", 0, NULL, 'W'},
                            {"one-line", 0, NULL, 'O'},
                            {"compact", 0, NULL, 'c'},
-                           {"compliant", 0, NULL, 'C'},
+                           {"no-compliant", 0, NULL, 'C'},
                            {"inplace", 0, NULL, 'i'},
                            {"indent", 0, NULL, 'l'},
                            {0, 0, 0, 0}};
@@ -170,23 +170,25 @@ main(int argc, char* argv[]) {
       case 'h': usage(argv[0]); return 0;
       case 's': quote[0] = '\''; break;
       case 'd': quote[0] = '"'; break;
-      case 'S': separator = unix_optarg; break; case 'W': spacing = unix_optarg; break;
+      case 'S': separator = unix_optarg; break;
+      case 'W': spacing = unix_optarg; break;
       case 'D': scan_int(unix_optarg, &depth_arg); break;
       case 'O': one_line = 1; break;
-      case 'o':
-        out_file = unix_optarg;
-        break;
+      case 'o': out_file = unix_optarg; break;
       case 'c': {
         if(compact)
           spacing = "";
         compact = 1;
         break;
       }
-      case 'C': quote[0] = quote[1] = '"'; break;
+      case 'C': no_compliant = 1; break;
       case 'l': scan_int(unix_optarg, &indent); break;
       case 'i': in_place = 1; break;
       default: usage(argv[0]); return 1;
     }
+  }
+  if(!no_compliant) {
+    quote[0] = quote[1] = '"';
   }
 
   stralloc_init(&indent_str);
@@ -198,11 +200,13 @@ main(int argc, char* argv[]) {
   if(unix_optind == argc) {
     argv[++argc] = NULL;
   }
+#ifdef DEBUG_OUTPUT_
   if(out_file) {
     buffer_puts(buffer_2, "out file: ");
     buffer_puts(buffer_2, out_file);
     buffer_putnlflush(buffer_2);
   }
+#endif
   while(unix_optind < argc) {
     charbuf in_buf;
     buffer out_buf;
@@ -227,12 +231,13 @@ main(int argc, char* argv[]) {
       out_fd = open_trunc(out_file);
     }
 
-  if(out_fd != -1) {
+#ifdef DEBUG_OUTPUT_
+    if(out_fd != -1) {
       buffer_puts(buffer_2, "out fd: ");
       buffer_putlong(buffer_2, out_fd);
       buffer_putnlflush(buffer_2);
     }
-
+#endif
     buffer_write_fd(&out_buf, out_fd);
 
     doc = json_read_tree(&in_buf);
