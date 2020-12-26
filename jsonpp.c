@@ -48,15 +48,14 @@ compact_printer(jsonfmt* p, jsonval* v, int depth, int index, char q) {
 
   int valdepth = v ? get_depth(v) : 0;
   int pretty = depth < 4 && valdepth > 1;
-    int multi_line = !one_line && depth < depth_arg;
+  int multi_line = !one_line && depth < depth_arg;
 
   p->indent = !multi_line || depth > depth_arg ? "" : "  ";
-   
 
   p->newline = multi_line ? "\n" : "";
   p->spacing = spacing ? spacing : " ";
 
-  p->separat = separator ? separator :  multi_line ? ",\n" : p->spacing[0] ? ", " : ",";
+  p->separat = separator ? separator : multi_line ? ",\n" : p->spacing[0] ? ", " : ",";
   p->quote[0] = quote[0];
   p->quote[1] = quote[1];
   p->precision = 3;
@@ -68,13 +67,12 @@ compact_printer(jsonfmt* p, jsonval* v, int depth, int index, char q) {
 static void
 default_printer(jsonfmt* p, jsonval* v, int depth, int index, char q) {
   int pretty = v && get_depth(v) > 1;
-    int multi_line = !one_line && depth < depth_arg;
-p->indent = depth > depth_arg ? "" : "  ";  
+  int multi_line = !one_line && depth < depth_arg;
+  p->indent = depth > depth_arg ? "" : "  ";
 
-  
   p->spacing = spacing ? spacing : " ";
   p->newline = multi_line ? "\n" : p->spacing;
-  p->separat = separator ? separator :  multi_line ? ",\n" : p->spacing[0] ? ", " : ",";
+  p->separat = separator ? separator : multi_line ? ",\n" : p->spacing[0] ? ", " : ",";
   p->quote[0] = quote[0];
   p->quote[1] = quote[1];
   p->precision = 10;
@@ -104,29 +102,18 @@ usage(char* av0) {
   buffer_putm_internal(buffer_1,
                        "Usage: ",
                        str_basename(av0),
-                       " [OPTIONS] [FILES...]\n"
-                       "\n"
-                       "Options:\n"
-                       "\n"
-                       "  -h, --help              Show "
-                       "this help\n"
-                       "  -s, --single-quote      Use ' "
-                       "as quote\n"
-                       "  -d, --double-quote      Use "
-                       "\" as quote\n"
-                       "  -o, --one-line          "
-                       "One-line\n"
-                       "  -c, --compact           "
-                       "Compact\n"
-                       "  -l, --indent NUM        "
-                       "Indent level\n"
-                       "  -D, --depth NUM         Depth "
-                       "level\n"
-                       "  -S, --separator CHARS   "
-                       "Separator\n"
-                       "  -W, --spacing CHARS     "
-                       "Spacing\n"
-                       "\n",
+                       " [OPTIONS] [FILES...]\n\n",
+                       "Options:\n\n",
+                       "  -h, --help              Show this help\n",
+                       "  -s, --single-quote      Use ' as quote\n",
+                       "  -d, --double-quote      Use \" as quote\n",
+                       "  -o, --one-line          One-line\n",
+                       "  -c, --compact           Compact\n",
+                       "  -l, --indent NUM        Indent level\n",
+                       "  -D, --depth NUM         Depth level\n",
+                       "  -S, --separator CHARS   Separator\n",
+                       "  -W, --spacing CHARS     Spacing\n\n",
+                       "",
                        0);
   buffer_flush(buffer_1);
 }

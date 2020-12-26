@@ -95,6 +95,8 @@ debug_option(TLS "Debug TLS code")
 debug_option(OUTPUT "Debug output")
 debug_option(CPP "Debug C preprocessor")
 debug_option(TOKENIZER "Debug C tokenizer")
+debug_option(CHARBUF "Debug character buf")
+debug_option(JSON "Debug JSON")
 
 if(ENABLE_WERROR)
   add_definitions(-Wall -Werror -Wno-unused)
@@ -829,7 +831,7 @@ add_program(httptest slist xml sig http c dns stralloc buffer errmsg byte io soc
 # set(ssltest_SOURCES address.c address.h)
 
 add_program(impgen pe buffer byte mmap open)
-add_program(jsontest json stralloc buffer byte charbuf fmt hmap mmap open)
+add_program(jsontest json stralloc charbuf buffer   byte  fmt hmap mmap open)
 add_program(list-r path strarray strlist stralloc buffer array unix dir array fmt open str uint64 ${LIBADVAPI32})
 add_program(macho32list mmap uint32)
 if(USE_LZMA)
