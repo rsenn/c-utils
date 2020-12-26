@@ -194,17 +194,11 @@ int
 json_parse(jsonval* j, charbuf* b) {
   int r = 0;
   charbuf_skip_pred(b, &isspace);
-  if((r = json_parse_object(j, b)))
-    return r;
-  if((r = json_parse_array(j, b)))
-    return r;
-  if((r = json_parse_bool(j, b)))
-    return r;
-  if((r = json_parse_num(j, b)))
-    return r;
-  if((r = json_parse_string(j, b)))
-    return r;
-  if((r = json_parse_null_or_undefined(j, b)))
-    return r;
+  if(!(r = json_parse_object(j, b)))
+    if(!(r = json_parse_array(j, b)))
+      if(!(r = json_parse_bool(j, b)))
+        if(!(r = json_parse_num(j, b)))
+          if(!(r = json_parse_string(j, b)))
+            r = json_parse_null_or_undefined(j, b);
   return r;
 }

@@ -8,4 +8,5 @@ charbuf_init(charbuf* b, read_fn* op, fd_t fd) {
   b->fd = fd;
   b->eof = 0;
   b->err = 0;
+  byte_zero(&b->loc, sizeof(b->loc));
 }

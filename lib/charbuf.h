@@ -8,12 +8,18 @@
 
 #include "typedefs.h"
 #include "byte.h"
+#include "uint32.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 typedef ssize_t read_fn(fd_t fd, void* buf, size_t n, void*);
+
+typedef struct {
+  uint32 line;
+  uint32 column;
+} charloc;
 
 typedef struct {
   char ch;
@@ -25,6 +31,7 @@ typedef struct {
     fd_t fd;
     void* ptr;
   };
+  charloc loc;
 } charbuf;
 
 #define CHARBUF_INIT(op, fd)                                                                                                                                                                           \

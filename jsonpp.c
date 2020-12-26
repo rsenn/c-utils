@@ -4,7 +4,7 @@
 #include "lib/errmsg.h"
 #include "lib/str.h"
 #include "lib/scan.h"
-#include "lib/getopt.h"
+#include "lib/unix.h"
 
 #if WINDOWS_NATIVE
 #include <io.h>
@@ -50,7 +50,7 @@ compact_printer(jsonfmt* p, jsonval* v, int depth, int index, char q) {
   int pretty = depth < 4 && valdepth > 1;
   int multi_line = !one_line && depth < depth_arg;
 
-  p->indent = !multi_line || depth > depth_arg ? "" : "  ";
+  p->indent = !multi_line || depth > depth_arg ? "" : indent_str.s;
 
   p->newline = multi_line ? "\n" : "";
   p->spacing = spacing ? spacing : " ";
@@ -68,7 +68,7 @@ static void
 default_printer(jsonfmt* p, jsonval* v, int depth, int index, char q) {
   int pretty = v && get_depth(v) > 1;
   int multi_line = !one_line && depth < depth_arg;
-  p->indent = depth > depth_arg ? "" : "  ";
+  p->indent = depth > depth_arg ? "" : indent_str.s;
 
   p->spacing = spacing ? spacing : " ";
   p->newline = multi_line ? "\n" : p->spacing;
@@ -113,6 +113,7 @@ usage(char* av0) {
                        "  -D, --depth NUM         Depth level\n",
                        "  -S, --separator CHARS   Separator\n",
                        "  -W, --spacing CHARS     Spacing\n\n",
+                       "  -C, --compliant         Compliant\n",
                        "",
                        0);
   buffer_flush(buffer_1);
@@ -149,7 +150,7 @@ main(int argc, char* argv[]) {
                            {"depth", 0, NULL, 'D'},
                            {"separator", 0, NULL, 'S'},
                            {"spacing", 0, NULL, 'W'},
-                           {"one-line", 0, NULL, 'o'},
+                           {"one-line", 0, NULL, 'O'},
                            {"compact", 0, NULL, 'c'},
                            {"compliant", 0, NULL, 'C'},
                            {"inplace", 0, NULL, 'i'},
@@ -159,7 +160,7 @@ main(int argc, char* argv[]) {
   errmsg_iam(argv[0]);
 
   for(;;) {
-    c = getopt_long(argc, argv, "hsdol:cD:S:W:iC", opts, &index);
+    c = unix_getopt_long(argc, argv, "hsdOl:cD:S:W:iCo:", opts, &index);
     if(c == -1)
       break;
     if(c == 0)
@@ -169,10 +170,12 @@ main(int argc, char* argv[]) {
       case 'h': usage(argv[0]); return 0;
       case 's': quote[0] = '\''; break;
       case 'd': quote[0] = '"'; break;
-      case 'S': separator = optarg; break;
-      case 'W': spacing = optarg; break;
-      case 'D': scan_int(optarg, &depth_arg); break;
-      case 'o': one_line = 1; break;
+      case 'S': separator = unix_optarg; break; case 'W': spacing = unix_optarg; break;
+      case 'D': scan_int(unix_optarg, &depth_arg); break;
+      case 'O': one_line = 1; break;
+      case 'o':
+        out_file = unix_optarg;
+        break;
       case 'c': {
         if(compact)
           spacing = "";
@@ -180,7 +183,7 @@ main(int argc, char* argv[]) {
         break;
       }
       case 'C': quote[0] = quote[1] = '"'; break;
-      case 'l': scan_int(optarg, &indent); break;
+      case 'l': scan_int(unix_optarg, &indent); break;
       case 'i': in_place = 1; break;
       default: usage(argv[0]); return 1;
     }
@@ -192,15 +195,19 @@ main(int argc, char* argv[]) {
 
   stralloc_init(&tmp);
 
-  if(optind == argc) {
+  if(unix_optind == argc) {
     argv[++argc] = NULL;
   }
-
-  while(optind < argc) {
+  if(out_file) {
+    buffer_puts(buffer_2, "out file: ");
+    buffer_puts(buffer_2, out_file);
+    buffer_putnlflush(buffer_2);
+  }
+  while(unix_optind < argc) {
     charbuf in_buf;
     buffer out_buf;
     jsonval* doc;
-    const char* in_file = argv[optind++];
+    const char* in_file = argv[unix_optind++];
 
     fd = in_file ? open_read(in_file) : 0;
 
@@ -220,9 +227,9 @@ main(int argc, char* argv[]) {
       out_fd = open_trunc(out_file);
     }
 
-    if(out_file) {
-      buffer_puts(buffer_2, "out file: ");
-      buffer_puts(buffer_2, out_file);
+  if(out_fd != -1) {
+      buffer_puts(buffer_2, "out fd: ");
+      buffer_putlong(buffer_2, out_fd);
       buffer_putnlflush(buffer_2);
     }
 
