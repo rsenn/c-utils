@@ -92,18 +92,49 @@ struct address {
   char ip[16];
 };
 
-GEN_ALLOC_typedef(address_alloc, struct address, s, len, a) GEN_ALLOC_readyplus(address_alloc, struct address, s, len, a, i, n, x, 30, address_alloc_readyplus)
-    GEN_ALLOC_append(address_alloc, struct address, s, len, a, i, n, x, 30, address_alloc_readyplus, address_alloc_append)
+GEN_ALLOC_typedef(address_alloc, struct address, s, len, a)
+    GEN_ALLOC_readyplus(address_alloc,
+                        struct address,
+                        s,
+                        len,
+                        a,
+                        i,
+                        n,
+                        x,
+                        30,
+                        address_alloc_readyplus)
+        GEN_ALLOC_append(address_alloc,
+                         struct address,
+                         s,
+                         len,
+                         a,
+                         i,
+                         n,
+                         x,
+                         30,
+                         address_alloc_readyplus,
+                         address_alloc_append)
 
-        static address_alloc address;
+            static address_alloc address;
 
 struct ns {
   char* owner;
   char* ns;
 };
 
-GEN_ALLOC_typedef(ns_alloc, struct ns, s, len, a) GEN_ALLOC_readyplus(ns_alloc, struct ns, s, len, a, i, n, x, 30, ns_alloc_readyplus)
-    GEN_ALLOC_append(ns_alloc, struct ns, s, len, a, i, n, x, 30, ns_alloc_readyplus, ns_alloc_append)
+GEN_ALLOC_typedef(ns_alloc, struct ns, s, len, a) GEN_ALLOC_readyplus(
+    ns_alloc, struct ns, s, len, a, i, n, x, 30, ns_alloc_readyplus)
+    GEN_ALLOC_append(ns_alloc,
+                     struct ns,
+                     s,
+                     len,
+                     a,
+                     i,
+                     n,
+                     x,
+                     30,
+                     ns_alloc_readyplus,
+                     ns_alloc_append)
 
         static ns_alloc ns;
 
@@ -112,8 +143,19 @@ struct query {
   char type[2];
 };
 
-GEN_ALLOC_typedef(query_alloc, struct query, s, len, a) GEN_ALLOC_readyplus(query_alloc, struct query, s, len, a, i, n, x, 30, query_alloc_readyplus)
-    GEN_ALLOC_append(query_alloc, struct query, s, len, a, i, n, x, 30, query_alloc_readyplus, query_alloc_append)
+GEN_ALLOC_typedef(query_alloc, struct query, s, len, a) GEN_ALLOC_readyplus(
+    query_alloc, struct query, s, len, a, i, n, x, 30, query_alloc_readyplus)
+    GEN_ALLOC_append(query_alloc,
+                     struct query,
+                     s,
+                     len,
+                     a,
+                     i,
+                     n,
+                     x,
+                     30,
+                     query_alloc_readyplus,
+                     query_alloc_append)
 
         static query_alloc query;
 
@@ -124,13 +166,27 @@ struct qt {
   char ip[16];
 };
 
-GEN_ALLOC_typedef(qt_alloc, struct qt, s, len, a) GEN_ALLOC_readyplus(qt_alloc, struct qt, s, len, a, i, n, x, 30, qt_alloc_readyplus)
-    GEN_ALLOC_append(qt_alloc, struct qt, s, len, a, i, n, x, 30, qt_alloc_readyplus, qt_alloc_append)
+GEN_ALLOC_typedef(qt_alloc, struct qt, s, len, a) GEN_ALLOC_readyplus(
+    qt_alloc, struct qt, s, len, a, i, n, x, 30, qt_alloc_readyplus)
+    GEN_ALLOC_append(qt_alloc,
+                     struct qt,
+                     s,
+                     len,
+                     a,
+                     i,
+                     n,
+                     x,
+                     30,
+                     qt_alloc_readyplus,
+                     qt_alloc_append)
 
         static qt_alloc qt;
 
 void
-qt_add(const char* q, const char type[2], const char* control, const char ip[16]) {
+qt_add(const char* q,
+       const char type[2],
+       const char* control,
+       const char ip[16]) {
   struct qt x;
   int i;
 
@@ -264,7 +320,11 @@ typematch(const char rtype[2], const char qtype[2]) {
 }
 
 void
-parsepacket(const char* buf, unsigned int len, const char* d, const char dtype[2], const char* control) {
+parsepacket(const char* buf,
+            unsigned int len,
+            const char* d,
+            const char dtype[2],
+            const char* control) {
   char misc[20];
   char header[12];
   unsigned int pos;
@@ -342,7 +402,8 @@ parsepacket(const char* buf, unsigned int len, const char* d, const char dtype[2
   }
 
   if(!flagcname && !rcode && !flagout && flagreferral && !flagsoa)
-    if(dns_domain_equal(referral, control) || !dns_domain_suffix(referral, control)) {
+    if(dns_domain_equal(referral, control) ||
+       !dns_domain_suffix(referral, control)) {
       buffer_put(buffer_1, querystr.s, querystr.len);
       buffer_puts(buffer_1,
                   "ALERT:lame server; "

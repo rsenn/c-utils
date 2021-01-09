@@ -34,7 +34,12 @@ int ftplib_read_oneline(buffer* io, stralloc* ret);
  * -3: ftpserver tried to redirect us to
  * another host or an illegal port.
  */
-int ftplib_pasv(buffer* io_i, buffer* io_o, unsigned long timeout, stralloc* allowed_ips, stralloc* message, unsigned int retries);
+int ftplib_pasv(buffer* io_i,
+                buffer* io_o,
+                unsigned long timeout,
+                stralloc* allowed_ips,
+                stralloc* message,
+                unsigned int retries);
 /* -1: error, else number of \0
  * terminated string in "dir". fd will
  * not be closed.

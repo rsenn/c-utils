@@ -21,7 +21,8 @@
 #include <libgen.h>
 #endif
 
-#if WINDOWS_NATIVE && !defined(__TINYC__) && !defined(__ORANGEC__) && !defined(__DMC__)
+#if WINDOWS_NATIVE && !defined(__TINYC__) && !defined(__ORANGEC__) &&          \
+    !defined(__DMC__)
 #ifndef isnan
 #define isnan(x) _isnan(x)
 #endif
@@ -32,10 +33,26 @@ void after_element(const char*);
 void on_attribute_decl(void*, const char*, const char*, int, int, const char*);
 void on_characters(void*, const char*, int);
 void on_end_element(void*, const char*);
-void on_start_element_ns(void*, const char*, const char*, const char*, int, const char**, int, int, const char**);
+void on_start_element_ns(void*,
+                         const char*,
+                         const char*,
+                         const char*,
+                         int,
+                         const char**,
+                         int,
+                         int,
+                         const char**);
 void on_start_element(void*, const char*, HMAP_DB**);
-int xml_callback(xmlreader* r, xmlnodeid id, stralloc* name, stralloc* value, HMAP_DB** attrs);
-int xml_read_node(xmlreader* r, xmlnodeid id, stralloc* name, stralloc* value, HMAP_DB** attrs);
+int xml_callback(xmlreader* r,
+                 xmlnodeid id,
+                 stralloc* name,
+                 stralloc* value,
+                 HMAP_DB** attrs);
+int xml_read_node(xmlreader* r,
+                  xmlnodeid id,
+                  stralloc* name,
+                  stralloc* value,
+                  HMAP_DB** attrs);
 stralloc element_name, character_buf;
 double const unit_factor = 25.4, scale_factor = 0.666666, grid_mils = 100;
 double min_x = 0.0, max_x = 0.0, min_y = 0.0, max_y = 0.0;
@@ -78,7 +95,18 @@ typedef struct instance {
  */
 void
 dump_part(part_t const* p) {
-  buffer_putm_internal(buffer_2, "dump_part{name=", p->name, ",library=", p->library, ",deviceset", p->deviceset, ",device=", p->device, ",value=", p->value, NULL);
+  buffer_putm_internal(buffer_2,
+                       "dump_part{name=",
+                       p->name,
+                       ",library=",
+                       p->library,
+                       ",deviceset",
+                       p->deviceset,
+                       ",device=",
+                       p->device,
+                       ",value=",
+                       p->value,
+                       NULL);
 
   buffer_puts(buffer_2, ",x=");
   buffer_putdouble(buffer_2, p->x, 1);
@@ -93,7 +121,8 @@ dump_part(part_t const* p) {
  */
 void
 dump_instance(instance_t const* i) {
-  buffer_putm_internal(buffer_2, "dump_instance \"", i->part, ":", i->gate, "\"", 0);
+  buffer_putm_internal(
+      buffer_2, "dump_instance \"", i->part, ":", i->gate, "\"", 0);
   buffer_puts(buffer_2, " x=");
   buffer_putdouble(buffer_2, i->x, 2);
   buffer_puts(buffer_2, ", y=");
@@ -181,7 +210,8 @@ get_part(const char* part) {
 /* -----------------------------------------------------------------------
  */
 instance_t*
-create_instance(const char* part, const char* gate, double x, double y, double rot) {
+create_instance(
+    const char* part, const char* gate, double x, double y, double rot) {
   int ret;
   stralloc key;
   instance_t* i;
@@ -208,7 +238,11 @@ create_instance(const char* part, const char* gate, double x, double y, double r
 /* -----------------------------------------------------------------------
  */
 part_t*
-create_part(const char* name, const char* library, const char* deviceset, const char* device, const char* value) {
+create_part(const char* name,
+            const char* library,
+            const char* deviceset,
+            const char* device,
+            const char* value) {
   part_t* p;
   if(value == NULL)
     value = "";
@@ -332,7 +366,14 @@ process_instance(xmlnode* e) {
   y /= unit_factor;*/
   /*x *= scale_factor;
   y *= scale_factor;*/
-  { instance_t* newinst = create_instance(part.s, gate.s, round_to_mil(x * scale_factor / unit_factor, grid_mils), round_to_mil(y * scale_factor / unit_factor, grid_mils), rotate); }
+  {
+    instance_t* newinst =
+        create_instance(part.s,
+                        gate.s,
+                        round_to_mil(x * scale_factor / unit_factor, grid_mils),
+                        round_to_mil(y * scale_factor / unit_factor, grid_mils),
+                        rotate);
+  }
 }
 
 /* -----------------------------------------------------------------------
@@ -350,7 +391,10 @@ process_part(xmlnode* e) {
   xml_get_attribute_sa(e, &device, "device");
   stralloc_init(&value);
   xml_get_attribute_sa(e, &value, "value");
-  { part_t* newpart = create_part(name.s, library.s, deviceset.s, device.s, value.s); }
+  {
+    part_t* newpart =
+        create_part(name.s, library.s, deviceset.s, device.s, value.s);
+  }
 }
 
 /* -----------------------------------------------------------------------
@@ -412,7 +456,8 @@ main(int argc, char* argv[]) {
   if(argc > 1) {
     filename = argv[1];
   } else {
-    buffer_putm_internal(buffer_2, "Usage: ", mystr_basename(argv[0]), " <filename>", 0);
+    buffer_putm_internal(
+        buffer_2, "Usage: ", mystr_basename(argv[0]), " <filename>", 0);
     buffer_putnlflush(buffer_2);
     return 1;
   }

@@ -162,7 +162,9 @@ extern int dns_addr_lookup(struct dns_resolver* dns, struct in_addr address);
    modified.
  */
 extern int dns_pre_poll(struct dns_resolver* dns, struct pollfd* pfds);
-extern int dns_pre_select(struct dns_resolver* dns, fd_set* readset, fd_set* writeset);
+extern int dns_pre_select(struct dns_resolver* dns,
+                          fd_set* readset,
+                          fd_set* writeset);
 
 /*
    returns 0 when lookup is in progress,
@@ -172,7 +174,9 @@ extern int dns_pre_select(struct dns_resolver* dns, fd_set* readset, fd_set* wri
    pollfd array.
  */
 extern int dns_post_poll(struct dns_resolver* dns, const struct pollfd* pfds);
-extern int dns_post_select(struct dns_resolver* dns, const fd_set* readset, const fd_set* writeset);
+extern int dns_post_select(struct dns_resolver* dns,
+                           const fd_set* readset,
+                           const fd_set* writeset);
 
 /*
    when the post poll call returned 1

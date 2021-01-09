@@ -118,7 +118,11 @@ int str_isfloat(const char* s);
 int str_isspace(const char* s);
 void print_attrs(HMAP_DB* a_node);
 void print_element_attrs(xmlnode* a_node);
-int output_net(const void* key, size_t key_len, const void* value, size_t value_len, void* user_data);
+int output_net(const void* key,
+               size_t key_len,
+               const void* value,
+               size_t value_len,
+               void* user_data);
 
 MAP_T devicesets;
 MAP_T packages;
@@ -380,7 +384,10 @@ build_reflist(xmlnode* node, struct net* n, int* index) {
     print_element_attrs(node);
     buffer_putnlflush(buffer_2);
   }
-  qsort(array_start(&n->contacts), array_length(&n->contacts, sizeof(struct ref)), sizeof(struct ref), (cmp_fn_t*)&compare_ref);
+  qsort(array_start(&n->contacts),
+        array_length(&n->contacts, sizeof(struct ref)),
+        sizeof(struct ref),
+        (cmp_fn_t*)&compare_ref);
 }
 
 /**
@@ -487,7 +494,8 @@ build_deviceset(xmlnode* set) {
     // &len);
     pm.pkg = MAP_GET(packages, package, str_len(package));
 
-    MAP_INSERT(d.devices, name, str_len(name) + 1, &pm, sizeof(struct pinmapping));
+    MAP_INSERT(
+        d.devices, name, str_len(name) + 1, &pm, sizeof(struct pinmapping));
   }
   MAP_INSERT(devicesets, name, str_len(name) + 1, &d, sizeof(struct deviceset));
 }
@@ -547,7 +555,8 @@ clean_pkgname(stralloc* pkgname, const struct package* pkg) {
   stralloc_copy(pkgname, &pkg->name);
   stralloc_lower(pkgname);
 
-  if(pkgname->len > 4 && pkgname->s[0] == '0' && isdigit(pkgname->s[1]) && isdigit(pkgname->s[2]) && isdigit(pkgname->s[3]) && pkgname->s[4] == '/') {
+  if(pkgname->len > 4 && pkgname->s[0] == '0' && isdigit(pkgname->s[1]) &&
+     isdigit(pkgname->s[2]) && isdigit(pkgname->s[3]) && pkgname->s[4] == '/') {
     // stralloc_remove(pkgname, 0, 1);
     pkgname->s[0] = 'r';
     pkgname->s[1] = 'e';
@@ -575,7 +584,11 @@ clean_pkgname(stralloc* pkgname, const struct package* pkg) {
 }
 
 int
-dump_package(const void* key, size_t key_len, const void* value, size_t value_len, void* user_data) {
+dump_package(const void* key,
+             size_t key_len,
+             const void* value,
+             size_t value_len,
+             void* user_data) {
   int64 i;
   double x, y;
   const struct package* pkg = value;
@@ -593,7 +606,10 @@ dump_package(const void* key, size_t key_len, const void* value, size_t value_le
 
   first = array_start(&pkg->pads);
 
-  qsort(first, array_length(&pkg->pads, sizeof(struct pad)), sizeof(struct pad), (cmp_fn_t*)&compare_pads);
+  qsort(first,
+        array_length(&pkg->pads, sizeof(struct pad)),
+        sizeof(struct pad),
+        (cmp_fn_t*)&compare_pads);
 
   x = first->x;
   y = first->y;
@@ -621,7 +637,8 @@ dump_package(const void* key, size_t key_len, const void* value, size_t value_le
 
 static int
 cmp_ref(const char* a, const char* b) {
-  size_t alen = byte_chr(a, str_len(a), '\t'), blen = byte_chr(b, str_len(b), '\t');
+  size_t alen = byte_chr(a, str_len(a), '\t'),
+         blen = byte_chr(b, str_len(b), '\t');
   if(alen != blen)
     return alen - blen;
 
@@ -629,7 +646,11 @@ cmp_ref(const char* a, const char* b) {
 }
 
 int
-output_part(const void* key, size_t key_len, const void* value, size_t value_len, void* user_data) {
+output_part(const void* key,
+            size_t key_len,
+            const void* value,
+            size_t value_len,
+            void* user_data) {
   struct part* ptr = (struct part*)value;
   struct pad* pad1 = array_start(&ptr->pkg->pads);
   double x, y;
@@ -657,7 +678,11 @@ output_part(const void* key, size_t key_len, const void* value, size_t value_len
 }
 
 int
-dump_part(const void* key, size_t key_len, const void* value, size_t value_len, void* user_data) {
+dump_part(const void* key,
+          size_t key_len,
+          const void* value,
+          size_t value_len,
+          void* user_data) {
   struct part* ptr = (struct part*)value;
   const char *s, *comment;
   size_t n;
@@ -742,14 +767,22 @@ pin_sa(stralloc* sa, const stralloc* name, int pin) {
 }
 
 void
-conn_sa(stralloc* sa, const stralloc* name1, int pin1, const stralloc* name2, int pin2) {
+conn_sa(stralloc* sa,
+        const stralloc* name1,
+        int pin1,
+        const stralloc* name2,
+        int pin2) {
   pin_sa(sa, name1, pin1);
   stralloc_catc(sa, '\t');
   pin_sa(sa, name2, pin2);
 }
 
 void
-dump_net(const void* key, size_t key_len, const void* value, size_t value_len, void* user_data) {
+dump_net(const void* key,
+         size_t key_len,
+         const void* value,
+         size_t value_len,
+         void* user_data) {
   struct net* n = (struct net*)value;
   struct ref* r;
 
@@ -768,7 +801,11 @@ dump_net(const void* key, size_t key_len, const void* value, size_t value_len, v
 }
 
 int
-output_net(const void* key, size_t key_len, const void* value, size_t value_len, void* user_data) {
+output_net(const void* key,
+           size_t key_len,
+           const void* value,
+           size_t value_len,
+           void* user_data) {
   struct net* n = (struct net*)value;
   strlist* refs = ((struct part_ref*)user_data)->list;
   struct part* p = ((struct part_ref*)user_data)->part;
@@ -803,7 +840,8 @@ output_net(const void* key, size_t key_len, const void* value, size_t value_len,
     conn_sa(&conn, &p->name, rc->pin + 1, &r->part->name, r->pin + 1);
     conn_sa(&rconn, &r->part->name, r->pin + 1, &p->name, rc->pin + 1);
 
-    if(strlist_contains_sa(&connections, &conn) || strlist_contains_sa(&connections, &rconn))
+    if(strlist_contains_sa(&connections, &conn) ||
+       strlist_contains_sa(&connections, &rconn))
       continue;
 
     strlist_push_sa(&connections, &conn);
@@ -888,7 +926,13 @@ print_attrs(HMAP_DB* a) {
 
   for(t = a->list_tuple; t; t = t->next) {
     char* v = t->vals.val_chars;
-    buffer_putm_internal(buffer_2, " ", t->key, str_isdoublenum(v) ? "=" : "=\"", v, str_isdoublenum(v) ? "" : "\"", 0);
+    buffer_putm_internal(buffer_2,
+                         " ",
+                         t->key,
+                         str_isdoublenum(v) ? "=" : "=\"",
+                         v,
+                         str_isdoublenum(v) ? "" : "\"",
+                         0);
     if(t->next == a->list_tuple)
       break;
   }
@@ -984,7 +1028,8 @@ match_query(xmlnode* doc, const char* q) {
       stralloc_init(&query);
       elem_name = "*";
 
-      for(a = hmap_begin(node->attributes); a; a = hmap_next(node->attributes, a)) {
+      for(a = hmap_begin(node->attributes); a;
+          a = hmap_next(node->attributes, a)) {
         strlist part_names;
         const char* attr_name = a->key;
         const char* v = a->vals.val_chars;
@@ -999,7 +1044,8 @@ match_query(xmlnode* doc, const char* q) {
           attr_name = "name";
         }
         stralloc_zero(&query);
-        stralloc_catm_internal(&query, "", elem_name, "[@", attr_name, "='", v, "']", NULL);
+        stralloc_catm_internal(
+            &query, "", elem_name, "[@", attr_name, "='", v, "']", NULL);
         stralloc_0(&query);
         match_query(doc, query.s);
         part_names = getparts(doc);

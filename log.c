@@ -212,7 +212,13 @@ log_startup(void) {
 }
 
 void
-log_query(uint64* qnum, const char client[], unsigned int port, int fd, const char id[2], const char* q, const char qtype[2]) {
+log_query(uint64* qnum,
+          const char client[],
+          unsigned int port,
+          int fd,
+          const char id[2],
+          const char* q,
+          const char qtype[2]) {
   log_string("query ");
   log_number(*qnum);
   log_space();
@@ -227,7 +233,12 @@ log_query(uint64* qnum, const char client[], unsigned int port, int fd, const ch
 }
 
 void
-log_querydone(uint64* qnum, const char client[], uint16 port, int fd, const char id[2], unsigned int len) {
+log_querydone(uint64* qnum,
+              const char client[],
+              uint16 port,
+              int fd,
+              const char id[2],
+              unsigned int len) {
   log_string("sent ");
   log_number(*qnum);
   log_space();
@@ -269,7 +280,11 @@ log_tcpclose(const char client[], unsigned int port, int fd) {
 }
 
 void
-log_tx(const char* q, const char qtype[2], const char* control, const char servers[64], unsigned int gluelessness) {
+log_tx(const char* q,
+       const char qtype[2],
+       const char* control,
+       const char servers[64],
+       unsigned int gluelessness) {
   int i;
 
   log_string("tx ");
@@ -289,7 +304,10 @@ log_tx(const char* q, const char qtype[2], const char* control, const char serve
 }
 
 void
-log_cachedanswer(const char* q, const char type[2], const char* cached, size_t cachedlen) {
+log_cachedanswer(const char* q,
+                 const char type[2],
+                 const char* cached,
+                 size_t cachedlen) {
   size_t i;
   log_string("cached ");
   log_logtype(type);
@@ -379,7 +397,10 @@ log_nxdomain(const char server[16], const char* q, unsigned int ttl) {
 }
 
 void
-log_nodata(const char server[16], const char* q, const char qtype[2], unsigned int ttl) {
+log_nodata(const char server[16],
+           const char* q,
+           const char qtype[2],
+           unsigned int ttl) {
   log_string("nodata ");
   log_ip(server, 4);
   log_space();
@@ -415,7 +436,12 @@ log_servfail(const char* dn) {
 }
 
 void
-log_rr(const char server[16], const char* q, const char type[2], const char* buf, unsigned int len, unsigned int ttl) {
+log_rr(const char server[16],
+       const char* q,
+       const char type[2],
+       const char* buf,
+       unsigned int len,
+       unsigned int ttl) {
   size_t i;
 
   log_string("rr ");
@@ -443,7 +469,10 @@ log_rr(const char server[16], const char* q, const char type[2], const char* buf
 }
 
 void
-log_rrns(const char server[16], const char* q, const char* data, unsigned int ttl) {
+log_rrns(const char server[16],
+         const char* q,
+         const char* data,
+         unsigned int ttl) {
   log_string("rr ");
   log_ip(server, 4);
   log_space();
@@ -456,7 +485,10 @@ log_rrns(const char server[16], const char* q, const char* data, unsigned int tt
 }
 
 void
-log_rrcname(const char server[16], const char* q, const char* data, unsigned int ttl) {
+log_rrcname(const char server[16],
+            const char* q,
+            const char* data,
+            unsigned int ttl) {
   log_string("rr ");
   log_ip(server, 4);
   log_space();
@@ -469,7 +501,10 @@ log_rrcname(const char server[16], const char* q, const char* data, unsigned int
 }
 
 void
-log_rrptr(const char server[16], const char* q, const char* data, unsigned int ttl) {
+log_rrptr(const char server[16],
+          const char* q,
+          const char* data,
+          unsigned int ttl) {
   log_string("rr ");
   log_ip(server, 4);
   log_space();
@@ -482,7 +517,11 @@ log_rrptr(const char server[16], const char* q, const char* data, unsigned int t
 }
 
 void
-log_rrmx(const char server[16], const char* q, const char* mx, const char pref[2], unsigned int ttl) {
+log_rrmx(const char server[16],
+         const char* q,
+         const char* mx,
+         const char pref[2],
+         unsigned int ttl) {
   uint16 u;
 
   log_string("rr ");
@@ -500,7 +539,12 @@ log_rrmx(const char server[16], const char* q, const char* mx, const char pref[2
 }
 
 void
-log_rrsoa(const char server[16], const char* q, const char* n1, const char* n2, const char misc[20], unsigned int ttl) {
+log_rrsoa(const char server[16],
+          const char* q,
+          const char* n1,
+          const char* n2,
+          const char misc[20],
+          unsigned int ttl) {
   uint32 u;
   int i;
 

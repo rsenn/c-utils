@@ -413,16 +413,16 @@ typedef struct macho_segment_command {
 
 typedef struct macho_segment_command_64 { /* for 64-bit architectures */
   uint32 cmd;                             /* LC_SEGMENT_64 */
-  uint32 cmdsize;                         /* includes sizeof macho_section_64 structs */
-  char segname[16];                       /* segment name */
-  uint64 vmaddr;                          /* memory address of this segment */
-  uint64 vmsize;                          /* memory size of this segment */
-  uint64 fileoff;                         /* file offset of this segment */
-  uint64 filesize;                        /* amount to map from the file */
-  vm_prot_t maxprot;                      /* maximum VM protection */
-  vm_prot_t initprot;                     /* initial VM protection */
-  uint32 nsects;                          /* number of sections in segment */
-  uint32 flags;                           /* flags */
+  uint32 cmdsize;     /* includes sizeof macho_section_64 structs */
+  char segname[16];   /* segment name */
+  uint64 vmaddr;      /* memory address of this segment */
+  uint64 vmsize;      /* memory size of this segment */
+  uint64 fileoff;     /* file offset of this segment */
+  uint64 filesize;    /* amount to map from the file */
+  vm_prot_t maxprot;  /* maximum VM protection */
+  vm_prot_t initprot; /* initial VM protection */
+  uint32 nsects;      /* number of sections in segment */
+  uint32 flags;       /* flags */
 } macho_segment_command_64;
 
 typedef struct macho_section {
@@ -553,7 +553,8 @@ typedef struct macho_nlist {
 ** unsigned char [N_STAB:3 | N_PEXT:1 | N_TYPE:3 | N_EXT:1]
 ** which are used via the following masks
 */
-#define MACHO_N_STAB 0xe0 /* if any of these bits set, a symbolic debugging entry */
+#define MACHO_N_STAB                                                           \
+  0xe0 /* if any of these bits set, a symbolic debugging entry */
 #define MACHO_N_PEXT 0x10 /* private external symbol bit */
 #define MACHO_N_TYPE 0x0e /* mask for the type bits */
 #define MACHO_N_EXT 0x01  /* external symbol bit, set for external symbols */

@@ -5,7 +5,12 @@
    cpp_expand_macro from the if-evaluator code, which means activating
    the "define" macro */
 int
-cpp_expand_macro(cpp_t* cpp, tokenizer* t, buffer* out, const char* name, unsigned rec_level, char* visited[]) {
+cpp_expand_macro(cpp_t* cpp,
+                 tokenizer* t,
+                 buffer* out,
+                 const char* name,
+                 unsigned rec_level,
+                 char* visited[]) {
   int is_define = !str_diff(name, "defined");
 
   struct macro_s* m;
@@ -26,7 +31,8 @@ cpp_expand_macro(cpp_t* cpp, tokenizer* t, buffer* out, const char* name, unsign
 #ifdef DEBUG_CPP
   buffer_puts(buffer_2, "lvl ");
   buffer_putulong(buffer_2, rec_level);
-  buffer_putm_internal(buffer_2, ": expanding macro ", name, " (", m->str_contents_buf, ")", 0);
+  buffer_putm_internal(
+      buffer_2, ": expanding macro ", name, " (", m->str_contents_buf, ")", 0);
   buffer_putnlflush(buffer_2);
 #endif
 
@@ -52,16 +58,20 @@ cpp_expand_macro(cpp_t* cpp, tokenizer* t, buffer* out, const char* name, unsign
   size_t i;
   struct token_s tok;
   unsigned num_args = MACRO_ARGCOUNT(m);
-  struct FILE_container_s* argvalues = alloc_zero((MACRO_VARIADIC(m) ? num_args + 1 : num_args) * sizeof(struct FILE_container_s));
+  struct FILE_container_s* argvalues =
+      alloc_zero((MACRO_VARIADIC(m) ? num_args + 1 : num_args) *
+                 sizeof(struct FILE_container_s));
 
-  for(i = 0; i < num_args; i++) argvalues[i].f = memstream_open(&argvalues[i].buf, &argvalues[i].len);
+  for(i = 0; i < num_args; i++)
+    argvalues[i].f = memstream_open(&argvalues[i].buf, &argvalues[i].len);
 
   /* replace named arguments in the contents of the macro call */
   if(FUNCTIONLIKE(m)) {
     int ret;
     if((ret = tokenizer_peek(t)) != '(') {
       /* function-like macro shall not be expanded if not followed by '(' */
-      if(ret == TOKENIZER_EOF && rec_level > 0 && (ret = cpp_tchain_parens_follows(cpp, rec_level - 1)) != -1) {
+      if(ret == TOKENIZER_EOF && rec_level > 0 &&
+         (ret = cpp_tchain_parens_follows(cpp, rec_level - 1)) != -1) {
         // warning("Replacement text involved subsequent text", t, 0);
         t = cpp->tchain[ret];
       } else {
@@ -126,7 +136,8 @@ cpp_expand_macro(cpp_t* cpp, tokenizer* t, buffer* out, const char* name, unsign
   }
 
   for(i = 0; i < num_args; i++) {
-    argvalues[i].f = buffer_reopen(argvalues[i].f, &argvalues[i].buf, &argvalues[i].len);
+    argvalues[i].f =
+        buffer_reopen(argvalues[i].f, &argvalues[i].buf, &argvalues[i].len);
     tokenizer_from_file(&argvalues[i].t, argvalues[i].f);
 #ifdef DEBUG_CPP
     buffer_puts(buffer_2, "macro argument ");
@@ -235,7 +246,8 @@ cpp_expand_macro(cpp_t* cpp, tokenizer* t, buffer* out, const char* name, unsign
   if(1) {
     cwae.f = buffer_reopen(cwae.f, &cwae.buf, &cwae.len);
 #ifdef DEBUG_CPP
-    buffer_putm_internal(buffer_2, "contents with args expanded: ", cwae.buf, 0);
+    buffer_putm_internal(
+        buffer_2, "contents with args expanded: ", cwae.buf, 0);
     buffer_putnlflush(buffer_2);
 #endif
     tokenizer_from_file(&cwae.t, cwae.f);
@@ -251,10 +263,12 @@ cpp_expand_macro(cpp_t* cpp, tokenizer* t, buffer* out, const char* name, unsign
     }
 
     tokenizer_rewind(&cwae.t);
-    struct macro_info_s* mcs = alloc_zero(mac_cnt * sizeof(struct macro_info_s));
+    struct macro_info_s* mcs =
+        alloc_zero(mac_cnt * sizeof(struct macro_info_s));
     {
       size_t mac_iter = 0;
-      cpp_get_macro_info(cpp, &cwae.t, mcs, &mac_iter, 0, 0, "null", visited, rec_level);
+      cpp_get_macro_info(
+          cpp, &cwae.t, mcs, &mac_iter, 0, 0, "null", visited, rec_level);
       /* some of the macros might not expand at this stage (without braces)*/
       while(mac_cnt && mcs[mac_cnt - 1].name == 0) --mac_cnt;
     }
@@ -274,7 +288,8 @@ cpp_expand_macro(cpp_t* cpp, tokenizer* t, buffer* out, const char* name, unsign
           for(j = 0; j < mi->first + 1; ++j) tokenizer_next(&cwae.t, &utok);
           struct FILE_container_s t2 = {0}, tmp = {0};
           t2.f = memstream_open(&t2.buf, &t2.len);
-          if(!cpp_expand_macro(cpp, &cwae.t, t2.f, mi->name, rec_level + 1, visited))
+          if(!cpp_expand_macro(
+                 cpp, &cwae.t, t2.f, mi->name, rec_level + 1, visited))
             return 0;
           t2.f = buffer_reopen(t2.f, &t2.buf, &t2.len);
           tokenizer_from_file(&t2.t, t2.f);
@@ -282,7 +297,8 @@ cpp_expand_macro(cpp_t* cpp, tokenizer* t, buffer* out, const char* name, unsign
           off_t cwae_pos = tokenizer_ftello(&cwae.t);
           tokenizer_rewind(&cwae.t);
 #ifdef DEBUG_CPP
-          buffer_putm_internal(buffer_2, "merging ", cwae.buf, " with ", t2.buf, 0);
+          buffer_putm_internal(
+              buffer_2, "merging ", cwae.buf, " with ", t2.buf, 0);
           buffer_putnlflush(buffer_2);
 #endif
           int diff = mem_tokenizers_join(&cwae, &t2, &tmp, mi->first, cwae_pos);
@@ -319,8 +335,12 @@ cpp_expand_macro(cpp_t* cpp, tokenizer* t, buffer* out, const char* name, unsign
       tokenizer_next(&cwae.t, &tok);
       if(tok.type == TT_EOF)
         break;
-      if(tok.type == TT_IDENTIFIER && tokenizer_peek(&cwae.t) == TOKENIZER_EOF && (ma = cpp_get_macro(cpp, cwae.t.buf)) && FUNCTIONLIKE(ma) && cpp_tchain_parens_follows(cpp, rec_level) != -1) {
-        int ret = cpp_expand_macro(cpp, &cwae.t, out, cwae.t.buf, rec_level + 1, visited);
+      if(tok.type == TT_IDENTIFIER &&
+         tokenizer_peek(&cwae.t) == TOKENIZER_EOF &&
+         (ma = cpp_get_macro(cpp, cwae.t.buf)) && FUNCTIONLIKE(ma) &&
+         cpp_tchain_parens_follows(cpp, rec_level) != -1) {
+        int ret = cpp_expand_macro(
+            cpp, &cwae.t, out, cwae.t.buf, rec_level + 1, visited);
         if(!ret)
           return ret;
       } else

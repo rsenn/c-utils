@@ -45,7 +45,10 @@ io_wantread_really(fd_t d, io_entry* e) {
     if(e->kernelwantwrite)
       x.events |= EPOLLOUT;
     x.data.fd = d;
-    epoll_ctl(io_master, e->kernelwantwrite ? EPOLL_CTL_MOD : EPOLL_CTL_ADD, d, &x);
+    epoll_ctl(io_master,
+              e->kernelwantwrite ? EPOLL_CTL_MOD : EPOLL_CTL_ADD,
+              d,
+              &x);
   }
 #endif
 
@@ -72,7 +75,10 @@ io_wantread_really(fd_t d, io_entry* e) {
       }
     }
     if(e->canread) {
-      debug_printf(("io_wantread: enqueueing %lld in normal read queue (next is %ld)\n", d, first_readable));
+      debug_printf(
+          ("io_wantread: enqueueing %lld in normal read queue (next is %ld)\n",
+           d,
+           first_readable));
       e->next_read = first_readable;
       first_readable = d;
     }
@@ -88,7 +94,11 @@ io_wantread_really(fd_t d, io_entry* e) {
       e->acceptqueued = 1;
     }
   } else if(!e->wantread) {
-    if(ReadFile((HANDLE)(size_t)d, e->inbuf, sizeof(e->inbuf), &e->errorcode, &e->or)) {
+    if(ReadFile((HANDLE)(size_t)d,
+                e->inbuf,
+                sizeof(e->inbuf),
+                &e->errorcode,
+                &e->or)) {
     queueread:
       /* had something to read immediately.  Damn! */
       e->readqueued = 0;

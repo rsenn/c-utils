@@ -87,7 +87,8 @@ static int fnmatch_strarray(buffer* b, array* a, const char* string, int flags);
 static strlist exclude_masks, include_masks;
 static char opt_separator = DIRSEP_C;
 
-static int opt_list = 0, opt_numeric = 0, opt_relative = 0, opt_deref = 0, opt_samedev = 1, opt_crc = 0;
+static int opt_list = 0, opt_numeric = 0, opt_relative = 0, opt_deref = 0,
+           opt_samedev = 1, opt_crc = 0;
 static int64 opt_minsize = -1;
 static long opt_depth = -1;
 static uint32 opt_types = (uint32)(int32)-1;
@@ -133,7 +134,13 @@ get_file_size(char* path) {
   typedef LONG(WINAPI getfilesizeex_fn)(HANDLE, PLARGE_INTEGER);
   static getfilesizeex_fn* api_fn;
 
-  HANDLE hFile = CreateFileA(path, GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
+  HANDLE hFile = CreateFileA(path,
+                             GENERIC_READ,
+                             FILE_SHARE_READ | FILE_SHARE_WRITE,
+                             0,
+                             OPEN_EXISTING,
+                             FILE_ATTRIBUTE_NORMAL,
+                             0);
   if(hFile == INVALID_HANDLE_VALUE)
     return -1; /* error condition, could
                   call GetLastError to
@@ -142,7 +149,8 @@ get_file_size(char* path) {
   if(!api_fn) {
     HANDLE kernel;
     if((kernel = LoadLibraryA("kernel32.dll")) != INVALID_HANDLE_VALUE)
-      api_fn = (getfilesizeex_fn*)(void*)GetProcAddress(kernel, "GetFileSizeEx");
+      api_fn =
+          (getfilesizeex_fn*)(void*)GetProcAddress(kernel, "GetFileSizeEx");
   }
 
   if(!api_fn)
@@ -166,7 +174,13 @@ uint64
 get_file_time(const char* path) {
   FILETIME c, la, lw;
   int64 t;
-  HANDLE hFile = CreateFileA(path, GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
+  HANDLE hFile = CreateFileA(path,
+                             GENERIC_READ,
+                             FILE_SHARE_READ | FILE_SHARE_WRITE,
+                             0,
+                             OPEN_EXISTING,
+                             FILE_ATTRIBUTE_NORMAL,
+                             0);
   if(hFile == INVALID_HANDLE_VALUE)
     return -1; /* error condition, could
                   call GetLastError to
@@ -218,12 +232,25 @@ get_file_owner(const char* path) {
   PSECURITY_DESCRIPTOR pSD = 0;
   LPSTR strsid = 0;
   DWORD dwErrorCode = 0;
-  static DWORD(WINAPI * get_security_info)(HANDLE, DWORD, SECURITY_INFORMATION, PSID*, PSID*, PACL*, PACL*, PSECURITY_DESCRIPTOR*);
+  static DWORD(WINAPI * get_security_info)(HANDLE,
+                                           DWORD,
+                                           SECURITY_INFORMATION,
+                                           PSID*,
+                                           PSID*,
+                                           PACL*,
+                                           PACL*,
+                                           PSECURITY_DESCRIPTOR*);
   static BOOL(WINAPI * convert_sid_to_string_sid_a)(PSID, LPSTR*);
   tmpbuf[0] = '\0';
   /* Get the handle of the file object.
    */
-  hFile = CreateFileA(path, GENERIC_READ, FILE_SHARE_READ, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
+  hFile = CreateFileA(path,
+                      GENERIC_READ,
+                      FILE_SHARE_READ,
+                      0,
+                      OPEN_EXISTING,
+                      FILE_ATTRIBUTE_NORMAL,
+                      0);
   /* Check GetLastError for CreateFile
    * error code. */
   if(hFile == INVALID_HANDLE_VALUE) {
@@ -235,11 +262,20 @@ get_file_owner(const char* path) {
   }
   if(get_win_api(&get_security_info, "advapi32", "GetSecurityInfo") == -1)
     return 0;
-  if(get_win_api(&convert_sid_to_string_sid_a, "advapi32", "ConvertSidToStringSidA") == -1)
+  if(get_win_api(&convert_sid_to_string_sid_a,
+                 "advapi32",
+                 "ConvertSidToStringSidA") == -1)
     return 0;
 
   /* Get the owner SID of the file. */
-  dwRtnCode = get_security_info(hFile, SE_FILE_OBJECT, OWNER_SECURITY_INFORMATION, &pSidOwner, 0, 0, 0, &pSD);
+  dwRtnCode = get_security_info(hFile,
+                                SE_FILE_OBJECT,
+                                OWNER_SECURITY_INFORMATION,
+                                &pSidOwner,
+                                0,
+                                0,
+                                0,
+                                &pSD);
   /* Check GetLastError for
    * GetSecurityInfo error condition. */
   if(dwRtnCode != ERROR_SUCCESS) {
@@ -672,7 +708,11 @@ file_crc32(const char* path, size_t size, uint32* crc) {
 }
 
 int
-list_file(stralloc* path, const char* name, dir_type_t dtype, long depth, dev_t root_dev) {
+list_file(stralloc* path,
+          const char* name,
+          dir_type_t dtype,
+          long depth,
+          dev_t root_dev) {
   size_t l;
   struct stat st;
   static stralloc pre;

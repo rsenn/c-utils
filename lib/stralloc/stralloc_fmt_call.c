@@ -19,7 +19,8 @@ stralloc_fmt_call(stralloc* out, stralloc_fmt_fn* fmt_function, void* av[4]) {
   size_t i;
 
   stralloc_readyplus(out, 1024);
-  n = (*((stralloc_fmt_x*)(void*)fmt_function))(&out->s[out->len], av[0], av[1], av[2], av[3]);
+  n = (*((stralloc_fmt_x*)(void*)fmt_function))(
+      &out->s[out->len], av[0], av[1], av[2], av[3]);
   out->len += n;
 
   stralloc_trunc(out, out->len);

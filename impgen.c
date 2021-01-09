@@ -85,7 +85,11 @@ main(int argc, char* argv[]) {
      */
 
     for(i = 0; i < nexp; i++) {
-      buffer_putm_internal(buffer_1, "  ", pe_rva2ptr(base, uint32_get(&name_rvas[i])), " @ ", 0);
+      buffer_putm_internal(buffer_1,
+                           "  ",
+                           pe_rva2ptr(base, uint32_get(&name_rvas[i])),
+                           " @ ",
+                           0);
       buffer_putulong(buffer_1, uint16_get(&ord_rvas[i]));
       buffer_putnlflush(buffer_1);
     }

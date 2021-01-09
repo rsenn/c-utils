@@ -77,12 +77,14 @@ char* search_path(const char* filename);
 #define MAX_PATH 260
 #endif
 
-#if(!defined(__MSYS__) && !defined(HAVE_CYGWIN_CONV_PATH)) || (defined(__MSYS__) && defined(__x86_64__))
+#if(!defined(__MSYS__) && !defined(HAVE_CYGWIN_CONV_PATH)) ||                  \
+    (defined(__MSYS__) && defined(__x86_64__))
 #define HAVE_CYGWIN_CONV_PATH 1
 #endif
 
 #ifdef HAVE_CYGWIN_CONV_PATH
-#define cygwin_conv_to_full_posix_path(from, to) cygwin_conv_path(CCP_WIN_A_TO_POSIX | CCP_ABSOLUTE, (from), (to), MAX_PATH)
+#define cygwin_conv_to_full_posix_path(from, to)                               \
+  cygwin_conv_path(CCP_WIN_A_TO_POSIX | CCP_ABSOLUTE, (from), (to), MAX_PATH)
 #endif
 
 void
@@ -106,14 +108,22 @@ resize_array(void** data, uint64* data_size, size_t sizeof_data) {
   uint64 new_size = (*data_size) > 0 ? (*data_size) * 2 : 64;
   void* new_data;
   new_data = realloc(*data, new_size * sizeof_data);
-  byte_zero(((unsigned char*)new_data) + (*data_size * sizeof_data), (new_size - (*data_size)) * sizeof_data);
+  byte_zero(((unsigned char*)new_data) + (*data_size * sizeof_data),
+            (new_size - (*data_size)) * sizeof_data);
   *data = new_data;
   *data_size = new_size;
 }
 
-#define resize_dep_list(ptr_deptree, ptr_deptree_size) resize_array((void**)ptr_deptree, ptr_deptree_size, sizeof(struct dep_tree_element*))
-#define resize_import_list(ptr_import_list, ptr_import_list_size) resize_array((void**)ptr_import_list, ptr_import_list_size, sizeof(struct import_table_item))
-#define resize_stack(ptr_stack, ptr_stack_size) resize_array((void**)ptr_stack, ptr_stack_size, sizeof(char*))
+#define resize_dep_list(ptr_deptree, ptr_deptree_size)                         \
+  resize_array((void**)ptr_deptree,                                            \
+               ptr_deptree_size,                                               \
+               sizeof(struct dep_tree_element*))
+#define resize_import_list(ptr_import_list, ptr_import_list_size)              \
+  resize_array((void**)ptr_import_list,                                        \
+               ptr_import_list_size,                                           \
+               sizeof(struct import_table_item))
+#define resize_stack(ptr_stack, ptr_stack_size)                                \
+  resize_array((void**)ptr_stack, ptr_stack_size, sizeof(char*))
 
 void
 add_dep(struct dep_tree_element* parent, struct dep_tree_element* child) {
@@ -134,7 +144,9 @@ add_import(struct dep_tree_element* self) {
 }
 
 int
-find_dep(struct dep_tree_element* root, char* name, struct dep_tree_element** result) {
+find_dep(struct dep_tree_element* root,
+         char* name,
+         struct dep_tree_element** result) {
   int ret = -1;
   uint64 i;
   if(root->flags & DEPTREE_VISITED) {
@@ -156,10 +168,17 @@ find_dep(struct dep_tree_element* root, char* name, struct dep_tree_element** re
   return ret;
 }
 
-int build_dep_tree(build_tree_config* cfg, char* name, struct dep_tree_element* root, struct dep_tree_element* self);
+int build_dep_tree(build_tree_config* cfg,
+                   char* name,
+                   struct dep_tree_element* root,
+                   struct dep_tree_element* self);
 
 struct dep_tree_element*
-process_dep(build_tree_config* cfg, uint32 name, struct dep_tree_element* root, struct dep_tree_element* self, int deep) {
+process_dep(build_tree_config* cfg,
+            uint32 name,
+            struct dep_tree_element* root,
+            struct dep_tree_element* self,
+            int deep) {
   struct dep_tree_element* child = NULL;
   int found;
   int64 i;
@@ -209,7 +228,8 @@ export_ordinal)
 int
 clear_dep_status(struct dep_tree_element* self, uint64 flags) {
   uint64 i;
-  for(i = 0; i < self->childs_len; i++) clear_dep_status(self->childs[i], flags);
+  for(i = 0; i < self->childs_len; i++)
+    clear_dep_status(self->childs[i], flags);
   self->flags &= ~flags;
   return 0;
 }
@@ -230,7 +250,10 @@ pop_stack(char*** stack, uint64* stack_len, uint64* stack_size, char* name) {
 }
 
 static uint64
-thunk_data_u1_function(void* pe, void* thunk_array, uint32 index, build_tree_config* cfg) {
+thunk_data_u1_function(void* pe,
+                       void* thunk_array,
+                       uint32 index,
+                       build_tree_config* cfg) {
   if(PE_64(pe))
     return ((uint64*)thunk_array)[index];
   else
@@ -250,7 +273,10 @@ PE_FILE_MACHINE_I386) return
 }*/
 
 static void
-build_dep_tree32or64(pe_loaded_image* img, build_tree_config* cfg, struct dep_tree_element* root, struct dep_tree_element* self) {
+build_dep_tree32or64(pe_loaded_image* img,
+                     build_tree_config* cfg,
+                     struct dep_tree_element* root,
+                     struct dep_tree_element* self) {
   pe_data_directory* idata;
   pe_import_descriptor* iid;
   pe_export_directory* ied;
@@ -273,8 +299,10 @@ build_dep_tree32or64(pe_loaded_image* img, build_tree_config* cfg, struct dep_tr
       uint32 *addrs, *names;
       uint16* ords;
       self->exports_len = uint32_get(&ied->number_of_functions);
-      self->exports = (struct export_table_item*)malloc(sizeof(struct export_table_item) * self->exports_len);
-      byte_zero(self->exports, sizeof(struct export_table_item) * self->exports_len);
+      self->exports = (struct export_table_item*)malloc(
+          sizeof(struct export_table_item) * self->exports_len);
+      byte_zero(self->exports,
+                sizeof(struct export_table_item) * self->exports_len);
       addrs = pe_rva2ptr(img->base, uint32_get(&ied->address_of_functions));
       ords = pe_rva2ptr(img->base, uint32_get(&ied->address_of_name_ordinals));
       names = pe_rva2ptr(img->base, uint32_get(&ied->address_of_names));
@@ -289,11 +317,14 @@ build_dep_tree32or64(pe_loaded_image* img, build_tree_config* cfg, struct dep_tr
       for(i = 0; i < ied->number_of_functions; i++) {
         if(addrs[i] != 0) {
           int section_index = pe_rva2section(img->base, addrs[i]);
-          if((idata->virtual_address <= addrs[i]) && (idata->virtual_address + idata->size > addrs[i])) {
+          if((idata->virtual_address <= addrs[i]) &&
+             (idata->virtual_address + idata->size > addrs[i])) {
             self->exports[i].address = NULL;
-            self->exports[i].forward_str = str_dup(pe_rva2ptr(img->base, uint32_get(&addrs[i])));
+            self->exports[i].forward_str =
+                str_dup(pe_rva2ptr(img->base, uint32_get(&addrs[i])));
           } else
-            self->exports[i].address = pe_rva2ptr(img->base, uint32_get(&addrs[i]));
+            self->exports[i].address =
+                pe_rva2ptr(img->base, uint32_get(&addrs[i]));
           self->exports[i].ordinal = i + ied->base;
           self->exports[i].section_index = section_index;
           self->exports[i].address_offset = addrs[i];
@@ -306,7 +337,9 @@ build_dep_tree32or64(pe_loaded_image* img, build_tree_config* cfg, struct dep_tr
   if(idata->size > 0 && idata->virtual_address != 0) {
     iid = pe_rva2ptr(img->base, uint32_get(&idata->virtual_address));
     if(iid)
-      for(i = 0; iid[i].characteristics || iid[i].time_date_stamp || iid[i].forwarder_chain || iid[i].name || iid[i].first_thunk; i++) {
+      for(i = 0; iid[i].characteristics || iid[i].time_date_stamp ||
+                 iid[i].forwarder_chain || iid[i].name || iid[i].first_thunk;
+          i++) {
         struct dep_tree_element* dll;
         uint64 impaddress;
         dll = process_dep(cfg, iid[i].name, root, self, 0);
@@ -315,7 +348,9 @@ build_dep_tree32or64(pe_loaded_image* img, build_tree_config* cfg, struct dep_tr
         ith = pe_rva2ptr(img->base, uint32_get(&iid[i].first_thunk));
         oith = pe_rva2ptr(img->base, uint32_get(&iid[i].original_first_thunk));
 
-        for(j = 0; (impaddress = thunk_data_u1_function(img->base, ith, j, cfg)) != 0; j++) {
+        for(j = 0;
+            (impaddress = thunk_data_u1_function(img->base, ith, j, cfg)) != 0;
+            j++) {
           struct import_table_item* imp = add_import(self);
           imp->dll = dll;
           imp->ordinal = -1;
@@ -328,7 +363,8 @@ build_dep_tree32or64(pe_loaded_image* img, build_tree_config* cfg, struct dep_tr
           if(oith && imp->orig_address & (1 << (sizeof(uint32) * 8 - 1))) {
             imp->ordinal = imp->orig_address & ~(1 << (sizeof(uint32) * 8 - 1));
           } else if(oith) {
-            pe_import_by_name* byname = pe_rva2ptr(img->base, uint32_get(&imp->orig_address));
+            pe_import_by_name* byname =
+                pe_rva2ptr(img->base, uint32_get(&imp->orig_address));
             if(byname != NULL)
               imp->name = str_dup((char*)byname->name);
           }
@@ -340,8 +376,11 @@ build_dep_tree32or64(pe_loaded_image* img, build_tree_config* cfg, struct dep_tr
   if(idata->size > 0 && idata->virtual_address != 0) {
     idd = pe_rva2ptr(img->base, uint32_get(&idata->virtual_address));
     if(idd)
-      for(i = 0; idd[i].attributes.all_attributes || idd[i].dll_name_rva || idd[i].module_handle_rva || idd[i].import_address_table_rva || idd[i].import_name_table_rva ||
-                 idd[i].bound_import_address_table_rva || idd[i].unload_information_table_rva || idd[i].time_date_stamp;
+      for(i = 0; idd[i].attributes.all_attributes || idd[i].dll_name_rva ||
+                 idd[i].module_handle_rva || idd[i].import_address_table_rva ||
+                 idd[i].import_name_table_rva ||
+                 idd[i].bound_import_address_table_rva ||
+                 idd[i].unload_information_table_rva || idd[i].time_date_stamp;
           i++) {
         struct dep_tree_element* dll;
         uint64 impaddress;
@@ -349,13 +388,17 @@ build_dep_tree32or64(pe_loaded_image* img, build_tree_config* cfg, struct dep_tr
         if(dll == NULL)
           continue;
         if(idd[i].attributes.all_attributes & 0x00000001) {
-          ith = pe_rva2ptr(img->base, uint32_get(&idd[i].import_address_table_rva));
-          oith = pe_rva2ptr(img->base, uint32_get(&idd[i].import_name_table_rva));
+          ith = pe_rva2ptr(img->base,
+                           uint32_get(&idd[i].import_address_table_rva));
+          oith =
+              pe_rva2ptr(img->base, uint32_get(&idd[i].import_name_table_rva));
         } else {
           ith = (void*)(uintptr_t)idd[i].import_address_table_rva;
           oith = (void*)(uintptr_t)idd[i].import_name_table_rva;
         }
-        for(j = 0; (impaddress = thunk_data_u1_function(img->base, ith, j, cfg)) != 0; j++) {
+        for(j = 0;
+            (impaddress = thunk_data_u1_function(img->base, ith, j, cfg)) != 0;
+            j++) {
           struct import_table_item* imp = add_import(self);
           imp->dll = dll;
           imp->ordinal = -1;
@@ -367,7 +410,8 @@ build_dep_tree32or64(pe_loaded_image* img, build_tree_config* cfg, struct dep_tr
           if(oith && imp->orig_address & (1 << (sizeof(uint32) * 8 - 1))) {
             imp->ordinal = imp->orig_address & ~(1 << (sizeof(uint32) * 8 - 1));
           } else if(oith) {
-            pe_import_by_name* byname = pe_rva2ptr(img->base, uint32_get(&imp->orig_address));
+            pe_import_by_name* byname =
+                pe_rva2ptr(img->base, uint32_get(&imp->orig_address));
             if(byname != NULL)
               imp->name = str_dup((char*)byname->name);
           }
@@ -379,22 +423,31 @@ build_dep_tree32or64(pe_loaded_image* img, build_tree_config* cfg, struct dep_tr
   if(idata->size > 0 && idata->virtual_address != 0) {
     iid = pe_rva2ptr(img->base, uint32_get(&idata->virtual_address));
     if(iid)
-      for(i = 0; iid[i].characteristics || iid[i].time_date_stamp || iid[i].forwarder_chain || iid[i].name || iid[i].first_thunk; i++) process_dep(cfg, iid[i].name, root, self, 1);
+      for(i = 0; iid[i].characteristics || iid[i].time_date_stamp ||
+                 iid[i].forwarder_chain || iid[i].name || iid[i].first_thunk;
+          i++)
+        process_dep(cfg, iid[i].name, root, self, 1);
   }
 
   idata = &pe_get_datadir(img->base, NULL)[PE_DIRECTORY_ENTRY_DELAY_IMPORT];
   if(idata->size > 0 && idata->virtual_address != 0) {
     idd = pe_rva2ptr(img->base, uint32_get(&idata->virtual_address));
     if(idd)
-      for(i = 0; idd[i].attributes.all_attributes || idd[i].dll_name_rva || idd[i].module_handle_rva || idd[i].import_address_table_rva || idd[i].import_name_table_rva ||
-                 idd[i].bound_import_address_table_rva || idd[i].unload_information_table_rva || idd[i].time_date_stamp;
+      for(i = 0; idd[i].attributes.all_attributes || idd[i].dll_name_rva ||
+                 idd[i].module_handle_rva || idd[i].import_address_table_rva ||
+                 idd[i].import_name_table_rva ||
+                 idd[i].bound_import_address_table_rva ||
+                 idd[i].unload_information_table_rva || idd[i].time_date_stamp;
           i++)
         process_dep(cfg, idd[i].dll_name_rva, root, self, 1);
   }
 }
 
 char
-try_map_and_load(char* name, char* path, pe_loaded_image* loaded_image, int required_machine_type) {
+try_map_and_load(char* name,
+                 char* path,
+                 pe_loaded_image* loaded_image,
+                 int required_machine_type) {
   char success = 0;
   size_t sz;
   stralloc sa;
@@ -425,7 +478,9 @@ try_map_and_load(char* name, char* path, pe_loaded_image* loaded_image, int requ
     loaded_image->base = (char*)dhdr;
     loaded_image->file_header = pe_header_nt(loaded_image->base);
     loaded_image->module_name = str_dup(sa.s);
-    loaded_image->sections = pe_header_sections(loaded_image->base, &loaded_image->number_of_sections);
+    loaded_image->sections =
+        pe_header_sections(loaded_image->base,
+                           &loaded_image->number_of_sections);
     success = 1;
   }
 
@@ -435,7 +490,10 @@ try_map_and_load(char* name, char* path, pe_loaded_image* loaded_image, int requ
 }
 
 int
-build_dep_tree(build_tree_config* cfg, char* name, struct dep_tree_element* root, struct dep_tree_element* self) {
+build_dep_tree(build_tree_config* cfg,
+               char* name,
+               struct dep_tree_element* root,
+               struct dep_tree_element* self) {
   pe_loaded_image loaded_image;
   pe_loaded_image* img;
   unsigned char* hmod = 0;
@@ -453,10 +511,12 @@ build_dep_tree(build_tree_config* cfg, char* name, struct dep_tree_element* root
     // str_dup(name);
 
     loaded_image.file_header = pe_header_nt(hmod);
-    loaded_image.sections = pe_header_sections(hmod, &loaded_image.number_of_sections);
+    loaded_image.sections =
+        pe_header_sections(hmod, &loaded_image.number_of_sections);
     loaded_image.base = (void*)hmod;
 
-    if(cfg->machine_type != -1 && (int)loaded_image.file_header->coff_header.machine != cfg->machine_type)
+    if(cfg->machine_type != -1 &&
+       (int)loaded_image.file_header->coff_header.machine != cfg->machine_type)
       return 1;
   } else {
     stralloc sa;
@@ -466,7 +526,10 @@ build_dep_tree(build_tree_config* cfg, char* name, struct dep_tree_element* root
     strlist_foreach_s(cfg->search_paths, dir) {
       if(path_find(dir, str_basename(name), &sa)) {
         stralloc_nul(&sa);
-        success = try_map_and_load(str_basename(sa.s), dir, &loaded_image, cfg->machine_type);
+        success = try_map_and_load(str_basename(sa.s),
+                                   dir,
+                                   &loaded_image,
+                                   cfg->machine_type);
         if(success)
           break;
       }
@@ -536,11 +599,14 @@ build_dep_tree(build_tree_config* cfg, char* name, struct dep_tree_element* root
   }
   */
   for(i = 0; i < self->imports_len; i++) {
-    if(self->imports[i].mapped == NULL && self->imports[i].dll != NULL && (self->imports[i].name != NULL || self->imports[i].ordinal > 0)) {
+    if(self->imports[i].mapped == NULL && self->imports[i].dll != NULL &&
+       (self->imports[i].name != NULL || self->imports[i].ordinal > 0)) {
       struct dep_tree_element* dll = self->imports[i].dll;
       for(j = 0; j < dll->exports_len; j++) {
-        if((self->imports[i].name != NULL && dll->exports[j].name != NULL && str_equal(self->imports[i].name, dll->exports[j].name)) ||
-           (self->imports[i].ordinal > 0 && dll->exports[j].ordinal > 0 && self->imports[i].ordinal == dll->exports[j].ordinal)) {
+        if((self->imports[i].name != NULL && dll->exports[j].name != NULL &&
+            str_equal(self->imports[i].name, dll->exports[j].name)) ||
+           (self->imports[i].ordinal > 0 && dll->exports[j].ordinal > 0 &&
+            self->imports[i].ordinal == dll->exports[j].ordinal)) {
           self->imports[i].mapped = &dll->exports[j];
           break;
         }
@@ -608,7 +674,16 @@ For bug reporting instructions, please see:\n\
 }
 
 int
-print_image_links(int first, int verbose, int unused, int datarelocs, int functionrelocs, struct dep_tree_element* self, int recursive, int list_exports, int list_imports, int depth) {
+print_image_links(int first,
+                  int verbose,
+                  int unused,
+                  int datarelocs,
+                  int functionrelocs,
+                  struct dep_tree_element* self,
+                  int recursive,
+                  int list_exports,
+                  int list_imports,
+                  int depth) {
   size_t i;
   int unresolved = 0;
   self->flags |= DEPTREE_VISITED;
@@ -624,7 +699,11 @@ print_image_links(int first, int verbose, int unused, int datarelocs, int functi
       buffer_putspad(buffer_1, item->name, 16);
       buffer_puts(buffer_1, " (0x");
       buffer_putxlonglong0(buffer_1, item->address_offset, 8);
-      buffer_putm_internal(buffer_1, item->forward_str ? " ->" : "", item->forward_str ? item->forward_str : "", " <", 0);
+      buffer_putm_internal(buffer_1,
+                           item->forward_str ? " ->" : "",
+                           item->forward_str ? item->forward_str : "",
+                           " <",
+                           0);
       buffer_putulong(buffer_1, item->section_index);
       buffer_puts(buffer_1, ">");
       buffer_putnlflush(buffer_1);
@@ -679,7 +758,10 @@ print_image_links(int first, int verbose, int unused, int datarelocs, int functi
       buffer_putspace(buffer_1);
       buffer_puts(buffer_1, item->mapped ? "" : "<UNRESOLVED>");
       buffer_putspace(buffer_1);
-      buffer_puts(buffer_1, item->dll == 0 ? "<MODULE MISSING>" : item->dll->module ? item->dll->module : "<0>");
+      buffer_puts(buffer_1,
+                  item->dll == 0
+                      ? "<MODULE MISSING>"
+                      : item->dll->module ? item->dll->module : "<0>");
       buffer_putnlflush(buffer_1);
       /*printf("\t%*s%llx %llx %3d %s %s
          %s\n", depth, depth > 0 ? " " :
@@ -704,7 +786,16 @@ print_image_links(int first, int verbose, int unused, int datarelocs, int functi
       if(!(self->childs[i]->flags & DEPTREE_VISITED)) {
         buffer_putnspace(buffer_1, depth * 2);
         buffer_puts(buffer_1, self->childs[i]->module);
-        print_image_links(0, verbose, unused, datarelocs, functionrelocs, self->childs[i], recursive, list_exports, list_imports, depth + 1);
+        print_image_links(0,
+                          verbose,
+                          unused,
+                          datarelocs,
+                          functionrelocs,
+                          self->childs[i],
+                          recursive,
+                          list_exports,
+                          list_imports,
+                          depth + 1);
       }
     }
   }
@@ -719,7 +810,8 @@ int
 registry_query(const char* key, const char* value, stralloc* sa) {
   HKEY hkey = 0;
   DWORD len, ret, type;
-  typedef LONG(WINAPI reggetvalue_fn)(HKEY, LPCSTR, LPCSTR, DWORD, DWORD*, void*, DWORD*);
+  typedef LONG(WINAPI reggetvalue_fn)(
+      HKEY, LPCSTR, LPCSTR, DWORD, DWORD*, void*, DWORD*);
   static reggetvalue_fn* api_fn;
 
   if(!api_fn) {
@@ -733,9 +825,11 @@ registry_query(const char* key, const char* value, stralloc* sa) {
 
   if(!str_diffn(key, "HKCU", 4) || !str_diffn(key, "HKEY_CURRENT_USER", 17)) {
     hkey = HKEY_CURRENT_USER;
-  } else if(!str_diffn(key, "HKLM", 4) || !str_diffn(key, "HKEY_LOCAL_MACHINE", 19)) {
+  } else if(!str_diffn(key, "HKLM", 4) ||
+            !str_diffn(key, "HKEY_LOCAL_MACHINE", 19)) {
     hkey = HKEY_LOCAL_MACHINE;
-  } else if(!str_diffn(key, "HKCR", 4) || !str_diffn(key, "HKEY_CLASSES_ROOT", 17)) {
+  } else if(!str_diffn(key, "HKCR", 4) ||
+            !str_diffn(key, "HKEY_CLASSES_ROOT", 17)) {
     hkey = HKEY_LOCAL_MACHINE;
   } else if(!str_diffn(key, "HKU", 3) || !str_diffn(key, "HKEY_USERS", 10)) {
     hkey = HKEY_LOCAL_MACHINE;
@@ -743,7 +837,8 @@ registry_query(const char* key, const char* value, stralloc* sa) {
 
   stralloc_ready(sa, PATH_MAX * 64 + 1);
   len = sa->a;
-  ret = (*api_fn)(hkey, strchr(key, '\\') + 1, value, RRF_RT_ANY, &type, sa->s, &len);
+  ret = (*api_fn)(
+      hkey, strchr(key, '\\') + 1, value, RRF_RT_ANY, &type, sa->s, &len);
   sa->len = len;
   if(ret == ERROR_SUCCESS) {
     if(type == REG_EXPAND_SZ)
@@ -814,7 +909,8 @@ search_path(const char* filename) {
 int
 main(int argc, char** argv) {
   int i = 0;
-  static int verbose = 0, unused = 0, datarelocs = 0, functionrelocs = 0, recursive = 0, list_exports = 0, list_imports = 0;
+  static int verbose = 0, unused = 0, datarelocs = 0, functionrelocs = 0,
+             recursive = 0, list_exports = 0, list_imports = 0;
   int skip = 0;
   int files = 0;
   int files_start = -1;
@@ -943,7 +1039,8 @@ main(int argc, char** argv) {
       struct dep_tree_element root;
       byte_zero(&root, sizeof(struct dep_tree_element));
       for(i = files_start; i < argc; i++) {
-        struct dep_tree_element* child = (struct dep_tree_element*)malloc(sizeof(struct dep_tree_element));
+        struct dep_tree_element* child =
+            (struct dep_tree_element*)malloc(sizeof(struct dep_tree_element));
         byte_zero(child, sizeof(struct dep_tree_element));
         child->module = str_dup(argv[i]);
 
@@ -974,7 +1071,16 @@ main(int argc, char** argv) {
           buffer_puts(buffer_1, argv[i]);
           buffer_putsflush(buffer_1, ":\n");
         }
-        print_image_links(1, verbose, unused, datarelocs, functionrelocs, root.childs[i - files_start], recursive, list_exports, list_imports, 0);
+        print_image_links(1,
+                          verbose,
+                          unused,
+                          datarelocs,
+                          functionrelocs,
+                          root.childs[i - files_start],
+                          recursive,
+                          list_exports,
+                          list_imports,
+                          0);
       }
     }
   }

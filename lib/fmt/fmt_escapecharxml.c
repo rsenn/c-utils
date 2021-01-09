@@ -40,7 +40,8 @@ fmt_escapecharhtml(char* dest, unsigned int ch) {
   return fmt_escapecharxml(dest, ch);
 }
 #else
-size_t fmt_escapecharhtml(char* dest, unsigned int ch) __attribute__((__alias__("fmt_escapecharxml")));
+size_t fmt_escapecharhtml(char* dest, unsigned int ch)
+    __attribute__((__alias__("fmt_escapecharxml")));
 #endif
 
 #endif

@@ -33,7 +33,10 @@ xml_debug_nodelist(xmlnode* node, buffer* b, int depth) {
       stralloc_free(&text);
       continue;
     }
-    buffer_putm_internal(b, "element[", node_is_closing(node) ? &node->name[1] : node->name, NULL);
+    buffer_putm_internal(b,
+                         "element[",
+                         node_is_closing(node) ? &node->name[1] : node->name,
+                         NULL);
     buffer_putm_internal(b, "] ", NULL);
     buffer_putm_internal(b, node_is_closing(node) ? " closing" : NULL, NULL);
     if(node->attributes)
@@ -50,7 +53,8 @@ xml_debug_nodelist(xmlnode* node, buffer* b, int depth) {
         xml_debug_nodelist(node->children, b, depth + 1);
       }
       buffer_putnspace(b, depth * 2);
-    } else if(node->name[0] == '/' || (node->next && node_is_closing(node->next))) {
+    } else if(node->name[0] == '/' ||
+              (node->next && node_is_closing(node->next))) {
       buffer_puts(b, " ");
     } else {
       buffer_puts(b, node->name[0] == '?' ? "?" : " self-closing");

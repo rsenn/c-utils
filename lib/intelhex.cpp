@@ -96,7 +96,9 @@ hex_data::compact() {
 
   for(++i; i != blocks.end(); ++i) {
     if((previous->first + previous->second.size()) == i->first) {
-      previous->second.insert(previous->second.end(), i->second.begin(), i->second.end());
+      previous->second.insert(previous->second.end(),
+                              i->second.begin(),
+                              i->second.end());
       blocks.erase(i);
       i = previous;
     }
@@ -149,7 +151,8 @@ hex_data::erase(address_type first, address_type last) {
   if(first > last)
     std::swap(first, last);
 
-  for(iterator i = blocks.begin(); (i != blocks.end()) && (first <= last); ++i) {
+  for(iterator i = blocks.begin(); (i != blocks.end()) && (first <= last);
+      ++i) {
     const address_type ope = i->first + i->second.size();
     if(first >= ope) /* Ignore all blocks with addresses < first */
       continue;
@@ -192,7 +195,8 @@ hex_data::size_type
 hex_data::size() {
   size_type s = 0;
 
-  for(iterator i = blocks.begin(); i != blocks.end(); ++i) s += i->second.size();
+  for(iterator i = blocks.begin(); i != blocks.end(); ++i)
+    s += i->second.size();
 
   return s;
 }
@@ -241,7 +245,8 @@ hex_data::max_addr_below(address_type hi) {
 
   for(iterator i = blocks.begin(); i != blocks.end(); ++i) {
     if(i->first <= hi) {
-      const address_type a = i->first + i->second.size() - 1; // Max address of this block
+      const address_type a =
+          i->first + i->second.size() - 1; // Max address of this block
       if(a > s)
         s = a;
     }
@@ -358,7 +363,8 @@ hex_data::read(std::istream& s) {
           address_type num = 0;
           /* If the start of the new block is interior to an existing block...
            */
-          if((i->first <= address) && ((i->first + i->second.size()) > address)) {
+          if((i->first <= address) &&
+             ((i->first + i->second.size()) > address)) {
             /* Store the portion of the new block that overlaps the existing
              * block */
             const size_type index = address - i->first;
@@ -388,7 +394,9 @@ hex_data::read(std::istream& s) {
         break;
       }
       case 1: break; /* Ignore EOF record */
-      case 2: /* Segment address record (INHX32) */ segment_addr_rec = true; break;
+      case 2:        /* Segment address record (INHX32) */
+        segment_addr_rec = true;
+        break;
       case 4: /* Linear address record (INHX32) */
         if((0 == address) && (2 == length)) {
           linear_address = buffer[4];
@@ -420,8 +428,9 @@ hex_data::write(std::ostream& os) {
   if(!os) /* Bail out on bad streams */
     return;
 
-  os.setf(std::ios::hex,
-          std::ios::basefield); // Set the stream to ouput hex instead of decimal
+  os.setf(
+      std::ios::hex,
+      std::ios::basefield); // Set the stream to ouput hex instead of decimal
   os.setf(std::ios::uppercase); // Use uppercase hex notation
   os.fill('0');                 // Pad with zeroes
 
@@ -473,7 +482,8 @@ hex_data::write(std::ostream& os) {
     checksum += static_cast<uint8_t>(i->first);      /* Low byte */
     checksum += static_cast<uint8_t>(i->first >> 8); /* High byte */
     os << "00";                                      // Record type
-    for(unsigned j = 0; j < i->second.size(); ++j)   // Store the data bytes, LSB first, ASCII HEX
+    for(unsigned j = 0; j < i->second.size();
+        ++j) // Store the data bytes, LSB first, ASCII HEX
     {
       os.width(2);
       /* OSX (or maybe GCC), seems unable to handle uint8_t */
@@ -514,12 +524,18 @@ hex_data::tidy(hex_data::size_type length) {
 /*        Return true if every word in hex1 has a corresponding, and equivalent,
  * word in hex2 */
 bool
-compare(hex_data& hex1, hex_data& hex2, value_type mask, address_type begin, address_type end) {
+compare(hex_data& hex1,
+        hex_data& hex2,
+        value_type mask,
+        address_type begin,
+        address_type end) {
   // Walk block list from hex1
   for(hex_data::iterator i = hex1.begin(); i != hex1.end(); ++i) {
     // Walk the block
     address_type addr(i->first);
-    for(hex_data::data_container::iterator j = i->second.begin(); j != i->second.end(); ++j, ++addr) {
+    for(hex_data::data_container::iterator j = i->second.begin();
+        j != i->second.end();
+        ++j, ++addr) {
       if((addr < begin) || (addr > end))
         continue;
 

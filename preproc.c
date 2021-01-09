@@ -115,7 +115,10 @@ emit_error_or_warning(tokenizer* t, int is_error) {
 
 /* return index of matching item in values array, or -1 on error */
 static int
-expect(tokenizer* t, enum tokentype tt, const char* values[], struct token* token) {
+expect(tokenizer* t,
+       enum tokentype tt,
+       const char* values[],
+       struct token* token) {
   int ret;
   do {
     ret = tokenizer_next(t, token);

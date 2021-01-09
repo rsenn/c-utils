@@ -45,7 +45,8 @@ dns_domain_todot(char* out, const char* d, size_t n) {
       if((ch2 >= 'A') && (ch2 <= 'Z'))
         ch2 += 0x20;
 
-      if(((ch2 >= 'a') && (ch2 <= 'z')) || ((ch2 >= '0') && (ch2 <= '9')) || (ch2 == '-') || (ch2 == '_')) {
+      if(((ch2 >= 'a') && (ch2 <= 'z')) || ((ch2 >= '0') && (ch2 <= '9')) ||
+         (ch2 == '-') || (ch2 == '_')) {
         out[idx++] = ch2;
 
         if(idx == n)
@@ -537,7 +538,9 @@ resolve_ip6(const char* name, int* nptr) {
     return 0;
   }
 
-  for(i = 0, n = 0; i < out.len && n < (sizeof(addrlist) / sizeof(addrlist[0]) - 1); i += 16, n++) {
+  for(i = 0, n = 0;
+      i < out.len && n < (sizeof(addrlist) / sizeof(addrlist[0]) - 1);
+      i += 16, n++) {
     addrlist[n] = &out.s[i];
 
     b[fmt_ip6(b, addrlist[n])] = '\0';
@@ -566,7 +569,10 @@ gethostbyname(const char* name) {
 }
 
 int
-getaddrinfo(const char* node, const char* service, const struct addrinfo* hints, struct addrinfo** res) {
+getaddrinfo(const char* node,
+            const char* service,
+            const struct addrinfo* hints,
+            struct addrinfo** res) {
 
   struct hostent* h = gethostbyname(node);
   static struct addrinfo r;

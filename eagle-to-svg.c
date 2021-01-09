@@ -8,8 +8,22 @@
 
 #include "lib/map.h"
 
-static const char* palette[16] = {
-    "#000000", "#0000aa", "#555555", "#5555ff", "#aa0000", "#00aa00", "#55ff55", "#aaaaaa", "#00aaaa", "#55ffff", "#ff5555", "#aa00aa", "#ff55ff", "#aa5500", "#ffff55", "#aaaaaa"};
+static const char* palette[16] = {"#000000",
+                                  "#0000aa",
+                                  "#555555",
+                                  "#5555ff",
+                                  "#aa0000",
+                                  "#00aa00",
+                                  "#55ff55",
+                                  "#aaaaaa",
+                                  "#00aaaa",
+                                  "#55ffff",
+                                  "#ff5555",
+                                  "#aa00aa",
+                                  "#ff55ff",
+                                  "#aa5500",
+                                  "#ffff55",
+                                  "#aaaaaa"};
 
 static buffer input, output;
 static xmlnodeset nodeset;
@@ -159,12 +173,15 @@ main(int argc, char* argv[]) {
     const char* number = xml_get_attribute(*nptr, "number");
     const char* color = xml_get_attribute(*nptr, "color");
 
-    MAP_INSERT(layers, number, str_len(number) + 1, (char*)name, str_len(name) + 1);
-    MAP_INSERT(colors, number, str_len(number) + 1, (char*)color, str_len(color) + 1);
+    MAP_INSERT(
+        layers, number, str_len(number) + 1, (char*)name, str_len(name) + 1);
+    MAP_INSERT(
+        colors, number, str_len(number) + 1, (char*)color, str_len(color) + 1);
   }
 
   MAP_FOREACH(layers, t) {
-    const char* color = MAP_GET(colors, MAP_ITER_KEY(t), str_len(MAP_ITER_KEY(t)));
+    const char* color =
+        MAP_GET(colors, MAP_ITER_KEY(t), str_len(MAP_ITER_KEY(t)));
     unsigned int c = 0;
     scan_uint(color, &c);
 
@@ -225,7 +242,9 @@ main(int argc, char* argv[]) {
     layer = MAP_GET(layers, layer, str_len(layer) + 1);
     xml_set_attribute(line, "class", layer);
     xml_add_child(svggroup, line);
-    xml_add_child(svggroup, pad(rect.x1 > rect.x2 ? rect.x2 : rect.x1, rect.y1 > rect.y2 ? rect.y2 : rect.y1));
+    xml_add_child(svggroup,
+                  pad(rect.x1 > rect.x2 ? rect.x2 : rect.x1,
+                      rect.y1 > rect.y2 ? rect.y2 : rect.y1));
   }
   // nodeset = xml_find_all_1(signals,
   // xml_match_name, "wire");

@@ -34,7 +34,10 @@ io_wantwrite_really(fd_t d, io_entry* e) {
     if(e->kernelwantread)
       x.events |= EPOLLIN;
     x.data.fd = d;
-    epoll_ctl(io_master, e->kernelwantread ? EPOLL_CTL_MOD : EPOLL_CTL_ADD, d, &x);
+    epoll_ctl(io_master,
+              e->kernelwantread ? EPOLL_CTL_MOD : EPOLL_CTL_ADD,
+              d,
+              &x);
   }
 #endif
 
@@ -60,7 +63,10 @@ io_wantwrite_really(fd_t d, io_entry* e) {
       case -1: return;
     }
     if(e->canwrite) {
-      debug_printf(("io_wantwrite: enqueueing %lld in normal write queue before %ld\n", d, first_readable));
+      debug_printf(
+          ("io_wantwrite: enqueueing %lld in normal write queue before %ld\n",
+           d,
+           first_readable));
       e->next_write = first_writeable;
       first_writeable = d;
     }

@@ -200,7 +200,9 @@ xml_to_json_obj(xmlnode* node) {
     if(node->attributes && node->attributes->list_tuple)
       hmap_to_jsonobj(node->attributes, &obj);
     if(node->children)
-      json_set_property(&obj, json_string(children_property), xmllist_to_jsonarray(node->children));
+      json_set_property(&obj,
+                        json_string(children_property),
+                        xmllist_to_jsonarray(node->children));
     return obj;
   }
   if(node->type == XML_TEXT) {

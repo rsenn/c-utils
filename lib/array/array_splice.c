@@ -4,7 +4,12 @@
 #include "../safemult.h"
 
 int64
-array_splice(array* a, uint64 membersize, uint64 start, uint64 del, uint64 insert, const void* x) {
+array_splice(array* a,
+             uint64 membersize,
+             uint64 start,
+             uint64 del,
+             uint64 insert,
+             const void* x) {
   char* s = a->p;
   uint64 i, len, newlen;
 

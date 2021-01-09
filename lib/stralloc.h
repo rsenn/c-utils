@@ -81,10 +81,12 @@ int stralloc_catm_internal(stralloc* sa, ...);
 
 #if defined(__BORLANDC__) || defined(__LCC__)
 #define stralloc_catm(sa, args) stralloc_catm_internal(sa, args, (char*)0)
-#define stralloc_copym(sa, args) (stralloc_zero(sa), stralloc_catm_internal(sa, args, (char*)0))
+#define stralloc_copym(sa, args)                                               \
+  (stralloc_zero(sa), stralloc_catm_internal(sa, args, (char*)0))
 #else
 #define stralloc_catm(sa, ...) stralloc_catm_internal(sa, __VA_ARGS__, (char*)0)
-#define stralloc_copym(sa, ...) (stralloc_zero(sa), stralloc_catm_internal(sa, __VA_ARGS__, (char*)0))
+#define stralloc_copym(sa, ...)                                                \
+  (stralloc_zero(sa), stralloc_catm_internal(sa, __VA_ARGS__, (char*)0))
 #endif
 
 /* stralloc_cat is analogous to stralloc_copy */
@@ -92,7 +94,8 @@ int stralloc_cat(stralloc* sa, const stralloc* in);
 
 /* stralloc_append adds one byte in[0] to the end of the string stored
  * in sa. It is the same as stralloc_catb(&sa, in, 1). */
-int stralloc_append(stralloc* sa, const char* in); /* beware: this takes a pointer to 1 char */
+int stralloc_append(
+    stralloc* sa, const char* in); /* beware: this takes a pointer to 1 char */
 
 /* stralloc_starts returns 1 if the \0 - terminated string in "in", without
  * the terminating \0, is a prefix of the string stored in sa. Otherwise
@@ -148,7 +151,9 @@ int stralloc_chop(stralloc* sa);
  * or 2) */
 int stralloc_chomp(stralloc* sa);
 
-void stralloc_trimr(stralloc* sa, const char* trimchars, unsigned int trimcharslen);
+void stralloc_trimr(stralloc* sa,
+                    const char* trimchars,
+                    unsigned int trimcharslen);
 
 size_t stralloc_decamelize(const char*, stralloc* sa, char sep);
 
@@ -182,12 +187,18 @@ int buffer_putsaflush(buffer* b, const stralloc* sa);
  * data is available. */
 
 /* read token from buffer to stralloc */
-int buffer_get_token_sa(buffer* b, stralloc* sa, const char* charset, size_t setlen);
+int buffer_get_token_sa(buffer* b,
+                        stralloc* sa,
+                        const char* charset,
+                        size_t setlen);
 /* read line from buffer to stralloc */
 int buffer_getline_sa(buffer* b, stralloc* sa);
 
 /* same as buffer_get_token_sa but empty sa first */
-int buffer_get_new_token_sa(buffer* b, stralloc* sa, const char* charset, size_t setlen);
+int buffer_get_new_token_sa(buffer* b,
+                            stralloc* sa,
+                            const char* charset,
+                            size_t setlen);
 /* same as buffer_getline_sa but empty sa first */
 int buffer_getnewline_sa(buffer* b, stralloc* sa);
 
@@ -196,7 +207,8 @@ typedef int (*sa_predicate)(stralloc* sa, void*);
 /* like buffer_get_token_sa but the token ends when your predicate says so */
 int buffer_get_token_sa_pred(buffer* b, stralloc* sa, sa_predicate p, void*);
 /* same, but clear sa first */
-int buffer_get_new_token_sa_pred(buffer* b, stralloc* sa, sa_predicate p, void*);
+int
+buffer_get_new_token_sa_pred(buffer* b, stralloc* sa, sa_predicate p, void*);
 
 /* make a buffer from a stralloc.
  * Do not change the stralloc after this! */
@@ -205,7 +217,9 @@ void buffer_fromsa(buffer* b, const stralloc* sa);
 int stralloc_write(int fd, const char* buf, size_t len, buffer* b);
 #endif
 
-size_t stralloc_scan(stralloc* out, const stralloc* in, size_t (*scan_function)(const char*, char*));
+size_t stralloc_scan(stralloc* out,
+                     const stralloc* in,
+                     size_t (*scan_function)(const char*, char*));
 
 #ifdef __BORLANDC__
 #define stralloc_length(sa) (sa)->len
@@ -221,7 +235,8 @@ stralloc_length(const stralloc* sa) {
 #define stralloc_iterator_decrement(it) (--(it))
 #define stralloc_iterator_dereference(it_ptr) (*(*(it_ptr)))
 #define stralloc_iterator_distance(it1, it2) ((it2) - (it1))
-#define stralloc_is_last(sa, ptr) ((sa)->len > 0 && ((sa)->s + (sa)->len - 1) == (ptr))
+#define stralloc_is_last(sa, ptr)                                              \
+  ((sa)->len > 0 && ((sa)->s + (sa)->len - 1) == (ptr))
 
 size_t stralloc_endb(const stralloc* sa, const void* suffix, size_t len);
 
@@ -235,19 +250,31 @@ stralloc_iterator_equal(char** it1, char** it2) {
 }
 
 #ifdef BYTE_H
-size_t byte_scan(const char* in, size_t in_len, stralloc* out, size_t (*scan_function)(), ...);
+size_t byte_scan(const char* in,
+                 size_t in_len,
+                 stralloc* out,
+                 size_t (*scan_function)(),
+                 ...);
 #endif
 
 int stralloc_insertb(stralloc* sa, const char* s, size_t pos, size_t n);
 int stralloc_inserts(stralloc* sa, const char* s, size_t pos);
 int stralloc_insert(stralloc* sa, const stralloc* other, size_t pos);
 
-int stralloc_subst(stralloc* out, const char* b, size_t len, const char* from, const char* to);
+int stralloc_subst(
+    stralloc* out, const char* b, size_t len, const char* from, const char* to);
 
 typedef size_t(stralloc_fmt_fn)(char*, int);
 size_t stralloc_fmt_call(stralloc*, stralloc_fmt_fn*, void* av[4]);
-size_t stralloc_fmt_pred(stralloc*, const char* in, size_t in_len, size_t (*fmt_function)(char*, int), int (*pred)(int));
-size_t stralloc_fmt(stralloc*, const char* in, size_t in_len, size_t (*fmt_function)(char*, int));
+size_t stralloc_fmt_pred(stralloc*,
+                         const char* in,
+                         size_t in_len,
+                         size_t (*fmt_function)(char*, int),
+                         int (*pred)(int));
+size_t stralloc_fmt(stralloc*,
+                    const char* in,
+                    size_t in_len,
+                    size_t (*fmt_function)(char*, int));
 
 int stralloc_catdouble(stralloc*, double d, int prec);
 
@@ -280,7 +307,8 @@ int stralloc_removesuffixb(stralloc*, const char* x, size_t len);
 
 int stralloc_contains(const stralloc* sa, const char* what);
 int stralloc_replaces(stralloc*, const char* from, const char* to);
-int stralloc_replace(stralloc*, size_t pos, size_t len, const char* to, size_t tolen);
+int stralloc_replace(
+    stralloc*, size_t pos, size_t len, const char* to, size_t tolen);
 
 size_t stralloc_case_end(const stralloc*, const stralloc* suffix);
 size_t stralloc_case_starts(const stralloc*, const char* prefix);
@@ -294,7 +322,9 @@ size_t stralloc_erase(stralloc*);
 void stralloc_lower(stralloc*);
 void stralloc_move(stralloc*, stralloc* from);
 int stralloc_ready_tuned(stralloc*, size_t n, size_t base, size_t a, size_t b);
-void stralloc_remove_all(stralloc*, register const char* delchars, register unsigned int delcharslen);
+void stralloc_remove_all(stralloc*,
+                         register const char* delchars,
+                         register unsigned int delcharslen);
 void stralloc_replace_non_printable(stralloc*, char ch);
 void stralloc_reverse_blocks(stralloc*, size_t size);
 void stralloc_reverse(stralloc*);

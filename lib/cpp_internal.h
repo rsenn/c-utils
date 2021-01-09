@@ -57,8 +57,14 @@ static int charlit_to_int(const char*);
 static int eat_whitespace(tokenizer*, struct token_s* token, int* count);
 static int emit_error_or_warning(tokenizer*, int is_error);
 static void error(const char*, tokenizer* t, struct token_s* curr);
-static void error_or_warning(const char*, const char* type, tokenizer* t, struct token_s* curr);
-static int expect(tokenizer*, enum tokentype tt, const char* values[], struct token_s* token);
+static void error_or_warning(const char*,
+                             const char* type,
+                             tokenizer* t,
+                             struct token_s* curr);
+static int expect(tokenizer*,
+                  enum tokentype tt,
+                  const char* const values[],
+                  struct token_s* token);
 static int expr(tokenizer*, int rbp, int* err);
 static void free_file_container(struct FILE_container_s*);
 static void free_visited(char* visited[]);
@@ -130,7 +136,10 @@ emit_token(buffer* out, struct token_s* tok, const char* strbuf) {
 }
 
 static inline void
-error_or_warning(const char* err, const char* type, tokenizer* t, struct token_s* curr) {
+error_or_warning(const char* err,
+                 const char* type,
+                 tokenizer* t,
+                 struct token_s* curr) {
   unsigned column = curr ? curr->column : t->column;
   unsigned line = curr ? curr->line : t->line;
 
@@ -201,7 +210,11 @@ x_tokenizer_next_of(struct tokenizer_s* t, token* tok, int fail_unk) {
 }
 
 static inline int
-mem_tokenizers_join(struct FILE_container_s* org, struct FILE_container_s* inj, struct FILE_container_s* result, int first, off_t lastpos) {
+mem_tokenizers_join(struct FILE_container_s* org,
+                    struct FILE_container_s* inj,
+                    struct FILE_container_s* result,
+                    int first,
+                    off_t lastpos) {
   result->f = memstream_open(&result->buf, &result->len);
   size_t i;
   struct token_s tok;
@@ -403,7 +416,10 @@ emit_error_or_warning(tokenizer* t, int is_error) {
 
 /* return index of matching item in values array, or -1 on error */
 static inline int
-expect(tokenizer* t, enum tokentype tt, const char* values[], struct token_s* token) {
+expect(tokenizer* t,
+       enum tokentype tt,
+       const char* const values[],
+       struct token_s* token) {
   int ret;
   do {
     ret = tokenizer_next(t, token);
@@ -435,7 +451,7 @@ free_visited(char* visited[]) {
 
 static inline int
 charlit_to_int(const char* lit) {
-  int ret = lit[1];
+  unsigned int ret = lit[1];
 
   if(lit[1] == '\\')
     switch(lit[2]) {
@@ -474,8 +490,8 @@ nud(tokenizer* t, struct token_s* tok, int* err) {
       error("floating constant in preprocessor expression", t, tok);
       *err = 1;
       return 0;
-    case TT_HEX_INT_LIT: scan_xint(t->buf, &ret); break;
-    case TT_OCT_INT_LIT: scan_8int(t->buf, &ret); break;
+    case TT_HEX_INT_LIT: scan_xint(t->buf, (unsigned int*)&ret); break;
+    case TT_OCT_INT_LIT: scan_8int(t->buf, (unsigned int*)&ret); break;
     case TT_DEC_INT_LIT: scan_int(t->buf, &ret); break;
 
     case TT_RPAREN:

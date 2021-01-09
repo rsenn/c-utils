@@ -14,7 +14,13 @@
 /*#include "havescope.h"*/
 
 ssize_t
-socket_send6_flag(int s, const char* buf, size_t len, const char ip[16], uint16 port, uint32 scope_id, int flag) {
+socket_send6_flag(int s,
+                  const char* buf,
+                  size_t len,
+                  const char ip[16],
+                  uint16 port,
+                  uint32 scope_id,
+                  int flag) {
 #ifdef LIBC_HAS_IP6
   struct sockaddr_in6 si;
 #else
@@ -49,6 +55,11 @@ socket_send6_flag(int s, const char* buf, size_t len, const char ip[16], uint16 
 }
 
 ssize_t
-socket_send6(int s, const char* buf, size_t len, const char ip[16], uint16 port, uint32 scope_id) {
+socket_send6(int s,
+             const char* buf,
+             size_t len,
+             const char ip[16],
+             uint16 port,
+             uint32 scope_id) {
   return socket_send6_flag(s, buf, len, ip, port, scope_id, 0);
 }

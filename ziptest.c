@@ -63,7 +63,8 @@ compression_from_ext(const char* ext) {
   if(str_case_equal(ext, "gz") || str_case_equal(ext, "tgz"))
     return C_GZ;
 
-  if(str_case_equal(ext, "bz2") || str_case_equal(ext, "tbz2") || str_case_equal(ext, "tbz"))
+  if(str_case_equal(ext, "bz2") || str_case_equal(ext, "tbz2") ||
+     str_case_equal(ext, "tbz"))
     return C_BZ2;
 
   if(str_case_equal(ext, "xz") || str_case_equal(ext, "txz"))

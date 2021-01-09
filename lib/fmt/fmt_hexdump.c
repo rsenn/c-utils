@@ -1,11 +1,12 @@
 #include "../fmt.h"
 #include "../uint8.h"
+#include <ctype.h>
 
 unsigned int
 fmt_hexdump(void* out, const void* d, unsigned int len) {
   char *x, *e, *w;
   size_t i, o = 0;
-  x = d;
+  x = (void*)d;
   e = x + len;
   w = out;
   for(i = 0; i < len; i++) {

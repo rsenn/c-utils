@@ -13,7 +13,9 @@ io_canwrite() {
   if(first_writeable == -1)
 #if defined(HAVE_SIGIO)
   {
-    if(alt_firstwrite >= 0 && (e = (io_entry*)iarray_get((iarray*)io_getfds(), alt_firstwrite)) && e->canwrite) {
+    if(alt_firstwrite >= 0 &&
+       (e = (io_entry*)iarray_get((iarray*)io_getfds(), alt_firstwrite)) &&
+       e->canwrite) {
       debug_printf(("io_canwrite: normal write queue is empty, swapping in alt "
                     "write queue "
                     "(starting with %ld)\n",
@@ -34,7 +36,10 @@ io_canwrite() {
     r = first_writeable;
     first_writeable = e->next_write;
     e->next_write = -1;
-    debug_printf(("io_canwrite: dequeue %lld from normal write queue (next is %ld)\n", r, first_writeable));
+    debug_printf(
+        ("io_canwrite: dequeue %lld from normal write queue (next is %ld)\n",
+         r,
+         first_writeable));
     if(e->wantwrite &&
 #if WINDOWS_NATIVE && !defined(USE_SELECT)
        (e->canwrite || e->sendfilequeued == 1)
@@ -45,7 +50,10 @@ io_canwrite() {
 #if defined(HAVE_SIGIO)
       e->next_write = alt_firstwrite;
       alt_firstwrite = r;
-      debug_printf(("io_canwrite: enqueue %ld in alt write queue (next is %ld)\n", alt_firstwrite, e->next_write));
+      debug_printf(
+          ("io_canwrite: enqueue %ld in alt write queue (next is %ld)\n",
+           alt_firstwrite,
+           e->next_write));
       if(io_waitmode != _SIGIO)
 #endif
         e->canwrite = 0;

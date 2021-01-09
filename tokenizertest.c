@@ -1,11 +1,12 @@
-#include "lib/tokenizer.h"
 #include "lib/unix.h"
 #include "lib/open.h"
+#include "lib/uint64.h"
 #include "lib/buffer.h"
 #include "lib/errmsg.h"
 #include "lib/str.h"
 #include "lib/byte.h"
 #include "lib/fmt.h"
+#include "lib/tokenizer.h"
 
 static tokenizer t;
 static buffer in;
@@ -124,7 +125,10 @@ token_dump(const tokenizer* t, const token* tok, size_t len) {
     buffer_putulong(buffer_2, len);
     buffer_puts(buffer_2, " data = ");
 
-    buffer_putfmt(buffer_2, &t->input->x[prev], len, &fmt_escapecharnonprintable);
+    buffer_putfmt(buffer_2,
+                  &t->input->x[prev],
+                  len,
+                  &fmt_escapecharnonprintable);
   }
 
   buffer_puts(buffer_2, "▕⎹  ");

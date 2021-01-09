@@ -8,6 +8,6 @@ tokenizer_rewind(tokenizer* t) {
   const char* fn = t->filename;
   tokenizer_init(t, b, flags);
   tokenizer_set_filename(t, fn);
-  buffer_rewind(b->fd);
+  buffer_rewind(b);
   return 1;
 }

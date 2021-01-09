@@ -21,9 +21,9 @@ typedef union {
 /** IPv4 port number. */
 typedef uint16 ipv4port;
 
-static const ipv4addr IPV4ADDR_ANY = {0, 0, 0, 0};
-static const ipv4addr IPV4ADDR_BROADCAST = {255, 255, 255, 255};
-static const ipv4addr IPV4ADDR_LOOPBACK = {127, 0, 0, 1};
+static const ipv4addr IPV4ADDR_ANY = {{0, 0, 0, 0}};
+static const ipv4addr IPV4ADDR_BROADCAST = {{255, 255, 255, 255}};
+static const ipv4addr IPV4ADDR_LOOPBACK = {{127, 0, 0, 1}};
 
 size_t scan_ip4(const char* src, char* ip);
 size_t fmt_ip4(char* dest, const char* ip);

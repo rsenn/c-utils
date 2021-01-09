@@ -7,5 +7,6 @@ coff_get_symtab(void* coff, uint32* num) {
   if(num) {
     *num = uint32_get(&fhdr->number_of_symbols);
   }
-  return (coff_symtab_entry*)((char*)coff + uint32_get(&fhdr->pointer_to_symbol_table));
+  return (coff_symtab_entry*)((char*)coff +
+                              uint32_get(&fhdr->pointer_to_symbol_table));
 }
