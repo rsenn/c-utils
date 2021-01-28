@@ -40,6 +40,7 @@
 #include "lib/mmap.h"
 #include "lib/strlist.h"
 #include "lib/strarray.h"
+#include "lib/array.h"
 
 #ifdef _MSC_VER
 #define snprintf _snprintf
@@ -1154,103 +1155,123 @@ main(int argc, char* argv[]) {
     strarray lines;
     array columns;
     const int max_cols = 16;
-          int fields[max_cols];
-buffer_readfile(&input, input_file);
+    const size_t col_size = sizeof(int) * max_cols;
+    typedef int col_t[2];
+    size_t i, j, n, column;
+    int fields[max_cols], lengths[max_cols];
+    int init[] = {
+        -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 
+    };
+    
+    buffer_readfile(&input, input_file);
     stralloc_init(&line);
     strarray_init(&lines);
     array_init(&columns);
     while(buffer_getnewline_sa(&input, &line) > 0) {
       const char* x = line.s;
-      size_t i, j, n, column;
       while(line.len > 0 && isspace(line.s[line.len - 1])) {
         line.len--;
 
+        buffer_puts(buffer_2, "line: ");
+        buffer_put(buffer_2, line.s, line.len);
+        buffer_putnlflush(buffer_2);
         strarray_push_sa(&lines, &line);
       }
 
-        n =  line.len;
-        column = 0;
+      byte_copy(fields, sizeof(fields), init);
+      byte_copy(lengths, sizeof(lengths), init);
 
-        for(i = 0; column < max_cols && i < n;) {
-          while(isspace(x[i])) i++;
+      n = line.len;
+      column = 0;
 
-          fields[column++] = i;
+      for(i = 0; i < n;  column++) {
+        while(isspace(x[i])) i++;
 
-          for(j = i; j < n; j++)
-            if(isspace(x[j]))
-              break;
+ 
 
-           i = j;
-        }
+        fields[column] = i;
+        buffer_puts(buffer_2, "[");
+        buffer_putlong(buffer_2, column);
+        buffer_puts(buffer_2, "] offset=");
+        buffer_putlong(buffer_2, i);
+       
+        for(j = i; j < n; j++)
+          if(isspace(x[j]))
+            break;
 
-        array_pushb(&columns, fields, column * sizeof(int));
+        lengths[column] = j - i;
+         buffer_puts(buffer_2, " length=");
+        buffer_putlong(buffer_2, j - i);    
+        buffer_puts(buffer_2, " data=");
+        buffer_put(buffer_2, &x[i], j - i);
+         buffer_putnlflush(buffer_2);
 
-}
-
-
-    /*  j = strarray_size(&lines);
-      n = 0;
-      for(i = 0; i < j; i++) {
-        x = strarray_at(&fields, i);
-        columns[i] = n;
-        n += str_len(x);
+        i = j;
       }
 
-    columns = alloca(j * sizeof(int));
-*/
-    buffer_puts(buffer_2, "line: ");
-    buffer_put(buffer_2, line.s, line.len);
-    buffer_putnlflush(buffer_2);
-    buffer_puts(buffer_2, "fields[");
-    buffer_putulong(buffer_2, j);
-    buffer_puts(buffer_2, "]: ");
-    buffer_putstra(buffer_2, &fields, " ");
-    buffer_putnlflush(buffer_2);
-  }
-}
-
-/*
-  while(optind < argc) {
-    if(!str_diff(argv[optind], "-l")
-  || !str_diff(argv[optind],
-  "--list")) { opt_list = 1; } else
-  if(!str_diff(argv[optind], "-n") ||
-  !str_diff(argv[optind],
-  "--numeric")) { opt_numeric = 1; }
-  else if(!str_diff(argv[optind],
-  "-r") || !str_diff(argv[optind],
-  "--relative")) { relative = 1; }
-  else if(!str_diff(argv[optind],
-  "-o") || !str_diff(argv[optind],
-  "--output")) { buffer_1->fd =
-  io_err_check(open_trunc(argv[optind
-  + 1]));
-      ++optind;
-    } else if(!str_diff(argv[optind],
-  "--relative")) { relative = 1; }
-  else if(!str_diff(argv[optind],
-  "-t") || !str_diff(argv[optind],
-  "--time-style")) { optind++;
-      opt_timestyle = argv[optind];
-    } else {
-      break;
+      array_catb(&columns, fields, column * sizeof(int));
     }
-    optind++;
+
+    buffer_puts(buffer_2, "j: ");
+    buffer_putulong(buffer_2, n);
+    buffer_putnlflush(buffer_2);
+    j = column;
+    n = 0;
+    for(i = 0; i < column; i++) {
+      col_t* field = array_get(&columns, col_size, i);
+
+      for(j = 0; j < max_cols /* && field[j] != -1*/; j++) {
+        if(j > 0)
+          buffer_putspace(buffer_1);
+
+        buffer_putlong(buffer_1, field[j]);
+      }
+    }
+    buffer_putnlflush(buffer_1);
   }
-  */
-// strlist_dump(buffer_2,
-// &exclude_masks);
-if(optind < argc) {
-  while(optind < argc) {
-    if(opt_relative)
-      opt_relative_to = argv[optind];
-    stralloc_copys(&dir, argv[optind]);
+
+  /*
+    while(optind < argc) {
+      if(!str_diff(argv[optind], "-l")
+    || !str_diff(argv[optind],
+    "--list")) { opt_list = 1; } else
+    if(!str_diff(argv[optind], "-n") ||
+    !str_diff(argv[optind],
+    "--numeric")) { opt_numeric = 1; }
+    else if(!str_diff(argv[optind],
+    "-r") || !str_diff(argv[optind],
+    "--relative")) { relative = 1; }
+    else if(!str_diff(argv[optind],
+    "-o") || !str_diff(argv[optind],
+    "--output")) { buffer_1->fd =
+    io_err_check(open_trunc(argv[optind
+    + 1]));
+        ++optind;
+      } else if(!str_diff(argv[optind],
+    "--relative")) { relative = 1; }
+    else if(!str_diff(argv[optind],
+    "-t") || !str_diff(argv[optind],
+    "--time-style")) { optind++;
+        opt_timestyle = argv[optind];
+      } else {
+        break;
+      }
+      optind++;
+    }
+    */
+  // strlist_dump(buffer_2,
+  // &exclude_masks);
+  if(optind < argc) {
+    while(optind < argc) {
+      if(opt_relative)
+        opt_relative_to = argv[optind];
+      stralloc_copys(&dir, argv[optind]);
+      list_dir_internal(&dir, 0, 0);
+      optind++;
+    }
+  } else {
+    stralloc_copys(&dir, ".");
     list_dir_internal(&dir, 0, 0);
-    optind++;
   }
-} else {
-  stralloc_copys(&dir, ".");
-  list_dir_internal(&dir, 0, 0);
-}
-return 0;
+  return 0;
 }
