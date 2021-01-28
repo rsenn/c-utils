@@ -41,6 +41,8 @@
 #include "lib/strlist.h"
 #include "lib/strarray.h"
 #include "lib/array.h"
+#include "lib/errmsg.h"
+#include "dump.h"
 
 #ifdef _MSC_VER
 #define snprintf _snprintf
@@ -88,7 +90,7 @@
 
 static void print_strarray(buffer* b, array* a);
 static int fnmatch_strarray(buffer* b, array* a, const char* string, int flags);
-static strlist exclude_masks, include_masks;
+static strlist extensions, exclude_masks, include_masks;
 static char opt_separator = DIRSEP_C;
 
 static int opt_list = 0, opt_numeric = 0, opt_relative = 0, opt_deref = 0,
@@ -700,6 +702,58 @@ crc32(uint32 crc, const char* data, size_t size) {
   return ~r;
 }
 
+static inline dir_type_t
+stat_type(int mode) {
+  dir_type_t dtype = S_ISREG(mode) ? D_FILE : 0;
+  dtype |= S_ISLNK(mode) ? D_FILE : 0;
+  dtype |= S_ISBLK(mode) ? D_BLKDEV : 0;
+  dtype |= S_ISCHR(mode) ? D_CHARDEV : 0;
+  dtype |= S_ISSOCK(mode) ? D_SOCKET : 0;
+  dtype |= S_ISFIFO(mode) ? D_PIPE : 0;
+  return dtype;
+}
+static const char* type_strs[] = {"D_PIPE",
+                                  "D_CHARDEV",
+                                  "D_BLKDEV",
+                                  "D_SYMLINK",
+                                  "D_DIRECTORY",
+                                  "D_FILE",
+                                  "D_SOCKET",
+                                  0};
+static const char*
+type_str(dir_type_t type) {
+  int shift = 0;
+  type &= 0x7f;
+  for(shift = 0; type_strs[shift]; shift++) {
+    if((type >> shift) & 1)
+      break;
+  }
+  if(!type_strs[shift])
+    return "";
+  return type_strs[shift];
+}
+static inline mode_t
+stat_perm(int mode) {
+  mode_t mask = S_ISUID | S_ISGID | S_ISVTX | S_IRWXU | S_IRWXG | S_IRWXO;
+
+  return mode & mask;
+}
+
+static inline mode_t
+type_mode(dir_type_t dtype) {
+  mode_t mode;
+  switch(dtype) {
+    case D_DIRECTORY: mode |= S_IFDIR; break;
+    case D_SYMLINK: mode |= S_IFLNK; break;
+    case D_BLKDEV: mode |= S_IFBLK; break;
+    case D_CHARDEV: mode |= S_IFCHR; break;
+    case D_SOCKET: mode |= S_IFSOCK; break;
+    case D_FILE: mode |= S_IFREG; break;
+    case D_PIPE: mode |= S_IFIFO; break;
+  }
+  return mode;
+}
+
 static int
 file_crc32(const char* path, size_t size, uint32* crc) {
   size_t n;
@@ -717,11 +771,11 @@ file_crc32(const char* path, size_t size, uint32* crc) {
 }
 
 int
-list_file(stralloc* path,
-          const char* name,
-          dir_type_t dtype,
-          long depth,
-          dev_t root_dev) {
+list_file(
+    stralloc* path, const char* name, mode_t mode, long depth, dev_t root_dev) {
+  /*dump_key("list_file");
+  dump_bytes(path->s, path->len);
+  dump_newline();*/
   size_t l;
   struct stat st;
   static stralloc pre;
@@ -729,43 +783,59 @@ list_file(stralloc* path,
   size_t len;
   uint32 crc;
   const char *s, *pattern;
-
+  dir_type_t dtype;
   int match = 0, show = 1;
-  uint64 mtime = 0, size = 0;
-  uint32 mode = 0, nlink = 0;
+  uint64 mtime = 0, size = 0, nlink = 0;
   uint32 uid = 0, gid = 0;
 
 #if !WINDOWS_NATIVE
   byte_zero(&st, sizeof(st));
 #endif
 
+  dtype = stat_type(mode);
+
+  if(dtype) {
+    // mode = type_mode(dtype);
+    is_dir = !!(dtype & D_DIRECTORY);
+    is_symlink = !!(dtype & D_SYMLINK);
+  }
+
   /*
    */
 #if !WINDOWS_NATIVE
   // mode = (is_dir ? 0040000 : 0100000) | (is_symlink ? 0120000 : 0);
+  //
 
-  if((opt_deref ? stat : lstat)(path->s, &st) != -1) {
-    nlink = is_dir ? st.st_nlink : 1;
-    mode = st.st_mode;
-    uid = st.st_uid;
-    gid = st.st_gid;
-    size = st.st_size;
-    mtime = st.st_mtime;
-    if(opt_samedev && root_dev && st.st_dev) {
-      if(st.st_dev != root_dev)
-        return 0;
-    }
-
-    is_dir = S_ISDIR(mode);
-    is_symlink = S_ISLNK(mode);
-    if(opt_deref && is_symlink) {
-      is_symlink = 0;
-      is_dir = S_ISDIR(st.st_mode);
-    }
+  if((opt_deref ? stat : lstat)(path->s, &st) == -1) {
+    errmsg_warnsys(buffer_2, path->s, ": ", 0);
+    return 0;
   }
+
+  nlink = is_dir ? st.st_nlink : 1;
+  /*  mode |= (st.st_mode & 0777);
+    mode &= 04777;*/
+  dump_key("st.st_mode");
+  dump_long(st.st_mode);
+  mode = st.st_mode;
+  uid = st.st_uid;
+  gid = st.st_gid;
+  size = st.st_size;
+  mtime = st.st_mtime;
+  if(opt_samedev && root_dev && st.st_dev) {
+    if(st.st_dev != root_dev)
+      return 0;
+  }
+
+  is_dir = S_ISDIR(mode);
+  is_symlink = S_ISLNK(mode);
+  if(opt_deref && is_symlink) {
+    is_symlink = 0;
+    is_dir = S_ISDIR(st.st_mode);
+  }
+
+  dtype = stat_type(mode);
+
 #else
-  is_dir = !!(dtype & D_DIRECTORY);
-  is_symlink = !!(dtype & D_SYMLINK);
 
   if(dtype & D_SYMLINK)
     is_symlink = 1;
@@ -783,6 +853,8 @@ list_file(stralloc* path,
   mtime = dir_time(&d, D_TIME_MODIFICATION);
 #endif
 #endif
+  printf("mode=%o %x %03o\n", mode & 07777, stat_type(mode), stat_perm(mode));
+
   if(dtype) {
     is_dir = !!(dtype & D_DIRECTORY);
   } else {
@@ -839,6 +911,28 @@ list_file(stralloc* path,
       break;
     }
   }
+
+  if(strlist_count(&extensions)) {
+    const char* ext;
+    size_t extlen;
+    match = 0;
+    strlist_foreach(&extensions, ext, extlen) {
+      dump_key("ext");
+      dump_bytes(&path->s[path->len - extlen], extlen);
+      dump_key("pattern");
+      dump_bytes(ext, extlen);
+      if(len > extlen + 1) {
+        if(s[len - extlen - 1] == '.' &&
+           byte_equal(&path->s[path->len - extlen], extlen, ext)) {
+          match = 1;
+          break;
+        }
+      }
+    }
+    if(match == 0)
+      return 0;
+  }
+
   if(match)
     return 0;
 
@@ -942,13 +1036,7 @@ list_dir_internal(stralloc* dir, int type, long depth) {
     if(!S_ISDIR(st.st_mode)) {
       const char* base = path_basename(dir->s);
       //    path_dirname(dir->s, dir);
-      dtype = S_ISREG(st.st_mode) ? D_FILE : 0;
-      dtype |= S_ISLNK(st.st_mode) ? D_FILE : 0;
-      dtype |= S_ISBLK(st.st_mode) ? D_BLKDEV : 0;
-      dtype |= S_ISCHR(st.st_mode) ? D_CHARDEV : 0;
-      dtype |= S_ISSOCK(st.st_mode) ? D_SOCKET : 0;
-      dtype |= S_ISFIFO(st.st_mode) ? D_PIPE : 0;
-
+      dtype = stat_type(st.st_mode);
       list_file(dir, base, dtype, 0, root_dev);
       return 0;
     }
@@ -1062,84 +1150,6 @@ usage(char* argv0) {
   buffer_putnlflush(buffer_1);
 }
 
-void
-dump_sep() {
-  buffer_putspace(buffer_2);
-  buffer_flush(buffer_2);
-}
-void
-dump_newline() {
-  buffer_putnlflush(buffer_2);
-}
-void
-dump_str(const char* str) {
-  if(str)
-    buffer_puts(buffer_2, str);
-}
-void
-dump_key(const char* str) {
-  if(str) {
-    dump_str(str);
-    dump_str("=");
-  }
-}
-void
-dump_long(long num) {
-  buffer_putlong(buffer_2, num);
-}
-void
-dump_long_n(long num, int n) {
-  buffer_putlong0(buffer_2, num, n);
-}
-void
-dump_quote() {
-  dump_str("\"");
-}
-
-void
-dump_char(char c) {
-  if(c == '\n')
-    dump_str("\\n");
-  else if(c == '\r')
-    dump_str("\\r");
-  else if(c == '\t')
-    dump_str("\\t");
-  else if(c == '\0')
-    dump_str("\\0");
-  else if(c == ' ')
-    dump_str("\\x20");
-  else
-    buffer_putc(buffer_2, c);
-}
-void
-dump_bytes(const char* x, size_t n) {
-  size_t i;
-  char buf[FMT_ULONG];
-  for(i = 0; i < n; i++) {
-    if(isspace(x[i]) || isprint(x[i])) {
-      dump_char(x[i]);
-    } else {
-      buffer_puts(buffer_2, "\\");
-      buffer_put(buffer_2, buf, fmt_ulong0(buf, x[i], 3));
-    }
-  }
-}
-
-void
-dump_ints(const int* x, size_t n) {
-  size_t i;
-  buffer_puts(buffer_2, "[");
-  for(i = 0; i < n; i++) {
-    if(x[i] == -1)
-      break;
-    if(i > 0)
-      dump_str(",");
-    buffer_putlong(buffer_2, x[i]);
-  }
-  buffer_puts(buffer_2, "]");
-  dump_sep();
-}
-
 int
 main(int argc, char* argv[]) {
   stralloc dir = {0, 0, 0};
@@ -1173,11 +1183,11 @@ main(int argc, char* argv[]) {
 #if WINDOWS && defined(O_BINARY)
   setmode(STDOUT_FILENO, O_BINARY);
 #endif
-
+  errmsg_iam(argv[0]);
   strlist_init(&exclude_masks, '\0');
 
   for(;;) {
-    c = getopt_long(argc, argv, "hlLnri:o:I:X:t:m:cd:f:CD", opts, &index);
+    c = getopt_long(argc, argv, "hlLne:ri:o:I:X:t:m:cd:f:CD", opts, &index);
     if(c == -1)
       break;
     if(c == 0)
@@ -1185,6 +1195,7 @@ main(int argc, char* argv[]) {
 
     switch(c) {
       case 'h': usage(argv[0]); return 0;
+      case 'e': strlist_push(&extensions, optarg); break;
       case 'X': strlist_push(&exclude_masks, optarg); break;
       case 'I': strlist_push(&include_masks, optarg); break;
       case 'o': {
@@ -1318,18 +1329,30 @@ main(int argc, char* argv[]) {
 
       for(cols = 0; fields[cols] != -1 && cols < max_cols; cols++) {
       }
+      stralloc_copyb(&file, line.s + fields[cols - 1], lengths[cols - 1]);
+      stralloc_nul(&file);
 #ifdef DEBUG_LINE
       dump_key("cols");
       dump_ints(fields, max_cols);
       dump_sep();
-      stralloc_copyb(&file, line.s + fields[cols - 1], lengths[cols - 1]);
-      stralloc_nul(&file);
       // dump_key("file");
       dump_str(file.s);
       dump_newline();
 #endif
       stralloc_nul(&file);
-      list_file(&file, path_basename(file.s), 0, 0, 0);
+      {
+        unsigned int mode;
+        scan_8int(line.s, &mode);
+        /* dump_key("line");
+                    dump_bytes(line.s,   line.len);
+                    dump_sep();*/
+
+        dump_key("mode");
+        dump_long(mode);
+        dump_newline();
+
+        list_file(&file, path_basename(file.s), mode, 0, 0);
+      }
     }
   }
 

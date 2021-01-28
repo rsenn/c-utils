@@ -832,7 +832,8 @@ add_program(httptest slist xml sig http c dns stralloc buffer errmsg byte io soc
 
 add_program(impgen pe buffer byte mmap open)
 add_program(jsontest json stralloc charbuf buffer   byte  fmt hmap mmap open)
-add_program(list-r path strarray strlist stralloc buffer array unix dir array fmt open str uint64 ${LIBADVAPI32})
+set(list_r_SOURCES dump.c dump.h)
+add_program(list-r errmsg path strarray strlist stralloc buffer array unix dir array fmt open str uint64 ${LIBADVAPI32})
 add_program(macho32list mmap uint32)
 if(USE_LZMA)
   add_program(mediathek-list errmsg stralloc buffer alloc byte fmt http tls scan slist str unix strarray strlist ${LIBLZMA_LIBRARY} ${TLS_LIBRARIES} ${LIBDL} pthread)
