@@ -94,7 +94,7 @@ static strlist extensions, exclude_masks, include_masks;
 static char opt_separator = DIRSEP_C;
 
 static int opt_list = 0, opt_numeric = 0, opt_relative = 0, opt_deref = 0,
-           opt_samedev = 1, opt_crc = 0;
+           opt_samedev = 1, opt_crc = 0, opt_human = 0;
 static int64 opt_minsize = -1;
 static long opt_depth = -1, opt_force = 0, opt_quiet = 0;
 static uint32 opt_types = (uint32)(int32)-1;
@@ -531,12 +531,17 @@ resolve_etc(const strarray* arr, uint32 id) {
 }
 
 static void
-make_num(stralloc* out, int32 num, uint32 width) {
-  char fmt[FMT_ULONG + 1];
-  size_t sz = fmt_int(fmt, num);
+make_num(stralloc* out,
+         uint64 num,
+         uint32 width,
+         size_t (*fmt)(char*, uint64)) {
+  char buf[FMT_ULONG + 1];
+  if(!fmt)
+    fmt = &fmt_ulonglong;
+  size_t sz = fmt(buf, num);
   ssize_t n = width - sz;
   while(n-- > 0) stralloc_catb(out, " ", 1);
-  stralloc_catb(out, fmt, sz);
+  stralloc_catb(out, buf, sz);
 }
 
 static void
@@ -552,6 +557,29 @@ make_time(stralloc* out, uint64 t, uint32 width) {
     fmt[10] = ' ';
 
   stralloc_catb(out, fmt, sz);
+}
+
+#define TIMESTAMP 25
+static char hex[16] = "0123456789abcdef";
+
+void
+make_taia(stralloc* out, const uint64* epoch) {
+  struct taia t = {0};
+  char *s, tpack[TAIA_PACK];
+  size_t i;
+  if(epoch)
+    taia_uint(&t, epoch);
+  else
+    taia_now(&t);
+  taia_pack(tpack, &t);
+  stralloc_readyplus(out, 25);
+  s = &out->s[out->len];
+  s[0] = '@';
+  for(i = 0; i < 12; ++i) {
+    s[i * 2 + 1] = hex[(tpack[i] >> 4) & 15];
+    s[i * 2 + 2] = hex[tpack[i] & 15];
+  }
+  out->len += 25;
 }
 
 static void
@@ -742,13 +770,14 @@ stat_perm(int mode) {
 
 static int
 match_extensions(const stralloc* path) {
-  const char *file, *pattern, *ext, *str;
-  size_t plen, slen,pos;
+  const char *pattern, *ext, *str;
+  size_t elen, plen, slen, pos;
   int match = 0, ret = 0;
   if(extensions.sa.len == 0)
     return 1;
 
-  file = path->s;
+  pos = 1 + byte_rchr(path->s, path->len, '.');
+  elen = path->len - pos;
 
   strlist_foreach(&extensions, pattern, plen) {
     int invert = *pattern == '!' || *pattern == '^';
@@ -756,39 +785,34 @@ match_extensions(const stralloc* path) {
     slen = plen - invert;
     pos = path->len - slen;
 
-    ext = &file[pos];
-    if(pos > 0 && file[pos-1] == '.') {
-      match = byte_equal(ext  , slen, str);
+    if(elen == slen) {
+      match = byte_equal(path->s + pos, slen, str);
+      if(match ^ invert) {
 
 #ifdef DEBUG_OUTPUT
-       dump_key("match");
-    dump_ulong(match);
-    dump_sep();
-    dump_key("str");
-    dump_bytes(str, slen);
-    dump_sep(); 
-    dump_key("slen");
-    dump_ulong(slen);
-    dump_sep();
-    dump_key("pos");
-    dump_ulong(pos);
-    dump_sep();
-    dump_key("invert");
-    dump_ulong(invert);
-    dump_sep();
-    dump_key("ext");
-    dump_bytes(ext, str_chr(ext,','));
-    dump_sep();
-  /*  dump_key("pattern");
-    dump_bytes(pattern, plen);
-    dump_sep();*/
-    dump_key("file");
-    dump_str(file);
-    dump_newline();
+        dump_key("match");
+        dump_ulong(match);
+        dump_sep();
+        dump_key("pattern");
+        dump_bytes(pattern, plen);
+        dump_sep();
+        dump_key("str");
+        dump_bytes(str, slen);
+        dump_sep();
+        dump_key("slen");
+        dump_ulong(slen);
+        dump_sep();
+        dump_key("pos");
+        dump_ulong(pos);
+        dump_sep();
+        dump_key("invert");
+        dump_ulong(invert);
+        dump_sep();
+        dump_key("file");
+        dump_str(path->s);
+        dump_newline();
 #endif
 
-
-      if(match ^ invert) {
         ret = !invert;
         break;
       }
@@ -1009,21 +1033,21 @@ list_file(
       (opt_numeric ? mode_octal : mode_flags)(&pre, mode);
       stralloc_catb(&pre, " ", 1);
       /* num links */
-      make_num(&pre, nlink, 3);
+      make_num(&pre, nlink, 3, 0);
       stralloc_catb(&pre, " ", 1);
       /* uid */
       s = opt_numeric ? NULL : resolve_etc(&etc_users, uid);
-      s ? make_str(&pre, s, 8) : make_num(&pre, uid, opt_numeric ? 5 : 8);
+      s ? make_str(&pre, s, 8) : make_num(&pre, uid, opt_numeric ? 5 : 8, 0);
       stralloc_catb(&pre, " ", 1);
       /* gid */
       s = opt_numeric ? NULL : resolve_etc(&etc_groups, gid);
-      s ? make_str(&pre, s, 8) : make_num(&pre, gid, opt_numeric ? 5 : 8);
+      s ? make_str(&pre, s, 8) : make_num(&pre, gid, opt_numeric ? 5 : 8, 0);
       stralloc_catb(&pre, " ", 1);
       /* size */
-      make_num(&pre, size, 10);
+      make_num(&pre, size, 10, &fmt_human);
       stralloc_catb(&pre, " ", 1);
       /* time */
-      opt_numeric ? make_num(&pre, mtime, 10) : make_time(&pre, mtime, 10);
+      opt_numeric ? make_num(&pre, mtime, 10, 0) : make_time(&pre, mtime, 10);
       /*     make_time(&pre, mtime, 10);
        */
       stralloc_catb(&pre, " ", 1);
@@ -1314,6 +1338,7 @@ main(int argc, char* argv[]) {
     {"list", 0, &opt_list, 1},
     {"numeric", 0, &opt_numeric, 1},
     {"relative", 0, &opt_relative, 1},
+    {"human", 0, &opt_human, 'H'},
     {"input", 1, 0, 'i'},
     {"output", 1, 0, 'o'},
     {"include", 1, 0, 'I'},
