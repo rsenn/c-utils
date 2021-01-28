@@ -98,7 +98,7 @@ static int opt_list = 0, opt_numeric = 0, opt_relative = 0, opt_deref = 0,
 static int64 opt_minsize = -1;
 static long opt_depth = -1, opt_force = 0, opt_quiet = 0;
 static uint32 opt_types = (uint32)(int32)-1;
-static const char* opt_relative_to = 0, *opt_chdir=0;
+static const char *opt_relative_to = 0, *opt_chdir = 0;
 static const char* opt_timestyle = "%b %2e %H:%M";
 static strarray etc_users, etc_groups;
 
@@ -743,8 +743,8 @@ stat_perm(int mode) {
 static int
 match_extensions(const stralloc* path) {
 
-  const char *pattern, *ext;
-  size_t plen;
+  const char *pattern, *ext, *str;
+  size_t plen, slen;
   int match = 0;
   if(extensions.sa.len == 0)
     return 1;
@@ -757,6 +757,9 @@ match_extensions(const stralloc* path) {
 #endif
   match = 0;
   strlist_foreach(&extensions, pattern, plen) {
+    int invert = *pattern == '!' || *pattern == '^';
+    str = pattern + invert;
+    slen = plen - invert;
 #ifdef DEBUG_OUTPUT_
     dump_key("file");
     dump_str(path_basename(path->s));
@@ -770,9 +773,10 @@ match_extensions(const stralloc* path) {
 #endif
     if(path->len > plen + 1) {
       ext = &path->s[path->len - plen];
-      if(byte_equal(ext, plen, pattern)) {
+      if(ext[-1] == '.' && byte_equal(ext, slen, str) ^ invert) {
         match = 1;
-        break;
+        if(match)
+          break;
       }
     }
   }
@@ -1183,6 +1187,90 @@ usage(char* argv0) {
   buffer_putnlflush(buffer_1);
 }
 
+typedef const char* ext_class_t[2];
+
+static const ext_class_t ext_classes[] = {
+    {"archives",
+     "^rar^zip^7z^cab^tar^tar.Z^tar.gz^tar.xz^tar.bz2^tar.lzma^tgz^txz^tbz2^"
+     "tlzma"},
+    {"audio", "^aif^aiff^flac^m4a^m4b^mp2^mp3^mpc^ogg^raw^rm^wav^wma"},
+    {"books", "^pdf^epub^mobi^azw3^djv^djvu"},
+    {"documents",
+     "^cdr^doc^docx^odf^odg^odp^ods^odt^pdf^ppt^pptx^rtf^vsd^xls^xlsx^html"},
+    {"fonts", "^CompositeFont^pcf^ttc^otf^afm^pfb^fon^ttf"},
+    {"images",
+     "^bmp^cin^cod^dcx^djvu^emf^fig^gif^ico^im1^im24^im8^jin^jpeg^jpg^lss^miff^"
+     "opc^pbm^pcx^pgm^pgx^png^pnm^ppm^psd^rle^rmp^sgi^shx^svg^tga^tif^tiff^wim^"
+     "xcf^xpm^xwd^mng"},
+    {"incomplete", "^*.part^*.!??^INCOMPL*"},
+    {"music",
+     "^mp3^ogg^flac^mpc^m4a^m4b^wma^wav^aif^aiff^mod^s3m^xm^it^669^mp4"},
+    {"packages", "^tgz^txz^rpm^deb"},
+    {"scripts", "^sh^py^rb^bat^cmd"},
+    {"software",
+     "^*setup*.exe^*install*.exe^*.msi^*.msu^*.cab^*.vbox-extpack^*.apk^*.run^*"
+     ".dmg^*.app^*.apk^7z^app^bin^daa^deb^dmg^exe^iso^msi^msu^cab^vbox-extpack^"
+     "apk^nrg^pkg^rar^rpm^run^sh^tar.Z^tar.bz2^tar.gz^tar.xz^tbz2^tgz^txz^zip"},
+    {"sources",
+     "^c^cs^cc^cpp^cxx^h^hh^hpp^hxx^ipp^mm^r^java^rb^py^S^s^asm^inc"},
+    {"scripts",
+     "^lua^etlua^moon^py^rb^sh^js^jsx^es^es5^es6^es7^coffee^scss^sass^css^jsx^"
+     "tcl^pl^awk^m4^php"},
+    {"web", "^js^css^htm^html"},
+    {"videos",
+     "^3gp^avi^f4v^flv^m4v^m2v^mkv^mov^mp4^mpeg^mpg^ogm^vob^webm^wmv"},
+    {"vmdisk", "^vdi^vmdk^vhd^qed^qcow^qcow2^vhdx^hdd"},
+    {"project",
+     "^avrgccproj^bdsproj^cbproj^coproj^cproj^cproject^csproj^dproj^fsproj^"
+     "groupproj^jsproj^jucer^lproj^lsxproj^metaproj^packproj^pbxproj^pkgproj^"
+     "pmproj^pnproj^pro^proj^project^pssproj^shfbproj^sln^tmproj^unityproj^"
+     "uvproj^vbproj^vcproj^vcxproj^vdproj^vfproj^webproj^winproj^wixproj^"
+     "zdsproj^zfpproj"},
+    {"spice", "^sp^cir^spc^spi"},
+    {"eda", "^sch^brd^lbr"},
+    {"bin", "^hex^cof"},
+    {"proteus", "^dsn^pdsproj"},
+    {"js", "^js^jsx^es5^es6"},
+    {"cad", "^jscad^stl^nc"},
+    {"cam", "^sts^sol^hpgl^dri^gpi^274^exc^std"},
+};
+
+static const char*
+find_ext_class(const char* name) {
+  size_t i, namelen = str_chr(name, ',');
+  size_t n = sizeof(ext_classes) / sizeof(ext_classes[0]);
+  for(i = 0; i < n; i++) {
+    if(byte_equal(name, namelen, ext_classes[i][0]))
+      return ext_classes[i][1];
+  }
+  return 0;
+}
+
+static const int
+add_ext_class(const char* ext) {
+  int ret = 0, invert = 0;
+  size_t len;
+  invert =  str_chr("^!-", *ext) < 3;
+  len = str_chr(ext, ',');
+  if(ext[invert] == ':') {
+    char* group;
+    if((group = find_ext_class(&ext[invert+1])) == 0) {
+      buffer_putm_internal(buffer_2, "class ", ext, " not found", 0);
+      buffer_putnlflush(buffer_2);
+      // usage(argv[0]);
+      return 0;
+    }
+    while(*group) {
+       if(!invert && *group == '^')
+         group++;
+      len = invert + str_chr(group+invert, '^'); 
+      strlist_pushb(&extensions, group , len);
+      group += len;
+    }
+  }
+  strlist_push(&extensions, ext);
+}
+
 int
 main(int argc, char* argv[]) {
   stralloc dir = {0, 0, 0};
@@ -1220,6 +1308,7 @@ main(int argc, char* argv[]) {
 #endif
   errmsg_iam(argv[0]);
   strlist_init(&exclude_masks, '\0');
+  strlist_init(&extensions, ',');
 
   for(;;) {
     c = getopt_long(argc, argv, "fhlLne:qri:o:I:X:t:m:cd:C:F:SD", opts, &index);
@@ -1230,7 +1319,20 @@ main(int argc, char* argv[]) {
 
     switch(c) {
       case 'h': usage(argv[0]); return 0;
-      case 'e': strlist_push(&extensions, optarg); break;
+      case 'e': {
+        char* x = optarg;
+        ssize_t n;
+        while(*x) {
+          n = str_chr(x, ',');
+          add_ext_class(x);
+
+          x += n;
+          if(*x == ',')
+            x++;
+        }
+
+        break;
+      }
       case 'X': strlist_push(&exclude_masks, optarg); break;
       case 'I': strlist_push(&include_masks, optarg); break;
       case 'o': {
@@ -1308,18 +1410,18 @@ main(int argc, char* argv[]) {
 
     if(*base_path) {
       stralloc_copys(&file, base_path);
-      if(file.len && file.s[file.len-1] != '/')
-            stralloc_catc(&file, '/'); 
+      if(file.len && file.s[file.len - 1] != '/')
+        stralloc_catc(&file, '/');
     }
-              pathlen = file.len;
-    
+    pathlen = file.len;
+
     if(opt_chdir) {
       if(chdir(opt_chdir) == -1) {
         //      if(!opt_quiet)
         errmsg_warnsys("chdir", opt_chdir, 0);
         return 1;
       }
-          }
+    }
 
     stralloc_init(&line);
     strarray_init(&lines);
@@ -1387,9 +1489,9 @@ main(int argc, char* argv[]) {
 
 #endif
       j = offsets[n - 1];
-      
+
       if(file.len > pathlen)
-      file.len= pathlen;
+        file.len = pathlen;
 
       stralloc_catb(&file, &line.s[j], line.len - j);
       stralloc_nul(&file);
