@@ -53,6 +53,7 @@
 #include <errno.h>
 #include <string.h>
 #include <time.h>
+#include <ctype.h>
 
 #if WINDOWS
 #include <io.h>
@@ -81,6 +82,8 @@
 #ifndef S_IFMT
 #define S_IFMT 0170000
 #endif
+#define max(a, b) ((a) > (b) ? (a) : (b))
+#define min(a, b) ((a) < (b) ? (a) : (b))
 
 static void print_strarray(buffer* b, array* a);
 static int fnmatch_strarray(buffer* b, array* a, const char* string, int flags);
@@ -1056,16 +1059,17 @@ main(int argc, char* argv[]) {
   stralloc dir = {0, 0, 0};
   int c;
   int digit_optind = 0;
-  const char* rel_to = 0;
+  const char *rel_to = 0, *input_file = 0;
   int index = 0;
   static const struct longopt opts[] =
   { {"help", 0, 0, 'h'},
     {"list", 0, &opt_list, 1},
     {"numeric", 0, &opt_numeric, 1},
     {"relative", 0, &opt_relative, 1},
+    {"input", 1, 0, 'i'},
     {"output", 1, 0, 'o'},
-    {"include", 1, 0, 'i'},
-    {"exclude", 1, 0, 'x'},
+    {"include", 1, 0, 'I'},
+    {"exclude", 1, 0, 'X'},
     {"time-style", 1, 0, 't'},
     {"dereference", 0, &opt_deref, 1},
     {"no-dereference", 0, &opt_deref, 0},
@@ -1087,7 +1091,7 @@ main(int argc, char* argv[]) {
   strlist_init(&exclude_masks, '\0');
 
   for(;;) {
-    c = getopt_long(argc, argv, "hlLnro:i:x:t:m:cd:f:CD", opts, &index);
+    c = getopt_long(argc, argv, "hlLnri:o:I:X:t:m:cd:f:CD", opts, &index);
     if(c == -1)
       break;
     if(c == 0)
@@ -1095,10 +1099,14 @@ main(int argc, char* argv[]) {
 
     switch(c) {
       case 'h': usage(argv[0]); return 0;
-      case 'x': strlist_push(&exclude_masks, optarg); break;
-      case 'i': strlist_push(&include_masks, optarg); break;
+      case 'X': strlist_push(&exclude_masks, optarg); break;
+      case 'I': strlist_push(&include_masks, optarg); break;
       case 'o': {
         buffer_1->fd = io_err_check(open_trunc(optarg));
+        break;
+      }
+      case 'i': {
+        input_file = optarg;
         break;
       }
       case 't': {
@@ -1140,48 +1148,109 @@ main(int argc, char* argv[]) {
   }
 #endif
 
-  /*
-    while(optind < argc) {
-      if(!str_diff(argv[optind], "-l")
-    || !str_diff(argv[optind],
-    "--list")) { opt_list = 1; } else
-    if(!str_diff(argv[optind], "-n") ||
-    !str_diff(argv[optind],
-    "--numeric")) { opt_numeric = 1; }
-    else if(!str_diff(argv[optind],
-    "-r") || !str_diff(argv[optind],
-    "--relative")) { relative = 1; }
-    else if(!str_diff(argv[optind],
-    "-o") || !str_diff(argv[optind],
-    "--output")) { buffer_1->fd =
-    io_err_check(open_trunc(argv[optind
-    + 1]));
-        ++optind;
-      } else if(!str_diff(argv[optind],
-    "--relative")) { relative = 1; }
-    else if(!str_diff(argv[optind],
-    "-t") || !str_diff(argv[optind],
-    "--time-style")) { optind++;
-        opt_timestyle = argv[optind];
-      } else {
-        break;
+  if(input_file) {
+    buffer input;
+    stralloc line;
+    strarray lines;
+    array columns;
+    const int max_cols = 16;
+          int fields[max_cols];
+buffer_readfile(&input, input_file);
+    stralloc_init(&line);
+    strarray_init(&lines);
+    array_init(&columns);
+    while(buffer_getnewline_sa(&input, &line) > 0) {
+      const char* x = line.s;
+      size_t i, j, n, column;
+      while(line.len > 0 && isspace(line.s[line.len - 1])) {
+        line.len--;
+
+        strarray_push_sa(&lines, &line);
       }
-      optind++;
-    }
-    */
-  // strlist_dump(buffer_2,
-  // &exclude_masks);
-  if(optind < argc) {
-    while(optind < argc) {
-      if(opt_relative)
-        opt_relative_to = argv[optind];
-      stralloc_copys(&dir, argv[optind]);
-      list_dir_internal(&dir, 0, 0);
-      optind++;
-    }
-  } else {
-    stralloc_copys(&dir, ".");
-    list_dir_internal(&dir, 0, 0);
+
+        n =  line.len;
+        column = 0;
+
+        for(i = 0; column < max_cols && i < n;) {
+          while(isspace(x[i])) i++;
+
+          fields[column++] = i;
+
+          for(j = i; j < n; j++)
+            if(isspace(x[j]))
+              break;
+
+           i = j;
+        }
+
+        array_pushb(&columns, fields, column * sizeof(int));
+
+}
+
+
+    /*  j = strarray_size(&lines);
+      n = 0;
+      for(i = 0; i < j; i++) {
+        x = strarray_at(&fields, i);
+        columns[i] = n;
+        n += str_len(x);
+      }
+
+    columns = alloca(j * sizeof(int));
+*/
+    buffer_puts(buffer_2, "line: ");
+    buffer_put(buffer_2, line.s, line.len);
+    buffer_putnlflush(buffer_2);
+    buffer_puts(buffer_2, "fields[");
+    buffer_putulong(buffer_2, j);
+    buffer_puts(buffer_2, "]: ");
+    buffer_putstra(buffer_2, &fields, " ");
+    buffer_putnlflush(buffer_2);
   }
-  return 0;
+}
+
+/*
+  while(optind < argc) {
+    if(!str_diff(argv[optind], "-l")
+  || !str_diff(argv[optind],
+  "--list")) { opt_list = 1; } else
+  if(!str_diff(argv[optind], "-n") ||
+  !str_diff(argv[optind],
+  "--numeric")) { opt_numeric = 1; }
+  else if(!str_diff(argv[optind],
+  "-r") || !str_diff(argv[optind],
+  "--relative")) { relative = 1; }
+  else if(!str_diff(argv[optind],
+  "-o") || !str_diff(argv[optind],
+  "--output")) { buffer_1->fd =
+  io_err_check(open_trunc(argv[optind
+  + 1]));
+      ++optind;
+    } else if(!str_diff(argv[optind],
+  "--relative")) { relative = 1; }
+  else if(!str_diff(argv[optind],
+  "-t") || !str_diff(argv[optind],
+  "--time-style")) { optind++;
+      opt_timestyle = argv[optind];
+    } else {
+      break;
+    }
+    optind++;
+  }
+  */
+// strlist_dump(buffer_2,
+// &exclude_masks);
+if(optind < argc) {
+  while(optind < argc) {
+    if(opt_relative)
+      opt_relative_to = argv[optind];
+    stralloc_copys(&dir, argv[optind]);
+    list_dir_internal(&dir, 0, 0);
+    optind++;
+  }
+} else {
+  stralloc_copys(&dir, ".");
+  list_dir_internal(&dir, 0, 0);
+}
+return 0;
 }
