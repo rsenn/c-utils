@@ -1,5 +1,5 @@
-#ifndef DUMP_H
-#define DUMP_H
+#ifndef DEBUG_H
+#define DEBUG_H
 
 void dump_char(char);
 void dump_key(const char*);

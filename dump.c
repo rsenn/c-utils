@@ -1,5 +1,6 @@
 #include "lib/buffer.h"
 #include "lib/fmt.h"
+#include "lib/strlist.h"
 
 void
 dump_sep() {
@@ -23,9 +24,13 @@ dump_key(const char* str) {
   }
 }
 void
-dump_long(long num) {
+dump_int(long num) {
   dump_str("0");
   buffer_put8long(buffer_2, num);
+}
+void
+dump_ulong(long num) {
+  buffer_putulong(buffer_2, num);
 }
 void
 dump_long_n(long num, int n) {
@@ -78,4 +83,10 @@ dump_ints(const int* x, size_t n) {
   }
   buffer_puts(buffer_2, "]");
   dump_sep();
+}
+
+void
+dump_strlist(const strlist* list) {
+  buffer_putsl(buffer_2, list, ", ");
+  buffer_flush(buffer_2);
 }

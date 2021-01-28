@@ -20,6 +20,7 @@
 #include <stdlib.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include "dump.h"
 
 #include "lib/buffer.h"
 #include "lib/dir.h"
@@ -42,7 +43,6 @@
 #include "lib/strarray.h"
 #include "lib/array.h"
 #include "lib/errmsg.h"
-#include "dump.h"
 
 #ifdef _MSC_VER
 #define snprintf _snprintf
@@ -96,7 +96,7 @@ static char opt_separator = DIRSEP_C;
 static int opt_list = 0, opt_numeric = 0, opt_relative = 0, opt_deref = 0,
            opt_samedev = 1, opt_crc = 0;
 static int64 opt_minsize = -1;
-static long opt_depth = -1;
+static long opt_depth = -1, opt_force = 0;
 static uint32 opt_types = (uint32)(int32)-1;
 static const char* opt_relative_to = 0;
 static const char* opt_timestyle = "%b %2e %H:%M";
@@ -739,6 +739,51 @@ stat_perm(int mode) {
   return mode & mask;
 }
 
+static int
+match_extensions(const stralloc* path) {
+
+  const char *pattern, *ext;
+  size_t plen;
+  int match = 0;
+  if(!strlist_count(&extensions))
+    return 0;
+
+#ifdef DEBUG_OUTPUT
+
+  buffer_puts(buffer_2, "extensions: ");
+  buffer_putsl(buffer_2, &extensions, ",");
+  buffer_putnlflush(buffer_2);
+#endif
+  match = 0;
+  strlist_foreach(&extensions, pattern, plen) {
+#ifdef DEBUG_OUTPUT
+    dump_key("file");
+    dump_str(path_basename(path->s));
+    dump_sep();
+    dump_key("ext");
+    dump_str(&path->s[path->len - plen - 1]);
+    dump_sep();
+    dump_key("pattern");
+    dump_bytes(pattern, plen);
+    dump_sep();
+#endif
+    if(path->len > plen + 1) {
+      ext = &path->s[path->len - plen];
+      if(byte_equal(ext, plen, pattern)) {
+        match = 1;
+        break;
+      }
+    }
+  }
+#ifdef DEBUG_OUTPUT
+  dump_key("match");
+  dump_ulong(match);
+  dump_newline();
+
+#endif
+  return match;
+}
+
 static inline mode_t
 type_mode(dir_type_t dtype) {
   mode_t mode;
@@ -773,9 +818,11 @@ file_crc32(const char* path, size_t size, uint32* crc) {
 int
 list_file(
     stralloc* path, const char* name, mode_t mode, long depth, dev_t root_dev) {
-  /*dump_key("list_file");
+#ifdef DEBUG_OUTPUT_
+  dump_key("list_file");
   dump_bytes(path->s, path->len);
-  dump_newline();*/
+  dump_newline();
+#endif
   size_t l;
   struct stat st;
   static stralloc pre;
@@ -791,31 +838,24 @@ list_file(
 #if !WINDOWS_NATIVE
   byte_zero(&st, sizeof(st));
 #endif
-
   dtype = stat_type(mode);
-
   if(dtype) {
-    // mode = type_mode(dtype);
     is_dir = !!(dtype & D_DIRECTORY);
     is_symlink = !!(dtype & D_SYMLINK);
   }
-
-  /*
-   */
 #if !WINDOWS_NATIVE
-  // mode = (is_dir ? 0040000 : 0100000) | (is_symlink ? 0120000 : 0);
-  //
-
   if((opt_deref ? stat : lstat)(path->s, &st) == -1) {
-    errmsg_warnsys(buffer_2, path->s, ": ", 0);
-    return 0;
+    errmsg_warnsys(opt_force ? "warning: " : "error: ", path->s, 0);
+    if(!opt_force)
+      exit(1);
   }
-
   nlink = is_dir ? st.st_nlink : 1;
-  /*  mode |= (st.st_mode & 0777);
-    mode &= 04777;*/
+
+#ifdef DEBUG_OUTPUT_
   dump_key("st.st_mode");
-  dump_long(st.st_mode);
+  dump_int(st.st_mode);
+#endif
+
   mode = st.st_mode;
   uid = st.st_uid;
   gid = st.st_gid;
@@ -825,24 +865,19 @@ list_file(
     if(st.st_dev != root_dev)
       return 0;
   }
-
   is_dir = S_ISDIR(mode);
   is_symlink = S_ISLNK(mode);
   if(opt_deref && is_symlink) {
     is_symlink = 0;
     is_dir = S_ISDIR(st.st_mode);
   }
-
   dtype = stat_type(mode);
-
 #else
-
   if(dtype & D_SYMLINK)
     is_symlink = 1;
 #if USE_READDIR
   if(!is_dir) {
-    size = dir_size(&d); /* dir_INTERNAL(&d)->dir_entry->d_name);
-                          */
+    size = dir_size(&d);
     mtime = dir_time(&d, D_TIME_MODIFICATION);
   } else {
     mtime = 0;
@@ -853,7 +888,6 @@ list_file(
   mtime = dir_time(&d, D_TIME_MODIFICATION);
 #endif
 #endif
-  printf("mode=%o %x %03o\n", mode & 07777, stat_type(mode), stat_perm(mode));
 
   if(dtype) {
     is_dir = !!(dtype & D_DIRECTORY);
@@ -874,9 +908,6 @@ list_file(
     buffer_puts(buffer_2,
                 " longer than PATH_MAX "
                 "(" STRINGIFY(PATH_MAX) ")!\n");
-    /*buffer_putulong(buffer_2,
-    PATH_MAX); buffer_puts(buffer_2,
-    ")!\n");*/
     buffer_flush(buffer_2);
     return 1;
   }
@@ -910,27 +941,6 @@ list_file(
       match = 1;
       break;
     }
-  }
-
-  if(strlist_count(&extensions)) {
-    const char* ext;
-    size_t extlen;
-    match = 0;
-    strlist_foreach(&extensions, ext, extlen) {
-      dump_key("ext");
-      dump_bytes(&path->s[path->len - extlen], extlen);
-      dump_key("pattern");
-      dump_bytes(ext, extlen);
-      if(len > extlen + 1) {
-        if(s[len - extlen - 1] == '.' &&
-           byte_equal(&path->s[path->len - extlen], extlen, ext)) {
-          match = 1;
-          break;
-        }
-      }
-    }
-    if(match == 0)
-      return 0;
   }
 
   if(match)
@@ -1093,6 +1103,15 @@ write_err_check(int fd, const void* buf, size_t len) {
   return ret;
 }
 
+int
+count_non_negative(const int* x, size_t n) {
+  size_t i;
+  for(i = 0; i < n; i++)
+    if(x[i] == -1)
+      break;
+  return i;
+}
+
 void
 usage(char* argv0) {
   const char* prog = str_basename(argv0);
@@ -1174,7 +1193,8 @@ main(int argc, char* argv[]) {
     {"min-size", 1, 0, 'm'},
     {"crc", 1, 0, 'c'},
     {"depth", 1, 0, 'd'},
-    {"filter-type", 1, 0, 'f'},
+    {"filter-type", 1, 0, 'F'},
+    {"force", 1, 0, 'f'},
 #if WINDOWS
     {"separator", 1, 0, 's'},
 #endif
@@ -1187,7 +1207,7 @@ main(int argc, char* argv[]) {
   strlist_init(&exclude_masks, '\0');
 
   for(;;) {
-    c = getopt_long(argc, argv, "hlLne:ri:o:I:X:t:m:cd:f:CD", opts, &index);
+    c = getopt_long(argc, argv, "fhlLne:ri:o:I:X:t:m:cd:F:CD", opts, &index);
     if(c == -1)
       break;
     if(c == 0)
@@ -1210,7 +1230,8 @@ main(int argc, char* argv[]) {
         opt_timestyle = optarg;
         break;
       }
-      case 'f': opt_types = type_mask(optarg); break;
+      case 'f': opt_force++; break;
+      case 'F': opt_types = type_mask(optarg); break;
       case 's': {
         opt_separator = optarg[0];
         break;
@@ -1250,14 +1271,14 @@ main(int argc, char* argv[]) {
     stralloc line, file;
     strarray lines;
     array columns;
-    const int max_cols = 16;
+    const int max_cols = 8;
     const size_t col_size = sizeof(int) * max_cols;
     typedef int col_t[max_cols];
     typedef col_t offsets_lengths_t[2];
-    size_t i, j, k, l, n, column;
-    col_t fields, lengths;
-
-    // int fields[max_cols], lengths[max_cols];
+    size_t i, j, k, l, n, column, pathlen;
+    col_t offsets, lengths;
+    const char* base_path;
+    // int offsets[max_cols], lengths[max_cols];
     offsets_lengths_t col, *cptr;
     int cols;
     int init[] = {
@@ -1278,33 +1299,45 @@ main(int argc, char* argv[]) {
         -1,
         -1,
     };
+    stralloc_init(&file);
+    base_path = argv[optind] ? argv[optind] : "";
+
+    if(*base_path) {
+      if(chdir(base_path) == 1) {
+        errmsg_warnsys("chdir", base_path, 0);
+        return 1;
+      }
+      /*      stralloc_copys(&file, base_path);
+            stralloc_catc(&file, '/');*/
+    }
+    /*  pathlen = file.len;*/
 
     buffer_readfile(&input, input_file);
     stralloc_init(&line);
-    stralloc_init(&file);
     strarray_init(&lines);
     array_init(&columns);
     l = 0;
+
     while(buffer_getnewline_sa(&input, &line) > 0) {
       const char* x = line.s;
       while(line.len > 0 && isspace(line.s[line.len - 1])) {
         line.len--;
       }
-
-#ifdef DEBUG_LINE
+      stralloc_nul(&line);
+#ifdef DEBUG_OUTPUT_
       dump_key("line");
-      dump_bytes(line.s, line.len);
+      dump_str(line.s);
       dump_newline();
 #endif
       strarray_push_sa(&lines, &line);
-      byte_copy(fields, sizeof(fields), init);
+      byte_copy(offsets, sizeof(offsets), init);
       byte_copy(lengths, sizeof(lengths), init);
       n = line.len;
       column = 0;
       for(i = 0; i < n; column++) {
         j = i;
         while(isspace(x[i])) i++;
-        fields[column] = i;
+        offsets[column] = i;
         for(j = i; j < n; j++)
           if(isspace(x[j]))
             break;
@@ -1313,9 +1346,9 @@ main(int argc, char* argv[]) {
       }
 
 #ifdef DEBUG_LINE
-      dump_long(l++);
+      dump_ulong(l++);
       dump_str(": ");
-      byte_copy(&col[0], sizeof(int) * max_cols, fields);
+      byte_copy(&col[0], sizeof(int) * max_cols, offsets);
       dump_key("offsets");
       dump_ints(&col[0], max_cols);
       byte_copy(&col[1], sizeof(int) * max_cols, lengths);
@@ -1324,16 +1357,36 @@ main(int argc, char* argv[]) {
       dump_ints(lengths, max_cols);
       dump_newline();
 #endif
-      array_catb(&columns, &fields, sizeof(int) * max_cols);
+      array_catb(&columns, &offsets, sizeof(int) * max_cols);
       array_catb(&columns, &lengths, sizeof(int) * max_cols);
 
-      for(cols = 0; fields[cols] != -1 && cols < max_cols; cols++) {
-      }
-      stralloc_copyb(&file, line.s + fields[cols - 1], lengths[cols - 1]);
+      n = count_non_negative(offsets, 7 /*max_cols*/);
+      stralloc_nul(&line);
+#ifdef DEBUG_OUTPUT_
+      dump_key("n");
+      dump_ulong(n);
+      dump_sep();
+      dump_str("offsets[");
+      dump_ulong(n - 1);
+      dump_key("]");
+      dump_ulong(offsets[n - 1]);
+      dump_sep();
+      dump_str("lengths[");
+      dump_ulong(n - 1);
+      dump_key("]");
+      dump_ulong(lengths[n - 1]);
+      dump_newline();
+
+#endif
+      j = offsets[n - 1];
+      stralloc_copyb(&file, &line.s[j], line.len - j);
       stralloc_nul(&file);
-#ifdef DEBUG_LINE
+#ifdef DEBUG_OUTPUT_
+      dump_key("file");
+      dump_str(file.s);
+      dump_newline();
       dump_key("cols");
-      dump_ints(fields, max_cols);
+      dump_ints(offsets, max_cols);
       dump_sep();
       // dump_key("file");
       dump_str(file.s);
@@ -1347,13 +1400,16 @@ main(int argc, char* argv[]) {
                     dump_bytes(line.s,   line.len);
                     dump_sep();*/
 
+#ifdef DEBUG_OUTPUT_
         dump_key("mode");
-        dump_long(mode);
+        dump_int(mode);
         dump_newline();
+#endif
 
         list_file(&file, path_basename(file.s), mode, 0, 0);
       }
     }
+    return 0;
   }
 
   if(optind < argc) {
