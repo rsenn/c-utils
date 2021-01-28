@@ -742,51 +742,69 @@ stat_perm(int mode) {
 
 static int
 match_extensions(const stralloc* path) {
-
-  const char *pattern, *ext, *str;
-  size_t plen, slen;
-  int match = 0;
+  const char *file, *pattern, *ext, *str;
+  size_t plen, slen,pos;
+  int match = 0, ret = 0;
   if(extensions.sa.len == 0)
     return 1;
 
-#ifdef DEBUG_OUTPUT_
+  file = path->s;
 
-  buffer_puts(buffer_2, "extensions: ");
-  buffer_putsl(buffer_2, &extensions, ",");
-  buffer_putnlflush(buffer_2);
-#endif
-  match = 0;
   strlist_foreach(&extensions, pattern, plen) {
     int invert = *pattern == '!' || *pattern == '^';
     str = pattern + invert;
     slen = plen - invert;
-#ifdef DEBUG_OUTPUT_
-    dump_key("file");
-    dump_str(path_basename(path->s));
+    pos = path->len - slen;
+
+    ext = &file[pos];
+    if(pos > 0 && file[pos-1] == '.') {
+      match = byte_equal(ext  , slen, str);
+
+#ifdef DEBUG_OUTPUT
+       dump_key("match");
+    dump_ulong(match);
+    dump_sep();
+    dump_key("str");
+    dump_bytes(str, slen);
+    dump_sep(); 
+    dump_key("slen");
+    dump_ulong(slen);
+    dump_sep();
+    dump_key("pos");
+    dump_ulong(pos);
+    dump_sep();
+    dump_key("invert");
+    dump_ulong(invert);
     dump_sep();
     dump_key("ext");
-    dump_str(&path->s[path->len - plen - 1]);
+    dump_bytes(ext, str_chr(ext,','));
     dump_sep();
-    dump_key("pattern");
+  /*  dump_key("pattern");
     dump_bytes(pattern, plen);
-    dump_sep();
+    dump_sep();*/
+    dump_key("file");
+    dump_str(file);
+    dump_newline();
 #endif
-    if(path->len > plen + 1) {
-      ext = &path->s[path->len - plen];
-      if(ext[-1] == '.' && byte_equal(ext, slen, str) ^ invert) {
-        match = 1;
-        if(match)
-          break;
+
+
+      if(match ^ invert) {
+        ret = !invert;
+        break;
       }
     }
   }
 #ifdef DEBUG_OUTPUT_
-  dump_key("match");
-  dump_ulong(match);
-  dump_newline();
-
+  if(match) {
+    dump_key("match");
+    dump_ulong(match);
+    dump_sep();
+    dump_key("file");
+    dump_str(file);
+    dump_newline();
+  }
 #endif
-  return match;
+  return ret;
 }
 
 static inline mode_t
@@ -1206,7 +1224,7 @@ static const ext_class_t ext_classes[] = {
     {"music",
      "^mp3^ogg^flac^mpc^m4a^m4b^wma^wav^aif^aiff^mod^s3m^xm^it^669^mp4"},
     {"packages", "^tgz^txz^rpm^deb"},
-    {"scripts", "^sh^py^rb^bat^cmd"},
+    {"scripts", "^sh^py^rb^bat^cmd^js^ts^jsx^tsx"},
     {"software",
      "^*setup*.exe^*install*.exe^*.msi^*.msu^*.cab^*.vbox-extpack^*.apk^*.run^*"
      ".dmg^*.app^*.apk^7z^app^bin^daa^deb^dmg^exe^iso^msi^msu^cab^vbox-extpack^"
@@ -1216,7 +1234,7 @@ static const ext_class_t ext_classes[] = {
     {"scripts",
      "^lua^etlua^moon^py^rb^sh^js^jsx^es^es5^es6^es7^coffee^scss^sass^css^jsx^"
      "tcl^pl^awk^m4^php"},
-    {"web", "^js^css^htm^html"},
+    {"web", "^js^css^htm^html^xml^svg"},
     {"videos",
      "^3gp^avi^f4v^flv^m4v^m2v^mkv^mov^mp4^mpeg^mpg^ogm^vob^webm^wmv"},
     {"vmdisk", "^vdi^vmdk^vhd^qed^qcow^qcow2^vhdx^hdd"},
@@ -1245,30 +1263,42 @@ find_ext_class(const char* name) {
   }
   return 0;
 }
+static const int
+add_ext_name(const char* ext) {
+  size_t len = 1 + str_chrs(ext + 1, ",^-", 3);
+#ifdef DEBUG_OUTPUT
+  dump_key("add");
+  dump_bytes(ext, len);
+  dump_newline();
+#endif
+  strlist_pushb(&extensions, ext, len);
+  return len;
+}
 
 static const int
 add_ext_class(const char* ext) {
   int ret = 0, invert = 0;
   size_t len;
-  invert =  str_chr("^!-", *ext) < 3;
-  len = str_chr(ext, ',');
+  invert = str_chr("^!-", *ext) < 3;
+  //
   if(ext[invert] == ':') {
     char* group;
-    if((group = find_ext_class(&ext[invert+1])) == 0) {
+    if((group = find_ext_class(&ext[invert + 1])) == 0) {
       buffer_putm_internal(buffer_2, "class ", ext, " not found", 0);
       buffer_putnlflush(buffer_2);
       // usage(argv[0]);
       return 0;
     }
     while(*group) {
-       if(!invert && *group == '^')
-         group++;
-      len = invert + str_chr(group+invert, '^'); 
-      strlist_pushb(&extensions, group , len);
+      if(!invert && *group == '^')
+        group++;
+      len = invert + str_chr(group + invert, '^');
+      add_ext_name(group);
       group += len;
     }
+    return str_chr(ext, ',');
   }
-  strlist_push(&extensions, ext);
+  return add_ext_name(ext);
 }
 
 int
@@ -1323,10 +1353,7 @@ main(int argc, char* argv[]) {
         char* x = optarg;
         ssize_t n;
         while(*x) {
-          n = str_chr(x, ',');
-          add_ext_class(x);
-
-          x += n;
+          x += add_ext_class(x);
           if(*x == ',')
             x++;
         }
@@ -1383,6 +1410,11 @@ main(int argc, char* argv[]) {
     buffer_putlong(buffer_2, num_groups);
     buffer_putnlflush(buffer_2);
   }
+#endif
+#ifdef DEBUG_OUTPUT
+  buffer_puts(buffer_2, "extensions: ");
+  buffer_putsl(buffer_2, &extensions, ",");
+  buffer_putnlflush(buffer_2);
 #endif
 
   if(input_file) {
