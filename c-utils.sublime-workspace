@@ -28,48 +28,13 @@
 	"buffers":
 	[
 		{
-			"contents": "  z_stream\n  z_streamp\n  gz_header\n  gz_headerp\nOF\nOF\nOF\nOF\nOF\nOF\nOF\nOF\nOF\nOF\nOF\nOF\nOF\nOF\nOF\nOF\nOF\nOF\nOF\nOF\nOF\nOF\nOF\nOF\nOF\nOF\nOF\nOF\nOF\nOF\nOF\nOF\n  gzFile\nOF\nOF\nOF\nOF\nOF\nOF\nOF\nZ_ARG\nOF\nOF\nOF\nOF\nOF\nOF\nOF\nOF\nOF\nOF\nOF\nOF\nOF\nOF\nOF\nOF\nOF\nOF\nOF\nOF\nOF\nOF\nOF\n  z_deflateInit\n  z_inflateInit\n  z_deflateInit2\n  z_inflateInit2\n  z_inflateBackInit\n  deflateInit\n  inflateInit\n  deflateInit2\n  inflateInit2\n  inflateBackInit\n  gzFile_s\nOF\n  z_gzgetc\n  gzgetc\nOF\nOF\nOF\nOF\nOF\nOF\nOF\nOF\nOF\nOF\nOF\nOF\nOF\nOF\nOF\nOF\nOF\nOF\nOF\nOF\nOF\nOF\nOF\nOF\nOF\nOF \nOF\nOF\nOF\nZ_ARG",
+			"contents": "",
 			"settings":
 			{
-				"buffer_size": 538,
+				"buffer_size": 0,
 				"line_ending": "Unix",
 				"name": "𝌆 Outline",
 				"scratch": true
-			}
-		},
-		{
-			"file": "lib/buffer/buffer_lzma.c",
-			"settings":
-			{
-				"buffer_size": 3356,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"contents": "#include \"../buffer.h\"\n#include \"../byte.h\"\n#include \"../str.h\"\n#include <stdlib.h>\n#include <time.h>\n\n#ifdef HAVE_ZLIB\n#include <zlib.h>\n\ntypedef struct {\n  z_stream z;\n  gz_header hdr;\n  buffer* other;\n  char buf[1024];\n} deflate_ctx;\n\nstatic ssize_t\nbuffer_deflate_write(fd_t fd, const void* data, size_t n, buffer* b) {\n  ssize_t have;\n  int ret;\n  deflate_ctx* ctx = b->cookie;\n  z_stream* z = &ctx->z;\n\n  z->avail_in = n;\n  z->next_in = (void*)data;\n\nagain:\n  z->next_out = (void*)&ctx->other->x[ctx->other->p];\n  z->avail_out = ctx->other->a - ctx->other->p;\nq\n  ret = deflate(&ctx->z, 0);\nq\n  if(ret == Z_OK && z->avail_out == 0) {\n    buffer_flush(ctx->other);\n    goto again;\n  }\n\n  if(ret == Z_STREAM_ERROR)\n    return -1;\n\n  have = n - z->avail_in;\n\n  ctx->other->p += (ctx->other->a - ctx->other->p) - z->avail_out;\n\n  return have;\n}\n\nstatic void\nbuffer_deflate_close(buffer* b) {\n  deflate_ctx* ctx = b->cookie;\n\n  int ret, wr;\n\n  do {\n    ctx->z.next_out = (void*)&ctx->other->x[ctx->other->p];\n    ctx->z.avail_out = ctx->other->a - ctx->other->p;\n\n    ret = deflate(&ctx->z, Z_SYNC_FLUSH);\n\n    wr = (ctx->other->a - ctx->other->p) - ctx->z.avail_out;\n    ctx->other->p += wr;\n\n  } while(ret == Z_OK);\n\n  buffer_flush(ctx->other);\n\n  b->deinit = NULL;\n  buffer_close(b);\n}\n\nint\nbuffer_deflate(buffer* b, buffer* out, int level) {\n  int ret;\n  z_stream* z;\n  deflate_ctx* ctx = calloc(1, sizeof(deflate_ctx));\n  if(ctx == NULL)\n    return 0;\n\n  ctx->other = out;\n\n  z = &ctx->z;\n  z->zalloc = Z_NULL;\n  z->zfree = Z_NULL;\n  z->opaque = Z_NULL;\n\n  byte_zero(b, sizeof(buffer));\n\n  buffer_init(\n      b, (buffer_op_fn*)&buffer_deflate_write, -1, ctx->buf, sizeof(ctx->buf));\n  b->cookie = ctx;\n  b->deinit = &buffer_deflate_close;\n\n  ret =\n      deflateInit2(&ctx->z, level, Z_DEFLATED, 15 + 16, 8, Z_DEFAULT_STRATEGY);\n  //\n  byte_zero(&ctx->hdr, sizeof(gz_header));\n  ctx->hdr.text = 0;\n  ctx->hdr.time = time(NULL);\n  ctx->hdr.os = 1;\n  ctx->hdr.name = (void*)\"test.c\";\n  ctx->hdr.name_max = str_len((char*)ctx->hdr.name) + 1;\n\n  deflateSetHeader(&ctx->z, &ctx->hdr);\n\n  if(ret != Z_OK)\n    return 0;\n\n  return 1;\n}\n#endif\n",
-			"file": "lib/buffer/buffer_deflate.c",
-			"file_size": 2138,
-			"file_write_time": 132537467687821550,
-			"settings":
-			{
-				"buffer_size": 2140,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "/home/roman/Sources/plot-cv/zlib.h",
-			"settings":
-			{
-				"buffer_size": 96261,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "3rdparty/zlib/zconf.h",
-			"settings":
-			{
-				"buffer_size": 13846,
-				"line_ending": "Unix"
 			}
 		}
 	],
@@ -189,14 +154,30 @@
 	},
 	"expanded_folders":
 	[
-		"/home/roman/Sources/c-utils",
-		"/home/roman/Sources/c-utils/lib",
-		"/home/roman/Sources/c-utils/lib/buffer",
-		"/home/roman/Sources/c-utils/lib/byte",
-		"/home/roman/Sources/c-utils/lib/strarray"
+		"/home/roman/Dokumente/Sources/c-utils",
+		"/home/roman/Dokumente/Sources/c-utils/inst",
+		"/home/roman/Dokumente/Sources/c-utils/inst/usr",
+		"/home/roman/Dokumente/Sources/c-utils/lib",
+		"/home/roman/Dokumente/Sources/c-utils/lib/fmt",
+		"/home/roman/Dokumente/Sources/c-utils/lib/strarray"
 	],
 	"file_history":
 	[
+		"/home/roman/Dokumente/Sources/c-utils/3rdparty/zlib/zconf.h",
+		"/home/roman/Sources/plot-cv/zlib.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/buffer/buffer_deflate.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/strlist/strlist_fromb.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/strlist/strlist_count.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/strarray/buffer_putstra.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/strarray.h",
+		"/home/roman/Dokumente/Sources/c-utils/list-r.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/buffer/buffer_put8long.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/fmt/fmt_ulong0.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/buffer/buffer_putlong0.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/array.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/array/array_bytes.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/buffer/buffer_lzma.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/stralloc/buffer_getnewline_sa.c",
 		"/home/roman/Sources/c-utils/lib/json.h",
 		"/home/roman/Sources/c-utils/lib/dns/dns_random.c",
 		"/home/roman/Sources/c-utils/lib/dns/dns_transmit.c",
@@ -309,26 +290,11 @@
 		"/home/roman/Sources/c-utils/lib/bmap.h",
 		"/home/roman/Sources/c-utils/lib/cpp/cpp_get_macro.c",
 		"/home/roman/Sources/c-utils/lib/alloc.h",
-		"/home/roman/Sources/c-utils/lib/cpp/preproc.c",
-		"/home/roman/Sources/c-utils/lib/memstream.h",
-		"/home/roman/Sources/c-utils/lib/cpp/cpp_add_includedir.c",
-		"/home/roman/Sources/c-utils/lib/strlist.h",
-		"/home/roman/Sources/c-utils/lib/bmap_internal.h",
-		"/home/roman/Dokumente/Sources/c-utils/lib/array.h",
-		"/home/roman/Dokumente/Sources/c-utils/lib/binfmt.h",
-		"/home/roman/Dokumente/Sources/c-utils/lib/bmap.h",
-		"/home/roman/Dokumente/Sources/c-utils/lib/byte.h",
-		"/home/roman/Dokumente/Sources/c-utils/lib/case.h",
-		"/home/roman/Dokumente/Sources/c-utils/lib/cb.h",
-		"/home/roman/Dokumente/Sources/c-utils/lib/cbmap.h",
-		"/home/roman/Dokumente/Sources/c-utils/lib/coff.h",
-		"/home/roman/Dokumente/Sources/c-utils/lib/dir.h",
-		"/home/roman/Dokumente/Sources/c-utils/lib/dlist.h",
-		"/home/roman/Dokumente/Sources/c-utils/lib/dns.h"
+		"/home/roman/Sources/c-utils/lib/cpp/preproc.c"
 	],
 	"find":
 	{
-		"height": 40.0
+		"height": 47.0
 	},
 	"find_in_files":
 	{
@@ -351,6 +317,31 @@
 		"case_sensitive": true,
 		"find_history":
 		[
+			"dump_bytes",
+			"dump_long",
+			"dump_byte",
+			"\"b\"",
+			"\"@",
+			"offsets\"",
+			"1287",
+			"dump_long",
+			"line:",
+			"col_t",
+			"columns_t",
+			"struct col",
+			"columns",
+			"offsets",
+			"get",
+			"columns",
+			"columns_t",
+			"array_catb",
+			"array_get",
+			"columns",
+			"init",
+			"length",
+			"'i'",
+			"'o'",
+			"main\\(",
 			"deflateInit2_",
 			"deflateInit2",
 			"deflateInit",
@@ -453,32 +444,7 @@
 			"^led",
 			"^nud",
 			"^free",
-			"^led",
-			"^exp",
-			"^emit_err",
-			"^emit_wa",
-			"^expect",
-			"^eat_w",
-			"^expr",
-			"#\\s*define\\s*TT",
-			"#\\s*define",
-			"do_eval",
-			"^do_eval",
-			"^error\\(",
-			"^error",
-			"token_needs",
-			"expand_mac",
-			"memstream",
-			"^(is_char|emit_token)",
-			"^is_char",
-			"is_char",
-			"tokenizer_from_file",
-			"buffer_reopen",
-			"from_file",
-			"macro_info",
-			"macro",
-			"struct macro",
-			"FILE_con"
+			"^led"
 		],
 		"highlight": false,
 		"in_selection": false,
@@ -599,7 +565,7 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 538,
+						"buffer_size": 0,
 						"regions":
 						{
 						},
@@ -608,719 +574,38 @@
 						],
 						"settings":
 						{
-							"current_file": "/home/roman/Sources/plot-cv/zlib.h",
+							"current_file": null,
 							"function_name_status_row": -1,
 							"outline_rename_mode": false,
-							"sorttabs_lastactivated": 1610528478.79,
+							"sorttabs_lastactivated": 1611827657.39,
 							"symkeys":
 							[
-								[
-									4517,
-									4525
-								],
-								[
-									4550,
-									4559
-								],
-								[
-									5691,
-									5700
-								],
-								[
-									5726,
-									5736
-								],
-								[
-									9271,
-									9273
-								],
-								[
-									10686,
-									10688
-								],
-								[
-									17131,
-									17133
-								],
-								[
-									18872,
-									18874
-								],
-								[
-									26317,
-									26319
-								],
-								[
-									30982,
-									30984
-								],
-								[
-									33649,
-									33651
-								],
-								[
-									34876,
-									34878
-								],
-								[
-									35723,
-									35725
-								],
-								[
-									36185,
-									36187
-								],
-								[
-									38432,
-									38434
-								],
-								[
-									39308,
-									39310
-								],
-								[
-									40161,
-									40163
-								],
-								[
-									40890,
-									40892
-								],
-								[
-									41753,
-									41755
-								],
-								[
-									46350,
-									46352
-								],
-								[
-									47691,
-									47693
-								],
-								[
-									48442,
-									48444
-								],
-								[
-									49431,
-									49433
-								],
-								[
-									50103,
-									50105
-								],
-								[
-									50533,
-									50535
-								],
-								[
-									51188,
-									51190
-								],
-								[
-									52242,
-									52244
-								],
-								[
-									53812,
-									53814
-								],
-								[
-									57576,
-									57578
-								],
-								[
-									62024,
-									62026
-								],
-								[
-									62256,
-									62258
-								],
-								[
-									64305,
-									64307
-								],
-								[
-									65024,
-									65026
-								],
-								[
-									65817,
-									65819
-								],
-								[
-									66097,
-									66099
-								],
-								[
-									67120,
-									67122
-								],
-								[
-									67809,
-									67815
-								],
-								[
-									70019,
-									70021
-								],
-								[
-									71328,
-									71330
-								],
-								[
-									72057,
-									72059
-								],
-								[
-									72553,
-									72555
-								],
-								[
-									74271,
-									74273
-								],
-								[
-									75835,
-									75837
-								],
-								[
-									76116,
-									76118
-								],
-								[
-									76864,
-									76869
-								],
-								[
-									77777,
-									77779
-								],
-								[
-									78041,
-									78043
-								],
-								[
-									78673,
-									78675
-								],
-								[
-									78876,
-									78878
-								],
-								[
-									79281,
-									79283
-								],
-								[
-									79908,
-									79910
-								],
-								[
-									81497,
-									81499
-								],
-								[
-									82549,
-									82551
-								],
-								[
-									83339,
-									83341
-								],
-								[
-									84332,
-									84334
-								],
-								[
-									84979,
-									84981
-								],
-								[
-									85028,
-									85030
-								],
-								[
-									85563,
-									85565
-								],
-								[
-									86345,
-									86347
-								],
-								[
-									86841,
-									86843
-								],
-								[
-									87429,
-									87431
-								],
-								[
-									88178,
-									88180
-								],
-								[
-									88761,
-									88763
-								],
-								[
-									89511,
-									89513
-								],
-								[
-									89652,
-									89654
-								],
-								[
-									89783,
-									89785
-								],
-								[
-									90060,
-									90062
-								],
-								[
-									90212,
-									90214
-								],
-								[
-									90468,
-									90481
-								],
-								[
-									90584,
-									90597
-								],
-								[
-									90684,
-									90698
-								],
-								[
-									90911,
-									90925
-								],
-								[
-									91065,
-									91082
-								],
-								[
-									91252,
-									91263
-								],
-								[
-									91366,
-									91377
-								],
-								[
-									91464,
-									91476
-								],
-								[
-									91689,
-									91701
-								],
-								[
-									91841,
-									91856
-								],
-								[
-									92492,
-									92500
-								],
-								[
-									92597,
-									92599
-								],
-								[
-									92694,
-									92702
-								],
-								[
-									92804,
-									92810
-								],
-								[
-									93321,
-									93323
-								],
-								[
-									93393,
-									93395
-								],
-								[
-									93461,
-									93463
-								],
-								[
-									93515,
-									93517
-								],
-								[
-									93572,
-									93574
-								],
-								[
-									93644,
-									93646
-								],
-								[
-									94260,
-									94262
-								],
-								[
-									94332,
-									94334
-								],
-								[
-									94398,
-									94400
-								],
-								[
-									94452,
-									94454
-								],
-								[
-									94511,
-									94513
-								],
-								[
-									94583,
-									94585
-								],
-								[
-									94660,
-									94662
-								],
-								[
-									94728,
-									94730
-								],
-								[
-									94790,
-									94792
-								],
-								[
-									94840,
-									94842
-								],
-								[
-									94895,
-									94897
-								],
-								[
-									94963,
-									94965
-								],
-								[
-									95061,
-									95063
-								],
-								[
-									95129,
-									95131
-								],
-								[
-									95258,
-									95260
-								],
-								[
-									95317,
-									95319
-								],
-								[
-									95387,
-									95389
-								],
-								[
-									95447,
-									95449
-								],
-								[
-									95516,
-									95518
-								],
-								[
-									95586,
-									95589
-								],
-								[
-									95652,
-									95654
-								],
-								[
-									95717,
-									95719
-								],
-								[
-									95839,
-									95841
-								],
-								[
-									96041,
-									96046
-								]
 							],
 							"symlist":
 							[
-								"  z_stream",
-								"  z_streamp",
-								"  gz_header",
-								"  gz_headerp",
-								"OF",
-								"OF",
-								"OF",
-								"OF",
-								"OF",
-								"OF",
-								"OF",
-								"OF",
-								"OF",
-								"OF",
-								"OF",
-								"OF",
-								"OF",
-								"OF",
-								"OF",
-								"OF",
-								"OF",
-								"OF",
-								"OF",
-								"OF",
-								"OF",
-								"OF",
-								"OF",
-								"OF",
-								"OF",
-								"OF",
-								"OF",
-								"OF",
-								"OF",
-								"OF",
-								"OF",
-								"OF",
-								"  gzFile",
-								"OF",
-								"OF",
-								"OF",
-								"OF",
-								"OF",
-								"OF",
-								"OF",
-								"Z_ARG",
-								"OF",
-								"OF",
-								"OF",
-								"OF",
-								"OF",
-								"OF",
-								"OF",
-								"OF",
-								"OF",
-								"OF",
-								"OF",
-								"OF",
-								"OF",
-								"OF",
-								"OF",
-								"OF",
-								"OF",
-								"OF",
-								"OF",
-								"OF",
-								"OF",
-								"OF",
-								"OF",
-								"  z_deflateInit",
-								"  z_inflateInit",
-								"  z_deflateInit2",
-								"  z_inflateInit2",
-								"  z_inflateBackInit",
-								"  deflateInit",
-								"  inflateInit",
-								"  deflateInit2",
-								"  inflateInit2",
-								"  inflateBackInit",
-								"  gzFile_s",
-								"OF",
-								"  z_gzgetc",
-								"  gzgetc",
-								"OF",
-								"OF",
-								"OF",
-								"OF",
-								"OF",
-								"OF",
-								"OF",
-								"OF",
-								"OF",
-								"OF",
-								"OF",
-								"OF",
-								"OF",
-								"OF",
-								"OF",
-								"OF",
-								"OF",
-								"OF",
-								"OF",
-								"OF",
-								"OF",
-								"OF",
-								"OF",
-								"OF",
-								"OF",
-								"OF ",
-								"OF",
-								"OF",
-								"OF",
-								"Z_ARG"
 							],
-							"syntax": "Packages/Outline/outline.hidden-tmLanguage"
+							"syntax": "Packages/Outline/outline.hidden-tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 4,
+					"stack_index": 0,
 					"type": "text"
 				}
 			]
 		},
 		{
-			"selected": 2,
 			"sheets":
 			[
-				{
-					"buffer": 1,
-					"file": "lib/buffer/buffer_lzma.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 3356,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								3074,
-								3074
-							]
-						],
-						"settings":
-						{
-							"function_name_status_row": 153,
-							"syntax": "Packages/C99/C99.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 1674.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 2,
-					"type": "text"
-				},
-				{
-					"buffer": 2,
-					"file": "lib/buffer/buffer_deflate.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 2140,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								519,
-								519
-							]
-						],
-						"settings":
-						{
-							"function_name_status_row": 28,
-							"syntax": "Packages/C99/C99.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 1425.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 3,
-					"type": "text"
-				},
-				{
-					"buffer": 3,
-					"file": "/home/roman/Sources/plot-cv/zlib.h",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 96261,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								91235,
-								91235
-							]
-						],
-						"settings":
-						{
-							"function_name_status_row": 1791,
-							"syntax": "Packages/C++/C++.sublime-syntax",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 29654.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 0,
-					"type": "text"
-				},
-				{
-					"buffer": 4,
-					"file": "3rdparty/zlib/zconf.h",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 13846,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								3114,
-								3114
-							]
-						],
-						"settings":
-						{
-							"function_name_status_row": 100,
-							"syntax": "Packages/C++/C++.sublime-syntax"
-						},
-						"translation.x": 0.0,
-						"translation.y": 973.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 1,
-					"type": "text"
-				}
 			]
 		}
 	],
 	"incremental_find":
 	{
-		"height": 31.0
+		"height": 34.0
 	},
 	"input":
 	{
@@ -1378,7 +663,7 @@
 	"project": "c-utils.sublime-project",
 	"replace":
 	{
-		"height": 69.0
+		"height": 64.0
 	},
 	"save_all_on_build": true,
 	"select_file":
@@ -1387,6 +672,22 @@
 		"last_filter": "",
 		"selected_items":
 		[
+			[
+				"strarray.h",
+				"lib/strarray.h"
+			],
+			[
+				"array.h",
+				"lib/array.h"
+			],
+			[
+				"buffer_getnew",
+				"lib/stralloc/buffer_getnewline_sa.c"
+			],
+			[
+				"list-r",
+				"list-r.c"
+			],
 			[
 				"env_get",
 				"lib/env/env_get.c"
@@ -1748,10 +1049,6 @@
 				"lib/cb_internal.h"
 			],
 			[
-				"strarray.h",
-				"lib/strarray.h"
-			],
-			[
 				"stralloc_trim",
 				"lib/stralloc/stralloc_trimr.c"
 			],
@@ -1886,18 +1183,6 @@
 			[
 				"tls_inter",
 				"lib/tls_internal.h"
-			],
-			[
-				"tls_interna",
-				"lib/tls_internal.h"
-			],
-			[
-				"tls.h",
-				"lib/tls.h"
-			],
-			[
-				"http_strer",
-				"lib/http/http_strerror.c"
 			]
 		],
 		"width": 0.0

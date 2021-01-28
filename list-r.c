@@ -103,6 +103,11 @@ static strarray etc_users, etc_groups;
 #if(defined(_WIN32) || defined(MINGW)) && !defined(__MSYS__)
 static uint64 filetime_to_unix(const FILETIME* ft);
 
+typedef struct column_s {
+  int offsets[16];
+  int lengths[16];
+} column_t;
+
 static const char*
 last_error() {
   DWORD errCode = GetLastError();
@@ -734,34 +739,36 @@ list_file(stralloc* path,
   byte_zero(&st, sizeof(st));
 #endif
 
-  is_dir = !!(dtype & D_DIRECTORY);
-  is_symlink = !!(dtype & D_SYMLINK);
-
-  if(dtype & D_SYMLINK)
-    is_symlink = 1;
-
+  /*
+   */
 #if !WINDOWS_NATIVE
-  mode = (is_dir ? 0040000 : 0100000) | (is_symlink ? 0120000 : 0);
+  // mode = (is_dir ? 0040000 : 0100000) | (is_symlink ? 0120000 : 0);
 
   if((opt_deref ? stat : lstat)(path->s, &st) != -1) {
+    nlink = is_dir ? st.st_nlink : 1;
+    mode = st.st_mode;
+    uid = st.st_uid;
+    gid = st.st_gid;
+    size = st.st_size;
+    mtime = st.st_mtime;
     if(opt_samedev && root_dev && st.st_dev) {
-      if(st.st_dev != root_dev) {
+      if(st.st_dev != root_dev)
         return 0;
-      }
     }
+
+    is_dir = S_ISDIR(mode);
+    is_symlink = S_ISLNK(mode);
     if(opt_deref && is_symlink) {
       is_symlink = 0;
       is_dir = S_ISDIR(st.st_mode);
     }
   }
-  nlink = is_dir ? st.st_nlink : 1;
-  mode = st.st_mode | ((dtype & D_SYMLINK) ? S_IFLNK : 0);
-  uid = st.st_uid;
-  gid = st.st_gid;
-  size = st.st_size;
-  mtime = st.st_mtime;
-
 #else
+  is_dir = !!(dtype & D_DIRECTORY);
+  is_symlink = !!(dtype & D_SYMLINK);
+
+  if(dtype & D_SYMLINK)
+    is_symlink = 1;
 #if USE_READDIR
   if(!is_dir) {
     size = dir_size(&d); /* dir_INTERNAL(&d)->dir_entry->d_name);
@@ -1055,6 +1062,84 @@ usage(char* argv0) {
   buffer_putnlflush(buffer_1);
 }
 
+void
+dump_sep() {
+  buffer_putspace(buffer_2);
+  buffer_flush(buffer_2);
+}
+void
+dump_newline() {
+  buffer_putnlflush(buffer_2);
+}
+void
+dump_str(const char* str) {
+  if(str)
+    buffer_puts(buffer_2, str);
+}
+void
+dump_key(const char* str) {
+  if(str) {
+    dump_str(str);
+    dump_str("=");
+  }
+}
+void
+dump_long(long num) {
+  buffer_putlong(buffer_2, num);
+}
+void
+dump_long_n(long num, int n) {
+  buffer_putlong0(buffer_2, num, n);
+}
+void
+dump_quote() {
+  dump_str("\"");
+}
+
+void
+dump_char(char c) {
+  if(c == '\n')
+    dump_str("\\n");
+  else if(c == '\r')
+    dump_str("\\r");
+  else if(c == '\t')
+    dump_str("\\t");
+  else if(c == '\0')
+    dump_str("\\0");
+  else if(c == ' ')
+    dump_str("\\x20");
+  else
+    buffer_putc(buffer_2, c);
+}
+void
+dump_bytes(const char* x, size_t n) {
+  size_t i;
+  char buf[FMT_ULONG];
+  for(i = 0; i < n; i++) {
+    if(isspace(x[i]) || isprint(x[i])) {
+      dump_char(x[i]);
+    } else {
+      buffer_puts(buffer_2, "\\");
+      buffer_put(buffer_2, buf, fmt_ulong0(buf, x[i], 3));
+    }
+  }
+}
+
+void
+dump_ints(const int* x, size_t n) {
+  size_t i;
+  buffer_puts(buffer_2, "[");
+  for(i = 0; i < n; i++) {
+    if(x[i] == -1)
+      break;
+    if(i > 0)
+      dump_str(",");
+    buffer_putlong(buffer_2, x[i]);
+  }
+  buffer_puts(buffer_2, "]");
+  dump_sep();
+}
+
 int
 main(int argc, char* argv[]) {
   stralloc dir = {0, 0, 0};
@@ -1151,116 +1236,103 @@ main(int argc, char* argv[]) {
 
   if(input_file) {
     buffer input;
-    stralloc line;
+    stralloc line, file;
     strarray lines;
     array columns;
     const int max_cols = 16;
     const size_t col_size = sizeof(int) * max_cols;
-    typedef int col_t[2];
-    size_t i, j, n, column;
-    int fields[max_cols], lengths[max_cols];
+    typedef int col_t[max_cols];
+    typedef col_t offsets_lengths_t[2];
+    size_t i, j, k, l, n, column;
+    col_t fields, lengths;
+
+    // int fields[max_cols], lengths[max_cols];
+    offsets_lengths_t col, *cptr;
+    int cols;
     int init[] = {
-        -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
     };
-    
+
     buffer_readfile(&input, input_file);
     stralloc_init(&line);
+    stralloc_init(&file);
     strarray_init(&lines);
     array_init(&columns);
+    l = 0;
     while(buffer_getnewline_sa(&input, &line) > 0) {
       const char* x = line.s;
       while(line.len > 0 && isspace(line.s[line.len - 1])) {
         line.len--;
-
-        buffer_puts(buffer_2, "line: ");
-        buffer_put(buffer_2, line.s, line.len);
-        buffer_putnlflush(buffer_2);
-        strarray_push_sa(&lines, &line);
       }
 
+#ifdef DEBUG_LINE
+      dump_key("line");
+      dump_bytes(line.s, line.len);
+      dump_newline();
+#endif
+      strarray_push_sa(&lines, &line);
       byte_copy(fields, sizeof(fields), init);
       byte_copy(lengths, sizeof(lengths), init);
-
       n = line.len;
       column = 0;
-
-      for(i = 0; i < n;  column++) {
+      for(i = 0; i < n; column++) {
+        j = i;
         while(isspace(x[i])) i++;
-
- 
-
         fields[column] = i;
-        buffer_puts(buffer_2, "[");
-        buffer_putlong(buffer_2, column);
-        buffer_puts(buffer_2, "] offset=");
-        buffer_putlong(buffer_2, i);
-       
         for(j = i; j < n; j++)
           if(isspace(x[j]))
             break;
-
         lengths[column] = j - i;
-         buffer_puts(buffer_2, " length=");
-        buffer_putlong(buffer_2, j - i);    
-        buffer_puts(buffer_2, " data=");
-        buffer_put(buffer_2, &x[i], j - i);
-         buffer_putnlflush(buffer_2);
-
         i = j;
       }
 
-      array_catb(&columns, fields, column * sizeof(int));
-    }
+#ifdef DEBUG_LINE
+      dump_long(l++);
+      dump_str(": ");
+      byte_copy(&col[0], sizeof(int) * max_cols, fields);
+      dump_key("offsets");
+      dump_ints(&col[0], max_cols);
+      byte_copy(&col[1], sizeof(int) * max_cols, lengths);
+      dump_sep();
+      dump_key("lengths");
+      dump_ints(lengths, max_cols);
+      dump_newline();
+#endif
+      array_catb(&columns, &fields, sizeof(int) * max_cols);
+      array_catb(&columns, &lengths, sizeof(int) * max_cols);
 
-    buffer_puts(buffer_2, "j: ");
-    buffer_putulong(buffer_2, n);
-    buffer_putnlflush(buffer_2);
-    j = column;
-    n = 0;
-    for(i = 0; i < column; i++) {
-      col_t* field = array_get(&columns, col_size, i);
-
-      for(j = 0; j < max_cols /* && field[j] != -1*/; j++) {
-        if(j > 0)
-          buffer_putspace(buffer_1);
-
-        buffer_putlong(buffer_1, field[j]);
+      for(cols = 0; fields[cols] != -1 && cols < max_cols; cols++) {
       }
+#ifdef DEBUG_LINE
+      dump_key("cols");
+      dump_ints(fields, max_cols);
+      dump_sep();
+      stralloc_copyb(&file, line.s + fields[cols - 1], lengths[cols - 1]);
+      stralloc_nul(&file);
+      // dump_key("file");
+      dump_str(file.s);
+      dump_newline();
+#endif
+      stralloc_nul(&file);
+      list_file(&file, path_basename(file.s), 0, 0, 0);
     }
-    buffer_putnlflush(buffer_1);
   }
 
-  /*
-    while(optind < argc) {
-      if(!str_diff(argv[optind], "-l")
-    || !str_diff(argv[optind],
-    "--list")) { opt_list = 1; } else
-    if(!str_diff(argv[optind], "-n") ||
-    !str_diff(argv[optind],
-    "--numeric")) { opt_numeric = 1; }
-    else if(!str_diff(argv[optind],
-    "-r") || !str_diff(argv[optind],
-    "--relative")) { relative = 1; }
-    else if(!str_diff(argv[optind],
-    "-o") || !str_diff(argv[optind],
-    "--output")) { buffer_1->fd =
-    io_err_check(open_trunc(argv[optind
-    + 1]));
-        ++optind;
-      } else if(!str_diff(argv[optind],
-    "--relative")) { relative = 1; }
-    else if(!str_diff(argv[optind],
-    "-t") || !str_diff(argv[optind],
-    "--time-style")) { optind++;
-        opt_timestyle = argv[optind];
-      } else {
-        break;
-      }
-      optind++;
-    }
-    */
-  // strlist_dump(buffer_2,
-  // &exclude_masks);
   if(optind < argc) {
     while(optind < argc) {
       if(opt_relative)
