@@ -98,7 +98,7 @@ static int opt_list = 0, opt_numeric = 0, opt_relative = 0, opt_deref = 0,
 static int64 opt_minsize = -1;
 static long opt_depth = -1, opt_force = 0, opt_quiet = 0;
 static uint32 opt_types = (uint32)(int32)-1;
-static const char* opt_relative_to = 0;
+static const char* opt_relative_to = 0, *opt_chdir=0;
 static const char* opt_timestyle = "%b %2e %H:%M";
 static strarray etc_users, etc_groups;
 
@@ -1206,9 +1206,9 @@ main(int argc, char* argv[]) {
     {"one-filesysten", 0, &opt_samedev, 1},
     {"cross-filesysten", 0, &opt_samedev, 0},
     {"min-size", 1, 0, 'm'},
-    {"crc", 1, 0, 'c'},
     {"depth", 1, 0, 'd'},
     {"filter-type", 1, 0, 'F'},
+    {"samedev", 0, 0, 'S'},
     {"force", 1, 0, 'f'},
 #if WINDOWS
     {"separator", 1, 0, 's'},
@@ -1222,7 +1222,7 @@ main(int argc, char* argv[]) {
   strlist_init(&exclude_masks, '\0');
 
   for(;;) {
-    c = getopt_long(argc, argv, "fhlLne:qri:o:I:X:t:m:cd:F:CD", opts, &index);
+    c = getopt_long(argc, argv, "fhlLne:qri:o:I:X:t:m:cd:C:F:SD", opts, &index);
     if(c == -1)
       break;
     if(c == 0)
@@ -1258,7 +1258,8 @@ main(int argc, char* argv[]) {
         ;
         break;
       case 'L': opt_deref = 1; break;
-      case 'C': opt_samedev = 0; break;
+      case 'C': opt_chdir = optarg; break;
+      case 'S': opt_samedev = 0; break;
       case 'D': opt_samedev = 1; break;
       case 'n': opt_numeric = 1; break;
       case 'r': opt_relative = 1; break;
@@ -1302,18 +1303,23 @@ main(int argc, char* argv[]) {
     stralloc_init(&file);
 
     buffer_readfile(&input, input_file);
+
     base_path = argv[optind] ? argv[optind] : "";
 
     if(*base_path) {
-      if(chdir(base_path) == -1) {
+      stralloc_copys(&file, base_path);
+      if(file.len && file.s[file.len-1] != '/')
+            stralloc_catc(&file, '/'); 
+    }
+              pathlen = file.len;
+    
+    if(opt_chdir) {
+      if(chdir(opt_chdir) == -1) {
         //      if(!opt_quiet)
-        errmsg_warnsys("chdir", base_path, 0);
+        errmsg_warnsys("chdir", opt_chdir, 0);
         return 1;
       }
-      /*      stralloc_copys(&file, base_path);
-            stralloc_catc(&file, '/');*/
-    }
-    /*  pathlen = file.len;*/
+          }
 
     stralloc_init(&line);
     strarray_init(&lines);
@@ -1381,7 +1387,11 @@ main(int argc, char* argv[]) {
 
 #endif
       j = offsets[n - 1];
-      stralloc_copyb(&file, &line.s[j], line.len - j);
+      
+      if(file.len > pathlen)
+      file.len= pathlen;
+
+      stralloc_catb(&file, &line.s[j], line.len - j);
       stralloc_nul(&file);
 #ifdef DEBUG_OUTPUT_
       dump_key("file");
