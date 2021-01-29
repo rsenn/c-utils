@@ -284,6 +284,7 @@ int buffer_putxlonglong(buffer*, uint64 l);
 int buffer_putulonglong(buffer*, uint64 i);
 int buffer_putlonglong(buffer*, int64 i);
 int buffer_putxlonglong0(buffer*, uint64 l, int pad);
+int buffer_putulonglongpad(buffer*, uint64, int pad);
 #endif
 
 #ifdef TAI_H

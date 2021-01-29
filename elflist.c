@@ -16,6 +16,8 @@
 #include <stdlib.h>
 #include "lib/bool.h"
 
+strlist flaglist;
+
 void elf_dump_dynamic(range map);
 void elf_dump_sections(range map);
 void elf_dump_segments(range map);
@@ -23,8 +25,20 @@ void elf_dump_symbols(
     range map, range section, range text, const char* stname, int binding);
 void elf_print_prefix(buffer* b);
 
+
+int hex64(buffer*b, uint64 num, int pad) {
+   buffer_puts(b, "0x");
+   buffer_putxlonglong0(b, num, pad-2);
+   return 0;
+}
+
 static int list_defined, list_undefined;
 static const char* filename;
+typedef int put64_function
+ (buffer* , uint64  , int  ) ;
+static put64_function* put64 =&hex64;
+static unsigned word_size;
+static unsigned radix = 16;
 
 #define RANGE_CHECK(ptr)                                                       \
   do {                                                                         \
@@ -36,8 +50,8 @@ static const char* filename;
   } while(0)
 
 #define ELF_DUMP_FIELD(base, ptr, st, field)                                   \
-  buffer_putspad(b, #field, 30), buffer_puts(b, " 0x"),                        \
-      buffer_putxlonglong0(b,                                                  \
+  buffer_putspad(b, #field, 30), buffer_puts(b, " "),                        \
+      put64(b,                                                  \
                            ELF_GET(base, ptr, st, field),                      \
                            ELF_SIZE(base, st, field) * 2),                     \
       buffer_putnlflush(b)
@@ -91,117 +105,6 @@ elf_dump_header(buffer* b, range map) {
   ELF_DUMP_FIELD(map.start, map.start, ehdr, e_shstrndx);
 }
 
-/**
- * @brief usage  Show command line usage
- * @param av0
- */
-void
-usage(char* av0) {
-  buffer_putm_internal(buffer_1,
-                       "Usage: ",
-                       str_basename(av0),
-                       " [OPTIONS] <file...>\n",
-                       "\n",
-                       "Options:\n",
-                       "\n",
-                       "  -h, --help              Show "
-                       "this help\n",
-                       "  -D, --defined           List "
-                       "defined symbols\n",
-                       "  -U, --undefined         List "
-                       "undefined symbols\n",
-                       "  -F, --file-header       Dump "
-                       "file header\n",
-                       "  -S, --sections          Dump "
-                       "sections\n",
-                       "\n",
-                       0);
-  buffer_flush(buffer_1);
-}
-
-int
-main(int argc, char** argv) {
-  static range map;
-  size_t filesize;
-  static bool dump_file_header = false, dump_sections = false;
-
-  int c, index = 0;
-
-  struct longopt opts[] = {{"help", 0, NULL, 'h'},
-                           {"defined", 0, &list_defined, 'D'},
-                           {"undefined", 0, &list_undefined, 'U'},
-                           {"file-header", 0, 0, 'F'},
-                           {"sections", 0, 0, 'S'},
-                           {0, 0, 0, 0}};
-
-  for(;;) {
-    c = getopt_long(argc, argv, "hDUFS", opts, &index);
-    if(c == -1)
-      break;
-    if(c == '\0')
-      continue;
-
-    switch(c) {
-      case 'h': usage(argv[0]); return 0;
-      case 'D': list_defined = 1; break;
-      case 'U': list_undefined = 1; break;
-      case 'F': dump_file_header = true; break;
-      case 'S': dump_sections = true; break;
-      default: {
-        usage(argv[0]);
-        return 1;
-      }
-    }
-  }
-
-  if(!(list_defined | list_undefined))
-    list_defined = list_undefined = 1;
-
-  if(optind == argc) {
-    usage(argv[0]);
-    return 0;
-  }
-
-  for(; argv[optind]; ++optind) {
-    const char* interp;
-    range symtab, text;
-
-    filename = argv[optind];
-
-    map.start = (char*)mmap_read(filename, &filesize);
-    map.end = map.start + filesize;
-
-    buffer_puts(buffer_2, "map start: ");
-    buffer_putptr(buffer_2, map.start);
-    buffer_putnlflush(buffer_2);
-
-    if(dump_file_header)
-      elf_dump_header(buffer_1, map);
-
-    interp = elf_get_section(map.start, ".interp", NULL);
-
-    if(dump_sections)
-      elf_dump_sections(map);
-    elf_dump_segments(map);
-    elf_dump_dynamic(map);
-
-    if(interp) {
-      buffer_putm_internal(buffer_1, "Interpreter: ", interp, 0);
-      buffer_putnlflush(buffer_1);
-    }
-    /*    elf_dump_imports(map.start);*/
-
-    symtab = elf_get_symtab_r(map.start);
-    text = elf_get_section_r(map.start, ".text");
-
-    elf_dump_symbols(map, symtab, text, ".strtab", ELF_STB_GLOBAL);
-    elf_dump_symbols(map, symtab, text, ".strtab", ELF_STB_LOCAL);
-
-    mmap_unmap(map.start, map.end - map.start);
-  }
-
-  return 0;
-}
 
 /**
  * @brief elf_dump_dynamic  Dumps all
@@ -216,6 +119,7 @@ elf_dump_dynamic(range map) {
   range dyn;
   void* entry;
   const char* dynstrtab = NULL;
+  int col_width = ELF_BITS(map.start) / 4 + 2;
   static const char* const dynamic_types[] = {
       "NULL",       "NEEDED",     "PLTRELSZ",      "PLTGOT",         "HASH",
       "STRTAB",     "SYMTAB",     "RELA",          "RELASZ",         "RELAENT",
@@ -235,8 +139,8 @@ elf_dump_dynamic(range map) {
     uint64 val = ELF_GET(map.start, entry, dyn, d_un.d_val);
 
     if(tag == ELF_DT_STRTAB) {
-      buffer_puts(buffer_2, "ELF_DT_STRTAB:\n0x");
-      buffer_putxlonglong0(buffer_2, val, ELF_BITS(map.start) / 4);
+      buffer_puts(buffer_2, "ELF_DT_STRTAB:\n");
+      put64(buffer_2, val, col_width);
       buffer_putnlflush(buffer_2);
       //   buffer_puts(buffer_2, elf_)
 
@@ -256,8 +160,7 @@ elf_dump_dynamic(range map) {
     uint64 val = ELF_GET(map.start, entry, dyn, d_un.d_val);
 
     if(tag >= ELF_DT_NUM) {
-      buffer_puts(buffer_1, "0x");
-      buffer_putxlonglong0(buffer_1, tag, ELF_BITS(map.start) / 4);
+       put64(buffer_1, tag, col_width);
     } else {
       buffer_putspad(buffer_1, dynamic_types[tag % ELF_DT_NUM], 18);
     }
@@ -266,8 +169,7 @@ elf_dump_dynamic(range map) {
       buffer_putspace(buffer_1);
       buffer_puts(buffer_1, (const char*)&dynstrtab[val]);
     } else {
-      buffer_puts(buffer_1, " 0x");
-      buffer_putxlonglong0(buffer_1, val, ELF_BITS(map.start) / 4);
+      put64(buffer_1, val, col_width);
     }
     buffer_putnlflush(buffer_1);
 
@@ -345,12 +247,12 @@ elf_dump_symbols(
       buffer_puts(buffer_1, !range_empty(&code) ? " t " : " u ");
 
     buffer_putspad(buffer_1, &(strtab[name]), 32);
-    /*buffer_puts(buffer_1, "0x");
+    /*buffer_puts(buffer_1, "");
     buffer_putxlong0(buffer_1, name, 8);
     */
     /*jjif(size) {
-      buffer_puts(buffer_1, " 0x");
-      buffer_putxlonglong0(buffer_1,
+      buffer_puts(buffer_1, " ");
+      put64(buffer_1,
     value, ELF_BITS(map.start) / 4); }
     else { buffer_putnspace(buffer_1,
     ELF_BITS(map.start) / 4 + 3);
@@ -374,6 +276,29 @@ elf_dump_symbols(
   }
 }
 
+const char*
+elf_section_flags(uint64 flags, strlist* list) {
+  strlist_zero(list);
+  list->sep = '|';
+
+  if(flags & ELF_SHF_WRITE) strlist_push(list, "WRITE");
+if(flags & ELF_SHF_ALLOC) strlist_push(list, "ALLOC");
+if(flags & ELF_SHF_EXECINSTR) strlist_push(list, "EXECINSTR");
+if(flags & ELF_SHF_MERGE) strlist_push(list, "MERGE");
+if(flags & ELF_SHF_STRINGS) strlist_push(list, "STRINGS");
+if(flags & ELF_SHF_INFO_LINK) strlist_push(list, "INFO_LINK");
+if(flags & ELF_SHF_LINK_ORDER) strlist_push(list, "LINK_ORDER");
+if(flags & ELF_SHF_OS_NONCONFORMING) strlist_push(list, "OS_NONCONFORMING");
+if(flags & ELF_SHF_GROUP) strlist_push(list, "GROUP");
+if(flags & ELF_SHF_TLS) strlist_push(list, "TLS");
+if(flags & ELF_SHF_MASKOS) strlist_push(list, "MASKOS");
+if(flags & ELF_SHF_MASKPROC) strlist_push(list, "MASKPROC");
+if(flags & ELF_SHF_ARM_ENTRYSECT) strlist_push(list, "ARM_ENTRYSECT");
+if(flags & ELF_SHF_ARM_COMDEF) strlist_push(list, "ARM_COMDEF");
+stralloc_nul(&list->sa);
+return list->sa.s;
+}
+
 /**
  * @brief elf_dump_sections
  * @param map               Pointer
@@ -384,6 +309,7 @@ elf_dump_sections(range map) {
   int i, n;
   range sections = elf_section_headers(map.start);
   void* section;
+   int col_width = ELF_BITS(map.start) / 4 + 2;
 
   buffer_putspad(buffer_1, "section name", 16);
   buffer_putspace(buffer_1);
@@ -395,7 +321,9 @@ elf_dump_sections(range map) {
   buffer_putnspace(buffer_1, 3);
   buffer_putspad(buffer_1, "align", ELF_BITS(map.start) / 4);
   buffer_putnspace(buffer_1, 3);
-  buffer_puts(buffer_1, "type");
+   buffer_putspad(buffer_1, "type", 8);
+   buffer_putnspace(buffer_1, 1);
+buffer_puts(buffer_1, "flags");
   buffer_putnlflush(buffer_1);
 
   range_foreach(&sections, section) {
@@ -405,21 +333,25 @@ elf_dump_sections(range map) {
     uint64 offs = ELF_GET(map.start, section, shdr, sh_offset);
     uint64 align = ELF_GET(map.start, section, shdr, sh_addralign);
     uint32 type = ELF_GET(map.start, section, shdr, sh_type) % ELF_SHT_NUM;
+    uint64 flags = ELF_GET(map.start, section, shdr, sh_flags);
 
     if(!name && !addr && !size)
       continue;
 
     buffer_putspad(buffer_1, &(elf_shstrtab(map.start)[name]), 16);
-    buffer_puts(buffer_1, " 0x");
-    buffer_putxlonglong0(buffer_1, addr, ELF_BITS(map.start) / 4);
-    buffer_puts(buffer_1, " 0x");
-    buffer_putxlonglong0(buffer_1, size, ELF_BITS(map.start) / 4);
-    buffer_puts(buffer_1, " 0x");
-    buffer_putxlonglong0(buffer_1, offs, ELF_BITS(map.start) / 4);
-    buffer_puts(buffer_1, " 0x");
-    buffer_putxlonglong0(buffer_1, align, ELF_BITS(map.start) / 4);
-    buffer_putspace(buffer_1);
-    buffer_puts(buffer_1, elf_section_typename(type));
+    buffer_puts(buffer_1, " ");
+    put64(buffer_1, addr, col_width);
+    buffer_puts(buffer_1, " ");
+    put64(buffer_1, size, col_width);
+    buffer_puts(buffer_1, " ");
+    put64(buffer_1, offs, col_width);
+    buffer_puts(buffer_1, " ");
+    put64(buffer_1, align, col_width);
+   buffer_putspace(buffer_1);
+    buffer_putspad(buffer_1, elf_section_typename(type), 8);
+       buffer_puts(buffer_1, " ");
+    buffer_puts(buffer_1, elf_section_flags(flags, &flaglist));
+
     buffer_putnlflush(buffer_1);
 
     if(type == ELF_SHT_SYMTAB || type == ELF_SHT_DYNSYM) {
@@ -443,6 +375,7 @@ elf_dump_segments(range map) {
   int i, n;
   range segments = elf_program_headers(map.start);
   void* segment;
+  int col_width = ELF_BITS(map.start) / 4 + 2;
 
   if(range_size(&segments) == 0)
     return;
@@ -467,15 +400,13 @@ elf_dump_segments(range map) {
 
     if(!paddr && !vaddr && !filesz)
       continue;
-
-    buffer_puts(buffer_1, "0x");
-    buffer_putxlonglong0(buffer_1, paddr, ELF_BITS(map.start) / 4);
-    buffer_puts(buffer_1, " 0x");
-    buffer_putxlonglong0(buffer_1, vaddr, ELF_BITS(map.start) / 4);
-    buffer_puts(buffer_1, " 0x");
-    buffer_putxlonglong0(buffer_1, filesz, ELF_BITS(map.start) / 4);
-    buffer_puts(buffer_1, " 0x");
-    buffer_putxlonglong0(buffer_1, memsz, ELF_BITS(map.start) / 4);
+     put64(buffer_1, paddr, col_width);
+    buffer_puts(buffer_1, " ");
+    put64(buffer_1, vaddr, col_width);
+    buffer_puts(buffer_1, " ");
+    put64(buffer_1, filesz, col_width);
+    buffer_puts(buffer_1, " ");
+    put64(buffer_1, memsz, col_width);
     buffer_putm_internal(buffer_1,
                          " ",
                          (flags & ELF_PF_R) ? "r" : "-",
@@ -484,4 +415,124 @@ elf_dump_segments(range map) {
                          NULL);
     buffer_putnlflush(buffer_1);
   }
+}
+
+/**
+ * @brief usage  Show command line usage
+ * @param av0
+ */
+void
+usage(char* av0) {
+  buffer_putm_internal(buffer_1,
+                       "Usage: ",
+                       str_basename(av0),
+                       " [OPTIONS] <file...>\n",
+                       "\n",
+                       "Options:\n",
+                       "\n",
+                       "  -h, --help              Show "
+                       "this help\n",
+                       "  -D, --defined           List "
+                       "defined symbols\n",
+                       "  -U, --undefined         List "
+                       "undefined symbols\n",
+                       "  -F, --file-header       Dump "
+                       "file header\n",
+                       "  -S, --sections          Dump "
+                       "sections\n",
+                       "\n",
+                       0);
+  buffer_flush(buffer_1);
+}
+
+int
+main(int argc, char** argv) {
+  static range map;
+  size_t filesize;
+  static bool dump_file_header = false, dump_sections = false;
+
+  int c, index = 0;
+
+  struct longopt opts[] = {{"help", 0, NULL, 'h'},
+                           {"defined", 0, &list_defined, 'D'},
+                           {"undefined", 0, &list_undefined, 'U'},
+                           {"file-header", 0, 0, 'F'},
+                           {"sections", 0, 0, 'S'},
+                           {"radix", 1, 0, 'r'},
+                           {0, 0, 0, 0}};
+  strlist_init(&flaglist, '|');
+
+  for(;;) {
+    c = getopt_long(argc, argv, "hDUFSr:", opts, &index);
+    if(c == -1)
+      break;
+    if(c == '\0')
+      continue;
+
+    switch(c) {
+      case 'h': usage(argv[0]); return 0;
+      case 'D': list_defined = 1; break;
+      case 'U': list_undefined = 1; break;
+      case 'F': dump_file_header = true; break;
+      case 'S': dump_sections = true; break;
+      case 'r': radix = atoi(optarg); break;
+      default: {
+        usage(argv[0]);
+        return 1;
+      }
+    }
+  }
+
+  if(!(list_defined | list_undefined))
+    list_defined = list_undefined = 1;
+
+  if(optind == argc) {
+    usage(argv[0]);
+    return 0;
+  }
+
+if(radix == 10)
+  put64 = &buffer_putulonglongpad;
+
+  for(; argv[optind]; ++optind) {
+    const char* interp;
+    range symtab, text;
+
+    filename = argv[optind];
+
+    map.start = (char*)mmap_read(filename, &filesize);
+    map.end = map.start + filesize;
+
+//word_size = ELF_BITS(map.start);
+
+    buffer_puts(buffer_2, "map start: ");
+    buffer_putptr(buffer_2, map.start);
+    buffer_putnlflush(buffer_2);
+
+    if(dump_file_header)
+      elf_dump_header(buffer_1, map);
+
+    interp = elf_get_section(map.start, ".interp", NULL);
+
+    if(dump_sections)
+      elf_dump_sections(map);
+    elf_dump_segments(map);
+    elf_dump_dynamic(map);
+
+    if(interp) {
+      buffer_putm_internal(buffer_1, "Interpreter: ", interp, 0);
+      buffer_putnlflush(buffer_1);
+    }
+    /*    elf_dump_imports(map.start);*/
+
+    symtab = elf_get_symtab_r(map.start);
+    text = elf_get_section_r(map.start, ".text");
+
+    elf_dump_symbols(map, symtab, text, ".strtab", ELF_STB_GLOBAL);
+    elf_dump_symbols(map, symtab, text, ".strtab", ELF_STB_LOCAL);
+
+    mmap_unmap(map.start, map.end - map.start);
+  }
+
+  return 0;
 }
