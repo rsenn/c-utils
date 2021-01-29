@@ -1511,14 +1511,11 @@ main(int argc, char* argv[]) {
         lengths[column] = j - i;
         i = j;
       }
-      byte_copy(&col[0], sizeof(int) * max_cols, offsets);
-      byte_copy(&col[1], sizeof(int) * max_cols, lengths);
-
 #ifdef DEBUG_LINE
       dump_ulong(l++);
       dump_str(": ");
       dump_key("offsets");
-      dump_ints(&col[0], max_cols);
+      dump_ints(&offsets, max_cols);
       dump_sep();
       dump_key("lengths");
       dump_ints(lengths, max_cols);

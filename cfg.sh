@@ -10,10 +10,19 @@ cfg() {
   if [ -z "$host" -a -z "$builddir" ]; then
     host=$build
     case "$host" in
-      x86_64-w64-mingw32) host="$host"; : ${builddir=build/$host}; : ${prefix=/mingw64} ;;
-      i686-w64-mingw32) host="$host"; : ${builddir=build/$host}; : ${prefix=/mingw32} ;;
-      x86_64-pc-*) host="$host"; : ${builddir=build/$host}; : ${prefix=/usr} ;;
-      i686-pc-*) host="$host"; : ${builddir=build/$host}; : ${prefix=/usr} ;;
+      x86_64-w64-mingw32) host="$host"; : ${builddir=build/$host} ;;
+      i686-w64-mingw32) host="$host"; : ${builddir=build/$host} ;;
+      x86_64-pc-*) host="$host"; : ${builddir=build/$host} ;;
+      i686-pc-*) host="$host"; : ${builddir=build/$host} ;;
+    esac
+  fi
+
+  if false && [ -n "$host" -a -z "$prefix" ]; then
+    case "$host" in
+      x86_64-w64-mingw32) : ${prefix=/mingw64} ;;
+      i686-w64-mingw32) : ${prefix=/mingw32} ;;
+      x86_64-pc-*) : ${prefix=/usr} ;;
+      i686-pc-*) : ${prefix=/usr} ;;
     esac
   fi
 
@@ -220,7 +229,7 @@ cfg-tcc() {
  (build=$(cc -dumpmachine | sed 's|-pc-|-|g')
   host=${build/-gnu/-tcc}
   builddir=build/$host
-  prefix=/usr
+  prefix=/usr/local
   includedir=/usr/lib/$build/tcc/include
   libdir=/usr/lib/$build/tcc/
   bindir=/usr/bin
@@ -355,7 +364,7 @@ cfg-tcc() {
  (build=$(cc -dumpmachine | sed 's|-pc-|-|g')
   host=${build/-gnu/-tcc}
   : ${builddir=build/$host}
-  prefix=/usr
+  prefix=/usr/local
   includedir=/usr/lib/$build/tcc/include
   libdir=/usr/lib/$build/tcc/
   bindir=/usr/bin

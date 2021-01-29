@@ -219,3 +219,8 @@ endif()
 file(GLOB LIBSSL_SOURCES ssl/*.c ssl/record/*.c ssl/statem/*.c)
 
 add_library(ssl ${LIBSSL_SOURCES})
+
+set(TLS_LIBRARY_DIR ${CMAKE_CURRENT_BINARY_DIR})
+link_directories(${TLS_LIBRARY_DIR})
+
+set(TLS_LIBRARIES ssl crypto)

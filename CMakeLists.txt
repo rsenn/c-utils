@@ -825,13 +825,13 @@ add_program(hexedit stralloc buffer array io errmsg mmap open path scan uint64 u
 set(httptest_SOURCES uri.c uri.h)
 
 message("TLS_LIBRARIES = ${TLS_LIBRARIES}")
-add_program(httptest slist xml sig http c dns stralloc buffer errmsg byte io socket alloc taia ${TLS_LIBRARIES} ${LIBMSWSOCK} ${LIBDL} pthread)
+add_program(httptest slist xml sig http c dns stralloc buffer errmsg byte io socket alloc taia ${TLS_LIBRARIES} ${LIBMSWSOCK} pthread)
 # add_program(ssltest strlist unix dns stralloc buffer errmsg byte io  tls socket alloc taia ${TLS_LIBRARIES} ${LIBMSWSOCK} ${LIBDL} pthread)
 
 # set(ssltest_SOURCES address.c address.h)
 
 add_program(impgen pe buffer byte mmap open)
-add_program(jsontest json stralloc charbuf buffer   byte  fmt hmap mmap open)
+add_program(jsontest json stralloc charbuf buffer byte fmt hmap mmap open)
 set(list_r_SOURCES dump.c dump.h)
 add_program(list-r errmsg path strarray strlist stralloc buffer array unix dir array fmt open str uint64 ${LIBADVAPI32})
 add_program(macho32list mmap uint32)
@@ -897,7 +897,7 @@ add_program(testihex ihex stralloc buffer alloc mmap)
 add_program(setuidgid errmsg path stralloc mmap open scan str)
 add_program(lsproc strlist errmsg mmap buffer unix dir)
 add_program(cpptest cpp tokenizer unix buffer open)
-add_program(tokenizertest   errmsg tokenizer unix buffer open)
+add_program(tokenizertest errmsg tokenizer unix buffer open)
 
 #[[add_program(ftpcopy io)
 add_program(ftpls io)
