@@ -48,7 +48,6 @@ static void
 compact_printer(jsonfmt* p, jsonval* v, int depth, int index, char q) {
 
   int valdepth = v ? get_depth(v) : 0;
-  int pretty = depth < 4 && valdepth > 1;
   int multi_line = !one_line && depth < depth_arg;
 
   p->indent = !multi_line || depth > depth_arg ? "" : indent_str.s;
@@ -68,7 +67,6 @@ compact_printer(jsonfmt* p, jsonval* v, int depth, int index, char q) {
 
 static void
 default_printer(jsonfmt* p, jsonval* v, int depth, int index, char q) {
-  int pretty = v && get_depth(v) > 1;
   int multi_line = !one_line && depth < depth_arg;
   p->indent = depth > depth_arg ? "" : indent_str.s;
 
@@ -158,6 +156,7 @@ main(int argc, char* argv[]) {
                            {"no-compliant", 0, NULL, 'C'},
                            {"inplace", 0, NULL, 'i'},
                            {"indent", 0, NULL, 'l'},
+                           {"output", 1, NULL, 'o'},
                            {0, 0, 0, 0}};
 
   errmsg_iam(argv[0]);

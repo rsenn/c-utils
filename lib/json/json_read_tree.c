@@ -1,15 +1,15 @@
-#include "../hmap.h"
 #include "../byte.h"
 #include "../fmt.h"
 #include "../json.h"
 #include "../scan.h"
+#include "../map.h"
 
 static int
 json_read_value(jsonreader* reader,
                 jsondata id,
                 stralloc* name,
                 stralloc* value,
-                HMAP_DB** attrs) {
+                MAP_T* attrs) {
   return 1;
 }
 

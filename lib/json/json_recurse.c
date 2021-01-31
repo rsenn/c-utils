@@ -1,4 +1,4 @@
-#include "../hmap.h"
+#include "../map.h"
 #include "../json.h"
 #include "../slist.h"
 
@@ -14,8 +14,8 @@ json_recurse_val(jsonval* val, void (*fn)(), void* arg, int depth) {
 
     case JSON_OBJECT: {
       if(val->dictv && val->dictv->list_tuple) {
-        TUPLE* t;
-        hmap_foreach(val->dictv, t) {
+        MAP_ITER_T t;
+        MAP_FOREACH(val->dictv, t) {
           json_recurse_val(t->vals.val_custom, fn, arg, depth + 1);
         }
       }

@@ -1,4 +1,4 @@
-#include "../hmap.h"
+#include "../map.h"
 #include "../json.h"
 
 jsonval*
@@ -14,10 +14,10 @@ json_set_property(jsonval* obj, jsonval name, jsonval value) {
         buffer_flush(buffer_2);*/
 
     if(obj->dictv == NULL)
-      hmap_init(MAP_BUCKET, &obj->dictv);
+      MAP_NEW(obj->dictv);
 
-    hmap_set(&obj->dictv, key.s, key.len + 1, &value, sizeof(jsonval));
-    ret = hmap_get(obj->dictv, key.s, key.len + 1);
+   MAP_INSERT(obj->dictv, key.s, key.len + 1, &value, sizeof(jsonval));
+    ret = MAP_GET(obj->dictv, key.s, key.len + 1);
 
     stralloc_free(&key);
 

@@ -13,6 +13,7 @@
 #include "lib/byte.h"
 #include "lib/fmt.h"
 #include "lib/strlist.h"
+#include "lib/errmsg.h"
 #include <stdlib.h>
 #include "lib/bool.h"
 
@@ -25,18 +26,19 @@ void elf_dump_symbols(
     range map, range section, range text, const char* stname, int binding);
 void elf_print_prefix(buffer* b);
 
-
-int hex64(buffer*b, uint64 num, int pad) {
-   buffer_puts(b, "0x");
-   buffer_putxlonglong0(b, num, pad-2);
-   return 0;
+int
+hex64(buffer* b, uint64 num, int pad) {
+  buffer_puts(b, "0x");
+  buffer_putxlonglong0(b, num, pad - 2);
+  return 0;
 }
 
 static int list_defined, list_undefined;
 static const char* filename;
-typedef int put64_function
- (buffer* , uint64  , int  ) ;
-static put64_function* put64 =&hex64;
+typedef int put64_function(buffer*, uint64, int);
+typedef int putstr_function(buffer*, const char*, int);
+static put64_function* putnum = &hex64;
+static putstr_function* putstr = &buffer_putspad;
 static unsigned word_size;
 static unsigned radix = 16;
 
@@ -50,10 +52,8 @@ static unsigned radix = 16;
   } while(0)
 
 #define ELF_DUMP_FIELD(base, ptr, st, field)                                   \
-  buffer_putspad(b, #field, 30), buffer_puts(b, " "),                        \
-      put64(b,                                                  \
-                           ELF_GET(base, ptr, st, field),                      \
-                           ELF_SIZE(base, st, field) * 2),                     \
+  buffer_putspad(b, #field, 30), buffer_puts(b, " "),                          \
+      putnum(b, ELF_GET(base, ptr, st, field), ELF_SIZE(base, st, field) * 2), \
       buffer_putnlflush(b)
 
 void
@@ -105,7 +105,6 @@ elf_dump_header(buffer* b, range map) {
   ELF_DUMP_FIELD(map.start, map.start, ehdr, e_shstrndx);
 }
 
-
 /**
  * @brief elf_dump_dynamic  Dumps all
  * ELF dynamic entries
@@ -140,7 +139,7 @@ elf_dump_dynamic(range map) {
 
     if(tag == ELF_DT_STRTAB) {
       buffer_puts(buffer_2, "ELF_DT_STRTAB:\n");
-      put64(buffer_2, val, col_width);
+      putnum(buffer_2, val, col_width);
       buffer_putnlflush(buffer_2);
       //   buffer_puts(buffer_2, elf_)
 
@@ -160,7 +159,7 @@ elf_dump_dynamic(range map) {
     uint64 val = ELF_GET(map.start, entry, dyn, d_un.d_val);
 
     if(tag >= ELF_DT_NUM) {
-       put64(buffer_1, tag, col_width);
+      putnum(buffer_1, tag, col_width);
     } else {
       buffer_putspad(buffer_1, dynamic_types[tag % ELF_DT_NUM], 18);
     }
@@ -169,7 +168,7 @@ elf_dump_dynamic(range map) {
       buffer_putspace(buffer_1);
       buffer_puts(buffer_1, (const char*)&dynstrtab[val]);
     } else {
-      put64(buffer_1, val, col_width);
+      putnum(buffer_1, val, col_width);
     }
     buffer_putnlflush(buffer_1);
 
@@ -251,8 +250,8 @@ elf_dump_symbols(
     buffer_putxlong0(buffer_1, name, 8);
     */
     /*jjif(size) {
-      buffer_puts(buffer_1, " ");
-      put64(buffer_1,
+      buffer_putspace(buffer_1);
+      putnum(buffer_1,
     value, ELF_BITS(map.start) / 4); }
     else { buffer_putnspace(buffer_1,
     ELF_BITS(map.start) / 4 + 3);
@@ -281,22 +280,36 @@ elf_section_flags(uint64 flags, strlist* list) {
   strlist_zero(list);
   list->sep = '|';
 
-  if(flags & ELF_SHF_WRITE) strlist_push(list, "WRITE");
-if(flags & ELF_SHF_ALLOC) strlist_push(list, "ALLOC");
-if(flags & ELF_SHF_EXECINSTR) strlist_push(list, "EXECINSTR");
-if(flags & ELF_SHF_MERGE) strlist_push(list, "MERGE");
-if(flags & ELF_SHF_STRINGS) strlist_push(list, "STRINGS");
-if(flags & ELF_SHF_INFO_LINK) strlist_push(list, "INFO_LINK");
-if(flags & ELF_SHF_LINK_ORDER) strlist_push(list, "LINK_ORDER");
-if(flags & ELF_SHF_OS_NONCONFORMING) strlist_push(list, "OS_NONCONFORMING");
-if(flags & ELF_SHF_GROUP) strlist_push(list, "GROUP");
-if(flags & ELF_SHF_TLS) strlist_push(list, "TLS");
-if(flags & ELF_SHF_MASKOS) strlist_push(list, "MASKOS");
-if(flags & ELF_SHF_MASKPROC) strlist_push(list, "MASKPROC");
-if(flags & ELF_SHF_ARM_ENTRYSECT) strlist_push(list, "ARM_ENTRYSECT");
-if(flags & ELF_SHF_ARM_COMDEF) strlist_push(list, "ARM_COMDEF");
-stralloc_nul(&list->sa);
-return list->sa.s;
+  if(flags & ELF_SHF_WRITE)
+    strlist_push(list, "WRITE");
+  if(flags & ELF_SHF_ALLOC)
+    strlist_push(list, "ALLOC");
+  if(flags & ELF_SHF_EXECINSTR)
+    strlist_push(list, "EXECINSTR");
+  if(flags & ELF_SHF_MERGE)
+    strlist_push(list, "MERGE");
+  if(flags & ELF_SHF_STRINGS)
+    strlist_push(list, "STRINGS");
+  if(flags & ELF_SHF_INFO_LINK)
+    strlist_push(list, "INFO_LINK");
+  if(flags & ELF_SHF_LINK_ORDER)
+    strlist_push(list, "LINK_ORDER");
+  if(flags & ELF_SHF_OS_NONCONFORMING)
+    strlist_push(list, "OS_NONCONFORMING");
+  if(flags & ELF_SHF_GROUP)
+    strlist_push(list, "GROUP");
+  if(flags & ELF_SHF_TLS)
+    strlist_push(list, "TLS");
+  if(flags & ELF_SHF_MASKOS)
+    strlist_push(list, "MASKOS");
+  if(flags & ELF_SHF_MASKPROC)
+    strlist_push(list, "MASKPROC");
+  if(flags & ELF_SHF_ARM_ENTRYSECT)
+    strlist_push(list, "ARM_ENTRYSECT");
+  if(flags & ELF_SHF_ARM_COMDEF)
+    strlist_push(list, "ARM_COMDEF");
+  stralloc_nul(&list->sa);
+  return list->sa.s;
 }
 
 /**
@@ -309,21 +322,21 @@ elf_dump_sections(range map) {
   int i, n;
   range sections = elf_section_headers(map.start);
   void* section;
-   int col_width = ELF_BITS(map.start) / 4 + 2;
+  int col_width = ELF_BITS(map.start) / 4 + 2;
 
   buffer_putspad(buffer_1, "section name", 16);
   buffer_putspace(buffer_1);
-  buffer_putspad(buffer_1, "addr", ELF_BITS(map.start) / 4);
+  putstr(buffer_1, "addr", ELF_BITS(map.start) / 4);
   buffer_putnspace(buffer_1, 3);
-  buffer_putspad(buffer_1, "size", ELF_BITS(map.start) / 4);
+  putstr(buffer_1, "size", ELF_BITS(map.start) / 4);
   buffer_putnspace(buffer_1, 3);
-  buffer_putspad(buffer_1, "offset", ELF_BITS(map.start) / 4);
+  putstr(buffer_1, "offset", ELF_BITS(map.start) / 4);
   buffer_putnspace(buffer_1, 3);
-  buffer_putspad(buffer_1, "align", ELF_BITS(map.start) / 4);
+  putstr(buffer_1, "align", ELF_BITS(map.start) / 4);
   buffer_putnspace(buffer_1, 3);
-   buffer_putspad(buffer_1, "type", 8);
-   buffer_putnspace(buffer_1, 1);
-buffer_puts(buffer_1, "flags");
+  buffer_putspad(buffer_1, "type", 8);
+  buffer_putnspace(buffer_1, 1);
+  buffer_puts(buffer_1, "flags");
   buffer_putnlflush(buffer_1);
 
   range_foreach(&sections, section) {
@@ -339,17 +352,17 @@ buffer_puts(buffer_1, "flags");
       continue;
 
     buffer_putspad(buffer_1, &(elf_shstrtab(map.start)[name]), 16);
-    buffer_puts(buffer_1, " ");
-    put64(buffer_1, addr, col_width);
-    buffer_puts(buffer_1, " ");
-    put64(buffer_1, size, col_width);
-    buffer_puts(buffer_1, " ");
-    put64(buffer_1, offs, col_width);
-    buffer_puts(buffer_1, " ");
-    put64(buffer_1, align, col_width);
-   buffer_putspace(buffer_1);
+    buffer_putspace(buffer_1);
+    putnum(buffer_1, addr, col_width);
+    buffer_putspace(buffer_1);
+    putnum(buffer_1, size, col_width);
+    buffer_putspace(buffer_1);
+    putnum(buffer_1, offs, col_width);
+    buffer_putspace(buffer_1);
+    putnum(buffer_1, align, col_width);
+    buffer_putspace(buffer_1);
     buffer_putspad(buffer_1, elf_section_typename(type), 8);
-       buffer_puts(buffer_1, " ");
+    buffer_putspace(buffer_1);
     buffer_puts(buffer_1, elf_section_flags(flags, &flaglist));
 
     buffer_putnlflush(buffer_1);
@@ -380,13 +393,13 @@ elf_dump_segments(range map) {
   if(range_size(&segments) == 0)
     return;
 
-  buffer_putspad(buffer_1, "paddr", ELF_BITS(map.start) / 4);
+  putstr(buffer_1, "paddr", ELF_BITS(map.start) / 4);
   buffer_putnspace(buffer_1, 3);
-  buffer_putspad(buffer_1, "vaddr", ELF_BITS(map.start) / 4);
+  putstr(buffer_1, "vaddr", ELF_BITS(map.start) / 4);
   buffer_putnspace(buffer_1, 3);
-  buffer_putspad(buffer_1, "filesz", ELF_BITS(map.start) / 4);
+  putstr(buffer_1, "filesz", ELF_BITS(map.start) / 4);
   buffer_putnspace(buffer_1, 3);
-  buffer_putspad(buffer_1, "memsz", ELF_BITS(map.start) / 4);
+  putstr(buffer_1, "memsz", ELF_BITS(map.start) / 4);
   buffer_putnspace(buffer_1, 3);
   buffer_puts(buffer_1, "flags");
   buffer_putnlflush(buffer_1);
@@ -400,13 +413,13 @@ elf_dump_segments(range map) {
 
     if(!paddr && !vaddr && !filesz)
       continue;
-     put64(buffer_1, paddr, col_width);
-    buffer_puts(buffer_1, " ");
-    put64(buffer_1, vaddr, col_width);
-    buffer_puts(buffer_1, " ");
-    put64(buffer_1, filesz, col_width);
-    buffer_puts(buffer_1, " ");
-    put64(buffer_1, memsz, col_width);
+    putnum(buffer_1, paddr, col_width);
+    buffer_putspace(buffer_1);
+    putnum(buffer_1, vaddr, col_width);
+    buffer_putspace(buffer_1);
+    putnum(buffer_1, filesz, col_width);
+    buffer_putspace(buffer_1);
+    putnum(buffer_1, memsz, col_width);
     buffer_putm_internal(buffer_1,
                          " ",
                          (flags & ELF_PF_R) ? "r" : "-",
@@ -491,8 +504,8 @@ main(int argc, char** argv) {
     return 0;
   }
 
-if(radix == 10)
-  put64 = &buffer_putulonglongpad;
+  if(radix == 10)
+    putnum = &buffer_putulonglongpad;
 
   for(; argv[optind]; ++optind) {
     const char* interp;
@@ -501,14 +514,21 @@ if(radix == 10)
     filename = argv[optind];
 
     map.start = (char*)mmap_read(filename, &filesize);
+
+if(map.start == 0) {
+  errmsg_warnsys("ERROR: ", "mmap '",filename,"'",0);
+  return 127;
+}
+
     map.end = map.start + filesize;
 
-//word_size = ELF_BITS(map.start);
-
+    // word_size = ELF_BITS(map.start);
+#ifdef DEBUG_OUTPUT_
     buffer_puts(buffer_2, "map start: ");
     buffer_putptr(buffer_2, map.start);
     buffer_putnlflush(buffer_2);
-
+#endif
+    
     if(dump_file_header)
       elf_dump_header(buffer_1, map);
 

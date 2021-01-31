@@ -1,4 +1,4 @@
-#include "../hmap.h"
+#include "../map.h"
 #include "../alloc.h"
 #include "../json.h"
 
@@ -21,10 +21,10 @@ json_free_val(jsonval* val, jsonval* parent) {
       break;
     }
     case JSON_OBJECT: {
-      TUPLE* t;
+      MAP_ITER_T t;
       if(val->dictv != NULL) {
-        hmap_foreach(val->dictv, t) { json_free_val(t->vals.val_custom, val); }
-        hmap_destroy(&val->dictv);
+        MAP_FOREACH(val->dictv, t) { json_free_val(t->vals.val_custom, val); }
+        MAP_DESTROY(val->dictv);
       }
       break;
     }

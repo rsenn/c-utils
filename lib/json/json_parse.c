@@ -1,4 +1,4 @@
-#include "../hmap.h"
+#include "../map.h"
 #include "../byte.h"
 #include "../charbuf.h"
 #include "../json.h"
@@ -156,7 +156,7 @@ json_parse_object(jsonval* j, charbuf* b) {
   if(charbuf_skip_ifeq(b, '{')) {
     stralloc_init(&key);
     j->type = JSON_OBJECT;
-    hmap_init(1024, &j->dictv);
+    MAP_NEW(j->dictv);
 
     for(;;) {
       jsonval* member;
@@ -167,7 +167,7 @@ json_parse_object(jsonval* j, charbuf* b) {
       if(!charbuf_skip_ifeq(b, ':'))
         return 0;
       member = json_newnode(JSON_UNDEFINED);
-      hmap_add(&j->dictv, key.s, key.len, 1, HMAP_DATA_TYPE_CUSTOM, member);
+    MAP_INSERT(j->dictv, key.s, key.len, member, 0);
       if(!json_parse(member, b))
         return 0;
       charbuf_skip_pred(b, &isspace);

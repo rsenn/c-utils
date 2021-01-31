@@ -201,6 +201,8 @@ MAP_GET2(HMAP_DB* map, const void* key, size_t klen) {
 #define MAP_INSERT(map, key, klen, data, dlen)                                 \
   (dlen == 0 ? hmap_add(&(map), key, klen, 0, HMAP_DATA_TYPE_CUSTOM, data)     \
              : hmap_set(&(map), key, klen, data, dlen))
+  #define MAP_ADD(map, key, klen, data)                                 \
+   hmap_add(&(map), key, klen, 0, HMAP_DATA_TYPE_CUSTOM, data)  
 #define MAP_SEARCH(map, key, klen, tuple)                                      \
   (hmap_search(map, key, klen, tuple) == HMAP_SUCCESS ? *(tuple) : 0)
 

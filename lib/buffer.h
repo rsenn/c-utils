@@ -259,6 +259,7 @@ int buffer_putnc(buffer*, char c, int ntimes);
 int buffer_putns(buffer*, const char* s, int ntimes);
 
 int buffer_putspad(buffer*, const char* x, size_t pad);
+int buffer_putspadstart(buffer*, const char* x, size_t pad);
 
 int buffer_deflate(buffer*, buffer* out, int level);
 int buffer_inflate(buffer*, buffer* in);

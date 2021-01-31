@@ -1,6 +1,6 @@
 #include "../uint64.h"
 #include "../buffer.h"
-#include "../hmap.h"
+#include "../map.h"
 #include "../json.h"
 #include "../slist.h"
 #include "../stralloc.h"
@@ -146,7 +146,7 @@ json_print_str(buffer* b, const char* x, size_t len, const jsonfmt* fmt) {
 
 static void
 json_print_object(jsonval* val, buffer* b, int depth, json_print_fn* p) {
-  TUPLE* t;
+  MAP_ITER_T t;
   int index = 0;
   jsonfmt printer;
   p(&printer, val, depth + 1, index, 0);
@@ -159,8 +159,8 @@ json_print_object(jsonval* val, buffer* b, int depth, json_print_fn* p) {
 
   json_print_separator(val, b, JSON_FMT_NEWLINE, &printer);
   if(val->dictv && val->dictv->list_tuple) {
-    hmap_foreach(val->dictv, t) {
-      int last = hmap_next(val->dictv, t) == NULL;
+    MAP_FOREACH(val->dictv, t) {
+      int last = t->next  == NULL;
       ++index;
       p(&printer, 0, depth + 1, index, 0);
       json_print_key(b, t->key, t->key_len, &printer);

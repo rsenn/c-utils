@@ -1,4 +1,4 @@
-#include "../hmap.h"
+#include "../map.h"
 #include "../json.h"
 
 int64
@@ -11,7 +11,7 @@ json_length(jsonval v) {
       return slist_length(&v.listv);
     }
     case JSON_OBJECT: {
-      return hmap_size(v.dictv);
+      return MAP_SIZE(v.dictv);
     }
     default: break;
   }

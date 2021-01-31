@@ -602,7 +602,7 @@ signal_handler(int sig) {
     exit(2);
   }
 }
-extern buffer* optbuf;
+
 int
 main(int argc, char* argv[]) {
   char* portname = NULL;
@@ -629,14 +629,9 @@ main(int argc, char* argv[]) {
 
   MAP_NEW(port_map);
 
-#ifdef _MSC_VER
-  optbuf = buffer_1;
-#endif
-  opterr = 0;
-
   for(;;) {
     c = getopt_long(argc, argv, "b:hvri:x", opts, &index);
-    if(c == -1 || opterr /* || argv[optind] == 0 */)
+    if(c == -1)
       break;
     if(c == 0)
       continue;
