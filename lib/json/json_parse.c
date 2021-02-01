@@ -166,7 +166,8 @@ json_parse_object(jsonval* j, charbuf* b) {
       if(!charbuf_skip_ifeq(b, ':'))
         return 0;
       member = json_newnode(JSON_UNDEFINED);
-      MAP_INSERT(j->dictv, key.s, key.len, member, 0);
+      stralloc_nul(&key);
+      MAP_ADD(j->dictv, key.s,  member);
       if(!json_parse(member, b))
         return 0;
       charbuf_skip_pred(b, &isspace);

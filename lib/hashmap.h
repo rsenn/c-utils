@@ -33,6 +33,10 @@ typedef int (*hashmap_comparator)(const void* l, const void* r);
  */
 typedef size_t (*hashmap_hash_func)(const void* key, size_t capacity);
 
+typedef void* (*hashmap_key_dup_func)(const void* key);
+typedef void (*hashmap_key_free_func)(const void* pair);
+
+
 /**
  * Hash map object
  */
@@ -47,6 +51,8 @@ typedef struct {
   hashmap_comparator comparator;
   /** Key hash function */
   hashmap_hash_func hash_func;
+  hashmap_key_dup_func key_dup_func;
+  hashmap_key_free_func key_free_func;
   /** Keys */
   linked_list* keys;
 } hashmap;
@@ -71,7 +77,9 @@ typedef struct {
 void hashmap_init(hashmap* map,
                   size_t capacity,
                   hashmap_comparator comparator,
-                  hashmap_hash_func hash_func);
+                  hashmap_hash_func hash_func,
+                  hashmap_key_dup_func key_dup_func,
+                  hashmap_key_free_func key_free_func);
 
 /**
  * Free the hash map.

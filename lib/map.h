@@ -17,26 +17,29 @@ typedef linked_list_node* MAP_ITER_T;
 #define MAP_SIZE(map) hashmap_size(&(map))
 #define MAP_ZERO(map) byte_zero(&(map), sizeof(map))
 #define MAP_ISNULL(map) (byte_count(&(map), sizeof(map), 0) == sizeof(map))
-#define MAP_NEW(map) hashmap_init(&(map), 64, MAP_COMPARATOR, &hashfunc)
+#define MAP_NEW(map) hashmap_init(&(map), 64, MAP_COMPARATOR, &hashfunc, (void*)&str_dup, &hashkeyfree)
 #define MAP_GET(map, key, klen) hashmap_get(&(map), (void*)(key))
 #define MAP_DESTROY(map) hashmap_free(&(map))
 #define MAP_FOREACH(map, iter)                                                 \
   for(linked_list_node* node = linked_list_head(hashmap_keys(&(map)));         \
-      (iter = node ? hashmap_getpair(hashmap_search(&(map), node->data)) : 0); \
+      (iter = node ? MAP_DATA(hashmap_search(&(map), node->data)) : 0);        \
       node = node->next)
 #define MAP_ITER_KEY(iter) ((char*)MAP_DATA(iter)->key)
 #define MAP_ITER_KEY_LEN(iter) str_len(MAP_ITER_KEY(iter))
 #define MAP_ITER_VALUE(iter) (MAP_DATA(iter)->value)
-#define MAP_DATA hashmap_getpair
-#define MAP_VALUE(pair) ((pair) ? (void*)(((MAP_PAIR_T)(pair))->value) : 0)
-#define MAP_DELETE(map, key, klen) hashmap_remove(&(map), (void*)(key))
+#define MAP_KEY(pair) ((pair)->key)
+#define MAP_KEY_LEN(pair) str_len((pair)->key)
+#define MAP_VALUE(pair) ((pair)->value)
+#define MAP_DATA(iter) ((MAP_PAIR_T)(iter)->data)
+#define MAP_DELETE(map, key, klen)                                             \
+  do {                                                                         \
+    hashmap_pair* pair = hashmap_find(&(map), (key));                          \
+    alloc_free(MAP_KEY(pair));                                                 \
+    alloc_free((char*)MAP_VALUE(pair) - sizeof(size_t));                       \
+    hashmap_remove(&(map), (void*)(key));                                      \
+  } while(0);
 #define MAP_SEARCH(map, key, klen, pair)                                       \
-  (*(pair) = hashmap_getpair(hashmap_search(&(map), (void*)(key))))
-
-static MAP_PAIR_T
-hashmap_getpair(linked_list_node* node) {
-  return node ? node->data : 0;
-}
+  (*(pair) = MAP_DATA(hashmap_search(&(map), (void*)(key))))
 
 #define MAP_SET(map, key, value)                                               \
   MAP_INSERT(map, (key), str_len(key) + 1, (value), str_len(value) + 1)
@@ -46,6 +49,9 @@ hashmap_getpair(linked_list_node* node) {
     MAP_FOREACH(map, t)                                                        \
     fn(MAP_KEY(t), str_len(MAP_KEY(t)), MAP_VALUE(t), 0, arg);                 \
   }
+
+#define MAP_ADD(map, key, value)                                 \
+  hashmap_put(&(map), (key), (value))
 
 #define MAP_INSERT(map, key, klen, data, dlen)                                 \
   hashmap_insert(&(map), (void*)(key), klen, (void*)(data), dlen)
@@ -74,7 +80,15 @@ hashmap_insert(MAP_T* map, void* key, size_t klen, void* data, size_t dlen) {
 #define ROR(v, c) v = (((v) >> c) | (v) << (HASH_BITS - c))
 #define ROL(v, c) v = (((v) << c) | (v) >> (HASH_BITS - c))
 
-static size_t
+/*static void* hashkeydup(const void* key) {
+  return str_dup(key);
+}*/
+
+static void hashkeyfree(const void* pair) {
+  alloc_free(((hashmap_pair*)pair)->key);
+}
+
+inline static size_t
 hashfunc(const void* str, size_t capacity) {
   uint64 hash;
   int rotate;

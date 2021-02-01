@@ -28,6 +28,21 @@
 static charbuf infile;
 // static buffer b;
 
+static void
+default_printer(jsonfmt* p, jsonval* v, int depth, int index, char q) {
+  p->indent = "  ";
+
+  p->spacing = " ";
+  p->newline = "\n";
+  p->separat = ",\n";
+  p->quote[0] = '"';
+  p->quote[1] = '\0';
+  p->precision = 10;
+  p->depth = depth - (index == -2);
+  p->index = index;
+  p->compliant = 1;
+};
+
 void
 put_str_escaped(buffer* b, const char* str) {
   stralloc esc;
@@ -67,7 +82,7 @@ main(int argc, char* argv[]) {
 
   taia_now(&s);
 
-  json_print(*doc, &out_buf, 0);
+  json_print(*doc, &out_buf, &default_printer);
   taia_now(&t);
 
   taia_sub(&u, &t, &s);

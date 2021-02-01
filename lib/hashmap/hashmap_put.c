@@ -23,7 +23,7 @@ hashmap_put(hashmap* map, void* key, void* value) {
     head = head->next;
   }
   pair = (hashmap_pair*)alloc(sizeof(hashmap_pair));
-  pair->key = key;
+  pair->key = map->key_dup_func(key);
   pair->value = value;
   map->size++;
   head = linked_list_prepend(list, pair);

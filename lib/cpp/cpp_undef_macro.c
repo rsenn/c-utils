@@ -12,6 +12,6 @@ cpp_undef_macro(cpp_t* cpp, const char* name) {
   alloc_free(m->str_contents_buf);
   LIST_DESTROY(m->argnames);
   // LIST_DESTROY(m->argnames);
-  MAP_DELETE(cpp->macros, MAP_ITER_KEY(k), MAP_KEY_LEN(k));
+  MAP_DELETE(cpp->macros, MAP_KEY(k), MAP_KEY_LEN(k));
   return 1;
 }
