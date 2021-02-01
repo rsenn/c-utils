@@ -883,7 +883,7 @@ add_program(strip-comments errmsg env charbuf buffer path dir strarray strlist s
 add_program(quote textcode unix errmsg env charbuf buffer path dir strarray strlist stralloc fmt)
 
 add_program(httpproxy http io hmap)
-add_program(testini ini.c ini.h hmap stralloc buffer mmap open uint16)
+add_program(testini ini.c ini.h hashmap stralloc buffer mmap open uint16)
 # add_program(montty io hmap)
 add_program(logserial sig charbuf hmap path unix rdir dir errmsg io ndelay strarray stralloc buffer taia tai)
 add_program(tinyproxy process unix path wait range dns taia tai hmap env ndelay buffer strarray array strlist stralloc errmsg sig socket fmt scan io uint32)

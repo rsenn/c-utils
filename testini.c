@@ -1,4 +1,5 @@
 #include "ini.h"
+#define MAP_USE_HMAP 1
 #include "lib/map.h"
 #include "lib/open.h"
 

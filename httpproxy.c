@@ -9,6 +9,7 @@
 #include "lib/stralloc.h"
 #include "lib/dns.h"
 #include "lib/ip4.h"
+#define MAP_USE_HMAP 1
 #include "lib/map.h"
 #include "lib/safemult.h"
 #include "lib/str.h"

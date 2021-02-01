@@ -1,5 +1,4 @@
 #include "ini.h"
-#include "lib/map.h"
 #include "lib/str.h"
 #include "lib/fmt.h"
 #include "lib/alloc.h"
@@ -80,7 +79,7 @@ static int utf16 = 0;
 
 void
 ini_write(buffer* b, ini_section_t* ini, int utf16) {
-  MAP_PAIR_T t;
+  MAP_ITER_T t;
   buffer out;
   char x[1024];
   buffer_init(
@@ -97,9 +96,9 @@ ini_write(buffer* b, ini_section_t* ini, int utf16) {
     buffer_put(b, "]\r\n", 3);
 
     MAP_FOREACH(ini->map, t) {
-      buffer_put(b, MAP_KEY(ini->map, t), str_len(MAP_KEY(ini->map, t)));
+      buffer_put(b, MAP_ITER_KEY(t), str_len(MAP_ITER_KEY(t)));
       buffer_putc(b, '=');
-      buffer_put(b, MAP_DATA(ini->map, t), str_len(MAP_DATA(ini->map, t)));
+      buffer_put(b, MAP_DATA(t), str_len(MAP_DATA(t)));
       buffer_puts(b, "\r\n");
     }
 

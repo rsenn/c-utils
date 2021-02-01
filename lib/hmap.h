@@ -8,9 +8,6 @@
 
 #include <sys/types.h>
 
-#include "stralloc.h"
-#include "buffer.h"
-
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -94,7 +91,6 @@ int hmap_add(HMAP_DB** hmap_db,
              ...);
 int hmap_delete(HMAP_DB** hmap_db, void* key, size_t k_len);
 int hmap_destroy(HMAP_DB** hmap_db);
-void hmap_dump(HMAP_DB* hmap, buffer* b);
 int hmap_free_data(TUPLE* tuple);
 int hmap_init(int bucket_size, HMAP_DB** hmap_db);
 int hmap_is_locate(HMAP_DB* hmap_db, void* key, size_t k_len);
@@ -103,9 +99,6 @@ int hmap_print_table(HMAP_DB* my_hmap_db);
 int hmap_print_tree(HMAP_DB* my_hmap_db);
 int hmap_search(HMAP_DB* hmap_db, const void* key, size_t k_len, TUPLE** data);
 int hmap_set_chars(HMAP_DB** hmap_db, const char* key, const char* data);
-int hmap_set_stralloc(HMAP_DB** hmap_db,
-                      const stralloc* key,
-                      const stralloc* data);
 int hmap_set(
     HMAP_DB** hmap_db, const void* key, size_t k_len, void* data, size_t d_len);
 size_t hmap_size(HMAP_DB* my_hmap_db);

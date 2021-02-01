@@ -8,6 +8,7 @@
 #include "lib/strlist.h"
 #include "lib/str.h"
 #include "lib/mmap.h"
+#define MAP_USE_HMAP 1
 #include "lib/map.h"
 #include "lib/scan.h"
 

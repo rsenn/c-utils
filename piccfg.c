@@ -10,6 +10,7 @@
 #include "lib/ihex.h"
 #include "lib/stralloc.h"
 #include "lib/buffer.h"
+#define MAP_USE_HMAP 1
 #include "lib/map.h"
 #include "lib/strlist.h"
 #include "lib/getopt.h"

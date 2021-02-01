@@ -6,6 +6,7 @@
 #include "lib/strlist.h"
 #include "lib/xml.h"
 
+#define MAP_USE_HMAP 1
 #include "lib/map.h"
 
 static const char* palette[16] = {"#000000",

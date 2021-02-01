@@ -58,6 +58,7 @@
 #include "lib/bool.h"
 #include <errno.h>
 
+#define MAP_USE_HMAP 1
 #include "lib/map.h"
 #include "address.h"
 

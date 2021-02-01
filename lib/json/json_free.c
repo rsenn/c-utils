@@ -1,4 +1,3 @@
-#include "../map.h"
 #include "../alloc.h"
 #include "../json.h"
 
@@ -22,8 +21,8 @@ json_free_val(jsonval* val, jsonval* parent) {
     }
     case JSON_OBJECT: {
       MAP_ITER_T t;
-      if(val->dictv != NULL) {
-        MAP_FOREACH(val->dictv, t) { json_free_val(t->vals.val_custom, val); }
+      if(!MAP_ISNULL(val->dictv)) {
+        MAP_FOREACH(val->dictv, t) { json_free_val(MAP_ITER_VALUE(t), val); }
         MAP_DESTROY(val->dictv);
       }
       break;

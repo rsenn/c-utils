@@ -1,3 +1,5 @@
+#include "lib/stralloc.h"
+#include "lib/buffer.h"
 #include "lib/json.h"
 #include "lib/open.h"
 #include "lib/fmt.h"

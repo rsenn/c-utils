@@ -1,4 +1,3 @@
-#include "../map.h"
 #include "../byte.h"
 #include "../charbuf.h"
 #include "../json.h"
@@ -109,7 +108,7 @@ json_parse_null_or_undefined(jsonval* j, charbuf* b) {
         return 0;
     }
     j->type = v ? JSON_OBJECT : JSON_UNDEFINED;
-    j->dictv = NULL;
+    MAP_ZERO(j->dictv);
     return 1;
   }
   return 0;
@@ -167,7 +166,7 @@ json_parse_object(jsonval* j, charbuf* b) {
       if(!charbuf_skip_ifeq(b, ':'))
         return 0;
       member = json_newnode(JSON_UNDEFINED);
-    MAP_INSERT(j->dictv, key.s, key.len, member, 0);
+      MAP_INSERT(j->dictv, key.s, key.len, member, 0);
       if(!json_parse(member, b))
         return 0;
       charbuf_skip_pred(b, &isspace);

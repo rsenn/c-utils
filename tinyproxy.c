@@ -29,6 +29,7 @@
 #include "lib/dns.h"
 #include "lib/wait.h"
 #include "lib/process.h"
+#define MAP_USE_HMAP 1
 #include "lib/map.h"
 #include "debug.h"
 #include <errno.h>

@@ -1,5 +1,7 @@
 #include <assert.h>
 
+#define MAP_USE_HASHMAP 1
+
 #include "cpp.h"
 #include "map.h"
 #include "list.h"

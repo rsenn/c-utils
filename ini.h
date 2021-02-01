@@ -1,10 +1,12 @@
 #ifndef _INI_H
 #define _INI_H
 
-#include "lib/map.h"
 #include "lib/byte.h"
 #include "lib/stralloc.h"
 #include "lib/buffer.h"
+
+#define MAP_USE_HASHMAP 1
+#include "lib/map.h"
 
 typedef struct ini_section {
   struct ini_section* next;

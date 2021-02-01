@@ -515,10 +515,10 @@ main(int argc, char** argv) {
 
     map.start = (char*)mmap_read(filename, &filesize);
 
-if(map.start == 0) {
-  errmsg_warnsys("ERROR: ", "mmap '",filename,"'",0);
-  return 127;
-}
+    if(map.start == 0) {
+      errmsg_warnsys("ERROR: ", "mmap '", filename, "'", 0);
+      return 127;
+    }
 
     map.end = map.start + filesize;
 
@@ -528,7 +528,7 @@ if(map.start == 0) {
     buffer_putptr(buffer_2, map.start);
     buffer_putnlflush(buffer_2);
 #endif
-    
+
     if(dump_file_header)
       elf_dump_header(buffer_1, map);
 

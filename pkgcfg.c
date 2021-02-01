@@ -29,6 +29,7 @@
 #include "lib/case.h"
 #include "lib/scan.h"
 #include "lib/fnmatch.h"
+#define MAP_USE_HMAP 1
 #include "lib/map.h"
 
 #include <ctype.h>

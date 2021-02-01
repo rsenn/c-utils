@@ -7,12 +7,15 @@
 #define JSON_H
 
 #include "charbuf.h"
-#include "hmap.h"
 #include "slist.h"
 #include "uint64.h"
 #include "str.h"
+#include "stralloc.h"
 #include <sys/types.h>
 #include <ctype.h>
+
+#define MAP_USE_HASHMAP 1
+#include "map.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -36,7 +39,7 @@ typedef struct {
     double doublev;
     stralloc stringv;
     slink* listv;
-    HMAP_DB* dictv;
+    MAP_T dictv;
   };
 } jsonval;
 
@@ -64,11 +67,8 @@ enum {
   JSON_FMT_QUOTE = 4,
 };
 
-typedef int json_read_callback_fn(jsonreader* r,
-                                  jsondata id,
-                                  stralloc* name,
-                                  stralloc* value,
-                                  HMAP_DB** attrs);
+typedef int json_read_callback_fn(
+    jsonreader* r, jsondata id, stralloc* name, stralloc* value, MAP_T* attrs);
 typedef void json_print_fn(jsonfmt*, jsonval*, int, int, char);
 typedef void json_format_fn(jsonfmt*, jsonval*, int, int, char);
 typedef int json_predicate_fn();
@@ -96,8 +96,12 @@ jsonval json_get_property(jsonval, jsonval name);
 jsonval* json_push(jsonval* arr, jsonval item);
 int64 json_length(jsonval);
 
+#ifdef BUFFER_H
 void json_print(jsonval, buffer* b, json_print_fn* p);
+#endif
+#ifdef STRALLOC_H
 void json_tosa(jsonval, stralloc* sa, json_print_fn* p);
+#endif
 
 double json_todouble(jsonval);
 int64 json_toint(jsonval);
@@ -126,15 +130,14 @@ static inline jsonval
 json_null() {
   jsonval ret;
   ret.type = JSON_OBJECT;
-  ret.dictv = 0;
+  byte_zero(&ret.dictv, sizeof(MAP_T));
   return ret;
 }
 static inline jsonval
 json_object() {
   jsonval ret;
   ret.type = JSON_OBJECT;
-  ret.dictv = 0;
-  hmap_init(MAP_BUCKET, &ret.dictv);
+  MAP_NEW(ret.dictv);
   return ret;
 }
 static inline jsonval
@@ -185,7 +188,7 @@ json_stringn(const char* s, size_t n) {
 
 static inline int
 json_isnull(jsonval v) {
-  return v.type == JSON_OBJECT && v.dictv == 0;
+  return v.type == JSON_OBJECT && MAP_ISNULL(v.dictv);
 }
 static inline int
 json_isnumber(jsonval v) {

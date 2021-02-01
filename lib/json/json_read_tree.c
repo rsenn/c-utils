@@ -2,7 +2,6 @@
 #include "../fmt.h"
 #include "../json.h"
 #include "../scan.h"
-#include "../map.h"
 
 static int
 json_read_value(jsonreader* reader,

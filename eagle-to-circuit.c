@@ -27,6 +27,7 @@
 #include <libgen.h>
 #endif
 
+#define MAP_USE_HMAP 1
 #include "lib/map.h"
 
 #ifdef _MSC_VER

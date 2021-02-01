@@ -356,11 +356,9 @@ get_file_owner(const char* path) {
   if(bRtnBool == FALSE) {
     dwErrorCode = GetLastError();
     if(dwErrorCode == ERROR_NONE_MAPPED)
-      str_copy(tmpbuf,
-               "Account owner not found for specified SID.\n");
+      str_copy(tmpbuf, "Account owner not found for specified SID.\n");
     else
-      str_copy(tmpbuf,
-               "Error in LookupAccountSid.\n");
+      str_copy(tmpbuf, "Error in LookupAccountSid.\n");
     return tmpbuf;
   } else if(bRtnBool == TRUE)
     /* Print the account name. */
@@ -963,8 +961,7 @@ list_file(
   if(path->len > PATH_MAX) {
     buffer_puts(buffer_2, "ERROR: Directory ");
     buffer_putsa(buffer_2, path);
-    buffer_puts(buffer_2,
-                " longer than PATH_MAX (" STRINGIFY(PATH_MAX) ")!\n");
+    buffer_puts(buffer_2, " longer than PATH_MAX (" STRINGIFY(PATH_MAX) ")!\n");
     buffer_flush(buffer_2);
     return 1;
   }
@@ -1172,31 +1169,34 @@ count_non_negative(const int* x, size_t n) {
 void
 usage(char* argv0) {
   const char* prog = str_basename(argv0);
-  buffer_putm_internal(buffer_1,
-                       "Usage: ",
-                       prog,
-                       " [-o output] [infile or stdin]\n\n",
-                       "  -1 ... -9           compression level; default is 3\n",
-                       "\n",
-                       "Options\n",
-                       "  -h, --help                show this help\n",
-                       "  -l, --list                long list\n",
-                       "  -n, --numeric             numeric user/group\n",
-                       "  -r, --relative            relative path\n",
-                       "  -i, --input      FILE     read files to list from FILE\n",
-                       "  -o, --output     FILE     write output to FILE\n",
-                       "  -I, --include    PATTERN  include entries matching PATTERN\n",
-                       "  -X, --exclude    PATTERN  exclude entries matching PATTERN\n",
-                       "  -t, --time-style FORMAT   format time according to FORMAT\n",
-                       "  -m, --min-size   BYTES    minimum file size\n",
-                       "  -L, --dereference         dereference symlinks\n",
-                       "      --no-dereference\n",
-                       "  -D, --one-filesystem\n",
-                       "  -C, --cross-filesystem\n",
-                       "  -c, --crc                 cyclic redundancy check\n",
-                       "  -d, --depth      NUM      max depth\n",
-                       "  -f, --types      TYPES    filter by type:\n\n    d = directory, b = block dev s = socket\n    f = file,      c = char dev\n    l = symlink,   p = pipe (fifo)\n\n",
-                       0);
+  buffer_putm_internal(
+      buffer_1,
+      "Usage: ",
+      prog,
+      " [-o output] [infile or stdin]\n\n",
+      "  -1 ... -9           compression level; default is 3\n",
+      "\n",
+      "Options\n",
+      "  -h, --help                show this help\n",
+      "  -l, --list                long list\n",
+      "  -n, --numeric             numeric user/group\n",
+      "  -r, --relative            relative path\n",
+      "  -i, --input      FILE     read files to list from FILE\n",
+      "  -o, --output     FILE     write output to FILE\n",
+      "  -I, --include    PATTERN  include entries matching PATTERN\n",
+      "  -X, --exclude    PATTERN  exclude entries matching PATTERN\n",
+      "  -t, --time-style FORMAT   format time according to FORMAT\n",
+      "  -m, --min-size   BYTES    minimum file size\n",
+      "  -L, --dereference         dereference symlinks\n",
+      "      --no-dereference\n",
+      "  -D, --one-filesystem\n",
+      "  -C, --cross-filesystem\n",
+      "  -c, --crc                 cyclic redundancy check\n",
+      "  -d, --depth      NUM      max depth\n",
+      "  -f, --types      TYPES    filter by type:\n\n    d = directory, b = "
+      "block dev s = socket\n    f = file,      c = char dev\n    l = symlink, "
+      "  p = pipe (fifo)\n\n",
+      0);
   buffer_putnlflush(buffer_1);
 }
 
@@ -1204,31 +1204,41 @@ typedef const char* ext_class_t[2];
 
 static const ext_class_t ext_classes[] = {
     {"archives",
-     "^rar^zip^7z^cab^tar^tar.Z^tar.gz^tar.xz^tar.bz2^tar.lzma^tgz^txz^tbz2^tlzma"},
+     "^rar^zip^7z^cab^tar^tar.Z^tar.gz^tar.xz^tar.bz2^tar.lzma^tgz^txz^tbz2^"
+     "tlzma"},
     {"audio", "^aif^aiff^flac^m4a^m4b^mp2^mp3^mpc^ogg^raw^rm^wav^wma"},
     {"books", "^pdf^epub^mobi^azw3^djv^djvu"},
     {"documents",
      "^cdr^doc^docx^odf^odg^odp^ods^odt^pdf^ppt^pptx^rtf^vsd^xls^xlsx^html"},
     {"fonts", "^CompositeFont^pcf^ttc^otf^afm^pfb^fon^ttf"},
     {"images",
-     "^bmp^cin^cod^dcx^djvu^emf^fig^gif^ico^im1^im24^im8^jin^jpeg^jpg^lss^miff^opc^pbm^pcx^pgm^pgx^png^pnm^ppm^psd^rle^rmp^sgi^shx^svg^tga^tif^tiff^wim^xcf^xpm^xwd^mng"},
+     "^bmp^cin^cod^dcx^djvu^emf^fig^gif^ico^im1^im24^im8^jin^jpeg^jpg^lss^miff^"
+     "opc^pbm^pcx^pgm^pgx^png^pnm^ppm^psd^rle^rmp^sgi^shx^svg^tga^tif^tiff^wim^"
+     "xcf^xpm^xwd^mng"},
     {"incomplete", "^*.part^*.!??^INCOMPL*"},
     {"music",
      "^mp3^ogg^flac^mpc^m4a^m4b^wma^wav^aif^aiff^mod^s3m^xm^it^669^mp4"},
     {"packages", "^tgz^txz^rpm^deb"},
     {"scripts", "^sh^py^rb^bat^cmd^js^ts^jsx^tsx"},
     {"software",
-     "^*setup*.exe^*install*.exe^*.msi^*.msu^*.cab^*.vbox-extpack^*.apk^*.run^*.dmg^*.app^*.apk^7z^app^bin^daa^deb^dmg^exe^iso^msi^msu^cab^vbox-extpack^apk^nrg^pkg^rar^rpm^run^sh^tar.Z^tar.bz2^tar.gz^tar.xz^tbz2^tgz^txz^zip"},
+     "^*setup*.exe^*install*.exe^*.msi^*.msu^*.cab^*.vbox-extpack^*.apk^*.run^*"
+     ".dmg^*.app^*.apk^7z^app^bin^daa^deb^dmg^exe^iso^msi^msu^cab^vbox-extpack^"
+     "apk^nrg^pkg^rar^rpm^run^sh^tar.Z^tar.bz2^tar.gz^tar.xz^tbz2^tgz^txz^zip"},
     {"sources",
      "^c^cs^cc^cpp^cxx^h^hh^hpp^hxx^ipp^mm^r^java^rb^py^S^s^asm^inc"},
     {"scripts",
-     "^lua^etlua^moon^py^rb^sh^js^jsx^es^es5^es6^es7^coffee^scss^sass^css^jsx^tcl^pl^awk^m4^php"},
+     "^lua^etlua^moon^py^rb^sh^js^jsx^es^es5^es6^es7^coffee^scss^sass^css^jsx^"
+     "tcl^pl^awk^m4^php"},
     {"web", "^js^css^htm^html^xml^svg"},
     {"videos",
      "^3gp^avi^f4v^flv^m4v^m2v^mkv^mov^mp4^mpeg^mpg^ogm^vob^webm^wmv"},
     {"vmdisk", "^vdi^vmdk^vhd^qed^qcow^qcow2^vhdx^hdd"},
     {"project",
-     "^avrgccproj^bdsproj^cbproj^coproj^cproj^cproject^csproj^dproj^fsproj^groupproj^jsproj^jucer^lproj^lsxproj^metaproj^packproj^pbxproj^pkgproj^pmproj^pnproj^pro^proj^project^pssproj^shfbproj^sln^tmproj^unityproj^uvproj^vbproj^vcproj^vcxproj^vdproj^vfproj^webproj^winproj^wixproj^zdsproj^zfpproj"},
+     "^avrgccproj^bdsproj^cbproj^coproj^cproj^cproject^csproj^dproj^fsproj^"
+     "groupproj^jsproj^jucer^lproj^lsxproj^metaproj^packproj^pbxproj^pkgproj^"
+     "pmproj^pnproj^pro^proj^project^pssproj^shfbproj^sln^tmproj^unityproj^"
+     "uvproj^vbproj^vcproj^vcxproj^vdproj^vfproj^webproj^winproj^wixproj^"
+     "zdsproj^zfpproj"},
     {"spice", "^sp^cir^spc^spi"},
     {"eda", "^sch^brd^lbr"},
     {"bin", "^hex^cof"},

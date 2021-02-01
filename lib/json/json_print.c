@@ -1,6 +1,5 @@
 #include "../uint64.h"
 #include "../buffer.h"
-#include "../map.h"
 #include "../json.h"
 #include "../slist.h"
 #include "../stralloc.h"
@@ -150,7 +149,7 @@ json_print_object(jsonval* val, buffer* b, int depth, json_print_fn* p) {
   int index = 0;
   jsonfmt printer;
   p(&printer, val, depth + 1, index, 0);
-  if(val->dictv == NULL) {
+  if(MAP_ISNULL(val->dictv)) {
     buffer_puts(b, "null");
     return;
   }
@@ -158,17 +157,17 @@ json_print_object(jsonval* val, buffer* b, int depth, json_print_fn* p) {
   p(&printer, val, depth + 1, index, 0);
 
   json_print_separator(val, b, JSON_FMT_NEWLINE, &printer);
-  if(val->dictv && val->dictv->list_tuple) {
+  if(!MAP_ISNULL(val->dictv)) {
     MAP_FOREACH(val->dictv, t) {
-      int last = t->next  == NULL;
+      int last = t->next == NULL;
       ++index;
       p(&printer, 0, depth + 1, index, 0);
-      json_print_key(b, t->key, t->key_len, &printer);
+      json_print_key(b, MAP_ITER_KEY(t), MAP_ITER_KEY_LEN(t), &printer);
       buffer_puts(b, ":");
-      json_print_separator(t->vals.val_custom, b, JSON_FMT_SPACING, &printer);
-      json_print_val(t->vals.val_custom, b, depth + 1, p);
+      json_print_separator(MAP_DATA(t), b, JSON_FMT_SPACING, &printer);
+      json_print_val(MAP_DATA(t), b, depth + 1, p);
       if(!last) {
-        json_print_separator(t->vals.val_custom,
+        json_print_separator(MAP_ITER_VALUE(t),
                              b,
                              JSON_FMT_SEPARATOR,
                              &printer);

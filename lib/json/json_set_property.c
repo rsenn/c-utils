@@ -1,4 +1,3 @@
-#include "../map.h"
 #include "../json.h"
 
 jsonval*
@@ -13,10 +12,10 @@ json_set_property(jsonval* obj, jsonval name, jsonval value) {
     /*    buffer_putm_internal(buffer_2, "key: ", key.s, "\n", NULL);
         buffer_flush(buffer_2);*/
 
-    if(obj->dictv == NULL)
+    if(MAP_ISNULL(obj->dictv))
       MAP_NEW(obj->dictv);
 
-   MAP_INSERT(obj->dictv, key.s, key.len + 1, &value, sizeof(jsonval));
+    MAP_INSERT(obj->dictv, key.s, key.len + 1, &value, sizeof(jsonval));
     ret = MAP_GET(obj->dictv, key.s, key.len + 1);
 
     stralloc_free(&key);
