@@ -10,7 +10,7 @@ hashmap_put(hashmap* map, void* key, void* value) {
   hashmap_pair* pair;
   if(!(list = map->table[map->hash_func(key, map->capacity)])) {
     list = (linked_list*)alloc(sizeof(linked_list));
-    linked_list_init(list, (linked_list_destructor)alloc_free);
+    linked_list_init(list, (linked_list_destructor)&alloc_free);
     map->table[map->hash_func(key, map->capacity)] = list;
   }
   head = linked_list_head(list);
@@ -27,6 +27,6 @@ hashmap_put(hashmap* map, void* key, void* value) {
   pair->value = value;
   map->size++;
   head = linked_list_prepend(list, pair);
-  linked_list_append(map->keys, key);
+  linked_list_append(&map->keys, pair->key);
   return head;
 }

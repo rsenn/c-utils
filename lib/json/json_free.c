@@ -20,9 +20,9 @@ json_free_val(jsonval* val, jsonval* parent) {
       break;
     }
     case JSON_OBJECT: {
-      MAP_ITER_T t;
       if(!MAP_ISNULL(val->dictv)) {
-        MAP_FOREACH(val->dictv, t) { json_free_val(MAP_ITER_VALUE(t), val); }
+        MAP_PAIR_T t;
+        MAP_FOREACH(val->dictv, t) { json_free_val(MAP_VALUE(t), val); }
         MAP_DESTROY(val->dictv);
       }
       break;

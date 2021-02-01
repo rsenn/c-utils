@@ -14,7 +14,8 @@
 #include <sys/types.h>
 #include <ctype.h>
 
-#define MAP_USE_HASHMAP 1
+//#define MAP_USE_HASHMAP 1
+#define MAP_USE_HMAP 1
 #include "map.h"
 
 #ifdef __cplusplus

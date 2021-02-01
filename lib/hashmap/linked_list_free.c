@@ -19,5 +19,5 @@ linked_list_free(linked_list* list) {
 
   list->head = NULL;
 
-  alloc_free(list);
+  //alloc_free(list);
 }

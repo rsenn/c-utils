@@ -36,7 +36,6 @@ typedef size_t (*hashmap_hash_func)(const void* key, size_t capacity);
 typedef void* (*hashmap_key_dup_func)(const void* key);
 typedef void (*hashmap_key_free_func)(const void* pair);
 
-
 /**
  * Hash map object
  */
@@ -54,7 +53,7 @@ typedef struct {
   hashmap_key_dup_func key_dup_func;
   hashmap_key_free_func key_free_func;
   /** Keys */
-  linked_list* keys;
+  linked_list keys;
 } hashmap;
 
 /**

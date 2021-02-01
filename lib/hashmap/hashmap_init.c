@@ -9,10 +9,7 @@ hashmap_default_key_dup_func(const void* key) {
 }
 
 void
-hashmap_default_key_free_func(const void* pair) {
-
-}
-
+hashmap_default_key_free_func(const void* pair) {}
 
 void
 hashmap_init(hashmap* map,
@@ -45,7 +42,6 @@ hashmap_init(hashmap* map,
   } else {
     map->key_free_func = hashmap_default_key_free_func;
   }
-  map->keys = (linked_list*)alloc(sizeof(linked_list));
-  linked_list_init(map->keys, &map->key_free_func );
+ // map->keys = (linked_list*)alloc(sizeof(linked_list));
+  linked_list_init(&map->keys, map->key_free_func);
 }
-

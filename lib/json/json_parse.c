@@ -153,29 +153,33 @@ int
 json_parse_object(jsonval* j, charbuf* b) {
   stralloc key;
   if(charbuf_skip_ifeq(b, '{')) {
-    stralloc_init(&key);
     j->type = JSON_OBJECT;
     MAP_NEW(j->dictv);
 
-    for(;;) {
-      jsonval* member;
-      stralloc_zero(&key);
-      if(!json_parse_getsa(b, &key))
-        return 0;
-      charbuf_skip_pred(b, &isspace);
-      if(!charbuf_skip_ifeq(b, ':'))
-        return 0;
-      member = json_newnode(JSON_UNDEFINED);
-      stralloc_nul(&key);
-      MAP_ADD(j->dictv, key.s,  member);
-      if(!json_parse(member, b))
-        return 0;
-      charbuf_skip_pred(b, &isspace);
-      if(!charbuf_skip_ifeq(b, ','))
-        break;
+    charbuf_skip_pred(b, isspace);
+
+    if(charbuf_peek(b) != '}') {
+      stralloc_init(&key);
+      for(;;) {
+        jsonval* member;
+        stralloc_zero(&key);
+        if(!json_parse_getsa(b, &key))
+          return 0;
+        charbuf_skip_pred(b, &isspace);
+        if(!charbuf_skip_ifeq(b, ':'))
+          return 0;
+        member = json_newnode(JSON_UNDEFINED);
+        stralloc_nul(&key);
+        MAP_ADD(j->dictv, key.s, member);
+        if(!json_parse(member, b))
+          return 0;
+        charbuf_skip_pred(b, &isspace);
+        if(!charbuf_skip_ifeq(b, ','))
+          break;
+      }
+      stralloc_free(&key);
     }
 
-    stralloc_free(&key);
     if(charbuf_skip_ifeq(b, '}'))
       return 1;
   }

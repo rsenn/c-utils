@@ -4,5 +4,5 @@
 
 linked_list*
 hashmap_keys(hashmap* map) {
-  return map->keys;
+  return &map->keys;
 }

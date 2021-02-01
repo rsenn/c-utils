@@ -54,7 +54,7 @@ put_str_escaped(buffer* b, const char* str) {
 
 int
 main(int argc, char* argv[]) {
-  int in_fd, out_fd;
+  int in_fd, out_fd = STDOUT_FILENO;
   buffer out_buf;
   jsonval* doc;
   tai6464 s, t, u;
