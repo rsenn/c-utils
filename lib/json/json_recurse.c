@@ -24,7 +24,7 @@ json_recurse_val(jsonval* val, void (*fn)(), void* arg, int depth) {
       slink* link;
       for(link = val->listv; link; link = link->next) {
         json_recurse_val((jsonval*)&(link)[1], fn, arg, depth + 1);
-      }       
+      }
       break;
     }
   }

@@ -15,7 +15,7 @@ buffer_gettok_sa(buffer* b, stralloc* sa, const char* charset, size_t setlen) {
       break;
     if(!stralloc_readyplus(sa, 1))
       goto nomem;
-    stralloc_append(sa, &c);
+    stralloc_APPEND(sa, &c);
     if(buffer_skipc(b) <= 0)
       return 0;
   }

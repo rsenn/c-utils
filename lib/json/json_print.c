@@ -158,19 +158,16 @@ json_print_object(jsonval* val, buffer* b, int depth, json_print_fn* p) {
 
   if(!MAP_ISNULL(val->dictv)) {
     MAP_FOREACH(val->dictv, pair) {
+      if(index == 0)
+        json_print_separator(val, b, JSON_FMT_NEWLINE, &printer);
+      else
+        json_print_separator(MAP_VALUE(pair), b, JSON_FMT_SEPARATOR, &printer);
       ++index;
-      json_print_separator(val, b, JSON_FMT_NEWLINE, &printer);
       p(&printer, 0, depth + 1, index, 0);
       json_print_key(b, MAP_KEY(pair), MAP_KEY_LEN(pair), &printer);
       buffer_puts(b, ":");
       json_print_separator(MAP_VALUE(pair), b, JSON_FMT_SPACING, &printer);
       json_print_val(MAP_VALUE(pair), b, depth + 1, p);
-      /*  if(!last) {
-          json_print_separator(MAP_ITER_VALUE(t),
-                               b,
-                               JSON_FMT_SEPARATOR,
-                               &printer);
-        }*/
     }
     p(&printer, val, depth + 1, -2, 0);
     json_print_separator(val, b, JSON_FMT_NEWLINE, &printer);

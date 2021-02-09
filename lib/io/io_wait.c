@@ -1,7 +1,7 @@
 #include "../io.h"
 #include "../io_internal.h"
 
-void
+int64
 io_wait() {
-  io_waituntil2(-1);
+  return io_waituntil2(-1);
 }

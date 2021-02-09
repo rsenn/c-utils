@@ -128,6 +128,7 @@ get_prototypes() {
       -I* ) CPROTO_ARGS="$CPROTO_ARGS$NL$1" ; shift ;; 
       -r | --remove* | -R) REMOVE_NAMES=true; shift ;;
       -c | --copy* | --xclip*) XCLIP=true; shift ;;
+      -S | --no-sort) NO_SORT=true; shift ;;
       -E | --ellips* | --empty*) EMPTY=true; shift ;;
       -q | --quiet) QUIET=true; shift ;;
       -e | --expr) EXPR="${EXPR:+$EXPR ;; }$2"; shift 2 ;;
@@ -174,16 +175,16 @@ get_prototypes() {
     adjust_length FNAME
     adjust_length ARGS
   done <<<"$CPROTO_OUT"
-
+  
+  FILTER="sed 's,|,,g'"
+[ "$NO_SORT" = true ] || FILTER="sort -t'|' -k2 -f | $FILTER"
  (TEMP=`mktemp`
   trap 'rm -f "$TEMP"' EXIT 
   [ "$PAD_ARGS" = true ] && PAD_A2="-$((FNAME_MAXLEN))"
   while read_proto; do
     set -- "$TYPE" "$FNAME" "$ARGS"
     printf "%-$((TYPE_MAXLEN))s |%${PAD_A2}s|%s\n" "$1" "$2" "$(clean_args "$3");"
-  done <<<"$CPROTO_OUT" | 
-      sort -t'|' -k2 -f |
-      sed "s,|,,g" >"$TEMP"
+  done <<<"$CPROTO_OUT" | eval "$FILTER"  >"$TEMP"
 
   [ "$XCLIP" = true ] && xclip -selection clipboard -in <"$TEMP"
   cat "$TEMP"

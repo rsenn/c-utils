@@ -1,4 +1,4 @@
-										#include "../linked_list.h"
+#include "../linked_list.h"
 #include "../alloc.h"
 
 linked_list_node*
@@ -12,4 +12,3 @@ linked_list_prepend(linked_list* list, void* data) {
   list->size++;
   return new_node;
 }
-											

@@ -31,7 +31,7 @@ json_parse_getsa(charbuf* b, stralloc* out) {
       break;
     }
 
-    stralloc_append(&sa, &ch);
+    stralloc_APPEND(&sa, &ch);
   }
   for(i = 0; i < sa.len; i++) {
     size_t r;
@@ -42,7 +42,7 @@ json_parse_getsa(charbuf* b, stralloc* out) {
       i += r - 1;
     } else {
       ch = n;
-      stralloc_append(out, &ch);
+      stralloc_APPEND(out, &ch);
     }
   }
   stralloc_free(&sa);
@@ -60,7 +60,7 @@ json_parse_num(jsonval* j, charbuf* b) {
     stralloc_init(&num);
 
     for(;;) {
-      stralloc_append(&num, &c);
+      stralloc_APPEND(&num, &c);
       if(charbuf_nextc(b, &c) < 0)
         return 0;
 

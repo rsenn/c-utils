@@ -528,7 +528,11 @@ message(STATUS "LIBPTHREAD = ${LIBPTHREAD}")
 
 include(${CMAKE_CURRENT_SOURCE_DIR}/build/cmake/FindStandardMathLibrary.cmake)
 
-# check_library_exists(m log2 "" HAVE_MATH_LIB) if(HAVE_MATH_LIB) set(LIBMATH m CACHE STRING "Math library" FORCE) endif()
+check_library_exists(m exp2 "" HAVE_MATH_LIB) 
+
+if(HAVE_MATH_LIB)
+  set(LIBMATH m CACHE STRING "Math library" FORCE)
+endif(HAVE_MATH_LIB)
 message(STATUS "LIBMATH = ${LIBMATH}")
 
 if(NOT LINK_STATIC)
@@ -898,6 +902,9 @@ add_program(setuidgid errmsg path stralloc mmap open scan str)
 add_program(lsproc strlist errmsg mmap buffer unix dir)
 add_program(cpptest cpp tokenizer unix buffer open)
 add_program(tokenizertest errmsg tokenizer unix buffer open)
+set(least_SOURCES terminal.c  terminal.h)
+add_program(least errmsg sig io strarray buffer stralloc open)
+target_link_libraries(least ${LIBMATH})
 
 #[[add_program(ftpcopy io)
 add_program(ftpls io)

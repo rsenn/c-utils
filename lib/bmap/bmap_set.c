@@ -45,7 +45,7 @@ bmap_resize(bmap_base_t* m, int nbuckets) {
   }
   /* Reset buckets */
   buckets = m->buckets;
-  alloc_re((void**)&buckets,
+  alloc_re(&buckets,
            sizeof(*m->buckets) * m->nbuckets,
            sizeof(*m->buckets) * nbuckets);
   if(buckets != NULL) {

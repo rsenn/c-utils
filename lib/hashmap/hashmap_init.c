@@ -42,6 +42,6 @@ hashmap_init(hashmap* map,
   } else {
     map->key_free_func = hashmap_default_key_free_func;
   }
- // map->keys = (linked_list*)alloc(sizeof(linked_list));
+  // map->keys = (linked_list*)alloc(sizeof(linked_list));
   linked_list_init(&map->keys, map->key_free_func);
 }

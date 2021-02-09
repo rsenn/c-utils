@@ -3,7 +3,8 @@
 #include "../byte.h"
 
 int
-alloc_re(void** x, size_t m, size_t n) {
+alloc_re(void* ptr, size_t m, size_t n) {
+  char** x = ptr;
   char* y;
 #ifdef DJB_STRICT
   y = alloc(n);

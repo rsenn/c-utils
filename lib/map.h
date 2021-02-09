@@ -18,8 +18,12 @@ typedef linked_list_node* MAP_ITER_T;
 #define MAP_ZERO(map) byte_zero(&(map), sizeof(map))
 #define MAP_ISNULL(map) (byte_count(&(map), sizeof(map), 0) == sizeof(map))
 #define MAP_NEW(map)                                                           \
-  hashmap_init(                                                                \
-      &(map), 64, MAP_COMPARATOR, &hashfunc, (void*)&str_dup, (void*)&alloc_free)
+  hashmap_init(&(map),                                                         \
+               64,                                                             \
+               MAP_COMPARATOR,                                                 \
+               &hashfunc,                                                      \
+               (void*)&str_dup,                                                \
+               (void*)&alloc_free)
 #define MAP_GET(map, key, klen) hashmap_get(&(map), (void*)(key))
 #define MAP_DESTROY(map) hashmap_free(&(map))
 #define MAP_FOREACH(map, pair)                                                 \

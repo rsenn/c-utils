@@ -65,10 +65,12 @@ io_canwrite() {
   }
 
 #ifdef DEBUG_IO
-  buffer_putspad(buffer_2, "io_canwrite ", 30);
-  buffer_puts(buffer_2, "ret=");
-  buffer_putlong(buffer_2, ret);
-  buffer_putnlflush(buffer_2);
+  if(ret != -1) {
+    buffer_putspad(buffer_2, "io_canwrite ", 30);
+    buffer_puts(buffer_2, "ret=");
+    buffer_putlong(buffer_2, ret);
+    buffer_putnlflush(buffer_2);
+  } 
 #endif
   return ret;
 }

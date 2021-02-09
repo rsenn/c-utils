@@ -41,8 +41,9 @@ typedef struct {
   size_t size;
 } linked_list;
 
-#define linked_list_foreach(list, node) for((node) = (list)->head; (node); (node) = (node)->next)
- 
+#define linked_list_foreach(list, node)                                        \
+  for((node) = (list)->head; (node); (node) = (node)->next)
+
 /**
  * Initialize a linked list.
  * @param list linked list structure

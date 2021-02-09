@@ -16,7 +16,7 @@ buffer_get_token_sa(buffer* b,
       case -1: return -1;
       case 0: return 0;
     }
-    stralloc_append(sa, &x);
+    stralloc_APPEND(sa, &x);
     if(byte_chr(charset, setlen, x) < setlen) {
       break;
     };

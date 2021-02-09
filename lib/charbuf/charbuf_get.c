@@ -4,11 +4,11 @@
 int
 charbuf_get(charbuf* b) {
   int ret;
+  
   if(b->eof || b->err) {
     ret = -1;
   } else if(b->p) {
     b->p = 0;
-
   } else {
     b->ch = '\0';
     if((ret = b->op(b->fd, &b->ch, 1, b) <= 0)) {
@@ -18,6 +18,7 @@ charbuf_get(charbuf* b) {
         b->err = 1;
     }
   }
+
 #ifdef DEBUG_CHARBUF
   buffer_puts(buffer_2, "charbuf_get '");
   buffer_putc(buffer_2, b->ch);

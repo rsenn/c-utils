@@ -4,6 +4,10 @@
 		"selected_items":
 		[
 			[
+				"default",
+				"default_printer\tabc"
+			],
+			[
 				"ext",
 				"ext\tabc"
 			],
@@ -36,102 +40,159 @@
 	"buffers":
 	[
 		{
-			"contents": "",
+			"contents": "  Ⓜ  __BSD_VISIBLE … — macro object\n  Ⓜ  _WINSOCKAPI_ … — macro object\n  Ⓜ  FIONBIO … — macro object\n  Ⓜ  O_NONBLOCK … — macro object\n—Ⓕ– io_nonblock ( ) { … } — function",
 			"settings":
 			{
-				"buffer_size": 0,
+				"buffer_size": 170,
 				"line_ending": "Unix",
 				"name": "𝌆 Outline",
 				"scratch": true
 			}
 		},
 		{
-			"file": "list-r.c",
+			"contents": "#include \"../uint64.h\"\n#include \"../buffer.h\"\n#include \"../json.h\"\n#include \"../slist.h\"\n#include \"../stralloc.h\"\n#include \"../fmt.h\"\n#include <assert.h>\n\nstruct indent_write {\n  buffer_op_proto* realop;\n  size_t level;\n  const char* indent;\n};\n\nstatic void\nbuffer_indent_set(buffer* b, const char* in) {\n  struct indent_write* iw = (struct indent_write*)b->cookie;\n  iw->indent = in;\n}\n\nstatic ssize_t\nbuffer_indent_write(fd_t fd, char* x, size_t n, void* ptr) {\n  buffer* b = (buffer*)ptr;\n  struct indent_write* iw = (struct indent_write*)b->cookie;\n\n  ssize_t ret;\n  while(n > 0) {\n\n    ret = iw->realop(fd, x, 1, ptr);\n\n    if(*x == '\\n') {\n      size_t i;\n      for(i = 0; i < iw->level; i++) {\n        ret = iw->realop(fd, (void*)iw->indent, str_len(iw->indent), ptr);\n        if(ret < 0)\n          return ret;\n      }\n    }\n    x++;\n    n--;\n  }\n  return ret;\n}\n\nstatic void\nbuffer_indent(buffer* b, struct indent_write* iw) {\n  iw->realop = b->op;\n  iw->indent = \"  \";\n  iw->level = 0;\n  b->op = (buffer_op_proto*)&buffer_indent_write;\n  b->cookie = iw;\n}\n\nstatic void\ndepth_fn(const jsonval* v, int* arg, int depth) {\n  if(*arg < depth)\n    *arg = depth;\n}\n\nstatic int\nget_depth(const jsonval* v) {\n  int depth = -1;\n  json_recurse((jsonval*)v, depth_fn, &depth);\n  return depth;\n}\n\nstatic void\njson_default_printer(jsonfmt* p, jsonval* v, int depth, int index, char quote) {\n  int pretty = v && get_depth(v) > 1;\n  static char q[2] = {'\"', '\\0'};\n  p->indent = pretty ? \" \" : \"\";\n  p->newline = pretty ? \"\\n\" : \"\";\n  p->spacing = pretty ? \" \" : \"\";\n  p->separat = pretty ? \", \" : \",\";\n  p->quote[0] = quote;\n  p->quote[1] = quote;\n  p->precision = 10;\n  p->depth = depth;\n  p->index = index;\n  p->compliant = 1;\n};\n\nstatic void json_print_val(jsonval* val, buffer* b, int depth, json_print_fn*);\n\nstatic int\nbyte_fullfils_predicate(const char* x, size_t len, int (*pred)(int)) {\n  size_t i;\n\n  for(i = 0; i < len; ++i) {\n    if(!pred(x[i]))\n      return 0;\n  }\n  return !!i;\n}\n\nstatic void\njson_print_separator(jsonval* val,\n                     buffer* b,\n                     int what,\n                     const jsonfmt* printer) {\n  const char* s;\n\n  s = printer->ws[what];\n  buffer_puts(b, s);\n\n  if(s[str_chr(s, '\\n')])\n    buffer_putns(b, printer->indent, printer->depth);\n}\n\nstatic void\njson_print_key(buffer* b, const char* key, size_t key_len, const jsonfmt* fmt) {\n  char quote;\n  quote = ((!isdigit(key[0]) &&\n            byte_fullfils_predicate(key, key_len, json_is_identifier_char)))\n              ? fmt->quote[1]\n              : fmt->quote[0];\n  if(fmt->compliant) {\n    if(quote != '\"')\n      quote = '\"';\n  }\n  if(quote)\n    buffer_putc(b, quote);\n  buffer_put(b, key, key_len);\n  if(quote)\n    buffer_putc(b, quote);\n}\n\nstatic void\njson_print_str(buffer* b, const char* x, size_t len, const jsonfmt* fmt) {\n  char tmp[6];\n  char quote = fmt->quote[0];\n  if(quote)\n    buffer_putc(b, quote);\n  while(len--) {\n    assert(*x);\n    if(*x == quote || (*x == '\\\\' && !(len > 0 && x[1] == 'u')))\n      buffer_put(b, tmp, fmt_escapecharjson(tmp, *x, quote));\n    else\n      buffer_PUTC(b, *x);\n    ++x;\n  }\n  if(quote)\n    buffer_putc(b, quote);\n}\n\nstatic void\njson_print_object(jsonval* val, buffer* b, int depth, json_print_fn* p) {\n  MAP_PAIR_T pair;\n  int index = 0;\n  jsonfmt printer;\n  p(&printer, val, depth + 1, index, 0);\n  if(MAP_ISNULL(val->dictv)) {\n    buffer_puts(b, \"null\");\n    return;\n  }\n  buffer_puts(b, \"{\");\n  p(&printer, val, depth + 1, index, 0);\n\n  if(!MAP_ISNULL(val->dictv)) {\n    MAP_FOREACH(val->dictv, pair) {\n      if(index == 0)\n        json_print_separator(val, b, JSON_FMT_NEWLINE, &printer);\n      else\n        json_print_separator(MAP_VALUE(pair), b, JSON_FMT_SEPARATOR, &printer);\n      ++index;\n      p(&printer, 0, depth + 1, index, 0);\n      json_print_key(b, MAP_KEY(pair), MAP_KEY_LEN(pair), &printer);\n      buffer_puts(b, \":\");\n      json_print_separator(MAP_VALUE(pair), b, JSON_FMT_SPACING, &printer);\n      json_print_val(MAP_VALUE(pair), b, depth + 1, p);\n    }\n    p(&printer, val, depth + 1, -2, 0);\n    json_print_separator  (val, b, JSON_FMT_NEWLINE, &printer);\n  }\n  buffer_puts(b, \"}\");\n}\n\nstatic void\njson_print_array(jsonval* val, buffer* b, int depth, json_print_fn* p) {\n  jsonfmt printer;\n  union {\n    slink* ptr;\n    void* iter;\n  } it;\n  int index = 0;\n\n  buffer_puts(b, \"[\");\n\n  if(val->listv == NULL) {\n    buffer_puts(b, \"]\");\n    return;\n  }\n  // buffer_puts(b, printer.spacing);\n  //\n  p(&printer, val, depth + 1, index, 0);\n  json_print_separator(val, b, JSON_FMT_NEWLINE, &printer);\n\n  slink_foreach(val->listv, it.iter) {\n    p(&printer, val, depth + 1, index, 0);\n    if(index > 0)\n      json_print_separator(val, b, JSON_FMT_SEPARATOR, &printer);\n\n    json_print_val(slist_data(it.ptr), b, depth + 1, p);\n    ++index;\n    // if(!!slist_next(it.ptr)) json_print_separator(val, b, JSON_FMT_SEPARATOR,\n    // &printer);\n  }\n  p(&printer, val, depth + 1, -2, 0);\n\n  json_print_separator(val, b, JSON_FMT_NEWLINE, &printer);\n  buffer_puts(b, \"]\");\n}\n\nstatic void\njson_print_val(jsonval* val, buffer* b, int depth, json_print_fn* p) {\n  jsonfmt printer;\n  p(&printer, val, depth, 0, 0);\n\n  /*if(depth > 0)\n    buffer_puts(b, printer.spacing);*/\n  //    json_print_separator(val, b, depth, -1, p);\n\n  switch(val->type) {\n    case JSON_UNDEFINED: break;\n    case JSON_STRING:\n      json_print_str(b, val->stringv.s, val->stringv.len, &printer);\n      break;\n    case JSON_DOUBLE:\n      buffer_putdouble(b, val->doublev, printer.precision);\n      break;\n    case JSON_BOOL: buffer_puts(b, val->boolv ? \"true\" : \"false\"); break;\n    case JSON_INT: buffer_putlonglong(b, val->intv); break;\n    case JSON_OBJECT: json_print_object(val, b, depth, p); break;\n    case JSON_ARRAY: json_print_array(val, b, depth, p); break;\n  }\n}\n\nvoid\njson_print(jsonval val, buffer* b, json_print_fn* p) {\n  jsonfmt printer;\n  if(p == NULL)\n    p = &json_default_printer;\n  p(&printer, &val, 0, -1, '\"');\n  json_print_val(&val, b, 0, p);\n  buffer_puts(b, printer.newline);\n  buffer_flush(b);\n}\n",
+			"file": "lib/json/json_print.c",
+			"file_size": 6055,
+			"file_write_time": 132566285374913286,
 			"settings":
 			{
-				"buffer_size": 41601,
+				"buffer_size": 6057,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/hmap/hmap_add.c",
+			"settings":
+			{
+				"buffer_size": 2311,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/hmap/hmap_search.c",
+			"settings":
+			{
+				"buffer_size": 1048,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/json.h",
+			"settings":
+			{
+				"buffer_size": 4136,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "CMakeLists.txt",
+			"file": "lib/hashmap/hashmap_find.c",
 			"settings":
 			{
-				"buffer_size": 44160,
+				"buffer_size": 219,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/io/io_nonblock.c",
+			"settings":
+			{
+				"buffer_size": 866,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/hashmap/hashmap_put.c",
+			"settings":
+			{
+				"buffer_size": 942,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/hashmap/linked_list_head.c",
+			"settings":
+			{
+				"buffer_size": 136,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/hashmap/linked_list_size.c",
+			"settings":
+			{
+				"buffer_size": 119,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/hashmap/hashmap_init.c",
+			"settings":
+			{
+				"buffer_size": 1268,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/charbuf/charbuf_skip.c",
+			"settings":
+			{
+				"buffer_size": 995,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "build/x86_64-linux-gnu/lib/Makefile",
+			"file": "lib/charbuf/charbuf_peek.c",
 			"settings":
 			{
-				"buffer_size": 1448862,
+				"buffer_size": 774,
+				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "build/cmake/BuildSSL.cmake",
+			"file": "lib/charbuf/charbuf_peekc.c",
 			"settings":
 			{
-				"buffer_size": 3916,
+				"buffer_size": 739,
+				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "build/cmake/BuildBZip2.cmake",
+			"file": "lib/charbuf/charbuf_get.c",
 			"settings":
 			{
-				"buffer_size": 33544,
+				"buffer_size": 824,
+				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "build/cmake/CheckOpenSSL.cmake",
+			"file": "lib/charbuf/charbuf_close.c",
 			"settings":
 			{
-				"buffer_size": 6187,
+				"buffer_size": 188,
+				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "build/cmake/BuildZlib.cmake",
+			"file": "lib/charbuf/charbuf_skip_until.c",
 			"settings":
 			{
-				"buffer_size": 1599,
+				"buffer_size": 255,
+				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "build/cmake/CheckZlib.cmake",
+			"file": "lib/charbuf/charbuf_skip_pred.c",
 			"settings":
 			{
-				"buffer_size": 1198,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "build/cmake/CheckBZip2.cmake",
-			"settings":
-			{
-				"buffer_size": 2139,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "build/cmake/BuildLZMA.cmake",
-			"settings":
-			{
-				"buffer_size": 5197,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "build/cmake/BuildOpenSSL.cmake",
-			"settings":
-			{
-				"buffer_size": 6085,
+				"buffer_size": 272,
+				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
 		}
@@ -148,15 +209,19 @@
 		"selected_items":
 		[
 			[
+				"Package Control: ",
+				"Package Control: Advanced Install Package"
+			],
+			[
+				"install",
+				"Package Control: Install Package"
+			],
+			[
 				"out",
 				"Browse Mode: Outline (Right)"
 			],
 			[
 				"install pac",
-				"Package Control: Install Package"
-			],
-			[
-				"install",
 				"Package Control: Install Package"
 			],
 			[
@@ -190,10 +255,6 @@
 			[
 				"add re",
 				"Package Control: Add Repository"
-			],
-			[
-				"Package Control: ",
-				"Package Control: Remove Package"
 			],
 			[
 				"install pa",
@@ -252,16 +313,91 @@
 	},
 	"expanded_folders":
 	[
-		"/home/roman/Dokumente/Sources/c-utils"
+		"/home/roman/Dokumente/Sources/c-utils",
+		"/home/roman/Dokumente/Sources/c-utils/lib",
+		"/home/roman/Dokumente/Sources/c-utils/lib/hashmap",
+		"/home/roman/Dokumente/Sources/c-utils/lib/io",
+		"/home/roman/Dokumente/Sources/c-utils/lib/json"
 	],
 	"file_history":
 	[
+		"/home/roman/Dokumente/Sources/c-utils/lib/hashmap/hashmap_put.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/json/json_parse.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/charbuf.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/hashmap/hashmap_init.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/map.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/cbmap/cbmap_alloc.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/cbmap/cbmap_get.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/hashmap/linked_list_free.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/stralloc.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/hashmap/linked_list_append.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/json/json_recurse.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/hashmap.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/linked_list.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/hashmap/hashmap_free.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/json.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/hashmap/hashmap_get.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/hashmap/linked_list_size.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/hashmap/linked_list_prepend.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/hashmap/linked_list_init.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/hashmap/hashmap_size.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/charbuf/charbuf_peek.c",
+		"/home/roman/Dokumente/Sources/c-utils/CMakeLists.txt",
+		"/home/roman/Dokumente/Sources/c-utils/lib/stralloc/stralloc_append.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/stralloc/stralloc_0.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/stralloc/stralloc_subst.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/hashmap/linked_list_head.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/json/json_print.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/json/json_free.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/hmap/hmap_add.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/hashmap/hashmap_search.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/hashmap/hashmap_remove.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/json/json_newnode.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/cpp/cpp_undef_macro.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/hashmap/hashmap_default_hash_func.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/hashmap/hashmap_default_comparator.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/hashmap/hashmap_find.c",
+		"/home/roman/Dokumente/Sources/c-utils/jsontest.c",
+		"/home/roman/Dokumente/Sources/c-utils/jsonpp.c",
+		"/home/roman/Dokumente/Sources/c-utils/genmakefile.h",
+		"/home/roman/Dokumente/Sources/c-utils/genmakefile.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/json/json_set_property.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/json/json_tosa.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/json/json_toint.c",
+		"/home/roman/Dokumente/Sources/c-utils/build/x86_64-linux-gnu/lib/Makefile",
+		"/home/roman/Dokumente/Sources/c-utils/ini.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/cpp/cpp_free.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/hmap.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/cpp.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/cpp_internal.h",
+		"/home/roman/Dokumente/Sources/c-utils/eagle-to-svg.js",
+		"/home/roman/Dokumente/Sources/c-utils/lib/buffer.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/CMakeLists.txt",
+		"/home/roman/Dokumente/Sources/c-utils/tinyproxy.c",
+		"/home/roman/Dokumente/Sources/c-utils/ini.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/tai.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/taia.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/taia/taia_frac.c",
+		"/home/roman/Dokumente/Sources/c-utils/build/x86_64-linux-clang/Makefile",
+		"/home/roman/Dokumente/Sources/c-utils/lib/json/json_read_tree.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/byte/byte_diff.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/byte/byte_count.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/hmap/hmap_get.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/json/json_length.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/json/json_get_property.c",
+		"/home/roman/Dokumente/Sources/c-utils/build/cmake/BuildSSL.cmake",
+		"/home/roman/Dokumente/Sources/c-utils/list-r.c",
+		"/home/roman/Sources/c-utils/lib/json/json_print.c",
+		"/home/roman/Sources/c-utils/lib/json/json_recurse.c",
+		"/home/roman/Dokumente/Sources/c-utils/build/cmake/BuildBZip2.cmake",
+		"/home/roman/Dokumente/Sources/c-utils/build/cmake/CheckOpenSSL.cmake",
+		"/home/roman/Dokumente/Sources/c-utils/build/cmake/BuildZlib.cmake",
+		"/home/roman/Dokumente/Sources/c-utils/build/cmake/CheckZlib.cmake",
+		"/home/roman/Dokumente/Sources/c-utils/build/cmake/CheckBZip2.cmake",
+		"/home/roman/Dokumente/Sources/c-utils/build/cmake/BuildLZMA.cmake",
+		"/home/roman/Dokumente/Sources/c-utils/build/cmake/BuildOpenSSL.cmake",
 		"/home/roman/Dokumente/Sources/c-utils/dump.c",
 		"/home/roman/Dokumente/Sources/daemontools/src/timestamp.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/taia.h",
-		"/home/roman/Dokumente/Sources/c-utils/build/cmake/BuildSSL.cmake",
-		"/home/roman/Dokumente/Sources/c-utils/build/cmake/BuildOpenSSL.cmake",
-		"/home/roman/Dokumente/Sources/c-utils/build/cmake/CheckOpenSSL.cmake",
 		"/home/roman/Dokumente/Sources/c-utils/lib/taia/taia_now.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/fmt/fmt_tai.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/fmt/fmt_ulonglong.c",
@@ -273,15 +409,12 @@
 		"/home/roman/Dokumente/Sources/c-utils/lib/str/str_chrs.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/byte.h",
 		"/home/roman/Dokumente/Sources/c-utils/debug.h",
-		"/home/roman/Dokumente/Sources/c-utils/CMakeLists.txt",
 		"/home/roman/Dokumente/Sources/c-utils/build/functions.mk",
 		"/home/roman/Dokumente/Sources/c-utils/build/cmake/Functions.cmake",
 		"/home/roman/Dokumente/Sources/c-utils/build/cmake/dump.h",
 		"/home/roman/Dokumente/Sources/c-utils/lib/dir.h",
 		"/home/roman/Dokumente/Sources/c-utils/lib/strlist.h",
 		"/home/roman/Dokumente/Sources/c-utils/lib/path.h",
-		"/home/roman/Dokumente/Sources/c-utils/lib/stralloc.h",
-		"/home/roman/Dokumente/Sources/c-utils/list-r.c",
 		"/home/roman/Dokumente/Sources/c-utils/3rdparty/zlib/zconf.h",
 		"/home/roman/Sources/plot-cv/zlib.h",
 		"/home/roman/Dokumente/Sources/c-utils/lib/buffer/buffer_deflate.c",
@@ -303,87 +436,19 @@
 		"/home/roman/Sources/c-utils/lib/dns/dns_domain.c",
 		"/home/roman/Sources/c-utils/lib/env/env_get.c",
 		"/home/roman/Sources/c-utils/lib/strarray/buffer_putstra.c",
-		"/home/roman/Sources/c-utils/lib/json/json_recurse.c",
 		"/home/roman/Sources/c-utils/tinyproxy.c",
 		"/home/roman/Sources/c-utils/lib/dns/dns_name.c",
 		"/home/roman/Sources/c-utils/lib/dns/dns_packet.c",
 		"/home/roman/Sources/c-utils/lib/dns/dns_dtda.c",
 		"/home/roman/Sources/c-utils/lib/dns/dns_ip4.c",
 		"/home/roman/Sources/c-utils/pkgcfg.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/json/json_print.c",
-		"/home/roman/Dokumente/Sources/c-utils/jsonpp.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/json/json_parse.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/charbuf/charbuf_skip.c",
-		"/home/roman/Dokumente/Sources/c-utils/jsontest.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/charbuf.h",
 		"/home/roman/Dokumente/Sources/c-utils/lib/charbuf/charbuf_get.c",
 		"/home/roman/Dokumente/Sources/opencv/samples/cpp/stitching_detailed.cpp",
 		"/home/roman/Dokumente/Sources/opencv/samples/cpp/essential_mat_reconstr.cpp",
 		"/home/roman/Dokumente/Sources/opencv/samples/cpp/cout_mat.cpp",
 		"/home/roman/Dokumente/Sources/opencv/samples/cpp/mask_tmpl.cpp",
-		"/home/roman/Dokumente/Sources/opencv/samples/cpp/create_mask.cpp",
-		"/home/roman/Dokumente/Sources/opencv/samples/cpp/inpaint.cpp",
-		"/home/roman/Dokumente/Sources/opencv/samples/cpp/intelligent_scissors.cpp",
-		"/home/roman/Dokumente/Sources/c-utils/lib/buffer.h",
-		"/home/roman/Dokumente/Sources/c-utils/lib/buffer/buffer_putnlflush.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/CMakeLists.txt",
-		"/home/roman/Sources/c-utils/cpptest.c",
-		"/home/roman/Sources/c-utils/tokenizertest.c",
-		"/home/roman/Sources/c-utils/lib/buffer/buffer_put.c",
-		"/home/roman/Sources/c-utils/lib/fmt/fmt_hexb.c",
-		"/home/roman/Sources/c-utils/lib/fmt/fmt_escapecharhtml.c",
-		"/home/roman/Sources/c-utils/lib/fmt/fmt_escapecharxml.c",
-		"/home/roman/Sources/c-utils/lib/fmt/fmt_longlong.c",
-		"/home/roman/Sources/c-utils/lib/fmt/fmt_long.c",
-		"/home/roman/Sources/c-utils/lib/fmt/fmt_httpdate.c",
-		"/home/roman/Sources/c-utils/lib/fmt/fmt_hexdump.c",
-		"/home/roman/Sources/c-utils/lib/buffer/buffer_dump.c",
-		"/home/roman/Sources/c-utils/lib/tokenizer.h",
-		"/home/roman/Sources/c-utils/lib/stralloc/buffer_puts_escaped.c",
-		"/home/roman/Sources/c-utils/lib/buffer/buffer_putstr.c",
-		"/home/roman/Sources/c-utils/lib/stralloc/buffer_gettok_sa.c",
-		"/home/roman/.local/share/endless-sky/saves/achmed tsingzhali~~previous-1.txt",
-		"/home/roman/.local/share/endless-sky/saves/achmed tsingzhali~~previous-2.txt",
-		"/home/roman/.local/share/endless-sky/saves/achmed tsingzhali~~previous-3.txt",
-		"/home/roman/.local/share/endless-sky/saves/achmed tsingzhali.txt",
-		"/home/roman/Sources/c-utils/lib/buffer/buffer_put_escaped.c",
-		"/home/roman/Sources/c-utils/lib/fmt.h",
-		"/home/roman/Sources/c-utils/lib/cpp_internal.h",
-		"/home/roman/Sources/c-utils/lib/cpp/cpp_parse_file.c",
-		"/home/roman/Sources/c-utils/lib/buffer/buffer_putm_internal_flush.c",
-		"/home/roman/Sources/c-utils/lib/http/http_canwrite.c",
-		"/home/roman/Sources/c-utils/lib/tokenizer/tokenizer_set_filename.c",
-		"/home/roman/Sources/c-utils/lib/byte.h",
-		"/home/roman/Sources/c-utils/lib/buffer.h",
-		"/home/roman/Sources/c-utils/lib/tokenizer/tokenizer_getc.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/tokenizer.h",
-		"/home/roman/Dokumente/Sources/c-utils/lib/tokenizer_internal.h",
-		"/home/roman/Dokumente/Sources/c-utils/lib/cpp.h",
-		"/home/roman/Dokumente/Sources/c-utils/lib/cpp_internal.h",
-		"/home/roman/Dokumente/Sources/c-utils/tokenizertest.c",
-		"/home/roman/Dokumente/Sources/c-utils/cpptest.c",
-		"/home/roman/Sources/c-utils/jsonpp.c",
-		"/home/roman/Sources/c-utils/CMakeLists.txt",
-		"/home/roman/Sources/c-utils/lib/buffer/buffer_putulong0.c",
-		"/home/roman/Sources/c-utils/compiler-wrapper.c",
-		"/home/roman/Sources/c-utils/lib/tokenizer/tokenizer_next.c",
-		"/home/roman/Sources/c-utils/lib/tokenizer/tokenizer_peek.c",
-		"/home/roman/Sources/c-utils/lib/cpp.h",
-		"/home/roman/Sources/c-utils/lib/cpp/cpp_add_define.c",
-		"/home/roman/Sources/c-utils/lib/cpp/cpp_add_macro.c",
-		"/home/roman/Sources/c-utils/lib/tokenizer/tokenizer_get_flags.c",
-		"/home/roman/Sources/c-utils/lib/cpp/cpp_get_macro_info.c",
-		"/home/roman/Sources/c-utils/lib/cpp/cpp_run.c",
-		"/home/roman/Sources/c-utils/lib/tokenizer/tokenizer_rewind.c",
-		"/home/roman/Sources/c-utils/lib/tokenizer/tokenizer_init.c",
-		"/home/roman/Sources/c-utils/lib/cpp/cpp_evaluate_condition.c",
-		"/home/roman/Sources/c-utils/scripts/encapsulate-header.sh",
-		"/home/roman/Sources/c-utils/lib/seek.h",
-		"/home/roman/Sources/c-utils/lib/cpp/cpp_new.c",
-		"/home/roman/Sources/c-utils/lib/cpp/cpp_parse_macro.c",
-		"/home/roman/Sources/c-utils/lib/CMakeLists.txt",
-		"/home/roman/Sources/c-utils/lib/tokenizer/tokenizer_ungetc.c",
-		"/home/roman/Sources/c-utils/lib/tokenizer/tokentype_to_str.c"
+		"/home/roman/Dokumente/Sources/opencv/samples/cpp/create_mask.cpp"
 	],
 	"find":
 	{
@@ -394,6 +459,9 @@
 		"height": 142.0,
 		"where_history":
 		[
+			"/home/roman/Sources/c-utils,*.txt,*.cmake,*CMakeLists*,*.c,*.h,-*/3rdparty/*,-*/build/*",
+			"/home/roman/Sources/c-utils,*.txt,*.cmake,*CMakeLists*,/home/roman/Sources/c-utils,*.c,*.h,-*/3rdparty/*,-*/build/*",
+			"/home/roman/Sources/c-utils/lib,*.c,*.h,*.txt,*.cmake,*CMakeLists*,/home/roman/Sources/c-utils,*.c,*.h,-*/3rdparty/*,-*/build/*",
 			"/home/roman/Sources/c-utils/lib/cpp,*.c,*.h,*.txt,*.cmake,*CMakeLists*,/home/roman/Sources/c-utils,*.c,*.h,-*/3rdparty/*,-*/build/*",
 			"/home/roman/Sources/c-utils/lib,*.c,*.h,*.txt,*.cmake,*CMakeLists*,/home/roman/Sources/c-utils,*.c,*.h,-*/3rdparty/*,-*/build/*",
 			"/home/roman/Sources/c-utils/lib,*.c,*.h,*.txt,/home/roman/Sources/c-utils,*.c,*.h,-*/3rdparty/*,-*/build/*",
@@ -410,6 +478,60 @@
 		"case_sensitive": true,
 		"find_history":
 		[
+			"CHARBUF",
+			"MAP_SET",
+			"MAP_ADD",
+			"dup_flag",
+			"MAP_ADD",
+			"hashkeydup",
+			"MAP_INIT",
+			"MAP_INSERT",
+			"MAP_VALUE",
+			"getpair",
+			"get_de",
+			"pair",
+			"print",
+			"NULL",
+			"get",
+			"getpair",
+			"MAP_DATA",
+			"remove",
+			"getpair",
+			"ini.c",
+			"ini",
+			"init",
+			"MAP",
+			"cpptest",
+			"MAP_KEY",
+			"MAP_DATA",
+			"MAP_KEY",
+			"MAP",
+			"write_fd",
+			"out_fd",
+			"library",
+			"target_link",
+			"json",
+			"jsonpp",
+			"jsonp",
+			"== 0",
+			"buffer",
+			"NULL",
+			"$",
+			"NULL",
+			"buffer",
+			"stralloc",
+			"buffer.h",
+			"HMAP_DB",
+			"stralloc",
+			"hmap_",
+			"hmap",
+			"hmap_",
+			"pretty",
+			"json_recurse",
+			"json_recurse_val",
+			"recurse_val",
+			"recurse",
+			"buffer_put",
 			"Configur",
 			"httptest",
 			"Configuring",
@@ -483,61 +605,7 @@
 			"'e'",
 			"trunc",
 			"list_file",
-			"getopt",
-			"base_",
-			"opt_chd",
-			"opt_chd$",
-			"'C'",
-			"'S'",
-			"'C'",
-			"match\"",
-			"\"warning",
-			"^list_f",
-			"opt_quiet",
-			"errmsg_war",
-			"quiet",
-			"force",
-			"'f'",
-			"match_ex",
-			"\"file\"",
-			"opt_force",
-			"mode_octal",
-			"errmsg",
-			"fill",
-			"dump.h\"",
-			"dump.h",
-			"false",
-			"extensions",
-			"file",
-			"base_path",
-			"optarg",
-			"pathlen",
-			"'/'",
-			"'/'0",
-			"'/0",
-			"extlen",
-			"\"pattern",
-			"extensions",
-			"DEBUG_OUTPUT$",
-			"errmsg",
-			"list_file",
-			"^list_file",
-			"line",
-			"^\\s*dump",
-			"list_file\"",
-			"list_file",
-			"list_file=",
-			"errmsg_war",
-			"getopt",
-			"mode=",
-			"_key.*mode",
-			"_key",
-			"file",
-			"base_path",
-			"errmsg_war",
-			"\"offset\"",
-			"\"offset",
-			"dump_ulong"
+			"getopt"
 		],
 		"highlight": false,
 		"in_selection": false,
@@ -661,7 +729,7 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 0,
+						"buffer_size": 170,
 						"regions":
 						{
 						},
@@ -670,15 +738,40 @@
 						],
 						"settings":
 						{
-							"current_file": "/home/roman/Dokumente/Sources/c-utils/CMakeLists.txt",
+							"current_file": "/home/roman/Dokumente/Sources/c-utils/lib/io/io_nonblock.c",
 							"function_name_status_row": -1,
 							"outline_rename_mode": false,
 							"sorttabs_lastactivated": 1611847516.67,
 							"symkeys":
 							[
+								[
+									124,
+									137
+								],
+								[
+									148,
+									160
+								],
+								[
+									185,
+									192
+								],
+								[
+									347,
+									357
+								],
+								[
+									380,
+									391
+								]
 							],
 							"symlist":
 							[
+								"\tⓂ  __BSD_VISIBLE … — macro object",
+								"\tⓂ  _WINSOCKAPI_ … — macro object",
+								"\tⓂ  FIONBIO … — macro object",
+								"\tⓂ  O_NONBLOCK … — macro object",
+								"—Ⓕ– io_nonblock ( ) { … } — function"
 							],
 							"syntax": "Packages/Outline/outline.hidden-tmLanguage",
 							"tab_size": 2,
@@ -688,145 +781,142 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 11,
+					"stack_index": 17,
 					"type": "text"
 				}
 			]
 		},
 		{
-			"selected": 1,
+			"selected": 5,
 			"sheets":
 			[
 				{
 					"buffer": 1,
-					"file": "list-r.c",
+					"file": "lib/json/json_print.c",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 41601,
+						"buffer_size": 6057,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								21373,
-								21373
+								4071,
+								4071
 							]
 						],
 						"settings":
 						{
-							"sorttabs_lastactivated": 1611933023.25,
 							"syntax": "Packages/C99/C99.tmLanguage",
 							"tab_size": 2,
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 13232.0,
+						"translation.y": 2017.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 10,
+					"stack_index": 6,
 					"type": "text"
 				},
 				{
 					"buffer": 2,
-					"file": "CMakeLists.txt",
+					"file": "lib/hmap/hmap_add.c",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 44160,
+						"buffer_size": 2311,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								38829,
-								38829
+								504,
+								504
 							]
 						],
 						"settings":
 						{
-							"sorttabs_lastactivated": 1611936795.81,
-							"syntax": "Packages/CMakeEditor/CMakeEditor.tmLanguage",
+							"syntax": "Packages/C99/C99.tmLanguage",
 							"tab_size": 2,
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 15363.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 0,
+					"stack_index": 16,
 					"type": "text"
 				},
 				{
 					"buffer": 3,
-					"file": "build/x86_64-linux-gnu/lib/Makefile",
+					"file": "lib/hmap/hmap_search.c",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 1448862,
+						"buffer_size": 1048,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								8323,
-								8323
+								0,
+								0
 							]
 						],
 						"settings":
 						{
-							"sorttabs_lastactivated": 1611933462.54,
-							"syntax": "Packages/Makefile/Makefile.sublime-syntax",
-							"translate_tabs_to_spaces": false
+							"syntax": "Packages/C99/C99.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 3788.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 9,
+					"stack_index": 15,
 					"type": "text"
 				},
 				{
 					"buffer": 4,
-					"file": "build/cmake/BuildSSL.cmake",
+					"file": "lib/json.h",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 3916,
+						"buffer_size": 4136,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								2747,
-								2747
+								263,
+								263
 							]
 						],
 						"settings":
 						{
-							"sorttabs_lastactivated": 1611933721.63,
-							"syntax": "Packages/CMakeEditor/CMakeEditor.tmLanguage",
+							"syntax": "Packages/C++/C++.sublime-syntax",
 							"tab_size": 2,
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 609.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 7,
+					"stack_index": 14,
 					"type": "text"
 				},
 				{
 					"buffer": 5,
-					"file": "build/cmake/BuildBZip2.cmake",
+					"file": "lib/hashmap/hashmap_find.c",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 33544,
+						"buffer_size": 219,
 						"regions":
 						{
 						},
@@ -839,130 +929,79 @@
 						],
 						"settings":
 						{
-							"sorttabs_lastactivated": 1611933791.21,
-							"syntax": "Packages/CMakeEditor/CMakeEditor.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
+							"function_name_status_row": 0,
+							"syntax": "Packages/C Improved/C Improved.tmLanguage"
 						},
 						"translation.x": 0.0,
 						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 4,
-					"type": "text"
-				},
-				{
-					"buffer": 6,
-					"file": "build/cmake/CheckOpenSSL.cmake",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 6187,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/CMakeEditor/CMakeEditor.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 3,
-					"type": "text"
-				},
-				{
-					"buffer": 7,
-					"file": "build/cmake/BuildZlib.cmake",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 1599,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/CMakeEditor/CMakeEditor.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 2,
-					"type": "text"
-				},
-				{
-					"buffer": 8,
-					"file": "build/cmake/CheckZlib.cmake",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 1198,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								897,
-								897
-							]
-						],
-						"settings":
-						{
-							"sorttabs_lastactivated": 1611934779.4,
-							"syntax": "Packages/CMakeEditor/CMakeEditor.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 12.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 1,
 					"type": "text"
 				},
 				{
-					"buffer": 9,
-					"file": "build/cmake/CheckBZip2.cmake",
+					"buffer": 6,
+					"file": "lib/io/io_nonblock.c",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 2139,
+						"buffer_size": 866,
+						"regions":
+						{
+							"col_8004667E":
+							{
+								"flags": 16,
+								"regions":
+								[
+									[
+										193,
+										203
+									]
+								],
+								"scope": "col_8004667E"
+							}
+						},
+						"selection":
+						[
+							[
+								658,
+								658
+							]
+						],
+						"settings":
+						{
+							"function_name_status_row": -1,
+							"syntax": "Packages/C Improved/C Improved.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 7,
+					"file": "lib/hashmap/hashmap_put.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 942,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								1252,
-								1252
+								759,
+								759
 							]
 						],
 						"settings":
 						{
-							"sorttabs_lastactivated": 1611933744.32,
-							"syntax": "Packages/CMakeEditor/CMakeEditor.tmLanguage",
+							"syntax": "Packages/C99/C99.tmLanguage",
 							"tab_size": 2,
 							"translate_tabs_to_spaces": true
 						},
@@ -974,12 +1013,12 @@
 					"type": "text"
 				},
 				{
-					"buffer": 10,
-					"file": "build/cmake/BuildLZMA.cmake",
+					"buffer": 8,
+					"file": "lib/hashmap/linked_list_head.c",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 5197,
+						"buffer_size": 136,
 						"regions":
 						{
 						},
@@ -992,8 +1031,63 @@
 						],
 						"settings":
 						{
-							"sorttabs_lastactivated": 1611933721.66,
-							"syntax": "Packages/CMakeEditor/CMakeEditor.tmLanguage",
+							"syntax": "Packages/C99/C99.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 3,
+					"type": "text"
+				},
+				{
+					"buffer": 9,
+					"file": "lib/hashmap/linked_list_size.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 119,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C99/C99.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 10,
+					"file": "lib/hashmap/hashmap_init.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1268,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C99/C99.tmLanguage",
 							"tab_size": 2,
 							"translate_tabs_to_spaces": true
 						},
@@ -1001,30 +1095,119 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 6,
+					"stack_index": 4,
 					"type": "text"
 				},
 				{
 					"buffer": 11,
-					"file": "build/cmake/BuildOpenSSL.cmake",
+					"file": "lib/charbuf/charbuf_skip.c",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 6085,
+						"buffer_size": 995,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								0,
-								0
+								417,
+								417
 							]
 						],
 						"settings":
 						{
-							"sorttabs_lastactivated": 1611933468.32,
-							"syntax": "Packages/CMakeEditor/CMakeEditor.tmLanguage",
+							"syntax": "Packages/C99/C99.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 11,
+					"type": "text"
+				},
+				{
+					"buffer": 12,
+					"file": "lib/charbuf/charbuf_peek.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 774,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								349,
+								349
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C99/C99.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 9,
+					"type": "text"
+				},
+				{
+					"buffer": 13,
+					"file": "lib/charbuf/charbuf_peekc.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 739,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								348,
+								348
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C99/C99.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 10,
+					"type": "text"
+				},
+				{
+					"buffer": 14,
+					"file": "lib/charbuf/charbuf_get.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 824,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								325,
+								325
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C99/C99.tmLanguage",
 							"tab_size": 2,
 							"translate_tabs_to_spaces": true
 						},
@@ -1033,6 +1216,94 @@
 						"zoom_level": 1.0
 					},
 					"stack_index": 8,
+					"type": "text"
+				},
+				{
+					"buffer": 15,
+					"file": "lib/charbuf/charbuf_close.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 188,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C99/C99.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 7,
+					"type": "text"
+				},
+				{
+					"buffer": 16,
+					"file": "lib/charbuf/charbuf_skip_until.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 255,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								88,
+								88
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C99/C99.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 13,
+					"type": "text"
+				},
+				{
+					"buffer": 17,
+					"file": "lib/charbuf/charbuf_skip_pred.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 272,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								97,
+								97
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C99/C99.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 12,
 					"type": "text"
 				}
 			]
@@ -1108,6 +1379,166 @@
 		"selected_items":
 		[
 			[
+				"json.h",
+				"lib/json.h"
+			],
+			[
+				"stralloc.h",
+				"lib/stralloc.h"
+			],
+			[
+				"charbuf",
+				"lib/charbuf.h"
+			],
+			[
+				"map.h",
+				"lib/map.h"
+			],
+			[
+				"linked",
+				"lib/linked_list.h"
+			],
+			[
+				"hashmap.h",
+				"lib/hashmap.h"
+			],
+			[
+				"cmakelists",
+				"CMakeLists.txt"
+			],
+			[
+				"charbuf_peek",
+				"lib/charbuf/charbuf_peek.c"
+			],
+			[
+				"json_prin",
+				"lib/json/json_print.c"
+			],
+			[
+				"hashmap",
+				"lib/hashmap.h"
+			],
+			[
+				"put.c",
+				"lib/hashmap/hashmap_put.c"
+			],
+			[
+				"json_print",
+				"lib/json/json_print.c"
+			],
+			[
+				"json_parse",
+				"lib/json/json_parse.c"
+			],
+			[
+				"linked_li",
+				"lib/linked_list.h"
+			],
+			[
+				"json_pa",
+				"lib/json/json_parse.c"
+			],
+			[
+				"undef_ma",
+				"lib/cpp/cpp_undef_macro.c"
+			],
+			[
+				"jsonpp",
+				"jsonpp.c"
+			],
+			[
+				"jsontest",
+				"jsontest.c"
+			],
+			[
+				"genma",
+				"genmakefile.c"
+			],
+			[
+				"genmake",
+				"genmakefile.c"
+			],
+			[
+				"set_prop",
+				"lib/json/json_set_property.c"
+			],
+			[
+				"undef_macr",
+				"lib/cpp/cpp_undef_macro.c"
+			],
+			[
+				"parse.c",
+				"lib/json/json_parse.c"
+			],
+			[
+				"json_free",
+				"lib/json/json_free.c"
+			],
+			[
+				"cmakeli",
+				"CMakeLists.txt"
+			],
+			[
+				"ini.h",
+				"ini.h"
+			],
+			[
+				"ini.c",
+				"ini.c"
+			],
+			[
+				"tinypro",
+				"tinyproxy.c"
+			],
+			[
+				"undef_mac",
+				"lib/cpp/cpp_undef_macro.c"
+			],
+			[
+				"cpp_free",
+				"lib/cpp/cpp_free.c"
+			],
+			[
+				"hmap.h",
+				"lib/hmap.h"
+			],
+			[
+				"cp_internal.h",
+				"lib/cpp_internal.h"
+			],
+			[
+				"cpp.h",
+				"lib/cpp.h"
+			],
+			[
+				"buffer.h",
+				"lib/buffer.h"
+			],
+			[
+				"tai.h",
+				"lib/tai.h"
+			],
+			[
+				"taia.h",
+				"lib/taia.h"
+			],
+			[
+				"lib/CMa",
+				"lib/CMakeLists.txt"
+			],
+			[
+				"jsonpp.c ",
+				"jsonpp.c"
+			],
+			[
+				"read_tree",
+				"lib/json/json_read_tree.c"
+			],
+			[
+				"recurse",
+				"lib/json/json_recurse.c"
+			],
+			[
 				"buildopen",
 				"build/cmake/BuildOpenSSL.cmake"
 			],
@@ -1122,10 +1553,6 @@
 			[
 				"list-r",
 				"list-r.c"
-			],
-			[
-				"taia.h",
-				"lib/taia.h"
 			],
 			[
 				"list-r.c",
@@ -1160,10 +1587,6 @@
 				"lib/byte.h"
 			],
 			[
-				"stralloc.h",
-				"lib/stralloc.h"
-			],
-			[
 				"debug.h",
 				"debug.h"
 			],
@@ -1174,10 +1597,6 @@
 			[
 				"function",
 				"build/functions.mk"
-			],
-			[
-				"cmakelists",
-				"CMakeLists.txt"
 			],
 			[
 				"dir.h",
@@ -1212,14 +1631,6 @@
 				"pkgcfg.c"
 			],
 			[
-				"tinypro",
-				"tinyproxy.c"
-			],
-			[
-				"jsontest",
-				"jsontest.c"
-			],
-			[
 				"Func",
 				"build/cmake/Functions.cmake"
 			],
@@ -1228,24 +1639,12 @@
 				"lib/CMakeLists.txt"
 			],
 			[
-				"cmakeli",
-				"CMakeLists.txt"
-			],
-			[
 				"charbuf.h",
 				"lib/charbuf.h"
 			],
 			[
-				"jsonpp",
-				"jsonpp.c"
-			],
-			[
 				"buffer_putnl",
 				"lib/buffer/buffer_putnlflush.c"
-			],
-			[
-				"buffer.h",
-				"lib/buffer.h"
 			],
 			[
 				"cpp_inter",
@@ -1270,10 +1669,6 @@
 			[
 				"cpp_add",
 				"lib/cpp/cpp_add_define.c"
-			],
-			[
-				"cpp.h",
-				"lib/cpp.h"
 			],
 			[
 				"tokenizer.h",
@@ -1408,20 +1803,8 @@
 				"lib/bmap_internal.h"
 			],
 			[
-				"genma",
-				"genmakefile.c"
-			],
-			[
-				"map.h",
-				"lib/map.h"
-			],
-			[
 				"httppr",
 				"httpproxy.c"
-			],
-			[
-				"ini.c",
-				"ini.c"
 			],
 			[
 				"get-pro",
@@ -1472,10 +1855,6 @@
 				"lib/preproc.h"
 			],
 			[
-				"genmake",
-				"genmakefile.c"
-			],
-			[
 				"http_sock",
 				"lib/http/http_socket.c"
 			],
@@ -1510,114 +1889,6 @@
 			[
 				"uri.c",
 				"uri.c"
-			],
-			[
-				"uri.h",
-				"uri.h"
-			],
-			[
-				"uri",
-				"uri.c"
-			],
-			[
-				"xmlscan",
-				"xmlscantest.c"
-			],
-			[
-				"httptest",
-				"httptest.c"
-			],
-			[
-				"xmlsca",
-				"xmlscantest.c"
-			],
-			[
-				"openssl",
-				"build/cmake/BuildOpenSSL.cmake"
-			],
-			[
-				"cb_in",
-				"lib/cb_internal.h"
-			],
-			[
-				"stralloc_trim",
-				"lib/stralloc/stralloc_trimr.c"
-			],
-			[
-				"pkgcfg",
-				"pkgcfg.c"
-			],
-			[
-				"hexed",
-				"hexedit.c"
-			],
-			[
-				"hexedit",
-				"hexedit.c"
-			],
-			[
-				"eagle-ini",
-				"eagle-init-brd.c"
-			],
-			[
-				"eagle-gen",
-				"eagle-gen-cmds.c"
-			],
-			[
-				"_brotli",
-				"lib/buffer/buffer_brotli.c"
-			],
-			[
-				"xml_read_t",
-				"lib/xml/xml_read_token.c"
-			],
-			[
-				"attrva",
-				"lib/xml/xml_scan_attrvalue.c"
-			],
-			[
-				"mt.h",
-				"lib/fmt.h"
-			],
-			[
-				"tls_rea",
-				"lib/tls/tls_read.c"
-			],
-			[
-				"xml_sca",
-				"lib/xml/xml_scan_attrvalue.c"
-			],
-			[
-				"xmlsc",
-				"xmlscantest.c"
-			],
-			[
-				"xml_",
-				"lib/xml/xml_attributes.c"
-			],
-			[
-				"xml_read",
-				"lib/xml/xml_read_token.c"
-			],
-			[
-				"stralloc_fmt",
-				"lib/stralloc/stralloc_fmt.c"
-			],
-			[
-				"yte.h",
-				"lib/byte.h"
-			],
-			[
-				"prefet",
-				"lib/buffer/buffer_prefetch.c"
-			],
-			[
-				"eagle-to",
-				"eagle-to-circuit.c"
-			],
-			[
-				"nonchar",
-				"lib/scan/scan_noncharsetnskip.c"
 			]
 		],
 		"width": 0.0

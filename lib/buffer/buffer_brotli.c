@@ -40,7 +40,7 @@ buffer_brotli_read(fd_t fd, void* data, size_t n, buffer* b) {
     }
     if(ret == BROTLI_DECODER_RESULT_NEEDS_MORE_OUTPUT) {
       size_t offset = (char*)data - b->x;
-      if(alloc_re((void**)&b->x, b->a, b->a << 1)) {
+      if(alloc_re(&b->x, b->a, b->a << 1)) {
         b->a <<= 1;
         next_out = data = (char*)b->x + offset;
         avail_out = n = b->a - offset;

@@ -26,17 +26,14 @@ charbuf_skip(charbuf* b) {
 
   if(b->p) {
     b->p = 0;
-
     if(b->ch == '\n') {
       b->loc.column = 0;
       b->loc.line++;
     } else {
       b->loc.column++;
     }
-
     ret = 1;
   } else {
-
     if((ret = b->op(b->fd, &b->ch, 1, b) <= 0)) {
       if(ret == 0)
         b->eof = 1;

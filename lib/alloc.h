@@ -17,7 +17,7 @@ void* alloc_zero(size_t n);
 void alloc_free(void* x);
 void alloc_clear(void* ptr);
 
-int alloc_re(void** x, size_t m, size_t n);
+int alloc_re(void* x, size_t m, size_t n);
 
 #ifdef __cplusplus
 }

@@ -21,7 +21,7 @@ static inline ssize_t
 memstream_write(int fd, void* data, size_t len, buffer* b) {
   memstream_ctx* ms = (memstream_ctx*)&b[1];
   size_t n = *ms->psize;
-  if(alloc_re((void**)ms->pdata, n, n + len)) {
+  if(alloc_re(ms->pdata, n, n + len)) {
     byte_copy((*ms->pdata) + n, len, data);
     return len;
   }
