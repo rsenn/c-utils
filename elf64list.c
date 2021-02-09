@@ -6,8 +6,8 @@
 #include "lib/uint32.h"
 #include "lib/uint64.h"
 #include "lib/str.h"
+#include "lib/buffer.h"
 #include <stdlib.h>
-#include <stdio.h>
 #include <string.h>
 
 int
@@ -19,8 +19,9 @@ main(int argc, char** argv) {
   uint16 text_section_header_index = 0;
 
   if(argc < 2) {
-    printf("Usage: %s XXX.so\n", argv[0]);
-    return 0;
+    buffer_putm_internal(buffer_2, "Usage: ", argv[0], " XXX.so", 0);
+    buffer_putnlflush(buffer_2);
+    return 1;
   }
 
   content = mmap_private(argv[1], &length);
@@ -36,14 +37,15 @@ main(int argc, char** argv) {
 
     header = (elf64_ehdr*)content;
     if(memcmp(header->e_ident, ELF_ELFMAG, ELF_SELFMAG) != 0) {
-      printf("not ELF\n");
-      return -1;
+
+      buffer_putsflush(buffer_2, "not ELF\n");
+      return 1;
     }
 
     header = (elf64_ehdr*)content;
     if(header->e_type != ELF_ET_DYN) {
-      printf("not shared library\n");
-      return -1;
+      buffer_putsflush(buffer_2, "not shared library\n");
+      return 1;
     }
 
     section_offset = header->e_shoff;
@@ -74,21 +76,18 @@ main(int argc, char** argv) {
     }
 
     if(!dynsym) {
-      printf(".dynsym section is not "
-             "found\n");
-      return -1;
+      buffer_putsflush(buffer_2,".dynsym section is not found\n");
+      return 1;
     }
 
     if(!dynstr) {
-      printf(".dynstr section is not "
-             "found\n");
-      return -1;
+            buffer_putsflush(buffer_2,".dynstr section is not found\n");
+      return 1;
     }
 
     if(text_section_header_index == 0) {
-      printf(".text section is not "
-             "found\n");
-      return -1;
+            buffer_putsflush(buffer_2, ".text section is not found\n");
+      return 1;
     }
   }
 
@@ -124,12 +123,14 @@ main(int argc, char** argv) {
         const char* name;
 
         name = content + name_section_offset + name_index;
-        printf("found: %s\n", name);
+
+        buffer_puts(buffer_1, name);
+        buffer_putnlflush(buffer_1);
       }
     }
   }
 
-  free(content);
+  mmap_unmap(content, length);
 
   return 0;
 }

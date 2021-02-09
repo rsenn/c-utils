@@ -11,7 +11,7 @@
 #include <sys/stat.h>
 #endif
 
-char mmap_empty[] = {0};
+extern char mmap_empty[];
 
 char*
 mmap_read_fd_range(fd_t fd, size_t* size, size_t offset, size_t len) {

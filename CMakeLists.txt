@@ -38,6 +38,8 @@ option(USE_ZLIB "zlib compression" ON)
 option(USE_BROTLI "brotli compression" ON)
 option(USE_SSL "ssl encryption" ON)
 
+option(BUILD_SHARED "build shared library" ON)
+
 if(CMAKE_C_COMPILER MATCHES "musl")
   set(MUSL TRUE)
 endif(CMAKE_C_COMPILER MATCHES "musl")
@@ -831,7 +833,7 @@ add_program(eagle-gen-cmds xml stralloc buffer strarray array byte cb cbmap errm
 add_program(eagle-init-brd xml stralloc buffer hmap strlist scan str ${LIBMATH})
 add_program(eagle-to-circuit xml stralloc buffer strlist array byte cb cbmap fmt hashmap hmap mmap scan str ${LIBMATH})
 add_program(eagle-to-svg xml stralloc buffer strlist array byte cb cbmap fmt hashmap hmap mmap scan str)
-add_program(elf64list elf mmap uint16 uint32 uint64)
+add_program(elf64list buffer elf mmap uint16 uint32 uint64)
 add_program(elflist strlist buffer alloc errmsg unix elf mmap str)
 add_program(elfwrsec buffer alloc elf mmap)
 add_program(genmakefile sig set case errmsg strarray slist rdir dir path strlist hashmap hmap stralloc buffer mmap unix open scan fmt byte str array safemult alloc)

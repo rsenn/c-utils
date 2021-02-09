@@ -8,6 +8,8 @@ set(iarray_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/cas.S)
 set(MODSUBDIRS alloc array binfmt bmap buffer byte case cb cbmap charbuf coff dir dlist dns elf env errmsg fmt gpio hashmap hmap http iarray ihex io json mmap ndelay omf open path pe playlist cpp process range rdir safemult scan seek set sig slist socket str stralloc strarray strlist tai taia textbuf textcode tls tokenizer ucs uint16 uint32 uint64 unix utf8 wait xml)
 file(GLOB MODHEADERS ${CMAKE_CURRENT_SOURCE_DIR}/*.h)
 
+set(LIB_SOURCES )
+
 foreach(LIBNAME ${MODSUBDIRS})
   file(GLOB MODHEADERS ${CMAKE_CURRENT_SOURCE_DIR}/${LIBNAME}.h ${CMAKE_CURRENT_SOURCE_DIR}/${LIBNAME}_*.h)
   file(GLOB MODSOURCES ${CMAKE_CURRENT_SOURCE_DIR}/${LIBNAME}/*.c)
@@ -17,6 +19,10 @@ foreach(LIBNAME ${MODSUBDIRS})
   set(EXTRA_SOURCES ${${LIBNAME}_SOURCES})
   set(EXTRA_DEFS "${${LIBNAME}_DEFS}")
   set(EXTRA_LIBS "${${LIBNAME}_LIBS}")
+
+set(ALL_SOURCES ${LIB_SOURCES})
+  list(APPEND ALL_SOURCES ${LIB_SOURCES} ${MODSOURCES} ${MODHEADERS} ${EXTRA_SOURCES})
+  set(LIB_SOURCES "${ALL_SOURCES}" PARENT_SCOPE)
 
   # message("Library ${LIBNAME} EXTRA_DEFS = ${EXTRA_DEFS}")
   if(EXTRA_SOURCES)
@@ -82,3 +88,12 @@ target_link_libraries(tls io iarray buffer byte str ${TLS_LIBRARIES})
 target_link_libraries(http dns errmsg byte io scan tls socket stralloc str)
 target_link_libraries(tokenizer buffer byte str)
 target_link_libraries(cpp errmsg tokenizer strlist hashmap hmap)
+
+if(BUILD_SHARED)
+  file(GLOB LIB_SOURCES */*.c)
+
+  add_library(c-utils SHARED ${LIB_SOURCES})
+  set_target_properties(c-utils PROPERTIES SOVERSION 1.0)
+
+  install(TARGETS c-utils DESTINATION lib)
+endif(BUILD_SHARED)
