@@ -1,6 +1,8 @@
 if(BUILD_SSL)
   add_definitions(-DOPENSSL_THREADS=1)
-
+  if(CMAKE_C_COMPILER MATCHES "-musl")
+    set(MUSL TRUE)
+  endif(CMAKE_C_COMPILER MATCHES "-musl")
   if(MUSL)
     add_definitions(-DOPENSSL_NO_SECURE_MEMORY=1)
   endif(MUSL)

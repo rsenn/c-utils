@@ -29,6 +29,10 @@ add_definitions(-DOPENSSL_NO_MDC2=1 -DOPENSSL_NO_DES=1)
 
 add_definitions(-DOPENSSL_CPUID_OBJ=1 -DOPENSSL_USE_NODELETE=1)
 
+if(MUSL)
+  add_definitions(-DOPENSSL_NO_SECURE_MEMORY)
+endif(MUSL)
+
 include_directories(${CMAKE_CURRENT_BINARY_DIR}/include)
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 include_directories(${THISDIR})

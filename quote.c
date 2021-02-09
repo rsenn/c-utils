@@ -179,7 +179,7 @@ add_output(const char* x, size_t len, buffer* out) {
     unsigned int chlen = fmt_utf8(0, x[i]);
 
     if(do_quote(x[i])) {
-      if(chlen > 1 || fmt_call != fmt_default) {
+      if(1 /*chlen > 1 || fmt_call != fmt_default*/) {
         n = fmt_call(tmp, x[i], 0);
       } else /* if(iscntrl(ch) || ch >
                 127) */
@@ -409,7 +409,7 @@ main(int argc, char* argv[]) {
         add_quotes = "\"";
         // tab_size = 2;
         quote_newline = quote_tabs = true;
-        quote_backslash = 3;
+        quote_backslash = 0;
         stralloc_copys(&quote_chars, "$\t");
         break;
       case 'c':

@@ -1,5 +1,5 @@
 cfg() {
-  if type gcc 2>/dev/null >/dev/null && type g++ 2>/dev/null >/dev/null; then
+ (if type gcc 2>/dev/null >/dev/null && type g++ 2>/dev/null >/dev/null; then
     : ${CC:=gcc} ${CXX:=g++}
   elif type clang 2>/dev/null >/dev/null && type clang++ 2>/dev/null >/dev/null; then
     : ${CC:=clang} ${CXX:=clang++}
@@ -61,7 +61,7 @@ cfg() {
   esac
   : ${generator:="CodeLite - Unix Makefiles"}
 
- (mkdir -p $builddir
+  mkdir -p $builddir
   : ${relsrcdir=`realpath --relative-to "$builddir" .`}
   : set -x
   cd "${builddir:-.}"
@@ -82,7 +82,7 @@ cfg() {
     "$@" \
     $relsrcdir 
   eval "${CMAKE:-cmake} \"\$@\""
- ) 2>&1 |tee "${builddir##*/}.log"
+  ) 2>&1 |tee "${builddir##*/}.log"
 }
 
 cfg-android ()
@@ -234,7 +234,9 @@ cfg-tcc() {
   libdir=/usr/lib/$build/tcc/
   bindir=/usr/bin
 
-  CC=${TCC:-tcc} \
+  : ${CC:=${TCC:-tcc}}
+  export CC
+
   cfg \
     "$@")
 }
@@ -360,20 +362,6 @@ cfg-wasm() {
   "$@")
 }
 
-cfg-tcc() {
- (build=$(cc -dumpmachine | sed 's|-pc-|-|g')
-  host=${build/-gnu/-tcc}
-  : ${builddir=build/$host}
-  prefix=/usr/local
-  includedir=/usr/lib/$build/tcc/include
-  libdir=/usr/lib/$build/tcc/
-  bindir=/usr/bin
-
-  CC=${TCC:-tcc} \
-  cfg \
-    "$@")
-}
-  
 cfg-android64() { 
     ( : ${builddir=build/android64};
     cfg -DCMAKE_INSTALL_PREFIX=/opt/aarch64-linux-android64eabi/sysroot/usr -DCMAKE_TOOLCHAIN_FILE=${TOOLCHAIN:-/opt/android64-cmake/android64.cmake} -DANDROID_NATIVE_API_LEVEL=21 -DPKG_CONFIG_EXECUTABLE=aarch64-linux-android64eabi-pkg-config -DCMAKE_PREFIX_PATH=/opt/aarch64-linux-android64eabi/sysroot/usr -DCMAKE_MAKE_PROGRAM=/usr/bin/make -DCMAKE_MODULE_PATH="/opt/OpenCV-3.4.1-android64-sdk/sdk/native/jni/abi-armeabi-v7a" -DOpenCV_DIR="/opt/OpenCV-3.4.1-android64-sdk/sdk/native/jni/abi-armeabi-v7a" "$@" )
