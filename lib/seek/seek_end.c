@@ -12,9 +12,7 @@
 #include <sys/types.h>
 #endif
 
-int
+seek_pos
 seek_end(fd_t fd) {
-  if(io_seek(fd, 0, SEEK_END) == -1)
-    return -1;
-  return 0;
+  return io_seek(fd, 0, SEEK_END);
 }

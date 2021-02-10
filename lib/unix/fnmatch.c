@@ -31,17 +31,7 @@
 
 #define ISUPPER(c) (ISASCII(c) && isupper(c))
 
-/* Comment out all this code if we are using the GNU C Library, and are not
-   actually compiling the library itself.  This code is part of the GNU C
-   Library, but also included in many other GNU distributions.  Compiling
-   and linking in this code is a waste when using the GNU C library
-   (especially if it is a shared library).  Rather than having every GNU
-   program understand `configure --with-gnu-libc' and omit the object files,
-   it is simpler to just do this in the source for each such file.  */
-
-//#if defined (_LIBC) || !defined (__GNU_LIBRARY__)
-//#if defined(_WIN32) || defined(__MINGW64__) || defined(_MSC_VER)
-#if !defined(HAVE_FNMATCH)
+#define fnmatch unix_fnmatch
 
 /* Match STRING against the filename pattern PATTERN, returning zero if
    it matches, nonzero if not.  */
@@ -187,7 +177,3 @@ fnmatch(const char* pattern, const char* string, int flags) {
 
 #undef FOLD
 }
-
-//#endif  /* _LIBC or not __GNU_LIBRARY__.  */
-
-#endif /* defined(_WIN32) || defined(__MINGW64__) || defined(_MSC_VER) */

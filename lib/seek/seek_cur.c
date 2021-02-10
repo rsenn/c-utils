@@ -14,5 +14,5 @@
 
 seek_pos
 seek_cur(fd_t fd) {
-  return lseek(fd, (off_t)0, SEEK_CUR);
+  return io_seek(fd, (seek_pos)0, SEEK_CUR);
 }

@@ -3,7 +3,7 @@
 int
 charbuf_skip_until(charbuf* b, char c) {
   int r, n = 0;
-  
+
   for(;;) {
     if((r = charbuf_peek(b)) <= 0)
       break;

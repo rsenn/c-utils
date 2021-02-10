@@ -78,7 +78,7 @@ tokenizer_next(tokenizer* t, struct token_s* out) {
     c = tokenizer_getc(t);
     if((t->flags & TF_PARSE_WIDE_STRINGS) && c == 'L') {
       c = tokenizer_getc(t);
-      //assert(c == '\'' || c == '\"');
+      // assert(c == '\'' || c == '\"');
       wide = 1;
       goto string_handling;
     } else if(c == '.' && sequence_follows(t, c, "...")) {

@@ -4,7 +4,7 @@
 int
 charbuf_get(charbuf* b) {
   int ret;
-  
+
   if(b->eof || b->err) {
     ret = -1;
   } else if(b->p) {

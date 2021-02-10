@@ -70,7 +70,7 @@ io_canwrite() {
     buffer_puts(buffer_2, "ret=");
     buffer_putlong(buffer_2, ret);
     buffer_putnlflush(buffer_2);
-  } 
+  }
 #endif
   return ret;
 }

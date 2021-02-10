@@ -19,7 +19,7 @@ charbuf_peekc(charbuf* b, char* ch) {
       *ch = b->ch;
     }
   }
-  
+
 #ifdef DEBUG_CHARBUF_
   buffer_puts(buffer_2, "charbuf_peekc '");
   buffer_putc(buffer_2, b->ch);

@@ -76,17 +76,17 @@ main(int argc, char** argv) {
     }
 
     if(!dynsym) {
-      buffer_putsflush(buffer_2,".dynsym section is not found\n");
+      buffer_putsflush(buffer_2, ".dynsym section is not found\n");
       return 1;
     }
 
     if(!dynstr) {
-            buffer_putsflush(buffer_2,".dynstr section is not found\n");
+      buffer_putsflush(buffer_2, ".dynstr section is not found\n");
       return 1;
     }
 
     if(text_section_header_index == 0) {
-            buffer_putsflush(buffer_2, ".text section is not found\n");
+      buffer_putsflush(buffer_2, ".text section is not found\n");
       return 1;
     }
   }

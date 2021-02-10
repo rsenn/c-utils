@@ -284,6 +284,12 @@ if(HAVE_UNISTD_H)
   set(CMAKE_EXTRA_INCLUDE_FILES unistd.h ${CMAKE_EXTRA_INCLUDE_FILES})
 endif(HAVE_UNISTD_H)
 
+check_include_file(fcntl.h HAVE_FCNTL_H)
+if(HAVE_FCNTL_H)
+  # add_definitions(-DHAVE_UNISTD_H)
+  set(CMAKE_EXTRA_INCLUDE_FILES fcntl.h ${CMAKE_EXTRA_INCLUDE_FILES})
+endif(HAVE_FCNTL_H)
+
 message(STATUS "extra includes = ${CMAKE_EXTRA_INCLUDE_FILES}")
 
 if(NOT CMAKE_CROSSCOMPILING AND NOT CMAKE_TOOLCHAIN_FILE)
@@ -443,6 +449,16 @@ endif(HAVE_LINUX_AIO_ABI_H)
 if(HAVE_POSIX_SPAWNATTR_SETFLAGS AND HAVE_POSIX_SPAWN_FILE_ACTIONS_INIT AND HAVE_POSIX_SPAWN_FILE_ACTIONS_ADDDUP2 AND HAVE_POSIX_SPAWNP)
   add_definitions(-DPOSIX_SPAWN=1)
 endif()
+
+
+check_symbol_exists(off_t "" HAVE_OFF_T)
+check_type_size(off_t SIZEOF_OFF_T)
+
+if(HAVE_OFF_T OR SIZEOF_OFF_T)
+  message(STATUS "Have off_t type")
+else(HAVE_OFF_T OR SIZEOF_OFF_T)
+  add_definitions(-Doff_t=int64)
+endif(HAVE_OFF_T OR SIZEOF_OFF_T)
 
 check_function_exists(lseek64 HAVE_LSEEK64)
 if(NOT HAVE_LSEEK64)
@@ -636,7 +652,8 @@ endif(SUPPORT_SELECT STREQUAL "")
 set(MUX "")
 set(MUX_DEFS "")
 set(MUX_ALL
-    LINUX_AIO KQUEUE DEVPOLL EPOLL
+    #LINUX_AIO
+    KQUEUE DEVPOLL EPOLL
     # SIGIO
     POLL SELECT)
 set(MUX_USE LINUX_AIO KQUEUE EPOLL DEVPOLL SIGIO POLL SELECT)
@@ -916,7 +933,7 @@ add_program(lsproc strlist errmsg mmap buffer unix dir)
 add_program(cpptest cpp tokenizer unix buffer open)
 add_program(tokenizertest errmsg tokenizer unix buffer open)
 set(least_SOURCES terminal.c  terminal.h)
-add_program(least errmsg sig io strarray buffer stralloc open)
+add_program(least unix errmsg sig io strarray buffer stralloc open)
 target_link_libraries(least ${LIBMATH})
 
 #[[add_program(ftpcopy io)
