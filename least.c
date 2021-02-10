@@ -38,7 +38,8 @@ struct termios oldterm;
 
 static stralloc command_buf;
 
-volatile sig_atomic_t running = 1, reset = 0, resized = 0, command_mode = 0;
+volatile sig_atomic_t running = 1, reset = 0, resized = 0, command_mode = 0,
+                      line_numbers = 0;
 
 static inline size_t
 line_count(void) {
@@ -146,7 +147,7 @@ print_linenumber(size_t number, size_t pad) {
     buffer_putspace(buffer_1);
     len++;
   }
-  terminal_rgb_foreground(134, 195, 186);
+  terminal_rgb_foreground(143, 255, 245);
   buffer_put(buffer_1, buf, n);
   terminal_number_sequence(0, 'm');
   return len;
@@ -155,9 +156,11 @@ print_linenumber(size_t number, size_t pad) {
 void
 print_line(size_t number) {
   const char* s;
-  size_t len, pos;
-  pos = print_linenumber(number, number_width(last_line()));
-  buffer_putspace(buffer_1);
+  size_t len, pos = 0;
+  if(line_numbers) {
+    pos = print_linenumber(number + 1, number_width(last_line()));
+    buffer_putspace(buffer_1);
+  }
   s = line_at(number);
   len = line_numbytes(s, terminal_cols - pos - 1);
   buffer_put(buffer_1, s, len);
@@ -167,8 +170,8 @@ void
 print_status() {
   buffer_putc(buffer_1, '\r');
   terminal_erase_in_line(0);
-  if(command_buf.len) {
-    buffer_puts(buffer_1, ":");
+  if(command_mode) {
+    buffer_puts(buffer_1, command_mode == 1 ? ":" : "/");
     buffer_putsa(buffer_1, &command_buf);
   } else {
     terminal_number_sequence(7, 'm');
@@ -232,6 +235,7 @@ scroll_to(int64 line) {
     first_line += i;
   terminal_erase_in_display(2);
   terminal_cursor_position(1, 1);
+  terminal_linewrap_disable();
   for(i = 0; i < display_rows; i++) {
     if(line + i < num_lines)
       print_line(line + i);
@@ -508,6 +512,13 @@ handle_input(void) {
     case 'U':
     case 21: scroll_by(-display_rows / 2 * n); break;
 
+    case 'n':
+    case 'N':
+    case 14:
+      line_numbers = !line_numbers;
+      scroll_to(first_line);
+      break;
+
     case ':':
       command_mode = 1;
       read_command();
@@ -560,6 +571,7 @@ terminate(int sig) {
   tcsetattr(STDOUT_FILENO, TCSANOW, &oldterm);
 
   terminal_set_normal_screen();
+  terminal_number_sequence(7, 'h');
   buffer_flush(buffer_1);
 
   exit(0);
@@ -602,6 +614,7 @@ main(int argc, char* argv[]) {
 
   init_terminal();
   terminal_set_alternate_screen();
+
   buffer_flush(buffer_1);
 
   scroll_to(0);

@@ -22,6 +22,14 @@ put_string(const char* s) {
   buffer_puts(buffer_1, s);
 }
 
+/*void
+terminal_device_reset() {
+  put_char(ESC);
+  put_char('c');
+    buffer_flush(buffer_1);
+
+}
+*/
 void
 terminal_number_sequence(int n, char c) {
   put_escape();
@@ -40,6 +48,13 @@ terminal_numbers_sequence(int* numbers, size_t len, char c) {
     put_num(numbers[i]);
   }
   put_char(c);
+}
+
+void
+terminal_escape_char(char c) {
+  buffer_putc(buffer_1, ESC);
+  buffer_putc(buffer_1, c);
+  buffer_flush(buffer_1);
 }
 
 void

@@ -5,8 +5,18 @@
 
 #define ESC 27
 
+#define terminal_devicecode_query() terminal_escape_sequence("c")
+#define terminal_devicestatus_query() terminal_number_sequence(5, 'n')
+#define terminal_cursor_query() terminal_number_sequence(6, 'n')
+#define terminal_device_reset() terminal_escape_char('c')
+#define terminal_tab_set() terminal_escape_char('H')
+#define terminal_tab_clear() terminal_escape_sequence("g")
+#define terminal_tabs_clearall() terminal_number_sequence(3, 'g')
+
 #define terminal_cursor_save() terminal_escape_sequence("s")
 #define terminal_cursor_restore() terminal_escape_sequence("u")
+#define terminal_linewrap_enable() terminal_number_sequence(7, 'h')
+#define terminal_linewrap_disable() terminal_number_sequence(7, 'l')
 
 void terminal_number_sequence(int n, char c);
 void terminal_numbers_sequence(int* numbers, size_t len, char c);
