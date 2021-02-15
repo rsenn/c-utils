@@ -172,9 +172,9 @@ print_linenumber(size_t number, size_t pad) {
     buffer_putspace(buffer_1);
     len++;
   }
-  terminal_rgb_foreground(143, 255, 245);
+  terminal_rgb_foreground(buffer_1, 143, 255, 245);
   buffer_put(buffer_1, buf, n);
-  terminal_number_sequence(0, 'm');
+  terminal_number_sequence(buffer_1, 0, 'm');
   return len;
 }
 
@@ -199,7 +199,7 @@ print_status() {
     buffer_puts(buffer_1, command_mode == 1 ? ":" : "/");
     buffer_putsa(buffer_1, &command_buf);
   } else {
-    terminal_number_sequence(7, 'm');
+    terminal_number_sequence(buffer_1, 7, 'm');
     buffer_puts(buffer_1, filename);
     buffer_putspace(buffer_1);
     if(first_line >= line_range() - 1)
@@ -208,7 +208,7 @@ print_status() {
       print_position();
     buffer_putspace(buffer_1);
     print_progress();
-    terminal_number_sequence(0, 'm');
+    terminal_number_sequence(buffer_1, 0, 'm');
   }
   buffer_flush(buffer_1);
 }
@@ -217,11 +217,11 @@ void
 print_added(size_t num_lines) {
   terminal_erase_in_line(1);
   buffer_putc(buffer_1, '\r');
-  terminal_number_sequence(7, 'm');
+  terminal_number_sequence(buffer_1, 7, 'm');
   buffer_puts(buffer_1, "+");
   buffer_putulong(buffer_1, num_lines);
   buffer_puts(buffer_1, " lines");
-  terminal_number_sequence(0, 'm');
+  terminal_number_sequence(buffer_1, 0, 'm');
   buffer_flush(buffer_1);
 }
 
@@ -412,33 +412,33 @@ search_update(int(*predicate)(const char*, const char*)) {
   if((first = find_line(command_buf.s, predicate)) >= 0)
     matches = count_matches(command_buf.s, predicate);
   terminal_erase_in_line(0);
-  terminal_cursor_horizontal_absolute(terminal_cols - 30 - command_buf.len);
-  terminal_escape_sequence("1m");
-  terminal_rgb_background(25, 73, 216);
-  terminal_rgb_foreground(208, 240, 248);
+  terminal_cursor_horizontal_absolute(terminal_cols - 40 - command_buf.len);
+  terminal_escape_sequence(buffer_1, "1m");
+  terminal_rgb_background(buffer_1, 25, 73, 216);
+  terminal_rgb_foreground(buffer_1, 208, 240, 248);
   buffer_puts(buffer_1, "↓ ");
-  terminal_rgb_foreground(230, 198, 5);
+  terminal_rgb_foreground(buffer_1, 230, 198, 5);
   buffer_putsa(buffer_1, &command_buf);
 
   if(matches) {
-    terminal_rgb_foreground(208, 240, 248);
+    terminal_rgb_foreground(buffer_1, 208, 240, 248);
     buffer_puts(buffer_1, " ✖");
-    terminal_rgb_foreground(230, 198, 5);
+    terminal_rgb_foreground(buffer_1, 230, 198, 5);
     buffer_putspace(buffer_1);
     buffer_putulong(buffer_1, matches);
     buffer_puts(buffer_1, " matches");
-    terminal_rgb_foreground(208, 240, 248);
+    terminal_rgb_foreground(buffer_1, 208, 240, 248);
     buffer_puts(buffer_1, " ⇲ ");
-    terminal_rgb_foreground(230, 198, 5);
+    terminal_rgb_foreground(buffer_1, 230, 198, 5);
     buffer_putlonglong(buffer_1, first);
   } else {
-    terminal_rgb_foreground(208, 240, 248);
+    terminal_rgb_foreground(buffer_1, 208, 240, 248);
     buffer_puts(buffer_1, " ∞ " /*" ∅ "*/);
-    terminal_rgb_foreground(230, 198, 5);
+    terminal_rgb_foreground(buffer_1, 230, 198, 5);
     buffer_puts(buffer_1, " not found");
   }
   buffer_putspace(buffer_1);
-  terminal_escape_sequence("m");
+  terminal_escape_sequence(buffer_1, "m");
 }
 
 int64
@@ -453,29 +453,41 @@ search_command(const char* cmd, int(*predicate)(const char*,const char*)) {
   }
 }
 
+static const char* command_prefixes[4] =  { ":" , " :", "/", "\\"};
+
 int
 read_command(void) {
   char c;
    stralloc_zero(&command_buf);
+
   terminal_erase_in_line(2);
   buffer_putsflush(buffer_1, command_mode == 1 ? "\r :" : command_mode == 2 ? "\r/" : "\r\\");
+
    while(buffer_getc(&terminal, &c) == 1) {
     if(c == '\n' || c == '\r')
       break;
     if(c == 0x7f || c == 8) {
+      if(command_buf.len) {
       buffer_puts(buffer_1, "\b \b");
-      if(command_buf.len)
         stralloc_trunc(&command_buf, command_buf.len-1);
+      }
     } else {
     assert(c >= 0x20);
       buffer_putc(buffer_1, c);
       stralloc_catc(&command_buf, c);
     }
-    buffer_flush(buffer_1);
-    if(command_mode >= 2) {
+
+/*  terminal_erase_in_line(2);
+terminal_cursor_horizontal_absolute(1);
+buffer_puts(buffer_1,  command_prefixes[command_mode & 0x03]);
+    buffer_putsa(buffer_1, &command_buf);*/
+    
+    if(command_mode >= 2)
       search_update(command_mode == 2 ? &match_pattern : &nomatch_pattern);
+
+    buffer_flush(buffer_1);
+
       terminal_cursor_horizontal_absolute(command_buf.len+1);
-    }
   }
   stralloc_nul(&command_buf);
   switch(command_mode) {
@@ -619,7 +631,7 @@ terminate(int sig) {
   tcsetattr(STDOUT_FILENO, TCSANOW, &oldterm);
 
   terminal_set_normal_screen();
-  terminal_number_sequence(7, 'h');
+  terminal_linewrap_enable();
   buffer_flush(buffer_1);
 
   exit(0);
