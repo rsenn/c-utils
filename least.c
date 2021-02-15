@@ -85,16 +85,40 @@ read_terminal_properties(void) {
 
 int
 read_line(buffer* buf) {
+  size_t bytes = buffer_LEN(buf);
   ssize_t ret;
   stralloc line;
   stralloc_init(&line);
   if((ret = buffer_getline_sa(buf, &line)) > 0) {
+    char* s;
+    ssize_t i;
+    int underline = 0;
     stralloc_trimr(&line, "\r\n", 2);
     stralloc_nul(&line);
+    s = line.s;
+    stralloc_init(&line);
+    for(i = 0; s[i]; i++) {
+      if(s[i + 1] == 8 && s[i + 2] == s[i]) {
+        if(!underline) {
+          underline = 1;
+          stralloc_cats(&line, "\x1b[4m");
+        }
+        i += 2;
+      } else if(underline) {
+        stralloc_cats(&line, "\x1b[0m");
+        underline = 0;
+      }
+      stralloc_CATC(&line, s[i]);
+    }
+    if(underline)
+      stralloc_cats(&line, "\x1b[0m");  
+    free(s);
+    stralloc_nul(&line);
     array_catb((array*)&lines, &line.s, sizeof(char*));
-    line.s = 0;
-    line.a = 0;
+    stralloc_init(&line);
     return 1;
+  } else {
+    ret = buffer_LEN(buf) - bytes;
   }
   stralloc_free(&line);
   return ret;
@@ -112,7 +136,7 @@ init_terminal(void) {
   tcgetattr(terminal.fd, &oldterm);
   newt = oldterm;
   newt.c_lflag &= ~(ICANON | ECHO);
-  tcsetattr(STDIN_FILENO, TCSANOW, &newt);
+  tcsetattr(terminal.fd, TCSANOW, &newt);
   return &oldterm;
 }
 
@@ -334,40 +358,58 @@ jump_command(int64 to) {
 void
 
 read_goto(const char* cmd) {
-  int64 to;
-  if(scan_longlong(cmd, &to))
-    jump_command(to);
+  double to;
+  size_t pos;
+  if((pos = scan_double(cmd, &to))) {
+    if(cmd[pos] == '%') {
+      to = (line_range() - 1) * to / 100;
+
+      to = ((int)to * display_rows) / display_rows;
+    }
+
+    jump_command((int)to);
+  }
+}
+
+int
+match_pattern(const char* pattern, const char* string) {
+  return str_contains(string, pattern) || unix_fnmatch(pattern, string, FNM_CASEFOLD) == 0;
+}
+
+int
+nomatch_pattern(const char* pattern, const char* string) {
+  return !match_pattern(pattern, string);
 }
 
 int64
-find_line(const char* cmd) {
+find_line(const char* cmd, int(*predicate)(const char*, const char*)) {
   size_t i, n = line_count();
   for(i = 0; i < n; i++) {
     const char* s = line_at((first_line + i) % n);
-    if(str_contains(s, cmd) || unix_fnmatch(cmd, s, FNM_CASEFOLD) == 0)
+    if(predicate(cmd, s))
       return first_line + i;
   }
   return -1;
 }
 
 size_t
-count_matches(const char* cmd) {
+count_matches(const char* cmd, int(*predicate)(const char*, const char*)) {
   size_t count = 0, i, n = line_count();
   for(i = 0; i < n; i++) {
     const char* s = line_at((first_line + i) % n);
-    if(str_contains(s, cmd) || unix_fnmatch(cmd, s, FNM_CASEFOLD) == 0)
+    if(predicate(cmd, s))
       count++;
   }
   return count;
 }
 
 void
-search_update() {
+search_update(int(*predicate)(const char*, const char*)) {
   int64 first;
   size_t matches = 0;
   stralloc_nul(&command_buf);
-  if((first = find_line(command_buf.s)) >= 0)
-    matches = count_matches(command_buf.s);
+  if((first = find_line(command_buf.s, predicate)) >= 0)
+    matches = count_matches(command_buf.s, predicate);
   terminal_erase_in_line(0);
   terminal_cursor_save();
   terminal_cursor_position(terminal_rows, terminal_cols - 30 - command_buf.len);
@@ -401,11 +443,11 @@ search_update() {
 }
 
 int64
-search_command(const char* cmd) {
-  int64 match;
+search_command(const char* cmd, int(*predicate)(const char*,const char*)) {
+  int64 found;
   command_mode = 0;
-  if((match = find_line(command_buf.s)) >= 0) {
-    scroll_to(match);
+  if((found = find_line(command_buf.s, predicate)) >= 0) {
+    scroll_to(found);
   } else {
     buffer_putc(buffer_1, '\r');
     print_status();
@@ -417,7 +459,7 @@ read_command(void) {
   char c;
   stralloc_zero(&command_buf);
   terminal_erase_in_line(2);
-  buffer_putsflush(buffer_1, command_mode == 1 ? "\r :" : "\r/");
+  buffer_putsflush(buffer_1, command_mode == 1 ? "\r :" : command_mode == 2 ? "\r/" : "\r\\");
   while(buffer_getc(&terminal, &c) == 1) {
     if(c == '\n' || c == '\r')
       break;
@@ -430,14 +472,15 @@ read_command(void) {
       buffer_putc(buffer_1, c);
       stralloc_catc(&command_buf, c);
     }
-    if(command_mode == 2)
-      search_update();
+    if(command_mode >= 2)
+      search_update(command_mode == 2 ? &match_pattern : &nomatch_pattern);
     buffer_flush(buffer_1);
   }
   stralloc_nul(&command_buf);
   switch(command_mode) {
     case 1: read_goto(command_buf.s); break;
-    case 2: search_command(command_buf.s); break;
+    case 2: search_command(command_buf.s, &match_pattern); break;
+    case 3: search_command(command_buf.s, &nomatch_pattern); break;
   }
   command_mode = 0;
   stralloc_zero(&command_buf);
@@ -527,7 +570,11 @@ handle_input(void) {
       command_mode = 2;
       read_command();
       break;
-
+  case '\\':
+  case '<':
+      command_mode = 3;
+      read_command();
+      break;
     case ESC: handle_escape_sequence(); break;
 
     default: return 0;
@@ -630,11 +677,12 @@ main(int argc, char* argv[]) {
   io_fd(terminal.fd);
   io_fd(watchfd);
 
+  io_wantread(terminal.fd);
+  io_wantread(watchfd);
+
   while(running) {
     fd_t fd;
-
-    io_wantread(terminal.fd);
-    io_wantread(watchfd);
+    int on_terminal = 0, on_input = 0;
 
     while(io_wait() == -1) {
       if(errno == EINTR) {
@@ -650,34 +698,55 @@ main(int argc, char* argv[]) {
 
     while((fd = io_canread()) != -1) {
       if(fd == terminal.fd)
-        handle_input();
+        on_terminal = 1;
 
       if(fd == watchfd) {
         struct inotify_event event;
-        size_t newsize, prev_lines;
-        int do_scroll;
 
         if(watchfd != input.fd) {
           if(read(watchfd, &event, sizeof(event)) <= 0)
             continue;
         }
 
-        if(!is_pipe)
-          if(!get_filesize(input.fd, &newsize))
-            newsize = 0;
-
-        prev_lines = strarray_size(&lines);
-        do_scroll = last_line() >= prev_lines - 1;
-        while(is_pipe || get_position(&input) < newsize) {
-          if(!read_line(&input))
-            break;
-          if(do_scroll)
-            scroll_down();
-        }
-        if(!do_scroll)
-          print_added(strarray_size(&lines) - prev_lines);
+        on_input = 1;
       }
     }
+
+    if(on_terminal)
+      handle_input();
+
+    if(on_input) {
+      size_t newsize, prev_lines;
+      ssize_t ret;
+      int do_scroll;
+
+      if(!is_pipe)
+        if(!get_filesize(input.fd, &newsize))
+          newsize = 0;
+
+      prev_lines = strarray_size(&lines);
+      do_scroll = last_line() >= prev_lines - 1;
+
+      while(is_pipe || get_position(&input) < newsize) {
+        if((ret = read_line(&input)) <= 0)
+          break;
+        if(do_scroll)
+          scroll_down();
+      }
+      if(!do_scroll) {
+        size_t added = strarray_size(&lines) - prev_lines;
+
+        if(added)
+          print_added(added);
+      }
+
+      if(ret == 0 && is_pipe)
+        io_dontwantread(watchfd);
+    }
+
+    /*if(!on_terminal && !on_input) {
+      io_dontwantread(watchfd);
+    }*/
   }
   terminate(0);
 
