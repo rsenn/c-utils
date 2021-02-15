@@ -412,7 +412,7 @@ search_update(int(*predicate)(const char*, const char*)) {
   if((first = find_line(command_buf.s, predicate)) >= 0)
     matches = count_matches(command_buf.s, predicate);
   terminal_erase_in_line(0);
-  terminal_cursor_horizontal_absolute(terminal_cols - 40 - command_buf.len);
+  terminal_cursor_horizontal_absolute(terminal_cols - 30 - command_buf.len);
   terminal_escape_sequence(buffer_1, "1m");
   terminal_rgb_background(buffer_1, 25, 73, 216);
   terminal_rgb_foreground(buffer_1, 208, 240, 248);
@@ -477,6 +477,9 @@ read_command(void) {
       stralloc_catc(&command_buf, c);
     }
 
+       //terminal_cursor_position(display_rows+1, command_buf.len+1);
+   buffer_flush(buffer_1);
+
 /*  terminal_erase_in_line(2);
 terminal_cursor_horizontal_absolute(1);
 buffer_puts(buffer_1,  command_prefixes[command_mode & 0x03]);
@@ -484,10 +487,9 @@ buffer_puts(buffer_1,  command_prefixes[command_mode & 0x03]);
     
     if(command_mode >= 2)
       search_update(command_mode == 2 ? &match_pattern : &nomatch_pattern);
+       terminal_cursor_position(display_rows+1, command_buf.len+1);
 
-    buffer_flush(buffer_1);
 
-      terminal_cursor_horizontal_absolute(command_buf.len+1);
   }
   stralloc_nul(&command_buf);
   switch(command_mode) {

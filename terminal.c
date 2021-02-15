@@ -125,11 +125,8 @@ terminal_cursor_horizontal_absolute(int n) {
 
 void
 terminal_cursor_position(int row, int column) {
-  put_escape(&terminal_buffer);
-  put_num(row);
-  put_char(';');
-  put_num(column);
-  put_char('H');
+  int coord[2] = { row, column };
+  terminal_numbers_sequence(&terminal_buffer, coord, 2, 'H');
   buffer_flush(&terminal_buffer);
 }
 
