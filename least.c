@@ -12,6 +12,7 @@
 #include "lib/unix.h"
 #include "lib/fmt.h"
 
+#include <assert.h>
 #include <ctype.h>
 #include <unistd.h>
 #include <errno.h>
@@ -461,11 +462,12 @@ read_command(void) {
    while(buffer_getc(&terminal, &c) == 1) {
     if(c == '\n' || c == '\r')
       break;
-    if(c == 0x7f) {
-      buffer_puts(buffer_1, "\x08 \x08");
+    if(c == 0x7f || c == 8) {
+      buffer_puts(buffer_1, "\b \b");
       if(command_buf.len)
         stralloc_trunc(&command_buf, command_buf.len-1);
     } else {
+    assert(c >= 0x20);
       buffer_putc(buffer_1, c);
       stralloc_catc(&command_buf, c);
     }
