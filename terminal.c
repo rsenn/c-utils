@@ -36,6 +36,7 @@ terminal_number_sequence(int n, char c) {
   if(n > 1)
     put_num(n);
   put_char(c);
+  buffer_flush(buffer_1);
 }
 
 void
@@ -48,6 +49,7 @@ terminal_numbers_sequence(int* numbers, size_t len, char c) {
     put_num(numbers[i]);
   }
   put_char(c);
+  buffer_flush(buffer_1);
 }
 
 void
@@ -61,16 +63,6 @@ void
 terminal_escape_sequence(const char* seq) {
   put_escape();
   buffer_putsflush(buffer_1, seq);
-}
-
-void
-terminal_cursor_position(int row, int column) {
-  put_escape();
-  put_num(row);
-  put_char(';');
-  put_num(column);
-  put_char('H');
-  buffer_flush(buffer_1);
 }
 
 void
@@ -101,6 +93,21 @@ terminal_cursor_next_line(int n) {
 void
 terminal_cursor_previous_line(int n) {
   terminal_number_sequence(n, 'F');
+}
+
+void
+terminal_cursor_horizontal_absolute(int n) {
+  terminal_number_sequence(n, 'G');
+}
+
+void
+terminal_cursor_position(int row, int column) {
+  put_escape();
+  put_num(row);
+  put_char(';');
+  put_num(column);
+  put_char('H');
+  buffer_flush(buffer_1);
 }
 
 void

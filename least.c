@@ -411,8 +411,7 @@ search_update(int(*predicate)(const char*, const char*)) {
   if((first = find_line(command_buf.s, predicate)) >= 0)
     matches = count_matches(command_buf.s, predicate);
   terminal_erase_in_line(0);
-  terminal_cursor_save();
-  terminal_cursor_position(terminal_rows, terminal_cols - 30 - command_buf.len);
+  terminal_cursor_horizontal_absolute(terminal_cols - 30 - command_buf.len);
   terminal_escape_sequence("1m");
   terminal_rgb_background(25, 73, 216);
   terminal_rgb_foreground(208, 240, 248);
@@ -439,7 +438,6 @@ search_update(int(*predicate)(const char*, const char*)) {
   }
   buffer_putspace(buffer_1);
   terminal_escape_sequence("m");
-  terminal_cursor_restore();
 }
 
 int64
@@ -457,24 +455,25 @@ search_command(const char* cmd, int(*predicate)(const char*,const char*)) {
 int
 read_command(void) {
   char c;
-  stralloc_zero(&command_buf);
+   stralloc_zero(&command_buf);
   terminal_erase_in_line(2);
   buffer_putsflush(buffer_1, command_mode == 1 ? "\r :" : command_mode == 2 ? "\r/" : "\r\\");
-  while(buffer_getc(&terminal, &c) == 1) {
+   while(buffer_getc(&terminal, &c) == 1) {
     if(c == '\n' || c == '\r')
       break;
     if(c == 0x7f) {
-      buffer_puts(buffer_1, "\x08");
-      terminal_erase_in_line(0);
+      buffer_puts(buffer_1, "\x08 \x08");
       if(command_buf.len)
-        stralloc_trunc(&command_buf, command_buf.len - 1);
+        stralloc_trunc(&command_buf, command_buf.len-1);
     } else {
       buffer_putc(buffer_1, c);
       stralloc_catc(&command_buf, c);
     }
-    if(command_mode >= 2)
-      search_update(command_mode == 2 ? &match_pattern : &nomatch_pattern);
     buffer_flush(buffer_1);
+    if(command_mode >= 2) {
+      search_update(command_mode == 2 ? &match_pattern : &nomatch_pattern);
+      terminal_cursor_horizontal_absolute(command_buf.len+1);
+    }
   }
   stralloc_nul(&command_buf);
   switch(command_mode) {

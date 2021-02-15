@@ -28,6 +28,7 @@ void terminal_cursor_forward(int n);
 void terminal_cursor_backward(int n);
 void terminal_cursor_next_line(int n);
 void terminal_cursor_previous_line(int n);
+void terminal_cursor_horizontal_absolute(int n);
 void terminal_erase_in_display(int n);
 void terminal_erase_in_line(int n);
 void terminal_scroll_up(int n);
