@@ -27,7 +27,7 @@ void terminal_escape_number_char(buffer* b, int n, char c);
 void terminal_escape_char(buffer* b, char c);
 void terminal_escape_sequence(buffer* b, const char* seq);
 void terminal_command_sequence(buffer* b, const char* seq);
-void terminal_command_number_char( int n, char c);
+void terminal_command_number_char(int n, char c);
 void terminal_command_char(char c);
 void terminal_cursor_up(int n);
 void terminal_cursor_down(int n);
@@ -45,10 +45,5 @@ void terminal_set_alternate_screen(void);
 void terminal_set_normal_screen(void);
 void terminal_rgb_foreground(buffer*, uint8 r, uint8 g, uint8 b);
 void terminal_rgb_background(buffer*, uint8 r, uint8 g, uint8 b);
-
-
-
-
-
 
 #endif

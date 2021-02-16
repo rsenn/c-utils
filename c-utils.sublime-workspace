@@ -1,1 +1,724 @@
-{}
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"terminal_numer",
+				"terminal_number_sequence"
+			],
+			[
+				"property",
+				"property_enumeration_value"
+			],
+			[
+				"tab",
+				"tab_atom_len"
+			]
+		]
+	},
+	"buffers":
+	[
+		{
+			"contents": "—Ⓜ– scroll_page_up ( ) … — macro function\n—Ⓜ– scroll_page_down ( ) … — macro function\n—Ⓜ– scroll_to_top ( ) … — macro function\n—Ⓜ– scroll_to_bottom ( ) … — macro function\n—Ⓜ– last_line ( ) … — macro function\n—Ⓕ– line_count ( ) { … } — function\n—Ⓕ– line_range ( ) { … } — function\n—Ⓕ– line_at ( ) { … } — function\n—Ⓕ– line_numbytes ( ) { … } — function\n—Ⓕ– read_terminal_properties ( ) { … } — function\n—Ⓕ– read_line ( ) { … } — function\n—Ⓕ– read_content ( ) { … } — function\n—Ⓕ– init_terminal ( ) { … } — function\n—Ⓕ– print_progress ( ) { … } — function\n—Ⓕ– print_position ( ) { … } — function\n—Ⓕ– number_width ( ) { … } — function\n—Ⓕ– print_linenumber ( ) { … } — function\n—Ⓕ– print_line ( ) { … } — function\n—Ⓕ– print_status ( ) { … } — function\n—Ⓕ– print_added ( ) { … } — function\n—Ⓕ– scroll_up ( ) { … } — function\n—Ⓕ– scroll_down ( ) { … } — function\n—Ⓕ– scroll_to ( ) { … } — function\n—Ⓕ– scroll_by ( ) { … } — function\n—Ⓕ– handle_key_modifier ( ) { … } — function\n—Ⓕ– handle_escape_sequence ( ) { … } — function\n—Ⓕ– jump_command ( ) { … } — function\n—Ⓕ– read_goto ( ) { … } — function\n—Ⓕ– match_pattern ( ) { … } — function\n—Ⓕ– nomatch_pattern ( ) { … } — function\n—Ⓕ– find_line ( ) { … } — function\n—Ⓕ– count_matches ( ) { … } — function\n—Ⓕ– search_update ( ) { … } — function\n—Ⓕ– search_command ( ) { … } — function\n—Ⓕ– read_command ( ) { … } — function\n—Ⓕ– update_number ( ) { … } — function\n—Ⓕ– get_number ( ) { … } — function\n—Ⓕ– handle_input ( ) { … } — function\n—Ⓕ– get_filesize ( ) { … } — function\n—Ⓕ– get_position ( ) { … } — function\n—Ⓕ– interrupt ( ) { … } — function\n—Ⓕ– terminate ( ) { … } — function\n—Ⓕ– winsizechange ( ) { … } — function\n—Ⓕ– main ( ) { … } — function",
+			"settings":
+			{
+				"buffer_size": 1691,
+				"line_ending": "Unix",
+				"name": "𝌆 Outline",
+				"scratch": true
+			}
+		},
+		{
+			"file": "least.c",
+			"settings":
+			{
+				"buffer_size": 18038,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "terminal.c",
+			"settings":
+			{
+				"buffer_size": 3478,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "terminal.h",
+			"settings":
+			{
+				"buffer_size": 1981,
+				"line_ending": "Unix"
+			}
+		}
+	],
+	"build_system": "",
+	"build_system_choices":
+	[
+	],
+	"build_varint": "",
+	"command_palette":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+			[
+				"outlin",
+				"Browse Mode: Outline (Right)"
+			],
+			[
+				"edit",
+				"Color Scheme Editor: Edit current color scheme"
+			],
+			[
+				"out",
+				"Browse Mode: Outline (Right)"
+			],
+			[
+				"remove",
+				"Package Control: Remove Package"
+			],
+			[
+				"edi",
+				"Color Scheme Editor: Edit current color scheme"
+			],
+			[
+				"remove ",
+				"Package Control: Remove Package"
+			],
+			[
+				"install",
+				"Package Control: Install Package"
+			],
+			[
+				"scheme",
+				"Color Scheme Editor: Edit current color scheme"
+			],
+			[
+				"schemeed",
+				"Color Scheme Editor: Edit current color scheme"
+			],
+			[
+				"outine",
+				"Outline: Toggle Sort"
+			],
+			[
+				"outline",
+				"Browse Mode: Outline (Right)"
+			],
+			[
+				"instal",
+				"Package Control: Install Package"
+			],
+			[
+				"package disa",
+				"Package Control: Disable Package"
+			],
+			[
+				"Package Control: ",
+				"Package Control: Enable Package"
+			],
+			[
+				"",
+				"Browse Mode: Outline (Right)"
+			],
+			[
+				"extract",
+				"Extract Sublime Package: Extract all packages"
+			],
+			[
+				"package",
+				"Package Control: Discover Packages"
+			],
+			[
+				"in",
+				"Package Control: Install Package"
+			]
+		],
+		"width": 0.0
+	},
+	"console":
+	{
+		"height": 345.0,
+		"history":
+		[
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"expanded_folders":
+	[
+		"/home/roman/Dokumente/Sources/c-utils",
+		"/home/roman/Dokumente/Sources/c-utils/lib",
+		"/home/roman/Dokumente/Sources/c-utils/lib/fmt"
+	],
+	"file_history":
+	[
+		"/home/roman/Dokumente/Sources/c-utils/lib/fmt/fmt_hexb.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/fmt/fmt_hexbs.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/fmt.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/stralloc.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/stralloc/stralloc_zero.c",
+		"/home/roman/Dokumente/Sources/c-utils/terminal.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/buffer.h",
+		"/home/roman/Dokumente/Sources/c-utils/terminal.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/scan/scan_double.c",
+		"/home/roman/.config/sublime-text-3/Packages/User/Themes/C Theme 2.tmTheme",
+		"/home/roman/.config/sublime-text-3/Packages/Outroot Color Schemes/Monokai.tmTheme",
+		"/home/roman/Dokumente/Sources/plot-cv/src/js_cv.cpp",
+		"/home/roman/Dokumente/Sources/plot-cv/quickjs/quickjs.c",
+		"/home/roman/Dokumente/Sources/plot-cv/quickjs/qjs-cache/quickjs.c",
+		"/home/roman/Dokumente/Sources/plot-cv/lib/consoleSetup.js",
+		"/home/roman/.config/sublime-text-3/Packages/User/Themes/C Theme.tmTheme",
+		"/home/roman/.config/sublime-text-3/Packages/User/Default (Linux).sublime-keymap",
+		"/home/roman/.config/sublime-text-3/Packages/User/SchemrFavorites.sublime-settings",
+		"/home/roman/.config/sublime-text-3/Packages/Rainglow/rainglow/Horizon (rainglow).tmTheme",
+		"/home/roman/.config/sublime-text-3/Packages/Outline/outline.hidden-tmTheme",
+		"/home/roman/.config/sublime-text-3/Packages/Color Scheme - Legacy/Zenburnesque.tmTheme",
+		"/home/roman/.config/sublime-text-3/Packages/Color Scheme - Sleeplessmind/Sleeplessmind.tmTheme",
+		"/home/roman/.config/sublime-text-3/Packages/DobDark Color Scheme/Dobdark.tmTheme",
+		"/home/roman/.config/sublime-text-3/Packages/Rainglow/rainglow/Stark Contrast (rainglow).tmTheme",
+		"/home/roman/.config/sublime-text-3/Packages/SynthWave 84 - Color Scheme/SynthWave 84.tmTheme",
+		"/home/roman/.config/sublime-text-3/Packages/Dogs Colour Scheme/Dogs.tmTheme"
+	],
+	"find":
+	{
+		"height": 39.0
+	},
+	"find_in_files":
+	{
+		"height": 0.0,
+		"where_history":
+		[
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+			"read_content",
+			"read_line",
+			"read_content",
+			"read_terminal_properties",
+			"read_content",
+			"assert",
+			"search_update",
+			"scroll_up",
+			"read_command",
+			"(terminal_buffer",
+			"terminal_number_sequence(&terminal_buffer, ",
+			"terminal_escape_sequence",
+			"terminal_escape_char",
+			"'H'",
+			"search_command",
+			"command_mode == 2",
+			"command_mode",
+			"jump_command",
+			"search_update"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+			"(&terminal_buffer",
+			"terminal_number_command("
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"selected": 0,
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1691,
+						"regions":
+						{
+						},
+						"selection":
+						[
+						],
+						"settings":
+						{
+							"current_file": "/home/roman/Dokumente/Sources/c-utils/least.c",
+							"outline_rename_mode": false,
+							"symkeys":
+							[
+								[
+									494,
+									508
+								],
+								[
+									544,
+									560
+								],
+								[
+									595,
+									608
+								],
+								[
+									632,
+									648
+								],
+								[
+									687,
+									696
+								],
+								[
+									1087,
+									1097
+								],
+								[
+									1161,
+									1171
+								],
+								[
+									1240,
+									1247
+								],
+								[
+									1303,
+									1316
+								],
+								[
+									1608,
+									1632
+								],
+								[
+									1800,
+									1809
+								],
+								[
+									2741,
+									2753
+								],
+								[
+									2943,
+									2956
+								],
+								[
+									3147,
+									3161
+								],
+								[
+									3313,
+									3327
+								],
+								[
+									3533,
+									3545
+								],
+								[
+									3623,
+									3639
+								],
+								[
+									3968,
+									3978
+								],
+								[
+									4273,
+									4285
+								],
+								[
+									4847,
+									4858
+								],
+								[
+									5170,
+									5179
+								],
+								[
+									5442,
+									5453
+								],
+								[
+									5705,
+									5714
+								],
+								[
+									6173,
+									6182
+								],
+								[
+									6388,
+									6407
+								],
+								[
+									7258,
+									7280
+								],
+								[
+									8106,
+									8118
+								],
+								[
+									8350,
+									8359
+								],
+								[
+									8610,
+									8623
+								],
+								[
+									8775,
+									8790
+								],
+								[
+									8885,
+									8894
+								],
+								[
+									9148,
+									9161
+								],
+								[
+									9413,
+									9426
+								],
+								[
+									10786,
+									10800
+								],
+								[
+									11121,
+									11133
+								],
+								[
+									13228,
+									13241
+								],
+								[
+									13304,
+									13314
+								],
+								[
+									13505,
+									13517
+								],
+								[
+									14832,
+									14844
+								],
+								[
+									15100,
+									15112
+								],
+								[
+									15204,
+									15213
+								],
+								[
+									15266,
+									15275
+								],
+								[
+									15475,
+									15488
+								],
+								[
+									15522,
+									15526
+								]
+							],
+							"symlist":
+							[
+								"—Ⓜ– scroll_page_up ( ) … — macro function",
+								"—Ⓜ– scroll_page_down ( ) … — macro function",
+								"—Ⓜ– scroll_to_top ( ) … — macro function",
+								"—Ⓜ– scroll_to_bottom ( ) … — macro function",
+								"—Ⓜ– last_line ( ) … — macro function",
+								"—Ⓕ– line_count ( ) { … } — function",
+								"—Ⓕ– line_range ( ) { … } — function",
+								"—Ⓕ– line_at ( ) { … } — function",
+								"—Ⓕ– line_numbytes ( ) { … } — function",
+								"—Ⓕ– read_terminal_properties ( ) { … } — function",
+								"—Ⓕ– read_line ( ) { … } — function",
+								"—Ⓕ– read_content ( ) { … } — function",
+								"—Ⓕ– init_terminal ( ) { … } — function",
+								"—Ⓕ– print_progress ( ) { … } — function",
+								"—Ⓕ– print_position ( ) { … } — function",
+								"—Ⓕ– number_width ( ) { … } — function",
+								"—Ⓕ– print_linenumber ( ) { … } — function",
+								"—Ⓕ– print_line ( ) { … } — function",
+								"—Ⓕ– print_status ( ) { … } — function",
+								"—Ⓕ– print_added ( ) { … } — function",
+								"—Ⓕ– scroll_up ( ) { … } — function",
+								"—Ⓕ– scroll_down ( ) { … } — function",
+								"—Ⓕ– scroll_to ( ) { … } — function",
+								"—Ⓕ– scroll_by ( ) { … } — function",
+								"—Ⓕ– handle_key_modifier ( ) { … } — function",
+								"—Ⓕ– handle_escape_sequence ( ) { … } — function",
+								"—Ⓕ– jump_command ( ) { … } — function",
+								"—Ⓕ– read_goto ( ) { … } — function",
+								"—Ⓕ– match_pattern ( ) { … } — function",
+								"—Ⓕ– nomatch_pattern ( ) { … } — function",
+								"—Ⓕ– find_line ( ) { … } — function",
+								"—Ⓕ– count_matches ( ) { … } — function",
+								"—Ⓕ– search_update ( ) { … } — function",
+								"—Ⓕ– search_command ( ) { … } — function",
+								"—Ⓕ– read_command ( ) { … } — function",
+								"—Ⓕ– update_number ( ) { … } — function",
+								"—Ⓕ– get_number ( ) { … } — function",
+								"—Ⓕ– handle_input ( ) { … } — function",
+								"—Ⓕ– get_filesize ( ) { … } — function",
+								"—Ⓕ– get_position ( ) { … } — function",
+								"—Ⓕ– interrupt ( ) { … } — function",
+								"—Ⓕ– terminate ( ) { … } — function",
+								"—Ⓕ– winsizechange ( ) { … } — function",
+								"—Ⓕ– main ( ) { … } — function"
+							],
+							"syntax": "Packages/Outline/outline.hidden-tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 3,
+					"type": "text"
+				}
+			]
+		},
+		{
+			"selected": 0,
+			"sheets":
+			[
+				{
+					"buffer": 1,
+					"file": "least.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 18038,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								16651,
+								16651
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C Improved/C Improved.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 5847.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "terminal.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 3478,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								780,
+								780
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C Improved/C Improved.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 311.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "terminal.h",
+					"semi_transient": true,
+					"settings":
+					{
+						"buffer_size": 1981,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								613,
+								613
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				}
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 25.0
+	},
+	"input":
+	{
+		"height": 0.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				2,
+				0,
+				3,
+				2
+			],
+			[
+				0,
+				0,
+				2,
+				2
+			]
+		],
+		"cols":
+		[
+			0.0,
+			0.2,
+			0.8,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			0.5,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"pinned_build_system": "",
+	"project": "c-utils.sublime-project",
+	"replace":
+	{
+		"height": 69.0
+	},
+	"save_all_on_build": false,
+	"select_file":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+			[
+				"buffer.h",
+				"lib/buffer.h"
+			],
+			[
+				"scan_double",
+				"lib/scan/scan_double.c"
+			],
+			[
+				"cv-she",
+				"cv-shell.js"
+			],
+			[
+				"test-opencv",
+				"test-opencv.js"
+			],
+			[
+				"js_cv",
+				"src/js_cv.cpp"
+			],
+			[
+				"consoleset",
+				"lib/consoleSetup.js"
+			],
+			[
+				"quickjs.c",
+				"quickjs/quickjs.c"
+			],
+			[
+				"quickjs.h",
+				"quickjs/quickjs.h"
+			]
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_symbol":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"selected_group": 1,
+	"settings":
+	{
+	},
+	"show_minimap": true,
+	"show_open_files": false,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 265.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}

@@ -38,6 +38,7 @@ buffer terminal;
 struct termios oldterm;
 
 static stralloc command_buf;
+static int eof;
 
 volatile sig_atomic_t running = 1, reset = 0, resized = 0, command_mode = 0,
                       line_numbers = 0;
@@ -112,7 +113,7 @@ read_line(buffer* buf) {
       stralloc_CATC(&line, s[i]);
     }
     if(underline)
-      stralloc_cats(&line, "\x1b[0m");  
+      stralloc_cats(&line, "\x1b[0m");
     free(s);
     stralloc_nul(&line);
     array_catb((array*)&lines, &line.s, sizeof(char*));
@@ -125,10 +126,16 @@ read_line(buffer* buf) {
   return ret;
 }
 
-void
-read_content(buffer* b) {
-  while(read_line(b))
-    ;
+int
+read_content(buffer* b, size_t max_lines) {
+  size_t i;
+  if(!eof)
+   for(i = 0; max_lines == 0 || i < max_lines; i++)
+  if(!read_line(b)) {
+    eof = 1;
+    break;
+  }
+  return eof;
 }
 
 struct termios*
@@ -230,10 +237,10 @@ scroll_up(void) {
   if(first_line <= 0)
     return;
   terminal_scroll_down(1);
-  terminal_erase_in_line(2);
   terminal_cursor_position(1, 1);
+  //  terminal_erase_in_line(2);
   print_line(--first_line);
-  buffer_putc(buffer_1, '\n');
+  buffer_flush(buffer_1);
   terminal_cursor_position(terminal_rows, 1);
   print_status();
 }
@@ -255,7 +262,10 @@ scroll_to(int64 line) {
   int64 i;
   size_t num_lines = line_count();
   i = num_lines - display_rows;
+
+  if(i >= 1)
   first_line = line % i;
+else first_line = line;
   if(first_line < 0)
     first_line += i;
   terminal_erase_in_display(2);
@@ -374,7 +384,8 @@ read_goto(const char* cmd) {
 
 int
 match_pattern(const char* pattern, const char* string) {
-  return str_contains(string, pattern) || unix_fnmatch(pattern, string, FNM_CASEFOLD) == 0;
+  return str_contains(string, pattern) ||
+         unix_fnmatch(pattern, string, FNM_CASEFOLD) == 0;
 }
 
 int
@@ -383,7 +394,7 @@ nomatch_pattern(const char* pattern, const char* string) {
 }
 
 int64
-find_line(const char* cmd, int(*predicate)(const char*, const char*)) {
+find_line(const char* cmd, int (*predicate)(const char*, const char*)) {
   size_t i, n = line_count();
   for(i = 0; i < n; i++) {
     const char* s = line_at((first_line + i) % n);
@@ -394,7 +405,7 @@ find_line(const char* cmd, int(*predicate)(const char*, const char*)) {
 }
 
 size_t
-count_matches(const char* cmd, int(*predicate)(const char*, const char*)) {
+count_matches(const char* cmd, int (*predicate)(const char*, const char*)) {
   size_t count = 0, i, n = line_count();
   for(i = 0; i < n; i++) {
     const char* s = line_at((first_line + i) % n);
@@ -405,14 +416,15 @@ count_matches(const char* cmd, int(*predicate)(const char*, const char*)) {
 }
 
 void
-search_update(int(*predicate)(const char*, const char*)) {
+search_update(int (*predicate)(const char*, const char*)) {
   int64 first;
   size_t matches = 0;
   stralloc_nul(&command_buf);
   if((first = find_line(command_buf.s, predicate)) >= 0)
     matches = count_matches(command_buf.s, predicate);
-  terminal_erase_in_line(0);
   terminal_cursor_horizontal_absolute(terminal_cols - 30 - command_buf.len);
+  terminal_erase_in_line(0);
+
   terminal_escape_sequence(buffer_1, "1m");
   terminal_rgb_background(buffer_1, 25, 73, 216);
   terminal_rgb_foreground(buffer_1, 208, 240, 248);
@@ -439,10 +451,11 @@ search_update(int(*predicate)(const char*, const char*)) {
   }
   buffer_putspace(buffer_1);
   terminal_escape_sequence(buffer_1, "m");
+  buffer_flush(buffer_1);
 }
 
 int64
-search_command(const char* cmd, int(*predicate)(const char*,const char*)) {
+search_command(const char* cmd, int (*predicate)(const char*, const char*)) {
   int64 found;
   command_mode = 0;
   if((found = find_line(command_buf.s, predicate)) >= 0) {
@@ -453,43 +466,70 @@ search_command(const char* cmd, int(*predicate)(const char*,const char*)) {
   }
 }
 
-static const char* command_prefixes[4] =  { ":" , " :", "/", "\\"};
+static const char* command_prefixes[4] = {":", " :", "/", "\\"};
 
 int
 read_command(void) {
-  char c;
-   stralloc_zero(&command_buf);
+  unsigned char c;
+  stralloc_zero(&command_buf);
 
+  /*terminal_erase_in_line(2);
+       terminal_cursor_horizontal_absolute(1);*/
+  terminal_cursor_position(display_rows + 1, 1);
   terminal_erase_in_line(2);
-  buffer_putsflush(buffer_1, command_mode == 1 ? "\r :" : command_mode == 2 ? "\r/" : "\r\\");
+  buffer_puts(buffer_1, command_prefixes[command_mode & 0x03]);
+  buffer_flush(buffer_1);
+  //      terminal_cursor_horizontal_absolute(2);
 
-   while(buffer_getc(&terminal, &c) == 1) {
+  while(buffer_getc(&terminal, &c) == 1) {
     if(c == '\n' || c == '\r')
       break;
+    terminal_cursor_horizontal_absolute(command_buf.len + 2);
+
     if(c == 0x7f || c == 8) {
       if(command_buf.len) {
-      buffer_puts(buffer_1, "\b \b");
-        stralloc_trunc(&command_buf, command_buf.len-1);
+        terminal_cursor_backward(1);
+
+        command_buf.len -= 1;
       }
-    } else {
-    assert(c >= 0x20);
-      buffer_putc(buffer_1, c);
+
+      //  terminal_cursor_horizontal_absolute(command_buf.len + 2);
+      //      terminal_erase_in_line(0);
+    } else if(c >= 0x20) {
+
       stralloc_catc(&command_buf, c);
+      buffer_put(buffer_1, &c, 1);
+      buffer_flush(buffer_1);
+    } else {
+      if(c < 0x20) {
+        buffer_puts(buffer_2, "Character: ");
+        buffer_putulong(buffer_2, c);
+        buffer_putnlflush(buffer_2);
+      }
+      assert(c >= 0x20);
     }
 
-       //terminal_cursor_position(display_rows+1, command_buf.len+1);
-   buffer_flush(buffer_1);
+    terminal_cursor_horizontal_absolute(command_buf.len + 2);
+    //   terminal_erase_in_line(0);
 
-/*  terminal_erase_in_line(2);
-terminal_cursor_horizontal_absolute(1);
-buffer_puts(buffer_1,  command_prefixes[command_mode & 0x03]);
-    buffer_putsa(buffer_1, &command_buf);*/
-    
-    if(command_mode >= 2)
+    // terminal_cursor_position(display_rows+1, command_buf.len+1);
+
+    /*  terminal_erase_in_line(2);
+    terminal_cursor_horizontal_absolute(1);
+    buffer_puts(buffer_1,  command_prefixes[command_mode & 0x03]);
+        buffer_putsa(buffer_1, &command_buf);*/
+    char buf[1024];
+
+    /*     buffer_put(buffer_1, buf, fmt_hexbs(buf, command_buf.s,
+      command_buf.len)); buffer_flush(buffer_1);*/
+
+    if(command_mode >= 2) {
+      terminal_cursor_save();
+      /*  terminal_erase_in_line(0);*/
+
       search_update(command_mode == 2 ? &match_pattern : &nomatch_pattern);
-       terminal_cursor_position(display_rows+1, command_buf.len+1);
-
-
+      terminal_cursor_restore();
+    }
   }
   stralloc_nul(&command_buf);
   switch(command_mode) {
@@ -585,8 +625,8 @@ handle_input(void) {
       command_mode = 2;
       read_command();
       break;
-  case '\\':
-  case '<':
+    case '\\':
+    case '<':
       command_mode = 3;
       read_command();
       break;
@@ -667,7 +707,7 @@ main(int argc, char* argv[]) {
   buffer_read_fd(&terminal, STDOUT_FILENO);
 
   read_terminal_properties();
-  read_content(&input);
+  read_content(&input, display_rows);
 
   if(fstat(input.fd, &st) != -1) {
     inputsize = st.st_size;
@@ -680,6 +720,7 @@ main(int argc, char* argv[]) {
   buffer_flush(buffer_1);
 
   scroll_to(0);
+
 
   if(input.fd != STDIN_FILENO /*&& !is_pipe*/) {
     watchfd = inotify_init();
@@ -698,6 +739,8 @@ main(int argc, char* argv[]) {
   while(running) {
     fd_t fd;
     int on_terminal = 0, on_input = 0;
+
+  read_content(&input, 0);
 
     while(io_wait() == -1) {
       if(errno == EINTR) {

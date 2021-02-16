@@ -170,6 +170,8 @@ size_t fmt_escapecharquotedprintableutf8(char* dest, int ch);
 size_t fmt_escapecharnonprintable(char* dest, int c);
 
 unsigned int fmt_hexb(void* out, const void* d, unsigned int len);
+unsigned int fmt_hexbs(void* out, const void* d, unsigned int len);
+
 size_t fmt_xmlescape(char* dest, int ch);
 
 #ifdef UINT32_H
