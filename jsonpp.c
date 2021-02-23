@@ -211,11 +211,17 @@ main(int argc, char* argv[]) {
     buffer_putnlflush(buffer_2);
   }
 #endif
+
+  if(argc < 2)
+    argv[argc++] = 0;
+
   while(unix_optind < argc) {
     charbuf in_buf;
     buffer out_buf;
     jsonval* doc;
-    const char* in_file = argv[unix_optind++];
+    const char* in_file = argv[unix_optind];
+
+    unix_optind++;
 
     fd = in_file ? open_read(in_file) : 0;
 

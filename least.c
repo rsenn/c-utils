@@ -130,11 +130,11 @@ int
 read_content(buffer* b, size_t max_lines) {
   size_t i;
   if(!eof)
-   for(i = 0; max_lines == 0 || i < max_lines; i++)
-  if(!read_line(b)) {
-    eof = 1;
-    break;
-  }
+    for(i = 0; max_lines == 0 || i < max_lines; i++)
+      if(!read_line(b)) {
+        eof = 1;
+        break;
+      }
   return eof;
 }
 
@@ -264,8 +264,9 @@ scroll_to(int64 line) {
   i = num_lines - display_rows;
 
   if(i >= 1)
-  first_line = line % i;
-else first_line = line;
+    first_line = line % i;
+  else
+    first_line = line;
   if(first_line < 0)
     first_line += i;
   terminal_erase_in_display(2);
@@ -721,7 +722,6 @@ main(int argc, char* argv[]) {
 
   scroll_to(0);
 
-
   if(input.fd != STDIN_FILENO /*&& !is_pipe*/) {
     watchfd = inotify_init();
 
@@ -740,7 +740,7 @@ main(int argc, char* argv[]) {
     fd_t fd;
     int on_terminal = 0, on_input = 0;
 
-  read_content(&input, 0);
+    read_content(&input, 0);
 
     while(io_wait() == -1) {
       if(errno == EINTR) {
