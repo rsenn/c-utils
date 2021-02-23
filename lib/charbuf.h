@@ -67,6 +67,7 @@ charbuf_skip_ifset(charbuf* b, const char* set, size_t setlen) {
 }
 
 void charbuf_froms(charbuf* b, char** s);
+ssize_t charbuf_stubborn_read(read_fn*, fd_t, const void*, size_t, void*);
 
 #ifdef __cplusplus
 }

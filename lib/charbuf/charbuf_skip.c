@@ -25,25 +25,28 @@ charbuf_skip(charbuf* b) {
 #endif
 
   if(b->p) {
-    b->p = 0;
     if(b->ch == '\n') {
       b->loc.column = 0;
       b->loc.line++;
     } else {
       b->loc.column++;
     }
-    ret = 1;
-  } else {
-    if((ret = b->op(b->fd, &b->ch, 1, b) <= 0)) {
-      if(ret == 0)
-        b->eof = 1;
-      else if(ret < 0)
-        b->err = 1;
-    } else {
-      b->p = 0;
-    }
+    b->ch = '\0';
+    b->p = 0;
+    return 1;
   }
-  b->ch = '\0';
+  if(b->eof || b->err)
+    return b->eof ? 0 : -1;
+
+  if((ret = charbuf_stubborn_read(b->op,  b->fd, &b->ch, 1, b) <= 0)) {
+    if(ret == 0)
+      b->eof = 1;
+    else if(ret < 0)
+      b->err = 1;
+    return ret;
+  } else {
+    b->p = 1;
+  }
 
   return ret;
 }

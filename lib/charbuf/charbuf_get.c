@@ -4,6 +4,8 @@
 int
 charbuf_get(charbuf* b) {
   int ret;
+  if(b->eof || b->err)
+    return b->eof ? 0 : -1;
 
   if(b->eof || b->err) {
     ret = -1;
@@ -11,11 +13,12 @@ charbuf_get(charbuf* b) {
     b->p = 0;
   } else {
     b->ch = '\0';
-    if((ret = b->op(b->fd, &b->ch, 1, b) <= 0)) {
+    if((ret =charbuf_stubborn_read(b->op,  b->fd, &b->ch, 1, b) <= 0)) {
       if(ret == 0)
         b->eof = 1;
       else if(ret < 0)
         b->err = 1;
+      return ret;
     }
   }
 

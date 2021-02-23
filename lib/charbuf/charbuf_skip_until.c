@@ -6,11 +6,11 @@ charbuf_skip_until(charbuf* b, char c) {
 
   for(;;) {
     if((r = charbuf_peek(b)) <= 0)
-      break;
+      return r;
     if(r == c)
       return n;
     if((r = charbuf_skip(b)) <= 0)
-      break;
+      return r;
     ++n;
   }
   return r;

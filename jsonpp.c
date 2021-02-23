@@ -212,7 +212,7 @@ main(int argc, char* argv[]) {
   }
 #endif
 
-  if(argc < 2)
+  if(unix_optind == argc)
     argv[argc++] = 0;
 
   while(unix_optind < argc) {
