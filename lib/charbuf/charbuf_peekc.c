@@ -9,22 +9,14 @@ charbuf_peekc(charbuf* b, char* ch) {
     *ch = b->ch;
     return 1;
   }
+ 
 
-  if(b->eof || b->err)
-    return b->eof ? 0 : -1;
-
-  if((ret = charbuf_stubborn_read(b->op,  b->fd, &b->ch, 1, b) <= 0)) {
-    if(ret == 0)
-      b->eof = 1;
-    else if(ret < 0)
-      b->err = 1;
+  if((ret = charbuf_stubborn_read(b) <= 0)) 
     return ret;
-  } else {
+  
     b->p = 1;
     *ch = b->ch;
-    return 1;
-  }
-
+ 
 #ifdef DEBUG_CHARBUF_
   buffer_puts(buffer_2, "charbuf_peekc '");
   buffer_putc(buffer_2, b->ch);

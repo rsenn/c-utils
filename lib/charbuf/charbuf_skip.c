@@ -35,18 +35,10 @@ charbuf_skip(charbuf* b) {
     b->p = 0;
     return 1;
   }
-  if(b->eof || b->err)
-    return b->eof ? 0 : -1;
+  
 
-  if((ret = charbuf_stubborn_read(b->op,  b->fd, &b->ch, 1, b) <= 0)) {
-    if(ret == 0)
-      b->eof = 1;
-    else if(ret < 0)
-      b->err = 1;
+ ret = charbuf_stubborn_read(b);
+ b->ch = 0;
+ b->p = 0;
     return ret;
-  } else {
-    b->p = 1;
   }
-
-  return ret;
-}

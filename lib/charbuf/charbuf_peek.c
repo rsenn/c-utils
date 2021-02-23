@@ -8,19 +8,12 @@ charbuf_peek(charbuf* b) {
   if(!b->p) {
     b->ch = '\0';
 
-    if(b->eof || b->err)
-      return b->eof ? 0 : -1;
+      if((ret = charbuf_stubborn_read(b) <= 0))  
+            return ret;
 
-    if((ret = charbuf_stubborn_read(b->op,  b->fd, &b->ch, 1, b) <= 0)) {
-      if(ret == 0)
-        b->eof = 1;
-      else if(ret < 0)
-        b->err = 1;
-      return ret;
-    } else {
       b->p = 1;
-    }
   }
+ 
   if(b->p)
     ret = (unsigned int)(unsigned char)b->ch;
 
