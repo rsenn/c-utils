@@ -871,7 +871,7 @@
 #include "lib/charbuf/charbuf_froms.c"
 #include "lib/charbuf/charbuf_nextc.c"
 #include "lib/charbuf/charbuf_init.c"
-#include "lib/charbuf/charbuf_skip_pred.c"
+#include "lib/charbuf/charbuf_pred_skip.c"
 #include "lib/charbuf/charbuf_close.c"
 #include "lib/charbuf/charbuf_skip_until.c"
 #include "lib/charbuf/charbuf_skip.c"

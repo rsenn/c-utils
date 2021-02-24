@@ -2,7 +2,7 @@
 #include "../scan.h"
 
 int
-json_stralloc_parse(charbuf* b, stralloc* out, int quoted) {
+json_parse_stralloc(charbuf* b, stralloc* out, int quoted) {
   unsigned char ch;
   int ret;
   size_t i;

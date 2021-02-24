@@ -118,13 +118,13 @@ void json_default_printer(jsonfmt*, jsonval*, int depth, int index, char quote);
 
 int json_parse_null_or_undefined(jsonval*, charbuf*);
 
-int json_array_parse(jsonval*, charbuf*);
-int json_boolean_parse(jsonval*, charbuf*);
-int json_null_parse(jsonval*, charbuf*);
-int json_number_parse(jsonval*, charbuf*);
-int json_object_parse(jsonval*, charbuf*);
-int json_stralloc_parse(charbuf*, stralloc*, int quoted);
-int json_string_parse(jsonval*, charbuf*);
+int charbuf_pred_json_array_parse(jsonval*, charbuf*);
+int json_parse_boolean(jsonval*, charbuf*);
+int json_parse_null(jsonval*, charbuf*);
+int json_parse_number(jsonval*, charbuf*);
+int json_parse_object(jsonval*, charbuf*);
+int json_parse_stralloc(charbuf*, stralloc*, int quoted);
+int json_parse_string(jsonval*, charbuf*);
 
 int json_parse(jsonval*, charbuf*);
 

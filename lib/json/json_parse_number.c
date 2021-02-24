@@ -3,7 +3,7 @@
 #include "../json_internal.h"
 
 int
-json_number_parse(jsonval* val, charbuf* b) {
+json_parse_number(jsonval* val, charbuf* b) {
   size_t n;
   stralloc num;
   int ret;

@@ -2,7 +2,7 @@
  
 
 int
-json_array_parse(jsonval* val, charbuf* b) {
+json_parse_array(jsonval* val, charbuf* b) {
   if(charbuf_skip_ifeq(b, '[')) {
     int ret;
     jsonitem **ptr, *item;
@@ -13,7 +13,7 @@ json_array_parse(jsonval* val, charbuf* b) {
     val->itemv = 0;
 
     ptr = &val->itemv;
-    charbuf_skip_pred(b, predicate_ctype, isspace);
+    charbuf_pred_skip(b, predicate_ctype, isspace);
     while((ret = charbuf_peekc(b, &c)) > 0) {
       if(c == '}') {
         ret = 1;
@@ -30,14 +30,14 @@ json_array_parse(jsonval* val, charbuf* b) {
       json_print(item->value, buffer_2, json_compact_printer);
       buffer_putnlflush(buffer_2);
 #endif
-      charbuf_skip_pred(b, predicate_ctype, isspace);
+      charbuf_pred_skip(b, predicate_ctype, isspace);
       if((ret = charbuf_peekc(b, &c)) <= 0)
         break;
       if(c == '}')
         continue;
       if(c == ',') {
         charbuf_skip(b);
-        charbuf_skip_pred(b, predicate_ctype, isspace);
+        charbuf_pred_skip(b, predicate_ctype, isspace);
         continue;
       }
       break;

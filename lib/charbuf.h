@@ -55,16 +55,19 @@ ssize_t charbuf_peek(charbuf*);
 ssize_t charbuf_peekc(charbuf*, unsigned char* ch);
 uint8* charbuf_peekn(charbuf*, unsigned int n);
 
-#ifdef STRALLOC_H
-ssize_t charbuf_get_pred(charbuf* b, stralloc* sa, int (*pred)(int, size_t, void*), void* ptr);
-#endif
 ssize_t charbuf_skip(charbuf*);
 
-ssize_t charbuf_skip_pred(charbuf* b, int (*pred)(int, size_t, void*), void* ptr);
 ssize_t charbuf_skip_until(charbuf*, int c);
 ssize_t charbuf_skipc(charbuf*, uint8* ch);
 ssize_t charbuf_skipn(charbuf*, size_t n);
 ssize_t charbuf_stubborn_read(charbuf*, size_t max);
+
+ssize_t charbuf_pred_skip(charbuf*, int (*pred)(int, size_t, void* ), void* ptr);
+ssize_t charbuf_pred_lookahead(charbuf*, int (*pred)(int, size_t, void* ), void* ptr);
+#ifdef STRALLOC_H
+ssize_t charbuf_pred_get(charbuf*, stralloc* sa, int (*pred)(int, size_t, void* ), void* ptr);
+#endif
+
 
 static inline ssize_t
 charbuf_done(charbuf* b) {

@@ -11,13 +11,13 @@
 int
 json_parse(jsonval* j, charbuf* b) {
   int r = 0;
-  charbuf_skip_pred(b, predicate_ctype, isspace);
+  charbuf_pred_skip(b, predicate_ctype, isspace);
 
-  if((r = json_object_parse(j, b)) < 1)
-    if((r = json_array_parse(j, b)) < 1)
-      if((r = json_null_parse(j, b)) < 1)
-        if((r = json_boolean_parse(j, b)) < 1)
-          if((r = json_number_parse(j, b)) < 1)
-            r = json_string_parse(j, b);
+  if((r = json_parse_object(j, b)) < 1)
+    if((r = charbuf_pred_json_array_parse(j, b)) < 1)
+      if((r = json_parse_null(j, b)) < 1)
+        if((r = json_parse_boolean(j, b)) < 1)
+          if((r = json_parse_number(j, b)) < 1)
+            r = json_parse_string(j, b);
   return r;
 }

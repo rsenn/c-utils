@@ -1,7 +1,7 @@
 #include "../json_internal.h"
 
 int
-json_boolean_parse(jsonval* val, charbuf* b) {
+json_parse_boolean(jsonval* val, charbuf* b) {
   int ret;
   if((ret = charbuf_skip_ifset(b, "tf", 2)) > 0) {
     const char* n;

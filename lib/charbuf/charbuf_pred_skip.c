@@ -1,7 +1,7 @@
 #include "../charbuf_internal.h"
 
 ssize_t
-charbuf_skip_pred(charbuf* b, int (*pred)(int, size_t, void*), void* ptr) {
+charbuf_pred_skip(charbuf* b, int (*pred)(int, size_t, void*), void* ptr) {
   size_t n = 0;
   uint8 ch;
   for(;;) {

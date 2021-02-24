@@ -14,3 +14,9 @@ predicate_ctype(int c, size_t pos, void* ptr) {
   ctypefn_ptr fn = ptr;
   return fn(c);
 }
+
+static inline int
+predicate_string(int c, size_t pos, void* ptr) {
+  const char* str = ptr;
+  return str[pos] && str[pos] == c;
+}
