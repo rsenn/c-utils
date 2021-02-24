@@ -73,8 +73,11 @@ done)
 #  exec list-r -c -n -l "$@")
 }
 
+temp_prefix() {
+  echo "${1:-${0#-}}-$$"
+}
 temp_file() {
-  FILENAME="${2:-${0#-}}-$(($$ + ${RANDOM:-0})).tmp"
+  FILENAME="$(temp_prefix "$2")-$(($$ + ${RANDOM:-0})).tmp"
   TEMPFILES="${TEMPFILES:+$TEMPFILES$NL}$FILENAME"
   eval "$1=\$FILENAME"
 }
@@ -120,7 +123,7 @@ EXPR="${EXPR:+$EXPR ;; }$1"
 add_expr 's|\s\s\+\\$| \\|'
 add_expr '\|(\s\\$|  { N; s|\\\n\s\+|| }'
 
-    trap 'IFS="$NL";  rm -vf -- $TEMPFILES 1>&2' EXIT
+    trap 'IFS="$NL";  rm -f -- $(temp_prefix)-*.tmp  1>&2' EXIT
 
     LIST=$(list_cmd "$@")
     FILES=$(set -- $LIST; echo "${*##* }")
@@ -136,17 +139,18 @@ add_expr '\|(\s\\$|  { N; s|\\\n\s\+|| }'
       done; } <"$A"
     IFS="$NL"
     temp_file B
-    list_cmd "$@" >"$B"
+   
+   list_cmd "$@" >"$B"
+  #temp_file C
     { IFS=" "
       while read -r CRC32 MODE N USERID GROUPID SIZE TIME FILE; do
-        (temp_file C
-          grep " $FILE\$" "$A" >"$C"
-          read -r OTHER_{CRC32,MODE,N,USERID,GROUPID,SIZE,TIME,FILE} <"$C"
+        (  grep " $FILE\$" "$A"  | { 
+          read -r OTHER_{CRC32,MODE,N,USERID,GROUPID,SIZE,TIME,FILE} 
           if [ "$CRC32" != "$OTHER_CRC32" -o "$TIME" != "$OTHER_TIME" ]; then
       [ "${DEBUG:-0}" -gt 1 ] &&   dump CRC32 MODE N USERID GROUPID SIZE TIME FILE
             #dump OTHER_{CRC32,MODE,N,USERID,GROUPID,SIZE,TIME,FILE}
          #    echo 1>&2
-          fi)
+          fi; })
       done; } <"$B"
     # (diff -U0 "$A" "$B" | grep "^[-+][^-+]" | sort -t' ' -k8)
   )

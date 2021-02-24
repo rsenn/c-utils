@@ -11,7 +11,7 @@
 int
 json_parse(jsonval* j, charbuf* b) {
   int r = 0;
-  charbuf_skip_pred(b, &isspace);
+  charbuf_skip_pred(b, predicate_ctype, isspace);
 
   if((r = json_object_parse(j, b)) < 1)
     if((r = json_array_parse(j, b)) < 1)

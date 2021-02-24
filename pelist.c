@@ -23,8 +23,8 @@ static stralloc search;
 
 void pe_dump_sections(uint8* base);
 
-#define PE_DUMP_FIELD(base, ptr, st, field) \
-  buffer_putspad(b, #field, 30), buffer_puts(b, " 0x"), \
+#define PE_DUMP_FIELD(base, ptr, st, field)                                                                            \
+  buffer_putspad(b, #field, 30), buffer_puts(b, " 0x"),                                                                \
       buffer_putxlonglong0(b, PE_GET(base, ptr, st, field), PE_SIZE(base, st, field) * 2), buffer_putnlflush(b)
 
 size_t

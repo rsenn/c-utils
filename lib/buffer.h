@@ -31,9 +31,9 @@ typedef struct buffer {
   fd_t fd;             /* passed as first argument to op */
 } buffer;
 
-#define BUFFER_INIT(op, fd, buf, len) \
+#define BUFFER_INIT(op, fd, buf, len)                                                                                  \
   { (buf), 0, 0, (len), (buffer_op_proto*)(void*)(op), NULL, NULL, (fd) }
-#define BUFFER_INIT_FREE(op, fd, buf, len) \
+#define BUFFER_INIT_FREE(op, fd, buf, len)                                                                             \
   { (buf), 0, 0, (len), (buffer_op_proto*)(void*)(op), NULL, buffer_free, (fd) }
 #define BUFFER_INIT_READ(op, fd, buf, len) BUFFER_INIT(op, fd, buf, len) /*obsolete*/
 #define BUFFER_INSIZE 65535
@@ -68,7 +68,7 @@ ssize_t buffer_putsflush(buffer*, const char* x);
  * constant string,  where we know its length at compile-time,  call
  * buffer_put with the known length instead */
 #define buffer_puts(b, s) (__builtin_constant_p(s) ? buffer_put(b, s, __builtin_strlen(s)) : buffer_puts(b, s))
-#define buffer_putsflush(b, s) \
+#define buffer_putsflush(b, s)                                                                                         \
   (__builtin_constant_p(s) ? buffer_putflush(b, s, __builtin_strlen(s)) : buffer_putsflush(b, s))
 #endif
 
@@ -129,7 +129,7 @@ int buffer_prefetch(buffer*, size_t n);
 #define buffer_LEN(b) ((b)->n - (b)->p)
 #define buffer_SEEK(b, len) ((b)->p += (len))
 
-#define buffer_GETC(b, c) \
+#define buffer_GETC(b, c)                                                                                              \
   (((b)->p < (b)->n) ? (*(c) = *buffer_PEEK(b), buffer_SEEK((b), 1), 1) : buffer_get((b), (c), 1))
 
 #define buffer_BEGIN(b) buffer_PEEK(b)

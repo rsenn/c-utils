@@ -82,7 +82,7 @@ char* search_path(const char* filename);
 #endif
 
 #ifdef HAVE_CYGWIN_CONV_PATH
-#define cygwin_conv_to_full_posix_path(from, to) \
+#define cygwin_conv_to_full_posix_path(from, to)                                                                       \
   cygwin_conv_path(CCP_WIN_A_TO_POSIX | CCP_ABSOLUTE, (from), (to), MAX_PATH)
 #endif
 
@@ -112,9 +112,9 @@ resize_array(void** data, uint64* data_size, size_t sizeof_data) {
   *data_size = new_size;
 }
 
-#define resize_dep_list(ptr_deptree, ptr_deptree_size) \
+#define resize_dep_list(ptr_deptree, ptr_deptree_size)                                                                 \
   resize_array((void**)ptr_deptree, ptr_deptree_size, sizeof(struct dep_tree_element*))
-#define resize_import_list(ptr_import_list, ptr_import_list_size) \
+#define resize_import_list(ptr_import_list, ptr_import_list_size)                                                      \
   resize_array((void**)ptr_import_list, ptr_import_list_size, sizeof(struct import_table_item))
 #define resize_stack(ptr_stack, ptr_stack_size) resize_array((void**)ptr_stack, ptr_stack_size, sizeof(char*))
 

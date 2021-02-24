@@ -158,7 +158,7 @@ static MAP_T dns_cache;
 static tai6464 ttl;
 static strlist output_files;
 
-#define BACKLOG \
+#define BACKLOG                                                                                                        \
   20 // how many pending connections
      // queue will hold
 

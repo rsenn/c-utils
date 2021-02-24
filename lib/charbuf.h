@@ -40,7 +40,7 @@ typedef struct __attribute__((packed)) {
 } charbuf;
 #pragma pack(pop)
 
-#define CHARBUF_INIT(op, fd) \
+#define CHARBUF_INIT(op, fd)                                                                                           \
   { '\0', 0, 0, 0, (op), (fd) }
 
 void charbuf_close(charbuf*);
@@ -54,8 +54,13 @@ ssize_t charbuf_nextc(charbuf*, unsigned char* ch);
 ssize_t charbuf_peek(charbuf*);
 ssize_t charbuf_peekc(charbuf*, unsigned char* ch);
 uint8* charbuf_peekn(charbuf*, unsigned int n);
+
+#ifdef STRALLOC_H
+ssize_t charbuf_get_pred(charbuf* b, stralloc* sa, int (*pred)(int, size_t, void*), void* ptr);
+#endif
 ssize_t charbuf_skip(charbuf*);
-ssize_t charbuf_skip_pred(charbuf*, int (*pred)(int));
+
+ssize_t charbuf_skip_pred(charbuf* b, int (*pred)(int, size_t, void*), void* ptr);
 ssize_t charbuf_skip_until(charbuf*, int c);
 ssize_t charbuf_skipc(charbuf*, uint8* ch);
 ssize_t charbuf_skipn(charbuf*, size_t n);

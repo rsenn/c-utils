@@ -8,7 +8,7 @@
 #undef USE_WS2_32
 #endif
 
-#if((defined(_WIN32) || defined(_WIN64) || defined(_MSC_VER)) && !defined(__CYGWIN__)) || WINDOWS_NATIVE || \
+#if((defined(_WIN32) || defined(_WIN64) || defined(_MSC_VER)) && !defined(__CYGWIN__)) || WINDOWS_NATIVE ||            \
     defined(WINDOWS_OVERRIDE)
 #if USE_WS2_32
 #define _WINSOCKAPI_

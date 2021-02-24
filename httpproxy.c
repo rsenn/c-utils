@@ -23,9 +23,9 @@
 
 #if WINDOWS_NATIVE
 #include <io.h>
-#define HOSTS_FILE \
-  "C:" \
-  "\\Windows\\System32\\drivers\\etc" \
+#define HOSTS_FILE                                                                                                     \
+  "C:"                                                                                                                 \
+  "\\Windows\\System32\\drivers\\etc"                                                                                  \
   "\\hosts"
 #else
 #include <unistd.h>
