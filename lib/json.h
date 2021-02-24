@@ -143,10 +143,10 @@ json_string_sa(jsonval* val) {
 static inline const char*
 json_string_cstr(jsonval* val) {
   if(val->type == JSON_STRING) {
-     stralloc_nul(&val->stringv);
-     return val->stringv.s;
-   }
-   return 0;
+    stralloc_nul(&val->stringv);
+    return val->stringv.s;
+  }
+  return 0;
 }
 
 static inline jsonval

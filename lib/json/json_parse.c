@@ -110,7 +110,7 @@ json_parse_null_or_undefined(jsonval* j, charbuf* b) {
         return 0;
     }
     j->type = v ? JSON_NULL : JSON_UNDEFINED;
-    MAP_ZERO(j->dictv);
+    // MAP_ZERO(j->dictv);
     return 1;
   }
   return ret;
@@ -138,11 +138,15 @@ json_parse_array(jsonval* j, charbuf* b) {
         return -1;
       if((ret = json_parse(&item->value, b)) <= 0)
         break;
+
+#ifdef JSON_DEBUG
       buffer_puts(buffer_2, "json array element ");
       buffer_putlonglong(buffer_2, i++);
       buffer_puts(buffer_2, ": ");
       json_print(item->value, buffer_2, json_compact_printer);
       buffer_putnlflush(buffer_2);
+#endif
+
       charbuf_skip_pred(b, &isspace);
       if((ret = charbuf_getc(b, &c)) <= 0)
         return ret;
