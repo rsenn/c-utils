@@ -13,36 +13,36 @@ json_array_parse(jsonval* j, charbuf* b) {
 
     ptr = &j->itemv;
     charbuf_skip_pred(b, isspace);
-    for(; (ret = charbuf_peekc(b, &c)) > 0; ptr = &item->next) {
-      if(c == ']')
+    while((ret = charbuf_peekc(b, &c)) > 0) {
+      if(c == '}') {
+        ret = 1;
         break;
+      }
 
-      if((item = json_append(ptr, json_undefined())) == 0)
-        return -1;
-      if((ret = json_parse(&item->value, b)) <= 0)
-        break;
+      ptr = &((item = json_append(ptr, json_undefined()))->next);
+      json_parse(&item->value, b);
 
-#ifdef JSON_DEBUG
+#if 1 // def JSON_DEBUG
       buffer_puts(buffer_2, "json array element ");
       buffer_putlonglong(buffer_2, i++);
       buffer_puts(buffer_2, ": ");
       json_print(item->value, buffer_2, json_compact_printer);
       buffer_putnlflush(buffer_2);
 #endif
-
       charbuf_skip_pred(b, &isspace);
-      if((ret = charbuf_getc(b, &c)) <= 0)
-        return ret;
+      if((ret = charbuf_peekc(b, &c)) <= 0)
+        break;
+      if(c == '}')
+        continue;
       if(c == ',') {
+        charbuf_skip(b);
         charbuf_skip_pred(b, isspace);
         continue;
       }
       break;
     }
 
-    if(c == ']')
-      ret = 1;
-    return ret;
+    return 1;
   }
   return 0;
 }

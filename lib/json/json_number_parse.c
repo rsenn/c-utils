@@ -1,3 +1,5 @@
+#include "../uint64.h"
+#include "../scan.h"
 #include "../json_internal.h"
 
 int
