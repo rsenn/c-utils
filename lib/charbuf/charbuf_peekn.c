@@ -1,5 +1,5 @@
-#include "../charbuf.h"
 #include "../buffer.h"
+#include "../charbuf.h"
 #include <assert.h>
 
 uint8*
@@ -17,15 +17,13 @@ charbuf_peekn(charbuf* b, unsigned int n) {
   }
 
 #ifdef DEBUG_CHARBUF
+  if(charbuf_debug) {
   buffer_puts(buffer_2, "charbuf_peekn (");
   buffer_putlong(buffer_2, n);
-  buffer_puts(buffer_2, ") eof=");
-  buffer_putulong(buffer_2, b->eof ? 1 : 0);
-  buffer_puts(buffer_2, " err=");
-  buffer_putulong(buffer_2, b->err ? 1 : 0);
-  buffer_puts(buffer_2, " ret=");
+  buffer_puts(buffer_2, ") ret=");
   buffer_putlong(buffer_2, ret);
-  buffer_putnlflush(buffer_2);
+ charbuf_dump(b, buffer_2);
+}
 #endif
 
   return 0;

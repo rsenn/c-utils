@@ -22,19 +22,23 @@ typedef struct {
   uint32 column;
 } charloc;
 
-typedef struct {
+#pragma pack(push, 1)
+typedef struct __attribute__((packed)) {
   uint8* chrs;
-  unsigned p : 10;
-  unsigned a : 10;
+  unsigned p : 12;
+  unsigned a : 12;
   unsigned eof : 1;
-  unsigned err : 1;
+  unsigned err : 6;
   read_fn* op;
   union {
     fd_t fd;
     void* ptr;
   };
   charloc loc;
+  size_t offset;
+
 } charbuf;
+#pragma pack(pop)
 
 #define CHARBUF_INIT(op, fd)                                                                                           \
   { '\0', 0, 0, 0, (op), (fd) }
@@ -80,7 +84,13 @@ charbuf_skip_ifset(charbuf* b, const char* set, size_t setlen) {
   if(byte_chr(set, setlen, c) == setlen)
     return 0;
   return charbuf_skip(b);
-}
+} 
+
+extern int charbuf_debug;
+
+#ifdef BUFFER_H
+void charbuf_dump(charbuf*, buffer*);
+#endif
 
 #ifdef __cplusplus
 }

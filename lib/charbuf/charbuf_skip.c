@@ -1,6 +1,6 @@
-#include "../charbuf.h"
 #include "../buffer.h"
-
+#include "../charbuf.h"
+ 
 ssize_t
 charbuf_skip(charbuf* b) {
   ssize_t ret;
@@ -18,36 +18,34 @@ charbuf_skip(charbuf* b) {
       if(--b->p > 0)
         byte_copy(b->chrs, b->p, b->chrs + 1);
 
+      b->offset++;
+
     } else if((ret = charbuf_stubborn_read(b, 1)) > 0) {
       b->p = ret;
-    } else {
-      break;
+      continue;
     }
+    break;
   }
 
 #ifdef DEBUG_CHARBUF
-  buffer_puts(buffer_2, "charbuf_skip ");
-  if(ret < 0x20) {
+   if(charbuf_debug) {
+ buffer_puts(buffer_2, "charbuf_skip ret=");
+  if(ret > 0x20 || ret == 0x0a || ret == 0x0d || ret == 9) {
+    buffer_putc(buffer_2, '\'');
+    if(ret == 0x0a || ret == 0x0d || ret == 0x09)
+      buffer_puts(buffer_2, ret == '\n' ? "\\n" : ret == '\r' ? "\\r" : "\\t");
+    else
+      buffer_putc(buffer_2, ret);
+    buffer_putc(buffer_2, '\'');
+  } else if(ret > 0 && ret < 0x20) {
     buffer_puts(buffer_2, "x");
     buffer_putxlong0(buffer_2, ret, 2);
-  } else if(ret >= 0) {
-    buffer_putc(buffer_2, '\'');
-    buffer_putc(buffer_2, ret);
-    buffer_putc(buffer_2, '\'');
+  } else {
+    buffer_putlong(buffer_2, ret);
   }
-  buffer_puts(buffer_2, " p=");
-  buffer_putulong(buffer_2, b->p);
-  buffer_puts(buffer_2, " a=");
-  buffer_putulong(buffer_2, b->a);
-  buffer_puts(buffer_2, " eof=");
-  buffer_putulong(buffer_2, b->eof);
-  buffer_puts(buffer_2, " err=");
-  buffer_putulong(buffer_2, b->err);
-  buffer_puts(buffer_2, " loc=");
-  buffer_putulong(buffer_2, b->loc.line);
-  buffer_puts(buffer_2, ":");
-  buffer_putulong(buffer_2, b->loc.column);
-  buffer_putnlflush(buffer_2);
+  charbuf_dump(b, buffer_2);
+
+}
 #endif
   return ret;
 }

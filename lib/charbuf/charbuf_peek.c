@@ -1,5 +1,5 @@
-#include "../charbuf.h"
 #include "../buffer.h"
+#include "../charbuf.h"
 
 ssize_t
 charbuf_peek(charbuf* b) {
@@ -15,15 +15,24 @@ charbuf_peek(charbuf* b) {
   }
 
 #ifdef DEBUG_CHARBUF
-  buffer_puts(buffer_2, "charbuf_peek '");
-  buffer_putc(buffer_2, b->chrs[0]);
-  buffer_puts(buffer_2, "' eof=");
-  buffer_putulong(buffer_2, b->eof ? 1 : 0);
-  buffer_puts(buffer_2, " err=");
-  buffer_putulong(buffer_2, b->err ? 1 : 0);
-  buffer_puts(buffer_2, " ret=");
-  buffer_putlong(buffer_2, ret);
-  buffer_putnlflush(buffer_2);
+  if(charbuf_debug) {
+  buffer_puts(buffer_2, "charbuf_peek ret=");
+  if(ret > 0x20 || ret == 0x0a || ret == 0x0d || ret == 9) {
+    buffer_putc(buffer_2, '\'');
+    if(ret == 0x0a || ret == 0x0d || ret == 0x09)
+      buffer_puts(buffer_2, ret == '\n' ? "\\n" : ret == '\r' ? "\\r" : "\\t");
+    else
+      buffer_putc(buffer_2, ret);
+    buffer_putc(buffer_2, '\'');
+  } else if(ret > 0 && ret < 0x20) {
+    buffer_puts(buffer_2, "x");
+    buffer_putxlong0(buffer_2, ret, 2);
+  } else {
+    buffer_putlong(buffer_2, ret);
+  }
+   charbuf_dump(b, buffer_2);
+
+}
 #endif
 
   return ret;
