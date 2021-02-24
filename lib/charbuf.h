@@ -84,7 +84,7 @@ charbuf_skip_ifset(charbuf* b, const char* set, size_t setlen) {
   if(byte_chr(set, setlen, c) == setlen)
     return 0;
   return charbuf_skip(b);
-} 
+}
 
 extern int charbuf_debug;
 

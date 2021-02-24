@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 ME=`basename "$0" .sh`
 THISDIR=`dirname "$0"`
 BASEDIR=`cd "$THISDIR"/.. && pwd`
@@ -83,7 +83,7 @@ clean_args() {
       *) ;;
     esac
          
-    echo "[$DEPTH] ARG='$ARG'" 1>&7
+      echo "[$DEPTH] ARG='$ARG'" 1>&7
 
     ARG2=
     case "$ARG" in
@@ -117,6 +117,8 @@ clean_args() {
 
 get_prototypes() {
   : ${PAD_ARGS=false}
+  unset INCLUDES
+
   while :; do
     case "$1" in
       -[dx] | --debug) DEBUG=true; shift ;;
@@ -126,6 +128,7 @@ get_prototypes() {
       -a | --pad-args* | -*args*) PAD_ARGS=true; shift ;;
       -r=* | --remove*=* | -R=*) REMOVE_NAMES=${1#*=}; shift ;;
       -I* ) CPROTO_ARGS="$CPROTO_ARGS$NL$1" ; shift ;; 
+      -include  ) INCLUDES="${INCLUDES:+$INCLUDES }-include $2" ; shift 2 ;; 
       -r | --remove* | -R) REMOVE_NAMES=true; shift ;;
       -c | --copy* | --xclip*) XCLIP=true; shift ;;
       -S | --no-sort) NO_SORT=true; shift ;;
@@ -137,6 +140,7 @@ get_prototypes() {
       *) break ;;
     esac
   done
+  #: ${CPROTO_CMD:="cproto${INCLUDES:+ -E 'cpp $INCLUDES'}"}
  IFS="$NL"
   add_arg() {
     CPROTO_ARGS="$CPROTO_ARGS$NL$*"
@@ -155,15 +159,25 @@ get_prototypes() {
   fi
   PP=$(get_preprocessor)
   if [ -x "$PP" ]; then
-     check_exec "$PP" -std=c2x &&  
-      add_arg "-E" "$PP -std=c2x" ||
+    PPARGS=$INCLUDES
+    check_exec "$PP" -std=c2x &&   PPARGS=${PPARGS:+$PPARGS }-std=c2x
+    if [ -n "$PPARGS" ]; then
+      PPTMP=$(mktemp ./cpp-XXXXXX)
+      trap 'rm -f "$PPTMP"' EXIT
+      cat >$PPTMP <<EOF
+#!/bin/sh
+exec $PP $PPARGS "\$@"
+EOF
+      chmod +x "$PPTMP"
+      PP="$PPTMP"
+    fi
       add_arg "-E" "$PP"
   fi
   if [ "$QUIET" = true ]; then
     add_arg -q
     CPROTO_REDIR="2>/dev/null"
   fi
-  CPROTO_CMD="cproto \$CPROTO_ARGS -D_Noreturn= -D__{value,x,y}= -p \"\$@\" $CPROTO_REDIR | sed \"\\|^/|d ;; $EXPR\""
+  CPROTO_CMD="${CPROTO_CMD:-cproto} \$CPROTO_ARGS -D_Noreturn= -D__{value,x,y}= -p \"\$@\" $CPROTO_REDIR | sed \"\\|^/|d ;; $EXPR\""
   if [ "$DEBUG" = true ]; then
     eval "echo \"Command:\" $CPROTO_CMD 1>&2"
   fi
