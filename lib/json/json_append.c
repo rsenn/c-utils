@@ -1,13 +1,18 @@
 #include "../json_internal.h"
 #include "../alloc.h"
+#include "../byte.h"
 
-jsonval*
-json_append(jsonval* arr, const jsonval value) {
-    jsonval* v;
+jsonitem*
+json_append(jsonitem** list, const jsonval value) {
+  jsonitem* item;
 
+  if((item = (jsonitem*)slink_new(jsonval))) {
+    byte_copy(&item->value, sizeof(jsonval), &value);
 
-    if((v = json_push(arr))) 
-      memcpy(v, &value, sizeof(jsonval));
+    while(*list) list = &((*list)->next);
 
-    return v;
+    item->next = *list;
+    *list = item;
+  }
+  return item;
 }

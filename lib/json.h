@@ -56,11 +56,11 @@ typedef struct {
 } jsonval;
 
 typedef union jsonitem {
-slink link;
-struct {
-  jsonval* next;
-  jsonval value;
-};
+  slink link;
+  struct {
+    union jsonitem* next;
+    jsonval value;
+  };
 } jsonitem;
 
 typedef struct {
@@ -93,29 +93,29 @@ typedef void json_print_fn(jsonfmt*, jsonval*, int, int, char);
 typedef void json_format_fn(jsonfmt*, jsonval*, int, int, char);
 typedef int json_predicate_fn();
 
-jsonval*    json_append(jsonval*, const jsonval);
-void        json_free(jsonval*);
-jsonval     json_get_property(jsonval, jsonval);
-int         json_isnull(jsonval);
-int64       json_length(jsonval);
-jsonval*    json_newnode(jsondata);
-jsonval     json_object(void);
-int         json_parse_getsa(charbuf*, stralloc*, _Bool);
-int         json_parse_num(jsonval*, charbuf*);
-int         json_parse_bool(jsonval*, charbuf*);
-int         json_parse_null_or_undefined(jsonval*, charbuf*);
-int         json_parse_array(jsonval*, charbuf*);
-int         json_parse_object(jsonval*, charbuf*);
-int         json_parse_string(jsonval*, charbuf*);
-int         json_parse(jsonval*, charbuf*);
-jsonval*    json_push(jsonval*);
-void        json_read_callback(jsonreader*, json_read_callback_fn*);
-jsonval*    json_read_tree(charbuf*);
-void        json_reader_init(jsonreader*, charbuf*);
-void        json_recurse(jsonval*, void (*fn)(void), void*);
-jsonval*    json_set_property(jsonval*, jsonval, jsonval);
-double      json_todouble(jsonval);
-int64       json_toint(jsonval);
+jsonitem* json_append(jsonitem**, const jsonval);
+void json_free(jsonval*);
+jsonval json_get_property(jsonval, jsonval);
+int json_isnull(jsonval);
+int64 json_length(jsonval);
+jsonval* json_newnode(jsondata);
+jsonval json_object(void);
+int json_parse_getsa(charbuf*, stralloc*, _Bool);
+int json_parse_num(jsonval*, charbuf*);
+int json_parse_bool(jsonval*, charbuf*);
+int json_parse_null_or_undefined(jsonval*, charbuf*);
+int json_parse_array(jsonval*, charbuf*);
+int json_parse_object(jsonval*, charbuf*);
+int json_parse_string(jsonval*, charbuf*);
+int json_parse(jsonval*, charbuf*);
+jsonval* json_push(jsonval*, const jsonval);
+void json_read_callback(jsonreader*, json_read_callback_fn*);
+jsonval* json_read_tree(charbuf*);
+void json_reader_init(jsonreader*, charbuf*);
+void json_recurse(jsonval*, void (*)(), void*);
+jsonval* json_set_property(jsonval*, jsonval, jsonval);
+double json_todouble(jsonval);
+int64 json_toint(jsonval);
 const char* json_tostring(jsonval, stralloc*);
 
 #ifdef BUFFER_H
@@ -124,7 +124,6 @@ void json_print(jsonval, buffer* b, json_print_fn* p);
 #ifdef STRALLOC_H
 void json_tosa(jsonval, stralloc* sa, json_print_fn* p);
 #endif
- 
 
 static inline int
 json_is_identifier_char(int c) {

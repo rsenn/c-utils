@@ -31,7 +31,7 @@ slink* slist_find_delete(slink**, int (*pred)(slink*));
 void slist_init(slink**);
 size_t slist_length(slink**);
 int slist_pushs(slink**, const char* s);
-slink** slist_push(slink**, void*); 
+slink** slist_push(slink**, void*);
 slink* slist_remove(slink**);
 void slist_removes(slink**);
 int slist_shifts(slink**);

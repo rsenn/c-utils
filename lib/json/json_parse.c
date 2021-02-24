@@ -1,9 +1,9 @@
+#include "../uint64.h"
+#include "../buffer.h"
 #include "../json_internal.h"
 #include "../bool.h"
-#include "../uint64.h"
 #include "../byte.h"
 #include "../charbuf.h"
-#include "../buffer.h"
 #include "../scan.h"
 #include "../stralloc.h"
 
@@ -122,38 +122,39 @@ int
 json_parse_array(jsonval* j, charbuf* b) {
   if(charbuf_skip_ifeq(b, '[')) {
     int ret;
-     jsonitem* item;
+    jsonitem **ptr, *item;
     unsigned char c;
     int64_t i = 0;
 
     j->type = JSON_ARRAY;
     j->listv = 0;
 
-    item = &j->listv;
+    ptr = &j->itemv;
 
     charbuf_skip_pred(b, isspace);
 
-
-    for(; (ret = charbuf_peekc(b, &c)) > 0; ) {
+    for(; (ret = charbuf_peekc(b, &c)) > 0;) {
 
       if(c == ']') {
         ret = 1;
         break;
       }
-      if((item = json_append(j, json_undefined())) == 0)
+      if((item = json_append(ptr, json_undefined())) == 0)
         return -1;
+
+      ptr = &item->next;
+
       // = slink_insert(ptr, lnk);
-    
+
       if((ret = json_parse(&item->value, b)) <= 0)
         break;
 
-         buffer_puts(buffer_2, "json array element ");
+      buffer_puts(buffer_2, "json array element ");
       buffer_putlonglong(buffer_2, i++);
       buffer_puts(buffer_2, ": ");
-      json_print(*item, buffer_2, 0);
+      json_print(item->value, buffer_2, 0);
       buffer_putnlflush(buffer_2);
 
- 
       charbuf_skip_pred(b, &isspace);
 
       if((ret = charbuf_getc(b, &c)) <= 0)
@@ -162,7 +163,7 @@ json_parse_array(jsonval* j, charbuf* b) {
       if(c == ',') {
         charbuf_skip_pred(b, isspace);
 
-         continue;
+        continue;
       }
 
       break;

@@ -26,7 +26,7 @@ json_set_property(jsonval* obj, jsonval name, jsonval value) {
 
     if(len <= i) {
       while(len <= i) {
-        if((ret = json_append(obj, json_undefined())))
+        if((ret = json_push(obj, json_undefined())))
           ++len;
       }
     } else {

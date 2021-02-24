@@ -7,7 +7,7 @@
 
 void*
 slist_pushb(slink** list, const void* x, size_t len) {
-   slink* n;
+  slink* n;
 
   if((n = (slink*)alloc(sizeof(slink*) + len)) == NULL)
     return 0;
