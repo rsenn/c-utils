@@ -20,19 +20,14 @@ static ssize_t
 buffer_indent_write(fd_t fd, char* x, size_t n, void* ptr) {
   buffer* b = (buffer*)ptr;
   struct indent_write* iw = (struct indent_write*)b->cookie;
-
   ssize_t ret;
   while(n > 0) {
-
     ret = iw->realop(fd, x, 1, ptr);
-
     if(*x == '\n') {
       size_t i;
-      for(i = 0; i < iw->level; i++) {
-        ret = iw->realop(fd, (void*)iw->indent, str_len(iw->indent), ptr);
-        if(ret < 0)
+      for(i = 0; i < iw->level; i++)
+        if((ret = iw->realop(fd, (void*)iw->indent, str_len(iw->indent), ptr)) < 0)
           return ret;
-      }
     }
     x++;
     n--;
@@ -49,30 +44,14 @@ buffer_indent(buffer* b, struct indent_write* iw) {
   b->cookie = iw;
 }
 
-static void
-depth_fn(const jsonval* v, int* arg, int depth) {
-  if(*arg < depth)
-    *arg = depth;
-}
-
-static int
-get_depth(const jsonval* v) {
-  int depth = -1;
-  json_recurse((jsonval*)v, depth_fn, &depth);
-  return depth;
-}
- 
-
 static void json_print_val(jsonval* val, buffer* b, int depth, json_print_fn*);
 
 static int
 byte_fullfils_predicate(const char* x, size_t len, int (*pred)(int)) {
   size_t i;
-
-  for(i = 0; i < len; ++i) {
+  for(i = 0; i < len; ++i)
     if(!pred(x[i]))
       return 0;
-  }
   return !!i;
 }
 
@@ -158,28 +137,21 @@ json_print_array(jsonval* val, buffer* b, int depth, json_print_fn* p) {
   jsonfmt printer;
   jsonitem* item;
   int index = 0;
-
   buffer_puts(b, "[");
-
   if(val->listv == NULL) {
     buffer_puts(b, "]");
     return;
   }
   p(&printer, val, depth + 1, index, 0);
   json_print_separator(val, b, JSON_FMT_NEWLINE, &printer);
-
   for(item = val->itemv; item; item = item->next) {
     p(&printer, val, depth + 1, index, 0);
     if(index > 0)
       json_print_separator(val, b, JSON_FMT_SEPARATOR, &printer);
-
     json_print_val(&item->value, b, depth + 1, p);
     ++index;
-    // if(!!slist_next(it.ptr)) json_print_separator(val, b, JSON_FMT_SEPARATOR,
-    // &printer);
   }
   p(&printer, val, depth + 1, -2, 0);
-
   json_print_separator(val, b, JSON_FMT_NEWLINE, &printer);
   buffer_puts(b, "]");
 }
@@ -188,10 +160,6 @@ static void
 json_print_val(jsonval* val, buffer* b, int depth, json_print_fn* p) {
   jsonfmt printer;
   p(&printer, val, depth, 0, 0);
-
-  /*if(depth > 0)
-    buffer_puts(b, printer.spacing);*/
-  //    json_print_separator(val, b, depth, -1, p);
 
   switch(val->type) {
     case JSON_UNDEFINED: break;
