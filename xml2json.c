@@ -140,7 +140,7 @@ xml_style_json(char* x, size_t n) {
       if(!numbers || !json_parse_number(&val, &b))
         val = json_stringn(value, nv);
 
-      json_set_property(&r, name, val);
+      js_property_set(&r, name, val);
     }
   }
   strlist_free(&style);
@@ -172,7 +172,7 @@ hmap_to_jsonobj(HMAP_DB* db, jsonval* obj) {
         if(!numbers || !json_parse_number(&v, &b))
           v = json_stringn(t->vals.val_chars, len);
       }
-      json_set_property(obj, json_string(prop), v);
+      js_property_set(obj, json_string(prop), v);
     }
     return 1;
   }
@@ -196,11 +196,11 @@ xml_to_json_obj(xmlnode* node) {
      node->name, "\n", 0);*/
   if(node->type == XML_ELEMENT) {
     jsonval obj = json_object();
-    json_set_property(&obj, json_string(tag_property), json_string(node->name));
+    js_property_set(&obj, json_string(tag_property), json_string(node->name));
     if(node->attributes && node->attributes->list_tuple)
       hmap_to_jsonobj(node->attributes, &obj);
     if(node->children)
-      json_set_property(&obj, json_string(children_property), xmllist_to_jsonarray(node->children));
+      js_property_set(&obj, json_string(children_property), xmllist_to_jsonarray(node->children));
     return obj;
   }
   if(node->type == XML_TEXT) {

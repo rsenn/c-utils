@@ -846,7 +846,7 @@
 //#include "lib/json/json_tostring.c"
 //#include "lib/json/json_free.c"
 //#include
-//"lib/json/json_set_property.c"
+//"lib/json/js_property_set.c"
 #include "lib/array/array_cat.c"
 #include "lib/array/array_get.c"
 #include "lib/array/array_equal.c"

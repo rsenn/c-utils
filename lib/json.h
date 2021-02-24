@@ -98,7 +98,7 @@ jsonitem* json_array_at(jsonval, int64);
 
 jsonitem* json_append(jsonitem**, const jsonval);
 void json_free(jsonval*);
-jsonval json_property(jsonval, jsonval);
+jsonval js_property_get(jsonval, jsonval);
 int json_isnull(jsonval);
 int64 json_length(jsonval);
 jsonval* json_newnode(jsondata);
@@ -109,9 +109,9 @@ void json_read_callback(jsonreader*, json_read_callback_fn*);
 jsonval* json_read_tree(charbuf*);
 void json_reader_init(jsonreader*, charbuf*);
 void json_recurse(jsonval*, void (*)(), void*);
-jsonval* json_set_property(jsonval*, jsonval, jsonval);
-jsonval* json_set_property_str(jsonval*, const char* key, jsonval value);
-jsonval* json_set_property_int(jsonval*, int64 index, jsonval value);
+jsonval* js_property_set(jsonval*, jsonval, jsonval);
+jsonval* js_property_set_str(jsonval*, const char* key, jsonval value);
+jsonval* js_property_set_int(jsonval*, int64 index, jsonval value);
 
 double json_todouble(jsonval);
 int64 json_toint( jsonval);

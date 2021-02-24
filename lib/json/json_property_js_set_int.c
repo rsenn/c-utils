@@ -3,13 +3,13 @@
 #include "../json_internal.h"
 
 jsonval*
-json_set_property_int(jsonval* obj, int64 index, jsonval value) {
+js_property_set_int(jsonval* obj, int64 index, jsonval value) {
   char buf[128];
   jsonval*ret;
   size_t i = 0;
   i = fmt_longlong(buf, index);
   buf[i] = '\0';
-  ret = json_set_property_str(obj, buf, value);
+  ret = js_property_set_str(obj, buf, value);
 
   if(ret)
     *ret = value;

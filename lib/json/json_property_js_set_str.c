@@ -3,7 +3,7 @@
 #include "../json_internal.h"
 
 jsonval*
-json_set_property_str(jsonval* obj, const char* key, jsonval value) {
+js_property_set_str(jsonval* obj, const char* key, jsonval value) {
   jsonval* ret = 0;
   if(obj->type == JSON_OBJECT) {
     buffer_putm_internal(buffer_2, "key: ", key, "\n", NULL);
