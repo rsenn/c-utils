@@ -152,7 +152,7 @@ json_parse_array(jsonval* j, charbuf* b) {
       buffer_puts(buffer_2, "json array element ");
       buffer_putlonglong(buffer_2, i++);
       buffer_puts(buffer_2, ": ");
-      json_print(item->value, buffer_2, 0);
+      json_print(item->value, buffer_2, json_compact_printer);
       buffer_putnlflush(buffer_2);
 
       charbuf_skip_pred(b, &isspace);
