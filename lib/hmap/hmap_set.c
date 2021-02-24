@@ -17,9 +17,10 @@ hmap_set(HMAP_DB** hmap_db, const void* key, size_t k_len, void* data, size_t d_
     t->data_len = d_len;
     return t;
   }
-  if(!hmap_add(hmap_db, key, k_len, 1, HMAP_DATA_TYPE_CHARS, data, d_len))
-    if(hmap_search(*hmap_db, key, k_len, &t))
+  if(hmap_add(hmap_db, key, k_len, 0, HMAP_DATA_TYPE_CHARS, data, d_len) == HMAP_SUCCESS) {
+    if(hmap_search(*hmap_db, key, k_len, &t) != HMAP_SUCCESS)
       t = 0;
 
-  return t;
+    return t;
+  }
 }

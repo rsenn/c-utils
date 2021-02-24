@@ -78,7 +78,6 @@ static int utf16 = 0;
 
 void
 ini_write(buffer* b, ini_section_t* ini, int utf16) {
-  MAP_ITER_T t;
   buffer out;
   char x[1024];
   buffer_init(&out, (buffer_op_sys*)(void*)&buffer_write_utf16le, 0, x, sizeof(x));
@@ -89,17 +88,16 @@ ini_write(buffer* b, ini_section_t* ini, int utf16) {
   }
   while(ini) {
 
+    MAP_PAIR_T t;
     buffer_putc(b, '[');
     buffer_putsa(b, &ini->name);
     buffer_put(b, "]\r\n", 3);
-
     MAP_FOREACH(ini->map, t) {
-      buffer_put(b, MAP_ITER_KEY(t), str_len(MAP_ITER_KEY(t)));
+      buffer_put(b, MAP_KEY(t), str_len(MAP_KEY(t)));
       buffer_putc(b, '=');
-      buffer_put(b, MAP_DATA(t), str_len(MAP_DATA(t)));
+      buffer_put(b, MAP_VALUE(t), str_len(MAP_VALUE(t)));
       buffer_puts(b, "\r\n");
     }
-
     ini = ini->next;
   }
   buffer_flush(b);

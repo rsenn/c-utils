@@ -1,8 +1,9 @@
+#include "../uint32.h"
 #include "../hmap_internal.h"
 
-int
+int32
 hmap_hash(const void* key, size_t len) {
-  unsigned int hmap_hash, i;
+  uint32 hmap_hash, i;
 
   for(hmap_hash = i = 0; i < len; ++i) {
     hmap_hash += ((const unsigned char*)key)[i];
