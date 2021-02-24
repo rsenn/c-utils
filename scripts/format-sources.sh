@@ -120,13 +120,13 @@ EXPR="${EXPR:+$EXPR ;; }$1"
 add_expr 's|\s\s\+\\$| \\|'
 add_expr '\|(\s\\$|  { N; s|\\\n\s\+|| }'
 
-    trap 'IFS=$NL; : ls -la  -- $TEMPFILES; rm -f -- $TEMPFILES 1>&2' EXIT
+    trap 'IFS="$NL";  rm -vf -- $TEMPFILES 1>&2' EXIT
 
     LIST=$(list_cmd "$@")
     FILES=$(set -- $LIST; echo "${*##* }")
     (set -- $LIST; echo "Got $# files." 1>&2 )
-    ([ "$DEBUG" -gt 0 ] && set -x; clang-format -style=file ${WIDTH:+-style="{ColumnLimit:$WIDTH}"} -i $FILES) 
-    [ -n "$EXPR" ] && ([ "$DEBUG" -gt 0 ] && set -x; sed -i -e "$EXPR" -i $FILES )
+    ([ "${DEBUG:-0}" -gt 0 ] && set -x; clang-format -style=file ${WIDTH:+-style="{ColumnLimit:$WIDTH}"} -i $FILES) 
+    [ -n "$EXPR" ] && ([ "${DEBUG:-0}" -gt 0 ] && set -x; sed -i -e "$EXPR" -i $FILES )
     temp_file A
     MATCH=""
     echo "$LIST" >"$A"
