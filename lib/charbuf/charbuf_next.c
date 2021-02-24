@@ -1,4 +1,4 @@
-#include "../charbuf.h"
+#include "../charbuf_internal.h"
 
 ssize_t
 charbuf_next(charbuf* b) {

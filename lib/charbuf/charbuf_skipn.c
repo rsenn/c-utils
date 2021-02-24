@@ -1,4 +1,4 @@
-#include "../charbuf.h"
+#include "../charbuf_internal.h"
 #include "../buffer.h"
 
 #define max(a, b) ((a) >= (b) ? (a) : (b))

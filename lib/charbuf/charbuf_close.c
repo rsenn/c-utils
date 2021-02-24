@@ -6,7 +6,7 @@
 #include <unistd.h>
 #endif
 
-#include "../charbuf.h"
+#include "../charbuf_internal.h"
 
 void
 charbuf_close(charbuf* b) {

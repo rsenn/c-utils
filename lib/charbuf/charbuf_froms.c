@@ -1,6 +1,5 @@
-#include "../charbuf.h"
+#include "../charbuf_internal.h"
 #include "../str.h"
-#include "../charbuf.h"
 
 static ssize_t
 charbuf_readstr(int fd, void* buf, size_t len, void* b) {
