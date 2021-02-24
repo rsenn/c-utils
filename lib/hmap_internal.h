@@ -1,3 +1,4 @@
+#include "uint32.h"
 #include "byte.h"
 #include "hmap.h"
 #include <stdarg.h>
@@ -157,4 +158,4 @@ int hmap_free_data(TUPLE* tuple);
   }
 
 int hmap_cmp(void* v1, size_t v1_len, void* v2, size_t v2_len);
-int hmap_hash(const void* key, size_t len);
+uint32 hmap_hash(const void* key, size_t len);

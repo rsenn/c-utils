@@ -1,7 +1,7 @@
 #include "../uint32.h"
 #include "../hmap_internal.h"
 
-int32
+ uint32
 hmap_hash(const void* key, size_t len) {
   uint32 hmap_hash, i;
 
