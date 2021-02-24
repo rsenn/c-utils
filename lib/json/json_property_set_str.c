@@ -14,9 +14,6 @@ json_property_set_str(jsonval* obj, const char* key, jsonval value) {
     ret = MAP_GET(obj->dictv, key, str_len(key));
   } else if(obj->type == JSON_ARRAY) {
     int64 i;
-
-    scan_longlong(key, &i);
-
     int64 len = slist_size(obj->listv);
     if(len <= i) {
       while(len <= i) {
