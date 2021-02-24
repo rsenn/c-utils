@@ -26,13 +26,14 @@ charbuf_skipc(charbuf* b, uint8* ch) {
     break;
   }
 
-#ifdef DEBUG_CHARBUF
+#ifdef DEBUG_CHARBUF_
   if(charbuf_debug) {
-    buffer_puts(buffer_2, "charbuf_skipc *ch=");
+    buffer_puts(buffer_2, "charbuf_skipc");
+    charbuf_dumplabel("*ch", buffer_2);
     charbuf_dumpchar(*ch, buffer_2);
 
     charbuf_dump(b, buffer_2);
-    buffer_puts(buffer_2, charbuf_colors ? "  " CHARBUF_GRAY "ret" CHARBUF_BLACK CHARBUF_EQ CHARBUF_CYAN : ", ret=");
+    charbuf_dumplabel("ret", buffer_2);
     buffer_putlonglong(buffer_2, ret);
     if(charbuf_colors)
       buffer_puts(buffer_2, CHARBUF_NC);

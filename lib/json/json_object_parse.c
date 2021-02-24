@@ -21,7 +21,7 @@ json_object_parse(jsonval* val, charbuf* b) {
       jsonval *itemv, member = {.type = JSON_UNDEFINED};
       MAP_PAIR_T pair;
       stralloc_zero(&key);
-      if((ret = json_parse_getsa(b, &key, charbuf_skip_ifeq(b, '"'))) <= 0)
+      if((ret = json_stralloc_parse(b, &key, charbuf_skip_ifeq(b, '"'))) <= 0)
         return ret;
       stralloc_nul(&key);
       charbuf_skip_pred(b, &isspace);

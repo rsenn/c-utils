@@ -21,16 +21,14 @@ charbuf_peekn(charbuf* b, unsigned int n) {
   if(charbuf_debug) {
     unsigned int i;
     buffer_puts(buffer_2, "charbuf_peekn (");
+    charbuf_dumplabel("n", buffer_2);
     buffer_putlong(buffer_2, n);
     buffer_puts(buffer_2, ")");
     charbuf_dump(b, buffer_2);
-    buffer_puts(buffer_2, charbuf_colors ? "  " CHARBUF_GRAY "ret" CHARBUF_BLACK CHARBUF_EQ CHARBUF_CYAN : "  ret=");
-    for(i = 0; i < n; i++) {
-      if(i > 0)
-        buffer_putspace(buffer_2);
-      charbuf_dumpchar(b->chrs[i], buffer_2);
-    }
-    buffer_putxlonglong(buffer_2, (uintptr_t)ret);
+    charbuf_dumplabel("ret", buffer_2);
+
+    charbuf_dumpchars(ret, n, buffer_2);
+
     if(charbuf_colors)
       buffer_puts(buffer_2, CHARBUF_NC);
     buffer_putnlflush(buffer_2);

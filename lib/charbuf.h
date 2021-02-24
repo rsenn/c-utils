@@ -87,9 +87,6 @@ charbuf_skip_ifset(charbuf* b, const char* set, size_t setlen) {
   return charbuf_skip(b);
 }
 
-extern int charbuf_debug;
-extern int charbuf_colors;
-
 #ifdef BUFFER_H
 void charbuf_dump(charbuf*, buffer*);
 

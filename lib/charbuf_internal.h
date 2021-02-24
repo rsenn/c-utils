@@ -2,7 +2,9 @@
 #include "buffer.h"
 #include "charbuf.h"
 #include "fmt.h"
+
 #include <ctype.h>
+#include <alloca.h>
 
 #define CHARBUF_SEP "\x1b[m  "
 #define CHARBUF_EQ " " //"\x1b[38;5;233m="
@@ -12,6 +14,49 @@
 #define CHARBUF_GREEN "\x1b[0;32m"
 #define CHARBUF_YELLOW "\x1b[0;33m"
 #define CHARBUF_NC "\x1b[m"
+
+extern int charbuf_debug;
+extern int charbuf_colors;
+
+#define charbuf_dumplabel(lbl, out)                                                                                    \
+  buffer_puts(out,                                                                                                     \
+              charbuf_colors ? CHARBUF_SEP CHARBUF_GRAY lbl CHARBUF_BLACK CHARBUF_EQ CHARBUF_CYAN                      \
+                             : CHARBUF_SEP lbl "=");
+
+static inline void
+charbuf_dumpret(ssize_t ret, buffer* out) {
+  buffer_puts(out,
+              charbuf_colors ? CHARBUF_SEP CHARBUF_GRAY "ret" CHARBUF_BLACK CHARBUF_EQ CHARBUF_CYAN
+                             : CHARBUF_SEP "ret=");
+}
+
+static inline void
+charbuf_dumpchars(uint8* chrs, size_t n, buffer* out) {
+  size_t i = 0;
+  char buf[256];
+
+  buf[i++] = '\'';
+  for(; n > 0; chrs++, n--) {
+    int c = *chrs;
+
+    if(isprint(c) || c == ' ') {
+
+      buf[i++] = c;
+    } else if(isspace(c)) {
+      buf[i++] = '\'';
+      i += fmt_escapecharc(&buf[i], c);
+      buf[i++] = '\'';
+    } else {
+      buf[i++] = '0';
+      int pad = 3 - fmt_8long(0, c);
+      buf[i++] = '\\';
+      while(pad-- > 0) buf[i++] = '0';
+      i += fmt_8long(&buf[i], c);
+    }
+  }
+  buf[i++] = '\'';
+  buffer_put(out, buf, i);
+}
 
 static inline void
 charbuf_dumpchar(int c, buffer* out) {

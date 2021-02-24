@@ -17,13 +17,14 @@ charbuf_peekc(charbuf* b, unsigned char* ch) {
     break;
   }
 
-#ifdef DEBUG_CHARBUF_
+#ifdef DEBUG_CHARBUF
   if(charbuf_debug) {
     buffer_puts(buffer_2, "charbuf_peekc *ch=");
     charbuf_dumpchar(*ch, buffer_2);
 
     charbuf_dump(b, buffer_2);
-    buffer_puts(buffer_2, charbuf_colors ? "  " CHARBUF_GRAY "ret" CHARBUF_BLACK CHARBUF_EQ CHARBUF_CYAN : "  ret=");
+    charbuf_dumplabel("ret", buffer_2);
+
     buffer_putlonglong(buffer_2, ret);
     if(charbuf_colors)
       buffer_puts(buffer_2, CHARBUF_NC);
