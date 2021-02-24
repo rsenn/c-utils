@@ -5,7 +5,7 @@
 jsonval*
 js_property_set_int(jsonval* obj, int64 index, jsonval value) {
   char buf[128];
-  jsonval*ret;
+  jsonval* ret;
   size_t i = 0;
   i = fmt_longlong(buf, index);
   buf[i] = '\0';

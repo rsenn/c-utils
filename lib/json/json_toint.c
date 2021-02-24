@@ -3,7 +3,7 @@
 #include "../scan.h"
 
 int64
-json_toint(  jsonval val) {
+json_toint(jsonval val) {
   int64 ret;
   stralloc sa;
   stralloc_init(&sa);
