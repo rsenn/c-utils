@@ -163,6 +163,7 @@ json_print_val(jsonval* val, buffer* b, int depth, json_print_fn* p) {
 
   switch(val->type) {
     case JSON_UNDEFINED: break;
+    case JSON_NULL: buffer_puts(b, "null"); break;
     case JSON_STRING: json_print_str(b, val->stringv.s, val->stringv.len, &printer); break;
     case JSON_DOUBLE: buffer_putdouble(b, val->doublev, printer.precision); break;
     case JSON_BOOL: buffer_puts(b, val->boolv ? "true" : "false"); break;

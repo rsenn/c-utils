@@ -109,7 +109,7 @@ json_parse_null_or_undefined(jsonval* j, charbuf* b) {
       if(!charbuf_skip_ifeq(b, *n))
         return 0;
     }
-    j->type = v ? JSON_OBJECT : JSON_UNDEFINED;
+    j->type = v ? JSON_NULL : JSON_UNDEFINED;
     MAP_ZERO(j->dictv);
     return 1;
   }

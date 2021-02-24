@@ -2,11 +2,11 @@
 #include "../alloc.h"
 
 jsonval*
-json_push(jsonval* arr, const jsonval v) {
-  if(arr->type == JSON_ARRAY) {
+json_array_push(jsonval* val, const jsonval v) {
+  if(val->type == JSON_ARRAY) {
     jsonitem* item;
 
-    if((item = json_append(&arr->itemv, v)))
+    if((item = json_append(&val->itemv, v)))
       return &item->value;
   }
   return 0;

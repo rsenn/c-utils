@@ -21,13 +21,14 @@ extern "C" {
 #endif
 
 typedef enum {
-  JSON_UNDEFINED = 0,
+  JSON_UNDEFINED = -1,
+  JSON_NULL = 0,
   JSON_BOOL,
   JSON_INT,
   JSON_DOUBLE,
   JSON_STRING,
   JSON_ARRAY,
-  JSON_OBJECT,
+  JSON_OBJECT
 } jsondata;
 
 typedef enum key_type { JSON_KEY_OBJECT = 0, JSON_KEY_ARRAY = 1 } jsonkey_type;
@@ -92,9 +93,12 @@ typedef void json_print_fn(jsonfmt*, jsonval*, int, int, char);
 typedef void json_format_fn(jsonfmt*, jsonval*, int, int, char);
 typedef int json_predicate_fn();
 
+jsonitem* json_array_items(jsonval);
+jsonitem* json_array_at(jsonval, int64);
+
 jsonitem* json_append(jsonitem**, const jsonval);
 void json_free(jsonval*);
-jsonval json_get_property(jsonval, jsonval);
+jsonval json_property(jsonval, jsonval);
 int json_isnull(jsonval);
 int64 json_length(jsonval);
 jsonval* json_newnode(jsondata);
@@ -107,7 +111,7 @@ int json_parse_array(jsonval*, charbuf*);
 int json_parse_object(jsonval*, charbuf*);
 int json_parse_string(jsonval*, charbuf*);
 int json_parse(jsonval*, charbuf*);
-jsonval* json_push(jsonval*, const jsonval);
+jsonval* json_array_push(jsonval*, const jsonval);
 void json_read_callback(jsonreader*, json_read_callback_fn*);
 jsonval* json_read_tree(charbuf*);
 void json_reader_init(jsonreader*, charbuf*);
