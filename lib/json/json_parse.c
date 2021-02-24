@@ -1,5 +1,3 @@
-#include "../uint64.h"
-#include "../buffer.h"
 #include "../json_internal.h"
 #include "../bool.h"
 #include "../byte.h"
@@ -21,7 +19,7 @@ json_parse_getsa(charbuf* b, stralloc* out, bool quoted) {
   for(; (ret = charbuf_peekc(b, &ch)) > 0; charbuf_skip(b)) {
     if(ch == '\\') {
       if((ret = charbuf_nextc(b, &ch)) <= 0)
-        return ret;
+        break;
     } else if(quoted && ch == '"') {
       charbuf_skip(b);
       ret = 1;
@@ -32,7 +30,7 @@ json_parse_getsa(charbuf* b, stralloc* out, bool quoted) {
     }
     stralloc_APPEND(&sa, &ch);
   }
-  if(ret > 0 && out) {
+  if(quoted || sa.len) {
     for(i = 0; i < sa.len; i++) {
       size_t r;
       unsigned int n;
@@ -130,35 +128,26 @@ json_parse_array(jsonval* j, charbuf* b) {
     j->itemv = 0;
 
     ptr = &j->itemv;
-
     charbuf_skip_pred(b, isspace);
-
     for(; (ret = charbuf_peekc(b, &c)) > 0; ptr = &item->next) {
-
       if(c == ']') {
         ret = 1;
         break;
       }
       if((item = json_append(ptr, json_undefined())) == 0)
         return -1;
-
       if((ret = json_parse(&item->value, b)) <= 0)
         break;
-
       buffer_puts(buffer_2, "json array element ");
       buffer_putlonglong(buffer_2, i++);
       buffer_puts(buffer_2, ": ");
       json_print(item->value, buffer_2, json_compact_printer);
       buffer_putnlflush(buffer_2);
-
       charbuf_skip_pred(b, &isspace);
-
       if((ret = charbuf_getc(b, &c)) <= 0)
         return ret;
-
       if(c == ',') {
         charbuf_skip_pred(b, isspace);
-
         continue;
       }
 
@@ -190,35 +179,33 @@ json_parse_object(jsonval* j, charbuf* b) {
       jsonval *itemv, member = {.type = JSON_UNDEFINED};
       MAP_PAIR_T pair;
 
-      stralloc_zero(&key);
       if(c == '}') {
 
         charbuf_skip(b);
         return 1;
       }
 
+      stralloc_zero(&key);
       if((ret = json_parse_getsa(b, &key, charbuf_skip_ifeq(b, '"'))) <= 0)
         return ret;
+      stralloc_nul(&key);
 
       charbuf_skip_pred(b, &isspace);
 
       if(!charbuf_skip_ifeq(b, ':'))
         return 0;
 
-      stralloc_nul(&key);
-
-      pair = MAP_INSERT(j->dictv, key.s, key.len + 1, &member, sizeof(jsonval));
-      assert(pair);
-      itemv = MAP_VALUE(pair);
-
       charbuf_skip_pred(b, &isspace);
-      if(!json_parse(itemv, b))
-        return 0;
 
-      charbuf_skip_pred(b, &isspace);
-      if(charbuf_skip_ifeq(b, ',')) {
+      if((ret = json_parse(&member, b)) > 0) {
+
+        MAP_INSERT(j->dictv, key.s, key.len, &member, sizeof(jsonval));
+
         charbuf_skip_pred(b, &isspace);
-        continue;
+        if(charbuf_skip_ifeq(b, ',')) {
+          charbuf_skip_pred(b, &isspace);
+          continue;
+        }
       }
       break;
     }
@@ -233,6 +220,8 @@ json_parse_string(jsonval* j, charbuf* b) {
   if(charbuf_skip_ifeq(b, '"')) {
 
     j->type = JSON_STRING;
+    stralloc_init(&j->stringv);
+
     json_parse_getsa(b, &j->stringv, true);
     return 1;
   }

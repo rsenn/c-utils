@@ -1,7 +1,6 @@
 #include "../json_internal.h"
 #include "../stralloc.h"
 #include "../scan.h"
-#include "../uint64.h"
 
 int64
 json_toint(jsonval val) {

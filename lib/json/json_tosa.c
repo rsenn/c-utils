@@ -1,4 +1,3 @@
-#include "../buffer.h"
 #include "../json_internal.h"
 #include "../stralloc.h"
 

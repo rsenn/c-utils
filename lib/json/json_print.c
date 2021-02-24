@@ -1,6 +1,4 @@
 #include "../json_internal.h"
-#include "../uint64.h"
-#include "../buffer.h"
 #include "../slist.h"
 #include "../stralloc.h"
 #include "../fmt.h"
@@ -63,22 +61,7 @@ get_depth(const jsonval* v) {
   json_recurse((jsonval*)v, depth_fn, &depth);
   return depth;
 }
-
-static void
-json_default_printer(jsonfmt* p, jsonval* v, int depth, int index, char quote) {
-  int pretty = v && get_depth(v) > 1;
-  static char q[2] = {'"', '\0'};
-  p->indent = pretty ? " " : "";
-  p->newline = pretty ? "\n" : "";
-  p->spacing = pretty ? " " : "";
-  p->separat = pretty ? ", " : ",";
-  p->quote[0] = quote;
-  p->quote[1] = quote;
-  p->precision = 10;
-  p->depth = depth;
-  p->index = index;
-  p->compliant = 1;
-};
+ 
 
 static void json_print_val(jsonval* val, buffer* b, int depth, json_print_fn*);
 
@@ -173,10 +156,7 @@ json_print_object(jsonval* val, buffer* b, int depth, json_print_fn* p) {
 static void
 json_print_array(jsonval* val, buffer* b, int depth, json_print_fn* p) {
   jsonfmt printer;
-  union {
-    slink* ptr;
-    void* iter;
-  } it;
+  jsonitem* item;
   int index = 0;
 
   buffer_puts(b, "[");
@@ -185,17 +165,15 @@ json_print_array(jsonval* val, buffer* b, int depth, json_print_fn* p) {
     buffer_puts(b, "]");
     return;
   }
-  // buffer_puts(b, printer.spacing);
-  //
   p(&printer, val, depth + 1, index, 0);
   json_print_separator(val, b, JSON_FMT_NEWLINE, &printer);
 
-  slink_foreach(val->listv, it.iter) {
+  for(item = val->itemv; item; item = item->next) {
     p(&printer, val, depth + 1, index, 0);
     if(index > 0)
       json_print_separator(val, b, JSON_FMT_SEPARATOR, &printer);
 
-    json_print_val(slist_data(it.ptr), b, depth + 1, p);
+    json_print_val(&item->value, b, depth + 1, p);
     ++index;
     // if(!!slist_next(it.ptr)) json_print_separator(val, b, JSON_FMT_SEPARATOR,
     // &printer);

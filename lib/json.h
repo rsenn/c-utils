@@ -117,6 +117,7 @@ double json_todouble(jsonval);
 int64 json_toint(jsonval);
 const char* json_tostring(jsonval, stralloc*);
 void json_compact_printer(jsonfmt*, jsonval*, int depth, int index, char quote);
+void json_default_printer(jsonfmt*, jsonval*, int depth, int index, char quote);
 
 #ifdef BUFFER_H
 void json_print(jsonval, buffer* b, json_print_fn* p);
