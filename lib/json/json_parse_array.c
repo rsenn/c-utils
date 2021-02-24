@@ -23,7 +23,7 @@ json_parse_array(jsonval* val, charbuf* b) {
 
       json_parse(&item->value, b);
 
-#ifdef JSON_DEBUG
+#if defined(DEBUG_OUTPUT) || defined(DEBUG_JSON)
       buffer_puts(buffer_2, "json array element ");
       buffer_putlonglong(buffer_2, i++);
       buffer_puts(buffer_2, ": ");
@@ -31,14 +31,13 @@ json_parse_array(jsonval* val, charbuf* b) {
       buffer_putnlflush(buffer_2);
 #endif
       charbuf_skip_ws(b);
-      if((ret = charbuf_peekc(b, &c)) <= 0)
-        break;
-      if(c == ']')
-        continue;
-      if(charbuf_skip_ifeq(b, ',')) {
-
-        charbuf_skip_ws(b);
-        continue;
+      if(charbuf_peekc(b, &c) > 0) {
+        if(c == ',' || c == ']') {
+          charbuf_skip(b);
+          charbuf_skip_ws(b);
+          if(c == ',')
+            continue;
+        }
       }
       break;
     }
