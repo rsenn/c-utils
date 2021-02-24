@@ -12,7 +12,7 @@ json_parse_array(jsonval* val, charbuf* b) {
     val->itemv = 0;
 
     ptr = &val->itemv;
-    charbuf_pred_skip(b, charbuf_is_ctype, isspace);
+    charbuf_skip_ws(b);
     while((ret = charbuf_peekc(b, &c)) > 0) {
       if(c == ']') {
         ret = 1;
@@ -30,14 +30,14 @@ json_parse_array(jsonval* val, charbuf* b) {
       json_print(item->value, buffer_2, json_compact_printer);
       buffer_putnlflush(buffer_2);
 #endif
-      charbuf_pred_skip(b, charbuf_is_ctype, isspace);
+    charbuf_skip_ws(b);
       if((ret = charbuf_peekc(b, &c)) <= 0)
         break;
       if(c == ']')
         continue;
       if(charbuf_skip_ifeq(b, ',')) {
 
-        charbuf_pred_skip(b, charbuf_is_ctype, isspace);
+    charbuf_skip_ws(b);
         continue;
       }
       break;
