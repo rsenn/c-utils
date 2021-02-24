@@ -1,9 +1,9 @@
 #include "../uint64.h"
-#include "../fmt.h"
+#include "../scan.h"
 #include "../json_internal.h"
 
 jsonval*
-js_property_set_str(jsonval* obj, const char* key, jsonval value) {
+json_property_set_str(jsonval* obj, const char* key, jsonval value) {
   jsonval* ret = 0;
   if(obj->type == JSON_OBJECT) {
     buffer_putm_internal(buffer_2, "key: ", key, "\n", NULL);

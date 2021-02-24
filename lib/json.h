@@ -110,16 +110,18 @@ jsonval* json_read_tree(charbuf*);
 void json_reader_init(jsonreader*, charbuf*);
 void json_recurse(jsonval*, void (*)(), void*);
 
-jsonval* js_property_get(jsonval, jsonval);
-jsonval* js_property_get_str(jsonval, const char*);
-jsonval* js_property_get_int(jsonval, int64);
-jsonval* js_property_set(jsonval*, jsonval, jsonval value);
-jsonval* js_property_set_int(jsonval*, int64, jsonval value);
-jsonval* js_property_set_str(jsonval*, const char*, jsonval value);
+jsonval json_property_get(jsonval, jsonval);
+jsonval json_property_get_str(jsonval, const char*);
+jsonval json_property_get_int(jsonval, int64);
 
-double json_todouble(jsonval);
+jsonval* json_property_set(jsonval*, jsonval, jsonval value);
+jsonval* json_property_set_int(jsonval*, int64, jsonval value);
+jsonval* json_property_set_str(jsonval*, const char*, jsonval value);
+
 int64 json_toint(jsonval);
+void json_tosa(jsonval, stralloc*, json_print_fn* p);
 const char* json_tostring(jsonval, stralloc*);
+
 void json_compact_printer(jsonfmt*, jsonval*, int depth, int index, char quote);
 void json_default_printer(jsonfmt*, jsonval*, int depth, int index, char quote);
 
