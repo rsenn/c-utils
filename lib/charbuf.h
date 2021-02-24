@@ -62,7 +62,14 @@ ssize_t charbuf_skipc(charbuf*, uint8* ch);
 ssize_t charbuf_skipn(charbuf*, size_t n);
 ssize_t charbuf_skip_ws(charbuf*);
 
+typedef int charbuf_ctypefn_t(int);
+typedef charbuf_ctypefn_t* charbuf_ctypefn_ptr;
 
+static inline int
+charbuf_is_ctype(int c, size_t pos, void* ptr) {
+  charbuf_ctypefn_ptr fn = ptr;
+  return fn(c);
+}
 
 ssize_t charbuf_pred_skip(charbuf*, int (*pred)(int, size_t, void*), void* ptr);
 ssize_t charbuf_pred_lookahead(charbuf*, int (*pred)(int, size_t, void*), void* ptr);
@@ -75,15 +82,23 @@ charbuf_done(charbuf* b) {
   return b->eof || b->err;
 }
 
+static inline int
+charbuf_is_samechar(int c, size_t pos, void* ptr) {
+  int other = (size_t)ptr;
+
+  return pos == 0 && c == other;
+}
+
 static inline ssize_t
 charbuf_skip_ifeq(charbuf* b, unsigned char c) {
-  unsigned char ch;
-  ssize_t ret;
-  if((ret = charbuf_peekc(b, &ch)) <= 0)
-    return ret;
-  if((ret = (ch == c)))
-    charbuf_skip(b);
-  return ret;
+  return charbuf_pred_skip(b, charbuf_is_samechar, (void*)(size_t)c);
+  /* unsigned char ch;
+   ssize_t ret;
+   if((ret = charbuf_peekc(b, &ch)) <= 0)
+     return ret;
+   if((ret = (ch == c)))
+     charbuf_skip(b);
+   return ret;*/
 }
 
 static inline ssize_t

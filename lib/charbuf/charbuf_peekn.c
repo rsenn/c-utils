@@ -6,6 +6,11 @@ charbuf_peekn(charbuf* b, unsigned int n) {
   ssize_t r;
   uint8* ret = 0;
   assert(n < b->a);
+#ifdef DEBUG_CHARBUF
+  int debug = charbuf_debug;
+
+  charbuf_debug = 0;
+#endif
 
   for(;;) {
     if(b->p == n) {
@@ -18,21 +23,25 @@ charbuf_peekn(charbuf* b, unsigned int n) {
   }
 
 #ifdef DEBUG_CHARBUF
-  if(charbuf_debug) {
-    unsigned int i;
-    buffer_puts(buffer_2, "charbuf_peekn (");
+  if(debug) {
+    size_t i, pos, len;
+    uint8* x;
+    buffer_puts(buffer_2, "charbuf_peekn( ");
     charbuf_dumplabel("n", buffer_2);
     buffer_putlong(buffer_2, n);
-    buffer_puts(buffer_2, ")");
-    charbuf_dump(b, buffer_2);
-    charbuf_dumplabel(CHARBUF_SEP "ret", buffer_2);
+    buffer_puts(buffer_2, " )");
 
+    charbuf_dump_setcolumn(CHARBUF_COLUMN_1, buffer_2);
+
+    //       charbuf_dumpint64("ret", ret, buffer_2);
     charbuf_dumpchars(ret, n, buffer_2, 1);
 
+    charbuf_dump(b, buffer_2);
     if(charbuf_colors)
       buffer_puts(buffer_2, CHARBUF_NC);
     buffer_putnlflush(buffer_2);
   }
+  charbuf_debug = debug;
 #endif
 
   return ret;

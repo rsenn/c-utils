@@ -13,7 +13,6 @@ charbuf_peekc(charbuf* b, unsigned char* ch) {
       b->p = ret;
       continue;
     }
-
     break;
   }
 
@@ -26,12 +25,9 @@ charbuf_peekc(charbuf* b, unsigned char* ch) {
     charbuf_dumpchar(*ch, buffer_2, 2);
     if(charbuf_colors)
       buffer_puts(buffer_2, CHARBUF_NC);
-
     charbuf_dump(b, buffer_2);
-
     buffer_putspace(buffer_2);
     charbuf_dumpint64("ret", ret, buffer_2);
-
     if(charbuf_colors)
       buffer_puts(buffer_2, CHARBUF_NC);
     buffer_putnlflush(buffer_2);

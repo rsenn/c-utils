@@ -6,14 +6,8 @@
 #include "bool.h"
 #include <ctype.h>
 
-typedef int ctypefn_t(int);
-typedef ctypefn_t* ctypefn_ptr;
-
-static inline int
-predicate_ctype(int c, size_t pos, void* ptr) {
-  ctypefn_ptr fn = ptr;
-  return fn(c);
-}
+typedef int charbuf_ctypefn_t(int);
+typedef charbuf_ctypefn_t* charbuf_ctypefn_ptr;
 
 static inline int
 predicate_string(int c, size_t pos, void* ptr) {

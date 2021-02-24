@@ -10,13 +10,14 @@ json_parse_object(jsonval* val, charbuf* b) {
     MAP_NEW(val->dictv);
     stralloc_init(&key);
 
-    charbuf_pred_skip(b, predicate_ctype, isspace);
-    if((ret = charbuf_peekc(b, &c)) <= 0)
-      return ret;
+    charbuf_skip_ws(b);
 
-    if(c == '}')
+    if(charbuf_skip_ifeq(b, '}'))
       return 1;
 
+    /*    if((ret = charbuf_peekc(b, &c)) <= 0)
+          return ret;
+    */
     for(; (ret = charbuf_peekc(b, &c)) > 0;) {
       jsonval *itemv, member = {.type = JSON_UNDEFINED};
       MAP_PAIR_T pair;
@@ -24,27 +25,20 @@ json_parse_object(jsonval* val, charbuf* b) {
       if((ret = json_parse_stralloc(b, &key, charbuf_skip_ifeq(b, '"'))) <= 0)
         return ret;
       stralloc_nul(&key);
-      charbuf_pred_skip(b, predicate_ctype, isspace);
+      charbuf_skip_ws(b);
 
-      if((ret = charbuf_peekc(b, &c)) <= 0)
-        break;
+      if(charbuf_skip_ifeq(b, ':')) {
+        charbuf_skip_ws(b);
 
-      if(c == ':') {
-        charbuf_next(b);
-        charbuf_pred_skip(b, predicate_ctype, isspace);
+        if(json_parse(&member, b) > 0) {
+          MAP_INSERT(val->dictv, key.s, key.len, &member, sizeof(jsonval));
 
-        json_parse(&member, b);
-        MAP_INSERT(val->dictv, key.s, key.len, &member, sizeof(jsonval));
+          charbuf_skip_ws(b);
 
-        charbuf_pred_skip(b, predicate_ctype, isspace);
-
-        if((ret = charbuf_peekc(b, &c)) <= 0)
-          break;
-
-        if(c == ',') {
-          charbuf_next(b);
-          charbuf_pred_skip(b, predicate_ctype, isspace);
-          continue;
+          if(charbuf_skip_ifeq(b, ',')) {
+            charbuf_skip_ws(b);
+            continue;
+          }
         }
       }
       break;

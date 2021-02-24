@@ -12,6 +12,7 @@
 #define CHARBUF_GRAY "\x1b[1;30m"
 #define CHARBUF_GRAY20 "\x1b[38;5;233m"
 #define CHARBUF_GRAY40 "\x1b[38;5;235m"
+#define CHARBUF_CYAN30 "\x1b[38;2;0;153;153m"
 #define CHARBUF_BLUE "\x1b[0;34m"
 #define CHARBUF_LIGHT_BLUE "\x1b[1;34m"
 #define CHARBUF_MARINE "\x1b[0;36m"
@@ -28,12 +29,18 @@
 
 #define CHARBUF_PROPSEP ", "
 #define CHARBUF_PREFIX "."
+#define CHARBUF_COLUMN_1 24
+#define CHARBUF_COLUMN_2 45
+#define CHARBUF_COLUMN_3 78
+#define CHARBUF_COLUMN_4 96
+#define charbuf_stringify_helper(s) #s
+#define charbuf_ansi_setcolumn(n) "\x1b[" charbuf_stringify_helper(n) "G"
+#define charbuf_dump_setcolumn(n, out) buffer_putsflush((out), charbuf_ansi_setcolumn(n))
 
 extern int charbuf_debug;
 extern int charbuf_colors;
 
 ssize_t charbuf_stubborn_read(charbuf*, size_t max);
-
 
 #define charbuf_colorstr(str, color, out)                                                                              \
   buffer_putm_internal(                                                                                                \
@@ -46,15 +53,18 @@ ssize_t charbuf_stubborn_read(charbuf*, size_t max);
     charbuf_colorstr("=", "\x1b[38;2;0;100;100m", out);                                                                \
   } while(0)
 
-#define charbuf_dumpint64(lbl, val, out)                                                                               \
+#define charbuf_dumpfmt(lbl, val, fmt_fn, out)                                                                         \
   do {                                                                                                                 \
     char buf[128];                                                                                                     \
     size_t n;                                                                                                          \
-    charbuf_dumplabel(lbl, out);                                                                                       \
-    n = fmt_longlong(buf, (val));                                                                                      \
+    charbuf_dumplabel((lbl), (out));                                                                                   \
+    n = fmt_fn(buf, (val));                                                                                            \
     buf[n++] = '\0';                                                                                                   \
     charbuf_colorstr(buf, CHARBUF_YELLOW, out);                                                                        \
   } while(0)
+
+#define charbuf_dumpint64(lbl, val, out) charbuf_dumpfmt((lbl), ((int64)(val)), fmt_longlong, out)
+#define charbuf_dumpuint32(lbl, val, out) charbuf_dumpfmt((lbl), ((uint32)(val)), fmt_uint, out)
 
 static inline void
 charbuf_dumpchar(int c, buffer* out, int pad) {
@@ -104,7 +114,13 @@ charbuf_dumpchars(uint8* chrs, size_t n, buffer* out, int pad) {
     if(chrs[i] == '\'')
       buffer_puts(out, "\\'");
     else
-    charbuf_dumpchar(chrs[i], out, pad);
-   }
+      charbuf_dumpchar(chrs[i], out, pad);
+  }
   buffer_puts(buffer_2, "'");
+}
+
+static inline void
+charbuf_column(buffer* out, int col) {
+  if(buffer_LEN(out) < col)
+    buffer_putnspace(out, col - buffer_LEN(out));
 }

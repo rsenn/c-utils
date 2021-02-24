@@ -13,7 +13,7 @@ json_read_tree(charbuf* b) {
   jsonreader r;
   json_reader_init(&r, b);
   *r.loc = json_newnode(JSON_UNDEFINED);
-  charbuf_pred_skip(b, predicate_ctype, isspace);
+  charbuf_pred_skip(b, charbuf_is_ctype, isspace);
   json_parse(*r.loc, r.b);
   json_read_callback(&r, json_read_value);
   return r.doc;
