@@ -1,13 +1,13 @@
 #include "../json_internal.h"
 
 int
-json_object_parse(jsonval* j, charbuf* b) {
+json_object_parse(jsonval* val, charbuf* b) {
   if(charbuf_skip_ifeq(b, '{')) {
     stralloc key;
     int ret;
     unsigned char c;
-    j->type = JSON_OBJECT;
-    MAP_NEW(j->dictv);
+    val->type = JSON_OBJECT;
+    MAP_NEW(val->dictv);
     stralloc_init(&key);
 
     charbuf_skip_pred(b, isspace);
@@ -34,7 +34,7 @@ json_object_parse(jsonval* j, charbuf* b) {
         charbuf_skip_pred(b, &isspace);
 
         json_parse(&member, b);
-        MAP_INSERT(j->dictv, key.s, key.len, &member, sizeof(jsonval));
+        MAP_INSERT(val->dictv, key.s, key.len, &member, sizeof(jsonval));
 
         charbuf_skip_pred(b, &isspace);
 

@@ -2,8 +2,9 @@
 #include <errno.h>
 
 ssize_t
-charbuf_stubborn_read(charbuf* b) {
+charbuf_stubborn_read(charbuf* b, size_t max) {
   ssize_t ret;
+  size_t n;
 
   if(b->eof)
     return 0;
@@ -11,7 +12,11 @@ charbuf_stubborn_read(charbuf* b) {
     return -1;
 
   for(;;) {
-    ret = b->op((int)b->fd, &b->ch, 1, b);
+    n = b->a - b->p;
+    if(n >= max)
+      n = max;
+
+    ret = b->op((int)b->fd, &b->chrs[b->p], n, b);
 
     if(ret < 0 && errno == EINTR) {
       errno = 0;

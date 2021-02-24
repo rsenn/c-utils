@@ -1,17 +1,17 @@
 #include "../json_internal.h"
 
 int
-json_array_parse(jsonval* j, charbuf* b) {
+json_array_parse(jsonval* val, charbuf* b) {
   if(charbuf_skip_ifeq(b, '[')) {
     int ret;
     jsonitem **ptr, *item;
     unsigned char c;
     int64_t i = 0;
 
-    j->type = JSON_ARRAY;
-    j->itemv = 0;
+    val->type = JSON_ARRAY;
+    val->itemv = 0;
 
-    ptr = &j->itemv;
+    ptr = &val->itemv;
     charbuf_skip_pred(b, isspace);
     while((ret = charbuf_peekc(b, &c)) > 0) {
       if(c == '}') {

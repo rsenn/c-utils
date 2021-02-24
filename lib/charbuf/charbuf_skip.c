@@ -23,23 +23,22 @@ charbuf_skip(charbuf* b) {
   buffer_putulong(buffer_2, b->loc.column);
   buffer_putnlflush(buffer_2);
 #endif
-
-  if(b->p) {
-    if(b->ch == '\n') {
-      b->loc.column = 0;
-      b->loc.line++;
-    } else {
-      b->loc.column++;
+  for(;;) {
+    if(b->p) {
+      if(b->chrs[0] == '\n') {
+        b->loc.column = 0;
+        b->loc.line++;
+      } else {
+        b->loc.column++;
+      }
+      if(b->p > 1)
+        byte_copy(b->chrs, (b->p - 1), b->chrs + 1);
+      return (unsigned int)(unsigned char)b->chrs[--b->p];
     }
-
-  } else {
-
-    if((ret = charbuf_stubborn_read(b)) <= 0)
-      return ret;
+    if((ret = charbuf_stubborn_read(b, 1)) > 0)
+      b->p = ret;
+    else
+      break;
   }
-
-  ret = (int)(unsigned int)(unsigned char)b->ch;
-  b->ch = 0;
-  b->p = 0;
   return ret;
 }

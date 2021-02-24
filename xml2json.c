@@ -135,7 +135,7 @@ xml_style_json(char* x, size_t n) {
       charbuf b;
       char* ptr = value;
       value[nv] = '\0';
-      charbuf_froms(&b, &ptr);
+      charbuf_froms(&b, ptr, 2);
 
       if(!numbers || !json_number_parse(&val, &b))
         val = json_stringn(value, nv);
@@ -168,7 +168,7 @@ hmap_to_jsonobj(HMAP_DB* db, jsonval* obj) {
         if(str_equal(prop, "class") || str_equal(prop, "className"))
           prop = class_property;
         ptr = t->vals.val_chars;
-        charbuf_froms(&b, &ptr);
+        charbuf_froms(&b, ptr, 2);
         if(!numbers || !json_number_parse(&v, &b))
           v = json_stringn(t->vals.val_chars, len);
       }

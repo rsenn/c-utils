@@ -64,7 +64,7 @@ main(int argc, char* argv[]) {
   if(argc > 2)
     out_fd = open_trunc(argv[2]);
 
-  charbuf_init(&infile, (read_fn*)(void*)&read, in_fd);
+  charbuf_init(&infile, (read_fn*)(void*)&read, in_fd, 2);
 
   taia_now(&s);
 

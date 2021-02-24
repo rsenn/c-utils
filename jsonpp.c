@@ -222,7 +222,7 @@ main(int argc, char* argv[]) {
 
     fd = in_file ? open_read(in_file) : 0;
 
-    charbuf_init(&in_buf, (read_fn*)(void*)&read, fd);
+    charbuf_init(&in_buf, (read_fn*)(void*)&read, fd, 5);
 
     if(out_fd > 2)
       close(out_fd);

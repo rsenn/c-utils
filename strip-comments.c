@@ -232,7 +232,7 @@ main(int argc, char* argv[]) {
     optind++;
   }
 
-  charbuf_init(&input, (read_fn*)(void*)&read, in_fd);
+  charbuf_init(&input, (read_fn*)(void*)&read, in_fd, 2);
 
 again:
   if(in_place) {

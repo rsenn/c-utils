@@ -9,6 +9,7 @@
 #include "typedefs.h"
 #include "byte.h"
 #include "uint32.h"
+#include "uint8.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -22,8 +23,9 @@ typedef struct {
 } charloc;
 
 typedef struct {
-  unsigned char ch;
-  unsigned p : 1;
+  uint8* chrs;
+  unsigned p : 10;
+  unsigned a : 10;
   unsigned eof : 1;
   unsigned err : 1;
   read_fn* op;
@@ -38,18 +40,19 @@ typedef struct {
   { '\0', 0, 0, 0, (op), (fd) }
 
 void charbuf_close(charbuf*);
-void charbuf_froms(charbuf*, char** s);
+void charbuf_froms(charbuf*, char* s, unsigned lookahead);
 ssize_t charbuf_get(charbuf*);
 ssize_t charbuf_getc(charbuf*, unsigned char* ch);
-void charbuf_init(charbuf*, read_fn* op, fd_t fd);
+void charbuf_init(charbuf*, read_fn* op, fd_t fd, unsigned int lookahead);
 ssize_t charbuf_next(charbuf*);
 ssize_t charbuf_nextc(charbuf*, unsigned char* ch);
 ssize_t charbuf_peek(charbuf*);
 ssize_t charbuf_peekc(charbuf*, unsigned char* ch);
+ssize_t charbuf_peekn(charbuf*, unsigned int n);
 ssize_t charbuf_skip(charbuf*);
 ssize_t charbuf_skip_pred(charbuf*, int (*pred)(int));
 ssize_t charbuf_skip_until(charbuf*, int c);
-ssize_t charbuf_stubborn_read(charbuf*);
+ssize_t charbuf_stubborn_read(charbuf*, size_t max);
 
 static inline ssize_t
 charbuf_done(charbuf* b) {

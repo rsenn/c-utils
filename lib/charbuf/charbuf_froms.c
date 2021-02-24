@@ -1,16 +1,24 @@
 #include "../charbuf.h"
+#include "../str.h"
+#include "../charbuf.h"
 
 static ssize_t
-charbuf_readstr(fd_t fd, char* buf, size_t len, charbuf* b) {
-  char** sptr = (char**)b->ptr;
-  *buf = *(*sptr)++;
-  return !!*buf;
+charbuf_readstr(int fd, void* buf, size_t len, void* b) {
+  char* src = ((charbuf*)b)->ptr;
+  size_t n;
+  if((n = (*src == '\0' ? 0 : str_len(src))) > len)
+    n = len;
+
+  if(n) {
+    byte_copy(buf, n, src);
+    src += n;
+    ((charbuf*)b)->ptr = src;
+  }
+  return n;
 }
 
 void
-charbuf_froms(charbuf* b, char** s) {
-  b->p = 0;
-  b->ch = '\0';
-  b->op = (read_fn*)&charbuf_readstr;
+charbuf_froms(charbuf* b, char* s, unsigned lookahead) {
+  charbuf_init(b, charbuf_readstr, -1, lookahead);
   b->ptr = (void*)s;
 }
