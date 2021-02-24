@@ -5,11 +5,7 @@
 /* does an array of "elements" members of size "membersize" starting at
  * "arraystart" lie inside buf1[0..len-1]? */
 int
-range_arrayinbuf(const void* buf1,
-                 size_t len,
-                 const void* arraystart,
-                 size_t elements,
-                 size_t membersize) {
+range_arrayinbuf(const void* buf1, size_t len, const void* arraystart, size_t elements, size_t membersize) {
   size_t alen;
   if(sizeof(alen) == 8) {
     uint64 x;

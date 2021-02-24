@@ -139,8 +139,7 @@ pathlist_lookup(const char* bin, stralloc* out) {
       stralloc_nul(&name);
 
 #ifdef DEBUG_OUTPUT
-      buffer_putm_internal(
-          buffer_2, "path_find(\"", dir, "\", \"", name.s, "\", out);", NULL);
+      buffer_putm_internal(buffer_2, "path_find(\"", dir, "\", \"", name.s, "\", out);", NULL);
       buffer_putnlflush(buffer_2);
 #endif
 
@@ -382,8 +381,7 @@ main(int argc, char* argv[]) {
           it += n + 1;
         }
 
-        strarray_splice(
-            &v, i, 1, array_length(&a, sizeof(char*)), array_start(&a));
+        strarray_splice(&v, i, 1, array_length(&a, sizeof(char*)), array_start(&a));
 
         // debug_strarray("new args",
         // &v);
@@ -403,8 +401,7 @@ main(int argc, char* argv[]) {
     if(stralloc_endb(&arg, ".a", 2) || stralloc_endb(&arg, ".lib", 4)) {
       stralloc_copy(&lib, &arg);
     } else {
-      int is_obj =
-          stralloc_endb(&arg, ".o", 2) || stralloc_endb(&arg, ".obj", 4);
+      int is_obj = stralloc_endb(&arg, ".o", 2) || stralloc_endb(&arg, ".obj", 4);
 
       if(is_obj) {
         stralloc dir;

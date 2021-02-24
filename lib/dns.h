@@ -70,23 +70,14 @@ int dns_domain_todot_cat(stralloc* out, const char* d);
 unsigned int dns_domain_todot(char* out, const char* in);
 unsigned int dns_domain_todot_inline(char* x);
 
-unsigned int
-dns_packet_copy(const char*, unsigned int, unsigned int, char*, unsigned int);
-unsigned int
-dns_packet_getname(const char*, unsigned int, unsigned int, char**);
+unsigned int dns_packet_copy(const char*, unsigned int, unsigned int, char*, unsigned int);
+unsigned int dns_packet_getname(const char*, unsigned int, unsigned int, char**);
 unsigned int dns_packet_skipname(const char*, unsigned int, unsigned int);
 
-int dns_transmit_start(struct dns_transmit*,
-                       const char*,
-                       int,
-                       const char*,
-                       const char*,
-                       const char*);
+int dns_transmit_start(struct dns_transmit*, const char*, int, const char*, const char*, const char*);
 void dns_transmit_free(struct dns_transmit*);
 void dns_transmit_io(struct dns_transmit*, iopause_fd*, struct taia*);
-int dns_transmit_get(struct dns_transmit*,
-                     const iopause_fd*,
-                     const struct taia*);
+int dns_transmit_get(struct dns_transmit*, const iopause_fd*, const struct taia*);
 
 int dns_resolvconfip(char*);
 int dns_resolve(const char*, const char*);
@@ -106,11 +97,9 @@ int dns_mx_packet(stralloc*, const char*, unsigned int);
 int dns_mx(stralloc*, const stralloc*);
 
 int dns_resolvconfrewrite(stralloc*);
-int
-dns_ip4_qualify_rules(stralloc*, stralloc*, const stralloc*, const stralloc*);
+int dns_ip4_qualify_rules(stralloc*, stralloc*, const stralloc*, const stralloc*);
 int dns_ip4_qualify(stralloc*, stralloc*, const stralloc*);
-int
-dns_ip6_qualify_rules(stralloc*, stralloc*, const stralloc*, const stralloc*);
+int dns_ip6_qualify_rules(stralloc*, stralloc*, const stralloc*, const stralloc*);
 int dns_ip6_qualify(stralloc*, stralloc*, const stralloc*);
 
 void dns_name6_domain(char*, const char*);

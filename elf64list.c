@@ -52,8 +52,7 @@ main(int argc, char** argv) {
     section_header_size = header->e_shentsize;
     n_headers = header->e_shnum;
 
-    section_name_header_offset =
-        header->e_shoff + (header->e_shstrndx * header->e_shentsize);
+    section_name_header_offset = header->e_shoff + (header->e_shstrndx * header->e_shentsize);
     section_name_header = (elf64_shdr*)(content + section_name_header_offset);
     section_names = content + section_name_header->sh_offset;
 

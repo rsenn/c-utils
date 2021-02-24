@@ -3,8 +3,7 @@
 #include "terminal.h"
 
 static char terminal_buf[32];
-buffer terminal_buffer =
-    BUFFER_INIT(write, 1, terminal_buf, sizeof(terminal_buf));
+buffer terminal_buffer = BUFFER_INIT(write, 1, terminal_buf, sizeof(terminal_buf));
 
 static inline void
 put_escape(buffer* b) {

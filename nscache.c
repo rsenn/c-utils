@@ -147,12 +147,7 @@ nscache_droproot(const char* fatal) {
 }
 
 static int
-packetquery(char* buf,
-            unsigned int len,
-            char** q,
-            char qtype[2],
-            char qclass[2],
-            char id[2]) {
+packetquery(char* buf, unsigned int len, char** q, char qtype[2], char qclass[2], char id[2]) {
   unsigned int pos;
   char header[12];
 
@@ -240,8 +235,7 @@ udp_new(void) {
   x = u + j;
   taia_now(&x->start);
 
-  if((ret = socket_recv6(
-          udp53, buf, sizeof buf, x->ip, &x->port, &x->scope_id)) == -1)
+  if((ret = socket_recv6(udp53, buf, sizeof buf, x->ip, &x->port, &x->scope_id)) == -1)
     return;
   len = (size_t)ret;
   if(len >= sizeof buf)

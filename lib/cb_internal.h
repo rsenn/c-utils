@@ -55,8 +55,7 @@ make_external_node(const void* key, size_t keylen) {
 
 static inline struct critbit_node*
 make_internal_node(void) {
-  struct critbit_node* node =
-      (struct critbit_node*)malloc(sizeof(struct critbit_node));
+  struct critbit_node* node = (struct critbit_node*)malloc(sizeof(struct critbit_node));
   return node;
 }
 

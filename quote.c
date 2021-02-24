@@ -30,8 +30,7 @@ static stralloc indent_str, queue, quote_chars;
 static buffer output;
 static const char* add_quotes = 0;
 static int tab_size = -1;
-static int quote_newline = 0, quote_tabs = 0, quote_nul = 0,
-           quote_backslash = 0;
+static int quote_newline = 0, quote_tabs = 0, quote_nul = 0, quote_backslash = 0;
 
 typedef size_t fmt_function(char*, int, int);
 
@@ -78,8 +77,7 @@ void
 put_str_escaped(buffer* b, const char* str) {
   stralloc esc;
   stralloc_init(&esc);
-  stralloc_fmt_pred(
-      &esc, str, str_len(str), (stralloc_fmt_fn*)&fmt_escapecharc, iscntrl);
+  stralloc_fmt_pred(&esc, str, str_len(str), (stralloc_fmt_fn*)&fmt_escapecharc, iscntrl);
   buffer_putsa(b, &esc);
 }
 
@@ -417,9 +415,7 @@ main(int argc, char* argv[]) {
         stralloc_copys(&quote_chars, "\"\n\\");
         break;
       case 'J': fmt_call = (fmt_function*)(void*)&fmt_escapecharjson; break;
-      case 'P':
-        fmt_call = (fmt_function*)(void*)&fmt_escapecharquotedprintable;
-        break;
+      case 'P': fmt_call = (fmt_function*)(void*)&fmt_escapecharquotedprintable; break;
       case 'S': fmt_call = (fmt_function*)(void*)&fmt_escapecharshell; break;
       case 'Q':
         add_quotes = "'";
@@ -458,8 +454,7 @@ main(int argc, char* argv[]) {
 
   if(unix_optind < argc) {
 #ifdef DEBUG_OUTPUT
-    buffer_putm_internal(
-        buffer_2, "Opening input file '", argv[unix_optind], "'...", NULL);
+    buffer_putm_internal(buffer_2, "Opening input file '", argv[unix_optind], "'...", NULL);
     buffer_putnlflush(buffer_2);
 #endif
     in_fd = open_read((in_path = argv[unix_optind]));
@@ -467,16 +462,14 @@ main(int argc, char* argv[]) {
   }
   if(unix_optind < argc) {
 #ifdef DEBUG_OUTPUT
-    buffer_putm_internal(
-        buffer_2, "Opening output file '", argv[unix_optind], "'...", NULL);
+    buffer_putm_internal(buffer_2, "Opening output file '", argv[unix_optind], "'...", NULL);
     buffer_putnlflush(buffer_2);
 #endif
     out_fd = open_trunc((out_path = argv[unix_optind]));
     unix_optind++;
   }
 
-  buffer_init_free(
-      &input, (buffer_op_sys*)(void*)&read, in_fd, alloc(1024), 1024);
+  buffer_init_free(&input, (buffer_op_sys*)(void*)&read, in_fd, alloc(1024), 1024);
 
 again:
   if(in_place) {

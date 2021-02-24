@@ -15,8 +15,7 @@ new_page(size_t pagesize) {
   if(x == 0)
     return 0;
 #else
-  void* x = mmap(
-      0, pagesize, PROT_READ | PROT_WRITE, MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);
+  void* x = mmap(0, pagesize, PROT_READ | PROT_WRITE, MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);
   if(x == MAP_FAILED)
     return 0;
 #endif
@@ -27,8 +26,7 @@ void*
 iarray_allocate(iarray* ia, size_t pos) {
   size_t index, prevlen = ia->len;
   /* first, find the linked list of pages */
-  iarray_page** p =
-      &ia->pages[pos % (sizeof(ia->pages) / sizeof(ia->pages[0]))];
+  iarray_page** p = &ia->pages[pos % (sizeof(ia->pages) / sizeof(ia->pages[0]))];
   /* this is here so we don't munmap and then re-mmap pages when a
    * certain path makes it necessary to mmap several pages into the
    * linked list and we are competing with another thread that does the

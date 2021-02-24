@@ -61,18 +61,15 @@ extern "C" {
 /* does ptr point to one of buf[0], buf[1], ... buf[len-1]? */
 __static inline __gnuinline int
 range_ptrinbuf(const void* buf, size_t len, const void* ptr) {
-  register const char* c =
-      (const char*)buf; /* no pointer arithmetic on void* */
-  return __likely(
-      c && /* is buf non-NULL? */
-      ((size_t)c) + len >
-          (size_t)c && /* gcc 4.1 miscompiles without (size_t) */
-      /* catch integer overflows and fail if buffer is 0 bytes long */
-      /* because then ptr can't point _in_ the buffer */
-      (size_t)((const char*)ptr - c) < len); /* this one is a little tricky.
-         "ptr-c" checks the offset of ptr in the buffer is inside the buffer
-         size. Now, ptr-c can underflow; say it is -1.  When we cast it to
-         size_t, it becomes a very large number. */
+  register const char* c = (const char*)buf;       /* no pointer arithmetic on void* */
+  return __likely(c &&                             /* is buf non-NULL? */
+                  ((size_t)c) + len > (size_t)c && /* gcc 4.1 miscompiles without (size_t) */
+                  /* catch integer overflows and fail if buffer is 0 bytes long */
+                  /* because then ptr can't point _in_ the buffer */
+                  (size_t)((const char*)ptr - c) < len); /* this one is a little tricky.
+                     "ptr-c" checks the offset of ptr in the buffer is inside the buffer
+                     size. Now, ptr-c can underflow; say it is -1.  When we cast it to
+                     size_t, it becomes a very large number. */
 }
 
 /* same thing, but the buffer is specified by a pointer to the first
@@ -102,17 +99,12 @@ range_validbuf2(const void* Min, const void* Max) {
 __static inline __gnuinline int
 range_bufinbuf(const void* buf1, size_t len1, const void* buf2, size_t len2) {
   return range_validbuf(buf1, len1) && range_validbuf(buf2, len2) &&
-         __likely(buf1 <= buf2 &&
-                  (ptrdiff_t)buf1 + len1 >= (ptrdiff_t)buf2 + len2);
+         __likely(buf1 <= buf2 && (ptrdiff_t)buf1 + len1 >= (ptrdiff_t)buf2 + len2);
 }
 
 /* does an array of "elements" members of size "membersize" starting at
  * "arraystart" lie inside buf1[0..len-1]? */
-int range_arrayinbuf(const void* buf,
-                     size_t len,
-                     const void* arraystart,
-                     size_t elements,
-                     size_t membersize);
+int range_arrayinbuf(const void* buf, size_t len, const void* arraystart, size_t elements, size_t membersize);
 
 /* does an ASCIIZ string starting at "ptr" lie in buf[0..len-1]? */
 int range_strinbuf(const void* buf, size_t len, const void* stringstart);
@@ -148,19 +140,18 @@ int range_str4inbuf(const void* buf, size_t len, const void* stringstart);
  */
 
 #define __HALF_MAX_SIGNED(type) ((type)1 << (sizeof(type) * 8 - 2))
-#define __MAX_SIGNED(type)                                                     \
-  (__HALF_MAX_SIGNED(type) - 1 + __HALF_MAX_SIGNED(type))
+#define __MAX_SIGNED(type) (__HALF_MAX_SIGNED(type) - 1 + __HALF_MAX_SIGNED(type))
 #define __MIN_SIGNED(type) (-1 - __MAX_SIGNED(type))
 
 /* we use <1 and not <0 to avoid a gcc warning */
 #define __MIN(type) ((type)-1 < 1 ? __MIN_SIGNED(type) : (type)0)
 #define __MAX(type) ((type)~__MIN(type))
 
-#define assign(type, dest, src)                                                \
-  {                                                                            \
-    type __x = (src);                                                          \
-    type __y = __x;                                                            \
-    (__x == __y && ((__x < 1) == (__y < 1)) ? (void)((dest) = __y), 0 : 1);    \
+#define assign(type, dest, src)                                                                                        \
+  {                                                                                                                    \
+    type __x = (src);                                                                                                  \
+    type __y = __x;                                                                                                    \
+    (__x == __y && ((__x < 1) == (__y < 1)) ? (void)((dest) = __y), 0 : 1);                                            \
   }
 
 /* gcc 5 now has nice builtins we can use instead */
@@ -177,25 +168,20 @@ int range_str4inbuf(const void* buf, size_t len, const void* stringstart);
 
 /* if a+b is defined and does not have an integer overflow, do c=a+b and
  * return 0.  Otherwise, return 1. */
-#define add_of(result, type, c, a, b)                                          \
-  {                                                                            \
-    type __a = a;                                                              \
-    type __b = b;                                                              \
-    result =                                                                   \
-        (__b) < 1                                                              \
-            ? ((__MIN(type) - (__b) <= (__a)) ? assign(type, c, __a + __b)     \
-                                              : 1)                             \
-            : ((__MAX(type) - (__b) >= (__a)) ? assign(type, c, __a + __b)     \
-                                              : 1);                            \
+#define add_of(result, type, c, a, b)                                                                                  \
+  {                                                                                                                    \
+    type __a = a;                                                                                                      \
+    type __b = b;                                                                                                      \
+    result = (__b) < 1 ? ((__MIN(type) - (__b) <= (__a)) ? assign(type, c, __a + __b) : 1)                             \
+                       : ((__MAX(type) - (__b) >= (__a)) ? assign(type, c, __a + __b) : 1);                            \
   }
 
-#define sub_of(c, a, b)                                                        \
-  {                                                                            \
-    typeof(a) __a = a;                                                         \
-    typeof(b) __b = b;                                                         \
-    (__b) < 1                                                                  \
-        ? ((__MAX(typeof(a + b)) + __b >= __a) ? assign(c, __a - __b) : 1)     \
-        : ((__MIN(typeof(c)) + __b <= __a) ? assign(c, __a - __b) : 1);        \
+#define sub_of(c, a, b)                                                                                                \
+  {                                                                                                                    \
+    typeof(a) __a = a;                                                                                                 \
+    typeof(b) __b = b;                                                                                                 \
+    (__b) < 1 ? ((__MAX(typeof(a + b)) + __b >= __a) ? assign(c, __a - __b) : 1)                                       \
+              : ((__MIN(typeof(c)) + __b <= __a) ? assign(c, __a - __b) : 1);                                          \
   }
 
 #endif

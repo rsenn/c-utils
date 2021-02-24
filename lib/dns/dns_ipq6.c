@@ -42,10 +42,7 @@ doit(stralloc* work, const char* rule) {
 }
 
 int
-dns_ip6_qualify_rules(stralloc* out,
-                      stralloc* fqdn,
-                      const stralloc* in,
-                      const stralloc* rules) {
+dns_ip6_qualify_rules(stralloc* out, stralloc* fqdn, const stralloc* in, const stralloc* rules) {
   unsigned int i;
   unsigned int j;
   unsigned int plus;

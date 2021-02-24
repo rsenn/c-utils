@@ -72,19 +72,9 @@ static io_entry* g_iofd;
 static http h;
 static buffer in, out;
 
-const char* token_types[] = {"XML_EOF",
-                             "XML_DATA",
-                             "XML_TAG_NAME",
-                             "XML_TAG_CLOSE",
-                             "XML_ATTR_NAME",
-                             "XML_ATTR_VALUE",
-                             "XML_COMMENT"};
-const char* token_colors[] = {"\x1b[1;37m",
-                              "\x1b[1;31m",
-                              "\x1b[1;35m",
-                              "\x1b[1;33m",
-                              "\x1b[1;36m",
-                              "\x1b[1;32m"};
+const char* token_types[] = {
+    "XML_EOF", "XML_DATA", "XML_TAG_NAME", "XML_TAG_CLOSE", "XML_ATTR_NAME", "XML_ATTR_VALUE", "XML_COMMENT"};
+const char* token_colors[] = {"\x1b[1;37m", "\x1b[1;31m", "\x1b[1;35m", "\x1b[1;33m", "\x1b[1;36m", "\x1b[1;32m"};
 
 void
 usage(char* av0) {
@@ -340,10 +330,8 @@ process_xml(const char* x, size_t len, strlist* urls, uri_t* uri) {
     } else
 
         if(tok.id == XML_ATTR_VALUE) {
-      if(stralloc_equals(&attr_name, "href") ||
-         stralloc_equals(&attr_name, "src") ||
-         stralloc_equals(&attr_name, "url") ||
-         byte_finds(tok.x, tok.len, "://") < tok.len) {
+      if(stralloc_equals(&attr_name, "href") || stralloc_equals(&attr_name, "src") ||
+         stralloc_equals(&attr_name, "url") || byte_finds(tok.x, tok.len, "://") < tok.len) {
         stralloc url;
         uri_t link;
         uri_init(&link);
@@ -366,10 +354,7 @@ process_xml(const char* x, size_t len, strlist* urls, uri_t* uri) {
 
       process_uris(tok.x, tok.len, urls, uri);
 #ifdef DEBUG_OUTPUT_
-      buffer_puts(buffer_2,
-                  tok.id < (sizeof(token_colors) / sizeof(token_colors[0]))
-                      ? token_colors[tok.id]
-                      : "?");
+      buffer_puts(buffer_2, tok.id < (sizeof(token_colors) / sizeof(token_colors[0])) ? token_colors[tok.id] : "?");
       buffer_putspad(buffer_2, token_types[tok.id + 1], 16);
       buffer_puts(buffer_2, "\"");
       buffer_put(buffer_2, tok.x, tok.len);
@@ -384,8 +369,7 @@ void
 http_process(http* h, strlist* urls, uri_t* uri) {
   http_response* r = h->response;
   size_t received = r->data.len;
-  size_t pos =
-      http_skip_header(stralloc_begin(&r->data), stralloc_length(&r->data));
+  size_t pos = http_skip_header(stralloc_begin(&r->data), stralloc_length(&r->data));
   const char* type = http_get_header(h, "Content-Type");
   size_t typelen = str_chrs(type, "\r\n\0", 3);
   buffer_puts(buffer_2, "STATUS: ");
@@ -413,16 +397,10 @@ http_process(http* h, strlist* urls, uri_t* uri) {
   buffer_putulonglong(buffer_2, r->data.len - r->ptr);
   buffer_puts(buffer_2, "\nRESPONSE DATA: ");
 
-  if(0 && byte_finds(type, typelen, "html") < typelen ||
-     byte_finds(type, typelen, "xml") < typelen) {
-    process_xml(stralloc_begin(&r->data) + pos,
-                stralloc_length(&r->data) - pos,
-                urls,
-                uri);
+  if(0 && byte_finds(type, typelen, "html") < typelen || byte_finds(type, typelen, "xml") < typelen) {
+    process_xml(stralloc_begin(&r->data) + pos, stralloc_length(&r->data) - pos, urls, uri);
   } else {
-    put_escaped(buffer_2,
-                stralloc_begin(&r->data) + pos,
-                stralloc_length(&r->data) - pos);
+    put_escaped(buffer_2, stralloc_begin(&r->data) + pos, stralloc_length(&r->data) - pos);
 
     //    put_indented_n(buffer_2, stralloc_begin(&r->data) + pos,
     //    stralloc_length(&r->data) - pos, 1024);
@@ -441,9 +419,7 @@ main(int argc, char* argv[]) {
   buffer data;
   const char *s, *outname = 0;
   char* tmpl = "output-XXXXXX.txt";
-  struct longopt opts[] = {{"help", 0, NULL, 'h'},
-                           {"output", 0, NULL, 'o'},
-                           {0, 0, 0, 0}};
+  struct longopt opts[] = {{"help", 0, NULL, 'h'}, {"output", 0, NULL, 'o'}, {0, 0, 0, 0}};
 
   errmsg_iam(argv[0]);
 #if !WINDOWS_NATIVE
@@ -473,13 +449,8 @@ main(int argc, char* argv[]) {
     errmsg_warnsys("open error: ", outname, 0);
     return 126;
   }
-  buffer_init(
-      &out, (buffer_op_sys*)(void*)&write, outfile, outbuf, sizeof(outbuf));
-  buffer_init(&in,
-              (buffer_op_sys*)(void*)&http_read,
-              (uintptr_t)&h,
-              inbuf,
-              sizeof(inbuf));
+  buffer_init(&out, (buffer_op_sys*)(void*)&write, outfile, outbuf, sizeof(outbuf));
+  buffer_init(&in, (buffer_op_sys*)(void*)&http_read, (uintptr_t)&h, inbuf, sizeof(inbuf));
   in.cookie = &h;
 
   http_init(&h, url_host, url_port);
@@ -561,8 +532,7 @@ main(int argc, char* argv[]) {
 
       // buffer_dump(buffer_1, &h.q.in);
 
-      if(h.response->status == HTTP_STATUS_FINISH ||
-         h.response->status == HTTP_STATUS_CLOSED)
+      if(h.response->status == HTTP_STATUS_FINISH || h.response->status == HTTP_STATUS_CLOSED)
         break;
     }
     if(0) {

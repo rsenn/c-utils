@@ -34,7 +34,7 @@ typedef struct {
   charloc loc;
 } charbuf;
 
-#define CHARBUF_INIT(op, fd)                                                   \
+#define CHARBUF_INIT(op, fd)                                                                                           \
   { '\0', 0, 0, 0, (op), (fd) }
 
 void charbuf_close(charbuf*);

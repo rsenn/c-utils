@@ -30,8 +30,7 @@
 #define last_line() (first_line + display_rows)
 
 static strarray lines;
-static int64 terminal_rows, terminal_cols, display_rows, first_line,
-    match_index;
+static int64 terminal_rows, terminal_cols, display_rows, first_line, match_index;
 
 const char* filename;
 buffer terminal;
@@ -40,8 +39,7 @@ struct termios oldterm;
 static stralloc command_buf;
 static int eof;
 
-volatile sig_atomic_t running = 1, reset = 0, resized = 0, command_mode = 0,
-                      line_numbers = 0;
+volatile sig_atomic_t running = 1, reset = 0, resized = 0, command_mode = 0, line_numbers = 0;
 
 static inline size_t
 line_count(void) {
@@ -385,8 +383,7 @@ read_goto(const char* cmd) {
 
 int
 match_pattern(const char* pattern, const char* string) {
-  return str_contains(string, pattern) ||
-         unix_fnmatch(pattern, string, FNM_CASEFOLD) == 0;
+  return str_contains(string, pattern) || unix_fnmatch(pattern, string, FNM_CASEFOLD) == 0;
 }
 
 int

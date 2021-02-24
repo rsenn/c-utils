@@ -152,9 +152,7 @@ FILE* __cdecl popen(const char* cmdstring, const char* type) {
   while(*type == _T(' ')) {
     ++type;
   }
-  _VALIDATE_RETURN(((*type == 0) || (*type == _T('t')) || (*type == _T('b'))),
-                   EINVAL,
-                   NULL);
+  _VALIDATE_RETURN(((*type == 0) || (*type == _T('t')) || (*type == _T('b'))), EINVAL, NULL);
   _type[1] = *type;
 
   /* do the _pipe(). note that neither of the resulting handles will
@@ -226,8 +224,7 @@ FILE* __cdecl popen(const char* cmdstring, const char* type) {
       goto error3;
 
     /* Find what to use. command.com or cmd.exe */
-    if((_EINVAL(_tdupenv_s_crt(&envbuf, NULL, _T("COMSPEC"))) != 0) ||
-       (envbuf == NULL)) {
+    if((_EINVAL(_tdupenv_s_crt(&envbuf, NULL, _T("COMSPEC"))) != 0) || (envbuf == NULL)) {
       unsigned int osver = 0;
       _get_osver(&osver);
       cmdexe = (osver & 0x8000) ? _T("command.com") : _T("cmd.exe");
@@ -245,14 +242,11 @@ FILE* __cdecl popen(const char* cmdstring, const char* type) {
     /* Used by os for duplicating the Handles. */
 
     StartupInfo.dwFlags = STARTF_USESTDHANDLES;
-    StartupInfo.hStdInput =
-        stdhdl == STDIN ? (HANDLE)newhnd : (HANDLE)_osfhnd(0);
-    StartupInfo.hStdOutput =
-        stdhdl == STDOUT ? (HANDLE)newhnd : (HANDLE)_osfhnd(1);
+    StartupInfo.hStdInput = stdhdl == STDIN ? (HANDLE)newhnd : (HANDLE)_osfhnd(0);
+    StartupInfo.hStdOutput = stdhdl == STDOUT ? (HANDLE)newhnd : (HANDLE)_osfhnd(1);
     StartupInfo.hStdError = (HANDLE)_osfhnd(2);
 
-    CommandLineSize =
-        strlen(cmdexe) + strlen(_T(" /c ")) + (strlen(cmdstring)) + 1;
+    CommandLineSize = strlen(cmdexe) + strlen(_T(" /c ")) + (strlen(cmdstring)) + 1;
     if((CommandLine = calloc(CommandLineSize, sizeof(char))) == NULL)
       goto error3;
     (lstrcpyn(CommandLine, cmdexe, CommandLineSize));
@@ -264,16 +258,8 @@ FILE* __cdecl popen(const char* cmdstring, const char* type) {
      */
     save_errno = errno;
     if(_taccess_s(cmdexe, 0) == 0) {
-      childstatus = CreateProcess((LPTSTR)cmdexe,
-                                  (LPTSTR)CommandLine,
-                                  NULL,
-                                  NULL,
-                                  TRUE,
-                                  0,
-                                  NULL,
-                                  NULL,
-                                  &StartupInfo,
-                                  &ProcessInfo);
+      childstatus = CreateProcess(
+          (LPTSTR)cmdexe, (LPTSTR)CommandLine, NULL, NULL, TRUE, 0, NULL, NULL, &StartupInfo, &ProcessInfo);
     } else {
       TCHAR* envPath = NULL;
       size_t envPathSize = 0;
@@ -297,8 +283,7 @@ FILE* __cdecl popen(const char* cmdstring, const char* type) {
       env = envPath;
 
 #ifdef WPRFLAG
-      while((env = (char*)_wgetpath((char*)env, buf, _MAX_PATH - 1)) &&
-            (*buf)) {
+      while((env = (char*)_wgetpath((char*)env, buf, _MAX_PATH - 1)) && (*buf)) {
 #else  /* WPRFLAG */
       while((env = (char*)_getpath((char*)env, buf, _MAX_PATH - 1)) && (*buf)) {
 #endif /* WPRFLAG */
@@ -328,16 +313,8 @@ FILE* __cdecl popen(const char* cmdstring, const char* type) {
          * again.
          */
         if(_taccess_s(buf, 0) == 0) {
-          childstatus = CreateProcess((LPTSTR)buf,
-                                      CommandLine,
-                                      NULL,
-                                      NULL,
-                                      TRUE,
-                                      0,
-                                      NULL,
-                                      NULL,
-                                      &StartupInfo,
-                                      &ProcessInfo);
+          childstatus =
+              CreateProcess((LPTSTR)buf, CommandLine, NULL, NULL, TRUE, 0, NULL, NULL, &StartupInfo, &ProcessInfo);
           break;
         }
       }
@@ -456,8 +433,7 @@ int __cdecl _pclose(FILE* pstream) {
      */
     save_errno = errno;
     errno = 0;
-    if((cwait(&termstat, locidpair->prochnd, WAIT_GRANDCHILD) != -1) ||
-       (errno == EINTR))
+    if((cwait(&termstat, locidpair->prochnd, WAIT_GRANDCHILD) != -1) || (errno == EINTR))
       retval = termstat;
     errno = save_errno;
 
@@ -529,11 +505,8 @@ static IDpair* __cdecl idtab(FILE* pstream) {
    * the extra entries as being free (i.e., set their stream fields to
    * to NULL).
    */
-  if((pstream != NULL) || ((__idtabsiz + 1) < __idtabsiz) ||
-     ((__idtabsiz + 1) >= (SIZE_MAX / sizeof(IDpair))) ||
-     ((newptr = (IDpair*)_recalloc_crt((void*)__idpairs,
-                                       (__idtabsiz + 1),
-                                       sizeof(IDpair))) == NULL))
+  if((pstream != NULL) || ((__idtabsiz + 1) < __idtabsiz) || ((__idtabsiz + 1) >= (SIZE_MAX / sizeof(IDpair))) ||
+     ((newptr = (IDpair*)_recalloc_crt((void*)__idpairs, (__idtabsiz + 1), sizeof(IDpair))) == NULL))
     /* either pstream was non-NULL or the attempt to create/expand
      * the table failed. in either case, return a NULL to indicate
      * failure.

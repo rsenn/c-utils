@@ -7,6 +7,7 @@
 #include "../scan.h"
 #include "../stralloc.h"
 
+#include <assert.h>
 #include <ctype.h>
 
 int
@@ -74,8 +75,7 @@ json_parse_num(jsonval* j, charbuf* b) {
         j->type = JSON_DOUBLE;
     }
     stralloc_nul(&num);
-    n = j->type == JSON_INT ? scan_longlong(num.s, &j->intv)
-                            : scan_double(num.s, &j->doublev);
+    n = j->type == JSON_INT ? scan_longlong(num.s, &j->intv) : scan_double(num.s, &j->doublev);
     stralloc_free(&num);
     if(n > 0) {
       return 1;
@@ -127,13 +127,13 @@ json_parse_array(jsonval* j, charbuf* b) {
     int64_t i = 0;
 
     j->type = JSON_ARRAY;
-    j->listv = 0;
+    j->itemv = 0;
 
     ptr = &j->itemv;
 
     charbuf_skip_pred(b, isspace);
 
-    for(; (ret = charbuf_peekc(b, &c)) > 0;) {
+    for(; (ret = charbuf_peekc(b, &c)) > 0; ptr = &item->next) {
 
       if(c == ']') {
         ret = 1;
@@ -141,10 +141,6 @@ json_parse_array(jsonval* j, charbuf* b) {
       }
       if((item = json_append(ptr, json_undefined())) == 0)
         return -1;
-
-      ptr = &item->next;
-
-      // = slink_insert(ptr, lnk);
 
       if((ret = json_parse(&item->value, b)) <= 0)
         break;
@@ -191,7 +187,9 @@ json_parse_object(jsonval* j, charbuf* b) {
     charbuf_skip_pred(b, isspace);
 
     for(; (ret = charbuf_peekc(b, &c)) > 0;) {
-      jsonval member = {.type = JSON_UNDEFINED};
+      jsonval *itemv, member = {.type = JSON_UNDEFINED};
+      MAP_PAIR_T pair;
+
       stralloc_zero(&key);
       if(c == '}') {
 
@@ -207,13 +205,15 @@ json_parse_object(jsonval* j, charbuf* b) {
       if(!charbuf_skip_ifeq(b, ':'))
         return 0;
 
-      //      stralloc_nul(&key);
+      stralloc_nul(&key);
+
+      pair = MAP_INSERT(j->dictv, key.s, key.len + 1, &member, sizeof(jsonval));
+      assert(pair);
+      itemv = MAP_VALUE(pair);
 
       charbuf_skip_pred(b, &isspace);
-      if(!json_parse(&member, b))
+      if(!json_parse(itemv, b))
         return 0;
-
-      MAP_INSERT(j->dictv, key.s, key.len, &member, sizeof(member));
 
       charbuf_skip_pred(b, &isspace);
       if(charbuf_skip_ifeq(b, ',')) {

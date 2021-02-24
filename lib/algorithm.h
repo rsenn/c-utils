@@ -7,9 +7,7 @@
 extern "C" {
 #endif
 
-#define for_each(container, it)                                                \
-  for(it = begin(container); !is_end(container, it);                           \
-      iterator_increment(container, it))
+#define for_each(container, it) for(it = begin(container); !is_end(container, it); iterator_increment(container, it))
 
 #ifdef __cplusplus
 }

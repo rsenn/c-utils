@@ -75,10 +75,7 @@ fail:
   }
   if(h->response->data.len > 0) {
     buffer_puts(buffer_2, " data=");
-    buffer_putfmt(buffer_2,
-                  h->response->data.s,
-                  h->response->data.len,
-                  &fmt_escapecharnonprintable);
+    buffer_putfmt(buffer_2, h->response->data.s, h->response->data.len, &fmt_escapecharnonprintable);
   }
   buffer_puts(buffer_2, " ret=");
   buffer_putlong(buffer_2, ret);

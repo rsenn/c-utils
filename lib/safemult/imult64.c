@@ -12,8 +12,7 @@ imult64(int64 a, int64 b, int64* c) {
 
 #else
 
-#if defined(__x86_64__) && defined(__OPTIMIZE__) && defined(__GNUC__) &&       \
-    !defined(__clang__)
+#if defined(__x86_64__) && defined(__OPTIMIZE__) && defined(__GNUC__) && !defined(__clang__)
 
 /* WARNING: this only works if compiled with -fomit-frame-pointer */
 int

@@ -3,11 +3,7 @@
 #include "../stralloc.h"
 
 int
-stralloc_subst(stralloc* out,
-               const char* b,
-               size_t len,
-               const char* from,
-               const char* to) {
+stralloc_subst(stralloc* out, const char* b, size_t len, const char* from, const char* to) {
   size_t plen = str_len(from);
   size_t i;
   for(i = 0; i < len;) {

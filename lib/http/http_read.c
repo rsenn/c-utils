@@ -112,8 +112,7 @@ end:
   }
 
 #ifdef DEBUG_HTTP
-  if(r->status == HTTP_STATUS_BUSY || r->status == HTTP_RECV_HEADER ||
-     r->status == HTTP_RECV_DATA) {
+  if(r->status == HTTP_STATUS_BUSY || r->status == HTTP_RECV_HEADER || r->status == HTTP_RECV_DATA) {
     buffer_putspad(buffer_2, "\x1b[38;5;201mhttp_read\x1b[0m ", 30);
     buffer_puts(buffer_2, "s=");
 
@@ -134,9 +133,7 @@ end:
     }
     buffer_puts(buffer_2, " transfer=");
     buffer_puts(buffer_2, "HTTP_TRANSFER_");
-    buffer_puts(buffer_2,
-                ((const char* const[]){
-                    "UNDEF", "CHUNKED", "LENGTH", "BOUNDARY", 0})[r->transfer]);
+    buffer_puts(buffer_2, ((const char* const[]){"UNDEF", "CHUNKED", "LENGTH", "BOUNDARY", 0})[r->transfer]);
 
     buffer_puts(buffer_2, " status=");
     buffer_puts(buffer_2,

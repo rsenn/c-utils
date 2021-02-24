@@ -59,14 +59,8 @@ static int charlit_to_int(const char*);
 static int eat_whitespace(tokenizer*, struct token_s* token, int* count);
 static int emit_error_or_warning(tokenizer*, int is_error);
 static void error(const char*, tokenizer* t, struct token_s* curr);
-static void error_or_warning(const char*,
-                             const char* type,
-                             tokenizer* t,
-                             struct token_s* curr);
-static int expect(tokenizer*,
-                  enum tokentype tt,
-                  const char* const values[],
-                  struct token_s* token);
+static void error_or_warning(const char*, const char* type, tokenizer* t, struct token_s* curr);
+static int expect(tokenizer*, enum tokentype tt, const char* const values[], struct token_s* token);
 static int expr(tokenizer*, int rbp, int* err);
 static void free_file_container(struct FILE_container_s*);
 static void free_visited(char* visited[]);
@@ -138,10 +132,7 @@ emit_token(buffer* out, struct token_s* tok, const char* strbuf) {
 }
 
 static inline void
-error_or_warning(const char* err,
-                 const char* type,
-                 tokenizer* t,
-                 struct token_s* curr) {
+error_or_warning(const char* err, const char* type, tokenizer* t, struct token_s* curr) {
   unsigned column = curr ? curr->column : t->column;
   unsigned line = curr ? curr->line : t->line;
 
@@ -418,10 +409,7 @@ emit_error_or_warning(tokenizer* t, int is_error) {
 
 /* return index of matching item in values array, or -1 on error */
 static inline int
-expect(tokenizer* t,
-       enum tokentype tt,
-       const char* const values[],
-       struct token_s* token) {
+expect(tokenizer* t, enum tokentype tt, const char* const values[], struct token_s* token) {
   int ret;
   do {
     ret = tokenizer_next(t, token);

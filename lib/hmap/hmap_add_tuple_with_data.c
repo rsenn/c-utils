@@ -2,10 +2,7 @@
 #include "../hmap_internal.h"
 
 int
-hmap_add_tuple_with_data(HMAP_DB** hmap_db,
-                         const void* key,
-                         size_t k_len,
-                         void* data) {
+hmap_add_tuple_with_data(HMAP_DB** hmap_db, const void* key, size_t k_len, void* data) {
   TUPLE *new_tuple = NULL, *ptr_tuple = NULL, *root_tuple = NULL;
   int r = 0;
   int index = hmap_hash(key, k_len) % (*hmap_db)->bucket_size;

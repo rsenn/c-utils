@@ -140,8 +140,7 @@ reg2cmd() {
     len = buffer_getline(buffer_0, buffer, sizeof(buffer));
 
     if(lineno == 1) {
-      if(((unsigned char)buffer[0] == 0xff &&
-          (unsigned char)buffer[1] == 0xfe) ||
+      if(((unsigned char)buffer[0] == 0xff && (unsigned char)buffer[1] == 0xfe) ||
          (buffer[0] == 0x00 || buffer[1] == 0x00)) {
         unicode = 1;
       }
@@ -315,10 +314,8 @@ reg2cmd() {
         exit(2);
       }
 
-      buffer_puts(buffer_1,
-                  (rt == REGISTRY_DELETE) ? "reg delete \"" : "reg add \"");
-      buffer_puts(buffer_1,
-                  (shortroot ? registry_roots_short : registry_roots)[rr]);
+      buffer_puts(buffer_1, (rt == REGISTRY_DELETE) ? "reg delete \"" : "reg add \"");
+      buffer_puts(buffer_1, (shortroot ? registry_roots_short : registry_roots)[rr]);
       buffer_puts(buffer_1, "\\");
       buffer_putsa(buffer_1, &subkey);
 
@@ -335,12 +332,10 @@ reg2cmd() {
         buffer_puts(buffer_1, "\" ");
       }
 
-      has_newline =
-          (find_char('\n', &line.s[valuestart], valueend - valuestart) ||
-           find_char('\r', &line.s[valuestart], valueend - valuestart));
+      has_newline = (find_char('\n', &line.s[valuestart], valueend - valuestart) ||
+                     find_char('\r', &line.s[valuestart], valueend - valuestart));
 
-      has_expansion =
-          (find_char('%', &line.s[valuestart], valueend - valuestart) >= 2);
+      has_expansion = (find_char('%', &line.s[valuestart], valueend - valuestart) >= 2);
 
       if(has_expansion && rt == REGISTRY_SZ)
         rt = REGISTRY_EXPAND_SZ;
@@ -374,8 +369,7 @@ reg2cmd() {
             if(has_newline) {
               for(pos = valuestart; pos < valueend; pos++) {
                 buffer_putc(buffer_1, hexchar((unsigned char)line.s[pos] >> 4));
-                buffer_putc(buffer_1,
-                            hexchar((unsigned char)line.s[pos] & 0x0f));
+                buffer_putc(buffer_1, hexchar((unsigned char)line.s[pos] & 0x0f));
               }
             } else {
               buffer_put(buffer_1, &line.s[valuestart], valueend - valuestart);

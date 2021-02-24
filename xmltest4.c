@@ -48,8 +48,7 @@ xml_print_node(xmlnode* node, buffer* b, int depth, const char* nl) {
       xml_print_list(node->children, b, depth + 1, "\n");
       buffer_putnspace(b, depth * 2);
     }
-  } else if(node->name[0] == '/' ||
-            (node->next && node_is_closing(node->next))) {
+  } else if(node->name[0] == '/' || (node->next && node_is_closing(node->next))) {
     buffer_putc(b, '>');
   } else {
     buffer_puts(b, node->name[0] == '?' ? "?>" : "/>");

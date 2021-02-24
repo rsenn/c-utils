@@ -12,15 +12,11 @@ hmap_free_data(TUPLE* tuple) {
       tuple->vals.val_uint = 0;
       break;
     case HMAP_DATA_TYPE_INT64:
-      HMAP_DUMP("remove[%d] data[%ld]\n",
-                tuple->index,
-                tuple->vals.val_longlong);
+      HMAP_DUMP("remove[%d] data[%ld]\n", tuple->index, tuple->vals.val_longlong);
       tuple->vals.val_longlong = 0;
       break;
     case HMAP_DATA_TYPE_UINT64:
-      HMAP_DUMP("remove[%d] data[%lu]\n",
-                tuple->index,
-                tuple->vals.val_ulonglong);
+      HMAP_DUMP("remove[%d] data[%lu]\n", tuple->index, tuple->vals.val_ulonglong);
       tuple->vals.val_ulonglong = 0;
       break;
     case HMAP_DATA_TYPE_DOUBLE:
@@ -28,9 +24,7 @@ hmap_free_data(TUPLE* tuple) {
       tuple->vals.val_double = 0.0;
       break;
     case HMAP_DATA_TYPE_CHARS:
-      HMAP_DUMP("remove[%d] data[%s]\n",
-                tuple->index,
-                (char*)tuple->vals.val_chars);
+      HMAP_DUMP("remove[%d] data[%s]\n", tuple->index, (char*)tuple->vals.val_chars);
       if(tuple->vals.val_chars != NULL) {
         free(tuple->vals.val_chars);
       }

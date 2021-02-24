@@ -31,35 +31,27 @@ void dlist_push(dlist*, node*);
 void dlist_remove(dlist*, node*);
 void dlist_unshift(dlist*, node*);
 
-#define dlist_foreach_down(dlist, n)                                           \
-  for((n) = (void*)(dlist)->head; (n) != NULL; (n) = (void*)(((node*)n)->next))
+#define dlist_foreach_down(dlist, n) for((n) = (void*)(dlist)->head; (n) != NULL; (n) = (void*)(((node*)n)->next))
 
 /* n is set to the current node and n->next is backupped
    into m before loop body for safe walk-throught when
    links get deleted */
-#define dlist_foreach_down_safe(dlist, n, m)                                   \
-  for((n) = (void*)(dlist)->head,                                              \
-  (m) = (void*)((node*)n) != NULL ? (void*)((node*)n)->next : NULL;            \
-      (n) != NULL;                                                             \
-      (n) = (void*)((node*)m),                                                 \
-  (m) = (void*)((node*)n) != NULL ? (void*)((node*)n)->next : NULL)
+#define dlist_foreach_down_safe(dlist, n, m)                                                                           \
+  for((n) = (void*)(dlist)->head, (m) = (void*)((node*)n) != NULL ? (void*)((node*)n)->next : NULL; (n) != NULL;       \
+      (n) = (void*)((node*)m), (m) = (void*)((node*)n) != NULL ? (void*)((node*)n)->next : NULL)
 
 /*
  * Macros to walk through a dlist list from tail to head.                     *
  */
 /* n is set to the current node*/
-#define dlist_foreach_up(dlist, n)                                             \
-  for((n) = (void*)(dlist)->tail; (n) != NULL; (n) = (void*)(((node*)n)->prev))
+#define dlist_foreach_up(dlist, n) for((n) = (void*)(dlist)->tail; (n) != NULL; (n) = (void*)(((node*)n)->prev))
 
 /* n is set to the current node and n->prev is backupped
    into m before loop body for safe walk-throught when
    links get deleted */
-#define dlist_foreach_up_safe(dlist, n, m)                                     \
-  for((n) = (void*)(dlist)->tail,                                              \
-  (m) = (void*)((node*)n) != NULL ? (void*)((node*)n)->prev : NULL;            \
-      (n) != NULL;                                                             \
-      (n) = (void*)((node*)m),                                                 \
-  (m) = (void*)((node*)n) != NULL ? (void*)((node*)n)->prev : NULL)
+#define dlist_foreach_up_safe(dlist, n, m)                                                                             \
+  for((n) = (void*)(dlist)->tail, (m) = (void*)((node*)n) != NULL ? (void*)((node*)n)->prev : NULL; (n) != NULL;       \
+      (n) = (void*)((node*)m), (m) = (void*)((node*)n) != NULL ? (void*)((node*)n)->prev : NULL)
 
 /* aliases for backwards compatibility */
 #define dlist_foreach dlist_foreach_down

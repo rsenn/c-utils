@@ -20,11 +20,7 @@ typedef void* (*cbmap_allocator_fn)(void* data, size_t data_len);
 typedef void (*cbmap_deallocator_fn)(void* data);
 
 /** @return 1 to continue iterating, any other to stop. */
-typedef int (*cbmap_visitor)(const void* key,
-                             size_t key_len,
-                             const void* value,
-                             size_t value_len,
-                             void* user_data);
+typedef int (*cbmap_visitor)(const void* key, size_t key_len, const void* value, size_t value_len, void* user_data);
 
 /** Opaque map type */
 typedef struct cbmap* cbmap_t;
@@ -48,11 +44,10 @@ cbmap_t cbmap_new_with_static_keys_and_values(void);
  WARNING: Of course, expect undefined behaviour if keys and values are changed
  during the map lifetime.
 */
-cbmap_t
-cbmap_new_with_custom_allocation(cbmap_allocator_fn key_allocator,
-                                 cbmap_deallocator_fn key_deallocator,
-                                 cbmap_allocator_fn value_allocator,
-                                 cbmap_deallocator_fn value_deallocator);
+cbmap_t cbmap_new_with_custom_allocation(cbmap_allocator_fn key_allocator,
+                                         cbmap_deallocator_fn key_deallocator,
+                                         cbmap_allocator_fn value_allocator,
+                                         cbmap_deallocator_fn value_deallocator);
 
 /** Frees a map (invokes appropriate deallocators on keys and values) */
 void cbmap_destroy(cbmap_t* cmap_ptr);
@@ -61,12 +56,10 @@ void cbmap_destroy(cbmap_t* cmap_ptr);
 size_t cbmap_count(cbmap_t map);
 
 /** @return 0 if no memory, 1 on insertion and 2 on update. */
-int cbmap_insert(
-    cbmap_t map, void* key, size_t key_len, void* value, size_t value_len);
+int cbmap_insert(cbmap_t map, void* key, size_t key_len, void* value, size_t value_len);
 
 /** @return 0 if not found, 1 if found */
-int cbmap_get(
-    cbmap_t map, void* key, size_t key_len, void** value, size_t* value_len);
+int cbmap_get(cbmap_t map, void* key, size_t key_len, void** value, size_t* value_len);
 
 /** @return 0 if not found, 1 if found */
 int cbmap_delete(cbmap_t map, void* key, size_t key_len);
@@ -74,11 +67,8 @@ int cbmap_delete(cbmap_t map, void* key, size_t key_len);
 /** Visits keys and values after a given key prefix */
 int cbmap_visit(uint8* top, cbmap_visitor visitor_fn, void* user_data);
 
-int cbmap_visit_prefix(cbmap_t map,
-                       uint8* key_prefix,
-                       size_t key_prefix_len,
-                       cbmap_visitor visitor_fn,
-                       void* user_data);
+int
+cbmap_visit_prefix(cbmap_t map, uint8* key_prefix, size_t key_prefix_len, cbmap_visitor visitor_fn, void* user_data);
 
 /** Visits all keys and values */
 int cbmap_visit_all(cbmap_t map, cbmap_visitor visitor_fn, void* user_data);

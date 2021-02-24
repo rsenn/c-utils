@@ -27,8 +27,7 @@ void
 put_str_escaped(buffer* b, const char* str) {
   stralloc esc;
   stralloc_init(&esc);
-  stralloc_fmt_pred(
-      &esc, str, str_len(str), (stralloc_fmt_fn*)&fmt_escapecharc, iscntrl);
+  stralloc_fmt_pred(&esc, str, str_len(str), (stralloc_fmt_fn*)&fmt_escapecharc, iscntrl);
   buffer_putsa(b, &esc);
 }
 
@@ -198,9 +197,7 @@ main(int argc, char* argv[]) {
   const char* x;
   char* tmpl = "/tmp/strip-comments.XXXXXX";
 
-  struct longopt opts[] = {{"help", 0, NULL, 'h'},
-                           {"in-place", 0, NULL, 'i'},
-                           {0, 0, 0, 0}};
+  struct longopt opts[] = {{"help", 0, NULL, 'h'}, {"in-place", 0, NULL, 'i'}, {0, 0, 0, 0}};
 
   errmsg_iam(argv[0]);
 
@@ -223,15 +220,13 @@ main(int argc, char* argv[]) {
   //  stralloc_init(&data);
 
   if(optind < argc) {
-    buffer_putm_internal(
-        buffer_2, "Opening input file '", argv[optind], "'...", NULL);
+    buffer_putm_internal(buffer_2, "Opening input file '", argv[optind], "'...", NULL);
     buffer_putnlflush(buffer_2);
     in_fd = open_read((in_path = argv[optind]));
     optind++;
   }
   if(optind < argc) {
-    buffer_putm_internal(
-        buffer_2, "Opening output file '", argv[optind], "'...", NULL);
+    buffer_putm_internal(buffer_2, "Opening output file '", argv[optind], "'...", NULL);
     buffer_putnlflush(buffer_2);
     out_fd = open_trunc((out_path = argv[optind]));
     optind++;

@@ -21,9 +21,7 @@ tls_instance_handshake(tls_instance* i) {
 #endif
     sslfn = server ? SSL_accept : SSL_connect;
 
-    ret = tls_instance_return(i,
-                              server ? TLS_OP_ACCEPT : TLS_OP_CONNECT,
-                              sslfn(i->ssl));
+    ret = tls_instance_return(i, server ? TLS_OP_ACCEPT : TLS_OP_CONNECT, sslfn(i->ssl));
 #ifdef DEBUG_OUTPUT
     tls_instance_debug(i);
     buffer_puts(buffer_2, " resumed handshake: ");

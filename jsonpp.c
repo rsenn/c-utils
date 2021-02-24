@@ -28,8 +28,7 @@ void
 put_str_escaped(buffer* b, const char* str) {
   stralloc esc;
   stralloc_init(&esc);
-  stralloc_fmt_pred(
-      &esc, str, str_len(str), (stralloc_fmt_fn*)&fmt_escapecharc, iscntrl);
+  stralloc_fmt_pred(&esc, str, str_len(str), (stralloc_fmt_fn*)&fmt_escapecharc, iscntrl);
   buffer_putsa(b, &esc);
 }
 
@@ -57,8 +56,7 @@ compact_printer(jsonfmt* p, jsonval* v, int depth, int index, char q) {
   p->newline = multi_line ? "\n" : "";
   p->spacing = spacing ? spacing : compact ? "" : " ";
 
-  p->separat =
-      separator ? separator : multi_line ? ",\n" : p->spacing[0] ? ", " : ",";
+  p->separat = separator ? separator : multi_line ? ",\n" : p->spacing[0] ? ", " : ",";
   p->quote[0] = quote[0];
   p->quote[1] = quote[1];
   p->precision = 3;
@@ -74,8 +72,7 @@ default_printer(jsonfmt* p, jsonval* v, int depth, int index, char q) {
 
   p->spacing = spacing ? spacing : compact ? "" : " ";
   p->newline = multi_line ? "\n" : p->spacing;
-  p->separat =
-      separator ? separator : multi_line ? ",\n" : p->spacing[0] ? ", " : ",";
+  p->separat = separator ? separator : multi_line ? ",\n" : p->spacing[0] ? ", " : ",";
   p->quote[0] = quote[0];
   p->quote[1] = quote[1];
   p->precision = 10;
@@ -234,8 +231,7 @@ main(int argc, char* argv[]) {
       const char tmpl[] = ".tmpXXXXXX";
       out_file = alloc(str_len(in_file) + str_len(tmpl));
 
-      str_copy(&out_file[str_copyn(out_file, in_file, str_rchr(in_file, '.'))],
-               tmpl);
+      str_copy(&out_file[str_copyn(out_file, in_file, str_rchr(in_file, '.'))], tmpl);
 
       out_fd = open_temp(&out_file);
     } else if(out_file) {

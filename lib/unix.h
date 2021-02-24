@@ -34,8 +34,7 @@ int isleap(int year);
 int pipe2(int fd[2], int flags);
 
 int unix_getopt(int, char* const[], const char*);
-int
-unix_getopt_long(int, char* const[], const char*, const struct longopt*, int*);
+int unix_getopt_long(int, char* const[], const char*, const struct longopt*, int*);
 
 extern char* unix_optarg;
 extern int unix_optind;

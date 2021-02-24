@@ -45,8 +45,7 @@ fmt_ip6(char* s, const char ip[16]) {
       k += len0 - 2;
       continue;
     }
-    temp = ((unsigned long)(unsigned char)ip[k] << 8) +
-           (unsigned long)(unsigned char)ip[k + 1];
+    temp = ((unsigned long)(unsigned char)ip[k] << 8) + (unsigned long)(unsigned char)ip[k + 1];
     temp = fmt_xlong(s, temp);
     len += temp;
     if(s)

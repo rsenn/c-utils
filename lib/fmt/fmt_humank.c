@@ -11,12 +11,10 @@ fmt_humank(char* dest, uint64 l) {
         ((uint64)1024 * (uint64)1024 * (uint64)1024 * (uint64)1024 / 10);
     unit = 'T';
   } else if(l > (uint64)1024 * (uint64)1024 * (uint64)1024) {
-    l = (l + ((uint64)1024 * (uint64)1024 * (uint64)1024 / 20)) /
-        ((uint64)1024 * (uint64)1024 * (uint64)1024 / 10);
+    l = (l + ((uint64)1024 * (uint64)1024 * (uint64)1024 / 20)) / ((uint64)1024 * (uint64)1024 * (uint64)1024 / 10);
     unit = 'G';
   } else if(l > (uint64)1024 * (uint64)1024) {
-    l = (l + ((uint64)1024 * (uint64)1024 / 20)) /
-        ((uint64)1024 * (uint64)1024 / 10);
+    l = (l + ((uint64)1024 * (uint64)1024 / 20)) / ((uint64)1024 * (uint64)1024 / 10);
     unit = 'M';
   } else {
     l = (l + (1024 / 20)) / (1024 / 10);

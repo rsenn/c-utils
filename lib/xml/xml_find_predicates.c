@@ -5,10 +5,7 @@
 int xml_has_attr(xmlnode* node, const void*, const strlist*);
 
 int
-xml_match_name(xmlnode* node,
-               strlist* names,
-               const char* attr,
-               const char* value) {
+xml_match_name(xmlnode* node, strlist* names, const char* attr, const char* value) {
   (void)attr;
   (void)value;
   if(node->name == NULL)
@@ -17,10 +14,7 @@ xml_match_name(xmlnode* node,
 }
 
 int
-xml_match_name_and_attr(xmlnode* node,
-                        strlist* names,
-                        const char* attr,
-                        const char* value) {
+xml_match_name_and_attr(xmlnode* node, strlist* names, const char* attr, const char* value) {
   if(node->name == NULL)
     return 0;
   if(!xml_has_attribute(node, attr))

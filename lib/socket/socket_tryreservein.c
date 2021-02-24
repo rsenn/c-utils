@@ -10,9 +10,7 @@
 void
 socket_tryreservein(int s, int size) {
   while(size >= 1024) {
-    if(winsock2errno(
-           setsockopt(s, SOL_SOCKET, SO_RCVBUF, (void*)&size, sizeof size)) ==
-       0)
+    if(winsock2errno(setsockopt(s, SOL_SOCKET, SO_RCVBUF, (void*)&size, sizeof size)) == 0)
       return;
     size -= (size >> 5);
   }

@@ -118,12 +118,9 @@ enum io_fd_flags {
 #endif
 
 /* put d on internal data structure, return 1 on success, 0 on error */
-int io_fd(
-    fd_t d); /* use this for sockets before you called connect() or accept() */
-int io_fd_canwrite(
-    fd_t d); /* use this for connected sockets (assumes socket is writable) */
-int io_fd_flags(fd_t d,
-                int flags); /* can be used to tell io_fd to skip one syscall */
+int io_fd(fd_t d);                  /* use this for sockets before you called connect() or accept() */
+int io_fd_canwrite(fd_t d);         /* use this for connected sockets (assumes socket is writable) */
+int io_fd_flags(fd_t d, int flags); /* can be used to tell io_fd to skip one syscall */
 
 void io_setcookie(fd_t d, void* cookie);
 void* io_getcookie(fd_t d);
@@ -168,8 +165,7 @@ int io_queueforwrite(fd_t d);
 typedef int64 (*io_write_callback)(fd_t sfd, const void* buf, uint64 n);
 
 /* used internally, but hey, who knows */
-int64 io_mmapwritefile(
-    fd_t out, fd_t in, uint64 off, uint64 bytes, io_write_callback writecb);
+int64 io_mmapwritefile(fd_t out, fd_t in, uint64 off, uint64 bytes, io_write_callback writecb);
 
 /* only needed for debugging, will print some stats into the buffer to
  * aid in debugging the state machine if a descriptor loops or so */

@@ -39,13 +39,10 @@ int
 unittest_main() {
   size_t dl;
   char buf[100];
-  assert(scan_ldapescape("test\\n\");", buf, &dl) == 4 && dl == 4 &&
-         !memcmp(buf, "test", 4));
+  assert(scan_ldapescape("test\\n\");", buf, &dl) == 4 && dl == 4 && !memcmp(buf, "test", 4));
   /* check hex escaping */
-  assert(scan_ldapescape("test\\0afoo", buf, &dl) == 10 && dl == 8 &&
-         !memcmp(buf, "test\nfoo", 8));
+  assert(scan_ldapescape("test\\0afoo", buf, &dl) == 10 && dl == 8 && !memcmp(buf, "test\nfoo", 8));
   /* check that short sequences are rejected */
-  assert(scan_ldapescape("test\\ax", buf, &dl) == 4 && dl == 4 &&
-         !memcmp(buf, "test", 4));
+  assert(scan_ldapescape("test\\ax", buf, &dl) == 4 && dl == 4 && !memcmp(buf, "test", 4));
 }
 #endif

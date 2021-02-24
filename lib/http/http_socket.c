@@ -98,8 +98,7 @@ http_socket_read(fd_t fd, void* buf, size_t len, void* b) {
     ret = 0;
   } else if(ret == -1 && (!h->tls || tlserr != 5)) {
     r->err = errno;
-    if(h->tls ? (tlserr != 2 && tlserr != 3)
-              : (errno != EWOULDBLOCK && errno != EAGAIN))
+    if(h->tls ? (tlserr != 2 && tlserr != 3) : (errno != EWOULDBLOCK && errno != EAGAIN))
       r->status = HTTP_STATUS_ERROR;
   }
 #if DEBUG_HTTP
@@ -118,12 +117,7 @@ http_socket_read(fd_t fd, void* buf, size_t len, void* b) {
   if(h->response) {
     buffer_puts(buffer_2, " transfer=");
     buffer_puts(buffer_2, "HTTP_TRANSFER_");
-    buffer_puts(buffer_2,
-                ((const char* const[]){"UNDEF",
-                                       "CHUNKED",
-                                       "LENGTH",
-                                       "BOUNDARY",
-                                       0})[h->response->transfer]);
+    buffer_puts(buffer_2, ((const char* const[]){"UNDEF", "CHUNKED", "LENGTH", "BOUNDARY", 0})[h->response->transfer]);
 
     buffer_puts(buffer_2, " status=");
     buffer_puts(buffer_2,
@@ -199,8 +193,7 @@ http_socket_write(fd_t fd, void* buf, size_t len, void* b) {
     ret = 0;
   } else if(ret == -1 && (!h->tls || tlserr != 5)) {
     r->err = errno;
-    if(h->tls ? (tlserr != 2 && tlserr != 3)
-              : (errno != EWOULDBLOCK && errno != EAGAIN))
+    if(h->tls ? (tlserr != 2 && tlserr != 3) : (errno != EWOULDBLOCK && errno != EAGAIN))
       r->status = HTTP_STATUS_ERROR;
   }
 #ifdef DEBUG_HTTP
@@ -218,12 +211,7 @@ http_socket_write(fd_t fd, void* buf, size_t len, void* b) {
   if(h->response) {
     buffer_puts(buffer_2, " transfer=");
     buffer_puts(buffer_2, "HTTP_TRANSFER_");
-    buffer_puts(buffer_2,
-                ((const char* const[]){"UNDEF",
-                                       "CHUNKED",
-                                       "LENGTH",
-                                       "BOUNDARY",
-                                       0})[h->response->transfer]);
+    buffer_puts(buffer_2, ((const char* const[]){"UNDEF", "CHUNKED", "LENGTH", "BOUNDARY", 0})[h->response->transfer]);
 
     buffer_puts(buffer_2, " status=");
     buffer_puts(buffer_2,

@@ -61,8 +61,7 @@ wsa_socketpair(int af, int type, int proto, fd_t sock[2]) {
   if(getsockname(sock[1], (SOCKADDR*)&addr2, &addr2_len) == SOCKET_ERROR)
     goto error;
 
-  if(addr1_len != addr2_len || addr1.sin_addr.s_addr != addr2.sin_addr.s_addr ||
-     addr1.sin_port != addr2.sin_port)
+  if(addr1_len != addr2_len || addr1.sin_addr.s_addr != addr2.sin_addr.s_addr || addr1.sin_port != addr2.sin_port)
     goto error;
 
   closesocket(listen_sock);

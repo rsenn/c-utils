@@ -52,21 +52,15 @@ unittest_main() {
   size_t l;
   /* check base operation */
   byte_fill(buf, sizeof(buf), '?');
-  assert(scan_urlencoded("foo%2ebar", buf, &l) == 9 && l == 7 &&
-         !memcmp(buf, "foo.bar?", 8));
+  assert(scan_urlencoded("foo%2ebar", buf, &l) == 9 && l == 7 && !memcmp(buf, "foo.bar?", 8));
   /* check + handling */
   byte_fill(buf, sizeof(buf), '?');
-  assert(scan_urlencoded("foo+bar", buf, &l) == 7 && l == 7 &&
-         !memcmp(buf, "foo bar?", 8));
-  assert(scan_urlencoded2("foo+bar", buf, &l) == 7 && l == 7 &&
-         !memcmp(buf, "foo+bar?", 8));
+  assert(scan_urlencoded("foo+bar", buf, &l) == 7 && l == 7 && !memcmp(buf, "foo bar?", 8));
+  assert(scan_urlencoded2("foo+bar", buf, &l) == 7 && l == 7 && !memcmp(buf, "foo+bar?", 8));
   /* check that we abort on invalid sequences */
   byte_fill(buf, sizeof(buf), '?');
-  assert(scan_urlencoded("foo%2xbar", buf, &l) == 3 && l == 3 &&
-         !memcmp(buf, "foo?", 4));
-  assert(scan_urlencoded("foo\nbar", buf, &l) == 3 && l == 3 &&
-         !memcmp(buf, "foo?", 4));
-  assert(scan_urlencoded("foo bar", buf, &l) == 3 && l == 3 &&
-         !memcmp(buf, "foo?", 4));
+  assert(scan_urlencoded("foo%2xbar", buf, &l) == 3 && l == 3 && !memcmp(buf, "foo?", 4));
+  assert(scan_urlencoded("foo\nbar", buf, &l) == 3 && l == 3 && !memcmp(buf, "foo?", 4));
+  assert(scan_urlencoded("foo bar", buf, &l) == 3 && l == 3 && !memcmp(buf, "foo?", 4));
 }
 #endif

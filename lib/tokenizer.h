@@ -87,12 +87,8 @@ int tokenizer_next(tokenizer* t, struct token_s* out);
 int tokenizer_peek(tokenizer* t);
 int tokenizer_peek_token(tokenizer* t, struct token_s* tok);
 int tokenizer_read_until(tokenizer* t, const char* marker, int stop_at_nl);
-void tokenizer_register_custom_token(tokenizer* t,
-                                     int tokentype,
-                                     const char* str);
-void tokenizer_register_marker(tokenizer* t,
-                               enum markertype mt,
-                               const char* marker);
+void tokenizer_register_custom_token(tokenizer* t, int tokentype, const char* str);
+void tokenizer_register_marker(tokenizer* t, enum markertype mt, const char* marker);
 int tokenizer_rewind(tokenizer* t);
 void tokenizer_set_filename(tokenizer* t, const char* fn);
 void tokenizer_set_flags(tokenizer* t, int flags);

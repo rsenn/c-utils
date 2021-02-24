@@ -88,27 +88,18 @@ int
 unittest_main() {
   size_t dl;
   char buf[100];
-  assert(scan_cescape("test\\n\");", buf, &dl) == 6 && dl == 5 &&
-         !memcmp(buf, "test\n", 5));
+  assert(scan_cescape("test\\n\");", buf, &dl) == 6 && dl == 5 && !memcmp(buf, "test\n", 5));
   /* check hex and octal escaping */
-  assert(scan_cescape("test\\x0a\");", buf, &dl) == 8 && dl == 5 &&
-         !memcmp(buf, "test\n", 5));
-  assert(scan_cescape("test\\012\");", buf, &dl) == 8 && dl == 5 &&
-         !memcmp(buf, "test\n", 5));
+  assert(scan_cescape("test\\x0a\");", buf, &dl) == 8 && dl == 5 && !memcmp(buf, "test\n", 5));
+  assert(scan_cescape("test\\012\");", buf, &dl) == 8 && dl == 5 && !memcmp(buf, "test\n", 5));
   /* check short escape sequences */
-  assert(scan_cescape("test\\xa\");", buf, &dl) == 7 && dl == 5 &&
-         !memcmp(buf, "test\n", 5));
-  assert(scan_cescape("test\\12\");", buf, &dl) == 7 && dl == 5 &&
-         !memcmp(buf, "test\n", 5));
-  assert(scan_cescape("test\\1\");", buf, &dl) == 6 && dl == 5 &&
-         !memcmp(buf, "test\1", 5));
+  assert(scan_cescape("test\\xa\");", buf, &dl) == 7 && dl == 5 && !memcmp(buf, "test\n", 5));
+  assert(scan_cescape("test\\12\");", buf, &dl) == 7 && dl == 5 && !memcmp(buf, "test\n", 5));
+  assert(scan_cescape("test\\1\");", buf, &dl) == 6 && dl == 5 && !memcmp(buf, "test\1", 5));
   /* check unicode */
-  assert(scan_cescape("test\\u000a\");", buf, &dl) == 10 && dl == 5 &&
-         !memcmp(buf, "test\n", 5));
-  assert(scan_cescape("test\\U0000000a\");", buf, &dl) == 14 && dl == 5 &&
-         !memcmp(buf, "test\n", 5));
+  assert(scan_cescape("test\\u000a\");", buf, &dl) == 10 && dl == 5 && !memcmp(buf, "test\n", 5));
+  assert(scan_cescape("test\\U0000000a\");", buf, &dl) == 14 && dl == 5 && !memcmp(buf, "test\n", 5));
   /* check that short sequences are rejected */
-  assert(scan_cescape("test\\Ua\");", buf, &dl) == 4 && dl == 4 &&
-         !memcmp(buf, "test", 4));
+  assert(scan_cescape("test\\Ua\");", buf, &dl) == 4 && dl == 4 && !memcmp(buf, "test", 4));
 }
 #endif

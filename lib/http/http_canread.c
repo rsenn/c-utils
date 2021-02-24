@@ -74,17 +74,13 @@ http_canread(http* h, void (*wantwrite)(fd_t)) {
       }
       break;
     }
-    if(!case_diffb(&r->data.s[pos],
-                   str_len("Content-Type: multipart"),
-                   "Content-Type: multipart")) {
+    if(!case_diffb(&r->data.s[pos], str_len("Content-Type: multipart"), "Content-Type: multipart")) {
       size_t p = pos + str_find(&r->data.s[pos], "boundary=");
       if(r->data.s[p]) {
         stralloc_copys(&r->boundary, &r->data.s[p + str_len("boundary=")]);
       }
       r->transfer = HTTP_TRANSFER_BOUNDARY;
-    } else if(!case_diffb(&r->data.s[pos],
-                          str_len("Content-Length: "),
-                          "Content-Length: ")) {
+    } else if(!case_diffb(&r->data.s[pos], str_len("Content-Length: "), "Content-Length: ")) {
       scan_ulonglong(&r->data.s[pos + 16], &r->content_length);
       r->transfer = HTTP_TRANSFER_LENGTH;
     } else {

@@ -6,18 +6,18 @@
 #include <sys/syscall.h>
 #include <unistd.h>
 
-#define PFATAL(x...)                                                           \
-  do {                                                                         \
-    fprintf(stderr, "[-] SYSTEM ERROR : " x);                                  \
-    fprintf(stderr,                                                            \
-            "\n\tLocation : %s(), "                                            \
-            "%s:%u\n",                                                         \
-            __FUNCTION__,                                                      \
-            __FILE__,                                                          \
-            __LINE__);                                                         \
-    perror("      OS message ");                                               \
-    fprintf(stderr, "\n");                                                     \
-    exit(EXIT_FAILURE);                                                        \
+#define PFATAL(x...)                                                                                                   \
+  do {                                                                                                                 \
+    fprintf(stderr, "[-] SYSTEM ERROR : " x);                                                                          \
+    fprintf(stderr,                                                                                                    \
+            "\n\tLocation : %s(), "                                                                                    \
+            "%s:%u\n",                                                                                                 \
+            __FUNCTION__,                                                                                              \
+            __FILE__,                                                                                                  \
+            __LINE__);                                                                                                 \
+    perror("      OS message ");                                                                                       \
+    fprintf(stderr, "\n");                                                                                             \
+    exit(EXIT_FAILURE);                                                                                                \
   } while(0)
 
 inline static int
@@ -36,11 +36,7 @@ io_submit(aio_context_t ctx, long nr, struct iocb** iocbpp) {
 }
 
 inline static int
-io_getevents(aio_context_t ctx,
-             long min_nr,
-             long max_nr,
-             struct io_event* events,
-             struct timespec* timeout) {
+io_getevents(aio_context_t ctx, long min_nr, long max_nr, struct io_event* events, struct timespec* timeout) {
   // This might be improved.
   return syscall(__NR_io_getevents, ctx, min_nr, max_nr, events, timeout);
 }

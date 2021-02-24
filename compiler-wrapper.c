@@ -50,17 +50,13 @@ typedef enum {
 
 } operation_mode;
 
-const char* opmode_strs[] = {"compile,assemble,link",
-                             "preprocess",
-                             "compile",
-                             "compile,assemble"};
+const char* opmode_strs[] = {"compile,assemble,link", "preprocess", "compile", "compile,assemble"};
 static strlist args;
 static int i, n;
 
 static compiler_type type;
 static operation_mode mode = COMPILE_ASSEMBLE_LINK;
-static int debug = 0, warn = 0, fltbits = 0, dblbits = 0, ident_len = 127,
-           optlevel = 0, optsize = 0;
+static int debug = 0, warn = 0, fltbits = 0, dblbits = 0, ident_len = 127, optlevel = 0, optsize = 0;
 static strlist defines, includedirs, opts, longopts, params;
 static stralloc output_dir, output_file;
 static stralloc map_file, chip, optimization, runtime, debugger;
@@ -126,8 +122,7 @@ get_machine(const stralloc* chip, stralloc* mach) {
   return 0;
 }
 
-void
-print_strlist(buffer*, const strlist* sl, const char* sep, const char* quot);
+void print_strlist(buffer*, const strlist* sl, const char* sep, const char* quot);
 
 int
 process_option(const char* optstr, const char* nextopt, int* i) {
@@ -140,14 +135,11 @@ process_option(const char* optstr, const char* nextopt, int* i) {
     stralloc_copys(&output_dir, nextopt);
     ++*i;
     return 0;
-  } else if(!str_diff(optstr, "pass1") ||
-            (str_len(optstr) == 1 && mytolower(*optstr) == 'c')) {
+  } else if(!str_diff(optstr, "pass1") || (str_len(optstr) == 1 && mytolower(*optstr) == 'c')) {
     mode = COMPILE_AND_ASSEMBLE;
-  } else if(!str_diff(optstr, "S") ||
-            (str_len(optstr) == 1 && toupper(*optstr) == 'S')) {
+  } else if(!str_diff(optstr, "S") || (str_len(optstr) == 1 && toupper(*optstr) == 'S')) {
     mode = COMPILE;
-  } else if(!str_diff(optstr, "P") ||
-            (str_len(optstr) == 1 && toupper(*optstr) == 'E')) {
+  } else if(!str_diff(optstr, "P") || (str_len(optstr) == 1 && toupper(*optstr) == 'E')) {
     mode = PREPROCESS;
   } else if(!str_diffn(optstr, "outdir=", 7)) {
     stralloc_copys(&output_dir, &optstr[7]);
@@ -350,8 +342,7 @@ read_arguments() {
     stralloc_cats(&compiler, compiler_strs[type]);
 
   dump_stralloc("compiler", &compiler);
-  if(output_file.len == 0 &&
-     (mode == COMPILE_AND_ASSEMBLE || mode == COMPILE || mode == PREPROCESS)) {
+  if(output_file.len == 0 && (mode == COMPILE_AND_ASSEMBLE || mode == COMPILE || mode == PREPROCESS)) {
     size_t n;
     stralloc_copys(&output_file, str_basename(strlist_at(&params, 0)));
 
@@ -360,15 +351,9 @@ read_arguments() {
       output_file.len = n + 1;
 
       switch(mode) {
-        case PREPROCESS:
-          stralloc_cats(&output_file, (type == SDCC) ? "e" : "pre");
-          break;
-        case COMPILE_AND_ASSEMBLE:
-          stralloc_cats(&output_file, (type == SDCC) ? "o" : "p1");
-          break;
-        case COMPILE:
-          stralloc_cats(&output_file, (type == SDCC) ? "s" : "as");
-          break;
+        case PREPROCESS: stralloc_cats(&output_file, (type == SDCC) ? "e" : "pre"); break;
+        case COMPILE_AND_ASSEMBLE: stralloc_cats(&output_file, (type == SDCC) ? "o" : "p1"); break;
+        case COMPILE: stralloc_cats(&output_file, (type == SDCC) ? "s" : "as"); break;
         default: break;
       }
     }
@@ -387,12 +372,12 @@ read_arguments() {
       optlevel = 9;
   }
 
-#define DUMP_LIST(buf, n, sep, q)                                              \
-  buffer_puts(buf, #n);                                                        \
+#define DUMP_LIST(buf, n, sep, q)                                                                                      \
+  buffer_puts(buf, #n);                                                                                                \
   print_strlist(buf, &n, sep, q);
-#define DUMP_VALUE(n, fn, v)                                                   \
-  buffer_puts(debug_buf, n ": ");                                              \
-  fn(debug_buf, v);                                                            \
+#define DUMP_VALUE(n, fn, v)                                                                                           \
+  buffer_puts(debug_buf, n ": ");                                                                                      \
+  fn(debug_buf, v);                                                                                                    \
   buffer_putnlflush(debug_buf);
 
   DUMP_LIST(debug_buf, defines, "\n\t", "");
@@ -607,10 +592,7 @@ execute_cmd() {
 }
 
 void
-print_strlist(buffer* b,
-              const strlist* sl,
-              const char* separator,
-              const char* quot) {
+print_strlist(buffer* b, const strlist* sl, const char* separator, const char* quot) {
   ssize_t n = strlist_count(sl);
   int i, need_quote;
   buffer_puts(b, " (#");

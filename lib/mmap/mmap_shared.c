@@ -41,8 +41,7 @@ mmap_shared(const char* filename, size_t* filesize) {
     }
     *filesize = (size_t)o;
     if(o) {
-      map =
-          (char*)mmap(0, *filesize, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+      map = (char*)mmap(0, *filesize, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
       if(map == (char*)-1)
         map = 0;
     } else

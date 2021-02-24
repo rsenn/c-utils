@@ -93,8 +93,7 @@ static int fnmatch_strarray(buffer* b, array* a, const char* string, int flags);
 static strlist extensions, exclude_masks, include_masks;
 static char opt_separator = DIRSEP_C;
 
-static int opt_list = 0, opt_numeric = 0, opt_relative = 0, opt_deref = 0,
-           opt_samedev = 1, opt_crc = 0, opt_human = 0;
+static int opt_list = 0, opt_numeric = 0, opt_relative = 0, opt_deref = 0, opt_samedev = 1, opt_crc = 0, opt_human = 0;
 static int64 opt_minsize = -1;
 static long opt_depth = -1, opt_force = 0, opt_quiet = 0;
 static uint32 opt_types = (uint32)(int32)-1;
@@ -145,13 +144,8 @@ get_file_size(char* path) {
   typedef LONG(WINAPI getfilesizeex_fn)(HANDLE, PLARGE_INTEGER);
   static getfilesizeex_fn* api_fn;
 
-  HANDLE hFile = CreateFileA(path,
-                             GENERIC_READ,
-                             FILE_SHARE_READ | FILE_SHARE_WRITE,
-                             0,
-                             OPEN_EXISTING,
-                             FILE_ATTRIBUTE_NORMAL,
-                             0);
+  HANDLE hFile =
+      CreateFileA(path, GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
   if(hFile == INVALID_HANDLE_VALUE)
     return -1; /* error condition, could
                   call GetLastError to
@@ -160,8 +154,7 @@ get_file_size(char* path) {
   if(!api_fn) {
     HANDLE kernel;
     if((kernel = LoadLibraryA("kernel32.dll")) != INVALID_HANDLE_VALUE)
-      api_fn =
-          (getfilesizeex_fn*)(void*)GetProcAddress(kernel, "GetFileSizeEx");
+      api_fn = (getfilesizeex_fn*)(void*)GetProcAddress(kernel, "GetFileSizeEx");
   }
 
   if(!api_fn)
@@ -185,13 +178,8 @@ uint64
 get_file_time(const char* path) {
   FILETIME c, la, lw;
   int64 t;
-  HANDLE hFile = CreateFileA(path,
-                             GENERIC_READ,
-                             FILE_SHARE_READ | FILE_SHARE_WRITE,
-                             0,
-                             OPEN_EXISTING,
-                             FILE_ATTRIBUTE_NORMAL,
-                             0);
+  HANDLE hFile =
+      CreateFileA(path, GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
   if(hFile == INVALID_HANDLE_VALUE)
     return -1; /* error condition, could
                   call GetLastError to
@@ -243,25 +231,14 @@ get_file_owner(const char* path) {
   PSECURITY_DESCRIPTOR pSD = 0;
   LPSTR strsid = 0;
   DWORD dwErrorCode = 0;
-  static DWORD(WINAPI * get_security_info)(HANDLE,
-                                           DWORD,
-                                           SECURITY_INFORMATION,
-                                           PSID*,
-                                           PSID*,
-                                           PACL*,
-                                           PACL*,
-                                           PSECURITY_DESCRIPTOR*);
+  static DWORD(
+      WINAPI *
+      get_security_info)(HANDLE, DWORD, SECURITY_INFORMATION, PSID*, PSID*, PACL*, PACL*, PSECURITY_DESCRIPTOR*);
   static BOOL(WINAPI * convert_sid_to_string_sid_a)(PSID, LPSTR*);
   tmpbuf[0] = '\0';
   /* Get the handle of the file object.
    */
-  hFile = CreateFileA(path,
-                      GENERIC_READ,
-                      FILE_SHARE_READ,
-                      0,
-                      OPEN_EXISTING,
-                      FILE_ATTRIBUTE_NORMAL,
-                      0);
+  hFile = CreateFileA(path, GENERIC_READ, FILE_SHARE_READ, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
   /* Check GetLastError for CreateFile
    * error code. */
   if(hFile == INVALID_HANDLE_VALUE) {
@@ -273,20 +250,11 @@ get_file_owner(const char* path) {
   }
   if(get_win_api(&get_security_info, "advapi32", "GetSecurityInfo") == -1)
     return 0;
-  if(get_win_api(&convert_sid_to_string_sid_a,
-                 "advapi32",
-                 "ConvertSidToStringSidA") == -1)
+  if(get_win_api(&convert_sid_to_string_sid_a, "advapi32", "ConvertSidToStringSidA") == -1)
     return 0;
 
   /* Get the owner SID of the file. */
-  dwRtnCode = get_security_info(hFile,
-                                SE_FILE_OBJECT,
-                                OWNER_SECURITY_INFORMATION,
-                                &pSidOwner,
-                                0,
-                                0,
-                                0,
-                                &pSD);
+  dwRtnCode = get_security_info(hFile, SE_FILE_OBJECT, OWNER_SECURITY_INFORMATION, &pSidOwner, 0, 0, 0, &pSD);
   /* Check GetLastError for
    * GetSecurityInfo error condition. */
   if(dwRtnCode != ERROR_SUCCESS) {
@@ -527,10 +495,7 @@ resolve_etc(const strarray* arr, uint32 id) {
 }
 
 static void
-make_num(stralloc* out,
-         uint64 num,
-         uint32 width,
-         size_t (*fmt)(char*, uint64)) {
+make_num(stralloc* out, uint64 num, uint32 width, size_t (*fmt)(char*, uint64)) {
   char buf[FMT_ULONG + 1];
   if(!fmt)
     fmt = &fmt_ulonglong;
@@ -737,14 +702,8 @@ stat_type(int mode) {
   dtype |= S_ISFIFO(mode) ? D_PIPE : 0;
   return dtype;
 }
-static const char* type_strs[] = {"D_PIPE",
-                                  "D_CHARDEV",
-                                  "D_BLKDEV",
-                                  "D_SYMLINK",
-                                  "D_DIRECTORY",
-                                  "D_FILE",
-                                  "D_SOCKET",
-                                  0};
+static const char* type_strs[] = {
+    "D_PIPE", "D_CHARDEV", "D_BLKDEV", "D_SYMLINK", "D_DIRECTORY", "D_FILE", "D_SOCKET", 0};
 static const char*
 type_str(dir_type_t type) {
   int shift = 0;
@@ -859,8 +818,7 @@ file_crc32(const char* path, size_t size, uint32* crc) {
 }
 
 int
-list_file(
-    stralloc* path, const char* name, mode_t mode, long depth, dev_t root_dev) {
+list_file(stralloc* path, const char* name, mode_t mode, long depth, dev_t root_dev) {
 
   size_t l;
   struct stat st;
@@ -1169,34 +1127,33 @@ count_non_negative(const int* x, size_t n) {
 void
 usage(char* argv0) {
   const char* prog = str_basename(argv0);
-  buffer_putm_internal(
-      buffer_1,
-      "Usage: ",
-      prog,
-      " [-o output] [infile or stdin]\n\n",
-      "  -1 ... -9           compression level; default is 3\n",
-      "\n",
-      "Options\n",
-      "  -h, --help                show this help\n",
-      "  -l, --list                long list\n",
-      "  -n, --numeric             numeric user/group\n",
-      "  -r, --relative            relative path\n",
-      "  -i, --input      FILE     read files to list from FILE\n",
-      "  -o, --output     FILE     write output to FILE\n",
-      "  -I, --include    PATTERN  include entries matching PATTERN\n",
-      "  -X, --exclude    PATTERN  exclude entries matching PATTERN\n",
-      "  -t, --time-style FORMAT   format time according to FORMAT\n",
-      "  -m, --min-size   BYTES    minimum file size\n",
-      "  -L, --dereference         dereference symlinks\n",
-      "      --no-dereference\n",
-      "  -D, --one-filesystem\n",
-      "  -C, --cross-filesystem\n",
-      "  -c, --crc                 cyclic redundancy check\n",
-      "  -d, --depth      NUM      max depth\n",
-      "  -f, --types      TYPES    filter by type:\n\n    d = directory, b = "
-      "block dev s = socket\n    f = file,      c = char dev\n    l = symlink, "
-      "  p = pipe (fifo)\n\n",
-      0);
+  buffer_putm_internal(buffer_1,
+                       "Usage: ",
+                       prog,
+                       " [-o output] [infile or stdin]\n\n",
+                       "  -1 ... -9           compression level; default is 3\n",
+                       "\n",
+                       "Options\n",
+                       "  -h, --help                show this help\n",
+                       "  -l, --list                long list\n",
+                       "  -n, --numeric             numeric user/group\n",
+                       "  -r, --relative            relative path\n",
+                       "  -i, --input      FILE     read files to list from FILE\n",
+                       "  -o, --output     FILE     write output to FILE\n",
+                       "  -I, --include    PATTERN  include entries matching PATTERN\n",
+                       "  -X, --exclude    PATTERN  exclude entries matching PATTERN\n",
+                       "  -t, --time-style FORMAT   format time according to FORMAT\n",
+                       "  -m, --min-size   BYTES    minimum file size\n",
+                       "  -L, --dereference         dereference symlinks\n",
+                       "      --no-dereference\n",
+                       "  -D, --one-filesystem\n",
+                       "  -C, --cross-filesystem\n",
+                       "  -c, --crc                 cyclic redundancy check\n",
+                       "  -d, --depth      NUM      max depth\n",
+                       "  -f, --types      TYPES    filter by type:\n\n    d = directory, b = "
+                       "block dev s = socket\n    f = file,      c = char dev\n    l = symlink, "
+                       "  p = pipe (fifo)\n\n",
+                       0);
   buffer_putnlflush(buffer_1);
 }
 
@@ -1208,30 +1165,26 @@ static const ext_class_t ext_classes[] = {
      "tlzma"},
     {"audio", "^aif^aiff^flac^m4a^m4b^mp2^mp3^mpc^ogg^raw^rm^wav^wma"},
     {"books", "^pdf^epub^mobi^azw3^djv^djvu"},
-    {"documents",
-     "^cdr^doc^docx^odf^odg^odp^ods^odt^pdf^ppt^pptx^rtf^vsd^xls^xlsx^html"},
+    {"documents", "^cdr^doc^docx^odf^odg^odp^ods^odt^pdf^ppt^pptx^rtf^vsd^xls^xlsx^html"},
     {"fonts", "^CompositeFont^pcf^ttc^otf^afm^pfb^fon^ttf"},
     {"images",
      "^bmp^cin^cod^dcx^djvu^emf^fig^gif^ico^im1^im24^im8^jin^jpeg^jpg^lss^miff^"
      "opc^pbm^pcx^pgm^pgx^png^pnm^ppm^psd^rle^rmp^sgi^shx^svg^tga^tif^tiff^wim^"
      "xcf^xpm^xwd^mng"},
     {"incomplete", "^*.part^*.!??^INCOMPL*"},
-    {"music",
-     "^mp3^ogg^flac^mpc^m4a^m4b^wma^wav^aif^aiff^mod^s3m^xm^it^669^mp4"},
+    {"music", "^mp3^ogg^flac^mpc^m4a^m4b^wma^wav^aif^aiff^mod^s3m^xm^it^669^mp4"},
     {"packages", "^tgz^txz^rpm^deb"},
     {"scripts", "^sh^py^rb^bat^cmd^js^ts^jsx^tsx"},
     {"software",
      "^*setup*.exe^*install*.exe^*.msi^*.msu^*.cab^*.vbox-extpack^*.apk^*.run^*"
      ".dmg^*.app^*.apk^7z^app^bin^daa^deb^dmg^exe^iso^msi^msu^cab^vbox-extpack^"
      "apk^nrg^pkg^rar^rpm^run^sh^tar.Z^tar.bz2^tar.gz^tar.xz^tbz2^tgz^txz^zip"},
-    {"sources",
-     "^c^cs^cc^cpp^cxx^h^hh^hpp^hxx^ipp^mm^r^java^rb^py^S^s^asm^inc"},
+    {"sources", "^c^cs^cc^cpp^cxx^h^hh^hpp^hxx^ipp^mm^r^java^rb^py^S^s^asm^inc"},
     {"scripts",
      "^lua^etlua^moon^py^rb^sh^js^jsx^es^es5^es6^es7^coffee^scss^sass^css^jsx^"
      "tcl^pl^awk^m4^php"},
     {"web", "^js^css^htm^html^xml^svg"},
-    {"videos",
-     "^3gp^avi^f4v^flv^m4v^m2v^mkv^mov^mp4^mpeg^mpg^ogm^vob^webm^wmv"},
+    {"videos", "^3gp^avi^f4v^flv^m4v^m2v^mkv^mov^mp4^mpeg^mpg^ogm^vob^webm^wmv"},
     {"vmdisk", "^vdi^vmdk^vhd^qed^qcow^qcow2^vhdx^hdd"},
     {"project",
      "^avrgccproj^bdsproj^cbproj^coproj^cproj^cproject^csproj^dproj^fsproj^"

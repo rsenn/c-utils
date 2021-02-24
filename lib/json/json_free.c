@@ -28,12 +28,12 @@ json_free_val(jsonval* val, jsonval* parent) {
       break;
     }
     case JSON_ARRAY: {
-      slink *link, *next;
-      for(link = val->listv; link; link = next) {
-        next = link->next;
+      jsonitem *item, *next;
+      for(item = val->itemv; item; item = next) {
+        next = item->next;
 
-        json_free_val((jsonval*)(&link[1]), val);
-        alloc_free(link);
+        json_free_val(&item->value, val);
+        slink_delete(item);
       }
       val->listv = 0;
       break;

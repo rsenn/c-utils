@@ -50,8 +50,7 @@ static uint32 baseaddr;
 static stralloc cfg;
 // static bmap_t(const char*) pragmas;
 static strlist pragmas;
-static int nodefault = 1, oneline = 0, comments = 1, output_name = 0,
-           verbose = 0;
+static int nodefault = 1, oneline = 0, comments = 1, output_name = 0, verbose = 0;
 
 uint16
 config_data_at(uint32 addr) {
@@ -387,8 +386,7 @@ add_item(strlist* list, const char* name, const char* value) {
 }
 
 void
-process_config(void (*callback)(strlist*, const char* key, const char* value),
-               strlist* list) {
+process_config(void (*callback)(strlist*, const char* key, const char* value), strlist* list) {
   cword *prevword = 0, *word;
   csetting* setting;
   cvalue* value;
@@ -407,8 +405,7 @@ process_config(void (*callback)(strlist*, const char* key, const char* value),
       if(value == NULL) {
         buffer_puts(buffer_2, "WARNING:  value ");
         buffer_putxlong0(buffer_2, get_setting_word(word, setting), 2);
-        buffer_putm_internal(
-            buffer_2, " for setting ", setting->name, " not found!", NULL);
+        buffer_putm_internal(buffer_2, " for setting ", setting->name, " not found!", NULL);
         buffer_putnlflush(buffer_2);
         continue;
       }
@@ -416,12 +413,7 @@ process_config(void (*callback)(strlist*, const char* key, const char* value),
       if(value->is_default && nodefault) {
 #ifdef DEBUG_OUTPUT
         if(verbose > 1) {
-          buffer_putm_internal(buffer_2,
-                               "skip default value ",
-                               value->name,
-                               " for setting ",
-                               setting->name,
-                               NULL);
+          buffer_putm_internal(buffer_2, "skip default value ", value->name, " for setting ", setting->name, NULL);
           buffer_putnlflush(buffer_2);
         }
 #endif
@@ -447,8 +439,7 @@ output_items(const strlist* items) {
   strlist_foreach(items, x, n) {
     if(x[0] != '/') {
       if(i)
-        buffer_puts(buffer_1,
-                    (oneline && col > 0) ? ", " : "\n#pragma config ");
+        buffer_puts(buffer_1, (oneline && col > 0) ? ", " : "\n#pragma config ");
       else
         buffer_puts(buffer_1, "#pragma config ");
 

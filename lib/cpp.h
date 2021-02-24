@@ -18,12 +18,7 @@ int cpp_add_define(cpp_t*, const char* mdecl);
 void cpp_add_includedir(cpp_t*, const char* includedir);
 void cpp_add_macro(cpp_t*, const char* name, struct macro_s* m);
 int cpp_evaluate_condition(cpp_t*, tokenizer* t, int* result, char* visited[]);
-int cpp_expand_macro(cpp_t*,
-                     tokenizer* t,
-                     buffer* out,
-                     const char* name,
-                     unsigned rec_level,
-                     char* visited[]);
+int cpp_expand_macro(cpp_t*, tokenizer* t, buffer* out, const char* name, unsigned rec_level, char* visited[]);
 void cpp_free(cpp_t*);
 void cpp_free_macros(cpp_t*);
 struct macro_s* cpp_get_macro(cpp_t*, const char* name);

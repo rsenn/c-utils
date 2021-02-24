@@ -123,8 +123,7 @@ pclose(FILE* iop) {
     return (-1);
   (void)fclose(iop);
   {
-#if defined(HAVE_SIGEMPTYSET) && defined(HAVE_SIGADDSET) &&                    \
-    defined(HAVE_SIGPROCMASK)
+#if defined(HAVE_SIGEMPTYSET) && defined(HAVE_SIGADDSET) && defined(HAVE_SIGPROCMASK)
     sigset_t omask, nmask;
     sigemptyset(&nmask);
     sigaddset(&nmask, SIGINT);
@@ -138,8 +137,7 @@ pclose(FILE* iop) {
       pid = waitpid(pids[fdes], (int*)&pstat, 0);
     } while(pid == -1 && errno == EINTR);
 #endif
-#if defined(HAVE_SIGEMPTYSET) && defined(HAVE_SIGADDSET) &&                    \
-    defined(HAVE_SIGPROCMASK)
+#if defined(HAVE_SIGEMPTYSET) && defined(HAVE_SIGADDSET) && defined(HAVE_SIGPROCMASK)
     (void)sigprocmask(SIG_SETMASK, &omask, NULL);
 #endif
   }

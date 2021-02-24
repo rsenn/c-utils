@@ -27,8 +27,7 @@
 #include <unistd.h>
 #endif
 
-#define isdelim(c)                                                             \
-  (c == ' ' || c == '\t' || c == '\n' || c == '-' || c == ';' || c == ',')
+#define isdelim(c) (c == ' ' || c == '\t' || c == '\n' || c == '-' || c == ';' || c == ',')
 typedef enum format { M3U = 0, WGET, CURL } format_t;
 static int lowq = 0, debug = 0;
 static const char* datetime_format = "%d.%m.%Y %H:%M:%S";
@@ -50,9 +49,7 @@ typedef output_fn* output_fn_ptr;
 
 output_fn output_m3u_entry, output_wget_entry, output_curl_entry;
 
-const output_fn_ptr output_handlers[3] = {&output_m3u_entry,
-                                          &output_wget_entry,
-                                          &output_curl_entry};
+const output_fn_ptr output_handlers[3] = {&output_m3u_entry, &output_wget_entry, &output_curl_entry};
 
 /**
  * @brief read_line
@@ -202,8 +199,7 @@ cleanup_text(char** t) {
 char*
 cleanup_domain(stralloc* d) {
   size_t i;
-  const char* remove_parts[] = {
-      "ondemand", "storage", "files", "stream", "mvideos", "online", 0};
+  const char* remove_parts[] = {"ondemand", "storage", "files", "stream", "mvideos", "online", 0};
   d->len = byte_rchr(d->s, d->len, '.');
   for(i = 0; i < d->len; ++i) d->s[i] = toupper(d->s[i]);
   stralloc_nul(d);
@@ -232,8 +228,7 @@ process_entry(char** av, int ac) {
   if(!str_start(av[0], "\"X"))
     return 0;
 
-  while(ac > 6 &&
-        !(av[4] && str_len(av[4]) == 10 && av[6] && str_len(av[6]) == 8)) {
+  while(ac > 6 && !(av[4] && str_len(av[4]) == 10 && av[6] && str_len(av[6]) == 8)) {
     av++;
     ac--;
   }
@@ -320,13 +315,7 @@ process_entry(char** av, int ac) {
 
     strftime(timebuf, sizeof(timebuf), "%Y%m%d %H:%M", &tm);
 
-    output_handlers[output_format](sender,
-                                   thema,
-                                   title,
-                                   d,
-                                   timebuf,
-                                   lowq > 0 ? url_lo.s : url,
-                                   description);
+    output_handlers[output_format](sender, thema, title, d, timebuf, lowq > 0 ? url_lo.s : url, description);
 
     (void)t;
   } else {
@@ -436,8 +425,7 @@ output_wget_entry(const char* sender,
   buffer_puts(&output_buf, " - ");
   buffer_puts_escaped(&output_buf, title, &fmt_escapecharnonprintable);
 
-  buffer_putm_internal(
-      &output_buf, ".mp4'", "\ntouch -c -d '", datetime, "' '", 0);
+  buffer_putm_internal(&output_buf, ".mp4'", "\ntouch -c -d '", datetime, "' '", 0);
   if(!skipSender) {
     buffer_puts_escaped(&output_buf, sender, &fmt_escapecharnonprintable);
     buffer_puts(&output_buf, " - ");
@@ -460,8 +448,7 @@ output_curl_entry(const char* sender,
                   const char* description) {
 
   buffer_putm_internal(&output_buf, "curl -L -k ", url, 0);
-  buffer_putm_internal(
-      &output_buf, " -o '", sender, " - ", thema, " - ", title, ".mp4'", 0);
+  buffer_putm_internal(&output_buf, " -o '", sender, " - ", thema, " - ", title, ".mp4'", 0);
   /*    buffer_puts(&output_buf, "|");
       buffer_puts(&output_buf,
      description);*/
@@ -573,8 +560,7 @@ main(int argc, char* argv[]) {
       {0, 0, 0, 0},
   };
 
-  while((opt = getopt_long(argc, argv, "hcdf:t:i:x:lF:o:P:", opts, &index)) !=
-        -1) {
+  while((opt = getopt_long(argc, argv, "hcdf:t:i:x:lF:o:P:", opts, &index)) != -1) {
     if(opt == 0)
       continue;
 
@@ -628,8 +614,7 @@ main(int argc, char* argv[]) {
         buffer_putnlflush(buffer_2);
       }
     } else {
-      buffer_init(
-          &b, (buffer_op_sys*)(void*)&read, STDIN_FILENO, inbuf, sizeof(inbuf));
+      buffer_init(&b, (buffer_op_sys*)(void*)&read, STDIN_FILENO, inbuf, sizeof(inbuf));
     }
     process_input(&b);
     ++optind;

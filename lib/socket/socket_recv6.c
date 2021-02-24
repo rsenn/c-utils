@@ -13,8 +13,7 @@
 /*#include "havescope.h"*/
 
 ssize_t
-socket_recv6(
-    int s, char* buf, size_t len, char ip[16], uint16* port, uint32* scope_id) {
+socket_recv6(int s, char* buf, size_t len, char ip[16], uint16* port, uint32* scope_id) {
 #ifdef LIBC_HAS_IP6
   struct sockaddr_in6 si;
 #else

@@ -40,18 +40,12 @@ int slist_unshifts(slink**, const char* s);
 void* slist_pushb(slink** list, const void* x, size_t len);
 int slist_unshiftb(slink** list, const void* x, size_t len);
 
-#define slink_foreach(link, n)                                                 \
-  for((n) = (void*)(link); *(void**)(n); (n) = (void*)((slink*)(n))->next)
-#define slist_foreach(list, n)                                                 \
-  for((n) = (void*)slist_begin((slink*)(list)); (n);                           \
-      (n) = (void*)slist_next((slink*)n))
-#define slist_foreach_safe(list, n, next)                                      \
-  for((n) = slist_begin(list); (((n) && ((next) = slist_next((n)))), 1);       \
-      (n) = (next))
-#define slink_foreach_safe(list, n, next)                                      \
-  for((n) = &(list);                                                           \
-      ((*(n) && ((next) = (void*)slink_next((struct slink**)(n)))), 1);        \
-      (n) = (next))
+#define slink_foreach(link, n) for((n) = (void*)(link); *(void**)(n); (n) = (void*)((slink*)(n))->next)
+#define slist_foreach(list, n) for((n) = (void*)slist_begin((slink*)(list)); (n); (n) = (void*)slist_next((slink*)n))
+#define slist_foreach_safe(list, n, next)                                                                              \
+  for((n) = slist_begin(list); (((n) && ((next) = slist_next((n)))), 1); (n) = (next))
+#define slink_foreach_safe(list, n, next)                                                                              \
+  for((n) = &(list); ((*(n) && ((next) = (void*)slink_next((struct slink**)(n)))), 1); (n) = (next))
 
 #define _slist_begin(st) ((struct slink**)&(st))
 #define _slist_next(st) (((struct slink*)(st))->next)
@@ -119,6 +113,7 @@ slist_end(slink* list) {
 }
 
 #define slink_new(type) ((slink*)alloc_zero(sizeof(type) + sizeof(slink)))
+#define slink_delete(slink) alloc_free((slink))
 
 static inline slink**
 slink_insert(slink** at, slink* link) {
