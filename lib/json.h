@@ -110,8 +110,11 @@ jsonval* json_read_tree(charbuf*);
 void json_reader_init(jsonreader*, charbuf*);
 void json_recurse(jsonval*, void (*)(), void*);
 jsonval* json_set_property(jsonval*, jsonval, jsonval);
+jsonval* json_set_property_str(jsonval*, const char* key, jsonval value);
+jsonval* json_set_property_int(jsonval*, int64 index, jsonval value);
+
 double json_todouble(jsonval);
-int64 json_toint(jsonval);
+int64 json_toint( jsonval);
 const char* json_tostring(jsonval, stralloc*);
 void json_compact_printer(jsonfmt*, jsonval*, int depth, int index, char quote);
 void json_default_printer(jsonfmt*, jsonval*, int depth, int index, char quote);

@@ -1,7 +1,7 @@
 #include "../json_internal.h"
 
 jsonval
-json_property(jsonval obj, jsonval name) {
+json_property(jsonval obj,  jsonval name) {
   jsonval ret = json_undefined();
 
   if(obj.type == JSON_ARRAY || obj.type == JSON_STRING) {

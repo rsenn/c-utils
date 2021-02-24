@@ -249,9 +249,9 @@ main(int argc, char* argv[]) {
 
     doc = json_read_tree(&in_buf);
 
-        charbuf_dump(&in_buf, buffer_2);
+    charbuf_dump(&in_buf, buffer_2);
     buffer_putnlflush(buffer_2);
-    
+
     json_pretty_print(*doc, &out_buf);
     (one_line ? &buffer_putnlflush : &buffer_flush)(&out_buf);
 

@@ -29,9 +29,9 @@ json_parse_object(jsonval* val, charbuf* b) {
         charbuf_skip_ws(b);
         if(json_parse(&member, b) > 0) {
           MAP_PAIR_T pair;
-          MAP_INSERT(val->dictv, key.s, key.len  , &member, sizeof(jsonval));
+          MAP_INSERT(val->dictv, key.s, key.len, &member, sizeof(jsonval));
           pair = 0;
-          MAP_SEARCH(val->dictv, key.s, key.len  , &pair);
+          MAP_SEARCH(val->dictv, key.s, key.len, &pair);
 
           charbuf_skip_ws(b);
           if(charbuf_peekc(b, &c) > 0) {
