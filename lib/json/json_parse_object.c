@@ -5,10 +5,10 @@ json_parse_object(jsonval* val, charbuf* b) {
   if(charbuf_skip_ifeq(b, '{')) {
     int ret;
     unsigned char c;
-stralloc str;
+    stralloc str;
     val->type = JSON_OBJECT;
     MAP_NEW(val->dictv);
-stralloc_init(&str);
+    stralloc_init(&str);
 
     charbuf_skip_ws(b);
     for(; (ret = charbuf_peekc(b, &c)) > 0;) {
@@ -17,12 +17,11 @@ stralloc_init(&str);
         charbuf_nextc(b, &c);
         return 1;
       }
-stralloc_zero(&str);
-      if(json_parse_string(&key, b) > 0) 
-        stralloc_copy(&str,  &key.stringv);
+      stralloc_zero(&str);
+      if(json_parse_string(&key, b) > 0)
+        stralloc_copy(&str, &key.stringv);
       else if(json_parse_number(&key, b) > 0)
-      stralloc_catulong(&str, key.intv);
-      
+        stralloc_catulong(&str, key.intv);
 
       stralloc_nul(&str);
 
