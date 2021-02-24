@@ -134,11 +134,18 @@ static inline int
 json_is_identifier_char(int c) {
   return (isalnum(c) || c == '$' || c == '_' || c == '@');
 }
+
+static inline stralloc*
+json_string_sa(jsonval* val) {
+  return val->type == JSON_STRING ? &val->stringv : 0;
+}
+
 static inline const char*
-json_str(jsonval* val) {
-  if(val->type == JSON_STRING) {
-    stralloc_nul(&val->stringv);
-    return val->stringv.s;
+json_string_cstr(jsonval* val) {
+  stralloc* sa;
+  if((sa = json_string_sa(val))) {
+    stralloc_nul(&sa);
+    return sa->s;
   }
   return 0;
 }
