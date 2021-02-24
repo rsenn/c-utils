@@ -1,7 +1,6 @@
 #include "../json_internal.h"
 
- int
+int
 json_isnull(jsonval v) {
-    return v.type == JSON_OBJECT && MAP_ISNULL(v.dictv);
-
+  return v.type == JSON_OBJECT && MAP_ISNULL(v.dictv);
 }

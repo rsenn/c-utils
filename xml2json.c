@@ -109,7 +109,7 @@ xmllist_to_jsonarray(xmlnode* list) {
         continue;
       v = xml_to_json_obj(n);
     }
-    json_push(&arr, v);
+    json_append(&arr, v);
   }
   return arr;
 }

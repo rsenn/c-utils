@@ -1,10 +1,11 @@
 #include "../slist.h"
 
-void
-slist_push(slink** list, slink* link) {
-  slink** ptr = list;
+slink**
+slist_push(slink** list, void* arg) {
+slink* link = arg;
+  while(*list) list = &(*list)->next;
 
-  while(*ptr) ptr = &(*ptr)->next;
+  *list = link;
 
-  *ptr = link;
+  return &link->next;
 }

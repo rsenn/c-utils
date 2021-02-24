@@ -1,14 +1,13 @@
 #include "../json_internal.h"
-#include "../slist.h"
+#include "../alloc.h"
 
 jsonval*
-json_push(jsonval* arr, jsonval item) {
+json_push(jsonval* arr) {
   if(arr->type == JSON_ARRAY) {
-    slink* __new = slink_new(jsonval);
-    jsonval* val = (jsonval*)(&__new[1]);
-    slist_push(&arr->listv, __new);
-    *val = item;
-    return val;
+    jsonitem* item = alloc_zero(sizeof(jsonitem));
+//    jsonval* val = &item->value;
+    slist_push(&arr->listv, item);
+    return &item->value;
   }
   return 0;
 }

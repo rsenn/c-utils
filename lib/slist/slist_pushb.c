@@ -5,21 +5,20 @@
 
 #include <stdlib.h>
 
-int
+void*
 slist_pushb(slink** list, const void* x, size_t len) {
-  slink** ptr = list;
-  slink* n;
+   slink* n;
 
   if((n = (slink*)alloc(sizeof(slink*) + len)) == NULL)
     return 0;
 
-  while(*ptr) ptr = &(*ptr)->next;
+  while(*list) list = &(*list)->next;
 
-  *ptr = n;
+  *list = n;
 
   n[0].next = NULL;
   byte_copy(((const char**)&n[1]), len, x);
 
   //  *((const char**)&n[1]) = str_dup(s);
-  return 1;
+  return n;
 }

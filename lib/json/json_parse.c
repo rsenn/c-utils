@@ -122,41 +122,47 @@ int
 json_parse_array(jsonval* j, charbuf* b) {
   if(charbuf_skip_ifeq(b, '[')) {
     int ret;
-    slink *lnk, **ptr;
-    jsonval* item;
+     jsonitem* item;
     unsigned char c;
     int64_t i = 0;
 
     j->type = JSON_ARRAY;
     j->listv = 0;
 
+    item = &j->listv;
+
     charbuf_skip_pred(b, isspace);
 
-    ptr = &j->listv;
 
-    for(; (ret = charbuf_peekc(b, &c)) > 0; ptr = &((*ptr)->next)) {
+    for(; (ret = charbuf_peekc(b, &c)) > 0; ) {
 
       if(c == ']') {
         ret = 1;
         break;
       }
-      if((lnk = slink_new(jsonval)) == 0)
+      if((item = json_append(j, json_undefined())) == 0)
         return -1;
-      *ptr = lnk;
       // = slink_insert(ptr, lnk);
-      item = (jsonval*)&lnk[1];
-      buffer_puts(buffer_2, "json array element ");
-      buffer_putlonglong(buffer_2, i++);
-      buffer_putnlflush(buffer_2);
-      if((ret = json_parse(item, b)) <= 0)
+    
+      if((ret = json_parse(&item->value, b)) <= 0)
         break;
+
+         buffer_puts(buffer_2, "json array element ");
+      buffer_putlonglong(buffer_2, i++);
+      buffer_puts(buffer_2, ": ");
+      json_print(*item, buffer_2, 0);
+      buffer_putnlflush(buffer_2);
+
+ 
       charbuf_skip_pred(b, &isspace);
 
       if((ret = charbuf_getc(b, &c)) <= 0)
         return ret;
+
       if(c == ',') {
         charbuf_skip_pred(b, isspace);
-        continue;
+
+         continue;
       }
 
       break;

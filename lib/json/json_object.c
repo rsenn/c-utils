@@ -1,6 +1,6 @@
 #include "../json_internal.h"
 
- jsonval
+jsonval
 json_object() {
   jsonval ret;
   ret.type = JSON_OBJECT;
