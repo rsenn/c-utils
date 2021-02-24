@@ -29,8 +29,7 @@ json_parse_object(jsonval* val, charbuf* b) {
       if((ret = json_parse_stralloc(b, &key, charbuf_skip_ifeq(b, '"'))) <= 0)
         return ret;
 */
-#if defined(DEBUG_OUTPUT) || defined(DEBUG_JSON)
-
+#if defined(DEBUG_OUTPUT) && defined(DEBUG_JSON)
       buffer_putm_internal(buffer_2, "json_parse_object ", " str=", str.s, 0);
       buffer_putnlflush(buffer_2);
 #endif

@@ -107,7 +107,7 @@ usage(char* av0) {
                        "  -h, --help              Show this help\n",
                        "  -s, --single-quote      Use ' as quote\n",
                        "  -d, --double-quote      Use \" as quote\n",
-                       "  -o, --one-line          One-line\n",
+                       "  -O, --one-line          One-line\n",
                        "  -c, --compact           Compact\n",
                        "  -l, --indent NUM        Indent level\n",
                        "  -D, --depth NUM         Depth level\n",

@@ -23,7 +23,7 @@ json_parse_array(jsonval* val, charbuf* b) {
 
       json_parse(&item->value, b);
 
-#if defined(DEBUG_OUTPUT) || defined(DEBUG_JSON)
+#if defined(DEBUG_OUTPUT) && defined(DEBUG_JSON)
       buffer_puts(buffer_2, "json array element ");
       buffer_putlonglong(buffer_2, i++);
       buffer_puts(buffer_2, ": ");
