@@ -50,56 +50,6 @@ json_parse_getsa(charbuf* b, stralloc* out, bool quoted) {
 }
 
 int
-json_parse_num(jsonval* j, charbuf* b) {
-  size_t n;
-  stralloc num;
-  int ret;
-  unsigned char c;
-  if((ret = charbuf_peek(b)) <= 0)
-    return ret;
-  c = ret;
-  if(isdigit(c) || c == '-' || c == '.' || c == '+') {
-    j->type = JSON_INT;
-    stralloc_init(&num);
-    for(;;) {
-      stralloc_APPEND(&num, &c);
-      if((ret = charbuf_nextc(b, &c)) <= 0)
-        return ret;
-      if(!isdigit(c) && c != '.' && c != 'E' && c != 'e') {
-        if(!(j->type == JSON_DOUBLE && c == '-'))
-          break;
-      }
-      if(c == '.' || c == 'E' || c == 'e')
-        j->type = JSON_DOUBLE;
-    }
-    stralloc_nul(&num);
-    n = j->type == JSON_INT ? scan_longlong(num.s, &j->intv) : scan_double(num.s, &j->doublev);
-    stralloc_free(&num);
-    if(n > 0) {
-      return 1;
-    }
-  }
-  return 0;
-}
-
-int
-json_parse_bool(jsonval* j, charbuf* b) {
-  int ret;
-  if((ret = charbuf_skip_ifset(b, "tf", 2)) > 0) {
-    const char* n;
-    int v = charbuf_peek(b) == 'r';
-    for(n = v ? "rue" : "alse"; *n; ++n) {
-      if(!charbuf_skip_ifeq(b, *n))
-        return 0;
-    }
-    j->type = JSON_BOOL;
-    j->boolv = v;
-    return 1;
-  }
-  return ret;
-}
-
-int
 json_parse_null_or_undefined(jsonval* j, charbuf* b) {
   int ret;
   if((ret = charbuf_skip_ifset(b, "nu", 2)) > 0) {
@@ -115,133 +65,16 @@ json_parse_null_or_undefined(jsonval* j, charbuf* b) {
   }
   return ret;
 }
-
-int
-json_parse_array(jsonval* j, charbuf* b) {
-  if(charbuf_skip_ifeq(b, '[')) {
-    int ret;
-    jsonitem **ptr, *item;
-    unsigned char c;
-    int64_t i = 0;
-
-    j->type = JSON_ARRAY;
-    j->itemv = 0;
-
-    ptr = &j->itemv;
-    charbuf_skip_pred(b, isspace);
-    for(; (ret = charbuf_peekc(b, &c)) > 0; ptr = &item->next) {
-      if(c == ']') {
-        ret = 1;
-        break;
-      }
-      if((item = json_append(ptr, json_undefined())) == 0)
-        return -1;
-      if((ret = json_parse(&item->value, b)) <= 0)
-        break;
-
-#ifdef JSON_DEBUG
-      buffer_puts(buffer_2, "json array element ");
-      buffer_putlonglong(buffer_2, i++);
-      buffer_puts(buffer_2, ": ");
-      json_print(item->value, buffer_2, json_compact_printer);
-      buffer_putnlflush(buffer_2);
-#endif
-
-      charbuf_skip_pred(b, &isspace);
-      if((ret = charbuf_getc(b, &c)) <= 0)
-        return ret;
-      if(c == ',') {
-        charbuf_skip_pred(b, isspace);
-        continue;
-      }
-
-      break;
-    }
-
-    if(c == ']')
-      ret = 1;
-
-    /*if(ret == 1)
-      charbuf_skip_ifeq(b, ']');*/
-    return ret;
-  }
-  return 0;
-}
-
-int
-json_parse_object(jsonval* j, charbuf* b) {
-  if(charbuf_skip_ifeq(b, '{')) {
-    stralloc key;
-    int ret;
-    unsigned char c;
-    j->type = JSON_OBJECT;
-    MAP_NEW(j->dictv);
-    stralloc_init(&key);
-    charbuf_skip_pred(b, isspace);
-
-    for(; (ret = charbuf_peekc(b, &c)) > 0;) {
-      jsonval *itemv, member = {.type = JSON_UNDEFINED};
-      MAP_PAIR_T pair;
-
-      if(c == '}') {
-
-        charbuf_skip(b);
-        return 1;
-      }
-
-      stralloc_zero(&key);
-      if((ret = json_parse_getsa(b, &key, charbuf_skip_ifeq(b, '"'))) <= 0)
-        return ret;
-      stralloc_nul(&key);
-
-      charbuf_skip_pred(b, &isspace);
-
-      if(!charbuf_skip_ifeq(b, ':'))
-        return 0;
-
-      charbuf_skip_pred(b, &isspace);
-
-      if((ret = json_parse(&member, b)) > 0) {
-
-        MAP_INSERT(j->dictv, key.s, key.len, &member, sizeof(jsonval));
-
-        charbuf_skip_pred(b, &isspace);
-        if(charbuf_skip_ifeq(b, ',')) {
-          charbuf_skip_pred(b, &isspace);
-          continue;
-        }
-      }
-      break;
-    }
-    stralloc_free(&key);
-    return ret;
-  }
-  return 0;
-}
-
-int
-json_parse_string(jsonval* j, charbuf* b) {
-  if(charbuf_skip_ifeq(b, '"')) {
-
-    j->type = JSON_STRING;
-    stralloc_init(&j->stringv);
-
-    json_parse_getsa(b, &j->stringv, true);
-    return 1;
-  }
-  return 0;
-}
-
 int
 json_parse(jsonval* j, charbuf* b) {
   int r = 0;
   charbuf_skip_pred(b, &isspace);
 
-  if(!(r = json_parse_object(j, b)))
-    if(!(r = json_parse_array(j, b)))
-      if(!(r = json_parse_bool(j, b)))
-        if(!(r = json_parse_num(j, b)))
-          if(!(r = json_parse_string(j, b)))
+  if(!(r = json_object_parse(j, b)))
+    if(!(r = json_array_parse(j, b)))
+      if(!(r = json_boolean_parse(j, b)))
+        if(!(r = json_number_parse(j, b)))
+          if(!(r = json_string_parse(j, b)))
             r = json_parse_null_or_undefined(j, b);
   return r;
 }

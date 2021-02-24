@@ -104,12 +104,7 @@ int64 json_length(jsonval);
 jsonval* json_newnode(jsondata);
 jsonval json_object(void);
 int json_parse_getsa(charbuf*, stralloc*, _Bool);
-int json_parse_num(jsonval*, charbuf*);
-int json_parse_bool(jsonval*, charbuf*);
 int json_parse_null_or_undefined(jsonval*, charbuf*);
-int json_parse_array(jsonval*, charbuf*);
-int json_parse_object(jsonval*, charbuf*);
-int json_parse_string(jsonval*, charbuf*);
 int json_parse(jsonval*, charbuf*);
 jsonval* json_array_push(jsonval*, const jsonval);
 void json_read_callback(jsonreader*, json_read_callback_fn*);
@@ -122,6 +117,16 @@ int64 json_toint(jsonval);
 const char* json_tostring(jsonval, stralloc*);
 void json_compact_printer(jsonfmt*, jsonval*, int depth, int index, char quote);
 void json_default_printer(jsonfmt*, jsonval*, int depth, int index, char quote);
+
+int json_array_parse(jsonval*, charbuf*);
+int json_boolean_parse(jsonval*, charbuf*);
+int json_number_parse(jsonval*, charbuf*);
+int json_object_parse(jsonval*, charbuf*);
+int json_object_parse(jsonval*, charbuf*);
+int json_parse_getsa(charbuf*, stralloc*, _Bool quoted);
+int json_parse_null_or_undefined(jsonval*, charbuf*);
+int json_parse(jsonval*, charbuf*);
+int json_string_parse(jsonval*, charbuf*);
 
 #ifdef BUFFER_H
 void json_print(jsonval, buffer* b, json_print_fn* p);
