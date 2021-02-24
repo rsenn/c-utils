@@ -95,11 +95,11 @@ int stralloc_cat(stralloc* sa, const stralloc* in);
 int stralloc_append(stralloc* sa, const char* in); /* beware: this takes a pointer to 1 char */
 
 #define stralloc_APPEND(sa, ptr) stralloc_CATC((sa), *(ptr))
-#define stralloc_CATC(sa, c)                                                                                           \
-  do {                                                                                                                 \
-    if((sa)->len >= (sa)->a)                                                                                           \
-      stralloc_readyplus((sa), 1);                                                                                     \
-    (sa)->s[(sa)->len++] = (c);                                                                                        \
+#define stralloc_CATC(sa, c) \
+  do { \
+    if((sa)->len >= (sa)->a) \
+      stralloc_readyplus((sa), 1); \
+    (sa)->s[(sa)->len++] = (c); \
   } while(0);
 
 /* stralloc_starts returns 1 if the \0 - terminated string in "in", without

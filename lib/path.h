@@ -30,8 +30,8 @@ extern "C" {
 
 #define PATH_FNM_NOMATCH 1
 #define PATH_FNM_PATHNAME (1 << 0) /* No wildcard can ever match /'.  */
-#define PATH_FNM_NOESCAPE                                                                                              \
-  (1 << 1)                       /* Backslashes don't quote special chars.                                             \
+#define PATH_FNM_NOESCAPE \
+  (1 << 1)                       /* Backslashes don't quote special chars. \
                                   */
 #define PATH_FNM_PERIOD (1 << 2) /* Leading .' is matched only explicitly.  */
 int path_absolute(const char* path, stralloc* sa);

@@ -10,6 +10,7 @@
 #define CHARBUF_EQ " " //"\x1b[38;5;233m="
 #define CHARBUF_BLACK "\x1b[0;30m"
 #define CHARBUF_GRAY "\x1b[1;30m"
+#define CHARBUF_GRAY20 "\x1b[38;5;233m"
 #define CHARBUF_CYAN "\x1b[1;36m"
 #define CHARBUF_GREEN "\x1b[0;32m"
 #define CHARBUF_YELLOW "\x1b[0;33m"
@@ -18,16 +19,19 @@
 extern int charbuf_debug;
 extern int charbuf_colors;
 
-#define charbuf_dumplabel(lbl, out)                                                                                    \
-  buffer_puts(out,                                                                                                     \
-              charbuf_colors ? CHARBUF_SEP CHARBUF_GRAY lbl CHARBUF_BLACK CHARBUF_EQ CHARBUF_CYAN                      \
-                             : CHARBUF_SEP lbl "=");
+#define charbuf_colorstr(str, color, out) \
+  buffer_putm_internal( out, charbuf_colors ? COLOR_NC : "", charbuf_colors ? color : "", str, charbuf_colors ? COLOR_NC : "", 0);
+#define charbuf_dumpname(lbl, out) charbuf_colorstr(lbl, CHARBUF_GRAY, out)
+#define charbuf_dumplabel(lbl, out) \
+  do { \
+    charbuf_dumpname(lbl, out); \
+    charbuf_colorstr("=", CHARBUF_GRAY20); \
+  } while(0)
 
 static inline void
 charbuf_dumpret(ssize_t ret, buffer* out) {
-  buffer_puts(out,
-              charbuf_colors ? CHARBUF_SEP CHARBUF_GRAY "ret" CHARBUF_BLACK CHARBUF_EQ CHARBUF_CYAN
-                             : CHARBUF_SEP "ret=");
+  charbuf_dumplabel(CHARBUF_SEP "ret", out);
+  buffer_putlonglong(out, ret);
 }
 
 static inline void

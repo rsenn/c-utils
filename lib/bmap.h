@@ -27,11 +27,11 @@ typedef struct {
   bmap_node_t* node;
 } bmap_iter_t;
 
-#define bmap_t(T)                                                                                                      \
-  struct {                                                                                                             \
-    bmap_base_t base;                                                                                                  \
-    T* ref;                                                                                                            \
-    T tmp;                                                                                                             \
+#define bmap_t(T) \
+  struct { \
+    bmap_base_t base; \
+    T* ref; \
+    T tmp; \
   }
 
 #define bmap_init(m) byte_zero(m, sizeof(*(m)))
@@ -40,10 +40,10 @@ typedef struct {
 
 #define bmap_get(m, key) ((m)->ref = bmap_get_(&(m)->base, (key)))
 
-#define bmap_set(m, key, value)                                                                                        \
-  do {                                                                                                                 \
-    (m)->tmp = (value);                                                                                                \
-    bmap_set_(&(m)->base, key, (void*)&(m)->tmp, sizeof((m)->tmp));                                                    \
+#define bmap_set(m, key, value) \
+  do { \
+    (m)->tmp = (value); \
+    bmap_set_(&(m)->base, key, (void*)&(m)->tmp, sizeof((m)->tmp)); \
   } while(0)
 
 #define bmap_remove(m, key) bmap_remove_(&(m)->base, key)

@@ -118,7 +118,6 @@ void json_default_printer(jsonfmt*, jsonval*, int depth, int index, char quote);
 
 int json_parse_null_or_undefined(jsonval*, charbuf*);
 
-
 int json_array_parse(jsonval*, charbuf*);
 int json_boolean_parse(jsonval*, charbuf*);
 int json_null_parse(jsonval*, charbuf*);
@@ -127,9 +126,7 @@ int json_object_parse(jsonval*, charbuf*);
 int json_stralloc_parse(charbuf*, stralloc*, int quoted);
 int json_string_parse(jsonval*, charbuf*);
 
-
 int json_parse(jsonval*, charbuf*);
-
 
 #ifdef BUFFER_H
 void json_print(jsonval, buffer* b, json_print_fn* p);

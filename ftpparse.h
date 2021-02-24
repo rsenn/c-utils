@@ -73,11 +73,11 @@ struct ftpparse {
 #define FTPPARSE_FORMAT_LS 3
 
 #define FTPPARSE_SIZE_UNKNOWN 0
-#define FTPPARSE_SIZE_BINARY                                                                                           \
-  1 /* size is the number of octets in                                                                                 \
+#define FTPPARSE_SIZE_BINARY \
+  1 /* size is the number of octets in \
        TYPE I */
-#define FTPPARSE_SIZE_ASCII                                                                                            \
-  2 /* size is the number of octets in                                                                                 \
+#define FTPPARSE_SIZE_ASCII \
+  2 /* size is the number of octets in \
        TYPE A */
 
 /*
@@ -90,17 +90,17 @@ struct ftpparse {
  */
 #define FTPPARSE_MTIME_UNKNOWN 0
 #define FTPPARSE_MTIME_LOCAL 1 /* time is correct */
-#define FTPPARSE_MTIME_REMOTEMINUTE                                                                                    \
-  2 /* time zone and secs are unknown                                                                                  \
+#define FTPPARSE_MTIME_REMOTEMINUTE \
+  2 /* time zone and secs are unknown \
      */
-#define FTPPARSE_MTIME_REMOTEDAY                                                                                       \
-  3                                   /* time zone and time of day are                                                 \
+#define FTPPARSE_MTIME_REMOTEDAY \
+  3                                   /* time zone and time of day are \
                                          unknown */
 #define FTPPARSE_MTIME_REMOTESECOND 4 /* time zone is unknown */
 
 #define FTPPARSE_ID_UNKNOWN 0
-#define FTPPARSE_ID_FULL                                                                                               \
-  1 /* unique identifier for files on                                                                                  \
+#define FTPPARSE_ID_FULL \
+  1 /* unique identifier for files on \
        this FTP server */
 
 extern int ftpparse(struct ftpparse* fp, char* buf, int len, int eat_leading_spaces);

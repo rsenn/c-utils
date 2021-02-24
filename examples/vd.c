@@ -39,7 +39,8 @@ main(int argc, char* argv[]) {
     else {
       line[l + 1] = 0;
       if(!header) {
-        if(strcmp(line, "\e[7mMLdonkey command-line:\e[2;37;0m\n") && strcmp(line, "\e[2;37;0m\e[7mMLdonkey command-line:\e[2;37;0m\n") && strncmp(line, "> ", 2))
+        if(strcmp(line, "\e[7mMLdonkey command-line:\e[2;37;0m\n") &&
+           strcmp(line, "\e[2;37;0m\e[7mMLdonkey command-line:\e[2;37;0m\n") && strncmp(line, "> ", 2))
           buffer_put(buffer_1, line, l + 1);
       }
       if(!strcmp(line, "Use \e[31m?\e[2;37;0m for help\n"))

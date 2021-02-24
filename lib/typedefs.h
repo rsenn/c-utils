@@ -27,7 +27,7 @@
 (!defined(_MSC_VER) && !defined(__MSYS__) && !defined(__CYGWIN__) &&
 !defined(__BORLANDC__)) #include <stdint.h> #endif*/
 
-#if defined(__MINGW32__) || defined(__MINGW64__) || defined(__ORANGEC__) || defined(__DMC__) ||                        \
+#if defined(__MINGW32__) || defined(__MINGW64__) || defined(__ORANGEC__) || defined(__DMC__) || \
     defined(__STDC_IEC_559__)
 #include <stdint.h>
 #endif

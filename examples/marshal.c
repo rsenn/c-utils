@@ -224,7 +224,8 @@ main() {
   ull = -1;
   assert(scan_asn1derlengthvalue("\xff_", 200, &ull) == 0 && ull == -1); // incomplete sequence
   ull = -1;
-  assert(scan_asn1derlengthvalue("\x89\x12\x23\x34\x45\x56\x67\x78\x89_", 200, &ull) == 0 && ull == -1); // value too large
+  assert(scan_asn1derlengthvalue("\x89\x12\x23\x34\x45\x56\x67\x78\x89_", 200, &ull) == 0 &&
+         ull == -1); // value too large
 
   ull = -1;
   assert(scan_asn1derlength("\x10_", 1, &ull) == 0 && ull == -1); // not enough space in buffer for length
@@ -532,7 +533,8 @@ main() {
     for(i = 0; i < 100; ++i) buffer_puts(&b, "foo bar baz!\n");
     buffer_flush(&b);
     assert(s.len == 100 * sizeof("foo bar baz!"));
-    for(i = 0; i < 100; ++i) assert(byte_equal(s.s + i * sizeof("foo bar baz!"), sizeof("foo bar baz!"), "foo bar baz!\n"));
+    for(i = 0; i < 100; ++i)
+      assert(byte_equal(s.s + i * sizeof("foo bar baz!"), sizeof("foo bar baz!"), "foo bar baz!\n"));
   }
 
   return 0;

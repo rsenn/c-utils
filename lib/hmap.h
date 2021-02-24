@@ -141,8 +141,7 @@ hmap_iterator_dereference(TUPLE** it) {
 int hmap_distance(TUPLE** it1, TUPLE** it2);
 
 #define hmap_iterator_equal(it1, it2) ((it1) == (it2))
-/*#define hmap_iterator_equal(it1, it2) ( \
-  ((it1) == NULL && (it2)->next == (it2)) || \
+/*#define hmap_iterator_equal(it1, it2) ( ((it1) == NULL && (it2)->next == (it2)) || \
   ((it2) == NULL && (it1)->next == (it1)) || \
   hmap_iterator_distance(it1, it2) == 0)
 */
