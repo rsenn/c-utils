@@ -3,28 +3,20 @@
 
 ssize_t
 charbuf_peek(charbuf* b) {
-  ssize_t ret = -1;
-  if(!b->p) {
-    b->chrs[0] = '\0';
-    if((ret = charbuf_stubborn_read(b, 1)) <= 0)
-      return ret;
-    b->p += ret;
-  }
+  ssize_t ret;
   for(;;) {
-    if(b->p)
-      return (unsigned int)(unsigned char)b->chrs[b->p - 1];
-
-    if((ret = charbuf_stubborn_read(b, 1)) > 0) {
-      b->p += ret;
-      continue;
+    if(b->p) {
+      ret = (unsigned int)(unsigned char)b->chrs[0];
+      break;
     }
-
-    break;
+    if((ret = charbuf_stubborn_read(b, 1)) <= 0)
+      break;
+    b->p = ret;
   }
 
-#ifdef DEBUG_CHARBUF_
+#ifdef DEBUG_CHARBUF
   buffer_puts(buffer_2, "charbuf_peek '");
-  buffer_putc(buffer_2, b->ch);
+  buffer_putc(buffer_2, b->chrs[0]);
   buffer_puts(buffer_2, "' eof=");
   buffer_putulong(buffer_2, b->eof ? 1 : 0);
   buffer_puts(buffer_2, " err=");

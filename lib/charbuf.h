@@ -39,16 +39,18 @@ typedef struct {
 #define CHARBUF_INIT(op, fd)                                                                                           \
   { '\0', 0, 0, 0, (op), (fd) }
 
+void charbuf_init(charbuf*, read_fn* op, fd_t fd, unsigned int lookahead);
+void charbuf_free(charbuf*);
+
 void charbuf_close(charbuf*);
 void charbuf_froms(charbuf*, char* s, unsigned lookahead);
 ssize_t charbuf_get(charbuf*);
 ssize_t charbuf_getc(charbuf*, unsigned char* ch);
-void charbuf_init(charbuf*, read_fn* op, fd_t fd, unsigned int lookahead);
 ssize_t charbuf_next(charbuf*);
 ssize_t charbuf_nextc(charbuf*, unsigned char* ch);
 ssize_t charbuf_peek(charbuf*);
 ssize_t charbuf_peekc(charbuf*, unsigned char* ch);
-ssize_t charbuf_peekn(charbuf*, unsigned int n);
+uint8* charbuf_peekn(charbuf*, unsigned int);
 ssize_t charbuf_skip(charbuf*);
 ssize_t charbuf_skip_pred(charbuf*, int (*pred)(int));
 ssize_t charbuf_skip_until(charbuf*, int c);

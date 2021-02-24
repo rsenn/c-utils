@@ -5,5 +5,7 @@ void
 charbuf_free(charbuf* b) {
   if(b->chrs)
     alloc_free(b->chrs);
-  byte_zero(n, sizeof(charbuf));
+  b->chrs = 0;
+  b->a = 0;
+  b->p = 0;
 }

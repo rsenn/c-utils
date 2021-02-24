@@ -3,12 +3,9 @@
 
 void
 charbuf_init(charbuf* b, read_fn* op, fd_t fd, unsigned int lookahead) {
-
-  lookahead += 0x7;
-  lookahead &= ~0x7;
-
+  b->a = (lookahead + 7) & (~7);
   b->p = 0;
-  b->chrs = alloc_zero((b->a = lookahead));
+  b->chrs = alloc(b->a);
   b->op = op;
   b->fd = fd;
   b->eof = 0;

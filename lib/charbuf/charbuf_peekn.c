@@ -2,20 +2,21 @@
 #include "../buffer.h"
 #include <assert.h>
 
-ssize_t
+uint8*
 charbuf_peekn(charbuf* b, unsigned int n) {
-  ssize_t ret = -1;
+  ssize_t ret;
   assert(n < b->a);
-  while(b->p < n) {
+
+  for(;;) {
+    if(b->p == n)
+      return b->chrs;
     b->chrs[b->p] = '\0';
     if((ret = charbuf_stubborn_read(b, n - b->p)) <= 0)
-      return ret;
+      break;
     b->p += ret;
   }
-  if(b->p)
-    ret = b->p;
 
-#ifdef DEBUG_CHARBUF_
+#ifdef DEBUG_CHARBUF
   buffer_puts(buffer_2, "charbuf_peekn (");
   buffer_putlong(buffer_2, n);
   buffer_puts(buffer_2, ") eof=");
@@ -27,5 +28,5 @@ charbuf_peekn(charbuf* b, unsigned int n) {
   buffer_putnlflush(buffer_2);
 #endif
 
-  return ret;
+  return 0;
 }
