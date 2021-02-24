@@ -3,20 +3,25 @@
 
 ssize_t
 charbuf_stubborn_read(charbuf* b) {
-  ssize_t w;
+  ssize_t ret;
 
-if(b->eof || b->err)
-    return b->eof ? 0 : -1;
-  
+  if(b->eof)
+    return 0;
+  if(b->err)
+    return -1;
+
   for(;;) {
-    if((w = b->op((int)b->fd, &b->ch,1, b)) < 0)
-      if(errno == EINTR)
-        continue;
+    ret = b->op((int)b->fd, &b->ch, 1, b);
 
-      if(w == 0) b->eof =1;
-     else if(w == -1) b->err =1;
-
+    if(ret < 0 && errno == EINTR) {
+      errno = 0;
+      continue;
+    }
+    if(ret < 0)
+      b->err = 1;
+    else if(ret == 0)
+      b->eof = 1;
     break;
   }
-  return w;
+  return ret;
 }

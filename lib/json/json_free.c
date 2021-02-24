@@ -1,5 +1,5 @@
+#include "../json_internal.h"
 #include "../alloc.h"
-#include "../json.h"
 
 struct free_stats {
   size_t num, max_depth;

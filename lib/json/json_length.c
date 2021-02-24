@@ -1,4 +1,4 @@
-#include "../json.h"
+#include "../json_internal.h"
 
 int64
 json_length(jsonval v) {

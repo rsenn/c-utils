@@ -1,6 +1,6 @@
+#include "../json_internal.h"
 #include "../stralloc.h"
 #include "../scan.h"
-#include "../json.h"
 #include <float.h>
 
 double

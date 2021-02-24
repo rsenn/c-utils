@@ -1,6 +1,6 @@
+#include "../json_internal.h"
 #include "../uint64.h"
 #include "../buffer.h"
-#include "../json.h"
 #include "../slist.h"
 #include "../stralloc.h"
 #include "../fmt.h"

@@ -1,19 +1,15 @@
 #include "../charbuf.h"
 #include "../buffer.h"
 
-int
+ssize_t
 charbuf_peek(charbuf* b) {
-  int ret = -1;
-
+  ssize_t ret = -1;
   if(!b->p) {
     b->ch = '\0';
-
-      if((ret = charbuf_stubborn_read(b) <= 0))  
-            return ret;
-
-      b->p = 1;
+    if((ret = charbuf_stubborn_read(b)) <= 0)
+      return ret;
+    b->p = 1;
   }
- 
   if(b->p)
     ret = (unsigned int)(unsigned char)b->ch;
 

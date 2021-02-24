@@ -1,6 +1,6 @@
+#include "../json_internal.h"
 #include "../alloc.h"
 #include "../byte.h"
-#include "../json.h"
 #include <stdlib.h>
 
 jsonval*

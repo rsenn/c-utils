@@ -1,22 +1,20 @@
 #include "../charbuf.h"
 #include "../buffer.h"
 
-int
-charbuf_peekc(charbuf* b, char* ch) {
-
-  int ret;
+ssize_t
+charbuf_peekc(charbuf* b, unsigned char* ch) {
+  ssize_t ret;
   if(b->p) {
     *ch = b->ch;
     return 1;
   }
- 
 
-  if((ret = charbuf_stubborn_read(b) <= 0)) 
+  if((ret = charbuf_stubborn_read(b)) <= 0)
     return ret;
-  
-    b->p = 1;
-    *ch = b->ch;
- 
+
+  b->p = 1;
+  *ch = b->ch;
+
 #ifdef DEBUG_CHARBUF_
   buffer_puts(buffer_2, "charbuf_peekc '");
   buffer_putc(buffer_2, b->ch);

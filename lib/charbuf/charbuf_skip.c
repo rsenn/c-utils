@@ -1,9 +1,9 @@
 #include "../charbuf.h"
 #include "../buffer.h"
 
-int
+ssize_t
 charbuf_skip(charbuf* b) {
-  int ret;
+  ssize_t ret;
 
 #ifdef DEBUG_CHARBUF
   buffer_puts(buffer_2, "charbuf_skip ");
@@ -31,14 +31,15 @@ charbuf_skip(charbuf* b) {
     } else {
       b->loc.column++;
     }
-    b->ch = '\0';
-    b->p = 0;
-    return 1;
-  }
-  
 
- ret = charbuf_stubborn_read(b);
- b->ch = 0;
- b->p = 0;
-    return ret;
+  } else {
+
+    if((ret = charbuf_stubborn_read(b)) <= 0)
+      return ret;
   }
+
+  ret = (int)(unsigned int)(unsigned char)b->ch;
+  b->ch = 0;
+  b->p = 0;
+  return ret;
+}

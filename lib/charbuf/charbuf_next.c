@@ -1,8 +1,8 @@
 #include "../charbuf.h"
 
-int
+ssize_t
 charbuf_next(charbuf* b) {
-  int ret;
+  ssize_t ret;
   if((ret = charbuf_skip(b)) > 0)
     ret = charbuf_peek(b);
   return ret;

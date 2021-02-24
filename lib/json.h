@@ -32,6 +32,16 @@ typedef enum {
   JSON_OBJECT,
 } jsondata;
 
+typedef enum key_type { JSON_KEY_OBJECT = 0, JSON_KEY_ARRAY = 1 } jsonkey_type;
+
+typedef struct {
+  jsonkey_type is_array;
+  union {
+    int64 intk;
+    char* stringk;
+  };
+} jsonkey;
+
 typedef struct {
   jsondata type;
   union {
@@ -82,7 +92,6 @@ jsonval* json_read_tree(charbuf*);
 
 int json_parse_array(jsonval*, charbuf* b);
 int json_parse_bool(jsonval*, charbuf* b);
-int json_parse_getsa(charbuf*, stralloc* sa);
 int json_parse(jsonval*, charbuf* b);
 int json_parse_num(jsonval*, charbuf* b);
 int json_parse_object(jsonval*, charbuf* b);

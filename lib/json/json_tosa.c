@@ -1,6 +1,6 @@
+#include "../json_internal.h"
 #include "../buffer.h"
 #include "../stralloc.h"
-#include "../json.h"
 
 static void
 json_default_printer(jsonfmt* p, jsonval* v, int depth, int index, char q) {

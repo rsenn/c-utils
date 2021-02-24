@@ -1,4 +1,4 @@
-#include "../json.h"
+#include "../json_internal.h"
 
 jsonval*
 json_set_property(jsonval* obj, jsonval name, jsonval value) {

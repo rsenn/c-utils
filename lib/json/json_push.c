@@ -1,5 +1,5 @@
+#include "../json_internal.h"
 #include "../slist.h"
-#include "../json.h"
 
 jsonval*
 json_push(jsonval* arr, jsonval item) {

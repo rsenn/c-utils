@@ -1,29 +1,9 @@
 #include "../charbuf.h"
 
-int
-charbuf_getc(charbuf* b, char* ch) {
-  int ret;
-
-  if(b->p) {
-    b->p = 0;
-    *ch = b->ch;
-    return 1;
-  }
-
-  if(b->eof || b->err)
-    return b->eof ? 0 : -1;
-
-  b->ch = '\0';
-  if((ret = charbuf_stubborn_read(b) <= 0)) {
-    if(ret == 0)
-      b->eof = 1;
-    else if(ret < 0)
-      b->err = 1;
-    return ret;
-  } else {
-    b->p = 1;
-    *ch = b->ch;
-  }
-
+ssize_t
+charbuf_getc(charbuf* b, unsigned char* ch) {
+  ssize_t ret;
+  if((ret = charbuf_peekc(b, ch)) > 0)
+    charbuf_skip(b);
   return ret;
 }

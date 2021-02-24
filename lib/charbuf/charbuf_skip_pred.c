@@ -1,16 +1,17 @@
 #include "../charbuf.h"
 
-int
+ssize_t
 charbuf_skip_pred(charbuf* b, int (*pred)(int)) {
-  int r, n = 0;
+  ssize_t ret;
+  size_t n = 0;
 
   for(;;) {
-    if((r = charbuf_peek(b)) <= 0)
-      return r;
-    if(!pred((char)r))
+    if((ret = charbuf_peek(b)) <= 0)
+      return ret;
+    if(!pred((unsigned int)(unsigned char)ret))
       return n;
-    if((r = charbuf_skip(b)) <= 0)
-      return r;
+    if((ret = charbuf_skip(b)) <= 0)
+      return ret;
     ++n;
   }
   return n;

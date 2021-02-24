@@ -1,6 +1,6 @@
+#include "../json_internal.h"
 #include "../stralloc.h"
 #include "../fmt.h"
-#include "../json.h"
 
 static void
 json_tostring_printer(jsonfmt* p, jsonval* v, int depth, int index, char q) {

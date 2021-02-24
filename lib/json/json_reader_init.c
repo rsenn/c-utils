@@ -1,5 +1,5 @@
+#include "../json_internal.h"
 #include "../byte.h"
-#include "../json.h"
 void
 json_reader_init(jsonreader* r, charbuf* b) {
   byte_zero(r, sizeof(jsonreader));

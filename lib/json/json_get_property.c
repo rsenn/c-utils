@@ -1,4 +1,4 @@
-#include "../json.h"
+#include "../json_internal.h"
 
 jsonval
 json_get_property(jsonval obj, jsonval name) {
