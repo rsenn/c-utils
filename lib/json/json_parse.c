@@ -49,22 +49,23 @@ json_parse_getsa(charbuf* b, stralloc* out, bool quoted) {
   return ret;
 }
 
+static const char identifier_chars[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789$_";
+
 int
-json_parse_null_or_undefined(jsonval* j, charbuf* b) {
-  int ret;
-  if((ret = charbuf_skip_ifset(b, "nu", 2)) > 0) {
-    const char* n;
-    int v = charbuf_peek(b) == 'u';
-    for(n = v ? "ull" : "ndefined"; *n; ++n) {
-      if(!charbuf_skip_ifeq(b, *n))
-        return 0;
+json_parse_null(jsonval* j, charbuf* b) {
+  uint8* chars;
+  if((chars = charbuf_peekn(b, 5))) {
+    if(byte_equal(chars, 4, "null")) {
+      if(identifier_chars[str_chr(identifier_chars, chars[4])] == '\0') {
+        charbuf_skipn(b, 4);
+        j->type = JSON_NULL;
+        return 1;
+      }
     }
-    j->type = v ? JSON_NULL : JSON_UNDEFINED;
-    // MAP_ZERO(j->dictv);
-    return 1;
   }
-  return ret;
+  return 0;
 }
+
 int
 json_parse(jsonval* j, charbuf* b) {
   int r = 0;
@@ -75,6 +76,6 @@ json_parse(jsonval* j, charbuf* b) {
       if(!(r = json_boolean_parse(j, b)))
         if(!(r = json_number_parse(j, b)))
           if(!(r = json_string_parse(j, b)))
-            r = json_parse_null_or_undefined(j, b);
+            r = json_parse_null(j, b);
   return r;
 }

@@ -92,6 +92,7 @@ extern int charbuf_colors;
 
 #ifdef BUFFER_H
 void charbuf_dump(charbuf*, buffer*);
+
 #endif
 
 #ifdef __cplusplus
