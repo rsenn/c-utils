@@ -1,4 +1,4 @@
-#define MAP_USE_H MAP 1
+#define MAP_USE_HMAP 1
 #include "uint64.h"
 #include "buffer.h"
 #include "map.h"
