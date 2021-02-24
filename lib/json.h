@@ -6,6 +6,8 @@
 #ifndef JSON_H
 #define JSON_H
 
+#include "map.h"
+
 #include "charbuf.h"
 #include "slist.h"
 #include "uint64.h"
@@ -13,10 +15,6 @@
 #include "stralloc.h"
 #include <sys/types.h>
 #include <ctype.h>
-
-#define MAP_USE_HASHMAP 1
-//#define MAP_USE_HMAP 1
-#include "map.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -116,6 +114,8 @@ void json_tosa(jsonval, stralloc* sa, json_print_fn* p);
 double json_todouble(jsonval);
 int64 json_toint(jsonval);
 const char* json_tostring(jsonval, stralloc* sa);
+jsonval json_object(void);
+int json_isnull(jsonval);
 
 static inline int
 json_is_identifier_char(int c) {
@@ -143,13 +143,7 @@ json_null() {
   byte_zero(&ret.dictv, sizeof(MAP_T));
   return ret;
 }
-static inline jsonval
-json_object() {
-  jsonval ret;
-  ret.type = JSON_OBJECT;
-  MAP_NEW(ret.dictv);
-  return ret;
-}
+
 static inline jsonval
 json_array() {
   jsonval ret;
@@ -195,11 +189,8 @@ json_stringn(const char* s, size_t n) {
   ret.stringv.a = n + 1;
   return ret;
 }
+ 
 
-static inline int
-json_isnull(jsonval v) {
-  return v.type == JSON_OBJECT && MAP_ISNULL(v.dictv);
-}
 static inline int
 json_isnumber(jsonval v) {
   return v.type == JSON_INT || v.type == JSON_DOUBLE;

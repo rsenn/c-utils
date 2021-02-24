@@ -1,5 +1,5 @@
-#include "../json_internal.h"
 #include "../buffer.h"
+#include "../json_internal.h"
 #include "../stralloc.h"
 
 static void

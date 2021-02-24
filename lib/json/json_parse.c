@@ -1,7 +1,4 @@
 #include "../json_internal.h"
-#define MAP_USE_HMAP 1
-#include "../map.h"
-
 #include "../bool.h"
 #include "../uint64.h"
 #include "../byte.h"
@@ -136,6 +133,7 @@ json_parse_array(jsonval* j, charbuf* b) {
     charbuf_skip_pred(b, isspace);
 
     ptr = &j->listv;
+
     for(; (ret = charbuf_peekc(b, &c)) > 0; ptr = &((*ptr)->next)) {
 
       if(c == ']') {
@@ -186,7 +184,7 @@ json_parse_object(jsonval* j, charbuf* b) {
     charbuf_skip_pred(b, isspace);
 
     for(; (ret = charbuf_peekc(b, &c)) > 0;) {
-      jsonval* member;
+      jsonval member = {.type = JSON_UNDEFINED};
       stralloc_zero(&key);
       if(c == '}') {
 
@@ -202,13 +200,14 @@ json_parse_object(jsonval* j, charbuf* b) {
       if(!charbuf_skip_ifeq(b, ':'))
         return 0;
 
-      member = json_newnode(JSON_UNDEFINED);
-      stralloc_nul(&key);
-      MAP_ADD(j->dictv, key.s, member);
+      //      stralloc_nul(&key);
 
       charbuf_skip_pred(b, &isspace);
-      if(!json_parse(member, b))
+      if(!json_parse(&member, b))
         return 0;
+
+      MAP_INSERT(j->dictv, key.s, key.len, &member, sizeof(member));
+
       charbuf_skip_pred(b, &isspace);
       if(charbuf_skip_ifeq(b, ',')) {
         charbuf_skip_pred(b, &isspace);

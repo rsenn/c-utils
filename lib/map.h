@@ -174,7 +174,7 @@ typedef TUPLE* MAP_ITER_T;
 
 #define MAP_ITER_KEY(iter) ((const char*)((iter)->key))
 #define MAP_ITER_KEY_LEN(iter) ((iter)->key_len)
-#define MAP_ITER_VALUE(iter) ((const char*)((iter)->vals.val_custom))
+#define MAP_ITER_VALUE(iter) ((void*)((iter)->vals.val_custom))
 #define MAP_KEY MAP_ITER_KEY
 #define MAP_KEY_LEN MAP_ITER_KEY_LEN
 #define MAP_VALUE MAP_ITER_VALUE
@@ -218,6 +218,9 @@ MAP_GET2(HMAP_DB* map, const void* key, size_t klen) {
 #define MAP_SEARCH(map, key, klen, tuple)                                      \
   (hmap_search(map, key, klen, tuple) == HMAP_SUCCESS ? *(tuple) : 0)
 
+#else
+
+typedef void* MAP_T;
 #endif
 
 #endif /* defined _MAP_H */
