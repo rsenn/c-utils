@@ -7,10 +7,11 @@ charbuf_pred_lookahead(charbuf* b, int (*pred)(int, size_t, void*), void* ptr) {
 
   for(;;) {
     uint8* v;
-    if((v = charbuf_peekn(b, n + 1)) > 0 && pred((unsigned int)(unsigned char)v[n], n, ptr)) {
-      n++;
-      if(charbuf_skip(b) > 0)
+    if((v = charbuf_peekn(b, n + 1)) > 0) {
+      if(pred((unsigned int)(unsigned char)v[n], n, ptr)) {
+        n++;
         continue;
+      }
     }
     break;
   }
