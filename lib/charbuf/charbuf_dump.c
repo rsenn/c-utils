@@ -29,8 +29,9 @@ charbuf_dump(charbuf* b, buffer* out) {
   charbuf_dumpint64("p", b->p, out);
 
   buffer_puts(out, CHARBUF_PROPSEP);
-  charbuf_dumplabel(CHARBUF_PROPSEP "chrs", out);
+  charbuf_dumplabel("chrs", out);
   charbuf_dump_chrs(b, out);
+  buffer_puts(out, CHARBUF_PROPSEP);
 
   charbuf_dumpint64("offset", b->offset, out);
   if(b->eof) {

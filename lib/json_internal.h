@@ -24,16 +24,17 @@ predicate_string(int c, size_t pos, void* ptr) {
 static inline int
 is_identifier_char(int c) {
   static const char identifier_chars[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789$_";
- return !!identifier_chars[str_chr(identifier_chars, c)];
+  return !!identifier_chars[str_chr(identifier_chars, c)];
 }
- 
+
 static inline int
 predicate_identifier(int c, size_t pos, void* ptr) {
-  const char* str = ptr;
-    return pos < str_len(str) ? predicate_string(c, pos, str)  : !is_identifier_char(c);
+  char* str = ptr;
+  size_t len = str_len(str);
 
- }
+  return pos < len ? predicate_string(c, pos, str) : pos == len ? !is_identifier_char(c) : 0;
+}
 static inline int
 predicate_null(int c, size_t pos, void* ptr) {
-    return predicate_identifier(c, pos, "null");
-    }
+  return predicate_identifier(c, pos, "null");
+}

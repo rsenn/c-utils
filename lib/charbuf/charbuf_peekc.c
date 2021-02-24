@@ -23,7 +23,7 @@ charbuf_peekc(charbuf* b, unsigned char* ch) {
     charbuf_dumplabel("c", buffer_2);
     if(charbuf_colors)
       buffer_puts(buffer_2, CHARBUF_CYAN);
-    charbuf_dumpchar(*ch, buffer_2);
+    charbuf_dumpchar(*ch, buffer_2, 2);
     if(charbuf_colors)
       buffer_puts(buffer_2, CHARBUF_NC);
 

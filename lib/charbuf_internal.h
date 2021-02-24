@@ -12,9 +12,18 @@
 #define CHARBUF_GRAY "\x1b[1;30m"
 #define CHARBUF_GRAY20 "\x1b[38;5;233m"
 #define CHARBUF_GRAY40 "\x1b[38;5;235m"
+#define CHARBUF_BLUE "\x1b[0;34m"
+#define CHARBUF_LIGHT_BLUE "\x1b[1;34m"
+#define CHARBUF_MARINE "\x1b[0;36m"
 #define CHARBUF_CYAN "\x1b[1;36m"
 #define CHARBUF_GREEN "\x1b[0;32m"
+#define CHARBUF_LIGHT_GREEN "\x1b[1;32m"
+#define CHARBUF_RED "\x1b[0;31m"
+#define CHARBUF_LIGHT_RED "\x1b[1;31m"
 #define CHARBUF_YELLOW "\x1b[0;33m"
+#define CHARBUF_LIGHT_YELLOW "\x1b[1;33m"
+#define CHARBUF_MAGENTA "\x1b[0;35m"
+#define CHARBUF_LIGHT_MAGENTA "\x1b[1;35m"
 #define CHARBUF_NC "\x1b[m"
 
 #define CHARBUF_PROPSEP ", "
@@ -22,6 +31,9 @@
 
 extern int charbuf_debug;
 extern int charbuf_colors;
+
+ssize_t charbuf_stubborn_read(charbuf*, size_t max);
+
 
 #define charbuf_colorstr(str, color, out)                                                                              \
   buffer_putm_internal(                                                                                                \
@@ -44,82 +56,55 @@ extern int charbuf_colors;
     charbuf_colorstr(buf, CHARBUF_YELLOW, out);                                                                        \
   } while(0)
 
-/*static inline void
-charbuf_dumpint64(int64 ret,  buffer* out) {
-  charbuf_dumplabel(CHARBUF_SEP "ret", out);
-  buffer_putlonglong(out, ret);
-}
-*/
 static inline void
-charbuf_dumpchars(uint8* chrs, size_t n, buffer* out) {
-  size_t i = 0;
-  char buf[256];
-
-  buf[i++] = '\'';
-  for(; n > 0; chrs++, n--) {
-    int c = *chrs;
-
-    if(isprint(c) || c == ' ') {
-
-      buf[i++] = c;
-    } else if(isspace(c)) {
-      i += fmt_escapecharc(&buf[i], c);
-    } else {
-      buf[i++] = '0';
-      int pad = 3 - fmt_8long(0, c);
-      buf[i++] = '\\';
-      while(pad-- > 0) buf[i++] = '0';
-      i += fmt_8long(&buf[i], c);
-    }
-  }
-  buf[i++] = '\'';
-  buffer_put(out, buf, i);
-}
-
-static inline void
-charbuf_dumpchar(int c, buffer* out) {
+charbuf_dumpchar(int c, buffer* out, int pad) {
   char buf[64];
+  int quote = pad < 0;
+  if(pad < 0)
+    pad = -pad;
+
   size_t l, i = 0;
   if(isprint(c) || c == ' ') {
-    buf[i++] = '\'';
+    if(quote)
+      buf[i++] = '\'';
 
     buf[i++] = c;
-    buf[i++] = '\'';
+    if(quote)
+      buf[i++] = '\'';
   } else if(isspace(c) /*&& !iscntrl(c)*/) {
-    buf[i++] = '\'';
+    if(quote)
+      buf[i++] = '\'';
     i += fmt_escapecharc(&buf[i], c);
-    buf[i++] = '\'';
+    if(quote)
+      buf[i++] = '\'';
   } else {
-    buf[i++] = '0';
-    int pad = 3 - fmt_8long(0, c);
+    buf[i++] = '\\';
+    buf[i++] = 'u';
+    int pad = 4 - fmt_xlong(0, c);
     while(pad-- > 0) buf[i++] = '0';
-    i += fmt_8long(&buf[i], c);
+    i += fmt_xlong(&buf[i], c);
   }
 
-  if(i < 6) {
-    l = ((6 - i) + 1) / 2;
+  if(i < pad) {
+    l = (size_t)(pad - i) / 2 - 1;
     buffer_putnspace(out, l);
   }
   buffer_put(out, buf, i);
-  if(l + i < 6) {
-    size_t r = 6 - l - i;
+  if(l + i < pad) {
+    size_t r = pad - (l + i);
     buffer_putnspace(out, r);
   }
-  return;
+}
 
-  if(c > 0x20 || c == 0x0a || c == 0x0d || c == 9) {
-    buffer_putc(out, '\'');
-    if(c == 0x0a || c == 0x0d || c == 0x09)
-      buffer_puts(out, c == '\n' ? "\\n" : c == '\r' ? "\\r" : "\\t");
+static inline void
+charbuf_dumpchars(uint8* chrs, size_t n, buffer* out, int pad) {
+  size_t i = 0;
+  buffer_puts(buffer_2, "'");
+  for(i = 0; i < n; i++) {
+    if(chrs[i] == '\'')
+      buffer_puts(out, "\\'");
     else
-      buffer_putc(out, c);
-    buffer_putc(out, '\'');
-  } else if(c > 0 && c < 0x20 && !(c == 0x0a || c == 0x0d || c == 9)) {
-    buffer_puts(out, "x");
-    buffer_putxlong0(out, c, 2);
-  } else {
-    int pad = 3 - fmt_8long(0, c);
-    while(pad-- > 0) buffer_putc(out, '0');
-    buffer_put8long(out, c);
-  }
+    charbuf_dumpchar(chrs[i], out, pad);
+   }
+  buffer_puts(buffer_2, "'");
 }

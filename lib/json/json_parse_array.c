@@ -14,15 +14,16 @@ json_parse_array(jsonval* val, charbuf* b) {
     ptr = &val->itemv;
     charbuf_pred_skip(b, predicate_ctype, isspace);
     while((ret = charbuf_peekc(b, &c)) > 0) {
-      if(c == '}') {
+      if(c == ']') {
         ret = 1;
         break;
       }
 
       ptr = &((item = json_append(ptr, json_undefined()))->next);
+   
       json_parse(&item->value, b);
 
-#if 1 // def JSON_DEBUG
+#ifdef JSON_DEBUG
       buffer_puts(buffer_2, "json array element ");
       buffer_putlonglong(buffer_2, i++);
       buffer_puts(buffer_2, ": ");
@@ -32,10 +33,10 @@ json_parse_array(jsonval* val, charbuf* b) {
       charbuf_pred_skip(b, predicate_ctype, isspace);
       if((ret = charbuf_peekc(b, &c)) <= 0)
         break;
-      if(c == '}')
+      if(c == ']')
         continue;
-      if(c == ',') {
-        charbuf_skip(b);
+      if(charbuf_skip_ifeq(b, ',')) {
+        
         charbuf_pred_skip(b, predicate_ctype, isspace);
         continue;
       }

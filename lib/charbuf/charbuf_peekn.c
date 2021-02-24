@@ -27,7 +27,7 @@ charbuf_peekn(charbuf* b, unsigned int n) {
     charbuf_dump(b, buffer_2);
     charbuf_dumplabel(CHARBUF_SEP "ret", buffer_2);
 
-    charbuf_dumpchars(ret, n, buffer_2);
+    charbuf_dumpchars(ret, n, buffer_2, 1);
 
     if(charbuf_colors)
       buffer_puts(buffer_2, CHARBUF_NC);
