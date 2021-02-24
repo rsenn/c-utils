@@ -248,10 +248,10 @@ main(int argc, char* argv[]) {
     buffer_write_fd(&out_buf, out_fd);
 
     doc = json_read_tree(&in_buf);
-
+#ifdef DEBUG_CHARBUF
     charbuf_dump(&in_buf, buffer_2);
     buffer_putnlflush(buffer_2);
-
+#endif
     json_pretty_print(*doc, &out_buf);
     (one_line ? &buffer_putnlflush : &buffer_flush)(&out_buf);
 
