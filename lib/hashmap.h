@@ -121,6 +121,7 @@ size_t hashmap_size(hashmap* map);
 /**
  * Returns a linked list that contains all keys in the map
  * @param map hash map structure
+
  * @return a linked list containing all keys
  */
 linked_list* hashmap_keys(hashmap* map);

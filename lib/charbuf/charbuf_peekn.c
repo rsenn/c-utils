@@ -33,7 +33,6 @@ charbuf_peekn(charbuf* b, unsigned int n) {
 
     charbuf_dump_setcolumn(CHARBUF_COLUMN_1, buffer_2);
 
-    //       charbuf_dumpint64("ret", ret, buffer_2);
     charbuf_dumpchars(ret, n, buffer_2, 1);
 
     charbuf_dump(b, buffer_2);

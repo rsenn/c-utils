@@ -1,3 +1,4 @@
+#include "../uint32.h"
 #include "../byte.h"
 #include "../alloc.h"
 #include "../hmap_internal.h"
@@ -11,7 +12,7 @@ hmap_add(HMAP_DB** hmap_db, const void* key, size_t k_len, int dup_flag, int dat
   char* data = NULL;
   va_list args;
 
-  int index = hmap_hash(key, k_len) % (*hmap_db)->bucket_size;
+  int32 index = hmap_hash(key, k_len) % (*hmap_db)->bucket_size;
 
   VALIDATE_DB(*hmap_db, key, k_len);
 

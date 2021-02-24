@@ -909,6 +909,7 @@ set(nscache_SOURCES cache.c cache.h log.c log.h query.c query.h response.c respo
 add_program(nscache dns path errmsg dir array stralloc alloc env byte uint16 ${LIBMSWSOCK} ${LIBIPHLPAPI})
 add_program(crc errmsg buffer mmap open ${ZLIB_LIBRARY})
 add_program(cmake-run errmsg env buffer path dir strarray strlist stralloc fmt)
+set(jsonpp_SOURCES terminal.c terminal.h)
 
 add_program(jsonpp json errmsg unix)
 add_program(xml2json json xml errmsg unix)

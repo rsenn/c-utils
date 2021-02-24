@@ -34,7 +34,7 @@ charbuf_skipn(charbuf* b, size_t n) {
     buffer_puts(buffer_2, "charbuf_skipn(");
     charbuf_dumplabel("n", buffer_2);
     buffer_putulonglong(buffer_2, n);
-    buffer_puts(buffer_2, ")\x1b[" charbuf_stringify_helper(CHARBUF_COLUMN_1) "G");
+    charbuf_dump_setcolumn(CHARBUF_COLUMN_1, buffer_2);
     charbuf_dumpchars(skipped, pos, buffer_2, 1);
     buffer_puts(buffer_2, CHARBUF_PROPSEP);
     charbuf_dumpint64("ret", pos, buffer_2);

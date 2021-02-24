@@ -4,6 +4,14 @@
 		"selected_items":
 		[
 			[
+				"r",
+				"r"
+			],
+			[
+				"ret",
+				"ret"
+			],
+			[
 				"terminal_numer",
 				"terminal_number_sequence"
 			],
@@ -20,38 +28,21 @@
 	"buffers":
 	[
 		{
-			"contents": "—Ⓜ– scroll_page_up ( ) … — macro function\n—Ⓜ– scroll_page_down ( ) … — macro function\n—Ⓜ– scroll_to_top ( ) … — macro function\n—Ⓜ– scroll_to_bottom ( ) … — macro function\n—Ⓜ– last_line ( ) … — macro function\n—Ⓕ– line_count ( ) { … } — function\n—Ⓕ– line_range ( ) { … } — function\n—Ⓕ– line_at ( ) { … } — function\n—Ⓕ– line_numbytes ( ) { … } — function\n—Ⓕ– read_terminal_properties ( ) { … } — function\n—Ⓕ– read_line ( ) { … } — function\n—Ⓕ– read_content ( ) { … } — function\n—Ⓕ– init_terminal ( ) { … } — function\n—Ⓕ– print_progress ( ) { … } — function\n—Ⓕ– print_position ( ) { … } — function\n—Ⓕ– number_width ( ) { … } — function\n—Ⓕ– print_linenumber ( ) { … } — function\n—Ⓕ– print_line ( ) { … } — function\n—Ⓕ– print_status ( ) { … } — function\n—Ⓕ– print_added ( ) { … } — function\n—Ⓕ– scroll_up ( ) { … } — function\n—Ⓕ– scroll_down ( ) { … } — function\n—Ⓕ– scroll_to ( ) { … } — function\n—Ⓕ– scroll_by ( ) { … } — function\n—Ⓕ– handle_key_modifier ( ) { … } — function\n—Ⓕ– handle_escape_sequence ( ) { … } — function\n—Ⓕ– jump_command ( ) { … } — function\n—Ⓕ– read_goto ( ) { … } — function\n—Ⓕ– match_pattern ( ) { … } — function\n—Ⓕ– nomatch_pattern ( ) { … } — function\n—Ⓕ– find_line ( ) { … } — function\n—Ⓕ– count_matches ( ) { … } — function\n—Ⓕ– search_update ( ) { … } — function\n—Ⓕ– search_command ( ) { … } — function\n—Ⓕ– read_command ( ) { … } — function\n—Ⓕ– update_number ( ) { … } — function\n—Ⓕ– get_number ( ) { … } — function\n—Ⓕ– handle_input ( ) { … } — function\n—Ⓕ– get_filesize ( ) { … } — function\n—Ⓕ– get_position ( ) { … } — function\n—Ⓕ– interrupt ( ) { … } — function\n—Ⓕ– terminate ( ) { … } — function\n—Ⓕ– winsizechange ( ) { … } — function\n—Ⓕ– main ( ) { … } — function",
+			"contents": "—Ⓕ– charbuf_peekn ( ) { … } — function",
 			"settings":
 			{
-				"buffer_size": 1691,
+				"buffer_size": 38,
 				"line_ending": "Unix",
 				"name": "𝌆 Outline",
 				"scratch": true
 			}
 		},
 		{
-			"file": "least.c",
+			"file": "lib/charbuf/charbuf_peekn.c",
 			"settings":
 			{
-				"buffer_size": 18038,
+				"buffer_size": 909,
 				"encoding": "UTF-8",
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "terminal.c",
-			"settings":
-			{
-				"buffer_size": 3478,
-				"encoding": "UTF-8",
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "terminal.h",
-			"settings":
-			{
-				"buffer_size": 1981,
 				"line_ending": "Unix"
 			}
 		}
@@ -162,18 +153,131 @@
 	[
 		"/home/roman/Dokumente/Sources/c-utils",
 		"/home/roman/Dokumente/Sources/c-utils/lib",
-		"/home/roman/Dokumente/Sources/c-utils/lib/fmt"
+		"/home/roman/Dokumente/Sources/c-utils/lib/charbuf",
+		"/home/roman/Dokumente/Sources/c-utils/lib/hmap",
+		"/home/roman/Dokumente/Sources/c-utils/lib/json"
 	],
 	"file_history":
 	[
+		"/home/roman/Dokumente/Sources/c-utils/lib/hmap.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/charbuf.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/charbuf_internal.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/map.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/json.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/hmap/hmap_cmp.c",
+		"/home/roman/Dokumente/Sources/c-utils/mplab.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/hmap/hmap_get.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/hmap/hmap_set_stralloc.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/hmap/hmap_set.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/hmap/hmap_set_chars.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/hmap/hmap_add.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/hmap/hmap_add_tuple_with_data.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/hmap/hmap_search.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/json/json_set_property.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/json/json_parse_object.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/charbuf/charbuf_skipn.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/charbuf/charbuf_dump.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/hmap_internal.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/hmap/hmap_hash.c",
+		"/home/roman/Dokumente/Sources/plot-cv/quickjs/modules/ini.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/hmap/hmap_distance.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/json/json_parse_number.c",
+		"/home/roman/Sources/c-utils/ini.c",
+		"/home/roman/Dokumente/Sources/plot-cv/quickjs/modules/test.json",
+		"/home/roman/Dokumente/Sources/c-utils/lib/charbuf/charbuf_skipc.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/charbuf/charbuf_skip_ws.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/charbuf/charbuf_peekc.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/charbuf/charbuf_peekn.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/json/json_parse_null.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/charbuf/charbuf_peek.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/charbuf/charbuf_nextc.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/buffer/buffer_getn.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/byte/byte_rchr.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/buffer.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/json/json_tostring.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/json/json_parse.c",
+		"/home/roman/Dokumente/Sources/c-utils/terminal.h",
+		"/home/roman/Dokumente/Sources/c-utils/terminal.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/charbuf/charbuf_getc.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/byte/byte_count.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/json/json_parse_array.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/charbuf/charbuf_pred_skip.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/charbuf/charbuf_skip.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/charbuf/charbuf_skip_until.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/json_internal.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/charbuf/charbuf_close.c",
+		"/home/roman/Dokumente/Sources/plot-cv/quickjs/modules/output.json",
+		"/home/roman/Dokumente/Sources/c-utils/lib/charbuf/charbuf_next.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/charbuf/charbuf_get.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/charbuf/charbuf_free.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/charbuf/charbuf_pred_lookahead.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/json/json_object_parse.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/json/json_parse_boolean.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/json/json_parse_stralloc.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/json/json_compact_printer.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/charbuf/charbuf_skip_pred.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/charbuf/charbuf_init.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/json/json_read_tree.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/json/json_array_parse.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/json/json_default_printer.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/json/json_number_parse.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/json/json_length.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/charbuf/charbuf_get_pred.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/charbuf/charbuf_pred_get.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/charbuf/charbuf_lookahead_pred.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/json/json_null_parse.c",
+		"/home/roman/Dokumente/Sources/c-utils/scripts/format-sources.sh",
+		"/home/roman/Dokumente/Sources/c-utils/lib/json/json_stralloc_parse.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/json/json_print.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/json/json_string_parse.c",
+		"/home/roman/Dokumente/Sources/c-utils/xml2json.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/fmt/fmt_escapecharc.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/buffer/buffer_put8long.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/fmt/fmt_8long.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/charbuf/charbuf_froms.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/json/json_append.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/json/json_free.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/slist.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/json/json_array_push.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/json/json_array_items.c",
+		"/home/roman/Dokumente/Sources/c-utils/jsontest.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/json/json_boolean_parse.c",
+		"/home/roman/Dokumente/Sources/c-utils/strip-comments.c",
+		"/home/roman/Dokumente/Sources/c-utils/jsonpp.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/charbuf/charbuf_stubborn.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/json/json_recurse.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/hmap/hmap_init.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/json/json_object.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/json/json_property.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/json/json_read_callback.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/json/json_isnull.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/json/json_newnode.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/json/json_array_at.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/json/json_tosa.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/json/charbuf_dump.c",
+		"/home/roman/.config/sublime-text-3/Packages/CTags/Default.sublime-keymap",
+		"/home/roman/.config/sublime-text-3/Packages/User/Default (Linux).sublime-keymap",
+		"/home/roman/.config/sublime-text-3/Packages/CTags/CTags.sublime-settings",
+		"/home/roman/.config/sublime-text-3/Packages/User/CTags.sublime-settings",
+		"/home/roman/Dokumente/Sources/c-utils/least.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/slist/slist_push.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/slist/slist_pushb.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/json/json_todouble.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/json/json_toint.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/json/json_push.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/stralloc.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/json/json_get_property.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/bool.h",
+		"/home/roman/Dokumente/Sources/c-utils/lib/slist/slist_unshifts.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/slist/slist_shift.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/buffer/buffer_stubborn.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/buffer/buffer_skip_pred.c",
+		"/home/roman/Dokumente/Sources/c-utils/lib/buffer/buffer_stubborn2.c",
+		"/home/roman/Dokumente/Sources/plot-cv/quickjs/modules/V",
 		"/home/roman/Dokumente/Sources/c-utils/lib/fmt/fmt_hexb.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/fmt/fmt_hexbs.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/fmt.h",
-		"/home/roman/Dokumente/Sources/c-utils/lib/stralloc.h",
 		"/home/roman/Dokumente/Sources/c-utils/lib/stralloc/stralloc_zero.c",
-		"/home/roman/Dokumente/Sources/c-utils/terminal.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/buffer.h",
-		"/home/roman/Dokumente/Sources/c-utils/terminal.h",
 		"/home/roman/Dokumente/Sources/c-utils/lib/scan/scan_double.c",
 		"/home/roman/.config/sublime-text-3/Packages/User/Themes/C Theme 2.tmTheme",
 		"/home/roman/.config/sublime-text-3/Packages/Outroot Color Schemes/Monokai.tmTheme",
@@ -182,16 +286,7 @@
 		"/home/roman/Dokumente/Sources/plot-cv/quickjs/qjs-cache/quickjs.c",
 		"/home/roman/Dokumente/Sources/plot-cv/lib/consoleSetup.js",
 		"/home/roman/.config/sublime-text-3/Packages/User/Themes/C Theme.tmTheme",
-		"/home/roman/.config/sublime-text-3/Packages/User/Default (Linux).sublime-keymap",
-		"/home/roman/.config/sublime-text-3/Packages/User/SchemrFavorites.sublime-settings",
-		"/home/roman/.config/sublime-text-3/Packages/Rainglow/rainglow/Horizon (rainglow).tmTheme",
-		"/home/roman/.config/sublime-text-3/Packages/Outline/outline.hidden-tmTheme",
-		"/home/roman/.config/sublime-text-3/Packages/Color Scheme - Legacy/Zenburnesque.tmTheme",
-		"/home/roman/.config/sublime-text-3/Packages/Color Scheme - Sleeplessmind/Sleeplessmind.tmTheme",
-		"/home/roman/.config/sublime-text-3/Packages/DobDark Color Scheme/Dobdark.tmTheme",
-		"/home/roman/.config/sublime-text-3/Packages/Rainglow/rainglow/Stark Contrast (rainglow).tmTheme",
-		"/home/roman/.config/sublime-text-3/Packages/SynthWave 84 - Color Scheme/SynthWave 84.tmTheme",
-		"/home/roman/.config/sublime-text-3/Packages/Dogs Colour Scheme/Dogs.tmTheme"
+		"/home/roman/.config/sublime-text-3/Packages/User/SchemrFavorites.sublime-settings"
 	],
 	"find":
 	{
@@ -199,16 +294,100 @@
 	},
 	"find_in_files":
 	{
-		"height": 0.0,
+		"height": 99.0,
 		"where_history":
 		[
+			"/home/roman/Dokumente/Sources/c-utils,*.c,*.h,-*3rd*",
+			"/home/roman/Dokumente/Sources/c-utils,*.c,*.h",
+			"/home/roman/Dokumente/Sources/c-utils/lib,*.c",
+			"/home/roman/Dokumente/Sources/c-utils/lib/charbuf,*.c",
+			"/home/roman/Dokumente/Sources/c-utils,*.[ch]",
+			"/home/roman/Dokumente/Sources/c-utils,*.c,*.h",
+			"/home/roman/Dokumente/Sources/c-utils"
 		]
 	},
 	"find_state":
 	{
-		"case_sensitive": false,
+		"case_sensitive": true,
 		"find_history":
 		[
+			"COLUMN_2",
+			"vals.*chars",
+			"vals",
+			"hmap_hash\\(",
+			"hmap_hash",
+			"hmap_cmp",
+			"MAP_SET",
+			"189",
+			"hash",
+			"_hash",
+			"_hashg",
+			"hmap_add",
+			"MAP_GET",
+			"chrs",
+			"chras",
+			"set_col",
+			"charbuf_stringify_helper",
+			" + 1",
+			"+ 1",
+			"\\+ 1",
+			"putl",
+			"buffer_LE",
+			"buffer_SIZE",
+			"putspad",
+			"charbuf_pred_skip(b, charbuf_is_ctype, isspace);",
+			"skip_",
+			"dumpchars",
+			"charbuf_debug =",
+			"n =",
+			"tok",
+			"charbuf_skip_pred(b, &pred_isspace, 0)",
+			"charbuf_skip_pred(b, &isspace);",
+			"stralloc",
+			"charbuf_skip_pred",
+			"skip_pred",
+			"charbuf_dumpchar",
+			"n64",
+			"\\$DEBUG",
+			"$DEBUG",
+			"\"$DEBUG\"",
+			"$DEBUG",
+			"\"$DEBUG\"",
+			"\"\\$DEBUG\"",
+			"\\$DEBUG",
+			"list_cmd",
+			"number_parse",
+			"buf",
+			"out",
+			"charbuf_dump",
+			"buffer_2",
+			"_free",
+			"froms",
+			"charbuf_froms",
+			"froms",
+			"charbuf_init",
+			"dup_flag",
+			"dup_fla",
+			"json_parse_getsa",
+			"hmap_set",
+			"MAP_SET",
+			"hmap_insert",
+			"delete",
+			"_new",
+			"slist_new",
+			"json_appe",
+			"recurse",
+			"slink_new",
+			"json_obj",
+			"MAP_NEW",
+			"stralloc_write",
+			"char c",
+			"getsa",
+			"json_parse_getsa",
+			"39",
+			"^int\ncharbuf_",
+			"int\ncharbuf_",
+			"charbuf_stubborn_read(b->op,  b->fd, &b->ch, 1, b)",
 			"read_content",
 			"read_line",
 			"read_content",
@@ -229,12 +408,22 @@
 			"jump_command",
 			"search_update"
 		],
-		"highlight": true,
+		"highlight": false,
 		"in_selection": false,
 		"preserve_case": false,
-		"regex": false,
+		"regex": true,
 		"replace_history":
 		[
+			"",
+			"charbuf_skip_ws(b);",
+			"charbuf_skip_pred(b, predicate_ctype, isspace)",
+			"charbuf_skip_pred(b, predicate_ctype, isspace);",
+			"nt64",
+			"${DEBUG:-0}",
+			"buffer_2",
+			"out",
+			"ssize_t\ncharbuf_",
+			"charbuf_stubborn_read(b)",
 			"(&terminal_buffer",
 			"terminal_number_command("
 		],
@@ -242,7 +431,7 @@
 		"show_context": true,
 		"use_buffer2": true,
 		"whole_word": false,
-		"wrap": true
+		"wrap": false
 	},
 	"groups":
 	[
@@ -255,7 +444,7 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 1691,
+						"buffer_size": 38,
 						"regions":
 						{
 						},
@@ -264,233 +453,18 @@
 						],
 						"settings":
 						{
-							"current_file": "/home/roman/Dokumente/Sources/c-utils/least.c",
+							"current_file": "/home/roman/Dokumente/Sources/c-utils/lib/charbuf/charbuf_peekn.c",
 							"outline_rename_mode": false,
 							"symkeys":
 							[
 								[
-									494,
-									508
-								],
-								[
-									544,
-									560
-								],
-								[
-									595,
-									608
-								],
-								[
-									632,
-									648
-								],
-								[
-									687,
-									696
-								],
-								[
-									1087,
-									1097
-								],
-								[
-									1161,
-									1171
-								],
-								[
-									1240,
-									1247
-								],
-								[
-									1303,
-									1316
-								],
-								[
-									1608,
-									1632
-								],
-								[
-									1800,
-									1809
-								],
-								[
-									2741,
-									2753
-								],
-								[
-									2943,
-									2956
-								],
-								[
-									3147,
-									3161
-								],
-								[
-									3313,
-									3327
-								],
-								[
-									3533,
-									3545
-								],
-								[
-									3623,
-									3639
-								],
-								[
-									3968,
-									3978
-								],
-								[
-									4273,
-									4285
-								],
-								[
-									4847,
-									4858
-								],
-								[
-									5170,
-									5179
-								],
-								[
-									5442,
-									5453
-								],
-								[
-									5705,
-									5714
-								],
-								[
-									6173,
-									6182
-								],
-								[
-									6388,
-									6407
-								],
-								[
-									7258,
-									7280
-								],
-								[
-									8106,
-									8118
-								],
-								[
-									8350,
-									8359
-								],
-								[
-									8610,
-									8623
-								],
-								[
-									8775,
-									8790
-								],
-								[
-									8885,
-									8894
-								],
-								[
-									9148,
-									9161
-								],
-								[
-									9413,
-									9426
-								],
-								[
-									10786,
-									10800
-								],
-								[
-									11121,
-									11133
-								],
-								[
-									13228,
-									13241
-								],
-								[
-									13304,
-									13314
-								],
-								[
-									13505,
-									13517
-								],
-								[
-									14832,
-									14844
-								],
-								[
-									15100,
-									15112
-								],
-								[
-									15204,
-									15213
-								],
-								[
-									15266,
-									15275
-								],
-								[
-									15475,
-									15488
-								],
-								[
-									15522,
-									15526
+									61,
+									74
 								]
 							],
 							"symlist":
 							[
-								"—Ⓜ– scroll_page_up ( ) … — macro function",
-								"—Ⓜ– scroll_page_down ( ) … — macro function",
-								"—Ⓜ– scroll_to_top ( ) … — macro function",
-								"—Ⓜ– scroll_to_bottom ( ) … — macro function",
-								"—Ⓜ– last_line ( ) … — macro function",
-								"—Ⓕ– line_count ( ) { … } — function",
-								"—Ⓕ– line_range ( ) { … } — function",
-								"—Ⓕ– line_at ( ) { … } — function",
-								"—Ⓕ– line_numbytes ( ) { … } — function",
-								"—Ⓕ– read_terminal_properties ( ) { … } — function",
-								"—Ⓕ– read_line ( ) { … } — function",
-								"—Ⓕ– read_content ( ) { … } — function",
-								"—Ⓕ– init_terminal ( ) { … } — function",
-								"—Ⓕ– print_progress ( ) { … } — function",
-								"—Ⓕ– print_position ( ) { … } — function",
-								"—Ⓕ– number_width ( ) { … } — function",
-								"—Ⓕ– print_linenumber ( ) { … } — function",
-								"—Ⓕ– print_line ( ) { … } — function",
-								"—Ⓕ– print_status ( ) { … } — function",
-								"—Ⓕ– print_added ( ) { … } — function",
-								"—Ⓕ– scroll_up ( ) { … } — function",
-								"—Ⓕ– scroll_down ( ) { … } — function",
-								"—Ⓕ– scroll_to ( ) { … } — function",
-								"—Ⓕ– scroll_by ( ) { … } — function",
-								"—Ⓕ– handle_key_modifier ( ) { … } — function",
-								"—Ⓕ– handle_escape_sequence ( ) { … } — function",
-								"—Ⓕ– jump_command ( ) { … } — function",
-								"—Ⓕ– read_goto ( ) { … } — function",
-								"—Ⓕ– match_pattern ( ) { … } — function",
-								"—Ⓕ– nomatch_pattern ( ) { … } — function",
-								"—Ⓕ– find_line ( ) { … } — function",
-								"—Ⓕ– count_matches ( ) { … } — function",
-								"—Ⓕ– search_update ( ) { … } — function",
-								"—Ⓕ– search_command ( ) { … } — function",
-								"—Ⓕ– read_command ( ) { … } — function",
-								"—Ⓕ– update_number ( ) { … } — function",
-								"—Ⓕ– get_number ( ) { … } — function",
-								"—Ⓕ– handle_input ( ) { … } — function",
-								"—Ⓕ– get_filesize ( ) { … } — function",
-								"—Ⓕ– get_position ( ) { … } — function",
-								"—Ⓕ– interrupt ( ) { … } — function",
-								"—Ⓕ– terminate ( ) { … } — function",
-								"—Ⓕ– winsizechange ( ) { … } — function",
-								"—Ⓕ– main ( ) { … } — function"
+								"—Ⓕ– charbuf_peekn ( ) { … } — function"
 							],
 							"syntax": "Packages/Outline/outline.hidden-tmLanguage"
 						},
@@ -498,7 +472,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 3,
+					"stack_index": 1,
 					"type": "text"
 				}
 			]
@@ -509,19 +483,19 @@
 			[
 				{
 					"buffer": 1,
-					"file": "least.c",
+					"file": "lib/charbuf/charbuf_peekn.c",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 18038,
+						"buffer_size": 909,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								16651,
-								16651
+								687,
+								687
 							]
 						],
 						"settings":
@@ -531,68 +505,10 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 5847.0,
+						"translation.y": 126.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 0,
-					"type": "text"
-				},
-				{
-					"buffer": 2,
-					"file": "terminal.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 3478,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								780,
-								780
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C Improved/C Improved.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 311.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 2,
-					"type": "text"
-				},
-				{
-					"buffer": 3,
-					"file": "terminal.h",
-					"semi_transient": true,
-					"settings":
-					{
-						"buffer_size": 1981,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								613,
-								613
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C++/C++.sublime-syntax"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 1,
 					"type": "text"
 				}
 			]
@@ -600,11 +516,11 @@
 	],
 	"incremental_find":
 	{
-		"height": 25.0
+		"height": 39.0
 	},
 	"input":
 	{
-		"height": 0.0
+		"height": 39.0
 	},
 	"layout":
 	{
@@ -627,7 +543,7 @@
 		[
 			0.0,
 			0.2,
-			0.8,
+			0.797997751841,
 			1.0
 		],
 		"rows":
@@ -656,8 +572,144 @@
 		"selected_items":
 		[
 			[
+				"peekn",
+				"lib/charbuf/charbuf_peekn.c"
+			],
+			[
+				"charbuf_in",
+				"lib/charbuf_internal.h"
+			],
+			[
+				"charbuf.h",
+				"lib/charbuf.h"
+			],
+			[
+				"hmap_set",
+				"lib/hmap/hmap_set.c"
+			],
+			[
+				"json.h",
+				"lib/json.h"
+			],
+			[
+				"hmap_in",
+				"lib/hmap_internal.h"
+			],
+			[
+				"hmap_cm",
+				"lib/hmap/hmap_cmp.c"
+			],
+			[
+				"mplab",
+				"mplab.c"
+			],
+			[
+				"map.h",
+				"lib/map.h"
+			],
+			[
+				"hmap.h",
+				"lib/hmap.h"
+			],
+			[
+				"json_par",
+				"lib/json/json_parse_object.c"
+			],
+			[
+				"charbuf_dump",
+				"lib/charbuf/charbuf_dump.c"
+			],
+			[
+				"charbuf_dum",
+				"lib/charbuf/charbuf_dump.c"
+			],
+			[
+				"skipn",
+				"lib/charbuf/charbuf_skipn.c"
+			],
+			[
+				"termin",
+				"terminal.c"
+			],
+			[
+				"ermin",
+				"terminal.h"
+			],
+			[
+				"charbuf_",
+				"lib/charbuf_internal.h"
+			],
+			[
 				"buffer.h",
 				"lib/buffer.h"
+			],
+			[
+				"byte_rc",
+				"lib/byte/byte_rchr.c"
+			],
+			[
+				"json_in",
+				"lib/json_internal.h"
+			],
+			[
+				"charbuf",
+				"lib/charbuf.h"
+			],
+			[
+				"forma",
+				"scripts/format-sources.sh"
+			],
+			[
+				"format",
+				"scripts/format-sources.sh"
+			],
+			[
+				"xml2json",
+				"xml2json.c"
+			],
+			[
+				"jsontest",
+				"jsontest.c"
+			],
+			[
+				"xml2j",
+				"xml2json.c"
+			],
+			[
+				"jsonpp.c",
+				"jsonpp.c"
+			],
+			[
+				"strip-com",
+				"strip-comments.c"
+			],
+			[
+				"hmap_inter",
+				"lib/hmap_internal.h"
+			],
+			[
+				"hmap",
+				"lib/hmap.h"
+			],
+			[
+				"slist.h",
+				"lib/slist.h"
+			],
+			[
+				"slist",
+				"lib/slist.h"
+			],
+			[
+				"slist_push",
+				"lib/slist/slist_push.c"
+			],
+			[
+				"stralloc.h",
+				"lib/stralloc.h"
+			],
+			[
+				"jsonpp",
+				"jsonpp.c"
 			],
 			[
 				"scan_double",

@@ -102,7 +102,6 @@ json_print_str(buffer* b, const char* x, size_t len, const jsonfmt* fmt) {
 
 static void
 json_print_object(jsonval* val, buffer* b, int depth, json_print_fn* p) {
-  MAP_ITER_T iter;
   int index = 0;
   jsonfmt printer;
   p(&printer, val, depth + 1, index, 0);
@@ -114,17 +113,22 @@ json_print_object(jsonval* val, buffer* b, int depth, json_print_fn* p) {
   p(&printer, val, depth + 1, index, 0);
 
   if(!MAP_ISNULL(val->dictv)) {
-    MAP_FOREACH(val->dictv, iter) {
+    MAP_PAIR_T pair;
+    MAP_FOREACH(val->dictv, pair) {
+      const char* key = MAP_KEY(pair);
+      size_t klen = MAP_KEY_LEN(pair);
+      jsonval* value = MAP_VALUE(pair);
+
       if(index == 0)
         json_print_separator(val, b, JSON_FMT_NEWLINE, &printer);
       else
-        json_print_separator(MAP_ITER_VALUE(iter), b, JSON_FMT_SEPARATOR, &printer);
+        json_print_separator(value, b, JSON_FMT_SEPARATOR, &printer);
       ++index;
       p(&printer, 0, depth + 1, index, 0);
-      json_print_key(b, MAP_ITER_KEY(iter), MAP_ITER_KEY_LEN(iter), &printer);
+      json_print_key(b, key, klen, &printer);
       buffer_puts(b, ":");
-      json_print_separator(MAP_ITER_VALUE(iter), b, JSON_FMT_SPACING, &printer);
-      json_print_val(MAP_ITER_VALUE(iter), b, depth + 1, p);
+      json_print_separator(value, b, JSON_FMT_SPACING, &printer);
+      json_print_val(value, b, depth + 1, p);
     }
     p(&printer, val, depth + 1, -2, 0);
     json_print_separator(val, b, JSON_FMT_NEWLINE, &printer);

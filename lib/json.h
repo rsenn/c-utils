@@ -46,7 +46,7 @@ union jsonitem;
 typedef struct {
   jsondata type;
   union {
-    int boolv : 1;
+    unsigned boolv : 1;
     int64 intv;
     double doublev;
     stralloc stringv;

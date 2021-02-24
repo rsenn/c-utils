@@ -13,8 +13,8 @@ json_recurse_val(jsonval* val, void (*fn)(), void* arg, int depth) {
 
     case JSON_OBJECT: {
       if(!MAP_ISNULL(val->dictv)) {
-        MAP_ITER_T t;
-        MAP_FOREACH(val->dictv, t) { json_recurse_val(MAP_ITER_VALUE(t), fn, arg, depth + 1); }
+        MAP_PAIR_T t;
+        MAP_FOREACH(val->dictv, t) { json_recurse_val(MAP_VALUE(t), fn, arg, depth + 1); }
       }
       break;
     }

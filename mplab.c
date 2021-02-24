@@ -15,7 +15,7 @@ make_fileno(stralloc* sa, int i) {
 
 static void
 set_str(MAP_T map, const char* key, const char* value) {
-  MAP_SET(map, (char*)key, (char*)value);
+  MAP_SET(map, (char*)key, str_len(key) + 1, (char*)value, str_len(value) + 1);
 }
 
 static void

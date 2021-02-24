@@ -33,9 +33,18 @@
 #define CHARBUF_COLUMN_2 45
 #define CHARBUF_COLUMN_3 78
 #define CHARBUF_COLUMN_4 96
-#define charbuf_stringify_helper(s) #s
-#define charbuf_ansi_setcolumn(n) "\x1b[" charbuf_stringify_helper(n) "G"
-#define charbuf_dump_setcolumn(n, out) buffer_putsflush((out), charbuf_ansi_setcolumn(n))
+
+//#define charbuf_stringify_helper(s) #s
+#define charbuf_ansi_setcolumn(n) ("\033[" #n "G")
+#define charbuf_dump_setcolumn(n, out)                                                                                 \
+  do {                                                                                                                 \
+    buffer_flush((out));                                                                                               \
+    buffer_putc((out), 0x1b);                                                                                          \
+    buffer_putc((out), '[');                                                                                           \
+    buffer_putulong((out), (n));                                                                                       \
+    buffer_putc((out), 'G');                                                                                           \
+    buffer_flush((out));                                                                                               \
+  } while(0)
 
 extern int charbuf_debug;
 extern int charbuf_colors;

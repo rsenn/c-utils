@@ -156,6 +156,9 @@ typedef HMAP_DB* MAP_T;
 typedef TUPLE* MAP_PAIR_T;
 typedef TUPLE* MAP_ITER_T;
 
+#define MAP_SUCCESS(rval) ((rval) == HMAP_SUCCESS)
+#define MAP_FAILED(rval) ((rval) < 0)
+
 #define MAP_SIZE hmap_size
 #define MAP_ZERO(map) ((map) = 0)
 #define MAP_ISNULL(map) ((map) == 0)
@@ -198,13 +201,13 @@ MAP_GET2(HMAP_DB* map, const void* key, size_t klen) {
 }
 
 #define MAP_DUMP hmap_dump
-#define MAP_DELETE(map, key, klen) hmap_delete(&(map), key, klen)
+#define MAP_DELETE(map, key, klen) hmap_delete(&(map), (key), (klen))
 #define MAP_ERASE(map, iter) MAP_DELETE((map), MAP_KEY(iter), MAP_KEY_LEN(iter))
-#define MAP_SET(map, key, value) MAP_INSERT(map, (key), str_len(key) + 1, (value), str_len(value) + 1)
-#define MAP_INSERT(map, key, klen, data, dlen) hmap_set(&(map), key, klen, data, dlen)
-#define MAP_ADD(map, key, data) hmap_add(&(map), key, str_len(key) + 1, 0, HMAP_DATA_TYPE_CUSTOM, data)
-#define MAP_ADD(map, key, data) hmap_add(&(map), key, str_len(key) + 1, 0, HMAP_DATA_TYPE_CUSTOM, data)
-#define MAP_SEARCH(map, key, klen, tuple) (hmap_search(map, key, klen, tuple) == HMAP_SUCCESS ? *(tuple) : 0)
+#define MAP_SET(map, key, klen, value, vlen) MAP_INSERT(map, (key), (klen), (value), (vlen))
+#define MAP_INSERT(map, key, klen, data, dlen) hmap_set(&(map), (key), (klen), (data), (dlen))
+#define MAP_ADD(map, key, data) hmap_add(&(map), (key), str_len(key) + 1, 0, HMAP_DATA_TYPE_CUSTOM, (data))
+#define MAP_ADD_LEN(map, key, klen, data, dlen) hmap_add(&(map), (key), (klen), 0, HMAP_DATA_TYPE_CHARS, (data), (dlen))
+#define MAP_SEARCH(map, key, klen, tuple) (hmap_search((map), (key), (klen), (tuple)) == HMAP_SUCCESS ? *(tuple) : 0)
 
 #else
 
