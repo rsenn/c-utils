@@ -118,7 +118,7 @@ void json_default_printer(jsonfmt*, jsonval*, int depth, int index, char quote);
 
 int json_parse_null_or_undefined(jsonval*, charbuf*);
 
-int charbuf_pred_json_array_parse(jsonval*, charbuf*);
+int json_parse_array(jsonval*, charbuf*);
 int json_parse_boolean(jsonval*, charbuf*);
 int json_parse_null(jsonval*, charbuf*);
 int json_parse_number(jsonval*, charbuf*);

@@ -1,5 +1,4 @@
 #include "../json_internal.h"
- 
 
 int
 json_parse_array(jsonval* val, charbuf* b) {

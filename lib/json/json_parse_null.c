@@ -11,10 +11,7 @@ is_identifier_char(int c, size_t pos, void* ptr) {
 int
 json_parse_null(jsonval* j, charbuf* b) {
   ssize_t n;
-
-  n = charbuf_pred_lookahead(b, &tok, predicate_string, "null");
-
-  if(n == 4)  {
+  if((n = charbuf_pred_lookahead(b, predicate_string, "null")) == 4) {
     charbuf_skipn(b, 4);
     j->type = JSON_NULL;
     return 1;
