@@ -4,7 +4,7 @@
 #include <stdlib.h>
 
 jsonval*
-json_newnode(jsondata type) {
+json_newnode(jsontype type) {
   jsonval* ret;
   if((ret = alloc_zero(sizeof(jsonval)))) {
     ret->type = type;

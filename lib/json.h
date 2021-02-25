@@ -29,7 +29,7 @@ typedef enum {
   JSON_STRING,
   JSON_ARRAY,
   JSON_OBJECT
-} jsondata;
+} jsontype;
 
 typedef enum key_type { JSON_KEY_OBJECT = 0, JSON_KEY_ARRAY = 1 } jsonkey_type;
 
@@ -44,7 +44,7 @@ typedef struct {
 union jsonitem;
 
 typedef struct {
-  jsondata type;
+  jsontype type;
   union {
     unsigned boolv : 1;
     int64 intv;
@@ -88,7 +88,7 @@ enum {
   JSON_FMT_QUOTE = 4,
 };
 
-typedef int json_read_callback_fn(jsonreader* r, jsondata id, stralloc* name, stralloc* value, MAP_T* attrs);
+typedef int json_read_callback_fn(jsonreader* r, jsontype id, stralloc* name, stralloc* value, MAP_T* attrs);
 typedef void json_print_fn(jsonfmt*, jsonval*, int, int, char);
 typedef void json_format_fn(jsonfmt*, jsonval*, int, int, char);
 typedef int json_predicate_fn();
@@ -101,7 +101,7 @@ void json_free(jsonval*);
 
 int json_isnull(jsonval);
 int64 json_length(jsonval);
-jsonval* json_newnode(jsondata);
+jsonval* json_newnode(jsontype);
 jsonval json_object(void);
 int json_parse_null_or_undefined(jsonval*, charbuf*);
 jsonval* json_array_push(jsonval*, const jsonval);
