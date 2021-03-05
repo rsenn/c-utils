@@ -512,12 +512,12 @@ endif(HAVE_WORDEXP)
 set(IOPAUSE_MUX "" CACHE STRING "iopause() multiplex call")
 
 #if(HAVE_LINUX_AIO)
-#  set(IOPAUSE_MUX LINUX_AIO CACHE STRING "iopause() multiplex call" FORCE)
+#  set(IOPAUSE_MUX LINUX_AIO CACHE STRING "iopause() multiplex call")
 #else
 if(SUPPORT_POLL)
-  set(IOPAUSE_MUX POLL CACHE STRING "iopause() multiplex call" FORCE)
+  set(IOPAUSE_MUX POLL CACHE STRING "iopause() multiplex call")
 else()
-  set(IOPAUSE_MUX SELECT CACHE STRING "iopause() multiplex call" FORCE)
+  set(IOPAUSE_MUX SELECT CACHE STRING "iopause() multiplex call")
 endif()
 add_definitions(-DIOPAUSE_${IOPAUSE_MUX}=1)
 
