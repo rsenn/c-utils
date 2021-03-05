@@ -188,8 +188,10 @@ void* io_getfds(void);
 #define STDERR_FILENO 2
 #endif
 
+#ifndef IOPAUSE_POLL
 #ifdef HAVE_POLL
 #define IOPAUSE_POLL
+#endif
 #endif
 
 #ifdef BUFFER_H
