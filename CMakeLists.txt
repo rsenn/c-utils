@@ -231,15 +231,15 @@ check_compile(
 set(TRY_LINUX_AIO
     "#include <fcntl.h>\n#include <linux/aio_abi.h>\n#include <stdint.h>\n#include <stdio.h>\n#include <stdlib.h>\n#include <sys/syscall.h>\n#include <unistd.h>\n\n#define PFATAL(x...) \\\\\n  do { \\\\\n    fprintf(stderr, \"[-] SYSTEM ERROR : \" x); \\\\\n    fprintf(stderr, \"\\\\n\\tLocation : %s(), %s:%u\\\\n\", __FUNCTION__, __FILE__, __LINE__); \\\\\n    perror(\"      OS message \"); \\\\\n    fprintf(stderr, \"\\\\n\"); \\\\\n    exit(EXIT_FAILURE); \\\\\n  } while(0)\n\n#ifdef __dietlibc__\n#include <bits/syscall.h>\n#else\ninline static int\nio_setup(unsigned nr, aio_context_t* ctxp) {\n  return syscall(__NR_io_setup, nr, ctxp);\n}\n\ninline static int\nio_destroy(aio_context_t ctx) {\n  return syscall(__NR_io_destroy, ctx);\n}\n\ninline static int\nio_submit(aio_context_t ctx, long nr, struct iocb** iocbpp) {\n  return syscall(__NR_io_submit, ctx, nr, iocbpp);\n}\n\ninline static int\nio_getevents(aio_context_t ctx,\n             long min_nr,\n             long max_nr,\n             struct io_event* events,\n             struct timespec* timeout) {\n  // This might be improved.\n  return syscall(__NR_io_getevents, ctx, min_nr, max_nr, events, timeout);\n}\n#endif\n\n#define BUF_SZ (4096)\n\nint\nmain() {\n  int fd = open(\"/etc/passwd\", O_RDONLY);\n  if(fd < 0) {\n    PFATAL(\"open(/etc/passwd)\");\n  }\n\n  aio_context_t ctx = 0;\n  int r = io_setup(128, &ctx);\n  if(r < 0) {\n    PFATAL(\"io_setup()\");\n  }\n\n  char buf[BUF_SZ];\n  struct iocb cb = {.aio_fildes = fd,\n                    .aio_lio_opcode = IOCB_CMD_PREAD,\n                    .aio_buf = (uint64_t)&buf[0],\n                    .aio_nbytes = BUF_SZ};\n  struct iocb* list_of_iocb[1] = {&cb};\n\n  r = io_submit(ctx, 1, list_of_iocb);\n  if(r != 1) {\n    PFATAL(\"io_submit()\");\n  }\n\n  struct io_event events[1] = {};\n  r = io_getevents(ctx, 1, 1, events, NULL);\n  if(r != 1) {\n    PFATAL(\"io_getevents()\");\n  }\n\n  printf(\"read %ld bytes from /etc/passwd\\\\n\", events[0].res);\n  io_destroy(ctx);\n  close(fd);\n  return 0;\n}\n"
 )
-check_compile(HAVE_LINUX_AIO "${TRY_LINUX_AIO}")
-if(HAVE_LINUX_AIO)
-  check_run(SUPPORT_LINUX_AIO "${TRY_LINUX_AIO}")
-endif(HAVE_LINUX_AIO)
-
-if(HAVE_LINUX_AIO)
-  message(STATUS "Support Linux AIO: ${SUPPORT_LINUX_AIO}")
-  add_definitions(-DHAVE_LINUX_AIO=1)
-endif(HAVE_LINUX_AIO)
+#check_compile(HAVE_LINUX_AIO "${TRY_LINUX_AIO}")
+#if(HAVE_LINUX_AIO)
+#  check_run(SUPPORT_LINUX_AIO "${TRY_LINUX_AIO}")
+#endif(HAVE_LINUX_AIO)
+#
+#if(HAVE_LINUX_AIO)
+#  message(STATUS "Support Linux AIO: ${SUPPORT_LINUX_AIO}")
+#  add_definitions(-DHAVE_LINUX_AIO=1)
+#endif(HAVE_LINUX_AIO)
 
 check_compile(HAVE_SOCKLEN_T "#include <sys/types.h>\n#ifdef __MINGW32__\n#include <winsock2.h>\n#include <ws2tcpip.h>\n#else\n#include <sys/socket.h>\n#include <netinet/in.h>\n#endif\n\nint main() { socklen_t t;\n  (void)t;\n  return 0;\n}\n")
 if(NOT HAVE_SOCKLEN_T)
@@ -431,20 +431,20 @@ set(CMAKE_STATIC_LINKER_FLAGS "")
 
 check_functions(lstat waitpid aligned_alloc fnmatch getdelim getopt getopt_long pipe2 popen posix_memalign pread sendfile sigaddset sigemptyset sigprocmask strerror_r __write writev posix_spawnattr_setflags posix_spawn_file_actions_init posix_spawn_file_actions_adddup2 posix_spawnp clock_gettime)
 
-check_include_file(linux/aio_abi.h HAVE_LINUX_AIO_ABI_H)
+#check_include_file(linux/aio_abi.h HAVE_LINUX_AIO_ABI_H)
 
-if(HAVE_LINUX_AIO_ABI_H)
-  message(STATUS "Have Linux AIO ABI header")
-  # list(APPEND CMAKE_REQUIRED_INCLUDES  "linux/aio_abi.h" )
-  check_symbol_exists(io_setup "linux/aio_abi.h" HAVE_IO_SETUP)
-  check_symbol_exists(io_destroy "linux/aio_abi.h" HAVE_IO_DESTROY)
-  check_symbol_exists(io_submit "linux/aio_abi.h" HAVE_IO_SUBMIT)
-  check_symbol_exists(io_getevents "linux/aio_abi.h" HAVE_IO_GETEVENTS)
-
-  #[[foreach(H HAVE_IO_SETUP HAVE_IO_DESTROY HAVE_IO_SUBMIT HAVE_IO_GETEVENTS)
-    add_definitions(-D"${H}=1")
-  endforeach()]]
-endif(HAVE_LINUX_AIO_ABI_H)
+#if(HAVE_LINUX_AIO_ABI_H)
+#  message(STATUS "Have Linux AIO ABI header")
+#  # list(APPEND CMAKE_REQUIRED_INCLUDES  "linux/aio_abi.h" )
+#  check_symbol_exists(io_setup "linux/aio_abi.h" HAVE_IO_SETUP)
+#  check_symbol_exists(io_destroy "linux/aio_abi.h" HAVE_IO_DESTROY)
+#  check_symbol_exists(io_submit "linux/aio_abi.h" HAVE_IO_SUBMIT)
+#  check_symbol_exists(io_getevents "linux/aio_abi.h" HAVE_IO_GETEVENTS)
+#
+#  #[[foreach(H HAVE_IO_SETUP HAVE_IO_DESTROY HAVE_IO_SUBMIT HAVE_IO_GETEVENTS)
+#    add_definitions(-D"${H}=1")
+#  endforeach()]]
+#endif(HAVE_LINUX_AIO_ABI_H)
 
 if(HAVE_POSIX_SPAWNATTR_SETFLAGS AND HAVE_POSIX_SPAWN_FILE_ACTIONS_INIT AND HAVE_POSIX_SPAWN_FILE_ACTIONS_ADDDUP2 AND HAVE_POSIX_SPAWNP)
   add_definitions(-DPOSIX_SPAWN=1)
@@ -511,9 +511,10 @@ endif(HAVE_WORDEXP)
 
 set(IOPAUSE_MUX "" CACHE STRING "iopause() multiplex call")
 
-if(HAVE_LINUX_AIO)
-  set(IOPAUSE_MUX LINUX_AIO CACHE STRING "iopause() multiplex call" FORCE)
-elseif(SUPPORT_POLL)
+#if(HAVE_LINUX_AIO)
+#  set(IOPAUSE_MUX LINUX_AIO CACHE STRING "iopause() multiplex call" FORCE)
+#else
+if(SUPPORT_POLL)
   set(IOPAUSE_MUX POLL CACHE STRING "iopause() multiplex call" FORCE)
 else()
   set(IOPAUSE_MUX SELECT CACHE STRING "iopause() multiplex call" FORCE)
@@ -656,7 +657,10 @@ set(MUX_ALL
     KQUEUE DEVPOLL EPOLL
     # SIGIO
     POLL SELECT)
-set(MUX_USE LINUX_AIO KQUEUE EPOLL DEVPOLL SIGIO POLL SELECT)
+set(MUX_USE 
+  #LINUX_AIO
+  KQUEUE EPOLL DEVPOLL SIGIO POLL SELECT
+ )
 foreach(METHOD ${MUX_USE})
   if(SUPPORT_${METHOD})
     list_contains("${MUX_LIST}" "${METHOD}" CONTAINS_METHOD)

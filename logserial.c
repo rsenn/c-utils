@@ -429,14 +429,12 @@ process_loop(fd_t serial_fd, int64 timeout) {
   buffer_write_fd(&send_buf, serial_fd);
   buffer_read_fd(&term_buf, STDIN_FILENO);
 
-  io_fd(serial_fd);
-  io_nonblock(serial_fd);
-  io_wantread(serial_fd);
-
-  io_fd(STDIN_FILENO);
-  io_nonblock(STDIN_FILENO);
-  io_wantread(STDIN_FILENO);
-
+  /*  io_fd(serial_fd);
+    io_nonblock(serial_fd);
+  */
+  /*  io_fd(STDIN_FILENO);
+    io_nonblock(STDIN_FILENO);
+  */
   if(send_file) {
     size_t n;
     char* x;
@@ -451,7 +449,10 @@ process_loop(fd_t serial_fd, int64 timeout) {
     queue = 1;
   } else {
     buffer_write_fd(&send_buf, serial_fd);
+    io_wantread(serial_fd);
   }
+
+  // io_wantread(STDIN_FILENO);
 
   for(;;) {
     taia_now(&t);
@@ -466,7 +467,6 @@ process_loop(fd_t serial_fd, int64 timeout) {
     /*
        io_wantread(STDIN_FILENO);*/
 
-    io_wantread(serial_fd);
     if(debugmode > 1) {
       buffer_puts(buffer_2, "wait until ");
       buffer_putlonglong(buffer_2, wait_msecs);
@@ -700,6 +700,7 @@ getopt_end:
     buffer_putulong(buffer_2, baudrate);
     buffer_putnlflush(buffer_2);
     serial_fd = serial_open(portname, baudrate);
+    io_fd(serial_fd);
     io_nonblock(serial_fd);
     io_closeonexec(serial_fd);
 
