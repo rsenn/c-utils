@@ -28,53 +28,149 @@
 	"buffers":
 	[
 		{
-			"contents": " Ⓜ  VERSION … — macro object\n Ⓜ  MAP_USE_HMAP … — macro object\n Ⓜ  HOSTS_FILE … — macro object\n Ⓜ  closesocket … — macro object\n Ⓜ  HOSTS_FILE … — macro object\n—Ⓕ– read_hosts ( ) { … } — function\n—Ⓕ– lookup_hosts ( ) { … } — function\n—Ⓕ– dump_hosts ( ) { … } — function\n—Ⓕ– usage ( ) { … } — function\n—Ⓕ– fmt_taia ( ) { … } — function\n—Ⓕ– put_taia ( ) { … } — function\n—Ⓕ– main ( ) { … } — function",
+			"contents": "   Ⓜ  _POSIX_C_SOURCE … — macro object\n   Ⓜ  _GNU_SOURCE … — macro object\n   Ⓜ  MAP_USE_HMAP … — macro object\n—Ⓒ– port { … } ; — type\n   Ⓣ  port_t ; — typedef\n—Ⓒ– link { … } ; — type\n   Ⓣ  link_t ; — typedef\n—Ⓕ– dir_entries ( ) { … } — \n—Ⓕ– find_port ( ) { … } — \n—Ⓕ– remove_port ( ) { … } — \n—Ⓕ– clear_ports ( ) { … } — \n—Ⓕ– get_ports ( ) { … } — \n—Ⓕ– serial_ports ( ) { … } — \n—Ⓕ– serial_read ( ) { … } — \n—Ⓕ– term_init ( ) { … } — \n—Ⓕ– term_restore ( ) { … } — \n—Ⓕ– process_serial ( ) { … } — \n—Ⓜ– max ( ) … — macro \n—Ⓕ– process_loop ( ) { … } — \n—Ⓕ– usage ( ) { … } — \n—Ⓕ– signal_handler ( ) { … } — \n—Ⓕ– main ( ) { … } — ",
 			"settings":
 			{
-				"buffer_size": 398,
+				"buffer_size": 626,
 				"line_ending": "Unix",
 				"name": "𝌆 Outline",
 				"scratch": true
-			}
+			},
+			"undo_stack":
+			[
+				[
+					1,
+					1,
+					"outline_refresh",
+					{
+						"path": "/home/roman/Sources/c-utils/logserial.c",
+						"symkeys":
+						[
+							[
+								8,
+								23
+							],
+							[
+								34,
+								45
+							],
+							[
+								658,
+								670
+							],
+							[
+								750,
+								754
+							],
+							[
+								779,
+								785
+							],
+							[
+								802,
+								806
+							],
+							[
+								906,
+								912
+							],
+							[
+								1346,
+								1357
+							],
+							[
+								1624,
+								1633
+							],
+							[
+								1806,
+								1817
+							],
+							[
+								2005,
+								2016
+							],
+							[
+								2248,
+								2257
+							],
+							[
+								3488,
+								3500
+							],
+							[
+								5661,
+								5672
+							],
+							[
+								5819,
+								5828
+							],
+							[
+								7211,
+								7223
+							],
+							[
+								7993,
+								8007
+							],
+							[
+								8571,
+								8574
+							],
+							[
+								8761,
+								8773
+							],
+							[
+								12208,
+								12213
+							],
+							[
+								13124,
+								13138
+							],
+							[
+								13366,
+								13370
+							]
+						],
+						"symlist":
+						[
+							" Ⓜ  _POSIX_C_SOURCE … — macro object",
+							" Ⓜ  _GNU_SOURCE … — macro object",
+							" Ⓜ  MAP_USE_HMAP … — macro object",
+							"—Ⓒ– port { … } ; — type",
+							" Ⓣ  port_t ; — typedef",
+							"—Ⓒ– link { … } ; — type",
+							" Ⓣ  link_t ; — typedef",
+							"—Ⓕ– dir_entries ( ) { … } — function",
+							"—Ⓕ– find_port ( ) { … } — function",
+							"—Ⓕ– remove_port ( ) { … } — function",
+							"—Ⓕ– clear_ports ( ) { … } — function",
+							"—Ⓕ– get_ports ( ) { … } — function",
+							"—Ⓕ– serial_ports ( ) { … } — function",
+							"—Ⓕ– serial_read ( ) { … } — function",
+							"—Ⓕ– term_init ( ) { … } — function",
+							"—Ⓕ– term_restore ( ) { … } — function",
+							"—Ⓕ– process_serial ( ) { … } — function",
+							"—Ⓜ– max ( ) … — macro function",
+							"—Ⓕ– process_loop ( ) { … } — function",
+							"—Ⓕ– usage ( ) { … } — function",
+							"—Ⓕ– signal_handler ( ) { … } — function",
+							"—Ⓕ– main ( ) { … } — function"
+						]
+					},
+					"AgAAAAAAAAAAAAAAAAAAAAAAAACeAgAA4oCD4pOC4oCC4oCDVkVSU0lPTuKAg+KApuKAg+KAlOKAg21hY3JvIG9iamVjdArigIPik4LigILigINNQVBfVVNFX0hNQVDigIPigKbigIPigJTigINtYWNybyBvYmplY3QK4oCD4pOC4oCC4oCDSE9TVFNfRklMReKAg+KApuKAg+KAlOKAg21hY3JvIG9iamVjdArigIPik4LigILigINjbG9zZXNvY2tldOKAg+KApuKAg+KAlOKAg21hY3JvIG9iamVjdArigIPik4LigILigINIT1NUU19GSUxF4oCD4oCm4oCD4oCU4oCDbWFjcm8gb2JqZWN0CuKAlOKSu+KAk+KAg3JlYWRfaG9zdHPigIko4oCJKeKAg3vigInigKbigIl94oCD4oCU4oCDZnVuY3Rpb24K4oCU4pK74oCT4oCDbG9va3VwX2hvc3Rz4oCJKOKAiSnigIN74oCJ4oCm4oCJfeKAg+KAlOKAg2Z1bmN0aW9uCuKAlOKSu+KAk+KAg2R1bXBfaG9zdHPigIko4oCJKeKAg3vigInigKbigIl94oCD4oCU4oCDZnVuY3Rpb24K4oCU4pK74oCT4oCDdXNhZ2XigIko4oCJKeKAg3vigInigKbigIl94oCD4oCU4oCDZnVuY3Rpb24K4oCU4pK74oCT4oCDZm10X3RhaWHigIko4oCJKeKAg3vigInigKbigIl94oCD4oCU4oCDZnVuY3Rpb24K4oCU4pK74oCT4oCDcHV0X3RhaWHigIko4oCJKeKAg3vigInigKbigIl94oCD4oCU4oCDZnVuY3Rpb24K4oCU4pK74oCT4oCDbWFpbuKAiSjigIkp4oCDe+KAieKApuKAiX3igIPigJTigINmdW5jdGlvbgAAAAAAAAAAcgIAAAAAAAAAAAAA",
+					"AQAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/"
+				]
+			]
 		},
 		{
 			"file": "logserial.c",
 			"settings":
 			{
-				"buffer_size": 17092,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "/home/roman/Dokumente/Sources/c-utils/ftptest.c",
-			"settings":
-			{
-				"buffer_size": 13960,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "/home/roman/Dokumente/Sources/c-utils/httpproxy.c",
-			"settings":
-			{
-				"buffer_size": 6691,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "/home/roman/Dokumente/Sources/c-utils/httptest.c",
-			"settings":
-			{
-				"buffer_size": 15580,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "/home/roman/Dokumente/Sources/c-utils/least.c",
-			"settings":
-			{
-				"buffer_size": 18029,
-				"encoding": "UTF-8",
+				"buffer_size": 17106,
 				"line_ending": "Unix"
 			}
 		},
@@ -92,32 +188,6 @@
 			"settings":
 			{
 				"buffer_size": 859,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "/home/roman/Dokumente/Sources/c-utils/mediathek-list.c",
-			"settings":
-			{
-				"buffer_size": 19721,
-				"encoding": "UTF-8",
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "/home/roman/Dokumente/Sources/c-utils/ssltest.c",
-			"settings":
-			{
-				"buffer_size": 7052,
-				"encoding": "UTF-8",
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "/home/roman/Dokumente/Sources/c-utils/tinyproxy.c",
-			"settings":
-			{
-				"buffer_size": 34546,
 				"line_ending": "Unix"
 			}
 		}
@@ -230,6 +300,13 @@
 	],
 	"file_history":
 	[
+		"/home/roman/Dokumente/Sources/c-utils/tinyproxy.c",
+		"/home/roman/Dokumente/Sources/c-utils/ssltest.c",
+		"/home/roman/Dokumente/Sources/c-utils/mediathek-list.c",
+		"/home/roman/Dokumente/Sources/c-utils/least.c",
+		"/home/roman/Dokumente/Sources/c-utils/ftptest.c",
+		"/home/roman/Dokumente/Sources/c-utils/httpproxy.c",
+		"/home/roman/Dokumente/Sources/c-utils/httptest.c",
 		"/home/roman/Dokumente/Sources/c-utils/tcping.c",
 		"/home/roman/Dokumente/Sources/c-utils/logserial.c",
 		"/home/roman/Sources/c-utils/lib/iopause.h",
@@ -350,14 +427,7 @@
 		"/home/roman/Dokumente/Sources/c-utils/lib/json/json_array_push.c",
 		"/home/roman/Dokumente/Sources/c-utils/lib/json/json_array_items.c",
 		"/home/roman/Dokumente/Sources/c-utils/jsontest.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/json/json_boolean_parse.c",
-		"/home/roman/Dokumente/Sources/c-utils/strip-comments.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/charbuf/charbuf_stubborn.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/hmap/hmap_init.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/json/json_object.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/json/json_isnull.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/json/json_newnode.c",
-		"/home/roman/Dokumente/Sources/c-utils/lib/json/json_array_at.c"
+		"/home/roman/Dokumente/Sources/c-utils/lib/json/json_boolean_parse.c"
 	],
 	"find":
 	{
@@ -533,23 +603,25 @@
 			"terminal_number_command("
 		],
 		"reverse": false,
+		"scrollbar_highlights": true,
 		"show_context": true,
 		"use_buffer2": true,
+		"use_gitignore": true,
 		"whole_word": false,
 		"wrap": true
 	},
 	"groups":
 	[
 		{
-			"selected": 0,
 			"sheets":
 			[
 				{
 					"buffer": 0,
+					"selected": true,
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 398,
+						"buffer_size": 626,
 						"regions":
 						{
 						},
@@ -558,73 +630,123 @@
 						],
 						"settings":
 						{
-							"current_file": "/home/roman/Sources/c-utils/tcping.c",
+							"current_file": "/home/roman/Sources/c-utils/logserial.c",
 							"outline_rename_mode": false,
 							"symkeys":
 							[
 								[
-									956,
-									963
+									8,
+									23
 								],
 								[
-									1488,
-									1500
+									34,
+									45
 								],
 								[
-									1589,
-									1599
+									658,
+									670
 								],
 								[
-									2010,
-									2021
+									750,
+									754
 								],
 								[
-									2043,
-									2053
+									779,
+									785
 								],
 								[
-									2103,
-									2113
+									802,
+									806
 								],
 								[
-									3278,
-									3290
+									906,
+									912
 								],
 								[
-									3507,
-									3517
+									1346,
+									1357
 								],
 								[
-									3838,
-									3843
+									1624,
+									1633
 								],
 								[
-									4147,
-									4155
+									1806,
+									1817
 								],
 								[
-									4469,
-									4477
+									2005,
+									2016
 								],
 								[
-									4578,
-									4582
+									2248,
+									2257
+								],
+								[
+									3488,
+									3500
+								],
+								[
+									5661,
+									5672
+								],
+								[
+									5819,
+									5828
+								],
+								[
+									7211,
+									7223
+								],
+								[
+									7993,
+									8007
+								],
+								[
+									8571,
+									8574
+								],
+								[
+									8761,
+									8773
+								],
+								[
+									12208,
+									12213
+								],
+								[
+									13124,
+									13138
+								],
+								[
+									13366,
+									13370
 								]
 							],
 							"symlist":
 							[
-								" Ⓜ  VERSION … — macro object",
-								" Ⓜ  MAP_USE_HMAP … — macro object",
-								" Ⓜ  HOSTS_FILE … — macro object",
-								" Ⓜ  closesocket … — macro object",
-								" Ⓜ  HOSTS_FILE … — macro object",
-								"—Ⓕ– read_hosts ( ) { … } — function",
-								"—Ⓕ– lookup_hosts ( ) { … } — function",
-								"—Ⓕ– dump_hosts ( ) { … } — function",
-								"—Ⓕ– usage ( ) { … } — function",
-								"—Ⓕ– fmt_taia ( ) { … } — function",
-								"—Ⓕ– put_taia ( ) { … } — function",
-								"—Ⓕ– main ( ) { … } — function"
+								"\tⓂ  _POSIX_C_SOURCE … — macro object",
+								"\tⓂ  _GNU_SOURCE … — macro object",
+								"\tⓂ  MAP_USE_HMAP … — macro object",
+								"—Ⓒ– port { … } ; — type",
+								"\tⓉ  port_t ; — typedef",
+								"—Ⓒ– link { … } ; — type",
+								"\tⓉ  link_t ; — typedef",
+								"—Ⓕ– dir_entries ( ) { … } — ",
+								"—Ⓕ– find_port ( ) { … } — ",
+								"—Ⓕ– remove_port ( ) { … } — ",
+								"—Ⓕ– clear_ports ( ) { … } — ",
+								"—Ⓕ– get_ports ( ) { … } — ",
+								"—Ⓕ– serial_ports ( ) { … } — ",
+								"—Ⓕ– serial_read ( ) { … } — ",
+								"—Ⓕ– term_init ( ) { … } — ",
+								"—Ⓕ– term_restore ( ) { … } — ",
+								"—Ⓕ– process_serial ( ) { … } — ",
+								"—Ⓜ– max ( ) … — macro ",
+								"—Ⓕ– process_loop ( ) { … } — ",
+								"—Ⓕ– usage ( ) { … } — ",
+								"—Ⓕ– signal_handler ( ) { … } — ",
+								"—Ⓕ– main ( ) { … } — "
 							],
 							"syntax": "Packages/Outline/outline.hidden-tmLanguage"
 						},
@@ -632,30 +754,31 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 10,
+					"stack_index": 0,
+					"stack_multiselect": false,
 					"type": "text"
 				}
 			]
 		},
 		{
-			"selected": 5,
 			"sheets":
 			[
 				{
 					"buffer": 1,
 					"file": "logserial.c",
+					"selected": true,
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 17092,
+						"buffer_size": 17106,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								13110,
-								13124
+								0,
+								0
 							]
 						],
 						"settings":
@@ -668,131 +791,12 @@
 						"translation.y": 8871.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 9,
+					"stack_index": 0,
+					"stack_multiselect": false,
 					"type": "text"
 				},
 				{
 					"buffer": 2,
-					"file": "/home/roman/Dokumente/Sources/c-utils/ftptest.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 13960,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C Improved/C Improved.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 8,
-					"type": "text"
-				},
-				{
-					"buffer": 3,
-					"file": "/home/roman/Dokumente/Sources/c-utils/httpproxy.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 6691,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C Improved/C Improved.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 7,
-					"type": "text"
-				},
-				{
-					"buffer": 4,
-					"file": "/home/roman/Dokumente/Sources/c-utils/httptest.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 15580,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C Improved/C Improved.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 6,
-					"type": "text"
-				},
-				{
-					"buffer": 5,
-					"file": "/home/roman/Dokumente/Sources/c-utils/least.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 18029,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C Improved/C Improved.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 3,
-					"type": "text"
-				},
-				{
-					"buffer": 6,
 					"file": "tcping.c",
 					"semi_transient": false,
 					"settings":
@@ -818,11 +822,12 @@
 						"translation.y": 4326.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 0,
+					"stack_index": 1,
+					"stack_multiselect": false,
 					"type": "text"
 				},
 				{
-					"buffer": 7,
+					"buffer": 3,
 					"file": "lib/socket/socket_tcp6.c",
 					"semi_transient": false,
 					"settings":
@@ -848,97 +853,8 @@
 						"translation.y": 16.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 1,
-					"type": "text"
-				},
-				{
-					"buffer": 8,
-					"file": "/home/roman/Dokumente/Sources/c-utils/mediathek-list.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 19721,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C Improved/C Improved.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 5,
-					"type": "text"
-				},
-				{
-					"buffer": 9,
-					"file": "/home/roman/Dokumente/Sources/c-utils/ssltest.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 7052,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C Improved/C Improved.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
 					"stack_index": 2,
-					"type": "text"
-				},
-				{
-					"buffer": 10,
-					"file": "/home/roman/Dokumente/Sources/c-utils/tinyproxy.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 34546,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								1943,
-								1943
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C Improved/C Improved.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 1536.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 4,
+					"stack_multiselect": false,
 					"type": "text"
 				}
 			]
