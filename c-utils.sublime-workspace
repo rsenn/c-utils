@@ -28,10 +28,10 @@
 	"buffers":
 	[
 		{
-			"contents": "   Ⓜ  _POSIX_C_SOURCE … — macro object\n   Ⓜ  _GNU_SOURCE … — macro object\n   Ⓜ  MAP_USE_HMAP … — macro object\n—Ⓒ– port { … } ; — type\n   Ⓣ  port_t ; — typedef\n—Ⓒ– link { … } ; — type\n   Ⓣ  link_t ; — typedef\n—Ⓕ– dir_entries ( ) { … } — \n—Ⓕ– find_port ( ) { … } — \n—Ⓕ– remove_port ( ) { … } — \n—Ⓕ– clear_ports ( ) { … } — \n—Ⓕ– get_ports ( ) { … } — \n—Ⓕ– serial_ports ( ) { … } — \n—Ⓕ– serial_read ( ) { … } — \n—Ⓕ– term_init ( ) { … } — \n—Ⓕ– term_restore ( ) { … } — \n—Ⓕ– process_serial ( ) { … } — \n—Ⓜ– max ( ) … — macro \n—Ⓕ– process_loop ( ) { … } — \n—Ⓕ– usage ( ) { … } — \n—Ⓕ– signal_handler ( ) { … } — \n—Ⓕ– main ( ) { … } — ",
+			"contents": "—Ⓕ– put_escape ( ) { … } — \n—Ⓕ– put_num ( ) { … } — \n—Ⓕ– put_char ( ) { … } — \n—Ⓕ– put_string ( ) { … } — \n—Ⓕ– terminal_number_sequence ( ) { … } — \n—Ⓕ– terminal_numbers_sequence ( ) { … } — \n—Ⓕ– terminal_escape_number_char ( ) { … } — \n—Ⓕ– terminal_escape_char ( ) { … } — \n—Ⓕ– terminal_escape_sequence ( ) { … } — \n—Ⓕ– terminal_command_sequence ( ) { … } — \n—Ⓕ– terminal_command_number_char ( ) { … } — \n—Ⓕ– terminal_command_char ( ) { … } — \n—Ⓕ– terminal_cursor_up ( ) { … } — \n—Ⓕ– terminal_cursor_down ( ) { … } — \n—Ⓕ– terminal_cursor_forward ( ) { … } — \n—Ⓕ– terminal_cursor_backward ( ) { … } — \n—Ⓕ– terminal_cursor_next_line ( ) { … } — \n—Ⓕ– terminal_cursor_previous_line ( ) { … } — \n—Ⓕ– terminal_cursor_horizontal_absolute ( ) { … } — \n—Ⓕ– terminal_cursor_position ( ) { … } — \n—Ⓕ– terminal_erase_in_display ( ) { … } — \n—Ⓕ– terminal_erase_in_line ( ) { … } — \n—Ⓕ– terminal_scroll_up ( ) { … } — \n—Ⓕ– terminal_scroll_down ( ) { … } — \n—Ⓕ– terminal_set_alternate_screen ( ) { … } — \n—Ⓕ– terminal_set_normal_screen ( ) { … } — \n—Ⓕ– terminal_rgb_foreground ( ) { … } — \n—Ⓕ– terminal_rgb_background ( ) { … } — ",
 			"settings":
 			{
-				"buffer_size": 626,
+				"buffer_size": 1116,
 				"line_ending": "Unix",
 				"name": "𝌆 Outline",
 				"scratch": true
@@ -162,7 +162,743 @@
 						]
 					},
 					"AgAAAAAAAAAAAAAAAAAAAAAAAACeAgAA4oCD4pOC4oCC4oCDVkVSU0lPTuKAg+KApuKAg+KAlOKAg21hY3JvIG9iamVjdArigIPik4LigILigINNQVBfVVNFX0hNQVDigIPigKbigIPigJTigINtYWNybyBvYmplY3QK4oCD4pOC4oCC4oCDSE9TVFNfRklMReKAg+KApuKAg+KAlOKAg21hY3JvIG9iamVjdArigIPik4LigILigINjbG9zZXNvY2tldOKAg+KApuKAg+KAlOKAg21hY3JvIG9iamVjdArigIPik4LigILigINIT1NUU19GSUxF4oCD4oCm4oCD4oCU4oCDbWFjcm8gb2JqZWN0CuKAlOKSu+KAk+KAg3JlYWRfaG9zdHPigIko4oCJKeKAg3vigInigKbigIl94oCD4oCU4oCDZnVuY3Rpb24K4oCU4pK74oCT4oCDbG9va3VwX2hvc3Rz4oCJKOKAiSnigIN74oCJ4oCm4oCJfeKAg+KAlOKAg2Z1bmN0aW9uCuKAlOKSu+KAk+KAg2R1bXBfaG9zdHPigIko4oCJKeKAg3vigInigKbigIl94oCD4oCU4oCDZnVuY3Rpb24K4oCU4pK74oCT4oCDdXNhZ2XigIko4oCJKeKAg3vigInigKbigIl94oCD4oCU4oCDZnVuY3Rpb24K4oCU4pK74oCT4oCDZm10X3RhaWHigIko4oCJKeKAg3vigInigKbigIl94oCD4oCU4oCDZnVuY3Rpb24K4oCU4pK74oCT4oCDcHV0X3RhaWHigIko4oCJKeKAg3vigInigKbigIl94oCD4oCU4oCDZnVuY3Rpb24K4oCU4pK74oCT4oCDbWFpbuKAiSjigIkp4oCDe+KAieKApuKAiX3igIPigJTigINmdW5jdGlvbgAAAAAAAAAAcgIAAAAAAAAAAAAA",
+					"AgAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8L8"
+				],
+				[
+					1,
+					1,
+					"outline_refresh",
+					{
+						"path": null,
+						"symkeys":
+						[
+						],
+						"symlist":
+						[
+						]
+					},
+					"AgAAAAAAAAAAAAAAAAAAAAAAAABwBAAAICAg4pOC4oCC4oCDX1BPU0lYX0NfU09VUkNF4oCD4oCm4oCD4oCU4oCDbWFjcm8gb2JqZWN0CiAgIOKTguKAguKAg19HTlVfU09VUkNF4oCD4oCm4oCD4oCU4oCDbWFjcm8gb2JqZWN0CiAgIOKTguKAguKAg01BUF9VU0VfSE1BUOKAg+KApuKAg+KAlOKAg21hY3JvIG9iamVjdArigJTikrjigJPigINwb3J04oCDe+KAieKApuKAiX3igIk74oCD4oCU4oCDdHlwZQogICDik4nigILigINwb3J0X3TigIk74oCD4oCU4oCDdHlwZWRlZgrigJTikrjigJPigINsaW5r4oCDe+KAieKApuKAiX3igIk74oCD4oCU4oCDdHlwZQogICDik4nigILigINsaW5rX3TigIk74oCD4oCU4oCDdHlwZWRlZgrigJTikrvigJPigINkaXJfZW50cmllc+KAiSjigIkp4oCDe+KAieKApuKAiX3igIPigJTigIMK4oCU4pK74oCT4oCDZmluZF9wb3J04oCJKOKAiSnigIN74oCJ4oCm4oCJfeKAg+KAlOKAgwrigJTikrvigJPigINyZW1vdmVfcG9ydOKAiSjigIkp4oCDe+KAieKApuKAiX3igIPigJTigIMK4oCU4pK74oCT4oCDY2xlYXJfcG9ydHPigIko4oCJKeKAg3vigInigKbigIl94oCD4oCU4oCDCuKAlOKSu+KAk+KAg2dldF9wb3J0c+KAiSjigIkp4oCDe+KAieKApuKAiX3igIPigJTigIMK4oCU4pK74oCT4oCDc2VyaWFsX3BvcnRz4oCJKOKAiSnigIN74oCJ4oCm4oCJfeKAg+KAlOKAgwrigJTikrvigJPigINzZXJpYWxfcmVhZOKAiSjigIkp4oCDe+KAieKApuKAiX3igIPigJTigIMK4oCU4pK74oCT4oCDdGVybV9pbml04oCJKOKAiSnigIN74oCJ4oCm4oCJfeKAg+KAlOKAgwrigJTikrvigJPigIN0ZXJtX3Jlc3RvcmXigIko4oCJKeKAg3vigInigKbigIl94oCD4oCU4oCDCuKAlOKSu+KAk+KAg3Byb2Nlc3Nfc2VyaWFs4oCJKOKAiSnigIN74oCJ4oCm4oCJfeKAg+KAlOKAgwrigJTik4LigJPigINtYXjigIko4oCJKeKAg+KApuKAg+KAlOKAg21hY3JvIArigJTikrvigJPigINwcm9jZXNzX2xvb3DigIko4oCJKeKAg3vigInigKbigIl94oCD4oCU4oCDCuKAlOKSu+KAk+KAg3VzYWdl4oCJKOKAiSnigIN74oCJ4oCm4oCJfeKAg+KAlOKAgwrigJTikrvigJPigINzaWduYWxfaGFuZGxlcuKAiSjigIkp4oCDe+KAieKApuKAiX3igIPigJTigIMK4oCU4pK74oCT4oCDbWFpbuKAiSjigIkp4oCDe+KAieKApuKAiX3igIPigJTigIMAAAAAAAAAAAAAAAAAAAAAAAAAAA",
 					"AQAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/"
+				],
+				[
+					2,
+					1,
+					"outline_refresh",
+					{
+						"path": "/home/roman/Sources/c-utils/terminal.c",
+						"symkeys":
+						[
+							[
+								210,
+								220
+							],
+							[
+								302,
+								309
+							],
+							[
+								381,
+								389
+							],
+							[
+								457,
+								467
+							],
+							[
+								638,
+								662
+							],
+							[
+								776,
+								801
+							],
+							[
+								1017,
+								1044
+							],
+							[
+								1166,
+								1186
+							],
+							[
+								1260,
+								1284
+							],
+							[
+								1363,
+								1388
+							],
+							[
+								1511,
+								1539
+							],
+							[
+								1653,
+								1674
+							],
+							[
+								1772,
+								1790
+							],
+							[
+								1848,
+								1868
+							],
+							[
+								1926,
+								1949
+							],
+							[
+								2007,
+								2031
+							],
+							[
+								2089,
+								2114
+							],
+							[
+								2172,
+								2201
+							],
+							[
+								2259,
+								2294
+							],
+							[
+								2352,
+								2376
+							],
+							[
+								2536,
+								2561
+							],
+							[
+								2619,
+								2641
+							],
+							[
+								2699,
+								2717
+							],
+							[
+								2775,
+								2795
+							],
+							[
+								2853,
+								2882
+							],
+							[
+								3012,
+								3038
+							],
+							[
+								3168,
+								3191
+							],
+							[
+								3324,
+								3347
+							]
+						],
+						"symlist":
+						[
+							"—Ⓕ– put_escape ( ) { … } — function",
+							"—Ⓕ– put_num ( ) { … } — function",
+							"—Ⓕ– put_char ( ) { … } — function",
+							"—Ⓕ– put_string ( ) { … } — function",
+							"—Ⓕ– terminal_number_sequence ( ) { … } — function",
+							"—Ⓕ– terminal_numbers_sequence ( ) { … } — function",
+							"—Ⓕ– terminal_escape_number_char ( ) { … } — function",
+							"—Ⓕ– terminal_escape_char ( ) { … } — function",
+							"—Ⓕ– terminal_escape_sequence ( ) { … } — function",
+							"—Ⓕ– terminal_command_sequence ( ) { … } — function",
+							"—Ⓕ– terminal_command_number_char ( ) { … } — function",
+							"—Ⓕ– terminal_command_char ( ) { … } — function",
+							"—Ⓕ– terminal_cursor_up ( ) { … } — function",
+							"—Ⓕ– terminal_cursor_down ( ) { … } — function",
+							"—Ⓕ– terminal_cursor_forward ( ) { … } — function",
+							"—Ⓕ– terminal_cursor_backward ( ) { … } — function",
+							"—Ⓕ– terminal_cursor_next_line ( ) { … } — function",
+							"—Ⓕ– terminal_cursor_previous_line ( ) { … } — function",
+							"—Ⓕ– terminal_cursor_horizontal_absolute ( ) { … } — function",
+							"—Ⓕ– terminal_cursor_position ( ) { … } — function",
+							"—Ⓕ– terminal_erase_in_display ( ) { … } — function",
+							"—Ⓕ– terminal_erase_in_line ( ) { … } — function",
+							"—Ⓕ– terminal_scroll_up ( ) { … } — function",
+							"—Ⓕ– terminal_scroll_down ( ) { … } — function",
+							"—Ⓕ– terminal_set_alternate_screen ( ) { … } — function",
+							"—Ⓕ– terminal_set_normal_screen ( ) { … } — function",
+							"—Ⓕ– terminal_rgb_foreground ( ) { … } — function",
+							"—Ⓕ– terminal_rgb_background ( ) { … } — function"
+						]
+					},
+					"AQAAAAAAAAAAAAAAXAQAAAAAAAAAAAAA",
+					"AQAAAAAAAAAAAAAA"
+				],
+				[
+					62,
+					1,
+					"outline_refresh",
+					{
+						"path": "/home/roman/Sources/c-utils/logserial.c",
+						"symkeys":
+						[
+							[
+								8,
+								23
+							],
+							[
+								34,
+								45
+							],
+							[
+								658,
+								670
+							],
+							[
+								750,
+								754
+							],
+							[
+								779,
+								785
+							],
+							[
+								802,
+								806
+							],
+							[
+								906,
+								912
+							],
+							[
+								1346,
+								1357
+							],
+							[
+								1624,
+								1633
+							],
+							[
+								1806,
+								1817
+							],
+							[
+								2005,
+								2016
+							],
+							[
+								2248,
+								2257
+							],
+							[
+								3488,
+								3500
+							],
+							[
+								5661,
+								5672
+							],
+							[
+								5819,
+								5828
+							],
+							[
+								7211,
+								7223
+							],
+							[
+								7993,
+								8007
+							],
+							[
+								8571,
+								8574
+							],
+							[
+								8761,
+								8773
+							],
+							[
+								12208,
+								12213
+							],
+							[
+								13124,
+								13138
+							],
+							[
+								13366,
+								13370
+							]
+						],
+						"symlist":
+						[
+							" Ⓜ  _POSIX_C_SOURCE … — macro object",
+							" Ⓜ  _GNU_SOURCE … — macro object",
+							" Ⓜ  MAP_USE_HMAP … — macro object",
+							"—Ⓒ– port { … } ; — type",
+							" Ⓣ  port_t ; — typedef",
+							"—Ⓒ– link { … } ; — type",
+							" Ⓣ  link_t ; — typedef",
+							"—Ⓕ– dir_entries ( ) { … } — function",
+							"—Ⓕ– find_port ( ) { … } — function",
+							"—Ⓕ– remove_port ( ) { … } — function",
+							"—Ⓕ– clear_ports ( ) { … } — function",
+							"—Ⓕ– get_ports ( ) { … } — function",
+							"—Ⓕ– serial_ports ( ) { … } — function",
+							"—Ⓕ– serial_read ( ) { … } — function",
+							"—Ⓕ– term_init ( ) { … } — function",
+							"—Ⓕ– term_restore ( ) { … } — function",
+							"—Ⓕ– process_serial ( ) { … } — function",
+							"—Ⓜ– max ( ) … — macro function",
+							"—Ⓕ– process_loop ( ) { … } — function",
+							"—Ⓕ– usage ( ) { … } — function",
+							"—Ⓕ– signal_handler ( ) { … } — function",
+							"—Ⓕ– main ( ) { … } — function"
+						]
+					},
+					"AgAAAAAAAAAAAAAAAAAAAAAAAAB0BQAA4oCU4pK74oCTIHB1dF9lc2NhcGUgKCApIHsg4oCmIH0g4oCUIArigJTikrvigJMgcHV0X251bSAoICkgeyDigKYgfSDigJQgCuKAlOKSu+KAkyBwdXRfY2hhciAoICkgeyDigKYgfSDigJQgCuKAlOKSu+KAkyBwdXRfc3RyaW5nICggKSB7IOKApiB9IOKAlCAK4oCU4pK74oCTIHRlcm1pbmFsX251bWJlcl9zZXF1ZW5jZSAoICkgeyDigKYgfSDigJQgCuKAlOKSu+KAkyB0ZXJtaW5hbF9udW1iZXJzX3NlcXVlbmNlICggKSB7IOKApiB9IOKAlCAK4oCU4pK74oCTIHRlcm1pbmFsX2VzY2FwZV9udW1iZXJfY2hhciAoICkgeyDigKYgfSDigJQgCuKAlOKSu+KAkyB0ZXJtaW5hbF9lc2NhcGVfY2hhciAoICkgeyDigKYgfSDigJQgCuKAlOKSu+KAkyB0ZXJtaW5hbF9lc2NhcGVfc2VxdWVuY2UgKCApIHsg4oCmIH0g4oCUIArigJTikrvigJMgdGVybWluYWxfY29tbWFuZF9zZXF1ZW5jZSAoICkgeyDigKYgfSDigJQgCuKAlOKSu+KAkyB0ZXJtaW5hbF9jb21tYW5kX251bWJlcl9jaGFyICggKSB7IOKApiB9IOKAlCAK4oCU4pK74oCTIHRlcm1pbmFsX2NvbW1hbmRfY2hhciAoICkgeyDigKYgfSDigJQgCuKAlOKSu+KAkyB0ZXJtaW5hbF9jdXJzb3JfdXAgKCApIHsg4oCmIH0g4oCUIArigJTikrvigJMgdGVybWluYWxfY3Vyc29yX2Rvd24gKCApIHsg4oCmIH0g4oCUIArigJTikrvigJMgdGVybWluYWxfY3Vyc29yX2ZvcndhcmQgKCApIHsg4oCmIH0g4oCUIArigJTikrvigJMgdGVybWluYWxfY3Vyc29yX2JhY2t3YXJkICggKSB7IOKApiB9IOKAlCAK4oCU4pK74oCTIHRlcm1pbmFsX2N1cnNvcl9uZXh0X2xpbmUgKCApIHsg4oCmIH0g4oCUIArigJTikrvigJMgdGVybWluYWxfY3Vyc29yX3ByZXZpb3VzX2xpbmUgKCApIHsg4oCmIH0g4oCUIArigJTikrvigJMgdGVybWluYWxfY3Vyc29yX2hvcml6b250YWxfYWJzb2x1dGUgKCApIHsg4oCmIH0g4oCUIArigJTikrvigJMgdGVybWluYWxfY3Vyc29yX3Bvc2l0aW9uICggKSB7IOKApiB9IOKAlCAK4oCU4pK74oCTIHRlcm1pbmFsX2VyYXNlX2luX2Rpc3BsYXkgKCApIHsg4oCmIH0g4oCUIArigJTikrvigJMgdGVybWluYWxfZXJhc2VfaW5fbGluZSAoICkgeyDigKYgfSDigJQgCuKAlOKSu+KAkyB0ZXJtaW5hbF9zY3JvbGxfdXAgKCApIHsg4oCmIH0g4oCUIArigJTikrvigJMgdGVybWluYWxfc2Nyb2xsX2Rvd24gKCApIHsg4oCmIH0g4oCUIArigJTikrvigJMgdGVybWluYWxfc2V0X2FsdGVybmF0ZV9zY3JlZW4gKCApIHsg4oCmIH0g4oCUIArigJTikrvigJMgdGVybWluYWxfc2V0X25vcm1hbF9zY3JlZW4gKCApIHsg4oCmIH0g4oCUIArigJTikrvigJMgdGVybWluYWxfcmdiX2ZvcmVncm91bmQgKCApIHsg4oCmIH0g4oCUIArigJTikrvigJMgdGVybWluYWxfcmdiX2JhY2tncm91bmQgKCApIHsg4oCmIH0g4oCUIAAAAAAAAAAA0gEAAAAAAAAAAAAA",
+					"AQAAAAAAAAABAAAAugIAAAAAAAC6AgAAAAAAAAAAAAAAAPC/"
+				],
+				[
+					63,
+					1,
+					"outline_refresh",
+					{
+						"path": "/home/roman/Sources/c-utils/terminal.c",
+						"symkeys":
+						[
+							[
+								210,
+								220
+							],
+							[
+								302,
+								309
+							],
+							[
+								381,
+								389
+							],
+							[
+								457,
+								467
+							],
+							[
+								638,
+								662
+							],
+							[
+								776,
+								801
+							],
+							[
+								1017,
+								1044
+							],
+							[
+								1166,
+								1186
+							],
+							[
+								1260,
+								1284
+							],
+							[
+								1363,
+								1388
+							],
+							[
+								1511,
+								1539
+							],
+							[
+								1653,
+								1674
+							],
+							[
+								1772,
+								1790
+							],
+							[
+								1848,
+								1868
+							],
+							[
+								1926,
+								1949
+							],
+							[
+								2007,
+								2031
+							],
+							[
+								2089,
+								2114
+							],
+							[
+								2172,
+								2201
+							],
+							[
+								2259,
+								2294
+							],
+							[
+								2352,
+								2376
+							],
+							[
+								2536,
+								2561
+							],
+							[
+								2619,
+								2641
+							],
+							[
+								2699,
+								2717
+							],
+							[
+								2775,
+								2795
+							],
+							[
+								2853,
+								2882
+							],
+							[
+								3012,
+								3038
+							],
+							[
+								3168,
+								3191
+							],
+							[
+								3324,
+								3347
+							]
+						],
+						"symlist":
+						[
+							"—Ⓕ– put_escape ( ) { … } — function",
+							"—Ⓕ– put_num ( ) { … } — function",
+							"—Ⓕ– put_char ( ) { … } — function",
+							"—Ⓕ– put_string ( ) { … } — function",
+							"—Ⓕ– terminal_number_sequence ( ) { … } — function",
+							"—Ⓕ– terminal_numbers_sequence ( ) { … } — function",
+							"—Ⓕ– terminal_escape_number_char ( ) { … } — function",
+							"—Ⓕ– terminal_escape_char ( ) { … } — function",
+							"—Ⓕ– terminal_escape_sequence ( ) { … } — function",
+							"—Ⓕ– terminal_command_sequence ( ) { … } — function",
+							"—Ⓕ– terminal_command_number_char ( ) { … } — function",
+							"—Ⓕ– terminal_command_char ( ) { … } — function",
+							"—Ⓕ– terminal_cursor_up ( ) { … } — function",
+							"—Ⓕ– terminal_cursor_down ( ) { … } — function",
+							"—Ⓕ– terminal_cursor_forward ( ) { … } — function",
+							"—Ⓕ– terminal_cursor_backward ( ) { … } — function",
+							"—Ⓕ– terminal_cursor_next_line ( ) { … } — function",
+							"—Ⓕ– terminal_cursor_previous_line ( ) { … } — function",
+							"—Ⓕ– terminal_cursor_horizontal_absolute ( ) { … } — function",
+							"—Ⓕ– terminal_cursor_position ( ) { … } — function",
+							"—Ⓕ– terminal_erase_in_display ( ) { … } — function",
+							"—Ⓕ– terminal_erase_in_line ( ) { … } — function",
+							"—Ⓕ– terminal_scroll_up ( ) { … } — function",
+							"—Ⓕ– terminal_scroll_down ( ) { … } — function",
+							"—Ⓕ– terminal_set_alternate_screen ( ) { … } — function",
+							"—Ⓕ– terminal_set_normal_screen ( ) { … } — function",
+							"—Ⓕ– terminal_rgb_foreground ( ) { … } — function",
+							"—Ⓕ– terminal_rgb_background ( ) { … } — function"
+						]
+					},
+					"AgAAAAAAAAAAAAAAAAAAAAAAAAB8AgAA4oCU4pK44oCTIHBvcnQgeyDigKYgfSA7IOKAlCB0eXBlCuKAlOKSuOKAkyBsaW5rIHsg4oCmIH0gOyDigJQgdHlwZQrigJTikrvigJMgZGlyX2VudHJpZXMgKCApIHsg4oCmIH0g4oCUIArigJTikrvigJMgZmluZF9wb3J0ICggKSB7IOKApiB9IOKAlCAK4oCU4pK74oCTIHJlbW92ZV9wb3J0ICggKSB7IOKApiB9IOKAlCAK4oCU4pK74oCTIGNsZWFyX3BvcnRzICggKSB7IOKApiB9IOKAlCAK4oCU4pK74oCTIGdldF9wb3J0cyAoICkgeyDigKYgfSDigJQgCuKAlOKSu+KAkyBzZXJpYWxfcG9ydHMgKCApIHsg4oCmIH0g4oCUIArigJTikrvigJMgc2VyaWFsX3JlYWQgKCApIHsg4oCmIH0g4oCUIArigJTikrvigJMgdGVybV9pbml0ICggKSB7IOKApiB9IOKAlCAK4oCU4pK74oCTIHRlcm1fcmVzdG9yZSAoICkgeyDigKYgfSDigJQgCuKAlOKSu+KAkyBwcm9jZXNzX3NlcmlhbCAoICkgeyDigKYgfSDigJQgCuKAlOKTguKAkyBtYXggKCApIOKApiDigJQgbWFjcm8gCuKAlOKSu+KAkyBwcm9jZXNzX2xvb3AgKCApIHsg4oCmIH0g4oCUIArigJTikrvigJMgdXNhZ2UgKCApIHsg4oCmIH0g4oCUIArigJTikrvigJMgc2lnbmFsX2hhbmRsZXIgKCApIHsg4oCmIH0g4oCUIArigJTikrvigJMgbWFpbiAoICkgeyDigKYgfSDigJQgAAAAAAAAAABcBAAAAAAAAAAAAAA",
+					"AQAAAAAAAAAAAAAA"
+				],
+				[
+					64,
+					1,
+					"outline_refresh",
+					{
+						"path": "/home/roman/Sources/c-utils/logserial.c",
+						"symkeys":
+						[
+							[
+								8,
+								23
+							],
+							[
+								34,
+								45
+							],
+							[
+								658,
+								670
+							],
+							[
+								750,
+								754
+							],
+							[
+								779,
+								785
+							],
+							[
+								802,
+								806
+							],
+							[
+								906,
+								912
+							],
+							[
+								1346,
+								1357
+							],
+							[
+								1624,
+								1633
+							],
+							[
+								1806,
+								1817
+							],
+							[
+								2005,
+								2016
+							],
+							[
+								2248,
+								2257
+							],
+							[
+								3488,
+								3500
+							],
+							[
+								5661,
+								5672
+							],
+							[
+								5819,
+								5828
+							],
+							[
+								7211,
+								7223
+							],
+							[
+								7993,
+								8007
+							],
+							[
+								8571,
+								8574
+							],
+							[
+								8761,
+								8773
+							],
+							[
+								12208,
+								12213
+							],
+							[
+								13124,
+								13138
+							],
+							[
+								13366,
+								13370
+							]
+						],
+						"symlist":
+						[
+							" Ⓜ  _POSIX_C_SOURCE … — macro object",
+							" Ⓜ  _GNU_SOURCE … — macro object",
+							" Ⓜ  MAP_USE_HMAP … — macro object",
+							"—Ⓒ– port { … } ; — type",
+							" Ⓣ  port_t ; — typedef",
+							"—Ⓒ– link { … } ; — type",
+							" Ⓣ  link_t ; — typedef",
+							"—Ⓕ– dir_entries ( ) { … } — function",
+							"—Ⓕ– find_port ( ) { … } — function",
+							"—Ⓕ– remove_port ( ) { … } — function",
+							"—Ⓕ– clear_ports ( ) { … } — function",
+							"—Ⓕ– get_ports ( ) { … } — function",
+							"—Ⓕ– serial_ports ( ) { … } — function",
+							"—Ⓕ– serial_read ( ) { … } — function",
+							"—Ⓕ– term_init ( ) { … } — function",
+							"—Ⓕ– term_restore ( ) { … } — function",
+							"—Ⓕ– process_serial ( ) { … } — function",
+							"—Ⓜ– max ( ) … — macro function",
+							"—Ⓕ– process_loop ( ) { … } — function",
+							"—Ⓕ– usage ( ) { … } — function",
+							"—Ⓕ– signal_handler ( ) { … } — function",
+							"—Ⓕ– main ( ) { … } — function"
+						]
+					},
+					"AgAAAAAAAAAAAAAAAAAAAAAAAAB0BQAA4oCU4pK74oCTIHB1dF9lc2NhcGUgKCApIHsg4oCmIH0g4oCUIArigJTikrvigJMgcHV0X251bSAoICkgeyDigKYgfSDigJQgCuKAlOKSu+KAkyBwdXRfY2hhciAoICkgeyDigKYgfSDigJQgCuKAlOKSu+KAkyBwdXRfc3RyaW5nICggKSB7IOKApiB9IOKAlCAK4oCU4pK74oCTIHRlcm1pbmFsX251bWJlcl9zZXF1ZW5jZSAoICkgeyDigKYgfSDigJQgCuKAlOKSu+KAkyB0ZXJtaW5hbF9udW1iZXJzX3NlcXVlbmNlICggKSB7IOKApiB9IOKAlCAK4oCU4pK74oCTIHRlcm1pbmFsX2VzY2FwZV9udW1iZXJfY2hhciAoICkgeyDigKYgfSDigJQgCuKAlOKSu+KAkyB0ZXJtaW5hbF9lc2NhcGVfY2hhciAoICkgeyDigKYgfSDigJQgCuKAlOKSu+KAkyB0ZXJtaW5hbF9lc2NhcGVfc2VxdWVuY2UgKCApIHsg4oCmIH0g4oCUIArigJTikrvigJMgdGVybWluYWxfY29tbWFuZF9zZXF1ZW5jZSAoICkgeyDigKYgfSDigJQgCuKAlOKSu+KAkyB0ZXJtaW5hbF9jb21tYW5kX251bWJlcl9jaGFyICggKSB7IOKApiB9IOKAlCAK4oCU4pK74oCTIHRlcm1pbmFsX2NvbW1hbmRfY2hhciAoICkgeyDigKYgfSDigJQgCuKAlOKSu+KAkyB0ZXJtaW5hbF9jdXJzb3JfdXAgKCApIHsg4oCmIH0g4oCUIArigJTikrvigJMgdGVybWluYWxfY3Vyc29yX2Rvd24gKCApIHsg4oCmIH0g4oCUIArigJTikrvigJMgdGVybWluYWxfY3Vyc29yX2ZvcndhcmQgKCApIHsg4oCmIH0g4oCUIArigJTikrvigJMgdGVybWluYWxfY3Vyc29yX2JhY2t3YXJkICggKSB7IOKApiB9IOKAlCAK4oCU4pK74oCTIHRlcm1pbmFsX2N1cnNvcl9uZXh0X2xpbmUgKCApIHsg4oCmIH0g4oCUIArigJTikrvigJMgdGVybWluYWxfY3Vyc29yX3ByZXZpb3VzX2xpbmUgKCApIHsg4oCmIH0g4oCUIArigJTikrvigJMgdGVybWluYWxfY3Vyc29yX2hvcml6b250YWxfYWJzb2x1dGUgKCApIHsg4oCmIH0g4oCUIArigJTikrvigJMgdGVybWluYWxfY3Vyc29yX3Bvc2l0aW9uICggKSB7IOKApiB9IOKAlCAK4oCU4pK74oCTIHRlcm1pbmFsX2VyYXNlX2luX2Rpc3BsYXkgKCApIHsg4oCmIH0g4oCUIArigJTikrvigJMgdGVybWluYWxfZXJhc2VfaW5fbGluZSAoICkgeyDigKYgfSDigJQgCuKAlOKSu+KAkyB0ZXJtaW5hbF9zY3JvbGxfdXAgKCApIHsg4oCmIH0g4oCUIArigJTikrvigJMgdGVybWluYWxfc2Nyb2xsX2Rvd24gKCApIHsg4oCmIH0g4oCUIArigJTikrvigJMgdGVybWluYWxfc2V0X2FsdGVybmF0ZV9zY3JlZW4gKCApIHsg4oCmIH0g4oCUIArigJTikrvigJMgdGVybWluYWxfc2V0X25vcm1hbF9zY3JlZW4gKCApIHsg4oCmIH0g4oCUIArigJTikrvigJMgdGVybWluYWxfcmdiX2ZvcmVncm91bmQgKCApIHsg4oCmIH0g4oCUIArigJTikrvigJMgdGVybWluYWxfcmdiX2JhY2tncm91bmQgKCApIHsg4oCmIH0g4oCUIAAAAAAAAAAA0gEAAAAAAAAAAAAA",
+					"AQAAAAAAAAAAAAAA"
+				],
+				[
+					65,
+					1,
+					"outline_refresh",
+					{
+						"path": "/home/roman/Sources/c-utils/terminal.c",
+						"symkeys":
+						[
+							[
+								210,
+								220
+							],
+							[
+								302,
+								309
+							],
+							[
+								381,
+								389
+							],
+							[
+								457,
+								467
+							],
+							[
+								638,
+								662
+							],
+							[
+								776,
+								801
+							],
+							[
+								1017,
+								1044
+							],
+							[
+								1166,
+								1186
+							],
+							[
+								1260,
+								1284
+							],
+							[
+								1363,
+								1388
+							],
+							[
+								1511,
+								1539
+							],
+							[
+								1653,
+								1674
+							],
+							[
+								1772,
+								1790
+							],
+							[
+								1848,
+								1868
+							],
+							[
+								1926,
+								1949
+							],
+							[
+								2007,
+								2031
+							],
+							[
+								2089,
+								2114
+							],
+							[
+								2172,
+								2201
+							],
+							[
+								2259,
+								2294
+							],
+							[
+								2352,
+								2376
+							],
+							[
+								2536,
+								2561
+							],
+							[
+								2619,
+								2641
+							],
+							[
+								2699,
+								2717
+							],
+							[
+								2775,
+								2795
+							],
+							[
+								2853,
+								2882
+							],
+							[
+								3012,
+								3038
+							],
+							[
+								3168,
+								3191
+							],
+							[
+								3324,
+								3347
+							]
+						],
+						"symlist":
+						[
+							"—Ⓕ– put_escape ( ) { … } — function",
+							"—Ⓕ– put_num ( ) { … } — function",
+							"—Ⓕ– put_char ( ) { … } — function",
+							"—Ⓕ– put_string ( ) { … } — function",
+							"—Ⓕ– terminal_number_sequence ( ) { … } — function",
+							"—Ⓕ– terminal_numbers_sequence ( ) { … } — function",
+							"—Ⓕ– terminal_escape_number_char ( ) { … } — function",
+							"—Ⓕ– terminal_escape_char ( ) { … } — function",
+							"—Ⓕ– terminal_escape_sequence ( ) { … } — function",
+							"—Ⓕ– terminal_command_sequence ( ) { … } — function",
+							"—Ⓕ– terminal_command_number_char ( ) { … } — function",
+							"—Ⓕ– terminal_command_char ( ) { … } — function",
+							"—Ⓕ– terminal_cursor_up ( ) { … } — function",
+							"—Ⓕ– terminal_cursor_down ( ) { … } — function",
+							"—Ⓕ– terminal_cursor_forward ( ) { … } — function",
+							"—Ⓕ– terminal_cursor_backward ( ) { … } — function",
+							"—Ⓕ– terminal_cursor_next_line ( ) { … } — function",
+							"—Ⓕ– terminal_cursor_previous_line ( ) { … } — function",
+							"—Ⓕ– terminal_cursor_horizontal_absolute ( ) { … } — function",
+							"—Ⓕ– terminal_cursor_position ( ) { … } — function",
+							"—Ⓕ– terminal_erase_in_display ( ) { … } — function",
+							"—Ⓕ– terminal_erase_in_line ( ) { … } — function",
+							"—Ⓕ– terminal_scroll_up ( ) { … } — function",
+							"—Ⓕ– terminal_scroll_down ( ) { … } — function",
+							"—Ⓕ– terminal_set_alternate_screen ( ) { … } — function",
+							"—Ⓕ– terminal_set_normal_screen ( ) { … } — function",
+							"—Ⓕ– terminal_rgb_foreground ( ) { … } — function",
+							"—Ⓕ– terminal_rgb_background ( ) { … } — function"
+						]
+					},
+					"AgAAAAAAAAAAAAAAAAAAAAAAAAB8AgAA4oCU4pK44oCTIHBvcnQgeyDigKYgfSA7IOKAlCB0eXBlCuKAlOKSuOKAkyBsaW5rIHsg4oCmIH0gOyDigJQgdHlwZQrigJTikrvigJMgZGlyX2VudHJpZXMgKCApIHsg4oCmIH0g4oCUIArigJTikrvigJMgZmluZF9wb3J0ICggKSB7IOKApiB9IOKAlCAK4oCU4pK74oCTIHJlbW92ZV9wb3J0ICggKSB7IOKApiB9IOKAlCAK4oCU4pK74oCTIGNsZWFyX3BvcnRzICggKSB7IOKApiB9IOKAlCAK4oCU4pK74oCTIGdldF9wb3J0cyAoICkgeyDigKYgfSDigJQgCuKAlOKSu+KAkyBzZXJpYWxfcG9ydHMgKCApIHsg4oCmIH0g4oCUIArigJTikrvigJMgc2VyaWFsX3JlYWQgKCApIHsg4oCmIH0g4oCUIArigJTikrvigJMgdGVybV9pbml0ICggKSB7IOKApiB9IOKAlCAK4oCU4pK74oCTIHRlcm1fcmVzdG9yZSAoICkgeyDigKYgfSDigJQgCuKAlOKSu+KAkyBwcm9jZXNzX3NlcmlhbCAoICkgeyDigKYgfSDigJQgCuKAlOKTguKAkyBtYXggKCApIOKApiDigJQgbWFjcm8gCuKAlOKSu+KAkyBwcm9jZXNzX2xvb3AgKCApIHsg4oCmIH0g4oCUIArigJTikrvigJMgdXNhZ2UgKCApIHsg4oCmIH0g4oCUIArigJTikrvigJMgc2lnbmFsX2hhbmRsZXIgKCApIHsg4oCmIH0g4oCUIArigJTikrvigJMgbWFpbiAoICkgeyDigKYgfSDigJQgAAAAAAAAAABcBAAAAAAAAAAAAAA",
+					"AQAAAAAAAAAAAAAA"
 				]
 			]
 		},
@@ -173,6 +909,17 @@
 				"buffer_size": 17106,
 				"line_ending": "Unix"
 			}
+		},
+		{
+			"file": "terminal.c",
+			"settings":
+			{
+				"buffer_size": 3474,
+				"line_ending": "Unix"
+			},
+			"undo_stack":
+			[
+			]
 		},
 		{
 			"file": "tcping.c",
@@ -621,7 +1368,7 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 626,
+						"buffer_size": 1116,
 						"regions":
 						{
 						},
@@ -630,127 +1377,159 @@
 						],
 						"settings":
 						{
-							"current_file": "/home/roman/Sources/c-utils/logserial.c",
+							"current_file": "/home/roman/Sources/c-utils/terminal.c",
 							"outline_rename_mode": false,
 							"symkeys":
 							[
 								[
-									8,
-									23
+									210,
+									220
 								],
 								[
-									34,
-									45
+									302,
+									309
 								],
 								[
-									658,
-									670
+									381,
+									389
 								],
 								[
-									750,
-									754
+									457,
+									467
 								],
 								[
-									779,
-									785
+									638,
+									662
 								],
 								[
-									802,
-									806
+									776,
+									801
 								],
 								[
-									906,
-									912
+									1017,
+									1044
 								],
 								[
-									1346,
-									1357
+									1166,
+									1186
 								],
 								[
-									1624,
-									1633
+									1260,
+									1284
 								],
 								[
-									1806,
-									1817
+									1363,
+									1388
 								],
 								[
-									2005,
-									2016
+									1511,
+									1539
 								],
 								[
-									2248,
-									2257
+									1653,
+									1674
 								],
 								[
-									3488,
-									3500
+									1772,
+									1790
 								],
 								[
-									5661,
-									5672
+									1848,
+									1868
 								],
 								[
-									5819,
-									5828
+									1926,
+									1949
 								],
 								[
-									7211,
-									7223
+									2007,
+									2031
 								],
 								[
-									7993,
-									8007
+									2089,
+									2114
 								],
 								[
-									8571,
-									8574
+									2172,
+									2201
 								],
 								[
-									8761,
-									8773
+									2259,
+									2294
 								],
 								[
-									12208,
-									12213
+									2352,
+									2376
 								],
 								[
-									13124,
-									13138
+									2536,
+									2561
 								],
 								[
-									13366,
-									13370
+									2619,
+									2641
+								],
+								[
+									2699,
+									2717
+								],
+								[
+									2775,
+									2795
+								],
+								[
+									2853,
+									2882
+								],
+								[
+									3012,
+									3038
+								],
+								[
+									3168,
+									3191
+								],
+								[
+									3324,
+									3347
 								]
 							],
 							"symlist":
 							[
-								"\tⓂ  _POSIX_C_SOURCE … — macro object",
-								"\tⓂ  _GNU_SOURCE … — macro object",
-								"\tⓂ  MAP_USE_HMAP … — macro object",
-								"—Ⓒ– port { … } ; — type",
-								"\tⓉ  port_t ; — typedef",
-								"—Ⓒ– link { … } ; — type",
-								"\tⓉ  link_t ; — typedef",
-								"—Ⓕ– dir_entries ( ) { … } — ",
-								"—Ⓕ– find_port ( ) { … } — ",
-								"—Ⓕ– remove_port ( ) { … } — ",
-								"—Ⓕ– clear_ports ( ) { … } — ",
-								"—Ⓕ– get_ports ( ) { … } — ",
-								"—Ⓕ– serial_ports ( ) { … } — ",
-								"—Ⓕ– serial_read ( ) { … } — ",
-								"—Ⓕ– term_init ( ) { … } — ",
-								"—Ⓕ– term_restore ( ) { … } — ",
-								"—Ⓕ– process_serial ( ) { … } — ",
-								"—Ⓜ– max ( ) … — macro ",
-								"—Ⓕ– process_loop ( ) { … } — ",
-								"—Ⓕ– usage ( ) { … } — ",
-								"—Ⓕ– signal_handler ( ) { … } — ",
-								"—Ⓕ– main ( ) { … } — "
+								"—Ⓕ– put_escape ( ) { … } — ",
+								"—Ⓕ– put_num ( ) { … } — ",
+								"—Ⓕ– put_char ( ) { … } — ",
+								"—Ⓕ– put_string ( ) { … } — ",
+								"—Ⓕ– terminal_number_sequence ( ) { … } — ",
+								"—Ⓕ– terminal_numbers_sequence ( ) { … } — ",
+								"—Ⓕ– terminal_escape_number_char ( ) { … } — ",
+								"—Ⓕ– terminal_escape_char ( ) { … } — ",
+								"—Ⓕ– terminal_escape_sequence ( ) { … } — ",
+								"—Ⓕ– terminal_command_sequence ( ) { … } — ",
+								"—Ⓕ– terminal_command_number_char ( ) { … } — ",
+								"—Ⓕ– terminal_command_char ( ) { … } — ",
+								"—Ⓕ– terminal_cursor_up ( ) { … } — ",
+								"—Ⓕ– terminal_cursor_down ( ) { … } — ",
+								"—Ⓕ– terminal_cursor_forward ( ) { … } — ",
+								"—Ⓕ– terminal_cursor_backward ( ) { … } — ",
+								"—Ⓕ– terminal_cursor_next_line ( ) { … } — ",
+								"—Ⓕ– terminal_cursor_previous_line ( ) { … } — ",
+								"—Ⓕ– terminal_cursor_horizontal_absolute ( ) { … } — ",
+								"—Ⓕ– terminal_cursor_position ( ) { … } — ",
+								"—Ⓕ– terminal_erase_in_display ( ) { … } — ",
+								"—Ⓕ– terminal_erase_in_line ( ) { … } — ",
+								"—Ⓕ– terminal_scroll_up ( ) { … } — ",
+								"—Ⓕ– terminal_scroll_down ( ) { … } — ",
+								"—Ⓕ– terminal_set_alternate_screen ( ) { … } — ",
+								"—Ⓕ– terminal_set_normal_screen ( ) { … } — ",
+								"—Ⓕ– terminal_rgb_foreground ( ) { … } — ",
+								"—Ⓕ– terminal_rgb_background ( ) { … } — "
 							],
-							"syntax": "Packages/Outline/outline.hidden-tmLanguage"
+							"syntax": "Packages/Outline/outline.hidden-tmLanguage",
+							"tab_size": 3,
+							"translate_tabs_to_spaces": true
 						},
-						"translation.x": 135.0,
+						"translation.x": 0.0,
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
@@ -766,7 +1545,6 @@
 				{
 					"buffer": 1,
 					"file": "logserial.c",
-					"selected": true,
 					"semi_transient": false,
 					"settings":
 					{
@@ -791,12 +1569,44 @@
 						"translation.y": 8871.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 0,
+					"stack_index": 1,
 					"stack_multiselect": false,
 					"type": "text"
 				},
 				{
 					"buffer": 2,
+					"file": "terminal.c",
+					"selected": true,
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 3474,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2613,
+								2613
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C Improved/C Improved.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 1800.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"stack_multiselect": false,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
 					"file": "tcping.c",
 					"semi_transient": false,
 					"settings":
@@ -822,12 +1632,12 @@
 						"translation.y": 4326.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 1,
+					"stack_index": 2,
 					"stack_multiselect": false,
 					"type": "text"
 				},
 				{
-					"buffer": 3,
+					"buffer": 4,
 					"file": "lib/socket/socket_tcp6.c",
 					"semi_transient": false,
 					"settings":
@@ -853,7 +1663,7 @@
 						"translation.y": 16.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 2,
+					"stack_index": 3,
 					"stack_multiselect": false,
 					"type": "text"
 				}
@@ -889,7 +1699,7 @@
 		[
 			0.0,
 			0.2,
-			0.8,
+			0.698335196965,
 			1.0
 		],
 		"rows":
@@ -917,6 +1727,10 @@
 		"last_filter": "",
 		"selected_items":
 		[
+			[
+				"termin",
+				"terminal.c"
+			],
 			[
 				"iopause",
 				"lib/iopause.h"
@@ -972,10 +1786,6 @@
 			[
 				"json_print",
 				"lib/json/json_print.c"
-			],
-			[
-				"termin",
-				"node_modules/asynckit/lib/terminator.js"
 			],
 			[
 				"cmakeli",
