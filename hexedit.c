@@ -192,15 +192,26 @@ patch(size_t i, unsigned char from, unsigned char to) {
 }
 
 int
+patch_match(unsigned char* x, size_t n, patch_t* p) {
+  uint32 crc;
+  if(p->file_size && p->file_size != n)
+    return 0;
+  crc = byte_crc32((const char*)x, n);
+  if(p->crc32 && p->crc32 != crc)
+    return 0;
+  return 1;
+}
+
+int
 patch_check(unsigned char* x, size_t n, patch_t* p) {
   size_t i, nrec = array_length(&p->records, sizeof(record_t));
   size_t done = 0;
   uint32 crc;
   if(p->file_size && p->file_size != n)
     return -1;
-  crc = byte_crc32((const char*)x, n);
+ /* crc = byte_crc32((const char*)x, n);
   if(p->crc32 && p->crc32 != crc)
-    return -1;
+    return -1;*/
 
   buffer_putm_internal(buffer_2, "Checking for '", p->name, "'...", 0);
   buffer_flush(buffer_2);
@@ -221,7 +232,7 @@ patch_check(unsigned char* x, size_t n, patch_t* p) {
   for(i = 0; i < nrec; ++i) {
     record_t* r = array_get(&p->records, sizeof(record_t), i);
 
-    buffer_puts(buffer_2, "position 0x");
+    buffer_puts(buffer_2, "Position 0x");
     buffer_putxlong0(buffer_2, r->offset, 8);
     buffer_puts(buffer_2, " is 0x");
     buffer_putxlong0(buffer_2, x[r->offset] == r->to ? r->to : r->from, 2);
@@ -251,7 +262,13 @@ patch_find(unsigned char* x, size_t n) {
   for(i = 0; i < np; ++i) {
     patch_t* p = array_get(&patches, sizeof(patch_t), i);
 
-    if(patch_check(x, n, p) >= 0)
+    if(patch_match(x, n, p))
+      return p;
+  }
+  for(i = 0; i < np; ++i) {
+    patch_t* p = array_get(&patches, sizeof(patch_t), i);
+
+    if(p->file_size == n)
       return p;
   }
   return NULL;
@@ -259,7 +276,7 @@ patch_find(unsigned char* x, size_t n) {
 
 void
 record_apply(unsigned char* p, size_t i, unsigned char from, unsigned char to) {
-  buffer_puts(buffer_2, "patch ");
+  buffer_puts(buffer_2, "Patch ");
   print(p, i, from, to);
   if(p[i] == from) {
     p[i] = to;
@@ -561,6 +578,11 @@ main(int argc, char* argv[]) {
   patch(0x4142E8, 0x53, 0xc3);
   patch(0x352242, 0x38, 0x08);
   patch(0x352243, 0x00, 0x01);
+
+  patch_new("Sublime Text 4094 Linux x64", 8448168, 0xd9ae8d09);
+  patch(0x046fcc, 0x97, 0x00);
+  patch(0x046fcd, 0x94, 0x00);
+  patch(0x046fce, 0x0d, 0x00);
 
   /* eagle-lin32-7.2.0 */
   patch_new("EAGLE 7.2.0 Linux x86", 20629928, 0);
