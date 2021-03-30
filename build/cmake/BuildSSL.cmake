@@ -45,9 +45,9 @@ if(BUILD_SSL)
   message(STATUS "Configuring OpenSSL...")
   add_subdirectory(3rdparty/openssl)
 
-  if(NOT OPENSSL_LIBRARIES)
-    message(WARNING "Variable OPENSSL_LIBRARIES not set!")
-  endif(NOT OPENSSL_LIBRARIES)
+#  if(NOT OPENSSL_LIBRARIES)
+#    message(WARNING "Variable OPENSSL_LIBRARIES not set!")
+#  endif(NOT OPENSSL_LIBRARIES)
 
   set(OPENSSL_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/3rdparty/openssl/include" CACHE FILEPATH "" FORCE)
 
