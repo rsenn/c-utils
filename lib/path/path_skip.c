@@ -1,4 +1,5 @@
 #include "../path_internal.h"
+
 size_t
 path_skip(const char* s, size_t n) {
   const char *p = s, *e = s + n;

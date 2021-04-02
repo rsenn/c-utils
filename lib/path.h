@@ -16,6 +16,10 @@
 extern "C" {
 #endif
 
+typedef struct {
+  size_t sz1, sz2;
+} SizePair;
+
 #if WINDOWS_NATIVE
 #define PATHSEP_C '\\'
 #define PATHSEP_S "\\"
@@ -67,7 +71,11 @@ int path_relative(const char* path, const char* relative_to, stralloc* out);
 size_t path_right(const char* s, size_t n);
 size_t path_skip(const char* s, size_t n);
 size_t path_skips(const char* s);
-char* path_skip_separator(const char* p);
+size_t path_skip_separator(const char* p, size_t n);
+size_t path_skip_component(const char* p, size_t n);
+
+SizePair path_common_prefix(const char* s1, size_t n1, const char* s2, size_t n2);
+int path_relative_b(const char* s1, size_t n1, const char* s2, size_t n2, stralloc* out);
 
 void path_concat(const char* a, size_t alen, const char* b, size_t blen, stralloc* out);
 void path_append(const char* x, size_t len, stralloc* out);

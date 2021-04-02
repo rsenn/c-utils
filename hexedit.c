@@ -209,9 +209,9 @@ patch_check(unsigned char* x, size_t n, patch_t* p) {
   uint32 crc;
   if(p->file_size && p->file_size != n)
     return -1;
- /* crc = byte_crc32((const char*)x, n);
-  if(p->crc32 && p->crc32 != crc)
-    return -1;*/
+  /* crc = byte_crc32((const char*)x, n);
+   if(p->crc32 && p->crc32 != crc)
+     return -1;*/
 
   buffer_putm_internal(buffer_2, "Checking for '", p->name, "'...", 0);
   buffer_flush(buffer_2);

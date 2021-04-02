@@ -1,4 +1,5 @@
 #include "../path_internal.h"
+
 int
 path_getsep(const char* path) {
   while(*path) {

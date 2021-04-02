@@ -2,6 +2,7 @@
 #include "../str.h"
 #include "../strlist.h"
 #include <ctype.h>
+
 int
 path_split(const char* p, strlist* sl) {
   size_t len = str_len(p);

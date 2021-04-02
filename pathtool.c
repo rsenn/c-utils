@@ -32,8 +32,9 @@ strlist_from_path(strlist* sl, const char* p) {
   if(*dp == sl->sep && delims.len > 1)
     ++dp;
 
-  strlist_zero(sl);
-  strlist_froms(sl, p, *dp);
+  stralloc_copys(&sl->sa, p);
+  /*strlist_zero(sl);
+  strlist_froms(sl, p, *dp);*/
 }
 
 #if defined(__CYGWIN__) || defined(__MSYS__)
@@ -141,7 +142,8 @@ pathtool(const char* arg, stralloc* sa) {
     buffer_putnlflush(buffer_2);
 #endif
 
-    path_relative(path.sa.s, relative_to.sa.s, sa);
+    path_relative_b(path.sa.s, path.sa.len, relative_to.sa.s, relative_to.sa.len, sa);
+    //path_relative(path.sa.s, relative_to.sa.s, sa);
 
     /*
     strlist rel;
@@ -249,6 +251,7 @@ main(int argc, char* argv[]) {
                            {0, 0, 0, 0}};
 
   errmsg_iam(argv[0]);
+  strlist_init(&relative_to, PATHSEP_C);
 
 #if WINDOWS_NATIVE
   format = WIN;
@@ -301,27 +304,30 @@ main(int argc, char* argv[]) {
   }
 
   if(rel_to) {
-    char tmpsep = separator[0];
-    stralloc rel;
 
-    stralloc_init(&rel);
-    absolute = 1;
+    stralloc_copys(&relative_to.sa, rel_to);
 
-    separator[0] = PATHSEP_C;
+//    char tmpsep = separator[0];
+//    stralloc rel;
 
-    if(pathtool(rel_to, &rel)) {
-      stralloc_copy(&relative_to.sa, &rel);
-      relative_to.sep = separator[0];
-    } else {
-      errmsg_warnsys(str_basename(argv[0]), ": relative to", NULL);
-    }
+//    stralloc_init(&rel);
+//    absolute = 1;
+
+//    separator[0] = PATHSEP_C;
+
+//    if(pathtool(rel_to, &rel)) {
+//      stralloc_copy(&relative_to.sa, &rel);
+//      relative_to.sep = separator[0];
+//    } else {
+//      errmsg_warnsys(str_basename(argv[0]), ": relative to", NULL);
+//    }
 
 #ifdef DEBUG_OUTPUT
     buffer_puts(buffer_2, "relative-to: ");
     buffer_putsa(buffer_2, &relative_to.sa);
     buffer_putnlflush(buffer_2);
 #endif
-    separator[0] = tmpsep;
+   // separator[0] = tmpsep;
   }
 
   while(optind < argc) {
