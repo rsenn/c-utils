@@ -30,12 +30,12 @@ extern buffer input_buffer;
 static ssize_t
 yy_input(char* buf, size_t max_size) {
  ssize_t  ret;
-  ret = buffer_get(&input_buffer, buf, 1 || max_size);
+  ret = buffer_get(&input_buffer, buf, /* 1 ||  */max_size);
 
   if(ret > 0) {
-    buffer_puts(buffer_2, "Read char '");
-    buffer_putc(buffer_2, buf[0]);
-    buffer_putsflush(buffer_2, "'\n");
+    buffer_puts(buffer_2, "Read ");
+    buffer_putlong(buffer_2, ret);
+    buffer_putsflush(buffer_2, " chars\n");
   }
   return ret > 0 ? ret : YY_NULL;
 }

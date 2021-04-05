@@ -10,7 +10,6 @@ extern const char* input_file;
 
 extern int yylex ();
 extern void yyerror();
-
 %}
 
 %token	IDENTIFIER I_CONSTANT F_CONSTANT STRING_LITERAL FUNC_NAME SIZEOF
@@ -542,6 +541,7 @@ declaration_list
 %%
 
 #include "../lib/buffer.h"
+       YYLTYPE *yyget_lloc ( void );
 
 void
 yyerror(YYLTYPE* locp, char const* msg) {

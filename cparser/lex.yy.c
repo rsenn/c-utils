@@ -13,6 +13,30 @@
 #define FLEX_BETA
 #endif
 
+#ifdef yyget_lval
+#define yyget_lval_ALREADY_DEFINED
+#else
+#define yyget_lval yyget_lval
+#endif
+
+#ifdef yyset_lval
+#define yyset_lval_ALREADY_DEFINED
+#else
+#define yyset_lval yyset_lval
+#endif
+
+#ifdef yyget_lloc
+#define yyget_lloc_ALREADY_DEFINED
+#else
+#define yyget_lloc yyget_lloc
+#endif
+
+#ifdef yyset_lloc
+#define yyset_lloc_ALREADY_DEFINED
+#else
+#define yyset_lloc yyset_lloc
+#endif
+
 /* First, we deal with  platform-specific or compiler-specific issues. */
 
 /* begin standard C headers. */
@@ -748,12 +772,12 @@ extern buffer input_buffer;
 static ssize_t
 yy_input(char* buf, size_t max_size) {
  ssize_t  ret;
-  ret = buffer_get(&input_buffer, buf, 1 || max_size);
+  ret = buffer_get(&input_buffer, buf, /* 1 ||  */max_size);
 
   if(ret > 0) {
-    buffer_puts(buffer_2, "Read char '");
-    buffer_putc(buffer_2, buf[0]);
-    buffer_putsflush(buffer_2, "'\n");
+    buffer_puts(buffer_2, "Read ");
+    buffer_putlong(buffer_2, ret);
+    buffer_putsflush(buffer_2, " chars\n");
   }
   return ret > 0 ? ret : YY_NULL;
 }
@@ -768,8 +792,8 @@ extern int sym_type(const char*); /* returns type from symbol table */
 static void comment(void);
 static int check_type(void);
 
-#line 772 "lex.yy.c"
-#line 773 "lex.yy.c"
+#line 796 "lex.yy.c"
+#line 797 "lex.yy.c"
 
 #define INITIAL 0
 
@@ -816,6 +840,14 @@ int yyget_lineno ( void );
 
 void yyset_lineno ( int _line_number  );
 
+YYSTYPE * yyget_lval ( void );
+
+void yyset_lval ( YYSTYPE * yylval_param  );
+
+       YYLTYPE *yyget_lloc ( void );
+    
+        void yyset_lloc ( YYLTYPE * yylloc_param  );
+    
 /* Macros after this point can all be overridden by user definitions in
  * section 1.
  */
@@ -931,9 +963,11 @@ static int input ( void );
 #ifndef YY_DECL
 #define YY_DECL_IS_OURS 1
 
-extern int yylex (void);
+extern int yylex \
+               (YYSTYPE * yylval_param, YYLTYPE * yylloc_param );
 
-#define YY_DECL int yylex (void)
+#define YY_DECL int yylex \
+               (YYSTYPE * yylval_param, YYLTYPE * yylloc_param )
 #endif /* !YY_DECL */
 
 /* Code executed at the beginning of each rule, after yytext and yyleng
@@ -959,6 +993,14 @@ YY_DECL
 	char *yy_cp, *yy_bp;
 	int yy_act;
     
+        YYSTYPE * yylval;
+    
+        YYLTYPE * yylloc;
+    
+    yylval = yylval_param;
+
+    yylloc = yylloc_param;
+
 	if ( !(yy_init) )
 		{
 		(yy_init) = 1;
@@ -988,7 +1030,7 @@ YY_DECL
 	{
 #line 55 "ansi-c.l"
 
-#line 992 "lex.yy.c"
+#line 1034 "lex.yy.c"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -1587,7 +1629,7 @@ YY_RULE_SETUP
 #line 171 "ansi-c.l"
 ECHO;
 	YY_BREAK
-#line 1591 "lex.yy.c"
+#line 1633 "lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 

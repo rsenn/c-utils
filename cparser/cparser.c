@@ -34,7 +34,7 @@ main(int argc, char* argv[]) {
     buffer_puts(buffer_2, ")");
     buffer_putnlflush(buffer_2);
 
-  } while(token);*/
+  } while(token); */
 
   result = yyparse();
 
