@@ -147,7 +147,8 @@ struct YYLTYPE
 #endif
 
 
-
+extern YYSTYPE yylval;
+extern YYLTYPE yylloc;
 int yyparse (void);
 
 #endif /* !YY_YY_ANSI_C_TAB_H_INCLUDED  */

@@ -39,7 +39,7 @@ $(BUILDDIR)%.o: $(BUILDDIR)%.c
 	$(CC) $(CFLAGS) $(CPPFLAGS) -c -o $@ $<
 
 $(BUILDDIR)lex.yy.c $(BUILDDIR)lex.yy.h: ansi-c.l
-	($(if $(BUILDDIR),cd $(BUILDDIR) && ) flex -T -v    --bison-locations $(if $(BUILDDIR),../../)$<)
+	($(if $(BUILDDIR),cd $(BUILDDIR) && ) flex -T -v --yylineno --bison-locations $(if $(BUILDDIR),../../)$<)
 
 $(BUILDDIR)ansi-c.tab.c $(BUILDDIR)ansi-c.tab.h: ansi-c.y
 	($(if $(BUILDDIR),cd $(BUILDDIR) && ) bison   --defines --debug --report=all   $(if $(BUILDDIR),../../)$<)

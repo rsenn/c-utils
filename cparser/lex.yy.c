@@ -186,8 +186,27 @@ extern FILE *yyin, *yyout;
 #define EOB_ACT_END_OF_FILE 1
 #define EOB_ACT_LAST_MATCH 2
     
-    #define YY_LESS_LINENO(n)
-    #define YY_LINENO_REWIND_TO(ptr)
+    /* Note: We specifically omit the test for yy_rule_can_match_eol because it requires
+     *       access to the local variable yy_act. Since yyless() is a macro, it would break
+     *       existing scanners that call yyless() from OUTSIDE yylex.
+     *       One obvious solution it to make yy_act a global. I tried that, and saw
+     *       a 5% performance hit in a non-yylineno scanner, because yy_act is
+     *       normally declared as a register variable-- so it is not worth it.
+     */
+    #define  YY_LESS_LINENO(n) \
+            do { \
+                int yyl;\
+                for ( yyl = n; yyl < yyleng; ++yyl )\
+                    if ( yytext[yyl] == '\n' )\
+                        --yylineno;\
+            }while(0)
+    #define YY_LINENO_REWIND_TO(dst) \
+            do {\
+                const char *p;\
+                for ( p = yy_cp-1; p >= (dst); --p)\
+                    if ( *p == '\n' )\
+                        --yylineno;\
+            }while(0)
     
 /* Return all but the first "n" matched characters back to the input stream. */
 #define yyless(n) \
@@ -748,6 +767,16 @@ static const flex_int16_t yy_chk[775] =
       384,  384,  384,  384
     } ;
 
+/* Table of booleans, true if rule could match eol. */
+static const flex_int32_t yy_rule_can_match_eol[109] =
+    {   0,
+0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+    0, 0, 0, 0, 0, 0, 1, 0, 0,     };
+
 static yy_state_type yy_last_accepting_state;
 static char *yy_last_accepting_cpos;
 
@@ -777,6 +806,8 @@ yy_input(char* buf, size_t max_size) {
   if(ret > 0) {
     buffer_puts(buffer_2, "Read ");
     buffer_putlong(buffer_2, ret);
+    buffer_putc(buffer_2, '/');
+    buffer_putlong(buffer_2, max_size);
     buffer_putsflush(buffer_2, " chars\n");
   }
   return ret > 0 ? ret : YY_NULL;
@@ -792,8 +823,8 @@ extern int sym_type(const char*); /* returns type from symbol table */
 static void comment(void);
 static int check_type(void);
 
-#line 796 "lex.yy.c"
-#line 797 "lex.yy.c"
+#line 827 "lex.yy.c"
+#line 828 "lex.yy.c"
 
 #define INITIAL 0
 
@@ -1028,9 +1059,9 @@ YY_DECL
 		}
 
 	{
-#line 55 "ansi-c.l"
+#line 57 "ansi-c.l"
 
-#line 1034 "lex.yy.c"
+#line 1065 "lex.yy.c"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -1076,6 +1107,16 @@ yy_find_action:
 
 		YY_DO_BEFORE_ACTION;
 
+		if ( yy_act != YY_END_OF_BUFFER && yy_rule_can_match_eol[yy_act] )
+			{
+			int yyl;
+			for ( yyl = 0; yyl < yyleng; ++yyl )
+				if ( yytext[yyl] == '\n' )
+					
+    yylineno++;
+;
+			}
+
 do_action:	/* This label is used only to access EOF actions. */
 
 		switch ( yy_act )
@@ -1089,547 +1130,547 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 56 "ansi-c.l"
+#line 58 "ansi-c.l"
 { comment(); }
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 57 "ansi-c.l"
+#line 59 "ansi-c.l"
 { /* consume //-comment */ }
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 59 "ansi-c.l"
+#line 61 "ansi-c.l"
 { return(AUTO); }
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 60 "ansi-c.l"
+#line 62 "ansi-c.l"
 { return(BREAK); }
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 61 "ansi-c.l"
+#line 63 "ansi-c.l"
 { return(CASE); }
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 62 "ansi-c.l"
+#line 64 "ansi-c.l"
 { return(CHAR); }
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 63 "ansi-c.l"
+#line 65 "ansi-c.l"
 { return(CONST); }
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 64 "ansi-c.l"
+#line 66 "ansi-c.l"
 { return(CONTINUE); }
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 65 "ansi-c.l"
+#line 67 "ansi-c.l"
 { return(DEFAULT); }
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 66 "ansi-c.l"
+#line 68 "ansi-c.l"
 { return(DO); }
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 67 "ansi-c.l"
+#line 69 "ansi-c.l"
 { return(DOUBLE); }
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 68 "ansi-c.l"
+#line 70 "ansi-c.l"
 { return(ELSE); }
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 69 "ansi-c.l"
+#line 71 "ansi-c.l"
 { return(ENUM); }
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 70 "ansi-c.l"
+#line 72 "ansi-c.l"
 { return(EXTERN); }
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 71 "ansi-c.l"
+#line 73 "ansi-c.l"
 { return(FLOAT); }
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 72 "ansi-c.l"
+#line 74 "ansi-c.l"
 { return(FOR); }
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 73 "ansi-c.l"
+#line 75 "ansi-c.l"
 { return(GOTO); }
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 74 "ansi-c.l"
+#line 76 "ansi-c.l"
 { return(IF); }
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 75 "ansi-c.l"
+#line 77 "ansi-c.l"
 { return(INLINE); }
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 76 "ansi-c.l"
+#line 78 "ansi-c.l"
 { return(INT); }
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 77 "ansi-c.l"
+#line 79 "ansi-c.l"
 { return(LONG); }
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 78 "ansi-c.l"
+#line 80 "ansi-c.l"
 { return(REGISTER); }
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 79 "ansi-c.l"
+#line 81 "ansi-c.l"
 { return(RESTRICT); }
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 80 "ansi-c.l"
+#line 82 "ansi-c.l"
 { return(RETURN); }
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 81 "ansi-c.l"
+#line 83 "ansi-c.l"
 { return(SHORT); }
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 82 "ansi-c.l"
+#line 84 "ansi-c.l"
 { return(SIGNED); }
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 83 "ansi-c.l"
+#line 85 "ansi-c.l"
 { return(SIZEOF); }
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 84 "ansi-c.l"
+#line 86 "ansi-c.l"
 { return(STATIC); }
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 85 "ansi-c.l"
+#line 87 "ansi-c.l"
 { return(STRUCT); }
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 86 "ansi-c.l"
+#line 88 "ansi-c.l"
 { return(SWITCH); }
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 87 "ansi-c.l"
+#line 89 "ansi-c.l"
 { return(TYPEDEF); }
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 88 "ansi-c.l"
+#line 90 "ansi-c.l"
 { return(UNION); }
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 89 "ansi-c.l"
+#line 91 "ansi-c.l"
 { return(UNSIGNED); }
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 90 "ansi-c.l"
+#line 92 "ansi-c.l"
 { return(VOID); }
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-#line 91 "ansi-c.l"
+#line 93 "ansi-c.l"
 { return(VOLATILE); }
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
-#line 92 "ansi-c.l"
+#line 94 "ansi-c.l"
 { return(WHILE); }
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
-#line 93 "ansi-c.l"
+#line 95 "ansi-c.l"
 { return ALIGNAS; }
 	YY_BREAK
 case 38:
 YY_RULE_SETUP
-#line 94 "ansi-c.l"
+#line 96 "ansi-c.l"
 { return ALIGNOF; }
 	YY_BREAK
 case 39:
 YY_RULE_SETUP
-#line 95 "ansi-c.l"
+#line 97 "ansi-c.l"
 { return ATOMIC; }
 	YY_BREAK
 case 40:
 YY_RULE_SETUP
-#line 96 "ansi-c.l"
+#line 98 "ansi-c.l"
 { return BOOL; }
 	YY_BREAK
 case 41:
 YY_RULE_SETUP
-#line 97 "ansi-c.l"
+#line 99 "ansi-c.l"
 { return COMPLEX; }
 	YY_BREAK
 case 42:
 YY_RULE_SETUP
-#line 98 "ansi-c.l"
+#line 100 "ansi-c.l"
 { return GENERIC; }
 	YY_BREAK
 case 43:
 YY_RULE_SETUP
-#line 99 "ansi-c.l"
+#line 101 "ansi-c.l"
 { return IMAGINARY; }
 	YY_BREAK
 case 44:
 YY_RULE_SETUP
-#line 100 "ansi-c.l"
+#line 102 "ansi-c.l"
 { return NORETURN; }
 	YY_BREAK
 case 45:
 YY_RULE_SETUP
-#line 101 "ansi-c.l"
+#line 103 "ansi-c.l"
 { return STATIC_ASSERT; }
 	YY_BREAK
 case 46:
 YY_RULE_SETUP
-#line 102 "ansi-c.l"
+#line 104 "ansi-c.l"
 { return THREAD_LOCAL; }
 	YY_BREAK
 case 47:
 YY_RULE_SETUP
-#line 103 "ansi-c.l"
+#line 105 "ansi-c.l"
 { return FUNC_NAME; }
 	YY_BREAK
 case 48:
 YY_RULE_SETUP
-#line 105 "ansi-c.l"
+#line 107 "ansi-c.l"
 { return check_type(); }
 	YY_BREAK
 case 49:
 YY_RULE_SETUP
-#line 107 "ansi-c.l"
+#line 109 "ansi-c.l"
 { return I_CONSTANT; }
 	YY_BREAK
 case 50:
 YY_RULE_SETUP
-#line 108 "ansi-c.l"
+#line 110 "ansi-c.l"
 { return I_CONSTANT; }
 	YY_BREAK
 case 51:
 YY_RULE_SETUP
-#line 109 "ansi-c.l"
+#line 111 "ansi-c.l"
 { return I_CONSTANT; }
 	YY_BREAK
 case 52:
 YY_RULE_SETUP
-#line 110 "ansi-c.l"
+#line 112 "ansi-c.l"
 { return I_CONSTANT; }
 	YY_BREAK
 case 53:
 YY_RULE_SETUP
-#line 112 "ansi-c.l"
+#line 114 "ansi-c.l"
 { return F_CONSTANT; }
 	YY_BREAK
 case 54:
 YY_RULE_SETUP
-#line 113 "ansi-c.l"
+#line 115 "ansi-c.l"
 { return F_CONSTANT; }
 	YY_BREAK
 case 55:
 YY_RULE_SETUP
-#line 114 "ansi-c.l"
+#line 116 "ansi-c.l"
 { return F_CONSTANT; }
 	YY_BREAK
 case 56:
 YY_RULE_SETUP
-#line 115 "ansi-c.l"
+#line 117 "ansi-c.l"
 { return F_CONSTANT; }
 	YY_BREAK
 case 57:
 YY_RULE_SETUP
-#line 116 "ansi-c.l"
+#line 118 "ansi-c.l"
 { return F_CONSTANT; }
 	YY_BREAK
 case 58:
 YY_RULE_SETUP
-#line 117 "ansi-c.l"
+#line 119 "ansi-c.l"
 { return F_CONSTANT; }
 	YY_BREAK
 case 59:
 /* rule 59 can match eol */
 YY_RULE_SETUP
-#line 119 "ansi-c.l"
+#line 121 "ansi-c.l"
 { return STRING_LITERAL; }
 	YY_BREAK
 case 60:
 YY_RULE_SETUP
-#line 121 "ansi-c.l"
+#line 123 "ansi-c.l"
 { return ELLIPSIS; }
 	YY_BREAK
 case 61:
 YY_RULE_SETUP
-#line 122 "ansi-c.l"
+#line 124 "ansi-c.l"
 { return RIGHT_ASSIGN; }
 	YY_BREAK
 case 62:
 YY_RULE_SETUP
-#line 123 "ansi-c.l"
+#line 125 "ansi-c.l"
 { return LEFT_ASSIGN; }
 	YY_BREAK
 case 63:
 YY_RULE_SETUP
-#line 124 "ansi-c.l"
+#line 126 "ansi-c.l"
 { return ADD_ASSIGN; }
 	YY_BREAK
 case 64:
 YY_RULE_SETUP
-#line 125 "ansi-c.l"
+#line 127 "ansi-c.l"
 { return SUB_ASSIGN; }
 	YY_BREAK
 case 65:
 YY_RULE_SETUP
-#line 126 "ansi-c.l"
+#line 128 "ansi-c.l"
 { return MUL_ASSIGN; }
 	YY_BREAK
 case 66:
 YY_RULE_SETUP
-#line 127 "ansi-c.l"
+#line 129 "ansi-c.l"
 { return DIV_ASSIGN; }
 	YY_BREAK
 case 67:
 YY_RULE_SETUP
-#line 128 "ansi-c.l"
+#line 130 "ansi-c.l"
 { return MOD_ASSIGN; }
 	YY_BREAK
 case 68:
 YY_RULE_SETUP
-#line 129 "ansi-c.l"
+#line 131 "ansi-c.l"
 { return AND_ASSIGN; }
 	YY_BREAK
 case 69:
 YY_RULE_SETUP
-#line 130 "ansi-c.l"
+#line 132 "ansi-c.l"
 { return XOR_ASSIGN; }
 	YY_BREAK
 case 70:
 YY_RULE_SETUP
-#line 131 "ansi-c.l"
+#line 133 "ansi-c.l"
 { return OR_ASSIGN; }
 	YY_BREAK
 case 71:
 YY_RULE_SETUP
-#line 132 "ansi-c.l"
+#line 134 "ansi-c.l"
 { return RIGHT_OP; }
 	YY_BREAK
 case 72:
 YY_RULE_SETUP
-#line 133 "ansi-c.l"
+#line 135 "ansi-c.l"
 { return LEFT_OP; }
 	YY_BREAK
 case 73:
 YY_RULE_SETUP
-#line 134 "ansi-c.l"
+#line 136 "ansi-c.l"
 { return INC_OP; }
 	YY_BREAK
 case 74:
 YY_RULE_SETUP
-#line 135 "ansi-c.l"
+#line 137 "ansi-c.l"
 { return DEC_OP; }
 	YY_BREAK
 case 75:
 YY_RULE_SETUP
-#line 136 "ansi-c.l"
+#line 138 "ansi-c.l"
 { return PTR_OP; }
 	YY_BREAK
 case 76:
 YY_RULE_SETUP
-#line 137 "ansi-c.l"
+#line 139 "ansi-c.l"
 { return AND_OP; }
 	YY_BREAK
 case 77:
 YY_RULE_SETUP
-#line 138 "ansi-c.l"
+#line 140 "ansi-c.l"
 { return OR_OP; }
 	YY_BREAK
 case 78:
 YY_RULE_SETUP
-#line 139 "ansi-c.l"
+#line 141 "ansi-c.l"
 { return LE_OP; }
 	YY_BREAK
 case 79:
 YY_RULE_SETUP
-#line 140 "ansi-c.l"
+#line 142 "ansi-c.l"
 { return GE_OP; }
 	YY_BREAK
 case 80:
 YY_RULE_SETUP
-#line 141 "ansi-c.l"
+#line 143 "ansi-c.l"
 { return EQ_OP; }
 	YY_BREAK
 case 81:
 YY_RULE_SETUP
-#line 142 "ansi-c.l"
+#line 144 "ansi-c.l"
 { return NE_OP; }
 	YY_BREAK
 case 82:
 YY_RULE_SETUP
-#line 143 "ansi-c.l"
+#line 145 "ansi-c.l"
 { return ';'; }
 	YY_BREAK
 case 83:
 YY_RULE_SETUP
-#line 144 "ansi-c.l"
+#line 146 "ansi-c.l"
 { return '{'; }
 	YY_BREAK
 case 84:
 YY_RULE_SETUP
-#line 145 "ansi-c.l"
+#line 147 "ansi-c.l"
 { return '}'; }
 	YY_BREAK
 case 85:
 YY_RULE_SETUP
-#line 146 "ansi-c.l"
+#line 148 "ansi-c.l"
 { return ','; }
 	YY_BREAK
 case 86:
 YY_RULE_SETUP
-#line 147 "ansi-c.l"
+#line 149 "ansi-c.l"
 { return ':'; }
 	YY_BREAK
 case 87:
 YY_RULE_SETUP
-#line 148 "ansi-c.l"
+#line 150 "ansi-c.l"
 { return '='; }
 	YY_BREAK
 case 88:
 YY_RULE_SETUP
-#line 149 "ansi-c.l"
+#line 151 "ansi-c.l"
 { return '('; }
 	YY_BREAK
 case 89:
 YY_RULE_SETUP
-#line 150 "ansi-c.l"
+#line 152 "ansi-c.l"
 { return ')'; }
 	YY_BREAK
 case 90:
 YY_RULE_SETUP
-#line 151 "ansi-c.l"
+#line 153 "ansi-c.l"
 { return '['; }
 	YY_BREAK
 case 91:
 YY_RULE_SETUP
-#line 152 "ansi-c.l"
+#line 154 "ansi-c.l"
 { return ']'; }
 	YY_BREAK
 case 92:
 YY_RULE_SETUP
-#line 153 "ansi-c.l"
+#line 155 "ansi-c.l"
 { return '.'; }
 	YY_BREAK
 case 93:
 YY_RULE_SETUP
-#line 154 "ansi-c.l"
+#line 156 "ansi-c.l"
 { return '&'; }
 	YY_BREAK
 case 94:
 YY_RULE_SETUP
-#line 155 "ansi-c.l"
+#line 157 "ansi-c.l"
 { return '!'; }
 	YY_BREAK
 case 95:
 YY_RULE_SETUP
-#line 156 "ansi-c.l"
+#line 158 "ansi-c.l"
 { return '~'; }
 	YY_BREAK
 case 96:
 YY_RULE_SETUP
-#line 157 "ansi-c.l"
+#line 159 "ansi-c.l"
 { return '-'; }
 	YY_BREAK
 case 97:
 YY_RULE_SETUP
-#line 158 "ansi-c.l"
+#line 160 "ansi-c.l"
 { return '+'; }
 	YY_BREAK
 case 98:
 YY_RULE_SETUP
-#line 159 "ansi-c.l"
+#line 161 "ansi-c.l"
 { return '*'; }
 	YY_BREAK
 case 99:
 YY_RULE_SETUP
-#line 160 "ansi-c.l"
+#line 162 "ansi-c.l"
 { return '/'; }
 	YY_BREAK
 case 100:
 YY_RULE_SETUP
-#line 161 "ansi-c.l"
+#line 163 "ansi-c.l"
 { return '%'; }
 	YY_BREAK
 case 101:
 YY_RULE_SETUP
-#line 162 "ansi-c.l"
+#line 164 "ansi-c.l"
 { return '<'; }
 	YY_BREAK
 case 102:
 YY_RULE_SETUP
-#line 163 "ansi-c.l"
+#line 165 "ansi-c.l"
 { return '>'; }
 	YY_BREAK
 case 103:
 YY_RULE_SETUP
-#line 164 "ansi-c.l"
+#line 166 "ansi-c.l"
 { return '^'; }
 	YY_BREAK
 case 104:
 YY_RULE_SETUP
-#line 165 "ansi-c.l"
+#line 167 "ansi-c.l"
 { return '|'; }
 	YY_BREAK
 case 105:
 YY_RULE_SETUP
-#line 166 "ansi-c.l"
+#line 168 "ansi-c.l"
 { return '?'; }
 	YY_BREAK
 case 106:
 /* rule 106 can match eol */
 YY_RULE_SETUP
-#line 168 "ansi-c.l"
+#line 170 "ansi-c.l"
 { /* whitespace separates tokens */ }
 	YY_BREAK
 case 107:
 YY_RULE_SETUP
-#line 169 "ansi-c.l"
+#line 171 "ansi-c.l"
 { /* discard bad characters */ }
 	YY_BREAK
 case 108:
 YY_RULE_SETUP
-#line 171 "ansi-c.l"
+#line 173 "ansi-c.l"
 ECHO;
 	YY_BREAK
-#line 1633 "lex.yy.c"
+#line 1674 "lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -1997,6 +2038,10 @@ static int yy_get_next_buffer (void)
 
 	*--yy_cp = (char) c;
 
+    if ( c == '\n' ){
+        --yylineno;
+    }
+
 	(yytext_ptr) = yy_bp;
 	(yy_hold_char) = *yy_cp;
 	(yy_c_buf_p) = yy_cp;
@@ -2073,6 +2118,11 @@ static int yy_get_next_buffer (void)
 	c = *(unsigned char *) (yy_c_buf_p);	/* cast for 8-bit char's */
 	*(yy_c_buf_p) = '\0';	/* preserve yytext */
 	(yy_hold_char) = *++(yy_c_buf_p);
+
+	if ( c == '\n' )
+		
+    yylineno++;
+;
 
 	return c;
 }
@@ -2540,6 +2590,9 @@ static int yy_init_globals (void)
      * This function is called from yylex_destroy(), so don't allocate here.
      */
 
+    /* We do not touch yylineno unless the option is enabled. */
+    yylineno =  1;
+    
     (yy_buffer_stack) = NULL;
     (yy_buffer_stack_top) = 0;
     (yy_buffer_stack_max) = 0;
@@ -2634,7 +2687,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 171 "ansi-c.l"
+#line 173 "ansi-c.l"
 
 
 int yywrap(void)        /* called at end of input */

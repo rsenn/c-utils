@@ -1,15 +1,29 @@
 %locations 
-%define api.pure full
+%verbose
+
+//%define api.pure full
+%define parse.trace
 
 %{
 #define YYERROR_VERBOSE 1
 #define YYDEBUG 1
 
+#include <stdio.h>
 
 extern const char* input_file;
 
 extern int yylex ();
 extern void yyerror();
+
+typedef int YYSTYPE;
+typedef enum  { TOK1} yytoken_kind_t;
+
+static void print_token_value (FILE *file, int type, YYSTYPE value);
+
+#undef YYPRINT
+#define YYPRINT(File, Type, Value)            \
+  print_token_value (File, Type, Value)
+
 %}
 
 %token	IDENTIFIER I_CONSTANT F_CONSTANT STRING_LITERAL FUNC_NAME SIZEOF
@@ -63,6 +77,7 @@ generic_assoc_list
 	: generic_association
 	| generic_assoc_list ',' generic_association
 	;
+
 
 generic_association
 	: type_name ':' assignment_expression
@@ -556,6 +571,14 @@ yyerror(YYLTYPE* locp, char const* msg) {
   buffer_putnlflush(buffer_2);
 }
 
+static void
+print_token_value (FILE *file, int kind, YYSTYPE value)
+{
+  //if (kind == VAR)
+//    fprintf (file, "%s", value.tptr->name);
+  //else if (kind == NUM)
+    fprintf (file, "%d\n", value);
+}
 
 const char*
 yytokname(int tok) {

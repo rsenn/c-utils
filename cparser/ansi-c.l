@@ -35,6 +35,8 @@ yy_input(char* buf, size_t max_size) {
   if(ret > 0) {
     buffer_puts(buffer_2, "Read ");
     buffer_putlong(buffer_2, ret);
+    buffer_putc(buffer_2, '/');
+    buffer_putlong(buffer_2, max_size);
     buffer_putsflush(buffer_2, " chars\n");
   }
   return ret > 0 ? ret : YY_NULL;

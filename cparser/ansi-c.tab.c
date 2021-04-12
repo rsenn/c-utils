@@ -54,7 +54,7 @@
 #define YYSKELETON_NAME "yacc.c"
 
 /* Pure parsers.  */
-#define YYPURE 2
+#define YYPURE 0
 
 /* Push parsers.  */
 #define YYPUSH 0
@@ -66,18 +66,29 @@
 
 
 /* First part of user prologue.  */
-#line 4 "ansi-c.y"
+#line 7 "ansi-c.y"
 
 #define YYERROR_VERBOSE 1
 #define YYDEBUG 1
 
+#include <stdio.h>
 
 extern const char* input_file;
 
 extern int yylex ();
 extern void yyerror();
 
-#line 81 "ansi-c.tab.c"
+typedef int YYSTYPE;
+typedef enum  { TOK1} yytoken_kind_t;
+
+static void print_token_value (FILE *file, int type, YYSTYPE value);
+
+#undef YYPRINT
+#define YYPRINT(File, Type, Value)            \
+  print_token_value (File, Type, Value)
+
+
+#line 92 "ansi-c.tab.c"
 
 # ifndef YY_CAST
 #  ifdef __cplusplus
@@ -223,7 +234,8 @@ struct YYLTYPE
 #endif
 
 
-
+extern YYSTYPE yylval;
+extern YYLTYPE yylloc;
 int yyparse (void);
 
 #endif /* !YY_YY_ANSI_C_TAB_H_INCLUDED  */
@@ -599,34 +611,34 @@ static const yytype_int8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_int16 yyrline[] =
 {
-       0,    36,    36,    37,    38,    39,    40,    44,    45,    46,
-      50,    54,    55,    59,    63,    64,    68,    69,    73,    74,
-      75,    76,    77,    78,    79,    80,    81,    82,    86,    87,
-      91,    92,    93,    94,    95,    96,    97,   101,   102,   103,
-     104,   105,   106,   110,   111,   115,   116,   117,   118,   122,
-     123,   124,   128,   129,   130,   134,   135,   136,   137,   138,
-     142,   143,   144,   148,   149,   153,   154,   158,   159,   163,
-     164,   168,   169,   173,   174,   178,   179,   183,   184,   185,
-     186,   187,   188,   189,   190,   191,   192,   193,   197,   198,
-     202,   206,   207,   208,   212,   213,   214,   215,   216,   217,
-     218,   219,   220,   221,   225,   226,   230,   231,   235,   236,
-     237,   238,   239,   240,   244,   245,   246,   247,   248,   249,
-     250,   251,   252,   253,   254,   255,   256,   257,   258,   259,
-     263,   264,   265,   269,   270,   274,   275,   279,   280,   281,
-     285,   286,   287,   288,   292,   293,   297,   298,   299,   303,
-     304,   305,   306,   307,   311,   312,   316,   317,   321,   325,
-     326,   327,   328,   332,   333,   337,   338,   342,   343,   347,
-     348,   349,   350,   351,   352,   353,   354,   355,   356,   357,
-     358,   359,   360,   364,   365,   366,   367,   371,   372,   377,
-     378,   382,   383,   387,   388,   389,   393,   394,   398,   399,
-     403,   404,   405,   409,   410,   411,   412,   413,   414,   415,
-     416,   417,   418,   419,   420,   421,   422,   423,   424,   425,
-     426,   427,   428,   429,   433,   434,   435,   439,   440,   441,
-     442,   446,   450,   451,   455,   456,   460,   464,   465,   466,
-     467,   468,   469,   473,   474,   475,   479,   480,   484,   485,
-     489,   490,   494,   495,   499,   500,   501,   505,   506,   507,
-     508,   509,   510,   514,   515,   516,   517,   518,   522,   523,
-     527,   528,   532,   533,   537,   538
+       0,    50,    50,    51,    52,    53,    54,    58,    59,    60,
+      64,    68,    69,    73,    77,    78,    83,    84,    88,    89,
+      90,    91,    92,    93,    94,    95,    96,    97,   101,   102,
+     106,   107,   108,   109,   110,   111,   112,   116,   117,   118,
+     119,   120,   121,   125,   126,   130,   131,   132,   133,   137,
+     138,   139,   143,   144,   145,   149,   150,   151,   152,   153,
+     157,   158,   159,   163,   164,   168,   169,   173,   174,   178,
+     179,   183,   184,   188,   189,   193,   194,   198,   199,   200,
+     201,   202,   203,   204,   205,   206,   207,   208,   212,   213,
+     217,   221,   222,   223,   227,   228,   229,   230,   231,   232,
+     233,   234,   235,   236,   240,   241,   245,   246,   250,   251,
+     252,   253,   254,   255,   259,   260,   261,   262,   263,   264,
+     265,   266,   267,   268,   269,   270,   271,   272,   273,   274,
+     278,   279,   280,   284,   285,   289,   290,   294,   295,   296,
+     300,   301,   302,   303,   307,   308,   312,   313,   314,   318,
+     319,   320,   321,   322,   326,   327,   331,   332,   336,   340,
+     341,   342,   343,   347,   348,   352,   353,   357,   358,   362,
+     363,   364,   365,   366,   367,   368,   369,   370,   371,   372,
+     373,   374,   375,   379,   380,   381,   382,   386,   387,   392,
+     393,   397,   398,   402,   403,   404,   408,   409,   413,   414,
+     418,   419,   420,   424,   425,   426,   427,   428,   429,   430,
+     431,   432,   433,   434,   435,   436,   437,   438,   439,   440,
+     441,   442,   443,   444,   448,   449,   450,   454,   455,   456,
+     457,   461,   465,   466,   470,   471,   475,   479,   480,   481,
+     482,   483,   484,   488,   489,   490,   494,   495,   499,   500,
+     504,   505,   509,   510,   514,   515,   516,   520,   521,   522,
+     523,   524,   525,   529,   530,   531,   532,   533,   537,   538,
+     542,   543,   547,   548,   552,   553
 };
 #endif
 
@@ -1497,7 +1509,7 @@ static const yytype_int8 yyr2[] =
       }                                                           \
     else                                                          \
       {                                                           \
-        yyerror (&yylloc, YY_("syntax error: cannot back up")); \
+        yyerror (YY_("syntax error: cannot back up")); \
         YYERROR;                                                  \
       }                                                           \
   while (0)
@@ -1978,6 +1990,21 @@ yydestruct (const char *yymsg, int yytype, YYSTYPE *yyvaluep, YYLTYPE *yylocatio
 
 
 
+/* The lookahead symbol.  */
+int yychar;
+
+/* The semantic value of the lookahead symbol.  */
+YYSTYPE yylval;
+/* Location data for the lookahead symbol.  */
+YYLTYPE yylloc
+# if defined YYLTYPE_IS_TRIVIAL && YYLTYPE_IS_TRIVIAL
+  = { 1, 1, 1, 1 }
+# endif
+;
+/* Number of syntax errors so far.  */
+int yynerrs;
+
+
 /*----------.
 | yyparse.  |
 `----------*/
@@ -1985,27 +2012,6 @@ yydestruct (const char *yymsg, int yytype, YYSTYPE *yyvaluep, YYLTYPE *yylocatio
 int
 yyparse (void)
 {
-/* The lookahead symbol.  */
-int yychar;
-
-
-/* The semantic value of the lookahead symbol.  */
-/* Default value used for initialization, for pacifying older GCCs
-   or non-GCC compilers.  */
-YY_INITIAL_VALUE (static YYSTYPE yyval_default;)
-YYSTYPE yylval YY_INITIAL_VALUE (= yyval_default);
-
-/* Location data for the lookahead symbol.  */
-static YYLTYPE yyloc_default
-# if defined YYLTYPE_IS_TRIVIAL && YYLTYPE_IS_TRIVIAL
-  = { 1, 1, 1, 1 }
-# endif
-;
-YYLTYPE yylloc = yyloc_default;
-
-    /* Number of syntax errors so far.  */
-    int yynerrs;
-
     yy_state_fast_t yystate;
     /* Number of tokens to shift before error messages enabled.  */
     int yyerrstatus;
@@ -2186,7 +2192,7 @@ yybackup:
   if (yychar == YYEMPTY)
     {
       YYDPRINTF ((stderr, "Reading a token: "));
-      yychar = yylex (&yylval, &yylloc);
+      yychar = yylex ();
     }
 
   if (yychar <= YYEOF)
@@ -2266,7 +2272,7 @@ yyreduce:
   switch (yyn)
     {
 
-#line 2270 "ansi-c.tab.c"
+#line 2276 "ansi-c.tab.c"
 
       default: break;
     }
@@ -2317,7 +2323,7 @@ yyerrlab:
     {
       ++yynerrs;
 #if ! YYERROR_VERBOSE
-      yyerror (&yylloc, YY_("syntax error"));
+      yyerror (YY_("syntax error"));
 #else
 # define YYSYNTAX_ERROR yysyntax_error (&yymsg_alloc, &yymsg, \
                                         yyssp, yytoken)
@@ -2344,7 +2350,7 @@ yyerrlab:
                 yymsgp = yymsg;
               }
           }
-        yyerror (&yylloc, yymsgp);
+        yyerror (yymsgp);
         if (yysyntax_error_status == 2)
           goto yyexhaustedlab;
       }
@@ -2466,7 +2472,7 @@ yyabortlab:
 | yyexhaustedlab -- memory exhaustion comes here.  |
 `-------------------------------------------------*/
 yyexhaustedlab:
-  yyerror (&yylloc, YY_("memory exhausted"));
+  yyerror (YY_("memory exhausted"));
   yyresult = 2;
   /* Fall through.  */
 #endif
@@ -2504,7 +2510,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 541 "ansi-c.y"
+#line 556 "ansi-c.y"
 
 
 #include "../lib/buffer.h"
@@ -2523,6 +2529,14 @@ yyerror(YYLTYPE* locp, char const* msg) {
   buffer_putnlflush(buffer_2);
 }
 
+static void
+print_token_value (FILE *file, int kind, YYSTYPE value)
+{
+  //if (kind == VAR)
+//    fprintf (file, "%s", value.tptr->name);
+  //else if (kind == NUM)
+    fprintf (file, "%d\n", value);
+}
 
 const char*
 yytokname(int tok) {

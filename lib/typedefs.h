@@ -9,7 +9,7 @@
 #include <stddef.h>
 
 /* for time_t */
-#include <time.h>
+//#include <time.h>
 
 #ifdef __LCC__
 #include <stdint.h>
