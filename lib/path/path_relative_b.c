@@ -27,12 +27,12 @@ path_relative_b(const char* s1, size_t n1, const char* s2, size_t n2, stralloc* 
     n2 -= i;
   }
 
-  i = path_skip_separator(s1,n1);
+  i = path_skip_separator(s1, n1);
 
-  stralloc_catb(out, s1+i, n1-i);
+  stralloc_catb(out, s1 + i, n1 - i);
 
   if(out->len == 0)
-    stralloc_catc(out,'.');
+    stralloc_catc(out, '.');
 
   stralloc_nul(out);
   return 1;

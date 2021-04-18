@@ -3,7 +3,7 @@
 
 SizePair
 path_common_prefix(const char* s1, size_t n1, const char* s2, size_t n2) {
-    SizePair r;
+  SizePair r;
 
   for(r.sz1 = 0, r.sz2 = 0; r.sz1 != n1 && r.sz2 != n2;) {
     size_t i1, i2;
