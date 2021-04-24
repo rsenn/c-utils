@@ -558,7 +558,7 @@ message(STATUS "LIBPTHREAD = ${LIBPTHREAD}")
 
 include(${CMAKE_CURRENT_SOURCE_DIR}/build/cmake/FindStandardMathLibrary.cmake)
 
-check_library_exists(m exp2 "" HAVE_MATH_LIB) 
+check_library_exists(m exp2 "" HAVE_MATH_LIB)
 
 if(HAVE_MATH_LIB)
   set(LIBMATH m CACHE STRING "Math library" FORCE)
@@ -657,7 +657,7 @@ set(MUX_ALL
     KQUEUE DEVPOLL EPOLL
     # SIGIO
     POLL SELECT)
-set(MUX_USE 
+set(MUX_USE
   #LINUX_AIO
   KQUEUE EPOLL DEVPOLL SIGIO POLL SELECT
  )
@@ -857,7 +857,7 @@ add_program(eagle-to-svg xml stralloc buffer strlist array byte cb cbmap fmt has
 add_program(elf64list buffer elf mmap uint16 uint32 uint64)
 add_program(elflist strlist buffer alloc errmsg unix elf mmap str)
 add_program(elfwrsec buffer alloc elf mmap)
-add_program(genmakefile sig set case errmsg strarray slist rdir dir path strlist hashmap hmap stralloc buffer mmap unix open scan fmt byte str array safemult alloc)
+add_program(genmakefile env sig set case errmsg strarray slist rdir dir path strlist hashmap hmap stralloc buffer mmap unix open scan fmt byte str array safemult alloc)
 add_program(piccfg ihex errmsg strarray slist rdir dir path strlist hashmap hmap stralloc buffer mmap unix open scan fmt byte str array safemult alloc)
 add_program(hexedit stralloc buffer array io errmsg mmap open path scan uint64 unix ${ZLIB_LIBRARY})
 set(httptest_SOURCES uri.c uri.h)

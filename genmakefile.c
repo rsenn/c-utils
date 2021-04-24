@@ -9,6 +9,7 @@
 #include "mplab.h"
 #include "lib/unix.h"
 #include "lib/sig.h"
+#include "lib/env.h"
 
 extern buffer* unix_optbuf;
 static const char tok_charset[] = {'_', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O',
@@ -46,6 +47,7 @@ static int batchmode;
 static linklib_fmt* format_linklib_fn;
 static int inst_bins, inst_libs;
 static int cygming;
+static strlist system_path;
 
 set_t srcs;
 exts_t exts = {DEFAULT_OBJEXT, DEFAULT_LIBEXT, DEFAULT_EXEEXT, DEFAULT_PPSEXT};
@@ -1371,6 +1373,28 @@ is_object_sa(stralloc* sa) {
 int
 is_object(const char* s) {
   return is_s(s, &is_object_b);
+}
+
+int
+is_command_b(const char* filename, size_t len) {
+  size_t n;
+  const char* x;
+  stralloc path;
+  stralloc_init(&path);
+
+  strlist_foreach(&system_path, x, n) {
+    stralloc_copyb(&path, x, n);
+    stralloc_catc(&path, PATHSEP_C);
+    stralloc_catb(&path, filename, len);
+    stralloc_nul(&path);
+
+    if(path_exists(path.s)) {
+      stralloc_free(&path);
+      return 1;
+    }
+  }
+  stralloc_free(&path);
+  return 0;
 }
 
 /**
@@ -3340,6 +3364,9 @@ input_command(stralloc* cmd, char* argv[]) {
   strlist_init(&files, ' ');
   strlist_init(&flags, ' ');
 
+  if(!is_command_b(cmd->s, cmd->len))
+    return 0;
+
   for(p = argv; (len = *p ? str_len(*p) : 0, x = *p); p++) {
     int src = is_source_b(x, len);
     if(byte_equal(x, 2, "-c") || src) {
@@ -5236,6 +5263,11 @@ main(int argc, char* argv[]) {
 
   pathsep_args = WINDOWS_NATIVE ? '\\' : '/';
   pathsep_make = cfg.sys.type == NTOS ? '\\' : '/';
+
+  if((s = env_get("PATH")) == 0)
+    s = "/usr/local/bin:/usr/bin:/bin";
+
+  path_split(s, &system_path);
 
   strlist_init(&vpath, ' ');
 
