@@ -143,7 +143,7 @@ pathtool(const char* arg, stralloc* sa) {
 #endif
 
     path_relative_b(path.sa.s, path.sa.len, relative_to.sa.s, relative_to.sa.len, sa);
-    //path_relative(path.sa.s, relative_to.sa.s, sa);
+    // path_relative(path.sa.s, relative_to.sa.s, sa);
 
     /*
     strlist rel;
@@ -307,27 +307,27 @@ main(int argc, char* argv[]) {
 
     stralloc_copys(&relative_to.sa, rel_to);
 
-//    char tmpsep = separator[0];
-//    stralloc rel;
+    //    char tmpsep = separator[0];
+    //    stralloc rel;
 
-//    stralloc_init(&rel);
-//    absolute = 1;
+    //    stralloc_init(&rel);
+    //    absolute = 1;
 
-//    separator[0] = PATHSEP_C;
+    //    separator[0] = PATHSEP_C;
 
-//    if(pathtool(rel_to, &rel)) {
-//      stralloc_copy(&relative_to.sa, &rel);
-//      relative_to.sep = separator[0];
-//    } else {
-//      errmsg_warnsys(str_basename(argv[0]), ": relative to", NULL);
-//    }
+    //    if(pathtool(rel_to, &rel)) {
+    //      stralloc_copy(&relative_to.sa, &rel);
+    //      relative_to.sep = separator[0];
+    //    } else {
+    //      errmsg_warnsys(str_basename(argv[0]), ": relative to", NULL);
+    //    }
 
 #ifdef DEBUG_OUTPUT
     buffer_puts(buffer_2, "relative-to: ");
     buffer_putsa(buffer_2, &relative_to.sa);
     buffer_putnlflush(buffer_2);
 #endif
-   // separator[0] = tmpsep;
+    // separator[0] = tmpsep;
   }
 
   while(optind < argc) {
