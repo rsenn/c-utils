@@ -13,8 +13,8 @@ include(CheckIncludeFile)
 include(CheckCCompilerFlag)
 include(CheckTypeSize)
 
-include(${CMAKE_CURRENT_SOURCE_DIR}/build/cmake/Functions.cmake)
-include(${CMAKE_CURRENT_SOURCE_DIR}/build/cmake/Macros.cmake)
+include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/Functions.cmake)
+include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/Macros.cmake)
 
 if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
   set(CMAKE_INSTALL_PREFIX "/usr/local" CACHE PATH "Installation prefix" FORCE)
@@ -556,7 +556,7 @@ if(HAVE_PTHREAD_LIB)
 endif()
 message(STATUS "LIBPTHREAD = ${LIBPTHREAD}")
 
-include(${CMAKE_CURRENT_SOURCE_DIR}/build/cmake/FindStandardMathLibrary.cmake)
+include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/FindStandardMathLibrary.cmake)
 
 check_library_exists(m exp2 "" HAVE_MATH_LIB)
 
@@ -574,8 +574,8 @@ endif(NOT LINK_STATIC)
 
 # include(${CMAKE_SOURCE_DIR}/FindZlib.cmake) include(${CMAKE_SOURCE_DIR}/FindBZip2.cmake) include(${CMAKE_SOURCE_DIR}/FindLibLZMA.cmake)
 
-include(${CMAKE_CURRENT_SOURCE_DIR}/build/cmake/CheckInline.cmake)
-include(${CMAKE_CURRENT_SOURCE_DIR}/build/cmake/Profile.cmake)
+include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/CheckInline.cmake)
+include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/Profile.cmake)
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
   debug_option(OUTPUT "Output verbose messages")
@@ -602,13 +602,13 @@ foreach(CompilerFlag ${CompilerFlags})
   # message("${CompilerFlag}: ${${CompilerFlag}}")
 endforeach()
 
-include(${CMAKE_CURRENT_SOURCE_DIR}/build/cmake/Werror.cmake)
+include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/Werror.cmake)
 
-include(${CMAKE_CURRENT_SOURCE_DIR}/build/cmake/CheckBrotli.cmake)
-include(${CMAKE_CURRENT_SOURCE_DIR}/build/cmake/CheckBZip2.cmake)
-include(${CMAKE_CURRENT_SOURCE_DIR}/build/cmake/CheckLZMA.cmake)
-include(${CMAKE_CURRENT_SOURCE_DIR}/build/cmake/CheckOpenSSL.cmake)
-include(${CMAKE_CURRENT_SOURCE_DIR}/build/cmake/CheckZlib.cmake)
+include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/CheckBrotli.cmake)
+include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/CheckBZip2.cmake)
+include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/CheckLZMA.cmake)
+include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/CheckOpenSSL.cmake)
+include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/CheckZlib.cmake)
 
 set(CMAKE_REQUIRED_DEFINITIONS)
 set(CMAKE_REQUIRED_INCLUDES "poll.h")
@@ -764,11 +764,11 @@ invoption(BUILD_SSL "build 3rdparty openssl" OPENSSL_FOUND)
 
 find_program(TAR NAMES bsdtar tar gtar gnutar star)
 
-include(${CMAKE_CURRENT_SOURCE_DIR}/build/cmake/BuildBrotli.cmake)
-include(${CMAKE_CURRENT_SOURCE_DIR}/build/cmake/BuildBZip2.cmake)
-include(${CMAKE_CURRENT_SOURCE_DIR}/build/cmake/BuildLZMA.cmake)
-include(${CMAKE_CURRENT_SOURCE_DIR}/build/cmake/BuildSSL.cmake)
-include(${CMAKE_CURRENT_SOURCE_DIR}/build/cmake/BuildZlib.cmake)
+include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/BuildBrotli.cmake)
+include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/BuildBZip2.cmake)
+include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/BuildLZMA.cmake)
+include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/BuildSSL.cmake)
+include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/BuildZlib.cmake)
 
 # unset(TLS_LIBRARIES) unset(TLS_LIBRARIES CACHE) set(TLS_LIBRARIES "")
 #
@@ -813,7 +813,7 @@ endif(LINK_STATIC)
 
 add_definitions(-DHAVE_CONFIG_H=1)
 include_directories("${CMAKE_CURRENT_BINARY_DIR}")
-configure_file("${CMAKE_CURRENT_SOURCE_DIR}/build/cmake/config.h.cmake" "${CMAKE_CURRENT_BINARY_DIR}/config.h")
+configure_file("${CMAKE_CURRENT_SOURCE_DIR}/cmake/config.h.cmake" "${CMAKE_CURRENT_BINARY_DIR}/config.h")
 
 # ------------------------------------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------------------------------------

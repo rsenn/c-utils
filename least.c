@@ -366,17 +366,14 @@ jump_command(int64 to) {
 }
 
 void
-
 read_goto(const char* cmd) {
   double to;
   size_t pos;
   if((pos = scan_double(cmd, &to))) {
     if(cmd[pos] == '%') {
       to = (line_range() - 1) * to / 100;
-
       to = ((int)to * display_rows) / display_rows;
     }
-
     jump_command((int)to);
   }
 }
@@ -508,17 +505,17 @@ read_command(void) {
     }
 
     terminal_cursor_horizontal_absolute(command_buf.len + 2);
-    //   terminal_erase_in_line(0);
+    // terminal_erase_in_line(0);
 
     // terminal_cursor_position(display_rows+1, command_buf.len+1);
 
-    /*  terminal_erase_in_line(2);
+    /*terminal_erase_in_line(2);
     terminal_cursor_horizontal_absolute(1);
     buffer_puts(buffer_1,  command_prefixes[command_mode & 0x03]);
         buffer_putsa(buffer_1, &command_buf);*/
     char buf[1024];
 
-    /*     buffer_put(buffer_1, buf, fmt_hexbs(buf, command_buf.s,
+    /*buffer_put(buffer_1, buf, fmt_hexbs(buf, command_buf.s,
       command_buf.len)); buffer_flush(buffer_1);*/
 
     if(command_mode >= 2) {

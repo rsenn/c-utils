@@ -387,6 +387,8 @@ elf_dump_segments(range map) {
   if(range_size(&segments) == 0)
     return;
 
+  putstr(buffer_1, "offset", ELF_BITS(map.start) / 4);
+  buffer_putnspace(buffer_1, 3);
   putstr(buffer_1, "paddr", ELF_BITS(map.start) / 4);
   buffer_putnspace(buffer_1, 3);
   putstr(buffer_1, "vaddr", ELF_BITS(map.start) / 4);
@@ -399,6 +401,7 @@ elf_dump_segments(range map) {
   buffer_putnlflush(buffer_1);
 
   range_foreach(&segments, segment) {
+    uint64 offset = ELF_GET(map.start, segment, phdr, p_paddr);
     uint64 paddr = ELF_GET(map.start, segment, phdr, p_paddr);
     uint64 vaddr = ELF_GET(map.start, segment, phdr, p_vaddr);
     uint64 filesz = ELF_GET(map.start, segment, phdr, p_filesz);
@@ -407,6 +410,8 @@ elf_dump_segments(range map) {
 
     if(!paddr && !vaddr && !filesz)
       continue;
+    putnum(buffer_1, offset, col_width);
+    buffer_putspace(buffer_1);
     putnum(buffer_1, paddr, col_width);
     buffer_putspace(buffer_1);
     putnum(buffer_1, vaddr, col_width);
@@ -437,16 +442,11 @@ usage(char* av0) {
                        "\n",
                        "Options:\n",
                        "\n",
-                       "  -h, --help              Show "
-                       "this help\n",
-                       "  -D, --defined           List "
-                       "defined symbols\n",
-                       "  -U, --undefined         List "
-                       "undefined symbols\n",
-                       "  -F, --file-header       Dump "
-                       "file header\n",
-                       "  -S, --sections          Dump "
-                       "sections\n",
+                       "  -h, --help              Show this help\n",
+                       "  -D, --defined           List defined symbols\n",
+                       "  -U, --undefined         List undefined symbols\n",
+                       "  -F, --file-header       Dump file header\n",
+                       "  -S, --sections          Dump sections\n",
                        "\n",
                        0);
   buffer_flush(buffer_1);

@@ -1288,6 +1288,10 @@ const char* elf_section_typename(uint32);
 range elf_section(void*, void* shdr);
 const char* elf_shstrtab(void*);
 range elf_symbol_r(void*, void* sym);
+void* elf_find_segment_offset(range map, uint64 offs);
+void* elf_find_segment_vaddr(range map, uint64 addr);
+int64 elf_address_to_offset(range map, uint64 addr);
+int64 elf_offset_to_addr(range map, uint64 offs);
 
 #define ELF_BITS(elf) (elf_header_ident((elf))[ELF_EI_CLASS] == ELF_ELFCLASS64 ? 64 : 32)
 #define ELF_32(elf) (elf_header_ident((elf))[ELF_EI_CLASS] == ELF_ELFCLASS32)
