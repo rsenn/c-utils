@@ -343,7 +343,7 @@ process_instance(xmlnode* e) {
   y /= unit_factor;*/
   /*x *= scale_factor;
   y *= scale_factor;*/
-  {
+  if(part.s) {
     instance_t* newinst = create_instance(part.s,
                                           gate.s,
                                           round_to_mil(x * scale_factor / unit_factor, grid_mils),
@@ -367,7 +367,10 @@ process_part(xmlnode* e) {
   xml_get_attribute_sa(e, &device, "device");
   stralloc_init(&value);
   xml_get_attribute_sa(e, &value, "value");
-  { part_t* newpart = create_part(name.s, library.s, deviceset.s, device.s, value.s); }
+
+  if(name.s) {
+    part_t* newpart = create_part(name.s, library.s, deviceset.s, device.s, value.s);
+  }
 }
 
 /* -----------------------------------------------------------------------

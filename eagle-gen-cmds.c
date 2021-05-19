@@ -588,17 +588,21 @@ print_wire(buffer* b, const struct wire w) {
 
 void
 check_wire(xmlnode* node) {
-  int layer = atoi(xml_get_attribute(node, "layer"));
-  wire w = get_wire(node);
+  const char* layerId;
 
-  if(layer == measures_layer) {
+  if((layerId = xml_get_attribute(node, "layer"))) {
+    int layer = atoi(layerId);
+    wire w = get_wire(node);
 
-    array_catb(&wires, &w, sizeof(wire));
+    if(layer == measures_layer) {
 
-    xml_delete(node);
-  } else if(layer == bottom_layer || layer == get_layer(current_layer)) {
-    rect_update(&wire_bounds, w.x1, w.y1);
-    rect_update(&wire_bounds, w.x2, w.y2);
+      array_catb(&wires, &w, sizeof(wire));
+
+      xml_delete(node);
+    } else if(layer == bottom_layer || layer == get_layer(current_layer)) {
+      rect_update(&wire_bounds, w.x1, w.y1);
+      rect_update(&wire_bounds, w.x2, w.y2);
+    }
   }
 }
 
