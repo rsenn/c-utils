@@ -104,6 +104,7 @@ typedef struct {
 typedef struct {
   char* obj;
   char* lib;
+  char* slib;
   char* bin;
   char* pps;
 } exts_t;
@@ -190,6 +191,7 @@ bool rule_is_compile(target* rule);
 bool rule_is_lib(target* rule);
 bool rule_is_link(target* rule);
 void rule_prereq_recursive(target*, set_t* s);
+target* rule_find_lib(const char* name, size_t namelen);
 
 void add_path_b(set_t*, const char*, size_t);
 void add_path(set_t*, const char*);
@@ -270,7 +272,7 @@ void deps_for_libs(void);
 
 void target_ptrs(const strlist*, array*);
 
-target* gen_single_rule(stralloc*, strlist*, stralloc*);
+target* gen_single_rule(stralloc* output,  stralloc* cmd);
 void gen_clean_rule(void);
 
 int filter_pptoks(const void*, size_t);
@@ -312,4 +314,5 @@ extern set_t srcs;
 extern tools_t tools;
 extern const char* project_name;
 extern int cmd_objs, cmd_libs, cmd_bins;
+extern set_t link_libraries;
 #endif

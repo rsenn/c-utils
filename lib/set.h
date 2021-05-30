@@ -45,6 +45,9 @@ void set_init(set_t*, uint32 (*const)(const void*, size_t));
 int set_cat(set_t*, const set_t*);
 
 int set_sub(const set_t* a, const set_t* b, set_t* c);
+int set_filter(const set_t* in, set_t* out, int (*pred)(const char* , size_t));
+int set_filter_out(const set_t* in, set_t* out, int (*pred)(const char* , size_t));
+
 int set_iterator_erase(set_iterator_t*);
 int set_iterator_find(set_iterator_t*, const void*, size_t);
 int set_iterator_init(set_iterator_t*, const set_t*);

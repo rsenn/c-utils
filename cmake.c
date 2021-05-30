@@ -50,6 +50,29 @@ output_cmake_cmd(buffer* b, const char* cmd, const strlist* list) {
 }
 
 void
+output_cmake_set(buffer* b, const char* cmd, const set_t* list) {
+  if(set_size(list)) {
+    const char* s;
+    size_t n;
+    set_iterator_t it;
+    buffer_putm_internal(b, cmd, "(\n", 0);
+    set_foreach(list,it, s, n) {
+      size_t i;
+      buffer_puts(b, "  \"");
+
+      for(i = 0; i < n; i++) {
+        if(byte_chr("\"\\", 2, s[i]) < 2)
+          buffer_putc(b, '\\');
+        buffer_putc(b, s[i]);
+      }
+      buffer_puts(b, "\"\n");
+    }
+    buffer_puts(b, ")\n");
+    buffer_putnlflush(b);
+  }
+}
+/*
+void
 output_cmake_libs(buffer* b) {
   strlist* libs = var_list("LIBS");
   const char* s;
@@ -65,7 +88,7 @@ output_cmake_libs(buffer* b) {
   buffer_puts(b, "\n)");
   buffer_putnlflush(b);
 }
-
+*/
 void
 output_cmake_rule(buffer* b, target* rule) {
   bool compile = stralloc_contains(&rule->recipe, " -c ");
@@ -169,8 +192,8 @@ output_cmake_project(buffer* b, MAP_T* rules, MAP_T* vars, const strlist* includ
   */
   buffer_putnlflush(b);
   output_cmake_cmd(b, "add_definitions", var_list("DEFS"));
-  // output_cmake_cmd(b, "link_libraries", var_list("LIBS"));
-  output_cmake_libs(b);
+ output_cmake_set(b, "link_libraries", &link_libraries);
+ // output_cmake_libs(b);
   output_cmake_cmd(b, "include_directories", include_dirs);
   output_cmake_cmd(b, "link_directories", link_dirs);
 
