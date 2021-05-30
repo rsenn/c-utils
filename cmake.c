@@ -30,9 +30,21 @@ append_cmake_var(buffer* b, const char* name, const strlist* list) {
 void
 output_cmake_cmd(buffer* b, const char* cmd, const strlist* list) {
   if(strlist_count(list)) {
-    buffer_putm_internal(b, cmd, "(\n  ", 0);
-    buffer_putsl(b, list, "\n  ");
-    buffer_puts(b, "\n)\n");
+    const char* s;
+    size_t n;
+    buffer_putm_internal(b, cmd, "(\n", 0);
+    strlist_foreach(list, s, n) {
+      size_t i;
+      buffer_puts(b, "  \"");
+
+      for(i = 0; i < n; i++) {
+        if(byte_chr("\"\\", 2, s[i]) < 2)
+          buffer_putc(b, '\\');
+        buffer_putc(b, s[i]);
+      }
+      buffer_puts(b, "\"\n");
+    }
+    buffer_puts(b, ")\n");
     buffer_putnlflush(b);
   }
 }
