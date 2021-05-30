@@ -77,21 +77,24 @@ output_cmake_rule(buffer* b, target* rule) {
 
     if(!compile) {
       bool lib = rule_is_lib(rule);
+      bool link = !(rule_is_compile(rule) || lib);
       size_t pos = 0;
       set_t deps;
 
       set_init(&deps, 0);
 
       buffer_puts(b, lib ? "add_library(" : "add_executable(");
-      if(lib) {
+      if(lib || link) {
         pos = byte_rchr(x, n, '/');
         if(pos < n)
           pos++;
-        if(n - pos >= 3 && byte_equal(x + pos, 3, "lib"))
-          pos += 3;
-        if(byte_ends(x + pos, n - pos, exts.lib))
-          n -= str_len(exts.lib);
-        rule_prereq_recursive(rule, &deps);
+        if(lib) {
+          if(n - pos >= 3 && byte_equal(x + pos, 3, "lib"))
+            pos += 3;
+          if(byte_ends(x + pos, n - pos, exts.lib))
+            n -= str_len(exts.lib);
+          rule_prereq_recursive(rule, &deps);
+        }
       }
       buffer_put(b, x + pos, n - pos);
       buffer_putc(b, ' ');

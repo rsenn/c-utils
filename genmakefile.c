@@ -1245,12 +1245,11 @@ rule_dump(target* rule) {
 bool
 rule_is_compile(target* rule) {
   size_t n;
+  const char* x;
   if(stralloc_contains(&rule->recipe, " -c "))
     return true;
-
-  if(is_source_b(set_at(&rule->prereq, 0), n))
-    return true;
-  if(is_object(rule->name))
+  x = set_at_n(&rule->prereq, 0, &n);
+  if(is_source_b(x, n) && is_object(rule->name))
     return true;
   return false;
 }
