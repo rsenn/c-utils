@@ -82,11 +82,9 @@ void* omf_record_begin(omf_record*);
 void* omf_record_end(omf_record*);
 void* omf_record_next(omf_record*, void* ptr);
 
-#define omf_foreach(omf, r)                                                                                            \
-  for((r) = omf_begin(omf); (char*)r + 2 + uint16_get(&(r)->length) < (char*)omf_end(omf); (r) = omf_next(r))
+#define omf_foreach(omf, r) for((r) = omf_begin(omf); (char*)r + 2 + uint16_get(&(r)->length) < (char*)omf_end(omf); (r) = omf_next(r))
 
-#define omf_record_foreach(rec, ptr)                                                                                   \
-  for((ptr) = omf_record_begin(rec); (char*)(ptr) < (char*)omf_record_end(rec); (ptr) = omf_record_next(rec, (ptr)))
+#define omf_record_foreach(rec, ptr) for((ptr) = omf_record_begin(rec); (char*)(ptr) < (char*)omf_record_end(rec); (ptr) = omf_record_next(rec, (ptr)))
 
 static inline void*
 omf_read_index(void* readptr, int16* idxptr) {

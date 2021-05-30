@@ -53,6 +53,9 @@ char* set_iterator_value(const set_iterator_t*, size_t*);
 
 char** set_toarray(const set_t*);
 
+char* set_at(const set_t*, const size_t pos);
+char* set_at_n(const set_t*, const size_t pos, size_t* len);
+
 #define set_hash(s, x, len) ((s)->hash_fp((x), (len)))
 
 static inline uint32
@@ -74,13 +77,13 @@ set_iterator_new(const set_t* s) {
 
 #define set_foreach_it(s, it) for(set_iterator_init(&(it), (s)); set_iterator_value(&(it), 0); set_iterator_next(&(it)))
 
-#define set_foreach(s, it, x, n)                                                                                       \
-  for(it = set_iterator_new((s)); (x = set_iterator_value(&(it), &n)); set_iterator_next(&(it)))
+#define set_foreach(s, it, x, n) for(it = set_iterator_new((s)); (x = set_iterator_value(&(it), &n)); set_iterator_next(&(it)))
 
 #ifdef STRALLOC_H
 int set_has_sa(const set_t*, const stralloc*);
 int set_addsa(set_t*, const stralloc*);
 size_t stralloc_catset(stralloc*, const set_t*, const char*);
+void set_join(const set_t* set, const char* sep, stralloc* out);
 #endif
 #ifdef BUFFER_H
 void buffer_putset(buffer*, const set_t*, const char* sep, size_t seplen);

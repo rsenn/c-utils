@@ -60,8 +60,7 @@ again:
           errno = EAGAIN;
         }
     */
-    if((received > 0 || r->status == HTTP_RECV_HEADER) &&
-       (ret = http_read_internal(h->sock, buf, received, &h->q.in)) > 0) {
+    if((received > 0 || r->status == HTTP_RECV_HEADER) && (ret = http_read_internal(h->sock, buf, received, &h->q.in)) > 0) {
     }
     if(r->status == HTTP_STATUS_FINISH) {
       goto end;
@@ -136,15 +135,9 @@ end:
     buffer_puts(buffer_2, ((const char* const[]){"UNDEF", "CHUNKED", "LENGTH", "BOUNDARY", 0})[r->transfer]);
 
     buffer_puts(buffer_2, " status=");
-    buffer_puts(buffer_2,
-                ((const char* const[]){"-1",
-                                       "HTTP_RECV_HEADER",
-                                       "HTTP_RECV_DATA",
-                                       "HTTP_STATUS_CLOSED",
-                                       "HTTP_STATUS_ERROR",
-                                       "HTTP_STATUS_BUSY",
-                                       "HTTP_STATUS_FINISH",
-                                       0})[r->status + 1]);
+    buffer_puts(
+        buffer_2,
+        ((const char* const[]){"-1", "HTTP_RECV_HEADER", "HTTP_RECV_DATA", "HTTP_STATUS_CLOSED", "HTTP_STATUS_ERROR", "HTTP_STATUS_BUSY", "HTTP_STATUS_FINISH", 0})[r->status + 1]);
 
     buffer_putnlflush(buffer_2);
 

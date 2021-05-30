@@ -34,8 +34,8 @@ typedef struct {
 
 #define PATH_FNM_NOMATCH 1
 #define PATH_FNM_PATHNAME (1 << 0) /* No wildcard can ever match /'.  */
-#define PATH_FNM_NOESCAPE                                                                                              \
-  (1 << 1)                       /* Backslashes don't quote special chars.                                             \
+#define PATH_FNM_NOESCAPE                                                                                                                                                          \
+  (1 << 1)                       /* Backslashes don't quote special chars.                                                                                                         \
                                   */
 #define PATH_FNM_PERIOD (1 << 2) /* Leading .' is matched only explicitly.  */
 int path_absolute(const char* path, stralloc* sa);
@@ -80,6 +80,7 @@ int path_relative_b(const char* s1, size_t n1, const char* s2, size_t n2, strall
 
 void path_concat(const char* a, size_t alen, const char* b, size_t blen, stralloc* out);
 void path_append(const char* x, size_t len, stralloc* out);
+void path_appends(const char* s, stralloc* out);
 
 #ifdef STRLIST_H
 int path_split(const char* p, strlist* sl);

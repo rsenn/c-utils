@@ -24,8 +24,8 @@ static const int GPIO_PULL_UP = 2;
 #define GPSET ((volatile unsigned int*)(gpio + 7))
 #define GPCLR ((volatile unsigned int*)(gpio + 10))
 #define GPLEV ((volatile unsigned int*)(gpio + 13))
-#define GPPULL                                                                                                         \
-  ((volatile unsigned int*)(gpio + 37))                  /* Pull up / pull down.                                       \
+#define GPPULL                                                                                                                                                                     \
+  ((volatile unsigned int*)(gpio + 37))                  /* Pull up / pull down.                                                                                                   \
                                                           */
 #define GPPULLCLK0 ((volatile unsigned int*)(gpio + 38)) /* Pull up / pull down clock. */
 

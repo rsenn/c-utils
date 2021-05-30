@@ -203,11 +203,7 @@ x_tokenizer_next_of(struct tokenizer_s* t, token* tok, int fail_unk) {
 }
 
 static inline int
-mem_tokenizers_join(struct FILE_container_s* org,
-                    struct FILE_container_s* inj,
-                    struct FILE_container_s* result,
-                    int first,
-                    off_t lastpos) {
+mem_tokenizers_join(struct FILE_container_s* org, struct FILE_container_s* inj, struct FILE_container_s* result, int first, off_t lastpos) {
   result->f = memstream_open(&result->buf, &result->len);
   size_t i;
   struct token_s tok;

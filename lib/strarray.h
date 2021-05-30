@@ -46,7 +46,7 @@ int strarray_from_vec(strarray* arr, char* vec[]);
 */
 int64 strarray_index_of(strarray*, const char* s);
 int64 strarray_index_of_b(strarray*, const char* s, size_t n);
-char* strarray_pop(strarray*, char* s);
+char* strarray_pop(strarray*);
 int strarray_pushb(strarray*, const char* b, size_t n);
 int strarray_pushd(strarray*, const char* s);
 int strarray_push(strarray*, const char* s);
@@ -54,10 +54,10 @@ int strarray_set(strarray*, size_t index, const char* s);
 int strarray_setb(strarray*, size_t index, const char* s, size_t len);
 
 #ifdef STRALLOC_H
-#define strarray_push_sa_unique(a, sa)                                                                                 \
-  do {                                                                                                                 \
-    if(!strarray_contains_sa((a), (sa)))                                                                               \
-      strarray_push_sa((a), (sa));                                                                                     \
+#define strarray_push_sa_unique(a, sa)                                                                                                                                             \
+  do {                                                                                                                                                                             \
+    if(!strarray_contains_sa((a), (sa)))                                                                                                                                           \
+      strarray_push_sa((a), (sa));                                                                                                                                                 \
   } while(0)
 #define strarray_contains_sa(a, sa) (strarray_index_of_sa((a), (sa)) != -1)
 
@@ -78,6 +78,7 @@ int strarray_transform(strarray* in, strarray* out, char* (*pred)(const char*));
 int strarray_each(strarray* arr, void (*pred)(char**));
 
 int strarray_glob(strarray* arr, const char* pattern);
+int strarray_glob_b(strarray* arr, const char* x, size_t len);
 
 int64 strarray_splice(strarray*, uint64 start, uint64 del, uint64 insert, const char** x);
 void strarray_free(strarray*);
@@ -97,6 +98,10 @@ int strarray_unshiftb(strarray*, const char* b, size_t n);
 int strarray_unshift(strarray*, const char* s);
 int strarray_unshiftm(strarray*, ...);
 int strarray_unshiftn(strarray*, const char* const* v, size_t n);
+
+#ifdef STRALLOC_H
+int strarray_emplace_sa(strarray* arr, stralloc* sa);
+#endif
 
 #ifdef __cplusplus
 }

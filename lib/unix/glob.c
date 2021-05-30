@@ -1,9 +1,9 @@
 #include "../windoze.h"
 
 #if WINDOWS_NATIVE //&& !defined(_MSC_VER)
+#include "../glob.h"
 
 #include "../byte.h"
-#include "../glob.h"
 #include "../str.h"
 
 #include <errno.h>

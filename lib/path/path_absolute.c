@@ -19,7 +19,7 @@ path_absolute(const char* path, stralloc* sa) {
 }
 
 char*
-path_absolute_s(const char* path ) {
+path_absolute_s(const char* path) {
   stralloc sa;
   stralloc_init(&sa);
   path_absolute(path, &sa);

@@ -57,8 +57,8 @@ uint64 uint64_read_big(const char* in);
 
 #if !defined(NO_UINT64_MACROS)
 
-#if(defined(__i386__) || defined(_M_IX86) || defined(_X86_) || defined(__x86_64__) || defined(_M_AMD64) ||             \
-    defined(__LITTLE_ENDIAN__) || (BYTE_ORDER == _LITTLE_ENDIAN) || defined(_AMD64_) || defined(I_X86_))
+#if(defined(__i386__) || defined(_M_IX86) || defined(_X86_) || defined(__x86_64__) || defined(_M_AMD64) || defined(__LITTLE_ENDIAN__) || (BYTE_ORDER == _LITTLE_ENDIAN) ||         \
+    defined(_AMD64_) || defined(I_X86_))
 
 #define uint64_pack(out, in) (*(uint64*)(out) = (in))
 #define uint64_unpack(in, out) (*(out) = *(uint64*)(in))
@@ -102,8 +102,7 @@ uint64 uint64_read(const char* in);
 // (why?-)
 __inline double
 uint64_to_double(uint64 ull) {
-  return ((int64)ull >= 0 ? (double)(int64)ull
-                          : ((double)(int64)(ull - 9223372036854775808UI64)) + 9223372036854775808.0);
+  return ((int64)ull >= 0 ? (double)(int64)ull : ((double)(int64)(ull - 9223372036854775808UI64)) + 9223372036854775808.0);
 }
 #else
 #define uint64_to_double(ull) ((double)(ull))

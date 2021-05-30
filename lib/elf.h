@@ -187,8 +187,8 @@ elf64_ehdr;
 #define ELF_EM_ST19 74    /* STMicroelectronics ST19 8 bit mc */
 #define ELF_EM_VAX 75     /* Digital VAX */
 #define ELF_EM_CRIS 76    /* Axis Communications 32-bit embedded processor */
-#define ELF_EM_JAVELIN                                                                                                 \
-  77                       /* Infineon Technologies 32-bit embedded processor                                          \
+#define ELF_EM_JAVELIN                                                                                                                                                             \
+  77                       /* Infineon Technologies 32-bit embedded processor                                                                                                      \
                             */
 #define ELF_EM_FIREPATH 78 /* Element 14 64-bit DSP Processor */
 #define ELF_EM_ZSP 79      /* LSI Logic 16-bit DSP Processor */
@@ -1012,11 +1012,11 @@ elf64_move;
 #define ELF_R_386_TLS_IE 15    /* Address of GOT entry for static TLS block offset */
 #define ELF_R_386_TLS_GOTIE 16 /* GOT entry for static TLS block offset */
 #define ELF_R_386_TLS_LE 17    /* Offset relative to static TLS block */
-#define ELF_R_386_TLS_GD                                                                                               \
-  18 /* Direct 32 bit for GNU version of general dynamic thread local data                                             \
+#define ELF_R_386_TLS_GD                                                                                                                                                           \
+  18 /* Direct 32 bit for GNU version of general dynamic thread local data                                                                                                         \
       */
-#define ELF_R_386_TLS_LDM                                                                                              \
-  19 /* Direct 32 bit for GNU version of local dynamic thread local data in LE                                         \
+#define ELF_R_386_TLS_LDM                                                                                                                                                          \
+  19 /* Direct 32 bit for GNU version of local dynamic thread local data in LE                                                                                                     \
         code */
 #define ELF_R_386_16 20
 #define ELF_R_386_PC16 21
@@ -1032,8 +1032,8 @@ elf64_move;
 #define ELF_R_386_TLS_LDM_POP 31  /* Tag for popl in LDM TLS code */
 #define ELF_R_386_TLS_LDO_32 32   /* Offset relative to TLS block */
 #define ELF_R_386_TLS_IE_32 33    /* GOT entry for negated static TLS block offset */
-#define ELF_R_386_TLS_LE_32                                                                                            \
-  34                              /* Negated offset relative to static TLS block                                       \
+#define ELF_R_386_TLS_LE_32                                                                                                                                                        \
+  34                              /* Negated offset relative to static TLS block                                                                                                   \
                                    */
 #define ELF_R_386_TLS_DTPMOD32 35 /* ID of module containing symbol */
 #define ELF_R_386_TLS_DTPOFF32 36 /* Offset in TLS block */
@@ -1303,20 +1303,14 @@ int64 elf_offset_to_addr(range map, uint64 offs);
 #define ELF_STRUCT_OFFSETS(st, field) ELF_FIELD_OFFS(elf32_##st, field), ELF_FIELD_SIZE(elf32_##st, field), ELF_FIELD_OFFS(elf64_##st, field), ELF_FIELD_SIZE(elf64_##st, field))
 #define ELF_STRUCT_SIZE(elf, st) (ELF_64(elf) ? sizeof(elf64_##st) : sizeof(elf32_##st))
 
-#define ELF_GET(elf, ptr, st, field)                                                                                   \
-  elf_get_value(elf,                                                                                                   \
-                ptr,                                                                                                   \
-                ELF_FIELD_OFFS(elf32_##st, field),                                                                     \
-                ELF_FIELD_SIZE(elf32_##st, field),                                                                     \
-                ELF_FIELD_OFFS(elf64_##st, field),                                                                     \
-                ELF_FIELD_SIZE(elf64_##st, field))
+#define ELF_GET(elf, ptr, st, field)                                                                                                                                               \
+  elf_get_value(elf, ptr, ELF_FIELD_OFFS(elf32_##st, field), ELF_FIELD_SIZE(elf32_##st, field), ELF_FIELD_OFFS(elf64_##st, field), ELF_FIELD_SIZE(elf64_##st, field))
 
 #define ELF_FIELD_OFFSET(type, field) ((size_t)(uint8*)&(((type*)0)->field))
 #define ELF_FIELD_SIZE(type, field) sizeof(((type*)0)->field)
 
 #define ELF_ADDR(elf, ptr, st, field) ((void*)(((char*)ptr) + ELF_OFFSET(elf, st, field)))
-#define ELF_OFFSET(elf, st, field)                                                                                     \
-  (ELF_64(elf) ? ELF_FIELD_OFFSET(elf64_##st, field) : ELF_FIELD_OFFSET(elf32_##st, field))
+#define ELF_OFFSET(elf, st, field) (ELF_64(elf) ? ELF_FIELD_OFFSET(elf64_##st, field) : ELF_FIELD_OFFSET(elf32_##st, field))
 #define ELF_SIZE(elf, st, field) (ELF_64(elf) ? ELF_FIELD_SIZE(elf64_##st, field) : ELF_FIELD_SIZE(elf32_##st, field))
 
 #ifdef __cplusplus

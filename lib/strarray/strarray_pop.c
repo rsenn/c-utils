@@ -1,7 +1,7 @@
 #include "../strarray.h"
 
 char*
-strarray_pop(strarray* arr, char* s) {
+strarray_pop(strarray* arr) {
   char* ret = NULL;
   size_t n;
   if((n = strarray_size(arr)) > 0) {

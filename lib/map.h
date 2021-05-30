@@ -20,9 +20,7 @@ typedef linked_list_node* MAP_ITER_T;
 #define MAP_NEW(map) hashmap_init(&(map), 64, MAP_COMPARATOR, &hashfunc, (void*)&str_dup, (void*)&alloc_free)
 #define MAP_GET(map, key, klen) hashmap_get(&(map), (void*)(key))
 #define MAP_DESTROY(map) hashmap_free(&(map))
-#define MAP_FOREACH(map, pair)                                                                                         \
-  for(MAP_ITER_T iter = linked_list_head(hashmap_keys(&(map))); iter && ((pair) = hashmap_find(&(map), iter->data));   \
-      (iter) = (iter)->next)
+#define MAP_FOREACH(map, pair) for(MAP_ITER_T iter = linked_list_head(hashmap_keys(&(map))); iter && ((pair) = hashmap_find(&(map), iter->data)); (iter) = (iter)->next)
 #define MAP_ITER_KEY(iter) ((char*)MAP_DATA(iter)->key)
 #define MAP_ITER_KEY_LEN(iter) str_len(MAP_ITER_KEY(iter))
 #define MAP_ITER_VALUE(iter) (MAP_DATA(iter)->value)
@@ -34,11 +32,11 @@ typedef linked_list_node* MAP_ITER_T;
 #define MAP_SEARCH(map, key, klen, pair) (*(pair) = MAP_DATA(hashmap_search(&(map), (void*)(key))))
 
 #define MAP_ADD(map, key, value) hashmap_put(&(map), (key), (value))
-#define MAP_VISIT_ALL(map, fn, arg)                                                                                    \
-  {                                                                                                                    \
-    MAP_PAIR_T t;                                                                                                      \
-    MAP_FOREACH(map, t)                                                                                                \
-    fn(MAP_KEY(t), str_len(MAP_KEY(t)), MAP_VALUE(t), 0, arg);                                                         \
+#define MAP_VISIT_ALL(map, fn, arg)                                                                                                                                                \
+  {                                                                                                                                                                                \
+    MAP_PAIR_T t;                                                                                                                                                                  \
+    MAP_FOREACH(map, t)                                                                                                                                                            \
+    fn(MAP_KEY(t), str_len(MAP_KEY(t)), MAP_VALUE(t), 0, arg);                                                                                                                     \
   }
 
 #define MAP_INSERT(map, key, klen, data, dlen) hashmap_insert(&(map), (void*)(key), klen, (void*)(data), dlen)
@@ -180,10 +178,10 @@ typedef TUPLE* MAP_ITER_T;
 #define MAP_DATA(iter) hmap_data((iter))
 #define MAP_DATA_LEN(iter) ((void*)((iter)->data_len))*/
 
-#define MAP_VISIT_ALL(map, fn, arg)                                                                                    \
-  {                                                                                                                    \
-    TUPLE* t;                                                                                                          \
-    hmap_foreach(map, t) fn(t->key, t->key_len, t->vals.val_chars, t->data_len, arg);                                  \
+#define MAP_VISIT_ALL(map, fn, arg)                                                                                                                                                \
+  {                                                                                                                                                                                \
+    TUPLE* t;                                                                                                                                                                      \
+    hmap_foreach(map, t) fn(t->key, t->key_len, t->vals.val_chars, t->data_len, arg);                                                                                              \
   }
 #define MAP_GET(map, key, klen) hmap_get(map, key, klen)
 

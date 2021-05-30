@@ -95,11 +95,11 @@ int stralloc_cat(stralloc* sa, const stralloc* in);
 int stralloc_append(stralloc* sa, const char* in); /* beware: this takes a pointer to 1 char */
 
 #define stralloc_APPEND(sa, ptr) stralloc_CATC((sa), *(ptr))
-#define stralloc_CATC(sa, c)                                                                                           \
-  do {                                                                                                                 \
-    if((sa)->len >= (sa)->a)                                                                                           \
-      stralloc_readyplus((sa), 1);                                                                                     \
-    (sa)->s[(sa)->len++] = (c);                                                                                        \
+#define stralloc_CATC(sa, c)                                                                                                                                                       \
+  do {                                                                                                                                                                             \
+    if((sa)->len >= (sa)->a)                                                                                                                                                       \
+      stralloc_readyplus((sa), 1);                                                                                                                                                 \
+    (sa)->s[(sa)->len++] = (c);                                                                                                                                                    \
   } while(0);
 
 /* stralloc_starts returns 1 if the \0 - terminated string in "in", without
@@ -121,6 +121,7 @@ int stralloc_diffs(const stralloc* a, const char* b) __pure__;
 
 #define stralloc_equal(a, b) (!stralloc_diff((a), (b)))
 #define stralloc_equals(a, b) (!stralloc_diffs((a), (b)))
+//#define stralloc_equalb(a, x, n) ((a)->len == (n) && !byte_diff((a)->s, (n), (x)))
 
 /* stralloc_0 appends \0 */
 #define stralloc_0(sa) stralloc_append(sa, "")
@@ -254,8 +255,7 @@ int stralloc_subst(stralloc* out, const char* b, size_t len, const char* from, c
 
 typedef size_t(stralloc_fmt_fn)(char*, int);
 size_t stralloc_fmt_call(stralloc*, stralloc_fmt_fn*, void* av[4]);
-size_t
-stralloc_fmt_pred(stralloc*, const char* in, size_t in_len, size_t (*fmt_function)(char*, int), int (*pred)(int));
+size_t stralloc_fmt_pred(stralloc*, const char* in, size_t in_len, size_t (*fmt_function)(char*, int), int (*pred)(int));
 size_t stralloc_fmt(stralloc*, const char* in, size_t in_len, size_t (*fmt_function)(char*, int));
 
 int stralloc_catdouble(stralloc*, double d, int prec);
@@ -302,6 +302,7 @@ size_t stralloc_count(const stralloc*, char c);
 size_t stralloc_erase(stralloc*);
 void stralloc_lower(stralloc*);
 void stralloc_move(stralloc*, stralloc* from);
+char* stralloc_moveb(stralloc*, size_t* len);
 int stralloc_ready_tuned(stralloc*, size_t n, size_t base, size_t a, size_t b);
 void stralloc_remove_all(stralloc*, register const char* delchars, register unsigned int delcharslen);
 void stralloc_replace_non_printable(stralloc*, char ch);

@@ -25,6 +25,7 @@
 #include "lib/case.h"
 #include "lib/set.h"
 #include "lib/map.h"
+#include <stdbool.h>
 
 typedef enum { OS_WIN, OS_MAC, OS_LINUX } os_type;
 typedef enum { LANG_C, LANG_CXX } lang_type;
@@ -185,6 +186,10 @@ void rule_dep_list_recursive(target*, set_t*, int, strlist*);
 void rule_dep_list(target*, set_t*);
 void rule_deps_indirect(target*, set_t*);
 void rule_dump(target*);
+bool rule_is_compile(target* rule);
+bool rule_is_lib(target* rule);
+bool rule_is_link(target* rule);
+void rule_prereq_recursive(target*, set_t* s);
 
 void add_path_b(set_t*, const char*, size_t);
 void add_path(set_t*, const char*);
@@ -204,6 +209,10 @@ int is_include_sa(stralloc*);
 int is_include_b(const char*, size_t);
 int is_object(const char*);
 int is_object_sa(stralloc*);
+int is_object_b(const char*, size_t);
+int is_lib_b(const char* filename, size_t len);
+int is_lib_sa(stralloc* sa);
+int is_lib(const char* s);
 
 sourcefile* sources_new(const char*);
 int sources_add(const char*);
@@ -214,6 +223,7 @@ const char* sources_find(const char*, size_t, size_t*);
 void sources_deps(sourcefile*, strlist*);
 void sources_readdir(stralloc*, strarray*);
 void sources_addincludes(sourcefile*, sourcedir*, const strlist*, strarray*);
+bool sources_iscplusplus(void);
 
 int var_isset(const char*);
 strlist* var_list(const char*);
@@ -301,5 +311,5 @@ extern dirs_t dirs;
 extern set_t srcs;
 extern tools_t tools;
 extern const char* project_name;
-
+extern int cmd_objs, cmd_libs, cmd_bins;
 #endif
