@@ -98,6 +98,10 @@ output_cmake_rule(buffer* b, target* rule) {
       }
       buffer_put(b, x + pos, n - pos);
       buffer_putc(b, ' ');
+
+      if(lib && is_lib(rule->name))
+        buffer_puts(b, "STATIC ");
+
       buffer_putset(b, lib ? &deps : &rule->prereq, " ", 1);
       buffer_puts(b, ")");
       buffer_putnlflush(b);
