@@ -300,4 +300,6 @@ extern config_t cfg;
 extern dirs_t dirs;
 extern set_t srcs;
 extern tools_t tools;
+extern const char* project_name;
+
 #endif

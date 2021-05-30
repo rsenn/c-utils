@@ -506,9 +506,8 @@ new_name:
       }
     }
 
-    if(!typematch(DNS_T_ANY, dtype) && !typematch(DNS_T_AXFR, dtype) && !typematch(DNS_T_CNAME, dtype) &&
-       !typematch(DNS_T_NS, dtype) && !typematch(DNS_T_PTR, dtype) && !typematch(DNS_T_A, dtype) &&
-       !typematch(DNS_T_MX, dtype) && !typematch(DNS_T_SOA, dtype)) {
+    if(!typematch(DNS_T_ANY, dtype) && !typematch(DNS_T_AXFR, dtype) && !typematch(DNS_T_CNAME, dtype) && !typematch(DNS_T_NS, dtype) && !typematch(DNS_T_PTR, dtype) &&
+       !typematch(DNS_T_A, dtype) && !typematch(DNS_T_MX, dtype) && !typematch(DNS_T_SOA, dtype)) {
       byte_copy(key, 2, dtype);
       cached = cache_get(key, dlen + 2, &cachedlen, &ttl);
       if(cached && (cachedlen || byte_diff(dtype, 2, DNS_T_ANY))) {

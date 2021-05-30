@@ -144,8 +144,7 @@ get_file_size(char* path) {
   typedef LONG(WINAPI getfilesizeex_fn)(HANDLE, PLARGE_INTEGER);
   static getfilesizeex_fn* api_fn;
 
-  HANDLE hFile =
-      CreateFileA(path, GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
+  HANDLE hFile = CreateFileA(path, GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
   if(hFile == INVALID_HANDLE_VALUE)
     return -1; /* error condition, could
                   call GetLastError to
@@ -178,8 +177,7 @@ uint64
 get_file_time(const char* path) {
   FILETIME c, la, lw;
   int64 t;
-  HANDLE hFile =
-      CreateFileA(path, GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
+  HANDLE hFile = CreateFileA(path, GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
   if(hFile == INVALID_HANDLE_VALUE)
     return -1; /* error condition, could
                   call GetLastError to
@@ -231,9 +229,7 @@ get_file_owner(const char* path) {
   PSECURITY_DESCRIPTOR pSD = 0;
   LPSTR strsid = 0;
   DWORD dwErrorCode = 0;
-  static DWORD(
-      WINAPI *
-      get_security_info)(HANDLE, DWORD, SECURITY_INFORMATION, PSID*, PSID*, PACL*, PACL*, PSECURITY_DESCRIPTOR*);
+  static DWORD(WINAPI * get_security_info)(HANDLE, DWORD, SECURITY_INFORMATION, PSID*, PSID*, PACL*, PACL*, PSECURITY_DESCRIPTOR*);
   static BOOL(WINAPI * convert_sid_to_string_sid_a)(PSID, LPSTR*);
   tmpbuf[0] = '\0';
   /* Get the handle of the file object.
@@ -529,7 +525,7 @@ make_taia(stralloc* out, const uint64* epoch) {
   char *s, tpack[TAIA_PACK];
   size_t i;
   if(epoch)
-    taia_uint(&t, epoch);
+    taia_uint(&t, *epoch);
   else
     taia_now(&t);
   taia_pack(tpack, &t);
@@ -702,8 +698,7 @@ stat_type(int mode) {
   dtype |= S_ISFIFO(mode) ? D_PIPE : 0;
   return dtype;
 }
-static const char* type_strs[] = {
-    "D_PIPE", "D_CHARDEV", "D_BLKDEV", "D_SYMLINK", "D_DIRECTORY", "D_FILE", "D_SOCKET", 0};
+static const char* type_strs[] = {"D_PIPE", "D_CHARDEV", "D_BLKDEV", "D_SYMLINK", "D_DIRECTORY", "D_FILE", "D_SOCKET", 0};
 static const char*
 type_str(dir_type_t type) {
   int shift = 0;
@@ -1135,22 +1130,23 @@ usage(char* argv0) {
                        "\n",
                        "Options\n",
                        "  -h, --help                show this help\n",
+                       "  -f, --force               force\n",
                        "  -l, --list                long list\n",
                        "  -n, --numeric             numeric user/group\n",
                        "  -r, --relative            relative path\n",
-                       "  -i, --input      FILE     read files to list from FILE\n",
-                       "  -o, --output     FILE     write output to FILE\n",
-                       "  -I, --include    PATTERN  include entries matching PATTERN\n",
-                       "  -X, --exclude    PATTERN  exclude entries matching PATTERN\n",
-                       "  -t, --time-style FORMAT   format time according to FORMAT\n",
-                       "  -m, --min-size   BYTES    minimum file size\n",
-                       "  -L, --dereference         dereference symlinks\n",
-                       "      --no-dereference\n",
+                       "  -i, --input       FILE     read files to list from FILE\n",
+                       "  -o, --output      FILE     write output to FILE\n",
+                       "  -I, --include     PATTERN  include entries matching PATTERN\n",
+                       "  -X, --exclude     PATTERN  exclude entries matching PATTERN\n",
+                       "  -t, --time-style  FORMAT   format time according to FORMAT\n",
+                       "  -m, --min-size    BYTES    minimum file size\n",
+                       "  -L, --dereference          dereference symlinks\n",
+                       "      --no-dereferen1ce\n",
                        "  -D, --one-filesystem\n",
                        "  -C, --cross-filesystem\n",
-                       "  -c, --crc                 cyclic redundancy check\n",
-                       "  -d, --depth      NUM      max depth\n",
-                       "  -f, --types      TYPES    filter by type:\n\n    d = directory, b = "
+                       "  -c, --crc                  cyclic redundancy check\n",
+                       "  -d, --depth       NUM      max depth\n",
+                       "  -F, --filter-type TYPES    filter by type:\n\n    d = directory, b = "
                        "block dev s = socket\n    f = file,      c = char dev\n    l = symlink, "
                        "  p = pipe (fifo)\n\n",
                        0);
@@ -1231,7 +1227,7 @@ add_ext_class(const char* ext) {
   //
   if(ext[invert] == ':') {
     char* group;
-    if((group = find_ext_class(&ext[invert + 1])) == 0) {
+    if((group = find_ext_class((char*)&ext[invert + 1])) == 0) {
       buffer_putm_internal(buffer_2, "class ", ext, " not found", 0);
       buffer_putnlflush(buffer_2);
       // usage(argv[0]);

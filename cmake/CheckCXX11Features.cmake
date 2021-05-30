@@ -1,7 +1,13 @@
 # Taken from: http://pageant.ghulbus.eu/?p=664
 
-# Checks for C++11 features CXX11_FEATURE_LIST - a list containing all supported features HAS_CXX11_AUTO               - auto keyword HAS_CXX11_NULLPTR            - nullptr HAS_CXX11_LAMBDA             - lambdas HAS_CXX11_STATIC_ASSERT      - static_assert() HAS_CXX11_RVALUE_REFERENCES  - rvalue references HAS_CXX11_DECLTYPE           - decltype keyword HAS_CXX11_CSTDINT_H          - cstdint
-# header HAS_CXX11_LONG_LONG          - long long signed & unsigned types HAS_CXX11_VARIADIC_TEMPLATES - variadic templates HAS_CXX11_CONSTEXPR          - constexpr keyword HAS_CXX11_SIZEOF_MEMBER      - sizeof() non-static members HAS_CXX11_FUNC               - __func__ preprocessor constant
+# Checks for C++11 features CXX11_FEATURE_LIST - a list containing all supported features
+# HAS_CXX11_AUTO               - auto keyword HAS_CXX11_NULLPTR            - nullptr
+# HAS_CXX11_LAMBDA             - lambdas HAS_CXX11_STATIC_ASSERT      - static_assert()
+# HAS_CXX11_RVALUE_REFERENCES  - rvalue references HAS_CXX11_DECLTYPE           - decltype keyword
+# HAS_CXX11_CSTDINT_H          - cstdint header HAS_CXX11_LONG_LONG          - long long signed &
+# unsigned types HAS_CXX11_VARIADIC_TEMPLATES - variadic templates HAS_CXX11_CONSTEXPR          -
+# constexpr keyword HAS_CXX11_SIZEOF_MEMBER      - sizeof() non-static members HAS_CXX11_FUNC -
+# __func__ preprocessor constant
 #
 # Original script by Rolf Eike Beer Modifications by Andreas Weis
 #

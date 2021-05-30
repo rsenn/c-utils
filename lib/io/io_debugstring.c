@@ -5,6 +5,8 @@
 #include "../iarray.h"
 #include "../io_internal.h"
 
+#include <time.h>
+
 #if WINDOWS_NATIVE
 #else
 #include <sys/time.h>

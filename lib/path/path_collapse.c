@@ -1,5 +1,7 @@
 #include "../path_internal.h"
 #include "../byte.h"
+#include <string.h>
+#include <stdlib.h>
 
 size_t
 path_collapse(char* path, size_t n) {

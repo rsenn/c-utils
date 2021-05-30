@@ -84,8 +84,7 @@ get_pipe(int64 id) {
 void
 print_number_nonl_base(const char* property, int64 num, int base) {
   buffer_putm_internal(buffer_1, property, "=", base == 8 ? "0" : base == 16 ? "0x" : "", 0);
-  (base == 8 ? buffer_put8long(buffer_1, num)
-             : base == 16 ? buffer_putxlonglong0(buffer_1, num, 2) : buffer_putlonglong(buffer_1, num));
+  (base == 8 ? buffer_put8long(buffer_1, num) : base == 16 ? buffer_putxlonglong0(buffer_1, num, 2) : buffer_putlonglong(buffer_1, num));
 }
 
 void
@@ -374,10 +373,7 @@ main(int argc, char* argv[]) {
 
   if(0) {
     read_proc();
-    qsort(array_start(&pipes),
-          array_length(&pipes, sizeof(pipe_t)),
-          sizeof(pipe_t),
-          (int (*)(const void*, const void*))(void*)&compare_pipes);
+    qsort(array_start(&pipes), array_length(&pipes, sizeof(pipe_t)), sizeof(pipe_t), (int (*)(const void*, const void*))(void*)&compare_pipes);
   }
 
   if(verbose) {

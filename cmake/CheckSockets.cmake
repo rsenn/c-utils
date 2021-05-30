@@ -64,7 +64,8 @@ function(check_sockets OUT_VAR LIB INC)
   set(SRC "${CMAKE_CURRENT_BINARY_DIR}/try_sockets.c")
   file(WRITE "${SRC}" "${TRY_SOCK_PROG}")
 
-  try_compile("${OUT_VAR}" "${CMAKE_CURRENT_BINARY_DIR}" "${SRC}" LINK_LIBRARIES "${LIB}" OUTPUT_VARIABLE OUTPUT)
+  try_compile("${OUT_VAR}" "${CMAKE_CURRENT_BINARY_DIR}" "${SRC}" LINK_LIBRARIES "${LIB}"
+              OUTPUT_VARIABLE OUTPUT)
   # message("check_sockets(${INC} ${LIB}) ${OUT_VAR}='${${OUT_VAR}}'")
   if(NOT "${${OUT_VAR}}")
     message("check_sockets ${OUT_VAR} ${LIB} ${INC} failed")
@@ -77,7 +78,8 @@ function(check_sockets OUT_VAR LIB INC)
   endif("${${OUT_VAR}}")
 endfunction(check_sockets OUT_VAR LIB INC)
 
-# check_sockets(mswsock.h wsock32 HAVE_MSWSOCK_WSOCK32_LIB) check_sockets(mswsock.h mswsock HAVE_MSWSOCK_MWSOCK_LIB)
+# check_sockets(mswsock.h wsock32 HAVE_MSWSOCK_WSOCK32_LIB) check_sockets(mswsock.h mswsock
+# HAVE_MSWSOCK_MWSOCK_LIB)
 check_sockets(HAVE_WINSOCK2_WSOCK32_LIB wsock32 "windows.h;winsock2.h")
 check_sockets(HAVE_WINSOCK_WSOCK32_LIB wsock32 "windows.h;winsock.h")
 check_sockets(HAVE_WINSOCK2_WS2_32_LIB ws2_32 "windows.h;winsock2.h")

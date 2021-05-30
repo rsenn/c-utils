@@ -3,19 +3,21 @@
 #include <ctype.h>
 #include "lib/stralloc.h"
 #include "lib/buffer.h"
+#include "lib/strlist.h"
+#include "lib/path.h"
 #include "genmakefile.h"
 #include "lib/map.h"
 #include "debug.h"
 #include "mplab.h"
+#include "cmake.h"
 #include "lib/unix.h"
 #include "lib/sig.h"
 #include "lib/env.h"
 
 extern buffer* unix_optbuf;
-static const char tok_charset[] = {'_', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O',
-                                   'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'a', 'b', 'c', 'd', 'e',
-                                   'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u',
-                                   'v', 'w', 'x', 'y', 'z', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
+static const char tok_charset[] = {'_', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T',
+                                   'U', 'V', 'W', 'X', 'Y', 'Z', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o',
+                                   'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
 
 void debug_int(const char* name, int i);
 void debug_sa(const char* name, stralloc* sa);
@@ -48,6 +50,8 @@ static linklib_fmt* format_linklib_fn;
 static int inst_bins, inst_libs;
 static int cygming;
 static strlist system_path;
+const char *outfile = NULL, *infile = NULL;
+const char* project_name = NULL;
 
 set_t srcs;
 exts_t exts = {DEFAULT_OBJEXT, DEFAULT_LIBEXT, DEFAULT_EXEEXT, DEFAULT_PPSEXT};
@@ -1492,8 +1496,7 @@ sources_get(const char* basedir) {
     const char* s;
     while((s = rdir_read(&rdir))) {
       size_t len = str_len(s);
-      if(len + 1 > dirs.this.sa.len && byte_equal(s, dirs.this.sa.len, dirs.this.sa.s) &&
-         path_is_separator(s[dirs.this.sa.len])) {
+      if(len + 1 > dirs.this.sa.len && byte_equal(s, dirs.this.sa.len, dirs.this.sa.s) && path_is_separator(s[dirs.this.sa.len])) {
         s += dirs.this.sa.len + 1;
       }
       if(sources_add(s)) {
@@ -2573,9 +2576,7 @@ gen_clean_rule() {
           stralloc_catb(&fn, &(MAP_ITER_KEY(t)[bpos + 1]), epos);
           stralloc_catc(&fn, pathsep_make);
           stralloc_cats(&fn, "*");
-          stralloc_catb(&fn,
-                        &(MAP_ITER_KEY(t)[bpos + 1 + epos + 1]),
-                        str_chr(&(MAP_ITER_KEY(t)[bpos + 1 + epos + 1]), ':'));
+          stralloc_catb(&fn, &(MAP_ITER_KEY(t)[bpos + 1 + epos + 1]), str_chr(&(MAP_ITER_KEY(t)[bpos + 1 + epos + 1]), ':'));
           stralloc_nul(&fn);
           arg = fn.s;
         } else {
@@ -3271,11 +3272,10 @@ gen_install_rules() {
     target* rule = MAP_ITER_VALUE(t);
     int do_lib, do_bin;
 
-    do_lib = (inst_libs && (str_end(MAP_ITER_KEY(t), ".lib") || str_end(MAP_ITER_KEY(t), ".a") ||
-                            MAP_ITER_KEY(t)[str_find(MAP_ITER_KEY(t), ".so")] || rule->recipe.s == lib_command.s));
+    do_lib =
+        (inst_libs && (str_end(MAP_ITER_KEY(t), ".lib") || str_end(MAP_ITER_KEY(t), ".a") || MAP_ITER_KEY(t)[str_find(MAP_ITER_KEY(t), ".so")] || rule->recipe.s == lib_command.s));
 
-    do_bin = (inst_bins && (str_end(MAP_ITER_KEY(t), ".dll") || str_end(MAP_ITER_KEY(t), ".exe") ||
-                            rule->recipe.s == link_command.s));
+    do_bin = (inst_bins && (str_end(MAP_ITER_KEY(t), ".dll") || str_end(MAP_ITER_KEY(t), ".exe") || rule->recipe.s == link_command.s));
 
     if(!(do_lib || do_bin))
       continue;
@@ -3720,8 +3720,7 @@ output_make_rule(buffer* b, target* rule) {
      print_rule_deps(b, rule);
   */
 
-  if(num_prereqs == 0 && str_diffn(rule->name, dirs.work.sa.s, dirs.work.sa.len) &&
-     !rule->name[str_chr(rule->name, pathsep_make)] && str_end(rule->name, ":")) {
+  if(num_prereqs == 0 && str_diffn(rule->name, dirs.work.sa.s, dirs.work.sa.len) && !rule->name[str_chr(rule->name, pathsep_make)] && str_end(rule->name, ":")) {
     buffer_putm_internal(b, ".PHONY: ", rule->name, newline, NULL);
   }
 
@@ -3824,8 +3823,7 @@ output_ninja_rule(buffer* b, target* rule) {
   if(rule_name) {
     stralloc path;
     stralloc_init(&path);
-    stralloc_subst(
-        &path, rule->name, str_len(rule->name), pathsep_args == '/' ? "\\" : "/", pathsep_args == '/' ? "/" : "\\");
+    stralloc_subst(&path, rule->name, str_len(rule->name), pathsep_args == '/' ? "\\" : "/", pathsep_args == '/' ? "/" : "\\");
 
     buffer_puts(b, "build ");
     buffer_putsa(b, &path);
@@ -3968,23 +3966,8 @@ output_script(buffer* b, target* rule) {
   }
 
   if(str_equal(rule->name, "all")) {
-    buffer_putm_internal(b,
-                         newline,
-                         ":SUCCESS",
-                         newline,
-                         "ECHO Done.",
-                         newline,
-                         "GOTO QUIT",
-                         newline,
-                         newline,
-                         ":FAIL",
-                         newline,
-                         "ECHO Fail.",
-                         newline,
-                         newline,
-                         ":QUIT",
-                         newline,
-                         0);
+    buffer_putm_internal(
+        b, newline, ":SUCCESS", newline, "ECHO Done.", newline, "GOTO QUIT", newline, newline, ":FAIL", newline, "ECHO Fail.", newline, newline, ":QUIT", newline, 0);
   }
 
   put_newline(b, flush);
@@ -4153,6 +4136,7 @@ set_make_type() {
     inst = "copy /y";
 
   } else if(str_equal(tools.make, "mplab")) {
+  } else if(str_equal(tools.make, "cmake")) {
   }
 
   if(inst_bins || inst_libs)
@@ -4195,8 +4179,7 @@ set_compiler_type(const char* compiler) {
   /*
    * Visual C++ compiler
    */
-  if(str_start(compiler, "msvc") || str_start(compiler, "icl") || str_start(compiler, "vs20") ||
-     str_start(compiler, "vc") || compiler[str_find(compiler, "-cl")]) {
+  if(str_start(compiler, "msvc") || str_start(compiler, "icl") || str_start(compiler, "vs20") || str_start(compiler, "vc") || compiler[str_find(compiler, "-cl")]) {
 
     exts.obj = ".obj";
     exts.bin = ".exe";
@@ -4325,8 +4308,7 @@ set_compiler_type(const char* compiler) {
                 "-pdb:\"$@.pdb\"",
                 "$^ $(LIBS) $(EXTRA_LIBS)");
 
-  } else if(str_start(compiler, "gnu") || str_start(compiler, "gcc") || cygming || str_start(compiler, "clang") ||
-            str_start(compiler, "llvm") || str_start(compiler, "zapcc")) {
+  } else if(str_start(compiler, "gnu") || str_start(compiler, "gcc") || cygming || str_start(compiler, "clang") || str_start(compiler, "llvm") || str_start(compiler, "zapcc")) {
 
     exts.lib = ".a";
     exts.obj = ".o";
@@ -5024,9 +5006,7 @@ set_compiler_type(const char* compiler) {
 
       //      cross->sep = '-';
       stralloc_cats(&cross->sa, str_start(tools.toolchain, "mingw") ? "-w64-" : "-pc-");
-      stralloc_cats(&cross->sa,
-                    str_start(tools.toolchain, "mingw") ? "mingw32"
-                                                        : str_start(tools.toolchain, "msys") ? "msys" : "cygwin");
+      stralloc_cats(&cross->sa, str_start(tools.toolchain, "mingw") ? "mingw32" : str_start(tools.toolchain, "msys") ? "msys" : "cygwin");
 
       stralloc_catc(&cross->sa, '-');
     }
@@ -5135,8 +5115,8 @@ usage(char* errmsg_argv0) {
                        "     ninja       Ninja build\n"
                        "     mplab       MPLAB project "
                        "(.mcp)\n"
-                       "     mplabx      MPLAB X "
-                       "project (NetBeans)\n"
+                       "     mplabx      MPLAB X project (NetBeans)\n"
+                       "     cmake       KitWare CMake\n"
                        "\n"
                        "  Specify build type:\n\n"
                        "    --debug            with "
@@ -5166,7 +5146,7 @@ int
 main(int argc, char* argv[]) {
   int c;
   int ret = 0, index = 0;
-  const char *outfile = NULL, *infile = NULL, *dir = NULL;
+  const char* dir = NULL;
   set_t toks;
   strarray args;
   strlist cmdline;
@@ -5399,8 +5379,7 @@ main(int argc, char* argv[]) {
   }
 
   if(tools.toolchain)
-    cygming =
-        str_start(tools.toolchain, "mingw") || str_start(tools.toolchain, "cyg") || str_start(tools.toolchain, "msys");
+    cygming = str_start(tools.toolchain, "mingw") || str_start(tools.toolchain, "cyg") || str_start(tools.toolchain, "msys");
 
   if(cygming) {
     tools.compiler = "gcc";
@@ -5798,6 +5777,17 @@ main(int argc, char* argv[]) {
   if(((batch | shell) && stralloc_equals(&dirs.work.sa, ".")))
     batchmode = 1;
 
+  if(output_name.len) {
+    project_name = str_ndup(output_name.s, output_name.len);
+  } else {
+    stralloc abspath;
+    stralloc_init(&abspath);
+    path_absolute(dirs.this.sa.s, &abspath);
+    stralloc_nul(&abspath);
+    project_name = str_dup(path_basename(abspath.s));
+    stralloc_free(&abspath);
+  }
+
   if(!infile) {
 
     stralloc src;
@@ -5920,8 +5910,12 @@ main(int argc, char* argv[]) {
 fail:
 
   if(!case_diffs(tools.make, "mplab")) {
-
     output_mplab_project(out, 0, 0, &include_dirs);
+    goto quit;
+  }
+
+  if(!case_diffs(tools.make, "cmake")) {
+    output_cmake_project(out, &rules, &vars, &include_dirs);
     goto quit;
   }
 

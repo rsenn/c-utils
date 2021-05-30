@@ -372,12 +372,12 @@ read_arguments() {
       optlevel = 9;
   }
 
-#define DUMP_LIST(buf, n, sep, q)                                                                                      \
-  buffer_puts(buf, #n);                                                                                                \
+#define DUMP_LIST(buf, n, sep, q)                                                                                                                                                  \
+  buffer_puts(buf, #n);                                                                                                                                                            \
   print_strlist(buf, &n, sep, q);
-#define DUMP_VALUE(n, fn, v)                                                                                           \
-  buffer_puts(debug_buf, n ": ");                                                                                      \
-  fn(debug_buf, v);                                                                                                    \
+#define DUMP_VALUE(n, fn, v)                                                                                                                                                       \
+  buffer_puts(debug_buf, n ": ");                                                                                                                                                  \
+  fn(debug_buf, v);                                                                                                                                                                \
   buffer_putnlflush(debug_buf);
 
   DUMP_LIST(debug_buf, defines, "\n\t", "");
@@ -456,12 +456,7 @@ execute_cmd() {
 
       if(optlevel) {
         nbuf[fmt_ulong(nbuf, optlevel)] = '\0';
-        strlist_pushm_internal(&cmd,
-                               "--opt=default,+asm,",
-                               debug ? "+debug," : "",
-                               optsize ? "-speed,+space," : "-space,+speed,",
-                               nbuf,
-                               NULL);
+        strlist_pushm_internal(&cmd, "--opt=default,+asm,", debug ? "+debug," : "", optsize ? "-speed,+space," : "-space,+speed,", nbuf, NULL);
       }
 
       if(warn) {

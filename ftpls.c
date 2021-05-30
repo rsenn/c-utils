@@ -274,8 +274,7 @@ parseit(stralloc* r_dir, stralloc* dirdata, int dirlines) {
     if(!ok) {
       if(!str_start(p, "total") && !str_start(p, "Total"))
         do_log3("cannot parse LIST line: ", p, "\r\n");
-    } else if(parsed[ind].name[0] == '.' &&
-              (parsed[ind].namelen == 1 || (parsed[ind].namelen == 2 && parsed[ind].name[1] == '.'))) {
+    } else if(parsed[ind].name[0] == '.' && (parsed[ind].namelen == 1 || (parsed[ind].namelen == 2 && parsed[ind].name[1] == '.'))) {
       if(o_loglevel > 1) {
         do_log2(r_dir->s, "/");
         do_logmem(parsed[ind].name, parsed[ind].namelen);
@@ -583,15 +582,7 @@ static uogetopt2 myopts[] = {
      "SOMEWHERE/cvs-trees/"
      "index-by-date.html\n",
      0},
-    {0,
-     "author",
-     uogo_print_help,
-     UOGO_NOARG | UOGO_HIDDEN | UOGO_EXIT | UOGO_NOLHD,
-     0,
-     0,
-     "Show author.",
-     "Uwe Ohse, <uwe@ohse.de>.",
-     0},
+    {0, "author", uogo_print_help, UOGO_NOARG | UOGO_HIDDEN | UOGO_EXIT | UOGO_NOLHD, 0, 0, "Show author.", "Uwe Ohse, <uwe@ohse.de>.", 0},
     {0,
      "copyright",
      uogo_print_help,

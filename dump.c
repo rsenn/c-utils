@@ -1,6 +1,7 @@
 #include "lib/buffer.h"
 #include "lib/fmt.h"
 #include "lib/strlist.h"
+#include <ctype.h>
 
 void
 dump_sep() {

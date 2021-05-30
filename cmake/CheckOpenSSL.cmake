@@ -1,12 +1,13 @@
-# ##############################################################################################################################################################################################################################################################################################################################################################################################################
+# ##################################################################################################
 # Check OpenSSL
-# ##############################################################################################################################################################################################################################################################################################################################################################################################################
+# ##################################################################################################
 if(USE_SSL AND NOT BUILD_SSL)
   message(STATUS "Using OpenSSL encryption")
   if(NOT OPENSSL_ROOT_DIR)
     if("$ENV{OPENSSL_ROOT}")
       set(OPENSSL_ROOT_DIR "$ENV{OPENSSL_ROOT}" CACHE FILEPATH "OpenSSL root directory")
-      # else("$ENV{OPENSSL_ROOT}") set(OPENSSL_ROOT_DIR "${CMAKE_INSTALL_PREFIX}" CACHE FILEPATH "OpenSSL root directory")
+      # else("$ENV{OPENSSL_ROOT}") set(OPENSSL_ROOT_DIR "${CMAKE_INSTALL_PREFIX}" CACHE FILEPATH
+      # "OpenSSL root directory")
     endif("$ENV{OPENSSL_ROOT}")
   endif(NOT OPENSSL_ROOT_DIR)
   set(PKG_CONFIG_USE_CMAKE_PREFIX_PATH ON)
@@ -25,19 +26,21 @@ if(USE_SSL AND NOT BUILD_SSL)
     message(STATUS "Found openssl at ${OPENSSL_LIBRARY_DIRS} ${OPENSSL_INCLUDE_DIRS} ...")
 
     if(pkgcfg_lib_OPENSSL_crypto)
-      set(OPENSSL_CRYPTO_LIBRARY "${pkgcfg_lib_OPENSSL_crypto}" CACHE FILEPATH "OpenSSL crypto library" FORCE)
+      set(OPENSSL_CRYPTO_LIBRARY "${pkgcfg_lib_OPENSSL_crypto}"
+          CACHE FILEPATH "OpenSSL crypto library" FORCE)
     endif(pkgcfg_lib_OPENSSL_crypto)
     if(pkgcfg_lib_OPENSSL_ssl)
-      set(OPENSSL_SSL_LIBRARY "${pkgcfg_lib_OPENSSL_ssl}" CACHE FILEPATH "OpenSSL ssl library" FORCE)
+      set(OPENSSL_SSL_LIBRARY "${pkgcfg_lib_OPENSSL_ssl}" CACHE FILEPATH "OpenSSL ssl library"
+                                                                FORCE)
     endif(pkgcfg_lib_OPENSSL_ssl)
-
 
     if(OPENSSL_CRYPTO_LIBRARIES)
       set(OPENSSL_CRYPTO_LIBRARY "${OPENSSL_CRYPTO_LIBRARIES}")
     endif(OPENSSL_CRYPTO_LIBRARIES)
 
     if(OPENSSL_CRYPTO_LIBRARY AND OPENSSL_SSL_LIBRARY)
-      set(TLS_LIBRARIES "${OPENSSL_SSL_LIBRARY};${OPENSSL_CRYPTO_LIBRARY}" CACHE STRING "TLS libraries" FORCE)
+      set(TLS_LIBRARIES "${OPENSSL_SSL_LIBRARY};${OPENSSL_CRYPTO_LIBRARY}"
+          CACHE STRING "TLS libraries" FORCE)
     endif(OPENSSL_CRYPTO_LIBRARY AND OPENSSL_SSL_LIBRARY)
 
     list(APPEND CMAKE_REQUIRED_INCLUDES "${OPENSSL_INCLUDE_DIRS}")
@@ -47,13 +50,12 @@ if(USE_SSL AND NOT BUILD_SSL)
     message(STATUS "Searching for openssl using FindOpenSSL.cmake script...")
     include(FindOpenSSL)
 
-    
     if(OPENSSL_CRYPTO_LIBRARIES)
       set(OPENSSL_CRYPTO_LIBRARY "${OPENSSL_CRYPTO_LIBRARIES}")
     endif(OPENSSL_CRYPTO_LIBRARIES)
 
-
-    dump(OPENSSL_FOUND OPENSSL_INCLUDE_DIR OPENSSL_CRYPTO_LIBRARY OPENSSL_CRYPTO_LIBRARIES OPENSSL_SSL_LIBRARY OPENSSL_SSL_LIBRARIES OPENSSL_LIBRARIES OPENSSL_VERSION)
+    dump(OPENSSL_FOUND OPENSSL_INCLUDE_DIR OPENSSL_CRYPTO_LIBRARY OPENSSL_CRYPTO_LIBRARIES
+         OPENSSL_SSL_LIBRARY OPENSSL_SSL_LIBRARIES OPENSSL_LIBRARIES OPENSSL_VERSION)
   endif(OPENSSL_FOUND)
 
   # if(NOT HAVE_OPENSSL_SSL_H) set(OPENSSL_FOUND FALSE) endif(NOT HAVE_OPENSSL_SSL_H)
@@ -70,7 +72,9 @@ if(USE_SSL AND NOT BUILD_SSL)
     set(BUILD_SSL TRUE)
   endif(OPENSSL_FOUND)
 
-  # message(STATUS "OPENSSL_FOUND=${OPENSSL_FOUND}\n   OPENSSL_INCLUDE_DIR=${OPENSSL_LIB_DIR}\n   OPENSSL_LIB_DIR=${OPENSSL_INCLUDE_DIR}\n   OPENSSL_ROOT_DIR=${OPENSSL_ROOT_DIR}\n   OPENSSL_CRYPTO_LIBRARY=${OPENSSL_CRYPTO_LIBRARY}\n   OPENSSL_SSL_LIBRARY=${OPENSSL_SSL_LIBRARY}")
+  # message(STATUS "OPENSSL_FOUND=${OPENSSL_FOUND}\n   OPENSSL_INCLUDE_DIR=${OPENSSL_LIB_DIR}\n
+  # OPENSSL_LIB_DIR=${OPENSSL_INCLUDE_DIR}\n   OPENSSL_ROOT_DIR=${OPENSSL_ROOT_DIR}\n
+  # OPENSSL_CRYPTO_LIBRARY=${OPENSSL_CRYPTO_LIBRARY}\n OPENSSL_SSL_LIBRARY=${OPENSSL_SSL_LIBRARY}")
 
   if(OPENSSL_SSL_LIBRARY AND NOT OPENSSL_CRYPTO_LIBRARY)
     string(REPLACE "libssl" "libcrypto" OPENSSL_CRYPTO_LIBRARY "${OPENSSL_SSL_LIBRARY}")
@@ -82,7 +86,8 @@ else()
   unset(OPENSSL_SSL_LIBRARY CACHE)
   unset(OPENSSL_INCLUDE_DIR CACHE)
 endif()
-# link_libraries( ${ZLIB_LIBRARY} ${BZIP2_LIBRARY} ${LIBLZMA_LIBRARY} ${TLS_LIBRARIES} ) add_definitions(-Dinline=__inline)
+# link_libraries( ${ZLIB_LIBRARY} ${BZIP2_LIBRARY} ${LIBLZMA_LIBRARY} ${TLS_LIBRARIES} )
+# add_definitions(-Dinline=__inline)
 if(NOT OPENSSL_SSL_LIBRARY OR OPENSSL_SSL_LIBRARY STREQUAL "")
 
   # message("OPENSSL_CRYPTO_LIBRARY: ${OPENSSL_CRYPTO_LIBRARY}")

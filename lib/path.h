@@ -39,6 +39,7 @@ typedef struct {
                                   */
 #define PATH_FNM_PERIOD (1 << 2) /* Leading .' is matched only explicitly.  */
 int path_absolute(const char* path, stralloc* sa);
+char* path_absolute_s(const char* path);
 int path_absolute_sa(stralloc* sa);
 char* path_basename(const char* path);
 int path_canonical(const char* path, stralloc* out);

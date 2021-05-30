@@ -140,8 +140,7 @@ reg2cmd() {
     len = buffer_getline(buffer_0, buffer, sizeof(buffer));
 
     if(lineno == 1) {
-      if(((unsigned char)buffer[0] == 0xff && (unsigned char)buffer[1] == 0xfe) ||
-         (buffer[0] == 0x00 || buffer[1] == 0x00)) {
+      if(((unsigned char)buffer[0] == 0xff && (unsigned char)buffer[1] == 0xfe) || (buffer[0] == 0x00 || buffer[1] == 0x00)) {
         unicode = 1;
       }
       /*
@@ -332,8 +331,7 @@ reg2cmd() {
         buffer_puts(buffer_1, "\" ");
       }
 
-      has_newline = (find_char('\n', &line.s[valuestart], valueend - valuestart) ||
-                     find_char('\r', &line.s[valuestart], valueend - valuestart));
+      has_newline = (find_char('\n', &line.s[valuestart], valueend - valuestart) || find_char('\r', &line.s[valuestart], valueend - valuestart));
 
       has_expansion = (find_char('%', &line.s[valuestart], valueend - valuestart) >= 2);
 

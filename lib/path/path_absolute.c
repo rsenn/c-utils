@@ -17,3 +17,12 @@ path_absolute(const char* path, stralloc* sa) {
   stralloc_copys(sa, path);
   return 0;
 }
+
+char*
+path_absolute_s(const char* path ) {
+  stralloc sa;
+  stralloc_init(&sa);
+  path_absolute(path, &sa);
+  stralloc_nul(&sa);
+  return sa.s;
+}

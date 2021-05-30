@@ -5,7 +5,7 @@
 
 void*
 hashmap_default_key_dup_func(const void* key) {
-  return key;
+  return (void*)key;
 }
 
 void
