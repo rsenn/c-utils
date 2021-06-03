@@ -110,16 +110,16 @@ pipe2(int fd[2], int flags) {
   if(flags & O_NONBLOCK) {
     int fcntl_flags;
 
-    if((fcntl_flags = fcntl(fd[1], F_GETFL, 0)) < 0 || fcntl(fd[1], F_SETFL, fcntl_flags | O_NONBLOCK) == -1 || (fcntl_flags = fcntl(fd[0], F_GETFL, 0)) < 0 ||
-       fcntl(fd[0], F_SETFL, fcntl_flags | O_NONBLOCK) == -1)
+    if((fcntl_flags = fcntl(fd[1], F_GETFL, 0)) < 0 || fcntl(fd[1], F_SETFL, fcntl_flags | O_NONBLOCK) == -1 ||
+       (fcntl_flags = fcntl(fd[0], F_GETFL, 0)) < 0 || fcntl(fd[0], F_SETFL, fcntl_flags | O_NONBLOCK) == -1)
       goto fail;
   }
 
   if(flags & O_CLOEXEC) {
     int fcntl_flags;
 
-    if((fcntl_flags = fcntl(fd[1], F_GETFD, 0)) < 0 || fcntl(fd[1], F_SETFD, fcntl_flags | FD_CLOEXEC) == -1 || (fcntl_flags = fcntl(fd[0], F_GETFD, 0)) < 0 ||
-       fcntl(fd[0], F_SETFD, fcntl_flags | FD_CLOEXEC) == -1)
+    if((fcntl_flags = fcntl(fd[1], F_GETFD, 0)) < 0 || fcntl(fd[1], F_SETFD, fcntl_flags | FD_CLOEXEC) == -1 ||
+       (fcntl_flags = fcntl(fd[0], F_GETFD, 0)) < 0 || fcntl(fd[0], F_SETFD, fcntl_flags | FD_CLOEXEC) == -1)
       goto fail;
   }
 #endif

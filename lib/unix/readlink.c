@@ -66,12 +66,14 @@ readlink(const char* LinkPath, char* buf, size_t maxlen) {
 
   switch(u.iobuf.ReparseTag) {
     case IO_REPARSE_TAG_MOUNT_POINT: { /* Junction */
-      wbuf = u.iobuf.MountPointReparseBuffer.PathBuffer + u.iobuf.MountPointReparseBuffer.SubstituteNameOffset / sizeof(wchar_t);
+      wbuf = u.iobuf.MountPointReparseBuffer.PathBuffer +
+             u.iobuf.MountPointReparseBuffer.SubstituteNameOffset / sizeof(wchar_t);
       wlen = u.iobuf.MountPointReparseBuffer.SubstituteNameLength / sizeof(WCHAR);
       break;
     }
     case IO_REPARSE_TAG_SYMLINK: { /* Symlink */
-      wbuf = u.iobuf.SymbolicLinkReparseBuffer.PathBuffer + u.iobuf.SymbolicLinkReparseBuffer.SubstituteNameOffset / sizeof(WCHAR);
+      wbuf = u.iobuf.SymbolicLinkReparseBuffer.PathBuffer +
+             u.iobuf.SymbolicLinkReparseBuffer.SubstituteNameOffset / sizeof(WCHAR);
       wlen = u.iobuf.SymbolicLinkReparseBuffer.SubstituteNameLength / sizeof(WCHAR);
       break;
     }

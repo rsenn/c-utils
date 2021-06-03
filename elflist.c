@@ -41,17 +41,18 @@ static putstr_function* putstr = &buffer_putspad;
 static unsigned word_size;
 static unsigned radix = 16;
 
-#define RANGE_CHECK(ptr)                                                                                                                                                           \
-  do {                                                                                                                                                                             \
-    if(!range_ptrinbuf2(map.start, map.end, ptr)) {                                                                                                                                \
-      buffer_puts(buffer_2, "OUT of range: " #ptr);                                                                                                                                \
-      buffer_putnlflush(buffer_2);                                                                                                                                                 \
-      exit(120);                                                                                                                                                                   \
-    }                                                                                                                                                                              \
+#define RANGE_CHECK(ptr)                                                                                               \
+  do {                                                                                                                 \
+    if(!range_ptrinbuf2(map.start, map.end, ptr)) {                                                                    \
+      buffer_puts(buffer_2, "OUT of range: " #ptr);                                                                    \
+      buffer_putnlflush(buffer_2);                                                                                     \
+      exit(120);                                                                                                       \
+    }                                                                                                                  \
   } while(0)
 
-#define ELF_DUMP_FIELD(base, ptr, st, field)                                                                                                                                       \
-  buffer_putspad(b, #field, 30), buffer_puts(b, " "), putnum(b, ELF_GET(base, ptr, st, field), ELF_SIZE(base, st, field) * 2), buffer_putnlflush(b)
+#define ELF_DUMP_FIELD(base, ptr, st, field)                                                                           \
+  buffer_putspad(b, #field, 30), buffer_puts(b, " "),                                                                  \
+      putnum(b, ELF_GET(base, ptr, st, field), ELF_SIZE(base, st, field) * 2), buffer_putnlflush(b)
 
 void
 elf_print_prefix(buffer* b) {
@@ -59,24 +60,24 @@ elf_print_prefix(buffer* b) {
     buffer_putm_internal(b, filename, ":", NULL);
 }
 
-#define MACHINES                                                                                                                                                                   \
-  "NONE\0M32\0SPARC\0386\068K\088K\08"                                                                                                                                             \
-  "60\0MIPS\0S370\0PARISC\0VPP500\0SP"                                                                                                                                             \
-  "ARC32PLUS\0960\0PPC\0PPC64"                                                                                                                                                     \
-  "\0S390\0V800\0FR20\0"                                                                                                                                                           \
-  "RH32\0RCE\0ARM\0FAKE_"                                                                                                                                                          \
-  "ALPHA\0SH\0SPARCV9\0TRICORE\0ARC\0"                                                                                                                                             \
-  "H8_300\0H8_300H\0H8S\0H8_500\0IA_"                                                                                                                                              \
-  "64\0COLDFIRE\068HC12\0MMA\0PCP\0NC"                                                                                                                                             \
-  "PU\0NDR1\0STARCORE\0ME16\0ST100\0T"                                                                                                                                             \
-  "INYJ\0X86_"                                                                                                                                                                     \
-  "64\0PDSP\0FX66\0ST9PLUS\0ST7\068HC"                                                                                                                                             \
-  "16\068HC11\068HC08\068HC05\0SVX\0S"                                                                                                                                             \
-  "T19\0VAX\0CRIS\0JAVELIN\0F"                                                                                                                                                     \
-  "IREPATH\0ZSP\0MMIX\0"                                                                                                                                                           \
-  "HUANY\0PRISM\0AVR\0FR30\0D10V\0D30"                                                                                                                                             \
-  "V\0V850\0M32R\0MN10300\0MN10200\0P"                                                                                                                                             \
-  "J\0OPENRISC\0ARC_"                                                                                                                                                              \
+#define MACHINES                                                                                                       \
+  "NONE\0M32\0SPARC\0386\068K\088K\08"                                                                                 \
+  "60\0MIPS\0S370\0PARISC\0VPP500\0SP"                                                                                 \
+  "ARC32PLUS\0960\0PPC\0PPC64"                                                                                         \
+  "\0S390\0V800\0FR20\0"                                                                                               \
+  "RH32\0RCE\0ARM\0FAKE_"                                                                                              \
+  "ALPHA\0SH\0SPARCV9\0TRICORE\0ARC\0"                                                                                 \
+  "H8_300\0H8_300H\0H8S\0H8_500\0IA_"                                                                                  \
+  "64\0COLDFIRE\068HC12\0MMA\0PCP\0NC"                                                                                 \
+  "PU\0NDR1\0STARCORE\0ME16\0ST100\0T"                                                                                 \
+  "INYJ\0X86_"                                                                                                         \
+  "64\0PDSP\0FX66\0ST9PLUS\0ST7\068HC"                                                                                 \
+  "16\068HC11\068HC08\068HC05\0SVX\0S"                                                                                 \
+  "T19\0VAX\0CRIS\0JAVELIN\0F"                                                                                         \
+  "IREPATH\0ZSP\0MMIX\0"                                                                                               \
+  "HUANY\0PRISM\0AVR\0FR30\0D10V\0D30"                                                                                 \
+  "V\0V850\0M32R\0MN10300\0MN10200\0P"                                                                                 \
+  "J\0OPENRISC\0ARC_"                                                                                                  \
   "A5\0XTENSA\0ALPHA"
 #define TYPES "NONE\0REL\0EXEC\0DYN\0CORE\0"
 
@@ -116,10 +117,13 @@ elf_dump_dynamic(range map) {
   void* entry;
   const char* dynstrtab = NULL;
   int col_width = ELF_BITS(map.start) / 4 + 2;
-  static const char* const dynamic_types[] = {"NULL",         "NEEDED",       "PLTRELSZ", "PLTGOT", "HASH",     "STRTAB",        "SYMTAB",         "RELA",       "RELASZ",
-                                              "RELAENT",      "STRSZ",        "SYMENT",   "INIT",   "FINI",     "SONAME",        "RPATH",          "SYMBOLIC",   "REL",
-                                              "RELSZ",        "RELENT",       "PLTREL",   "DEBUG",  "TEXTREL",  "JMPREL",        "BIND_NOW",       "INIT_ARRAY", "FINI_ARRAY",
-                                              "INIT_ARRAYSZ", "FINI_ARRAYSZ", "RUNPATH",  "FLAGS",  "ENCODING", "PREINIT_ARRAY", "PREINIT_ARRAYSZ"};
+  static const char* const dynamic_types[] = {"NULL",       "NEEDED",     "PLTRELSZ",      "PLTGOT",         "HASH",
+                                              "STRTAB",     "SYMTAB",     "RELA",          "RELASZ",         "RELAENT",
+                                              "STRSZ",      "SYMENT",     "INIT",          "FINI",           "SONAME",
+                                              "RPATH",      "SYMBOLIC",   "REL",           "RELSZ",          "RELENT",
+                                              "PLTREL",     "DEBUG",      "TEXTREL",       "JMPREL",         "BIND_NOW",
+                                              "INIT_ARRAY", "FINI_ARRAY", "INIT_ARRAYSZ",  "FINI_ARRAYSZ",   "RUNPATH",
+                                              "FLAGS",      "ENCODING",   "PREINIT_ARRAY", "PREINIT_ARRAYSZ"};
 
   if(di == -1)
     return;
@@ -415,7 +419,12 @@ elf_dump_segments(range map) {
     putnum(buffer_1, filesz, col_width);
     buffer_putspace(buffer_1);
     putnum(buffer_1, memsz, col_width);
-    buffer_putm_internal(buffer_1, " ", (flags & ELF_PF_R) ? "r" : "-", (flags & ELF_PF_W) ? "w" : "-", (flags & ELF_PF_W) ? "x" : "-", NULL);
+    buffer_putm_internal(buffer_1,
+                         " ",
+                         (flags & ELF_PF_R) ? "r" : "-",
+                         (flags & ELF_PF_W) ? "w" : "-",
+                         (flags & ELF_PF_W) ? "x" : "-",
+                         NULL);
     buffer_putnlflush(buffer_1);
   }
 }

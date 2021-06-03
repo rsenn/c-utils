@@ -75,16 +75,21 @@ process_create(const char* filename, char* const argv[], fd_t std[3], const char
     posix_spawnattr_t attr;
 
     posix_spawnattr_setflags(&attr, 0);
-    posix_spawn_file_actions_init(&actions);
-    posix_spawn_file_actions_adddup2(&actions, std[0], 0);
-    posix_spawn_file_actions_adddup2(&actions, std[1], 1);
-    posix_spawn_file_actions_adddup2(&actions, std[2], 2);
+    if(std) {
+      posix_spawn_file_actions_init(&actions);
+      posix_spawn_file_actions_adddup2(&actions, std[0], 0);
+      posix_spawn_file_actions_adddup2(&actions, std[1], 1);
+      posix_spawn_file_actions_adddup2(&actions, std[2], 2);
+    }
 
-    if(posix_spawnp(&pid, filename, &actions, &attr, argv, NULL)) {
+    if(posix_spawnp(&pid, filename, std ? &actions : 0, &attr, argv, NULL)) {
       errmsg_warnsys("execvpe error: ", 0);
       exit(1);
     }
   }
+  buffer_putm_internal(buffer_2, "Spawned '", filename, "' PID = ", 0);
+  buffer_putlong(buffer_2, pid);
+  buffer_putsflush(buffer_2, "\n");
 
 #elif WINDOWS_NATIVE
   {
@@ -171,7 +176,7 @@ process_create(const char* filename, char* const argv[], fd_t std[3], const char
         }
       }
 
-      if(execve(filename, (char* const*)argv, environ) == -1)
+      if(execvp(filename, (char* const*)argv) == -1)
         errmsg_warn("execve failed: ", 0);
       exit(127);
     }

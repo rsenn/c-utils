@@ -6,18 +6,18 @@
 #include <sys/syscall.h>
 #include <unistd.h>
 
-#define PFATAL(x...)                                                                                                                                                               \
-  do {                                                                                                                                                                             \
-    fprintf(stderr, "[-] SYSTEM ERROR : " x);                                                                                                                                      \
-    fprintf(stderr,                                                                                                                                                                \
-            "\n\tLocation : %s(), "                                                                                                                                                \
-            "%s:%u\n",                                                                                                                                                             \
-            __FUNCTION__,                                                                                                                                                          \
-            __FILE__,                                                                                                                                                              \
-            __LINE__);                                                                                                                                                             \
-    perror("      OS message ");                                                                                                                                                   \
-    fprintf(stderr, "\n");                                                                                                                                                         \
-    exit(EXIT_FAILURE);                                                                                                                                                            \
+#define PFATAL(x...)                                                                                                   \
+  do {                                                                                                                 \
+    fprintf(stderr, "[-] SYSTEM ERROR : " x);                                                                          \
+    fprintf(stderr,                                                                                                    \
+            "\n\tLocation : %s(), "                                                                                    \
+            "%s:%u\n",                                                                                                 \
+            __FUNCTION__,                                                                                              \
+            __FILE__,                                                                                                  \
+            __LINE__);                                                                                                 \
+    perror("      OS message ");                                                                                       \
+    fprintf(stderr, "\n");                                                                                             \
+    exit(EXIT_FAILURE);                                                                                                \
   } while(0)
 
 inline static int
@@ -57,7 +57,10 @@ main() {
   }
 
   char buf[BUF_SZ];
-  struct iocb cb = {.aio_fildes = fd, .aio_lio_opcode = IOCB_CMD_PREAD, .aio_buf = (uint64_t)&buf[0], .aio_nbytes = BUF_SZ};
+  struct iocb cb = {.aio_fildes = fd,
+                    .aio_lio_opcode = IOCB_CMD_PREAD,
+                    .aio_buf = (uint64_t)&buf[0],
+                    .aio_nbytes = BUF_SZ};
   struct iocb* list_of_iocb[1] = {&cb};
 
   r = io_submit(ctx, 1, list_of_iocb);

@@ -258,7 +258,8 @@ FILE* __cdecl popen(const char* cmdstring, const char* type) {
      */
     save_errno = errno;
     if(_taccess_s(cmdexe, 0) == 0) {
-      childstatus = CreateProcess((LPTSTR)cmdexe, (LPTSTR)CommandLine, NULL, NULL, TRUE, 0, NULL, NULL, &StartupInfo, &ProcessInfo);
+      childstatus = CreateProcess(
+          (LPTSTR)cmdexe, (LPTSTR)CommandLine, NULL, NULL, TRUE, 0, NULL, NULL, &StartupInfo, &ProcessInfo);
     } else {
       TCHAR* envPath = NULL;
       size_t envPathSize = 0;
@@ -312,7 +313,8 @@ FILE* __cdecl popen(const char* cmdstring, const char* type) {
          * again.
          */
         if(_taccess_s(buf, 0) == 0) {
-          childstatus = CreateProcess((LPTSTR)buf, CommandLine, NULL, NULL, TRUE, 0, NULL, NULL, &StartupInfo, &ProcessInfo);
+          childstatus =
+              CreateProcess((LPTSTR)buf, CommandLine, NULL, NULL, TRUE, 0, NULL, NULL, &StartupInfo, &ProcessInfo);
           break;
         }
       }

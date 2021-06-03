@@ -157,8 +157,10 @@ static buffer log = BUFFER_INIT(write, STDOUT_FILENO, logbuf, sizeof(logbuf));
 static MAP_T dns_cache;
 static tai6464 ttl;
 static strlist output_files;
+static char** program_argv;
+static int program_argc;
 
-#define BACKLOG                                                                                                                                                                    \
+#define BACKLOG                                                                                                        \
   20 // how many pending connections
      // queue will hold
 
@@ -455,9 +457,7 @@ connection_open_log(connection_t* c, const char* prefix, const char* suffix) {
   stralloc_init(&filename);
   if(fileBase)
     stralloc_catm_internal(&filename, fileBase, "-", 0);
-  if(prefix)
-    stralloc_catm_internal(&filename, prefix, "-", 0);
-  stralloc_catb(&filename, buf, sockbuf_fmt_addr(&c->client, buf, '-'));
+  stralloc_catb(&filename, buf, sockbuf_fmt_addr(&c->proxy, buf, '-'));
   stralloc_catc(&filename, '-');
   if(c->proxy.af == 0) {
     socketbuf_t* sb = &c->proxy;
@@ -466,11 +466,9 @@ connection_open_log(connection_t* c, const char* prefix, const char* suffix) {
     else if((ret = socket_local4(sb->sock, sb->addr, &sb->port)) == 0)
       sb->af = AF_INET;
   }
-  stralloc_catb(&filename, buf, sockbuf_fmt_addr(&c->proxy, buf, '-'));
-  /*  stralloc_catm_internal(&filename,
-    "-", 0); taia_now(&now);
-    stralloc_catb(&filename, buf,
-    fmt_ulonglong(buf, now.sec.x));*/
+  stralloc_catb(&filename, buf, sockbuf_fmt_addr(&c->client, buf, '-'));
+  if(prefix)
+    stralloc_catm_internal(&filename, prefix, "-", 0);
   stralloc_cats(&filename, suffix);
   x = filename.s;
   n = filename.len;
@@ -616,14 +614,12 @@ sockbuf_fmt_addr(socketbuf_t* sb, char* dest, char sep) {
     if(sb->af == AF_INET6)
       n = fmt_ip6(dest, sb->addr);
     else
-      n = fmt_hexb(dest, sb->addr, 4) /*|| fmt_ip4(dest,
-                                         sb->addr)*/
-          ;
+      n = /*fmt_hexb(dest, sb->addr, 4)*/ fmt_ip4(dest, sb->addr);
     if(sb->af == AF_INET6 && byte_equal(dest, 6, "::ffff"))
-      n = fmt_hexb(dest, &sb->addr[12], 4);
+      n = fmt_ip4(dest, &sb->addr[12]); // fmt_hexb(dest, &sb->addr[12], 4);
   }
   dest[n++] = sep ? sep : ':';
-  n += fmt_xlong0(&dest[n], sb->port, 4);
+  n += fmt_ulong(&dest[n], sb->port);
   dest[n] = '\0';
   return n;
 }
@@ -647,7 +643,8 @@ sockbuf_close(socketbuf_t* sb) {
 
 void
 sockbuf_check(socketbuf_t* sb) {
-  int wantwrite = (line_buffer && !buffer_is_binary(&sb->buf) && !sb->force_write) ? buffer_numlines(&sb->buf, NULL) > 0 : sb->buf.p > 0;
+  int wantwrite = (line_buffer && !buffer_is_binary(&sb->buf) && !sb->force_write) ? buffer_numlines(&sb->buf, NULL) > 0
+                                                                                   : sb->buf.p > 0;
   io_entry* e = io_getentry(sb->sock);
 
   if(wantwrite) {
@@ -995,6 +992,22 @@ server_sigterm(int sig) {
   server_exit(0);
 }
 
+void
+server_spawn() {
+  if(program_argc > 0) {
+    strlist args;
+    strlist_init(&args, ' ');
+    strlist_fromv(&args, program_argv, program_argc);
+    buffer_puts(buffer_2, "Executing '");
+    buffer_putsa(buffer_2, &args.sa);
+    buffer_putsflush(buffer_2, "'\n");
+
+    process_create(program_argv[0], program_argv, 0, 0);
+
+    strlist_free(&args);
+  }
+}
+
 /* Main server loop */
 void
 server_loop() {
@@ -1050,38 +1063,30 @@ server_loop() {
 #endif
 
         while(sb->buf.p > 0) {
-          /*
-                    if(line_buffer &&
-             !buffer_is_binary(&sb->buf)
-             && !sb->force_write) {
-                      size_t num_lines,
-             end_pos; socketbuf_t*
-             other; if((num_lines =
-             buffer_numlines(&sb->buf,
-             &end_pos)) > 0) { ssize_t r
-             = socket_send(sb->sock,
-             sb->buf.x, end_pos, 0);
-                        if(r > 0) {
-                          buffer* b =
-             &sb->buf; if(r < b->p) {
-                            byte_copyr(b->x,
-             b->p - r, &b->x[r]); b->p
-             -= r;
 
-                            if(b->p) {
-                              other =
-             socket_other(sb->sock); r =
-             io_tryread(other->sock,
-             &b->x[b->p], b->a - b->p);
-                              if(r > 0)
-             { b->p += r; continue;
-                              }
-                            }
-                          }
-                        }
-                      }
-                    } else*/
-          {
+       /*   if(line_buffer && !buffer_is_binary(&sb->buf) && !sb->force_write) {
+            size_t num_lines, end_pos;
+            socketbuf_t* other;
+            if((num_lines = buffer_numlines(&sb->buf, &end_pos)) > 0) {
+              ssize_t r = socket_send(sb->sock, sb->buf.x, end_pos, 0);
+              if(r > 0) {
+                buffer* b = &sb->buf;
+                if(r < b->p) {
+                  byte_copyr(b->x, b->p - r, &b->x[r]);
+                  b->p -= r;
+
+                  if(b->p) {
+                    other = socket_other(sb->sock);
+                    r = io_tryread(other->sock, &b->x[b->p], b->a - b->p);
+                    if(r > 0) {
+                      b->p += r;
+                      continue;
+                    }
+                  }
+                }
+              }
+            }
+          } else*/ {
             buffer_flush(&sb->buf);
             sb->force_write = 0;
             break;
@@ -1105,7 +1110,8 @@ server_loop() {
         char addr[16];
         uint16 port;
         socklen_t addrlen = sizeof(addr);
-        sock = server.af == AF_INET ? socket_accept4(server_sock, addr, &port) : socket_accept6(server_sock, addr, &port, 0);
+        sock = server.af == AF_INET ? socket_accept4(server_sock, addr, &port)
+                                    : socket_accept6(server_sock, addr, &port, 0);
         if(sock == -1) {
           errmsg_warn("Accept error: ", strerror(errno), 0);
           exit(2);
@@ -1197,6 +1203,12 @@ server_connection_count() {
 }
 
 void
+sigchild_handler(int sig) {
+  buffer_puts(buffer_2, "SIGCHLD");
+  buffer_putnlflush(buffer_2);
+}
+
+void
 usage(const char* argv0) {
   buffer_putm_internal(buffer_2,
                        "Syntax: ",
@@ -1248,6 +1260,8 @@ main(int argc, char* argv[]) {
   fileBase = path_basename(argv[0]);
   errmsg_iam(argv[0]);
 
+  signal(SIGCHLD, sigchild_handler);
+
   MAP_NEW(dns_cache);
 
   sockbuf_init(&server);
@@ -1291,6 +1305,14 @@ main(int argc, char* argv[]) {
     }
   }
 
+  program_argv = argv + optind;
+  program_argc = argc - optind;
+  // strarray_from_argv(argc - optind, argv + optind, &program);
+
+  /*buffer_puts(buffer_2, "program:\n  ");
+  buffer_putstra(buffer_2, &program, "\n  ");
+  buffer_putnlflush(buffer_2);*/
+
   if(!(server.port && remote.port)) {
     usage(argv[0]);
     return -SYNTAX_ERROR;
@@ -1332,6 +1354,8 @@ main(int argc, char* argv[]) {
   if(!foreground)
     daemon(1, 0);
 #endif
+
+  server_spawn();
 
   server_loop();
 

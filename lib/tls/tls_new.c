@@ -11,7 +11,11 @@
 #include <sys/socket.h>
 #endif
 
-iarray tls_list = {.pages = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, .elemsize = sizeof(tls_instance), .elemperpage = 127, .bytesperpage = 4096, .len = 0};
+iarray tls_list = {.pages = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                   .elemsize = sizeof(tls_instance),
+                   .elemperpage = 127,
+                   .bytesperpage = 4096,
+                   .len = 0};
 
 #ifdef HAVE_OPENSSL
 #include <openssl/ssl.h>

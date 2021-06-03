@@ -1253,7 +1253,17 @@ print_xml_rect(buffer* b, xmlnode* e) {
   y1 = xml_get_attribute(e, "y1");
   x2 = xml_get_attribute(e, "x2");
   y2 = xml_get_attribute(e, "y2");
-  buffer_putm_internal(b, "(", x1 ? x1 : "<null>", " ", y1 ? y1 : "<null>", ") (", x2 ? x2 : "<null>", " ", y2 ? y2 : "<null>", ")", NULL);
+  buffer_putm_internal(b,
+                       "(",
+                       x1 ? x1 : "<null>",
+                       " ",
+                       y1 ? y1 : "<null>",
+                       ") (",
+                       x2 ? x2 : "<null>",
+                       " ",
+                       y2 ? y2 : "<null>",
+                       ")",
+                       NULL);
   buffer_flush(b);
 }
 
@@ -1533,12 +1543,12 @@ draw_measures(xmlnode* doc) {
  * Executes XPath query and for every
  * resulting element calls a function
  */
-#define match_foreach(doc, q, fn)                                                                                                                                                  \
-  do {                                                                                                                                                                             \
-    xmlnodeset ns = getnodeset(doc, q);                                                                                                                                            \
-    if(xmlnodeset_size(&ns)) {                                                                                                                                                     \
-      for_set(&ns, fn);                                                                                                                                                            \
-    }                                                                                                                                                                              \
+#define match_foreach(doc, q, fn)                                                                                      \
+  do {                                                                                                                 \
+    xmlnodeset ns = getnodeset(doc, q);                                                                                \
+    if(xmlnodeset_size(&ns)) {                                                                                         \
+      for_set(&ns, fn);                                                                                                \
+    }                                                                                                                  \
   } while(0);
 
 void

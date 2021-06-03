@@ -56,7 +56,7 @@ output_cmake_set(buffer* b, const char* cmd, const set_t* list) {
     size_t n;
     set_iterator_t it;
     buffer_putm_internal(b, cmd, "(\n", 0);
-    set_foreach(list,it, s, n) {
+    set_foreach(list, it, s, n) {
       size_t i;
       buffer_puts(b, "  \"");
 
@@ -102,9 +102,10 @@ output_cmake_rule(buffer* b, target* rule) {
       bool lib = rule_is_lib(rule);
       bool link = !(rule_is_compile(rule) || lib);
       size_t pos = 0;
-      set_t deps;
+      set_t deps, srcs;
 
       set_init(&deps, 0);
+      set_init(&srcs, 0);
 
       buffer_puts(b, lib ? "add_library(" : "add_executable(");
       if(lib || link) {
@@ -119,13 +120,18 @@ output_cmake_rule(buffer* b, target* rule) {
           rule_prereq_recursive(rule, &deps);
         }
       }
+      if(link) {
+        set_filter_out(&rule->prereq, &deps, is_source_b);
+        set_filter(&rule->prereq, &srcs, is_source_b);
+      }
+
       buffer_put(b, x + pos, n - pos);
       buffer_putc(b, ' ');
 
       if(lib && is_lib(rule->name))
         buffer_puts(b, "STATIC ");
 
-      buffer_putset(b, lib ? &deps : &rule->prereq, " ", 1);
+      buffer_putset(b, lib ? &deps : &srcs, " ", 1);
       buffer_puts(b, ")");
       buffer_putnlflush(b);
     }
@@ -192,8 +198,8 @@ output_cmake_project(buffer* b, MAP_T* rules, MAP_T* vars, const strlist* includ
   */
   buffer_putnlflush(b);
   output_cmake_cmd(b, "add_definitions", var_list("DEFS"));
- output_cmake_set(b, "link_libraries", &link_libraries);
- // output_cmake_libs(b);
+  output_cmake_set(b, "link_libraries", &link_libraries);
+  // output_cmake_libs(b);
   output_cmake_cmd(b, "include_directories", include_dirs);
   output_cmake_cmd(b, "link_directories", link_dirs);
 

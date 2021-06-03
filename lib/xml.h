@@ -24,7 +24,15 @@ extern "C" {
 #define __inl static inline
 #endif
 
-typedef enum xmltokid { XML_EOF = -1, XML_DATA = 0, XML_TAG_NAME = 1, XML_TAG_CLOSE = 2, XML_ATTR_NAME = 3, XML_ATTR_VALUE = 4, XML_COMMENT = 5 } xmltokid;
+typedef enum xmltokid {
+  XML_EOF = -1,
+  XML_DATA = 0,
+  XML_TAG_NAME = 1,
+  XML_TAG_CLOSE = 2,
+  XML_ATTR_NAME = 3,
+  XML_ATTR_VALUE = 4,
+  XML_COMMENT = 5
+} xmltokid;
 
 typedef struct {
   char* x;

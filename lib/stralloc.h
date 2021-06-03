@@ -95,11 +95,11 @@ int stralloc_cat(stralloc* sa, const stralloc* in);
 int stralloc_append(stralloc* sa, const char* in); /* beware: this takes a pointer to 1 char */
 
 #define stralloc_APPEND(sa, ptr) stralloc_CATC((sa), *(ptr))
-#define stralloc_CATC(sa, c)                                                                                                                                                       \
-  do {                                                                                                                                                                             \
-    if((sa)->len >= (sa)->a)                                                                                                                                                       \
-      stralloc_readyplus((sa), 1);                                                                                                                                                 \
-    (sa)->s[(sa)->len++] = (c);                                                                                                                                                    \
+#define stralloc_CATC(sa, c)                                                                                           \
+  do {                                                                                                                 \
+    if((sa)->len >= (sa)->a)                                                                                           \
+      stralloc_readyplus((sa), 1);                                                                                     \
+    (sa)->s[(sa)->len++] = (c);                                                                                        \
   } while(0);
 
 /* stralloc_starts returns 1 if the \0 - terminated string in "in", without
@@ -255,7 +255,8 @@ int stralloc_subst(stralloc* out, const char* b, size_t len, const char* from, c
 
 typedef size_t(stralloc_fmt_fn)(char*, int);
 size_t stralloc_fmt_call(stralloc*, stralloc_fmt_fn*, void* av[4]);
-size_t stralloc_fmt_pred(stralloc*, const char* in, size_t in_len, size_t (*fmt_function)(char*, int), int (*pred)(int));
+size_t
+stralloc_fmt_pred(stralloc*, const char* in, size_t in_len, size_t (*fmt_function)(char*, int), int (*pred)(int));
 size_t stralloc_fmt(stralloc*, const char* in, size_t in_len, size_t (*fmt_function)(char*, int));
 
 int stralloc_catdouble(stralloc*, double d, int prec);

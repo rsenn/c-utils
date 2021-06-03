@@ -326,7 +326,8 @@ term_init(fd_t fd, struct termios* state) {
     return;
   }
 
-  if(actual.c_iflag != raw.c_iflag || actual.c_oflag != raw.c_oflag || actual.c_cflag != raw.c_cflag || actual.c_lflag != raw.c_lflag) {
+  if(actual.c_iflag != raw.c_iflag || actual.c_oflag != raw.c_oflag || actual.c_cflag != raw.c_cflag ||
+     actual.c_lflag != raw.c_lflag) {
     /* Try restoring the old settings!
      */
     tcsetattr(fd, TCSANOW, &old);

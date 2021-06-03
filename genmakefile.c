@@ -2695,13 +2695,13 @@ target_ptrs(const strlist* targets, array* out) {
 }
 
 target*
-gen_single_rule(stralloc* output,  stralloc* cmd) {
+gen_single_rule(stralloc* output, stralloc* cmd) {
   target* rule;
   char* x;
   size_t n;
 
   if((rule = rule_get_sa(output))) {
-    set_init(&rule->prereq,0 );
+    set_init(&rule->prereq, 0);
 
     if(cmd && !(rule->recipe.len && stralloc_equal(&rule->recipe, cmd))) {
       if(rule->recipe.len)

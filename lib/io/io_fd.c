@@ -156,7 +156,8 @@ io_fd_internal(fd_t d, int flags) {
     alt_firstread = alt_firstwrite = -1;
     if(io_waitmode == UNDECIDED) {
       io_signum = SIGRTMIN + 1;
-      if(sigemptyset(&io_ss) == 0 && sigaddset(&io_ss, io_signum) == 0 && sigaddset(&io_ss, SIGIO) == 0 && sigprocmask(SIG_BLOCK, &io_ss, 0) == 0)
+      if(sigemptyset(&io_ss) == 0 && sigaddset(&io_ss, io_signum) == 0 && sigaddset(&io_ss, SIGIO) == 0 &&
+         sigprocmask(SIG_BLOCK, &io_ss, 0) == 0)
         io_waitmode = _SIGIO;
     }
 #endif

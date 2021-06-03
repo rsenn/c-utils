@@ -54,10 +54,10 @@ int strarray_set(strarray*, size_t index, const char* s);
 int strarray_setb(strarray*, size_t index, const char* s, size_t len);
 
 #ifdef STRALLOC_H
-#define strarray_push_sa_unique(a, sa)                                                                                                                                             \
-  do {                                                                                                                                                                             \
-    if(!strarray_contains_sa((a), (sa)))                                                                                                                                           \
-      strarray_push_sa((a), (sa));                                                                                                                                                 \
+#define strarray_push_sa_unique(a, sa)                                                                                 \
+  do {                                                                                                                 \
+    if(!strarray_contains_sa((a), (sa)))                                                                               \
+      strarray_push_sa((a), (sa));                                                                                     \
   } while(0)
 #define strarray_contains_sa(a, sa) (strarray_index_of_sa((a), (sa)) != -1)
 

@@ -118,7 +118,8 @@ buffer_brotli_close(buffer* b) {
   if(b->op == (buffer_op_proto*)&buffer_brotli_write) {
 
     do {
-      ret = BrotliEncoderCompressStream(ctx->state, BROTLI_OPERATION_FINISH, &avail_in, &next_in, &avail_out, &next_out, 0);
+      ret = BrotliEncoderCompressStream(
+          ctx->state, BROTLI_OPERATION_FINISH, &avail_in, &next_in, &avail_out, &next_out, 0);
     } while(ret != BROTLI_FALSE && avail_in > 0);
 
     BrotliEncoderDestroyInstance(ctx->state);

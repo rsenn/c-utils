@@ -1,7 +1,15 @@
 #include "../cpp_internal.h"
 
 unsigned
-cpp_get_macro_info(cpp_t* cpp, tokenizer* t, struct macro_info_s* mi_list, size_t* mi_cnt, unsigned nest, unsigned tpos, const char* name, char* visited[], unsigned rec_level) {
+cpp_get_macro_info(cpp_t* cpp,
+                   tokenizer* t,
+                   struct macro_info_s* mi_list,
+                   size_t* mi_cnt,
+                   unsigned nest,
+                   unsigned tpos,
+                   const char* name,
+                   char* visited[],
+                   unsigned rec_level) {
   int brace_lvl = 0;
   while(1) {
     struct token_s tok;
@@ -25,7 +33,8 @@ cpp_get_macro_info(cpp_t* cpp, tokenizer* t, struct macro_info_s* mi_list, size_
         if(tokenizer_peek(t) == '(') {
           unsigned tpos_save = tpos;
           tpos = cpp_get_macro_info(cpp, t, mi_list, mi_cnt, nest + 1, tpos + 1, newname, visited, rec_level);
-          mi_list[*mi_cnt] = (struct macro_info_s){.name = newname, .nest = nest + 1, .first = tpos_save, .last = tpos + 1};
+          mi_list[*mi_cnt] =
+              (struct macro_info_s){.name = newname, .nest = nest + 1, .first = tpos_save, .last = tpos + 1};
           ++(*mi_cnt);
         } else {
           /* suppress expansion */

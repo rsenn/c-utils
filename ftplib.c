@@ -100,9 +100,11 @@ ftplib_read(buffer* in, stralloc* ret) {
     if(!x)
       return 0;
     p = ret->s;
-    if(ret->len >= 4 && (p[0] >= '0' && p[0] <= '9') && (p[1] >= '0' && p[1] <= '9') && (p[2] >= '0' && p[2] <= '9') && (p[3] == ' '))
+    if(ret->len >= 4 && (p[0] >= '0' && p[0] <= '9') && (p[1] >= '0' && p[1] <= '9') && (p[2] >= '0' && p[2] <= '9') &&
+       (p[3] == ' '))
       break;
-    if(ret->len >= 4 && (p[0] >= '0' && p[0] <= '9') && (p[1] >= '0' && p[1] <= '9') && (p[2] >= '0' && p[2] <= '9') && (p[3] == '-')) {
+    if(ret->len >= 4 && (p[0] >= '0' && p[0] <= '9') && (p[1] >= '0' && p[1] <= '9') && (p[2] >= '0' && p[2] <= '9') &&
+       (p[3] == '-')) {
       multiline = 1;
     }
     if(!multiline)
@@ -112,7 +114,8 @@ ftplib_read(buffer* in, stralloc* ret) {
 }
 
 int
-ftplib_pasv(buffer* in, buffer* out, unsigned long timeout, stralloc* allowed_ips, stralloc* meld, unsigned int retries) {
+ftplib_pasv(
+    buffer* in, buffer* out, unsigned long timeout, stralloc* allowed_ips, stralloc* meld, unsigned int retries) {
   stralloc x;
   char *p, *q, *r;
   unsigned i;

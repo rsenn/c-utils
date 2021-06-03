@@ -272,7 +272,7 @@ void deps_for_libs(void);
 
 void target_ptrs(const strlist*, array*);
 
-target* gen_single_rule(stralloc* output,  stralloc* cmd);
+target* gen_single_rule(stralloc* output, stralloc* cmd);
 void gen_clean_rule(void);
 
 int filter_pptoks(const void*, size_t);

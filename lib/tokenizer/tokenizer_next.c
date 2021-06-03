@@ -31,7 +31,8 @@ tokenizer_next(tokenizer* t, struct token_s* out) {
           continue;
         tokenizer_ungetc(t, c);
         c = '\\';
-      } else if(is_plus_or_minus(c) && s > t->buf + 1 && (s[-1] == 'E' || s[-1] == 'e') && is_valid_float_until(t->buf, s - 1)) {
+      } else if(is_plus_or_minus(c) && s > t->buf + 1 && (s[-1] == 'E' || s[-1] == 'e') &&
+                is_valid_float_until(t->buf, s - 1)) {
         goto process_char;
       } else if(c == '.' && s != t->buf && is_valid_float_until(t->buf, s) == 1) {
         goto process_char;
