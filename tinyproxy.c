@@ -1002,8 +1002,11 @@ server_spawn() {
     buffer_putsa(buffer_2, &args.sa);
     buffer_putsflush(buffer_2, "'\n");
 
-    process_create(program_argv[0], program_argv, 0, 0);
-
+if(fork() > 0) {
+      execvp(program_argv[0], program_argv);
+      errmsg_warnsys("Error in execvp: ",0);
+      exit(1);
+}
     strlist_free(&args);
   }
 }
