@@ -645,6 +645,9 @@ include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/CheckLZMA.cmake)
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/CheckOpenSSL.cmake)
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/CheckZlib.cmake)
 
+include_directories(${OPENSSL_INCLUDE_DIRS})
+link_directories(${OPENSSL_LIBRARY_DIRS})
+
 set(CMAKE_REQUIRED_DEFINITIONS)
 set(CMAKE_REQUIRED_INCLUDES "poll.h")
 set(CMAKE_REQUIRED_FLAGS)
