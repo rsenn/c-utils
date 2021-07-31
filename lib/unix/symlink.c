@@ -242,10 +242,8 @@ CreateJunction(LPCTSTR lpLinkName, LPCTSTR lpTargetName, LPSECURITY_ATTRIBUTES l
   return TRUE;
 }
 
-int link(const char*, const char*) __attribute__((alias("junction")));
-
 int
-junction(const char* oldpath, const char* newpath) {
+link(const char* oldpath, const char* newpath) {
   return CreateJunction(newpath, oldpath, NULL);
 }
 
