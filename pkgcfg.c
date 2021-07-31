@@ -199,7 +199,7 @@ const char*
 exec_program(const char* compiler, const char* arg, stralloc* out) {
   pid_t pid;
   int ws = 0;
-#ifdef POSIX_SPAWN
+#if 0 //def POSIX_SPAWN
   posix_spawn_file_actions_t actions;
   posix_spawnattr_t attr;
 #endif
@@ -232,7 +232,7 @@ exec_program(const char* compiler, const char* arg, stralloc* out) {
     return 0;
   }
 #else
-#if POSIX_SPAWN
+#if 0 //POSIX_SPAWN
 
   posix_spawnattr_setflags(&attr, 0);
   posix_spawn_file_actions_init(&actions);

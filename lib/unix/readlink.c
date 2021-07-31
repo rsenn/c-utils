@@ -1,7 +1,7 @@
 #include "../windoze.h"
 #include "../typedefs.h"
 
-#if WINDOWS_NATIVE
+#if WINDOWS
 #include "../ioctlcmd.h"
 #include "../utf8.h"
 #include "../stralloc.h"
@@ -120,6 +120,46 @@ is_symlink(const char* LinkPath) {
 char
 is_junction(const char* LinkPath) {
   return reparse_tag(LinkPath) == IO_REPARSE_TAG_MOUNT_POINT;
+}
+
+#else
+#include <sys/mman.h>
+#include <sys/stat.h>
+#include <unistd.h>
+#include <fcntl.h>
+
+int
+is_symlink(const char* path) {
+  struct stat st;
+  if(lstat(path, &st) == 0) {
+    if(S_ISLNK(st.st_mode))
+      return 1;
+  }
+  return 0;
+}
+
+int
+is_junction(const char* path) {
+  struct stat st;
+  int fd,ret=0;
+  if(stat(path, &st) == 0) {
+
+    if((fd = open("/proc/mounts", O_RDONLY)) != -1) {
+      char *p, *e;
+
+      if((p = mmap(0, st.st_size, PROT_READ, MAP_PRIVATE, fd, 0))) {
+        size_t len;
+        e = p + st.st_size;
+
+        for(; p < e; p += len) {
+          len = byte_chr(p, e - p, '\n');
+        }
+      }
+
+      close(fd);
+    }
+  }
+  return ret;
 }
 
 #endif /* WINDOWS */

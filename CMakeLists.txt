@@ -858,7 +858,7 @@ add_program(hexedit stralloc buffer array io errmsg mmap open path scan uint64 u
 set(httptest_SOURCES uri.c uri.h)
 
 message("TLS_LIBRARIES = ${TLS_LIBRARIES}")
-add_program(httptest slist xml sig http c dns stralloc buffer errmsg byte io socket alloc taia ${TLS_LIBRARIES} ${LIBMSWSOCK} pthread)
+add_program(httptest slist xml sig http dns stralloc buffer errmsg byte io socket alloc taia ${TLS_LIBRARIES} ${LIBMSWSOCK} pthread)
 link_program(httptest ${LIBDL})
 # add_program(ssltest strlist unix dns stralloc buffer errmsg byte io  tls socket alloc taia ${TLS_LIBRARIES} ${LIBMSWSOCK} ${LIBDL} pthread)
 
