@@ -1534,6 +1534,10 @@ int
 is_command_b(const char* filename, size_t len) {
   size_t n;
   const char* x;
+
+  if(path_is_absolute(filename))
+    return path_exists(filename);
+
   stralloc path;
   stralloc_init(&path);
 
@@ -1939,16 +1943,17 @@ var_isset(const char* name) {
  * @param name
  * @return
  */
-strlist*
+var_t*
 var_list(const char* name) {
   MAP_PAIR_T t;
   if(!MAP_SEARCH(vars, name, str_len(name) + 1, &t)) {
-    strlist var;
-    strlist_init(&var, (name[0] >= 'A' && name[0] <= 'Z') ? ' ' : pathsep_args);
+    var_t var;
+    var.serial = 0;
+    strlist_init(&var.value, (name[0] >= 'A' && name[0] <= 'Z') ? ' ' : pathsep_args);
     MAP_INSERT(vars, name, str_len(name) + 1, &var, sizeof(strlist));
     MAP_SEARCH(vars, name, str_len(name) + 1, &t);
   }
-  return (strlist*)MAP_ITER_VALUE(t);
+  return (var_t*)MAP_ITER_VALUE(t);
 }
 
 /**
@@ -1958,9 +1963,9 @@ var_list(const char* name) {
  */
 const char*
 var_get(const char* name) {
-  strlist* v = var_list(name);
-  stralloc_nul(&v->sa);
-  return v->sa.s;
+  var_t* v = var_list(name);
+  stralloc_nul(&v->value.sa);
+  return v->value.sa.s;
 }
 
 /**
@@ -1969,12 +1974,12 @@ var_get(const char* name) {
  * @param value
  * @return
  */
-strlist*
+var_t*
 var_set(const char* name, const char* value) {
-  strlist* var;
+  var_t* var;
   var = var_list(name);
-  stralloc_zero(&var->sa);
-  stralloc_copys(&var->sa, value);
+  stralloc_zero(&var->value.sa);
+  stralloc_copys(&var->value.sa, value);
   return var;
 }
 
@@ -1992,8 +1997,8 @@ var_unset(const char* name) {
  */
 void
 var_push(const char* name, const char* value) {
-  strlist* var = var_list(name);
-  strlist_push_unique(var, value);
+  var_t* var = var_list(name);
+  strlist_push_unique(&var->value, value);
 }
 
 /**
@@ -2003,7 +2008,8 @@ var_push(const char* name, const char* value) {
  */
 void
 var_push_sa(const char* name, stralloc* value) {
-  strlist_push_unique_sa(var_list(name), value);
+  var_t* var = var_list(name);
+  strlist_push_unique_sa(&var->value, value);
 }
 
 /**
@@ -2015,7 +2021,7 @@ var_push_sa(const char* name, stralloc* value) {
 void
 push_lib(const char* name, const char* lib) {
   stralloc sa;
-  strlist* var = var_list(name);
+  // var_t* var = var_list(name);
   stralloc_init(&sa);
   if(format_linklib_fn) {
     format_linklib_fn(lib, &sa);
@@ -3459,7 +3465,7 @@ gen_install_rules() {
                              0);
 
       if(!v) {
-        v = var_set("INSTALL", "install")->sa.s;
+        v = var_set("INSTALL", "install")->value.sa.s;
 
         var_set("INSTALL_DIR", str_start(v, "install") ? "$(INSTALL) -d" : "mkdir");
 
@@ -3510,11 +3516,11 @@ get_keys(MAP_T* map, strlist* list) {
 }
 
 int
-input_command(stralloc* cmd, char* argv[]) {
+input_command(stralloc* cmd, int argc, char* argv[]) {
   size_t n, len;
   int compile = 0, link = 0, objects = 0;
   const char *x, *file;
-  char** p;
+  char **p, **end = argv + argc;
   sourcedir* srcdir;
   stralloc output, dir;
   strlist files, flags, libs;
@@ -3527,7 +3533,7 @@ input_command(stralloc* cmd, char* argv[]) {
   if(!is_command_b(cmd->s, cmd->len))
     return 0;
 
-  for(p = argv; (len = *p ? str_len(*p) : 0, x = *p); p++) {
+  for(p = argv; (len = *p ? str_len(*p) : 0, x = *p, p < end); p++) {
     int src = is_source_b(x, len);
     if(byte_equal(x, 2, "-c") || src) {
       compile = 1;
@@ -3537,7 +3543,7 @@ input_command(stralloc* cmd, char* argv[]) {
       sources_add_b(x, byte_chrs(x, len, " \t\n\v\r", 5));
   }
 
-  for(p = argv; (len = *p ? str_len(*p) : 0, x = *p); p++) {
+  for(p = argv; (len = *p ? str_len(*p) : 0, x = *p, p < end); p++) {
     len = str_len(x);
     if(len >= 2 && !byte_diff(x, 2, "-o")) {
       size_t i;
@@ -3553,15 +3559,15 @@ input_command(stralloc* cmd, char* argv[]) {
     }
   }
 
-  for(p = argv; (len = *p ? str_len(*p) : 0, x = *p); p++) {
+  for(p = argv; (len = *p ? str_len(*p) : 0, x = *p, p < end); p++) {
     len = str_len(x);
     strlist_pushb(&flags, x, len);
 
     if(len >= 2 && byte_equal(x, 2, "-o")) {
       x = (x[2] == '\0') ? p[1] : x + 2;
 
-      path_normalize(x, &output);
-      //      stralloc_copys(&output, x);
+      //      path_normalize(x, &output);
+      stralloc_copys(&output, x);
     } else if(len >= 2 && byte_equal(x, 2, "-D")) {
       x += (x[2] == '\0') ? 3 : 2;
       push_define(x);
@@ -3581,6 +3587,8 @@ input_command(stralloc* cmd, char* argv[]) {
       len -= i;
     } else if(len >= 2 && byte_equal(x, 2, "-c")) {
       compile = true;
+    } else if(len >= 7 && byte_equal(x, 7, "--chip=")) {
+      stralloc_copys(&cfg.chip, &x[7]);
     } else if(len >= 1 && x[0] != '-') {
       if(is_filename_b(x, len)) {
         stralloc file;
@@ -3607,6 +3615,14 @@ input_command(stralloc* cmd, char* argv[]) {
   buffer_putsl(buffer_2, &files, " ");
   buffer_putnlflush(buffer_2);
 #endif
+  if(output.len) {
+    path_dirname(output.s, &dirs.work.sa);
+    stralloc_nul(&dirs.work.sa);
+    stralloc_copy(&dirs.build.sa, &dirs.out.sa);
+    stralloc_nul(&dirs.build.sa);
+    path_appends(dirs.work.sa.s, &dirs.build.sa);
+  }
+
   for(p = argv; (len = *p ? str_len(*p) : 0, x = *p); p++) {
     len = str_len(x);
     if(byte_finds(x, len, exts.obj) < len || byte_finds(x, len, exts.lib) < len) {
@@ -3815,7 +3831,10 @@ input_command_line(const char* x, size_t n) {
     }
     i = scan_nonwhitenskip(x, n);
     if(idx == 0) {
-      stralloc_copyb(&command, x, i);
+      if(i >= 2 && x[0] == '"' && x[i - 1] == '"')
+        stralloc_copyb(&command, x + 1, i - 2);
+      else
+        stralloc_copyb(&command, x, i);
     } else if(byte_chrs(x, i, "*?[", 3) < i) {
       bool same_dir;
       stralloc cwd;
@@ -3856,7 +3875,7 @@ input_command_line(const char* x, size_t n) {
 #endif
 
   if(*(av = strarray_to_argv(&args)))
-    ret = input_command(&command, av);
+    ret = input_command(&command, strarray_size(&args), av);
   if(av)
     alloc_free(av);
   stralloc_free(&command);
@@ -3871,28 +3890,32 @@ input_command_line(const char* x, size_t n) {
  * @param vars
  */
 void
-output_var(buffer* b, MAP_T* vars, const char* name) {
+output_var(buffer* b, MAP_T* vars, const char* name, int serial) {
   stralloc v;
-  strlist* var;
+  var_t* var;
   set_t refvars;
   const char* ref;
   size_t len;
   set_iterator_t it;
   MAP_PAIR_T t = 0;
   set_init(&refvars, 0);
+
   if(MAP_SEARCH(*vars, name, str_len(name) + 1, &t)) {
-    stralloc_init(&v);
     var = MAP_ITER_VALUE(t);
-    if(var->sa.len) {
+    if(var->serial == serial)
+      return;
+    stralloc_init(&v);
+
+    if(var->value.sa.len) {
       stralloc_copys(&v, MAP_ITER_KEY(t));
       if(ninja)
         stralloc_lower(&v);
       stralloc_nul(&v);
 
       set_clear(&refvars);
-      extract_vars(var->sa.s, var->sa.len, &refvars);
+      extract_vars(var->value.sa.s, var->value.sa.len, &refvars);
 
-      set_foreach(&refvars, it, ref, len) { output_var(b, vars, ref); }
+      set_foreach(&refvars, it, ref, len) { output_var(b, vars, ref, serial); }
 
       if(batch)
         buffer_putm_internal(b, "@SET ", v.s, "=", NULL);
@@ -3901,16 +3924,18 @@ output_var(buffer* b, MAP_T* vars, const char* name) {
       else
         buffer_putm_internal(b, v.s, " = ", NULL);
 
+      var->serial = serial;
+
       if(ninja || shell) {
         stralloc_zero(&v);
-        var_subst(&var->sa, &v, "$", "", 1);
+        var_subst(&var->value.sa, &v, "$", "", 1);
         buffer_putsa(b, &v);
       } else if(batch) {
         stralloc_zero(&v);
-        var_subst(&var->sa, &v, "%", "%", 1);
+        var_subst(&var->value.sa, &v, "%", "%", 1);
         buffer_putsa(b, &v);
       } else {
-        buffer_putsa(b, &var->sa);
+        buffer_putsa(b, &var->value.sa);
       }
       if(shell)
         buffer_putc(b, '"');
@@ -3936,8 +3961,11 @@ void
 output_all_vars(buffer* b, MAP_T* vars, strlist* varnames) {
   MAP_PAIR_T t;
   const char* name;
+  static int serial = 0;
+
   stralloc_nul(&varnames->sa);
-  strlist_foreach_s(varnames, name) { output_var(b, vars, name); }
+  ++serial;
+  strlist_foreach_s(varnames, name) { output_var(b, vars, name, serial); }
   put_newline(b, 1);
 }
 
@@ -4987,8 +5015,8 @@ set_compiler_type(const char* compiler) {
     if(cfg.chip.len == 0)
       stralloc_copys(&cfg.chip, "16f876a");
 
-    stralloc_nul(&cfg.chip);
-    var_set("CHIP", cfg.chip.s);
+    /* stralloc_nul(&cfg.chip);
+     var_set("CHIP", cfg.chip.s);*/
 
     /* {
        stralloc chipdef;
@@ -5084,9 +5112,9 @@ set_compiler_type(const char* compiler) {
     if(cfg.chip.len == 0)
       stralloc_copys(&cfg.chip, "16f876a");
 
-    stralloc_nul(&cfg.chip);
-    var_set("CHIP", cfg.chip.s);
-
+    /*    stralloc_nul(&cfg.chip);
+        var_set("CHIP", cfg.chip.s);
+    */
     if(!var_isset("MACH")) {
 
       if(cfg.mach.bits == _14)
@@ -5166,9 +5194,6 @@ set_compiler_type(const char* compiler) {
 
     if(cfg.chip.len == 0)
       stralloc_copys(&cfg.chip, "16f876a");
-
-    stralloc_nul(&cfg.chip);
-    var_set("CHIP", cfg.chip.s);
 
     var_push("CFLAGS", "--mode=pro");
     var_push("CFLAGS", "--float=24");
@@ -5288,15 +5313,15 @@ set_compiler_type(const char* compiler) {
     var_push("prefix", str_start(tools.toolchain, "mingw") ? tools.toolchain : "usr");
 
     if(cygming && 0) {
-      strlist* cross = var_set("CROSS_COMPILE", str_end(tools.toolchain, "64") ? "x86_64" : "i686");
+      var_t* cross = var_set("CROSS_COMPILE", str_end(tools.toolchain, "64") ? "x86_64" : "i686");
 
       //      cross->sep = '-';
-      stralloc_cats(&cross->sa, str_start(tools.toolchain, "mingw") ? "-w64-" : "-pc-");
-      stralloc_cats(&cross->sa,
+      stralloc_cats(&cross->value.sa, str_start(tools.toolchain, "mingw") ? "-w64-" : "-pc-");
+      stralloc_cats(&cross->value.sa,
                     str_start(tools.toolchain, "mingw") ? "mingw32"
                                                         : str_start(tools.toolchain, "msys") ? "msys" : "cygwin");
 
-      stralloc_catc(&cross->sa, '-');
+      stralloc_catc(&cross->value.sa, '-');
     }
   }
 
@@ -5724,11 +5749,11 @@ main(int argc, char* argv[]) {
     var_set("CROSS_COMPILE", cross_compile);
 
     if(var_isset("CC"))
-      stralloc_prepends(&var_list("CC")->sa, "$(CROSS_COMPILE)");
+      stralloc_prepends(&var_list("CC")->value.sa, "$(CROSS_COMPILE)");
     if(var_isset("CXX"))
-      stralloc_prepends(&var_list("CXX")->sa, "$(CROSS_COMPILE)");
+      stralloc_prepends(&var_list("CXX")->value.sa, "$(CROSS_COMPILE)");
     if(var_isset("AR"))
-      stralloc_prepends(&var_list("AR")->sa, "$(CROSS_COMPILE)");
+      stralloc_prepends(&var_list("AR")->value.sa, "$(CROSS_COMPILE)");
   }
 
   batchmode = batch && stralloc_contains(&compile_command, "-Fo");
@@ -6210,15 +6235,16 @@ buffer_putm_internal(out, comment, " Generated by:", newline, comment, "  ", NUL
 buffer_putsa(out, &cmdline.sa);
 buffer_putsflush(out, newline);
 
+stralloc_nul(&cfg.chip);
+var_set("CHIP", cfg.chip.s);
+
 {
   strlist varnames;
   strlist_init(&varnames, '\0');
 
   get_keys(&vars, &varnames);
-  /*    buffer_puts(buffer_2,
-     "varnames: ");
-     strlist_dump(buffer_2,
-     &varnames); */
+  buffer_puts(buffer_2, "varnames: ");
+  strlist_dump(buffer_2, &varnames);
 
   output_all_vars(out, &vars, &varnames);
 }

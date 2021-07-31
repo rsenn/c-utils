@@ -131,6 +131,11 @@ typedef struct {
   int lang;
 } config_t;
 
+typedef struct {
+  strlist value;
+  uint32_t serial;
+} var_t;
+
 int mkdir_sa(const stralloc*, int);
 int mkdir_components(strlist*, int);
 
@@ -228,9 +233,9 @@ void sources_addincludes(sourcefile*, sourcedir*, const strlist*, strarray*);
 bool sources_iscplusplus(void);
 
 int var_isset(const char*);
-strlist* var_list(const char*);
+var_t* var_list(const char*);
 const char* var_get(const char*);
-strlist* var_set(const char*, const char*);
+var_t* var_set(const char*, const char*);
 void var_unset(const char*);
 void var_push(const char*, const char*);
 void var_push_sa(const char*, stralloc*);
@@ -288,10 +293,9 @@ target* gen_install_rules(void);
 void get_keys(MAP_T*, strlist*);
 #define MAP_USE_HMAP 1
 
-int input_command(stralloc*, char*[]);
 int input_command_line(const char*, size_t);
 
-void output_var(buffer*, MAP_T*, const char*);
+void output_var(buffer*, MAP_T*, const char*, int);
 void output_all_vars(buffer*, MAP_T*, strlist*);
 void output_make_rule(buffer*, target*);
 void output_ninja_rule(buffer*, target*);

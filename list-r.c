@@ -569,12 +569,12 @@ fnmatch_strarray(buffer* b, array* a, const char* string, int flags) {
   size_t i, n = array_length(a, sizeof(char*));
   char** x = array_start(a);
   int ret = FNM_NOMATCH;
-  size_t string_len =str_len(string);
+  size_t string_len = str_len(string);
   for(i = 0; i < n; ++i) {
     char* s = x[i];
     if(s == 0)
       break;
-    if((ret = path_fnmatch(s, str_len(s), string,  string_len, flags)) != FNM_NOMATCH)
+    if((ret = path_fnmatch(s, str_len(s), string, string_len, flags)) != FNM_NOMATCH)
       break;
   }
   return ret;
@@ -696,17 +696,17 @@ crc32(uint32 crc, const char* data, size_t size) {
 static inline dir_type_t
 stat_type(const char* path, int mode) {
   dir_type_t dtype = S_ISREG(mode) ? D_FILE : 0;
-  #ifdef S_ISLNK
+#ifdef S_ISLNK
   dtype |= S_ISLNK(mode) ? D_SYMLINK : 0;
-  #else
+#else
   if(is_symlink(path))
-    dtype |= D_SYMLINK;  
-  #endif
+    dtype |= D_SYMLINK;
+#endif
   dtype |= S_ISBLK(mode) ? D_BLKDEV : 0;
   dtype |= S_ISCHR(mode) ? D_CHARDEV : 0;
-  #ifdef S_ISSOCK
+#ifdef S_ISSOCK
   dtype |= S_ISSOCK(mode) ? D_SOCKET : 0;
-  #endif
+#endif
   dtype |= S_ISFIFO(mode) ? D_PIPE : 0;
   return dtype;
 }
@@ -861,7 +861,7 @@ list_file(stralloc* path, const char* name, mode_t mode, long depth, dev_t root_
 #if !WINDOWS_NATIVE
   byte_zero(&st, sizeof(st));
 #endif
-  dtype = stat_type(path->s,mode);
+  dtype = stat_type(path->s, mode);
   if(dtype) {
     is_dir = !!(dtype & D_DIRECTORY);
     is_symlink = !!(dtype & D_SYMLINK);
@@ -897,7 +897,7 @@ list_file(stralloc* path, const char* name, mode_t mode, long depth, dev_t root_
     is_symlink = 0;
     is_dir = S_ISDIR(st.st_mode);
   }
-  dtype = stat_type(path->s,mode);
+  dtype = stat_type(path->s, mode);
 #else
   if(dtype & D_SYMLINK)
     is_symlink = 1;
@@ -949,8 +949,8 @@ list_file(stralloc* path, const char* name, mode_t mode, long depth, dev_t root_
     match = 0;
     strlist_foreach_s(&include_masks, pattern) {
       int has_slash = !!pattern[str_chr(pattern, '/')];
-        const char*mask = has_slash ? s : name;
-  if(path_fnmatch(pattern, str_len(pattern), mask,str_len(mask),  FNM_PATHNAME) == 0) {
+      const char* mask = has_slash ? s : name;
+      if(path_fnmatch(pattern, str_len(pattern), mask, str_len(mask), FNM_PATHNAME) == 0) {
         match = 1;
         break;
       }
@@ -962,8 +962,8 @@ list_file(stralloc* path, const char* name, mode_t mode, long depth, dev_t root_
   match = 0;
   strlist_foreach_s(&exclude_masks, pattern) {
     int has_slash = !!pattern[str_chr(pattern, '/')];
-    const char*mask = has_slash ? s : name;
-    if(path_fnmatch(pattern, str_len(pattern), mask,str_len(mask),  FNM_PATHNAME) == 0) {
+    const char* mask = has_slash ? s : name;
+    if(path_fnmatch(pattern, str_len(pattern), mask, str_len(mask), FNM_PATHNAME) == 0) {
       match = 1;
       break;
     }
@@ -1052,8 +1052,8 @@ list_file(stralloc* path, const char* name, mode_t mode, long depth, dev_t root_
 int
 list_dir_internal(stralloc* dir, int type, long depth) {
   size_t l;
-   static dev_t root_dev=0;
-   dir_type_t dtype;
+  static dev_t root_dev = 0;
+  dir_type_t dtype;
   struct dir_s d;
   char *name, *s;
   struct stat st;
