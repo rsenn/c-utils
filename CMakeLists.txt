@@ -241,7 +241,7 @@ set(TRY_LINUX_AIO
 check_compile(HAVE_SOCKLEN_T "#include <sys/types.h>\n#ifdef __MINGW32__\n#include <winsock2.h>\n#include <ws2tcpip.h>\n#else\n#include <sys/socket.h>\n#include <netinet/in.h>\n#endif\n\nint main() { socklen_t t;\n  (void)t;\n  return 0;\n}\n")
 
 if(NOT HAVE_SOCKLEN_T)
-  #add_definitions(-Dsocklen_t=int)
+  # add_definitions(-Dsocklen_t=int)
 endif(NOT HAVE_SOCKLEN_T)
 
 check_compile(HAVE___INLINE__ "static __inline__ int\nfoo(int bar) {\n  return bar + 1;\n}\nint main() { return foo(42); }\n")
@@ -445,7 +445,7 @@ check_type_size(off_t SIZEOF_OFF_T)
 if(HAVE_OFF_T OR SIZEOF_OFF_T)
   message(STATUS "Have off_t type")
 else(HAVE_OFF_T OR SIZEOF_OFF_T)
-  #add_definitions(-Doff_t=int64)
+  # add_definitions(-Doff_t=int64)
 endif(HAVE_OFF_T OR SIZEOF_OFF_T)
 
 check_function_exists(lseek64 HAVE_LSEEK64)
