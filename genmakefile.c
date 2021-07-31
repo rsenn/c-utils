@@ -1588,7 +1588,7 @@ int
 sources_add_b(const char* x, size_t len) {
   int ret = 0;
 
-  if(byte_chr(x, len, '/') == len && byte_ends(x, len, "strlist_shift.c")){
+  if(byte_chr(x, len, '/') == len && byte_ends(x, len, "strlist_shift.c")) {
 #ifdef SIGTRAP
     raise(SIGTRAP);
 #endif
@@ -2126,7 +2126,7 @@ sourcedir_addsource(const char* source, strarray* srcs) {
 #endif
     return;
 #if defined(__x86_64__) || defined(__i386__)
-    asm("int3");
+    __asm__("int3");
 #endif
   }
 
@@ -6009,17 +6009,35 @@ main(int argc, char* argv[]) {
 
   strarray_foreach(&args, arg) {
 
-    if(!path_exists(*arg)) {
-      buffer_putm_internal(buffer_2, "ERROR: Doesn't exist: ", *arg, newline, NULL);
+#if WINDOWS_NATIVE
+    glob_t gl;
+    size_t i;
+
+    if(glob(*arg, GLOB_TILDE | GLOB_BRACE, 0, &gl)) {
+      buffer_putm_internal(buffer_2, "ERROR: glob() ", *arg, newline, NULL);
       buffer_flush(buffer_2);
-      ret = 127;
-      goto fail;
+      continue;
     }
 
-    if(is_source(*arg) || is_include(*arg))
-      sources_add(*arg);
-    else if(path_is_directory(*arg))
-      sources_get(*arg);
+    for(i = 0; i < gl.gl_matchc; i++) {
+      const char* p = gl.gl_pathv[i];
+
+#else
+    const char* p = *arg;
+    {
+#endif
+      if(!path_exists(p)) {
+        buffer_putm_internal(buffer_2, "ERROR: Doesn't exist: ", p, newline, NULL);
+        buffer_flush(buffer_2);
+        ret = 127;
+        goto fail;
+      }
+
+      if(is_source(p) || is_include(p))
+        sources_add(p);
+      else if(path_is_directory(p))
+        sources_get(p);
+    }
   }
   {
     set_iterator_t it;
