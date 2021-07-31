@@ -300,15 +300,18 @@ serial_open(const char* port, unsigned int baud) {
       cfsetispeed(&options, B3000000);
       cfsetospeed(&options, B3000000);
       break;
+#ifdef B3500000
     case 3500000:
       cfsetispeed(&options, B3500000);
       cfsetospeed(&options, B3500000);
       break;
+#endif
+#ifdef B4000000
     case 4000000:
       cfsetispeed(&options, B4000000);
       cfsetospeed(&options, B4000000);
       break;
-
+#endif
     default:
       fprintf(stderr,
               "Warning: Baudrate not "
