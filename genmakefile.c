@@ -5978,7 +5978,7 @@ main(int argc, char* argv[]) {
     stralloc_replacec(&arg, PATHSEP_C == '/' ? '\\' : '/', PATHSEP_C);
     stralloc_nul(&arg);
 
-#if WINDOWS_NATIVE && !MINGW
+#if WINDOWS_NATIVE || defined(__MINGW32__)
     if(str_rchrs(argv[unix_optind], "*?", 2) < str_len(argv[unix_optind]))
       strarray_glob(&args, arg.s);
     else
@@ -6014,7 +6014,7 @@ main(int argc, char* argv[]) {
 
   strarray_foreach(&args, arg) {
 
-#if WINDOWS_NATIVE
+#if 0 //WINDOWS_NATIVE
     glob_t gl;
     size_t i;
 
