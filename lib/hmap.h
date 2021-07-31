@@ -81,7 +81,7 @@ typedef struct hmap_db {
 
 int hmap_add_tuple_with_data(HMAP_DB** hmap_db, const void* key, size_t k_len, void* data);
 int hmap_add(HMAP_DB** hmap_db, const void* key, size_t k_len, int dup_flag, int data_type, ...);
-int hmap_delete(HMAP_DB** hmap_db, void* key, size_t k_len);
+int hmap_delete(HMAP_DB** hmap_db, const void* key, size_t k_len);
 int hmap_destroy(HMAP_DB** hmap_db);
 int hmap_free_data(TUPLE* tuple);
 int hmap_init(int bucket_size, HMAP_DB** hmap_db);

@@ -14,9 +14,13 @@
 #include "lib/unix.h"
 #include "lib/sig.h"
 #include "lib/env.h"
+#include "lib/glob.h"
 
-#if !WINDOWS
+#if !WINDOWS_NATIVE
 #include <unistd.h>
+#else
+#include <io.h>
+#include <sys/stat.h>
 #endif
 
 extern buffer* unix_optbuf;
@@ -3918,6 +3922,7 @@ output_var(buffer* b, MAP_T* vars, const char* name) {
 
     MAP_DELETE(*vars, MAP_ITER_KEY(t), str_len(MAP_ITER_KEY(t)));
   }
+
   set_free(&refvars);
 }
 

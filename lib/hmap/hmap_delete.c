@@ -1,7 +1,7 @@
 #include "../hmap_internal.h"
 
 int
-hmap_delete(HMAP_DB** hmap_db, void* key, size_t k_len) {
+hmap_delete(HMAP_DB** hmap_db, const void* key, size_t k_len) {
   TUPLE *root_tuple = NULL, *ptr_tuple = NULL;
   int r = hmap_search(*hmap_db, key, k_len, &ptr_tuple);
 
