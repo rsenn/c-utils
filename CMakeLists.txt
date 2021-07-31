@@ -239,8 +239,9 @@ set(TRY_LINUX_AIO
 # if(HAVE_LINUX_AIO) message(STATUS "Support Linux AIO: ${SUPPORT_LINUX_AIO}") add_definitions(-DHAVE_LINUX_AIO=1) endif(HAVE_LINUX_AIO)
 
 check_compile(HAVE_SOCKLEN_T "#include <sys/types.h>\n#ifdef __MINGW32__\n#include <winsock2.h>\n#include <ws2tcpip.h>\n#else\n#include <sys/socket.h>\n#include <netinet/in.h>\n#endif\n\nint main() { socklen_t t;\n  (void)t;\n  return 0;\n}\n")
+
 if(NOT HAVE_SOCKLEN_T)
-  add_definitions(-Dsocklen_t=int)
+  #add_definitions(-Dsocklen_t=int)
 endif(NOT HAVE_SOCKLEN_T)
 
 check_compile(HAVE___INLINE__ "static __inline__ int\nfoo(int bar) {\n  return bar + 1;\n}\nint main() { return foo(42); }\n")
@@ -913,7 +914,7 @@ set(jsonpp_SOURCES terminal.c terminal.h)
 add_program(jsonpp json errmsg charbuf unix)
 add_program(xml2json json xml charbuf errmsg unix)
 add_program(xml2moon xml charbuf textcode errmsg)
-add_program(strip-comments errmsg env charbuf buffer path dir strarray strlist stralloc fmt)
+add_program(strip-comments errmsg env charbuf buffer path dir strarray strlist stralloc fmt unix)
 add_program(quote textcode unix errmsg env charbuf buffer path dir strarray strlist stralloc fmt)
 
 add_program(httpproxy http io hmap)

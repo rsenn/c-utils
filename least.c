@@ -11,15 +11,19 @@
 #include "lib/scan.h"
 #include "lib/unix.h"
 #include "lib/fmt.h"
+#include "lib/windoze.h"
 
 #include <assert.h>
 #include <ctype.h>
 #include <unistd.h>
 #include <errno.h>
+
+#if !WINDOWS_NATIVE
 #include <termios.h>
 #include <sys/ioctl.h>
 #include <sys/inotify.h>
 #include <sys/stat.h>
+#endif
 
 #include "terminal.h"
 
@@ -37,7 +41,7 @@ buffer terminal;
 struct termios oldterm;
 
 static stralloc command_buf;
-static int eof;
+static int end_of_file;
 
 volatile sig_atomic_t running = 1, reset = 0, resized = 0, command_mode = 0, line_numbers = 0;
 
@@ -127,13 +131,13 @@ read_line(buffer* buf) {
 int
 read_content(buffer* b, size_t max_lines) {
   size_t i;
-  if(!eof)
+  if(!end_of_file)
     for(i = 0; max_lines == 0 || i < max_lines; i++)
       if(!read_line(b)) {
-        eof = 1;
+        end_of_file = 1;
         break;
       }
-  return eof;
+  return end_of_file;
 }
 
 struct termios*
