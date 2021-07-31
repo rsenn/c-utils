@@ -3,7 +3,9 @@ message("CMAKE_CURRENT_SOURCE_DIR: ${CMAKE_CURRENT_SOURCE_DIR}")
 message("CMAKE_BINARY_DIR: ${CMAKE_BINARY_DIR}")
 message("CMAKE_CURRENT_BINARY_DIR: ${CMAKE_CURRENT_BINARY_DIR}")
 
-set(iarray_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/cas.S)
+if(CMAKE_COMPILER_IS_GNUCC OR "${CMAKE_C_COMPILER_ID}" STREQUAL "Clang" OR "${CMAKE_C_COMPILER_ID}" STREQUAL "GNU")
+  set(iarray_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/cas.S)
+endif(CMAKE_COMPILER_IS_GNUCC OR "${CMAKE_C_COMPILER_ID}" STREQUAL "Clang" OR "${CMAKE_C_COMPILER_ID}" STREQUAL "GNU")
 
 set(MODSUBDIRS alloc array binfmt bmap buffer byte case cb cbmap charbuf coff dir dlist dns elf env errmsg fmt gpio hashmap hmap http iarray ihex io json mmap ndelay omf open path pe playlist cpp process range rdir safemult scan seek set sig slist socket str stralloc strarray strlist tai taia textbuf textcode tls tokenizer ucs uint16 uint32 uint64 unix utf8 wait xml)
 file(GLOB MODHEADERS ${CMAKE_CURRENT_SOURCE_DIR}/*.h)
