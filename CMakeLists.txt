@@ -162,7 +162,7 @@ foreach(C_STANDARD c2x c18 c17 c1x c11 c99)
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${C_STANDARD_FLAG}")
     break()
   endif(C_STANDARD_${C_STANDARD_NUM})
-endforeach()
+endforeach(C_STANDARD c2x c18 c17 c1x c11 c99)
 
 message(STATUS "C standard: ${C_STANDARD_VALUE}")
 
