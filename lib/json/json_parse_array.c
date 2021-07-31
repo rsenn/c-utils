@@ -1,4 +1,5 @@
 #include "../json_internal.h"
+#include "../uint64.h"
 
 int
 json_parse_array(jsonval* val, charbuf* b) {
@@ -6,7 +7,7 @@ json_parse_array(jsonval* val, charbuf* b) {
     int ret;
     jsonitem **ptr, *item;
     unsigned char c;
-    int64_t i = 0;
+    int64 i = 0;
 
     val->type = JSON_ARRAY;
     val->itemv = 0;

@@ -9,9 +9,7 @@ extern "C" {
 #include <stdbool.h>
 #else
 
-typedef enum { false = 0, true = 1 } _Bool;
-
-typedef _Bool bool;
+typedef enum { false = 0, true = 1 } bool;
 
 #endif
 
