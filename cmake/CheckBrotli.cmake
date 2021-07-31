@@ -25,9 +25,9 @@ if(USE_BROTLI)
                        ${pkgcfg_lib_BROTLICOMMON_brotlicommon})
     set(BROTLI_LINK_LIBRARY ${pkgcfg_lib_BROTLIENC_brotlienc} ${pkgcfg_lib_BROTLIDEC_brotlidec}
                             ${pkgcfg_lib_BROTLICOMMON_brotlicommon})
-    set(BROTLI_INCLUDE_DIR ${BROTLICOMMON_INCLUDE_DIRS})
     set(BROTLI_LIBRARY_DIR ${BROTLICOMMON_LIBRARY_DIRS})
     set(BROTLI_FOUND TRUE)
   endif(NOT BROTLICOMMON_FOUND OR "${BROTLICOMMON_FOUND}" STREQUAL "")
+  set(BROTLI_INCLUDE_DIR "${BROTLICOMMON_INCLUDE_DIRS}" CACHE PATH "Brotli include dir")
 
 endif(USE_BROTLI)
