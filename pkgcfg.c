@@ -29,13 +29,18 @@
 #include "lib/case.h"
 #include "lib/scan.h"
 #include "lib/fnmatch.h"
+#include "lib/process.h"
 #define MAP_USE_HMAP 1
 #include "lib/map.h"
 
+#if WINDOWS_NATIVE
+#include <io.h>
+#else
+#include <unistd.h>
+#endif
+
 #include <ctype.h>
-#include <spawn.h>
 #include <stdlib.h>
-#include <sys/wait.h>
 
 #define PKGCFG_EXISTS 1
 #define PKGCFG_PRINT_ERR 2
@@ -207,10 +212,27 @@ exec_program(const char* compiler, const char* arg, stralloc* out) {
 
   stralloc_zero(out);
 
+#if WINDOWS_NATIVE
+  if(_pipe(p, 2048, 1) == -1)
+    return NULL;
+#else
   if(pipe(p) == -1)
     return NULL;
+#endif
 
-#ifdef POSIX_SPAWN
+#if WINDOWS_NATIVE
+
+  if((bin = search_path(env_get("PATH"), compiler, &dir)) == 0) {
+    errmsg_warnsys(bin, " not found: ", 0);
+    exit(127);
+  }
+
+  if((pid = process_create(bin, argv, 0, 0)) < 0) {
+    errmsg_warnsys("process_create error ", bin, ": ", 0);
+    return 0;
+  }
+#else
+#if POSIX_SPAWN
 
   posix_spawnattr_setflags(&attr, 0);
   posix_spawn_file_actions_init(&actions);
@@ -238,11 +260,14 @@ exec_program(const char* compiler, const char* arg, stralloc* out) {
     }
   }
 #endif
+#endif
 
   close(p[1]);
-
+#if WINDOWS_NATIVE
+  ws = process_wait(pid);
+#else
   wait_pid(pid, &ws);
-
+#endif
   readclose_append(p[0], out, 1024);
 
   stralloc_trimr(out, "\r\t\v\n", 4);
@@ -687,7 +712,8 @@ pkg_list(id code) {
         buffer_putsa(buffer_2, &path);
         buffer_putnlflush(buffer_2);
 #endif
-        if(match_pattern && fnmatch(match_pattern, path.s, FNM_CASEFOLD) == FNM_NOMATCH)
+        if(match_pattern &&
+           path_fnmatch(match_pattern, str_len(match_pattern), path.s, path.len, FNM_CASEFOLD) == FNM_NOMATCH)
           continue;
 
         pkg_init(&pf, path.s);

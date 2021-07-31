@@ -48,7 +48,7 @@ foreach(NETLIB dns http io ndelay socket)
   target_link_libraries(${NETLIB} ${LIBMSWSOCK})
 endforeach()
 
-target_link_libraries(unix stralloc buffer ndelay)
+target_link_libraries(unix stralloc buffer ndelay utf8)
 target_link_libraries(array safemult byte str)
 target_link_libraries(binfmt mmap byte)
 target_link_libraries(buffer alloc byte fmt mmap open str ${ZLIB_LIBRARY})
