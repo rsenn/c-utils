@@ -5,9 +5,9 @@ if(USE_BROTLI)
   if(NOT BROTLICOMMON_FOUND OR "${BROTLICOMMON_FOUND}" STREQUAL "")
     message(STATUS "brotli package config not found")
 
-    find_library(BROTLIDEC_LIBRARY NAMES brotlidec)
-    find_library(BROTLIENC_LIBRARY NAMES brotlienc)
-    find_library(BROTLICOMMON_LIBRARY NAMES brotlicommon)
+    find_library(BROTLIDEC_LIBRARY NAMES brotlidec CMAKE_FIND_ROOT_PATH_BOTH)
+    find_library(BROTLIENC_LIBRARY NAMES brotlienc CMAKE_FIND_ROOT_PATH_BOTH)
+    find_library(BROTLICOMMON_LIBRARY NAMES brotlicommon CMAKE_FIND_ROOT_PATH_BOTH)
     if(BROTLIDEC_LIBRARY AND BROTLIENC_LIBRARY AND BROTLICOMMON_LIBRARY)
       message(
         STATUS

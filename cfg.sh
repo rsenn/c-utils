@@ -293,9 +293,6 @@ cfg-msys() {
   : ${host=${build%%-*}-pc-msys}
   : ${prefix=/usr/$host/sysroot/usr}
 echo "host: $host"
-  : ${PKG_CONFIG_PATH=/usr/${host}/sysroot/usr/lib/pkgconfig}
-
-  export PKG_CONFIG_PATH
 
   case "$host" in
     x86_64*) TOOLCHAIN=/opt/cmake-toolchains/msys64.cmake ;;
@@ -303,6 +300,8 @@ echo "host: $host"
   esac
   export TOOLCHAIN
   echo "builddir: $builddir"
+
+  export PKG_CONFIG=$host-pkg-config
 
   : ${builddir=build/$host}
 

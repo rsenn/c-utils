@@ -21,7 +21,7 @@
 #endif
 
 static BOOL
-get_reparse_data(const char* LinkPath, union REPARSE_DATA_BUFFER_UNION* u) {
+get_reparse_data(const char* LinkPath, REPARSE_DATA_BUFFER *rdb) {
   HANDLE hFile;
   DWORD returnedLength;
 
@@ -38,7 +38,7 @@ get_reparse_data(const char* LinkPath, union REPARSE_DATA_BUFFER_UNION* u) {
   }
 
   /* Get the link */
-  if(!DeviceIoControl(hFile, FSCTL_GET_REPARSE_POINT, 0, 0, &u->iobuf, 1024, &returnedLength, 0)) {
+  if(!DeviceIoControl(hFile, FSCTL_GET_REPARSE_POINT, 0, 0, &rdb->u, 1024, &returnedLength, 0)) {
 
     CloseHandle(hFile);
     return FALSE;
@@ -46,7 +46,7 @@ get_reparse_data(const char* LinkPath, union REPARSE_DATA_BUFFER_UNION* u) {
 
   CloseHandle(hFile);
 
-  if(u->iobuf.ReparseTag != IO_REPARSE_TAG_MOUNT_POINT && u->iobuf.ReparseTag != IO_REPARSE_TAG_SYMLINK) {
+  if(rdb->ReparseTag != IO_REPARSE_TAG_MOUNT_POINT && rdb->ReparseTag != IO_REPARSE_TAG_SYMLINK) {
     return FALSE;
   }
 
@@ -56,25 +56,25 @@ get_reparse_data(const char* LinkPath, union REPARSE_DATA_BUFFER_UNION* u) {
 #if WINDOWS_NATIVE
 ssize_t
 readlink(const char* LinkPath, char* buf, size_t maxlen) {
-  union REPARSE_DATA_BUFFER_UNION u;
+  REPARSE_DATA_BUFFER rdb;
   wchar_t* wbuf = 0;
   unsigned int u8len, len, wlen;
 
-  if(!get_reparse_data(LinkPath, &u)) {
+  if(!get_reparse_data(LinkPath, &rdb)) {
     return -1;
   }
 
-  switch(u.iobuf.ReparseTag) {
+  switch(rdb.ReparseTag) {
     case IO_REPARSE_TAG_MOUNT_POINT: { /* Junction */
-      wbuf = u.iobuf.MountPointReparseBuffer.PathBuffer +
-             u.iobuf.MountPointReparseBuffer.SubstituteNameOffset / sizeof(wchar_t);
-      wlen = u.iobuf.MountPointReparseBuffer.SubstituteNameLength / sizeof(WCHAR);
+      wbuf = rdb.u.MountPointReparseBuffer.PathBuffer +
+             rdb.u.MountPointReparseBuffer.SubstituteNameOffset / sizeof(wchar_t);
+      wlen = rdb.u.MountPointReparseBuffer.SubstituteNameLength / sizeof(WCHAR);
       break;
     }
     case IO_REPARSE_TAG_SYMLINK: { /* Symlink */
-      wbuf = u.iobuf.SymbolicLinkReparseBuffer.PathBuffer +
-             u.iobuf.SymbolicLinkReparseBuffer.SubstituteNameOffset / sizeof(WCHAR);
-      wlen = u.iobuf.SymbolicLinkReparseBuffer.SubstituteNameLength / sizeof(WCHAR);
+      wbuf = rdb.u.SymbolicLinkReparseBuffer.PathBuffer +
+             rdb.u.SymbolicLinkReparseBuffer.SubstituteNameOffset / sizeof(WCHAR);
+      wlen = rdb.u.SymbolicLinkReparseBuffer.SubstituteNameLength / sizeof(WCHAR);
       break;
     }
   }
@@ -103,13 +103,13 @@ readlink(const char* LinkPath, char* buf, size_t maxlen) {
 
 static DWORD
 reparse_tag(const char* LinkPath) {
-  union REPARSE_DATA_BUFFER_UNION u;
+  REPARSE_DATA_BUFFER rdb;
 
-  if(!get_reparse_data(LinkPath, &u)) {
+  if(!get_reparse_data(LinkPath, &rdb)) {
     return 0;
   }
 
-  return u.iobuf.ReparseTag;
+  return rdb.ReparseTag;
 }
 
 int
