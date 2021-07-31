@@ -50,7 +50,7 @@ static uint32 baseaddr;
 static stralloc cfg;
 // static bmap_t(const char*) pragmas;
 static strlist pragmas;
-static int nodefault = 1, oneline = 0, comments = 1, output_name = 0, verbose = 0;
+static int nodefault = 0, oneline = 0, comments = 1, output_name = 0, verbose = 0;
 
 uint16
 config_data_at(uint32 addr) {
@@ -241,16 +241,14 @@ cvalue*
 get_setting_value(cword* word, csetting* setting) {
   cvalue* value;
   uint16 byteval = get_setting_word(word, setting);
-  /*
-    if(verbose) {
-      buffer_putm_internal(buffer_2,
-    word->name, ": ", setting->name, " =
-    ", NULL); buffer_putxlong0(buffer_2,
-    byteval, 2);
-      buffer_putnlflush(buffer_2);
-    }
-  */
-  slink_foreach(setting->values, value) {
+
+#ifdef DEBUG_OUTPUT_
+  buffer_putm_internal(buffer_2, word->name, ": ", setting->name, " = ", NULL);
+  buffer_putxlong0(buffer_2, byteval, 2);
+  buffer_putnlflush(buffer_2);
+#endif
+
+  for(value = setting->values; value; value = value->next) {
     if(verbose) {
       buffer_putm_internal(buffer_2, "  ", value->name, ": ", NULL);
       buffer_putxlong0(buffer_2, value->value, 2);
@@ -269,7 +267,7 @@ find_setting(const char* str) {
   cword* word;
   csetting* setting;
   slink_foreach(words, word) {
-    slink_foreach(word->settings, setting) {
+    for(setting = word->settings; setting; setting = setting->next) {
       if(!str_diffn(str, setting->name, str_len(setting->name)))
         return setting;
     }
@@ -398,13 +396,13 @@ process_config(void (*callback)(strlist*, const char* key, const char* value), s
     if(verbose)
       dump_cword(buffer_2, word);
 
-    slink_foreach(word->settings, setting) {
+    for(setting = word->settings; setting; setting = setting->next) {
 
       value = get_setting_value(word, setting);
 
       if(value == NULL) {
         buffer_puts(buffer_2, "WARNING:  value ");
-        buffer_putxlong0(buffer_2, get_setting_word(word, setting), 2);
+        buffer_putxlong(buffer_2, get_setting_word(word, setting));
         buffer_putm_internal(buffer_2, " for setting ", setting->name, " not found!", NULL);
         buffer_putnlflush(buffer_2);
         continue;
@@ -478,20 +476,13 @@ usage(char* argv0) {
                        " <hex-file> <cfgdata-file>\n"
                        "\n"
                        "Options\n"
-                       "  -h, --help                "
-                       "show this help\n"
-                       "  -o, --oneline             "
-                       "output oneliner\n"
-                       "  -D, --no-default          "
-                       "don't output settings with "
-                       "default value\n"
-                       "  -C, --no-comments         "
-                       "don't output description "
-                       "comments\n"
-                       "  -n, --name                "
-                       "output register name\n"
-                       "  -v, --verbose             "
-                       "show verbose messages\n"
+                       "  -h, --help                show this help\n"
+                       "  -o, --oneline             output oneliner\n"
+                       "  -D, --no-default          don't output settings with default value\n"
+                       "  -d, --default             output settings with default value\n"
+                       "  -C, --no-comments         don't output description comments\n"
+                       "  -n, --name                output register name\n"
+                       "  -v, --verbose             show verbose messages\n"
                        "\n",
                        NULL);
   buffer_putnlflush(buffer_1);
@@ -506,6 +497,7 @@ main(int argc, char* argv[]) {
 
   struct longopt opts[] = {{"help", 0, NULL, 'h'},
                            {"oneline", 0, &oneline, 1},
+                           {"no-default", 0, &nodefault, 1},
                            {"default", 0, &nodefault, 0},
                            {"no-comments", 0, &comments, 0},
                            {"name", 0, &output_name, 1},
@@ -523,6 +515,7 @@ main(int argc, char* argv[]) {
       case 'h': usage(argv[0]); return 0;
       case 'o': oneline = 1; break;
       case 'd': nodefault = 0; break;
+      case 'D': nodefault = 1; break;
       case 'C': comments = 0; break;
       case 'n': output_name = 1; break;
       case 'v': verbose++; break;

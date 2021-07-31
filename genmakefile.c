@@ -3593,7 +3593,8 @@ input_command(stralloc* cmd, int argc, char* argv[]) {
       if(is_filename_b(x, len)) {
         stralloc file;
         stralloc_init(&file);
-        path_normalize(x, &file);
+        stralloc_copys(&file, x);
+        //        path_normalize(x, &file);
         strlist_push_sa(&files, &file);
 
 #if DEBUG_OUTPUT
