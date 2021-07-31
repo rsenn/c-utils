@@ -8,15 +8,23 @@
 #include <string.h>
 #include <unistd.h>
 #include <fcntl.h>
-#include <termios.h>
 #include <dirent.h>
 #include <errno.h>
 #include <time.h>
-#include <poll.h>
 
-#include "serial.h"
+#include "lib/windoze.h"
 #include "lib/uint64.h"
 #include "lib/io.h"
+
+#include "serial.h"
+
+#if !WINDOWS_NATIVE
+#include <poll.h>
+#include <termios.h>
+#else
+#include <windows.h>
+#endif
+
 
 #ifndef XON
 #define XON 0x11
@@ -30,8 +38,133 @@
 #define TIMEOUT 2
 #endif
 
+#if WINDOWS_NATIVE
+
+static char*
+last_error(void) {
+  unsigned long err = 0;
+  unsigned long ret = 0;
+  static char errbuf[MAX_PATH + 1] = {0};
+  static char retbuf[MAX_PATH + 1] = {0};
+
+  err = GetLastError();
+  ret = FormatMessageA(FORMAT_MESSAGE_FROM_SYSTEM, NULL, err, 0, errbuf, MAX_PATH, NULL);
+  if(ret != 0) {
+    /* CRLF fun */
+    errbuf[ret - 2] = 0;
+    snprintf(retbuf, MAX_PATH, "LastError: %s (%d)", errbuf, ret);
+  } else
+    snprintf(retbuf, MAX_PATH, "LastError: %d (FormatMessageA failed)", ret);
+
+  return retbuf;
+}
+
+#define GET_PORT_TIMEOUTS(fd, t)                                                                                       \
+  memset(t, 0, sizeof(COMMTIMEOUTS));                                                                                  \
+  if(!GetCommTimeouts(fd, t)) {                                                                                        \
+    fprintf(stderr,"GetCommTimeouts() %s\n", last_error());                                                                       \
+    return 1;                                                                                                          \
+  }
+
+#define SET_PORT_TIMEOUTS(fd, t)                                                                                       \
+  if(!SetCommTimeouts(fd, t)) {                                                                                        \
+    fprintf(stderr,"SetCommTimeouts() %s\n", last_error());                                                                       \
+    return 1;                                                                                                          \
+  }
+
+#define GET_PORT_STATE(fd, pdcb)                                                                                       \
+  memset(pdcb, 0, sizeof(DCB));                                                                                        \
+  if(!GetCommState(fd, pdcb)) {                                                                                        \
+    fprintf(stderr,"GetCommState() %s\n", last_error());                                                                          \
+    return 1;                                                                                                          \
+  }
+
+#define SET_PORT_STATE(fd, pdcb)                                                                                       \
+  if(!SetCommState(fd, pdcb)) {                                                                                        \
+    fprintf(stderr,"SetCommState() %s\n", last_error());                                                                          \
+    return 1;                                                                                                          \
+  }
+
+static unsigned int
+port_timeout(HANDLE fd, unsigned int rt, unsigned int wt) {
+  COMMTIMEOUTS t;
+
+  GET_PORT_TIMEOUTS(fd, &t);
+
+  t.ReadIntervalTimeout = 0;
+  t.ReadTotalTimeoutMultiplier = 0;
+  t.ReadTotalTimeoutConstant = rt;
+  t.WriteTotalTimeoutMultiplier = 0;
+  t.WriteTotalTimeoutConstant = wt;
+
+  SET_PORT_TIMEOUTS(fd, &t);
+
+  return 0;
+}
+
+#endif
+
 int
 serial_open(const char* port, unsigned int baud) {
+#if WINDOWS_NATIVE
+  HANDLE fd;
+  char buf[1024] = {0};
+  strcpy(buf, "\\\\.\\");
+  strncat(buf, port, sizeof(buf) - 5);
+  fd = CreateFile(buf,                          // port name
+                  GENERIC_READ | GENERIC_WRITE, // Read/Write
+                  0,                            // No Sharing
+                  NULL,                         // No Security
+                  OPEN_EXISTING,                // Open existing port only
+                  0,                            // Non Overlapped I/O
+                  NULL);                        // Null for Comm Devices
+
+  if(fd != INVALID_HANDLE_VALUE) {
+    DCB dcbSerialParams;
+    COMMTIMEOUTS timeouts;
+    if(!GetCommState(fd, &dcbSerialParams)) {
+      CloseHandle(fd); /* Sets port to null. Necessary? */
+      return -1;
+    }
+
+    dcbSerialParams.DCBlength = sizeof(dcbSerialParams);
+    /* Using real values instead of CBR_BAUD_RATE for simplicity.
+     * Allowed according to MSDN:
+     * http://msdn.microsoft.com/en-us/library/windows/desktop/aa363214(v=vs.85).aspx */
+    /* printf("Baud rate: %lu\n", baud_rate); */
+
+    dcbSerialParams.BaudRate = baud;
+    dcbSerialParams.ByteSize = 8;
+    dcbSerialParams.StopBits = ONESTOPBIT;
+    dcbSerialParams.Parity = NOPARITY;
+    dcbSerialParams.fBinary = TRUE;
+    dcbSerialParams.fDtrControl = DTR_CONTROL_DISABLE;
+    dcbSerialParams.fRtsControl = RTS_CONTROL_DISABLE;
+    dcbSerialParams.fOutxCtsFlow = FALSE;
+    dcbSerialParams.fOutxDsrFlow = FALSE;
+    dcbSerialParams.fDsrSensitivity = FALSE;
+    dcbSerialParams.fAbortOnError = TRUE;
+
+    /* Note to self: Forgot the indirection operator here- W. Jones... */
+    if(!SetCommState(port, &dcbSerialParams)) {
+      return -2;
+    }
+
+    /* Add if-else here? */
+    GetCommTimeouts(port, &timeouts);
+    timeouts.ReadIntervalTimeout = MAXDWORD;
+    timeouts.ReadTotalTimeoutMultiplier = 0;
+    timeouts.ReadTotalTimeoutConstant = 0;
+    timeouts.WriteTotalTimeoutMultiplier = 0;
+    timeouts.WriteTotalTimeoutConstant = 0;
+
+    if(!SetCommTimeouts(port, &timeouts)) {
+      return -3;
+    }
+  }
+
+  return fd;
+#else
   struct termios options;
 
   int fd = open(port, O_RDWR | O_NOCTTY | O_NDELAY);
@@ -188,7 +321,7 @@ serial_open(const char* port, unsigned int baud) {
   // Input Modes
   options.c_iflag &= ~IGNCR; // Ignore CR
 #ifdef XONXOFF
-  options.c_iflag |= IXON; // XON-XOFF Flow Control
+  options.c_iflag |= IXON;   // XON-XOFF Flow Control
 #endif
 
   // Output Modes
@@ -217,16 +350,23 @@ serial_open(const char* port, unsigned int baud) {
   tcflush(fd, TCIOFLUSH);
 
   return fd;
+#endif
 }
 
 void
 serial_close(int fd) {
+#if !WINDOWS_NATIVE
+
   tcflush(fd, TCIOFLUSH);
   close(fd);
+#else
+  CloseHandle(fd);
+#endif
 }
 
 int
 serial_has_char_timeout(int fd, int64 msecs) {
+#if !WINDOWS_NATIVE
   struct pollfd fds;
   fds.fd = fd;
   fds.events = (POLLIN | POLLPRI); // Data may be read
@@ -235,17 +375,31 @@ serial_has_char_timeout(int fd, int64 msecs) {
   } else {
     return 0;
   }
+#else
+  COMSTAT ComStat;
+  DWORD errors=0;
+  if(!ClearCommError(fd, &errors,&ComStat))
+    return 0;
+  return ComStat.cbInQue > 0;
+#endif
 }
 
 int
 serial_has_char(int fd) {
   return serial_has_char_timeout(fd, 0);
 }
+
 void
 serial_wait_until_sent(int fd) {
+#if !WINDOWS_NATIVE
   while(tcdrain(fd) == -1) {
     fprintf(stderr, "Could not drain data: %s\n", strerror(errno));
   }
+#else
+  if(!PurgeComm(fd, PURGE_TXCLEAR)) {
+    fprintf(stderr, "Could not drain data: %s\n", last_error());
+  }
+#endif
 }
 
 unsigned int
@@ -254,8 +408,18 @@ serial_write_raw(int fd, const char* d, unsigned int len) {
   time_t start = time(NULL);
 
   while((processed < len) && (time(NULL) - start < TIMEOUT)) {
-    int t = write(fd, (d + processed), (len - processed));
-    if(t == -1) {
+    int t;
+#if !WINDOWS_NATIVE
+
+    t = write(fd, (d + processed), (len - processed));
+    if(t == -1)
+#else
+    DWORD sentSize;
+    t = WriteFile(fd, (d + processed), (len - processed), &sentSize, NULL);
+    if(!t)
+#endif
+
+    {
       fprintf(stderr, "Error while writing: %s\n", strerror(errno));
       return processed;
     } else {
@@ -272,8 +436,19 @@ serial_read_raw(int fd, char* d, unsigned int len) {
   time_t start = time(NULL);
 
   while((processed < len) && (time(NULL) - start < TIMEOUT)) {
-    int t = read(fd, (d + processed), (len - processed));
-    if(t == -1) {
+    int t;
+
+#if !WINDOWS_NATIVE
+    t = read(fd, (d + processed), (len - processed));
+
+    if(t == -1)
+#else
+    DWORD bytesRead;
+    t = ReadFile(fd, (d + processed), (len - processed), &bytesRead, NULL);
+
+    if(!t)
+#endif
+    {
       fprintf(stderr, "Error while reading: %s\n", strerror(errno));
       return processed;
     } else {

@@ -1,3 +1,4 @@
+#include "../windoze.h"
 #include "../tls_internal.h"
 #include "../str.h"
 #include <errno.h>

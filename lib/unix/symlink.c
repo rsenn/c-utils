@@ -152,14 +152,13 @@ CreateSymlink(LPCTSTR lpLinkName, LPCTSTR lpTargetName, LPSECURITY_ATTRIBUTES lp
         rdb.u.SymbolicLinkReparseBuffer.PrintNameOffset + rdb.u.SymbolicLinkReparseBuffer.PrintNameLength;
     rdb.u.SymbolicLinkReparseBuffer.SubstituteNameLength = wcslen(namebuf_w) * sizeof(WCHAR);
 
-    byte_copy((char*)rdb.u.SymbolicLinkReparseBuffer.PathBuffer +
-                  rdb.u.SymbolicLinkReparseBuffer.SubstituteNameOffset,
+    byte_copy((char*)rdb.u.SymbolicLinkReparseBuffer.PathBuffer + rdb.u.SymbolicLinkReparseBuffer.SubstituteNameOffset,
               rdb.u.SymbolicLinkReparseBuffer.SubstituteNameLength,
               namebuf_w);
 
     rdb.u.SymbolicLinkReparseBuffer.Flags = isRelative ? 1 : 0;
     rdb.ReparseDataLength = 12 + rdb.u.SymbolicLinkReparseBuffer.SubstituteNameOffset +
-                                rdb.u.SymbolicLinkReparseBuffer.SubstituteNameLength;
+                            rdb.u.SymbolicLinkReparseBuffer.SubstituteNameLength;
     cb = 8 + rdb.ReparseDataLength;
 
     if(!DeviceIoControl(hFile, FSCTL_SET_REPARSE_POINT, &rdb, cb, NULL, 0, &cb, NULL)) {
@@ -228,8 +227,7 @@ CreateJunction(LPCTSTR lpLinkName, LPCTSTR lpTargetName, LPSECURITY_ATTRIBUTES l
   rdb.u.MountPointReparseBuffer.SubstituteNameLength = wcslen(rdb.u.MountPointReparseBuffer.PathBuffer) * 2;
   rdb.u.MountPointReparseBuffer.PrintNameOffset = rdb.u.MountPointReparseBuffer.SubstituteNameLength + 2;
   rdb.u.MountPointReparseBuffer.PrintNameLength = 0;
-  byte_zero((char*)rdb.u.MountPointReparseBuffer.PathBuffer + rdb.u.MountPointReparseBuffer.SubstituteNameLength,
-            4);
+  byte_zero((char*)rdb.u.MountPointReparseBuffer.PathBuffer + rdb.u.MountPointReparseBuffer.SubstituteNameLength, 4);
   rdb.ReparseDataLength =
       8 + rdb.u.MountPointReparseBuffer.PrintNameOffset + rdb.u.MountPointReparseBuffer.PrintNameLength + 2;
   cb = 8 + rdb.ReparseDataLength;

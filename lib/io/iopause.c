@@ -8,7 +8,7 @@
 #include "../iopause.h"
 #include "../taia.h"
 #include "../alloc.h"
-#include <alloca.h>
+//#include <alloca.h>
 
 void
 iopause(iopause_fd* x, unsigned int len, struct taia* deadline, struct taia* stamp) {

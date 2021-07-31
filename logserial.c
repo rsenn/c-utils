@@ -273,6 +273,7 @@ serial_read(fd_t serial_fd, char* buf, size_t len, void* ptr) {
 
 void
 term_init(fd_t fd, struct termios* state) {
+#ifndef WINDOWS_NATIVE
   struct termios old, raw, actual;
 
   /* Discard all unread input and
@@ -332,10 +333,12 @@ term_init(fd_t fd, struct termios* state) {
      */
     tcsetattr(fd, TCSANOW, &old);
   }
+#endif
 }
 
 void
 term_restore(fd_t fd, const struct termios* state) {
+#ifndef WINDOWS_NATIVE
   int result;
   /* Discard all unread input and
    * untransmitted output. */
@@ -347,6 +350,7 @@ term_restore(fd_t fd, const struct termios* state) {
   do {
     result = tcsetattr(fd, TCSAFLUSH, (struct termios*)state);
   } while(result == -1 && errno == EINTR);
+#endif
 }
 
 /**
@@ -598,7 +602,9 @@ int
 main(int argc, char* argv[]) {
   char* portname = NULL;
   unsigned int baudrate = 0;
+#ifndef WINDOWS_NATIVE
   struct termios tio;
+#endif
   int c;
   int index = 0;
 
@@ -659,16 +665,21 @@ getopt_end:
 
   setjmp(context);
 
+#ifndef WINDOWS_NATIVE
   term_init(term_buf.fd, &tio);
-
+#endif
   io_fd(term_buf.fd);
   io_nonblock(term_buf.fd);
   io_wantread(term_buf.fd);
   sig_blocknone();
 
   //  sig_catch(SIGINT, signal_handler);
+#ifdef SIGTERM
   sig_catch(SIGTERM, signal_handler);
+#endif
+#ifdef SIGSTOP
   sig_catch(SIGSTOP, signal_handler);
+#endif
   running = 1;
 
   while(running) {
@@ -748,9 +759,9 @@ getopt_end:
     }
     buffer_putnlflush(buffer_1); */
   }
-
+#ifndef WINDOWS_NATIVE
   term_restore(term_buf.fd, &tio);
-
+#endif
   strarray_free(&portArr);
   stralloc_free(&serial_buf);
 }

@@ -29,18 +29,21 @@ typedef long long int64_t;
 extern "C" {
 #endif
 
-#if defined(__UINT64_TYPE__) && defined(__INT64_TYPE__)
+#undef uint64
+#undef int64
+
+#if defined(_MSC_VER) || defined(__BORLANDC__) || defined(__MINGW32__)
+#include <windows.h>
+typedef UINT64 uint64;
+typedef INT64 int64;
+
+#elif defined(__UINT64_TYPE__) && defined(__INT64_TYPE__)
 typedef __UINT64_TYPE__ uint64;
 typedef __INT64_TYPE__ int64;
 
 #elif defined(___int64_t_defined) || defined(__BIT_TYPES_DEFINED__)
 typedef u_int64_t uint64;
 typedef int64_t int64;
-
-#elif defined(_MSC_VER) || defined(__BORLANDC__)
-#include <windows.h>
-typedef UINT64 uint64;
-typedef INT64 int64;
 
 #elif defined(__MINGW32__) || defined(__MINGW64__)
 typedef uint64_t uint64;

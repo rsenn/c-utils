@@ -2,6 +2,7 @@
 #include "../str.h"
 #include "../byte.h"
 #include "../unix.h"
+#include "../glob.h"
 #include <stdlib.h>
 
 static int

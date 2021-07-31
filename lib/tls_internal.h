@@ -1,6 +1,7 @@
 #ifndef TLS_INTERNAL_H
 #define TLS_INTERNAL_H
 
+#include "windoze.h"
 #include "iarray.h"
 #include "tls.h"
 

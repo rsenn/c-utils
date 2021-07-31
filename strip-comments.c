@@ -9,6 +9,7 @@
 #include "lib/buffer.h"
 #include "lib/mmap.h"
 #include "lib/path.h"
+#include "lib/unix.h"
 #include <ctype.h>
 
 #if WINDOWS_NATIVE

@@ -47,7 +47,7 @@
 #include "config.h"
 #endif
 #ifdef HAVE_ALLOCA_H
-#include <alloca.h>
+//#include <alloca.h>
 #endif
 #if !WINDOWS_NATIVE
 #include <syslog.h>
@@ -994,6 +994,7 @@ server_sigterm(int sig) {
 
 void
 server_spawn() {
+  int pid;
   if(program_argc > 0) {
     strlist args;
     strlist_init(&args, ' ');
@@ -1002,11 +1003,16 @@ server_spawn() {
     buffer_putsa(buffer_2, &args.sa);
     buffer_putsflush(buffer_2, "'\n");
 
-    if(fork() > 0) {
-      execvp(program_argv[0], program_argv);
+    if((pid = process_create(program_argv[0], program_argv, 0, 0)) < 0) {
       errmsg_warnsys("Error in execvp: ", 0);
       exit(1);
     }
+
+    /*    if(vfork() > 0) {
+          execvp(program_argv[0], program_argv);
+          errmsg_warnsys("Error in execvp: ", 0);
+          exit(1);
+        }*/
     strlist_free(&args);
   }
 }
@@ -1264,7 +1270,9 @@ main(int argc, char* argv[]) {
   fileBase = path_basename(argv[0]);
   errmsg_iam(argv[0]);
 
+#ifdef SIGCHLD
   signal(SIGCHLD, sigchild_handler);
+#endif
 
   MAP_NEW(dns_cache);
 

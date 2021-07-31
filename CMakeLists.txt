@@ -444,7 +444,7 @@ check_type_size(off_t SIZEOF_OFF_T)
 if(HAVE_OFF_T OR SIZEOF_OFF_T)
   message(STATUS "Have off_t type")
 else(HAVE_OFF_T OR SIZEOF_OFF_T)
-  add_definitions(-Doff_t=int64)
+  #add_definitions(-Doff_t=int64)
 endif(HAVE_OFF_T OR SIZEOF_OFF_T)
 
 check_function_exists(lseek64 HAVE_LSEEK64)
@@ -688,8 +688,10 @@ endif(LIBMSWSOCK)
 
 message(STATUS "MUX method: ${MUX_METHOD}")
 
-add_definitions("-DHAVE_${MUX_METHOD}=1" "-DUSE_${MUX_METHOD}=1")
-set(io_COMPILE_FLAGS "-DMUX_METHOD=${MUX_METHOD} -DHAVE_${MUX_METHOD}=1 -DUSE_${MUX_METHOD}=1")
+if(NOT "${MUX_METHOD}" STREQUAL "")
+  add_definitions("-DHAVE_${MUX_METHOD}=1" "-DUSE_${MUX_METHOD}=1")
+  set(io_COMPILE_FLAGS "-DMUX_METHOD=${MUX_METHOD} -DHAVE_${MUX_METHOD}=1 -DUSE_${MUX_METHOD}=1")
+endif(NOT "${MUX_METHOD}" STREQUAL "")
 
 if(WIN32 OR MSVC)
   if(USE_WIDECHAR)

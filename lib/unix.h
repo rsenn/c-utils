@@ -25,7 +25,6 @@
 
 #if !WINDOWS_NATIVE
 #include <unistd.h>
-#include <glob.h>
 #endif
 
 #ifdef __cplusplus

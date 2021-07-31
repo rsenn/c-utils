@@ -2,9 +2,9 @@
 
 #include <signal.h>
 
-#ifdef SA_RESTART
 int
 sig_action(int sig, struct sigaction const* new, struct sigaction* old) {
+#ifdef SA_RESTART
   struct sigaction sanew, saold;
   if(((new->sa_flags& SA_MASKALL) ? sigfillset(&sanew.sa_mask) : sigemptyset(&sanew.sa_mask)) == -1)
     return -1;
@@ -26,6 +26,6 @@ sig_action(int sig, struct sigaction const* new, struct sigaction* old) {
       old->sa_flags |= SA_NOCLDSTOP;
     old->sa_handler = saold.sa_handler;
   }
+#endif
   return 0;
 }
-#endif
