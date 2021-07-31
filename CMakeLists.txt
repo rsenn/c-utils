@@ -956,6 +956,6 @@ if(BUILD_TESTS)
 endif(BUILD_TESTS)
 if(BUILD_EXAMPLES)
   add_subdirectory(examples)
-endif(BUILD_EXAMLPES)
+endif(BUILD_EXAMPLES)
 
 dump(PROGRAMS)
