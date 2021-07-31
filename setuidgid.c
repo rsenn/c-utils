@@ -103,12 +103,14 @@ main(int argc, char* argv[] /*, char* envp[]*/) {
       return 111;
     }
   }
-
+#ifdef HAVE_SETGID
   if(gid != -1)
     setgid(gid);
+#endif
+#ifdef HAVE_SETUID
   if(uid != -1)
     setuid(uid);
-
+#endif
   cmd = args[0];
 
   if(cmd[str_chr(cmd, '/')] == '\0') {
