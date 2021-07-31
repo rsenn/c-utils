@@ -958,7 +958,7 @@ list_file(stralloc* path, const char* name, mode_t mode, long depth, dev_t root_
   if(match)
     return 0;
 
-  if(/*!is_dir && */(opt_minsize != -1 && size < (uint64)opt_minsize))
+  if(/*!is_dir && */ (opt_minsize != -1 && size < (uint64)opt_minsize))
     show = 0;
 
   if(dtype && (dtype & opt_types) == 0)
@@ -1249,8 +1249,6 @@ add_ext_class(const char* ext) {
   }
   return add_ext_name(ext);
 }
-
-
 
 int
 main(int argc, char* argv[]) {

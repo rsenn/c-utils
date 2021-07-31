@@ -20,7 +20,7 @@
 #endif
 
 #ifndef STDERR_FILENO
-#define STDERR_FILENO 2 
+#define STDERR_FILENO 2
 #endif
 
 #if !WINDOWS_NATIVE

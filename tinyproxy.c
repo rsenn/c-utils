@@ -1002,11 +1002,11 @@ server_spawn() {
     buffer_putsa(buffer_2, &args.sa);
     buffer_putsflush(buffer_2, "'\n");
 
-if(fork() > 0) {
+    if(fork() > 0) {
       execvp(program_argv[0], program_argv);
-      errmsg_warnsys("Error in execvp: ",0);
+      errmsg_warnsys("Error in execvp: ", 0);
       exit(1);
-}
+    }
     strlist_free(&args);
   }
 }
@@ -1067,29 +1067,30 @@ server_loop() {
 
         while(sb->buf.p > 0) {
 
-       /*   if(line_buffer && !buffer_is_binary(&sb->buf) && !sb->force_write) {
-            size_t num_lines, end_pos;
-            socketbuf_t* other;
-            if((num_lines = buffer_numlines(&sb->buf, &end_pos)) > 0) {
-              ssize_t r = socket_send(sb->sock, sb->buf.x, end_pos, 0);
-              if(r > 0) {
-                buffer* b = &sb->buf;
-                if(r < b->p) {
-                  byte_copyr(b->x, b->p - r, &b->x[r]);
-                  b->p -= r;
+          /*   if(line_buffer && !buffer_is_binary(&sb->buf) && !sb->force_write) {
+               size_t num_lines, end_pos;
+               socketbuf_t* other;
+               if((num_lines = buffer_numlines(&sb->buf, &end_pos)) > 0) {
+                 ssize_t r = socket_send(sb->sock, sb->buf.x, end_pos, 0);
+                 if(r > 0) {
+                   buffer* b = &sb->buf;
+                   if(r < b->p) {
+                     byte_copyr(b->x, b->p - r, &b->x[r]);
+                     b->p -= r;
 
-                  if(b->p) {
-                    other = socket_other(sb->sock);
-                    r = io_tryread(other->sock, &b->x[b->p], b->a - b->p);
-                    if(r > 0) {
-                      b->p += r;
-                      continue;
-                    }
-                  }
-                }
-              }
-            }
-          } else*/ {
+                     if(b->p) {
+                       other = socket_other(sb->sock);
+                       r = io_tryread(other->sock, &b->x[b->p], b->a - b->p);
+                       if(r > 0) {
+                         b->p += r;
+                         continue;
+                       }
+                     }
+                   }
+                 }
+               }
+             } else*/
+          {
             buffer_flush(&sb->buf);
             sb->force_write = 0;
             break;

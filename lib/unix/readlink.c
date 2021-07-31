@@ -21,7 +21,7 @@
 #endif
 
 static BOOL
-get_reparse_data(const char* LinkPath, REPARSE_DATA_BUFFER *rdb) {
+get_reparse_data(const char* LinkPath, REPARSE_DATA_BUFFER* rdb) {
   HANDLE hFile;
   DWORD returnedLength;
 
