@@ -4,7 +4,7 @@
 #include "fmt.h"
 
 #include <ctype.h>
-#include <alloca.h>
+//#include <alloca.h>
 
 #define CHARBUF_SEP "\x1b[m  "
 #define CHARBUF_EQ " " //"\x1b[38;5;233m="
