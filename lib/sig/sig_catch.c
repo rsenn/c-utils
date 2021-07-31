@@ -6,7 +6,7 @@ int
 sig_catch(int sig, sighandler_t_ref f) {
   struct sigaction ssa = {
     .sa_handler = f
-#if !defined(__MINGW32__)
+#if !defined(__MINGW32__) && !defined(__BORLANDC__) && !defined(_MSC_VER)
     ,
     .sa_mask = {{0}}
 #endif

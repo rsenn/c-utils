@@ -23,7 +23,7 @@ typedef struct {
 } charloc;
 
 #pragma pack(push, 1)
-typedef struct __attribute__((packed)) {
+typedef struct /*__attribute__((packed))*/ {
   uint8* chrs;
   unsigned p : 12;
   unsigned a : 12;

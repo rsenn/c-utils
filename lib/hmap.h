@@ -6,7 +6,7 @@
 #ifndef HMAP_H
 #define HMAP_H 1
 
-#include <sys/types.h>
+#include "typedefs.h"
 
 #ifdef __cplusplus
 extern "C" {

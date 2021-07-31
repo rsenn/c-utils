@@ -44,7 +44,11 @@ extern "C" {
 #endif
 
 #if !defined(__LCC__)
-#if defined(__SSIZE_TYPE__) && !defined(_SSIZE_T_DEFINED) && !defined(_SSIZE_T_)
+#if defined(_MSC_VER)
+#include <intsafe.h>
+typedef SSIZE_T ssize_t;
+
+#elif defined(__SSIZE_TYPE__) && !defined(_SSIZE_T_DEFINED) && !defined(_SSIZE_T_)
 #define _SSIZE_T_DEFINED 1
 #define _SSIZE_T_ 1
 typedef __SSIZE_TYPE__ ssize_t;

@@ -4,7 +4,7 @@
 
 #undef sig_dfl
 struct sigaction const sig_dfl = {.sa_handler = (void (*)(int))0
-#if !defined(__MINGW32__)
+#if !defined(__MINGW32__) && !defined(__BORLANDC__) && !defined(_MSC_VER)
                                   ,
                                   .sa_mask = {{0}}
 #endif
@@ -17,7 +17,7 @@ struct sigaction const sig_dfl = {.sa_handler = (void (*)(int))0
 };
 #undef sig_ign
 struct sigaction const sig_ign = {.sa_handler = (void (*)(int))1
-#if !defined(__MINGW32__)
+#if !defined(__MINGW32__) && !defined(__BORLANDC__) && !defined(_MSC_VER)
                                   ,
                                   .sa_mask = {{0}}
 #endif
