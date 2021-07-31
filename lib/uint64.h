@@ -32,7 +32,7 @@ extern "C" {
 #undef uint64
 #undef int64
 
-#if  defined(__BORLANDC__) 
+#if defined(__BORLANDC__)
 typedef unsigned long long uint64;
 typedef signed long long int64;
 

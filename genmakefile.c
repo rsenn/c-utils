@@ -6014,7 +6014,7 @@ main(int argc, char* argv[]) {
 
   strarray_foreach(&args, arg) {
 
-#if 0 //WINDOWS_NATIVE
+#if 0 // WINDOWS_NATIVE
     glob_t gl;
     size_t i;
 
@@ -6031,263 +6031,263 @@ main(int argc, char* argv[]) {
     const char* p = *arg;
     {
 #endif
-      if(!path_exists(p)) {
-        buffer_putm_internal(buffer_2, "ERROR: Doesn't exist: ", p, newline, NULL);
-        buffer_flush(buffer_2);
-        ret = 127;
-        goto fail;
-      }
-
-      if(is_source(p) || is_include(p))
-        sources_add(p);
-      else if(path_is_directory(p))
-        sources_get(p);
+    if(!path_exists(p)) {
+      buffer_putm_internal(buffer_2, "ERROR: Doesn't exist: ", p, newline, NULL);
+      buffer_flush(buffer_2);
+      ret = 127;
+      goto fail;
     }
-  }
-  {
-    set_iterator_t it;
 
-    set_foreach(&srcs, it, x, n) { strarray_pushb(&sources, x, n); }
-    strarray_sort(&sources, &sources_sort);
+    if(is_source(p) || is_include(p))
+      sources_add(p);
+    else if(path_is_directory(p))
+      sources_get(p);
   }
+}
+{
+  set_iterator_t it;
+
+  set_foreach(&srcs, it, x, n) { strarray_pushb(&sources, x, n); }
+  strarray_sort(&sources, &sources_sort);
+}
 
 #ifdef DEBUG_OUTPUT_
-  buffer_puts(buffer_2, "strarray sources:");
-  strarray_dump(buffer_2, &sources);
+buffer_puts(buffer_2, "strarray sources:");
+strarray_dump(buffer_2, &sources);
+buffer_putnlflush(buffer_2);
+#endif
+
+if(str_end(tools.make, "make")) {
+  stralloc rulename;
+  stralloc_init(&rulename);
+
+  if(str_start(tools.make, "g")) {
+    stralloc_copy(&rulename, &dirs.work.sa);
+    stralloc_cats(&rulename, "/%");
+    stralloc_cats(&rulename, exts.obj);
+    stralloc_cats(&rulename, ": %");
+    stralloc_cats(&rulename,
+                  /* tools.preproc ?
+                     exts.pps : */
+                  ".c");
+  } else {
+    stralloc_copys(&rulename, ".c");
+    stralloc_cats(&rulename, exts.obj);
+  }
+
+  compile = rule_get_sa(&rulename);
+  stralloc_weak(&compile->recipe, &compile_command);
+
+  stralloc_free(&rulename);
+}
+
+if(str_start(tools.make, "g")) {
+  stralloc bdir;
+
+  stralloc_init(&bdir);
+  path_relative(dirs.build.sa.s, dirs.work.sa.s, &bdir);
+  stralloc_nul(&bdir);
+  stralloc_cats(&dirs.work.sa, PATHSEP_S);
+
+  var_set("BUILDDIR", dirs.work.sa.s);
+
+  stralloc_copys(&dirs.build.sa, "$(BUILDDIR)");
+}
+
+if(((batch | shell) && stralloc_equals(&dirs.work.sa, ".")))
+  batchmode = 1;
+
+if(output_name.len) {
+  project_name = str_ndup(output_name.s, output_name.len);
+} else {
+  stralloc abspath;
+  stralloc_init(&abspath);
+  path_absolute(dirs.this.sa.s, &abspath);
+  stralloc_nul(&abspath);
+  project_name = str_dup(path_basename(abspath.s));
+  stralloc_free(&abspath);
+}
+
+if(!infile) {
+
+  stralloc src;
+  stralloc_init(&src);
+
+  strarray_foreach(&sources, ptr) { sourcedir_addsource(*ptr, &sources); }
+  sourcedir_populate(&sources);
+  strarray_free(&sources);
+
+  stralloc_free(&src);
+#if DEBUG_OUTPUT_
+
+  // debug_stra("srcs", &srcs);
+  buffer_puts(buffer_2, "targetdirs:\n");
+
+  MAP_FOREACH(targetdirs, t) {
+    uint32* count_ptr = (uint32*)MAP_ITER_VALUE(t);
+    buffer_puts(buffer_2, "  '");
+    buffer_puts(buffer_2, MAP_ITER_KEY(t));
+    buffer_puts(buffer_2, "' => ");
+    buffer_putulong(buffer_2, *count_ptr);
+    buffer_putnlflush(buffer_2);
+  }
   buffer_putnlflush(buffer_2);
 #endif
 
-  if(str_end(tools.make, "make")) {
-    stralloc rulename;
-    stralloc_init(&rulename);
-
-    if(str_start(tools.make, "g")) {
-      stralloc_copy(&rulename, &dirs.work.sa);
-      stralloc_cats(&rulename, "/%");
-      stralloc_cats(&rulename, exts.obj);
-      stralloc_cats(&rulename, ": %");
-      stralloc_cats(&rulename,
-                    /* tools.preproc ?
-                       exts.pps : */
-                    ".c");
-    } else {
-      stralloc_copys(&rulename, ".c");
-      stralloc_cats(&rulename, exts.obj);
-    }
-
-    compile = rule_get_sa(&rulename);
-    stralloc_weak(&compile->recipe, &compile_command);
-
-    stralloc_free(&rulename);
-  }
-
-  if(str_start(tools.make, "g")) {
-    stralloc bdir;
-
-    stralloc_init(&bdir);
-    path_relative(dirs.build.sa.s, dirs.work.sa.s, &bdir);
-    stralloc_nul(&bdir);
-    stralloc_cats(&dirs.work.sa, PATHSEP_S);
-
-    var_set("BUILDDIR", dirs.work.sa.s);
-
-    stralloc_copys(&dirs.build.sa, "$(BUILDDIR)");
-  }
-
-  if(((batch | shell) && stralloc_equals(&dirs.work.sa, ".")))
-    batchmode = 1;
-
-  if(output_name.len) {
-    project_name = str_ndup(output_name.s, output_name.len);
-  } else {
-    stralloc abspath;
-    stralloc_init(&abspath);
-    path_absolute(dirs.this.sa.s, &abspath);
-    stralloc_nul(&abspath);
-    project_name = str_dup(path_basename(abspath.s));
-    stralloc_free(&abspath);
-  }
-
-  if(!infile) {
-
-    stralloc src;
-    stralloc_init(&src);
-
-    strarray_foreach(&sources, ptr) { sourcedir_addsource(*ptr, &sources); }
-    sourcedir_populate(&sources);
-    strarray_free(&sources);
-
-    stralloc_free(&src);
 #if DEBUG_OUTPUT_
 
-    // debug_stra("srcs", &srcs);
-    buffer_puts(buffer_2, "targetdirs:\n");
-
-    MAP_FOREACH(targetdirs, t) {
-      uint32* count_ptr = (uint32*)MAP_ITER_VALUE(t);
-      buffer_puts(buffer_2, "  '");
-      buffer_puts(buffer_2, MAP_ITER_KEY(t));
-      buffer_puts(buffer_2, "' => ");
-      buffer_putulong(buffer_2, *count_ptr);
-      buffer_putnlflush(buffer_2);
-    }
-    buffer_putnlflush(buffer_2);
+  sourcedir_dump_all(buffer_2);
 #endif
 
 #if DEBUG_OUTPUT_
 
-    sourcedir_dump_all(buffer_2);
-#endif
-
-#if DEBUG_OUTPUT_
-
-    // debug_stra("srcs", &srcs);
-    buffer_puts(buffer_2, "cmd_libs = ");
-    buffer_putlong(buffer_2, cmd_libs);
-    buffer_puts(buffer_2, " cmd_bins = ");
-    buffer_putlong(buffer_2, cmd_libs);
-    buffer_puts(buffer_2, " cmd_objs = ");
-    buffer_putlong(buffer_2, cmd_objs);
-    buffer_putnlflush(buffer_2);
+  // debug_stra("srcs", &srcs);
+  buffer_puts(buffer_2, "cmd_libs = ");
+  buffer_putlong(buffer_2, cmd_libs);
+  buffer_puts(buffer_2, " cmd_bins = ");
+  buffer_putlong(buffer_2, cmd_libs);
+  buffer_puts(buffer_2, " cmd_objs = ");
+  buffer_putlong(buffer_2, cmd_objs);
+  buffer_putnlflush(buffer_2);
 
 #endif
 #ifdef DEBUG_OUTPUT_
 
-    MAP_FOREACH(targetdirs, t) {
-      uint32* count_ptr = (uint32*)MAP_ITER_VALUE(t);
-      buffer_puts(buffer_2, "  '");
-      buffer_puts(buffer_2, MAP_ITER_KEY(t));
-      buffer_puts(buffer_2, "' => ");
-      buffer_putulong(buffer_2, *count_ptr);
-      buffer_putnlflush(buffer_2);
-    }
+  MAP_FOREACH(targetdirs, t) {
+    uint32* count_ptr = (uint32*)MAP_ITER_VALUE(t);
+    buffer_puts(buffer_2, "  '");
+    buffer_puts(buffer_2, MAP_ITER_KEY(t));
+    buffer_puts(buffer_2, "' => ");
+    buffer_putulong(buffer_2, *count_ptr);
     buffer_putnlflush(buffer_2);
+  }
+  buffer_putnlflush(buffer_2);
 
-    sourcedir_dump_all(buffer_2, sourcedirs);
+  sourcedir_dump_all(buffer_2, sourcedirs);
 #endif
 
-    if(cmd_libs) {
-      gen_lib_rules();
+  if(cmd_libs) {
+    gen_lib_rules();
 
-      deps_for_libs();
-    } else {
-      MAP_PAIR_T t;
-      MAP_FOREACH(sourcedirs, t) {
-        sourcedir* srcdir = *(sourcedir**)MAP_ITER_VALUE(t);
-
-        /*if(tools.preproc) {
-          gen_simple_compile_rules(rules,
-        srcdir, MAP_ITER_KEY(t), ".c",
-        exts.pps, &preprocess_command);
-          gen_simple_compile_rules(rules,
-        srcdir, MAP_ITER_KEY(t), exts.pps,
-        exts.obj, &compile_command); }
-        else */
-        { gen_simple_compile_rules(srcdir, MAP_ITER_KEY(t), ".c", exts.obj, &compile_command); }
-      }
-    }
-
-    if(cmd_bins) {
-
-      cmd_bins = gen_link_rules();
-    }
-
-    if(cmd_bins == 0 || cmd_libs == 1) {
-      MAP_PAIR_T t;
-      MAP_FOREACH(rules, t) {
-        target* tgt = MAP_ITER_VALUE(t);
-
-        if(stralloc_equal(&tgt->recipe, &lib_command) && cmd_libs)
-          set_adds(&all->prereq, MAP_ITER_KEY(t));
-      }
-    }
-  }
-
-  gen_clean_rule();
-
-  {
-    MAP_PAIR_T t;
-    MAP_FOREACH(rules, t) {
-      target* tgt = MAP_ITER_VALUE(t);
-      // print_rule_deps(buffer_2, tgt);
-    }
-  }
-  if(inst_bins || inst_libs)
-    gen_install_rules();
-
-  {
+    deps_for_libs();
+  } else {
     MAP_PAIR_T t;
     MAP_FOREACH(sourcedirs, t) {
       sourcedir* srcdir = *(sourcedir**)MAP_ITER_VALUE(t);
 
-      //  strlist_sort(&srcdir->pptoks,
-      //  (strlist_cmpfn_t*)&case_diffs);
-      // debug_sl(t->key,
-      // &srcdir->pptoks, ", ");
+      /*if(tools.preproc) {
+        gen_simple_compile_rules(rules,
+      srcdir, MAP_ITER_KEY(t), ".c",
+      exts.pps, &preprocess_command);
+        gen_simple_compile_rules(rules,
+      srcdir, MAP_ITER_KEY(t), exts.pps,
+      exts.obj, &compile_command); }
+      else */
+      { gen_simple_compile_rules(srcdir, MAP_ITER_KEY(t), ".c", exts.obj, &compile_command); }
     }
   }
 
-fail:
+  if(cmd_bins) {
 
-  if(!case_diffs(tools.make, "mplab")) {
-    output_mplab_project(out, 0, 0, &include_dirs);
-    goto quit;
+    cmd_bins = gen_link_rules();
   }
 
-  if(!case_diffs(tools.make, "cmake")) {
-    output_cmake_project(out, &rules, &vars, &include_dirs, &link_dirs);
-    goto quit;
-  }
+  if(cmd_bins == 0 || cmd_libs == 1) {
+    MAP_PAIR_T t;
+    MAP_FOREACH(rules, t) {
+      target* tgt = MAP_ITER_VALUE(t);
 
-  buffer_putm_internal(out, comment, " Generated by:", newline, comment, "  ", NULL);
-  buffer_putsa(out, &cmdline.sa);
-  buffer_putsflush(out, newline);
-
-  {
-    strlist varnames;
-    strlist_init(&varnames, '\0');
-
-    get_keys(&vars, &varnames);
-    /*    buffer_puts(buffer_2,
-       "varnames: ");
-       strlist_dump(buffer_2,
-       &varnames); */
-
-    output_all_vars(out, &vars, &varnames);
-  }
-
-  if(str_equal(tools.make, "gmake")) {
-    stralloc_nul(&vpath.sa);
-
-    //      buffer_putm_internal(out,
-    //      "\nvpath ", vpath.sa.s,
-    //      "\n", NULL);
-
-    stralloc_replacec(&vpath.sa, ' ', ':');
-    buffer_putm_internal(out, "VPATH = ", vpath.sa.s, "\n\n", NULL);
-    buffer_flush(out);
-  }
-
-  if(ninja) {
-    output_build_rules(out, "cc", &compile_command);
-    output_build_rules(out, "link", &link_command);
-    output_build_rules(out, "lib", &lib_command);
-    put_newline(out, 0);
-  }
-
-  if(batch || shell) {
-    if(batch) {
-      buffer_putm_internal(out, "CD %~dp0", newline, NULL);
-    } else {
-      buffer_putm_internal(out,
-                           "cd \"$(dirname "
-                           "\"$0\")\"\n\n",
-                           NULL);
+      if(stralloc_equal(&tgt->recipe, &lib_command) && cmd_libs)
+        set_adds(&all->prereq, MAP_ITER_KEY(t));
     }
+  }
+}
 
-    output_script(out, NULL);
-  } else
-    output_all_rules(out);
+gen_clean_rule();
+
+{
+  MAP_PAIR_T t;
+  MAP_FOREACH(rules, t) {
+    target* tgt = MAP_ITER_VALUE(t);
+    // print_rule_deps(buffer_2, tgt);
+  }
+}
+if(inst_bins || inst_libs)
+  gen_install_rules();
+
+{
+  MAP_PAIR_T t;
+  MAP_FOREACH(sourcedirs, t) {
+    sourcedir* srcdir = *(sourcedir**)MAP_ITER_VALUE(t);
+
+    //  strlist_sort(&srcdir->pptoks,
+    //  (strlist_cmpfn_t*)&case_diffs);
+    // debug_sl(t->key,
+    // &srcdir->pptoks, ", ");
+  }
+}
+
+fail :
+
+    if(!case_diffs(tools.make, "mplab")) {
+  output_mplab_project(out, 0, 0, &include_dirs);
+  goto quit;
+}
+
+if(!case_diffs(tools.make, "cmake")) {
+  output_cmake_project(out, &rules, &vars, &include_dirs, &link_dirs);
+  goto quit;
+}
+
+buffer_putm_internal(out, comment, " Generated by:", newline, comment, "  ", NULL);
+buffer_putsa(out, &cmdline.sa);
+buffer_putsflush(out, newline);
+
+{
+  strlist varnames;
+  strlist_init(&varnames, '\0');
+
+  get_keys(&vars, &varnames);
+  /*    buffer_puts(buffer_2,
+     "varnames: ");
+     strlist_dump(buffer_2,
+     &varnames); */
+
+  output_all_vars(out, &vars, &varnames);
+}
+
+if(str_equal(tools.make, "gmake")) {
+  stralloc_nul(&vpath.sa);
+
+  //      buffer_putm_internal(out,
+  //      "\nvpath ", vpath.sa.s,
+  //      "\n", NULL);
+
+  stralloc_replacec(&vpath.sa, ' ', ':');
+  buffer_putm_internal(out, "VPATH = ", vpath.sa.s, "\n\n", NULL);
+  buffer_flush(out);
+}
+
+if(ninja) {
+  output_build_rules(out, "cc", &compile_command);
+  output_build_rules(out, "link", &link_command);
+  output_build_rules(out, "lib", &lib_command);
+  put_newline(out, 0);
+}
+
+if(batch || shell) {
+  if(batch) {
+    buffer_putm_internal(out, "CD %~dp0", newline, NULL);
+  } else {
+    buffer_putm_internal(out,
+                         "cd \"$(dirname "
+                         "\"$0\")\"\n\n",
+                         NULL);
+  }
+
+  output_script(out, NULL);
+} else
+  output_all_rules(out);
 
 quit :
 
@@ -6311,29 +6311,29 @@ quit :
   }
 }
 
-  {
-    sourcefile* source;
-    slink* link;
-    strlist deps;
-    strlist_init(&deps, '\0');
-    slist_foreach(sourcelist, link) {
-      source = slist_data(link);
+{
+  sourcefile* source;
+  slink* link;
+  strlist deps;
+  strlist_init(&deps, '\0');
+  slist_foreach(sourcelist, link) {
+    source = slist_data(link);
 
-      if(0 &&
-         /*source->name[str_find(source->name,
-            "genmakefile")] &&
-            strlist_count(&source->deps)*/
-         1) {
-        buffer_putm_internal(buffer_2, "source: ", source->name, " deps: ", NULL);
-        strlist_zero(&deps);
-        sources_deps(source, &deps);
-        buffer_puts(buffer_2, " includes: ");
+    if(0 &&
+       /*source->name[str_find(source->name,
+          "genmakefile")] &&
+          strlist_count(&source->deps)*/
+       1) {
+      buffer_putm_internal(buffer_2, "source: ", source->name, " deps: ", NULL);
+      strlist_zero(&deps);
+      sources_deps(source, &deps);
+      buffer_puts(buffer_2, " includes: ");
 
-        strlist_dump(buffer_2, &source->includes);
-        buffer_putnlflush(buffer_2);
-      }
+      strlist_dump(buffer_2, &source->includes);
+      buffer_putnlflush(buffer_2);
     }
   }
-  //  MAP_DESTROY(sourcedirs);
-  return ret;
+}
+//  MAP_DESTROY(sourcedirs);
+return ret;
 }
