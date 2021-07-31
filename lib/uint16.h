@@ -30,6 +30,9 @@ extern "C" {
 #endif
 
 #if defined(__BORLANDC__)
+typedef unsigned short uint16;
+typedef signed short int16;
+
 #elif defined(__UINT16_TYPE__) && defined(__INT16_TYPE__)
 typedef __UINT16_TYPE__ uint16;
 typedef __INT16_TYPE__ int16;

@@ -32,7 +32,11 @@ extern "C" {
 #undef uint64
 #undef int64
 
-#if defined(_MSC_VER) || defined(__BORLANDC__) || defined(__MINGW32__)
+#if  defined(__BORLANDC__) 
+typedef unsigned long long uint64;
+typedef signed long long int64;
+
+#elif defined(_MSC_VER) || defined(__MINGW32__)
 #include <windows.h>
 typedef UINT64 uint64;
 typedef INT64 int64;
