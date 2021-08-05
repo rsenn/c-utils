@@ -10,7 +10,7 @@ ssize_t
 charbuf_skipn(charbuf* b, size_t n) {
   size_t pos;
   ssize_t ret;
-  uint8 *skipped=malloc(n);
+  uint8* skipped = malloc(n);
 #ifdef DEBUG_CHARBUF
   int debug = charbuf_debug;
   charbuf_debug = 0;

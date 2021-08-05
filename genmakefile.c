@@ -5540,7 +5540,7 @@ main(int argc, char* argv[]) {
   for(;;) {
     c = unix_getopt_long(argc,
                          argv,
-                         "ho:O:B:L:d:t:m:n:a:D:l:I:c:s:"
+                         "habo:O:B:L:d:t:m:n:a:D:l:I:c:s:"
                          "p:P:S:if:C",
                          opts,
                          &index);
@@ -5556,6 +5556,7 @@ main(int argc, char* argv[]) {
         goto quit;
       case 'C': cfg.lang = LANG_C; break;
       case 'c': cross_compile = unix_optarg; break;
+      case 'b': cmd_bins = 1; break;
       case 'o': outfile = unix_optarg; break;
       case 'O': exts.obj = unix_optarg; break;
       case 'B': exts.bin = unix_optarg; break;

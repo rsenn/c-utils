@@ -141,7 +141,7 @@ is_symlink(const char* path) {
 int
 is_junction(const char* path) {
   struct stat st;
-  int fd,ret=0;
+  int fd, ret = 0;
   if(stat(path, &st) == 0) {
 
     if((fd = open("/proc/mounts", O_RDONLY)) != -1) {
