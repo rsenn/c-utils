@@ -1039,6 +1039,7 @@ rule_command_subst(target* rule, stralloc* out, const char* prereq, size_t plen)
       if(!stralloc_append(out, p))
         break;
     }
+    stralloc_nul(out);
   }
 }
 
@@ -1066,12 +1067,9 @@ rule_command(target* rule, stralloc* out) {
       strlist_pushb_unique(&prereq, s, len);
     }
   }
-  //  stralloc_copy(&prereq.sa,
-  //  &rule->prereq.sa);
+  // stralloc_copy(&prereq.sa, &rule->prereq.sa);
   stralloc_replacec(&prereq.sa, from, pathsep_args);
-  if(0) { // make_begin_inline == NULL
-          // && rule->recipe ==
-          // &lib_command) {
+  if(0 /* make_begin_inline == NULL  && rule->recipe ==  &lib_command*/) {
     char* x;
     size_t n = 0;
     range r;
@@ -1099,10 +1097,10 @@ rule_command(target* rule, stralloc* out) {
         n++;
       r.start += n;
     }
-  } else if(str_start(tools.make, "g")) {
-    stralloc_copy(out, &rule->recipe);
-  } else {
+  } else if(!str_start(tools.make, "g") && !(rule->name[0] == '.' && strchr(&rule->name[1], '.') && prereq.sa.len == 0)) {
     rule_command_subst(rule, out, prereq.sa.s, prereq.sa.len);
+  } else {
+    stralloc_copy(out, &rule->recipe);
   }
   stralloc_free(&prereq.sa);
 }
@@ -2915,7 +2913,6 @@ gen_srcdir_compile_rules(sourcedir* sdir, const char* dir) {
 
     if(str_start(tools.make, "g") || ((shell | batch) && batchmode)) {
       stralloc_cat(&target, &srcs);
-      // path_wildcard(&target, "%");
     } else if(batchmode) {
       stralloc_zero(&target);
       stralloc_catm_internal(&target, "{", dir, "}", ext, "{", dirs.work.sa.s, "}", exts.obj, ":", 0);
@@ -2937,46 +2934,37 @@ gen_srcdir_compile_rules(sourcedir* sdir, const char* dir) {
       }
 
       set_addsa(&rule->output, &obj);
-
       add_srcpath(&rule->prereq, srcs.s);
 
       if(rule->recipe.s)
         continue;
 
       if((shell | batch) == 0 && batchmode) {
-        // rule->recipe =
-        // malloc(sizeof(stralloc));
         stralloc_init(&rule->recipe);
         stralloc_copy(&rule->recipe, &compile_command);
         stralloc_replaces(&rule->recipe, "-Fo", "-Fd");
         stralloc_replaces(&rule->recipe, "$@", dirs.work.sa.s);
-
-      } else {
+        continue;
+      }
+      {
         size_t p, e;
         char* x;
 
         if(dirs.work.sa.len == 0 || stralloc_equals(&dirs.work.sa, ".")) {
           stralloc_copy(&rule->recipe, &compile_command);
           x = stralloc_begin(&rule->recipe);
-          // e =
-          // stralloc_end(&rule->recipe);
-
           p = e = stralloc_finds(&rule->recipe, "$@");
           while(p > 0 && !((x[p + 1] == '/' || x[p + 1] == '-') && x[p] == ' ')) p--;
-
           e += 2;
           if(x[e] == '"')
             e++;
-
           stralloc_remove(&rule->recipe, p, e - p);
         } else {
           stralloc_weak(&rule->recipe, &compile_command);
         }
 
-        //        rule->recipe = /*
-        //        str_start(tools.make,
-        //        "g") ? NULL :*/
-        //        &compile_command;
+        /* if(stralloc_length(&rule->recipe) == 0)
+           stralloc_copy(&rule->recipe, &compile_command);*/
       }
     }
   }
@@ -2996,11 +2984,8 @@ gen_srcdir_compile_rules(sourcedir* sdir, const char* dir) {
 }
 
 /**
- * @brief gen_simple_compile_rules
- * Generate compile rules for every
- * source file in srcdir
- * @param rules                     All
- * rules
+ * @brief gen_simple_compile_rules  compile rules for every  source file in srcdir
+ * @param rules                     All  rules
  * @param srcdir source dir structure
  * @param dir source dir path
  * @return
@@ -3011,6 +2996,10 @@ gen_simple_compile_rules(sourcedir* srcdir, const char* dir, const char* fromext
   stralloc ppsrc, obj;
   stralloc_init(&ppsrc);
   stralloc_init(&obj);
+#ifdef DEBUG_OUTPUT
+  buffer_putm_internal(buffer_2, "gen_simple_compile_rules '", dir, "' ", fromext, " ", toext, 0);
+  buffer_putnlflush(buffer_2);
+#endif
 
   slist_foreach(srcdir->sources, src) {
     target* rule;
@@ -3029,9 +3018,7 @@ gen_simple_compile_rules(sourcedir* srcdir, const char* dir, const char* fromext
       stralloc_zero(&obj);
       path_output(base, &obj, ".pp.c");
 
-      //      stralloc_inserts(&ppsrc,
-      //      ".pp", byte_rchr(ppsrc.s,
-      //      ppsrc.len, '.'));
+      // stralloc_inserts(&ppsrc,  ".pp", byte_rchr(ppsrc.s,     ppsrc.len, '.'));
 
       if((rule = rule_get_sa(&obj))) {
         add_source(&rule->prereq, src->name);
@@ -3063,10 +3050,8 @@ gen_simple_compile_rules(sourcedir* srcdir, const char* dir, const char* fromext
 }
 
 /**
- * @brief gen_srcdir_lib_rule  Generate
- * lib rule for source dir
- * @param rules                     All
- * rules
+ * @brief gen_srcdir_lib_rule  Generate  lib rule for source dir
+ * @param rules                     All rules
  * @param srcdir source dir structure
  * @param dir source dir path
  * @return
@@ -3088,16 +3073,11 @@ gen_srcdir_lib_rule(sourcedir* srcdir, const char* name) {
 #endif
 
   if((str_start(tools.make, "g") || batchmode) && cfg.mach.arch != PIC) {
-    debug_str("gen_srcdir_compile_rules", name);
+    buffer_putm_internal(buffer_2, "gen_srcdir_compile_rules: ", name, 0);
+    buffer_flush(buffer_2);
     dep = gen_srcdir_compile_rules(srcdir, name);
   } else {
-    /* if(0 && tools.preproc) {
-       gen_simple_compile_rules(rules,
-     srcdir, name, ".c", exts.pps,
-     &preprocess_command); dep =
-     gen_simple_compile_rules(rules,
-     srcdir, name, exts.pps, exts.obj,
-     &compile_command); } else {*/
+    /* if(0 && tools.preproc) {gen_simple_compile_rules(rules, srcdir, name, ".c", exts.pps, &preprocess_command); dep = gen_simple_compile_rules(rules, srcdir, name, exts.pps, exts.obj, &compile_command); } else {*/
     dep = gen_simple_compile_rules(srcdir, name, ".c", exts.obj, &compile_command);
     //}
   }
@@ -3116,13 +3096,10 @@ gen_srcdir_lib_rule(sourcedir* srcdir, const char* name) {
         if(pfile->name == NULL || !is_source(pfile->name))
           continue;
         stralloc_zero(&sa);
-
         if(vpath.sa.len)
           path_extension(pfile->name, &sa, exts.obj);
         else
-
           path_output(pfile->name, &sa, exts.obj);
-
         set_addsa(&rule->prereq, &sa);
       }
     }
@@ -3996,35 +3973,21 @@ output_make_rule(buffer* b, target* rule) {
   stralloc_copys(&name, rule->name);
 
 #if 1
-  buffer_puts(buffer_2, "\033[38;5;90mrule name\033[0m: ");
+  buffer_puts(buffer_2, "RULE\n  \033[38;5;220mname\033[0m: ");
   buffer_puts(buffer_2, rule->name);
-  buffer_puts(buffer_2, "\033[38;5;90m recipe\033[0m: ");
+  buffer_puts(buffer_2, "\n  \033[38;5;90mrecipe\033[0m: ");
   buffer_putsa(buffer_2, &rule->recipe);
-  buffer_putnlflush(buffer_2);
-  /*if(str_end(rule->name, ".a") || rule->name[str_chr(rule->name, '%')]) {
-    const char* color = str_end(rule->name, ".a") ? YELLOW : RED;
+  buffer_puts(buffer_2, "\n  \033[38;5;27moutput\033[0m:\n\t");
+  buffer_putset(buffer_2, &rule->output, "\n\t", 2);
+  buffer_puts(buffer_2, "\n  \033[38;5;70mprereq\033[0m:\n\t");
+  buffer_putset(buffer_2, &rule->prereq, "\n\t", 2);
 
-    buffer_puts(buffer_2, color);
-    debug_str("rule->name" NC, rule->name);
-    if(num_outputs <= 1) {
-      buffer_puts(buffer_2, color);
-      debug_set("rule->output" NC, &rule->output, " ");
-    }
-    buffer_puts(buffer_2, color);
-    debug_int("num_outputs" NC, num_outputs);
-    if(num_prereqs <= 1) {
-      buffer_puts(buffer_2, color);
-      debug_set("rule->prereq" NC, &rule->prereq, " ");
-    }
-    buffer_puts(buffer_2, color);
-    debug_int("num_prereqs" NC, num_prereqs);
-  }*/
-#endif
   if(array_length(&rule->deps, sizeof(target*))) {
-    buffer_puts(buffer_2, "\033[38;5;90mrule deps\033[0m: ");
+    buffer_puts(buffer_2, "\n  deps\033[0m: ");
     print_rule_deps(buffer_2, rule);
-    buffer_putnlflush(buffer_2);
   }
+  buffer_putnlflush(buffer_2);
+#endif
 
   if(num_prereqs == 0 && str_diffn(rule->name, dirs.work.sa.s, dirs.work.sa.len) && !rule->name[str_chr(rule->name, pathsep_make)] && str_end(rule->name, ":")) {
     buffer_putm_internal(b, ".PHONY: ", rule->name, newline, NULL);
@@ -4047,7 +4010,6 @@ output_make_rule(buffer* b, target* rule) {
 
   if(stralloc_diffs(&sa, rule->name)) {
     size_t outlen;
-
     if((outlen = output.len))
       stralloc_cats(&output, ": \\\n");
     stralloc_cat(&output, &name);
@@ -4061,18 +4023,13 @@ output_make_rule(buffer* b, target* rule) {
     const char* str;
     size_t len;
     set_iterator_t it;
-
     set_foreach(&rule->prereq, it, str, len) {
       if(stralloc_endsb(&output, str, len))
         continue;
-
       stralloc_catc(&output, ' ');
       stralloc_catb(&output, str, len);
     }
-
-    // stralloc_replacec(&output,
-    // pathsep_make == '/' ? '\\' : '/',
-    // pathsep_make);
+    // stralloc_replacec(&output, pathsep_make == '/' ? '\\' : '/', pathsep_make);
   }
 
   buffer_putsa(b, &output);
@@ -4167,9 +4124,9 @@ output_all_rules(buffer* b) {
     if(!cmd_libs && str_end(name, ".a"))
       continue;
 
-#ifdef DEBUG_OUTPUT
+#ifdef DEBUG_OUTPUT_
     buffer_puts(buffer_2, "Outputting rule '");
-    buffer_putsx(buffer_2, MAP_ITER_KEY(t), MAP_ITER_KEY(t) _len);
+    buffer_puts(buffer_2, name);
     buffer_putc(buffer_2, '\'');
     buffer_putnlflush(buffer_2);
 #endif
@@ -6151,8 +6108,8 @@ if(inst_bins || inst_libs)
   MAP_FOREACH(sourcedirs, t) {
     sourcedir* srcdir = *(sourcedir**)MAP_ITER_VALUE(t);
 #if DEBUG_OUTPUT
-    strlist_sort(&srcdir->pptoks, (strlist_cmpfn_t*)&case_diffs);
-    debug_sl(t->key, &srcdir->pptoks, ", ");
+    buffer_putm_internal(buffer_2, "key: ", t->key, " pptoks: ", 0);
+    buffer_putset(buffer_2, &srcdir->pptoks, ", ", 2);
 #endif
   }
 }
@@ -6205,6 +6162,28 @@ if(ninja) {
   output_build_rules(out, "lib", &lib_command);
   put_newline(out, 0);
 }
+{
+  MAP_PAIR_T t;
+
+  MAP_FOREACH(rules, t) {
+
+    const char* name = MAP_ITER_KEY(t);
+    target* rule = MAP_ITER_VALUE(t);
+    if(rule->recipe.len)
+      continue;
+
+    if(str_end(name, exts.obj)) {
+      stralloc_weak(&rule->recipe, &compile_command);
+    }
+
+#if 1
+    buffer_puts(buffer_2, "Empty RULE '");
+    buffer_puts(buffer_2, name);
+    buffer_putc(buffer_2, '\'');
+    buffer_putnlflush(buffer_2);
+#endif
+  }
+}
 
 if(batch || shell) {
   if(batch) {
@@ -6217,8 +6196,10 @@ if(batch || shell) {
   }
 
   output_script(out, NULL);
-} else
+} else {
+
   output_all_rules(out);
+}
 
 quit :
 

@@ -495,14 +495,7 @@ main(int argc, char* argv[]) {
   int c, index = 0;
   const char *cfgdata = 0, *hexfile = 0;
 
-  struct longopt opts[] = {{"help", 0, NULL, 'h'},
-                           {"oneline", 0, &oneline, 1},
-                           {"no-default", 0, &nodefault, 1},
-                           {"default", 0, &nodefault, 0},
-                           {"no-comments", 0, &comments, 0},
-                           {"name", 0, &output_name, 1},
-                           {"verbose", 0, &verbose, 1},
-                           {0, 0, 0, 0}};
+  struct longopt opts[] = {{"help", 0, NULL, 'h'}, {"oneline", 0, &oneline, 1}, {"no-default", 0, &nodefault, 1}, {"default", 0, &nodefault, 0}, {"no-comments", 0, &comments, 0}, {"name", 0, &output_name, 1}, {"verbose", 0, &verbose, 1}, {0, 0, 0, 0}};
 
   for(;;) {
     c = getopt_long(argc, argv, "hodCnv", opts, &index);
