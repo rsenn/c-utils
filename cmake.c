@@ -7,11 +7,7 @@
 
 void
 output_cmake_var(buffer* b, const char* name, const strlist* list) {
-
-  const char* s;
-  size_t n;
   buffer_putm_internal(b, "set(", name, " ", 0);
-
   buffer_putsa(b, &list->sa);
   buffer_puts(b, ")");
   buffer_putnlflush(b);
@@ -19,8 +15,6 @@ output_cmake_var(buffer* b, const char* name, const strlist* list) {
 
 void
 append_cmake_var(buffer* b, const char* name, const strlist* list) {
-  const char* s;
-  size_t n;
   buffer_putm_internal(b, "set(", name, " ${", name, "} ", 0);
   buffer_putsa(b, &list->sa);
   buffer_puts(b, ")");
@@ -153,7 +147,7 @@ output_cmake_rules(buffer* b, MAP_T rules) {
   MAP_PAIR_T t;
 
   MAP_FOREACH(rules, t) {
-    target* rule = MAP_ITER_VALUE(t);
+    // target* rule = MAP_ITER_VALUE(t);
     const char* name = MAP_ITER_KEY(t);
 
     if(!cmd_libs && str_end(name, ".a"))
@@ -175,8 +169,6 @@ output_cmake_rules(buffer* b, MAP_T rules) {
 
 void
 output_cmake_project(buffer* b, MAP_T* rules, MAP_T* vars, const strlist* include_dirs, const strlist* link_dirs) {
-  const char* s;
-  size_t n;
   buffer_putm_internal(b, "project(", project_name, " ", sources_iscplusplus() ? "CXX" : "C", ")", 0);
   buffer_putnlflush(b);
   buffer_putnlflush(b);

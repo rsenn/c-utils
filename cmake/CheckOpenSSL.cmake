@@ -27,11 +27,11 @@ if(USE_SSL AND NOT BUILD_SSL)
 
     if(pkgcfg_lib_OPENSSL_crypto)
       set(OPENSSL_CRYPTO_LIBRARY "${pkgcfg_lib_OPENSSL_crypto}"
-          CACHE FILEPATH "OpenSSL crypto library" FORCE)
+          CACHE FILEPATH "OpenSSL crypto library")
     endif(pkgcfg_lib_OPENSSL_crypto)
     if(pkgcfg_lib_OPENSSL_ssl)
       set(OPENSSL_SSL_LIBRARY "${pkgcfg_lib_OPENSSL_ssl}" CACHE FILEPATH "OpenSSL ssl library"
-                                                                FORCE)
+                                                               )
     endif(pkgcfg_lib_OPENSSL_ssl)
 
     if(OPENSSL_CRYPTO_LIBRARIES)
@@ -40,7 +40,7 @@ if(USE_SSL AND NOT BUILD_SSL)
 
     if(OPENSSL_CRYPTO_LIBRARY AND OPENSSL_SSL_LIBRARY)
       set(TLS_LIBRARIES "${OPENSSL_SSL_LIBRARY};${OPENSSL_CRYPTO_LIBRARY}"
-          CACHE STRING "TLS libraries" FORCE)
+          CACHE STRING "TLS libraries")
     endif(OPENSSL_CRYPTO_LIBRARY AND OPENSSL_SSL_LIBRARY)
 
     list(APPEND CMAKE_REQUIRED_INCLUDES "${OPENSSL_INCLUDE_DIRS}")
@@ -107,17 +107,17 @@ if(OPENSSL_FOUND)
     set(OPENSSL_SSL_LIBRARY "${pkgcfg_lib_OPENSSL_ssl}")
   else(pkgcfg_lib_OPENSSL_ssl)
     string(REPLACE "libcrypto" "libssl" OPENSSL_SSL_LIB "${OPENSSL_CRYPTO_LIBRARY}")
-    set(OPENSSL_SSL_LIBRARY "${OPENSSL_SSL_LIB}" CACHE STRING "SSL library" FORCE)
+    set(OPENSSL_SSL_LIBRARY "${OPENSSL_SSL_LIB}" CACHE STRING "SSL library")
   endif(pkgcfg_lib_OPENSSL_ssl)
 
   if(OPENSSL_SSL_LIBRARY STREQUAL "" OR NOT OPENSSL_SSL_LIBRARY)
     string(REPLACE "libcrypto" "libssl" OPENSSL_SSL_LIB "${OPENSSL_CRYPTO_LIBRARY}")
-    set(OPENSSL_SSL_LIBRARY "${OPENSSL_SSL_LIB}" CACHE FILEPATH "SSL library" FORCE)
+    set(OPENSSL_SSL_LIBRARY "${OPENSSL_SSL_LIB}" CACHE FILEPATH "SSL library")
   endif(OPENSSL_SSL_LIBRARY STREQUAL "" OR NOT OPENSSL_SSL_LIBRARY)
 
   if(OPENSSL_CRYPTO_LIBRARY STREQUAL "" OR NOT OPENSSL_CRYPTO_LIBRARY)
     string(REPLACE "libssl" "libcrypto" OPENSSL_CRYPTO_LIB "${OPENSSL_SSL_LIBRARY}")
-    set(OPENSSL_CRYPTO_LIBRARY "${OPENSSL_CRYPTO_LIB}" CACHE FILEPATH "SSL library" FORCE)
+    set(OPENSSL_CRYPTO_LIBRARY "${OPENSSL_CRYPTO_LIB}" CACHE FILEPATH "SSL library")
   endif(OPENSSL_CRYPTO_LIBRARY STREQUAL "" OR NOT OPENSSL_CRYPTO_LIBRARY)
 
   if(OPENSSL_SSL_LIBRARY)

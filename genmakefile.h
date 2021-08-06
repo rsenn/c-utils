@@ -43,6 +43,7 @@ typedef enum { LANG_C, LANG_CXX } lang_type;
 
 #define DEFAULT_OBJEXT ".o"
 #define DEFAULT_LIBEXT ".a"
+#define DEFAULT_DSOEXT ".so"
 #define DEFAULT_LIBPFX "lib"
 #define DEFAULT_EXEEXT ""
 #define DEFAULT_PPSEXT ".pp.c"
@@ -65,7 +66,10 @@ typedef struct {
 } system_type;
 
 typedef struct {
-  struct slink link;
+  union {
+    struct slink link;
+    struct sourcefile* next;
+  };
   const char* name;
   int has_main;
   strlist includes;

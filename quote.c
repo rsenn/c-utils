@@ -24,9 +24,7 @@
 #include <unistd.h>
 #endif
 
-static char quote[4] = {'"', 0};
-static int one_line, indent = 2, compact;
-static stralloc indent_str, queue, quote_chars;
+static stralloc quote_chars;
 static buffer output;
 static const char* add_quotes = 0;
 static int tab_size = -1;
@@ -174,7 +172,7 @@ add_output(const char* x, size_t len, buffer* out) {
 
   for(i = 0; i < len; i++) {
     uint8 ch = x[i];
-    unsigned int chlen = fmt_utf8(0, x[i]);
+    /*unsigned int chlen =*/fmt_utf8(0, x[i]);
 
     if(do_quote(x[i])) {
       if(1 /*chlen > 1 || fmt_call != fmt_default*/) {
@@ -209,9 +207,8 @@ add_output(const char* x, size_t len, buffer* out) {
 
 int
 run_quote(buffer* in, buffer* out) {
-  int c, prev_c, is_empty;
-  const char* x;
-  size_t p, n, line, col;
+  int c, prev_c;
+  size_t n, line, col;
   bool ws = false;
   stralloc buf;
   stralloc_init(&buf);
@@ -337,13 +334,8 @@ main(int argc, char* argv[]) {
   int c;
   const char *in_path = 0, *out_path = 0;
   int index = 0;
-  char buf[16384];
-  buffer temp;
   int in_place = 0;
   buffer input;
-  stralloc data;
-  size_t n;
-  const char* x;
   char* tmpl = "/tmp/quote.XXXXXX";
 
   struct longopt opts[] = {{"help", 0, NULL, 'h'},

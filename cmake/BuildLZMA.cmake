@@ -135,7 +135,7 @@ if(BUILD_LZMA)
   endif(LIBLZMA_SOURCES)
 
   link_directories(BEFORE "${CMAKE_CURRENT_BINARY_DIR}/xz")
-  set(LIBLZMA_LIBRARY lzma CACHE FILEPATH "" FORCE)
+  set(LIBLZMA_LIBRARY lzma CACHE FILEPATH "")
   set(LIBLZMA_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/xz/src/liblzma/api" CACHE FILEPATH
-                                                                                          "" FORCE)
+                                                                                          "")
 endif(BUILD_LZMA)

@@ -18,6 +18,11 @@ typedef struct slink {
   struct slink* next;
 } slink;
 
+typedef struct slist {
+  struct slink* head;
+  struct slink** tail;
+} slist;
+
 static inline void
 slist_add(slink** list, slink* link) {
   link->next = *list;

@@ -59,14 +59,14 @@ if(BUILD_SSL)
   # OPENSSL_LIBRARIES)
 
   set(OPENSSL_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/openssl/include" CACHE FILEPATH ""
-                                                                                       FORCE)
+                                                                                      )
 
   # set(OPENSSL_SSL_LIBRARY "${CMAKE_CURRENT_BINARY_DIR}/3rdparty/openssl/ssl/libssl.a" CACHE
   # FILEPATH "SSL library") set(OPENSSL_CRYPTO_LIBRARY
   # "${CMAKE_CURRENT_BINARY_DIR}/3rdparty/openssl/crypto/libcrypto.a" CACHE  FILEPATH "Cryptography
   # library")
-  set(OPENSSL_SSL_LIBRARY libssl CACHE STRING "SSL library" FORCE)
-  set(OPENSSL_CRYPTO_LIBRARY libcrypto CACHE FILEPATH "Cryptography library" FORCE)
+  set(OPENSSL_SSL_LIBRARY libssl CACHE STRING "SSL library")
+  set(OPENSSL_CRYPTO_LIBRARY libcrypto CACHE FILEPATH "Cryptography library")
 
 endif()
 

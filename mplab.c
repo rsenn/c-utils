@@ -123,8 +123,7 @@ output_mplab_project(buffer* b, MAP_T* _rules, MAP_T* vars, const strlist* inclu
                               .size_of_double = 1,
                               .size_of_float = 1};
 
-  ini_section_t *ini, *section, *cat_subfolders, *file_subfolders, *generated_files, *other_files, *file_info,
-      *active_file_settings, *tool_settings;
+  ini_section_t *ini, *section, *cat_subfolders, *file_subfolders, *generated_files, *other_files /*, *file_info*/, *active_file_settings, *tool_settings;
 
   stralloc_init(&sa);
   stralloc_init(&file);
@@ -258,7 +257,7 @@ output_mplab_project(buffer* b, MAP_T* _rules, MAP_T* vars, const strlist* inclu
       ini_set(other_files, sa.s, "no");
       ini_set_sa(section, &sa, &file);
       stralloc_zero(&file);
-      path_dirname(*p, &file);
+      path_dirname(p ? *p : s, &file);
       ini_set_sa(file_subfolders, &sa, &file);
       stralloc_free(&file);
     }
@@ -298,7 +297,7 @@ output_mplab_project(buffer* b, MAP_T* _rules, MAP_T* vars, const strlist* inclu
   strlist_init(&defines, ',');
   strlist_init(&tcfg, ',');
 
-  vdefs = var_list("DEFS");
+  vdefs = &var_list("DEFS")->value;
   strlist_foreach(vdefs, s, n) {
     n = byte_chr(s, n, ' ');
     if(str_start(s, "-D")) {
@@ -307,7 +306,7 @@ output_mplab_project(buffer* b, MAP_T* _rules, MAP_T* vars, const strlist* inclu
     }
     strlist_pushb(&defines, s, n);
   }
-  vdefs = var_list("CPPFLAGS");
+  vdefs = &var_list("CPPFLAGS")->value;
   strlist_foreach(vdefs, s, n) {
     n = byte_chr(s, n, ' ');
     if(str_start(s, "-D") || str_start(s, "-d")) {
