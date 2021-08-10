@@ -3927,7 +3927,8 @@ output_var(buffer* b, MAP_T* vars, const char* name, int serial) {
         var_subst(&var->value.sa, &v, "%", "%", 1);
         buffer_putsa(b, &v);
       } else {
-        buffer_putsa(b, &var->value.sa);
+        buffer_putslq(b, &var->value, ' ', '"');
+        // buffer_putsa(b, &var->value.sa);
       }
       if(shell)
         buffer_putc(b, '"');
@@ -3981,7 +3982,7 @@ output_make_rule(buffer* b, target* rule) {
   stralloc_zero(&name);
   stralloc_copys(&name, rule->name);
 
-#if 1
+#if 0
   buffer_puts(buffer_2, "RULE\n  \033[38;5;220mname\033[0m: ");
   buffer_puts(buffer_2, rule->name);
   buffer_puts(buffer_2, "\n  \033[38;5;90mrecipe\033[0m: ");
@@ -5865,18 +5866,28 @@ main(int argc, char* argv[]) {
     buffer_putsl(buffer_2, &args, "\n\t");
     buffer_putnlflush(buffer_2);
 
-    var_t* cflags = var_list("CFLAGS");
+    var_t *cflags = var_list("CFLAGS"), *cc = var_list("CC");
 
-    buffer_puts(buffer_2, "CFLAGS before: ");
-    buffer_putsl(buffer_2, &cflags->value, " ");
+    buffer_puts(buffer_2, "CFLAGS before:\n\t");
+    buffer_putsl(buffer_2, &cflags->value, "\n\t");
+    buffer_putnlflush(buffer_2);
+
+    buffer_puts(buffer_2, "CC before: ");
+    buffer_putsl(buffer_2, &cc->value, " ");
     buffer_putnlflush(buffer_2);
 
     strlist_free(&cflags->value);
-    cflags->value.sep = '\0';
-    strlist_slice(&cflags->value, &args, 1, strlist_count(&args));
+    strlist_init(&cflags->value, '\0');
+    size_t count = strlist_count(&args);
+    strlist_slice(&cflags->value, &args, 1, count);
+    strlist_at_sa(&args, &cc->value.sa, 0);
 
-    buffer_puts(buffer_2, "CFLAGS after: ");
-    buffer_putsl(buffer_2, &cflags->value, " ");
+    buffer_puts(buffer_2, "CC after: ");
+    buffer_putsl(buffer_2, &cc->value, " ");
+    buffer_putnlflush(buffer_2);
+
+    buffer_puts(buffer_2, "CFLAGS after:\n\t");
+    buffer_putsl(buffer_2, &cflags->value, "\n\t");
     buffer_putnlflush(buffer_2);
   }
 

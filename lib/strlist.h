@@ -118,7 +118,7 @@ int strlist_splice(strlist*, size_t pos, size_t ndelete, char* x, size_t n);
 
 #ifdef STRALLOC_H
 int strlist_append_sa(strlist*, const stralloc* sa);
-stralloc strlist_at_sa(const strlist*, size_t i);
+size_t strlist_at_sa(const strlist* sl, stralloc* out, size_t i);
 int strlist_contains_sa(strlist*, const stralloc* sa);
 int strlist_copyat(const strlist*, size_t i, stralloc* out);
 void strlist_join(const strlist*, stralloc* sa, char delim);
@@ -130,6 +130,8 @@ int strlist_push_unique_sa(strlist*, const stralloc* sa);
 #endif
 #ifdef BUFFER_H
 void buffer_putsl(buffer*, const strlist* sl, const char* separator);
+void buffer_putslq(buffer* out, const strlist* sl, char delim, char quote);
+
 void strlist_dump(buffer*, const strlist* sl);
 void strlist_dump_named(buffer*, const strlist* sl, const char* names[]);
 #endif
@@ -142,6 +144,7 @@ void strlist_union(const strlist* s1, const strlist* s2, strlist* out);
 void strlist_fromq(strlist* sl, const char* s, size_t len, const char* delim, const char* quote);
 void strlist_fromsq(strlist* sl, const char* s, const char* delim, const char* quote);
 void strlist_slice(strlist* out, const strlist* in, int start, int end);
+void strlist_joinq(const strlist* sl, stralloc* sa, char delim, char quote);
 
 #ifdef __cplusplus
 }

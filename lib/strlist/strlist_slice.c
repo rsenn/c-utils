@@ -16,7 +16,9 @@ strlist_slice(strlist* out, const strlist* in, int start, int end) {
   if(end < 0)
     end = c - ((-end) % c);
 
-  if((j = strlist_pos(in, end)) == -1)
+  if(end == c)
+    j = in->sa.len;
+  else if((j = strlist_pos(in, end)) == -1)
     return;
 
   while(i < j) {

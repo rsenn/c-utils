@@ -1,7 +1,7 @@
-#include "../byte.h"
+#include "../stralloc.h"
 #include "../strlist.h"
 
-stralloc
+/*stralloc
 strlist_at_sa(const strlist* sl, size_t i) {
   stralloc sa;
   size_t p, l = 0;
@@ -18,4 +18,14 @@ strlist_at_sa(const strlist* sl, size_t i) {
       ++l;
   }
   return sa;
+}*/
+
+size_t
+strlist_at_sa(const strlist* sl, stralloc* out, size_t i) {
+  char* x;
+  size_t len;
+
+  if((x = strlist_at_n(sl, i, &len)))
+    stralloc_copyb(out, x, len);
+  return len;
 }
