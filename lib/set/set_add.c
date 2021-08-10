@@ -62,7 +62,7 @@ set_add(set_t* set, const void* val, const size_t size) {
 
   if(!b->value) {
     b->hash = hash;
-    b->value = malloc(size);
+    b->value = calloc(1, size + 1);
     assert(b->value);
     memcpy(b->value, val, size);
     b->size = size;
@@ -73,7 +73,7 @@ set_add(set_t* set, const void* val, const size_t size) {
       assert(b->next);
       b->next->hash = hash;
       b->next->next = NULL;
-      b->next->value = malloc(size);
+      b->next->value = calloc(1, size + 1);
       assert(b->next->value);
       memcpy(b->next->value, val, size);
       b->next->size = size;
@@ -87,7 +87,7 @@ set_add(set_t* set, const void* val, const size_t size) {
       assert(b->next);
       b->next->hash = hash;
       b->next->next = NULL;
-      b->next->value = malloc(size);
+      b->next->value = calloc(1, size + 1);
       assert(b->next->value);
       memcpy(b->next->value, val, size);
       b->next->size = size;

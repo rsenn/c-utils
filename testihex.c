@@ -12,9 +12,9 @@ putdata(const uint8* x, size_t n) {
   size_t i;
   for(i = 0; i < n; i++) {
     if(i)
-      buffer_putspace(buffer_2);
+      buffer_putspace(buffer_1);
 
-    buffer_putxlong0(buffer_2, x[i], 2);
+    buffer_putxlong0(buffer_1, x[i], 2);
   }
 }
 
@@ -48,19 +48,19 @@ main(int argc, char* argv[]) {
     ret = ihex_load_buf(&ihx, x, sz);
 
     slink_foreach(ihx.records, recp) {
-      buffer_puts(buffer_2, "record addr = 0x");
-      buffer_putxlong0(buffer_2, recp->offset, 4);
-      buffer_puts(buffer_2, ", len = ");
-      buffer_putulong(buffer_2, recp->length);
-      buffer_puts(buffer_2, ", type = ");
-      buffer_putulong(buffer_2, recp->type);
-      buffer_puts(buffer_2, ", data = ");
+      buffer_puts(buffer_1, "record addr = 0x");
+      buffer_putxlong0(buffer_1, recp->offset, 4);
+      buffer_puts(buffer_1, ", len = ");
+      buffer_putulong(buffer_1, recp->length);
+      buffer_puts(buffer_1, ", type = ");
+      buffer_putulong(buffer_1, recp->type);
+      buffer_puts(buffer_1, ", data = ");
       putdata(recp->data, recp->length);
-      buffer_putnlflush(buffer_2);
+      buffer_putnlflush(buffer_1);
     }
   }
 
-  buffer_puts(buffer_2, "ret = ");
-  buffer_putlong(buffer_2, ret);
-  buffer_putnlflush(buffer_2);
+  buffer_puts(buffer_1, "ret = ");
+  buffer_putlong(buffer_1, ret);
+  buffer_putnlflush(buffer_1);
 }

@@ -4056,7 +4056,13 @@ output_var(buffer* b, MAP_T* vars, const char* name, int serial) {
       stralloc_nul(&v);
       set_clear(&refvars);
       extract_vars(var->value.sa.s, var->value.sa.len, &refvars);
-      set_foreach(&refvars, it, ref, len) { output_var(b, vars, ref, serial); }
+      set_foreach(&refvars, it, ref, len) {
+#ifdef DEBUG_OUTPUT
+        buffer_putm_internal(buffer_2, "Var ", name, " ref: ", ref, 0);
+        buffer_putnlflush(buffer_2);
+#endif
+        output_var(b, vars, ref, serial);
+      }
       if(batch)
         buffer_putm_internal(b, "@SET ", v.s, "=", NULL);
       else if(shell)
@@ -4064,15 +4070,21 @@ output_var(buffer* b, MAP_T* vars, const char* name, int serial) {
       else
         buffer_putm_internal(b, v.s, " = ", NULL);
       var->serial = serial;
+      stralloc u;
+      stralloc_init(&u);
+      strlist_joinq(&var->value, &u, ' ', '"');
+
       if(ninja || shell) {
         stralloc_zero(&v);
-        var_subst(&var->value.sa, &v, "$", "", 1);
+        var_subst(&u, &v, "$", "", 1);
       } else if(batch) {
         stralloc_zero(&v);
-        var_subst(&var->value.sa, &v, "%", "%", 1);
+        var_subst(&u, &v, "%", "%", 1);
       } else {
+        stralloc_copy(&v, &u);
       }
-      buffer_putslq(b, &var->value, ' ', '"');
+      stralloc_free(&u);
+      buffer_putsa(b, &v);
       if(shell)
         buffer_putc(b, '"');
       put_newline(b, 0);
@@ -4239,11 +4251,11 @@ output_make_rule(buffer* b, target* rule) {
 void
 output_ninja_rule(buffer* b, target* rule) {
   const char* rule_name = 0;
-  if(rule->recipe.s == compile_command.s)
+  if(rule_is_compile(rule) || rule->recipe.s == compile_command.s)
     rule_name = "cc";
-  else if(rule->recipe.s == link_command.s)
+  else if(rule_is_link(rule) || rule->recipe.s == link_command.s)
     rule_name = "link";
-  else if(stralloc_equal(&rule->recipe, &lib_command))
+  else if(rule_is_lib(rule) || stralloc_equal(&rule->recipe, &lib_command))
     rule_name = "lib";
   if(rule_name) {
     stralloc path;

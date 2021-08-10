@@ -130,8 +130,9 @@ void strlist_joins(const strlist*, stralloc* sa, const char* delim);
 int strlist_prepend_sa(strlist*, const stralloc* sa);
 int strlist_push_sa(strlist*, const stralloc* sa);
 int strlist_push_unique_sa(strlist*, const stralloc* sa);
-
+void strlist_joinq(const strlist*, stralloc* sa, char delim, char quote);
 #endif
+
 #ifdef BUFFER_H
 void buffer_putsl(buffer*, const strlist* sl, const char* separator);
 void buffer_putslq(buffer* out, const strlist* sl, char delim, char quote);
