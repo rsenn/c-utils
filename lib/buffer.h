@@ -193,6 +193,8 @@ int buffer_tosa(buffer* b, stralloc* sa);        /* write to sa,  auto-growing i
 int buffer_gettok_sa(buffer*, stralloc* sa, const char* charset, size_t setlen);
 
 int buffer_getln(buffer*, stralloc*, int*, int);
+
+int buffer_putsa_escaped(buffer*, const stralloc* sa, size_t (*escape)(char*, int));
 #endif
 
 void buffer_frombuf(buffer*, const char* x, size_t l); /* buffer reads from static buffer */

@@ -313,7 +313,6 @@ void stralloc_upper(register stralloc*);
 
 #ifdef BUFFER_H
 void stralloc_dump(const stralloc* sa, buffer* b);
-int buffer_putsa_escaped(buffer*, const stralloc* sa, size_t (*escape)(char*, int));
 #endif
 
 void stralloc_alloc(stralloc*);

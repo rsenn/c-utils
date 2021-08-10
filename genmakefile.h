@@ -104,7 +104,8 @@ typedef struct target_s {
   array objs;
   uint32 serial;
   strlist vars;
-  int disabled : 1;
+  bool disabled : 1;
+  bool outputs : 1;
 } target;
 
 typedef struct {
@@ -128,6 +129,8 @@ typedef struct {
   char* make;
   char* preproc;
 } tools_t;
+
+typedef enum { MAKE_IMPLICIT_RULES = 0x01, MAKE_PATTERN_RULES = 0x02 } tool_config_t;
 
 typedef enum {
   BUILD_TYPE_RELEASE = 0,
@@ -329,6 +332,7 @@ extern config_t cfg;
 extern dirs_t dirs;
 extern set_t srcs;
 extern tools_t tools;
+extern tool_config_t tool_config;
 extern const char* project_name;
 extern int cmd_objs, cmd_libs, cmd_bins;
 extern set_t link_libraries;

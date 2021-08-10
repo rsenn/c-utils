@@ -152,6 +152,7 @@ void strlist_joinq(const strlist* sl, stralloc* sa, char delim, char quote);
 
 ssize_t strlist_match(const strlist* sl, const char* pattern, int start);
 void strlist_filter(const strlist*, strlist* matching, strlist* not_matching, const char* pattern);
+void strlist_copy(strlist*, const strlist* in);
 
 #ifdef __cplusplus
 }

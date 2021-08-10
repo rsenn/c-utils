@@ -18,6 +18,8 @@
 #include "lib/env.h"
 #include "lib/glob.h"
 #include "lib/dlist.h"
+#include "lib/bool.h"
+#include <string.h>
 
 #if !WINDOWS_NATIVE
 #include <unistd.h>
@@ -70,7 +72,7 @@ static const char* quote_args = "";
 static strlist build_as_lib;
 strlist include_dirs = {0}, link_dirs = {0};
 set_t link_libraries = {0, 0, 0, byte_hash};
-static strlist pptoks;
+// static strlist pptoks;
 static MAP_T sourcedirs, targetdirs, rules, vars;
 static dlist sourcelist;
 static const char* newline = "\n";
@@ -90,6 +92,7 @@ exts_t exts = {DEFAULT_OBJEXT, DEFAULT_LIBEXT, DEFAULT_DSOEXT, DEFAULT_EXEEXT, D
 dirs_t dirs;
 tools_t tools;
 config_t cfg = {.mach = {0, 0}, .sys = {0, 0}, .chip = {0, 0, 0}, .build_type = 1, .lang = LANG_CXX};
+tool_config_t tool_config = 0;
 
 /*#if  (defined(DEBUG_OUTPUT) || defined(_DEBUG)) && !defined(NDEBUG)
 #include "debug.h"
@@ -1661,7 +1664,7 @@ sources_add(const char* source) {
 
 int
 sources_add_b(const char* x, size_t len) {
-  int ret = 0;
+
   if(byte_chr(x, len, '/') == len && byte_ends(x, len, "strlist_shift.c")) {
 
 #ifdef SIGTRAP
@@ -1674,12 +1677,11 @@ sources_add_b(const char* x, size_t len) {
       x += dirlen;
       len -= dirlen;
     }
-    ret = set_add(&srcs, x, len);
-
+    if(set_add(&srcs, x, len)) {
 #ifdef DEBUG_OUTPUT_
-    if(ret)
       debug_byte("sources_add", x, len);
 #endif
+    }
   }
   return 0;
 }
@@ -2761,72 +2763,70 @@ gen_single_rule(stralloc* output, stralloc* cmd) {
  */
 void
 gen_clean_rule() {
-  target* rule;
+  target* clean = rule_get("clean");
   static stralloc output;
-  /* Generate "clean" rule */
-  if((rule = rule_get("clean"))) {
-    MAP_PAIR_T t;
-    char* arg;
-    size_t cmdoffs, lineoffs = 0;
-    stralloc fn;
-    strlist delete_args;
-    stralloc_init(&fn);
-    strlist_init(&delete_args, '\0');
+  MAP_PAIR_T t;
+  char* arg;
+  size_t cmdoffs, lineoffs = 0;
+  stralloc fn;
+  strlist delete_args;
+  stralloc_init(&fn);
+  strlist_init(&delete_args, '\0');
 
-    if(delete_command.len == 0)
-      stralloc_copys(&delete_command, cfg.sys.type == OS_WIN ? "DEL /F /Q" : "$(RM)");
+  if(delete_command.len == 0)
+    stralloc_copys(&delete_command, cfg.sys.type == NTOS ? "DEL /F /Q" : "$(RM)");
 
-    cmdoffs = delete_command.len;
-    MAP_FOREACH(rules, t) {
-      const char* target = MAP_ITER_KEY(t);
-      stralloc_zero(&output);
-      /* Ignore the dirs.build rule */
-      if(stralloc_equals(&dirs.work.sa, MAP_ITER_KEY(t)))
-        continue;
-      rule = MAP_ITER_VALUE(t);
-      if(target[str_chr(target, '%')]) {
-        //   strlist_nul(&rule->output);
-        stralloc_catset(&output, &rule->output, " ");
-      }
-      /* If the rule has prerequisites  and a recipe, it must be a producing rule */
-      if(set_size(&rule->prereq) && rule->recipe.s) {
-        size_t bpos;
-        if((MAP_ITER_KEY(t))[(bpos = str_rchr(MAP_ITER_KEY(t), '{'))]) {
-          size_t epos = str_rchr(&(MAP_ITER_KEY(t))[bpos + 1], '}');
-          stralloc_zero(&fn);
-          stralloc_catb(&fn, &(MAP_ITER_KEY(t)[bpos + 1]), epos);
-          stralloc_catc(&fn, pathsep_make);
-          stralloc_cats(&fn, "*");
-          stralloc_catb(&fn,
-                        &(MAP_ITER_KEY(t)[bpos + 1 + epos + 1]),
-                        str_chr(&(MAP_ITER_KEY(t)[bpos + 1 + epos + 1]), ':'));
-          stralloc_nul(&fn);
-          arg = fn.s;
-        } else {
-          stralloc_copys(&fn, target);
-          /* If possible, transform file
-           * name into a wildcard
-           * pattern */
-          arg = path_wildcard(&fn, "*");
-        }
-        /* Add to deletion list */
-        strlist_push_unique(&delete_args, arg);
-      }
+  cmdoffs = delete_command.len;
+  MAP_FOREACH(rules, t) {
+    target* rule = MAP_ITER_VALUE(t);
+    const char* name = MAP_ITER_KEY(t);
+    stralloc_zero(&output);
+    /* Ignore the dirs.build rule */
+    /*  if(stralloc_equals(&dirs.work.sa, MAP_ITER_KEY(t)))
+        continue;*/
+
+    if(name[str_chr(name, '%')]) {
+      // strlist_nul(&rule->output);
+      stralloc_catset(&delete_args.sa, &rule->output, " ");
+      continue;
     }
-    strlist_foreach_s(&delete_args, arg) {
-      if(delete_command.len - lineoffs + str_len(arg) >= MAX_CMD_LEN) {
-        stralloc_readyplus(&delete_command, cmdoffs + 3);
-        stralloc_catm_internal(&delete_command, newline, "\t", 0);
-        stralloc_catb(&delete_command, delete_command.s, cmdoffs);
-        lineoffs = delete_command.len;
+    /* If the rule has prerequisites  and a recipe, it must be a producing rule */
+    if(set_size(&rule->prereq) && rule->recipe.s) {
+      size_t bpos;
+      if((MAP_ITER_KEY(t))[(bpos = str_rchr(MAP_ITER_KEY(t), '{'))]) {
+        size_t epos = str_rchr(&(MAP_ITER_KEY(t))[bpos + 1], '}');
+        stralloc_zero(&fn);
+        stralloc_catb(&fn, &(MAP_ITER_KEY(t)[bpos + 1]), epos);
+        stralloc_catc(&fn, pathsep_make);
+        stralloc_cats(&fn, "*");
+        stralloc_catb(&fn,
+                      &(MAP_ITER_KEY(t)[bpos + 1 + epos + 1]),
+                      str_chr(&(MAP_ITER_KEY(t)[bpos + 1 + epos + 1]), ':'));
+        stralloc_nul(&fn);
+        arg = fn.s;
+      } else {
+        stralloc_copys(&fn, name);
+        /* If possible, transform file name into a wildcard pattern */
+        arg = path_wildcard(&fn, "*");
       }
-      stralloc_catc(&delete_command, ' ');
-      stralloc_cats(&delete_command, arg);
-      if(arg[str_chr(arg, '*')])
-        lineoffs = -MAX_CMD_LEN;
+      /* Add to deletion list */
+      strlist_push_unique(&delete_args, arg);
     }
-    stralloc_weak(&rule->recipe, &delete_command);
   }
+  strlist_nul(&delete_args);
+  strlist_foreach_s(&delete_args, arg) {
+    if(delete_command.len - lineoffs + str_len(arg) >= MAX_CMD_LEN) {
+      stralloc_readyplus(&delete_command, cmdoffs + 3);
+      stralloc_catm_internal(&delete_command, newline, "\t", 0);
+      stralloc_catb(&delete_command, delete_command.s, cmdoffs);
+      lineoffs = delete_command.len;
+    }
+    stralloc_catc(&delete_command, ' ');
+    stralloc_cats(&delete_command, arg);
+    if(arg[str_chr(arg, '*')])
+      lineoffs = -MAX_CMD_LEN;
+  }
+  stralloc_weak(&clean->recipe, &delete_command);
 }
 
 int
@@ -2835,7 +2835,7 @@ filter_pptoks(const void* x, size_t n) {
 }
 
 target*
-gen_mkdir_rule(const stralloc* dir) {
+gen_mkdir_rule(stralloc* dir) {
   target* rule = 0;
   if(stralloc_length(dir) && !stralloc_equals(dir, ".")) {
     if((rule = rule_get_sa(dir))) {
@@ -3607,11 +3607,10 @@ input_command(stralloc* cmd, int argc, char* argv[]) {
 #endif
 
   if(output.len) {
-    char* d;
     uint32* count_ptr;
     stralloc_nul(&output);
     stralloc_zero(&dir);
-    d = path_dirname(output.s, &dir);
+    path_dirname(output.s, &dir);
     if(!(count_ptr = MAP_GET(targetdirs, dir.s, dir.len + 1))) {
       uint32 count = 0;
       MAP_INSERT(targetdirs, dir.s, dir.len + 1, &count, sizeof(count));
@@ -3882,7 +3881,8 @@ input_process_rules(target* all) {
 
   var_setb("DISTDIR", dirs.out.sa.s, dirs.out.sa.len);
 
-  var_t *cflags = var_list("CFLAGS"), *cc = var_list("CC"), *defs = var_list("DEFS");
+  var_t *cflags = var_list("CFLAGS"), *cc = var_list("CC"), *defs = var_list("DEFS"),
+        *common = var_list("COMMON_FLAGS");
   stralloc_zero(&defs->value.sa);
 
 #ifdef DEBUG_OUTPUT
@@ -3916,6 +3916,13 @@ input_process_rules(target* all) {
 #endif
   }
   strlist_filter(&cflags->value, &defs->value, &cflags->value, "-D*");
+
+  common->value.sep = '\0';
+  strlist_filter(&cflags->value, &common->value, &cflags->value, "--*format=*");
+
+  if(common->value.sa.len)
+    strlist_push(&cflags->value, "$(COMMON_FLAGS)");
+
   strlist_nul(&cc->value);
   {
     strlist compiler;
@@ -3961,7 +3968,7 @@ input_process_rules(target* all) {
 
       stralloc_prepends(&rule->recipe, "$(CC) $(CFLAGS) ");
       if(rule->recipe.len && rule->recipe.s[rule->recipe.len - 1] != ' ')
-        stralloc_cat(&rule->recipe, ' ');
+        stralloc_catc(&rule->recipe, ' ');
       stralloc_cats(&rule->recipe, set_size(&rule->prereq) > 1 ? "$^" : "$<");
       if((i = stralloc_finds(&rule->recipe, name)) < rule->recipe.len) {
         stralloc_replace(&rule->recipe, i, str_len(name), "$@", 2);
@@ -4109,9 +4116,8 @@ void
 output_make_rule(buffer* b, target* rule) {
   const char* x;
   static stralloc output, sa, name;
-  size_t n, num_prereqs, num_outputs;
+  size_t n, num_prereqs;
   num_prereqs = set_size(&rule->prereq);
-  num_outputs = set_size(&rule->output);
   debug_nl = "\n";
   stralloc_zero(&name);
   stralloc_copys(&name, rule->name);
@@ -4163,11 +4169,14 @@ output_make_rule(buffer* b, target* rule) {
       stralloc_cats(&sa, " \\\n");
       stralloc_cats(&sa, rule->name);
     }
-    stralloc_catc(&sa, ':');
   }
 
-  if(sa.len > 0)
+  if(sa.len > 0 && rule->outputs)
     stralloc_cat(&output, &sa);
+  else
+    stralloc_cats(&output, rule->name);
+
+  stralloc_catc(&output, ':');
 
   if(num_prereqs) {
     const char* str;
@@ -5292,7 +5301,7 @@ main(int argc, char* argv[]) {
   char** it;
   const char* s;
   size_t n;
-  target *rule, *all, *compile;
+  target *all = 0, *compile = 0;
   char** arg;
   char **ptr, *x;
   strarray sources;
@@ -5487,16 +5496,19 @@ main(int argc, char* argv[]) {
   if(cfg.build_type == -1)
     cfg.build_type = BUILD_TYPE_DEBUG;
   if(tools.make == NULL && tools.compiler) {
-    if(str_start(tools.compiler, "b"))
+    if(str_start(tools.compiler, "b")) {
       tools.make = "borland";
-    else if(str_start(tools.compiler, "msvc"))
+
+    } else if(str_start(tools.compiler, "msvc")) {
       tools.make = "nmake";
-    else if(str_start(tools.compiler, "g"))
+    } else if(str_start(tools.compiler, "g")) {
       tools.make = "gmake";
-    else if(str_start(tools.compiler, "o"))
+      tool_config |= MAKE_PATTERN_RULES;
+    } else if(str_start(tools.compiler, "o")) {
       tools.make = "omake";
-    else if(str_start(tools.compiler, "po"))
+    } else if(str_start(tools.compiler, "po")) {
       tools.make = "pomake";
+    }
   }
   if(tools.toolchain)
     cygming =
@@ -5689,23 +5701,25 @@ main(int argc, char* argv[]) {
   */
   all = rule_get("all");
 
-  if(str_end(tools.make, "make")) {
-    stralloc rulename;
-    stralloc_init(&rulename);
-    if(str_start(tools.make, "g")) {
-      stralloc_copys(&rulename, "$(BUILDDIR)");
-      stralloc_cats(&rulename, "%");
-      stralloc_cats(&rulename, exts.obj);
-      stralloc_cats(&rulename, ": %");
-      stralloc_cats(&rulename, ".c");
-
+  if(tool_config & (MAKE_PATTERN_RULES | MAKE_IMPLICIT_RULES)) {
+    stralloc rn;
+    bool outputs = false;
+    stralloc_init(&rn);
+    if(tool_config & MAKE_PATTERN_RULES) {
+      stralloc_copys(&rn, "$(BUILDDIR)");
+      stralloc_cats(&rn, "%");
+      stralloc_cats(&rn, exts.obj);
+      stralloc_cats(&rn, ": %");
+      stralloc_cats(&rn, ".c");
+      outputs = true;
     } else {
-      stralloc_copys(&rulename, ".c");
-      stralloc_cats(&rulename, exts.obj);
+      stralloc_copys(&rn, ".c");
+      stralloc_cats(&rn, exts.obj);
     }
-    compile = rule_get_sa(&rulename);
+    compile = rule_get_sa(&rn);
+    compile->outputs = outputs;
 
-    stralloc_free(&rulename);
+    stralloc_free(&rn);
   }
 
   strarray_init(&args);
@@ -5717,23 +5731,23 @@ main(int argc, char* argv[]) {
   if(compile)
     stralloc_weak(&compile->recipe, &compile_command);
 
-  if(str_equal(tools.make, "gmake")) {
+  if(compile) {
     strlist_nul(&dirs.work);
     strlist_push_unique(&vpath, ".");
     strlist_push_unique_sa(&vpath, &dirs.work.sa);
 
     set_clear(&compile->output);
-
     MAP_PAIR_T it;
-    target* rule;
+
     MAP_FOREACH(rules, it) {
       target* rule = MAP_ITER_VALUE(it);
 
-      if(rule_is_compile(rule)) {
+      if(rule_is_compile(rule) && rule != compile) {
         stralloc_free(&rule->recipe);
         stralloc_init(&rule->recipe);
 
-        rule->disabled = 1;
+        if(str_equal(tools.make, "gmake"))
+          rule->disabled = 1;
 
         //        set_cat(&compile->prereq, &rule->prereq);
         set_cat(&compile->output, &rule->output);
@@ -5770,9 +5784,7 @@ main(int argc, char* argv[]) {
   }
   /* No arguments given */
   if(strarray_size(&args) == 0 && !infile) {
-    buffer_putsflush(buffer_2,
-                     "ERROR: No arguments "
-                     "given\n\n");
+    buffer_putsflush(buffer_2, "ERROR: No arguments given\n\n");
     usage(argv[0]);
     ret = 1;
     goto quit;
@@ -6035,7 +6047,7 @@ fail:
         continue;
       if(str_end(name, exts.obj)) {
 
-        if(!(str_end(tools.make, "make") && str_start(tools.make, "g")))
+        if(!str_end(tools.make, "make"))
           stralloc_weak(&rule->recipe, &compile_command);
       }
 
