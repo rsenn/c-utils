@@ -3880,6 +3880,7 @@ input_process_rules(target* all) {
   strlist_nul(&dirs.out);
 
   var_setb("DISTDIR", dirs.out.sa.s, dirs.out.sa.len);
+  var_setb("BUILDDIR", dirs.work.sa.s, dirs.work.sa.len);
 
   var_t *cflags = var_list("CFLAGS"), *cc = var_list("CC"), *defs = var_list("DEFS"),
         *common = var_list("COMMON_FLAGS");
@@ -4260,8 +4261,13 @@ output_ninja_rule(buffer* b, target* rule) {
   if(rule_name) {
     stralloc path;
     stralloc_init(&path);
-    stralloc_subst(
-        &path, rule->name, str_len(rule->name), pathsep_args == '/' ? "\\" : "/", pathsep_args == '/' ? "/" : "\\");
+    set_at_sa(&rule->output, 0, &path);
+
+    stralloc_replaces(&path, dirs.work.sa.s, "$builddir/");
+    stralloc_replaces(&path, dirs.out.sa.s, "$distdir/");
+
+    /*stralloc_subst(
+        &path, rule->name, str_len(rule->name), pathsep_args == '/' ? "\\" : "/", pathsep_args == '/' ? "/" : "\\");*/
     buffer_puts(b, "build ");
     buffer_putsa(b, &path);
     buffer_puts(b, ": ");
@@ -4270,6 +4276,9 @@ output_ninja_rule(buffer* b, target* rule) {
     stralloc_zero(&path);
     stralloc_catset(&path, &rule->prereq, " ");
     stralloc_replacec(&path, pathsep_args == '/' ? '\\' : '/', pathsep_args == '/' ? '/' : '\\');
+    stralloc_replaces(&path, dirs.work.sa.s, "$builddir/");
+    stralloc_replaces(&path, dirs.out.sa.s, "$distdir/");
+
     buffer_putsa(b, &path);
     buffer_putnlflush(b);
     stralloc_free(&path);

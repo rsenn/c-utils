@@ -11,6 +11,8 @@
 #include "uint32.h"
 #include "slist.h"
 
+enum ihex_type_e { IHEX_DATA = 0, IHEX_EOF = 1, IHEX_EXTSEGADDR = 2, IHEX_EXTLINADDR = 4 };
+
 struct ihex_record_s;
 struct ihex_record_s {
   struct ihex_record_s* next;
