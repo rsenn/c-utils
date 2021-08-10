@@ -6,7 +6,7 @@ ssize_t
 strlist_match(const strlist* sl, const char* pattern, int start) {
   int64 i;
   const char *x, *end = stralloc_end(&sl->sa);
-  size_t c = strlist_count(&sl);
+  size_t c = strlist_count(sl);
   size_t plen = str_len(pattern);
 
   if(start < 0)
@@ -14,13 +14,13 @@ strlist_match(const strlist* sl, const char* pattern, int start) {
 
   i = start;
 
-  if(!(x = strlist_at(&sl, start)))
+  if(!(x = strlist_at(sl, start)))
     return;
 
   while(x < end) {
     size_t n = byte_chr(x, end - x, sl->sep);
 
-    if(fnmatch_b(x, n, pattern, plen) == 0)
+    if(fnmatch_b(pattern, plen, x, n, FNM_CASEFOLD) == 0)
       return i;
 
     x += n;

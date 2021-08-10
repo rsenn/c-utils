@@ -848,6 +848,7 @@ rule_get(const char* name) {
     set_init(&tgt.output, 0);
     set_adds(&tgt.output, name);
     set_init(&tgt.prereq, 0);
+    strlist_init(&tgt.cmds, ' ');
     MAP_INSERT(rules, name, len + 1, &tgt, ((sizeof(struct target_s) + 3) / 4) * 4);
     (MAP_SEARCH(rules, name, len + 1, &t));
     // ret = MAP_ITER_VALUE(t);
@@ -1623,7 +1624,7 @@ sources_add_b(const char* x, size_t len) {
       len -= dirlen;
     }
     ret = set_add(&srcs, x, len);
-#ifdef DEBUG_OUTPUT
+#ifdef DEBUG_OUTPUT_
     if(ret)
       debug_byte("sources_add", x, len);
 #endif
@@ -3589,7 +3590,7 @@ input_command(stralloc* cmd, int argc, char* argv[]) {
         //        path_normalize(x, &file);
         strlist_push_sa(&files, &file);
 
-#ifdef DEBUG_OUTPUT
+#ifdef DEBUG_OUTPUT_
         buffer_puts(buffer_2, "File '");
         buffer_putsa(buffer_2, &file);
         buffer_puts(buffer_2, "'");
@@ -3603,7 +3604,7 @@ input_command(stralloc* cmd, int argc, char* argv[]) {
       }
     }
   }
-#ifdef DEBUG_OUTPUT
+#ifdef DEBUG_OUTPUT_
   buffer_puts(buffer_2, "files = ");
   buffer_putsl(buffer_2, &files, " ");
   buffer_putnlflush(buffer_2);
@@ -3798,7 +3799,7 @@ input_command_line(const char* x, size_t n) {
   char** av;
   stralloc command;
   strarray args;
-#ifdef DEBUG_OUTPUT
+#ifdef DEBUG_OUTPUT_
   buffer_puts(buffer_2, "input_comand_line \"");
   buffer_put(buffer_2, x, n);
   buffer_puts(buffer_2, "\"");
@@ -3843,7 +3844,7 @@ input_command_line(const char* x, size_t n) {
           errmsg_warnsys("chdir(): ", dirs.build.sa.s, 0);
       }
       strarray_glob_b(&args, x, i);
-#ifdef DEBUG_OUTPUT
+#ifdef DEBUG_OUTPUT_
       if(strarray_size(&args) >= 1) {
         buffer_puts(buffer_2, "glob = ");
         strarray_dump(buffer_2, &args);
@@ -3875,6 +3876,181 @@ input_command_line(const char* x, size_t n) {
   return ret;
 }
 
+void
+input_process(const char* infile) {
+  const char* x;
+  size_t n;
+
+  path_dirname(infile, &dirs.this.sa);
+  stralloc_nul(&dirs.this.sa);
+  // sources_get(dirs.this.sa.s);
+
+  if((x = mmap_read(infile, &n))) {
+    while(n > 0) {
+      size_t i = byte_chr(x, n, '\n');
+
+      if(!(i > 2 && x[0] == '-' && x[1] == '-')) {
+        size_t pos;
+        if((pos = byte_finds(x, i, "ing directory '")) < i) {
+          bool enter = byte_equal(&x[pos - 5], 5, "Enter");
+          size_t len;
+          pos += 15;
+          len = byte_chr(&x[pos], i - 15, '\'');
+
+          if(enter)
+            builddir_enter(&x[pos], len);
+          else
+            builddir_leave(&x[pos], len);
+
+        } else if(i > 0) {
+          input_command_line(x, i);
+        }
+      }
+
+      if(i < n)
+        i++;
+
+      x += i;
+      n -= i;
+    }
+
+    mmap_unmap(x, n);
+  }
+
+  MAP_PAIR_T t;
+  strlist args;
+  strlist_init(&args, '\0');
+
+  MAP_FOREACH(rules, t) {
+    const char* name = MAP_ITER_KEY(t);
+    target* rule = MAP_ITER_VALUE(t);
+    size_t dlen;
+    char* dep = set_at_n(&rule->prereq, 0, &dlen);
+    bool compile = is_object(name), link = is_object_b(dep, dlen);
+
+    if(compile || link) {
+      strlist cmds;
+      strlist_init(&cmds, '\0');
+      strlist_fromq(&cmds, rule->recipe.s, rule->recipe.len, " \t\r\n", "\"'`");
+
+      compile = true;
+
+      if(strlist_count(&args) == 0)
+        strlist_copy(&args, &cmds);
+      else
+        strlist_intersection(&args, &cmds, &args);
+    }
+
+    buffer_putm_internal(buffer_2, "Rule: ", name, compile ? " (compile)" : 0, 0);
+    buffer_putnlflush(buffer_2);
+  }
+
+  buffer_puts(buffer_2, "args:\n\t");
+  buffer_putsl(buffer_2, &args, "\n\t");
+  buffer_putnlflush(buffer_2);
+
+  var_t *cflags = var_list("CFLAGS"), *cc = var_list("CC"), *ldflags = var_list("LDFLAGS"), *defs = var_list("DEFS"), *cppflags = var_list("CPPFLAGS");
+
+  stralloc_zero(&ldflags->value.sa);
+  stralloc_zero(&defs->value.sa);
+  stralloc_zero(&cppflags->value.sa);
+
+  buffer_puts(buffer_2, "CFLAGS before:\n\t");
+  buffer_putsl(buffer_2, &cflags->value, "\n\t");
+  buffer_putnlflush(buffer_2);
+
+  buffer_puts(buffer_2, "CC before: ");
+  buffer_putsl(buffer_2, &cc->value, " ");
+  buffer_putnlflush(buffer_2);
+
+  strlist_free(&cflags->value);
+  strlist_init(&cflags->value, '\0');
+  size_t count = strlist_count(&args);
+  strlist_slice(&cflags->value, &args, 1, count);
+  strlist_at_sa(&args, &cc->value.sa, 0);
+
+  ssize_t found;
+
+  if((found = strlist_match(&args, "--chip=*", 0)) >= 0) {
+    char* chip = strlist_at(&args, found);
+
+    chip += str_chr(chip, '=') + 1;
+
+    stralloc_copys(&cfg.chip, chip);
+    stralloc_nul(&cfg.chip);
+
+    stralloc_replaces(&cflags->value.sa, cfg.chip.s, "$(CHIP)");
+
+    stralloc_lower(&cfg.chip);
+
+    buffer_puts(buffer_2, "Chip: ");
+    buffer_putsa(buffer_2, &cfg.chip);
+    buffer_putnlflush(buffer_2);
+  }
+
+  strlist_filter(&cflags->value, &defs->value, &cflags->value, "-D*");
+
+  buffer_puts(buffer_2, "CC after: ");
+  buffer_putsl(buffer_2, &cc->value, " ");
+  buffer_putnlflush(buffer_2);
+
+  buffer_puts(buffer_2, "CFLAGS after:\n\t");
+  buffer_putsl(buffer_2, &cflags->value, "\n\t");
+  buffer_putnlflush(buffer_2);
+
+  MAP_FOREACH(rules, t) {
+    const char* name = MAP_ITER_KEY(t);
+    target* rule = MAP_ITER_VALUE(t);
+    size_t dlen;
+    char* dep = set_at_n(&rule->prereq, 0, &dlen);
+    bool compile = is_object(name), link = is_object_b(dep, dlen);
+
+    if(compile || link) {
+      char* x;
+      size_t i, n;
+      set_iterator_t it;
+
+      if(link && (i = stralloc_findb(&rule->recipe, "\n", 1)) < rule->recipe.len)
+        stralloc_trunc(&rule->recipe, i);
+
+      strlist_foreach(&args, x, n) {
+#define REMOVE(sa)                                                                                                                                                                                                                                                                                                             \
+  size_t j = n;                                                                                                                                                                                                                                                                                                                \
+  i = stralloc_findb((sa), x, n);                                                                                                                                                                                                                                                                                              \
+                                                                                                                                                                                                                                                                                                                               \
+  if(i < (sa)->len) {                                                                                                                                                                                                                                                                                                          \
+    int q = i > 0 && (sa)->s[i - 1] == '"';                                                                                                                                                                                                                                                                                    \
+    if(q) {                                                                                                                                                                                                                                                                                                                    \
+      i--;                                                                                                                                                                                                                                                                                                                     \
+      j++;                                                                                                                                                                                                                                                                                                                     \
+      if((sa)->s[i + j] == '"')                                                                                                                                                                                                                                                                                                \
+        j++;                                                                                                                                                                                                                                                                                                                   \
+    }                                                                                                                                                                                                                                                                                                                          \
+    if((sa)->s[i + j] == ' ')                                                                                                                                                                                                                                                                                                  \
+      j++;                                                                                                                                                                                                                                                                                                                     \
+    stralloc_replace((sa), i, j, "", 0);                                                                                                                                                                                                                                                                                       \
+  }
+        REMOVE(&rule->recipe);
+      }
+
+      set_foreach(&rule->prereq, it, x, n) { REMOVE(&rule->recipe); }
+
+      stralloc_prepends(&rule->recipe, "$(CC) $(CFLAGS) ");
+
+      if(rule->recipe.len && rule->recipe.s[rule->recipe.len - 1] != ' ')
+        stralloc_cat(&rule->recipe, ' ');
+      stralloc_cats(&rule->recipe, set_size(&rule->prereq) > 1 ? "$^" : "$<");
+
+      if((i = stralloc_finds(&rule->recipe, name)) < rule->recipe.len) {
+        stralloc_replace(&rule->recipe, i, str_len(name), "$@", 2);
+      }
+    }
+
+    buffer_putm_internal(buffer_2, "Rule: ", name, compile ? " (compile)" : "", "\n\t", 0);
+    buffer_putsa(buffer_2, &rule->recipe);
+    buffer_putnlflush(buffer_2);
+  }
+}
 /**
  * @brief output_all_vars  Output all
  * variables
@@ -5798,97 +5974,7 @@ main(int argc, char* argv[]) {
   strarray_init(&srcs);
 
   if(infile) {
-    const char* x;
-    size_t n;
-
-    path_dirname(infile, &dirs.this.sa);
-    stralloc_nul(&dirs.this.sa);
-    // sources_get(dirs.this.sa.s);
-
-    if((x = mmap_read(infile, &n))) {
-      while(n > 0) {
-        size_t i = byte_chr(x, n, '\n');
-
-        if(!(i > 2 && x[0] == '-' && x[1] == '-')) {
-          size_t pos;
-          if((pos = byte_finds(x, i, "ing directory '")) < i) {
-            bool enter = byte_equal(&x[pos - 5], 5, "Enter");
-            size_t len;
-            pos += 15;
-            len = byte_chr(&x[pos], i - 15, '\'');
-
-            if(enter)
-              builddir_enter(&x[pos], len);
-            else
-              builddir_leave(&x[pos], len);
-
-          } else if(i > 0) {
-            input_command_line(x, i);
-          }
-        }
-
-        if(i < n)
-          i++;
-
-        x += i;
-        n -= i;
-      }
-
-      mmap_unmap(x, n);
-    }
-
-    MAP_PAIR_T t;
-    strlist args;
-    strlist_init(&args, '\0');
-
-    MAP_FOREACH(rules, t) {
-      const char* name = MAP_ITER_KEY(t);
-      target* rule = MAP_ITER_VALUE(t);
-      bool compile = false, link = false;
-      if(is_object(name)) {
-        strlist cmds;
-        strlist_init(&cmds, '\0');
-        strlist_fromq(&cmds, rule->recipe.s, rule->recipe.len, " \t\r\n", "\"'`");
-
-        compile = true;
-
-        if(strlist_count(&args) == 0)
-          strlist_copy(&args, &cmds);
-        else
-          strlist_intersection(&args, &cmds, &args);
-      }
-
-      buffer_putm_internal(buffer_2, "Rule: ", name, compile ? " (compile)" : 0, 0);
-      buffer_putnlflush(buffer_2);
-    }
-
-    buffer_puts(buffer_2, "args:\n\t");
-    buffer_putsl(buffer_2, &args, "\n\t");
-    buffer_putnlflush(buffer_2);
-
-    var_t *cflags = var_list("CFLAGS"), *cc = var_list("CC");
-
-    buffer_puts(buffer_2, "CFLAGS before:\n\t");
-    buffer_putsl(buffer_2, &cflags->value, "\n\t");
-    buffer_putnlflush(buffer_2);
-
-    buffer_puts(buffer_2, "CC before: ");
-    buffer_putsl(buffer_2, &cc->value, " ");
-    buffer_putnlflush(buffer_2);
-
-    strlist_free(&cflags->value);
-    strlist_init(&cflags->value, '\0');
-    size_t count = strlist_count(&args);
-    strlist_slice(&cflags->value, &args, 1, count);
-    strlist_at_sa(&args, &cc->value.sa, 0);
-
-    buffer_puts(buffer_2, "CC after: ");
-    buffer_putsl(buffer_2, &cc->value, " ");
-    buffer_putnlflush(buffer_2);
-
-    buffer_puts(buffer_2, "CFLAGS after:\n\t");
-    buffer_putsl(buffer_2, &cflags->value, "\n\t");
-    buffer_putnlflush(buffer_2);
+    input_process(infile);
   }
 
   while(unix_optind < argc) {

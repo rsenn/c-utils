@@ -85,7 +85,6 @@ int strlist_containsb(const strlist*, const char* x, size_t len);
 int strlist_contains(const strlist*, const char* s);
 size_t strlist_count(const strlist*);
 size_t strlist_diff(const strlist*, const strlist* b, strlist* out);
-size_t strlist_filter(strlist*, strlist_filterfn_t* filter_fn, strlist* out);
 void strlist_fromb(strlist*, const char* x, size_t n, const char* delim);
 void strlist_froms(strlist*, const char* s, char delim);
 void strlist_fromv(strlist*, const char** v, int c);
@@ -145,6 +144,9 @@ void strlist_fromq(strlist* sl, const char* s, size_t len, const char* delim, co
 void strlist_fromsq(strlist* sl, const char* s, const char* delim, const char* quote);
 void strlist_slice(strlist* out, const strlist* in, int start, int end);
 void strlist_joinq(const strlist* sl, stralloc* sa, char delim, char quote);
+
+ssize_t strlist_match(const strlist* sl, const char* pattern, int start);
+void strlist_filter(const strlist*, strlist* matching, strlist* not_matching, const char* pattern);
 
 #ifdef __cplusplus
 }

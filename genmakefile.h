@@ -91,7 +91,10 @@ typedef struct target_s {
   const char* name;
   set_t output;
   set_t prereq;
-  stralloc recipe;
+  union {
+    stralloc recipe;
+    strlist cmds;
+  };
   array deps;
   array objs;
   uint32 serial;
