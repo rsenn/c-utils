@@ -76,14 +76,15 @@ TEST(test_strlist_at_sa) {
   strlist_push(&sl, "12");
   strlist_push(&sl, "123");
   strlist_push(&sl, "1234");
+  stralloc_init(&sa);
 
-  sa = strlist_at_sa(&sl, 0);
+  strlist_at_sa(&sl, &sa, 0);
   ASSERT_EQ(0, !stralloc_equals(&sa, "1"));
-  sa = strlist_at_sa(&sl, 1);
+  strlist_at_sa(&sl, &sa, 1);
   ASSERT_EQ(0, !stralloc_equals(&sa, "12"));
-  sa = strlist_at_sa(&sl, 2);
+  strlist_at_sa(&sl, &sa, 2);
   ASSERT_EQ(0, !stralloc_equals(&sa, "123"));
-  sa = strlist_at_sa(&sl, 3);
+  strlist_at_sa(&sl, &sa, 3);
   ASSERT_EQ(0, !stralloc_equals(&sa, "1234"));
 }
 

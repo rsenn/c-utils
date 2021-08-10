@@ -15,7 +15,7 @@ strlist_match(const strlist* sl, const char* pattern, int start) {
   i = start;
 
   if(!(x = strlist_at(sl, start)))
-    return;
+    return -1;
 
   while(x < end) {
     size_t n = byte_chr(x, end - x, sl->sep);

@@ -4067,15 +4067,12 @@ output_var(buffer* b, MAP_T* vars, const char* name, int serial) {
       if(ninja || shell) {
         stralloc_zero(&v);
         var_subst(&var->value.sa, &v, "$", "", 1);
-        buffer_putsa(b, &v);
       } else if(batch) {
         stralloc_zero(&v);
         var_subst(&var->value.sa, &v, "%", "%", 1);
-        buffer_putsa(b, &v);
       } else {
-        buffer_putslq(b, &var->value, ' ', '"');
-        // buffer_putsa(b, &var->value.sa);
       }
+      buffer_putslq(b, &var->value, ' ', '"');
       if(shell)
         buffer_putc(b, '"');
       put_newline(b, 0);
