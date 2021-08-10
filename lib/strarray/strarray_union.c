@@ -12,20 +12,22 @@ strarray_union(const strarray* s1, const strarray* s2, strarray* out) {
 
   for(k = 0; k < (size1 + size2); k++) {
     int delta = str_diff(a[i], b[j]);
+    const char* s;
 
     if(i >= size1) {
-      c[k] = b[j++];
+      s = b[j++];
     } else if(j >= size2) {
-      c[k] = a[i++];
+      s = a[i++];
     } else if(delta < 0) {
-      c[k] = a[i++];
+      s = a[i++];
     } else if(delta > 0) {
-      c[k] = b[j++];
+      s = b[j++];
     } else {
-      c[k] = a[i++];
+      s = a[i++];
       j++;
       common++;
     }
+    c[k] = str_dup(s);
   }
   array_truncate(out, sizeof(char*), k - common);
 }

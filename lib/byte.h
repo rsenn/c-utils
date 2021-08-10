@@ -103,14 +103,15 @@ byte_trim(char* x, size_t* n, const char* trimchars, unsigned int trimcharslen) 
 size_t byte_camelize(char* x, size_t len);
 
 #define byte_foreach(x, n, p) byte_foreach_skip(x, n, p, 1)
-#define byte_foreach_skip(x, n, p, skip)                                                                               \
-  for((p) = (void*)x; (void*)(p) != ((char*)(x) + (n)); (p) = (void*)(((char*)(p)) + (skip)))
+#define byte_foreach_skip(x, n, p, skip) for((p) = (void*)x; (void*)(p) != ((char*)(x) + (n)); (p) = (void*)(((char*)(p)) + (skip)))
 
 int byte_startb(const void*, size_t, const char*, size_t);
 int byte_starts(const void*, size_t, const char*);
 
 int byte_endb(const void*, size_t, const char*, size_t);
 int byte_ends(const void*, size_t, const char*);
+
+int byte_diff2(const char* a, size_t alen, const char* b, size_t blen);
 
 #ifdef __cplusplus
 }

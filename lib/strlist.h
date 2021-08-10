@@ -41,13 +41,9 @@ typedef struct strlist_s {
 
 #define strlist_end(sl) ((sl)->sa.s + (sl)->sa.len)
 
-#define strlist_foreach(sl, str, n)                                                                                    \
-  for((str) = (sl)->sa.s;                                                                                              \
-      ((str) < strlist_end(sl) && ((n) = byte_chr((str), strlist_end(sl) - (str), (sl)->sep)) > 0);                    \
-      (str) += (n) + 1)
+#define strlist_foreach(sl, str, n) for((str) = (sl)->sa.s; ((str) < strlist_end(sl) && ((n) = byte_chr((str), strlist_end(sl) - (str), (sl)->sep)) > 0); (str) += (n) + 1)
 
-#define strlist_foreach_s(sl, str)                                                                                     \
-  for(str = (sl)->sa.s; str < strlist_end(sl); str += byte_chr((str), strlist_end(sl) - str, (sl)->sep) + 1)
+#define strlist_foreach_s(sl, str) for(str = (sl)->sa.s; str < strlist_end(sl); str += byte_chr((str), strlist_end(sl) - str, (sl)->sep) + 1)
 
 #define strlist_len(sl, ptr) (byte_chr(ptr, strlist_end((sl)) - (ptr), (sl)->sep))
 
@@ -137,6 +133,9 @@ void buffer_putsl(buffer*, const strlist* sl, const char* separator);
 void strlist_dump(buffer*, const strlist* sl);
 void strlist_dump_named(buffer*, const strlist* sl, const char* names[]);
 #endif
+
+void strlist_intersection(const strlist* s1, const strlist* s2, strlist* out);
+void strlist_difference(const strlist* s1, const strlist* s2, strlist* out1, strlist* out2);
 
 #ifdef __cplusplus
 }
