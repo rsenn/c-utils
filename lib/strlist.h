@@ -31,7 +31,7 @@ typedef struct strlist_s {
 #define strlist_zero(l) stralloc_zero(&(l)->sa)
 #define strlist_init(l, s) stralloc_init(&(l)->sa), (l)->sep = (s);
 #define strlist_free(l) stralloc_free(&(l)->sa)
-#define strlist_copy(d, s) (d)->sep = (s)->sep, stralloc_copy(&(d)->sa, &(s)->sa)
+//#define strlist_copy(d, s) (d)->sep = (s)->sep, stralloc_copy(&(d)->sa, &(s)->sa)
 
 #if defined(__BORLANDC__) || defined(__LCC__)
 #define strlist_pushm(sa, args) strlist_pushm_internal(sa, args, (char*)0)
@@ -135,7 +135,11 @@ void strlist_dump_named(buffer*, const strlist* sl, const char* names[]);
 #endif
 
 void strlist_intersection(const strlist* s1, const strlist* s2, strlist* out);
+void strlist_sorted_intersection(const strlist* s1, const strlist* s2, strlist* out);
 void strlist_difference(const strlist* s1, const strlist* s2, strlist* out1, strlist* out2);
+void strlist_union(const strlist* s1, const strlist* s2, strlist* out);
+
+void strlist_fromsq(strlist* sl, const char* s, const char* delim, const char* quote);
 
 #ifdef __cplusplus
 }

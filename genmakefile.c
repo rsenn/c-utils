@@ -5826,6 +5826,35 @@ main(int argc, char* argv[]) {
 
       mmap_unmap(x, n);
     }
+
+    MAP_PAIR_T t;
+    strlist args;
+    strlist_init(&args, '\0');
+
+    MAP_FOREACH(rules, t) {
+      const char* name = MAP_ITER_KEY(t);
+      target* rule = MAP_ITER_VALUE(t);
+      bool compile = false, link = false;
+      if(is_object(name)) {
+        strlist cmds;
+        strlist_init(&cmds, ' ');
+        cmds.sa = rule->recipe;
+
+        compile = true;
+
+        if(strlist_count(&args) == 0)
+          strlist_copy(&args, &cmds);
+        else
+          strlist_intersection(&args, &cmds, &args);
+      }
+
+      buffer_putm_internal(buffer_2, "Rule: ", name, compile ? " (compile)" : 0, 0);
+      buffer_putnlflush(buffer_2);
+    }
+
+    buffer_puts(buffer_2, "args:\n\t");
+    buffer_putsl(buffer_2, &args, "\n\t");
+    buffer_putnlflush(buffer_2);
   }
 
   while(unix_optind < argc) {
