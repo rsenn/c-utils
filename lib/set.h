@@ -10,7 +10,7 @@
 #include "uint32.h"
 
 typedef struct bucket {
-  struct bucket* next;
+  struct bucket *next, *list_next, *list_prev;
   void* value;
   size_t size;
   uint32 hash;
@@ -21,7 +21,7 @@ typedef struct set {
   uint32 overflow;
   uint32 len;
   uint32 (*hash_fp)(const void*, size_t);
-  bucket_t* array;
+  bucket_t *array, *list, *last;
 } set_t;
 
 // Iterator Definition
@@ -31,7 +31,7 @@ typedef struct set_iterator {
   const set_t* set;
 } set_iterator_t;
 
-#define SET()                                                                                                                                                                                                                                                                                                                  \
+#define SET()                                                                                                          \
   (struct set) { 0, 0, 0, 0, 0 }
 
 size_t fmt_set(char*, const set_t*, const char*);
@@ -43,7 +43,7 @@ int set_delete(set_t*, const void*, const size_t);
 void set_free_array(set_t*);
 void set_free(set_t*);
 int set_has(const set_t*, const void*, const size_t);
-uint32 set_hashfunc(const void*, size_t);
+int set_has_s(const set_t*, const char* s);
 void set_init(set_t*, uint32 (*const)(const void*, size_t));
 int set_cat(set_t*, const set_t*);
 
@@ -83,7 +83,10 @@ set_iterator_new(const set_t* s) {
 
 #define set_foreach_it(s, it) for(set_iterator_init(&(it), (s)); set_iterator_value(&(it), 0); set_iterator_next(&(it)))
 
-#define set_foreach(s, it, x, n) for(it = set_iterator_new((s)); (x = set_iterator_value(&(it), &n)); set_iterator_next(&(it)))
+#define set_foreach(s, it, x, n)                                                                                       \
+  for(it = set_iterator_new((s)); (x = set_iterator_value(&(it), &n)); set_iterator_next(&(it)))
+
+#define set_foreach_ordered(s, b, x, n) for(b = (s)->list; b && (n = b->size, x = b->value); b = b->list_next)
 
 #ifdef STRALLOC_H
 int set_has_sa(const set_t*, const stralloc*);

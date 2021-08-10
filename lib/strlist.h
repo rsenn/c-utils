@@ -31,6 +31,7 @@ typedef struct strlist_s {
 #define strlist_zero(l) stralloc_zero(&(l)->sa)
 #define strlist_init(l, s) stralloc_init(&(l)->sa), (l)->sep = (s);
 #define strlist_free(l) stralloc_free(&(l)->sa)
+#define strlist_nul(l) stralloc_nul(&(l)->sa)
 //#define strlist_copy(d, s) (d)->sep = (s)->sep, stralloc_copy(&(d)->sa, &(s)->sa)
 
 #if defined(__BORLANDC__) || defined(__LCC__)
@@ -41,9 +42,13 @@ typedef struct strlist_s {
 
 #define strlist_end(sl) ((sl)->sa.s + (sl)->sa.len)
 
-#define strlist_foreach(sl, str, n) for((str) = (sl)->sa.s; ((str) < strlist_end(sl) && ((n) = byte_chr((str), strlist_end(sl) - (str), (sl)->sep)) > 0); (str) += (n) + 1)
+#define strlist_foreach(sl, str, n)                                                                                    \
+  for((str) = (sl)->sa.s;                                                                                              \
+      ((str) < strlist_end(sl) && ((n) = byte_chr((str), strlist_end(sl) - (str), (sl)->sep)) > 0);                    \
+      (str) += (n) + 1)
 
-#define strlist_foreach_s(sl, str) for(str = (sl)->sa.s; str < strlist_end(sl); str += byte_chr((str), strlist_end(sl) - str, (sl)->sep) + 1)
+#define strlist_foreach_s(sl, str)                                                                                     \
+  for(str = (sl)->sa.s; str < strlist_end(sl); str += byte_chr((str), strlist_end(sl) - str, (sl)->sep) + 1)
 
 #define strlist_len(sl, ptr) (byte_chr(ptr, strlist_end((sl)) - (ptr), (sl)->sep))
 

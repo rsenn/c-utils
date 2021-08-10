@@ -66,6 +66,7 @@ set_add(set_t* set, const void* val, const size_t size) {
     assert(b->value);
     memcpy(b->value, val, size);
     b->size = size;
+
   } else {
     if(b->next == NULL) {
       b->next = malloc(sizeof(bucket_t));
@@ -79,7 +80,8 @@ set_add(set_t* set, const void* val, const size_t size) {
       ++set->overflow;
     } else {
       //    bucket_t* b = set->array[index].next;
-      while(b->next) b = b->next;
+      while(b->next)
+        b = b->next;
 
       b->next = malloc(sizeof(bucket_t));
       assert(b->next);
@@ -92,7 +94,19 @@ set_add(set_t* set, const void* val, const size_t size) {
 
       ++set->overflow;
     }
+
+    b = b->next;
   }
+
+  b->list_prev = set->last;
+  b->list_next = 0;
+
+  if(set->last)
+    set->last->list_next = b;
+  else
+    set->list = b;
+
+  set->last = b;
 
   ++set->entries;
   return 1;

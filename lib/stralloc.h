@@ -232,8 +232,6 @@ stralloc_length(const stralloc* sa) {
 #define stralloc_iterator_distance(it1, it2) ((it2) - (it1))
 #define stralloc_is_last(sa, ptr) ((sa)->len > 0 && ((sa)->s + (sa)->len - 1) == (ptr))
 
-size_t stralloc_endb(const stralloc* sa, const void* suffix, size_t len);
-
 inline static void
 stralloc_iterator_increment(char** it) {
   ++(*it);
@@ -278,8 +276,10 @@ int stralloc_prependb(stralloc* sa, const char* s, size_t n);
 int stralloc_prepends(stralloc* sa, const char* s);
 int stralloc_prepend(stralloc* sa, const stralloc* other);
 
-size_t stralloc_ends(const stralloc* sa, const stralloc* suffix);
-size_t stralloc_endsb(const stralloc* sa, const char* x, size_t n);
+size_t stralloc_endsa(const stralloc* sa, const stralloc* suffix);
+size_t stralloc_endb(const stralloc*, const char* x, size_t n);
+#define stralloc_ends(sa, s) stralloc_endb((sa), (s), str_len((s)))
+#define stralloc_endc(sa, c) ((sa)->len > 0 && (sa)->s[(sa)->len - 1] == (c))
 
 int stralloc_expand(stralloc* sa);
 
@@ -313,7 +313,10 @@ void stralloc_upper(register stralloc*);
 
 #ifdef BUFFER_H
 void stralloc_dump(const stralloc* sa, buffer* b);
+int buffer_putsa_escaped(buffer*, const stralloc* sa, size_t (*escape)(char*, int));
 #endif
+
+void stralloc_alloc(stralloc*);
 
 #ifdef __cplusplus
 }

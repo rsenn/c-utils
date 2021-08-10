@@ -23,6 +23,14 @@ typedef linked_list_node* MAP_ITER_T;
 #define MAP_FOREACH(map, pair)                                                                                         \
   for(MAP_ITER_T iter = linked_list_head(hashmap_keys(&(map))); iter && ((pair) = hashmap_find(&(map), iter->data));   \
       (iter) = (iter)->next)
+#define MAP_FOREACH_SAFE(map, pair)                                                                                    \
+  for(MAP_ITER_T next, iter = linked_list_head(hashmap_keys(&(map)));                                                  \
+      iter && ((next = (iter)->next), ((pair) = hashmap_find(&(map), iter->data)));                                    \
+      (iter) = next)
+#define MAP_FOREACH_VALUE(map, pair, value)                                                                            \
+  for(MAP_ITER_T iter = linked_list_head(hashmap_keys(&(map)));                                                        \
+      iter && (((pair) = hashmap_find(&(map), iter->data)), ((value) = MAP_VALUE((pair))));                            \
+      (iter) = (iter)->next)
 #define MAP_ITER_KEY(iter) ((char*)MAP_DATA(iter)->key)
 #define MAP_ITER_KEY_LEN(iter) str_len(MAP_ITER_KEY(iter))
 #define MAP_ITER_VALUE(iter) (MAP_DATA(iter)->value)

@@ -9,14 +9,9 @@ set_toarray(const set_t* set) {
   char** array = malloc(sizeof(void*) * (set->entries + 1));
   assert(array);
 
-  for(index = 0; index < set->len; ++index) {
-    b = &(set->array[index]);
-
-    while(b && b->value) {
-      array[i++] = b->value;
-      b = b->next;
-    }
+  for(b = set->list; b; b = b->list_next) {
+    array[i++] = str_ndup(b->value, b->size);
   }
-  array[set->entries] = 0;
+  array[i] = 0;
   return array;
 }

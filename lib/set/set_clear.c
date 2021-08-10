@@ -28,4 +28,6 @@ set_clear(set_t* set) {
 
   set->overflow = 0;
   set->entries = 0;
+  set->list = 0;
+  set->last = 0;
 }

@@ -190,6 +190,8 @@ size_t fmt_escapecharxml(char*, unsigned int ch);
 
 size_t fmt_xlong0(char*, size_t num, size_t n);
 
+size_t fmt_escapecharcontrol(char*, int c);
+
 #ifdef __cplusplus
 }
 #endif

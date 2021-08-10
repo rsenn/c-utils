@@ -1,7 +1,8 @@
-#include "../set.h"
+#include "../byte.h"
+#include "../uint32.h"
 
 uint32
-set_hashfunc(const void* x, size_t len) {
+byte_hash(const void* x, size_t len) {
   const char* key = x;
   unsigned char c;
   size_t i;

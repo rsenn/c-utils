@@ -274,7 +274,7 @@ output_mplab_project(buffer* b, MAP_T* _rules, MAP_T* vars, const strlist* inclu
     (target*)it->vals.val_chars;
 
       if(!is_object(t->name) ||
-    stralloc_ends(&t->prereq.sa,
+    stralloc_end(&t->prereq.sa,
     exts.pps)) continue;
 
       //debug_target(t);

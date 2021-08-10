@@ -55,6 +55,8 @@ typedef enum { LANG_C, LANG_CXX } lang_type;
 #define DEFAULT_PATHSEP '/'
 #endif
 
+#define rule_foreach(it, r) MAP_FOREACH_VALUE(rules, it, r)
+
 typedef struct {
   enum { X86, ARM, PIC } arch;
   enum { _14, _16, _32, _64 } bits;
@@ -88,7 +90,10 @@ typedef struct {
 } sourcedir;
 
 typedef struct target_s {
-  const char* name;
+  union {
+    const char* name;
+    stralloc namesa;
+  };
   set_t output;
   set_t prereq;
   union {
@@ -99,6 +104,7 @@ typedef struct target_s {
   array objs;
   uint32 serial;
   strlist vars;
+  int disabled : 1;
 } target;
 
 typedef struct {

@@ -3,14 +3,12 @@
 
 void
 set_join(const set_t* set, const char* sep, stralloc* out) {
-  set_iterator_t it;
+  bucket_t* b;
   size_t i = 0;
-  set_foreach_it(set, it) {
-    size_t len;
+  for(b = set->list; b; b = b->list_next) {
     if(i > 0)
       stralloc_cats(out, sep);
-
-    stralloc_catb(out, set_iterator_value(&it, &len), len);
+    stralloc_catb(out, b->value, b->size);
     i++;
   }
 }
