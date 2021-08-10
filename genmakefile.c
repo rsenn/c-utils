@@ -1996,6 +1996,15 @@ var_set(const char* name, const char* value) {
   return var;
 }
 
+var_t*
+var_setb(const char* name, const char* value, size_t vlen) {
+  var_t* var;
+  var = var_list(name);
+  stralloc_zero(&var->value.sa);
+  stralloc_copyb(&var->value.sa, value, vlen);
+  return var;
+}
+
 void
 var_unset(const char* name) {
   if(var_isset(name))
@@ -5837,8 +5846,8 @@ main(int argc, char* argv[]) {
       bool compile = false, link = false;
       if(is_object(name)) {
         strlist cmds;
-        strlist_init(&cmds, ' ');
-        cmds.sa = rule->recipe;
+        strlist_init(&cmds, '\0');
+        strlist_fromq(&cmds, rule->recipe.s, rule->recipe.len, " \t\r\n", "\"'`");
 
         compile = true;
 
@@ -5854,6 +5863,19 @@ main(int argc, char* argv[]) {
 
     buffer_puts(buffer_2, "args:\n\t");
     buffer_putsl(buffer_2, &args, "\n\t");
+    buffer_putnlflush(buffer_2);
+
+    var_t* cflags = var_list("CFLAGS");
+
+    buffer_puts(buffer_2, "CFLAGS before: ");
+    buffer_putsl(buffer_2, &cflags->value, ' ');
+    buffer_putnlflush(buffer_2);
+
+    strlist_free(&cflags->value);
+    cflags->value = args;
+
+    buffer_puts(buffer_2, "CFLAGS after: ");
+    buffer_putsl(buffer_2, &cflags->value, ' ');
     buffer_putnlflush(buffer_2);
   }
 
