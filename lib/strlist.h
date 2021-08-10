@@ -141,6 +141,7 @@ void strlist_union(const strlist* s1, const strlist* s2, strlist* out);
 
 void strlist_fromq(strlist* sl, const char* s, size_t len, const char* delim, const char* quote);
 void strlist_fromsq(strlist* sl, const char* s, const char* delim, const char* quote);
+void strlist_slice(strlist* out, const strlist* in, int start, int end);
 
 #ifdef __cplusplus
 }

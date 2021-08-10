@@ -5868,14 +5868,15 @@ main(int argc, char* argv[]) {
     var_t* cflags = var_list("CFLAGS");
 
     buffer_puts(buffer_2, "CFLAGS before: ");
-    buffer_putsl(buffer_2, &cflags->value, ' ');
+    buffer_putsl(buffer_2, &cflags->value, " ");
     buffer_putnlflush(buffer_2);
 
     strlist_free(&cflags->value);
-    cflags->value = args;
+    cflags->value.sep = '\0';
+    strlist_slice(&cflags->value, &args, 1, strlist_count(&args));
 
     buffer_puts(buffer_2, "CFLAGS after: ");
-    buffer_putsl(buffer_2, &cflags->value, ' ');
+    buffer_putsl(buffer_2, &cflags->value, " ");
     buffer_putnlflush(buffer_2);
   }
 
