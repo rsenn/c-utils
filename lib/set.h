@@ -8,6 +8,7 @@
 #define SET_H
 
 #include "uint32.h"
+#include "uint64.h"
 
 typedef struct bucket {
   struct bucket *next, *list_next, *list_prev;
@@ -59,8 +60,8 @@ char* set_iterator_value(const set_iterator_t*, size_t*);
 
 char** set_toarray(const set_t*);
 
-char* set_at_n(const set_t*, const size_t pos, size_t* len);
-char* set_at(const set_t*, const size_t pos);
+char* set_at_n(const set_t*, int64 pos, size_t* len);
+char* set_at(const set_t*, int64 pos);
 
 #define set_hash(s, x, len) ((s)->hash_fp((x), (len)))
 
@@ -89,7 +90,7 @@ set_iterator_new(const set_t* s) {
 #define set_foreach_ordered(s, b, x, n) for(b = (s)->list; b && (n = b->size, x = b->value); b = b->list_next)
 
 #ifdef STRALLOC_H
-char* set_at_sa(const set_t*, const size_t pos, stralloc* out);
+char* set_at_sa(const set_t*, int64 pos, stralloc* out);
 int set_has_sa(const set_t*, const stralloc*);
 int set_addsa(set_t*, const stralloc*);
 size_t stralloc_catset(stralloc*, const set_t*, const char*);
