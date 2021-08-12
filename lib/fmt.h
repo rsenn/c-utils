@@ -192,6 +192,9 @@ size_t fmt_xlong0(char*, size_t num, size_t n);
 
 size_t fmt_escapecharcontrol(char*, int c);
 
+size_t fmt_xlong0u(char*, size_t num, size_t n);
+size_t fmt_xlongu(char*, unsigned long i);
+
 #ifdef __cplusplus
 }
 #endif

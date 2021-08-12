@@ -140,7 +140,8 @@ slink_begin(slink** list) {
 }
 inline static slink**
 slink_end(slink** list) {
-  while(*list) list = &(*list)->next;
+  while(*list)
+    list = &(*list)->next;
   return list;
 }
 

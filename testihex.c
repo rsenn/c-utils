@@ -29,8 +29,8 @@ mem_top(ihex_file* h) {
       continue;
     }
     a.lo16 = r->offset;
-    if(top < a.ptr32 + r->length)
-      top = a.ptr32 + r->length;
+    if(top < a.off32 + r->length)
+      top = a.off32 + r->length;
   }
   return top;
 }
@@ -48,8 +48,8 @@ mem_bottom(ihex_file* h) {
     }
     a.lo16 = r->offset;
 
-    if(bottom > a.ptr32)
-      bottom = a.ptr32;
+    if(bottom > a.off32)
+      bottom = a.off32;
   }
   return bottom;
 }
@@ -57,7 +57,7 @@ mem_bottom(ihex_file* h) {
 int
 main(int argc, char* argv[]) {
   ssize_t ret;
-  static buffer input;
+  static buffer input, output;
   const char* filename = argv[1] ? argv[1]
                                  : "/home/roman/Dokumente/Sources/xc8/pictest/bootloaders/18f2550-usb-hid-xc8/FIRMWARE/"
                                    "PIC18F2550/18F2550-MPLAB.X/dist/default/production/18F2550-MPLAB.X.production.hex";
@@ -73,7 +73,7 @@ main(int argc, char* argv[]) {
     ihex_file ihx;
     ihex_addr a = {0}, prev = {0};
 
-    ret = ihex_read_record(&r, sa.s, sa.len);
+    ret = ihex_record_read(&r, sa.s, sa.len);
     ret = ihex_read_buf(&ihx, x, sz);
 
     uint32 top = mem_top(&ihx);
@@ -93,15 +93,15 @@ main(int argc, char* argv[]) {
 
       a.lo16 = r->offset;
 
-      if(prev.ptr32 < a.ptr32) {
+      if(prev.off32 < a.off32) {
         buffer_puts(buffer_1, "empty space = 0x");
-        buffer_putxlong0(buffer_1, a.ptr32 - prev.ptr32, 6);
+        buffer_putxlong0(buffer_1, a.off32 - prev.off32, 6);
         buffer_puts(buffer_1, " bytes");
         buffer_putnlflush(buffer_1);
       }
 
       buffer_puts(buffer_1, "record addr = 0x");
-      buffer_putxlong0(buffer_1, a.ptr32, 6);
+      buffer_putxlong0(buffer_1, a.off32, 6);
       buffer_puts(buffer_1, ", len = ");
       buffer_putulong0(buffer_1, r->length, 3);
       buffer_puts(buffer_1, ", type = ");
@@ -111,8 +111,12 @@ main(int argc, char* argv[]) {
       buffer_putnlflush(buffer_1);
 
       prev = a;
-      prev.ptr32 += r->length;
+      prev.off32 += r->length;
     }
+
+    buffer_writefile(&output, "testihex.hex");
+    ihex_write(&ihx, &output);
+    buffer_close(&output);
   }
 
   buffer_puts(buffer_1, "ret = ");

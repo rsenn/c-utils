@@ -3,7 +3,7 @@
 #include "../alloc.h"
 
 ssize_t
-ihex_read_record(ihex_record** pihr, const char* in, size_t n) {
+ihex_record_read(ihex_record** pihr, const char* in, size_t n) {
   uint8 len, typ, chk;
   uint16 off;
   const char* x = in;

@@ -11,9 +11,10 @@ ihex_read_buf(ihex_file* ihf, const char* in, size_t n) {
 
   while(x < end) {
     size_t len = byte_chrs(x, end - x, "\r\n", 2);
-    ihex_read_record(recp, x, len);
+    ihex_record_read(recp, x, len);
     x += len;
-    while(*x == '\r' || *x == '\n') ++x;
+    while(*x == '\r' || *x == '\n')
+      ++x;
     recp = &((*recp)->next);
     ret++;
   }
