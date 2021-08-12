@@ -45,7 +45,8 @@ reduce(stralloc* sa) {
 
       size_t k = i + 1;
 
-      while(isdigit(sa->s[k])) ++k;
+      while(isdigit(sa->s[k]))
+        ++k;
 
       if(!str_diffn(&sa->s[k], ".so", 3))
         break;

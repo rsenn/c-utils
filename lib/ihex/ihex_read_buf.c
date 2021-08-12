@@ -2,7 +2,7 @@
 #include "../byte.h"
 
 ssize_t
-ihex_load_buf(ihex_file* ihf, const char* in, size_t n) {
+ihex_read_buf(ihex_file* ihf, const char* in, size_t n) {
   const char *x = in, *end = in + n;
   ihex_record** recp = &ihf->records;
   ssize_t ret = 0;
@@ -11,12 +11,9 @@ ihex_load_buf(ihex_file* ihf, const char* in, size_t n) {
 
   while(x < end) {
     size_t len = byte_chrs(x, end - x, "\r\n", 2);
-
-    ihex_load_record(recp, x, len);
-
+    ihex_read_record(recp, x, len);
     x += len;
     while(*x == '\r' || *x == '\n') ++x;
-
     recp = &((*recp)->next);
     ret++;
   }

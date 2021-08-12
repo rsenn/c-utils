@@ -22,9 +22,15 @@ uint32
 mem_top(ihex_file* h) {
   ihex_record* r;
   uint32 top = 0;
+  ihex_addr a = {0};
   slink_foreach(h->records, r) {
-    if(top < r->offset + r->length)
-      top = r->offset + r->length;
+    if(r->type == 4) {
+      uint16_unpack_big(r->data, &a.hi16);
+      continue;
+    }
+    a.lo16 = r->offset;
+    if(top < a.ptr32 + r->length)
+      top = a.ptr32 + r->length;
   }
   return top;
 }
@@ -33,9 +39,17 @@ uint32
 mem_bottom(ihex_file* h) {
   ihex_record* r;
   uint32 bottom = 0xffffffff;
+  ihex_addr a = {0};
+
   slink_foreach(h->records, r) {
-    if(bottom > r->offset)
-      bottom = r->offset;
+    if(r->type == 4) {
+      uint16_unpack_big(r->data, &a.hi16);
+      continue;
+    }
+    a.lo16 = r->offset;
+
+    if(bottom > a.ptr32)
+      bottom = a.ptr32;
   }
   return bottom;
 }
@@ -55,11 +69,12 @@ main(int argc, char* argv[]) {
   buffer_getline_sa(&input, &sa);
 
   {
-    ihex_record* recp;
+    ihex_record* r;
     ihex_file ihx;
+    ihex_addr a = {0}, prev = {0};
 
-    ret = ihex_load_record(&recp, sa.s, sa.len);
-    ret = ihex_load_buf(&ihx, x, sz);
+    ret = ihex_read_record(&r, sa.s, sa.len);
+    ret = ihex_read_buf(&ihx, x, sz);
 
     uint32 top = mem_top(&ihx);
     uint32 bottom = mem_bottom(&ihx);
@@ -70,17 +85,33 @@ main(int argc, char* argv[]) {
     buffer_putxlong0(buffer_1, bottom, 4);
     buffer_putnlflush(buffer_1);
 
-    slink_foreach(ihx.records, recp) {
+    slink_foreach(ihx.records, r) {
+      if(r->type == 4) {
+        uint16_unpack_big(r->data, &a.hi16);
+        continue;
+      }
+
+      a.lo16 = r->offset;
+
+      if(prev.ptr32 < a.ptr32) {
+        buffer_puts(buffer_1, "empty space = 0x");
+        buffer_putxlong0(buffer_1, a.ptr32 - prev.ptr32, 6);
+        buffer_puts(buffer_1, " bytes");
+        buffer_putnlflush(buffer_1);
+      }
 
       buffer_puts(buffer_1, "record addr = 0x");
-      buffer_putxlong0(buffer_1, recp->offset, 4);
+      buffer_putxlong0(buffer_1, a.ptr32, 6);
       buffer_puts(buffer_1, ", len = ");
-      buffer_putulong(buffer_1, recp->length);
+      buffer_putulong0(buffer_1, r->length, 3);
       buffer_puts(buffer_1, ", type = ");
-      buffer_putulong(buffer_1, recp->type);
+      buffer_putulong(buffer_1, r->type);
       buffer_puts(buffer_1, ", data = ");
-      putdata(recp->data, recp->length);
+      putdata(r->data, r->length);
       buffer_putnlflush(buffer_1);
+
+      prev = a;
+      prev.ptr32 += r->length;
     }
   }
 

@@ -58,30 +58,30 @@ last_error(void) {
   return retbuf;
 }
 
-#define GET_PORT_TIMEOUTS(fd, t)                                                                                                                                                                                                                                                                                               \
-  memset(t, 0, sizeof(COMMTIMEOUTS));                                                                                                                                                                                                                                                                                          \
-  if(!GetCommTimeouts(fd, t)) {                                                                                                                                                                                                                                                                                                \
-    fprintf(stderr, "GetCommTimeouts() %s\n", last_error());                                                                                                                                                                                                                                                                   \
-    return 1;                                                                                                                                                                                                                                                                                                                  \
+#define GET_PORT_TIMEOUTS(fd, t)                                                                                       \
+  memset(t, 0, sizeof(COMMTIMEOUTS));                                                                                  \
+  if(!GetCommTimeouts(fd, t)) {                                                                                        \
+    fprintf(stderr, "GetCommTimeouts() %s\n", last_error());                                                           \
+    return 1;                                                                                                          \
   }
 
-#define SET_PORT_TIMEOUTS(fd, t)                                                                                                                                                                                                                                                                                               \
-  if(!SetCommTimeouts(fd, t)) {                                                                                                                                                                                                                                                                                                \
-    fprintf(stderr, "SetCommTimeouts() %s\n", last_error());                                                                                                                                                                                                                                                                   \
-    return 1;                                                                                                                                                                                                                                                                                                                  \
+#define SET_PORT_TIMEOUTS(fd, t)                                                                                       \
+  if(!SetCommTimeouts(fd, t)) {                                                                                        \
+    fprintf(stderr, "SetCommTimeouts() %s\n", last_error());                                                           \
+    return 1;                                                                                                          \
   }
 
-#define GET_PORT_STATE(fd, pdcb)                                                                                                                                                                                                                                                                                               \
-  memset(pdcb, 0, sizeof(DCB));                                                                                                                                                                                                                                                                                                \
-  if(!GetCommState(fd, pdcb)) {                                                                                                                                                                                                                                                                                                \
-    fprintf(stderr, "GetCommState() %s\n", last_error());                                                                                                                                                                                                                                                                      \
-    return 1;                                                                                                                                                                                                                                                                                                                  \
+#define GET_PORT_STATE(fd, pdcb)                                                                                       \
+  memset(pdcb, 0, sizeof(DCB));                                                                                        \
+  if(!GetCommState(fd, pdcb)) {                                                                                        \
+    fprintf(stderr, "GetCommState() %s\n", last_error());                                                              \
+    return 1;                                                                                                          \
   }
 
-#define SET_PORT_STATE(fd, pdcb)                                                                                                                                                                                                                                                                                               \
-  if(!SetCommState(fd, pdcb)) {                                                                                                                                                                                                                                                                                                \
-    fprintf(stderr, "SetCommState() %s\n", last_error());                                                                                                                                                                                                                                                                      \
-    return 1;                                                                                                                                                                                                                                                                                                                  \
+#define SET_PORT_STATE(fd, pdcb)                                                                                       \
+  if(!SetCommState(fd, pdcb)) {                                                                                        \
+    fprintf(stderr, "SetCommState() %s\n", last_error());                                                              \
+    return 1;                                                                                                          \
   }
 
 static unsigned int
@@ -491,7 +491,8 @@ serial_read_char(int fd, char* c) {
 
 void
 serial_write_string(int fd, const char* s) {
-  while(*s) serial_write_char(fd, *(s++));
+  while(*s)
+    serial_write_char(fd, *(s++));
 }
 
 char**
