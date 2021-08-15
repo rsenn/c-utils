@@ -155,7 +155,8 @@ httpresponse(struct http_data* h, int64 s) {
     *d = 0;
     if(c[0] != '/')
       goto e404;
-    while(c[1] == '/') ++c;
+    while(c[1] == '/')
+      ++c;
     if(!io_readfile(&fd, c + 1)) {
     e404:
       httperror(h, "404 Not Found", "No such file or directory.");

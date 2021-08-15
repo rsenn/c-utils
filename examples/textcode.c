@@ -12,7 +12,8 @@ int
 main() {
   char buf[256];
   int i;
-  for(i = 0; i < 256; ++i) buf[i] = i;
+  for(i = 0; i < 256; ++i)
+    buf[i] = i;
 
   fmt_to_array(fmt_uuencoded, &a, buf, 256);
   assert(!array_failed(&a));

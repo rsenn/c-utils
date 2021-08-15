@@ -64,7 +64,8 @@ find_char(char ch, char* buffer, unsigned int n) {
 static ssize_t
 collapse_unicode(char* buffer, size_t n) {
   size_t i = 0, o = 0;
-  while(buffer[i] == '\0') i++;
+  while(buffer[i] == '\0')
+    i++;
 
   for(; i < n; o++, i += 2) {
     buffer[o] = buffer[i];
@@ -288,7 +289,8 @@ regfilter() {
       } else if(!str_diffn(&line.s[valuestart], "hex", 3)) {
         rt = REGISTRY_BINARY;
 
-        while(line.s[valuestart] != ':' && valuestart < valueend) valuestart++;
+        while(line.s[valuestart] != ':' && valuestart < valueend)
+          valuestart++;
 
         valuestart++;
 

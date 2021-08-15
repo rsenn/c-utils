@@ -8,7 +8,8 @@ default_fmt(xmlnode* node, buffer* b, int depth, char ch, int n) {
 
   depth = depth < 0 ? -depth : depth;
 
-  while(n-- > 0) buffer_putc(b, ch);
+  while(n-- > 0)
+    buffer_putc(b, ch);
 
   /*   switch(ch) {
       case '\n':
@@ -92,7 +93,8 @@ xml_print_node(xmlnode* node, buffer* b, int depth, xml_print_fmt_t* fmt) {
 static void
 xml_print_list(xmlnode* list, buffer* b, int depth, xml_print_fmt_t* fmt) {
   xmlnode* node;
-  for(node = list; node; node = node->next) xml_print_node(node, b, depth, fmt);
+  for(node = list; node; node = node->next)
+    xml_print_node(node, b, depth, fmt);
 }
 
 void

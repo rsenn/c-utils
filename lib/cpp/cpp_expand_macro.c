@@ -55,7 +55,8 @@ cpp_expand_macro(cpp_t* cpp, tokenizer* t, buffer* out, const char* name, unsign
   struct FILE_container_s* argvalues =
       alloc_zero((MACRO_VARIADIC(m) ? num_args + 1 : num_args) * sizeof(struct FILE_container_s));
 
-  for(i = 0; i < num_args; i++) argvalues[i].f = memstream_open(&argvalues[i].buf, &argvalues[i].len);
+  for(i = 0; i < num_args; i++)
+    argvalues[i].f = memstream_open(&argvalues[i].buf, &argvalues[i].len);
 
   /* replace named arguments in the contents of the macro call */
   if(FUNCTIONLIKE(m)) {
@@ -257,7 +258,8 @@ cpp_expand_macro(cpp_t* cpp, tokenizer* t, buffer* out, const char* name, unsign
       size_t mac_iter = 0;
       cpp_get_macro_info(cpp, &cwae.t, mcs, &mac_iter, 0, 0, "null", visited, rec_level);
       /* some of the macros might not expand at this stage (without braces)*/
-      while(mac_cnt && mcs[mac_cnt - 1].name == 0) --mac_cnt;
+      while(mac_cnt && mcs[mac_cnt - 1].name == 0)
+        --mac_cnt;
     }
     size_t i;
     int depth = 0;
@@ -272,7 +274,8 @@ cpp_expand_macro(cpp_t* cpp, tokenizer* t, buffer* out, const char* name, unsign
           tokenizer_rewind(&cwae.t);
           size_t j;
           struct token_s utok;
-          for(j = 0; j < mi->first + 1; ++j) tokenizer_next(&cwae.t, &utok);
+          for(j = 0; j < mi->first + 1; ++j)
+            tokenizer_next(&cwae.t, &utok);
           struct FILE_container_s t2 = {0}, tmp = {0};
           t2.f = memstream_open(&t2.buf, &t2.len);
           if(!cpp_expand_macro(cpp, &cwae.t, t2.f, mi->name, rec_level + 1, visited))

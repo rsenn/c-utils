@@ -22,7 +22,8 @@ json_property_set_str(jsonval* obj, const char* key, jsonval value) {
       }
     } else {
       slink* link = obj->listv;
-      for(len = 0; len < i; ++len) link = link->next;
+      for(len = 0; len < i; ++len)
+        link = link->next;
       ret = slist_data(link);
     }
   }

@@ -193,7 +193,8 @@ main(int argc, char* argv[]) {
   }
 
   stralloc_init(&indent_str);
-  for(c = 0; c < indent; ++c) stralloc_cats(&indent_str, " ");
+  for(c = 0; c < indent; ++c)
+    stralloc_cats(&indent_str, " ");
   stralloc_nul(&indent_str);
 
   stralloc_init(&tmp);

@@ -11,7 +11,8 @@ main() {
   stralloc_init(&a);
   buffer_tosa(&b, &a);
 
-  for(i = 0; i < 100; ++i) buffer_puts(&b, "foo bar baz!\n");
+  for(i = 0; i < 100; ++i)
+    buffer_puts(&b, "foo bar baz!\n");
   buffer_flush(&b);
   assert(a.len == 100 * sizeof("foo bar baz!"));
   for(i = 0; i < 100; ++i)

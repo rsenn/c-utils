@@ -132,7 +132,8 @@ xmlpp_get_depth(xmlnode* node, int d) {
   else if(d > max_depth)
     max_depth = d;
 
-  for(n = node->children; n; n = n->next) xmlpp_get_depth(n, d + 1);
+  for(n = node->children; n; n = n->next)
+    xmlpp_get_depth(n, d + 1);
 
   return max_depth;
 }
@@ -160,7 +161,8 @@ xmlpp_fmt(xmlnode* node, buffer* b, int depth, char ch, int n) {
     }
   }
 
-  while(n-- > 0) buffer_putc(b, ch);
+  while(n-- > 0)
+    buffer_putc(b, ch);
 
   if(ch == '\n')
     buffer_flush(buffer_1);

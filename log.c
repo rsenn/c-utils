@@ -94,7 +94,8 @@ log_ip(const char* x, size_t iplen) {
     buffer_put(buffer_2, buf, (iplen == 4 ? fmt_ip4 : fmt_ip6)(buf, x));
   } else {
     int j;
-    for(j = ip6_isv4mapped(x) ? 12 : 0; j < 16; j++) log_hex(x[j]);
+    for(j = ip6_isv4mapped(x) ? 12 : 0; j < 16; j++)
+      log_hex(x[j]);
   }
 }
 

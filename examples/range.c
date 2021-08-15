@@ -113,7 +113,8 @@ check_rangeptrbuf() {
   {
     uint16_t y[6];
     int i;
-    for(i = 0; i < 6; ++i) y[i] = "fnord"[i];
+    for(i = 0; i < 6; ++i)
+      y[i] = "fnord"[i];
     assert(range_str2inbuf(y, 5 * 2, y) == 0);
     assert(range_str2inbuf(y, 5 * 2 + 1, y) == 0);
     assert(range_str2inbuf(y, sizeof(y), y) == 1);
@@ -127,7 +128,8 @@ check_rangeptrbuf() {
   {
     uint32 y[6];
     int i;
-    for(i = 0; i < 6; ++i) y[i] = "fnord"[i];
+    for(i = 0; i < 6; ++i)
+      y[i] = "fnord"[i];
     assert(range_str4inbuf(y, 5 * 4, y) == 0);
     assert(range_str4inbuf(y, 5 * 4 + 3, y) == 0);
     assert(range_str4inbuf(y, sizeof(y), y) == 1);

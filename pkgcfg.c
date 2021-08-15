@@ -46,7 +46,19 @@
 #define PKGCFG_PRINT_ERR 2
 #define PKGCFG_SHORT_ERR 4
 
-typedef enum { PRINT_VERSION = 1, PRINT_CFLAGS = 2, PRINT_LIBS = 4, PRINT_REQUIRES = 8, PRINT_PATH = 16, LIST_ALL = 32, LIST_PATH = 64, LIST_FILE = 128, ATLEAST_PKGCONFIG_VERSION = 4096, CHECK_EXISTS = 8192, MATCH = 0x10000 } id;
+typedef enum {
+  PRINT_VERSION = 1,
+  PRINT_CFLAGS = 2,
+  PRINT_LIBS = 4,
+  PRINT_REQUIRES = 8,
+  PRINT_PATH = 16,
+  LIST_ALL = 32,
+  LIST_PATH = 64,
+  LIST_FILE = 128,
+  ATLEAST_PKGCONFIG_VERSION = 4096,
+  CHECK_EXISTS = 8192,
+  MATCH = 0x10000
+} id;
 typedef enum { OP_EQ = 0, OP_NE, OP_GT, OP_GE, OP_LT, OP_LE } op_code;
 
 typedef enum { LIBS_ONLY_L = 64, LIBS_ONLY_LIBPATH = 128, LIBS_ONLY_OTHER = 256 } libs_mode_t;
@@ -485,7 +497,8 @@ pkg_read(buffer* b, pkg* p) {
     int ret;
     char sep, ch;
 
-    while(buffer_peekc(b, &ch) && (ch == ' ' || ch == '\t')) buffer_skipc(b);
+    while(buffer_peekc(b, &ch) && (ch == ' ' || ch == '\t'))
+      buffer_skipc(b);
 
     if((ret = buffer_get_new_token_sa(b, &name, ":=\r\n", 4)) == -1)
       goto fail;
@@ -501,7 +514,8 @@ pkg_read(buffer* b, pkg* p) {
       sep = name.s[--name.len];
     }
 
-    while(buffer_peekc(b, &ch) && (ch == ' ' || ch == '\t')) buffer_skipc(b);
+    while(buffer_peekc(b, &ch) && (ch == ' ' || ch == '\t'))
+      buffer_skipc(b);
 
     stralloc_zero(&value);
     if((ret = buffer_getline_sa(b, &value)) == -1)
@@ -700,7 +714,8 @@ pkg_list(id code) {
         buffer_putsa(buffer_2, &path);
         buffer_putnlflush(buffer_2);
 #endif
-        if(match_pattern && path_fnmatch(match_pattern, str_len(match_pattern), path.s, path.len, FNM_CASEFOLD) == FNM_NOMATCH)
+        if(match_pattern &&
+           path_fnmatch(match_pattern, str_len(match_pattern), path.s, path.len, FNM_CASEFOLD) == FNM_NOMATCH)
           continue;
 
         pkg_init(&pf, path.s);
@@ -1450,9 +1465,13 @@ main(int argc, char* argv[], char* envp[]) {
           int i = arg[2] == 'l' ? PRINT_LIBS : PRINT_CFLAGS;
           add_cmd(i);
           if(i == PRINT_LIBS)
-            libs_mode = arg[str_find(arg, "only")] ? (arg[str_find(arg, "other")] ? LIBS_ONLY_OTHER : (arg[str_find(arg, "L")] ? LIBS_ONLY_LIBPATH : LIBS_ONLY_L)) : 0;
+            libs_mode = arg[str_find(arg, "only")] ? (arg[str_find(arg, "other")]
+                                                          ? LIBS_ONLY_OTHER
+                                                          : (arg[str_find(arg, "L")] ? LIBS_ONLY_LIBPATH : LIBS_ONLY_L))
+                                                   : 0;
           else
-            cflags_mode = arg[str_find(arg, "only")] ? (arg[str_find(arg, "other")] ? CFLAGS_ONLY_OTHER : CFLAGS_ONLY_I) : 0;
+            cflags_mode =
+                arg[str_find(arg, "only")] ? (arg[str_find(arg, "other")] ? CFLAGS_ONLY_OTHER : CFLAGS_ONLY_I) : 0;
 
           argv[unix_optind] = "-";
           /*           for(i = unix_optind;

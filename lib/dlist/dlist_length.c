@@ -6,7 +6,8 @@ dlist_length(dlist* l) {
   node* node;
   size_t count = 0;
 
-  for(node = l->head; node; node = node->next) ++count;
+  for(node = l->head; node; node = node->next)
+    ++count;
 
   return count;
 }

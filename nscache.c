@@ -568,7 +568,8 @@ main(int argc, char* argv[]) {
 
   uint32_seed(NULL, 0);
 
-  for(i = 1; i < argc; i++) env_put(argv[i]);
+  for(i = 1; i < argc; i++)
+    env_put(argv[i]);
 
   x = env_get("IP");
   if(!x)
@@ -604,7 +605,8 @@ main(int argc, char* argv[]) {
 
   socket_tryreservein(udp53, 131072);
 
-  for(i = 0; i < 32; i++) seed.u32[i] = uint32_random();
+  for(i = 0; i < 32; i++)
+    seed.u32[i] = uint32_random();
 
   dns_random_init(seed.u8);
 

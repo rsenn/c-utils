@@ -144,7 +144,8 @@ get_file_size(char* path) {
   typedef LONG(WINAPI getfilesizeex_fn)(HANDLE, PLARGE_INTEGER);
   static getfilesizeex_fn* api_fn;
 
-  HANDLE hFile = CreateFileA(path, GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
+  HANDLE hFile =
+      CreateFileA(path, GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
   if(hFile == INVALID_HANDLE_VALUE)
     return -1; /* error condition, could
                   call GetLastError to
@@ -177,7 +178,8 @@ uint64
 get_file_time(const char* path) {
   FILETIME c, la, lw;
   int64 t;
-  HANDLE hFile = CreateFileA(path, GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
+  HANDLE hFile =
+      CreateFileA(path, GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
   if(hFile == INVALID_HANDLE_VALUE)
     return -1; /* error condition, could
                   call GetLastError to
@@ -229,7 +231,9 @@ get_file_owner(const char* path) {
   PSECURITY_DESCRIPTOR pSD = 0;
   LPSTR strsid = 0;
   DWORD dwErrorCode = 0;
-  static DWORD(WINAPI * get_security_info)(HANDLE, DWORD, SECURITY_INFORMATION, PSID*, PSID*, PACL*, PACL*, PSECURITY_DESCRIPTOR*);
+  static DWORD(
+      WINAPI *
+      get_security_info)(HANDLE, DWORD, SECURITY_INFORMATION, PSID*, PSID*, PACL*, PACL*, PSECURITY_DESCRIPTOR*);
   static BOOL(WINAPI * convert_sid_to_string_sid_a)(PSID, LPSTR*);
   tmpbuf[0] = '\0';
   /* Get the handle of the file object.
@@ -497,7 +501,8 @@ make_num(stralloc* out, uint64 num, uint32 width, size_t (*fmt)(char*, uint64)) 
     fmt = &fmt_ulonglong;
   size_t sz = fmt(buf, num);
   ssize_t n = width - sz;
-  while(n-- > 0) stralloc_catb(out, " ", 1);
+  while(n-- > 0)
+    stralloc_catb(out, " ", 1);
   stralloc_catb(out, buf, sz);
 }
 
@@ -505,7 +510,8 @@ static void
 make_time(stralloc* out, uint64 t, uint32 width) {
   char fmt[21];
   size_t i, sz = fmt_iso8601(fmt, t);
-  for(i = 0; i + sz < width; i++) stralloc_catc(out, ' ');
+  for(i = 0; i + sz < width; i++)
+    stralloc_catc(out, ' ');
 
   if(sz > 0 && fmt[sz - 1] == 'Z')
     sz--;
@@ -543,7 +549,8 @@ static void
 make_str(stralloc* out, const char* s, uint32 width) {
   size_t i, sz = str_len(s);
   stralloc_catb(out, s, sz);
-  for(i = 0; i + sz < width; i++) stralloc_catc(out, ' ');
+  for(i = 0; i + sz < width; i++)
+    stralloc_catc(out, ' ');
 }
 
 static void
@@ -604,7 +611,8 @@ mode_octal(stralloc* out, int mode) {
   char buf[6];
   size_t i, n = fmt_8long(buf, mode & 07777);
   if(mode)
-    for(i = 0; i + n < 4; i++) stralloc_catc(out, '0');
+    for(i = 0; i + n < 4; i++)
+      stralloc_catc(out, '0');
   stralloc_catb(out, buf, n);
 }
 
@@ -707,7 +715,8 @@ stat_type(const char* path, int mode) {
   return dtype;
 }
 
-static const char* type_strs[] = {"D_PIPE", "D_CHARDEV", "D_BLKDEV", "D_SYMLINK", "D_DIRECTORY", "D_FILE", "D_SOCKET", 0};
+static const char* type_strs[] = {
+    "D_PIPE", "D_CHARDEV", "D_BLKDEV", "D_SYMLINK", "D_DIRECTORY", "D_FILE", "D_SOCKET", 0};
 
 static const char*
 type_str(dir_type_t type) {
@@ -1055,7 +1064,8 @@ list_dir_internal(stralloc* dir, int type, long depth) {
   byte_zero(&st, sizeof(st));
 
   (void)type;
-  while(dir->len > 1 && IS_DIRSEP(dir->s[dir->len - 1])) dir->len--;
+  while(dir->len > 1 && IS_DIRSEP(dir->s[dir->len - 1]))
+    dir->len--;
   stralloc_nul(dir);
 #if !WINDOWS_NATIVE
   if(stat(dir->s, &st) != -1) {
@@ -1435,7 +1445,8 @@ main(int argc, char* argv[]) {
       column = 0;
       for(i = 0; i < n; column++) {
         j = i;
-        while(isspace(x[i])) i++;
+        while(isspace(x[i]))
+          i++;
         offsets[column] = i;
         for(j = i; j < n; j++)
           if(isspace(x[j]))

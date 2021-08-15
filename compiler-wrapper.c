@@ -126,7 +126,8 @@ void print_strlist(buffer*, const strlist* sl, const char* sep, const char* quot
 
 int
 process_option(const char* optstr, const char* nextopt, int* i) {
-  while(*optstr == '-') ++optstr;
+  while(*optstr == '-')
+    ++optstr;
   // buffer_puts(debug_buf, "optstr: ");
   // buffer_puts(debug_buf, optstr);
   // buffer_putnlflush(debug_buf);

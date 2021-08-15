@@ -483,7 +483,8 @@ main(int argc, char** argv) {
       nomem();
     if(dns_ip6_qualify(&out, &fqdn, &udn) == -1)
       nomem(); /* XXX */
-    for(i = 0; i + 16 <= out.len; i += 16) address_add("", out.s + i);
+    for(i = 0; i + 16 <= out.len; i += 16)
+      address_add("", out.s + i);
   }
 
   for(i = 0; i < qt.len; ++i) {

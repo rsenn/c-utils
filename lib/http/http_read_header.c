@@ -21,7 +21,8 @@ putline(const char* what, const char* b, ssize_t l, int i) {
   if(l <= 0)
     buffer_puts(buffer_2, b);
   else {
-    while(l-- > 0) buffer_put(buffer_2, b++, 1);
+    while(l-- > 0)
+      buffer_put(buffer_2, b++, 1);
   }
   buffer_putnlflush(buffer_2);
 }

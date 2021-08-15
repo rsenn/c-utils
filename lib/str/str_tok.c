@@ -7,7 +7,8 @@ str_tok(char* s, const char* delims, char** ptrptr) {
 
   if(s == NULL) {
     s = *ptrptr;
-    while(*s && strchr(delims, *s)) ++s;
+    while(*s && strchr(delims, *s))
+      ++s;
   }
 
   if(*s == '\0')
@@ -15,7 +16,8 @@ str_tok(char* s, const char* delims, char** ptrptr) {
 
   ret = s;
 
-  while(*s && !strchr(delims, *s)) ++s;
+  while(*s && !strchr(delims, *s))
+    ++s;
 
   if(*s)
     *s++ = '\0';

@@ -31,6 +31,7 @@ unurl(const char* s) {
 int
 main(int argc, char* argv[]) {
   int i;
-  for(i = 1; i < argc; ++i) unurl(argv[i]);
+  for(i = 1; i < argc; ++i)
+    unurl(argv[i]);
   return 0;
 }

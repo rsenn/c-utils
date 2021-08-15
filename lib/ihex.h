@@ -53,5 +53,10 @@ uint8 ihex_record_checksum(const ihex_record*);
 void ihex_record_write(ihex_record*, buffer* b);
 int ihex_write(ihex_file*, buffer* b);
 
+static inline const char*
+ihex_typestr(enum ihex_type_e type) {
+  return ((const char* const[5]){"DATA", "EOF", "EXTSEGADDR", 0, "EXTLINADDR"})[type];
+}
+
 #endif /* IHEX_H_ */
 /** @} */

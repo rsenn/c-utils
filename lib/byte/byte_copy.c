@@ -7,5 +7,6 @@ byte_copy(void* out, size_t len, const void* in) {
   char* s = (char*)out;
   const char* t = (const char*)in;
   size_t i;
-  for(i = 0; i < len; ++i) s[i] = t[i];
+  for(i = 0; i < len; ++i)
+    s[i] = t[i];
 }

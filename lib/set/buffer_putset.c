@@ -8,7 +8,8 @@ buffer_putset(buffer* b, const set_t* set, const char* sep, size_t seplen) {
   set_iterator_t it;
 
   set_foreach(set, it, x, n) {
-    while(n > 0 && x[n - 1] == '\0') n--;
+    while(n > 0 && x[n - 1] == '\0')
+      n--;
     if(i++ > 0)
       buffer_put(b, sep, seplen);
     buffer_put(b, x, n);

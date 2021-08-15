@@ -27,6 +27,7 @@ tokenizer_read_until(tokenizer* t, const char* marker, int stop_at_nl) {
   }
   *s = 0;
   size_t i;
-  for(i = str_len(marker); i > 0;) tokenizer_ungetc(t, marker[--i]);
+  for(i = str_len(marker); i > 0;)
+    tokenizer_ungetc(t, marker[--i]);
   return 1;
 }

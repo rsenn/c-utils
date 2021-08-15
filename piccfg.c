@@ -280,7 +280,8 @@ find_value(const char* str) {
   csetting* setting = find_setting(str);
   cvalue* value;
   str += str_chr(str, '=');
-  while(*str == '=' || *str == ' ') ++str;
+  while(*str == '=' || *str == ' ')
+    ++str;
   slink_foreach(setting->values, value) {
     if(!str_diffn(str, value->name, str_len(value->name)))
       return value;
@@ -495,7 +496,14 @@ main(int argc, char* argv[]) {
   int c, index = 0;
   const char *cfgdata = 0, *hexfile = 0;
 
-  struct longopt opts[] = {{"help", 0, NULL, 'h'}, {"oneline", 0, &oneline, 1}, {"no-default", 0, &nodefault, 1}, {"default", 0, &nodefault, 0}, {"no-comments", 0, &comments, 0}, {"name", 0, &output_name, 1}, {"verbose", 0, &verbose, 1}, {0, 0, 0, 0}};
+  struct longopt opts[] = {{"help", 0, NULL, 'h'},
+                           {"oneline", 0, &oneline, 1},
+                           {"no-default", 0, &nodefault, 1},
+                           {"default", 0, &nodefault, 0},
+                           {"no-comments", 0, &comments, 0},
+                           {"name", 0, &output_name, 1},
+                           {"verbose", 0, &verbose, 1},
+                           {0, 0, 0, 0}};
 
   for(;;) {
     c = getopt_long(argc, argv, "hodCnv", opts, &index);

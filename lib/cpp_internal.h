@@ -144,7 +144,8 @@ error_or_warning(const char* err, const char* type, tokenizer* t, struct token_s
 
   /*  dprintf(2, "<%s> %u:%u %s: '%s'\n", t->filename, line, column, type, err);
     dprintf(2, "%s\n", t->buf);*/
-  for(int i = 0; i < str_len(t->buf); i++) buffer_puts(buffer_2, "^");
+  for(int i = 0; i < str_len(t->buf); i++)
+    buffer_puts(buffer_2, "^");
 
   buffer_putnlflush(buffer_2);
 }

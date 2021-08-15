@@ -59,7 +59,8 @@ int
 fnmatch_b(const char* p, size_t plen, const char* s, size_t slen, int flags) {
   size_t i = 0, j = 0;
   if(s[j] == 0) {
-    while(p[i] == '*') ++i;
+    while(p[i] == '*')
+      ++i;
     return i < plen ? FNM_NOMATCH : 0;
   }
   if(s[j] == '.' && p[i] != '.' && (flags & FNM_PERIOD)) {
@@ -119,7 +120,8 @@ fnmatch_b(const char* p, size_t plen, const char* s, size_t slen, int flags) {
           }
         }
         if((res && !neg) || ((neg && !res) && p[i] == ']')) {
-          while(p[i] && p[i] != ']') ++i;
+          while(p[i] && p[i] != ']')
+            ++i;
           return fnmatch_b(p + !!p[i], plen - !!p[i], s + 1, slen - 1, flags);
         } else if(res && neg)
           return FNM_NOMATCH;

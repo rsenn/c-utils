@@ -104,8 +104,7 @@ expand(char* src, char* dst, int len) {
 
 static int
 uu_lock(const char* ttyname) {
-  char try
-    [1024];
+  char try[1024];
   char final[1024];
   int fd;
   char buff[50];

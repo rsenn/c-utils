@@ -17,7 +17,8 @@ path_appends(const char* s, stralloc* out) {
   if(out->len > 0 && out->s[out->len - 1] != PATHSEP_C)
     stralloc_catc(out, PATHSEP_C);
 
-  while(str_start(s, "./")) s += 2;
+  while(str_start(s, "./"))
+    s += 2;
 
   stralloc_cats(out, s);
 }

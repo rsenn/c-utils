@@ -25,7 +25,8 @@ scan_base64(const char* src, char* dest, size_t* destlen) {
     int a = dec(*s);
     if(a < 0) {
       int equal = (*s == '=');
-      while(*s == '=' && ((s - (const unsigned char*)src) & 3)) ++s;
+      while(*s == '=' && ((s - (const unsigned char*)src) & 3))
+        ++s;
       tmp &= ((1 << bits) - 1);
       if(!tmp || equal) {
         j = i;

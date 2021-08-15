@@ -5,7 +5,7 @@
 ihex_record*
 ihex_record_insert(ihex_file* ihf, uint32 at, uint8 len) {
   ihex_record **rp, *r;
-  ihex_addr o;
+  ihex_addr o, prev = {0};
 
   o.off32 = 0;
 
@@ -20,13 +20,17 @@ ihex_record_insert(ihex_file* ihf, uint32 at, uint8 len) {
     if(at < o.off32) {
       break;
     }
+    prev = o;
+    prev.off32 += r->length;
   }
 
   if(*rp) {
     assert(at + len <= o.off32);
   }
 
-  if((at & 0xffff0000) != (o.off32 & 0xffff0000)) {
+  assert(at >= prev.off32);
+
+  if((at & 0xffff0000) != (prev.off32 & 0xffff0000)) {
     r = (ihex_record*)alloc(sizeof(ihex_record) + 2);
     r->next = *rp;
     r->type = 4;

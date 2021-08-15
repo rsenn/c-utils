@@ -21,10 +21,12 @@ scan_ip6(const char* s, char ip[16]) {
   unsigned int suffixlen = 0;
 
   if((i = scan_ip4(s, ip + 12))) {
-    for(len = 0; len < 12; ++len) ip[len] = V4mappedprefix[len];
+    for(len = 0; len < 12; ++len)
+      ip[len] = V4mappedprefix[len];
     return i;
   }
-  for(i = 0; i < 16; i++) ip[i] = 0;
+  for(i = 0; i < 16; i++)
+    ip[i] = 0;
   for(;;) {
     if(*s == ':') {
       ++len;
@@ -85,6 +87,7 @@ scan_ip6(const char* s, char ip[16]) {
     if(prefixlen + suffixlen == 16)
       break;
   }
-  for(i = 0; i < suffixlen; i++) ip[16 - suffixlen + i] = suffix[i];
+  for(i = 0; i < suffixlen; i++)
+    ip[16 - suffixlen + i] = suffix[i];
   return len;
 }

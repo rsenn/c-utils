@@ -237,7 +237,8 @@ uri_find(const char* x, size_t len) {
   size_t i;
   i = byte_finds(x, len, "://");
   if(i < len) {
-    while(i > 0 && (isalnum(x[i - 1]) || x[i - 1] == '+')) i--;
+    while(i > 0 && (isalnum(x[i - 1]) || x[i - 1] == '+'))
+      i--;
   }
   return i;
 }

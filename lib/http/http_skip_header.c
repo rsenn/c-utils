@@ -10,7 +10,8 @@ http_skip_header(const char* x, size_t len) {
     if(s < end) {
       s++;
       if(s < end && (*s == '\r' || *s == '\n')) {
-        while(s < end && *s != '\n') s++;
+        while(s < end && *s != '\n')
+          s++;
         if(s < end)
           s++;
         break;

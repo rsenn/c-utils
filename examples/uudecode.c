@@ -140,7 +140,8 @@ main(int argc, char* argv[]) {
         }
         if(line[l + (i = str_rchr(line + l, '/'))])
           l += i + 1;
-        while(line[l] == '.') ++l;
+        while(line[l] == '.')
+          ++l;
         if(line[l]) {
           if(mode == YENC)
             ofd = open_write(line + l);

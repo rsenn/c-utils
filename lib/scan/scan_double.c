@@ -44,7 +44,8 @@ scan_double(const char* in, double* dest) {
           goto done;
       }
     }
-    while(isdigit(*++c)) exp = exp * 10 + (*c - '0');
+    while(isdigit(*++c))
+      exp = exp * 10 + (*c - '0');
     if(neg)
       while(exp) { /* XXX: this introduces rounding errors */
         d /= 10;

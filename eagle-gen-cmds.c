@@ -258,7 +258,8 @@ get_int(xmlnode* node, const char* key) {
   const char* istr = xml_get_attribute(node, key);
 
   if(istr) {
-    while(*istr && str_chr("-0123456789", *istr) >= 11) ++istr;
+    while(*istr && str_chr("-0123456789", *istr) >= 11)
+      ++istr;
     if(!scan_long(istr, &ret))
       ret = INT_MAX;
   }
@@ -914,7 +915,8 @@ tree_topleft(xmlnode* elem, const char* elems, double* x, double* y) {
   xmlnode* node = elem->children;
   if(node == 0)
     return;
-  while(node && node->type != XML_ELEMENT && str_diff(node->name, elems)) node = node->next;
+  while(node && node->type != XML_ELEMENT && str_diff(node->name, elems))
+    node = node->next;
   *x = get_double(node, "x");
   *y = get_double(node, "y");
 
@@ -1027,7 +1029,8 @@ node_print(xmlnode* node) {
 int
 node_depth(xmlnode* node) {
   size_t i = 0;
-  while((node = node->next)) ++i;
+  while((node = node->next))
+    ++i;
   return i;
 }
 

@@ -51,7 +51,8 @@ fmt_xmlescape(char* dest, int c) {
     }
   if(dest) {
     size_t i;
-    for(i = 0; i < n; ++i) dest[i] = x[i];
+    for(i = 0; i < n; ++i)
+      dest[i] = x[i];
   }
   return n;
 }

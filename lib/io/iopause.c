@@ -28,7 +28,8 @@ iopause(iopause_fd* x, unsigned int len, struct taia* deadline, struct taia* sta
     millisecs = (int)(d * 1000.0 + 20.0);
   }
 
-  for(i = 0; i < len; ++i) x[i].revents = 0;
+  for(i = 0; i < len; ++i)
+    x[i].revents = 0;
 
 #ifdef IOPAUSE_LINUX_AIO
   {

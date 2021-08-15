@@ -290,7 +290,8 @@ parseit(stralloc* r_dir, stralloc* dirdata, int dirlines) {
     sort_it(parsed, ind);
   /* output */
   if(!o_raw)
-    for(i = 0; i < ind; i++) entity(r_dir, &parsed[i]);
+    for(i = 0; i < ind; i++)
+      entity(r_dir, &parsed[i]);
   if(o_recursive)
     for(i = 0; i < ind; i++) {
       struct ftpparse* x;

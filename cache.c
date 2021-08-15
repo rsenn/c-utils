@@ -278,7 +278,8 @@ cache_init(size_t cachesize) {
   size = cachesize;
 
   hsize = 4;
-  while(hsize <= (size >> 5)) hsize <<= 1;
+  while(hsize <= (size >> 5))
+    hsize <<= 1;
 
   x = alloc_zero(size);
   if(!x)
@@ -323,7 +324,8 @@ cache_open(const char* file, size_t cachesize) {
   size = cachesize - sizeof(uint32) * 3;
 
   hsize = 4;
-  while(hsize <= (size >> 5)) hsize <<= 1;
+  while(hsize <= (size >> 5))
+    hsize <<= 1;
 
   if(exists) {
     uint32_unpack((const char*)&data->writer, &writer);

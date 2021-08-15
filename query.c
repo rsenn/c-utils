@@ -194,10 +194,12 @@ query_cleanup(struct query* z) {
   int k;
 
   dns_transmit_free(&z->dt);
-  for(j = 0; j < QUERY_MAXALIAS; ++j) dns_domain_free(&z->alias[j]);
+  for(j = 0; j < QUERY_MAXALIAS; ++j)
+    dns_domain_free(&z->alias[j]);
   for(j = 0; j < QUERY_MAXLEVEL; ++j) {
     dns_domain_free(&z->name[j]);
-    for(k = 0; k < QUERY_MAXNS; ++k) dns_domain_free(&z->ns[j][k]);
+    for(k = 0; k < QUERY_MAXNS; ++k)
+      dns_domain_free(&z->ns[j][k]);
   }
   z->dt.iplen = 4;
 }
@@ -539,7 +541,8 @@ new_name:
 
   for(;;) {
     if(roots(z->servers[z->level], d)) {
-      for(j = 0; j < QUERY_MAXNS; ++j) dns_domain_free(&z->ns[z->level][j]);
+      for(j = 0; j < QUERY_MAXNS; ++j)
+        dns_domain_free(&z->ns[z->level][j]);
       z->control[z->level] = d;
       break;
     }
@@ -553,7 +556,8 @@ new_name:
         if(cached && cachedlen) {
           z->control[z->level] = d;
           byte_zero(z->servers[z->level], 64);
-          for(j = 0; j < QUERY_MAXNS; ++j) dns_domain_free(&z->ns[z->level][j]);
+          for(j = 0; j < QUERY_MAXNS; ++j)
+            dns_domain_free(&z->ns[z->level][j]);
 
           j = pos = 0;
           pos = dns_packet_getname(cached, cachedlen, pos, &t1);
@@ -624,7 +628,8 @@ have_ns:
 
 lower_level:
   dns_domain_free(&z->name[z->level]);
-  for(j = 0; j < QUERY_MAXNS; ++j) dns_domain_free(&z->ns[z->level][j]);
+  for(j = 0; j < QUERY_MAXNS; ++j)
+    dns_domain_free(&z->ns[z->level][j]);
   --z->level;
   goto have_ns;
 
@@ -960,8 +965,10 @@ have_packet:
       if(z->alias[QUERY_MAXALIAS - 1])
         goto die;
 
-      for(j = QUERY_MAXALIAS - 1; j > 0; --j) z->alias[j] = z->alias[j - 1];
-      for(j = QUERY_MAXALIAS - 1; j > 0; --j) z->aliasttl[j] = z->aliasttl[j - 1];
+      for(j = QUERY_MAXALIAS - 1; j > 0; --j)
+        z->alias[j] = z->alias[j - 1];
+      for(j = QUERY_MAXALIAS - 1; j > 0; --j)
+        z->aliasttl[j] = z->aliasttl[j - 1];
 
       z->alias[0] = z->name[0];
       z->aliasttl[0] = ttl;
@@ -1105,7 +1112,8 @@ have_packet:
   control = d + dns_domain_suffixpos(d, referral);
   z->control[z->level] = control;
   byte_zero(z->servers[z->level], 64);
-  for(j = 0; j < QUERY_MAXNS; ++j) dns_domain_free(&z->ns[z->level][j]);
+  for(j = 0; j < QUERY_MAXNS; ++j)
+    dns_domain_free(&z->ns[z->level][j]);
   k = 0;
 
   pos = posauthority;

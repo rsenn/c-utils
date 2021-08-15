@@ -165,8 +165,10 @@ each_part(part_t* p) {
 
     if(fabs(p->rot) >= 0.1) {
       int angle = (int)((p->rot / 90)) * 90.0;
-      while(angle < 0) angle += 360;
-      while(angle > 360) angle -= 360;
+      while(angle < 0)
+        angle += 360;
+      while(angle > 360)
+        angle -= 360;
 
       output_rotate(p->name, angle);
     }
@@ -334,7 +336,8 @@ process_instance(xmlnode* e) {
   xml_get_attribute_sa(e, &rot, "rot");
   if(rot.len > 0) {
     const char* r = rot.s;
-    while(*r && !isdigit(*r)) ++r;
+    while(*r && !isdigit(*r))
+      ++r;
     scan_double(r, &rotate);
   }
   get_attribute_double(&x, e, "x");

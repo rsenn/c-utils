@@ -9,7 +9,8 @@ put_tuple(buffer* b, TUPLE* t) {
   buffer_put(b, "#", 1);
   buffer_putulong0(b, (t)->index, 5);
   buffer_puts(b, " ");
-  while(n > 0 && x[n - 1] == '\0') --n;
+  while(n > 0 && x[n - 1] == '\0')
+    --n;
   buffer_put(b, x, n);
   buffer_putm_internal(b, " = ", NULL);
   buffer_flush(b);
@@ -33,7 +34,8 @@ hmap_dump(HMAP_DB* hmap, buffer* b) {
         const char* x = tuple->vals.val_chars;
         size_t n = tuple->data_len;
 
-        while(n > 0 && x[n - 1] < 0x20) --n;
+        while(n > 0 && x[n - 1] < 0x20)
+          --n;
         buffer_puts(b, "\"");
         buffer_put(b, x, n);
         buffer_puts(b, "\"");

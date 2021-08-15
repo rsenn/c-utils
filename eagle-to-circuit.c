@@ -172,7 +172,8 @@ get_int(xmlnode* node, const char* key) {
   const char* istr = xml_get_attribute(node, key);
 
   if(istr) {
-    while(*istr && str_chr("-0123456789", *istr) >= 11) ++istr;
+    while(*istr && str_chr("-0123456789", *istr) >= 11)
+      ++istr;
     if(!scan_long(istr, &ret))
       ret = INT_MAX;
   }
@@ -533,7 +534,8 @@ for_set(xmlnodeset* ns, void (*fn)(xmlnode*)) {
   xmlnodeset_iter_t it, e;
   if(!ns)
     return;
-  for(it = xmlnodeset_begin(ns), e = xmlnodeset_end(ns); it != e; ++it) fn(*it);
+  for(it = xmlnodeset_begin(ns), e = xmlnodeset_end(ns); it != e; ++it)
+    fn(*it);
 }
 
 int
@@ -828,7 +830,8 @@ output_net(const void* key, size_t key_len, const void* value, size_t value_len,
 int
 node_depth(xmlnode* node) {
   size_t i = 0;
-  while((node = node->next)) ++i;
+  while((node = node->next))
+    ++i;
   return i;
 }
 

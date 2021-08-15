@@ -47,12 +47,14 @@ skip_field(int n, char* s, size_t len) {
     if(ret == len)
       return ret;
 
-    while(ret < len && !is_delimiter(s[ret])) ret++;
+    while(ret < len && !is_delimiter(s[ret]))
+      ret++;
 
     if(ret == len)
       return ret;
 
-    while(ret < len && is_delimiter(s[ret])) ret++;
+    while(ret < len && is_delimiter(s[ret]))
+      ret++;
 
     if(ret == len)
       return ret;

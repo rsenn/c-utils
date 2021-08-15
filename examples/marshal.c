@@ -22,13 +22,15 @@ stralloc sa;
 void
 zap() {
   size_t i;
-  for(i = 0; i < sizeof(buf); ++i) buf[i] = '_';
+  for(i = 0; i < sizeof(buf); ++i)
+    buf[i] = '_';
 }
 
 void
 zap2() {
   size_t i;
-  for(i = 0; i < sizeof(buf); ++i) buf[i] = i;
+  for(i = 0; i < sizeof(buf); ++i)
+    buf[i] = i;
 }
 
 int
@@ -530,7 +532,8 @@ main() {
 
     stralloc_free(&s);
     buffer_tosa(&b, &s);
-    for(i = 0; i < 100; ++i) buffer_puts(&b, "foo bar baz!\n");
+    for(i = 0; i < 100; ++i)
+      buffer_puts(&b, "foo bar baz!\n");
     buffer_flush(&b);
     assert(s.len == 100 * sizeof("foo bar baz!"));
     for(i = 0; i < 100; ++i)

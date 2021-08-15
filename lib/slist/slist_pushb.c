@@ -12,7 +12,8 @@ slist_pushb(slink** list, const void* x, size_t len) {
   if((n = (slink*)alloc(sizeof(slink*) + len)) == NULL)
     return 0;
 
-  while(*list) list = &(*list)->next;
+  while(*list)
+    list = &(*list)->next;
 
   *list = n;
 

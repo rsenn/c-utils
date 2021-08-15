@@ -31,7 +31,8 @@ main() {
       }
   }
   io_close(pfd[0]);
-  for(i = 0; i < sizeof(buf); ++i) buf[i] = "abcdefghihjklmnopqrstuvwxyz"[i % 26];
+  for(i = 0; i < sizeof(buf); ++i)
+    buf[i] = "abcdefghihjklmnopqrstuvwxyz"[i % 26];
   for(i = 0; i < 1000; ++i) {
     int64 r;
     if((r = io_waitwrite(pfd[1], buf, sizeof buf)) != sizeof buf) {

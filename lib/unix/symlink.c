@@ -89,7 +89,8 @@ CreateSymlink(LPCTSTR lpLinkName, LPCTSTR lpTargetName, LPSECURITY_ATTRIBUTES lp
           if(q > root) {
             p += 3;
             q--;
-            while(q > root && q[-1] != '\\') q--;
+            while(q > root && q[-1] != '\\')
+              q--;
           } else {
             byte_copy(q, 3 * sizeof(WCHAR), p);
             q += 3;

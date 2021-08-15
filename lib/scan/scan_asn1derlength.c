@@ -44,7 +44,8 @@ scan_asn1derlengthvalue(const char* src, size_t len, uint64* value) {
     return 0; /* too many bytes, does not fit into target integer type */
   if(c + 1 > len)
     return 0; /* not enough data in input buffer */
-  for(i = 2; i <= c; ++i) l = l * 256 + (unsigned char)src[i];
+  for(i = 2; i <= c; ++i)
+    l = l * 256 + (unsigned char)src[i];
   if(l < 0x7f)
     return 0; /* not minimally encoded: 0x81 0x70 instead of 0x70 */
   *value = l;

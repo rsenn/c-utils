@@ -100,7 +100,8 @@ charbuf_dumpchar(int c, buffer* out, int pad) {
     buf[i++] = '\\';
     buf[i++] = 'u';
     int pad = 4 - fmt_xlong(0, c);
-    while(pad-- > 0) buf[i++] = '0';
+    while(pad-- > 0)
+      buf[i++] = '0';
     i += fmt_xlong(&buf[i], c);
   }
 

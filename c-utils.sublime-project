@@ -15,7 +15,7 @@
     },
     {
       "name": "clang-format",
-      "shell_cmd": "clang-format -verbose -style=file -i `find . -name '*.c' -or -name '*.h'`",
+      "shell_cmd": "clang-format -verbose -style=file -i '${file}'",
       "working_dir": "${project_path:${folder:${file_path}}}"
     }
   ],

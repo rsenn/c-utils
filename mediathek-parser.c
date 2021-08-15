@@ -71,7 +71,8 @@ read_line(char* s, size_t len, strlist* fields) {
   if((n = byte_finds(p + 1, end - p - 1, "\"X\":[")) != (unsigned)(end - p))
     end = p + 1 + n;
 
-  while(p < end && *p != '"') ++p;
+  while(p < end && *p != '"')
+    ++p;
 
   if(str_start(p, "\"X\":[")) {
     p[2] = ':';
@@ -143,9 +144,11 @@ dump_long(buffer* b, const char* name, long value) {
  */
 void
 get_domain(const char* url, stralloc* d) {
-  while(*url && *url != ':') ++url;
+  while(*url && *url != ':')
+    ++url;
   ++url;
-  while(*url && *url == '/') ++url;
+  while(*url && *url == '/')
+    ++url;
   stralloc_copyb(d, url, str_chr(url, '/'));
 }
 
@@ -175,7 +178,8 @@ cleanup_text(char** t) {
   stralloc_replaces(&out, ": ", " - ");
   stralloc_replaces(&out, " - ...", "...");
 
-  while(out.len > 0 && !isalnum(out.s[out.len - 1])) out.len--;
+  while(out.len > 0 && !isalnum(out.s[out.len - 1]))
+    out.len--;
 
   stralloc_nul(&out);
 
@@ -201,7 +205,8 @@ cleanup_domain(stralloc* d) {
   size_t i;
   const char* remove_parts[] = {"ondemand", "storage", "files", "stream", "mvideos", "online", 0};
   d->len = byte_rchr(d->s, d->len, '.');
-  for(i = 0; i < d->len; ++i) d->s[i] = toupper(d->s[i]);
+  for(i = 0; i < d->len; ++i)
+    d->s[i] = toupper(d->s[i]);
   stralloc_nul(d);
 
   for(i = 0; remove_parts[i]; ++i) {

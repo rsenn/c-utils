@@ -29,8 +29,10 @@ surf(void) {
   int i;
   int loop;
 
-  for(i = 0; i < 12; ++i) t[i] = in[i] ^ seed[12 + i];
-  for(i = 0; i < 8; ++i) out[i] = seed[24 + i];
+  for(i = 0; i < 12; ++i)
+    t[i] = in[i] ^ seed[12 + i];
+  for(i = 0; i < 8; ++i)
+    out[i] = seed[24 + i];
   x = t[11];
   for(loop = 0; loop < 2; ++loop) {
     for(r = 0; r < 16; ++r) {
@@ -43,7 +45,8 @@ surf(void) {
       MUSH(5, 7)
       MUSH(6, 9) MUSH(7, 13) MUSH(8, 5) MUSH(9, 7) MUSH(10, 9) MUSH(11, 13)
     }
-    for(i = 0; i < 8; ++i) out[i] ^= t[i + 4];
+    for(i = 0; i < 8; ++i)
+      out[i] ^= t[i + 4];
   }
 }
 
@@ -53,11 +56,13 @@ dns_random_init(const char data[128]) {
   struct taia t;
   char tpack[16];
 
-  for(i = 0; i < 32; ++i) uint32_unpack(data + 4 * i, seed + i);
+  for(i = 0; i < 32; ++i)
+    uint32_unpack(data + 4 * i, seed + i);
 
   taia_now(&t);
   taia_pack(tpack, &t);
-  for(i = 0; i < 4; ++i) uint32_unpack(tpack + 4 * i, in + 4 + i);
+  for(i = 0; i < 4; ++i)
+    uint32_unpack(tpack + 4 * i, in + 4 + i);
 
 #if WINDOWS_NATIVE
   in[8] = GetCurrentProcessId();

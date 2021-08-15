@@ -6,6 +6,7 @@
 size_t
 env_len(const char* const* e) {
   size_t i = 0;
-  while(*e++) i++;
+  while(*e++)
+    i++;
   return i;
 }

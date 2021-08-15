@@ -85,7 +85,8 @@ put_line(stralloc* sa, const char* x, ssize_t len) {
     if((x[len - 1] == '\n' || x[len - 1] == '\r'))
 
       len--;
-    while(len >= 1 && isspace(x[len - 1])) len--;
+    while(len >= 1 && isspace(x[len - 1]))
+      len--;
   }
 
   if(len > 0) {

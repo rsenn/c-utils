@@ -891,7 +891,8 @@ ftpparse_mlsx(struct ftpparse* fp, char* x, int ll, int is_mlst) {
     int j = 0, k = 0;
     if(x[i] == ' ')
       break; /* end of facts */
-    while(i + j < ll && x[i + j] != ';' && x[i + j] != ' ' && x[i + j] != '=') j++;
+    while(i + j < ll && x[i + j] != ';' && x[i + j] != ' ' && x[i + j] != '=')
+      j++;
     if(i + j == ll)
       return 0;
     if(x[i + j] == ' ')
@@ -899,7 +900,8 @@ ftpparse_mlsx(struct ftpparse* fp, char* x, int ll, int is_mlst) {
     if(x[i + j] == ';')
       return 0;
     /* x[i+j] is now '=' */
-    while(i + j + k < ll && x[i + j + k] != ';' && x[i + j + k] != ' ') k++;
+    while(i + j + k < ll && x[i + j + k] != ';' && x[i + j + k] != ' ')
+      k++;
     if(i + j + k == ll)
       return 0;
       /* x[i+j+k] is space or semicolon,

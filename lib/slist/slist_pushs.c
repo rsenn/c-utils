@@ -12,7 +12,8 @@ slist_pushs(slink** list, const char* s) {
   if((n = (slink*)alloc(sizeof(slink*) + sizeof(char*))) == NULL)
     return 0;
 
-  while(*ptr) ptr = &(*ptr)->next;
+  while(*ptr)
+    ptr = &(*ptr)->next;
 
   *ptr = n;
 

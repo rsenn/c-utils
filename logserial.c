@@ -71,7 +71,8 @@ dir_entries(const char* dir, strarray* arr) {
     errmsg_warnsys("ERROR: Opening directory /dev", 0);
     return;
   }
-  while((entry = rdir_read(&d))) strarray_push(arr, entry);
+  while((entry = rdir_read(&d)))
+    strarray_push(arr, entry);
   rdir_close(&d);
 }
 

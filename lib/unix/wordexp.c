@@ -44,7 +44,8 @@ expand_variables(const char* in) {
           break;
       }
     } else {
-      while(is_valid_variable_char(begin[npos], npos)) npos++;
+      while(is_valid_variable_char(begin[npos], npos))
+        npos++;
       bpos = npos;
     }
     name = strdup(begin);

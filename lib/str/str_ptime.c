@@ -49,7 +49,8 @@ str_ptime(const char* s, const char* format, struct tm* tm) {
       case ' ':
       case '\t':
         /* match zero or more white space in input string */
-        while(*s == ' ' || *s == '\t' || *s == '\r' || *s == '\n') ++s;
+        while(*s == ' ' || *s == '\t' || *s == '\r' || *s == '\n')
+          ++s;
         ++format;
         break;
       case '%':
@@ -129,7 +130,8 @@ str_ptime(const char* s, const char* format, struct tm* tm) {
             break;
           case 'n':
           case 't':
-            while(isblank(*s)) ++s;
+            while(isblank(*s))
+              ++s;
             break;
           case 'p':
           case 'P':
@@ -173,7 +175,8 @@ str_ptime(const char* s, const char* format, struct tm* tm) {
           case 'Z':
             /* time zone.  Not sure what I'm expected to do here. We'll just
              * skip to the next whitespace */
-            while(*s != ' ' && *s != '\t') ++s;
+            while(*s != ' ' && *s != '\t')
+              ++s;
             break;
         }
         ++format;
