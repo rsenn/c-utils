@@ -226,11 +226,11 @@ scroll_up(void) {
   if(first_line <= 0)
     return;
   terminal_scroll_down(1);
-  terminal_cursor_position(1, 1);
+  terminal_goto_xy(0, 0);
   //  terminal_erase_in_line(2);
   print_line(--first_line);
   buffer_flush(buffer_1);
-  terminal_cursor_position(terminal_rows, 1);
+  terminal_goto_xy(terminal_rows - 1, 0);
   print_status();
 }
 
@@ -259,7 +259,7 @@ scroll_to(int64 line) {
   if(first_line < 0)
     first_line += i;
   terminal_erase_in_display(2);
-  terminal_cursor_position(1, 1);
+  terminal_goto_xy(0, 0);
   terminal_linewrap_disable();
   for(i = 0; i < display_rows; i++) {
     if(line + i < num_lines)
@@ -461,7 +461,7 @@ read_command(void) {
 
   /*terminal_erase_in_line(2);
        terminal_cursor_horizontal_absolute(1);*/
-  terminal_cursor_position(display_rows + 1, 1);
+  terminal_goto_xy(display_rows, 0);
   terminal_erase_in_line(2);
   buffer_puts(buffer_1, command_prefixes[command_mode & 0x03]);
   buffer_flush(buffer_1);
@@ -498,7 +498,7 @@ read_command(void) {
     terminal_cursor_horizontal_absolute(command_buf.len + 2);
     // terminal_erase_in_line(0);
 
-    // terminal_cursor_position(display_rows+1, command_buf.len+1);
+    // terminal_goto_xy(display_rows, command_buf.len);
 
     /*terminal_erase_in_line(2);
     terminal_cursor_horizontal_absolute(1);
@@ -627,11 +627,13 @@ handle_input(void) {
 
 int
 get_filesize(int fd, uint64* size) {
-  struct stat st;
   seek_pos save, end;
   int ret = 0;
+#if !WINDOWS_NATIVE
+  struct stat st;
   if(fstat(fd, &st) != -1 && (*size = st.st_size))
     return 1;
+#endif
   save = seek_cur(fd);
   if((*size = seek_end(fd)))
     ret = 1;
@@ -672,12 +674,13 @@ main(int argc, char* argv[]) {
   buffer input;
   int watchfd, wd, is_pipe = 0;
   ssize_t inputsize;
-  struct stat st;
 
   sig_catch(SIGTERM, terminate);
   sig_catch(SIGINT, interrupt);
+#ifdef SIGWINCH
   sig_catch(SIGWINCH, winsizechange);
-
+#endif
+  
   if(argc < 2) {
     buffer_read_fd(&input, STDIN_FILENO);
     filename = "(stdin)";
@@ -692,10 +695,15 @@ main(int argc, char* argv[]) {
   read_terminal_properties();
   read_content(&input, display_rows);
 
-  if(fstat(input.fd, &st) != -1) {
-    inputsize = st.st_size;
-    is_pipe = S_ISFIFO(st.st_mode);
+#if !WINDOWS_NATIVE
+  {
+    struct stat st;
+    if(fstat(input.fd, &st) != -1) {
+      inputsize = st.st_size;
+      is_pipe = S_ISFIFO(st.st_mode);
+    }
   }
+#endif
 
   terminal_init();
   terminal_set_alternate_screen();

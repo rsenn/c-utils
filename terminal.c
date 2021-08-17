@@ -3,9 +3,12 @@
 #include "lib/buffer.h"
 #include "lib/io_internal.h"
 #include "terminal.h"
-#if WINDOWS_NATIVE
+#if WINDOWS
+#include <windows.h>
 #include <io.h>
-#else
+#endif
+
+#if !WINDOWS_NATIVE
 #include <unistd.h>
 #include <termios.h>
 #include <sys/ioctl.h>
@@ -14,11 +17,12 @@
 static char terminal_out_buf[32], terminal_in_buf[64];
 buffer terminal_out_buffer = BUFFER_INIT(write, 1, terminal_out_buf, sizeof(terminal_out_buf));
 buffer terminal_in_buffer = BUFFER_INIT(read, 0, terminal_in_buf, sizeof(terminal_in_buf));
-static struct termios oldterm;
 
-#if WINDOWS_NATIVE
-WORD COLOR_DEFAULT = FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY;
-HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+#if WINDOWS
+static WORD COLOR_DEFAULT = FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY;
+static HANDLE hConsole;
+#else
+static struct termios oldterm;
 #endif
 
 static inline void
@@ -52,27 +56,28 @@ terminal_device_reset() {
 */
 int
 terminal_init(void) {
-#if WINDOWS_NATIVE
+#if WINDOWS
+  hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+#else
   struct termios newt;
   tcgetattr(terminal_out_buffer.fd, &oldterm);
   newt = oldterm;
   newt.c_lflag &= ~(ICANON | ECHO);
   tcsetattr(terminal_out_buffer.fd, TCSANOW, &newt);
-#else
 #endif
   return 0;
 }
 
 void
 terminal_restore(void) {
-
+#if !WINDOWS
   tcsetattr(terminal_out_buffer.fd, TCSANOW, &oldterm);
-
+#endif
   terminal_set_normal_screen();
   terminal_linewrap_enable();
 }
 
-#if WINDOWS_NATIVE
+#if WINDOWS
 static CONSOLE_SCREEN_BUFFER_INFO
 getsize() {
   CONSOLE_SCREEN_BUFFER_INFO csbi;
@@ -83,7 +88,7 @@ getsize() {
 
 int
 terminal_getwidth() {
-#if WINDOWS_NATIVE
+#if WINDOWS
   CONSOLE_SCREEN_BUFFER_INFO size = getsize();
   return size.srWindow.Right - size.srWindow.Left;
 #else
@@ -95,7 +100,7 @@ terminal_getwidth() {
 
 int
 terminal_getheight() {
-#if WINDOWS_NATIVE
+#if WINDOWS
   CONSOLE_SCREEN_BUFFER_INFO size = getsize();
   return size.srWindow.Bottom - size.srWindow.Top;
 #else
@@ -216,7 +221,7 @@ terminal_cursor_position(int row, int column) {
 */
 void
 terminal_cursor_position(int* x, int* y) {
-#if WINDOWS_NATIVE
+#if WINDOWS
   CONSOLE_SCREEN_BUFFER_INFO csbi;
   if(!GetConsoleScreenBufferInfo(hConsole, &csbi))
     return;

@@ -103,8 +103,12 @@ print_number(const char* property, int64 num) {
 const char*
 type(uint32 bits) {
   switch(bits & S_IFMT) {
+#ifdef S_IFSOCK
     case S_IFSOCK: return "socket";
+#endif
+#ifdef S_IFLNK
     case S_IFLNK: return "symlink";
+#endif
     case S_IFREG: return "regular";
     case S_IFBLK: return "blkdev";
     case S_IFDIR: return "directory";
@@ -139,6 +143,7 @@ print_stat(const char* property, const struct stat* st) {
     buffer_putm_internal(buffer_1, ", size ", 0);
     buffer_putulonglong(buffer_1, st->st_size);
   }
+#if !WINDOWS_NATIVE
   if(st->st_blocks) {
     buffer_putm_internal(buffer_1, ", blocks ", 0);
     buffer_putulonglong(buffer_1, st->st_blocks);
@@ -147,6 +152,7 @@ print_stat(const char* property, const struct stat* st) {
     buffer_putm_internal(buffer_1, ", blksize 0x", 0);
     buffer_putxlonglong(buffer_1, st->st_blksize);
   }
+#endif
   buffer_puts(buffer_1, " ]");
   buffer_putnlflush(buffer_1);
 }
@@ -177,8 +183,10 @@ print_string(const char* property, const char* str) {
 void
 proc_fd_root(int32 pid, stralloc* out) {
   stralloc_zero(out);
+#if !WINDOWS_NATIVE
   stralloc_cats(out, "/proc/");
   stralloc_catulong(out, pid <= 0 ? getpid() : pid);
+#endif
   stralloc_nul(out);
 }
 
@@ -254,11 +262,15 @@ read_proc() {
         byte_zero(&lst, sizeof(lst));
         byte_zero(&st, sizeof(st));
         fdPath = proc_fd_path(pid, fd, &procfd);
+#if !WINDOWS_NATIVE
         lstat(fdPath, &lst);
+#endif
         stat(fdPath, &st);
         stralloc_zero(&target);
+#ifdef S_ISLNK
         if(S_ISLNK(lst.st_mode))
           path_readlink(fdPath, &target);
+#endif
         stralloc_zero(&real);
         path_realpath(fdPath, &real, 0, &current);
         stralloc_nul(&real);
@@ -284,6 +296,7 @@ read_proc() {
           stralloc_free(&filename);
         }
         if(n >= 0)
+#ifdef S_ISLNK
           if(S_ISLNK(lst.st_mode)) {
             if(!stralloc_equal(&real, &target))
               if(stralloc_starts(&target, "pipe:[")) {
@@ -291,6 +304,7 @@ read_proc() {
                 scan_uint(target.s + 6, &pipeId);
               }
           }
+#endif
         if(S_ISFIFO(st.st_mode)) {
           p = get_pipe(pipeId);
           pfd = alloc_zero(sizeof(procfd_t));
@@ -430,9 +444,10 @@ main(int argc, char* argv[]) {
 
       print_number_nonl(" fd", fd);
       print_number_nonl(" size", st.st_size);
+#if !WINDOWS_NATIVE
       print_number_nonl(" blksize", st.st_blksize);
       print_number_nonl(" blocks", st.st_blocks);
-
+#endif
       buffer_putnlflush(buffer_1);
     }
   }
