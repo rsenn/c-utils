@@ -362,7 +362,7 @@ main(int argc, char** argv) {
 
   int c, index = 0;
 
-  static const struct longopt opts[] = {{"help", 0, NULL, 'h'},
+  static const struct unix_longopt opts[] = {{"help", 0, NULL, 'h'},
                                         {"imports", 0, &list_imports, 'i'},
                                         {"exports", 0, &list_exports, 'e'},
                                         {"deps", 0, &list_deps, 'd'},
@@ -402,9 +402,9 @@ main(int argc, char** argv) {
       case 'D': print_data_dir = 1; break;
       case 'O': print_opt_header = 1; break;
       case 'r': print_range = 1; break;
-      case 'o': print_offset_rva = parse_offset(optarg, &offset); break;
-      case 'a': print_rva_offset = parse_offset(optarg, &rva); break;
-      case 'S': parse_search(optarg, &search); break;
+      case 'o': print_offset_rva = parse_offset(unix_optarg, &offset); break;
+      case 'a': print_rva_offset = parse_offset(unix_optarg, &rva); break;
+      case 'S': parse_search(unix_optarg, &search); break;
       case 'R': print_as_rva = 1; break;
       default: {
         usage(argv[0]);
@@ -416,8 +416,8 @@ main(int argc, char** argv) {
   if(!(list_deps | list_exports | list_imports | list_sections))
     list_imports = list_exports = 1;
 
-  for(; argv[optind]; ++optind) {
-    base = (uint8*)mmap_read(argv[optind], &filesize);
+  for(; argv[unix_optind]; ++unix_optind) {
+    base = (uint8*)mmap_read(argv[unix_optind], &filesize);
 
     if(base) {
       pe32_nt_headers* nt_headers = pe_header_nt(base);
@@ -491,7 +491,7 @@ main(int argc, char** argv) {
 
       mmap_unmap((void*)base, filesize);
     } else {
-      errmsg_warn("ERROR opening '", argv[optind], "': ", 0);
+      errmsg_warn("ERROR opening '", argv[unix_optind], "': ", 0);
       return 127;
     }
   }

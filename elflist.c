@@ -460,7 +460,7 @@ main(int argc, char** argv) {
 
   int c, index = 0;
 
-  struct longopt opts[] = {{"help", 0, NULL, 'h'},
+  struct unix_longopt opts[] = {{"help", 0, NULL, 'h'},
                            {"defined", 0, &list_defined, 'D'},
                            {"undefined", 0, &list_undefined, 'U'},
                            {"file-header", 0, 0, 'F'},
@@ -482,7 +482,7 @@ main(int argc, char** argv) {
       case 'U': list_undefined = 1; break;
       case 'F': dump_file_header = true; break;
       case 'S': dump_sections = true; break;
-      case 'r': radix = atoi(optarg); break;
+      case 'r': radix = atoi(unix_optarg); break;
       default: {
         usage(argv[0]);
         return 1;
@@ -493,7 +493,7 @@ main(int argc, char** argv) {
   if(!(list_defined | list_undefined))
     list_defined = list_undefined = 1;
 
-  if(optind == argc) {
+  if(unix_optind == argc) {
     usage(argv[0]);
     return 0;
   }
@@ -501,11 +501,11 @@ main(int argc, char** argv) {
   if(radix == 10)
     putnum = &buffer_putulonglongpad;
 
-  for(; argv[optind]; ++optind) {
+  for(; argv[unix_optind]; ++unix_optind) {
     const char* interp;
     range symtab, text;
 
-    filename = argv[optind];
+    filename = argv[unix_optind];
 
     map.start = (char*)mmap_read(filename, &filesize);
 

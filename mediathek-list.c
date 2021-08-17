@@ -857,20 +857,20 @@ main(int argc, char* argv[]) {
   while((opt = getopt(argc, argv, "u:F:dt:i:x:ho:")) != -1) {
     switch(opt) {
       case 'h': usage(argv[0]); return 0;
-      case 'F': dt_fmt = optarg; break;
-      case 'u': mediathek_url = optarg; break;
+      case 'F': dt_fmt = unix_optarg; break;
+      case 'u': mediathek_url = unix_optarg; break;
       case 'd': debug++; break;
-      case 't': min_length = parse_time(optarg); break;
-      case 'i': strlist_push(&include, optarg); break;
-      case 'x': strlist_push(&exclude, optarg); break;
-      case 'o': outfile = optarg; break;
+      case 't': min_length = parse_time(unix_optarg); break;
+      case 'i': strlist_push(&include, unix_optarg); break;
+      case 'x': strlist_push(&exclude, unix_optarg); break;
+      case 'o': outfile = unix_optarg; break;
       default: usage(argv[0]); return EXIT_FAILURE;
     }
   }
 
-  while(optind < argc) {
+  while(unix_optind < argc) {
 
-    strlist_push(&include, argv[optind++]);
+    strlist_push(&include, argv[unix_optind++]);
   }
 
   if(outfile) {
@@ -902,7 +902,7 @@ main(int argc, char* argv[]) {
     fflush(stderr);
     */
 
-  /*   if(optind >= argc) {
+  /*   if(unix_optind >= argc) {
          fprintf(stderr,
                  "Nach den Optionen
      wurde ein Argument erwartet\n");

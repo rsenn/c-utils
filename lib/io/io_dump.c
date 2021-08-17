@@ -1,5 +1,12 @@
+#include "../windoze.h"
 #include "../io_internal.h"
 #include "../buffer.h"
+
+#if WINDOWS_NATIVE
+#include <mswsock.h>
+#else
+#include <sys/select.h>
+#endif
 
 void
 io_dump(buffer* p) {

@@ -861,7 +861,7 @@ main(int argc, char** argv) {
   const char* rel_to = 0;
   int index = 0;
   static int print_dirs = 0;
-  const struct longopt opts[] = {{"help", 0, 0, 'h'},
+  const struct unix_longopt opts[] = {{"help", 0, 0, 'h'},
                                  {"verbose", 0, &verbose, 'v'},
                                  {"unused", 0, &unused, 'u'},
                                  {"data-relocs", 0, &datarelocs, 'd'},
@@ -900,7 +900,7 @@ main(int argc, char** argv) {
       case 'e': list_exports = 1; break;
       case 'i': list_imports = 1; break;
       case 'D': {
-        add_path(&sp, optarg);
+        add_path(&sp, unix_optarg);
         break;
       }
 
@@ -908,7 +908,7 @@ main(int argc, char** argv) {
       default:
         buffer_putm_internal(buffer_2,
                              "Unrecognized option `",
-                             argv[optind],
+                             argv[unix_optind],
                              "'\n",
                              "Try `ntldd --help' for "
                              "more information",
@@ -919,7 +919,7 @@ main(int argc, char** argv) {
   }
 
   skip = 0;
-  files_start = optind;
+  files_start = unix_optind;
   {
     const char* pathenv = getenv("PATH");
 #ifdef DEBUG_OUTPUT_

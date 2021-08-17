@@ -554,7 +554,7 @@ main(int argc, char* argv[]) {
   buffer b;
   const char* output_file = 0;
 
-  struct longopt opts[] = {
+  struct unix_longopt opts[] = {
       {"help", 0, NULL, 'h'},
       {"csv", 0, NULL, 'c'},
       {"debug", 0, NULL, 'd'},
@@ -577,19 +577,19 @@ main(int argc, char* argv[]) {
       case 'c': csv = 1; break;
       case 'd': debug++; break;
       case 'l': lowq++; break;
-      case 'o': output_file = optarg; break;
-      case 'P': prefix_cmd = optarg; break;
+      case 'o': output_file = unix_optarg; break;
+      case 'P': prefix_cmd = unix_optarg; break;
       case 'F': {
-        if(case_equals(optarg, "wget"))
+        if(case_equals(unix_optarg, "wget"))
           output_format = WGET;
-        else if(case_equals(optarg, "curl"))
+        else if(case_equals(unix_optarg, "curl"))
           output_format = CURL;
         else
           output_format = M3U;
 
         break;
       }
-      case 'f': datetime_format = optarg; break;
+      case 'f': datetime_format = unix_optarg; break;
       default: /* '?' */ usage(argv[0]); exit(EXIT_FAILURE);
     }
   }
@@ -599,19 +599,19 @@ main(int argc, char* argv[]) {
   else
     buffer_write_fd(&output_buf, STDOUT_FILENO);
 
-  if(optind == argc) {
+  if(unix_optind == argc) {
     ++argc;
-    argv[optind] = "-";
+    argv[unix_optind] = "-";
   }
 
-  while(optind < argc) {
+  while(unix_optind < argc) {
 
-    if(str_diff(argv[optind], "-")) {
+    if(str_diff(argv[unix_optind], "-")) {
       buffer_puts(buffer_2, "Processing '");
-      buffer_puts(buffer_2, argv[optind]);
+      buffer_puts(buffer_2, argv[unix_optind]);
       buffer_puts(buffer_2, "' ... ");
 
-      if(buffer_mmapread(&b, argv[optind])) {
+      if(buffer_mmapread(&b, argv[unix_optind])) {
         buffer_puts(buffer_2, "failed");
         buffer_putnlflush(buffer_2);
         return 1;
@@ -622,7 +622,7 @@ main(int argc, char* argv[]) {
       buffer_init(&b, (buffer_op_sys*)(void*)&read, STDIN_FILENO, inbuf, sizeof(inbuf));
     }
     process_input(&b);
-    ++optind;
+    ++unix_optind;
   }
 
   return 0;

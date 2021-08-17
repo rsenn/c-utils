@@ -90,7 +90,7 @@ main(int argc, char* argv[], char* envp[]) {
   int ret;
   const char* pathstr;
   static int index, c, verbose;
-  const struct longopt opts[] = {
+  const struct unix_longopt opts[] = {
       {"help", 0, 0, 'h'}, {"verbose", 0, &verbose, 'v'}, {"exec", 0, 0, 'e'}, {"root", 0, 0, 'r'}, {0, 0, 0, 0}};
   strlist_init(&args, '\0');
 
@@ -106,13 +106,13 @@ main(int argc, char* argv[], char* envp[]) {
       case 'h': usage(argv[0]); break;
 
       case 'v': verbose++; break;
-      case 'r': stralloc_copys(&root, optarg); break;
-      case 'e': stralloc_copys(&execbin, optarg); break;
+      case 'r': stralloc_copys(&root, unix_optarg); break;
+      case 'e': stralloc_copys(&execbin, unix_optarg); break;
 
       default:
         buffer_putm_internal(buffer_2,
                              "Unrecognized option `",
-                             argv[optind],
+                             argv[unix_optind],
                              "'\n",
                              "Try `",
                              argv[0],

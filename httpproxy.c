@@ -140,13 +140,13 @@ main(int argc, char* argv[]) {
     switch(c) {
       case 'q': verbose = 0; break;
       case 't':
-        if(scan_long(optarg, &timeout_sec) == 0) {
+        if(scan_long(unix_optarg, &timeout_sec) == 0) {
           usage(argv[0]);
           return 108;
         }
         break;
       case 'u':
-        if(scan_long(optarg, &timeout_usec) == 0)
+        if(scan_long(unix_optarg, &timeout_usec) == 0)
           usage(argv[0]);
         break;
       default: usage(argv[0]); return 107;
@@ -160,26 +160,26 @@ main(int argc, char* argv[]) {
   stralloc_init(&ips);
 
   stralloc_init(&host);
-  stralloc_copys(&host, argv[optind]);
+  stralloc_copys(&host, argv[unix_optind]);
 
   if(!lookup_hosts(&host, &ips)) {
     if(dns_ip4(&ips, &host) == -1) {
       errmsg_warnsys("unable to find "
                      "IP address for ",
-                     argv[optind],
+                     argv[unix_optind],
                      0);
       return 111;
     }
   }
 
 #ifdef DEBUG_OUTPUT
-  buffer_putm_internal(buffer_1, "IP address for ", argv[optind], ": ", NULL);
+  buffer_putm_internal(buffer_1, "IP address for ", argv[unix_optind], ": ", NULL);
   buffer_put(buffer_1, ipbuf, fmt_ip4(ipbuf, ips.s));
   buffer_putnlflush(buffer_1);
 #endif
 
-  if(argv[optind + 1]) {
-    if(scan_int(argv[optind + 1], &port) == 0) {
+  if(argv[unix_optind + 1]) {
+    if(scan_int(argv[unix_optind + 1], &port) == 0) {
       usage(argv[0]);
       return 106;
     }
@@ -201,7 +201,7 @@ main(int argc, char* argv[]) {
        * ECONNREFUSED on local ports */
       if(errno) {
         if(verbose) {
-          buffer_putm_internal(buffer_1, argv[optind], " port ", argv[optind + 1], " closed.", NULL);
+          buffer_putm_internal(buffer_1, argv[unix_optind], " port ", argv[unix_optind + 1], " closed.", NULL);
           buffer_putnlflush(buffer_1);
         }
         closesocket(sock);
@@ -210,7 +210,7 @@ main(int argc, char* argv[]) {
 #endif
       {
         if(verbose)
-          errmsg_warn("error: ", argv[optind], " port ", argv[optind + 1], ": ", 0);
+          errmsg_warn("error: ", argv[unix_optind], " port ", argv[unix_optind + 1], ": ", 0);
 
         return 4;
       }
@@ -239,7 +239,7 @@ main(int argc, char* argv[]) {
       /* timeout */
       closesocket(sock);
       if(verbose) {
-        buffer_putm_internal(buffer_1, argv[optind], " port ", argv[optind + 1], " user timeout.", NULL);
+        buffer_putm_internal(buffer_1, argv[unix_optind], " port ", argv[unix_optind + 1], " user timeout.", NULL);
         buffer_putnlflush(buffer_1);
       }
       return 2;
@@ -249,7 +249,7 @@ main(int argc, char* argv[]) {
       if(socket_error(sock, &error) == 0) {
         /* getsockopt error */
         if(verbose) {
-          errmsg_warn("error: ", argv[optind], " port ", argv[optind + 1], ": getsockopt: ", 0);
+          errmsg_warn("error: ", argv[unix_optind], " port ", argv[unix_optind + 1], ": getsockopt: ", 0);
           buffer_putnlflush(buffer_2);
         }
         closesocket(sock);
@@ -257,7 +257,7 @@ main(int argc, char* argv[]) {
       }
       if(error != 0) {
         if(verbose) {
-          buffer_putm_internal(buffer_1, argv[optind], " port ", argv[optind + 1], " closed.", NULL);
+          buffer_putm_internal(buffer_1, argv[unix_optind], " port ", argv[unix_optind + 1], " closed.", NULL);
           buffer_putnlflush(buffer_1);
         }
         closesocket(sock);
@@ -274,7 +274,7 @@ main(int argc, char* argv[]) {
   /* OK, connection established */
   closesocket(sock);
   if(verbose) {
-    buffer_putm_internal(buffer_1, argv[optind], " port ", argv[optind + 1], " open.", NULL);
+    buffer_putm_internal(buffer_1, argv[unix_optind], " port ", argv[unix_optind + 1], " open.", NULL);
     buffer_putnlflush(buffer_1);
   }
   return 0;

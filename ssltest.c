@@ -269,7 +269,7 @@ usage(char* av0) {
 int
 main(int argc, char* argv[]) {
   int c, index;
-  struct longopt opts[] = {{"help", 0, NULL, 'h'}, {0, 0, 0, 0}};
+  struct unix_longopt opts[] = {{"help", 0, NULL, 'h'}, {0, 0, 0, 0}};
 
   errmsg_iam(str_basename(argv[0]));
 #if !WINDOWS_NATIVE

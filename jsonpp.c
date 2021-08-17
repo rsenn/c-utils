@@ -144,7 +144,7 @@ main(int argc, char* argv[]) {
   int out_fd = 1;
   char* out_file = 0;
 
-  struct longopt opts[] = {{"help", 0, NULL, 'h'},
+  struct unix_longopt opts[] = {{"help", 0, NULL, 'h'},
                            {"single-quote", 0, NULL, 's'},
                            {"double-quote", 0, NULL, 'd'},
                            {"depth", 0, NULL, 'D'},

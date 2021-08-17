@@ -138,7 +138,8 @@ main(int argc, char** argv) {
   char *tmp, *fn;
   fd_t fd;
   errmsg_iam(argv[0]);
-  while((c = unix_getopt(argc, argv, "h")) != -1) switch(c) {
+  while((c = unix_getopt(argc, argv, "h")) != -1)
+    switch(c) {
       default: return usage(argv[0]);
     }
   fn = 0;

@@ -15,25 +15,26 @@
 extern "C" {
 #endif /* __cplusplus */
 
-int getopt(int argc, char* const argv[], const char* optstring);
+int unix_getopt(int argc, char* const argv[], const char* optstring);
 
-extern char* optarg;
-extern int optind, opterr, optopt;
+extern char* unix_optarg;
+extern int unix_optind, unix_opterr, unix_optopt;
 
 #define no_argument 0
 #define required_argument 1
 #define optional_argument 2
 
-struct longopt {
+struct unix_longopt {
   const char* name;
   int has_arg;
   int* flag;
   int val;
 };
 
-int getopt_long(int argc, char* const* argv, const char* optstring, const struct longopt*, int*);
+int unix_getopt_long(int argc, char* const* argv, const char* optstring, const struct unix_longopt*, int*);
 
-int getopt_long_only(int argc, char* const* argv, const char* shortopts, const struct longopt* longopts, int* indexptr);
+int unix_getopt_long_only(
+    int argc, char* const* argv, const char* shortopts, const struct unix_longopt* longopts, int* indexptr);
 /****************************************************************************
     int getopt_long_only(int argc, char* const argv[],
             const char* optstring,

@@ -109,8 +109,8 @@ main(int argc, char* argv[]) {
       case '8':
       case '9': level = opt - '0'; break;
       case 'd': decompress = 1; break;
-      case 't': in_type = compression_from_ext(optarg); break;
-      case 'o': out_filename = optarg; break;
+      case 't': in_type = compression_from_ext(unix_optarg); break;
+      case 'o': out_filename = unix_optarg; break;
       case 'h': usage(str_basename(argv[0])); exit(EXIT_SUCCESS);
       default: /* '?' */
         buffer_putm_internal(buffer_2,
@@ -123,8 +123,8 @@ main(int argc, char* argv[]) {
     }
   }
 
-  if(argv[optind])
-    in_filename = argv[optind];
+  if(argv[unix_optind])
+    in_filename = argv[unix_optind];
 
   if(str_equal(in_filename, "-")) {
     input = buffer_0;

@@ -419,7 +419,7 @@ main(int argc, char* argv[]) {
   buffer data;
   const char *s, *outname = 0;
   char* tmpl = "output-XXXXXX.txt";
-  struct longopt opts[] = {{"help", 0, NULL, 'h'}, {"output", 0, NULL, 'o'}, {0, 0, 0, 0}};
+  struct unix_longopt opts[] = {{"help", 0, NULL, 'h'}, {"output", 0, NULL, 'o'}, {0, 0, 0, 0}};
 
   errmsg_iam(argv[0]);
 #if !WINDOWS_NATIVE
@@ -437,7 +437,7 @@ main(int argc, char* argv[]) {
       continue;
 
     switch(c) {
-      case 'o': outname = optarg; break;
+      case 'o': outname = unix_optarg; break;
       case 'h': usage(argv[0]); return 0;
 
       default: usage(argv[0]); return 1;
@@ -457,12 +457,12 @@ main(int argc, char* argv[]) {
   h.nonblocking = 1;
   h.keepalive = 1;
   h.version = 11;
-  argi = optind;
-  if(argv[optind] == 0) {
-    argv[optind++] = (char*)default_url;
+  argi = unix_optind;
+  if(argv[unix_optind] == 0) {
+    argv[unix_optind++] = (char*)default_url;
     // argv[1] =
     // "http://127.0.0.1:5555/show";
-    argv[optind] = 0;
+    argv[unix_optind] = 0;
   }
   for(; argv[argi]; ++argi) {
     int ret;

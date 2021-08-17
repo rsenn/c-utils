@@ -91,7 +91,7 @@ main(int argc, char** argv) {
 
   int c, index = 0;
 
-  struct longopt opts[] = {{"help", 0, NULL, 'h'}, {0, 0, 0, 0}};
+  struct unix_longopt opts[] = {{"help", 0, NULL, 'h'}, {0, 0, 0, 0}};
   errmsg_iam(argv[0]);
   buffer_puts(buffer_1, "Number of arguments: ");
   buffer_putlong(buffer_1, argc);
@@ -113,10 +113,10 @@ main(int argc, char** argv) {
     }
   }
 
-  for(; argv[optind]; ++optind) {
+  for(; argv[unix_optind]; ++unix_optind) {
     omf_file omf;
 
-    if(omf_open(&omf, argv[optind])) {
+    if(omf_open(&omf, argv[unix_optind])) {
 
       omf_record* r;
       char* p;
@@ -166,7 +166,7 @@ main(int argc, char** argv) {
 
       omf_close(&omf);
     } else {
-      errmsg_warnsys("ERROR opening '", argv[optind], "': ");
+      errmsg_warnsys("ERROR opening '", argv[unix_optind], "': ");
       return 127;
     }
   }

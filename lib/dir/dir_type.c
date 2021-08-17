@@ -46,10 +46,18 @@ dir_type(struct dir_s* d) {
     case DT_DIR: r |= D_DIRECTORY; break;
     case DT_REG: r |= D_FILE; break;
     case DT_LNK: r |= D_SYMLINK; break;
+#ifdef DT_FIFO
     case DT_FIFO: r |= D_PIPE; break;
+#endif
+#ifdef DT_BLK
     case DT_BLK: r |= D_BLKDEV; break;
+#endif
+#ifdef DT_CHR
     case DT_CHR: r |= D_CHARDEV; break;
+#endif
+#ifdef DT_SOCK
     case DT_SOCK: r |= D_SOCKET; break;
+#endif
     case 0:
     default: {
       break;

@@ -361,7 +361,7 @@ int
 main(int argc, char* argv[]) {
   int index = 0, c, i, prev;
   const pipe_t* p;
-  static const struct longopt opts[] = {{"help", 0, NULL, 'h'}, {"verbose", 0, 0, 'v'}, {0, 0, 0, 0}};
+  static const struct unix_longopt opts[] = {{"help", 0, NULL, 'h'}, {"verbose", 0, 0, 'v'}, {0, 0, 0, 0}};
 
   errmsg_iam(argv[0]);
 
@@ -383,7 +383,7 @@ main(int argc, char* argv[]) {
   }
 
   if(argc <= 1) {
-    argv[optind] = "-";
+    argv[unix_optind] = "-";
     argc++;
   }
 
@@ -421,9 +421,9 @@ main(int argc, char* argv[]) {
     }
   }
 
-  while(optind < argc) {
+  while(unix_optind < argc) {
     struct stat st;
-    const char* a = argv[optind++];
+    const char* a = argv[unix_optind++];
     fd_t fd = 0;
 
     if(str_diff(a, "-"))

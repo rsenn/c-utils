@@ -349,7 +349,7 @@ parse_args(int argc, char* argv[]) {
                                          {"version", no_argument, 0, 'v'},
                                          {0, 0, 0, 0}};
 
-  extern int optind;
+  extern int unix_optind;
   int opt, compat = 0;
   char src[INET6_ADDRSTRLEN] = "", dst[INET6_ADDRSTRLEN] = "";
 #ifndef NO_FTP
@@ -367,11 +367,11 @@ parse_args(int argc, char* argv[]) {
   const char* prognm = progname(argv[0]);
   while((opt = getopt_long(argc, argv, "b:hiI:l:npst:vx:" FTP_OPTS SHAPER_OPTS, long_options, NULL)) != -1) {
     switch(opt) {
-      case 'b': bind_addr = optarg; break;
+      case 'b': bind_addr = unix_optarg; break;
 
 #ifndef NO_FTP
       case 'f':
-        ftp_type = optarg;
+        ftp_type = unix_optarg;
         if(!ftp_type)
           exit(usage(prognm, 1));
         break;
@@ -384,11 +384,11 @@ parse_args(int argc, char* argv[]) {
       case 'I':
         /* This is the ident which is
          * added to syslog messages */
-        ident = optarg;
+        ident = unix_optarg;
         break;
 
       case 'l':
-        loglevel = loglvl(optarg);
+        loglevel = loglvl(unix_optarg);
         if(-1 == loglevel)
           exit(usage(prognm, 1));
         break;
@@ -402,21 +402,21 @@ parse_args(int argc, char* argv[]) {
 
       case 's': do_syslog++; break;
 
-      case 't': timeout = atol(optarg); break;
+      case 't': timeout = atol(unix_optarg); break;
 
 #ifndef NO_SHAPER
-      case 'm': max_bandwidth = atol(optarg); break;
+      case 'm': max_bandwidth = atol(unix_optarg); break;
 
       case 'o':
-        wait_in_out = atol(optarg);
+        wait_in_out = atol(unix_optarg);
         wait_in = wait_in_out & 1;
         wait_out = wait_in_out & 2;
         break;
 
-      case 'w': random_wait = atol(optarg); break;
+      case 'w': random_wait = atol(unix_optarg); break;
 
       case 'z':
-        bufsize = (unsigned int)atol(optarg);
+        bufsize = (unsigned int)atol(unix_optarg);
         if(bufsize < 256) {
           // syslog(LOG_ERR, "Too small
           // buffer (%zd), must be at
@@ -428,26 +428,26 @@ parse_args(int argc, char* argv[]) {
 #endif
       case 'v': fprintf(stdout, "%s\n", "1.0"); exit(0);
 
-      case 'x': connect_str = optarg; break;
+      case 'x': connect_str = unix_optarg; break;
 #ifdef COMPAT_OPTIONS
       case 128: /* --caddr=1.2.3.4 */
         compat = 1;
-        target_addr = strdup(optarg);
+        target_addr = strdup(unix_optarg);
         break;
 
       case 129: /* --cport=80 */
         compat = 1;
-        target_port = parse_port(optarg);
+        target_port = parse_port(unix_optarg);
         break;
 
       case 130: /* --laddr=127.0.0.1 */
         compat = 1;
-        local_addr = strdup(optarg);
+        local_addr = strdup(unix_optarg);
         break;
 
       case 131: /* --lport=8080 */
         compat = 1;
-        local_port = parse_port(optarg);
+        local_port = parse_port(unix_optarg);
         break;
 #endif
       default: exit(usage(prognm, 1));
@@ -460,26 +460,26 @@ parse_args(int argc, char* argv[]) {
     goto done;
   }
 
-  if(optind >= argc)
+  if(unix_optind >= argc)
     exit(usage(prognm, 2));
 
   if(inetd) {
     /* In inetd mode we redirect from
      * src=stdin to dst:port */
-    target_port = parse_ipport(argv[optind], dst, sizeof(dst));
+    target_port = parse_ipport(argv[unix_optind], dst, sizeof(dst));
     if(strlen(dst) > 1)
       target_addr = strdup(dst);
   } else {
     /* We need at least [src]:port, if
      * src is left out we listen to any
      */
-    local_port = parse_ipport(argv[optind++], src, sizeof(src));
+    local_port = parse_ipport(argv[unix_optind++], src, sizeof(src));
     if(-1 == local_port)
       exit(usage(prognm, 3));
     if(strlen(src) > 1)
       local_addr = strdup(src);
 
-    target_port = parse_ipport(argv[optind], dst, sizeof(dst));
+    target_port = parse_ipport(argv[unix_optind], dst, sizeof(dst));
     if(strlen(dst) > 1)
       target_addr = strdup(dst);
   }

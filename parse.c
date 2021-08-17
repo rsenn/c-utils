@@ -209,9 +209,9 @@ main(int argc, char* argv[]) {
 
   get_prog_name();
 
-  while((opt = getopt(argc, argv, "f:h")) != -1) {
+  while((opt = unix_getopt(argc, argv, "f:h")) != -1) {
     switch(opt) {
-      case 'f': in_type = optarg; break;
+      case 'f': in_type = unix_optarg; break;
 
       case 'h': usage(str_basename(argv[0])); exit(EXIT_SUCCESS);
       default: /* '?' */
@@ -221,7 +221,7 @@ main(int argc, char* argv[]) {
   }
 
   {
-    const char* in_file = argc > optind ? argv[optind] : "-";
+    const char* in_file = argc > unix_optind ? argv[unix_optind] : "-";
 
     if(!str_diff(in_file, "-")) {
       in_fd = 0;

@@ -1581,7 +1581,7 @@ main(int argc, char* argv[]) {
   int c;
   int index = 0;
   rect extent, extent2;
-  struct longopt opts[] = {{"help", 0, NULL, 'h'},
+  struct unix_longopt opts[] = {{"help", 0, NULL, 'h'},
                            {"layer", 1, NULL, 'l'},
                            {"layers", 0, NULL, 'L'},
                            {"draw", 0, NULL, 'd'},
@@ -1605,9 +1605,9 @@ main(int argc, char* argv[]) {
       case 'c': print_comments = 1; break;
       case 'A':
         do_align_coords = 1;
-        alignment = human_to_mm(optarg);
+        alignment = human_to_mm(unix_optarg);
         break;
-      case 'l': current_layer = optarg; break;
+      case 'l': current_layer = unix_optarg; break;
       default: usage(argv[0]); return 1;
     }
   }
@@ -1628,16 +1628,16 @@ main(int argc, char* argv[]) {
     nets = cbmap_new();
     symbols = cbmap_new();
 
-    if(!argv[optind]) {
-      argv[optind] = "/home/roman/Sources/"
+    if(!argv[unix_optind]) {
+      argv[unix_optind] = "/home/roman/Sources/"
                      "an-tronics/eagle/"
                      "40106-4069-Synth.brd";
-    } else if(argv[optind + 1]) {
-      xq = argv[optind + 1];
+    } else if(argv[unix_optind + 1]) {
+      xq = argv[unix_optind + 1];
     }
 
-    base = str_basename(argv[optind]);
-    buffer_mmapprivate(&input, argv[optind]);
+    base = str_basename(argv[unix_optind]);
+    buffer_mmapprivate(&input, argv[unix_optind]);
     buffer_skip_until(&input, "\r\n", 2);
     doc = xml_read_tree(&input);
 

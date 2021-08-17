@@ -8,7 +8,7 @@
 
 void
 unurl(const char* s) {
-  char *buf = alloc_zero(str_len(s) + 1);
+  char* buf = alloc_zero(str_len(s) + 1);
   unsigned long len;
   if(s[scan_urlencoded(s, buf, &len)]) {
     buffer_putsflush(buffer_2, "parse error!\n");
@@ -27,7 +27,7 @@ unurl(const char* s) {
     else
       buffer_putsflush(buffer_1, "\n");
   }
-    alloc_free(buf);
+  alloc_free(buf);
 }
 
 int

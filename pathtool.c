@@ -240,7 +240,7 @@ main(int argc, char* argv[]) {
   int digit_optind = 0;
   const char* rel_to = NULL;
   int index = 0;
-  struct longopt opts[] = {{"help", 0, NULL, 'h'},
+  struct unix_longopt opts[] = {{"help", 0, NULL, 'h'},
                            {"relative-to", 1, NULL, 'r'},
                            {"separator", 1, NULL, 's'},
                            {"mixed", 0, NULL, 'm'},
@@ -270,8 +270,8 @@ main(int argc, char* argv[]) {
 
     switch(c) {
       case 'h': usage(argv[0]); return 0;
-      case 'r': rel_to = optarg; break;
-      case 's': separator[0] = optarg[0]; break;
+      case 'r': rel_to = unix_optarg; break;
+      case 's': separator[0] = unix_optarg[0]; break;
       case 'm': format = MIXED; break;
       case 'u': format = UNIX; break;
       case 'w': format = WIN; break;
@@ -330,11 +330,11 @@ main(int argc, char* argv[]) {
     // separator[0] = tmpsep;
   }
 
-  while(optind < argc) {
+  while(unix_optind < argc) {
     stralloc sa;
     stralloc_init(&sa);
 
-    if(pathtool(argv[optind++], &sa)) {
+    if(pathtool(argv[unix_optind++], &sa)) {
       buffer_putsa(buffer_1, &sa);
       buffer_putnlflush(buffer_1);
     }

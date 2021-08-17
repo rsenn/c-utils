@@ -1,6 +1,6 @@
 #include "../windoze.h"
 
-#if WINDOWS
+#if WINDOWS_NATIVE
 #include <windows.h>
 #else
 #include <sys/types.h>
@@ -17,7 +17,7 @@
 
 void
 taia_now(struct taia* t) {
-#if WINDOWS
+#if WINDOWS_NATIVE
   LARGE_INTEGER ticks, freq;
   if(QueryPerformanceFrequency(&freq)) {
     if(QueryPerformanceCounter(&ticks)) {

@@ -1,6 +1,11 @@
+#define _POSIX_SOURCE 1
 #include "../windoze.h"
 #include "../sig.h"
+
+#if !WINDOWS_NATIVE
 #include <signal.h>
+#include <sys/signal.h>
+#endif
 
 int
 sig_ignore(int sig) {

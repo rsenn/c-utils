@@ -88,14 +88,14 @@ main(int argc, char* argv[]) {
 
   while((opt = getopt(argc, argv, "o:f:t:h")) != -1) {
     switch(opt) {
-      case 'o': out_file = optarg; break;
-      case 'f': in_type = optarg; break;
+      case 'o': out_file = unix_optarg; break;
+      case 'f': in_type = unix_optarg; break;
       case 't':
-        if(!str_diff(optarg, "pls"))
+        if(!str_diff(unix_optarg, "pls"))
           outtype = PLS;
-        else if(!str_diff(optarg, "m3u"))
+        else if(!str_diff(unix_optarg, "m3u"))
           outtype = M3U;
-        else if(!str_diff(optarg, "xspf"))
+        else if(!str_diff(unix_optarg, "xspf"))
           outtype = XSPF;
         break;
       case 'h': usage(str_basename(argv[0])); exit(EXIT_SUCCESS);
@@ -106,7 +106,7 @@ main(int argc, char* argv[]) {
   }
 
   {
-    const char* in_file = argc > optind ? argv[optind] : "-";
+    const char* in_file = argc > unix_optind ? argv[unix_optind] : "-";
     int in_fd;
 
     if(!str_diff(in_file, "-")) {

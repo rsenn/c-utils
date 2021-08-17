@@ -199,7 +199,7 @@ main(int argc, char* argv[]) {
   const char* x;
   char* tmpl = "/tmp/strip-comments.XXXXXX";
 
-  struct longopt opts[] = {{"help", 0, NULL, 'h'}, {"in-place", 0, NULL, 'i'}, {0, 0, 0, 0}};
+  struct unix_longopt opts[] = {{"help", 0, NULL, 'h'}, {"in-place", 0, NULL, 'i'}, {0, 0, 0, 0}};
 
   errmsg_iam(argv[0]);
 
@@ -221,17 +221,17 @@ main(int argc, char* argv[]) {
   stralloc_init(&tmp);
   //  stralloc_init(&data);
 
-  if(optind < argc) {
-    buffer_putm_internal(buffer_2, "Opening input file '", argv[optind], "'...", NULL);
+  if(unix_optind < argc) {
+    buffer_putm_internal(buffer_2, "Opening input file '", argv[unix_optind], "'...", NULL);
     buffer_putnlflush(buffer_2);
-    in_fd = open_read((in_path = argv[optind]));
-    optind++;
+    in_fd = open_read((in_path = argv[unix_optind]));
+    unix_optind++;
   }
-  if(optind < argc) {
-    buffer_putm_internal(buffer_2, "Opening output file '", argv[optind], "'...", NULL);
+  if(unix_optind < argc) {
+    buffer_putm_internal(buffer_2, "Opening output file '", argv[unix_optind], "'...", NULL);
     buffer_putnlflush(buffer_2);
-    out_fd = open_trunc((out_path = argv[optind]));
-    optind++;
+    out_fd = open_trunc((out_path = argv[unix_optind]));
+    unix_optind++;
   }
 
   charbuf_init(&input, (read_fn*)(void*)&read, in_fd, 2);
@@ -299,7 +299,7 @@ again:
     */
 
     if(out_path == 0) {
-      in_path = argv[optind++];
+      in_path = argv[unix_optind++];
       in_fd = open_read(in_path);
       goto again;
     }

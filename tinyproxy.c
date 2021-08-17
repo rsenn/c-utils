@@ -1249,23 +1249,23 @@ main(int argc, char* argv[]) {
   int pid;
   int c, index = 0;
   const char* s;
-  struct longopt opts[] = {{"help", 0, NULL, 'h'},
-                           {"local-port", 0, NULL, 'l'},
-                           {"local-addr", 0, NULL, 'b'},
-                           {"remote-port", 0, NULL, 'p'},
-                           {"remote-addr", 0, NULL, 'r'},
-                           {"input-parser", 0, NULL, 'i'},
-                           {"output-parser", 0, NULL, 'O'},
-                           {"foreground", 0, NULL, 'f'},
-                           {"syslog", 0, NULL, 's'},
-                           {"logfile", 0, NULL, 'o'},
-                           {"append", 0, NULL, 'a'},
-                           {"max-length", 0, NULL, 'm'},
-                           {"line-buffer", 0, NULL, 'L'},
-                           {"dump", 0, NULL, 'd'},
-                           {"ttl", 0, NULL, 'T'},
-                           {"basename", 0, NULL, 'n'},
-                           {0}};
+  struct unix_longopt opts[] = {{"help", 0, NULL, 'h'},
+                                {"local-port", 0, NULL, 'l'},
+                                {"local-addr", 0, NULL, 'b'},
+                                {"remote-port", 0, NULL, 'p'},
+                                {"remote-addr", 0, NULL, 'r'},
+                                {"input-parser", 0, NULL, 'i'},
+                                {"output-parser", 0, NULL, 'O'},
+                                {"foreground", 0, NULL, 'f'},
+                                {"syslog", 0, NULL, 's'},
+                                {"logfile", 0, NULL, 'o'},
+                                {"append", 0, NULL, 'a'},
+                                {"max-length", 0, NULL, 'm'},
+                                {"line-buffer", 0, NULL, 'L'},
+                                {"dump", 0, NULL, 'd'},
+                                {"ttl", 0, NULL, 'T'},
+                                {"basename", 0, NULL, 'n'},
+                                {0}};
 
   fileBase = path_basename(argv[0]);
   errmsg_iam(argv[0]);
@@ -1296,30 +1296,30 @@ main(int argc, char* argv[]) {
         return 0;
         break;
       case 'T':
-        scan_ulonglong(optarg, &ttl.sec.x);
+        scan_ulonglong(unix_optarg, &ttl.sec.x);
         ;
         break;
-      case 'l': scan_ushort(optarg, &server.port); break;
-      case 'b': sockbuf_parse_addr(&server, optarg); break;
-      case 'r': sockbuf_parse_addr(&remote, optarg); break;
-      case 'p': scan_ushort(optarg, &remote.port); break;
-      case 'i': cmd_in = optarg; break;
-      case 'O': cmd_out = optarg; break;
+      case 'l': scan_ushort(unix_optarg, &server.port); break;
+      case 'b': sockbuf_parse_addr(&server, unix_optarg); break;
+      case 'r': sockbuf_parse_addr(&remote, unix_optarg); break;
+      case 'p': scan_ushort(unix_optarg, &remote.port); break;
+      case 'i': cmd_in = unix_optarg; break;
+      case 'O': cmd_out = unix_optarg; break;
       case 'f': foreground = true; break;
       case 's': use_syslog = true; break;
-      case 'm': scan_longlong(optarg, &max_length); break;
-      case 'n': fileBase = optarg; break;
-      case 'B': scan_ulonglong(optarg, &buf_size); break;
+      case 'm': scan_longlong(unix_optarg, &max_length); break;
+      case 'n': fileBase = unix_optarg; break;
+      case 'B': scan_ulonglong(unix_optarg, &buf_size); break;
       case 'L': line_buffer = true; break;
       case 'd': dump = true; break;
-      case 'a': log.fd = open_append(optarg); break;
-      case 'o': log.fd = open_trunc(optarg); break;
+      case 'a': log.fd = open_append(unix_optarg); break;
+      case 'o': log.fd = open_trunc(unix_optarg); break;
     }
   }
 
-  program_argv = argv + optind;
-  program_argc = argc - optind;
-  // strarray_from_argv(argc - optind, argv + optind, &program);
+  program_argv = argv + unix_optind;
+  program_argc = argc - unix_optind;
+  // strarray_from_argv(argc - unix_optind, argv + unix_optind, &program);
 
   /*buffer_puts(buffer_2, "program:\n  ");
   buffer_putstra(buffer_2, &program, "\n  ");

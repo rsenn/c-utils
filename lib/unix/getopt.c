@@ -17,6 +17,7 @@
 #include <string.h>
 
 #if 1 // def HAVE_GETOPT
+#define longopt unix_longopt
 #define getopt unix_getopt
 #define getopt_long unix_getopt_long
 #define getopt_real unix_getopt_real

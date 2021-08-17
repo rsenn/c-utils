@@ -162,7 +162,7 @@ usage(char* av0) {
 int
 main(int argc, char* argv[]) {
   int index = 0, c;
-  static const struct longopt opts[] = {{"help", 0, NULL, 'h'}, {"verbose", 0, 0, 'v'}, {0, 0, 0, 0}};
+  static const struct unix_longopt opts[] = {{"help", 0, NULL, 'h'}, {"verbose", 0, 0, 'v'}, {0, 0, 0, 0}};
 
   errmsg_iam(argv[0]);
 
@@ -183,8 +183,8 @@ main(int argc, char* argv[]) {
     }
   }
 
-  while(optind < argc) {
-    const char* a = argv[optind++];
+  while(unix_optind < argc) {
+    const char* a = argv[unix_optind++];
     int i = str_rchr(a, '.');
 
     if(str_equal(&a[i], ".list")) {

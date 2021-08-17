@@ -327,7 +327,7 @@ main(int argc, char** argv) {
 
   int c, index = 0;
 
-  struct longopt opts[] = {{"help", 0, NULL, 'h'},
+  struct unix_longopt opts[] = {{"help", 0, NULL, 'h'},
                            {"imports", 0, &list_imports, 'i'},
                            {"exports", 0, &list_exports, 'e'},
                            {"deps", 0, &list_deps, 'd'},
@@ -369,8 +369,8 @@ main(int argc, char** argv) {
   if(!(list_deps | list_exports | list_imports | list_sections))
     list_sections = list_imports = list_exports = 1;
 
-  for(; argv[optind]; ++optind) {
-    base = (uint8*)mmap_read(argv[optind], &filesize);
+  for(; argv[unix_optind]; ++unix_optind) {
+    base = (uint8*)mmap_read(argv[unix_optind], &filesize);
 
     if(base) {
       coff_file_header* header = coff_header_file(base);
@@ -457,7 +457,7 @@ main(int argc, char** argv) {
       }
       mmap_unmap((void*)base, filesize);
     } else {
-      errmsg_warn("ERROR opening '", argv[optind], "': ", 0);
+      errmsg_warn("ERROR opening '", argv[unix_optind], "': ", 0);
       return 127;
     }
   }

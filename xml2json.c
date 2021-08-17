@@ -290,18 +290,18 @@ main(int argc, char* argv[]) {
   int c;
   int index = 0;
 
-  struct longopt opts[] = {{"help", 0, NULL, 'h'},
-                           {"single-quote", 0, NULL, 's'},
-                           {"double-quote", 0, NULL, 'd'},
-                           {"one-line", 0, NULL, 'o'},
-                           {"compact", 0, NULL, 'c'},
-                           {"indent", 0, NULL, 'l'},
-                           {"numbers", 0, NULL, 'n'},
-                           {"no-quote", 0, NULL, 'Q'},
-                           {"tag", 0, NULL, 'T'},
-                           {"children", 0, NULL, 'C'},
-                           {"class", 0, NULL, 'N'},
-                           {0, 0, 0, 0}};
+  struct unix_longopt opts[] = {{"help", 0, NULL, 'h'},
+                                {"single-quote", 0, NULL, 's'},
+                                {"double-quote", 0, NULL, 'd'},
+                                {"one-line", 0, NULL, 'o'},
+                                {"compact", 0, NULL, 'c'},
+                                {"indent", 0, NULL, 'l'},
+                                {"numbers", 0, NULL, 'n'},
+                                {"no-quote", 0, NULL, 'Q'},
+                                {"tag", 0, NULL, 'T'},
+                                {"children", 0, NULL, 'C'},
+                                {"class", 0, NULL, 'N'},
+                                {0, 0, 0, 0}};
 
   errmsg_iam(argv[0]);
 
@@ -320,18 +320,18 @@ main(int argc, char* argv[]) {
       case 'c': compact = 1; break;
       case 'n': numbers = 1; break;
       case 'Q': no_quote = 1; break;
-      case 'l': scan_int(optarg, &indent); break;
-      case 'T': tag_property = optarg; break;
-      case 'C': children_property = optarg; break;
-      case 'N': class_property = optarg; break;
+      case 'l': scan_int(unix_optarg, &indent); break;
+      case 'T': tag_property = unix_optarg; break;
+      case 'C': children_property = unix_optarg; break;
+      case 'N': class_property = unix_optarg; break;
       default: usage(argv[0]); return 1;
     }
   }
 
-  while(optind < argc) {
+  while(unix_optind < argc) {
 
-    if(argv[optind])
-      input->fd = open_read(argv[optind]);
+    if(argv[unix_optind])
+      input->fd = open_read(argv[unix_optind]);
 
     buffer_skip_until(input, "\r\n", 2);
     doc = xml_read_tree(input);
@@ -349,7 +349,7 @@ main(int argc, char* argv[]) {
      */
     xml_free(doc);
 
-    optind++;
+    unix_optind++;
   }
 
   return (0);

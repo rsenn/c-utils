@@ -109,15 +109,17 @@ static int static_libs = 0;
 static int cflags_mode = 0;
 static int sorted = 0;
 static int verbose = 0;
+static int debug = 0;
 static int show_version = 0;
 static int atleast_version = 0;
+const char* pkgcfg_path = 0;
 
-void
+static void
 add_cmd(id cmd) {
   array_catb(&cmds, &cmd, sizeof(id));
 }
 
-int
+static int
 get_field_index(int flags) {
   if(flags & (PRINT_LIBS | LIBS_ONLY_L | LIBS_ONLY_LIBPATH | LIBS_ONLY_OTHER))
     return 2;
@@ -137,7 +139,7 @@ get_field_index(int flags) {
   return -1;
 }
 
-int
+static int
 get_op_index(const stralloc* op) {
   int i;
   for(i = 0; op_strings[i]; i++) {
@@ -147,7 +149,7 @@ get_op_index(const stralloc* op) {
   return -1;
 }
 
-char*
+static char*
 search_path(const char* path, const char* what, stralloc* out) {
   const char* x;
   char* ret = 0;
@@ -177,7 +179,7 @@ search_path(const char* path, const char* what, stralloc* out) {
   return ret;
 }
 
-void
+static void
 extract_paths(const stralloc* sa, strlist* paths) {
   const char *s, *e;
   size_t n;
@@ -354,7 +356,7 @@ pkg_get(pkg* pf, const char* key) {
  * @return           1 on sucess, 0 on
  * failure
  */
-int
+static int
 wordexp_sa(const char* s, stralloc* sa, MAP_T vars) {
   const char *x, *v;
   size_t i, n;
@@ -1055,7 +1057,7 @@ pkg_conf(strarray* modules, id code, int mode) {
   return 0;
 }
 
-int
+static int
 add_path(const stralloc* dir) {
 
   if(path_exists(dir->s)) {
@@ -1072,7 +1074,7 @@ add_path(const stralloc* dir) {
   return 0;
 }
 
-int
+static int
 add_paths(const stralloc* prefix) {
   size_t pos;
   int n = 0;
@@ -1112,32 +1114,26 @@ add_paths(const stralloc* prefix) {
 }
 
 void
-pkgcfg_init(const char* self, const char* pkgcfg_path) {
+pkgcfg_init(const char* self) {
   size_t pos;
   const char* x;
   stralloc dir;
   stralloc_init(&dir);
-
   // path_readlink("/proc/self/exe",
   // &cmd.self);
   stralloc_init(&cmd.self);
   stralloc_init(&cmd.host);
   stralloc_init(&cmd.prefix);
-
   if(!self[str_chr(self, '/')]) {
-
     if((x = search_path(env_get("PATH"), self, &dir)))
       self = x;
   }
-
   if(!self[str_chr(self, '/')]) {
     path_readlink("/proc/self/exe", &dir);
     stralloc_nul(&dir);
     self = dir.s;
   }
-
   stralloc_copys(&cmd.self, path_basename(self));
-
 #ifdef DEBUG_OUTPUT_
   buffer_puts(buffer_2, "self: ");
   buffer_puts(buffer_2, self);
@@ -1146,34 +1142,27 @@ pkgcfg_init(const char* self, const char* pkgcfg_path) {
   buffer_putsa(buffer_2, &cmd.self);
   buffer_putnlflush(buffer_2);
 #endif
-
   if(str_contains(self, "/bin/")) {
     path_dirname(self, &cmd.prefix);
-
     stralloc_trunc(&cmd.prefix, stralloc_finds(&cmd.prefix, "/bin"));
   } else {
     stralloc_copys(&cmd.prefix, default_prefix);
   }
-
 #ifdef DEBUG_OUTPUT_
   buffer_puts(buffer_2, "cmd.prefix: ");
   buffer_putsa(buffer_2, &cmd.prefix);
   buffer_putnlflush(buffer_2);
 #endif
-
   pos = stralloc_finds(&cmd.self, "pkg");
-
   if(cmd.host.len == 0) {
     if((pos = stralloc_finds(&cmd.self, "pkg")) > 0 && byte_count(cmd.self.s, pos, '-') >= 2) {
       stralloc_copyb(&cmd.host, cmd.self.s, pos);
     } else {
       const char* compiler = env_get("CC");
-
       if(compiler && compiler[0]) {
         if(!host_arch(compiler, &cmd.host)) {
           errmsg_warnsys("Failed executing compiler '", compiler, "': ", 0);
         }
-
       } else {
         if(!host_arch("cc", &cmd.host))
           if(!host_arch("gcc", &cmd.host))
@@ -1181,7 +1170,6 @@ pkgcfg_init(const char* self, const char* pkgcfg_path) {
       }
     }
   }
-
 #ifdef DEBUG_OUTPUT_
   buffer_puts(buffer_2, "cmd.host: ");
   buffer_putsa(buffer_2, &cmd.host);
@@ -1192,17 +1180,14 @@ pkgcfg_init(const char* self, const char* pkgcfg_path) {
   stralloc_cat(&dir, &cmd.host);
   stralloc_cats(&dir, "/sysroot");
   stralloc_nul(&dir);
-
 #ifdef DEBUG_OUTPUT_
   buffer_puts(buffer_2, "dir: ");
   buffer_putsa(buffer_2, &dir);
   buffer_putnlflush(buffer_2);
 #endif
-
   if(path_exists(dir.s) && sysroot == 0) {
     sysroot = str_dup(dir.s);
   }
-
 #ifdef DEBUG_OUTPUT_
   if(sysroot) {
     buffer_puts(buffer_2, "sysroot: ");
@@ -1210,12 +1195,24 @@ pkgcfg_init(const char* self, const char* pkgcfg_path) {
     buffer_putnlflush(buffer_2);
   }
 #endif
+#ifdef DEBUG_OUTPUT_
+  buffer_puts(buffer_2, "full qualified host: '");
+  buffer_putsa(buffer_2, &cmd.host);
+  buffer_putsflush(buffer_2, "'\n");
+#endif
+  stralloc_free(&dir);
+  stralloc_nul(&cmd.prefix);
+  stralloc_nul(&cmd.host);
+  stralloc_nul(&cmd.self);
+}
 
+void
+pkgcfg_setpath(const char* path) {
+  stralloc dir;
+  stralloc_init(&dir);
   strlist_init(&cmd.path, ':');
-
-  if(pkgcfg_path) {
-    strlist_froms(&cmd.path, pkgcfg_path, ':');
-
+  if(path) {
+    strlist_froms(&cmd.path, path, ':');
   } else {
     const char* local = PATHSEP_S "local";
     /*   if(sysroot)
@@ -1223,86 +1220,44 @@ pkgcfg_init(const char* self, const char* pkgcfg_path) {
         else */
     stralloc_copy(&dir, &cmd.prefix);
     stralloc_nul(&dir);
-
     add_paths(&dir);
-
     if(str_end(dir.s, local)) {
       dir.len -= str_len(local);
       stralloc_nul(&dir);
       add_paths(&dir);
     }
-
     if(str_end(dir.s, PATHSEP_S "usr")) {
       dir.len -= 4;
       stralloc_nul(&dir);
       add_paths(&dir);
     }
   }
-
 #ifdef DEBUG_OUTPUT_
   buffer_puts(buffer_2, "cmd.path: ");
   buffer_putsa(buffer_2, &cmd.path.sa);
   buffer_putnlflush(buffer_2);
 #endif
-
-#ifdef DEBUG_OUTPUT_
-  buffer_puts(buffer_2, "full qualified host: '");
-  buffer_putsa(buffer_2, &cmd.host);
-  buffer_putsflush(buffer_2, "'\n");
-#endif
-
-  stralloc_free(&dir);
-
   stralloc_nul(&cmd.path.sa);
-  stralloc_nul(&cmd.prefix);
-  stralloc_nul(&cmd.host);
-  stralloc_nul(&cmd.self);
+  stralloc_free(&dir);
 }
 
 void
 usage(char* progname) {
   buffer_putm_internal(buffer_1, "Usage: ", path_basename(progname), " [OPTIONS] [PACKAGES...]\n", 0);
   buffer_puts(buffer_1, "Options\n");
-  buffer_puts(buffer_1,
-              "  --help, -h                    "
-              "    show this help\n");
-  buffer_puts(buffer_1,
-              "  --cflags                      "
-              "    print required CFLAGS to "
-              "stdout\n");
-  buffer_puts(buffer_1,
-              "  --libs                        "
-              "    print required linker flags "
-              "to stdout\n");
-  buffer_puts(buffer_1,
-              "  --path                        "
-              "    show the exact filenames "
-              "for any matching .pc files\n");
-  buffer_puts(buffer_1,
-              "  --modversion                  "
-              "    print the specified "
-              "module's version to stdout\n");
-  buffer_puts(buffer_1,
-              "  --list-all                    "
-              "    list all known packages\n");
-  buffer_puts(buffer_1,
-              "  --list-path                   "
-              "    list path of all known "
-              "packages\n");
-  buffer_puts(buffer_1,
-              "  --verbose                     "
-              "    increase verbosity\n");
-  buffer_puts(buffer_1,
-              "  --debug                       "
-              "    show verbose debug "
-              "information\n");
-  buffer_puts(buffer_1,
-              "  --sorted                      "
-              "    sorted list output\n");
-  buffer_puts(buffer_1,
-              "  --unsorted                    "
-              "    unsorted list output "
-              "(default)\n\n");
+  buffer_puts(buffer_1, "  --help, -h                        show this help\n");
+  buffer_puts(buffer_1, "  --prefix, -p DIRECTORY            Set prefix directory\n");
+  buffer_puts(buffer_1, "  --host, -m MACHINE                Set canonical host\n");
+  buffer_puts(buffer_1, "  --cflags                          print required CFLAGS to stdout\n");
+  buffer_puts(buffer_1, "  --libs                            print required linker flags to stdout\n");
+  buffer_puts(buffer_1, "  --path                            show the exact filenames for any matching .pc files\n");
+  buffer_puts(buffer_1, "  --modversion                      print the specified module's version to stdout\n");
+  buffer_puts(buffer_1, "  --list-all                        list all known packages\n");
+  buffer_puts(buffer_1, "  --list-path                       list path of all known packages\n");
+  buffer_puts(buffer_1, "  --verbose                         increase verbosity\n");
+  buffer_puts(buffer_1, "  --debug                           show verbose debug information\n");
+  buffer_puts(buffer_1, "  --sorted                          sorted list output\n");
+  buffer_puts(buffer_1, "  --unsorted                        unsorted list output (default)\n\n");
   buffer_putm_internal(buffer_1, "Default prefix: ", cmd.prefix.s, "\n", 0);
   buffer_putm_internal(buffer_1, "Default host: ", cmd.host.s, "\n", 0);
   buffer_puts(buffer_1, "Default search path:\n  ");
@@ -1333,7 +1288,7 @@ main(int argc, char* argv[], char* envp[]) {
   id* code;
   int index = 0;
   int mode = 0;
-  struct longopt opts[] = {
+  struct unix_longopt opts[] = {
       {"help", 0, NULL, 'h'},
       {"version", 0, &show_version, 1},
       {"modversion", 0, NULL, PRINT_VERSION},
@@ -1358,38 +1313,9 @@ main(int argc, char* argv[], char* envp[]) {
       {"sorted", 0, &sorted, 1},
       {"unsorted", 0, &sorted, 0},
       {"atleast-pkgconfig-version", 1, NULL, ATLEAST_PKGCONFIG_VERSION},
-
-      /*   {"atleast", 0, NULL, 0},
-          {"atleast-pkgconfig-version",
-         0, NULL, 0},
-          {"atleast-version", 0, NULL,
-         0},
-            {"debug", 0, NULL, 0},
-          {"define-prefix", 0, NULL, 0},
-          {"define-variable", 0, NULL,
-         0},
-          {"dont-define-prefix", 0,
-         NULL, 0},
-          {"errors-to-stdout", 0, NULL,
-         0},
-          {"exact-version", 0, NULL, 0},
-
-          {"max-version", 0, NULL, 0},
-          {"prefix-variable", 0, NULL,
-         0},
-          {"print-provides", 0, NULL,
-         0},
-          {"print-requires", 0, NULL,
-         0},
-          {"print-requires-private", 0,
-         NULL, 0},
-          {"print-variables", 0, NULL,
-         0},
-          {"silence-errors", 0, NULL,
-         0},
-          {"uninstalled", 0, NULL, 0},
-          {"validate", 0, NULL, 0}, */
-
+      {"host", 1, NULL, 'm'},
+      {"prefix", 1, NULL, 'p'},
+      {"debug", 0, NULL, 'd'},
       {0, 0, 0, 0},
   };
 
@@ -1397,9 +1323,12 @@ main(int argc, char* argv[], char* envp[]) {
   strlist_init(&args, '\t');
   strlist_fromv(&args, (const char**)argv, argc);
 
-  pkgcfg_init(argv[0], env_get("PKG_CONFIG_PATH"));
+  pkgcfg_init(argv[0]);
 
-  // pkgcfg_dumpenv(envp);
+  if((pkgcfg_path = env_get("PKG_CONFIG_PATH")))
+    pkgcfg_setpath(pkgcfg_path);
+
+    // pkgcfg_dumpenv(envp);
 
 #if DEBUG_OUTPUT_
   buffer_puts(buffer_2, "pkgcfg args = ");
@@ -1413,7 +1342,7 @@ main(int argc, char* argv[], char* envp[]) {
   unix_opterr = 0;
 
   for(;;) {
-    c = unix_getopt_long(argc, argv, "hmilLpaPSvV:F", opts, &index);
+    c = unix_getopt_long(argc, argv, "dhm:ilLp:aPSvV:F", opts, &index);
     if(c == -1 || unix_opterr /* || argv[unix_optind] == 0 */)
       break;
     if(c == 0)
@@ -1425,7 +1354,9 @@ main(int argc, char* argv[], char* envp[]) {
     switch(c) {
 
       case ATLEAST_PKGCONFIG_VERSION: atleast_version = 1; break;
-
+      case 'm': stralloc_copys(&cmd.host, argv[unix_optind]); break;
+      case 'p': stralloc_copys(&cmd.prefix, argv[unix_optind]); break;
+      case 'd': debug++; break;
       case 'h': usage(argv[0]); return 0;
       case 'v': verbose++; break;
       case 'V': {
@@ -1485,9 +1416,7 @@ main(int argc, char* argv[], char* envp[]) {
       }
 
       default:
-        buffer_puts(buffer_2,
-                    "WARNING: Invalid "
-                    "argument -");
+        buffer_puts(buffer_2, "WARNING: Invalid argument -");
         buffer_putc(buffer_2, isprint(c) ? c : '?');
         buffer_putm_internal(buffer_2, " '", unix_optarg ? unix_optarg : argv[unix_optind], "'", NULL);
         buffer_putnlflush(buffer_2);
@@ -1497,6 +1426,11 @@ main(int argc, char* argv[], char* envp[]) {
     }
   }
 getopt_end:
+
+  if(pkgcfg_path == 0) {
+
+    pkgcfg_setpath(pkgcfg_path);
+  }
 
   if(argv[unix_optind - 1] && str_equal(argv[unix_optind - 1], "--list-all")) {
     add_cmd(LIST_ALL);

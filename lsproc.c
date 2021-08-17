@@ -89,7 +89,7 @@ main(int argc, char* argv[]) {
   stralloc data;
   strlist stat, statm, cmdline;
   const char* pid;
-  static const struct longopt opts[] = {{"help", 0, 0, 'h'}, {0, 0, 0, 0}};
+  static const struct unix_longopt opts[] = {{"help", 0, 0, 'h'}, {0, 0, 0, 0}};
 
   while((c = unix_getopt_long(argc, argv, "h", opts, &index)) != -1) {
     switch(c) {

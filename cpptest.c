@@ -41,8 +41,8 @@ main(int argc, char** argv) {
     }
   fn = "<stdin>";
   fd = STDIN_FILENO;
-  if(argv[optind] && str_diff(argv[optind], "-")) {
-    fn = argv[optind];
+  if(argv[unix_optind] && str_diff(argv[unix_optind], "-")) {
+    fn = argv[unix_optind];
     if((fd = open_read(fn)) == -1) {
       errmsg_warnsys("open_read", 0);
       return 1;

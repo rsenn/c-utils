@@ -1,7 +1,7 @@
 //#include "../io.h"
 #define USE_WS2_32 1
 
-#include "../socket_internal.h"
+#include "../socket.h"
 #include "../io_internal.h"
 #include "../buffer.h"
 #include "../alloc.h"
@@ -11,8 +11,11 @@
 #include <windows.h>
 #endif
 
-#if !WINDOWS_NATIVE
+#if WINDOWS_NATIVE
+#include <winsock2.h>
+#else
 #include <poll.h>
+#include <sys/select.h>
 #endif
 
 #include <errno.h>

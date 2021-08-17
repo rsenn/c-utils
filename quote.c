@@ -339,7 +339,7 @@ main(int argc, char* argv[]) {
   buffer input;
   char* tmpl = "/tmp/quote.XXXXXX";
 
-  struct longopt opts[] = {{"help", 0, NULL, 'h'},
+  struct unix_longopt opts[] = {{"help", 0, NULL, 'h'},
                            {"in-place", 0, NULL, 'i'},
                            {"add-quotes", 1, NULL, 'a'},
                            {"tab-size", 1, NULL, 't'},

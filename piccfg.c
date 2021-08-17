@@ -496,7 +496,7 @@ main(int argc, char* argv[]) {
   int c, index = 0;
   const char *cfgdata = 0, *hexfile = 0;
 
-  struct longopt opts[] = {{"help", 0, NULL, 'h'},
+  struct unix_longopt opts[] = {{"help", 0, NULL, 'h'},
                            {"oneline", 0, &oneline, 1},
                            {"no-default", 0, &nodefault, 1},
                            {"default", 0, &nodefault, 0},
@@ -529,11 +529,11 @@ main(int argc, char* argv[]) {
     }
   }
 
-  if(optind < argc) {
-    hexfile = argv[optind++];
+  if(unix_optind < argc) {
+    hexfile = argv[unix_optind++];
 
-    if(optind < argc)
-      cfgdata = argv[optind++];
+    if(unix_optind < argc)
+      cfgdata = argv[unix_optind++];
   }
 
   if(!hexfile)

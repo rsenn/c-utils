@@ -611,7 +611,7 @@ main(int argc, char* argv[]) {
 
   ssize_t ret;
   int mode = 0;
-  struct longopt opts[] = {
+  struct unix_longopt opts[] = {
       {"help", 0, NULL, 'h'},
       {"verbose", 0, NULL, 'v'},
       {"baud", 1, NULL, 'b'},
@@ -638,9 +638,9 @@ main(int argc, char* argv[]) {
 
       case 'h': usage(argv[0]); return 0;
       case 'v': verbose++; break;
-      case 'i': send_file = optarg; break;
+      case 'i': send_file = unix_optarg; break;
       case 'r': rawmode = 1; break;
-      case 'b': scan_uint(optarg, &baudrate); break;
+      case 'b': scan_uint(unix_optarg, &baudrate); break;
       case 'x': debugmode++; break;
 
       default:
@@ -648,18 +648,18 @@ main(int argc, char* argv[]) {
                     "WARNING: Invalid "
                     "argument -");
         buffer_putc(buffer_2, isprint(c) ? c : '?');
-        buffer_putm_internal(buffer_2, " '", optarg ? optarg : argv[optind], "'", NULL);
+        buffer_putm_internal(buffer_2, " '", unix_optarg ? unix_optarg : argv[unix_optind], "'", NULL);
         buffer_putnlflush(buffer_2);
         usage(argv[0]);
         return 1;
     }
   }
 getopt_end:
-  if(optind < argc) {
-    portname = argv[optind++];
+  if(unix_optind < argc) {
+    portname = argv[unix_optind++];
 
-    if(optind < argc && scan_uint(argv[optind], &baudrate))
-      optind++;
+    if(unix_optind < argc && scan_uint(argv[unix_optind], &baudrate))
+      unix_optind++;
     else
       baudrate = 38400;
   }

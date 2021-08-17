@@ -40,9 +40,9 @@
 
 int
 main(int argc, char* argv[]) {
-  int optarg;
+  int unix_optarg;
 
-  for(optarg = 1; optarg < argc; ++optarg) {
+  for(unix_optarg = 1; unix_optarg < argc; ++unix_optarg) {
     char *base, *filename, *dll_name;
     size_t dllsz;
     uint32 i, *name_rvas, nexp, num_entries;
@@ -52,7 +52,7 @@ main(int argc, char* argv[]) {
     pe32_opt_header* opt_hdr_32;
     pe_type type;
 
-    filename = argv[optarg];
+    filename = argv[unix_optarg];
 
     base = (char*)mmap_read(filename, &dllsz);
     if(base == NULL)

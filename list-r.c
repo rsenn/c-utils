@@ -1274,7 +1274,7 @@ main(int argc, char* argv[]) {
   int digit_optind = 0;
   const char *rel_to = 0, *input_file = 0;
   int index = 0;
-  static const struct longopt opts[] =
+  static const struct unix_longopt opts[] =
   { {"help", 0, 0, 'h'},
     {"quiet", 0, 0, 'q'},
     {"list", 0, &opt_list, 1},
@@ -1317,7 +1317,7 @@ main(int argc, char* argv[]) {
     switch(c) {
       case 'h': usage(argv[0]); return 0;
       case 'e': {
-        char* x = optarg;
+        char* x = unix_optarg;
         ssize_t n;
         while(*x) {
           x += add_ext_class(x);
@@ -1327,40 +1327,40 @@ main(int argc, char* argv[]) {
 
         break;
       }
-      case 'X': strlist_push(&exclude_masks, optarg); break;
-      case 'I': strlist_push(&include_masks, optarg); break;
+      case 'X': strlist_push(&exclude_masks, unix_optarg); break;
+      case 'I': strlist_push(&include_masks, unix_optarg); break;
       case 'o': {
-        buffer_1->fd = io_err_check(open_trunc(optarg));
+        buffer_1->fd = io_err_check(open_trunc(unix_optarg));
         break;
       }
       case 'i': {
-        input_file = optarg;
+        input_file = unix_optarg;
         break;
       }
       case 't': {
-        opt_timestyle = optarg;
+        opt_timestyle = unix_optarg;
         break;
       }
       case 'q': opt_quiet++; break;
       case 'f': opt_force++; break;
-      case 'F': opt_types = type_mask(optarg); break;
+      case 'F': opt_types = type_mask(unix_optarg); break;
       case 's': {
-        opt_separator = optarg[0];
+        opt_separator = unix_optarg[0];
         break;
       }
       case 'l': opt_list = 1; break;
       case 'd':
-        scan_long(optarg, &opt_depth);
+        scan_long(unix_optarg, &opt_depth);
         ;
         break;
       case 'L': opt_deref = 1; break;
-      case 'C': opt_chdir = optarg; break;
+      case 'C': opt_chdir = unix_optarg; break;
       case 'S': opt_samedev = 0; break;
       case 'D': opt_samedev = 1; break;
       case 'n': opt_numeric = 1; break;
       case 'r': opt_relative = 1; break;
       case 'c': opt_crc = 1; break;
-      case 'm': scan_human(optarg, &opt_minsize); break;
+      case 'm': scan_human(unix_optarg, &opt_minsize); break;
       default: usage(argv[0]); return 1;
     }
   }
@@ -1405,7 +1405,7 @@ main(int argc, char* argv[]) {
 
     buffer_readfile(&input, input_file);
 
-    base_path = argv[optind] ? argv[optind] : "";
+    base_path = argv[unix_optind] ? argv[unix_optind] : "";
 
     if(*base_path) {
       stralloc_copys(&file, base_path);
@@ -1513,13 +1513,13 @@ main(int argc, char* argv[]) {
     return 0;
   }
 
-  if(optind < argc) {
-    while(optind < argc) {
+  if(unix_optind < argc) {
+    while(unix_optind < argc) {
       if(opt_relative)
-        opt_relative_to = argv[optind];
-      stralloc_copys(&dir, argv[optind]);
+        opt_relative_to = argv[unix_optind];
+      stralloc_copys(&dir, argv[unix_optind]);
       list_dir_internal(&dir, 0, 0);
-      optind++;
+      unix_optind++;
     }
   } else {
     stralloc_copys(&dir, ".");

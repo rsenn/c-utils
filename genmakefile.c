@@ -5290,7 +5290,7 @@ main(int argc, char* argv[]) {
   sig_ignore(SIGTRAP);
 #endif
 
-  struct longopt opts[] = {{"help", 0, NULL, 'h'},
+  struct unix_longopt opts[] = {{"help", 0, NULL, 'h'},
                            {"objext", 1, NULL, 'O'},
                            {"exeext", 1, NULL, 'B'},
                            {"libext", 1, NULL, 'X'},

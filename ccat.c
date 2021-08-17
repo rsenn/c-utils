@@ -97,7 +97,7 @@ main(int argc, char* argv[]) {
   buffer infile, outfile;
   buffer *input, *output;
 
-  struct longopt opts[] = {{"help", 0, NULL, 'h'},
+  struct unix_longopt opts[] = {{"help", 0, NULL, 'h'},
                            {"10", 0, NULL, 10},
                            {"11", 0, NULL, 11},
                            {"compress", 0, NULL, 'c'},
