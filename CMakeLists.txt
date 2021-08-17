@@ -426,7 +426,7 @@ else(LINK_STATIC)
   # set(EXE_LINKER_FLAGS "-Wl,-rpath=${OPENSSL_LIB_DIR}")
   set(CHK_DLFCN TRUE)
 endif(LINK_STATIC)
-
+#
 set(CMAKE_STATIC_LINKER_FLAGS "")
 
 check_functions(setuid setgid execve lstat waitpid aligned_alloc fnmatch getdelim getopt getopt_long pipe2 popen posix_memalign pread sendfile sigaddset sigemptyset sigprocmask strerror_r __write writev posix_spawnattr_setflags posix_spawn_file_actions_init posix_spawn_file_actions_adddup2 posix_spawnp clock_gettime)
@@ -801,6 +801,8 @@ endif(NOT LIBLZMA_LIBRARY)
 set(COMPRESSION_LIBRARIES ${LIBLZMA_LIBRARY} ${ZLIB_LIBRARY} ${BZIP2_LIBRARY} ${BROTLI_LIBRARY} ${LIBMATH} CACHE STRING "Compression libraries")
 # dump(COMPRESSION_LIBRARIES)
 
+link_directories(${LIBLZMA_LIBRARY_DIR} ${ZLIB_LIBRARY_DIR} ${BZIP2_LIBRARY_DIR} ${BROTLI_LIBRARY_DIR})
+
 if(LINK_STATIC)
   message(STATUS "Static linking")
   if(CMAKE_COMPILER_IS_GNUCC OR "${CMAKE_C_COMPILER_ID}" STREQUAL "Clang" OR "${CMAKE_C_COMPILER_ID}" STREQUAL "GNU")
@@ -830,7 +832,7 @@ set(genmakefile_SOURCES cmake.c cmake.h mplab.c mplab.h ini.c ini.h genmakefile.
 
 if(USE_BZIP)
   add_program(bsdiffcat path errmsg buffer array safemult str byte errmsg uint32 uint64 ${COMPRESSION_LIBRARIES})
-  add_program(ccat path case buffer open str unix ${COMPRESSION_LIBRARIES} ${LIBMATH})
+  add_program(ccat path case buffer open str unix ${ZLIB_LIBRARY} ${COMPRESSION_LIBRARIES} ${LIBMATH})
 endif(USE_BZIP)
 add_program(compiler-wrapper stralloc buffer byte fmt str strlist dir)
 add_program(count-depth buffer fmt)
@@ -865,7 +867,7 @@ message("TLS_LIBRARIES = ${TLS_LIBRARIES}")
 add_program(impgen pe buffer byte mmap open)
 set(list_r_SOURCES dump.c dump.h)
 add_program(list-r errmsg path strarray strlist stralloc buffer array unix dir array fmt open str uint64 ${LIBADVAPI32})
-#add_program(macho32list mmap uint32)
+# add_program(macho32list mmap uint32)
 if(USE_LZMA)
   add_program(mediathek-list errmsg stralloc buffer alloc byte fmt http tls scan slist str unix strarray strlist ${LIBLZMA_LIBRARY} ${TLS_LIBRARIES} ${LIBDL} pthread)
 endif(USE_LZMA)
@@ -919,8 +921,7 @@ add_program(setuidgid errmsg path stralloc mmap open scan str)
 add_program(lsproc strlist errmsg mmap buffer unix dir)
 
 if(BUILD_TESTS)
-  # add_program(ssltest strlist unix dns stralloc buffer errmsg byte io  tls socket alloc taia ${TLS_LIBRARIES} ${LIBMSWSOCK} ${LIBDL} pthread)
-  # add_program(ziptest buffer str unix ${COMPRESSION_LIBRARIES})
+  # add_program(ssltest strlist unix dns stralloc buffer errmsg byte io  tls socket alloc taia ${TLS_LIBRARIES} ${LIBMSWSOCK} ${LIBDL} pthread) add_program(ziptest buffer str unix ${COMPRESSION_LIBRARIES})
   add_program(binfmttest binfmt)
   add_program(buffertest stralloc buffer array case mmap ${COMPRESSION_LIBRARIES})
   add_program(cpptest cpp tokenizer unix buffer open)
@@ -973,10 +974,6 @@ set(CPACK_PACKAGE_FILE_NAME "c-utils")
 set(CPACK_PACKAGE_VERSION_MAJOR 1)
 set(CPACK_PACKAGE_VERSION_MINOR 0)
 set(CPACK_SOURCE_GENERATOR "TXZ")
-set(CPACK_SOURCE_IGNORE_FILES
-  \\.git/
-  build/
-  ".*~$"
-)
+set(CPACK_SOURCE_IGNORE_FILES \\.git/ build/ ".*~$")
 set(CPACK_VERBATIM_VARIABLES YES)
 include(CPack)

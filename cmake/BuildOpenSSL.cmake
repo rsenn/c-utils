@@ -60,9 +60,7 @@ message("BN_CONF_H: ${BN_CONF_H}")
 file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/include/internal/bn_conf.h "${BN_CONF_H}\n\n")
 ]]
 set(OPENSSLDIR "${CMAKE_INSTALL_PREFIX}/ssl")
-set(BUILDINF_TEMPLATE
-    "#define PLATFORM \"platform: \"\n#define DATE \"built on: Thu Feb 13 07:00:01 2020 UTC\"\n\nstatic const char compiler_flags[] = {\n    'c','o','m','p','i','l','e','r',':',' ','\\0'\n};"
-)
+set(BUILDINF_TEMPLATE "#define PLATFORM \"platform: \"\n#define DATE \"built on: Thu Feb 13 07:00:01 2020 UTC\"\n\nstatic const char compiler_flags[] = {\n    'c','o','m','p','i','l','e','r',':',' ','\\0'\n};")
 file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/buildinf.h" "${BUILDINF_TEMPLATE}\n")
 
 file(
@@ -207,17 +205,13 @@ file(
   crypto/threads_win.c
   crypto/uid.c)
 
-file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/e_os.h
-     DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/include/openssl)
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/e_os.h DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/include/openssl)
 
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/../../build/cmake/opensslconf.h.cmake
-               ${CMAKE_CURRENT_BINARY_DIR}/include/openssl/opensslconf.h)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/../../build/cmake/opensslconf.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/include/openssl/opensslconf.h)
 
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/../../build/cmake/bn_conf.h.cmake
-               ${CMAKE_CURRENT_BINARY_DIR}/include/internal/bn_conf.h)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/../../build/cmake/bn_conf.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/include/internal/bn_conf.h)
 
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/../../build/cmake/dso_conf.h.cmake
-               ${CMAKE_CURRENT_BINARY_DIR}/include/internal/dso_conf.h)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/../../build/cmake/dso_conf.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/include/internal/dso_conf.h)
 
 add_library(crypto ${LIBCRYPTO_SOURCES})
 target_link_libraries(crypto ${LIBPTHREAD})

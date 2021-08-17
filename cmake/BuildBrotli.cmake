@@ -12,18 +12,13 @@ if(BUILD_BROTLI)
   if(NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/brotli/CMakeLists.txt")
     if(NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/brotli-${BROTLI_VERSION}.tar.gz")
       file(REMOVE_RECURSE "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/brotli")
-      file(DOWNLOAD "https://github.com/google/brotli/archive/v${BROTLI_VERSION}.tar.gz"
-           "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/brotli-${BROTLI_VERSION}.tar.gz" SHOW_PROGRESS)
+      file(DOWNLOAD "https://github.com/google/brotli/archive/v${BROTLI_VERSION}.tar.gz" "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/brotli-${BROTLI_VERSION}.tar.gz" SHOW_PROGRESS)
     endif()
 
-    exec_program(
-      "${TAR}" ARGS -C "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty" -xzf
-                    "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/brotli-${BROTLI_VERSION}.tar.gz")
-    file(RENAME "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/brotli-${BROTLI_VERSION}"
-         "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/brotli")
+    exec_program("${TAR}" ARGS -C "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty" -xzf "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/brotli-${BROTLI_VERSION}.tar.gz")
+    file(RENAME "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/brotli-${BROTLI_VERSION}" "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/brotli")
 
-  endif() # file(READ "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/brotli.cmake.txt" BROTLI_CMAKELISTS_TXT)
-          # file(WRITE  "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/brotli/CMakeLists.txt"
+  endif() # file(READ "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/brotli.cmake.txt" BROTLI_CMAKELISTS_TXT) file(WRITE  "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/brotli/CMakeLists.txt"
           # "${BROTLI_CMAKELISTS_TXT}")
   set(BROTLI_STATIC TRUE)
   set(BROTLI_NO_INSTALL TRUE)

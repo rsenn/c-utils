@@ -1,14 +1,11 @@
 # =============================================================================
 # Copyright 2013 Stephen Kelly <steveire@gmail.com>
 #
-# Distributed under the OSI-approved BSD License (the "License"); see accompanying file
-# Copyright.txt for details.
+# Distributed under the OSI-approved BSD License (the "License"); see accompanying file Copyright.txt for details.
 #
-# This software is distributed WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the License for more information.
+# This software is distributed WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the License for more information.
 # =============================================================================
-# (To distribute this file outside of CMake, substitute the full License text for the above
-# reference.)
+# (To distribute this file outside of CMake, substitute the full License text for the above reference.)
 
 function(cmake_determine_compile_features lang)
 
@@ -36,8 +33,7 @@ function(cmake_determine_compile_features lang)
     endif()
 
     if(NOT CMAKE_C_COMPILE_FEATURES)
-      set(CMAKE_C_COMPILE_FEATURES ${CMAKE_C90_COMPILE_FEATURES} ${CMAKE_C99_COMPILE_FEATURES}
-                                   ${CMAKE_C11_COMPILE_FEATURES})
+      set(CMAKE_C_COMPILE_FEATURES ${CMAKE_C90_COMPILE_FEATURES} ${CMAKE_C99_COMPILE_FEATURES} ${CMAKE_C11_COMPILE_FEATURES})
     endif()
 
     set(CMAKE_C_COMPILE_FEATURES ${CMAKE_C_COMPILE_FEATURES} PARENT_SCOPE)
@@ -71,9 +67,7 @@ function(cmake_determine_compile_features lang)
     endif()
 
     if(NOT CMAKE_CXX_COMPILE_FEATURES)
-      set(CMAKE_CXX_COMPILE_FEATURES
-          ${CMAKE_CXX98_COMPILE_FEATURES} ${CMAKE_CXX11_COMPILE_FEATURES}
-          ${CMAKE_CXX14_COMPILE_FEATURES})
+      set(CMAKE_CXX_COMPILE_FEATURES ${CMAKE_CXX98_COMPILE_FEATURES} ${CMAKE_CXX11_COMPILE_FEATURES} ${CMAKE_CXX14_COMPILE_FEATURES})
     endif()
 
     set(CMAKE_CXX_COMPILE_FEATURES ${CMAKE_CXX_COMPILE_FEATURES} PARENT_SCOPE)

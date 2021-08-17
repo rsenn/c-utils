@@ -35,6 +35,7 @@ typedef enum { LANG_C, LANG_CXX } lang_type;
 
 #define DEFAULT_OBJEXT ".obj"
 #define DEFAULT_LIBEXT ".lib"
+#define DEFAULT_DSOEXT ".dll"
 #define DEFAULT_LIBPFX ""
 #define DEFAULT_EXEEXT ".exe"
 #define DEFAULT_PPSEXT ".pp.c"

@@ -9,8 +9,9 @@
 #include <stdlib.h>
 #include "lib/bool.h"
 #include <unistd.h>
+#if !WINDOWS_NATIVE
 #include <sys/mman.h>
-
+#endif
 #include "cache.h"
 
 uint64 cache_motion = 0;
@@ -249,8 +250,9 @@ cache_update() {
     uint32_pack((char*)&data->writer, writer);
     uint32_pack((char*)&data->oldest, oldest);
     uint32_pack((char*)&data->unused, unused);
-
+#if !WINDOWS_NATIVE
     msync(data, sizeof(uint32) * 3 + top, MS_SYNC);
+#endif
     top = 0;
   }
 }

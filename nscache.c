@@ -123,12 +123,15 @@ nscache_droproot(const char* fatal) {
   if((x = env_get("ROOT"))) {
     if(chdir(x) == -1)
       diesys(111, fatal, "unable to chdir to ", x, ": ");
+#if !WINDOWS_NATIVE
     if(getuid() == 0 && chroot(".") == -1)
       carpsys(WARN, "unable to chroot to ", x, ": ");
+#endif
   } else {
     msg(WARN, "$ROOT not set");
   }
 
+#if !WINDOWS_NATIVE
   if((x = env_get("GID"))) {
     scan_ulong(x, &id);
     if(setgid((int)id) == -1)
@@ -144,6 +147,7 @@ nscache_droproot(const char* fatal) {
   } else {
     msg(WARN, "$UID not set");
   }
+#endif
 }
 
 static int

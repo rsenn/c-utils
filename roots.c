@@ -139,8 +139,10 @@ roots_init(void) {
   if(fddir == -1)
     return 0;
   r = roots_init1();
+#if !WINDOWS_NATIVE
   if(fchdir(fddir) == -1)
     r = 0;
+#endif
   close(fddir);
   return r;
 }

@@ -1,6 +1,11 @@
 #include "lib/buffer.h"
 #include "lib/io_internal.h"
 #include "terminal.h"
+#if WINDOWS_NATIVE
+#include <io.h>
+#else
+#include <unistd.h>
+#endif
 
 static char terminal_buf[32];
 buffer terminal_buffer = BUFFER_INIT(write, 1, terminal_buf, sizeof(terminal_buf));

@@ -21,8 +21,10 @@
 #if !WINDOWS_NATIVE
 #include <termios.h>
 #include <sys/ioctl.h>
-#include <sys/inotify.h>
 #include <sys/stat.h>
+#endif
+#if !WINDOWS
+#include <sys/inotify.h>
 #endif
 
 #include "terminal.h"
@@ -721,9 +723,11 @@ main(int argc, char* argv[]) {
   scroll_to(0);
 
   if(input.fd != STDIN_FILENO /*&& !is_pipe*/) {
+#if !WINDOWS
     watchfd = inotify_init();
 
     wd = inotify_add_watch(watchfd, filename, IN_MODIFY);
+#endif
   } else {
     watchfd = input.fd;
   }
@@ -757,13 +761,14 @@ main(int argc, char* argv[]) {
         on_terminal = 1;
 
       if(fd == watchfd) {
+#if !WINDOWS
         struct inotify_event event;
 
         if(watchfd != input.fd) {
           if(read(watchfd, &event, sizeof(event)) <= 0)
             continue;
         }
-
+#endif
         on_input = 1;
       }
     }

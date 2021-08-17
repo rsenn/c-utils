@@ -1,3 +1,7 @@
+#include "../windoze.h"
+#if WINDOWS
+#define ZLIB_DLL 1
+#endif
 #include "../buffer.h"
 #include "../byte.h"
 #include "../str.h"

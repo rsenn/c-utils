@@ -8,7 +8,7 @@
 #include "lib/errmsg.h"
 #include "lib/fmt.h"
 #include "lib/dns.h"
-#include "lib/socket.h"
+#include "lib/socket_internal.h"
 
 #include "log.h"
 
@@ -16,7 +16,7 @@
 #include <errno.h>
 #include <string.h>
 #include <ctype.h>
-#include <sys/socket.h>
+//#include <sys/socket.h>
 #include <sys/types.h>
 
 static int iphex = 0;
@@ -113,7 +113,7 @@ log_iplist(const char* x, size_t n, size_t iplen) {
 void
 log_fd(int fd) {
   int type = 0;
-  socklen_t length = sizeof(type);
+  int length = sizeof(type);
   getsockopt(fd, SOL_SOCKET, SO_TYPE, &type, &length);
   log_string(type == SOCK_STREAM ? "tcp" : type == SOCK_DGRAM ? "udp" : "sock");
   // log_string(socket_is6(fd) ? "6" :
