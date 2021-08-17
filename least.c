@@ -19,8 +19,6 @@
 #include <errno.h>
 
 #if !WINDOWS_NATIVE
-#include <termios.h>
-#include <sys/ioctl.h>
 #include <sys/stat.h>
 #endif
 #if !WINDOWS
@@ -40,7 +38,6 @@ static int64 terminal_rows, terminal_cols, display_rows, first_line, match_index
 
 const char* filename;
 buffer terminal;
-struct termios oldterm;
 
 static stralloc command_buf;
 static int end_of_file;
@@ -82,10 +79,8 @@ line_numbytes(const char* s, size_t maxwidth) {
 
 void
 read_terminal_properties(void) {
-  struct winsize w;
-  ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
-  terminal_rows = w.ws_row;
-  terminal_cols = w.ws_col;
+  terminal_rows = terminal_getwidth();
+  terminal_cols = terminal_getheight();
   display_rows = terminal_rows - 1;
 }
 
@@ -140,16 +135,6 @@ read_content(buffer* b, size_t max_lines) {
         break;
       }
   return end_of_file;
-}
-
-struct termios*
-init_terminal(void) {
-  struct termios newt;
-  tcgetattr(terminal.fd, &oldterm);
-  newt = oldterm;
-  newt.c_lflag &= ~(ICANON | ECHO);
-  tcsetattr(terminal.fd, TCSANOW, &newt);
-  return &oldterm;
 }
 
 void
@@ -671,10 +656,7 @@ void
 terminate(int sig) {
   buffer_putnlflush(buffer_1);
 
-  tcsetattr(STDOUT_FILENO, TCSANOW, &oldterm);
-
-  terminal_set_normal_screen();
-  terminal_linewrap_enable();
+  terminal_restore();
   buffer_flush(buffer_1);
 
   exit(0);
@@ -715,7 +697,7 @@ main(int argc, char* argv[]) {
     is_pipe = S_ISFIFO(st.st_mode);
   }
 
-  init_terminal();
+  terminal_init();
   terminal_set_alternate_screen();
 
   buffer_flush(buffer_1);

@@ -1,3 +1,5 @@
+#define _XOPEN_SOURCE_EXTENDED 1
+#define _MISC_SOURCE 1
 #include "lib/buffer.h"
 #include "lib/io_internal.h"
 #include "terminal.h"
@@ -5,10 +7,19 @@
 #include <io.h>
 #else
 #include <unistd.h>
+#include <termios.h>
+#include <sys/ioctl.h>
 #endif
 
-static char terminal_buf[32];
-buffer terminal_buffer = BUFFER_INIT(write, 1, terminal_buf, sizeof(terminal_buf));
+static char terminal_out_buf[32], terminal_in_buf[64];
+buffer terminal_out_buffer = BUFFER_INIT(write, 1, terminal_out_buf, sizeof(terminal_out_buf));
+buffer terminal_in_buffer = BUFFER_INIT(read, 0, terminal_in_buf, sizeof(terminal_in_buf));
+static struct termios oldterm;
+
+#if WINDOWS_NATIVE
+WORD COLOR_DEFAULT = FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY;
+HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+#endif
 
 static inline void
 put_escape(buffer* b) {
@@ -18,27 +29,82 @@ put_escape(buffer* b) {
 
 static inline void
 put_num(int n) {
-  buffer_putulong(&terminal_buffer, n);
+  buffer_putulong(&terminal_out_buffer, n);
 }
 
 static inline void
 put_char(int c) {
-  buffer_putc(&terminal_buffer, c);
+  buffer_putc(&terminal_out_buffer, c);
 }
 
 static inline void
 put_string(const char* s) {
-  buffer_puts(&terminal_buffer, s);
+  buffer_puts(&terminal_out_buffer, s);
 }
 
 /*void
 terminal_device_reset() {
   put_char(ESC);
   put_char('c');
-    buffer_flush(&terminal_buffer);
+    buffer_flush(&terminal_out_buffer);
 
 }
 */
+int
+terminal_init(void) {
+#if WINDOWS_NATIVE
+  struct termios newt;
+  tcgetattr(terminal_out_buffer.fd, &oldterm);
+  newt = oldterm;
+  newt.c_lflag &= ~(ICANON | ECHO);
+  tcsetattr(terminal_out_buffer.fd, TCSANOW, &newt);
+#else
+#endif
+  return 0;
+}
+
+void
+terminal_restore(void) {
+
+  tcsetattr(terminal_out_buffer.fd, TCSANOW, &oldterm);
+
+  terminal_set_normal_screen();
+  terminal_linewrap_enable();
+}
+
+#if WINDOWS_NATIVE
+static CONSOLE_SCREEN_BUFFER_INFO
+getsize() {
+  CONSOLE_SCREEN_BUFFER_INFO csbi;
+  GetConsoleScreenBufferInfo(hConsole, &csbi);
+  return csbi;
+}
+#endif
+
+int
+terminal_getwidth() {
+#if WINDOWS_NATIVE
+  CONSOLE_SCREEN_BUFFER_INFO size = getsize();
+  return size.srWindow.Right - size.srWindow.Left;
+#else
+  struct winsize w;
+  ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
+  return w.ws_col;
+#endif
+}
+
+int
+terminal_getheight() {
+#if WINDOWS_NATIVE
+  CONSOLE_SCREEN_BUFFER_INFO size = getsize();
+  return size.srWindow.Bottom - size.srWindow.Top;
+#else
+  struct winsize w;
+  ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
+  return w.ws_row;
+#endif
+}
+
 void
 terminal_number_sequence(buffer* b, int n, char c) {
   put_escape(b);
@@ -61,8 +127,8 @@ terminal_numbers_sequence(buffer* b, int* numbers, size_t len, char c) {
 
 void
 terminal_escape_number_char(buffer* b, int n, char c) {
-  terminal_number_sequence(&terminal_buffer, n, c);
-  buffer_flush(&terminal_buffer);
+  terminal_number_sequence(&terminal_out_buffer, n, c);
+  buffer_flush(&terminal_out_buffer);
 }
 void
 terminal_escape_char(buffer* b, char c) {
@@ -78,18 +144,32 @@ terminal_escape_sequence(buffer* b, const char* seq) {
 
 void
 terminal_command_sequence(buffer* b, const char* seq) {
-  terminal_escape_sequence(&terminal_buffer, seq);
-  buffer_flush(&terminal_buffer);
+  terminal_escape_sequence(&terminal_out_buffer, seq);
+  buffer_flush(&terminal_out_buffer);
 }
 void
 terminal_command_number_char(int n, char c) {
-  terminal_escape_number_char(&terminal_buffer, n, c);
-  buffer_flush(&terminal_buffer);
+  terminal_escape_number_char(&terminal_out_buffer, n, c);
+  buffer_flush(&terminal_out_buffer);
 }
 void
 terminal_command_char(char c) {
-  terminal_escape_char(&terminal_buffer, c);
-  buffer_flush(&terminal_buffer);
+  terminal_escape_char(&terminal_out_buffer, c);
+  buffer_flush(&terminal_out_buffer);
+}
+
+void
+terminal_goto_xy(int x, int y) {
+#if WINDOWS
+  COORD point;
+  point.X = x;
+  point.Y = y;
+  SetConsoleCursorPosition(hConsole, point);
+#else
+  int coord[2] = {y + 1, x + 1};
+  terminal_numbers_sequence(&terminal_out_buffer, coord, 2, 'H');
+  buffer_flush(&terminal_out_buffer);
+#endif
 }
 
 void
@@ -127,16 +207,51 @@ terminal_cursor_horizontal_absolute(int n) {
   terminal_command_number_char(n, 'G');
 }
 
-void
+/*void
 terminal_cursor_position(int row, int column) {
   int coord[2] = {row, column};
-  terminal_numbers_sequence(&terminal_buffer, coord, 2, 'H');
-  buffer_flush(&terminal_buffer);
+  terminal_numbers_sequence(&terminal_out_buffer, coord, 2, 'H');
+  buffer_flush(&terminal_out_buffer);
+}
+*/
+void
+terminal_cursor_position(int* x, int* y) {
+#if WINDOWS_NATIVE
+  CONSOLE_SCREEN_BUFFER_INFO csbi;
+  if(!GetConsoleScreenBufferInfo(hConsole, &csbi))
+    return;
+
+  if(x)
+    *x = csbi.dwCursorPosition.X;
+  if(y)
+    *y = csbi.dwCursorPosition.Y;
+#else
+  terminal_command_number_char(6, 'n');
+
+  buffer_feed(&terminal_in_buffer);
+
+#endif
 }
 
 void
 terminal_erase_in_display(int n) {
+#if WINDOWS
+  COORD coordScreen = {0, 0};
+  DWORD cCharsWritten;
+  CONSOLE_SCREEN_BUFFER_INFO csbi;
+  DWORD dwConSize;
+
+  if(n == 2) {
+    GetConsoleScreenBufferInfo(hConsole, &csbi);
+    dwConSize = csbi.dwSize.X * csbi.dwSize.Y;
+    FillConsoleOutputCharacter(hConsole, TEXT(' '), dwConSize, coordScreen, &cCharsWritten);
+    GetConsoleScreenBufferInfo(hConsole, &csbi);
+    FillConsoleOutputAttribute(hConsole, csbi.wAttributes, dwConSize, coordScreen, &cCharsWritten);
+    SetConsoleCursorPosition(hConsole, coordScreen);
+  }
+#else
   terminal_command_number_char(n, 'J');
+#endif
 }
 
 void
@@ -156,20 +271,20 @@ terminal_scroll_down(int n) {
 
 void
 terminal_set_alternate_screen() {
-  put_escape(&terminal_buffer);
+  put_escape(&terminal_out_buffer);
   put_char('?');
   put_num(1049);
   put_char('h');
-  buffer_flush(&terminal_buffer);
+  buffer_flush(&terminal_out_buffer);
 }
 
 void
 terminal_set_normal_screen() {
-  put_escape(&terminal_buffer);
+  put_escape(&terminal_out_buffer);
   put_char('?');
   put_num(1049);
   put_char('l');
-  buffer_flush(&terminal_buffer);
+  buffer_flush(&terminal_out_buffer);
 }
 
 void
