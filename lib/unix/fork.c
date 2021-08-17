@@ -23,7 +23,7 @@
 #include <process.h>
 #include <stdio.h>
 #include <windows.h>
-#include <winnt.h>
+//#include <winnt.h>
 
 #ifndef ENOSYS
 #define ENOSYS 1052

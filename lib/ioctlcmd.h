@@ -3,13 +3,15 @@
 
 #include "windoze.h"
 
-#if !WINDOWS_NATIVE
+#if !WINDOWS
 typedef unsigned char UCHAR;
 typedef unsigned char BYTE;
 typedef char TCHAR;
-typedef int WCHAR;
 typedef unsigned short WORD;
+#if !WINDOWS
+typedef int WCHAR;
 typedef unsigned long ULONG;
+#endif
 typedef unsigned int DWORD;
 typedef void* PVOID;
 #else
