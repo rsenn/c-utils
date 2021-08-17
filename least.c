@@ -680,7 +680,7 @@ main(int argc, char* argv[]) {
 #ifdef SIGWINCH
   sig_catch(SIGWINCH, winsizechange);
 #endif
-  
+
   if(argc < 2) {
     buffer_read_fd(&input, STDIN_FILENO);
     filename = "(stdin)";

@@ -1,6 +1,7 @@
 #define _XOPEN_SOURCE_EXTENDED 1
 #define _MISC_SOURCE 1
 #include "lib/buffer.h"
+#include "lib/bool.h"
 #include "lib/io_internal.h"
 #include "terminal.h"
 #if WINDOWS
@@ -119,7 +120,7 @@ terminal_number_sequence(buffer* b, int n, char c) {
 }
 
 void
-terminal_numbers_sequence(buffer* b, int* numbers, size_t len, char c) {
+terminal_numbers_sequence(buffer* b, int numbers[], size_t len, char c) {
   size_t i;
   put_escape(b);
   for(i = 0; i < len; i++) {
@@ -292,6 +293,62 @@ terminal_set_normal_screen() {
   buffer_flush(&terminal_out_buffer);
 }
 
+void
+terminal_set_bg(int color) {
+  int c = color & 7;
+  bool bright = (color & COLOR_BRIGHT) == COLOR_BRIGHT;
+
+#if WINDOWS
+  CONSOLE_SCREEN_BUFFER_INFO csbi;
+  GetConsoleScreenBufferInfo(hConsole, &csbi);
+
+  if(color == COLOR_RESET)
+    c = (COLOR_DEFAULT & 240) | (csbi.wAttributes & 15);
+  else {
+    if(bright)
+      c += 8;
+
+    c = c << 4;
+    c |= (csbi.wAttributes & 15);
+  }
+
+  SetConsoleTextAttribute(hConsole, c);
+#else
+  if(color == COLOR_RESET)
+    terminal_command_number_char(49, 'm');
+  else
+    terminal_numbers_sequence(&terminal_out_buffer, (int[]){bright ? 0 : 1, 40 + c}, 2, 'm');
+//    printf("\033[%d;%dm", bright ? 0 : 1, 40 + c);
+#endif
+}
+
+void
+terminal_set_fg(int color) {
+  int c = color & 7;
+  bool bright = (color & COLOR_BRIGHT) == COLOR_BRIGHT;
+
+#if WINDOWS
+  CONSOLE_SCREEN_BUFFER_INFO csbi;
+  GetConsoleScreenBufferInfo(hConsole, &csbi);
+
+  if(color == COLOR_RESET)
+    c = (COLOR_DEFAULT & 15) | (csbi.wAttributes & 240);
+  else {
+    if(bright)
+      c += 8;
+
+    c |= (csbi.wAttributes & 240);
+  }
+
+  SetConsoleTextAttribute(hConsole, c);
+#else
+  if(color == COLOR_RESET)
+    terminal_command_number_char(39, 'm');
+  else
+    terminal_numbers_sequence(&terminal_out_buffer, (int[]){bright ? 0 : 2, 30 + c}, 2, 'm');
+    // printf("\033[%d;%dm", bright ? 0 : 2, 30 + c);
+#endif
+}
 void
 terminal_rgb_foreground(buffer* buf, uint8 r, uint8 g, uint8 b) {
   int code[5] = {38, 2, r, g, b};

@@ -3,6 +3,43 @@
 
 #include "lib/uint8.h"
 #include "lib/buffer.h"
+#include "lib/windoze.h"
+
+#define COLOR_RESET -1
+#define COLOR_BLACK 0
+#define COLOR_GREEN 2
+#define COLOR_MAGENTA 5
+#define COLOR_FUSCHIA 5
+#define COLOR_PURPLE 5
+#define COLOR_WHITE 7
+#define COLOR_BRIGHT 8
+#if WINDOWS
+#define COLOR_AQUA 3
+#define COLOR_BLUE 1
+#define COLOR_CYAN 3
+#define COLOR_RED 4
+#define COLOR_YELLOW 6
+#else
+#define COLOR_AQUA 6
+#define COLOR_BLUE 4
+#define COLOR_CYAN 6
+#define COLOR_RED 1
+#define COLOR_YELLOW 3
+#endif
+
+// BRIGHT
+#define COLOR_BRIGHTAQUA (COLOR_BRIGHT | COLOR_AQUA)
+#define COLOR_BRIGHTBLACK (COLOR_BRIGHT | COLOR_BLACK)
+#define COLOR_BRIGHTBLUE (COLOR_BRIGHT | COLOR_BLUE)
+#define COLOR_BRIGHTCYAN (COLOR_BRIGHT | COLOR_CYAN)
+#define COLOR_BRIGHTFUSCHIA (COLOR_BRIGHT | COLOR_FUSCHIA)
+#define COLOR_BRIGHTGREEN (COLOR_BRIGHT | COLOR_GREEN)
+#define COLOR_BRIGHTMAGENTA (COLOR_BRIGHT | COLOR_MAGENTA)
+#define COLOR_BRIGHTPURPLE (COLOR_BRIGHT | COLOR_PURPLE)
+#define COLOR_BRIGHTRED (COLOR_BRIGHT | COLOR_RED)
+#define COLOR_BRIGHTWHITE (COLOR_BRIGHT | COLOR_WHITE)
+#define COLOR_BRIGHTYELLOW (COLOR_BRIGHT | COLOR_YELLOW)
+#define COLOR_GRAY (COLOR_BRIGHT | COLOR_BLACK)
 
 #define ESC 27
 
@@ -41,7 +78,7 @@ int terminal_getheight(void);
 int terminal_getwidth(void);
 void terminal_goto_xy(int x, int y);
 int terminal_init(void);
-void terminal_numbers_sequence(buffer* b, int* numbers, size_t len, char c);
+void terminal_numbers_sequence(buffer* b, int numbers[], size_t len, char c);
 void terminal_number_sequence(buffer* b, int n, char c);
 void terminal_restore(void);
 void terminal_rgb_background(buffer* buf, uint8 r, uint8 g, uint8 b);
@@ -49,6 +86,8 @@ void terminal_rgb_foreground(buffer* buf, uint8 r, uint8 g, uint8 b);
 void terminal_scroll_down(int n);
 void terminal_scroll_up(int n);
 void terminal_set_alternate_screen(void);
+void terminal_set_bg(int color);
+void terminal_set_fg(int color);
 void terminal_set_normal_screen(void);
 
 #endif
