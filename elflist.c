@@ -461,12 +461,12 @@ main(int argc, char** argv) {
   int c, index = 0;
 
   struct unix_longopt opts[] = {{"help", 0, NULL, 'h'},
-                           {"defined", 0, &list_defined, 'D'},
-                           {"undefined", 0, &list_undefined, 'U'},
-                           {"file-header", 0, 0, 'F'},
-                           {"sections", 0, 0, 'S'},
-                           {"radix", 1, 0, 'r'},
-                           {0, 0, 0, 0}};
+                                {"defined", 0, &list_defined, 'D'},
+                                {"undefined", 0, &list_undefined, 'U'},
+                                {"file-header", 0, 0, 'F'},
+                                {"sections", 0, 0, 'S'},
+                                {"radix", 1, 0, 'r'},
+                                {0, 0, 0, 0}};
   strlist_init(&flaglist, '|');
 
   for(;;) {

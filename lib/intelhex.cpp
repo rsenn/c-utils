@@ -192,7 +192,8 @@ hex_data::size_type
 hex_data::size() {
   size_type s = 0;
 
-  for(iterator i = blocks.begin(); i != blocks.end(); ++i) s += i->second.size();
+  for(iterator i = blocks.begin(); i != blocks.end(); ++i)
+    s += i->second.size();
 
   return s;
 }
@@ -271,7 +272,8 @@ hex_data::is_set(address_type addr) {
    * address */
   /*  less than addr */
   reverse_iterator i = blocks.rbegin();
-  while((i != blocks.rend()) && (i->first > addr)) ++i;
+  while((i != blocks.rend()) && (i->first > addr))
+    ++i;
 
   if((addr - i->first) > i->second.size())
     return false;

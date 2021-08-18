@@ -30,7 +30,8 @@ main(int argc, char** argv) {
 
   cpp = cpp_new();
 
-  while((c = unix_getopt(argc, argv, "D:I:")) != -1) switch(c) {
+  while((c = unix_getopt(argc, argv, "D:I:")) != -1)
+    switch(c) {
       case 'I': cpp_add_includedir(cpp, unix_optarg); break;
       case 'D':
         if(*(tmp = unix_optarg + str_chr(unix_optarg, '=')) == '=')

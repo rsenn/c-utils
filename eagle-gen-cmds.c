@@ -1582,13 +1582,13 @@ main(int argc, char* argv[]) {
   int index = 0;
   rect extent, extent2;
   struct unix_longopt opts[] = {{"help", 0, NULL, 'h'},
-                           {"layer", 1, NULL, 'l'},
-                           {"layers", 0, NULL, 'L'},
-                           {"draw", 0, NULL, 'd'},
-                           {"align", 0, NULL, 'a'},
-                           {"align-by", 0, NULL, 'A'},
-                           {"comments", 0, NULL, 'c'},
-                           {0, 0, 0, 0}};
+                                {"layer", 1, NULL, 'l'},
+                                {"layers", 0, NULL, 'L'},
+                                {"draw", 0, NULL, 'd'},
+                                {"align", 0, NULL, 'a'},
+                                {"align-by", 0, NULL, 'A'},
+                                {"comments", 0, NULL, 'c'},
+                                {0, 0, 0, 0}};
 
   for(;;) {
     c = unix_getopt_long(argc, argv, "LdhaA:l:c", opts, &index);
@@ -1630,8 +1630,8 @@ main(int argc, char* argv[]) {
 
     if(!argv[unix_optind]) {
       argv[unix_optind] = "/home/roman/Sources/"
-                     "an-tronics/eagle/"
-                     "40106-4069-Synth.brd";
+                          "an-tronics/eagle/"
+                          "40106-4069-Synth.brd";
     } else if(argv[unix_optind + 1]) {
       xq = argv[unix_optind + 1];
     }

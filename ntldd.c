@@ -81,7 +81,7 @@ char* search_path(const char* filename);
 #define HAVE_CYGWIN_CONV_PATH 1
 #endif
 
-#if  1 // def HAVE_CYGWIN_CONV_PATH
+#if 1 // def HAVE_CYGWIN_CONV_PATH
 #define cygwin_conv_to_full_posix_path(from, to)                                                                       \
   cygwin_conv_path(CCP_WIN_A_TO_POSIX | CCP_ABSOLUTE, (from), (to), MAX_PATH)
 #endif
@@ -213,7 +213,8 @@ export_ordinal)
 int
 clear_dep_status(struct dep_tree_element* self, uint64 flags) {
   uint64 i;
-  for(i = 0; i < self->childs_len; i++) clear_dep_status(self->childs[i], flags);
+  for(i = 0; i < self->childs_len; i++)
+    clear_dep_status(self->childs[i], flags);
   self->flags &= ~flags;
   return 0;
 }
@@ -862,17 +863,17 @@ main(int argc, char** argv) {
   int index = 0;
   static int print_dirs = 0;
   const struct unix_longopt opts[] = {{"help", 0, 0, 'h'},
-                                 {"verbose", 0, &verbose, 'v'},
-                                 {"unused", 0, &unused, 'u'},
-                                 {"data-relocs", 0, &datarelocs, 'd'},
-                                 {"function-relocs", 0, &functionrelocs, 'r'},
-                                 {"recursive", 0, &recursive, 'R'},
-                                 {"list-exports", 0, &list_exports, 'e'},
-                                 {"list-imports", 0, &list_imports, 'i'},
-                                 {"version", 0, 0, 'V'},
-                                 {"search-dir", 0, 0, 'D'},
-                                 {"print-search-dirs", 0, &print_dirs, 1},
-                                 {0, 0, 0, 0}};
+                                      {"verbose", 0, &verbose, 'v'},
+                                      {"unused", 0, &unused, 'u'},
+                                      {"data-relocs", 0, &datarelocs, 'd'},
+                                      {"function-relocs", 0, &functionrelocs, 'r'},
+                                      {"recursive", 0, &recursive, 'R'},
+                                      {"list-exports", 0, &list_exports, 'e'},
+                                      {"list-imports", 0, &list_imports, 'i'},
+                                      {"version", 0, 0, 'V'},
+                                      {"search-dir", 0, 0, 'D'},
+                                      {"print-search-dirs", 0, &print_dirs, 1},
+                                      {0, 0, 0, 0}};
 
   path_getcwd(&cwd);
   stralloc_append(&cwd, PATHSEP_S);

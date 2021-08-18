@@ -729,7 +729,7 @@ void
 part_unconnected() {
   MAP_PAIR_T t;
   MAP_FOREACH(parts, t) {
-  int i;
+    int i;
     struct part* part = MAP_ITER_VALUE(t);
     for(i = 0; i < part->num_pins; i++) {
       struct net* pin = &part->pins[i];

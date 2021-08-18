@@ -328,14 +328,14 @@ main(int argc, char** argv) {
   int c, index = 0;
 
   struct unix_longopt opts[] = {{"help", 0, NULL, 'h'},
-                           {"imports", 0, &list_imports, 'i'},
-                           {"exports", 0, &list_exports, 'e'},
-                           {"deps", 0, &list_deps, 'd'},
-                           {"sections", 0, &list_sections, 's'},
-                           {"export-directory", 0, &print_export_dir, 'E'},
-                           {"data-directory", 0, &print_data_dir, 'D'},
-                           {"optional-header", 0, &print_opt_header, 'O'},
-                           {0, 0, 0, 0}};
+                                {"imports", 0, &list_imports, 'i'},
+                                {"exports", 0, &list_exports, 'e'},
+                                {"deps", 0, &list_deps, 'd'},
+                                {"sections", 0, &list_sections, 's'},
+                                {"export-directory", 0, &print_export_dir, 'E'},
+                                {"data-directory", 0, &print_data_dir, 'D'},
+                                {"optional-header", 0, &print_opt_header, 'O'},
+                                {0, 0, 0, 0}};
 
   errmsg_iam(argv[0]);
 

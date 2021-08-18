@@ -15,9 +15,9 @@ cb_insert(critbit_tree* cb, const void* key, size_t keylen) {
     for(;;) {
       void* ptr = *iter;
       if(decode_pointer(&ptr) == INTERNAL_NODE) {
-         int branch;
-         node = (struct critbit_node*)ptr;
-       branch= (keylen <= node->byte) ? 0 : ((1 + ((bytes[node->byte] | node->mask) & 0xFF)) >> 8);
+        int branch;
+        node = (struct critbit_node*)ptr;
+        branch = (keylen <= node->byte) ? 0 : ((1 + ((bytes[node->byte] | node->mask) & 0xFF)) >> 8);
         iter = &node->child[branch];
         prev = node;
       } else {

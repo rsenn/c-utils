@@ -98,15 +98,15 @@ main(int argc, char* argv[]) {
   buffer *input, *output;
 
   struct unix_longopt opts[] = {{"help", 0, NULL, 'h'},
-                           {"10", 0, NULL, 10},
-                           {"11", 0, NULL, 11},
-                           {"compress", 0, NULL, 'c'},
-                           {"decompress", 0, NULL, 'd'},
-                           {"type", 1, NULL, 't'},
-                           {"output", 1, NULL, 'o'},
-                           {"force", 0, NULL, 'f'},
+                                {"10", 0, NULL, 10},
+                                {"11", 0, NULL, 11},
+                                {"compress", 0, NULL, 'c'},
+                                {"decompress", 0, NULL, 'd'},
+                                {"type", 1, NULL, 't'},
+                                {"output", 1, NULL, 'o'},
+                                {"force", 0, NULL, 'f'},
 
-                           {0, 0, 0, 0}};
+                                {0, 0, 0, 0}};
 
   while((opt = unix_getopt_long(argc, argv, "123456789cdt:o:hf", opts, &index)) != -1) {
     switch(opt) {

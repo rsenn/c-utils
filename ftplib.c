@@ -141,7 +141,8 @@ ftplib_pasv(
     return -2;
   p = x.s;
   q = p + 4;
-  while(*q && (*q < '0' || *q > '9')) q++;
+  while(*q && (*q < '0' || *q > '9'))
+    q++;
   if(!*q) {
     stralloc_free(&x);
     return -2;

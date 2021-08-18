@@ -123,7 +123,8 @@ output_mplab_project(buffer* b, MAP_T* _rules, MAP_T* vars, const strlist* inclu
                               .size_of_double = 1,
                               .size_of_float = 1};
 
-  ini_section_t *ini, *section, *cat_subfolders, *file_subfolders, *generated_files, *other_files /*, *file_info*/, *active_file_settings, *tool_settings;
+  ini_section_t *ini, *section, *cat_subfolders, *file_subfolders, *generated_files, *other_files /*, *file_info*/,
+      *active_file_settings, *tool_settings;
 
   stralloc_init(&sa);
   stralloc_init(&file);
@@ -236,7 +237,8 @@ output_mplab_project(buffer* b, MAP_T* _rules, MAP_T* vars, const strlist* inclu
       n = str_rchrs(dirname.s, "/\\", 2);
       if(s[n])
         s += n;
-      while(s[0] == '.' && s[1] == '.' && (s[2] == '/' || s[2] == '\\')) s += 3;
+      while(s[0] == '.' && s[1] == '.' && (s[2] == '/' || s[2] == '\\'))
+        s += 3;
 
       if(!str_equal(s, ".")) {
         strlist_push_unique(is_source(*p) ? &srcdirs : &incdirs, s);

@@ -55,7 +55,7 @@ int
 socket_udp6(void) {
   int s = socket_udp6b();
   if(s != -1 && ndelay_on(s) == -1) {
-   closesocket(s);
+    closesocket(s);
     return -1;
   }
   return s;

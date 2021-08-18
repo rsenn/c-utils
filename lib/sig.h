@@ -41,7 +41,7 @@ typedef long sigset_t;
 #define sigdelset(s, n) *(s) &= ~sigbit(n)
 #endif
 #ifndef sigismember
-#define sigismember(s, n) (*(s) & sigbit(n))
+#define sigismember(s, n) (*(s)&sigbit(n))
 #endif
 #include <errno.h>
 #ifndef ENOBUFS

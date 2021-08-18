@@ -145,18 +145,18 @@ main(int argc, char* argv[]) {
   char* out_file = 0;
 
   struct unix_longopt opts[] = {{"help", 0, NULL, 'h'},
-                           {"single-quote", 0, NULL, 's'},
-                           {"double-quote", 0, NULL, 'd'},
-                           {"depth", 0, NULL, 'D'},
-                           {"separator", 0, NULL, 'S'},
-                           {"spacing", 0, NULL, 'W'},
-                           {"one-line", 0, NULL, 'O'},
-                           {"compact", 0, NULL, 'c'},
-                           {"no-compliant", 0, NULL, 'C'},
-                           {"inplace", 0, NULL, 'i'},
-                           {"indent", 0, NULL, 'l'},
-                           {"output", 1, NULL, 'o'},
-                           {0, 0, 0, 0}};
+                                {"single-quote", 0, NULL, 's'},
+                                {"double-quote", 0, NULL, 'd'},
+                                {"depth", 0, NULL, 'D'},
+                                {"separator", 0, NULL, 'S'},
+                                {"spacing", 0, NULL, 'W'},
+                                {"one-line", 0, NULL, 'O'},
+                                {"compact", 0, NULL, 'c'},
+                                {"no-compliant", 0, NULL, 'C'},
+                                {"inplace", 0, NULL, 'i'},
+                                {"indent", 0, NULL, 'l'},
+                                {"output", 1, NULL, 'o'},
+                                {0, 0, 0, 0}};
 
   errmsg_iam(argv[0]);
 
