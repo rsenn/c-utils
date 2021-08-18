@@ -23,5 +23,7 @@ if(BUILD_BROTLI)
   set(BROTLI_STATIC TRUE)
   set(BROTLI_NO_INSTALL TRUE)
 
+  set(BROTLI_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/brotli/c/include" CACHE PATH "brotli include directory")
+
   add_subdirectory(3rdparty/brotli)
 endif(BUILD_BROTLI)
