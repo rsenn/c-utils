@@ -9,7 +9,7 @@ ihex_record_read(ihex_record** pihr, const char* in, size_t n) {
   uint16 off;
   const char* x = in;
   size_t i;
-  
+
   if(x[0] != ':')
     return 0;
   x += 1;
