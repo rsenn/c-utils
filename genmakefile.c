@@ -4529,6 +4529,8 @@ set_make_type() {
        "@<<$*.rsp\r\n"; make_end_inline
        = "\r\n<<keep";
     */
+    stralloc_copys(&mkdir_command, "if not exist $@ mkdir $@");
+    stralloc_copys(&delete_command, "del /f");
     newline = "\r\n";
     inst = "copy /y";
   } else if(str_start(tools.make, "gmake") || str_start(tools.make, "gnu")) {

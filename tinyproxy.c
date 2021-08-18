@@ -630,7 +630,7 @@ sockbuf_fmt_addr(socketbuf_t* sb, char* dest, char sep) {
 
 void
 sockbuf_put_addr(buffer* b, socketbuf_t* sb) {
-  char *buf = malloc(100 + sb->host.len);
+  char* buf = malloc(100 + sb->host.len);
   buffer_put(b, buf, sockbuf_fmt_addr(sb, buf, ':'));
   free(buf);
 }
