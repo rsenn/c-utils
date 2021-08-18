@@ -37,6 +37,7 @@ set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS Debug Release MinSizeRel Re
 option(USE_LZMA "lzma compression" ON)
 option(USE_BZIP "bzip2 compression" ON)
 option(USE_ZLIB "zlib compression" ON)
+option(USE_GZIP "gzip compression" OFF)
 option(USE_BROTLI "brotli compression" ON)
 option(USE_SSL "ssl encryption" ON)
 
@@ -683,13 +684,10 @@ if(NOT ZLIB_FOUND OR NOT EXISTS "${ZLIB_LIBRARY}")
 endif()
 
 if(USE_ZLIB)
-  # message("ZLIB_LIBRARY: ${ZLIB_LIBRARY} ZLIB_FOUND: ${ZLIB_FOUND}") if(ZLIB_INCLUDE_DIR) link_libraries(${ZLIB_LIBRARY})
   include_directories(${ZLIB_INCLUDE_DIR})
-  # endif(ZLIB_INCLUDE_DIR)
+  link_directories(${ZLIB_LIBRARY_DIR})
 
-  # if(ZLIB_LIBRARY)
   add_definitions(-DHAVE_ZLIB=1)
-  # else(ZLIB_LIBRARY) add_definitions(-DHAVE_ZLIB=0) endif(ZLIB_LIBRARY)
 endif(USE_ZLIB)
 
 if(USE_BZIP)
