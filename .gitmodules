@@ -2,3 +2,6 @@
 	path = 3rdparty/xz
 	url = https://github.com/rsenn/xz.git
 	branch = cmake
+[submodule "preproc99"]
+	path = 3rdparty/p99
+	url = https://github.com/jweyrich/p99.git
