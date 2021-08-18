@@ -142,7 +142,7 @@ get_ports(strarray* ports) {
       if(/*str_start(&port[i], "tnt")
             ||*/
          str_start(&port[i], "ttyACM") || str_start(&port[i], "ttyUSB") /*||   port[i + 3] == 'S'*/) {
-        if(access(port, R_OK)) {
+        if(!path_access(port, R_OK)) {
           if(errno != ENOENT && errno != ENODEV && errno != EACCES)
             errmsg_warnsys(port, 0);
           continue;
