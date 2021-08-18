@@ -17,6 +17,9 @@ include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/Functions.cmake)
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/Macros.cmake)
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/CheckInline.cmake)
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/Profile.cmake)
+include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/CheckMsysCygwinMingw.cmake)
+
+check_msys_cygwin_mingw()
 
 if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
   set(CMAKE_INSTALL_PREFIX "/usr/local" CACHE PATH "Installation prefix")
