@@ -61,12 +61,6 @@
 #if WINDOWS
 #include <io.h>
 
-const int max_cols = 8;
-const size_t col_size = sizeof(int) * max_cols;
-
-typedef int col_t[max_cols];
-typedef col_t offsets_lengths_t[2];
-
 #ifndef IO_REPARSE_TAG_SYMLINK
 #define IO_REPARSE_TAG_SYMLINK 0xa000000c
 #endif
@@ -93,6 +87,12 @@ typedef col_t offsets_lengths_t[2];
 #endif
 #define MAX(a, b) ((a) > (b) ? (a) : (b))
 #define MIN(a, b) ((a) < (b) ? (a) : (b))
+
+const int max_cols = 8;
+const size_t col_size = sizeof(int) * max_cols;
+
+typedef int col_t[8];
+typedef col_t offsets_lengths_t[2];
 
 static void print_strarray(buffer* b, array* a);
 static int fnmatch_strarray(buffer* b, array* a, const char* string, int flags);
