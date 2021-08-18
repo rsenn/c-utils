@@ -1,4 +1,7 @@
 #define USE_WS2_32 1
+#include "lib/windoze.h"
+#include "lib/socket_internal.h"
+#include "lib/io_internal.h"
 #include "lib/path.h"
 #include "lib/uint16.h"
 #include "lib/uint64.h"
@@ -14,8 +17,6 @@
 #include "lib/str.h"
 #include "lib/io.h"
 #include "lib/range.h"
-#include "lib/io_internal.h"
-#include "lib/socket.h"
 #include "lib/ndelay.h"
 #include "lib/fmt.h"
 #include "lib/scan.h"
@@ -25,7 +26,6 @@
 #include "lib/array.h"
 #include "lib/slist.h"
 #include "lib/taia.h"
-#include "lib/socket_internal.h"
 #include "lib/dns.h"
 #include "lib/wait.h"
 #include "lib/process.h"
@@ -34,14 +34,18 @@
 #include "debug.h"
 #include <errno.h>
 #include <fcntl.h>
-#include <libgen.h>
+//#include <libgen.h>
 #include <signal.h>
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include "lib/bool.h"
 #include <string.h>
+#if WINDOWS_NATIVE
+#include <io.h>
+#else
 #include <unistd.h>
+#endif
 #include <sys/stat.h>
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -626,8 +630,9 @@ sockbuf_fmt_addr(socketbuf_t* sb, char* dest, char sep) {
 
 void
 sockbuf_put_addr(buffer* b, socketbuf_t* sb) {
-  char buf[100 + sb->host.len];
+  char *buf = malloc(100 + sb->host.len);
   buffer_put(b, buf, sockbuf_fmt_addr(sb, buf, ':'));
+  free(buf);
 }
 
 void
@@ -740,7 +745,7 @@ ssize_t
 sockbuf_forward_data(socketbuf_t* source, socketbuf_t* destination) {
   ssize_t n;
   size_t written = 0;
-  char buffer[buf_size];
+  char* buffer = malloc(buf_size);
 
   if((n = recv(source->sock, buffer, buf_size,
                0)) > 0) { // read data from input socket
@@ -752,6 +757,7 @@ sockbuf_forward_data(socketbuf_t* source, socketbuf_t* destination) {
     written += n;
 
     sockbuf_log_data(source, false, buffer, n);
+    free(buffer);
   }
   if(written > 0) {
     if(n == -1 && errno == EAGAIN)
