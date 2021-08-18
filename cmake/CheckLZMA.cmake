@@ -2,7 +2,13 @@ if(USE_LZMA)
   # ############################################################################################################################################################################################################################################################################################################################################################################################################
   # Check LibLZMA
   # ############################################################################################################################################################################################################################################################################################################################################################################################################
-  # pkg_search_module(LIBLZMA liblzma lzma) if(LIBLZMA_FOUND) if(pkgcfg_lib_LIBLZMA_lzma) set(LIBLZMA_LIBRARY ${pkgcfg_lib_LIBLZMA_lzma} CACHE FILEPATH "") endif(pkgcfg_lib_LIBLZMA_lzma) endif(LIBLZMA_FOUND)
+  pkg_search_module(LIBLZMA liblzma lzma QUIET)
+
+  if(LIBLZMA_FOUND)
+    if(pkgcfg_lib_LIBLZMA_lzma)
+      set(LIBLZMA_LIBRARY ${pkgcfg_lib_LIBLZMA_lzma} CACHE FILEPATH "")
+    endif(pkgcfg_lib_LIBLZMA_lzma)
+  endif(LIBLZMA_FOUND)
   #
   # if(NOT LIBLZMA_FOUND) include(FindLibLZMA) endif(NOT LIBLZMA_FOUND)
 
@@ -15,7 +21,7 @@ if(USE_LZMA)
       set(LIBLZMA_INCLUDE_DIRS "")
       set(LIBLZMA_LIBRARY lzma)
       message(STATUS "Found liblzma")
-      message(STATUS "  LIBLZMA_LIBRARY=${LIBLZMA_LIBRARY}")
+      # message(STATUS "  LIBLZMA_LIBRARY=${LIBLZMA_LIBRARY}")
     endif(HAVE_LIBLZMA AND HAVE_LZMA_H)
 
   endif(NOT LIBLZMA_FOUND)

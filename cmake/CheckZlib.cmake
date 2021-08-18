@@ -1,6 +1,7 @@
 if(USE_ZLIB)
+  message(CHECK_START "Checking for libz")
   if(NOT ZLIB_LIBRARY)
-    pkg_search_module(ZLIB zlib libz z)
+    pkg_search_module(ZLIB zlib libz z QUIET)
     if(ZLIB_FOUND)
       if(pkgcfg_lib_ZLIB_z)
         set(ZLIB_LIBRARY "${pkgcfg_lib_ZLIB_z}" CACHE FILEPATH "")
@@ -12,7 +13,6 @@ if(USE_ZLIB)
 
   if(NOT ZLIB_LIBRARY)
 
-    message(STATUS "Checking for libz")
     find_library(ZLIB_LIBRARY z)
     if(ZLIB_LIBRARY)
       message(STATUS "Found libz: ${ZLIB_LIBRARY}")
@@ -23,10 +23,12 @@ if(USE_ZLIB)
 
     endif(ZLIB_LIBRARY)
   endif(NOT ZLIB_LIBRARY)
+
   if(ZLIB_LIBRARY)
-    message(STATUS "zlib library found: ${ZLIB_LIBRARY}")
+    message(CHECK_PASS "found")
+  else(ZLIB_LIBRARY)
+    message(CHECK_FAIL "NOT found")
   endif(ZLIB_LIBRARY)
-  message("ZLIB_LIBRARY = ${ZLIB_LIBRARY}")
 
 else(USE_ZLIB)
   unset(ZLIB_LIBRARY CACHE)
