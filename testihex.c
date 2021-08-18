@@ -242,7 +242,14 @@ main(int argc, char* argv[]) {
     puthex("mem top", top);
 
     for(r = ihx.records; r; r = r->next) {
-      if(ihex_record_address(r, &a)) {
+      if(ihex_record_address(r, &a) == 0) {
+buffer_puts(buffer_2, "Record @");
+buffer_putxlong0(buffer_2, a.off32, 4);
+buffer_puts(buffer_2, ": ");
+        putdata(buffer_2, r->data, r->length);
+        buffer_putnlflush(buffer_2);
+
+        ihex_put(&hex_output, a.off32, r->data, r->length);
       }
     }
 

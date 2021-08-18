@@ -4,7 +4,7 @@
 
 #include "cpp.h"
 #include "map.h"
-#include "list.h"
+#include "pplist.h"
 #include "buffer.h"
 #include "memstream.h"
 #include "tokenizer.h"

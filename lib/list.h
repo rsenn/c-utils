@@ -1,34 +1,100 @@
-#ifndef _LIST_H
-#define _LIST_H
+/*
+ * Linux klist like system
+ * 
+ * Copyright (c) 2016-2017 Fabrice Bellard
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+ * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
+#ifndef LIST_H
+#define LIST_H
 
-#include "strlist.h"
-//#include "strarray.h"
-//#include "slist.h"
+#ifndef NULL
+#include <stddef.h>
+#endif
 
-typedef strlist LIST_T;
-typedef const char* LIST_VALUE_T;
-typedef const char* LIST_ITER_T;
+struct list_head {
+    struct list_head *prev;
+    struct list_head *next;
+};
 
-#define LIST_SIZE(list) strlist_count(&(list))
-#define LIST_NEW(list) strlist_init(&(list), '\0')
-#define LIST_GET(list, index) strlist_at(&(list), (index))
-#define LIST_DESTROY(list) strlist_free(&(list))
-#define LIST_FOREACH(list, iter) strlist_foreach_s(&(list), iter)
-#define LIST_DELETE(list, index) strlist_remove_at(&(list), (index))
-#define LIST_SEARCH(list, value) strlist_index_of(&(list), (value))
+#define LIST_HEAD_INIT(el) { &(el), &(el) }
 
-#define LIST_DATA(list, iter) ((char*)(iter))
-#define LIST_DATA_LEN(list, iter) byte_chr((iter), strlist_end((list)) - (iter), (list)->sep)
+/* return the pointer of type 'type *' containing 'el' as field 'member' */
+#define list_entry(el, type, member) \
+    ((type *)((uint8_t *)(el) - offsetof(type, member)))
 
-#define LIST_SET(list, index, value) LIST_INSERT(list, (key), str_len(key) + 1, (value), str_len(value) + 1)
-#define LIST_VISIT_ALL(list, fn, arg)                                                                                  \
-  {                                                                                                                    \
-    LIST_PAIR_T t;                                                                                                     \
-    LIST_FOREACH(list, t)                                                                                              \
-    fn(LIST_KEY(t), str_len(LIST_KEY(t)), LIST_VALUE(t), 0, arg);                                                      \
-  }
+static inline void init_list_head(struct list_head *head)
+{
+    head->prev = head;
+    head->next = head;
+}
 
-#define LIST_PUSH_BACK(list, item) strlist_push(&(list), (item))
-#define LIST_PUSH_FRONT(list, item) strlist_unshift(&(list), (item))
+/* insert 'el' between 'prev' and 'next' */
+static inline void __list_add(struct list_head *el, 
+                              struct list_head *prev, struct list_head *next)
+{
+    prev->next = el;
+    el->prev = prev;
+    el->next = next;
+    next->prev = el;
+}
 
-#endif /* defined _LIST_H */
+/* add 'el' at the head of the list 'head' (= after element head) */
+static inline void list_add(struct list_head *el, struct list_head *head)
+{
+    __list_add(el, head, head->next);
+}
+
+/* add 'el' at the end of the list 'head' (= before element head) */
+static inline void list_add_tail(struct list_head *el, struct list_head *head)
+{
+    __list_add(el, head->prev, head);
+}
+
+static inline void list_del(struct list_head *el)
+{
+    struct list_head *prev, *next;
+    prev = el->prev;
+    next = el->next;
+    prev->next = next;
+    next->prev = prev;
+    el->prev = NULL; /* fail safe */
+    el->next = NULL; /* fail safe */
+}
+
+static inline int list_empty(struct list_head *el)
+{
+    return el->next == el;
+}
+
+#define list_for_each(el, head) \
+  for(el = (head)->next; el != (head); el = el->next)
+
+#define list_for_each_safe(el, el1, head)                \
+    for(el = (head)->next, el1 = el->next; el != (head); \
+        el = el1, el1 = el->next)
+
+#define list_for_each_prev(el, head) \
+  for(el = (head)->prev; el != (head); el = el->prev)
+
+#define list_for_each_prev_safe(el, el1, head)           \
+    for(el = (head)->prev, el1 = el->prev; el != (head); \
+        el = el1, el1 = el->prev)
+
+#endif /* LIST_H */

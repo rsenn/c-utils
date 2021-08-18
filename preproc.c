@@ -2,14 +2,14 @@
 
 #include <string.h>
 #include <assert.h>
-#include "../tokenizer_internal.h"
-#include "../cpp.h"
-#include "../list.h"
-#include "../buffer.h"
-#include "../open.h"
-#include "../map.h"
-#include "../errmsg.h"
-#include "../alloc.h"
+#include "lib/tokenizer_internal.h"
+#include "lib/cpp.h"
+#include "lib/buffer.h"
+#include "lib/open.h"
+#include "lib/map.h"
+#include "lib/errmsg.h"
+#include "lib/alloc.h"
+#include "lib/pplist.h"
 
 static unsigned
 string_hash(const char* s) {

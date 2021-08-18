@@ -15,8 +15,8 @@ ihex_record_find(ihex_file* ihf, uint32 at, uint32* roffs) {
     if(at >= o.off32 && at < o.off32 + r->length) {
       if(roffs)
         *roffs = o.off32;
-      return ptr;
+      break;
     }
   }
-  return 0;
+  return ptr;
 }
