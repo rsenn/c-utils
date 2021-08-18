@@ -38,6 +38,8 @@ typedef struct {
   (1 << 1)                       /* Backslashes don't quote special chars.                                             \
                                   */
 #define PATH_FNM_PERIOD (1 << 2) /* Leading .' is matched only explicitly.  */
+
+int path_access(const char*, int rights);
 int path_absolute(const char* path, stralloc* sa);
 char* path_absolute_s(const char* path);
 int path_absolute_sa(stralloc* sa);
@@ -98,6 +100,19 @@ int path_split(const char* p, strlist* sl);
 
 #ifndef PATH_MAX
 #define PATH_MAX MAX_PATH
+#endif
+
+#ifndef R_OK
+#define R_OK 4
+#endif
+#ifndef W_OK
+#define W_OK 2
+#endif
+#ifndef X_OK
+#define X_OK 1
+#endif
+#ifndef F_OK
+#define F_OK 0
 #endif
 
 #ifdef __cplusplus
