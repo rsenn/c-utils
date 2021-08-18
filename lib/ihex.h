@@ -47,11 +47,12 @@ size_t ihex_read_at(ihex_file*, uint32 at, char* x, size_t n);
 ssize_t ihex_read_buf(ihex_file*, const char* in, size_t n);
 ihex_record* ihex_record_at(ihex_file*, uint32 at, uint32* roffs);
 uint8 ihex_record_checksum(const ihex_record*);
+ihex_record** ihex_record_find(ihex_file*, uint32 at, uint32* roffs);
 ihex_record* ihex_record_insert(ihex_file*, uint32 at, uint8 len);
 ssize_t ihex_record_read(ihex_record**, const char* in, size_t n);
-uint8 ihex_record_checksum(const ihex_record*);
 void ihex_record_write(ihex_record*, buffer* b);
 int ihex_write(ihex_file*, buffer* b);
+ihex_record* ihex_put(ihex_file*, uint32 offset, const char* x, size_t n);
 
 static inline const char*
 ihex_typestr(enum ihex_type_e type) {
