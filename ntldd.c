@@ -602,9 +602,9 @@ Written by LRN.");
 void
 printhelp(char* argv0) {
   buffer_putm_internal(buffer_1,
-              "Usage: ",
-              argv0,
-              " [OPTION]... FILE...\n\
+                       "Usage: ",
+                       argv0,
+                       " [OPTION]... FILE...\n\
 OPTIONS:\n\
 --version         Displays version\n\
 -v, --verbose         Does not work\n\
@@ -621,7 +621,7 @@ OPTIONS:\n\
 Use -- option to pass filenames that start with `--' or `-'\n\
 For bug reporting instructions, please see:\n\
 <somewhere>.",
-              0);
+                       0);
   buffer_putnlflush(buffer_1);
 }
 

@@ -3,7 +3,7 @@
 #include "../sig.h"
 #include "../errmsg.h"
 
-#if 0 //WINDOWS_NATIVE
+#if 0 // WINDOWS_NATIVE
 #include <windows.h>
 
 static HANDLE timerHandle = INVALID_HANDLE_VALUE;

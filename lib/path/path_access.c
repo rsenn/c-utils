@@ -14,19 +14,22 @@ hasAccessRight(LPCSTR path, DWORD genericAccessRights) {
   DWORD len = 0;
   if(GetFileSecurityA(
          path, OWNER_SECURITY_INFORMATION | GROUP_SECURITY_INFORMATION | DACL_SECURITY_INFORMATION, 0, 0, &len) ==
-     FALSE) return -1;
+     FALSE)
+    return -1;
 
-   if(GetFileSecurityA(path,
+  if(GetFileSecurityA(path,
                       OWNER_SECURITY_INFORMATION | GROUP_SECURITY_INFORMATION | DACL_SECURITY_INFORMATION,
                       &secDesc,
                       len,
-                      &len) == FALSE) return -1;
+                      &len) == FALSE)
+    return -1;
 
   HANDLE hToken = 0;
   HANDLE hImpersonatedToken = 0;
   if(OpenProcessToken(GetCurrentProcess(),
                       TOKEN_IMPERSONATE | TOKEN_QUERY | TOKEN_DUPLICATE | STANDARD_RIGHTS_READ,
-                      &hToken) == FALSE) return -1;
+                      &hToken) == FALSE)
+    return -1;
 
   if(DuplicateToken(hToken, SecurityImpersonation, &hImpersonatedToken) == FALSE) {
     CloseHandle(hToken);
@@ -57,7 +60,7 @@ hasAccessRight(LPCSTR path, DWORD genericAccessRights) {
   CloseHandle(hToken);
 
   if(success == FALSE)
-return -1;
+    return -1;
 
   return result == TRUE;
 }
@@ -86,7 +89,7 @@ path_access(const char* path, int rights) {
     case R_OK | W_OK:
     case W_OK: return hasWriteAccess(path);
 
-    case X_OK: return hasExecuteAccess(path); 
+    case X_OK: return hasExecuteAccess(path);
     case X_OK | R_OK: return hasExecuteAccess(path) && hasReadAccess(path);
     case X_OK | W_OK: return hasExecuteAccess(path) && hasWriteAccess(path);
     case X_OK | R_OK | W_OK: return hasExecuteAccess(path) && hasReadAccess(path) && hasWriteAccess(path);
