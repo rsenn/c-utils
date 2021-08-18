@@ -61,6 +61,12 @@
 #if WINDOWS
 #include <io.h>
 
+const int max_cols = 8;
+const size_t col_size = sizeof(int) * max_cols;
+
+typedef int col_t[max_cols];
+typedef col_t offsets_lengths_t[2];
+
 #ifndef IO_REPARSE_TAG_SYMLINK
 #define IO_REPARSE_TAG_SYMLINK 0xa000000c
 #endif
@@ -833,8 +839,7 @@ file_crc32(const char* path, size_t size, uint32* crc) {
 }
 
 int
-list_file(stralloc* path, const char* name, mode_t mode, long depth, dev_t root_dev) {
-
+list_file(stralloc* path, const char* name, int mode, long depth, int root_dev) {
   size_t l;
   struct stat st;
   static stralloc pre;
@@ -1389,10 +1394,6 @@ main(int argc, char* argv[]) {
     stralloc line, file;
     strarray lines;
     array columns;
-    const int max_cols = 8;
-    const size_t col_size = sizeof(int) * max_cols;
-    typedef int col_t[max_cols];
-    typedef col_t offsets_lengths_t[2];
     size_t i, j, k, l, n, column, pathlen;
     col_t offsets, lengths;
     const char* base_path;

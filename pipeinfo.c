@@ -110,10 +110,14 @@ type(uint32 bits) {
     case S_IFLNK: return "symlink";
 #endif
     case S_IFREG: return "regular";
+#ifdef S_IFBLK
     case S_IFBLK: return "blkdev";
+#endif
     case S_IFDIR: return "directory";
     case S_IFCHR: return "chardev";
+#ifdef S_IFIFO
     case S_IFIFO: return "fifo";
+#endif
     default: return NULL;
   }
 }
