@@ -961,7 +961,7 @@ set(CPACK_PACKAGE_NAME "c-utils")
 set(CPACK_GENERATOR "TZST")
 set(CPACK_RESOURCE_FILE_README ${CMAKE_CURRENT_SOURCE_DIR}/README.txt)
 set(CPACK_SOURCE_GENERATOR "TXZ")
-set(CPACK_SOURCE_IGNORE_FILES "\\.git/" "build/" "build*" ".*~$" "*.tar.*")
+set(CPACK_SOURCE_IGNORE_FILES "\\.git/" "build/" "inst/" "build.*" ".*~$" ".*\\.tar\\..*")
 set(CPACK_SOURCE_PACKAGE_FILE_NAME "c-utils-${C_UTILS_VERSION}")
 set(CPACK_VERBATIM_VARIABLES YES)
 
