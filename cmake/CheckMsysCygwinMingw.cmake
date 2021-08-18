@@ -78,8 +78,19 @@ macro(check_msys_cygwin_mingw)
 
   set(SYSTEM "${SYSTEM}" PARENT_SCOPE)
 
-  check_enable_auto_import_flag(AUTO_IMPORT)
-  if(AUTO_IMPORT)
-    message(STATUS "Auto-import flag: ${AUTO_IMPORT}")
-  endif(AUTO_IMPORT)
+  if(WINDOWS)
+    check_enable_auto_import_flag(AUTO_IMPORT)
+    if(AUTO_IMPORT)
+      message(STATUS "Auto-import flag: ${AUTO_IMPORT}")
+    endif(AUTO_IMPORT)
+
+    set(LIBSHLWAPI shlwapi CACHE STRING "Windows API shlwapi library")
+    set(LIBIPHLPAPI iphlpapi CACHE STRING "Windows API iphlpapi library")
+    set(LIBWSOCK32 shlwapi CACHE STRING "Windows API wsock32 library")
+  else(WINDOWS)
+    unset(LIBSHLWAPI PARENT_SCOPE)
+    unset(LIBIPHLPAPI PARENT_SCOPE)
+    unset(LIBWSOCK32 PARENT_SCOPE)
+  endif(WINDOWS)
+
 endmacro(check_msys_cygwin_mingw)

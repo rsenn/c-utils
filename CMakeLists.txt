@@ -135,8 +135,14 @@ if(WIN32)
   endif(PP_NOWARN_CPP)
 endif(WIN32)
 
-# if(WIN32) check_c_compiler_flag("-Wl,--enable-auto-import" LINK_ENABLE_AUTO_IMPORT) if(LINK_ENABLE_AUTO_IMPORT) set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,--enable-auto-import") set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,--enable-auto-import") set(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} -Wl,--enable-auto-import") endif(LINK_ENABLE_AUTO_IMPORT)
-# endif(WIN32)
+#if(WIN32)
+#  check_c_compiler_flag("-Wl,--enable-auto-import" LINK_ENABLE_AUTO_IMPORT)
+#  if(LINK_ENABLE_AUTO_IMPORT)
+#    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,--enable-auto-import")
+#    set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,--enable-auto-import")
+#    set(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} -Wl,--enable-auto-import")
+#  endif(LINK_ENABLE_AUTO_IMPORT)
+#endif(WIN32)
 
 check_c_compiler_flag("-Wl,--no-export-dynamic" LINK_NO_EXPORT_DYNAMIC)
 if(LINK_NO_EXPORT_DYNAMIC)
@@ -159,7 +165,6 @@ include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/CheckWinSock.cmake)
 
 check_c_standard()
 check_msys_cygwin_mingw()
-
 dump(CMAKE_EXE_LINKER_FLAGS CMAKE_MODULE_LINKER_FLAGS CMAKE_SHARED_LINKER_FLAGS)
 
 if(WINDOWS)
@@ -818,7 +823,7 @@ set(genmakefile_SOURCES cmake.c cmake.h mplab.c mplab.h ini.c ini.h genmakefile.
 
 if(USE_BZIP)
   add_program(bsdiffcat path errmsg buffer array safemult str byte errmsg uint32 uint64 ${COMPRESSION_LIBRARIES})
-  add_program(ccat path case buffer open str unix ${ZLIB_LIBRARY} ${COMPRESSION_LIBRARIES} ${LIBMATH})
+  add_program(ccat path case buffer open str unix ${ZLIB_LIBRARY} ${BROTLI_LIBRARIES} ${COMPRESSION_LIBRARIES} ${LIBMATH} ${LIBSHLWAPI})
 endif(USE_BZIP)
 add_program(compiler-wrapper stralloc buffer byte fmt str strlist dir)
 add_program(count-depth buffer fmt)
@@ -880,7 +885,7 @@ set(ftptest_SOURCES address.c ftplib.c)
 
 set(nscache_SOURCES cache.c cache.h log.c log.h query.c query.h response.c response.h roots.c roots.h names.c names.h lib/alloc.h lib/array.h lib/buffer.h lib/byte.h lib/case.h lib/dir.h lib/dns.h lib/env.h lib/errmsg.h lib/fmt.h lib/iopause.h lib/ip4.h lib/ip6.h lib/mmap.h lib/ndelay.h lib/open.h lib/path.h lib/scan.h lib/socket.h lib/str.h lib/stralloc.h lib/tai.h lib/taia.h lib/uint16.h
                     lib/uint32.h lib/uint64.h)
-add_program(nscache dns path errmsg dir array stralloc alloc env byte uint16 ${LIBMSWSOCK} ${LIBIPHLPAPI})
+add_program(nscache dns path errmsg dir array stralloc alloc env byte uint16 ${LIBMSWSOCK} ${LIBIPHLPAPI} ${LIBSHLWAPI})
 add_program(crc errmsg buffer mmap open ${ZLIB_LIBRARY})
 add_program(cmake-run errmsg env buffer path dir strarray strlist stralloc fmt)
 set(jsonpp_SOURCES terminal.c terminal.h)
