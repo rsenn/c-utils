@@ -47,7 +47,7 @@ option(BUILD_TESTS "build tests" OFF)
 if(CMAKE_C_COMPILER MATCHES "musl")
   set(MUSL TRUE)
 endif(CMAKE_C_COMPILER MATCHES "musl")
-message("MUSL = ${MUSL}")
+
 if(MUSL)
   add_definitions(-DMUSL=1 -DOPENSSL_NO_SECURE_MEMORY)
 endif(MUSL)
@@ -498,7 +498,6 @@ check_library_exists(pthread pthread_create "" HAVE_PTHREAD_LIB)
 if(HAVE_PTHREAD_LIB)
   set(LIBPTHREAD pthread)
 endif()
-message(STATUS "LIBPTHREAD = ${LIBPTHREAD}")
 
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/FindStandardMathLibrary.cmake)
 
@@ -507,7 +506,6 @@ check_library_exists(m exp2 "" HAVE_MATH_LIB)
 if(HAVE_MATH_LIB)
   set(LIBMATH m CACHE STRING "Math library")
 endif(HAVE_MATH_LIB)
-message(STATUS "LIBMATH = ${LIBMATH}")
 
 if(NOT LINK_STATIC)
   check_library_exists(dl dlopen "" HAVE_DLFCN_LIB)
@@ -722,8 +720,6 @@ include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/BuildZlib.cmake)
 #
 # else(OPENSSL_FOUND OR BUILD_OPENSSL) set(TLS_LIBRARIES "" CACHE PATH "OpenSSL library") endif(OPENSSL_FOUND OR BUILD_OPENSSL)
 
-dump(TLS_LIBRARIES)
-
 link_directories(AFTER "${CMAKE_BINARY_DIR}")
 
 file(TO_NATIVE_PATH "/" PATH_SEPARATOR)
@@ -806,8 +802,6 @@ add_program(genmakefile set env sig set case errmsg strarray dlist slist rdir di
 add_program(piccfg ihex errmsg strarray slist rdir dir path strlist hashmap hmap stralloc buffer mmap unix open scan fmt byte str array safemult alloc)
 add_program(hexedit stralloc buffer array io errmsg mmap open path scan uint64 unix ${ZLIB_LIBRARY})
 set(httptest_SOURCES uri.c uri.h)
-
-message("TLS_LIBRARIES = ${TLS_LIBRARIES}")
 
 # set(ssltest_SOURCES address.c address.h)
 
@@ -914,7 +908,7 @@ if(BUILD_EXAMPLES)
   add_subdirectory(examples)
 endif(BUILD_EXAMPLES)
 
-dump(PROGRAMS)
+# dump(PROGRAMS)
 
 set(CPACK_PACKAGE_VERSION_MAJOR 1)
 set(CPACK_PACKAGE_VERSION_MINOR 0)

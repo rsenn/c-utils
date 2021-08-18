@@ -891,15 +891,16 @@ static cond condition;
  */
 int
 pkg_conf(strarray* modules, id code, int mode) {
-  int i, do_cond;
+  int ret = 0, i, do_cond;
   size_t n, pos;
   const char* x;
   size_t len;
+  strlist output, require;
   stralloc name, cond, value;
-  strlist require;
   stralloc_init(&name);
   stralloc_init(&cond);
   stralloc_init(&value);
+  strlist_init(&output, '\0');
   strlist_init(&require, ' ');
 
   for(i = 0; i < strarray_size(modules); ++i) {
@@ -912,6 +913,7 @@ pkg_conf(strarray* modules, id code, int mode) {
     buffer_puts(buffer_2, ")");
     buffer_putnlflush(buffer_2);
 #endif
+
     pkg pf;
     byte_zero(&pf, sizeof(pf));
     stralloc_copys(&name, pkgname);
@@ -1045,17 +1047,48 @@ pkg_conf(strarray* modules, id code, int mode) {
       }
     }
 
+    if(!(mode & PKGCFG_EXISTS)) {
+      char *x, *end;
+      size_t n, i;
+
+      for(x = value.s, n = value.len, end = x + n; x < end; x += i + 1) {
+        i = byte_chr(x, end - x, ' ');
+        strlist_pushb_unique(&output, x, i);
+      }
+
+      if(value.len) {
+        buffer_putsa(buffer_1, &value);
+        buffer_putnlflush(buffer_1);
+      }
+    }
+    stralloc_zero(&name);
+    stralloc_zero(&cond);
+    stralloc_zero(&value);
+
     pkg_unset(&pf);
     pkg_free(&pf);
   }
 
   if(!(mode & PKGCFG_EXISTS)) {
-    buffer_putsa(buffer_1, &value);
-    buffer_putnlflush(buffer_1);
+    if(value.len) {
+      buffer_putsa(buffer_1, &value);
+      buffer_putnlflush(buffer_1);
+    }
   } else {
-    return 1;
+    ret = 1;
   }
-  return 0;
+  stralloc_free(&name);
+  stralloc_free(&cond);
+  stralloc_free(&value);
+
+#ifdef DEBUG_OUTPUT_
+  buffer_puts(buffer_2, "pkg_conf output: ");
+  buffer_putsl(buffer_2, &output, ", ");
+  buffer_putnlflush(buffer_2);
+#endif
+  strlist_free(&output);
+  strlist_free(&require);
+  return ret;
 }
 
 static int

@@ -1,6 +1,7 @@
 #include "../charbuf_internal.h"
 #include "../buffer.h"
 #include "../alloc.h"
+#include <stdlib.h>
 
 #define max(a, b) ((a) >= (b) ? (a) : (b))
 #define max(a, b) ((a) >= (b) ? (a) : (b))
