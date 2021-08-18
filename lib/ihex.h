@@ -27,6 +27,11 @@ typedef union ihex_addr_u {
   };
 } ihex_addr;
 
+typedef union {
+  struct list_head* link;
+  struct ihex_record_s* rec;
+} ihex_recptr;
+
 struct ihex_record_s;
 struct ihex_record_s {
   union {
@@ -61,7 +66,7 @@ ssize_t ihex_read_buf(ihex_file*, const char* in, size_t n);
 int ihex_record_address(ihex_record*, ihex_addr* addr);
 ihex_record* ihex_record_at(ihex_file*, uint32 at, uint32* roffs);
 uint8 ihex_record_checksum(const ihex_record*);
-ihex_record** ihex_record_find(ihex_file*, uint32 at, uint32* roffs);
+ihex_recptr ihex_record_find(ihex_file*, uint32 at, uint32* roffs);
 ihex_record* ihex_record_insert(ihex_file*, uint32 at, uint8 len);
 ssize_t ihex_record_read(ihex_record**, const char* in, size_t n);
 void ihex_record_write(ihex_record*, buffer* b);

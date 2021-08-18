@@ -92,6 +92,12 @@ hex_load(ihex_file* hex, const char* filename) {
     buffer_getline_sa(&input, &sa);
     ret = ihex_record_read(&r, sa.s, sa.len);
     ret = ihex_read_buf(hex, x, sz);
+
+    buffer_putm_internal(buffer_2, "Loaded '", filename, "' ... ", 0);
+    buffer_putlong(buffer_2, ret);
+    buffer_puts(buffer_2, " records");
+    buffer_putnlflush(buffer_2);
+
     buffer_close(&input);
     mmap_unmap(x, sz);
     ret = 0;

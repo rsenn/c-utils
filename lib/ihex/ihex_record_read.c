@@ -26,10 +26,9 @@ ihex_record_read(ihex_record** pihr, const char* in, size_t n) {
   n -= i;
   if((i = scan_xchar(&x[(len * 2)], &chk)) != 2)
     return 0;
-
-  if((*pihr = (ihex_record*)alloc_zero(sizeof(ihex_record) + len))) {
+ ihex_record* r ;
+  if((r = (ihex_record*)alloc_zero(sizeof(ihex_record) + len))) {
     size_t j;
-    ihex_record* r = *pihr;
     uint8* data = (uint8*)&r->data;
 
     for(j = 0; j < len; j++) {
@@ -43,11 +42,12 @@ ihex_record_read(ihex_record** pihr, const char* in, size_t n) {
       n -= i;
     }
 
-    r->next = 0;
     r->length = len;
     r->type = typ;
     r->offset = off;
     r->checksum = chk;
+
+*pihr = r;
 
     return x - in;
   }

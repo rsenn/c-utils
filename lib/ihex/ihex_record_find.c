@@ -1,23 +1,23 @@
 #include "../ihex.h"
 #include "../uint32.h"
 
-ihex_record**
+ihex_recptr
 ihex_record_find(ihex_file* ihf, uint32 at, uint32* roffs) {
-  ihex_record **ptr, *r;
+  ihex_recptr p;
   ihex_addr o;
   o.off32 = 0;
 
-  for(ptr = &ihf->records; r = *ptr; ptr = &(*ptr)->next) {
-    if(r->type == 4) {
-      uint16_unpack_big(r->data, &o.hi16);
+  list_for_each(p.link, &ihf->records) {
+    if(p.rec->type == 4) {
+      uint16_unpack_big(p.rec->data, &o.hi16);
       continue;
     }
-    o.lo16 = r->offset;
-    if(at >= o.off32 && at < o.off32 + r->length) {
+    o.lo16 = p.rec->offset;
+    if(at >= o.off32 && at < o.off32 + p.rec->length) {
       if(roffs)
         *roffs = o.off32;
       break;
     }
   }
-  return ptr;
+  return p;
 }
