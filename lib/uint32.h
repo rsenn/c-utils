@@ -30,8 +30,11 @@ extern "C" {
 #endif
 
 #if defined(__BORLANDC__)
-/*typedef unsigned int uint32;
-typedef signed int int32;*/
+
+#if __BORLANDC__ >= 0x570
+typedef unsigned int uint32;
+typedef signed int int32;
+#endif
 
 #elif defined(__UINT32_TYPE__) && defined(__INT32_TYPE__)
 typedef __UINT32_TYPE__ uint32;
