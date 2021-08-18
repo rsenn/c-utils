@@ -13,6 +13,7 @@
 #include "lib/windoze.h"
 #include "lib/uint64.h"
 #include "lib/io.h"
+#include "lib/dir.h"
 
 #include "serial.h"
 
@@ -496,33 +497,35 @@ serial_write_string(int fd, const char* s) {
 
 char**
 get_serial_ports(void) {
-  DIR* dir;
-  struct dirent* ent;
+  dir_t dir;
+  char* entry;
   char** files;
   int size = 0;
-  dir = opendir("/dev/");
-  while((ent = readdir(dir)) != NULL) {
+
+  dir_open(&dir, "/dev/");
+
+  while((entry = dir_read(&dir)) != NULL) {
 #ifdef SEARCH
-    if(strstr(ent->d_name, SEARCH) != NULL)
+    if(strstr(entry, SEARCH) != NULL)
 #endif
       size++;
   }
-  closedir(dir);
+  dir_close(&dir);
 
   files = (char**)malloc((size + 1) * sizeof(char*));
 
   int i = 0;
-  dir = opendir("/dev/");
-  while(((ent = readdir(dir)) != NULL) && (i < size)) {
+  dir_open(&dir, "/dev/");
+  while((entry = dir_read(&dir)) != NULL && (i < size)) {
 
 #ifdef SEARCH
-    if(strstr(ent->d_name, SEARCH) != NULL) {
+    if(strstr(entry, SEARCH) != NULL) {
 #endif
 
-      int tmp = strlen(ent->d_name) + 6;
+      int tmp = strlen(entry) + 6;
       files[i] = (char*)malloc(tmp * sizeof(char));
       strcpy(files[i], "/dev/");
-      strcpy(files[i] + 5, ent->d_name);
+      strcpy(files[i] + 5, entry);
       files[i][tmp - 1] = '\0';
 
 #ifdef TRY_TO_OPEN_PORTS
@@ -543,7 +546,7 @@ get_serial_ports(void) {
     }
 #endif
   }
-  closedir(dir);
+  dir_close(&dir);
   files[i] = NULL;
   return files;
 }
