@@ -9,8 +9,8 @@
 #include <errno.h>
 #include <assert.h>
 
-#define max(a, b) ((a) > (b) ? (a) : (b))
-#define min(a, b) ((a) < (b) ? (a) : (b))
+#define MAX(a, b) ((a) > (b) ? (a) : (b))
+#define MIN(a, b) ((a) < (b) ? (a) : (b))
 
 /**
  * @brief http_read_internal
@@ -74,7 +74,7 @@ http_read_internal(fd_t fd, char* buf, size_t received, buffer* b) {
       size_t len = buffer_LEN(in);
       const char* s = buffer_BEGIN(in);
       size_t remain = r->content_length - r->ptr;
-      size_t num = min(len, remain);
+      size_t num = MIN(len, remain);
 
       stralloc_catb(&r->data, s, num);
 

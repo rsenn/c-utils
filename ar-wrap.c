@@ -12,6 +12,7 @@
 #include "lib/mmap.h"
 #include "lib/scan.h"
 #include "lib/wait.h"
+#include "lib/readlink.h"
 
 #if WINDOWS
 #define EXEEXT ".exe"

@@ -42,6 +42,7 @@ extern const short __spm[13];
 #define FNM_CASEFOLD (1 << 4)
 
 int unix_fnmatch(const char* pattern, const char* string, int flags);
+int     fnmatch_b(const char*, size_t, const char*, size_t slen, int flags);
 int isleap(int year);
 int pipe2(int fd[2], int flags);
 
@@ -59,6 +60,7 @@ extern buffer* unix_optbuf;
 #if WINDOWS_NATIVE
 size_t getpagesize();
 #endif
+
 
 #ifdef __cplusplus
 }

@@ -1,16 +1,15 @@
 if(USE_BROTLI)
+  message(CHECK_START "Checking for brotli library")
   pkg_search_module(BROTLIDEC libbrotlidec brotlidec QUIET)
   pkg_search_module(BROTLIENC libbrotlienc brotlienc QUIET)
   pkg_search_module(BROTLICOMMON libbrotlicommon brotlicommon QUIET)
 
   if(NOT BROTLICOMMON_FOUND OR "${BROTLICOMMON_FOUND}" STREQUAL "")
-    message(STATUS "brotli package config not found")
 
     find_library(BROTLIDEC_LIBRARY NAMES brotlidec CMAKE_FIND_ROOT_PATH_BOTH)
     find_library(BROTLIENC_LIBRARY NAMES brotlienc CMAKE_FIND_ROOT_PATH_BOTH)
     find_library(BROTLICOMMON_LIBRARY NAMES brotlicommon CMAKE_FIND_ROOT_PATH_BOTH)
     if(BROTLIDEC_LIBRARY AND BROTLIENC_LIBRARY AND BROTLICOMMON_LIBRARY)
-      message(STATUS "brotli library found: ${BROTLIDEC_LIBRARY} ${BROTLIENC_LIBRARY} ${BROTLICOMMON_LIBRARY}")
       set(BROTLI_FOUND TRUE)
       set(BROTLI_LIBRARY ${BROTLIDEC_LIBRARY} ${BROTLIENC_LIBRARY} ${BROTLICOMMON_LIBRARY})
 
@@ -19,9 +18,6 @@ if(USE_BROTLI)
   endif(NOT BROTLICOMMON_FOUND OR "${BROTLICOMMON_FOUND}" STREQUAL "")
 
   if(BROTLICOMMON_FOUND OR BROTLI_FOUND)
-
-    message(STATUS "brotli package found: ${BROTLI_PREFIX} ${BROTLI_LIBRARY_DIRS} ${BROTLI_LIBRARIES}")
-    # pkg_get_variable(BROTLI_LIBRARY "${BROTLI_MODULE_NAME}")
 
     set(BROTLI_LIBRARY "")
     if(pkgcfg_lib_BROTLIENC_brotlienc AND EXISTS "${pkgcfg_lib_BROTLIENC_brotlienc}")
@@ -55,6 +51,14 @@ if(USE_BROTLI)
     set(BROTLI_LIBRARY_DIR "${BROTLICOMMON_LIBRARY_DIRS}" CACHE PATH "Brotli library dir")
   endif(NOT BROTLI_LIBRARY_DIR AND BROTLICOMMON_LIBRARY_DIRS)
 
-  # dump(BROTLI_INCLUDE_DIR BROTLI_LIBRARIES BROTLI_LIBRARY_DIR)
+  if(BROTLI_FOUND)
+    message(CHECK_PASS "found")
+  else(BROTLI_FOUND)
+    message(CHECK_FAIL "NOT found")
+  endif(BROTLI_FOUND)
+  # dump(BROTLI_LIBRARIES BROTLI_LIBRARY_DIR BROTLI_INCLUDE_DIR)
 
+else(USE_BROTLI)
+  unset(BROTLI_LIBRARIES CACHE)
+  unset(BROTLI_LIBRARY_DIR CACHE)
 endif(USE_BROTLI)

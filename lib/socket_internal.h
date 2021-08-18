@@ -2,7 +2,7 @@
 #ifndef SOCKET_INTERNAL_H
 #define SOCKET_INTERNAL_H
 
-#if defined(_WIN32) || defined(_WIN64) || defined(__CYGWIN__)
+#if defined(_WIN32) || defined(_WIN64) || defined(__CYGWIN__) || defined(__MSYS__) || defined(__MINGW32__)
 
 #ifdef __ORANGEC__
 #undef USE_WS2_32
@@ -10,7 +10,7 @@
 
 #if((defined(_WIN32) || defined(_WIN64) || defined(_MSC_VER)) && !defined(__CYGWIN__)) || WINDOWS_NATIVE ||            \
     defined(WINDOWS_OVERRIDE)
-#if USE_WS2_32
+#ifdef USE_WS2_32
 #define _WINSOCKAPI_
 #include <winsock2.h>
 #else

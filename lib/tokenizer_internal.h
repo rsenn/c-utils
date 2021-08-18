@@ -10,8 +10,8 @@
 #define isspace(c) ((c) == ' ' || (c) == '\r' || (c) == '\n' || (c) == '\t' || (c) == '\v')
 #define tolower(c) ((c) >= 'A' && (c) <= 'Z' ? (c) + 0x20 : (c))
 
-#define ERROR -1
-#define EOF -2
+#define TOKENIZER_ERROR -1
+#define TOKENIZER_EOF -2
 
 static inline int
 has_ul_tail(const char* p) {
@@ -239,7 +239,7 @@ get_string(tokenizer* t, char quote_char, struct token_s* out, int wide) {
   char* end = t->buf + t->bufsize - 2;
   while(s < end) {
     int c = tokenizer_getc(t);
-    if(c == EOF) {
+    if(c == TOKENIZER_EOF) {
       out->type = TT_EOF;
       *s = 0;
       return apply_coords(t, out, s, 0);
@@ -310,7 +310,7 @@ ignore_until(tokenizer* t, const char* marker, int col_advance) {
   int c;
   do {
     c = tokenizer_getc(t);
-    if(c == EOF)
+    if(c == TOKENIZER_EOF)
       return 0;
     if(c == '\n') {
       t->line++;

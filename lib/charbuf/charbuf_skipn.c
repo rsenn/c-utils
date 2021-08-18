@@ -3,10 +3,6 @@
 #include "../alloc.h"
 #include <stdlib.h>
 
-#define max(a, b) ((a) >= (b) ? (a) : (b))
-#define max(a, b) ((a) >= (b) ? (a) : (b))
-#define min(a, b) ((a) <= (b) ? (a) : (b))
-
 ssize_t
 charbuf_skipn(charbuf* b, size_t n) {
   size_t pos;

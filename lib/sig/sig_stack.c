@@ -5,7 +5,6 @@
 #if !WINDOWS_NATIVE
 #include <signal.h>
 #include <sys/signal.h>
-#endif
 
 #ifdef NSIG
 static struct sigaction sig_stack[NSIG - 1][SIGSTACKSIZE];
@@ -32,4 +31,5 @@ sig_pop(int sig) {
     return -1;
   return --sigsp[sig - 1];
 }
+#endif
 #endif

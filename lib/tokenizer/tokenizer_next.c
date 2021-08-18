@@ -12,7 +12,7 @@ tokenizer_next(tokenizer* t, struct token_s* out) {
   }
   while(1) {
     c = tokenizer_getc(t);
-    if(c == EOF)
+    if(c == TOKENIZER_EOF)
       break;
 
     /* components of multi-line comment marker might be terminals themselves */
@@ -65,7 +65,7 @@ tokenizer_next(tokenizer* t, struct token_s* out) {
     }
   }
   if(s == t->buf) {
-    if(c == EOF) {
+    if(c == TOKENIZER_EOF) {
       out->type = TT_EOF;
       return apply_coords(t, out, s, 1);
     }

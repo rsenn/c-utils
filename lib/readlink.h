@@ -4,7 +4,7 @@
 #include "typedefs.h"
 #include "windoze.h"
 
-#if WINDOWS_NATIVE
+#if WINDOWS
 ssize_t readlink(const char*, char* buf, size_t maxlen);
 #endif
 

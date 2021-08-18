@@ -2,8 +2,9 @@
 #include "../windoze.h"
 #include "../sig.h"
 
-#if !WINDOWS_NATIVE
 #include <signal.h>
+
+#if !WINDOWS_NATIVE
 #include <sys/signal.h>
 #endif
 
@@ -11,6 +12,7 @@
 
 int
 sig_catch(int sig, sighandler_t_ref f) {
+#if !WINDOWS_NATIVE
   struct sigaction ssa = {
     .sa_handler = f
 #if !defined(__MINGW32__) && !defined(__BORLANDC__) && !defined(_MSC_VER)
@@ -31,4 +33,6 @@ sig_catch(int sig, sighandler_t_ref f) {
 
   };
   return sig_catcha(sig, &ssa);
+#endif
+  return -1;
 }

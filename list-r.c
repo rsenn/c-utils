@@ -85,8 +85,8 @@
 #ifndef S_IFMT
 #define S_IFMT 0170000
 #endif
-#define max(a, b) ((a) > (b) ? (a) : (b))
-#define min(a, b) ((a) < (b) ? (a) : (b))
+#define MAX(a, b) ((a) > (b) ? (a) : (b))
+#define MIN(a, b) ((a) < (b) ? (a) : (b))
 
 static void print_strarray(buffer* b, array* a);
 static int fnmatch_strarray(buffer* b, array* a, const char* string, int flags);
@@ -488,9 +488,9 @@ read_etc(strarray* out, const char* path) {
 
 static char*
 resolve_etc(const strarray* arr, uint32 id) {
-  uint64 len = array_length(arr, sizeof(char*));
+  uint64 len = strarray_size(arr);
   if(id < len)
-    return *(char**)array_get(arr, sizeof(char*), id);
+    return strarray_at(arr, id);
   return 0;
 }
 
@@ -1161,13 +1161,13 @@ usage(char* argv0) {
                        "  -I, --include     PATTERN  include entries matching PATTERN\n",
                        "  -X, --exclude     PATTERN  exclude entries matching PATTERN\n",
                        "  -t, --time-style  FORMAT   format time according to FORMAT\n",
-                       "  -m, --min-size    BYTES    minimum file size\n",
+                       "  -m, --MIN-size    BYTES    minimum file size\n",
                        "  -L, --dereference          dereference symlinks\n",
                        "      --no-dereferen1ce\n",
                        "  -D, --one-filesystem\n",
                        "  -C, --cross-filesystem\n",
                        "  -c, --crc                  cyclic redundancy check\n",
-                       "  -d, --depth       NUM      max depth\n",
+                       "  -d, --depth       NUM      MAX depth\n",
                        "  -F, --filter-type TYPES    filter by type:\n\n    d = directory, b = "
                        "block dev s = socket\n    f = file,      c = char dev\n    l = symlink, "
                        "  p = pipe (fifo)\n\n",
@@ -1249,7 +1249,7 @@ add_ext_class(const char* ext) {
   //
   if(ext[invert] == ':') {
     char* group;
-    if((group = find_ext_class((char*)&ext[invert + 1])) == 0) {
+    if((group = (char*)find_ext_class((char*)&ext[invert + 1])) == 0) {
       buffer_putm_internal(buffer_2, "class ", ext, " not found", 0);
       buffer_putnlflush(buffer_2);
       // usage(argv[0]);
@@ -1290,7 +1290,7 @@ main(int argc, char* argv[]) {
     {"no-dereference", 0, &opt_deref, 0},
     {"one-filesysten", 0, &opt_samedev, 1},
     {"cross-filesysten", 0, &opt_samedev, 0},
-    {"min-size", 1, 0, 'm'},
+    {"MIN-size", 1, 0, 'm'},
     {"depth", 1, 0, 'd'},
     {"filter-type", 1, 0, 'F'},
     {"samedev", 0, 0, 'S'},

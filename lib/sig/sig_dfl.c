@@ -8,6 +8,7 @@
 #endif
 
 #undef sig_dfl
+#if !WINDOWS_NATIVE
 struct sigaction const sig_dfl = {.sa_handler = (void (*)(int))0
 #if !defined(__MINGW32__) && !defined(__BORLANDC__) && !defined(_MSC_VER)
                                   ,
@@ -33,3 +34,4 @@ struct sigaction const sig_ign = {.sa_handler = (void (*)(int))1
                                   .sa_restorer = 0
 #endif
 };
+#endif

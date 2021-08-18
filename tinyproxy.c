@@ -157,7 +157,7 @@ static buffer log = BUFFER_INIT(write, STDOUT_FILENO, logbuf, sizeof(logbuf));
 static MAP_T dns_cache;
 static tai6464 ttl;
 static strlist output_files;
-static char** program_argv;
+static char*const* program_argv;
 static int program_argc;
 
 #define BACKLOG                                                                                                        \

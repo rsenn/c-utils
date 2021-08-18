@@ -14,8 +14,10 @@
 
 #include <errno.h>
 #include <stdlib.h>
-#define max(a, b) ((a) > (b) ? (a) : (b))
-#define min(a, b) ((a) < (b) ? (a) : (b))
+
+#ifndef MIN
+#define MIN(a, b) ((a) < (b) ? (a) : (b))
+#endif
 
 int
 http_get(http* h, const char* location) {
@@ -68,7 +70,7 @@ http_get(http* h, const char* location) {
     req->serial = serial;
     req->type = GET;
     stralloc_init(&req->location);
-    stralloc_catb(&req->location, location, min(len, str_len(location)));
+    stralloc_catb(&req->location, location, MIN(len, str_len(location)));
     stralloc_nul(&req->location);
     stralloc_init(&req->headers);
     req->next = h->request;

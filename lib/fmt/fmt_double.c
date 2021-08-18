@@ -1,5 +1,7 @@
 #include "../fmt.h"
 #include "../uint64.h"
+#include "../str.h"
+#include <math.h>
 
 size_t
 fmt_double(char* dest, double d, int maxlen, int prec) {

@@ -6,7 +6,7 @@ tokenizer_read_until(tokenizer* t, const char* marker, int stop_at_nl) {
   char* s = t->buf;
   while(1) {
     c = tokenizer_getc(t);
-    if(c == EOF) {
+    if(c == TOKENIZER_EOF) {
       *s = 0;
       return 0;
     }

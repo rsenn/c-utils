@@ -7,7 +7,7 @@ tokenizer_skip_chars(tokenizer* t, const char* chars, int* count) {
   *count = 0;
   while(1) {
     c = tokenizer_getc(t);
-    if(c == EOF)
+    if(c == TOKENIZER_EOF)
       return 0;
     const char* s = chars;
     int match = 0;

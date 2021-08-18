@@ -35,7 +35,7 @@ hex64(buffer* b, uint64 num, int pad) {
 static int list_defined, list_undefined;
 static const char* filename;
 typedef int put64_function(buffer*, uint64, int);
-typedef int putstr_function(buffer*, const char*, int);
+typedef int putstr_function(buffer*, const char*, size_t);
 static put64_function* putnum = &hex64;
 static putstr_function* putstr = &buffer_putspad;
 static unsigned word_size;

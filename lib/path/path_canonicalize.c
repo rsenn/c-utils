@@ -1,9 +1,3 @@
-#include <sys/stat.h>
-
-#include "../windoze.h"
-#include "../path_internal.h"
-#include "../readlink.h"
-
 #ifndef _XOPEN_SOURCE
 #define _XOPEN_SOURCE 1
 #endif
@@ -18,6 +12,12 @@
 #define _FILE_OFFSET_BITS 64
 //#define _LARGEFILE64_SOURCE 1
 #define _LARGEFILE_SOURCE 1
+
+#include <sys/stat.h>
+
+#include "../windoze.h"
+#include "../path_internal.h"
+#include "../readlink.h"
 
 #include "../buffer.h"
 #include "../byte.h"

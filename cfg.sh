@@ -189,9 +189,9 @@ cfg-mingw() {
     *) : ${TOOLCHAIN=/opt/cmake-toolchains/mingw32.cmake} ;;
   esac
 
-  : ${PKG_CONFIG_PATH=/usr/${host}/sys-root/mingw/lib/pkgconfig}
+  : ${PKG_CONFIG=${host}-pkg-config}
 
-  export TOOLCHAIN PKG_CONFIG_PATH
+  export TOOLCHAIN PKG_CONFIG
   
   builddir=build/$host \
   bindir=$prefix/bin \

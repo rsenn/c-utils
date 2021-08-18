@@ -2,7 +2,7 @@
 # Check OpenSSL
 # ##############################################################################################################################################################################################################################################################################################################################################################################################################
 if(USE_SSL AND NOT BUILD_SSL)
-  message(STATUS "Using OpenSSL encryption")
+  message(CHECK_START "Checking for openssl library")
   if(NOT OPENSSL_ROOT_DIR)
     if("$ENV{OPENSSL_ROOT}")
       set(OPENSSL_ROOT_DIR "$ENV{OPENSSL_ROOT}" CACHE FILEPATH "OpenSSL root directory")
@@ -10,14 +10,13 @@ if(USE_SSL AND NOT BUILD_SSL)
     endif("$ENV{OPENSSL_ROOT}")
   endif(NOT OPENSSL_ROOT_DIR)
   set(PKG_CONFIG_USE_CMAKE_PREFIX_PATH ON)
-  # unset(OPENSSL_FOUND CACHE)
-  message(STATUS "Searching pkgconfig database for openssl...")
+  # unset(OPENSSL_FOUND CACHE) message(STATUS "Searching pkgconfig database for openssl...")
   pkg_search_module(OPENSSL openssl libssl QUIET)
 
-  message(STATUS "pkg_search_module(OPENSSL openssl)")
+  # message(STATUS "pkg_search_module(OPENSSL openssl)")
 
   if(OPENSSL_FOUND)
-    message(STATUS "Found openssl at ${OPENSSL_LIBRARY_DIRS} ${OPENSSL_INCLUDE_DIRS} ...")
+    # message(STATUS "Found openssl at ${OPENSSL_LIBRARY_DIRS} ${OPENSSL_INCLUDE_DIRS} ...")
 
     if(pkgcfg_lib_OPENSSL_crypto)
       set(OPENSSL_CRYPTO_LIBRARY "${pkgcfg_lib_OPENSSL_crypto}" CACHE FILEPATH "OpenSSL crypto library")
@@ -41,7 +40,7 @@ if(USE_SSL AND NOT BUILD_SSL)
     link_directories(${OPENSSL_LIBRARY_DIRS})
 
   else(OPENSSL_FOUND)
-    message(STATUS "Searching for openssl using FindOpenSSL.cmake script...")
+    # message(STATUS "Searching for openssl using FindOpenSSL.cmake script...")
     include(FindOpenSSL)
 
     if(OPENSSL_CRYPTO_LIBRARIES)
@@ -75,6 +74,12 @@ if(USE_SSL AND NOT BUILD_SSL)
     list(APPEND OPENSSL_LIBRARIES ${OPENSSL_CRYPTO_LIBRARY})
   endif(OPENSSL_CRYPTO_LIBRARY)
   set(OPENSSL_LIBRARIES "${OPENSSL_LIBRARIES}" CACHE STRING "OpenSSL libraries")
+
+  if(OPENSSL_FOUND)
+    message(CHECK_PASS "found")
+  else(OPENSSL_FOUND)
+    message(CHECK_FAIL "NOT found")
+  endif(OPENSSL_FOUND)
 
   # dump(OPENSSL_CRYPTO_LIBRARY OPENSSL_SSL_LIBRARY OPENSSL_LIBRARY_DIRS OPENSSL_INCLUDE_DIRS OPENSSL_LIBRARIES)
 

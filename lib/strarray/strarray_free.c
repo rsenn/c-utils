@@ -9,5 +9,5 @@ strarray_free(strarray* arr) {
     if(*x)
       alloc_free((void*)*x);
   }
-  array_reset(arr);
+  array_reset(&arr->a);
 }

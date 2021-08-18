@@ -1,8 +1,20 @@
+#include "../windoze.h"
+#if WINDOWS
+#define ZLIB_DLL 1
+#endif
 #include "../buffer.h"
 #include <stdlib.h>
 
 #ifdef HAVE_ZLIB
+#include <zconf.h>
 #include <zlib.h>
+#define ZEXPORT  __declspec(dllimport)
+ZEXPORT gzFile      gzdopen(int, const char*);
+ZEXPORT gzFile      gzopen(const char*, const char*);
+ZEXPORT int         gzclose(gzFile);
+ZEXPORT int         gzflush(gzFile, int);
+ZEXPORT int         gzread(gzFile, voidp, unsigned);
+ZEXPORT int         gzwrite(gzFile, voidpc, unsigned);
 
 static void
 buffer_gz_close(buffer* b) {

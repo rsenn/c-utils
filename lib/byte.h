@@ -26,8 +26,8 @@ extern "C" {
 /* byte_chr returns the smallest integer i between 0 and len-1
  * inclusive such that one[i] equals needle, or len if not found. */
 size_t byte_chr(const void* haystack, size_t len, char needle) __pure__;
-size_t byte_chrs(const char*, size_t, char charset[], size_t setlen);
-size_t byte_chrns(const char*, size_t, char charset[], size_t setlen);
+size_t byte_chrs(const char*, size_t, const char charset[], size_t setlen);
+size_t byte_chrns(const char*, size_t, const char charset[], size_t setlen);
 
 /* byte_rchr returns the largest integer i between 0 and len-1 inclusive
  * such that one[i] equals needle, or len if not found. */
