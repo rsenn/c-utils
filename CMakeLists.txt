@@ -17,9 +17,6 @@ include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/Functions.cmake)
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/Macros.cmake)
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/CheckInline.cmake)
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/Profile.cmake)
-include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/CheckMsysCygwinMingw.cmake)
-
-check_msys_cygwin_mingw()
 
 if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
   set(CMAKE_INSTALL_PREFIX "/usr/local" CACHE PATH "Installation prefix")
@@ -162,14 +159,20 @@ else(NOT ENABLE_SHARED)
 endif(NOT ENABLE_SHARED)
 
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/CheckCStandard.cmake)
+include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/CheckMsysCygwinMingw.cmake)
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/CheckWinSock.cmake)
 
 check_c_standard()
-check_winsock()
-dump(LIBMSWSOCK)
+check_msys_cygwin_mingw()
 
-check_compile(LIBC_HAS_IP6 "#include <sys/types.h>\n#include <sys/socket.h>\n#include <netinet/in.h>\n\nint main() {\n  struct sockaddr_in6 sa;\n  sa.sin6_family = PF_INET6;\n  (void)sa;\n  return 0;\n}\n")
-check_compile(LIBC_HAS_SCOPE_ID "#include <sys/types.h>\n#include <sys/socket.h>\n#include <netinet/in.h>\n\nint main() {\n  struct sockaddr_in6 sa;\n  sa.sin6_family = PF_INET6;\n  sa.sin6_scope_id = 23;\n  (void)sa;\n  return 0;\n}\n")
+if(WINDOWS)
+  check_winsock()
+  #dump(LIBMSWSOCK)
+else(WINDOWS)
+  check_compile(LIBC_HAS_IP6 "#include <sys/types.h>\n#include <sys/socket.h>\n#include <netinet/in.h>\n\nint main() {\n  struct sockaddr_in6 sa;\n  sa.sin6_family = PF_INET6;\n  (void)sa;\n  return 0;\n}\n")
+  check_compile(LIBC_HAS_SCOPE_ID "#include <sys/types.h>\n#include <sys/socket.h>\n#include <netinet/in.h>\n\nint main() {\n  struct sockaddr_in6 sa;\n  sa.sin6_family = PF_INET6;\n  sa.sin6_scope_id = 23;\n  (void)sa;\n  return 0;\n}\n")
+endif(WINDOWS)
+
 check_compile(HAVE_SYSCALL "#define _GNU_SOURCE\n#include <unistd.h>\n#include <sys/syscall.h>\n\nstatic inline ssize_t\nsys_write(int fd, const void* buf, size_t n) {\n  return syscall(SYS_write, fd, buf, n);\n}\n\nint main() { return sys_write(1, \"test\\\\n\", 5);\n}\n")
 
 if(NOT USE_SELECT)

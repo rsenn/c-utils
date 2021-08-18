@@ -1,5 +1,5 @@
 macro(check_winsock)
-  dump(MINGW MINGW32 MINGW64 WIN32 WIN64 MSVC MSYS)
+  # dump(MINGW MINGW32 MINGW64 WIN32 WIN64 MSVC MSYS)
   if(WIN32 OR MSVC)
     check_library_exists(wsock32 select@20 "" HAVE_WSOCK32_LIB)
     if(HAVE_WSOCK32_LIB)
