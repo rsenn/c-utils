@@ -57,7 +57,8 @@ typedef enum {
   LIST_FILE = 128,
   ATLEAST_PKGCONFIG_VERSION = 4096,
   CHECK_EXISTS = 8192,
-  MATCH = 0x10000
+  MATCH = 0x10000,
+  VARIABLE = 0x20000
 } id;
 typedef enum { OP_EQ = 0, OP_NE, OP_GT, OP_GE, OP_LT, OP_LE } op_code;
 
@@ -65,14 +66,12 @@ typedef enum { LIBS_ONLY_L = 64, LIBS_ONLY_LIBPATH = 128, LIBS_ONLY_OTHER = 256 
 
 typedef enum { CFLAGS_ONLY_I = 512, CFLAGS_ONLY_OTHER = 1024 } cflags_mode_t;
 
-static array cmds;
-
-static struct cmd_s {
+typedef struct cmd_s {
   strlist path;
   stralloc self;
   stralloc host;
   stralloc prefix;
-} cmd;
+} cmd_t;
 
 typedef struct pkg_s {
   stralloc name;
@@ -89,6 +88,8 @@ typedef struct cond_s {
   uint64 version_val;
 } cond;
 
+static array cmds;
+static cmd_t cmd;
 static const char* const field_names[] = {
     "Version",
     "Cflags",
@@ -104,6 +105,7 @@ static const char* const op_strings[] = {"==", "!=", ">", ">=", "<", "<="};
 static const char* default_prefix = CONFIG_PREFIX;
 static const char* sysroot = 0;
 static const char* match_pattern = 0;
+static const char* variable = 0;
 static int libs_mode = 0;
 static int static_libs = 0;
 static int cflags_mode = 0;
@@ -113,10 +115,13 @@ static int debug = 0;
 static int show_version = 0;
 static int atleast_version = 0;
 const char* pkgcfg_path = 0;
+extern buffer* unix_optbuf;
+static strlist args;
 
 static void
 add_cmd(id cmd) {
-  array_catb(&cmds, &cmd, sizeof(id));
+  if(array_indexof(&cmds, sizeof(id), &cmd) == -1)
+    array_catb(&cmds, &cmd, sizeof(id));
 }
 
 static int
@@ -137,6 +142,17 @@ get_field_index(int flags) {
   exit(2);
 
   return -1;
+}
+
+static const char*
+get_field_name(int flags) {
+  if(flags == -1)
+    return NULL;
+  if(flags & PRINT_PATH)
+    return 0;
+  if(flags & VARIABLE)
+    return variable;
+  return field_names[get_field_index(flags)];
 }
 
 static int
@@ -222,54 +238,21 @@ exec_program(const char* compiler, const char* arg, stralloc* out) {
     return NULL;
 #endif
 
-#if WINDOWS_NATIVE
-
-  if((bin = search_path(env_get("PATH"), compiler, &dir)) == 0) {
+  if(path_is_absolute(compiler)) {
+    bin = compiler;
+  } else if((bin = search_path(env_get("PATH"), compiler, &dir)) == 0) {
     errmsg_warnsys(bin, " not found: ", 0);
     exit(127);
   }
 
-  if((pid = process_create(bin, argv, 0, 0)) < 0) {
+  if((pid = process_create(bin, argv, (int[3]){0, p[1], p[1]}, 0)) < 0) {
     errmsg_warnsys("process_create error ", bin, ": ", 0);
     return 0;
   }
-#else
-#if 0 // POSIX_SPAWN
-
-  posix_spawnattr_setflags(&attr, 0);
-  posix_spawn_file_actions_init(&actions);
-  posix_spawn_file_actions_adddup2(&actions, p[1], 1);
-
-  if(posix_spawnp(&pid, compiler, &actions, &attr, argv, envp)) {
-    errmsg_warnsys("execvpe error ", compiler, ": ", 0);
-    return 0;
-  }
-
-#else
-  if((pid = fork()) == 0) {
-    close(p[0]);
-
-    dup2(p[1], 1);
-
-    if((bin = search_path(env_get("PATH"), compiler, &dir)) == 0) {
-      errmsg_warnsys(bin, " not found: ", 0);
-      exit(127);
-    }
-
-    if(execve(bin, argv, envp)) {
-      errmsg_warnsys("execvpe error: ", 0);
-      exit(1);
-    }
-  }
-#endif
-#endif
 
   close(p[1]);
-#if WINDOWS_NATIVE
   ws = process_wait(pid);
-#else
-  wait_pid(pid, &ws);
-#endif
+
   readclose_append(p[0], out, 1024);
 
   stralloc_trimr(out, "\r\t\v\n", 4);
@@ -806,7 +789,7 @@ pkg_list(id code) {
  */
 int
 pkg_open(const char* pkgname, pkg* pf) {
-  buffer pc;
+  buffer pc = {.x = 0};
   const char* s;
   size_t n;
   int ret = 0;
@@ -924,7 +907,9 @@ pkg_conf(strarray* modules, id code, int mode) {
 #ifdef DEBUG_OUTPUT_
     buffer_puts(buffer_2, "pkgname: ");
     buffer_puts(buffer_2, pkgname);
-
+    buffer_puts(buffer_2, " (");
+    buffer_putlong(buffer_2, i);
+    buffer_puts(buffer_2, ")");
     buffer_putnlflush(buffer_2);
 #endif
     pkg pf;
@@ -937,13 +922,7 @@ pkg_conf(strarray* modules, id code, int mode) {
       pos = n;
       if(pos < name.len)
         pos += scan_whitenskip(&name.s[pos], name.len - pos);
-
       pkg_parse_cond(&condition, &name.s[pos], name.len - pos);
-      /*   pkg_dump_cond(&condition);
-
-        stralloc_copyb(&cond,
-        &name.s[pos], name.len - pos);
-      */
       do_cond = 1;
       name.len = n;
     }
@@ -990,17 +969,39 @@ pkg_conf(strarray* modules, id code, int mode) {
 #endif
       strarray_pushb_unique(modules, x, len);
     }
+    {
+      const char* fn = 0;
 
-    if(code == PRINT_PATH) {
-      if(value.len)
-        stralloc_catc(&value, '\n');
-      stralloc_cat(&value, &pf.name);
-    } else {
-      int fi = code != 0 ? get_field_index(code) : -1;
-      const char* fn = fi == -1 ? NULL : field_names[fi];
+      if(code & PRINT_PATH) {
+        if(value.len)
+          stralloc_catc(&value, '\n');
+
+        stralloc_cat(&value, &pf.name);
+      }
+
+      if(code & VARIABLE) {
+        /*   if(value.len)
+             stralloc_catc(&value, '\n');
+           pkg_expand(&pf, variable, &value);
+           stralloc_catc(&value, '\n');*/
+
+#ifdef DEBUG_OUTPUT_
+        buffer_putm_internal(buffer_2, "Variable '", variable, "': ", 0);
+        buffer_putsa(buffer_2, &value);
+        buffer_putnlflush(buffer_2);
+#endif
+
+        fn = variable;
+        /*   buffer_putsa(buffer_1, &value);
+           buffer_putnlflush(buffer_1);
+      */
+
+      } else {
+        fn = get_field_name(code);
+      }
 
       pkg_set(&pf);
-      stralloc_zero(&value);
+      // stralloc_zero(&value);
 
       if(fn) {
 
@@ -1241,6 +1242,14 @@ pkgcfg_setpath(const char* path) {
   stralloc_free(&dir);
 }
 
+static void
+error_exit(int exitCode) {
+  buffer_puts(buffer_2, "The arguments leading up to this were:\n  ");
+  buffer_putsl(buffer_2, &args, "\n  ");
+  buffer_putnlflush(buffer_2);
+  exit(exitCode);
+}
+
 void
 usage(char* progname) {
   buffer_putm_internal(buffer_1, "Usage: ", path_basename(progname), " [OPTIONS] [PACKAGES...]\n", 0);
@@ -1266,9 +1275,6 @@ usage(char* progname) {
   buffer_putnlflush(buffer_1);
 }
 
-extern buffer* unix_optbuf;
-static strlist args;
-
 void
 pkgcfg_dumpenv(char* envp[]) {
   strarray stra;
@@ -1292,11 +1298,10 @@ main(int argc, char* argv[], char* envp[]) {
       {"help", 0, NULL, 'h'},
       {"version", 0, &show_version, 1},
       {"modversion", 0, NULL, PRINT_VERSION},
-      {"cflags", 0, NULL, PRINT_CFLAGS},
       {"path", 0, NULL, PRINT_PATH},
       {"verbose", 0, &verbose, 1},
       {"match", 0, NULL, MATCH},
-      {"variable", 1, NULL, 'V'},
+      {"variable", 1, NULL, VARIABLE},
       {"list-all", 0, NULL, 'l'},
       {"list-path", 0, NULL, 'L'},
       {"list-file", 0, NULL, 'F'},
@@ -1309,18 +1314,19 @@ main(int argc, char* argv[], char* envp[]) {
       {"libs", 0, NULL, PRINT_LIBS},
       {"cflags-only-I", 0, &cflags_mode, CFLAGS_ONLY_I},
       {"cflags-only-other", 0, &cflags_mode, CFLAGS_ONLY_OTHER},
+      {"cflags", 0, NULL, PRINT_CFLAGS},
       {"static", 0, &static_libs, 1},
       {"sorted", 0, &sorted, 1},
       {"unsorted", 0, &sorted, 0},
       {"atleast-pkgconfig-version", 1, NULL, ATLEAST_PKGCONFIG_VERSION},
-      {"host", 1, NULL, 'm'},
-      {"prefix", 1, NULL, 'p'},
+      /* {"host", 1, NULL, 'm'},
+       {"prefix", 1, NULL, 'p'},*/
       {"debug", 0, NULL, 'd'},
       {0, 0, 0, 0},
   };
 
   errmsg_iam(path_basename(argv[0]));
-  strlist_init(&args, '\t');
+  strlist_init(&args, '\0');
   strlist_fromv(&args, (const char**)argv, argc);
 
   pkgcfg_init(argv[0]);
@@ -1332,14 +1338,13 @@ main(int argc, char* argv[], char* envp[]) {
 
 #if DEBUG_OUTPUT_
   buffer_puts(buffer_2, "pkgcfg args = ");
-  buffer_putsa(buffer_2, &args.sa);
+  buffer_putsl(buffer_2, &args, ", ");
   buffer_putnlflush(buffer_2);
 #endif
 
-#ifdef _MSC_VER
-  unix_optbuf = buffer_1;
-#endif
   unix_opterr = 0;
+
+  unix_optbuf = buffer_1;
 
   for(;;) {
     c = unix_getopt_long(argc, argv, "dhm:ilLp:aPSvV:F", opts, &index);
@@ -1354,14 +1359,25 @@ main(int argc, char* argv[], char* envp[]) {
     switch(c) {
 
       case ATLEAST_PKGCONFIG_VERSION: atleast_version = 1; break;
-      case 'm': stralloc_copys(&cmd.host, argv[unix_optind]); break;
-      case 'p': stralloc_copys(&cmd.prefix, argv[unix_optind]); break;
+      case 'm': {
+        stralloc_copys(&cmd.host, unix_optarg);
+        break;
+      }
+      case 'p': {
+        stralloc_copys(&cmd.prefix, unix_optarg);
+        break;
+      }
       case 'd': debug++; break;
       case 'h': usage(argv[0]); return 0;
       case 'v': verbose++; break;
       case 'V': {
         show_version = 1;
         goto getopt_end;
+      }
+      case VARIABLE: {
+        add_cmd(VARIABLE);
+        variable = unix_optarg;
+        break;
       }
       case 'F':
       case 'L':
@@ -1389,7 +1405,6 @@ main(int argc, char* argv[], char* envp[]) {
       case 'S': mode |= PKGCFG_SHORT_ERR; break;
       case 'E': mode |= PKGCFG_EXISTS; break;
       case '?': {
-
         const char* arg = argv[unix_optind];
 
         if(!str_diffn(arg, "--libs", 6) || !str_diffn(arg, "--cflags", 8)) {
@@ -1404,13 +1419,11 @@ main(int argc, char* argv[], char* envp[]) {
             cflags_mode =
                 arg[str_find(arg, "only")] ? (arg[str_find(arg, "other")] ? CFLAGS_ONLY_OTHER : CFLAGS_ONLY_I) : 0;
 
-          argv[unix_optind] = "-";
-          /*           for(i = unix_optind;
-             argv[i]; i++) argv[i] =
-             argv[i+1];
-           */
+          //   argv[unix_optind] = "-";      for(i = unix_optind; argv[i]; i++) argv[i] = argv[i+1];
+
           continue;
         }
+        // unix_optind++;
 
         goto getopt_end;
       }
@@ -1428,8 +1441,8 @@ main(int argc, char* argv[], char* envp[]) {
 getopt_end:
 
   if(pkgcfg_path == 0) {
-
-    pkgcfg_setpath(pkgcfg_path);
+    stralloc_nul(&cmd.prefix);
+    pkgcfg_setpath(0);
   }
 
   if(argv[unix_optind - 1] && str_equal(argv[unix_optind - 1], "--list-all")) {
@@ -1451,8 +1464,18 @@ getopt_end:
 
   sysroot = env_get("PKG_CONFIG_SYSROOT");
 
-  if(!sysroot)
-    sysroot = "";
+  if(!sysroot) {
+    size_t pos;
+    stralloc_nul(&cmd.prefix);
+
+    if((pos = stralloc_finds(&cmd.prefix, "/sys-root/")) < cmd.prefix.len ||
+       (pos = stralloc_finds(&cmd.prefix, "/sysroot/")) < cmd.prefix.len) {
+
+      sysroot = str_ndup(cmd.prefix.s, pos + 9);
+    } else {
+      sysroot = "";
+    }
+  }
 
   if(verbose) {
     buffer_putm_internal(buffer_2, path_basename(argv[0]), ": ", 0);
@@ -1464,15 +1487,18 @@ getopt_end:
   if(mode & PKGCFG_EXISTS) {
     add_cmd(CHECK_EXISTS);
   } else if(array_empty(&cmds) && !(mode & PKGCFG_EXISTS)) {
-    buffer_puts(buffer_2,
-                "Must specify package names on "
-                "the command line");
+
+    buffer_puts(buffer_2, "Must specify package names on the command line");
     buffer_putnlflush(buffer_2);
-    return 1;
+    error_exit(1);
   }
 
   array_foreach_t(&cmds, code) {
-
+#ifdef DEBUG_OUTPUT_
+    buffer_puts(buffer_2, "Command: ");
+    buffer_putulong(buffer_2, *code);
+    buffer_putnlflush(buffer_2);
+#endif
     if(*code == LIST_ALL || *code == LIST_PATH || *code == LIST_FILE) {
       pkg_list(*code);
     } else if(unix_optind < argc) {
@@ -1480,13 +1506,8 @@ getopt_end:
       strarray modules;
       strarray_from_argv(argc - unix_optind, (const char* const*)&argv[unix_optind], &modules);
       exitCode = pkg_conf(&modules, *code, mode);
-      if(exitCode) {
-        buffer_puts(buffer_2, "The arguments leading up to this were:\n  ");
-        buffer_putstra(buffer_2, &modules, "\n  ");
-        buffer_putnlflush(buffer_2);
-      }
-
-      return exitCode;
+      if(exitCode)
+        error_exit(exitCode);
     }
   }
 }

@@ -98,7 +98,7 @@ main(int argc, char** argv) {
   buffer_putnlflush(buffer_1);
 
   for(;;) {
-    c = getopt_long(argc, argv, "hiedsEDO", opts, &index);
+    c = unix_getopt_long(argc, argv, "hiedsEDO", opts, &index);
     if(c == -1)
       break;
     if(c == '\0')

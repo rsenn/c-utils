@@ -628,7 +628,7 @@ main(int argc, char* argv[]) {
   MAP_NEW(port_map);
 
   for(;;) {
-    c = getopt_long(argc, argv, "b:hvri:x", opts, &index);
+    c = unix_getopt_long(argc, argv, "b:hvri:x", opts, &index);
     if(c == -1)
       break;
     if(c == 0)

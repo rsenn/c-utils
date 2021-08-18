@@ -86,7 +86,7 @@ main(int argc, char* argv[]) {
 
   int out_fd = STDOUT_FILENO;
 
-  while((opt = getopt(argc, argv, "o:f:t:h")) != -1) {
+  while((opt = unix_getopt(argc, argv, "o:f:t:h")) != -1) {
     switch(opt) {
       case 'o': out_file = unix_optarg; break;
       case 'f': in_type = unix_optarg; break;

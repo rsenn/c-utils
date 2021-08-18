@@ -430,7 +430,7 @@ main(int argc, char* argv[]) {
   // tls_new_client(0);
 
   for(;;) {
-    c = getopt_long(argc, argv, "ho:", opts, &index);
+    c = unix_getopt_long(argc, argv, "ho:", opts, &index);
     if(c == -1)
       break;
     if(c == 0)

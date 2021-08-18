@@ -18,7 +18,17 @@ extern "C" {
 /* strarray is the internfal data structure all functions are working on.
  */
 
-typedef array strarray;
+typedef struct {
+  union {
+    struct {
+      char** p;
+      int64 allocated;
+      uint64 initialized;
+      size_t headroom;
+    };
+    struct array_s a;
+  };
+} strarray;
 
 /* strarray_init will initialize a strarray. */
 #define strarray_zero(l) array_trunc((l))

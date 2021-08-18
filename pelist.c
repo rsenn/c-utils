@@ -386,7 +386,7 @@ main(int argc, char** argv) {
 #endif
 
   for(;;) {
-    c = getopt_long(argc, argv, "hiedsEDOo:ra:S:R", opts, &index);
+    c = unix_getopt_long(argc, argv, "hiedsEDOo:ra:S:R", opts, &index);
     if(c == -1)
       break;
     if(c == '\0')

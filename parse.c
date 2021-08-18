@@ -13,6 +13,10 @@
 #include "lib/getopt.h"
 #include "lib/open.h"
 
+#if WINDOWS
+#include <windows.h>
+#endif
+
 static stralloc prog;
 
 const char*

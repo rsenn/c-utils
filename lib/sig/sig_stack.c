@@ -1,7 +1,11 @@
-#include "../sig.h"
+#define _POSIX_SOURCE 1
+#include "../sig_internal.h"
 
 #include <errno.h>
+#if !WINDOWS_NATIVE
 #include <signal.h>
+#include <sys/signal.h>
+#endif
 
 #ifdef NSIG
 static struct sigaction sig_stack[NSIG - 1][SIGSTACKSIZE];

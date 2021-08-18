@@ -136,7 +136,7 @@ main(int argc, char* argv[]) {
     return 109;
   }
 
-  while((c = getopt(argc, argv, "qt:u:")) != -1) {
+  while((c = unix_getopt(argc, argv, "qt:u:")) != -1) {
     switch(c) {
       case 'q': verbose = 0; break;
       case 't':

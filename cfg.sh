@@ -292,7 +292,7 @@ cfg-msys() {
   build=$(gcc -dumpmachine)
   : ${host=${build%%-*}-pc-msys}
   : ${prefix=/usr/$host/sysroot/usr}
-echo "host: $host"
+   echo "host: $host"
 
   case "$host" in
     x86_64*) TOOLCHAIN=/opt/cmake-toolchains/msys64.cmake ;;

@@ -1284,7 +1284,7 @@ main(int argc, char* argv[]) {
 
   taia_uint(&ttl, DNS_MAX_AGE);
 
-  while((c = getopt_long(argc,
+  while((c = unix_getopt_long(argc,
                          argv,
                          "hb:l:r:p:i:O:fso:a:m:LdB:"
                          "T:n:",

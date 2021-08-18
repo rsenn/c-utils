@@ -220,7 +220,7 @@ main(int argc, char* argv[]) {
     return 109;
   }
 
-  while((c = getopt(argc, argv, "4qt:u:")) != -1) {
+  while((c = unix_getopt(argc, argv, "4qt:u:")) != -1) {
     switch(c) {
       case '4': no_ip6 = true; break;
       case 'q': verbose = 0; break;

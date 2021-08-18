@@ -565,7 +565,7 @@ main(int argc, char* argv[]) {
       {0, 0, 0, 0},
   };
 
-  while((opt = getopt_long(argc, argv, "hcdf:t:i:x:lF:o:P:", opts, &index)) != -1) {
+  while((opt = unix_getopt_long(argc, argv, "hcdf:t:i:x:lF:o:P:", opts, &index)) != -1) {
     if(opt == 0)
       continue;
 

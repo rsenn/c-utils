@@ -7,8 +7,6 @@
  * https://github.com/takamin/win-c/blob/master/LICENSE
  */
 
-#if 1 //! defined(HAVE_GETOPT) || !defined(HAVE_GETOPT_LONG)
-
 #include "../getopt.h"
 #include "../buffer.h"
 #include "../str.h"
@@ -16,23 +14,11 @@
 #include <stdio.h>
 #include <string.h>
 
-#if 1 // def HAVE_GETOPT
-#define longopt unix_longopt
-#define getopt unix_getopt
-#define getopt_long unix_getopt_long
-#define getopt_real unix_getopt_real
-#define optind unix_optind
-#define optarg unix_optarg
-#define opterr unix_opterr
-#define optopt unix_optopt
-#define optbuf unix_optbuf
-#endif
-
-char* optarg = 0;
-int optind = 1;
-int opterr = 1;
-int optopt = 0;
-buffer* optbuf = NULL;
+char* unix_optarg = 0;
+int unix_optind = 1;
+int unix_opterr = 1;
+int unix_optopt = 0;
+buffer* unix_optbuf = NULL;
 
 int postpone_count = 0;
 int nextchar = 0;
@@ -61,62 +47,63 @@ postpone_noopt(int argc, char* const argv[], int index) {
 }
 
 static int
-getopt_real(int argc, char* const argv[], const char* optstring, const struct longopt* longopts, int* longindex) {
-  if(optbuf == NULL)
-    optbuf = buffer_2;
+getopt_real(int argc, char* const argv[], const char* optstring, const struct unix_longopt* longopts, int* longindex) {
+  if(unix_optbuf == NULL)
+    unix_optbuf = buffer_2;
   while(1) {
     int c;
     const char* optptr = 0;
-    if(optind >= argc - postpone_count) {
+    if(unix_optind >= argc - postpone_count) {
       c = 0;
-      optarg = 0;
+      unix_optarg = 0;
       break;
     }
-    c = *(argv[optind] + nextchar);
+    c = *(argv[unix_optind] + nextchar);
     if(c == '\0') {
       nextchar = 0;
-      ++optind;
+      ++unix_optind;
       continue;
     }
     if(nextchar == 0) {
       if(optstring[0] != '+' && optstring[0] != '-') {
         while(c != '-') {
           /* postpone non-opt parameter */
-          if(!postpone_noopt(argc, argv, optind)) {
+          if(!postpone_noopt(argc, argv, unix_optind)) {
             break; /* all args are non-opt param */
           }
           ++postpone_count;
-          c = *argv[optind];
+          c = *argv[unix_optind];
         }
       }
       if(c != '-') {
         if(optstring[0] == '-') {
-          optarg = argv[optind];
+          unix_optarg = argv[unix_optind];
           nextchar = 0;
-          ++optind;
+          ++unix_optind;
           return 1;
         }
         break;
       } else {
-        if(str_diff(argv[optind], "--") == 0) {
-          optind++;
+        if(str_diff(argv[unix_optind], "--") == 0) {
+          unix_optind++;
           break;
         }
         ++nextchar;
-        if(longopts != 0 && *(argv[optind] + 1) == '-') {
-          char const* spec_long = argv[optind] + 2;
+        if(longopts != 0 && *(argv[unix_optind] + 1) == '-') {
+          char const* spec_long = argv[unix_optind] + 2;
           size_t pos_eq = str_chr(spec_long, '=');
           ssize_t spec_len = pos_eq;
           int index_search = 0, index_found = -1;
-          const struct longopt* optdef = 0;
+          const struct unix_longopt* optdef = 0;
           if(spec_long[pos_eq] == '\0')
             pos_eq = 0;
           while(longopts->name != 0) {
-            if(str_diffn(spec_long, longopts->name, spec_len) == 0) {
+            if(str_diff(spec_long, longopts->name) == 0 ||
+               (spec_long[pos_eq] == '=' && str_diffn(spec_long, longopts->name, spec_len) == 0)) {
               if(optdef != 0) {
-                if(opterr) {
-                  buffer_putm_internal(optbuf, "ambiguous option: ", spec_long, 0);
-                  buffer_putnlflush(optbuf);
+                if(unix_opterr) {
+                  buffer_putm_internal(unix_optbuf, "ambiguous option: ", spec_long, 0);
+                  buffer_putnlflush(unix_optbuf);
                 }
                 return '?';
               }
@@ -127,33 +114,33 @@ getopt_real(int argc, char* const argv[], const char* optstring, const struct lo
             index_search++;
           }
           if(optdef == 0) {
-            if(opterr) {
-              buffer_putm_internal(optbuf, "no such option: ", spec_long, 0);
-              buffer_putnlflush(optbuf);
+            if(unix_opterr) {
+              buffer_putm_internal(unix_optbuf, "no such option: ", spec_long, 0);
+              buffer_putnlflush(unix_optbuf);
             }
             return '?';
           }
           switch(optdef->has_arg) {
             case no_argument:
-              optarg = 0;
+              unix_optarg = 0;
               if(pos_eq != 0) {
-                if(opterr) {
-                  buffer_putm_internal(optbuf, "no argument for ", optdef->name, 0);
-                  buffer_putnlflush(optbuf);
+                if(unix_opterr) {
+                  buffer_putm_internal(unix_optbuf, "no argument for ", optdef->name, 0);
+                  buffer_putnlflush(unix_optbuf);
                 }
                 return '?';
               }
               break;
             case required_argument:
               if(spec_long[pos_eq] == '\0') {
-                ++optind;
-                optarg = argv[optind];
+                ++unix_optind;
+                unix_optarg = argv[unix_optind];
               } else {
-                optarg = (char*)pos_eq + 1;
+                unix_optarg = (char*)spec_long + pos_eq + 1;
               }
               break;
           }
-          ++optind;
+          ++unix_optind;
           nextchar = 0;
           if(longindex != 0) {
             *longindex = index_found;
@@ -169,36 +156,36 @@ getopt_real(int argc, char* const argv[], const char* optstring, const struct lo
     }
     optptr = strchr(optstring, c);
     if(optptr == NULL) {
-      optopt = c;
-      if(opterr) {
-        buffer_putm_internal(optbuf, argv[0], ": invalid option -- ", 0);
-        buffer_PUTC(optbuf, (char)c);
-        buffer_putnlflush(optbuf);
+      unix_optopt = c;
+      if(unix_opterr) {
+        buffer_putm_internal(unix_optbuf, argv[0], ": invalid option -- ", 0);
+        buffer_PUTC(unix_optbuf, (char)c);
+        buffer_putnlflush(unix_optbuf);
       }
       ++nextchar;
       return '?';
     }
     if(*(optptr + 1) != ':') {
       nextchar++;
-      if(*(argv[optind] + nextchar) == '\0') {
-        ++optind;
+      if(*(argv[unix_optind] + nextchar) == '\0') {
+        ++unix_optind;
         nextchar = 0;
       }
-      optarg = 0;
+      unix_optarg = 0;
     } else {
       nextchar++;
-      if(*(argv[optind] + nextchar) != '\0') {
-        optarg = argv[optind] + nextchar;
+      if(*(argv[unix_optind] + nextchar) != '\0') {
+        unix_optarg = argv[unix_optind] + nextchar;
       } else {
-        ++optind;
-        if(optind < argc - postpone_count) {
-          optarg = argv[optind];
+        ++unix_optind;
+        if(unix_optind < argc - postpone_count) {
+          unix_optarg = argv[unix_optind];
         } else {
-          optopt = c;
-          if(opterr) {
-            buffer_putm_internal(optbuf, argv[0], ": option requires an argument -- ", 0);
-            buffer_PUTC(optbuf, (char)c);
-            buffer_putnlflush(optbuf);
+          unix_optopt = c;
+          if(unix_opterr) {
+            buffer_putm_internal(unix_optbuf, argv[0], ": option requires an argument -- ", 0);
+            buffer_PUTC(unix_optbuf, (char)c);
+            buffer_putnlflush(unix_optbuf);
           }
           if(optstring[0] == ':' || ((optstring[0] == '-' || optstring[0] == '+') && optstring[1] == ':')) {
             c = ':';
@@ -207,7 +194,7 @@ getopt_real(int argc, char* const argv[], const char* optstring, const struct lo
           }
         }
       }
-      ++optind;
+      ++unix_optind;
       nextchar = 0;
     }
     return c;
@@ -216,8 +203,8 @@ getopt_real(int argc, char* const argv[], const char* optstring, const struct lo
   /* end of option analysis */
 
   /* fix the order of non-opt params to original */
-  while((argc - optind - postpone_count) > 0) {
-    postpone(argc, argv, optind);
+  while((argc - unix_optind - postpone_count) > 0) {
+    postpone(argc, argv, unix_optind);
     ++postpone_count;
   }
 
@@ -226,26 +213,13 @@ getopt_real(int argc, char* const argv[], const char* optstring, const struct lo
   return -1;
 }
 
-#if 1 // ndef HAVE_GETOPT
 int
-getopt(int argc, char* const argv[], const char* optstring) {
+unix_getopt(int argc, char* const argv[], const char* optstring) {
   return getopt_real(argc, argv, optstring, 0, 0);
 }
-#endif
 
-#if 1 // ndef HAVE_GETOPT_LONG
 int
-getopt_long(int argc, char* const argv[], const char* optstring, const struct longopt* longopts, int* longindex) {
+unix_getopt_long(
+    int argc, char* const argv[], const char* optstring, const struct unix_longopt* longopts, int* longindex) {
   return getopt_real(argc, argv, optstring, longopts, longindex);
 }
-#endif
-
-/********************************************************
-int getopt_long_only(int argc, char* const argv[],
-        const char* optstring,
-        const struct longopt* longopts, int* longindex)
-{
-    return -1;
-}
-********************************************************/
-#endif /* !defined(HAVE_GETOPT) || !defined(HAVE_GETOPT_LONG) */

@@ -1308,7 +1308,7 @@ main(int argc, char* argv[]) {
   strlist_init(&extensions, ',');
 
   for(;;) {
-    c = getopt_long(argc, argv, "fhlLne:qri:o:I:X:t:m:cd:C:F:SD", opts, &index);
+    c = unix_getopt_long(argc, argv, "fhlLne:qri:o:I:X:t:m:cd:C:F:SD", opts, &index);
     if(c == -1)
       break;
     if(c == 0)

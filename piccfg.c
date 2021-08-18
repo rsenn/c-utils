@@ -506,7 +506,7 @@ main(int argc, char* argv[]) {
                            {0, 0, 0, 0}};
 
   for(;;) {
-    c = getopt_long(argc, argv, "hodCnv", opts, &index);
+    c = unix_getopt_long(argc, argv, "hodCnv", opts, &index);
     if(c == -1)
       break;
     if(c == 0)

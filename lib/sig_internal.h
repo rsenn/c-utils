@@ -1,6 +1,9 @@
+#ifndef SIG_INTERNAL_H
+#define SIG_INTERNAL_H
 
-#ifndef SIG_INTERNAL
-#define SIG_INTERNAL
+#include "sig.h"
+
+#define NSIG 31
 
 typedef struct sigtable_s sigtable_t, *sigtable_t_ref;
 struct sigtable_s {

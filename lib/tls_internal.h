@@ -2,6 +2,11 @@
 #define TLS_INTERNAL_H
 
 #include "windoze.h"
+#if WINDOWS
+#define OPENSSL_SYS_WINDOWS 1
+#define OPENSSL_OPT_WINDLL 1
+#endif
+
 #include "iarray.h"
 #include "tls.h"
 

@@ -470,7 +470,7 @@ main(int argc, char** argv) {
   strlist_init(&flaglist, '|');
 
   for(;;) {
-    c = getopt_long(argc, argv, "hDUFSr:", opts, &index);
+    c = unix_getopt_long(argc, argv, "hDUFSr:", opts, &index);
     if(c == -1)
       break;
     if(c == '\0')

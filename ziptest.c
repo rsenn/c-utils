@@ -97,7 +97,7 @@ main(int argc, char* argv[]) {
   compression_type type;
   buffer cbuf;
 
-  while((opt = getopt(argc, argv, "123456789dt:o:h")) != -1) {
+  while((opt = unix_getopt(argc, argv, "123456789dt:o:h")) != -1) {
     switch(opt) {
       case '1':
       case '2':

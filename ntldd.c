@@ -880,7 +880,7 @@ main(int argc, char** argv) {
   // byte_zero(&sp, sizeof(sp));
   // sp.path = calloc(1, sizeof(char*));
   for(;;) {
-    c = getopt_long(argc, argv, "hvudrReiD:", opts, &index);
+    c = unix_getopt_long(argc, argv, "hvudrReiD:", opts, &index);
     if(c == -1)
       break;
     if(c == 0)

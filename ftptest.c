@@ -404,7 +404,7 @@ main(int argc, char* argv[]) {
     return 109;
   }
 
-  while((c = getopt(argc, argv, "qt:u:4")) != -1) {
+  while((c = unix_getopt(argc, argv, "qt:u:4")) != -1) {
     switch(c) {
       case 'q': verbose = 0; break;
       case '4': no_ip6 = true; break;

@@ -19,6 +19,7 @@ if(USE_BZIP)
 
   else(NOT BZIP2_FOUND OR "${BZIP2_FOUND}" STREQUAL "")
     # pkg_get_variable(BZIP2_LIBRARY "${BZIP2_MODULE_NAME}")
+
     if(pkgcfg_lib_BZIP2_bz2)
       set(BZIP2_LIBRARY ${pkgcfg_lib_BZIP2_bz2})
     else(pkgcfg_lib_BZIP2_bz2)

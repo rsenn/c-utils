@@ -854,7 +854,7 @@ main(int argc, char* argv[]) {
 
   errmsg_iam(argv[0]);
 
-  while((opt = getopt(argc, argv, "u:F:dt:i:x:ho:")) != -1) {
+  while((opt = unix_getopt(argc, argv, "u:F:dt:i:x:ho:")) != -1) {
     switch(opt) {
       case 'h': usage(argv[0]); return 0;
       case 'F': dt_fmt = unix_optarg; break;

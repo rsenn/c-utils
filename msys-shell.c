@@ -96,7 +96,7 @@ main(int argc, char* argv[], char* envp[]) {
 
   errmsg_iam(argv[0]);
   for(;;) {
-    c = getopt_long(argc, argv, "hve:", opts, &index);
+    c = unix_getopt_long(argc, argv, "hve:", opts, &index);
     if(c == -1)
       break;
     if(c == 0)

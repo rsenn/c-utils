@@ -262,7 +262,7 @@ main(int argc, char* argv[]) {
 #endif
 
   for(;;) {
-    c = getopt_long(argc, argv, "afhr:s:muw", opts, &index);
+    c = unix_getopt_long(argc, argv, "afhr:s:muw", opts, &index);
     if(c == -1)
       break;
     if(c == 0)

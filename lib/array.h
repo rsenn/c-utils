@@ -14,7 +14,7 @@
 extern "C" {
 #endif
 
-typedef struct {
+typedef struct array_s {
   char* p;
   int64 allocated;    /* in bytes */
   uint64 initialized; /* in bytes */

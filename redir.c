@@ -35,7 +35,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <signal.h>
-#include <getopt.h>
+#include <unix_getopt.h>
 #define SYSLOG_NAMES
 #include <syslog.h>
 #include <sys/types.h>
@@ -365,7 +365,7 @@ parse_args(int argc, char* argv[]) {
 #define SHAPER_OPTS ""
 #endif
   const char* prognm = progname(argv[0]);
-  while((opt = getopt_long(argc, argv, "b:hiI:l:npst:vx:" FTP_OPTS SHAPER_OPTS, long_options, NULL)) != -1) {
+  while((opt = unix_getopt_long(argc, argv, "b:hiI:l:npst:vx:" FTP_OPTS SHAPER_OPTS, long_options, NULL)) != -1) {
     switch(opt) {
       case 'b': bind_addr = unix_optarg; break;
 
