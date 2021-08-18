@@ -4,7 +4,7 @@
 #include <sys/stat.h>
 
 #if WINDOWS_NATIVE
-#include <io.h>
+#include <windows.h>
 #define lstat stat
 #endif
 
@@ -16,14 +16,16 @@
 
 int
 path_exists(const char* p) {
+#if WINDOWS_NATIVE
+  return !!PathFileExistsA(p);
+#else
   struct _stat st;
   int r;
-#if WINDOWS_NATIVE
   if(access(p, 0) == 0)
     return 1;
-#endif
   r = lstat(p, &st);
   if(r == 0)
     return 1;
   return 0;
+#endif
 }
