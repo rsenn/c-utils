@@ -34,13 +34,7 @@ typedef union {
 
 struct ihex_record_s;
 struct ihex_record_s {
-  union {
-    struct list_head link;
-    struct {
-      struct ihex_record_s *prev, *next;
-    };
-  };
-  //  struct ihex_record_s* next;
+  struct list_head link;
   uint8 length;
   uint16 offset;
   uint8 type;
@@ -53,26 +47,25 @@ typedef struct ihex_record_s ihex_record;
 typedef struct {
   union {
     struct list_head records;
-    /*    struct {
-          struct ihex_record_s *tail, *head;
-        };*/
   };
 } ihex_file;
 
-void ihex_init(ihex_file*);
+void         ihex_init(ihex_file*);
 ihex_record* ihex_put(ihex_file*, uint32 offset, const char* x, size_t n);
-size_t ihex_read_at(ihex_file*, uint32 at, char* x, size_t n);
-ssize_t ihex_read_buf(ihex_file*, const char* in, size_t n);
-int ihex_record_address(ihex_record*, ihex_addr* addr);
+size_t       ihex_read_at(ihex_file*, uint32 at, char* x, size_t n);
+ssize_t      ihex_read_buf(ihex_file*, const char* in, size_t n);
+int          ihex_record_address(ihex_record*, ihex_addr* addr);
 ihex_record* ihex_record_at(ihex_file*, uint32 at, uint32* roffs);
-uint8 ihex_record_checksum(const ihex_record*);
-ihex_recptr ihex_record_find(ihex_file*, uint32 at, uint32* roffs);
+uint8        ihex_record_checksum(const ihex_record*);
+void         ihex_record_dump(ihex_record*, buffer* b);
+ihex_recptr  ihex_record_find(ihex_file*, uint32 at, uint32* roffs);
 ihex_record* ihex_record_insert(ihex_file*, uint32 at, uint8 len);
 ihex_record* ihex_record_next(ihex_record*, int type);
 ihex_record* ihex_record_prev(ihex_record*, int type);
-ssize_t ihex_record_read(ihex_record**, const char* in, size_t n);
-void ihex_record_write(ihex_record*, buffer* b);
-int ihex_write(ihex_file*, buffer* b);
+ssize_t      ihex_record_read(ihex_record**, const char* in, size_t n);
+void         ihex_record_write(ihex_record*, buffer* b);
+int          ihex_write(ihex_file*, buffer* b);
+
 
 static inline const char*
 ihex_typestr(enum ihex_type_e type) {

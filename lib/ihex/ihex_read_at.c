@@ -26,7 +26,7 @@ ihex_read_at(ihex_file* ihf, uint32 at, char* x, size_t n) {
       n -= num;
       x += num;
       end = o.off32 + rec->length;
-      rec = rec->next;
+      rec = (ihex_record*)rec->link.next;
       if(!rec)
         break;
       o.lo16 = rec->offset;

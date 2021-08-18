@@ -150,21 +150,25 @@ hex_print(ihex_file* ihf, buffer* out) {
   ihex_addr a = {0}, prev = {0};
   ihex_record* r;
   list_for_each(p.el, &ihf->records) {
-    if(ihex_record_address(p.r, &a)) {
-      a.lo16 = p.r->offset;
-      if(prev.off32 < a.off32) {
-        buffer_puts(out, "empty space = 0x");
-        buffer_putxlong0(out, prev.off32, 6);
-        buffer_puts(out, ", len = 0x");
-        buffer_putxlong0(out, a.off32 - prev.off32, 6);
-        buffer_putnlflush(out);
-      }
-    } else {
-      /*    }
+    if(ihex_record_address(p.r, &a) == 4) {
+      buffer_puts(out, "set upper 16 address = 0x");
+      buffer_putxlong0(out, a.hi16, 4);
+      buffer_putnlflush(out);
+      continue;
+    }
 
-          if(p.r->type == 0) {*/
-      if((a.off32 & (~mask)))
-        break;
+    if(prev.off32 < a.off32) {
+      buffer_puts(out, "empty space = 0x");
+      buffer_putxlong0(out, prev.off32, 6);
+      buffer_puts(out, ", len = 0x");
+      buffer_putxlong0(out, a.off32 - prev.off32, 6);
+      buffer_putnlflush(out);
+    }
+    if(p.r->type == 0) {
+      a.lo16 = p.r->offset;
+
+      /*  if((a.off32 & (~mask)))
+         break;*/
       buffer_putxlong0(out, a.off32, 8);
       buffer_putm_internal(out, " ", ihex_typestr(p.r->type), "(", 0);
       buffer_putulong(out, p.r->length);
@@ -254,22 +258,24 @@ main(int argc, char* argv[]) {
       struct list_head* el;
       ihex_record* r;
     } p;
-    ihex_file ihx;
+    ihex_file hex_input;
     ihex_addr a = {0}, prev = {0};
     uint32 top, bottom;
     input_file = argv[unix_optind++];
 
-    if(hex_load(&ihx, input_file)) {
+    if(hex_load(&hex_input, input_file)) {
       errmsg_warnsys("hex_load: ", 0);
       return 1;
     }
-    bottom = mem_bottom(&ihx);
-    top = mem_top(&ihx, mask);
+    bottom = mem_bottom(&hex_input);
+    top = mem_top(&hex_input, mask);
+    buffer_putm_internal(buffer_2, "Input Hex File '", input_file, "':\n", 0);
+    hex_print(&hex_input, buffer_2);
 
     puthex("mem bottom", bottom);
     puthex("mem top", top);
 
-    list_for_each(p.el, &ihx.records) {
+    list_for_each(p.el, &hex_input.records) {
       if(ihex_record_address(p.r, &a) == 0) {
         /*buffer_puts(buffer_2, "Record @");
         buffer_putxlong0(buffer_2, a.off32, 4);
@@ -294,8 +300,7 @@ main(int argc, char* argv[]) {
       }
     }
 
-    hex_print(&ihx, buffer_2);
-    hex_copy(&ihx, m);
+    hex_copy(&hex_input, m);
   }
 
   int fd = open_trunc("testihex.bin");
@@ -303,6 +308,9 @@ main(int argc, char* argv[]) {
   close(fd);
 
   if(output_file) {
+    buffer_puts(buffer_2, "Output Hex File:\n");
+    hex_print(&hex_output, buffer_2);
+
     hex_save(&hex_output, output_file);
     buffer_putm_internal(buffer_2, "Wrote '", output_file, "' ...", 0);
     buffer_putnlflush(buffer_2);
