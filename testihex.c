@@ -9,9 +9,12 @@
 #include "lib/uint8.h"
 #include "lib/str.h"
 #include "lib/path.h"
+#include "lib/scan.h"
+#include "lib/errmsg.h"
 #include "lib/unix.h"
 
 static uint32 mask;
+static ihex_file hex_output;
 
 void
 putdata(const uint8* x, size_t n) {
@@ -24,7 +27,7 @@ putdata(const uint8* x, size_t n) {
 }
 
 uint32
-mem_top(ihex_file* h) {
+mem_top(ihex_file* h, uint32 mask) {
   ihex_record* r;
   uint32 top = 0;
   ihex_addr a = {0};
@@ -61,6 +64,90 @@ mem_bottom(ihex_file* h) {
   return bottom;
 }
 
+int
+hex_open(ihex_file* hex, const char* filename) {
+  static stralloc sa;
+  int ret = -1;
+  size_t sz = 0;
+  const char* x;
+  if((x = mmap_read(filename, &sz))) {
+    ihex_record* r;
+    buffer input;
+    buffer_mmapread(&input, filename);
+    buffer_getline_sa(&input, &sa);
+    ret = ihex_record_read(&r, sa.s, sa.len);
+    ret = ihex_read_buf(hex, x, sz);
+    buffer_close(&input);
+    mmap_unmap(x, sz);
+    ret = 0;
+  }
+  return ret;
+}
+
+int
+hex_copy(ihex_record* r, uint8_t* m) {
+  ihex_addr a = {0}, prev = {0};
+  for(; r; r = r->next) {
+    if(r->type == 4)
+      uint16_unpack_big(r->data, &a.hi16);
+    else
+      a.lo16 = r->offset;
+    if(r->type == 0) {
+      if((a.off32 & (~mask)))
+        break;
+      if((a.off32 & (~mask)) == 0)
+        byte_copy(&m[a.off32], r->length, r->data);
+    }
+    prev = a;
+    prev.off32 += r->length;
+  }
+}
+
+int
+hex_save(ihex_record* r, const char* filename) {
+  ihex_addr a = {0}, prev = {0};
+  buffer output;
+  buffer_truncfile(&output, filename);
+
+  for(; r; r = r->next) {
+
+    if(r->type == 4) {
+      uint16_unpack_big(r->data, &a.hi16);
+    } else {
+      a.lo16 = r->offset;
+
+      if(prev.off32 < a.off32) {
+        buffer_puts(buffer_2, "empty space = 0x");
+        buffer_putxlong0(buffer_2, prev.off32, 6);
+        buffer_puts(buffer_2, ", len = 0x");
+        buffer_putxlong0(buffer_2, a.off32 - prev.off32, 6);
+        buffer_putnlflush(buffer_2);
+      }
+    }
+
+    if(r->type == 0) {
+      if((a.off32 & (~mask)))
+        break;
+
+      if((a.off32 & (~mask)) == 0) {
+        ihex_record_write(r, &output);
+        //  byte_copy(&m[a.off32], r->length, r->data);
+      }
+
+      buffer_putxlong0(buffer_2, a.off32, 8);
+      buffer_putm_internal(buffer_2, " ", ihex_typestr(r->type), "(", 0);
+      buffer_putulong(buffer_2, r->length);
+      buffer_puts(buffer_2, ") ");
+      putdata(r->data, r->length);
+      buffer_putnlflush(buffer_2);
+    }
+
+    prev = a;
+    prev.off32 += r->length;
+  }
+  buffer_close(&output);
+}
+
 /**
  * @brief usage  Show command line usage
  * @param argv0
@@ -70,11 +157,12 @@ usage(char* argv0) {
   buffer_putm_internal(buffer_1,
                        "Usage: ",
                        path_basename(argv0),
-                       " <hex-file> <cfgdata-file>\n"
+                       " <hex-files...>\n"
                        "\n"
                        "Options\n"
                        "  -h, --help                show this help\n"
                        "  -b, --bits N              max address bits\n"
+                       "  -o, --output FILE         combine into output file\n"
                        "  -v, --verbose             show verbose messages\n"
                        "\n",
                        0);
@@ -105,7 +193,10 @@ main(int argc, char* argv[]) {
       continue;
 
     switch(c) {
-      case 'b': scan_int(unix_optarg, &bits); break;
+      case 'b': {
+        scan_int(argv[unix_optind], &bits);
+        break;
+      }
       case 'h': usage(argv[0]); return 0;
       case 'v': verbose++; break;
       default:
@@ -125,23 +216,26 @@ main(int argc, char* argv[]) {
   if(unix_optind < argc) {
     hexfile = argv[unix_optind++];
   }
-  static stralloc sa;
-  size_t sz = 0;
-  const char* x = mmap_read(hexfile, &sz);
+  /*  static stralloc sa;
+    size_t sz = 0;
+    const char* x = mmap_read(hexfile, &sz);
 
-  buffer_mmapread(&input, hexfile);
-  buffer_getline_sa(&input, &sa);
-
+    buffer_mmapread(&input, hexfile);
+    buffer_getline_sa(&input, &sa);
+  */
   {
     ihex_record* r;
     ihex_file ihx;
     ihex_addr a = {0}, prev = {0};
+    uint8_t* m;
+    uint32 top, bottom;
 
-    ret = ihex_record_read(&r, sa.s, sa.len);
-    ret = ihex_read_buf(&ihx, x, sz);
-
-    uint32 top = mem_top(&ihx);
-    uint32 bottom = mem_bottom(&ihx);
+    if(hex_open(&ihx, hexfile)) {
+      errmsg_warnsys("hex_open: ", 0);
+      return 1;
+    }
+    top = mem_top(&ihx, mask);
+    bottom = mem_bottom(&ihx);
     buffer_puts(buffer_2, "mem top = 0x");
     buffer_putxlong0(buffer_2, top, 4);
     buffer_putnlflush(buffer_2);
@@ -149,50 +243,50 @@ main(int argc, char* argv[]) {
     buffer_putxlong0(buffer_2, bottom, 4);
     buffer_putnlflush(buffer_2);
 
-    uint8_t* m = alloc_zero(top);
-    buffer_truncfile(&output, "testihex.hex");
+    m = alloc_zero(top);
 
-    for(r = ihx.records; r; r = r->next) {
+    hex_copy(ihx.records, m);
 
-      if(r->type == 4) {
-        uint16_unpack_big(r->data, &a.hi16);
-      } else {
-        a.lo16 = r->offset;
+    hex_save(ihx.records, "testihex.hex");
+    /*  buffer_truncfile(&output, "testihex.hex");
 
-        if(prev.off32 < a.off32) {
-          buffer_puts(buffer_2, "empty space = 0x");
-          buffer_putxlong0(buffer_2, prev.off32, 6);
-          buffer_puts(buffer_2, ", len = 0x");
-          buffer_putxlong0(buffer_2, a.off32 - prev.off32, 6);
+      for(r = ihx.records; r; r = r->next) {
+
+        if(r->type == 4) {
+          uint16_unpack_big(r->data, &a.hi16);
+        } else {
+          a.lo16 = r->offset;
+
+          if(prev.off32 < a.off32) {
+            buffer_puts(buffer_2, "empty space = 0x");
+            buffer_putxlong0(buffer_2, prev.off32, 6);
+            buffer_puts(buffer_2, ", len = 0x");
+            buffer_putxlong0(buffer_2, a.off32 - prev.off32, 6);
+            buffer_putnlflush(buffer_2);
+          }
+        }
+
+        if(r->type == 0) {
+          if((a.off32 & (~mask)))
+            break;
+
+          if((a.off32 & (~mask)) == 0) {
+            ihex_record_write(r, &output);
+            byte_copy(&m[a.off32], r->length, r->data);
+          }
+
+          buffer_putxlong0(buffer_2, a.off32, 8);
+          buffer_putm_internal(buffer_2, " ", ihex_typestr(r->type), "(", 0);
+          buffer_putulong(buffer_2, r->length);
+          buffer_puts(buffer_2, ") ");
+          putdata(r->data, r->length);
           buffer_putnlflush(buffer_2);
         }
+
+        prev = a;
+        prev.off32 += r->length;
       }
-
-      if(r->type == 0) {
-        if((a.off32 & (~mask)))
-          break;
-
-        if((a.off32 & (~mask)) == 0) {
-          ihex_record_write(r, &output);
-          byte_copy(&m[a.off32], r->length, r->data);
-        }
-
-        buffer_putxlong0(buffer_2, a.off32, 8);
-        buffer_putm_internal(buffer_2, " ", ihex_typestr(r->type), "(", 0);
-        buffer_putulong(buffer_2, r->length);
-        buffer_puts(buffer_2, ") ");
-        putdata(r->data, r->length);
-        buffer_putnlflush(buffer_2);
-      }
-
-      prev = a;
-      prev.off32 += r->length;
-    }
-    /* r = ihex_record_insert(&ihx, 0x004000, 16);
-     byte_zero(r->data, 16);
-     byte_copy(r->data, 8, "\xde\xad\xca\xfe\xba\xbe\xf0\x0f");
-     r->checksum = ihex_record_checksum(r);*/
-    buffer_close(&output);
+      buffer_close(&output);*/
 
     int fd = open_trunc("testihex.bin");
     write(fd, m, top);
