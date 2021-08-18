@@ -2,25 +2,28 @@
 
 #if WINDOWS_NATIVE
 #include <windows.h>
+#else
+#include <unistd.h>
+#endif
 
+#if WINDOWS_NATIVE
 int
 hasAccessRight(LPCSTR path, DWORD genericAccessRights) {
   SECURITY_DESCRIPTOR secDesc;
 
   DWORD len = 0;
   if(GetFileSecurityA(
-         path, OWNER_SECURITY_INFORMATION | GROUP_SECURITY_INFORMATION | DACL_SECURITY_INFORMATION, NULL, NULL, &len) ==
+         path, OWNER_SECURITY_INFORMATION | GROUP_SECURITY_INFORMATION | DACL_SECURITY_INFORMATION, 0, 0, &len) ==
      FALSE) return -1;
 
-  SecurityDescriptorWrapper sd{len};
-  if(GetFileSecurityA(path,
+   if(GetFileSecurityA(path,
                       OWNER_SECURITY_INFORMATION | GROUP_SECURITY_INFORMATION | DACL_SECURITY_INFORMATION,
-                      sd.get(),
+                      &secDesc,
                       len,
                       &len) == FALSE) return -1;
 
-  HANDLE hToken = NULL;
-  HANDLE hImpersonatedToken = NULL;
+  HANDLE hToken = 0;
+  HANDLE hImpersonatedToken = 0;
   if(OpenProcessToken(GetCurrentProcess(),
                       TOKEN_IMPERSONATE | TOKEN_QUERY | TOKEN_DUPLICATE | STANDARD_RIGHTS_READ,
                       &hToken) == FALSE) return -1;
@@ -42,7 +45,7 @@ hasAccessRight(LPCSTR path, DWORD genericAccessRights) {
   BOOL result = FALSE;
 
   MapGenericMask(&genericAccessRights, &mapping);
-  auto success = AccessCheck(sd.get(),
+  BOOL success = AccessCheck(&secDesc,
                              hImpersonatedToken,
                              genericAccessRights,
                              &mapping,
@@ -59,17 +62,17 @@ return -1;
   return result == TRUE;
 }
 
-static inline bool
+static inline int
 hasReadAccess(LPCSTR path) {
   return hasAccessRight(path, GENERIC_READ) == 1;
 }
 
-static inline bool
+static inline int
 hasWriteAccess(LPCSTR path) {
   return hasAccessRight(path, GENERIC_READ | GENERIC_WRITE) == 1;
 }
 
-static inline bool
+static inline int
 hasExecuteAccess(LPCSTR path) {
   return hasAccessRight(path, GENERIC_EXECUTE) == 1;
 }
@@ -83,7 +86,7 @@ path_access(const char* path, int rights) {
     case R_OK | W_OK:
     case W_OK: return hasWriteAccess(path);
 
-    case X_OK: return hasExecuteAccess(path);
+    case X_OK: return hasExecuteAccess(path); 
     case X_OK | R_OK: return hasExecuteAccess(path) && hasReadAccess(path);
     case X_OK | W_OK: return hasExecuteAccess(path) && hasWriteAccess(path);
     case X_OK | R_OK | W_OK: return hasExecuteAccess(path) && hasReadAccess(path) && hasWriteAccess(path);
