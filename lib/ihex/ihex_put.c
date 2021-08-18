@@ -1,4 +1,5 @@
 #include "../ihex.h"
+#include "../byte.h"
 
 ihex_record*
 ihex_put(ihex_file* ihf, uint32 offset, const char* x, size_t n) {

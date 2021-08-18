@@ -9,7 +9,7 @@
 #include "uint8.h"
 #include "uint16.h"
 #include "uint32.h"
-#include "slist.h"
+#include "list.h"
 #include "buffer.h"
 
 enum ihex_type_e { IHEX_DATA = 0, IHEX_EOF = 1, IHEX_EXTSEGADDR = 2, IHEX_EXTLINADDR = 4 };
@@ -29,7 +29,13 @@ typedef union ihex_addr_u {
 
 struct ihex_record_s;
 struct ihex_record_s {
-  struct ihex_record_s* next;
+  union {
+    struct list_head link;
+    struct {
+      struct ihex_record_s *prev, *next;
+    };
+  };
+  //  struct ihex_record_s* next;
   uint8 length;
   uint16 offset;
   uint8 type;
@@ -40,9 +46,15 @@ struct ihex_record_s {
 typedef struct ihex_record_s ihex_record;
 
 typedef struct {
-  ihex_record* records;
+  union {
+    struct list_head records;
+    struct {
+      struct ihex_record_s *tail, *head;
+    };
+  };
 } ihex_file;
 
+void ihex_init(ihex_file*);
 ihex_record* ihex_put(ihex_file*, uint32 offset, const char* x, size_t n);
 size_t ihex_read_at(ihex_file*, uint32 at, char* x, size_t n);
 ssize_t ihex_read_buf(ihex_file*, const char* in, size_t n);

@@ -34,7 +34,7 @@ ihex_record_read(ihex_record** pihr, const char* in, size_t n) {
 
     for(j = 0; j < len; j++) {
       if((i = scan_xchar(x, &data[j])) != 2) {
-        free(*pihr);
+        alloc_free(*pihr);
         *pihr = 0;
         return 0;
       }

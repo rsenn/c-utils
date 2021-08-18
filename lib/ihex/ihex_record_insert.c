@@ -1,5 +1,6 @@
 #include "../ihex.h"
 #include "../uint32.h"
+#include "../alloc.h"
 #include <assert.h>
 
 ihex_record*
@@ -21,7 +22,7 @@ ihex_record_insert(ihex_file* ihf, uint32 at, uint8 len) {
      prev = o;
      prev.off32 += r->length;
    }*/
-  rp = ihf->records ?  ihex_record_find(ihf, at, &o.off32) : &ihf->records;
+  rp = ihex_record_find(ihf, at, &o.off32) /*: &ihf->records*/;
 
   if(*rp) {
     assert(at + len <= o.off32);
