@@ -29,7 +29,7 @@
 
 #if defined(_WIN32) || defined(_WIN64) || defined(__CYGWIN__)
 
-#if WINDOWS && WINDOWS_OVERRIDE
+#if WINDOWS && WINDOWS_OVERRIDE && !defined(WINDOWS_NATIVE)
 #define WINDOWS_NATIVE 1
 #endif
 #endif

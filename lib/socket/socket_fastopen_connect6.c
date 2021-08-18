@@ -2,6 +2,7 @@
 #include "../socket_internal.h"
 #if WINDOWS_NATIVE
 #include <windows.h>
+#include <io.h>
 #else
 #include <sys/types.h>
 #include <unistd.h>

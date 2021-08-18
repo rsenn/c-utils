@@ -3,7 +3,13 @@
 
 #include "sig.h"
 
-#define NSIG 31
+#ifndef NSIG
+#if 0 // def SIGRTMAX
+#define NSIG (SIGRTMAX + 1)
+#else
+#define NSIG 65
+#endif
+#endif
 
 typedef struct sigtable_s sigtable_t, *sigtable_t_ref;
 struct sigtable_s {
@@ -11,6 +17,6 @@ struct sigtable_s {
   char const* name;
 };
 
-extern sigtable_t const skalibs_sigtable[];
+extern sigtable_t const sigtable[];
 
 #endif

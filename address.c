@@ -6,8 +6,8 @@
 #include "lib/errmsg.h"
 #include "address.h"
 
-#define max(a, b) ((a) > (b) ? (a) : (b))
-#define min(a, b) ((a) < (b) ? (a) : (b))
+#define MAX(a, b) ((a) > (b) ? (a) : (b))
+#define MIN(a, b) ((a) < (b) ? (a) : (b))
 
 static bool address_initialized = false;
 static char address_seed[128];
@@ -73,7 +73,7 @@ address_lookup(stralloc* name, address_t* addr, bool no_ip6) {
   } else {
     addr->ip6 = true;
   }
-  byte_copy(addr->ip, min(addr->ip6 ? 16 : 4, ips.len), ips.s);
+  byte_copy(addr->ip, MIN(addr->ip6 ? 16 : 4, ips.len), ips.s);
   stralloc_free(&ips);
   return 1;
 }

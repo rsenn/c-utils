@@ -5,6 +5,7 @@
 #include "lib/mmap.h"
 #include "lib/open.h"
 #include "lib/path.h"
+#include "lib/unix.h"
 
 #include <stdlib.h>
 #include "lib/bool.h"
@@ -242,7 +243,7 @@ cache_set(const char* key, unsigned int keylen, const char* data, unsigned int d
   cache_update();
 }
 
-#define max(a, b) ((a) > (b) ? (a) : (b))
+#define MAX(a, b) ((a) > (b) ? (a) : (b))
 
 void
 cache_update() {

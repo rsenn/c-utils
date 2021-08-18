@@ -157,7 +157,7 @@ static buffer log = BUFFER_INIT(write, STDOUT_FILENO, logbuf, sizeof(logbuf));
 static MAP_T dns_cache;
 static tai6464 ttl;
 static strlist output_files;
-static char*const* program_argv;
+static const char** program_argv;
 static int program_argc;
 
 #define BACKLOG                                                                                                        \
@@ -1285,11 +1285,11 @@ main(int argc, char* argv[]) {
   taia_uint(&ttl, DNS_MAX_AGE);
 
   while((c = unix_getopt_long(argc,
-                         argv,
-                         "hb:l:r:p:i:O:fso:a:m:LdB:"
-                         "T:n:",
-                         opts,
-                         &index)) != -1) {
+                              argv,
+                              "hb:l:r:p:i:O:fso:a:m:LdB:"
+                              "T:n:",
+                              opts,
+                              &index)) != -1) {
     switch(c) {
       case 'h':
         usage(argv[0]);
@@ -1317,8 +1317,8 @@ main(int argc, char* argv[]) {
     }
   }
 
-  program_argv = argv + unix_optind;
-  program_argc = argc - unix_optind;
+  program_argv = (char**)argv + unix_optind;
+  program_argc = (int)argc - unix_optind;
   // strarray_from_argv(argc - unix_optind, argv + unix_optind, &program);
 
   /*buffer_puts(buffer_2, "program:\n  ");

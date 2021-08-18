@@ -284,45 +284,22 @@ usage(char* av0) {
                        "\n"
                        "Options:\n"
                        "\n"
-                       "  -h, --help                    "
-                       "   Show this help\n"
-                       "  -i, --in-place                "
-                       "   Write to input file\n"
-                       "  -q, --quote-chars CHARS       "
-                       "   Characters to quote\n"
-                       "  -n, --quote-newline           "
-                       "   Quote newline (\\n)\n"
-                       "      --quote-tabs              "
-                       "   Quote tabs (\\t)\n"
-                       "      --quote-nul               "
-                       "   Quote nul (\\0)\n"
-                       "  -b, --quote-backslash         "
-                       "   Quote backslash (\\)\n"
-                       "  -c, --escape-c                "
-                       "   Escape characters for C "
-                       "strings\n"
-                       "  -C, --escape-cmake            "
-                       "   Escape characters for CMake "
-                       "strings\n"
-                       "  -S, --escape-shell            "
-                       "   Escape characters for shell "
-                       "strings\n"
-                       "  -D, "
-                       "--escape-doublequoted-shell  "
-                       "Escape characters for "
-                       "double-quoted shell strings\n"
-                       "  -Q, --escape-quoted-shell     "
-                       "   Escape characters for "
-                       "single-quoted shell strings\n"
-                       "  -X, --escape-xml              "
-                       "   Escape characters for XML\n"
-                       "  -J, --escape-json             "
-                       "   Escape characters for JSON\n"
-                       "  -P, --escape-printable        "
-                       "   Escape non-printable "
-                       "characters\n"
-                       "  -a, --add-quotes QUOTE        "
-                       "   Add quotes of type\n"
+                       "  -h, --help                       Show this help\n"
+                       "  -i, --in-place                   Write to input file\n"
+                       "  -q, --quote-chars CHARS          Characters to quote\n"
+                       "  -n, --quote-newline              Quote newline (\\n)\n"
+                       "      --quote-tabs                 Quote tabs (\\t)\n"
+                       "      --quote-nul                  Quote nul (\\0)\n"
+                       "  -b, --quote-backslash            Quote backslash (\\)\n"
+                       "  -c, --escape-c                   Escape characters for C strings\n"
+                       "  -C, --escape-cmake               Escape characters for CMake strings\n"
+                       "  -S, --escape-shell               Escape characters for shell strings\n"
+                       "  -D, --escape-doublequoted-shell  Escape characters for double-quoted shell strings\n"
+                       "  -Q, --escape-quoted-shell        Escape characters for single-quoted shell strings\n"
+                       "  -X, --escape-xml                 Escape characters for XML\n"
+                       "  -J, --escape-json                Escape characters for JSON\n"
+                       "  -P, --escape-printable           Escape non-printable characters\n"
+                       "  -a, --add-quotes QUOTE           Add quotes of type\n"
                        "\n",
                        NULL);
   buffer_flush(buffer_1);
@@ -340,26 +317,26 @@ main(int argc, char* argv[]) {
   char* tmpl = "/tmp/quote.XXXXXX";
 
   struct unix_longopt opts[] = {{"help", 0, NULL, 'h'},
-                           {"in-place", 0, NULL, 'i'},
-                           {"add-quotes", 1, NULL, 'a'},
-                           {"tab-size", 1, NULL, 't'},
-                           {"quote-chars", 1, NULL, 'q'},
-                           {"quote-newline", 0, NULL, 'n'},
-                           {"quote-tabs", 0, NULL, 9},
-                           {"quote-nul", 0, NULL, '0'},
-                           {"quote-backslash", 0, NULL, 'b'},
-                           {"no-quote-newline", 0, &quote_newline, false},
-                           {"no-quote-tabs", 0, &quote_tabs, false},
-                           {"no-quote-nul", 0, &quote_nul, false},
-                           {"escape-cmake", 1, NULL, 'C'},
-                           {"escape-shell", 0, NULL, 'S'},
-                           {"escape-doublequoted-shell", 0, NULL, 'D'},
-                           {"escape-quoted-shell", 0, NULL, 'Q'},
-                           {"escape-c", 0, NULL, 'c'},
-                           {"escape-xml", 0, NULL, 'X'},
-                           {"escape-json", 0, NULL, 'J'},
-                           {"escape-printable", 0, NULL, 'P'},
-                           {0, 0, 0, 0}};
+                                {"in-place", 0, NULL, 'i'},
+                                {"add-quotes", 1, NULL, 'a'},
+                                {"tab-size", 1, NULL, 't'},
+                                {"quote-chars", 1, NULL, 'q'},
+                                {"quote-newline", 0, NULL, 'n'},
+                                {"quote-tabs", 0, NULL, 9},
+                                {"quote-nul", 0, NULL, '0'},
+                                {"quote-backslash", 0, NULL, 'b'},
+                                {"no-quote-newline", 0, &quote_newline, false},
+                                {"no-quote-tabs", 0, &quote_tabs, false},
+                                {"no-quote-nul", 0, &quote_nul, false},
+                                {"escape-cmake", 1, NULL, 'C'},
+                                {"escape-shell", 0, NULL, 'S'},
+                                {"escape-doublequoted-shell", 0, NULL, 'D'},
+                                {"escape-quoted-shell", 0, NULL, 'Q'},
+                                {"escape-c", 0, NULL, 'c'},
+                                {"escape-xml", 0, NULL, 'X'},
+                                {"escape-json", 0, NULL, 'J'},
+                                {"escape-printable", 0, NULL, 'P'},
+                                {0, 0, 0, 0}};
 
   stralloc_init(&quote_chars);
   stralloc_ready(&quote_chars, 4);

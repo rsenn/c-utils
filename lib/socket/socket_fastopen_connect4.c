@@ -7,6 +7,12 @@
 #include "../socket_internal.h"
 #include <errno.h>
 
+#if WINDOWS_NATIVE
+#include <io.h>
+#else
+#include <unistd.h>
+#endif
+
 int
 socket_fastopen_connect4(int s, const char* ip, uint16 port, const char* buf, size_t len) {
 #ifndef MSG_FASTOPEN

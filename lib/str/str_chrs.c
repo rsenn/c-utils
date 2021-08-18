@@ -1,7 +1,7 @@
 #include "../str.h"
 
 size_t
-str_chrs(const char* in, char needles[], size_t nn) {
+str_chrs(const char* in, const char needles[], size_t nn) {
   const char* t = in;
   size_t i;
   for(;;) {

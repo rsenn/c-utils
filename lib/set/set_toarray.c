@@ -1,4 +1,5 @@
 #include "../set.h"
+#include "../str.h"
 #include <stdlib.h>
 #include <assert.h>
 

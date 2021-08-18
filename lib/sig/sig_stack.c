@@ -2,8 +2,8 @@
 #include "../sig_internal.h"
 
 #include <errno.h>
-#if !WINDOWS_NATIVE
 #include <signal.h>
+#if !WINDOWS_NATIVE
 #include <sys/signal.h>
 
 #ifdef NSIG

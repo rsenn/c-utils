@@ -1,5 +1,6 @@
 #include "../sig.h"
 #include "../windoze.h"
+#include "../byte.h"
 
 #include <signal.h>
 

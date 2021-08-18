@@ -41,12 +41,37 @@ typedef long sigset_t;
 #define sigdelset(s, n) *(s) &= ~sigbit(n)
 #endif
 #ifndef sigismember
-#define sigismember(set, n) ((*(set)&sigbit(n)) == sigbit(n))
+#define sigismember(s, n) (*(s) & sigbit(n))
 #endif
 #include <errno.h>
 #ifndef ENOBUFS
 #define ENOBUFS 1039
 #endif
+
+#else
+
+#include "byte.h"
+#include <sys/signal.h>
+
+#define __sigmask(sig) (((unsigned long)1) << (((sig)-1) % (8 * sizeof(unsigned long))))
+#define __sigword(sig) (((sig)-1) / (8 * sizeof(unsigned long)))
+
+#ifndef sigemptyset
+#define sigemptys(s) byte_zero((s), sizeof(*(s)))
+#endif
+#ifndef sigfillset
+#define sigfillset(s) byte_fill((s), 0xff, sizeof(*(s)))
+#endif
+#ifndef sigaddset
+#define sigaddset(s, n) (((unsigned long*)(s))[__sigword((n))] |= __sigmask((n)))
+#endif
+#ifndef sigdelset
+#define sigdelset(s, n) (((unsigned long*)(s))[__sigword((n))] |= __sigmask((n)))
+#endif
+#ifndef sigismember
+#define sigismember(s, n) ((((unsigned long*)(s))[__sigword((n))] & __sigmask((n))) ? 1 : 0)
+#endif
+
 #endif
 
 #define SA_MASKALL 1
@@ -92,7 +117,7 @@ int sig_number(char const*);
 void sig_pause(void);
 int sig_push(int, sighandler_t_ref);
 int sig_pusha(int sig, struct sigaction const* ssa);
-void sig_restoreto(const void*, unsigned int);
+void sig_restoreto(const sigset_t*, unsigned int);
 int sigsegv(void);
 void sig_shield(void);
 void sig_unshield(void);

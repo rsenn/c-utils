@@ -7,7 +7,7 @@ strarray_union(const strarray* s1, const strarray* s2, strarray* out) {
   size_t size1 = strarray_size(s1), size2 = strarray_size(s2);
   char **a = strarray_begin(s1), **b = strarray_begin(s2), **c;
 
-  array_allocate(out, sizeof(char*), (size1 + size2) - 1);
+  array_allocate(&out->a, sizeof(char*), (size1 + size2) - 1);
   c = strarray_begin(out);
 
   for(k = 0; k < (size1 + size2); k++) {
@@ -29,5 +29,5 @@ strarray_union(const strarray* s1, const strarray* s2, strarray* out) {
     }
     c[k] = str_dup(s);
   }
-  array_truncate(out, sizeof(char*), k - common);
+  array_truncate(&out->a, sizeof(char*), k - common);
 }

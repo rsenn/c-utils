@@ -32,7 +32,7 @@ socket_tcp6(void) {
   if(s == -1)
     return -1;
   if(ndelay_on(s) == -1) {
-    close(s);
+    closesocket(s);
     return -1;
   }
   return s;

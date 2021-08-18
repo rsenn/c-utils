@@ -9,11 +9,11 @@
 #endif
 
 #ifndef HAVE_DAEMON
-
 int
 daemon(int nochdir, int noclose) {
   if(!nochdir && chdir("/"))
     return -1;
+
   if(!noclose) {
     int fd, failed = 0;
     if((fd = open("/dev/null", O_RDWR)) < 0)
@@ -43,5 +43,4 @@ daemon(int nochdir, int noclose) {
 
   return 0;
 }
-
 #endif

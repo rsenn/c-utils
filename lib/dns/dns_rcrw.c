@@ -1,4 +1,7 @@
+#define _POSIX_SOURCE 1
+#define _BSD_SOURCE 1
 #define USE_WS2_32 1
+#include "../socket_internal.h"
 #include "../windoze.h"
 #include "../byte.h"
 #include "../dns.h"
@@ -8,7 +11,9 @@
 #include "../taia.h"
 #include <stdlib.h>
 
-#if !WINDOWS_NATIVE
+#if WINDOWS_NATIVE
+#include <winsock2.h>
+#else
 #include <unistd.h>
 #endif
 

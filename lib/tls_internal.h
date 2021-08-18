@@ -2,8 +2,8 @@
 #define TLS_INTERNAL_H
 
 #include "windoze.h"
-#if WINDOWS
-#define OPENSSL_SYS_WINDOWS 1
+#if OPENSSL_SYS_WINDOWS
+#undef OPENSSL_OPT_WINDLL
 #define OPENSSL_OPT_WINDLL 1
 #endif
 

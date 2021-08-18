@@ -9,7 +9,9 @@
 #endif
 
 #if !defined(__LCC__) || defined(_WIN64)
+#ifndef _stat
 #define _stat stat
+#endif
 #endif
 
 int

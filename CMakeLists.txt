@@ -127,6 +127,12 @@ if(LINK_STATIC)
 endif(LINK_STATIC)
 # set(CMAKE_ENABLE_EXPORTS FALSE)
 
+if(WIN32)
+  check_c_compiler_flag("-Wno-cpp" PP_NOWARN_CPP)
+  if(PP_NOWARN_CPP)
+    add_definitions(-Wno-cpp)
+  endif(PP_NOWARN_CPP)
+endif(WIN32)
 check_c_compiler_flag("-Wl,--no-export-dynamic" LINK_NO_EXPORT_DYNAMIC)
 
 if(WIN32)
@@ -386,7 +392,13 @@ endif(LINK_STATIC)
 #
 set(CMAKE_STATIC_LINKER_FLAGS "")
 
-check_functions(setuid setgid execve lstat waitpid aligned_alloc fnmatch getdelim getopt getopt_long pipe2 popen posix_memalign pread sendfile sigaddset sigemptyset sigprocmask strerror_r __write writev posix_spawnattr_setflags posix_spawn_file_actions_init posix_spawn_file_actions_adddup2 posix_spawnp clock_gettime)
+check_functions(__write aligned_alloc clock_gettime getdelim lstat pipe2 popen posix_memalign pread sendfile sigaddset sigemptyset sigprocmask waitpid writev)
+check_functions(sigismember sigsuspend)
+check_functions(ftruncate)
+if(WIN32 OR CYGWIN OR MSYS OR MINGW)
+  check_functions(cygwin_conv_path cygwin_conv_to_posix_path cygwin_conv_to_win32_path pathconv)
+endif(WIN32 OR CYGWIN OR MSYS OR MINGW)
+# check_functions(setuid setgid execve lstat waitpid aligned_alloc fnmatch getdelim getopt getopt_long pipe2 popen posix_memalign pread sendfile sigaddset sigemptyset sigprocmask strerror_r __write writev posix_spawnattr_setflags posix_spawn_file_actions_init posix_spawn_file_actions_adddup2 posix_spawnp clock_gettime)
 
 # check_include_file(linux/aio_abi.h HAVE_LINUX_AIO_ABI_H)
 
@@ -752,7 +764,7 @@ if(NOT LIBLZMA_LIBRARIES)
   set(LIBLZMA_LIBRARIES "${LIBLZMA_LIBRARIES}")
 endif(NOT LIBLZMA_LIBRARIES)
 
-if(NOT COMPRESSION_LIBRARIES)
+if(NOT COMPRESSION_LIBRARIES OR "${COMPRESSION_LIBRARIES}" STREQUAL "")
   set(COMPRESSION_LIBRARIES "")
   foreach(VAR LIBLZMA_LIBRARIES ZLIB_LIBRARY BZIP2_LIBRARY BROTLI_LIBRARIES)
     set(LIB "${${VAR}}")
@@ -762,7 +774,7 @@ if(NOT COMPRESSION_LIBRARIES)
   endforeach(VAR LIBLZMA_LIBRARIES ZLIB_LIBRARY BZIP2_LIBRARY BROTLI_LIBRARIES)
 
   set(COMPRESSION_LIBRARIES "${COMPRESSION_LIBRARIES}" CACHE STRING "Compression libraries")
-endif(NOT COMPRESSION_LIBRARIES)
+endif(NOT COMPRESSION_LIBRARIES OR "${COMPRESSION_LIBRARIES}" STREQUAL "")
 
 set(LINK_DIRS "")
 # dump(BROTLICOMMON_LIBRARY_DIRS BROTLI_LIBRARY_DIR BROTLI_LIBRARY_DIRS BZIP2_LIBRARY_DIR BZIP2_LIBRARY_DIRS OPENSSL_LIBRARY_DIRS)

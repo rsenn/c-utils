@@ -1,3 +1,5 @@
+#define _BSD_SOURCE 1
+#define _POSIX_SOURCE 1
 #include "../windoze.h"
 #include "../gpio_internal.h"
 

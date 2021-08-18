@@ -65,7 +65,7 @@ io_debugstring(fd_t s, char* buf, unsigned int bufsize) {
     i += fmt_str(buf + i, "ea ");
   if(e->mmapped) {
     i += fmt_str(buf + i, "mmap(");
-    i += fmt_xlonglong(buf + i, (uint64)e->mmapped);
+    i += fmt_xlonglong(buf + i, (ptrdiff_t)e->mmapped);
     i += fmt_str(buf + i, ",");
     i += fmt_xlong(buf + i, (unsigned long)e->maplen);
     i += fmt_str(buf + i, "@");
@@ -78,7 +78,7 @@ io_debugstring(fd_t s, char* buf, unsigned int bufsize) {
   i += fmt_str(buf + i, " next_write ");
   i += fmt_long(buf + i, e->next_write);
   i += fmt_str(buf + i, " cookie ");
-  i += fmt_xlonglong(buf + i, (uint64)e->cookie);
+  i += fmt_xlonglong(buf + i, (ptrdiff_t)e->cookie);
   buf[i] = 0;
   return i;
 }

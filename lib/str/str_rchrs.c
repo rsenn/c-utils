@@ -1,7 +1,7 @@
 #include "../str.h"
 
 size_t
-str_rchrs(const char* in, char needles[], size_t nn) {
+str_rchrs(const char* in, const char needles[], size_t nn) {
   const char *s = in, *found = NULL;
   size_t i;
   for(;;) {

@@ -41,13 +41,13 @@ size_t str_len(const char* in);
 /* str_chr returns the index of the first occurance of needle or \0 in haystack
  */
 size_t str_chr(const char* haystack, char needle) __pure__;
-size_t str_chrs(const char* in, char needles[], size_t nn) __pure__;
+size_t str_chrs(const char* in, const char needles[], size_t nn) __pure__;
 size_t str_str(const char* haystack, const char* needle) __pure__;
 
 /* str_rchr returns the index of the last occurance of needle or \0 in haystack
  */
 size_t str_rchr(const char* haystack, char needle) __pure__;
-size_t str_rchrs(const char* haystack, char needles[], size_t);
+size_t str_rchrs(const char* haystack, const char needles[], size_t);
 
 /* str_start returns 1 if the b is a prefix of a, 0 otherwise */
 int str_endb(const char*, const char*, size_t);

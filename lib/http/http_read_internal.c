@@ -9,8 +9,9 @@
 #include <errno.h>
 #include <assert.h>
 
-#define MAX(a, b) ((a) > (b) ? (a) : (b))
+#ifndef MIN
 #define MIN(a, b) ((a) < (b) ? (a) : (b))
+#endif
 
 /**
  * @brief http_read_internal

@@ -2,7 +2,7 @@
 #include "../strlist.h"
 
 void
-strlist_fromv(strlist* sl, const char*const * v, int c) {
+strlist_fromv(strlist* sl, const char* v[], int c) {
   int i;
 
   for(i = 0; i < c; ++i)

@@ -1,3 +1,6 @@
+#define _POSIX_SOURCE 1
+#define _GNU_SOURCE 1
+#define _MISC_SOURCE 1
 #include "../windoze.h"
 #include <sys/types.h>
 #include <assert.h>
