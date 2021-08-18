@@ -75,7 +75,9 @@ again:
     }
     case XML_ATTR_VALUE: {
       size_t j;
-      char quote[2] = {*x, '\0'};
+      char quote[2];
+      quote[0] = *x;
+      quote[1] = '\0';
       for(i = 1; i < len; i++) {
         i += scan_noncharsetnskip(&x[i], quote, len - i);
         if(i > 0 && x[i - 1] != '\\')

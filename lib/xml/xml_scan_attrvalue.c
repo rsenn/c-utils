@@ -5,7 +5,9 @@
 size_t
 xml_scan_attrvalue(const char* x, size_t len, size_t* toklen) {
   size_t i, j;
-  char quote[2] = {*x, '\0'};
+  char quote[2];
+  quote[0]=*x;
+  quote[1]='\0';
 
   if(byte_chr("\r\n\t >/", 6, *x) == 6) {
     j = 0;

@@ -18,14 +18,14 @@
 //#include <time.h>
 
 /*
-#if defined(HAVE_INTTYPES_H) || defined(__LCC__) || (!defined(_MSC_VER) &&
-!defined(__MSYS__) && !defined(__CYGWIN__) && !defined(__BORLANDC__)) #include
-<inttypes.h> #endif
+#if defined(HAVE_INTTYPES_H) || defined(__LCC__) || (!defined(_MSC_VER) && !defined(__MSYS__) && !defined(__CYGWIN__) && !defined(__BORLANDC__))
+#include <inttypes.h>
+#endif
 
-#if defined(HAVE_STDINT_H) || defined(__LCC__) || (CYGWIN_VERSION_API_MINOR >
-100) ||
-(!defined(_MSC_VER) && !defined(__MSYS__) && !defined(__CYGWIN__) &&
-!defined(__BORLANDC__)) #include <stdint.h> #endif*/
+#if defined(HAVE_STDINT_H) || defined(__LCC__) || (CYGWIN_VERSION_API_MINOR > 100) || (!defined(_MSC_VER) && !defined(__MSYS__) && !defined(__CYGWIN__) && !defined(__BORLANDC__))
+#include <stdint.h>
+#endif
+*/
 
 #if defined(__MINGW32__) || defined(__MINGW64__) || defined(__ORANGEC__) || defined(__DMC__) ||                        \
     defined(__STDC_IEC_559__)
@@ -44,7 +44,10 @@ extern "C" {
 #endif
 
 #if !defined(__LCC__)
-#if defined(_MSC_VER)
+#if defined(__BORLANDC__)
+typedef long ssize_t;
+
+#elif defined(_MSC_VER)
 #include <intsafe.h>
 typedef SSIZE_T ssize_t;
 
@@ -59,7 +62,8 @@ typedef __SSIZE_TYPE__ ssize_t;
 typedef __PTRDIFF_TYPE__ ssize_t;
 
 #elif !(defined(_SYS_TYPES_H) && defined(__MSYS__)) && !defined(_SSIZE_T_DEFINED) && !defined(_SSIZE_T_)
-#define _SSIZE_T_DEFINED 1
+#undef _SSIZE_T_DEFINED
+#define _SSIZE_T_DEFINED
 #define _SSIZE_T_ 1
 typedef __PTRDIFF_TYPE__ ssize_t;
 

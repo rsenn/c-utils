@@ -4,6 +4,10 @@
 #include <stdlib.h>
 
 #ifdef HAVE_LIBLZMA
+#ifdef __BORLANDC__
+#define _MSC_VER 1500
+#endif
+
 #define LZMA_API_STATIC 1
 #include <lzma.h>
 

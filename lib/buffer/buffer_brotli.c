@@ -5,6 +5,10 @@
 #include <errno.h>
 
 #ifdef HAVE_BROTLI
+#ifdef __BORLANDC__
+#define _MSC_VER 1500
+#endif
+
 #include <brotli/decode.h>
 #include <brotli/encode.h>
 #include <brotli/port.h>

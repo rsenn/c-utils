@@ -33,8 +33,8 @@ extern "C" {
 #undef int64
 
 #if defined(__BORLANDC__)
-typedef unsigned long long uint64;
-typedef signed long long int64;
+typedef unsigned __int64 uint64;
+typedef signed __int64 int64;
 
 #elif defined(_MSC_VER) || defined(__MINGW32__)
 #include <windows.h>

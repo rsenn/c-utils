@@ -14,8 +14,8 @@ cb_find_top_i(const critbit_tree* cb, const void* key, size_t keylen) {
   for(ptr = cb->root, top = cb->root;;) {
     last = ptr;
     if(decode_pointer(&ptr) == INTERNAL_NODE) {
-      node = (struct critbit_node*)ptr;
       int branch;
+      node = (struct critbit_node*)ptr;
       if(keylen <= node->byte) {
         break;
       } else {
