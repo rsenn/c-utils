@@ -167,55 +167,57 @@ check_msys_cygwin_mingw()
 
 if(WINDOWS)
   check_winsock()
-  #dump(LIBMSWSOCK)
+  # dump(LIBMSWSOCK)
 else(WINDOWS)
   check_compile(LIBC_HAS_IP6 "#include <sys/types.h>\n#include <sys/socket.h>\n#include <netinet/in.h>\n\nint main() {\n  struct sockaddr_in6 sa;\n  sa.sin6_family = PF_INET6;\n  (void)sa;\n  return 0;\n}\n")
   check_compile(LIBC_HAS_SCOPE_ID "#include <sys/types.h>\n#include <sys/socket.h>\n#include <netinet/in.h>\n\nint main() {\n  struct sockaddr_in6 sa;\n  sa.sin6_family = PF_INET6;\n  sa.sin6_scope_id = 23;\n  (void)sa;\n  return 0;\n}\n")
+
+  check_compile(HAVE_SYSCALL "#define _GNU_SOURCE\n#include <unistd.h>\n#include <sys/syscall.h>\n\nstatic inline ssize_t\nsys_write(int fd, const void* buf, size_t n) {\n  return syscall(SYS_write, fd, buf, n);\n}\n\nint main() { return sys_write(1, \"test\\\\n\", 5);\n}\n")
+
+  if(NOT USE_SELECT)
+    check_compile(
+      SUPPORT_DEVPOLL
+      "#include <stdio.h>\n#include <stdlib.h>\n#include <poll.h>\n#include <netdb.h>\n#include <unistd.h>\n#include <fcntl.h>\n#include <strings.h>\n#include <sys/types.h>\n#include <sys/socket.h>\n#include <sys/errno.h>\n#include <netinet/in.h>\n#include <sys/devpoll.h>\n\nmain() {\n  int fd = open(\"/dev/poll\", O_RDWR);\n  struct pollfd p[100];\n  int i, r;\n  dvpoll_t timeout;\n  p[0].fd = 0;\n  p[0].events = POLLIN;\n  write(fd, p, sizeof(struct pollfd));\n  timeout.dp_timeout = 100; /* milliseconds? */\n  timeout.dp_nfds = 1;\n  timeout.dp_fds = p;\n  r = ioctl(fd, DP_POLL, &timeout);\n  for(i = 0; i < r; ++i) printf(\"event %d on fd #%d\\\\n\", p[i].revents, p[i].fd);\n}\n"
+    )
+
+    check_compile(
+      SUPPORT_EPOLL
+      "#include <inttypes.h>\n#include <sys/epoll.h>\n#include <stdio.h>\n\nint main() { int efd = epoll_create(10);\n  struct epoll_event x;\n  if(efd == -1)\n    return 111;\n  x.events = EPOLLIN;\n  x.data.fd = 0;\n  if(epoll_ctl(efd, EPOLL_CTL_ADD, 0 /* fd */, &x) == -1)\n    return 111;\n  {\n    int n;\n    struct epoll_event y[100];\n    if((n = epoll_wait(efd, y, 100, 1000)) == -1)\n      return 111;\n    if(n > 0)\n      printf(\"event %d on fd #%d\\\\n\", y[0].events, y[0].data.fd);\n  }\n  return 0;\n}\n"
+    )
+    check_compile(
+      SUPPORT_KQUEUE
+      "#include <sys/types.h>\n#include <sys/event.h>\n#include <sys/time.h>\n\nint main() { int kq = kqueue();\n  struct kevent kev;\n  struct timespec ts;\n  if(kq == -1)\n    return 111;\n  EV_SET(&kev, 0 /* fd */, EVFILT_READ, EV_ADD | EV_ENABLE, 0, 0, 0);\n  ts.tv_sec = 0;\n  ts.tv_nsec = 0;\n  if(kevent(kq, &kev, 1, 0, 0, &ts) == -1)\n    return 111;\n\n  {\n    struct kevent events[100];\n    int i, n;\n    ts.tv_sec = 1;\n    ts.tv_nsec = 0;\n    switch(n = kevent(kq, 0, 0, events, 100, &ts)) {\n      case -1: return 111;\n      case 0: puts(\"no data on fd #0\"); break;\n    }\n    for(i = 0; i < n; ++i) {\n      printf(\"ident %d, filter %d, flags %d, fflags %d, data %d\\\\n\",\n             events[i].ident,\n             events[i].filter,\n             events[i].flags,\n             events[i].fflags,\n             events[i].data);\n    }\n  }\n  return 0;\n}\n"
+    )
+
+    check_compile(
+      SUPPORT_SIGIO
+      "#define _GNU_SOURCE\n#include <sys/types.h>\n#include <sys/unistd.h>\n#include <sys/poll.h>\n#include <signal.h>\n#include <fcntl.h>\n#include <stdio.h>\n\nint main() { int signum = SIGRTMIN + 1;\n  sigset_t ss;\n  sigemptyset(&ss);\n  sigaddset(&ss, signum);\n  sigaddset(&ss, SIGIO);\n  sigprocmask(SIG_BLOCK, &ss, 0);\n\n  fcntl(0 /* fd */, F_SETOWN, getpid());\n  fcntl(0 /* fd */, F_SETSIG, signum);\n#if defined(O_ONESIGFD) && defined(F_SETAUXFL)\n  fcntl(0 /* fd */, F_SETAUXFL, O_ONESIGFD);\n#endif\n  fcntl(0 /* fd */, F_SETFL, fcntl(0 /* fd */, F_GETFL) | O_NONBLOCK | O_ASYNC);\n\n  {\n    siginfo_t info;\n    struct timespec timeout;\n    int r;\n    timeout.tv_sec = 1;\n    timeout.tv_nsec = 0;\n    switch((r = sigtimedwait(&ss, &info, &timeout))) {\n      case SIGIO:\n        /* signal queue overflow */\n        signal(signum, SIG_DFL);\n        /* do poll */\n        break;\n      default:\n        if(r == signum) {\n          printf(\"event %c%c on fd #%d\\\\n\",\n                 info.si_band & POLLIN ? 'r' : '-',\n                 info.si_band & POLLOUT ? 'w' : '-',\n                 info.si_fd);\n        }\n    }\n  }\n  return 0;\n}\n"
+    )
+    check_compile(
+      SUPPORT_POLL
+      "#include <sys/types.h>\n#include <fcntl.h>\n#include <unistd.h>\n#include <poll.h>\n\nint main() { struct pollfd x;\n\n  x.fd = open(\"trypoll.c\", O_RDONLY);\n  if(x.fd == -1)\n    _exit(111);\n  x.events = POLLIN;\n  if(poll(&x, 1, 10) == -1)\n    _exit(1);\n  if(x.revents != POLLIN)\n    _exit(1);\n\n  /* XXX: try to detect and avoid poll() imitation libraries */\n\n  _exit(0);\n}\n")
+    check_compile(SUPPORT_SELECT "#include <sys/types.h>\n#include <sys/time.h>\n#if defined(_WIN32) || defined(__MINGW32__)\n#include <winsock2.h>\n#else\n#include <sys/select.h>\n#include <unistd.h>\n#endif\n\nint\nmain() {\n  struct timeval tv;\n  fd_set rfds;\n  int fd = 0;\n  FD_ZERO(&rfds);\n  FD_SET(fd, &rfds);\n  tv.tv_sec = tv.tv_usec = 0;\n  select(fd + 1, &rfds, 0, 0, &tv);\n}\n"
+                  ${LIBMSWSOCK})
+  endif(NOT USE_SELECT)
+
+  check_compile(HAVE_N2I "#include <sys/types.h>\n#include <sys/socket.h>\n#include <net/if.h>\n\nint main() { static char ifname[IFNAMSIZ];\n  char* tmp = if_indextoname(0, ifname);\n  (void)tmp;\n  return 0;\n}\n")
+
+  check_compile(
+    HAVE_BSDSENDFILE
+    "/* for macos X, don't ask */\n#define SENDFILE 1\n\n#include <sys/types.h>\n#include <sys/socket.h>\n#include <sys/uio.h>\n#include <errno.h>\n#include <netinet/in.h>\n#include <netinet/tcp.h>\n\nint main() { struct sf_hdtr hdr;\n  struct iovec v[17 + 23];\n  int r, fd = 1;\n  off_t sbytes;\n  hdr.headers = v;\n  hdr.hdr_cnt = 17;\n  hdr.trailers = v + 17;\n  hdr.trl_cnt = 23;\n  r = sendfile(0, 1, 37, 42, &hdr, &sbytes, 0);\n  (void)r;\n  return 0;\n}\n"
+  )
+
+  check_compile(
+    HAVE_SENDFILE
+    "#ifdef __hpux__\n#include <sys/types.h>\n#include <sys/uio.h>\n#include <sys/socket.h>\n#include <stdio.h>\n\nint main() { /*\n        sbsize_t sendfile(int s, int fd, off_t offset, bsize_t nbytes,\n                      const struct iovec *hdtrl, int flags);\n  */\n  struct iovec x[2];\n  int fd = open(\"havesendfile.c\", 0);\n  x[0].iov_base = \"header\";\n  x[0].iov_len = 6;\n  x[1].iov_base = \"footer\";\n  x[1].iov_len = 6;\n  sendfile(1 /* dest socket */, fd /* src file */, 0 /* offset */, 23 /* nbytes */, x, 0);\n  perror(\"sendfile\");\n  return 0;\n}\n#elif defined(__sun__) && defined(__svr4__)\n#include <sys/types.h>\n#include <sys/socket.h>\n#include <sys/sendfile.h>\n#include <stdio.h>\n\nint main() { off_t o;\n  o = 0;\n  sendfile(1 /* dest */, 0 /* src */, &o, 23 /* nbytes */);\n  perror(\"sendfile\");\n  return 0;\n}\n#elif defined(_AIX)\n\n#define _FILE_OFFSET_BITS 64\n#include <sys/types.h>\n#include <sys/socket.h>\n#include <unistd.h>\n#include <stdio.h>\n\nint main() { int fd = open(\"havesendfile.c\", 0);\n  struct sf_parms p;\n  int destfd = 1;\n  p.header_data = \"header\";\n  p.header_length = 6;\n  p.file_descriptor = fd;\n  p.file_offset = 0;\n  p.file_bytes = 23;\n  p.trailer_data = \"footer\";\n  p.trailer_length = 6;\n  if(send_file(&destfd, &p, 0) >= 0)\n    printf(\"sent %lu bytes.\\\\n\", p.bytes_sent);\n  return 0;\n}\n#elif defined(__linux__)\n\n#define _FILE_OFFSET_BITS 64\n#include <sys/types.h>\n#include <unistd.h>\n#if defined(__GLIBC__)\n#include <sys/sendfile.h>\n#elif defined(__dietlibc__)\n#include <sys/sendfile.h>\n#else\n#include <linux/unistd.h>\n_syscall4(int, sendfile, int, out, int, in, long*, offset, unsigned long, count)\n#endif\n#include <stdio.h>\n\nint main() { int fd = open(\"havesendfile.c\", 0);\n  off_t o = 0;\n  off_t r = sendfile(1, fd, &o, 23);\n  if(r != -1)\n    printf(\"sent %llu bytes.\\\\n\", r);\n  return 0;\n}\n\n#else\n#error unsupported architecture\n/* stupid fucking IRIX c99 does not signal #error via a non-zero exit\n * code!  ARGH!  So insert a parse error */\n#include rumpelstilzchen\n)\n#endif\n"
+  )
+
+  set(TRY_LINUX_AIO
+      "#include <fcntl.h>\n#include <linux/aio_abi.h>\n#include <stdint.h>\n#include <stdio.h>\n#include <stdlib.h>\n#include <sys/syscall.h>\n#include <unistd.h>\n\n#define PFATAL(x...) \\\\\n  do { \\\\\n    fprintf(stderr, \"[-] SYSTEM ERROR : \" x); \\\\\n    fprintf(stderr, \"\\\\n\\tLocation : %s(), %s:%u\\\\n\", __FUNCTION__, __FILE__, __LINE__); \\\\\n    perror(\"      OS message \"); \\\\\n    fprintf(stderr, \"\\\\n\"); \\\\\n    exit(EXIT_FAILURE); \\\\\n  } while(0)\n\n#ifdef __dietlibc__\n#include <bits/syscall.h>\n#else\ninline static int\nio_setup(unsigned nr, aio_context_t* ctxp) {\n  return syscall(__NR_io_setup, nr, ctxp);\n}\n\ninline static int\nio_destroy(aio_context_t ctx) {\n  return syscall(__NR_io_destroy, ctx);\n}\n\ninline static int\nio_submit(aio_context_t ctx, long nr, struct iocb** iocbpp) {\n  return syscall(__NR_io_submit, ctx, nr, iocbpp);\n}\n\ninline static int\nio_getevents(aio_context_t ctx,\n             long min_nr,\n             long max_nr,\n             struct io_event* events,\n             struct timespec* timeout) {\n  // This might be improved.\n  return syscall(__NR_io_getevents, ctx, min_nr, max_nr, events, timeout);\n}\n#endif\n\n#define BUF_SZ (4096)\n\nint\nmain() {\n  int fd = open(\"/etc/passwd\", O_RDONLY);\n  if(fd < 0) {\n    PFATAL(\"open(/etc/passwd)\");\n  }\n\n  aio_context_t ctx = 0;\n  int r = io_setup(128, &ctx);\n  if(r < 0) {\n    PFATAL(\"io_setup()\");\n  }\n\n  char buf[BUF_SZ];\n  struct iocb cb = {.aio_fildes = fd,\n                    .aio_lio_opcode = IOCB_CMD_PREAD,\n                    .aio_buf = (uint64_t)&buf[0],\n                    .aio_nbytes = BUF_SZ};\n  struct iocb* list_of_iocb[1] = {&cb};\n\n  r = io_submit(ctx, 1, list_of_iocb);\n  if(r != 1) {\n    PFATAL(\"io_submit()\");\n  }\n\n  struct io_event events[1] = {};\n  r = io_getevents(ctx, 1, 1, events, NULL);\n  if(r != 1) {\n    PFATAL(\"io_getevents()\");\n  }\n\n  printf(\"read %ld bytes from /etc/passwd\\\\n\", events[0].res);\n  io_destroy(ctx);\n  close(fd);\n  return 0;\n}\n"
+  )
+
 endif(WINDOWS)
 
-check_compile(HAVE_SYSCALL "#define _GNU_SOURCE\n#include <unistd.h>\n#include <sys/syscall.h>\n\nstatic inline ssize_t\nsys_write(int fd, const void* buf, size_t n) {\n  return syscall(SYS_write, fd, buf, n);\n}\n\nint main() { return sys_write(1, \"test\\\\n\", 5);\n}\n")
-
-if(NOT USE_SELECT)
-  check_compile(
-    SUPPORT_DEVPOLL
-    "#include <stdio.h>\n#include <stdlib.h>\n#include <poll.h>\n#include <netdb.h>\n#include <unistd.h>\n#include <fcntl.h>\n#include <strings.h>\n#include <sys/types.h>\n#include <sys/socket.h>\n#include <sys/errno.h>\n#include <netinet/in.h>\n#include <sys/devpoll.h>\n\nmain() {\n  int fd = open(\"/dev/poll\", O_RDWR);\n  struct pollfd p[100];\n  int i, r;\n  dvpoll_t timeout;\n  p[0].fd = 0;\n  p[0].events = POLLIN;\n  write(fd, p, sizeof(struct pollfd));\n  timeout.dp_timeout = 100; /* milliseconds? */\n  timeout.dp_nfds = 1;\n  timeout.dp_fds = p;\n  r = ioctl(fd, DP_POLL, &timeout);\n  for(i = 0; i < r; ++i) printf(\"event %d on fd #%d\\\\n\", p[i].revents, p[i].fd);\n}\n"
-  )
-
-  check_compile(
-    SUPPORT_EPOLL
-    "#include <inttypes.h>\n#include <sys/epoll.h>\n#include <stdio.h>\n\nint main() { int efd = epoll_create(10);\n  struct epoll_event x;\n  if(efd == -1)\n    return 111;\n  x.events = EPOLLIN;\n  x.data.fd = 0;\n  if(epoll_ctl(efd, EPOLL_CTL_ADD, 0 /* fd */, &x) == -1)\n    return 111;\n  {\n    int n;\n    struct epoll_event y[100];\n    if((n = epoll_wait(efd, y, 100, 1000)) == -1)\n      return 111;\n    if(n > 0)\n      printf(\"event %d on fd #%d\\\\n\", y[0].events, y[0].data.fd);\n  }\n  return 0;\n}\n"
-  )
-  check_compile(
-    SUPPORT_KQUEUE
-    "#include <sys/types.h>\n#include <sys/event.h>\n#include <sys/time.h>\n\nint main() { int kq = kqueue();\n  struct kevent kev;\n  struct timespec ts;\n  if(kq == -1)\n    return 111;\n  EV_SET(&kev, 0 /* fd */, EVFILT_READ, EV_ADD | EV_ENABLE, 0, 0, 0);\n  ts.tv_sec = 0;\n  ts.tv_nsec = 0;\n  if(kevent(kq, &kev, 1, 0, 0, &ts) == -1)\n    return 111;\n\n  {\n    struct kevent events[100];\n    int i, n;\n    ts.tv_sec = 1;\n    ts.tv_nsec = 0;\n    switch(n = kevent(kq, 0, 0, events, 100, &ts)) {\n      case -1: return 111;\n      case 0: puts(\"no data on fd #0\"); break;\n    }\n    for(i = 0; i < n; ++i) {\n      printf(\"ident %d, filter %d, flags %d, fflags %d, data %d\\\\n\",\n             events[i].ident,\n             events[i].filter,\n             events[i].flags,\n             events[i].fflags,\n             events[i].data);\n    }\n  }\n  return 0;\n}\n"
-  )
-
-  check_compile(
-    SUPPORT_SIGIO
-    "#define _GNU_SOURCE\n#include <sys/types.h>\n#include <sys/unistd.h>\n#include <sys/poll.h>\n#include <signal.h>\n#include <fcntl.h>\n#include <stdio.h>\n\nint main() { int signum = SIGRTMIN + 1;\n  sigset_t ss;\n  sigemptyset(&ss);\n  sigaddset(&ss, signum);\n  sigaddset(&ss, SIGIO);\n  sigprocmask(SIG_BLOCK, &ss, 0);\n\n  fcntl(0 /* fd */, F_SETOWN, getpid());\n  fcntl(0 /* fd */, F_SETSIG, signum);\n#if defined(O_ONESIGFD) && defined(F_SETAUXFL)\n  fcntl(0 /* fd */, F_SETAUXFL, O_ONESIGFD);\n#endif\n  fcntl(0 /* fd */, F_SETFL, fcntl(0 /* fd */, F_GETFL) | O_NONBLOCK | O_ASYNC);\n\n  {\n    siginfo_t info;\n    struct timespec timeout;\n    int r;\n    timeout.tv_sec = 1;\n    timeout.tv_nsec = 0;\n    switch((r = sigtimedwait(&ss, &info, &timeout))) {\n      case SIGIO:\n        /* signal queue overflow */\n        signal(signum, SIG_DFL);\n        /* do poll */\n        break;\n      default:\n        if(r == signum) {\n          printf(\"event %c%c on fd #%d\\\\n\",\n                 info.si_band & POLLIN ? 'r' : '-',\n                 info.si_band & POLLOUT ? 'w' : '-',\n                 info.si_fd);\n        }\n    }\n  }\n  return 0;\n}\n"
-  )
-  check_compile(
-    SUPPORT_POLL
-    "#include <sys/types.h>\n#include <fcntl.h>\n#include <unistd.h>\n#include <poll.h>\n\nint main() { struct pollfd x;\n\n  x.fd = open(\"trypoll.c\", O_RDONLY);\n  if(x.fd == -1)\n    _exit(111);\n  x.events = POLLIN;\n  if(poll(&x, 1, 10) == -1)\n    _exit(1);\n  if(x.revents != POLLIN)\n    _exit(1);\n\n  /* XXX: try to detect and avoid poll() imitation libraries */\n\n  _exit(0);\n}\n")
-  check_compile(SUPPORT_SELECT "#include <sys/types.h>\n#include <sys/time.h>\n#if defined(_WIN32) || defined(__MINGW32__)\n#include <winsock2.h>\n#else\n#include <sys/select.h>\n#include <unistd.h>\n#endif\n\nint\nmain() {\n  struct timeval tv;\n  fd_set rfds;\n  int fd = 0;\n  FD_ZERO(&rfds);\n  FD_SET(fd, &rfds);\n  tv.tv_sec = tv.tv_usec = 0;\n  select(fd + 1, &rfds, 0, 0, &tv);\n}\n"
-                ${LIBMSWSOCK})
-endif(NOT USE_SELECT)
-
-check_compile(HAVE_N2I "#include <sys/types.h>\n#include <sys/socket.h>\n#include <net/if.h>\n\nint main() { static char ifname[IFNAMSIZ];\n  char* tmp = if_indextoname(0, ifname);\n  (void)tmp;\n  return 0;\n}\n")
-
-check_compile(
-  HAVE_BSDSENDFILE
-  "/* for macos X, don't ask */\n#define SENDFILE 1\n\n#include <sys/types.h>\n#include <sys/socket.h>\n#include <sys/uio.h>\n#include <errno.h>\n#include <netinet/in.h>\n#include <netinet/tcp.h>\n\nint main() { struct sf_hdtr hdr;\n  struct iovec v[17 + 23];\n  int r, fd = 1;\n  off_t sbytes;\n  hdr.headers = v;\n  hdr.hdr_cnt = 17;\n  hdr.trailers = v + 17;\n  hdr.trl_cnt = 23;\n  r = sendfile(0, 1, 37, 42, &hdr, &sbytes, 0);\n  (void)r;\n  return 0;\n}\n"
-)
-
-check_compile(
-  HAVE_SENDFILE
-  "#ifdef __hpux__\n#include <sys/types.h>\n#include <sys/uio.h>\n#include <sys/socket.h>\n#include <stdio.h>\n\nint main() { /*\n        sbsize_t sendfile(int s, int fd, off_t offset, bsize_t nbytes,\n                      const struct iovec *hdtrl, int flags);\n  */\n  struct iovec x[2];\n  int fd = open(\"havesendfile.c\", 0);\n  x[0].iov_base = \"header\";\n  x[0].iov_len = 6;\n  x[1].iov_base = \"footer\";\n  x[1].iov_len = 6;\n  sendfile(1 /* dest socket */, fd /* src file */, 0 /* offset */, 23 /* nbytes */, x, 0);\n  perror(\"sendfile\");\n  return 0;\n}\n#elif defined(__sun__) && defined(__svr4__)\n#include <sys/types.h>\n#include <sys/socket.h>\n#include <sys/sendfile.h>\n#include <stdio.h>\n\nint main() { off_t o;\n  o = 0;\n  sendfile(1 /* dest */, 0 /* src */, &o, 23 /* nbytes */);\n  perror(\"sendfile\");\n  return 0;\n}\n#elif defined(_AIX)\n\n#define _FILE_OFFSET_BITS 64\n#include <sys/types.h>\n#include <sys/socket.h>\n#include <unistd.h>\n#include <stdio.h>\n\nint main() { int fd = open(\"havesendfile.c\", 0);\n  struct sf_parms p;\n  int destfd = 1;\n  p.header_data = \"header\";\n  p.header_length = 6;\n  p.file_descriptor = fd;\n  p.file_offset = 0;\n  p.file_bytes = 23;\n  p.trailer_data = \"footer\";\n  p.trailer_length = 6;\n  if(send_file(&destfd, &p, 0) >= 0)\n    printf(\"sent %lu bytes.\\\\n\", p.bytes_sent);\n  return 0;\n}\n#elif defined(__linux__)\n\n#define _FILE_OFFSET_BITS 64\n#include <sys/types.h>\n#include <unistd.h>\n#if defined(__GLIBC__)\n#include <sys/sendfile.h>\n#elif defined(__dietlibc__)\n#include <sys/sendfile.h>\n#else\n#include <linux/unistd.h>\n_syscall4(int, sendfile, int, out, int, in, long*, offset, unsigned long, count)\n#endif\n#include <stdio.h>\n\nint main() { int fd = open(\"havesendfile.c\", 0);\n  off_t o = 0;\n  off_t r = sendfile(1, fd, &o, 23);\n  if(r != -1)\n    printf(\"sent %llu bytes.\\\\n\", r);\n  return 0;\n}\n\n#else\n#error unsupported architecture\n/* stupid fucking IRIX c99 does not signal #error via a non-zero exit\n * code!  ARGH!  So insert a parse error */\n#include rumpelstilzchen\n)\n#endif\n"
-)
-
-set(TRY_LINUX_AIO
-    "#include <fcntl.h>\n#include <linux/aio_abi.h>\n#include <stdint.h>\n#include <stdio.h>\n#include <stdlib.h>\n#include <sys/syscall.h>\n#include <unistd.h>\n\n#define PFATAL(x...) \\\\\n  do { \\\\\n    fprintf(stderr, \"[-] SYSTEM ERROR : \" x); \\\\\n    fprintf(stderr, \"\\\\n\\tLocation : %s(), %s:%u\\\\n\", __FUNCTION__, __FILE__, __LINE__); \\\\\n    perror(\"      OS message \"); \\\\\n    fprintf(stderr, \"\\\\n\"); \\\\\n    exit(EXIT_FAILURE); \\\\\n  } while(0)\n\n#ifdef __dietlibc__\n#include <bits/syscall.h>\n#else\ninline static int\nio_setup(unsigned nr, aio_context_t* ctxp) {\n  return syscall(__NR_io_setup, nr, ctxp);\n}\n\ninline static int\nio_destroy(aio_context_t ctx) {\n  return syscall(__NR_io_destroy, ctx);\n}\n\ninline static int\nio_submit(aio_context_t ctx, long nr, struct iocb** iocbpp) {\n  return syscall(__NR_io_submit, ctx, nr, iocbpp);\n}\n\ninline static int\nio_getevents(aio_context_t ctx,\n             long min_nr,\n             long max_nr,\n             struct io_event* events,\n             struct timespec* timeout) {\n  // This might be improved.\n  return syscall(__NR_io_getevents, ctx, min_nr, max_nr, events, timeout);\n}\n#endif\n\n#define BUF_SZ (4096)\n\nint\nmain() {\n  int fd = open(\"/etc/passwd\", O_RDONLY);\n  if(fd < 0) {\n    PFATAL(\"open(/etc/passwd)\");\n  }\n\n  aio_context_t ctx = 0;\n  int r = io_setup(128, &ctx);\n  if(r < 0) {\n    PFATAL(\"io_setup()\");\n  }\n\n  char buf[BUF_SZ];\n  struct iocb cb = {.aio_fildes = fd,\n                    .aio_lio_opcode = IOCB_CMD_PREAD,\n                    .aio_buf = (uint64_t)&buf[0],\n                    .aio_nbytes = BUF_SZ};\n  struct iocb* list_of_iocb[1] = {&cb};\n\n  r = io_submit(ctx, 1, list_of_iocb);\n  if(r != 1) {\n    PFATAL(\"io_submit()\");\n  }\n\n  struct io_event events[1] = {};\n  r = io_getevents(ctx, 1, 1, events, NULL);\n  if(r != 1) {\n    PFATAL(\"io_getevents()\");\n  }\n\n  printf(\"read %ld bytes from /etc/passwd\\\\n\", events[0].res);\n  io_destroy(ctx);\n  close(fd);\n  return 0;\n}\n"
-)
 # check_compile(HAVE_LINUX_AIO "${TRY_LINUX_AIO}") if(HAVE_LINUX_AIO) check_run(SUPPORT_LINUX_AIO "${TRY_LINUX_AIO}") endif(HAVE_LINUX_AIO)
 #
 # if(HAVE_LINUX_AIO) message(STATUS "Support Linux AIO: ${SUPPORT_LINUX_AIO}") add_definitions(-DHAVE_LINUX_AIO=1) endif(HAVE_LINUX_AIO)
@@ -629,7 +631,11 @@ set(MUX_ALL
     POLL SELECT)
 set(MUX_USE # LINUX_AIO
     KQUEUE EPOLL DEVPOLL SIGIO POLL SELECT)
+
 foreach(METHOD ${MUX_USE})
+  #[[message("METHOD ${METHOD}")
+  message("SUPPORT_${METHOD} = ${SUPPORT_${METHOD}}")]]
+
   if(SUPPORT_${METHOD})
     list_contains("${MUX_LIST}" "${METHOD}" CONTAINS_METHOD)
     if(NOT CONTAINS_METHOD)
@@ -637,22 +643,18 @@ foreach(METHOD ${MUX_USE})
     endif(NOT CONTAINS_METHOD)
     if(MUX STREQUAL "")
       message(STATUS "Setting MUX method to ${METHOD}")
-      set(MUX "${METHOD}" CACHE STRING "I/O multiplex method")
+      set(MUX "${METHOD}")
     endif(MUX STREQUAL "")
-    # set(MUX_DEFS "${MUX_DEFS} -DHAVE_${METHOD}=1")
   endif(SUPPORT_${METHOD})
 endforeach()
-#[[foreach(METHOD ${MUX_ALL})
-  if(SUPPORT_${METHOD})
-    set(MUX_DEFS "${MUX_DEFS} -DSUPPORT_${METHOD}=1")
-  endif(SUPPORT_${METHOD})
-endforeach()]]
 set(MUX_METHODS "${MUX_LIST}")
 
-message(STATUS "Available MUX methods: ${MUX_METHODS}")
+string(REGEX REPLACE "[;\n ]" " " L_MUX_METHODS "${MUX_METHODS}")
 string(REGEX REPLACE "[;\n ]" ";" __MUX_METHODS "${MUX_METHODS}")
+message(STATUS "Available MUX methods: ${L_MUX_METHODS}")
+
 # unset(MUX_METHODS)
-set(MUX_METHOD "${MUX}" CACHE STRING "multiplex methods")
+set(MUX_METHOD "${MUX}" CACHE STRING "I/O multiplex method")
 
 set_property(CACHE MUX_METHOD PROPERTY STRINGS ${__MUX_METHODS})
 
@@ -662,9 +664,9 @@ if(LIBMSWSOCK)
   list(APPEND CMAKE_REQUIRED_LIBRARIES ${LIBMSWSOCK})
 endif(LIBMSWSOCK)
 
-message(STATUS "MUX method: ${MUX_METHOD}")
-
 if(NOT "${MUX_METHOD}" STREQUAL "")
+  message(STATUS "I/O multiplex method: ${MUX_METHOD}")
+
   add_definitions("-DHAVE_${MUX_METHOD}=1" "-DUSE_${MUX_METHOD}=1")
   set(io_COMPILE_FLAGS "-DMUX_METHOD=${MUX_METHOD} -DHAVE_${MUX_METHOD}=1 -DUSE_${MUX_METHOD}=1")
 endif(NOT "${MUX_METHOD}" STREQUAL "")
