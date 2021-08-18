@@ -4520,19 +4520,18 @@ set_make_type() {
     make_begin_inline = "@&&|\r\n ";
     make_sep_inline = " ";
     make_end_inline = "\r\n|";
-    inst = "copy /y";
+    inst = "COPY /Y";
     newline = "\r\n";
   } else if(str_start(tools.make, "nmake")) {
     /* Microsoft NMake */
     pathsep_make = '\\';
-    /*    make_begin_inline =
-       "@<<$*.rsp\r\n"; make_end_inline
-       = "\r\n<<keep";
-    */
-    stralloc_copys(&mkdir_command, "if not exist $@ mkdir $@");
-    stralloc_copys(&delete_command, "del /f");
+    pathsep_args = '\\';
+    // make_begin_inline = "@<<$*.rsp\r\n";
+    // make_end_inline = "\r\n<<keep";
+    stralloc_copys(&mkdir_command, "IF NOT EXIST $@ MKDIR $@");
+    stralloc_copys(&delete_command, "DEL /F");
     newline = "\r\n";
-    inst = "copy /y";
+    inst = "COPY /Y";
   } else if(str_start(tools.make, "gmake") || str_start(tools.make, "gnu")) {
     newline = "\n";
     pathsep_make = '/';
