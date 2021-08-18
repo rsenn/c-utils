@@ -89,7 +89,7 @@
 #define MIN(a, b) ((a) < (b) ? (a) : (b))
 
 const int max_cols = 8;
-const size_t col_size = sizeof(int) * max_cols;
+const size_t col_size = sizeof(int) * 8;
 
 typedef int col_t[8];
 typedef col_t offsets_lengths_t[2];
