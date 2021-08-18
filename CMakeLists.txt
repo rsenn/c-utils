@@ -319,8 +319,7 @@ if(HAVE_SIGSET_T)
   # add_definitions(-DHAVE_SIGSET_T)
 endif(HAVE_SIGSET_T)
 
-# set(SIZEOF_SIGSET_TYPE "${SIZEOF_SIGSET_T}" CACHE STRING "Size of 'sigset_t' type")
-message(STATUS "size of sigset_t = ${SIZEOF_SIGSET_T}")
+message(STATUS "Size of sigset_t: ${SIZEOF_SIGSET_T}")
 
 if(SIZEOF_SIGSET_T)
   add_definitions(-DSIZEOF_SIGSET_T=${SIZEOF_SIGSET_T})
