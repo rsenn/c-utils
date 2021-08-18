@@ -18,6 +18,10 @@
 
 static uint32 mask;
 static ihex_file hex_output;
+typedef union {
+  struct list_head* el;
+  ihex_record* r;
+} ptr;
 
 static void
 putdata(buffer* out, const uint8* x, size_t n) {
@@ -38,10 +42,7 @@ puthex(const char* name, uint32 value) {
 
 uint32
 mem_top(ihex_file* h, uint32 mask) {
-  union {
-    struct list_head* el;
-    ihex_record* r;
-  } p;
+  ptr p;
   uint32 top = 0;
   ihex_addr a = {0};
   list_for_each(p.el, &h->records) {
@@ -59,10 +60,7 @@ mem_top(ihex_file* h, uint32 mask) {
 
 uint32
 mem_bottom(ihex_file* h) {
-  union {
-    struct list_head* el;
-    ihex_record* r;
-  } p;
+  ptr p;
   uint32 bottom = 0xffffffff;
   ihex_addr a = {0};
   list_for_each(p.el, &h->records) {
@@ -103,10 +101,7 @@ hex_load(ihex_file* hex, const char* filename) {
 
 int
 hex_copy(ihex_file* h, uint8_t* m) {
-  union {
-    struct list_head* el;
-    ihex_record* r;
-  } p;
+  ptr p;
   ihex_addr a = {0}, prev = {0};
   list_for_each(p.el, &h->records) {
     ihex_record_address(p.r, &a);
@@ -124,10 +119,7 @@ hex_copy(ihex_file* h, uint8_t* m) {
 
 int
 hex_save(ihex_file* ihf, const char* filename) {
-  union {
-    struct list_head* el;
-    ihex_record* r;
-  } p;
+  ptr p;
   ihex_addr a = {0}, prev = {0};
   buffer output;
   buffer_truncfile(&output, filename);
@@ -148,10 +140,7 @@ hex_save(ihex_file* ihf, const char* filename) {
 
 int
 hex_print(ihex_file* ihf, buffer* out) {
-  union {
-    struct list_head* el;
-    ihex_record* r;
-  } p;
+  ptr p;
   ihex_addr a = {0}, prev = {0};
   ihex_record* r;
   list_for_each(p.el, &ihf->records) {
