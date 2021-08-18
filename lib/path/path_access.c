@@ -3,37 +3,31 @@
 #if WINDOWS_NATIVE
 #include <windows.h>
 
-BOOL
+int
 hasAccessRight(LPCSTR path, DWORD genericAccessRights) {
   SECURITY_DESCRIPTOR secDesc;
 
   DWORD len = 0;
   if(GetFileSecurityA(
          path, OWNER_SECURITY_INFORMATION | GROUP_SECURITY_INFORMATION | DACL_SECURITY_INFORMATION, NULL, NULL, &len) ==
-     FALSE) {
-    MMBLOG_FILE_FUNC_LINE(CRITICAL, "Failed to get security information for file " << path << std::endl);
-  }
+     FALSE) return -1;
 
   SecurityDescriptorWrapper sd{len};
   if(GetFileSecurityA(path,
                       OWNER_SECURITY_INFORMATION | GROUP_SECURITY_INFORMATION | DACL_SECURITY_INFORMATION,
                       sd.get(),
                       len,
-                      &len) == FALSE) {
-    MMBLOG_FILE_FUNC_LINE(CRITICAL, "Failed to get security information for file " << path << std::endl);
-  }
+                      &len) == FALSE) return -1;
 
   HANDLE hToken = NULL;
   HANDLE hImpersonatedToken = NULL;
   if(OpenProcessToken(GetCurrentProcess(),
                       TOKEN_IMPERSONATE | TOKEN_QUERY | TOKEN_DUPLICATE | STANDARD_RIGHTS_READ,
-                      &hToken) == FALSE) {
-    MMBLOG_FILE_FUNC_LINE(CRITICAL, "Failed to get security information for file " << path << std::endl);
-  }
+                      &hToken) == FALSE) return -1;
 
   if(DuplicateToken(hToken, SecurityImpersonation, &hImpersonatedToken) == FALSE) {
     CloseHandle(hToken);
-    MMBLOG_FILE_FUNC_LINE(CRITICAL, "Failed to get security information for file " << path << std::endl);
+    return -1;
   }
 
   GENERIC_MAPPING mapping = {0xFFFFFFFF};
@@ -60,24 +54,24 @@ hasAccessRight(LPCSTR path, DWORD genericAccessRights) {
   CloseHandle(hToken);
 
   if(success == FALSE)
-    MMBLOG_FILE_FUNC_LINE(CRITICAL, "Failed to get security information for file " << path << std::endl);
+return -1;
 
   return result == TRUE;
 }
 
 static inline bool
 hasReadAccess(LPCSTR path) {
-  return hasAccessRight(path, GENERIC_READ);
+  return hasAccessRight(path, GENERIC_READ) == 1;
 }
 
 static inline bool
 hasWriteAccess(LPCSTR path) {
-  return hasAccessRight(path, GENERIC_READ | GENERIC_WRITE);
+  return hasAccessRight(path, GENERIC_READ | GENERIC_WRITE) == 1;
 }
 
 static inline bool
 hasExecuteAccess(LPCSTR path) {
-  return hasAccessRight(path, GENERIC_EXECUTE);
+  return hasAccessRight(path, GENERIC_EXECUTE) == 1;
 }
 #endif
 
