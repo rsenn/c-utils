@@ -5,7 +5,7 @@
 
 ihex_record*
 ihex_record_insert(ihex_file* ihf, uint32 at, uint8 len) {
-    ihex_record*r=0;
+  ihex_record* r = 0;
   ihex_recptr p;
   ihex_addr o, prev = {0};
   o.off32 = 0;
@@ -35,10 +35,10 @@ ihex_record_insert(ihex_file* ihf, uint32 at, uint8 len) {
     r->length = 2;
     uint16_pack_big(r->data, at >> 16);
     r->checksum = ihex_record_checksum(r);
-  list_add(&r->link, p.link);
+    list_add(&r->link, p.link);
   }
   r = (ihex_record*)alloc_zero(sizeof(ihex_record) + len);
-  
+
   r->offset = at & 0xffff;
   r->length = len;
   list_add(&r->link, p.link);
