@@ -3,7 +3,7 @@
 #include <errno.h>
 
 #if WINDOWS_NATIVE
-#include <winsock2.h>
+#include <windows.h>
 #else
 #include <sys/types.h>
 #include <sys/socket.h>

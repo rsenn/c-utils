@@ -1,7 +1,11 @@
 #ifndef TLS_INTERNAL_H
 #define TLS_INTERNAL_H
 
+#define USE_WS2_32 1
+
 #include "windoze.h"
+#include "socket_internal.h"
+
 #if OPENSSL_SYS_WINDOWS
 #undef OPENSSL_OPT_WINDLL
 #define OPENSSL_OPT_WINDLL 1
