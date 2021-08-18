@@ -1400,7 +1400,7 @@ main(int argc, char* argv[]) {
     // int offsets[max_cols], lengths[max_cols];
     offsets_lengths_t col, *cptr;
     int cols;
-    int init[max_cols];
+    int init[8];
     byte_fill(init, sizeof(init), -1);
     stralloc_init(&file);
 
