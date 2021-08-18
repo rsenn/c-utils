@@ -7,22 +7,22 @@ ihex_record_insert(ihex_file* ihf, uint32 at, uint8 len) {
   ihex_record **rp, *r;
   ihex_addr o, prev = {0};
   o.off32 = 0;
- /* for(rp = &ihf->records; *rp; rp = &(*rp)->next) {
-    r = *rp;
-    if(r->type == 4) {
-      uint16_unpack_big(r->data, &o.hi16);
-      o.lo16 = 0;
-    } else {
-      o.lo16 = r->offset;
-    }
-    if(at < o.off32) {
-      break;
-    }
-    prev = o;
-    prev.off32 += r->length;
-  }*/
+  /* for(rp = &ihf->records; *rp; rp = &(*rp)->next) {
+     r = *rp;
+     if(r->type == 4) {
+       uint16_unpack_big(r->data, &o.hi16);
+       o.lo16 = 0;
+     } else {
+       o.lo16 = r->offset;
+     }
+     if(at < o.off32) {
+       break;
+     }
+     prev = o;
+     prev.off32 += r->length;
+   }*/
   rp = ihex_record_find(ihf, at, &o.off32);
-  
+
   if(*rp) {
     assert(at + len <= o.off32);
   }

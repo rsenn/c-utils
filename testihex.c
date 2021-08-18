@@ -93,10 +93,8 @@ int
 hex_copy(ihex_record* r, uint8_t* m) {
   ihex_addr a = {0}, prev = {0};
   for(; r; r = r->next) {
-    if(r->type == 4)
-      uint16_unpack_big(r->data, &a.hi16);
-    else
-      a.lo16 = r->offset;
+    ihex_record_address(r, &a);
+
     if(r->type == 0) {
       if((a.off32 & (~mask)))
         break;
@@ -114,10 +112,7 @@ hex_save(ihex_record* r, const char* filename) {
   buffer output;
   buffer_truncfile(&output, filename);
   for(; r; r = r->next) {
-    if(r->type == 4)
-      uint16_unpack_big(r->data, &a.hi16);
-    else
-      a.lo16 = r->offset;
+    ihex_record_address(r, &a);
     if(r->type == 0) {
       if((a.off32 & (~mask)))
         break;
@@ -134,9 +129,7 @@ int
 hex_print(ihex_record* r, buffer* out) {
   ihex_addr a = {0}, prev = {0};
   for(; r; r = r->next) {
-    if(r->type == 4) {
-      uint16_unpack_big(r->data, &a.hi16);
-    } else {
+    if(ihex_record_address(r, &a)) {
       a.lo16 = r->offset;
       if(prev.off32 < a.off32) {
         buffer_puts(out, "empty space = 0x");
@@ -146,6 +139,7 @@ hex_print(ihex_record* r, buffer* out) {
         buffer_putnlflush(out);
       }
     }
+
     if(r->type == 0) {
       if((a.off32 & (~mask)))
         break;
@@ -246,6 +240,11 @@ main(int argc, char* argv[]) {
 
     puthex("mem bottom", bottom);
     puthex("mem top", top);
+
+    for(r = ihx.records; r; r = r->next) {
+      if(ihex_record_address(r, &a)) {
+      }
+    }
 
     m = alloc(top);
     byte_fill(m, top, 0xff);
