@@ -159,9 +159,10 @@ hex_print(ihex_file* ihf, buffer* out) {
         buffer_putxlong0(out, a.off32 - prev.off32, 6);
         buffer_putnlflush(out);
       }
-    }
+    } else {
+      /*    }
 
-    if(p.r->type == 0) {
+          if(p.r->type == 0) {*/
       if((a.off32 & (~mask)))
         break;
       buffer_putxlong0(out, a.off32, 8);
