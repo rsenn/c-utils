@@ -9,8 +9,10 @@
 
 #include <stdlib.h>
 #include "lib/bool.h"
+#if WINDOWS_NATIVE
+#include <io.h>
+#else
 #include <unistd.h>
-#if !WINDOWS_NATIVE
 #include <sys/mman.h>
 #endif
 #include "cache.h"

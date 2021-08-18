@@ -1,13 +1,15 @@
 #include "../windoze.h"
 #include "../unix.h"
+#include "../sig.h"
+#include "../errmsg.h"
 
-#if WINDOWS_NATIVE
+#if 0 //WINDOWS_NATIVE
+#include <windows.h>
 
 static HANDLE timerHandle = INVALID_HANDLE_VALUE;
 
 static VOID CALLBACK
 timer_completion(LPVOID arg, DWORD timeLow, DWORD timeHigh) {
-  pg_queue_signal(SIGALRM);
 }
 
 /*
@@ -21,7 +23,7 @@ int
 setitimer(int which, const struct itimerval* value, struct itimerval* ovalue) {
   LARGE_INTEGER dueTime;
 
-  Assert(which == ITIMER_REAL);
+ assert(which == ITIMER_REAL);
 
   if(timerHandle == INVALID_HANDLE_VALUE) {
     /* First call in this backend, create new timer object */
@@ -45,7 +47,7 @@ setitimer(int which, const struct itimerval* value, struct itimerval* ovalue) {
 
   /* Turn timer on, or change timer */
   if(!SetWaitableTimer(timerHandle, &dueTime, 0, timer_completion, NULL, FALSE))
-    ereport(FATAL, (errmsg_internal("failed to set waitable timer: %i", GetLastError())));
+    errmsg_warnsys("failed to set waitable timer: ",0);
 
   return 0;
 }

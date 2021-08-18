@@ -16,7 +16,11 @@
 #include "lib/str.h"
 
 #include "lib/bool.h"
+#if WINDOWS_NATIVE
+#include <io.h>
+#else
 #include <unistd.h>
+#endif
 #include <sys/stat.h>
 
 #include "response.h"

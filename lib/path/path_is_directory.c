@@ -4,7 +4,7 @@
 #include <sys/stat.h>
 
 #if WINDOWS_NATIVE
-#include <io.h>
+#include <windows.h>
 #define lstat stat
 #endif
 
@@ -16,6 +16,9 @@
 
 int
 path_is_directory(const char* p) {
+#if WINDOWS_NATIVE
+  return !!PathIsDirectoryA(p);
+#else
   struct _stat st;
   int r;
   if((r = lstat(p, &st) == 0)) {
@@ -23,4 +26,5 @@ path_is_directory(const char* p) {
       return 1;
   }
   return 0;
+#endif
 }

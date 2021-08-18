@@ -9,7 +9,11 @@
 #include "lib/ip6.h"
 #include "lib/dns.h"
 
+#if WINDOWS_NATIVE
+#include <io.h>
+#else
 #include <unistd.h>
+#endif
 #include <errno.h>
 #include "lib/bool.h"
 

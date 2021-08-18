@@ -24,7 +24,11 @@
 #include "lib/charbuf.h"
 #include "lib/mmap.h"
 #include <stdlib.h>
+#if WINDOWS_NATIVE
+#include <io.h>
+#else
 #include <unistd.h>
+#endif
 #include <ctype.h>
 #include <setjmp.h>
 #define MAP_USE_HMAP 1

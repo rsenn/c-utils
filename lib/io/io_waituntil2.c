@@ -12,7 +12,7 @@
 #endif
 
 #if WINDOWS_NATIVE
-#include <winsock2.h>
+//#include <winsock2.h>
 #else
 #include <poll.h>
 #include <sys/select.h>

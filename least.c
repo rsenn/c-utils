@@ -15,11 +15,11 @@
 
 #include <assert.h>
 #include <ctype.h>
-#include <unistd.h>
 #include <errno.h>
 
 #if !WINDOWS_NATIVE
 #include <sys/stat.h>
+#include <unistd.h>
 #endif
 #if !WINDOWS
 #include <sys/inotify.h>

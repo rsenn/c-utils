@@ -601,7 +601,7 @@ Written by LRN.");
 
 void
 printhelp(char* argv0) {
-  buffer_putm(buffer_1,
+  buffer_putm_internal(buffer_1,
               "Usage: ",
               argv0,
               " [OPTION]... FILE...\n\

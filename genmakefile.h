@@ -25,7 +25,7 @@
 #include "lib/case.h"
 #include "lib/set.h"
 #include "lib/map.h"
-#include <stdbool.h>
+#include "lib/bool.h"
 
 typedef enum { OS_WIN, OS_MAC, OS_LINUX } os_type;
 typedef enum { LANG_C, LANG_CXX } lang_type;
@@ -150,7 +150,7 @@ typedef struct {
 
 typedef struct {
   strlist value;
-  uint32_t serial;
+  uint32 serial;
 } var_t;
 
 int mkdir_sa(const stralloc*, int);

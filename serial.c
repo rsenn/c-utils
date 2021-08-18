@@ -6,7 +6,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <unistd.h>
 #include <fcntl.h>
 #include <dirent.h>
 #include <errno.h>
@@ -21,6 +20,7 @@
 #if !WINDOWS_NATIVE
 #include <poll.h>
 #include <termios.h>
+#include <unistd.h>
 #else
 #include <windows.h>
 #endif

@@ -1,9 +1,10 @@
 #include "../windoze.h"
 #include "../io_internal.h"
+#include "../socket_internal.h"
 #include "../buffer.h"
 
 #if WINDOWS_NATIVE
-#include <mswsock.h>
+//#include <mswsock.h>
 #else
 #include <sys/select.h>
 #endif

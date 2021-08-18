@@ -215,7 +215,7 @@ extract_paths(const stralloc* sa, strlist* paths) {
 
 const char*
 exec_program(const char* compiler, const char* arg, stralloc* out) {
-  pid_t pid;
+  int pid;
   int ws = 0;
 #if 0 // def POSIX_SPAWN
   posix_spawn_file_actions_t actions;
