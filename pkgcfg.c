@@ -1470,7 +1470,9 @@ getopt_end:
   strarray_from_argv(argc - unix_optind, argv + unix_optind, &modules);
 
 #ifdef DEBUG_OUTPUT
-  buffer_puts(buffer_2, "Modules: ");
+  buffer_puts(buffer_2, "Modules(");
+  buffer_putulong(buffer_2, strarray_size(&modules));
+  buffer_puts(buffer_2, "): ");
   buffer_putstra(buffer_2, &modules, " ");
   buffer_putnlflush(buffer_2);
 #endif
