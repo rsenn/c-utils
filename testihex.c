@@ -126,20 +126,23 @@ hex_copy(ihex_file* h, uint8_t* m) {
 int
 hex_save(ihex_file* ihf, const char* filename) {
   ptr p;
-  ihex_addr a = {0}, prev = {0};
+  ihex_addr a = {0};
+  uint32 prev = 0;
   buffer output;
   buffer_truncfile(&output, filename);
 
   list_for_each(p.el, &ihf->records) {
-    ihex_record_address(p.r, &a);
-    if(p.r->type == 0) {
-      if((a.off32 & (~mask)))
+    ihex_record_write(p.r, &output);
+
+    if(ihex_record_address(p.r, &a) == 4)
+      continue;
+
+    /*  if((a.off32 & (~mask)))
         break;
-      if((a.off32 & (~mask)) == 0)
-        ihex_record_write(p.r, &output);
-    }
-    prev = a;
-    prev.off32 += p.r->length;
+*/
+    /*if((a.off32 & (~mask)) == 0)*/
+
+    prev = a.off32 + p.r->length;
   }
   buffer_close(&output);
 }
@@ -147,38 +150,39 @@ hex_save(ihex_file* ihf, const char* filename) {
 int
 hex_print(ihex_file* ihf, buffer* out) {
   ptr p;
-  ihex_addr a = {0}, prev = {0};
-  ihex_record* r;
+  ihex_addr a = {0};
+  uint32 prev = 0;
+  int i = 0;
   list_for_each(p.el, &ihf->records) {
-    if(ihex_record_address(p.r, &a) == 4) {
-      buffer_puts(out, "set upper 16 address = 0x");
-      buffer_putxlong0(out, a.hi16, 4);
-      buffer_putnlflush(out);
+    buffer_putc(buffer_2, '#');
+    buffer_putulong(buffer_2, i++);
+    buffer_putc(buffer_2, ' ');
+    ihex_record_dump(p.r, buffer_2);
+
+    if(ihex_record_address(p.r, &a) == 4)
       continue;
+
+    if(prev < a.off32) {
+      buffer_puts(out, "empty space = 0x");
+      buffer_putxlong0(out, prev, 6);
+      buffer_puts(out, ", len = 0x");
+      buffer_putxlong0(out, a.off32 - prev, 6);
+      buffer_putnlflush(out);
     }
 
-    if(prev.off32 < a.off32) {
-      buffer_puts(out, "empty space = 0x");
-      buffer_putxlong0(out, prev.off32, 6);
-      buffer_puts(out, ", len = 0x");
-      buffer_putxlong0(out, a.off32 - prev.off32, 6);
-      buffer_putnlflush(out);
-    }
     if(p.r->type == 0) {
       a.lo16 = p.r->offset;
-
       /*  if((a.off32 & (~mask)))
          break;*/
+      /*
       buffer_putxlong0(out, a.off32, 8);
       buffer_putm_internal(out, " ", ihex_typestr(p.r->type), "(", 0);
       buffer_putulong(out, p.r->length);
       buffer_puts(out, ") ");
       putdata(out, p.r->data, p.r->length);
-      buffer_putnlflush(out);
+      buffer_putnlflush(out);*/
     }
-
-    prev = a;
-    prev.off32 += p.r->length;
+    prev = a.off32 + p.r->length;
   }
 }
 

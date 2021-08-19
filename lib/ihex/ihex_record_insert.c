@@ -52,6 +52,7 @@ ihex_record_insert(ihex_file* ihf, uint32 at, uint8 len) {
 
   r->offset = at & 0xffff;
   r->length = len;
+
   list_add_tail(&r->link, p.link);
   return r;
 }
