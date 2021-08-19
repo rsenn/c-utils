@@ -78,7 +78,6 @@ typedef struct pkg_s {
   MAP_T vars;
   MAP_T fields;
   uint64 version;
-
 } pkg;
 
 typedef struct cond_s {
@@ -117,6 +116,7 @@ static int atleast_version = 0;
 const char* pkgcfg_path = 0;
 extern buffer* unix_optbuf;
 static strlist args;
+static strarray modules = {0, 0, 0};
 
 static void
 add_cmd(id cmd) {
@@ -913,7 +913,7 @@ pkg_conf(strarray* modules, id code, int mode) {
     }
     if(mode & PKGCFG_EXISTS)
       return 0;
-#ifdef DEBUG_OUTPUT_
+#ifdef DEBUG_OUTPUT
     pkg_dump(buffer_2, &pf);
 #endif
     stralloc_zero(&value);
@@ -1456,9 +1456,27 @@ getopt_end:
     buffer_putnlflush(buffer_2);
     error_exit(1);
   }
+#ifdef DEBUG_OUTPUT
+
+  buffer_puts(buffer_2, "argc: ");
+  buffer_putulong(buffer_2, argc);
+  buffer_puts(buffer_2, "\nunix_optind: ");
+  buffer_putulong(buffer_2, unix_optind);
+  buffer_puts(buffer_2, "\nargv[unix_optind]: ");
+  buffer_puts(buffer_2, argv[unix_optind]);
+  buffer_putnlflush(buffer_2);
+#endif
+
+  strarray_from_argv(argc - unix_optind, argv + unix_optind, &modules);
+
+#ifdef DEBUG_OUTPUT
+  buffer_puts(buffer_2, "Modules:\n  ");
+  buffer_putstra(buffer_2, &modules, "\n  ");
+  buffer_putnlflush(buffer_2);
+#endif
 
   array_foreach_t(&cmds, code) {
-#ifdef DEBUG_OUTPUT_
+#ifdef DEBUG_OUTPUT
     buffer_puts(buffer_2, "Command: ");
     buffer_putulong(buffer_2, *code);
     buffer_putnlflush(buffer_2);
@@ -1467,8 +1485,7 @@ getopt_end:
       pkg_list(*code);
     } else if(unix_optind < argc) {
       int exitCode;
-      strarray modules;
-      strarray_from_argv(argc - unix_optind, (const char* const*)&argv[unix_optind], &modules);
+
       exitCode = pkg_conf(&modules, *code, mode);
       if(exitCode)
         error_exit(exitCode);
