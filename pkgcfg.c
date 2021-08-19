@@ -902,7 +902,6 @@ pkg_conf(strarray* modules, id code, int mode) {
   stralloc_init(&value);
   strlist_init(&output, '\0');
   strlist_init(&require, ' ');
-
   for(i = 0; i < strarray_size(modules); ++i) {
     const char* pkgname = strarray_at(modules, i);
 #ifdef DEBUG_OUTPUT_
@@ -913,7 +912,6 @@ pkg_conf(strarray* modules, id code, int mode) {
     buffer_puts(buffer_2, ")");
     buffer_putnlflush(buffer_2);
 #endif
-
     pkg pf;
     byte_zero(&pf, sizeof(pf));
     stralloc_copys(&name, pkgname);
@@ -928,7 +926,6 @@ pkg_conf(strarray* modules, id code, int mode) {
       do_cond = 1;
       name.len = n;
     }
-
 #ifdef DEBUG_OUTPUT_
     buffer_puts(buffer_2, "name: ");
     buffer_putsa(buffer_2, &name);
@@ -937,13 +934,11 @@ pkg_conf(strarray* modules, id code, int mode) {
     buffer_putnlflush(buffer_2);
 #endif
     stralloc_nul(&name);
-
     if(!pkg_open(name.s, &pf)) {
       buffer_putm_internal(buffer_2, "No package '", name.s, "' found", 0);
       buffer_putnlflush(buffer_2);
       return 1;
     }
-
     if(do_cond) {
       int r = pkg_check_cond(&condition, &pf);
       if(r == -1) {
@@ -953,16 +948,13 @@ pkg_conf(strarray* modules, id code, int mode) {
     }
     if(mode & PKGCFG_EXISTS)
       return 0;
-
 #ifdef DEBUG_OUTPUT_
     pkg_dump(buffer_2, &pf);
 #endif
-
     stralloc_zero(&value);
     pkg_expand(&pf, "Requires", &value);
     strlist_zero(&require);
     strlist_fromb(&require, value.s, value.len, " ,\r\n\t");
-
     strlist_foreach(&require, x, len) {
 #ifdef DEBUG_OUTPUT_
       buffer_puts(buffer_2, "Require: ");
@@ -973,48 +965,30 @@ pkg_conf(strarray* modules, id code, int mode) {
     }
     {
       const char* fn = 0;
-
       if(code & PRINT_PATH) {
         if(value.len)
           stralloc_catc(&value, '\n');
-
         stralloc_cat(&value, &pf.name);
       }
-
       if(code & VARIABLE) {
-        /*   if(value.len)
-             stralloc_catc(&value, '\n');
-           pkg_expand(&pf, variable, &value);
-           stralloc_catc(&value, '\n');*/
-
 #ifdef DEBUG_OUTPUT_
         buffer_putm_internal(buffer_2, "Variable '", variable, "': ", 0);
         buffer_putsa(buffer_2, &value);
         buffer_putnlflush(buffer_2);
 #endif
-
         fn = variable;
-        /*   buffer_putsa(buffer_1, &value);
-           buffer_putnlflush(buffer_1);
-      */
-
       } else {
         fn = get_field_name(code);
       }
-
       pkg_set(&pf);
-      // stralloc_zero(&value);
-
       if(fn) {
-
         if(!pkg_expand(&pf, fn, &value)) {
-          /*   buffer_flush(buffer_1);
-             buffer_flush(buffer_2);
-             errmsg_warn("Expanding ",
-             pkgname, "::", fn, NULL);*/
-          /*     pkg_unset(&pf);
-               pkg_free(&pf);
-               return 0;*/
+          buffer_flush(buffer_1);
+          buffer_flush(buffer_2);
+          errmsg_warn("Expanding ", pkgname, "::", fn, NULL);
+          pkg_unset(&pf);
+          pkg_free(&pf);
+          return 0;
         }
       }
       if((code == PRINT_LIBS && libs_mode) || (code == PRINT_CFLAGS && cflags_mode)) {
@@ -1024,7 +998,6 @@ pkg_conf(strarray* modules, id code, int mode) {
         stralloc_nul(&value);
         strlist_froms(&sl, value.s, ' ');
         stralloc_zero(&value);
-
         strlist_foreach_s(&sl, s) {
           if((code == PRINT_LIBS) && libs_mode) {
             if((libs_mode == LIBS_ONLY_L) && !str_start(s, "-l"))
@@ -1039,23 +1012,19 @@ pkg_conf(strarray* modules, id code, int mode) {
             if((libs_mode == CFLAGS_ONLY_I) ^ (flag != 0))
               continue;
           }
-
           if(value.len > 0)
             stralloc_catc(&value, ' ');
           stralloc_cats(&value, s);
         }
       }
     }
-
     if(!(mode & PKGCFG_EXISTS)) {
       char *x, *end;
       size_t n, i;
-
       for(x = value.s, n = value.len, end = x + n; x < end; x += i + 1) {
         i = byte_chr(x, end - x, ' ');
         strlist_pushb_unique(&output, x, i);
       }
-
       if(value.len) {
         buffer_putsa(buffer_1, &value);
         buffer_putnlflush(buffer_1);
@@ -1064,11 +1033,9 @@ pkg_conf(strarray* modules, id code, int mode) {
     stralloc_zero(&name);
     stralloc_zero(&cond);
     stralloc_zero(&value);
-
     pkg_unset(&pf);
     pkg_free(&pf);
   }
-
   if(!(mode & PKGCFG_EXISTS)) {
     if(value.len) {
       buffer_putsa(buffer_1, &value);
@@ -1080,7 +1047,6 @@ pkg_conf(strarray* modules, id code, int mode) {
   stralloc_free(&name);
   stralloc_free(&cond);
   stralloc_free(&value);
-
 #ifdef DEBUG_OUTPUT_
   buffer_puts(buffer_2, "pkg_conf output: ");
   buffer_putsl(buffer_2, &output, ", ");
