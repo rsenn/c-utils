@@ -154,13 +154,7 @@ hex_print(ihex_file* ihf, buffer* out) {
   uint32 prev = 0;
   int i = 0;
   list_for_each(p.el, &ihf->records) {
-    buffer_putc(buffer_2, '#');
-    buffer_putulong(buffer_2, i++);
-    buffer_putc(buffer_2, ' ');
-    ihex_record_dump(p.r, buffer_2);
-
-    if(ihex_record_address(p.r, &a) == 4)
-      continue;
+    int type = ihex_record_address(p.r, &a);
 
     if(prev < a.off32) {
       buffer_puts(out, "empty space = 0x");
@@ -169,6 +163,13 @@ hex_print(ihex_file* ihf, buffer* out) {
       buffer_putxlong0(out, a.off32 - prev, 6);
       buffer_putnlflush(out);
     }
+    buffer_puts(buffer_2, i >= 100 ? "#" : i >= 10 ? " #" : "  #");
+    buffer_putulong(buffer_2, i++);
+    buffer_putc(buffer_2, ' ');
+    ihex_record_dump(p.r, buffer_2);
+
+    if(type == 4)
+      continue;
 
     if(p.r->type == 0) {
       a.lo16 = p.r->offset;
