@@ -156,7 +156,7 @@ hex_print(ihex_file* ihf, buffer* out) {
   list_for_each(p.el, &ihf->records) {
     int type = ihex_record_address(p.r, &a);
 
-    if(prev < a.off32) {
+    if(prev < a.off32 && type == 0) {
       buffer_puts(out, "     EMPTY      0x");
       buffer_putxlong0u(out, prev, 8);
       buffer_puts(out, "   Size: ");
@@ -169,7 +169,14 @@ hex_print(ihex_file* ihf, buffer* out) {
     buffer_puts(buffer_2, i >= 100 ? "#" : i >= 10 ? " #" : "  #");
     buffer_putulong(buffer_2, i++);
     buffer_putc(buffer_2, ' ');
-    ihex_record_dump(p.r, buffer_2);
+
+    /*  ihex_record* extlinaddr;
+      uint16 hi16 = 0;
+
+      if((extlinaddr = ihex_record_prev(ihf, p.r, 4)))
+        uint16_unpack_big(extlinaddr->data, &hi16);*/
+
+    ihex_record_dump(p.r, a.hi16, buffer_2);
 
     if(type == 4)
       continue;
