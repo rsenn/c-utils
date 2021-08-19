@@ -385,31 +385,23 @@ int
 pkg_expand(pkg* pf, const char* key, stralloc* out) {
   stralloc k, v;
   const char* s;
-
   stralloc_init(&k);
   stralloc_init(&v);
   stralloc_copys(&k, key);
   stralloc_nul(&k);
-
   k.s[0] = toupper(k.s[0]);
-
   if((s = pkg_get(pf, key)) == NULL)
     return 0;
-
   stralloc_copys(&v, s);
-
   for(;;) {
     stralloc_nul(&v);
     if(!wordexp_sa(v.s, out, pf->vars))
       return 0;
-
     if(stralloc_finds(out, "${") == out->len)
       break;
-
     stralloc_copy(&v, out);
     stralloc_zero(out);
   }
-
   return 1;
 }
 
@@ -525,15 +517,10 @@ pkg_read(buffer* b, pkg* p) {
 
       if(stralloc_equals(&name, "Version"))
         pkg_parse_version(&p->version, value.s, value.len);
-
       {
         MAP_T map = sep == '=' ? p->vars : p->fields;
         MAP_INSERT(map, name.s, name.len + 1, value.s, value.len + 1);
       }
-
-      /*     if(islower(name.s[0]))
-            setenv(name.s, value.s, 1);
-       */
     }
   }
 
@@ -707,44 +694,35 @@ pkg_list(id code) {
 
         if(!buffer_mmapread(&pc, path.s)) {
           stralloc_zero(&line);
-
           i = byte_rchr(path.s, path.len, '/');
           if(i == path.len)
             i = 0;
           else
             i++;
           n = path.len - i - 3;
-
           if(code == LIST_FILE)
             stralloc_cat(&line, &path);
           else
             stralloc_catb(&line, path.s + i, n);
-
           if(code == LIST_PATH) {
-
             if(verbose == 1)
               stralloc_zero(&line);
             else if(line.len > 0)
               stralloc_cats(&line, " ");
-
             stralloc_catb(&line, path.s, verbose == 0 ? i - 1 : path.len);
           } else if(pkg_read(&pc, &pf)) {
             const char* desc;
-
             if((desc = pkg_get(&pf, "Description"))) {
               stralloc_cats(&line, " - ");
               stralloc_cats(&line, desc);
             }
           }
-
           stralloc_catc(&line, '\n');
           stralloc_nul(&line);
-
           n = byte_chr(line.s, line.len, ' ');
           if(line.s[n])
             n++;
           i = 0;
-
           found = 0;
           slist_foreach(pkgs, item) {
             char* s = *(char**)slist_data(item);
@@ -795,28 +773,22 @@ pkg_open(const char* pkgname, pkg* pf) {
   int ret = 0;
 
   stralloc_init(&pf->name);
-
   strlist_foreach(&cmd.path, s, n) {
-
     stralloc_copyb(&pf->name, s, n);
     stralloc_catm_internal(&pf->name, "/", pkgname, ".pc", 0);
     stralloc_nul(&pf->name);
-
     if(!buffer_mmapread(&pc, pf->name.s))
       break;
   }
-
   if(pc.x) {
 #ifdef DEBUG_OUTPUT_
     buffer_puts(buffer_2, "opened: ");
     buffer_puts(buffer_2, pf->name.s);
-
     buffer_putnlflush(buffer_2);
 #endif
     ret = pkg_read(&pc, pf);
   } else
     stralloc_free(&pf->name);
-
   return ret;
 }
 
@@ -827,20 +799,15 @@ pkg_parse_cond(cond* c, const char* x, size_t n) {
   stralloc_init(&c->op_str);
   stralloc_init(&c->version_str);
   stralloc_copyb(&c->op_str, x, i);
-
   op = get_op_index(&c->op_str);
-
   c->op_val = op;
-
   x += i;
   n -= i;
   i = scan_whitenskip(x, n);
   x += i;
   n -= i;
   stralloc_copyb(&c->version_str, x, n);
-
   pkg_parse_version(&c->version_val, x, n);
-
   return 0;
 }
 
@@ -856,6 +823,7 @@ pkg_check_cond(const cond* c, const pkg* p) {
   }
   return -1;
 }
+
 void
 pkg_dump_cond(const cond* c) {
   buffer_puts(buffer_2, "op_str='");
@@ -866,13 +834,10 @@ pkg_dump_cond(const cond* c) {
   buffer_puts(buffer_2, ", version_str = '");
   buffer_putsa(buffer_2, &c->version_str);
   buffer_puts(buffer_2, "'");
-
   buffer_puts(buffer_2, ", version_val = ");
   buffer_putxlonglong0(buffer_2, c->version_val, 16);
-
   {
     stralloc ver;
-
     stralloc_init(&ver);
     pkg_format_version(c->version_val, &ver);
     buffer_puts(buffer_2, ", version_fmt = ");
