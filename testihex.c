@@ -157,10 +157,13 @@ hex_print(ihex_file* ihf, buffer* out) {
     int type = ihex_record_address(p.r, &a);
 
     if(prev < a.off32) {
-      buffer_puts(out, "empty space = 0x");
-      buffer_putxlong0(out, prev, 6);
-      buffer_puts(out, ", len = 0x");
-      buffer_putxlong0(out, a.off32 - prev, 6);
+      buffer_puts(out, "     EMPTY      0x");
+      buffer_putxlong0u(out, prev, 8);
+      buffer_puts(out, "   Size: ");
+      buffer_putulong(out, a.off32 - prev);
+      buffer_puts(out, " bytes [0x");
+      buffer_putxlong0u(out, a.off32 - prev, 4);
+      buffer_puts(out, "]");
       buffer_putnlflush(out);
     }
     buffer_puts(buffer_2, i >= 100 ? "#" : i >= 10 ? " #" : "  #");
