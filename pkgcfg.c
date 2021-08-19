@@ -73,6 +73,27 @@ typedef struct cmd_s {
   stralloc prefix;
 } cmd_t;
 
+static void
+cmd_nul(cmd_t* c) {
+  stralloc_nul(&c->path.sa);
+  stralloc_nul(&c->self);
+  stralloc_nul(&c->host);
+  stralloc_nul(&c->prefix);
+}
+
+static void
+cmd_dump(cmd_t* c, buffer* b) {
+  buffer_puts(b, "path: ");
+  buffer_putsl(b, &c->path, ":");
+  buffer_puts(b, "\nself: ");
+  buffer_putsa(b, &c->self);
+  buffer_puts(b, "\nhost: ");
+  buffer_putsa(b, &c->host);
+  buffer_puts(b, "\nprefix: ");
+  buffer_putsa(b, &c->prefix);
+  buffer_putnlflush(b);
+}
+
 typedef struct pkg_s {
   stralloc name;
   MAP_T vars;
@@ -1293,21 +1314,19 @@ main(int argc, char* argv[], char* envp[]) {
   strlist_init(&args, '\0');
   strlist_fromv(&args, (const char**)argv, argc);
 
-  pkgcfg_init(argv[0]);
-
-  if((pkgcfg_path = env_get("PKG_CONFIG_PATH")))
-    pkgcfg_setpath(pkgcfg_path);
-
-    // pkgcfg_dumpenv(envp);
-
-#if DEBUG_OUTPUT_
-  buffer_puts(buffer_2, "pkgcfg args = ");
+#if DEBUG_OUTPUT
+  buffer_puts(buffer_2, "Arguments: ");
   buffer_putsl(buffer_2, &args, ", ");
   buffer_putnlflush(buffer_2);
 #endif
 
-  unix_opterr = 0;
+  byte_zero(&cmd, sizeof(cmd));
 
+  pkgcfg_init(argv[0]);
+
+  if((pkgcfg_path = env_get("PKG_CONFIG_PATH")))
+    pkgcfg_setpath(pkgcfg_path);
+  unix_opterr = 0;
   unix_optbuf = buffer_1;
 
   for(;;) {
@@ -1370,7 +1389,6 @@ main(int argc, char* argv[], char* envp[]) {
       case 'E': mode |= PKGCFG_EXISTS; break;
       case '?': {
         const char* arg = argv[unix_optind];
-
         if(!str_diffn(arg, "--libs", 6) || !str_diffn(arg, "--cflags", 8)) {
           int i = arg[2] == 'l' ? PRINT_LIBS : PRINT_CFLAGS;
           add_cmd(i);
@@ -1382,9 +1400,7 @@ main(int argc, char* argv[], char* envp[]) {
           else
             cflags_mode =
                 arg[str_find(arg, "only")] ? (arg[str_find(arg, "other")] ? CFLAGS_ONLY_OTHER : CFLAGS_ONLY_I) : 0;
-
           //   argv[unix_optind] = "-";      for(i = unix_optind; argv[i]; i++) argv[i] = argv[i+1];
-
           continue;
         }
         // unix_optind++;
@@ -1467,7 +1483,13 @@ getopt_end:
   buffer_putnlflush(buffer_2);
 #endif
 
+  cmd_nul(&cmd);
+  buffer_puts(buffer_2, "Dump cmd:\n");
+  cmd_dump(&cmd, buffer_2);
+
   strarray_from_argv(argc - unix_optind, argv + unix_optind, &modules);
+  buffer_puts(buffer_2, "Dump cmd:\n");
+  cmd_dump(&cmd, buffer_2);
 
 #ifdef DEBUG_OUTPUT
   buffer_puts(buffer_2, "Modules(");
