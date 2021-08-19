@@ -1456,8 +1456,8 @@ getopt_end:
     buffer_putnlflush(buffer_2);
     error_exit(1);
   }
-#ifdef DEBUG_OUTPUT
 
+#ifdef DEBUG_OUTPUT_
   buffer_puts(buffer_2, "argc: ");
   buffer_putulong(buffer_2, argc);
   buffer_puts(buffer_2, "\nunix_optind: ");
@@ -1470,8 +1470,8 @@ getopt_end:
   strarray_from_argv(argc - unix_optind, argv + unix_optind, &modules);
 
 #ifdef DEBUG_OUTPUT
-  buffer_puts(buffer_2, "Modules:\n  ");
-  buffer_putstra(buffer_2, &modules, "\n  ");
+  buffer_puts(buffer_2, "Modules: ");
+  buffer_putstra(buffer_2, &modules, " ");
   buffer_putnlflush(buffer_2);
 #endif
 
