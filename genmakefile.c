@@ -1424,6 +1424,11 @@ count_b(strlist* list, int (*fn_b)(const char*, size_t)) {
 
 int
 is_source_b(const char* filename, size_t len) {
+  if(byte_ends(filename, len, exts.src))
+    return 1;
+  if(byte_ends(filename, len, exts.inc))
+    return 1;
+
   if(byte_ends(filename, len, ".c"))
     return 1;
   if(byte_ends(filename, len, ".S"))
@@ -1431,6 +1436,8 @@ is_source_b(const char* filename, size_t len) {
   if(byte_ends(filename, len, ".s"))
     return 1;
   if(byte_ends(filename, len, ".asm"))
+    return 1;
+  if(byte_ends(filename, len, ".inc"))
     return 1;
   /*if(cfg.lang != LANG_CXX)
     return 0;*/
@@ -5822,9 +5829,15 @@ main(int argc, char* argv[]) {
   gen_mkdir_rule(&dirs.out.sa);
   add_path_sa(&all->prereq, &dirs.out.sa);
 
-  //  strarray_dump(buffer_2, &args);
+ strarray_dump(buffer_2, &args);
   strarray_foreach(&args, arg) {
 
+
+#ifdef DEBUG_OUTPUT
+  buffer_puts(buffer_2, "argument: ");
+  buffer_puts(buffer_2, *arg);
+  buffer_putnlflush(buffer_2);
+#endif
 #if 0 // WINDOWS_NATIVE
     glob_t gl;
     size_t i;
