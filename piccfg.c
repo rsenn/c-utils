@@ -560,6 +560,7 @@ main(int argc, char* argv[]) {
   x = mmap_read(hexfile, &n);
   assert(x);
   assert(n);
+  ihex_init(&hex);
   ihex_read_buf(&hex, x, n);
   mmap_unmap(x, n);
 

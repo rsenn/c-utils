@@ -117,6 +117,7 @@ typedef struct {
 } dirs_t;
 
 typedef struct {
+  char *src, *inc;
   char* obj;
   char* lib;
   char* slib;

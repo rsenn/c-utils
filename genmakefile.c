@@ -808,7 +808,7 @@ includes_to_libs(const set_t* includes, strlist* libs) {
     //  debug_sa("include", &sa);
     stralloc_zero(&lib);
     stralloc_copys(&lib, path_basename(sa.s));
-    if(stralloc_endb(&lib, ".h", 2))
+    if(stralloc_endb(&lib, exts.inc, 2))
       lib.len -= 2;
     stralloc_cats(&lib, exts.lib);
     // debug_sa("includes_to_libs",
@@ -1980,10 +1980,10 @@ sources_addincludes(sourcefile* file, sourcedir* sdir, const strlist* includes, 
           }
         }
       }
-      stralloc_cats(&real, ".c");
+      stralloc_cats(&real, exts.src);
       stralloc_nul(&real);
       if(path_exists(real.s) && !path_is_directory(real.s)) {
-        stralloc_cats(&path, ".c");
+        stralloc_cats(&path, exts.src);
         stralloc_nul(&path);
 
 #ifdef DEBUG_OUTPUT_
@@ -3051,9 +3051,9 @@ gen_srcdir_lib_rule(sourcedir* srcdir, const char* name) {
     buffer_flush(buffer_2);
     dep = gen_srcdir_compile_rules(srcdir, name);
   } else {
-    /* if(0 && tools.preproc) {gen_simple_compile_rules(rules, srcdir, name, ".c", exts.pps, &preprocess_command); dep =
-     * gen_simple_compile_rules(rules, srcdir, name, exts.pps, exts.obj, &compile_command); } else {*/
-    dep = gen_simple_compile_rules(srcdir, name, ".c", exts.obj, &compile_command);
+    /* if(0 && tools.preproc) {gen_simple_compile_rules(rules, srcdir, name, exts.src, exts.pps, &preprocess_command);
+     * dep = gen_simple_compile_rules(rules, srcdir, name, exts.pps, exts.obj, &compile_command); } else {*/
+    dep = gen_simple_compile_rules(srcdir, name, exts.src, exts.obj, &compile_command);
     //}
   }
   if((rule = rule_get_sa(&sa))) {
@@ -3213,7 +3213,7 @@ gen_program_rule(const char* filename) {
     stralloc outname;
     stralloc_init(&outname);
     stralloc_cats(&outname, path_basename(filename));
-    if(stralloc_endb(&outname, ".c", 2))
+    if(stralloc_endb(&outname, exts.src, 2))
       outname.len -= 2;
     stralloc_nul(&outname);
     path_output(outname.s, &bin, exts.bin);
@@ -3242,7 +3242,7 @@ gen_program_rule(const char* filename) {
         char* filename = (char*)sfile->name;
         stralloc_zero(&dir);
         path_dirname(filename, &dir);
-        if(str_end(filename, ".h"))
+        if(str_end(filename, exts.inc))
           continue;
         strlist_push_unique_sa(&vpath, &dir);
         stralloc_zero(&obj);
@@ -4153,7 +4153,7 @@ output_make_rule(buffer* b, target* rule) {
   stralloc_zero(&sa);
   stralloc_catset(&sa, &rule->output, " \\\n");
 
-#ifdef DEBUG_OUTPUT
+#ifdef DEBUG_OUTPUT_
   buffer_puts(buffer_2, "RULE OUTPUT: ");
   buffer_putsa_escaped(buffer_2, &sa, &fmt_escapecharcontrol);
   buffer_putnlflush(buffer_2);
@@ -4947,6 +4947,51 @@ set_compiler_type(const char* compiler) {
     stralloc_copys(&link_command, "$(CC) $^ -Fe $@ $(LDFLAGS) $(EXTRA_LDFLAGS) $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
     pathsep_args = '\\';
     quote_args = "\"";
+  } else if(str_start(compiler, "gp")) {
+    var_set("CC", "gpasm");
+    var_set("LINK", "gplink");
+    var_set("LIB", "gplib");
+    var_unset("CXX");
+    cfg.mach.arch = PIC;
+    exts.bin = ".cof";
+    exts.obj = ".o";
+    exts.lib = ".a";
+    exts.src = ".asm";
+    exts.inc = ".inc";
+
+    if(cfg.chip.len == 0)
+      stralloc_copys(&cfg.chip, "16f876a");
+
+    if(!var_isset("MACH")) {
+      if(cfg.mach.bits == _14)
+        var_set("MACH", "pic14");
+      else
+        var_set("MACH", "pic16");
+    }
+    if(cfg.mach.bits == _14) {
+    }
+    if(cfg.mach.bits == _16) {
+    }
+    if(cfg.build_type == BUILD_TYPE_MINSIZEREL) {
+    } else if(cfg.build_type != BUILD_TYPE_DEBUG) {
+    }
+    if(cfg.build_type == BUILD_TYPE_DEBUG || cfg.build_type == BUILD_TYPE_RELWITHDEBINFO) {
+      var_push("CFLAGS", "-d");
+    }
+    var_push("CFLAGS", "-p$(CHIP)");
+    var_push("CPPFLAGS", "-D__$(CHIP)=1");
+    var_push("CPPFLAGS", "-DGPUTILS=1");
+
+    /*    if(cfg.mach.bits == _16) {
+          var_push("LIBS", "-llibm18f.lib");
+        } else {
+          var_push("LIBS", "-llibm.lib");
+        }*/
+    set_command(&lib_command, "$(LIB) rcs $@", "$^");
+    stralloc_copys(&compile_command, "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) $(DEFS) -c $< -o $@");
+    stralloc_copys(
+        &link_command,
+        "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(LDFLAGS) $(EXTRA_LDFLAGS) -o $@ $^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
   } else if(str_start(compiler, "sdcc")) {
     var_set("CC", "sdcc");
     var_set("LINK", "sdcc");
@@ -5378,6 +5423,8 @@ main(int argc, char* argv[]) {
   strlist_init(&dirs.out, pathsep_make);
   strlist_init(&dirs.build, pathsep_make);
   strlist_init(&dirs.work, pathsep_make);
+  exts.src = ".c";
+  exts.inc = ".h";
 
   for(;;) {
     c = unix_getopt_long(argc,
@@ -5690,10 +5737,10 @@ main(int argc, char* argv[]) {
       stralloc_cats(&rn, "%");
       stralloc_cats(&rn, exts.obj);
       stralloc_cats(&rn, ": %");
-      stralloc_cats(&rn, ".c");
+      stralloc_cats(&rn, exts.src);
       outputs = true;
     } else {
-      stralloc_copys(&rn, ".c");
+      stralloc_copys(&rn, exts.src);
       stralloc_cats(&rn, exts.obj);
     }
     compile = rule_get_sa(&rn);
@@ -5818,7 +5865,7 @@ main(int argc, char* argv[]) {
     strarray_sort(&sources, &sources_sort);
   }
 
-#ifdef DEBUG_OUTPUT
+#ifdef DEBUG_OUTPUT_
   buffer_puts(buffer_2, "strarray sources:");
   strarray_dump(buffer_2, &sources);
   buffer_putnlflush(buffer_2);
@@ -5853,7 +5900,7 @@ main(int argc, char* argv[]) {
     stralloc_init(&src);
     strarray_foreach(&sources, ptr) {
 
-#ifdef DEBUG_OUTPUT
+#ifdef DEBUG_OUTPUT_
       buffer_putm_internal(buffer_2, "\033[38;5;201msourcedir_addsource\033[0m(\"", *ptr, "\")", 0);
       buffer_putnlflush(buffer_2);
 #endif
@@ -5909,18 +5956,18 @@ main(int argc, char* argv[]) {
         sourcedir* srcdir = *(sourcedir**)MAP_ITER_VALUE(t);
         /*if(tools.preproc) {
           gen_simple_compile_rules(rules,
-        srcdir, MAP_ITER_KEY(t), ".c",
+        srcdir, MAP_ITER_KEY(t), exts.src,
         exts.pps, &preprocess_command);
           gen_simple_compile_rules(rules,
         srcdir, MAP_ITER_KEY(t), exts.pps,
         exts.obj, &compile_command); }
         else */
-        { gen_simple_compile_rules(srcdir, MAP_ITER_KEY(t), ".c", exts.obj, &compile_command); }
+        { gen_simple_compile_rules(srcdir, MAP_ITER_KEY(t), exts.src, exts.obj, &compile_command); }
       }
     }
     if(cmd_bins) {
 
-#ifdef DEBUG_OUTPUT
+#ifdef DEBUG_OUTPUT_
       buffer_puts(buffer_2, "sourcelist.length = ");
       buffer_putulong(buffer_2, dlist_length(&sourcelist));
       buffer_putnlflush(buffer_2);
@@ -5928,13 +5975,13 @@ main(int argc, char* argv[]) {
 
       cmd_bins = gen_link_rules();
 
-#ifdef DEBUG_OUTPUT
+#ifdef DEBUG_OUTPUT_
       buffer_puts(buffer_2, "bins = ");
       buffer_putstra(buffer_2, &bins, ", ");
       buffer_putnlflush(buffer_2);
 #endif
 
-#ifdef DEBUG_OUTPUT
+#ifdef DEBUG_OUTPUT_
       buffer_puts(buffer_2, "progs = ");
       buffer_putstra(buffer_2, &progs, ", ");
       buffer_putnlflush(buffer_2);
@@ -5969,7 +6016,7 @@ main(int argc, char* argv[]) {
     MAP_FOREACH(sourcedirs, t) {
       sourcedir* srcdir = *(sourcedir**)MAP_ITER_VALUE(t);
 
-#if DEBUG_OUTPUT
+#if DEBUG_OUTPUT_
       buffer_putm_internal(buffer_2, "key: ", t->key, " pptoks: ", 0);
       buffer_putset(buffer_2, &srcdir->pptoks, ", ", 2);
 #endif
@@ -6038,6 +6085,16 @@ fail:
     }
   }
 
+#ifdef DEBUG_OUTPUT_
+  {
+    MAP_PAIR_T t;
+    MAP_FOREACH(rules, t) {
+      target* rule = MAP_ITER_VALUE(t);
+      rule_dump(rule);
+    }
+  }
+#endif
+
   if(batch || shell) {
     if(batch) {
       buffer_putm_internal(out, "CD %~dp0", newline, NULL);
@@ -6052,16 +6109,6 @@ fail:
     output_all_rules(out);
   }
 
-#ifdef DEBUG_OUTPUT
-  {
-    MAP_PAIR_T t;
-    MAP_FOREACH(rules, t) {
-      target* rule = MAP_ITER_VALUE(t);
-      rule_dump(rule);
-    }
-  }
-#endif
-
 quit : {
   strlist deps;
   strlist_init(&deps, '\0');
@@ -6072,7 +6119,7 @@ quit : {
       strlist_zero(&deps);
       sourcedir_deps(sdir, &deps);
 
-#ifdef DEBUG_OUTPUT
+#ifdef DEBUG_OUTPUT_
       buffer_putm_internal(buffer_2, "source directory '", MAP_ITER_KEY(t), "' deps =\n", NULL);
       strlist_dump(buffer_2, &deps);
       buffer_putnlflush(buffer_2);
