@@ -4,8 +4,6 @@
  */
 
 #define _DEFAULT_SOURCE
-#define _GNU_SOURCE
-#define _POSIX_SOURCE
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -314,8 +312,7 @@ serial_open(const char* port, int baud) {
 #endif
     case BDEFAULT: break;
     default:
-      fprintf(stderr,
-              "Warning: Baudrate not supported!\n");
+      fprintf(stderr, "Warning: Baudrate not supported!\n");
       serial_close(fd);
       return -1;
   }

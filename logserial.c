@@ -723,7 +723,7 @@ getopt_end:
 #endif
 
     serial_fd = serial_open(portname, baudrate);
-       if(serial_fd == -1) {
+    if(serial_fd == -1) {
       usleep(250 * 1000);
       continue;
     }
@@ -737,7 +737,6 @@ getopt_end:
     io_nonblock(serial_fd);
     io_closeonexec(serial_fd);
 
- 
     buffer_puts(buffer_2, "port opened: ");
     buffer_puts(buffer_2, portname);
     buffer_putnlflush(buffer_2);
