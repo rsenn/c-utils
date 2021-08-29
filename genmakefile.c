@@ -643,6 +643,10 @@ int
 main_present(const char* filename) {
   char* x;
   size_t n;
+
+  if(str_equal(exts.src, ".asm") && is_source(filename))
+    return 1;
+
   if((x = (char*)path_mmap_read(filename, &n))) {
     int ret = main_scan(x, n);
     mmap_unmap(x, n);
@@ -4955,7 +4959,7 @@ set_compiler_type(const char* compiler) {
     pathsep_args = '\\';
     quote_args = "\"";
   } else if(str_start(compiler, "gp")) {
-    var_set("CC", "gpasm");
+    var_set("AS", "gpasm");
     var_set("LINK", "gplink");
     var_set("LIB", "gplib");
     var_unset("CXX");
@@ -4965,6 +4969,11 @@ set_compiler_type(const char* compiler) {
     exts.lib = ".a";
     exts.src = ".asm";
     exts.inc = ".inc";
+
+    if(cfg.build_type == BUILD_TYPE_DEBUG || cfg.build_type == BUILD_TYPE_RELWITHDEBINFO) {
+      var_push("CFLAGS", "-g");
+      var_push("LDFLAGS", "-g");
+    }
 
     if(cfg.chip.len == 0)
       stralloc_copys(&cfg.chip, "16f876a");
@@ -4995,10 +5004,8 @@ set_compiler_type(const char* compiler) {
           var_push("LIBS", "-llibm.lib");
         }*/
     set_command(&lib_command, "$(LIB) rcs $@", "$^");
-    stralloc_copys(&compile_command, "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) $(DEFS) -c $< -o $@");
-    stralloc_copys(
-        &link_command,
-        "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(LDFLAGS) $(EXTRA_LDFLAGS) -o $@ $^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
+    stralloc_copys(&compile_command, "$(AS) $(CFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) $(DEFS) -c $< -o $@");
+    stralloc_copys(&link_command, "$(LINK) $(LDFLAGS) $(EXTRA_LDFLAGS) -o $@ $^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
   } else if(str_start(compiler, "sdcc")) {
     var_set("CC", "sdcc");
     var_set("LINK", "sdcc");
@@ -5189,7 +5196,8 @@ set_compiler_type(const char* compiler) {
     var_push("DEFS", "-D_DEBUG=1");
   } else {
     var_push("DEFS", "-DNDEBUG=1");
-    var_push("CFLAGS", cfg.build_type == BUILD_TYPE_MINSIZEREL ? "-O1" : "-O2");
+    if(str_equal(exts.src, ".c"))
+      var_push("CFLAGS", cfg.build_type == BUILD_TYPE_MINSIZEREL ? "-O1" : "-O2");
   }
   if(cfg.mach.arch == PIC) {
     stralloc chipdef;
@@ -5735,6 +5743,8 @@ main(int argc, char* argv[]) {
   */
   all = rule_get("all");
 
+  stralloc_catc(&all->recipe, '\n');
+
   if(tool_config & (MAKE_PATTERN_RULES | MAKE_IMPLICIT_RULES)) {
     stralloc rn;
     bool outputs = false;
@@ -5754,6 +5764,12 @@ main(int argc, char* argv[]) {
     compile->outputs = outputs;
 
     stralloc_free(&rn);
+  }
+
+  if(str_equal(exts.src, ".asm")) {
+    target* assemble = rule_get(".asm.o");
+
+    stralloc_copy(&assemble->recipe, &compile_command);
   }
 
   strarray_init(&args);
@@ -6088,7 +6104,7 @@ fail:
           stralloc_weak(&rule->recipe, &compile_command);
       }
 
-#if 1
+#if DEBUG_OUTPUT_
       buffer_puts(buffer_2, "Empty RULE '");
       buffer_puts(buffer_2, name);
       buffer_putc(buffer_2, '\'');

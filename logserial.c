@@ -119,6 +119,16 @@ clear_ports() {
   }
 }
 
+void
+list_ports(const strarray* ports) {
+  char** port;
+  strarray_foreach(ports, port) {
+    buffer_puts(buffer_1, *port);
+    buffer_putc(buffer_1, '\n');
+  }
+  buffer_flush(buffer_1);
+}
+
 /**
  * @brief      Gets the ports.
  *
@@ -139,9 +149,8 @@ get_ports(strarray* ports) {
     size_t i = str_rchr(port, '/');
     if(port[i]) {
       i++;
-      if(/*str_start(&port[i], "tnt")
-            ||*/
-         str_start(&port[i], "ttyACM") || str_start(&port[i], "ttyUSB") /*||   port[i + 3] == 'S'*/) {
+      if(str_start(&port[i], "ttyAMA") || str_start(&port[i], "ttyACM") || str_start(&port[i], "ttyUSB") ||
+         port[i + 3] == 'S') {
         if(!path_access(port, R_OK)) {
           if(errno != ENOENT && errno != ENODEV && errno != EACCES)
             errmsg_warnsys(port, 0);
@@ -149,13 +158,11 @@ get_ports(strarray* ports) {
         }
         if(!strarray_contains(ports, port)) {
           strarray_push(ports, port);
-          //          strarray_splice(ports,
-          //          0, 0, 1, &port);
-          /*       buffer_puts(buffer_2,
-             "detected new port: ");
-                 buffer_puts(buffer_2,
-             port);
-                 buffer_putnlflush(buffer_2);*/
+#ifdef DEBUG_OUTPUT
+          buffer_puts(buffer_2, "detected new port: ");
+          buffer_puts(buffer_2, port);
+          buffer_putnlflush(buffer_2);
+#endif
           r++;
         }
       }
@@ -622,7 +629,7 @@ main(int argc, char* argv[]) {
       {"send", 1, NULL, 'i'},
       {"raw", 0, NULL, 'r'},
       {"debug", 0, NULL, 'x'},
-
+      {"list", 0, NULL, 'l'},
       {0, 0, 0, 0},
   };
   strarray portArr;
@@ -632,14 +639,18 @@ main(int argc, char* argv[]) {
   MAP_NEW(port_map);
 
   for(;;) {
-    c = unix_getopt_long(argc, argv, "b:hvri:x", opts, &index);
+    c = unix_getopt_long(argc, argv, "b:hvri:xl", opts, &index);
     if(c == -1)
       break;
     if(c == 0)
       continue;
 
     switch(c) {
-
+      case 'l': {
+        if(get_ports(&portArr))
+          list_ports(&portArr);
+        return 0;
+      }
       case 'h': usage(argv[0]); return 0;
       case 'v': verbose++; break;
       case 'i': send_file = unix_optarg; break;
