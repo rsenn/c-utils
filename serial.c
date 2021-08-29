@@ -172,11 +172,7 @@ serial_open(const char* port, int baud) {
 
   int fd = open(port, O_RDWR | O_NOCTTY | O_NDELAY);
   if(fd == -1) {
-    fprintf(stderr,
-            "Couldn't open port "
-            "\"%s\": %s\n",
-            port,
-            strerror(errno));
+    fprintf(stderr, "Couldn't open port \"%s\": %s\n", port, strerror(errno));
     return -1;
   }
 
@@ -319,8 +315,7 @@ serial_open(const char* port, int baud) {
     case BDEFAULT: break;
     default:
       fprintf(stderr,
-              "Warning: Baudrate not "
-              "supported!\n");
+              "Warning: Baudrate not supported!\n");
       serial_close(fd);
       return -1;
   }
@@ -560,7 +555,12 @@ serial_ports(void) {
 int
 serial_baud_rate(int fd) {
   int rate, speed;
-  speed = cfgetispeed(fd);
+  struct termios options;
+
+  if(tcgetattr(fd, &options) == -1)
+    return -1;
+
+  speed = cfgetospeed(&options);
   switch(speed) {
     case B0: rate = 0; break;
     case B50: rate = 50; break;
