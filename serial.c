@@ -104,7 +104,7 @@ port_timeout(HANDLE fd, unsigned int rt, unsigned int wt) {
 #endif
 
 int
-serial_open(const char* port, unsigned int baud) {
+serial_open(const char* port, int baud) {
 #if WINDOWS_NATIVE
   HANDLE fd;
   char buf[1024] = {0};
@@ -312,6 +312,7 @@ serial_open(const char* port, unsigned int baud) {
       cfsetospeed(&options, B4000000);
       break;
 #endif
+    case BDEFAULT: break;
     default:
       fprintf(stderr,
               "Warning: Baudrate not "
@@ -347,7 +348,7 @@ serial_open(const char* port, unsigned int baud) {
   options.c_cc[VSTART] = XON;
 #endif
 
-  if(tcsetattr(fd, TCSANOW, &options) == -1 ||  tcflush(fd, TCIOFLUSH) == -1) {
+  if(tcsetattr(fd, TCSANOW, &options) == -1 || tcflush(fd, TCIOFLUSH) == -1) {
     close(fd);
     return -1;
   }
@@ -497,7 +498,7 @@ serial_write_string(int fd, const char* s) {
 }
 
 char**
-get_serial_ports(void) {
+serial_ports(void) {
   dir_t dir;
   char* entry;
   char** files;

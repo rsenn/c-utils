@@ -60,7 +60,7 @@ static const char* send_file = 0;
 static buffer send_buf;
 volatile int running;
 fd_t serial_fd;
-unsigned int baudrate = 0;
+int baudrate = -1;
 
 /**
  * @brief      { function_description }
@@ -188,7 +188,7 @@ get_ports(strarray* ports) {
  * description_of_the_return_value }
  */
 int64
-serial_ports(strarray* ports) {
+detect_ports(strarray* ports) {
   static int i;
   char** port;
   struct link **it, *entry;
@@ -702,7 +702,7 @@ getopt_end:
     } else {
 
       newports = get_ports(&portArr);
-      serial_ports(&portArr);
+      detect_ports(&portArr);
       /*buffer_puts(buffer_2, "num
       ports: ");
       buffer_putlonglong(buffer_2,
@@ -716,11 +716,14 @@ getopt_end:
       //  strarray_free(&portArr);
     }
 
+#ifdef DEBUG_OUTPUT
     buffer_puts(buffer_2, "portname: ");
     buffer_putnlflush(buffer_2);
     buffer_puts(buffer_2, "baud rate: ");
     buffer_putulong(buffer_2, baudrate);
     buffer_putnlflush(buffer_2);
+#endif
+
     serial_fd = serial_open(portname, baudrate);
     io_fd(serial_fd);
     io_nonblock(serial_fd);

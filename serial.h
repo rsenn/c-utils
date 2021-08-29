@@ -6,6 +6,8 @@
 #ifndef _SERIAL_H_
 #define _SERIAL_H_
 
+#define BDEFAULT -1
+
 /*
  * Configuration
  */
@@ -30,7 +32,7 @@
  *
  * If you define SEARCH, instead of
  * simply returning a list of files in
- * /dev/, get_serial_ports() will only
+ * /dev/, serial_ports() will only
  * return items that contain the string
  * defined to SEARCH.
  */
@@ -40,7 +42,7 @@
  * \brief Only list real serial ports.
  *
  * If you uncomment this definition,
- * get_serial_ports() will try to open
+ * serial_ports() will try to open
  * every port, only returning the name
  * if it is a real serial port. This
  * could cause a big delay, if eg. your
@@ -72,7 +74,7 @@
  * \param baud baudrate
  * \returns file handle or -1 on error
  */
-int serial_open(const char* port, unsigned int baud);
+int serial_open(const char* port, int baud);
 
 /*!
  * \brief close an open serial port
@@ -88,7 +90,7 @@ void serial_close(int fd);
  * Don't forget to free() after using
  * it!
  */
-char** get_serial_ports(void);
+char** serial_ports(void);
 
 /*
  * Raw, non-blocking I/O
