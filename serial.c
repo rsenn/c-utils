@@ -347,9 +347,10 @@ serial_open(const char* port, unsigned int baud) {
   options.c_cc[VSTART] = XON;
 #endif
 
-  tcsetattr(fd, TCSANOW, &options);
-
-  tcflush(fd, TCIOFLUSH);
+  if(tcsetattr(fd, TCSANOW, &options) == -1 ||  tcflush(fd, TCIOFLUSH) == -1) {
+    close(fd);
+    return -1;
+  }
 
   return fd;
 #endif

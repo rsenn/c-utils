@@ -60,6 +60,7 @@ static const char* send_file = 0;
 static buffer send_buf;
 volatile int running;
 fd_t serial_fd;
+unsigned int baudrate = 0;
 
 /**
  * @brief      { function_description }
@@ -122,10 +123,18 @@ clear_ports() {
 void
 list_ports(const strarray* ports) {
   char** port;
+  int fd;
   strarray_foreach(ports, port) {
+
+    if((fd = serial_open(*port, baudrate)) == -1)
+      continue;
+
+    close(fd);
+
     buffer_puts(buffer_1, *port);
     buffer_putc(buffer_1, '\n');
   }
+
   buffer_flush(buffer_1);
 }
 
@@ -158,7 +167,7 @@ get_ports(strarray* ports) {
         }
         if(!strarray_contains(ports, port)) {
           strarray_push(ports, port);
-#ifdef DEBUG_OUTPUT
+#ifdef DEBUG_OUTPUT_
           buffer_puts(buffer_2, "detected new port: ");
           buffer_puts(buffer_2, port);
           buffer_putnlflush(buffer_2);
@@ -613,7 +622,6 @@ signal_handler(int sig) {
 int
 main(int argc, char* argv[]) {
   char* portname = NULL;
-  unsigned int baudrate = 0;
 #ifndef WINDOWS_NATIVE
   struct termios tio;
 #endif
