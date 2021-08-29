@@ -2,8 +2,9 @@
  * Copyright 2012 - 2014 Thomas Buck
  * <xythobuz@xythobuz.de>
  */
-
+#ifndef _DEFAULT_SOURCE
 #define _DEFAULT_SOURCE
+#endif
 
 #include <stdio.h>
 #include <stdlib.h>
