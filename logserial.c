@@ -580,26 +580,13 @@ void
 usage(char* progname) {
   buffer_putm_internal(buffer_1, "Usage: ", path_basename(progname), " [OPTIONS] [PORT] [BAUDRATE]\n", 0);
   buffer_puts(buffer_1, "Options\n");
-  buffer_puts(buffer_1,
-              "  --help, -h                    "
-              "    show this help\n");
-  buffer_puts(buffer_1,
-              "  --version                     "
-              "    print program version\n");
-
-  buffer_puts(buffer_1,
-              "  --verbose                     "
-              "    increase verbosity\n");
-  buffer_puts(buffer_1,
-              "  --baud, -b RATE               "
-              "    baud rate\n");
-  buffer_puts(buffer_1,
-              "  --send, -i FILE               "
-              "    send file\n");
-  buffer_puts(buffer_1,
-              "  --debug         +             "
-              "     show verbose debug "
-              "information\n");
+  buffer_puts(buffer_1, "  --help, -h                        show this help\n");
+  buffer_puts(buffer_1, "  --version                         print program version\n");
+  buffer_puts(buffer_1, "  --verbose                         increase verbosity\n\n");
+  buffer_puts(buffer_1, "  --list                            list serial ports\n");
+  buffer_puts(buffer_1, "  --baud, -b RATE                   baud rate\n");
+  buffer_puts(buffer_1, "  --send, -i FILE                   send file\n");
+  buffer_puts(buffer_1, "  --debug                           show verbose debug information\n");
   buffer_putnlflush(buffer_1);
 }
 
