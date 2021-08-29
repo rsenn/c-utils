@@ -719,12 +719,16 @@ getopt_end:
 #ifdef DEBUG_OUTPUT
     buffer_puts(buffer_2, "portname: ");
     buffer_putnlflush(buffer_2);
-    buffer_puts(buffer_2, "baud rate: ");
-    buffer_putulong(buffer_2, baudrate);
-    buffer_putnlflush(buffer_2);
 #endif
 
     serial_fd = serial_open(portname, baudrate);
+    
+#ifdef DEBUG_OUTPUT
+    buffer_puts(buffer_2, "baud rate: ");
+    buffer_putulong(buffer_2, serial_baud_rate(serial_fd));
+    buffer_putnlflush(buffer_2);
+#endif
+
     io_fd(serial_fd);
     io_nonblock(serial_fd);
     io_closeonexec(serial_fd);

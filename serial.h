@@ -159,4 +159,11 @@ void serial_write_char(int fd, char c);
  */
 void serial_write_string(int fd, const char* s);
 
+/*!
+ * \brief      get (input) baud rate0
+ * \param fd file handle to write to
+ * \return     baud rate (bps)
+ */
+int serial_baud_rate(int fd);
+
 #endif

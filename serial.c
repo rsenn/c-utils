@@ -3,6 +3,10 @@
  * <xythobuz@xythobuz.de>
  */
 
+#define _DEFAULT_SOURCE
+#define _GNU_SOURCE
+#define _POSIX_SOURCE
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -551,4 +555,49 @@ serial_ports(void) {
   dir_close(&dir);
   files[i] = NULL;
   return files;
+}
+
+int
+serial_baud_rate(int fd) {
+  int rate, speed;
+  speed = cfgetispeed(fd);
+  switch(speed) {
+    case B0: rate = 0; break;
+    case B50: rate = 50; break;
+    case B75: rate = 75; break;
+    case B110: rate = 110; break;
+    case B134: rate = 134; break;
+    case B150: rate = 150; break;
+    case B200: rate = 200; break;
+    case B300: rate = 300; break;
+    case B600: rate = 600; break;
+    case B1200: rate = 1200; break;
+    case B1800: rate = 1800; break;
+    case B2400: rate = 2400; break;
+    case B4800: rate = 4800; break;
+    case B9600: rate = 9600; break;
+    case B19200: rate = 19200; break;
+    case B38400: rate = 38400; break;
+    case B57600: rate = 57600; break;
+    case B115200: rate = 115200; break;
+    case B230400: rate = 230400; break;
+    case B460800: rate = 460800; break;
+    case B500000: rate = 500000; break;
+    case B576000: rate = 576000; break;
+    case B921600: rate = 921600; break;
+    case B1000000: rate = 1000000; break;
+    case B1152000: rate = 1152000; break;
+    case B1500000: rate = 1500000; break;
+    case B2000000: rate = 2000000; break;
+    case B2500000: rate = 2500000; break;
+    case B3000000: rate = 3000000; break;
+#ifdef B3500000
+    case B3500000: rate = 3500000; break;
+#endif
+#ifdef B4000000
+    case B4000000: rate = 4000000; break;
+#endif
+    default: fprintf(stderr, "Warning: Unhandled baud rate constant: %d\n", speed); return -1;
+  }
+  return rate;
 }
