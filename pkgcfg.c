@@ -1483,13 +1483,18 @@ getopt_end:
   buffer_putnlflush(buffer_2);
 #endif
 
+#ifdef DEBUG_OUTPUT_
   cmd_nul(&cmd);
   buffer_puts(buffer_2, "Dump cmd:\n");
   cmd_dump(&cmd, buffer_2);
+#endif
 
   strarray_from_argv(argc - unix_optind, argv + unix_optind, &modules);
+
+#ifdef DEBUG_OUTPUT_
   buffer_puts(buffer_2, "Dump cmd:\n");
   cmd_dump(&cmd, buffer_2);
+#endif
 
 #ifdef DEBUG_OUTPUT
   buffer_puts(buffer_2, "Modules(");
