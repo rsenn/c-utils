@@ -136,7 +136,7 @@ static int show_version = 0;
 static int atleast_version = 0;
 const char* pkgcfg_path = 0;
 extern buffer* unix_optbuf;
-static strlist args;
+static strlist args, output;
 static strarray modules = {0, 0, 0};
 
 static void
@@ -868,6 +868,16 @@ pkg_dump_cond(const cond* c) {
   buffer_putnlflush(buffer_2);
 }
 
+void
+pkg_output(const char* x, size_t n) {
+#ifdef DEBUG_OUTPUT_
+  buffer_puts(buffer_2, "pkg_output: '");
+  buffer_put(buffer_2, x, n);
+  buffer_putsflush(buffer_2, "'\n");
+#endif
+  strlist_pushb_unique(&output, x, n);
+}
+
 static cond condition;
 
 /**
@@ -968,6 +978,7 @@ pkg_conf(strarray* modules, id code, int mode) {
       }
       pkg_set(&pf);
       if(fn) {
+        stralloc_zero(&value);
         if(!pkg_expand(&pf, fn, &value)) {
           buffer_flush(buffer_1);
           buffer_flush(buffer_2);
@@ -1012,8 +1023,7 @@ pkg_conf(strarray* modules, id code, int mode) {
         strlist_pushb_unique(&output, x, i);
       }
       if(value.len) {
-        buffer_putsa(buffer_1, &value);
-        buffer_putnlflush(buffer_1);
+        pkg_output(value.s, value.len);
       }
     }
     stralloc_zero(&name);
@@ -1311,6 +1321,7 @@ main(int argc, char* argv[], char* envp[]) {
   };
 
   errmsg_iam(path_basename(argv[0]));
+  strlist_init(&output, ' ');
   strlist_init(&args, '\0');
   strlist_fromv(&args, (const char**)argv, argc);
 
@@ -1520,4 +1531,10 @@ getopt_end:
         error_exit(exitCode);
     }
   }
+
+  if(output.sa.s) {
+    buffer_putsa(buffer_1, &output.sa);
+    buffer_putnlflush(buffer_1);
+  }
+  return 0;
 }
