@@ -894,7 +894,7 @@ add_program(jsonpp json errmsg charbuf unix)
 add_program(xml2json json xml charbuf errmsg unix)
 add_program(xml2moon xml charbuf textcode errmsg)
 add_program(strip-comments errmsg env charbuf buffer path dir strarray strlist stralloc fmt unix)
-add_program(quote textcode unix errmsg env charbuf buffer path dir strarray strlist stralloc fmt)
+add_program(q textcode unix errmsg env charbuf buffer path dir strarray strlist stralloc fmt)
 
 add_program(httpproxy unix http io hmap)
 # add_program(montty io hmap)

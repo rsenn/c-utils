@@ -981,7 +981,7 @@ list_file(stralloc* path, const char* name, int mode, long depth, int root_dev) 
   if(match)
     return 0;
 
-  if(/*!is_dir && */ (opt_minsize != -1 && size < (uint64)opt_minsize))
+  if( (opt_minsize != -1 && size < (uint64)opt_minsize))
     show = 0;
 
   if(dtype && (dtype & opt_types) == 0)
@@ -1053,7 +1053,7 @@ list_file(stralloc* path, const char* name, int mode, long depth, int root_dev) 
   if(is_dir && (opt_deref || !is_symlink)) {
     path->len--;
     if(opt_depth == -1 || depth + 1 < opt_depth)
-      list_dir_internal(path, 0, depth + 1);
+      list_dir_internal(path, mode, depth + 1);
   }
   return 1;
 }
