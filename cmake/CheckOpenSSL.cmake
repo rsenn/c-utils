@@ -11,6 +11,13 @@ if(USE_SSL AND NOT BUILD_SSL)
   endif(NOT OPENSSL_ROOT_DIR)
   set(PKG_CONFIG_USE_CMAKE_PREFIX_PATH ON)
   # unset(OPENSSL_FOUND CACHE) message(STATUS "Searching pkgconfig database for openssl...")
+
+  if(OPENSSL_ROOT_DIR)
+    if(NOT EXISTS "${OPENSSL_ROOT_DIR}")
+      message(FATAL_ERROR "--- FATAL error\nOPENSSL_ROOT_DIR '${OPENSSL_ROOT_DIR}' inexistent!\n--- FATAL error")
+    endif(NOT EXISTS "${OPENSSL_ROOT_DIR}")
+    list(APPEND CMAKE_PREFIX_PATH "${OPENSSL_ROOT_DIR}")
+  endif(OPENSSL_ROOT_DIR)
   pkg_search_module(OPENSSL openssl libssl QUIET)
 
   # message(STATUS "pkg_search_module(OPENSSL openssl)")
