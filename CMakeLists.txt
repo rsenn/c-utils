@@ -41,7 +41,7 @@ option(USE_GZIP "gzip compression" OFF)
 option(USE_BROTLI "brotli compression" ON)
 option(USE_SSL "ssl encryption" ON)
 
-option(BUILD_SHARED "build shared library" ON)
+option(BUILD_SHARED_LIBS "build shared library" OFF)
 option(BUILD_EXAMPLES "build examples" OFF)
 option(BUILD_TESTS "build tests" OFF)
 
@@ -539,6 +539,12 @@ if(HAVE_MATH_LIB)
   set(LIBMATH m CACHE STRING "Math library")
 endif(HAVE_MATH_LIB)
 
+check_library_exists(pthread pthread_create "" HAVE_PTHREAD_LIB)
+
+if(HAVE_PTHREAD_LIB)
+  set(LIBPTHREAD pthread CACHE STRING "POSIX threads library")
+endif(HAVE_PTHREAD_LIB)
+
 if(NOT LINK_STATIC)
   check_library_exists(dl dlopen "" HAVE_DLFCN_LIB)
   if(HAVE_DLFCN_LIB)
@@ -635,8 +641,8 @@ set(MUX_USE # LINUX_AIO
     KQUEUE EPOLL DEVPOLL SIGIO POLL SELECT)
 
 foreach(METHOD ${MUX_USE})
-  #[[message("METHOD ${METHOD}")
-  message("SUPPORT_${METHOD} = ${SUPPORT_${METHOD}}")]]
+  #message("METHOD ${METHOD}")
+  message("SUPPORT_${METHOD} = ${SUPPORT_${METHOD}}")
 
   if(SUPPORT_${METHOD})
     list_contains("${MUX_LIST}" "${METHOD}" CONTAINS_METHOD)
@@ -858,7 +864,7 @@ set(list_r_SOURCES dump.c dump.h)
 add_program(list-r errmsg path strarray strlist stralloc buffer array unix dir array fmt open str uint64 ${LIBADVAPI32})
 # add_program(macho32list mmap uint32)
 if(USE_LZMA)
-  add_program(mediathek-list errmsg stralloc buffer alloc byte fmt http tls scan slist str unix strarray strlist ${LIBLZMA_LIBRARIES} ${TLS_LIBRARIES} ${LIBDL} pthread)
+  add_program(mediathek-list errmsg stralloc buffer alloc byte fmt http tls scan slist str unix strarray strlist ${LIBLZMA_LIBRARIES} ${TLS_LIBRARIES} ${LIBDL} ${LIBPTHREAD})
 endif(USE_LZMA)
 
 add_program(mediathek-parser case ucs errmsg strarray strlist stralloc buffer array byte open str unix strlist)
@@ -910,13 +916,13 @@ add_program(setuidgid errmsg path stralloc mmap open scan str)
 add_program(lsproc strlist errmsg mmap buffer unix dir)
 
 if(BUILD_TESTS)
-  # add_program(ssltest strlist unix dns stralloc buffer errmsg byte io  tls socket alloc taia ${TLS_LIBRARIES} ${LIBMSWSOCK} ${LIBDL} pthread) add_program(ziptest buffer str unix ${COMPRESSION_LIBRARIES})
+  # add_program(ssltest strlist unix dns stralloc buffer errmsg byte io  tls socket alloc taia ${TLS_LIBRARIES} ${LIBMSWSOCK} ${LIBDL} ${LIBPTHREAD}) add_program(ziptest buffer str unix ${COMPRESSION_LIBRARIES})
   add_program(binfmttest binfmt)
   add_program(buffertest stralloc buffer array case mmap ${COMPRESSION_LIBRARIES})
   add_program(cpptest cpp tokenizer unix buffer open)
   add_program(dnstest dns stralloc buffer errmsg ${LIBIPHLPAPI} ${LIBMSWSOCK})
   add_program(ftptest hmap unix dns case io array socket ndelay errmsg taia tai stralloc buffer mmap open fmt scan str byte uint16 ${LIBMSWSOCK} ${LIBIPHLPAPI})
-  add_program(httptest unix slist xml sig http dns stralloc buffer errmsg byte io socket alloc taia ${TLS_LIBRARIES} ${LIBMSWSOCK} pthread)
+  add_program(httptest unix slist xml sig http dns stralloc buffer errmsg byte io socket alloc taia ${TLS_LIBRARIES} ${LIBMSWSOCK} ${LIBPTHREAD})
   link_program(httptest ${LIBDL})
   add_program(jsontest json stralloc charbuf buffer byte fmt hmap mmap open)
   add_program(rdir-test rdir stralloc buffer)
