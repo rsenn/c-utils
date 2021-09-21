@@ -20,12 +20,14 @@ if(BUILD_BROTLI)
 
     file(CREATE_LINK "${CMAKE_SOURCE_DIR}/3rdparty/brotli.cmake" "${CMAKE_SOURCE_DIR}/3rdparty/brotli/CMakeLists.txt")
 
-  endif() # file(READ "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/brotli.cmake.txt" BROTLI_CMAKELISTS_TXT) file(WRITE  "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/brotli/CMakeLists.txt"
-          # "${BROTLI_CMAKELISTS_TXT}")
+  endif()
+
   set(BROTLI_STATIC TRUE)
   set(BROTLI_NO_INSTALL TRUE)
 
   set(BROTLI_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/3rdparty/brotli/c/include" CACHE PATH "brotli include directory")
+
+  set(LIBM_LIBRARY "${LIBMATH}")
 
   add_subdirectory(3rdparty/brotli)
 endif(BUILD_BROTLI)
