@@ -58,7 +58,7 @@ if(USE_SSL AND NOT BUILD_SSL)
 
   if(OPENSSL_FOUND)
     if(NOT OPENSSL_INCLUDE_DIR)
-      set(OPENSSL_INCLUDE_DIR "${OPENSSL_ROOT_DIR}/include")
+      set(OPENSSL_INCLUDE_DIR "${OPENSSL_ROOT_DIR}/include" CACHE PATH "OpenSSL include dir")
     endif()
     if(NOT OPENSSL_LIB_DIR)
       set(OPENSSL_LIB_DIR "${OPENSSL_ROOT_DIR}/lib")
