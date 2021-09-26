@@ -23,8 +23,8 @@ static stralloc search;
 
 void pe_dump_sections(uint8* base);
 
-#define PE_DUMP_FIELD(base, ptr, st, field)                                                                            \
-  buffer_putspad(b, #field, 30), buffer_puts(b, " 0x"),                                                                \
+#define PE_DUMP_FIELD(base, ptr, st, field) \
+  buffer_putspad(b, #field, 30), buffer_puts(b, " 0x"), \
       buffer_putxlonglong0(b, PE_GET(base, ptr, st, field), PE_SIZE(base, st, field) * 2), buffer_putnlflush(b)
 
 size_t
@@ -324,32 +324,19 @@ usage(char* av0) {
                        "\n",
                        "Options:\n",
                        "\n",
-                       "  -h, --help              Show "
-                       "this help\n",
-                       "  -i, --imports           List "
-                       "imports\n",
-                       "  -e, --exports           List "
-                       "exports\n",
-                       "  -d, --deps              List "
-                       "DLL dependencies\n",
-                       "  -s, --sections          List "
-                       "PE32 sections\n",
-                       "  -E, --export-directory  Print "
-                       "export directory\n",
-                       "  -D, --data-directory    Print "
-                       "data directory\n",
-                       "  -O, --optional-header   Print "
-                       "optional header\n",
-                       "  -r, --range             Print "
-                       "sections as ranges\n",
-                       "  -o, --offset-rva        Print "
-                       "RVA of given offset\n",
-                       "  -a, --rva-offset        Print "
-                       "offset of given RVA\n",
-                       "  -S, --search BYTES      "
-                       "Search data\n",
-                       "  -R, --rva               "
-                       "Search result as RVA\n",
+                       "  -h, --help              Show this help\n",
+                       "  -i, --imports           List imports\n",
+                       "  -e, --exports           List exports\n",
+                       "  -d, --deps              List DLL dependencies\n",
+                       "  -s, --sections          List PE32 sections\n",
+                       "  -E, --export-directory  Print export directory\n",
+                       "  -D, --data-directory    Print data directory\n",
+                       "  -O, --optional-header   Print optional header\n",
+                       "  -r, --range             Print sections as ranges\n",
+                       "  -o, --offset-rva        Print RVA of given offset\n",
+                       "  -a, --rva-offset        Print offset of given RVA\n",
+                       "  -S, --search BYTES      Search data\n",
+                       "  -R, --rva               Search result as RVA\n",
                        "\n",
                        0);
   buffer_flush(buffer_1);
@@ -362,20 +349,22 @@ main(int argc, char** argv) {
 
   int c, index = 0;
 
-  static const struct unix_longopt opts[] = {{"help", 0, NULL, 'h'},
-                                             {"imports", 0, &list_imports, 'i'},
-                                             {"exports", 0, &list_exports, 'e'},
-                                             {"deps", 0, &list_deps, 'd'},
-                                             {"sections", 0, &list_sections, 's'},
-                                             {"export-directory", 0, &print_export_dir, 'E'},
-                                             {"data-directory", 0, &print_data_dir, 'D'},
-                                             {"optional-header", 0, &print_opt_header, 'O'},
-                                             {"range", 0, &print_range, 'r'},
-                                             {"offset-rva", 0, NULL, 'o'},
-                                             {"rva-offset", 0, NULL, 'a'},
-                                             {"search", 0, NULL, 'S'},
-                                             {"rva", 0, &print_as_rva, 'R'},
-                                             {0, 0, 0, 0}};
+  static const struct unix_longopt opts[] = {
+      {"help", 0, NULL, 'h'},
+      {"imports", 0, &list_imports, 'i'},
+      {"exports", 0, &list_exports, 'e'},
+      {"deps", 0, &list_deps, 'd'},
+      {"sections", 0, &list_sections, 's'},
+      {"export-directory", 0, &print_export_dir, 'E'},
+      {"data-directory", 0, &print_data_dir, 'D'},
+      {"optional-header", 0, &print_opt_header, 'O'},
+      {"range", 0, &print_range, 'r'},
+      {"offset-rva", 0, NULL, 'o'},
+      {"rva-offset", 0, NULL, 'a'},
+      {"search", 0, NULL, 'S'},
+      {"rva", 0, &print_as_rva, 'R'},
+      {0, 0, 0, 0},
+  };
 
   errmsg_iam(argv[0]);
 

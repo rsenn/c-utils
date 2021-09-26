@@ -981,7 +981,7 @@ list_file(stralloc* path, const char* name, int mode, long depth, int root_dev) 
   if(match)
     return 0;
 
-  if( (opt_minsize != -1 && size < (uint64)opt_minsize))
+  if((opt_minsize != -1 && size < (uint64)opt_minsize))
     show = 0;
 
   if(dtype && (dtype & opt_types) == 0)
