@@ -69,7 +69,7 @@ cfg() {
  set -- -Wno-dev \
     -G "$generator" \
     ${prefix:+-DCMAKE_INSTALL_PREFIX="$prefix"} \
-    ${VERBOSE:+-DCMAKE_VERBOSE_MAKEFILE=${VERBOSE:-OFF}} \
+    ${VERBOSE:+-DCMAKE_VERBOSE_MAKEFILE=OFF${VERBOSE:-OFF}} \
     -DCMAKE_BUILD_TYPE="${TYPE:-Debug}" \
     -DBUILD_SHARED_LIBS=ON \
     ${CC:+-DCMAKE_C_COMPILER="$CC"} \
@@ -91,7 +91,7 @@ cfg-android ()
     cfg \
   -DCMAKE_INSTALL_PREFIX=/opt/arm-linux-androideabi/sysroot/usr \
   \
-  -DCMAKE_TOOLCHAIN_FILE=${TOOLCHAIN:-/opt/android-cmake/android.cmake} \
+  -DCMAKE_TOOLCHAIN_FILE=${TOOLCHAIN:-/opt/cmake-toolchains/android.cmake} \
   -DANDROID_NATIVE_API_LEVEL=21 \
   -DPKG_CONFIG_EXECUTABLE=arm-linux-androideabi-pkg-config \
   -DCMAKE_PREFIX_PATH=/opt/arm-linux-androideabi/sysroot/usr \
