@@ -3527,15 +3527,20 @@ input_process_command(stralloc* cmd, int argc, char* argv[]) {
         stralloc_init(&path);
         y = x + ((x[2] == '\0') ? 3 : 2);
 
-        path_relative(y, dirs.build.sa.s, &path);
-        
-/*        if(str_startb(y, reldir.s, reldir.len)) {
-          y += reldir.len;
-        }*/
+        path_appends(dirs.build.sa.s, &path);
+        path_appends(y, &path);
+        path_relative(path.s, dirs.out.sa.s, &path);
+        path_prepends(".", &path);
+
+        path_concat(".", path.s, &path);
+        path_collapse_sa(&path);
+        /*        if(str_startb(y, reldir.s, reldir.len)) {
+                  y += reldir.len;
+                }*/
         strlist_push(&args, "-I");
-        stralloc_cats(&args.sa, y);
+        stralloc_cats(&args.sa, path.s);
         strlist_push(&flags, "-I");
-        stralloc_cats(&flags.sa, y);
+        stralloc_cats(&flags.sa, path.s);
         includes_add(y);
         x = y;
         continue;
