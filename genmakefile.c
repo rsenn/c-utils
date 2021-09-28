@@ -3437,6 +3437,10 @@ input_process_command(stralloc* cmd, int argc, char* argv[]) {
   char **p, **end = argv + argc;
   stralloc output, dir;
   strlist args, files, flags, libs;
+
+  stralloc reldir = {0, 0, 0};
+  path_relative_b(dirs.out.sa.s, dirs.out.sa.len, dirs.build.sa.s, dirs.build.sa.len, &reldir);
+
   stralloc_init(&output);
   stralloc_init(&dir);
   strlist_init(&args, ' ');
@@ -3446,8 +3450,9 @@ input_process_command(stralloc* cmd, int argc, char* argv[]) {
   if(!is_command_b(cmd->s, cmd->len))
     return 0;
 
- stralloc_nul(cmd);
+  stralloc_nul(cmd);
   strlist_froms(&args, cmd->s, ' ');
+  strlist_fromv(&args, argv, argc);
 
   if(stralloc_ends(cmd, "make")) {
     for(p = argv; (len = *p ? str_len(*p) : 0, x = *p, p < end); p++) {
@@ -3505,7 +3510,7 @@ input_process_command(stralloc* cmd, int argc, char* argv[]) {
       strlist_pushb(&flags, x, len);
       if(len >= 2 && byte_equal(x, 2, "-o")) {
         x = (x[2] == '\0') ? p[1] : x + 2;
-        stralloc_replaces(cmd, x, "$@");
+        // stralloc_replaces(cmd, x, "$@");
 
         // path_normalize(x, &output);
         stralloc_copys(&output, x);
@@ -3540,7 +3545,7 @@ input_process_command(stralloc* cmd, int argc, char* argv[]) {
           stralloc file;
           stralloc_init(&file);
 
-          stralloc_replaces(cmd, x, "$<");
+          // stralloc_replaces(cmd, x, "$<");
           //           stralloc_copys(&file, x);
           path_normalize(x, &file);
 
@@ -3562,7 +3567,8 @@ input_process_command(stralloc* cmd, int argc, char* argv[]) {
   }
 
   if(output.len) {
-    strlist_replaceb(&files, output.s, output.len, "$@", 2);
+    strlist_replaceb(&args, output.s, output.len, "$@", 2);
+    strlist_removeb(&files, output.s, output.len);
     path_normalize(output.s, &output);
   }
 
@@ -3666,14 +3672,11 @@ input_process_command(stralloc* cmd, int argc, char* argv[]) {
     stralloc_cat(cmd, &flags.sa);
     stralloc_nul(cmd);
     {
-      stralloc reldir = {0, 0, 0};
       stralloc* sacmd;
       size_t pathlen;
       target* rule;
       sacmd = alloc_zero(sizeof(stralloc));
       stralloc_move(sacmd, cmd);
-
-      path_relative_b(dirs.out.sa.s, dirs.out.sa.len, dirs.build.sa.s, dirs.build.sa.len, &reldir);
       pathlen = reldir.len;
       stralloc_cat(&reldir, &output);
 
