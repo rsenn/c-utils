@@ -36,14 +36,14 @@
 
 //#define charbuf_stringify_helper(s) #s
 #define charbuf_ansi_setcolumn(n) ("\033[" #n "G")
-#define charbuf_dump_setcolumn(n, out)                                                                                 \
-  do {                                                                                                                 \
-    buffer_flush((out));                                                                                               \
-    buffer_putc((out), 0x1b);                                                                                          \
-    buffer_putc((out), '[');                                                                                           \
-    buffer_putulong((out), (n));                                                                                       \
-    buffer_putc((out), 'G');                                                                                           \
-    buffer_flush((out));                                                                                               \
+#define charbuf_dump_setcolumn(n, out) \
+  do { \
+    buffer_flush((out)); \
+    buffer_putc((out), 0x1b); \
+    buffer_putc((out), '['); \
+    buffer_putulong((out), (n)); \
+    buffer_putc((out), 'G'); \
+    buffer_flush((out)); \
   } while(0)
 
 extern int charbuf_debug;
@@ -51,25 +51,25 @@ extern int charbuf_colors;
 
 ssize_t charbuf_stubborn_read(charbuf*, size_t max);
 
-#define charbuf_colorstr(str, color, out)                                                                              \
-  buffer_putm_internal(                                                                                                \
+#define charbuf_colorstr(str, color, out) \
+  buffer_putm_internal( \
       out, charbuf_colors ? CHARBUF_NC : "", charbuf_colors ? color : "", str, charbuf_colors ? CHARBUF_NC : "", 0);
 #define charbuf_dumpname(lbl, out) charbuf_colorstr(lbl, CHARBUF_GRAY, out)
-#define charbuf_dumplabel(lbl, out)                                                                                    \
-  do {                                                                                                                 \
-    charbuf_colorstr(CHARBUF_PREFIX, "\x1b[38;2;0;120;120m", out);                                                     \
-    charbuf_colorstr(lbl, CHARBUF_GRAY, out);                                                                          \
-    charbuf_colorstr("=", "\x1b[38;2;0;100;100m", out);                                                                \
+#define charbuf_dumplabel(lbl, out) \
+  do { \
+    charbuf_colorstr(CHARBUF_PREFIX, "\x1b[38;2;0;120;120m", out); \
+    charbuf_colorstr(lbl, CHARBUF_GRAY, out); \
+    charbuf_colorstr("=", "\x1b[38;2;0;100;100m", out); \
   } while(0)
 
-#define charbuf_dumpfmt(lbl, val, fmt_fn, out)                                                                         \
-  do {                                                                                                                 \
-    char buf[128];                                                                                                     \
-    size_t n;                                                                                                          \
-    charbuf_dumplabel((lbl), (out));                                                                                   \
-    n = fmt_fn(buf, (val));                                                                                            \
-    buf[n++] = '\0';                                                                                                   \
-    charbuf_colorstr(buf, CHARBUF_YELLOW, out);                                                                        \
+#define charbuf_dumpfmt(lbl, val, fmt_fn, out) \
+  do { \
+    char buf[128]; \
+    size_t n; \
+    charbuf_dumplabel((lbl), (out)); \
+    n = fmt_fn(buf, (val)); \
+    buf[n++] = '\0'; \
+    charbuf_colorstr(buf, CHARBUF_YELLOW, out); \
   } while(0)
 
 #define charbuf_dumpint64(lbl, val, out) charbuf_dumpfmt((lbl), ((int64)(val)), fmt_longlong, out)

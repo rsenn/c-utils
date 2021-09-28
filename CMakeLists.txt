@@ -404,6 +404,12 @@ set(CMAKE_STATIC_LINKER_FLAGS "")
 check_functions(__write aligned_alloc clock_gettime getdelim lstat pipe2 popen posix_memalign pread sendfile sigaddset sigemptyset sigprocmask waitpid writev)
 check_functions(sigismember sigsuspend)
 check_functions(ftruncate)
+check_functions(glob)
+
+if(HAVE_GLOB)
+  add_definitions(-DHAVE_GLOB)
+endif(HAVE_GLOB)
+
 if(WIN32 OR CYGWIN OR MSYS OR MINGW)
   check_functions(cygwin_conv_path cygwin_conv_to_posix_path cygwin_conv_to_win32_path pathconv)
 endif(WIN32 OR CYGWIN OR MSYS OR MINGW)

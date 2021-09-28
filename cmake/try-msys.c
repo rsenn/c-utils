@@ -10,6 +10,4 @@ main() {
   return 0;
 }
 int WINAPI
-WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR pCmdLine, int nCmdShow) 
-__attribute__((stdcall)) 
-{}
+WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR pCmdLine, int nCmdShow) __attribute__((stdcall)) {}

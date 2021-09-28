@@ -519,32 +519,32 @@ TEST(test_strlist_unshift) {
   strlist_init(&sl, '\0');
 }
 
-#define RUN_STRLIST_TESTS()                                                                                            \
-  RUN(test_strlist_at);                                                                                                \
-  RUN(test_strlist_at_n);                                                                                              \
-  RUN(test_strlist_at_sa);                                                                                             \
-  RUN(test_strlist_cat);                                                                                               \
-  RUN(test_strlist_contains);                                                                                          \
-  RUN(test_strlist_contains_sa);                                                                                       \
-  RUN(test_strlist_count);                                                                                             \
-  RUN(test_strlist_dump);                                                                                              \
-  RUN(test_strlist_froms);                                                                                             \
-  RUN(test_strlist_fromb);                                                                                             \
-  RUN(test_strlist_index_of);                                                                                          \
-  RUN(test_strlist_join);                                                                                              \
-  RUN(test_strlist_joins);                                                                                             \
-  RUN(test_strlist_push);                                                                                              \
-  RUN(test_strlist_push_sa);                                                                                           \
-  RUN(test_strlist_push_tokens);                                                                                       \
-  RUN(test_strlist_push_unique);                                                                                       \
-  RUN(test_strlist_push_unique_sa);                                                                                    \
-  RUN(test_strlist_pushb);                                                                                             \
-  RUN(test_strlist_pushm);                                                                                             \
-  RUN(test_strlist_range);                                                                                             \
-  RUN(test_strlist_shift);                                                                                             \
-  RUN(test_strlist_shift_n);                                                                                           \
-  RUN(test_strlist_sort);                                                                                              \
-  RUN(test_strlist_to_argv);                                                                                           \
+#define RUN_STRLIST_TESTS() \
+  RUN(test_strlist_at); \
+  RUN(test_strlist_at_n); \
+  RUN(test_strlist_at_sa); \
+  RUN(test_strlist_cat); \
+  RUN(test_strlist_contains); \
+  RUN(test_strlist_contains_sa); \
+  RUN(test_strlist_count); \
+  RUN(test_strlist_dump); \
+  RUN(test_strlist_froms); \
+  RUN(test_strlist_fromb); \
+  RUN(test_strlist_index_of); \
+  RUN(test_strlist_join); \
+  RUN(test_strlist_joins); \
+  RUN(test_strlist_push); \
+  RUN(test_strlist_push_sa); \
+  RUN(test_strlist_push_tokens); \
+  RUN(test_strlist_push_unique); \
+  RUN(test_strlist_push_unique_sa); \
+  RUN(test_strlist_pushb); \
+  RUN(test_strlist_pushm); \
+  RUN(test_strlist_range); \
+  RUN(test_strlist_shift); \
+  RUN(test_strlist_shift_n); \
+  RUN(test_strlist_sort); \
+  RUN(test_strlist_to_argv); \
   RUN(test_strlist_unshift)
 
 TESTS(strlist) { RUN_STRLIST_TESTS(); }

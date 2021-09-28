@@ -56,10 +56,10 @@ TEST(test_iarray_get) {
   ASSERT_EQ(5, *(size_t*)iarray_get(&a, 4));
 }
 
-#define RUN_STRALLOC_TESTS()                                                                                           \
-  RUN(test_iarray_init);                                                                                               \
-  RUN(test_iarray_allocate);                                                                                           \
-  RUN(test_iarray_length);                                                                                             \
+#define RUN_STRALLOC_TESTS() \
+  RUN(test_iarray_init); \
+  RUN(test_iarray_allocate); \
+  RUN(test_iarray_length); \
   RUN(test_iarray_get);
 
 TESTS(iarray) { RUN_STRALLOC_TESTS(); }

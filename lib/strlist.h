@@ -42,12 +42,12 @@ typedef struct strlist_s {
 
 #define strlist_end(sl) ((sl)->sa.s + (sl)->sa.len)
 
-#define strlist_foreach(sl, str, n)                                                                                    \
-  for((str) = (sl)->sa.s;                                                                                              \
-      ((str) < strlist_end(sl) && ((n) = byte_chr((str), strlist_end(sl) - (str), (sl)->sep)) > 0);                    \
+#define strlist_foreach(sl, str, n) \
+  for((str) = (sl)->sa.s; \
+      ((str) < strlist_end(sl) && ((n) = byte_chr((str), strlist_end(sl) - (str), (sl)->sep)) > 0); \
       (str) += (n) + 1)
 
-#define strlist_foreach_s(sl, str)                                                                                     \
+#define strlist_foreach_s(sl, str) \
   for(str = (sl)->sa.s; str < strlist_end(sl); str += byte_chr((str), strlist_end(sl) - str, (sl)->sep) + 1)
 
 #define strlist_len(sl, ptr) (byte_chr(ptr, strlist_end((sl)) - (ptr), (sl)->sep))
@@ -119,6 +119,7 @@ int strlist_trunc(strlist*, size_t items);
 int strlist_unshiftb(strlist*, const char* x, size_t len);
 int strlist_unshift(strlist*, const char* s);
 int strlist_splice(strlist*, size_t pos, size_t ndelete, char* x, size_t n);
+int strlist_replaceb(strlist*, const char* x, size_t n, const char* y, size_t len);
 
 #ifdef STRALLOC_H
 int strlist_append_sa(strlist*, const stralloc* sa);

@@ -193,30 +193,30 @@ extern FILE *yyin, *yyout;
  *       a 5% performance hit in a non-yylineno scanner, because yy_act is
  *       normally declared as a register variable-- so it is not worth it.
  */
-#define YY_LESS_LINENO(n)                                                                                              \
-  do {                                                                                                                 \
-    int yyl;                                                                                                           \
-    for(yyl = n; yyl < yyleng; ++yyl)                                                                                  \
-      if(yytext[yyl] == '\n')                                                                                          \
-        --yylineno;                                                                                                    \
+#define YY_LESS_LINENO(n) \
+  do { \
+    int yyl; \
+    for(yyl = n; yyl < yyleng; ++yyl) \
+      if(yytext[yyl] == '\n') \
+        --yylineno; \
   } while(0)
-#define YY_LINENO_REWIND_TO(dst)                                                                                       \
-  do {                                                                                                                 \
-    const char* p;                                                                                                     \
-    for(p = yy_cp - 1; p >= (dst); --p)                                                                                \
-      if(*p == '\n')                                                                                                   \
-        --yylineno;                                                                                                    \
+#define YY_LINENO_REWIND_TO(dst) \
+  do { \
+    const char* p; \
+    for(p = yy_cp - 1; p >= (dst); --p) \
+      if(*p == '\n') \
+        --yylineno; \
   } while(0)
 
 /* Return all but the first "n" matched characters back to the input stream. */
-#define yyless(n)                                                                                                      \
-  do {                                                                                                                 \
-    /* Undo effects of setting up yytext. */                                                                           \
-    int yyless_macro_arg = (n);                                                                                        \
-    YY_LESS_LINENO(yyless_macro_arg);                                                                                  \
-    *yy_cp = (yy_hold_char);                                                                                           \
-    YY_RESTORE_YY_MORE_OFFSET(yy_c_buf_p) = yy_cp = yy_bp + yyless_macro_arg - YY_MORE_ADJ;                            \
-    YY_DO_BEFORE_ACTION; /* set up yytext again */                                                                     \
+#define yyless(n) \
+  do { \
+    /* Undo effects of setting up yytext. */ \
+    int yyless_macro_arg = (n); \
+    YY_LESS_LINENO(yyless_macro_arg); \
+    *yy_cp = (yy_hold_char); \
+    YY_RESTORE_YY_MORE_OFFSET(yy_c_buf_p) = yy_cp = yy_bp + yyless_macro_arg - YY_MORE_ADJ; \
+    YY_DO_BEFORE_ACTION; /* set up yytext again */ \
   } while(0)
 #define unput(c) yyunput(c, (yytext_ptr))
 
@@ -337,21 +337,21 @@ void* yyrealloc(void*, yy_size_t);
 void yyfree(void*);
 
 #define yy_new_buffer yy_create_buffer
-#define yy_set_interactive(is_interactive)                                                                             \
-  {                                                                                                                    \
-    if(!YY_CURRENT_BUFFER) {                                                                                           \
-      yyensure_buffer_stack();                                                                                         \
-      YY_CURRENT_BUFFER_LVALUE = yy_create_buffer(yyin, YY_BUF_SIZE);                                                  \
-    }                                                                                                                  \
-    YY_CURRENT_BUFFER_LVALUE->yy_is_interactive = is_interactive;                                                      \
+#define yy_set_interactive(is_interactive) \
+  { \
+    if(!YY_CURRENT_BUFFER) { \
+      yyensure_buffer_stack(); \
+      YY_CURRENT_BUFFER_LVALUE = yy_create_buffer(yyin, YY_BUF_SIZE); \
+    } \
+    YY_CURRENT_BUFFER_LVALUE->yy_is_interactive = is_interactive; \
   }
-#define yy_set_bol(at_bol)                                                                                             \
-  {                                                                                                                    \
-    if(!YY_CURRENT_BUFFER) {                                                                                           \
-      yyensure_buffer_stack();                                                                                         \
-      YY_CURRENT_BUFFER_LVALUE = yy_create_buffer(yyin, YY_BUF_SIZE);                                                  \
-    }                                                                                                                  \
-    YY_CURRENT_BUFFER_LVALUE->yy_at_bol = at_bol;                                                                      \
+#define yy_set_bol(at_bol) \
+  { \
+    if(!YY_CURRENT_BUFFER) { \
+      yyensure_buffer_stack(); \
+      YY_CURRENT_BUFFER_LVALUE = yy_create_buffer(yyin, YY_BUF_SIZE); \
+    } \
+    YY_CURRENT_BUFFER_LVALUE->yy_at_bol = at_bol; \
   }
 #define YY_AT_BOL() (YY_CURRENT_BUFFER_LVALUE->yy_at_bol)
 
@@ -379,11 +379,11 @@ static void yynoreturn yy_fatal_error(const char* msg);
 /* Done after the current pattern has been matched and before the
  * corresponding action - sets up yytext.
  */
-#define YY_DO_BEFORE_ACTION                                                                                            \
-  (yytext_ptr) = yy_bp;                                                                                                \
-  yyleng = (int)(yy_cp - yy_bp);                                                                                       \
-  (yy_hold_char) = *yy_cp;                                                                                             \
-  *yy_cp = '\0';                                                                                                       \
+#define YY_DO_BEFORE_ACTION \
+  (yytext_ptr) = yy_bp; \
+  yyleng = (int)(yy_cp - yy_bp); \
+  (yy_hold_char) = *yy_cp; \
+  *yy_cp = '\0'; \
   (yy_c_buf_p) = yy_cp;
 #define YY_NUM_RULES 108
 #define YY_END_OF_BUFFER 109
@@ -743,10 +743,10 @@ static int input(void);
 /* This used to be an fputs(), but since the string might contain NUL's,
  * we now use fwrite().
  */
-#define ECHO                                                                                                           \
-  do {                                                                                                                 \
-    if(fwrite(yytext, (size_t)yyleng, 1, yyout)) {                                                                     \
-    }                                                                                                                  \
+#define ECHO \
+  do { \
+    if(fwrite(yytext, (size_t)yyleng, 1, yyout)) { \
+    } \
   } while(0)
 #endif
 
@@ -754,27 +754,27 @@ static int input(void);
  * is returned in "result".
  */
 #ifndef YY_INPUT
-#define YY_INPUT(buf, result, max_size)                                                                                \
-  if(YY_CURRENT_BUFFER_LVALUE->yy_is_interactive) {                                                                    \
-    int c = '*';                                                                                                       \
-    int n;                                                                                                             \
-    for(n = 0; n < max_size && (c = getc(yyin)) != EOF && c != '\n'; ++n)                                              \
-      buf[n] = (char)c;                                                                                                \
-    if(c == '\n')                                                                                                      \
-      buf[n++] = (char)c;                                                                                              \
-    if(c == EOF && ferror(yyin))                                                                                       \
-      YY_FATAL_ERROR("input in flex scanner failed");                                                                  \
-    result = n;                                                                                                        \
-  } else {                                                                                                             \
-    errno = 0;                                                                                                         \
-    while((result = (int)fread(buf, 1, (yy_size_t)max_size, yyin)) == 0 && ferror(yyin)) {                             \
-      if(errno != EINTR) {                                                                                             \
-        YY_FATAL_ERROR("input in flex scanner failed");                                                                \
-        break;                                                                                                         \
-      }                                                                                                                \
-      errno = 0;                                                                                                       \
-      clearerr(yyin);                                                                                                  \
-    }                                                                                                                  \
+#define YY_INPUT(buf, result, max_size) \
+  if(YY_CURRENT_BUFFER_LVALUE->yy_is_interactive) { \
+    int c = '*'; \
+    int n; \
+    for(n = 0; n < max_size && (c = getc(yyin)) != EOF && c != '\n'; ++n) \
+      buf[n] = (char)c; \
+    if(c == '\n') \
+      buf[n++] = (char)c; \
+    if(c == EOF && ferror(yyin)) \
+      YY_FATAL_ERROR("input in flex scanner failed"); \
+    result = n; \
+  } else { \
+    errno = 0; \
+    while((result = (int)fread(buf, 1, (yy_size_t)max_size, yyin)) == 0 && ferror(yyin)) { \
+      if(errno != EINTR) { \
+        YY_FATAL_ERROR("input in flex scanner failed"); \
+        break; \
+      } \
+      errno = 0; \
+      clearerr(yyin); \
+    } \
   }
 
 #endif
@@ -2390,10 +2390,7 @@ yy_scan_buffer(char* base, yy_size_t size) {
  *       yy_scan_bytes() instead.
  */
 YY_BUFFER_STATE
-yy_scan_string(const char* yystr) {
-
-  return yy_scan_bytes(yystr, (int)strlen(yystr));
-}
+yy_scan_string(const char* yystr) { return yy_scan_bytes(yystr, (int)strlen(yystr)); }
 
 /** Setup the input buffer state to scan the given bytes. The next call to yylex() will
  * scan from a @e copy of @a bytes.
@@ -2445,16 +2442,16 @@ yy_fatal_error(const char* msg) {
 /* Redefine yyless() so it works in section 3 code. */
 
 #undef yyless
-#define yyless(n)                                                                                                      \
-  do {                                                                                                                 \
-    /* Undo effects of setting up yytext. */                                                                           \
-    int yyless_macro_arg = (n);                                                                                        \
-    YY_LESS_LINENO(yyless_macro_arg);                                                                                  \
-    yytext[yyleng] = (yy_hold_char);                                                                                   \
-    (yy_c_buf_p) = yytext + yyless_macro_arg;                                                                          \
-    (yy_hold_char) = *(yy_c_buf_p);                                                                                    \
-    *(yy_c_buf_p) = '\0';                                                                                              \
-    yyleng = yyless_macro_arg;                                                                                         \
+#define yyless(n) \
+  do { \
+    /* Undo effects of setting up yytext. */ \
+    int yyless_macro_arg = (n); \
+    YY_LESS_LINENO(yyless_macro_arg); \
+    yytext[yyleng] = (yy_hold_char); \
+    (yy_c_buf_p) = yytext + yyless_macro_arg; \
+    (yy_hold_char) = *(yy_c_buf_p); \
+    *(yy_c_buf_p) = '\0'; \
+    yyleng = yyless_macro_arg; \
   } while(0)
 
 /* Accessor  methods (get/set functions) to struct members. */

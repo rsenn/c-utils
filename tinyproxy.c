@@ -164,7 +164,7 @@ static strlist output_files;
 static const char** program_argv;
 static int program_argc;
 
-#define BACKLOG                                                                                                        \
+#define BACKLOG \
   20 // how many pending connections
      // queue will hold
 

@@ -21,6 +21,11 @@ path_relative_b(const char* s1, size_t n1, const char* s2, size_t n2, stralloc* 
   s2 += p.sz2;
   n2 -= p.sz2;
 
+  while(n2 > 0 && s2[0] == PATHSEP_C) {
+    s2++;
+    n2--;
+  }
+
   while((i = path_skip(s2, n2))) {
     stralloc_cats(out, ".." PATHSEP_S);
     s2 += i;

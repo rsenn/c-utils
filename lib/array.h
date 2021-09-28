@@ -55,7 +55,7 @@ void array_chop(array* x, uint64 membersize, uint64 members);
 #define array_unallocated(x) (array_bytes(x) == 0)
 
 #define array_foreach_t(a, p) for((p) = array_start(a); (char*)(p) < (char*)array_end(a); ++(p))
-#define array_foreach(a, msz, p)                                                                                       \
+#define array_foreach(a, msz, p) \
   for((p) = array_start(a); (char*)(p) < (char*)array_end(a); (p) = (void*)(((char*)p) + msz))
 
 /* inline static void
@@ -63,7 +63,7 @@ array_sort(array* x, uint64 membersize, int (*compare_fn)(const void*,const
 void*)) { qsort(array_start(x), array_length(x, membersize), membersize,
 compare_fn);
 } */
-#define array_sort(x, membersize, compare_fn)                                                                          \
+#define array_sort(x, membersize, compare_fn) \
   qsort(array_start((x)), array_length((x), (membersize)), (membersize), (compare_fn))
 
 inline static void

@@ -52,13 +52,13 @@ typedef char bool;
 
 // APIs
 #define TEST(name) static void name(struct unit_test* mu_)
-#define RUN(name)                                                                                                      \
-  if(unit_test_run(mu_, name, #name) == EXIT_SUCCESS) {                                                                \
-    mu_->success++;                                                                                                    \
-  } else {                                                                                                             \
-    mu_->failure++;                                                                                                    \
-    if(muconf_ptr()->x)                                                                                                \
-      return;                                                                                                          \
+#define RUN(name) \
+  if(unit_test_run(mu_, name, #name) == EXIT_SUCCESS) { \
+    mu_->success++; \
+  } else { \
+    mu_->failure++; \
+    if(muconf_ptr()->x) \
+      return; \
   }
 
 #define TESTLOG_CHAR(c) buffer_putc(muerr, c)
@@ -110,22 +110,22 @@ typedef char bool;
 #define INFO(msg) msg
 #endif
 
-#define unit_test_assert(mu_, x1, x2, op, notop)                                                                       \
-  if(!op((x1), (x2))) {                                                                                                \
-    const char* file = __FILE__;                                                                                       \
-    size_t n = str_rfind(file, ".." PATHSEP_S);                                                                        \
-    if(file[n])                                                                                                        \
-      file += n + 3;                                                                                                   \
-    buffer_putm_internal((mu_)->faillog, file, ":", NULL);                                                             \
-    buffer_putulong((mu_)->faillog, __LINE__);                                                                         \
-    buffer_puts((mu_)->faillog, "  Assertion failed: ");                                                               \
-    buffer_puts((mu_)->faillog, #x1);                                                                                  \
-    buffer_puts((mu_)->faillog, " " #notop " ");                                                                       \
-    buffer_puts((mu_)->faillog, #x2);                                                                                  \
-    buffer_puts((mu_)->faillog, ")");                                                                                  \
-    buffer_putnlflush((mu_)->faillog);                                                                                 \
-    (mu_)->failure++;                                                                                                  \
-    return;                                                                                                            \
+#define unit_test_assert(mu_, x1, x2, op, notop) \
+  if(!op((x1), (x2))) { \
+    const char* file = __FILE__; \
+    size_t n = str_rfind(file, ".." PATHSEP_S); \
+    if(file[n]) \
+      file += n + 3; \
+    buffer_putm_internal((mu_)->faillog, file, ":", NULL); \
+    buffer_putulong((mu_)->faillog, __LINE__); \
+    buffer_puts((mu_)->faillog, "  Assertion failed: "); \
+    buffer_puts((mu_)->faillog, #x1); \
+    buffer_puts((mu_)->faillog, " " #notop " "); \
+    buffer_puts((mu_)->faillog, #x2); \
+    buffer_puts((mu_)->faillog, ")"); \
+    buffer_putnlflush((mu_)->faillog); \
+    (mu_)->failure++; \
+    return; \
   }
 
 struct unit_test {
