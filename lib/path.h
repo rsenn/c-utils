@@ -80,7 +80,8 @@ size_t path_skip_component(const char* p, size_t n);
 SizePair path_common_prefix(const char* s1, size_t n1, const char* s2, size_t n2);
 int path_relative_b(const char* s1, size_t n1, const char* s2, size_t n2, stralloc* out);
 
-void path_concat(const char* a, size_t alen, const char* b, size_t blen, stralloc* out);
+void path_concat(const char* a, const char* b,   stralloc* out);
+void path_concatb(const char* a, size_t alen, const char* b, size_t blen, stralloc* out);
 void path_append(const char* x, size_t len, stralloc* out);
 void path_appends(const char* s, stralloc* out);
 
