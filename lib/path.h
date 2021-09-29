@@ -67,6 +67,7 @@ size_t path_num(const char* p, size_t len, int n);
 size_t path_num_sa(const char* p, size_t len, stralloc* sa, int n);
 int path_readlink(const char* path, stralloc* sa);
 int path_realpath(const char* path, stralloc* sa, int symbolic, stralloc* cwd);
+int path_relative_b(const char*, size_t, stralloc*);
 int path_relative(const char*, stralloc*);
 int path_relative_to_b(const char*, size_t, const char*, size_t n2, stralloc* out);
 int path_relative_to(const char*, const char*, stralloc*);

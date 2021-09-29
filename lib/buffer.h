@@ -194,6 +194,7 @@ int buffer_gettok_sa(buffer*, stralloc* sa, const char* charset, size_t setlen);
 
 int buffer_getln(buffer*, stralloc*, int*, int);
 
+int buffer_put_escaped(buffer*, const void*, size_t, size_t (*escape)(char*, int));
 int buffer_putsa_escaped(buffer*, const stralloc* sa, size_t (*escape)(char*, int));
 #endif
 

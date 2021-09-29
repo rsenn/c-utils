@@ -59,6 +59,7 @@ int set_iterator_next(set_iterator_t*);
 char* set_iterator_value(const set_iterator_t*, size_t*);
 
 char** set_toarray(const set_t*);
+void set_tostrarray(const set_t*, strarray*);
 
 char* set_at_n(const set_t*, int64 pos, size_t* len);
 char* set_at(const set_t*, int64 pos);
