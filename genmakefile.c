@@ -409,7 +409,7 @@ path_normalize(const char* dir, stralloc* out) {
     path_canonical(dir, &tmp);
   }
   //  stralloc_nul(&tmp);
-  path_relative_b(tmp.s, tmp.len, dirs.out.sa.s, dirs.out.sa.len, out);
+  path_relative_to_b(tmp.s, tmp.len, dirs.out.sa.s, dirs.out.sa.len, out);
   stralloc_free(&tmp);
 }
 
@@ -673,7 +673,7 @@ includes_cppflags() {
 
     stralloc_zero(&arg);
     stralloc_cats(&arg, dir);
-    //    path_relative(dir, dirs.this.sa.s, &arg);
+    //    path_relative_to(dir, dirs.this.sa.s, &arg);
 
 #ifdef DEBUG_OUTPUT_
     buffer_puts(buffer_2, "include_dir: ");
@@ -2518,7 +2518,7 @@ sourcedir_printdeps(sourcedir* srcdir, buffer* b, int depth) {
 void
 builddir_enter(const char* x, size_t len) {
   strarray_emplace_sa(&dirstack, &dirs.build.sa);
-  // path_relative_b(x, len, dirs.out.sa.s, dirs.out.sa.len, &dirs.build.sa);
+  // path_relative_to_b(x, len, dirs.out.sa.s, dirs.out.sa.len, &dirs.build.sa);
   stralloc_copyb(&dirs.build.sa, x, len);
 
 #ifdef DEBUG_OUTPUT
@@ -3434,7 +3434,7 @@ input_process_command_adjust(const char* y, stralloc* out) {
   stralloc_init(out);
   path_appends(dirs.build.sa.s, out);
   path_appends(y, out);
-  path_relative(out->s, dirs.out.sa.s, out);
+  path_relative_to(out->s, dirs.out.sa.s, out);
   path_prepends(".", out);
   path_collapse_sa(out);
   stralloc_nul(out);
@@ -3450,7 +3450,7 @@ input_process_command(stralloc* cmd, int argc, char* argv[]) {
   strlist args, files, flags, libs;
 
   stralloc reldir = {0, 0, 0};
-  path_relative_b(dirs.out.sa.s, dirs.out.sa.len, dirs.build.sa.s, dirs.build.sa.len, &reldir);
+  path_relative_to_b(dirs.out.sa.s, dirs.out.sa.len, dirs.build.sa.s, dirs.build.sa.len, &reldir);
 
   stralloc_init(&output);
   stralloc_init(&dir);
@@ -3525,6 +3525,19 @@ input_process_command(stralloc* cmd, int argc, char* argv[]) {
         strlist_push(&flags, path.s);
         stralloc_copys(&output, y);
         stralloc_free(&path);
+        continue;
+      } else if(len >= 2 && byte_equal(x, 2, "-M")) {
+        switch(x[2]) {
+          case 'D':
+          case 'P':
+          case 'M': break;
+          case 'T':
+          case 'F': {
+            y = x + ((x[2] == '\0') ? 3 : 2);
+            ++p;
+            break;
+          }
+        }
         continue;
       } else if(len >= 2 && byte_equal(x, 2, "-D")) {
         y = x + ((x[2] == '\0') ? 3 : 2);
@@ -3918,10 +3931,10 @@ input_process_rules(target* all) {
   buffer_putnlflush(buffer_2);
 #endif
 
-  stralloc_copy(&dirs.out.sa, &outdir.sa);
-  if(!stralloc_endc(&dirs.out.sa, PATHSEP_C))
-    stralloc_catc(&dirs.out.sa, PATHSEP_C);
-  strlist_nul(&dirs.out);
+  /*   stralloc_copy(&dirs.out.sa, &outdir.sa);
+     if(!stralloc_endc(&dirs.out.sa, PATHSEP_C))
+       stralloc_catc(&dirs.out.sa, PATHSEP_C);
+     strlist_nul(&dirs.out);*/
 
   var_setb("DISTDIR", dirs.out.sa.s, dirs.out.sa.len);
   var_setb("BUILDDIR", dirs.work.sa.s, dirs.work.sa.len);
@@ -5617,7 +5630,7 @@ main(int argc, char* argv[]) {
   if(dirs.build.sa.len == 0) {
     if(strlist_contains(&dirs.out, "build")) {
       stralloc_copy(&dirs.build.sa, &dirs.out.sa);
-      // path_relative(dirs.out.sa.s,
+      // path_relative_to(dirs.out.sa.s,
       // dirs.this.sa.s,
       // &dirs.build.sa);
     } else if(tools.toolchain && !strlist_contains(&dirs.this, "build")) {
@@ -5658,14 +5671,14 @@ main(int argc, char* argv[]) {
   /*
     strlist_nul(&dirs.out);
     strlist_nul(&dirs.this);
-    path_relative(dirs.out.sa.s,
+    path_relative_to(dirs.out.sa.s,
     dirs.this.sa.s, &dirs.out.sa);
   */
   // debug_sa("dirs.work",
   // &dirs.work.sa);
   strlist_nul(&dirs.this);
   strlist_nul(&dirs.out);
-  path_relative(dirs.this.sa.s, dirs.out.sa.s, &srcdir);
+  path_relative_to(dirs.this.sa.s, dirs.out.sa.s, &srcdir);
   stralloc_nul(&srcdir);
   // debug_sa("srcdir", &srcdir);
   if(dirs.out.sa.len) {
@@ -5677,7 +5690,7 @@ main(int argc, char* argv[]) {
     // &dirs.out.sa);
     path_absolute_sa(&dirs.out.sa);
     stralloc_zero(&tmp);
-    path_relative(dirs.this.sa.s, dirs.out.sa.s, &tmp);
+    path_relative_to(dirs.this.sa.s, dirs.out.sa.s, &tmp);
     // if(tmp.len) {
     stralloc_copy(&srcdir, &tmp);
     // debug_sa("srcdir", &srcdir);
@@ -5685,7 +5698,7 @@ main(int argc, char* argv[]) {
     stralloc_zero(&tmp);
   }
   // debug_sa("srcdir", &srcdir);
-  path_relative(dirs.build.sa.s, dirs.out.sa.s, &tmp);
+  path_relative_to(dirs.build.sa.s, dirs.out.sa.s, &tmp);
   // debug_sa("tmp", &tmp);
   if(dirs.build.sa.len > dirs.out.sa.len && byte_equal(dirs.out.sa.s, dirs.out.sa.len, dirs.build.sa.s)) {
     const char* x = dirs.build.sa.s + dirs.out.sa.len;
@@ -5697,7 +5710,7 @@ main(int argc, char* argv[]) {
     }
     stralloc_catb(&dirs.work.sa, x, n);
   }
-  //  path_relative(dirs.build.sa.s,
+  //  path_relative_to(dirs.build.sa.s,
   //  dirs.out.sa.s, &dirs.work.sa);
   strlist_nul(&dirs.work);
   stralloc_replacec(&dirs.work.sa, pathsep_make == '/' ? '\\' : '/', pathsep_make);
@@ -5876,7 +5889,7 @@ main(int argc, char* argv[]) {
   if(str_start(tools.make, "g")) {
     stralloc builddir;
     stralloc_init(&builddir);
-    path_relative(dirs.build.sa.s, dirs.work.sa.s, &builddir);
+    path_relative_to(dirs.build.sa.s, dirs.work.sa.s, &builddir);
     stralloc_nul(&builddir);
     if(!stralloc_endc(&dirs.work.sa, PATHSEP_C))
       stralloc_catc(&dirs.work.sa, PATHSEP_C);

@@ -130,7 +130,7 @@ TEST(test_path_num_sa) {}
 TEST(test_path_exists) {}
 
 /*
- * int path_relative(const char*, const char* to, stralloc* rel);
+ * int path_relative_to(const char*, const char* to, stralloc* rel);
  */
 
 TEST(test_path_relative) {}

@@ -148,7 +148,7 @@
 #include "lib/path/path_len.c"
 #include "lib/path/path_getcwd.c"
 #include "lib/path/path_absolute.c"
-#include "lib/path/path_relative.c"
+#include "lib/path/path_relative_to.c"
 #include "lib/path/path_gethome.c"
 #include "lib/path/path_split.c"
 #include "lib/path/path_exists.c"

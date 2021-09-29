@@ -67,9 +67,9 @@ size_t path_num(const char* p, size_t len, int n);
 size_t path_num_sa(const char* p, size_t len, stralloc* sa, int n);
 int path_readlink(const char* path, stralloc* sa);
 int path_realpath(const char* path, stralloc* sa, int symbolic, stralloc* cwd);
-int path_relative(const char* path, const char* relative_to, stralloc* out);
-
-int path_relative(const char* path, const char* relative_to, stralloc* out);
+int path_relative(const char*, stralloc*);
+int path_relative_to_b(const char*, size_t, const char*, size_t n2, stralloc* out);
+int path_relative_to(const char*, const char*, stralloc*);
 
 size_t path_right(const char* s, size_t n);
 size_t path_skip(const char* s, size_t n);
@@ -78,7 +78,7 @@ size_t path_skip_separator(const char* p, size_t n);
 size_t path_skip_component(const char* p, size_t n);
 
 SizePair path_common_prefix(const char* s1, size_t n1, const char* s2, size_t n2);
-int path_relative_b(const char* s1, size_t n1, const char* s2, size_t n2, stralloc* out);
+int path_relative_to_b(const char* s1, size_t n1, const char* s2, size_t n2, stralloc* out);
 
 void path_concat(const char* a, const char* b, stralloc* out);
 void path_concatb(const char* a, size_t alen, const char* b, size_t blen, stralloc* out);

@@ -1,6 +1,11 @@
 #include "../path.h"
 
 int
-path_relative(const char* path, const char* relative_to, stralloc* out) {
-  return path_relative_b(path, str_len(path), relative_to, str_len(relative_to), out);
+path_relative(const char* path, stralloc* out) {
+  int ret;
+  stralloc cwd;
+  path_getcwd(&cwd);
+  ret=path_relative_to_b(path, str_len(path), cwd.s, cwd.len, out);
+  stralloc_free(&cwd);
+  return ret;
 }

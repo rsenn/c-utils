@@ -157,7 +157,7 @@ output_mplab_project(buffer* b, MAP_T* _rules, MAP_T* vars, const strlist* inclu
   strlist_foreach_s(include_dirs, dir) {
 
     stralloc_zero(&sa);
-    path_relative(dir, dirs.out.sa.s, &sa);
+    path_relative_to(dir, dirs.out.sa.s, &sa);
     if(stralloc_endb(&sa, "/", 1))
       sa.len -= 1;
 
@@ -250,7 +250,7 @@ output_mplab_project(buffer* b, MAP_T* _rules, MAP_T* vars, const strlist* inclu
       // &dirs.work.sa);
       // debug_sa("dirs.out",
       // &dirs.out.sa);
-      path_relative(sa.s, dirs.out.sa.s, &file);
+      path_relative_to(sa.s, dirs.out.sa.s, &file);
       // debug_sa("file", &file);
       stralloc_replacec(&file, '/', '\\');
       stralloc_nul(&file);
