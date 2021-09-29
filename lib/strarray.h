@@ -112,6 +112,9 @@ int strarray_unshiftn(strarray*, const char* const* v, size_t n);
 #ifdef STRALLOC_H
 int strarray_emplace_sa(strarray* arr, stralloc* sa);
 #endif
+#ifdef SET_H
+void set_tostrarray(const set_t*, strarray*);
+#endif
 
 #ifdef __cplusplus
 }

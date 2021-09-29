@@ -73,6 +73,7 @@ static const char* libpfx = DEFAULT_LIBPFX;
 static const char *make_begin_inline, *make_sep_inline, *make_end_inline;
 static const char* comment = "#";
 static const char* cross_compile = "";
+static const char *srcdir_varname = "DISTDIR", *builddir_varname = "BUILDDIR";
 static stralloc output_name;
 static strlist vpath;
 static stralloc srcdir;
@@ -83,7 +84,6 @@ strlist include_dirs = {0}, link_dirs = {0};
 set_t link_libraries = {0, 0, 0, byte_hash};
 set_t build_directories = {0, 0, 0, byte_hash};
 // static strlist pptoks;
-static MAP_T sourcedirs, targetdirs, rules, vars;
 static dlist sourcelist;
 static const char* newline = "\n";
 static int batch, shell, ninja;
@@ -103,6 +103,7 @@ dirs_t dirs;
 tools_t tools;
 config_t cfg = {.mach = {0, 0}, .sys = {0, 0}, .chip = {0, 0, 0}, .build_type = 1, .lang = LANG_CXX};
 tool_config_t tool_config = 0;
+MAP_T sourcedirs, targetdirs, rules, vars;
 
 void
 map_keys(const MAP_T* m, strlist* out) {
@@ -903,6 +904,7 @@ var_subst(const stralloc* in, stralloc* out, const char* pfx, const char* sfx, i
  */
 target*
 rule_get(const char* name) {
+  static int rule_serial;
   target* ret = NULL;
   MAP_PAIR_T t = NULL;
   size_t len = str_len(name);
@@ -910,6 +912,7 @@ rule_get(const char* name) {
     target tgt;
     byte_zero(&tgt, sizeof(struct target_s));
     tgt.name = str_ndup(name, len);
+    tgt.serial = ++rule_serial;
     set_init(&tgt.output, 0);
     set_adds(&tgt.output, name);
     set_init(&tgt.prereq, 0);
@@ -1284,6 +1287,14 @@ rule_deps_indirect(target* t, set_t* s) {
   }
   // set_deletes(s, t->name);
   strlist_free(&hier);
+}
+
+void
+rule_prereq(target* t, set_t* s) {
+  set_iterator_t it;
+  const char* x;
+  size_t n;
+  set_foreach(&t->prereq, it, x, n) { set_add(s, x, n); }
 }
 
 void
@@ -4044,10 +4055,10 @@ input_process_rules(target* all) {
        stralloc_catc(&dirs.out.sa, PATHSEP_C);
      strlist_nul(&dirs.out);*/
 
-  if(!var_isset("DISTDIR")) {
+  if(!var_isset(srcdir_varname)) {
     path_relative_b(dirs.out.sa.s, dirs.out.sa.len, &dirs.out.sa);
 
-    var_setb("DISTDIR", dirs.out.sa.s, dirs.out.sa.len);
+    var_setb(srcdir_varname, dirs.out.sa.s, dirs.out.sa.len);
   }
 
   var_t *cflags = var_list("CFLAGS"), *cc = var_list("CC"), *defs = var_list("DEFS"),
@@ -4738,6 +4749,8 @@ set_make_type() {
     inst = "copy /y";
   } else if(str_equal(tools.make, "mplab")) {
   } else if(str_equal(tools.make, "cmake")) {
+    builddir_varname = "CMAKE_CURRENT_BINARY_DIR";
+    srcdir_varname = "CMAKE_CURRENT_SOURCE_DIR";
   }
   if(inst_bins || inst_libs)
     var_set("INSTALL", inst);
@@ -5878,7 +5891,7 @@ main(int argc, char* argv[]) {
 
       set_at_sa(&build_directories, 0, &builddir);
 
-      var_setb("BUILDDIR", builddir.s, builddir.len);
+      var_setb(builddir_varname, builddir.s, builddir.len);
       stralloc_free(&builddir);
     }
   }
@@ -6010,7 +6023,7 @@ main(int argc, char* argv[]) {
     stralloc_nul(&builddir);
     if(!stralloc_endc(&dirs.work.sa, PATHSEP_C))
       stralloc_catc(&dirs.work.sa, PATHSEP_C);
-    var_set("BUILDDIR", dirs.work.sa.s);
+    var_set(builddir_varname, dirs.work.sa.s);
     stralloc_copys(&dirs.build.sa, "$(BUILDDIR)");
   }
 

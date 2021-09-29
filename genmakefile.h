@@ -338,4 +338,6 @@ extern tool_config_t tool_config;
 extern const char* project_name;
 extern int cmd_objs, cmd_libs, cmd_bins;
 extern set_t link_libraries;
+extern MAP_T sourcedirs, targetdirs, rules, vars;
+
 #endif
