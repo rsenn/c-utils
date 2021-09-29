@@ -40,7 +40,7 @@ const char* filename;
 buffer terminal;
 
 static stralloc command_buf;
-static int end_of_file;
+static int end_of_file, tab_size = 8;
 
 volatile sig_atomic_t running = 1, reset = 0, resized = 0, command_mode = 0, line_numbers = 0;
 
@@ -69,7 +69,11 @@ line_numbytes(const char* s, size_t maxwidth) {
       i += n;
       continue;
     }
-    width++;
+    if(s[i] == '\t')
+      width += tab_size;
+    else
+      width++;
+
     if(width > maxwidth)
       break;
     i++;
@@ -79,8 +83,8 @@ line_numbytes(const char* s, size_t maxwidth) {
 
 void
 read_terminal_properties(void) {
-  terminal_rows = terminal_getwidth();
-  terminal_cols = terminal_getheight();
+  terminal_cols = terminal_getwidth();
+  terminal_rows = terminal_getheight();
   display_rows = terminal_rows - 1;
 }
 
@@ -99,6 +103,12 @@ read_line(buffer* buf) {
     s = line.s;
     stralloc_init(&line);
     for(i = 0; s[i]; i++) {
+      if(s[i] == '\t') {
+        int j;
+        //  for(j = 0; j < tab_size; j++)
+        stralloc_CATC(&line, '\t');
+        continue;
+      }
       if(s[i + 1] == 8 && s[i + 2] == s[i]) {
         if(!underline) {
           underline = 1;
@@ -706,6 +716,7 @@ main(int argc, char* argv[]) {
 #endif
 
   terminal_init();
+  terminal_linewrap_disable();
   terminal_set_alternate_screen();
 
   buffer_flush(buffer_1);

@@ -55,8 +55,14 @@ extern buffer terminal_buffer;
 
 #define terminal_cursor_save() terminal_command_char('s')
 #define terminal_cursor_restore() terminal_command_char('u')
-#define terminal_linewrap_enable() terminal_command_number_char(7, 'h')
-#define terminal_linewrap_disable() terminal_command_number_char(7, 'l')
+static inline void
+terminal_linewrap_enable() {
+  terminal_command_number_char(7, 'h');
+}
+static inline void
+terminal_linewrap_disable() {
+  terminal_command_number_char(7, 'l');
+}
 
 void terminal_command_char(char c);
 void terminal_command_number_char(int n, char c);

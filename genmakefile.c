@@ -3428,13 +3428,25 @@ get_keys(MAP_T* map, strlist* list) {
   MAP_FOREACH(*map, t) { strlist_push(list, MAP_ITER_KEY(t)); }
 }
 
+void
+input_process_command_adjust(const char* y, stralloc* out) {
+
+  stralloc_init(out);
+  path_appends(dirs.build.sa.s, out);
+  path_appends(y, out);
+  path_relative(out->s, dirs.out.sa.s, out);
+  path_prepends(".", out);
+  path_collapse_sa(out);
+  stralloc_nul(out);
+}
+
 int
 input_process_command(stralloc* cmd, int argc, char* argv[]) {
   size_t n, len;
   int compile = 0, link = 0, objects = 0;
   const char *x, *y;
   char **p, **end = argv + argc;
-  stralloc output, dir;
+  stralloc output, dir, path;
   strlist args, files, flags, libs;
 
   stralloc reldir = {0, 0, 0};
@@ -3471,11 +3483,9 @@ input_process_command(stralloc* cmd, int argc, char* argv[]) {
       }
       if(is_var(x))
         continue;
-
       if(output.len)
         stralloc_catc(&output, ' ');
       stralloc_cats(&output, x);
-
       strlist_push(&flags, x);
     }
   } else {
@@ -3500,67 +3510,50 @@ input_process_command(stralloc* cmd, int argc, char* argv[]) {
         }
         if(len) {
           strlist_replaceb(&args, x, len, "$@", 2);
-
           stralloc_copyb(&output, x, len);
         }
       }
     }
     for(p = argv; (len = *p ? str_len(*p) : 0, x = *p, p < end); p++) {
       len = str_len(x);
-
       if(len >= 2 && byte_equal(x, 2, "-o")) {
         y = (x[2] == '\0') ? *++p : x + 2;
-        if(str_startb(y, reldir.s, reldir.len)) {
-          y += reldir.len;
-        }
+        input_process_command_adjust(y, &path);
         strlist_push(&args, "-o");
-        strlist_push(&args, y);
+        strlist_push(&args, path.s);
         strlist_push(&flags, "-o");
-        strlist_push(&flags, y);
+        strlist_push(&flags, path.s);
         stralloc_copys(&output, y);
+        stralloc_free(&path);
         continue;
       } else if(len >= 2 && byte_equal(x, 2, "-D")) {
         y = x + ((x[2] == '\0') ? 3 : 2);
         push_define(y);
       } else if(len >= 2 && byte_equal(x, 2, "-I")) {
-        stralloc path;
-        stralloc_init(&path);
         y = x + ((x[2] == '\0') ? 3 : 2);
-
-        path_appends(dirs.build.sa.s, &path);
-        path_appends(y, &path);
-        path_relative(path.s, dirs.out.sa.s, &path);
-        path_prepends(".", &path);
-
-        path_concat(".", path.s, &path);
-        path_collapse_sa(&path);
-        /*        if(str_startb(y, reldir.s, reldir.len)) {
-                  y += reldir.len;
-                }*/
+        input_process_command_adjust(y, &path);
         strlist_push(&args, "-I");
         stralloc_cats(&args.sa, path.s);
         strlist_push(&flags, "-I");
         stralloc_cats(&flags.sa, path.s);
         includes_add(y);
         x = y;
+        stralloc_free(&path);
         continue;
       } else if(len >= 2 && byte_equal(x, 2, "-L")) {
         y = x + ((x[2] == '\0') ? 3 : 2);
-        if(str_startb(y, reldir.s, reldir.len)) {
-          y += reldir.len;
-        }
+        input_process_command_adjust(y, &path);
         strlist_push(&args, "-L");
-        stralloc_cats(&args.sa, y);
+        stralloc_cats(&args.sa, path.s);
         strlist_push(&flags, "-L");
-        stralloc_cats(&flags.sa, y);
+        stralloc_cats(&flags.sa, path.s);
         libdirs_add(y);
         x = y;
+        stralloc_free(&path);
         continue;
       } else if(len >= 2 && byte_equal(x, 2, "-l")) {
         y = x + ((x[2] == '\0') ? 3 : 2);
         strlist_push(&libs, x);
-        // with_lib(x);
-
       } else if(len >= 3 && byte_equal(x, 3, "-MF")) {
         size_t i = len > 3 ? 3 : 4;
         y = x + i;
@@ -3576,34 +3569,22 @@ input_process_command(stralloc* cmd, int argc, char* argv[]) {
         ++p;
       } else if(len >= 1 && x[0] != '-') {
         y = x;
-        if(str_startb(y, reldir.s, reldir.len)) {
-          y += reldir.len;
-          len -= reldir.len;
-        }
         if(is_filename_b(y, len)) {
-          stralloc file;
-          stralloc_init(&file);
-
-          strlist_replaceb(&args, y, len, "$<", 2);
-          //     stralloc_replaceb(&args.sa, x-1, len+1, " $<", 3);
-          //           stralloc_copys(&file, x);
-
-          //    path_normalize(x, &file);
-
-          strlist_pushb(&files, y, len);
-
+          input_process_command_adjust(y, &path);
+          strlist_push_sa(&files, &path);
+          strlist_push_sa(&args, &path);
 #ifdef DEBUG_OUTPUT_
           buffer_puts(buffer_2, "File '");
-          buffer_put(buffer_2, y, len);
+          buffer_put(buffer_2, path.s, len);
           buffer_puts(buffer_2, "'");
           buffer_putnlflush(buffer_2);
 #endif
-
-          if(is_source_sa(&file))
-            sources_add_b(file.s, file.len);
-          stralloc_free(&file);
+          if(is_source_sa(&path))
+            sources_add_b(path.s, path.len);
+          stralloc_free(&path);
         }
         x = y;
+        continue;
       }
 
       strlist_push(&args, x);
@@ -3623,8 +3604,7 @@ input_process_command(stralloc* cmd, int argc, char* argv[]) {
   /*strlist_cat(&args, &flags);
   strlist_cat(&args, &files);*/
 
-  stralloc_catc(cmd, ' ');
-  stralloc_cat(cmd, &args.sa);
+  stralloc_copy(cmd, &args.sa);
   stralloc_nul(cmd);
 
 #ifdef DEBUG_OUTPUT_
@@ -3751,7 +3731,7 @@ input_process_command(stralloc* cmd, int argc, char* argv[]) {
       target* rule;
       sacmd = alloc_zero(sizeof(stralloc));
       // stralloc_move(sacmd, cmd);
-      stralloc_copy(sacmd, cmd);
+      stralloc_copy(sacmd, &args.sa);
       pathlen = reldir.len;
       stralloc_cat(&reldir, &output);
 
@@ -4310,7 +4290,7 @@ output_make_rule(buffer* b, target* rule) {
   stralloc_catc(&output, '\n');
   if(str_equal(tools.make, "gmake")) {
     stralloc_replaces(&output, dirs.work.sa.s, "$(BUILDDIR)");
-    stralloc_replaces(&output, dirs.out.sa.s, "$(DISTDIR)");
+    // stralloc_replaces(&output, dirs.out.sa.s, "$(DISTDIR)");
   }
   buffer_putsa(b, &output);
   buffer_flush(b);
