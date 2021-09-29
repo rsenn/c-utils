@@ -3518,7 +3518,16 @@ input_process_command(stralloc* cmd, int argc, char* argv[], const char* file, s
   strlist_init(&files, ' ');
   strlist_init(&flags, ' ');
   strlist_init(&libs, ' ');
-  if(!is_command_b(cmd->s, cmd->len))
+
+  for(int i = 0; i < argc; i++) {
+    if(is_source(argv[i])) {
+      compile = 1;
+      break;
+    }
+  }
+  if(compile || link || lib) {
+
+  } else if(!is_command_b(cmd->s, cmd->len))
     return 0;
 
   strlist_push_sa(&args, cmd);
@@ -3570,20 +3579,23 @@ input_process_command(stralloc* cmd, int argc, char* argv[], const char* file, s
         }
         if(len) {
           strlist_replaceb(&args, x, len, "$@", 2);
-          stralloc_copyb(&output, x, byte_chrs(x, len, "\r\n", 2));
+          stralloc_copyb(&output, x, str_chrs(x, "\r\n", 2));
         }
       }
     }
     for(p = argv; (len = *p ? str_len(*p) : 0, x = *p, p < end); p++) {
       len = str_len(x);
-      if(len >= 2 && byte_equal(x, 2, "-o")) {
+      if(len >= 2 && x[0] == '>') {
+        y = x + 1 + (x[1] == '>');
+        stralloc_copyb(&output, y, str_chrs(y, "\r\n", 2));
+      } else if(len >= 2 && byte_equal(x, 2, "-o")) {
         y = (x[2] == '\0') ? *++p : x + 2;
         input_process_path(y, &path);
         strlist_push(&args, "-o");
         strlist_push(&args, path.s);
         strlist_push(&flags, "-o");
         strlist_push(&flags, path.s);
-        stralloc_copys(&output, y);
+        stralloc_copyb(&output, y, str_chrs(y, "\r\n", 2));
         stralloc_free(&path);
         continue;
       } else if(len >= 2 && byte_equal(x, 2, "-M")) {
@@ -3968,8 +3980,10 @@ input_process_line(const char* x, size_t n, const char* file, size_t line) {
   }
 
   if(strarray_size(&args) && command.s) {
-    if(*(av = strarray_to_argv(&args)))
-      ret = input_process_command(&command, strarray_size(&args), av, file, line);
+    if(*(av = strarray_to_argv(&args))) {
+      int ac = strarray_size(&args);
+      ret = input_process_command(&command, ac, av, file, line);
+    }
     if(av)
       alloc_free(av);
   }
