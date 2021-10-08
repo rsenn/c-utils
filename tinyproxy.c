@@ -717,7 +717,7 @@ sockbuf_log_data(socketbuf_t* sb, bool send, char* x, size_t len) {
                             /*maxlen > 0 && maxlen <
                                end ? maxlen :*/
                             end,
-                            &fmt_escapecharnonprintable)
+                            &fmt_escapecharc)
             : buffer_put(&log,
                          x,
                          /*maxlen > 0 && maxlen <
