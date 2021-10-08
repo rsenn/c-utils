@@ -130,7 +130,7 @@ main(int argc, char* argv[]) {
     input = buffer_0;
   } else {
     if(buffer_mmapprivate(&infile, in_filename) < 0) {
-      buffer_putm_internal(buffer_2, "ERROR opening: ", in_filename, 0);
+      buffer_putm_internal(buffer_2, "ERROR opening: ", in_filename, NULL);
       buffer_putnlflush(buffer_2);
       return 1;
     }
@@ -146,7 +146,7 @@ main(int argc, char* argv[]) {
     output = buffer_1;
   } else {
     if(buffer_truncfile(&outfile, out_filename) < 0) {
-      buffer_putm_internal(buffer_2, "ERROR opening: ", out_filename, 0);
+      buffer_putm_internal(buffer_2, "ERROR opening: ", out_filename, NULL);
       buffer_putnlflush(buffer_2);
       return 1;
     }

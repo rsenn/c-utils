@@ -652,7 +652,7 @@ print_image_links(int first,
       buffer_puts(buffer_1, " (0x");
       buffer_putxlonglong0(buffer_1, item->address_offset, 8);
       buffer_putm_internal(
-          buffer_1, item->forward_str ? " ->" : "", item->forward_str ? item->forward_str : "", " <", 0);
+          buffer_1, item->forward_str ? " ->" : "", item->forward_str ? item->forward_str : "", " <", NULL);
       buffer_putulong(buffer_1, item->section_index);
       buffer_puts(buffer_1, ">");
       buffer_putnlflush(buffer_1);
@@ -674,7 +674,7 @@ print_image_links(int first,
     if(!first) {
       buffer_putsflush(buffer_1, " => not found\n");
     } else {
-      buffer_putm_internal(buffer_2, self->module, ": not found\n", 0);
+      buffer_putm_internal(buffer_2, self->module, ": not found\n", NULL);
       buffer_flush(buffer_2);
     }
     unresolved = 1;
@@ -685,7 +685,7 @@ print_image_links(int first,
       buffer_puts(buffer_1, " (");
       buffer_putptr(buffer_1, self->mapped_address);
     } else {
-      buffer_putm_internal(buffer_1, " => ", self->resolved_module, " (0x", 0);
+      buffer_putm_internal(buffer_1, " => ", self->resolved_module, " (0x", NULL);
       buffer_putptr(buffer_1, self->mapped_address);
     }
     buffer_putsflush(buffer_1, ")\n");
@@ -924,7 +924,7 @@ main(int argc, char** argv) {
   {
     const char* pathenv = getenv("PATH");
 #ifdef DEBUG_OUTPUT_
-    buffer_putm_internal(buffer_2, "PATH=", pathenv, 0);
+    buffer_putm_internal(buffer_2, "PATH=", pathenv, NULL);
     buffer_putnlflush(buffer_2);
 #endif
 
@@ -945,7 +945,7 @@ main(int argc, char** argv) {
 
     for(kidx = 0; keys[kidx]; ++kidx) {
       if(registry_query(keys[kidx], "Path", &rpath)) {
-        buffer_putm_internal(buffer_2, "Registry path [", keys[kidx], "]: ", 0);
+        buffer_putm_internal(buffer_2, "Registry path [", keys[kidx], "]: ", NULL);
         buffer_putsa(buffer_2, &rpath);
         buffer_putnlflush(buffer_2);
 

@@ -60,7 +60,7 @@ static const char*
 suite_guid(stralloc* sa) {
   int suite = get_suite();
   stralloc_zero(sa);
-  stralloc_catm_internal(sa, "{", compiler_suites[suite], "}", 0);
+  stralloc_catm_internal(sa, "{", compiler_suites[suite], "}", NULL);
   stralloc_nul(sa);
   return sa->s;
 }
@@ -70,7 +70,7 @@ make_tool_key(stralloc* sa, const char* key) {
   int suite = get_suite();
 
   stralloc_zero(sa);
-  stralloc_catm_internal(sa, "TS{", compiler_settings[suite], "}", key, 0);
+  stralloc_catm_internal(sa, "TS{", compiler_settings[suite], "}", key, NULL);
   stralloc_nul(sa);
   return sa->s;
 }

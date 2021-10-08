@@ -415,43 +415,43 @@ execute_cmd() {
 
   n = strlist_count(&includedirs);
   for(i = 0; i < n; ++i) {
-    strlist_pushm_internal(&cmd, "-I", strlist_at(&includedirs, i), 0);
+    strlist_pushm_internal(&cmd, "-I", strlist_at(&includedirs, i), NULL);
   }
 
   n = strlist_count(&defines);
   for(i = 0; i < n; ++i) {
-    strlist_pushm_internal(&cmd, "-D", strlist_at(&defines, i), 0);
+    strlist_pushm_internal(&cmd, "-D", strlist_at(&defines, i), NULL);
   }
   if(type == PICC || type == PICC18 || type == XC8) {
     char nbuf[FMT_ULONG];
 
-    strlist_pushm_internal(&cmd, "--chip=", chip.s, 0);
+    strlist_pushm_internal(&cmd, "--chip=", chip.s, NULL);
 
     if(mode != PREPROCESS) {
 
       if(runtime.len > 0) {
         stralloc_0(&runtime);
-        strlist_pushm_internal(&cmd, "--runtime=", runtime.s, 0);
+        strlist_pushm_internal(&cmd, "--runtime=", runtime.s, NULL);
       }
       if(optimization.len > 0) {
         stralloc_0(&optimization);
-        strlist_pushm_internal(&cmd, "--opt=", optimization.s, 0);
+        strlist_pushm_internal(&cmd, "--opt=", optimization.s, NULL);
       }
       if(debugger.len > 0) {
         stralloc_0(&debugger);
-        strlist_pushm_internal(&cmd, "--debugger=", debugger.s, 0);
+        strlist_pushm_internal(&cmd, "--debugger=", debugger.s, NULL);
       }
       if(err_format.len > 0) {
         stralloc_0(&err_format);
-        strlist_pushm_internal(&cmd, "--errformat=", err_format.s, 0);
+        strlist_pushm_internal(&cmd, "--errformat=", err_format.s, NULL);
       }
       if(warn_format.len > 0) {
         stralloc_0(&warn_format);
-        strlist_pushm_internal(&cmd, "--warnformat=", warn_format.s, 0);
+        strlist_pushm_internal(&cmd, "--warnformat=", warn_format.s, NULL);
       }
       if(msg_format.len > 0) {
         stralloc_0(&msg_format);
-        strlist_pushm_internal(&cmd, "--msgformat=", msg_format.s, 0);
+        strlist_pushm_internal(&cmd, "--msgformat=", msg_format.s, NULL);
       }
       strlist_push(&cmd, "--mode=PRO");
 
@@ -514,10 +514,10 @@ execute_cmd() {
       }
       stralloc_cat(&outf, &output_file);
       stralloc_0(&outf);
-      strlist_pushm_internal(&cmd, "-O", outf.s, 0);
+      strlist_pushm_internal(&cmd, "-O", outf.s, NULL);
     } else if(output_dir.len > 0) {
       stralloc_0(&output_dir);
-      strlist_pushm_internal(&cmd, "--outdir=", output_dir.s, 0);
+      strlist_pushm_internal(&cmd, "--outdir=", output_dir.s, NULL);
     }
 
   } else if(type == SDCC) {
@@ -529,10 +529,10 @@ execute_cmd() {
 
     if(get_machine(&chip, &machine) == 0) {
       stralloc_0(&machine);
-      strlist_pushm_internal(&cmd, "-m", machine.s, 0);
+      strlist_pushm_internal(&cmd, "-m", machine.s, NULL);
     }
 
-    strlist_pushm_internal(&cmd, "-p", chip.s, 0);
+    strlist_pushm_internal(&cmd, "-p", chip.s, NULL);
 
     switch(mode) {
       case PREPROCESS: {
@@ -553,7 +553,7 @@ execute_cmd() {
     }
 
     if(debug) {
-      strlist_pushm_internal(&cmd, "--debug", "--debug-xtra", 0);
+      strlist_pushm_internal(&cmd, "--debug", "--debug-xtra", NULL);
     }
     if(output_dir.len > 0) {
       stralloc_copy(&outp, &output_dir);

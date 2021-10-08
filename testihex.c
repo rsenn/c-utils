@@ -35,7 +35,7 @@ putdata(buffer* out, const uint8* x, size_t n) {
 
 static void
 puthex(const char* name, uint32 value) {
-  buffer_putm_internal(buffer_2, name, " = 0x", 0);
+  buffer_putm_internal(buffer_2, name, " = 0x", NULL);
   buffer_putxlong0(buffer_2, value, 4);
   buffer_putnlflush(buffer_2);
 }
@@ -93,7 +93,7 @@ hex_load(ihex_file* hex, const char* filename) {
     ret = ihex_record_read(&r, sa.s, sa.len);
     ret = ihex_read_buf(hex, x, sz);
 
-    buffer_putm_internal(buffer_2, "Loaded '", filename, "' ... ", 0);
+    buffer_putm_internal(buffer_2, "Loaded '", filename, "' ... ", NULL);
     buffer_putlong(buffer_2, ret);
     buffer_puts(buffer_2, " records");
     buffer_putnlflush(buffer_2);
@@ -187,7 +187,7 @@ hex_print(ihex_file* ihf, buffer* out) {
          break;*/
       /*
       buffer_putxlong0(out, a.off32, 8);
-      buffer_putm_internal(out, " ", ihex_typestr(p.r->type), "(", 0);
+      buffer_putm_internal(out, " ", ihex_typestr(p.r->type), "(", NULL);
       buffer_putulong(out, p.r->length);
       buffer_puts(out, ") ");
       putdata(out, p.r->data, p.r->length);
@@ -284,7 +284,7 @@ main(int argc, char* argv[]) {
     }
     bottom = mem_bottom(&hex_input);
     top = mem_top(&hex_input, mask);
-    buffer_putm_internal(buffer_2, "Input Hex File '", input_file, "':\n", 0);
+    buffer_putm_internal(buffer_2, "Input Hex File '", input_file, "':\n", NULL);
     hex_print(&hex_input, buffer_2);
 
     puthex("mem bottom", bottom);
@@ -327,7 +327,7 @@ main(int argc, char* argv[]) {
     hex_print(&hex_output, buffer_2);
 
     hex_save(&hex_output, output_file);
-    buffer_putm_internal(buffer_2, "Wrote '", output_file, "' ...", 0);
+    buffer_putm_internal(buffer_2, "Wrote '", output_file, "' ...", NULL);
     buffer_putnlflush(buffer_2);
   }
   /*  buffer_puts(buffer_2, "ret = ");

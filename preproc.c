@@ -79,7 +79,7 @@ emit_token(buffer* out, struct token* tok, const char* strbuf) {
     buffer_puts(buffer_2, "oops, dunno how to handle tt ");
     buffer_putlong(buffer_2, (int)tok->type);
 
-    buffer_putm_internal(buffer_2, " (", strbuf, ")", 0);
+    buffer_putm_internal(buffer_2, " (", strbuf, ")", NULL);
     buffer_putnlflush(buffer_2);
   }
 }
