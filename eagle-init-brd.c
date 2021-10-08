@@ -104,7 +104,7 @@ dump_part(part_t const* p) {
  */
 void
 dump_instance(instance_t const* i) {
-  buffer_putm_internal(buffer_2, "dump_instance \"", i->part, ":", i->gate, "\"", 0);
+  buffer_putm_internal(buffer_2, "dump_instance \"", i->part, ":", i->gate, "\"", NULL);
   buffer_puts(buffer_2, " x=");
   buffer_putdouble(buffer_2, i->x, 2);
   buffer_puts(buffer_2, ", y=");
@@ -129,7 +129,7 @@ output_move(const char* name, double x, double y) {
   stralloc cmd;
   stralloc_init(&cmd);
 
-  stralloc_catm_internal(&cmd, "MOVE ", name, " (", 0);
+  stralloc_catm_internal(&cmd, "MOVE ", name, " (", NULL);
   stralloc_catdouble(&cmd, x, 2);
   stralloc_catc(&cmd, ' ');
   stralloc_catdouble(&cmd, y, 2);
@@ -148,7 +148,7 @@ output_rotate(const char* name, long angle) {
 
   stralloc_cats(&cmd, "ROTATE =R");
   stralloc_catlong(&cmd, angle % 360);
-  stralloc_catm_internal(&cmd, " '", name, "'", 0);
+  stralloc_catm_internal(&cmd, " '", name, "'", NULL);
 
   strlist_push_sa(&cmds, &cmd);
   stralloc_free(&cmd);
@@ -435,7 +435,7 @@ main(int argc, char* argv[]) {
   if(argc > 1) {
     filename = argv[1];
   } else {
-    buffer_putm_internal(buffer_2, "Usage: ", mystr_basename(argv[0]), " <filename>", 0);
+    buffer_putm_internal(buffer_2, "Usage: ", mystr_basename(argv[0]), " <filename>", NULL);
     buffer_putnlflush(buffer_2);
     return 1;
   }

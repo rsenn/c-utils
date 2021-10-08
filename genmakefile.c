@@ -1320,7 +1320,7 @@ rule_prereq_recursive(target* t, set_t* s) {
 void
 rule_dump(target* rule) {
 #ifdef DEBUG_OUTPUT
-  buffer_putm_internal(buffer_2, "\n  ", YELLOW256, "NAME   ", NC, " ", 0);
+  buffer_putm_internal(buffer_2, "\n  ", YELLOW256, "NAME   ", NC, " ", NULL);
   buffer_puts(buffer_2, rule->name);
   buffer_puts(buffer_2, "\n  " PURPLE256 "RECIPE " NC " ");
   buffer_putsa_escaped(buffer_2, &rule->recipe, fmt_escapecharshell);
@@ -2903,7 +2903,7 @@ gen_clean_rule() {
   strlist_foreach_s(&delete_args, arg) {
     if(delete_command.len - lineoffs + str_len(arg) >= MAX_CMD_LEN) {
       stralloc_readyplus(&delete_command, cmdoffs + 3);
-      stralloc_catm_internal(&delete_command, newline, "\t", 0);
+      stralloc_catm_internal(&delete_command, newline, "\t", NULL);
       stralloc_catb(&delete_command, delete_command.s, cmdoffs);
       lineoffs = delete_command.len;
     }
@@ -3002,7 +3002,7 @@ gen_srcdir_compile_rules(sourcedir* sdir, const char* dir) {
       stralloc_cat(&target, &srcs);
     } else if(batchmode) {
       stralloc_zero(&target);
-      stralloc_catm_internal(&target, "{", dir, "}", ext, "{", dirs.work.sa.s, "}", exts.obj, ":", 0);
+      stralloc_catm_internal(&target, "{", dir, "}", ext, "{", dirs.work.sa.s, "}", exts.obj, ":", NULL);
     } else {
     }
     // stralloc_replacec(&target, pathsep_make == '/' ? '\\' : '/', pathsep_make);
@@ -3068,7 +3068,7 @@ gen_simple_compile_rules(sourcedir* srcdir, const char* dir, const char* fromext
   stralloc_init(&obj);
 
 #ifdef DEBUG_OUTPUT
-  buffer_putm_internal(buffer_2, "gen_simple_compile_rules '", dir, "' ", fromext, " ", toext, 0);
+  buffer_putm_internal(buffer_2, "gen_simple_compile_rules '", dir, "' ", fromext, " ", toext, NULL);
   buffer_putnlflush(buffer_2);
 #endif
 
@@ -3131,7 +3131,7 @@ gen_srcdir_lib_rule(sourcedir* srcdir, const char* name) {
 #endif
 
   if((str_start(tools.make, "g") || batchmode) && cfg.mach.arch != PIC) {
-    buffer_putm_internal(buffer_2, "gen_srcdir_compile_rules: ", name, 0);
+    buffer_putm_internal(buffer_2, "gen_srcdir_compile_rules: ", name, NULL);
     buffer_flush(buffer_2);
     dep = gen_srcdir_compile_rules(srcdir, name);
   } else {
@@ -3288,7 +3288,7 @@ gen_program_rule(const char* filename) {
     stralloc_weak(&compile->recipe, &compile_command);
     stralloc_zero(&compile->recipe);
     buffer_putm_internal(
-        buffer_2, "\033[38;5;82mcompile rule" NC " '", compile->name, "' recipe '", compile->recipe.s, "'", 0);
+        buffer_2, "\033[38;5;82mcompile rule" NC " '", compile->name, "' recipe '", compile->recipe.s, "'", NULL);
     buffer_putnlflush(buffer_2);
   }
   stralloc_zero(&bin);
@@ -3335,7 +3335,7 @@ gen_program_rule(const char* filename) {
     }
     stralloc_weak(&rule->recipe, &link_command);
     stralloc_nul(&rule->recipe);
-    buffer_putm_internal(buffer_2, "" BLUE256 "link rule" NC " '", rule->name, "' recipe '", rule->recipe.s, "'", 0);
+    buffer_putm_internal(buffer_2, "" BLUE256 "link rule" NC " '", rule->name, "' recipe '", rule->recipe.s, "'", NULL);
     buffer_putnlflush(buffer_2);
     includes_to_libs(&incs, &libs);
     target_ptrs(&libs, &rule->deps);
@@ -3382,7 +3382,7 @@ gen_link_rules(/*strarray* sources*/) {
     char* filename = (char*)file->name;
 
 #ifdef DEBUG_OUTPUT
-    buffer_putm_internal(buffer_2, "GEN_LINK_RULES file = ", filename, 0);
+    buffer_putm_internal(buffer_2, "GEN_LINK_RULES file = ", filename, NULL);
     buffer_putnlflush(buffer_2);
 #endif
 
@@ -3453,7 +3453,7 @@ gen_install_rules() {
     }
     if(!var_isset("prefix")) {
       var_set("prefix", "/usr");
-      stralloc_catm_internal(&inst->recipe, newline, "\t$(INSTALL_DIR) $(DESTDIR)$(prefix)", 0);
+      stralloc_catm_internal(&inst->recipe, newline, "\t$(INSTALL_DIR) $(DESTDIR)$(prefix)", NULL);
       if(!v) {
         v = var_set("INSTALL", "install")->value.sa.s;
         var_set("INSTALL_DIR", str_start(v, "install") ? "$(INSTALL) -d" : "mkdir");
@@ -3464,10 +3464,10 @@ gen_install_rules() {
     if(do_bin) {
       if(!var_isset("bindir")) {
         var_set("bindir", "$(prefix)/bin");
-        stralloc_catm_internal(&inst->recipe, newline, "\t$(INSTALL_DIR) $(DESTDIR)$(bindir)", 0);
+        stralloc_catm_internal(&inst->recipe, newline, "\t$(INSTALL_DIR) $(DESTDIR)$(bindir)", NULL);
       }
       var_set("INSTALL_EXEC", str_start(v, "install") ? "$(INSTALL) -m 755" : "$(INSTALL)");
-      stralloc_catm_internal(&inst->recipe, newline, "\t$(INSTALL_EXEC) ", MAP_ITER_KEY(t), " $(DESTDIR)$(bindir)", 0);
+      stralloc_catm_internal(&inst->recipe, newline, "\t$(INSTALL_EXEC) ", MAP_ITER_KEY(t), " $(DESTDIR)$(bindir)", NULL);
     }
     if(do_lib) {
       if(!var_isset("libdir")) {
@@ -3475,9 +3475,9 @@ gen_install_rules() {
         if(str_end(tools.compiler, "64")) {
           var_push("libdir", "$(X64)");
         }
-        stralloc_catm_internal(&inst->recipe, newline, "\t$(INSTALL_DIR) $(DESTDIR)$(libdir)", 0);
+        stralloc_catm_internal(&inst->recipe, newline, "\t$(INSTALL_DIR) $(DESTDIR)$(libdir)", NULL);
       }
-      stralloc_catm_internal(&inst->recipe, newline, "\t$(INSTALL_DATA) ", MAP_ITER_KEY(t), " $(DESTDIR)$(libdir)", 0);
+      stralloc_catm_internal(&inst->recipe, newline, "\t$(INSTALL_DATA) ", MAP_ITER_KEY(t), " $(DESTDIR)$(libdir)", NULL);
     }
   }
   return inst;
@@ -4036,7 +4036,7 @@ input_process_rules(target* all) {
       path_dirname(rule->name, &outdir.sa);
     }
 #ifdef DEBUG_OUTPUT_
-    buffer_putm_internal(buffer_2, "Rule: ", name, link ? " (link)" : compile ? " (compile)" : 0, 0);
+    buffer_putm_internal(buffer_2, "Rule: ", name, link ? " (link)" : compile ? " (compile)" : 0, NULL);
     buffer_putnlflush(buffer_2);
 #endif
   }
@@ -4192,7 +4192,7 @@ input_process_rules(target* all) {
       stralloc_free(&cmd);
     }
 #ifdef DEBUG_OUTPUT_
-    buffer_putm_internal(buffer_2, "Rule: ", name, compile ? " (compile)" : link ? " (link)" : "", "\n\t", 0);
+    buffer_putm_internal(buffer_2, "Rule: ", name, compile ? " (compile)" : link ? " (link)" : "", "\n\t", NULL);
     buffer_putsa(buffer_2, &rule->recipe);
     buffer_putnlflush(buffer_2);
 #endif
@@ -4271,7 +4271,7 @@ output_var(buffer* b, MAP_T* vars, const char* name, int serial) {
       extract_vars(var->value.sa.s, var->value.sa.len, &refvars);
       set_foreach(&refvars, it, ref, len) {
 #ifdef DEBUG_OUTPUT
-        buffer_putm_internal(buffer_2, "Var ", name, " ref: ", ref, 0);
+        buffer_putm_internal(buffer_2, "Var ", name, " ref: ", ref, NULL);
         buffer_putnlflush(buffer_2);
 #endif
         output_var(b, vars, ref, serial);
@@ -6060,7 +6060,7 @@ main(int argc, char* argv[]) {
     strarray_foreach(&sources, ptr) {
 
 #ifdef DEBUG_OUTPUT_
-      buffer_putm_internal(buffer_2, PINK256 "sourcedir_addsource" NC "(\"", *ptr, "\")", 0);
+      buffer_putm_internal(buffer_2, PINK256 "sourcedir_addsource" NC "(\"", *ptr, "\")", NULL);
       buffer_putnlflush(buffer_2);
 #endif
 
@@ -6176,7 +6176,7 @@ main(int argc, char* argv[]) {
       sourcedir* srcdir = *(sourcedir**)MAP_ITER_VALUE(t);
 
 #if DEBUG_OUTPUT_
-      buffer_putm_internal(buffer_2, "key: ", t->key, " pptoks: ", 0);
+      buffer_putm_internal(buffer_2, "key: ", t->key, " pptoks: ", NULL);
       buffer_putset(buffer_2, &srcdir->pptoks, ", ", 2);
 #endif
     }

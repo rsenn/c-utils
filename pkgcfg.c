@@ -531,8 +531,8 @@ pkg_read(buffer* b, pkg* p) {
         stralloc_prepends(&value, sysroot);
 
 #ifdef DEBUG_OUTPUT_
-      buffer_putm_internal(buffer_2, "Name: ", name.s, "\n", 0);
-      buffer_putm_internal(buffer_2, "Value: ", value.s, "\n", 0);
+      buffer_putm_internal(buffer_2, "Name: ", name.s, "\n", NULL);
+      buffer_putm_internal(buffer_2, "Value: ", value.s, "\n", NULL);
       buffer_flush(buffer_2);
 #endif
 
@@ -571,7 +571,7 @@ visit_set(const void* key, size_t key_len, const void* value, size_t value_len, 
   /* wordexp_sa(value, &v); */
 
 #ifdef DEBUG_OUTPUT_
-  buffer_putm_internal(buffer_2, "ENV SET ", key, "=", 0);
+  buffer_putm_internal(buffer_2, "ENV SET ", key, "=", NULL);
   buffer_putsa(buffer_2, &v);
   buffer_putnlflush(buffer_2);
 #endif
@@ -692,7 +692,7 @@ pkg_list(id code) {
 
     while((entry = dir_read(&d))) {
       path.len = len;
-      stralloc_catm_internal(&path, "/", entry, 0);
+      stralloc_catm_internal(&path, "/", entry, NULL);
 
       if(stralloc_endb(&path, ".pc", 3)) {
         stralloc line;
@@ -796,7 +796,7 @@ pkg_open(const char* pkgname, pkg* pf) {
   stralloc_init(&pf->name);
   strlist_foreach(&cmd.path, s, n) {
     stralloc_copyb(&pf->name, s, n);
-    stralloc_catm_internal(&pf->name, "/", pkgname, ".pc", 0);
+    stralloc_catm_internal(&pf->name, "/", pkgname, ".pc", NULL);
     stralloc_nul(&pf->name);
     if(!buffer_mmapread(&pc, pf->name.s))
       break;
@@ -931,7 +931,7 @@ pkg_conf(strarray* modules, id code, int mode) {
 #endif
     stralloc_nul(&name);
     if(!pkg_open(name.s, &pf)) {
-      buffer_putm_internal(buffer_2, "No package '", name.s, "' found", 0);
+      buffer_putm_internal(buffer_2, "No package '", name.s, "' found", NULL);
       buffer_putnlflush(buffer_2);
       return 1;
     }
@@ -968,7 +968,7 @@ pkg_conf(strarray* modules, id code, int mode) {
       }
       if(code & VARIABLE) {
 #ifdef DEBUG_OUTPUT_
-        buffer_putm_internal(buffer_2, "Variable '", variable, "': ", 0);
+        buffer_putm_internal(buffer_2, "Variable '", variable, "': ", NULL);
         buffer_putsa(buffer_2, &value);
         buffer_putnlflush(buffer_2);
 #endif
@@ -1247,7 +1247,7 @@ error_exit(int exitCode) {
 
 void
 usage(char* progname) {
-  buffer_putm_internal(buffer_1, "Usage: ", path_basename(progname), " [OPTIONS] [PACKAGES...]\n", 0);
+  buffer_putm_internal(buffer_1, "Usage: ", path_basename(progname), " [OPTIONS] [PACKAGES...]\n", NULL);
   buffer_puts(buffer_1, "Options\n");
   buffer_puts(buffer_1, "  --help, -h                        show this help\n");
   buffer_puts(buffer_1, "  --prefix, -p DIRECTORY            Set prefix directory\n");
@@ -1262,8 +1262,8 @@ usage(char* progname) {
   buffer_puts(buffer_1, "  --debug                           show verbose debug information\n");
   buffer_puts(buffer_1, "  --sorted                          sorted list output\n");
   buffer_puts(buffer_1, "  --unsorted                        unsorted list output (default)\n\n");
-  buffer_putm_internal(buffer_1, "Default prefix: ", cmd.prefix.s, "\n", 0);
-  buffer_putm_internal(buffer_1, "Default host: ", cmd.host.s, "\n", 0);
+  buffer_putm_internal(buffer_1, "Default prefix: ", cmd.prefix.s, "\n", NULL);
+  buffer_putm_internal(buffer_1, "Default host: ", cmd.host.s, "\n", NULL);
   buffer_puts(buffer_1, "Default search path:\n  ");
 
   buffer_putsl(buffer_1, &cmd.path, "\n  ");
@@ -1469,7 +1469,7 @@ getopt_end:
   }
 
   if(verbose) {
-    buffer_putm_internal(buffer_2, path_basename(argv[0]), ": ", 0);
+    buffer_putm_internal(buffer_2, path_basename(argv[0]), ": ", NULL);
     buffer_puts(buffer_2, "PKG_CONFIG_PATH is\n  ");
     strlist_dump(buffer_2, &cmd.path);
     buffer_putnlflush(buffer_2);

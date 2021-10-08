@@ -30,7 +30,7 @@ main(int argc, char* argv[]) {
                                    "file-5.34.tar.xz";
 
   if(buffer_mmapprivate(&input, filename) < 0) {
-    buffer_putm_internal(buffer_2, "ERROR opening: ", filename, 0);
+    buffer_putm_internal(buffer_2, "ERROR opening: ", filename, NULL);
     buffer_putnlflush(buffer_2);
     return 1;
   }

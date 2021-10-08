@@ -180,7 +180,7 @@ pe_dump_exports(uint8* base) {
   mintextptr = uint32_get(&text->virtual_address);
   maxtextptr = mintextptr + uint32_get(&text->size_of_raw_data);
   if((dllname = pe_dllname(base)))
-    buffer_putm_internal(buffer_1, "LIBRARY ", dllname, "\n", 0);
+    buffer_putm_internal(buffer_1, "LIBRARY ", dllname, "\n", NULL);
 
   buffer_puts(buffer_1, "EXPORTS\n");
 

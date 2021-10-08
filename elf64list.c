@@ -19,7 +19,7 @@ main(int argc, char** argv) {
   uint16 text_section_header_index = 0;
 
   if(argc < 2) {
-    buffer_putm_internal(buffer_2, "Usage: ", argv[0], " XXX.so", 0);
+    buffer_putm_internal(buffer_2, "Usage: ", argv[0], " XXX.so", NULL);
     buffer_putnlflush(buffer_2);
     return 1;
   }
