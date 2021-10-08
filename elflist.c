@@ -2,6 +2,7 @@
  * c-basic-offset: 4 -*- */
 
 #include "lib/uint64.h"
+#include "lib/scan.h"
 #include "lib/buffer.h"
 #include "lib/elf.h"
 #include "lib/mmap.h"
@@ -474,9 +475,8 @@ usage(char* av0) {
                        "  -F, --file-header       Dump file header\n",
                        "  -S, --sections          Dump sections\n",
                        "  -o, --offset-rva        Print RVA of given offset\n",
-                       "  -a, --rva-offset        Print offset of given RVA\n",
-                       "\n",
-                       0);
+                       "  -a, --rva-offset        Print offset of given RVA\n\n",
+                       NULL);
   buffer_flush(buffer_1);
 }
 
