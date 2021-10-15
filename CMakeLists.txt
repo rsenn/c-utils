@@ -171,10 +171,17 @@ if(WINDOWS)
   check_winsock()
   # dump(LIBMSWSOCK)
 else(WINDOWS)
-  check_compile(LIBC_HAS_IP6 "#include <sys/types.h>\n#include <sys/socket.h>\n#include <netinet/in.h>\n\nint main() {\n  struct sockaddr_in6 sa;\n  sa.sin6_family = PF_INET6;\n  (void)sa;\n  return 0;\n}\n")
-  check_compile(LIBC_HAS_SCOPE_ID "#include <sys/types.h>\n#include <sys/socket.h>\n#include <netinet/in.h>\n\nint main() {\n  struct sockaddr_in6 sa;\n  sa.sin6_family = PF_INET6;\n  sa.sin6_scope_id = 23;\n  (void)sa;\n  return 0;\n}\n")
+  check_compile(LIBC_HAS_IP6
+                "#include <sys/types.h>\n#include <sys/socket.h>\n#include <netinet/in.h>\n\nint main() {\n  struct sockaddr_in6 sa;\n  sa.sin6_family = PF_INET6;\n  (void)sa;\n  return 0;\n}\n")
+  check_compile(
+    LIBC_HAS_SCOPE_ID
+    "#include <sys/types.h>\n#include <sys/socket.h>\n#include <netinet/in.h>\n\nint main() {\n  struct sockaddr_in6 sa;\n  sa.sin6_family = PF_INET6;\n  sa.sin6_scope_id = 23;\n  (void)sa;\n  return 0;\n}\n"
+  )
 
-  check_compile(HAVE_SYSCALL "#define _GNU_SOURCE\n#include <unistd.h>\n#include <sys/syscall.h>\n\nstatic inline ssize_t\nsys_write(int fd, const void* buf, size_t n) {\n  return syscall(SYS_write, fd, buf, n);\n}\n\nint main() { return sys_write(1, \"test\\\\n\", 5);\n}\n")
+  check_compile(
+    HAVE_SYSCALL
+    "#define _GNU_SOURCE\n#include <unistd.h>\n#include <sys/syscall.h>\n\nstatic inline ssize_t\nsys_write(int fd, const void* buf, size_t n) {\n  return syscall(SYS_write, fd, buf, n);\n}\n\nint main() { return sys_write(1, \"test\\\\n\", 5);\n}\n"
+  )
 
   if(NOT USE_SELECT)
     check_compile(
@@ -197,12 +204,17 @@ else(WINDOWS)
     )
     check_compile(
       SUPPORT_POLL
-      "#include <sys/types.h>\n#include <fcntl.h>\n#include <unistd.h>\n#include <poll.h>\n\nint main() { struct pollfd x;\n\n  x.fd = open(\"trypoll.c\", O_RDONLY);\n  if(x.fd == -1)\n    _exit(111);\n  x.events = POLLIN;\n  if(poll(&x, 1, 10) == -1)\n    _exit(1);\n  if(x.revents != POLLIN)\n    _exit(1);\n\n  /* XXX: try to detect and avoid poll() imitation libraries */\n\n  _exit(0);\n}\n")
-    check_compile(SUPPORT_SELECT "#include <sys/types.h>\n#include <sys/time.h>\n#if defined(_WIN32) || defined(__MINGW32__)\n#include <winsock2.h>\n#else\n#include <sys/select.h>\n#include <unistd.h>\n#endif\n\nint\nmain() {\n  struct timeval tv;\n  fd_set rfds;\n  int fd = 0;\n  FD_ZERO(&rfds);\n  FD_SET(fd, &rfds);\n  tv.tv_sec = tv.tv_usec = 0;\n  select(fd + 1, &rfds, 0, 0, &tv);\n}\n"
-                  ${LIBMSWSOCK})
+      "#include <sys/types.h>\n#include <fcntl.h>\n#include <unistd.h>\n#include <poll.h>\n\nint main() { struct pollfd x;\n\n  x.fd = open(\"trypoll.c\", O_RDONLY);\n  if(x.fd == -1)\n    _exit(111);\n  x.events = POLLIN;\n  if(poll(&x, 1, 10) == -1)\n    _exit(1);\n  if(x.revents != POLLIN)\n    _exit(1);\n\n  /* XXX: try to detect and avoid poll() imitation libraries */\n\n  _exit(0);\n}\n"
+    )
+    check_compile(
+      SUPPORT_SELECT
+      "#include <sys/types.h>\n#include <sys/time.h>\n#if defined(_WIN32) || defined(__MINGW32__)\n#include <winsock2.h>\n#else\n#include <sys/select.h>\n#include <unistd.h>\n#endif\n\nint\nmain() {\n  struct timeval tv;\n  fd_set rfds;\n  int fd = 0;\n  FD_ZERO(&rfds);\n  FD_SET(fd, &rfds);\n  tv.tv_sec = tv.tv_usec = 0;\n  select(fd + 1, &rfds, 0, 0, &tv);\n}\n"
+      ${LIBMSWSOCK})
   endif(NOT USE_SELECT)
 
-  check_compile(HAVE_N2I "#include <sys/types.h>\n#include <sys/socket.h>\n#include <net/if.h>\n\nint main() { static char ifname[IFNAMSIZ];\n  char* tmp = if_indextoname(0, ifname);\n  (void)tmp;\n  return 0;\n}\n")
+  check_compile(
+    HAVE_N2I
+    "#include <sys/types.h>\n#include <sys/socket.h>\n#include <net/if.h>\n\nint main() { static char ifname[IFNAMSIZ];\n  char* tmp = if_indextoname(0, ifname);\n  (void)tmp;\n  return 0;\n}\n")
 
   check_compile(
     HAVE_BSDSENDFILE
@@ -224,7 +236,10 @@ endif(WINDOWS)
 #
 # if(HAVE_LINUX_AIO) message(STATUS "Support Linux AIO: ${SUPPORT_LINUX_AIO}") add_definitions(-DHAVE_LINUX_AIO=1) endif(HAVE_LINUX_AIO)
 
-check_compile(HAVE_SOCKLEN_T "#include <sys/types.h>\n#ifdef __MINGW32__\n#include <winsock2.h>\n#include <ws2tcpip.h>\n#else\n#include <sys/socket.h>\n#include <netinet/in.h>\n#endif\n\nint main() { socklen_t t;\n  (void)t;\n  return 0;\n}\n")
+check_compile(
+  HAVE_SOCKLEN_T
+  "#include <sys/types.h>\n#ifdef __MINGW32__\n#include <winsock2.h>\n#include <ws2tcpip.h>\n#else\n#include <sys/socket.h>\n#include <netinet/in.h>\n#endif\n\nint main() { socklen_t t;\n  (void)t;\n  return 0;\n}\n"
+)
 
 if(NOT HAVE_SOCKLEN_T)
   # add_definitions(-Dsocklen_t=int)
@@ -315,7 +330,10 @@ endif(SIGSET_T_SIZE)
 
 if(NOT HAVE_SIGSET_T OR NOT SIZEOF_SIGSET_T)
 
-  check_compile(HAVE_SIGSET_T "#define _GNU_SOURCE\n#include <sys/types.h>\n#include <signal.h>\n#include <fcntl.h>\n#include <stdio.h>\n\nint main() {\n  sigset_t ss;\nprintf(\"%lu\\\\n\", sizeof(ss));\n  return 0;\n}\n" SIZEOF_SIGSET_T)
+  check_compile(
+    HAVE_SIGSET_T
+    "#define _GNU_SOURCE\n#include <sys/types.h>\n#include <signal.h>\n#include <fcntl.h>\n#include <stdio.h>\n\nint main() {\n  sigset_t ss;\nprintf(\"%lu\\\\n\", sizeof(ss));\n  return 0;\n}\n"
+    SIZEOF_SIGSET_T)
   # message("SIZEOF_SIGSET_T = ${SIZEOF_SIGSET_T}")
 endif(NOT HAVE_SIGSET_T OR NOT SIZEOF_SIGSET_T)
 
@@ -538,12 +556,14 @@ if(HAVE_PTHREAD_LIB)
 endif()
 
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/FindStandardMathLibrary.cmake)
-
-check_library_exists(m exp2 "" HAVE_MATH_LIB)
-
-if(HAVE_MATH_LIB)
-  set(LIBMATH m CACHE STRING "Math library")
-endif(HAVE_MATH_LIB)
+#
+#check_library_exists(m exp2 "" HAVE_MATH_LIB)
+#
+#if(NOT LIBMATH)
+#  if(HAVE_MATH_LIB)
+#    set(LIBMATH m CACHE FILEPATH "Math library")
+#  endif(HAVE_MATH_LIB)
+#endif(NOT LIBMATH)
 
 check_library_exists(pthread pthread_create "" HAVE_PTHREAD_LIB)
 
@@ -602,70 +622,72 @@ set(CMAKE_REQUIRED_FLAGS)
 set(CMAKE_REQUIRED_LINK_OPTIONS)
 set(CMAKE_REQUIRED_LIBRARIES)
 
-if(NOT USE_SELECT)
-  if(NOT USE_POLL)
+if(NOT MUX_METHOD)
+  if(NOT USE_SELECT)
+    if(NOT USE_POLL)
 
-    if(SUPPORT_POLL STREQUAL "")
-      check_library_exists("" poll "" SUPPORT_POLL)
-      if(NOT SUPPORT_POLL)
-        check_function_exists(poll SUPPORT_POLL)
-      endif(NOT SUPPORT_POLL)
-    endif(SUPPORT_POLL STREQUAL "")
+      if(SUPPORT_POLL STREQUAL "")
+        check_library_exists("" poll "" SUPPORT_POLL)
+        if(NOT SUPPORT_POLL)
+          check_function_exists(poll SUPPORT_POLL)
+        endif(NOT SUPPORT_POLL)
+      endif(SUPPORT_POLL STREQUAL "")
 
-    if(SUPPORT_EPOLL STREQUAL "")
-      check_library_exists("" epoll_create "" SUPPORT_EPOLL)
-      if(NOT SUPPORT_EPOLL)
-        check_function_exists(epoll_create SUPPORT_EPOLL)
-      endif(NOT SUPPORT_EPOLL)
-    endif(SUPPORT_EPOLL STREQUAL "")
+      if(SUPPORT_EPOLL STREQUAL "")
+        check_library_exists("" epoll_create "" SUPPORT_EPOLL)
+        if(NOT SUPPORT_EPOLL)
+          check_function_exists(epoll_create SUPPORT_EPOLL)
+        endif(NOT SUPPORT_EPOLL)
+      endif(SUPPORT_EPOLL STREQUAL "")
 
-    if(SUPPORT_KQUEUE STREQUAL "")
-      check_library_exists("" kqueue "" SUPPORT_KQUEUE)
-      if(NOT SUPPORT_KQUEUE)
-        check_function_exists(kqueue SUPPORT_KQUEUE)
-      endif(NOT SUPPORT_KQUEUE)
-    endif(SUPPORT_KQUEUE STREQUAL "")
+      if(SUPPORT_KQUEUE STREQUAL "")
+        check_library_exists("" kqueue "" SUPPORT_KQUEUE)
+        if(NOT SUPPORT_KQUEUE)
+          check_function_exists(kqueue SUPPORT_KQUEUE)
+        endif(NOT SUPPORT_KQUEUE)
+      endif(SUPPORT_KQUEUE STREQUAL "")
 
-  endif(NOT USE_POLL)
-endif(NOT USE_SELECT)
+    endif(NOT USE_POLL)
+  endif(NOT USE_SELECT)
 
-if(SUPPORT_SELECT STREQUAL "")
-  check_library_exists("${LIBMSWSOCK}" select "" SUPPORT_SELECT)
-  if(NOT SUPPORT_SELECT)
-    check_function_exists(select SUPPORT_SELECT)
-  endif(NOT SUPPORT_SELECT)
-endif(SUPPORT_SELECT STREQUAL "")
+  if(SUPPORT_SELECT STREQUAL "")
+    check_library_exists("${LIBMSWSOCK}" select "" SUPPORT_SELECT)
+    if(NOT SUPPORT_SELECT)
+      check_function_exists(select SUPPORT_SELECT)
+    endif(NOT SUPPORT_SELECT)
+  endif(SUPPORT_SELECT STREQUAL "")
 
-set(MUX "")
-set(MUX_DEFS "")
-set(MUX_ALL
-    # LINUX_AIO
-    KQUEUE DEVPOLL EPOLL
-    # SIGIO
-    POLL SELECT)
-set(MUX_USE # LINUX_AIO
-    KQUEUE EPOLL DEVPOLL SIGIO POLL SELECT)
+  set(MUX "")
+  set(MUX_DEFS "")
+  set(MUX_ALL
+      # LINUX_AIO
+      KQUEUE DEVPOLL EPOLL
+      # SIGIO
+      POLL SELECT)
+  set(MUX_USE # LINUX_AIO
+      KQUEUE EPOLL DEVPOLL SIGIO POLL SELECT)
 
-foreach(METHOD ${MUX_USE})
-  #message("METHOD ${METHOD}")
-  message("SUPPORT_${METHOD} = ${SUPPORT_${METHOD}}")
+  foreach(METHOD ${MUX_USE})
+    #message("METHOD ${METHOD}")
+    message("SUPPORT_${METHOD} = ${SUPPORT_${METHOD}}")
 
-  if(SUPPORT_${METHOD})
-    list_contains("${MUX_LIST}" "${METHOD}" CONTAINS_METHOD)
-    if(NOT CONTAINS_METHOD)
-      list(APPEND MUX_LIST ${METHOD})
-    endif(NOT CONTAINS_METHOD)
-    if(MUX STREQUAL "")
-      message(STATUS "Setting MUX method to ${METHOD}")
-      set(MUX "${METHOD}")
-    endif(MUX STREQUAL "")
-  endif(SUPPORT_${METHOD})
-endforeach()
-set(MUX_METHODS "${MUX_LIST}")
+    if(SUPPORT_${METHOD})
+      list_contains("${MUX_LIST}" "${METHOD}" CONTAINS_METHOD)
+      if(NOT CONTAINS_METHOD)
+        list(APPEND MUX_LIST ${METHOD})
+      endif(NOT CONTAINS_METHOD)
+      if(MUX STREQUAL "")
+        message(STATUS "Setting MUX method to ${METHOD}")
+        set(MUX "${METHOD}")
+      endif(MUX STREQUAL "")
+    endif(SUPPORT_${METHOD})
+  endforeach()
+  set(MUX_METHODS "${MUX_LIST}")
 
-string(REGEX REPLACE "[;\n ]" " " L_MUX_METHODS "${MUX_METHODS}")
-string(REGEX REPLACE "[;\n ]" ";" __MUX_METHODS "${MUX_METHODS}")
-message(STATUS "Available MUX methods: ${L_MUX_METHODS}")
+  string(REGEX REPLACE "[;\n ]" " " L_MUX_METHODS "${MUX_METHODS}")
+  string(REGEX REPLACE "[;\n ]" ";" __MUX_METHODS "${MUX_METHODS}")
+  message(STATUS "Available MUX methods: ${L_MUX_METHODS}")
+endif(NOT MUX_METHOD)
 
 # unset(MUX_METHODS)
 set(MUX_METHOD "${MUX}" CACHE STRING "I/O multiplex method")
@@ -833,6 +855,7 @@ set(COMMON_LIBS strlist array safemult scan str byte mmap open fmt)
 
 set(genmakefile_SOURCES cmake.c cmake.h mplab.c mplab.h ini.c ini.h genmakefile.h debug.c debug.h)
 
+dump(LIBMATH)
 if(USE_BZIP)
   add_program(bsdiffcat path errmsg buffer array safemult str byte errmsg uint32 uint64 ${COMPRESSION_LIBRARIES})
   add_program(ccat path case buffer open str unix ${ZLIB_LIBRARY} ${BROTLI_LIBRARIES} ${COMPRESSION_LIBRARIES} ${LIBMATH} ${LIBSHLWAPI})
@@ -870,7 +893,7 @@ set(list_r_SOURCES dump.c dump.h)
 add_program(list-r errmsg path strarray strlist stralloc buffer array unix dir array fmt open str uint64 ${LIBADVAPI32})
 # add_program(macho32list mmap uint32)
 if(USE_LZMA)
-  add_program(mediathek-list errmsg stralloc buffer alloc byte fmt http tls scan slist str unix strarray strlist ${LIBLZMA_LIBRARY} ${TLS_LIBRARIES} ${LIBDL} ${LIBPTHREAD})
+  add_program(mediathek-list errmsg stralloc buffer alloc byte fmt http tls scan slist str unix strarray strlist ${LIBLZMA_LIBRARY} ${TLS_LIBRARIES} ${LIBCOMPAT} ${LIBDL} ${LIBPTHREAD})
 endif(USE_LZMA)
 
 add_program(mediathek-parser case ucs errmsg strarray strlist stralloc buffer array byte open str unix strlist)
@@ -895,8 +918,10 @@ set(tcping_SOURCES address.c)
 add_program(tcping hmap unix dns case io array socket ndelay errmsg taia tai buffer stralloc mmap open fmt scan str byte uint16 ${LIBMSWSOCK} ${LIBIPHLPAPI})
 set(ftptest_SOURCES address.c ftplib.c)
 
-set(nscache_SOURCES cache.c cache.h log.c log.h query.c query.h response.c response.h roots.c roots.h names.c names.h lib/alloc.h lib/array.h lib/buffer.h lib/byte.h lib/case.h lib/dir.h lib/dns.h lib/env.h lib/errmsg.h lib/fmt.h lib/iopause.h lib/ip4.h lib/ip6.h lib/mmap.h lib/ndelay.h lib/open.h lib/path.h lib/scan.h lib/socket.h lib/str.h lib/stralloc.h lib/tai.h lib/taia.h lib/uint16.h
-                    lib/uint32.h lib/uint64.h)
+set(nscache_SOURCES
+    cache.c cache.h log.c log.h query.c query.h response.c response.h roots.c roots.h names.c names.h lib/alloc.h lib/array.h lib/buffer.h lib/byte.h lib/case.h lib/dir.h lib/dns.h lib/env.h
+    lib/errmsg.h lib/fmt.h lib/iopause.h lib/ip4.h lib/ip6.h lib/mmap.h lib/ndelay.h lib/open.h lib/path.h lib/scan.h lib/socket.h lib/str.h lib/stralloc.h lib/tai.h lib/taia.h lib/uint16.h
+    lib/uint32.h lib/uint64.h)
 add_program(nscache dns path errmsg dir array stralloc alloc env byte uint16 ${LIBMSWSOCK} ${LIBIPHLPAPI} ${LIBSHLWAPI})
 add_program(crc errmsg buffer mmap open ${ZLIB_LIBRARY})
 add_program(cmake-run errmsg env buffer path dir strarray strlist stralloc fmt)

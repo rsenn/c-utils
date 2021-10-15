@@ -8,7 +8,7 @@
 
 void
 output_cmake_var(buffer* b, const char* name, const strlist* list) {
-  buffer_putm_internal(b, "set(", name, " ", 0);
+  buffer_putm_internal(b, "set(", name, " ", NULL);
   buffer_putsa(b, &list->sa);
   buffer_puts(b, ")");
   buffer_putnlflush(b);
@@ -16,7 +16,7 @@ output_cmake_var(buffer* b, const char* name, const strlist* list) {
 
 void
 append_cmake_var(buffer* b, const char* name, const strlist* list) {
-  buffer_putm_internal(b, "set(", name, " ${", name, "} ", 0);
+  buffer_putm_internal(b, "set(", name, " ${", name, "} ", NULL);
   buffer_putsa(b, &list->sa);
   buffer_puts(b, ")");
   buffer_putnlflush(b);
@@ -28,7 +28,7 @@ output_cmake_cmd(buffer* b, const char* cmd, const strlist* list, char quote) {
     char needle[2] = {quote, '\\'};
     const char* s;
     size_t n;
-    buffer_putm_internal(b, cmd, "(\n", 0);
+    buffer_putm_internal(b, cmd, "(\n", NULL);
     strlist_foreach(list, s, n) {
       size_t i;
       buffer_puts(b, "  ");
@@ -56,7 +56,7 @@ output_cmake_set(buffer* b, const char* cmd, const set_t* list, char quote) {
     const char* s;
     size_t n;
     set_iterator_t it;
-    buffer_putm_internal(b, cmd, "(\n", 0);
+    buffer_putm_internal(b, cmd, "(\n", NULL);
     set_foreach(list, it, s, n) {
       size_t i;
       buffer_puts(b, "  ");
@@ -82,7 +82,7 @@ output_cmake_subst(stralloc* str, const char* varname) {
   if((value = var_get(varname))) {
     stralloc ref;
     stralloc_init(&ref);
-    stralloc_catm_internal(&ref, "${", varname, "}", 0);
+    stralloc_catm_internal(&ref, "${", varname, "}", NULL);
     stralloc_nul(&ref);
     stralloc_replaces(str, value, ref.s);
   }
@@ -244,7 +244,7 @@ output_cmake_rules(buffer* b, MAP_T rules) {
     target* rule = MAP_ITER_VALUE(t);
 
 #ifdef DEBUG_OUTPUT_
-    buffer_putm_internal(buffer_2, "Outputting cmake ", 0);
+    buffer_putm_internal(buffer_2, "Outputting cmake ", NULL);
     rule_dump(rule);
 #endif
     if(!cmd_libs && str_end(name, ".a"))
@@ -268,7 +268,7 @@ void
 output_cmake_project(buffer* b, MAP_T* rules, MAP_T* vars, const strlist* include_dirs, const strlist* link_dirs) {
   MAP_PAIR_T t;
   set_t libraries;
-  buffer_putm_internal(b, "project(", project_name, " ", sources_iscplusplus() ? "CXX" : "C", ")", 0);
+  buffer_putm_internal(b, "project(", project_name, " ", sources_iscplusplus() ? "CXX" : "C", ")", NULL);
   buffer_putnlflush(b);
   buffer_putnlflush(b);
 

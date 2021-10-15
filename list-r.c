@@ -1117,7 +1117,7 @@ end:
 static ssize_t
 io_err_check(ssize_t ret) {
   if(ret == -1) {
-    buffer_putm_internal(buffer_2, "ERROR: ", strerror(errno), "\n", 0);
+    buffer_putm_internal(buffer_2, "ERROR: ", strerror(errno), "\n", NULL);
     buffer_flush(buffer_2);
     exit(errno);
     /* return -1; */
@@ -1129,7 +1129,7 @@ static ssize_t
 write_err_check(int fd, const void* buf, size_t len) {
   int ret = write(fd, buf, len);
   if(ret == -1) {
-    buffer_putm_internal(buffer_2, "ERROR: ", strerror(errno), "\n", 0);
+    buffer_putm_internal(buffer_2, "ERROR: ", strerror(errno), "\n", NULL);
     buffer_flush(buffer_2);
     exit(errno);
     /* return -1; */
@@ -1255,7 +1255,7 @@ add_ext_class(const char* ext) {
   if(ext[invert] == ':') {
     char* group;
     if((group = (char*)find_ext_class((char*)&ext[invert + 1])) == 0) {
-      buffer_putm_internal(buffer_2, "class ", ext, " not found", 0);
+      buffer_putm_internal(buffer_2, "class ", ext, " not found", NULL);
       buffer_putnlflush(buffer_2);
       // usage(argv[0]);
       return 0;
