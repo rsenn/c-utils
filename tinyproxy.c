@@ -471,8 +471,8 @@ connection_open_log(connection_t* c, const char* prefix, const char* suffix) {
       sb->af = AF_INET;
   }
   stralloc_catb(&filename, buf, sockbuf_fmt_addr(&c->client, buf, '-'));
-  if(prefix)
-    stralloc_catm_internal(&filename, prefix, "-", 0);
+  if(prefix && *prefix)
+    stralloc_catm_internal(&filename, "-", prefix, 0);
   stralloc_cats(&filename, suffix);
   x = filename.s;
   n = filename.len;
