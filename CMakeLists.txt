@@ -833,6 +833,8 @@ set(COMMON_LIBS strlist array safemult scan str byte mmap open fmt)
 
 set(genmakefile_SOURCES cmake.c cmake.h mplab.c mplab.h ini.c ini.h genmakefile.h debug.c debug.h)
 
+message("COMPRESSION_LIBRARIES: ${COMPRESSION_LIBRARIES}")
+
 if(USE_BZIP)
   add_program(bsdiffcat path errmsg buffer array safemult str byte errmsg uint32 uint64 ${COMPRESSION_LIBRARIES})
   add_program(ccat path case buffer open str unix ${ZLIB_LIBRARY} ${BROTLI_LIBRARIES} ${COMPRESSION_LIBRARIES} ${LIBMATH} ${LIBSHLWAPI})

@@ -3467,7 +3467,8 @@ gen_install_rules() {
         stralloc_catm_internal(&inst->recipe, newline, "\t$(INSTALL_DIR) $(DESTDIR)$(bindir)", NULL);
       }
       var_set("INSTALL_EXEC", str_start(v, "install") ? "$(INSTALL) -m 755" : "$(INSTALL)");
-      stralloc_catm_internal(&inst->recipe, newline, "\t$(INSTALL_EXEC) ", MAP_ITER_KEY(t), " $(DESTDIR)$(bindir)", NULL);
+      stralloc_catm_internal(
+          &inst->recipe, newline, "\t$(INSTALL_EXEC) ", MAP_ITER_KEY(t), " $(DESTDIR)$(bindir)", NULL);
     }
     if(do_lib) {
       if(!var_isset("libdir")) {
@@ -3477,7 +3478,8 @@ gen_install_rules() {
         }
         stralloc_catm_internal(&inst->recipe, newline, "\t$(INSTALL_DIR) $(DESTDIR)$(libdir)", NULL);
       }
-      stralloc_catm_internal(&inst->recipe, newline, "\t$(INSTALL_DATA) ", MAP_ITER_KEY(t), " $(DESTDIR)$(libdir)", NULL);
+      stralloc_catm_internal(
+          &inst->recipe, newline, "\t$(INSTALL_DATA) ", MAP_ITER_KEY(t), " $(DESTDIR)$(libdir)", NULL);
     }
   }
   return inst;
@@ -4474,7 +4476,7 @@ output_ninja_rule(buffer* b, target* rule) {
     set_at_sa(&rule->output, 0, &path);
 
     stralloc_replaces(&path, dirs.work.sa.s, "$builddir/");
-    stralloc_replaces(&path, dirs.out.sa.s, "$distdir/");
+    // stralloc_replaces(&path, dirs.out.sa.s, "$distdir/");
 
     /*stralloc_subst(
         &path, rule->name, str_len(rule->name), pathsep_args == '/' ? "\\" : "/", pathsep_args == '/' ? "/" : "\\");*/
@@ -4487,7 +4489,7 @@ output_ninja_rule(buffer* b, target* rule) {
     stralloc_catset(&path, &rule->prereq, " ");
     stralloc_replacec(&path, pathsep_args == '/' ? '\\' : '/', pathsep_args == '/' ? '/' : '\\');
     stralloc_replaces(&path, dirs.work.sa.s, "$builddir/");
-    stralloc_replaces(&path, dirs.out.sa.s, "$distdir/");
+    // stralloc_replaces(&path, dirs.out.sa.s, "$distdir/");
 
     buffer_putsa(b, &path);
     buffer_putnlflush(b);
@@ -5581,40 +5583,99 @@ main(int argc, char* argv[]) {
         usage(argv[0]);
         ret = 0;
         goto quit;
-      case 'C': cfg.lang = LANG_C; break;
-      case 'c': cross_compile = unix_optarg; break;
-      case 'b': cmd_bins = 1; break;
-      case 'o': outfile = unix_optarg; break;
-      case 'O': exts.obj = unix_optarg; break;
-      case 'B': exts.bin = unix_optarg; break;
-      case 'S': strlist_push(&build_as_lib, unix_optarg ? unix_optarg : argv[unix_optind]); break;
-      case 'X': exts.lib = unix_optarg; break;
-      case 'd': dir = unix_optarg; break;
-      case 'w': stralloc_copys(&dirs.work.sa, unix_optarg); break;
-      case 't': tools.toolchain = tools.compiler = unix_optarg; break;
-      case 'm': tools.make = unix_optarg; break;
-      case 'P': tools.preproc = unix_optarg; break;
-      case 'a': set_machine(unix_optarg); break;
-      case 's': set_system(unix_optarg); break;
-      case 'n': stralloc_copys(&output_name, unix_optarg); break;
-      case 'p':
-        if(unix_optarg)
-          set_chip(unix_optarg);
-        break;
-      case 'f': infile = unix_optarg; break;
-      case 'l': strarray_push(&libs, unix_optarg); break;
-      case 'I': {
-        buffer_puts(buffer_2, "Add -I: ");
-        buffer_puts(buffer_2, unix_optarg);
-        buffer_putnlflush(buffer_2);
-        strarray_push(&includes, unix_optarg);
+      case 'C': {
+        cfg.lang = LANG_C;
         break;
       }
-      case 'i':
+      case 'c': {
+        cross_compile = argv[unix_optind];
+        break;
+      }
+      case 'b': {
+        cmd_bins = 1;
+        break;
+      }
+      case 'o': {
+        outfile = argv[unix_optind];
+        break;
+      }
+      case 'O': {
+        exts.obj = argv[unix_optind];
+        break;
+      }
+      case 'B': {
+        exts.bin = argv[unix_optind];
+        break;
+      }
+      case 'S': {
+        strlist_push(&build_as_lib, argv[unix_optind]);
+        break;
+      }
+      case 'X': {
+        exts.lib = argv[unix_optind];
+        break;
+      }
+      case 'd': {
+        dir = argv[unix_optind];
+        break;
+      }
+      case 'w': {
+        stralloc_copys(&dirs.work.sa, argv[unix_optind]);
+        break;
+      }
+      case 't': {
+        tools.toolchain = tools.compiler = argv[unix_optind];
+        break;
+      }
+      case 'm': {
+        tools.make = argv[unix_optind];
+        break;
+      }
+      case 'P': {
+        tools.preproc = argv[unix_optind];
+        break;
+      }
+      case 'a': {
+        set_machine(argv[unix_optind]);
+        break;
+      }
+      case 's': {
+        set_system(argv[unix_optind]);
+        break;
+      }
+      case 'n': {
+        stralloc_copys(&output_name, argv[unix_optind]);
+        break;
+      }
+      case 'p': {
+        if(argv[unix_optind])
+          set_chip(argv[unix_optind]);
+        break;
+      }
+      case 'f': {
+        infile = argv[unix_optind];
+        break;
+      }
+      case 'l': {
+        strarray_push(&libs, argv[unix_optind]);
+        break;
+      }
+      case 'i': {
         inst_bins = 1;
         inst_libs = 1;
         break;
-      case 'D': push_define(unix_optarg); break;
+      }
+      case 'D': {
+        push_define(argv[unix_optind]);
+        break;
+      }
+      case 'I': {
+        buffer_puts(buffer_2, "Add -I: ");
+        buffer_puts(buffer_2, argv[unix_optind]);
+        buffer_putnlflush(buffer_2);
+        strarray_push(&includes, argv[unix_optind]);
+        break;
+      }
       default:
         buffer_puts(buffer_2, "No such option '");
         buffer_putlong(buffer_2, c);
