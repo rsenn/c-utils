@@ -18,12 +18,16 @@ if(USE_SSL AND NOT BUILD_SSL)
     endif(NOT EXISTS "${OPENSSL_ROOT_DIR}")
     list(APPEND CMAKE_PREFIX_PATH "${OPENSSL_ROOT_DIR}")
   endif(OPENSSL_ROOT_DIR)
-  pkg_search_module(OPENSSL openssl libssl QUIET)
+  include(FindPkgConfig)
 
-  # message(STATUS "pkg_search_module(OPENSSL openssl)")
+  # pkg_search_module(OPENSSL openssl libssl QUIET)
+  #  message(STATUS "pkg_search_module(OPENSSL openssl libssl): ${OPENSSL_FOUND}")
+  find_package(OpenSSL)
+  message(STATUS "OpenSSL_DIR=${OpenSSL_DIR}")
 
-  if(OPENSSL_FOUND)
-    # message(STATUS "Found openssl at ${OPENSSL_LIBRARY_DIRS} ${OPENSSL_INCLUDE_DIRS} ...")
+  if(NOT OpenSSL_DIR)
+    pkg_search_module(OPENSSL openssl libssl REQUIRED)
+    message(STATUS "pkg_check_modules(OPENSSL openssl libssl): ${OPENSSL_FOUND}")
 
     if(pkgcfg_lib_OPENSSL_crypto)
       set(OPENSSL_CRYPTO_LIBRARY "${pkgcfg_lib_OPENSSL_crypto}" CACHE FILEPATH "OpenSSL crypto library")
@@ -36,6 +40,16 @@ if(USE_SSL AND NOT BUILD_SSL)
     else(pkgcfg_lib_OPENSSL_ssl)
       set(OPENSSL_SSL_LIBRARY "ssl" CACHE FILEPATH "OpenSSL ssl library")
     endif(pkgcfg_lib_OPENSSL_ssl)
+  else(NOT OpenSSL_DIR)
+    set(OPENSSL_FOUND TRUE)
+  endif(NOT OpenSSL_DIR)
+
+  set(OPENSSL_LIBRARIES "${OPENSSL_SSL_LIBRARY};${OPENSSL_CRYPTO_LIBRARY}" CACHE FILEPATH "OpenSSL libraries")
+
+  dump(OPENSSL_LIBRARIES OPENSSL_LIBRARY_DIRS OPENSSL_INCLUDE_DIR)
+
+  if(OPENSSL_FOUND)
+    # message(STATUS "Found openssl at ${OPENSSL_LIBRARY_DIRS} ${OPENSSL_INCLUDE_DIRS} ...")
 
     if(OPENSSL_CRYPTO_LIBRARY AND OPENSSL_SSL_LIBRARY)
       set(TLS_LIBRARIES "${OPENSSL_SSL_LIBRARY};${OPENSSL_CRYPTO_LIBRARY}" CACHE STRING "TLS libraries")

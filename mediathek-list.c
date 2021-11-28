@@ -58,35 +58,18 @@ static http h;
 #include "lib/http.h"
 
 const char* const mediathek_urls[] = {
-    "http://"
-    "download10.onlinetvrecorder.com/"
-    "mediathekview/Filmliste-akt.xz",
-    "http://mediathekview.jankal.me/"
-    "Filmliste-akt.xz",
-    "http://"
-    "verteiler1.mediathekview.de/"
-    "Filmliste-akt.xz",
-    "http://"
-    "verteiler2.mediathekview.de/"
-    "Filmliste-akt.xz",
-    "http://"
-    "verteiler3.mediathekview.de/"
-    "Filmliste-akt.xz",
-    "http://"
-    "verteiler4.mediathekview.de/"
-    "Filmliste-akt.xz",
-    "http://"
-    "verteiler5.mediathekview.de/"
-    "Filmliste-akt.xz",
-    "http://"
-    "verteiler6.mediathekview.de/"
-    "Filmliste-akt.xz",
+    "http://download10.onlinetvrecorder.com/mediathekview/Filmliste-akt.xz",
+    "http://mediathekview.jankal.me/Filmliste-akt.xz",
+    "http://verteiler1.mediathekview.de/Filmliste-akt.xz",
+    "http://verteiler2.mediathekview.de/Filmliste-akt.xz",
+    "http://verteiler3.mediathekview.de/Filmliste-akt.xz",
+    "http://verteiler4.mediathekview.de/Filmliste-akt.xz",
+    "http://verteiler5.mediathekview.de/Filmliste-akt.xz",
+    "http://verteiler6.mediathekview.de/Filmliste-akt.xz",
 };
 
-const char* mediathek_url = "https://"
-                            "verteiler1.mediathekview.de/"
-                            "Filmliste-akt.xz";
-//"http://127.0.0.1/Filmliste-akt.xz";
+const char* mediathek_url = "https://verteiler1.mediathekview.de/Filmliste-akt.xz";
+const char* mediathek_file = 0;
 
 static unsigned long min_length;
 static int debug;
@@ -769,24 +752,25 @@ parse_mediathek_list(buffer* inbuf, buffer* outbuf) {
   buffer_putsflush(console, " bytes.\n");
 #endif
 
-  if(h.response->err) {
-    if(h.response->err != EAGAIN) {
-      buffer_puts(console, "Return value: ");
-      buffer_putlong(console, ret);
-      buffer_puts(console, " ");
-      buffer_flush(console);
-      errno = h.response->err;
-      errmsg_warnsys("Read error", 0);
+  if(h.response) {
+    if(h.response->err) {
+      if(h.response->err != EAGAIN) {
+        buffer_puts(console, "Return value: ");
+        buffer_putlong(console, ret);
+        buffer_puts(console, " ");
+        buffer_flush(console);
+        errno = h.response->err;
+        errmsg_warnsys("Read error", 0);
+      }
+    }
+
+    if(ret == 0 && h.response->err != EAGAIN) {
+      char status[FMT_ULONG + 1], error[1024];
+      status[fmt_ulong(status, h.response->status)] = '\0';
+      http_strerror(&h, ret);
+      errmsg_warn("STATUS: ", status, " error: ", error, " connected: ", h.connected ? "1" : "0", 0);
     }
   }
-
-  if(ret == 0 && h.response->err != EAGAIN) {
-    char status[FMT_ULONG + 1], error[1024];
-    status[fmt_ulong(status, h.response->status)] = '\0';
-    http_strerror(&h, ret);
-    errmsg_warn("STATUS: ", status, " error: ", error, " connected: ", h.connected ? "1" : "0", 0);
-  }
-
   if(ret == 0) {
 
     if(debug) {
@@ -818,20 +802,13 @@ usage(char* errmsg_argv0) {
                        "[OPTIONS] [KEYWORDS...]\n",
                        "\n",
                        "Options\n",
-                       "  -h, --help                "
-                       "show this help\n",
-                       "  -u, --url=URL             set "
-                       "URL\n",
-                       "  -F                        "
-                       "date/time format\n",
-                       "  -t HH:MM:SS               "
-                       "minimum length\n",
-                       "  -i KEYWORD                "
-                       "include entries matching\n",
-                       "  -x KEYWORD                "
-                       "exclude entries matching\n",
-                       "  -o FILE                   "
-                       "output file\n",
+                       "  -h, --help                show this help\n",
+                       "  -u, --url=URL             set URL\n",
+                       "  -F                        date/time format\n",
+                       "  -t HH:MM:SS               minimum length\n",
+                       "  -i KEYWORD                include entries matching\n",
+                       "  -x KEYWORD                exclude entries matching\n",
+                       "  -o FILE                   output file\n",
                        "\n",
                        0);
   buffer_putnlflush(buffer_1);
@@ -854,11 +831,12 @@ main(int argc, char* argv[]) {
 
   errmsg_iam(argv[0]);
 
-  while((opt = unix_getopt(argc, argv, "u:F:dt:i:x:ho:")) != -1) {
+  while((opt = unix_getopt(argc, argv, "u:F:dt:i:x:ho:f:")) != -1) {
     switch(opt) {
       case 'h': usage(argv[0]); return 0;
       case 'F': dt_fmt = unix_optarg; break;
       case 'u': mediathek_url = unix_optarg; break;
+      case 'f': mediathek_file = unix_optarg; break;
       case 'd': debug++; break;
       case 't': min_length = parse_time(unix_optarg); break;
       case 'i': strlist_push(&include, unix_optarg); break;
@@ -915,27 +893,42 @@ main(int argc, char* argv[]) {
   if(errmsg_argv0[str_rchr(errmsg_argv0, '/')] != '\0')
     errmsg_argv0 += str_rchr(errmsg_argv0, '/') + 1;
 
-  ret = read_mediathek_list(mediathek_url, &in);
+  if(mediathek_file)
+    ret = buffer_readfile(&in, mediathek_file);
+  else {
+    ret = read_mediathek_list(mediathek_url, &in);
+  }
+
   if(!ret) {
     int n = 0;
     fd_t fd;
 
     buffer_puts(&output, "{\n");
 
-    for(;;) {
-      io_waituntil2(1000);
+    if(mediathek_file) {
+      int r;
+      do {
+        r = parse_mediathek_list(&in, &output);
+        if(r > 0)
+          n += r;
+      } while(!buffer_EOF(&in));
 
-      while((fd = io_canwrite()) != -1) {
-        if(fd == h.sock)
-          http_canwrite(&h, &io_onlywantread);
-      }
+    } else {
+      for(;;) {
+        io_waituntil2(1000);
 
-      while((fd = io_canread()) != -1) {
-        if(fd == h.sock) {
-          if(!h.sent)
-            http_canread(&h, &io_onlywantwrite);
-          else
-            n += parse_mediathek_list(&in, &output);
+        while((fd = io_canwrite()) != -1) {
+          if(fd == h.sock)
+            http_canwrite(&h, &io_onlywantread);
+        }
+
+        while((fd = io_canread()) != -1) {
+          if(fd == h.sock) {
+            if(!h.sent)
+              http_canread(&h, &io_onlywantwrite);
+            else
+              n += parse_mediathek_list(&in, &output);
+          }
         }
       }
     }

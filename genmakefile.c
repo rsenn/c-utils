@@ -5573,11 +5573,14 @@ main(int argc, char* argv[]) {
   exts.inc = ".h";
 
   for(;;) {
+    const char* arg;
     c = unix_getopt_long(argc, argv, "habo:O:B:L:d:t:m:n:a:D:l:I:c:s:p:P:S:if:Cw:", opts, &index);
     if(c == -1)
       break;
     if(c == 0)
       continue;
+    arg = unix_optarg ? unix_optarg : argv[unix_optind];
+    
     switch(c) {
       case 'h':
         usage(argv[0]);
@@ -5588,7 +5591,7 @@ main(int argc, char* argv[]) {
         break;
       }
       case 'c': {
-        cross_compile = argv[unix_optind];
+        cross_compile = arg;
         break;
       }
       case 'b': {
@@ -5596,68 +5599,68 @@ main(int argc, char* argv[]) {
         break;
       }
       case 'o': {
-        outfile = argv[unix_optind];
+        outfile = arg;
         break;
       }
       case 'O': {
-        exts.obj = argv[unix_optind];
+        exts.obj = arg;
         break;
       }
       case 'B': {
-        exts.bin = argv[unix_optind];
+        exts.bin = arg;
         break;
       }
       case 'S': {
-        strlist_push(&build_as_lib, argv[unix_optind]);
+        strlist_push(&build_as_lib, arg);
         break;
       }
       case 'X': {
-        exts.lib = argv[unix_optind];
+        exts.lib = arg;
         break;
       }
       case 'd': {
-        dir = argv[unix_optind];
+        dir = arg;
         break;
       }
       case 'w': {
-        stralloc_copys(&dirs.work.sa, argv[unix_optind]);
+        stralloc_copys(&dirs.work.sa, arg);
         break;
       }
       case 't': {
-        tools.toolchain = tools.compiler = argv[unix_optind];
+        tools.toolchain = tools.compiler = arg;
         break;
       }
       case 'm': {
-        tools.make = argv[unix_optind];
+        tools.make = arg;
         break;
       }
       case 'P': {
-        tools.preproc = argv[unix_optind];
+        tools.preproc = arg;
         break;
       }
       case 'a': {
-        set_machine(argv[unix_optind]);
+        set_machine(arg);
         break;
       }
       case 's': {
-        set_system(argv[unix_optind]);
+        set_system(arg);
         break;
       }
       case 'n': {
-        stralloc_copys(&output_name, argv[unix_optind]);
+        stralloc_copys(&output_name, arg);
         break;
       }
       case 'p': {
-        if(argv[unix_optind])
-          set_chip(argv[unix_optind]);
+        if(arg)
+          set_chip(arg);
         break;
       }
       case 'f': {
-        infile = argv[unix_optind];
+        infile = arg;
         break;
       }
       case 'l': {
-        strarray_push(&libs, argv[unix_optind]);
+        strarray_push(&libs, arg);
         break;
       }
       case 'i': {
@@ -5666,14 +5669,14 @@ main(int argc, char* argv[]) {
         break;
       }
       case 'D': {
-        push_define(argv[unix_optind]);
+        push_define(arg);
         break;
       }
       case 'I': {
         buffer_puts(buffer_2, "Add -I: ");
-        buffer_puts(buffer_2, argv[unix_optind]);
+        buffer_puts(buffer_2, arg);
         buffer_putnlflush(buffer_2);
-        strarray_push(&includes, argv[unix_optind]);
+        strarray_push(&includes, arg);
         break;
       }
       default:
@@ -5802,7 +5805,7 @@ main(int argc, char* argv[]) {
     stralloc_free(&tok);
   }
   if(!set_make_type() || !set_compiler_type(tools.compiler)) {
-    usage(argv[0]);
+      usage(argv[0]);
     ret = 2;
     goto quit;
   }
@@ -5999,7 +6002,7 @@ main(int argc, char* argv[]) {
   while(unix_optind < argc) {
     stralloc arg;
     stralloc_init(&arg);
-    stralloc_copys(&arg, argv[unix_optind]);
+    stralloc_copys(&arg, arg);
     stralloc_nul(&arg);
     if(stralloc_contains(&arg, "=")) {
       size_t eqpos;
