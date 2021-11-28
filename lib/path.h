@@ -87,6 +87,8 @@ int path_relative_to_b(const char* s1, size_t n1, const char* s2, size_t n2, str
 
 void path_concat(const char* a, const char* b, stralloc* out);
 void path_concatb(const char* a, size_t alen, const char* b, size_t blen, stralloc* out);
+void path_concat_sa(const stralloc* a, const stralloc* b, stralloc* out);
+
 void path_append(const char* x, size_t len, stralloc* out);
 void path_appends(const char* s, stralloc* out);
 void path_prepend(const char*, size_t, stralloc*);

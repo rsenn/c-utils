@@ -4502,7 +4502,7 @@ output_ninja_rule(buffer* b, target* rule) {
           stralloc_catc(&path, ' ');
         path_concatb(dirs.this.sa.s, dirs.this.sa.len, x, n, &source_file);
 
-        path_relative_to_b(source_file.s, source_file.len, outdir.s, outdir.len, &tmp);
+        path_relative_to_sa(&source_file, &outdir, &tmp);
 
         stralloc_cat(&path, &tmp);
         stralloc_zero(&tmp);
@@ -4514,7 +4514,7 @@ output_ninja_rule(buffer* b, target* rule) {
     }
     stralloc_free(&source_file);
     stralloc_nul(&path);
-    
+
     // stralloc_catset(&path, &rule->prereq, " ");
     stralloc_replacec(&path, pathsep_args == '/' ? '\\' : '/', pathsep_args == '/' ? '/' : '\\');
     stralloc_replaces(&path, dirs.work.sa.s, "$builddir");
