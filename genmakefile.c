@@ -197,6 +197,10 @@ mkdir_components(strlist* dir, int mode) {
 
       if(r.sa.len) {
         if(mkdir_sa(&r.sa, mode) == -1) {
+          if(errno == EEXIST) {
+            errno = 0;
+            continue;
+          }
           ret = -1;
           break;
         }
@@ -4063,14 +4067,6 @@ input_process_rules(target* all) {
   buffer_putnlflush(buffer_2);
 #endif
 
-  /*  if(outdir.sa.s) {
-      path_relative_b(outdir.sa.s, outdir.sa.len, &dirs.out.sa);
-    }*/
-  /*   stralloc_copy(&dirs.out.sa, &outdir.sa);
-     if(!stralloc_endc(&dirs.out.sa, PATHSEP_C))
-       stralloc_catc(&dirs.out.sa, PATHSEP_C);
-     strlist_nul(&dirs.out);*/
-
   if(!var_isset(srcdir_varname)) {
     path_relative_b(dirs.out.sa.s, dirs.out.sa.len, &dirs.out.sa);
 
@@ -4287,7 +4283,10 @@ output_var(buffer* b, MAP_T* vars, const char* name, int serial) {
       var->serial = serial;
       stralloc u;
       stralloc_init(&u);
-      strlist_joinq(&var->value, &u, ' ', '"');
+      if(ninja)
+        stralloc_copy(&u, &var->value);
+      else
+        strlist_joinq(&var->value, &u, ' ', '"');
 
       if(ninja || shell) {
         stralloc_zero(&v);
@@ -4464,6 +4463,8 @@ output_make_rule(buffer* b, target* rule) {
 void
 output_ninja_rule(buffer* b, target* rule) {
   const char* rule_name = 0;
+  stralloc source_file;
+
   if(rule_is_compile(rule) || rule->recipe.s == compile_command.s)
     rule_name = "cc";
   else if(rule_is_link(rule) || rule->recipe.s == link_command.s)
@@ -4475,8 +4476,8 @@ output_ninja_rule(buffer* b, target* rule) {
     stralloc_init(&path);
     set_at_sa(&rule->output, 0, &path);
 
-    stralloc_replaces(&path, dirs.work.sa.s, "$builddir/");
-    // stralloc_replaces(&path, dirs.out.sa.s, "$distdir/");
+    stralloc_replaces(&path, dirs.work.sa.s, "$builddir");
+    // stralloc_replaces(&path, dirs.out.sa.s, "$distdir");
 
     /*stralloc_subst(
         &path, rule->name, str_len(rule->name), pathsep_args == '/' ? "\\" : "/", pathsep_args == '/' ? "/" : "\\");*/
@@ -4486,9 +4487,37 @@ output_ninja_rule(buffer* b, target* rule) {
     buffer_puts(b, rule_name);
     buffer_puts(b, " ");
     stralloc_zero(&path);
-    stralloc_catset(&path, &rule->prereq, " ");
+    stralloc_init(&source_file);
+    {
+      const char* x;
+      size_t n, i = 0;
+      set_iterator_t it;
+      stralloc tmp, outdir;
+      stralloc_init(&tmp);
+      stralloc_init(&outdir);
+      path_concatb(dirs.this.sa.s, dirs.this.sa.len, dirs.out.sa.s, dirs.out.sa.len, &outdir);
+
+      set_foreach(&rule->prereq, it, x, n) {
+        if(i)
+          stralloc_catc(&path, ' ');
+        path_concatb(dirs.this.sa.s, dirs.this.sa.len, x, n, &source_file);
+
+        path_relative_to_b(source_file.s, source_file.len, outdir.s, outdir.len, &tmp);
+
+        stralloc_cat(&path, &tmp);
+        stralloc_zero(&tmp);
+        stralloc_zero(&source_file);
+        i++;
+      }
+      stralloc_free(&tmp);
+      stralloc_free(&outdir);
+    }
+    stralloc_free(&source_file);
+    stralloc_nul(&path);
+    
+    // stralloc_catset(&path, &rule->prereq, " ");
     stralloc_replacec(&path, pathsep_args == '/' ? '\\' : '/', pathsep_args == '/' ? '/' : '\\');
-    stralloc_replaces(&path, dirs.work.sa.s, "$builddir/");
+    stralloc_replaces(&path, dirs.work.sa.s, "$builddir");
     // stralloc_replaces(&path, dirs.out.sa.s, "$distdir/");
 
     buffer_putsa(b, &path);
@@ -5596,6 +5625,7 @@ main(int argc, char* argv[]) {
       }
       case 'b': {
         cmd_bins = 1;
+        cmd_objs = 1;
         break;
       }
       case 'o': {
@@ -5847,12 +5877,7 @@ main(int argc, char* argv[]) {
   if(tools.preproc)
     var_set("CPP", tools.preproc);
   includes_cppflags();
-  /*
-    strlist_nul(&dirs.out);
-    strlist_nul(&dirs.this);
-    path_relative_to(dirs.out.sa.s,
-    dirs.this.sa.s, &dirs.out.sa);
-  */
+
   // debug_sa("dirs.work", &dirs.work.sa);
   strlist_nul(&dirs.this);
   strlist_nul(&dirs.out);
@@ -6089,7 +6114,16 @@ main(int argc, char* argv[]) {
 
   {
     set_iterator_t it;
-    set_foreach(&srcs, it, x, n) { strarray_pushb(&sources, x, n); }
+    set_foreach(&srcs, it, x, n) { 
+    
+#ifdef DEBUG_OUTPUT
+  buffer_puts(buffer_2, "adding to sources:");
+  buffer_put(buffer_2,x, n);
+  buffer_putnlflush(buffer_2);
+#endif
+
+      strarray_pushb(&sources, x, n);
+    }
     strarray_sort(&sources, &sources_sort);
   }
 
@@ -6292,6 +6326,11 @@ fail:
   buffer_putsflush(out, newline);
   stralloc_nul(&cfg.chip);
   var_set("CHIP", cfg.chip.s);
+
+  if(ninja) {
+    var_set("builddir", dirs.out.sa.s);
+  }
+
   {
     strlist varnames;
     strlist_init(&varnames, '\0');

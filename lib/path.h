@@ -74,6 +74,7 @@ int path_relative_b(const char*, size_t, stralloc*);
 int path_relative(const char*, stralloc*);
 int path_relative_to_b(const char*, size_t, const char*, size_t n2, stralloc* out);
 int path_relative_to(const char*, const char*, stralloc*);
+int path_relative_to_sa(const stralloc* path, const stralloc* relative_to, stralloc* out);
 
 size_t path_right(const char* s, size_t n);
 size_t path_skip(const char* s, size_t n);
