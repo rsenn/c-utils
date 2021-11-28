@@ -5580,7 +5580,7 @@ main(int argc, char* argv[]) {
     if(c == 0)
       continue;
     arg = unix_optarg ? unix_optarg : argv[unix_optind];
-    
+
     switch(c) {
       case 'h':
         usage(argv[0]);
@@ -5700,23 +5700,6 @@ main(int argc, char* argv[]) {
   if(!format_linklib_fn)
     format_linklib_fn = &format_linklib_lib;
 
-  if(outfile) {
-    path_dirname(outfile, &dirs.out.sa);
-    if('\\' != PATHSEP_C)
-      stralloc_replacec(&dirs.out.sa, '\\', PATHSEP_C);
-    if(stralloc_equals(&dirs.out.sa, "."))
-      stralloc_zero(&dirs.out.sa);
-    else
-      stralloc_catc(&dirs.out.sa, pathsep_make);
-    byte_zero(&filebuf, sizeof(filebuf));
-    if(buffer_truncfile(&filebuf, outfile)) {
-      errmsg_warnsys("ERROR: opening '", outfile, "'", 0);
-      ret = 2;
-      goto quit;
-    }
-    out = &filebuf;
-    // path_absolute_sa(&dirs.out.sa);
-  }
   path_getcwd(&dirs.this.sa);
   if(cfg.build_type == -1) {
     if((cfg.build_type = extract_build_type(&dirs.build.sa)) == -1)
@@ -5805,7 +5788,7 @@ main(int argc, char* argv[]) {
     stralloc_free(&tok);
   }
   if(!set_make_type() || !set_compiler_type(tools.compiler)) {
-      usage(argv[0]);
+    usage(argv[0]);
     ret = 2;
     goto quit;
   }
@@ -5906,10 +5889,32 @@ main(int argc, char* argv[]) {
   // path_relative_to(dirs.build.sa.s,  dirs.out.sa.s, &dirs.work.sa);
   strlist_nul(&dirs.work);
   stralloc_replacec(&dirs.work.sa, pathsep_make == '/' ? '\\' : '/', pathsep_make);
+
+  if(outfile)
+    path_dirname(outfile, &dirs.out.sa);
+
   mkdir_components(&dirs.out, 0755);
-  mkdir_components(&dirs.build, 0755);
   if(stralloc_diffs(&dirs.work.sa, "."))
     mkdir_components(&dirs.work, 0755);
+  mkdir_components(&dirs.build, 0755);
+
+  if(outfile) {
+    if('\\' != PATHSEP_C)
+      stralloc_replacec(&dirs.out.sa, '\\', PATHSEP_C);
+    if(stralloc_equals(&dirs.out.sa, "."))
+      stralloc_zero(&dirs.out.sa);
+    else
+      stralloc_catc(&dirs.out.sa, pathsep_make);
+    byte_zero(&filebuf, sizeof(filebuf));
+    if(buffer_truncfile(&filebuf, outfile)) {
+      errmsg_warnsys("ERROR: opening '", outfile, "'", 0);
+      ret = 2;
+      goto quit;
+    }
+    out = &filebuf;
+    // path_absolute_sa(&dirs.out.sa);
+  }
+
   /*
     if(tmp.len) {
       stralloc_catc(&tmp, pathsep_make);
@@ -6002,7 +6007,7 @@ main(int argc, char* argv[]) {
   while(unix_optind < argc) {
     stralloc arg;
     stralloc_init(&arg);
-    stralloc_copys(&arg, arg);
+    stralloc_copys(&arg, argv[unix_optind]);
     stralloc_nul(&arg);
     if(stralloc_contains(&arg, "=")) {
       size_t eqpos;
