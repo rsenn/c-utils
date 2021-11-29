@@ -350,9 +350,8 @@ path_extension(const char* in, stralloc* out, const char* ext) {
  */
 char*
 path_output(const char* in, stralloc* out, const char* ext) {
-  stralloc* prefix;
-  prefix = path_is_absolute_sa(&dirs.build.sa) ? &dirs.work.sa : &dirs.build.sa;
-  path_prefix_b(prefix, "", 0, out);
+  stralloc_copy(out, &dirs.build.sa);
+  stralloc_catc(out, pathsep_args);
   return path_extension(str_basename(in), out, ext);
 }
 
@@ -701,15 +700,6 @@ includes_cppflags() {
   stralloc arg;
   stralloc_init(&arg);
   strlist_foreach_s(&include_dirs, dir) {
-
-#ifdef DEBUG_OUTPUT_
-    debug_sa("dirs.work: ", &dirs.work.sa);
-    debug_sa("dirs.build: ", &dirs.build.sa);
-    debug_sa("dirs.out: ", &dirs.out.sa);
-    debug_sa("dirs.this: ", &dirs.this.sa);
-    debug_str("dir: ", dir);
-    buffer_putnlflush(buffer_2);
-#endif
 
     stralloc_zero(&arg);
     stralloc_cats(&arg, dir);
@@ -3316,7 +3306,7 @@ gen_program_rule(const char* filename) {
     add_path_sa(&rule->prereq, &obj);
     if(1 || cmd_libs) {
       slist_foreach(srcdir->sources, pfile) {
-        if(!pfile->has_main) {
+        if(!pfile->has_main && !is_include(pfile->name)) {
           stralloc_zero(&obj);
           path_output(pfile->name, &obj, exts.obj);
           add_path_sa(&rule->prereq, &obj);
@@ -4463,7 +4453,7 @@ output_make_rule(buffer* b, target* rule) {
 void
 output_ninja_rule(buffer* b, target* rule) {
   const char* rule_name = 0;
-  stralloc source_file;
+  stralloc source_file, obj_dir;
 
   if(rule_is_compile(rule) || rule->recipe.s == compile_command.s)
     rule_name = "cc";
@@ -4476,7 +4466,7 @@ output_ninja_rule(buffer* b, target* rule) {
     stralloc_init(&path);
     set_at_sa(&rule->output, 0, &path);
 
-    stralloc_replaces(&path, dirs.work.sa.s, "$builddir");
+    stralloc_replaces(&path, dirs.build.sa.s, "$objdir");
     // stralloc_replaces(&path, dirs.out.sa.s, "$distdir");
 
     /*stralloc_subst(
@@ -4488,6 +4478,8 @@ output_ninja_rule(buffer* b, target* rule) {
     buffer_puts(b, " ");
     stralloc_zero(&path);
     stralloc_init(&source_file);
+    stralloc_init(&obj_dir);
+    path_relative_to_sa(&dirs.out.sa, &dirs.work.sa, &obj_dir);
     {
       const char* x;
       size_t n, i = 0;
@@ -4495,16 +4487,17 @@ output_ninja_rule(buffer* b, target* rule) {
       stralloc tmp, outdir;
       stralloc_init(&tmp);
       stralloc_init(&outdir);
-      path_concatb(dirs.this.sa.s, dirs.this.sa.len, dirs.out.sa.s, dirs.out.sa.len, &outdir);
+      path_concat_sa(&dirs.this.sa, &dirs.out.sa, &outdir);
 
       set_foreach(&rule->prereq, it, x, n) {
         if(i)
           stralloc_catc(&path, ' ');
-        path_concatb(dirs.this.sa.s, dirs.this.sa.len, x, n, &source_file);
+        /*     path_concatb(dirs.this.sa.s, dirs.this.sa.len, x, n, &source_file);
 
-        path_relative_to_sa(&source_file, &outdir, &tmp);
-
-        stralloc_cat(&path, &tmp);
+             path_relative_to_sa(&source_file, &dirs.build.sa, &tmp);
+             stralloc_cat(&path, &tmp);
+     */
+        stralloc_catb(&path, x, n);
         stralloc_zero(&tmp);
         stralloc_zero(&source_file);
         i++;
@@ -4517,11 +4510,12 @@ output_ninja_rule(buffer* b, target* rule) {
 
     // stralloc_catset(&path, &rule->prereq, " ");
     stralloc_replacec(&path, pathsep_args == '/' ? '\\' : '/', pathsep_args == '/' ? '/' : '\\');
-    stralloc_replaces(&path, dirs.work.sa.s, "$builddir");
+    stralloc_replaces(&path, dirs.build.sa.s, "$objdir");
     // stralloc_replaces(&path, dirs.out.sa.s, "$distdir/");
 
     buffer_putsa(b, &path);
     buffer_putnlflush(b);
+    stralloc_free(&obj_dir);
     stralloc_free(&path);
   }
 }
@@ -5725,8 +5719,8 @@ main(int argc, char* argv[]) {
   }
   if(inst_bins)
     cmd_bins = 1;
-  if(inst_libs)
-    cmd_libs = 1;
+  if(!cmd_libs)
+    inst_libs = 0;
   if(!format_linklib_fn)
     format_linklib_fn = &format_linklib_lib;
 
@@ -5840,9 +5834,17 @@ main(int argc, char* argv[]) {
   // path_absolute_sa(&dirs.out.sa);
   strlist_nul(&dirs.out);
   strlist_nul(&dirs.this);
+
+  if(outfile)
+    path_dirname(outfile, &dirs.work.sa);
+  else
+    stralloc_copys(&dirs.work.sa, "build");
+
+  path_concat_sa(&dirs.this.sa, &dirs.work.sa, &dirs.out.sa);
+
   if(dirs.build.sa.len == 0) {
-    if(strlist_contains(&dirs.out, "build")) {
-      stralloc_copy(&dirs.build.sa, &dirs.out.sa);
+    if(strlist_contains(&dirs.work, "build") && strlist_count(&dirs.work) > 1) {
+      stralloc_copy(&dirs.build.sa, &dirs.work.sa);
       // path_relative_to(dirs.out.sa.s, dirs.this.sa.s, &dirs.build.sa);
     } else if(tools.toolchain && !strlist_contains(&dirs.this, "build")) {
       stralloc target;
@@ -5853,10 +5855,15 @@ main(int argc, char* argv[]) {
         stralloc_cat(&target, &cfg.chip);
       }
       stralloc_nul(&target);
-      stralloc_copy(&dirs.build.sa, &dirs.out.sa);
-      strlist_push(&dirs.build, dir ? dir : "build");
-      strlist_push_sa(&dirs.build, &target);
-      strlist_push(&dirs.build, build_types[cfg.build_type]);
+      stralloc_copy(&dirs.build.sa, &dirs.work.sa);
+      // strlist_push(&dirs.build, dir ? dir : "build");
+      if(cross_compile && *cross_compile) {
+        strlist_push(&dirs.build, cross_compile);
+      } else {
+        strlist_push_sa(&dirs.build, &target);
+        stralloc_catc(&dirs.build, '-');
+        stralloc_cats(&dirs.build, build_types[cfg.build_type]);
+      }
       stralloc_free(&target);
     }
     stralloc_replacec(&dirs.build.sa, PATHSEP_C == '/' ? '\\' : '/', PATHSEP_C);
@@ -5901,22 +5908,22 @@ main(int argc, char* argv[]) {
   // debug_sa("srcdir", &srcdir);
   path_relative_to(dirs.build.sa.s, dirs.out.sa.s, &tmp);
   // debug_sa("tmp", &tmp);
-  if(dirs.build.sa.len > dirs.out.sa.len && byte_equal(dirs.out.sa.s, dirs.out.sa.len, dirs.build.sa.s)) {
-    const char* x = dirs.build.sa.s + dirs.out.sa.len;
-    size_t n = dirs.build.sa.len - dirs.out.sa.len;
-    stralloc_zero(&dirs.work.sa);
-    if(n > 0 && *x == '/') {
-      x++;
-      n--;
-    }
-    stralloc_catb(&dirs.work.sa, x, n);
-  }
+  /* if(dirs.build.sa.len > dirs.out.sa.len && byte_equal(dirs.out.sa.s, dirs.out.sa.len, dirs.build.sa.s)) {
+     const char* x = dirs.build.sa.s + dirs.out.sa.len;
+     size_t n = dirs.build.sa.len - dirs.out.sa.len;
+     stralloc_zero(&dirs.work.sa);
+     if(n > 0 && *x == '/') {
+       x++;
+       n--;
+     }
+     stralloc_catb(&dirs.work.sa, x, n);
+   }*/
   // path_relative_to(dirs.build.sa.s,  dirs.out.sa.s, &dirs.work.sa);
   strlist_nul(&dirs.work);
   stralloc_replacec(&dirs.work.sa, pathsep_make == '/' ? '\\' : '/', pathsep_make);
 
-  if(outfile)
-    path_dirname(outfile, &dirs.out.sa);
+  /*  if(outfile)
+      path_dirname(outfile, &dirs.out.sa);*/
 
   mkdir_components(&dirs.out, 0755);
   if(stralloc_diffs(&dirs.work.sa, "."))
@@ -6057,6 +6064,15 @@ main(int argc, char* argv[]) {
       strarray_push(&args, arg.s);
     ++unix_optind;
   }
+
+#ifdef DEBUG_OUTPUT
+  debug_sa("dirs.work: ", &dirs.work.sa);
+  debug_sa("dirs.build: ", &dirs.build.sa);
+  debug_sa("dirs.out: ", &dirs.out.sa);
+  debug_sa("dirs.this: ", &dirs.this.sa);
+  buffer_putnlflush(buffer_2);
+#endif
+
   /* No arguments given */
   if(strarray_size(&args) == 0 && !infile) {
     buffer_putsflush(buffer_2, "ERROR: No arguments given\n\n");
@@ -6114,20 +6130,20 @@ main(int argc, char* argv[]) {
 
   {
     set_iterator_t it;
-    set_foreach(&srcs, it, x, n) { 
-    
-#ifdef DEBUG_OUTPUT
-  buffer_puts(buffer_2, "adding to sources:");
-  buffer_put(buffer_2,x, n);
-  buffer_putnlflush(buffer_2);
-#endif
+    set_foreach(&srcs, it, x, n) {
 
-      strarray_pushb(&sources, x, n);
+#ifdef DEBUG_OUTPUT
+      buffer_puts(buffer_2, "adding to sources:");
+      buffer_put(buffer_2, x, n);
+      buffer_putnlflush(buffer_2);
+#endif
+      if(is_source_b(x, n))
+        strarray_pushb(&sources, x, n);
     }
     strarray_sort(&sources, &sources_sort);
   }
 
-#ifdef DEBUG_OUTPUT_
+#ifdef DEBUG_OUTPUT
   buffer_puts(buffer_2, "strarray sources:");
   strarray_dump(buffer_2, &sources);
   buffer_putnlflush(buffer_2);
@@ -6285,7 +6301,7 @@ main(int argc, char* argv[]) {
     }
   }
 
-#ifdef DEBUG_OUTPUT_
+#ifdef DEBUG_OUTPUT
   buffer_puts(buffer_2, "Dumping all rules...\n");
   {
     int i = 0;
@@ -6328,7 +6344,15 @@ fail:
   var_set("CHIP", cfg.chip.s);
 
   if(ninja) {
-    var_set("builddir", dirs.out.sa.s);
+    stralloc tmp;
+    stralloc_init(&tmp);
+    path_relative_to_sa(&dirs.build.sa, &dirs.out.sa, &tmp);
+
+    while(stralloc_endb(&tmp, &pathsep_args, 1))
+      tmp.len--;
+
+    var_setb("objdir", tmp.s, tmp.len);
+    stralloc_free(&tmp);
   }
 
   {
