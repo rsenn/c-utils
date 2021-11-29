@@ -812,7 +812,7 @@ libdirs_add(const char* dir) {
   path_normalize(dir, &abs);
   if(strlist_push_unique_sa(&link_dirs, &abs)) {
 
-#ifdef DEBUG_OUTPUT
+#ifdef DEBUG_OUTPUT_
     buffer_puts(buffer_2, "Added to lib dirs: ");
     buffer_putsa(buffer_2, &abs);
     buffer_putnlflush(buffer_2);
@@ -3061,7 +3061,7 @@ gen_simple_compile_rules(sourcedir* srcdir, const char* dir, const char* fromext
   stralloc_init(&ppsrc);
   stralloc_init(&obj);
 
-#ifdef DEBUG_OUTPUT
+#ifdef DEBUG_OUTPUT_
   buffer_putm_internal(buffer_2, "gen_simple_compile_rules '", dir, "' ", fromext, " ", toext, NULL);
   buffer_putnlflush(buffer_2);
 #endif
@@ -3174,7 +3174,7 @@ gen_srcdir_rule(sourcedir* sdir, const char* name) {
   slist_foreach(sdir->sources, src) {
     const char* s;
 
-#ifdef DEBUG_OUTPUT
+#ifdef DEBUG_OUTPUT_
     debug_str("sourcefile", src->name);
 #endif
 
@@ -3262,7 +3262,7 @@ gen_program_rule(const char* filename) {
   stralloc_init(&dir);
   stralloc_init(&bin);
 
-#ifdef DEBUG_OUTPUT
+#ifdef DEBUG_OUTPUT_
   debug_str("gen_program_rule", filename);
 #endif
 
@@ -3375,7 +3375,7 @@ gen_link_rules(/*strarray* sources*/) {
     sourcefile* file = dlist_data(node, sourcefile*);
     char* filename = (char*)file->name;
 
-#ifdef DEBUG_OUTPUT
+#ifdef DEBUG_OUTPUT_
     buffer_putm_internal(buffer_2, "GEN_LINK_RULES file = ", filename, NULL);
     buffer_putnlflush(buffer_2);
 #endif
@@ -4037,7 +4037,7 @@ input_process_rules(target* all) {
 #endif
   }
 
-#ifdef DEBUG_OUTPUT
+#ifdef DEBUG_OUTPUT_
   buffer_puts(buffer_2, "args: ");
   buffer_putsl(buffer_2, &args, " ");
   buffer_putnlflush(buffer_2);
@@ -4051,7 +4051,7 @@ input_process_rules(target* all) {
     stralloc_catc(&dirs.work.sa, PATHSEP_C);
   strlist_nul(&dirs.work);
 
-#ifdef DEBUG_OUTPUT
+#ifdef DEBUG_OUTPUT_
   buffer_puts(buffer_2, "outdir:\n\t");
   buffer_putsa(buffer_2, &outdir.sa);
   buffer_putnlflush(buffer_2);
@@ -5994,7 +5994,7 @@ main(int argc, char* argv[]) {
   if(infile) {
     input_process(infile, all);
 
-#ifdef DEBUG_OUTPUT
+#ifdef DEBUG_OUTPUT_
     buffer_puts(buffer_2, "build_directories =\n\t");
     buffer_putset(buffer_2, &build_directories, "\n\t", 2);
     buffer_putnlflush(buffer_2);
@@ -6089,7 +6089,7 @@ main(int argc, char* argv[]) {
   strarray_dump(buffer_2, &args);
   strarray_foreach(&args, arg) {
 
-#ifdef DEBUG_OUTPUT
+#ifdef DEBUG_OUTPUT_
     buffer_puts(buffer_2, "argument: ");
     buffer_puts(buffer_2, *arg);
     buffer_putnlflush(buffer_2);
@@ -6132,7 +6132,7 @@ main(int argc, char* argv[]) {
     set_iterator_t it;
     set_foreach(&srcs, it, x, n) {
 
-#ifdef DEBUG_OUTPUT
+#ifdef DEBUG_OUTPUT_
       buffer_puts(buffer_2, "adding to sources:");
       buffer_put(buffer_2, x, n);
       buffer_putnlflush(buffer_2);
@@ -6143,7 +6143,7 @@ main(int argc, char* argv[]) {
     strarray_sort(&sources, &sources_sort);
   }
 
-#ifdef DEBUG_OUTPUT
+#ifdef DEBUG_OUTPUT_
   buffer_puts(buffer_2, "strarray sources:");
   strarray_dump(buffer_2, &sources);
   buffer_putnlflush(buffer_2);
@@ -6352,6 +6352,8 @@ fail:
       tmp.len--;
 
     var_setb("objdir", tmp.s, tmp.len);
+    var_set("extra_cflags", "$$EXTRA_CFLAGS");
+    var_set("extra_ldflags", "$$EXTRA_LDFLAGS");
     stralloc_free(&tmp);
   }
 
