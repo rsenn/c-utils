@@ -937,7 +937,10 @@ add_program(q textcode unix errmsg env charbuf buffer path dir strarray strlist 
 
 add_program(httpproxy unix http io hmap)
 # add_program(montty io hmap)
-add_program(logserial sig charbuf hmap path unix rdir dir errmsg io ndelay strarray stralloc buffer taia tai)
+if(UNIX)
+  add_program(logserial sig charbuf hmap path unix rdir dir errmsg io ndelay strarray stralloc buffer taia tai)
+endif(UNIX)
+
 add_program(tinyproxy process unix path wait range dns taia tai hmap env ndelay buffer strarray array strlist stralloc errmsg sig socket fmt scan io uint32)
 link_program(tinyproxy ${LIBMSWSOCK})
 # if(NOT WIN32) add_program(tcpproxy http io errmsg buffer open ) endif(NOT WIN32)
