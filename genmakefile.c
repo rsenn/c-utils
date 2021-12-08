@@ -1161,7 +1161,7 @@ rule_command(target* rule, stralloc* out) {
         n++;
       r.start += n;
     }
-  } else if(!str_start(tools.make, "g") &&
+  } else if(/*!infile && */ !str_start(tools.make, "g") /*&& !str_equal(tools.make, "make")*/ &&
             !(rule->name[0] == '.' && strchr(&rule->name[1], '.') && prereq.sa.len == 0)) {
     rule_command_subst(rule, out, prereq.sa.s, prereq.sa.len);
   } else {
@@ -1320,10 +1320,10 @@ rule_dump(target* rule) {
   buffer_putsa_escaped(buffer_2, &rule->recipe, fmt_escapecharshell);
   buffer_puts(buffer_2, "\n  " BLUE256 "OUTPUT " NC " ");
   buffer_putset(buffer_2, &rule->output, " ", 1);
-  buffer_puts(buffer_2, "\n  " GREEN256 "PREREQ " NC " ");
-  buffer_putset(buffer_2, &rule->prereq, " ", 1);
+  buffer_puts(buffer_2, "\n  " GREEN256 "PREREQ " NC "\n  \t");
+  buffer_putset(buffer_2, &rule->prereq, "\n  \t", 4);
   if(array_length(&rule->deps, sizeof(target*))) {
-    buffer_puts(buffer_2, "\n  DEPS   " NC " ");
+    buffer_puts(buffer_2, "\n  DEPS   " NC "\n  \t");
     print_rule_deps(buffer_2, rule);
   }
   buffer_putnlflush(buffer_2);
@@ -2860,6 +2860,10 @@ gen_clean_rule() {
   MAP_FOREACH(rules, t) {
     target* rule = MAP_ITER_VALUE(t);
     const char* name = MAP_ITER_KEY(t);
+
+    if(rule->phony)
+      continue;
+
     stralloc_zero(&output);
     /* Ignore the dirs.build rule */
     /*  if(stralloc_equals(&dirs.work.sa, MAP_ITER_KEY(t)))
@@ -3681,33 +3685,26 @@ input_process_command(stralloc* cmd, int argc, char* argv[], const char* file, s
 
   if(output.len) {
     strlist_removeb(&files, output.s, output.len);
-    path_normalize(output.s, &output);
+    path_canonical_sa(&output);
     strlist_removeb(&files, output.s, output.len);
   }
 
   stralloc_copy(cmd, &args.sa);
   stralloc_nul(cmd);
 
-#ifdef DEBUG_OUTPUT_
-  buffer_puts(buffer_2, "reldir = ");
+#ifdef DEBUG_OUTPUT_1
+  buffer_puts(buffer1_2, "\treldir = ");
   buffer_putsa(buffer_2, &reldir);
-  buffer_puts(buffer_2, ", builddir = ");
+  buffer_puts(buffer_2, "\n\tbuilddir = ");
   buffer_putsa(buffer_2, &dirs.build.sa);
-  buffer_puts(buffer_2, ", outdir = ");
+  buffer_puts(buffer_2, "\n\toutdir = ");
   buffer_putsa(buffer_2, &dirs.out.sa);
-  buffer_puts(buffer_2, "cmd = ");
+  buffer_puts(buffer_2, "\n\tcmd = ");
   buffer_putsa(buffer_2, cmd);
-  buffer_putnlflush(buffer_2);
-  buffer_putnlflush(buffer_2);
-#endif
-#ifdef DEBUG_OUTPUT_
-  buffer_puts(buffer_2, "args = ");
-  buffer_putsl(buffer_2, &args, " ");
-  buffer_putnlflush(buffer_2);
-#endif
-#ifdef DEBUG_OUTPUT_
-  buffer_puts(buffer_2, "files = ");
-  buffer_putsl(buffer_2, &files, " ");
+  buffer_puts(buffer_2, "\n\targs =\n\t\t");
+  buffer_putsl(buffer_2, &args, "\n\t\t");
+  buffer_puts(buffer_2, "\n\tfiles =\n\t\t");
+  buffer_putsl(buffer_2, &files, "\n\t\t");
   buffer_putnlflush(buffer_2);
 #endif
 
@@ -3761,20 +3758,14 @@ input_process_command(stralloc* cmd, int argc, char* argv[], const char* file, s
   buffer_puts(buffer_2, file);
   buffer_puts(buffer_2, ":");
   buffer_putulong(buffer_2, line);
-  buffer_puts(buffer_2, ": objects = ");
+  buffer_puts(buffer_2, ",\n\tobjects = ");
   buffer_putulong(buffer_2, objects);
-  buffer_puts(buffer_2, ", output = ");
+  buffer_puts(buffer_2, ",\n\toutput = ");
   buffer_putsa(buffer_2, &output);
-  buffer_putnlflush(buffer_2);
-#endif
-#ifdef DEBUG_OUTPUT_
-  buffer_puts(buffer_2, "cmd = ");
+  buffer_puts(buffer_2, ",\n\tcmd = ");
   buffer_putsa(buffer_2, cmd);
-  buffer_putnlflush(buffer_2);
-#endif
-#ifdef DEBUG_OUTPUT_
-  buffer_puts(buffer_2, "files = ");
-  buffer_putsl(buffer_2, &files, " ");
+  buffer_puts(buffer_2, ",\n\tfiles =\n\t\t");
+  buffer_putsl(buffer_2, &files, ",\n\t\t");
   buffer_putnlflush(buffer_2);
 #endif
 
@@ -3815,8 +3806,8 @@ input_process_command(stralloc* cmd, int argc, char* argv[], const char* file, s
 
     buffer_puts(buffer_2, "\n\tcommand = ");
     buffer_put(buffer_2, cmd->s, scan_nonwhitenskip(cmd->s, cmd->len));
-    buffer_puts(buffer_2, "\n\tfiles = ");
-    buffer_putsl(buffer_2, &files, " ");
+    buffer_puts(buffer_2, "\n\tfiles =\n\t\t");
+    buffer_putsl(buffer_2, &files, ",\n\t\t");
     buffer_putnlflush(buffer_2);
 #endif
 
@@ -3827,9 +3818,17 @@ input_process_command(stralloc* cmd, int argc, char* argv[], const char* file, s
       stralloc* sacmd;
       size_t pathlen;
       target* rule;
-      sacmd = alloc_zero(sizeof(stralloc));
-      // stralloc_move(sacmd, cmd);
-      stralloc_copy(sacmd, &args.sa);
+      // sacmd = alloc_zero(sizeof(stralloc));
+      //  stralloc_move(sacmd, cmd);
+      // stralloc_copy(sacmd, &args.sa);
+      sacmd = &args.sa;
+      if(compile) {
+        sacmd = &compile_command;
+      } else if(link) {
+        sacmd = &link_command;
+      } else if(lib) {
+        sacmd = &lib_command;
+      }
       pathlen = reldir.len;
       stralloc_cat(&reldir, &output);
 
@@ -3867,10 +3866,18 @@ input_process_command(stralloc* cmd, int argc, char* argv[], const char* file, s
 #endif
       }
 
-      if(compile) {
-        stralloc_copy(&rule->recipe, &compile_command);
-      } else if(link) {
-        stralloc_copy(&rule->recipe, &link_command);
+      /*   if(compile) {
+           stralloc_copy(&rule->recipe, &compile_command);
+         } else if(link) {
+           stralloc_copy(&rule->recipe, &link_command);
+         } else if(lib) {
+           stralloc_copy(&rule->recipe, &lib_command);
+         }*/
+
+      if(link) {
+        target* all = rule_get("all");
+
+        set_adds(&all->prereq, rule->name);
       }
 
 #ifdef DEBUG_OUTPUT_
@@ -4022,10 +4029,13 @@ input_process_rules(target* all) {
       strlist path;
       strlist_init(&path, '\0');
       strlist_froms(&path, rule->name, PATHSEP_C);
-      if(strlist_count(&builddir) == 0)
-        strlist_copy(&builddir, &path);
-      else
-        strlist_intersection(&builddir, &path, compile ? &builddir : &outdir);
+
+      /* if(!builddir.sa.len) */ {
+        if(strlist_count(&builddir) == 0)
+          strlist_copy(&builddir, &path);
+        else
+          strlist_intersection(&builddir, &path, compile ? &builddir : &outdir);
+      }
       strlist_free(&path);
     }
     if(link) {
@@ -4037,7 +4047,7 @@ input_process_rules(target* all) {
 #endif
   }
 
-#ifdef DEBUG_OUTPUT_
+#ifdef DEBUG_OUTPUT
   buffer_puts(buffer_2, "args: ");
   buffer_putsl(buffer_2, &args, " ");
   buffer_putnlflush(buffer_2);
@@ -4170,11 +4180,11 @@ input_process_rules(target* all) {
       }
 
       if(compile) {
-        if(compile_command.len == 0)
+        if(compile_command.len == 0 || infile)
           stralloc_copy(&compile_command, &cmd);
 
-        /*    stralloc_copy(&rule->recipe, &compile_command);
-            stralloc_nul(&rule->recipe);*/
+        /*    stralloc_copy(&rule->recipe, &compile_command); */
+        stralloc_nul(&rule->recipe);
       }
 
       stralloc_free(&cmd);
@@ -4256,13 +4266,15 @@ output_var(buffer* b, MAP_T* vars, const char* name, int serial) {
         stralloc_lower(&v);
       stralloc_nul(&v);
       set_clear(&refvars);
-      extract_vars(var->value.sa.s, var->value.sa.len, &refvars);
-      set_foreach(&refvars, it, ref, len) {
+      if(!infile) {
+        extract_vars(var->value.sa.s, var->value.sa.len, &refvars);
+        set_foreach(&refvars, it, ref, len) {
 #ifdef DEBUG_OUTPUT
-        buffer_putm_internal(buffer_2, "Var ", name, " ref: ", ref, NULL);
-        buffer_putnlflush(buffer_2);
+          buffer_putm_internal(buffer_2, "Var ", name, " ref: ", ref, NULL);
+          buffer_putnlflush(buffer_2);
 #endif
-        output_var(b, vars, ref, serial);
+          output_var(b, vars, ref, serial);
+        }
       }
       if(batch)
         buffer_putm_internal(b, "@SET ", v.s, "=", NULL);
@@ -4349,8 +4361,8 @@ output_make_rule(buffer* b, target* rule) {
   buffer_putnlflush(buffer_2);
 #endif
 
-  if(num_prereqs == 0 && str_diffn(rule->name, dirs.work.sa.s, dirs.work.sa.len) &&
-     !rule->name[str_chr(rule->name, pathsep_make)] && str_end(rule->name, ":")) {
+  if(rule->phony || (num_prereqs == 0 && str_diffn(rule->name, dirs.work.sa.s, dirs.work.sa.len) &&
+                     !rule->name[str_chr(rule->name, pathsep_make)] && str_end(rule->name, ":"))) {
     buffer_putm_internal(b, ".PHONY: ", rule->name, newline, NULL);
   }
   stralloc_zero(&sa);
@@ -4394,24 +4406,29 @@ output_make_rule(buffer* b, target* rule) {
     size_t len;
     bucket_t* it;
     int i = 0;
-    stralloc_catc(&output, ' ');
+    stralloc_cats(&output, num_prereqs > 1 ? " \\\n\t" : " ");
 
-    set_foreach_ordered(&rule->prereq, it, str, len) {
-      if(stralloc_endb(&output, str, len))
-        continue;
-      if(i)
-        stralloc_catc(&output, ' ');
-      stralloc_catb(&output, str, len);
-      i++;
-    }
-    // stralloc_replacec(&output, pathsep_make == '/' ? '\\' : '/', pathsep_make);
+    set_join(&rule->prereq, num_prereqs > 1 ? " \\\n\t" : " ", &output);
+    /*    set_foreach_ordered(&rule->prereq, it, str, len) {
+          if(stralloc_endb(&output, str, len))
+            continue;
+          if(i)
+            stralloc_catc(&output, ' ');
+          stralloc_catb(&output, str, len);
+          i++;
+        }
+    */    // stralloc_replacec(&output, pathsep_make == '/' ? '\\' : '/', pathsep_make);
   }
 
   // stralloc_zero(&output);
   if(rule->recipe.s) {
     stralloc cmd;
     stralloc_init(&cmd);
-    rule_command(rule, &cmd);
+
+    if(infile)
+      stralloc_copy(&cmd, &rule->recipe);
+    else
+      rule_command(rule, &cmd);
 
     if(!stralloc_starts(&cmd, newline)) {
       stralloc_catc(&output, '\n');
@@ -4629,23 +4646,7 @@ output_script(buffer* b, target* rule) {
     buffer_puts(b, " || GOTO FAIL");
   }
   if(str_equal(rule->name, "all")) {
-    buffer_putm_internal(b,
-                         newline,
-                         ":SUCCESS",
-                         newline,
-                         "ECHO Done.",
-                         newline,
-                         "GOTO QUIT",
-                         newline,
-                         newline,
-                         ":FAIL",
-                         newline,
-                         "ECHO Fail.",
-                         newline,
-                         newline,
-                         ":QUIT",
-                         newline,
-                         0);
+    buffer_putm_internal(b, newline, ":SUCCESS", newline, "ECHO Done.", newline, "GOTO QUIT", newline, newline, ":FAIL", newline, "ECHO Fail.", newline, newline, ":QUIT", newline, 0);
   }
   put_newline(b, flush);
   rule->serial = serial;
@@ -5958,6 +5959,7 @@ main(int argc, char* argv[]) {
     &dirs.build.sa);
   */
   all = rule_get("all");
+  all->phony = true;
 
   stralloc_catc(&all->recipe, '\n');
 

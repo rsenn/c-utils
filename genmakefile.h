@@ -107,6 +107,7 @@ typedef struct target_s {
   strlist vars;
   bool disabled : 1;
   bool outputs : 1;
+  bool phony : 1;
 } target;
 
 typedef struct {
