@@ -63,15 +63,13 @@ set_insert(set_t* set, const void* val, const size_t size) {
     b = b->next;
   }
 
-  b->list_next = set->first;
+  b->list_next = set->list;
   b->list_prev = 0;
 
-  if(set->first)
-    set->first->list_prev = b;
-  else
-    set->list = b;
+  if(set->list)
+    set->list->list_prev = b;
 
-  set->first = b;
+  set->list = b;
 
   ++set->entries;
   return 1;

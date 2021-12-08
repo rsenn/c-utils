@@ -22,7 +22,7 @@ typedef struct set {
   uint32 overflow;
   uint32 len;
   uint32 (*hash_fp)(const void*, size_t);
-  bucket_t *array, *list, *first, *last;
+  bucket_t *array, *list, *last;
 } set_t;
 
 // Iterator Definition

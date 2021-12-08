@@ -29,6 +29,7 @@
 
 typedef enum { OS_WIN, OS_MAC, OS_LINUX } os_type;
 typedef enum { LANG_C, LANG_CXX } lang_type;
+typedef enum { PREPROCESS = 0, COMPILE, LIB, LINK, MKDIR, DELETE, NUM_COMMANDS } command_type;
 
 #if WINDOWS
 #define MAX_CMD_LEN 1023
@@ -67,6 +68,13 @@ typedef struct {
   os_type os;
   enum { NTOS, UNIX } type;
 } system_type;
+
+union commands {
+  stralloc v[NUM_COMMANDS];
+  struct {
+    stralloc preprocess, compile, lib, link, mkdir, delete;
+  };
+};
 
 typedef struct {
   union {
@@ -108,6 +116,7 @@ typedef struct target_s {
   bool disabled : 1;
   bool outputs : 1;
   bool phony : 1;
+  command_type type;
 } target;
 
 typedef struct {
