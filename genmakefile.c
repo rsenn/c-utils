@@ -3867,11 +3867,11 @@ input_process_command(stralloc* cmd, int argc, char* argv[], const char* file, s
 #endif
       }
 
-      /*      if(compile) {
-              stralloc_copy(&rule->recipe, &compile_command);
-            } else if(link) {
-              stralloc_copy(&rule->recipe, &link_command);
-            }*/
+      if(compile) {
+        stralloc_copy(&rule->recipe, &compile_command);
+      } else if(link) {
+        stralloc_copy(&rule->recipe, &link_command);
+      }
 
 #ifdef DEBUG_OUTPUT_
       rule_dump(rule);
@@ -3963,7 +3963,7 @@ input_process_line(const char* x, size_t n, const char* file, size_t line) {
 #endif
 
       if(!same_dir)
-        chdir(cwd.s);
+        (void)chdir(cwd.s);
       stralloc_free(&cwd);
     } else if(i == 2 && byte_equal(x, 2, "&&")) {
       break;
@@ -4274,7 +4274,7 @@ output_var(buffer* b, MAP_T* vars, const char* name, int serial) {
       stralloc u;
       stralloc_init(&u);
       if(ninja)
-        stralloc_copy(&u, &var->value);
+        stralloc_copy(&u, &var->value.sa);
       else
         strlist_joinq(&var->value, &u, ' ', '"');
 
@@ -5861,8 +5861,8 @@ main(int argc, char* argv[]) {
         strlist_push(&dirs.build, cross_compile);
       } else {
         strlist_push_sa(&dirs.build, &target);
-        stralloc_catc(&dirs.build, '-');
-        stralloc_cats(&dirs.build, build_types[cfg.build_type]);
+        stralloc_catc(&dirs.build.sa, '-');
+        stralloc_cats(&dirs.build.sa, build_types[cfg.build_type]);
       }
       stralloc_free(&target);
     }
