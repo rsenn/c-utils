@@ -40,7 +40,7 @@ size_t fmt_set(char*, const set_t*, const char*);
 int set_add(set_t*, const void*, const size_t);
 int set_adds(set_t*, const char*);
 int set_insert(set_t* set, const void* val, const size_t size);
-int set_inserts(set_t* set,  const char*);
+int set_inserts(set_t* set, const char*);
 
 void set_clear(set_t*);
 int set_delete(set_t*, const void*, const size_t);

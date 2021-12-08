@@ -1402,7 +1402,7 @@ void
 add_path_b(set_t* s, const char* path, size_t len) {
   if(set_has(s, path, len))
     return;
-  set_add(s, path, len);
+  set_insert(s, path, len);
 }
 
 /**
@@ -4646,7 +4646,23 @@ output_script(buffer* b, target* rule) {
     buffer_puts(b, " || GOTO FAIL");
   }
   if(str_equal(rule->name, "all")) {
-    buffer_putm_internal(b, newline, ":SUCCESS", newline, "ECHO Done.", newline, "GOTO QUIT", newline, newline, ":FAIL", newline, "ECHO Fail.", newline, newline, ":QUIT", newline, 0);
+    buffer_putm_internal(b,
+                         newline,
+                         ":SUCCESS",
+                         newline,
+                         "ECHO Done.",
+                         newline,
+                         "GOTO QUIT",
+                         newline,
+                         newline,
+                         ":FAIL",
+                         newline,
+                         "ECHO Fail.",
+                         newline,
+                         newline,
+                         ":QUIT",
+                         newline,
+                         0);
   }
   put_newline(b, flush);
   rule->serial = serial;
@@ -6067,8 +6083,8 @@ main(int argc, char* argv[]) {
     ++unix_optind;
   }
 
-#ifdef DEBUG_OUTPUT
-  debug_sa("dirs.work: ", &dirs.work.sa);
+#ifdef DEBUG_OUTP
+  UT debug_sa("dirs.work: ", &dirs.work.sa);
   debug_sa("dirs.build: ", &dirs.build.sa);
   debug_sa("dirs.out: ", &dirs.out.sa);
   debug_sa("dirs.this: ", &dirs.this.sa);

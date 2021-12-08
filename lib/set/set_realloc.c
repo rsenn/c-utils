@@ -1,10 +1,10 @@
 #include "../set.h"
 #include <stdlib.h>
- #include <assert.h>
+#include <assert.h>
 
 void set_free_array(set_t* set);
 
-  int
+int
 set_realloc(set_t* set) {
   uint32 set_index;
   bucket_t* b;

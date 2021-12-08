@@ -3,7 +3,7 @@
 #include <string.h>
 #include <assert.h>
 
-  int set_realloc(set_t* set);
+int set_realloc(set_t* set);
 
 int
 set_insert(set_t* set, const void* val, const size_t size) {
