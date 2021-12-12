@@ -42,8 +42,8 @@ option(USE_BROTLI "brotli compression" ON)
 option(USE_SSL "ssl encryption" ON)
 
 option(BUILD_SHARED "build shared library" ON)
-option(BUILD_EXAMPLES "build examples" OFF)
-option(BUILD_TESTS "build tests" OFF)
+option(BUILD_EXAMPLES "build examples" ON)
+option(BUILD_TESTS "build tests" ON)
 
 if(CMAKE_C_COMPILER MATCHES "musl")
   set(MUSL TRUE)
