@@ -166,7 +166,7 @@ serial_open(const char* port, int baud) {
   }
 
   return fd;
-#else
+#elif !NO_SERIAL
   struct termios options;
 
   int fd = open(port, O_RDWR | O_NOCTTY | O_NDELAY);
@@ -356,12 +356,11 @@ serial_open(const char* port, int baud) {
 
 void
 serial_close(int fd) {
-#if !WINDOWS_NATIVE
-
+#if WINDOWS_NATIVE
+  CloseHandle(fd);
+#elif !NO_SERIAL
   tcflush(fd, TCIOFLUSH);
   close(fd);
-#else
-  CloseHandle(fd);
 #endif
 }
 
@@ -392,13 +391,13 @@ serial_has_char(int fd) {
 
 void
 serial_wait_until_sent(int fd) {
-#if !WINDOWS_NATIVE
-  while(tcdrain(fd) == -1) {
-    fprintf(stderr, "Could not drain data: %s\n", strerror(errno));
-  }
-#else
+#if WINDOWS_NATIVE
   if(!PurgeComm(fd, PURGE_TXCLEAR)) {
     fprintf(stderr, "Could not drain data: %s\n", last_error());
+  }
+#elif !NO_SERIAL
+  while(tcdrain(fd) == -1) {
+    fprintf(stderr, "Could not drain data: %s\n", strerror(errno));
   }
 #endif
 }
@@ -552,7 +551,8 @@ serial_ports(void) {
 
 int
 serial_baud_rate(int fd) {
-  int rate, speed;
+  int rate = 0, speed;
+#if !NO_SERIAL
   struct termios options;
 
   if(tcgetattr(fd, &options) == -1)
@@ -597,5 +597,6 @@ serial_baud_rate(int fd) {
 #endif
     default: fprintf(stderr, "Warning: Unhandled baud rate constant: %d\n", speed); return -1;
   }
+#endif /* !NO_SERIAL */
   return rate;
 }

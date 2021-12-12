@@ -423,6 +423,21 @@ check_functions(__write aligned_alloc clock_gettime getdelim lstat pipe2 popen p
 check_functions(sigismember sigsuspend)
 check_functions(ftruncate)
 check_functions(glob)
+check_functions(tcgetattr tcsetattr)
+
+if(HAVE_TCGETATTR AND HAVE_TCSETATTR)
+else(HAVE_TCGETATTR AND HAVE_TCSETATTR)
+  add_definitions(-DNO_TCATTR=1)
+endif(HAVE_TCGETATTR AND HAVE_TCSETATTR)
+
+check_functions(cfsetispeed cfsetospeed tcdrain tcflush)
+
+if(NOT WIN32 AND NOT CYGWIN AND NOT MINGW)
+  if(HAVE_CFSETISPEED AND HAVE_CFSETOSPEED AND HAVE_TCDRAIN AND HAVE_TCFLUSH)
+  else(HAVE_CFSETISPEED AND HAVE_CFSETOSPEED AND HAVE_TCDRAIN AND HAVE_TCFLUSH)
+    add_definitions(-DNO_SERIAL=1)
+  endif(HAVE_CFSETISPEED AND HAVE_CFSETOSPEED AND HAVE_TCDRAIN AND HAVE_TCFLUSH)
+endif(NOT WIN32 AND NOT CYGWIN AND NOT MINGW)
 
 if(HAVE_GLOB)
   add_definitions(-DHAVE_GLOB)

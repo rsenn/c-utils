@@ -59,7 +59,7 @@ int
 terminal_init(void) {
 #if WINDOWS
   hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-#else
+#elif !NO_TCATTR
   struct termios newt;
   tcgetattr(terminal_out_buffer.fd, &oldterm);
   newt = oldterm;
@@ -71,7 +71,7 @@ terminal_init(void) {
 
 void
 terminal_restore(void) {
-#if !WINDOWS
+#if !(WINDOWS || NO_TCATTR)
   tcsetattr(terminal_out_buffer.fd, TCSANOW, &oldterm);
 #endif
   terminal_set_normal_screen();

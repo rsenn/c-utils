@@ -1,4 +1,3 @@
-#define _POSIX_C_SOURCE
 #define _GNU_SOURCE
 
 #include "lib/unix.h"
