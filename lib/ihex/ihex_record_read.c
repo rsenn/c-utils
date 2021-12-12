@@ -4,10 +4,12 @@
 
 ssize_t
 ihex_record_read(ihex_record** pihr, const char* in, size_t n) {
+  ihex_record* r;
   uint8 len, typ, chk;
   uint16 off;
   const char* x = in;
   size_t i;
+
   if(x[0] != ':')
     return 0;
   x += 1;
@@ -27,28 +29,23 @@ ihex_record_read(ihex_record** pihr, const char* in, size_t n) {
   if((i = scan_xchar(&x[(len * 2)], &chk)) != 2)
     return 0;
 
-  if((*pihr = (ihex_record*)alloc_zero(sizeof(ihex_record) + len))) {
+  if((r = (ihex_record*)alloc_zero(sizeof(ihex_record) + len))) {
     size_t j;
-    ihex_record* r = *pihr;
     uint8* data = (uint8*)&r->data;
-
     for(j = 0; j < len; j++) {
       if((i = scan_xchar(x, &data[j])) != 2) {
-        free(*pihr);
+        alloc_free(*pihr);
         *pihr = 0;
         return 0;
       }
-
       x += i;
       n -= i;
     }
-
-    r->next = 0;
     r->length = len;
     r->type = typ;
     r->offset = off;
     r->checksum = chk;
-
+    *pihr = r;
     return x - in;
   }
   return 0;

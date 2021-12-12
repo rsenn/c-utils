@@ -137,7 +137,7 @@ strip_comments(charbuf* in, buffer* out) {
   int c, is_empty;
   const char* x;
   size_t p, n;
-  char buf[2];
+  char buf[2], prev_c = 0;
   stralloc line;
   stralloc_init(&line);
   n = 0;
@@ -146,10 +146,10 @@ strip_comments(charbuf* in, buffer* out) {
     if(c == '/') {
       int c2 = charbuf_peek(in);
       if(c2 == '/') {
-        charbuf_skip_until(in, '\n');
-        /*   charbuf_skip(in);
-           stralloc_catc(&line, '\n');*/
-        continue;
+        if(prev_c != '\\') {
+          charbuf_skip_until(in, '\n');
+          continue;
+        }
       } else if(c2 == '*') {
         charbuf_skip(in);
         do {
@@ -163,6 +163,7 @@ strip_comments(charbuf* in, buffer* out) {
       }
     }
     buf[0] = c;
+    prev_c = c;
 
     n++;
     if(c == '\n') {

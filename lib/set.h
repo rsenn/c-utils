@@ -32,13 +32,16 @@ typedef struct set_iterator {
   const set_t* set;
 } set_iterator_t;
 
-#define SET()                                                                                                          \
+#define SET() \
   (struct set) { 0, 0, 0, 0, 0 }
 
 size_t fmt_set(char*, const set_t*, const char*);
 
 int set_add(set_t*, const void*, const size_t);
 int set_adds(set_t*, const char*);
+int set_insert(set_t* set, const void* val, const size_t size);
+int set_inserts(set_t* set, const char*);
+
 void set_clear(set_t*);
 int set_delete(set_t*, const void*, const size_t);
 void set_free_array(set_t*);
@@ -59,6 +62,9 @@ int set_iterator_next(set_iterator_t*);
 char* set_iterator_value(const set_iterator_t*, size_t*);
 
 char** set_toarray(const set_t*);
+#ifdef STRARRAY_H
+void set_tostrarray(const set_t*, strarray*);
+#endif
 
 char* set_at_n(const set_t*, int64 pos, size_t* len);
 char* set_at(const set_t*, int64 pos);
@@ -84,7 +90,7 @@ set_iterator_new(const set_t* s) {
 
 #define set_foreach_it(s, it) for(set_iterator_init(&(it), (s)); set_iterator_value(&(it), 0); set_iterator_next(&(it)))
 
-#define set_foreach(s, it, x, n)                                                                                       \
+#define set_foreach(s, it, x, n) \
   for(it = set_iterator_new((s)); (x = set_iterator_value(&(it), &n)); set_iterator_next(&(it)))
 
 #define set_foreach_ordered(s, b, x, n) for(b = (s)->list; b && (n = b->size, x = b->value); b = b->list_next)
@@ -93,6 +99,7 @@ set_iterator_new(const set_t* s) {
 char* set_at_sa(const set_t*, int64 pos, stralloc* out);
 int set_has_sa(const set_t*, const stralloc*);
 int set_addsa(set_t*, const stralloc*);
+int set_insertsa(set_t* set, const stralloc* sa);
 size_t stralloc_catset(stralloc*, const set_t*, const char*);
 void set_join(const set_t* set, const char* sep, stralloc* out);
 #endif

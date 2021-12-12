@@ -318,7 +318,7 @@ typedef int yytype_uint16;
 #endif
 #endif
 
-#define YYSIZE_MAXIMUM                                                                                                 \
+#define YYSIZE_MAXIMUM \
   YY_CAST(YYPTRDIFF_T, (YYPTRDIFF_MAXIMUM < YY_CAST(YYSIZE_T, -1) ? YYPTRDIFF_MAXIMUM : YY_CAST(YYSIZE_T, -1)))
 
 #define YYSIZEOF(X) YY_CAST(YYPTRDIFF_T, sizeof(X))
@@ -366,8 +366,8 @@ typedef int yy_state_fast_t;
 
 #if defined __GNUC__ && !defined __ICC && 407 <= __GNUC__ * 100 + __GNUC_MINOR__
 /* Suppress an incorrect diagnostic about yylval being uninitialized.  */
-#define YY_IGNORE_MAYBE_UNINITIALIZED_BEGIN                                                                            \
-  _Pragma("GCC diagnostic push") _Pragma("GCC diagnostic ignored \"-Wuninitialized\"")                                 \
+#define YY_IGNORE_MAYBE_UNINITIALIZED_BEGIN \
+  _Pragma("GCC diagnostic push") _Pragma("GCC diagnostic ignored \"-Wuninitialized\"") \
       _Pragma("GCC diagnostic ignored \"-Wmaybe-uninitialized\"")
 #define YY_IGNORE_MAYBE_UNINITIALIZED_END _Pragma("GCC diagnostic pop")
 #else
@@ -422,9 +422,9 @@ typedef int yy_state_fast_t;
 
 #ifdef YYSTACK_ALLOC
 /* Pacify GCC's 'empty if-body' warning.  */
-#define YYSTACK_FREE(Ptr)                                                                                              \
-  do { /* empty */                                                                                                     \
-    ;                                                                                                                  \
+#define YYSTACK_FREE(Ptr) \
+  do { /* empty */ \
+    ; \
   } while(0)
 #ifndef YYSTACK_ALLOC_MAXIMUM
 /* The OS might guarantee only one guard page at the bottom of the stack,
@@ -439,7 +439,7 @@ typedef int yy_state_fast_t;
 #ifndef YYSTACK_ALLOC_MAXIMUM
 #define YYSTACK_ALLOC_MAXIMUM YYSIZE_MAXIMUM
 #endif
-#if(defined __cplusplus && !defined EXIT_SUCCESS &&                                                                    \
+#if(defined __cplusplus && !defined EXIT_SUCCESS && \
     !((defined YYMALLOC || defined malloc) && (defined YYFREE || defined free)))
 #include <stdlib.h> /* INFRINGES ON USER NAME SPACE */
 #ifndef EXIT_SUCCESS
@@ -461,7 +461,7 @@ void free(void*);       /* INFRINGES ON USER NAME SPACE */
 #endif
 #endif /* ! defined yyoverflow || YYERROR_VERBOSE */
 
-#if(!defined yyoverflow && (!defined __cplusplus || (defined YYLTYPE_IS_TRIVIAL && YYLTYPE_IS_TRIVIAL &&               \
+#if(!defined yyoverflow && (!defined __cplusplus || (defined YYLTYPE_IS_TRIVIAL && YYLTYPE_IS_TRIVIAL && \
                                                      defined YYSTYPE_IS_TRIVIAL && YYSTYPE_IS_TRIVIAL)))
 
 /* A type that is properly aligned for any stack member.  */
@@ -476,7 +476,7 @@ union yyalloc {
 
 /* The size of an array large to enough to hold all stacks, each with
    N elements.  */
-#define YYSTACK_BYTES(N)                                                                                               \
+#define YYSTACK_BYTES(N) \
   ((N) * (YYSIZEOF(yy_state_t) + YYSIZEOF(YYSTYPE) + YYSIZEOF(YYLTYPE)) + 2 * YYSTACK_GAP_MAXIMUM)
 
 #define YYCOPY_NEEDED 1
@@ -486,13 +486,13 @@ union yyalloc {
    elements in the stack, and YYPTR gives the new location of the
    stack.  Advance YYPTR to a properly aligned location for the next
    stack.  */
-#define YYSTACK_RELOCATE(Stack_alloc, Stack)                                                                           \
-  do {                                                                                                                 \
-    YYPTRDIFF_T yynewbytes;                                                                                            \
-    YYCOPY(&yyptr->Stack_alloc, Stack, yysize);                                                                        \
-    Stack = &yyptr->Stack_alloc;                                                                                       \
-    yynewbytes = yystacksize * YYSIZEOF(*Stack) + YYSTACK_GAP_MAXIMUM;                                                 \
-    yyptr += yynewbytes / YYSIZEOF(*yyptr);                                                                            \
+#define YYSTACK_RELOCATE(Stack_alloc, Stack) \
+  do { \
+    YYPTRDIFF_T yynewbytes; \
+    YYCOPY(&yyptr->Stack_alloc, Stack, yysize); \
+    Stack = &yyptr->Stack_alloc; \
+    yynewbytes = yystacksize * YYSIZEOF(*Stack) + YYSTACK_GAP_MAXIMUM; \
+    yyptr += yynewbytes / YYSIZEOF(*yyptr); \
   } while(0)
 
 #endif
@@ -504,11 +504,11 @@ union yyalloc {
 #if defined __GNUC__ && 1 < __GNUC__
 #define YYCOPY(Dst, Src, Count) __builtin_memcpy(Dst, Src, YY_CAST(YYSIZE_T, (Count)) * sizeof(*(Src)))
 #else
-#define YYCOPY(Dst, Src, Count)                                                                                        \
-  do {                                                                                                                 \
-    YYPTRDIFF_T yyi;                                                                                                   \
-    for(yyi = 0; yyi < (Count); yyi++)                                                                                 \
-      (Dst)[yyi] = (Src)[yyi];                                                                                         \
+#define YYCOPY(Dst, Src, Count) \
+  do { \
+    YYPTRDIFF_T yyi; \
+    for(yyi = 0; yyi < (Count); yyi++) \
+      (Dst)[yyi] = (Src)[yyi]; \
   } while(0)
 #endif
 #endif
@@ -1131,18 +1131,18 @@ static const yytype_int8 yyr2[] = {0, 2, 1, 1, 1, 3, 1, 1, 1, 1, 1, 1, 1, 6, 1, 
 
 #define YYRECOVERING() (!!yyerrstatus)
 
-#define YYBACKUP(Token, Value)                                                                                         \
-  do                                                                                                                   \
-    if(yychar == YYEMPTY) {                                                                                            \
-      yychar = (Token);                                                                                                \
-      yylval = (Value);                                                                                                \
-      YYPOPSTACK(yylen);                                                                                               \
-      yystate = *yyssp;                                                                                                \
-      goto yybackup;                                                                                                   \
-    } else {                                                                                                           \
-      yyerror(YY_("syntax error: cannot back up"));                                                                    \
-      YYERROR;                                                                                                         \
-    }                                                                                                                  \
+#define YYBACKUP(Token, Value) \
+  do \
+    if(yychar == YYEMPTY) { \
+      yychar = (Token); \
+      yylval = (Value); \
+      YYPOPSTACK(yylen); \
+      yystate = *yyssp; \
+      goto yybackup; \
+    } else { \
+      yyerror(YY_("syntax error: cannot back up")); \
+      YYERROR; \
+    } \
   while(0)
 
 /* Error token number */
@@ -1154,17 +1154,17 @@ static const yytype_int8 yyr2[] = {0, 2, 1, 1, 1, 3, 1, 1, 1, 1, 1, 1, 1, 6, 1, 
    the previous symbol: RHS[0] (always defined).  */
 
 #ifndef YYLLOC_DEFAULT
-#define YYLLOC_DEFAULT(Current, Rhs, N)                                                                                \
-  do                                                                                                                   \
-    if(N) {                                                                                                            \
-      (Current).first_line = YYRHSLOC(Rhs, 1).first_line;                                                              \
-      (Current).first_column = YYRHSLOC(Rhs, 1).first_column;                                                          \
-      (Current).last_line = YYRHSLOC(Rhs, N).last_line;                                                                \
-      (Current).last_column = YYRHSLOC(Rhs, N).last_column;                                                            \
-    } else {                                                                                                           \
-      (Current).first_line = (Current).last_line = YYRHSLOC(Rhs, 0).last_line;                                         \
-      (Current).first_column = (Current).last_column = YYRHSLOC(Rhs, 0).last_column;                                   \
-    }                                                                                                                  \
+#define YYLLOC_DEFAULT(Current, Rhs, N) \
+  do \
+    if(N) { \
+      (Current).first_line = YYRHSLOC(Rhs, 1).first_line; \
+      (Current).first_column = YYRHSLOC(Rhs, 1).first_column; \
+      (Current).last_line = YYRHSLOC(Rhs, N).last_line; \
+      (Current).last_column = YYRHSLOC(Rhs, N).last_column; \
+    } else { \
+      (Current).first_line = (Current).last_line = YYRHSLOC(Rhs, 0).last_line; \
+      (Current).first_column = (Current).last_column = YYRHSLOC(Rhs, 0).last_column; \
+    } \
   while(0)
 #endif
 
@@ -1178,10 +1178,10 @@ static const yytype_int8 yyr2[] = {0, 2, 1, 1, 1, 3, 1, 1, 1, 1, 1, 1, 1, 6, 1, 
 #define YYFPRINTF fprintf
 #endif
 
-#define YYDPRINTF(Args)                                                                                                \
-  do {                                                                                                                 \
-    if(yydebug)                                                                                                        \
-      YYFPRINTF Args;                                                                                                  \
+#define YYDPRINTF(Args) \
+  do { \
+    if(yydebug) \
+      YYFPRINTF Args; \
   } while(0)
 
 /* YY_LOCATION_PRINT -- Print the location on the stream.
@@ -1221,13 +1221,13 @@ yy_location_print_(FILE* yyo, YYLTYPE const* const yylocp) {
 #endif
 #endif
 
-#define YY_SYMBOL_PRINT(Title, Type, Value, Location)                                                                  \
-  do {                                                                                                                 \
-    if(yydebug) {                                                                                                      \
-      YYFPRINTF(stderr, "%s ", Title);                                                                                 \
-      yy_symbol_print(stderr, Type, Value, Location);                                                                  \
-      YYFPRINTF(stderr, "\n");                                                                                         \
-    }                                                                                                                  \
+#define YY_SYMBOL_PRINT(Title, Type, Value, Location) \
+  do { \
+    if(yydebug) { \
+      YYFPRINTF(stderr, "%s ", Title); \
+      yy_symbol_print(stderr, Type, Value, Location); \
+      YYFPRINTF(stderr, "\n"); \
+    } \
   } while(0)
 
 /*-----------------------------------.
@@ -1279,10 +1279,10 @@ yy_stack_print(yy_state_t* yybottom, yy_state_t* yytop) {
   YYFPRINTF(stderr, "\n");
 }
 
-#define YY_STACK_PRINT(Bottom, Top)                                                                                    \
-  do {                                                                                                                 \
-    if(yydebug)                                                                                                        \
-      yy_stack_print((Bottom), (Top));                                                                                 \
+#define YY_STACK_PRINT(Bottom, Top) \
+  do { \
+    if(yydebug) \
+      yy_stack_print((Bottom), (Top)); \
   } while(0)
 
 /*------------------------------------------------.
@@ -1306,10 +1306,10 @@ yy_reduce_print(yy_state_t* yyssp, YYSTYPE* yyvsp, YYLTYPE* yylsp, int yyrule) {
   }
 }
 
-#define YY_REDUCE_PRINT(Rule)                                                                                          \
-  do {                                                                                                                 \
-    if(yydebug)                                                                                                        \
-      yy_reduce_print(yyssp, yyvsp, yylsp, Rule);                                                                      \
+#define YY_REDUCE_PRINT(Rule) \
+  do { \
+    if(yydebug) \
+      yy_reduce_print(yyssp, yyvsp, yylsp, Rule); \
   } while(0)
 
 /* Nonzero means print parse trace.  It is left uninitialized so that
@@ -1500,7 +1500,7 @@ yysyntax_error(YYPTRDIFF_T* yymsg_alloc, char** yymsg, yy_state_t* yyssp, int yy
   }
 
   switch(yycount) {
-#define YYCASE_(N, S)                                                                                                  \
+#define YYCASE_(N, S) \
   case N: yyformat = S; break
     default: /* Avoid compiler warnings. */
       YYCASE_(0, YY_("syntax error"));

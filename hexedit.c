@@ -213,7 +213,7 @@ patch_check(unsigned char* x, size_t n, patch_t* p) {
    if(p->crc32 && p->crc32 != crc)
      return -1;*/
 
-  buffer_putm_internal(buffer_2, "Checking for '", p->name, "'...", 0);
+  buffer_putm_internal(buffer_2, "Checking for '", p->name, "'...", NULL);
   buffer_flush(buffer_2);
 
   if(p->file_size) {
@@ -392,7 +392,7 @@ main(int argc, char* argv[]) {
 
         } /*else {
           buffer_putm_internal(buffer_2,
-        "ERROR: ", spec, "\n", 0);
+        "ERROR: ", spec, "\n", NULL);
           buffer_putnlflush(buffer_2);
           return 2;
         }*/

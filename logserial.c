@@ -60,6 +60,7 @@ static const char* send_file = 0;
 static buffer send_buf;
 volatile int running;
 fd_t serial_fd;
+int baudrate = -1;
 
 /**
  * @brief      { function_description }
@@ -119,6 +120,24 @@ clear_ports() {
   }
 }
 
+void
+list_ports(const strarray* ports) {
+  char** port;
+  int fd;
+  strarray_foreach(ports, port) {
+
+    if((fd = serial_open(*port, baudrate)) == -1)
+      continue;
+
+    close(fd);
+
+    buffer_puts(buffer_1, *port);
+    buffer_putc(buffer_1, '\n');
+  }
+
+  buffer_flush(buffer_1);
+}
+
 /**
  * @brief      Gets the ports.
  *
@@ -139,9 +158,8 @@ get_ports(strarray* ports) {
     size_t i = str_rchr(port, '/');
     if(port[i]) {
       i++;
-      if(/*str_start(&port[i], "tnt")
-            ||*/
-         str_start(&port[i], "ttyACM") || str_start(&port[i], "ttyUSB") /*||   port[i + 3] == 'S'*/) {
+      if(str_start(&port[i], "ttyAMA") || str_start(&port[i], "ttyACM") || str_start(&port[i], "ttyUSB") ||
+         port[i + 3] == 'S') {
         if(!path_access(port, R_OK)) {
           if(errno != ENOENT && errno != ENODEV && errno != EACCES)
             errmsg_warnsys(port, 0);
@@ -149,13 +167,11 @@ get_ports(strarray* ports) {
         }
         if(!strarray_contains(ports, port)) {
           strarray_push(ports, port);
-          //          strarray_splice(ports,
-          //          0, 0, 1, &port);
-          /*       buffer_puts(buffer_2,
-             "detected new port: ");
-                 buffer_puts(buffer_2,
-             port);
-                 buffer_putnlflush(buffer_2);*/
+#ifdef DEBUG_OUTPUT_
+          buffer_puts(buffer_2, "detected new port: ");
+          buffer_puts(buffer_2, port);
+          buffer_putnlflush(buffer_2);
+#endif
           r++;
         }
       }
@@ -172,7 +188,7 @@ get_ports(strarray* ports) {
  * description_of_the_return_value }
  */
 int64
-serial_ports(strarray* ports) {
+detect_ports(strarray* ports) {
   static int i;
   char** port;
   struct link **it, *entry;
@@ -562,28 +578,15 @@ end:
 
 void
 usage(char* progname) {
-  buffer_putm_internal(buffer_1, "Usage: ", path_basename(progname), " [OPTIONS] [PORT] [BAUDRATE]\n", 0);
+  buffer_putm_internal(buffer_1, "Usage: ", path_basename(progname), " [OPTIONS] [PORT] [BAUDRATE]\n", NULL);
   buffer_puts(buffer_1, "Options\n");
-  buffer_puts(buffer_1,
-              "  --help, -h                    "
-              "    show this help\n");
-  buffer_puts(buffer_1,
-              "  --version                     "
-              "    print program version\n");
-
-  buffer_puts(buffer_1,
-              "  --verbose                     "
-              "    increase verbosity\n");
-  buffer_puts(buffer_1,
-              "  --baud, -b RATE               "
-              "    baud rate\n");
-  buffer_puts(buffer_1,
-              "  --send, -i FILE               "
-              "    send file\n");
-  buffer_puts(buffer_1,
-              "  --debug         +             "
-              "     show verbose debug "
-              "information\n");
+  buffer_puts(buffer_1, "  --help, -h                        show this help\n");
+  buffer_puts(buffer_1, "  --version                         print program version\n");
+  buffer_puts(buffer_1, "  --verbose                         increase verbosity\n\n");
+  buffer_puts(buffer_1, "  --list                            list serial ports\n");
+  buffer_puts(buffer_1, "  --baud, -b RATE                   baud rate\n");
+  buffer_puts(buffer_1, "  --send, -i FILE                   send file\n");
+  buffer_puts(buffer_1, "  --debug                           show verbose debug information\n");
   buffer_putnlflush(buffer_1);
 }
 
@@ -606,7 +609,6 @@ signal_handler(int sig) {
 int
 main(int argc, char* argv[]) {
   char* portname = NULL;
-  unsigned int baudrate = 0;
 #ifndef WINDOWS_NATIVE
   struct termios tio;
 #endif
@@ -622,7 +624,7 @@ main(int argc, char* argv[]) {
       {"send", 1, NULL, 'i'},
       {"raw", 0, NULL, 'r'},
       {"debug", 0, NULL, 'x'},
-
+      {"list", 0, NULL, 'l'},
       {0, 0, 0, 0},
   };
   strarray portArr;
@@ -632,14 +634,18 @@ main(int argc, char* argv[]) {
   MAP_NEW(port_map);
 
   for(;;) {
-    c = unix_getopt_long(argc, argv, "b:hvri:x", opts, &index);
+    c = unix_getopt_long(argc, argv, "b:hvri:xl", opts, &index);
     if(c == -1)
       break;
     if(c == 0)
       continue;
 
     switch(c) {
-
+      case 'l': {
+        if(get_ports(&portArr))
+          list_ports(&portArr);
+        return 0;
+      }
       case 'h': usage(argv[0]); return 0;
       case 'v': verbose++; break;
       case 'i': send_file = unix_optarg; break;
@@ -696,7 +702,7 @@ getopt_end:
     } else {
 
       newports = get_ports(&portArr);
-      serial_ports(&portArr);
+      detect_ports(&portArr);
       /*buffer_puts(buffer_2, "num
       ports: ");
       buffer_putlonglong(buffer_2,
@@ -710,20 +716,27 @@ getopt_end:
       //  strarray_free(&portArr);
     }
 
+#ifdef DEBUG_OUTPUT
     buffer_puts(buffer_2, "portname: ");
+    buffer_puts(buffer_2, portname);
     buffer_putnlflush(buffer_2);
-    buffer_puts(buffer_2, "baud rate: ");
-    buffer_putulong(buffer_2, baudrate);
-    buffer_putnlflush(buffer_2);
-    serial_fd = serial_open(portname, baudrate);
-    io_fd(serial_fd);
-    io_nonblock(serial_fd);
-    io_closeonexec(serial_fd);
+#endif
 
+    serial_fd = serial_open(portname, baudrate);
     if(serial_fd == -1) {
       usleep(250 * 1000);
       continue;
     }
+#ifdef DEBUG_OUTPUT
+    buffer_puts(buffer_2, "baud rate: ");
+    buffer_putulong(buffer_2, serial_baud_rate(serial_fd));
+    buffer_putnlflush(buffer_2);
+#endif
+
+    io_fd(serial_fd);
+    io_nonblock(serial_fd);
+    io_closeonexec(serial_fd);
+
     buffer_puts(buffer_2, "port opened: ");
     buffer_puts(buffer_2, portname);
     buffer_putnlflush(buffer_2);

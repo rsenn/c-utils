@@ -1,8 +1,4 @@
-/**
- * @defgroup   sig
- * @brief      SIG module.
- * @{
- */
+/** @defgroup   sig @brief      SIG module.  @{ */
 #ifndef _SIG_H
 #define _SIG_H
 
@@ -60,7 +56,7 @@ typedef long sigset_t;
 #define sigemptys(s) byte_zero((s), sizeof(*(s)))
 #endif
 #ifndef sigfillset
-#define sigfillset(s) byte_fill((s), 0xff, sizeof(*(s)))
+#define sigfillset(s) byte_fill((s), sizeof(*(s)), 0xff)
 #endif
 #ifndef sigaddset
 #define sigaddset(s, n) (((unsigned long*)(s))[__sigword((n))] |= __sigmask((n)))

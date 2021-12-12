@@ -419,7 +419,7 @@ output_wget_entry(const char* sender,
                        multiline ? "wget \\\n  -c " : "wget -c ",
                        url,
                        0);
-  buffer_putm_internal(&output_buf, multiline ? " \\\n  -O '" : " -O '", 0);
+  buffer_putm_internal(&output_buf, multiline ? " \\\n  -O '" : " -O '", NULL);
 
   if(!skipSender) {
     buffer_puts_escaped(&output_buf, sender, &fmt_escapecharnonprintable);
@@ -430,7 +430,7 @@ output_wget_entry(const char* sender,
   buffer_puts(&output_buf, " - ");
   buffer_puts_escaped(&output_buf, title, &fmt_escapecharnonprintable);
 
-  buffer_putm_internal(&output_buf, ".mp4'", "\ntouch -c -d '", datetime, "' '", 0);
+  buffer_putm_internal(&output_buf, ".mp4'", "\ntouch -c -d '", datetime, "' '", NULL);
   if(!skipSender) {
     buffer_puts_escaped(&output_buf, sender, &fmt_escapecharnonprintable);
     buffer_puts(&output_buf, " - ");
@@ -439,7 +439,7 @@ output_wget_entry(const char* sender,
   buffer_puts_escaped(&output_buf, thema, &fmt_escapecharnonprintable);
   buffer_puts(&output_buf, " - ");
   buffer_puts_escaped(&output_buf, title, &fmt_escapecharnonprintable);
-  buffer_putm_internal(&output_buf, ".mp4'", 0);
+  buffer_putm_internal(&output_buf, ".mp4'", NULL);
   buffer_putnlflush(&output_buf);
 }
 
@@ -452,8 +452,8 @@ output_curl_entry(const char* sender,
                   const char* url,
                   const char* description) {
 
-  buffer_putm_internal(&output_buf, "curl -L -k ", url, 0);
-  buffer_putm_internal(&output_buf, " -o '", sender, " - ", thema, " - ", title, ".mp4'", 0);
+  buffer_putm_internal(&output_buf, "curl -L -k ", url, NULL);
+  buffer_putm_internal(&output_buf, " -o '", sender, " - ", thema, " - ", title, ".mp4'", NULL);
   /*    buffer_puts(&output_buf, "|");
       buffer_puts(&output_buf,
      description);*/

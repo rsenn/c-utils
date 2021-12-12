@@ -15,21 +15,21 @@ cpp_parse_file(cpp_t* cpp, buffer* f, const char* fn, buffer* out) {
 
 #define all_levels_active() (if_level_active == if_level)
 #define prev_level_active() (if_level_active == if_level - 1)
-#define set_level(X, V)                                                                                                \
-  do {                                                                                                                 \
-    if(if_level_active > X)                                                                                            \
-      if_level_active = X;                                                                                             \
-    if(if_level_satisfied > X)                                                                                         \
-      if_level_satisfied = X;                                                                                          \
-    if(V != -1) {                                                                                                      \
-      if(V)                                                                                                            \
-        if_level_active = X;                                                                                           \
-      else if(if_level_active == X)                                                                                    \
-        if_level_active = X - 1;                                                                                       \
-      if(V && if_level_active == X)                                                                                    \
-        if_level_satisfied = X;                                                                                        \
-    }                                                                                                                  \
-    if_level = X;                                                                                                      \
+#define set_level(X, V) \
+  do { \
+    if(if_level_active > X) \
+      if_level_active = X; \
+    if(if_level_satisfied > X) \
+      if_level_satisfied = X; \
+    if(V != -1) { \
+      if(V) \
+        if_level_active = X; \
+      else if(if_level_active == X) \
+        if_level_active = X - 1; \
+      if(V && if_level_active == X) \
+        if_level_satisfied = X; \
+    } \
+    if_level = X; \
   } while(0)
 #define skip_conditional_block (if_level > if_level_active)
 

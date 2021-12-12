@@ -2,10 +2,10 @@
 
 int
 ihex_write(ihex_file* ihf, buffer* b) {
-  ihex_record* r;
+  ihex_recptr p;
   int i = 0;
-  for(r = ihf->records; r; r = r->next) {
-    ihex_record_write(r, b);
+  list_for_each(p.link, &ihf->records) {
+    ihex_record_write(p.rec, b);
     i++;
   }
   return i;

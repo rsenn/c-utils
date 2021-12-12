@@ -19,30 +19,30 @@ set(CMAKE_REQUIRED_FLAGS "")
 set(CMAKE_REQUIRED_LIBRARIES "")
 check_c_source_compiles("${find_standard_math_library_test_program}" standard_math_library_linked_to_automatically)
 
-if(standard_math_library_linked_to_automatically)
+if(NOT DEFINED CACHE{LIBMATH})
+  if(standard_math_library_linked_to_automatically)
 
-  # the test program linked successfully without any linker flag.
-  set(LIBMATH "")
-  set(LIBMATH_FOUND TRUE)
-
-else()
-
-  # the test program did not link successfully without any linker flag. This is a very uncommon case that so far we only saw on QNX. The next try is the standard name 'm' for the standard math library.
-
-  set(CMAKE_REQUIRED_LIBRARIES "m")
-  check_c_source_compiles("${find_standard_math_library_test_program}" standard_math_library_linked_to_as_m)
-
-  if(standard_math_library_linked_to_as_m)
-
-    # the test program linked successfully when linking to the 'm' library
-    set(LIBMATH "m")
+    # the test program linked successfully without any linker flag.
+    set(LIBMATH "" CACHE STRING "C standard math library")
     set(LIBMATH_FOUND TRUE)
 
   else()
+    # the test program did not link successfully without any linker flag. This is a very uncommon case that so far we only saw on QNX. The next try is the standard name 'm' for the standard math library.
 
-    # the test program still doesn't link successfully
-    set(LIBMATH_FOUND FALSE)
+    set(CMAKE_REQUIRED_LIBRARIES "m")
+    check_c_source_compiles("${find_standard_math_library_test_program}" standard_math_library_linked_to_as_m)
 
+    if(standard_math_library_linked_to_as_m)
+
+      # the test program linked successfully when linking to the 'm' library
+      set(LIBMATH "m" CACHE STRING "C standard math library")
+      set(LIBMATH_FOUND TRUE)
+
+    else()
+
+      # the test program still doesn't link successfully
+      set(LIBMATH_FOUND FALSE)
+
+    endif()
   endif()
-
-endif()
+endif(NOT DEFINED CACHE{LIBMATH})

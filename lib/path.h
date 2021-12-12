@@ -34,8 +34,8 @@ typedef struct {
 
 #define PATH_FNM_NOMATCH 1
 #define PATH_FNM_PATHNAME (1 << 0) /* No wildcard can ever match /'.  */
-#define PATH_FNM_NOESCAPE                                                                                              \
-  (1 << 1)                       /* Backslashes don't quote special chars.                                             \
+#define PATH_FNM_NOESCAPE \
+  (1 << 1)                       /* Backslashes don't quote special chars. \
                                   */
 #define PATH_FNM_PERIOD (1 << 2) /* Leading .' is matched only explicitly.  */
 
@@ -49,7 +49,10 @@ int path_canonicalize(const char* path, stralloc* sa, int symbolic);
 int path_canonical_sa(stralloc* sa);
 size_t path_collapse(char*, size_t);
 size_t path_collapse_sa(stralloc*);
-char* path_dirname(const char* path, stralloc* dir);
+size_t path_dirlen_b(const char*, size_t);
+size_t path_dirlen(const char*);
+char* path_dirname_b(const char*, size_t, stralloc* dir);
+char* path_dirname(const char*, stralloc*);
 int path_exists(const char* p);
 int path_find(const char* path, const char* name, stralloc* out);
 int path_fnmatch(const char* pattern, unsigned int plen, const char* string, unsigned int slen, int flags);
@@ -67,9 +70,11 @@ size_t path_num(const char* p, size_t len, int n);
 size_t path_num_sa(const char* p, size_t len, stralloc* sa, int n);
 int path_readlink(const char* path, stralloc* sa);
 int path_realpath(const char* path, stralloc* sa, int symbolic, stralloc* cwd);
-int path_relative(const char* path, const char* relative_to, stralloc* out);
-
-int path_relative(const char* path, const char* relative_to, stralloc* out);
+int path_relative_b(const char*, size_t, stralloc*);
+int path_relative(const char*, stralloc*);
+int path_relative_to_b(const char*, size_t, const char*, size_t n2, stralloc* out);
+int path_relative_to(const char*, const char*, stralloc*);
+int path_relative_to_sa(const stralloc* path, const stralloc* relative_to, stralloc* out);
 
 size_t path_right(const char* s, size_t n);
 size_t path_skip(const char* s, size_t n);
@@ -78,11 +83,16 @@ size_t path_skip_separator(const char* p, size_t n);
 size_t path_skip_component(const char* p, size_t n);
 
 SizePair path_common_prefix(const char* s1, size_t n1, const char* s2, size_t n2);
-int path_relative_b(const char* s1, size_t n1, const char* s2, size_t n2, stralloc* out);
+int path_relative_to_b(const char* s1, size_t n1, const char* s2, size_t n2, stralloc* out);
 
-void path_concat(const char* a, size_t alen, const char* b, size_t blen, stralloc* out);
+void path_concat(const char* a, const char* b, stralloc* out);
+void path_concatb(const char* a, size_t alen, const char* b, size_t blen, stralloc* out);
+void path_concat_sa(const stralloc* a, const stralloc* b, stralloc* out);
+
 void path_append(const char* x, size_t len, stralloc* out);
 void path_appends(const char* s, stralloc* out);
+void path_prepend(const char*, size_t, stralloc*);
+void path_prepends(const char*, stralloc*);
 
 #ifdef STRLIST_H
 int path_split(const char* p, strlist* sl);

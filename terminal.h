@@ -55,8 +55,6 @@ extern buffer terminal_buffer;
 
 #define terminal_cursor_save() terminal_command_char('s')
 #define terminal_cursor_restore() terminal_command_char('u')
-#define terminal_linewrap_enable() terminal_command_number_char(7, 'h')
-#define terminal_linewrap_disable() terminal_command_number_char(7, 'l')
 
 void terminal_command_char(char c);
 void terminal_command_number_char(int n, char c);
@@ -89,5 +87,14 @@ void terminal_set_alternate_screen(void);
 void terminal_set_bg(int color);
 void terminal_set_fg(int color);
 void terminal_set_normal_screen(void);
+
+static inline void
+terminal_linewrap_enable() {
+  terminal_command_number_char(7, 'h');
+}
+static inline void
+terminal_linewrap_disable() {
+  terminal_command_number_char(7, 'l');
+}
 
 #endif

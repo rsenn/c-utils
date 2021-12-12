@@ -83,7 +83,7 @@ get_pipe(int64 id) {
 
 void
 print_number_nonl_base(const char* property, int64 num, int base) {
-  buffer_putm_internal(buffer_1, property, "=", base == 8 ? "0" : base == 16 ? "0x" : "", 0);
+  buffer_putm_internal(buffer_1, property, "=", base == 8 ? "0" : base == 16 ? "0x" : "", NULL);
   (base == 8    ? buffer_put8long(buffer_1, num)
    : base == 16 ? buffer_putxlonglong0(buffer_1, num, 2)
                 : buffer_putlonglong(buffer_1, num));
@@ -124,10 +124,10 @@ type(uint32 bits) {
 void
 print_stat(const char* property, const struct stat* st) {
   const char* t = type(st->st_mode);
-  buffer_putm_internal(buffer_1, property, ": ", 0);
+  buffer_putm_internal(buffer_1, property, ": ", NULL);
   t ? buffer_puts(buffer_1, t) : buffer_put8long(buffer_1, st->st_mode & S_IFMT);
 
-  buffer_putm_internal(buffer_1, " [ mode 0", 0);
+  buffer_putm_internal(buffer_1, " [ mode 0", NULL);
   buffer_put8long(buffer_1, st->st_mode & 07777);
   if(st->st_dev) {
     print_number_nonl_base(", dev", st->st_dev, 16); /*
@@ -136,24 +136,24 @@ print_stat(const char* property, const struct stat* st) {
                      st->st_dev, 3);*/
   }
   if(st->st_rdev) {
-    buffer_putm_internal(buffer_1, ", rdev 0x", 0);
+    buffer_putm_internal(buffer_1, ", rdev 0x", NULL);
     buffer_putxlong0(buffer_1, st->st_rdev, 3);
   }
   if(st->st_ino) {
-    buffer_putm_internal(buffer_1, ", inode 0x", 0);
+    buffer_putm_internal(buffer_1, ", inode 0x", NULL);
     buffer_putxlong0(buffer_1, st->st_ino, 3);
   }
   if(st->st_size) {
-    buffer_putm_internal(buffer_1, ", size ", 0);
+    buffer_putm_internal(buffer_1, ", size ", NULL);
     buffer_putulonglong(buffer_1, st->st_size);
   }
 #if !WINDOWS_NATIVE
   if(st->st_blocks) {
-    buffer_putm_internal(buffer_1, ", blocks ", 0);
+    buffer_putm_internal(buffer_1, ", blocks ", NULL);
     buffer_putulonglong(buffer_1, st->st_blocks);
   }
   if(st->st_blksize) {
-    buffer_putm_internal(buffer_1, ", blksize 0x", 0);
+    buffer_putm_internal(buffer_1, ", blksize 0x", NULL);
     buffer_putxlonglong(buffer_1, st->st_blksize);
   }
 #endif
@@ -163,7 +163,7 @@ print_stat(const char* property, const struct stat* st) {
 
 void
 print_stralloc_nonl(const char* property, const stralloc* sa) {
-  buffer_putm_internal(buffer_1, property, "='", 0);
+  buffer_putm_internal(buffer_1, property, "='", NULL);
   buffer_putsa(buffer_1, sa);
   buffer_puts(buffer_1, "'");
 }
@@ -175,7 +175,7 @@ print_stralloc(const char* property, const stralloc* sa) {
 
 void
 print_string_nonl(const char* property, const char* str) {
-  buffer_putm_internal(buffer_1, property, "=", str, 0);
+  buffer_putm_internal(buffer_1, property, "=", str, NULL);
 }
 
 void
@@ -198,7 +198,7 @@ const char*
 proc_subdir_path(int32 pid, const char* subdir, stralloc* out) {
   stralloc_zero(out);
   proc_fd_root(pid, out);
-  stralloc_catm_internal(out, "/", subdir, "/", 0);
+  stralloc_catm_internal(out, "/", subdir, "/", NULL);
 
   return out->s;
 }
@@ -433,7 +433,7 @@ main(int argc, char* argv[]) {
     if(str_diff(a, "-"))
       fd = open_read(a);
 
-    buffer_putm_internal(buffer_1, "arg: '", a, "'", 0);
+    buffer_putm_internal(buffer_1, "arg: '", a, "'", NULL);
     buffer_putnlflush(buffer_1);
 
     if(fstat(fd, &st) != -1) {

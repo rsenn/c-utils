@@ -2,6 +2,7 @@
  * c-basic-offset: 4 -*- */
 
 #include "lib/uint64.h"
+#include "lib/scan.h"
 #include "lib/buffer.h"
 #include "lib/elf.h"
 #include "lib/mmap.h"
@@ -32,7 +33,7 @@ hex64(buffer* b, uint64 num, int pad) {
   return 0;
 }
 
-static int list_defined, list_undefined;
+static int list_defined, list_undefined, print_offset_rva, print_rva_offset;
 static const char* filename;
 typedef int put64_function(buffer*, uint64, int);
 typedef int putstr_function(buffer*, const char*, size_t);
@@ -40,18 +41,30 @@ static put64_function* putnum = &hex64;
 static putstr_function* putstr = &buffer_putspad;
 static unsigned word_size;
 static unsigned radix = 16;
+static uint64 offset, rva;
 
-#define RANGE_CHECK(ptr)                                                                                               \
-  do {                                                                                                                 \
-    if(!range_ptrinbuf2(map.start, map.end, ptr)) {                                                                    \
-      buffer_puts(buffer_2, "OUT of range: " #ptr);                                                                    \
-      buffer_putnlflush(buffer_2);                                                                                     \
-      exit(120);                                                                                                       \
-    }                                                                                                                  \
+int
+parse_offset(const char* arg, uint64* dest) {
+  int ret = 0;
+  if(str_start(arg, "0x"))
+    ret = scan_xlonglong(arg + 2, dest) > 0;
+  if(!ret)
+    ret = scan_ulonglong(arg, dest) > 0;
+
+  return ret;
+}
+
+#define RANGE_CHECK(ptr) \
+  do { \
+    if(!range_ptrinbuf2(map.start, map.end, ptr)) { \
+      buffer_puts(buffer_2, "OUT of range: " #ptr); \
+      buffer_putnlflush(buffer_2); \
+      exit(120); \
+    } \
   } while(0)
 
-#define ELF_DUMP_FIELD(base, ptr, st, field)                                                                           \
-  buffer_putspad(b, #field, 30), buffer_puts(b, " "),                                                                  \
+#define ELF_DUMP_FIELD(base, ptr, st, field) \
+  buffer_putspad(b, #field, 30), buffer_puts(b, " "), \
       putnum(b, ELF_GET(base, ptr, st, field), ELF_SIZE(base, st, field) * 2), buffer_putnlflush(b)
 
 void
@@ -60,24 +73,24 @@ elf_print_prefix(buffer* b) {
     buffer_putm_internal(b, filename, ":", NULL);
 }
 
-#define MACHINES                                                                                                       \
-  "NONE\0M32\0SPARC\0386\068K\088K\08"                                                                                 \
-  "60\0MIPS\0S370\0PARISC\0VPP500\0SP"                                                                                 \
-  "ARC32PLUS\0960\0PPC\0PPC64"                                                                                         \
-  "\0S390\0V800\0FR20\0"                                                                                               \
-  "RH32\0RCE\0ARM\0FAKE_"                                                                                              \
-  "ALPHA\0SH\0SPARCV9\0TRICORE\0ARC\0"                                                                                 \
-  "H8_300\0H8_300H\0H8S\0H8_500\0IA_"                                                                                  \
-  "64\0COLDFIRE\068HC12\0MMA\0PCP\0NC"                                                                                 \
-  "PU\0NDR1\0STARCORE\0ME16\0ST100\0T"                                                                                 \
-  "INYJ\0X86_"                                                                                                         \
-  "64\0PDSP\0FX66\0ST9PLUS\0ST7\068HC"                                                                                 \
-  "16\068HC11\068HC08\068HC05\0SVX\0S"                                                                                 \
-  "T19\0VAX\0CRIS\0JAVELIN\0F"                                                                                         \
-  "IREPATH\0ZSP\0MMIX\0"                                                                                               \
-  "HUANY\0PRISM\0AVR\0FR30\0D10V\0D30"                                                                                 \
-  "V\0V850\0M32R\0MN10300\0MN10200\0P"                                                                                 \
-  "J\0OPENRISC\0ARC_"                                                                                                  \
+#define MACHINES \
+  "NONE\0M32\0SPARC\0386\068K\088K\08" \
+  "60\0MIPS\0S370\0PARISC\0VPP500\0SP" \
+  "ARC32PLUS\0960\0PPC\0PPC64" \
+  "\0S390\0V800\0FR20\0" \
+  "RH32\0RCE\0ARM\0FAKE_" \
+  "ALPHA\0SH\0SPARCV9\0TRICORE\0ARC\0" \
+  "H8_300\0H8_300H\0H8S\0H8_500\0IA_" \
+  "64\0COLDFIRE\068HC12\0MMA\0PCP\0NC" \
+  "PU\0NDR1\0STARCORE\0ME16\0ST100\0T" \
+  "INYJ\0X86_" \
+  "64\0PDSP\0FX66\0ST9PLUS\0ST7\068HC" \
+  "16\068HC11\068HC08\068HC05\0SVX\0S" \
+  "T19\0VAX\0CRIS\0JAVELIN\0F" \
+  "IREPATH\0ZSP\0MMIX\0" \
+  "HUANY\0PRISM\0AVR\0FR30\0D10V\0D30" \
+  "V\0V850\0M32R\0MN10300\0MN10200\0P" \
+  "J\0OPENRISC\0ARC_" \
   "A5\0XTENSA\0ALPHA"
 #define TYPES "NONE\0REL\0EXEC\0DYN\0CORE\0"
 
@@ -117,13 +130,14 @@ elf_dump_dynamic(range map) {
   void* entry;
   const char* dynstrtab = NULL;
   int col_width = ELF_BITS(map.start) / 4 + 2;
-  static const char* const dynamic_types[] = {"NULL",       "NEEDED",     "PLTRELSZ",      "PLTGOT",         "HASH",
-                                              "STRTAB",     "SYMTAB",     "RELA",          "RELASZ",         "RELAENT",
-                                              "STRSZ",      "SYMENT",     "INIT",          "FINI",           "SONAME",
-                                              "RPATH",      "SYMBOLIC",   "REL",           "RELSZ",          "RELENT",
-                                              "PLTREL",     "DEBUG",      "TEXTREL",       "JMPREL",         "BIND_NOW",
-                                              "INIT_ARRAY", "FINI_ARRAY", "INIT_ARRAYSZ",  "FINI_ARRAYSZ",   "RUNPATH",
-                                              "FLAGS",      "ENCODING",   "PREINIT_ARRAY", "PREINIT_ARRAYSZ"};
+  static const char* const dynamic_types[] = {
+      "NULL",     "NEEDED",     "PLTRELSZ",      "PLTGOT",          "HASH",         "STRTAB",
+      "SYMTAB",   "RELA",       "RELASZ",        "RELAENT",         "STRSZ",        "SYMENT",
+      "INIT",     "FINI",       "SONAME",        "RPATH",           "SYMBOLIC",     "REL",
+      "RELSZ",    "RELENT",     "PLTREL",        "DEBUG",           "TEXTREL",      "JMPREL",
+      "BIND_NOW", "INIT_ARRAY", "FINI_ARRAY",    "INIT_ARRAYSZ",    "FINI_ARRAYSZ", "RUNPATH",
+      "FLAGS",    "ENCODING",   "PREINIT_ARRAY", "PREINIT_ARRAYSZ",
+  };
 
   if(di == -1)
     return;
@@ -158,13 +172,14 @@ elf_dump_dynamic(range map) {
     if(tag >= ELF_DT_NUM) {
       putnum(buffer_1, tag, col_width);
     } else {
-      buffer_putspad(buffer_1, dynamic_types[tag % ELF_DT_NUM], 18);
+      buffer_putspad(buffer_1, dynamic_types[tag % ELF_DT_NUM], col_width);
     }
 
     if(tag == ELF_DT_NEEDED) {
       buffer_putspace(buffer_1);
       buffer_puts(buffer_1, (const char*)&dynstrtab[val]);
     } else {
+      buffer_putspace(buffer_1);
       putnum(buffer_1, val, col_width);
     }
     buffer_putnlflush(buffer_1);
@@ -192,8 +207,20 @@ elf_dump_symbols(range map, range section, range text, const char* stname, int b
   void* symbol;
   int si = elf_section_find(map.start, stname);
   const char* strtab = elf_section_offset(map.start, si);
-  static const char* const binding_types[] = {"LOCAL", "GLOBAL", "WEAK"};
-  static const char* const symbol_types[] = {"NOTYPE", "OBJECT", "FUNC", "SECTION", "FILE", "COMMON", "TLS"};
+  static const char* const binding_types[] = {
+      "LOCAL",
+      "GLOBAL",
+      "WEAK",
+  };
+  static const char* const symbol_types[] = {
+      "NOTYPE",
+      "OBJECT",
+      "FUNC",
+      "SECTION",
+      "FILE",
+      "COMMON",
+      "TLS",
+  };
   range symtab = section;
   symtab.elem_size = ELF_BITS(map.start) == 64 ? sizeof(elf64_sym) : sizeof(elf32_sym);
 
@@ -201,7 +228,7 @@ elf_dump_symbols(range map, range section, range text, const char* stname, int b
     name", 33); buffer_putspad(buffer_1,
     "value", ELF_BITS(map.start) / 4 + 2
     + 1); buffer_putspad(buffer_1,
-    "size", ELF_BITS(map.start) / 4 + 2
+    "size", col_width + 2
     + 1); if(binding < 0)
       buffer_putspad(buffer_1,
     "binding", 16);
@@ -227,7 +254,7 @@ elf_dump_symbols(range map, range section, range text, const char* stname, int b
 
     elf_print_prefix(buffer_1);
 
-    buffer_putptr_size_2 = ELF_BITS(map.start) / 4;
+    buffer_putptr_size_2 = ELF_BITS(map.start) / 4 + 2 + 1;
 
     if(!range_empty(&code))
       buffer_putptr(buffer_1, (char*)(ptrdiff_t)(code.start - map.start));
@@ -246,17 +273,17 @@ elf_dump_symbols(range map, range section, range text, const char* stname, int b
     /*jjif(size) {
       buffer_putspace(buffer_1);
       putnum(buffer_1,
-    value, ELF_BITS(map.start) / 4); }
+    value, col_width); }
     else { buffer_putnspace(buffer_1,
-    ELF_BITS(map.start) / 4 + 3);
+    col_width + 3);
     }
 
     if(size) {
       buffer_puts(buffer_1, "   ");
       buffer_putulong0(buffer_1, size,
-    ELF_BITS(map.start) / 4); } else {
+    col_width); } else {
       buffer_putnspace(buffer_1,
-    ELF_BITS(map.start) / 4 + 3);
+    col_width + 3);
     }*/
     if(binding < 0) {
       buffer_putspace(buffer_1);
@@ -316,20 +343,20 @@ elf_dump_sections(range map) {
   int i, n;
   range sections = elf_section_headers(map.start);
   void* section;
-  int col_width = ELF_BITS(map.start) / 4 + 2;
+  int col_width = ELF_BITS(map.start) / 4 + 2 + 1;
 
   buffer_putspad(buffer_1, "section name", 16);
   buffer_putspace(buffer_1);
-  putstr(buffer_1, "addr", ELF_BITS(map.start) / 4);
-  buffer_putnspace(buffer_1, 3);
-  putstr(buffer_1, "size", ELF_BITS(map.start) / 4);
-  buffer_putnspace(buffer_1, 3);
-  putstr(buffer_1, "offset", ELF_BITS(map.start) / 4);
-  buffer_putnspace(buffer_1, 3);
-  putstr(buffer_1, "align", ELF_BITS(map.start) / 4);
-  buffer_putnspace(buffer_1, 3);
+  putstr(buffer_1, "addr", col_width);
+  buffer_putspace(buffer_1);
+  putstr(buffer_1, "size", col_width);
+  buffer_putspace(buffer_1);
+  putstr(buffer_1, "offset", col_width);
+  buffer_putspace(buffer_1);
+  putstr(buffer_1, "align", col_width);
+  buffer_putspace(buffer_1);
   buffer_putspad(buffer_1, "type", 8);
-  buffer_putnspace(buffer_1, 1);
+  buffer_putspace(buffer_1);
   buffer_puts(buffer_1, "flags");
   buffer_putnlflush(buffer_1);
 
@@ -387,16 +414,16 @@ elf_dump_segments(range map) {
   if(range_size(&segments) == 0)
     return;
 
-  putstr(buffer_1, "offset", ELF_BITS(map.start) / 4);
-  buffer_putnspace(buffer_1, 3);
-  putstr(buffer_1, "paddr", ELF_BITS(map.start) / 4);
-  buffer_putnspace(buffer_1, 3);
-  putstr(buffer_1, "vaddr", ELF_BITS(map.start) / 4);
-  buffer_putnspace(buffer_1, 3);
-  putstr(buffer_1, "filesz", ELF_BITS(map.start) / 4);
-  buffer_putnspace(buffer_1, 3);
-  putstr(buffer_1, "memsz", ELF_BITS(map.start) / 4);
-  buffer_putnspace(buffer_1, 3);
+  putstr(buffer_1, "offset", col_width);
+  buffer_putspace(buffer_1);
+  putstr(buffer_1, "paddr", col_width);
+  buffer_putspace(buffer_1);
+  putstr(buffer_1, "vaddr", col_width);
+  buffer_putspace(buffer_1);
+  putstr(buffer_1, "filesz", col_width);
+  buffer_putspace(buffer_1);
+  putstr(buffer_1, "memsz", col_width);
+  buffer_putspace(buffer_1);
   buffer_puts(buffer_1, "flags");
   buffer_putnlflush(buffer_1);
 
@@ -447,8 +474,9 @@ usage(char* av0) {
                        "  -U, --undefined         List undefined symbols\n",
                        "  -F, --file-header       Dump file header\n",
                        "  -S, --sections          Dump sections\n",
-                       "\n",
-                       0);
+                       "  -o, --offset-rva        Print RVA of given offset\n",
+                       "  -a, --rva-offset        Print offset of given RVA\n\n",
+                       NULL);
   buffer_flush(buffer_1);
 }
 
@@ -460,17 +488,21 @@ main(int argc, char** argv) {
 
   int c, index = 0;
 
-  struct unix_longopt opts[] = {{"help", 0, NULL, 'h'},
-                                {"defined", 0, &list_defined, 'D'},
-                                {"undefined", 0, &list_undefined, 'U'},
-                                {"file-header", 0, 0, 'F'},
-                                {"sections", 0, 0, 'S'},
-                                {"radix", 1, 0, 'r'},
-                                {0, 0, 0, 0}};
+  struct unix_longopt opts[] = {
+      {"help", 0, NULL, 'h'},
+      {"defined", 0, &list_defined, 'D'},
+      {"undefined", 0, &list_undefined, 'U'},
+      {"file-header", 0, 0, 'F'},
+      {"sections", 0, 0, 'S'},
+      {"radix", 1, 0, 'r'},
+      {"offset-rva", 0, NULL, 'o'},
+      {"rva-offset", 0, NULL, 'a'},
+      {0, 0, 0, 0},
+  };
   strlist_init(&flaglist, '|');
 
   for(;;) {
-    c = unix_getopt_long(argc, argv, "hDUFSr:", opts, &index);
+    c = unix_getopt_long(argc, argv, "hDUFSr:o:a:", opts, &index);
     if(c == -1)
       break;
     if(c == '\0')
@@ -483,6 +515,8 @@ main(int argc, char** argv) {
       case 'F': dump_file_header = true; break;
       case 'S': dump_sections = true; break;
       case 'r': radix = atoi(unix_optarg); break;
+      case 'o': print_offset_rva = parse_offset(unix_optarg, &offset); break;
+      case 'a': print_rva_offset = parse_offset(unix_optarg, &rva); break;
       default: {
         usage(argv[0]);
         return 1;
@@ -523,6 +557,21 @@ main(int argc, char** argv) {
     buffer_putnlflush(buffer_2);
 #endif
 
+    if(print_offset_rva) {
+      uint64 rva = elf_offset_to_addr(map, offset);
+
+      putnum(buffer_1, rva, rva > 0xffffffff ? 18 : 10);
+      buffer_putnlflush(buffer_1);
+      continue;
+    }
+    if(print_rva_offset) {
+      uint64 offset = elf_address_to_offset(map, rva);
+
+      putnum(buffer_1, offset, offset > 0xffffffff ? 18 : 10);
+      buffer_putnlflush(buffer_1);
+      continue;
+    }
+
     if(dump_file_header)
       elf_dump_header(buffer_1, map);
 
@@ -534,7 +583,7 @@ main(int argc, char** argv) {
     elf_dump_dynamic(map);
 
     if(interp) {
-      buffer_putm_internal(buffer_1, "Interpreter: ", interp, 0);
+      buffer_putm_internal(buffer_1, "Interpreter: ", interp, NULL);
       buffer_putnlflush(buffer_1);
     }
     /*    elf_dump_imports(map.start);*/

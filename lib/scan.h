@@ -66,14 +66,17 @@ size_t scan_plusminus(const char* src, signed int* dest);
 
 /* return the highest integer n <= limit so that isspace(in[i]) for all 0 <= i
  * <= n */
-size_t scan_whitenskip(const char* in, size_t limit) __pure__;
+size_t scan_whitenskip(const char*, size_t);
+size_t scan_whitenskip_escaped(const char*, size_t);
 
 /* return the highest integer n <= limit so that !isspace(in[i]) for all 0 <= i
  * <= n */
-size_t scan_nonwhitenskip(const char* in, size_t limit) __pure__;
+size_t scan_nonwhitenskip(const char*, size_t);
+size_t scan_nonwhitenskip_escaped(const char*, size_t);
 
-size_t scan_lineskip(const char* s, size_t limit);
-size_t scan_line(const char* s, size_t limit);
+size_t scan_line(const char*, size_t);
+size_t scan_lineskip(const char*, size_t);
+size_t scan_lineskip_escaped(const char*, size_t);
 
 /* return the highest integer n <= limit so that in[i] is element of
  * charset (ASCIIZ string) for all 0 <= i <= n */

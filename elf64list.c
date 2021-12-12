@@ -19,7 +19,7 @@ main(int argc, char** argv) {
   uint16 text_section_header_index = 0;
 
   if(argc < 2) {
-    buffer_putm_internal(buffer_2, "Usage: ", argv[0], " XXX.so", 0);
+    buffer_putm_internal(buffer_2, "Usage: ", argv[0], " XXX.so", NULL);
     buffer_putnlflush(buffer_2);
     return 1;
   }
@@ -43,10 +43,10 @@ main(int argc, char** argv) {
     }
 
     header = (elf64_ehdr*)content;
-    if(header->e_type != ELF_ET_DYN) {
-      buffer_putsflush(buffer_2, "not shared library\n");
-      return 1;
-    }
+    /*  if(header->e_type != ELF_ET_DYN) {
+        buffer_putsflush(buffer_2, "not shared library\n");
+        return 1;
+      }*/
 
     section_offset = header->e_shoff;
     section_header_size = header->e_shentsize;

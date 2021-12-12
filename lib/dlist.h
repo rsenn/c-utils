@@ -33,15 +33,15 @@ void dlist_unshift(dlist*, node*);
 
 #define dlist_data(n, t) (*(t*)(&(n)[1]))
 
-#define dlist_foreach_down(dlist, n)                                                                                   \
+#define dlist_foreach_down(dlist, n) \
   for((n) = (void*)(dlist)->head; (n) != NULL; (n) = (void*)(((struct dnode*)n)->next))
 
 /* n is set to the current node and n->next is backupped
    into m before loop body for safe walk-throught when
    links get deleted */
-#define dlist_foreach_down_safe(dlist, n, m)                                                                           \
-  for((n) = (void*)(dlist)->head, (m) = (void*)((struct dnode*)n) != NULL ? (void*)((struct dnode*)n)->next : NULL;    \
-      (n) != NULL && (n) != (void*)(dlist)->head(n) = (void*)((struct dnode*)m),                                       \
+#define dlist_foreach_down_safe(dlist, n, m) \
+  for((n) = (void*)(dlist)->head, (m) = (void*)((struct dnode*)n) != NULL ? (void*)((struct dnode*)n)->next : NULL; \
+      (n) != NULL && (n) != (void*)(dlist)->head(n) = (void*)((struct dnode*)m), \
   (m) = (void*)((struct dnode*)n) != NULL ? (void*)((struct dnode*)n)->next : NULL)
 
 /*
@@ -53,10 +53,10 @@ void dlist_unshift(dlist*, node*);
 /* n is set to the current node and n->prev is backupped
    into m before loop body for safe walk-throught when
    links get deleted */
-#define dlist_foreach_up_safe(dlist, n, m)                                                                             \
-  for((n) = (void*)(dlist)->tail, (m) = (void*)((struct dnode*)n) != NULL ? (void*)((struct dnode*)n)->prev : NULL;    \
-      (n) != NULL;                                                                                                     \
-      (n) = (void*)((struct dnode*)m),                                                                                 \
+#define dlist_foreach_up_safe(dlist, n, m) \
+  for((n) = (void*)(dlist)->tail, (m) = (void*)((struct dnode*)n) != NULL ? (void*)((struct dnode*)n)->prev : NULL; \
+      (n) != NULL; \
+      (n) = (void*)((struct dnode*)m), \
   (m) = (void*)((struct dnode*)n) != NULL ? (void*)((struct dnode*)n)->prev : NULL)
 
 /* aliases for backwards compatibility */

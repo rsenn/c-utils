@@ -14,6 +14,9 @@
 #include <sys/types.h>
 #include <unistd.h>
 #endif
+#ifdef __MSYS__
+#undef mmap
+#endif
 
 char*
 mmap_shared_fd(fd_t fd, size_t* filesize) {

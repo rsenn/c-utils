@@ -375,9 +375,9 @@ add_item(strlist* list, const char* name, const char* value) {
   stralloc_init(&out);
 
   if(value)
-    stralloc_catm_internal(&out, name, " = ", value, 0);
+    stralloc_catm_internal(&out, name, " = ", value, NULL);
   else
-    stralloc_catm_internal(&out, "// ", name, 0);
+    stralloc_catm_internal(&out, "// ", name, NULL);
 
   strlist_push_sa(list, &out);
 
@@ -560,6 +560,7 @@ main(int argc, char* argv[]) {
   x = mmap_read(hexfile, &n);
   assert(x);
   assert(n);
+  ihex_init(&hex);
   ihex_read_buf(&hex, x, n);
   mmap_unmap(x, n);
 

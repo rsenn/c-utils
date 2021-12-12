@@ -99,7 +99,10 @@ main(int argc, char* argv[]) {
     }
   }
 
-  proc_list(&pidlist);
+  if(unix_optind < argc)
+    strlist_fromv(&pidlist, &argv[unix_optind], argc - unix_optind);
+  else
+    proc_list(&pidlist);
 
   stralloc_init(&data);
   strlist_init(&cmdline, '\0');
@@ -117,7 +120,7 @@ main(int argc, char* argv[]) {
     buffer_puts(buffer_1, "Process #");
     buffer_puts(buffer_1, pid);
     buffer_puts(buffer_1, ": ");
-    strlist_dump_named(buffer_1, &stat, stat_fields);
+    //  strlist_dump_named(buffer_1, &stat, stat_fields);
     buffer_putnlflush(buffer_1);
 
     stralloc_zero(&cmdline.sa);

@@ -1,14 +1,14 @@
 #include "../path_internal.h"
 
 void
-path_concat(const char* a, size_t alen, const char* b, size_t blen, stralloc* out) {
+path_concat(const char* a, const char* b, stralloc* out) {
   stralloc sa;
   const char* x;
   size_t len;
   stralloc_init(&sa);
 
-  path_append(a, alen, &sa);
-  path_append(b, blen, &sa);
+  path_appends(a, &sa);
+  path_appends(b, &sa);
 
   x = sa.s;
   len = sa.len;

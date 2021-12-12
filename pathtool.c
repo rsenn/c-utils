@@ -85,7 +85,7 @@ pathtool(const char* arg, stralloc* sa) {
   stralloc_init(sa);
 
 #ifdef DEBUG_OUTPUT
-  buffer_putm_internal(buffer_2, "arg: ", arg, 0);
+  buffer_putm_internal(buffer_2, "arg: ", arg, NULL);
   buffer_putnlflush(buffer_2);
 #endif
   if(absolute) {
@@ -142,8 +142,8 @@ pathtool(const char* arg, stralloc* sa) {
     buffer_putnlflush(buffer_2);
 #endif
 
-    path_relative_b(path.sa.s, path.sa.len, relative_to.sa.s, relative_to.sa.len, sa);
-    // path_relative(path.sa.s, relative_to.sa.s, sa);
+    path_relative_to_b(path.sa.s, path.sa.len, relative_to.sa.s, relative_to.sa.len, sa);
+    // path_relative_to(path.sa.s, relative_to.sa.s, sa);
 
     /*
     strlist rel;

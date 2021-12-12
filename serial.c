@@ -2,6 +2,9 @@
  * Copyright 2012 - 2014 Thomas Buck
  * <xythobuz@xythobuz.de>
  */
+#ifndef _DEFAULT_SOURCE
+#define _DEFAULT_SOURCE
+#endif
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -58,30 +61,30 @@ last_error(void) {
   return retbuf;
 }
 
-#define GET_PORT_TIMEOUTS(fd, t)                                                                                       \
-  memset(t, 0, sizeof(COMMTIMEOUTS));                                                                                  \
-  if(!GetCommTimeouts(fd, t)) {                                                                                        \
-    fprintf(stderr, "GetCommTimeouts() %s\n", last_error());                                                           \
-    return 1;                                                                                                          \
+#define GET_PORT_TIMEOUTS(fd, t) \
+  memset(t, 0, sizeof(COMMTIMEOUTS)); \
+  if(!GetCommTimeouts(fd, t)) { \
+    fprintf(stderr, "GetCommTimeouts() %s\n", last_error()); \
+    return 1; \
   }
 
-#define SET_PORT_TIMEOUTS(fd, t)                                                                                       \
-  if(!SetCommTimeouts(fd, t)) {                                                                                        \
-    fprintf(stderr, "SetCommTimeouts() %s\n", last_error());                                                           \
-    return 1;                                                                                                          \
+#define SET_PORT_TIMEOUTS(fd, t) \
+  if(!SetCommTimeouts(fd, t)) { \
+    fprintf(stderr, "SetCommTimeouts() %s\n", last_error()); \
+    return 1; \
   }
 
-#define GET_PORT_STATE(fd, pdcb)                                                                                       \
-  memset(pdcb, 0, sizeof(DCB));                                                                                        \
-  if(!GetCommState(fd, pdcb)) {                                                                                        \
-    fprintf(stderr, "GetCommState() %s\n", last_error());                                                              \
-    return 1;                                                                                                          \
+#define GET_PORT_STATE(fd, pdcb) \
+  memset(pdcb, 0, sizeof(DCB)); \
+  if(!GetCommState(fd, pdcb)) { \
+    fprintf(stderr, "GetCommState() %s\n", last_error()); \
+    return 1; \
   }
 
-#define SET_PORT_STATE(fd, pdcb)                                                                                       \
-  if(!SetCommState(fd, pdcb)) {                                                                                        \
-    fprintf(stderr, "SetCommState() %s\n", last_error());                                                              \
-    return 1;                                                                                                          \
+#define SET_PORT_STATE(fd, pdcb) \
+  if(!SetCommState(fd, pdcb)) { \
+    fprintf(stderr, "SetCommState() %s\n", last_error()); \
+    return 1; \
   }
 
 static unsigned int
@@ -104,7 +107,7 @@ port_timeout(HANDLE fd, unsigned int rt, unsigned int wt) {
 #endif
 
 int
-serial_open(const char* port, unsigned int baud) {
+serial_open(const char* port, int baud) {
 #if WINDOWS_NATIVE
   HANDLE fd;
   char buf[1024] = {0};
@@ -163,16 +166,12 @@ serial_open(const char* port, unsigned int baud) {
   }
 
   return fd;
-#else
+#elif !NO_SERIAL
   struct termios options;
 
   int fd = open(port, O_RDWR | O_NOCTTY | O_NDELAY);
   if(fd == -1) {
-    fprintf(stderr,
-            "Couldn't open port "
-            "\"%s\": %s\n",
-            port,
-            strerror(errno));
+    fprintf(stderr, "Couldn't open port \"%s\": %s\n", port, strerror(errno));
     return -1;
   }
 
@@ -312,10 +311,9 @@ serial_open(const char* port, unsigned int baud) {
       cfsetospeed(&options, B4000000);
       break;
 #endif
+    case BDEFAULT: break;
     default:
-      fprintf(stderr,
-              "Warning: Baudrate not "
-              "supported!\n");
+      fprintf(stderr, "Warning: Baudrate not supported!\n");
       serial_close(fd);
       return -1;
   }
@@ -347,9 +345,10 @@ serial_open(const char* port, unsigned int baud) {
   options.c_cc[VSTART] = XON;
 #endif
 
-  tcsetattr(fd, TCSANOW, &options);
-
-  tcflush(fd, TCIOFLUSH);
+  if(tcsetattr(fd, TCSANOW, &options) == -1 || tcflush(fd, TCIOFLUSH) == -1) {
+    close(fd);
+    return -1;
+  }
 
   return fd;
 #endif
@@ -357,12 +356,11 @@ serial_open(const char* port, unsigned int baud) {
 
 void
 serial_close(int fd) {
-#if !WINDOWS_NATIVE
-
+#if WINDOWS_NATIVE
+  CloseHandle(fd);
+#elif !NO_SERIAL
   tcflush(fd, TCIOFLUSH);
   close(fd);
-#else
-  CloseHandle(fd);
 #endif
 }
 
@@ -393,13 +391,13 @@ serial_has_char(int fd) {
 
 void
 serial_wait_until_sent(int fd) {
-#if !WINDOWS_NATIVE
-  while(tcdrain(fd) == -1) {
-    fprintf(stderr, "Could not drain data: %s\n", strerror(errno));
-  }
-#else
+#if WINDOWS_NATIVE
   if(!PurgeComm(fd, PURGE_TXCLEAR)) {
     fprintf(stderr, "Could not drain data: %s\n", last_error());
+  }
+#elif !NO_SERIAL
+  while(tcdrain(fd) == -1) {
+    fprintf(stderr, "Could not drain data: %s\n", strerror(errno));
   }
 #endif
 }
@@ -496,7 +494,7 @@ serial_write_string(int fd, const char* s) {
 }
 
 char**
-get_serial_ports(void) {
+serial_ports(void) {
   dir_t dir;
   char* entry;
   char** files;
@@ -549,4 +547,56 @@ get_serial_ports(void) {
   dir_close(&dir);
   files[i] = NULL;
   return files;
+}
+
+int
+serial_baud_rate(int fd) {
+  int rate = 0, speed;
+#if !NO_SERIAL
+  struct termios options;
+
+  if(tcgetattr(fd, &options) == -1)
+    return -1;
+
+  speed = cfgetospeed(&options);
+  switch(speed) {
+    case B0: rate = 0; break;
+    case B50: rate = 50; break;
+    case B75: rate = 75; break;
+    case B110: rate = 110; break;
+    case B134: rate = 134; break;
+    case B150: rate = 150; break;
+    case B200: rate = 200; break;
+    case B300: rate = 300; break;
+    case B600: rate = 600; break;
+    case B1200: rate = 1200; break;
+    case B1800: rate = 1800; break;
+    case B2400: rate = 2400; break;
+    case B4800: rate = 4800; break;
+    case B9600: rate = 9600; break;
+    case B19200: rate = 19200; break;
+    case B38400: rate = 38400; break;
+    case B57600: rate = 57600; break;
+    case B115200: rate = 115200; break;
+    case B230400: rate = 230400; break;
+    case B460800: rate = 460800; break;
+    case B500000: rate = 500000; break;
+    case B576000: rate = 576000; break;
+    case B921600: rate = 921600; break;
+    case B1000000: rate = 1000000; break;
+    case B1152000: rate = 1152000; break;
+    case B1500000: rate = 1500000; break;
+    case B2000000: rate = 2000000; break;
+    case B2500000: rate = 2500000; break;
+    case B3000000: rate = 3000000; break;
+#ifdef B3500000
+    case B3500000: rate = 3500000; break;
+#endif
+#ifdef B4000000
+    case B4000000: rate = 4000000; break;
+#endif
+    default: fprintf(stderr, "Warning: Unhandled baud rate constant: %d\n", speed); return -1;
+  }
+#endif /* !NO_SERIAL */
+  return rate;
 }

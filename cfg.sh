@@ -85,8 +85,9 @@ cfg() {
   ) 2>&1 |tee "${builddir##*/}.log"
 }
 
-cfg-android ()
+cfg-android()
 {
+<<<<<<< HEAD
   (: ${builddir=build/android}
     cfg \
   -DCMAKE_INSTALL_PREFIX=/opt/arm-linux-androideabi/sysroot/usr \
@@ -100,6 +101,16 @@ cfg-android ()
    -DOpenCV_DIR="/opt/OpenCV-3.4.1-android-sdk/sdk/native/jni/abi-armeabi-v7a" \
    "$@"
     )
+=======
+ (build=arm-linux-androideabi
+  : ${builddir=build/$build}
+ 
+  TOOLCHAIN=/opt/cmake-toolchains/android.cmake \
+  prefix=/opt/$build/sysroot/usr \
+  PKG_CONFIG=$build-pkg-config \
+  CMAKE_PREFIX_PATH=/opt/$build/sysroot/usr \
+  cfg "$@")
+>>>>>>> 59aa70ebd97b7a841ea108796b13f843c349e085
 }
 
 cfg-diet() {
@@ -363,7 +374,14 @@ cfg-wasm() {
 
 cfg-android64() { 
     ( : ${builddir=build/android64};
-    cfg -DCMAKE_INSTALL_PREFIX=/opt/aarch64-linux-android64eabi/sysroot/usr -DCMAKE_TOOLCHAIN_FILE=${TOOLCHAIN:-/opt/android64-cmake/android64.cmake} -DANDROID_NATIVE_API_LEVEL=21 -DPKG_CONFIG_EXECUTABLE=aarch64-linux-android64eabi-pkg-config -DCMAKE_PREFIX_PATH=/opt/aarch64-linux-android64eabi/sysroot/usr -DCMAKE_MAKE_PROGRAM=/usr/bin/make -DCMAKE_MODULE_PATH="/opt/OpenCV-3.4.1-android64-sdk/sdk/native/jni/abi-armeabi-v7a" -DOpenCV_DIR="/opt/OpenCV-3.4.1-android64-sdk/sdk/native/jni/abi-armeabi-v7a" "$@" )
+      PKG_CONFIG=aarch64-linux-android-pkg-config \
+    cfg \
+      -DCMAKE_INSTALL_PREFIX=/opt/aarch64-linux-android/sysroot/usr \
+      -DCMAKE_TOOLCHAIN_FILE=${TOOLCHAIN:-/opt/cmake-toolchains/android64.cmake} \
+      -DANDROID_NATIVE_API_LEVEL=21 \
+      -DCMAKE_PREFIX_PATH=/opt/aarch64-linux-android/sysroot/usr \
+      -DCMAKE_MAKE_PROGRAM=/usr/bin/make \
+      "$@" )
 }
 
 cfg-emscripten() {

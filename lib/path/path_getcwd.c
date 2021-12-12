@@ -21,4 +21,5 @@ path_getcwd(stralloc* sa) {
   sep = path_getsep(sa->s);
   if(sep && sep != PATHSEP_C)
     stralloc_replacec(sa, sep, PATHSEP_C);
+  stralloc_nul(sa);
 }

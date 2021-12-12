@@ -48,7 +48,7 @@ debug_sa(const char* name, stralloc* sa) {
 
 void
 debug_set(const char* name, const set_t* s, const char* sep) {
-  buffer_putm_internal(buffer_2, name, ": ", 0);
+  buffer_putm_internal(buffer_2, name, ": ", NULL);
   buffer_putset(buffer_2, s, sep, str_len(sep));
   buffer_putsflush(buffer_2, debug_nl);
 }

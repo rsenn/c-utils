@@ -130,7 +130,7 @@ TEST(test_path_num_sa) {}
 TEST(test_path_exists) {}
 
 /*
- * int path_relative(const char*, const char* to, stralloc* rel);
+ * int path_relative_to(const char*, const char* to, stralloc* rel);
  */
 
 TEST(test_path_relative) {}
@@ -172,27 +172,27 @@ TEST(test_path_collapse) {
   ASSERT_STRALLOCEQUALS(&sa, "/this/is/a/test");
 }
 
-#define RUN_PATH_TESTS()                                                                                               \
-  RUN(test_path_basename);                                                                                             \
-  RUN(test_path_canonicalize);                                                                                         \
-  RUN(test_path_dirname);                                                                                              \
-  RUN(test_path_fnmatch);                                                                                              \
-  RUN(test_path_getcwd);                                                                                               \
-  RUN(test_path_gethome);                                                                                              \
-  RUN(test_path_len_s);                                                                                                \
-  RUN(test_path_len);                                                                                                  \
-  RUN(test_path_readlink);                                                                                             \
-  RUN(test_path_right);                                                                                                \
-  RUN(test_path_skips);                                                                                                \
-  RUN(test_path_skip);                                                                                                 \
-  RUN(test_path_num);                                                                                                  \
-  RUN(test_path_num_sa);                                                                                               \
-  RUN(test_path_exists);                                                                                               \
-  RUN(test_path_is_absolute);                                                                                          \
-  RUN(test_path_relative);                                                                                             \
-  RUN(test_path_split);                                                                                                \
-  RUN(test_path_canonical_sa);                                                                                         \
-  RUN(test_path_absolute_sa);                                                                                          \
+#define RUN_PATH_TESTS() \
+  RUN(test_path_basename); \
+  RUN(test_path_canonicalize); \
+  RUN(test_path_dirname); \
+  RUN(test_path_fnmatch); \
+  RUN(test_path_getcwd); \
+  RUN(test_path_gethome); \
+  RUN(test_path_len_s); \
+  RUN(test_path_len); \
+  RUN(test_path_readlink); \
+  RUN(test_path_right); \
+  RUN(test_path_skips); \
+  RUN(test_path_skip); \
+  RUN(test_path_num); \
+  RUN(test_path_num_sa); \
+  RUN(test_path_exists); \
+  RUN(test_path_is_absolute); \
+  RUN(test_path_relative); \
+  RUN(test_path_split); \
+  RUN(test_path_canonical_sa); \
+  RUN(test_path_absolute_sa); \
   RUN(test_path_collapse)
 
 TESTS(path) { RUN_PATH_TESTS(); }
