@@ -906,6 +906,7 @@ rule_get(const char* name) {
     byte_zero(&tgt, sizeof(struct target_s));
     tgt.name = str_ndup(name, len);
     tgt.serial = ++rule_serial;
+    tgt.type = -1;
     set_init(&tgt.output, 0);
     set_adds(&tgt.output, name);
     set_init(&tgt.prereq, 0);
@@ -4460,7 +4461,7 @@ output_make_rule(buffer* b, target* rule) {
     stralloc cmd;
     stralloc_init(&cmd);
 
-    if(infile)
+    if(infile && (signed)rule->type >= 0)
       stralloc_copy(&cmd, &commands.v[rule->type]);
     else
       rule_command(rule, &cmd);
@@ -4593,7 +4594,7 @@ output_all_rules(buffer* b) {
     if(rule->disabled)
       continue;
 
-#ifdef DEBUG_OUTPUT_
+#ifdef DEBUG_OUTPUT
     buffer_puts(buffer_2, "Outputting rule '");
     buffer_puts(buffer_2, name);
     buffer_putc(buffer_2, '\'');
@@ -4866,7 +4867,7 @@ set_compiler_type(const char* compiler) {
   set_command(&commands.link,
               "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(LDFLAGS) $(EXTRA_LDFLAGS) -o $@",
               "$^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
-  set_command(&commands., "$(CPP) $(CPPFLAGS) $(DEFS) -o$@", "$<");
+  set_command(&commands.preprocess, "$(CPP) $(CPPFLAGS) $(DEFS) -o$@", "$<");
   // var_push("DEFS", "-DHAVE_ERRNO_H=1");
   /*
    * Visual C++ compiler
@@ -6507,11 +6508,7 @@ quit : {
     strlist_init(&deps, '\0');
     dlist_foreach_down(&sourcelist, link) {
       sourcefile* source = dlist_data(link, sourcefile*);
-      if(0 &&
-         /*source->name[str_find(source->name,
-            "genmakefile")] &&
-            strlist_count(&source->deps)*/
-         1) {
+      if(0 && 1) {
         buffer_putm_internal(buffer_2, "source: ", source->name, " deps: ", NULL);
         strlist_zero(&deps);
         sources_deps(source, &deps);
