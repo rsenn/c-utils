@@ -38,7 +38,7 @@ typedef struct bio_method_st {
   long (*ctrl)(struct bio_st*, int, long, void*);
   int (*create)(struct bio_st*);
   int (*destroy)(struct bio_st*);
-  long (*callback_ctrl)(struct bio_st*, int, int (*info_cb)(BIO *, int, int));
+  long (*callback_ctrl)(struct bio_st*, int, int (*info_cb)(BIO*, int, int));
 } bio_method_t;
 
 typedef struct bio_st {

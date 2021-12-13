@@ -69,13 +69,6 @@ const char* const build_types[] = {"Release", "RelWithDebInfo", "MinSizeRel", "D
 typedef void(linklib_fmt)(const char*, stralloc*);
 int cmd_objs = 0, cmd_libs = 0, cmd_bins = 0;
 static union commands commands;
-#define preprocess_command commands.preprocess
-#define compile_command commands.compile
-#define lib_command commands.lib
-#define link_command commands.link
-#define mkdir_command commands.mkdir
-#define delete_command commands.delete
-/*preprocess_command, compile_command, lib_command, link_command, mkdir_command, delete_command;*/
 static const char* libpfx = DEFAULT_LIBPFX;
 static const char *make_begin_inline, *make_sep_inline, *make_end_inline;
 static const char* comment = "#";
@@ -99,8 +92,7 @@ static linklib_fmt* format_linklib_fn;
 static int inst_bins, inst_libs;
 static int cygming;
 static strlist system_path;
-const char *outfile = NULL, *infile = NULL;
-const char* project_name = NULL;
+const char *outfile = NULL, *infile = NULL, *project_name = NULL;
 static strarray dirstack;
 set_t srcs;
 strarray bins;
@@ -1140,7 +1132,7 @@ rule_command(target* rule, stralloc* out) {
   }
   // stralloc_copy(&prereq.sa, &rule->prereq.sa);
   stralloc_replacec(&prereq.sa, from, pathsep_args);
-  if(0 /* make_begin_inline == NULL  && rule->recipe ==  &lib_command*/) {
+  if(0 /* make_begin_inline == NULL  && rule->recipe ==  &commands.lib*/) {
     char* x;
     size_t n = 0;
     range r;
@@ -2863,10 +2855,10 @@ gen_clean_rule() {
   stralloc_init(&fn);
   strlist_init(&delete_args, '\0');
 
-  if(delete_command.len == 0)
-    stralloc_copys(&delete_command, cfg.sys.type == NTOS ? "DEL /F /Q" : "$(RM)");
+  if(commands.delete.len == 0)
+    stralloc_copys(&commands.delete, cfg.sys.type == NTOS ? "DEL /F /Q" : "$(RM)");
 
-  cmdoffs = delete_command.len;
+  cmdoffs = commands.delete.len;
   MAP_FOREACH(rules, t) {
     target* rule = MAP_ITER_VALUE(t);
     const char* name = MAP_ITER_KEY(t);
@@ -2909,18 +2901,18 @@ gen_clean_rule() {
   }
   strlist_nul(&delete_args);
   strlist_foreach_s(&delete_args, arg) {
-    if(delete_command.len - lineoffs + str_len(arg) >= MAX_CMD_LEN) {
-      stralloc_readyplus(&delete_command, cmdoffs + 3);
-      stralloc_catm_internal(&delete_command, newline, "\t", NULL);
-      stralloc_catb(&delete_command, delete_command.s, cmdoffs);
-      lineoffs = delete_command.len;
+    if(commands.delete.len - lineoffs + str_len(arg) >= MAX_CMD_LEN) {
+      stralloc_readyplus(&commands.delete, cmdoffs + 3);
+      stralloc_catm_internal(&commands.delete, newline, "\t", NULL);
+      stralloc_catb(&commands.delete, commands.delete.s, cmdoffs);
+      lineoffs = commands.delete.len;
     }
-    stralloc_catc(&delete_command, ' ');
-    stralloc_cats(&delete_command, arg);
+    stralloc_catc(&commands.delete, ' ');
+    stralloc_cats(&commands.delete, arg);
     if(arg[str_chr(arg, '*')])
       lineoffs = -MAX_CMD_LEN;
   }
-  stralloc_weak(&clean->recipe, &delete_command);
+  stralloc_weak(&clean->recipe, &commands.delete);
 }
 
 int
@@ -2933,7 +2925,7 @@ gen_mkdir_rule(stralloc* dir) {
   target* rule = 0;
   if(stralloc_length(dir) && !stralloc_equals(dir, ".")) {
     if((rule = rule_get_sa(dir))) {
-      stralloc_weak(&rule->recipe, &mkdir_command);
+      stralloc_weak(&rule->recipe, &commands.mkdir);
     }
   }
   return rule;
@@ -3028,7 +3020,7 @@ gen_srcdir_compile_rules(sourcedir* sdir, const char* dir) {
         continue;
       if((shell | batch) == 0 && batchmode) {
         stralloc_init(&rule->recipe);
-        stralloc_copy(&rule->recipe, &compile_command);
+        stralloc_copy(&rule->recipe, &commands.compile);
         stralloc_replaces(&rule->recipe, "-Fo", "-Fd");
         stralloc_replaces(&rule->recipe, "$@", dirs.work.sa.s);
         continue;
@@ -3037,7 +3029,7 @@ gen_srcdir_compile_rules(sourcedir* sdir, const char* dir) {
         size_t p, e;
         char* x;
         if(dirs.work.sa.len == 0 || stralloc_equals(&dirs.work.sa, ".")) {
-          stralloc_copy(&rule->recipe, &compile_command);
+          stralloc_copy(&rule->recipe, &commands.compile);
           x = stralloc_begin(&rule->recipe);
           p = e = stralloc_finds(&rule->recipe, "$@");
           while(p > 0 && !((x[p + 1] == '/' || x[p + 1] == '-') && x[p] == ' '))
@@ -3047,10 +3039,10 @@ gen_srcdir_compile_rules(sourcedir* sdir, const char* dir) {
             e++;
           stralloc_remove(&rule->recipe, p, e - p);
         } else {
-          stralloc_weak(&rule->recipe, &compile_command);
+          stralloc_weak(&rule->recipe, &commands.compile);
         }
         /* if(stralloc_length(&rule->recipe) == 0)
-           stralloc_copy(&rule->recipe, &compile_command);*/
+           stralloc_copy(&rule->recipe, &commands.compile);*/
       }
     }
   }
@@ -3095,7 +3087,7 @@ gen_simple_compile_rules(sourcedir* srcdir, const char* dir, const char* fromext
       // stralloc_inserts(&ppsrc,  ".pp", byte_rchr(ppsrc.s,     ppsrc.len, '.'));
       if((rule = rule_get_sa(&obj))) {
         add_source(&rule->prereq, src->name);
-        stralloc_copy(&rule->recipe, &preprocess_command);
+        stralloc_copy(&rule->recipe, &commands.preprocess);
         ppsrc = obj;
         srcname = ppsrc.s;
       }
@@ -3143,9 +3135,9 @@ gen_srcdir_lib_rule(sourcedir* srcdir, const char* name) {
     buffer_flush(buffer_2);
     dep = gen_srcdir_compile_rules(srcdir, name);
   } else {
-    /* if(0 && tools.preproc) {gen_simple_compile_rules(rules, srcdir, name, exts.src, exts.pps, &preprocess_command);
-     * dep = gen_simple_compile_rules(rules, srcdir, name, exts.pps, exts.obj, &compile_command); } else {*/
-    dep = gen_simple_compile_rules(srcdir, name, exts.src, exts.obj, &compile_command);
+    /* if(0 && tools.preproc) {gen_simple_compile_rules(rules, srcdir, name, exts.src, exts.pps, &commands.preprocess);
+     * dep = gen_simple_compile_rules(rules, srcdir, name, exts.pps, exts.obj, &commands.compile); } else {*/
+    dep = gen_simple_compile_rules(srcdir, name, exts.src, exts.obj, &commands.compile);
     //}
   }
   if((rule = rule_get_sa(&sa))) {
@@ -3166,7 +3158,7 @@ gen_srcdir_lib_rule(sourcedir* srcdir, const char* name) {
         set_addsa(&rule->prereq, &sa);
       }
     }
-    stralloc_weak(&rule->recipe, &lib_command);
+    stralloc_weak(&rule->recipe, &commands.lib);
   }
   stralloc_free(&sa);
   return rule;
@@ -3207,7 +3199,7 @@ gen_srcdir_rule(sourcedir* sdir, const char* name) {
     if((rule = rule_get_sa(&mask))) {
       set_adds(&rule->prereq, src->name);
       if(rule->recipe.s == 0) {
-        stralloc_weak(&rule->recipe, &compile_command);
+        stralloc_weak(&rule->recipe, &commands.compile);
       }
     }
     free((void*)s);
@@ -3289,11 +3281,11 @@ gen_program_rule(const char* filename) {
   path_output(filename, &obj, exts.obj);
   if(tools.preproc && (preprocess = rule_get_sa(&ppsrc))) {
     add_source(&preprocess->prereq, filename);
-    stralloc_weak(&preprocess->recipe, &preprocess_command);
+    stralloc_weak(&preprocess->recipe, &commands.preprocess);
   }
   if((compile = rule_get_sa(&obj))) {
     add_source(&compile->prereq, filename);
-    stralloc_weak(&compile->recipe, &compile_command);
+    stralloc_weak(&compile->recipe, &commands.compile);
     stralloc_zero(&compile->recipe);
     buffer_putm_internal(
         buffer_2, "\033[38;5;82mcompile rule" NC " '", compile->name, "' recipe '", compile->recipe.s, "'", NULL);
@@ -3341,7 +3333,7 @@ gen_program_rule(const char* filename) {
         add_path_sa(&rule->prereq, &obj);
       }
     }
-    stralloc_weak(&rule->recipe, &link_command);
+    stralloc_weak(&rule->recipe, &commands.link);
     stralloc_nul(&rule->recipe);
     buffer_putm_internal(buffer_2, "" BLUE256 "link rule" NC " '", rule->name, "' recipe '", rule->recipe.s, "'", NULL);
     buffer_putnlflush(buffer_2);
@@ -3447,9 +3439,9 @@ gen_install_rules() {
     target* rule = MAP_ITER_VALUE(t);
     int do_lib, do_bin;
     do_lib = (inst_libs && (str_end(MAP_ITER_KEY(t), ".lib") || str_end(MAP_ITER_KEY(t), ".a") ||
-                            MAP_ITER_KEY(t)[str_find(MAP_ITER_KEY(t), ".so")] || rule->recipe.s == lib_command.s));
+                            MAP_ITER_KEY(t)[str_find(MAP_ITER_KEY(t), ".so")] || rule->recipe.s == commands.lib.s));
     do_bin = (inst_bins && (str_end(MAP_ITER_KEY(t), ".dll") || str_end(MAP_ITER_KEY(t), ".exe") ||
-                            rule->recipe.s == link_command.s));
+                            rule->recipe.s == commands.link.s));
     if(!(do_lib || do_bin))
       continue;
     if(!inst) {
@@ -3857,11 +3849,11 @@ input_process_command(stralloc* cmd, int argc, char* argv[], const char* file, s
       target* rule;
       sacmd = &args.sa;
       /*      if(compile) {
-              sacmd = &compile_command;
+              sacmd = &commands.compile;
             } else if(link) {
-              sacmd = &link_command;
+              sacmd = &commands.link;
             } else if(lib) {
-              sacmd = &lib_command;
+              sacmd = &commands.lib;
             }*/
       pathlen = reldir.len;
       stralloc_cat(&reldir, &output);
@@ -3903,11 +3895,11 @@ input_process_command(stralloc* cmd, int argc, char* argv[], const char* file, s
       }
 
       /*   if(compile) {
-           stralloc_copy(&rule->recipe, &compile_command);
+           stralloc_copy(&rule->recipe, &commands.compile);
          } else if(link) {
-           stralloc_copy(&rule->recipe, &link_command);
+           stralloc_copy(&rule->recipe, &commands.link);
          } else if(lib) {
-           stralloc_copy(&rule->recipe, &lib_command);
+           stralloc_copy(&rule->recipe, &commands.lib);
          }*/
 
       if(link) {
@@ -3916,7 +3908,7 @@ input_process_command(stralloc* cmd, int argc, char* argv[], const char* file, s
         set_adds(&all->prereq, rule->name);
       }
 
-#ifdef DEBUG_OUTPUT_
+#ifdef DEBUG_OUTPUT
       rule_dump(rule);
 #endif
     }
@@ -4039,7 +4031,7 @@ input_process_rules(target* all) {
   strlist_init(&builddir, PATHSEP_C);
   strlist_init(&outdir, PATHSEP_C);
 
-  stralloc_zero(&compile_command);
+  stralloc_zero(&commands.compile);
 
   MAP_DESTROY(vars);
   MAP_NEW(vars);
@@ -4223,10 +4215,10 @@ input_process_rules(target* all) {
       }
 
       if(compile) {
-        if(compile_command.len == 0 /* && !infile*/)
-          stralloc_copy(&compile_command, &cmd);
+        if(commands.compile.len == 0 /* && !infile*/)
+          stralloc_copy(&commands.compile, &cmd);
 
-        /*    stralloc_copy(&rule->recipe, &compile_command); */
+        /*    stralloc_copy(&rule->recipe, &commands.compile); */
         stralloc_nul(&rule->recipe);
       }
 
@@ -4388,7 +4380,7 @@ output_make_rule(buffer* b, target* rule) {
   stralloc_zero(&name);
   stralloc_copys(&name, rule->name);
 
-#ifdef DEBUG_OUTPUT_
+#ifdef DEBUG_OUTPUT
   buffer_puts(buffer_2, "RULE\n  " YELLOW256 "name" NC ": ");
   buffer_puts(buffer_2, rule->name);
   buffer_puts(buffer_2, "\n  " PURPLE256 "recipe" NC ": ");
@@ -4517,11 +4509,11 @@ output_ninja_rule(buffer* b, target* rule) {
   const char* rule_name = 0;
   stralloc source_file, obj_dir;
 
-  if(rule_is_compile(rule) || rule->recipe.s == compile_command.s)
+  if(rule_is_compile(rule) || rule->recipe.s == commands.compile.s)
     rule_name = "cc";
-  else if(rule_is_link(rule) || rule->recipe.s == link_command.s)
+  else if(rule_is_link(rule) || rule->recipe.s == commands.link.s)
     rule_name = "link";
-  else if(rule_is_lib(rule) || stralloc_equal(&rule->recipe, &lib_command))
+  else if(rule_is_lib(rule) || stralloc_equal(&rule->recipe, &commands.lib))
     rule_name = "lib";
   if(rule_name) {
     stralloc path;
@@ -4663,7 +4655,7 @@ output_script(buffer* b, target* rule) {
   if(rule->serial == serial)
     return;
   if(!rule->name[str_chr(rule->name, '%')]) {
-    if(rule->recipe.s != compile_command.s)
+    if(rule->recipe.s != commands.compile.s)
       buffer_putm_internal(b, newline, "REM Rules for '", rule->name, "'", newline, NULL);
   }
   set_foreach(&rule->prereq, it, x, n) {
@@ -4808,7 +4800,7 @@ set_make_type() {
   newline = "\n";
 #endif
 
-  stralloc_copys(&mkdir_command, cfg.sys.os == OS_WIN ? "IF NOT EXIST $@ MKDIR $@" : "mkdir -p $@");
+  stralloc_copys(&commands.mkdir, cfg.sys.os == OS_WIN ? "IF NOT EXIST $@ MKDIR $@" : "mkdir -p $@");
   if(str_start(tools.make, "batch") || str_start(tools.make, "cmd")) {
     pathsep_args = '\\';
     pathsep_make = '\\';
@@ -4826,15 +4818,15 @@ set_make_type() {
     pathsep_args = '\\';
     // make_begin_inline = "@<<$*.rsp\r\n";
     // make_end_inline = "\r\n<<keep";
-    stralloc_copys(&mkdir_command, "IF NOT EXIST $@ MKDIR $@");
-    stralloc_copys(&delete_command, "DEL /F");
+    stralloc_copys(&commands.mkdir, "IF NOT EXIST $@ MKDIR $@");
+    stralloc_copys(&commands.delete, "DEL /F");
     newline = "\r\n";
     inst = "COPY /Y";
   } else if(str_start(tools.make, "gmake") || str_start(tools.make, "gnu")) {
     newline = "\n";
     pathsep_make = '/';
-    stralloc_copys(&mkdir_command, "test -d $@ || mkdir -p $@");
-    stralloc_copys(&delete_command, "rm -f");
+    stralloc_copys(&commands.mkdir, "test -d $@ || mkdir -p $@");
+    stralloc_copys(&commands.delete, "rm -f");
   } else if(str_start(tools.make, "omake") || str_start(tools.make, "orange")) {
     pathsep_make = '\\';
     if(inst_bins || inst_libs)
@@ -4869,12 +4861,12 @@ int
 set_compiler_type(const char* compiler) {
   var_set("CC", "cc");
   var_set("CXX", "c++");
-  stralloc_copys(&compile_command, "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) $(DEFS) -c -o $@ $<");
-  set_command(&lib_command, "$(LIB) /out:$@", "$^");
-  set_command(&link_command,
+  stralloc_copys(&commands.compile, "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) $(DEFS) -c -o $@ $<");
+  set_command(&commands.lib, "$(LIB) /out:$@", "$^");
+  set_command(&commands.link,
               "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(LDFLAGS) $(EXTRA_LDFLAGS) -o $@",
               "$^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
-  set_command(&preprocess_command, "$(CPP) $(CPPFLAGS) $(DEFS) -o$@", "$<");
+  set_command(&commands., "$(CPP) $(CPPFLAGS) $(DEFS) -o$@", "$<");
   // var_push("DEFS", "-DHAVE_ERRNO_H=1");
   /*
    * Visual C++ compiler
@@ -4899,9 +4891,9 @@ set_compiler_type(const char* compiler) {
 
     // var_push("LDFLAGS", "/SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT");
     // var_push("LDFLAGS", "/MANIFEST /manifest:embed2 /MANIFESTUAC:\"level=asInvoker uiAccess=false\"");
-    stralloc_copys(&compile_command, "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) $(DEFS) -c -Fo\"$@\" $<");
-    set_command(&lib_command, "$(LIB) -out:$@", "$^");
-    // stralloc_copys(&lib_command, "$(LIB) /OUT:$@ <<\n\t\t$^\n<<");
+    stralloc_copys(&commands.compile, "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) $(DEFS) -c -Fo\"$@\" $<");
+    set_command(&commands.lib, "$(LIB) -out:$@", "$^");
+    // stralloc_copys(&commands.lib, "$(LIB) /OUT:$@ <<\n\t\t$^\n<<");
     /*
      * Intel C++ compiler
      */
@@ -4917,7 +4909,7 @@ set_compiler_type(const char* compiler) {
         var_push("LDFLAGS", "-libpath:\"$(ROOT)\\compiler\\lib\\intel64\"");
       else
         var_push("LDFLAGS", "-libpath:\"$(ROOT)\\compiler\\lib\"");
-      // stralloc_copys(&compile_command, "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) $(DEFS) -c -Fo $@ $<");
+      // stralloc_copys(&commands.compile, "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) $(DEFS) -c -Fo $@ $<");
     }
     var_push("LDFLAGS", "-libpath:\"$(UNIVERSALCRTSDKDIR)lib\\$(WINDOWSSDKLIBVERSION)ucrt\\$(MACHINE)\"");
     var_push("LDFLAGS", "-libpath:\"$(WINDOWSSDKDIR)lib\\$(WINDOWSSDKLIBVERSION)um\\$(MACHINE)\"");
@@ -4943,7 +4935,7 @@ set_compiler_type(const char* compiler) {
       var_set("MACHINE", "x86");
       var_set("X64", "");
     }
-    set_command(&link_command,
+    set_command(&commands.link,
                 "$(LINK) -out:$@ $(LDFLAGS) $(EXTRA_LDFLAGS) -pdb:\"$@.pdb\"",
                 "$^ $(LIBS) $(EXTRA_LIBS)");
   } else if(str_start(compiler, "gnu") || str_start(compiler, "gcc") || cygming || str_start(compiler, "clang") ||
@@ -4981,10 +4973,10 @@ set_compiler_type(const char* compiler) {
       var_set("CXX", "clang++");
       var_set("AR", "llvm-ar");
     }
-    set_command(&lib_command, "$(AR) rcs $@", "$^");
-    // set_command(&link_command, "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(LDFLAGS) $(EXTRA_LDFLAGS) -o $@", "$^ $(LIBS)
+    set_command(&commands.lib, "$(AR) rcs $@", "$^");
+    // set_command(&commands.link, "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(LDFLAGS) $(EXTRA_LDFLAGS) -o $@", "$^ $(LIBS)
     //$(EXTRA_LIBS)");
-    set_command(&link_command, "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(LDFLAGS) $(EXTRA_LDFLAGS) -o $@", "$^ $(LIBS)");
+    set_command(&commands.link, "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(LDFLAGS) $(EXTRA_LDFLAGS) -o $@", "$^ $(LIBS)");
     exts.bin = "";
     format_linklib_fn = &format_linklib_switch;
     /*
@@ -5017,7 +5009,7 @@ set_compiler_type(const char* compiler) {
          BUILD_TYPE_DEBUG)
           var_push("CFLAGS", "-Or");
       */
-      set_command(&link_command, "$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) -o $@ ", "$^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
+      set_command(&commands.link, "$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) -o $@ ", "$^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
       /* Borland C++ Builder 5.5 */
     } else {
       var_set("CC", "bcc32");
@@ -5033,14 +5025,14 @@ set_compiler_type(const char* compiler) {
         var_push("CFLAGS", "-w-use");
       else
         var_push("CFLAGS", "-r");
-      stralloc_copys(&compile_command, "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) $(DEFS) -c -o$@ $<");
-      set_command(&link_command, "$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) -e$@", "$^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
+      stralloc_copys(&commands.compile, "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) $(DEFS) -c -o$@ $<");
+      set_command(&commands.link, "$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) -e$@", "$^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
     }
     var_set("LINK", "ilink32");
     var_set("LIB", "tlib");
     push_lib("STDC_LIBS", "cw32");
     push_lib("STDC_LIBS", "import32");
-    set_command(&lib_command, "$(LIB) /p256 $@ /u", "$^");
+    set_command(&commands.lib, "$(LIB) /p256 $@ /u", "$^");
     quote_args = "\"";
     pathsep_args = '\\';
     /*
@@ -5068,9 +5060,9 @@ set_compiler_type(const char* compiler) {
       var_push("STDC_LIBS", "libc.lib");
     }
     stralloc_copys(
-        &link_command,
+        &commands.link,
         "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(LDFLAGS) $(EXTRA_LDFLAGS) -o $@ $^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
-    stralloc_copys(&link_command, "$(LINK) $(LDFLAGS) $(EXTRA_LDFLAGS) -o $@ $^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
+    stralloc_copys(&commands.link, "$(LINK) $(LDFLAGS) $(EXTRA_LDFLAGS) -o $@ $^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
     /*
      * Tiny CC compiler
      */
@@ -5087,8 +5079,8 @@ set_compiler_type(const char* compiler) {
       // var_push("LDFLAGS", "-Wl,-file-alignment=16");
       var_push("CFLAGS", "-Wall");
     var_push("CPPFLAGS", "-D__TCC__=1");
-    set_command(&lib_command, "$(AR) r $@", "$^");
-    set_command(&link_command, "$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) -o $@", "$^ $(LIBS) $(EXTRA_LIBS)");
+    set_command(&commands.lib, "$(AR) r $@", "$^");
+    set_command(&commands.link, "$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) -o $@", "$^ $(LIBS) $(EXTRA_LIBS)");
   } else if(str_start(compiler, "occ") || str_start(compiler, "orange")) {
     var_set("CC", "occ");
     var_set("LIB", "olib");
@@ -5107,10 +5099,10 @@ set_compiler_type(const char* compiler) {
     var_push("LDFLAGS", "-T:CON32");
     push_lib("DEFAULT_LIBS", "clwin");
     push_lib("DEFAULT_LIBS", "climp");
-    // stralloc_copys(&compile_command, "$(CC) /! /c $(CFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) $(DEFS) -o$@ \"/I;\" $<");
-    stralloc_copys(&compile_command, "$(CC) /! /c $(CFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) $(DEFS) -o$@ $<");
-    set_command(&lib_command, "$(LIB) /! $@", "$^");
-    set_command(&link_command, "$(LINK) -c /! $(LDFLAGS) $(EXTRA_LDFLAGS) -o$@", "$^ c0xpe.o $(LIBS) $(DEFAULT_LIBS)");
+    // stralloc_copys(&commands.compile, "$(CC) /! /c $(CFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) $(DEFS) -o$@ \"/I;\" $<");
+    stralloc_copys(&commands.compile, "$(CC) /! /c $(CFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) $(DEFS) -o$@ $<");
+    set_command(&commands.lib, "$(LIB) /! $@", "$^");
+    set_command(&commands.link, "$(LINK) -c /! $(LDFLAGS) $(EXTRA_LDFLAGS) -o$@", "$^ c0xpe.o $(LIBS) $(DEFAULT_LIBS)");
   } else if(str_start(compiler, "8cc")) {
     exts.lib = ".a";
     exts.obj = ".o";
@@ -5132,10 +5124,10 @@ set_compiler_type(const char* compiler) {
     } else {
       var_push("CFLAGS", "-o");
     }
-    // set_command(&lib_command, "$(LIB) -c $@", "$^");
-    set_command(&lib_command, "$(LIB) -c $@", "$^");
-    stralloc_copys(&compile_command, "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) $(DEFS) -c -o$@ $<");
-    set_command(&link_command,
+    // set_command(&commands.lib, "$(LIB) -c $@", "$^");
+    set_command(&commands.lib, "$(LIB) -c $@", "$^");
+    stralloc_copys(&commands.compile, "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) $(DEFS) -c -o$@ $<");
+    set_command(&commands.link,
                 "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(LDFLAGS) $(EXTRA_LDFLAGS) -o$@",
                 "$^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
   } else if(str_start(compiler, "pelles") || str_start(compiler, "po")) {
@@ -5180,8 +5172,8 @@ set_compiler_type(const char* compiler) {
       var_push("CFLAGS", "-Zi");
       var_push("LDFLAGS", "-DEBUG");
     }
-    stralloc_copys(&compile_command, "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) $(DEFS) -c $< -Fo$@");
-    stralloc_copys(&link_command, "$(CC) $^ -Fe $@ $(LDFLAGS) $(EXTRA_LDFLAGS) $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
+    stralloc_copys(&commands.compile, "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) $(DEFS) -c $< -Fo$@");
+    stralloc_copys(&commands.link, "$(CC) $^ -Fe $@ $(LDFLAGS) $(EXTRA_LDFLAGS) $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
     pathsep_args = '\\';
     quote_args = "\"";
   } else if(str_start(compiler, "gp")) {
@@ -5229,9 +5221,9 @@ set_compiler_type(const char* compiler) {
         } else {
           var_push("LIBS", "-llibm.lib");
         }*/
-    set_command(&lib_command, "$(LIB) rcs $@", "$^");
-    stralloc_copys(&compile_command, "$(AS) $(CFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) $(DEFS) -c $< -o $@");
-    stralloc_copys(&link_command, "$(LINK) $(LDFLAGS) $(EXTRA_LDFLAGS) -o $@ $^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
+    set_command(&commands.lib, "$(LIB) rcs $@", "$^");
+    stralloc_copys(&commands.compile, "$(AS) $(CFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) $(DEFS) -c $< -o $@");
+    stralloc_copys(&commands.link, "$(LINK) $(LDFLAGS) $(EXTRA_LDFLAGS) -o $@ $^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
   } else if(str_start(compiler, "sdcc")) {
     var_set("CC", "sdcc");
     var_set("LINK", "sdcc");
@@ -5293,10 +5285,10 @@ set_compiler_type(const char* compiler) {
     } else {
       var_push("LIBS", "-llibm.lib");
     }
-    set_command(&lib_command, "$(LIB) rcs $@", "$^");
-    stralloc_copys(&compile_command, "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) $(DEFS) -c $< -o $@");
+    set_command(&commands.lib, "$(LIB) rcs $@", "$^");
+    stralloc_copys(&commands.compile, "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) $(DEFS) -c $< -o $@");
     stralloc_copys(
-        &link_command,
+        &commands.link,
         "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(LDFLAGS) $(EXTRA_LDFLAGS) -o $@ $^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
   } else if(str_start(compiler, "htc")) {
     var_unset("CXX");
@@ -5347,10 +5339,10 @@ set_compiler_type(const char* compiler) {
      * [%n]: %s\"");*/
     var_push("LDFLAGS", "--asmlist");
     // var_push("CPPFLAGS", "-D__$(CHIP)=1");
-    set_command(&lib_command, "$(LIB) $@", "$^");
-    stralloc_copys(&compile_command, "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) $(DEFS) --pass1 -c $< -o$@");
+    set_command(&commands.lib, "$(LIB) $@", "$^");
+    stralloc_copys(&commands.compile, "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) $(DEFS) --pass1 -c $< -o$@");
     stralloc_copys(
-        &link_command,
+        &commands.link,
         "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(LDFLAGS) $(EXTRA_LDFLAGS) -o$@ $^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
   } else if(str_start(compiler, "xc8") || str_start(compiler, "picc")) {
     // no_libs = 1;
@@ -5396,13 +5388,13 @@ set_compiler_type(const char* compiler) {
     %s\""); var_push("CFLAGS",
     "--warnformat=\"%f:%l:%c warning
     [%n]: %s\"");*/
-    stralloc_copys(&preprocess_command, "$(CPP) $(CPPFLAGS) $(DEFS) $< -o$@");
-    stralloc_copys(&compile_command,
+    stralloc_copys(&commands.preprocess, "$(CPP) $(CPPFLAGS) $(DEFS) $< -o$@");
+    stralloc_copys(&commands.compile,
                    "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) $(DEFS) --pass1 -c $< -o$@");
     stralloc_copys(
-        &link_command,
+        &commands.link,
         "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(LDFLAGS) $(EXTRA_LDFLAGS) -o$@ $^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
-    stralloc_copys(&lib_command,
+    stralloc_copys(&commands.lib,
                    "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(LDFLAGS) $(EXTRA_LDFLAGS) --OUTPUT=lpp --memorysummary -G "
                    "-m$@.map -P --asmlist --output=default,-inhx032 --output=-mcof,+elf:multilocs -o$@.elf $^ $(LIBS) "
                    "$(EXTRA_LIBS) $(STDC_LIBS)");
@@ -5450,9 +5442,9 @@ set_compiler_type(const char* compiler) {
     }
   }
   if(var_isset("CROSS_COMPILE")) {
-    stralloc_prepends(&compile_command, "$(CROSS_COMPILE)");
-    stralloc_prepends(&lib_command, "$(CROSS_COMPILE)");
-    stralloc_prepends(&link_command, "$(CROSS_COMPILE)");
+    stralloc_prepends(&commands.compile, "$(CROSS_COMPILE)");
+    stralloc_prepends(&commands.lib, "$(CROSS_COMPILE)");
+    stralloc_prepends(&commands.link, "$(CROSS_COMPILE)");
   }
   return 1;
 }
@@ -5888,7 +5880,7 @@ main(int argc, char* argv[]) {
     if(var_isset("AR"))
       stralloc_prepends(&var_list("AR")->value.sa, "$(CROSS_COMPILE)");
   }
-  batchmode = batch && stralloc_contains(&compile_command, "-Fo");
+  batchmode = batch && stralloc_contains(&commands.compile, "-Fo");
   if(batch)
     pathsep_args = pathsep_make;
   strarray_foreach(&libs, it) { with_lib(*it); }
@@ -6049,7 +6041,7 @@ main(int argc, char* argv[]) {
   if(str_equal(exts.src, ".asm")) {
     target* assemble = rule_get(".asm.o");
 
-    stralloc_copy(&assemble->recipe, &compile_command);
+    stralloc_copy(&assemble->recipe, &commands.compile);
   }
 
   strarray_init(&args);
@@ -6075,7 +6067,7 @@ main(int argc, char* argv[]) {
     }
   }
   if(compile)
-    stralloc_weak(&compile->recipe, &compile_command);
+    stralloc_weak(&compile->recipe, &commands.compile);
 
   if(compile) {
     strlist_nul(&dirs.work);
@@ -6313,14 +6305,10 @@ main(int argc, char* argv[]) {
       MAP_FOREACH(sourcedirs, t) {
         sourcedir* srcdir = *(sourcedir**)MAP_ITER_VALUE(t);
         /*if(tools.preproc) {
-          gen_simple_compile_rules(rules,
-        srcdir, MAP_ITER_KEY(t), exts.src,
-        exts.pps, &preprocess_command);
-          gen_simple_compile_rules(rules,
-        srcdir, MAP_ITER_KEY(t), exts.pps,
-        exts.obj, &compile_command); }
+          gen_simple_compile_rules(rules, srcdir, MAP_ITER_KEY(t), exts.src, exts.pps, &commands.preprocess);
+          gen_simple_compile_rules(rules, srcdir, MAP_ITER_KEY(t), exts.pps, exts.obj, &commands.compile); }
         else */
-        { gen_simple_compile_rules(srcdir, MAP_ITER_KEY(t), exts.src, exts.obj, &compile_command); }
+        { gen_simple_compile_rules(srcdir, MAP_ITER_KEY(t), exts.src, exts.obj, &commands.compile); }
       }
     }
     if(cmd_bins) {
@@ -6349,7 +6337,7 @@ main(int argc, char* argv[]) {
       MAP_PAIR_T t;
       MAP_FOREACH(rules, t) {
         target* tgt = MAP_ITER_VALUE(t);
-        if(stralloc_equal(&tgt->recipe, &lib_command) && cmd_libs)
+        if(stralloc_equal(&tgt->recipe, &commands.lib) && cmd_libs)
           set_adds(&all->prereq, MAP_ITER_KEY(t));
       }
     }
@@ -6455,9 +6443,9 @@ fail:
   }
 
   if(ninja) {
-    output_build_rules(out, "cc", &compile_command);
-    output_build_rules(out, "link", &link_command);
-    output_build_rules(out, "lib", &lib_command);
+    output_build_rules(out, "cc", &commands.compile);
+    output_build_rules(out, "link", &commands.link);
+    output_build_rules(out, "lib", &commands.lib);
     put_newline(out, 0);
   }
 
@@ -6471,7 +6459,7 @@ fail:
       if(str_end(name, exts.obj)) {
 
         if(!str_end(tools.make, "make"))
-          stralloc_weak(&rule->recipe, &compile_command);
+          stralloc_weak(&rule->recipe, &commands.compile);
       }
 
 #if DEBUG_OUTPUT_
