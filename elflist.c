@@ -33,7 +33,7 @@ hex64(buffer* b, uint64 num, int pad) {
   return 0;
 }
 
-static int list_defined, list_undefined, print_offset_rva, print_rva_offset;
+static bool list_defined, list_undefined, list_needed, print_offset_rva, print_rva_offset;
 static const char* filename;
 typedef int put64_function(buffer*, uint64, int);
 typedef int putstr_function(buffer*, const char*, size_t);
@@ -184,6 +184,48 @@ elf_dump_dynamic(range map) {
     }
     buffer_putnlflush(buffer_1);
 
+    if(tag == ELF_DT_NULL)
+      break;
+  }
+}
+
+/**
+ * @brief elf_dump_needed  Dumps all
+ * ELF dynamic entries
+ * @param map               Pointer
+ * range of the loaded ELF file
+ */
+void
+elf_dump_needed(buffer* b, range map) {
+  void* entry;
+  int di = elf_section_find(map.start, ".dynamic");
+  range dyn;
+  const char* dynstrtab = NULL;
+
+  if(di == -1)
+    return;
+
+  dyn = elf_dynamic_section(map.start);
+
+  range_foreach(&dyn, entry) {
+    int64 tag = ELF_GET(map.start, entry, dyn, d_tag);
+    uint64 val = ELF_GET(map.start, entry, dyn, d_un.d_val);
+    if(tag == ELF_DT_STRTAB) {
+      dynstrtab = map.start + val;
+      RANGE_CHECK(dynstrtab);
+      break;
+    }
+  }
+
+  range_foreach(&dyn, entry) {
+    int64 tag = ELF_GET(map.start, entry, dyn, d_tag);
+    uint64 val = ELF_GET(map.start, entry, dyn, d_un.d_val);
+
+    if(tag == ELF_DT_NEEDED) {
+      const char* value = (const char*)&dynstrtab[val];
+      buffer_puts(b, value ? value : "(null)");
+      buffer_putnlflush(b);
+    }
     if(tag == ELF_DT_NULL)
       break;
   }
@@ -475,7 +517,8 @@ usage(char* av0) {
                        "  -F, --file-header       Dump file header\n",
                        "  -S, --sections          Dump sections\n",
                        "  -o, --offset-rva        Print RVA of given offset\n",
-                       "  -a, --rva-offset        Print offset of given RVA\n\n",
+                       "  -a, --rva-offset        Print offset of given RVA\n",
+                       "  -n, --needed            Print needed libraries\n\n",
                        NULL);
   buffer_flush(buffer_1);
 }
@@ -485,8 +528,7 @@ main(int argc, char** argv) {
   static range map;
   size_t filesize;
   static bool dump_file_header = false, dump_sections = false;
-
-  int c, index = 0;
+  int i, c, index = 0;
 
   struct unix_longopt opts[] = {
       {"help", 0, NULL, 'h'},
@@ -497,12 +539,13 @@ main(int argc, char** argv) {
       {"radix", 1, 0, 'r'},
       {"offset-rva", 0, NULL, 'o'},
       {"rva-offset", 0, NULL, 'a'},
+      {"needed", 0, &list_needed, 'n'},
       {0, 0, 0, 0},
   };
   strlist_init(&flaglist, '|');
 
   for(;;) {
-    c = unix_getopt_long(argc, argv, "hDUFSr:o:a:", opts, &index);
+    c = unix_getopt_long(argc, argv, "hDUFSr:o:a:n", opts, &index);
     if(c == -1)
       break;
     if(c == '\0')
@@ -510,8 +553,9 @@ main(int argc, char** argv) {
 
     switch(c) {
       case 'h': usage(argv[0]); return 0;
-      case 'D': list_defined = 1; break;
-      case 'U': list_undefined = 1; break;
+      case 'n': list_needed = true; break;
+      case 'D': list_defined = true; break;
+      case 'U': list_undefined = true; break;
       case 'F': dump_file_header = true; break;
       case 'S': dump_sections = true; break;
       case 'r': radix = atoi(unix_optarg); break;
@@ -535,11 +579,15 @@ main(int argc, char** argv) {
   if(radix == 10)
     putnum = &buffer_putulonglongpad;
 
-  for(; argv[unix_optind]; ++unix_optind) {
+  for(i = unix_optind; argv[i]; ++i) {
     const char* interp;
     range symtab, text;
 
-    filename = argv[unix_optind];
+    filename = argv[i];
+    if(argc - unix_optind >= 2) {
+      buffer_putm_internal(buffer_2, filename, ":", 0);
+      buffer_putnlflush(buffer_2);
+    }
 
     map.start = (char*)mmap_read(filename, &filesize);
 
@@ -569,6 +617,11 @@ main(int argc, char** argv) {
 
       putnum(buffer_1, offset, offset > 0xffffffff ? 18 : 10);
       buffer_putnlflush(buffer_1);
+      continue;
+    }
+
+    if(list_needed) {
+      elf_dump_needed(buffer_1, map);
       continue;
     }
 

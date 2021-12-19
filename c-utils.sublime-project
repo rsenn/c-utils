@@ -53,7 +53,7 @@
     }
   ],
   "settings": {
-    "debug.configurations": [],
+    /*"debug.configurations": [],*/
     "sublimegdb_commandline": "gdb --interpreter=mi ${file}",
     "sublimegdb_exec_cmd": "-exec-run",
     "sublimegdb_i_know_how_to_use_gdb_thank_you_very_much": true,
@@ -62,5 +62,5 @@
   },
   "debugger_configurations":
   [
-	],
+  ],
 }
