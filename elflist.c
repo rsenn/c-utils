@@ -33,7 +33,8 @@ hex64(buffer* b, uint64 num, int pad) {
   return 0;
 }
 
-static bool list_defined, list_undefined, list_needed, print_offset_rva, print_rva_offset;
+static int list_defined, list_undefined, list_needed;
+static int print_offset_rva, print_rva_offset;
 static const char* filename;
 typedef int put64_function(buffer*, uint64, int);
 typedef int putstr_function(buffer*, const char*, size_t);
@@ -149,10 +150,11 @@ elf_dump_dynamic(range map) {
     uint64 val = ELF_GET(map.start, entry, dyn, d_un.d_val);
 
     if(tag == ELF_DT_STRTAB) {
+#ifdef DEBUG_OUTPUT_
       buffer_puts(buffer_2, "ELF_DT_STRTAB:\n");
       putnum(buffer_2, val, col_width);
       buffer_putnlflush(buffer_2);
-      //   buffer_puts(buffer_2, elf_)
+#endif
 
       dynstrtab = map.start + val;
 
@@ -527,7 +529,7 @@ int
 main(int argc, char** argv) {
   static range map;
   size_t filesize;
-  static bool dump_file_header = false, dump_sections = false;
+  static int dump_file_header = false, dump_sections = false, dump_segments = false;
   int i, c, index = 0;
 
   struct unix_longopt opts[] = {
@@ -535,7 +537,8 @@ main(int argc, char** argv) {
       {"defined", 0, &list_defined, 'D'},
       {"undefined", 0, &list_undefined, 'U'},
       {"file-header", 0, 0, 'F'},
-      {"sections", 0, 0, 'S'},
+      {"sections", 0, &dump_sections, 'S'},
+      {"segments", 0, &dump_segments, 'l'},
       {"radix", 1, 0, 'r'},
       {"offset-rva", 0, NULL, 'o'},
       {"rva-offset", 0, NULL, 'a'},
@@ -545,22 +548,36 @@ main(int argc, char** argv) {
   strlist_init(&flaglist, '|');
 
   for(;;) {
-    c = unix_getopt_long(argc, argv, "hDUFSr:o:a:n", opts, &index);
+    c = unix_getopt_long(argc, argv, "hDUFSlr:o:a:n", opts, &index);
     if(c == -1)
       break;
     if(c == '\0')
       continue;
 
     switch(c) {
-      case 'h': usage(argv[0]); return 0;
+      case 'h': {
+        usage(argv[0]);
+        return 0;
+      }
       case 'n': list_needed = true; break;
       case 'D': list_defined = true; break;
       case 'U': list_undefined = true; break;
       case 'F': dump_file_header = true; break;
       case 'S': dump_sections = true; break;
-      case 'r': radix = atoi(unix_optarg); break;
-      case 'o': print_offset_rva = parse_offset(unix_optarg, &offset); break;
-      case 'a': print_rva_offset = parse_offset(unix_optarg, &rva); break;
+      case 'l': dump_segments = true; break;
+      case 'r': {
+        radix = atoi(unix_optarg);
+        break;
+      }
+      case 'o': {
+        print_offset_rva = parse_offset(unix_optarg, &offset);
+        break;
+      }
+      case 'a': {
+        print_rva_offset = parse_offset(unix_optarg, &rva);
+        break;
+      }
+
       default: {
         usage(argv[0]);
         return 1;
@@ -632,7 +649,8 @@ main(int argc, char** argv) {
 
     if(dump_sections)
       elf_dump_sections(map);
-    elf_dump_segments(map);
+    if(dump_segments)
+      elf_dump_segments(map);
     elf_dump_dynamic(map);
 
     if(interp) {

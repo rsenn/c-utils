@@ -5436,8 +5436,9 @@ set_compiler_type(const char* compiler) {
       // cross->sep = '-';
       stralloc_cats(&cross->value.sa, str_start(tools.toolchain, "mingw") ? "-w64-" : "-pc-");
       stralloc_cats(&cross->value.sa,
-                    str_start(tools.toolchain, "mingw") ? "mingw32"
-                                                        : str_start(tools.toolchain, "msys") ? "msys" : "cygwin");
+                    str_start(tools.toolchain, "mingw")  ? "mingw32"
+                    : str_start(tools.toolchain, "msys") ? "msys"
+                                                         : "cygwin");
       stralloc_catc(&cross->value.sa, '-');
     }
   }
