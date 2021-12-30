@@ -7,7 +7,7 @@
 #include <openssl/err.h>
 
 void
-tls_instance_debug(tls_instance* i) {
+tls_instance_debug(tls_instance_t* i) {
   int server, init;
   assert(i);
   assert(i->ssl);

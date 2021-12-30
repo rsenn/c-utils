@@ -42,7 +42,7 @@ int tls_verify(int ok, tls_cert_t* cert);
 int tls_want(fd_t fd, void (*wantread)(fd_t), void (*wantwrite)(fd_t));
 ssize_t tls_write(fd_t fd, const void* data, size_t len);
 
-#define tls_instance(fd) tls_instance_get((fd))
+#define tls_instance_t(fd) tls_instance_get((fd))
 #define is_tls(fd) !!tls_instance_get((fd))
 
 //#define tls_error(fd) (tls_instance_get((fd))->error)

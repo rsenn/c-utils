@@ -9,7 +9,7 @@
 int
 tls_established(fd_t fd) {
   int ret;
-  tls_instance* i = iarray_get(&tls_list, fd);
+  tls_instance_t* i = iarray_get(&tls_list, fd);
   assert(i);
   assert(i->ssl);
 
