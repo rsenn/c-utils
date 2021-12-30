@@ -14,7 +14,7 @@
 ssize_t
 tls_read(fd_t fd, void* data, size_t len) {
   int64 ret;
-  tls_instance* i = iarray_get(&tls_list, fd);
+  tls_instance_t* i = iarray_get(&tls_list, fd);
   assert(i);
   assert(i->ssl);
 

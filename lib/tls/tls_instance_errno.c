@@ -3,7 +3,7 @@
 
 #ifdef HAVE_OPENSSL
 int
-tls_instance_errno(tls_instance* i) {
+tls_instance_errno(tls_instance_t* i) {
   int ret;
   switch(i->error) {
     case SSL_ERROR_WANT_WRITE: ret = EWOULDBLOCK; break;

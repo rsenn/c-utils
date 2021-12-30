@@ -1,7 +1,7 @@
 if(USE_BZIP)
   message(CHECK_START "Checking for bzip2 library")
 
-  pkg_search_module(BZIP2 libbz2 bzip2 QUIET)
+  pkg_check_modules(BZIP2 QUIET libbz2 bzip2)
   if(NOT BZIP2_FOUND OR "${BZIP2_FOUND}" STREQUAL "")
 
     find_library(BZIP2_LIBRARY NAMES bz2)
