@@ -13,6 +13,7 @@
 #include "lib/mmap.h"
 #include "lib/ucs.h"
 #include "lib/case.h"
+#include "lib/bool.h"
 
 #include <ctype.h>
 #include <errno.h>
@@ -66,10 +67,14 @@ read_line(char* s, size_t len, strlist* fields) {
   int quoted = 0;
   size_t n, i = 0;
   char tokbuf[65536];
+  bool comma_space;
+
   (void)fields;
 
   if((n = byte_finds(p + 1, end - p - 1, "\"X\":[")) != (unsigned)(end - p))
     end = p + 1 + n;
+
+  comma_space = byte_finds(p, n, "\", \"") < n;
 
   while(p < end && *p != '"')
     ++p;
@@ -81,7 +86,7 @@ read_line(char* s, size_t len, strlist* fields) {
   }
 
   strlist_zero(fields);
-  strlist_fromb(fields, p, end - p, "\", \"");
+  strlist_fromb(fields, p, end - p, comma_space ? "\", \"" : "\",\"");
 
   for(; p < end; ++p) {
     if(*p == '\\') {
@@ -230,7 +235,7 @@ cleanup_domain(stralloc* d) {
 int
 process_entry(char** av, int ac) {
 
-  if(!str_start(av[0], "\"X"))
+  if(!str_start(av[0], "\"X") && !str_start(av[0], "["))
     return 0;
 
   while(ac > 6 && !(av[4] && str_len(av[4]) == 10 && av[6] && str_len(av[6]) == 8)) {
@@ -461,6 +466,33 @@ output_curl_entry(const char* sender,
   buffer_putnlflush(&output_buf);
 }
 
+ssize_t
+get_line(buffer* input, stralloc* sa) {
+  bool done = false;
+  stralloc_zero(sa);
+
+  while(!done) {
+    if(buffer_get_token_sa(input, sa, "]", 1) <= 0)
+      break;
+
+    if(buffer_prefetch(input, 6) < 6)
+      break;
+
+    done = byte_equal(&input->x[input->p], 5, ",\"X\":");
+
+    if(!done)
+      done = byte_equal(&input->x[input->p], 6, ",\n\"X\":");
+
+    stralloc_append(sa, &input->x[input->p]);
+    buffer_skipc(input);
+
+    if(input->x[input->p] == '\n')
+      buffer_skipc(input);
+  }
+
+  return sa->len;
+}
+
 /**
  * @brief process_input
  * @param input
@@ -478,7 +510,7 @@ process_input(buffer* input) {
   if(csv == 0 && output_format == M3U)
     buffer_puts(&output_buf, "#EXTM3U\r\n");
 
-  for(stralloc_init(&sa); buffer_getline_sa(input, &sa); stralloc_zero(&sa)) {
+  for(stralloc_init(&sa); get_line(input, &sa); stralloc_zero(&sa)) {
     ++line;
 
     strlist_init(&fields, '\0');
@@ -521,18 +553,12 @@ usage(const char* argv0) {
                        argv0,
                        "[OPTIONS] <file>\n",
                        "\n",
-                       "  -h, --help                  "
-                       "Show this help\n",
-                       "  -c, --csv                   "
-                       "Output as CSV\n",
-                       "  -d, --debug                 "
-                       "Debug mode\n",
-                       "  -l, --low                   "
-                       "Low quality\n",
-                       "  -o, --output FILE           "
-                       "Output file\n",
-                       "  -F, --format FMT            "
-                       "Output format\n",
+                       "  -h, --help                  Show this help\n",
+                       "  -c, --csv                   Output as CSV\n",
+                       "  -d, --debug                 Debug mode\n",
+                       "  -l, --low                   Low quality\n",
+                       "  -o, --output FILE           Output file\n",
+                       "  -F, --format FMT            Output format\n",
                        "\n",
                        "Valid formats:\n",
                        "  wget, curl, m3u\n",

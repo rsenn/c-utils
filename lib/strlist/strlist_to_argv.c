@@ -6,13 +6,17 @@ char**
 strlist_to_argv(const strlist* sl) {
   size_t i = 0, n = strlist_count(sl);
   char** v = (char**)alloc((n + 1) * sizeof(char*) + sl->sa.len + 1);
-  char *s, *p = (char*)&v[n + 1];
+  char *s = sl->sa.s, *p = (char*)&v[n + 1];
+  char* end = s + sl->sa.len;
 
-  strlist_foreach(sl, s, n) {
-    byte_copy(p, n, s);
-    p[n] = '\0';
+  while(s < end) {
+    size_t len = byte_chr(s, end - s, sl->sep);
+    byte_copy(p, len, s);
+    p[len] = '\0';
     v[i++] = p;
-    p += n + 1;
+    ++len;
+    p += len;
+    s += len;
   }
   v[i] = NULL;
   return v;
