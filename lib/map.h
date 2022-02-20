@@ -178,7 +178,7 @@ typedef TUPLE* MAP_ITER_T;
 #define MAP_ITER_KEY(iter) ((const char*)((iter)->key))
 #define MAP_ITER_KEY_LEN(iter) ((iter)->key_len)
 #define MAP_ITER_VALUE(iter) ((void*)((iter)->vals.val_chars))
-#define MAP_ITER_VALUE_LEN(iter) ((void*)((iter)->data_len))
+#define MAP_ITER_VALUE_LEN(iter) ((size_t)((iter)->data_len))
 #define MAP_KEY MAP_ITER_KEY
 #define MAP_KEY_LEN MAP_ITER_KEY_LEN
 #define MAP_VALUE MAP_ITER_VALUE
