@@ -179,9 +179,11 @@ mounts_match(MAP_T map, const char* path, size_t pathlen, size_t* matchlen, int 
 #ifdef DEBUG_OUTPUT
     buffer_putm_internal(buffer_2, "mounts_match(map, ", 0);
     buffer_put(buffer_2, path, pathlen);
-    buffer_putm_internal(buffer_2, "\") device: ", c.dev.s ? c.dev.s : "(null)", " ", 0);
-    buffer_putm_internal(buffer_2, "mountpoint: ", c.mnt.s ? c.mnt.s : "(null)", "\n", 0);
-    buffer_flush(buffer_2);
+    buffer_puts(buffer_2, "\") device: ");
+    buffer_put(buffer_2, c.dev.s, c.dev.n);
+    buffer_puts(buffer_2, " mountpoint: ");
+    buffer_put(buffer_2, c.mnt.s, c.mnt.n);
+    buffer_putnlflush(buffer_2);
 #endif
 
     if(c.a[!!col].n <= pathlen && !path_diffb(path, c.a[!!col].n, c.a[!!col].s) &&
