@@ -121,7 +121,7 @@ typedef struct {
   size_t n;
 } blob_t;
 
-int
+static int
 mounts_read(MAP_T map) {
   buffer in;
   stralloc line;
@@ -154,8 +154,8 @@ mounts_read(MAP_T map) {
 
     MAP_INSERT(map, dev.s, dev.n + 1, mnt.s, mnt.n + 1);
 
-#ifdef DEBUG_OUTPUT
-    buffer_putm_internal(buffer_2, "mounts_read() dev.sice: ", dev.s ? dev.s : "(null)", " ", 0);
+#ifdef DEBUG_OUTPUT_
+    buffer_putm_internal(buffer_2, "mounts_read() device: ", dev.s ? dev.s : "(null)", " ", 0);
     buffer_putm_internal(buffer_2, "mountpoint: ", mnt.s ? mnt.s : "(null)", "\n", 0);
     buffer_flush(buffer_2);
 #endif
