@@ -309,6 +309,12 @@ pathtool(const char* arg, stralloc* sa) {
 
     mounts_replace(mtab, &msys, 1, true);
 
+#ifdef DEBUG_OUTPUT
+    buffer_puts(buffer_2, "msys root: ");
+    buffer_putsa(buffer_2, &msys);
+    buffer_putnlflush(buffer_2);
+#endif
+
     stralloc_cats(&msys, arg);
     stralloc_nul(&msys);
 
