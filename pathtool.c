@@ -319,7 +319,7 @@ pathtool(const char* arg, stralloc* sa) {
 
 #ifdef DEBUG_OUTPUT
   buffer_putm_internal(buffer_2, "strlist path = ", 0);
-  buffer_putsl(buffer_2, &path);
+  buffer_putsl(buffer_2, &path, " / ");
   buffer_putnlflush(buffer_2);
 #endif
 
