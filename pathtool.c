@@ -42,6 +42,7 @@ static stralloc mingw, msys;
 static MAP_T mtab;
 
 #define tolower(c) ((c) >= 'A' && (c) <= 'Z' ? (c) + 0x20 : (c))
+#define toupper(c) ((c) >= 'a' && (c) <= 'z' ? (c)-0x20 : (c))
 #define toslash(c) ((c) == '\\' ? '/' : (c))
 
 int
@@ -151,7 +152,7 @@ mounts_read(MAP_T map) {
       blob_t tmp = {mnt.s, mnt.n};
       mnt = dev;
 
-      tmp.s[0] = tmp.s[10];
+      tmp.s[0] = toupper(tmp.s[10]);
       tmp.s[1] = ':';
       tmp.s[2] = '\0';
       tmp.n = 2;
