@@ -205,9 +205,25 @@ mounts_replace(MAP_T map, stralloc* sa, int col) {
   size_t len;
 
   if((mount = mounts_match(mtab, sa->s, sa->len, &len, col))) {
-    size_t mountlen = str_len(mount);
 
-    stralloc_replace(sa, 0, len, mount, mountlen);
+#ifdef DEBUG_OUTPUT
+    buffer_puts(buffer_2, "found mount: ");
+    buffer_puts(buffer_2, mount);
+    buffer_putnlflush(buffer_2);
+#endif
+#ifdef DEBUG_OUTPUT
+    buffer_puts(buffer_2, "before replace: ");
+    buffer_putsa(buffer_2, sa);
+    buffer_putnlflush(buffer_2);
+#endif
+
+    stralloc_replace(sa, 0, len, mount, str_len(mount));
+
+#ifdef DEBUG_OUTPUT
+    buffer_puts(buffer_2, "after replace: ");
+    buffer_putsa(buffer_2, sa);
+    buffer_putnlflush(buffer_2);
+#endif
   }
   return mount;
 }
@@ -329,32 +345,8 @@ pathtool(const char* arg, stralloc* sa) {
 #endif
 
 #if defined(__MINGW32__) || defined(__MSYS__)
-  {
-    const char* mount;
-    size_t len;
+  mounts_replace(mtab, sa, 0);
 
-    if((mount = mounts_match(mtab, sa->s, sa->len, &len, 0))) {
-      size_t mountlen = str_len(mount);
-#ifdef DEBUG_OUTPUT
-      buffer_puts(buffer_2, "before replaced: ");
-      buffer_putsa(buffer_2, sa);
-      buffer_putnlflush(buffer_2);
-#endif
-
-      stralloc_replace(sa, 0, len, mount, mountlen);
-
-#ifdef DEBUG_OUTPUT
-      buffer_puts(buffer_2, "found mount: ");
-      buffer_puts(buffer_2, mount);
-      buffer_putnlflush(buffer_2);
-#endif
-#ifdef DEBUG_OUTPUT
-      buffer_puts(buffer_2, "after replaced: ");
-      buffer_putsa(buffer_2, sa);
-      buffer_putnlflush(buffer_2);
-#endif
-    }
-  }
 #endif
 
   strlist_init(&path, relative_to.sa.s ? PATHSEP_C : separator[0]);
