@@ -7,6 +7,7 @@
 #include "lib/windoze.h"
 #include "lib/str.h"
 #include "lib/byte.h"
+#include "lib/case.h"
 #include "lib/array.h"
 #include <ctype.h>
 #include <string.h>
@@ -110,7 +111,7 @@ mounts_read(MAP_T map) {
 
     stralloc_nul(&line);
     dev = line.s;
-    dlen = byte_chr(dev, line.len, ' ');
+    dlen = str_find(dev, " /"); //byte_chr(dev, line.len, ' ');
     dev[dlen] = '\0';
     mnt = dev + dlen + 1;
 
@@ -153,7 +154,7 @@ mounts_match(MAP_T map, const char* path, size_t pathlen) {
     buffer_flush(buffer_2);
 #endif
 
-    if(dlen <= pathlen && str_startb(path, dev, dlen) &&
+    if(dlen <= pathlen && !case_diffb(path, dlen, dev) &&
        (dlen == pathlen || (dlen < pathlen && path_issep(path[dlen])))) {
       if(mlen > rlen) {
         ret = mnt;
