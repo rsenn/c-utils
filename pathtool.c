@@ -8,6 +8,7 @@
 #include "lib/str.h"
 #include "lib/byte.h"
 #include "lib/array.h"
+#include "lib/bool.h"
 #include <string.h>
 
 #define MAP_USE_HMAP 1
