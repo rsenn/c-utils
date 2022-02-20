@@ -9,6 +9,7 @@
 #include "lib/byte.h"
 #include "lib/array.h"
 #include "lib/bool.h"
+#include "debug.h"
 #include <string.h>
 
 #define MAP_USE_HMAP 1
@@ -85,7 +86,7 @@ strlist_from_path(strlist* sl, const char* p) {
 #define HAVE_CYGWIN_CONV_PATH 1
 #endif
 
-#if 1 // def HAVE_CYGWIN_CONV_PATH
+#ifdef HAVE_CYGWIN_CONV_PATH
 #define cygwin_conv_to_win32_path(from, to) cygwin_conv_path(CCP_POSIX_TO_WIN_A, (from), (to), MAX_PATH)
 #define cygwin_conv_to_posix_path(from, to) cygwin_conv_path(CCP_WIN_A_TO_POSIX, (from), (to), MAX_PATH)
 #endif
@@ -219,26 +220,20 @@ mounts_replace(MAP_T map, stralloc* sa, int col, bool first) {
   const char* mount;
   size_t len;
 
-#if 1 // def DEBUG_OUTPUT
-  buffer_puts(buffer_2, "before replace: ");
-  buffer_putsa(buffer_2, sa);
-  buffer_putnlflush(buffer_2);
+#ifdef DEBUG_OUTPUT
+  debug_sa("before replace: ", sa);
 #endif
 
   if((mount = mounts_match(mtab, sa->s, sa->len, &len, col, first))) {
 
-#if 1 // def DEBUG_OUTPUT
-    buffer_puts(buffer_2, "found mount: ");
-    buffer_puts(buffer_2, mount);
-    buffer_putnlflush(buffer_2);
+#ifdef DEBUG_OUTPUT
+    debug_str("found mount: ", mount);
 #endif
 
     stralloc_replace(sa, 0, len, mount, str_len(mount));
 
-#if 1 // def DEBUG_OUTPUT
-    buffer_puts(buffer_2, "after replace: ");
-    buffer_putsa(buffer_2, sa);
-    buffer_putnlflush(buffer_2);
+#ifdef DEBUG_OUTPUT
+    debug_sa("after replace: ", sa);
 #endif
   }
   return mount;
