@@ -143,7 +143,7 @@ mounts_read(MAP_T map) {
     mnt[mlen] = '\0';
     MAP_INSERT(map, dev, dlen + 1, mnt, mlen + 1);
 
-#ifdef DEBUG_OUTPUT
+#ifdef DEBUG_OUTPUT_
     buffer_putm_internal(buffer_2, "mounts_read() device: ", dev ? dev : "(null)", " ", 0);
     buffer_putm_internal(buffer_2, "mountpoint: ", mnt ? mnt : "(null)", "\n", 0);
     buffer_flush(buffer_2);
@@ -167,7 +167,7 @@ mounts_match(MAP_T map, const char* path, size_t pathlen, size_t* matchlen) {
     mnt = MAP_ITER_VALUE(t);
     mlen = str_len(mnt);
 
-#ifdef DEBUG_OUTPUT
+#ifdef DEBUG_OUTPUT_
     buffer_putm_internal(buffer_2, "mounts_match(map, ", 0);
     buffer_put(buffer_2, path, pathlen);
     buffer_putm_internal(buffer_2, "\") device: ", dev ? dev : "(null)", " ", 0);
