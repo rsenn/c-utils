@@ -245,7 +245,7 @@ mounts_replace(MAP_T map, stralloc* sa, int col, bool first) {
 
 static void
 mounts_add(MAP_T map, const char* dev, const char* mnt) {
-  MAP_INSERT(map, dev, str_len(dev) + 1, mnt, str_len(mnt) + 1);
+  MAP_INSERT(map, dev, str_len(dev) + 1, (void*)mnt, str_len(mnt) + 1);
 }
 
 #if defined(__MINGW32__) || defined(__MSYS__)
