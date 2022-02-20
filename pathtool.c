@@ -200,11 +200,11 @@ mounts_match(MAP_T map, const char* path, size_t pathlen, size_t* matchlen, int 
 #endif
 
     if(matched) {
-      if(replacement->n > ret.n) {
+      if(cols[1].n > ret.n) {
         if(matchlen)
           *matchlen = search->n;
         ret.s = replacement->s;
-        ret.n = replacement->n;
+        ret.n = cols[1].n;
 
         if(first)
           break;
