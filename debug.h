@@ -11,13 +11,20 @@ void debug_str(const char*, const char*);
 #ifdef STRALLOC_H
 void debug_sa(const char*, stralloc*);
 #endif
-#ifdef SET_H
-void debug_set(const char*, const set_t*, const char*);
-#endif
-#ifdef STRLIST_H
 
+#ifdef SET_H
+static inline void
+debug_set(const char* name, const set_t* s, const char* sep) {
+  buffer_putm_internal(buffer_2, name, ": ", NULL);
+  buffer_putset(buffer_2, s, sep, str_len(sep));
+  buffer_putsflush(buffer_2, debug_nl);
+}
+#endif
+
+#ifdef STRLIST_H
 void debug_sl(const char* name, const strlist* l, const char* sep);
 #endif
+
 #ifdef STRARRAY_H
 void debug_strarray(const char*, const strarray*);
 #endif
