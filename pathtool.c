@@ -220,19 +220,19 @@ mounts_replace(MAP_T map, stralloc* sa, int col, bool first) {
   const char* mount;
   size_t len;
 
-#ifdef DEBUG_OUTPUT
+#if 1 // def DEBUG_OUTPUT
   debug_sa("before replace: ", sa);
 #endif
 
   if((mount = mounts_match(mtab, sa->s, sa->len, &len, col, first))) {
 
-#ifdef DEBUG_OUTPUT
+#if 1 // def DEBUG_OUTPUT
     debug_str("found mount: ", mount);
 #endif
 
     stralloc_replace(sa, 0, len, mount, str_len(mount));
 
-#ifdef DEBUG_OUTPUT
+#if 1 // def DEBUG_OUTPUT
     debug_sa("after replace: ", sa);
 #endif
   }
