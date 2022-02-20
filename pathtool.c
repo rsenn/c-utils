@@ -196,7 +196,7 @@ mounts_match(MAP_T map, const char* path, size_t pathlen, size_t* matchlen, int 
     bool matched = search->n >= ret.n && search->n <= pathlen && !path_diffb(path, search->n, search->s) &&
                    (search->n == pathlen || (search->n < pathlen && path_issep(path[search->n])));
 
-#if 1 // def DEBUG_OUTPUT
+#ifdef DEBUG_OUTPUT
     buffer_putulong(buffer_2, matched);
     buffer_puts(buffer_2, " mounts_match(map, ");
     buffer_put(buffer_2, path, pathlen);
