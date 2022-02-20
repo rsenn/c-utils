@@ -167,21 +167,24 @@ mounts_match(MAP_T map, const char* path, size_t pathlen) {
 #if defined(__MINGW32__) || defined(__MSYS__)
 static int
 msys_root(stralloc* sa) {
+  int ret=0;
   const char* s;
   stralloc_zero(sa);
   if((s = getenv("MSYS_PREFIX"))) {
     path_dirname(s, sa);
-    return 1;
+    ret= 1;
   }
 #ifdef __MSYS__
-  if((s = getenv("MSYSTEM_PREFIX"))) {
+   else if((s = getenv("MSYSTEM_PREFIX"))) {
     stralloc_ready(sa, PATH_MAX + 1);
     cygwin_conv_to_win32_path(s, sa->s);
     sa->len = str_len(sa->s);
-    return 1;
+    ret= 1;
   }
 #endif
-  return 0;
+  if(ret)
+    stralloc_replacec(sa, '\\', '/');
+  return ret;
 }
 
 static int
@@ -233,7 +236,7 @@ pathtool(const char* arg, stralloc* sa) {
     buffer_puts(buffer_2, arg);
     buffer_putnlflush(buffer_2);
 #endif
-    
+
   if(absolute) {
     path_absolute(arg, sa);
     stralloc_nul(sa);
