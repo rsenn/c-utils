@@ -219,7 +219,7 @@ mounts_replace(MAP_T map, stralloc* sa, int col, bool first) {
   const char* mount;
   size_t len;
 
-#ifdef DEBUG_OUTPUT
+#if 1 // def DEBUG_OUTPUT
   buffer_puts(buffer_2, "before replace: ");
   buffer_putsa(buffer_2, sa);
   buffer_putnlflush(buffer_2);
@@ -227,7 +227,7 @@ mounts_replace(MAP_T map, stralloc* sa, int col, bool first) {
 
   if((mount = mounts_match(mtab, sa->s, sa->len, &len, col, first))) {
 
-#ifdef DEBUG_OUTPUT
+#if 1 // def DEBUG_OUTPUT
     buffer_puts(buffer_2, "found mount: ");
     buffer_puts(buffer_2, mount);
     buffer_putnlflush(buffer_2);
@@ -235,7 +235,7 @@ mounts_replace(MAP_T map, stralloc* sa, int col, bool first) {
 
     stralloc_replace(sa, 0, len, mount, str_len(mount));
 
-#ifdef DEBUG_OUTPUT
+#if 1 // def DEBUG_OUTPUT
     buffer_puts(buffer_2, "after replace: ");
     buffer_putsa(buffer_2, sa);
     buffer_putnlflush(buffer_2);
