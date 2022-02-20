@@ -360,6 +360,8 @@ pathtool(const char* arg, stralloc* sa) {
     stralloc tmp;
     stralloc_init(&tmp);
     pathconv(sa->s, &tmp);
+    mounts_replace(mtab, &tmp, 1, false);
+
     stralloc_copy(sa, &tmp);
     stralloc_nul(sa);
     stralloc_free(&tmp);
