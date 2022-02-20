@@ -479,13 +479,13 @@ main(int argc, char* argv[]) {
   errmsg_iam(argv[0]);
   strlist_init(&relative_to, PATHSEP_C);
 
-#if WINDOWS_NATIVE
-  format = WIN;
-#elif defined(WINDOWS) && !(defined(__CYGWIN__) || defined(__MSYS__))
-  format = MIXED;
-#else
+  /*#if WINDOWS_NATIVE
+    format = WIN;
+  #elif defined(WINDOWS) && !(defined(__CYGWIN__) || defined(__MSYS__))
+    format = MIXED;
+  #else*/
   format = UNIX;
-#endif
+  /*#endif*/
 
   for(;;) {
     c = unix_getopt_long(argc, argv, "afhr:s:muw", opts, &index);
