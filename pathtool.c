@@ -391,12 +391,14 @@ pathtool(const char* arg, stralloc* sa) {
 #if defined(__MINGW32__) || defined(__MSYS__)
   mounts_replace(mtab, sa, format != UNIX, false);
 
+#if defined(__MINGW32__)
   if(format == UNIX) {
     if(sa->len >= 2 && sa->s[1] == ':') {
       sa->s[1] = tolower(sa->s[0]);
       sa->s[0] = '/';
     }
   }
+#endif
 #endif
 
 #ifdef DEBUG_OUTPUT
