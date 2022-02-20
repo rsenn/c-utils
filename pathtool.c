@@ -315,10 +315,10 @@ pathtool(const char* arg, stralloc* sa) {
     buffer_putnlflush(buffer_2);
 #endif
 
-    stralloc_cats(&msys, arg);
-    stralloc_nul(&msys);
+    /*   stralloc_cats(&msys, arg);
+       stralloc_nul(&msys);
 
-    arg = (const char*)((str = stralloc_moveb(&msys, 0)));
+       arg = (const char*)((str = stralloc_moveb(&msys, 0)));*/
   }
 #endif
 
@@ -373,7 +373,7 @@ pathtool(const char* arg, stralloc* sa) {
 #endif
 
 #if defined(__MINGW32__) || defined(__MSYS__)
-  mounts_replace(mtab, sa, 0, false);
+  mounts_replace(mtab, sa, 1, false);
 
 #endif
 
