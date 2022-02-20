@@ -8,7 +8,6 @@
 #include "lib/str.h"
 #include "lib/byte.h"
 #include "lib/array.h"
-#include <ctype.h>
 #include <string.h>
 
 #define MAP_USE_HMAP 1
@@ -40,19 +39,19 @@ static stralloc mingw;
 #endif
 static MAP_T mtab;
 
-#define tolower(c)   ((c) >= 'A' && (c) <= 'Z' ? (c) + 0x20 : (c))
-#define toslash(c)   ((c) == '\\' ? '/' : (c))
+#define tolower(c) ((c) >= 'A' && (c) <= 'Z' ? (c) + 0x20 : (c))
+#define toslash(c) ((c) == '\\' ? '/' : (c))
 
 int
 path_diffb(const char* s, size_t len, const char* t) {
-  unsigned char x,y;
-   
+  unsigned char x, y;
+
   while(len > 0) {
     --len;
     x = tolower(*s);
-    x=toslash(x);
+    x = toslash(x);
     y = tolower(*t);
-    y=toslash(y);
+    y = toslash(y);
 
     if(x != y)
       return ((int)(unsigned int)x) - ((int)(unsigned int)y);
@@ -137,7 +136,7 @@ mounts_read(MAP_T map) {
     dev[dlen] = '\0';
     mnt = dev + dlen + 1;
 
-    while(*mnt && isspace(*mnt))
+    while(*mnt && *mnt == ' ')
       ++mnt;
 
     mlen = str_chr(mnt, ' ');
@@ -157,7 +156,7 @@ mounts_read(MAP_T map) {
 }
 
 static const char*
-mounts_match(MAP_T map, const char* path, size_t pathlen) {
+mounts_match(MAP_T map, const char* path, size_t pathlen, size_t* matchlen) {
   MAP_PAIR_T t;
   const char *dev, *mnt, *ret = 0;
   size_t dlen, mlen, rlen = 0;
@@ -179,6 +178,8 @@ mounts_match(MAP_T map, const char* path, size_t pathlen) {
     if(dlen <= pathlen && !path_diffb(path, dlen, dev) &&
        (dlen == pathlen || (dlen < pathlen && path_issep(path[dlen])))) {
       if(mlen > rlen) {
+        if(matchlen)
+          *matchlen = dlen;
         ret = mnt;
         rlen = mlen;
       }
@@ -301,8 +302,13 @@ pathtool(const char* arg, stralloc* sa) {
 #if defined(__MINGW32__) || defined(__MSYS__)
   {
     const char* mount;
+    size_t len;
 
-    if((mount = mounts_match(mtab, sa->s, sa->len))) {
+    if((mount = mounts_match(mtab, sa->s, sa->len, &len))) {
+      size_t mountlen = str_len(mount);
+
+      stralloc_replace(sa, 0, len, mount, mountlen);
+
       buffer_puts(buffer_2, "found mount: ");
       buffer_puts(buffer_2, mount);
       buffer_putnlflush(buffer_2);
