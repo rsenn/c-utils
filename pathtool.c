@@ -179,14 +179,14 @@ typedef struct {
 static const char*
 mounts_match(MAP_T map, const char* path, size_t pathlen, size_t* matchlen, int col, bool first) {
   MAP_PAIR_T t;
-  column_t cols[2], ret = {0, 0}, *match = &cols[!!col], *repl = &cols[!col];
+  column_t cols[2], ret = {0, 0}, *search = &cols[!!col], *replacement = &cols[!col];
 
   MAP_FOREACH(map, t) {
     cols[0] = KEY(t);
     cols[1] = VAL(t);
 
-    bool matched = match->n <= pathlen && !path_diffb(path, match->n, match->s) &&
-                   (match->n == pathlen || (match->n < pathlen && path_issep(path[match->n])));
+    bool matched = search->n <= pathlen && !path_diffb(path, search->n, search->s) &&
+                   (search->n == pathlen || (search->n < pathlen && path_issep(path[search->n])));
 
 #ifdef DEBUG_OUTPUT
     buffer_putulong(buffer_2, matched);
@@ -200,11 +200,11 @@ mounts_match(MAP_T map, const char* path, size_t pathlen, size_t* matchlen, int 
 #endif
 
     if(matched) {
-      if(repl->n > ret.n) {
+      if(replacement->n > ret.n) {
         if(matchlen)
-          *matchlen = match->n;
-        ret.s = repl->s;
-        ret.n = repl->n;
+          *matchlen = search->n;
+        ret.s = replacement->s;
+        ret.n = replacement->n;
 
         if(first)
           break;
