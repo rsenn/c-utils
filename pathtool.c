@@ -177,8 +177,11 @@ mounts_match(MAP_T map, const char* path, size_t pathlen, size_t* matchlen, int 
     c.dev = (column_t){MAP_ITER_KEY(t), MAP_ITER_KEY_LEN(t) - 1};
     c.mnt = (column_t){MAP_ITER_VALUE(t), MAP_ITER_VALUE_LEN(t) - 1};
 
+    bool matched = match->n <= pathlen && !path_diffb(path, match->n, match->s) &&
+                   (match->n == pathlen || (match->n < pathlen && path_issep(path[match->n])));
+
 #ifdef DEBUG_OUTPUT
-    buffer_puts(buffer_2, " mounts_match(map, ");
+    buffer_putulong(buffer_2, matched);
     buffer_puts(buffer_2, " mounts_match(map, ");
     buffer_put(buffer_2, path, pathlen);
     buffer_puts(buffer_2, "\") device: ");
@@ -188,8 +191,7 @@ mounts_match(MAP_T map, const char* path, size_t pathlen, size_t* matchlen, int 
     buffer_putnlflush(buffer_2);
 #endif
 
-    if(match->n <= pathlen && !path_diffb(path, match->n, match->s) &&
-       (match->n == pathlen || (match->n < pathlen && path_issep(path[match->n])))) {
+    if(matched) {
       if(repl->n > ret.n) {
         if(matchlen)
           *matchlen = match->n;
