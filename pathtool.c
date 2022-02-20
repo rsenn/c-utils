@@ -523,7 +523,9 @@ main(int argc, char* argv[]) {
 #endif
 
   msys_root(&msys);
-  mounts_replace(mtab, &msys, 1, true);
+  if(!mounts_replace(mtab, &msys, 1, true)) {
+    MAP_INSERT(mtab, msys.s, msys.len + 1, "/", 2);
+  }
 
 #if 1 // def DEBUG_OUTPUT
   buffer_puts(buffer_2, "msys root: ");
