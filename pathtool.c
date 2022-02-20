@@ -373,7 +373,7 @@ pathtool(const char* arg, stralloc* sa) {
 #endif
 
 #if defined(__MINGW32__) || defined(__MSYS__)
-  mounts_replace(mtab, sa, 1, false);
+  mounts_replace(matb, sa, 1, false);
 
 #endif
 
@@ -444,7 +444,7 @@ separator[0]);*/
   } else {
 
 #ifdef DEBUG_OUTPUT
-    buffer_putm_internal(buffer_2, "separator: ", separator, "\n", 0);
+    buffer_putm_internal(buffer_2, "separator: ", separator ? separator : "(null)", "\n", 0);
     buffer_putm_internal(buffer_2, "PATHSEP_S_MIXED: ", PATHSEP_S_MIXED, "\n", 0);
     buffer_putnlflush(buffer_2);
 #endif
