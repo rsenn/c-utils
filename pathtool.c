@@ -443,7 +443,7 @@ separator[0]);*/
 
   } else {
 
-#ifdef DEBUG_OUTPUT
+#ifdef DEBUG_OUTPUT_
     buffer_putm_internal(buffer_2, "separator: ", separator ? separator : "(null)", "\n", 0);
     buffer_putm_internal(buffer_2, "PATHSEP_S_MIXED: ", PATHSEP_S_MIXED, "\n", 0);
     buffer_putnlflush(buffer_2);
