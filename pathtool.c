@@ -249,8 +249,8 @@ msys_root(stralloc* sa) {
   int ret = 0;
   const char* s;
   stralloc_zero(sa);
-#ifdef __MSYS__
-  if(cygwin_conv_path(CCP_POSIX_TO_WIN_A, "/", buf, sizeof(buf)) > 0) {
+#if defined(__MSYS__) || defined(__CYGWIN__)
+  if(cygwin_conv_path(CCP_POSIX_TO_WIN_A, "/", buf, sizeof(buf)) == 0) {
     path_dirname(buf, sa);
     ret = 1;
   }
@@ -259,13 +259,11 @@ msys_root(stralloc* sa) {
     path_dirname(s, sa);
     ret = 1;
   }
-#ifdef __MSYS__
-  else if(!ret && (s = getenv("MSYSTEM_PREFIX"))) {
-    // stralloc_ready(sa, PATH_MAX + 1);
+
+#if defined(__MSYS__) || defined(__CYGWIN__)
+  if(!ret && (s = getenv("MSYSTEM_PREFIX"))) {
     cygwin_conv_to_win32_path(s, buf);
     path_dirname(buf, sa);
-
-    // sa->len = str_len(sa->s);
     ret = 1;
   }
 #endif
