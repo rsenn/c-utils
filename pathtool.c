@@ -116,15 +116,17 @@ pathconv(const char* path, stralloc* sa) {
 }
 #endif
 
+typedef struct {
+  char* s;
+  size_t n;
+} blob_t;
+
 int
 mounts_read(MAP_T map) {
   buffer in;
   stralloc line;
   int ret = 0;
-  struct {
-    char* s;
-    size_t n;
-  } dev = {0, 0}, mnt = {0, 0};
+  blob_t dev = {0, 0}, mnt = {0, 0};
 
   if(buffer_readfile(&in, "/proc/mounts"))
     return -1;
@@ -134,7 +136,7 @@ mounts_read(MAP_T map) {
   while(buffer_getnewline_sa(&in, &line) > 0) {
     stralloc_nul(&line);
     dev.s = line.s;
-    dev.n = str_find(dev.s, " /"); // byte_chr(dev.s, line.len, ' ');
+    dev.n = str_find(dev.s, " /");
     dev.s[dev.n] = '\0';
     mnt.s = dev.s + dev.n + 1;
 
@@ -143,6 +145,13 @@ mounts_read(MAP_T map) {
 
     mnt.n = str_chr(mnt.s, ' ');
     mnt.s[mnt.n] = '\0';
+
+    if(str_start(mnt.s, "/cygdrive/")) {
+      blob_t tmp = {mnt.s + 9, mnt.n - 9};
+      mnt = dev;
+      dev = tmp;
+    }
+
     MAP_INSERT(map, dev.s, dev.n + 1, mnt.s, mnt.n + 1);
 
 #ifdef DEBUG_OUTPUT
