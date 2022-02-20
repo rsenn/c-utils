@@ -173,10 +173,10 @@ mounts_match(MAP_T map, const char* path, size_t pathlen, size_t* matchlen, int 
   column_t ret = {0, 0};
 
   MAP_FOREACH(map, t) {
-    c.dev = (column_t){MAP_ITER_KEY(t), str_len(c.dev.s)};
-    c.mnt = (column_t){MAP_ITER_VALUE(t), str_len(c.mnt.s)};
+    c.dev = (column_t){MAP_ITER_KEY(t), MAP_ITER_KEY_LEN(t)};
+    c.mnt = (column_t){MAP_ITER_VALUE(t), MAP_ITER_VALUE_LEN(t)};
 
-#ifdef DEBUG_OUTPUT_
+#ifdef DEBUG_OUTPUT
     buffer_putm_internal(buffer_2, "mounts_match(map, ", 0);
     buffer_put(buffer_2, path, pathlen);
     buffer_putm_internal(buffer_2, "\") device: ", c.dev.s ? c.dev.s : "(null)", " ", 0);
