@@ -209,9 +209,10 @@ msys_root(stralloc* sa) {
   }
 #ifdef __MSYS__
   else if((s = getenv("MSYSTEM_PREFIX"))) {
-    stralloc_ready(sa, PATH_MAX + 1);
-    cygwin_conv_to_win32_path(s, sa->s);
-    path_dirname(sa->s, sa);
+    char buf[PATH_MAX + 1];
+    // stralloc_ready(sa, PATH_MAX + 1);
+    cygwin_conv_to_win32_path(s, buf);
+    path_dirname(buf, sa);
 
     // sa->len = str_len(sa->s);
     ret = 1;
