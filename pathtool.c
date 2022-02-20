@@ -185,6 +185,11 @@ strlist_at_n(&relative_to, i, &l2);
 separator[0]);*/
 
   } else {
+
+#ifdef DEBUG_OUTPUT
+    buffer_putm_internal(buffer_2, "separator: ", separator, "\n", 0);
+    buffer_putnlflush(buffer_2);
+#endif
     strlist_join(&path, sa, separator[0]);
   }
   stralloc_nul(sa);
@@ -201,33 +206,16 @@ usage(char* av0) {
                        "\n",
                        "Options:\n",
                        "\n",
-                       "  -h, --help             Show "
-                       "this help\n",
-                       "  -r, --relative-to DIR  Print "
-                       "the resolved path relative to "
-                       "DIR\n",
-                       "  -s, --separator SEP    Use "
-                       "SEP as directory separator\n",
-                       "  -w, --windows          Print "
-                       "Windows form of path(s) "
-                       "(C:\\WINNT)\n",
-                       "  -m, --mixed            Like "
-                       "--windows, but with regular "
-                       "slashes (C:/WINNT)\n",
-                       "  -u, --unix   (default) Print "
-                       "Unix form of path(s) "
-                       "(/cygdrive/c/winnt)\n",
-                       "  -a, --absolute         Output "
-                       "absolute path\n",
-                       "  -f, --canonicalize     "
-                       "Canonicalize by following every "
-                       "symlink in\n"
-                       "                         every "
-                       "component of the given name "
-                       "recursively;\n"
-                       "                         all "
-                       "but the last component must "
-                       "exist\n",
+                       "  -h, --help             Show this help\n",
+                       "  -r, --relative-to DIR  Print the resolved path relative to DIR\n",
+                       "  -s, --separator SEP    Use SEP as directory separator\n",
+                       "  -w, --windows          Print Windows form of path(s) (C:\\WINNT)\n",
+                       "  -m, --mixed            Like --windows, but with regular slashes (C:/WINNT)\n",
+                       "  -u, --unix   (default) Print Unix form of path(s) (/cygdrive/c/winnt)\n",
+                       "  -a, --absolute         Output absolute path\n",
+                       "  -f, --canonicalize     Canonicalize by following every symlink in\n"
+                       "                         every component of the given name recursively;\n"
+                       "                         all but the last component must exist\n",
                        "\n",
                        0);
   buffer_flush(buffer_1);

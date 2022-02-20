@@ -8,6 +8,7 @@
 #include "lib/buffer.h"
 #include "lib/strlist.h"
 #include "lib/path.h"
+#include "lib/path_internal.h"
 #include "genmakefile.h"
 #include "lib/map.h"
 #include "debug.h"
@@ -2261,7 +2262,7 @@ get_rules_by_cmd(stralloc* cmd, strlist* deps) {
 char*
 dirname_alloc(const char* p) {
   size_t len = str_len(p);
-  size_t pos = str_rchrs(p, "\\/", 2);
+  size_t pos = str_rchrs(p, PATHSEP_S_MIXED, sizeof(PATHSEP_S_MIXED) - 1);
   if(pos < len)
     return str_ndup(p, pos);
   return str_dup(".");
