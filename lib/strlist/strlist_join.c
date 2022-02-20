@@ -7,7 +7,7 @@ strlist_join(const strlist* sl, stralloc* sa, char delim) {
   const char* x, *y;
   size_t i = 0, n;
 
-  for(x = sl->sa.s, y=sl->sa.s+sl->sa.len; x < y; ) {
+  for(x = sl->sa.s, y=sl->sa.s+sl->sa.len; x < y; x += n + 1) {
 //  strlist_foreach(sl, x, n) {
 //  
    n = byte_chr(x, y-x, sl->sep);
