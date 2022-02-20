@@ -111,7 +111,7 @@ mounts_read(MAP_T map) {
 
     stralloc_nul(&line);
     dev = line.s;
-    dlen = str_find(dev, " /"); //byte_chr(dev, line.len, ' ');
+    dlen = str_find(dev, " /"); // byte_chr(dev, line.len, ' ');
     dev[dlen] = '\0';
     mnt = dev + dlen + 1;
 
@@ -168,19 +168,19 @@ mounts_match(MAP_T map, const char* path, size_t pathlen) {
 #if defined(__MINGW32__) || defined(__MSYS__)
 static int
 msys_root(stralloc* sa) {
-  int ret=0;
+  int ret = 0;
   const char* s;
   stralloc_zero(sa);
   if((s = getenv("MSYS_PREFIX"))) {
     path_dirname(s, sa);
-    ret= 1;
+    ret = 1;
   }
 #ifdef __MSYS__
-   else if((s = getenv("MSYSTEM_PREFIX"))) {
+  else if((s = getenv("MSYSTEM_PREFIX"))) {
     stralloc_ready(sa, PATH_MAX + 1);
     cygwin_conv_to_win32_path(s, sa->s);
     sa->len = str_len(sa->s);
-    ret= 1;
+    ret = 1;
   }
 #endif
   if(ret)
@@ -233,9 +233,9 @@ pathtool(const char* arg, stralloc* sa) {
 #endif
 
 #ifdef DEBUG_OUTPUT
-    buffer_puts(buffer_2, "arg: ");
-    buffer_puts(buffer_2, arg);
-    buffer_putnlflush(buffer_2);
+  buffer_puts(buffer_2, "arg: ");
+  buffer_puts(buffer_2, arg);
+  buffer_putnlflush(buffer_2);
 #endif
 
   if(absolute) {
