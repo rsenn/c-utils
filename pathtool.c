@@ -179,18 +179,11 @@ typedef struct {
 static const char*
 mounts_match(MAP_T map, const char* path, size_t pathlen, size_t* matchlen, int col, bool first) {
   MAP_PAIR_T t;
-  union {
-    /*   struct {
-         column_t dev, mnt;
-       };*/
-    column_t a[2];
-  } c;
-
-  column_t ret = {0, 0}, *match = &c.a[!!col], *repl = &c.a[!col];
+  column_t cols[2], ret = {0, 0}, *match = &cols[!!col], *repl = &cols[!col];
 
   MAP_FOREACH(map, t) {
-    c.a[0] = KEY(t);
-    c.a[1] = VAL(t);
+    cols[0] = KEY(t);
+    cols[1] = VAL(t);
 
     bool matched = match->n <= pathlen && !path_diffb(path, match->n, match->s) &&
                    (match->n == pathlen || (match->n < pathlen && path_issep(path[match->n])));
@@ -200,9 +193,9 @@ mounts_match(MAP_T map, const char* path, size_t pathlen, size_t* matchlen, int 
     buffer_puts(buffer_2, " mounts_match(map, ");
     buffer_put(buffer_2, path, pathlen);
     buffer_puts(buffer_2, "\") device: ");
-    buffer_put(buffer_2, c.a[0].s, c.a[0].n);
+    buffer_put(buffer_2, cols[0].s, cols[0].n);
     buffer_puts(buffer_2, " mountpoint: ");
-    buffer_put(buffer_2, c.a[1].s, c.a[1].n);
+    buffer_put(buffer_2, cols[1].s, cols[1].n);
     buffer_putnlflush(buffer_2);
 #endif
 
