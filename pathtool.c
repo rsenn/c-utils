@@ -228,12 +228,16 @@ mounts_replace(MAP_T map, stralloc* sa, int col, bool first) {
 #endif
 
   if((mount = mounts_match(mtab, sa->s, sa->len, &len, col, first))) {
+    size_t mountlen = str_len(mount);
 
 #if 1 // def DEBUG_OUTPUT
     debug_str("found mount", mount);
 #endif
 
-    stralloc_replace(sa, 0, len, mount, str_len(mount));
+    while(mountlen && path_issep(mount[mountlen - 1]))
+      --mountlen;
+
+    stralloc_replace(sa, 0, len, mount, mountlen);
     stralloc_nul(sa);
 
 #if 1 // def DEBUG_OUTPUT
@@ -549,7 +553,9 @@ main(int argc, char* argv[]) {
   msys_root(&msys);
   if(!mounts_replace(mtab, &msys, 1, false)) {
   }
-  mounts_add(mtab, "/", msys.s);
+
+  // mounts_add(mtab, "/", msys.s);
+  mounts_add(mtab, msys.s, "/");
 
 #if 1 // def DEBUG_OUTPUT
   buffer_puts(buffer_2, "msys root: ");
