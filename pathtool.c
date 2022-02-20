@@ -145,7 +145,7 @@ mounts_read(MAP_T map) {
     mnt.s[mnt.n] = '\0';
     MAP_INSERT(map, dev.s, dev.n + 1, mnt.s, mnt.n + 1);
 
-#ifdef DEBUG_OUTPUT_
+#ifdef DEBUG_OUTPUT
     buffer_putm_internal(buffer_2, "mounts_read() dev.sice: ", dev.s ? dev.s : "(null)", " ", 0);
     buffer_putm_internal(buffer_2, "mountpoint: ", mnt.s ? mnt.s : "(null)", "\n", 0);
     buffer_flush(buffer_2);
