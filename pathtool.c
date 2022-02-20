@@ -529,7 +529,7 @@ main(int argc, char* argv[]) {
   stralloc_catb(&delims, separator, 1);
   stralloc_nul(&delims);
 
-#ifdef DEBUG_OUTPUT
+#if 1 // def DEBUG_OUTPUT
   buffer_puts(buffer_2, "format: ");
   buffer_puts(buffer_2, ((const char*[]){"MIXED", "UNIX", "WIN"})[format]);
   buffer_putnlflush(buffer_2);
