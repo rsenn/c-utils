@@ -39,7 +39,6 @@ static stralloc cwd;
 static stralloc mingw;
 #endif
 static MAP_T mtab;
-static struct mount_entry* mounts = 0;
 
 void
 strlist_from_path(strlist* sl, const char* p) {
@@ -94,30 +93,25 @@ pathconv(const char* path, stralloc* sa) {
 }
 #endif
 
-static struct mount_entry*
-read_mounts() {
+int
+mounts_read(MAP_T map) {
   buffer in;
   stralloc line;
-  /*array a;
-  struct mount_entry e;*/
+  int ret = 0;
 
   if(buffer_readfile(&in, "/proc/mounts"))
-    return 0;
+    return -1;
 
   stralloc_init(&line);
-  // array_init(&a);
 
   while(buffer_getnewline_sa(&in, &line) > 0) {
     char *dev, *mnt;
     size_t dlen, mlen;
 
     stralloc_nul(&line);
-
     dev = line.s;
     dlen = byte_chr(dev, line.len, ' ');
     dev[dlen] = '\0';
-    /*  e.device = str_dup(dev);*/
-
     mnt = dev + dlen + 1;
 
     while(*mnt && isspace(*mnt))
@@ -125,22 +119,49 @@ read_mounts() {
 
     mlen = str_chr(mnt, ' ');
     mnt[mlen] = '\0';
-
-    MAP_INSERT(mtab, dev, dlen, mnt, mlen);
+    MAP_INSERT(map, dev, dlen + 1, mnt, mlen + 1);
 
 #ifdef DEBUG_OUTPUT
-    buffer_putm_internal(buffer_2, "device: ", dev ? dev : "(null)", " ", 0);
+    buffer_putm_internal(buffer_2, "mounts_read() device: ", dev ? dev : "(null)", " ", 0);
     buffer_putm_internal(buffer_2, "mountpoint: ", mnt ? mnt : "(null)", "\n", 0);
     buffer_flush(buffer_2);
 #endif
 
-    // array_catb(&a, &e, sizeof(struct mount_entry));
+    ++ret;
   }
 
-  /* e.device = e.mountpoint = 0;
-   array_catb(&a, &e, sizeof(struct mount_entry));
+  return ret;
+}
 
-   return array_start(&a);*/
+static const char*
+mounts_match(MAP_T map, const char* path, size_t pathlen) {
+  MAP_PAIR_T t;
+  const char *dev, *mnt, *ret = 0;
+  size_t dlen, mlen, rlen = 0;
+
+  MAP_FOREACH(map, t) {
+    dev = MAP_ITER_KEY(t);
+    dlen = str_len(dev);
+    mnt = MAP_ITER_VALUE(t);
+    mlen = str_len(mnt);
+
+#ifdef DEBUG_OUTPUT
+    buffer_putm_internal(buffer_2, "mounts_match(map, ", 0);
+    buffer_put(buffer_2, path, pathlen);
+    buffer_putm_internal(buffer_2, "\") device: ", dev ? dev : "(null)", " ", 0);
+    buffer_putm_internal(buffer_2, "mountpoint: ", mnt ? mnt : "(null)", "\n", 0);
+    buffer_flush(buffer_2);
+#endif
+
+    if(dlen <= pathlen && str_startb(path, dev, dlen) &&
+       (dlen == pathlen || (dlen < pathlen && path_issep(path[dlen])))) {
+      if(mlen > rlen) {
+        ret = mnt;
+        rlen = mlen;
+      }
+    }
+  }
+  return ret;
 }
 
 #if defined(__MINGW32__) || defined(__MSYS__)
@@ -207,6 +228,12 @@ pathtool(const char* arg, stralloc* sa) {
   }
 #endif
 
+#ifdef DEBUG_OUTPUT
+    buffer_puts(buffer_2, "arg: ");
+    buffer_puts(buffer_2, arg);
+    buffer_putnlflush(buffer_2);
+#endif
+    
   if(absolute) {
     path_absolute(arg, sa);
     stralloc_nul(sa);
@@ -242,6 +269,18 @@ pathtool(const char* arg, stralloc* sa) {
     stralloc_copy(sa, &tmp);
     stralloc_nul(sa);
     stralloc_free(&tmp);
+  }
+#endif
+
+#if defined(__MINGW32__) || defined(__MSYS__)
+  {
+    const char* mount;
+
+    if((mount = mounts_match(mtab, sa->s, sa->len))) {
+      buffer_puts(buffer_2, "found mount: ");
+      buffer_puts(buffer_2, mount);
+      buffer_putnlflush(buffer_2);
+    }
   }
 #endif
 
@@ -430,7 +469,7 @@ main(int argc, char* argv[]) {
   buffer_putnlflush(buffer_2);
 #endif
 
-  mounts = read_mounts();
+  mounts_read(mtab);
 
   if(rel_to) {
 
