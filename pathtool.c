@@ -7,7 +7,6 @@
 #include "lib/windoze.h"
 #include "lib/str.h"
 #include "lib/byte.h"
-#include "lib/case.h"
 #include "lib/array.h"
 #include <ctype.h>
 #include <string.h>
@@ -40,6 +39,29 @@ static stralloc cwd;
 static stralloc mingw;
 #endif
 static MAP_T mtab;
+
+#define tolower(c)   ((c) >= 'A' && (c) <= 'Z' ? (c) + 0x20 : (c))
+#define toslash(c)   ((c) == '\\' ? '/' : (c))
+
+int
+path_diffb(const char* s, size_t len, const char* t) {
+  unsigned char x,y;
+   
+  while(len > 0) {
+    --len;
+    x = tolower(*s);
+    x=toslash(x);
+    y = tolower(*t);
+    y=toslash(y);
+
+    if(x != y)
+      return ((int)(unsigned int)x) - ((int)(unsigned int)y);
+
+    ++s;
+    ++t;
+  }
+  return 0;
+}
 
 void
 strlist_from_path(strlist* sl, const char* p) {
@@ -154,7 +176,7 @@ mounts_match(MAP_T map, const char* path, size_t pathlen) {
     buffer_flush(buffer_2);
 #endif
 
-    if(dlen <= pathlen && !case_diffb(path, dlen, dev) &&
+    if(dlen <= pathlen && !path_diffb(path, dlen, dev) &&
        (dlen == pathlen || (dlen < pathlen && path_issep(path[dlen])))) {
       if(mlen > rlen) {
         ret = mnt;
