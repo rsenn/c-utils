@@ -171,13 +171,15 @@ mounts_match(MAP_T map, const char* path, size_t pathlen, size_t* matchlen, int 
     column_t a[2];
   } c;
   column_t ret = {0, 0};
+  column_t *match = &c.a[!!col], *repl = &c.a[!col];
 
   MAP_FOREACH(map, t) {
     c.dev = (column_t){MAP_ITER_KEY(t), MAP_ITER_KEY_LEN(t) - 1};
     c.mnt = (column_t){MAP_ITER_VALUE(t), MAP_ITER_VALUE_LEN(t) - 1};
 
 #ifdef DEBUG_OUTPUT
-    buffer_putm_internal(buffer_2, "mounts_match(map, ", 0);
+    buffer_puts(buffer_2, " mounts_match(map, ");
+    buffer_puts(buffer_2, " mounts_match(map, ");
     buffer_put(buffer_2, path, pathlen);
     buffer_puts(buffer_2, "\") device: ");
     buffer_put(buffer_2, c.dev.s, c.dev.n);
@@ -186,13 +188,13 @@ mounts_match(MAP_T map, const char* path, size_t pathlen, size_t* matchlen, int 
     buffer_putnlflush(buffer_2);
 #endif
 
-    if(c.a[!!col].n <= pathlen && !path_diffb(path, c.a[!!col].n, c.a[!!col].s) &&
-       (c.a[!!col].n == pathlen || (c.a[!!col].n < pathlen && path_issep(path[c.a[!!col].n])))) {
-      if(c.a[!col].n > ret.n) {
+    if(match->n <= pathlen && !path_diffb(path, match->n, match->s) &&
+       (match->n == pathlen || (match->n < pathlen && path_issep(path[match->n])))) {
+      if(repl->n > ret.n) {
         if(matchlen)
-          *matchlen = c.a[!!col].n;
-        ret.s = c.a[!col].s;
-        ret.n = c.a[!col].n;
+          *matchlen = match->n;
+        ret.s = repl->s;
+        ret.n = repl->n;
       }
     }
   }
