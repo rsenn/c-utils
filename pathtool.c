@@ -245,6 +245,18 @@ mounts_replace(MAP_T map, stralloc* sa, int col, bool first) {
 
 static void
 mounts_add(MAP_T map, const char* dev, const char* mnt) {
+
+#if 1 // def DEBUG_OUTPUT
+  buffer_putulong(buffer_2, matched);
+  buffer_puts(buffer_2, " mounts_add(map, \"");
+  buffer_puts(buffer_2, dev);
+  buffer_puts(buffer_2, "\",  \"");
+
+  buffer_puts(buffer_2, mnt);
+  buffer_puts(buffer_2, "\")");
+  buffer_putnlflush(buffer_2);
+#endif
+
   MAP_INSERT(map, dev, str_len(dev) + 1, (void*)mnt, str_len(mnt) + 1);
 }
 
