@@ -37,7 +37,7 @@ static path_format format;
 static int absolute = 0, canonical = 0;
 static stralloc cwd;
 #if defined(__MINGW32__) || defined(__MSYS__)
-static stralloc mingw;
+static stralloc mingw, msys;
 #endif
 static MAP_T mtab;
 
@@ -221,19 +221,19 @@ mounts_replace(MAP_T map, stralloc* sa, int col, bool first) {
   size_t len;
 
 #if 1 // def DEBUG_OUTPUT
-  debug_sa("before replace: ", sa);
+  debug_sa("before replace", sa);
 #endif
 
   if((mount = mounts_match(mtab, sa->s, sa->len, &len, col, first))) {
 
 #if 1 // def DEBUG_OUTPUT
-    debug_str("found mount: ", mount);
+    debug_str("found mount", mount);
 #endif
 
     stralloc_replace(sa, 0, len, mount, str_len(mount));
 
 #if 1 // def DEBUG_OUTPUT
-    debug_sa("after replace: ", sa);
+    debug_sa("after replace", sa);
 #endif
   }
   return mount;
@@ -298,17 +298,6 @@ pathtool(const char* arg, stralloc* sa) {
 #if defined(__MINGW32__) || defined(__MSYS__)
   len = str_len(arg);
   if(len >= mingw.len && stralloc_equalb(&mingw, arg, mingw.len)) {
-    stralloc msys;
-    stralloc_init(&msys);
-    msys_root(&msys);
-
-    mounts_replace(mtab, &msys, 1, true);
-
-#ifdef DEBUG_OUTPUT
-    buffer_puts(buffer_2, "msys root: ");
-    buffer_putsa(buffer_2, &msys);
-    buffer_putnlflush(buffer_2);
-#endif
 
     /*   stralloc_cats(&msys, arg);
        stralloc_nul(&msys);
@@ -522,17 +511,26 @@ main(int argc, char* argv[]) {
   buffer_putnlflush(buffer_2);
 #endif
 
+  mounts_read(mtab);
+
 #if defined(__MINGW32__) || defined(__MSYS__)
   mingw_prefix(&mingw);
 
-#ifdef DEBUG_OUTPUT
+#if 1 // def DEBUG_OUTPUT
   buffer_puts(buffer_2, "mingw prefix: ");
   buffer_putsa(buffer_2, &mingw);
   buffer_putnlflush(buffer_2);
 #endif
-#endif
 
-  mounts_read(mtab);
+  msys_root(&msys);
+  mounts_replace(mtab, &msys, 1, true);
+
+#if 1 // def DEBUG_OUTPUT
+  buffer_puts(buffer_2, "msys root: ");
+  buffer_putsa(buffer_2, &msys);
+  buffer_putnlflush(buffer_2);
+#endif
+#endif
 
   if(rel_to) {
 
