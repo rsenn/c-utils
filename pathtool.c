@@ -208,7 +208,7 @@ mounts_match(MAP_T map, const char* path, size_t pathlen, size_t* matchlen, int 
 }
 
 static const char*
-mounts_replace(MAP_T map, stralloc* sa, int col) {
+mounts_replace(MAP_T map, stralloc* sa, int col, bool first) {
   const char* mount;
   size_t len;
 
@@ -218,7 +218,7 @@ mounts_replace(MAP_T map, stralloc* sa, int col) {
   buffer_putnlflush(buffer_2);
 #endif
 
-  if((mount = mounts_match(mtab, sa->s, sa->len, &len, col))) {
+  if((mount = mounts_match(mtab, sa->s, sa->len, &len, col, first))) {
 
 #ifdef DEBUG_OUTPUT
     buffer_puts(buffer_2, "found mount: ");
@@ -300,7 +300,7 @@ pathtool(const char* arg, stralloc* sa) {
     stralloc_init(&msys);
     msys_root(&msys);
 
-    mounts_replace(mtab, &msys, 1);
+    mounts_replace(mtab, &msys, 1, true);
 
     stralloc_cats(&msys, arg);
     stralloc_nul(&msys);
@@ -360,7 +360,7 @@ pathtool(const char* arg, stralloc* sa) {
 #endif
 
 #if defined(__MINGW32__) || defined(__MSYS__)
-  mounts_replace(mtab, sa, 0);
+  mounts_replace(mtab, sa, 0, false);
 
 #endif
 
