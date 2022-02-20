@@ -120,6 +120,10 @@ mounts_read(MAP_T map) {
   buffer in;
   stralloc line;
   int ret = 0;
+  struct {
+    char* s;
+    size_t n;
+  } dev = {0, 0}, mnt = {0, 0};
 
   if(buffer_readfile(&in, "/proc/mounts"))
     return -1;
@@ -127,25 +131,22 @@ mounts_read(MAP_T map) {
   stralloc_init(&line);
 
   while(buffer_getnewline_sa(&in, &line) > 0) {
-    char *dev, *mnt;
-    size_t dlen, mlen;
-
     stralloc_nul(&line);
-    dev = line.s;
-    dlen = str_find(dev, " /"); // byte_chr(dev, line.len, ' ');
-    dev[dlen] = '\0';
-    mnt = dev + dlen + 1;
+    dev.s = line.s;
+    dev.n = str_find(dev.s, " /"); // byte_chr(dev.s, line.len, ' ');
+    dev.s[dev.n] = '\0';
+    mnt.s = dev.s + dev.n + 1;
 
-    while(*mnt && *mnt == ' ')
-      ++mnt;
+    while(*mnt.s && *mnt.s == ' ')
+      ++mnt.s;
 
-    mlen = str_chr(mnt, ' ');
-    mnt[mlen] = '\0';
-    MAP_INSERT(map, dev, dlen + 1, mnt, mlen + 1);
+    mnt.n = str_chr(mnt.s, ' ');
+    mnt.s[mnt.n] = '\0';
+    MAP_INSERT(map, dev.s, dev.n + 1, mnt.s, mnt.n + 1);
 
 #ifdef DEBUG_OUTPUT_
-    buffer_putm_internal(buffer_2, "mounts_read() device: ", dev ? dev : "(null)", " ", 0);
-    buffer_putm_internal(buffer_2, "mountpoint: ", mnt ? mnt : "(null)", "\n", 0);
+    buffer_putm_internal(buffer_2, "mounts_read() dev.sice: ", dev.s ? dev.s : "(null)", " ", 0);
+    buffer_putm_internal(buffer_2, "mountpoint: ", mnt.s ? mnt.s : "(null)", "\n", 0);
     buffer_flush(buffer_2);
 #endif
 
@@ -158,34 +159,36 @@ mounts_read(MAP_T map) {
 static const char*
 mounts_match(MAP_T map, const char* path, size_t pathlen, size_t* matchlen) {
   MAP_PAIR_T t;
-  const char *dev, *mnt, *ret = 0;
-  size_t dlen, mlen, rlen = 0;
+  struct {
+    const char* s;
+    size_t n;
+  } dev = {0, 0}, mnt = {0, 0}, ret = {0, 0};
 
   MAP_FOREACH(map, t) {
-    dev = MAP_ITER_KEY(t);
-    dlen = str_len(dev);
-    mnt = MAP_ITER_VALUE(t);
-    mlen = str_len(mnt);
+    dev.s = MAP_ITER_KEY(t);
+    dev.n = str_len(dev.s);
+    mnt.s = MAP_ITER_VALUE(t);
+    mnt.n = str_len(mnt.s);
 
 #ifdef DEBUG_OUTPUT_
     buffer_putm_internal(buffer_2, "mounts_match(map, ", 0);
     buffer_put(buffer_2, path, pathlen);
-    buffer_putm_internal(buffer_2, "\") device: ", dev ? dev : "(null)", " ", 0);
-    buffer_putm_internal(buffer_2, "mountpoint: ", mnt ? mnt : "(null)", "\n", 0);
+    buffer_putm_internal(buffer_2, "\") device: ", dev.s ? dev.s : "(null)", " ", 0);
+    buffer_putm_internal(buffer_2, "mountpoint: ", mnt.s ? mnt.s : "(null)", "\n", 0);
     buffer_flush(buffer_2);
 #endif
 
-    if(dlen <= pathlen && !path_diffb(path, dlen, dev) &&
-       (dlen == pathlen || (dlen < pathlen && path_issep(path[dlen])))) {
-      if(mlen > rlen) {
+    if(dev.n <= pathlen && !path_diffb(path, dev.n, dev.s) &&
+       (dev.n == pathlen || (dev.n < pathlen && path_issep(path[dev.n])))) {
+      if(mnt.n > ret.n) {
         if(matchlen)
-          *matchlen = dlen;
-        ret = mnt;
-        rlen = mlen;
+          *matchlen = dev.n;
+        ret.s = mnt.s;
+        ret.n = mnt.n;
       }
     }
   }
-  return ret;
+  return ret.s;
 }
 
 #if defined(__MINGW32__) || defined(__MSYS__)
