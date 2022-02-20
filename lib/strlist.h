@@ -43,8 +43,7 @@ typedef struct strlist_s {
 #define strlist_end(sl) ((sl)->sa.s + (sl)->sa.len)
 
 #define strlist_foreach(sl, str, n) \
-  for((str) = (sl)->sa.s; \
-      ((str) < strlist_end(sl) && ((n) = byte_chr((str), strlist_end(sl) - (str), (sl)->sep)) > 0); \
+  for((str) = (sl)->sa.s; (((n) = byte_chr((str), strlist_end(sl) - (str), (sl)->sep)), ((str) < strlist_end(sl))); \
       (str) += (n) + 1)
 
 #define strlist_foreach_s(sl, str) \
