@@ -366,7 +366,7 @@ pathtool(const char* arg, stralloc* sa) {
   }
 #endif
 
-#if 1 // def DEBUG_OUTPUT
+#ifdef DEBUG_OUTPUT
   buffer_puts(buffer_2, "sa: ");
   buffer_putsa(buffer_2, sa);
   buffer_putnlflush(buffer_2);
@@ -375,7 +375,7 @@ pathtool(const char* arg, stralloc* sa) {
 #if defined(__MINGW32__) || defined(__MSYS__)
   mounts_replace(mtab, sa, format != UNIX, false);
 #endif
-#if 1 // def DEBUG_OUTPUT
+#ifdef DEBUG_OUTPUT
   buffer_puts(buffer_2, "sa2: ");
   buffer_putsa(buffer_2, sa);
   buffer_putnlflush(buffer_2);
@@ -386,7 +386,7 @@ pathtool(const char* arg, stralloc* sa) {
 
   stralloc_zero(sa);
 
-#if 1
+#ifdef DEBUG_OUTPUT
   buffer_putm_internal(buffer_2, "strlist path = ", 0);
   buffer_putsl(buffer_2, &path, " / ");
   buffer_putnlflush(buffer_2);
@@ -404,51 +404,10 @@ pathtool(const char* arg, stralloc* sa) {
 #endif
 
     path_relative_to_b(path.sa.s, path.sa.len, relative_to.sa.s, relative_to.sa.len, sa);
-    // path_relative_to(path.sa.s, relative_to.sa.s, sa);
-
-    /*
-    strlist rel;
-    size_t n1 = strlist_count(&path);
-    size_t n2 =
-strlist_count(&relative_to); size_t i, n
-= MAX(n1, n2);
-
-    for(i = 0; i < n; ++i) {
-      size_t l1, l2;
-      char* s1 = strlist_at_n(&path, i,
-&l1); char* s2 =
-strlist_at_n(&relative_to, i, &l2);
-
-#ifdef DEBUG_OUTPUT
-      buffer_puts(buffer_2, "REL ");
-      buffer_put(buffer_2, s1, l1);
-      buffer_puts(buffer_2, " ");
-      buffer_put(buffer_2, s2, l2);
-      buffer_putnlflush(buffer_2);
-#endif
-
-      if(l1 != l2) break;
-      if(byte_diff(s1, l1, s2)) break;
-    }
-
-    strlist_init(&rel, separator[0]);
-
-    while(n2-- > i) {
-      strlist_push(&rel, "..");
-    }
-    while(i < n1) {
-      char* s = strlist_at_n(&path, i,
-&n); strlist_pushb(&rel, s, n);
-      ++i;
-    }
-
-    strlist_join(&rel, sa,
-separator[0]);*/
 
   } else {
 
-#if 1 // def DEBUG_OUTPUT_
-    //    buffer_putm_internal(buffer_2, "separator: ", separator ? separator : "(null)", "\n", 0);
+#ifdef DEBUG_OUTPUT_
     buffer_puts(buffer_2, "PATHSEP_S_MIXED: ");
     buffer_puts(buffer_2, PATHSEP_S_MIXED);
     buffer_putnlflush(buffer_2);
