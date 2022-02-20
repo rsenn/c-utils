@@ -193,7 +193,7 @@ mounts_match(MAP_T map, const char* path, size_t pathlen, size_t* matchlen, int 
     cols[0] = KEY(t);
     cols[1] = VAL(t);
 
-    bool matched = cols[1].n > ret.n && search->n <= pathlen && !path_diffb(path, search->n, search->s) &&
+    bool matched = search.n > ret.n && search->n <= pathlen && !path_diffb(path, search->n, search->s) &&
                    (search->n == pathlen || (search->n < pathlen && path_issep(path[search->n])));
 
 #if 1 // def DEBUG_OUTPUT
@@ -216,7 +216,7 @@ mounts_match(MAP_T map, const char* path, size_t pathlen, size_t* matchlen, int 
       if(matchlen)
         *matchlen = search->n;
       ret.s = replacement->s;
-      ret.n = cols[1].n;
+      ret.n = search->n;
 
       if(first)
         break;
