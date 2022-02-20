@@ -273,6 +273,8 @@ pathtool(const char* arg, stralloc* sa) {
     stralloc_init(&msys);
     msys_root(&msys);
 
+    mounts_replace(mtab, &msys, 1);
+
     stralloc_cats(&msys, arg);
     stralloc_nul(&msys);
 
