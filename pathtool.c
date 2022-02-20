@@ -197,6 +197,19 @@ mounts_match(MAP_T map, const char* path, size_t pathlen, size_t* matchlen, int 
   return ret.s;
 }
 
+static const char*
+mounts_replace(MAP_T map, stralloc* sa, int col) {
+  const char* mount;
+  size_t len;
+
+  if((mount = mounts_match(mtab, sa->s, sa->len, &len, col))) {
+    size_t mountlen = str_len(mount);
+
+    stralloc_replace(sa, 0, len, mount, mountlen);
+  }
+  return mount;
+}
+
 #if defined(__MINGW32__) || defined(__MSYS__)
 static int
 msys_root(stralloc* sa) {
