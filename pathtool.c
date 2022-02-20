@@ -193,7 +193,12 @@ mounts_match(MAP_T map, const char* path, size_t pathlen, size_t* matchlen, int 
     buffer_putulong(buffer_2, matched);
     buffer_puts(buffer_2, " mounts_match(map, ");
     buffer_put(buffer_2, path, pathlen);
-    buffer_puts(buffer_2, "\") device: ");
+    buffer_puts(buffer_2, "\", ");
+
+    buffer_putulong(buffer_2, col);
+    buffer_puts(buffer_2, ", ");
+    buffer_puts(buffer_2, first ? "true" : "false");
+    buffer_puts(buffer_2, ") device: ");
     buffer_put(buffer_2, cols[0].s, cols[0].n);
     buffer_puts(buffer_2, " mountpoint: ");
     buffer_put(buffer_2, cols[1].s, cols[1].n);
