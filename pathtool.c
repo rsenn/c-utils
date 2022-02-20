@@ -528,7 +528,7 @@ main(int argc, char* argv[]) {
 #endif
 
   msys_root(&msys);
-  if(!mounts_replace(mtab, &msys, 1, true)) {
+  if(!mounts_replace(mtab, &msys, 0, false)) {
     MAP_INSERT(mtab, msys.s, msys.len + 1, "/", 2);
   }
 
