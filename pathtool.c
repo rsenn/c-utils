@@ -245,16 +245,22 @@ mounts_replace(MAP_T map, stralloc* sa, int col, bool first) {
 #if defined(__MINGW32__) || defined(__MSYS__)
 static int
 msys_root(stralloc* sa) {
+  char buf[PATH_MAX + 1];
   int ret = 0;
   const char* s;
   stralloc_zero(sa);
-  if((s = getenv("MSYS_PREFIX"))) {
+#ifdef __MSYS__
+  if(cygwin_conv_path(CCP_POSIX_TO_WIN_A, "/", buf, sizeof(buf)) > 0) {
+    path_dirname(buf, sa);
+    ret = 1;
+  }
+#endif
+  if(!ret && (s = getenv("MSYS_PREFIX"))) {
     path_dirname(s, sa);
     ret = 1;
   }
 #ifdef __MSYS__
-  else if((s = getenv("MSYSTEM_PREFIX"))) {
-    char buf[PATH_MAX + 1];
+  else if(!ret && (s = getenv("MSYSTEM_PREFIX"))) {
     // stralloc_ready(sa, PATH_MAX + 1);
     cygwin_conv_to_win32_path(s, buf);
     path_dirname(buf, sa);
