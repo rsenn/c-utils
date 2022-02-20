@@ -563,9 +563,12 @@ main(int argc, char* argv[]) {
 
 #if defined(__MINGW32__) || defined(__MSYS__)
   mingw_prefix(&mingw);
+
+#ifdef DEBUG_OUTPUT
   buffer_puts(buffer_2, "mingw prefix: ");
   buffer_putsa(buffer_2, &mingw);
   buffer_putnlflush(buffer_2);
+#endif
 #endif
 
   mounts_read(mtab);
