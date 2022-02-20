@@ -375,13 +375,18 @@ pathtool(const char* arg, stralloc* sa) {
 #if defined(__MINGW32__) || defined(__MSYS__)
   mounts_replace(mtab, sa, format != UNIX, false);
 #endif
+#if 1 // def DEBUG_OUTPUT
+  buffer_puts(buffer_2, "sa2: ");
+  buffer_putsa(buffer_2, sa);
+  buffer_putnlflush(buffer_2);
+#endif
 
   strlist_init(&path, relative_to.sa.s ? PATHSEP_C : separator[0]);
   strlist_from_path(&path, sa->s);
 
   stralloc_zero(sa);
 
-#ifdef DEBUG_OUTPUT
+#if 1
   buffer_putm_internal(buffer_2, "strlist path = ", 0);
   buffer_putsl(buffer_2, &path, " / ");
   buffer_putnlflush(buffer_2);
