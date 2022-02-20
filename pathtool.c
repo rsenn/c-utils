@@ -196,7 +196,7 @@ mounts_match(MAP_T map, const char* path, size_t pathlen, size_t* matchlen, int 
     bool matched = search->n >= ret.n && search->n <= pathlen && !path_diffb(path, search->n, search->s) &&
                    (search->n == pathlen || (search->n < pathlen && path_issep(path[search->n])));
 
-#if 1 // def DEBUG_OUTPUT
+#ifdef DEBUG_OUTPUT
     buffer_putulong(buffer_2, matched);
     buffer_puts(buffer_2, " mounts_match(map, ");
     buffer_put(buffer_2, path, pathlen);
@@ -230,14 +230,14 @@ mounts_replace(MAP_T map, stralloc* sa, int col, bool first) {
   const char* mount;
   size_t len;
 
-#if 1 // def DEBUG_OUTPUT
+#ifdef DEBUG_OUTPUT
   debug_sa("before replace", sa);
 #endif
 
   if((mount = mounts_match(mtab, sa->s, sa->len, &len, col, first))) {
     size_t mountlen = str_len(mount);
 
-#if 1 // def DEBUG_OUTPUT
+#ifdef DEBUG_OUTPUT
     debug_str("found mount", mount);
 #endif
 
@@ -247,7 +247,7 @@ mounts_replace(MAP_T map, stralloc* sa, int col, bool first) {
     stralloc_replace(sa, 0, len, mount, mountlen);
     stralloc_nul(sa);
 
-#if 1 // def DEBUG_OUTPUT
+#ifdef DEBUG_OUTPUT
     debug_sa("after replace", sa);
 #endif
   }
@@ -257,7 +257,7 @@ mounts_replace(MAP_T map, stralloc* sa, int col, bool first) {
 static void
 mounts_add(MAP_T map, const char* dev, const char* mnt) {
 
-#if 1 // def DEBUG_OUTPUT
+#ifdef DEBUG_OUTPUT
   buffer_puts(buffer_2, "mounts_add(map, \"");
   buffer_puts(buffer_2, dev);
   buffer_puts(buffer_2, "\",  \"");
@@ -325,7 +325,7 @@ pathtool(const char* arg, stralloc* sa) {
 
   stralloc_init(sa);
 
-#if 1 // def DEBUG_OUTPUT
+#ifdef DEBUG_OUTPUT
   buffer_putm_internal(buffer_2, "pathtool(\"", arg, "\")", NULL);
   buffer_putnlflush(buffer_2);
 #endif
@@ -535,7 +535,7 @@ main(int argc, char* argv[]) {
   stralloc_catb(&delims, separator, 1);
   stralloc_nul(&delims);
 
-#if 1 // def DEBUG_OUTPUT
+#ifdef DEBUG_OUTPUT
   buffer_puts(buffer_2, "format: ");
   buffer_puts(buffer_2, ((const char*[]){"MIXED", "UNIX", "WIN"})[format]);
   buffer_putnlflush(buffer_2);
@@ -546,7 +546,7 @@ main(int argc, char* argv[]) {
 #if defined(__MINGW32__) || defined(__MSYS__)
   mingw_prefix(&mingw);
 
-#if 1 // def DEBUG_OUTPUT
+#ifdef DEBUG_OUTPUT
   buffer_puts(buffer_2, "mingw prefix: ");
   buffer_putsa(buffer_2, &mingw);
   buffer_putnlflush(buffer_2);
@@ -559,7 +559,7 @@ main(int argc, char* argv[]) {
   // mounts_add(mtab, "/", msys.s);
   mounts_add(mtab, msys.s, "/");
 
-#if 1 // def DEBUG_OUTPUT
+#ifdef DEBUG_OUTPUT
   buffer_puts(buffer_2, "msys root: ");
   buffer_putsa(buffer_2, &msys);
   buffer_putnlflush(buffer_2);
