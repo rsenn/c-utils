@@ -325,21 +325,16 @@ pathtool(const char* arg, stralloc* sa) {
 
   stralloc_init(sa);
 
-#ifdef DEBUG_OUTPUT
-  buffer_putm_internal(buffer_2, "arg: ", arg, NULL);
+#if 1 // def DEBUG_OUTPUT
+  buffer_putm_internal(buffer_2, "pathtool(\"", arg, "\")", NULL);
   buffer_putnlflush(buffer_2);
 #endif
 
-#if defined(__MINGW32__) || defined(__MSYS__)
-  len = str_len(arg);
-  if(len >= mingw.len && stralloc_equalb(&mingw, arg, mingw.len)) {
-
-    /*   stralloc_cats(&msys, arg);
-       stralloc_nul(&msys);
-
-       arg = (const char*)((str = stralloc_moveb(&msys, 0)));*/
-  }
-#endif
+  /*#if defined(__MINGW32__) || defined(__MSYS__)
+    len = str_len(arg);
+    if(len >= mingw.len && stralloc_equalb(&mingw, arg, mingw.len)) {
+    }
+  #endif*/
 
 #ifdef DEBUG_OUTPUT
   buffer_puts(buffer_2, "arg: ");
