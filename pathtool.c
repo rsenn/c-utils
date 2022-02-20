@@ -247,8 +247,7 @@ static void
 mounts_add(MAP_T map, const char* dev, const char* mnt) {
 
 #if 1 // def DEBUG_OUTPUT
-  buffer_putulong(buffer_2, matched);
-  buffer_puts(buffer_2, " mounts_add(map, \"");
+  buffer_puts(buffer_2, "mounts_add(map, \"");
   buffer_puts(buffer_2, dev);
   buffer_puts(buffer_2, "\",  \"");
 
