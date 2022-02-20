@@ -953,7 +953,7 @@ endif(USE_LZMA)
 add_program(mediathek-parser case ucs errmsg strarray strlist stralloc buffer array byte open str unix strlist)
 add_program(ntldd stralloc buffer pe strlist byte path str unix uint64)
 add_program(opensearch-dump xml stralloc buffer)
-add_program(pathtool stralloc buffer errmsg path strlist unix)
+add_program(pathtool hmap stralloc buffer errmsg path strlist unix)
 add_program(pelist buffer errmsg mmap pe str unix)
 add_program(omflist stralloc buffer errmsg omf mmap str unix)
 add_program(pkgcfg process wait path unix hashmap hmap stralloc buffer byte cbmap dir env errmsg slist case str

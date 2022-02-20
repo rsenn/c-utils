@@ -1,12 +1,18 @@
 #include "lib/unix.h"
 #include "lib/buffer.h"
 #include "lib/errmsg.h"
-#include "lib/path.h"
+#include "lib/path_internal.h"
 #include "lib/stralloc.h"
 #include "lib/strlist.h"
 #include "lib/windoze.h"
 #include "lib/str.h"
 #include "lib/byte.h"
+#include "lib/array.h"
+#include <ctype.h>
+#include <string.h>
+
+#define MAP_USE_HMAP 1
+#include "lib/map.h"
 
 #define MAX(a, b) ((a) > (b) ? (a) : (b))
 /*
@@ -18,12 +24,22 @@ typedef int path_format;
 #define UNIX 1
 #define WIN 2
 
+struct mount_entry {
+  const char* device;
+  const char* mountpoint;
+};
+
 static strlist relative_to;
 static char separator[2];
 static stralloc delims;
 static path_format format;
 static int absolute = 0, canonical = 0;
 static stralloc cwd;
+#if defined(__MINGW32__) || defined(__MSYS__)
+static stralloc mingw;
+#endif
+static MAP_T mtab;
+static struct mount_entry* mounts = 0;
 
 void
 strlist_from_path(strlist* sl, const char* p) {
@@ -78,9 +94,97 @@ pathconv(const char* path, stralloc* sa) {
 }
 #endif
 
+static struct mount_entry*
+read_mounts() {
+  buffer in;
+  stralloc line;
+  /*array a;
+  struct mount_entry e;*/
+
+  if(buffer_readfile(&in, "/proc/mounts"))
+    return 0;
+
+  stralloc_init(&line);
+  // array_init(&a);
+
+  while(buffer_getnewline_sa(&in, &line) > 0) {
+    char *dev, *mnt;
+    size_t dlen, mlen;
+
+    stralloc_nul(&line);
+
+    dev = line.s;
+    dlen = byte_chr(dev, line.len, ' ');
+    dev[dlen] = '\0';
+    /*  e.device = str_dup(dev);*/
+
+    mnt = dev + dlen + 1;
+
+    while(*mnt && isspace(*mnt))
+      ++mnt;
+
+    mlen = str_chr(mnt, ' ');
+    mnt[mlen] = '\0';
+
+    MAP_INSERT(mtab, dev, dlen, mnt, mlen);
+
+#ifdef DEBUG_OUTPUT
+    buffer_putm_internal(buffer_2, "device: ", dev ? dev : "(null)", " ", 0);
+    buffer_putm_internal(buffer_2, "mountpoint: ", mnt ? mnt : "(null)", "\n", 0);
+    buffer_flush(buffer_2);
+#endif
+
+    // array_catb(&a, &e, sizeof(struct mount_entry));
+  }
+
+  /* e.device = e.mountpoint = 0;
+   array_catb(&a, &e, sizeof(struct mount_entry));
+
+   return array_start(&a);*/
+}
+
+#if defined(__MINGW32__) || defined(__MSYS__)
+static int
+msys_root(stralloc* sa) {
+  const char* s;
+  stralloc_zero(sa);
+  if((s = getenv("MSYS_PREFIX"))) {
+    path_dirname(s, sa);
+    return 1;
+  }
+#ifdef __MSYS__
+  if((s = getenv("MSYSTEM_PREFIX"))) {
+    stralloc_ready(sa, PATH_MAX + 1);
+    cygwin_conv_to_win32_path(s, sa->s);
+    sa->len = str_len(sa->s);
+    return 1;
+  }
+#endif
+  return 0;
+}
+
+static int
+mingw_prefix(stralloc* sa) {
+  const char* s;
+  stralloc root;
+  stralloc_init(&root);
+  msys_root(&root);
+
+  stralloc_zero(sa);
+  if((s = getenv("MINGW_PREFIX"))) {
+    path_relative_to(s, root.s, sa);
+    stralloc_inserts(sa, "/", 0);
+    return 1;
+  }
+  return 0;
+}
+#endif
+
 int
 pathtool(const char* arg, stralloc* sa) {
   strlist path;
+  size_t len;
+  char* str = 0;
 
   stralloc_init(sa);
 
@@ -88,6 +192,21 @@ pathtool(const char* arg, stralloc* sa) {
   buffer_putm_internal(buffer_2, "arg: ", arg, NULL);
   buffer_putnlflush(buffer_2);
 #endif
+
+#if defined(__MINGW32__) || defined(__MSYS__)
+  len = str_len(arg);
+  if(len >= mingw.len && stralloc_equalb(&mingw, arg, mingw.len)) {
+    stralloc msys;
+    stralloc_init(&msys);
+    msys_root(&msys);
+
+    stralloc_cats(&msys, arg);
+    stralloc_nul(&msys);
+
+    arg = (const char*)((str = stralloc_moveb(&msys, 0)));
+  }
+#endif
+
   if(absolute) {
     path_absolute(arg, sa);
     stralloc_nul(sa);
@@ -188,11 +307,16 @@ separator[0]);*/
 
 #ifdef DEBUG_OUTPUT
     buffer_putm_internal(buffer_2, "separator: ", separator, "\n", 0);
+    buffer_putm_internal(buffer_2, "PATHSEP_S_MIXED: ", PATHSEP_S_MIXED, "\n", 0);
     buffer_putnlflush(buffer_2);
 #endif
     strlist_join(&path, sa, separator[0]);
   }
+
   stralloc_nul(sa);
+
+  if(str)
+    free(str);
 
   return 1;
 }
@@ -238,6 +362,8 @@ main(int argc, char* argv[]) {
                                 {"canonicalize", 0, NULL, 'f'},
                                 {0, 0, 0, 0}};
 
+  MAP_NEW(mtab);
+
   errmsg_iam(argv[0]);
   strlist_init(&relative_to, PATHSEP_C);
 
@@ -279,10 +405,6 @@ main(int argc, char* argv[]) {
   stralloc_copy(&cwd, &tmp);
 #endif
 
-  stralloc_catb(&delims, "/\\", 2);
-  stralloc_catb(&delims, separator, 1);
-  stralloc_nul(&delims);
-
   if(separator[0] == '\0') {
     switch(format) {
       case UNIX:
@@ -290,6 +412,25 @@ main(int argc, char* argv[]) {
       case WIN: separator[0] = '\\'; break;
     }
   }
+
+  stralloc_catb(&delims, "/\\", 2);
+  stralloc_catb(&delims, separator, 1);
+  stralloc_nul(&delims);
+
+#ifdef DEBUG_OUTPUT
+  buffer_puts(buffer_2, "format: ");
+  buffer_puts(buffer_2, ((const char*[]){"MIXED", "UNIX", "WIN"})[format]);
+  buffer_putnlflush(buffer_2);
+#endif
+
+#if defined(__MINGW32__) || defined(__MSYS__)
+  mingw_prefix(&mingw);
+  buffer_puts(buffer_2, "mingw prefix: ");
+  buffer_putsa(buffer_2, &mingw);
+  buffer_putnlflush(buffer_2);
+#endif
+
+  mounts = read_mounts();
 
   if(rel_to) {
 
@@ -323,6 +464,12 @@ main(int argc, char* argv[]) {
     stralloc_init(&sa);
 
     if(pathtool(argv[unix_optind++], &sa)) {
+
+      if(format == WIN)
+        stralloc_replacec(&sa, '/', '\\');
+      else
+        stralloc_replacec(&sa, '\\', '/');
+
       buffer_putsa(buffer_1, &sa);
       buffer_putnlflush(buffer_1);
     }
