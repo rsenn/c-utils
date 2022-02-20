@@ -156,35 +156,41 @@ mounts_read(MAP_T map) {
   return ret;
 }
 
+typedef struct {
+  const char* s;
+  size_t n;
+} column_t;
+
 static const char*
-mounts_match(MAP_T map, const char* path, size_t pathlen, size_t* matchlen) {
+mounts_match(MAP_T map, const char* path, size_t pathlen, size_t* matchlen, int col) {
   MAP_PAIR_T t;
-  struct {
-    const char* s;
-    size_t n;
-  } dev = {0, 0}, mnt = {0, 0}, ret = {0, 0};
+  union {
+    struct {
+      column_t dev, mnt;
+    };
+    column_t a[2];
+  } c;
+  column_t ret = {0, 0};
 
   MAP_FOREACH(map, t) {
-    dev.s = MAP_ITER_KEY(t);
-    dev.n = str_len(dev.s);
-    mnt.s = MAP_ITER_VALUE(t);
-    mnt.n = str_len(mnt.s);
+    c.dev = (column_t){MAP_ITER_KEY(t), str_len(c.dev.s)};
+    c.mnt = (column_t){MAP_ITER_VALUE(t), str_len(c.mnt.s)};
 
 #ifdef DEBUG_OUTPUT_
     buffer_putm_internal(buffer_2, "mounts_match(map, ", 0);
     buffer_put(buffer_2, path, pathlen);
-    buffer_putm_internal(buffer_2, "\") device: ", dev.s ? dev.s : "(null)", " ", 0);
-    buffer_putm_internal(buffer_2, "mountpoint: ", mnt.s ? mnt.s : "(null)", "\n", 0);
+    buffer_putm_internal(buffer_2, "\") device: ", c.dev.s ? c.dev.s : "(null)", " ", 0);
+    buffer_putm_internal(buffer_2, "mountpoint: ", c.mnt.s ? c.mnt.s : "(null)", "\n", 0);
     buffer_flush(buffer_2);
 #endif
 
-    if(dev.n <= pathlen && !path_diffb(path, dev.n, dev.s) &&
-       (dev.n == pathlen || (dev.n < pathlen && path_issep(path[dev.n])))) {
-      if(mnt.n > ret.n) {
+    if(c.a[!!col].n <= pathlen && !path_diffb(path, c.a[!!col].n, c.a[!!col].s) &&
+       (c.a[!!col].n == pathlen || (c.a[!!col].n < pathlen && path_issep(path[c.a[!!col].n])))) {
+      if(c.a[!col].n > ret.n) {
         if(matchlen)
-          *matchlen = dev.n;
-        ret.s = mnt.s;
-        ret.n = mnt.n;
+          *matchlen = c.a[!!col].n;
+        ret.s = c.a[!col].s;
+        ret.n = c.a[!col].n;
       }
     }
   }
@@ -307,7 +313,7 @@ pathtool(const char* arg, stralloc* sa) {
     const char* mount;
     size_t len;
 
-    if((mount = mounts_match(mtab, sa->s, sa->len, &len))) {
+    if((mount = mounts_match(mtab, sa->s, sa->len, &len, 0))) {
       size_t mountlen = str_len(mount);
 #ifdef DEBUG_OUTPUT
       buffer_puts(buffer_2, "before replaced: ");
