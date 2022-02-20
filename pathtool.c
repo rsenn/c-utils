@@ -325,7 +325,7 @@ pathtool(const char* arg, stralloc* sa) {
 
   stralloc_init(sa);
 
-#ifdef DEBUG_OUTPUT
+#if 1 // def DEBUG_OUTPUT
   buffer_putm_internal(buffer_2, "pathtool(\"", arg, "\")", NULL);
   buffer_putnlflush(buffer_2);
 #endif
@@ -543,7 +543,7 @@ main(int argc, char* argv[]) {
   stralloc_catb(&delims, separator, 1);
   stralloc_nul(&delims);
 
-#ifdef DEBUG_OUTPUT
+#if 1 // def DEBUG_OUTPUT
   buffer_puts(buffer_2, "format: ");
   buffer_puts(buffer_2, ((const char*[]){"MIXED", "UNIX", "WIN"})[format]);
   buffer_putnlflush(buffer_2);
