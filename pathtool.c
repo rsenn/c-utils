@@ -171,6 +171,11 @@ typedef struct {
   size_t n;
 } column_t;
 
+#define KEY(t) \
+  (column_t) { MAP_ITER_KEY(t), MAP_ITER_KEY_LEN(t) - 1 }
+#define VAL(t) \
+  (column_t) { MAP_ITER_VALUE(t), MAP_ITER_VALUE_LEN(t) - 1 }
+
 static const char*
 mounts_match(MAP_T map, const char* path, size_t pathlen, size_t* matchlen, int col, bool first) {
   MAP_PAIR_T t;
@@ -184,8 +189,8 @@ mounts_match(MAP_T map, const char* path, size_t pathlen, size_t* matchlen, int 
   column_t ret = {0, 0}, *match = &c.a[!!col], *repl = &c.a[!col];
 
   MAP_FOREACH(map, t) {
-    c.dev = (column_t){MAP_ITER_KEY(t), MAP_ITER_KEY_LEN(t) - 1};
-    c.mnt = (column_t){MAP_ITER_VALUE(t), MAP_ITER_VALUE_LEN(t) - 1};
+    c.dev = KEY(t);
+    c.mnt = VAL(t);
 
     bool matched = match->n <= pathlen && !path_diffb(path, match->n, match->s) &&
                    (match->n == pathlen || (match->n < pathlen && path_issep(path[match->n])));
