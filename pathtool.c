@@ -345,6 +345,12 @@ pathtool(const char* arg, stralloc* sa) {
   }
 #endif
 
+#ifdef DEBUG_OUTPUT
+  buffer_puts(buffer_2, "sa: ");
+  buffer_putsa(buffer_2, sa);
+  buffer_putnlflush(buffer_2);
+#endif
+
 #if defined(__MINGW32__) || defined(__MSYS__)
   mounts_replace(mtab, sa, 0);
 
