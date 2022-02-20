@@ -373,7 +373,7 @@ pathtool(const char* arg, stralloc* sa) {
 #endif
 
 #if defined(__MINGW32__) || defined(__MSYS__)
-  mounts_replace(matb, sa, 1, false);
+  mounts_replace(mtab, sa, 1, false);
 
 #endif
 
