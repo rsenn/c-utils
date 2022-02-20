@@ -147,11 +147,11 @@ mounts_read(MAP_T map) {
     mnt.n = str_chr(mnt.s, ' ');
     mnt.s[mnt.n] = '\0';
 
-    if(str_start(mnt.s, "/cygdrive/") && mnt.n == 10) {
+    if(str_start(mnt.s, "/cygdrive/") /*&& mnt.n == 10*/) {
       blob_t tmp = {mnt.s, mnt.n};
       mnt = dev;
 
-      tmp.s[0] = tmp.s[9];
+      tmp.s[0] = tmp.s[10];
       tmp.s[1] = ':';
       tmp.s[2] = '\0';
       tmp.n = 2;
