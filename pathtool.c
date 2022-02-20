@@ -306,8 +306,24 @@ pathtool(const char* arg, stralloc* sa) {
 
     if((mount = mounts_match(mtab, sa->s, sa->len, &len))) {
       size_t mountlen = str_len(mount);
+#ifdef DEBUG_OUTPUT
+      buffer_puts(buffer_2, "before replaced: ");
+      buffer_putsa(buffer_2, sa);
+      buffer_putnlflush(buffer_2);
+#endif
 
       stralloc_replace(sa, 0, len, mount, mountlen);
+
+#ifdef DEBUG_OUTPUT
+      buffer_puts(buffer_2, "found mount: ");
+      buffer_puts(buffer_2, mount);
+      buffer_putnlflush(buffer_2);
+#endif
+#ifdef DEBUG_OUTPUT
+      buffer_puts(buffer_2, "after replaced: ");
+      buffer_putsa(buffer_2, sa);
+      buffer_putnlflush(buffer_2);
+#endif
     }
   }
 #endif
