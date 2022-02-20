@@ -234,12 +234,18 @@ mounts_replace(MAP_T map, stralloc* sa, int col, bool first) {
 #endif
 
     stralloc_replace(sa, 0, len, mount, str_len(mount));
+    stralloc_nul(sa);
 
 #if 1 // def DEBUG_OUTPUT
     debug_sa("after replace", sa);
 #endif
   }
   return mount;
+}
+
+static void
+mounts_add(MAP_T map, const char* dev, const char* mnt) {
+  MAP_INSERT(map, dev, str_len(dev) + 1, mnt, str_len(mnt) + 1);
 }
 
 #if defined(__MINGW32__) || defined(__MSYS__)
@@ -531,8 +537,8 @@ main(int argc, char* argv[]) {
 
   msys_root(&msys);
   if(!mounts_replace(mtab, &msys, 1, false)) {
-    MAP_INSERT(mtab, msys.s, msys.len + 1, "/", 2);
   }
+  mounts_add(mtab, msys.s, "/");
 
 #if 1 // def DEBUG_OUTPUT
   buffer_puts(buffer_2, "msys root: ");
