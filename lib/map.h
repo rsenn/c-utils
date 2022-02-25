@@ -34,6 +34,7 @@ typedef linked_list_node* MAP_ITER_T;
 #define MAP_ITER_KEY(iter) ((char*)MAP_DATA(iter)->key)
 #define MAP_ITER_KEY_LEN(iter) str_len(MAP_ITER_KEY(iter))
 #define MAP_ITER_VALUE(iter) (MAP_DATA(iter)->value)
+#define MAP_ITER_VALUE_LEN(iter) (str_len(MAP_ITER_VALUE(iter)))
 #define MAP_KEY(pair) ((pair)->key)
 #define MAP_KEY_LEN(pair) str_len((pair)->key)
 #define MAP_VALUE(pair) ((pair)->value)
@@ -177,7 +178,7 @@ typedef TUPLE* MAP_ITER_T;
 #define MAP_ITER_KEY(iter) ((const char*)((iter)->key))
 #define MAP_ITER_KEY_LEN(iter) ((iter)->key_len)
 #define MAP_ITER_VALUE(iter) ((void*)((iter)->vals.val_chars))
-#define MAP_ITER_VALUE_LEN(iter) ((void*)((iter)->data_len))
+#define MAP_ITER_VALUE_LEN(iter) ((size_t)((iter)->data_len))
 #define MAP_KEY MAP_ITER_KEY
 #define MAP_KEY_LEN MAP_ITER_KEY_LEN
 #define MAP_VALUE MAP_ITER_VALUE

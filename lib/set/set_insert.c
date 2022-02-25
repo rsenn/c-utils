@@ -6,7 +6,7 @@
 int set_realloc(set_t* set);
 
 int
-set_add(set_t* set, const void* val, const size_t size) {
+set_insert(set_t* set, const void* val, const size_t size) {
   uint32 hash, index;
   bucket_t* b;
 
@@ -63,15 +63,13 @@ set_add(set_t* set, const void* val, const size_t size) {
     b = b->next;
   }
 
-  b->list_prev = set->last;
-  b->list_next = 0;
+  b->list_next = set->list;
+  b->list_prev = 0;
 
-  if(set->last)
-    set->last->list_next = b;
-  else
-    set->list = b;
+  if(set->list)
+    set->list->list_prev = b;
 
-  set->last = b;
+  set->list = b;
 
   ++set->entries;
   return 1;

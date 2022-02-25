@@ -74,6 +74,7 @@ int path_relative_b(const char*, size_t, stralloc*);
 int path_relative(const char*, stralloc*);
 int path_relative_to_b(const char*, size_t, const char*, size_t n2, stralloc* out);
 int path_relative_to(const char*, const char*, stralloc*);
+int path_relative_to_sa(const stralloc* path, const stralloc* relative_to, stralloc* out);
 
 size_t path_right(const char* s, size_t n);
 size_t path_skip(const char* s, size_t n);
@@ -86,6 +87,8 @@ int path_relative_to_b(const char* s1, size_t n1, const char* s2, size_t n2, str
 
 void path_concat(const char* a, const char* b, stralloc* out);
 void path_concatb(const char* a, size_t alen, const char* b, size_t blen, stralloc* out);
+void path_concat_sa(const stralloc* a, const stralloc* b, stralloc* out);
+
 void path_append(const char* x, size_t len, stralloc* out);
 void path_appends(const char* s, stralloc* out);
 void path_prepend(const char*, size_t, stralloc*);

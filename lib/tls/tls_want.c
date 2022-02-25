@@ -8,7 +8,7 @@
 
 int
 tls_want(fd_t fd, void (*wantread)(fd_t), void (*wantwrite)(fd_t)) {
-  tls_instance* inst = tls_instance_get(fd);
+  tls_instance_t* inst = tls_instance_get(fd);
 
   switch(inst->error) {
     case SSL_ERROR_WANT_READ:

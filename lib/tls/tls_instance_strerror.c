@@ -7,7 +7,7 @@
 #include <openssl/err.h>
 
 const char*
-tls_instance_strerror(tls_instance* i) {
+tls_instance_strerror(tls_instance_t* i) {
   switch(i->error) {
     case SSL_ERROR_WANT_READ: str_copy(i->errstr, "want read"); break;
     case SSL_ERROR_WANT_WRITE: str_copy(i->errstr, "want write"); break;

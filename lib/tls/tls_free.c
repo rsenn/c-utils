@@ -7,7 +7,7 @@
 
 void
 tls_free(fd_t fd) {
-  tls_instance* i = iarray_get(&tls_list, fd);
+  tls_instance_t* i = iarray_get(&tls_list, fd);
   assert(i);
   assert(i->ssl);
   assert(i->bio);

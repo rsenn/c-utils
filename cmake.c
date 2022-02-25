@@ -1,4 +1,6 @@
 #define MAP_USE_HMAP 1
+#include "lib/stralloc.h"
+#include "lib/path.h"
 #include "genmakefile.h"
 #include "cmake.h"
 #include "lib/strarray.h"

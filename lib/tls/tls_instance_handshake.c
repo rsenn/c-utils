@@ -7,7 +7,7 @@
 #include <openssl/err.h>
 
 int
-tls_instance_handshake(tls_instance* i) {
+tls_instance_handshake(tls_instance_t* i) {
   int ret;
   assert(i->ssl);
 
