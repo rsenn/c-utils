@@ -90,7 +90,7 @@ eat_line(const char** s, size_t n, buffer* out) {
     q = scan_charsetnskip(&x[p], "\n\r", n - p);
     if(p == 0 && q == n)
       return p;
-    if(!remove_blank_lines || q > p)
+    if(!remove_blank_lines || p > 0)
       buffer_put(out, x, p + (q > 2 ? 2 : q));
     x += p + q;
     n -= p + q;
@@ -230,14 +230,18 @@ main(int argc, char* argv[]) {
   //  stralloc_init(&data);
 
   if(unix_optind < argc) {
+#ifdef DEBUG_OUTPUT
     buffer_putm_internal(buffer_2, "Opening input file '", argv[unix_optind], "'...", NULL);
     buffer_putnlflush(buffer_2);
+#endif
     in_fd = open_read((in_path = argv[unix_optind]));
     unix_optind++;
   }
   if(unix_optind < argc) {
+#ifdef DEBUG_OUTPUT
     buffer_putm_internal(buffer_2, "Opening output file '", argv[unix_optind], "'...", NULL);
     buffer_putnlflush(buffer_2);
+#endif
     out_fd = open_trunc((out_path = argv[unix_optind]));
     unix_optind++;
   }
