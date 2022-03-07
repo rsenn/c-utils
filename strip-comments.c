@@ -203,22 +203,23 @@ main(int argc, char* argv[]) {
   struct unix_longopt opts[] = {
       {"help", 0, NULL, 'h'},
       {"in-place", 0, NULL, 'i'},
+      {"remove-blank", 0, NULL, 'b'},
       {0, 0, 0, 0},
   };
 
   errmsg_iam(argv[0]);
 
   for(;;) {
-    c = unix_getopt_long(argc, argv, "hi", opts, &index);
+    c = unix_getopt_long(argc, argv, "hib", opts, &index);
     if(c == -1)
       break;
     if(c == 0)
       continue;
 
     switch(c) {
-      case 'i': in_place = 1; break;
       case 'h': usage(argv[0]); return 0;
-      case 'b': remove_blank_lines = 1; return 0;
+      case 'i': in_place = true; break;
+      case 'b': remove_blank_lines = true; return 0;
 
       default: usage(argv[0]); return 1;
     }
