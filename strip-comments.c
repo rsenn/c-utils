@@ -10,6 +10,7 @@
 #include "lib/mmap.h"
 #include "lib/path.h"
 #include "lib/unix.h"
+#include "lib/bool.h"
 #include <ctype.h>
 
 #if WINDOWS_NATIVE
@@ -22,6 +23,7 @@ static char quote[4] = {'"', 0};
 static int one_line, indent = 2, compact;
 static stralloc indent_str, queue;
 static buffer output;
+static bool in_place, remove_blank_lines;
 
 size_t consume_output(stralloc* sa, buffer* out);
 void
@@ -41,10 +43,9 @@ usage(char* av0) {
                        "\n"
                        "Options:\n"
                        "\n"
-                       "  -h, --help              Show "
-                       "this help\n"
-                       "  -i, --in-place          Write "
-                       "to input file\n"
+                       "  -h, --help              Show this help\n"
+                       "  -i, --in-place          Write to input file\n"
+                       "  -b, --remove-blank      Remove blank lines\n"
                        "\n",
                        NULL);
   buffer_flush(buffer_1);
@@ -193,14 +194,17 @@ main(int argc, char* argv[]) {
   int index = 0;
   char buf[16384];
   buffer temp;
-  int in_place = 0;
   charbuf input;
   stralloc data;
   size_t n;
   const char* x;
   char* tmpl = "/tmp/strip-comments.XXXXXX";
 
-  struct unix_longopt opts[] = {{"help", 0, NULL, 'h'}, {"in-place", 0, NULL, 'i'}, {0, 0, 0, 0}};
+  struct unix_longopt opts[] = {
+      {"help", 0, NULL, 'h'},
+      {"in-place", 0, NULL, 'i'},
+      {0, 0, 0, 0},
+  };
 
   errmsg_iam(argv[0]);
 
@@ -214,6 +218,7 @@ main(int argc, char* argv[]) {
     switch(c) {
       case 'i': in_place = 1; break;
       case 'h': usage(argv[0]); return 0;
+      case 'b': remove_blank_lines = 1; return 0;
 
       default: usage(argv[0]); return 1;
     }
