@@ -90,7 +90,8 @@ eat_line(const char** s, size_t n, buffer* out) {
     q = scan_charsetnskip(&x[p], "\n\r", n - p);
     if(p == 0 && q == n)
       return p;
-    buffer_put(out, x, p + (q > 2 ? 2 : q));
+    if(!remove_blank_lines || q > p)
+      buffer_put(out, x, p + (q > 2 ? 2 : q));
     x += p + q;
     n -= p + q;
   }
@@ -219,7 +220,7 @@ main(int argc, char* argv[]) {
     switch(c) {
       case 'h': usage(argv[0]); return 0;
       case 'i': in_place = true; break;
-      case 'b': remove_blank_lines = true; return 0;
+      case 'b': remove_blank_lines = true; break;
 
       default: usage(argv[0]); return 1;
     }
