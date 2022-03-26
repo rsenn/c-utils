@@ -12,7 +12,10 @@ if(BUILD_ZLIB)
     endif()
 
     exec_program("${TAR}" ARGS -C "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty" -xzf "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/zlib-${ZLIB_VERSION}.tar.gz")
+    
+    if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/zlib-${ZLIB_VERSION}")
     file(RENAME "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/zlib-${ZLIB_VERSION}" "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/zlib")
+    endif(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/zlib-${ZLIB_VERSION}")
 
   endif()
   include("${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/zlib.cmake")
