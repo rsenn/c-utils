@@ -18,12 +18,36 @@ endif()
 # message(INFO "Compiler Id: ${CMAKE_C_COMPILER_ID}")
 
 if(CMAKE_C_COMPILER_ID MATCHES "GNU")
-  set(PEDANTIC_COMPILE_FLAGS -pedantic-errors -Wall -Wextra -pedantic -Wold-style-cast -Wundef -Wredundant-decls -Wwrite-strings -Wpointer-arith -Wcast-qual -Wformat=2 -Wmissing-include-dirs -Wcast-align -Wnon-virtual-dtor -Wctor-dtor-privacy -Wdisabled-optimization -Winvalid-pch -Woverloaded-virtual -Wconversion -Wno-ctor-dtor-privacy -Wno-format-nonliteral -Wno-shadow)
+  set(PEDANTIC_COMPILE_FLAGS
+      -pedantic-errors
+      -Wall
+      -Wextra
+      -pedantic
+      -Wold-style-cast
+      -Wundef
+      -Wredundant-decls
+      -Wwrite-strings
+      -Wpointer-arith
+      -Wcast-qual
+      -Wformat=2
+      -Wmissing-include-dirs
+      -Wcast-align
+      -Wnon-virtual-dtor
+      -Wctor-dtor-privacy
+      -Wdisabled-optimization
+      -Winvalid-pch
+      -Woverloaded-virtual
+      -Wconversion
+      -Wno-ctor-dtor-privacy
+      -Wno-format-nonliteral
+      -Wno-shadow)
   if(NOT CMAKE_C_COMPILER_VERSION VERSION_LESS 4.6)
     set(PEDANTIC_COMPILE_FLAGS ${PEDANTIC_COMPILE_FLAGS} -Wnoexcept -Wno-dangling-else -Wno-unused-local-typedefs)
   endif()
   if(NOT CMAKE_C_COMPILER_VERSION VERSION_LESS 5.0)
-    set(PEDANTIC_COMPILE_FLAGS ${PEDANTIC_COMPILE_FLAGS} -Wdouble-promotion -Wtrampolines -Wzero-as-null-pointer-constant -Wuseless-cast -Wvector-operation-performance -Wsized-deallocation)
+    set(PEDANTIC_COMPILE_FLAGS
+        ${PEDANTIC_COMPILE_FLAGS} -Wdouble-promotion -Wtrampolines -Wzero-as-null-pointer-constant -Wuseless-cast
+        -Wvector-operation-performance -Wsized-deallocation)
   endif()
   if(NOT CMAKE_C_COMPILER_VERSION VERSION_LESS 6.0)
     set(PEDANTIC_COMPILE_FLAGS ${PEDANTIC_COMPILE_FLAGS} -Wshift-overflow=2 -Wnull-dereference -Wduplicated-cond)

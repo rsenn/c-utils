@@ -12,7 +12,7 @@
 #endif
 
 iarray tls_list = {.pages = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-                   .elemsize = sizeof(tls_instance),
+                   .elemsize = sizeof(tls_instance_t),
                    .elemperpage = 127,
                    .bytesperpage = 4096,
                    .len = 0};
@@ -25,7 +25,7 @@ iarray tls_list = {.pages = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
 static tls_t*
 tls_new(tls_ctx_t* ctx, fd_t fd) {
   SSL* ssl;
-  tls_instance* i = 0;
+  tls_instance_t* i = 0;
 
   if(ctx == 0) {
     buffer_putsflush(buffer_2, "ERROR tls_new ctx=0\n");

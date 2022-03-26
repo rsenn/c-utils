@@ -10,6 +10,7 @@
 #include "lib/mmap.h"
 #include "lib/path.h"
 #include "lib/unix.h"
+#include "lib/bool.h"
 #include <ctype.h>
 
 #if WINDOWS_NATIVE
@@ -22,6 +23,7 @@ static char quote[4] = {'"', 0};
 static int one_line, indent = 2, compact;
 static stralloc indent_str, queue;
 static buffer output;
+static bool in_place, remove_blank_lines;
 
 size_t consume_output(stralloc* sa, buffer* out);
 void
@@ -41,10 +43,9 @@ usage(char* av0) {
                        "\n"
                        "Options:\n"
                        "\n"
-                       "  -h, --help              Show "
-                       "this help\n"
-                       "  -i, --in-place          Write "
-                       "to input file\n"
+                       "  -h, --help              Show this help\n"
+                       "  -i, --in-place          Write to input file\n"
+                       "  -b, --remove-blank      Remove blank lines\n"
                        "\n",
                        NULL);
   buffer_flush(buffer_1);
@@ -89,7 +90,8 @@ eat_line(const char** s, size_t n, buffer* out) {
     q = scan_charsetnskip(&x[p], "\n\r", n - p);
     if(p == 0 && q == n)
       return p;
-    buffer_put(out, x, p + (q > 2 ? 2 : q));
+    if(!remove_blank_lines || p > 0)
+      buffer_put(out, x, p + (q > 2 ? 2 : q));
     x += p + q;
     n -= p + q;
   }
@@ -193,27 +195,32 @@ main(int argc, char* argv[]) {
   int index = 0;
   char buf[16384];
   buffer temp;
-  int in_place = 0;
   charbuf input;
   stralloc data;
   size_t n;
   const char* x;
   char* tmpl = "/tmp/strip-comments.XXXXXX";
 
-  struct unix_longopt opts[] = {{"help", 0, NULL, 'h'}, {"in-place", 0, NULL, 'i'}, {0, 0, 0, 0}};
+  struct unix_longopt opts[] = {
+      {"help", 0, NULL, 'h'},
+      {"in-place", 0, NULL, 'i'},
+      {"remove-blank", 0, NULL, 'b'},
+      {0, 0, 0, 0},
+  };
 
   errmsg_iam(argv[0]);
 
   for(;;) {
-    c = unix_getopt_long(argc, argv, "hi", opts, &index);
+    c = unix_getopt_long(argc, argv, "hib", opts, &index);
     if(c == -1)
       break;
     if(c == 0)
       continue;
 
     switch(c) {
-      case 'i': in_place = 1; break;
       case 'h': usage(argv[0]); return 0;
+      case 'i': in_place = true; break;
+      case 'b': remove_blank_lines = true; break;
 
       default: usage(argv[0]); return 1;
     }
@@ -223,14 +230,18 @@ main(int argc, char* argv[]) {
   //  stralloc_init(&data);
 
   if(unix_optind < argc) {
+#ifdef DEBUG_OUTPUT
     buffer_putm_internal(buffer_2, "Opening input file '", argv[unix_optind], "'...", NULL);
     buffer_putnlflush(buffer_2);
+#endif
     in_fd = open_read((in_path = argv[unix_optind]));
     unix_optind++;
   }
   if(unix_optind < argc) {
+#ifdef DEBUG_OUTPUT
     buffer_putm_internal(buffer_2, "Opening output file '", argv[unix_optind], "'...", NULL);
     buffer_putnlflush(buffer_2);
+#endif
     out_fd = open_trunc((out_path = argv[unix_optind]));
     unix_optind++;
   }

@@ -2,21 +2,21 @@
   "build_systems": [
     {
       "name": "List",
-      "shell_cmd": "ls -l"
+      "shell_cmd": "ls -l",
     },
     {
       "name": "Build debug",
       "shell_cmd": "make DEBUG=1 SELECT=1 CC=clang",
-      "working_dir": "${project_path:${folder:${file_path}}}"
+      "working_dir": "${project_path:${folder:${file_path}}}",
     },
     {
       "name": "Rebuild CTags",
-      "shell_cmd": "make .tags"
+      "shell_cmd": "make .tags",
     },
     {
       "name": "clang-format",
       "shell_cmd": "clang-format -verbose -style=file -i '${file}'",
-      "working_dir": "${project_path:${folder:${file_path}}}"
+      "working_dir": "${project_path:${folder:${file_path}}}",
     }
   ],
   "folders": [
@@ -49,15 +49,18 @@
         "Sources/[!c][!-]*",
         "Sources/[^c][^-]*"
       ],
-      "path": "."
+      "path": ".",
     }
   ],
   "settings": {
-    "debug.configurations": [],
+    /*"debug.configurations": [],*/
     "sublimegdb_commandline": "gdb --interpreter=mi ${file}",
     "sublimegdb_exec_cmd": "-exec-run",
     "sublimegdb_i_know_how_to_use_gdb_thank_you_very_much": true,
     "sublimegdb_workingdir": "${folder:${project_path:${file}}}",
-    "tab_size": 2
-  }
+    "tab_size": 2,
+  },
+  "debugger_configurations":
+  [
+  ],
 }

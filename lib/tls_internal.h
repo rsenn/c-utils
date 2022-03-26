@@ -38,7 +38,7 @@ typedef struct bio_method_st {
   long (*ctrl)(struct bio_st*, int, long, void*);
   int (*create)(struct bio_st*);
   int (*destroy)(struct bio_st*);
-  long (*callback_ctrl)(struct bio_st*, int, BIO_info_cb*);
+  long (*callback_ctrl)(struct bio_st*, int, int (*info_cb)(BIO*, int, int));
 } bio_method_t;
 
 typedef struct bio_st {
@@ -65,7 +65,7 @@ typedef struct tls_instance_st {
   int error;
   want_func *wantread, *wantwrite;
   char errstr[128];
-} tls_instance;
+} tls_instance_t;
 
 extern const char *tls_key, *tls_certificate;
 extern iarray tls_list;
@@ -74,14 +74,14 @@ extern int tls_initialized;
 extern tls_method_t const *tls_client_method, *tls_server_method;
 extern tls_ctx_t *tls_client_ctx, *tls_server_ctx;
 
-void tls_instance_debug(tls_instance* i);
-int tls_instance_errno(tls_instance* i);
-tls_instance* tls_instance_get(fd_t fd);
-int tls_instance_handshake(tls_instance* i);
-tls_instance* tls_instance_new(fd_t fd);
-ssize_t tls_instance_return(tls_instance* i, tls_op_t op, int ret);
-const char* tls_instance_strerror(tls_instance* i);
-const char* tls_instance_strerror(tls_instance* i);
+void tls_instance_debug(tls_instance_t* i);
+int tls_instance_errno(tls_instance_t* i);
+tls_instance_t* tls_instance_get(fd_t fd);
+int tls_instance_handshake(tls_instance_t* i);
+tls_instance_t* tls_instance_new(fd_t fd);
+ssize_t tls_instance_return(tls_instance_t* i, tls_op_t op, int ret);
+const char* tls_instance_strerror(tls_instance_t* i);
+const char* tls_instance_strerror(tls_instance_t* i);
 
 #endif
 #endif

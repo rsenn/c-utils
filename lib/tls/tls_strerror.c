@@ -12,7 +12,7 @@ const char*
 tls_strerror(fd_t fd) {
   int err;
   const char* str;
-  tls_instance* i = iarray_get(&tls_list, fd);
+  tls_instance_t* i = iarray_get(&tls_list, fd);
 
   switch(i->error) {
     case SSL_ERROR_WANT_READ: str_copy(i->errstr, "want read"); break;

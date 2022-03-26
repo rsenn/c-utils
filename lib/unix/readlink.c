@@ -1,5 +1,6 @@
 #include "../windoze.h"
 #include "../typedefs.h"
+#include "../byte.h"
 
 #if WINDOWS
 #include "../ioctlcmd.h"

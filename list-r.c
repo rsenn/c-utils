@@ -1170,7 +1170,8 @@ usage(char* argv0) {
                        "  -L, --dereference          dereference symlinks\n",
                        "      --no-dereferen1ce\n",
                        "  -D, --one-filesystem\n",
-                       "  -C, --cross-filesystem\n",
+                       "      --cross-filesystem\n",
+                       "  -C, --chdir       DIR      in directory\n",
                        "  -c, --crc                  cyclic redundancy check\n",
                        "  -d, --depth       NUM      MAX depth\n",
                        "  -F, --filter-type TYPES    filter by type:\n\n    d = directory, b = "
@@ -1389,6 +1390,14 @@ main(int argc, char* argv[]) {
   buffer_putnlflush(buffer_2);
 #endif
 
+  if(opt_chdir) {
+    if(chdir(opt_chdir) == -1) {
+      //      if(!opt_quiet)
+      errmsg_warnsys("chdir", opt_chdir, 0);
+      return 1;
+    }
+  }
+
   if(input_file) {
     buffer input;
     stralloc line, file;
@@ -1414,14 +1423,6 @@ main(int argc, char* argv[]) {
         stralloc_catc(&file, '/');
     }
     pathlen = file.len;
-
-    if(opt_chdir) {
-      if(chdir(opt_chdir) == -1) {
-        //      if(!opt_quiet)
-        errmsg_warnsys("chdir", opt_chdir, 0);
-        return 1;
-      }
-    }
 
     stralloc_init(&line);
     strarray_init(&lines);

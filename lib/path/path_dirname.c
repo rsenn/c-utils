@@ -1,5 +1,6 @@
 #include "../path_internal.h"
 #include "../str.h"
+#include "../byte.h"
 
 /*
         path           dirname        basename
@@ -16,12 +17,12 @@ static const char* const dot = ".";
 
 size_t
 path_dirlen_b(const char* path, size_t size) {
-  return byte_rchrs(path, size, "/\\", 2);
+  return byte_rchrs(path, size, PATHSEP_S_MIXED, sizeof(PATHSEP_S_MIXED) - 1);
 }
 
 size_t
 path_dirlen(const char* path) {
-  return str_rchrs(path, "/\\", 2);
+  return str_rchrs(path, PATHSEP_S_MIXED, sizeof(PATHSEP_S_MIXED) - 1);
 }
 
 char*

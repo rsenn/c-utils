@@ -29,6 +29,7 @@
 
 typedef enum { OS_WIN, OS_MAC, OS_LINUX } os_type;
 typedef enum { LANG_C, LANG_CXX } lang_type;
+typedef enum { PREPROCESS = 0, COMPILE, LIB, LINK, MKDIR, CLEAN, NUM_COMMANDS } command_type;
 
 #if WINDOWS
 #define MAX_CMD_LEN 1023
@@ -67,6 +68,13 @@ typedef struct {
   os_type os;
   enum { NTOS, UNIX } type;
 } system_type;
+
+union commands {
+  stralloc v[NUM_COMMANDS];
+  struct {
+    stralloc preprocess, compile, lib, link, mkdir, delete;
+  };
+};
 
 typedef struct {
   union {
@@ -107,6 +115,8 @@ typedef struct target_s {
   strlist vars;
   bool disabled : 1;
   bool outputs : 1;
+  bool phony : 1;
+  command_type type;
 } target;
 
 typedef struct {
@@ -117,19 +127,11 @@ typedef struct {
 } dirs_t;
 
 typedef struct {
-  char *src, *inc;
-  char* obj;
-  char* lib;
-  char* slib;
-  char* bin;
-  char* pps;
+  const char *src, *inc, *obj, *lib, *slib, *bin, *pps;
 } exts_t;
 
 typedef struct {
-  char* toolchain;
-  char* compiler;
-  char* make;
-  char* preproc;
+  const char *toolchain, *compiler, *make, *preproc;
 } tools_t;
 
 typedef enum { MAKE_IMPLICIT_RULES = 0x01, MAKE_PATTERN_RULES = 0x02 } tool_config_t;
@@ -165,13 +167,17 @@ void set_command(stralloc*, const char*, const char*);
 
 void strarray_dump(buffer*, const strarray*);
 
-void path_prefix_b(const stralloc*, const char*, size_t, stralloc*);
-void path_prefix_s(const stralloc*, const char*, stralloc*);
-void path_prefix_sa(const stralloc*, stralloc*);
-char* path_extension(const char*, stralloc*, const char*);
-char* path_output(const char*, stralloc*, const char*);
-char* path_wildcard(stralloc*, const char*);
-const char* path_mmap_read(const char*, size_t*);
+char* path_clean_b(const char* path, size_t* len);
+char* path_clean_s(const char* path);
+char* path_extension(const char* in, stralloc* out, const char* ext);
+const char* path_mmap_read(const char* path, size_t* n);
+void path_normalize_b(const char* x, size_t len, stralloc* out);
+void path_normalize(const char* dir, stralloc* out);
+char* path_output(const char* in, stralloc* out, const char* ext);
+void path_prefix_b(const stralloc* prefix, const char* x, size_t n, stralloc* out);
+void path_prefix_sa(const stralloc* prefix, stralloc* sa);
+void path_prefix_s(const stralloc* prefix, const char* path, stralloc* out);
+char* path_wildcard(stralloc* sa, const char* wildchar);
 
 int extract_build_type(const stralloc*);
 void extract_tokens(const char*, size_t, set_t*);
@@ -213,6 +219,7 @@ void rule_dump(target*);
 bool rule_is_compile(target* rule);
 bool rule_is_lib(target* rule);
 bool rule_is_link(target* rule);
+void rule_prereq(target* t, set_t* s);
 void rule_prereq_recursive(target*, set_t* s);
 target* rule_find_lib(const char* name, size_t namelen);
 
@@ -339,5 +346,6 @@ extern const char* project_name;
 extern int cmd_objs, cmd_libs, cmd_bins;
 extern set_t link_libraries;
 extern MAP_T sourcedirs, targetdirs, rules, vars;
+extern strlist include_dirs, link_dirs;
 
 #endif
