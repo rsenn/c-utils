@@ -523,13 +523,16 @@ pkg_read(buffer* b, pkg* p) {
 
     if(name.len) {
       stralloc_trimr(&value, "\r\n\t \0", 5);
-      stralloc_nul(&value);
-      stralloc_nul(&name);
 
       if(stralloc_starts(&value, "/"))
         stralloc_prepends(&value, sysroot);
 
-#ifdef DEBUG_OUTPUT_
+      stralloc_remove_all(&value, "\"'", 2);
+
+      stralloc_nul(&name);
+      stralloc_nul(&value);
+
+#ifdef DEBUG_OUTPUT
       buffer_putm_internal(buffer_2, "Name: ", name.s, "\n", NULL);
       buffer_putm_internal(buffer_2, "Value: ", value.s, "\n", NULL);
       buffer_flush(buffer_2);
@@ -537,6 +540,7 @@ pkg_read(buffer* b, pkg* p) {
 
       if(stralloc_equals(&name, "Version"))
         pkg_parse_version(&p->version, value.s, value.len);
+
       {
         MAP_T map = sep == '=' ? p->vars : p->fields;
         MAP_INSERT(map, name.s, name.len + 1, value.s, value.len + 1);

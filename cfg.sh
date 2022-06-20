@@ -174,8 +174,9 @@ cfg-mingw() {
   esac
 
   : ${PKG_CONFIG=${host}-pkg-config}
+  : ${PKG_CONFIG_PATH=$prefix/lib/pkgconfig}
 
-  export TOOLCHAIN PKG_CONFIG
+  export TOOLCHAIN PKG_CONFIG PKG_CONFIG_PATH
   
   builddir=build/$host \
   bindir=$prefix/bin \
@@ -275,19 +276,21 @@ cfg-msys() {
  (echo "host: $host"
   build=$(gcc -dumpmachine)
   : ${host=${build%%-*}-pc-msys}
-  : ${prefix=/usr/$host/sysroot/usr}
+  : ${prefix=/usr/$host/sys-root/usr}
    echo "host: $host"
 
   case "$host" in
     x86_64*) TOOLCHAIN=/opt/cmake-toolchains/msys64.cmake ;;
    *) TOOLCHAIN=/opt/cmake-toolchains/msys32.cmake ;;
   esac
-  export TOOLCHAIN
   echo "builddir: $builddir"
 
   export PKG_CONFIG=$host-pkg-config
+  export PKG_CONFIG_PATH="$prefix/lib/pkgconfig"
 
   : ${builddir=build/$host}
+
+  export TOOLCHAIN PKG_CONFIG PKG_CONFIG_PATH
 
   bindir=$prefix/bin \
   libdir=$prefix/lib \
