@@ -4,6 +4,7 @@ cfg() {
   elif type clang 2>/dev/null >/dev/null && type clang++ 2>/dev/null >/dev/null; then
     : ${CC:=clang} ${CXX:=clang++}
   fi
+  echo "builddir=$builddir" 1>&2
 
   : ${build:=`$CC -dumpmachine | sed 's|-pc-|-|g'`}
 
@@ -16,6 +17,7 @@ cfg() {
       i686-pc-*) host="$host"; : ${builddir=build/$host} ;;
     esac
   fi
+  
 
   if false && [ -n "$host" -a -z "$prefix" ]; then
     case "$host" in
@@ -38,11 +40,12 @@ cfg() {
   else
    : ${builddir=build/$host}
   fi
-  case "$host" in
+  case "$host:$builddir" in
     *msys*) ;;
     *) test -n "$builddir" && builddir=`echo $builddir | sed 's|-pc-|-|g'` ;;
   esac
-  
+    echo "builddir=$builddir" 1>&2
+
   case $(uname -o) in
    # MSys|MSYS|Msys) SYSTEM="MSYS" ;;
     *) SYSTEM="Unix" ;;
@@ -60,6 +63,8 @@ cfg() {
      *) PKG_CONFIG=$(which "$PKG_CONFIG") ;; 
   esac
   : ${generator:="CodeLite - Unix Makefiles"}
+  echo "host=$host" 1>&2
+  echo "builddir=$builddir" 1>&2
 
   mkdir -p $builddir
   : ${relsrcdir=`realpath --relative-to "$builddir" .`}

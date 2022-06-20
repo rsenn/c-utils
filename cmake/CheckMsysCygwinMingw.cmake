@@ -20,7 +20,7 @@ macro(check_enable_auto_import_flag VAR)
   check_flag_and_add("-Wl,--enable-auto-import" "${VAR}" CMAKE_EXE_LINKER_FLAGS CMAKE_MODULE_LINKER_FLAGS
                      CMAKE_SHARED_LINKER_FLAGS)
   foreach(ARG CMAKE_EXE_LINKER_FLAGS CMAKE_MODULE_LINKER_FLAGS CMAKE_SHARED_LINKER_FLAGS)
-    set("${ARG}" "${${ARG}}" PARENT_SCOPE)
+    set("${ARG}" "${${ARG}}")
   endforeach(ARG CMAKE_EXE_LINKER_FLAGS CMAKE_MODULE_LINKER_FLAGS CMAKE_SHARED_LINKER_FLAGS)
 endmacro(check_enable_auto_import_flag VAR)
 
@@ -78,17 +78,17 @@ macro(check_msys_cygwin_mingw)
     set(NATIVE TRUE)
   endif(WIN32 OR MINGW)
 
-  set(WINDOWS_NATIVE "${NATIVE}" PARENT_SCOPE)
+  set(WINDOWS_NATIVE "${NATIVE}")
   set(WINDOWS_NATIVE "${NATIVE}" CACHE BOOL "Native windows (msvcrt or mingw)")
 
   if(WIN32 OR CYGWIN OR MSYS OR MINGW)
     set(WINDOWS TRUE)
   endif(WIN32 OR CYGWIN OR MSYS OR MINGW)
 
-  set(WINDOWS "${WINDOWS}" PARENT_SCOPE)
+  set(WINDOWS "${WINDOWS}")
   set(WINDOWS "${WINDOWS}" CACHE BOOL "Any windows (native/msys/cygwin)")
 
-  set(SYSTEM "${SYSTEM}" PARENT_SCOPE)
+  set(SYSTEM "${SYSTEM}")
 
   if(WINDOWS)
     check_enable_auto_import_flag(AUTO_IMPORT)
