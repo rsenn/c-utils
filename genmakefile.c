@@ -1,4 +1,4 @@
-﻿#include <assert.h>
+#include <assert.h>
 #include <stdlib.h>
 #include <ctype.h>
 #include <errno.h>
@@ -12,14 +12,17 @@
 #include "genmakefile.h"
 #include "lib/map.h"
 #include "debug.h"
-#include "mplab.h"
-#include "cmake.h"
 #include "lib/unix.h"
 #include "lib/sig.h"
 #include "lib/env.h"
 #include "lib/glob.h"
 #include "lib/dlist.h"
 #include "lib/bool.h"
+#include "src/genmakefile/is.h"
+#include "src/genmakefile/path.h"
+#include "src/genmakefile/rule.h"
+#include "src/genmakefile/mplab.h"
+#include "src/genmakefile/cmake.h"
 #include <string.h>
 
 #if !WINDOWS_NATIVE
@@ -103,7 +106,7 @@ dirs_t dirs;
 tools_t tools;
 config_t cfg = {.mach = {0, 0}, .sys = {0, 0}, .chip = {0, 0, 0}, .build_type = 1, .lang = LANG_CXX};
 tool_config_t tool_config = 0;
-MAP_T sourcedirs, targetdirs, rules, vars;
+MAP_T sourcedirs, targetdirs,  vars;
 
 void
 map_keys(const MAP_T* m, strlist* out) {
@@ -151,26 +154,6 @@ debug_target(const target* t) {
 #ifndef _WIN32
 #define _mkdir mkdir
 #endif
-
-void
-concat_quoted(stralloc* sa, const char* x, size_t len) {
-  size_t j, k;
-  if(quote_args[0] == '\0') {
-    stralloc_catb(sa, x, len);
-    return;
-  }
-  for(j = 0; j < len;) {
-    k = byte_chr(&x[j], len - j, ' ');
-    if(k) {
-      if(j)
-        stralloc_catc(sa, ' ');
-      stralloc_cats(sa, quote_args);
-      stralloc_catb(sa, &x[j], k);
-      stralloc_cats(sa, quote_args);
-    }
-    j += k + 1;
-  }
-}
 
 int
 mkdir_sa(const stralloc* dir, int mode) {
@@ -279,21 +262,7 @@ strarray_dump(buffer* b, const strarray* arr) {
   buffer_putsflush(b, "]\n");
 }
 
-/**
- * @defgroup path functions
- * @{
- */
-/**
- * @brief path_prefix_b Adds a prefix to
- * the specified path
- * @param prefix        Prefix to add
- * @param x             The path buffer
- * @param n             Length of path
- * buffer
- * @param out           Write output
- * here
- */
-void
+/*void
 path_prefix_b(const stralloc* prefix, const char* x, size_t n, stralloc* out) {
   if(prefix->len && !stralloc_equals(prefix, ".")) {
     stralloc_cat(out, prefix);
@@ -304,14 +273,6 @@ path_prefix_b(const stralloc* prefix, const char* x, size_t n, stralloc* out) {
   stralloc_nul(out);
 }
 
-/**
- * @brief path_prefix_s Adds a prefix to
- * the specified path
- * @param prefix        Prefix to add
- * @param path          The path string
- * @param out           Write output
- * here
- */
 void
 path_prefix_s(const stralloc* prefix, const char* path, stralloc* out) {
   path_prefix_b(prefix, path, str_len(path), out);
@@ -328,10 +289,6 @@ path_prefix_sa(const stralloc* prefix, stralloc* sa) {
   stralloc_nul(sa);
 }
 
-/**
- * Change file extension and concatenate
- * it to out.
- */
 char*
 path_extension(const char* in, stralloc* out, const char* ext) {
   size_t extpos = str_rchr(in, '.');
@@ -341,13 +298,6 @@ path_extension(const char* in, stralloc* out, const char* ext) {
   return out->s;
 }
 
-/**
- * @brief path_output  Convert source
- * file name to object file name
- * @param in
- * @param out
- * @return
- */
 char*
 path_output(const char* in, stralloc* out, const char* ext) {
   stralloc_copy(out, &dirs.build.sa);
@@ -355,16 +305,6 @@ path_output(const char* in, stralloc* out, const char* ext) {
   return path_extension(str_basename(in), out, ext);
 }
 
-/**
- * @brief path_wildcard  Replaces the
- * path basename (without extensions)
- * with a wildcard
- * @param path           The path to
- * replace
- * @param sa             Write output
- * here
- * @return               Output string
- */
 char*
 path_wildcard(stralloc* sa, const char* wildchar) {
   const char* x;
@@ -444,7 +384,6 @@ path_normalize(const char* dir, stralloc* out) {
   } else {
     path_canonical(dir, &tmp);
   }
-  // stralloc_nul(&tmp);
   path_relative_to_b(tmp.s, tmp.len, dirs.out.sa.s, dirs.out.sa.len, out);
   stralloc_free(&tmp);
 }
@@ -460,7 +399,7 @@ path_normalize_b(const char* x, size_t len, stralloc* out) {
     out->len -= 2;
   stralloc_nul(out);
   stralloc_free(&tmp);
-}
+}*/
 
 /**
  * @}
@@ -686,7 +625,7 @@ main_present(const char* filename) {
   if(str_equal(exts.src, ".asm") && is_source(filename))
     return 1;
 
-  if((x = (char*)path_mmap_read(filename, &n))) {
+  if((x = (char*)path_mmap_read(filename, &n, &dirs.this.sa, pathsep_make))) {
     int ret = main_scan(x, n);
     mmap_unmap(x, n);
     return ret;
@@ -778,7 +717,7 @@ int
 includes_get(const char* srcfile, strlist* includes, int sys) {
   const char* x;
   size_t n;
-  if((x = path_mmap_read(srcfile, &n))) {
+  if((x = path_mmap_read(srcfile, &n, &dirs.this.sa, pathsep_make))) {
     includes_extract(x, n, includes, sys);
     mmap_unmap(x, n);
     return 1;
@@ -790,7 +729,7 @@ void
 includes_add_b(const char* dir, size_t len) {
   static stralloc abs;
   stralloc_zero(&abs);
-  path_normalize_b(dir, len, &abs);
+  path_normalize_b(dir, len, &abs, &dirs.build.sa, &dirs.out.sa);
   if(strlist_push_unique_sa(&include_dirs, &abs)) {
 #ifdef DEBUG_OUTPUT
     buffer_puts(buffer_2, "Added to include dirs: ");
@@ -809,7 +748,7 @@ void
 libdirs_add(const char* dir) {
   static stralloc abs;
   stralloc_zero(&abs);
-  path_normalize(dir, &abs);
+  path_normalize(dir, &abs, &dirs.build.sa, &dirs.out.sa);
   if(strlist_push_unique_sa(&link_dirs, &abs)) {
 
 #ifdef DEBUG_OUTPUT_
@@ -893,10 +832,7 @@ var_subst(const stralloc* in, stralloc* out, const char* pfx, const char* sfx, i
   }
 }
 
-/**
- * Find or create rule
- */
-target*
+/*target*
 rule_get(const char* name) {
   static int rule_serial;
   target* ret = NULL;
@@ -914,7 +850,6 @@ rule_get(const char* name) {
     strlist_init(&tgt.cmds, ' ');
     MAP_INSERT(rules, name, len + 1, &tgt, ((sizeof(struct target_s) + 3) / 4) * 4);
     (MAP_SEARCH(rules, name, len + 1, &t));
-    // ret = MAP_ITER_VALUE(t);
 
 #ifdef DEBUG_OUTPUT_
     if(t) {
@@ -928,22 +863,12 @@ rule_get(const char* name) {
   return ret;
 }
 
-/**
- * @brief rule_get_sa
- * @param name
- * @return
- */
 target*
 rule_get_sa(stralloc* name) {
   stralloc_nul(name);
   return rule_get(name->s);
 }
 
-/**
- * @brief rule_find
- * @param needle
- * @return
- */
 target*
 rule_find(const char* needle) {
   MAP_PAIR_T t;
@@ -953,9 +878,6 @@ rule_find(const char* needle) {
       return MAP_ITER_VALUE(t);
     if(str_equal(path_basename((char*)name), path_basename((char*)needle)))
       return MAP_ITER_VALUE(t);
-    /*
-        if(t->next == rules->list_tuple)
-          break; */
   }
   return 0;
 }
@@ -976,23 +898,12 @@ rule_rename(target* rule, const char* name) {
   rule->name = str_ndup(out.s, out.len);
 }
 
-/**
- * @brief rule_find_sa
- * @param name
- * @return
- */
 target*
 rule_find_sa(stralloc* name) {
   stralloc_nul(name);
   return rule_find(name->s);
 }
 
-/**
- * @brief rule_find_b
- * @param x
- * @param n
- * @return
- */
 target*
 rule_find_b(const char* x, size_t n) {
   target* r;
@@ -1023,13 +934,6 @@ rule_find_lib(const char* name, size_t namelen) {
   return 0;
 }
 
-/**
- * @brief rule_match
- * @param rule           Target rule
- * @param pattern        Preqreq
- * wildcard pattern
- * @return               1 if match
- */
 int
 rule_match(target* rule, const char* pattern) {
   int ret = 0;
@@ -1049,14 +953,6 @@ rule_match(target* rule, const char* pattern) {
   return ret;
 }
 
-/**
- * @brief rule_command_subst  Get rule
- * command with substitutions
- * @param rule
- * @param out
- * @param prereq
- * @param plen
- */
 void
 rule_command_subst(target* rule, stralloc* out, const char* prereq, size_t plen) {
   size_t i;
@@ -1078,12 +974,12 @@ rule_command_subst(target* rule, stralloc* out, const char* prereq, size_t plen)
       switch(p[1]) {
         case '@': {
           size_t p = out->len;
-          concat_quoted(out, rule->name, str_len(rule->name));
+          stralloc_catq(out, rule->name, str_len(rule->name), quote_args);
           byte_replace(&out->s[p], out->len - p, pathsep_args == '/' ? '\\' : '/', pathsep_args);
           break;
         }
         case '^': {
-          concat_quoted(out, prereq, plen);
+          stralloc_catq(out, prereq, plen, quote_args);
           break;
         }
         case '|': {
@@ -1092,7 +988,7 @@ rule_command_subst(target* rule, stralloc* out, const char* prereq, size_t plen)
         }
         case '<': {
           size_t n = byte_chr(prereq, plen, ' ');
-          concat_quoted(out, prereq, n);
+          stralloc_catq(out, prereq, n, quote_args);
           break;
         }
       }
@@ -1108,11 +1004,6 @@ rule_command_subst(target* rule, stralloc* out, const char* prereq, size_t plen)
   }
 }
 
-/**
- * @brief rule_command
- * @param rule
- * @param out
- */
 void
 rule_command(target* rule, stralloc* out) {
   size_t len;
@@ -1132,9 +1023,8 @@ rule_command(target* rule, stralloc* out) {
       strlist_pushb_unique(&prereq, s, len);
     }
   }
-  // stralloc_copy(&prereq.sa, &rule->prereq.sa);
   stralloc_replacec(&prereq.sa, from, pathsep_args);
-  if(0 /* make_begin_inline == NULL  && rule->recipe ==  &commands.lib*/) {
+  if(0) {
     char* x;
     size_t n = 0;
     range r;
@@ -1162,7 +1052,7 @@ rule_command(target* rule, stralloc* out) {
         n++;
       r.start += n;
     }
-  } else if(/*!infile && */ !str_start(tools.make, "g") /*&& !str_equal(tools.make, "make")*/ &&
+  } else if(!str_start(tools.make, "g") &&
             !(rule->name[0] == '.' && strchr(&rule->name[1], '.') && prereq.sa.len == 0)) {
     rule_command_subst(rule, out, prereq.sa.s, prereq.sa.len);
   } else {
@@ -1180,12 +1070,6 @@ rule_command(target* rule, stralloc* out) {
   stralloc_free(&prereq.sa);
 }
 
-/**
- * @brief rule_add_dep
- * @param t
- * @param other
- * @return
- */
 int
 rule_add_dep(target* t, target* other) {
   target** ptr;
@@ -1197,11 +1081,6 @@ rule_add_dep(target* t, target* other) {
   return 0;
 }
 
-/**
- * @brief rule_add_deps
- * @param t
- * @param deps
- */
 void
 rule_add_deps(target* t, const strlist* deps) {
   const char* x;
@@ -1216,15 +1095,6 @@ rule_add_deps(target* t, const strlist* deps) {
   }
 }
 
-/**
- * @}
- */
-/**
- * @brief rule_dep_list_recursive Lists
- * all dependencies of a target
- * @param l Output target names
- * @param t Target
- */
 static uint32 rule_dep_serial;
 void
 rule_dep_list_recursive(target* t, set_t* s, int depth, strlist* hier) {
@@ -1246,11 +1116,6 @@ rule_dep_list_recursive(target* t, set_t* s, int depth, strlist* hier) {
   }
 }
 
-/**
- * @brief rule_dep_list
- * @param l
- * @param t
- */
 void
 rule_dep_list(target* t, set_t* s) {
   strlist hier;
@@ -1262,13 +1127,6 @@ rule_dep_list(target* t, set_t* s) {
   strlist_free(&hier);
 }
 
-/**
- * @brief indirect_dep_list  List all
- * indirect deps of a target
- * @param l                  Output
- * target names
- * @param t                  Target
- */
 void
 rule_deps_indirect(target* t, set_t* s) {
   target** ptr;
@@ -1280,7 +1138,6 @@ rule_deps_indirect(target* t, set_t* s) {
     if(*ptr)
       rule_dep_list_recursive(*ptr, s, 0, &hier);
   }
-  // set_deletes(s, t->name);
   strlist_free(&hier);
 }
 
@@ -1308,10 +1165,6 @@ rule_prereq_recursive(target* t, set_t* s) {
   }
 }
 
-/**
- * @brief rule_dump
- * @param rule
- */
 void
 rule_dump(target* rule) {
 #ifdef DEBUG_OUTPUT
@@ -1395,6 +1248,8 @@ rule_is_link(target* rule) {
   }
   return set_size(&rule->prereq) > 0;
 }
+*/
+
 
 /**
  * Add a path to a strlist
@@ -1424,7 +1279,7 @@ add_srcpath(set_t* s, const char* path) {
   static stralloc sa;
   if(srcdir.len && !stralloc_equals(&srcdir, ".")) {
     stralloc_zero(&sa);
-    path_prefix_s(&srcdir, path, &sa);
+    path_prefix_s(&srcdir, path, &sa, pathsep_make);
     set_addsa(s, &sa);
     stralloc_free(&sa);
   } else {
@@ -1437,7 +1292,7 @@ add_source(set_t* s, const char* path) {
   static stralloc sa;
   if(srcdir.len && !stralloc_equals(&srcdir, ".")) {
     stralloc_zero(&sa);
-    path_prefix_s(&srcdir, path, &sa);
+    path_prefix_s(&srcdir, path, &sa, pathsep_make);
     set_addsa(s, &sa);
   } else {
     set_adds(s, path);
@@ -1464,11 +1319,23 @@ add_path_relativeb(set_t* s, stralloc* dir, const char* path, size_t pathlen) {
   stralloc_free(&sa);
 }
 
+static int
+count_b(strlist* list, int (*fn_b)(const char*, size_t)) {
+  const char* x;
+  size_t n;
+  int ret = 0;
+  strlist_foreach(list, x, n) {
+    if(is_b(x, n, fn_b))
+      ret++;
+  }
+  return ret;
+}
+
 /**
  * @defgroup source functions
  * @{
  */
-static int
+/*static int
 is_b(const char* x, size_t n, int (*fn_b)(const char*, size_t)) {
   return fn_b(x, n);
 }
@@ -1483,17 +1350,6 @@ is_sa(const stralloc* sa, int (*fn_b)(const char*, size_t)) {
   return is_b(sa->s, sa->len, fn_b);
 }
 
-static int
-count_b(strlist* list, int (*fn_b)(const char*, size_t)) {
-  const char* x;
-  size_t n;
-  int ret = 0;
-  strlist_foreach(list, x, n) {
-    if(is_b(x, n, fn_b))
-      ret++;
-  }
-  return ret;
-}
 
 int
 is_source_b(const char* filename, size_t len) {
@@ -1512,8 +1368,6 @@ is_source_b(const char* filename, size_t len) {
     return 1;
   if(byte_ends(filename, len, ".inc"))
     return 1;
-  /*if(cfg.lang != LANG_CXX)
-    return 0;*/
   if(byte_ends(filename, len, ".C"))
     return 1;
   if(byte_ends(filename, len, ".cc"))
@@ -1684,7 +1538,7 @@ is_var_b(const char* x, size_t n) {
 int
 is_var(const char* s) {
   return is_var_b(s, str_len(s));
-}
+}*/
 
 /**
  * @brief sources_new  Create new source
@@ -1985,7 +1839,7 @@ sources_addincludes(sourcefile* file, sourcedir* sdir, const strlist* includes, 
   }
 #endif
 
-  relative.s = path_clean_b(relative.s, &relative.len);
+  relative.s = path_clean_b(relative.s, &relative.len, &dirs.this.sa);
   strlist_foreach(includes, x, n) {
     size_t len = n;
     // stralloc_copyb(&path, x,len);
@@ -2285,7 +2139,7 @@ sourcedir_addsource(const char* source, strarray* srcs) {
   path_dirname(source, &dir);
   stralloc_nul(&dir);
   dlen = dir.len;
-  source = path_clean_s(source);
+  source = path_clean_s(source, &dirs.this.sa);
   srcdir = sourcedir_getsa(&dir);
   slist_add(&srcdir->sources, &file->link);
   struct dnode* node = alloc(sizeof(struct dnode) + sizeof(sourcefile*));
@@ -2308,7 +2162,7 @@ sourcedir_addsource(const char* source, strarray* srcs) {
     __asm__("int3");
 #endif
   }
-  if((x = path_mmap_read(source, &n)) != 0) {
+  if((x = path_mmap_read(source, &n, &dirs.this.sa, pathsep_make)) != 0) {
     includes_extract(x, n, &l, 0);
     extract_pptok(x, n, &file->pptoks);
     mmap_unmap(x, n);
@@ -2770,7 +2624,7 @@ deps_for_libs() {
     sourcedir* srcdir = *(sourcedir**)MAP_ITER_VALUE(t);
     target* lib;
     stralloc_zero(&sa);
-    path_prefix_s(&dirs.work.sa, str_basename(MAP_ITER_KEY(t)), &sa);
+    path_prefix_s(&dirs.work.sa, str_basename(MAP_ITER_KEY(t)), &sa, pathsep_make);
     stralloc_cats(&sa, exts.lib);
     if((lib = rule_find_sa(&sa))) {
       strlist libs;
@@ -2955,7 +2809,7 @@ gen_srcdir_compile_rules(sourcedir* sdir, const char* dir) {
   set_iterator_t it;
   stralloc defines;
   stralloc_init(&target);
-  path_output("%", &target, exts.obj);
+  path_output("%", &target, exts.obj, &dirs.build.sa,pathsep_args);
   stralloc_cats(&target, ": ");
   stralloc_init(&srcs);
   tlen = target.len;
@@ -2995,11 +2849,11 @@ gen_srcdir_compile_rules(sourcedir* sdir, const char* dir) {
     // s = str_basename(src->name);
     target.len = tlen;
     stralloc_zero(&srcs);
-    path_prefix_s(&srcdir, src->name, &srcs);
+    path_prefix_s(&srcdir, src->name, &srcs,  pathsep_make);
     path_wildcard(&srcs, "%");
     stralloc_replacec(&srcs, pathsep_make == '/' ? '\\' : '/', pathsep_make);
     stralloc_zero(&obj);
-    path_output(src->name, &obj, exts.obj);
+    path_output(src->name, &obj, exts.obj, &dirs.build.sa, pathsep_args);
     if(str_start(tools.make, "g") || ((shell | batch) && batchmode)) {
       stralloc_cat(&target, &srcs);
     } else if(batchmode) {
@@ -3085,7 +2939,7 @@ gen_simple_compile_rules(sourcedir* srcdir, const char* dir, const char* fromext
       continue;
     if(tools.preproc) {
       stralloc_zero(&obj);
-      path_output(base, &obj, ".pp.c");
+      path_output(base, &obj, ".pp.c",&dirs.build.sa, pathsep_args);
       // stralloc_inserts(&ppsrc,  ".pp", byte_rchr(ppsrc.s,     ppsrc.len, '.'));
       if((rule = rule_get_sa(&obj))) {
         add_source(&rule->prereq, src->name);
@@ -3095,7 +2949,7 @@ gen_simple_compile_rules(sourcedir* srcdir, const char* dir, const char* fromext
       }
     }
     stralloc_init(&obj);
-    path_output(base, &obj, toext);
+    path_output(base, &obj, toext,&dirs.build.sa, pathsep_args);
     /*    debug_str("base", base);
         debug_sa("obj", &obj);*/
     if((rule = rule_get_sa(&obj))) {
@@ -3123,7 +2977,7 @@ gen_srcdir_lib_rule(sourcedir* srcdir, const char* name) {
   target *dep = 0, *rule;
   stralloc sa;
   stralloc_init(&sa);
-  path_prefix_s(&dirs.work.sa, name, &sa);
+  path_prefix_s(&dirs.work.sa, name, &sa,pathsep_make);
   // stralloc_copys(&sa, name);
   stralloc_cats(&sa, exts.lib);
 
@@ -3156,7 +3010,7 @@ gen_srcdir_lib_rule(sourcedir* srcdir, const char* name) {
         if(vpath.sa.len)
           path_extension(pfile->name, &sa, exts.obj);
         else
-          path_output(pfile->name, &sa, exts.obj);
+          path_output(pfile->name, &sa, exts.obj,&dirs.build.sa, pathsep_args);
         set_addsa(&rule->prereq, &sa);
       }
     }
@@ -3190,7 +3044,7 @@ gen_srcdir_rule(sourcedir* sdir, const char* name) {
       continue;
     s = str_ndup(src->name, str_rchr(src->name, '.'));
     stralloc_zero(&mask);
-    path_prefix_s(&dirs.work.sa, str_basename(s), &mask);
+    path_prefix_s(&dirs.work.sa, str_basename(s), &mask, pathsep_make);
     stralloc_cats(&mask, exts.obj);
     if(batchmode || str_start(tools.make, "g")) {
       stralloc_cats(&mask, ": ");
@@ -3278,9 +3132,9 @@ gen_program_rule(const char* filename) {
   sourcedir* srcdir = sourcedir_getsa(&dir);
   // gen_compile_rules(srcdir, dir.s);
   if(tools.preproc) {
-    path_output(filename, &ppsrc, exts.pps);
+    path_output(filename, &ppsrc, exts.pps,&dirs.build.sa, pathsep_args);
   }
-  path_output(filename, &obj, exts.obj);
+  path_output(filename, &obj, exts.obj,&dirs.build.sa, pathsep_args);
   if(tools.preproc && (preprocess = rule_get_sa(&ppsrc))) {
     add_source(&preprocess->prereq, filename);
     stralloc_weak(&preprocess->recipe, &commands.preprocess);
@@ -3301,7 +3155,7 @@ gen_program_rule(const char* filename) {
     if(stralloc_endb(&outname, exts.src, 2))
       outname.len -= 2;
     stralloc_nul(&outname);
-    path_output(outname.s, &bin, exts.bin);
+    path_output(outname.s, &bin, exts.bin,&dirs.build.sa, pathsep_args);
   } else {
     path_extension(obj.s, &bin, exts.bin);
   }
@@ -3316,7 +3170,7 @@ gen_program_rule(const char* filename) {
       slist_foreach(srcdir->sources, pfile) {
         if(!pfile->has_main && !is_include(pfile->name)) {
           stralloc_zero(&obj);
-          path_output(pfile->name, &obj, exts.obj);
+          path_output(pfile->name, &obj, exts.obj,&dirs.build.sa, pathsep_args);
           add_path_sa(&rule->prereq, &obj);
         }
       }
@@ -3331,7 +3185,7 @@ gen_program_rule(const char* filename) {
           continue;
         strlist_push_unique_sa(&vpath, &dir);
         stralloc_zero(&obj);
-        path_output(filename, &obj, exts.obj);
+        path_output(filename, &obj, exts.obj,&dirs.build.sa, pathsep_args);
         add_path_sa(&rule->prereq, &obj);
       }
     }
@@ -3408,7 +3262,7 @@ gen_link_rules(/*strarray* sources*/) {
     if(!stralloc_endb(&output_name, exts.bin, str_len(exts.bin)))
       stralloc_cats(&output_name, exts.bin);
     stralloc_nul(&output_name);
-    rule_rename(link, output_name.s);
+    rule_rename(link, output_name.s, pathsep_make);
     // if(set_has_sa(&all->prereq, &oldname)) {
     //}
     /*  if((pos =
@@ -3818,7 +3672,7 @@ input_process_command(stralloc* cmd, int argc, char* argv[], const char* file, s
     stralloc_init(&source);
   }
   stralloc_nul(&output);
-  // path_prefix_sa(&dirs.build.sa, &output);
+  // path_prefix_sa(&dirs.build.sa, &output, pathsep_make);
   n = count_b(&files, &is_source_b);
   if(n > 0)
     compile = 1;
@@ -3875,7 +3729,7 @@ input_process_command(stralloc* cmd, int argc, char* argv[], const char* file, s
         }
         strlist_foreach(&libs, x, n) {
           target* dep;
-          if((dep = rule_find_lib(x, n))) {
+          if((dep = rule_find_lib(x, n, exts.lib, exts.slib))) {
             set_adds(&rule->prereq, dep->name);
             rule_add_dep(rule, dep);
           } else {
@@ -4465,7 +4319,7 @@ output_make_rule(buffer* b, target* rule) {
     if(infile && (signed)rule->type >= 0)
       stralloc_copy(&cmd, &commands.v[rule->type]);
     else
-      rule_command(rule, &cmd);
+      rule_command(rule, &cmd,shell,batch,quote_args,pathsep_args,make_sep_inline,tools.make);
 
     stralloc_remove_all(&cmd, "\0", 1);
 
@@ -4679,7 +4533,7 @@ output_script(buffer* b, target* rule) {
   if(rule->recipe.len) {
     stralloc cmd;
     stralloc_init(&cmd);
-    rule_command(rule, &cmd);
+    rule_command(rule, &cmd,shell,batch,quote_args,pathsep_args,make_sep_inline,tools.make);
     buffer_putsa(b, &cmd);
     stralloc_free(&cmd);
     buffer_puts(b, " || GOTO FAIL");
@@ -5561,47 +5415,49 @@ main(int argc, char* argv[]) {
   sig_ignore(SIGTRAP);
 #endif
 
-  struct unix_longopt opts[] = {{"help", 0, NULL, 'h'},
-                                {"objext", 1, NULL, 'O'},
-                                {"exeext", 1, NULL, 'B'},
-                                {"libext", 1, NULL, 'X'},
-                                {"create-libs", 0, &cmd_libs, 1},
-                                {"create-objs", 0, &cmd_objs, 1},
-                                {"create-bins", 0, &cmd_bins, 1},
-                                {"no-create-libs", 0, &cmd_libs, 0},
-                                {"no-create-objs", 0, &cmd_objs, 0},
-                                {"no-create-bins", 0, &cmd_bins, 0},
-                                {"name", 0, 0, 'n'},
-                                {"install", 0, 0, 'i'},
-                                {"includedir", 0, 0, 'I'},
-                                /*                           {"install-bins",
-                                   0, &inst_bins, 1},
-                                                          {"install-libs",
-                                   0, &inst_libs, 1},*/
-                                {"builddir", 1, 0, 'd'},
-                                {"workdir", 1, 0, 'w'},
-                                {"compiler-type", 1, 0, 't'},
-                                {"make-type", 1, 0, 'm'},
-                                {"arch", 1, 0, 'a'},
-                                {"system", 1, 0, 's'},
-                                {"release", 0, &cfg.build_type, BUILD_TYPE_RELEASE},
-                                {"Release", 0, &cfg.build_type, BUILD_TYPE_RELEASE},
-                                {"relwithdebinfo", 0, &cfg.build_type, BUILD_TYPE_RELWITHDEBINFO},
-                                {"RelWithDebInfo", 0, &cfg.build_type, BUILD_TYPE_RELWITHDEBINFO},
-                                {"minsizerel", 0, &cfg.build_type, BUILD_TYPE_MINSIZEREL},
-                                {"MinSizeRel", 0, &cfg.build_type, BUILD_TYPE_MINSIZEREL},
-                                {"debug", 0, &cfg.build_type, BUILD_TYPE_DEBUG},
-                                {"Debug", 0, &cfg.build_type, BUILD_TYPE_DEBUG},
-                                {"define", 1, NULL, 'D'},
-                                {"build-as-lib", 0, 0, 'S'},
-                                {"input-file", 0, 0, 'f'},
-                                {"cross", 0, 0, 'c'},
-                                {"chip", 1, 0, 'p'},
-                                {"preprocessor", 1, 0, 'P'},
-                                {"lang-c", 0, &cfg.lang, LANG_C},
-                                {"cxx", 0, &cfg.lang, LANG_CXX},
-                                {"c++", 0, &cfg.lang, LANG_CXX},
-                                {0, 0, 0, 0}};
+  struct unix_longopt opts[] = {
+      {"help", 0, NULL, 'h'},
+      {"objext", 1, NULL, 'O'},
+      {"exeext", 1, NULL, 'B'},
+      {"libext", 1, NULL, 'X'},
+      {"create-libs", 0, &cmd_libs, 1},
+      {"create-objs", 0, &cmd_objs, 1},
+      {"create-bins", 0, &cmd_bins, 1},
+      {"no-create-libs", 0, &cmd_libs, 0},
+      {"no-create-objs", 0, &cmd_objs, 0},
+      {"no-create-bins", 0, &cmd_bins, 0},
+      {"name", 0, 0, 'n'},
+      {"install", 0, 0, 'i'},
+      {"includedir", 0, 0, 'I'},
+      /*                           {"install-bins",
+         0, &inst_bins, 1},
+                                {"install-libs",
+         0, &inst_libs, 1},*/
+      {"builddir", 1, 0, 'd'},
+      {"workdir", 1, 0, 'w'},
+      {"compiler-type", 1, 0, 't'},
+      {"make-type", 1, 0, 'm'},
+      {"arch", 1, 0, 'a'},
+      {"system", 1, 0, 's'},
+      {"release", 0, &cfg.build_type, BUILD_TYPE_RELEASE},
+      {"Release", 0, &cfg.build_type, BUILD_TYPE_RELEASE},
+      {"relwithdebinfo", 0, &cfg.build_type, BUILD_TYPE_RELWITHDEBINFO},
+      {"RelWithDebInfo", 0, &cfg.build_type, BUILD_TYPE_RELWITHDEBINFO},
+      {"minsizerel", 0, &cfg.build_type, BUILD_TYPE_MINSIZEREL},
+      {"MinSizeRel", 0, &cfg.build_type, BUILD_TYPE_MINSIZEREL},
+      {"debug", 0, &cfg.build_type, BUILD_TYPE_DEBUG},
+      {"Debug", 0, &cfg.build_type, BUILD_TYPE_DEBUG},
+      {"define", 1, NULL, 'D'},
+      {"build-as-lib", 0, 0, 'S'},
+      {"input-file", 0, 0, 'f'},
+      {"cross", 0, 0, 'c'},
+      {"chip", 1, 0, 'p'},
+      {"preprocessor", 1, 0, 'P'},
+      {"lang-c", 0, &cfg.lang, LANG_C},
+      {"cxx", 0, &cfg.lang, LANG_CXX},
+      {"c++", 0, &cfg.lang, LANG_CXX},
+      {0, 0, 0, 0},
+  };
   errmsg_iam(argv[0]);
   uint32_seed(NULL, 0);
 
@@ -6390,6 +6246,8 @@ fail:
     output_mplab_project(out, 0, 0, &include_dirs);
     goto quit;
   }
+
+#ifdef DEBUG_OUTPUT
   {
     strlist rule_names;
     strlist_init(&rule_names, '\0');
@@ -6401,6 +6259,7 @@ fail:
     buffer_putnlflush(buffer_2);
     strlist_free(&rule_names);
   }
+#endif
 
   if(!case_diffs(tools.make, "cmake")) {
     output_cmake_project(out, &rules, &vars, &include_dirs, &link_dirs);
@@ -6427,6 +6286,7 @@ fail:
     stralloc_free(&tmp);
   }
 
+#ifdef DEBUG_OUTPUT
   {
     strlist varnames;
     strlist_init(&varnames, '\0');
@@ -6435,6 +6295,7 @@ fail:
     strlist_dump(buffer_2, &varnames);
     output_all_vars(out, &vars, &varnames);
   }
+#endif
 
   if(str_equal(tools.make, "gmake")) {
     strlist_nul(&vpath);

@@ -17,11 +17,13 @@ function(check_flag_and_add FLAG VAR)
 endfunction(check_flag_and_add FLAG VAR)
 
 macro(check_enable_auto_import_flag VAR)
-  check_flag_and_add("-Wl,--enable-auto-import" "${VAR}" CMAKE_EXE_LINKER_FLAGS CMAKE_MODULE_LINKER_FLAGS
-                     CMAKE_SHARED_LINKER_FLAGS)
-  foreach(ARG CMAKE_EXE_LINKER_FLAGS CMAKE_MODULE_LINKER_FLAGS CMAKE_SHARED_LINKER_FLAGS)
+  check_flag_and_add("-Wl,--enable-auto-import" "${VAR}" CMAKE_EXE_LINKER_FLAGS
+                     CMAKE_MODULE_LINKER_FLAGS CMAKE_SHARED_LINKER_FLAGS)
+  foreach(ARG CMAKE_EXE_LINKER_FLAGS CMAKE_MODULE_LINKER_FLAGS
+              CMAKE_SHARED_LINKER_FLAGS)
     set("${ARG}" "${${ARG}}")
-  endforeach(ARG CMAKE_EXE_LINKER_FLAGS CMAKE_MODULE_LINKER_FLAGS CMAKE_SHARED_LINKER_FLAGS)
+  endforeach(ARG CMAKE_EXE_LINKER_FLAGS CMAKE_MODULE_LINKER_FLAGS
+             CMAKE_SHARED_LINKER_FLAGS)
 endmacro(check_enable_auto_import_flag VAR)
 
 macro(check_msys_cygwin_mingw)
@@ -44,20 +46,26 @@ macro(check_msys_cygwin_mingw)
   unset(MINGW CACHE)
   unset(SYS CACHE)
 
-  exec_program("${CMAKE_C_COMPILER}" "${CMAKE_BINARY_DIR}/cmake" ARGS -c ${CMAKE_BINARY_DIR}/cmake/try-msys.c
-               OUTPUT_VARIABLE OUTPUT RETURN_VALUE TRY_MSYS)
+  exec_program(
+    "${CMAKE_C_COMPILER}" "${CMAKE_BINARY_DIR}/cmake"
+    ARGS -c ${CMAKE_BINARY_DIR}/cmake/try-msys.c OUTPUT_VARIABLE OUTPUT
+    RETURN_VALUE TRY_MSYS)
   if(TRY_MSYS STREQUAL 0)
     set(MSYS TRUE CACHE BOOL "System is Msys")
     set(SYS msys)
   else(TRY_MSYS STREQUAL 0)
-    exec_program("${CMAKE_C_COMPILER}" "${CMAKE_BINARY_DIR}/cmake" ARGS -c ${CMAKE_BINARY_DIR}/cmake/try-cygwin.c
-                 OUTPUT_VARIABLE OUTPUT RETURN_VALUE TRY_CYGWIN)
+    exec_program(
+      "${CMAKE_C_COMPILER}" "${CMAKE_BINARY_DIR}/cmake"
+      ARGS -c ${CMAKE_BINARY_DIR}/cmake/try-cygwin.c OUTPUT_VARIABLE OUTPUT
+      RETURN_VALUE TRY_CYGWIN)
     if(TRY_CYGWIN STREQUAL 0)
       set(CYGWIN TRUE CACHE BOOL "System is Cygwin")
       set(SYS cygwin)
     else(TRY_CYGWIN STREQUAL 0)
-      exec_program("${CMAKE_C_COMPILER}" "${CMAKE_BINARY_DIR}/cmake" ARGS -c ${CMAKE_BINARY_DIR}/cmake/try-mingw.c
-                   OUTPUT_VARIABLE OUTPUT RETURN_VALUE TRY_MINGW)
+      exec_program(
+        "${CMAKE_C_COMPILER}" "${CMAKE_BINARY_DIR}/cmake"
+        ARGS -c ${CMAKE_BINARY_DIR}/cmake/try-mingw.c OUTPUT_VARIABLE OUTPUT
+        RETURN_VALUE TRY_MINGW)
       if(TRY_MINGW STREQUAL 0)
         set(MINGW TRUE CACHE BOOL "System is Cygwin")
         set(SYS mingw)

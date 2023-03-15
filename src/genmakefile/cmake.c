@@ -1,12 +1,13 @@
 #define MAP_USE_HMAP 1
-#include "lib/stralloc.h"
-#include "lib/path.h"
-#include "genmakefile.h"
+#include "../../lib/stralloc.h"
+#include "../../lib/path.h"
+#include "../../genmakefile.h"
 #include "cmake.h"
-#include "lib/strarray.h"
-#include "lib/map.h"
-#include "lib/set.h"
+#include "../../lib/strarray.h"
+#include "../../lib/map.h"
+#include "../../lib/set.h"
 #include <stdbool.h>
+#include "is.h"
 
 void
 output_cmake_var(buffer* b, const char* name, const strlist* list) {

@@ -14,10 +14,12 @@ if(USE_ZLIB)
         set(ZLIB_FOUND TRUE)
       endif(ZLIB_LIBRARIES)
       if(ZLIB_INCLUDE_DIRS)
-        set(ZLIB_INCLUDE_DIR "${ZLIB_INCLUDE_DIRS}" CACHE PATH "zlib include dir")
+        set(ZLIB_INCLUDE_DIR "${ZLIB_INCLUDE_DIRS}" CACHE PATH
+                                                          "zlib include dir")
       endif(ZLIB_INCLUDE_DIRS)
       if(ZLIB_LIBRARY_DIRS)
-        set(ZLIB_LIBRARY_DIR "${ZLIB_LIBRARY_DIRS}" CACHE PATH "zlib library dir")
+        set(ZLIB_LIBRARY_DIR "${ZLIB_LIBRARY_DIRS}" CACHE PATH
+                                                          "zlib library dir")
       endif(ZLIB_LIBRARY_DIRS)
     endif(NOT ZLIB_LIBRARY)
 

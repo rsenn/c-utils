@@ -26,10 +26,8 @@
 #include "lib/set.h"
 #include "lib/map.h"
 #include "lib/bool.h"
-
-typedef enum { OS_WIN, OS_MAC, OS_LINUX } os_type;
-typedef enum { LANG_C, LANG_CXX } lang_type;
-typedef enum { PREPROCESS = 0, COMPILE, LIB, LINK, MKDIR, CLEAN, NUM_COMMANDS } command_type;
+#include "src/genmakefile/types.h"
+#include "src/genmakefile/rule.h"
 
 #if WINDOWS
 #define MAX_CMD_LEN 1023
@@ -58,16 +56,6 @@ typedef enum { PREPROCESS = 0, COMPILE, LIB, LINK, MKDIR, CLEAN, NUM_COMMANDS } 
 #endif
 
 #define rule_foreach(it, r) MAP_FOREACH_VALUE(rules, it, r)
-
-typedef struct {
-  enum { X86, ARM, PIC } arch;
-  enum { _14, _16, _32, _64 } bits;
-} machine_type;
-
-typedef struct {
-  os_type os;
-  enum { NTOS, UNIX } type;
-} system_type;
 
 union commands {
   stralloc v[NUM_COMMANDS];
@@ -98,7 +86,7 @@ typedef struct {
   uint32 serial;
 } sourcedir;
 
-typedef struct target_s {
+/*typedef struct target_s {
   union {
     const char* name;
     stralloc namesa;
@@ -117,7 +105,7 @@ typedef struct target_s {
   bool outputs : 1;
   bool phony : 1;
   command_type type;
-} target;
+} target;*/
 
 typedef struct {
   strlist work;
@@ -125,10 +113,6 @@ typedef struct {
   strlist out;
   strlist this;
 } dirs_t;
-
-typedef struct {
-  const char *src, *inc, *obj, *lib, *slib, *bin, *pps;
-} exts_t;
 
 typedef struct {
   const char *toolchain, *compiler, *make, *preproc;
@@ -142,14 +126,6 @@ typedef enum {
   BUILD_TYPE_MINSIZEREL,
   BUILD_TYPE_DEBUG,
 } build_type_t;
-
-typedef struct {
-  machine_type mach;
-  system_type sys;
-  stralloc chip;
-  int build_type;
-  int lang;
-} config_t;
 
 typedef struct {
   strlist value;
@@ -166,18 +142,6 @@ void put_newline(buffer*, int);
 void set_command(stralloc*, const char*, const char*);
 
 void strarray_dump(buffer*, const strarray*);
-
-char* path_clean_b(const char* path, size_t* len);
-char* path_clean_s(const char* path);
-char* path_extension(const char* in, stralloc* out, const char* ext);
-const char* path_mmap_read(const char* path, size_t* n);
-void path_normalize_b(const char* x, size_t len, stralloc* out);
-void path_normalize(const char* dir, stralloc* out);
-char* path_output(const char* in, stralloc* out, const char* ext);
-void path_prefix_b(const stralloc* prefix, const char* x, size_t n, stralloc* out);
-void path_prefix_sa(const stralloc* prefix, stralloc* sa);
-void path_prefix_s(const stralloc* prefix, const char* path, stralloc* out);
-char* path_wildcard(stralloc* sa, const char* wildchar);
 
 int extract_build_type(const stralloc*);
 void extract_tokens(const char*, size_t, set_t*);
@@ -201,50 +165,12 @@ void includes_to_libs(const set_t*, strlist*);
 
 void var_subst(const stralloc*, stralloc*, const char*, const char*, int);
 
-target* rule_get(const char*);
-target* rule_get_sa(stralloc*);
-target* rule_find(const char*);
-void rule_rename(target*, const char*);
-target* rule_find_sa(stralloc*);
-target* rule_find_b(const char*, size_t);
-int rule_match(target*, const char*);
-void rule_command_subst(target*, stralloc*, const char*, size_t);
-void rule_command(target*, stralloc*);
-int rule_add_dep(target*, target*);
-void rule_add_deps(target*, const strlist*);
-void rule_dep_list_recursive(target*, set_t*, int, strlist*);
-void rule_dep_list(target*, set_t*);
-void rule_deps_indirect(target*, set_t*);
-void rule_dump(target*);
-bool rule_is_compile(target* rule);
-bool rule_is_lib(target* rule);
-bool rule_is_link(target* rule);
-void rule_prereq(target* t, set_t* s);
-void rule_prereq_recursive(target*, set_t* s);
-target* rule_find_lib(const char* name, size_t namelen);
-
 void add_path_b(set_t*, const char*, size_t);
 void add_path(set_t*, const char*);
 void add_srcpath(set_t*, const char*);
 void add_source(set_t*, const char*);
 void add_path_sa(set_t*, stralloc*);
 void add_path_relativeb(set_t*, stralloc*, const char*, size_t);
-
-int is_source(const char*);
-int is_source_sa(stralloc*);
-int is_source_b(const char*, size_t);
-int is_filename(const char*);
-int is_filename_sa(stralloc*);
-int is_filename_b(const char*, size_t);
-int is_include(const char*);
-int is_include_sa(stralloc*);
-int is_include_b(const char*, size_t);
-int is_object(const char*);
-int is_object_sa(stralloc*);
-int is_object_b(const char*, size_t);
-int is_lib_b(const char* filename, size_t len);
-int is_lib_sa(stralloc* sa);
-int is_lib(const char* s);
 
 sourcefile* sources_new(const char*);
 int sources_add(const char*);

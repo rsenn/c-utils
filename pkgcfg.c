@@ -1243,7 +1243,7 @@ pkgcfg_setpath(const char* path) {
 static void
 error_exit(int exitCode) {
   buffer_puts(buffer_2, "The arguments leading up to this were:\n  ");
-  buffer_putsl(buffer_2, &args, "\n  ");
+  buffer_putsl(buffer_2, &args, " ");
   buffer_putnlflush(buffer_2);
   exit(exitCode);
 }
