@@ -1,4 +1,5 @@
 #include "var.h"
+#include "../../lib/str.h"
 
 MAP_T vars;
 
@@ -70,7 +71,7 @@ var_setb(const char* name, const char* value, size_t vlen) {
  */
 var_t*
 var_set(const char* name, const char* value) {
-  return var_setb(name, str_len(name), value);
+  return var_setb(name, value, str_len(value));
 }
 
 void

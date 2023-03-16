@@ -19,7 +19,7 @@ size_t
 path_dirlen_b(const char* path, size_t size) {
   return byte_rchrs(path, size, PATHSEP_S_MIXED, sizeof(PATHSEP_S_MIXED) - 1);
 }
- 
+
 char*
 path_dirname_b(const char* path, size_t size, stralloc* dir) {
   size_t i;

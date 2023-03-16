@@ -199,12 +199,12 @@ stralloc_weak(stralloc* out, const stralloc* from) {
 }
 
 /**
- * @brief put_newline
+ * @brief buffer_putnl
  * @param b
  * @param flush
  */
 void
-put_newline(buffer* b, int flush) {
+buffer_putnl(buffer* b, int flush) {
   buffer_puts(b, newline);
   if(flush)
     buffer_flush(b);
@@ -461,7 +461,8 @@ format_linklib_switch(const char* libname, stralloc* out) {
  */
 void
 format_linklib_dummy(const char* libname, stralloc* out) {}
-size_t
+
+static inline size_t
 skip_comment(const char* p, size_t len) {
   return byte_finds(p, len, "*/");
 }
@@ -612,9 +613,9 @@ add_path_relativeb(set_t* s, stralloc* dir, const char* path, size_t pathlen) {
   add_path_sa(s, &sa);
   stralloc_free(&sa);
 }
-
+/*
 static int
-count_b(strlist* list, int (*fn_b)(const char*, size_t)) {
+strlist_count_b(strlist* list, int (*fn_b)(const char*, size_t)) {
   const char* x;
   size_t n;
   int ret = 0;
@@ -624,7 +625,7 @@ count_b(strlist* list, int (*fn_b)(const char*, size_t)) {
   }
   return ret;
 }
-
+*/
 /**
  * @brief push_lib  Add library spec to variable
  * @param name
@@ -695,20 +696,6 @@ get_rules_by_cmd(stralloc* cmd, strlist* deps) {
       strlist_push(deps, rule->name);
     }
   }
-}
-
-/**
- * @brief dirname_alloc  Gets directory name from a file path (allocated).
- * @param p
- * @return
- */
-char*
-dirname_alloc(const char* p) {
-  size_t len = str_len(p);
-  size_t pos = str_rchrs(p, PATHSEP_S_MIXED, sizeof(PATHSEP_S_MIXED) - 1);
-  if(pos < len)
-    return str_ndup(p, pos);
-  return str_dup(".");
 }
 
 void
@@ -815,7 +802,7 @@ print_rule_deps_r(buffer* b, target* t, set_t* deplist, strlist* hierlist, int d
       buffer_puts(b, str_basename(t->name));
       buffer_puts(b, " -> ");
       buffer_puts(b, str_basename(name));
-      put_newline(b, 1);
+      buffer_putnl(b, 1);
       if(set_adds(deplist, name))
         print_rule_deps_r(b, (*ptr), deplist, hierlist, depth + 1);
     }
@@ -1884,7 +1871,7 @@ input_process_command(stralloc* cmd, int argc, char* argv[], const char* file, s
     stralloc_free(&sa);
   }
   if(!output.len) {
-    n = count_b(&files, &is_source_b);
+    n = strlist_count_pred(&files, &is_source_b);
     if(n < strlist_count(&files)) {
       stralloc sa;
       stralloc_init(&sa);
@@ -1941,10 +1928,10 @@ input_process_command(stralloc* cmd, int argc, char* argv[], const char* file, s
   }
   stralloc_nul(&output);
   // path_prefix_sa(&dirs.build.sa, &output, pathsep_make);
-  n = count_b(&files, &is_source_b);
+  n = strlist_count_pred(&files, &is_source_b);
   if(n > 0)
     compile = 1;
-  bool do_rule = (n || count_b(&files, &is_object_b)) || output.len;
+  bool do_rule = (n || strlist_count_pred(&files, &is_object_b)) || output.len;
 
   if(stralloc_starts(&output, "@") || stralloc_starts(&output, "/tmp"))
     do_rule = false;
@@ -2461,7 +2448,7 @@ output_var(buffer* b, MAP_T* vars, const char* name, int serial) {
       buffer_putsa(b, &v);
       if(shell)
         buffer_putc(b, '"');
-      put_newline(b, 0);
+      buffer_putnl(b, 0);
       buffer_flush(b);
     }
     stralloc_free(&v);
@@ -2482,7 +2469,7 @@ output_all_vars(buffer* b, MAP_T* vars, strlist* varnames) {
   stralloc_nul(&varnames->sa);
   ++serial;
   strlist_foreach_s(varnames, name) { output_var(b, vars, name, serial); }
-  put_newline(b, 1);
+  buffer_putnl(b, 1);
 }
 
 /**
@@ -2821,7 +2808,7 @@ output_script(buffer* b, target* rule) {
                          newline,
                          0);
   }
-  put_newline(b, flush);
+  buffer_putnl(b, flush);
   rule->serial = serial;
 }
 
@@ -4569,7 +4556,7 @@ fail:
     output_build_rules(out, "cc", &commands.compile);
     output_build_rules(out, "link", &commands.link);
     output_build_rules(out, "lib", &commands.lib);
-    put_newline(out, 0);
+    buffer_putnl(out, 0);
   }
 
   {

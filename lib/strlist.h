@@ -89,6 +89,7 @@ int strlist_cat_unique(strlist*, const strlist* l);
 int strlist_containsb(const strlist*, const char* x, size_t len);
 int strlist_contains(const strlist*, const char* s);
 size_t strlist_count(const strlist*);
+size_t strlist_count_pred(strlist*, int (*predicate)(const char*, size_t));
 size_t strlist_diff(const strlist*, const strlist* b, strlist* out);
 void strlist_fromb(strlist*, const char* x, size_t n, const char* delim);
 void strlist_froms(strlist*, const char*, char delim);

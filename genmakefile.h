@@ -88,64 +88,41 @@ typedef enum {
 
 int mkdir_sa(const stralloc*, int);
 int mkdir_components(strlist*, int);
-
 void stralloc_weak(stralloc*, const stralloc*);
-
-void put_newline(buffer*, int);
-
+void buffer_putnl(buffer*, int);
 void set_command(stralloc*, const char*, const char*);
-
 void strarray_dump(buffer*, const strarray*);
-
 int extract_build_type(const stralloc*);
 void extract_tokens(const char*, size_t, set_t*);
 void extract_pptok(const char*, size_t, set_t*);
 void extract_vars(const char*, size_t, set_t*);
-
 void format_linklib_lib(const char*, stralloc*);
 void format_linklib_switch(const char*, stralloc*);
 void format_linklib_dummy(const char*, stralloc*);
-
-size_t skip_comment(const char*, size_t);
-
 int main_scan(const char*, size_t);
 int main_present(const char*);
-
 void var_subst(const stralloc*, stralloc*, const char*, const char*, int);
-
 void add_path_b(set_t*, const char*, size_t);
 void add_path(set_t*, const char*);
 void add_srcpath(set_t*, const char*);
 void add_source(set_t*, const char*);
 void add_path_sa(set_t*, stralloc*);
 void add_path_relativeb(set_t*, stralloc*, const char*, size_t);
-
 void push_lib(const char*, const char*);
-
 void with_lib(const char*);
-
 void push_define(const char*);
-
 void get_rules_by_cmd(stralloc*, strlist*);
-
-char* dirname_alloc(const char*);
-
+char* path_dirname_alloc(const char*);
 void deps_indirect(set_t*, const strlist*);
 void deps_direct(set_t*, const target*);
-
 void print_rule_deps_r(buffer*, target*, set_t*, strlist*, int);
 void print_rule_deps(buffer*, target*);
-
 void remove_indirect_deps_recursive(array*, array*, int);
 ssize_t remove_indirect_deps(array*);
-
 void deps_for_libs(void);
-
 void target_ptrs(const strlist*, array*);
-
 target* gen_single_rule(stralloc* output, stralloc* cmd);
 void gen_clean_rule(void);
-
 int filter_pptoks(const void*, size_t);
 
 target* gen_srcdir_compile_rules(sourcedir*, const char*);

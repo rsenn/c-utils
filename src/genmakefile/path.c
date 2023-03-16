@@ -1,4 +1,5 @@
 #include "is.h"
+#include "../../lib/path_internal.h"
 #include "../../lib/mmap.h"
 #include "../../lib/errmsg.h"
 
@@ -179,4 +180,18 @@ path_normalize_b(const char* x, size_t len, stralloc* out, stralloc* builddir, s
     out->len -= 2;
   stralloc_nul(out);
   stralloc_free(&tmp);
+}
+
+/**
+ * @brief path_dirname_alloc  Gets directory name from a file path (allocated).
+ * @param p
+ * @return
+ */
+char*
+path_dirname_alloc(const char* p) {
+  size_t len = str_len(p);
+  size_t pos = str_rchrs(p, PATHSEP_S_MIXED, sizeof(PATHSEP_S_MIXED) - 1);
+  if(pos < len)
+    return str_ndup(p, pos);
+  return str_dup(".");
 }

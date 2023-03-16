@@ -14,7 +14,6 @@
         ""             "."            "."
 */
 static const char* const dot = ".";
- 
 
 size_t
 path_dirlen(const char* path) {
@@ -37,4 +36,3 @@ path_dirname(const char* path, stralloc* dir) {
   stralloc_nul(dir);
   return dir->s;
 }
- 
