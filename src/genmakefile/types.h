@@ -1,7 +1,12 @@
 #ifndef GENMAKEFILE_TYPES_H
 #define GENMAKEFILE_TYPES_H
 
+#define MAP_USE_HMAP 1
+
+#include "../../lib/map.h"
 #include "../../lib/stralloc.h"
+#include "../../lib/strlist.h"
+#include "../../lib/uint32.h"
 
 typedef enum { OS_WIN, OS_MAC, OS_LINUX } os_type;
 typedef enum { LANG_C, LANG_CXX } lang_type;
@@ -28,5 +33,10 @@ typedef struct {
   int build_type;
   int lang;
 } config_t;
+
+typedef struct {
+  strlist value;
+  uint32 serial;
+} var_t;
 
 #endif /* defined(GENMAKEFILE_TYPES_H) */

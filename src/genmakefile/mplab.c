@@ -301,7 +301,7 @@ output_mplab_project(buffer* b, MAP_T* _rules, MAP_T* vars, const strlist* inclu
   strlist_init(&defines, ',');
   strlist_init(&tcfg, ',');
 
-  vdefs = &var_list("DEFS")->value;
+  vdefs = &var_list("DEFS", ' ')->value;
   strlist_foreach(vdefs, s, n) {
     n = byte_chr(s, n, ' ');
     if(str_start(s, "-D")) {
@@ -310,7 +310,7 @@ output_mplab_project(buffer* b, MAP_T* _rules, MAP_T* vars, const strlist* inclu
     }
     strlist_pushb(&defines, s, n);
   }
-  vdefs = &var_list("CPPFLAGS")->value;
+  vdefs = &var_list("CPPFLAGS", ' ')->value;
   strlist_foreach(vdefs, s, n) {
     n = byte_chr(s, n, ' ');
     if(str_start(s, "-D") || str_start(s, "-d")) {

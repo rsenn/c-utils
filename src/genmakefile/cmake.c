@@ -317,12 +317,12 @@ output_cmake_project(buffer* b, MAP_T* rules, MAP_T* vars, const strlist* includ
   output_cmake_subst(&link_dirs->sa, "CMAKE_CURRENT_BINARY_DIR");
 
   if(var_isset("CFLAGS"))
-    output_cmake_var(b, "CMAKE_C_FLAGS", &var_list("CFLAGS")->value);
+    output_cmake_var(b, "CMAKE_C_FLAGS", &var_list("CFLAGS", ' ')->value);
   if(var_isset("CXXFLAGS"))
-    output_cmake_var(b, "CMAKE_CXX_FLAGS", &var_list("CXXFLAGS")->value);
+    output_cmake_var(b, "CMAKE_CXX_FLAGS", &var_list("CXXFLAGS", ' ')->value);
 
   if(var_isset("LDFLAGS"))
-    output_cmake_var(b, "CMAKE_EXE_LINKER_FLAGS", &var_list("LDFLAGS")->value);
+    output_cmake_var(b, "CMAKE_EXE_LINKER_FLAGS", &var_list("LDFLAGS", ' ')->value);
 
   /*  if(var_isset("DEFS")) {
       buffer_puts(b, "add_definitions(");
@@ -332,7 +332,7 @@ output_cmake_project(buffer* b, MAP_T* rules, MAP_T* vars, const strlist* includ
     }
   */
   buffer_putnlflush(b);
-  output_cmake_cmd(b, "add_definitions", &var_list("DEFS")->value, 0);
+  output_cmake_cmd(b, "add_definitions", &var_list("DEFS", ' ')->value, 0);
   output_cmake_set(b, "link_libraries", &link_libraries, 0);
   // output_cmake_libs(b);
   output_cmake_cmd(b, "include_directories", include_dirs, 0);

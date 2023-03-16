@@ -27,6 +27,7 @@
 #include "src/genmakefile/types.h"
 #include "src/genmakefile/rule.h"
 #include "src/genmakefile/sources.h"
+#include "src/genmakefile/var.h"
 
 #if WINDOWS
 #define MAX_CMD_LEN 1023
@@ -104,11 +105,6 @@ typedef enum {
   BUILD_TYPE_DEBUG,
 } build_type_t;
 
-typedef struct {
-  strlist value;
-  uint32 serial;
-} var_t;
-
 int mkdir_sa(const stralloc*, int);
 int mkdir_components(strlist*, int);
 
@@ -148,14 +144,6 @@ void add_srcpath(set_t*, const char*);
 void add_source(set_t*, const char*);
 void add_path_sa(set_t*, stralloc*);
 void add_path_relativeb(set_t*, stralloc*, const char*, size_t);
-
-int var_isset(const char*);
-var_t* var_list(const char*);
-const char* var_get(const char*);
-var_t* var_set(const char*, const char*);
-void var_unset(const char*);
-void var_push(const char*, const char*);
-void var_push_sa(const char*, stralloc*);
 
 void push_lib(const char*, const char*);
 
@@ -236,7 +224,7 @@ extern tool_config_t tool_config;
 extern const char* project_name;
 extern int cmd_objs, cmd_libs, cmd_bins;
 extern set_t link_libraries;
-extern MAP_T sourcedirs, targetdirs, rules, vars;
+extern MAP_T sourcedirs, targetdirs, rules;
 extern strlist include_dirs, link_dirs;
 
 #endif
