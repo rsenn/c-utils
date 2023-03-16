@@ -177,7 +177,7 @@ int set_compiler_type(const char*);
 
 void usage(char*);
 
-extern exts_t exts;
+// extern exts_t exts;
 extern config_t cfg;
 extern dirs_t dirs;
 extern tools_t tools;

@@ -302,8 +302,7 @@ extract_tokens(const char* x, size_t n, set_t* tokens) {
 }
 
 /**
- * @brief extract_pptok  Extract
- * preprocessor tokens directives
+ * @brief extract_pptok  Extract preprocessor tokens directives
  * @param x
  * @param n
  * @param includes
@@ -347,11 +346,12 @@ extract_pptok(const char* x, size_t n, set_t* tokens) {
             }
             if(commentpos < linelen)
               linelen = commentpos;
-            /*          buffer_puts(buffer_2,
-               "pptoks: ");
-                      buffer_put(buffer_2,
-               x, linelen);
-                      buffer_putnlflush(buffer_2);*/
+
+#ifdef DEBUG_OUTPUT
+            buffer_puts(buffer_2, "pptoks: ");
+            buffer_put(buffer_2, x, linelen);
+            buffer_putnlflush(buffer_2);
+#endif
             extract_tokens(x, linelen, tokens);
           }
         }
@@ -382,8 +382,7 @@ extract_vars(const char* x, size_t len, set_t* s) {
 }
 
 /**
- * @brief extract_includes  Extract
- * #include directives
+ * @brief extract_includes  Extract #include directives
  * @param x
  * @param n
  * @param includes
@@ -432,8 +431,7 @@ extract_includes(const char* x, size_t n, strlist* includes, int sys) {
 }
 
 /**
- * @brief format_linklib_lib  Output
- * library name (+".lib")
+ * @brief format_linklib_lib  Output library name (+".lib")
  * @param libname
  * @param out
  */
@@ -445,8 +443,7 @@ format_linklib_lib(const char* libname, stralloc* out) {
 }
 
 /**
- * @brief format_linklib_switch  Output
- * library name (+ leading "-l")
+ * @brief format_linklib_switch  Output library name (+ leading "-l")
  * @param libname
  * @param out
  */
@@ -470,9 +467,7 @@ skip_comment(const char* p, size_t len) {
 }
 
 /**
- * @brief main_scan  Checks if the given
- * source file contains a main()
- * function
+ * @brief main_scan  Checks if the given source file contains a main() function
  * @param x
  * @param n
  * @return
@@ -515,11 +510,9 @@ main_scan(const char* p, size_t n) {
 }
 
 /**
- * @brief main_present  Checks for
- * main() routine in source file
+ * @brief main_present  Checks for main() routine in source file
  * @param filename  Path to source file
- * @return          1 when yes, 0 when
- * no, -1 on error
+ * @return          1 when yes, 0 when no, -1 on error
  */
 int
 main_present(const char* filename) {
@@ -537,94 +530,6 @@ main_present(const char* filename) {
   return -1;
 }
 
-/*void
-includes_cppflags() {
-  const char* dir;
-  stralloc arg;
-  stralloc_init(&arg);
-  strlist_foreach_s(&include_dirs, dir) {
-
-    stralloc_zero(&arg);
-    stralloc_cats(&arg, dir);
-
-#ifdef DEBUG_OUTPUT_
-    buffer_puts(buffer_2, "include_dir: ");
-    buffer_putsa(buffer_2, &arg);
-    buffer_putnlflush(buffer_2);
-#endif
-
-    stralloc_prepends(&arg, "-I");
-    var_push_sa("CPPFLAGS", &arg);
-  }
-  stralloc_free(&arg);
-}
-
-int
-includes_get(const char* srcfile, strlist* includes, int sys) {
-  const char* x;
-  size_t n;
-  if((x = path_mmap_read(srcfile, &n, &dirs.this.sa, pathsep_make))) {
-    extract_includes(x, n, includes, sys);
-    mmap_unmap(x, n);
-    return 1;
-  }
-  return 0;
-}
-
-void
-includes_add_b(const char* dir, size_t len) {
-  static stralloc abs;
-  stralloc_zero(&abs);
-  path_normalize_b(dir, len, &abs, &dirs.build.sa, &dirs.out.sa);
-  if(strlist_push_unique_sa(&include_dirs, &abs)) {
-#ifdef DEBUG_OUTPUT
-    buffer_puts(buffer_2, "Added to include dirs: ");
-    buffer_putsa(buffer_2, &abs);
-    buffer_putnlflush(buffer_2);
-#endif
-  }
-}
-
-void
-includes_add(const char* dir) {
-  includes_add_b(dir, str_len(dir));
-}
-
-void
-includes_to_libs(const set_t* includes, strlist* libs) {
-  const char* s;
-  size_t n;
-  stralloc sa, lib;
-  set_iterator_t it;
-  stralloc_init(&sa);
-  stralloc_init(&lib);
-  stralloc_zero(&libs->sa);
-  set_foreach(includes, it, s, n) {
-    target* rule;
-    stralloc_zero(&sa);
-    path_append(s, n, &sa);
-    if(!(n > str_len(libpfx) && byte_equal(s, str_len(libpfx), libpfx)) && byte_chr(s, n, PATHSEP_C) == n) {
-      path_concatb(libpfx, str_len(libpfx), sa.s, sa.len, &sa);
-    }
-    path_concatb(dirs.this.sa.s, dirs.this.sa.len, sa.s, sa.len, &sa);
-    stralloc_zero(&lib);
-    stralloc_copys(&lib, path_basename(sa.s));
-    if(stralloc_endb(&lib, exts.inc, 2))
-      lib.len -= 2;
-    stralloc_cats(&lib, exts.lib);
-     if((rule = rule_find_sa(&lib))) {
-
-#ifdef DEBUG_OUTPUT_
-      debug_str("lib", rule->name);
-#endif
-
-      strlist_push(libs, rule->name);
-    }
-  }
-  stralloc_free(&lib);
-  stralloc_free(&sa);
-}
-*/
 void
 libdirs_add(const char* dir) {
   static stralloc abs;
@@ -721,8 +626,7 @@ count_b(strlist* list, int (*fn_b)(const char*, size_t)) {
 }
 
 /**
- * @brief push_lib  Add library spec to
- * variable
+ * @brief push_lib  Add library spec to variable
  * @param name
  * @param lib
  */
@@ -778,8 +682,7 @@ push_define(const char* def) {
  * @}
  */
 /**
- * @brief get_rules_by_cmd  Search rules
- * by command
+ * @brief get_rules_by_cmd  Search rules by command
  * @param cmd
  * @param deps
  */
@@ -795,8 +698,7 @@ get_rules_by_cmd(stralloc* cmd, strlist* deps) {
 }
 
 /**
- * @brief dirname_alloc  Gets directory
- * name from a file path (allocated).
+ * @brief dirname_alloc  Gets directory name from a file path (allocated).
  * @param p
  * @return
  */
@@ -898,19 +800,17 @@ void
 print_rule_deps_r(buffer* b, target* t, set_t* deplist, strlist* hierlist, int depth) {
   target** ptr;
   size_t l = hierlist->sa.len;
-  /*if(strlist_contains(&hierlist,
-    t->name)) return;
-  */
+
   strlist_push(hierlist, t->name);
   stralloc_nul(&hierlist->sa);
   array_foreach_t(&t->deps, ptr) {
     const char* name = (*ptr)->name;
     if(strlist_contains(hierlist, name))
       continue;
-    // strlist_push_unique(deplist, name);
+
     {
       buffer_puts(b, "# ");
-      // buffer_putsa(b,   &hierlist->sa);
+
       buffer_putnspace(b, depth * 2);
       buffer_puts(b, str_basename(t->name));
       buffer_puts(b, " -> ");
@@ -920,15 +820,13 @@ print_rule_deps_r(buffer* b, target* t, set_t* deplist, strlist* hierlist, int d
         print_rule_deps_r(b, (*ptr), deplist, hierlist, depth + 1);
     }
   }
+
   hierlist->sa.len = l;
-  // strlist_trunc(hierlist, depth);
 }
 
 /**
- * @brief print_rule_deps  Prints
- * dependency tree for a target
- * @param b                  Output
- * buffer
+ * @brief print_rule_deps  Prints dependency tree for a target
+ * @param b                  Output buffer
  * @param t                  Target
  */
 void
@@ -946,8 +844,7 @@ print_rule_deps(buffer* b, target* t) {
 }
 
 /**
- * @brief remove_indirect_deps_recursive
- * Removes all indirect dependencies
+ * @brief remove_indirect_deps_recursive  Removes all indirect dependencies
  * @param top Toplevel dependencies
  * @param a Dependency layer array
  * @param depth Recursion depth
@@ -1040,9 +937,7 @@ deps_for_libs() {
 }
 
 /**
- * @brief target_ptrs  Given a list of
- * target names, outputs an array of
- * pointers to those targets.
+ * @brief target_ptrs  Given a list of target names, outputs an array of pointers to those targets.
  * @param targets      Target names
  * @param out          Output array
  */
@@ -1079,8 +974,7 @@ gen_single_rule(stralloc* output, stralloc* cmd) {
 }
 
 /**
- * @brief gen_clean_rule  Generate clean
- * rule which removes all target outputs
+ * @brief gen_clean_rule  Generate clean rule which removes all target outputs
  * @param rules
  */
 void
@@ -1107,15 +1001,12 @@ gen_clean_rule() {
       continue;
 
     stralloc_zero(&output);
-    /* Ignore the dirs.build rule */
-    /*  if(stralloc_equals(&dirs.work.sa, MAP_ITER_KEY(t)))
-        continue;*/
 
     if(name[str_chr(name, '%')]) {
-      // strlist_nul(&rule->output);
       stralloc_catset(&delete_args.sa, &rule->output, " ");
       continue;
     }
+
     /* If the rule has prerequisites  and a recipe, it must be a producing rule */
     if(set_size(&rule->prereq) && rule->recipe.s) {
       size_t bpos;
@@ -1172,11 +1063,8 @@ gen_mkdir_rule(stralloc* dir) {
 }
 
 /**
- * @brief gen_srcdir_compile_rules
- * Generate compile rules for every
- * source file given
- * @param rules                     All
- * rules
+ * @brief gen_srcdir_compile_rules Generate compile rules for every source file given
+ * @param rules                     All rules
  * @param srcdir source dir structure
  * @param dir source dir path
  * @return
@@ -1406,8 +1294,7 @@ gen_srcdir_lib_rule(sourcedir* srcdir, const char* name) {
 
 /**
  * @brief gen_srcdir_rule
- * @param rules                     All
- * rules
+ * @param rules                     All rules
  * @param srcdir source dir structure
  * @param name source dir name
  */
@@ -1448,8 +1335,7 @@ gen_srcdir_rule(sourcedir* sdir, const char* name) {
 }
 
 /**
- * @brief gen_lib_rules  Generate
- * library rules for every source dir
+ * @brief gen_lib_rules  Generate library rules for every source dir
  * @param rules
  * @param srcdirs
  */
@@ -1599,9 +1485,7 @@ gen_program_rule(const char* filename) {
 }
 
 /**
- * @brief gen_link_rules  Generate
- * compile rules for every source file
- * with a main()
+ * @brief gen_link_rules  Generate compile rules for every source file with a main()
  * @param rules
  * @param sources
  * @return
@@ -2515,8 +2399,7 @@ input_process(const char* infile, target* all) {
 }
 
 /**
- * @brief output_all_vars  Output all
- * variables
+ * @brief output_all_vars  Output all variables
  * @param b
  * @param vars
  */
@@ -2588,8 +2471,7 @@ output_var(buffer* b, MAP_T* vars, const char* name, int serial) {
 }
 
 /**
- * @brief output_all_vars  Output all
- * variables
+ * @brief output_all_vars  Output all variables
  * @param b
  * @param vars
  */
@@ -2604,8 +2486,7 @@ output_all_vars(buffer* b, MAP_T* vars, strlist* varnames) {
 }
 
 /**
- * @brief output_make_rule  Output rule
- * to buffer
+ * @brief output_make_rule  Output rule to buffer
  * @param b
  * @param rule
  */
@@ -2815,8 +2696,7 @@ output_ninja_rule(buffer* b, target* rule) {
 }
 
 /**
- * @brief output_all_rules  Output the
- * rule set
+ * @brief output_all_rules  Output the rule set
  * @param b
  * @param hmap
  */
@@ -2946,8 +2826,7 @@ output_script(buffer* b, target* rule) {
 }
 
 /**
- * @brief set_machine  Set the machine
- * type
+ * @brief set_machine  Set the machine type
  * @param s
  * @return
  */
@@ -2994,8 +2873,7 @@ set_chip(const char* s) {
 }
 
 /**
- * @brief set_system  Set the system
- * type
+ * @brief set_system  Set the system type
  * @param s
  * @return
  */
@@ -3024,8 +2902,7 @@ set_system(const char* s) {
 }
 
 /**
- * @brief set_make_type  Set tools.make
- * program type
+ * @brief set_make_type  Set tools.make program type
  * @param tools.make
  * @param tools.compiler
  * @return
@@ -3092,8 +2969,7 @@ set_make_type() {
 }
 
 /**
- * @brief set_tools.compiler_type Set
- * the tools.compiler type
+ * @brief set_tools.compiler_type Set the tools.compiler type
  * @param tools.compiler
  * @return
  */
@@ -3107,7 +2983,7 @@ set_compiler_type(const char* compiler) {
               "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(LDFLAGS) $(EXTRA_LDFLAGS) -o $@",
               "$^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
   set_command(&commands.preprocess, "$(CPP) $(CPPFLAGS) $(DEFS) -o$@", "$<");
-  // var_push("DEFS", "-DHAVE_ERRNO_H=1");
+
   /*
    * Visual C++ compiler
    */

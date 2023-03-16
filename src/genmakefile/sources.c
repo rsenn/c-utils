@@ -6,6 +6,8 @@ set_t srcs;
 stralloc srcdir = {0, 0, 0};
 dlist sourcelist = {0};
 
+int main_present(const char*);
+
 /**
  * @brief sources_new  Create new source
  * file entry.
