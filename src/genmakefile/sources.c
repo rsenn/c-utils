@@ -1,10 +1,10 @@
 #include "sources.h"
 #include "is.h"
 #include "../../lib/rdir.h"
-#include "../../lib/path.h"
 
 set_t srcs;
 stralloc srcdir = {0, 0, 0};
+dlist sourcelist = {0};
 
 /**
  * @brief sources_new  Create new source

@@ -15,7 +15,6 @@
 #include "../../lib/stralloc.h"
 #include "../../lib/strarray.h"
 #include "../../lib/strlist.h"
-#include "../../lib/path.h"
 #include "../../lib/uint32.h"
 #include "../../lib/errmsg.h"
 #include "../../lib/array.h"

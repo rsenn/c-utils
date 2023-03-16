@@ -923,6 +923,7 @@ set(COMMON_LIBS strlist array safemult scan str byte mmap open fmt)
 set(genmakefile_SOURCES
     ini.c ini.h genmakefile.h debug.c debug.h src/genmakefile/cmake.c
     src/genmakefile/mplab.c src/genmakefile/path.c src/genmakefile/rule.c
+    src/genmakefile/sourcedir.c
     src/genmakefile/sources.c
     src/genmakefile/var.c)
 

@@ -2,7 +2,7 @@
 #define GENMAKEFILE_PATH_H
 
 #include "../../lib/stralloc.h"
-#include "../../lib/path.h"
+#include "../../lib/strlist.h"
 
 char* path_clean_b(const char*, size_t*, stralloc*);
 char* path_clean_s(const char*, stralloc*);

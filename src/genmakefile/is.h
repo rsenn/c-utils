@@ -1,15 +1,16 @@
 #ifndef GENMAKEFILE_IS_H
 #define GENMAKEFILE_IS_H
 
-#include "../../lib/str.h"
 #include "../../lib/strlist.h"
+#include "../../lib/path.h"
+#include "../../lib/str.h"
 #include "../../lib/byte.h"
 #include "../../lib/stralloc.h"
-#include "../../lib/path.h"
 #include "../../lib/env.h"
 #include <ctype.h>
 
 #include "types.h"
+#include "path.h"
 
 extern exts_t exts;
 extern config_t cfg;

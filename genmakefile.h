@@ -3,6 +3,11 @@
 
 #define MAP_USE_HMAP 1
 
+#include "src/genmakefile/is.h"
+#include "src/genmakefile/rule.h"
+#include "src/genmakefile/sources.h"
+#include "src/genmakefile/var.h"
+
 #include "lib/windoze.h"
 #include "lib/unix.h"
 #include "lib/mmap.h"
@@ -24,10 +29,6 @@
 #include "lib/case.h"
 #include "lib/map.h"
 #include "lib/bool.h"
-#include "src/genmakefile/types.h"
-#include "src/genmakefile/rule.h"
-#include "src/genmakefile/sources.h"
-#include "src/genmakefile/var.h"
 
 #if WINDOWS
 #define MAX_CMD_LEN 1023
@@ -63,27 +64,6 @@ union commands {
     stralloc preprocess, compile, lib, link, mkdir, delete;
   };
 };
-
-/*typedef struct target_s {
-  union {
-    const char* name;
-    stralloc namesa;
-  };
-  set_t output;
-  set_t prereq;
-  union {
-    stralloc recipe;
-    strlist cmds;
-  };
-  array deps;
-  array objs;
-  uint32 serial;
-  strlist vars;
-  bool disabled : 1;
-  bool outputs : 1;
-  bool phony : 1;
-  command_type type;
-} target;*/
 
 typedef struct {
   strlist work;
@@ -154,20 +134,6 @@ void push_define(const char*);
 void get_rules_by_cmd(stralloc*, strlist*);
 
 char* dirname_alloc(const char*);
-
-sourcedir* sourcedir_find(const char*);
-sourcedir* sourcedir_findsa(stralloc*);
-sourcedir* sourcedir_findb(const char*, size_t);
-sourcedir* sourcedir_getb(const char*, size_t);
-sourcedir* sourcedir_getsa(stralloc*);
-void sourcedir_addsource(const char*, strarray*);
-void sourcedir_populate(strarray*);
-void sourcedir_dump_all(buffer*);
-void sourcedir_dep_recursive(sourcedir*, strlist*, uint32, sourcedir*);
-void sourcedir_deps(sourcedir*, strlist*);
-void sourcedir_deps_s(const char*, strlist*);
-void sourcedir_deps_b(const char*, size_t, strlist*);
-void sourcedir_printdeps(sourcedir*, buffer*, int);
 
 void deps_indirect(set_t*, const strlist*);
 void deps_direct(set_t*, const target*);

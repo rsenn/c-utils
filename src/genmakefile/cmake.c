@@ -1,6 +1,5 @@
 #define MAP_USE_HMAP 1
 #include "../../lib/stralloc.h"
-#include "../../lib/path.h"
 #include "../../genmakefile.h"
 #include "cmake.h"
 #include "../../lib/strarray.h"
@@ -79,6 +78,7 @@ output_cmake_set(buffer* b, const char* cmd, const set_t* list, char quote) {
     buffer_putnlflush(b);
   }
 }
+
 void
 output_cmake_subst(stralloc* str, const char* varname) {
   const char* value;
@@ -95,7 +95,7 @@ void
 output_cmake_subst_path(const char* path, const char* varname, stralloc* out) {
   const char* value;
   stralloc_zero(out);
-  path_normalize(path, out);
+  path_normalize(path, out, &dirs.build.sa, &dirs.out.sa);
   output_cmake_subst(out, varname);
 }
 
@@ -312,9 +312,9 @@ output_cmake_project(buffer* b, MAP_T* rules, MAP_T* vars, const strlist* includ
     stralloc_free(&sa);
   }
 
-  output_cmake_subst(&include_dirs->sa, "CMAKE_CURRENT_SOURCE_DIR");
-  output_cmake_subst(&include_dirs->sa, "CMAKE_CURRENT_BINARY_DIR");
-  output_cmake_subst(&link_dirs->sa, "CMAKE_CURRENT_BINARY_DIR");
+  output_cmake_subst((stralloc*)&include_dirs->sa, "CMAKE_CURRENT_SOURCE_DIR");
+  output_cmake_subst((stralloc*)&include_dirs->sa, "CMAKE_CURRENT_BINARY_DIR");
+  output_cmake_subst((stralloc*)&link_dirs->sa, "CMAKE_CURRENT_BINARY_DIR");
 
   if(var_isset("CFLAGS"))
     output_cmake_var(b, "CMAKE_C_FLAGS", &var_list("CFLAGS", ' ')->value);

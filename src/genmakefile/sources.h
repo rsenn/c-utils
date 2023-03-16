@@ -2,21 +2,8 @@
 #define GENMAKEFILE_SOURCES_H
 
 #include <stdbool.h>
-#include "types.h"
-#include "../../lib/set.h"
-#include "../../lib/slist.h"
-#include "../../lib/strlist.h"
-#include "../../lib/strarray.h"
-
-typedef struct {
-  int n_sources;
-  slink* sources;
-  set_t includes;
-  array rules;
-  set_t pptoks;
-  set_t deps;
-  uint32 serial;
-} sourcedir;
+#include "sourcedir.h"
+#include "../../lib/dlist.h"
 
 typedef struct {
   union {
@@ -43,6 +30,6 @@ void sources_readdir(stralloc*, strarray*, stralloc*, stralloc*);
 int sources_sort(const char**, const char**);
 
 extern set_t srcs;
-extern stralloc srcdir;
+extern dlist sourcelist;
 
 #endif /* defined(GENMAKEFILE_SOURCES_H) */

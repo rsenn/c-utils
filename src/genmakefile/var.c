@@ -101,3 +101,7 @@ var_push_sa(const char* name, stralloc* value) {
   var_t* var = var_list(name, ' ');
   strlist_push_unique_sa(&var->value, value);
 }
+
+/**
+ * @}
+ */

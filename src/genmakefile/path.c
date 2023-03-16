@@ -1,10 +1,6 @@
-#include "../../lib/str.h"
-#include "../../lib/stralloc.h"
-#include "../../lib/byte.h"
+#include "is.h"
 #include "../../lib/mmap.h"
 #include "../../lib/errmsg.h"
-#include "../../lib/buffer.h"
-#include "path.h"
 
 /**
  * @defgroup path functions
