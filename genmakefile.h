@@ -59,13 +59,6 @@
 
 #define rule_foreach(it, r) MAP_FOREACH_VALUE(rules, it, r)
 
-union commands {
-  stralloc v[NUM_COMMANDS];
-  struct {
-    stralloc preprocess, compile, lib, link, mkdir, delete;
-  };
-};
-
 typedef struct {
   strlist work;
   strlist build;
@@ -121,19 +114,6 @@ void remove_indirect_deps_recursive(array*, array*, int);
 ssize_t remove_indirect_deps(array*);
 void deps_for_libs(void);
 void target_ptrs(const strlist*, array*);
-target* gen_single_rule(stralloc* output, stralloc* cmd);
-void gen_clean_rule(void);
-int filter_pptoks(const void*, size_t);
-
-target* gen_srcdir_compile_rules(sourcedir*, const char*);
-target* gen_simple_compile_rules(sourcedir*, const char*, const char*, const char*, stralloc*);
-target* gen_srcdir_lib_rule(sourcedir*, const char*);
-void gen_srcdir_rule(sourcedir*, const char*);
-void gen_lib_rules(void);
-int gen_link_rules(void);
-target* gen_install_rules(void);
-
-
 
 int input_command_line(const char*, size_t);
 
@@ -163,5 +143,10 @@ extern int cmd_objs, cmd_libs, cmd_bins;
 extern set_t link_libraries;
 extern MAP_T sourcedirs, targetdirs, rules;
 extern strlist link_dirs;
+extern strlist vpath;
+extern strlist build_as_lib;
+extern union commands commands;
+extern bool inst_bins, inst_libs;
+extern const char* newline;
 
 #endif

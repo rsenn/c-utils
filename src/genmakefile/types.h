@@ -39,4 +39,11 @@ typedef struct {
   uint32 serial;
 } var_t;
 
+union commands {
+  stralloc v[NUM_COMMANDS];
+  struct {
+    stralloc preprocess, compile, lib, link, mkdir, delete;
+  };
+};
+
 #endif /* defined(GENMAKEFILE_TYPES_H) */

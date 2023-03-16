@@ -108,25 +108,6 @@ read_line(char* s, size_t len, strlist* fields) {
   return p - s;
 }
 
-/**
- * @brief strarray_dump
- * @param b
- * @param a
- */
-void
-strarray_dump(buffer* b, const array* a) {
-  char** av = array_start(a);
-  ssize_t ac = array_length(a, sizeof(char*));
-  buffer_puts(b, "[ \"");
-  while(ac--) {
-    buffer_puts(b, *av);
-    if(ac > 0)
-      buffer_puts(b, "\", \"");
-    ++av;
-  }
-  buffer_putsflush(b, "\" ]\n");
-}
-
 void
 dump_pair(buffer* b, const char* first, const char* second) {
   buffer_puts(b, first);

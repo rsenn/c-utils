@@ -926,7 +926,8 @@ set(genmakefile_SOURCES
     src/genmakefile/includes.c
     src/genmakefile/sourcedir.c
     src/genmakefile/sources.c
-    src/genmakefile/var.c)
+    src/genmakefile/var.c
+    src/genmakefile/gen.c)
 
 message("COMPRESSION_LIBRARIES: ${COMPRESSION_LIBRARIES}")
 dump(LIBMATH)
@@ -969,7 +970,7 @@ add_program(elflist strlist buffer alloc errmsg unix elf mmap str)
 add_program(elfwrsec buffer alloc elf mmap)
 add_program(
   genmakefile set env sig set case errmsg strarray dlist slist rdir dir path
-  strlist hashmap hmap stralloc buffer mmap unix open scan fmt byte str array
+  strarray strlist hashmap hmap stralloc buffer mmap unix open scan fmt byte str array
   safemult alloc)
 add_program(
   piccfg ihex errmsg strarray slist rdir dir path strlist hashmap hmap stralloc
