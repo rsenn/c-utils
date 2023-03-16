@@ -5,6 +5,7 @@
 #include "../../lib/mmap.h"
 
 MAP_T sourcedirs;
+  const char *srcdir_varname = "DISTDIR";
 
 void extract_includes(const char*, size_t, strlist*, int);
 void extract_pptok(const char*, size_t, set_t*);

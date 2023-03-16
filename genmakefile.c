@@ -27,6 +27,7 @@
 #include "src/genmakefile/sourcedir.h"
 #include "src/genmakefile/ansi.h"
 #include "src/genmakefile/gen.h"
+#include "src/genmakefile/input.h"
 #include <string.h>
 
 #if !WINDOWS_NATIVE
@@ -35,23 +36,6 @@
 #include <io.h>
 #include <sys/stat.h>
 #endif
-
-#define REMOVE(sa, i, x, n) \
-  size_t j = n; \
-  i = stralloc_findb((sa), x, n); \
-\
-  if(i < (sa)->len) { \
-    int q = i > 0 && (sa)->s[i - 1] == '"'; \
-    if(q) { \
-      i--; \
-      j++; \
-      if((sa)->s[i + j] == '"') \
-        j++; \
-    } \
-    if((sa)->s[i + j] == ' ') \
-      j++; \
-    stralloc_replace((sa), i, j, "", 0); \
-  }
 
 extern buffer* unix_optbuf;
 static const char tok_charset[] = {'_', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O',
@@ -66,28 +50,29 @@ void debug_str(const char* name, const char* s);
 
 const char* const build_types[] = {"Release", "RelWithDebInfo", "MinSizeRel", "Debug"};
 typedef void(linklib_fmt)(const char*, stralloc*);
-int cmd_objs = 0, cmd_libs = 0, cmd_bins = 0;
-union commands commands;
 static const char* libpfx = DEFAULT_LIBPFX;
 static const char *make_begin_inline, *make_sep_inline, *make_end_inline;
 static const char* comment = "#";
 static const char* cross_compile = "";
-static const char *srcdir_varname = "DISTDIR", *builddir_varname = "BUILDDIR";
-strlist vpath = {0};
+static const char* builddir_varname = "BUILDDIR";
 static char pathsep_make = DEFAULT_PATHSEP, pathsep_args = DEFAULT_PATHSEP;
 static const char* quote_args = "";
+static int batch, shell, ninja, batchmode;
+static linklib_fmt* format_linklib_fn;
+static int cygming;
+static strlist system_path;
+strarray dirstack = {0};
+
+int cmd_objs = 0, cmd_libs = 0, cmd_bins = 0;
+union commands commands;
+strlist vpath = {0};
 strlist build_as_lib = {0};
 strlist link_dirs = {0};
 set_t link_libraries = {0, 0, 0, byte_hash};
 set_t build_directories = {0, 0, 0, byte_hash};
 const char* newline = "\n";
-static int batch, shell, ninja, batchmode;
-static linklib_fmt* format_linklib_fn;
 bool inst_bins = false, inst_libs = false;
-static int cygming;
-static strlist system_path;
 const char *outfile = NULL, *infile = NULL, *project_name = NULL;
-static strarray dirstack;
 exts_t exts = {DEFAULT_OBJEXT, DEFAULT_LIBEXT, DEFAULT_DSOEXT, DEFAULT_EXEEXT, DEFAULT_PPSEXT};
 dirs_t dirs;
 tools_t tools;
@@ -661,45 +646,6 @@ get_rules_by_cmd(stralloc* cmd, strlist* deps) {
   }
 }
 
-void
-builddir_enter(const char* x, size_t len) {
-  stralloc dir;
-  stralloc_init(&dir);
-  strarray_emplace_sa(&dirstack, &dirs.build.sa);
-  stralloc_copyb(&dirs.build.sa, x, len);
-
-  path_relative_b(dirs.build.sa.s, dirs.build.sa.len, &dir);
-  set_addsa(&build_directories, &dir);
-
-#ifdef DEBUG_OUTPUT
-  buffer_puts(buffer_2, "Entering [");
-  buffer_putlong(buffer_2, strarray_size(&dirstack));
-  buffer_puts(buffer_2, "] '");
-  buffer_putsa(buffer_2, &dir);
-  buffer_puts(buffer_2, "'");
-  buffer_putnlflush(buffer_2);
-#endif
-
-  stralloc_free(&dir);
-}
-
-void
-builddir_leave(const char* x, size_t len) {
-#ifdef DEBUG_OUTPUT
-  buffer_puts(buffer_2, "Leaving [");
-  buffer_putlong(buffer_2, strarray_size(&dirstack));
-  buffer_puts(buffer_2, "] '");
-  buffer_put(buffer_2, x, len);
-  buffer_puts(buffer_2, "'");
-  buffer_putnlflush(buffer_2);
-#endif
-
-  stralloc_free(&dirs.build.sa);
-
-  dirs.build.sa.s = strarray_pop(&dirstack);
-  dirs.build.sa.len = str_len(dirs.build.sa.s);
-}
-
 /**
  * @brief deps_indirect
  * @param l
@@ -907,7 +853,7 @@ target_ptrs(const strlist* targets, array* out) {
     }
   }
 }
-
+/*
 void
 input_process_path_b(const char* y, size_t len, stralloc* out) {
 #ifdef DEBUG_OUTPUT_
@@ -1169,7 +1115,6 @@ input_process_command(stralloc* cmd, int argc, char* argv[], const char* file, s
   if(output.len == 0) {
     stralloc sa;
     stralloc_init(&sa);
-    // path_normalize_b(files.sa.s, byte_chr(files.sa.s, files.sa.len, files.sep), &sa);
     stralloc_copyb(&sa, files.sa.s, byte_chr(files.sa.s, files.sa.len, files.sep));
     stralloc_nul(&sa);
     if(compile)
@@ -1194,11 +1139,6 @@ input_process_command(stralloc* cmd, int argc, char* argv[], const char* file, s
     stralloc_remove(&output, 0, 2);
 
   stralloc_nul(&output);
-
-  /* if(link && stralloc_ends(&output, exts.lib)) {
-     link = 0;
-     lib = 1;
-   }*/
 
 #ifdef DEBUG_OUTPUT_
   buffer_puts(buffer_2, file);
@@ -1233,7 +1173,6 @@ input_process_command(stralloc* cmd, int argc, char* argv[], const char* file, s
     stralloc_init(&source);
   }
   stralloc_nul(&output);
-  // path_prefix_sa(&dirs.build.sa, &output, pathsep_make);
   n = strlist_count_pred(&files, &is_source_b);
   if(n > 0)
     compile = 1;
@@ -1265,13 +1204,7 @@ input_process_command(stralloc* cmd, int argc, char* argv[], const char* file, s
       size_t pathlen;
       target* rule;
       sacmd = &args.sa;
-      /*      if(compile) {
-              sacmd = &commands.compile;
-            } else if(link) {
-              sacmd = &commands.link;
-            } else if(lib) {
-              sacmd = &commands.lib;
-            }*/
+
       pathlen = reldir.len;
       stralloc_cat(&reldir, &output);
 
@@ -1310,14 +1243,6 @@ input_process_command(stralloc* cmd, int argc, char* argv[], const char* file, s
         buffer_putnlflush(buffer_2);
 #endif
       }
-
-      /*   if(compile) {
-           stralloc_copy(&rule->recipe, &commands.compile);
-         } else if(link) {
-           stralloc_copy(&rule->recipe, &commands.link);
-         } else if(lib) {
-           stralloc_copy(&rule->recipe, &commands.lib);
-         }*/
 
       if(link) {
         target* all = rule_get("all");
@@ -1475,12 +1400,11 @@ input_process_rules(target* all) {
       strlist_init(&path, '\0');
       strlist_froms(&path, rule->name, PATHSEP_C);
 
-      /* if(!builddir.sa.len) */ {
-        if(strlist_count(&builddir) == 0)
-          strlist_copy(&builddir, &path);
-        else
-          strlist_intersection(&builddir, &path, compile ? &builddir : &outdir);
-      }
+      if(strlist_count(&builddir) == 0)
+        strlist_copy(&builddir, &path);
+      else
+        strlist_intersection(&builddir, &path, compile ? &builddir : &outdir);
+
       strlist_free(&path);
     }
     if(link) {
@@ -1544,7 +1468,6 @@ input_process_rules(target* all) {
     stralloc_nul(&cfg.chip);
     stralloc_replaces(&cflags->value.sa, cfg.chip.s, "$(CHIP)");
     stralloc_replaces(&cflags->value.sa, cfg.chip.s, "$(CHIP)");
-    // stralloc_lower(&cfg.chip);
 
 #ifdef DEBUG_OUTPUT
     buffer_puts(buffer_2, "Chip: ");
@@ -1584,14 +1507,6 @@ input_process_rules(target* all) {
   buffer_putsl(buffer_2, &cflags->value, " ");
   buffer_putnlflush(buffer_2);
 #endif
-
-  /*  MAP_FOREACH(rules, t) {
-      target* rule = MAP_ITER_VALUE(t);
-      stralloc* sa = &commands.v[rule->type];
-      if(sa->s && sa->len)
-        stralloc_copy(&rule->recipe, sa);
-    }
-  */
   MAP_FOREACH(rules, t) {
     const char* name = MAP_ITER_KEY(t);
     target* rule = MAP_ITER_VALUE(t);
@@ -1632,10 +1547,9 @@ input_process_rules(target* all) {
       }
 
       if(compile) {
-        if(commands.compile.len == 0 /* && !infile*/)
+        if(commands.compile.len == 0)
           stralloc_copy(&commands.compile, &cmd);
 
-        /*    stralloc_copy(&rule->recipe, &commands.compile); */
         stralloc_nul(&rule->recipe);
       }
 
@@ -1655,7 +1569,7 @@ input_process(const char* infile, target* all) {
   size_t n, line = 1;
   path_dirname(infile, &dirs.this.sa);
   strlist_nul(&dirs.this);
-  // sources_get(dirs.this.sa.s);
+
   if((x = mmap_read(infile, &n))) {
     while(n > 0) {
       size_t i = scan_lineskip_escaped(x, n);
@@ -1689,7 +1603,7 @@ input_process(const char* infile, target* all) {
   }
 
   input_process_rules(all);
-}
+}*/
 
 /**
  * @brief output_all_vars  Output all variables
@@ -3459,7 +3373,7 @@ main(int argc, char* argv[]) {
   strarray_init(&srcs);
 
   if(infile) {
-    input_process(infile, all);
+    input_process(infile, all, pathsep_args);
 
 #ifdef DEBUG_OUTPUT_
     buffer_puts(buffer_2, "build_directories =\n\t");

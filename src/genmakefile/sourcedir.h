@@ -36,5 +36,6 @@ void sourcedir_printdeps(sourcedir*, buffer*, int);
 
 extern stralloc srcdir;
 extern MAP_T sourcedirs;
+extern const char *srcdir_varname;
 
 #endif /* defined(GENMAKEFILE_SOURCEDIR_H) */

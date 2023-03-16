@@ -114,7 +114,7 @@ void remove_indirect_deps_recursive(array*, array*, int);
 ssize_t remove_indirect_deps(array*);
 void deps_for_libs(void);
 void target_ptrs(const strlist*, array*);
-
+void libdirs_add(const char* dir);
 int input_command_line(const char*, size_t);
 
 void output_var(buffer*, MAP_T*, const char*, int);
@@ -148,5 +148,7 @@ extern strlist build_as_lib;
 extern union commands commands;
 extern bool inst_bins, inst_libs;
 extern const char* newline;
+extern strarray dirstack;
+extern set_t build_directories;
 
 #endif
