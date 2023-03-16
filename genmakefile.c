@@ -104,7 +104,13 @@ config_t cfg = {.mach = {0, 0}, .sys = {0, 0}, .chip = {0, 0, 0}, .build_type = 
 tool_config_t tool_config = 0;
 MAP_T targetdirs;
 
-void
+static void
+get_map_keys(const MAP_T* map, strlist* list) {
+  MAP_PAIR_T t;
+  MAP_FOREACH(*map, t) { strlist_push(list, MAP_ITER_KEY(t)); }
+}
+
+/*void
 map_keys(const MAP_T* m, strlist* out) {
   MAP_PAIR_T t;
   MAP_FOREACH(*m, t) {
@@ -114,13 +120,13 @@ map_keys(const MAP_T* m, strlist* out) {
       --len;
     strlist_pushb(out, key, len);
   }
-}
+}*/
 
-void
+static void
 dump_map_keys(const MAP_T* m) {
   strlist out;
   strlist_init(&out, '\n');
-  map_keys(m, &out);
+  get_map_keys(m, &out);
   buffer_puts(buffer_2, "keys:\n  ");
   buffer_putsl(buffer_2, &out, "\n  ");
   buffer_putnlflush(buffer_2);
@@ -613,20 +619,8 @@ add_path_relativeb(set_t* s, stralloc* dir, const char* path, size_t pathlen) {
   add_path_sa(s, &sa);
   stralloc_free(&sa);
 }
-/*
-static int
-strlist_count_b(strlist* list, int (*fn_b)(const char*, size_t)) {
-  const char* x;
-  size_t n;
-  int ret = 0;
-  strlist_foreach(list, x, n) {
-    if(is_b(x, n, fn_b))
-      ret++;
-  }
-  return ret;
-}
-*/
-/**
+
+	/**
  * @brief push_lib  Add library spec to variable
  * @param name
  * @param lib
@@ -1594,12 +1588,6 @@ gen_install_rules() {
     }
   }
   return inst;
-}
-
-void
-get_keys(MAP_T* map, strlist* list) {
-  MAP_PAIR_T t;
-  MAP_FOREACH(*map, t) { strlist_push(list, MAP_ITER_KEY(t)); }
 }
 
 void
@@ -4537,7 +4525,7 @@ fail:
   {
     strlist varnames;
     strlist_init(&varnames, '\0');
-    get_keys(&vars, &varnames);
+    get_map_keys(&vars, &varnames);
     buffer_puts(buffer_2, "varnames: ");
     strlist_dump(buffer_2, &varnames);
     output_all_vars(out, &vars, &varnames);

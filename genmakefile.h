@@ -133,8 +133,7 @@ void gen_lib_rules(void);
 int gen_link_rules(void);
 target* gen_install_rules(void);
 
-void get_keys(MAP_T*, strlist*);
-#define MAP_USE_HMAP 1
+
 
 int input_command_line(const char*, size_t);
 
