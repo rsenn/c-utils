@@ -841,5 +841,5 @@ input_process(const char* infile, target* all, char pathsep_args) {
     mmap_unmap(x, n);
   }
 
-  input_process_rules(all,pathsep_args);
+  input_process_rules(all, pathsep_args);
 }

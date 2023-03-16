@@ -117,14 +117,6 @@ void target_ptrs(const strlist*, array*);
 void libdirs_add(const char* dir);
 int input_command_line(const char*, size_t);
 
-void output_var(buffer*, MAP_T*, const char*, int);
-void output_all_vars(buffer*, MAP_T*, strlist*);
-void output_make_rule(buffer*, target*);
-void output_ninja_rule(buffer*, target*);
-void output_all_rules(buffer*);
-void output_build_rules(buffer*, const char*, const stralloc*);
-void output_script(buffer*, target*);
-
 int set_machine(const char*);
 int set_chip(const char*);
 int set_system(const char*);
@@ -148,6 +140,7 @@ extern strlist build_as_lib;
 extern union commands commands;
 extern bool inst_bins, inst_libs;
 extern const char* newline;
+extern const char* infile;
 extern strarray dirstack;
 extern set_t build_directories;
 

@@ -928,7 +928,8 @@ set(genmakefile_SOURCES
     src/genmakefile/sources.c
     src/genmakefile/var.c
     src/genmakefile/gen.c
-    src/genmakefile/input.c)
+    src/genmakefile/input.c
+    src/genmakefile/output.c)
 
 message("COMPRESSION_LIBRARIES: ${COMPRESSION_LIBRARIES}")
 dump(LIBMATH)

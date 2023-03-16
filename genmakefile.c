@@ -28,6 +28,7 @@
 #include "src/genmakefile/ansi.h"
 #include "src/genmakefile/gen.h"
 #include "src/genmakefile/input.h"
+#include "src/genmakefile/output.h"
 #include <string.h>
 
 #if !WINDOWS_NATIVE
@@ -854,12 +855,7 @@ target_ptrs(const strlist* targets, array* out) {
   }
 }
 
-/**
- * @brief output_all_vars  Output all variables
- * @param b
- * @param vars
- */
-void
+/*void
 output_var(buffer* b, MAP_T* vars, const char* name, int serial) {
   stralloc v;
   var_t* var;
@@ -926,11 +922,6 @@ output_var(buffer* b, MAP_T* vars, const char* name, int serial) {
   set_free(&refvars);
 }
 
-/**
- * @brief output_all_vars  Output all variables
- * @param b
- * @param vars
- */
 void
 output_all_vars(buffer* b, MAP_T* vars, strlist* varnames) {
   const char* name;
@@ -940,12 +931,6 @@ output_all_vars(buffer* b, MAP_T* vars, strlist* varnames) {
   strlist_foreach_s(varnames, name) { output_var(b, vars, name, serial); }
   buffer_putnl(b, 1);
 }
-
-/**
- * @brief output_make_rule  Output rule to buffer
- * @param b
- * @param rule
- */
 
 void
 output_make_rule(buffer* b, target* rule) {
@@ -1020,7 +1005,6 @@ output_make_rule(buffer* b, target* rule) {
     int i = 0;
     stralloc_cats(&output, num_prereqs > 1 ? " \\\n\t" : " ");
 
-    /*set_join(&rule->prereq, num_prereqs > 1 ? " \\\n\t" : " ", &output);*/
     set_foreach_ordered(&rule->prereq, it, str, len) {
       if(stralloc_endb(&output, str, len))
         continue;
@@ -1072,15 +1056,6 @@ output_make_rule(buffer* b, target* rule) {
   buffer_flush(b);
 }
 
-/**
- * @brief gen_clean_rule
- * @param rules
- */
-/**
- * @brief output_ninja_rule
- * @param b
- * @param rule
- */
 void
 output_ninja_rule(buffer* b, target* rule) {
   const char* rule_name = 0;
@@ -1100,9 +1075,6 @@ output_ninja_rule(buffer* b, target* rule) {
     stralloc_replaces(&path, dirs.build.sa.s, "$objdir");
     // stralloc_replaces(&path, dirs.out.sa.s, "$distdir");
 
-    /*stralloc_subst(
-        &path, rule->name, str_len(rule->name), pathsep_args == '/' ? "\\" : "/", pathsep_args == '/' ? "/" : "\\");*/
-    buffer_puts(b, "build ");
     buffer_putsa(b, &path);
     buffer_puts(b, ": ");
     buffer_puts(b, rule_name);
@@ -1123,11 +1095,6 @@ output_ninja_rule(buffer* b, target* rule) {
       set_foreach(&rule->prereq, it, x, n) {
         if(i)
           stralloc_catc(&path, ' ');
-        /*     path_concatb(dirs.this.sa.s, dirs.this.sa.len, x, n, &source_file);
-
-             path_relative_to_sa(&source_file, &dirs.build.sa, &tmp);
-             stralloc_cat(&path, &tmp);
-     */
         stralloc_catb(&path, x, n);
         stralloc_zero(&tmp);
         stralloc_zero(&source_file);
@@ -1151,11 +1118,6 @@ output_ninja_rule(buffer* b, target* rule) {
   }
 }
 
-/**
- * @brief output_all_rules  Output the rule set
- * @param b
- * @param hmap
- */
 void
 output_all_rules(buffer* b) {
   MAP_PAIR_T t;
@@ -1183,12 +1145,6 @@ output_all_rules(buffer* b) {
   }
 }
 
-/**
- * @brief output_build_rules
- * @param b
- * @param name
- * @param cmd
- */
 void
 output_build_rules(buffer* b, const char* name, const stralloc* cmd) {
   static stralloc out;
@@ -1205,11 +1161,6 @@ output_build_rules(buffer* b, const char* name, const stralloc* cmd) {
   buffer_putsflush(b, newline);
 }
 
-/**
- * @brief output_script
- * @param b
- * @param rule
- */
 void
 output_script(buffer* b, target* rule) {
   static uint32 serial;
@@ -1220,11 +1171,7 @@ output_script(buffer* b, target* rule) {
   if(rule == NULL) {
     // MAP_PAIR_T t;
     ++serial;
-    /*    MAP_FOREACH(rules, t) {
-          rule = MAP_ITER_VALUE(t);
-          output_script(b, rule);
-        }
-    */
+
     flush = 1;
     rule = rule_get("all");
   }
@@ -1280,7 +1227,7 @@ output_script(buffer* b, target* rule) {
   buffer_putnl(b, flush);
   rule->serial = serial;
 }
-
+*/
 /**
  * @brief set_machine  Set the machine type
  * @param s
@@ -3056,9 +3003,9 @@ fail:
     } else {
       buffer_putm_internal(out, "cd \"$(dirname \"$0\")\"\n\n", NULL);
     }
-    output_script(out, NULL);
+    output_script(out, NULL, shell, batch, quote_args, pathsep_args, make_sep_inline);
   } else {
-    output_all_rules(out);
+    output_all_rules(out, ninja, batch, shell, quote_args, pathsep_args, pathsep_make, make_sep_inline);
   }
 
 quit : {
