@@ -7,6 +7,7 @@
 #include "src/genmakefile/rule.h"
 #include "src/genmakefile/sources.h"
 #include "src/genmakefile/var.h"
+#include "src/genmakefile/includes.h"
 
 #include "lib/windoze.h"
 #include "lib/unix.h"
@@ -110,12 +111,6 @@ size_t skip_comment(const char*, size_t);
 int main_scan(const char*, size_t);
 int main_present(const char*);
 
-void includes_cppflags(void);
-void includes_extract(const char*, size_t, strlist*, int);
-int includes_get(const char*, strlist*, int);
-void includes_add(const char*);
-void includes_to_libs(const set_t*, strlist*);
-
 void var_subst(const stralloc*, stralloc*, const char*, const char*, int);
 
 void add_path_b(set_t*, const char*, size_t);
@@ -191,6 +186,6 @@ extern const char* project_name;
 extern int cmd_objs, cmd_libs, cmd_bins;
 extern set_t link_libraries;
 extern MAP_T sourcedirs, targetdirs, rules;
-extern strlist include_dirs, link_dirs;
+extern strlist link_dirs;
 
 #endif

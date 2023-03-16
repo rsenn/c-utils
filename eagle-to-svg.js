@@ -68,7 +68,7 @@ let layers = Object.values(eagle.instances.Layer).sort((a, b) => b.number - a.nu
 
 layers = ["Bottom", "Top", "Measures", "tNames", "bNames", "tValues", "bValues"].map(name => eagle.Layer.get(name));
 
-for (let layer of layers) {
+for(let layer of layers) {
   let wl = /* eagle.instances.Wire.filter(w => w.layer == layer.number)*/ layer.objects
     .filter(o => o.constructor === eagle.Wire)
     .map(w => {
@@ -159,8 +159,8 @@ var grid = hu("<g>", outerGroup).attr({
   transform: `translate(-2, 6.26) scale(10.16, 10.16) translate(0, 0)`
 });
 
-for (let i = 0; i < 30; i++) hu("<line>", grid).attr({ x1: 0, y1: i, x2: 21, y2: i });
-for (let i = 0; i < 21; i++) hu("<line>", grid).attr({ x1: i, y1: 0, x2: i, y2: 29.7 });
+for(let i = 0; i < 30; i++) hu("<line>", grid).attr({ x1: 0, y1: i, x2: 21, y2: i });
+for(let i = 0; i < 21; i++) hu("<line>", grid).attr({ x1: i, y1: 0, x2: i, y2: 29.7 });
 
 var innerGroup = hu("<g>", outerGroup).attr({
   transform: `translate(105 148.5) scale(${scaleFactor} ${scaleFactor})`
@@ -176,7 +176,7 @@ hu("<rect>", outerGroup).attr({
   fill: "none"
 });
 
-for (let layer in lines) {
+for(let layer in lines) {
   let l = [...lines[layer]].sort((a, b) => a.bounds().x1 - b.bounds().x1);
   let l2 = [...l].map(l => new Line({ ...l }));
   let pl = l.map(l => l.toPoints());
@@ -257,7 +257,7 @@ let pkgGroup = makeGroup({
   fill: "#008000"
 });
 
-for (let via of eagle.instances.Via) {
+for(let via of eagle.instances.Via) {
   hu("<path>", viaGroup).attr({
     transform: ` translate(${via.x} ${via.y})  scale(0.5, 0.5) translate(2.5,2.5)`,
     d:
@@ -296,7 +296,7 @@ let hue = 0;
 let elemGroup;
 var wires = [];
 
-for (let name in eagle.Elements) {
+for(let name in eagle.Elements) {
   const e = eagle.Elements[name];
   const p = eagle.Packages[e.package];
   let rotate = /^R/.test(e.rot) ? parseInt(e.rot.substring(1)) : 0;
@@ -356,8 +356,7 @@ for (let name in eagle.Elements) {
           stroke: color.hex(),
           strokeWidth: "0.05",
           transform: `translate(${o.x + 0.75},${o.y - 0.25})   scale(0.5,0.5) translate(${c.join(",")}) `,
-          d:
-            "m-1.7561 2.79-0.35668 0.35669v0.51538l0.35668 0.35823h0.51693l0.35668-0.35823v-0.51538l-0.35668-0.35669zm0.25846 0.23779c0.20807 0 0.37736 0.1693 0.37736 0.37736 0 0.20807-0.16929 0.37736-0.37736 0.37736-0.20806 0-0.37736-0.16929-0.37736-0.37736 0-0.20806 0.1693-0.37736 0.37736-0.37736z"
+          d: "m-1.7561 2.79-0.35668 0.35669v0.51538l0.35668 0.35823h0.51693l0.35668-0.35823v-0.51538l-0.35668-0.35669zm0.25846 0.23779c0.20807 0 0.37736 0.1693 0.37736 0.37736 0 0.20807-0.16929 0.37736-0.37736 0.37736-0.20806 0-0.37736-0.16929-0.37736-0.37736 0-0.20806 0.1693-0.37736 0.37736-0.37736z"
         });
       } else if(className == "Wire") {
         let { x1, y1, x2, y2 } = o;

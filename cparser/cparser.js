@@ -1,20 +1,20 @@
-const Grammars = require('ebnf').Grammars;
-const fs = require('fs');
+const Grammars = require("ebnf").Grammars;
+const fs = require("fs");
 
 const ansiC = fs.readFileSync("../ansi-c.ebnf").toString();
 const cSource = fs.readFileSync("./cparser.e").toString();
 
 //console.log("ANSI C Grammar: ", ansiC);
 //console.log("C Source: ", cSource);
-console.log("Grammars: ",Object.keys(Grammars));
-console.log("getRules: ",Grammars.W3C.getRules);
+console.log("Grammars: ", Object.keys(Grammars));
+console.log("getRules: ", Grammars.W3C.getRules);
 console.log("RULES: ", Grammars.W3C.RULES);
 
 String.prototype.substr = function(start, length) {
-  return this.substring(start, start+length);
+  return this.substring(start, start + length);
 };
 
-let json_grammar  = `/* https://www.ietf.org/rfc/rfc4627.txt */
+let json_grammar = `/* https://www.ietf.org/rfc/rfc4627.txt */
 value                ::= false | null | true | object | array | number | string
 BEGIN_ARRAY          ::= WS* #x5B WS*  /* [ left square bracket */
 BEGIN_OBJECT         ::= WS* #x7B WS*  /* { left curly bracket */
@@ -37,7 +37,6 @@ number                ::= "-"? ("0" | [1-9] [0-9]*) ("." [0-9]+)? (("e" | "E") (
 string                ::= '"' (([#x20-#x21] | [#x23-#x5B] | [#x5D-#xFFFF]) | #x5C (#x22 | #x5C | #x2F | #x62 | #x66 | #x6E | #x72 | #x74 | #x75 HEXDIG HEXDIG HEXDIG HEXDIG))* '"'
 HEXDIG                ::= [a-fA-F0-9]`;
 
- 
 let grammar = `translation_unit ::= (external_declaration)*
 external_declaration ::= function_definition | declaration
 function_definition ::= (declaration_specifier)* declarator (declaration)* compound_statement
@@ -101,24 +100,20 @@ jump_statement ::= goto identifier ';' | continue ';' | break ';' | return (expr
 grammar = json_grammar.split(/\n/g).join("\n");
 
 try {
+  console.log("Grammar: ", grammar);
+  let rules = Grammars.W3C.getRules(grammar);
+  console.log("rules: ", rules);
 
-console.log("Grammar: ", grammar);
-let rules = Grammars.W3C.getRules(grammar);
-console.log("rules: ", rules);
+  let parser = new Grammars.W3C.Parser(grammar);
+  console.log("Parser: ", parser); /*let ast = parser.getAST(grammar);
 
+  //let ast = parser.getAST( '{"a":false,"b":"asd\\n      asd ","list":[1,2,3,true]}');
 
-let parser = new Grammars.W3C.Parser(grammar);
-console.log("Parser: ", parser);
-
-
-
-//let ast = parser.getAST( '{"a":false,"b":"asd\\n      asd ","list":[1,2,3,true]}');
-
-/*
+  /*
 
 console.log("parser: ", parser);
 
-*//*let ast = parser.getAST(grammar);
+*/
 console.log("ast: ", ast);
 */
 } catch(error) {

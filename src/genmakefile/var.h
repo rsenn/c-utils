@@ -10,6 +10,7 @@ void var_push(const char*, const char*);
 void var_push_sa(const char*, stralloc*);
 var_t* var_setb(const char*, const char*, size_t);
 var_t* var_set(const char*, const char*);
+void var_subst(const stralloc*, stralloc*, const char*, const char*, int);
 void var_unset(const char*);
 
 extern MAP_T vars;

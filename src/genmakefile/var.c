@@ -103,5 +103,35 @@ var_push_sa(const char* name, stralloc* value) {
 }
 
 /**
+ * @brief var_subst
+ * @param in
+ * @param out
+ * @param pfx
+ * @param sfx
+ * @param tolower
+ */
+void
+var_subst(const stralloc* in, stralloc* out, const char* pfx, const char* sfx, int tolower) {
+  size_t i;
+  stralloc_zero(out);
+  for(i = 0; i < in->len; ++i) {
+    const char* p = &in->s[i];
+    if(i + 4 <= in->len && *p == '$' && p[1] == '(') {
+      size_t vlen;
+      stralloc_cats(out, pfx);
+      i += 2;
+      vlen = byte_chr(&in->s[i], in->len - i, ')');
+      stralloc_catb(out, &in->s[i], vlen);
+      if(tolower)
+        byte_lower(&out->s[out->len - vlen], vlen);
+      stralloc_cats(out, sfx);
+      i += vlen;
+      continue;
+    }
+    stralloc_append(out, p);
+  }
+}
+
+/**
  * @}
  */
