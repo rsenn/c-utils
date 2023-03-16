@@ -214,5 +214,22 @@ with_lib(const char* lib) {
 }
 
 /**
+ * @brief push_define
+ * @param def
+ */
+void
+push_define(const char* def) {
+  stralloc sa;
+  stralloc_init(&sa);
+
+  stralloc_copys(&sa, "-D");
+  stralloc_cats(&sa, def);
+  stralloc_nul(&sa);
+  var_push_sa("DEFS", &sa);
+
+  stralloc_free(&sa);
+}
+
+/**
  * @}
  */

@@ -1,5 +1,6 @@
 #include "gen.h"
 #include "ansi.h"
+#include "../../debug.h"
 #include "../../genmakefile.h"
 
 strarray bins = {0}, progs = {0};

@@ -1,6 +1,8 @@
 #include "rule.h"
 #include "path.h"
 #include "is.h"
+#include "ansi.h"
+#include "../../genmakefile.h"
 #include <string.h>
 
 MAP_T rules;

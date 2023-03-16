@@ -2,6 +2,7 @@
 #include "../../lib/stralloc.h"
 #include "../../genmakefile.h"
 #include "cmake.h"
+#include "../../lib/buffer.h"
 #include "../../lib/strarray.h"
 #include "../../lib/map.h"
 #include "../../lib/set.h"
@@ -229,7 +230,7 @@ output_cmake_rule(buffer* b, target* rule) {
         buffer_putset(buffer_2, &deps, "\n  ", 3);
         buffer_putnlflush(buffer_2);
         buffer_puts(buffer_2, "srcs:\n  ");
-        buffer_putstra(buffer_2, &v, "\n  ", 3);
+        buffer_putstra(buffer_2, &v, "\n  ");
         buffer_putnlflush(buffer_2);
         strarray_free(&v);
       }

@@ -85,11 +85,10 @@ void buffer_putnl(buffer*, int);
 void extract_pptok(const char*, size_t, set_t*);
 int main_present(const char*);
 void var_subst(const stralloc*, stralloc*, const char*, const char*, int);
-void push_define(const char*);
 char* path_dirname_alloc(const char*);
-void print_rule_deps(buffer*, target*);
 void rule_list(const strlist*, array*);
 int input_command_line(const char*, size_t);
+void print_rule_deps(buffer* b, target* t);
 
 /*void add_path_b(set_t*, const char*, size_t);
 void add_path(set_t*, const char*);

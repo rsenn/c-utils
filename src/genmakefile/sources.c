@@ -1,6 +1,7 @@
 #include "sources.h"
 #include "is.h"
 #include "../../lib/rdir.h"
+#include "../../debug.h"
 
 set_t srcs;
 stralloc srcdir = {0, 0, 0};

@@ -72,11 +72,6 @@ config_t cfg = {.mach = {0, 0}, .sys = {0, 0}, .chip = {0, 0, 0}, .build_type = 
 tool_config_t tool_config = 0;
 MAP_T targetdirs;
 
-static inline size_t
-skip_comment(const char* p, size_t len) {
-  return byte_finds(p, len, "*/");
-}
-
 static void
 get_map_keys(const MAP_T* map, strlist* list) {
   MAP_PAIR_T t;
@@ -173,19 +168,24 @@ buffer_putnl(buffer* b, int flush) {
 static void
 set_command(stralloc* sa, const char* cmd, const char* args) {
   stralloc_copys(sa, cmd);
+
   if(args) {
     stralloc_catc(sa, ' ');
+
     if(!(ninja || batch) && (make_begin_inline && make_end_inline)) {
       stralloc_cats(sa, make_begin_inline);
+
       if(!str_start(tools.make, "nmake"))
         stralloc_subst(sa, args, str_len(args), "$^", "$|");
       else
         stralloc_copys(sa, args);
+
       stralloc_cats(sa, make_end_inline);
     } else {
       stralloc_cats(sa, args);
     }
   }
+
   if(str_start(tools.make, "nmake"))
     stralloc_replaces(sa, "$^", "$**");
 }
@@ -198,11 +198,17 @@ set_command(stralloc* sa, const char* cmd, const char* args) {
 static int
 extract_build_type(const stralloc* s) {
   size_t i;
-  for(i = 0; i < sizeof(build_types) / sizeof(build_types[0]); ++i) {
+
+  for(i = 0; i < sizeof(build_types) / sizeof(build_types[0]); ++i)
     if(stralloc_contains(s, build_types[i]))
       return i;
-  }
+
   return -1;
+}
+
+static inline size_t
+skip_comment(const char* p, size_t len) {
+  return byte_finds(p, len, "*/");
 }
 
 /**
@@ -211,41 +217,46 @@ extract_build_type(const stralloc* s) {
  * @param n
  * @return
  */
-static int
+static bool
 main_scan(const char* p, size_t n) {
-  const char *end = p + n, *x = p;
-  while(x + 5 < end) {
+  const char *end, *x;
+
+  for(x = p, end = p + n; x + 5 < end;) {
     size_t i;
+
     if(x[0] == '/') {
       if(x[1] == '*') {
         i = skip_comment(x, n);
         x += i;
         continue;
-      } else if(x[1] == '/') {
+      }
+
+      if(x[1] == '/') {
         i = byte_chr(x, n, '\n');
         x += i + 1;
       }
     } else if(!isalpha(x[0]) && x[0] != '_') {
       if(byte_equal(&x[1], 4, "main")) {
         ssize_t i = 0;
+
         if(x + 5 >= end)
-          return 0;
+          return false;
+
         i += 5;
         x += i;
-        /*        if(i > 4 &&
-           !isspace(*(x - 5))) continue;
-        */
-        i = scan_whitenskip(x, end - x);
-        if(x + i >= end)
+
+        if(x + (i = scan_whitenskip(x, end - x)) >= end)
           break;
-        x += i;
-        if(x + 1 < end && *x == '(')
-          return 1;
+
+        if((x += i) + 1 < end && *x == '(')
+          return true;
       }
     }
+
     x++;
   }
-  return 0;
+
+  return false;
 }
 
 /**
@@ -268,43 +279,6 @@ main_present(const char* filename) {
   }
   return -1;
 }
-
-/**
- * @brief push_define
- * @param def
- */
-void
-push_define(const char* def) {
-  stralloc sa;
-  stralloc_init(&sa);
-
-  stralloc_copys(&sa, "-D");
-  stralloc_cats(&sa, def);
-  stralloc_nul(&sa);
-  var_push_sa("DEFS", &sa);
-
-  stralloc_free(&sa);
-}
-
-/**
- * @}
- */
-/**
- * @brief get_rules_by_cmd  Search rules by command
- * @param cmd
- * @param deps
- */
-/*static void
-get_rules_by_cmd(stralloc* cmd, strlist* deps) {
-  MAP_PAIR_T t;
-
-  MAP_FOREACH(rules, t) {
-    target* rule = MAP_ITER_VALUE(t);
-
-    if(rule->recipe.s == cmd->s || stralloc_equal(&rule->recipe, cmd))
-      strlist_push(deps, rule->name);
-  }
-}*/
 
 /**
  * @brief deps_indirect
@@ -330,21 +304,6 @@ deps_indirect(set_t* s, const strlist* names) {
 
   strlist_free(&hier);
 }
-
-/**
- * @brief deps_direct
- * @param l
- * @param t
- */
-/*static void
-deps_direct(set_t* s, const target* t) {
-  target** ptr;
-
-  array_foreach_t(&t->deps, ptr) {
-    if(*ptr)
-      set_adds(s, (*ptr)->name);
-  }
-}*/
 
 /**
  * @brief deps_for_libs
@@ -408,20 +367,19 @@ print_rule_deps_r(buffer* b, target* t, set_t* deplist, strlist* hierlist, int d
   stralloc_nul(&hierlist->sa);
   array_foreach_t(&t->deps, ptr) {
     const char* name = (*ptr)->name;
+
     if(strlist_contains(hierlist, name))
       continue;
 
-    {
-      buffer_puts(b, "# ");
+    buffer_puts(b, "# ");
 
-      buffer_putnspace(b, depth * 2);
-      buffer_puts(b, str_basename(t->name));
-      buffer_puts(b, " -> ");
-      buffer_puts(b, str_basename(name));
-      buffer_putnl(b, 1);
-      if(set_adds(deplist, name))
-        print_rule_deps_r(b, (*ptr), deplist, hierlist, depth + 1);
-    }
+    buffer_putnspace(b, depth * 2);
+    buffer_puts(b, str_basename(t->name));
+    buffer_puts(b, " -> ");
+    buffer_puts(b, str_basename(name));
+    buffer_putnl(b, 1);
+    if(set_adds(deplist, name))
+      print_rule_deps_r(b, (*ptr), deplist, hierlist, depth + 1);
   }
 
   hierlist->sa.len = l;
@@ -436,12 +394,14 @@ void
 print_rule_deps(buffer* b, target* t) {
   set_t deplist;
   strlist hierlist;
+
   set_init(&deplist, 0);
   strlist_init(&hierlist, 0);
   set_adds(&deplist, t->name);
   buffer_putm_internal(b, "# Dependencies for '", t->name, "':", NULL);
   buffer_putnlflush(b);
   print_rule_deps_r(b, t, &deplist, &hierlist, 0);
+
   set_free(&deplist);
   strlist_free(&hierlist);
 }
@@ -455,19 +415,20 @@ print_rule_deps(buffer* b, target* t) {
 static void
 remove_indirect_deps_recursive(array* top, array* a, int depth) {
   target **p, **found;
+
   array_foreach_t(a, p) {
-    target* t = *p;
-    if(t == NULL)
+    target* t;
+
+    if((t = *p) == NULL)
       continue;
-    if(depth > 0) {
-      if((found = array_find(top, sizeof(target*), &t))) {
+
+    if(depth > 0)
+      if((found = array_find(top, sizeof(target*), &t)))
         *found = NULL;
-      }
-    }
-    if(a != &t->deps) {
+
+    if(a != &t->deps)
       if(depth < 100 && array_length(&t->deps, sizeof(target*)) > 0)
         remove_indirect_deps_recursive(top, &t->deps, depth + 1);
-    }
   }
 }
 
@@ -480,14 +441,18 @@ static ssize_t
 remove_indirect_deps(array* deps) {
   size_t w, r, n;
   target** a;
+
   remove_indirect_deps_recursive(deps, deps, 0);
+
   n = array_length(deps, sizeof(target*));
   a = array_start(deps);
-  for(w = 0, r = 0; r < n; ++r) {
+
+  for(w = 0, r = 0; r < n; ++r)
     if(a[r])
       a[w++] = a[r];
-  }
+
   array_truncate(deps, sizeof(target*), w);
+
   return r - w;
 }
 
@@ -499,6 +464,7 @@ remove_indirect_deps(array* deps) {
 static int
 set_machine(const char* s) {
   int ret = 1;
+
   if(s[str_find(s, "64")])
     cfg.mach.bits = _64;
   else if(s[str_find(s, "32")])
@@ -507,6 +473,7 @@ set_machine(const char* s) {
     cfg.mach.bits = _32;
   else
     ret = 0;
+
   if(str_start(s, "pic"))
     cfg.mach.arch = PIC;
   else if(s[str_find(s, "arm")] || s[str_find(s, "aarch")])
@@ -515,6 +482,7 @@ set_machine(const char* s) {
     cfg.mach.arch = X86;
   else
     ret = 0;
+
   return ret;
 }
 
@@ -527,6 +495,7 @@ static int
 set_chip(const char* s) {
   int ret = 1;
   size_t pos = 0;
+
   if(s[(pos = str_find(s, "16f"))] || s[(pos = str_find(s, "16F"))]) {
     cfg.mach.arch = PIC;
     cfg.mach.bits = _14;
@@ -534,7 +503,9 @@ set_chip(const char* s) {
     cfg.mach.arch = PIC;
     cfg.mach.bits = _16;
   }
+
   stralloc_copys(&cfg.chip, &s[pos]);
+
   return ret;
 }
 
@@ -546,6 +517,7 @@ set_chip(const char* s) {
 static int
 set_system(const char* s) {
   int ret = 1;
+
   if(str_contains(s, "win") || str_contains(s, "mingw")) {
     cfg.sys.os = OS_WIN;
     cfg.sys.type = NTOS;
@@ -561,9 +533,7 @@ set_system(const char* s) {
   } else {
     ret = 0;
   }
-  // pathsep_args = cfg.sys.type == NTOS
-  //? '\\' : '/'; pathsep_make =
-  // cfg.sys.type == NTOS ? '\\' : '/';
+
   return ret;
 }
 
@@ -2173,7 +2143,7 @@ fail:
     strlist rule_names;
     strlist_init(&rule_names, '\0');
 
-    map_keys(&rules, &rule_names);
+    get_map_keys(&rules, &rule_names);
 
     buffer_puts(buffer_2, "rule_names:\n\t");
     buffer_putsl(buffer_2, &rule_names, "\n\t");
@@ -2214,7 +2184,7 @@ fail:
     get_map_keys(&vars, &varnames);
     buffer_puts(buffer_2, "varnames: ");
     strlist_dump(buffer_2, &varnames);
-    output_all_vars(out, &vars, &varnames);
+    output_all_vars(out, &vars, &varnames, ninja, batch, shell);
   }
 #endif
 

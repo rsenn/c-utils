@@ -19,6 +19,7 @@ void var_push_sa(const char*, stralloc*);
 void var_subst(const stralloc*, stralloc*, const char*, const char*, int);
 void push_lib(const char*, const char*);
 void with_lib(const char*);
+void push_define(const char*);
 
 extern linklib_fmt* format_linklib_fn;
 
