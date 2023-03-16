@@ -26,9 +26,10 @@ const char* sources_find(const char*, size_t len, size_t* cptr);
 bool sources_iscplusplus(void);
 void sources_deps(sourcefile*, strlist* out);
 void sources_readdir(stralloc*, strarray* out);
-void sources_addincludes(sourcefile*, sourcedir* sdir, const strlist* includes, strarray* sources, const char* srcext);
+void sources_addincludes(sourcefile*, sourcedir* sdir, const strlist* includes, strarray* sources);
 
-extern set_t srcs;
-extern dlist sourcelist;
+extern set_t sources_set;
+extern stralloc sources_dir;
+extern dlist source_list;
 
 #endif /* defined(GENMAKEFILE_SOURCES_H) */

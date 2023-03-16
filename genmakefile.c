@@ -319,7 +319,7 @@ deps_for_libs(void) {
   set_init(&indir, 0);
   stralloc_init(&sa);
 
-  MAP_FOREACH(sourcedirs, t) {
+  MAP_FOREACH(srcdir_map, t) {
     sourcedir* srcdir = *(sourcedir**)MAP_ITER_VALUE(t);
     target* lib;
     stralloc_zero(&sa);
@@ -1341,15 +1341,15 @@ main(int argc, char* argv[]) {
 
   byte_zero(&cfg, sizeof(cfg));
   byte_zero(&dirs, sizeof(dirs));
-  byte_zero(&sourcelist, sizeof(sourcelist));
+  // byte_zero(&source_list, sizeof(source_list));
   byte_zero(&rules, sizeof(rules));
   byte_zero(&vars, sizeof(vars));
-  byte_zero(&srcs, sizeof(srcs));
+  // byte_zero(&sources_set, sizeof(sources_set));
   byte_zero(&bins, sizeof(bins));
   byte_zero(&tools, sizeof(tools));
   set_init(&link_libraries, 0);
   set_init(&build_directories, 0);
-  MAP_NEW(sourcedirs);
+  MAP_NEW(srcdir_map);
   MAP_NEW(targetdirs);
   MAP_NEW(rules);
   MAP_NEW(vars);
@@ -1673,8 +1673,8 @@ main(int argc, char* argv[]) {
   // debug_sa("dirs.work", &dirs.work.sa);
   strlist_nul(&dirs.this);
   strlist_nul(&dirs.out);
-  path_relative_to(dirs.this.sa.s, dirs.out.sa.s, &srcdir);
-  stralloc_nul(&srcdir);
+  path_relative_to(dirs.this.sa.s, dirs.out.sa.s, &sources_dir);
+  stralloc_nul(&sources_dir);
   // debug_sa("srcdir", &srcdir);
   if(dirs.out.sa.len) {
     stralloc_replacec(&dirs.this.sa, PATHSEP_C == '/' ? '\\' : '/', PATHSEP_C);
@@ -1685,12 +1685,12 @@ main(int argc, char* argv[]) {
     stralloc_zero(&tmp);
     path_relative_to(dirs.this.sa.s, dirs.out.sa.s, &tmp);
     // if(tmp.len) {
-    stralloc_copy(&srcdir, &tmp);
-    // debug_sa("srcdir", &srcdir);
+    stralloc_copy(&sources_dir, &tmp);
+    // debug_sa("sources_dir", &sources_dir);
     //}
     stralloc_zero(&tmp);
   }
-  // debug_sa("srcdir", &srcdir);
+  // debug_sa("sources_dir", &sources_dir);
   path_relative_to(dirs.build.sa.s, dirs.out.sa.s, &tmp);
   // debug_sa("tmp", &tmp);
   /* if(dirs.build.sa.len > dirs.out.sa.len && byte_equal(dirs.out.sa.s, dirs.out.sa.len, dirs.build.sa.s)) {
@@ -1775,7 +1775,7 @@ main(int argc, char* argv[]) {
   }
 
   strarray_init(&args);
-  strarray_init(&srcs);
+  // strarray_init(&sources_list);
 
   if(infile) {
     input_process(infile, all, pathsep_args);
@@ -1932,9 +1932,9 @@ main(int argc, char* argv[]) {
 
   {
     set_iterator_t it;
-    set_foreach(&srcs, it, x, n) {
+    set_foreach(&sources_set, it, x, n) {
 
-#ifdef DEBUG_OUTPUT_
+#ifdef DEBUG_OUTPUT
       buffer_puts(buffer_2, "adding to sources:");
       buffer_put(buffer_2, x, n);
       buffer_putnlflush(buffer_2);
@@ -1944,12 +1944,6 @@ main(int argc, char* argv[]) {
     }
     strarray_sort(&sources, &sources_sort);
   }
-
-#ifdef DEBUG_OUTPUT_
-  buffer_puts(buffer_2, "strarray sources:");
-  strarray_dump(buffer_2, &sources);
-  buffer_putnlflush(buffer_2);
-#endif
 
   if(str_start(tools.make, "g")) {
     stralloc builddir;
@@ -1979,15 +1973,26 @@ main(int argc, char* argv[]) {
     stralloc src;
     stralloc_init(&src);
 
-    strarray_foreach(&sources, ptr) {
+#ifdef DEBUG_OUTPUT
+    buffer_puts(buffer_2, "strarray sources:");
+    strarray_dump(buffer_2, &sources);
+    buffer_putnlflush(buffer_2);
+#endif
+
+    strarray sources2;
+    strarray_init(&sources2);
+    strarray_copy(&sources2, &sources);
+
+    strarray_foreach(&sources2, ptr) {
 
 #ifdef DEBUG_OUTPUT
       buffer_putm_internal(buffer_2, PINK256 "sourcedir_addsource" NC "(\"", *ptr, "\")", NULL);
       buffer_putnlflush(buffer_2);
 #endif
 
-      sourcedir_addsource(*ptr, &sources, exts.bin, exts.src, &progs, &bins, pathsep_make);
+      sourcedir_addsource(*ptr, &sources, &progs, &bins, pathsep_make);
     }
+
     sourcedir_populate(&sources);
     strarray_free(&sources);
     stralloc_free(&src);
@@ -2025,7 +2030,7 @@ main(int argc, char* argv[]) {
       buffer_putnlflush(buffer_2);
     }
     buffer_putnlflush(buffer_2);
-    sourcedir_dump_all(buffer_2, sourcedirs);
+    sourcedir_dump_all(buffer_2, srcdir_map);
 #endif
 
     if(cmd_libs) {
@@ -2033,7 +2038,7 @@ main(int argc, char* argv[]) {
       deps_for_libs();
     } else {
       MAP_PAIR_T t;
-      MAP_FOREACH(sourcedirs, t) {
+      MAP_FOREACH(srcdir_map, t) {
         sourcedir* srcdir = *(sourcedir**)MAP_ITER_VALUE(t);
         /*if(tools.preproc) {
           gen_simple_compile_rules(rules, srcdir, MAP_ITER_KEY(t), exts.src, exts.pps, &commands.preprocess);
@@ -2044,11 +2049,11 @@ main(int argc, char* argv[]) {
     }
     if(cmd_bins) {
 
-#ifdef DEBUG_OUTPUT_
-      buffer_puts(buffer_2, "sourcelist.length = ");
-      buffer_putulong(buffer_2, dlist_length(&sourcelist));
-      buffer_putnlflush(buffer_2);
-#endif
+      /*#ifdef DEBUG_OUTPUT_
+            buffer_puts(buffer_2, "source_list.length = ");
+            buffer_putulong(buffer_2, dlist_length(&source_list));
+            buffer_putnlflush(buffer_2);
+      #endif*/
 
       cmd_bins = gen_link_rules(libpfx, pathsep_args, pathsep_make);
 
@@ -2090,7 +2095,7 @@ main(int argc, char* argv[]) {
     gen_install_rules();
   {
     MAP_PAIR_T t;
-    MAP_FOREACH(sourcedirs, t) {
+    MAP_FOREACH(srcdir_map, t) {
       sourcedir* srcdir = *(sourcedir**)MAP_ITER_VALUE(t);
 
 #if DEBUG_OUTPUT_
@@ -2222,7 +2227,7 @@ quit : {
   strlist deps;
   strlist_init(&deps, '\0');
   MAP_PAIR_T t;
-  MAP_FOREACH(sourcedirs, t) {
+  MAP_FOREACH(srcdir_map, t) {
     sourcedir* sdir = *(sourcedir**)MAP_ITER_VALUE(t);
     if(1 /* && set_size(&sdir->deps)*/) {
       strlist_zero(&deps);
@@ -2241,7 +2246,8 @@ quit : {
     struct dnode* link;
     strlist deps;
     strlist_init(&deps, '\0');
-    dlist_foreach_down(&sourcelist, link) {
+
+    dlist_foreach_down(&source_list, link) {
       sourcefile* source = dlist_data(link, sourcefile*);
       if(0 && 1) {
         buffer_putm_internal(buffer_2, "source: ", source->name, " deps: ", NULL);
@@ -2254,6 +2260,6 @@ quit : {
     }
   }
 
-  // MAP_DESTROY(sourcedirs);
+  // MAP_DESTROY(srcdir_map);
   return ret;
 }

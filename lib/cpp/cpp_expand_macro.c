@@ -52,8 +52,7 @@ cpp_expand_macro(cpp_t* cpp, tokenizer* t, buffer* out, const char* name, unsign
   size_t i;
   struct token_s tok;
   unsigned num_args = MACRO_ARGCOUNT(m);
-  struct FILE_container_s* argvalues =
-      alloc_zero((MACRO_VARIADIC(m) ? num_args + 1 : num_args) * sizeof(struct FILE_container_s));
+  struct FILE_container_s* argvalues = alloc_zero((MACRO_VARIADIC(m) ? num_args + 1 : num_args) * sizeof(struct FILE_container_s));
 
   for(i = 0; i < num_args; i++)
     argvalues[i].f = memstream_open(&argvalues[i].buf, &argvalues[i].len);
@@ -323,8 +322,8 @@ cpp_expand_macro(cpp_t* cpp, tokenizer* t, buffer* out, const char* name, unsign
       tokenizer_next(&cwae.t, &tok);
       if(tok.type == TT_EOF)
         break;
-      if(tok.type == TT_IDENTIFIER && tokenizer_peek(&cwae.t) == TOKENIZER_EOF &&
-         (ma = cpp_get_macro(cpp, cwae.t.buf)) && FUNCTIONLIKE(ma) && cpp_tchain_parens_follows(cpp, rec_level) != -1) {
+      if(tok.type == TT_IDENTIFIER && tokenizer_peek(&cwae.t) == TOKENIZER_EOF && (ma = cpp_get_macro(cpp, cwae.t.buf)) && FUNCTIONLIKE(ma) &&
+         cpp_tchain_parens_follows(cpp, rec_level) != -1) {
         int ret = cpp_expand_macro(cpp, &cwae.t, out, cwae.t.buf, rec_level + 1, visited);
         if(!ret)
           return ret;

@@ -96,7 +96,7 @@ void
 output_cmake_subst_path(const char* path, const char* varname, stralloc* out) {
   const char* value;
   stralloc_zero(out);
-  path_normalize(path, out, &dirs.build.sa, &dirs.out.sa);
+  path_normalize(path, out);
   output_cmake_subst(out, varname);
 }
 
@@ -131,11 +131,11 @@ output_cmake_rule(buffer* b, target* rule) {
       bool lib = rule_is_lib(rule);
       bool link = !(rule_is_compile(rule) || lib);
       size_t pos = 0;
-      set_t deps, libs, srcs;
+      set_t deps, libs, sources_list;
 
       set_init(&libs, 0);
       set_init(&deps, 0);
-      set_init(&srcs, 0);
+      set_init(&sources_list, 0);
       buffer_puts(b, lib ? "add_library(\n  " : "add_executable(\n  ");
       if(lib || link) {
         pos = byte_rchr(x, n, '/');
@@ -151,7 +151,7 @@ output_cmake_rule(buffer* b, target* rule) {
       }
       /*   if(link) {
            set_filter_out(&rule->prereq, &deps, is_source_b);
-           set_filter(&rule->prereq, &srcs, is_source_b);
+           set_filter(&rule->prereq, &sources_list, is_source_b);
          } else */
       {
 
@@ -169,8 +169,8 @@ output_cmake_rule(buffer* b, target* rule) {
           if(is_object_b(s, n)) {
 
             if((compile = rule_find_b(s, n))) {
-              rule_prereq(compile, &srcs);
-//            set_cat(&srcs, &compile->prereq);
+              rule_prereq(compile, &sources_list);
+//            set_cat(&sources_list, &compile->prereq);
 #ifdef DEBUG_OUTPUT
               buffer_puts(buffer_2, "compile rule '");
               buffer_puts(buffer_2, compile->name);
@@ -188,7 +188,7 @@ output_cmake_rule(buffer* b, target* rule) {
           } else if(is_lib_b(s, n)) {
             set_add(&libs, s, n);
           } else if(is_source_b(s, n)) {
-            set_add(&srcs, s, n);
+            set_add(&sources_list, s, n);
 
           } else {
             set_add(&deps, s, n);
@@ -196,7 +196,7 @@ output_cmake_rule(buffer* b, target* rule) {
         }
       }
 
-      if(n - pos == 0 /* || 0 == set_size(lib ? &deps : &srcs)*/)
+      if(n - pos == 0 /* || 0 == set_size(lib ? &deps : &sources_list)*/)
         continue;
 
       buffer_put(b, x + pos, n - pos);
@@ -205,7 +205,7 @@ output_cmake_rule(buffer* b, target* rule) {
       if(lib && is_lib(rule->name))
         buffer_puts(b, "STATIC\n  ");
 
-      buffer_putset(b, lib ? &deps : &srcs, "\n  ", 3);
+      buffer_putset(b, lib ? &deps : &sources_list, "\n  ", 3);
       buffer_puts(b, "\n)");
       buffer_putnlflush(b);
 
@@ -223,13 +223,13 @@ output_cmake_rule(buffer* b, target* rule) {
         strarray v;
 
         strarray_init(&v);
-        set_tostrarray(&srcs, &v);
+        set_tostrarray(&sources_list, &v);
         strarray_sort(&v, 0);
 
         buffer_puts(buffer_2, "deps:\n  ");
         buffer_putset(buffer_2, &deps, "\n  ", 3);
         buffer_putnlflush(buffer_2);
-        buffer_puts(buffer_2, "srcs:\n  ");
+        buffer_puts(buffer_2, "sources_list:\n  ");
         buffer_putstra(buffer_2, &v, "\n  ");
         buffer_putnlflush(buffer_2);
         strarray_free(&v);

@@ -48,8 +48,7 @@ xml_read_node(xmlreader* r, xmlnodeid id, stralloc* name, stralloc* value, HMAP_
 
     case XML_TEXT: {
       xmlnode *pnode, *tnode, **nptr;
-      const char* x = name && name->s ? (const char*)name->s
-                                      : /* value && (const char*)value->s ? (const char*)value->s :  */
+      const char* x = name && name->s ? (const char*)name->s : /* value && (const char*)value->s ? (const char*)value->s :  */
                           "";
       size_t i, n = name && name->len ? name->len : /*  value && value->len ? value->len : */ 0;
 

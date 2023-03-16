@@ -1,12 +1,13 @@
 #include "sources.h"
 #include "is.h"
+#include "ansi.h"
 #include "../../lib/rdir.h"
 #include "../../debug.h"
 #include "../../genmakefile.h"
 
-set_t srcs;
-stralloc srcdir = {0, 0, 0};
-dlist sourcelist = {0};
+set_t sources_set = {0};
+stralloc sources_dir = {0, 0, 0};
+dlist source_list = {0};
 
 int main_present(const char*);
 
@@ -79,7 +80,7 @@ sources_add_b(const char* x, size_t len) {
       x += dirlen;
       len -= dirlen;
     }
-    if(set_add(&srcs, x, len)) {
+    if(set_add(&sources_set, x, len)) {
 #ifdef DEBUG_OUTPUT_
       debug_byte("sources_add", x, len);
 #endif
@@ -157,7 +158,7 @@ sources_find(const char* name, size_t len, size_t* cptr) {
   buffer_putnlflush(buffer_2);
 #endif
 
-  set_foreach(&srcs, it, x, n) {
+  set_foreach(&sources_set, it, x, n) {
     i = byte_findb(x, n, name, len);
     if(i == n)
       i = byte_findb(x, n, path_basename(name), len);
@@ -190,7 +191,7 @@ sources_iscplusplus() {
   char* x;
   size_t n;
   set_iterator_t it;
-  set_foreach(&srcs, it, x, n) {
+  set_foreach(&sources_set, it, x, n) {
     if(byte_ends(x, n, "pp"))
       return true;
     if(byte_ends(x, n, "xx"))
@@ -208,7 +209,7 @@ sources_deps(sourcefile* file, strlist* out) {
   sourcedir* dir;
   strlist_foreach(&file->includes, x, len) { strlist_pushb_unique(out, x, len); }
   set_foreach(&file->deps, it, x, len) {
-    stralloc_nul(&srcdir);
+    stralloc_nul(&sources_dir);
 
 #ifdef DEBUG_OUTPUT_I_q
     buffer_puts(buffer_2, "sources_deps '");
@@ -274,23 +275,38 @@ sources_readdir(stralloc* dir, strarray* out) {
 }
 
 void
-sources_addincludes(sourcefile* file, sourcedir* sdir, const strlist* includes, strarray* sources, const char* srcext) {
+sources_addincludes(sourcefile* file, sourcedir* sdir, const strlist* includes, strarray* sources) {
   const char* x;
   size_t n;
   stralloc basedir, dir, path, real, relative;
   strlist directories;
+
   stralloc_init(&real);
   stralloc_init(&dir);
   stralloc_init(&basedir);
   stralloc_init(&path);
   stralloc_init(&relative);
+  strlist_init(&directories, '\0');
+
+#ifdef DEBUG_OUTPUT
+  buffer_puts(buffer_2, __func__);
+  buffer_puts(buffer_2, "(1) file=");
+  buffer_puts(buffer_2, file->name);
+  buffer_puts(buffer_2, " exts.src=");
+  buffer_puts(buffer_2, exts.src);
+  buffer_putnlflush(buffer_2);
+#endif
+
   path_dirname(file->name, &basedir);
   path_absolute_sa(&basedir);
-  strlist_init(&directories, '\0');
+
   strlist_init(&file->includes, '\0');
+
   stralloc_nul(&basedir);
+
   if(stralloc_starts(&basedir, dirs.this.sa.s))
     stralloc_remove(&basedir, 0, dirs.this.sa.len + 1);
+
   stralloc_copy(&relative, &basedir);
   stralloc_nul(&relative);
 
@@ -309,37 +325,28 @@ sources_addincludes(sourcefile* file, sourcedir* sdir, const strlist* includes, 
 #endif
 
   relative.s = path_clean_b(relative.s, &relative.len);
+
   strlist_foreach(includes, x, n) {
     size_t len = n;
-    // stralloc_copyb(&path, x,len);
-    // stralloc_zero(&path);
+
     path_concatb(relative.s, relative.len, x, len, &path);
     path_collapse_sa(&path);
     path_concatb(dirs.this.sa.s, dirs.this.sa.len, path.s, path.len, &real);
     path_canonical_sa(&real);
     path_collapse_sa(&real);
-    {
-      const char* s = "strlist_shift.c";
-      if(stralloc_endb(&real, s, str_len(s))) {
-
-#ifdef SIGTRAP
-        raise(SIGTRAP);
-#endif
-      }
-    }
 
 #ifdef DEBUG_OUTPUT_
-    {
-      buffer_puts(buffer_2, "source_addincludes: file=");
-      buffer_puts(buffer_2, file->name);
-      buffer_puts(buffer_2, " path=");
-      buffer_putsa(buffer_2, &path);
-      buffer_putnlflush(buffer_2);
-    }
+    buffer_puts(buffer_2, __func__);
+    buffer_puts(buffer_2, "(2) file=");
+    buffer_puts(buffer_2, file->name);
+    buffer_puts(buffer_2, " path=");
+    buffer_putsa(buffer_2, &path);
+    buffer_putnlflush(buffer_2);
 #endif
 
     strlist_pushb_unique(&file->includes, path.s, path.len);
     strarray_pushb_unique(sources, path.s, path.len);
+
     if(len >= 2 && real.s[real.len - 2] == '.') {
       stralloc_copyb(&dir, path.s, path.len - 2);
       stralloc_nul(&dir);
@@ -347,10 +354,10 @@ sources_addincludes(sourcefile* file, sourcedir* sdir, const strlist* includes, 
       path.len -= 2;
       stralloc_nul(&path);
       stralloc_nul(&real);
-      if(stralloc_diff(&basedir, &dir)) {
 
+      if(stralloc_diff(&basedir, &dir)) {
 #ifdef DEBUG_OUTPUT_
-        buffer_puts(buffer_2, "real = ");
+        buffer_puts(buffer_2, __func__ " real = ");
         buffer_putsa(buffer_2, &real);
         buffer_puts(buffer_2, " path = ");
         buffer_putsa(buffer_2, &path);
@@ -361,10 +368,8 @@ sources_addincludes(sourcefile* file, sourcedir* sdir, const strlist* includes, 
         buffer_putnlflush(buffer_2);
 #endif
 
-        if(path_exists(real.s) && path_is_directory(real.s) /* && !stralloc_equal(&real, &dirs.this.sa)*/) {
-          if(1) /*strlist_push_unique_sa(&directories,
-                   &path))*/
-          {
+        if(path_exists(real.s) && path_is_directory(real.s)) {
+          if(1) {
             strarray a;
             strarray_init(&a);
             sources_readdir(&real, &a);
@@ -380,14 +385,16 @@ sources_addincludes(sourcefile* file, sourcedir* sdir, const strlist* includes, 
           }
         }
       }
-      stralloc_cats(&real, srcext);
+
+      stralloc_cats(&real, exts.src);
       stralloc_nul(&real);
+
       if(path_exists(real.s) && !path_is_directory(real.s)) {
-        stralloc_cats(&path, srcext);
+        stralloc_cats(&path, exts.src);
         stralloc_nul(&path);
 
-#ifdef DEBUG_OUTPUT_
-        buffer_puts(buffer_2, "exists: ");
+#ifdef DEBUG_OUTPUT
+        buffer_putm_internal(buffer_2, YELLOW, __func__, NC, " Adding: ", 0);
         buffer_putsa(buffer_2, &path);
         buffer_putnlflush(buffer_2);
 #endif

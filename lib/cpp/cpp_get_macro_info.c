@@ -33,8 +33,7 @@ cpp_get_macro_info(cpp_t* cpp,
         if(tokenizer_peek(t) == '(') {
           unsigned tpos_save = tpos;
           tpos = cpp_get_macro_info(cpp, t, mi_list, mi_cnt, nest + 1, tpos + 1, newname, visited, rec_level);
-          mi_list[*mi_cnt] =
-              (struct macro_info_s){.name = newname, .nest = nest + 1, .first = tpos_save, .last = tpos + 1};
+          mi_list[*mi_cnt] = (struct macro_info_s){.name = newname, .nest = nest + 1, .first = tpos_save, .last = tpos + 1};
           ++(*mi_cnt);
         } else {
           /* suppress expansion */

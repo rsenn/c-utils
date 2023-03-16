@@ -95,15 +95,14 @@ void add_srcpath(set_t*, const char*);
 void add_source(set_t*, const char*);
 void add_path_sa(set_t*, stralloc*);*/
 
-// extern exts_t exts;
-extern config_t cfg;
+// extern config_t cfg;
 extern dirs_t dirs;
 extern tools_t tools;
 extern tool_config_t tool_config;
 extern const char* project_name;
 extern int cmd_objs, cmd_libs, cmd_bins;
 extern set_t link_libraries;
-extern MAP_T sourcedirs, targetdirs, rules;
+extern MAP_T srcdir_map, targetdirs, rules;
 extern strlist link_dirs;
 extern strlist vpath;
 extern strlist build_as_lib;

@@ -107,7 +107,7 @@ void
 includes_add_b(const char* dir, size_t len) {
   static stralloc abs;
   stralloc_zero(&abs);
-  path_normalize_b(dir, len, &abs, &dirs.build.sa, &dirs.out.sa);
+  path_normalize_b(dir, len, &abs);
 
   if(strlist_push_unique_sa(&include_dirs, &abs)) {
 #ifdef DEBUG_OUTPUT
@@ -170,4 +170,45 @@ includes_to_libs(const set_t* includes, strlist* libs, const char* libpfx, const
 
   stralloc_free(&lib);
   stralloc_free(&sa);
+}
+
+int
+includes_find_sa(const char* x, size_t n, stralloc* out) {
+  const char* dir;
+
+  strlist_foreach_s(&include_dirs, dir) {
+    stralloc_copys(out, dir);
+    stralloc_catc(out, PATHSEP_C);
+    stralloc_catb(out, x, n);
+    stralloc_nul(out);
+
+#ifdef DEBUG_OUTPUT_
+    buffer_puts(buffer_2, __func__);
+    buffer_puts(buffer_2, ": ");
+    buffer_putsa(buffer_2, out);
+    buffer_putnlflush(buffer_2);
+#endif
+
+    if(path_exists(out->s))
+      return 1;
+  }
+
+  return 0;
+}
+
+char*
+includes_find_b(const char* x, size_t n) {
+  stralloc path;
+  stralloc_init(&path);
+
+  if(includes_find_sa(x, n, &path))
+    return path.s;
+
+  stralloc_free(&path);
+  return 0;
+}
+
+char*
+includes_find(const char* s) {
+  return includes_find_b(s, str_len(s));
 }

@@ -118,6 +118,8 @@ int strarray_emplace_sa(strarray* arr, stralloc* sa);
 void set_tostrarray(const set_t*, strarray*);
 #endif
 
+int strarray_copy(strarray*, const strarray*);
+
 #ifdef __cplusplus
 }
 #endif

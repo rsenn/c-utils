@@ -96,8 +96,8 @@ init(stralloc* rules) {
     i = 0;
     for(j = 0; j < data.len; ++j)
       if(data.s[j] == '\n') {
-        if(byte_equal("search ", 7, data.s + i) || byte_equal("search\t", 7, data.s + i) ||
-           byte_equal("domain ", 7, data.s + i) || byte_equal("domain\t", 7, data.s + i)) {
+        if(byte_equal("search ", 7, data.s + i) || byte_equal("search\t", 7, data.s + i) || byte_equal("domain ", 7, data.s + i) ||
+           byte_equal("domain\t", 7, data.s + i)) {
           if(!stralloc_copys(rules, "?:"))
             return -1;
           i += 7;

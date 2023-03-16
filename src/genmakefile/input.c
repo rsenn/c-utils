@@ -27,7 +27,7 @@ libdirs_add(const char* dir) {
   stralloc abs;
   stralloc_init(&abs);
 
-  path_normalize(dir, &abs, &dirs.build.sa, &dirs.out.sa);
+  path_normalize(dir, &abs);
   if(strlist_push_unique_sa(&link_dirs, &abs)) {
 
 #ifdef DEBUG_OUTPUT_

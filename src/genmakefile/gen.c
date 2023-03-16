@@ -39,9 +39,9 @@ add_srcpath(set_t* s, const char* path, char pathsep_make) {
   stralloc sa;
   stralloc_init(&sa);
 
-  if(srcdir.len && !stralloc_equals(&srcdir, ".")) {
+  if(sources_dir.len && !stralloc_equals(&sources_dir, ".")) {
     stralloc_zero(&sa);
-    path_prefix_s(&srcdir, path, &sa, pathsep_make);
+    path_prefix_s(&sources_dir, path, &sa, pathsep_make);
     set_addsa(s, &sa);
     stralloc_free(&sa);
   } else {
@@ -56,9 +56,9 @@ add_source(set_t* s, const char* path, char pathsep_make) {
   stralloc sa;
   stralloc_init(&sa);
 
-  if(srcdir.len && !stralloc_equals(&srcdir, ".")) {
+  if(sources_dir.len && !stralloc_equals(&sources_dir, ".")) {
     stralloc_zero(&sa);
-    path_prefix_s(&srcdir, path, &sa, pathsep_make);
+    path_prefix_s(&sources_dir, path, &sa, pathsep_make);
     set_addsa(s, &sa);
   } else {
     set_adds(s, path);
@@ -188,16 +188,16 @@ gen_srcdir_compile_rules(sourcedir* sdir, const char* dir, bool shell, bool batc
   sourcefile* src;
   target* rule = 0;
   MAP_PAIR_T t;
-  stralloc target, srcs, obj;
+  stralloc target, sources_list, obj;
   size_t len, tlen;
   strlist pptoks;
   const char* tok;
   set_iterator_t it;
   stralloc defines;
   stralloc_init(&target);
-  path_output("%", &target, exts.obj, &dirs.build.sa, pathsep_args);
+  path_output("%", &target, exts.obj, pathsep_args);
   stralloc_cats(&target, ": ");
-  stralloc_init(&srcs);
+  stralloc_init(&sources_list);
   tlen = target.len;
   stralloc_init(&obj);
   strlist_init(&pptoks, '\0');
@@ -237,14 +237,14 @@ gen_srcdir_compile_rules(sourcedir* sdir, const char* dir, bool shell, bool batc
       continue;
 
     target.len = tlen;
-    stralloc_zero(&srcs);
-    path_prefix_s(&srcdir, src->name, &srcs, pathsep_make);
-    path_wildcard(&srcs, "%");
-    stralloc_replacec(&srcs, pathsep_make == '/' ? '\\' : '/', pathsep_make);
+    stralloc_zero(&sources_list);
+    path_prefix_s(&sources_dir, src->name, &sources_list, pathsep_make);
+    path_wildcard(&sources_list, "%");
+    stralloc_replacec(&sources_list, pathsep_make == '/' ? '\\' : '/', pathsep_make);
     stralloc_zero(&obj);
-    path_output(src->name, &obj, exts.obj, &dirs.build.sa, pathsep_args);
+    path_output(src->name, &obj, exts.obj, pathsep_args);
     if(str_start(tools.make, "g") || ((shell | batch) && batchmode)) {
-      stralloc_cat(&target, &srcs);
+      stralloc_cat(&target, &sources_list);
     } else if(batchmode) {
       stralloc_zero(&target);
       stralloc_catm_internal(&target, "{", dir, "}", ext, "{", dirs.work.sa.s, "}", exts.obj, ":", NULL);
@@ -260,7 +260,7 @@ gen_srcdir_compile_rules(sourcedir* sdir, const char* dir, bool shell, bool batc
         set_clear(&rule->prereq);
       }
       set_addsa(&rule->output, &obj);
-      add_srcpath(&rule->prereq, srcs.s, pathsep_make);
+      add_srcpath(&rule->prereq, sources_list.s, pathsep_make);
 
       if(rule->recipe.s)
         continue;
@@ -331,7 +331,7 @@ gen_simple_compile_rules(sourcedir* srcdir, const char* dir, const char* fromext
 
     if(tools.preproc) {
       stralloc_zero(&obj);
-      path_output(base, &obj, ".pp.c", &dirs.build.sa, pathsep_args);
+      path_output(base, &obj, ".pp.c", pathsep_args);
 
       if((rule = rule_get_sa(&obj))) {
         add_source(&rule->prereq, src->name, pathsep_args);
@@ -341,7 +341,7 @@ gen_simple_compile_rules(sourcedir* srcdir, const char* dir, const char* fromext
       }
     }
     stralloc_init(&obj);
-    path_output(base, &obj, toext, &dirs.build.sa, pathsep_args);
+    path_output(base, &obj, toext, pathsep_args);
 
     if((rule = rule_get_sa(&obj))) {
       add_source(&rule->prereq, srcname, pathsep_args);
@@ -399,7 +399,7 @@ gen_srcdir_lib_rule(sourcedir* srcdir, const char* name, bool shell, bool batch,
         if(vpath.sa.len)
           path_extension(pfile->name, &sa, exts.obj);
         else
-          path_output(pfile->name, &sa, exts.obj, &dirs.build.sa, pathsep_args);
+          path_output(pfile->name, &sa, exts.obj, pathsep_args);
         set_addsa(&rule->prereq, &sa);
       }
     }
@@ -470,7 +470,7 @@ gen_lib_rules(bool shell, bool batch, bool batchmode, char pathsep_args, char pa
   stralloc_init(&abspath);
   all = rule_get("all");
 
-  MAP_FOREACH(sourcedirs, t) {
+  MAP_FOREACH(srcdir_map, t) {
     target* rule;
     sourcedir* srcdir = *(sourcedir**)MAP_ITER_VALUE(t);
     const char* base = path_basename(MAP_ITER_KEY(t));
@@ -521,9 +521,9 @@ gen_program_rule(const char* filename, const char* libpfx, char pathsep_args) {
   sourcedir* srcdir = sourcedir_getsa(&dir);
 
   if(tools.preproc)
-    path_output(filename, &ppsrc, exts.pps, &dirs.build.sa, pathsep_args);
+    path_output(filename, &ppsrc, exts.pps, pathsep_args);
 
-  path_output(filename, &obj, exts.obj, &dirs.build.sa, pathsep_args);
+  path_output(filename, &obj, exts.obj, pathsep_args);
 
   if(tools.preproc && (preprocess = rule_get_sa(&ppsrc))) {
     add_source(&preprocess->prereq, filename, pathsep_args);
@@ -547,7 +547,7 @@ gen_program_rule(const char* filename, const char* libpfx, char pathsep_args) {
     if(stralloc_endb(&outname, exts.src, 2))
       outname.len -= 2;
     stralloc_nul(&outname);
-    path_output(outname.s, &bin, exts.bin, &dirs.build.sa, pathsep_args);
+    path_output(outname.s, &bin, exts.bin, pathsep_args);
   } else {
     path_extension(obj.s, &bin, exts.bin);
   }
@@ -565,13 +565,13 @@ gen_program_rule(const char* filename, const char* libpfx, char pathsep_args) {
       slist_foreach(srcdir->sources, pfile) {
         if(!pfile->has_main && !is_include(pfile->name)) {
           stralloc_zero(&obj);
-          path_output(pfile->name, &obj, exts.obj, &dirs.build.sa, pathsep_args);
+          path_output(pfile->name, &obj, exts.obj, pathsep_args);
           add_path_sa(&rule->prereq, &obj);
         }
       }
     } else {
       slink* source2;
-      dlist_foreach_down(&sourcelist, source2) {
+      dlist_foreach_down(&source_list, source2) {
         sourcefile* sfile = dlist_data(source2, sourcefile*);
         char* filename = (char*)sfile->name;
         stralloc_zero(&dir);
@@ -580,7 +580,7 @@ gen_program_rule(const char* filename, const char* libpfx, char pathsep_args) {
           continue;
         strlist_push_unique_sa(&vpath, &dir);
         stralloc_zero(&obj);
-        path_output(filename, &obj, exts.obj, &dirs.build.sa, pathsep_args);
+        path_output(filename, &obj, exts.obj, pathsep_args);
         add_path_sa(&rule->prereq, &obj);
       }
     }
@@ -630,7 +630,7 @@ gen_link_rules(const char* libpfx, char pathsep_args, char pathsep_make) {
   set_init(&deps, 0);
   strlist_init(&libs, ' ');
   strlist_init(&indir, ' ');
-  dlist_foreach_down(&sourcelist, node) {
+  dlist_foreach_down(&source_list, node) {
     sourcefile* file = dlist_data(node, sourcefile*);
     char* filename = (char*)file->name;
 

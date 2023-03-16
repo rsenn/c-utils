@@ -60,8 +60,7 @@ again:
           errno = EAGAIN;
         }
     */
-    if((received > 0 || r->status == HTTP_RECV_HEADER) &&
-       (ret = http_read_internal(h->sock, buf, received, &h->q.in)) > 0) {
+    if((received > 0 || r->status == HTTP_RECV_HEADER) && (ret = http_read_internal(h->sock, buf, received, &h->q.in)) > 0) {
     }
     if(r->status == HTTP_STATUS_FINISH) {
       goto end;

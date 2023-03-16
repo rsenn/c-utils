@@ -74,8 +74,8 @@ path_extension(const char* in, stralloc* out, const char* ext) {
  * @return
  */
 char*
-path_output(const char* in, stralloc* out, const char* ext, stralloc* builddir, char pathsep_args) {
-  stralloc_copy(out, builddir);
+path_output(const char* in, stralloc* out, const char* ext, char pathsep_args) {
+  stralloc_copy(out, &dirs.build.sa);
   stralloc_catc(out, pathsep_args);
   return path_extension(str_basename(in), out, ext);
 }
@@ -154,29 +154,29 @@ path_mmap_read(const char* path, size_t* n, char pathsep_make) {
 }
 
 void
-path_normalize(const char* dir, stralloc* out, stralloc* builddir, stralloc* outdir) {
+path_normalize(const char* dir, stralloc* out) {
   stralloc tmp;
   stralloc_init(&tmp);
   stralloc_zero(out);
   if(!path_is_absolute(dir)) {
-    stralloc_copy(&tmp, builddir);
+    stralloc_copy(&tmp, &dirs.build.sa);
     path_appends(dir, &tmp);
     path_canonical_sa(&tmp);
   } else {
     path_canonical(dir, &tmp);
   }
   // stralloc_nul(&tmp);
-  path_relative_to_b(tmp.s, tmp.len, outdir->s, outdir->len, out);
+  path_relative_to_b(tmp.s, tmp.len, dirs.out.sa.s, dirs.out.sa.len, out);
   stralloc_free(&tmp);
 }
 
 void
-path_normalize_b(const char* x, size_t len, stralloc* out, stralloc* builddir, stralloc* outdir) {
+path_normalize_b(const char* x, size_t len, stralloc* out) {
   stralloc tmp;
   stralloc_init(&tmp);
   stralloc_copyb(&tmp, x, len);
   stralloc_nul(&tmp);
-  path_normalize(tmp.s, out, builddir, outdir);
+  path_normalize(tmp.s, out);
   if(stralloc_ends(out, "/."))
     out->len -= 2;
   stralloc_nul(out);

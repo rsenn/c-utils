@@ -223,7 +223,7 @@ output_mplab_project(buffer* b, MAP_T* _rules, MAP_T* vars, const strlist* inclu
 
     stralloc_zero(&incdirs.sa);
 
-    set_foreach(&srcs, it, x, n) {
+    set_foreach(&sources_set, it, x, n) {
       s = x;
       if(!is_source(s) && num_sources == 0)
         num_sources = i;

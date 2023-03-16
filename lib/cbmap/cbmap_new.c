@@ -60,8 +60,5 @@ cbmap_new(void) {
 
 cbmap_t
 cbmap_new_with_static_keys_and_values(void) {
-  return cbmap_new_with_custom_allocation(CBMAP_NOP_ALLOCATOR.malloc,
-                                          CBMAP_NOP_ALLOCATOR.free,
-                                          CBMAP_NOP_ALLOCATOR.malloc,
-                                          CBMAP_NOP_ALLOCATOR.free);
+  return cbmap_new_with_custom_allocation(CBMAP_NOP_ALLOCATOR.malloc, CBMAP_NOP_ALLOCATOR.free, CBMAP_NOP_ALLOCATOR.malloc, CBMAP_NOP_ALLOCATOR.free);
 }
