@@ -710,8 +710,7 @@ pkg_list(id code) {
         buffer_putsa(buffer_2, &path);
         buffer_putnlflush(buffer_2);
 #endif
-        if(match_pattern &&
-           path_fnmatch(match_pattern, str_len(match_pattern), path.s, path.len, FNM_CASEFOLD) == FNM_NOMATCH)
+        if(match_pattern && path_fnmatch(match_pattern, str_len(match_pattern), path.s, path.len, FNM_CASEFOLD) == FNM_NOMATCH)
           continue;
 
         pkg_init(&pf, path.s);
@@ -1407,13 +1406,11 @@ main(int argc, char* argv[], char* envp[]) {
           int i = arg[2] == 'l' ? PRINT_LIBS : PRINT_CFLAGS;
           add_cmd(i);
           if(i == PRINT_LIBS)
-            libs_mode = arg[str_find(arg, "only")] ? (arg[str_find(arg, "other")]
-                                                          ? LIBS_ONLY_OTHER
-                                                          : (arg[str_find(arg, "L")] ? LIBS_ONLY_LIBPATH : LIBS_ONLY_L))
-                                                   : 0;
+            libs_mode = arg[str_find(arg, "only")]
+                            ? (arg[str_find(arg, "other")] ? LIBS_ONLY_OTHER : (arg[str_find(arg, "L")] ? LIBS_ONLY_LIBPATH : LIBS_ONLY_L))
+                            : 0;
           else
-            cflags_mode =
-                arg[str_find(arg, "only")] ? (arg[str_find(arg, "other")] ? CFLAGS_ONLY_OTHER : CFLAGS_ONLY_I) : 0;
+            cflags_mode = arg[str_find(arg, "only")] ? (arg[str_find(arg, "other")] ? CFLAGS_ONLY_OTHER : CFLAGS_ONLY_I) : 0;
           //   argv[unix_optind] = "-";      for(i = unix_optind; argv[i]; i++) argv[i] = argv[i+1];
           continue;
         }
@@ -1462,8 +1459,7 @@ getopt_end:
     size_t pos;
     stralloc_nul(&cmd.prefix);
 
-    if((pos = stralloc_finds(&cmd.prefix, "/sys-root/")) < cmd.prefix.len ||
-       (pos = stralloc_finds(&cmd.prefix, "/sysroot/")) < cmd.prefix.len) {
+    if((pos = stralloc_finds(&cmd.prefix, "/sys-root/")) < cmd.prefix.len || (pos = stralloc_finds(&cmd.prefix, "/sysroot/")) < cmd.prefix.len) {
 
       sysroot = str_ndup(cmd.prefix.s, pos + 9);
     } else {

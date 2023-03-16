@@ -5,12 +5,12 @@
 #include "../../lib/strlist.h"
 #include "../../lib/set.h"
 
-void includes_add_b(const char*, size_t, stralloc*, stralloc*);
-void includes_add(const char*, stralloc*, stralloc*);
+void includes_extract(const char*, size_t n, strlist* includes, int sys);
 void includes_cppflags(void);
-void includes_extract(const char*, size_t, strlist*, int);
-int includes_get(const char*, strlist*, int, stralloc*, char);
-void includes_to_libs(const set_t*, strlist*, const char*, stralloc*, const char*, const char*);
+int includes_get(const char*, strlist* includes, int sys, char pathsep_make);
+void includes_add_b(const char*, size_t len);
+void includes_add(const char*);
+void includes_to_libs(const set_t*, strlist* libs, const char* libpfx, const char* incext, const char* libext);
 
 extern strlist include_dirs;
 

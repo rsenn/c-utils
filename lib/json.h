@@ -20,16 +20,7 @@
 extern "C" {
 #endif
 
-typedef enum {
-  JSON_UNDEFINED = -1,
-  JSON_NULL = 0,
-  JSON_BOOL,
-  JSON_INT,
-  JSON_DOUBLE,
-  JSON_STRING,
-  JSON_ARRAY,
-  JSON_OBJECT
-} jsontype;
+typedef enum { JSON_UNDEFINED = -1, JSON_NULL = 0, JSON_BOOL, JSON_INT, JSON_DOUBLE, JSON_STRING, JSON_ARRAY, JSON_OBJECT } jsontype;
 
 typedef enum key_type { JSON_KEY_OBJECT = 0, JSON_KEY_ARRAY = 1 } jsonkey_type;
 

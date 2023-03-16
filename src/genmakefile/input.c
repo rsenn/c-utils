@@ -174,7 +174,7 @@ input_process_command(stralloc* cmd, int argc, char* argv[], const char* file, s
         link = 0;
       }
       if(src)
-        sources_add_b(x, byte_chrs(x, len, " \t\n\v\r", 5), &dirs.this.sa);
+        sources_add_b(x, byte_chrs(x, len, " \t\n\v\r", 5));
     }
     for(p = argv; (len = *p ? str_len(*p) : 0, x = *p, p < end); p++) {
       len = str_len(x);
@@ -235,7 +235,7 @@ input_process_command(stralloc* cmd, int argc, char* argv[], const char* file, s
 
         if(n >= 2 && y[n - 1] == '.' && y[n - 2] == '/')
           n -= 2;
-        includes_add_b(y, n, &dirs.build.sa, &dirs.out.sa);
+        includes_add_b(y, n);
         x = y;
         stralloc_free(&path);
         continue;
@@ -286,7 +286,7 @@ input_process_command(stralloc* cmd, int argc, char* argv[], const char* file, s
           buffer_putnlflush(buffer_2);
 #endif
           if(is_source_sa(&path))
-            sources_add_b(path.s, path.len, &dirs.this.sa);
+            sources_add_b(path.s, path.len);
           stralloc_free(&path);
         }
         x = y;
@@ -688,8 +688,8 @@ input_process_rules(target* all, char pathsep_args) {
     var_setb(srcdir_varname, dirs.out.sa.s, dirs.out.sa.len);
   }
 
-  var_t *cflags = var_list("CFLAGS", pathsep_args), *cc = var_list("CC", pathsep_args),
-        *defs = var_list("DEFS", pathsep_args), *common = var_list("COMMON_FLAGS", pathsep_args);
+  var_t *cflags = var_list("CFLAGS", pathsep_args), *cc = var_list("CC", pathsep_args), *defs = var_list("DEFS", pathsep_args),
+        *common = var_list("COMMON_FLAGS", pathsep_args);
   stralloc_zero(&defs->value.sa);
 
 #ifdef DEBUG_OUTPUT

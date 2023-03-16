@@ -33,8 +33,7 @@ void dlist_unshift(dlist*, node*);
 
 #define dlist_data(n, t) (*(t*)(&(n)[1]))
 
-#define dlist_foreach_down(dlist, n) \
-  for((n) = (void*)(dlist)->head; (n) != NULL; (n) = (void*)(((struct dnode*)n)->next))
+#define dlist_foreach_down(dlist, n) for((n) = (void*)(dlist)->head; (n) != NULL; (n) = (void*)(((struct dnode*)n)->next))
 
 /* n is set to the current node and n->next is backupped
    into m before loop body for safe walk-throught when
@@ -54,10 +53,8 @@ void dlist_unshift(dlist*, node*);
    into m before loop body for safe walk-throught when
    links get deleted */
 #define dlist_foreach_up_safe(dlist, n, m) \
-  for((n) = (void*)(dlist)->tail, (m) = (void*)((struct dnode*)n) != NULL ? (void*)((struct dnode*)n)->prev : NULL; \
-      (n) != NULL; \
-      (n) = (void*)((struct dnode*)m), \
-  (m) = (void*)((struct dnode*)n) != NULL ? (void*)((struct dnode*)n)->prev : NULL)
+  for((n) = (void*)(dlist)->tail, (m) = (void*)((struct dnode*)n) != NULL ? (void*)((struct dnode*)n)->prev : NULL; (n) != NULL; \
+      (n) = (void*)((struct dnode*)m), (m) = (void*)((struct dnode*)n) != NULL ? (void*)((struct dnode*)n)->prev : NULL)
 
 /* aliases for backwards compatibility */
 #define dlist_foreach dlist_foreach_down

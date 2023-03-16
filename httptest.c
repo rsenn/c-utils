@@ -72,8 +72,7 @@ static io_entry* g_iofd;
 static http h;
 static buffer in, out;
 
-const char* token_types[] = {
-    "XML_EOF", "XML_DATA", "XML_TAG_NAME", "XML_TAG_CLOSE", "XML_ATTR_NAME", "XML_ATTR_VALUE", "XML_COMMENT"};
+const char* token_types[] = {"XML_EOF", "XML_DATA", "XML_TAG_NAME", "XML_TAG_CLOSE", "XML_ATTR_NAME", "XML_ATTR_VALUE", "XML_COMMENT"};
 const char* token_colors[] = {"\x1b[1;37m", "\x1b[1;31m", "\x1b[1;35m", "\x1b[1;33m", "\x1b[1;36m", "\x1b[1;32m"};
 
 void
@@ -330,8 +329,8 @@ process_xml(const char* x, size_t len, strlist* urls, uri_t* uri) {
     } else
 
         if(tok.id == XML_ATTR_VALUE) {
-      if(stralloc_equals(&attr_name, "href") || stralloc_equals(&attr_name, "src") ||
-         stralloc_equals(&attr_name, "url") || byte_finds(tok.x, tok.len, "://") < tok.len) {
+      if(stralloc_equals(&attr_name, "href") || stralloc_equals(&attr_name, "src") || stralloc_equals(&attr_name, "url") ||
+         byte_finds(tok.x, tok.len, "://") < tok.len) {
         stralloc url;
         uri_t link;
         uri_init(&link);

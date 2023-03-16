@@ -52,8 +52,8 @@ void debug_str(const char* name, const char* s);
 
 const char* const build_types[] = {"Release", "RelWithDebInfo", "MinSizeRel", "Debug"};
 
-static const char *make_begin_inline, *make_sep_inline, *make_end_inline,
-    *comment = "#", *cross_compile = "", *builddir_varname = "BUILDDIR", *quote_args = "";
+static const char *make_begin_inline, *make_sep_inline, *make_end_inline, *comment = "#", *cross_compile = "", *builddir_varname = "BUILDDIR",
+                                                                          *quote_args = "";
 static char pathsep_make = DEFAULT_PATHSEP, pathsep_args = DEFAULT_PATHSEP;
 static bool batch, shell, ninja, batchmode, cygming;
 static strlist system_path;
@@ -272,7 +272,7 @@ main_present(const char* filename) {
   if(str_equal(exts.src, ".asm") && is_source(filename))
     return 1;
 
-  if((x = (char*)path_mmap_read(filename, &n, &dirs.this.sa, pathsep_make))) {
+  if((x = (char*)path_mmap_read(filename, &n, pathsep_make))) {
     int ret = main_scan(x, n);
     mmap_unmap(x, n);
     return ret;
@@ -329,7 +329,7 @@ deps_for_libs(void) {
     if((lib = rule_find_sa(&sa))) {
       strlist libs;
       strlist_init(&libs, ' ');
-      includes_to_libs(&srcdir->includes, &libs, libpfx, &dirs.this.sa, exts.inc, exts.lib);
+      includes_to_libs(&srcdir->includes, &libs, libpfx, exts.inc, exts.lib);
       strlist_removes(&libs, lib->name);
       set_clear(&indir);
       deps_indirect(&indir, &libs);
@@ -615,16 +615,14 @@ set_compiler_type(const char* compiler) {
   var_set("CXX", "c++");
   stralloc_copys(&commands.compile, "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) $(DEFS) -c -o $@ $<");
   set_command(&commands.lib, "$(LIB) /out:$@", "$^");
-  set_command(&commands.link,
-              "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(LDFLAGS) $(EXTRA_LDFLAGS) -o $@",
-              "$^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
+  set_command(&commands.link, "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(LDFLAGS) $(EXTRA_LDFLAGS) -o $@", "$^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
   set_command(&commands.preprocess, "$(CPP) $(CPPFLAGS) $(DEFS) -o$@", "$<");
 
   /*
    * Visual C++ compiler
    */
-  if(str_start(compiler, "msvc") || str_start(compiler, "icl") || str_start(compiler, "vs20") ||
-     str_start(compiler, "vc") || compiler[str_find(compiler, "-cl")]) {
+  if(str_start(compiler, "msvc") || str_start(compiler, "icl") || str_start(compiler, "vs20") || str_start(compiler, "vc") ||
+     compiler[str_find(compiler, "-cl")]) {
     exts.obj = ".obj";
     exts.bin = ".exe";
     exts.lib = ".lib";
@@ -687,11 +685,9 @@ set_compiler_type(const char* compiler) {
       var_set("MACHINE", "x86");
       var_set("X64", "");
     }
-    set_command(&commands.link,
-                "$(LINK) -out:$@ $(LDFLAGS) $(EXTRA_LDFLAGS) -pdb:\"$@.pdb\"",
-                "$^ $(LIBS) $(EXTRA_LIBS)");
-  } else if(str_start(compiler, "gnu") || str_start(compiler, "gcc") || cygming || str_start(compiler, "clang") ||
-            str_start(compiler, "llvm") || str_start(compiler, "zapcc")) {
+    set_command(&commands.link, "$(LINK) -out:$@ $(LDFLAGS) $(EXTRA_LDFLAGS) -pdb:\"$@.pdb\"", "$^ $(LIBS) $(EXTRA_LIBS)");
+  } else if(str_start(compiler, "gnu") || str_start(compiler, "gcc") || cygming || str_start(compiler, "clang") || str_start(compiler, "llvm") ||
+            str_start(compiler, "zapcc")) {
     exts.lib = ".a";
     exts.obj = ".o";
     if(str_start(compiler, "zapcc"))
@@ -811,9 +807,7 @@ set_compiler_type(const char* compiler) {
     } else {
       var_push("STDC_LIBS", "libc.lib");
     }
-    stralloc_copys(
-        &commands.link,
-        "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(LDFLAGS) $(EXTRA_LDFLAGS) -o $@ $^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
+    stralloc_copys(&commands.link, "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(LDFLAGS) $(EXTRA_LDFLAGS) -o $@ $^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
     stralloc_copys(&commands.link, "$(LINK) $(LDFLAGS) $(EXTRA_LDFLAGS) -o $@ $^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
     /*
      * Tiny CC compiler
@@ -879,9 +873,7 @@ set_compiler_type(const char* compiler) {
     // set_command(&commands.lib, "$(LIB) -c $@", "$^");
     set_command(&commands.lib, "$(LIB) -c $@", "$^");
     stralloc_copys(&commands.compile, "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) $(DEFS) -c -o$@ $<");
-    set_command(&commands.link,
-                "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(LDFLAGS) $(EXTRA_LDFLAGS) -o$@",
-                "$^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
+    set_command(&commands.link, "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(LDFLAGS) $(EXTRA_LDFLAGS) -o$@", "$^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
   } else if(str_start(compiler, "pelles") || str_start(compiler, "po")) {
     var_set("CC", "cc");
     var_set("LINK", "polink");
@@ -1039,9 +1031,7 @@ set_compiler_type(const char* compiler) {
     }
     set_command(&commands.lib, "$(LIB) rcs $@", "$^");
     stralloc_copys(&commands.compile, "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) $(DEFS) -c $< -o $@");
-    stralloc_copys(
-        &commands.link,
-        "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(LDFLAGS) $(EXTRA_LDFLAGS) -o $@ $^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
+    stralloc_copys(&commands.link, "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(LDFLAGS) $(EXTRA_LDFLAGS) -o $@ $^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
   } else if(str_start(compiler, "htc")) {
     var_unset("CXX");
     var_set("LIB", "libr");
@@ -1093,9 +1083,7 @@ set_compiler_type(const char* compiler) {
     // var_push("CPPFLAGS", "-D__$(CHIP)=1");
     set_command(&commands.lib, "$(LIB) $@", "$^");
     stralloc_copys(&commands.compile, "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) $(DEFS) --pass1 -c $< -o$@");
-    stralloc_copys(
-        &commands.link,
-        "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(LDFLAGS) $(EXTRA_LDFLAGS) -o$@ $^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
+    stralloc_copys(&commands.link, "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(LDFLAGS) $(EXTRA_LDFLAGS) -o$@ $^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
   } else if(str_start(compiler, "xc8") || str_start(compiler, "picc")) {
     // no_libs = 1;
     var_unset("CXX");
@@ -1141,11 +1129,8 @@ set_compiler_type(const char* compiler) {
     "--warnformat=\"%f:%l:%c warning
     [%n]: %s\"");*/
     stralloc_copys(&commands.preprocess, "$(CPP) $(CPPFLAGS) $(DEFS) $< -o$@");
-    stralloc_copys(&commands.compile,
-                   "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) $(DEFS) --pass1 -c $< -o$@");
-    stralloc_copys(
-        &commands.link,
-        "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(LDFLAGS) $(EXTRA_LDFLAGS) -o$@ $^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
+    stralloc_copys(&commands.compile, "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) $(DEFS) --pass1 -c $< -o$@");
+    stralloc_copys(&commands.link, "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(LDFLAGS) $(EXTRA_LDFLAGS) -o$@ $^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
     stralloc_copys(&commands.lib,
                    "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(LDFLAGS) $(EXTRA_LDFLAGS) --OUTPUT=lpp --memorysummary -G "
                    "-m$@.map -P --asmlist --output=default,-inhx032 --output=-mcof,+elf:multilocs -o$@.elf $^ $(LIBS) "
@@ -1186,10 +1171,7 @@ set_compiler_type(const char* compiler) {
       var_t* cross = var_set("CROSS_COMPILE", str_end(tools.toolchain, "64") ? "x86_64" : "i686");
       // cross->sep = '-';
       stralloc_cats(&cross->value.sa, str_start(tools.toolchain, "mingw") ? "-w64-" : "-pc-");
-      stralloc_cats(&cross->value.sa,
-                    str_start(tools.toolchain, "mingw")  ? "mingw32"
-                    : str_start(tools.toolchain, "msys") ? "msys"
-                                                         : "cygwin");
+      stralloc_cats(&cross->value.sa, str_start(tools.toolchain, "mingw") ? "mingw32" : str_start(tools.toolchain, "msys") ? "msys" : "cygwin");
       stralloc_catc(&cross->value.sa, '-');
     }
   }
@@ -1552,8 +1534,7 @@ main(int argc, char* argv[]) {
     }
   }
   if(tools.toolchain)
-    cygming =
-        str_start(tools.toolchain, "mingw") || str_start(tools.toolchain, "cyg") || str_start(tools.toolchain, "msys");
+    cygming = str_start(tools.toolchain, "mingw") || str_start(tools.toolchain, "cyg") || str_start(tools.toolchain, "msys");
   if(cygming) {
     tools.compiler = "gcc";
     if(tools.make == 0)
@@ -1633,7 +1614,7 @@ main(int argc, char* argv[]) {
   if(batch)
     pathsep_args = pathsep_make;
   strarray_foreach(&libs, it) { with_lib(*it); }
-  strarray_foreach(&includes, it) { includes_add(*it, &dirs.build.sa, &dirs.out.sa); }
+  strarray_foreach(&includes, it) { includes_add(*it); }
   stralloc_replacec(&dirs.out.sa, PATHSEP_C == '/' ? '\\' : '/', PATHSEP_C);
   // path_absolute_sa(&dirs.out.sa);
   strlist_nul(&dirs.out);
@@ -1943,9 +1924,9 @@ main(int argc, char* argv[]) {
         goto fail;
       }
       if(is_source(p) || is_include(p))
-        sources_add(p, &dirs.this.sa);
+        sources_add(p);
       else if(path_is_directory(p))
-        sources_get(p, &dirs.this.sa);
+        sources_get(p);
     }
   }
 
@@ -1997,14 +1978,15 @@ main(int argc, char* argv[]) {
   if(!infile) {
     stralloc src;
     stralloc_init(&src);
+
     strarray_foreach(&sources, ptr) {
 
-#ifdef DEBUG_OUTPUT_
+#ifdef DEBUG_OUTPUT
       buffer_putm_internal(buffer_2, PINK256 "sourcedir_addsource" NC "(\"", *ptr, "\")", NULL);
       buffer_putnlflush(buffer_2);
 #endif
 
-      sourcedir_addsource(*ptr, &sources, exts.bin, exts.src, &dirs.this.sa, &dirs.out.sa, &progs, &bins, pathsep_make);
+      sourcedir_addsource(*ptr, &sources, exts.bin, exts.src, &progs, &bins, pathsep_make);
     }
     sourcedir_populate(&sources);
     strarray_free(&sources);

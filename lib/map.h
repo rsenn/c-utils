@@ -21,11 +21,9 @@ typedef linked_list_node* MAP_ITER_T;
 #define MAP_GET(map, key, klen) hashmap_get(&(map), (void*)(key))
 #define MAP_DESTROY(map) hashmap_free(&(map))
 #define MAP_FOREACH(map, pair) \
-  for(MAP_ITER_T iter = linked_list_head(hashmap_keys(&(map))); iter && ((pair) = hashmap_find(&(map), iter->data)); \
-      (iter) = (iter)->next)
+  for(MAP_ITER_T iter = linked_list_head(hashmap_keys(&(map))); iter && ((pair) = hashmap_find(&(map), iter->data)); (iter) = (iter)->next)
 #define MAP_FOREACH_SAFE(map, pair) \
-  for(MAP_ITER_T next, iter = linked_list_head(hashmap_keys(&(map))); \
-      iter && ((next = (iter)->next), ((pair) = hashmap_find(&(map), iter->data))); \
+  for(MAP_ITER_T next, iter = linked_list_head(hashmap_keys(&(map))); iter && ((next = (iter)->next), ((pair) = hashmap_find(&(map), iter->data))); \
       (iter) = next)
 #define MAP_FOREACH_VALUE(map, pair, value) \
   for(MAP_ITER_T iter = linked_list_head(hashmap_keys(&(map))); \

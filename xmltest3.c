@@ -4,9 +4,8 @@
 
 xmlnode*
 create_xml_document() {
-  xmlnode *compile_type, *conf, *configuration_descriptor, *confs, *doc, *hitechcomp, *linker_tool, *loading,
-      *logical_folder, *logical_folder1, *logical_folder2, *logical_folder3, *make_customization_type, *packs,
-      *source_root_list, *tools_set;
+  xmlnode *compile_type, *conf, *configuration_descriptor, *confs, *doc, *hitechcomp, *linker_tool, *loading, *logical_folder, *logical_folder1,
+      *logical_folder2, *logical_folder3, *make_customization_type, *packs, *source_root_list, *tools_set;
 
   doc = xml_newnode(XML_DOCUMENT);
   configuration_descriptor = doc->children = xml_element("configurationDescriptor");
@@ -16,20 +15,10 @@ create_xml_document() {
   logical_folder = xml_child_element("logicalFolder", configuration_descriptor);
   logical_folder->attributes = xml_attributes("name", "root", "displayName", "root", "projectFiles", "true", 0);
 
-  xml_child_element_attrs(
-      "logicalFolder", logical_folder, "name", "HeaderFiles", "displayName", "Header Files", "projectFiles", "true", 0);
-  xml_child_element_attrs("logicalFolder",
-                          logical_folder,
-                          "name",
-                          "LinkerScript",
-                          "displayName",
-                          "Linker Files",
-                          "projectFiles",
-                          "true",
-                          0);
+  xml_child_element_attrs("logicalFolder", logical_folder, "name", "HeaderFiles", "displayName", "Header Files", "projectFiles", "true", 0);
+  xml_child_element_attrs("logicalFolder", logical_folder, "name", "LinkerScript", "displayName", "Linker Files", "projectFiles", "true", 0);
   logical_folder1 = xml_child_element("logicalFolder", logical_folder);
-  logical_folder->attributes =
-      xml_attributes("name", "SourceFiles", "displayName", "Source Files", "projectFiles", "true", 0);
+  logical_folder->attributes = xml_attributes("name", "SourceFiles", "displayName", "Source Files", "projectFiles", "true", 0);
 
   logical_folder2 = xml_child_element("logicalFolder", logical_folder1);
   logical_folder->attributes = xml_attributes("name", "f1", "displayName", "lib", "projectFiles", "true", 0);
@@ -47,8 +36,7 @@ create_xml_document() {
   xml_child_element_text("itemPath", logical_folder1, "../../../blinktest.c");
 
   logical_folder3 = xml_child_element("logicalFolder", logical_folder);
-  logical_folder->attributes =
-      xml_attributes("name", "ExternalFiles", "displayName", "Important Files", "projectFiles", "false", 0);
+  logical_folder->attributes = xml_attributes("name", "ExternalFiles", "displayName", "Important Files", "projectFiles", "false", 0);
 
   xml_child_element_text("itemPath", logical_folder3, "Makefile");
 

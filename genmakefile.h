@@ -82,7 +82,6 @@ typedef enum {
 void stralloc_weak(stralloc*, const stralloc*);
 void buffer_putnl(buffer*, int);
 
-void extract_pptok(const char*, size_t, set_t*);
 int main_present(const char*);
 void var_subst(const stralloc*, stralloc*, const char*, const char*, int);
 char* path_dirname_alloc(const char*);

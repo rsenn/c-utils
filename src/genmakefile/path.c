@@ -2,6 +2,7 @@
 #include "../../lib/path_internal.h"
 #include "../../lib/mmap.h"
 #include "../../lib/errmsg.h"
+#include "../../genmakefile.h"
 
 /**
  * @defgroup path functions
@@ -107,9 +108,9 @@ path_wildcard(stralloc* sa, const char* wildchar) {
 }
 
 char*
-path_clean_s(const char* path, stralloc* thisdir) {
-  if(str_startb(path, thisdir->s, thisdir->len)) {
-    path += thisdir->len;
+path_clean_s(const char* path) {
+  if(str_startb(path, dirs.this.sa.s, dirs.this.sa.len)) {
+    path += dirs.this.sa.len;
     if(path[0] == PATHSEP_C)
       path++;
   }
@@ -119,10 +120,10 @@ path_clean_s(const char* path, stralloc* thisdir) {
 }
 
 char*
-path_clean_b(const char* path, size_t* len, stralloc* thisdir) {
-  if(byte_startb(path, *len, thisdir->s, thisdir->len)) {
-    path += thisdir->len;
-    *len -= thisdir->len;
+path_clean_b(const char* path, size_t* len) {
+  if(byte_startb(path, *len, dirs.this.sa.s, dirs.this.sa.len)) {
+    path += dirs.this.sa.len;
+    *len -= dirs.this.sa.len;
     if(*len > 0 && path[0] == PATHSEP_C) {
       path++;
       (*len)--;
@@ -136,12 +137,12 @@ path_clean_b(const char* path, size_t* len, stralloc* thisdir) {
 }
 
 const char*
-path_mmap_read(const char* path, size_t* n, stralloc* thisdir, char pathsep_make) {
+path_mmap_read(const char* path, size_t* n, char pathsep_make) {
   const char* x;
   stralloc sa;
   stralloc_init(&sa);
-  if(thisdir->s) {
-    path_prefix_s(thisdir, path, &sa, pathsep_make);
+  if(dirs.this.sa.s) {
+    path_prefix_s(&dirs.this.sa, path, &sa, pathsep_make);
     stralloc_replacec(&sa, pathsep_make, PATHSEP_C);
   }
   if((x = mmap_read(sa.s, n)) == NULL) {

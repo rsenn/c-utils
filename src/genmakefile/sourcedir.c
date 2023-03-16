@@ -5,6 +5,7 @@
 #include "../../lib/dlist.h"
 #include "../../lib/mmap.h"
 #include "../../lib/scan.h"
+#include "../../genmakefile.h"
 
 MAP_T sourcedirs;
 const char* srcdir_varname = "DISTDIR";
@@ -89,7 +90,7 @@ extract_pptok(const char* x, size_t n, set_t* tokens) {
             if(commentpos < linelen)
               linelen = commentpos;
 
-#ifdef DEBUG_OUTPUT
+#ifdef DEBUG_OUTPUT_
             buffer_puts(buffer_2, "pptoks: ");
             buffer_put(buffer_2, x, linelen);
             buffer_putnlflush(buffer_2);
@@ -107,63 +108,62 @@ extract_pptok(const char* x, size_t n, set_t* tokens) {
 }
 
 void
-sourcedir_addsource(const char* source,
-                    strarray* srcs,
-                    const char* binext,
-                    const char* srcext,
-                    stralloc* thisdir,
-                    stralloc* outdir,
-                    strarray* progs,
-                    strarray* bins,
-                    char pathsep_make) {
+sourcedir_addsource(const char* source, strarray* srcs, const char* binext, const char* srcext, strarray* progs, strarray* bins, char pathsep_make) {
   stralloc r, dir, tmp;
   strlist l;
   size_t n, dlen;
   const char *x, *s;
   set_iterator_t it;
   sourcedir* srcdir;
-  sourcefile* file = sources_new(source, binext, progs, bins);
+  sourcefile* file;
+  struct dnode* node;
+
   stralloc_init(&dir);
   stralloc_init(&tmp);
-  strlist_init(&l, '\0');
   stralloc_init(&r);
+  strlist_init(&l, '\0');
   strlist_zero(&l);
+
+  file = sources_new(source, binext, progs, bins);
   path_dirname(source, &dir);
   stralloc_nul(&dir);
   dlen = dir.len;
-  source = path_clean_s(source, thisdir);
+  source = path_clean_s(source);
   srcdir = sourcedir_getsa(&dir);
   slist_add(&srcdir->sources, &file->link);
-  struct dnode* node = alloc(sizeof(struct dnode) + sizeof(sourcefile*));
+  node = alloc(sizeof(struct dnode) + sizeof(sourcefile*));
   dlist_data(node, sourcefile*) = file;
   dlist_push(&sourcelist, node);
   ++srcdir->n_sources;
-  if(!path_exists(source)) {
 
+  if(!path_exists(source)) {
 #ifdef DEBUG_OUTPUT
     buffer_puts(buffer_2, "Path doesn't exist: ");
     buffer_puts(buffer_2, source);
     buffer_putnlflush(buffer_2);
 #endif
-
     return;
-
 #if defined(__x86_64__) || defined(__i386__)
     __asm__("int3");
 #endif
   }
-  if((x = path_mmap_read(source, &n, thisdir, pathsep_make)) != 0) {
+
+  if((x = path_mmap_read(source, &n, pathsep_make)) != 0) {
     includes_extract(x, n, &l, 0);
     extract_pptok(x, n, &file->pptoks);
     mmap_unmap(x, n);
   }
-  sources_addincludes(file, srcdir, &l, srcs, srcext, thisdir, outdir);
+
+  sources_addincludes(file, srcdir, &l, srcs, srcext);
+
   set_foreach_it(&file->pptoks, it) {
     x = set_iterator_value(&it, &n);
     if(n >= 5 && (byte_equal(x, 4, "USE_") || byte_equal(x, 5, "HAVE_")))
       set_add(&srcdir->pptoks, x, n);
   }
+
   stralloc_replacec(&l.sa, PATHSEP_C == '\\' ? '/' : '\\', PATHSEP_C);
+
   strlist_foreach(&l, s, n) {
     dir.len = dlen;
     stralloc_catc(&dir, PATHSEP_C);
@@ -173,10 +173,12 @@ sourcedir_addsource(const char* source,
     path_canonical_sa(&r);
     set_addsa(&srcdir->includes, &r);
   }
+
   dir.len = dlen;
-  stralloc_free(&r);
   strlist_free(&l);
   stralloc_free(&dir);
+  stralloc_free(&tmp);
+  stralloc_free(&r);
 }
 
 /**

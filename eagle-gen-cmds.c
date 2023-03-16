@@ -1100,8 +1100,7 @@ print_attrs(HMAP_DB* a) {
 
   for(t = a->list_tuple; t; t = t->next) {
     char* v = t->vals.val_chars;
-    buffer_putm_internal(
-        buffer_1, " ", t->key, str_isdoublenum(v) ? "=" : "=\"", v, str_isdoublenum(v) ? "" : "\"", NULL);
+    buffer_putm_internal(buffer_1, " ", t->key, str_isdoublenum(v) ? "=" : "=\"", v, str_isdoublenum(v) ? "" : "\"", NULL);
     if(t->next == a->list_tuple)
       break;
   }
@@ -1257,17 +1256,7 @@ print_xml_rect(buffer* b, xmlnode* e) {
   y1 = xml_get_attribute(e, "y1");
   x2 = xml_get_attribute(e, "x2");
   y2 = xml_get_attribute(e, "y2");
-  buffer_putm_internal(b,
-                       "(",
-                       x1 ? x1 : "<null>",
-                       " ",
-                       y1 ? y1 : "<null>",
-                       ") (",
-                       x2 ? x2 : "<null>",
-                       " ",
-                       y2 ? y2 : "<null>",
-                       ")",
-                       NULL);
+  buffer_putm_internal(b, "(", x1 ? x1 : "<null>", " ", y1 ? y1 : "<null>", ") (", x2 ? x2 : "<null>", " ", y2 ? y2 : "<null>", ")", NULL);
   buffer_flush(b);
 }
 

@@ -2,6 +2,7 @@
 #include "is.h"
 #include "../../lib/rdir.h"
 #include "../../debug.h"
+#include "../../genmakefile.h"
 
 set_t srcs;
 stralloc srcdir = {0, 0, 0};
@@ -59,12 +60,12 @@ sources_new(const char* name, const char* binext, strarray* progs, strarray* bin
  * @param sources
  */
 int
-sources_add(const char* source, stralloc* thisdir) {
-  return sources_add_b(source, str_len(source), thisdir);
+sources_add(const char* source) {
+  return sources_add_b(source, str_len(source));
 }
 
 int
-sources_add_b(const char* x, size_t len, stralloc* thisdir) {
+sources_add_b(const char* x, size_t len) {
 
   if(byte_chr(x, len, '/') == len && byte_ends(x, len, "strlist_shift.c")) {
 
@@ -73,8 +74,8 @@ sources_add_b(const char* x, size_t len, stralloc* thisdir) {
 #endif
   }
   if(is_source_b(x, len) || is_include_b(x, len)) {
-    if(len > thisdir->len && byte_startb(x, len, thisdir->s, thisdir->len)) {
-      size_t dirlen = thisdir->len + 1;
+    if(len > dirs.this.sa.len && byte_startb(x, len, dirs.this.sa.s, dirs.this.sa.len)) {
+      size_t dirlen = dirs.this.sa.len + 1;
       x += dirlen;
       len -= dirlen;
     }
@@ -113,7 +114,7 @@ sources_sort(const char** a, const char** b) {
  * @param sources
  */
 void
-sources_get(const char* basedir, stralloc* thisdir) {
+sources_get(const char* basedir) {
   rdir_t rdir;
 
 #ifdef DEBUG_OUTPUT_
@@ -126,10 +127,10 @@ sources_get(const char* basedir, stralloc* thisdir) {
     const char* s;
     while((s = rdir_read(&rdir))) {
       size_t len = str_len(s);
-      if(len + 1 > thisdir->len && byte_equal(s, thisdir->len, thisdir->s) && path_is_separator(s[thisdir->len])) {
-        s += thisdir->len + 1;
+      if(len + 1 > dirs.this.sa.len && byte_equal(s, dirs.this.sa.len, dirs.this.sa.s) && path_is_separator(s[dirs.this.sa.len])) {
+        s += dirs.this.sa.len + 1;
       }
-      if(sources_add(s, thisdir)) {
+      if(sources_add(s)) {
       }
       {
 
@@ -237,7 +238,7 @@ sources_deps(sourcefile* file, strlist* out) {
 }
 
 void
-sources_readdir(stralloc* dir, strarray* out, stralloc* thisdir, stralloc* outdir) {
+sources_readdir(stralloc* dir, strarray* out) {
   rdir_t d;
   stralloc srcdir;
   stralloc_init(&srcdir);
@@ -250,14 +251,14 @@ sources_readdir(stralloc* dir, strarray* out, stralloc* thisdir, stralloc* outdi
   buffer_putnlflush(buffer_2);
 #endif
 
-  // path_concatb(thisdir->s, thisdir->len, dir->s, dir->len, &srcdir);
+  // path_concatb(dirs.this.sa.s, dirs.this.sa.len, dir->s, dir->len, &srcdir);
   if(!rdir_open(&d, srcdir.s)) {
     const char* s;
     while((s = rdir_read(&d))) {
       if(!is_source(s) && !is_include(s))
         continue;
-      if(str_start(s, outdir->s))
-        s += outdir->len;
+      if(str_start(s, dirs.out.sa.s))
+        s += dirs.out.sa.len;
       else
         s += dir->len;
       if(*s == PATHSEP_C)
@@ -273,13 +274,7 @@ sources_readdir(stralloc* dir, strarray* out, stralloc* thisdir, stralloc* outdi
 }
 
 void
-sources_addincludes(sourcefile* file,
-                    sourcedir* sdir,
-                    const strlist* includes,
-                    strarray* sources,
-                    const char* srcext,
-                    stralloc* thisdir,
-                    stralloc* outdir) {
+sources_addincludes(sourcefile* file, sourcedir* sdir, const strlist* includes, strarray* sources, const char* srcext) {
   const char* x;
   size_t n;
   stralloc basedir, dir, path, real, relative;
@@ -294,8 +289,8 @@ sources_addincludes(sourcefile* file,
   strlist_init(&directories, '\0');
   strlist_init(&file->includes, '\0');
   stralloc_nul(&basedir);
-  if(stralloc_starts(&basedir, thisdir->s))
-    stralloc_remove(&basedir, 0, thisdir->len + 1);
+  if(stralloc_starts(&basedir, dirs.this.sa.s))
+    stralloc_remove(&basedir, 0, dirs.this.sa.len + 1);
   stralloc_copy(&relative, &basedir);
   stralloc_nul(&relative);
 
@@ -313,14 +308,14 @@ sources_addincludes(sourcefile* file,
   }
 #endif
 
-  relative.s = path_clean_b(relative.s, &relative.len, thisdir);
+  relative.s = path_clean_b(relative.s, &relative.len);
   strlist_foreach(includes, x, n) {
     size_t len = n;
     // stralloc_copyb(&path, x,len);
     // stralloc_zero(&path);
     path_concatb(relative.s, relative.len, x, len, &path);
     path_collapse_sa(&path);
-    path_concatb(thisdir->s, thisdir->len, path.s, path.len, &real);
+    path_concatb(dirs.this.sa.s, dirs.this.sa.len, path.s, path.len, &real);
     path_canonical_sa(&real);
     path_collapse_sa(&real);
     {
@@ -372,8 +367,8 @@ sources_addincludes(sourcefile* file,
           {
             strarray a;
             strarray_init(&a);
-            sources_readdir(&real, &a, thisdir, outdir);
-            sources_get(real.s, thisdir);
+            sources_readdir(&real, &a);
+            sources_get(real.s);
             set_addsa(&file->deps, &path);
             set_addsa(&sdir->deps, &path);
 

@@ -4,11 +4,11 @@
 #include "../../lib/stralloc.h"
 #include "../../lib/strlist.h"
 
-char* path_clean_b(const char*, size_t*, stralloc* thisdir);
-char* path_clean_s(const char*, stralloc*);
+char* path_clean_b(const char*, size_t*);
+char* path_clean_s(const char*);
 char* path_dirname_alloc(const char*);
 char* path_extension(const char*, stralloc*, const char* ext);
-const char* path_mmap_read(const char*, size_t*, stralloc* thisdir, char pathsep_make);
+const char* path_mmap_read(const char*, size_t*, char pathsep_make);
 void path_normalize_b(const char*, size_t, stralloc* out, stralloc* builddir, stralloc* outdir);
 void path_normalize(const char*, stralloc*, stralloc* builddir, stralloc* outdir);
 char* path_output(const char*, stralloc*, const char* ext, stralloc* builddir, char pathsep_args);

@@ -60,8 +60,7 @@ target* rule_find_sa(stralloc*);
 target* rule_find_b(const char*, size_t);
 target* rule_find_lib(const char*, size_t, const char*, const char*);
 int rule_match(target*, const char*);
-void
-rule_command_subst(target*, stralloc*, const char*, size_t, bool, bool, const char quote_args[], char, const char*);
+void rule_command_subst(target*, stralloc*, const char*, size_t, bool, bool, const char quote_args[], char, const char*);
 void rule_command(target*, stralloc*, bool, bool, const char quote_args[], char, const char*, const char*);
 int rule_add_dep(target*, target*);
 void rule_add_deps(target*, const strlist*);

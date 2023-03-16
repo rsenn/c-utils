@@ -229,11 +229,7 @@ main(int argc, char* argv[]) {
   int c, index = 0;
   const char *cfgdata = 0, *input_file = 0, *output_file = 0;
 
-  struct unix_longopt opts[] = {{"help", 0, NULL, 'h'},
-                                {"bits", 0, NULL, 'b'},
-                                {"output", 1, NULL, 'o'},
-                                {"verbose", 0, &verbose, 1},
-                                {0, 0, 0, 0}};
+  struct unix_longopt opts[] = {{"help", 0, NULL, 'h'}, {"bits", 0, NULL, 'b'}, {"output", 1, NULL, 'o'}, {"verbose", 0, &verbose, 1}, {0, 0, 0, 0}};
 
   for(;;) {
     c = unix_getopt_long(argc, argv, "hvb:o:", opts, &index);

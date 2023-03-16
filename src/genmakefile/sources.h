@@ -17,17 +17,16 @@ typedef struct {
   set_t pptoks;
 } sourcefile;
 
+sourcefile* sources_new(const char*, const char* binext, strarray* progs, strarray* bins);
+int sources_add(const char*);
+int sources_add_b(const char*, size_t len);
+int sources_sort(const char**, const char** b);
+void sources_get(const char*);
+const char* sources_find(const char*, size_t len, size_t* cptr);
 bool sources_iscplusplus(void);
-
-int sources_add_b(const char*, size_t, stralloc*);
-int sources_add(const char*, stralloc*);
-void sources_addincludes(sourcefile*, sourcedir*, const strlist*, strarray*, const char*, stralloc*, stralloc*);
-void sources_deps(sourcefile*, strlist*);
-const char* sources_find(const char*, size_t, size_t*);
-void sources_get(const char*, stralloc*);
-sourcefile* sources_new(const char*, const char*, strarray*, strarray*);
-void sources_readdir(stralloc*, strarray*, stralloc*, stralloc*);
-int sources_sort(const char**, const char**);
+void sources_deps(sourcefile*, strlist* out);
+void sources_readdir(stralloc*, strarray* out);
+void sources_addincludes(sourcefile*, sourcedir* sdir, const strlist* includes, strarray* sources, const char* srcext);
 
 extern set_t srcs;
 extern dlist sourcelist;

@@ -6,6 +6,8 @@
 #include "../../lib/str.h"
 #include "../../lib/strlist.h"
 #include "../../lib/path.h"
+#include "../../debug.h"
+#include "../../genmakefile.h"
 
 strlist include_dirs = {0};
 
@@ -89,10 +91,11 @@ includes_cppflags(void) {
  * @return
  */
 int
-includes_get(const char* srcfile, strlist* includes, int sys, stralloc* thisdir, char pathsep_make) {
+includes_get(const char* srcfile, strlist* includes, int sys, char pathsep_make) {
   const char* x;
   size_t n;
-  if((x = path_mmap_read(srcfile, &n, thisdir, pathsep_make))) {
+
+  if((x = path_mmap_read(srcfile, &n, pathsep_make))) {
     includes_extract(x, n, includes, sys);
     mmap_unmap(x, n);
     return 1;
@@ -101,10 +104,11 @@ includes_get(const char* srcfile, strlist* includes, int sys, stralloc* thisdir,
 }
 
 void
-includes_add_b(const char* dir, size_t len, stralloc* builddir, stralloc* outdir) {
+includes_add_b(const char* dir, size_t len) {
   static stralloc abs;
   stralloc_zero(&abs);
-  path_normalize_b(dir, len, &abs, builddir, outdir);
+  path_normalize_b(dir, len, &abs, &dirs.build.sa, &dirs.out.sa);
+
   if(strlist_push_unique_sa(&include_dirs, &abs)) {
 #ifdef DEBUG_OUTPUT
     buffer_puts(buffer_2, "Added to include dirs: ");
@@ -115,8 +119,8 @@ includes_add_b(const char* dir, size_t len, stralloc* builddir, stralloc* outdir
 }
 
 void
-includes_add(const char* dir, stralloc* builddir, stralloc* outdir) {
-  includes_add_b(dir, str_len(dir), builddir, outdir);
+includes_add(const char* dir) {
+  includes_add_b(dir, str_len(dir));
 }
 
 /**
@@ -126,43 +130,44 @@ includes_add(const char* dir, stralloc* builddir, stralloc* outdir) {
  * @param libs
  */
 void
-includes_to_libs(const set_t* includes,
-                 strlist* libs,
-                 const char* libpfx,
-                 stralloc* thisdir,
-                 const char* incext,
-                 const char* libext) {
+includes_to_libs(const set_t* includes, strlist* libs, const char* libpfx, const char* incext, const char* libext) {
   const char* s;
   size_t n;
   stralloc sa, lib;
   set_iterator_t it;
+
   stralloc_init(&sa);
   stralloc_init(&lib);
   stralloc_zero(&libs->sa);
+
   set_foreach(includes, it, s, n) {
     target* rule;
     stralloc_zero(&sa);
     path_append(s, n, &sa);
-    if(!(n > str_len(libpfx) && byte_equal(s, str_len(libpfx), libpfx)) && byte_chr(s, n, PATHSEP_C) == n) {
+
+    if(!(n > str_len(libpfx) && byte_equal(s, str_len(libpfx), libpfx)) && byte_chr(s, n, PATHSEP_C) == n)
       path_concatb(libpfx, str_len(libpfx), sa.s, sa.len, &sa);
-    }
-    path_concatb(thisdir->s, thisdir->len, sa.s, sa.len, &sa);
-    // debug_sa("include", &sa);
+
+    path_concatb(dirs.this.sa.s, dirs.this.sa.len, sa.s, sa.len, &sa);
+
     stralloc_zero(&lib);
     stralloc_copys(&lib, path_basename(sa.s));
+
     if(stralloc_endb(&lib, incext, 2))
       lib.len -= 2;
+
     stralloc_cats(&lib, libext);
-    // debug_sa("includes_to_libs", &lib);
+
     if((rule = rule_find_sa(&lib))) {
 
-#ifdef DEBUG_OUTPUT_
+#ifdef DEBUG_OUTPUT
       debug_str("lib", rule->name);
 #endif
 
       strlist_push(libs, rule->name);
     }
   }
+
   stralloc_free(&lib);
   stralloc_free(&sa);
 }

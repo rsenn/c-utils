@@ -98,8 +98,7 @@ range_validbuf2(const void* Min, const void* Max) {
 /* is buf2[0..len2-1] inside buf1[0..len-1]? */
 __static inline __gnuinline int
 range_bufinbuf(const void* buf1, size_t len1, const void* buf2, size_t len2) {
-  return range_validbuf(buf1, len1) && range_validbuf(buf2, len2) &&
-         __likely(buf1 <= buf2 && (ptrdiff_t)buf1 + len1 >= (ptrdiff_t)buf2 + len2);
+  return range_validbuf(buf1, len1) && range_validbuf(buf2, len2) && __likely(buf1 <= buf2 && (ptrdiff_t)buf1 + len1 >= (ptrdiff_t)buf2 + len2);
 }
 
 /* does an array of "elements" members of size "membersize" starting at
@@ -180,8 +179,7 @@ int range_str4inbuf(const void* buf, size_t len, const void* stringstart);
   { \
     typeof(a) __a = a; \
     typeof(b) __b = b; \
-    (__b) < 1 ? ((__MAX(typeof(a + b)) + __b >= __a) ? assign(c, __a - __b) : 1) \
-              : ((__MIN(typeof(c)) + __b <= __a) ? assign(c, __a - __b) : 1); \
+    (__b) < 1 ? ((__MAX(typeof(a + b)) + __b >= __a) ? assign(c, __a - __b) : 1) : ((__MIN(typeof(c)) + __b <= __a) ? assign(c, __a - __b) : 1); \
   }
 
 #endif
