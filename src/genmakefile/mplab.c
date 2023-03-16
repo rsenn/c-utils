@@ -4,6 +4,7 @@
 #include "../../lib/map.h"
 #include "mplab.h"
 #include "../../lib/set.h"
+#include "sources.h"
 #include "is.h"
 
 static void

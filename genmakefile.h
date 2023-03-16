@@ -9,7 +9,6 @@
 #include "lib/open.h"
 #include "lib/rdir.h"
 #include "lib/scan.h"
-#include "lib/slist.h"
 #include "lib/str.h"
 #include "lib/stralloc.h"
 #include "lib/strarray.h"
@@ -23,11 +22,11 @@
 #include "lib/dir.h"
 #include "lib/range.h"
 #include "lib/case.h"
-#include "lib/set.h"
 #include "lib/map.h"
 #include "lib/bool.h"
 #include "src/genmakefile/types.h"
 #include "src/genmakefile/rule.h"
+#include "src/genmakefile/sources.h"
 
 #if WINDOWS
 #define MAX_CMD_LEN 1023
@@ -63,28 +62,6 @@ union commands {
     stralloc preprocess, compile, lib, link, mkdir, delete;
   };
 };
-
-typedef struct {
-  union {
-    struct slink link;
-    struct sourcefile* next;
-  };
-  const char* name;
-  int has_main;
-  strlist includes;
-  set_t deps;
-  set_t pptoks;
-} sourcefile;
-
-typedef struct {
-  int n_sources;
-  slink* sources;
-  set_t includes;
-  array rules;
-  set_t pptoks;
-  set_t deps;
-  uint32 serial;
-} sourcedir;
 
 /*typedef struct target_s {
   union {
@@ -172,17 +149,6 @@ void add_source(set_t*, const char*);
 void add_path_sa(set_t*, stralloc*);
 void add_path_relativeb(set_t*, stralloc*, const char*, size_t);
 
-sourcefile* sources_new(const char*);
-int sources_add(const char*);
-int sources_add_b(const char*, size_t);
-int sources_sort(const char**, const char**);
-void sources_get(const char*);
-const char* sources_find(const char*, size_t, size_t*);
-void sources_deps(sourcefile*, strlist*);
-void sources_readdir(stralloc*, strarray*);
-void sources_addincludes(sourcefile*, sourcedir*, const strlist*, strarray*);
-bool sources_iscplusplus(void);
-
 int var_isset(const char*);
 var_t* var_list(const char*);
 const char* var_get(const char*);
@@ -265,7 +231,6 @@ void usage(char*);
 extern exts_t exts;
 extern config_t cfg;
 extern dirs_t dirs;
-extern set_t srcs;
 extern tools_t tools;
 extern tool_config_t tool_config;
 extern const char* project_name;

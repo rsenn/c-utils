@@ -234,4 +234,5 @@ is_var(const char* s) {
 /**
  * @}
  */
+
 #endif /* defined(GENMAKEFILE_IS_H) */

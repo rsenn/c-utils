@@ -922,7 +922,7 @@ set(COMMON_LIBS strlist array safemult scan str byte mmap open fmt)
 
 set(genmakefile_SOURCES
     ini.c ini.h genmakefile.h debug.c debug.h src/genmakefile/cmake.c
-    src/genmakefile/mplab.c src/genmakefile/path.c src/genmakefile/rule.c)
+    src/genmakefile/mplab.c src/genmakefile/path.c src/genmakefile/rule.c src/genmakefile/sources.c)
 
 message("COMPRESSION_LIBRARIES: ${COMPRESSION_LIBRARIES}")
 dump(LIBMATH)
