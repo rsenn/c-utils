@@ -4,8 +4,8 @@
 
 xmlnode*
 create_xml_document() {
-  xmlnode *compile_type, *conf, *configuration_descriptor, *confs, *doc, *hitechcomp, *linker_tool, *loading, *logical_folder, *logical_folder1,
-      *logical_folder2, *logical_folder3, *make_customization_type, *packs, *source_root_list, *tools_set;
+  xmlnode *compile_type, *conf, *configuration_descriptor, *confs, *doc, *hitechcomp, *linker_tool, *loading, *logical_folder, *logical_folder1, *logical_folder2, *logical_folder3,
+      *make_customization_type, *packs, *source_root_list, *tools_set;
 
   doc = xml_newnode(XML_DOCUMENT);
   configuration_descriptor = doc->children = xml_element("configurationDescriptor");

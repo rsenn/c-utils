@@ -30,6 +30,6 @@ void sources_addincludes(sourcefile*, sourcedir* sdir, const strlist* includes, 
 
 extern set_t sources_set;
 extern stralloc sources_dir;
-extern dlist source_list;
+extern dlist sources_list;
 
 #endif /* defined(GENMAKEFILE_SOURCES_H) */

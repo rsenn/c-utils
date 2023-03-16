@@ -39,8 +39,7 @@ static const char* prefix_cmd;
 
 char* str_ptime(const char* s, const char* format, struct tm* tm);
 
-typedef void output_fn(
-    const char* sender, const char* thema, const char* title, unsigned duration, const char* datetime, const char* url, const char* description);
+typedef void output_fn(const char* sender, const char* thema, const char* title, unsigned duration, const char* datetime, const char* url, const char* description);
 typedef output_fn* output_fn_ptr;
 
 output_fn output_m3u_entry, output_wget_entry, output_curl_entry;
@@ -340,8 +339,7 @@ put_quoted_string(const char* str) {
  * @param description
  */
 void
-output_m3u_entry(
-    const char* sender, const char* thema, const char* title, unsigned duration, const char* datetime, const char* url, const char* description) {
+output_m3u_entry(const char* sender, const char* thema, const char* title, unsigned duration, const char* datetime, const char* url, const char* description) {
 
   if(csv == 0) {
     buffer_puts(&output_buf, "#EXTINF:");
@@ -380,8 +378,7 @@ output_m3u_entry(
   buffer_flush(&output_buf);
 }
 void
-output_wget_entry(
-    const char* sender, const char* thema, const char* title, unsigned duration, const char* datetime, const char* url, const char* description) {
+output_wget_entry(const char* sender, const char* thema, const char* title, unsigned duration, const char* datetime, const char* url, const char* description) {
   int skipSender = str_start(thema, sender);
   int multiline = 0;
   buffer_putm_internal(&output_buf, prefix_cmd ? prefix_cmd : "", prefix_cmd ? " " : "", multiline ? "wget \\\n  -c " : "wget -c ", url, 0);
@@ -410,8 +407,7 @@ output_wget_entry(
 }
 
 void
-output_curl_entry(
-    const char* sender, const char* thema, const char* title, unsigned duration, const char* datetime, const char* url, const char* description) {
+output_curl_entry(const char* sender, const char* thema, const char* title, unsigned duration, const char* datetime, const char* url, const char* description) {
 
   buffer_putm_internal(&output_buf, "curl -L -k ", url, NULL);
   buffer_putm_internal(&output_buf, " -o '", sender, " - ", thema, " - ", title, ".mp4'", NULL);

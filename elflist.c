@@ -131,10 +131,9 @@ elf_dump_dynamic(range map) {
   const char* dynstrtab = NULL;
   int col_width = ELF_BITS(map.start) / 4 + 2;
   static const char* const dynamic_types[] = {
-      "NULL",         "NEEDED",       "PLTRELSZ", "PLTGOT", "HASH",     "STRTAB",        "SYMTAB",          "RELA",       "RELASZ",
-      "RELAENT",      "STRSZ",        "SYMENT",   "INIT",   "FINI",     "SONAME",        "RPATH",           "SYMBOLIC",   "REL",
-      "RELSZ",        "RELENT",       "PLTREL",   "DEBUG",  "TEXTREL",  "JMPREL",        "BIND_NOW",        "INIT_ARRAY", "FINI_ARRAY",
-      "INIT_ARRAYSZ", "FINI_ARRAYSZ", "RUNPATH",  "FLAGS",  "ENCODING", "PREINIT_ARRAY", "PREINIT_ARRAYSZ",
+      "NULL",     "NEEDED",     "PLTRELSZ",   "PLTGOT",       "HASH",         "STRTAB",  "SYMTAB", "RELA",     "RELASZ",        "RELAENT",         "STRSZ",   "SYMENT",
+      "INIT",     "FINI",       "SONAME",     "RPATH",        "SYMBOLIC",     "REL",     "RELSZ",  "RELENT",   "PLTREL",        "DEBUG",           "TEXTREL", "JMPREL",
+      "BIND_NOW", "INIT_ARRAY", "FINI_ARRAY", "INIT_ARRAYSZ", "FINI_ARRAYSZ", "RUNPATH", "FLAGS",  "ENCODING", "PREINIT_ARRAY", "PREINIT_ARRAYSZ",
   };
 
   if(di == -1)

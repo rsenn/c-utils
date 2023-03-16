@@ -11,8 +11,7 @@ int isleap(int year);
 
 extern const short __spm[];
 
-static const char* months[12] = {
-    "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
+static const char* months[12] = {"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
 
 static int
 getint(const char** s, int max) {

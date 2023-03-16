@@ -1,6 +1,7 @@
 #include <assert.h>
 #include "sources.h"
 #include "is.h"
+#include "ansi.h"
 #include "includes.h"
 #include "../../lib/dlist.h"
 #include "../../lib/mmap.h"
@@ -11,9 +12,8 @@ MAP_T srcdir_map;
 const char* srcdir_varname = "DISTDIR";
 
 static const char tok_charset[] = {
-    '_', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T',
-    'U', 'V', 'W', 'X', 'Y', 'Z', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o',
-    'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
+    '_', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'a', 'b', 'c', 'd', 'e',
+    'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
 };
 
 static inline bool
@@ -132,7 +132,7 @@ extract_pptok(const char* x, size_t n, set_t* tokens) {
  * @{
  */
 void
-sourcedir_addsource(const char* source, strarray* sources, strarray* progs, strarray* bins, char pathsep_make) {
+sourcedir_addsource(const char* source, strarray* sources, strarray* progs, strarray* bins, char psm) {
   stralloc r, dir, tmp;
   strlist list;
   size_t n, dlen;
@@ -148,6 +148,11 @@ sourcedir_addsource(const char* source, strarray* sources, strarray* progs, stra
   strlist_init(&list, '\0');
   strlist_zero(&list);
 
+#ifdef DEBUG_OUTPUT_
+  buffer_putm_internal(buffer_2, "[1]", BLUE256, "sourcedir_addsource(", NC, source, BLUE256, ") ", NC, NULL);
+  buffer_putnlflush(buffer_2);
+#endif
+
   file = sources_new(source, exts.bin, progs, bins);
   path_dirname(source, &dir);
   stralloc_nul(&dir);
@@ -157,7 +162,7 @@ sourcedir_addsource(const char* source, strarray* sources, strarray* progs, stra
   slist_add(&srcdir->sources, &file->link);
   node = alloc(sizeof(struct dnode) + sizeof(sourcefile*));
   dlist_data(node, sourcefile*) = file;
-  dlist_push(&source_list, node);
+  dlist_push(&sources_list, node);
   ++srcdir->n_sources;
 
   if(!path_exists(source)) {
@@ -173,7 +178,7 @@ sourcedir_addsource(const char* source, strarray* sources, strarray* progs, stra
 #endif
   }
 
-  if((x = path_mmap_read(source, &n, pathsep_make)) != 0) {
+  if((x = path_mmap_read(source, &n, psm)) != 0) {
     includes_extract(x, n, &list, 0);
     extract_pptok(x, n, &file->pptoks);
     mmap_unmap(x, n);
@@ -190,30 +195,25 @@ sourcedir_addsource(const char* source, strarray* sources, strarray* progs, stra
   stralloc_replacec(&list.sa, PATHSEP_C == '\\' ? '/' : '\\', PATHSEP_C);
 
   strlist_foreach(&list, s, n) {
-    /* dir.len = dlen;
+    dir.len = dlen;
 
-     stralloc_catc(&dir, PATHSEP_C);
-     stralloc_catb(&dir, s, n);
-     stralloc_nul(&dir);
-     stralloc_copy(&r, &dir);
+    stralloc_catc(&dir, PATHSEP_C);
+    stralloc_catb(&dir, s, n);
+    stralloc_nul(&dir);
+    stralloc_copy(&r, &dir);
 
-     path_canonical_sa(&r);*/
+    path_canonical_sa(&r);
 
-    if(includes_find_sa(s, n, &r)) {
+    if(path_exists(r.s) || includes_find_sa(s, n, &r)) {
 
-#ifdef DEBUG_OUTPUT
-      buffer_puts(buffer_2, __func__);
-      buffer_puts(buffer_2, ": ");
-      buffer_puts(buffer_2, source);
-      buffer_puts(buffer_2, ": Adding include ");
+#ifdef DEBUG_OUTPUT_
+      buffer_putm_internal(buffer_2, "[2]", GREEN256, "sourcedir_addsource(", NC, source, GREEN256, ") ", NC, "Adding include ", 0);
       buffer_putsa(buffer_2, &r);
       buffer_putnlflush(buffer_2);
 #endif
 
       set_addsa(&srcdir->includes, &r);
     }
-
-    // set_addsa(&srcdir->includes, &r);
   }
 
   dir.len = dlen;

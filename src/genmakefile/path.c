@@ -19,11 +19,11 @@
  * here
  */
 void
-path_prefix_b(const stralloc* prefix, const char* x, size_t n, stralloc* out, char pathsep_make) {
+path_prefix_b(const stralloc* prefix, const char* x, size_t n, stralloc* out, char psm) {
   if(prefix->len && !stralloc_equals(prefix, ".")) {
     stralloc_cat(out, prefix);
-    if(!stralloc_endb(prefix, &pathsep_make, 1) && !stralloc_endb(prefix, ")", 1))
-      stralloc_catc(out, pathsep_make);
+    if(!stralloc_endb(prefix, &psm, 1) && !stralloc_endb(prefix, ")", 1))
+      stralloc_catc(out, psm);
   }
   stralloc_catb(out, x, n);
   stralloc_nul(out);
@@ -38,17 +38,17 @@ path_prefix_b(const stralloc* prefix, const char* x, size_t n, stralloc* out, ch
  * here
  */
 void
-path_prefix_s(const stralloc* prefix, const char* path, stralloc* out, char pathsep_make) {
-  path_prefix_b(prefix, path, str_len(path), out, pathsep_make);
+path_prefix_s(const stralloc* prefix, const char* path, stralloc* out, char psm) {
+  path_prefix_b(prefix, path, str_len(path), out, psm);
   stralloc_nul(out);
 }
 
 void
-path_prefix_sa(const stralloc* prefix, stralloc* sa, char pathsep_make) {
+path_prefix_sa(const stralloc* prefix, stralloc* sa, char psm) {
   if(prefix->len && !stralloc_equals(prefix, ".")) {
     stralloc_insertb(sa, prefix->s, 0, prefix->len);
-    if(!stralloc_endb(prefix, &pathsep_make, 1))
-      stralloc_insertb(sa, &pathsep_make, prefix->len, 1);
+    if(!stralloc_endb(prefix, &psm, 1))
+      stralloc_insertb(sa, &psm, prefix->len, 1);
   }
   stralloc_nul(sa);
 }
@@ -74,9 +74,9 @@ path_extension(const char* in, stralloc* out, const char* ext) {
  * @return
  */
 char*
-path_output(const char* in, stralloc* out, const char* ext, char pathsep_args) {
+path_output(const char* in, stralloc* out, const char* ext, char psa) {
   stralloc_copy(out, &dirs.build.sa);
-  stralloc_catc(out, pathsep_args);
+  stralloc_catc(out, psa);
   return path_extension(str_basename(in), out, ext);
 }
 
@@ -137,13 +137,13 @@ path_clean_b(const char* path, size_t* len) {
 }
 
 const char*
-path_mmap_read(const char* path, size_t* n, char pathsep_make) {
+path_mmap_read(const char* path, size_t* n, char psm) {
   const char* x;
   stralloc sa;
   stralloc_init(&sa);
   if(dirs.this.sa.s) {
-    path_prefix_s(&dirs.this.sa, path, &sa, pathsep_make);
-    stralloc_replacec(&sa, pathsep_make, PATHSEP_C);
+    path_prefix_s(&dirs.this.sa, path, &sa, psm);
+    stralloc_replacec(&sa, psm, PATHSEP_C);
   }
   if((x = mmap_read(sa.s, n)) == NULL) {
     errmsg_warnsys("error opening '", path, "'", 0);
@@ -158,6 +158,7 @@ path_normalize(const char* dir, stralloc* out) {
   stralloc tmp;
   stralloc_init(&tmp);
   stralloc_zero(out);
+
   if(!path_is_absolute(dir)) {
     stralloc_copy(&tmp, &dirs.build.sa);
     path_appends(dir, &tmp);
@@ -165,8 +166,13 @@ path_normalize(const char* dir, stralloc* out) {
   } else {
     path_canonical(dir, &tmp);
   }
+
   // stralloc_nul(&tmp);
-  path_relative_to_b(tmp.s, tmp.len, dirs.out.sa.s, dirs.out.sa.len, out);
+  if(dirs.out.sa.s)
+    path_relative_to_b(tmp.s, tmp.len, dirs.out.sa.s, dirs.out.sa.len, out);
+  else
+    stralloc_copy(out, &tmp);
+
   stralloc_free(&tmp);
 }
 
@@ -176,9 +182,12 @@ path_normalize_b(const char* x, size_t len, stralloc* out) {
   stralloc_init(&tmp);
   stralloc_copyb(&tmp, x, len);
   stralloc_nul(&tmp);
+
   path_normalize(tmp.s, out);
+
   if(stralloc_ends(out, "/."))
     out->len -= 2;
+
   stralloc_nul(out);
   stralloc_free(&tmp);
 }

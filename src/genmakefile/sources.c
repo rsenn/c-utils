@@ -7,7 +7,7 @@
 
 set_t sources_set = {0};
 stralloc sources_dir = {0, 0, 0};
-dlist source_list = {0};
+dlist sources_list = {0};
 
 int main_present(const char*);
 
@@ -288,15 +288,6 @@ sources_addincludes(sourcefile* file, sourcedir* sdir, const strlist* includes, 
   stralloc_init(&relative);
   strlist_init(&directories, '\0');
 
-#ifdef DEBUG_OUTPUT
-  buffer_puts(buffer_2, __func__);
-  buffer_puts(buffer_2, "(1) file=");
-  buffer_puts(buffer_2, file->name);
-  buffer_puts(buffer_2, " exts.src=");
-  buffer_puts(buffer_2, exts.src);
-  buffer_putnlflush(buffer_2);
-#endif
-
   path_dirname(file->name, &basedir);
   path_absolute_sa(&basedir);
 
@@ -311,38 +302,35 @@ sources_addincludes(sourcefile* file, sourcedir* sdir, const strlist* includes, 
   stralloc_nul(&relative);
 
 #ifdef DEBUG_OUTPUT_
-  {
-    buffer_puts(buffer_2, "relative: ");
-    buffer_putsa(buffer_2, &relative);
-    buffer_putnlflush(buffer_2);
-    buffer_puts(buffer_2, "dirs.out.sa: ");
-    buffer_putsa(buffer_2, &dirs.out.sa);
-    buffer_putnlflush(buffer_2);
-    buffer_puts(buffer_2, "basedir: ");
-    buffer_putsa(buffer_2, &basedir);
-    buffer_putnlflush(buffer_2);
-  }
+  buffer_putm_internal(buffer_2, "[1]", YELLOW256, "sources_addincludes(", NC, file->name, YELLOW256, ")", NC, "(2) file=", file->name, " relative=", 0);
+  buffer_putsa(buffer_2, &relative);
+  buffer_puts(buffer_2, "\nIncludes: ");
+  strlist_dump(buffer_2, includes);
+  buffer_putnlflush(buffer_2);
 #endif
 
   relative.s = path_clean_b(relative.s, &relative.len);
 
   strlist_foreach(includes, x, n) {
     size_t len = n;
+    bool exists = false;
 
     path_concatb(relative.s, relative.len, x, len, &path);
     path_collapse_sa(&path);
     path_concatb(dirs.this.sa.s, dirs.this.sa.len, path.s, path.len, &real);
+
     path_canonical_sa(&real);
     path_collapse_sa(&real);
 
-#ifdef DEBUG_OUTPUT_
-    buffer_puts(buffer_2, __func__);
-    buffer_puts(buffer_2, "(2) file=");
-    buffer_puts(buffer_2, file->name);
-    buffer_puts(buffer_2, " path=");
-    buffer_putsa(buffer_2, &path);
-    buffer_putnlflush(buffer_2);
-#endif
+    exists = path_exists(real.s);
+
+    if(!exists) {
+      if((exists = includes_find_sa(x, n, &path))) {
+        stralloc_copy(&real, &path);
+        path_canonical_sa(&real);
+        path_collapse_sa(&real);
+      }
+    }
 
     strlist_pushb_unique(&file->includes, path.s, path.len);
     strarray_pushb_unique(sources, path.s, path.len);
@@ -356,33 +344,13 @@ sources_addincludes(sourcefile* file, sourcedir* sdir, const strlist* includes, 
       stralloc_nul(&real);
 
       if(stralloc_diff(&basedir, &dir)) {
-#ifdef DEBUG_OUTPUT_
-        buffer_puts(buffer_2, __func__ " real = ");
-        buffer_putsa(buffer_2, &real);
-        buffer_puts(buffer_2, " path = ");
-        buffer_putsa(buffer_2, &path);
-        buffer_puts(buffer_2, " dir = ");
-        buffer_putsa(buffer_2, &dir);
-        buffer_puts(buffer_2, " basedir = ");
-        buffer_putsa(buffer_2, &basedir);
-        buffer_putnlflush(buffer_2);
-#endif
-
-        if(path_exists(real.s) && path_is_directory(real.s)) {
-          if(1) {
-            strarray a;
-            strarray_init(&a);
-            sources_readdir(&real, &a);
-            sources_get(real.s);
-            set_addsa(&file->deps, &path);
-            set_addsa(&sdir->deps, &path);
-
-#ifdef DEBUG_OUTPUT_
-            buffer_puts(buffer_2, "path = ");
-            buffer_putsa(buffer_2, &path);
-            buffer_putnlflush(buffer_2);
-#endif
-          }
+        if(exists) {
+          strarray a;
+          strarray_init(&a);
+          sources_readdir(&real, &a);
+          sources_get(real.s);
+          set_addsa(&file->deps, &path);
+          set_addsa(&sdir->deps, &path);
         }
       }
 
@@ -393,8 +361,8 @@ sources_addincludes(sourcefile* file, sourcedir* sdir, const strlist* includes, 
         stralloc_cats(&path, exts.src);
         stralloc_nul(&path);
 
-#ifdef DEBUG_OUTPUT
-        buffer_putm_internal(buffer_2, YELLOW, __func__, NC, " Adding: ", 0);
+#ifdef DEBUG_OUTPUT_
+        buffer_putm_internal(buffer_2, "[4]", YELLOW256, "sources_addincludes(", NC, file->name, YELLOW256, ")", NC, ": ", "Adding ", 0);
         buffer_putsa(buffer_2, &path);
         buffer_putnlflush(buffer_2);
 #endif

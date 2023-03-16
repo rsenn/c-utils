@@ -26,7 +26,7 @@
 #include "src/genmakefile/sources.h"
 #include "src/genmakefile/sourcedir.h"
 #include "src/genmakefile/ansi.h"
-#include "src/genmakefile/gen.h"
+#include "src/genmakefile/generate.h"
 #include "src/genmakefile/input.h"
 #include "src/genmakefile/output.h"
 #include "src/genmakefile/var.h"
@@ -52,14 +52,13 @@ void debug_str(const char* name, const char* s);
 
 const char* const build_types[] = {"Release", "RelWithDebInfo", "MinSizeRel", "Debug"};
 
-static const char *make_begin_inline, *make_sep_inline, *make_end_inline, *comment = "#", *cross_compile = "", *builddir_varname = "BUILDDIR",
-                                                                          *quote_args = "";
+static const char *make_begin_inline, *make_sep_inline, *make_end_inline, *comment = "#", *cross_compile = "", *builddir_varname = "BUILDDIR", *quote_args = "";
 static char pathsep_make = DEFAULT_PATHSEP, pathsep_args = DEFAULT_PATHSEP;
 static bool batch, shell, ninja, batchmode, cygming;
 static strlist system_path;
 
 strarray dirstack = {0};
-int cmd_objs = 0, cmd_libs = 0, cmd_bins = 0;
+int cmd_objs = 0, cmd_libs = 0, cmd_bins = 0, cmd_module = 0;
 union commands commands;
 strlist vpath = {0}, build_as_lib = {0}, link_dirs = {0};
 set_t link_libraries = {0, 0, 0, byte_hash}, build_directories = {0, 0, 0, byte_hash};
@@ -329,7 +328,7 @@ deps_for_libs(void) {
     if((lib = rule_find_sa(&sa))) {
       strlist libs;
       strlist_init(&libs, ' ');
-      includes_to_libs(&srcdir->includes, &libs, libpfx, exts.inc, exts.lib);
+      includes_to_libs(&srcdir->includes, &libs);
       strlist_removes(&libs, lib->name);
       set_clear(&indir);
       deps_indirect(&indir, &libs);
@@ -621,8 +620,7 @@ set_compiler_type(const char* compiler) {
   /*
    * Visual C++ compiler
    */
-  if(str_start(compiler, "msvc") || str_start(compiler, "icl") || str_start(compiler, "vs20") || str_start(compiler, "vc") ||
-     compiler[str_find(compiler, "-cl")]) {
+  if(str_start(compiler, "msvc") || str_start(compiler, "icl") || str_start(compiler, "vs20") || str_start(compiler, "vc") || compiler[str_find(compiler, "-cl")]) {
     exts.obj = ".obj";
     exts.bin = ".exe";
     exts.lib = ".lib";
@@ -686,8 +684,7 @@ set_compiler_type(const char* compiler) {
       var_set("X64", "");
     }
     set_command(&commands.link, "$(LINK) -out:$@ $(LDFLAGS) $(EXTRA_LDFLAGS) -pdb:\"$@.pdb\"", "$^ $(LIBS) $(EXTRA_LIBS)");
-  } else if(str_start(compiler, "gnu") || str_start(compiler, "gcc") || cygming || str_start(compiler, "clang") || str_start(compiler, "llvm") ||
-            str_start(compiler, "zapcc")) {
+  } else if(str_start(compiler, "gnu") || str_start(compiler, "gcc") || cygming || str_start(compiler, "clang") || str_start(compiler, "llvm") || str_start(compiler, "zapcc")) {
     exts.lib = ".a";
     exts.obj = ".o";
     if(str_start(compiler, "zapcc"))
@@ -1200,22 +1197,26 @@ usage(char* errmsg_argv0) {
                        "  -o, --output FILE         write to file\n"
                        "  -f, --input-file FILE     read from input file\n"
                        "\n"
-                       "  -O, --objext EXT          object file extension\n"
+                       "  -T, --objext EXT          object file extension\n"
                        "  -B, --exeext EXT          binary file extension\n"
-                       "  -L, --libext EXT          library file extension\n"
+                       "  -X, --libext EXT          library file extension\n"
                        "\n"
-                       "  -a, --create-libs         create rules for libraries\n"
-                       "  -o, --create-objs         create rules for objects\n"
-                       "  -b, --create-bins         create rules for programs\n"
+                       "      --create-libs         create rules for libraries\n"
+                       "      --create-objs         create rules for objects\n"
+                       "      --create-bins         create rules for programs\n"
+                       "      --create-module       create rules for loadable module\n"
                        "  -i, --install             create installation rules\n"
                        "\n"
-                       "  -d, --builddir            build directory\n"
+                       //"  -R, --objdir   DIR        object directory\n"
+                       "  -O, --outdir   DIR        output directory\n"
+                       "  -d, --builddir DIR        build directory\n"
                        "  -a, --arch                set architecture\n"
                        "  -s, --system OS           set operating system\n"
                        "  -c, --cross TARGET        set cross compiler\n"
                        "\n"
                        "  -D, --define NAME[=VALUE] add a preprocessor definition\n"
-                       "  -I, --includedir DIR      add an include directory\n"
+                       "  -I, --include-path DIR    add an include directory\n"
+                       "  -L, --library-path DIR    add a library directory\n"
                        "  -l, --link LIB            link a library\n"
                        "\n"
                        "  -t, --compiler-type TYPE  compiler type, one of:\n"
@@ -1270,10 +1271,10 @@ usage(char* errmsg_argv0) {
  */
 int
 main(int argc, char* argv[]) {
-  static strarray libs, includes;
+  static strarray libs, libdirs, includes;
   static stralloc tmp;
   int c, ret = 0, index = 0;
-  const char *s, *dir = NULL;
+  const char *s, /**dir = NULL,*/ *objdir = NULL;
   set_t toks;
   strarray args;
   strlist cmdline;
@@ -1290,22 +1291,24 @@ main(int argc, char* argv[]) {
 
   struct unix_longopt opts[] = {
       {"help", 0, NULL, 'h'},
-      {"objext", 1, NULL, 'O'},
+      {"objext", 1, NULL, 'T'},
       {"exeext", 1, NULL, 'B'},
       {"libext", 1, NULL, 'X'},
       {"create-libs", 0, &cmd_libs, 1},
       {"create-objs", 0, &cmd_objs, 1},
       {"create-bins", 0, &cmd_bins, 1},
+      {"create-module", 0, &cmd_module, 1},
+      //{"create-bins", 0, 0, 'b'},
       {"no-create-libs", 0, &cmd_libs, 0},
       {"no-create-objs", 0, &cmd_objs, 0},
       {"no-create-bins", 0, &cmd_bins, 0},
+      {"no-create-module", 0, &cmd_module, 0},
       {"name", 0, 0, 'n'},
       {"install", 0, 0, 'i'},
-      {"includedir", 0, 0, 'I'},
-      /*                           {"install-bins",
-         0, &inst_bins, 1},
-                                {"install-libs",
-         0, &inst_libs, 1},*/
+      {"include-path", 0, 0, 'I'},
+      {"library-path", 0, 0, 'L'},
+      {"objdir", 1, 0, 'R'},
+      {"outdir", 1, 0, 'O'},
       {"builddir", 1, 0, 'd'},
       {"workdir", 1, 0, 'w'},
       {"compiler-type", 1, 0, 't'},
@@ -1341,7 +1344,7 @@ main(int argc, char* argv[]) {
 
   byte_zero(&cfg, sizeof(cfg));
   byte_zero(&dirs, sizeof(dirs));
-  // byte_zero(&source_list, sizeof(source_list));
+  // byte_zero(&sources_list, sizeof(sources_list));
   byte_zero(&rules, sizeof(rules));
   byte_zero(&vars, sizeof(vars));
   // byte_zero(&sources_set, sizeof(sources_set));
@@ -1383,11 +1386,14 @@ main(int argc, char* argv[]) {
 
   for(;;) {
     const char* arg;
-    c = unix_getopt_long(argc, argv, "habo:O:B:L:d:t:m:n:a:D:l:I:c:s:p:P:S:if:Cw:", opts, &index);
+    c = unix_getopt_long(argc, argv, "habo:O:B:E:d:t:m:n:a:D:l:I:c:s:p:P:R:S:if:Cw:L:O:T:", opts, &index);
+
     if(c == -1)
       break;
+
     if(c == 0)
       continue;
+
     arg = unix_optarg ? unix_optarg : argv[unix_optind];
 
     switch(c) {
@@ -1412,7 +1418,7 @@ main(int argc, char* argv[]) {
         outfile = arg;
         break;
       }
-      case 'O': {
+      case 'T': {
         exts.obj = arg;
         break;
       }
@@ -1429,7 +1435,16 @@ main(int argc, char* argv[]) {
         break;
       }
       case 'd': {
-        dir = arg;
+        //  dir = arg;
+        stralloc_copys(&dirs.build.sa, arg);
+        break;
+      }
+      case 'R': {
+        objdir = arg;
+        break;
+      }
+      case 'O': {
+        stralloc_copys(&dirs.out.sa, arg);
         break;
       }
       case 'w': {
@@ -1483,30 +1498,45 @@ main(int argc, char* argv[]) {
         break;
       }
       case 'I': {
+#ifdef DEBUG_OUTPUT_
         buffer_puts(buffer_2, "Add -I: ");
         buffer_puts(buffer_2, arg);
         buffer_putnlflush(buffer_2);
+#endif
         strarray_push(&includes, arg);
+        break;
+      }
+      case 'L': {
+#ifdef DEBUG_OUTPUT_
+        buffer_puts(buffer_2, "Add -L: ");
+        buffer_puts(buffer_2, arg);
+        buffer_putnlflush(buffer_2);
+#endif
+        strarray_push(&libdirs, arg);
         break;
       }
       default:
         buffer_puts(buffer_2, "No such option '");
-        buffer_putlong(buffer_2, c);
+        buffer_putc(buffer_2, c);
         buffer_putsflush(buffer_2, "'\n");
         // usage(argv[0]);
         ret = 1;
         goto quit;
     }
   }
+
   if(!cmd_bins && !cmd_libs && !cmd_objs) {
     cmd_bins = 1;
     cmd_objs = 1;
     cmd_libs = 1;
   }
+
   if(inst_bins)
     cmd_bins = 1;
+
   if(!cmd_libs)
     inst_libs = 0;
+
   if(!format_linklib_fn)
     format_linklib_fn = &format_linklib_lib;
 
@@ -1601,6 +1631,7 @@ main(int argc, char* argv[]) {
     ret = 2;
     goto quit;
   }
+
   if(*cross_compile) {
     var_set("CROSS_COMPILE", cross_compile);
     if(var_isset("CC"))
@@ -1610,13 +1641,14 @@ main(int argc, char* argv[]) {
     if(var_isset("AR"))
       stralloc_prepends(&var_list("AR", pathsep_args)->value.sa, "$(CROSS_COMPILE)");
   }
+
   batchmode = batch && stralloc_contains(&commands.compile, "-Fo");
   if(batch)
     pathsep_args = pathsep_make;
-  strarray_foreach(&libs, it) { with_lib(*it); }
-  strarray_foreach(&includes, it) { includes_add(*it); }
+
   stralloc_replacec(&dirs.out.sa, PATHSEP_C == '/' ? '\\' : '/', PATHSEP_C);
   // path_absolute_sa(&dirs.out.sa);
+
   strlist_nul(&dirs.out);
   strlist_nul(&dirs.this);
 
@@ -1625,7 +1657,8 @@ main(int argc, char* argv[]) {
   else
     stralloc_copys(&dirs.work.sa, "build");
 
-  path_concat_sa(&dirs.this.sa, &dirs.work.sa, &dirs.out.sa);
+  if(dirs.out.sa.len == 0)
+    path_concat_sa(&dirs.this.sa, &dirs.work.sa, &dirs.out.sa);
 
   if(dirs.build.sa.len == 0) {
     if(strlist_contains(&dirs.work, "build") && strlist_count(&dirs.work) > 1) {
@@ -1655,19 +1688,30 @@ main(int argc, char* argv[]) {
   }
   if(dirs.work.sa.len == 0)
     stralloc_copys(&dirs.work.sa, ".");
+
   path_absolute_sa(&dirs.out.sa);
   path_canonical_sa(&dirs.out.sa);
+  path_collapse_sa(&dirs.out.sa);
+
   path_absolute_sa(&dirs.build.sa);
   path_canonical_sa(&dirs.build.sa);
+  path_collapse_sa(&dirs.build.sa);
+
   strlist_nul(&dirs.this);
   strlist_nul(&dirs.out);
   strlist_nul(&dirs.build);
   strlist_nul(&dirs.work);
+
   // debug_sa("dirs.this", &dirs.this.sa);
   // debug_sa("dirs.out", &dirs.out.sa);
   // debug_sa("dirs.build", &dirs.build.sa);
   if(tools.preproc)
     var_set("CPP", tools.preproc);
+
+  strarray_foreach(&libdirs, it) { push_linkdir("LIBS", *it); }
+  strarray_foreach(&libs, it) { with_lib(*it); }
+  strarray_foreach(&includes, it) { includes_add(*it); }
+
   includes_cppflags();
 
   // debug_sa("dirs.work", &dirs.work.sa);
@@ -1854,10 +1898,10 @@ main(int argc, char* argv[]) {
   path_collapse_sa(&dirs.out.sa);
 
 #ifdef DEBUG_OUTPUT
-  debug_sa("dirs.work: ", &dirs.work.sa);
-  debug_sa("dirs.build: ", &dirs.build.sa);
-  debug_sa("dirs.out: ", &dirs.out.sa);
-  debug_sa("dirs.this: ", &dirs.this.sa);
+  debug_sa("dirs.work", &dirs.work.sa);
+  debug_sa("dirs.build", &dirs.build.sa);
+  debug_sa("dirs.out", &dirs.out.sa);
+  debug_sa("dirs.this", &dirs.this.sa);
   buffer_putnlflush(buffer_2);
 #endif
 
@@ -1868,10 +1912,10 @@ main(int argc, char* argv[]) {
     ret = 1;
     goto quit;
   }
-  gen_mkdir_rule(&dirs.work.sa);
+  generate_mkdir_rule(&dirs.work.sa);
   add_path_sa(&all->prereq, &dirs.work.sa);
 
-#ifdef DEBUG_OUTPUT
+#ifdef DEBUG_OUTPUT_
   {
     size_t n;
 
@@ -1884,11 +1928,15 @@ main(int argc, char* argv[]) {
 #endif
 
   if(!stralloc_equals(&dirs.out.sa, "./")) {
-    gen_mkdir_rule(&dirs.out.sa);
+    generate_mkdir_rule(&dirs.out.sa);
     add_path_sa(&all->prereq, &dirs.out.sa);
   }
 
+#ifdef DEBUG_OUTPUT_
+  buffer_puts(buffer_2, "args: ");
   strarray_dump(buffer_2, &args);
+#endif
+
   strarray_foreach(&args, arg) {
 
 #ifdef DEBUG_OUTPUT_
@@ -1934,8 +1982,8 @@ main(int argc, char* argv[]) {
     set_iterator_t it;
     set_foreach(&sources_set, it, x, n) {
 
-#ifdef DEBUG_OUTPUT
-      buffer_puts(buffer_2, "adding to sources:");
+#ifdef DEBUG_OUTPUT_
+      buffer_puts(buffer_2, "adding to sources: ");
       buffer_put(buffer_2, x, n);
       buffer_putnlflush(buffer_2);
 #endif
@@ -1973,8 +2021,8 @@ main(int argc, char* argv[]) {
     stralloc src;
     stralloc_init(&src);
 
-#ifdef DEBUG_OUTPUT
-    buffer_puts(buffer_2, "strarray sources:");
+#ifdef DEBUG_OUTPUT_
+    buffer_puts(buffer_2, "strarray sources: ");
     strarray_dump(buffer_2, &sources);
     buffer_putnlflush(buffer_2);
 #endif
@@ -1983,15 +2031,7 @@ main(int argc, char* argv[]) {
     strarray_init(&sources2);
     strarray_copy(&sources2, &sources);
 
-    strarray_foreach(&sources2, ptr) {
-
-#ifdef DEBUG_OUTPUT
-      buffer_putm_internal(buffer_2, PINK256 "sourcedir_addsource" NC "(\"", *ptr, "\")", NULL);
-      buffer_putnlflush(buffer_2);
-#endif
-
-      sourcedir_addsource(*ptr, &sources, &progs, &bins, pathsep_make);
-    }
+    strarray_foreach(&sources2, ptr) { sourcedir_addsource(*ptr, &sources, &progs, &bins, pathsep_make); }
 
     sourcedir_populate(&sources);
     strarray_free(&sources);
@@ -2034,41 +2074,50 @@ main(int argc, char* argv[]) {
 #endif
 
     if(cmd_libs) {
-      gen_lib_rules(shell, batch, batchmode, pathsep_args, pathsep_make);
+      generate_lib_rules(shell, batch, batchmode, pathsep_args, pathsep_make);
       deps_for_libs();
     } else {
       MAP_PAIR_T t;
       MAP_FOREACH(srcdir_map, t) {
         sourcedir* srcdir = *(sourcedir**)MAP_ITER_VALUE(t);
         /*if(tools.preproc) {
-          gen_simple_compile_rules(rules, srcdir, MAP_ITER_KEY(t), exts.src, exts.pps, &commands.preprocess);
-          gen_simple_compile_rules(rules, srcdir, MAP_ITER_KEY(t), exts.pps, exts.obj, &commands.compile); }
+          generate_simple_compile_rules(rules, srcdir, MAP_ITER_KEY(t), exts.src, exts.pps, &commands.preprocess);
+          generate_simple_compile_rules(rules, srcdir, MAP_ITER_KEY(t), exts.pps, exts.obj, &commands.compile); }
         else */
-        { gen_simple_compile_rules(srcdir, MAP_ITER_KEY(t), exts.src, exts.obj, &commands.compile, pathsep_args); }
+        { generate_simple_compile_rules(srcdir, MAP_ITER_KEY(t), exts.src, exts.obj, &commands.compile, pathsep_args); }
       }
     }
+    int link_rules = 0;
+
     if(cmd_bins) {
+      int ret;
 
-      /*#ifdef DEBUG_OUTPUT_
-            buffer_puts(buffer_2, "source_list.length = ");
-            buffer_putulong(buffer_2, dlist_length(&source_list));
-            buffer_putnlflush(buffer_2);
-      #endif*/
+#ifdef DEBUG_OUTPUT
+      buffer_puts(buffer_2, "sources_list.length = ");
+      buffer_putulong(buffer_2, dlist_length(&sources_list));
+      buffer_putnlflush(buffer_2);
+#endif
+      if(!(ret = generate_link_rules(pathsep_args, pathsep_make)))
+        cmd_bins = 0;
 
-      cmd_bins = gen_link_rules(libpfx, pathsep_args, pathsep_make);
+      link_rules += ret;
 
-#ifdef DEBUG_OUTPUT_
+#ifdef DEBUG_OUTPUT
       buffer_puts(buffer_2, "bins = ");
       buffer_putstra(buffer_2, &bins, ", ");
       buffer_putnlflush(buffer_2);
 #endif
 
-#ifdef DEBUG_OUTPUT_
+#ifdef DEBUG_OUTPUT
       buffer_puts(buffer_2, "progs = ");
       buffer_putstra(buffer_2, &progs, ", ");
       buffer_putnlflush(buffer_2);
 #endif
     }
+
+    if(cmd_module) {
+    }
+
     if(cmd_bins == 0 || cmd_libs == 1) {
       MAP_PAIR_T t;
       MAP_FOREACH(rules, t) {
@@ -2079,7 +2128,7 @@ main(int argc, char* argv[]) {
     }
   }
 
-  gen_clean_rule(pathsep_make);
+  generate_clean_rule(pathsep_make);
 
   {
     MAP_PAIR_T t;
@@ -2092,7 +2141,7 @@ main(int argc, char* argv[]) {
   }
 
   if(inst_bins || inst_libs)
-    gen_install_rules();
+    generate_install_rules();
   {
     MAP_PAIR_T t;
     MAP_FOREACH(srcdir_map, t) {
@@ -2247,7 +2296,7 @@ quit : {
     strlist deps;
     strlist_init(&deps, '\0');
 
-    dlist_foreach_down(&source_list, link) {
+    dlist_foreach_down(&sources_list, link) {
       sourcefile* source = dlist_data(link, sourcefile*);
       if(0 && 1) {
         buffer_putm_internal(buffer_2, "source: ", source->name, " deps: ", NULL);

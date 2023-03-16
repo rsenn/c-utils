@@ -60,9 +60,8 @@ typedef struct queue_entry_s {
 
 /* https://github.com/rsenn/lc-meter/raw/master/doc/LCmeter0-LCD-8pinlcd-PIC_COMP.pdf
  */
-static const char default_url[] =
-    "https://www.google.com/"
-    "search?q=SSL_bio"; //"https://raw.githubusercontent.com/rsenn/lc-meter/master/doc/LCmeter0-LCD-8pinlcd-PIC_COMP.pdf";
+static const char default_url[] = "https://www.google.com/"
+                                  "search?q=SSL_bio"; //"https://raw.githubusercontent.com/rsenn/lc-meter/master/doc/LCmeter0-LCD-8pinlcd-PIC_COMP.pdf";
 static const char* const url_host = "127.0.0.1";
 static const char* const url_location = "/login";
 static const uint16 url_port = 8080;
@@ -248,15 +247,10 @@ http_io_handler(http* h, buffer* out) {
           buffer_puts(buffer_2, " errno=");
           buffer_puts(buffer_2, strerror(errno));
           buffer_puts(buffer_2, " status=");
-          buffer_puts(buffer_2,
-                      ((const char* const[]){"-1",
-                                             "HTTP_RECV_HEADER",
-                                             "HTTP_RECV_DATA",
-                                             "HTTP_STATUS_CLOSED",
-                                             "HTTP_STATUS_ERROR",
-                                             "HTTP_STATUS_BUSY",
-                                             "HTTP_STATUS_FINISH",
-                                             0})[h->response->status + 1]);
+          buffer_puts(
+              buffer_2,
+              ((const char* const[]){
+                  "-1", "HTTP_RECV_HEADER", "HTTP_RECV_DATA", "HTTP_STATUS_CLOSED", "HTTP_STATUS_ERROR", "HTTP_STATUS_BUSY", "HTTP_STATUS_FINISH", 0})[h->response->status + 1]);
           buffer_puts(buffer_2, " len=");
           buffer_putlong(buffer_2, len);
           buffer_puts(buffer_2, " data='");
@@ -329,8 +323,7 @@ process_xml(const char* x, size_t len, strlist* urls, uri_t* uri) {
     } else
 
         if(tok.id == XML_ATTR_VALUE) {
-      if(stralloc_equals(&attr_name, "href") || stralloc_equals(&attr_name, "src") || stralloc_equals(&attr_name, "url") ||
-         byte_finds(tok.x, tok.len, "://") < tok.len) {
+      if(stralloc_equals(&attr_name, "href") || stralloc_equals(&attr_name, "src") || stralloc_equals(&attr_name, "url") || byte_finds(tok.x, tok.len, "://") < tok.len) {
         stralloc url;
         uri_t link;
         uri_init(&link);
@@ -372,15 +365,9 @@ http_process(http* h, strlist* urls, uri_t* uri) {
   const char* type = http_get_header(h, "Content-Type");
   size_t typelen = str_chrs(type, "\r\n\0", 3);
   buffer_puts(buffer_2, "STATUS: ");
-  buffer_puts(buffer_2,
-              ((const char* const[]){"-1",
-                                     "HTTP_RECV_HEADER",
-                                     "HTTP_RECV_DATA",
-                                     "HTTP_STATUS_CLOSED",
-                                     "HTTP_STATUS_ERROR",
-                                     "HTTP_STATUS_BUSY",
-                                     "HTTP_STATUS_FINISH",
-                                     0})[r->status + 1]);
+  buffer_puts(
+      buffer_2,
+      ((const char* const[]){"-1", "HTTP_RECV_HEADER", "HTTP_RECV_DATA", "HTTP_STATUS_CLOSED", "HTTP_STATUS_ERROR", "HTTP_STATUS_BUSY", "HTTP_STATUS_FINISH", 0})[r->status + 1]);
   buffer_putnlflush(buffer_2);
   buffer_puts(buffer_2, "PTR: ");
   buffer_putulong(buffer_2, r->ptr);
@@ -519,14 +506,8 @@ main(int argc, char* argv[]) {
 
       buffer_puts(buffer_2, " status=");
       buffer_puts(buffer_2,
-                  ((const char* const[]){"-1",
-                                         "HTTP_RECV_HEADER",
-                                         "HTTP_RECV_DATA",
-                                         "HTTP_STATUS_CLOSED",
-                                         "HTTP_STATUS_ERROR",
-                                         "HTTP_STATUS_BUSY",
-                                         "HTTP_STATUS_FINISH",
-                                         0})[h.response->status + 1]);
+                  ((const char* const[]){
+                      "-1", "HTTP_RECV_HEADER", "HTTP_RECV_DATA", "HTTP_STATUS_CLOSED", "HTTP_STATUS_ERROR", "HTTP_STATUS_BUSY", "HTTP_STATUS_FINISH", 0})[h.response->status + 1]);
       buffer_putnlflush(buffer_2);
 
       // buffer_dump(buffer_1, &h.q.in);

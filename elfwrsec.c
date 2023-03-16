@@ -25,8 +25,7 @@ static const char* section = ".rodata";
 
 const char*
 get_p_type(int type) {
-  static const char* const p_types[] = {
-      "PT_NULL   ", "PT_LOAD   ", "PT_DYNAMIC", "PT_INTERP ", "PT_NOTE   ", "PT_SHLIB  ", "PT_PHDR   ", "PT_TLS    ", "PT_NUM    "};
+  static const char* const p_types[] = {"PT_NULL   ", "PT_LOAD   ", "PT_DYNAMIC", "PT_INTERP ", "PT_NOTE   ", "PT_SHLIB  ", "PT_PHDR   ", "PT_TLS    ", "PT_NUM    "};
 
   if(type < (int)(sizeof(p_types) / sizeof(p_types[0])))
     return p_types[type];

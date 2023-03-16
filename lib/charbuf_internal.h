@@ -51,8 +51,7 @@ extern int charbuf_colors;
 
 ssize_t charbuf_stubborn_read(charbuf*, size_t max);
 
-#define charbuf_colorstr(str, color, out) \
-  buffer_putm_internal(out, charbuf_colors ? CHARBUF_NC : "", charbuf_colors ? color : "", str, charbuf_colors ? CHARBUF_NC : "", 0);
+#define charbuf_colorstr(str, color, out) buffer_putm_internal(out, charbuf_colors ? CHARBUF_NC : "", charbuf_colors ? color : "", str, charbuf_colors ? CHARBUF_NC : "", 0);
 #define charbuf_dumpname(lbl, out) charbuf_colorstr(lbl, CHARBUF_GRAY, out)
 #define charbuf_dumplabel(lbl, out) \
   do { \

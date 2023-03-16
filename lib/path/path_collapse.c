@@ -5,36 +5,50 @@
 
 size_t
 path_collapse(char* path, size_t n) {
-  char *x, *end;
-  int ret = 0;
-  char sep = path_getsep(path);
-  size_t l, i;
+  char *x, *end, sep = path_getsep(path);
+  int count = 0;
+  size_t l, i, j = 0;
 
   for(x = path, end = path + n, i = 0; i < n;) {
     while(x[i] == sep)
-      i++;
+      ++i;
 
-    l = i + byte_chr(&x[i], n - i, sep);
-    if(l < n) {
-      l++;
-      if(l + 2 <= n) {
-        if(x[l] == '.' && x[l + 1] == '.' && (l + 2 >= n || x[l + 2] == sep)) {
-          l += 3;
-          if(l < n)
-            memmove(&x[i], &x[l], n - l);
-          n = i + (n - l);
-          x[n] = '\0';
+    if((l = i + byte_chr(&x[i], n - i, sep)) < n) {
+      j = l;
+      while(x[l] == sep)
+        ++l;
 
-          while(x[--i] == sep)
-            ;
-          while(i > 0 && x[i] != sep)
-            i--;
-          continue;
+      if(l + 2 <= n && x[l] == '.' && x[l + 1] == '.' && (l + 2 >= n || x[l + 2] == sep)) {
+        l += 3;
+      move:
+        if(l < n)
+          memmove(&x[i], &x[l], n - l);
+        n = i + (n - l);
+        x[n] = '\0';
+
+        while(x[--i] == sep)
+          ;
+        while(i > 0 && x[i] != sep)
+          i--;
+        continue;
+      }
+
+      if(l + 1 <= n && x[l] == '.') {
+        if(l + 1 >= n) {
+          x[j] = '\0';
+          return j;
+        }
+
+        if(x[l + 1] == sep) {
+          l += 2;
+          i = j;
+          goto move;
         }
       }
     }
 
     i = l;
+    ++count;
   }
 
   return n;

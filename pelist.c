@@ -23,8 +23,7 @@ static stralloc search;
 void pe_dump_sections(uint8* base);
 
 #define PE_DUMP_FIELD(base, ptr, st, field) \
-  buffer_putspad(b, #field, 30), buffer_puts(b, " 0x"), buffer_putxlonglong0(b, PE_GET(base, ptr, st, field), PE_SIZE(base, st, field) * 2), \
-      buffer_putnlflush(b)
+  buffer_putspad(b, #field, 30), buffer_puts(b, " 0x"), buffer_putxlonglong0(b, PE_GET(base, ptr, st, field), PE_SIZE(base, st, field) * 2), buffer_putnlflush(b)
 
 size_t
 pe_end_offset(uint8* base) {
@@ -517,9 +516,7 @@ pe_dump_sections(uint8* base) {
     buffer_putxlong0(buffer_1, uint32_get(&sections[i].virtual_address), sizeof(sections[i].virtual_address) * 2);
     if(print_range) {
       buffer_puts(buffer_1, " 0x");
-      buffer_putxlong0(buffer_1,
-                       uint32_get(&sections[i].virtual_address) + uint32_get(&sections[i].physical_address),
-                       sizeof(sections[i].physical_address) * 2);
+      buffer_putxlong0(buffer_1, uint32_get(&sections[i].virtual_address) + uint32_get(&sections[i].physical_address), sizeof(sections[i].physical_address) * 2);
     }
     if(!print_range) {
       buffer_puts(buffer_1, " 0x");
@@ -529,9 +526,7 @@ pe_dump_sections(uint8* base) {
     buffer_putxlong0(buffer_1, uint32_get(&sections[i].pointer_to_raw_data), sizeof(sections[i].pointer_to_raw_data) * 2);
     if(print_range) {
       buffer_puts(buffer_1, " 0x");
-      buffer_putxlong0(buffer_1,
-                       uint32_get(&sections[i].pointer_to_raw_data) + uint32_get(&sections[i].size_of_raw_data),
-                       sizeof(sections[i].size_of_raw_data) * 2);
+      buffer_putxlong0(buffer_1, uint32_get(&sections[i].pointer_to_raw_data) + uint32_get(&sections[i].size_of_raw_data), sizeof(sections[i].size_of_raw_data) * 2);
     }
     buffer_putnlflush(buffer_1);
   }

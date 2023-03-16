@@ -92,11 +92,10 @@ struct address {
   char ip[16];
 };
 
-GEN_ALLOC_typedef(address_alloc, struct address, s, len, a)
-    GEN_ALLOC_readyplus(address_alloc, struct address, s, len, a, i, n, x, 30, address_alloc_readyplus)
-        GEN_ALLOC_append(address_alloc, struct address, s, len, a, i, n, x, 30, address_alloc_readyplus, address_alloc_append)
+GEN_ALLOC_typedef(address_alloc, struct address, s, len, a) GEN_ALLOC_readyplus(address_alloc, struct address, s, len, a, i, n, x, 30, address_alloc_readyplus)
+    GEN_ALLOC_append(address_alloc, struct address, s, len, a, i, n, x, 30, address_alloc_readyplus, address_alloc_append)
 
-            static address_alloc address;
+        static address_alloc address;
 
 struct ns {
   char* owner;

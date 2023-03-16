@@ -3,7 +3,7 @@
 #include "../../genmakefile.h"
 
 MAP_T vars;
-linklib_fmt* format_linklib_fn = 0;
+linklib_fmt *format_linklib_fn = 0, *format_linkdir_fn = &format_linkdir_switch;
 
 /**
  * @brief format_linklib_lib  Output library name (+".lib")
@@ -37,6 +37,12 @@ format_linklib_switch(const char* libname, stralloc* out) {
 void
 format_linklib_dummy(const char* libname, stralloc* out) {}
 
+void
+format_linkdir_switch(const char* libdir, stralloc* out) {
+  stralloc_cats(out, "-L");
+  stralloc_cats(out, libdir);
+}
+
 /**
  * @defgroup var functions
  * @{
@@ -57,12 +63,12 @@ var_isset(const char* name) {
  * @return
  */
 var_t*
-var_list(const char* name, char pathsep_args) {
+var_list(const char* name, char psa) {
   MAP_PAIR_T t;
   if(!MAP_SEARCH(vars, name, str_len(name) + 1, &t)) {
     var_t var;
     var.serial = 0;
-    strlist_init(&var.value, (name[0] >= 'A' && name[0] <= 'Z') ? ' ' : pathsep_args);
+    strlist_init(&var.value, (name[0] >= 'A' && name[0] <= 'Z') ? ' ' : psa);
     MAP_INSERT(vars, name, str_len(name) + 1, &var, sizeof(strlist));
     MAP_SEARCH(vars, name, str_len(name) + 1, &t);
   }
@@ -88,12 +94,13 @@ var_setb(const char* name, const char* value, size_t vlen) {
   stralloc_zero(&var->value.sa);
   stralloc_copyb(&var->value.sa, value, vlen);
 
-#ifdef DEBUG_OUTPUT
+#ifdef DEBUG_OUTPUT_
   buffer_putm_internal(buffer_2, "var_setb(", name, ", \"", 0);
   buffer_put(buffer_2, value, vlen);
   buffer_puts(buffer_2, "\")");
   buffer_putnlflush(buffer_2);
 #endif
+
   return var;
 }
 
@@ -179,6 +186,24 @@ push_lib(const char* name, const char* lib) {
 
   if(format_linklib_fn) {
     format_linklib_fn(lib, &sa);
+    var_push_sa(name, &sa);
+  }
+
+  stralloc_free(&sa);
+}
+
+/**
+ * @brief push_linkdir  Add library directory to variable
+ * @param name
+ * @param dir
+ */
+void
+push_linkdir(const char* name, const char* dir) {
+  stralloc sa;
+  stralloc_init(&sa);
+
+  if(format_linkdir_fn) {
+    format_linkdir_fn(dir, &sa);
     var_push_sa(name, &sa);
   }
 

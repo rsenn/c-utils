@@ -40,8 +40,7 @@ void dlist_unshift(dlist*, node*);
    links get deleted */
 #define dlist_foreach_down_safe(dlist, n, m) \
   for((n) = (void*)(dlist)->head, (m) = (void*)((struct dnode*)n) != NULL ? (void*)((struct dnode*)n)->next : NULL; \
-      (n) != NULL && (n) != (void*)(dlist)->head(n) = (void*)((struct dnode*)m), \
-  (m) = (void*)((struct dnode*)n) != NULL ? (void*)((struct dnode*)n)->next : NULL)
+      (n) != NULL && (n) != (void*)(dlist)->head(n) = (void*)((struct dnode*)m), (m) = (void*)((struct dnode*)n) != NULL ? (void*)((struct dnode*)n)->next : NULL)
 
 /*
  * Macros to walk through a dlist list from tail to head.                     *

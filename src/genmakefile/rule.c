@@ -172,15 +172,7 @@ rule_match(target* rule, const char* pattern) {
  * @param plen
  */
 void
-rule_command_subst(target* rule,
-                   stralloc* out,
-                   const char* prereq,
-                   size_t plen,
-                   bool shell,
-                   bool batch,
-                   const char quote_args[],
-                   char pathsep_args,
-                   const char* make_sep_inline) {
+rule_command_subst(target* rule, stralloc* out, const char* prereq, size_t plen, bool shell, bool batch, const char quote_args[], char psa, const char* make_sep_inline) {
   size_t i;
   stralloc* in = &rule->recipe;
   for(i = 0; i < in->len; ++i) {
@@ -201,7 +193,7 @@ rule_command_subst(target* rule,
         case '@': {
           size_t p = out->len;
           stralloc_catq(out, rule->name, str_len(rule->name), quote_args);
-          byte_replace(&out->s[p], out->len - p, pathsep_args == '/' ? '\\' : '/', pathsep_args);
+          byte_replace(&out->s[p], out->len - p, psa == '/' ? '\\' : '/', psa);
           break;
         }
         case '^': {
@@ -236,17 +228,10 @@ rule_command_subst(target* rule,
  * @param out
  */
 void
-rule_command(target* rule,
-             stralloc* out,
-             bool shell,
-             bool batch,
-             const char quote_args[],
-             char pathsep_args,
-             const char* make_sep_inline,
-             const char* maketool) {
+rule_command(target* rule, stralloc* out, bool shell, bool batch, const char quote_args[], char psa, const char* make_sep_inline, const char* maketool) {
   size_t len;
   const char* pfx = 0;
-  char *s, from = pathsep_args == '/' ? '\\' : '/';
+  char *s, from = psa == '/' ? '\\' : '/';
   set_iterator_t it;
   strlist prereq;
   strlist_init(&prereq, ' ');
@@ -262,7 +247,7 @@ rule_command(target* rule,
     }
   }
   // stralloc_copy(&prereq.sa, &rule->prereq.sa);
-  stralloc_replacec(&prereq.sa, from, pathsep_args);
+  stralloc_replacec(&prereq.sa, from, psa);
   if(0 /* make_begin_inline == NULL  && rule->recipe ==  &commands.lib*/) {
     char* x;
     size_t n = 0;
@@ -285,13 +270,13 @@ rule_command(target* rule,
       n = x - r.start;
       if(n > 0 && r.start[n - 1] == ' ')
         n--;
-      rule_command_subst(rule, out, r.start, n, shell, batch, quote_args, pathsep_args, make_sep_inline);
+      rule_command_subst(rule, out, r.start, n, shell, batch, quote_args, psa, make_sep_inline);
       if(r.start + n < r.end && r.start[n] == ' ')
         n++;
       r.start += n;
     }
   } else if(!str_start(maketool, "g") && !(rule->name[0] == '.' && strchr(&rule->name[1], '.') && prereq.sa.len == 0)) {
-    rule_command_subst(rule, out, prereq.sa.s, prereq.sa.len, shell, batch, quote_args, pathsep_args, make_sep_inline);
+    rule_command_subst(rule, out, prereq.sa.s, prereq.sa.len, shell, batch, quote_args, psa, make_sep_inline);
   } else {
     const char *p, *end;
     for(p = out->s, end = out->s + out->len; p < end;) {

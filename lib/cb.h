@@ -41,8 +41,7 @@ int cb_insert(critbit_tree* cb, const void* key, size_t keylen);
 const void* cb_find(critbit_tree* cb, const void* key, size_t keylen);
 int cb_erase(critbit_tree* cb, const void* key, size_t keylen);
 int cb_find_prefix(const critbit_tree* cb, const void* key, size_t keylen, void** results, int numresults, int offset);
-int
-cb_foreach(critbit_tree* cb, const void* key, size_t keylen, int (*match_cb)(const void* match, const void* key, size_t keylen, void*), void* data);
+int cb_foreach(critbit_tree* cb, const void* key, size_t keylen, int (*match_cb)(const void* match, const void* key, size_t keylen, void*), void* data);
 void cb_clear(critbit_tree* cb);
 
 #define cb_insert_str(cb, key) cb_insert(cb, (void*)key, str_len(key) + 1)

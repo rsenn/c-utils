@@ -34,14 +34,19 @@ typedef struct {
 #define strarray_zero(l) array_trunc(&(l)->a)
 #define strarray_init(l) byte_zero((l), sizeof(strarray))
 
-#define strarray_size(l) array_length(&(l)->a, sizeof(char*))
+//#define strarray_size(l) array_length(&(l)->a, sizeof(char*))
+
+static inline size_t
+strarray_size(const strarray* l) {
+  return array_length(&l->a, sizeof(char*));
+}
 
 #define strarray_begin(l) (char**)array_start(&(l)->a)
 #define strarray_end(l) (strarray_begin(l) + strarray_size(l))
 
 #define strarray_at(l, pos) (((char**)((l)->p))[(pos)])
 
-#define strarray_foreach(a, ptr) for((ptr) = (char**)strarray_begin(a); ((char**)(ptr)) < strarray_end(a); ++ptr)
+#define strarray_foreach(a, ptr) for((ptr) = (char**)strarray_begin(a); ((char**)(ptr)) != strarray_end(a) && *(char**)(ptr); ++ptr)
 
 char** strarray_to_argv(strarray*);
 int strarray_from_argv(int argc, const char* const argv[], strarray* arr);

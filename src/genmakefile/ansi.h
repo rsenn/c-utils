@@ -1,10 +1,10 @@
 #ifndef GENMAKEFILE_ANSI_H
 #define GENMAKEFILE_ANSI_H
 
-#define YELLOW256 "\033[38;5;220m"
+#define YELLOW256 "\033[38;5;227m"
 #define PURPLE256 "\033[38;5;90m"
-#define BLUE256 "\033[38;5;27m"
-#define GREEN256 "\033[38;5;70m"
+#define BLUE256 "\033[38;5;33m"
+#define GREEN256 "\033[38;5;82m"
 #define YELLOW "\x1b[1;33m"
 #define PINK256 "\x1b[38;5;201m"
 #define RED "\x1b[1;31m"

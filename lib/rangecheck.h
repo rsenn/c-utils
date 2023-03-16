@@ -171,8 +171,7 @@ int range_str4inbuf(const void* buf, size_t len, const void* stringstart);
   { \
     type __a = a; \
     type __b = b; \
-    result = (__b) < 1 ? ((__MIN(type) - (__b) <= (__a)) ? assign(type, c, __a + __b) : 1) \
-                       : ((__MAX(type) - (__b) >= (__a)) ? assign(type, c, __a + __b) : 1); \
+    result = (__b) < 1 ? ((__MIN(type) - (__b) <= (__a)) ? assign(type, c, __a + __b) : 1) : ((__MAX(type) - (__b) >= (__a)) ? assign(type, c, __a + __b) : 1); \
   }
 
 #define sub_of(c, a, b) \

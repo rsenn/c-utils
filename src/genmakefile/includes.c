@@ -2,6 +2,7 @@
 #include "rule.h"
 #include "var.h"
 #include "path.h"
+#include "ansi.h"
 #include "../../lib/mmap.h"
 #include "../../lib/str.h"
 #include "../../lib/strlist.h"
@@ -65,14 +66,15 @@ includes_cppflags(void) {
   const char* dir;
   stralloc arg;
   stralloc_init(&arg);
+
   strlist_foreach_s(&include_dirs, dir) {
 
     stralloc_zero(&arg);
     stralloc_cats(&arg, dir);
     // path_relative_to(dir, dirs.this.sa.s, &arg);
 
-#ifdef DEBUG_OUTPUT_
-    buffer_puts(buffer_2, "include_dir: ");
+#ifdef DEBUG_OUTPUT
+    buffer_putm_internal(buffer_2, "[1]", PINK256, "includes_cppflags", NC, " include_dir=", 0);
     buffer_putsa(buffer_2, &arg);
     buffer_putnlflush(buffer_2);
 #endif
@@ -91,11 +93,11 @@ includes_cppflags(void) {
  * @return
  */
 int
-includes_get(const char* srcfile, strlist* includes, int sys, char pathsep_make) {
+includes_get(const char* srcfile, strlist* includes, int sys, char psm) {
   const char* x;
   size_t n;
 
-  if((x = path_mmap_read(srcfile, &n, pathsep_make))) {
+  if((x = path_mmap_read(srcfile, &n, psm))) {
     includes_extract(x, n, includes, sys);
     mmap_unmap(x, n);
     return 1;
@@ -107,11 +109,13 @@ void
 includes_add_b(const char* dir, size_t len) {
   static stralloc abs;
   stralloc_zero(&abs);
-  path_normalize_b(dir, len, &abs);
+
+  stralloc_copyb(&abs, dir, len);
+  // path_normalize_b(dir, len, &abs);
 
   if(strlist_push_unique_sa(&include_dirs, &abs)) {
 #ifdef DEBUG_OUTPUT
-    buffer_puts(buffer_2, "Added to include dirs: ");
+    buffer_putm_internal(buffer_2, "[1]", PINK256, "includes_add_b", NC, " abs=", 0);
     buffer_putsa(buffer_2, &abs);
     buffer_putnlflush(buffer_2);
 #endif
@@ -130,7 +134,7 @@ includes_add(const char* dir) {
  * @param libs
  */
 void
-includes_to_libs(const set_t* includes, strlist* libs, const char* libpfx, const char* incext, const char* libext) {
+includes_to_libs(const set_t* includes, strlist* libs) {
   const char* s;
   size_t n;
   stralloc sa, lib;
@@ -153,10 +157,10 @@ includes_to_libs(const set_t* includes, strlist* libs, const char* libpfx, const
     stralloc_zero(&lib);
     stralloc_copys(&lib, path_basename(sa.s));
 
-    if(stralloc_endb(&lib, incext, 2))
+    if(stralloc_endb(&lib, exts.inc, 2))
       lib.len -= 2;
 
-    stralloc_cats(&lib, libext);
+    stralloc_cats(&lib, exts.lib);
 
     if((rule = rule_find_sa(&lib))) {
 

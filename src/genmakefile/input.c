@@ -1,6 +1,6 @@
 #include "input.h"
 #include "var.h"
-#include "gen.h"
+#include "generate.h"
 #include "../../lib/path.h"
 #include "../../genmakefile.h"
 #include <errno.h>
@@ -403,7 +403,7 @@ input_process_command(stralloc* cmd, int argc, char* argv[], const char* file, s
     stralloc_init(&source);
   }
   stralloc_nul(&output);
-  // path_prefix_sa(&dirs.build.sa, &output, pathsep_make);
+  // path_prefix_sa(&dirs.build.sa, &output, psm);
   n = strlist_count_pred(&files, &is_source_b);
   if(n > 0)
     compile = 1;
@@ -445,7 +445,7 @@ input_process_command(stralloc* cmd, int argc, char* argv[], const char* file, s
       pathlen = reldir.len;
       stralloc_cat(&reldir, &output);
 
-      if((rule = gen_single_rule(&output, sacmd))) {
+      if((rule = generate_single_rule(&output, sacmd))) {
         rule->type = compile ? COMPILE : lib ? LIB : link ? LINK : 0;
 
         strlist_foreach(&files, x, n) {
@@ -611,7 +611,7 @@ input_process_line(const char* x, size_t n, const char* file, size_t line) {
 }
 
 void
-input_process_rules(target* all, char pathsep_args) {
+input_process_rules(target* all, char psa) {
   MAP_PAIR_T t;
   strlist args, builddir, outdir;
   strlist_init(&args, '\0');
@@ -688,8 +688,7 @@ input_process_rules(target* all, char pathsep_args) {
     var_setb(srcdir_varname, dirs.out.sa.s, dirs.out.sa.len);
   }
 
-  var_t *cflags = var_list("CFLAGS", pathsep_args), *cc = var_list("CC", pathsep_args), *defs = var_list("DEFS", pathsep_args),
-        *common = var_list("COMMON_FLAGS", pathsep_args);
+  var_t *cflags = var_list("CFLAGS", psa), *cc = var_list("CC", psa), *defs = var_list("DEFS", psa), *common = var_list("COMMON_FLAGS", psa);
   stralloc_zero(&defs->value.sa);
 
 #ifdef DEBUG_OUTPUT
@@ -820,7 +819,7 @@ input_process_rules(target* all, char pathsep_args) {
 }
 
 void
-input_process(const char* infile, target* all, char pathsep_args) {
+input_process(const char* infile, target* all, char psa) {
   const char* x;
   size_t n, line = 1;
   path_dirname(infile, &dirs.this.sa);
@@ -858,5 +857,5 @@ input_process(const char* infile, target* all, char pathsep_args) {
     mmap_unmap(x, n);
   }
 
-  input_process_rules(all, pathsep_args);
+  input_process_rules(all, psa);
 }

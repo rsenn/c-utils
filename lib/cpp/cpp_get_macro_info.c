@@ -1,15 +1,7 @@
 #include "../cpp_internal.h"
 
 unsigned
-cpp_get_macro_info(cpp_t* cpp,
-                   tokenizer* t,
-                   struct macro_info_s* mi_list,
-                   size_t* mi_cnt,
-                   unsigned nest,
-                   unsigned tpos,
-                   const char* name,
-                   char* visited[],
-                   unsigned rec_level) {
+cpp_get_macro_info(cpp_t* cpp, tokenizer* t, struct macro_info_s* mi_list, size_t* mi_cnt, unsigned nest, unsigned tpos, const char* name, char* visited[], unsigned rec_level) {
   int brace_lvl = 0;
   while(1) {
     struct token_s tok;
