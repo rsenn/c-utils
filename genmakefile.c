@@ -4308,7 +4308,7 @@ main(int argc, char* argv[]) {
 #endif
 
     if(cmd_libs) {
-      gen_lib_rules(shell,batch,batchmode,pathsep_args,pathsep_make);
+      gen_lib_rules(shell, batch, batchmode, pathsep_args, pathsep_make);
       deps_for_libs();
     } else {
       MAP_PAIR_T t;
@@ -4329,7 +4329,7 @@ main(int argc, char* argv[]) {
       buffer_putnlflush(buffer_2);
 #endif
 
-      cmd_bins = gen_link_rules(libpfx, pathsep_args,pathsep_make);
+      cmd_bins = gen_link_rules(libpfx, pathsep_args, pathsep_make);
 
 #ifdef DEBUG_OUTPUT_
       buffer_puts(buffer_2, "bins = ");
