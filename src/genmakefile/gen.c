@@ -10,6 +10,72 @@ filter_pptoks(const void* x, size_t n) {
   return byte_equal(x, n > 4 ? 4 : n, "USE_");
 }
 
+/**
+ * Add a path to a strlist
+ */
+static void
+add_path_b(set_t* s, const char* path, size_t len) {
+  if(set_has(s, path, len))
+    return;
+  set_insert(s, path, len);
+}
+
+/**
+ * Add a path to a strlist
+ */
+static void
+add_path(set_t* s, const char* path) {
+  add_path_b(s, path, str_len(path));
+}
+
+/**
+ * @brief add_srcpath
+ * @param list
+ * @param path
+ */
+static void
+add_srcpath(set_t* s, const char* path, char pathsep_make) {
+  stralloc sa;
+  stralloc_init(&sa);
+
+  if(srcdir.len && !stralloc_equals(&srcdir, ".")) {
+    stralloc_zero(&sa);
+    path_prefix_s(&srcdir, path, &sa, pathsep_make);
+    set_addsa(s, &sa);
+    stralloc_free(&sa);
+  } else {
+    set_adds(s, path);
+  }
+
+  stralloc_free(&sa);
+}
+
+static void
+add_source(set_t* s, const char* path, char pathsep_make) {
+  stralloc sa;
+  stralloc_init(&sa);
+
+  if(srcdir.len && !stralloc_equals(&srcdir, ".")) {
+    stralloc_zero(&sa);
+    path_prefix_s(&srcdir, path, &sa, pathsep_make);
+    set_addsa(s, &sa);
+  } else {
+    set_adds(s, path);
+  }
+
+  stralloc_free(&sa);
+}
+
+/**
+ * @brief add_path_sa
+ * @param list
+ * @param path
+ */
+void
+add_path_sa(set_t* s, stralloc* path) {
+  add_path_b(s, path->s, path->len);
+}
+
 target*
 gen_single_rule(stralloc* output, stralloc* cmd) {
   target* rule;
@@ -191,7 +257,7 @@ gen_srcdir_compile_rules(
         set_clear(&rule->prereq);
       }
       set_addsa(&rule->output, &obj);
-      add_srcpath(&rule->prereq, srcs.s);
+      add_srcpath(&rule->prereq, srcs.s, pathsep_make);
 
       if(rule->recipe.s)
         continue;
@@ -266,7 +332,7 @@ gen_simple_compile_rules(
       path_output(base, &obj, ".pp.c", &dirs.build.sa, pathsep_args);
 
       if((rule = rule_get_sa(&obj))) {
-        add_source(&rule->prereq, src->name);
+        add_source(&rule->prereq, src->name, pathsep_args);
         stralloc_copy(&rule->recipe, &commands.preprocess);
         ppsrc = obj;
         srcname = ppsrc.s;
@@ -276,7 +342,7 @@ gen_simple_compile_rules(
     path_output(base, &obj, toext, &dirs.build.sa, pathsep_args);
 
     if((rule = rule_get_sa(&obj))) {
-      add_source(&rule->prereq, srcname);
+      add_source(&rule->prereq, srcname, pathsep_args);
       if(rule->recipe.s == NULL) {
         stralloc_weak(&rule->recipe, cmd);
         array_catb(&srcdir->rules, &rule, sizeof(target*));
@@ -459,12 +525,12 @@ gen_program_rule(const char* filename, const char* libpfx, char pathsep_args) {
   path_output(filename, &obj, exts.obj, &dirs.build.sa, pathsep_args);
 
   if(tools.preproc && (preprocess = rule_get_sa(&ppsrc))) {
-    add_source(&preprocess->prereq, filename);
+    add_source(&preprocess->prereq, filename, pathsep_args);
     stralloc_weak(&preprocess->recipe, &commands.preprocess);
   }
 
   if((compile = rule_get_sa(&obj))) {
-    add_source(&compile->prereq, filename);
+    add_source(&compile->prereq, filename, pathsep_args);
     stralloc_weak(&compile->recipe, &commands.compile);
     stralloc_zero(&compile->recipe);
     buffer_putm_internal(
@@ -524,7 +590,7 @@ gen_program_rule(const char* filename, const char* libpfx, char pathsep_args) {
     buffer_putm_internal(buffer_2, "" BLUE256 "link rule" NC " '", rule->name, "' recipe '", rule->recipe.s, "'", NULL);
     buffer_putnlflush(buffer_2);
     includes_to_libs(&incs, &libs, libpfx, &dirs.this.sa, exts.inc, exts.lib);
-    target_ptrs(&libs, &rule->deps);
+    rule_list(&libs, &rule->deps);
     set_clear(&deps);
     rule_dep_list(rule, &deps);
 

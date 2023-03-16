@@ -52,27 +52,28 @@ typedef struct target_s {
 
 extern MAP_T rules;
 
-void rule_add_deps(target*, const strlist*);
-int rule_add_dep(target*, target*);
+target* rule_get(const char*);
+target* rule_get_sa(stralloc*);
+target* rule_find(const char*);
+void rule_rename(target*, const char*, char);
+target* rule_find_sa(stralloc*);
+target* rule_find_b(const char*, size_t);
+target* rule_find_lib(const char*, size_t, const char*, const char*);
+int rule_match(target*, const char*);
 void
-rule_command_subst(target*, stralloc*, const char*, size_t, _Bool, _Bool, const char quote_args[], char, const char*);
-void rule_command(target*, stralloc*, _Bool, _Bool, const char quote_args[], char, const char*, const char*);
+rule_command_subst(target*, stralloc*, const char*, size_t, bool, bool, const char quote_args[], char, const char*);
+void rule_command(target*, stralloc*, bool, bool, const char quote_args[], char, const char*, const char*);
+int rule_add_dep(target*, target*);
+void rule_add_deps(target*, const strlist*);
 void rule_dep_list_recursive(target*, set_t*, int, strlist*);
 void rule_dep_list(target*, set_t*);
 void rule_deps_indirect(target*, set_t*);
-void rule_dump(target*);
-target* rule_find_b(const char*, size_t);
-target* rule_find(const char*);
-target* rule_find_lib(const char*, size_t, const char*, const char*);
-target* rule_find_sa(stralloc*);
-target* rule_get(const char*);
-target* rule_get_sa(stralloc*);
-_Bool rule_is_compile(target*);
-_Bool rule_is_lib(target*);
-_Bool rule_is_link(target*);
-int rule_match(target*, const char*);
-void rule_prereq_recursive(target*, set_t*);
 void rule_prereq(target*, set_t*);
-void rule_rename(target*, const char*, char);
+void rule_prereq_recursive(target*, set_t*);
+void rule_dump(target*);
+bool rule_is_compile(target*);
+bool rule_is_lib(target*);
+bool rule_is_link(target*);
+void rule_list(const strlist*, array*);
 
 #endif

@@ -23,6 +23,23 @@
   }
 
 static void
+libdirs_add(const char* dir) {
+  stralloc abs;
+  stralloc_init(&abs);
+
+  path_normalize(dir, &abs, &dirs.build.sa, &dirs.out.sa);
+  if(strlist_push_unique_sa(&link_dirs, &abs)) {
+
+#ifdef DEBUG_OUTPUT_
+    buffer_puts(buffer_2, "Added to lib dirs: ");
+    buffer_putsa(buffer_2, &abs);
+    buffer_putnlflush(buffer_2);
+#endif
+  }
+
+  stralloc_free(&abs);
+}
+static void
 builddir_enter(const char* x, size_t len) {
   stralloc dir;
   stralloc_init(&dir);

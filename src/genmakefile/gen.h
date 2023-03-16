@@ -6,6 +6,7 @@
 #include "rule.h"
 #include "sourcedir.h"
 
+void add_path_sa(set_t*, stralloc*);
 void gen_clean_rule(char);
 target* gen_install_rules(void);
 void gen_lib_rules(bool, bool, bool batchmode, char pathsep_args, char pathsep_make);

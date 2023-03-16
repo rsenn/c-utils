@@ -1,7 +1,41 @@
 #include "var.h"
 #include "../../lib/str.h"
+#include "../../genmakefile.h"
 
 MAP_T vars;
+linklib_fmt* format_linklib_fn = 0;
+
+/**
+ * @brief format_linklib_lib  Output library name (+".lib")
+ * @param libname
+ * @param out
+ */
+void
+format_linklib_lib(const char* libname, stralloc* out) {
+  stralloc_cats(out, libpfx);
+  stralloc_cats(out, libname);
+  stralloc_cats(out, exts.lib);
+}
+
+/**
+ * @brief format_linklib_switch  Output library name (+ leading "-l")
+ * @param libname
+ * @param out
+ */
+void
+format_linklib_switch(const char* libname, stralloc* out) {
+  stralloc_cats(out, "-l");
+  stralloc_cats(out, libname);
+  stralloc_replaces(out, "lib", "");
+}
+
+/**
+ * @brief format_linklib_dummy
+ * @param libname
+ * @param out
+ */
+void
+format_linklib_dummy(const char* libname, stralloc* out) {}
 
 /**
  * @defgroup var functions
@@ -131,6 +165,52 @@ var_subst(const stralloc* in, stralloc* out, const char* pfx, const char* sfx, i
     }
     stralloc_append(out, p);
   }
+}
+
+/**
+ * @brief push_lib  Add library spec to variable
+ * @param name
+ * @param lib
+ */
+void
+push_lib(const char* name, const char* lib) {
+  stralloc sa;
+  stralloc_init(&sa);
+
+  if(format_linklib_fn) {
+    format_linklib_fn(lib, &sa);
+    var_push_sa(name, &sa);
+  }
+
+  stralloc_free(&sa);
+}
+
+/**
+ * @brief with_lib
+ * @param lib
+ */
+void
+with_lib(const char* lib) {
+  stralloc def, lib64;
+  stralloc_init(&def);
+  stralloc_init(&lib64);
+
+  stralloc_copys(&def, "-DHAVE_");
+
+  if(str_find(lib, "lib") == str_len(lib))
+    stralloc_cats(&def, "LIB");
+
+  stralloc_cats(&def, lib);
+  stralloc_cats(&def, "=1");
+  byte_upper(def.s, def.len);
+  var_push_sa("DEFS", &def);
+  stralloc_copys(&lib64, lib);
+  stralloc_cats(&lib64, "$(L64)");
+  stralloc_nul(&lib64);
+  push_lib("LIBS", lib64.s);
+
+  stralloc_free(&def);
+  stralloc_free(&lib64);
 }
 
 /**

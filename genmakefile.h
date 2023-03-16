@@ -79,51 +79,23 @@ typedef enum {
   BUILD_TYPE_DEBUG,
 } build_type_t;
 
-int mkdir_sa(const stralloc*, int);
-int mkdir_components(strlist*, int);
 void stralloc_weak(stralloc*, const stralloc*);
 void buffer_putnl(buffer*, int);
-void set_command(stralloc*, const char*, const char*);
-void strarray_dump(buffer*, const strarray*);
-int extract_build_type(const stralloc*);
-void extract_tokens(const char*, size_t, set_t*);
+
 void extract_pptok(const char*, size_t, set_t*);
-void extract_vars(const char*, size_t, set_t*);
-void format_linklib_lib(const char*, stralloc*);
-void format_linklib_switch(const char*, stralloc*);
-void format_linklib_dummy(const char*, stralloc*);
-int main_scan(const char*, size_t);
 int main_present(const char*);
 void var_subst(const stralloc*, stralloc*, const char*, const char*, int);
-void add_path_b(set_t*, const char*, size_t);
+void push_define(const char*);
+char* path_dirname_alloc(const char*);
+void print_rule_deps(buffer*, target*);
+void rule_list(const strlist*, array*);
+int input_command_line(const char*, size_t);
+
+/*void add_path_b(set_t*, const char*, size_t);
 void add_path(set_t*, const char*);
 void add_srcpath(set_t*, const char*);
 void add_source(set_t*, const char*);
-void add_path_sa(set_t*, stralloc*);
-void add_path_relativeb(set_t*, stralloc*, const char*, size_t);
-void push_lib(const char*, const char*);
-void with_lib(const char*);
-void push_define(const char*);
-void get_rules_by_cmd(stralloc*, strlist*);
-char* path_dirname_alloc(const char*);
-void deps_indirect(set_t*, const strlist*);
-void deps_direct(set_t*, const target*);
-void print_rule_deps_r(buffer*, target*, set_t*, strlist*, int);
-void print_rule_deps(buffer*, target*);
-void remove_indirect_deps_recursive(array*, array*, int);
-ssize_t remove_indirect_deps(array*);
-void deps_for_libs(void);
-void target_ptrs(const strlist*, array*);
-void libdirs_add(const char* dir);
-int input_command_line(const char*, size_t);
-
-int set_machine(const char*);
-int set_chip(const char*);
-int set_system(const char*);
-int set_make_type(void);
-int set_compiler_type(const char*);
-
-void usage(char*);
+void add_path_sa(set_t*, stralloc*);*/
 
 // extern exts_t exts;
 extern config_t cfg;
@@ -141,6 +113,7 @@ extern union commands commands;
 extern bool inst_bins, inst_libs;
 extern const char* newline;
 extern const char* infile;
+extern const char* libpfx;
 extern strarray dirstack;
 extern set_t build_directories;
 

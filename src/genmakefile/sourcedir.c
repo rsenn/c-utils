@@ -1,14 +1,110 @@
 #include <assert.h>
 #include "sources.h"
 #include "is.h"
+#include "includes.h"
 #include "../../lib/dlist.h"
 #include "../../lib/mmap.h"
+#include "../../lib/scan.h"
 
 MAP_T sourcedirs;
 const char* srcdir_varname = "DISTDIR";
 
-void extract_includes(const char*, size_t, strlist*, int);
-void extract_pptok(const char*, size_t, set_t*);
+static const char tok_charset[] = {
+    '_', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T',
+    'U', 'V', 'W', 'X', 'Y', 'Z', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o',
+    'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
+};
+
+static void
+extract_tokens(const char* x, size_t n, set_t* tokens) {
+  while(n) {
+    size_t i;
+    if(*x == '\r' || *x == '\n')
+      break;
+    if((i = scan_noncharsetnskip(x, tok_charset, n)) == n)
+      break;
+    x += i;
+    n -= i;
+    if(*x == '\r' || *x == '\n')
+      break;
+    i = scan_charsetnskip(x, tok_charset, n);
+    if(i > 0 && !(i == 7 && byte_equal(x, 7, "defined")))
+      if(!(*x >= '0' && *x <= '9'))
+        if(set_add(tokens, x, i) == 1) {
+
+#ifdef DEBUG_OUTPUT_
+          debug_byte("added tok", x, i);
+#endif
+        }
+    if(i == n)
+      break;
+    x += i;
+    n -= i;
+  }
+}
+
+/**
+ * @brief extract_pptok  Extract preprocessor tokens directives
+ * @param x
+ * @param n
+ * @param includes
+ * @param sys
+ */
+static void
+extract_pptok(const char* x, size_t n, set_t* tokens) {
+  while(n) {
+    size_t i;
+    if((i = scan_charsetnskip(x, " \t\r\n", n)) == n)
+      break;
+    x += i;
+    n -= i;
+    if(*x == '#') {
+      x += 1;
+      n -= 1;
+      if((i = scan_charsetnskip(x, " \t\r", n)) == n)
+        break;
+      x += i;
+      n -= i;
+      if((i = scan_noncharsetnskip(x, " \t\r\n<\"", n)) == n)
+        break;
+      if(!(i == 7 && byte_equal(x, 7, "include"))) {
+        if((i >= 2 && byte_equal(x, 2, "if"))) {
+          x += i;
+          n -= i;
+          {
+            size_t linelen = byte_chrs(x, n, "\r\n", 2);
+            size_t commentpos = byte_findb(x, n, "//", 2);
+            while(linelen > 0 && linelen < n) {
+              if(x[linelen - 1] == '\\') {
+                if(x[linelen] == '\r' && x[linelen + 1] == '\n')
+                  linelen++;
+                if(linelen + 1 < n) {
+                  linelen += 1;
+                  linelen += byte_chrs(&x[linelen], n - linelen, "\r\n", 2);
+                  continue;
+                }
+              }
+              break;
+            }
+            if(commentpos < linelen)
+              linelen = commentpos;
+
+#ifdef DEBUG_OUTPUT
+            buffer_puts(buffer_2, "pptoks: ");
+            buffer_put(buffer_2, x, linelen);
+            buffer_putnlflush(buffer_2);
+#endif
+            extract_tokens(x, linelen, tokens);
+          }
+        }
+      }
+    }
+    if((i = byte_chr(x, n, '\n')) >= n)
+      break;
+    x += i;
+    n -= i;
+  }
+}
 
 void
 sourcedir_addsource(const char* source,
@@ -57,7 +153,7 @@ sourcedir_addsource(const char* source,
 #endif
   }
   if((x = path_mmap_read(source, &n, thisdir, pathsep_make)) != 0) {
-    extract_includes(x, n, &l, 0);
+    includes_extract(x, n, &l, 0);
     extract_pptok(x, n, &file->pptoks);
     mmap_unmap(x, n);
   }

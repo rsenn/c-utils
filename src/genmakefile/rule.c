@@ -520,3 +520,26 @@ rule_is_link(target* rule) {
   }
   return set_size(&rule->prereq) > 0;
 }
+
+/**
+ * @brief rule_list  Given a list of target names, outputs an array of pointers to those targets.
+ * @param targets      Target names
+ * @param out          Output array
+ */
+void
+rule_list(const strlist* targets, array* out) {
+  const char* x;
+  size_t n;
+  strlist_foreach(targets, x, n) {
+    target* rule;
+    if((rule = rule_find_b(x, n))) {
+      if(!array_find(out, sizeof(target*), &rule))
+        array_catb(out, &rule, sizeof(target*));
+    } else {
+      buffer_puts(buffer_2, "ERROR: rule '");
+      buffer_put(buffer_2, x, n);
+      buffer_puts(buffer_2, "' not found");
+      buffer_putnlflush(buffer_2);
+    }
+  }
+}

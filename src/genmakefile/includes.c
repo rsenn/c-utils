@@ -9,7 +9,54 @@
 
 strlist include_dirs = {0};
 
-void extract_includes(const char*, size_t, strlist*, int);
+/**
+ * @brief includes_extract  Extract #include directives
+ * @param x
+ * @param n
+ * @param includes
+ * @param sys
+ */
+void
+includes_extract(const char* x, size_t n, strlist* includes, int sys) {
+  while(n) {
+    size_t i;
+    if((i = scan_charsetnskip(x, " \t\r\n", n)) == n)
+      break;
+    x += i;
+    n -= i;
+    if(*x == '#') {
+      x += 1;
+      n -= 1;
+      if((i = scan_charsetnskip(x, " \t\r", n) + 7) >= n)
+        break;
+      x += i;
+      n -= i;
+      if(!str_diffn(x - 7, "include", 7)) {
+        char quote;
+        if((i = scan_charsetnskip(x, " \t\r", n) + 1) >= n)
+          break;
+        x += i;
+        n -= i;
+        quote = *(x - 1);
+        if((sys && quote == '<') || quote == '"') {
+          char set[3];
+          set[0] = (quote == '<' ? '>' : '"');
+          set[1] = '\n';
+          set[2] = '\0';
+          if((i = scan_noncharsetnskip(x, set, n)) >= n)
+            break;
+          strlist_pushb(includes, x, i);
+          x += i + 1;
+          n -= i + 1;
+        }
+      }
+    }
+    if((i = byte_chr(x, n, '\n')) >= n)
+      break;
+    x += i;
+    n -= i;
+  }
+}
 
 void
 includes_cppflags(void) {
@@ -46,7 +93,7 @@ includes_get(const char* srcfile, strlist* includes, int sys, stralloc* thisdir,
   const char* x;
   size_t n;
   if((x = path_mmap_read(srcfile, &n, thisdir, pathsep_make))) {
-    extract_includes(x, n, includes, sys);
+    includes_extract(x, n, includes, sys);
     mmap_unmap(x, n);
     return 1;
   }
