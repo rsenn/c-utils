@@ -12,6 +12,18 @@
 extern "C" {
 #endif
 
+typedef enum {
+TLS_ERR_NONE=0,
+TLS_ERR_SSL,
+TLS_ERR_WANT_READ,
+TLS_ERR_WANT_WRITE,
+TLS_ERR_WANT_X509_LOOKUP,
+TLS_ERR_SYSCALL,
+TLS_ERR_ZERO_RETURN,
+TLS_ERR_WANT_CONNECT,
+TLS_ERR_WANT_ACCEPT,
+} tls_err_t;
+
 typedef struct ssl_st tls_t;
 typedef struct x509_store_ctx_st tls_cert_t;
 typedef struct ssl_method_st tls_method_t;
@@ -28,7 +40,8 @@ tls_t* tls_client(fd_t fd);
 int tls_close(fd_t fd);
 int tls_connect(fd_t fd);
 tls_ctx_t* tls_context(tls_method_t const* method);
-int tls_error(fd_t fd);
+tls_err_t tls_error(fd_t fd);
+int tls_errno(fd_t fd);
 int tls_established(fd_t fd);
 void tls_free(fd_t fd);
 fd_t tls_get_fd(tls_t* tls);
@@ -41,12 +54,6 @@ const char* tls_strerror(fd_t fd);
 int tls_verify(int ok, tls_cert_t* cert);
 int tls_want(fd_t fd, void (*wantread)(fd_t), void (*wantwrite)(fd_t));
 ssize_t tls_write(fd_t fd, const void* data, size_t len);
-
-#define tls_instance_t(fd) tls_instance_get((fd))
-#define is_tls(fd) !!tls_instance_get((fd))
-
-//#define tls_error(fd) (tls_instance_get((fd))->error)
-#define tls_errno(fd) (tls_instance_errno(tls_instance_get((fd))))
 int tls_want(fd_t fd, void (*)(fd_t), void (*)(fd_t));
 
 #ifdef __cplusplus

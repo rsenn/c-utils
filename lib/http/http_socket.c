@@ -78,19 +78,16 @@ http_socket_read(fd_t fd, void* buf, size_t len, void* b) {
 
   tlserr = h->tls ? tls_error(h->sock) : 0;
 
-  if(h->tls && ret < 0 && tlserr == 2) {
-    errno = EAGAIN;
+  if(h->tls && ret < 0 && tlserr) {
+    h->err = tls_errno(h->sock);
     ret = -1;
-  } else if(h->tls && ret < 0 && tlserr == 3) {
-    errno = EWOULDBLOCK;
-    ret = -1;
-  } else if(ret == 0 || (h->tls && tlserr == 5)) {
+  } else if(ret == 0 || (h->tls && tlserr == TLS_ERR_SYSCALL)) {
     h->connected = 0;
     r->status = HTTP_STATUS_CLOSED;
     ret = 0;
-  } else if(ret == -1 && (!h->tls || tlserr != 5)) {
+  } else if(ret == -1 && (!h->tls || tlserr == TLS_ERR_ZERO_RETURN)) {
     r->err = errno;
-    if(h->tls ? (tlserr != 2 && tlserr != 3) : (errno != EWOULDBLOCK && errno != EAGAIN))
+    if(h->tls ? (tlserr != TLS_ERR_WANT_READ && tlserr != TLS_ERR_WANT_WRITE) : ( r->err != EWOULDBLOCK &&  r->err != EAGAIN))
       r->status = HTTP_STATUS_ERROR;
   }
 #if DEBUG_HTTP

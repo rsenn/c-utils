@@ -82,8 +82,8 @@ typedef struct http_s {
   uint16 version;
 } http;
 
-ssize_t http_canread(http* h, void (*wantwrite)(fd_t));
-ssize_t http_canwrite(http* h, void (*wantread)(fd_t));
+ssize_t http_canread(http* h, void (*wantread)(fd_t), void (*wantwrite)(fd_t));
+ssize_t http_canwrite(http* h, void (*wantread)(fd_t), void (*wantwrite)(fd_t));
 void http_close(http* h);
 const char* http_get_header(http* h, const char* name);
 int http_get(http* h, const char* location);

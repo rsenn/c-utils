@@ -3,7 +3,7 @@
 #include "../tls_internal.h"
 #include <assert.h>
 
-int
+tls_err_t
 tls_error(fd_t fd) {
   ssize_t ret;
   tls_instance_t* i = iarray_get(&tls_list, fd);

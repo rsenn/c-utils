@@ -665,6 +665,16 @@ sockbuf_check(socketbuf_t* sb) {
 }
 
 void
+buffer_put_data(buffer* b, char* x, size_t len) {
+  for(size_t i = 0; i < len; i++) {
+    if(x[i] < 0x20 || x[i] >= 0x7f)
+      buffer_putfmt(b, &x[i], 1, &fmt_escapecharc);
+    else
+      buffer_putc(b, x[i]);
+  }
+}
+
+void
 sockbuf_log_data(socketbuf_t* sb, bool send, char* x, size_t len) {
   while(len > 0) {
     size_t maxlen, pos, end, n;
@@ -711,17 +721,7 @@ sockbuf_log_data(socketbuf_t* sb, bool send, char* x, size_t len) {
     pos = log.p;
 
 #ifdef DEBUG_OUTPUT
-    (escape ? buffer_putfmt(&log,
-                            x,
-                            /*maxlen > 0 && maxlen <
-                               end ? maxlen :*/
-                            end,
-                            &fmt_escapecharc)
-            : buffer_put(&log,
-                         x,
-                         /*maxlen > 0 && maxlen <
-                            end ? maxlen :*/
-                         end));
+    (escape ? buffer_put_data(&log, x, end) : buffer_put(&log, x, end));
 
     if(maxlen > 0 && maxlen < end)
       buffer_puts(&log, "<shortened> ...");
@@ -1008,7 +1008,7 @@ server_spawn() {
     buffer_putsa(buffer_2, &args.sa);
     buffer_putsflush(buffer_2, "'\n");
 
-    if((pid = process_create(program_argv[0], program_argv, 0, 0)) < 0) {
+    if((pid = process_create(program_argv[0], (char* const*)program_argv, 0, 0)) < 0) {
       errmsg_warnsys("Error in execvp: ", 0);
       exit(1);
     }
@@ -1321,7 +1321,7 @@ main(int argc, char* argv[]) {
     }
   }
 
-  program_argv = (char**)argv + unix_optind;
+  program_argv = (const char**)argv + unix_optind;
   program_argc = (int)argc - unix_optind;
   // strarray_from_argv(argc - unix_optind, argv + unix_optind, &program);
 

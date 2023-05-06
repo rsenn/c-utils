@@ -20,7 +20,7 @@
  * @return     -1 on error
  */
 ssize_t
-http_canread(http* h, void (*wantwrite)(fd_t)) {
+http_canread(http* h, void (*wantread)(fd_t), void (*wantwrite)(fd_t)) {
   http_response* r;
   int err;
   size_t len;
@@ -34,7 +34,7 @@ http_canread(http* h, void (*wantwrite)(fd_t)) {
     }
     if(h->connected && h->sent == 0) {
       http_sendreq(h);
-      tls_want(h->sock, 0, wantwrite);
+      tls_want(h->sock, wantread, wantwrite);
     }
   }
 
@@ -123,7 +123,7 @@ fail:
   /*  if(ret == -1 && !(errno == EAGAIN || errno == EWOULDBLOCK))
       r->status = HTTP_STATUS_ERROR;*/
   if(ret == -1 && (errno == EAGAIN || errno == EWOULDBLOCK))
-    tls_want(h->sock, 0, wantwrite);
+    tls_want(h->sock, wantread, wantwrite);
 
 #ifdef DEBUG_HTTP
   buffer_putspad(buffer_2, "\x1b[1;32mhttp_canread\x1b[0m ", 30);

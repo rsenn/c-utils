@@ -189,8 +189,8 @@ read_mediathek_list(const char* url, buffer* b) {
       if(h.sock != fd)
         continue;
 
-      if(http_canwrite(&h, &io_onlywantread) == -1) {
-        if(errno == EWOULDBLOCK)
+      if(http_canwrite(&h, &io_onlywantread, &io_onlywantwrite) == -1) {
+        if(h.err == EWOULDBLOCK)
           continue;
         errmsg_warnsys("send error: ", 0);
         return 2;
@@ -200,7 +200,7 @@ read_mediathek_list(const char* url, buffer* b) {
     while((fd = io_canread()) != -1) {
       if(h.sock == fd) {
 
-        if(http_canread(&h, &io_onlywantwrite) == -1) {
+        if(http_canread(&h, &io_onlywantread, &io_onlywantwrite) == -1) {
           if(errno == EAGAIN)
             continue;
           errmsg_warnsys("send error: ", 0);
@@ -746,7 +746,7 @@ parse_mediathek_list(buffer* inbuf, buffer* outbuf) {
     strlist_copy(&prev, &sl);
   }
 
-#ifdef DEBUG_OUTPUT_
+#ifdef DEBUG_OUTPUT
   buffer_puts(console, "Read ");
   buffer_putlong(console, read_bytes);
   buffer_putsflush(console, " bytes.\n");
@@ -764,7 +764,7 @@ parse_mediathek_list(buffer* inbuf, buffer* outbuf) {
       }
     }
 
-    if(ret == 0 && h.response->err != EAGAIN) {
+    if(ret == 0 && (h.response->err && h.response->err != EAGAIN)) {
       char status[FMT_ULONG + 1], error[1024];
       status[fmt_ulong(status, h.response->status)] = '\0';
       http_strerror(&h, ret);
@@ -919,13 +919,13 @@ main(int argc, char* argv[]) {
 
         while((fd = io_canwrite()) != -1) {
           if(fd == h.sock)
-            http_canwrite(&h, &io_onlywantread);
+            http_canwrite(&h, &io_onlywantread, &io_onlywantwrite);
         }
 
         while((fd = io_canread()) != -1) {
           if(fd == h.sock) {
             if(!h.sent)
-              http_canread(&h, &io_onlywantwrite);
+              http_canread(&h, &io_onlywantread, &io_onlywantwrite);
             else
               n += parse_mediathek_list(&in, &output);
           }

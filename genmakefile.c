@@ -1776,16 +1776,6 @@ main(int argc, char* argv[]) {
     // path_absolute_sa(&dirs.out.sa);
   }
 
-  /*
-    if(tmp.len) {
-      stralloc_catc(&tmp, pathsep_make);
-      stralloc_copy(&dirs.build.sa,
-    &tmp);
-    }
-    stralloc_free(&tmp);
-    //debug_sa("dirs.build",
-    &dirs.build.sa);
-  */
   all = rule_get("all");
   all->phony = true;
 
@@ -1795,6 +1785,7 @@ main(int argc, char* argv[]) {
     stralloc rn;
     bool outputs = false;
     stralloc_init(&rn);
+
     if(tool_config & MAKE_PATTERN_RULES) {
       stralloc_copys(&rn, "$(BUILDDIR)");
       stralloc_cats(&rn, "%");
