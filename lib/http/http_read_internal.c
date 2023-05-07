@@ -80,8 +80,8 @@ http_read_internal(fd_t fd, char* buf, size_t received, buffer* b) {
 
       buffer_skipn(in, num);
 
-      if(r->data.len - r->ptr >= r->content_length)
-        r->chunk_length = 0;
+      /* if(r->data.len - r->ptr >= r->content_length)*/
+      r->chunk_length += num;
       n = num;
     }
   }
@@ -139,7 +139,7 @@ http_read_internal(fd_t fd, char* buf, size_t received, buffer* b) {
         break;
       }
       case HTTP_TRANSFER_LENGTH: {
-        if(r->data.len - r->ptr >= r->content_length)
+        if(r->chunk_length >= r->content_length)
           r->status = HTTP_STATUS_FINISH;
         break;
       }

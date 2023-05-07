@@ -19,6 +19,9 @@
 #include <string.h>
 #include <stdio.h>
 
+#define HTTP_RECV_BUFSIZE 16384
+#define HTTP_SEND_BUFSIZE 32768
+
 ssize_t http_read_internal(fd_t fd, char* buf, size_t received, buffer* b);
 
 ssize_t http_socket_read(fd_t fd, void* buf, size_t len, void* b);
@@ -38,9 +41,10 @@ http_socket(http* h, int nonblock) {
   if(nonblock)
     ndelay_on(h->sock);
 
-  buffer_init_free(&h->q.in, (buffer_op_sys*)(void*)&http_socket_read, h->sock, h->q.in.x ? h->q.in.x : (char*)alloc(BUFFER_INSIZE), h->q.in.a ? h->q.in.a : BUFFER_INSIZE);
+  buffer_init_free(&h->q.in, (buffer_op_sys*)(void*)&http_socket_read, h->sock, h->q.in.x ? h->q.in.x : (char*)alloc(HTTP_RECV_BUFSIZE), h->q.in.a ? h->q.in.a : HTTP_RECV_BUFSIZE);
   h->q.in.cookie = (void*)h;
-  buffer_init_free(&h->q.out, (buffer_op_sys*)(void*)&http_socket_write, h->sock, h->q.out.x ? h->q.out.x : (char*)alloc(BUFFER_OUTSIZE), h->q.out.a ? h->q.out.a : BUFFER_OUTSIZE);
+  buffer_init_free(
+      &h->q.out, (buffer_op_sys*)(void*)&http_socket_write, h->sock, h->q.out.x ? h->q.out.x : (char*)alloc(HTTP_SEND_BUFSIZE), h->q.out.a ? h->q.out.a : HTTP_SEND_BUFSIZE);
   h->q.out.cookie = (void*)h;
 
 #if DEBUG_HTTP
@@ -105,12 +109,14 @@ http_socket_read(fd_t fd, void* buf, size_t len, void* b) {
   buffer_putlong(buffer_2, ret);
   buffer_puts(buffer_2, " len=");
   buffer_putlong(buffer_2, len);
-  if(ret < 0) {
+
+  if(errno) {
     buffer_puts(buffer_2, " errno=");
     buffer_putstr(buffer_2, strerror(errno));
   }
-
   if(h->response) {
+    buffer_puts(buffer_2, " err=");
+    buffer_putstr(buffer_2, strerror(h->response->err));
     buffer_puts(buffer_2, " received=");
     buffer_putlong(buffer_2, h->response->received);
     buffer_puts(buffer_2, " transfer=");

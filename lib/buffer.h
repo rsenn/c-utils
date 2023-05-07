@@ -132,6 +132,7 @@ int buffer_prefetch(buffer*, size_t n);
 
 #define buffer_BEGIN(b) buffer_PEEK(b)
 #define buffer_END(b) ((b)->x + (b)->n)
+#define buffer_AVAIL(b) ((b)->a - (b)->n)
 
 int buffer_putulong(buffer*, unsigned long int l);
 int buffer_put8long(buffer*, unsigned long int l);

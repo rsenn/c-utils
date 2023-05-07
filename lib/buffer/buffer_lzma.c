@@ -39,8 +39,8 @@ buffer_lzmaread_op(fd_t fd, void* data, size_t n, buffer* b) {
     return r;
   }
 
-  strm->next_in = (uint8*)&ctx->b->x[ctx->b->p];
-  strm->avail_in = a = ctx->b->n - ctx->b->p;
+  strm->next_in = (uint8*)buffer_PEEK(ctx->b);
+  strm->avail_in = a = buffer_LEN(ctx->b);
   strm->next_out = data;
   strm->avail_out = n;
 
@@ -53,9 +53,9 @@ buffer_lzmaread_op(fd_t fd, void* data, size_t n, buffer* b) {
   if(/* strm->avail_out == 0 */
      ret == LZMA_OK || ret == LZMA_STREAM_END) {
 
-    ctx->b->p += a - strm->avail_in;
-
+    buffer_SEEK(ctx->b, a - strm->avail_in);
     r = n - strm->avail_out;
+
   } else if(ret != LZMA_OK) {
     r = -1;
   }
