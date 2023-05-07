@@ -64,13 +64,12 @@ again:
 
     received = n - bytes;
     
-    /*    if(r->status == HTTP_RECV_HEADER) {
+      /*if(r->status == HTTP_RECV_HEADER) {
           if((ret = http_read_header(h, &r->data, r)) <= 0)
             goto end;
           ret = -1;
           errno = EAGAIN;
-        }
-    */
+        }*/
     if((received > 0 || r->status == HTTP_RECV_HEADER) && (ret = http_read_internal(h->sock, buf, MIN(len, received), &h->q.in)) > 0) {
     }
     if(r->status == HTTP_STATUS_FINISH) {
@@ -88,8 +87,8 @@ again:
         n = (ssize_t)len;
       byte_copy(buf, (size_t)n, buffer_BEGIN(b));
       len -= (size_t)n;
-      buf += n;
-      ret += n;
+      //buf += n;
+      ret = n;
       b->p += (size_t)n;
       if(b->p >= b->n)
         b->p = b->n = 0;
