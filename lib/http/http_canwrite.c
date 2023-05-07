@@ -33,8 +33,10 @@ http_canwrite(http* h, void (*wantread)(fd_t), void (*wantwrite)(fd_t)) {
   }
   if(h->connected && h->sent == 0) {
     ret = http_sendreq(h);
-    if(ret == -1)
-      tls_want(h->sock, wantread, wantwrite);
+    if(ret == -1) {
+      if(h->tls)
+        tls_want(h->sock, wantread, wantwrite);
+    }
     if(ret <= 0)
       goto fail;
     h->sent = 1;
@@ -83,9 +85,9 @@ fail:
     buffer_puts(buffer_2, " err=");
     buffer_putstr(buffer_2, http_strerror(h, ret));
   }
-  if(ret < 0) {
+  if(h->err) {
     buffer_puts(buffer_2, " errno=");
-    buffer_putstr(buffer_2, strerror(errno));
+    buffer_putlong(buffer_2, h->err);
   }
   /* buffer_puts(buffer_2, " tls=");
     buffer_putlong(buffer_2, !!h->tls);

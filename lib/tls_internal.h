@@ -62,7 +62,7 @@ typedef struct tls_instance_st {
   tls_op_t op;
   tls_bio_t* bio;
   int retval;
-  int error;
+  int error, syserr;
   want_func *wantread, *wantwrite;
   char errstr[128];
 } tls_instance_t;

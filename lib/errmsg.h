@@ -25,6 +25,7 @@ const char* errmsg_iam(const char* who); /* set errmsg_argv0 */
 /* newline is appended automatically. */
 void errmsg_warn(const char* message, ...);
 void errmsg_warnsys(const char* message, ...);
+void errmsg_warnerr(int err, const char* message, ...);
 
 void errmsg_info(const char* message, ...);
 void errmsg_infosys(const char* message, ...);

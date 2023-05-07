@@ -81,13 +81,13 @@ http_socket_read(fd_t fd, void* buf, size_t len, void* b) {
   if(h->tls && ret < 0 && tlserr) {
     h->err = tls_errno(h->sock);
     ret = -1;
-  } else if(ret == 0 || (h->tls && tlserr == TLS_ERR_SYSCALL)) {
+  } else if(ret == 0 || (h->tls && tlserr == TLS_ERR_ZERO_RETURN)) {
     h->connected = 0;
     r->status = HTTP_STATUS_CLOSED;
     ret = 0;
-  } else if(ret == -1 && (!h->tls || tlserr == TLS_ERR_ZERO_RETURN)) {
+  } else if(ret == -1 && (!h->tls || tlserr == TLS_ERR_SYSCALL)) {
     r->err = errno;
-    if(h->tls ? (tlserr != TLS_ERR_WANT_READ && tlserr != TLS_ERR_WANT_WRITE) : ( r->err != EWOULDBLOCK &&  r->err != EAGAIN))
+    if(h->tls ? (tlserr != TLS_ERR_WANT_READ && tlserr != TLS_ERR_WANT_WRITE) : (r->err != EWOULDBLOCK && r->err != EAGAIN))
       r->status = HTTP_STATUS_ERROR;
   }
 #if DEBUG_HTTP

@@ -76,8 +76,8 @@ http_sendreq(http* h) {
   buffer_putnlflush(buffer_2);
   buffer_flush(buffer_2);
 #endif
-  buffer_flush(out);
-  ret = len;
+  ret = buffer_flush(out);
+  // ret = len;
 
 #ifdef DEBUG_HTTP
   buffer_putspad(buffer_2, "http_sendreq ", 30);

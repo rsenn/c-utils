@@ -192,7 +192,7 @@ read_mediathek_list(const char* url, buffer* b) {
       if(http_canwrite(&h, &io_onlywantread, &io_onlywantwrite) == -1) {
         if(h.err == EWOULDBLOCK)
           continue;
-        errmsg_warnsys("send error: ", 0);
+        errmsg_warnerr(h.err, "send error: ", 0);
         return 2;
       }
     }
@@ -201,9 +201,9 @@ read_mediathek_list(const char* url, buffer* b) {
       if(h.sock == fd) {
 
         if(http_canread(&h, &io_onlywantread, &io_onlywantwrite) == -1) {
-          if(errno == EAGAIN)
+          if(h.err == EAGAIN)
             continue;
-          errmsg_warnsys("send error: ", 0);
+          errmsg_warnerr(h.err, "send error: ", 0);
           return 2;
         }
 
