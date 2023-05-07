@@ -34,7 +34,8 @@ buffer_lzmaread_op(fd_t fd, void* data, size_t n, buffer* b) {
   size_t a;
   int eof = 0;
 
-  if((r = buffer_prefetch(ctx->b, LZMA_BLOCK_SIZE)) > 0) {
+  if((r = buffer_feed(ctx->b))) {
+    // if((r = buffer_prefetch(ctx->b, LZMA_BLOCK_SIZE)) > 0) {
   } else {
     return r;
   }

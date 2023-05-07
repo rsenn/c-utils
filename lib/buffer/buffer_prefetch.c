@@ -6,18 +6,18 @@ ssize_t buffer_stubborn_read(buffer_op_proto*, fd_t fd, const void* buf, size_t 
 
 int
 buffer_prefetch(buffer* b, size_t len) {
-  size_t n =  buffer_LEN(b);
+  size_t n = buffer_LEN(b);
   size_t m = len - n;
 
   if(buffer_LEN(b) && m > buffer_AVAIL(b)) {
     if((buffer_op_proto*)b->op == (buffer_op_proto*)(void*)&buffer_dummyreadmmap || b->deinit == (void (*)()) & buffer_munmap)
-      return  buffer_LEN(b);
+      return buffer_LEN(b);
     byte_copy(b->x, n, buffer_PEEK(b));
     b->n -= b->p;
     b->p = 0;
   }
   if(m > buffer_AVAIL(b))
-    m =   buffer_AVAIL(b);
+    m = buffer_AVAIL(b);
   if(m == 0)
     return -1;
   while(b->n < b->p + len) {

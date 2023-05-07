@@ -71,14 +71,14 @@ http_read_internal(fd_t fd, char* buf, size_t received, buffer* b) {
        byte_copy(buf, num, buffer_PEEK(in));
        buffer_skipn(in, num);*/
 
-    /* if(r->data.len - r->ptr < r->content_length)*/ {
+    if(r->chunk_length < r->content_length) {
       const char* s = buffer_PEEK(in);
-      size_t remain = r->content_length - r->ptr;
+      size_t remain = r->content_length - r->chunk_length;
       size_t num = MIN(received, remain);
 
       byte_copy(buf, num, s);
 
-      buffer_skipn(in, num);
+      in->p += num;
 
       /* if(r->data.len - r->ptr >= r->content_length)*/
       r->chunk_length += num;
@@ -99,7 +99,7 @@ http_read_internal(fd_t fd, char* buf, size_t received, buffer* b) {
       case HTTP_TRANSFER_UNDEF: break;
       case HTTP_TRANSFER_BOUNDARY: break;
       case HTTP_TRANSFER_CHUNKED: {
-        if(r->ptr >= r->content_length) {
+        if(r->chunk_length >= r->content_length) {
           size_t skip;
           if((skip = scan_eolskip(&in->x[in->p], in->n - in->p))) {
             buffer_skipn(in, skip);
