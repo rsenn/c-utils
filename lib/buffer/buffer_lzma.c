@@ -55,13 +55,44 @@ buffer_lzmaread_op(fd_t fd, void* data, size_t n, buffer* b) {
 
     ctx->b->p += a - strm->avail_in;
 
-    return n - strm->avail_out;
+    r = n - strm->avail_out;
+  } else if(ret != LZMA_OK) {
+    r = -1;
   }
 
-  if(ret != LZMA_OK)
-    return -1;
+#ifdef DEBUG_BUFFER
+  buffer_putspad(buffer_2, "buffer_lzmaread_op ", 30);
+  buffer_puts(buffer_2, "fd=");
+  buffer_putlong(buffer_2, fd);
 
-  return 0;
+  buffer_puts(buffer_2, " ret=");
+  buffer_puts(buffer_2,
+              ((const char* const[]){"LZMA_OK",
+                                     "LZMA_STREAM_END",
+                                     "LZMA_NO_CHECK",
+                                     "LZMA_UNSUPPORTED_CHECK",
+                                     "LZMA_GET_CHECK",
+                                     "LZMA_MEM_ERROR",
+                                     "LZMA_MEMLIMIT_ERROR",
+                                     "LZMA_FORMAT_ERROR",
+                                     "LZMA_OPTIONS_ERROR",
+                                     "LZMA_DATA_ERROR",
+                                     "LZMA_BUF_ERROR",
+                                     "LZMA_PROG_ERROR"})[ret]);
+
+  buffer_puts(buffer_2, " avail_in=");
+  buffer_putlong(buffer_2, a);
+
+  buffer_puts(buffer_2, " consumed=");
+  buffer_putlong(buffer_2, a - strm->avail_in);
+
+  buffer_puts(buffer_2, " read=");
+  buffer_putlong(buffer_2, r);
+
+  buffer_putnlflush(buffer_2);
+#endif
+
+  return r;
 }
 
 static ssize_t
@@ -88,13 +119,45 @@ buffer_lzmawrite_op(fd_t fd, void* data, size_t n, buffer* b) {
     if(r > 0) {
       a = (other->a - other->p) - strm->avail_out;
       other->p += a;
-      return r;
     }
 
-  } else if(ret != LZMA_OK)
-    return -1;
+  } else if(ret != LZMA_OK) {
+    r = -1;
+  }
 
-  return 0;
+#ifdef DEBUG_BUFFER
+  buffer_putspad(buffer_2, "buffer_lzmawrite_op ", 30);
+  buffer_puts(buffer_2, "fd=");
+  buffer_putlong(buffer_2, fd);
+
+  buffer_puts(buffer_2, " ret=");
+  buffer_puts(buffer_2,
+              ((const char* const[]){"LZMA_OK",
+                                     "LZMA_STREAM_END",
+                                     "LZMA_NO_CHECK",
+                                     "LZMA_UNSUPPORTED_CHECK",
+                                     "LZMA_GET_CHECK",
+                                     "LZMA_MEM_ERROR",
+                                     "LZMA_MEMLIMIT_ERROR",
+                                     "LZMA_FORMAT_ERROR",
+                                     "LZMA_OPTIONS_ERROR",
+                                     "LZMA_DATA_ERROR",
+                                     "LZMA_BUF_ERROR",
+                                     "LZMA_PROG_ERROR"})[ret]);
+
+  buffer_puts(buffer_2, " avail_in=");
+  buffer_putlong(buffer_2, n);
+
+  buffer_puts(buffer_2, " written=");
+  buffer_putlong(buffer_2, a);
+
+  buffer_puts(buffer_2, " consumed=");
+  buffer_putlong(buffer_2, n - strm->avail_in);
+
+  buffer_putnlflush(buffer_2);
+#endif
+
+  return r;
 }
 
 static void
@@ -123,6 +186,33 @@ buffer_lzma_close(buffer* b) {
 
   b->deinit = 0;
   buffer_close(b);
+
+#ifdef DEBUG_BUFFER
+  buffer_putspad(buffer_2, "buffer_lzma_close ", 30);
+
+  buffer_puts(buffer_2, " ret=");
+  buffer_puts(buffer_2,
+              ((const char* const[]){"LZMA_OK",
+                                     "LZMA_STREAM_END",
+                                     "LZMA_NO_CHECK",
+                                     "LZMA_UNSUPPORTED_CHECK",
+                                     "LZMA_GET_CHECK",
+                                     "LZMA_MEM_ERROR",
+                                     "LZMA_MEMLIMIT_ERROR",
+                                     "LZMA_FORMAT_ERROR",
+                                     "LZMA_OPTIONS_ERROR",
+                                     "LZMA_DATA_ERROR",
+                                     "LZMA_BUF_ERROR",
+                                     "LZMA_PROG_ERROR"})[ret]);
+
+  buffer_puts(buffer_2, " avail_in=");
+  buffer_putlong(buffer_2, (b->n - b->p));
+
+  buffer_puts(buffer_2, " consumed=");
+  buffer_putlong(buffer_2, (b->n - b->p) - strm->avail_in);
+
+  buffer_putnlflush(buffer_2);
+#endif
 }
 
 int

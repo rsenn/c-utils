@@ -33,12 +33,14 @@ http_read_header(http* h, stralloc* sa, http_response* r) {
   size_t start, n;
   char* x;
   buffer* in = &h->q.in;
+
   while(r->status == HTTP_RECV_HEADER) {
     size_t bytesavail = in->n - in->p;
     // h->q.in.op = NULL;
     start = sa->len;
     if((ret = buffer_getline_sa(&h->q.in, sa)) <= 0)
       break;
+
     bytesread += bytesavail - (in->n - in->p);
     stralloc_nul(sa);
     x = &sa->s[start];
@@ -81,13 +83,15 @@ http_read_header(http* h, stralloc* sa, http_response* r) {
       r->transfer = HTTP_TRANSFER_CHUNKED;
     }
   }
-  h->q.in.op = (buffer_op_proto*)&http_socket_read;
+  // h->q.in.op = (buffer_op_proto*)&http_socket_read;
 
 #ifdef DEBUG_HTTP
   buffer_putspad(buffer_2, "\x1b[1;33mhttp_read_header\x1b[0m", 30);
   buffer_puts(buffer_2, "s=");
   buffer_putlong(buffer_2, h->sock);
 
+  buffer_puts(buffer_2, " bytesread=");
+  buffer_putlong(buffer_2, bytesread);
   buffer_puts(buffer_2, " ret=");
   buffer_putlong(buffer_2, ret);
   if(ret < 0) {
@@ -110,5 +114,5 @@ http_read_header(http* h, stralloc* sa, http_response* r) {
       ((const char* const[]){"-1", "HTTP_RECV_HEADER", "HTTP_RECV_DATA", "HTTP_STATUS_CLOSED", "HTTP_STATUS_ERROR", "HTTP_STATUS_BUSY", "HTTP_STATUS_FINISH", 0})[r->status + 1]);
   buffer_putnlflush(buffer_2);
 #endif
-  return ret;
+  return ret > 0 && bytesread > 0 ? bytesread : ret;
 }

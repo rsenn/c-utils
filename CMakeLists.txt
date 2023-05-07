@@ -108,6 +108,7 @@ option(BUILD_SHARED_LIBS "Build shared libs" "${SHARED_LIBS}")
 option(LINK_STATIC "Link libraries static" "${STATIC_LINK}")
 option(ENABLE_WERROR "Enable -Werror (warnings are errors)" OFF)
 
+debug_option(BUFFER "Debug buffer code")
 debug_option(IO "Debug I/O code")
 debug_option(HTTP "Debug HTTP code")
 debug_option(TLS "Debug TLS code")

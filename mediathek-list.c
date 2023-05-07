@@ -747,23 +747,26 @@ parse_mediathek_list(buffer* inbuf, buffer* outbuf) {
   }
 
 #ifdef DEBUG_OUTPUT
-  buffer_puts(console, "Read ");
-  buffer_putlong(console, read_bytes);
-  buffer_putsflush(console, " bytes.\n");
+
+  if(read_bytes) {
+    buffer_puts(console, "Read ");
+    buffer_putlong(console, read_bytes);
+    buffer_putsflush(console, " bytes.\n");
+  }
 #endif
 
-  if(h.response) {
-    if(h.response->err) {
-      if(h.response->err != EAGAIN) {
-        buffer_puts(console, "Return value: ");
-        buffer_putlong(console, ret);
-        buffer_puts(console, " ");
-        buffer_flush(console);
-        errno = h.response->err;
-        errmsg_warnsys("Read error", 0);
-      }
-    }
+  if((h.response && h.response->err && h.response->err != EAGAIN) || ret == -1) {
+    buffer_puts(console, "Return value: ");
+    buffer_putlong(console, ret);
+    buffer_puts(console, " ");
+    buffer_flush(console);
 
+    errmsg_warnerr(h.response->err, "Read error", 0);
+    buffer_close(inbuf);
+    return -1;
+  }
+
+  if(h.response) {
     if(ret == 0 && (h.response->err && h.response->err != EAGAIN)) {
       char status[FMT_ULONG + 1], error[1024];
       status[fmt_ulong(status, h.response->status)] = '\0';

@@ -90,20 +90,29 @@ http_socket_read(fd_t fd, void* buf, size_t len, void* b) {
     if(h->tls ? (tlserr != TLS_ERR_WANT_READ && tlserr != TLS_ERR_WANT_WRITE) : (r->err != EWOULDBLOCK && r->err != EAGAIN))
       r->status = HTTP_STATUS_ERROR;
   }
+
+  if(ret > 0) {
+    if(h->response) {
+      h->response->received += ret;
+    }
+  }
+
 #if DEBUG_HTTP
   buffer_putspad(buffer_2, "http_socket_read", 30);
   buffer_puts(buffer_2, "s=");
   buffer_putlong(buffer_2, h->sock);
-  buffer_puts(buffer_2, " len=");
-  buffer_putlong(buffer_2, len);
   buffer_puts(buffer_2, " ret=");
   buffer_putlong(buffer_2, ret);
+  buffer_puts(buffer_2, " len=");
+  buffer_putlong(buffer_2, len);
   if(ret < 0) {
     buffer_puts(buffer_2, " errno=");
     buffer_putstr(buffer_2, strerror(errno));
   }
 
   if(h->response) {
+    buffer_puts(buffer_2, " received=");
+    buffer_putlong(buffer_2, h->response->received);
     buffer_puts(buffer_2, " transfer=");
     buffer_puts(buffer_2, "HTTP_TRANSFER_");
     buffer_puts(buffer_2, ((const char* const[]){"UNDEF", "CHUNKED", "LENGTH", "BOUNDARY", 0})[h->response->transfer]);
@@ -115,23 +124,18 @@ http_socket_read(fd_t fd, void* buf, size_t len, void* b) {
   }
   buffer_putnlflush(buffer_2);
 #endif
-  if(ret > 0) {
-    int st = h->response->status;
-    size_t n = h->q.in.n;
-    /*   buffer_realloc(&h->q.in, h->q.in.n + ret);
-
-       byte_copy(&h->q.in.x[h->q.in.n], ret, buf);*/
-    if(st == HTTP_RECV_HEADER) {
-      buffer_realloc(&h->q.in, h->q.in.n + ret);
-
-      byte_copy(&h->q.in.x[h->q.in.n], ret, buf);
-      h->q.in.n += ret;
-    }
-
-    iret = http_read_internal(fd, (char*)buf, ret, &h->q.in);
-    if(st == HTTP_RECV_HEADER)
-      h->q.in.n = n;
-  }
+  /* if(ret > 0) {
+     int st = h->response->status;
+     size_t n = h->q.in.n;
+     if(st == HTTP_RECV_HEADER) {
+       buffer_realloc(&h->q.in, h->q.in.n + ret);
+       byte_copy(&h->q.in.x[h->q.in.n], ret, buf);
+       h->q.in.n += ret;
+     }
+     iret = http_read_internal(fd, (char*)buf, ret, &h->q.in);
+     if(st == HTTP_RECV_HEADER)
+       h->q.in.n = n;
+   }*/
   if(ret == 0) {
     io_dontwantwrite(fd);
     io_dontwantread(fd);

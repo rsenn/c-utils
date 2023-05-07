@@ -17,14 +17,14 @@ http_response_dump(http_response* r) {
   buffer_puts(buffer_2, ((const char* const[]){"-1", "RECV_HEADER", "RECV_DATA", "STATUS_CLOSED", "STATUS_ERROR", "STATUS_BUSY", "STATUS_FINISH", 0})[r->status + 1]);
   buffer_putspad(buffer_2, "\n\tptr", 18);
   buffer_putulonglong(buffer_2, r->ptr);
-  if(r->chnk != 0) {
-    buffer_putspad(buffer_2, "\n\tchnk", 18);
-    buffer_putulonglong(buffer_2, r->chnk);
-  }
-  if(r->line != 0) {
+  /* if(r->chnk != 0) {
+     buffer_putspad(buffer_2, "\n\tchnk", 18);
+     buffer_putulonglong(buffer_2, r->chnk);
+   }*/
+  /*if(r->line != 0) {
     buffer_putspad(buffer_2, "\n\tline", 18);
     buffer_putulonglong(buffer_2, r->line);
-  }
+  }*/
   if(r->content_length != 0) {
     buffer_putspad(buffer_2, "\n\tcontent_length", 18);
     buffer_putulonglong(buffer_2, r->content_length);

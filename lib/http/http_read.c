@@ -11,6 +11,10 @@
 #include <string.h>
 #include <assert.h>
 
+#ifndef MIN
+#define MIN(a, b) ((a) < (b) ? (a) : (b))
+#endif
+
 static void
 putnum(const char* what, ssize_t n) {
   buffer_puts(buffer_2, what);
@@ -39,20 +43,27 @@ again:
     const char* x;
     int st = r->status;
     bytes = buffer_LEN(b);
-    if(/*bytes > 0 ||*/ (n = buffer_freshen(b)) <= 0) {
-      if(n == 0) {
+
+    if( (n = buffer_freshen(b)) <= 0) {
+      if(n == bytes || n==0) {
         r->status = HTTP_STATUS_CLOSED;
+        if(n==0)
         goto end;
-      } else if((int)r->status == st) {
-        if(ret == 0 && r->err != 0) {
+      } 
+
+       if((int)r->status == st) {
+        if(r->err != 0) {
           errno = r->err;
           ret = -1;
         }
       }
     }
+    
     x = buffer_BEGIN(b);
     n = buffer_LEN(b);
+
     received = n - bytes;
+    
     /*    if(r->status == HTTP_RECV_HEADER) {
           if((ret = http_read_header(h, &r->data, r)) <= 0)
             goto end;
@@ -60,28 +71,30 @@ again:
           errno = EAGAIN;
         }
     */
-    if((received > 0 || r->status == HTTP_RECV_HEADER) && (ret = http_read_internal(h->sock, buf, received, &h->q.in)) > 0) {
+    if((received > 0 || r->status == HTTP_RECV_HEADER) && (ret = http_read_internal(h->sock, buf, MIN(len, received), &h->q.in)) > 0) {
     }
     if(r->status == HTTP_STATUS_FINISH) {
       goto end;
-    } else {
+    } /*else {
       errno = EAGAIN;
       ret = -1;
+    }*/
+
+    if(r->status == HTTP_RECV_DATA) {
+
+      if(n + r->ptr > r->content_length)
+        n = r->content_length - r->ptr;
+      if(n >= (ssize_t)len)
+        n = (ssize_t)len;
+      byte_copy(buf, (size_t)n, buffer_BEGIN(b));
+      len -= (size_t)n;
+      buf += n;
+      ret += n;
+      b->p += (size_t)n;
+      if(b->p >= b->n)
+        b->p = b->n = 0;
+      r->ptr += n;
     }
-    /*   } else {
-         if(n + r->ptr > r->content_length)
-           n = r->content_length - r->ptr;
-         if(n >= (ssize_t)len)
-           n = (ssize_t)len;
-         byte_copy(buf, (size_t)n, buffer_BEGIN(b));
-         len -= (size_t)n;
-         buf += n;
-         ret += n;
-         b->p += (size_t)n;
-         if(b->p >= b->n)
-           b->p = b->n = 0;
-         r->ptr += n;
-       }*/
     if((r->status == HTTP_STATUS_CLOSED) || r->status == HTTP_STATUS_FINISH)
       goto end;
   }
@@ -138,6 +151,14 @@ end:
     buffer_puts(
         buffer_2,
         ((const char* const[]){"-1", "HTTP_RECV_HEADER", "HTTP_RECV_DATA", "HTTP_STATUS_CLOSED", "HTTP_STATUS_ERROR", "HTTP_STATUS_BUSY", "HTTP_STATUS_FINISH", 0})[r->status + 1]);
+
+    if(ret > 0) {
+      buffer_puts(buffer_2, " buf=");
+      int len = MIN(ret, 30);
+      buffer_putfmt(buffer_2, buf, len, &fmt_escapecharnonprintable);
+      if(len < ret)
+        buffer_puts(buffer_2, " {...}");
+    }
 
     buffer_putnlflush(buffer_2);
 

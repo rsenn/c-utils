@@ -46,10 +46,7 @@ typedef struct http_response_s {
   http_status status;
   int code;
   stralloc data;
-  uint64 ptr;
-  size_t chnk;
-  size_t line;
-  // union {
+  uint64 ptr, received;
   uint64 content_length;
   uint64 chunk_length;
   //};
