@@ -33,7 +33,7 @@ static const char* ext =
     "";
 #endif
 static strlist path, pathext;
-static stralloc prog, base;
+static stralloc prog, base, progdir;
 
 void
 pathlist_get(strlist* list, const char* varname) {
@@ -191,12 +191,17 @@ main(int argc, char* argv[], char* envp[]) {
 
   get_prog_name();
 
+  stralloc_copy(&progdir, &prog);
+  path_dirname_sa(&progdir);
+
 #ifdef DEBUG_OUTPUT
   buffer_puts(buffer_2, "errmsg_argv0: ");
   buffer_puts(buffer_2, argv[0]);
-  buffer_puts(buffer_2, ", prog: ");
+  buffer_puts(buffer_2, "\nprog: ");
   buffer_putsa(buffer_2, &prog);
-  buffer_puts(buffer_2, ", ext: ");
+  buffer_puts(buffer_2, "\nprogdir: ");
+  buffer_putsa(buffer_2, &progdir);
+  buffer_puts(buffer_2, "\next: ");
   buffer_puts(buffer_2, ext);
   buffer_putnlflush(buffer_2);
 #endif
