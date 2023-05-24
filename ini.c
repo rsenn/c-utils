@@ -219,3 +219,24 @@ ini_read(buffer* b, ini_section_t** ptr) {
     }
   }
 }
+
+ini_section_t*
+ini_section(ini_section_t* ini, const char* name) {
+  do
+    if(stralloc_case_equals(&ini->name, name))
+      return ini;
+
+  while((ini = ini->next));
+
+  return 0;
+}
+
+strarray
+ini_keys(ini_section_t* ini) {
+  MAP_PAIR_T el;
+  strarray ret;
+  strarray_init(&ret);
+
+  MAP_FOREACH_SAFE(ini->map, el) { strarray_push(&ret, MAP_KEY(el)); }
+  return ret;
+}

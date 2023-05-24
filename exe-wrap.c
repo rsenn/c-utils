@@ -231,6 +231,11 @@ main(int argc, char* argv[], char* envp[]) {
     }
   }
 
+  ini_section_t* env;
+
+  if((env = ini_section(ini, "env"))) {
+  }
+
   if((exec = ini_get(ini, "exec"))) {
     stralloc_copys(&realcmd, exec);
     stralloc_nul(&realcmd);
