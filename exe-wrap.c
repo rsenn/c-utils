@@ -287,12 +287,16 @@ main(int argc, char* argv[], char* envp[]) {
     stralloc_replacec(&realcmd, PATHSEP_S_MIXED[0], '/');
 
     av = strlist_to_argv(&args);
-    ret = execve(realcmd.s, av, envp);
+
+    ret = process_create(realcmd.s, av, NULL, NULL);
+    // ret = execve(realcmd.s, av, envp);
 
     if(ret == -1) {
-      errmsg_warnsys("execve:", 0);
+      errmsg_warnsys("process_create:", 0);
       return 1;
     }
+
+    process_wait(ret);
   }
 
   return 0;
