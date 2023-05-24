@@ -573,7 +573,8 @@ main(int argc, char* argv[]) {
   }
 
   // mounts_add(mtab, "/", msys.s);
-  mounts_add(mtab, msys.s, "/");
+  if(msys.s)
+    mounts_add(mtab, msys.s, "/");
 
 #ifdef DEBUG_OUTPUT_
   buffer_puts(buffer_2, "msys root: ");
