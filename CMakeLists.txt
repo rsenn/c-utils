@@ -865,16 +865,16 @@ if(NOT LIBLZMA_LIBRARY)
 endif(NOT LIBLZMA_LIBRARY)
 
 #if(NOT COMPRESSION_LIBRARIES OR "${COMPRESSION_LIBRARIES}" STREQUAL "")
-  set(COMPRESSION_LIBRARIES "")
-  foreach(VAR LIBLZMA_LIBRARY ZLIB_LIBRARY BZIP2_LIBRARY BROTLI_LIBRARIES)
-    set(LIB "${${VAR}}")
-    if(LIB)
-      list(APPEND COMPRESSION_LIBRARIES "${LIB}")
-    endif(LIB)
-  endforeach(VAR LIBLZMA_LIBRARY ZLIB_LIBRARY BZIP2_LIBRARY BROTLI_LIBRARIES)
+set(COMPRESSION_LIBRARIES "")
+foreach(VAR LIBLZMA_LIBRARY ZLIB_LIBRARY BZIP2_LIBRARY BROTLI_LIBRARIES)
+  set(LIB "${${VAR}}")
+  if(LIB)
+    list(APPEND COMPRESSION_LIBRARIES "${LIB}")
+  endif(LIB)
+endforeach(VAR LIBLZMA_LIBRARY ZLIB_LIBRARY BZIP2_LIBRARY BROTLI_LIBRARIES)
 
-  set(COMPRESSION_LIBRARIES "${COMPRESSION_LIBRARIES}"
-      CACHE STRING "Compression libraries")
+set(COMPRESSION_LIBRARIES "${COMPRESSION_LIBRARIES}"
+    CACHE STRING "Compression libraries")
 #endif(NOT COMPRESSION_LIBRARIES OR "${COMPRESSION_LIBRARIES}" STREQUAL "")
 
 set(LINK_DIRS "")
@@ -922,8 +922,15 @@ add_subdirectory(lib ${CMAKE_BINARY_DIR}/lib)
 set(COMMON_LIBS strlist array safemult scan str byte mmap open fmt)
 
 set(genmakefile_SOURCES
-    ini.c ini.h genmakefile.h debug.c debug.h src/genmakefile/cmake.c
-    src/genmakefile/mplab.c src/genmakefile/path.c src/genmakefile/rule.c
+    ini.c
+    ini.h
+    genmakefile.h
+    debug.c
+    debug.h
+    src/genmakefile/cmake.c
+    src/genmakefile/mplab.c
+    src/genmakefile/path.c
+    src/genmakefile/rule.c
     src/genmakefile/includes.c
     src/genmakefile/sourcedir.c
     src/genmakefile/sources.c
@@ -973,8 +980,8 @@ add_program(elflist strlist buffer alloc errmsg unix elf mmap str)
 add_program(elfwrsec buffer alloc elf mmap)
 add_program(
   genmakefile set env sig set case errmsg strarray dlist slist rdir dir path
-  strarray strlist hashmap hmap stralloc buffer mmap unix open scan fmt byte str array
-  safemult alloc)
+  strarray strlist hashmap hmap stralloc buffer mmap unix open scan fmt byte
+  str array safemult alloc)
 add_program(
   piccfg ihex errmsg strarray slist rdir dir path strlist hashmap hmap stralloc
   buffer mmap unix open scan fmt byte str array safemult alloc)
@@ -1015,8 +1022,10 @@ add_program(sln unix stralloc buffer byte errmsg path)
 add_program(pipeinfo slist seek unix stralloc buffer array byte errmsg path)
 add_program(torrent-progress stralloc buffer io mmap open uint64)
 add_program(xmlpp errmsg xml stralloc buffer hmap io unix)
-add_program(cc-wrap process errmsg env buffer path dir strarray strlist stralloc fmt)
-add_program(exe-wrap ini.c hashmap process errmsg env buffer path dir strarray strlist stralloc fmt)
+add_program(cc-wrap process errmsg env buffer path dir strarray strlist
+            stralloc fmt)
+add_program(exe-wrap ini.c hashmap process errmsg env buffer path dir strarray
+            strlist stralloc fmt)
 add_program(ar-wrap path process errmsg env buffer dir strarray strlist
             stralloc fmt alloc)
 add_program(cofflist coff unix errmsg stralloc buffer mmap)
