@@ -278,6 +278,8 @@ main(int argc, char* argv[], char* envp[]) {
     buffer_putnlflush(buffer_2);
 #endif
 
+    stralloc_replacec(&realcmd, PATHSEP_S_MIXED[0], '/');
+
     av = strlist_to_argv(&args);
     ret = execve(realcmd.s, av, envp);
 
