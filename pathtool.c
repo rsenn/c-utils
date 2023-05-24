@@ -196,7 +196,7 @@ mounts_match(MAP_T map, const char* path, size_t pathlen, size_t* matchlen, int 
     bool matched =
         search->n >= ret.n && search->n <= pathlen && !path_diffb(path, search->n, search->s) && (search->n == pathlen || (search->n < pathlen && path_issep(path[search->n])));
 
-#ifdef DEBUG_OUTPUT
+#ifdef DEBUG_OUTPUT_
     buffer_putulong(buffer_2, matched);
     buffer_puts(buffer_2, " mounts_match(map, ");
     buffer_put(buffer_2, path, pathlen);
@@ -230,14 +230,14 @@ mounts_replace(MAP_T map, stralloc* sa, int col, bool first) {
   const char* mount;
   size_t len;
 
-#ifdef DEBUG_OUTPUT
+#ifdef DEBUG_OUTPUT_
   debug_sa("before replace", sa);
 #endif
 
   if((mount = mounts_match(mtab, sa->s, sa->len, &len, col, first))) {
     size_t mountlen = str_len(mount);
 
-#ifdef DEBUG_OUTPUT
+#ifdef DEBUG_OUTPUT_
     debug_str("found mount", mount);
 #endif
 
@@ -247,7 +247,7 @@ mounts_replace(MAP_T map, stralloc* sa, int col, bool first) {
     stralloc_replace(sa, 0, len, mount, mountlen);
     stralloc_nul(sa);
 
-#ifdef DEBUG_OUTPUT
+#ifdef DEBUG_OUTPUT_
     debug_sa("after replace", sa);
 #endif
   }
@@ -257,7 +257,7 @@ mounts_replace(MAP_T map, stralloc* sa, int col, bool first) {
 static void
 mounts_add(MAP_T map, const char* dev, const char* mnt) {
 
-#ifdef DEBUG_OUTPUT
+#ifdef DEBUG_OUTPUT_
   buffer_puts(buffer_2, "mounts_add(map, \"");
   buffer_puts(buffer_2, dev);
   buffer_puts(buffer_2, "\",  \"");
@@ -325,7 +325,7 @@ pathtool(const char* arg, stralloc* sa) {
 
   stralloc_init(sa);
 
-#ifdef DEBUG_OUTPUT
+#ifdef DEBUG_OUTPUT_
   buffer_putm_internal(buffer_2, "pathtool(\"", arg, "\")", NULL);
   buffer_putnlflush(buffer_2);
 #endif
@@ -336,7 +336,7 @@ pathtool(const char* arg, stralloc* sa) {
     }
   #endif*/
 
-#ifdef DEBUG_OUTPUT
+#ifdef DEBUG_OUTPUT_
   buffer_puts(buffer_2, "arg: ");
   buffer_puts(buffer_2, arg);
   buffer_putnlflush(buffer_2);
@@ -347,21 +347,21 @@ pathtool(const char* arg, stralloc* sa) {
     stralloc_nul(sa);
     path_canonical_sa(sa);
 
-#ifdef DEBUG_OUTPUT
+#ifdef DEBUG_OUTPUT_
     buffer_puts(buffer_2, "absolute: ");
     buffer_putsa(buffer_2, sa);
     buffer_putnlflush(buffer_2);
 #endif
   } else if(canonical) {
     path_canonicalize(arg, sa, 1);
-#ifdef DEBUG_OUTPUT
+#ifdef DEBUG_OUTPUT_
     buffer_putsflush(buffer_2, "path_canonicalize");
 #endif
   } else {
     stralloc_copys(sa, arg);
   }
 
-#ifdef DEBUG_OUTPUT
+#ifdef DEBUG_OUTPUT_
   buffer_puts(buffer_2, ": ");
   buffer_putsa(buffer_2, sa);
   buffer_putnlflush(buffer_2);
@@ -382,7 +382,7 @@ pathtool(const char* arg, stralloc* sa) {
   }
 #endif
 
-#ifdef DEBUG_OUTPUT
+#ifdef DEBUG_OUTPUT_
   buffer_puts(buffer_2, "sa: ");
   buffer_putsa(buffer_2, sa);
   buffer_putnlflush(buffer_2);
@@ -401,7 +401,7 @@ pathtool(const char* arg, stralloc* sa) {
 #endif
 #endif
 
-#ifdef DEBUG_OUTPUT
+#ifdef DEBUG_OUTPUT_
   buffer_puts(buffer_2, "sa2: ");
   buffer_putsa(buffer_2, sa);
   buffer_putnlflush(buffer_2);
@@ -412,7 +412,7 @@ pathtool(const char* arg, stralloc* sa) {
 
   stralloc_zero(sa);
 
-#ifdef DEBUG_OUTPUT
+#ifdef DEBUG_OUTPUT_
   buffer_putm_internal(buffer_2, "strlist path = ", 0);
   buffer_putsl(buffer_2, &path, " / ");
   buffer_putnlflush(buffer_2);
@@ -421,9 +421,15 @@ pathtool(const char* arg, stralloc* sa) {
   if(relative_to.sa.s) {
 
     stralloc_nul(&path.sa);
+
+    if(!path_is_absolute(path.sa.s)) {
+      path_absolute_sa(&path.sa);
+      path_collapse_sa(&path.sa);
+    }
+
     stralloc_nul(&relative_to.sa);
 
-#ifdef DEBUG_OUTPUT
+#ifdef DEBUG_OUTPUT_
     buffer_putm_internal(buffer_2, "relative(\"", path.sa.s, "\", \"", relative_to.sa.s, "\")", NULL);
     buffer_putsa(buffer_2, sa);
     buffer_putnlflush(buffer_2);
@@ -545,7 +551,7 @@ main(int argc, char* argv[]) {
   stralloc_catb(&delims, separator, 1);
   stralloc_nul(&delims);
 
-#ifdef DEBUG_OUTPUT
+#ifdef DEBUG_OUTPUT_
   buffer_puts(buffer_2, "format: ");
   buffer_puts(buffer_2, ((const char*[]){"MIXED", "UNIX", "WIN"})[format]);
   buffer_putnlflush(buffer_2);
@@ -556,7 +562,7 @@ main(int argc, char* argv[]) {
 #if defined(__MINGW32__) || defined(__MSYS__)
   mingw_prefix(&mingw);
 
-#ifdef DEBUG_OUTPUT
+#ifdef DEBUG_OUTPUT_
   buffer_puts(buffer_2, "mingw prefix: ");
   buffer_putsa(buffer_2, &mingw);
   buffer_putnlflush(buffer_2);
@@ -569,7 +575,7 @@ main(int argc, char* argv[]) {
   // mounts_add(mtab, "/", msys.s);
   mounts_add(mtab, msys.s, "/");
 
-#ifdef DEBUG_OUTPUT
+#ifdef DEBUG_OUTPUT_
   buffer_puts(buffer_2, "msys root: ");
   buffer_putsa(buffer_2, &msys);
   buffer_putnlflush(buffer_2);
@@ -577,8 +583,13 @@ main(int argc, char* argv[]) {
 #endif
 
   if(rel_to) {
-
     stralloc_copys(&relative_to.sa, rel_to);
+    stralloc_nul(&relative_to.sa);
+
+    if(!path_is_absolute(relative_to.sa.s)) {
+      path_absolute_sa(&relative_to.sa);
+      path_collapse_sa(&relative_to.sa);
+    }
 
     //    char tmpsep = separator[0];
     //    stralloc rel;
@@ -595,7 +606,7 @@ main(int argc, char* argv[]) {
     //      errmsg_warnsys(str_basename(argv[0]), ": relative to", NULL);
     //    }
 
-#ifdef DEBUG_OUTPUT
+#ifdef DEBUG_OUTPUT_
     buffer_puts(buffer_2, "relative-to: ");
     buffer_putsa(buffer_2, &relative_to.sa);
     buffer_putnlflush(buffer_2);
