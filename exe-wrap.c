@@ -24,6 +24,7 @@
 
 #if WINDOWS
 #include <windows.h>
+#include <io.h>
 #endif
 
 static stralloc cmd, realcmd, fullcmd, specs;
