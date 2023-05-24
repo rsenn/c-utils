@@ -125,6 +125,24 @@ path_lookup(const char* cmd, stralloc* out) {
   return 0;
 }
 
+static stralloc
+expand_env(const char* src) {
+  stralloc ret;
+  stralloc_init(&ret);
+  stralloc_ready(&ret, PATH_MAX + 1);
+
+#ifdef WINDOWS
+  ret.len = ExpandEnvironmentStringsA(src, ret.s, ret.a);
+#else
+  stralloc_copys(&ret, src);
+#endif
+
+  while(ret.len > 0 && ret.s[ret.len - 1] == '\0')
+    --ret.len;
+
+  return ret;
+}
+
 const char*
 get_prog_name(void) {
   ssize_t len;
@@ -234,6 +252,24 @@ main(int argc, char* argv[], char* envp[]) {
   ini_section_t* env;
 
   if((env = ini_section(ini, "env"))) {
+    strarray keys = ini_keys(env);
+    char** ptr;
+
+    strarray_foreach(&keys, ptr) {
+      const char* name = *ptr;
+      const char* value = ini_get(env, *ptr);
+
+      stralloc expanded = expand_env(value);
+      stralloc_nul(&expanded);
+
+#ifdef DEBUG_OUTPUT
+      buffer_putm_internal(buffer_2, "env_set(\"", name, "\", \"", expanded.s, "\"); (", value, ")", NULL);
+      buffer_putnlflush(buffer_2);
+#endif
+
+      env_set(name, expanded.s);
+      stralloc_free(&expanded);
+    }
   }
 
   if((exec = ini_get(ini, "exec"))) {
