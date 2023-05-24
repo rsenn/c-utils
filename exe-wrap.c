@@ -222,7 +222,7 @@ main(int argc, char* argv[], char* envp[]) {
 
   ini_read(&inifile, &ini);
 
-  const char *exec, *cwd;
+  const char *exec, *cwd, *argv0;
 
   if((cwd = ini_get(ini, "cwd"))) {
     if(chdir(cwd)) {
@@ -256,7 +256,11 @@ main(int argc, char* argv[], char* envp[]) {
       strlist_push(&args, argv[i]);
     }
 
-    strlist_unshift(&args, path_basename(realcmd.s));
+    if((argv0 = ini_get(ini, "name"))) {
+      strlist_unshift(&args, argv0);
+    } else {
+      strlist_unshift(&args, path_basename(realcmd.s));
+    }
 
     stralloc_init(&sa);
     strlist_joins(&args, &sa, "' '");
@@ -267,6 +271,7 @@ main(int argc, char* argv[], char* envp[]) {
 
     if(!path_exists(realcmd.s)) {
       errmsg_warnsys("doesn't exist: ", realcmd.s, " ('", sa.s, "''): ", 0);
+      return 127;
     }
 
     if(logfile)
