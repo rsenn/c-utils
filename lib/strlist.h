@@ -29,7 +29,7 @@ typedef struct strlist_s {
 
 /* strlist_init will initialize a strlist. */
 #define strlist_zero(l) stralloc_zero(&(l)->sa)
-#define strlist_init(l, s) stralloc_init(&(l)->sa), (l)->sep = (s);
+/*#define strlist_init(l, s) stralloc_init(&(l)->sa), (l)->sep = (s);*/
 #define strlist_free(l) stralloc_free(&(l)->sa)
 #define strlist_nul(l) stralloc_nul(&(l)->sa)
 //#define strlist_copy(d, s) (d)->sep = (s)->sep, stralloc_copy(&(d)->sa, &(s)->sa)
@@ -78,6 +78,7 @@ strlist_next_b(const strlist* sl, const char* ptr, size_t* n) {
   return 0;
 }
 
+void strlist_init(strlist* sl, char sep);
 char* strlist_at(const strlist*, size_t i);
 char* strlist_at_n(const strlist*, size_t i, size_t* n);
 int strlist_cat(strlist*, const strlist* l);
