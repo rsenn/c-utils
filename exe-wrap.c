@@ -228,6 +228,9 @@ main(int argc, char* argv[], char* envp[]) {
     stralloc_copys(&realcmd, exec);
     stralloc_nul(&realcmd);
 
+    if(!path_is_absolute(realcmd.s)) {
+    }
+
     if(!stralloc_contains(&realcmd, PATHSEP_S)) {
       path_lookup(realcmd.s, &fullcmd);
     } else if(path_exists(realcmd.s)) {

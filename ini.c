@@ -214,8 +214,8 @@ ini_read(buffer* b, ini_section_t** ptr) {
       e++;
       MAP_INSERT(s->map, &line.s[i], e - i - 1, &line.s[i + e], line.len - (i + e));
 
-      buffer_putsa(buffer_2, &line);
-      buffer_putnlflush(buffer_2);
+      /*buffer_putsa(buffer_2, &line);
+      buffer_putnlflush(buffer_2);*/
     }
   }
 }
