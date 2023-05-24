@@ -234,6 +234,11 @@ main(int argc, char* argv[], char* envp[]) {
     stralloc_nul(&realcmd);
 
     if(!path_is_absolute(realcmd.s)) {
+      stralloc tmp;
+      stralloc_init(&tmp);
+      path_concat_sa(&progdir, &realcmd, &tmp);
+      stralloc_free(&realcmd);
+      stralloc_move(&realcmd, &tmp);
     }
 
     if(!stralloc_contains(&realcmd, PATHSEP_S)) {
