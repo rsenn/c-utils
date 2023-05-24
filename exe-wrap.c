@@ -4,6 +4,7 @@
 #include "lib/stralloc.h"
 #include "lib/buffer.h"
 #include "lib/path.h"
+#include "lib/path_internal.h"
 #include "lib/process.h"
 #include "lib/env.h"
 #include "lib/errmsg.h"
@@ -239,6 +240,9 @@ main(int argc, char* argv[], char* envp[]) {
       path_concat_sa(&progdir, &realcmd, &tmp);
       stralloc_free(&realcmd);
       stralloc_move(&realcmd, &tmp);
+
+      if(str_len(PATHSEP_S_MIXED) > 1)
+        stralloc_replacec(&realcmd, PATHSEP_S_MIXED[1], PATHSEP_S_MIXED[0]);
     }
 
     if(!stralloc_contains(&realcmd, PATHSEP_S)) {
