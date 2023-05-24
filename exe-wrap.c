@@ -132,13 +132,11 @@ expand_env(const char* src) {
   stralloc_ready(&ret, PATH_MAX + 1);
 
 #ifdef WINDOWS
-  ret.len = ExpandEnvironmentStringsA(src, ret.s, ret.a);
+  ExpandEnvironmentStrings(src, ret.s, ret.a);
+  ret.len = str_len(ret.s);
 #else
   stralloc_copys(&ret, src);
 #endif
-
-  while(ret.len > 0 && ret.s[ret.len - 1] == '\0')
-    --ret.len;
 
   return ret;
 }
