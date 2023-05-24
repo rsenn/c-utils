@@ -30,6 +30,11 @@ buffer_write_utf16le(fd_t fd, void* buf, size_t len, void* arg) {
   return i;
 }
 
+const char*
+ini_get(ini_section_t* ini, const char* key) {
+  return MAP_GET(ini->map, (char*)key, str_len(key) + 1);
+}
+
 void
 ini_set(ini_section_t* ini, const char* key, const char* value) {
   MAP_INSERT(ini->map, (char*)key, str_len(key) + 1, (char*)value, str_len(value) + 1);
@@ -182,6 +187,7 @@ ini_read(buffer* b, ini_section_t** ptr) {
     size_t i, e;
 
     stralloc_trimr(&line, "\r\n", 2);
+    stralloc_nul(&line);
 
     i = scan_whitenskip(line.s, line.len);
 
@@ -194,16 +200,7 @@ ini_read(buffer* b, ini_section_t** ptr) {
     if(line.s[i] == '[') {
       i++;
       e = byte_chr(&line.s[i], line.len - i, ']');
-
       s = ini_newb(ptr, &line.s[i], e);
-      /*      s = alloc(sizeof(ini_
-         section_t));
-            stralloc_init(&s->name);
-            stralloc_copyb(&s->name,
-         &line.s[i], e); s->next = NULL;
-            MAP_NEW(s->map);
-            *ptr = s;
-            ptr = &s->next;*/
       continue;
     }
 
@@ -213,6 +210,7 @@ ini_read(buffer* b, ini_section_t** ptr) {
     e = byte_chr(&line.s[i], line.len - i, '=');
 
     if(i + e < line.len) {
+      line.s[i + e] = '\0';
       e++;
       MAP_INSERT(s->map, &line.s[i], e - i - 1, &line.s[i + e], line.len - (i + e));
 

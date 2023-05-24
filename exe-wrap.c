@@ -11,6 +11,7 @@
 #include "lib/mmap.h"
 #include "lib/scan.h"
 #include "lib/open.h"
+#include "ini.h"
 
 #if WINDOWS_NATIVE
 #define EXEEXT ".exe"
@@ -127,10 +128,13 @@ get_prog_name(void) {
   ssize_t len;
   char* name;
 
-  stralloc_ready(&prog, PATH_MAX);
-
-  if((name = process_executable()))
+  if((name = process_executable())) {
+    prog.s = name;
+    prog.len = str_len(name);
     return name;
+  }
+
+  stralloc_ready(&prog, PATH_MAX);
 
   if(!path_is_absolute(errmsg_argv0)) {
     pathlist_get(&path, "PATH");
@@ -179,6 +183,7 @@ main(int argc, char* argv[], char* envp[]) {
   int ret;
   const char* pathstr;
   const char* logfile = getenv("LOGFILE");
+  buffer inifile;
 
   errmsg_iam(argv[0]);
 
@@ -196,79 +201,73 @@ main(int argc, char* argv[], char* envp[]) {
   buffer_putnlflush(buffer_2);
 #endif
 
-  base_file(".real");
-  stralloc_cats(&base, ext);
-  stralloc_copy(&realcmd, &base);
-  stralloc_nul(&realcmd);
+  base_file(".ini");
 
-  if(!stralloc_contains(&realcmd, PATHSEP_S)) {
-    path_lookup(realcmd.s, &fullcmd);
-  } else if(path_exists(realcmd.s)) {
-    stralloc_copy(&fullcmd, &realcmd);
-  }
-
-  if(path_exists(base_file(".specs"))) {
-    stralloc_copys(&specs, "-specs=");
-    stralloc_cat(&specs, &base);
-    stralloc_nul(&specs);
-
-    strlist_unshift(&args, specs.s);
-  }
-
-  if(path_exists(base_file(".env"))) {
-    size_t n;
-    char* x;
-    if((x = (char*)mmap_read(base.s, &n)))
-      read_env(x, n);
-    mmap_unmap(x, n);
-  }
-
-  for(i = 1; i < argc; ++i) {
-    strlist_push(&args, argv[i]);
-  }
-
-  strlist_unshift(&args, path_basename(realcmd.s));
-
-  stralloc_init(&sa);
-  strlist_joins(&args, &sa, "' '");
-  stralloc_nul(&sa);
-  // strarray_joins(&v, &sa, "'\n'");
-
-  if(!stralloc_endb(&realcmd, EXEEXT, str_len(EXEEXT)))
-    stralloc_cats(&realcmd, EXEEXT);
-
-  if(!path_exists(realcmd.s)) {
-    errmsg_warnsys("doesn't exist: ", realcmd.s, " ('", sa.s, "''): ", 0);
-    //    return 127;
-  }
-
-  if(logfile)
-    write_log(&args, logfile);
-
-#if 0
-  buffer_puts(buffer_1, "cmd: '");
-  buffer_putsa(buffer_1, &cmd);
-  buffer_puts(buffer_1, ext);
-  buffer_puts(buffer_1, "'");
-  buffer_putnlflush(buffer_1);
-  buffer_puts(buffer_1, "realcmd: '");
-  buffer_putsa(buffer_1, &realcmd);
-  buffer_puts(buffer_1, "'");
-  buffer_putnlflush(buffer_1);
-#endif
 #ifdef DEBUG_OUTPUT
-  buffer_puts(buffer_2, "execve: '");
-  buffer_putsa(buffer_2, &sa);
-  buffer_puts(buffer_2, "'");
+  buffer_puts(buffer_2, "base: ");
+  buffer_putsa(buffer_2, &base);
+
   buffer_putnlflush(buffer_2);
 #endif
 
-  av = strlist_to_argv(&args);
-  ret = execve(realcmd.s, av, envp);
+  buffer_mmapread(&inifile, base.s);
+  ini_section_t* ini = 0;
 
-  if(ret == -1) {
-    errmsg_warnsys("execve:", 0);
-    return 1;
+  ini_read(&inifile, &ini);
+
+  const char *exec, *cwd;
+
+  if((cwd = ini_get(ini, "cwd"))) {
+    if(chdir(cwd)) {
+      errmsg_warnsys("failed to chdir(): ", cwd, 0);
+      return 2;
+    }
+  }
+
+  if((exec = ini_get(ini, "exec"))) {
+    stralloc_copys(&realcmd, exec);
+    stralloc_nul(&realcmd);
+
+    if(!stralloc_contains(&realcmd, PATHSEP_S)) {
+      path_lookup(realcmd.s, &fullcmd);
+    } else if(path_exists(realcmd.s)) {
+      stralloc_copy(&fullcmd, &realcmd);
+    }
+
+    for(i = 1; i < argc; ++i) {
+      strlist_push(&args, argv[i]);
+    }
+
+    strlist_unshift(&args, path_basename(realcmd.s));
+
+    stralloc_init(&sa);
+    strlist_joins(&args, &sa, "' '");
+    stralloc_nul(&sa);
+
+    if(!stralloc_endb(&realcmd, EXEEXT, str_len(EXEEXT)))
+      stralloc_cats(&realcmd, EXEEXT);
+
+    if(!path_exists(realcmd.s)) {
+      errmsg_warnsys("doesn't exist: ", realcmd.s, " ('", sa.s, "''): ", 0);
+    }
+
+    if(logfile)
+      write_log(&args, logfile);
+
+#ifdef DEBUG_OUTPUT
+    buffer_puts(buffer_2, "execve: '");
+    buffer_putsa(buffer_2, &sa);
+    buffer_puts(buffer_2, "'");
+    buffer_putnlflush(buffer_2);
+#endif
+
+    av = strlist_to_argv(&args);
+    ret = execve(realcmd.s, av, envp);
+
+    if(ret == -1) {
+      errmsg_warnsys("execve:", 0);
+      return 1;
+    }
   }
 
   return 0;

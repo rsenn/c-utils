@@ -1,9 +1,11 @@
 #include "../process.h"
+#include "../stralloc.h"
+#include <limits.h>
 
 char*
 process_executable(void) {
   ssize_t len;
-stralloc prog;
+  stralloc prog;
 
   stralloc_init(&prog);
 
