@@ -70,7 +70,7 @@ pathlist_lookup(const strarray* path, const strarray* pathext, const char* bin, 
     len = name.len;
     strarray_foreach(pathext, ext_p) {
       name.len = len;
-      stralloc_cats(&name, *ext_p);
+      stralloc_cats(&name, *ext_p ? *ext_p : "");
       stralloc_nul(&name);
 
       int found = path_exists(name.s);
