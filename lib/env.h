@@ -18,6 +18,7 @@ extern char** environ;
 void env_clear(void);
 const char* env_get2(const char* const* envp, const char* s);
 const char* env_get(const char* s);
+const char* env_get_b(const char* s, size_t namelen);
 size_t env_init(void);
 size_t env_len(const char* const* e);
 int env_make(const char** v, size_t argc, const char* s, size_t len);

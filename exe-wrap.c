@@ -127,17 +127,35 @@ path_lookup(const char* cmd, stralloc* out) {
 
 static stralloc
 expand_env(const char* src) {
+  size_t len = str_len(src);
+  const char *s = src, *e = src + len;
   stralloc ret;
   stralloc_init(&ret);
-  stralloc_ready(&ret, PATH_MAX + 1);
 
-#ifdef WINDOWS
-  ExpandEnvironmentStrings(src, ret.s, ret.a);
-  ret.len = str_len(ret.s);
-#else
-  stralloc_copys(&ret, src);
-#endif
+  while(s < e) {
+    size_t i, j;
 
+    if((i = byte_chr(s, e - s, '%'))) {
+      stralloc_catb(&ret, s, i);
+      s += i;
+      continue;
+    }
+
+    ++s;
+
+    if((i = byte_chr(s, e - s, '%'))) {
+      const char* value;
+
+      if(!(value = env_get_b(s, i)))
+        value = "";
+
+      stralloc_cats(&ret, value);
+
+      s += i + 1;
+    }
+  }
+
+  stralloc_nul(&ret);
   return ret;
 }
 
@@ -258,7 +276,6 @@ main(int argc, char* argv[], char* envp[]) {
       const char* value = ini_get(env, *ptr);
 
       stralloc expanded = expand_env(value);
-      stralloc_nul(&expanded);
 
 #ifdef DEBUG_OUTPUT
       buffer_putm_internal(buffer_2, "env_set(\"", name, "\", \"", expanded.s, "\"); (", value, ")", NULL);
