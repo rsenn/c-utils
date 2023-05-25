@@ -146,10 +146,10 @@ expand_env(const char* src) {
     if((i = byte_chr(s, e - s, '%'))) {
       const char* value;
 
-      if(!(value = env_get_b(s, i)))
-        value = "";
-
-      stralloc_cats(&ret, value);
+      if((value = env_get_b(s, i)))
+        stralloc_cats(&ret, value);
+      else
+        stralloc_catb(&ret, s - 1, i + 2);
 
       s += i + 1;
     }
