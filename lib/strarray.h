@@ -87,7 +87,7 @@ int strarray_prepends(strarray* arr, const char* s);
 int strarray_removeprefixs(strarray* arr, const char* s);
 int strarray_removesuffixs(strarray* arr, const char* s);
 
-int strarray_joins(strarray* arr, stralloc* sa, const char* sep);
+int strarray_joins(const strarray* arr, stralloc* sa, const char* sep);
 
 int strarray_transform(strarray* in, strarray* out, char* (*pred)(const char*));
 int strarray_each(strarray* arr, void (*pred)(char**));

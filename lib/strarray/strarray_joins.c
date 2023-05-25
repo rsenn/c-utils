@@ -3,7 +3,7 @@
 #include "../strarray.h"
 
 int
-strarray_joins(strarray* arr, stralloc* sa, const char* sep) {
+strarray_joins(const strarray* arr, stralloc* sa, const char* sep) {
   size_t i, n = strarray_size(arr);
   stralloc_zero(sa);
 

@@ -1,5 +1,4 @@
 #include "lib/windoze.h"
-#include "lib/strlist.h"
 #include "lib/strarray.h"
 #include "lib/stralloc.h"
 #include "lib/buffer.h"
@@ -34,43 +33,60 @@ static const char* ext =
 #else
     "";
 #endif
-static strlist path, pathext;
+
 static stralloc prog, base, progdir;
 
 void
-pathlist_get(strlist* list, const char* varname) {
+pathlist_get(strarray* list, const char* varname) {
   const char* p;
 
+  strarray_init(list);
+
   if((p = env_get(varname))) {
-    strlist_init(list, '\0');
-    strlist_froms(list, p, p[0] == '/' ? ':' : ';');
+    const char* e = p + str_len(p);
+
+    while(p < e) {
+      size_t i;
+
+      i = byte_chrs(p, e - p, ":;", 2);
+
+      strarray_pushb(list, p, i);
+      p += i + 1;
+    }
   }
 }
 
 const char*
-pathlist_lookup(const char* bin, stralloc* out) {
-  const char *dir, *ext;
+pathlist_lookup(const strarray* path, const strarray* pathext, const char* bin, stralloc* out) {
+  char **dir_p, **ext_p;
   stralloc name;
   stralloc_init(&name);
 
-  strlist_foreach_s(&path, dir) {
-    strlist_foreach_s(&pathext, ext) {
-      stralloc_copys(&name, bin);
-      stralloc_cats(&name, ext);
+  strarray_foreach(path, dir_p) {
+    size_t len;
+    path_concat(*dir_p, bin, &name);
+    len = name.len;
+    strarray_foreach(pathext, ext_p) {
+      name.len = len;
+      stralloc_cats(&name, *ext_p);
       stralloc_nul(&name);
 
+      int found = path_exists(name.s);
+
 #ifdef DEBUG_OUTPUT
-      buffer_putm_internal(buffer_2, "path_find(\"", dir, "\", \"", name.s, "\", out);", NULL);
+      buffer_putm_internal(buffer_2, "path_find(\"", *dir_p, "\", \"", name.s, "\", out) = ", found ? "true" : "false", ";", NULL);
       buffer_putnlflush(buffer_2);
 #endif
 
-      if(path_find(dir, name.s, out)) {
+      if(found) {
+        stralloc_copy(out, &name);
         stralloc_nul(out);
         stralloc_free(&name);
         return out->s;
       }
     }
   }
+
   stralloc_free(&name);
   return NULL;
 }
@@ -87,34 +103,13 @@ base_file(const char* suffix) {
   stralloc_nul(&base);
   return base.s;
 }
+/*
+static int
+path_lookup(const strarray* path, const strarray* pathext, const char* cmd, stralloc* out) {
+  char** ptr;
 
-ssize_t
-read_env(const char* x, size_t n) {
-  char* line;
-  size_t len, skip, num_read = 0;
-  byte_foreach_skip(x, n, line, skip) {
-
-    skip = scan_lineskip(line, n - (line - x));
-    len = scan_line(line, skip);
-
-    env_putb(line, len);
-
-    buffer_puts(buffer_2, "Line: ");
-    buffer_put(buffer_2, line, len);
-    buffer_putnlflush(buffer_2);
-
-    num_read += len;
-  }
-
-  return len;
-}
-
-int
-path_lookup(const char* cmd, stralloc* out) {
-  char* s;
-
-  strlist_foreach_s(&path, s) {
-    stralloc_copys(out, s);
+  strarray_foreach(path, ptr) {
+    stralloc_copys(out, *ptr);
     stralloc_catc(out, PATHSEP_C);
     stralloc_cats(out, cmd);
     stralloc_nul(out);
@@ -124,7 +119,7 @@ path_lookup(const char* cmd, stralloc* out) {
   }
   return 0;
 }
-
+*/
 static stralloc
 expand_env(const char* src) {
   size_t len = str_len(src);
@@ -134,23 +129,18 @@ expand_env(const char* src) {
 
   while(s < e) {
     size_t i, j;
-
     if((i = byte_chr(s, e - s, '%'))) {
       stralloc_catb(&ret, s, i);
       s += i;
       continue;
     }
-
     ++s;
-
     if((i = byte_chr(s, e - s, '%'))) {
       const char* value;
-
       if((value = env_get_b(s, i)))
         stralloc_cats(&ret, value);
       else
         stralloc_catb(&ret, s - 1, i + 2);
-
       s += i + 1;
     }
   }
@@ -159,7 +149,31 @@ expand_env(const char* src) {
   return ret;
 }
 
-const char*
+static char*
+search_path(stralloc* sa, const char* p) {
+  stralloc_init(sa);
+  stralloc_ready(sa, PATH_MAX);
+
+  if(!path_is_absolute(p)) {
+    strarray path, pathext;
+    pathlist_get(&path, "PATH");
+    pathlist_get(&pathext, "PATHEXT");
+
+    if(strarray_size(&pathext) == 0)
+      strarray_push(&pathext, "");
+
+    pathlist_lookup(&path, &pathext, p, sa);
+    strarray_free(&path);
+    strarray_free(&pathext);
+  } else {
+    stralloc_copys(sa, p);
+  }
+
+  stralloc_nul(sa);
+  return sa->s;
+}
+
+static const char*
 get_prog_name(void) {
   ssize_t len;
   char* name;
@@ -170,25 +184,11 @@ get_prog_name(void) {
     return name;
   }
 
-  stralloc_ready(&prog, PATH_MAX);
-
-  if(!path_is_absolute(errmsg_argv0)) {
-    pathlist_get(&path, "PATH");
-    pathlist_get(&pathext, "PATHEXT");
-
-    if(strlist_count(&pathext) == 0)
-      strlist_push(&pathext, "");
-
-    pathlist_lookup(errmsg_argv0, &prog);
-  } else {
-    stralloc_copys(&prog, errmsg_argv0);
-  }
-  stralloc_nul(&prog);
-  return prog.s;
+  return search_path(&prog, errmsg_argv0);
 }
 
-int
-write_log(const strlist* argv, const char* file) {
+static int
+write_log(const strarray* argv, const char* file) {
   stralloc sa;
   fd_t fd;
 
@@ -197,7 +197,7 @@ write_log(const strlist* argv, const char* file) {
     buffer_write_fd(&b, fd);
 
     stralloc_init(&sa);
-    strlist_join(argv, &sa, ' ');
+    strarray_joins(argv, &sa, " ");
 
     buffer_putsa(&b, &sa);
     buffer_putnlflush(&b);
@@ -214,7 +214,7 @@ main(int argc, char* argv[], char* envp[]) {
   int i;
   stralloc sa;
   strarray v;
-  strlist args;
+  strarray args;
   char** av;
   int ret;
   const char* pathstr;
@@ -223,7 +223,7 @@ main(int argc, char* argv[], char* envp[]) {
 
   errmsg_iam(argv[0]);
 
-  strlist_init(&args, '\0');
+  strarray_init(&args);
 
   get_prog_name();
 
@@ -295,38 +295,42 @@ main(int argc, char* argv[], char* envp[]) {
       stralloc tmp;
       stralloc_init(&tmp);
       path_concat_sa(&progdir, &realcmd, &tmp);
-      stralloc_free(&realcmd);
-      stralloc_move(&realcmd, &tmp);
 
       if(str_len(PATHSEP_S_MIXED) > 1)
-        stralloc_replacec(&realcmd, PATHSEP_S_MIXED[1], PATHSEP_S_MIXED[0]);
+        stralloc_replacec(&tmp, PATHSEP_S_MIXED[1], PATHSEP_S_MIXED[0]);
+
+      stralloc_nul(&tmp);
+      if(path_exists(tmp.s)) {
+        stralloc_free(&realcmd);
+        stralloc_move(&realcmd, &tmp);
+      }
     }
 
-    if(!stralloc_contains(&realcmd, PATHSEP_S)) {
-      path_lookup(realcmd.s, &fullcmd);
+    if(realcmd.len == byte_chrs(realcmd.s, realcmd.len, PATHSEP_S_MIXED, sizeof(PATHSEP_S_MIXED) - 1)) {
+      search_path(&fullcmd, realcmd.s);
     } else if(path_exists(realcmd.s)) {
       stralloc_copy(&fullcmd, &realcmd);
     }
 
     for(i = 1; i < argc; ++i) {
-      strlist_push(&args, argv[i]);
+      strarray_push(&args, argv[i]);
     }
 
     if((argv0 = ini_get(ini, "name"))) {
-      strlist_unshift(&args, argv0);
+      strarray_unshift(&args, argv0);
     } else {
-      strlist_unshift(&args, path_basename(realcmd.s));
+      strarray_unshift(&args, path_basename(fullcmd.s));
     }
 
     stralloc_init(&sa);
-    strlist_joins(&args, &sa, "' '");
+    strarray_joins(&args, &sa, "' '");
     stralloc_nul(&sa);
 
-    if(!stralloc_endb(&realcmd, EXEEXT, str_len(EXEEXT)))
-      stralloc_cats(&realcmd, EXEEXT);
+    if(!stralloc_endb(&fullcmd, EXEEXT, str_len(EXEEXT)))
+      stralloc_cats(&fullcmd, EXEEXT);
 
-    if(!path_exists(realcmd.s)) {
-      errmsg_warnsys("doesn't exist: ", realcmd.s, " ('", sa.s, "''): ", 0);
+    if(!path_exists(fullcmd.s)) {
+      errmsg_warnsys("doesn't exist: ", fullcmd.s, " ('", sa.s, "''): ", 0);
       return 127;
     }
 
@@ -334,25 +338,37 @@ main(int argc, char* argv[], char* envp[]) {
       write_log(&args, logfile);
 
 #ifdef DEBUG_OUTPUT
-    buffer_puts(buffer_2, "execve: '");
-    buffer_putsa(buffer_2, &sa);
+    buffer_puts(buffer_2, "args: '");
+    buffer_putstra(buffer_2, &args, "' '");
     buffer_puts(buffer_2, "'");
     buffer_putnlflush(buffer_2);
 #endif
 
-    stralloc_replacec(&realcmd, PATHSEP_S_MIXED[0], '/');
+    stralloc_replacec(&fullcmd, PATHSEP_S_MIXED[0], '/');
 
-    av = strlist_to_argv(&args);
-
-    ret = process_create(realcmd.s, av, NULL, NULL);
-    // ret = execve(realcmd.s, av, envp);
-
-    if(ret == -1) {
+#ifdef DEBUG_OUTPUT
+    buffer_puts(buffer_2, "fullcmd: ");
+    buffer_putsa(buffer_2, &fullcmd);
+    buffer_putnlflush(buffer_2);
+#endif
+    av = strarray_begin(&args);
+    if(-1 == (ret = process_create(fullcmd.s, av, NULL, NULL))) {
       errmsg_warnsys("process_create:", 0);
       return 1;
     }
 
-    process_wait(ret);
+    // ret = execve(realcmd.s, av, envp);
+
+    int status = process_wait(ret);
+#ifdef DEBUG_OUTPUT
+    buffer_puts(buffer_2, "status: ");
+    buffer_putlong(buffer_2, status);
+    buffer_putnlflush(buffer_2);
+#endif
+
+    if((status & 0xff) == 0)
+      return status >> 8;
+    /*strarray_free(&args);*/
   }
 
   return 0;

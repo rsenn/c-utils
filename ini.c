@@ -166,7 +166,7 @@ getline_sa(buffer* b, stralloc* line, getchar_fn* getbyte) {
 void
 ini_read(buffer* b, ini_section_t** ptr) {
   stralloc line;
-  ini_section_t* s = 0;
+  ini_section_t *ini = 0, *s = 0;
   char* x;
   getchar_fn* getc_fn = &getchar_utf8;
 
@@ -201,6 +201,8 @@ ini_read(buffer* b, ini_section_t** ptr) {
       i++;
       e = byte_chr(&line.s[i], line.len - i, ']');
       s = ini_newb(ptr, &line.s[i], e);
+      if(ini == 0)
+        ini = *ptr;
       continue;
     }
 
@@ -218,6 +220,8 @@ ini_read(buffer* b, ini_section_t** ptr) {
       buffer_putnlflush(buffer_2);*/
     }
   }
+
+  *ptr = ini;
 }
 
 ini_section_t*
