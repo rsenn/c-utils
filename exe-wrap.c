@@ -46,7 +46,7 @@ pathlist_get(strarray* list, const char* varname) {
     const char* e = p + str_len(p);
     char sep = ':';
 
-    if(p[0] != '/' && p[1] == ':' && p[byte_chr(p, e - p, ';')])
+    if(((p[0] != '/' && p[1] == ':') && p[byte_chr(p, e - p, ';')]) || varname[4] == 'E')
       sep = ';';
 
     while(p < e) {
