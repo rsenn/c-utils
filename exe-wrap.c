@@ -1,7 +1,7 @@
 #include "lib/windoze.h"
-#include "lib/strarray.h"
 #include "lib/stralloc.h"
 #include "lib/buffer.h"
+#include "lib/strarray.h"
 #include "lib/path.h"
 #include "lib/path_internal.h"
 #include "lib/process.h"
@@ -11,6 +11,7 @@
 #include "lib/mmap.h"
 #include "lib/scan.h"
 #include "lib/open.h"
+#include "lib/bool.h"
 #include "ini.h"
 
 #if WINDOWS_NATIVE
@@ -66,31 +67,38 @@ pathlist_lookup(const strarray* path, const strarray* pathext, const char* bin, 
 
   strarray_foreach(path, dir_p) {
     size_t len;
+    bool exist;
     path_concat(*dir_p, bin, &name);
     len = name.len;
+
+    if((exist = path_exists(name.s)))
+      goto found;
+
     strarray_foreach(pathext, ext_p) {
       name.len = len;
       stralloc_cats(&name, *ext_p ? *ext_p : "");
       stralloc_nul(&name);
 
-      int found = path_exists(name.s);
+      exist = path_exists(name.s);
 
 #ifdef DEBUG_OUTPUT
-      buffer_putm_internal(buffer_2, "path_find(\"", *dir_p, "\", \"", name.s, "\", out) = ", found ? "true" : "false", ";", NULL);
+      buffer_putm_internal(buffer_2, "path_find(\"", *dir_p, "\", \"", name.s, "\", out) = ", exist ? "true" : "false", ";", NULL);
       buffer_putnlflush(buffer_2);
 #endif
 
-      if(found) {
-        stralloc_copy(out, &name);
-        stralloc_nul(out);
-        stralloc_free(&name);
-        return out->s;
-      }
+      if(exist)
+        goto found;
     }
   }
 
   stralloc_free(&name);
   return NULL;
+
+found:
+  stralloc_copy(out, &name);
+  stralloc_nul(out);
+  stralloc_free(&name);
+  return out->s;
 }
 
 char*
