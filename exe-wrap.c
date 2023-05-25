@@ -44,12 +44,14 @@ pathlist_get(strarray* list, const char* varname) {
 
   if((p = env_get(varname))) {
     const char* e = p + str_len(p);
+    char sep = ':';
+
+    if(p[1] == ':' && p[byte_chr(p, e - p, ';')])
+      sep = ';';
 
     while(p < e) {
       size_t i;
-
-      i = byte_chrs(p, e - p, ":;", 2);
-
+      i = byte_chr(p, e - p, sep);
       strarray_pushb(list, p, i);
       p += i + 1;
     }
