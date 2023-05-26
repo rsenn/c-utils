@@ -943,8 +943,7 @@ message("COMPRESSION_LIBRARIES: ${COMPRESSION_LIBRARIES}")
 dump(LIBMATH)
 
 if(USE_BZIP)
-  add_program(bsdiffcat buffer path errmsg array safemult str byte errmsg
-              uint32 uint64 ${COMPRESSION_LIBRARIES})
+  add_program(bsdiffcat path array safemult str byte errmsg buffer stralloc uint32 uint64 ${COMPRESSION_LIBRARIES})
   add_program(
     ccat path case buffer open str unix ${ZLIB_LIBRARY} ${BROTLI_LIBRARIES}
     ${COMPRESSION_LIBRARIES} ${LIBMATH} ${LIBSHLWAPI})

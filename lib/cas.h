@@ -26,19 +26,24 @@ __atomic_compare_and_swap(volatile long* ptr, long oldval, long newval) {
 #define __CAS __atomic_compare_and_swap
 #define __CAS_PTR __atomic_compare_and_swap
 
-#elif(defined(__i386__) || defined(__x86_64__)) && (defined(__TINYC__) || defined(TCC) || defined(__GNUC__) || USE_INLINE_COMPARE_AND_SWAP)
+#elif (defined(__i386__) || defined(__x86_64__)) && (defined(__TINYC__) || defined(TCC) || defined(__GNUC__) || USE_INLINE_COMPARE_AND_SWAP) && !defined(__BORLANDC__)
 //#warning x86
+
 #ifdef __TINYC__
 //#warning TCC
 #endif
+
 #ifdef __GNUC__
 //#warning GNUC
 #undef __sync_val_compare_and_swap
 //#define __sync_val_compare_and_swap  __CAS
 #else
 #endif
+
 #undef __CAS
+
 #ifdef __TINYC__
+#warning __TINYC__
 static inline uint64_t
 __compare_and_swap(uint64_t* ptr, uint64_t new_val, uint64_t old_val) {
   uint64_t out;
@@ -49,6 +54,7 @@ __compare_and_swap(uint64_t* ptr, uint64_t new_val, uint64_t old_val) {
   return out;
 }
 #endif
+
 #define __CAS __compare_and_swap
 static inline long
 __sync_val_compare_and_swap(long* ptr, long cmp, long new) {

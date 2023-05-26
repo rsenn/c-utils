@@ -2,7 +2,7 @@
 
 size_t
 byte_rchrs(const void* in, size_t len, const char needles[], size_t nn) {
-  const char* s = in + len;
+  const char* s = (const char*)in + len;
   size_t i;
 
   while(--s >= (const char*)in)
