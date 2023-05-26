@@ -977,7 +977,7 @@ add_program(eagle-to-svg xml stralloc buffer strlist array byte cb cbmap fmt
 add_program(elf64list buffer elf mmap uint16 uint32 uint64)
 add_program(elflist strlist buffer alloc errmsg unix elf mmap str)
 add_program(elfwrsec buffer alloc elf mmap)
-add_program(pwmkwingui buffer alloc pe mmap)
+add_program(pemkwingui buffer alloc pe mmap)
 add_program(
   genmakefile set env sig set case errmsg strarray dlist slist rdir dir path
   strarray strlist hashmap hmap stralloc buffer mmap unix open scan fmt byte
