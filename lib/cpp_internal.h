@@ -320,7 +320,7 @@ static inline int
 skip_next_and_ws(tokenizer* t, struct token_s* tok) {
   int ws_count, ret;
 
-  if(!( = tokenizer_next(t, tok)))
+  if(!(ret = tokenizer_next(t, tok)))
     return ret;
 
   ret = eat_whitespace(t, tok, &ws_count);
@@ -376,9 +376,9 @@ expr(tokenizer* t, int rbp, int* err) {
 
   if(tok.type == TT_EOF)
     return 0;
-  
+
   left = nud(t, &tok, err);
-  
+
   while(1) {
     ret = tokenizer_peek_next_non_ws(t, &tok);
     if(bp(tok.type) <= rbp)
@@ -388,22 +388,22 @@ expr(tokenizer* t, int rbp, int* err) {
       break;
     left = led(t, left, &tok, err);
   }
-  
+
   (void)ret;
   return left;
 }
 
 static inline int
 emit_error_or_warning(tokenizer* t, int is_error) {
-  int ws_count,ret;
+  int ws_count, ret;
   struct token_s tmp;
-  
+
   if(!(ret = tokenizer_skip_chars(t, " \t", &ws_count)))
     return ret;
-  
+
   tmp.column = t->column;
   tmp.line = t->line;
- 
+
   ret = tokenizer_read_until(t, "\n", 1);
 
   if(is_error) {
