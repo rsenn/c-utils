@@ -264,61 +264,65 @@ cpp_expand_macro(cpp_t* cpp, tokenizer* t, buffer* out, const char* name, unsign
           while(mac_cnt && mcs[mac_cnt - 1].name == 0)
             --mac_cnt;
         }
-        size_t i;
-        int depth = 0;
-        for(i = 0; i < mac_cnt; ++i) {
-          if(mcs[i].nest > depth)
-            depth = mcs[i].nest;
-        }
-        while(depth > -1) {
-          for(i = 0; i < mac_cnt; ++i)
-            if(mcs[i].nest == depth) {
-              struct macro_info_s* mi = &mcs[i];
-              tokenizer_rewind(&cwae.t);
-              size_t j;
-              struct token_s utok;
-              for(j = 0; j < mi->first + 1; ++j)
-                tokenizer_next(&cwae.t, &utok);
-              struct FILE_container_s t2 = {0}, tmp = {0};
-              t2.f = memstream_open(&t2.buf, &t2.len);
-              if(!cpp_expand_macro(cpp, &cwae.t, t2.f, mi->name, rec_level + 1, visited))
-                return 0;
-              t2.f = buffer_reopen(t2.f, &t2.buf, &t2.len);
-              tokenizer_from_file(&t2.t, t2.f);
-              /* manipulating the stream in case more stuff has been consumed */
-              off_t cwae_pos = tokenizer_ftello(&cwae.t);
-              tokenizer_rewind(&cwae.t);
+        {
+          size_t i;
+          int depth = 0;
+          for(i = 0; i < mac_cnt; ++i) {
+            if(mcs[i].nest > depth)
+              depth = mcs[i].nest;
+          }
+          while(depth > -1) {
+            for(i = 0; i < mac_cnt; ++i)
+              if(mcs[i].nest == depth) {
+                struct macro_info_s* mi = &mcs[i];
+                size_t j;
+                int diff;
+                off_t cwae_pos;
+                struct token_s utok;
+                struct FILE_container_s t2 = {0}, tmp = {0};
+                tokenizer_rewind(&cwae.t);
+                for(j = 0; j < mi->first + 1; ++j)
+                  tokenizer_next(&cwae.t, &utok);
+                t2.f = memstream_open(&t2.buf, &t2.len);
+                if(!cpp_expand_macro(cpp, &cwae.t, t2.f, mi->name, rec_level + 1, visited))
+                  return 0;
+                t2.f = buffer_reopen(t2.f, &t2.buf, &t2.len);
+                tokenizer_from_file(&t2.t, t2.f);
+                /* manipulating the stream in case more stuff has been consumed */
+                cwae_pos = tokenizer_ftello(&cwae.t);
+                tokenizer_rewind(&cwae.t);
 #ifdef DEBUG_CPP
-              buffer_putm_internal(buffer_2, "merging ", cwae.buf, " with ", t2.buf, 0);
-              buffer_putnlflush(buffer_2);
+                buffer_putm_internal(buffer_2, "merging ", cwae.buf, " with ", t2.buf, 0);
+                buffer_putnlflush(buffer_2);
 #endif
-              int diff = mem_tokenizers_join(&cwae, &t2, &tmp, mi->first, cwae_pos);
-              free_file_container(&cwae);
-              free_file_container(&t2);
-              cwae = tmp;
+                diff = mem_tokenizers_join(&cwae, &t2, &tmp, mi->first, cwae_pos);
+                free_file_container(&cwae);
+                free_file_container(&t2);
+                cwae = tmp;
 #ifdef DEBUG_CPP
-              buffer_putm_internal(buffer_2, "result: ", cwae.buf, 0);
-              buffer_putnlflush(buffer_2);
+                buffer_putm_internal(buffer_2, "result: ", cwae.buf, 0);
+                buffer_putnlflush(buffer_2);
 #endif
-              if(diff == 0)
-                continue;
-              for(j = 0; j < mac_cnt; ++j) {
-                if(j == i)
+                if(diff == 0)
                   continue;
-                struct macro_info_s* mi2 = &mcs[j];
-                /* modified element mi can be either inside, after or before
-                   another macro. the after case doesn't affect us. */
-                if(mi->first >= mi2->first && mi->last <= mi2->last) {
-                  /* inside m2 */
-                  mi2->last += diff;
-                } else if(mi->first < mi2->first) {
-                  /* before m2 */
-                  mi2->first += diff;
-                  mi2->last += diff;
+                for(j = 0; j < mac_cnt; ++j) {
+                  struct macro_info_s* mi2 = &mcs[j];
+                  if(j == i)
+                    continue;
+                  /* modified element mi can be either inside, after or before
+                     another macro. the after case doesn't affect us. */
+                  if(mi->first >= mi2->first && mi->last <= mi2->last) {
+                    /* inside m2 */
+                    mi2->last += diff;
+                  } else if(mi->first < mi2->first) {
+                    /* before m2 */
+                    mi2->first += diff;
+                    mi2->last += diff;
+                  }
                 }
               }
-            }
-          --depth;
+            --depth;
+          }
         }
         tokenizer_rewind(&cwae.t);
         while(1) {
