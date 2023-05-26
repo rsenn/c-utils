@@ -56,64 +56,65 @@ cpp_parse_macro(cpp_t* cpp, tokenizer* t) {
     }
     redefined = 1;
   }
+  {
+    struct macro_s new = {0};
+    unsigned macro_flags = MACRO_FLAG_OBJECTLIKE;
+    LIST_NEW(new.argnames);
 
-  struct macro_s new = {0};
-  unsigned macro_flags = MACRO_FLAG_OBJECTLIKE;
-  LIST_NEW(new.argnames);
-
-  ret = x_tokenizer_next(t, &curr) && curr.type != TT_EOF;
-  if(!ret)
-    return ret;
-
-  if(is_char(&curr, '(')) {
-    macro_flags = 0;
-    unsigned expected = 0;
-    while(1) {
-      /* process next function argument identifier */
-      ret = consume_nl_and_ws(t, &curr, expected);
-      if(!ret) {
-        error("unexpected", t, &curr);
-        return ret;
-      }
-      expected = 0;
-      if(curr.type == TT_SEP) {
-        switch(curr.value) {
-          case '\\': expected = '\n'; continue;
-          case ',': continue;
-          case ')':
-            ret = tokenizer_skip_chars(t, " \t", &ws_count);
-            if(!ret)
-              return ret;
-            goto break_loop1;
-          default: error("unexpected character", t, &curr); return 0;
-        }
-      } else if(!(curr.type == TT_IDENTIFIER || curr.type == TT_ELLIPSIS)) {
-        error("expected identifier for macro arg", t, &curr);
-        return 0;
-      }
-      {
-        if(curr.type == TT_ELLIPSIS) {
-          if(macro_flags & MACRO_FLAG_VARIADIC) {
-            error("\"...\" isn't the last parameter", t, &curr);
-            return 0;
-          }
-          macro_flags |= MACRO_FLAG_VARIADIC;
-        }
-        char* tmps = str_dup(t->buf);
-        LIST_PUSH_BACK(new.argnames, tmps);
-      }
-      ++new.num_args;
-    }
-  break_loop1:;
-  } else if(is_whitespace_token(&curr)) {
-    ret = tokenizer_skip_chars(t, " \t", &ws_count);
+    ret = x_tokenizer_next(t, &curr) && curr.type != TT_EOF;
     if(!ret)
       return ret;
-  } else if(is_char(&curr, '\n')) {
-    /* content-less macro */
-    goto done;
-  }
 
+    if(is_char(&curr, '(')) {
+      unsigned expected = 0;
+      macro_flags = 0;
+      while(1) {
+        /* process next function argument identifier */
+        ret = consume_nl_and_ws(t, &curr, expected);
+        if(!ret) {
+          error("unexpected", t, &curr);
+          return ret;
+        }
+        expected = 0;
+        if(curr.type == TT_SEP) {
+          switch(curr.value) {
+            case '\\': expected = '\n'; continue;
+            case ',': continue;
+            case ')':
+              ret = tokenizer_skip_chars(t, " \t", &ws_count);
+              if(!ret)
+                return ret;
+              goto break_loop1;
+            default: error("unexpected character", t, &curr); return 0;
+          }
+        } else if(!(curr.type == TT_IDENTIFIER || curr.type == TT_ELLIPSIS)) {
+          error("expected identifier for macro arg", t, &curr);
+          return 0;
+        }
+        {
+          char* tmps;
+          if(curr.type == TT_ELLIPSIS) {
+            if(macro_flags & MACRO_FLAG_VARIADIC) {
+              error("\"...\" isn't the last parameter", t, &curr);
+              return 0;
+            }
+            macro_flags |= MACRO_FLAG_VARIADIC;
+          }
+          tmps = str_dup(t->buf);
+          LIST_PUSH_BACK(new.argnames, tmps);
+        }
+        ++new.num_args;
+      }
+    break_loop1:;
+    } else if(is_whitespace_token(&curr)) {
+      ret = tokenizer_skip_chars(t, " \t", &ws_count);
+      if(!ret)
+        return ret;
+    } else if(is_char(&curr, '\n')) {
+      /* content-less macro */
+      goto done;
+    }
+  }
   {
     int backslash_seen = 0;
     struct FILE_container_s {
