@@ -5,6 +5,7 @@ cpp_get_macro_info(cpp_t* cpp, tokenizer* t, struct macro_info_s* mi_list, size_
   int brace_lvl = 0;
   while(1) {
     struct token_s tok;
+    struct macro_s* m = 0;
     int ret = tokenizer_next(t, &tok);
     if(!ret || tok.type == TT_EOF)
       break;
@@ -18,7 +19,6 @@ cpp_get_macro_info(cpp_t* cpp, tokenizer* t, struct macro_info_s* mi_list, size_
     buffer_puts(buffer_2, t->buf);
     buffer_putnlflush(buffer_2);
 #endif
-    struct macro_s* m = 0;
     if(tok.type == TT_IDENTIFIER && (m = cpp_get_macro(cpp, t->buf)) && !was_visited(t->buf, visited, rec_level)) {
       const char* newname = str_dup(t->buf);
       if(FUNCTIONLIKE(m)) {

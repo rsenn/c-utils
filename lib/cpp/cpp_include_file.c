@@ -7,14 +7,15 @@ cpp_include_file(cpp_t* cpp, tokenizer* t, buffer* out) {
   static const char* const inc_chars[] = {"\"", "<", 0};
   static const char* const inc_chars_end[] = {"\"", ">", 0};
   struct token_s tok;
+  int inc1sep, ret;
   tokenizer_set_flags(t, 0); // disable string tokenization
 
-  int inc1sep = expect(t, TT_SEP, inc_chars, &tok);
+  inc1sep = expect(t, TT_SEP, inc_chars, &tok);
   if(inc1sep == -1) {
     error("expected one of [\"<]", t, &tok);
     return 0;
   }
-  int ret = tokenizer_read_until(t, inc_chars_end[inc1sep], 1);
+  ret = tokenizer_read_until(t, inc_chars_end[inc1sep], 1);
   if(!ret) {
     error("error parsing filename", t, &tok);
     return 0;

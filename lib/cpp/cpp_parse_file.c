@@ -12,6 +12,22 @@ cpp_parse_file(cpp_t* cpp, buffer* f, const char* fn, buffer* out) {
   int ret, newline = 1, ws_count = 0;
 
   int if_level = 0, if_level_active = 0, if_level_satisfied = 0;
+  static const char* directives[] = {
+      "include",
+      "error",
+      "warning",
+      "define",
+      "undef",
+      "if",
+      "elif",
+      "else",
+      "ifdef",
+      "ifndef",
+      "endif",
+      "line",
+      "pragma",
+      0,
+  };
 
 #define all_levels_active() (if_level_active == if_level)
 #define prev_level_active() (if_level_active == if_level - 1)
@@ -33,7 +49,6 @@ cpp_parse_file(cpp_t* cpp, buffer* f, const char* fn, buffer* out) {
   } while(0)
 #define skip_conditional_block (if_level > if_level_active)
 
-  static const char* directives[] = {"include", "error", "warning", "define", "undef", "if", "elif", "else", "ifdef", "ifndef", "endif", "line", "pragma", 0};
   while((ret = tokenizer_next(&t, &curr)) && curr.type != TT_EOF) {
     newline = curr.column == 0;
     if(newline) {
@@ -46,12 +61,12 @@ cpp_parse_file(cpp_t* cpp, buffer* f, const char* fn, buffer* out) {
     if(skip_conditional_block && !(newline && is_char(&curr, '#')))
       continue;
     if(is_char(&curr, '#')) {
+      int index;
       if(!newline) {
         error("stray #", &t, &curr);
         return 0;
       }
-      int index = expect(&t, TT_IDENTIFIER, directives, &curr);
-      if(index == -1) {
+      if((index = expect(&t, TT_IDENTIFIER, directives, &curr)) == -1) {
         if(skip_conditional_block)
           continue;
         error("invalid preprocessing directive", &t, &curr);

@@ -3,6 +3,8 @@
 
 static int
 do_eval(tokenizer* t, int* result) {
+  int err = 0;
+
   tokenizer_register_custom_token(t, TT_LAND, "&&");
   tokenizer_register_custom_token(t, TT_LOR, "||");
   tokenizer_register_custom_token(t, TT_LTE, "<=");
@@ -30,7 +32,6 @@ do_eval(tokenizer* t, int* result) {
   tokenizer_register_custom_token(t, TT_RPAREN, ")");
   tokenizer_register_custom_token(t, TT_LNOT, "!");
 
-  int err = 0;
   *result = expr(t, 0, &err);
 #ifdef DEBUG_CPP
   buffer_puts(buffer_2, "eval result: ");
@@ -47,6 +48,7 @@ cpp_evaluate_condition(cpp_t* cpp, tokenizer* t, int* result, char* visited[]) {
   char* bufp;
   size_t size;
   int tflags = tokenizer_get_flags(t);
+  buffer* f;
   tokenizer_set_flags(t, tflags | TF_PARSE_WIDE_STRINGS);
   ret = tokenizer_next(t, &curr);
   if(!ret)
@@ -55,7 +57,7 @@ cpp_evaluate_condition(cpp_t* cpp, tokenizer* t, int* result, char* visited[]) {
     error("expected whitespace after if/elif", t, &curr);
     return 0;
   }
-  buffer* f = memstream_open(&bufp, &size);
+  f = memstream_open(&bufp, &size);
   while(1) {
     ret = tokenizer_next(t, &curr);
     if(!ret)
