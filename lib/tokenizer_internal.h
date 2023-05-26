@@ -97,9 +97,11 @@ is_dec_int_literal(const char* str) {
 static inline int
 is_float_literal(const char* str) {
   const char* s = str;
+  int got_dot = 0, got_e = 0, got_digits = 0;
+
   if(is_plus_or_minus(s[0]))
     s++;
-  int got_dot = 0, got_e = 0, got_digits = 0;
+
   while(*s) {
     int l = tolower(*s);
     if(*s == '.') {
@@ -284,27 +286,32 @@ get_string(tokenizer* t, char quote_char, struct token_s* out, int wide) {
 /* if sequence found, next tokenizer_s call will point after the sequence */
 static inline int
 sequence_follows(tokenizer* t, int c, const char* which) {
+  size_t i = 0;
+
   if(!which || !which[0])
     return 0;
-  size_t i = 0;
+
   while(c == which[i]) {
     if(!which[++i])
       break;
     c = tokenizer_getc(t);
   }
+
   if(!which[i])
     return 1;
+
   while(i > 0) {
     tokenizer_ungetc(t, c);
     c = which[--i];
   }
+
   return 0;
 }
 
 static inline int
 ignore_until(tokenizer* t, const char* marker, int col_advance) {
-  t->column += col_advance;
   int c;
+  t->column += col_advance;
   do {
     c = tokenizer_getc(t);
     if(c == TOKENIZER_EOF)

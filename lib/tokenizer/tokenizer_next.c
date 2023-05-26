@@ -3,13 +3,16 @@
 int
 tokenizer_next(tokenizer* t, struct token_s* out) {
   char* s = t->buf;
-  out->value = 0;
   int c = 0;
+
+  out->value = 0;
+
   if(t->peeking) {
     *out = t->peek_token;
     t->peeking = 0;
     return 1;
   }
+
   while(1) {
     c = tokenizer_getc(t);
     if(c == TOKENIZER_EOF)
