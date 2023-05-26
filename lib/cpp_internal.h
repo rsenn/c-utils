@@ -271,7 +271,9 @@ mem_tokenizers_join(struct FILE_container_s* org, struct FILE_container_s* inj, 
 static inline int
 bp(int tokentype) {
   static const int bplist[] = {
-      TTENT(TT_LOR, 1 << 4),
+      0x20, 0x10,   0x400,  0x400,  0x800,  0x800,  0x200,  0x200,  0x400, 0x400, 0x100, 0x40,
+      0x80, 0x4000, 0x1000, 0x1000, 0x2000, 0x2000, 0x2000, 0x8000, 0,     0x4000
+      /*TTENT(TT_LOR, 1 << 4),
       TTENT(TT_LAND, 1 << 5),
       TTENT(TT_BOR, 1 << 6),
       TTENT(TT_XOR, 1 << 7),
@@ -294,7 +296,7 @@ bp(int tokentype) {
       TTENT(TT_LPAREN, 1 << 15),
       //    TTENT(TT_RPAREN, 1 << 15),
       //    TTENT(TT_LPAREN, 0),
-      TTENT(TT_RPAREN, 0)
+      TTENT(TT_RPAREN, 0)*/
   };
   if(TTINT(tokentype) < sizeof(bplist) / sizeof(bplist[0]))
     return bplist[TTINT(tokentype)];
