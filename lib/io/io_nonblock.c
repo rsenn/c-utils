@@ -23,7 +23,7 @@
 void
 io_nonblock(fd_t d) {
   io_entry* e = (io_entry*)iarray_get((iarray*)io_getfds(), d);
-  
+
 #ifdef DEBUG_IO
   buffer_putspad(buffer_2, "io_nonblock", 30);
   buffer_puts(buffer_2, " d=");

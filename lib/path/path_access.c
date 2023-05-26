@@ -14,11 +14,11 @@ hasAccessRight(LPCSTR path, DWORD genericAccessRights) {
   HANDLE hImpersonatedToken = 0;
   DWORD len = 0;
   GENERIC_MAPPING mapping = {0xFFFFFFFF};
- PRIVILEGE_SET privileges = {0};
+  PRIVILEGE_SET privileges = {0};
   DWORD grantedAccess = 0;
   DWORD privilegesLen = sizeof(privileges);
   BOOL success, result = FALSE;
-  
+
   if(GetFileSecurityA(path, OWNER_SECURITY_INFORMATION | GROUP_SECURITY_INFORMATION | DACL_SECURITY_INFORMATION, 0, 0, &len) == FALSE)
     return -1;
 
