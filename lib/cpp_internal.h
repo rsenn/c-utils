@@ -304,8 +304,8 @@ bp(int tokentype) {
 /* skips until the next non-whitespace token (if the current one is one too)*/
 static inline int
 eat_whitespace(tokenizer* t, struct token_s* token, int* count) {
-  *count = 0;
   int ret = 1;
+  *count = 0;
   while(is_whitespace_token(token)) {
     ++(*count);
     ret = x_tokenizer_next(t, token);
@@ -318,10 +318,11 @@ eat_whitespace(tokenizer* t, struct token_s* token, int* count) {
 /* fetches the next token until it is non-whitespace */
 static inline int
 skip_next_and_ws(tokenizer* t, struct token_s* tok) {
-  int ret = tokenizer_next(t, tok);
-  if(!ret)
+  int ws_count, ret;
+
+  if(!( = tokenizer_next(t, tok)))
     return ret;
-  int ws_count;
+
   ret = eat_whitespace(t, tok, &ws_count);
   return ret;
 }
@@ -371,10 +372,13 @@ led(tokenizer* t, int left, struct token_s* tok, int* err) {
 static inline int
 expr(tokenizer* t, int rbp, int* err) {
   struct token_s tok;
-  int ret = skip_next_and_ws(t, &tok);
+  int left, ret = skip_next_and_ws(t, &tok);
+
   if(tok.type == TT_EOF)
     return 0;
-  int left = nud(t, &tok, err);
+  
+  left = nud(t, &tok, err);
+  
   while(1) {
     ret = tokenizer_peek_next_non_ws(t, &tok);
     if(bp(tok.type) <= rbp)
@@ -384,22 +388,29 @@ expr(tokenizer* t, int rbp, int* err) {
       break;
     left = led(t, left, &tok, err);
   }
+  
   (void)ret;
   return left;
 }
 
 static inline int
 emit_error_or_warning(tokenizer* t, int is_error) {
-  int ws_count;
-  int ret = tokenizer_skip_chars(t, " \t", &ws_count);
-  if(!ret)
+  int ws_count,ret;
+  struct token_s tmp;
+  
+  if(!(ret = tokenizer_skip_chars(t, " \t", &ws_count)))
     return ret;
-  struct token_s tmp = {.column = t->column, .line = t->line};
+  
+  tmp.column = t->column;
+  tmp.line = t->line;
+ 
   ret = tokenizer_read_until(t, "\n", 1);
+
   if(is_error) {
     error(t->buf, t, &tmp);
     return 0;
   }
+
   warning(t->buf, t, &tmp);
   return 1;
 }
@@ -407,7 +418,8 @@ emit_error_or_warning(tokenizer* t, int is_error) {
 /* return index of matching item in values array, or -1 on error */
 static inline int
 expect(tokenizer* t, enum tokentype tt, const char* const values[], struct token_s* token) {
-  int ret;
+  int ret, i;
+
   do {
     ret = tokenizer_next(t, token);
     if(ret == 0 || token->type == TT_EOF)
@@ -419,12 +431,11 @@ expect(tokenizer* t, enum tokentype tt, const char* const values[], struct token
     error("unexpected token", t, token);
     return -1;
   }
-  int i = 0;
-  while(values[i]) {
+
+  for(i = 0; values[i]; i++)
     if(!str_diff(values[i], t->buf))
       return i;
-    ++i;
-  }
+
   return -1;
 }
 

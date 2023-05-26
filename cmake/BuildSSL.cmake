@@ -62,7 +62,7 @@ if(BUILD_SSL)
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DOPENSSL_NO_UI_CONSOLE=1")
 
   message(STATUS "Configuring OpenSSL...")
-  add_subdirectory(3rdparty/openssl)
+  #add_subdirectory(3rdparty/openssl)
 
   # if(NOT OPENSSL_LIBRARIES) message(WARNING "Variable OPENSSL_LIBRARIES not set!") endif(NOT OPENSSL_LIBRARIES)
 
