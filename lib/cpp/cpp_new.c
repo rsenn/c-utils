@@ -10,12 +10,14 @@ cpp_new(void) {
   cpp_add_includedir(ret, ".");
 
   MAP_NEW(ret->macros);
+
   {
     struct macro_s m = {.num_args = 1};
     cpp_add_macro(ret, str_dup("defined"), &m);
     m.num_args = MACRO_FLAG_OBJECTLIKE;
     cpp_add_macro(ret, str_dup("__FILE__"), &m);
     cpp_add_macro(ret, str_dup("__LINE__"), &m);
-    return ret;
   }
+
+  return ret;
 }
