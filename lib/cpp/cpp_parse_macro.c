@@ -28,13 +28,14 @@ consume_nl_and_ws(tokenizer* t, struct token_s* tok, int expected) {
 
 int
 cpp_parse_macro(cpp_t* cpp, tokenizer* t) {
-  int ws_count;
-  int ret = tokenizer_skip_chars(t, " \t", &ws_count);
-  if(!ret)
-    return ret;
+  const char* macroname;
+  int ws_count, ret, redefined = 0;
   struct token_s curr; // tmp = {.column = t->column, .line = t->line};
-  ret = tokenizer_next(t, &curr) && curr.type != TT_EOF;
-  if(!ret) {
+
+  if(!(ret = tokenizer_skip_chars(t, " \t", &ws_count)))
+    return ret;
+
+  if(!(ret = tokenizer_next(t, &curr) && curr.type != TT_EOF)) {
     error("parsing macro name", t, &curr);
     return ret;
   }
@@ -42,13 +43,13 @@ cpp_parse_macro(cpp_t* cpp, tokenizer* t) {
     error("expected identifier", t, &curr);
     return 0;
   }
-  const char* macroname = str_dup(t->buf);
+
+  macroname = str_dup(t->buf);
 #ifdef DEBUG_CPP
   buffer_puts(buffer_2, "parsing macro ");
   buffer_puts(buffer_2, macroname);
   buffer_putnlflush(buffer_2);
 #endif
-  int redefined = 0;
   if(cpp_get_macro(cpp, macroname)) {
     if(!str_diff(macroname, "defined")) {
       error("\"defined\" cannot be used as a macro name", t, &curr);
