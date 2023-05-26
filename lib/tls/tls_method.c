@@ -33,7 +33,7 @@ static const bio_method_t tls_method_sockp = {
     /* .ctrl =  */ tls_bio_ctrl,
     /* .create =  */ tls_bio_create,
     /* .destroy =  */ tls_bio_destroy,
-    /* .callback_ctrl =  */ NULL,
+    /* .callback_ctrl =  */ NULL
 };
 
 const BIO_METHOD*

@@ -265,7 +265,7 @@ mem_tokenizers_join(struct FILE_container_s* org, struct FILE_container_s* inj, 
 #define TT_RPAREN TT_CUSTOM + 20
 #define TT_LNOT TT_CUSTOM + 21
 
-#define TTINT(X) X - TT_CUSTOM
+#define TTINT(X) (X - TT_CUSTOM)
 #define TTENT(X, Y) [TTINT(X)] = Y
 
 static inline int
@@ -294,7 +294,7 @@ bp(int tokentype) {
       TTENT(TT_LPAREN, 1 << 15),
       //    TTENT(TT_RPAREN, 1 << 15),
       //    TTENT(TT_LPAREN, 0),
-      TTENT(TT_RPAREN, 0),
+      TTENT(TT_RPAREN, 0)
   };
   if(TTINT(tokentype) < sizeof(bplist) / sizeof(bplist[0]))
     return bplist[TTINT(tokentype)];

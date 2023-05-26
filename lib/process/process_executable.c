@@ -1,5 +1,6 @@
 #include "../process.h"
 #include "../stralloc.h"
+#include "../path.h"
 #include <limits.h>
 
 char*
