@@ -3,10 +3,11 @@
 cpp_t*
 cpp_new(void) {
   cpp_t* ret;
-  struct macro_s m = {.num_args = 1};
+  struct macro_s m = {/*.num_args =*/ 1};
 
   if(!(ret = alloc_zero(sizeof(struct cpp_s))))
     return ret;
+  
   LIST_NEW(ret->includedirs);
   cpp_add_includedir(ret, ".");
 
