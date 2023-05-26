@@ -4,14 +4,7 @@ int
 cpp_parse_file(cpp_t* cpp, buffer* f, const char* fn, buffer* out) {
   tokenizer t;
   struct token_s curr;
-  tokenizer_init(&t, f, TF_PARSE_STRINGS);
-  tokenizer_set_filename(&t, fn);
-  tokenizer_register_marker(&t, MT_MULTILINE_COMMENT_START, "/*"); /**/
-  tokenizer_register_marker(&t, MT_MULTILINE_COMMENT_END, "*/");
-  tokenizer_register_marker(&t, MT_SINGLELINE_COMMENT_START, "//");
-  int ret, newline = 1, ws_count = 0;
-
-  int if_level = 0, if_level_active = 0, if_level_satisfied = 0;
+  int ret, newline = 1, ws_count = 0, if_level = 0, if_level_active = 0, if_level_satisfied = 0;
   static const char* directives[] = {
       "include",
       "error",
@@ -28,6 +21,12 @@ cpp_parse_file(cpp_t* cpp, buffer* f, const char* fn, buffer* out) {
       "pragma",
       0,
   };
+
+  tokenizer_init(&t, f, TF_PARSE_STRINGS);
+  tokenizer_set_filename(&t, fn);
+  tokenizer_register_marker(&t, MT_MULTILINE_COMMENT_START, "/*"); /**/
+  tokenizer_register_marker(&t, MT_MULTILINE_COMMENT_END, "*/");
+  tokenizer_register_marker(&t, MT_SINGLELINE_COMMENT_START, "//");
 
 #define all_levels_active() (if_level_active == if_level)
 #define prev_level_active() (if_level_active == if_level - 1)
