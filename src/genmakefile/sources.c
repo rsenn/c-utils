@@ -32,8 +32,8 @@ sources_new(const char* name, const char* binext, strarray* progs, strarray* bin
 
       {
         stralloc bin;
-        stralloc_init(&bin);
         size_t n = str_len(ret->name);
+        stralloc_init(&bin);
         while(n > 0 && ret->name[n - 1] != '.')
           n--;
         path_extension(ret->name, &bin, binext);

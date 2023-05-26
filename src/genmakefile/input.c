@@ -112,7 +112,8 @@ input_process_path(const char* y, stralloc* out) {
 int
 input_process_command(stralloc* cmd, int argc, char* argv[], const char* file, size_t line) {
   size_t n, len;
-  int compile = 0, link = 0, lib = 0, objects = 0;
+  bool do_rule;
+  int i, compile = 0, link = 0, lib = 0, objects = 0;
   const char *x, *y;
   char **p, **end = argv + argc;
   stralloc output, dir, path;
@@ -128,7 +129,7 @@ input_process_command(stralloc* cmd, int argc, char* argv[], const char* file, s
   strlist_init(&flags, ' ');
   strlist_init(&libs, ' ');
 
-  for(int i = 0; i < argc; i++) {
+  for(i = 0; i < argc; i++) {
     if(is_source(argv[i])) {
       compile = 1;
       break;
@@ -407,7 +408,7 @@ input_process_command(stralloc* cmd, int argc, char* argv[], const char* file, s
   n = strlist_count_pred(&files, &is_source_b);
   if(n > 0)
     compile = 1;
-  bool do_rule = (n || strlist_count_pred(&files, &is_object_b)) || output.len;
+  do_rule = (n || strlist_count_pred(&files, &is_object_b)) || output.len;
 
   if(stralloc_starts(&output, "@") || stralloc_starts(&output, "/tmp"))
     do_rule = false;
@@ -620,7 +621,8 @@ input_process_rules(target* all, char psa) {
 
   stralloc_zero(&commands.compile);
 
-  MAP_DESTROY(vars);
+  hashmap_free(&(vars));
+  //MAP_DESTROY(vars);
   MAP_NEW(vars);
 
   MAP_FOREACH(rules, t) {
@@ -688,79 +690,82 @@ input_process_rules(target* all, char psa) {
     var_setb(srcdir_varname, dirs.out.sa.s, dirs.out.sa.len);
   }
 
-  var_t *cflags = var_list("CFLAGS", psa), *cc = var_list("CC", psa), *defs = var_list("DEFS", psa), *common = var_list("COMMON_FLAGS", psa);
-  stralloc_zero(&defs->value.sa);
+  {
+    size_t count;
+    ssize_t found;
+    var_t *cflags = var_list("CFLAGS", psa), *cc = var_list("CC", psa), *defs = var_list("DEFS", psa), *common = var_list("COMMON_FLAGS", psa);
+    stralloc_zero(&defs->value.sa);
 
 #ifdef DEBUG_OUTPUT
-  buffer_puts(buffer_2, "CFLAGS before: ");
-  buffer_putsl(buffer_2, &cflags->value, " ");
-  buffer_putnlflush(buffer_2);
+    buffer_puts(buffer_2, "CFLAGS before: ");
+    buffer_putsl(buffer_2, &cflags->value, " ");
+    buffer_putnlflush(buffer_2);
 #endif
 
-  strlist_free(&cflags->value);
-  strlist_init(&cflags->value, '\0');
-  size_t count = strlist_count(&args);
-  strlist_slice(&cflags->value, &args, 1, count);
-  strlist_at_sa(&args, &cc->value.sa, 0);
-  buffer_puts(buffer_2, "CC before: ");
-  buffer_putsl(buffer_2, &cc->value, " ");
-  buffer_putnlflush(buffer_2);
-  ssize_t found;
-  if((found = strlist_match(&args, "--chip=*", 0)) >= 0) {
-    char* chip = strlist_at(&args, found);
-    chip += str_chr(chip, '=') + 1;
-    stralloc_copys(&cfg.chip, chip);
-    stralloc_nul(&cfg.chip);
-    stralloc_replaces(&cflags->value.sa, cfg.chip.s, "$(CHIP)");
-    stralloc_replaces(&cflags->value.sa, cfg.chip.s, "$(CHIP)");
-    // stralloc_lower(&cfg.chip);
+    strlist_free(&cflags->value);
+    strlist_init(&cflags->value, '\0');
+    count = strlist_count(&args);
+    strlist_slice(&cflags->value, &args, 1, count);
+    strlist_at_sa(&args, &cc->value.sa, 0);
+    buffer_puts(buffer_2, "CC before: ");
+    buffer_putsl(buffer_2, &cc->value, " ");
+    buffer_putnlflush(buffer_2);
+    
+    if((found = strlist_match(&args, "--chip=*", 0)) >= 0) {
+      char* chip = strlist_at(&args, found);
+      chip += str_chr(chip, '=') + 1;
+      stralloc_copys(&cfg.chip, chip);
+      stralloc_nul(&cfg.chip);
+      stralloc_replaces(&cflags->value.sa, cfg.chip.s, "$(CHIP)");
+      stralloc_replaces(&cflags->value.sa, cfg.chip.s, "$(CHIP)");
+      // stralloc_lower(&cfg.chip);
 
 #ifdef DEBUG_OUTPUT
-    buffer_puts(buffer_2, "Chip: ");
-    buffer_putsa(buffer_2, &cfg.chip);
+      buffer_puts(buffer_2, "Chip: ");
+      buffer_putsa(buffer_2, &cfg.chip);
+      buffer_putnlflush(buffer_2);
+#endif
+    }
+    strlist_filter(&cflags->value, &defs->value, &cflags->value, "-D*");
+
+    common->value.sep = '\0';
+    strlist_filter(&cflags->value, &common->value, &cflags->value, "--*format=*");
+
+    if(common->value.sa.len)
+      strlist_push(&cflags->value, "$(COMMON_FLAGS)");
+
+    strlist_nul(&cc->value);
+    {
+      strlist compiler;
+      char* s;
+      size_t n;
+      strlist_init(&compiler, '/');
+      strlist_froms(&compiler, cc->value.sa.s + 1, PATHSEP_C);
+      strlist_foreach(&compiler, s, n) {
+        if(is_version_b(s, n)) {
+          var_setb("VER", s, n);
+          stralloc_replace(&cc->value.sa, s - compiler.sa.s + 1, n, "$(VER)", 6);
+          break;
+        }
+      }
+    }
+
+#ifdef DEBUG_OUTPUT
+    buffer_puts(buffer_2, "CC after: ");
+    buffer_putsa(buffer_2, &cc->value.sa);
+    buffer_putnlflush(buffer_2);
+    buffer_puts(buffer_2, "CFLAGS after: ");
+    buffer_putsl(buffer_2, &cflags->value, " ");
     buffer_putnlflush(buffer_2);
 #endif
   }
-  strlist_filter(&cflags->value, &defs->value, &cflags->value, "-D*");
-
-  common->value.sep = '\0';
-  strlist_filter(&cflags->value, &common->value, &cflags->value, "--*format=*");
-
-  if(common->value.sa.len)
-    strlist_push(&cflags->value, "$(COMMON_FLAGS)");
-
-  strlist_nul(&cc->value);
-  {
-    strlist compiler;
-    char* s;
-    size_t n;
-    strlist_init(&compiler, '/');
-    strlist_froms(&compiler, cc->value.sa.s + 1, PATHSEP_C);
-    strlist_foreach(&compiler, s, n) {
-      if(is_version_b(s, n)) {
-        var_setb("VER", s, n);
-        stralloc_replace(&cc->value.sa, s - compiler.sa.s + 1, n, "$(VER)", 6);
-        break;
+    /*  MAP_FOREACH(rules, t) {
+        target* rule = MAP_ITER_VALUE(t);
+        stralloc* sa = &commands.v[rule->type];
+        if(sa->s && sa->len)
+          stralloc_copy(&rule->recipe, sa);
       }
-    }
-  }
-
-#ifdef DEBUG_OUTPUT
-  buffer_puts(buffer_2, "CC after: ");
-  buffer_putsa(buffer_2, &cc->value.sa);
-  buffer_putnlflush(buffer_2);
-  buffer_puts(buffer_2, "CFLAGS after: ");
-  buffer_putsl(buffer_2, &cflags->value, " ");
-  buffer_putnlflush(buffer_2);
-#endif
-
-  /*  MAP_FOREACH(rules, t) {
-      target* rule = MAP_ITER_VALUE(t);
-      stralloc* sa = &commands.v[rule->type];
-      if(sa->s && sa->len)
-        stralloc_copy(&rule->recipe, sa);
-    }
-  */
+    */
   MAP_FOREACH(rules, t) {
     const char* name = MAP_ITER_KEY(t);
     target* rule = MAP_ITER_VALUE(t);

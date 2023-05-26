@@ -12,7 +12,7 @@ json_parse_object(jsonval* val, charbuf* b) {
 
     charbuf_skip_ws(b);
     for(; (ret = charbuf_peekc(b, &c)) > 0;) {
-      jsonval *itemv, key = {.type = JSON_UNDEFINED}, member = {.type = JSON_UNDEFINED};
+      jsonval *itemv, key = {JSON_UNDEFINED}, member = {JSON_UNDEFINED};
       if(c == '}') {
         charbuf_nextc(b, &c);
         return 1;

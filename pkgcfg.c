@@ -242,12 +242,17 @@ exec_program(const char* compiler, const char* arg, stralloc* out) {
   posix_spawnattr_t attr;
 #endif
   int p[2];
-  char* const argv[] = {(char*)compiler, (char*)arg, 0};
-  char* const envp[1] = {0};
+  int stdio[3];
+  char* argv[3];
+  char* envp[1];
   const char* bin;
   stralloc dir;
+  argv[0] = compiler;
+  argv[1] = arg;
+  argv[2] = NULL;
+  envp[0] = NULL;
+  
   stralloc_init(&dir);
-
   stralloc_zero(out);
 
 #if WINDOWS_NATIVE
@@ -265,7 +270,11 @@ exec_program(const char* compiler, const char* arg, stralloc* out) {
     exit(127);
   }
 
-  if((pid = process_create(bin, argv, (int[3]){0, p[1], p[1]}, 0)) < 0) {
+  stdio[0] = 0;
+  stdio[1] = p[1];
+  stdio[2] = p[1];
+
+  if((pid = process_create(bin, argv, stdio, 0)) < 0) {
     errmsg_warnsys("process_create error ", bin, ": ", 0);
     return 0;
   }
@@ -433,6 +442,7 @@ void
 pkg_free(pkg* p) {
   MAP_DESTROY(p->fields);
   MAP_DESTROY(p->vars);
+
   stralloc_free(&p->name);
 }
 
@@ -790,7 +800,7 @@ pkg_list(id code) {
  */
 int
 pkg_open(const char* pkgname, pkg* pf) {
-  buffer pc = {.x = 0};
+  buffer pc = {0};
   const char* s;
   size_t n;
   int ret = 0;

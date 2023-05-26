@@ -1,7 +1,7 @@
 #ifndef GENMAKEFILE_GENERATE_H
 #define GENMAKEFILE_GENERATE_H
 
-#include <stdbool.h>
+#include "../../lib/bool.h"
 #include "types.h"
 #include "rule.h"
 #include "sourcedir.h"

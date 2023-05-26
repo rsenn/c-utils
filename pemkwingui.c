@@ -29,14 +29,13 @@ int
 process64(void* base) {
   pe64_opt_header* opthdr = pe_header_opt64(base);
   pe_section_header* scthdr;
+  uint16 subsys = uint16_get(&opthdr->subsystem);
 
   if(!(scthdr = pe_get_section(base, section))) {
     buffer_putm_internal(buffer_2, "no such section: ", section, 0);
     buffer_putnlflush(buffer_2);
     return -1;
   }
-
-  uint16 subsys = uint16_get(&opthdr->subsystem);
 
   buffer_putm_internal(buffer_2, "subsystem: ", subsystems[subsys], 0);
   buffer_putnlflush(buffer_2);
@@ -49,14 +48,13 @@ int
 process32(void* base) {
   pe32_opt_header* opthdr = pe_header_opt32(base);
   pe_section_header* scthdr;
+  uint16 subsys = uint16_get(&opthdr->subsystem);
 
   if(!(scthdr = pe_get_section(base, section))) {
     buffer_putm_internal(buffer_2, "no such section: ", section, 0);
     buffer_putnlflush(buffer_2);
     return -1;
   }
-
-  uint16 subsys = uint16_get(&opthdr->subsystem);
 
   buffer_putm_internal(buffer_2, "subsystem: ", subsystems[subsys], 0);
   buffer_putnlflush(buffer_2);

@@ -100,32 +100,39 @@ output_mplab_project(buffer* b, MAP_T* _rules, MAP_T* vars, const strlist* inclu
   const char *dir, *s;
   char** p = 0;
   size_t n;
+  unsigned int i = 0, num_sources = 0;
   stralloc sa, file, dirname;
   strlist defines, tcfg, *vdefs;
-  mplab_config_t mplab_cfg = {.warning_level = (is_debug() ? 3 : -3),
-                              .verbose_messages = 1,
-                              .optimize_global = opt_size() || opt_speed(),
-                              .optimize_speed = opt_speed(),
-                              .optimize_debug = is_debug(),
-                              .optimize_assembler = 1,
-                              .preprocess_assembler = 1,
-                              .debugger = 39,
-                              .clear_bss = 1,
-                              .keep_generated_startup_as = 1,
-                              .initialize_data = 0,
-                              .calibrate_oscillator = 0,
-                              .backup_reset_condition_flags = 0,
-                              .format_hex_file_for_download = 1,
-                              .managed_stack = 1,
-                              .program_default_config_words = 0,
-                              .link_in_peripheral_library = 0,
-                              .additional_command_line_options = "--output=default,-inhx032 "
+  mplab_config_t mplab_cfg = {/* .warning_level = */ 0,
+                              /* .verbose_messages = */ 1,
+                              /* .optimize_global = */ 0,
+                              /* .optimize_speed = */ 0,
+                              /* .optimize_debug = */ 0,
+                              /* .optimize_assembler = */ 1,
+                              /* .preprocess_assembler = */ 1,
+                              /* .debugger = */ 39,
+                              /* .clear_bss = */ 1,
+                              /* .keep_generated_startup_as = */ 1,
+                              /* .initialize_data = */ 0,
+                              /* .calibrate_oscillator = */ 0,
+                              /* .backup_reset_condition_flags = */ 0,
+                              /* .format_hex_file_for_download = */ 1,
+                              /* .managed_stack = */ 1,
+                              /* .program_default_config_words = */ 0,
+                              /* .link_in_peripheral_library = */ 0,
+                              /* .additional_command_line_options = */ "--output=default,-inhx032 "
                                                                  "--output=+mcof,-elf",
-                              .memory_model = 1,
-                              .size_of_double = 1,
-                              .size_of_float = 1};
+                              /* .memory_model = */ 1,
+                              /* .size_of_double = */ 1,
+                              /* .size_of_float = */ 1};
 
   ini_section_t *ini, *section, *cat_subfolders, *file_subfolders, *generated_files, *other_files /*, *file_info*/, *active_file_settings, *tool_settings;
+
+  mplab_cfg.warning_level = (is_debug() ? 3 : -3);
+  mplab_cfg.verbose_messages = 1;
+  mplab_cfg.optimize_global = opt_size() || opt_speed();
+  mplab_cfg.optimize_speed = opt_speed();
+  mplab_cfg.optimize_debug = is_debug();
 
   stralloc_init(&sa);
   stralloc_init(&file);
@@ -210,7 +217,6 @@ output_mplab_project(buffer* b, MAP_T* _rules, MAP_T* vars, const strlist* inclu
   section = other_files = ini_new(&section->next, "OTHER_FILES");
 
   section = ini_new(&section->next, "FILE_INFO");
-  unsigned int i = 0, num_sources = 0;
   {
     set_iterator_t it;
     const char* x;
@@ -483,7 +489,6 @@ output_mplab_project(buffer* b, MAP_T* _rules, MAP_T* vars, const strlist* inclu
   ini_set(tool_settings, make_tool_key(&sa, ""), tcfg.sa.s);
 
   if(get_suite() <= 1) {
-
     for(i = 0; i < num_sources; i++) {
       size_t len;
       stralloc_zero(&file);

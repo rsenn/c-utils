@@ -29,7 +29,7 @@ if(USE_SSL AND NOT BUILD_SSL)
   find_package(OpenSSL)
   message(STATUS "OpenSSL_DIR=${OpenSSL_DIR}")
 
-  if(NOT OpenSSL_DIR)
+  if(NOT OPENSSL_ROOT_DIR)
     pkg_check_modules(OPENSSL REQUIRED openssl libssl)
     message(
       STATUS "pkg_check_modules(OPENSSL openssl libssl): ${OPENSSL_FOUND}")
@@ -51,9 +51,9 @@ if(USE_SSL AND NOT BUILD_SSL)
     else(pkgcfg_lib_OPENSSL_ssl)
       set(OPENSSL_SSL_LIBRARY "ssl" CACHE FILEPATH "OpenSSL ssl library")
     endif(pkgcfg_lib_OPENSSL_ssl)
-  else(NOT OpenSSL_DIR)
+  else(NOT OPENSSL_ROOT_DIR)
     set(OPENSSL_FOUND TRUE)
-  endif(NOT OpenSSL_DIR)
+  endif(NOT OPENSSL_ROOT_DIR)
 
   set(OPENSSL_LIBRARIES "${OPENSSL_SSL_LIBRARY};${OPENSSL_CRYPTO_LIBRARY}"
       CACHE FILEPATH "OpenSSL libraries")

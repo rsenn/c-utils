@@ -311,7 +311,8 @@ byte_numlines(char* x, size_t p, size_t* end_ptr) {
 
 static bool
 byte_is_binary(char* x, size_t n) {
-  for(size_t i = 0; i < n; i++)
+  size_t i;
+  for(i = 0; i < n; i++)
     if(x[i] < ' ' || x[i] >= 127)
       return true;
 
@@ -666,7 +667,8 @@ sockbuf_check(socketbuf_t* sb) {
 
 void
 buffer_put_data(buffer* b, char* x, size_t len) {
-  for(size_t i = 0; i < len; i++) {
+  size_t i;
+  for(i = 0; i < len; i++) {
     if(x[i] < 0x20 || x[i] >= 0x7f)
       buffer_putfmt(b, &x[i], 1, &fmt_escapecharc);
     else

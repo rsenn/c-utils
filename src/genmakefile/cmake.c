@@ -6,7 +6,7 @@
 #include "../../lib/strarray.h"
 #include "../../lib/map.h"
 #include "../../lib/set.h"
-#include <stdbool.h>
+#include "../../lib/bool.h"
 #include "is.h"
 
 void
@@ -28,9 +28,11 @@ append_cmake_var(buffer* b, const char* name, const strlist* list) {
 void
 output_cmake_cmd(buffer* b, const char* cmd, const strlist* list, char quote) {
   if(strlist_count(list)) {
-    char needle[2] = {quote, '\\'};
+    char needle[2];
     const char* s;
     size_t n;
+    needle[0] = quote;
+    needle[1] = '\\';
     buffer_putm_internal(b, cmd, "(\n", NULL);
     strlist_foreach(list, s, n) {
       size_t i;
@@ -55,10 +57,12 @@ output_cmake_cmd(buffer* b, const char* cmd, const strlist* list, char quote) {
 void
 output_cmake_set(buffer* b, const char* cmd, const set_t* list, char quote) {
   if(set_size(list)) {
-    char needle[2] = {quote, '\\'};
+    char needle[2];
     const char* s;
     size_t n;
     set_iterator_t it;
+    needle[0] = quote;
+    needle[1] = '\\';
     buffer_putm_internal(b, cmd, "(\n", NULL);
     set_foreach(list, it, s, n) {
       size_t i;
@@ -291,26 +295,28 @@ output_cmake_project(buffer* b, MAP_T* rules, MAP_T* vars, const strlist* includ
     set_filter(&rule->prereq, &libraries, is_lib_b);
   }
   //  return 0;
-  const char* s;
-  size_t n;
-  set_iterator_t it;
-  stralloc sa;
+  {
+    const char* s;
+    size_t n;
+    set_iterator_t it;
+    stralloc sa;
 
-  set_foreach(&libraries, it, s, n) {
-    stralloc_init(&sa);
-    // path_dirname_b(s, n, &sa);
+    set_foreach(&libraries, it, s, n) {
+      stralloc_init(&sa);
+      // path_dirname_b(s, n, &sa);
 
 #ifdef DEBUG_OUTPUT
-    buffer_puts(buffer_2, "libdir: ");
-    buffer_put(buffer_2, s, path_dirlen_b(s, n));
-    buffer_putnlflush(buffer_2);
+      buffer_puts(buffer_2, "libdir: ");
+      buffer_put(buffer_2, s, path_dirlen_b(s, n));
+      buffer_putnlflush(buffer_2);
 #endif
 #ifdef DEBUG_OUTPUT
-    buffer_puts(buffer_2, "lib: ");
-    buffer_put(buffer_2, s, n);
-    buffer_putnlflush(buffer_2);
+      buffer_puts(buffer_2, "lib: ");
+      buffer_put(buffer_2, s, n);
+      buffer_putnlflush(buffer_2);
 #endif
-    stralloc_free(&sa);
+      stralloc_free(&sa);
+    }
   }
 
   output_cmake_subst((stralloc*)&include_dirs->sa, "CMAKE_CURRENT_SOURCE_DIR");

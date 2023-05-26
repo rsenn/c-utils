@@ -149,7 +149,7 @@ mounts_read(MAP_T map) {
     mnt.s[mnt.n] = '\0';
 
     if(str_start(mnt.s, "/cygdrive/") /*&& mnt.n == 10*/) {
-      blob_t tmp = {mnt.s, mnt.n};
+      blob_t tmp = mnt;
       mnt = dev;
 
       tmp.s[0] = (tmp.s[10]);
@@ -178,14 +178,29 @@ typedef struct {
   const char* s;
   size_t n;
 } column_t;
-
+/*
 #define KEY(t) \
   (column_t) { MAP_ITER_KEY(t), MAP_ITER_KEY_LEN(t) - 1 }
 #define VAL(t) \
   (column_t) { MAP_ITER_VALUE(t), MAP_ITER_VALUE_LEN(t) - 1 }
+*/
+static column_t KEY(const MAP_PAIR_T pair) {
+  column_t ret;
+  ret.s=MAP_ITER_KEY(pair);
+  ret.n=MAP_ITER_KEY_LEN(pair);
+  return ret;
+}
+
+static column_t VAL(const MAP_PAIR_T pair) {
+  column_t ret;
+  ret.s=MAP_ITER_VALUE(pair);
+  ret.n=MAP_ITER_VALUE_LEN(pair);
+  return ret;
+}
 
 static const char*
 mounts_match(MAP_T map, const char* path, size_t pathlen, size_t* matchlen, int col, bool first) {
+  bool matched;
   MAP_PAIR_T t;
   column_t cols[2], ret = {0, 0}, *search = &cols[!!col], *replacement = &cols[!col];
 
@@ -193,7 +208,7 @@ mounts_match(MAP_T map, const char* path, size_t pathlen, size_t* matchlen, int 
     cols[0] = KEY(t);
     cols[1] = VAL(t);
 
-    bool matched =
+    matched =
         search->n >= ret.n && search->n <= pathlen && !path_diffb(path, search->n, search->s) && (search->n == pathlen || (search->n < pathlen && path_issep(path[search->n])));
 
 #ifdef DEBUG_OUTPUT_

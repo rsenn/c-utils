@@ -62,23 +62,25 @@ output_var(buffer* b, MAP_T* vars, const char* name, int serial, bool ninja, boo
       else
         buffer_putm_internal(b, v.s, " = ", NULL);
       var->serial = serial;
-      stralloc u;
-      stralloc_init(&u);
-      if(ninja)
-        stralloc_copy(&u, &var->value.sa);
-      else
-        strlist_joinq(&var->value, &u, ' ', '"');
+      {
+        stralloc u;
+        stralloc_init(&u);
+        if(ninja)
+          stralloc_copy(&u, &var->value.sa);
+        else
+          strlist_joinq(&var->value, &u, ' ', '"');
 
-      if(ninja || shell) {
-        stralloc_zero(&v);
-        var_subst(&u, &v, "$", "", 1);
-      } else if(batch) {
-        stralloc_zero(&v);
-        var_subst(&u, &v, "%", "%", 1);
-      } else {
-        stralloc_copy(&v, &u);
+        if(ninja || shell) {
+          stralloc_zero(&v);
+          var_subst(&u, &v, "$", "", 1);
+        } else if(batch) {
+          stralloc_zero(&v);
+          var_subst(&u, &v, "%", "%", 1);
+        } else {
+          stralloc_copy(&v, &u);
+        }
+        stralloc_free(&u);
       }
-      stralloc_free(&u);
       buffer_putsa(b, &v);
       if(shell)
         buffer_putc(b, '"');
@@ -215,9 +217,9 @@ output_make_rule(buffer* b, target* rule, bool batch, bool shell, const char quo
     stralloc_cat(&output, &cmd);
     stralloc_catc(&output, '\n');
     if(str_end(rule->name, ":")) {
-      stralloc_catc(&output, '\n');
-      stralloc_catc(&output, '\n');
       bucket_t* b;
+      stralloc_catc(&output, '\n');
+      stralloc_catc(&output, '\n');
       for(b = rule->prereq.list; b; b = b->list_next) {
         stralloc_catc(&output, ' ');
         stralloc_catb(&output, b->value, b->size);

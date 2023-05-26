@@ -67,7 +67,7 @@ const char *libpfx = DEFAULT_LIBPFX, *newline = "\n", *outfile = NULL, *infile =
 exts_t exts = {DEFAULT_OBJEXT, DEFAULT_LIBEXT, DEFAULT_DSOEXT, DEFAULT_EXEEXT, DEFAULT_PPSEXT};
 dirs_t dirs;
 tools_t tools;
-config_t cfg = {.mach = {0, 0}, .sys = {0, 0}, .chip = {0, 0, 0}, .build_type = 1, .lang = LANG_CXX};
+config_t cfg = { {0, 0}, {0, 0}, {0, 0, 0}, 1, LANG_CXX};
 tool_config_t tool_config = 0;
 MAP_T targetdirs;
 
@@ -1283,11 +1283,6 @@ main(int argc, char* argv[]) {
   target *all = 0, *compile = 0;
   char **it, **arg, **ptr, *x;
   strarray sources;
-  strarray_init(&sources);
-
-#if !WINDOWS_NATIVE
-  sig_ignore(SIGTRAP);
-#endif
 
   struct unix_longopt opts[] = {
       {"help", 0, NULL, 'h'},
@@ -1334,6 +1329,11 @@ main(int argc, char* argv[]) {
       {"c++", 0, &cfg.lang, LANG_CXX},
       {0, 0, 0, 0},
   };
+
+  strarray_init(&sources);
+#if !WINDOWS_NATIVE
+  sig_ignore(SIGTRAP);
+#endif
   errmsg_iam(argv[0]);
   uint32_seed(NULL, 0);
 
@@ -1835,12 +1835,13 @@ main(int argc, char* argv[]) {
     stralloc_weak(&compile->recipe, &commands.compile);
 
   if(compile) {
+    MAP_PAIR_T it;
+    
     strlist_nul(&dirs.work);
     strlist_push_unique(&vpath, ".");
     strlist_push_unique_sa(&vpath, &dirs.work.sa);
 
     set_clear(&compile->output);
-    MAP_PAIR_T it;
 
     MAP_FOREACH(rules, it) {
       target* rule = MAP_ITER_VALUE(it);
@@ -2009,7 +2010,10 @@ main(int argc, char* argv[]) {
   }
 
   if(!infile) {
+    int link_rules = 0;
     stralloc src;
+    strarray sources2;
+    
     stralloc_init(&src);
 
 #ifdef DEBUG_OUTPUT_
@@ -2018,7 +2022,6 @@ main(int argc, char* argv[]) {
     buffer_putnlflush(buffer_2);
 #endif
 
-    strarray sources2;
     strarray_init(&sources2);
     strarray_copy(&sources2, &sources);
 
@@ -2078,8 +2081,6 @@ main(int argc, char* argv[]) {
         { generate_simple_compile_rules(srcdir, MAP_ITER_KEY(t), exts.src, exts.obj, &commands.compile, pathsep_args); }
       }
     }
-    int link_rules = 0;
-
     if(cmd_bins) {
       int ret;
 
@@ -2265,8 +2266,10 @@ fail:
 
 quit : {
   strlist deps;
-  strlist_init(&deps, '\0');
   MAP_PAIR_T t;
+  
+  strlist_init(&deps, '\0');
+  
   MAP_FOREACH(srcdir_map, t) {
     sourcedir* sdir = *(sourcedir**)MAP_ITER_VALUE(t);
     if(1 /* && set_size(&sdir->deps)*/) {

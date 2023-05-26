@@ -133,6 +133,7 @@ emit_token(buffer* out, struct token_s* tok, const char* strbuf) {
 
 static inline void
 error_or_warning(const char* err, const char* type, tokenizer* t, struct token_s* curr) {
+  int i;
   unsigned column = curr ? curr->column : t->column;
   unsigned line = curr ? curr->line : t->line;
 
@@ -144,7 +145,7 @@ error_or_warning(const char* err, const char* type, tokenizer* t, struct token_s
 
   /*  dprintf(2, "<%s> %u:%u %s: '%s'\n", t->filename, line, column, type, err);
     dprintf(2, "%s\n", t->buf);*/
-  for(int i = 0; i < str_len(t->buf); i++)
+  for(i = 0; i < str_len(t->buf); i++)
     buffer_puts(buffer_2, "^");
 
   buffer_putnlflush(buffer_2);
@@ -205,17 +206,16 @@ x_tokenizer_next_of(struct tokenizer_s* t, token* tok, int fail_unk) {
 
 static inline int
 mem_tokenizers_join(struct FILE_container_s* org, struct FILE_container_s* inj, struct FILE_container_s* result, int first, off_t lastpos) {
-  result->f = memstream_open(&result->buf, &result->len);
   size_t i;
   struct token_s tok;
-  int ret;
+  int ret, diff, cnt = 0, last = first;
+  result->f = memstream_open(&result->buf, &result->len);
   tokenizer_rewind(&org->t);
   for(i = 0; i < first; ++i) {
     ret = tokenizer_next(&org->t, &tok);
     assert(ret && tok.type != TT_EOF);
     emit_token(result->f, &tok, org->t.buf);
   }
-  int cnt = 0, last = first;
   while(1) {
     ret = tokenizer_next(&inj->t, &tok);
     if(!ret || tok.type == TT_EOF)
@@ -228,7 +228,7 @@ mem_tokenizers_join(struct FILE_container_s* org, struct FILE_container_s* inj, 
     last++;
   }
 
-  int diff = cnt - ((int)last - (int)first);
+  diff = cnt - ((int)last - (int)first);
 
   while(1) {
     ret = tokenizer_next(&org->t, &tok);

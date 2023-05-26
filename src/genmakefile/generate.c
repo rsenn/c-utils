@@ -540,6 +540,7 @@ generate_program_rule(const char* filename, char psa) {
   set_t incs = SET(), deps = SET();
   strlist libs;
   stralloc dir, bin, ppsrc, obj;
+  sourcedir* srcdir;
 
   strlist_init(&libs, ' ');
   stralloc_init(&ppsrc);
@@ -554,7 +555,7 @@ generate_program_rule(const char* filename, char psa) {
 #endif
 
   path_dirname(filename, &dir);
-  sourcedir* srcdir = sourcedir_getsa(&dir);
+  srcdir = sourcedir_getsa(&dir);
 
   if(tools.preproc)
     path_output(filename, &ppsrc, exts.pps, psa);

@@ -68,7 +68,8 @@ int ihex_write(ihex_file*, buffer* b);
 
 static inline const char*
 ihex_typestr(enum ihex_type_e type) {
-  return ((const char* const[5]){"DATA", "EOF", "EXTSEGADDR", 0, "EXTLINADDR"})[type];
+  static const char* const types[] = {"DATA", "EOF", "EXTSEGADDR", 0, "EXTLINADDR"};
+  return types[type];
 }
 
 #endif /* IHEX_H_ */

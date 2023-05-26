@@ -1863,19 +1863,19 @@ main(int argc, char* argv[]) {
 
     /*  cbmap_visit_all(nets, dump_net,
      * "nets"); */
+    {
+      double scale = 1.0 / 2.54;
 
-    //
-    const double scale = 1.0 / 2.54;
+      wire_bounds.x2 += 2.54;
+      wire_bounds.y2 += 2.54;
+      // rect_outset(&bounds, 1.27);
 
-    wire_bounds.x2 += 2.54;
-    wire_bounds.y2 += 2.54;
-    // rect_outset(&bounds, 1.27);
+      rect_mult(&wire_bounds, scale);
+      rect_round(&wire_bounds, 0.1);
 
-    rect_mult(&wire_bounds, scale);
-    rect_round(&wire_bounds, 0.1);
-
-    // print_rect(buffer_2, "Wire",
-    // &wire_bounds);
+      // print_rect(buffer_2, "Wire",
+      // &wire_bounds);
+    }
 
     buffer_puts(buffer_1, "--- WIRE BOUNDS ---\n");
     buffer_puts(buffer_1, "\nLayer Measures;\n");

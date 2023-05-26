@@ -501,11 +501,13 @@ make_num(stralloc* out, uint64 num, uint32 width, size_t (*fmt)(char*, uint64)) 
   char buf[FMT_ULONG + 1];
   if(!fmt)
     fmt = &fmt_ulonglong;
-  size_t sz = fmt(buf, num);
-  ssize_t n = width - sz;
-  while(n-- > 0)
-    stralloc_catb(out, " ", 1);
-  stralloc_catb(out, buf, sz);
+  {
+    size_t sz = fmt(buf, num);
+    ssize_t n = width - sz;
+    while(n-- > 0)
+      stralloc_catb(out, " ", 1);
+    stralloc_catb(out, buf, sz);
+  }
 }
 
 static void

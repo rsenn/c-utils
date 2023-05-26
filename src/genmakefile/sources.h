@@ -1,7 +1,7 @@
 #ifndef GENMAKEFILE_SOURCES_H
 #define GENMAKEFILE_SOURCES_H
 
-#include <stdbool.h>
+#include "../../lib/bool.h"
 #include "sourcedir.h"
 #include "../../lib/dlist.h"
 

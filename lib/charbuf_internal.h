@@ -77,10 +77,11 @@ static inline void
 charbuf_dumpchar(int c, buffer* out, int pad) {
   char buf[64];
   int quote = pad < 0;
+  size_t l, i = 0;
+  
   if(pad < 0)
     pad = -pad;
 
-  size_t l, i = 0;
   if(isprint(c) || c == ' ') {
     if(quote)
       buf[i++] = '\'';
@@ -95,9 +96,10 @@ charbuf_dumpchar(int c, buffer* out, int pad) {
     if(quote)
       buf[i++] = '\'';
   } else {
+    int pad; 
     buf[i++] = '\\';
     buf[i++] = 'u';
-    int pad = 4 - fmt_xlong(0, c);
+    pad = 4 - fmt_xlong(0, c);
     while(pad-- > 0)
       buf[i++] = '0';
     i += fmt_xlong(&buf[i], c);

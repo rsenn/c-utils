@@ -35,7 +35,7 @@ http_read(fd_t fd, char* buf, size_t len, void* ptr) {
   buffer* b = &h->q.in;
 
   if((h = (http*)((buffer*)ptr)->cookie) == 0)
-    h = (http*)(uintptr_t)fd;
+    h = (http*)(ptrdiff_t)fd;
 again:
 
   r = h->response;
@@ -98,8 +98,8 @@ end:
   /*if(r->status == HTTP_STATUS_FINISH || r->status == HTTP_STATUS_CLOSED) */ {}
 
   if(r->code == 302) {
-    location = http_get_header(h, "Location");
     size_t len;
+    location = http_get_header(h, "Location");
     pos = 0;
     end = len = str_chrs(location, "\r\n\0", 3);
     if(pos = byte_finds(location, len, "://")) {

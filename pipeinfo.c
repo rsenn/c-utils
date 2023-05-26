@@ -229,7 +229,6 @@ read_proc() {
   uint32 pid, fd, pipeId;
   int64 n;
   fd_t tmpfd;
-
   pipe_t* p;
   procfd_t* pfd;
   size_t len, i;
@@ -237,6 +236,7 @@ read_proc() {
   const char *fdPath, targetPath;
   char* x;
   struct stat lst, st;
+  const char *fdStr, *s;
 
   stralloc target, real, current;
   stralloc_init(&procfd);
@@ -244,7 +244,6 @@ read_proc() {
   stralloc_init(&target);
   stralloc_init(&current);
 
-  const char *fdStr, *s;
   if(dir_open(&procdir, "/proc"))
     return;
   while((s = dir_read(&procdir))) {

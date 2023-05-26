@@ -262,74 +262,73 @@ main(int argc, char* argv[], char* envp[]) {
 #endif
 
   buffer_mmapread(&inifile, base.s);
-  ini_section_t* ini = 0;
+  {
+    ini_section_t* ini = 0, *env = 0;
+    const char *exec, *cwd, *argv0;
 
-  ini_read(&inifile, &ini);
+    ini_read(&inifile, &ini);
 
-  const char *exec, *cwd, *argv0;
-
-  if((cwd = ini_get(ini, "cwd"))) {
-    if(chdir(cwd)) {
-      errmsg_warnsys("failed to chdir(): ", cwd, 0);
-      return 2;
-    }
-  }
-
-  ini_section_t* env;
-
-  if((env = ini_section(ini, "env"))) {
-    strarray keys = ini_keys(env);
-    char** ptr;
-
-    strarray_foreach(&keys, ptr) {
-      const char* name = *ptr;
-      const char* value = ini_get(env, *ptr);
-
-      stralloc expanded = expand_env(value);
-
-#ifdef DEBUG_OUTPUT
-      buffer_putm_internal(buffer_2, "env_set(\"", name, "\", \"", expanded.s, "\"); (", value, ")", NULL);
-      buffer_putnlflush(buffer_2);
-#endif
-
-      env_set(name, expanded.s);
-      stralloc_free(&expanded);
-    }
-  }
-
-  if((exec = ini_get(ini, "exec"))) {
-    stralloc_copys(&realcmd, exec);
-    stralloc_nul(&realcmd);
-
-    if(!path_is_absolute(realcmd.s)) {
-      stralloc tmp;
-      stralloc_init(&tmp);
-      path_concat_sa(&progdir, &realcmd, &tmp);
-
-      if(str_len(PATHSEP_S_MIXED) > 1)
-        stralloc_replacec(&tmp, PATHSEP_S_MIXED[1], PATHSEP_S_MIXED[0]);
-
-      stralloc_nul(&tmp);
-      if(path_exists(tmp.s)) {
-        stralloc_free(&realcmd);
-        stralloc_move(&realcmd, &tmp);
+    if((cwd = ini_get(ini, "cwd"))) {
+      if(chdir(cwd)) {
+        errmsg_warnsys("failed to chdir(): ", cwd, 0);
+        return 2;
       }
     }
 
-    if(realcmd.len == byte_chrs(realcmd.s, realcmd.len, PATHSEP_S_MIXED, sizeof(PATHSEP_S_MIXED) - 1)) {
-      search_path(&fullcmd, realcmd.s);
-    } else if(path_exists(realcmd.s)) {
-      stralloc_copy(&fullcmd, &realcmd);
+    if((env = ini_section(ini, "env"))) {
+      strarray keys = ini_keys(env);
+      char** ptr;
+
+      strarray_foreach(&keys, ptr) {
+        const char* name = *ptr;
+        const char* value = ini_get(env, *ptr);
+
+        stralloc expanded = expand_env(value);
+
+#ifdef DEBUG_OUTPUT
+        buffer_putm_internal(buffer_2, "env_set(\"", name, "\", \"", expanded.s, "\"); (", value, ")", NULL);
+        buffer_putnlflush(buffer_2);
+#endif
+
+        env_set(name, expanded.s);
+        stralloc_free(&expanded);
+      }
     }
 
-    for(i = 1; i < argc; ++i) {
-      strarray_push(&args, argv[i]);
-    }
+    if((exec = ini_get(ini, "exec"))) {
+      stralloc_copys(&realcmd, exec);
+      stralloc_nul(&realcmd);
 
-    if((argv0 = ini_get(ini, "name"))) {
-      strarray_unshift(&args, argv0);
-    } else {
-      strarray_unshift(&args, path_basename(fullcmd.s));
+      if(!path_is_absolute(realcmd.s)) {
+        stralloc tmp;
+        stralloc_init(&tmp);
+        path_concat_sa(&progdir, &realcmd, &tmp);
+
+        if(str_len(PATHSEP_S_MIXED) > 1)
+          stralloc_replacec(&tmp, PATHSEP_S_MIXED[1], PATHSEP_S_MIXED[0]);
+
+        stralloc_nul(&tmp);
+        if(path_exists(tmp.s)) {
+          stralloc_free(&realcmd);
+          stralloc_move(&realcmd, &tmp);
+        }
+      }
+
+      if(realcmd.len == byte_chrs(realcmd.s, realcmd.len, PATHSEP_S_MIXED, sizeof(PATHSEP_S_MIXED) - 1)) {
+        search_path(&fullcmd, realcmd.s);
+      } else if(path_exists(realcmd.s)) {
+        stralloc_copy(&fullcmd, &realcmd);
+      }
+
+      for(i = 1; i < argc; ++i) {
+        strarray_push(&args, argv[i]);
+      }
+
+      if((argv0 = ini_get(ini, "name"))) {
+        strarray_unshift(&args, argv0);
+      } else {
+        strarray_unshift(&args, path_basename(fullcmd.s));
+      }
     }
 
     stralloc_init(&sa);
@@ -368,16 +367,17 @@ main(int argc, char* argv[], char* envp[]) {
     }
 
     // ret = execve(realcmd.s, av, envp);
-
-    int status = process_wait(ret);
+    {
+      int status = process_wait(ret);
 #ifdef DEBUG_OUTPUT
-    buffer_puts(buffer_2, "status: ");
-    buffer_putlong(buffer_2, status);
-    buffer_putnlflush(buffer_2);
+      buffer_puts(buffer_2, "status: ");
+      buffer_putlong(buffer_2, status);
+      buffer_putnlflush(buffer_2);
 #endif
 
-    if((status & 0xff) == 0)
-      return status >> 8;
+      if((status & 0xff) == 0)
+        return status >> 8;
+    }
     /*strarray_free(&args);*/
   }
 

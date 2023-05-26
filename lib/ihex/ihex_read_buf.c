@@ -4,8 +4,10 @@
 ssize_t
 ihex_read_buf(ihex_file* ihf, const char* in, size_t n) {
   const char *x = in, *end = in + n;
-  ihex_recptr p, pos = {&ihf->records};
+  ihex_recptr p, pos = { NULL };
   ssize_t ret = 0;
+
+  pos.rec = &ihf->records;
 
   while(x < end) {
     size_t len = byte_chrs(x, end - x, "\r\n", 2);
