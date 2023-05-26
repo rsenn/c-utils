@@ -114,36 +114,38 @@ cpp_parse_macro(cpp_t* cpp, tokenizer* t) {
     goto done;
   }
 
-  struct FILE_container_s {
-    buffer* f;
-    char* buf;
-    size_t len;
-  } contents;
-  contents.f = memstream_open(&contents.buf, &contents.len);
+  {
+    int backslash_seen = 0;
+    struct FILE_container_s {
+      buffer* f;
+      char* buf;
+      size_t len;
+    } contents;
+    contents.f = memstream_open(&contents.buf, &contents.len);
 
-  int backslash_seen = 0;
-  while(1) {
-    /* ignore unknown tokens in macro body */
-    ret = tokenizer_next(t, &curr);
-    if(!ret)
-      return 0;
-    if(curr.type == TT_EOF)
-      break;
-    if(curr.type == TT_SEP) {
-      if(curr.value == '\\')
-        backslash_seen = 1;
-      else {
-        if(curr.value == '\n' && !backslash_seen)
-          break;
+    while(1) {
+      /* ignore unknown tokens in macro body */
+      ret = tokenizer_next(t, &curr);
+      if(!ret)
+        return 0;
+      if(curr.type == TT_EOF)
+        break;
+      if(curr.type == TT_SEP) {
+        if(curr.value == '\\')
+          backslash_seen = 1;
+        else {
+          if(curr.value == '\n' && !backslash_seen)
+            break;
+          emit_token(contents.f, &curr, t->buf);
+          backslash_seen = 0;
+        }
+      } else {
         emit_token(contents.f, &curr, t->buf);
-        backslash_seen = 0;
       }
-    } else {
-      emit_token(contents.f, &curr, t->buf);
     }
+    new.str_contents = buffer_reopen(contents.f, &contents.buf, &contents.len);
+    new.str_contents_buf = contents.buf;
   }
-  new.str_contents = buffer_reopen(contents.f, &contents.buf, &contents.len);
-  new.str_contents_buf = contents.buf;
 done:
   if(redefined) {
     struct macro_s* old = cpp_get_macro(cpp, macroname);
