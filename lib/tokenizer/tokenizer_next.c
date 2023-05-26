@@ -67,12 +67,12 @@ tokenizer_next(tokenizer* t, struct token_s* out) {
     }
   }
   if(s == t->buf) {
+    int wide = 0;
     if(c == TOKENIZER_EOF) {
       out->type = TT_EOF;
       return apply_coords(t, out, s, 1);
     }
 
-    int wide = 0;
     c = tokenizer_getc(t);
     if((t->flags & TF_PARSE_WIDE_STRINGS) && c == 'L') {
       c = tokenizer_getc(t);
