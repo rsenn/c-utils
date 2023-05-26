@@ -152,10 +152,10 @@ cpp_expand_macro(cpp_t* cpp, tokenizer* t, buffer* out, const char* name, unsign
       buffer* output;
       struct FILE_container_s cwae = {0}; /* contents_with_args_expanded */
       int hash_count = 0, ws_count = 0;
+      tokenizer t2;
       cwae.f = memstream_open(&cwae.buf, &cwae.len);
       output = cwae.f;
 
-      tokenizer t2;
       tokenizer_from_file(&t2, m->str_contents);
       while(1) {
         int ret;
