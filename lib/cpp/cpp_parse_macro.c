@@ -114,54 +114,54 @@ cpp_parse_macro(cpp_t* cpp, tokenizer* t) {
       /* content-less macro */
       goto done;
     }
-  }
-  {
-    int backslash_seen = 0;
-    struct FILE_container_s {
-      buffer* f;
-      char* buf;
-      size_t len;
-    } contents;
-    contents.f = memstream_open(&contents.buf, &contents.len);
+    {
+      int backslash_seen = 0;
+      struct FILE_container_s {
+        buffer* f;
+        char* buf;
+        size_t len;
+      } contents;
+      contents.f = memstream_open(&contents.buf, &contents.len);
 
-    while(1) {
-      /* ignore unknown tokens in macro body */
-      ret = tokenizer_next(t, &curr);
-      if(!ret)
-        return 0;
-      if(curr.type == TT_EOF)
-        break;
-      if(curr.type == TT_SEP) {
-        if(curr.value == '\\')
-          backslash_seen = 1;
-        else {
-          if(curr.value == '\n' && !backslash_seen)
-            break;
+      while(1) {
+        /* ignore unknown tokens in macro body */
+        ret = tokenizer_next(t, &curr);
+        if(!ret)
+          return 0;
+        if(curr.type == TT_EOF)
+          break;
+        if(curr.type == TT_SEP) {
+          if(curr.value == '\\')
+            backslash_seen = 1;
+          else {
+            if(curr.value == '\n' && !backslash_seen)
+              break;
+            emit_token(contents.f, &curr, t->buf);
+            backslash_seen = 0;
+          }
+        } else {
           emit_token(contents.f, &curr, t->buf);
-          backslash_seen = 0;
         }
-      } else {
-        emit_token(contents.f, &curr, t->buf);
+      }
+      new.str_contents = buffer_reopen(contents.f, &contents.buf, &contents.len);
+      new.str_contents_buf = contents.buf;
+    }
+  done:
+    if(redefined) {
+      struct macro_s* old = cpp_get_macro(cpp, macroname);
+      char* s_old = old->str_contents_buf ? old->str_contents_buf : "";
+      char* s_new = new.str_contents_buf ? new.str_contents_buf : "";
+      if(str_diff(s_old, s_new)) {
+        char buf[128];
+        size_t n;
+        n = str_copy(buf, "redefinition of macro ");
+        str_copyn(&buf[n], macroname, sizeof(buf) - n);
+
+        warning(buf, t, 0);
       }
     }
-    new.str_contents = buffer_reopen(contents.f, &contents.buf, &contents.len);
-    new.str_contents_buf = contents.buf;
+    new.num_args |= macro_flags;
+    cpp_add_macro(cpp, macroname, &new);
   }
-done:
-  if(redefined) {
-    struct macro_s* old = cpp_get_macro(cpp, macroname);
-    char* s_old = old->str_contents_buf ? old->str_contents_buf : "";
-    char* s_new = new.str_contents_buf ? new.str_contents_buf : "";
-    if(str_diff(s_old, s_new)) {
-      char buf[128];
-      size_t n;
-      n = str_copy(buf, "redefinition of macro ");
-      str_copyn(&buf[n], macroname, sizeof(buf) - n);
-
-      warning(buf, t, 0);
-    }
-  }
-  new.num_args |= macro_flags;
-  cpp_add_macro(cpp, macroname, &new);
   return 1;
 }
