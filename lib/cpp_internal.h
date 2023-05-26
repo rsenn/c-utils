@@ -480,7 +480,8 @@ nud(tokenizer* t, struct token_s* tok, int* err) {
     case TT_LNOT: return !expr(t, bp(tok->type), err);
     case TT_LPAREN: {
       int inner = expr(t, 0, err);
-      if(0 != expect(t, TT_RPAREN, (const char*[]){")", 0}, tok)) {
+      const char* values[] = {")", 0};
+      if(0 != expect(t, TT_RPAREN, values, tok)) {
         error("missing ')'", t, tok);
         return 0;
       }
