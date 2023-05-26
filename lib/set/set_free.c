@@ -4,11 +4,12 @@
 void
 set_free_array(set_t* set) {
   bucket_t* next = NULL;
-  size_t i;
+  uint32 i, n = set->len;
 
-  for(i = 0; i < set->len; ++i) {
+  for(uint32 i = 0; i < n; i++) {
     next = set->array[i].next;
     free(set->array[i].value);
+
     while(next) {
       set->array[i].next = next->next;
       free(next->value);

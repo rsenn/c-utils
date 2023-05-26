@@ -10,13 +10,16 @@ set_realloc(set_t* set) {
   bucket_t* b;
 
   // allocate new set
-  set_t new_set;
-
-  new_set.entries = 0;
-  new_set.overflow = 0;
-  new_set.hash_fp = set->hash_fp;
-  new_set.len = set->len * 2;
-  new_set.array = calloc(new_set.len, sizeof(bucket_t));
+  set_t new_set = {
+      0,
+      0,
+      set->len * 2,
+      set->hash_fp,
+      calloc(new_set.len, sizeof(bucket_t)),
+      NULL,
+      NULL,
+      NULL,
+  };
   assert(new_set.array);
 
   // copy over old set
