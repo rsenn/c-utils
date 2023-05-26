@@ -5,19 +5,21 @@
 #include "lib/byte.h"
 #include "lib/fmt.h"
 
-static const char* const s_flags[] = {"SHF_WRITE",
-                                      "SHF_ALLOC",
-                                      "SHF_EXECINSTR",
-                                      "SHF_UNKNOWN_3",
-                                      "SHF_MERGE",
-                                      "SHF_STRINGS",
-                                      "SHF_INFO_LINK",
-                                      "SHF_LINK_ORDER",
-                                      "SHF_OS_NONCONFORMING",
-                                      "SHF_GROUP",
-                                      "SHF_TLS",
-                                      "SHF_COMPRESSED",
-                                      0};
+static const char* const s_flags[] = {
+    "SHF_WRITE",
+    "SHF_ALLOC",
+    "SHF_EXECINSTR",
+    "SHF_UNKNOWN_3",
+    "SHF_MERGE",
+    "SHF_STRINGS",
+    "SHF_INFO_LINK",
+    "SHF_LINK_ORDER",
+    "SHF_OS_NONCONFORMING",
+    "SHF_GROUP",
+    "SHF_TLS",
+    "SHF_COMPRESSED",
+    0,
+};
 static const char* const p_flags[] = {"PF_X", "PF_W", "PF_R", 0};
 static size_t size;
 static void* base;
