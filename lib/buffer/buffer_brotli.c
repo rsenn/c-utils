@@ -9,6 +9,8 @@
 #define _MSC_VER 1500
 #endif
 
+#define BROTLI_SHARED_COMPILATION
+
 #include <brotli/decode.h>
 #include <brotli/encode.h>
 #include <brotli/port.h>

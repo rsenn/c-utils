@@ -1,6 +1,6 @@
+#include "../tls_internal.h"
 #include "../io.h"
 #include "../typedefs.h"
-#include "../tls_internal.h"
 #include <assert.h>
 
 int

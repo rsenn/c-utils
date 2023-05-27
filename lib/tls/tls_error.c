@@ -1,3 +1,4 @@
+#define _WINSOCKAPI_
 #include "../io.h"
 #include "../typedefs.h"
 #include "../tls_internal.h"

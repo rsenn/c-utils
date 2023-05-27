@@ -13,7 +13,7 @@
 #define _WINSOCKAPI_
 #include <winsock2.h>
 #else
-#include <winsock.h>
+//#include <winsock.h>
 #endif
 //# include <ws2ipdef.h>
 #ifndef _MSC_VER
