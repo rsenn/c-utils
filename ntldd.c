@@ -1,3 +1,4 @@
+
 /*
     ntldd - lists dynamic dependencies
    of a module
@@ -910,10 +911,11 @@ main(int argc, char** argv) {
 
     for(kidx = 0; keys[kidx]; ++kidx) {
       if(registry_query(keys[kidx], "Path", &rpath)) {
+#ifdef DEBUG_OUTPUT
         buffer_putm_internal(buffer_2, "Registry path [", keys[kidx], "]: ", NULL);
         buffer_putsa(buffer_2, &rpath);
         buffer_putnlflush(buffer_2);
-
+#endif
         stralloc_nul(&rpath);
         add_path(&sp, rpath.s);
       }
