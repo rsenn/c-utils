@@ -848,7 +848,7 @@ list_file(stralloc* path, const char* name, int mode, long depth, int root_dev) 
   int match, show = 1;
   uint64 mtime = 0, size = 0, nlink = 0;
   uint32 uid = 0, gid = 0;
-  struct dir_s d;
+  struct dir_s d = {0};
 
   match = match_extensions(path);
 #ifdef DEBUG_OUTPUT_
