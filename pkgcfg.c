@@ -251,7 +251,7 @@ exec_program(const char* compiler, const char* arg, stralloc* out) {
   argv[1] = arg;
   argv[2] = NULL;
   envp[0] = NULL;
-  
+
   stralloc_init(&dir);
   stralloc_zero(out);
 

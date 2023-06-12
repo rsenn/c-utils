@@ -78,7 +78,7 @@ charbuf_dumpchar(int c, buffer* out, int pad) {
   char buf[64];
   int quote = pad < 0;
   size_t l, i = 0;
-  
+
   if(pad < 0)
     pad = -pad;
 
@@ -96,7 +96,7 @@ charbuf_dumpchar(int c, buffer* out, int pad) {
     if(quote)
       buf[i++] = '\'';
   } else {
-    int pad; 
+    int pad;
     buf[i++] = '\\';
     buf[i++] = 'u';
     pad = 4 - fmt_xlong(0, c);

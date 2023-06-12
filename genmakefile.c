@@ -67,7 +67,7 @@ const char *libpfx = DEFAULT_LIBPFX, *newline = "\n", *outfile = NULL, *infile =
 exts_t exts = {DEFAULT_OBJEXT, DEFAULT_LIBEXT, DEFAULT_DSOEXT, DEFAULT_EXEEXT, DEFAULT_PPSEXT};
 dirs_t dirs;
 tools_t tools;
-config_t cfg = { {0, 0}, {0, 0}, {0, 0, 0}, 1, LANG_CXX};
+config_t cfg = {{0, 0}, {0, 0}, {0, 0, 0}, 1, LANG_CXX};
 tool_config_t tool_config = 0;
 MAP_T targetdirs;
 
@@ -1836,7 +1836,7 @@ main(int argc, char* argv[]) {
 
   if(compile) {
     MAP_PAIR_T it;
-    
+
     strlist_nul(&dirs.work);
     strlist_push_unique(&vpath, ".");
     strlist_push_unique_sa(&vpath, &dirs.work.sa);
@@ -2013,7 +2013,7 @@ main(int argc, char* argv[]) {
     int link_rules = 0;
     stralloc src;
     strarray sources2;
-    
+
     stralloc_init(&src);
 
 #ifdef DEBUG_OUTPUT_
@@ -2267,9 +2267,9 @@ fail:
 quit : {
   strlist deps;
   MAP_PAIR_T t;
-  
+
   strlist_init(&deps, '\0');
-  
+
   MAP_FOREACH(srcdir_map, t) {
     sourcedir* sdir = *(sourcedir**)MAP_ITER_VALUE(t);
     if(1 /* && set_size(&sdir->deps)*/) {

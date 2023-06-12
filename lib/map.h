@@ -20,9 +20,12 @@ typedef linked_list_node* MAP_ITER_T;
 #define MAP_NEW(map) hashmap_init(&(map), 64, MAP_COMPARATOR, &hashfunc, (hashmap_key_dup_func)&str_dup, (hashmap_key_free_func)&alloc_free)
 #define MAP_GET(map, key, klen) hashmap_get(&(map), (void*)(key))
 #define MAP_DESTROY(map) hashmap_free(&(map))
-#define MAP_FOREACH(map, pair) MAP_ITER_T iter; for(iter = linked_list_head(hashmap_keys(&(map))); iter && ((pair) = hashmap_find(&(map), iter->data)); (iter) = (iter)->next)
+#define MAP_FOREACH(map, pair) \
+  MAP_ITER_T iter; \
+  for(iter = linked_list_head(hashmap_keys(&(map))); iter && ((pair) = hashmap_find(&(map), iter->data)); (iter) = (iter)->next)
 #define MAP_FOREACH_SAFE(map, pair) \
-  MAP_ITER_T next, iter; for(iter = linked_list_head(hashmap_keys(&(map))); iter && ((next = (iter)->next), ((pair) = hashmap_find(&(map), iter->data))); (iter) = next)
+  MAP_ITER_T next, iter; \
+  for(iter = linked_list_head(hashmap_keys(&(map))); iter && ((next = (iter)->next), ((pair) = hashmap_find(&(map), iter->data))); (iter) = next)
 #define MAP_FOREACH_VALUE(map, pair, value) \
   for(MAP_ITER_T iter = linked_list_head(hashmap_keys(&(map))); iter && (((pair) = hashmap_find(&(map), iter->data)), ((value) = MAP_VALUE((pair)))); (iter) = (iter)->next)
 #define MAP_ITER_KEY(iter) ((char*)MAP_DATA(iter)->key)

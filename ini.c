@@ -93,17 +93,17 @@ ini_write(buffer* b, ini_section_t* ini, int utf16) {
   }
   while(ini) {
     MAP_PAIR_T t;
-    
+
     buffer_putc(b, '[');
     buffer_putsa(b, &ini->name);
     buffer_put(b, "]\r\n", 3);
     {
-    MAP_FOREACH(ini->map, t) {
-      buffer_put(b, MAP_KEY(t), str_len(MAP_KEY(t)));
-      buffer_putc(b, '=');
-      buffer_put(b, MAP_VALUE(t), str_len(MAP_VALUE(t)));
-      buffer_puts(b, "\r\n");
-    }
+      MAP_FOREACH(ini->map, t) {
+        buffer_put(b, MAP_KEY(t), str_len(MAP_KEY(t)));
+        buffer_putc(b, '=');
+        buffer_put(b, MAP_VALUE(t), str_len(MAP_VALUE(t)));
+        buffer_puts(b, "\r\n");
+      }
     }
     ini = ini->next;
   }
@@ -243,6 +243,8 @@ ini_keys(ini_section_t* ini) {
   strarray ret;
   strarray_init(&ret);
 
-  { MAP_FOREACH_SAFE(ini->map, el) { strarray_push(&ret, MAP_KEY(el)); } }
+  {
+    MAP_FOREACH_SAFE(ini->map, el) { strarray_push(&ret, MAP_KEY(el)); }
+  }
   return ret;
 }

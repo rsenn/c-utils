@@ -514,7 +514,7 @@ read_command(void) {
     terminal_cursor_horizontal_absolute(1);
     buffer_puts(buffer_1,  command_prefixes[command_mode & 0x03]);
         buffer_putsa(buffer_1, &command_buf);*/
-    //char buf[1024];
+    // char buf[1024];
 
     /*buffer_put(buffer_1, buf, fmt_hexbs(buf, command_buf.s,
       command_buf.len)); buffer_flush(buffer_1);*/

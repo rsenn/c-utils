@@ -263,7 +263,7 @@ main(int argc, char* argv[], char* envp[]) {
 
   buffer_mmapread(&inifile, base.s);
   {
-    ini_section_t* ini = 0, *env = 0;
+    ini_section_t *ini = 0, *env = 0;
     const char *exec, *cwd, *argv0;
 
     ini_read(&inifile, &ini);

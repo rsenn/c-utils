@@ -184,17 +184,19 @@ typedef struct {
 #define VAL(t) \
   (column_t) { MAP_ITER_VALUE(t), MAP_ITER_VALUE_LEN(t) - 1 }
 */
-static column_t KEY(const MAP_PAIR_T pair) {
+static column_t
+KEY(const MAP_PAIR_T pair) {
   column_t ret;
-  ret.s=MAP_ITER_KEY(pair);
-  ret.n=MAP_ITER_KEY_LEN(pair);
+  ret.s = MAP_ITER_KEY(pair);
+  ret.n = MAP_ITER_KEY_LEN(pair);
   return ret;
 }
 
-static column_t VAL(const MAP_PAIR_T pair) {
+static column_t
+VAL(const MAP_PAIR_T pair) {
   column_t ret;
-  ret.s=MAP_ITER_VALUE(pair);
-  ret.n=MAP_ITER_VALUE_LEN(pair);
+  ret.s = MAP_ITER_VALUE(pair);
+  ret.n = MAP_ITER_VALUE_LEN(pair);
   return ret;
 }
 
