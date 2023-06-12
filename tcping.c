@@ -240,6 +240,8 @@ main(int argc, char* argv[]) {
     }
   }
 
+  taia_uint(&timeout, timeout_sec + timeout_usec / 1000000);
+
   dns_random_init(seed);
 
   MAP_NEW(hosts_db);
@@ -315,7 +317,6 @@ main(int argc, char* argv[]) {
     buffer_putnlflush(buffer_2);
 #endif
 
-    taia_uint(&timeout, timeout_sec + timeout_usec / 1000000);
     umult64(timeout_usec % 1000000, 1000, &result);
 
     timeout.nano = result;
