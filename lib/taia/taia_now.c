@@ -30,6 +30,10 @@ taia_now(struct taia* t) {
     }
   }
 #elif defined(_WIN32)
+  union {
+    FILETIME f;
+    uint64_t l;
+  } fnord;
   GetSystemTimeAsFileTime(&fnord.f);
   /* 64-bit value representing the number of 100-nanosecond intervals
    * since January 1, 1601 (UTC) */
