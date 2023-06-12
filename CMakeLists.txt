@@ -46,6 +46,10 @@ option(BUILD_SHARED_LIBS "build shared library" OFF)
 option(BUILD_EXAMPLES "build examples" OFF)
 option(BUILD_TESTS "build tests" OFF)
 
+message("CMAKE_SYSTEM_NAME: ${CMAKE_SYSTEM_NAME}")
+
+
+
 if(CMAKE_C_COMPILER MATCHES "musl")
   set(MUSL TRUE)
 endif(CMAKE_C_COMPILER MATCHES "musl")

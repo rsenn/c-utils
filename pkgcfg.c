@@ -463,7 +463,7 @@ pkg_parse_version(uint64* v, const char* x, size_t n) {
         n = 0;
       }
     }
-    *v |= (num & 0xffffll) << s;
+    *v |= (num & 0xffff) << s;
   }
 }
 
@@ -498,7 +498,7 @@ pkg_read(buffer* b, pkg* p) {
 
   MAP_NEW(p->vars);
   MAP_NEW(p->fields);
-  p->version = 0LL;
+  p->version = 0;
 
   for(;;) {
     int ret;
