@@ -23,8 +23,7 @@ struct unix_longopt {
 
 int unix_getopt_long(int argc, char* const* argv, const char* optstring, const struct unix_longopt*, int*);
 
-int unix_getopt_long_only(
-    int argc, char* const* argv, const char* shortopts, const struct unix_longopt* longopts, int* indexptr);
+int unix_getopt_long_only(int argc, char* const* argv, const char* shortopts, const struct unix_longopt* longopts, int* indexptr);
 /****************************************************************************
     int getopt_long_only(int argc, char* const argv[],
             const char* optstring,

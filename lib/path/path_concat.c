@@ -16,6 +16,7 @@ path_concat(const char* a, const char* b, stralloc* out) {
     x += 2;
     len -= 2;
   }
+
   stralloc_copyb(out, x, len);
   stralloc_nul(out);
   stralloc_free(&sa);

@@ -91,7 +91,12 @@ main(int argc, char* argv[], char* envp[]) {
   const char* pathstr;
   static int index, c, verbose;
   const struct unix_longopt opts[] = {
-      {"help", 0, 0, 'h'}, {"verbose", 0, &verbose, 'v'}, {"exec", 0, 0, 'e'}, {"root", 0, 0, 'r'}, {0, 0, 0, 0}};
+      {"help", 0, 0, 'h'},
+      {"verbose", 0, &verbose, 'v'},
+      {"exec", 0, 0, 'e'},
+      {"root", 0, 0, 'r'},
+      {0, 0, 0, 0},
+  };
   strlist_init(&args, '\0');
 
   errmsg_iam(argv[0]);

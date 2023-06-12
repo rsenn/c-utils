@@ -253,8 +253,7 @@ int stralloc_subst(stralloc* out, const char* b, size_t len, const char* from, c
 
 typedef size_t(stralloc_fmt_fn)(char*, int);
 size_t stralloc_fmt_call(stralloc*, stralloc_fmt_fn*, void* av[4]);
-size_t
-stralloc_fmt_pred(stralloc*, const char* in, size_t in_len, size_t (*fmt_function)(char*, int), int (*pred)(int));
+size_t stralloc_fmt_pred(stralloc*, const char* in, size_t in_len, size_t (*fmt_function)(char*, int), int (*pred)(int));
 size_t stralloc_fmt(stralloc*, const char* in, size_t in_len, size_t (*fmt_function)(char*, int));
 
 int stralloc_catdouble(stralloc*, double d, int prec);
@@ -310,6 +309,8 @@ void stralloc_replace_non_printable(stralloc*, char ch);
 void stralloc_reverse_blocks(stralloc*, size_t size);
 void stralloc_reverse(stralloc*);
 void stralloc_upper(register stralloc*);
+
+void stralloc_catq(stralloc*, const char*, size_t len, const char q[]);
 
 #ifdef BUFFER_H
 void stralloc_dump(const stralloc* sa, buffer* b);

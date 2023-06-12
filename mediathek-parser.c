@@ -39,13 +39,7 @@ static const char* prefix_cmd;
 
 char* str_ptime(const char* s, const char* format, struct tm* tm);
 
-typedef void output_fn(const char* sender,
-                       const char* thema,
-                       const char* title,
-                       unsigned duration,
-                       const char* datetime,
-                       const char* url,
-                       const char* description);
+typedef void output_fn(const char* sender, const char* thema, const char* title, unsigned duration, const char* datetime, const char* url, const char* description);
 typedef output_fn* output_fn_ptr;
 
 output_fn output_m3u_entry, output_wget_entry, output_curl_entry;
@@ -106,25 +100,6 @@ read_line(char* s, size_t len, strlist* fields) {
     tokbuf[i++] = *p;
   }
   return p - s;
-}
-
-/**
- * @brief strarray_dump
- * @param b
- * @param a
- */
-void
-strarray_dump(buffer* b, const array* a) {
-  char** av = array_start(a);
-  ssize_t ac = array_length(a, sizeof(char*));
-  buffer_puts(b, "[ \"");
-  while(ac--) {
-    buffer_puts(b, *av);
-    if(ac > 0)
-      buffer_puts(b, "\", \"");
-    ++av;
-  }
-  buffer_putsflush(b, "\" ]\n");
 }
 
 void
@@ -364,13 +339,7 @@ put_quoted_string(const char* str) {
  * @param description
  */
 void
-output_m3u_entry(const char* sender,
-                 const char* thema,
-                 const char* title,
-                 unsigned duration,
-                 const char* datetime,
-                 const char* url,
-                 const char* description) {
+output_m3u_entry(const char* sender, const char* thema, const char* title, unsigned duration, const char* datetime, const char* url, const char* description) {
 
   if(csv == 0) {
     buffer_puts(&output_buf, "#EXTINF:");
@@ -409,21 +378,10 @@ output_m3u_entry(const char* sender,
   buffer_flush(&output_buf);
 }
 void
-output_wget_entry(const char* sender,
-                  const char* thema,
-                  const char* title,
-                  unsigned duration,
-                  const char* datetime,
-                  const char* url,
-                  const char* description) {
+output_wget_entry(const char* sender, const char* thema, const char* title, unsigned duration, const char* datetime, const char* url, const char* description) {
   int skipSender = str_start(thema, sender);
   int multiline = 0;
-  buffer_putm_internal(&output_buf,
-                       prefix_cmd ? prefix_cmd : "",
-                       prefix_cmd ? " " : "",
-                       multiline ? "wget \\\n  -c " : "wget -c ",
-                       url,
-                       0);
+  buffer_putm_internal(&output_buf, prefix_cmd ? prefix_cmd : "", prefix_cmd ? " " : "", multiline ? "wget \\\n  -c " : "wget -c ", url, 0);
   buffer_putm_internal(&output_buf, multiline ? " \\\n  -O '" : " -O '", NULL);
 
   if(!skipSender) {
@@ -449,13 +407,7 @@ output_wget_entry(const char* sender,
 }
 
 void
-output_curl_entry(const char* sender,
-                  const char* thema,
-                  const char* title,
-                  unsigned duration,
-                  const char* datetime,
-                  const char* url,
-                  const char* description) {
+output_curl_entry(const char* sender, const char* thema, const char* title, unsigned duration, const char* datetime, const char* url, const char* description) {
 
   buffer_putm_internal(&output_buf, "curl -L -k ", url, NULL);
   buffer_putm_internal(&output_buf, " -o '", sender, " - ", thema, " - ", title, ".mp4'", NULL);

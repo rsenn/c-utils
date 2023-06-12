@@ -3,13 +3,16 @@
 int
 tokenizer_next(tokenizer* t, struct token_s* out) {
   char* s = t->buf;
-  out->value = 0;
   int c = 0;
+
+  out->value = 0;
+
   if(t->peeking) {
     *out = t->peek_token;
     t->peeking = 0;
     return 1;
   }
+
   while(1) {
     c = tokenizer_getc(t);
     if(c == TOKENIZER_EOF)
@@ -31,8 +34,7 @@ tokenizer_next(tokenizer* t, struct token_s* out) {
           continue;
         tokenizer_ungetc(t, c);
         c = '\\';
-      } else if(is_plus_or_minus(c) && s > t->buf + 1 && (s[-1] == 'E' || s[-1] == 'e') &&
-                is_valid_float_until(t->buf, s - 1)) {
+      } else if(is_plus_or_minus(c) && s > t->buf + 1 && (s[-1] == 'E' || s[-1] == 'e') && is_valid_float_until(t->buf, s - 1)) {
         goto process_char;
       } else if(c == '.' && s != t->buf && is_valid_float_until(t->buf, s) == 1) {
         goto process_char;
@@ -65,12 +67,12 @@ tokenizer_next(tokenizer* t, struct token_s* out) {
     }
   }
   if(s == t->buf) {
+    int wide = 0;
     if(c == TOKENIZER_EOF) {
       out->type = TT_EOF;
       return apply_coords(t, out, s, 1);
     }
 
-    int wide = 0;
     c = tokenizer_getc(t);
     if((t->flags & TF_PARSE_WIDE_STRINGS) && c == 'L') {
       c = tokenizer_getc(t);

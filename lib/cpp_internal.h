@@ -133,6 +133,7 @@ emit_token(buffer* out, struct token_s* tok, const char* strbuf) {
 
 static inline void
 error_or_warning(const char* err, const char* type, tokenizer* t, struct token_s* curr) {
+  int i;
   unsigned column = curr ? curr->column : t->column;
   unsigned line = curr ? curr->line : t->line;
 
@@ -144,7 +145,7 @@ error_or_warning(const char* err, const char* type, tokenizer* t, struct token_s
 
   /*  dprintf(2, "<%s> %u:%u %s: '%s'\n", t->filename, line, column, type, err);
     dprintf(2, "%s\n", t->buf);*/
-  for(int i = 0; i < str_len(t->buf); i++)
+  for(i = 0; i < str_len(t->buf); i++)
     buffer_puts(buffer_2, "^");
 
   buffer_putnlflush(buffer_2);
@@ -204,22 +205,17 @@ x_tokenizer_next_of(struct tokenizer_s* t, token* tok, int fail_unk) {
 }
 
 static inline int
-mem_tokenizers_join(struct FILE_container_s* org,
-                    struct FILE_container_s* inj,
-                    struct FILE_container_s* result,
-                    int first,
-                    off_t lastpos) {
-  result->f = memstream_open(&result->buf, &result->len);
+mem_tokenizers_join(struct FILE_container_s* org, struct FILE_container_s* inj, struct FILE_container_s* result, int first, off_t lastpos) {
   size_t i;
   struct token_s tok;
-  int ret;
+  int ret, diff, cnt = 0, last = first;
+  result->f = memstream_open(&result->buf, &result->len);
   tokenizer_rewind(&org->t);
   for(i = 0; i < first; ++i) {
     ret = tokenizer_next(&org->t, &tok);
     assert(ret && tok.type != TT_EOF);
     emit_token(result->f, &tok, org->t.buf);
   }
-  int cnt = 0, last = first;
   while(1) {
     ret = tokenizer_next(&inj->t, &tok);
     if(!ret || tok.type == TT_EOF)
@@ -232,7 +228,7 @@ mem_tokenizers_join(struct FILE_container_s* org,
     last++;
   }
 
-  int diff = cnt - ((int)last - (int)first);
+  diff = cnt - ((int)last - (int)first);
 
   while(1) {
     ret = tokenizer_next(&org->t, &tok);
@@ -269,13 +265,15 @@ mem_tokenizers_join(struct FILE_container_s* org,
 #define TT_RPAREN TT_CUSTOM + 20
 #define TT_LNOT TT_CUSTOM + 21
 
-#define TTINT(X) X - TT_CUSTOM
+#define TTINT(X) (X - TT_CUSTOM)
 #define TTENT(X, Y) [TTINT(X)] = Y
 
 static inline int
 bp(int tokentype) {
   static const int bplist[] = {
-      TTENT(TT_LOR, 1 << 4),
+      0x20, 0x10,   0x400,  0x400,  0x800,  0x800,  0x200,  0x200,  0x400, 0x400, 0x100, 0x40,
+      0x80, 0x4000, 0x1000, 0x1000, 0x2000, 0x2000, 0x2000, 0x8000, 0,     0x4000
+      /*TTENT(TT_LOR, 1 << 4),
       TTENT(TT_LAND, 1 << 5),
       TTENT(TT_BOR, 1 << 6),
       TTENT(TT_XOR, 1 << 7),
@@ -298,7 +296,7 @@ bp(int tokentype) {
       TTENT(TT_LPAREN, 1 << 15),
       //    TTENT(TT_RPAREN, 1 << 15),
       //    TTENT(TT_LPAREN, 0),
-      TTENT(TT_RPAREN, 0),
+      TTENT(TT_RPAREN, 0)*/
   };
   if(TTINT(tokentype) < sizeof(bplist) / sizeof(bplist[0]))
     return bplist[TTINT(tokentype)];
@@ -308,8 +306,8 @@ bp(int tokentype) {
 /* skips until the next non-whitespace token (if the current one is one too)*/
 static inline int
 eat_whitespace(tokenizer* t, struct token_s* token, int* count) {
-  *count = 0;
   int ret = 1;
+  *count = 0;
   while(is_whitespace_token(token)) {
     ++(*count);
     ret = x_tokenizer_next(t, token);
@@ -322,10 +320,11 @@ eat_whitespace(tokenizer* t, struct token_s* token, int* count) {
 /* fetches the next token until it is non-whitespace */
 static inline int
 skip_next_and_ws(tokenizer* t, struct token_s* tok) {
-  int ret = tokenizer_next(t, tok);
-  if(!ret)
+  int ws_count, ret;
+
+  if(!(ret = tokenizer_next(t, tok)))
     return ret;
-  int ws_count;
+
   ret = eat_whitespace(t, tok, &ws_count);
   return ret;
 }
@@ -375,10 +374,13 @@ led(tokenizer* t, int left, struct token_s* tok, int* err) {
 static inline int
 expr(tokenizer* t, int rbp, int* err) {
   struct token_s tok;
-  int ret = skip_next_and_ws(t, &tok);
+  int left, ret = skip_next_and_ws(t, &tok);
+
   if(tok.type == TT_EOF)
     return 0;
-  int left = nud(t, &tok, err);
+
+  left = nud(t, &tok, err);
+
   while(1) {
     ret = tokenizer_peek_next_non_ws(t, &tok);
     if(bp(tok.type) <= rbp)
@@ -388,22 +390,29 @@ expr(tokenizer* t, int rbp, int* err) {
       break;
     left = led(t, left, &tok, err);
   }
+
   (void)ret;
   return left;
 }
 
 static inline int
 emit_error_or_warning(tokenizer* t, int is_error) {
-  int ws_count;
-  int ret = tokenizer_skip_chars(t, " \t", &ws_count);
-  if(!ret)
+  int ws_count, ret;
+  struct token_s tmp;
+
+  if(!(ret = tokenizer_skip_chars(t, " \t", &ws_count)))
     return ret;
-  struct token_s tmp = {.column = t->column, .line = t->line};
+
+  tmp.column = t->column;
+  tmp.line = t->line;
+
   ret = tokenizer_read_until(t, "\n", 1);
+
   if(is_error) {
     error(t->buf, t, &tmp);
     return 0;
   }
+
   warning(t->buf, t, &tmp);
   return 1;
 }
@@ -411,7 +420,8 @@ emit_error_or_warning(tokenizer* t, int is_error) {
 /* return index of matching item in values array, or -1 on error */
 static inline int
 expect(tokenizer* t, enum tokentype tt, const char* const values[], struct token_s* token) {
-  int ret;
+  int ret, i;
+
   do {
     ret = tokenizer_next(t, token);
     if(ret == 0 || token->type == TT_EOF)
@@ -423,12 +433,11 @@ expect(tokenizer* t, enum tokentype tt, const char* const values[], struct token
     error("unexpected token", t, token);
     return -1;
   }
-  int i = 0;
-  while(values[i]) {
+
+  for(i = 0; values[i]; i++)
     if(!str_diff(values[i], t->buf))
       return i;
-    ++i;
-  }
+
   return -1;
 }
 
@@ -471,7 +480,8 @@ nud(tokenizer* t, struct token_s* tok, int* err) {
     case TT_LNOT: return !expr(t, bp(tok->type), err);
     case TT_LPAREN: {
       int inner = expr(t, 0, err);
-      if(0 != expect(t, TT_RPAREN, (const char*[]){")", 0}, tok)) {
+      const char* values[] = {")", 0};
+      if(0 != expect(t, TT_RPAREN, values, tok)) {
         error("missing ')'", t, tok);
         return 0;
       }

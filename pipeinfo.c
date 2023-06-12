@@ -84,9 +84,7 @@ get_pipe(int64 id) {
 void
 print_number_nonl_base(const char* property, int64 num, int base) {
   buffer_putm_internal(buffer_1, property, "=", base == 8 ? "0" : base == 16 ? "0x" : "", NULL);
-  (base == 8    ? buffer_put8long(buffer_1, num)
-   : base == 16 ? buffer_putxlonglong0(buffer_1, num, 2)
-                : buffer_putlonglong(buffer_1, num));
+  (base == 8 ? buffer_put8long(buffer_1, num) : base == 16 ? buffer_putxlonglong0(buffer_1, num, 2) : buffer_putlonglong(buffer_1, num));
 }
 
 void
@@ -231,7 +229,6 @@ read_proc() {
   uint32 pid, fd, pipeId;
   int64 n;
   fd_t tmpfd;
-
   pipe_t* p;
   procfd_t* pfd;
   size_t len, i;
@@ -239,6 +236,7 @@ read_proc() {
   const char *fdPath, targetPath;
   char* x;
   struct stat lst, st;
+  const char *fdStr, *s;
 
   stralloc target, real, current;
   stralloc_init(&procfd);
@@ -246,7 +244,6 @@ read_proc() {
   stralloc_init(&target);
   stralloc_init(&current);
 
-  const char *fdStr, *s;
   if(dir_open(&procdir, "/proc"))
     return;
   while((s = dir_read(&procdir))) {
@@ -393,10 +390,7 @@ main(int argc, char* argv[]) {
 
   if(0) {
     read_proc();
-    qsort(array_start(&pipes),
-          array_length(&pipes, sizeof(pipe_t)),
-          sizeof(pipe_t),
-          (int (*)(const void*, const void*))(void*)&compare_pipes);
+    qsort(array_start(&pipes), array_length(&pipes, sizeof(pipe_t)), sizeof(pipe_t), (int (*)(const void*, const void*))(void*)&compare_pipes);
   }
 
   if(verbose) {

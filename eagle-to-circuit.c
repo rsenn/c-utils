@@ -382,10 +382,7 @@ build_reflist(xmlnode* node, struct net* n, int* index) {
     print_element_attrs(node);
     buffer_putnlflush(buffer_2);
   }
-  qsort(array_start(&n->contacts),
-        array_length(&n->contacts, sizeof(struct ref)),
-        sizeof(struct ref),
-        (cmp_fn_t*)&compare_ref);
+  qsort(array_start(&n->contacts), array_length(&n->contacts, sizeof(struct ref)), sizeof(struct ref), (cmp_fn_t*)&compare_ref);
 }
 
 /**
@@ -553,8 +550,7 @@ clean_pkgname(stralloc* pkgname, const struct package* pkg) {
   stralloc_copy(pkgname, &pkg->name);
   stralloc_lower(pkgname);
 
-  if(pkgname->len > 4 && pkgname->s[0] == '0' && isdigit(pkgname->s[1]) && isdigit(pkgname->s[2]) &&
-     isdigit(pkgname->s[3]) && pkgname->s[4] == '/') {
+  if(pkgname->len > 4 && pkgname->s[0] == '0' && isdigit(pkgname->s[1]) && isdigit(pkgname->s[2]) && isdigit(pkgname->s[3]) && pkgname->s[4] == '/') {
     // stralloc_remove(pkgname, 0, 1);
     pkgname->s[0] = 'r';
     pkgname->s[1] = 'e';
@@ -897,8 +893,7 @@ print_attrs(HMAP_DB* a) {
 
   for(t = a->list_tuple; t; t = t->next) {
     char* v = t->vals.val_chars;
-    buffer_putm_internal(
-        buffer_2, " ", t->key, str_isdoublenum(v) ? "=" : "=\"", v, str_isdoublenum(v) ? "" : "\"", NULL);
+    buffer_putm_internal(buffer_2, " ", t->key, str_isdoublenum(v) ? "=" : "=\"", v, str_isdoublenum(v) ? "" : "\"", NULL);
     if(t->next == a->list_tuple)
       break;
   }

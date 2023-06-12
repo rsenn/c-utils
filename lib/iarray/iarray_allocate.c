@@ -14,6 +14,7 @@ new_page(size_t pagesize) {
   void* x = malloc(pagesize);
   if(x == 0)
     return 0;
+  ZeroMemory(x, pagesize);
 #else
   void* x = mmap(0, pagesize, PROT_READ | PROT_WRITE, MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);
   if(x == MAP_FAILED)

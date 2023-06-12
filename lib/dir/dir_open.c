@@ -24,6 +24,8 @@ dir_open(struct dir_s* d, const char* p) {
   int ret;
   if(!(d->dir_int = malloc(sizeof(struct dir_internal_s))))
     return 1;
+
+  memset(d->dir_int, 0, sizeof(struct dir_internal_s));
 #if USE_READDIR
   ret = ((dir_INTERNAL(d)->dir_handle = opendir(p)) == NULL) ? -1 : 0;
 #else

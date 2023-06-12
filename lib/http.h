@@ -37,31 +37,16 @@ typedef struct http_return_s {
 } http_return_value;
 
 struct http_response_s;
-typedef enum {
-  HTTP_TRANSFER_UNDEF = 0,
-  HTTP_TRANSFER_CHUNKED,
-  HTTP_TRANSFER_LENGTH,
-  HTTP_TRANSFER_BOUNDARY
-} http_transfer_type;
+typedef enum { HTTP_TRANSFER_UNDEF = 0, HTTP_TRANSFER_CHUNKED, HTTP_TRANSFER_LENGTH, HTTP_TRANSFER_BOUNDARY } http_transfer_type;
 
-typedef enum {
-  HTTP_RECV_HEADER = 0,
-  HTTP_RECV_DATA,
-  HTTP_STATUS_CLOSED,
-  HTTP_STATUS_ERROR,
-  HTTP_STATUS_BUSY,
-  HTTP_STATUS_FINISH
-} http_status;
+typedef enum { HTTP_RECV_HEADER = 0, HTTP_RECV_DATA, HTTP_STATUS_CLOSED, HTTP_STATUS_ERROR, HTTP_STATUS_BUSY, HTTP_STATUS_FINISH } http_status;
 
 typedef struct http_response_s {
   http_transfer_type transfer;
   http_status status;
   int code;
   stralloc data;
-  uint64 ptr;
-  size_t chnk;
-  size_t line;
-  // union {
+  uint64 ptr, received;
   uint64 content_length;
   uint64 chunk_length;
   //};
@@ -94,8 +79,8 @@ typedef struct http_s {
   uint16 version;
 } http;
 
-ssize_t http_canread(http* h, void (*wantwrite)(fd_t));
-ssize_t http_canwrite(http* h, void (*wantread)(fd_t));
+ssize_t http_canread(http* h, void (*wantread)(fd_t), void (*wantwrite)(fd_t));
+ssize_t http_canwrite(http* h, void (*wantread)(fd_t), void (*wantwrite)(fd_t));
 void http_close(http* h);
 const char* http_get_header(http* h, const char* name);
 int http_get(http* h, const char* location);

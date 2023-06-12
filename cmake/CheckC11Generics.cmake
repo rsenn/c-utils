@@ -19,7 +19,8 @@ void test_c11generics() {
 int main() {
   test_c11generics();
 }")
-try_compile(HAVE_C11_GENERICS "${CMAKE_CURRENT_BINARY_DIR}" SOURCES "${CMAKE_CURRENT_BINARY_DIR}/try_c11generics.c")
+try_compile(HAVE_C11_GENERICS "${CMAKE_CURRENT_BINARY_DIR}"
+            SOURCES "${CMAKE_CURRENT_BINARY_DIR}/try_c11generics.c")
 
 if(HAVE_C11_GENERICS)
   message("Checking C11 generics - supported")

@@ -384,8 +384,8 @@ main(int argc, char** argv) {
 
       buffer_putnlflush(buffer_2);
 
-      if(header->machine != COFF_FILE_MACHINE_I386 && header->machine != COFF_FILE_MACHINE_AMD64 &&
-         header->machine != COFF_FILE_MACHINE_MICROCHIP_V1 && header->machine != COFF_FILE_MACHINE_MICROCHIP_V2) {
+      if(header->machine != COFF_FILE_MACHINE_I386 && header->machine != COFF_FILE_MACHINE_AMD64 && header->machine != COFF_FILE_MACHINE_MICROCHIP_V1 &&
+         header->machine != COFF_FILE_MACHINE_MICROCHIP_V2) {
         buffer_putsflush(buffer_2, "not COFF\n");
         return -1;
       }

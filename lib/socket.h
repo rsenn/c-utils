@@ -118,6 +118,15 @@ int socket_error(fd_t, int* error);
 #ifndef ECONNREFUSED
 #define ECONNREFUSED WSAECONNREFUSED
 #endif
+#ifndef EHOSTUNREACH
+#define EHOSTUNREACH WSAEHOSTUNREACH
+#endif
+#ifndef EPROTO
+#define EPROTO WSAEPROTONOSUPPORT
+#endif
+#ifndef ETIMEDOUT
+#define ETIMEDOUT WSAETIMEDOUT
+#endif
 #endif
 
 int socket_v6only(int fd, int enable);

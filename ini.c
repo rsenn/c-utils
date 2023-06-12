@@ -30,6 +30,11 @@ buffer_write_utf16le(fd_t fd, void* buf, size_t len, void* arg) {
   return i;
 }
 
+const char*
+ini_get(ini_section_t* ini, const char* key) {
+  return MAP_GET(ini->map, (char*)key, str_len(key) + 1);
+}
+
 void
 ini_set(ini_section_t* ini, const char* key, const char* value) {
   MAP_INSERT(ini->map, (char*)key, str_len(key) + 1, (char*)value, str_len(value) + 1);
@@ -87,16 +92,18 @@ ini_write(buffer* b, ini_section_t* ini, int utf16) {
     b = &out;
   }
   while(ini) {
-
     MAP_PAIR_T t;
+
     buffer_putc(b, '[');
     buffer_putsa(b, &ini->name);
     buffer_put(b, "]\r\n", 3);
-    MAP_FOREACH(ini->map, t) {
-      buffer_put(b, MAP_KEY(t), str_len(MAP_KEY(t)));
-      buffer_putc(b, '=');
-      buffer_put(b, MAP_VALUE(t), str_len(MAP_VALUE(t)));
-      buffer_puts(b, "\r\n");
+    {
+      MAP_FOREACH(ini->map, t) {
+        buffer_put(b, MAP_KEY(t), str_len(MAP_KEY(t)));
+        buffer_putc(b, '=');
+        buffer_put(b, MAP_VALUE(t), str_len(MAP_VALUE(t)));
+        buffer_puts(b, "\r\n");
+      }
     }
     ini = ini->next;
   }
@@ -161,7 +168,7 @@ getline_sa(buffer* b, stralloc* line, getchar_fn* getbyte) {
 void
 ini_read(buffer* b, ini_section_t** ptr) {
   stralloc line;
-  ini_section_t* s = 0;
+  ini_section_t *ini = 0, *s = 0;
   char* x;
   getchar_fn* getc_fn = &getchar_utf8;
 
@@ -182,6 +189,7 @@ ini_read(buffer* b, ini_section_t** ptr) {
     size_t i, e;
 
     stralloc_trimr(&line, "\r\n", 2);
+    stralloc_nul(&line);
 
     i = scan_whitenskip(line.s, line.len);
 
@@ -194,16 +202,9 @@ ini_read(buffer* b, ini_section_t** ptr) {
     if(line.s[i] == '[') {
       i++;
       e = byte_chr(&line.s[i], line.len - i, ']');
-
       s = ini_newb(ptr, &line.s[i], e);
-      /*      s = alloc(sizeof(ini_
-         section_t));
-            stralloc_init(&s->name);
-            stralloc_copyb(&s->name,
-         &line.s[i], e); s->next = NULL;
-            MAP_NEW(s->map);
-            *ptr = s;
-            ptr = &s->next;*/
+      if(ini == 0)
+        ini = *ptr;
       continue;
     }
 
@@ -213,11 +214,37 @@ ini_read(buffer* b, ini_section_t** ptr) {
     e = byte_chr(&line.s[i], line.len - i, '=');
 
     if(i + e < line.len) {
+      line.s[i + e] = '\0';
       e++;
       MAP_INSERT(s->map, &line.s[i], e - i - 1, &line.s[i + e], line.len - (i + e));
 
-      buffer_putsa(buffer_2, &line);
-      buffer_putnlflush(buffer_2);
+      /*buffer_putsa(buffer_2, &line);
+      buffer_putnlflush(buffer_2);*/
     }
   }
+
+  *ptr = ini;
+}
+
+ini_section_t*
+ini_section(ini_section_t* ini, const char* name) {
+  do
+    if(stralloc_case_equals(&ini->name, name))
+      return ini;
+
+  while((ini = ini->next));
+
+  return 0;
+}
+
+strarray
+ini_keys(ini_section_t* ini) {
+  MAP_PAIR_T el;
+  strarray ret;
+  strarray_init(&ret);
+
+  {
+    MAP_FOREACH_SAFE(ini->map, el) { strarray_push(&ret, MAP_KEY(el)); }
+  }
+  return ret;
 }

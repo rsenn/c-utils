@@ -21,6 +21,7 @@ fi
 [ $# -eq 0 ] &&  set -- lcc32 lcc64 tcc32 tcc64 bcc55 bcc101
 
 echo "MODULES=$MODULES" 1>&2
+echo "Compilers: $@" 1>&2
 #set -- 
 #set -- "$@" pocc32 pocc64
 #set -- "$@" dmc32 occ32

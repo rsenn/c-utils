@@ -99,9 +99,7 @@ main(int argc, char* argv[]) {
           outtype = XSPF;
         break;
       case 'h': usage(str_basename(argv[0])); exit(EXIT_SUCCESS);
-      default: /* '?' */
-        buffer_putm_internal(buffer_2, "Usage: ", argv[0], "[-t TYPE] [file]\n", NULL);
-        exit(EXIT_FAILURE);
+      default: /* '?' */ buffer_putm_internal(buffer_2, "Usage: ", argv[0], "[-t TYPE] [file]\n", NULL); exit(EXIT_FAILURE);
     }
   }
 

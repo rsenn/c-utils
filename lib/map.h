@@ -17,20 +17,17 @@ typedef linked_list_node* MAP_ITER_T;
 #define MAP_SIZE(map) hashmap_size(&(map))
 #define MAP_ZERO(map) byte_zero(&(map), sizeof(map))
 #define MAP_ISNULL(map) (byte_count(&(map), sizeof(map), 0) == sizeof(map))
-#define MAP_NEW(map) hashmap_init(&(map), 64, MAP_COMPARATOR, &hashfunc, (void*)&str_dup, (void*)&alloc_free)
+#define MAP_NEW(map) hashmap_init(&(map), 64, MAP_COMPARATOR, &hashfunc, (hashmap_key_dup_func)&str_dup, (hashmap_key_free_func)&alloc_free)
 #define MAP_GET(map, key, klen) hashmap_get(&(map), (void*)(key))
 #define MAP_DESTROY(map) hashmap_free(&(map))
 #define MAP_FOREACH(map, pair) \
-  for(MAP_ITER_T iter = linked_list_head(hashmap_keys(&(map))); iter && ((pair) = hashmap_find(&(map), iter->data)); \
-      (iter) = (iter)->next)
+  MAP_ITER_T iter; \
+  for(iter = linked_list_head(hashmap_keys(&(map))); iter && ((pair) = hashmap_find(&(map), iter->data)); (iter) = (iter)->next)
 #define MAP_FOREACH_SAFE(map, pair) \
-  for(MAP_ITER_T next, iter = linked_list_head(hashmap_keys(&(map))); \
-      iter && ((next = (iter)->next), ((pair) = hashmap_find(&(map), iter->data))); \
-      (iter) = next)
+  MAP_ITER_T next, iter; \
+  for(iter = linked_list_head(hashmap_keys(&(map))); iter && ((next = (iter)->next), ((pair) = hashmap_find(&(map), iter->data))); (iter) = next)
 #define MAP_FOREACH_VALUE(map, pair, value) \
-  for(MAP_ITER_T iter = linked_list_head(hashmap_keys(&(map))); \
-      iter && (((pair) = hashmap_find(&(map), iter->data)), ((value) = MAP_VALUE((pair)))); \
-      (iter) = (iter)->next)
+  for(MAP_ITER_T iter = linked_list_head(hashmap_keys(&(map))); iter && (((pair) = hashmap_find(&(map), iter->data)), ((value) = MAP_VALUE((pair)))); (iter) = (iter)->next)
 #define MAP_ITER_KEY(iter) ((char*)MAP_DATA(iter)->key)
 #define MAP_ITER_KEY_LEN(iter) str_len(MAP_ITER_KEY(iter))
 #define MAP_ITER_VALUE(iter) (MAP_DATA(iter)->value)
@@ -172,7 +169,7 @@ typedef TUPLE* MAP_ITER_T;
 #define MAP_ZERO(map) ((map) = 0)
 #define MAP_ISNULL(map) ((map) == 0)
 #define MAP_NEW(map) hmap_init(1024, &(map))
-#define MAP_DESTROY(map) ((map) ? hmap_destroy(&(map)) : (void)0)
+#define MAP_DESTROY(map) hmap_destroy(&(map))
 #define MAP_FOREACH(map, iter) hmap_foreach(map, iter)
 
 #define MAP_ITER_KEY(iter) ((const char*)((iter)->key))

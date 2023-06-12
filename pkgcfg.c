@@ -242,12 +242,17 @@ exec_program(const char* compiler, const char* arg, stralloc* out) {
   posix_spawnattr_t attr;
 #endif
   int p[2];
-  char* const argv[] = {(char*)compiler, (char*)arg, 0};
-  char* const envp[1] = {0};
+  int stdio[3];
+  char* argv[3];
+  char* envp[1];
   const char* bin;
   stralloc dir;
-  stralloc_init(&dir);
+  argv[0] = compiler;
+  argv[1] = arg;
+  argv[2] = NULL;
+  envp[0] = NULL;
 
+  stralloc_init(&dir);
   stralloc_zero(out);
 
 #if WINDOWS_NATIVE
@@ -265,7 +270,11 @@ exec_program(const char* compiler, const char* arg, stralloc* out) {
     exit(127);
   }
 
-  if((pid = process_create(bin, argv, (int[3]){0, p[1], p[1]}, 0)) < 0) {
+  stdio[0] = 0;
+  stdio[1] = p[1];
+  stdio[2] = p[1];
+
+  if((pid = process_create(bin, argv, stdio, 0)) < 0) {
     errmsg_warnsys("process_create error ", bin, ": ", 0);
     return 0;
   }
@@ -433,6 +442,7 @@ void
 pkg_free(pkg* p) {
   MAP_DESTROY(p->fields);
   MAP_DESTROY(p->vars);
+
   stralloc_free(&p->name);
 }
 
@@ -453,7 +463,7 @@ pkg_parse_version(uint64* v, const char* x, size_t n) {
         n = 0;
       }
     }
-    *v |= (num & 0xffffll) << s;
+    *v |= (num & 0xffff) << s;
   }
 }
 
@@ -488,7 +498,7 @@ pkg_read(buffer* b, pkg* p) {
 
   MAP_NEW(p->vars);
   MAP_NEW(p->fields);
-  p->version = 0LL;
+  p->version = 0;
 
   for(;;) {
     int ret;
@@ -523,13 +533,16 @@ pkg_read(buffer* b, pkg* p) {
 
     if(name.len) {
       stralloc_trimr(&value, "\r\n\t \0", 5);
-      stralloc_nul(&value);
-      stralloc_nul(&name);
 
       if(stralloc_starts(&value, "/"))
         stralloc_prepends(&value, sysroot);
 
-#ifdef DEBUG_OUTPUT_
+      stralloc_remove_all(&value, "\"'", 2);
+
+      stralloc_nul(&name);
+      stralloc_nul(&value);
+
+#ifdef DEBUG_OUTPUT
       buffer_putm_internal(buffer_2, "Name: ", name.s, "\n", NULL);
       buffer_putm_internal(buffer_2, "Value: ", value.s, "\n", NULL);
       buffer_flush(buffer_2);
@@ -537,6 +550,7 @@ pkg_read(buffer* b, pkg* p) {
 
       if(stralloc_equals(&name, "Version"))
         pkg_parse_version(&p->version, value.s, value.len);
+
       {
         MAP_T map = sep == '=' ? p->vars : p->fields;
         MAP_INSERT(map, name.s, name.len + 1, value.s, value.len + 1);
@@ -706,8 +720,7 @@ pkg_list(id code) {
         buffer_putsa(buffer_2, &path);
         buffer_putnlflush(buffer_2);
 #endif
-        if(match_pattern &&
-           path_fnmatch(match_pattern, str_len(match_pattern), path.s, path.len, FNM_CASEFOLD) == FNM_NOMATCH)
+        if(match_pattern && path_fnmatch(match_pattern, str_len(match_pattern), path.s, path.len, FNM_CASEFOLD) == FNM_NOMATCH)
           continue;
 
         pkg_init(&pf, path.s);
@@ -787,7 +800,7 @@ pkg_list(id code) {
  */
 int
 pkg_open(const char* pkgname, pkg* pf) {
-  buffer pc = {.x = 0};
+  buffer pc = {0};
   const char* s;
   size_t n;
   int ret = 0;
@@ -1239,7 +1252,7 @@ pkgcfg_setpath(const char* path) {
 static void
 error_exit(int exitCode) {
   buffer_puts(buffer_2, "The arguments leading up to this were:\n  ");
-  buffer_putsl(buffer_2, &args, "\n  ");
+  buffer_putsl(buffer_2, &args, " ");
   buffer_putnlflush(buffer_2);
   exit(exitCode);
 }
@@ -1403,13 +1416,9 @@ main(int argc, char* argv[], char* envp[]) {
           int i = arg[2] == 'l' ? PRINT_LIBS : PRINT_CFLAGS;
           add_cmd(i);
           if(i == PRINT_LIBS)
-            libs_mode = arg[str_find(arg, "only")] ? (arg[str_find(arg, "other")]
-                                                          ? LIBS_ONLY_OTHER
-                                                          : (arg[str_find(arg, "L")] ? LIBS_ONLY_LIBPATH : LIBS_ONLY_L))
-                                                   : 0;
+            libs_mode = arg[str_find(arg, "only")] ? (arg[str_find(arg, "other")] ? LIBS_ONLY_OTHER : (arg[str_find(arg, "L")] ? LIBS_ONLY_LIBPATH : LIBS_ONLY_L)) : 0;
           else
-            cflags_mode =
-                arg[str_find(arg, "only")] ? (arg[str_find(arg, "other")] ? CFLAGS_ONLY_OTHER : CFLAGS_ONLY_I) : 0;
+            cflags_mode = arg[str_find(arg, "only")] ? (arg[str_find(arg, "other")] ? CFLAGS_ONLY_OTHER : CFLAGS_ONLY_I) : 0;
           //   argv[unix_optind] = "-";      for(i = unix_optind; argv[i]; i++) argv[i] = argv[i+1];
           continue;
         }
@@ -1458,8 +1467,7 @@ getopt_end:
     size_t pos;
     stralloc_nul(&cmd.prefix);
 
-    if((pos = stralloc_finds(&cmd.prefix, "/sys-root/")) < cmd.prefix.len ||
-       (pos = stralloc_finds(&cmd.prefix, "/sysroot/")) < cmd.prefix.len) {
+    if((pos = stralloc_finds(&cmd.prefix, "/sys-root/")) < cmd.prefix.len || (pos = stralloc_finds(&cmd.prefix, "/sysroot/")) < cmd.prefix.len) {
 
       sysroot = str_ndup(cmd.prefix.s, pos + 9);
     } else {

@@ -23,17 +23,18 @@ static int tls_bio_create(tls_bio_t*);
 static int tls_bio_destroy(tls_bio_t*);
 
 static const bio_method_t tls_method_sockp = {
-    .type = BIO_TYPE_SOCKET,
-    .name = "socket",
-    .bwrite = tls_bio_send,
-    .bread = tls_bio_recv,
-    .bputs = tls_bio_puts,
-    .bgets = NULL,
-    .ctrl = tls_bio_ctrl,
-    .create = tls_bio_create,
-    .destroy = tls_bio_destroy,
-    .callback_ctrl = NULL,
-};
+    /* .type =  */ BIO_TYPE_SOCKET,
+    /* .name =  */ "socket",
+    /* .bwrite =  */ tls_bio_send,
+    /* .bwrite_old =  */ NULL,
+    /* .bread =  */ tls_bio_recv,
+    /* .bread_old =  */ NULL,
+    /* .bputs =  */ tls_bio_puts,
+    /* .bgets =  */ NULL,
+    /* .ctrl =  */ tls_bio_ctrl,
+    /* .create =  */ tls_bio_create,
+    /* .destroy =  */ tls_bio_destroy,
+    /* .callback_ctrl =  */ NULL};
 
 const BIO_METHOD*
 tls_bio_method(void) {

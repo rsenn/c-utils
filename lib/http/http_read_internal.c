@@ -57,36 +57,35 @@ http_read_internal(fd_t fd, char* buf, size_t received, buffer* b) {
   buffer_puts(buffer_2, "HTTP_TRANSFER_");
   buffer_puts(buffer_2, ((const char* const[]){"UNDEF", "CHUNKED", "LENGTH", "BOUNDARY", 0})[r->transfer]);
   buffer_puts(buffer_2, " status=");
-  buffer_puts(buffer_2,
-              ((const char* const[]){"-1",
-                                     "HTTP_RECV_HEADER",
-                                     "HTTP_RECV_DATA",
-                                     "HTTP_STATUS_CLOSED",
-                                     "HTTP_STATUS_ERROR",
-                                     "HTTP_STATUS_BUSY",
-                                     "HTTP_STATUS_FINISH",
-                                     0})[status + 1]);
+  buffer_puts(
+      buffer_2,
+      ((const char* const[]){"-1", "HTTP_RECV_HEADER", "HTTP_RECV_DATA", "HTTP_STATUS_CLOSED", "HTTP_STATUS_ERROR", "HTTP_STATUS_BUSY", "HTTP_STATUS_FINISH", 0})[status + 1]);
   buffer_putnlflush(buffer_2);
 
 #endif
+
   if(r->status == HTTP_RECV_DATA) {
+    /*         size_t remain = r->content_length - r->ptr;
+          size_t num = MIN(received, remain);
 
-    if(r->data.len - r->ptr < r->content_length) {
-      size_t len = buffer_LEN(in);
-      const char* s = buffer_BEGIN(in);
-      size_t remain = r->content_length - r->ptr;
-      size_t num = MIN(len, remain);
+       byte_copy(buf, num, buffer_PEEK(in));
+       buffer_skipn(in, num);*/
 
-      stralloc_catb(&r->data, s, num);
+    if(r->chunk_length < r->content_length) {
+      const char* s = buffer_PEEK(in);
+      size_t remain = r->content_length - r->chunk_length;
+      size_t num = MIN(received, remain);
+
+      byte_copy(buf, num, s);
 
       in->p += num;
-      //   r->ptr += num;
 
-      if(r->data.len - r->ptr >= r->content_length)
-        r->chunk_length = 0;
+      /* if(r->data.len - r->ptr >= r->content_length)*/
+      r->chunk_length += num;
       n = num;
     }
   }
+
   if(r->status == HTTP_RECV_HEADER) {
     while(r->status == HTTP_RECV_HEADER && http_read_header(h, &r->data, r) > 0) {
     }
@@ -94,15 +93,16 @@ http_read_internal(fd_t fd, char* buf, size_t received, buffer* b) {
       r->ptr = r->data.len;
     return n;
   }
+
   if(r->status == HTTP_RECV_DATA) {
     switch(r->transfer) {
       case HTTP_TRANSFER_UNDEF: break;
       case HTTP_TRANSFER_BOUNDARY: break;
       case HTTP_TRANSFER_CHUNKED: {
-        if(r->ptr >= r->content_length) {
+        if(r->chunk_length >= r->content_length) {
           size_t skip;
           if((skip = scan_eolskip(&in->x[in->p], in->n - in->p))) {
-            in->p += skip;
+            buffer_skipn(in, skip);
             r->chunk_length = 0;
           }
         }
@@ -111,9 +111,9 @@ http_read_internal(fd_t fd, char* buf, size_t received, buffer* b) {
           if((i = byte_chr(&in->x[in->p], bytes, '\n')) < bytes) {
             i = scan_xlonglong(&in->x[in->p], &r->chunk_length);
 
-            in->p += i;
+            buffer_skipn(in, i);
             if((i = scan_eolskip(&in->x[in->p], in->n - in->p)))
-              in->p += i;
+              buffer_skipn(in, i);
             //   r->ptr = 0;
             if(r->chunk_length) {
               r->content_length += r->chunk_length;
@@ -139,12 +139,13 @@ http_read_internal(fd_t fd, char* buf, size_t received, buffer* b) {
         break;
       }
       case HTTP_TRANSFER_LENGTH: {
-        if(r->data.len - r->ptr >= r->content_length)
+        if(r->chunk_length >= r->content_length)
           r->status = HTTP_STATUS_FINISH;
         break;
       }
     }
   }
+
   if(r->status == HTTP_STATUS_ERROR) {
     n = -1;
   } else if(r->status == HTTP_STATUS_CLOSED) {
@@ -154,5 +155,6 @@ http_read_internal(fd_t fd, char* buf, size_t received, buffer* b) {
   } else {
     n = received;
   }
+
   return n;
 }
