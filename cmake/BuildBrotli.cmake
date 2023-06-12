@@ -16,20 +16,12 @@ if(BUILD_BROTLI)
            "${CMAKE_SOURCE_DIR}/3rdparty/brotli-${BROTLI_VERSION}.tar.gz" SHOW_PROGRESS)
     endif()
 
-<<<<<<< HEAD
     exec_program("${TAR}" ARGS -C "${CMAKE_SOURCE_DIR}/3rdparty" -xzf "${CMAKE_SOURCE_DIR}/3rdparty/brotli-${BROTLI_VERSION}.tar.gz")
     if(EXISTS "${CMAKE_SOURCE_DIR}/3rdparty/brotli-${BROTLI_VERSION}")
 	  file(RENAME "${CMAKE_SOURCE_DIR}/3rdparty/brotli-${BROTLI_VERSION}" "${CMAKE_SOURCE_DIR}/3rdparty/brotli")
     endif()
 	
     file(COPY "${CMAKE_SOURCE_DIR}/3rdparty/brotli.cmake"  DESTINATION "${CMAKE_SOURCE_DIR}/3rdparty/brotli/CMakeLists.txt")
-=======
-    exec_program("${TAR}" ARGS -C "${CMAKE_SOURCE_DIR}/3rdparty" -xzf
-                               "${CMAKE_SOURCE_DIR}/3rdparty/brotli-${BROTLI_VERSION}.tar.gz")
-    file(RENAME "${CMAKE_SOURCE_DIR}/3rdparty/brotli-${BROTLI_VERSION}" "${CMAKE_SOURCE_DIR}/3rdparty/brotli")
-
-    file(CREATE_LINK "${CMAKE_SOURCE_DIR}/3rdparty/brotli.cmake" "${CMAKE_SOURCE_DIR}/3rdparty/brotli/CMakeLists.txt")
->>>>>>> a63fe48915b733d05a9a9c636c2c6ff931a36a92
 
   endif()
 

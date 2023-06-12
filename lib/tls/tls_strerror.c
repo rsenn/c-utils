@@ -19,7 +19,9 @@ tls_strerror(fd_t fd) {
     case SSL_ERROR_WANT_WRITE: str_copy(i->errstr, "want write"); break;
     case SSL_ERROR_WANT_CONNECT: str_copy(i->errstr, "want connect"); break;
     case SSL_ERROR_WANT_ACCEPT: str_copy(i->errstr, "want accept"); break;
+#ifdef SSL_ERROR_WANT_ASYNC
     case SSL_ERROR_WANT_ASYNC: str_copy(i->errstr, "want async"); break;
+#endif
     case SSL_ERROR_SYSCALL:
       str_copyn(i->errstr, "syscall ", sizeof(i->errstr));
       str_catn(i->errstr, strerror(errno), sizeof(i->errstr));
