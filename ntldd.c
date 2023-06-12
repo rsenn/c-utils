@@ -611,11 +611,23 @@ For bug reporting instructions, please see:\n\
 }
 
 int
-print_image_links(
-    int first, int verbose, int unused, int datarelocs, int functionrelocs, struct dep_tree_element* self, int recursive, int list_exports, int list_imports, int depth) {
+print_image_links(int first,
+                  int verbose,
+                  int unused,
+                  int datarelocs,
+                  int functionrelocs,
+                  struct dep_tree_element* self,
+                  int recursive,
+                  int list_exports,
+                  int list_imports,
+                  int depth,
+                  const char* file) {
   size_t i;
   int unresolved = 0;
   self->flags |= DEPTREE_VISITED;
+
+  if(file && first)
+    buffer_putm_internal(buffer_1, file, ": ", 0);
 
   if(list_exports) {
     for(i = 0; i < self->exports_len; i++) {
@@ -646,6 +658,7 @@ print_image_links(
     }
     return 0;
   }
+
   if(self->flags & DEPTREE_UNRESOLVED) {
     if(!first) {
       buffer_putsflush(buffer_1, " => not found\n");
@@ -671,6 +684,8 @@ print_image_links(
     for(i = 0; i < self->imports_len; i++) {
       struct import_table_item* item = &self->imports[i];
 
+      if(file && i > 0)
+        buffer_putm_internal(buffer_1, file, ": ", 0);
       buffer_puts(buffer_1, "\t");
       buffer_putnspace(buffer_1, depth * 2);
       buffer_putxlonglong0(buffer_1, item->orig_address, 8);
@@ -706,9 +721,11 @@ print_image_links(
   if(first || recursive) {
     for(i = 0; i < self->childs_len; i++) {
       if(!(self->childs[i]->flags & DEPTREE_VISITED)) {
+        if(file && i > 0)
+          buffer_putm_internal(buffer_1, file, ": ", 0);
         buffer_putnspace(buffer_1, depth * 2);
         buffer_puts(buffer_1, self->childs[i]->module);
-        print_image_links(0, verbose, unused, datarelocs, functionrelocs, self->childs[i], recursive, list_exports, list_imports, depth + 1);
+        print_image_links(0, verbose, unused, datarelocs, functionrelocs, self->childs[i], recursive, list_exports, list_imports, depth + 1, file);
       }
     }
   }
@@ -947,6 +964,7 @@ main(int argc, char** argv) {
       int multiple = files_start + 1 < argc;
       struct dep_tree_element root;
       byte_zero(&root, sizeof(struct dep_tree_element));
+
       for(i = files_start; i < argc; i++) {
         struct dep_tree_element* child = (struct dep_tree_element*)malloc(sizeof(struct dep_tree_element));
         byte_zero(child, sizeof(struct dep_tree_element));
@@ -974,12 +992,14 @@ main(int argc, char** argv) {
       }
 
       clear_dep_status(&root, DEPTREE_VISITED | DEPTREE_PROCESSED);
+
       for(i = files_start; i < argc; i++) {
-        if(multiple) {
-          buffer_puts(buffer_1, argv[i]);
-          buffer_putsflush(buffer_1, ":\n");
-        }
-        print_image_links(1, verbose, unused, datarelocs, functionrelocs, root.childs[i - files_start], recursive, list_exports, list_imports, 0);
+        /* if(multiple) {
+           buffer_puts(buffer_1, argv[i]);
+           buffer_putsflush(buffer_1, ":\n");
+         }*/
+
+        print_image_links(1, verbose, unused, datarelocs, functionrelocs, root.childs[i - files_start], recursive, list_exports, list_imports, 0, multiple ? argv[i] : 0);
       }
     }
   }
