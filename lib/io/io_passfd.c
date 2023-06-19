@@ -1,4 +1,4 @@
-#include "../io.h"
+#include "../io_internal.h"
 #include "../windoze.h"
 #include "../socket_internal.h"
 #ifdef _WIN32
@@ -6,7 +6,6 @@
 #endif
 
 #if WINDOWS
-#include "../io_internal.h"
 #include <errno.h>
 int
 io_passfd(fd_t sock, fd_t fd) {
@@ -32,7 +31,6 @@ io_passfd(fd_t sock, fd_t fd) {
 #define _XOPEN_SOURCE_EXTENDED 1
 #endif
 #endif
-#include "../io_internal.h"
 #include "../typedefs.h"
 #include "../byte.h"
 #include <string.h>

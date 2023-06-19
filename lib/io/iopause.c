@@ -4,7 +4,6 @@
 #include "../socket_internal.h"
 //#include "../io.h"
 #include "../select.h"
-#include "../io_internal.h"
 #include "../iopause.h"
 #include "../taia.h"
 #include "../alloc.h"

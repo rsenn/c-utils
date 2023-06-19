@@ -42,7 +42,7 @@ __atomic_compare_and_swap(volatile long* ptr, long oldval, long newval) {
 
 #undef __CAS
 
-#ifdef __TINYC__
+#if defined(__TINYC__) || __GNUC__ == 3
 #warning __TINYC__
 static inline uint64_t
 __compare_and_swap(uint64_t* ptr, uint64_t new_val, uint64_t old_val) {

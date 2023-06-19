@@ -1,4 +1,4 @@
-//#include "../io.h"
+#include "../io_internal.h"
 #define USE_WS2_32 1
 #define WINDOWS_OVERRIDE 1
 #include "../socket_internal.h"
@@ -14,7 +14,6 @@
 #define _LARGEFILE64_SOURCE
 #endif
 #define _FILE_OFFSET_BITS 64
-#include "../io_internal.h"
 
 #ifdef HAVE_ERRNO_H
 #include <errno.h>

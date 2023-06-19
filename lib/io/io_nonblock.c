@@ -1,4 +1,4 @@
-#include "../io.h"
+#include "../io_internal.h"
 #include "../windoze.h"
 #include "../socket_internal.h"
 
@@ -14,7 +14,6 @@
 
 #include <fcntl.h>
 #include <errno.h>
-#include "../io_internal.h"
 
 #ifndef O_NONBLOCK
 #define O_NONBLOCK O_NDELAY

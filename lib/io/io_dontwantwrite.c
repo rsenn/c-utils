@@ -1,11 +1,10 @@
-#include "../io.h"
+#include "../io_internal.h"
 #include "../socket_internal.h"
 
 #if WINDOWS_NATIVE
 #else
 #endif
 
-#include "../io_internal.h"
 #include <errno.h>
 #include <fcntl.h>
 

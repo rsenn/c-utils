@@ -1,7 +1,6 @@
-#include "../io.h"
+#include "../io_internal.h"
 #include "../windoze.h"
 #include "../socket_internal.h"
-#include "../io_internal.h"
 
 #if WINDOWS_NATIVE
 #else

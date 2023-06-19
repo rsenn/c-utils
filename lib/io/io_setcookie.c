@@ -1,11 +1,10 @@
-#include "../io.h"
+#include "../io_internal.h"
 #include "../windoze.h"
 
 #if WINDOWS_NATIVE
 #else
 #endif
 
-#include "../io_internal.h"
 
 void
 io_setcookie(fd_t d, void* cookie) {

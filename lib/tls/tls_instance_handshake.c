@@ -5,7 +5,11 @@
 #ifdef HAVE_OPENSSL
 #include <openssl/ssl.h>
 #include <openssl/err.h>
+#ifndef TLS_ST_OK
+#ifdef SSL_ST_OK
 #define TLS_ST_OK SSL_ST_OK
+#endif
+#endif
 
 int
 tls_instance_handshake(tls_instance_t* i) {

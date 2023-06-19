@@ -1,9 +1,8 @@
-#include "../io.h"
+#include "../io_internal.h"
 #include "../windoze.h"
 #include "../socket_internal.h"
 #include "../fmt.h"
 #include "../iarray.h"
-#include "../io_internal.h"
 
 #include <time.h>
 

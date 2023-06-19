@@ -1,8 +1,7 @@
-//#include "../io.h"
+#include "../io_internal.h"
 #define USE_WS2_32 1
 
 #include "../socket.h"
-#include "../io_internal.h"
 #include "../buffer.h"
 #include "../alloc.h"
 #include "../byte.h"

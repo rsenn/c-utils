@@ -1,4 +1,4 @@
-#include "../io.h"
+#include "../io_internal.h"
 #define _FILE_OFFSET_BITS 64
 #include "../windoze.h"
 
@@ -8,7 +8,6 @@
 #include <unistd.h>
 #endif
 
-#include "../io_internal.h"
 #include <fcntl.h>
 
 int
