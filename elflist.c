@@ -497,22 +497,7 @@ elf_dump_segments(range map) {
  */
 void
 usage(char* av0) {
-  buffer_putm_internal(buffer_1,
-                       "Usage: ",
-                       str_basename(av0),
-                       " [OPTIONS] <file...>\n",
-                       "\n",
-                       "Options:\n",
-                       "\n",
-                       "  -h, --help              Show this help\n",
-                       "  -D, --defined           List defined symbols\n",
-                       "  -U, --undefined         List undefined symbols\n",
-                       "  -F, --file-header       Dump file header\n",
-                       "  -S, --sections          Dump sections\n",
-                       "  -o, --offset-rva        Print RVA of given offset\n",
-                       "  -a, --rva-offset        Print offset of given RVA\n",
-                       "  -n, --needed            Print needed libraries\n\n",
-                       NULL);
+  buffer_putm_internal(buffer_1, "Usage: ", str_basename(av0), " [OPTIONS] <file...>\n", "\n", "Options:\n", "\n", "  -h, --help              Show this help\n", "  -D, --defined           List defined symbols\n", "  -U, --undefined         List undefined symbols\n", "  -F, --file-header       Dump file header\n", "  -S, --sections          Dump sections\n", "  -o, --offset-rva        Print RVA of given offset\n", "  -a, --rva-offset        Print offset of given RVA\n", "  -n, --needed            Print needed libraries\n\n", NULL);
   buffer_flush(buffer_1);
 }
 
@@ -593,7 +578,7 @@ main(int argc, char** argv) {
 
     filename = argv[i];
     if(argc - unix_optind >= 2) {
-      buffer_putm_internal(buffer_2, filename, ":", 0);
+      buffer_putm_internal(buffer_2, filename, ":", NULL);
       buffer_putnlflush(buffer_2);
     }
 

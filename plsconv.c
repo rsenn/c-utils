@@ -43,8 +43,7 @@ playlist_process(playlist* pl, stralloc* title, stralloc* location, uint32 lengt
   (void)pl;
   /*  buffer_putm_internal(buffer_2,
     "Title: ", title->s, "\n", NULL);
-    buffer_putm_internal(buffer_2,
-    "Location: ", location->s, "\n", NULL);
+    buffer_putm_internal(buffer_2, "Location: ", location->s, "\n", NULL);
     buffer_puts(buffer_2, "Duration: ");
     buffer_putulong(buffer_2, length);
     buffer_putnlflush(buffer_2);
@@ -59,17 +58,7 @@ playlist_process(playlist* pl, stralloc* title, stralloc* location, uint32 lengt
 
 void
 usage(char* argv0) {
-  buffer_putm_internal(buffer_1,
-                       "Usage: ",
-                       argv0,
-                       " [-f type] [-t type] [-o "
-                       "output] [input or stdin]\n\n",
-                       "  -f type  Input type\n"
-                       "  -t type  Output type\n"
-                       "\n"
-                       "Supported types are: m3u pls "
-                       "xspf\n",
-                       NULL);
+  buffer_putm_internal(buffer_1, "Usage: ", argv0, " [-f type] [-t type] [-o " "output] [input or stdin]\n\n", "  -f type  Input type\n" "  -t type  Output type\n" "\n" "Supported types are: m3u pls " "xspf\n", NULL);
   buffer_flush(buffer_1);
   exit(0);
 }

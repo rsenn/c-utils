@@ -32,12 +32,12 @@ process64(void* base) {
   uint16 subsys = uint16_get(&opthdr->subsystem);
 
   if(!(scthdr = pe_get_section(base, section))) {
-    buffer_putm_internal(buffer_2, "no such section: ", section, 0);
+    buffer_putm_internal(buffer_2, "no such section: ", section, NULL);
     buffer_putnlflush(buffer_2);
     return -1;
   }
 
-  buffer_putm_internal(buffer_2, "subsystem: ", subsystems[subsys], 0);
+  buffer_putm_internal(buffer_2, "subsystem: ", subsystems[subsys], NULL);
   buffer_putnlflush(buffer_2);
 
   if(subsys == 3)
@@ -51,12 +51,12 @@ process32(void* base) {
   uint16 subsys = uint16_get(&opthdr->subsystem);
 
   if(!(scthdr = pe_get_section(base, section))) {
-    buffer_putm_internal(buffer_2, "no such section: ", section, 0);
+    buffer_putm_internal(buffer_2, "no such section: ", section, NULL);
     buffer_putnlflush(buffer_2);
     return -1;
   }
 
-  buffer_putm_internal(buffer_2, "subsystem: ", subsystems[subsys], 0);
+  buffer_putm_internal(buffer_2, "subsystem: ", subsystems[subsys], NULL);
   buffer_putnlflush(buffer_2);
 
   if(subsys == 3)

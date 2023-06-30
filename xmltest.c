@@ -64,14 +64,7 @@ xml_dump(xmlnode* n, buffer* b, const char* parent, int depth) {
     if(n->type == XML_TEXT) {
       const char* x = xml_get_text(n, &name);
       if(x[0]) {
-        buffer_putm_internal(b,
-                             "",
-                             parent,
-                             "->children = "
-                             "xml_textnode(\"",
-                             x,
-                             "\");",
-                             NULL);
+        buffer_putm_internal(b, "", parent, "->children = " "xml_textnode(\"", x, "\");", NULL);
         newline_indent(b, depth);
       }
     } else if(n->type == XML_ELEMENT) {

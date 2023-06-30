@@ -617,20 +617,8 @@ print_entry(buffer* b, const mediathek_entry_t* e) {
 
   const char* sep = ", ";
 
-  buffer_putm_internal(b,
-                       "Kanal:\t",
-                       e->channel.s ? e->channel.s : "<null>" /*strlist_at(sl,
-                                                                 1)*/
-                       ,
-                       sep,
-                       NULL);
-  buffer_putm_internal(b,
-                       "Thema:\t",
-                       e->topic.s ? e->topic.s : "<null>" /*strlist_at(sl,
-                                                             2)*/
-                       ,
-                       sep,
-                       NULL);
+  buffer_putm_internal(b, "Kanal:\t", e->channel.s ? e->channel.s : "<null>" /*strlist_at(sl, 1)*/ , sep, NULL);
+  buffer_putm_internal(b, "Thema:\t", e->topic.s ? e->topic.s : "<null>" /*strlist_at(sl, 2)*/ , sep, NULL);
   buffer_putm_internal(b, "Titel:\t", e->title.s /*strlist_at(sl, 3)*/, sep, NULL);
 
   buffer_putm_internal(b, "Datum:\t", format_datetime(e->tm, dt_fmt), sep, NULL);
@@ -639,14 +627,8 @@ print_entry(buffer* b, const mediathek_entry_t* e) {
 
   /* buffer_putm_internal(b, "URL:\t",
    url , sep, NULL);
-   buffer_putm_internal(b, "URL lo:\t",
-   make_url(url, strlist_at(sl, 13)),
-   sep, NULL);
-   buffer_putm_internal(b, "URL hi:\t",
-   make_url(url, strlist_at(sl, 15)),
-   sep, NULL);*/
-
-  buffer_putnlflush(b);
+   buffer_putm_internal(b, "URL lo:\t", make_url(url, strlist_at(sl, 13)), sep, NULL);
+   buffer_putm_internal(b, "URL hi:\t", make_url(url, strlist_at(sl, 15)), sep, NULL);*/ buffer_putnlflush(b);
 }
 
 /**
@@ -800,21 +782,7 @@ parse_mediathek_list(buffer* inbuf, buffer* outbuf) {
  */
 void
 usage(char* errmsg_argv0) {
-  buffer_putm_internal(buffer_1,
-                       "Usage: ",
-                       str_basename(errmsg_argv0),
-                       "[OPTIONS] [KEYWORDS...]\n",
-                       "\n",
-                       "Options\n",
-                       "  -h, --help                show this help\n",
-                       "  -u, --url=URL             set URL\n",
-                       "  -F                        date/time format\n",
-                       "  -t HH:MM:SS               minimum length\n",
-                       "  -i KEYWORD                include entries matching\n",
-                       "  -x KEYWORD                exclude entries matching\n",
-                       "  -o FILE                   output file\n",
-                       "\n",
-                       0);
+  buffer_putm_internal(buffer_1, "Usage: ", str_basename(errmsg_argv0), "[OPTIONS] [KEYWORDS...]\n", "\n", "Options\n", "  -h, --help                show this help\n", "  -u, --url=URL             set URL\n", "  -F                        date/time format\n", "  -t HH:MM:SS               minimum length\n", "  -i KEYWORD                include entries matching\n", "  -x KEYWORD                exclude entries matching\n", "  -o FILE                   output file\n", "\n", NULL);
   buffer_putnlflush(buffer_1);
 }
 

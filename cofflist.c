@@ -292,31 +292,7 @@ coff_list_symbols(buffer* b, void* coff) {
 
 void
 usage(char* av0) {
-  buffer_putm_internal(buffer_1,
-                       "Usage: ",
-                       str_basename(av0),
-                       " [OPTIONS] <file...>\n",
-                       "\n",
-                       "Options:\n",
-                       "\n",
-                       "  -h, --help              Show "
-                       "this help\n",
-                       "  -i, --imports           List "
-                       "imports\n",
-                       "  -e, --exports           List "
-                       "exports\n",
-                       "  -d, --deps              List "
-                       "DLL dependencies\n",
-                       "  -s, --sections          List "
-                       "PE32 sections\n",
-                       "  -E, --export-directory  Print "
-                       "export directory\n",
-                       "  -D, --data-directory    Print "
-                       "data directory\n",
-                       "  -O, --optional-header   Print "
-                       "optional header\n",
-                       "\n",
-                       0);
+  buffer_putm_internal(buffer_1, "Usage: ", str_basename(av0), " [OPTIONS] <file...>\n", "\n", "Options:\n", "\n", "  -h, --help              Show " "this help\n", "  -i, --imports           List " "imports\n", "  -e, --exports           List " "exports\n", "  -d, --deps              List " "DLL dependencies\n", "  -s, --sections          List " "PE32 sections\n", "  -E, --export-directory  Print " "export directory\n", "  -D, --data-directory    Print " "data directory\n", "  -O, --optional-header   Print " "optional header\n", "\n", NULL);
   buffer_flush(buffer_1);
 }
 

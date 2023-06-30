@@ -191,7 +191,7 @@ cpp_parse_file(cpp_t* cpp, buffer* f, const char* fn, buffer* out) {
       }
     }
 #if DEBUG_CPP
-    buffer_putm_internal(buffer_2, "(", fn ? fn : "stdin", ":", 0);
+    buffer_putm_internal(buffer_2, "(", fn ? fn : "stdin", ":", NULL);
     buffer_putulong(buffer_2, curr.line);
     buffer_putc(buffer_2, ',');
     buffer_putulong(buffer_2, curr.column);
@@ -204,7 +204,7 @@ cpp_parse_file(cpp_t* cpp, buffer* f, const char* fn, buffer* out) {
       buffer_putxlong(buffer_2, sep);
 
     } else {
-      buffer_putm_internal(buffer_2, tokentype_to_str(curr.type), ": ", t.buf, 0);
+      buffer_putm_internal(buffer_2, tokentype_to_str(curr.type), ": ", t.buf, NULL);
     }
     buffer_putnlflush(buffer_2);
 #endif

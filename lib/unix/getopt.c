@@ -101,7 +101,7 @@ getopt_real(int argc, char* const argv[], const char* optstring, const struct un
             if(str_diff(spec_long, longopts->name) == 0 || (spec_long[pos_eq] == '=' && str_diffn(spec_long, longopts->name, spec_len) == 0)) {
               if(optdef != 0) {
                 if(unix_opterr) {
-                  buffer_putm_internal(unix_optbuf, "ambiguous option: ", spec_long, 0);
+                  buffer_putm_internal(unix_optbuf, "ambiguous option: ", spec_long, NULL);
                   buffer_putnlflush(unix_optbuf);
                 }
                 return '?';
@@ -114,7 +114,7 @@ getopt_real(int argc, char* const argv[], const char* optstring, const struct un
           }
           if(optdef == 0) {
             if(unix_opterr) {
-              buffer_putm_internal(unix_optbuf, "no such option: ", spec_long, 0);
+              buffer_putm_internal(unix_optbuf, "no such option: ", spec_long, NULL);
               buffer_putnlflush(unix_optbuf);
             }
             return '?';
@@ -124,7 +124,7 @@ getopt_real(int argc, char* const argv[], const char* optstring, const struct un
               unix_optarg = 0;
               if(pos_eq != 0) {
                 if(unix_opterr) {
-                  buffer_putm_internal(unix_optbuf, "no argument for ", optdef->name, 0);
+                  buffer_putm_internal(unix_optbuf, "no argument for ", optdef->name, NULL);
                   buffer_putnlflush(unix_optbuf);
                 }
                 return '?';
@@ -157,7 +157,7 @@ getopt_real(int argc, char* const argv[], const char* optstring, const struct un
     if(optptr == NULL) {
       unix_optopt = c;
       if(unix_opterr) {
-        buffer_putm_internal(unix_optbuf, argv[0], ": invalid option -- ", 0);
+        buffer_putm_internal(unix_optbuf, argv[0], ": invalid option -- ", NULL);
         buffer_PUTC(unix_optbuf, (char)c);
         buffer_putnlflush(unix_optbuf);
       }
@@ -182,7 +182,7 @@ getopt_real(int argc, char* const argv[], const char* optstring, const struct un
         } else {
           unix_optopt = c;
           if(unix_opterr) {
-            buffer_putm_internal(unix_optbuf, argv[0], ": option requires an argument -- ", 0);
+            buffer_putm_internal(unix_optbuf, argv[0], ": option requires an argument -- ", NULL);
             buffer_PUTC(unix_optbuf, (char)c);
             buffer_putnlflush(unix_optbuf);
           }

@@ -87,7 +87,7 @@ cpp_evaluate_condition(cpp_t* cpp, tokenizer* t, int* result, char* visited[]) {
     return 0;
   }
 #ifdef DEBUG_CPP
-  buffer_putm_internal(buffer_2, "evaluating condition ", bufp, 0);
+  buffer_putm_internal(buffer_2, "evaluating condition ", bufp, NULL);
   buffer_putnlflush(buffer_2);
 #endif
   {

@@ -381,7 +381,7 @@ void
 output_wget_entry(const char* sender, const char* thema, const char* title, unsigned duration, const char* datetime, const char* url, const char* description) {
   int skipSender = str_start(thema, sender);
   int multiline = 0;
-  buffer_putm_internal(&output_buf, prefix_cmd ? prefix_cmd : "", prefix_cmd ? " " : "", multiline ? "wget \\\n  -c " : "wget -c ", url, 0);
+  buffer_putm_internal(&output_buf, prefix_cmd ? prefix_cmd : "", prefix_cmd ? " " : "", multiline ? "wget \\\n  -c " : "wget -c ", url, NULL);
   buffer_putm_internal(&output_buf, multiline ? " \\\n  -O '" : " -O '", NULL);
 
   if(!skipSender) {
@@ -500,21 +500,7 @@ process_input(buffer* input) {
 
 void
 usage(const char* argv0) {
-  buffer_putm_internal(buffer_2,
-                       "Usage: ",
-                       argv0,
-                       "[OPTIONS] <file>\n",
-                       "\n",
-                       "  -h, --help                  Show this help\n",
-                       "  -c, --csv                   Output as CSV\n",
-                       "  -d, --debug                 Debug mode\n",
-                       "  -l, --low                   Low quality\n",
-                       "  -o, --output FILE           Output file\n",
-                       "  -F, --format FMT            Output format\n",
-                       "\n",
-                       "Valid formats:\n",
-                       "  wget, curl, m3u\n",
-                       0);
+  buffer_putm_internal(buffer_2, "Usage: ", argv0, "[OPTIONS] <file>\n", "\n", "  -h, --help                  Show this help\n", "  -c, --csv                   Output as CSV\n", "  -d, --debug                 Debug mode\n", "  -l, --low                   Low quality\n", "  -o, --output FILE           Output file\n", "  -F, --format FMT            Output format\n", "\n", "Valid formats:\n", "  wget, curl, m3u\n", NULL);
 
   buffer_putnlflush(buffer_2);
 }

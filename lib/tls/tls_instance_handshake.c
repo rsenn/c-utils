@@ -32,7 +32,7 @@ tls_instance_handshake(tls_instance_t* i) {
     buffer_puts(buffer_2, " resumed handshake: ");
     buffer_putlong(buffer_2, ret);
     if(ret == -1)
-      buffer_putm_internal(buffer_2, " (", tls_instance_strerror(i), ")", 0);
+      buffer_putm_internal(buffer_2, " (", tls_instance_strerror(i), ")", NULL);
 
     buffer_putnlflush(buffer_2);
 #endif

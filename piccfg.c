@@ -471,21 +471,7 @@ output_items(const strlist* items) {
  */
 void
 usage(char* argv0) {
-  buffer_putm_internal(buffer_1,
-                       "Usage: ",
-                       str_basename(argv0),
-                       " <hex-file> <cfgdata-file>\n"
-                       "\n"
-                       "Options\n"
-                       "  -h, --help                show this help\n"
-                       "  -o, --oneline             output oneliner\n"
-                       "  -D, --no-default          don't output settings with default value\n"
-                       "  -d, --default             output settings with default value\n"
-                       "  -C, --no-comments         don't output description comments\n"
-                       "  -n, --name                output register name\n"
-                       "  -v, --verbose             show verbose messages\n"
-                       "\n",
-                       NULL);
+  buffer_putm_internal(buffer_1, "Usage: ", str_basename(argv0), " <hex-file> <cfgdata-file>\n" "\n" "Options\n" "  -h, --help                show this help\n" "  -o, --oneline             output oneliner\n" "  -D, --no-default          don't output settings with default value\n" "  -d, --default             output settings with default value\n" "  -C, --no-comments         don't output description comments\n" "  -n, --name                output register name\n" "  -v, --verbose             show verbose messages\n" "\n", NULL);
   buffer_putnlflush(buffer_1);
 }
 

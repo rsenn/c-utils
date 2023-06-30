@@ -88,7 +88,7 @@ process_create(const char* filename, char* const argv[], fd_t std[3], const char
     }
   }
 #ifdef DEBUG_OUTPUT_
-  buffer_putm_internal(buffer_2, "Spawned '", filename, "' PID = ", 0);
+  buffer_putm_internal(buffer_2, "Spawned '", filename, "' PID = ", NULL);
   buffer_putlong(buffer_2, pid);
   buffer_putsflush(buffer_2, "\n");
 #endif

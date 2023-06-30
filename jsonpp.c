@@ -99,23 +99,7 @@ json_pretty_print(jsonval val, buffer* b) {
 
 void
 usage(char* av0) {
-  buffer_putm_internal(buffer_1,
-                       "Usage: ",
-                       str_basename(av0),
-                       " [OPTIONS] [FILES...]\n\n",
-                       "Options:\n\n",
-                       "  -h, --help              Show this help\n",
-                       "  -s, --single-quote      Use ' as quote\n",
-                       "  -d, --double-quote      Use \" as quote\n",
-                       "  -O, --one-line          One-line\n",
-                       "  -c, --compact           Compact\n",
-                       "  -l, --indent NUM        Indent level\n",
-                       "  -D, --depth NUM         Depth level\n",
-                       "  -S, --separator CHARS   Separator\n",
-                       "  -W, --spacing CHARS     Spacing\n\n",
-                       "  -C, --compliant         Compliant\n",
-                       "",
-                       0);
+  buffer_putm_internal(buffer_1, "Usage: ", str_basename(av0), " [OPTIONS] [FILES...]\n\n", "Options:\n\n", "  -h, --help              Show this help\n", "  -s, --single-quote      Use ' as quote\n", "  -d, --double-quote      Use \" as quote\n", "  -O, --one-line          One-line\n", "  -c, --compact           Compact\n", "  -l, --indent NUM        Indent level\n", "  -D, --depth NUM         Depth level\n", "  -S, --separator CHARS   Separator\n", "  -W, --spacing CHARS     Spacing\n\n", "  -C, --compliant         Compliant\n", "", NULL);
   buffer_flush(buffer_1);
 }
 

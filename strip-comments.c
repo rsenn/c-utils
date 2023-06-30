@@ -36,18 +36,7 @@ put_str_escaped(buffer* b, const char* str) {
 
 void
 usage(char* av0) {
-  buffer_putm_internal(buffer_1,
-                       "Usage: ",
-                       str_basename(av0),
-                       " [OPTIONS] [FILES...]\n"
-                       "\n"
-                       "Options:\n"
-                       "\n"
-                       "  -h, --help              Show this help\n"
-                       "  -i, --in-place          Write to input file\n"
-                       "  -b, --remove-blank      Remove blank lines\n"
-                       "\n",
-                       NULL);
+  buffer_putm_internal(buffer_1, "Usage: ", str_basename(av0), " [OPTIONS] [FILES...]\n" "\n" "Options:\n" "\n" "  -h, --help              Show this help\n" "  -i, --in-place          Write to input file\n" "  -b, --remove-blank      Remove blank lines\n" "\n", NULL);
   buffer_flush(buffer_1);
 }
 

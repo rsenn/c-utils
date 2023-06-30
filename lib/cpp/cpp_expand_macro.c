@@ -27,7 +27,7 @@ cpp_expand_macro(cpp_t* cpp, tokenizer* t, buffer* out, const char* name, unsign
 #ifdef DEBUG_CPP
   buffer_puts(buffer_2, "lvl ");
   buffer_putulong(buffer_2, rec_level);
-  buffer_putm_internal(buffer_2, ": expanding macro ", name, " (", m->str_contents_buf, ")", 0);
+  buffer_putm_internal(buffer_2, ": expanding macro ", name, " (", m->str_contents_buf, ")", NULL);
   buffer_putnlflush(buffer_2);
 #endif
 
@@ -132,7 +132,7 @@ cpp_expand_macro(cpp_t* cpp, tokenizer* t, buffer* out, const char* name, unsign
 #ifdef DEBUG_CPP
       buffer_puts(buffer_2, "macro argument ");
       buffer_putlong(buffer_2, (long)i);
-      buffer_putm_internal(buffer_2, ": ", argvalues[i].buf, 0);
+      buffer_putm_internal(buffer_2, ": ", argvalues[i].buf, NULL);
       buffer_putnlflush(buffer_2);
 #endif
     }
@@ -241,7 +241,7 @@ cpp_expand_macro(cpp_t* cpp, tokenizer* t, buffer* out, const char* name, unsign
         size_t mac_cnt = 0;
         cwae.f = buffer_reopen(cwae.f, &cwae.buf, &cwae.len);
 #ifdef DEBUG_CPP
-        buffer_putm_internal(buffer_2, "contents with args expanded: ", cwae.buf, 0);
+        buffer_putm_internal(buffer_2, "contents with args expanded: ", cwae.buf, NULL);
         buffer_putnlflush(buffer_2);
 #endif
         tokenizer_from_file(&cwae.t, cwae.f);
@@ -292,7 +292,7 @@ cpp_expand_macro(cpp_t* cpp, tokenizer* t, buffer* out, const char* name, unsign
                 cwae_pos = tokenizer_ftello(&cwae.t);
                 tokenizer_rewind(&cwae.t);
 #ifdef DEBUG_CPP
-                buffer_putm_internal(buffer_2, "merging ", cwae.buf, " with ", t2.buf, 0);
+                buffer_putm_internal(buffer_2, "merging ", cwae.buf, " with ", t2.buf, NULL);
                 buffer_putnlflush(buffer_2);
 #endif
                 diff = mem_tokenizers_join(&cwae, &t2, &tmp, mi->first, cwae_pos);
@@ -300,7 +300,7 @@ cpp_expand_macro(cpp_t* cpp, tokenizer* t, buffer* out, const char* name, unsign
                 free_file_container(&t2);
                 cwae = tmp;
 #ifdef DEBUG_CPP
-                buffer_putm_internal(buffer_2, "result: ", cwae.buf, 0);
+                buffer_putm_internal(buffer_2, "result: ", cwae.buf, NULL);
                 buffer_putnlflush(buffer_2);
 #endif
                 if(diff == 0)

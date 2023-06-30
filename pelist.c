@@ -308,28 +308,7 @@ put_search(buffer* b, const stralloc* search) {
 void
 usage(char* av0) {
   const char* me = str_basename(av0);
-  buffer_putm_internal(buffer_1,
-                       "Usage: ",
-                       me,
-                       " [OPTIONS] <file...>\n"
-                       "\n"
-                       "Options:\n"
-                       "\n"
-                       "  -h, --help              Show this help\n"
-                       "  -i, --imports           List imports\n"
-                       "  -e, --exports           List exports\n"
-                       "  -d, --deps              List DLL dependencies\n"
-                       "  -s, --sections          List PE32 sections\n"
-                       "  -E, --export-directory  Print export directory\n"
-                       "  -D, --data-directory    Print data directory\n"
-                       "  -O, --optional-header   Print optional header\n"
-                       "  -r, --range             Print sections as ranges\n"
-                       "  -o, --offset-rva        Print RVA of given offset\n"
-                       "  -a, --rva-offset        Print offset of given RVA\n"
-                       "  -S, --search BYTES      Search data\n"
-                       "  -R, --rva               Search result as RVA\n"
-                       "\n",
-                       0);
+  buffer_putm_internal(buffer_1, "Usage: ", me, " [OPTIONS] <file...>\n" "\n" "Options:\n" "\n" "  -h, --help              Show this help\n" "  -i, --imports           List imports\n" "  -e, --exports           List exports\n" "  -d, --deps              List DLL dependencies\n" "  -s, --sections          List PE32 sections\n" "  -E, --export-directory  Print export directory\n" "  -D, --data-directory    Print data directory\n" "  -O, --optional-header   Print optional header\n" "  -r, --range             Print sections as ranges\n" "  -o, --offset-rva        Print RVA of given offset\n" "  -a, --rva-offset        Print offset of given RVA\n" "  -S, --search BYTES      Search data\n" "  -R, --rva               Search result as RVA\n" "\n", NULL);
   buffer_flush(buffer_1);
 }
 

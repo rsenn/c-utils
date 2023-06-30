@@ -163,8 +163,8 @@ mounts_read(MAP_T map) {
     MAP_INSERT(map, dev.s, dev.n + 1, mnt.s, mnt.n + 1);
 
 #ifdef DEBUG_OUTPUT_
-    buffer_putm_internal(buffer_2, "mounts_read() device: ", dev.s ? dev.s : "(null)", " ", 0);
-    buffer_putm_internal(buffer_2, "mountpoint: ", mnt.s ? mnt.s : "(null)", "\n", 0);
+    buffer_putm_internal(buffer_2, "mounts_read() device: ", dev.s ? dev.s : "(null)", " ", NULL);
+    buffer_putm_internal(buffer_2, "mountpoint: ", mnt.s ? mnt.s : "(null)", "\n", NULL);
     buffer_flush(buffer_2);
 #endif
 
@@ -430,7 +430,7 @@ pathtool(const char* arg, stralloc* sa) {
   stralloc_zero(sa);
 
 #ifdef DEBUG_OUTPUT_
-  buffer_putm_internal(buffer_2, "strlist path = ", 0);
+  buffer_putm_internal(buffer_2, "strlist path = ", NULL);
   buffer_putsl(buffer_2, &path, " / ");
   buffer_putnlflush(buffer_2);
 #endif
@@ -474,25 +474,7 @@ pathtool(const char* arg, stralloc* sa) {
 
 void
 usage(char* av0) {
-  buffer_putm_internal(buffer_1,
-                       "Usage: ",
-                       str_basename(av0),
-                       " [OPTIONS] <path...>\n",
-                       "\n",
-                       "Options:\n",
-                       "\n",
-                       "  -h, --help             Show this help\n",
-                       "  -r, --relative-to DIR  Print the resolved path relative to DIR\n",
-                       "  -s, --separator SEP    Use SEP as directory separator\n",
-                       "  -w, --windows          Print Windows form of path(s) (C:\\WINNT)\n",
-                       "  -m, --mixed            Like --windows, but with regular slashes (C:/WINNT)\n",
-                       "  -u, --unix   (default) Print Unix form of path(s) (/cygdrive/c/winnt)\n",
-                       "  -a, --absolute         Output absolute path\n",
-                       "  -f, --canonicalize     Canonicalize by following every symlink in\n"
-                       "                         every component of the given name recursively;\n"
-                       "                         all but the last component must exist\n",
-                       "\n",
-                       0);
+  buffer_putm_internal(buffer_1, "Usage: ", str_basename(av0), " [OPTIONS] <path...>\n", "\n", "Options:\n", "\n", "  -h, --help             Show this help\n", "  -r, --relative-to DIR  Print the resolved path relative to DIR\n", "  -s, --separator SEP    Use SEP as directory separator\n", "  -w, --windows          Print Windows form of path(s) (C:\\WINNT)\n", "  -m, --mixed            Like --windows, but with regular slashes (C:/WINNT)\n", "  -u, --unix   (default) Print Unix form of path(s) (/cygdrive/c/winnt)\n", "  -a, --absolute         Output absolute path\n", "  -f, --canonicalize     Canonicalize by following every symlink in\n" "                         every component of the given name recursively;\n" "                         all but the last component must exist\n", "\n", NULL);
   buffer_flush(buffer_1);
 }
 

@@ -97,30 +97,7 @@ xml_read_function(xmlreader* reader, xmlnodeid id, stralloc* name, stralloc* val
 
 void
 usage(char* av0) {
-  buffer_putm_internal(buffer_1,
-                       "Usage: ",
-                       str_basename(av0),
-                       " [OPTIONS] [FILES...]\n"
-                       "\n"
-                       "Options:\n"
-                       "\n"
-                       "  -h, --help              Show "
-                       "this help\n"
-                       "  -s, --single-quote      Use ' "
-                       "as quote\n"
-                       "  -d, --double-quote      Use "
-                       "\" as quote\n"
-                       "  -o, --one-line          "
-                       "One-line\n"
-                       "  -c, --compact           "
-                       "Compact\n"
-                       "  -l, --indent NUM        "
-                       "Indent level\n"
-                       "  -t, --terminate         "
-                       "Terminate non-closed tags (img, "
-                       "link, br, ...)\n"
-                       "\n",
-                       0);
+  buffer_putm_internal(buffer_1, "Usage: ", str_basename(av0), " [OPTIONS] [FILES...]\n" "\n" "Options:\n" "\n" "  -h, --help              Show " "this help\n" "  -s, --single-quote      Use ' " "as quote\n" "  -d, --double-quote      Use " "\" as quote\n" "  -o, --one-line          " "One-line\n" "  -c, --compact           " "Compact\n" "  -l, --indent NUM        " "Indent level\n" "  -t, --terminate         " "Terminate non-closed tags (img, " "link, br, ...)\n" "\n", NULL);
   buffer_flush(buffer_1);
 }
 static int max_depth;

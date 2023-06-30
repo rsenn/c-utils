@@ -10,7 +10,7 @@ cpp_get_macro_info(cpp_t* cpp, tokenizer* t, struct macro_info_s* mi_list, size_
     if(!ret || tok.type == TT_EOF)
       break;
 #ifdef DEBUG_CPP
-    buffer_putm_internal(buffer_2, "(", name, ") nest ", 0);
+    buffer_putm_internal(buffer_2, "(", name, ") nest ", NULL);
 
     buffer_putulong(buffer_2, nest);
     buffer_puts(buffer_2, ", brace ");

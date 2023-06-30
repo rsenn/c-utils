@@ -9,13 +9,7 @@ cpp_t* cpp;
 
 static int
 usage(char* a0) {
-  buffer_putm_internal(buffer_2,
-                       "example preprocessor\n"
-                       "usage: ",
-                       a0,
-                       " [-I includedir...] [-D define] file\n"
-                       "if no filename or '-' is passed, stdin is used.",
-                       0);
+  buffer_putm_internal(buffer_2, "example preprocessor\n" "usage: ", a0, " [-I includedir...] [-D define] file\n" "if no filename or '-' is passed, stdin is used.", NULL);
   buffer_putnlflush(buffer_2);
   return 1;
 }

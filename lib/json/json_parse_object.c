@@ -30,7 +30,7 @@ json_parse_object(jsonval* val, charbuf* b) {
         return ret;
 */
 #if defined(DEBUG_OUTPUT) && defined(DEBUG_JSON)
-      buffer_putm_internal(buffer_2, "json_parse_object ", " str=", str.s, 0);
+      buffer_putm_internal(buffer_2, "json_parse_object ", " str=", str.s, NULL);
       buffer_putnlflush(buffer_2);
 #endif
 

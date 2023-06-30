@@ -586,27 +586,7 @@ Written by LRN.");
 
 void
 printhelp(char* argv0) {
-  buffer_putm_internal(buffer_1,
-                       "Usage: ",
-                       argv0,
-                       " [OPTION]... FILE...\n\
-OPTIONS:\n\
---version         Displays version\n\
--v, --verbose         Does not work\n\
--u, --unused          Does not work\n\
--d, --data-relocs     Does not work\n\
--r, --function-relocs Does not work\n\
--R, --recursive       Lists dependencies recursively,\n\
-                        eliminating duplicates\n\
--D, --search-dir      Additional search directory\n\
---list-exports        Lists exports of a module (single file only)\n\
---list-imports        Lists imports of modules\n\
---help                Displays this message\n\
-\n\
-Use -- option to pass filenames that start with `--' or `-'\n\
-For bug reporting instructions, please see:\n\
-<somewhere>.",
-                       0);
+  buffer_putm_internal(buffer_1, "Usage: ", argv0, " [OPTION]... FILE...\n\ OPTIONS:\n\ --version         Displays version\n\ -v, --verbose         Does not work\n\ -u, --unused          Does not work\n\ -d, --data-relocs     Does not work\n\ -r, --function-relocs Does not work\n\ -R, --recursive       Lists dependencies recursively,\n\ eliminating duplicates\n\ -D, --search-dir      Additional search directory\n\ --list-exports        Lists exports of a module (single file only)\n\ --list-imports        Lists imports of modules\n\ --help                Displays this message\n\ \n\ Use -- option to pass filenames that start with `--' or `-'\n\ For bug reporting instructions, please see:\n\ <somewhere>.", NULL);
   buffer_putnlflush(buffer_1);
 }
 
@@ -627,7 +607,7 @@ print_image_links(int first,
   self->flags |= DEPTREE_VISITED;
 
   if(file && first)
-    buffer_putm_internal(buffer_1, file, ": ", 0);
+    buffer_putm_internal(buffer_1, file, ": ", NULL);
 
   if(list_exports) {
     for(i = 0; i < self->exports_len; i++) {
@@ -685,7 +665,7 @@ print_image_links(int first,
       struct import_table_item* item = &self->imports[i];
 
       if(file && i > 0)
-        buffer_putm_internal(buffer_1, file, ": ", 0);
+        buffer_putm_internal(buffer_1, file, ": ", NULL);
       buffer_puts(buffer_1, "\t");
       buffer_putnspace(buffer_1, depth * 2);
       buffer_putxlonglong0(buffer_1, item->orig_address, 8);
@@ -722,7 +702,7 @@ print_image_links(int first,
     for(i = 0; i < self->childs_len; i++) {
       if(!(self->childs[i]->flags & DEPTREE_VISITED)) {
         if(file && i > 0)
-          buffer_putm_internal(buffer_1, file, ": ", 0);
+          buffer_putm_internal(buffer_1, file, ": ", NULL);
         buffer_putnspace(buffer_1, depth * 2);
         buffer_puts(buffer_1, self->childs[i]->module);
         print_image_links(0, verbose, unused, datarelocs, functionrelocs, self->childs[i], recursive, list_exports, list_imports, depth + 1, file);
@@ -890,13 +870,7 @@ main(int argc, char** argv) {
 
       case 'V': printversion(); break;
       default:
-        buffer_putm_internal(buffer_2,
-                             "Unrecognized option `",
-                             argv[unix_optind],
-                             "'\n",
-                             "Try `ntldd --help' for "
-                             "more information",
-                             0);
+        buffer_putm_internal(buffer_2, "Unrecognized option `", argv[unix_optind], "'\n", "Try `ntldd --help' for " "more information", NULL);
         buffer_putnlflush(buffer_2);
         return 1;
     }

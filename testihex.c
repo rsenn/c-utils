@@ -203,18 +203,7 @@ hex_print(ihex_file* ihf, buffer* out) {
  */
 void
 usage(char* argv0) {
-  buffer_putm_internal(buffer_1,
-                       "Usage: ",
-                       path_basename(argv0),
-                       " <hex-files...>\n"
-                       "\n"
-                       "Options\n"
-                       "  -h, --help                show this help\n"
-                       "  -b, --bits N              max address bits\n"
-                       "  -o, --output FILE         combine into output file\n"
-                       "  -v, --verbose             show verbose messages\n"
-                       "\n",
-                       0);
+  buffer_putm_internal(buffer_1, "Usage: ", path_basename(argv0), " <hex-files...>\n" "\n" "Options\n" "  -h, --help                show this help\n" "  -b, --bits N              max address bits\n" "  -o, --output FILE         combine into output file\n" "  -v, --verbose             show verbose messages\n" "\n", NULL);
   buffer_putnlflush(buffer_1);
 }
 

@@ -343,16 +343,16 @@ dump_strarray(buffer* b, const strarray* a, const char* quote, const char* sep) 
 
   for(i = 0; i < n; i++) {
     if(i)
-      buffer_putm_internal(b, sep, 0);
+      buffer_putm_internal(b, sep, NULL);
     s = strarray_at(a, i);
     if(s[str_chrs(s, quote_chars, str_len(quote_chars))])
 
-      buffer_putm_internal(b, quote, s, quote, 0);
+      buffer_putm_internal(b, quote, s, quote, NULL);
     else
       buffer_puts(b, s);
   }
   if(n < len)
-    buffer_putm_internal(b, s, " ", "...", " ", "more", 0);
+    buffer_putm_internal(b, s, " ", "...", " ", "more", NULL);
 
   buffer_flush(b);
 }
@@ -461,7 +461,7 @@ connection_open_log(connection_t* c, const char* prefix, const char* suffix) {
   tai6464 now;
   stralloc_init(&filename);
   if(fileBase)
-    stralloc_catm_internal(&filename, fileBase, "-", 0);
+    stralloc_catm_internal(&filename, fileBase, "-", NULL);
   stralloc_catb(&filename, buf, sockbuf_fmt_addr(&c->proxy, buf, '-'));
   stralloc_catc(&filename, '-');
   if(c->proxy.af == 0) {
@@ -473,7 +473,7 @@ connection_open_log(connection_t* c, const char* prefix, const char* suffix) {
   }
   stralloc_catb(&filename, buf, sockbuf_fmt_addr(&c->client, buf, '-'));
   if(prefix && *prefix)
-    stralloc_catm_internal(&filename, "-", prefix, 0);
+    stralloc_catm_internal(&filename, "-", prefix, NULL);
   stralloc_cats(&filename, suffix);
   x = filename.s;
   n = filename.len;
@@ -854,7 +854,7 @@ server_finalize() {
   if(b == NULL)
     b = path_basename(errmsg_argv0);
   if(b)
-    stralloc_catm_internal(&filename, b, "-", 0);
+    stralloc_catm_internal(&filename, b, "-", NULL);
   // stralloc_catb(&filename, buf,
   // strftime(buf, sizeof(buf),
   // "%Y%m%d-%H%M%S-", &lt));
@@ -1226,26 +1226,7 @@ sigchild_handler(int sig) {
 
 void
 usage(const char* argv0) {
-  buffer_putm_internal(buffer_2,
-                       "Syntax: ",
-                       argv0,
-                       " [...OPTIONS]\n"
-                       "  -b, --local-addr ADDR     local address\n"
-                       "  -l, --local-port PORT     local port\n"
-                       "  -r, --remote-addr ADDR    remote address\n"
-                       "  -p, --remote-port PORT    remote port\n"
-                       "  -f, --foreground          stay in foreground\n"
-                       "  -s, --syslog              use syslog\n"
-                       "  -o, --logfile             output logfile\n"
-                       "  -a, --append              append logfile\n"
-                       "  -n, --basename NAME       logfile basename\n"
-                       "  -d, --dump                debug output\n"
-                       "  -m, --max-length LENGTH   max line length\n"
-                       "  -L, --line-buffer         line buffered\n",
-                       "  -T, --ttl                 dns TTL\n",
-                       "  -O, --output-parser PROG  output parser\n",
-                       "  -i, --input-parser PROG   input parser\n",
-                       0);
+  buffer_putm_internal(buffer_2, "Syntax: ", argv0, " [...OPTIONS]\n" "  -b, --local-addr ADDR     local address\n" "  -l, --local-port PORT     local port\n" "  -r, --remote-addr ADDR    remote address\n" "  -p, --remote-port PORT    remote port\n" "  -f, --foreground          stay in foreground\n" "  -s, --syslog              use syslog\n" "  -o, --logfile             output logfile\n" "  -a, --append              append logfile\n" "  -n, --basename NAME       logfile basename\n" "  -d, --dump                debug output\n" "  -m, --max-length LENGTH   max line length\n" "  -L, --line-buffer         line buffered\n", "  -T, --ttl                 dns TTL\n", "  -O, --output-parser PROG  output parser\n", "  -i, --input-parser PROG   input parser\n", NULL);
   buffer_flush(buffer_2);
 }
 

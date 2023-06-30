@@ -203,10 +203,7 @@ next:
     fd = open_read(argv[ai]);
 
     /*
-        buffer_putm_internal(buffer_2,
-       "open_read(", argv[ai], ") = ",
-       NULL); buffer_putlong(buffer_2,
-       fd); buffer_putnlflush(buffer_2);
+        buffer_putm_internal(buffer_2, "open_read(", argv[ai], ") = ", NULL); buffer_putlong(buffer_2, fd); buffer_putnlflush(buffer_2);
     */
     fsize = file_size(fd);
 
