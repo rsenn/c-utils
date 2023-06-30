@@ -99,9 +99,11 @@ macro(check_msys_cygwin_mingw)
   set(SYSTEM "${SYSTEM}")
 
   if(WINDOWS)
-    if(NOT "${SYSTEM}" STREQUAL "cygwin")
+    if("${SYSTEM}" STREQUAL "cygwin")
+      add_definitions(-D__CRT__NO_INLINE)
+    else("${SYSTEM}" STREQUAL "cygwin")
       check_enable_auto_import_flag(AUTO_IMPORT)
-    endif(NOT "${SYSTEM}" STREQUAL "cygwin")
+    endif("${SYSTEM}" STREQUAL "cygwin")
 
     set(LIBSHLWAPI shlwapi CACHE STRING "Windows API shlwapi library")
     set(LIBIPHLPAPI iphlpapi CACHE STRING "Windows API iphlpapi library")
