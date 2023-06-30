@@ -57,7 +57,7 @@ void* __stdcall InterlockedCompareExchangePointer(void* volatile*, void*, void*)
 #define O_NDELAY O_NONBLOCK
 #endif
 
-long first_readable=0, first_writeable=0;
+long first_readable = 0, first_writeable = 0;
 
 static iarray io_fds;
 

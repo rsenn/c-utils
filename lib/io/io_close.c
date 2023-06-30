@@ -10,7 +10,6 @@
 #include <sys/mman.h>
 #endif
 
-
 extern void io_dontwantread_really(fd_t d, io_entry* e);
 extern void io_dontwantwrite_really(fd_t d, io_entry* e);
 

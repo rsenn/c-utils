@@ -5,7 +5,6 @@
 #else
 #endif
 
-
 void
 io_setcookie(fd_t d, void* cookie) {
   io_entry* e;

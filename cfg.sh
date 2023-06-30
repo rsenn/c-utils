@@ -102,10 +102,12 @@ cfg-diet() {
 
   export CC
 
-  if type pkgcfg >/dev/null; then
-    export PKG_CONFIG=`type pkgcfg 2>&1 |sed 's,.* is ,,'`
-  elif type pkg-config >/dev/null; then
-    export PKG_CONFIG=`type pkg-config 2>&1 |sed 's,.* is ,,'`
+  if [ "${PKG_CONFIG-unset}" = unset ]; then
+    if type pkgcfg >/dev/null; then
+      export PKG_CONFIG=`type pkgcfg 2>&1 |sed 's,.* is ,,'`
+    elif type pkg-config >/dev/null; then
+      export PKG_CONFIG=`type pkg-config 2>&1 |sed 's,.* is ,,'`
+    fi
   fi
 
   : ${builddir=build/${host%-*}-diet}

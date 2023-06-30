@@ -26,6 +26,7 @@ typedef void want_func(fd_t);
 
 typedef enum { TLS_OP_WRITE = 0, TLS_OP_READ, TLS_OP_ACCEPT, TLS_OP_CONNECT, TLS_OP_SHUTDOWN } tls_op_t;
 
+#ifndef HEADER_BIO_H
 struct bio_method_st {
   int type;
   char* name;
@@ -56,6 +57,7 @@ struct bio_st {
   struct bio_st* next_bio; /* used by filter BIOs */
   struct bio_st* prev_bio; /* used by filter BIOs */
 };
+#endif
 
 typedef struct tls_instance_st {
   tls_t* ssl;

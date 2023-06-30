@@ -925,6 +925,7 @@ add_subdirectory(lib ${CMAKE_BINARY_DIR}/lib)
 
 set(COMMON_LIBS strlist array safemult scan str byte mmap open fmt)
 
+
 set(genmakefile_SOURCES
     ini.c
     ini.h
