@@ -1226,7 +1226,26 @@ sigchild_handler(int sig) {
 
 void
 usage(const char* argv0) {
-  buffer_putm_internal(buffer_2, "Syntax: ", argv0, " [...OPTIONS]\n" "  -b, --local-addr ADDR     local address\n" "  -l, --local-port PORT     local port\n" "  -r, --remote-addr ADDR    remote address\n" "  -p, --remote-port PORT    remote port\n" "  -f, --foreground          stay in foreground\n" "  -s, --syslog              use syslog\n" "  -o, --logfile             output logfile\n" "  -a, --append              append logfile\n" "  -n, --basename NAME       logfile basename\n" "  -d, --dump                debug output\n" "  -m, --max-length LENGTH   max line length\n" "  -L, --line-buffer         line buffered\n", "  -T, --ttl                 dns TTL\n", "  -O, --output-parser PROG  output parser\n", "  -i, --input-parser PROG   input parser\n", NULL);
+  buffer_putm_internal(buffer_2,
+                       "Syntax: ",
+                       argv0,
+                       " [...OPTIONS]\n"
+                       "  -b, --local-addr ADDR     local address\n"
+                       "  -l, --local-port PORT     local port\n"
+                       "  -r, --remote-addr ADDR    remote address\n"
+                       "  -p, --remote-port PORT    remote port\n"
+                       "  -f, --foreground          stay in foreground\n"
+                       "  -s, --syslog              use syslog\n"
+                       "  -o, --logfile             output logfile\n"
+                       "  -a, --append              append logfile\n"
+                       "  -n, --basename NAME       logfile basename\n"
+                       "  -d, --dump                debug output\n"
+                       "  -m, --max-length LENGTH   max line length\n"
+                       "  -L, --line-buffer         line buffered\n",
+                       "  -T, --ttl                 dns TTL\n",
+                       "  -O, --output-parser PROG  output parser\n",
+                       "  -i, --input-parser PROG   input parser\n",
+                       NULL);
   buffer_flush(buffer_2);
 }
 

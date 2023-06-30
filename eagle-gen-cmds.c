@@ -1340,7 +1340,19 @@ print_script(buffer* b, xmlnode* e) {
     buffer_putm_internal(b, xml_get_attribute(e, "extent"), " ", xml_get_attribute(e, "shape"), " ", NULL);
     print_xml_xy(b, e);
   } else if(str_equal(e->name, "pad")) {
-    buffer_putm_internal(b, cmd.s, "'", xml_get_attribute(e, "name"), "'", " ", xml_get_attribute(e, "diameter"), " ", xml_get_attribute(e, "shape"), " ", xml_get_attribute(e, "orientation"), " ", NULL);
+    buffer_putm_internal(b,
+                         cmd.s,
+                         "'",
+                         xml_get_attribute(e, "name"),
+                         "'",
+                         " ",
+                         xml_get_attribute(e, "diameter"),
+                         " ",
+                         xml_get_attribute(e, "shape"),
+                         " ",
+                         xml_get_attribute(e, "orientation"),
+                         " ",
+                         NULL);
     print_xml_xy(b, e);
   } else if(str_equal(e->name, "hole")) {
     buffer_putm_internal(b, cmd.s, xml_get_attribute(e, "diameter"), " ", NULL);

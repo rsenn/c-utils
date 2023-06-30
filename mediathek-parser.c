@@ -500,7 +500,21 @@ process_input(buffer* input) {
 
 void
 usage(const char* argv0) {
-  buffer_putm_internal(buffer_2, "Usage: ", argv0, "[OPTIONS] <file>\n", "\n", "  -h, --help                  Show this help\n", "  -c, --csv                   Output as CSV\n", "  -d, --debug                 Debug mode\n", "  -l, --low                   Low quality\n", "  -o, --output FILE           Output file\n", "  -F, --format FMT            Output format\n", "\n", "Valid formats:\n", "  wget, curl, m3u\n", NULL);
+  buffer_putm_internal(buffer_2,
+                       "Usage: ",
+                       argv0,
+                       "[OPTIONS] <file>\n",
+                       "\n",
+                       "  -h, --help                  Show this help\n",
+                       "  -c, --csv                   Output as CSV\n",
+                       "  -d, --debug                 Debug mode\n",
+                       "  -l, --low                   Low quality\n",
+                       "  -o, --output FILE           Output file\n",
+                       "  -F, --format FMT            Output format\n",
+                       "\n",
+                       "Valid formats:\n",
+                       "  wget, curl, m3u\n",
+                       NULL);
 
   buffer_putnlflush(buffer_2);
 }

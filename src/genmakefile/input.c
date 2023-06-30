@@ -622,7 +622,7 @@ input_process_rules(target* all, char psa) {
   stralloc_zero(&commands.compile);
 
   hashmap_free(&(vars));
-  //MAP_DESTROY(vars);
+  // MAP_DESTROY(vars);
   MAP_NEW(vars);
 
   MAP_FOREACH(rules, t) {
@@ -710,7 +710,7 @@ input_process_rules(target* all, char psa) {
     buffer_puts(buffer_2, "CC before: ");
     buffer_putsl(buffer_2, &cc->value, " ");
     buffer_putnlflush(buffer_2);
-    
+
     if((found = strlist_match(&args, "--chip=*", 0)) >= 0) {
       char* chip = strlist_at(&args, found);
       chip += str_chr(chip, '=') + 1;
@@ -759,13 +759,13 @@ input_process_rules(target* all, char psa) {
     buffer_putnlflush(buffer_2);
 #endif
   }
-    /*  MAP_FOREACH(rules, t) {
-        target* rule = MAP_ITER_VALUE(t);
-        stralloc* sa = &commands.v[rule->type];
-        if(sa->s && sa->len)
-          stralloc_copy(&rule->recipe, sa);
-      }
-    */
+  /*  MAP_FOREACH(rules, t) {
+      target* rule = MAP_ITER_VALUE(t);
+      stralloc* sa = &commands.v[rule->type];
+      if(sa->s && sa->len)
+        stralloc_copy(&rule->recipe, sa);
+    }
+  */
   MAP_FOREACH(rules, t) {
     const char* name = MAP_ITER_KEY(t);
     target* rule = MAP_ITER_VALUE(t);

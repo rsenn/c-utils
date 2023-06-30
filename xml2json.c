@@ -191,7 +191,9 @@ xml_to_json_obj(xmlnode* node) {
      node_types[] = {"(null)",
      "XML_DOCUMENT", "XML_ELEMENT",
      "XML_ATTRIBUTE", "XML_TEXT" };
-      buffer_putm_internal(buffer_2, node_types[(int)node->type], " ", node->name, "\n", NULL);*/ if(node->type == XML_ELEMENT) { jsonval obj = json_object();
+      buffer_putm_internal(buffer_2, node_types[(int)node->type], " ", node->name, "\n", NULL);*/
+  if(node->type == XML_ELEMENT) {
+    jsonval obj = json_object();
     json_property_set(&obj, json_string(tag_property), json_string(node->name));
     if(node->attributes && node->attributes->list_tuple)
       hmap_to_jsonobj(node->attributes, &obj);
@@ -226,7 +228,42 @@ xml_depth(xmlnode* node) {
 
 void
 usage(char* av0) {
-  buffer_putm_internal(buffer_1, "Usage: ", str_basename(av0), " [OPTIONS] [FILES...]\n" "\n" "Options:\n" "\n" "  -h, --help              Show " "this help\n" "  -s, --single-quote      Use ' " "as quote\n" "  -d, --double-quote      Use " "\" as quote\n" "  -o, --one-line          " "One-line\n" "  -c, --compact           " "Compact\n" "  -l, --indent NUM        " "Indent level\n" "  -n, --numbers           Show " "numbers unquoted\n" "\n" "  -T, --tag NAME          Name " "of property with tag name [", tag_property, "]\n" "  -C, --children NAME     Name " "of property with children [", children_property, "]\n" "  -N, --class NAME        Name " "of property with classes [", class_property, "]\n" "\n", NULL);
+  buffer_putm_internal(buffer_1,
+                       "Usage: ",
+                       str_basename(av0),
+                       " [OPTIONS] [FILES...]\n"
+                       "\n"
+                       "Options:\n"
+                       "\n"
+                       "  -h, --help              Show "
+                       "this help\n"
+                       "  -s, --single-quote      Use ' "
+                       "as quote\n"
+                       "  -d, --double-quote      Use "
+                       "\" as quote\n"
+                       "  -o, --one-line          "
+                       "One-line\n"
+                       "  -c, --compact           "
+                       "Compact\n"
+                       "  -l, --indent NUM        "
+                       "Indent level\n"
+                       "  -n, --numbers           Show "
+                       "numbers unquoted\n"
+                       "\n"
+                       "  -T, --tag NAME          Name "
+                       "of property with tag name [",
+                       tag_property,
+                       "]\n"
+                       "  -C, --children NAME     Name "
+                       "of property with children [",
+                       children_property,
+                       "]\n"
+                       "  -N, --class NAME        Name "
+                       "of property with classes [",
+                       class_property,
+                       "]\n"
+                       "\n",
+                       NULL);
   buffer_flush(buffer_1);
 }
 

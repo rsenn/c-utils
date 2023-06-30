@@ -1146,7 +1146,35 @@ count_non_negative(const int* x, size_t n) {
 void
 usage(char* argv0) {
   const char* prog = str_basename(argv0);
-  buffer_putm_internal(buffer_1, "Usage: ", prog, " [-o output] [infile or stdin]\n\n", "  -1 ... -9           compression level; default is 3\n", "\n", "Options\n", "  -h, --help                show this help\n", "  -f, --force               force\n", "  -l, --list                long list\n", "  -n, --numeric             numeric user/group\n", "  -r, --relative            relative path\n", "  -i, --input       FILE     read files to list from FILE\n", "  -o, --output      FILE     write output to FILE\n", "  -I, --include     PATTERN  include entries matching PATTERN\n", "  -X, --exclude     PATTERN  exclude entries matching PATTERN\n", "  -t, --time-style  FORMAT   format time according to FORMAT\n", "  -m, --MIN-size    BYTES    minimum file size\n", "  -L, --dereference          dereference symlinks\n", "      --no-dereferen1ce\n", "  -D, --one-filesystem\n", "      --cross-filesystem\n", "  -C, --chdir       DIR      in directory\n", "  -c, --crc                  cyclic redundancy check\n", "  -d, --depth       NUM      MAX depth\n", "  -F, --filter-type TYPES    filter by type:\n\n    d = directory, b = " "block dev s = socket\n    f = file,      c = char dev\n    l = symlink, " "  p = pipe (fifo)\n\n", NULL);
+  buffer_putm_internal(buffer_1,
+                       "Usage: ",
+                       prog,
+                       " [-o output] [infile or stdin]\n\n",
+                       "  -1 ... -9           compression level; default is 3\n",
+                       "\n",
+                       "Options\n",
+                       "  -h, --help                show this help\n",
+                       "  -f, --force               force\n",
+                       "  -l, --list                long list\n",
+                       "  -n, --numeric             numeric user/group\n",
+                       "  -r, --relative            relative path\n",
+                       "  -i, --input       FILE     read files to list from FILE\n",
+                       "  -o, --output      FILE     write output to FILE\n",
+                       "  -I, --include     PATTERN  include entries matching PATTERN\n",
+                       "  -X, --exclude     PATTERN  exclude entries matching PATTERN\n",
+                       "  -t, --time-style  FORMAT   format time according to FORMAT\n",
+                       "  -m, --MIN-size    BYTES    minimum file size\n",
+                       "  -L, --dereference          dereference symlinks\n",
+                       "      --no-dereferen1ce\n",
+                       "  -D, --one-filesystem\n",
+                       "      --cross-filesystem\n",
+                       "  -C, --chdir       DIR      in directory\n",
+                       "  -c, --crc                  cyclic redundancy check\n",
+                       "  -d, --depth       NUM      MAX depth\n",
+                       "  -F, --filter-type TYPES    filter by type:\n\n    d = directory, b = "
+                       "block dev s = socket\n    f = file,      c = char dev\n    l = symlink, "
+                       "  p = pipe (fifo)\n\n",
+                       NULL);
   buffer_putnlflush(buffer_1);
 }
 

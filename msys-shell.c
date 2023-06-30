@@ -67,7 +67,16 @@ setup_env() {
  */
 void
 usage(char* errmsg_argv0) {
-  buffer_putm_internal(buffer_1, "Usage: ", str_basename(errmsg_argv0), " [sources...]\n", "\n", "Options\n", "  -h, --help                " "show this help\n", "\n", NULL);
+  buffer_putm_internal(buffer_1,
+                       "Usage: ",
+                       str_basename(errmsg_argv0),
+                       " [sources...]\n",
+                       "\n",
+                       "Options\n",
+                       "  -h, --help                "
+                       "show this help\n",
+                       "\n",
+                       NULL);
   buffer_putnlflush(buffer_1);
 }
 
@@ -106,7 +115,14 @@ main(int argc, char* argv[], char* envp[]) {
       case 'e': stralloc_copys(&execbin, unix_optarg); break;
 
       default:
-        buffer_putm_internal(buffer_2, "Unrecognized option `", argv[unix_optind], "'\n", "Try `", argv[0], "\" --help' for more " "information");
+        buffer_putm_internal(buffer_2,
+                             "Unrecognized option `",
+                             argv[unix_optind],
+                             "'\n",
+                             "Try `",
+                             argv[0],
+                             "\" --help' for more "
+                             "information");
         buffer_putnlflush(buffer_2);
         return 1;
     }

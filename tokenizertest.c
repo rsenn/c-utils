@@ -21,7 +21,13 @@ struct file_pos {
 
 static int
 usage(char* a0) {
-  buffer_putm_internal(buffer_2, "example tokenizer\n" "usage: ", a0, " [...options] file\n" "if no filename or '-' is passed, stdin is used.", NULL);
+  buffer_putm_internal(buffer_2,
+                       "example tokenizer\n"
+                       "usage: ",
+                       a0,
+                       " [...options] file\n"
+                       "if no filename or '-' is passed, stdin is used.",
+                       NULL);
   buffer_putnlflush(buffer_2);
   return 1;
 }

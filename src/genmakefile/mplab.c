@@ -120,8 +120,9 @@ output_mplab_project(buffer* b, MAP_T* _rules, MAP_T* vars, const strlist* inclu
                               /* .managed_stack = */ 1,
                               /* .program_default_config_words = */ 0,
                               /* .link_in_peripheral_library = */ 0,
-                              /* .additional_command_line_options = */ "--output=default,-inhx032 "
-                                                                 "--output=+mcof,-elf",
+                              /* .additional_command_line_options = */
+                              "--output=default,-inhx032 "
+                              "--output=+mcof,-elf",
                               /* .memory_model = */ 1,
                               /* .size_of_double = */ 1,
                               /* .size_of_float = */ 1};

@@ -474,7 +474,25 @@ pathtool(const char* arg, stralloc* sa) {
 
 void
 usage(char* av0) {
-  buffer_putm_internal(buffer_1, "Usage: ", str_basename(av0), " [OPTIONS] <path...>\n", "\n", "Options:\n", "\n", "  -h, --help             Show this help\n", "  -r, --relative-to DIR  Print the resolved path relative to DIR\n", "  -s, --separator SEP    Use SEP as directory separator\n", "  -w, --windows          Print Windows form of path(s) (C:\\WINNT)\n", "  -m, --mixed            Like --windows, but with regular slashes (C:/WINNT)\n", "  -u, --unix   (default) Print Unix form of path(s) (/cygdrive/c/winnt)\n", "  -a, --absolute         Output absolute path\n", "  -f, --canonicalize     Canonicalize by following every symlink in\n" "                         every component of the given name recursively;\n" "                         all but the last component must exist\n", "\n", NULL);
+  buffer_putm_internal(buffer_1,
+                       "Usage: ",
+                       str_basename(av0),
+                       " [OPTIONS] <path...>\n",
+                       "\n",
+                       "Options:\n",
+                       "\n",
+                       "  -h, --help             Show this help\n",
+                       "  -r, --relative-to DIR  Print the resolved path relative to DIR\n",
+                       "  -s, --separator SEP    Use SEP as directory separator\n",
+                       "  -w, --windows          Print Windows form of path(s) (C:\\WINNT)\n",
+                       "  -m, --mixed            Like --windows, but with regular slashes (C:/WINNT)\n",
+                       "  -u, --unix   (default) Print Unix form of path(s) (/cygdrive/c/winnt)\n",
+                       "  -a, --absolute         Output absolute path\n",
+                       "  -f, --canonicalize     Canonicalize by following every symlink in\n"
+                       "                         every component of the given name recursively;\n"
+                       "                         all but the last component must exist\n",
+                       "\n",
+                       NULL);
   buffer_flush(buffer_1);
 }
 

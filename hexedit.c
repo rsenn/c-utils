@@ -303,7 +303,15 @@ patch_apply(unsigned char* x, size_t n, patch_t* p) {
 
 void
 usage(const char* av0) {
-  buffer_putm_internal(buffer_2, "Usage: ", av0, " <file> [edit-specifier]\n" "\n" "  [edit-specifier] is " "<address>=<value>\n" "\n", NULL);
+  buffer_putm_internal(buffer_2,
+                       "Usage: ",
+                       av0,
+                       " <file> [edit-specifier]\n"
+                       "\n"
+                       "  [edit-specifier] is "
+                       "<address>=<value>\n"
+                       "\n",
+                       NULL);
   buffer_putnlflush(buffer_2);
 }
 

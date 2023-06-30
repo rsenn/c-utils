@@ -23,7 +23,15 @@ static const char* statm_fields[] = {"size", "resident", "share", "text", "lib",
 void
 usage(char* argv0) {
   const char* prog = str_basename(argv0);
-  buffer_putm_internal(buffer_1, "Usage: ", prog, "\n", "Options\n", "  -h, --help                " "show this help\n", "\n", NULL);
+  buffer_putm_internal(buffer_1,
+                       "Usage: ",
+                       prog,
+                       "\n",
+                       "Options\n",
+                       "  -h, --help                "
+                       "show this help\n",
+                       "\n",
+                       NULL);
   buffer_putnlflush(buffer_1);
 }
 

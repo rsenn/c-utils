@@ -50,7 +50,20 @@ static stralloc procfd, procfdinfo;
 
 void
 usage(char* av0) {
-  buffer_putm_internal(buffer_1, "Usage: ", str_basename(av0), " [OPTIONS] <FILE.list | TARGET " "LINK>\n", "\n", "Options:\n", "\n", "  -h, --help              Show " "this help\n", "  -v, --verbose           Be " "verbose\n", "\n", NULL);
+  buffer_putm_internal(buffer_1,
+                       "Usage: ",
+                       str_basename(av0),
+                       " [OPTIONS] <FILE.list | TARGET "
+                       "LINK>\n",
+                       "\n",
+                       "Options:\n",
+                       "\n",
+                       "  -h, --help              Show "
+                       "this help\n",
+                       "  -v, --verbose           Be "
+                       "verbose\n",
+                       "\n",
+                       NULL);
   buffer_flush(buffer_1);
 }
 
@@ -116,7 +129,10 @@ print_stat(const char* property, const struct stat* st) {
   buffer_put8long(buffer_1, st->st_mode & 07777);
   if(st->st_dev) {
     print_number_nonl_base(", dev", st->st_dev, 16); /*
-                     buffer_putm_internal(buffer_1, ", dev", 0); buffer_putxlong0(buffer_1, st->st_dev, 3);*/ } if(st->st_rdev) { buffer_putm_internal(buffer_1, ", rdev 0x", NULL);
+                     buffer_putm_internal(buffer_1, ", dev", 0); buffer_putxlong0(buffer_1, st->st_dev, 3);*/
+  }
+  if(st->st_rdev) {
+    buffer_putm_internal(buffer_1, ", rdev 0x", NULL);
     buffer_putxlong0(buffer_1, st->st_rdev, 3);
   }
   if(st->st_ino) {
