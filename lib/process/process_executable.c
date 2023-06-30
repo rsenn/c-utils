@@ -1,7 +1,12 @@
+#include "../windoze.h"
 #include "../process.h"
 #include "../stralloc.h"
 #include "../path.h"
 #include <limits.h>
+
+#if WINDOWS_NATIVE
+#include <windows.h>
+#endif
 
 char*
 process_executable(void) {

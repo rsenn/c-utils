@@ -1,3 +1,4 @@
+#include "../byte.h"
 #include "../stralloc.h"
 
 void

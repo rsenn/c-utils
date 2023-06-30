@@ -96,7 +96,7 @@ path_canonicalize(const char* path, stralloc* sa, int symbolic) {
   int ret = 1;
   char buf[PATH_MAX + 1];
   char sep;
-  int (*stat_fn)(const char*, struct _stat*) = stat;
+  int (*stat_fn)(const char*, struct _stat*) = (int (*)(const char*, struct _stat*))&stat;
 #ifdef HAVE_LSTAT
 #if !WINDOWS_NATIVE
   if(symbolic)
