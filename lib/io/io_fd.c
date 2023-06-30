@@ -44,6 +44,7 @@ void* __stdcall InterlockedCompareExchangePointer(void* volatile*, void*, void*)
 
 #if WINDOWS_NATIVE
 #include <stdio.h>
+intptr_t io_comport;
 #endif
 
 #include <fcntl.h>

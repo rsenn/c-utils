@@ -1,5 +1,5 @@
-#include "../windoze.h"
 #include "../tls_internal.h"
+#include "../windoze.h"
 #include "../str.h"
 #include <errno.h>
 
