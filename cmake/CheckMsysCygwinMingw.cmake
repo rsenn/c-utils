@@ -17,13 +17,13 @@ function(check_flag_and_add FLAG VAR)
 endfunction(check_flag_and_add FLAG VAR)
 
 macro(check_enable_auto_import_flag VAR)
-  check_flag_and_add("-Wl,--enable-auto-import" "${VAR}" CMAKE_EXE_LINKER_FLAGS
-                     CMAKE_MODULE_LINKER_FLAGS CMAKE_SHARED_LINKER_FLAGS)
-  foreach(ARG CMAKE_EXE_LINKER_FLAGS CMAKE_MODULE_LINKER_FLAGS
-              CMAKE_SHARED_LINKER_FLAGS)
-    set("${ARG}" "${${ARG}}")
-  endforeach(ARG CMAKE_EXE_LINKER_FLAGS CMAKE_MODULE_LINKER_FLAGS
-             CMAKE_SHARED_LINKER_FLAGS)
+  if(NOT DEFINED ${VAR})
+    check_flag_and_add("-Wl,--enable-auto-import" "${VAR}" AUTO_IMPORT_FLAG)
+		set("${VAR}" "${AUTO_IMPORT_FLAG}" CACHE STRING "Linker flag for automatic importing from DLL")
+    foreach(ARG CMAKE_EXE_LINKER_FLAGS CMAKE_MODULE_LINKER_FLAGS CMAKE_SHARED_LINKER_FLAGS)
+      set("${ARG}" "${${ARG}} ${AUTO_IMPORT_FLAG}")
+    endforeach()
+  endif(NOT DEFINED ${VAR})
 endmacro(check_enable_auto_import_flag VAR)
 
 macro(check_msys_cygwin_mingw)
@@ -99,10 +99,9 @@ macro(check_msys_cygwin_mingw)
   set(SYSTEM "${SYSTEM}")
 
   if(WINDOWS)
-    check_enable_auto_import_flag(AUTO_IMPORT)
-    if(AUTO_IMPORT)
-      message(STATUS "Auto-import flag: ${AUTO_IMPORT}")
-    endif(AUTO_IMPORT)
+    if(NOT "${SYSTEM}" STREQUAL "cygwin")
+      check_enable_auto_import_flag(AUTO_IMPORT)
+    endif(NOT "${SYSTEM}" STREQUAL "cygwin")
 
     set(LIBSHLWAPI shlwapi CACHE STRING "Windows API shlwapi library")
     set(LIBIPHLPAPI iphlpapi CACHE STRING "Windows API iphlpapi library")

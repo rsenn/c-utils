@@ -1,7 +1,7 @@
-#include "../io_internal.h"
 #define USE_WS2_32 1
 #define WINDOWS_OVERRIDE 1
 #include "../socket_internal.h"
+#include "../io_internal.h"
 #include "../windoze.h"
 
 #if WINDOWS && !defined(__ORANGEC__)

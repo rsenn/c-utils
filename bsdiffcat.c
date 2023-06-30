@@ -13,7 +13,9 @@
 #include "lib/errmsg.h"
 #include "lib/uint32.h"
 
-#if !WINDOWS_NATIVE
+#if WINDOWS_NATIVE
+#include <io.h>
+#else
 #include <unistd.h>
 #endif
 

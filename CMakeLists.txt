@@ -46,7 +46,6 @@ option(BUILD_SHARED_LIBS "build shared library" OFF)
 option(BUILD_EXAMPLES "build examples" OFF)
 option(BUILD_TESTS "build tests" OFF)
 
-message("CMAKE_SYSTEM_NAME: ${CMAKE_SYSTEM_NAME}")
 
 
 
@@ -141,15 +140,6 @@ if(WIN32)
   endif(PP_NOWARN_CPP)
 endif(WIN32)
 
-#if(WIN32)
-#  check_c_compiler_flag("-Wl,--enable-auto-import" LINK_ENABLE_AUTO_IMPORT)
-#  if(LINK_ENABLE_AUTO_IMPORT)
-#    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,--enable-auto-import")
-#    set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,--enable-auto-import")
-#    set(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} -Wl,--enable-auto-import")
-#  endif(LINK_ENABLE_AUTO_IMPORT)
-#endif(WIN32)
-
 check_c_compiler_flag("-Wl,--no-export-dynamic" LINK_NO_EXPORT_DYNAMIC)
 if(LINK_NO_EXPORT_DYNAMIC)
   set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,--no-export-dynamic"
@@ -172,7 +162,7 @@ include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/CheckWinSock.cmake)
 
 check_c_standard()
 check_msys_cygwin_mingw()
-dump(CMAKE_EXE_LINKER_FLAGS CMAKE_MODULE_LINKER_FLAGS CMAKE_SHARED_LINKER_FLAGS)
+#dump(CMAKE_EXE_LINKER_FLAGS CMAKE_MODULE_LINKER_FLAGS CMAKE_SHARED_LINKER_FLAGS)
 
 if(WINDOWS)
   check_winsock()
@@ -722,7 +712,6 @@ if(NOT MUX_METHOD)
 
   foreach(METHOD ${MUX_USE})
     #message("METHOD ${METHOD}")
-    message("SUPPORT_${METHOD} = ${SUPPORT_${METHOD}}")
 
     if(SUPPORT_${METHOD})
       list_contains("${MUX_LIST}" "${METHOD}" CONTAINS_METHOD)
@@ -944,8 +933,7 @@ set(genmakefile_SOURCES
     src/genmakefile/input.c
     src/genmakefile/output.c)
 
-message("COMPRESSION_LIBRARIES: ${COMPRESSION_LIBRARIES}")
-dump(LIBMATH)
+#dump(LIBMATH)
 
 if(USE_BZIP)
   add_program(bsdiffcat path array safemult str byte errmsg buffer stralloc uint32 uint64 ${COMPRESSION_LIBRARIES})

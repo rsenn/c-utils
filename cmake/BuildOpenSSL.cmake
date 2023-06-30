@@ -59,7 +59,6 @@ if(RETVAL_DOFILE)
   message(FATAL_ERROR "dofile.pl returned: ${RETVAL_DOFILE}\n\n${BN_CONF_H}")
 endif()
 
-message("BN_CONF_H: ${BN_CONF_H}")
 file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/include/internal/bn_conf.h "${BN_CONF_H}\n\n")
 ]]
 set(OPENSSLDIR "${CMAKE_INSTALL_PREFIX}/ssl")
