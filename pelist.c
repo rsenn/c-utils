@@ -267,6 +267,20 @@ pe_dump_imports(uint8* base) {
   }
 }
 
+void
+pe_dump_dependencies(uint8* base) {
+  int i;
+  pe_data_directory* import_dir = &pe_header_datadir(base)[PE_DIRECTORY_ENTRY_IMPORT];
+  pe_import_descriptor* imports = pe_rva2ptr(base, uint32_get(&import_dir->virtual_address));
+
+  for(i = 0; imports[i].original_first_thunk; ++i) {
+    const char* name = pe_rva2ptr(base, uint32_get(&imports[i].name));
+
+    buffer_puts(buffer_1, name);
+    buffer_putnlflush(buffer_1);
+  }
+}
+
 int
 parse_offset(const char* arg, uint64* dest) {
   int ret = 0;
@@ -450,6 +464,8 @@ main(int argc, char** argv) {
         pe_dump_sections(base);
       if(list_imports)
         pe_dump_imports(base);
+      if(list_deps)
+        pe_dump_dependencies(base);
 
       if(nt_headers->coff_header.characteristics & PE_FILE_DLL) {
         if(list_exports)
