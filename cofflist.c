@@ -154,10 +154,18 @@ coff_list_symbols(buffer* b, void* coff) {
     if(microchip) {
       coff_symtab_entry_microchip* entry = (coff_symtab_entry_microchip*)e;
 
-      if(entry->zeroes != 0 || entry->offset >= strtab_size)
+      if(entry->zeroes != 0)
         stralloc_copyb(&name, entry->name, sizeof(entry->name));
+      else if(entry->offset >= strtab_size)
+        stralloc_copys(&name, "<< strtab-out-of-bounds >>");
       else
         stralloc_copys(&name, &strtab[entry->offset]);
+
+      stralloc tmp;
+      stralloc_init(&tmp);
+      stralloc_quote_non_printable(&tmp, name.s, name.len);
+      stralloc_free(&name);
+      stralloc_move(&name, &tmp);
 
       stralloc_nul(&name);
       if(((uint16)(uint8)name.s[0]) > 127 || ((uint16)(uint8)name.s[0]) < 32)
