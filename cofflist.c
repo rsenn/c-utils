@@ -16,6 +16,8 @@
 #include <stdlib.h>
 #include <ctype.h>
 
+#define countof(arr) (sizeof((arr)) / sizeof((arr)[0]))
+
 int list_imports, list_exports, list_deps, list_sections;
 static int print_export_dir, print_data_dir, print_opt_header;
 
@@ -91,27 +93,30 @@ coff_print_func(buffer* b, void* coff, coff_symtab_entry* fn) {
   buffer_putnlflush(b);
 }
 
-static const char* coff_symtab_mchp_types[] = {"null",
-                                               "void",
-                                               "character",
-                                               "short integer",
-                                               "integer",
-                                               "long integer",
-                                               "floating point",
-                                               "double length floating point",
-                                               "structure",
-                                               "union",
-                                               "enumeration",
-                                               "member of enumeration",
-                                               "unsigned character",
-                                               "unsigned short",
-                                               "unsigned integer",
-                                               "unsigned long"};
+static const char* const coff_symtab_mchp_types[] = {
+    "null",
+    "void",
+    "character",
+    "short integer",
+    "integer",
+    "long integer",
+    "floating point",
+    "double length floating point",
+    "structure",
+    "union",
+    "enumeration",
+    "member of enumeration",
+    "unsigned character",
+    "unsigned short",
+    "unsigned integer",
+    "unsigned long",
+};
 
 void
 coff_list_symbols(buffer* b, void* coff) {
   range symtab;
-  const char* strtab = coff_get_strtab(coff, NULL);
+  uint32 strtab_size = 0;
+  const char* strtab = coff_get_strtab(coff, &strtab_size);
   coff_file_header* fhdr = coff_header_file(coff);
 
   char microchip = (fhdr->machine == COFF_FILE_MACHINE_MICROCHIP_V1 || fhdr->machine == COFF_FILE_MACHINE_MICROCHIP_V2);
@@ -149,7 +154,7 @@ coff_list_symbols(buffer* b, void* coff) {
     if(microchip) {
       coff_symtab_entry_microchip* entry = (coff_symtab_entry_microchip*)e;
 
-      if(entry->zeroes != 0)
+      if(entry->zeroes != 0 || entry->offset >= strtab_size)
         stralloc_copyb(&name, entry->name, sizeof(entry->name));
       else
         stralloc_copys(&name, &strtab[entry->offset]);
@@ -166,7 +171,7 @@ coff_list_symbols(buffer* b, void* coff) {
       buffer_puts(b, "0x");
       buffer_putxlong0(b, (long)(uint16)entry->scnum, 4);
       buffer_putspace(b);
-      buffer_putspad(b, coff_symtab_mchp_types[entry->type] ? coff_symtab_mchp_types[entry->type] : "", 16);
+      buffer_putspad(b, entry->type < countof(coff_symtab_mchp_types) && coff_symtab_mchp_types[entry->type] ? coff_symtab_mchp_types[entry->type] : "", 16);
       buffer_putspace(b);
       buffer_putlong0(b, (long)(uint32)entry->numaux, 2);
 
