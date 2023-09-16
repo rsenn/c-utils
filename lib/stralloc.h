@@ -306,7 +306,7 @@ char* stralloc_moveb(stralloc*, size_t* len);
 int stralloc_ready_tuned(stralloc*, size_t n, size_t base, size_t a, size_t b);
 void stralloc_remove_all(stralloc*, register const char* delchars, register unsigned int delcharslen);
 void stralloc_replace_non_printable(stralloc*, char ch);
- void stralloc_reverse_blocks(stralloc*, size_t size);
+void stralloc_reverse_blocks(stralloc*, size_t size);
 void stralloc_reverse(stralloc*);
 void stralloc_upper(register stralloc*);
 

@@ -164,7 +164,7 @@ coff_list_symbols(buffer* b, void* coff) {
       stralloc tmp;
       stralloc_init(&tmp);
       stralloc_nul(&name);
-      stralloc_fmt(&tmp, name.s, strlen(name.s),fmt_escapecharnonprintable);
+      stralloc_fmt(&tmp, name.s, strlen(name.s), fmt_escapecharcontrol);
       stralloc_free(&name);
       stralloc_move(&name, &tmp);
       stralloc_nul(&name);
