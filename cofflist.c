@@ -163,11 +163,12 @@ coff_list_symbols(buffer* b, void* coff) {
 
       stralloc tmp;
       stralloc_init(&tmp);
-      stralloc_quote_non_printable(&tmp, name.s, name.len);
+      stralloc_nul(&name);
+      stralloc_fmt(&tmp, name.s, strlen(name.s),fmt_escapecharnonprintable);
       stralloc_free(&name);
       stralloc_move(&name, &tmp);
-
       stralloc_nul(&name);
+
       if(((uint16)(uint8)name.s[0]) > 127 || ((uint16)(uint8)name.s[0]) < 32)
         name.s[0] = '\0';
 
