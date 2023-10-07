@@ -68,7 +68,8 @@ entry_to_v(boost::property_tree::ptree const& pt, std::list<std::string>& list) 
   // std::transform(pt.begin(),pt.end(), list.begin(), get_second_std::string);
 
   ptree::const_iterator end = pt.end();
-  for(ptree::const_iterator it = pt.begin(); it != end;) list.push_back(it->second.get_value<std::string>());
+  for(ptree::const_iterator it = pt.begin(); it != end;)
+    list.push_back(it->second.get_value<std::string>());
 }
 
 std::vector<std::string>

@@ -140,10 +140,7 @@ using namespace std::placeholders;
 template <typename CharT>
 std::function<bool(CharT)>
 make_predicate(const std::ctype<CharT>& ct, std::ctype_base::mask m) {
-  return std::bind((bool (std::ctype<CharT>::*)(std::ctype_base::mask, CharT) const) & std::ctype<CharT>::is,
-                   &ct,
-                   m,
-                   _1);
+  return std::bind((bool(std::ctype<CharT>::*)(std::ctype_base::mask, CharT) const) & std::ctype<CharT>::is, &ct, m, _1);
 }
 
 int
@@ -164,12 +161,7 @@ main() {
 
   auto cl = collect_chars(m);
 
-  for(auto mask : {ctype<char>::lower,
-                   ctype<char>::upper,
-                   ctype<char>::digit,
-                   ctype<char>::punct,
-                   ctype<char>::graph,
-                   ctype<char>::print}) {
+  for(auto mask : {ctype<char>::lower, ctype<char>::upper, ctype<char>::digit, ctype<char>::punct, ctype<char>::graph, ctype<char>::print}) {
     copy_if(cl.begin(), cl.end(), ostream_iterator<char>(cout), make_predicate(ct, mask));
     cout << endl;
   }
