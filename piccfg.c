@@ -59,6 +59,11 @@ config_data_at(uint32 addr) {
     size_t offs = addr - 0x2007;
     assert(offs < cfg.len);
     return uint16_read(&cfg.s[offs]);
+
+  } else if(addr >= 0x8007) {
+    size_t offs = (addr - 0x8007) * 2;
+    return uint16_read(&cfg.s[offs]);
+
   } else {
     size_t offs = (addr & 0x0fff);
     return cfg.s[offs];
@@ -221,8 +226,12 @@ config_bytes(ihex_file* ihf, stralloc* sa, uint32* addr) {
   if(((bytes = ihex_read_at(&hex, 0x00300000, sa->s, 14)) == 14)) {
     *addr = 0x00300000;
   } else {
-    if((bytes = ihex_read_at(&hex, 0x400e, sa->s, 2)) == 2)
-      *addr = 0x400e;
+    if((bytes = ihex_read_at(&hex, 0x8007 << 1, sa->s, 4)) == 4)
+      *addr = 0x8007;
+    else {
+      if((bytes = ihex_read_at(&hex, 0x400e, sa->s, 2)) == 2)
+        *addr = 0x400e;
+    }
   }
 
   sa->len = bytes;
@@ -330,16 +339,20 @@ get_cfgdat(const char* chip) {
   if(path.len == 0) {
     dir_t d;
     const char *dir = 0, *subdir;
-    static const char* const search_dirs[] = {"/opt/microchip",
-                                              "C:\\Program Files\\Microchip",
-                                              "C:\\Program Files (x86)\\Microchip"};
+    static const char* const search_dirs[] = {
+        "/opt/microchip",
+        "C:\\Program Files\\Microchip",
+        "C:\\Program Files (x86)\\Microchip",
+    };
     for(i = 0; i < sizeof(search_dirs) / sizeof(search_dirs[0]); i++) {
       dir = search_dirs[i];
       if(path_exists(dir))
         break;
     }
+
     if(dir == NULL)
       return NULL;
+
     stralloc_copys(&path, dir);
     stralloc_cats(&path, "/xc8/");
     stralloc_nul(&path);
@@ -564,7 +577,7 @@ main(int argc, char* argv[]) {
       cfgdata = get_cfgdat(cfgdata);
   } else {
     const char* chip = infer_chip(hexfile, str_len(hexfile));
-    
+
     if(chip)
       cfgdata = get_cfgdat(chip);
   }
