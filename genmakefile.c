@@ -2147,7 +2147,7 @@ var_setb(const char* name, const char* value, size_t vlen) {
  */
 var_t*
 var_set(const char* name, const char* value) {
-  return var_setb(name, str_len(name), value);
+  return var_setb(name, value, str_len(value));
 }
 
 void
@@ -3493,39 +3493,68 @@ get_keys(MAP_T* map, strlist* list) {
   MAP_FOREACH(*map, t) { strlist_push(list, MAP_ITER_KEY(t)); }
 }
 
-void
-input_process_path_b(const char* y, size_t len, stralloc* out) {
-#ifdef DEBUG_OUTPUT_
-  buffer_puts(buffer_2, "input_process_path_b \"");
-  buffer_put(buffer_2, y, len);
-  buffer_puts(buffer_2, "\"");
-  buffer_putnlflush(buffer_2);
-#endif
+command_type
+command_gettype(stralloc* cmd, int argc, char* argv[]) {
+  size_t n, len;
+  bool compile = false, link = false, lib = false;
+  int objects = 0;
+  const char *x, *y;
+  char **p, **end = argv + argc;
 
-  stralloc_init(out);
-  path_append(dirs.build.sa.s, dirs.build.sa.len, out);
-  path_append(y, len, out);
-  stralloc_nul(out);
-  path_relative_to(out->s, dirs.out.sa.s, out);
-  path_prepends(".", out);
+  for(int i = 0; i < argc; i++) {
+    if(is_source(argv[i])) {
+      compile = true;
+      break;
+    }
+  }
+  if(compile || link || lib) {
 
-  path_collapse_sa(out);
-  stralloc_nul(out);
-#ifdef DEBUG_OUTPUT_
-  buffer_puts(buffer_2, "out \"");
-  buffer_puts(buffer_2, out->s);
-  buffer_puts(buffer_2, "\"");
-  buffer_putnlflush(buffer_2);
-#endif
-}
+  } else if(!is_command_b(cmd->s, cmd->len))
+    return -1;
 
-void
-input_process_path(const char* y, stralloc* out) {
-  input_process_path_b(y, str_len(y), out);
+  if(stralloc_ends(cmd, "make")) {
+
+  } else {
+    for(p = argv; (len = *p ? str_len(*p) : 0, x = *p, p < end); p++) {
+      int src = is_source_b(x, len);
+      if(byte_equal(x, 2, "-c") || src) {
+        compile = true;
+        link = false;
+      }
+    }
+
+    for(p = argv; (len = *p ? str_len(*p) : 0, x = *p, p < end); p++) {
+      len = str_len(x);
+      if(len >= 2 && byte_equal(x, 2, "-c")) {
+        compile = true;
+      }
+    }
+  }
+
+  for(p = argv; (len = *p ? str_len(*p) : 0, x = *p); p++) {
+    len = str_len(x);
+    if(byte_finds(x, len, exts.obj) < len || byte_finds(x, len, exts.lib) < len) {
+      objects++;
+      if(!compile && !lib) {
+        if(objects > 1) {
+          compile = false;
+          link = true;
+        }
+      }
+    }
+  }
+
+  if(compile)
+    return COMPILE;
+  if(link)
+    return LINK;
+  if(lib)
+    return LIB;
+  return -1;
 }
 
 int
-input_process_command(stralloc* cmd, int argc, char* argv[], const char* file, size_t line) {
+command_process(stralloc* cmd, int argc, char* argv[], const char* file, size_t line) {
   size_t n, len;
   int compile = 0, link = 0, lib = 0, objects = 0;
   const char *x, *y;
@@ -3920,6 +3949,37 @@ input_process_command(stralloc* cmd, int argc, char* argv[], const char* file, s
   return link ? 2 : compile ? 1 : 0;
 }
 
+void
+input_process_path_b(const char* y, size_t len, stralloc* out) {
+#ifdef DEBUG_OUTPUT_
+  buffer_puts(buffer_2, "input_process_path_b \"");
+  buffer_put(buffer_2, y, len);
+  buffer_puts(buffer_2, "\"");
+  buffer_putnlflush(buffer_2);
+#endif
+
+  stralloc_init(out);
+  path_append(dirs.build.sa.s, dirs.build.sa.len, out);
+  path_append(y, len, out);
+  stralloc_nul(out);
+  path_relative_to(out->s, dirs.out.sa.s, out);
+  path_prepends(".", out);
+
+  path_collapse_sa(out);
+  stralloc_nul(out);
+#ifdef DEBUG_OUTPUT_
+  buffer_puts(buffer_2, "out \"");
+  buffer_puts(buffer_2, out->s);
+  buffer_puts(buffer_2, "\"");
+  buffer_putnlflush(buffer_2);
+#endif
+}
+
+void
+input_process_path(const char* y, stralloc* out) {
+  input_process_path_b(y, str_len(y), out);
+}
+
 int
 input_process_line(const char* x, size_t n, const char* file, size_t line) {
   size_t idx = 0;
@@ -4015,7 +4075,7 @@ input_process_line(const char* x, size_t n, const char* file, size_t line) {
   if(strarray_size(&args) && command.s) {
     if(*(av = strarray_to_argv(&args))) {
       int ac = strarray_size(&args);
-      ret = input_process_command(&command, ac, av, file, line);
+      ret = command_process(&command, ac, av, file, line);
     }
     if(av)
       alloc_free(av);
@@ -6387,7 +6447,7 @@ main(int argc, char* argv[]) {
 #endif
 fail:
   if(!case_diffs(tools.make, "mplab")) {
-    output_mplab_project(out, 0, 0, &include_dirs);
+    mplab_output_project(out, 0, 0, &include_dirs);
     goto quit;
   }
   {

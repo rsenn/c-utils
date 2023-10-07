@@ -82,25 +82,47 @@ ini_write(buffer* b, ini_section_t* ini, int utf16) {
   char x[1024];
   buffer_init(&out, (buffer_op_sys*)(void*)&buffer_write_utf16le, 0, x, sizeof(x));
   out.cookie = b;
+
   if(utf16) {
     buffer_putsflush(b, "\377\376");
     b = &out;
   }
-  while(ini) {
 
+  while(ini) {
     MAP_PAIR_T t;
+#ifdef DEBUG_OUTPUT
+    buffer_puts(buffer_2, "Writing section ");
+    buffer_putsa(buffer_2, &ini->name);
+    buffer_putnlflush(buffer_2);
+#endif
     buffer_putc(b, '[');
     buffer_putsa(b, &ini->name);
     buffer_put(b, "]\r\n", 3);
+
     MAP_FOREACH(ini->map, t) {
-      buffer_put(b, MAP_KEY(t), str_len(MAP_KEY(t)));
+      const char *key = MAP_KEY(t), *value = MAP_VALUE(t);
+      size_t keylen = byte_chr(key, MAP_KEY_LEN(t), '=');
+
+      buffer_put(b, key, keylen);
       buffer_putc(b, '=');
-      buffer_put(b, MAP_VALUE(t), str_len(MAP_VALUE(t)));
+      buffer_puts(b, value);
       buffer_puts(b, "\r\n");
     }
     ini = ini->next;
   }
   buffer_flush(b);
+}
+
+ini_section_t*
+ini_get_section(ini_section_t* ini, const char* name) {
+
+  while(ini) {
+    MAP_PAIR_T t;
+
+    if(stralloc_equals(&ini->name, name))
+      return ini;
+  }
+  return 0;
 }
 
 typedef int(getchar_fn)(buffer*, int*);
@@ -141,12 +163,14 @@ getline_sa(buffer* b, stralloc* line, getchar_fn* getbyte) {
         break;
       if(ch == '\n')
         continue;
-      if(ch == 'n')
-        ch = '\n';
-      else if(ch == 'r')
-        ch = '\r';
-      else if(ch == 't')
-        ch = '\t';
+      /* if(ch == 'n')
+         ch = '\n';
+       else if(ch == 'r')
+         ch = '\r';
+       else if(ch == 't')
+         ch = '\t';
+       else*/
+      stralloc_catc(line, '\\');
       stralloc_catc(line, ch);
     } else {
       stralloc_catc(line, ch);
@@ -195,7 +219,12 @@ ini_read(buffer* b, ini_section_t** ptr) {
       i++;
       e = byte_chr(&line.s[i], line.len - i, ']');
 
-      s = ini_newb(ptr, &line.s[i], e);
+      s = ini_newb(s ? &s->next : ptr, &line.s[i], e);
+
+      buffer_puts(buffer_2, "Reading section ");
+      buffer_putsa(buffer_2, &s->name);
+      buffer_putnlflush(buffer_2);
+
       /*      s = alloc(sizeof(ini_
          section_t));
             stralloc_init(&s->name);
@@ -213,11 +242,18 @@ ini_read(buffer* b, ini_section_t** ptr) {
     e = byte_chr(&line.s[i], line.len - i, '=');
 
     if(i + e < line.len) {
+      char *name, *value;
+      size_t namelen, valuelen;
       e++;
-      MAP_INSERT(s->map, &line.s[i], e - i - 1, &line.s[i + e], line.len - (i + e));
+      name = &line.s[i];
+      namelen = e - i - 1;
+      value = &line.s[i + e];
+      valuelen = line.len - (i + e);
 
-      buffer_putsa(buffer_2, &line);
-      buffer_putnlflush(buffer_2);
+      MAP_INSERT(s->map, name, namelen, value, valuelen);
+
+      /* buffer_putsa(buffer_2, &line);
+       buffer_putnlflush(buffer_2);*/
     }
   }
 }

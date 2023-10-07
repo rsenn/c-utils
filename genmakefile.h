@@ -29,7 +29,16 @@
 
 typedef enum { OS_WIN, OS_MAC, OS_LINUX } os_type;
 typedef enum { LANG_C, LANG_CXX } lang_type;
-typedef enum { PREPROCESS = 0, COMPILE, LIB, LINK, MKDIR, CLEAN, NUM_COMMANDS } command_type;
+typedef enum {
+  PREPROCESS = 0,
+  COMPILE_ONLY,
+  COMPILE /*_AND_ASSEMBLE*/,
+  LIB,
+  LINK,
+  MKDIR,
+  CLEAN,
+  NUM_COMMANDS
+} command_type;
 
 #if WINDOWS
 #define MAX_CMD_LEN 1023
@@ -318,7 +327,11 @@ target* gen_install_rules(void);
 void get_keys(MAP_T*, strlist*);
 #define MAP_USE_HMAP 1
 
-int input_command_line(const char*, size_t);
+void input_process_path_b(const char* y, size_t len, stralloc* out);
+void input_process_path(const char* y, stralloc* out);
+int input_process_line(const char* x, size_t n, const char* file, size_t line);
+void input_process_rules(target* all);
+void input_process(const char* infile, target* all);
 
 void output_var(buffer*, MAP_T*, const char*, int);
 void output_all_vars(buffer*, MAP_T*, strlist*);

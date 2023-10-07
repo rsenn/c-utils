@@ -311,9 +311,9 @@ output_cmake_project(buffer* b, MAP_T* rules, MAP_T* vars, const strlist* includ
     stralloc_free(&sa);
   }
 
-  output_cmake_subst(&include_dirs->sa, "CMAKE_CURRENT_SOURCE_DIR");
-  output_cmake_subst(&include_dirs->sa, "CMAKE_CURRENT_BINARY_DIR");
-  output_cmake_subst(&link_dirs->sa, "CMAKE_CURRENT_BINARY_DIR");
+  output_cmake_subst((stralloc*)&include_dirs->sa, "CMAKE_CURRENT_SOURCE_DIR");
+  output_cmake_subst((stralloc*)&include_dirs->sa, "CMAKE_CURRENT_BINARY_DIR");
+  output_cmake_subst((stralloc*)&link_dirs->sa, "CMAKE_CURRENT_BINARY_DIR");
 
   if(var_isset("CFLAGS"))
     output_cmake_var(b, "CMAKE_C_FLAGS", &var_list("CFLAGS")->value);

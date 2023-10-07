@@ -5,7 +5,7 @@
 #include "lib/stralloc.h"
 #include "lib/buffer.h"
 
-#define MAP_USE_HASHMAP 1
+#define MAP_USE_HMAP 1
 #include "lib/map.h"
 
 typedef struct ini_section {
@@ -25,5 +25,6 @@ void ini_set_long(ini_section_t* ini, const char* key, long value);
 void ini_set_sa(ini_section_t* ini, stralloc* key, stralloc* value);
 void ini_write(buffer* b, ini_section_t* ini, int utf16);
 void ini_read(buffer* b, ini_section_t** ini);
+ini_section_t* ini_get_section(ini_section_t* ini, const char* name);
 
 #endif /* defined _INI_H */

@@ -2,8 +2,17 @@
 #include "ini.h"
 #define MAP_USE_HMAP 1
 #include "lib/map.h"
-#include "mplab.h"
 #include "lib/set.h"
+#include "lib/array.h"
+#include "mplab.h"
+#include "ini.h"
+
+typedef union mplab_file_s {
+  struct {
+    const char *dir, *name, *generated, *other;
+  };
+  const char* fields[4];
+} mplab_file_t;
 
 static void
 make_fileno(stralloc* sa, int i) {
@@ -91,7 +100,7 @@ opt_speed() {
 static void set_debug(MAP_T map);
 
 void
-output_mplab_project(buffer* b, MAP_T* _rules, MAP_T* vars, const strlist* include_dirs) {
+mplab_output_project(buffer* b, MAP_T* _rules, MAP_T* vars, const strlist* include_dirs) {
   MAP_PAIR_T it;
   MAP_T toolcfg;
   strlist incdirs, srcdirs;
@@ -631,4 +640,61 @@ set_debug(MAP_T map) {
   set_str(map, "F7", "");
   set_str(map, "B9", "-1");
   set_str(map, "107", "0");
+}
+
+static int
+mplab_read_records(array* entries, ini_section_t* section, int field_index, size_t num_fields) {
+  MAP_PAIR_T t;
+  int n = 0, i = 0;
+
+  MAP_FOREACH(section->map, t) {
+    const char *key = MAP_KEY(t), *value = MAP_VALUE(t);
+    size_t keylen = byte_chr(key, MAP_KEY_LEN(t), '=');
+
+    size_t number_index;
+    long number = -1;
+
+    if((number_index = byte_chr(key, keylen, '_')) < keylen)
+      scan_long(&key[++number_index], &number);
+    else
+      number = i++;
+
+    if(number != -1) {
+      const char** fptr = array_allocate(entries, sizeof(const char*)*num_fields, number);
+
+      fptr[field_index] = str_dup(value);
+      n++;
+    }
+  }
+  return n;
+}
+
+static const char* file_sections[4] = {
+    "FILE_SUBFOLDERS",
+    "GENERATED_FILES",
+    "OTHER_FILES",
+    "FILE_INFO",
+};
+
+int
+mplab_read_project(buffer* input, MAP_T* rules, MAP_T* vars, strlist* include_dirs) {
+  int i;
+  ini_section_t *ini = 0, *section;
+  array files;
+  strarray settings;
+  mplab_file_t file = {0, 0, 0, 0}, *fptr;
+
+  array_init(&files);
+  array_init(&settings.a);
+
+  ini_read(input, &ini);
+
+  for(i = 0; i < 4; i++) {
+
+    if((section = ini_get_section(ini, file_sections[i])))
+      mplab_read_records(&files, section, i, 4);
+  }
+
+  if((section = ini_get_section(ini, "TOOL_SETTINGS")))
+    mplab_read_records(&settings.a, section, 0, 1);
 }
