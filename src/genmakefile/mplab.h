@@ -25,7 +25,6 @@ typedef struct mplab_config_s {
   int size_of_float : 1;
 } mplab_config_t;
 
-void mplab_output_project(buffer*, MAP_T* _rules, MAP_T* vars, const strlist* include_dirs);
-int mplab_read_project(buffer*, MAP_T* rules, MAP_T* vars, strlist* include_dirs);
+void output_mplab_project(buffer* b, MAP_T* rules, MAP_T* vars, const strlist* include_dirs);
 
 #endif
