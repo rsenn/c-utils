@@ -351,12 +351,18 @@ terminal_set_fg(int color) {
 }
 void
 terminal_rgb_foreground(buffer* buf, uint8 r, uint8 g, uint8 b) {
-  int code[5] = {38, 2, r, g, b};
+  int code[5] = {38, 2};
+  code[2] = r;
+  code[3] = g;
+  code[4] = b;
   terminal_numbers_sequence(buf, code, 5, 'm');
 }
 
 void
 terminal_rgb_background(buffer* buf, uint8 r, uint8 g, uint8 b) {
-  int code[5] = {48, 2, r, g, b};
+  int code[5] = {48, 2};
+  code[2] = r;
+  code[3] = g;
+  code[4] = b;
   terminal_numbers_sequence(buf, code, 5, 'm');
 }

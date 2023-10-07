@@ -118,7 +118,7 @@ main(int argc, char* argv[]) {
                              argv[0],
                              "[-t TYPE] [-o OUTPUT] "
                              "[file]\n",
-                             0);
+                             NULL);
         exit(EXIT_FAILURE);
     }
   }
@@ -197,7 +197,7 @@ main(int argc, char* argv[]) {
                            "ERROR: Unable to detect "
                            "compression type from ",
                            in_filename,
-                           0);
+                           NULL);
       buffer_putnlflush(buffer_2);
       exit(EXIT_FAILURE);
   }

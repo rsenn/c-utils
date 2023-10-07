@@ -120,7 +120,7 @@ usage(char* av0) {
                        "Terminate non-closed tags (img, "
                        "link, br, ...)\n"
                        "\n",
-                       0);
+                       NULL);
   buffer_flush(buffer_1);
 }
 static int max_depth;

@@ -150,8 +150,7 @@ get_file_size(char* path) {
   typedef LONG(WINAPI getfilesizeex_fn)(HANDLE, PLARGE_INTEGER);
   static getfilesizeex_fn* api_fn;
 
-  HANDLE hFile =
-      CreateFileA(path, GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
+  HANDLE hFile = CreateFileA(path, GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
   if(hFile == INVALID_HANDLE_VALUE)
     return -1; /* error condition, could
                   call GetLastError to
@@ -184,8 +183,7 @@ uint64
 get_file_time(const char* path) {
   FILETIME c, la, lw;
   int64 t;
-  HANDLE hFile =
-      CreateFileA(path, GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
+  HANDLE hFile = CreateFileA(path, GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
   if(hFile == INVALID_HANDLE_VALUE)
     return -1; /* error condition, could
                   call GetLastError to
@@ -237,9 +235,7 @@ get_file_owner(const char* path) {
   PSECURITY_DESCRIPTOR pSD = 0;
   LPSTR strsid = 0;
   DWORD dwErrorCode = 0;
-  static DWORD(
-      WINAPI *
-      get_security_info)(HANDLE, DWORD, SECURITY_INFORMATION, PSID*, PSID*, PACL*, PACL*, PSECURITY_DESCRIPTOR*);
+  static DWORD(WINAPI * get_security_info)(HANDLE, DWORD, SECURITY_INFORMATION, PSID*, PSID*, PACL*, PACL*, PSECURITY_DESCRIPTOR*);
   static BOOL(WINAPI * convert_sid_to_string_sid_a)(PSID, LPSTR*);
   tmpbuf[0] = '\0';
   /* Get the handle of the file object.
@@ -505,11 +501,13 @@ make_num(stralloc* out, uint64 num, uint32 width, size_t (*fmt)(char*, uint64)) 
   char buf[FMT_ULONG + 1];
   if(!fmt)
     fmt = &fmt_ulonglong;
-  size_t sz = fmt(buf, num);
-  ssize_t n = width - sz;
-  while(n-- > 0)
-    stralloc_catb(out, " ", 1);
-  stralloc_catb(out, buf, sz);
+  {
+    size_t sz = fmt(buf, num);
+    ssize_t n = width - sz;
+    while(n-- > 0)
+      stralloc_catb(out, " ", 1);
+    stralloc_catb(out, buf, sz);
+  }
 }
 
 static void
@@ -721,8 +719,7 @@ stat_type(const char* path, int mode) {
   return dtype;
 }
 
-static const char* type_strs[] = {
-    "D_PIPE", "D_CHARDEV", "D_BLKDEV", "D_SYMLINK", "D_DIRECTORY", "D_FILE", "D_SOCKET", 0};
+static const char* type_strs[] = {"D_PIPE", "D_CHARDEV", "D_BLKDEV", "D_SYMLINK", "D_DIRECTORY", "D_FILE", "D_SOCKET", 0};
 
 static const char*
 type_str(dir_type_t type) {
@@ -839,7 +836,7 @@ file_crc32(const char* path, size_t size, uint32* crc) {
 }
 
 int
-list_file(stralloc* path, const char* name, int mode, long depth, int root_dev) {
+list_file(stralloc* path, const char* name, int mode, long depth, int root_dev, struct dir_s* dir_p) {
   size_t l;
   struct stat st;
   static stralloc pre;
@@ -851,7 +848,7 @@ list_file(stralloc* path, const char* name, int mode, long depth, int root_dev) 
   int match, show = 1;
   uint64 mtime = 0, size = 0, nlink = 0;
   uint32 uid = 0, gid = 0;
-  struct dir_s d;
+  struct dir_s d = {dir_p ? dir_p->dir_int : 0};
 
   match = match_extensions(path);
 #ifdef DEBUG_OUTPUT_
@@ -1081,7 +1078,7 @@ list_dir_internal(stralloc* dir, int type, long depth) {
       const char* base = path_basename(dir->s);
       //    path_dirname(dir->s, dir);
       dtype = stat_type(dir->s, st.st_mode);
-      list_file(dir, base, dtype, 0, root_dev);
+      list_file(dir, base, dtype, 0, root_dev, &d);
       return 0;
     }
   }
@@ -1106,7 +1103,7 @@ list_dir_internal(stralloc* dir, int type, long depth) {
     str_copy(dir->s + dir->len, name);
     dir->len += str_len(name);
 
-    list_file(dir, name, dtype, depth, root_dev);
+    list_file(dir, name, dtype, depth, root_dev, &d);
     dir->len = l;
   }
 end:
@@ -1177,7 +1174,7 @@ usage(char* argv0) {
                        "  -F, --filter-type TYPES    filter by type:\n\n    d = directory, b = "
                        "block dev s = socket\n    f = file,      c = char dev\n    l = symlink, "
                        "  p = pipe (fifo)\n\n",
-                       0);
+                       NULL);
   buffer_putnlflush(buffer_1);
 }
 
@@ -1509,7 +1506,7 @@ main(int argc, char* argv[]) {
         unsigned int mode;
         scan_8int(line.s, &mode);
 
-        list_file(&file, path_basename(file.s), mode, 0, 0);
+        list_file(&file, path_basename(file.s), mode, 0, 0, 0);
       }
     }
     return 0;

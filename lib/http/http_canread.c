@@ -20,7 +20,7 @@
  * @return     -1 on error
  */
 ssize_t
-http_canread(http* h, void (*wantwrite)(fd_t)) {
+http_canread(http* h, void (*wantread)(fd_t), void (*wantwrite)(fd_t)) {
   http_response* r;
   int err;
   size_t len;
@@ -28,14 +28,29 @@ http_canread(http* h, void (*wantwrite)(fd_t)) {
 
   if(h->tls) {
     if(!h->connected) {
-      if((ret = tls_connect(h->sock)) != 1)
+
+      ret = tls_connect(h->sock);
+      if(ret == -1) {
+        h->err = tls_errno(h->sock);
+        tls_want(h->sock, wantread, wantwrite);
+      }
+
+      if(ret != 1)
         goto fail;
       h->connected = 1;
     }
     if(h->connected && h->sent == 0) {
-      http_sendreq(h);
-      tls_want(h->sock, 0, wantwrite);
+      ret = http_sendreq(h);
+      if(ret == -1)
+        tls_want(h->sock, wantread, wantwrite);
+      if(ret <= 0)
+        goto fail;
+      h->sent = 1;
     }
+
+  } else {
+    if(!h->connected)
+      h->connected = 1;
   }
 
   len = buffer_LEN(&h->q.in);
@@ -112,18 +127,19 @@ http_canread(http* h, void (*wantwrite)(fd_t)) {
     }
   }
 
+fail:
   if(ret == -1) {
-    err = errno;
-    errno = 0;
+    err = h->err = h->tls ? tls_errno(h->sock) : errno;
   } else {
-    err = 0;
+    err = h->err = 0;
   }
 
-fail:
-  /*  if(ret == -1 && !(errno == EAGAIN || errno == EWOULDBLOCK))
-      r->status = HTTP_STATUS_ERROR;*/
-  if(ret == -1 && (errno == EAGAIN || errno == EWOULDBLOCK))
-    tls_want(h->sock, 0, wantwrite);
+  if(h->tls) {
+    if(err == EAGAIN || err == EWOULDBLOCK) {
+      tls_want(h->sock, wantread, wantwrite);
+      errno = err;
+    }
+  }
 
 #ifdef DEBUG_HTTP
   buffer_putspad(buffer_2, "\x1b[1;32mhttp_canread\x1b[0m ", 30);
@@ -199,14 +215,8 @@ fail:
   }
   buffer_puts(buffer_2, " status=");
   buffer_puts(buffer_2,
-              ((const char* const[]){"-1",
-                                     "HTTP_RECV_HEADER",
-                                     "HTTP_RECV_DATA",
-                                     "HTTP_STATUS_CLOSED",
-                                     "HTTP_STATUS_ERROR",
-                                     "HTTP_STATUS_BUSY",
-                                     "HTTP_STATUS_FINISH",
-                                     0})[h->response->status + 1]);
+              ((const char* const[]){
+                  "-1", "HTTP_RECV_HEADER", "HTTP_RECV_DATA", "HTTP_STATUS_CLOSED", "HTTP_STATUS_ERROR", "HTTP_STATUS_BUSY", "HTTP_STATUS_FINISH", 0})[h->response->status + 1]);
   buffer_putnlflush(buffer_2);
 #endif
 

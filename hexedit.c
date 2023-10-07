@@ -391,8 +391,7 @@ main(int argc, char* argv[]) {
           } while(*spec);
 
         } /*else {
-          buffer_putm_internal(buffer_2,
-        "ERROR: ", spec, "\n", NULL);
+          buffer_putm_internal(buffer_2, "ERROR: ", spec, "\n", NULL);
           buffer_putnlflush(buffer_2);
           return 2;
         }*/

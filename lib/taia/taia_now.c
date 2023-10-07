@@ -17,7 +17,7 @@
 
 void
 taia_now(struct taia* t) {
-#if WINDOWS_NATIVE
+#if 0 // WINDOWS_NATIVE
   LARGE_INTEGER ticks, freq;
   if(QueryPerformanceFrequency(&freq)) {
     if(QueryPerformanceCounter(&ticks)) {
@@ -29,7 +29,11 @@ taia_now(struct taia* t) {
       t->atto = 0;
     }
   }
-#elif 0
+#elif defined(_WIN32)
+  union {
+    FILETIME f;
+    int64 l;
+  } fnord;
   GetSystemTimeAsFileTime(&fnord.f);
   /* 64-bit value representing the number of 100-nanosecond intervals
    * since January 1, 1601 (UTC) */

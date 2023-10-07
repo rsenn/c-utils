@@ -14,6 +14,7 @@ daemon(int nochdir, int noclose) {
   if(!nochdir && chdir("/"))
     return -1;
 
+#if !WINDOWS_NATIVE
   if(!noclose) {
     int fd, failed = 0;
     if((fd = open("/dev/null", O_RDWR)) < 0)
@@ -40,7 +41,7 @@ daemon(int nochdir, int noclose) {
     case -1: return -1;
     default: _exit(0);
   }
-
+#endif
   return 0;
 }
 #endif

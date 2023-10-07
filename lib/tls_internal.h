@@ -26,7 +26,8 @@ typedef void want_func(fd_t);
 
 typedef enum { TLS_OP_WRITE = 0, TLS_OP_READ, TLS_OP_ACCEPT, TLS_OP_CONNECT, TLS_OP_SHUTDOWN } tls_op_t;
 
-typedef struct bio_method_st {
+#if 1 // ndef HEADER_BIO_H
+struct bio_method_st {
   int type;
   char* name;
   int (*bwrite)(struct bio_st*, const char*, size_t, size_t*);
@@ -39,9 +40,9 @@ typedef struct bio_method_st {
   int (*create)(struct bio_st*);
   int (*destroy)(struct bio_st*);
   long (*callback_ctrl)(struct bio_st*, int, int (*info_cb)(BIO*, int, int));
-} bio_method_t;
+};
 
-typedef struct bio_st {
+struct bio_st {
   const bio_method_t* method;
   /* bio, mode, argp, argi, argl, ret */
   void* callback;
@@ -55,14 +56,18 @@ typedef struct bio_st {
   void* ptr;
   struct bio_st* next_bio; /* used by filter BIOs */
   struct bio_st* prev_bio; /* used by filter BIOs */
-} tls_bio_t;
+};
+#endif
+
+typedef struct bio_method_st tls_bio_method_t;
+typedef struct bio_st tls_bio_t;
 
 typedef struct tls_instance_st {
   tls_t* ssl;
   tls_op_t op;
   tls_bio_t* bio;
   int retval;
-  int error;
+  int error, syserr;
   want_func *wantread, *wantwrite;
   char errstr[128];
 } tls_instance_t;

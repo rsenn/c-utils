@@ -1,4 +1,4 @@
-//#include "../io.h"
+#include "../io_internal.h"
 #ifdef __POCC__
 #define NOWINBASEINTERLOCK 1
 #define _NTOS_ 1
@@ -16,7 +16,6 @@ void* __stdcall InterlockedCompareExchangePointer(void* volatile*, void*, void*)
 #include "../array.h"
 
 #define my_extern
-#include "../io_internal.h"
 #undef my_extern
 #include "../byte.h"
 
@@ -45,6 +44,7 @@ void* __stdcall InterlockedCompareExchangePointer(void* volatile*, void*, void*)
 
 #if WINDOWS_NATIVE
 #include <stdio.h>
+intptr_t io_comport;
 #endif
 
 #include <fcntl.h>
@@ -57,6 +57,8 @@ void* __stdcall InterlockedCompareExchangePointer(void* volatile*, void*, void*)
 #ifndef O_NDELAY
 #define O_NDELAY O_NONBLOCK
 #endif
+
+long first_readable = 0, first_writeable = 0;
 
 static iarray io_fds;
 
@@ -156,8 +158,7 @@ io_fd_internal(fd_t d, int flags) {
     alt_firstread = alt_firstwrite = -1;
     if(io_waitmode == UNDECIDED) {
       io_signum = SIGRTMIN + 1;
-      if(sigemptyset(&io_ss) == 0 && sigaddset(&io_ss, io_signum) == 0 && sigaddset(&io_ss, SIGIO) == 0 &&
-         sigprocmask(SIG_BLOCK, &io_ss, 0) == 0)
+      if(sigemptyset(&io_ss) == 0 && sigaddset(&io_ss, io_signum) == 0 && sigaddset(&io_ss, SIGIO) == 0 && sigprocmask(SIG_BLOCK, &io_ss, 0) == 0)
         io_waitmode = _SIGIO;
     }
 #endif

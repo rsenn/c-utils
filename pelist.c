@@ -16,16 +16,14 @@
 #include <stdlib.h>
 
 int list_imports, list_exports, list_deps, list_sections;
-static int print_export_dir, print_data_dir, print_opt_header, print_offset_rva, print_rva_offset, print_range,
-    print_as_rva;
+static int print_export_dir, print_data_dir, print_opt_header, print_offset_rva, print_rva_offset, print_range, print_as_rva;
 static uint64 offset, rva;
 static stralloc search;
 
 void pe_dump_sections(uint8* base);
 
 #define PE_DUMP_FIELD(base, ptr, st, field) \
-  buffer_putspad(b, #field, 30), buffer_puts(b, " 0x"), \
-      buffer_putxlonglong0(b, PE_GET(base, ptr, st, field), PE_SIZE(base, st, field) * 2), buffer_putnlflush(b)
+  buffer_putspad(b, #field, 30), buffer_puts(b, " 0x"), buffer_putxlonglong0(b, PE_GET(base, ptr, st, field), PE_SIZE(base, st, field) * 2), buffer_putnlflush(b)
 
 size_t
 pe_end_offset(uint8* base) {
@@ -112,9 +110,7 @@ pe_print_data_directories(buffer* b, uint8* base, pe_data_directory* data_dirs, 
     const char* name = pe_datadir_name(i);
     buffer_putspad(b, name ? name : "", 12);
     buffer_putspace(b);
-    buffer_putxlong0(b,
-                     pe_rva2offset(base, uint32_get(&data_dirs[i].virtual_address)),
-                     sizeof(data_dirs[i].virtual_address) * 2);
+    buffer_putxlong0(b, pe_rva2offset(base, uint32_get(&data_dirs[i].virtual_address)), sizeof(data_dirs[i].virtual_address) * 2);
     buffer_putspace(b);
     buffer_putxlong0(b, uint32_get(&data_dirs[i].size), sizeof(data_dirs[i].size) * 2);
     buffer_putnlflush(b);
@@ -141,17 +137,11 @@ pe_print_export_directory(buffer* b, uint8* base, pe_export_directory* export_di
   buffer_puts(b, "\nnumber_of_names: ");
   buffer_putulong(b, uint32_get(&export_dir->number_of_names));
   buffer_puts(b, "\naddress_of_functions: ");
-  buffer_putxlong0(b,
-                   pe_rva2offset(base, uint32_get(&export_dir->address_of_functions)),
-                   sizeof(export_dir->address_of_functions) * 2);
+  buffer_putxlong0(b, pe_rva2offset(base, uint32_get(&export_dir->address_of_functions)), sizeof(export_dir->address_of_functions) * 2);
   buffer_puts(b, "\naddress_of_names: ");
-  buffer_putxlong0(b,
-                   pe_rva2offset(base, uint32_get(&export_dir->address_of_names)),
-                   sizeof(export_dir->address_of_names) * 2);
+  buffer_putxlong0(b, pe_rva2offset(base, uint32_get(&export_dir->address_of_names)), sizeof(export_dir->address_of_names) * 2);
   buffer_puts(b, "\naddress_of_name_ordinals: ");
-  buffer_putxlong0(b,
-                   pe_rva2offset(base, uint32_get(&export_dir->address_of_name_ordinals)),
-                   sizeof(export_dir->address_of_name_ordinals) * 2);
+  buffer_putxlong0(b, pe_rva2offset(base, uint32_get(&export_dir->address_of_name_ordinals)), sizeof(export_dir->address_of_name_ordinals) * 2);
   buffer_putnlflush(b);
 }
 
@@ -277,6 +267,20 @@ pe_dump_imports(uint8* base) {
   }
 }
 
+void
+pe_dump_dependencies(uint8* base) {
+  int i;
+  pe_data_directory* import_dir = &pe_header_datadir(base)[PE_DIRECTORY_ENTRY_IMPORT];
+  pe_import_descriptor* imports = pe_rva2ptr(base, uint32_get(&import_dir->virtual_address));
+
+  for(i = 0; imports[i].original_first_thunk; ++i) {
+    const char* name = pe_rva2ptr(base, uint32_get(&imports[i].name));
+
+    buffer_puts(buffer_1, name);
+    buffer_putnlflush(buffer_1);
+  }
+}
+
 int
 parse_offset(const char* arg, uint64* dest) {
   int ret = 0;
@@ -317,28 +321,29 @@ put_search(buffer* b, const stralloc* search) {
 
 void
 usage(char* av0) {
+  const char* me = str_basename(av0);
   buffer_putm_internal(buffer_1,
                        "Usage: ",
-                       str_basename(av0),
-                       " [OPTIONS] <file...>\n",
+                       me,
+                       " [OPTIONS] <file...>\n"
+                       "\n"
+                       "Options:\n"
+                       "\n"
+                       "  -h, --help              Show this help\n"
+                       "  -i, --imports           List imports\n"
+                       "  -e, --exports           List exports\n"
+                       "  -d, --deps              List DLL dependencies\n"
+                       "  -s, --sections          List PE32 sections\n"
+                       "  -E, --export-directory  Print export directory\n"
+                       "  -D, --data-directory    Print data directory\n"
+                       "  -O, --optional-header   Print optional header\n"
+                       "  -r, --range             Print sections as ranges\n"
+                       "  -o, --offset-rva        Print RVA of given offset\n"
+                       "  -a, --rva-offset        Print offset of given RVA\n"
+                       "  -S, --search BYTES      Search data\n"
+                       "  -R, --rva               Search result as RVA\n"
                        "\n",
-                       "Options:\n",
-                       "\n",
-                       "  -h, --help              Show this help\n",
-                       "  -i, --imports           List imports\n",
-                       "  -e, --exports           List exports\n",
-                       "  -d, --deps              List DLL dependencies\n",
-                       "  -s, --sections          List PE32 sections\n",
-                       "  -E, --export-directory  Print export directory\n",
-                       "  -D, --data-directory    Print data directory\n",
-                       "  -O, --optional-header   Print optional header\n",
-                       "  -r, --range             Print sections as ranges\n",
-                       "  -o, --offset-rva        Print RVA of given offset\n",
-                       "  -a, --rva-offset        Print offset of given RVA\n",
-                       "  -S, --search BYTES      Search data\n",
-                       "  -R, --rva               Search result as RVA\n",
-                       "\n",
-                       0);
+                       NULL);
   buffer_flush(buffer_1);
 }
 
@@ -459,6 +464,8 @@ main(int argc, char** argv) {
         pe_dump_sections(base);
       if(list_imports)
         pe_dump_imports(base);
+      if(list_deps)
+        pe_dump_dependencies(base);
 
       if(nt_headers->coff_header.characteristics & PE_FILE_DLL) {
         if(list_exports)
@@ -526,23 +533,17 @@ pe_dump_sections(uint8* base) {
     buffer_putxlong0(buffer_1, uint32_get(&sections[i].virtual_address), sizeof(sections[i].virtual_address) * 2);
     if(print_range) {
       buffer_puts(buffer_1, " 0x");
-      buffer_putxlong0(buffer_1,
-                       uint32_get(&sections[i].virtual_address) + uint32_get(&sections[i].physical_address),
-                       sizeof(sections[i].physical_address) * 2);
+      buffer_putxlong0(buffer_1, uint32_get(&sections[i].virtual_address) + uint32_get(&sections[i].physical_address), sizeof(sections[i].physical_address) * 2);
     }
     if(!print_range) {
       buffer_puts(buffer_1, " 0x");
       buffer_putxlong0(buffer_1, uint32_get(&sections[i].size_of_raw_data), sizeof(sections[i].size_of_raw_data) * 2);
     }
     buffer_puts(buffer_1, " 0x");
-    buffer_putxlong0(buffer_1,
-                     uint32_get(&sections[i].pointer_to_raw_data),
-                     sizeof(sections[i].pointer_to_raw_data) * 2);
+    buffer_putxlong0(buffer_1, uint32_get(&sections[i].pointer_to_raw_data), sizeof(sections[i].pointer_to_raw_data) * 2);
     if(print_range) {
       buffer_puts(buffer_1, " 0x");
-      buffer_putxlong0(buffer_1,
-                       uint32_get(&sections[i].pointer_to_raw_data) + uint32_get(&sections[i].size_of_raw_data),
-                       sizeof(sections[i].size_of_raw_data) * 2);
+      buffer_putxlong0(buffer_1, uint32_get(&sections[i].pointer_to_raw_data) + uint32_get(&sections[i].size_of_raw_data), sizeof(sections[i].size_of_raw_data) * 2);
     }
     buffer_putnlflush(buffer_1);
   }

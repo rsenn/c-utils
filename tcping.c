@@ -240,6 +240,8 @@ main(int argc, char* argv[]) {
     }
   }
 
+  taia_uint(&timeout, timeout_sec + timeout_usec / 1000000);
+
   dns_random_init(seed);
 
   MAP_NEW(hosts_db);
@@ -280,8 +282,7 @@ main(int argc, char* argv[]) {
 
   io_fd(sock);
 
-  if((ret = addr.ip6 ? socket_connect6(sock, addr.ip, port, addr.scope_id) : socket_connect4(sock, addr.ip, port)) !=
-     0) {
+  if((ret = addr.ip6 ? socket_connect6(sock, addr.ip, port, addr.scope_id) : socket_connect4(sock, addr.ip, port)) != 0) {
     if(errno != EINPROGRESS) {
 #if 1 // def HAVE_SOLARIS
       /* solaris immediately returns
@@ -316,7 +317,6 @@ main(int argc, char* argv[]) {
     buffer_putnlflush(buffer_2);
 #endif
 
-    taia_uint(&timeout, timeout_sec + timeout_usec / 1000000);
     umult64(timeout_usec % 1000000, 1000, &result);
 
     timeout.nano = result;

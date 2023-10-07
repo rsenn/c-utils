@@ -21,7 +21,7 @@ address_init(address_t* addr, char ip[16], bool ip6, uint32 scope_id) {
     byte_zero(&addr->ip[4], 12);
   }
   addr->ip6 = ip6;
-  addr->scope_id = ip6 ? scope_id : UINT32_MAX;
+  addr->scope_id = ip6 ? scope_id : ~0;
   return 1;
 }
 

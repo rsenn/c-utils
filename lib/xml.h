@@ -24,15 +24,7 @@ extern "C" {
 #define __inl static inline
 #endif
 
-typedef enum xmltokid {
-  XML_EOF = -1,
-  XML_DATA = 0,
-  XML_TAG_NAME = 1,
-  XML_TAG_CLOSE = 2,
-  XML_ATTR_NAME = 3,
-  XML_ATTR_VALUE = 4,
-  XML_COMMENT = 5
-} xmltokid;
+typedef enum xmltokid { XML_EOF = -1, XML_DATA = 0, XML_TAG_NAME = 1, XML_TAG_CLOSE = 2, XML_ATTR_NAME = 3, XML_ATTR_VALUE = 4, XML_COMMENT = 5 } xmltokid;
 
 typedef struct {
   char* x;
@@ -234,8 +226,6 @@ xmlnodeset_iter_dist(xmlnode*** itp1, xmlnode*** itp2) {
 
 #define XML_READ_BUFFER 4096
 #define XML_HMAP_BUCKETS 48
-
-typedef int xml_pred_t(xmlnode*, const void*, const void*, const void*);
 
 xmlnode* xml_find_pred(xmlnode*, xml_pred_t*, ...);
 xmlnodeset xml_find_all(xmlnode*, xml_pred_t*, ...);

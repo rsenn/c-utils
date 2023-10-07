@@ -311,7 +311,8 @@ byte_numlines(char* x, size_t p, size_t* end_ptr) {
 
 static bool
 byte_is_binary(char* x, size_t n) {
-  for(size_t i = 0; i < n; i++)
+  size_t i;
+  for(i = 0; i < n; i++)
     if(x[i] < ' ' || x[i] >= 127)
       return true;
 
@@ -342,16 +343,16 @@ dump_strarray(buffer* b, const strarray* a, const char* quote, const char* sep) 
 
   for(i = 0; i < n; i++) {
     if(i)
-      buffer_putm_internal(b, sep, 0);
+      buffer_putm_internal(b, sep, NULL);
     s = strarray_at(a, i);
     if(s[str_chrs(s, quote_chars, str_len(quote_chars))])
 
-      buffer_putm_internal(b, quote, s, quote, 0);
+      buffer_putm_internal(b, quote, s, quote, NULL);
     else
       buffer_puts(b, s);
   }
   if(n < len)
-    buffer_putm_internal(b, s, " ", "...", " ", "more", 0);
+    buffer_putm_internal(b, s, " ", "...", " ", "more", NULL);
 
   buffer_flush(b);
 }
@@ -460,7 +461,7 @@ connection_open_log(connection_t* c, const char* prefix, const char* suffix) {
   tai6464 now;
   stralloc_init(&filename);
   if(fileBase)
-    stralloc_catm_internal(&filename, fileBase, "-", 0);
+    stralloc_catm_internal(&filename, fileBase, "-", NULL);
   stralloc_catb(&filename, buf, sockbuf_fmt_addr(&c->proxy, buf, '-'));
   stralloc_catc(&filename, '-');
   if(c->proxy.af == 0) {
@@ -472,7 +473,7 @@ connection_open_log(connection_t* c, const char* prefix, const char* suffix) {
   }
   stralloc_catb(&filename, buf, sockbuf_fmt_addr(&c->client, buf, '-'));
   if(prefix && *prefix)
-    stralloc_catm_internal(&filename, "-", prefix, 0);
+    stralloc_catm_internal(&filename, "-", prefix, NULL);
   stralloc_cats(&filename, suffix);
   x = filename.s;
   n = filename.len;
@@ -648,8 +649,7 @@ sockbuf_close(socketbuf_t* sb) {
 
 void
 sockbuf_check(socketbuf_t* sb) {
-  int wantwrite = (line_buffer && !buffer_is_binary(&sb->buf) && !sb->force_write) ? buffer_numlines(&sb->buf, NULL) > 0
-                                                                                   : sb->buf.p > 0;
+  int wantwrite = (line_buffer && !buffer_is_binary(&sb->buf) && !sb->force_write) ? buffer_numlines(&sb->buf, NULL) > 0 : sb->buf.p > 0;
   io_entry* e = io_getentry(sb->sock);
 
   if(wantwrite) {
@@ -662,6 +662,17 @@ sockbuf_check(socketbuf_t* sb) {
     io_wantwrite(sb->sock);
   } else {
     io_wantread(sb->sock);
+  }
+}
+
+void
+buffer_put_data(buffer* b, char* x, size_t len) {
+  size_t i;
+  for(i = 0; i < len; i++) {
+    if(x[i] < 0x20 || x[i] >= 0x7f)
+      buffer_putfmt(b, &x[i], 1, &fmt_escapecharc);
+    else
+      buffer_putc(b, x[i]);
   }
 }
 
@@ -712,17 +723,7 @@ sockbuf_log_data(socketbuf_t* sb, bool send, char* x, size_t len) {
     pos = log.p;
 
 #ifdef DEBUG_OUTPUT
-    (escape ? buffer_putfmt(&log,
-                            x,
-                            /*maxlen > 0 && maxlen <
-                               end ? maxlen :*/
-                            end,
-                            &fmt_escapecharc)
-            : buffer_put(&log,
-                         x,
-                         /*maxlen > 0 && maxlen <
-                            end ? maxlen :*/
-                         end));
+    (escape ? buffer_put_data(&log, x, end) : buffer_put(&log, x, end));
 
     if(maxlen > 0 && maxlen < end)
       buffer_puts(&log, "<shortened> ...");
@@ -853,7 +854,7 @@ server_finalize() {
   if(b == NULL)
     b = path_basename(errmsg_argv0);
   if(b)
-    stralloc_catm_internal(&filename, b, "-", 0);
+    stralloc_catm_internal(&filename, b, "-", NULL);
   // stralloc_catb(&filename, buf,
   // strftime(buf, sizeof(buf),
   // "%Y%m%d-%H%M%S-", &lt));
@@ -1009,7 +1010,7 @@ server_spawn() {
     buffer_putsa(buffer_2, &args.sa);
     buffer_putsflush(buffer_2, "'\n");
 
-    if((pid = process_create(program_argv[0], program_argv, 0, 0)) < 0) {
+    if((pid = process_create(program_argv[0], (char* const*)program_argv, 0, 0)) < 0) {
       errmsg_warnsys("Error in execvp: ", 0);
       exit(1);
     }
@@ -1126,8 +1127,7 @@ server_loop() {
         char addr[16];
         uint16 port;
         socklen_t addrlen = sizeof(addr);
-        sock = server.af == AF_INET ? socket_accept4(server_sock, addr, &port)
-                                    : socket_accept6(server_sock, addr, &port, 0);
+        sock = server.af == AF_INET ? socket_accept4(server_sock, addr, &port) : socket_accept6(server_sock, addr, &port, 0);
         if(sock == -1) {
           errmsg_warn("Accept error: ", strerror(errno), 0);
           exit(2);
@@ -1245,7 +1245,7 @@ usage(const char* argv0) {
                        "  -T, --ttl                 dns TTL\n",
                        "  -O, --output-parser PROG  output parser\n",
                        "  -i, --input-parser PROG   input parser\n",
-                       0);
+                       NULL);
   buffer_flush(buffer_2);
 }
 
@@ -1323,7 +1323,7 @@ main(int argc, char* argv[]) {
     }
   }
 
-  program_argv = (char**)argv + unix_optind;
+  program_argv = (const char**)argv + unix_optind;
   program_argc = (int)argc - unix_optind;
   // strarray_from_argv(argc - unix_optind, argv + unix_optind, &program);
 

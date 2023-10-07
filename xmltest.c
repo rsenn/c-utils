@@ -185,8 +185,7 @@ xml_dump(xmlnode* n, buffer* b, const char* parent, int depth) {
         } else {
           hmap_foreach(n->attributes, t) {
             newline_indent(b, depth);
-            buffer_putm_internal(
-                b, "xml_set_attribute(", name.s, ", \"", t->key, "\", \"", t->vals.val_chars, "\")", NULL);
+            buffer_putm_internal(b, "xml_set_attribute(", name.s, ", \"", t->key, "\", \"", t->vals.val_chars, "\")", NULL);
           }
         }
       }

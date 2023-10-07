@@ -29,7 +29,7 @@ typedef struct strlist_s {
 
 /* strlist_init will initialize a strlist. */
 #define strlist_zero(l) stralloc_zero(&(l)->sa)
-#define strlist_init(l, s) stralloc_init(&(l)->sa), (l)->sep = (s);
+/*#define strlist_init(l, s) stralloc_init(&(l)->sa), (l)->sep = (s);*/
 #define strlist_free(l) stralloc_free(&(l)->sa)
 #define strlist_nul(l) stralloc_nul(&(l)->sa)
 //#define strlist_copy(d, s) (d)->sep = (s)->sep, stralloc_copy(&(d)->sa, &(s)->sa)
@@ -42,13 +42,9 @@ typedef struct strlist_s {
 
 #define strlist_end(sl) ((sl)->sa.s + (sl)->sa.len)
 
-#define strlist_foreach(sl, str, n) \
-  for((str) = (sl)->sa.s; \
-      ((str) < strlist_end(sl) && ((n) = byte_chr((str), strlist_end(sl) - (str), (sl)->sep)) > 0); \
-      (str) += (n) + 1)
+#define strlist_foreach(sl, str, n) for((str) = (sl)->sa.s; ((str) < strlist_end(sl) && ((n) = byte_chr((str), strlist_end(sl) - (str), (sl)->sep)) > 0); (str) += (n) + 1)
 
-#define strlist_foreach_s(sl, str) \
-  for(str = (sl)->sa.s; str < strlist_end(sl); str += byte_chr((str), strlist_end(sl) - str, (sl)->sep) + 1)
+#define strlist_foreach_s(sl, str) for(str = (sl)->sa.s; str < strlist_end(sl); str += byte_chr((str), strlist_end(sl) - str, (sl)->sep) + 1)
 
 #define strlist_len(sl, ptr) (byte_chr(ptr, strlist_end((sl)) - (ptr), (sl)->sep))
 
@@ -82,6 +78,7 @@ strlist_next_b(const strlist* sl, const char* ptr, size_t* n) {
   return 0;
 }
 
+void strlist_init(strlist* sl, char sep);
 char* strlist_at(const strlist*, size_t i);
 char* strlist_at_n(const strlist*, size_t i, size_t* n);
 int strlist_cat(strlist*, const strlist* l);
@@ -89,6 +86,7 @@ int strlist_cat_unique(strlist*, const strlist* l);
 int strlist_containsb(const strlist*, const char* x, size_t len);
 int strlist_contains(const strlist*, const char* s);
 size_t strlist_count(const strlist*);
+size_t strlist_count_pred(strlist*, int (*predicate)(const char*, size_t));
 size_t strlist_diff(const strlist*, const strlist* b, strlist* out);
 void strlist_fromb(strlist*, const char* x, size_t n, const char* delim);
 void strlist_froms(strlist*, const char*, char delim);

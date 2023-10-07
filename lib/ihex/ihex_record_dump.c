@@ -5,7 +5,8 @@ void
 ihex_record_dump(ihex_record* ihr, uint16 hi16, buffer* b) {
   size_t i;
   ihex_record* extlinaddr;
-  ihex_addr a = {ihr->offset};
+  ihex_addr a;
+  a.off32 = ihr->offset;
 
   buffer_putspad(b, ihex_typestr(ihr->type), 10);
   buffer_puts(b, " 0x");

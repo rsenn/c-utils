@@ -10,5 +10,6 @@ main(int argc, char* argv[]) {
   if(argc > 1)
     myPath = argv[1];
 
-  for(auto& dirEntry : recursive_directory_iterator(myPath)) std::cout << dirEntry << std::endl;
+  for(auto& dirEntry : recursive_directory_iterator(myPath))
+    std::cout << dirEntry << std::endl;
 }

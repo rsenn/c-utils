@@ -52,16 +52,10 @@ struct cbmap_allocator CBMAP_NOP_ALLOCATOR = {cbmap_nop_allocator, cbmap_nop_dea
 
 cbmap_t
 cbmap_new(void) {
-  return cbmap_new_with_custom_allocation(CBMAP_DEFAULT_ALLOCATOR.malloc,
-                                          CBMAP_DEFAULT_ALLOCATOR.free,
-                                          CBMAP_DEFAULT_ALLOCATOR.malloc,
-                                          CBMAP_DEFAULT_ALLOCATOR.free);
+  return cbmap_new_with_custom_allocation(CBMAP_DEFAULT_ALLOCATOR.malloc, CBMAP_DEFAULT_ALLOCATOR.free, CBMAP_DEFAULT_ALLOCATOR.malloc, CBMAP_DEFAULT_ALLOCATOR.free);
 }
 
 cbmap_t
 cbmap_new_with_static_keys_and_values(void) {
-  return cbmap_new_with_custom_allocation(CBMAP_NOP_ALLOCATOR.malloc,
-                                          CBMAP_NOP_ALLOCATOR.free,
-                                          CBMAP_NOP_ALLOCATOR.malloc,
-                                          CBMAP_NOP_ALLOCATOR.free);
+  return cbmap_new_with_custom_allocation(CBMAP_NOP_ALLOCATOR.malloc, CBMAP_NOP_ALLOCATOR.free, CBMAP_NOP_ALLOCATOR.malloc, CBMAP_NOP_ALLOCATOR.free);
 }

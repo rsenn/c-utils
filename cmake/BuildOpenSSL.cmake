@@ -59,7 +59,6 @@ if(RETVAL_DOFILE)
   message(FATAL_ERROR "dofile.pl returned: ${RETVAL_DOFILE}\n\n${BN_CONF_H}")
 endif()
 
-message("BN_CONF_H: ${BN_CONF_H}")
 file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/include/internal/bn_conf.h "${BN_CONF_H}\n\n")
 ]]
 set(OPENSSLDIR "${CMAKE_INSTALL_PREFIX}/ssl")
@@ -210,7 +209,8 @@ file(
   crypto/threads_win.c
   crypto/uid.c)
 
-file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/e_os.h DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/include/openssl)
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/e_os.h
+     DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/include/openssl)
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/../../build/cmake/opensslconf.h.cmake
                ${CMAKE_CURRENT_BINARY_DIR}/include/openssl/opensslconf.h)

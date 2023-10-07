@@ -5,6 +5,7 @@
 
 #if WINDOWS_NATIVE
 #include <windows.h>
+#include <shlwapi.h>
 #define lstat stat
 #endif
 

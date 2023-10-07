@@ -5,6 +5,11 @@
 #ifdef HAVE_OPENSSL
 #include <openssl/ssl.h>
 #include <openssl/err.h>
+#ifndef TLS_ST_OK
+#ifdef SSL_ST_OK
+#define TLS_ST_OK SSL_ST_OK
+#endif
+#endif
 
 int
 tls_instance_handshake(tls_instance_t* i) {
@@ -27,7 +32,7 @@ tls_instance_handshake(tls_instance_t* i) {
     buffer_puts(buffer_2, " resumed handshake: ");
     buffer_putlong(buffer_2, ret);
     if(ret == -1)
-      buffer_putm_internal(buffer_2, " (", tls_instance_strerror(i), ")", 0);
+      buffer_putm_internal(buffer_2, " (", tls_instance_strerror(i), ")", NULL);
 
     buffer_putnlflush(buffer_2);
 #endif

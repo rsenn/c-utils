@@ -1,8 +1,7 @@
-//#include "../io.h"
+#include "../io_internal.h"
 #define USE_WS2_32 1
 
 #include "../socket.h"
-#include "../io_internal.h"
 #include "../buffer.h"
 #include "../alloc.h"
 #include "../byte.h"
@@ -281,8 +280,7 @@ io_waituntil2(int64 milliseconds) {
     if(first_readable != -1 || first_writeable != -1) {
       return 1;
     }
-    if(GetQueuedCompletionStatus(
-           (HANDLE)(ptrdiff_t)io_comport, &numberofbytes, &x, &o, milliseconds == -1 ? INFINITE : milliseconds)) {
+    if(GetQueuedCompletionStatus((HANDLE)(ptrdiff_t)io_comport, &numberofbytes, &x, &o, milliseconds == -1 ? INFINITE : milliseconds)) {
       io_entry* e = (io_entry*)iarray_get((iarray*)io_getfds(), x);
       if(!e)
         return 0;

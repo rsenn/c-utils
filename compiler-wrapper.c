@@ -457,12 +457,7 @@ execute_cmd() {
 
       if(optlevel) {
         nbuf[fmt_ulong(nbuf, optlevel)] = '\0';
-        strlist_pushm_internal(&cmd,
-                               "--opt=default,+asm,",
-                               debug ? "+debug," : "",
-                               optsize ? "-speed,+space," : "-space,+speed,",
-                               nbuf,
-                               NULL);
+        strlist_pushm_internal(&cmd, "--opt=default,+asm,", debug ? "+debug," : "", optsize ? "-speed,+space," : "-space,+speed,", nbuf, NULL);
       }
 
       if(warn) {

@@ -1,4 +1,4 @@
-#include "../io.h"
+#include "../io_internal.h"
 #include "../windoze.h"
 #ifdef DEBUG_IO
 #include "../buffer.h"
@@ -7,7 +7,6 @@
 #else
 #endif
 
-#include "../io_internal.h"
 #include <errno.h>
 
 void io_wantread_really(fd_t d, io_entry* e);

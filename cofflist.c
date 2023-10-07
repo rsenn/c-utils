@@ -16,6 +16,8 @@
 #include <stdlib.h>
 #include <ctype.h>
 
+#define countof(arr) (sizeof((arr)) / sizeof((arr)[0]))
+
 int list_imports, list_exports, list_deps, list_sections;
 static int print_export_dir, print_data_dir, print_opt_header;
 
@@ -91,27 +93,30 @@ coff_print_func(buffer* b, void* coff, coff_symtab_entry* fn) {
   buffer_putnlflush(b);
 }
 
-static const char* coff_symtab_mchp_types[] = {"null",
-                                               "void",
-                                               "character",
-                                               "short integer",
-                                               "integer",
-                                               "long integer",
-                                               "floating point",
-                                               "double length floating point",
-                                               "structure",
-                                               "union",
-                                               "enumeration",
-                                               "member of enumeration",
-                                               "unsigned character",
-                                               "unsigned short",
-                                               "unsigned integer",
-                                               "unsigned long"};
+static const char* const coff_symtab_mchp_types[] = {
+    "null",
+    "void",
+    "character",
+    "short integer",
+    "integer",
+    "long integer",
+    "floating point",
+    "double length floating point",
+    "structure",
+    "union",
+    "enumeration",
+    "member of enumeration",
+    "unsigned character",
+    "unsigned short",
+    "unsigned integer",
+    "unsigned long",
+};
 
 void
 coff_list_symbols(buffer* b, void* coff) {
   range symtab;
-  const char* strtab = coff_get_strtab(coff, NULL);
+  uint32 strtab_size = 0;
+  const char* strtab = coff_get_strtab(coff, &strtab_size);
   coff_file_header* fhdr = coff_header_file(coff);
 
   char microchip = (fhdr->machine == COFF_FILE_MACHINE_MICROCHIP_V1 || fhdr->machine == COFF_FILE_MACHINE_MICROCHIP_V2);
@@ -151,10 +156,19 @@ coff_list_symbols(buffer* b, void* coff) {
 
       if(entry->zeroes != 0)
         stralloc_copyb(&name, entry->name, sizeof(entry->name));
+      else if(entry->offset >= strtab_size)
+        stralloc_copys(&name, "<< strtab-out-of-bounds >>");
       else
         stralloc_copys(&name, &strtab[entry->offset]);
 
+      stralloc tmp;
+      stralloc_init(&tmp);
       stralloc_nul(&name);
+      stralloc_fmt(&tmp, name.s, strlen(name.s), fmt_escapecharcontrol);
+      stralloc_free(&name);
+      stralloc_move(&name, &tmp);
+      stralloc_nul(&name);
+
       if(((uint16)(uint8)name.s[0]) > 127 || ((uint16)(uint8)name.s[0]) < 32)
         name.s[0] = '\0';
 
@@ -166,7 +180,7 @@ coff_list_symbols(buffer* b, void* coff) {
       buffer_puts(b, "0x");
       buffer_putxlong0(b, (long)(uint16)entry->scnum, 4);
       buffer_putspace(b);
-      buffer_putspad(b, coff_symtab_mchp_types[entry->type] ? coff_symtab_mchp_types[entry->type] : "", 16);
+      buffer_putspad(b, entry->type < countof(coff_symtab_mchp_types) && coff_symtab_mchp_types[entry->type] ? coff_symtab_mchp_types[entry->type] : "", 16);
       buffer_putspace(b);
       buffer_putlong0(b, (long)(uint32)entry->numaux, 2);
 
@@ -316,7 +330,7 @@ usage(char* av0) {
                        "  -O, --optional-header   Print "
                        "optional header\n",
                        "\n",
-                       0);
+                       NULL);
   buffer_flush(buffer_1);
 }
 
@@ -384,8 +398,8 @@ main(int argc, char** argv) {
 
       buffer_putnlflush(buffer_2);
 
-      if(header->machine != COFF_FILE_MACHINE_I386 && header->machine != COFF_FILE_MACHINE_AMD64 &&
-         header->machine != COFF_FILE_MACHINE_MICROCHIP_V1 && header->machine != COFF_FILE_MACHINE_MICROCHIP_V2) {
+      if(header->machine != COFF_FILE_MACHINE_I386 && header->machine != COFF_FILE_MACHINE_AMD64 && header->machine != COFF_FILE_MACHINE_MICROCHIP_V1 &&
+         header->machine != COFF_FILE_MACHINE_MICROCHIP_V2) {
         buffer_putsflush(buffer_2, "not COFF\n");
         return -1;
       }

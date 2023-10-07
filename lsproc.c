@@ -11,14 +11,13 @@
 
 static strlist pidlist;
 
-static const char* stat_fields[] = {
-    "pid",        "comm",       "state",       "ppid",      "pgrp",        "session",     "tty_nr",
-    "tpgid",      "flags",      "minflt",      "cminflt",   "majflt",      "cmajflt",     "utime",
-    "stime",      "cutime",     "cstime",      "priority",  "nice",        "num_threads", "itrealvalue",
-    "starttime",  "vsize",      "rss",         "rsslim",    "startcode",   "endcode",     "startstack",
-    "kstkesp",    "kstkeip",    "signal",      "blocked",   "sigignore",   "sigcatch",    "wchan",
-    "nswap",      "cnswap",     "exit_signal", "processor", "rt_priority", "policy",      "delayacct_blkio_ticks",
-    "guest_time", "cguest_time"};
+static const char* stat_fields[] = {"pid",        "comm",       "state",       "ppid",      "pgrp",        "session",     "tty_nr",
+                                    "tpgid",      "flags",      "minflt",      "cminflt",   "majflt",      "cmajflt",     "utime",
+                                    "stime",      "cutime",     "cstime",      "priority",  "nice",        "num_threads", "itrealvalue",
+                                    "starttime",  "vsize",      "rss",         "rsslim",    "startcode",   "endcode",     "startstack",
+                                    "kstkesp",    "kstkeip",    "signal",      "blocked",   "sigignore",   "sigcatch",    "wchan",
+                                    "nswap",      "cnswap",     "exit_signal", "processor", "rt_priority", "policy",      "delayacct_blkio_ticks",
+                                    "guest_time", "cguest_time"};
 static const char* statm_fields[] = {"size", "resident", "share", "text", "lib", "data", "dt"};
 
 void
@@ -32,7 +31,7 @@ usage(char* argv0) {
                        "  -h, --help                "
                        "show this help\n",
                        "\n",
-                       0);
+                       NULL);
   buffer_putnlflush(buffer_1);
 }
 

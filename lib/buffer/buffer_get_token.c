@@ -15,7 +15,7 @@ buffer_get_token(buffer* b, char* x, size_t len, const char* charset, size_t set
       ssize_t i, n = buffer_feed(b);
       char* d;
       if(n <= 0)
-        return blen;
+        return n < 0 ? -1 : blen;
       if(n > (ssize_t)(len - blen))
         n = len - blen;
       if((i = byte_ccopy(x + blen, n, b->x + b->p, (unsigned char)charset[0])) < n) {

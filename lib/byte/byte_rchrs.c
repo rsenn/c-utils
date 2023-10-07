@@ -1,13 +1,14 @@
 #include "../byte.h"
 
 size_t
-byte_rchrs(const void* b, size_t len, const char* needles, size_t nn) {
-  const char *x = b, *found = NULL;
-  size_t i, j;
-  for(i = 0; i < len; i++) {
-    for(j = 0; j < nn; ++j)
-      if(x[i] == needles[j])
-        found = x;
-  }
-  return i;
+byte_rchrs(const void* in, size_t len, const char needles[], size_t nn) {
+  const char* s = (const char*)in + len;
+  size_t i;
+
+  while(--s >= (const char*)in)
+    for(i = 0; i < nn; ++i)
+      if(*s == needles[i])
+        return s - (const char*)in;
+
+  return len;
 }

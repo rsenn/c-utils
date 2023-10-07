@@ -34,13 +34,14 @@ buffer_lzmaread_op(fd_t fd, void* data, size_t n, buffer* b) {
   size_t a;
   int eof = 0;
 
-  if((r = buffer_prefetch(ctx->b, LZMA_BLOCK_SIZE)) > 0) {
+  if((r = buffer_feed(ctx->b))) {
+    // if((r = buffer_prefetch(ctx->b, LZMA_BLOCK_SIZE)) > 0) {
   } else {
     return r;
   }
 
-  strm->next_in = (uint8*)&ctx->b->x[ctx->b->p];
-  strm->avail_in = a = ctx->b->n - ctx->b->p;
+  strm->next_in = (uint8*)buffer_PEEK(ctx->b);
+  strm->avail_in = a = buffer_LEN(ctx->b);
   strm->next_out = data;
   strm->avail_out = n;
 
@@ -53,15 +54,46 @@ buffer_lzmaread_op(fd_t fd, void* data, size_t n, buffer* b) {
   if(/* strm->avail_out == 0 */
      ret == LZMA_OK || ret == LZMA_STREAM_END) {
 
-    ctx->b->p += a - strm->avail_in;
+    buffer_SEEK(ctx->b, a - strm->avail_in);
+    r = n - strm->avail_out;
 
-    return n - strm->avail_out;
+  } else if(ret != LZMA_OK) {
+    r = -1;
   }
 
-  if(ret != LZMA_OK)
-    return -1;
+#ifdef DEBUG_BUFFER
+  buffer_putspad(buffer_2, "buffer_lzmaread_op ", 30);
+  buffer_puts(buffer_2, "fd=");
+  buffer_putlong(buffer_2, fd);
 
-  return 0;
+  buffer_puts(buffer_2, " ret=");
+  buffer_puts(buffer_2,
+              ((const char* const[]){"LZMA_OK",
+                                     "LZMA_STREAM_END",
+                                     "LZMA_NO_CHECK",
+                                     "LZMA_UNSUPPORTED_CHECK",
+                                     "LZMA_GET_CHECK",
+                                     "LZMA_MEM_ERROR",
+                                     "LZMA_MEMLIMIT_ERROR",
+                                     "LZMA_FORMAT_ERROR",
+                                     "LZMA_OPTIONS_ERROR",
+                                     "LZMA_DATA_ERROR",
+                                     "LZMA_BUF_ERROR",
+                                     "LZMA_PROG_ERROR"})[ret]);
+
+  buffer_puts(buffer_2, " avail_in=");
+  buffer_putlong(buffer_2, a);
+
+  buffer_puts(buffer_2, " consumed=");
+  buffer_putlong(buffer_2, a - strm->avail_in);
+
+  buffer_puts(buffer_2, " read=");
+  buffer_putlong(buffer_2, r);
+
+  buffer_putnlflush(buffer_2);
+#endif
+
+  return r;
 }
 
 static ssize_t
@@ -88,13 +120,45 @@ buffer_lzmawrite_op(fd_t fd, void* data, size_t n, buffer* b) {
     if(r > 0) {
       a = (other->a - other->p) - strm->avail_out;
       other->p += a;
-      return r;
     }
 
-  } else if(ret != LZMA_OK)
-    return -1;
+  } else if(ret != LZMA_OK) {
+    r = -1;
+  }
 
-  return 0;
+#ifdef DEBUG_BUFFER
+  buffer_putspad(buffer_2, "buffer_lzmawrite_op ", 30);
+  buffer_puts(buffer_2, "fd=");
+  buffer_putlong(buffer_2, fd);
+
+  buffer_puts(buffer_2, " ret=");
+  buffer_puts(buffer_2,
+              ((const char* const[]){"LZMA_OK",
+                                     "LZMA_STREAM_END",
+                                     "LZMA_NO_CHECK",
+                                     "LZMA_UNSUPPORTED_CHECK",
+                                     "LZMA_GET_CHECK",
+                                     "LZMA_MEM_ERROR",
+                                     "LZMA_MEMLIMIT_ERROR",
+                                     "LZMA_FORMAT_ERROR",
+                                     "LZMA_OPTIONS_ERROR",
+                                     "LZMA_DATA_ERROR",
+                                     "LZMA_BUF_ERROR",
+                                     "LZMA_PROG_ERROR"})[ret]);
+
+  buffer_puts(buffer_2, " avail_in=");
+  buffer_putlong(buffer_2, n);
+
+  buffer_puts(buffer_2, " written=");
+  buffer_putlong(buffer_2, a);
+
+  buffer_puts(buffer_2, " consumed=");
+  buffer_putlong(buffer_2, n - strm->avail_in);
+
+  buffer_putnlflush(buffer_2);
+#endif
+
+  return r;
 }
 
 static void
@@ -123,6 +187,33 @@ buffer_lzma_close(buffer* b) {
 
   b->deinit = 0;
   buffer_close(b);
+
+#ifdef DEBUG_BUFFER
+  buffer_putspad(buffer_2, "buffer_lzma_close ", 30);
+
+  buffer_puts(buffer_2, " ret=");
+  buffer_puts(buffer_2,
+              ((const char* const[]){"LZMA_OK",
+                                     "LZMA_STREAM_END",
+                                     "LZMA_NO_CHECK",
+                                     "LZMA_UNSUPPORTED_CHECK",
+                                     "LZMA_GET_CHECK",
+                                     "LZMA_MEM_ERROR",
+                                     "LZMA_MEMLIMIT_ERROR",
+                                     "LZMA_FORMAT_ERROR",
+                                     "LZMA_OPTIONS_ERROR",
+                                     "LZMA_DATA_ERROR",
+                                     "LZMA_BUF_ERROR",
+                                     "LZMA_PROG_ERROR"})[ret]);
+
+  buffer_puts(buffer_2, " avail_in=");
+  buffer_putlong(buffer_2, (b->n - b->p));
+
+  buffer_puts(buffer_2, " consumed=");
+  buffer_putlong(buffer_2, (b->n - b->p) - strm->avail_in);
+
+  buffer_putnlflush(buffer_2);
+#endif
 }
 
 int
@@ -155,8 +246,7 @@ buffer_lzma(buffer* b, buffer* other, int compress) {
 
   b->op = (void*)(compress ? &buffer_lzmawrite_op : &buffer_lzmaread_op);
 
-  ret = compress ? lzma_stream_encoder(&ctx->strm, f, LZMA_CHECK_CRC64)
-                 : lzma_stream_decoder(&ctx->strm, 0xffffffffffffffff /*LZMA_VLI_UNKNOWN*/, LZMA_CONCATENATED);
+  ret = compress ? lzma_stream_encoder(&ctx->strm, f, LZMA_CHECK_CRC64) : lzma_stream_decoder(&ctx->strm, 0xffffffffffffffff /*LZMA_VLI_UNKNOWN*/, LZMA_CONCATENATED);
 
   if(ret != LZMA_OK)
     return 0;

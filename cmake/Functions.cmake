@@ -19,7 +19,6 @@ function(debug_option NAME DESC)
     set("${MODULE}_DEFS" "DEBUG_${NAME}=1;${DEFS}" PARENT_SCOPE)
     add_definitions(-DDEBUG_${NAME}=1)
     set(APPEND "${MODULE}_LIBS" buffer)
-    message("APPEND ${MODULE}_LIBS buffer")
   endif(DEBUG_${NAME})
   if(${${MODULE}_LIBS})
     set(${MODULE}_LIBS "${${MODULE}_LIBS}" PARENT_SCOPE)
@@ -82,30 +81,40 @@ function(add_program PROG)
     set(PROGRAMS "${PLIST}" PARENT_SCOPE)
     string(REGEX REPLACE "[-/]" "_" PFX "${PROG}")
     foreach(DEP ${ARGN})
-      if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${DEP}" AND NOT IS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/${DEP}")
+      if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${DEP}"
+         AND NOT IS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/${DEP}")
         list(APPEND "${PFX}_SOURCES" "${DEP}")
-      else(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${DEP}" AND NOT IS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/${DEP}")
+      else(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${DEP}"
+           AND NOT IS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/${DEP}")
         list(FIND MODSUBDIRS "${DEP}" I)
-        if(I GREATER -1 OR IS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/lib/${DEP}")
+        if(I GREATER -1 OR IS_DIRECTORY
+                           "${CMAKE_CURRENT_SOURCE_DIR}/lib/${DEP}")
           list(APPEND INCLUDES "lib/${DEP}.h")
-        endif(I GREATER -1 OR IS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/lib/${DEP}")
+        endif(I GREATER -1 OR IS_DIRECTORY
+                              "${CMAKE_CURRENT_SOURCE_DIR}/lib/${DEP}")
         list(APPEND DEPS ${DEP})
-      endif(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${DEP}" AND NOT IS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/${DEP}")
+      endif(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${DEP}"
+            AND NOT IS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/${DEP}")
     endforeach(DEP ${ARGN})
     # message("Program '${PROG}' INCLUDES: ${INCLUDES}") message("add_executable(${PROG} ${PROG}.c ${${PROG}_SOURCES} ${INCLUDES}")
     add_executable(${PROG} ${PROG}.c ${${PFX}_SOURCES} ${INCLUDES})
-    target_link_libraries(${PROG} ${DEPS} ${ELECTRICFENCE_LIBRARY} ${EXTRA_LIBRARIES})
+    target_link_libraries(${PROG} ${DEPS} ${ELECTRICFENCE_LIBRARY}
+                          ${EXTRA_LIBRARIES})
     target_compile_definitions(${PROG} PRIVATE CONFIG_PREFIX="${CONFIG_PREFIX}")
     install(TARGETS ${PROG} DESTINATION bin)
     if(NOT EMSCRIPTEN AND OPENSSL_FOUND AND USE_SSL)
-      if(CMAKE_COMPILER_IS_GNUCC OR "${CMAKE_C_COMPILER_ID}" STREQUAL "Clang" OR "${CMAKE_C_COMPILER_ID}" STREQUAL
-                                                                                 "GNU")
-        set_target_properties(${PROG} PROPERTIES LINK_FLAGS "-L${OPENSSL_LIB_DIR} ${EXE_LINKER_FLAGS}" COMPILE_FLAGS "")
-      endif(CMAKE_COMPILER_IS_GNUCC OR "${CMAKE_C_COMPILER_ID}" STREQUAL "Clang" OR "${CMAKE_C_COMPILER_ID}" STREQUAL
-                                                                                    "GNU")
+      if(CMAKE_COMPILER_IS_GNUCC OR "${CMAKE_C_COMPILER_ID}" STREQUAL "Clang"
+         OR "${CMAKE_C_COMPILER_ID}" STREQUAL "GNU")
+        set_target_properties(
+          ${PROG}
+          PROPERTIES LINK_FLAGS "-L${OPENSSL_LIB_DIR} ${EXE_LINKER_FLAGS}"
+                     COMPILE_FLAGS "")
+      endif(CMAKE_COMPILER_IS_GNUCC OR "${CMAKE_C_COMPILER_ID}" STREQUAL "Clang"
+            OR "${CMAKE_C_COMPILER_ID}" STREQUAL "GNU")
     endif(NOT EMSCRIPTEN AND OPENSSL_FOUND AND USE_SSL)
     if(EMSCRIPTEN)
-      set_target_properties(${PROG} PROPERTIES SUFFIX ".${EMSCRIPTEN_EXE_SUFFIX}")
+      set_target_properties(${PROG} PROPERTIES SUFFIX
+                                               ".${EMSCRIPTEN_EXE_SUFFIX}")
     endif(EMSCRIPTEN)
   endif(NOT BUILD_PROGRAMS OR BUILD)
 endfunction(add_program PROG)
@@ -137,11 +146,12 @@ function(add_module MOD SRC)
     target_link_libraries(${MOD} ${LIBS} ${EXTRA_LIBRARIES})
     install(TARGETS ${MOD} DESTINATION libexec)
     if(BUILD_SHARED_LIBS)
-      if(CMAKE_COMPILER_IS_GNUCC OR "${CMAKE_C_COMPILER_ID}" STREQUAL "Clang" OR "${CMAKE_C_COMPILER_ID}" STREQUAL
-                                                                                 "GNU")
-        set_target_properties(${MOD} PROPERTIES EXE_LINKER_FLAGS "-L${OPENSSL_LIB_DIR} -shared")
-      endif(CMAKE_COMPILER_IS_GNUCC OR "${CMAKE_C_COMPILER_ID}" STREQUAL "Clang" OR "${CMAKE_C_COMPILER_ID}" STREQUAL
-                                                                                    "GNU")
+      if(CMAKE_COMPILER_IS_GNUCC OR "${CMAKE_C_COMPILER_ID}" STREQUAL "Clang"
+         OR "${CMAKE_C_COMPILER_ID}" STREQUAL "GNU")
+        set_target_properties(${MOD} PROPERTIES EXE_LINKER_FLAGS
+                                                "-L${OPENSSL_LIB_DIR} -shared")
+      endif(CMAKE_COMPILER_IS_GNUCC OR "${CMAKE_C_COMPILER_ID}" STREQUAL "Clang"
+            OR "${CMAKE_C_COMPILER_ID}" STREQUAL "GNU")
     endif(BUILD_SHARED_LIBS)
     target_compile_options(${MOD} PUBLIC -fPIC)
   endif(NOT EMSCRIPTEN)

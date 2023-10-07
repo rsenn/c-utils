@@ -1,4 +1,4 @@
-#include "../io.h"
+#include "../io_internal.h"
 #include "../windoze.h"
 
 #if WINDOWS_NATIVE
@@ -9,7 +9,6 @@
 #endif
 
 #include "../byte.h"
-#include "../io_internal.h"
 #include "../socket_internal.h"
 
 #include <errno.h>

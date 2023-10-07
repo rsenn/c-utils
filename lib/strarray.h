@@ -34,14 +34,19 @@ typedef struct {
 #define strarray_zero(l) array_trunc(&(l)->a)
 #define strarray_init(l) byte_zero((l), sizeof(strarray))
 
-#define strarray_size(l) array_length(&(l)->a, sizeof(char*))
+//#define strarray_size(l) array_length(&(l)->a, sizeof(char*))
+
+static inline size_t
+strarray_size(const strarray* l) {
+  return array_length(&l->a, sizeof(char*));
+}
 
 #define strarray_begin(l) (char**)array_start(&(l)->a)
 #define strarray_end(l) (strarray_begin(l) + strarray_size(l))
 
 #define strarray_at(l, pos) (((char**)((l)->p))[(pos)])
 
-#define strarray_foreach(a, ptr) for((ptr) = (char**)strarray_begin(a); ((char**)(ptr)) < strarray_end(a); ++ptr)
+#define strarray_foreach(a, ptr) for((ptr) = (char**)strarray_begin(a); ((char**)(ptr)) != strarray_end(a) && *(char**)(ptr); ++ptr)
 
 char** strarray_to_argv(strarray*);
 int strarray_from_argv(int argc, const char* const argv[], strarray* arr);
@@ -82,7 +87,7 @@ int strarray_prepends(strarray* arr, const char* s);
 int strarray_removeprefixs(strarray* arr, const char* s);
 int strarray_removesuffixs(strarray* arr, const char* s);
 
-int strarray_joins(strarray* arr, stralloc* sa, const char* sep);
+int strarray_joins(const strarray* arr, stralloc* sa, const char* sep);
 
 int strarray_transform(strarray* in, strarray* out, char* (*pred)(const char*));
 int strarray_each(strarray* arr, void (*pred)(char**));
@@ -103,7 +108,9 @@ void strarray_union(const strarray* s1, const strarray* s2, strarray* out);
 #ifdef BUFFER_H
 int buffer_putstra(buffer* b, const strarray* stra, const char* sep);
 int buffer_putstra(buffer*, const strarray* stra, const char* sep);
+void strarray_dump(buffer*, const strarray*);
 #endif
+
 int strarray_unshiftb(strarray*, const char* b, size_t n);
 int strarray_unshift(strarray*, const char* s);
 int strarray_unshiftm(strarray*, ...);
@@ -115,6 +122,8 @@ int strarray_emplace_sa(strarray* arr, stralloc* sa);
 #ifdef SET_H
 void set_tostrarray(const set_t*, strarray*);
 #endif
+
+int strarray_copy(strarray*, const strarray*);
 
 #ifdef __cplusplus
 }

@@ -1,4 +1,4 @@
-#include "../io.h"
+#include "../io_internal.h"
 #include "../windoze.h"
 
 #include <sys/types.h>
@@ -9,8 +9,6 @@
 #include <unistd.h>
 #include <sys/mman.h>
 #endif
-
-#include "../io_internal.h"
 
 extern void io_dontwantread_really(fd_t d, io_entry* e);
 extern void io_dontwantwrite_really(fd_t d, io_entry* e);

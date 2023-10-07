@@ -21,6 +21,7 @@
 #include "lib/io.h"
 #include "lib/case.h"
 #include "lib/hmap.h"
+#include "lib/socket.h"
 
 #if !defined(_WIN32) && !(defined(__MSYS__) && __MSYS__ == 1)
 #include <libgen.h>
@@ -189,10 +190,10 @@ read_mediathek_list(const char* url, buffer* b) {
       if(h.sock != fd)
         continue;
 
-      if(http_canwrite(&h, &io_onlywantread) == -1) {
-        if(errno == EWOULDBLOCK)
+      if(http_canwrite(&h, &io_onlywantread, &io_onlywantwrite) == -1) {
+        if(h.err == EWOULDBLOCK)
           continue;
-        errmsg_warnsys("send error: ", 0);
+        errmsg_warnerr(h.err, "send error: ", 0);
         return 2;
       }
     }
@@ -200,10 +201,10 @@ read_mediathek_list(const char* url, buffer* b) {
     while((fd = io_canread()) != -1) {
       if(h.sock == fd) {
 
-        if(http_canread(&h, &io_onlywantwrite) == -1) {
-          if(errno == EAGAIN)
+        if(http_canread(&h, &io_onlywantread, &io_onlywantwrite) == -1) {
+          if(h.err == EAGAIN)
             continue;
-          errmsg_warnsys("send error: ", 0);
+          errmsg_warnerr(h.err, "send error: ", 0);
           return 2;
         }
 
@@ -616,20 +617,8 @@ print_entry(buffer* b, const mediathek_entry_t* e) {
 
   const char* sep = ", ";
 
-  buffer_putm_internal(b,
-                       "Kanal:\t",
-                       e->channel.s ? e->channel.s : "<null>" /*strlist_at(sl,
-                                                                 1)*/
-                       ,
-                       sep,
-                       NULL);
-  buffer_putm_internal(b,
-                       "Thema:\t",
-                       e->topic.s ? e->topic.s : "<null>" /*strlist_at(sl,
-                                                             2)*/
-                       ,
-                       sep,
-                       NULL);
+  buffer_putm_internal(b, "Kanal:\t", e->channel.s ? e->channel.s : "<null>" /*strlist_at(sl, 1)*/, sep, NULL);
+  buffer_putm_internal(b, "Thema:\t", e->topic.s ? e->topic.s : "<null>" /*strlist_at(sl, 2)*/, sep, NULL);
   buffer_putm_internal(b, "Titel:\t", e->title.s /*strlist_at(sl, 3)*/, sep, NULL);
 
   buffer_putm_internal(b, "Datum:\t", format_datetime(e->tm, dt_fmt), sep, NULL);
@@ -638,13 +627,8 @@ print_entry(buffer* b, const mediathek_entry_t* e) {
 
   /* buffer_putm_internal(b, "URL:\t",
    url , sep, NULL);
-   buffer_putm_internal(b, "URL lo:\t",
-   make_url(url, strlist_at(sl, 13)),
-   sep, NULL);
-   buffer_putm_internal(b, "URL hi:\t",
-   make_url(url, strlist_at(sl, 15)),
-   sep, NULL);*/
-
+   buffer_putm_internal(b, "URL lo:\t", make_url(url, strlist_at(sl, 13)), sep, NULL);
+   buffer_putm_internal(b, "URL hi:\t", make_url(url, strlist_at(sl, 15)), sep, NULL);*/
   buffer_putnlflush(b);
 }
 
@@ -746,25 +730,28 @@ parse_mediathek_list(buffer* inbuf, buffer* outbuf) {
     strlist_copy(&prev, &sl);
   }
 
-#ifdef DEBUG_OUTPUT_
-  buffer_puts(console, "Read ");
-  buffer_putlong(console, read_bytes);
-  buffer_putsflush(console, " bytes.\n");
+#ifdef DEBUG_OUTPUT
+
+  if(read_bytes) {
+    buffer_puts(console, "Read ");
+    buffer_putlong(console, read_bytes);
+    buffer_putsflush(console, " bytes.\n");
+  }
 #endif
 
-  if(h.response) {
-    if(h.response->err) {
-      if(h.response->err != EAGAIN) {
-        buffer_puts(console, "Return value: ");
-        buffer_putlong(console, ret);
-        buffer_puts(console, " ");
-        buffer_flush(console);
-        errno = h.response->err;
-        errmsg_warnsys("Read error", 0);
-      }
-    }
+  if((h.response && h.response->err && h.response->err != EAGAIN) || ret == -1) {
+    buffer_puts(console, "Return value: ");
+    buffer_putlong(console, ret);
+    buffer_puts(console, " ");
+    buffer_flush(console);
 
-    if(ret == 0 && h.response->err != EAGAIN) {
+    errmsg_warnerr(h.response->err, "Read error", 0);
+    buffer_close(inbuf);
+    return -1;
+  }
+
+  if(h.response) {
+    if(ret == 0 && (h.response->err && h.response->err != EAGAIN)) {
       char status[FMT_ULONG + 1], error[1024];
       status[fmt_ulong(status, h.response->status)] = '\0';
       http_strerror(&h, ret);
@@ -810,7 +797,7 @@ usage(char* errmsg_argv0) {
                        "  -x KEYWORD                exclude entries matching\n",
                        "  -o FILE                   output file\n",
                        "\n",
-                       0);
+                       NULL);
   buffer_putnlflush(buffer_1);
 }
 
@@ -919,13 +906,13 @@ main(int argc, char* argv[]) {
 
         while((fd = io_canwrite()) != -1) {
           if(fd == h.sock)
-            http_canwrite(&h, &io_onlywantread);
+            http_canwrite(&h, &io_onlywantread, &io_onlywantwrite);
         }
 
         while((fd = io_canread()) != -1) {
           if(fd == h.sock) {
             if(!h.sent)
-              http_canread(&h, &io_onlywantwrite);
+              http_canread(&h, &io_onlywantread, &io_onlywantwrite);
             else
               n += parse_mediathek_list(&in, &output);
           }

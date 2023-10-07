@@ -1,3 +1,4 @@
+#include "lib/windoze.h"
 #include "lib/env.h"
 #include "lib/scan.h"
 #include "lib/errmsg.h"
@@ -14,8 +15,9 @@
 #include "lib/alloc.h"
 #include "lib/ndelay.h"
 #include "lib/str.h"
-
 #include "lib/bool.h"
+#include "lib/socket.h"
+
 #if WINDOWS_NATIVE
 #include <io.h>
 #else

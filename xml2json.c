@@ -191,9 +191,7 @@ xml_to_json_obj(xmlnode* node) {
      node_types[] = {"(null)",
      "XML_DOCUMENT", "XML_ELEMENT",
      "XML_ATTRIBUTE", "XML_TEXT" };
-      buffer_putm_internal(buffer_2,
-     node_types[(int)node->type], " ",
-     node->name, "\n", NULL);*/
+      buffer_putm_internal(buffer_2, node_types[(int)node->type], " ", node->name, "\n", NULL);*/
   if(node->type == XML_ELEMENT) {
     jsonval obj = json_object();
     json_property_set(&obj, json_string(tag_property), json_string(node->name));
@@ -265,7 +263,7 @@ usage(char* av0) {
                        class_property,
                        "]\n"
                        "\n",
-                       0);
+                       NULL);
   buffer_flush(buffer_1);
 }
 

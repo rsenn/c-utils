@@ -43,8 +43,7 @@ playlist_process(playlist* pl, stralloc* title, stralloc* location, uint32 lengt
   (void)pl;
   /*  buffer_putm_internal(buffer_2,
     "Title: ", title->s, "\n", NULL);
-    buffer_putm_internal(buffer_2,
-    "Location: ", location->s, "\n", NULL);
+    buffer_putm_internal(buffer_2, "Location: ", location->s, "\n", NULL);
     buffer_puts(buffer_2, "Duration: ");
     buffer_putulong(buffer_2, length);
     buffer_putnlflush(buffer_2);
@@ -99,9 +98,7 @@ main(int argc, char* argv[]) {
           outtype = XSPF;
         break;
       case 'h': usage(str_basename(argv[0])); exit(EXIT_SUCCESS);
-      default: /* '?' */
-        buffer_putm_internal(buffer_2, "Usage: ", argv[0], "[-t TYPE] [file]\n", NULL);
-        exit(EXIT_FAILURE);
+      default: /* '?' */ buffer_putm_internal(buffer_2, "Usage: ", argv[0], "[-t TYPE] [file]\n", NULL); exit(EXIT_FAILURE);
     }
   }
 

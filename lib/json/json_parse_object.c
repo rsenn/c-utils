@@ -12,7 +12,7 @@ json_parse_object(jsonval* val, charbuf* b) {
 
     charbuf_skip_ws(b);
     for(; (ret = charbuf_peekc(b, &c)) > 0;) {
-      jsonval *itemv, key = {.type = JSON_UNDEFINED}, member = {.type = JSON_UNDEFINED};
+      jsonval *itemv, key = {JSON_UNDEFINED}, member = {JSON_UNDEFINED};
       if(c == '}') {
         charbuf_nextc(b, &c);
         return 1;
@@ -30,7 +30,7 @@ json_parse_object(jsonval* val, charbuf* b) {
         return ret;
 */
 #if defined(DEBUG_OUTPUT) && defined(DEBUG_JSON)
-      buffer_putm_internal(buffer_2, "json_parse_object ", " str=", str.s, 0);
+      buffer_putm_internal(buffer_2, "json_parse_object ", " str=", str.s, NULL);
       buffer_putnlflush(buffer_2);
 #endif
 

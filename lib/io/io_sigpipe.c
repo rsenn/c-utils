@@ -1,4 +1,3 @@
-#include "../io.h"
 #include "../io_internal.h"
 #include <signal.h>
 #include <sys/types.h>

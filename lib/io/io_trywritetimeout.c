@@ -1,6 +1,5 @@
-#include "../io.h"
-#include "../socket_internal.h"
 #include "../io_internal.h"
+#include "../socket_internal.h"
 #include <errno.h>
 
 #if WINDOWS_NATIVE

@@ -4,14 +4,13 @@
 #ifdef HAVE_OPENSSL
 int
 tls_instance_errno(tls_instance_t* i) {
-  int ret;
   switch(i->error) {
-    case SSL_ERROR_WANT_WRITE: ret = EWOULDBLOCK; break;
-    case SSL_ERROR_WANT_READ: ret = EAGAIN; break;
+    case SSL_ERROR_WANT_WRITE: return EWOULDBLOCK;
+    case SSL_ERROR_WANT_READ: return EAGAIN;
     case SSL_ERROR_ZERO_RETURN:
-    case SSL_ERROR_NONE: ret = 0; break;
-    default: ret = EIO; break;
+    case SSL_ERROR_NONE: return 0;
+    case SSL_ERROR_SYSCALL: return i->syserr;
+    default: return EIO;
   }
-  return ret;
 }
 #endif

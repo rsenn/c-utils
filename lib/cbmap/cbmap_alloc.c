@@ -62,13 +62,7 @@ cbmap_mem_debug_calloc(size_t count, size_t size, const char* file, int line) {
     CBM_DEBUG_ALLOCATED_BYTES += ((unsigned int)count * (unsigned int)size);
   }
 #ifdef DEBUG
-  printf("%p     CBM_MEM_CALLOC %-20s (%03d): Allocated %g x %g = %g bytes\n",
-         p,
-         file,
-         line,
-         (float)count,
-         (float)size,
-         (float)(count * size));
+  printf("%p     CBM_MEM_CALLOC %-20s (%03d): Allocated %g x %g = %g bytes\n", p, file, line, (float)count, (float)size, (float)(count * size));
 #endif
   return p;
 }

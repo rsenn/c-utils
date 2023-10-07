@@ -125,22 +125,12 @@ path_lookup(const char* cmd, stralloc* out) {
 const char*
 get_prog_name(void) {
   ssize_t len;
+  char* name;
 
   stralloc_ready(&prog, PATH_MAX);
 
-#ifndef WINDOWS_NATIVE
-  if((len = readlink("/proc/self/exe", prog.s, prog.a)) > 0) {
-    prog.len = len;
-    return prog.s;
-  }
-#endif
-
-#if WINDOWS
-  if((len = GetModuleFileNameA(0, prog.s, prog.a)) > 0) {
-    prog.len = len;
-    return prog.s;
-  }
-#endif
+  if((name = process_executable()))
+    return name;
 
   if(!path_is_absolute(errmsg_argv0)) {
     pathlist_get(&path, "PATH");

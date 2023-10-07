@@ -6,6 +6,7 @@ int
 strarray_appends(strarray* arr, const char* s) {
   size_t i, n = strarray_size(arr);
   char** p = strarray_begin(arr);
+
   for(i = 0; i < n; ++i) {
     size_t len = str_len(*p);
     stralloc sa;
@@ -16,5 +17,6 @@ strarray_appends(strarray* arr, const char* s) {
     stralloc_nul(&sa);
     *p++ = sa.s;
   }
+
   return 1;
 }

@@ -14,9 +14,9 @@ tls_instance_debug(tls_instance_t* i) {
   server = SSL_get_ssl_method(i->ssl) == tls_server_method;
   init = SSL_in_init(i->ssl);
 
-  buffer_putm_internal(buffer_2, "ssl ", server ? "server" : "client", "#", 0);
+  buffer_putm_internal(buffer_2, "ssl ", server ? "server" : "client", "#", NULL);
   buffer_putlong(buffer_2, SSL_get_fd(i->ssl));
   if(init)
-    buffer_putm_internal(buffer_2, " (", server ? "accept" : "connect", ")", 0);
+    buffer_putm_internal(buffer_2, " (", server ? "accept" : "connect", ")", NULL);
 }
 #endif

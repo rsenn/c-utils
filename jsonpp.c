@@ -115,7 +115,7 @@ usage(char* av0) {
                        "  -W, --spacing CHARS     Spacing\n\n",
                        "  -C, --compliant         Compliant\n",
                        "",
-                       0);
+                       NULL);
   buffer_flush(buffer_1);
 }
 

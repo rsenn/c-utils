@@ -1,7 +1,6 @@
-#include "../io.h"
+#include "../io_internal.h"
 #include "../windoze.h"
 
-#include "../io_internal.h"
 #include <errno.h>
 
 void io_wantwrite_really(fd_t d, io_entry* e);

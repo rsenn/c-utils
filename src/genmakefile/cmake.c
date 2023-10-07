@@ -1,12 +1,13 @@
 #define MAP_USE_HMAP 1
-#include "lib/stralloc.h"
-#include "lib/path.h"
-#include "genmakefile.h"
+#include "../../lib/stralloc.h"
+#include "../../genmakefile.h"
 #include "cmake.h"
-#include "lib/strarray.h"
-#include "lib/map.h"
-#include "lib/set.h"
-#include <stdbool.h>
+#include "../../lib/buffer.h"
+#include "../../lib/strarray.h"
+#include "../../lib/map.h"
+#include "../../lib/set.h"
+#include "../../lib/bool.h"
+#include "is.h"
 
 void
 output_cmake_var(buffer* b, const char* name, const strlist* list) {
@@ -27,9 +28,11 @@ append_cmake_var(buffer* b, const char* name, const strlist* list) {
 void
 output_cmake_cmd(buffer* b, const char* cmd, const strlist* list, char quote) {
   if(strlist_count(list)) {
-    char needle[2] = {quote, '\\'};
+    char needle[2];
     const char* s;
     size_t n;
+    needle[0] = quote;
+    needle[1] = '\\';
     buffer_putm_internal(b, cmd, "(\n", NULL);
     strlist_foreach(list, s, n) {
       size_t i;
@@ -54,10 +57,12 @@ output_cmake_cmd(buffer* b, const char* cmd, const strlist* list, char quote) {
 void
 output_cmake_set(buffer* b, const char* cmd, const set_t* list, char quote) {
   if(set_size(list)) {
-    char needle[2] = {quote, '\\'};
+    char needle[2];
     const char* s;
     size_t n;
     set_iterator_t it;
+    needle[0] = quote;
+    needle[1] = '\\';
     buffer_putm_internal(b, cmd, "(\n", NULL);
     set_foreach(list, it, s, n) {
       size_t i;
@@ -78,6 +83,7 @@ output_cmake_set(buffer* b, const char* cmd, const set_t* list, char quote) {
     buffer_putnlflush(b);
   }
 }
+
 void
 output_cmake_subst(stralloc* str, const char* varname) {
   const char* value;
@@ -129,11 +135,11 @@ output_cmake_rule(buffer* b, target* rule) {
       bool lib = rule_is_lib(rule);
       bool link = !(rule_is_compile(rule) || lib);
       size_t pos = 0;
-      set_t deps, libs, srcs;
+      set_t deps, libs, sources_list;
 
       set_init(&libs, 0);
       set_init(&deps, 0);
-      set_init(&srcs, 0);
+      set_init(&sources_list, 0);
       buffer_puts(b, lib ? "add_library(\n  " : "add_executable(\n  ");
       if(lib || link) {
         pos = byte_rchr(x, n, '/');
@@ -149,7 +155,7 @@ output_cmake_rule(buffer* b, target* rule) {
       }
       /*   if(link) {
            set_filter_out(&rule->prereq, &deps, is_source_b);
-           set_filter(&rule->prereq, &srcs, is_source_b);
+           set_filter(&rule->prereq, &sources_list, is_source_b);
          } else */
       {
 
@@ -167,8 +173,8 @@ output_cmake_rule(buffer* b, target* rule) {
           if(is_object_b(s, n)) {
 
             if((compile = rule_find_b(s, n))) {
-              rule_prereq(compile, &srcs);
-//            set_cat(&srcs, &compile->prereq);
+              rule_prereq(compile, &sources_list);
+//            set_cat(&sources_list, &compile->prereq);
 #ifdef DEBUG_OUTPUT
               buffer_puts(buffer_2, "compile rule '");
               buffer_puts(buffer_2, compile->name);
@@ -186,7 +192,7 @@ output_cmake_rule(buffer* b, target* rule) {
           } else if(is_lib_b(s, n)) {
             set_add(&libs, s, n);
           } else if(is_source_b(s, n)) {
-            set_add(&srcs, s, n);
+            set_add(&sources_list, s, n);
 
           } else {
             set_add(&deps, s, n);
@@ -194,7 +200,7 @@ output_cmake_rule(buffer* b, target* rule) {
         }
       }
 
-      if(n - pos == 0 /* || 0 == set_size(lib ? &deps : &srcs)*/)
+      if(n - pos == 0 /* || 0 == set_size(lib ? &deps : &sources_list)*/)
         continue;
 
       buffer_put(b, x + pos, n - pos);
@@ -203,7 +209,7 @@ output_cmake_rule(buffer* b, target* rule) {
       if(lib && is_lib(rule->name))
         buffer_puts(b, "STATIC\n  ");
 
-      buffer_putset(b, lib ? &deps : &srcs, "\n  ", 3);
+      buffer_putset(b, lib ? &deps : &sources_list, "\n  ", 3);
       buffer_puts(b, "\n)");
       buffer_putnlflush(b);
 
@@ -221,14 +227,14 @@ output_cmake_rule(buffer* b, target* rule) {
         strarray v;
 
         strarray_init(&v);
-        set_tostrarray(&srcs, &v);
+        set_tostrarray(&sources_list, &v);
         strarray_sort(&v, 0);
 
         buffer_puts(buffer_2, "deps:\n  ");
         buffer_putset(buffer_2, &deps, "\n  ", 3);
         buffer_putnlflush(buffer_2);
-        buffer_puts(buffer_2, "srcs:\n  ");
-        buffer_putstra(buffer_2, &v, "\n  ", 3);
+        buffer_puts(buffer_2, "sources_list:\n  ");
+        buffer_putstra(buffer_2, &v, "\n  ");
         buffer_putnlflush(buffer_2);
         strarray_free(&v);
       }
@@ -289,26 +295,28 @@ output_cmake_project(buffer* b, MAP_T* rules, MAP_T* vars, const strlist* includ
     set_filter(&rule->prereq, &libraries, is_lib_b);
   }
   //  return 0;
-  const char* s;
-  size_t n;
-  set_iterator_t it;
-  stralloc sa;
+  {
+    const char* s;
+    size_t n;
+    set_iterator_t it;
+    stralloc sa;
 
-  set_foreach(&libraries, it, s, n) {
-    stralloc_init(&sa);
-    // path_dirname_b(s, n, &sa);
+    set_foreach(&libraries, it, s, n) {
+      stralloc_init(&sa);
+      // path_dirname_b(s, n, &sa);
 
 #ifdef DEBUG_OUTPUT
-    buffer_puts(buffer_2, "libdir: ");
-    buffer_put(buffer_2, s, path_dirlen_b(s, n));
-    buffer_putnlflush(buffer_2);
+      buffer_puts(buffer_2, "libdir: ");
+      buffer_put(buffer_2, s, path_dirlen_b(s, n));
+      buffer_putnlflush(buffer_2);
 #endif
 #ifdef DEBUG_OUTPUT
-    buffer_puts(buffer_2, "lib: ");
-    buffer_put(buffer_2, s, n);
-    buffer_putnlflush(buffer_2);
+      buffer_puts(buffer_2, "lib: ");
+      buffer_put(buffer_2, s, n);
+      buffer_putnlflush(buffer_2);
 #endif
-    stralloc_free(&sa);
+      stralloc_free(&sa);
+    }
   }
 
   output_cmake_subst((stralloc*)&include_dirs->sa, "CMAKE_CURRENT_SOURCE_DIR");
@@ -316,12 +324,12 @@ output_cmake_project(buffer* b, MAP_T* rules, MAP_T* vars, const strlist* includ
   output_cmake_subst((stralloc*)&link_dirs->sa, "CMAKE_CURRENT_BINARY_DIR");
 
   if(var_isset("CFLAGS"))
-    output_cmake_var(b, "CMAKE_C_FLAGS", &var_list("CFLAGS")->value);
+    output_cmake_var(b, "CMAKE_C_FLAGS", &var_list("CFLAGS", ' ')->value);
   if(var_isset("CXXFLAGS"))
-    output_cmake_var(b, "CMAKE_CXX_FLAGS", &var_list("CXXFLAGS")->value);
+    output_cmake_var(b, "CMAKE_CXX_FLAGS", &var_list("CXXFLAGS", ' ')->value);
 
   if(var_isset("LDFLAGS"))
-    output_cmake_var(b, "CMAKE_EXE_LINKER_FLAGS", &var_list("LDFLAGS")->value);
+    output_cmake_var(b, "CMAKE_EXE_LINKER_FLAGS", &var_list("LDFLAGS", ' ')->value);
 
   /*  if(var_isset("DEFS")) {
       buffer_puts(b, "add_definitions(");
@@ -331,7 +339,7 @@ output_cmake_project(buffer* b, MAP_T* rules, MAP_T* vars, const strlist* includ
     }
   */
   buffer_putnlflush(b);
-  output_cmake_cmd(b, "add_definitions", &var_list("DEFS")->value, 0);
+  output_cmake_cmd(b, "add_definitions", &var_list("DEFS", ' ')->value, 0);
   output_cmake_set(b, "link_libraries", &link_libraries, 0);
   // output_cmake_libs(b);
   output_cmake_cmd(b, "include_directories", include_dirs, 0);

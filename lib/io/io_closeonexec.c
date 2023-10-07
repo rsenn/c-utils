@@ -1,4 +1,4 @@
-#include "../io.h"
+#include "../io_internal.h"
 #include "../windoze.h"
 
 #if WINDOWS_NATIVE
@@ -7,7 +7,6 @@
 
 #include <fcntl.h>
 #include <errno.h>
-#include "../io_internal.h"
 
 void
 io_closeonexec(fd_t d) {

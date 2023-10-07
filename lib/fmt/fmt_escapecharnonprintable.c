@@ -12,7 +12,9 @@ fmt_escapecharnonprintable(char* dest, int c) {
       *dest = c;
     return 1;
   }
+
   r = ch == '\0' ? 2 : 4;
+
   if(dest) {
     *dest++ = '\\';
     if(ch)
@@ -20,5 +22,6 @@ fmt_escapecharnonprintable(char* dest, int c) {
     else
       *dest = '0';
   }
+
   return r;
 }

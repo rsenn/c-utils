@@ -27,7 +27,7 @@ usage(char* a0) {
                        a0,
                        " [...options] file\n"
                        "if no filename or '-' is passed, stdin is used.",
-                       0);
+                       NULL);
   buffer_putnlflush(buffer_2);
   return 1;
 }

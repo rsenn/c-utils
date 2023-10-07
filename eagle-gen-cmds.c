@@ -1100,8 +1100,7 @@ print_attrs(HMAP_DB* a) {
 
   for(t = a->list_tuple; t; t = t->next) {
     char* v = t->vals.val_chars;
-    buffer_putm_internal(
-        buffer_1, " ", t->key, str_isdoublenum(v) ? "=" : "=\"", v, str_isdoublenum(v) ? "" : "\"", NULL);
+    buffer_putm_internal(buffer_1, " ", t->key, str_isdoublenum(v) ? "=" : "=\"", v, str_isdoublenum(v) ? "" : "\"", NULL);
     if(t->next == a->list_tuple)
       break;
   }
@@ -1257,17 +1256,7 @@ print_xml_rect(buffer* b, xmlnode* e) {
   y1 = xml_get_attribute(e, "y1");
   x2 = xml_get_attribute(e, "x2");
   y2 = xml_get_attribute(e, "y2");
-  buffer_putm_internal(b,
-                       "(",
-                       x1 ? x1 : "<null>",
-                       " ",
-                       y1 ? y1 : "<null>",
-                       ") (",
-                       x2 ? x2 : "<null>",
-                       " ",
-                       y2 ? y2 : "<null>",
-                       ")",
-                       NULL);
+  buffer_putm_internal(b, "(", x1 ? x1 : "<null>", " ", y1 ? y1 : "<null>", ") (", x2 ? x2 : "<null>", " ", y2 ? y2 : "<null>", ")", NULL);
   buffer_flush(b);
 }
 
@@ -1363,7 +1352,7 @@ print_script(buffer* b, xmlnode* e) {
                          " ",
                          xml_get_attribute(e, "orientation"),
                          " ",
-                         0);
+                         NULL);
     print_xml_xy(b, e);
   } else if(str_equal(e->name, "hole")) {
     buffer_putm_internal(b, cmd.s, xml_get_attribute(e, "diameter"), " ", NULL);
@@ -1874,19 +1863,19 @@ main(int argc, char* argv[]) {
 
     /*  cbmap_visit_all(nets, dump_net,
      * "nets"); */
+    {
+      double scale = 1.0 / 2.54;
 
-    //
-    const double scale = 1.0 / 2.54;
+      wire_bounds.x2 += 2.54;
+      wire_bounds.y2 += 2.54;
+      // rect_outset(&bounds, 1.27);
 
-    wire_bounds.x2 += 2.54;
-    wire_bounds.y2 += 2.54;
-    // rect_outset(&bounds, 1.27);
+      rect_mult(&wire_bounds, scale);
+      rect_round(&wire_bounds, 0.1);
 
-    rect_mult(&wire_bounds, scale);
-    rect_round(&wire_bounds, 0.1);
-
-    // print_rect(buffer_2, "Wire",
-    // &wire_bounds);
+      // print_rect(buffer_2, "Wire",
+      // &wire_bounds);
+    }
 
     buffer_puts(buffer_1, "--- WIRE BOUNDS ---\n");
     buffer_puts(buffer_1, "\nLayer Measures;\n");

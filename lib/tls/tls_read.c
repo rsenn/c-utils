@@ -1,5 +1,4 @@
 #include "../tls_internal.h"
-#include "../tls_internal.h"
 #include "../stralloc.h"
 #include "../buffer.h"
 #include "../fmt.h"
@@ -10,6 +9,7 @@
 #ifdef HAVE_OPENSSL
 #include <openssl/ssl.h>
 #include <openssl/err.h>
+#include <errno.h>
 
 ssize_t
 tls_read(fd_t fd, void* data, size_t len) {

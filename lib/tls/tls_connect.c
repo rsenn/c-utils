@@ -13,9 +13,10 @@ tls_connect(fd_t fd) {
   assert(i);
   assert(i->ssl);
 
-  if((ret = tls_instance_return(i, TLS_OP_CONNECT, SSL_connect(i->ssl))) < 0)
+  if((ret = tls_instance_return(i, TLS_OP_CONNECT, SSL_connect(i->ssl))) < 0) {
     errno = tls_instance_errno(i);
-  return ret;
+  }
+
 #ifdef DEBUG_TLS
   buffer_putspad(buffer_2, "tls_connect ", 30);
   buffer_puts(buffer_2, "fd=");
@@ -47,5 +48,6 @@ tls_connect(fd_t fd) {
   }
   buffer_putnlflush(buffer_2);
 #endif
+  return ret;
 }
 #endif

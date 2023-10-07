@@ -33,7 +33,7 @@ typedef struct set_iterator {
 } set_iterator_t;
 
 #define SET() \
-  (struct set) { 0, 0, 0, 0, 0 }
+  /*(struct set)*/ { 0, 0, 0, 0, 0 }
 
 size_t fmt_set(char*, const set_t*, const char*);
 
@@ -90,8 +90,7 @@ set_iterator_new(const set_t* s) {
 
 #define set_foreach_it(s, it) for(set_iterator_init(&(it), (s)); set_iterator_value(&(it), 0); set_iterator_next(&(it)))
 
-#define set_foreach(s, it, x, n) \
-  for(it = set_iterator_new((s)); (x = set_iterator_value(&(it), &n)); set_iterator_next(&(it)))
+#define set_foreach(s, it, x, n) for(it = set_iterator_new((s)); (x = set_iterator_value(&(it), &n)); set_iterator_next(&(it)))
 
 #define set_foreach_ordered(s, b, x, n) for(b = (s)->list; b && (n = b->size, x = b->value); b = b->list_next)
 

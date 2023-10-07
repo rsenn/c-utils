@@ -97,9 +97,11 @@ is_dec_int_literal(const char* str) {
 static inline int
 is_float_literal(const char* str) {
   const char* s = str;
+  int got_dot = 0, got_e = 0, got_digits = 0;
+
   if(is_plus_or_minus(s[0]))
     s++;
-  int got_dot = 0, got_e = 0, got_digits = 0;
+
   while(*s) {
     int l = tolower(*s);
     if(*s == '.') {
@@ -164,13 +166,16 @@ is_oct_int_literal(const char* s) {
 static inline int
 is_identifier(const char* s) {
   static const char ascmap[128] = {
-      ['0'] = 2, ['1'] = 2, ['2'] = 2, ['3'] = 2, ['4'] = 2, ['5'] = 2, ['6'] = 2, ['7'] = 2, ['8'] = 2,
-      ['9'] = 2, ['A'] = 1, ['B'] = 1, ['C'] = 1, ['D'] = 1, ['E'] = 1, ['F'] = 1, ['G'] = 1, ['H'] = 1,
-      ['I'] = 1, ['J'] = 1, ['K'] = 1, ['L'] = 1, ['M'] = 1, ['N'] = 1, ['O'] = 1, ['P'] = 1, ['Q'] = 1,
-      ['R'] = 1, ['S'] = 1, ['T'] = 1, ['U'] = 1, ['V'] = 1, ['W'] = 1, ['X'] = 1, ['Y'] = 1, ['Z'] = 1,
-      ['_'] = 1, ['a'] = 1, ['b'] = 1, ['c'] = 1, ['d'] = 1, ['e'] = 1, ['f'] = 1, ['g'] = 1, ['h'] = 1,
-      ['i'] = 1, ['j'] = 1, ['k'] = 1, ['l'] = 1, ['m'] = 1, ['n'] = 1, ['o'] = 1, ['p'] = 1, ['q'] = 1,
-      ['r'] = 1, ['s'] = 1, ['t'] = 1, ['u'] = 1, ['v'] = 1, ['w'] = 1, ['x'] = 1, ['y'] = 1, ['z'] = 1,
+      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+      1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0
+      /*
+      ['0'] = 2, ['1'] = 2, ['2'] = 2, ['3'] = 2, ['4'] = 2, ['5'] = 2, ['6'] = 2, ['7'] = 2, ['8'] = 2, ['9'] = 2, ['A'] = 1, ['B'] = 1, ['C'] = 1,
+      ['D'] = 1, ['E'] = 1, ['F'] = 1, ['G'] = 1, ['H'] = 1, ['I'] = 1, ['J'] = 1, ['K'] = 1, ['L'] = 1, ['M'] = 1, ['N'] = 1, ['O'] = 1, ['P'] = 1,
+      ['Q'] = 1, ['R'] = 1, ['S'] = 1, ['T'] = 1, ['U'] = 1, ['V'] = 1, ['W'] = 1, ['X'] = 1, ['Y'] = 1, ['Z'] = 1, ['_'] = 1, ['a'] = 1, ['b'] = 1,
+      ['c'] = 1, ['d'] = 1, ['e'] = 1, ['f'] = 1, ['g'] = 1, ['h'] = 1, ['i'] = 1, ['j'] = 1, ['k'] = 1, ['l'] = 1, ['m'] = 1, ['n'] = 1, ['o'] = 1,
+      ['p'] = 1, ['q'] = 1, ['r'] = 1, ['s'] = 1, ['t'] = 1, ['u'] = 1, ['v'] = 1, ['w'] = 1, ['x'] = 1, ['y'] = 1, ['z'] = 1,
+      */
   };
   if((*s) & 128)
     return 0;
@@ -205,18 +210,23 @@ categorize(const char* s) {
 static inline int
 is_sep(int c) {
   static const char ascmap[128] = {
-      ['\t'] = 1, ['\n'] = 1, [' '] = 1, ['!'] = 1, ['\"'] = 1, ['#'] = 1, ['%'] = 1, ['&'] = 1,
-      ['\''] = 1, ['('] = 1,  [')'] = 1, ['*'] = 1, ['+'] = 1,  [','] = 1, ['-'] = 1, ['.'] = 1,
-      ['/'] = 1,  [':'] = 1,  [';'] = 1, ['<'] = 1, ['='] = 1,  ['>'] = 1, ['?'] = 1, ['['] = 1,
-      ['\\'] = 1, [']'] = 1,  ['{'] = 1, ['|'] = 1, ['}'] = 1,  ['~'] = 1, ['^'] = 1,
+      0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1,
+      1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0
+      /*
+      ['\t'] = 1, ['\n'] = 1, [' '] = 1,  ['!'] = 1, ['\"'] = 1, ['#'] = 1, ['%'] = 1, ['&'] = 1, ['\''] = 1, ['('] = 1, [')'] = 1,
+      ['*'] = 1,  ['+'] = 1,  [','] = 1,  ['-'] = 1, ['.'] = 1,  ['/'] = 1, [':'] = 1, [';'] = 1, ['<'] = 1,  ['='] = 1, ['>'] = 1,
+      ['?'] = 1,  ['['] = 1,  ['\\'] = 1, [']'] = 1, ['{'] = 1,  ['|'] = 1, ['}'] = 1, ['~'] = 1, ['^'] = 1,
+      */
   };
+
   return !(c & 128) && ascmap[c];
 }
 
 static inline int
 apply_coords(tokenizer* t, struct token_s* out, char* end, int retval) {
+  size_t len = end - t->buf;
   out->line = t->line;
-  uintptr_t len = end - t->buf;
   out->column = t->column - len;
   if(len + 1 >= t->bufsize) {
     out->type = TT_OVERFLOW;
@@ -287,27 +297,32 @@ get_string(tokenizer* t, char quote_char, struct token_s* out, int wide) {
 /* if sequence found, next tokenizer_s call will point after the sequence */
 static inline int
 sequence_follows(tokenizer* t, int c, const char* which) {
+  size_t i = 0;
+
   if(!which || !which[0])
     return 0;
-  size_t i = 0;
+
   while(c == which[i]) {
     if(!which[++i])
       break;
     c = tokenizer_getc(t);
   }
+
   if(!which[i])
     return 1;
+
   while(i > 0) {
     tokenizer_ungetc(t, c);
     c = which[--i];
   }
+
   return 0;
 }
 
 static inline int
 ignore_until(tokenizer* t, const char* marker, int col_advance) {
-  t->column += col_advance;
   int c;
+  t->column += col_advance;
   do {
     c = tokenizer_getc(t);
     if(c == TOKENIZER_EOF)
