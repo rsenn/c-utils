@@ -15,6 +15,7 @@
 #include "lib/strlist.h"
 #include "lib/getopt.h"
 #include "lib/dir.h"
+#include "lib/fmt.h"
 #include "lib/path.h"
 #include <assert.h>
 #include <ctype.h>
@@ -228,6 +229,19 @@ config_bytes(ihex_file* ihf, stralloc* sa, uint32* addr) {
   return bytes;
 }
 
+void
+print_words(buffer* b, stralloc* sa) {
+  size_t i, n = sa->len >> 1;
+
+  for(i = 0; i < n; i++) {
+    buffer_putxlong0u(b, (((uint8_t*)sa->s)[i * 2] << 8) | ((uint8_t*)sa->s)[i * 2 + 1], 4);
+    buffer_putnlflush(b);
+/*    
+    if(i < n - 1)
+      buffer_putc(b, '\n');*/
+  }
+}
+
 uint16
 get_setting_word(cword* word, csetting* setting) {
   uint16 value = config_data_at(word->address);
@@ -242,7 +256,7 @@ get_setting_value(cword* word, csetting* setting) {
   cvalue* value;
   uint16 byteval = get_setting_word(word, setting);
 
-#ifdef DEBUG_OUTPUT
+#ifdef DEBUG_OUTPUT_
   buffer_putm_internal(buffer_2, word->name, ": ", setting->name, " = 0x", NULL);
   buffer_putxlong0(buffer_2, byteval, 2);
   buffer_putnlflush(buffer_2);
@@ -399,6 +413,8 @@ process_config(void (*pragma)(strlist*, const char* key, const char* value), voi
   cword *prevword = 0, *word;
   csetting* setting;
   cvalue* value;
+  char cbuf[64];
+  size_t n = 0;
 
   slink_foreach(words, word) {
     if(!str_diffn(word->name, "IDLOC", 5))
@@ -406,6 +422,13 @@ process_config(void (*pragma)(strlist*, const char* key, const char* value), voi
 
     if(verbose)
       dump_cword(buffer_2, word);
+
+    //n += str_copyb(cbuf, word->name, sizeof(cbuf) - 6);
+
+    /*    buf[n++] = ' ';
+
+        n += fmt_xlong0u(&buf[n], config_data_at(word->address), 4);*/
+    //cbuf[n] = '\0';
 
     comment(list, word->name);
 
@@ -431,8 +454,9 @@ process_config(void (*pragma)(strlist*, const char* key, const char* value), voi
         continue;
       }
 
-      if(output_name && prevword != word)
+      if(output_name && prevword != word) {
         pragma(list, word->name, NULL);
+      }
 
       pragma(list, setting->name, value->name);
       prevword = word;
@@ -512,7 +536,7 @@ int
 main(int argc, char* argv[]) {
   const char* x;
   size_t i, n;
-  int c, index = 0;
+  int c, index = 0, print = 0;
   const char *cfgdata = 0, *hexfile = 0;
 
   struct unix_longopt opts[] = {{"help", 0, NULL, 'h'},
@@ -525,7 +549,7 @@ main(int argc, char* argv[]) {
                                 {0, 0, 0, 0}};
 
   for(;;) {
-    c = unix_getopt_long(argc, argv, "hodCnv", opts, &index);
+    c = unix_getopt_long(argc, argv, "hodCnvp", opts, &index);
     if(c == -1)
       break;
     if(c == 0)
@@ -539,6 +563,7 @@ main(int argc, char* argv[]) {
       case 'C': comments = 0; break;
       case 'n': output_name = 1; break;
       case 'v': verbose++; break;
+      case 'p': print = 1; break;
       default:
         buffer_puts(buffer_2, "No such option '-");
         buffer_putc(buffer_2, c);
@@ -615,7 +640,11 @@ main(int argc, char* argv[]) {
         }*/
   }
 
-  output_items(&pragmas);
+  if(print) {
+    print_words(buffer_1, &cfg);
+  } else {
+    output_items(&pragmas);
+  }
 
   return 0;
 }
