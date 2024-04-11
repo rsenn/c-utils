@@ -444,9 +444,15 @@ check_functions(sigismember sigsuspend)
 check_functions(ftruncate)
 check_functions(glob)
 check_functions(tcgetattr tcsetattr)
+check_functions(access)
+
+if(HAVE_ACCESS)
+  add_definitions(-DHAVE_ACCESS=1)
+else(HAVE_ACCESS)
+  add_definitions(-DNO_ACCESS=1)
+endif(HAVE_ACCESS)
 
 if(HAVE_TCGETATTR AND HAVE_TCSETATTR)
-
 else(HAVE_TCGETATTR AND HAVE_TCSETATTR)
   add_definitions(-DNO_TCATTR=1)
 endif(HAVE_TCGETATTR AND HAVE_TCSETATTR)

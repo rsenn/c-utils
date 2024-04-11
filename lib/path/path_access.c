@@ -79,7 +79,9 @@ path_access(const char* path, int rights) {
     case X_OK | R_OK | W_OK: return hasExecuteAccess(path) && hasReadAccess(path) && hasWriteAccess(path);
   }
 #else
+#ifndef NO_ACCESS
   if(access(path, rights) == 0)
+#endif
     return 1;
 #endif
   return 0;

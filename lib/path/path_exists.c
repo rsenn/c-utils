@@ -22,7 +22,9 @@ path_exists(const char* p) {
 #else
   struct _stat st;
   int r;
+#if !(NO_ACCESS || defined(__ANDROID__))
   if(access(p, 0) == 0)
+#endif
     return 1;
   r = lstat(p, &st);
   if(r == 0)
