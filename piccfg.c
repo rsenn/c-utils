@@ -54,7 +54,7 @@ static stralloc cfg;
 static strlist pragmas;
 static int nodefault = 0, oneline = 0, comments = 1, output_name = 0, verbose = 0;
 
-uint16
+static uint16
 config_data_at(uint32 addr) {
   if(baseaddr == 0x0000400e) {
     size_t offs = addr - 0x2007;
@@ -63,6 +63,10 @@ config_data_at(uint32 addr) {
 
   } else if(addr >= 0x8007) {
     size_t offs = (addr - 0x8007) * 2;
+
+    if(cfg.len < offs)
+      offs &= 0xfff;
+
     return uint16_read(&cfg.s[offs]);
 
   } else {
@@ -104,7 +108,7 @@ dump_cvalue(buffer* b, cvalue* value) {
   buffer_putnlflush(b);
 }
 
-cvalue**
+static cvalue**
 cfg_value(cvalue** vptr, cword* w, csetting* s, const char* x, size_t n) {
   cvalue* v = *vptr = alloc(sizeof(cvalue));
   size_t i;
@@ -126,7 +130,7 @@ cfg_value(cvalue** vptr, cword* w, csetting* s, const char* x, size_t n) {
   return &v->next;
 }
 
-csetting**
+static csetting**
 cfg_setting(csetting** sptr, cword* w, const char* x, size_t n) {
   csetting* s = *sptr = alloc(sizeof(csetting));
   size_t i;
@@ -147,7 +151,7 @@ cfg_setting(csetting** sptr, cword* w, const char* x, size_t n) {
   return &s->next;
 }
 
-cword**
+static cword**
 cfg_word(cword** wptr, const char* x, size_t n) {
   cword* w = *wptr = alloc(sizeof(cword));
   size_t i;
@@ -173,7 +177,7 @@ cfg_word(cword** wptr, const char* x, size_t n) {
   return &w->next;
 }
 
-int
+static int
 cfg_data(cword** wptr, const char* x, size_t n) {
   size_t eol, col;
   cword* w = 0;
@@ -218,7 +222,7 @@ cfg_data(cword** wptr, const char* x, size_t n) {
   return 0;
 }
 
-size_t
+static size_t
 config_bytes(ihex_file* ihf, stralloc* sa, uint32* addr) {
   size_t bytes;
   stralloc_zero(sa);
@@ -239,20 +243,20 @@ config_bytes(ihex_file* ihf, stralloc* sa, uint32* addr) {
   return bytes;
 }
 
-void
+static void
 print_words(buffer* b, stralloc* sa) {
   size_t i, n = sa->len >> 1;
 
   for(i = 0; i < n; i++) {
     buffer_putxlong0u(b, (((uint8_t*)sa->s)[i * 2] << 8) | ((uint8_t*)sa->s)[i * 2 + 1], 4);
     buffer_putnlflush(b);
-/*    
-    if(i < n - 1)
-      buffer_putc(b, '\n');*/
+    /*
+        if(i < n - 1)
+          buffer_putc(b, '\n');*/
   }
 }
 
-uint16
+static uint16
 get_setting_word(cword* word, csetting* setting) {
   uint16 value = config_data_at(word->address);
 
@@ -261,7 +265,7 @@ get_setting_word(cword* word, csetting* setting) {
   return value;
 }
 
-cvalue*
+static cvalue*
 get_setting_value(cword* word, csetting* setting) {
   cvalue* value;
   uint16 byteval = get_setting_word(word, setting);
@@ -437,12 +441,12 @@ process_config(void (*pragma)(strlist*, const char* key, const char* value), voi
     if(verbose)
       dump_cword(buffer_2, word);
 
-    //n += str_copyb(cbuf, word->name, sizeof(cbuf) - 6);
+    // n += str_copyb(cbuf, word->name, sizeof(cbuf) - 6);
 
     /*    buf[n++] = ' ';
 
         n += fmt_xlong0u(&buf[n], config_data_at(word->address), 4);*/
-    //cbuf[n] = '\0';
+    // cbuf[n] = '\0';
 
     comment(list, word->name);
 
