@@ -52,8 +52,9 @@ cpp_evaluate_condition(cpp* pp, tokenizer* t, int* result, char* visited[]) {
   token tok;
   tokenizer t2;
 
+t2=*t;
+
 #ifdef DEBUG_CPP
-  cpp_location(t, buffer_2);
 #endif
 
   tokenizer_set_flags(t, flags | TF_PARSE_WIDE_STRINGS);
@@ -100,7 +101,8 @@ cpp_evaluate_condition(cpp* pp, tokenizer* t, int* result, char* visited[]) {
   }
 
 #ifdef DEBUG_CPP
-  buffer_putm_internal(buffer_2, "evaluating condition '", NULL);
+   cpp_location(&t2, buffer_2);
+ buffer_putm_internal(buffer_2, " evaluating condition '", NULL);
   buffer_put(buffer_2, x, n);
   buffer_putsflush(buffer_2, "'\n");
 #endif

@@ -134,7 +134,7 @@ cpp_parse_file(cpp* pp, buffer* f, const char* fn, buffer* out) {
           if(all_levels_active()) {
             char* visited[MAX_RECURSION] = {0};
 
-            if(!cpp_evaluate_condition(pp, &t, &ret, visited))
+            if(! cpp_evaluate_condition(pp, &t, &ret, visited))
               return 0;
 
             free_visited(visited);
