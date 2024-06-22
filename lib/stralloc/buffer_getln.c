@@ -7,7 +7,7 @@ buffer_getln(buffer* b, stralloc* sa, int* gotit, int termchar) {
   if(!stralloc_ready(sa, 0))
     return -1;
   sa->len = 0;
-  while(1) {
+  for(;;) {
     int r;
     char* p;
     int off;

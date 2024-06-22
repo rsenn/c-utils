@@ -25,7 +25,7 @@
 
 #define MAX_RECURSION 32
 
-#define x_tokenizer_next(T, TOK) x_tokenizer_next_of(T, TOK, 1)
+#define x_tokenizer_next(T, TOK) cpp_parse_next_of_x(T, TOK, 1)
 
 struct cpp_s {
   LIST_T includedirs;
@@ -35,29 +35,28 @@ struct cpp_s {
   tokenizer* tchain[MAX_RECURSION];
 };
 
-static int bp(int);
-static int charlit_to_int(const char*);
-static int eat_whitespace(tokenizer*, token* token, int* count);
-static int emit_error_or_warning(tokenizer*, int is_error);
-static void cpp_error(const char*, tokenizer* t, token* curr);
-static void error_or_warning(const char*, const char* type, tokenizer* t, token* curr);
-static int expect(tokenizer*, enum tokentype tt, const char* const values[], token* token);
-static int expr(tokenizer*, int rbp, int* err);
-static void free_file_container(cpp_file*);
-static void free_visited(char* visited[]);
-static int is_char(token*, int ch);
-static int is_whitespace_token(token*);
-static int led(tokenizer*, int left, token* tok, int* err);
-static int nud(tokenizer*, token* tok, int* err);
-static int skip_next_and_ws(tokenizer*, token* tok);
-static int tokenizer_peek_next_non_ws(tokenizer*, token* tok);
-static int token_needs_string(token*);
-static void warning(const char*, tokenizer* t, token* curr);
-static int was_visited(const char*, char* visited[], unsigned rec_level);
-static int x_tokenizer_next_of(tokenizer*, token* tok, int fail_unk);
+static int cpp_bp(int);
+int cpp_parse_led(tokenizer*, int left, token* tok, int* err);
+static int cpp_parse_nud(tokenizer*, token* tok, int* err);
+static int cpp_parse_expect(tokenizer*, enum tokentype tt, const char* const values[], token* token);
+static int cpp_parse_expr(tokenizer*, int rbp, int* err);
+static int cpp_parse_whitespace(tokenizer*, token* token, int* count);
+static int cpp_parse_skip(tokenizer*, token* tok);
+static int cpp_parse_peek(tokenizer*, token* tok);
+static int cpp_parse_next_of_x(tokenizer*, token* tok, int fail_unk);
+static int cpp_parse_error(tokenizer*, int is_error);
+
+static void cpp_msg_error(const char*, tokenizer* t, token* curr);
+static void cpp_msg_warning(const char*, tokenizer* t, token* curr);
+static void cpp_error_or_warning(const char*, const char* type, tokenizer* t, token* curr);
+
+static int cpp_charlit_to_int(const char*);
+static void cpp_free_file_container(cpp_file*);
+static void cpp_free_visited(char* visited[]);
+static int cpp_was_visited(const char*, char* visited[], unsigned rec_level);
 
 static inline void
-free_file_container(cpp_file* fc) {
+cpp_free_file_container(cpp_file* fc) {
   /*if(fc->f) {
     buffer_close(fc->f);
   }
@@ -69,32 +68,7 @@ free_file_container(cpp_file* fc) {
 }
 
 static inline void
-tokenizer_from_file(tokenizer* t, buffer* f) {
-  tokenizer_init(t, f, TF_PARSE_STRINGS);
-  tokenizer_set_filename(t, "<macro>");
-  // tokenizer_rewind(t);
-}
-
-static inline int
-token_needs_string(token* tok) {
-  switch(tok->type) {
-    case TT_IDENTIFIER:
-    case TT_WIDECHAR_LIT:
-    case TT_WIDESTRING_LIT:
-    case TT_SQSTRING_LIT:
-    case TT_DQSTRING_LIT:
-    case TT_ELLIPSIS:
-    case TT_HEX_INT_LIT:
-    case TT_OCT_INT_LIT:
-    case TT_DEC_INT_LIT:
-    case TT_FLOAT_LIT:
-    case TT_UNKNOWN: return 1;
-    default: return 0;
-  }
-}
-
-static inline void
-emit_token(buffer* out, token* tok, const char* strbuf) {
+cpp_emit_token(buffer* out, token* tok, const char* strbuf) {
   if(tok->type == TT_SEP) {
     buffer_putc(out, tok->value);
   } else if(strbuf && token_needs_string(tok)) {
@@ -109,7 +83,7 @@ emit_token(buffer* out, token* tok, const char* strbuf) {
 }
 
 static inline void
-error_or_warning(const char* err, const char* type, tokenizer* t, token* curr) {
+cpp_error_or_warning(const char* err, const char* type, tokenizer* t, token* curr) {
   int i;
   unsigned column = curr ? curr->column : t->column;
   unsigned line = curr ? curr->line : t->line;
@@ -129,31 +103,22 @@ error_or_warning(const char* err, const char* type, tokenizer* t, token* curr) {
 }
 
 static inline void
-cpp_error(const char* err, tokenizer* t, token* curr) {
-  error_or_warning(err, "error", t, curr);
+cpp_msg_error(const char* err, tokenizer* t, token* curr) {
+  cpp_error_or_warning(err, "error", t, curr);
 }
 
 static inline void
-warning(const char* err, tokenizer* t, token* curr) {
-  error_or_warning(err, "warning", t, curr);
+cpp_msg_warning(const char* err, tokenizer* t, token* curr) {
+  cpp_error_or_warning(err, "warning", t, curr);
 }
 
 static inline void
-flush_whitespace(buffer* out, int* ws_count) {
+cpp_flush_whitespace(buffer* out, int* ws_count) {
+
   while(*ws_count > 0) {
     buffer_puts(out, " ");
     --(*ws_count);
   }
-}
-
-static inline int
-is_char(token* tok, int ch) {
-  return tok->type == TT_SEP && tok->value == ch;
-}
-
-static inline int
-is_whitespace_token(token* token) {
-  return token->type == TT_SEP && (token->value == ' ' || token->value == '\t');
 }
 
 static inline size_t
@@ -162,23 +127,45 @@ macro_arglist_pos(cpp_macro* m, const char* iden) {
 
   for(i = 0; i < len; i++) {
     char* item = LIST_GET(m->argnames, i);
+
     if(!str_diff(item, iden))
       return i;
   }
+
   return (size_t)-1;
 }
 
 static inline int
-x_tokenizer_next_of(tokenizer* t, token* tok, int fail_unk) {
+cpp_parse_next_of_x(tokenizer* t, token* tok, int fail_unk) {
   int ret = tokenizer_next(t, tok);
+
   if(tok->type == TT_OVERFLOW) {
-    cpp_error("max token length of 4095 exceeded!", t, tok);
-    return 0;
-  } else if(fail_unk && ret == 0) {
-    cpp_error("tokenizer encountered unknown token", t, tok);
+    cpp_msg_error("max token length of 4095 exceeded!", t, tok);
     return 0;
   }
+
+  if(fail_unk && ret == 0) {
+    cpp_msg_error("tokenizer encountered unknown token", t, tok);
+    return 0;
+  }
+
   return 1;
+}
+
+static inline int
+cpp_parse_peek(tokenizer* t, token* tok) {
+  int ret;
+
+  for(;;) {
+    ret = tokenizer_peek_token(t, tok);
+
+    if(!token_is_whitespace(tok))
+      break;
+
+    x_tokenizer_next(t, tok);
+  }
+
+  return ret;
 }
 
 static inline int
@@ -186,20 +173,24 @@ mem_tokenizers_join(cpp_file* org, cpp_file* inj, cpp_file* result, int first, o
   size_t i;
   token tok;
   int ret, diff, cnt = 0, last = first;
+
   result->f = memstream_open(&result->buf, &result->len);
   tokenizer_rewind(&org->t);
+
   for(i = 0; i < first; ++i) {
     ret = tokenizer_next(&org->t, &tok);
     assert(ret && tok.type != TT_EOF);
-    emit_token(result->f, &tok, org->t.buf);
+    cpp_emit_token(result->f, &tok, org->t.buf);
   }
-  while(1) {
-    ret = tokenizer_next(&inj->t, &tok);
-    if(!ret || tok.type == TT_EOF)
+
+  for(;;) {
+    if(!(ret = tokenizer_next(&inj->t, &tok)) || tok.type == TT_EOF)
       break;
-    emit_token(result->f, &tok, inj->t.buf);
+
+    cpp_emit_token(result->f, &tok, inj->t.buf);
     ++cnt;
   }
+
   while(tokenizer_ftello(&org->t) < lastpos) {
     ret = tokenizer_next(&org->t, &tok);
     last++;
@@ -207,15 +198,16 @@ mem_tokenizers_join(cpp_file* org, cpp_file* inj, cpp_file* result, int first, o
 
   diff = cnt - ((int)last - (int)first);
 
-  while(1) {
-    ret = tokenizer_next(&org->t, &tok);
-    if(!ret || tok.type == TT_EOF)
+  for(;;) {
+    if(!(ret = tokenizer_next(&org->t, &tok)) || tok.type == TT_EOF)
       break;
-    emit_token(result->f, &tok, org->t.buf);
+
+    cpp_emit_token(result->f, &tok, org->t.buf);
   }
 
   result->f = memstream_reopen(result->f, &result->buf, &result->len);
   tokenizer_from_file(&result->t, result->f);
+
   return diff;
 }
 
@@ -246,133 +238,67 @@ mem_tokenizers_join(cpp_file* org, cpp_file* inj, cpp_file* result, int first, o
 #define TTENT(X, Y) [TTINT(X)] = Y
 
 static inline int
-bp(int tokentype) {
-  static const int bplist[] = {
-      0x20, 0x10,   0x400,  0x400,  0x800,  0x800,  0x200,  0x200,  0x400, 0x400, 0x100, 0x40,
-      0x80, 0x4000, 0x1000, 0x1000, 0x2000, 0x2000, 0x2000, 0x8000, 0,     0x4000
-      /*TTENT(TT_LOR, 1 << 4),
-      TTENT(TT_LAND, 1 << 5),
-      TTENT(TT_BOR, 1 << 6),
-      TTENT(TT_XOR, 1 << 7),
-      TTENT(TT_BAND, 1 << 8),
-      TTENT(TT_EQ, 1 << 9),
-      TTENT(TT_NEQ, 1 << 9),
-      TTENT(TT_LTE, 1 << 10),
-      TTENT(TT_GTE, 1 << 10),
-      TTENT(TT_LT, 1 << 10),
-      TTENT(TT_GT, 1 << 10),
-      TTENT(TT_SHL, 1 << 11),
-      TTENT(TT_SHR, 1 << 11),
-      TTENT(TT_PLUS, 1 << 12),
-      TTENT(TT_MINUS, 1 << 12),
-      TTENT(TT_MUL, 1 << 13),
-      TTENT(TT_DIV, 1 << 13),
-      TTENT(TT_MOD, 1 << 13),
-      TTENT(TT_NEG, 1 << 14),
-      TTENT(TT_LNOT, 1 << 14),
-      TTENT(TT_LPAREN, 1 << 15),
-      //    TTENT(TT_RPAREN, 1 << 15),
-      //    TTENT(TT_LPAREN, 0),
-      TTENT(TT_RPAREN, 0)*/
+cpp_bp(int type) {
+  static const int list[] = {
+      /*0x20, 0x10,   0x400,  0x400,  0x800,  0x800,  0x200,  0x200,  0x400, 0x400, 0x100, 0x40,
+      0x80, 0x4000, 0x1000, 0x1000, 0x2000, 0x2000, 0x2000, 0x8000, 0,     0x4000*/
+      TTENT(TT_LOR, 1 << 4),  TTENT(TT_LAND, 1 << 5), TTENT(TT_BOR, 1 << 6),  TTENT(TT_XOR, 1 << 7),   TTENT(TT_BAND, 1 << 8),    TTENT(TT_EQ, 1 << 9),    TTENT(TT_NEQ, 1 << 9),    TTENT(TT_LTE, 1 << 10),
+      TTENT(TT_GTE, 1 << 10), TTENT(TT_LT, 1 << 10),  TTENT(TT_GT, 1 << 10),  TTENT(TT_SHL, 1 << 11),  TTENT(TT_SHR, 1 << 11),    TTENT(TT_PLUS, 1 << 12), TTENT(TT_MINUS, 1 << 12), TTENT(TT_MUL, 1 << 13),
+      TTENT(TT_DIV, 1 << 13), TTENT(TT_MOD, 1 << 13), TTENT(TT_NEG, 1 << 14), TTENT(TT_LNOT, 1 << 14), TTENT(TT_LPAREN, 1 << 15), TTENT(TT_RPAREN, 0),
+
+      //TTENT(TT_RPAREN, 1 << 15),
+      //TTENT(TT_LPAREN, 0),
   };
 
-  if(TTINT(tokentype) < sizeof(bplist) / sizeof(bplist[0]))
-    return bplist[TTINT(tokentype)];
+  if(TTINT(type) < sizeof(list) / sizeof(list[0]))
+    return list[TTINT(type)];
 
   return 0;
 }
 
 /* skips until the next non-whitespace token (if the current one is one too)*/
 static inline int
-eat_whitespace(tokenizer* t, token* token, int* count) {
+cpp_parse_whitespace(tokenizer* t, token* token, int* count) {
   int ret = 1;
+
   *count = 0;
-  while(is_whitespace_token(token)) {
+
+  while(token_is_whitespace(token)) {
     ++(*count);
-    ret = x_tokenizer_next(t, token);
-    if(!ret)
+
+    if(!(ret = x_tokenizer_next(t, token)))
       break;
   }
+
   return ret;
 }
 
 /* fetches the next token until it is non-whitespace */
 static inline int
-skip_next_and_ws(tokenizer* t, token* tok) {
+cpp_parse_skip(tokenizer* t, token* tok) {
   int ws_count, ret;
 
   if(!(ret = tokenizer_next(t, tok)))
     return ret;
 
-  ret = eat_whitespace(t, tok, &ws_count);
+  ret = cpp_parse_whitespace(t, tok, &ws_count);
   return ret;
 }
 
 static inline int
-led(tokenizer* t, int left, token* tok, int* err) {
-  int right;
-
-  switch((unsigned)tok->type) {
-    case TT_LAND:
-    case TT_LOR: {
-      right = expr(t, bp(tok->type), err);
-
-      if(tok->type == TT_LAND)
-        return left && right;
-
-      return left || right;
-    }
-
-    case TT_LTE: return left <= expr(t, bp(tok->type), err);
-    case TT_GTE: return left >= expr(t, bp(tok->type), err);
-    case TT_SHL: return left << expr(t, bp(tok->type), err);
-    case TT_SHR: return left >> expr(t, bp(tok->type), err);
-    case TT_EQ: return left == expr(t, bp(tok->type), err);
-    case TT_NEQ: return left != expr(t, bp(tok->type), err);
-    case TT_LT: return left < expr(t, bp(tok->type), err);
-    case TT_GT: return left > expr(t, bp(tok->type), err);
-    case TT_BAND: return left & expr(t, bp(tok->type), err);
-    case TT_BOR: return left | expr(t, bp(tok->type), err);
-    case TT_XOR: return left ^ expr(t, bp(tok->type), err);
-    case TT_PLUS: return left + expr(t, bp(tok->type), err);
-    case TT_MINUS: return left - expr(t, bp(tok->type), err);
-    case TT_MUL: return left * expr(t, bp(tok->type), err);
-    case TT_DIV:
-    case TT_MOD: {
-      if((right = expr(t, bp(tok->type), err)) == 0) {
-        cpp_error("eval: div by zero", t, tok);
-        *err = 1;
-      } else if(tok->type == TT_DIV) {
-        return left / right;
-      } else if(tok->type == TT_MOD) {
-        return left % right;
-      }
-
-      return 0;
-    }
-
-    default: {
-      cpp_error("eval: unexpect token", t, tok);
-      *err = 1;
-      return 0;
-    }
-  }
-}
-
-static inline int
-expr(tokenizer* t, int rbp, int* err) {
+cpp_parse_expr(tokenizer* t, int rbp, int* err) {
   token tok;
-  int left, ret = skip_next_and_ws(t, &tok);
+  int left, ret = cpp_parse_skip(t, &tok);
 
   if(tok.type == TT_EOF)
     return 0;
 
-  left = nud(t, &tok, err);
+  left = cpp_parse_nud(t, &tok, err);
 
-  while(1) {
-    ret = tokenizer_peek_next_non_ws(t, &tok);
+  for(;;) {
+    ret = cpp_parse_peek(t, &tok);
 
-    if(bp(tok.type) <= rbp)
+    if(cpp_bp(tok.type) <= rbp)
       break;
 
     ret = tokenizer_next(t, &tok);
@@ -380,15 +306,16 @@ expr(tokenizer* t, int rbp, int* err) {
     if(tok.type == TT_EOF)
       break;
 
-    left = led(t, left, &tok, err);
+    left = cpp_parse_led(t, left, &tok, err);
   }
 
   (void)ret;
+
   return left;
 }
 
 static inline int
-emit_error_or_warning(tokenizer* t, int is_error) {
+cpp_parse_error(tokenizer* t, int is_error) {
   int ws_count, ret;
   token tmp;
 
@@ -401,32 +328,32 @@ emit_error_or_warning(tokenizer* t, int is_error) {
   ret = tokenizer_read_until(t, "\n", 1);
 
   if(is_error) {
-    cpp_error(t->buf, t, &tmp);
+    cpp_msg_error(t->buf, t, &tmp);
     return 0;
   }
 
-  warning(t->buf, t, &tmp);
+  cpp_msg_warning(t->buf, t, &tmp);
   return 1;
 }
 
 /* return index of matching item in values array, or -1 on error */
 static inline int
-expect(tokenizer* t, enum tokentype tt, const char* const values[], token* token) {
-  int ret, i;
+cpp_parse_expect(tokenizer* t, enum tokentype tt, const char* const values[], token* token) {
+  int ret;
 
   do {
-    ret = tokenizer_next(t, token);
-    if(ret == 0 || token->type == TT_EOF)
+    if((ret = tokenizer_next(t, token)) == 0 || token->type == TT_EOF)
       goto err;
-  } while(is_whitespace_token(token));
+
+  } while(token_is_whitespace(token));
 
   if(token->type != tt) {
   err:
-    cpp_error("unexpected token", t, token);
+    cpp_msg_error("unexpected token", t, token);
     return -1;
   }
 
-  for(i = 0; values[i]; i++)
+  for(int i = 0; values[i]; i++)
     if(!str_diff(values[i], t->buf))
       return i;
 
@@ -434,16 +361,14 @@ expect(tokenizer* t, enum tokentype tt, const char* const values[], token* token
 }
 
 static inline void
-free_visited(char* visited[]) {
-  size_t i;
-
-  for(i = 0; i < MAX_RECURSION; i++)
+cpp_free_visited(char* visited[]) {
+  for(size_t i = 0; i < MAX_RECURSION; i++)
     if(visited[i])
       alloc_free(visited[i]);
 }
 
 static inline int
-charlit_to_int(const char* lit) {
+cpp_charlit_to_int(const char* lit) {
   unsigned int ret = lit[1];
 
   if(lit[1] == '\\')
@@ -452,10 +377,12 @@ charlit_to_int(const char* lit) {
       case 'n': ret = 10; break;
       case 't': ret = 9; break;
       case 'r': ret = 13; break;
+
       case 'x': {
         if(scan_xint(lit + 3, &ret))
           break;
       }
+
       default: return lit[2];
     }
 
@@ -463,29 +390,31 @@ charlit_to_int(const char* lit) {
 }
 
 static inline int
-nud(tokenizer* t, token* tok, int* err) {
+cpp_parse_nud(tokenizer* t, token* tok, int* err) {
   int ret;
+
   switch((unsigned)tok->type) {
     case TT_IDENTIFIER: ret = 0; break;
     case TT_WIDECHAR_LIT:
-    case TT_SQSTRING_LIT: return charlit_to_int(t->buf);
-    case TT_NEG: return ~expr(t, bp(tok->type), err);
-    case TT_PLUS: return expr(t, bp(tok->type), err);
-    case TT_MINUS: return -expr(t, bp(tok->type), err);
-    case TT_LNOT: return !expr(t, bp(tok->type), err);
+    case TT_SQSTRING_LIT: return cpp_charlit_to_int(t->buf);
+    case TT_NEG: return ~cpp_parse_expr(t, cpp_bp(tok->type), err);
+    case TT_PLUS: return cpp_parse_expr(t, cpp_bp(tok->type), err);
+    case TT_MINUS: return -cpp_parse_expr(t, cpp_bp(tok->type), err);
+    case TT_LNOT: return !cpp_parse_expr(t, cpp_bp(tok->type), err);
     case TT_LPAREN: {
-      int inner = expr(t, 0, err);
+      int inner = cpp_parse_expr(t, 0, err);
       const char* values[] = {")", 0};
 
-      if(0 != expect(t, TT_RPAREN, values, tok)) {
-        cpp_error("missing ')'", t, tok);
+      if(0 != cpp_parse_expect(t, TT_RPAREN, values, tok)) {
+        cpp_msg_error("missing ')'", t, tok);
         return 0;
       }
+
       return inner;
     }
 
     case TT_FLOAT_LIT: {
-      cpp_error("floating constant in preprocessor expression", t, tok);
+      cpp_msg_error("floating constant in preprocessor expression", t, tok);
       *err = 1;
       return 0;
     }
@@ -495,34 +424,18 @@ nud(tokenizer* t, token* tok, int* err) {
     case TT_DEC_INT_LIT: scan_int(t->buf, &ret); break;
 
     case TT_RPAREN:
-
     default: {
-      cpp_error("unexpected token", t, tok);
+      cpp_msg_error("unexpected token", t, tok);
       *err = 1;
       return 0;
     }
   }
-  return ret;
-}
-
-static inline int
-tokenizer_peek_next_non_ws(tokenizer* t, token* tok) {
-  int ret;
-
-  while(1) {
-    ret = tokenizer_peek_token(t, tok);
-
-    if(is_whitespace_token(tok))
-      x_tokenizer_next(t, tok);
-    else
-      break;
-  }
 
   return ret;
 }
 
 static inline int
-was_visited(const char* name, char* visited[], unsigned rec_level) {
+cpp_was_visited(const char* name, char* visited[], unsigned rec_level) {
   int x;
 
   for(x = rec_level; x >= 0; --x)

@@ -18,13 +18,13 @@ cpp_include_file(cpp* pp, tokenizer* t, buffer* out) {
 
   tokenizer_set_flags(t, 0); // disable string tokenization
 
-  if((inc1sep = expect(t, TT_SEP, inc_chars, &tok)) == -1) {
-    cpp_error("expected one of [\"<]", t, &tok);
+  if((inc1sep = cpp_parse_expect(t, TT_SEP, inc_chars, &tok)) == -1) {
+    cpp_msg_error("expected one of [\"<]", t, &tok);
     return 0;
   }
 
   if(!(ret = tokenizer_read_until(t, inc_chars_end[inc1sep], 1))) {
-    cpp_error("error parsing filename", t, &tok);
+    cpp_msg_error("error parsing filename", t, &tok);
     return 0;
   }
 
@@ -55,7 +55,7 @@ cpp_include_file(cpp* pp, tokenizer* t, buffer* out) {
   stralloc_free(&sa);
 
   fn = str_dup(t->buf);
-  assert(tokenizer_next(t, &tok) && is_char(&tok, inc_chars_end[inc1sep][0]));
+  assert(tokenizer_next(t, &tok) && token_is_char(&tok, inc_chars_end[inc1sep][0]));
 
   tokenizer_set_flags(t, TF_PARSE_STRINGS);
 

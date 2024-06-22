@@ -1,45 +1,45 @@
 #include "../cpp_internal.h"
 
 int
-cpp_stringify(cpp* pp, tokenizer* t, buffer* output) {
+cpp_stringify(cpp* pp, tokenizer* t, buffer* out) {
   int ret = 1;
   token tok;
 
-  buffer_puts(output, "\"");
+  buffer_puts(out, "\"");
 
-  while(1) {
-    ret = tokenizer_next(t, &tok);
-
-    if(!ret)
+  for(;;) {
+    if(!(ret = tokenizer_next(t, &tok)))
       return ret;
 
     if(tok.type == TT_EOF)
       break;
 
-    if(is_char(&tok, '\n'))
+    if(token_is_char(&tok, '\n'))
       continue;
 
-    if(is_char(&tok, '\\') && tokenizer_peek(t) == '\n')
+    if(token_is_char(&tok, '\\') && tokenizer_peek(t) == '\n')
       continue;
 
     if(tok.type == TT_DQSTRING_LIT) {
-      char* s = t->buf;
-      char buf[2] = {0};
+      char *s = t->buf, buf[2] = {0};
+
       while(*s) {
         if(*s == '\"') {
-          buffer_puts(output, "\\\"");
+          buffer_puts(out, "\\\"");
         } else if(*s == '\\') {
-          buffer_puts(output, "\\\\");
+          buffer_puts(out, "\\\\");
         } else {
           buf[0] = *s;
-          buffer_puts(output, buf);
+          buffer_puts(out, buf);
         }
+
         ++s;
       }
-    } else
-      emit_token(output, &tok, t->buf);
+    } else {
+      cpp_emit_token(out, &tok, t->buf);
+    }
   }
 
-  buffer_puts(output, "\"");
+  buffer_puts(out, "\"");
   return ret;
 }

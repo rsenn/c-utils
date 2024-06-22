@@ -90,7 +90,7 @@ guess_year(unsigned long month, unsigned long day) {
     struct tai n;
     tai_now(&n);
     this_year = 1970;
-    while(1) {
+    for(;;) {
       utcdate2tai(&yearstart, this_year + 1, 0, 1, 0, 0, 0);
       if(tai_less(&n, &yearstart))
         break;

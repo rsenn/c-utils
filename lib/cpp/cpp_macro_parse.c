@@ -5,7 +5,7 @@ static int
 consume_nl_and_ws(tokenizer* t, token* tok, int expected) {
   if(!x_tokenizer_next(t, tok)) {
   err:
-    error("unexpected", t, tok);
+    cpp_msg_error("unexpected", t, tok);
     return 0;
   }
 
@@ -18,9 +18,9 @@ consume_nl_and_ws(tokenizer* t, token* tok, int expected) {
       case '\n': expected = 0; break;
     }
   } else {
-    if(is_whitespace_token(tok))
+    if(token_is_whitespace(tok))
       ;
-    else if(is_char(tok, '\\'))
+    else if(token_is_char(tok, '\\'))
       expected = '\n';
     else
       return 1;
@@ -39,12 +39,12 @@ cpp_macro_parse(cpp* cpp, tokenizer* t) {
     return ret;
 
   if(!(ret = tokenizer_next(t, &curr) && curr.type != TT_EOF)) {
-    error("parsing macro name", t, &curr);
+    cpp_msg_error("parsing macro name", t, &curr);
     return ret;
   }
 
   if(curr.type != TT_IDENTIFIER) {
-    error("expected identifier", t, &curr);
+    cpp_msg_error("expected identifier", t, &curr);
     return 0;
   }
 
@@ -58,7 +58,7 @@ cpp_macro_parse(cpp* cpp, tokenizer* t) {
 
   if(cpp_macro_get(cpp, macroname)) {
     if(!str_diff(macroname, "defined")) {
-      error("\"defined\" cannot be used as a macro name", t, &curr);
+      cpp_msg_error("\"defined\" cannot be used as a macro name", t, &curr);
       return 0;
     }
 
@@ -74,17 +74,17 @@ cpp_macro_parse(cpp* cpp, tokenizer* t) {
     if(!(ret = x_tokenizer_next(t, &curr) && curr.type != TT_EOF))
       return ret;
 
-    if(is_char(&curr, '(')) {
+    if(token_is_char(&curr, '(')) {
       unsigned expected = 0;
 
       macro_flags = 0;
 
-      while(1) {
+      for(;;) {
         /* process next function argument identifier */
         ret = consume_nl_and_ws(t, &curr, expected);
 
         if(!ret) {
-          error("unexpected", t, &curr);
+          cpp_msg_error("unexpected", t, &curr);
           return ret;
         }
 
@@ -101,11 +101,11 @@ cpp_macro_parse(cpp* cpp, tokenizer* t) {
 
               goto break_loop1;
 
-            default: error("unexpected character", t, &curr); return 0;
+            default: cpp_msg_error("unexpected character", t, &curr); return 0;
           }
 
         } else if(!(curr.type == TT_IDENTIFIER || curr.type == TT_ELLIPSIS)) {
-          error("expected identifier for macro arg", t, &curr);
+          cpp_msg_error("expected identifier for macro arg", t, &curr);
           return 0;
         }
 
@@ -114,7 +114,7 @@ cpp_macro_parse(cpp* cpp, tokenizer* t) {
 
           if(curr.type == TT_ELLIPSIS) {
             if(macro_flags & MACRO_FLAG_VARIADIC) {
-              error("\"...\" isn't the last parameter", t, &curr);
+              cpp_msg_error("\"...\" isn't the last parameter", t, &curr);
               return 0;
             }
 
@@ -130,13 +130,13 @@ cpp_macro_parse(cpp* cpp, tokenizer* t) {
 
     break_loop1:
 
-    } else if(is_whitespace_token(&curr)) {
+    } else if(token_is_whitespace(&curr)) {
       ret = tokenizer_skip_chars(t, " \t", &ws_count);
 
       if(!ret)
         return ret;
 
-    } else if(is_char(&curr, '\n')) {
+    } else if(token_is_char(&curr, '\n')) {
       /* content-less macro */
       goto done;
     }
@@ -147,7 +147,7 @@ cpp_macro_parse(cpp* cpp, tokenizer* t) {
 
       contents.f = memstream_open(&contents.buf, &contents.len);
 
-      while(1) {
+      for(;;) {
         /* ignore unknown tokens in macro body */
         ret = tokenizer_next(t, &curr);
 
@@ -164,11 +164,11 @@ cpp_macro_parse(cpp* cpp, tokenizer* t) {
             if(curr.value == '\n' && !backslash_seen)
               break;
 
-            emit_token(contents.f, &curr, t->buf);
+            cpp_emit_token(contents.f, &curr, t->buf);
             backslash_seen = 0;
           }
         } else {
-          emit_token(contents.f, &curr, t->buf);
+          cpp_emit_token(contents.f, &curr, t->buf);
         }
       }
 
@@ -195,7 +195,7 @@ cpp_macro_parse(cpp* cpp, tokenizer* t) {
         n = str_copy(buf, "redefinition of macro ");
         str_copyn(&buf[n], macroname, sizeof(buf) - n);
 
-        warning(buf, t, 0);
+        cpp_msg_warning(buf, t, 0);
       }
     }
 

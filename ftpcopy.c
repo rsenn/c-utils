@@ -532,7 +532,7 @@ retry_pasv:
   buffer_init(&io_d, (buffer_op)TIMEOUTREADFN(o_timeout), data_sock, io_d_mem.s, BUFFER_INSIZE);
   progress_flag = 0;
   taia_now(&last_report);
-  while(1) {
+  for(;;) {
     int l;
     char* q;
     struct taia now;
@@ -1218,7 +1218,7 @@ initialentity(struct ftpparse* fp, stralloc* r_dir) {
   if(!p)
     eof_or_error(111, errno, "failed to read MLST answer", 0, 0);
   if(*p == '2') {
-    while(1) {
+    for(;;) {
       p = ccread_oneline();
       if(str_start(p, "250 "))
         break;
@@ -1456,7 +1456,7 @@ include_exclude_file(const char* fname) {
   if(-1 == fd)
     xbailout(111, errno, "failed to open_read ", fname, 0, 0);
   buffer_init(&io, (buffer_op)read, fd, spc, sizeof(spc));
-  while(1) {
+  for(;;) {
     int gotlf;
     if(-1 == getln(&io, &s, &gotlf, '\n'))
       xbailout(111, errno, "failed to read from ", fname, 0, 0);
@@ -2286,7 +2286,7 @@ main(int argc, char** argv) {
     buffer io_stdin;
     char spc[BUFFER_INSIZE];
     buffer_init(&io_stdin, (buffer_op)read, 0, spc, sizeof(spc));
-    while(1) {
+    for(;;) {
       int gotlf;
       char* p;
       if(-1 == getln(&io_stdin, &d1, &gotlf, '\n'))

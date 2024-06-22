@@ -681,7 +681,7 @@ copyloop(int insock, int outsock, int timeout_secs) {
   // syslog(LOG_DEBUG, "Entering
   // copyloop() - timeout is %d",
   // timeout_secs);
-  while(1) {
+  for(;;) {
     fd_set iofds;
 
     FD_ZERO(&iofds);
@@ -1227,7 +1227,7 @@ main(int argc, char* argv[]) {
       return 1;
     }
 
-    while(1) {
+    for(;;) {
       struct sockaddr_in target;
 
       memset(&target, 0, sizeof(target));

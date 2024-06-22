@@ -93,7 +93,7 @@ ftplib_read(buffer* in, stralloc* ret) {
   ret->len = 0;
   if(!stralloc_0(ret))
     return -1;
-  while(1) {
+  for(;;) {
     int x;
     char* p;
     x = ftplib_read_oneline(in, ret);

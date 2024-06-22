@@ -7,7 +7,7 @@ tokenizer_skip_chars(tokenizer* t, const char* chars, int* count) {
   assert(!t->peeking);
   *count = 0;
 
-  while(1) {
+  for(;;) {
     const char* s = chars;
     int match = 0;
 

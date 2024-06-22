@@ -259,7 +259,7 @@ static int
 tokenizer_peek_next_non_ws(tokenizer* t, struct token* tok) {
   int ret;
 
-  while(1) {
+  for(;;) {
     ret = tokenizer_peek_token(t, tok);
 
     if(is_whitespace_token(tok))
@@ -279,7 +279,7 @@ was_visited(const char* name, char* visited[], unsigned rec_level) {
 
   return 0;
 }
- 
+
 static int
 consume_nl_and_ws(tokenizer* t, struct token* tok, int expected) {
   if(!x_tokenizer_next(t, tok)) {
@@ -411,7 +411,7 @@ expr(tokenizer* t, int rbp, int* err) {
 
   left = nud(t, &tok, err);
 
-  while(1) {
+  for(;;) {
     ret = tokenizer_peek_next_non_ws(t, &tok);
 
     if(bp(tok.type) <= rbp)

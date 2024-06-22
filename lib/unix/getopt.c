@@ -50,7 +50,7 @@ static int
 getopt_real(int argc, char* const argv[], const char* optstring, const struct unix_longopt* longopts, int* longindex) {
   if(unix_optbuf == NULL)
     unix_optbuf = buffer_2;
-  while(1) {
+  for(;;) {
     int c;
     const char* optptr = 0;
     if(unix_optind >= argc - postpone_count) {

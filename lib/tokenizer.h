@@ -91,5 +91,40 @@ int tokenizer_skip_chars(tokenizer* t, const char* chars, int* count);
 void tokenizer_skip_until(tokenizer* t, const char* marker);
 int tokenizer_ungetc(tokenizer* t, int c);
 
+static inline void
+tokenizer_from_file(tokenizer* t, buffer* f) {
+  tokenizer_init(t, f, TF_PARSE_STRINGS);
+  tokenizer_set_filename(t, "<macro>");
+  // tokenizer_rewind(t);
+}
+
+static inline int
+token_needs_string(token* tok) {
+  switch(tok->type) {
+    case TT_IDENTIFIER:
+    case TT_WIDECHAR_LIT:
+    case TT_WIDESTRING_LIT:
+    case TT_SQSTRING_LIT:
+    case TT_DQSTRING_LIT:
+    case TT_ELLIPSIS:
+    case TT_HEX_INT_LIT:
+    case TT_OCT_INT_LIT:
+    case TT_DEC_INT_LIT:
+    case TT_FLOAT_LIT:
+    case TT_UNKNOWN: return 1;
+    default: return 0;
+  }
+}
+
+static inline int
+token_is_char(token* tok, int ch) {
+  return tok->type == TT_SEP && tok->value == ch;
+}
+
+static inline int
+token_is_whitespace(token* token) {
+  return token->type == TT_SEP && (token->value == ' ' || token->value == '\t');
+}
+
 #endif /* defined(TOKENIZER_H) */
 /** @} */

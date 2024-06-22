@@ -96,7 +96,7 @@ static inline long
 __CAS(long* ptr, long oldval, long newval) {
   long actual_oldval, fail;
 
-  while(1) {
+  for(;;) {
     actual_oldval = *ptr;
 
     if(__builtin_expect(oldval != actual_oldval, 0))

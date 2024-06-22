@@ -790,7 +790,7 @@ main(int argc, char** argv) {
     buffer io_stdin;
     char spc[BUFFER_INSIZE];
     buffer_init(&io_stdin, (buffer_op)read, 0, spc, sizeof(spc));
-    while(1) {
+    for(;;) {
       int gotlf;
       if(-1 == getln(&io_stdin, &d1, &gotlf, '\n'))
         xbailout(111, errno, "failed to read from stdin", 0, 0, 0);

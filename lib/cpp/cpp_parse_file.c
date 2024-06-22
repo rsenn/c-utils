@@ -51,28 +51,28 @@ cpp_parse_file(cpp* pp, buffer* f, const char* fn, buffer* out) {
   while((ret = tokenizer_next(&t, &tok)) && tok.type != TT_EOF) {
 
     if((newline = tok.column == 0))
-      if(!(ret = eat_whitespace(&t, &tok, &ws_count)))
+      if(!(ret = cpp_parse_whitespace(&t, &tok, &ws_count)))
         return ret;
 
     if(tok.type == TT_EOF)
       break;
 
-    if(skip_conditional_block && !(newline && is_char(&tok, '#')))
+    if(skip_conditional_block && !(newline && token_is_char(&tok, '#')))
       continue;
 
-    if(is_char(&tok, '#')) {
+    if(token_is_char(&tok, '#')) {
       int index;
 
       if(!newline) {
-        error("stray #", &t, &tok);
+        cpp_msg_error("stray #", &t, &tok);
         return 0;
       }
 
-      if((index = expect(&t, TT_IDENTIFIER, directives, &tok)) == -1) {
+      if((index = cpp_parse_expect(&t, TT_IDENTIFIER, directives, &tok)) == -1) {
         if(skip_conditional_block)
           continue;
 
-        error("invalid preprocessing directive", &t, &tok);
+        cpp_msg_error("invalid preprocessing directive", &t, &tok);
         return 0;
       }
 
@@ -97,14 +97,14 @@ cpp_parse_file(cpp* pp, buffer* f, const char* fn, buffer* out) {
         }
 
         case 1: {
-          if(!(ret = emit_error_or_warning(&t, 1)))
+          if(!(ret = cpp_parse_error(&t, 1)))
             return ret;
 
           break;
         }
 
         case 2: {
-          if(!(ret = emit_error_or_warning(&t, 0)))
+          if(!(ret = cpp_parse_error(&t, 0)))
             return ret;
 
           break;
@@ -116,11 +116,11 @@ cpp_parse_file(cpp* pp, buffer* f, const char* fn, buffer* out) {
           break;
         }
         case 4: {
-          if(!skip_next_and_ws(&t, &tok))
+          if(!cpp_parse_skip(&t, &tok))
             return 0;
 
           if(tok.type != TT_IDENTIFIER) {
-            error("expected identifier", &t, &tok);
+            cpp_msg_error("expected identifier", &t, &tok);
             return 0;
           }
 
@@ -134,7 +134,7 @@ cpp_parse_file(cpp* pp, buffer* f, const char* fn, buffer* out) {
             if(!cpp_evaluate_condition(pp, &t, &ret, visited))
               return 0;
 
-            free_visited(visited);
+            cpp_free_visited(visited);
             set_level(if_level + 1, ret);
           } else {
             set_level(if_level + 1, 0);
@@ -149,7 +149,7 @@ cpp_parse_file(cpp* pp, buffer* f, const char* fn, buffer* out) {
             if(!cpp_evaluate_condition(pp, &t, &ret, visited))
               return 0;
 
-            free_visited(visited);
+            cpp_free_visited(visited);
 
             if(ret) {
               if_level_active = if_level;
@@ -175,7 +175,7 @@ cpp_parse_file(cpp* pp, buffer* f, const char* fn, buffer* out) {
         }
         case 8:   // ifdef
         case 9: { // ifndef
-          if(!skip_next_and_ws(&t, &tok) || tok.type == TT_EOF)
+          if(!cpp_parse_skip(&t, &tok) || tok.type == TT_EOF)
             return 0;
 
           ret = !!cpp_macro_get(pp, t.buf);
@@ -192,7 +192,7 @@ cpp_parse_file(cpp* pp, buffer* f, const char* fn, buffer* out) {
         }
         case 11: { // line
           if(!(ret = tokenizer_read_until(&t, "\n", 1))) {
-            error("unknown", &t, &tok);
+            cpp_msg_error("unknown", &t, &tok);
             return 0;
           }
 
@@ -202,8 +202,8 @@ cpp_parse_file(cpp* pp, buffer* f, const char* fn, buffer* out) {
           buffer_puts(out, "#pragma");
 
           while((ret = x_tokenizer_next(&t, &tok)) && tok.type != TT_EOF) {
-            emit_token(out, &tok, t.buf);
-            if(is_char(&tok, '\n'))
+            cpp_emit_token(out, &tok, t.buf);
+            if(token_is_char(&tok, '\n'))
               break;
           }
 
@@ -253,14 +253,14 @@ cpp_parse_file(cpp* pp, buffer* f, const char* fn, buffer* out) {
       if(!cpp_macro_expand(pp, &t, out, t.buf, 0, visited))
         return 0;
 
-      free_visited(visited);
+      cpp_free_visited(visited);
     } else {
-      emit_token(out, &tok, t.buf);
+      cpp_emit_token(out, &tok, t.buf);
     }
   }
 
   if(if_level) {
-    error("unterminated #if", &t, &tok);
+    cpp_msg_error("unterminated #if", &t, &tok);
     return 0;
   }
 

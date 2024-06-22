@@ -2,16 +2,16 @@
 
 int
 cpp_tchain_parens_follows(cpp* pp, int rec_level) {
-  int i, c = 0;
+  for(int i = rec_level; i >= 0; --i) {
+    int c;
 
-  for(i = rec_level; i >= 0; --i) {
-    c = tokenizer_peek(pp->tchain[i]);
-    if(c == TOKENIZER_EOF)
+    if((c = tokenizer_peek(pp->tchain[i])) == TOKENIZER_EOF)
       continue;
+
     if(c == '(')
       return i;
-    else
-      break;
+
+    break;
   }
 
   return -1;

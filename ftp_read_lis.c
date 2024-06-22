@@ -21,7 +21,7 @@ ftp_read_list(int fd, stralloc* dir) {
 
   buffer_init(&io, (buffer_op)TIMEOUTREADFN(o_timeout), fd, buf, BUFFER_INSIZE);
   dir->len = 0;
-  while(1) {
+  for(;;) {
     int gotlf;
     if(-1 == getln(&io, &direntry, &gotlf, '\n')) {
       int e;

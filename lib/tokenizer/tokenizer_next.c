@@ -13,7 +13,7 @@ tokenizer_next(tokenizer* t, token* out) {
     return 1;
   }
 
-  while(1) {
+  for(;;) {
     c = tokenizer_getc(t);
     if(c == TOKENIZER_EOF)
       break;

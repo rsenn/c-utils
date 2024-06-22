@@ -50,7 +50,7 @@ glob(const char* pattern, int flags, int (*errfunc)(const char* epath, int eerrn
   pglob->gl_pathv = malloc(sizeof(char*));
   pglob->gl_pathv[0] = strdup(found_file.cFileName);
   pglob->gl_pathc++;
-  while(1) {
+  for(;;) {
     if(!FindNextFile(searchhndl, &found_file)) {
       if(GetLastError() == ERROR_NO_MORE_FILES) {
         // printf("glob(): no more files found\n");

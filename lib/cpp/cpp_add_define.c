@@ -15,6 +15,6 @@ cpp_add_define(cpp* pp, const char* mdecl) {
   tokenizer_from_file(&tmp.t, tmp.f);
   ret = cpp_macro_parse(pp, &tmp.t);
 
-  free_file_container(&tmp);
+  cpp_free_file_container(&tmp);
   return ret;
 }

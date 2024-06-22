@@ -32,7 +32,7 @@ do_eval(tokenizer* t, int* result) {
   tokenizer_register_custom_token(t, TT_RPAREN, ")");
   tokenizer_register_custom_token(t, TT_LNOT, "!");
 
-  *result = expr(t, 0, &err);
+  *result = cpp_parse_expr(t, 0, &err);
 #ifdef DEBUG_CPP
   buffer_puts(buffer_2, "eval result: ");
   buffer_putlong(buffer_2, *result);
@@ -56,14 +56,14 @@ cpp_evaluate_condition(cpp* pp, tokenizer* t, int* result, char* visited[]) {
   if(!(ret = tokenizer_next(t, &tok)))
     return ret;
 
-  if(!is_whitespace_token(&tok)) {
-    cpp_error("expected whitespace after if/elif", t, &tok);
+  if(!token_is_whitespace(&tok)) {
+    cpp_msg_error("expected whitespace after if/elif", t, &tok);
     return 0;
   }
 
   mst = memstream_open(&x, &n);
 
-  while(1) {
+  for(;;) {
     if(!(ret = tokenizer_next(t, &tok)))
       return ret;
 
@@ -79,18 +79,18 @@ cpp_evaluate_condition(cpp* pp, tokenizer* t, int* result, char* visited[]) {
           if(!backslash_seen)
             break;
         } else {
-          emit_token(mst, &tok, t->buf);
+          cpp_emit_token(mst, &tok, t->buf);
         }
 
         backslash_seen = 0;
       }
     } else {
-      emit_token(mst, &tok, t->buf);
+      cpp_emit_token(mst, &tok, t->buf);
     }
   }
 
   if(!(mst = memstream_reopen(mst, &x, &n)) /* || n == 0*/) {
-    cpp_error("#(el)if with no expression", t, &tok);
+    cpp_msg_error("#(el)if with no expression", t, &tok);
     return 0;
   }
 
