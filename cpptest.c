@@ -32,13 +32,21 @@ main(int argc, char** argv) {
 
   while((c = unix_getopt(argc, argv, "D:I:")) != -1) {
     switch(c) {
-      case 'I': cpp_add_includedir(pp, unix_optarg); break;
-      case 'D':
+      case 'I': {
+        cpp_add_includedir(pp, unix_optarg);
+        break;
+      }
+
+      case 'D': {
         if(*(tmp = unix_optarg + str_chr(unix_optarg, '=')) == '=')
           *tmp = ' ';
         cpp_add_define(pp, unix_optarg);
         break;
-      default: return usage(argv[0]);
+      }
+
+      default: {
+        return usage(argv[0]);
+      }
     }
   }
 

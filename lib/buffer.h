@@ -28,7 +28,7 @@ typedef struct buffer {
                           chaini(ng */
   void (*deinit)();    /* called to munmap/free cleanup,  with a pointer to the
                           buffer as argument */
-  fd_type fd;             /* passed as first argument to op */
+  fd_type fd;          /* passed as first argument to op */
 } buffer;
 
 #define BUFFER_INIT(op, fd, buf, len) \

@@ -483,7 +483,7 @@ typedef struct {
 
 typedef struct {
   char* module_name;            /* 0x00 (PSTR) */
-  fd_type h_file;                  /* 0x08 (HANDLE) */
+  fd_type h_file;               /* 0x08 (HANDLE) */
   char* base;                   /* 0x10 (PUCHAR) */
   pe64_nt_headers* file_header; /* 0x18 (PIMAGE_NT_HEADERS64) */
   uint64 last_rva_section;      /* 0x20 (pe_section_header) */
