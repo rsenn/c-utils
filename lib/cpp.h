@@ -35,7 +35,7 @@ typedef struct cpp_s cpp;
 
 int cpp_add_define(cpp*, const char* mdecl);
 void cpp_add_includedir(cpp*, const char* includedir);
-void cpp_dump(cpp*);
+void cpp_dump(cpp*, buffer*);
 void cpp_error_or_warning(const char*, const char* type, tokenizer* t, token* curr);
 int cpp_evaluate_condition(cpp*, tokenizer* t, int* result, char* visited[]);
 void cpp_free(cpp*);
