@@ -104,12 +104,11 @@ uint64 uint64_read(const char* in);
 #endif /* _WIN32 && _MSC_VER */
 
 #if defined(_WIN32) && defined(_MSC_VER)
-// for older MSVC: "unsigned __int64 -> double" conversion not implemented
-// (why?-)
-__inline double
+/* for older MSVC: "unsigned __int64 -> double" conversion not implemented (why?-) */
+/*__inline double
 uint64_to_double(uint64 ull) {
   return ((int64)ull >= 0 ? (double)(int64)ull : ((double)(int64)(ull - 9223372036854775808UI64)) + 9223372036854775808.0);
-}
+}*/
 #else
 #define uint64_to_double(ull) ((double)(ull))
 #endif /* _WIN32 && _MSC_VER && TSCI2_OS_WIN32 */

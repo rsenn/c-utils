@@ -3,7 +3,7 @@
 int
 cpp_stringify(cpp_t* ccp, tokenizer* t, buffer* output) {
   int ret = 1;
-  struct token_s tok;
+  token tok;
   buffer_puts(output, "\"");
   while(1) {
     ret = tokenizer_next(t, &tok);

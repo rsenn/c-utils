@@ -222,7 +222,7 @@ is_sep(int c) {
 }
 
 static inline int
-apply_coords(tokenizer* t, struct token_s* out, char* end, int retval) {
+apply_coords(tokenizer* t, token* out, char* end, int retval) {
   size_t len = end - t->buf;
   out->line = t->line;
   out->column = t->column - len;
@@ -241,7 +241,7 @@ assign_bufchar(tokenizer* t, char* s, int c) {
 }
 
 static inline int
-get_string(tokenizer* t, char quote_char, struct token_s* out, int wide) {
+get_string(tokenizer* t, char quote_char, token* out, int wide) {
   char* s = t->buf + 1;
   int escaped = 0;
   char* end = t->buf + t->bufsize - 2;

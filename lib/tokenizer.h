@@ -46,7 +46,7 @@ enum tokentype {
 
 const char* tokentype_to_str(enum tokentype tt);
 
-typedef struct token_s {
+typedef struct {
   enum tokentype type;
   uint32 line;
   uint32 column;
@@ -58,7 +58,7 @@ enum tokenizer_flags {
   TF_PARSE_WIDE_STRINGS = 1 << 1,
 };
 
-typedef struct tokenizer_s {
+typedef struct {
   buffer* input;
   uint32 line;
   uint32 column;
@@ -78,9 +78,9 @@ int64 tokenizer_ftello(tokenizer* t);
 int tokenizer_getc(tokenizer* t);
 int tokenizer_get_flags(tokenizer* t);
 void tokenizer_init(tokenizer* t, buffer* in, int flags);
-int tokenizer_next(tokenizer* t, struct token_s* out);
+int tokenizer_next(tokenizer* t, token* out);
 int tokenizer_peek(tokenizer* t);
-int tokenizer_peek_token(tokenizer* t, struct token_s* tok);
+int tokenizer_peek_token(tokenizer* t, token* tok);
 int tokenizer_read_until(tokenizer* t, const char* marker, int stop_at_nl);
 void tokenizer_register_custom_token(tokenizer* t, int tokentype, const char* str);
 void tokenizer_register_marker(tokenizer* t, enum markertype mt, const char* marker);

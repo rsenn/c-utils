@@ -4,10 +4,13 @@
 
 char*
 str_ndup(const char* s, size_t n) {
-  char* r = malloc(n + 1);
-  if(r == NULL)
-    return NULL;
+  char* r;
+
+  if(!(r = malloc(n + 1)))
+    return r;
+
   byte_copy(r, n, s);
   r[n] = '\0';
+
   return r;
 }

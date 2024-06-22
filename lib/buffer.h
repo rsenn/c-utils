@@ -39,8 +39,8 @@ typedef struct buffer {
 #define BUFFER_INSIZE 65535
 #define BUFFER_OUTSIZE 32768
 
-void buffer_init(buffer*, buffer_op_sys*, fd_t fd, char* y, size_t ylen);
-void buffer_init_free(buffer*, buffer_op_sys*, fd_t fd, char* y, size_t ylen);
+void buffer_init(buffer*, buffer_op_proto*, fd_t fd, char* y, size_t ylen);
+void buffer_init_free(buffer*, buffer_op_proto*, fd_t fd, char* y, size_t ylen);
 void buffer_free(void* buf);
 void buffer_munmap(void* buf);
 int buffer_mmapread(buffer*, const char* filename);

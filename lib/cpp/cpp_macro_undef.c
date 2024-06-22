@@ -1,9 +1,9 @@
 #include "../cpp_internal.h"
 
 int
-cpp_undef_macro(cpp_t* cpp, const char* name) {
+cpp_macro_undef(cpp_t* cpp, const char* name) {
   MAP_PAIR_T k;
-  struct macro_s* m;
+  cpp_macro* m;
 
   if(!MAP_SEARCH(cpp->macros, name, str_len(name) + 1, &k))
     return 0;
@@ -11,7 +11,8 @@ cpp_undef_macro(cpp_t* cpp, const char* name) {
   m = MAP_VALUE(k);
   /*  alloc_free(hbmap_getkey(cpp->macros, k));*/
 
-  buffer_free(&m->str_contents);
+  /*buffer_free(&m->str_contents);
+  m->str_contents_buf=0;*/
   alloc_free(m->str_contents_buf);
 
   LIST_DESTROY(m->argnames);

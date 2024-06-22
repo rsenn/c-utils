@@ -7,6 +7,8 @@
 #include <windows.h>
 #include <shlwapi.h>
 #define lstat stat
+#else
+#include <unistd.h>
 #endif
 
 #if !defined(__LCC__) || defined(_WIN64)

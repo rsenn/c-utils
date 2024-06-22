@@ -16,6 +16,6 @@ buffer_copybuf(buffer* b, const char* x, size_t l) {
   b->op = &buffer_dummyreadbuf;
   b->deinit = &buffer_free;
 
-  byte_copy(b->x, l,x);
+  byte_copy(b->x, l, x);
   return 0;
 }
