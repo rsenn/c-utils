@@ -13,10 +13,11 @@ cpp_new(void) {
 
   MAP_NEW(ret->macros);
 
-  cpp_macro_add(ret, str_dup("defined"), &m);
+  cpp_macro_add(ret, "defined", &m);
+
   m.num_args = MACRO_FLAG_OBJECTLIKE;
-  cpp_macro_add(ret, str_dup("__FILE__"), &m);
-  cpp_macro_add(ret, str_dup("__LINE__"), &m);
+  cpp_macro_add(ret, "__FILE__", &m);
+  cpp_macro_add(ret, "__LINE__", &m);
 
   return ret;
 }

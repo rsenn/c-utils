@@ -31,7 +31,7 @@ cpp_macro_expand(cpp_t* cpp, tokenizer* t, buffer* out, const char* name, unsign
 #ifdef DEBUG_CPP
   buffer_puts(buffer_2, "lvl ");
   buffer_putulong(buffer_2, rec_level);
-  buffer_putm_internal(buffer_2, ": expanding macro ", name, " (", m->str_contents_buf, ")", NULL);
+  buffer_putm_internal(buffer_2, ": expanding macro ", name, m->str_contents_buf ? " (" : 0, m->str_contents_buf, ")", NULL);
   buffer_putnlflush(buffer_2);
 #endif
 
@@ -154,15 +154,16 @@ cpp_macro_expand(cpp_t* cpp, tokenizer* t, buffer* out, const char* name, unsign
       tokenizer_from_file(&argvalues[i].t, argvalues[i].f);
 
 #ifdef DEBUG_CPP
-      buffer_puts(buffer_2, "macro argument ");
+      buffer_putm_internal(buffer_2, "macro argument ", 0);
       buffer_putlong(buffer_2, (long)i);
-      buffer_putm_internal(buffer_2, ": ", argvalues[i].buf, NULL);
+      buffer_puts(buffer_2, ": ");
+      buffer_put(buffer_2, argvalues[i].buf, argvalues[i].len);
       buffer_putnlflush(buffer_2);
 #endif
     }
 
     if(is_define) {
-      if(cpp_macro_get(cpp, argvalues[0].buf))
+      if(MAP_GET(cpp->macros, argvalues[0].buf, argvalues[0].len + 1))
         buffer_puts(out, "1");
       else
         buffer_puts(out, "0");

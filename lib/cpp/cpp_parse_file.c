@@ -225,7 +225,7 @@ cpp_parse_file(cpp_t* cpp, buffer* f, const char* fn, buffer* out) {
       }
     }
 
-#if DEBUG_CPP
+#if DEBUG_CPP_TOKEN
     buffer_putm_internal(buffer_2, "token (", fn ? fn : "stdin", ":", NULL);
     buffer_putulong(buffer_2, tok.line);
     buffer_putc(buffer_2, ':');

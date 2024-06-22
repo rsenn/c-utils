@@ -62,6 +62,7 @@ hashmap_insert(MAP_T* map, void* key, size_t klen, void* data, size_t dlen) {
 
   hashmap_put(map, k, v + sizeof(size_t));
 }
+
 #define MAP_DUMP(map, buf)
 
 #define HASH_TYPE uint64
