@@ -42,10 +42,11 @@ extern "C" {
 
 #if !defined(__LCC__)
 #if defined(__BORLANDC__)
-#if __BORLANDC__ >= 0x570
+/*#if __BORLANDC__ >= 0x570
+typedef int ssize_t;
 #else
 typedef long ssize_t;
-#endif
+#endif*/
 
 #elif defined(_MSC_VER)
 #include <intsafe.h>

@@ -10,6 +10,7 @@ path_append(const char* x, size_t len, stralloc* out) {
       len -= 2;
     }*/
   stralloc_catb(out, x, len);
+  stralloc_nul(out);
 }
 
 void
@@ -21,4 +22,5 @@ path_appends(const char* s, stralloc* out) {
      s += 2;*/
 
   stralloc_cats(out, s);
+  stralloc_nul(out);
 }

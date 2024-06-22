@@ -4,6 +4,7 @@
 #include "../str.h"
 #include "../stralloc.h"
 #include <assert.h>
+#include <string.h>
 
 #if USE_WIDECHAR
 #include "../utf8.h"

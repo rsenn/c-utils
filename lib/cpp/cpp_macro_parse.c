@@ -2,7 +2,7 @@
 #include "../memstream.h"
 
 static int
-consume_nl_and_ws(tokenizer* t, struct token_s* tok, int expected) {
+consume_nl_and_ws(tokenizer* t, token* tok, int expected) {
   if(!x_tokenizer_next(t, tok)) {
   err:
     error("unexpected", t, tok);
@@ -30,10 +30,10 @@ consume_nl_and_ws(tokenizer* t, struct token_s* tok, int expected) {
 }
 
 int
-cpp_parse_macro(cpp_t* cpp, tokenizer* t) {
+cpp_macro_parse(cpp_t* cpp, tokenizer* t) {
   const char* macroname;
   int ws_count, ret, redefined = 0;
-  struct token_s curr; // tmp = {.column = t->column, .line = t->line};
+  token curr; // tmp = {.column = t->column, .line = t->line};
 
   if(!(ret = tokenizer_skip_chars(t, " \t", &ws_count)))
     return ret;
@@ -56,7 +56,7 @@ cpp_parse_macro(cpp_t* cpp, tokenizer* t) {
   buffer_putnlflush(buffer_2);
 #endif
 
-  if(cpp_get_macro(cpp, macroname)) {
+  if(cpp_macro_get(cpp, macroname)) {
     if(!str_diff(macroname, "defined")) {
       error("\"defined\" cannot be used as a macro name", t, &curr);
       return 0;
@@ -65,7 +65,7 @@ cpp_parse_macro(cpp_t* cpp, tokenizer* t) {
   }
 
   {
-    struct macro_s new = {0};
+    cpp_macro new = {0};
     unsigned macro_flags = MACRO_FLAG_OBJECTLIKE;
 
     LIST_NEW(new.argnames);
@@ -142,7 +142,7 @@ cpp_parse_macro(cpp_t* cpp, tokenizer* t) {
 
     {
       int backslash_seen = 0;
-      struct FILE_container_s contents = {0, 0, 0};
+      cpp_file contents = {0, 0, 0};
 
       contents.f = memstream_open(&contents.buf, &contents.len);
 
@@ -170,14 +170,19 @@ cpp_parse_macro(cpp_t* cpp, tokenizer* t) {
           emit_token(contents.f, &curr, t->buf);
         }
       }
-      buffer_copybuf(&new.str_contents, contents.buf, contents.len);
 
-      new.str_contents_buf = str_ndup(contents.buf, contents.len);
+      buffer_putc(contents.f, '\0');
+
+      if(contents.buf) {
+        buffer_copybuf(&new.str_contents, contents.buf, contents.len);
+
+        new.str_contents_buf = new.str_contents.x;
+      }
     }
 
   done:
     if(redefined) {
-      struct macro_s* old = cpp_get_macro(cpp, macroname);
+      cpp_macro* old = cpp_macro_get(cpp, macroname);
       char* s_old = old->str_contents_buf ? old->str_contents_buf : "";
       char* s_new = new.str_contents_buf ? new.str_contents_buf : "";
 
@@ -193,7 +198,7 @@ cpp_parse_macro(cpp_t* cpp, tokenizer* t) {
     }
 
     new.num_args |= macro_flags;
-    cpp_add_macro(cpp, macroname, &new);
+    cpp_macro_add(cpp, macroname, &new);
   }
 
   return 1;

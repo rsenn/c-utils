@@ -11,6 +11,7 @@ static ssize_t
 b0read(fd_t fd, char* buf, size_t len) {
   if(buffer_flush(buffer_1) < 0)
     return -1;
+
   return read(fd, buf, len);
 }
 

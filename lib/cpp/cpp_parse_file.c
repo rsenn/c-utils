@@ -3,7 +3,7 @@
 int
 cpp_parse_file(cpp_t* cpp, buffer* f, const char* fn, buffer* out) {
   tokenizer t;
-  struct token_s curr;
+  token tok;
   int ret, newline = 1, ws_count = 0, if_level = 0, if_level_active = 0, if_level_satisfied = 0;
   static const char* directives[] = {
       "include",
@@ -48,29 +48,34 @@ cpp_parse_file(cpp_t* cpp, buffer* f, const char* fn, buffer* out) {
   } while(0)
 #define skip_conditional_block (if_level > if_level_active)
 
-  while((ret = tokenizer_next(&t, &curr)) && curr.type != TT_EOF) {
-    newline = curr.column == 0;
-    if(newline) {
-      ret = eat_whitespace(&t, &curr, &ws_count);
-      if(!ret)
+  while((ret = tokenizer_next(&t, &tok)) && tok.type != TT_EOF) {
+
+    if((newline = tok.column == 0))
+      if(!(ret = eat_whitespace(&t, &tok, &ws_count)))
         return ret;
-    }
-    if(curr.type == TT_EOF)
+
+    if(tok.type == TT_EOF)
       break;
-    if(skip_conditional_block && !(newline && is_char(&curr, '#')))
+
+    if(skip_conditional_block && !(newline && is_char(&tok, '#')))
       continue;
-    if(is_char(&curr, '#')) {
+
+    if(is_char(&tok, '#')) {
       int index;
+
       if(!newline) {
-        error("stray #", &t, &curr);
+        error("stray #", &t, &tok);
         return 0;
       }
-      if((index = expect(&t, TT_IDENTIFIER, directives, &curr)) == -1) {
+
+      if((index = expect(&t, TT_IDENTIFIER, directives, &tok)) == -1) {
         if(skip_conditional_block)
           continue;
-        error("invalid preprocessing directive", &t, &curr);
+
+        error("invalid preprocessing directive", &t, &tok);
         return 0;
       }
+
       if(skip_conditional_block)
         switch(index) {
           case 0:
@@ -82,53 +87,70 @@ cpp_parse_file(cpp_t* cpp, buffer* f, const char* fn, buffer* out) {
           case 12: continue;
           default: break;
         }
+
       switch(index) {
-        case 0:
-          ret = cpp_include_file(cpp, &t, out);
-          if(!ret)
+        case 0: {
+          if(!(ret = cpp_include_file(cpp, &t, out)))
             return ret;
+
           break;
-        case 1:
-          ret = emit_error_or_warning(&t, 1);
-          if(!ret)
+        }
+
+        case 1: {
+          if(!(ret = emit_error_or_warning(&t, 1)))
             return ret;
+
           break;
-        case 2:
-          ret = emit_error_or_warning(&t, 0);
-          if(!ret)
+        }
+
+        case 2: {
+          if(!(ret = emit_error_or_warning(&t, 0)))
             return ret;
+
           break;
-        case 3:
-          ret = cpp_parse_macro(cpp, &t);
-          if(!ret)
+        }
+        case 3: {
+          if(!(ret = cpp_macro_parse(cpp, &t)))
             return ret;
+
           break;
-        case 4:
-          if(!skip_next_and_ws(&t, &curr))
+        }
+        case 4: {
+          if(!skip_next_and_ws(&t, &tok))
             return 0;
-          if(curr.type != TT_IDENTIFIER) {
-            error("expected identifier", &t, &curr);
+
+          if(tok.type != TT_IDENTIFIER) {
+            error("expected identifier", &t, &tok);
             return 0;
           }
-          cpp_undef_macro(cpp, t.buf);
+
+          cpp_macro_undef(cpp, t.buf);
           break;
-        case 5: // if
+        }
+        case 5: { // if
           if(all_levels_active()) {
             char* visited[MAX_RECURSION] = {0};
+
             if(!cpp_evaluate_condition(cpp, &t, &ret, visited))
               return 0;
+
             free_visited(visited);
             set_level(if_level + 1, ret);
           } else {
             set_level(if_level + 1, 0);
           }
+
           break;
-        case 6: // elif
+        }
+        case 6: { // elif
           if(prev_level_active() && if_level_satisfied < if_level) {
             char* visited[MAX_RECURSION] = {0};
+
             if(!cpp_evaluate_condition(cpp, &t, &ret, visited))
               return 0;
+
             free_visited(visited);
+
             if(ret) {
               if_level_active = if_level;
               if_level_satisfied = if_level;
@@ -136,8 +158,10 @@ cpp_parse_file(cpp_t* cpp, buffer* f, const char* fn, buffer* out) {
           } else if(if_level_active == if_level) {
             --if_level_active;
           }
+
           break;
-        case 7: // else
+        }
+        case 7: { // else
           if(prev_level_active() && if_level_satisfied < if_level) {
             if(1) {
               if_level_active = if_level;
@@ -146,43 +170,53 @@ cpp_parse_file(cpp_t* cpp, buffer* f, const char* fn, buffer* out) {
           } else if(if_level_active == if_level) {
             --if_level_active;
           }
+
           break;
-        case 8: // ifdef
-        case 9: // ifndef
-          if(!skip_next_and_ws(&t, &curr) || curr.type == TT_EOF)
+        }
+        case 8:   // ifdef
+        case 9: { // ifndef
+          if(!skip_next_and_ws(&t, &tok) || tok.type == TT_EOF)
             return 0;
-          ret = !!cpp_get_macro(cpp, t.buf);
+
+          ret = !!cpp_macro_get(cpp, t.buf);
+
           if(index == 9)
             ret = !ret;
 
-          if(all_levels_active()) {
-            set_level(if_level + 1, ret);
-          } else {
-            set_level(if_level + 1, 0);
-          }
+          set_level(if_level + 1, all_levels_active() ? ret : 0);
           break;
-        case 10: // endif
+        }
+        case 10: { // endif
           set_level(if_level - 1, -1);
           break;
-        case 11: // line
-          ret = tokenizer_read_until(&t, "\n", 1);
-          if(!ret) {
-            error("unknown", &t, &curr);
+        }
+        case 11: { // line
+          if(!(ret = tokenizer_read_until(&t, "\n", 1))) {
+            error("unknown", &t, &tok);
             return 0;
           }
+
           break;
-        case 12: // pragma
+        }
+        case 12: { // pragma
           buffer_puts(out, "#pragma");
-          while((ret = x_tokenizer_next(&t, &curr)) && curr.type != TT_EOF) {
-            emit_token(out, &curr, t.buf);
-            if(is_char(&curr, '\n'))
+
+          while((ret = x_tokenizer_next(&t, &tok)) && tok.type != TT_EOF) {
+            emit_token(out, &tok, t.buf);
+            if(is_char(&tok, '\n'))
               break;
           }
+
           if(!ret)
             return ret;
+
           break;
-        default: break;
+        }
+        default: {
+          break;
+        }
       }
+
       continue;
     } else {
       while(ws_count) {
@@ -190,36 +224,45 @@ cpp_parse_file(cpp_t* cpp, buffer* f, const char* fn, buffer* out) {
         --ws_count;
       }
     }
+
 #if DEBUG_CPP
-    buffer_putm_internal(buffer_2, "(", fn ? fn : "stdin", ":", NULL);
-    buffer_putulong(buffer_2, curr.line);
-    buffer_putc(buffer_2, ',');
-    buffer_putulong(buffer_2, curr.column);
+    buffer_putm_internal(buffer_2, "token (", fn ? fn : "stdin", ":", NULL);
+    buffer_putulong(buffer_2, tok.line);
+    buffer_putc(buffer_2, ':');
+    buffer_putulong(buffer_2, tok.column);
     buffer_puts(buffer_2, ") ");
-    if(curr.type == TT_SEP) {
-      unsigned char sep = curr.value == '\n' ? ' ' : curr.value;
+
+    if(tok.type == TT_SEP) {
+      unsigned char sep = tok.value == '\n' ? ' ' : tok.value;
+
       buffer_puts(buffer_2, "separator: '");
       buffer_putc(buffer_2, sep);
       buffer_puts(buffer_2, "' 0x");
       buffer_putxlong(buffer_2, sep);
 
     } else {
-      buffer_putm_internal(buffer_2, tokentype_to_str(curr.type), ": ", t.buf, NULL);
+      buffer_putm_internal(buffer_2, tokentype_to_str(tok.type), ": ", t.buf, NULL);
     }
+
     buffer_putnlflush(buffer_2);
 #endif
-    if(curr.type == TT_IDENTIFIER) {
+
+    if(tok.type == TT_IDENTIFIER) {
       char* visited[MAX_RECURSION] = {0};
-      if(!cpp_expand_macro(cpp, &t, out, t.buf, 0, visited))
+
+      if(!cpp_macro_expand(cpp, &t, out, t.buf, 0, visited))
         return 0;
+
       free_visited(visited);
     } else {
-      emit_token(out, &curr, t.buf);
+      emit_token(out, &tok, t.buf);
     }
   }
+
   if(if_level) {
-    error("unterminated #if", &t, &curr);
+    error("unterminated #if", &t, &tok);
     return 0;
   }
+
   return 1;
 }

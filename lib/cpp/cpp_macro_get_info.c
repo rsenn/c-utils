@@ -1,11 +1,11 @@
 #include "../cpp_internal.h"
 
 unsigned
-cpp_get_macro_info(cpp_t* cpp, tokenizer* t, struct macro_info_s* mi_list, size_t* mi_cnt, unsigned nest, unsigned tpos, const char* name, char* visited[], unsigned rec_level) {
+cpp_macro_get_info(cpp_t* cpp, tokenizer* t, cpp_macro_info* mi_list, size_t* mi_cnt, unsigned nest, unsigned tpos, const char* name, char* visited[], unsigned rec_level) {
   int brace_lvl = 0;
   while(1) {
-    struct token_s tok;
-    struct macro_s* m = 0;
+    token tok;
+    cpp_macro* m = 0;
     int ret = tokenizer_next(t, &tok);
     if(!ret || tok.type == TT_EOF)
       break;
@@ -19,12 +19,12 @@ cpp_get_macro_info(cpp_t* cpp, tokenizer* t, struct macro_info_s* mi_list, size_
     buffer_puts(buffer_2, t->buf);
     buffer_putnlflush(buffer_2);
 #endif
-    if(tok.type == TT_IDENTIFIER && (m = cpp_get_macro(cpp, t->buf)) && !was_visited(t->buf, visited, rec_level)) {
+    if(tok.type == TT_IDENTIFIER && (m = cpp_macro_get(cpp, t->buf)) && !was_visited(t->buf, visited, rec_level)) {
       const char* newname = str_dup(t->buf);
       if(FUNCTIONLIKE(m)) {
         if(tokenizer_peek(t) == '(') {
           unsigned tpos_save = tpos;
-          tpos = cpp_get_macro_info(cpp, t, mi_list, mi_cnt, nest + 1, tpos + 1, newname, visited, rec_level);
+          tpos = cpp_macro_get_info(cpp, t, mi_list, mi_cnt, nest + 1, tpos + 1, newname, visited, rec_level);
           mi_list[*mi_cnt].name = newname;
           mi_list[*mi_cnt].nest = nest + 1;
           mi_list[*mi_cnt].first = tpos_save;

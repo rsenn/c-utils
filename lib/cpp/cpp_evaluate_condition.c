@@ -44,60 +44,65 @@ do_eval(tokenizer* t, int* result) {
 int
 cpp_evaluate_condition(cpp_t* cpp, tokenizer* t, int* result, char* visited[]) {
   int ret, backslash_seen = 0;
-  struct token_s curr;
-  char* bufp;
-  size_t size;
-  int tflags = tokenizer_get_flags(t);
+  token tok;
+  char* x = 0;
+  size_t n = 0;
+  int flags = tokenizer_get_flags(t);
   buffer* f;
-  tokenizer_set_flags(t, tflags | TF_PARSE_WIDE_STRINGS);
-  ret = tokenizer_next(t, &curr);
-  if(!ret)
+  tokenizer t2;
+
+  tokenizer_set_flags(t, flags | TF_PARSE_WIDE_STRINGS);
+
+  if(!(ret = tokenizer_next(t, &tok)))
     return ret;
-  if(!is_whitespace_token(&curr)) {
-    error("expected whitespace after if/elif", t, &curr);
+
+  if(!is_whitespace_token(&tok)) {
+    error("expected whitespace after if/elif", t, &tok);
     return 0;
   }
-  f = memstream_open(&bufp, &size);
+
+  f = memstream_open(&x, &n);
+
   while(1) {
-    ret = tokenizer_next(t, &curr);
-    if(!ret)
+    if(!(ret = tokenizer_next(t, &tok)))
       return ret;
-    if(curr.type == TT_IDENTIFIER) {
-      if(!cpp_expand_macro(cpp, t, f, t->buf, -1, visited))
+
+    if(tok.type == TT_IDENTIFIER) {
+      if(!cpp_macro_expand(cpp, t, f, t->buf, -1, visited))
         return 0;
-    } else if(curr.type == TT_SEP) {
-      if(curr.value == '\\')
+
+    } else if(tok.type == TT_SEP) {
+      if(tok.value == '\\')
         backslash_seen = 1;
       else {
-        if(curr.value == '\n') {
+        if(tok.value == '\n') {
           if(!backslash_seen)
             break;
         } else {
-          emit_token(f, &curr, t->buf);
+          emit_token(f, &tok, t->buf);
         }
+
         backslash_seen = 0;
       }
     } else {
-      emit_token(f, &curr, t->buf);
+      emit_token(f, &tok, t->buf);
     }
   }
-  f = buffer_reopen(f, &bufp, &size);
-  if(!f || size == 0) {
-    error("#(el)if with no expression", t, &curr);
+
+  if(!(f = buffer_reopen(f, &x, &n)) /* || n == 0*/) {
+    error("#(el)if with no expression", t, &tok);
     return 0;
   }
+
 #ifdef DEBUG_CPP
-  buffer_putm_internal(buffer_2, "evaluating condition ", bufp, NULL);
+  buffer_putm_internal(buffer_2, "evaluating condition ", x, NULL);
   buffer_putnlflush(buffer_2);
 #endif
-  {
-    tokenizer t2;
 
-    tokenizer_from_file(&t2, f);
-    ret = do_eval(&t2, result);
-    buffer_close(f);
-    alloc_free(bufp);
-    tokenizer_set_flags(t, tflags);
-    return ret;
-  }
+  tokenizer_from_file(&t2, f);
+  ret = do_eval(&t2, result);
+  memstream_free(f);
+  alloc_free(x);
+  tokenizer_set_flags(t, flags);
+  return ret;
 }
