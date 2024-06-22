@@ -20,6 +20,7 @@ tokenizer_skip_chars(tokenizer* t, const char* chars, int* count) {
         match = 1;
         break;
       }
+
       ++s;
     }
 

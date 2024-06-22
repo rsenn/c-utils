@@ -144,7 +144,7 @@ cpp_macro_expand(cpp* pp, tokenizer* t, buffer* out, const char* name, unsigned 
           }
 
           need_arg = 0;
-          cpp_emit_token(argvalues[curr_arg].f, &tok, t->buf);
+          emit_token(argvalues[curr_arg].f, &tok, t->buf);
         }
       }
     }
@@ -202,7 +202,7 @@ cpp_macro_expand(cpp* pp, tokenizer* t, buffer* out, const char* name, unsigned 
           if(MACRO_VARIADIC(m) && !str_diff(t2.buf, "__VA_ARGS__"))
             id = "...";
 
-          arg_nr = macro_arglist_pos(m, id);
+          arg_nr = cpp_macro_arglist_pos(m, id);
 
           if(arg_nr != (size_t)-1) {
             tokenizer_rewind(&argvalues[arg_nr].t);
@@ -219,7 +219,7 @@ cpp_macro_expand(cpp* pp, tokenizer* t, buffer* out, const char* name, unsigned 
                 if(tok.type == TT_EOF)
                   break;
 
-                cpp_emit_token(output, &tok, argvalues[arg_nr].t.buf);
+                emit_token(output, &tok, argvalues[arg_nr].t.buf);
               }
 
             hash_count = 0;
@@ -230,7 +230,7 @@ cpp_macro_expand(cpp* pp, tokenizer* t, buffer* out, const char* name, unsigned 
               return 0;
             }
 
-            cpp_emit_token(output, &tok, t2.buf);
+            emit_token(output, &tok, t2.buf);
           }
 
         } else if(token_is_char(&tok, '#')) {
@@ -273,7 +273,7 @@ cpp_macro_expand(cpp* pp, tokenizer* t, buffer* out, const char* name, unsigned 
             goto hash_err;
 
           cpp_flush_whitespace(output, &ws_count);
-          cpp_emit_token(output, &tok, t2.buf);
+          emit_token(output, &tok, t2.buf);
         }
       }
 
@@ -348,8 +348,8 @@ cpp_macro_expand(cpp* pp, tokenizer* t, buffer* out, const char* name, unsigned 
                 buffer_putnlflush(buffer_2);
 #endif
                 diff = mem_tokenizers_join(&cwae, &t2, &tmp, mi->first, cwae_pos);
-                cpp_free_file_container(&cwae);
-                cpp_free_file_container(&t2);
+                free_file_container(&cwae);
+                free_file_container(&t2);
                 cwae = tmp;
 #ifdef DEBUG_CPP
                 buffer_putm_internal(buffer_2, "result: ", cwae.buf, NULL);
@@ -396,13 +396,13 @@ cpp_macro_expand(cpp* pp, tokenizer* t, buffer* out, const char* name, unsigned 
               return ret;
 
           } else
-            cpp_emit_token(out, &tok, cwae.t.buf);
+            emit_token(out, &tok, cwae.t.buf);
         }
 
         alloc_free(mcs);
       }
 
-      cpp_free_file_container(&cwae);
+      free_file_container(&cwae);
     }
   cleanup:
     for(i = 0; i < num_args; i++) {

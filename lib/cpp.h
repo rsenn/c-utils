@@ -45,10 +45,21 @@ unsigned cpp_macro_get_info(cpp*, tokenizer* t, cpp_macro_info* mi_list, size_t*
 int cpp_macro_parse(cpp*, tokenizer* t);
 int cpp_macro_undef(cpp*, const char* name);
 cpp* cpp_new(void);
-int cpp_parse_file(cpp*, buffer* f, const char* fn, buffer* out);
 int cpp_run(cpp*, buffer* in, buffer* out, const char* inname);
 int cpp_stringify(cpp*, tokenizer* t, buffer* out);
 int cpp_tchain_parens_follows(cpp*, int rec_level);
+
+int cpp_parse_error(tokenizer*, int is_error);
+int cpp_parse_expect(tokenizer*, enum tokentype tt, const char* const values[], token* token);
+int cpp_parse_expr(tokenizer*, int rbp, int* err);
+int cpp_parse_file(cpp*, buffer* f, const char* fn, buffer* out);
+int cpp_parse_binary(tokenizer*, int left, token* tok, int* err);
+int cpp_parse_unary(tokenizer*, token* tok, int* err);
+int cpp_parse_peek(tokenizer*, token* tok);
+int cpp_parse_skip(tokenizer*, token* tok);
+int cpp_parse_whitespace(tokenizer*, token* token, int* count);
+size_t cpp_macro_arglist_pos(cpp_macro*, const char* iden);
+void cpp_error_or_warning(const char*, const char* type, tokenizer* t, token* curr);
 
 #endif
 /** @} */

@@ -1,17 +1,18 @@
 #include "../cpp_internal.h"
 
 int
-cpp_parse_nud(tokenizer* t, token* tok, int* err) {
+cpp_parse_unary(tokenizer* t, token* tok, int* err) {
   int ret;
 
   switch((unsigned)tok->type) {
     case TT_IDENTIFIER: ret = 0; break;
     case TT_WIDECHAR_LIT:
-    case TT_SQSTRING_LIT: return cpp_charlit_to_int(t->buf);
+    case TT_SQSTRING_LIT: return charlit_to_int(t->buf);
     case TT_NEG: return ~cpp_parse_expr(t, cpp_bp(tok->type), err);
     case TT_PLUS: return cpp_parse_expr(t, cpp_bp(tok->type), err);
     case TT_MINUS: return -cpp_parse_expr(t, cpp_bp(tok->type), err);
     case TT_LNOT: return !cpp_parse_expr(t, cpp_bp(tok->type), err);
+
     case TT_LPAREN: {
       int inner = cpp_parse_expr(t, 0, err);
       const char* values[] = {")", 0};

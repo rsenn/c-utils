@@ -33,11 +33,13 @@ do_eval(tokenizer* t, int* result) {
   tokenizer_register_custom_token(t, TT_LNOT, "!");
 
   *result = cpp_parse_expr(t, 0, &err);
+
 #ifdef DEBUG_CPP
   buffer_puts(buffer_2, "eval result: ");
   buffer_putlong(buffer_2, *result);
   buffer_putnlflush(buffer_2);
 #endif
+
   return !err;
 }
 
@@ -79,13 +81,13 @@ cpp_evaluate_condition(cpp* pp, tokenizer* t, int* result, char* visited[]) {
           if(!backslash_seen)
             break;
         } else {
-          cpp_emit_token(mst, &tok, t->buf);
+          emit_token(mst, &tok, t->buf);
         }
 
         backslash_seen = 0;
       }
     } else {
-      cpp_emit_token(mst, &tok, t->buf);
+      emit_token(mst, &tok, t->buf);
     }
   }
 
@@ -103,6 +105,7 @@ cpp_evaluate_condition(cpp* pp, tokenizer* t, int* result, char* visited[]) {
   tokenizer_from_file(&t2, mst);
   ret = do_eval(&t2, result);
   memstream_free(mst);
+
   if(x)
     alloc_free(x);
 

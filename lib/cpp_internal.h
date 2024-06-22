@@ -25,7 +25,7 @@
 
 #define MAX_RECURSION 32
 
-#define x_tokenizer_next(T, TOK) cpp_parse_next_of_x(T, TOK, 1)
+#define x_tokenizer_next(T, TOK) parse_next_of_x(T, TOK, 1)
 
 struct cpp_s {
   LIST_T includedirs;
@@ -36,27 +36,14 @@ struct cpp_s {
 };
 
 static int cpp_bp(int);
-int cpp_parse_led(tokenizer*, int left, token* tok, int* err);
-int cpp_parse_nud(tokenizer*, token* tok, int* err);
-int cpp_parse_expr(tokenizer*, int rbp, int* err);
-int cpp_parse_error(tokenizer*, int is_error);
-int cpp_parse_expect(tokenizer*, enum tokentype tt, const char* const values[], token* token);
-int cpp_parse_whitespace(tokenizer*, token* token, int* count);
-int cpp_parse_skip(tokenizer*, token* tok);
-static int cpp_parse_peek(tokenizer*, token* tok);
-static int cpp_parse_next_of_x(tokenizer*, token* tok, int fail_unk);
-
-static void cpp_msg_error(const char*, tokenizer* t, token* curr);
-static void cpp_msg_warning(const char*, tokenizer* t, token* curr);
-static void cpp_error_or_warning(const char*, const char* type, tokenizer* t, token* curr);
-
-static int cpp_charlit_to_int(const char*);
-static void cpp_free_file_container(cpp_file*);
-static void cpp_free_visited(char* visited[]);
-static int cpp_was_visited(const char*, char* visited[], unsigned rec_level);
+static int parse_next_of_x(tokenizer*, token* tok, int fail_unk);
+static int charlit_to_int(const char*);
+static void free_file_container(cpp_file*);
+static void free_visited(char* visited[]);
+static int was_visited(const char*, char* visited[], unsigned rec_level);
 
 static inline void
-cpp_free_file_container(cpp_file* fc) {
+free_file_container(cpp_file* fc) {
   /*if(fc->f) {
     buffer_close(fc->f);
   }
@@ -68,7 +55,7 @@ cpp_free_file_container(cpp_file* fc) {
 }
 
 static inline void
-cpp_emit_token(buffer* out, token* tok, const char* strbuf) {
+emit_token(buffer* out, token* tok, const char* strbuf) {
   if(tok->type == TT_SEP) {
     buffer_putc(out, tok->value);
   } else if(strbuf && token_needs_string(tok)) {
@@ -80,26 +67,6 @@ cpp_emit_token(buffer* out, token* tok, const char* strbuf) {
     buffer_putm_internal(buffer_2, " (", strbuf, ")", NULL);
     buffer_putnlflush(buffer_2);
   }
-}
-
-static inline void
-cpp_error_or_warning(const char* err, const char* type, tokenizer* t, token* curr) {
-  int i;
-  unsigned column = curr ? curr->column : t->column;
-  unsigned line = curr ? curr->line : t->line;
-
-  buffer_putm_internal(buffer_2, "<", t->filename, "> ", NULL);
-  buffer_putulong(buffer_2, line);
-  buffer_putc(buffer_2, ':');
-  buffer_putulong(buffer_2, column);
-  buffer_putm_internal(buffer_2, " ", type, ": '", err, "'\n", t->buf, "\n", NULL);
-
-  /*  dprintf(2, "<%s> %u:%u %s: '%s'\n", t->filename, line, column, type, err);
-    dprintf(2, "%s\n", t->buf);*/
-  for(i = 0; i < str_len(t->buf); i++)
-    buffer_puts(buffer_2, "^");
-
-  buffer_putnlflush(buffer_2);
 }
 
 static inline void
@@ -121,22 +88,8 @@ cpp_flush_whitespace(buffer* out, int* ws_count) {
   }
 }
 
-static inline size_t
-macro_arglist_pos(cpp_macro* m, const char* iden) {
-  size_t i, len = LIST_SIZE(m->argnames);
-
-  for(i = 0; i < len; i++) {
-    char* item = LIST_GET(m->argnames, i);
-
-    if(!str_diff(item, iden))
-      return i;
-  }
-
-  return (size_t)-1;
-}
-
 static inline int
-cpp_parse_next_of_x(tokenizer* t, token* tok, int fail_unk) {
+parse_next_of_x(tokenizer* t, token* tok, int fail_unk) {
   int ret = tokenizer_next(t, tok);
 
   if(tok->type == TT_OVERFLOW) {
@@ -153,22 +106,6 @@ cpp_parse_next_of_x(tokenizer* t, token* tok, int fail_unk) {
 }
 
 static inline int
-cpp_parse_peek(tokenizer* t, token* tok) {
-  int ret;
-
-  for(;;) {
-    ret = tokenizer_peek_token(t, tok);
-
-    if(!token_is_whitespace(tok))
-      break;
-
-    x_tokenizer_next(t, tok);
-  }
-
-  return ret;
-}
-
-static inline int
 mem_tokenizers_join(cpp_file* org, cpp_file* inj, cpp_file* result, int first, off_t lastpos) {
   size_t i;
   token tok;
@@ -180,14 +117,14 @@ mem_tokenizers_join(cpp_file* org, cpp_file* inj, cpp_file* result, int first, o
   for(i = 0; i < first; ++i) {
     ret = tokenizer_next(&org->t, &tok);
     assert(ret && tok.type != TT_EOF);
-    cpp_emit_token(result->f, &tok, org->t.buf);
+    emit_token(result->f, &tok, org->t.buf);
   }
 
   for(;;) {
     if(!(ret = tokenizer_next(&inj->t, &tok)) || tok.type == TT_EOF)
       break;
 
-    cpp_emit_token(result->f, &tok, inj->t.buf);
+    emit_token(result->f, &tok, inj->t.buf);
     ++cnt;
   }
 
@@ -202,7 +139,7 @@ mem_tokenizers_join(cpp_file* org, cpp_file* inj, cpp_file* result, int first, o
     if(!(ret = tokenizer_next(&org->t, &tok)) || tok.type == TT_EOF)
       break;
 
-    cpp_emit_token(result->f, &tok, org->t.buf);
+    emit_token(result->f, &tok, org->t.buf);
   }
 
   result->f = memstream_reopen(result->f, &result->buf, &result->len);
@@ -255,15 +192,16 @@ cpp_bp(int type) {
 
   return 0;
 }
+
 static inline void
-cpp_free_visited(char* visited[]) {
+free_visited(char* visited[]) {
   for(size_t i = 0; i < MAX_RECURSION; i++)
     if(visited[i])
       alloc_free(visited[i]);
 }
 
 static inline int
-cpp_charlit_to_int(const char* lit) {
+charlit_to_int(const char* lit) {
   unsigned int ret = lit[1];
 
   if(lit[1] == '\\')
@@ -285,7 +223,7 @@ cpp_charlit_to_int(const char* lit) {
 }
 
 static inline int
-cpp_was_visited(const char* name, char* visited[], unsigned rec_level) {
+was_visited(const char* name, char* visited[], unsigned rec_level) {
   int x;
 
   for(x = rec_level; x >= 0; --x)

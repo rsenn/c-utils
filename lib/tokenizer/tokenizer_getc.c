@@ -4,6 +4,7 @@
 int
 tokenizer_getc(tokenizer* t) {
   ssize_t ret;
+
   if(t->chb.buffered) {
     t->chb.buffered--;
     ret = t->chb.buf[(t->chb.cnt) % countof(t->chb.buf)];
@@ -18,6 +19,7 @@ tokenizer_getc(tokenizer* t) {
       if(ret == 0)
         ret = -2;
     }
+
 #ifdef DEBUG_TOKENIZER
     if(ret >= 0) {
       buffer_puts(buffer_2, "tokenizer_getc '");
@@ -31,6 +33,7 @@ tokenizer_getc(tokenizer* t) {
         buffer_puts(buffer_2, "' 0x");
         buffer_putxlong0(buffer_2, ret, 2);
       }
+
       buffer_putnlflush(buffer_2);
     }
 #endif

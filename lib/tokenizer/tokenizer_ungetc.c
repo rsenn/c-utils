@@ -7,5 +7,6 @@ tokenizer_ungetc(tokenizer* t, int c) {
   assert(t->chb.cnt > 0);
   --t->chb.cnt;
   assert(t->chb.buf[t->chb.cnt % countof(t->chb.buf)] == c);
+
   return c;
 }

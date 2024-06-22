@@ -164,11 +164,11 @@ cpp_macro_parse(cpp* cpp, tokenizer* t) {
             if(curr.value == '\n' && !backslash_seen)
               break;
 
-            cpp_emit_token(contents.f, &curr, t->buf);
+            emit_token(contents.f, &curr, t->buf);
             backslash_seen = 0;
           }
         } else {
-          cpp_emit_token(contents.f, &curr, t->buf);
+          emit_token(contents.f, &curr, t->buf);
         }
       }
 

@@ -8,7 +8,7 @@ cpp_parse_expr(tokenizer* t, int rbp, int* err) {
   if(tok.type == TT_EOF)
     return 0;
 
-  left = cpp_parse_nud(t, &tok, err);
+  left = cpp_parse_unary(t, &tok, err);
 
   for(;;) {
     ret = cpp_parse_peek(t, &tok);
@@ -21,7 +21,7 @@ cpp_parse_expr(tokenizer* t, int rbp, int* err) {
     if(tok.type == TT_EOF)
       break;
 
-    left = cpp_parse_led(t, left, &tok, err);
+    left = cpp_parse_binary(t, left, &tok, err);
   }
 
   (void)ret;

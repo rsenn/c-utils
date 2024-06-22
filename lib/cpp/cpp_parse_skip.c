@@ -3,11 +3,10 @@
 /* fetches the next token until it is non-whitespace */
 int
 cpp_parse_skip(tokenizer* t, token* tok) {
-  int ws_count, ret;
+  int ws;
 
-  if(!(ret = tokenizer_next(t, tok)))
-    return ret;
+  if(tokenizer_next(t, tok))
+    return cpp_parse_whitespace(t, tok, &ws);
 
-  ret = cpp_parse_whitespace(t, tok, &ws_count);
-  return ret;
+  return 0;
 }

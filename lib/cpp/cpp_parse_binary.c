@@ -1,7 +1,7 @@
 #include "../cpp_internal.h"
 
 int
-cpp_parse_led(tokenizer* t, int left, token* tok, int* err) {
+cpp_parse_binary(tokenizer* t, int left, token* tok, int* err) {
   int right;
 
   switch((unsigned)tok->type) {
@@ -29,6 +29,7 @@ cpp_parse_led(tokenizer* t, int left, token* tok, int* err) {
     case TT_PLUS: return left + cpp_parse_expr(t, cpp_bp(tok->type), err);
     case TT_MINUS: return left - cpp_parse_expr(t, cpp_bp(tok->type), err);
     case TT_MUL: return left * cpp_parse_expr(t, cpp_bp(tok->type), err);
+
     case TT_DIV:
     case TT_MOD: {
       if((right = cpp_parse_expr(t, cpp_bp(tok->type), err)) == 0) {

@@ -36,7 +36,7 @@ cpp_stringify(cpp* pp, tokenizer* t, buffer* out) {
         ++s;
       }
     } else {
-      cpp_emit_token(out, &tok, t->buf);
+      emit_token(out, &tok, t->buf);
     }
   }
 

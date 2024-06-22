@@ -109,12 +109,14 @@ cpp_parse_file(cpp* pp, buffer* f, const char* fn, buffer* out) {
 
           break;
         }
+
         case 3: {
           if(!(ret = cpp_macro_parse(pp, &t)))
             return ret;
 
           break;
         }
+
         case 4: {
           if(!cpp_parse_skip(&t, &tok))
             return 0;
@@ -127,6 +129,7 @@ cpp_parse_file(cpp* pp, buffer* f, const char* fn, buffer* out) {
           cpp_macro_undef(pp, t.buf);
           break;
         }
+
         case 5: { // if
           if(all_levels_active()) {
             char* visited[MAX_RECURSION] = {0};
@@ -134,7 +137,7 @@ cpp_parse_file(cpp* pp, buffer* f, const char* fn, buffer* out) {
             if(!cpp_evaluate_condition(pp, &t, &ret, visited))
               return 0;
 
-            cpp_free_visited(visited);
+            free_visited(visited);
             set_level(if_level + 1, ret);
           } else {
             set_level(if_level + 1, 0);
@@ -142,6 +145,7 @@ cpp_parse_file(cpp* pp, buffer* f, const char* fn, buffer* out) {
 
           break;
         }
+
         case 6: { // elif
           if(prev_level_active() && if_level_satisfied < if_level) {
             char* visited[MAX_RECURSION] = {0};
@@ -149,7 +153,7 @@ cpp_parse_file(cpp* pp, buffer* f, const char* fn, buffer* out) {
             if(!cpp_evaluate_condition(pp, &t, &ret, visited))
               return 0;
 
-            cpp_free_visited(visited);
+            free_visited(visited);
 
             if(ret) {
               if_level_active = if_level;
@@ -161,6 +165,7 @@ cpp_parse_file(cpp* pp, buffer* f, const char* fn, buffer* out) {
 
           break;
         }
+
         case 7: { // else
           if(prev_level_active() && if_level_satisfied < if_level) {
             if(1) {
@@ -173,6 +178,7 @@ cpp_parse_file(cpp* pp, buffer* f, const char* fn, buffer* out) {
 
           break;
         }
+
         case 8:   // ifdef
         case 9: { // ifndef
           if(!cpp_parse_skip(&t, &tok) || tok.type == TT_EOF)
@@ -186,10 +192,12 @@ cpp_parse_file(cpp* pp, buffer* f, const char* fn, buffer* out) {
           set_level(if_level + 1, all_levels_active() ? ret : 0);
           break;
         }
+
         case 10: { // endif
           set_level(if_level - 1, -1);
           break;
         }
+
         case 11: { // line
           if(!(ret = tokenizer_read_until(&t, "\n", 1))) {
             cpp_msg_error("unknown", &t, &tok);
@@ -198,11 +206,12 @@ cpp_parse_file(cpp* pp, buffer* f, const char* fn, buffer* out) {
 
           break;
         }
+
         case 12: { // pragma
           buffer_puts(out, "#pragma");
 
           while((ret = x_tokenizer_next(&t, &tok)) && tok.type != TT_EOF) {
-            cpp_emit_token(out, &tok, t.buf);
+            emit_token(out, &tok, t.buf);
             if(token_is_char(&tok, '\n'))
               break;
           }
@@ -212,6 +221,7 @@ cpp_parse_file(cpp* pp, buffer* f, const char* fn, buffer* out) {
 
           break;
         }
+
         default: {
           break;
         }
@@ -253,9 +263,9 @@ cpp_parse_file(cpp* pp, buffer* f, const char* fn, buffer* out) {
       if(!cpp_macro_expand(pp, &t, out, t.buf, 0, visited))
         return 0;
 
-      cpp_free_visited(visited);
+      free_visited(visited);
     } else {
-      cpp_emit_token(out, &tok, t.buf);
+      emit_token(out, &tok, t.buf);
     }
   }
 

@@ -23,7 +23,7 @@ cpp_macro_get_info(cpp* pp, tokenizer* t, cpp_macro_info* mi_list, size_t* mi_cn
     buffer_putnlflush(buffer_2);
 #endif
 
-    if(tok.type == TT_IDENTIFIER && (m = cpp_macro_get(pp, t->buf)) && !cpp_was_visited(t->buf, visited, rec_level)) {
+    if(tok.type == TT_IDENTIFIER && (m = cpp_macro_get(pp, t->buf)) && !was_visited(t->buf, visited, rec_level)) {
       const char* newname = str_dup(t->buf);
 
       if(FUNCTIONLIKE(m)) {

@@ -18,5 +18,6 @@ tokentype_to_str(enum tokentype tt) {
     case TT_OVERFLOW: return "overflow";
     case TT_EOF: return "eof";
   }
+
   return "????";
 }
