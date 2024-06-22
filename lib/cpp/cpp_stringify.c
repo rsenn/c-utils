@@ -1,7 +1,7 @@
 #include "../cpp_internal.h"
 
 int
-cpp_stringify(cpp_t* ccp, tokenizer* t, buffer* output) {
+cpp_stringify(cpp* ccp, tokenizer* t, buffer* output) {
   int ret = 1;
   token tok;
   buffer_puts(output, "\"");

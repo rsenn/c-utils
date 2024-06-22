@@ -4,7 +4,7 @@
 #include "../path.h"
 
 int
-cpp_include_file(cpp_t* cpp, tokenizer* t, buffer* out) {
+cpp_include_file(cpp* cpp, tokenizer* t, buffer* out) {
   static const char* const inc_chars[] = {"\"", "<", 0};
   static const char* const inc_chars_end[] = {"\"", ">", 0};
   token tok;

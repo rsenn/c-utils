@@ -2,7 +2,7 @@
 #include "../memstream.h"
 
 int
-cpp_add_define(cpp_t* cpp, const char* mdecl) {
+cpp_add_define(cpp* cpp, const char* mdecl) {
   int ret;
   cpp_file tmp = {0};
   tmp.f = memstream_open(&tmp.buf, &tmp.len);

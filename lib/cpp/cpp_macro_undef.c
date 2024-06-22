@@ -1,7 +1,7 @@
 #include "../cpp_internal.h"
 
 int
-cpp_macro_undef(cpp_t* cpp, const char* name) {
+cpp_macro_undef(cpp* cpp, const char* name) {
   MAP_PAIR_T k;
   cpp_macro* m;
 

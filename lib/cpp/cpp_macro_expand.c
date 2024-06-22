@@ -5,7 +5,7 @@
    cpp_macro_expand from the if-evaluator code, which means activating
    the "define" macro */
 int
-cpp_macro_expand(cpp_t* cpp, tokenizer* t, buffer* out, const char* name, unsigned rec_level, char* visited[]) {
+cpp_macro_expand(cpp* cpp, tokenizer* t, buffer* out, const char* name, unsigned rec_level, char* visited[]) {
   int is_define = !str_diff(name, "defined");
   size_t i;
   cpp_macro* m;

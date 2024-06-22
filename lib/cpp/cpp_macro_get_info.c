@@ -1,7 +1,7 @@
 #include "../cpp_internal.h"
 
 unsigned
-cpp_macro_get_info(cpp_t* cpp, tokenizer* t, cpp_macro_info* mi_list, size_t* mi_cnt, unsigned nest, unsigned tpos, const char* name, char* visited[], unsigned rec_level) {
+cpp_macro_get_info(cpp* cpp, tokenizer* t, cpp_macro_info* mi_list, size_t* mi_cnt, unsigned nest, unsigned tpos, const char* name, char* visited[], unsigned rec_level) {
   int brace_lvl = 0;
   while(1) {
     token tok;

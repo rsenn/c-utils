@@ -42,7 +42,7 @@ do_eval(tokenizer* t, int* result) {
 }
 
 int
-cpp_evaluate_condition(cpp_t* cpp, tokenizer* t, int* result, char* visited[]) {
+cpp_evaluate_condition(cpp* cpp, tokenizer* t, int* result, char* visited[]) {
   int ret, backslash_seen = 0;
   token tok;
   char* x = 0;

@@ -30,7 +30,7 @@ consume_nl_and_ws(tokenizer* t, token* tok, int expected) {
 }
 
 int
-cpp_macro_parse(cpp_t* cpp, tokenizer* t) {
+cpp_macro_parse(cpp* cpp, tokenizer* t) {
   const char* macroname;
   int ws_count, ret, redefined = 0;
   token curr; // tmp = {.column = t->column, .line = t->line};
@@ -177,7 +177,7 @@ cpp_macro_parse(cpp_t* cpp, tokenizer* t) {
       if(contents.buf) {
         buffer_copybuf(&new.str_contents, contents.buf, contents.len);
 
-        new.str_contents_buf = new.str_contents.x;
+        // new.str_contents_buf = new.str_contents.x;
       }
     }
 

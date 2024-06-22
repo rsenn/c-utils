@@ -1,7 +1,7 @@
 #include "../cpp_internal.h"
 
 int
-cpp_parse_file(cpp_t* cpp, buffer* f, const char* fn, buffer* out) {
+cpp_parse_file(cpp* cpp, buffer* f, const char* fn, buffer* out) {
   tokenizer t;
   token tok;
   int ret, newline = 1, ws_count = 0, if_level = 0, if_level_active = 0, if_level_satisfied = 0;

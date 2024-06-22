@@ -8,17 +8,17 @@ hashmap_search(hashmap* map, void* key) {
 
   if(!(list = map->table[map->hash_func(key, map->capacity)]))
     return NULL;
-  
+
   head = linked_list_head(list);
-  
+
   while(head) {
     hashmap_pair* pair = (hashmap_pair*)head->data;
-  
+
     if(map->comparator(pair->key, key) == 0)
       return head;
-  
+
     head = head->next;
   }
-  
+
   return NULL;
 }

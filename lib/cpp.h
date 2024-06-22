@@ -12,16 +12,16 @@
 
 typedef struct {
   unsigned num_args;
-  buffer str_contents;
-  char* str_contents_buf;
   LIST_T argnames;
+  union {
+    char* str_contents_buf;
+    buffer str_contents;
+  };
 } cpp_macro;
 
 typedef struct {
   const char* name;
-  unsigned nest;
-  unsigned first;
-  unsigned last;
+  unsigned nest, first, last;
 } cpp_macro_info;
 
 typedef struct {
@@ -31,26 +31,25 @@ typedef struct {
   tokenizer t;
 } cpp_file;
 
-typedef struct cpp_s cpp_t;
+typedef struct cpp_s cpp;
 
-int cpp_add_define(cpp_t*, const char* mdecl);
-void cpp_add_includedir(cpp_t*, const char* includedir);
-int cpp_evaluate_condition(cpp_t*, tokenizer* t, int* result, char* visited[]);
-void cpp_free(cpp_t*);
-int cpp_include_file(cpp_t*, tokenizer* t, buffer* out);
- int cpp_macro_expand(cpp_t*, tokenizer* t, buffer* out, const char* name, unsigned rec_level, char* visited[]);
-cpp_macro* cpp_macro_get(cpp_t*, const char* name);
-unsigned cpp_macro_get_info(cpp_t*, tokenizer* t, cpp_macro_info* mi_list, size_t* mi_cnt, unsigned nest, unsigned tpos, const char* name, char* visited[], unsigned rec_level);
-int cpp_macro_parse(cpp_t*, tokenizer* t);
-int cpp_macro_undef(cpp_t*, const char* name);
-cpp_t* cpp_new(void);
-int cpp_parse_file(cpp_t*, buffer* f, const char* fn, buffer* out);
-int cpp_run(cpp_t*, buffer* in, buffer* out, const char* inname);
-int cpp_stringify(cpp_t*, tokenizer* t, buffer* output);
-int cpp_tchain_parens_follows(cpp_t*, int rec_level);
+int cpp_add_define(cpp*, const char* mdecl);
+void cpp_add_includedir(cpp*, const char* includedir);
+int cpp_evaluate_condition(cpp*, tokenizer* t, int* result, char* visited[]);
+void cpp_free(cpp*);
+int cpp_include_file(cpp*, tokenizer* t, buffer* out);
+int cpp_macro_expand(cpp*, tokenizer* t, buffer* out, const char* name, unsigned rec_level, char* visited[]);
+cpp_macro* cpp_macro_get(cpp*, const char* name);
+unsigned cpp_macro_get_info(cpp*, tokenizer* t, cpp_macro_info* mi_list, size_t* mi_cnt, unsigned nest, unsigned tpos, const char* name, char* visited[], unsigned rec_level);
+int cpp_macro_parse(cpp*, tokenizer* t);
+int cpp_macro_undef(cpp*, const char* name);
+cpp* cpp_new(void);
+int cpp_parse_file(cpp*, buffer* f, const char* fn, buffer* out);
+int cpp_run(cpp*, buffer* in, buffer* out, const char* inname);
+int cpp_stringify(cpp*, tokenizer* t, buffer* output);
+int cpp_tchain_parens_follows(cpp*, int rec_level);
 
-#define cpp_macro_add(cpp,name,m) MAP_ADD((cpp)->macros, (char*)name,   m )
-
+#define cpp_macro_add(cpp, name, m) MAP_ADD((cpp)->macros, (char*)name, m)
 
 #endif
 /** @} */

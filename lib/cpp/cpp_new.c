@@ -1,8 +1,8 @@
 #include "../cpp_internal.h"
 
-cpp_t*
+cpp*
 cpp_new(void) {
-  cpp_t* ret;
+  cpp* ret;
   cpp_macro m = {/*.num_args =*/1};
 
   if(!(ret = alloc_zero(sizeof(struct cpp_s))))
