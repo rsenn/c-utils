@@ -1,6 +1,6 @@
 #include "../cpp_internal.h"
 
-  int
+int
 cpp_parse_led(tokenizer* t, int left, token* tok, int* err) {
   int right;
 
