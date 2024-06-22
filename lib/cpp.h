@@ -48,9 +48,7 @@ int cpp_parse_file(cpp*, buffer* f, const char* fn, buffer* out);
 int cpp_run(cpp*, buffer* in, buffer* out, const char* inname);
 int cpp_stringify(cpp*, tokenizer* t, buffer* output);
 int cpp_tchain_parens_follows(cpp*, int rec_level);
-
-#define cpp_macro_add(cpp, name, m) MAP_ADD((cpp)->macros, (char*)name, m)
- 
+int cpp_macro_add(cpp* pp, const char* name, cpp_macro* m);
 
 #endif
 /** @} */

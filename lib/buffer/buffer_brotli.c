@@ -166,7 +166,7 @@ buffer_brotli(buffer* b, buffer* other, int compress) {
 
   ctx->b = other;
 
-  buffer_init(b, (buffer_op_sys*)(void*)(compress ? &buffer_brotli_write : &buffer_brotli_read), -1, buf, 1024);
+  buffer_init(b, (buffer_op_proto*)(void*)(compress ? &buffer_brotli_write : &buffer_brotli_read), -1, buf, 1024);
   b->cookie = ctx;
   b->deinit = &buffer_brotli_close;
 
