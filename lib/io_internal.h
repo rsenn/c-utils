@@ -221,7 +221,7 @@ int64 io_canwrite_unlocked();
 int64 io_timeouted_unlocked();
 
 struct eventpacket {
-  fd_t fd;
+  fd_type fd;
   enum { CANREAD, CANWRITE, TIMEOUT } what;
 };
 

@@ -8,15 +8,15 @@
 #endif
 
 #if WINDOWS_NATIVE
-int wsa_socketpair(int, int, int, fd_t[2]);
+int wsa_socketpair(int, int, int, fd_type[2]);
 #define socketpair wsa_socketpair
 #else
 #include <netinet/in.h>
 #endif
 
 int
-io_socketpair(fd_t* d) {
-  fd_t fds[2];
+io_socketpair(fd_type* d) {
+  fd_type fds[2];
   __winsock_init();
 #ifdef AF_UNIX
   if(socketpair(AF_UNIX, SOCK_STREAM, 0, fds) == -1)

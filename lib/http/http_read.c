@@ -24,7 +24,7 @@ putnum(const char* what, ssize_t n) {
 }
 
 ssize_t
-http_read(fd_t fd, char* buf, size_t len, void* ptr) {
+http_read(fd_type fd, char* buf, size_t len, void* ptr) {
   size_t bytes, received;
   size_t pos = 0, end;
   ssize_t n, ret = 0;

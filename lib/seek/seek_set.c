@@ -15,7 +15,7 @@
 #define SET SEEK_SET /* sigh */
 
 int
-seek_set(fd_t fd, seek_pos pos) {
+seek_set(fd_type fd, seek_pos pos) {
   if(io_seek(fd, pos, SET) == -1)
     return -1;
   return 0;

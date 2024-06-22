@@ -15,7 +15,7 @@
 #endif
 
 void
-io_dontwantread_really(fd_t d, io_entry* e) {
+io_dontwantread_really(fd_type d, io_entry* e) {
   int64 newfd;
   (void)d;
   assert(e->kernelwantread);
@@ -49,7 +49,7 @@ io_dontwantread_really(fd_t d, io_entry* e) {
 }
 
 void
-io_dontwantread(fd_t d) {
+io_dontwantread(fd_type d) {
   io_entry* e;
 #ifdef DEBUG_IO
   buffer_putspad(buffer_2, "io_dontwantread", 30);

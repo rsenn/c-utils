@@ -2,7 +2,7 @@
 #include "../alloc.h"
 
 void
-charbuf_init(charbuf* b, read_fn* op, fd_t fd, unsigned int lookahead) {
+charbuf_init(charbuf* b, read_fn* op, fd_type fd, unsigned int lookahead) {
   b->a = (lookahead + 7) & (~7);
   b->p = 0;
   b->chrs = alloc(b->a);

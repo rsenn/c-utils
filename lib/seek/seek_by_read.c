@@ -20,7 +20,7 @@
  *  we must read and discard the data to skip over it.
  */
 void
-seek_by_read(fd_t fd, int64 amount) {
+seek_by_read(fd_type fd, int64 amount) {
   char* buf = (char*)
 #ifdef HAVE_ALLOCA
       alloca(amount);

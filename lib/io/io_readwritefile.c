@@ -11,7 +11,7 @@
 #include <fcntl.h>
 
 int
-io_readwritefile(fd_t* d, const char* s) {
+io_readwritefile(fd_type* d, const char* s) {
   long fd = open(s, O_RDWR);
   if(fd != -1) {
     *d = fd;

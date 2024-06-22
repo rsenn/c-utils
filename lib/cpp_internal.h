@@ -61,7 +61,7 @@ free_file_container(cpp_file* fc) {
   alloc_free(fc->buf);
 }
 
-ssize_t buffer_dummyreadbuf(fd_t, void*, size_t, void*);
+ssize_t buffer_dummyreadbuf(fd_type, void*, size_t, void*);
 
 static inline buffer*
 buffer_reopen(buffer* f, char** buf, size_t* size) {

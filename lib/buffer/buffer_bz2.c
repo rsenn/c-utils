@@ -17,7 +17,7 @@ typedef struct {
 } bz_ctx;
 
 static ssize_t
-buffer_bzread_op(fd_t fd, void* data, size_t n, buffer* b) {
+buffer_bzread_op(fd_type fd, void* data, size_t n, buffer* b) {
   bz_ctx* ctx = b->cookie;
   bz_stream* strm = &ctx->strm;
   int ret;
@@ -56,7 +56,7 @@ buffer_bzread_op(fd_t fd, void* data, size_t n, buffer* b) {
 }
 
 static ssize_t
-buffer_bzwrite_op(fd_t fd, void* data, size_t n, buffer* b) {
+buffer_bzwrite_op(fd_type fd, void* data, size_t n, buffer* b) {
   bz_ctx* ctx = b->cookie;
   bz_stream* strm = &ctx->strm;
   int ret;

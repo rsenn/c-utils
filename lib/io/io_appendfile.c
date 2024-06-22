@@ -11,7 +11,7 @@
 #include <fcntl.h>
 
 int
-io_appendfile(fd_t* d, const char* s) {
+io_appendfile(fd_type* d, const char* s) {
   long fd = open(s,
                  O_WRONLY | O_APPEND | O_CREAT
 #if !WINDOWS_NATIVE

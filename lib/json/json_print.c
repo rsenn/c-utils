@@ -17,7 +17,7 @@ buffer_indent_set(buffer* b, const char* in) {
 }
 
 static ssize_t
-buffer_indent_write(fd_t fd, char* x, size_t n, void* ptr) {
+buffer_indent_write(fd_type fd, char* x, size_t n, void* ptr) {
   buffer* b = (buffer*)ptr;
   struct indent_write* iw = (struct indent_write*)b->cookie;
   ssize_t ret;

@@ -30,7 +30,7 @@
 #endif
 
 void
-io_wantread_really(fd_t d, io_entry* e) {
+io_wantread_really(fd_type d, io_entry* e) {
   int64 newfd;
   assert(!e->kernelwantread);
   newfd = !e->kernelwantwrite;
@@ -112,7 +112,7 @@ io_wantread_really(fd_t d, io_entry* e) {
 }
 
 void
-io_wantread(fd_t d) {
+io_wantread(fd_type d) {
   io_entry* e;
 #ifdef DEBUG_IO
   buffer_putspad(buffer_2, "io_wantread", 30);

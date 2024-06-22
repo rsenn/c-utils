@@ -7,7 +7,7 @@
 #include <openssl/err.h>
 
 int
-tls_accept(fd_t fd) {
+tls_accept(fd_type fd) {
   int ret;
   tls_instance_t* i = iarray_get(&tls_list, fd);
   assert(i);

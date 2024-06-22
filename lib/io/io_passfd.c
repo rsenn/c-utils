@@ -8,7 +8,7 @@
 #if WINDOWS
 #include <errno.h>
 int
-io_passfd(fd_t sock, fd_t fd) {
+io_passfd(fd_type sock, fd_type fd) {
   errno = EINVAL;
   return -1;
 }
@@ -57,7 +57,7 @@ union fdmsg {
 };
 
 int
-io_passfd(fd_t sock, fd_t fd) {
+io_passfd(fd_type sock, fd_type fd) {
   struct msghdr msg;
   struct iovec iov;
 #ifdef CMSG_FIRSTHDR

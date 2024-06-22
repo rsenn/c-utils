@@ -9,7 +9,7 @@
 #include <openssl/err.h>
 
 ssize_t
-tls_write(fd_t fd, const void* data, size_t len) {
+tls_write(fd_type fd, const void* data, size_t len) {
   ssize_t ret;
   tls_instance_t* i = iarray_get(&tls_list, fd);
   assert(i);

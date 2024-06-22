@@ -6,7 +6,7 @@
 #include <openssl/err.h>
 
 void
-tls_free(fd_t fd) {
+tls_free(fd_type fd) {
   tls_instance_t* i = iarray_get(&tls_list, fd);
   assert(i);
   assert(i->ssl);

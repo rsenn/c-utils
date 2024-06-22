@@ -14,7 +14,7 @@
 #endif
 
 void
-io_block(fd_t d) {
+io_block(fd_type d) {
   io_entry* e = (io_entry*)iarray_get((iarray*)io_getfds(), d);
 #if WINDOWS_NATIVE
   unsigned long i = 0;

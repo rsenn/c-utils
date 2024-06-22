@@ -14,7 +14,7 @@
 #endif
 
 void
-seek_by_jump(fd_t fd, int64 amount) {
+seek_by_jump(fd_type fd, int64 amount) {
   if(amount && io_seek(fd, amount, SEEK_CUR) == (int64)-1) {
     if(errno == ESPIPE)
       seek_by_read(fd, amount);

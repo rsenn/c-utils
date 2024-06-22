@@ -7,7 +7,7 @@
 #include <openssl/err.h>
 
 int
-tls_want(fd_t fd, void (*wantread)(fd_t), void (*wantwrite)(fd_t)) {
+tls_want(fd_type fd, void (*wantread)(fd_type), void (*wantwrite)(fd_type)) {
   tls_instance_t* inst = tls_instance_get(fd);
 
   switch(inst->error) {

@@ -30,7 +30,7 @@ int pipe(int*, unsigned int, int);
 
 #ifdef __DMC__
 int
-pipe(fd_t fd[2]) {
+pipe(fd_type fd[2]) {
   HANDLE phandles[2];
 
   /* To get non-blocking pipes we could use CreateNamedPipe here. But it isn't

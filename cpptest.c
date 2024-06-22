@@ -24,7 +24,7 @@ main(int argc, char** argv) {
   int ret, c;
   char *tmp, *fn;
   buffer in;
-  fd_t fd;
+  fd_type fd;
 
   errmsg_iam(str_basename(argv[0]));
 

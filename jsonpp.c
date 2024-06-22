@@ -120,7 +120,7 @@ usage(char* av0) {
 }
 
 ssize_t
-charbuf_read(fd_t fd, char* buf, size_t len, void* ptr) {
+charbuf_read(fd_type fd, char* buf, size_t len, void* ptr) {
   ssize_t r = read(fd, buf, len);
 
 #ifdef DEBUG_OUTPUT_

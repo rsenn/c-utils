@@ -1,6 +1,6 @@
 #include "../buffer.h"
 
-extern int buffer_stubborn(buffer_op_proto*, fd_t, const char*, size_t, void*);
+extern int buffer_stubborn(buffer_op_proto*, fd_type, const char*, size_t, void*);
 
 int
 buffer_flush(buffer* b) {

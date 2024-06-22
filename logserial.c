@@ -49,7 +49,7 @@ typedef struct link {
 } link_t;
 
 static strarray ports;
-// static fd_t term_buf.fd = 0;
+// static fd_type term_buf.fd = 0;
 static buffer term_buf;
 static stralloc serial_buf;
 static int verbose, rawmode, debugmode;
@@ -59,7 +59,7 @@ static jmp_buf context;
 static const char* send_file = 0;
 static buffer send_buf;
 volatile int running;
-fd_t serial_fd;
+fd_type serial_fd;
 int baudrate = -1;
 
 /**
@@ -284,7 +284,7 @@ detect_ports(strarray* ports) {
  * description_of_the_return_value }
  */
 ssize_t
-serial_read(fd_t serial_fd, char* buf, size_t len, void* ptr) {
+serial_read(fd_type serial_fd, char* buf, size_t len, void* ptr) {
   ssize_t ret = read(serial_fd, buf, len);
   if(ret <= 0)
     return 0;
@@ -292,7 +292,7 @@ serial_read(fd_t serial_fd, char* buf, size_t len, void* ptr) {
 }
 
 void
-term_init(fd_t fd, struct termios* state) {
+term_init(fd_type fd, struct termios* state) {
 #ifndef WINDOWS_NATIVE
   struct termios old, raw, actual;
 
@@ -356,7 +356,7 @@ term_init(fd_t fd, struct termios* state) {
 }
 
 void
-term_restore(fd_t fd, const struct termios* state) {
+term_restore(fd_type fd, const struct termios* state) {
 #ifndef WINDOWS_NATIVE
   int result;
   /* Discard all unread input and
@@ -399,7 +399,7 @@ ch);
  * description_of_the_return_value }
  */
 ssize_t
-process_serial(fd_t serial_fd) {
+process_serial(fd_type serial_fd) {
   char x[1024];
   ssize_t ret;
   size_t bytes = 0;
@@ -437,7 +437,7 @@ process_serial(fd_t serial_fd) {
  * description_of_the_return_value }
  */
 ssize_t
-process_loop(fd_t serial_fd, int64 timeout) {
+process_loop(fd_type serial_fd, int64 timeout) {
   char x[1024];
   char ch;
   ssize_t ret;
@@ -485,7 +485,7 @@ process_loop(fd_t serial_fd, int64 timeout) {
     int64 wait_msecs = taia_approx(&diff) * 1000;
     if(wait_msecs < 0)
       wait_msecs = 0;
-    fd_t read_fd, write_fd;
+    fd_type read_fd, write_fd;
     //
     /*
        io_wantread(STDIN_FILENO);*/

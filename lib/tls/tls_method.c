@@ -101,13 +101,13 @@ tls_bio_ctrl(tls_bio_t* b, int cmd, long num, void* ptr) {
   switch(cmd) {
     case BIO_C_SET_FD:
       tls_bio_destroy(b);
-      b->num = *((fd_t*)ptr);
-      b->shutdown = (fd_t)num;
+      b->num = *((fd_type*)ptr);
+      b->shutdown = (fd_type)num;
       b->init = 1;
       break;
     case BIO_C_GET_FD:
       if(b->init) {
-        ip = (fd_t*)ptr;
+        ip = (fd_type*)ptr;
         if(ip != NULL)
           *ip = b->num;
         ret = b->num;
@@ -115,7 +115,7 @@ tls_bio_ctrl(tls_bio_t* b, int cmd, long num, void* ptr) {
         ret = -1;
       break;
     case BIO_CTRL_GET_CLOSE: ret = b->shutdown; break;
-    case BIO_CTRL_SET_CLOSE: b->shutdown = (fd_t)num; break;
+    case BIO_CTRL_SET_CLOSE: b->shutdown = (fd_type)num; break;
     case BIO_CTRL_DUP:
     case BIO_CTRL_FLUSH: ret = 1; break;
     default: ret = 0; break;

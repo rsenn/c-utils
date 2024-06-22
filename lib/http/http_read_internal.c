@@ -21,7 +21,7 @@
  * @return
  */
 ssize_t
-http_read_internal(fd_t fd, char* buf, size_t received, buffer* b) {
+http_read_internal(fd_type fd, char* buf, size_t received, buffer* b) {
   http* h = b->cookie;
   buffer* in = &h->q.in;
   /*  char* x = buffer_PEEK(in);

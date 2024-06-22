@@ -15,7 +15,7 @@
  * Currently supports TCP/IPv4 socket pairs only
  */
 int
-wsa_socketpair(int af, int type, int proto, fd_t sock[2]) {
+wsa_socketpair(int af, int type, int proto, fd_type sock[2]) {
   /*  assert(af == AF_INET
         && type == SOCK_STREAM
         && (proto == IPPROTO_IP || proto == IPPROTO_TCP));*/

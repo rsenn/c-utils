@@ -20,7 +20,7 @@
  * @return     -1 on error
  */
 ssize_t
-http_canread(http* h, void (*wantread)(fd_t), void (*wantwrite)(fd_t)) {
+http_canread(http* h, void (*wantread)(fd_type), void (*wantwrite)(fd_type)) {
   http_response* r;
   int err;
   size_t len;

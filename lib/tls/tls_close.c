@@ -6,7 +6,7 @@
 #include <openssl/err.h>
 
 int
-tls_close(fd_t fd) {
+tls_close(fd_type fd) {
   ssize_t ret;
   tls_instance_t* i = iarray_get(&tls_list, fd);
   assert(i);

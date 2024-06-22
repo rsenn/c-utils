@@ -91,8 +91,8 @@ typedef union {
 typedef enum { CONNECTED = 1, LOGGED_IN = 2, PASSIVE = 3, TRANSFERRING = 4 } ftp_state;
 
 typedef struct {
-  fd_t control_sock;
-  fd_t data_sock;
+  fd_type control_sock;
+  fd_type data_sock;
   ftp_state state;
   buffer data;
 } ftp_client;
@@ -294,7 +294,7 @@ handle_ftp(ftp_client* ftp, stralloc* line) {
 
 void
 list_ftp(ftp_client* ftp) {
-  fd_t r, w;
+  fd_type r, w;
   buffer in, out;
   stralloc meld;
   stralloc_init(&meld);
@@ -384,7 +384,7 @@ list_ftp(ftp_client* ftp) {
 
 int
 main(int argc, char* argv[]) {
-  fd_t sock;
+  fd_type sock;
   int error = 0;
   int ret = 0;
   int verbose = 1;

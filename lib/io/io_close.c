@@ -10,11 +10,11 @@
 #include <sys/mman.h>
 #endif
 
-extern void io_dontwantread_really(fd_t d, io_entry* e);
-extern void io_dontwantwrite_really(fd_t d, io_entry* e);
+extern void io_dontwantread_really(fd_type d, io_entry* e);
+extern void io_dontwantwrite_really(fd_type d, io_entry* e);
 
 void
-io_close(fd_t d) {
+io_close(fd_type d) {
   io_entry* e;
 
 #ifdef DEBUG_IO

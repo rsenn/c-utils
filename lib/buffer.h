@@ -13,9 +13,9 @@
 extern "C" {
 #endif
 
-typedef ssize_t(buffer_op_sys)(fd_t fd, void* buf, size_t len);
-typedef ssize_t(buffer_op_proto)(fd_t fd, void* buf, size_t len, void* arg);
-typedef ssize_t(buffer_op_fn)(/*fd_t fd, void* buf, size_t len, void* arg*/);
+typedef ssize_t(buffer_op_sys)(fd_type fd, void* buf, size_t len);
+typedef ssize_t(buffer_op_proto)(fd_type fd, void* buf, size_t len, void* arg);
+typedef ssize_t(buffer_op_fn)(/*fd_type fd, void* buf, size_t len, void* arg*/);
 typedef buffer_op_fn* buffer_op_ptr;
 
 typedef struct buffer {
@@ -28,7 +28,7 @@ typedef struct buffer {
                           chaini(ng */
   void (*deinit)();    /* called to munmap/free cleanup,  with a pointer to the
                           buffer as argument */
-  fd_t fd;             /* passed as first argument to op */
+  fd_type fd;             /* passed as first argument to op */
 } buffer;
 
 #define BUFFER_INIT(op, fd, buf, len) \
@@ -39,21 +39,21 @@ typedef struct buffer {
 #define BUFFER_INSIZE 65535
 #define BUFFER_OUTSIZE 32768
 
-void buffer_init(buffer*, buffer_op_proto*, fd_t fd, char* y, size_t ylen);
-void buffer_init_free(buffer*, buffer_op_proto*, fd_t fd, char* y, size_t ylen);
+void buffer_init(buffer*, buffer_op_proto*, fd_type fd, char* y, size_t ylen);
+void buffer_init_free(buffer*, buffer_op_proto*, fd_type fd, char* y, size_t ylen);
 void buffer_free(void* buf);
 void buffer_munmap(void* buf);
 int buffer_mmapread(buffer*, const char* filename);
-int buffer_mmapread_fd(buffer*, fd_t fd);
+int buffer_mmapread_fd(buffer*, fd_type fd);
 int buffer_mmapprivate(buffer*, const char* filename);
-int buffer_mmapprivate_fd(buffer*, fd_t fd);
+int buffer_mmapprivate_fd(buffer*, fd_type fd);
 int buffer_mmapshared(buffer*, const char* filename);
-int buffer_mmapshared_fd(buffer*, fd_t fd);
+int buffer_mmapshared_fd(buffer*, fd_type fd);
 void buffer_close(buffer* b);
 
 /* reading from an fd... if it is a regular file,  then  buffer_mmapread_fd is
    called, otherwise  buffer_init(&b,  read,  fd,  malloc(8192),  8192) */
-int buffer_read_fd(buffer*, fd_t fd);
+int buffer_read_fd(buffer*, fd_type fd);
 
 int buffer_flush(buffer* b);
 int buffer_put(buffer*, const char* x, size_t len);
@@ -243,17 +243,17 @@ int buffer_deflate(buffer*, buffer* out, int level);
 int buffer_inflate(buffer*, buffer* in);
 
 int buffer_gunzip(buffer*, const char* filename);
-int buffer_gunzip_fd(buffer*, fd_t fd);
+int buffer_gunzip_fd(buffer*, fd_type fd);
 int buffer_gzip(buffer*, const char* filename, int level);
-int buffer_gzip_fd(buffer*, fd_t fd, int level);
+int buffer_gzip_fd(buffer*, fd_type fd, int level);
 int buffer_bunzip(buffer*, const char* filename);
-int buffer_bunzip_fd(buffer*, fd_t fd);
+int buffer_bunzip_fd(buffer*, fd_type fd);
 int buffer_bzip(buffer*, const char* filename, int level);
-int buffer_bzip_fd(buffer*, fd_t fd, int level);
+int buffer_bzip_fd(buffer*, fd_type fd, int level);
 
 int buffer_get_until(buffer*, char* x, size_t len, const char* charset, size_t setlen);
 
-int buffer_write_fd(buffer*, fd_t fd);
+int buffer_write_fd(buffer*, fd_type fd);
 
 #ifdef UINT64_H
 int buffer_putlonglong(buffer*, int64 l);

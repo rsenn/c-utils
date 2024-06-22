@@ -1,7 +1,7 @@
 #include "../buffer.h"
 #include "../mmap.h"
 
-ssize_t buffer_dummyreadmmap(fd_t, void*, size_t, void*);
+ssize_t buffer_dummyreadmmap(fd_type, void*, size_t, void*);
 
 int
 buffer_mmapread(buffer* b, const char* filename) {

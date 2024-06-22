@@ -106,7 +106,7 @@ int socket_fastopen_connect6(int s, const char* ip, uint16 port, uint32 scope_id
 const char* socket_ip6loopback();
 const char* socket_ip4loopback();
 
-int socket_error(fd_t, int* error);
+int socket_error(fd_type, int* error);
 
 #if WINDOWS_NATIVE
 #ifndef EINPROGRESS
@@ -133,7 +133,7 @@ int socket_v6only(int fd, int enable);
 int socket_is4(int);
 int socket_is6(int);
 
-int socket_close(fd_t);
+int socket_close(fd_type);
 
 #ifdef __cplusplus
 }

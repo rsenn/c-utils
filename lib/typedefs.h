@@ -86,9 +86,9 @@ typedef ptrdiff_t intptr_t;
 #endif
 
 #if defined(_WIN32) || defined(__MINGW32__) || defined(_WIN64) && !(defined(__CYGWIN__) || defined(__MSYS__))
-typedef intptr_t fd_t;
+typedef intptr_t fd_type;
 #else
-typedef int fd_t;
+typedef int fd_type;
 #endif
 
 #ifndef __unaligned

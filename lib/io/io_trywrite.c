@@ -22,7 +22,7 @@
  * stuff on I/O batches. */
 
 int64
-io_trywrite(fd_t d, const char* buf, int64 len) {
+io_trywrite(fd_type d, const char* buf, int64 len) {
 #ifdef USE_SELECT
   io_entry* e = (io_entry*)iarray_get((iarray*)io_getfds(), d);
   int r;

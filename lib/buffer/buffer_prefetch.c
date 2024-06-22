@@ -1,8 +1,8 @@
 #include "../buffer.h"
 #include "../byte.h"
 
-ssize_t buffer_dummyreadmmap(fd_t, char* buf, unsigned long int len);
-ssize_t buffer_stubborn_read(buffer_op_proto*, fd_t fd, const void* buf, size_t len, void* ptr);
+ssize_t buffer_dummyreadmmap(fd_type, char* buf, unsigned long int len);
+ssize_t buffer_stubborn_read(buffer_op_proto*, fd_type fd, const void* buf, size_t len, void* ptr);
 
 int
 buffer_prefetch(buffer* b, size_t len) {

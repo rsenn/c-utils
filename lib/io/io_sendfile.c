@@ -28,7 +28,7 @@
 #define SENDFILE 1
 
 int64
-io_sendfile(fd_t s, fd_t fd, uint64 off, uint64 n) {
+io_sendfile(fd_type s, fd_type fd, uint64 off, uint64 n) {
   off_t sbytes;
   int r = sendfile(fd, s, off, n, 0, &sbytes, 0);
   if(r == -1) {
@@ -132,7 +132,7 @@ io_sendfile(int64 out, int64 in, uint64 off, uint64 bytes) {
 #endif
 
 int64
-io_sendfile(fd_t s, fd_t fd, uint64 off, uint64 n) {
+io_sendfile(fd_type s, fd_type fd, uint64 off, uint64 n) {
   off_t o = off;
   io_entry* e = (io_entry*)iarray_get((iarray*)io_getfds(), s);
   off_t i;
@@ -174,7 +174,7 @@ io_sendfile(fd_t s, fd_t fd, uint64 off, uint64 n) {
 #endif
 
 int64
-io_sendfile(fd_t out, fd_t in, uint64 off, uint64 bytes) {
+io_sendfile(fd_type out, fd_type in, uint64 off, uint64 bytes) {
 #ifdef USE_SELECT
   return -1;
 #else
@@ -231,12 +231,12 @@ io_sendfile(fd_t out, fd_t in, uint64 off, uint64 bytes) {
 #include "../iob.h"
 
 static int64
-writecb(fd_t s, const void* buf, uint64 n) {
+writecb(fd_type s, const void* buf, uint64 n) {
   return write(s, buf, n);
 }
 
 int64
-io_sendfile(fd_t out, fd_t in, uint64 off, uint64 bytes) {
+io_sendfile(fd_type out, fd_type in, uint64 off, uint64 bytes) {
   return io_mmapwritefile(out, in, off, bytes, writecb);
 }
 

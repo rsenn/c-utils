@@ -19,7 +19,7 @@
  * canwrite is already set.  In that case, just enqueue the fd. */
 
 void
-io_wantwrite_really(fd_t d, io_entry* e) {
+io_wantwrite_really(fd_type d, io_entry* e) {
   int64 newfd;
   assert(!e->kernelwantwrite); /* we should not be here if we already told the
                                   kernel we want to write */
@@ -80,7 +80,7 @@ io_wantwrite_really(fd_t d, io_entry* e) {
 }
 
 void
-io_wantwrite(fd_t d) {
+io_wantwrite(fd_type d) {
   io_entry* e;
 #ifdef DEBUG_IO
   buffer_putspad(buffer_2, "io_wantwrite", 30);

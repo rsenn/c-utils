@@ -13,6 +13,6 @@
 #endif
 
 seek_pos
-seek_end(fd_t fd) {
+seek_end(fd_type fd) {
   return io_seek(fd, 0, SEEK_END);
 }

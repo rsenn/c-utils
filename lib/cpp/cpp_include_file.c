@@ -10,7 +10,7 @@ cpp_include_file(cpp* cpp, tokenizer* t, buffer* out) {
   token tok;
   int inc1sep, ret;
   LIST_ITER_T i;
-  fd_t fd = -1;
+  fd_type fd = -1;
   buffer in;
   const char* fn;
   stralloc sa;

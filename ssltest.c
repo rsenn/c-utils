@@ -22,11 +22,11 @@
 
 static address_t host;
 static uint16 port;
-fd_t sock = -1;
+fd_type sock = -1;
 
-fd_t
+fd_type
 ssltest_connect(const address_t* addr, uint16 port) {
-  fd_t s;
+  fd_type s;
   int ret;
   if((s = (addr->ip6 ? socket_tcp6 : socket_tcp4)()) != -1) {
     ndelay_on(s);
@@ -162,9 +162,9 @@ ssltest_process_line(stralloc* line, buffer* b) {
 }
 
 void
-ssltest_loop(fd_t s) {
+ssltest_loop(fd_type s) {
   buffer in, out;
-  fd_t fd;
+  fd_type fd;
   ssize_t ret;
   tls_t* ssl;
   bool login_sent = false;

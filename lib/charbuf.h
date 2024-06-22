@@ -31,7 +31,7 @@ typedef struct /*__attribute__((packed))*/ {
   unsigned err : 6;
   read_fn* op;
   union {
-    fd_t fd;
+    fd_type fd;
     void* ptr;
   };
   charloc loc;
@@ -48,7 +48,7 @@ void charbuf_free(charbuf*);
 void charbuf_froms(charbuf*, char* s, unsigned lookahead);
 ssize_t charbuf_get(charbuf*);
 ssize_t charbuf_getc(charbuf*, unsigned char* ch);
-void charbuf_init(charbuf*, read_fn* op, fd_t fd, unsigned int lookahead);
+void charbuf_init(charbuf*, read_fn* op, fd_type fd, unsigned int lookahead);
 ssize_t charbuf_next(charbuf*);
 ssize_t charbuf_nextc(charbuf*, unsigned char* ch);
 ssize_t charbuf_peek(charbuf*);

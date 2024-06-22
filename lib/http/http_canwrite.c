@@ -14,7 +14,7 @@
 #include <string.h>
 
 ssize_t
-http_canwrite(http* h, void (*wantread)(fd_t), void (*wantwrite)(fd_t)) {
+http_canwrite(http* h, void (*wantread)(fd_type), void (*wantwrite)(fd_type)) {
   ssize_t ret = 0;
   if(h->tls) {
     if(!h->connected) {

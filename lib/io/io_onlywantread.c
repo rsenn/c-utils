@@ -2,7 +2,7 @@
 #include "../buffer.h"
 
 void
-io_onlywantread(fd_t d) {
+io_onlywantread(fd_type d) {
 #ifdef DEBUG_IO
   buffer_putspad(buffer_2, "io_onlywantread", 30);
   buffer_puts(buffer_2, "d=");

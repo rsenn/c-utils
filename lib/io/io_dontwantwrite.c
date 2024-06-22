@@ -21,7 +21,7 @@
  * reply", this should save a lot of syscalls. */
 
 void
-io_dontwantwrite_really(fd_t d, io_entry* e) {
+io_dontwantwrite_really(fd_type d, io_entry* e) {
   int64 newfd;
   (void)d;
   assert(e->kernelwantwrite);
@@ -55,7 +55,7 @@ io_dontwantwrite_really(fd_t d, io_entry* e) {
 }
 
 void
-io_dontwantwrite(fd_t d) {
+io_dontwantwrite(fd_type d) {
   io_entry* e;
 #ifdef DEBUG_IO
   buffer_putspad(buffer_2, "io_dontwantwrite", 30);

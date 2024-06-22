@@ -9,7 +9,7 @@
 #endif
 
 int64
-io_trywritetimeout(fd_t d, const char* buf, int64 len) {
+io_trywritetimeout(fd_type d, const char* buf, int64 len) {
   int64 r = io_trywrite(d, buf, len);
   if(r == -1) {
     tai6464 x;

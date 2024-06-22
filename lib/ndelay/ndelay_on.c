@@ -12,7 +12,7 @@
 #endif
 
 int
-ndelay_on(fd_t fd) {
+ndelay_on(fd_type fd) {
 #if WINDOWS_NATIVE
   unsigned long i = 0;
   return winsock2errno(ioctlsocket(fd, FIONBIO, &i));

@@ -12,7 +12,7 @@
 #endif
 
 unsigned int
-io_debugstring(fd_t s, char* buf, unsigned int bufsize) {
+io_debugstring(fd_type s, char* buf, unsigned int bufsize) {
   unsigned int i;
   io_entry* e;
   e = (io_entry*)iarray_get((iarray*)io_getfds(), s);

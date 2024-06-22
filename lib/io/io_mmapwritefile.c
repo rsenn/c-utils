@@ -18,7 +18,7 @@
 #define BUFSIZE 16384
 
 int64
-io_mmapwritefile(fd_t out, fd_t in, uint64 off, uint64 bytes, io_write_callback writecb) {
+io_mmapwritefile(fd_type out, fd_type in, uint64 off, uint64 bytes, io_write_callback writecb) {
   char buf[BUFSIZE];
   int64 n, m;
   uint64 sent = 0;

@@ -13,7 +13,7 @@
 #include <openssl/bio.h>
 
 tls_bio_t*
-tls_bio_socket(fd_t fd) {
+tls_bio_socket(fd_type fd) {
 
   tls_bio_t* bio;
 

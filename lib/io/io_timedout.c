@@ -1,7 +1,7 @@
 #include "../io_internal.h"
 
 int
-io_timedout(fd_t d) {
+io_timedout(fd_type d) {
   tai6464 now;
   io_entry* e = (io_entry*)iarray_get((iarray*)io_getfds(), d);
   taia_now(&now);

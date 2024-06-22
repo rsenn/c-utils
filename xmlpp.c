@@ -224,7 +224,7 @@ main(int argc, char* argv[]) {
     ret = buffer_read_fd(&infile, 0);
 
   if(inplace) {
-    fd_t out_fd = open_temp(&tmpl);
+    fd_type out_fd = open_temp(&tmpl);
     if(out_fd == -1) {
       errmsg_warn("output file", 0);
       return 1;

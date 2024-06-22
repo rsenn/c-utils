@@ -31,7 +31,7 @@ buffer_gz_close(buffer* b) {
 }
 
 static ssize_t
-buffer_gunzip_read(fd_t fd, void* x, size_t n, void* b) {
+buffer_gunzip_read(fd_type fd, void* x, size_t n, void* b) {
   gzFile f = ((buffer*)b)->cookie;
   return gzread(f, x, n);
 }
@@ -52,7 +52,7 @@ buffer_gunzip(buffer* b, const char* filename) {
 }
 
 int
-buffer_gunzip_fd(buffer* b, fd_t fd) {
+buffer_gunzip_fd(buffer* b, fd_type fd) {
   gzFile f;
   if((f = gzdopen(fd, "rb")) == NULL)
     return -1;
@@ -67,7 +67,7 @@ buffer_gunzip_fd(buffer* b, fd_t fd) {
 }
 
 static ssize_t
-buffer_gzip_write(fd_t fd, void* x, size_t n, void* b) {
+buffer_gzip_write(fd_type fd, void* x, size_t n, void* b) {
   gzFile f = ((buffer*)b)->cookie;
   return gzwrite(f, x, n);
 }
@@ -90,7 +90,7 @@ buffer_gzip(buffer* b, const char* filename, int level) {
 }
 
 int
-buffer_gzip_fd(buffer* b, fd_t fd, int level) {
+buffer_gzip_fd(buffer* b, fd_type fd, int level) {
   gzFile f;
   char mode[4] = "wb0";
   mode[2] = '0' + (level % 10);

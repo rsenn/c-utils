@@ -14,7 +14,7 @@
 #include "../alloc.h"
 
 int
-buffer_read_fd(buffer* b, fd_t fd) {
+buffer_read_fd(buffer* b, fd_type fd) {
   /*  struct stat st;
     if(fstat(fd, &st) == -1) return -1;
 

@@ -26,7 +26,7 @@
  * we are called. */
 
 int64
-io_tryread(fd_t d, char* buf, int64 len) {
+io_tryread(fd_type d, char* buf, int64 len) {
   io_entry* e = (io_entry*)iarray_get((iarray*)io_getfds(), d);
   if(!e) {
     errno = EBADF;

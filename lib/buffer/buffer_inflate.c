@@ -16,7 +16,7 @@ typedef struct {
 } inflate_ctx;
 
 static ssize_t
-buffer_inflate_read(fd_t fd, void* data, size_t n, buffer* b) {
+buffer_inflate_read(fd_type fd, void* data, size_t n, buffer* b) {
   int ret;
   ssize_t have;
   inflate_ctx* ctx = b->cookie;

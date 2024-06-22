@@ -20,7 +20,7 @@
 #endif
 
 void
-io_nonblock(fd_t d) {
+io_nonblock(fd_type d) {
   io_entry* e = (io_entry*)iarray_get((iarray*)io_getfds(), d);
 
 #ifdef DEBUG_IO

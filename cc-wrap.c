@@ -150,7 +150,7 @@ get_prog_name(void) {
 int
 write_log(const strlist* argv, const char* file) {
   stralloc sa;
-  fd_t fd;
+  fd_type fd;
 
   if((fd = open_append(file)) != -1) {
     buffer b;

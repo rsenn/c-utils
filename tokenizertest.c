@@ -136,7 +136,7 @@ int
 main(int argc, char** argv) {
   int ret, c;
   char *tmp, *fn;
-  fd_t fd;
+  fd_type fd;
   errmsg_iam(argv[0]);
   while((c = unix_getopt(argc, argv, "h")) != -1)
     switch(c) {

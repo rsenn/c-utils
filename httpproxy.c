@@ -118,7 +118,7 @@ lookup_hosts(stralloc* name, stralloc* ips) {
 
 int
 main(int argc, char* argv[]) {
-  fd_t sock;
+  fd_type sock;
   int error = 0;
   int ret;
   int verbose = 1;

@@ -184,7 +184,7 @@ put_indented_n(buffer* b, const char* x, size_t len, size_t maxlen) {
 
 static int
 http_io_handler(http* h, buffer* out) {
-  fd_t r, w;
+  fd_type r, w;
   int nr = 0, nw = 0;
   ssize_t nb, ret = 0;
   while((w = io_canwrite()) != -1) {
@@ -395,7 +395,7 @@ main(int argc, char* argv[]) {
   iopause_fd iop;
   static char inbuf[128 * 1024];
   static char outbuf[256 * 1024];
-  fd_t fd, outfile;
+  fd_type fd, outfile;
   int c, index;
   buffer data;
   const char *s, *outname = 0;
@@ -468,7 +468,7 @@ main(int argc, char* argv[]) {
     for(;;) {
 
       int doread = 1;
-      fd_t sock;
+      fd_type sock;
       ;
       buffer_putsflush(buffer_2, "htttpest start loop\n");
 

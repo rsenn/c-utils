@@ -14,7 +14,7 @@
 extern char mmap_empty[];
 
 char*
-mmap_rw_fd(fd_t fd, size_t* filesize) {
+mmap_rw_fd(fd_type fd, size_t* filesize) {
 #if WINDOWS_NATIVE
   HANDLE h = (HANDLE)_get_osfhandle((int)fd);
   HANDLE m;

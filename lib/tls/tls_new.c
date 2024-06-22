@@ -25,7 +25,7 @@ iarray tls_list = {
 #include <openssl/bio.h>
 
 static tls_t*
-tls_new(tls_ctx_t* ctx, fd_t fd) {
+tls_new(tls_ctx_t* ctx, fd_type fd) {
   SSL* ssl;
   tls_instance_t* i = 0;
 
@@ -48,7 +48,7 @@ tls_new(tls_ctx_t* ctx, fd_t fd) {
 }
 
 tls_t*
-tls_client(fd_t fd) {
+tls_client(fd_type fd) {
   if(!tls_initialized)
     tls_init(0, 0);
   if(tls_client_ctx == 0)
@@ -57,7 +57,7 @@ tls_client(fd_t fd) {
 }
 
 tls_t*
-tls_server(fd_t fd) {
+tls_server(fd_type fd) {
   if(!tls_initialized)
     tls_init(0, 0);
   if(tls_server_ctx == 0)

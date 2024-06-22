@@ -8,6 +8,6 @@
 #endif
 
 int
-buffer_unixread(fd_t fd, char* buf, size_t len) {
+buffer_unixread(fd_type fd, char* buf, size_t len) {
   return read(fd, buf, len);
 }

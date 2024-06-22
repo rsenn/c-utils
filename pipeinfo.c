@@ -200,7 +200,7 @@ proc_subdir_path(int32 pid, const char* subdir, stralloc* out) {
 }
 
 const char*
-proc_fd_path(int32 pid, fd_t fd, stralloc* out) {
+proc_fd_path(int32 pid, fd_type fd, stralloc* out) {
   proc_subdir_path(pid, "fd", out);
   if(fd >= 0)
     stralloc_catulong(out, fd);
@@ -208,7 +208,7 @@ proc_fd_path(int32 pid, fd_t fd, stralloc* out) {
   return out->s;
 }
 const char*
-proc_fdinfo_path(int32 pid, fd_t fd, stralloc* out) {
+proc_fdinfo_path(int32 pid, fd_type fd, stralloc* out) {
   proc_subdir_path(pid, "fdinfo", out);
   if(fd >= 0)
     stralloc_catulong(out, fd);
@@ -226,7 +226,7 @@ read_proc() {
   dir_t procdir, fddir;
   uint32 pid, fd, pipeId;
   int64 n;
-  fd_t tmpfd;
+  fd_type tmpfd;
   pipe_t* p;
   procfd_t* pfd;
   size_t len, i;
@@ -420,7 +420,7 @@ main(int argc, char* argv[]) {
   while(unix_optind < argc) {
     struct stat st;
     const char* a = argv[unix_optind++];
-    fd_t fd = 0;
+    fd_type fd = 0;
 
     if(str_diff(a, "-"))
       fd = open_read(a);

@@ -21,7 +21,7 @@
 #include "../alloc.h"
 
 int
-buffer_write_fd(buffer* b, fd_t fd) {
+buffer_write_fd(buffer* b, fd_type fd) {
   b->fd = fd;
 
   b->p = b->n = 0;

@@ -22,10 +22,10 @@
 #define HTTP_RECV_BUFSIZE 16384
 #define HTTP_SEND_BUFSIZE 32768
 
-ssize_t http_read_internal(fd_t fd, char* buf, size_t received, buffer* b);
+ssize_t http_read_internal(fd_type fd, char* buf, size_t received, buffer* b);
 
-ssize_t http_socket_read(fd_t fd, void* buf, size_t len, void* b);
-ssize_t http_socket_write(fd_t fd, void* buf, size_t len, void* b);
+ssize_t http_socket_read(fd_type fd, void* buf, size_t len, void* b);
+ssize_t http_socket_write(fd_type fd, void* buf, size_t len, void* b);
 
 int
 http_socket(http* h, int nonblock) {
@@ -57,7 +57,7 @@ http_socket(http* h, int nonblock) {
 }
 
 ssize_t
-http_socket_read(fd_t fd, void* buf, size_t len, void* b) {
+http_socket_read(fd_type fd, void* buf, size_t len, void* b) {
   ssize_t ret = -1, iret = -1;
   http* h = (http*)((buffer*)b)->cookie;
   http_response* r = h->response;
@@ -148,7 +148,7 @@ http_socket_read(fd_t fd, void* buf, size_t len, void* b) {
 }
 
 ssize_t
-http_socket_write(fd_t fd, void* buf, size_t len, void* b) {
+http_socket_write(fd_type fd, void* buf, size_t len, void* b) {
   http* h = (http*)((buffer*)b)->cookie;
   http_response* r = h->response;
   ssize_t ret = 0;

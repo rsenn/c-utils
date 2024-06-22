@@ -22,7 +22,7 @@ typedef struct {
 } brotli_ctx;
 
 static ssize_t
-buffer_brotli_read(fd_t fd, void* data, size_t n, buffer* b) {
+buffer_brotli_read(fd_type fd, void* data, size_t n, buffer* b) {
   brotli_ctx* ctx = b->cookie;
   BrotliDecoderResult ret;
   ssize_t r;
@@ -65,7 +65,7 @@ buffer_brotli_read(fd_t fd, void* data, size_t n, buffer* b) {
 }
 
 static ssize_t
-buffer_brotli_write(fd_t fd, void* data, size_t n, buffer* b) {
+buffer_brotli_write(fd_type fd, void* data, size_t n, buffer* b) {
   brotli_ctx* ctx = b->cookie;
   buffer* other = ctx->b;
   const uint8* next_in;

@@ -13,8 +13,8 @@
 extern "C" {
 #endif
 
-int ndelay_on(fd_t);
-int ndelay_off(fd_t);
+int ndelay_on(fd_type);
+int ndelay_off(fd_type);
 
 #ifdef __cplusplus
 }

@@ -1,7 +1,7 @@
 #include "../buffer.h"
 
 ssize_t
-buffer_dummyreadbuf(fd_t fd, void* buf, size_t len, void* arg) {
+buffer_dummyreadbuf(fd_type fd, void* buf, size_t len, void* arg) {
   (void)fd;
   (void)buf;
   (void)len;

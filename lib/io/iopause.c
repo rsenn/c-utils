@@ -93,7 +93,7 @@ iopause(iopause_fd* x, unsigned int len, struct taia* deadline, struct taia* sta
     fd_set rfds;
     fd_set wfds;
     int nfds;
-    fd_t fd;
+    fd_type fd;
 
     FD_ZERO(&rfds);
     FD_ZERO(&wfds);
@@ -127,7 +127,7 @@ iopause(iopause_fd* x, unsigned int len, struct taia* deadline, struct taia* sta
       fd = x[i].fd;
       if(fd < 0)
         continue;
-      if(fd >= (fd_t)(8 * sizeof(fd_set)))
+      if(fd >= (fd_type)(8 * sizeof(fd_set)))
         continue; /*XXX*/
 
       if(x[i].events & IOPAUSE_READ)

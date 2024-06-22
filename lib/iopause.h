@@ -30,7 +30,7 @@ extern void iopause(iopause_fd*, unsigned int, struct taia*, struct taia*);
 /* sysdep: -poll */
 
 typedef struct {
-  fd_t fd;
+  fd_type fd;
   short events;
   short revents;
 } iopause_fd;

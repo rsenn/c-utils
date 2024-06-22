@@ -8,7 +8,7 @@
 
 ssize_t
 tls_instance_return(tls_instance_t* i, tls_op_t op, int ret) {
-  fd_t fd = 0;
+  fd_type fd = 0;
   i->op = op;
   i->error = 0;
   i->retval = ret;

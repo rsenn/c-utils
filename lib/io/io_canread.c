@@ -9,7 +9,7 @@
 
 #include <errno.h>
 
-void io_wantread_really(fd_t d, io_entry* e);
+void io_wantread_really(fd_type d, io_entry* e);
 
 int64
 io_canread() {

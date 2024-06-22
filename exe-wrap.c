@@ -200,7 +200,7 @@ get_prog_name(void) {
 static int
 write_log(const strarray* argv, const char* file) {
   stralloc sa;
-  fd_t fd;
+  fd_type fd;
 
   if((fd = open_append(file)) != -1) {
     buffer b;

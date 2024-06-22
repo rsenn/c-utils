@@ -55,8 +55,8 @@ last_error_str() {
 #endif
 
 int
-process_create(const char* filename, char* const argv[], fd_t std[3], const char* cwd) {
-  fd_t fds[3];
+process_create(const char* filename, char* const argv[], fd_type std[3], const char* cwd) {
+  fd_type fds[3];
   int32 pid;
   int status = 0;
 
@@ -170,7 +170,7 @@ process_create(const char* filename, char* const argv[], fd_t std[3], const char
     int status;
 
     if((pid = fork()) == 0) {
-      fd_t i;
+      fd_type i;
       for(i = 0; i <= 2; ++i) {
         if(fds[i] != i) {
           dup2(fds[i], i);

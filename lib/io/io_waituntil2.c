@@ -25,7 +25,7 @@
 #endif
 
 #if 0
-static void handleevent(fd_t fd, int readable, int writable, int error) {
+static void handleevent(fd_type fd, int readable, int writable, int error) {
   io_entry* e = array_get(io_getfds(), sizeof(io_entry), fd);
   if(e) {
     int curevents = 0, newevents;
@@ -101,8 +101,8 @@ static void handleevent(fd_t fd, int readable, int writable, int error) {
 #endif
 
 static void
-put_fdset(buffer* b, const char* name, const fd_set* fds, fd_t maxfd) {
-  fd_t i;
+put_fdset(buffer* b, const char* name, const fd_set* fds, fd_type maxfd) {
+  fd_type i;
   buffer_putm_internal(b, "fd_set ", name, "=[", NULL);
   for(i = 0; i <= maxfd; ++i) {
     if(FD_ISSET(i, fds)) {
@@ -216,7 +216,7 @@ io_waituntil2(int64 milliseconds) {
 #elif defined(USE_SELECT)
   {
     fd_set rfds, wfds;
-    fd_t maxfd = -1;
+    fd_type maxfd = -1;
     io_entry* e;
     struct timeval tv;
     iarray* fds = io_getfds();

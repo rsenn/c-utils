@@ -175,13 +175,13 @@ read_mediathek_list(const char* url, buffer* b) {
 
   io_onlywantwrite(h.sock);
 
-  buffer_init(&in, (buffer_op_sys*)(void*)&http_read, (fd_t)(size_t)(void*)&h, malloc(8192), 8192);
+  buffer_init(&in, (buffer_op_sys*)(void*)&http_read, (fd_type)(size_t)(void*)&h, malloc(8192), 8192);
   in.cookie = &h;
   in.deinit = &buffer_free;
   buffer_lzma(b, &in, 0);
 
   for(;;) {
-    fd_t fd;
+    fd_type fd;
     int doread = 0;
 
     io_wait();
@@ -888,7 +888,7 @@ main(int argc, char* argv[]) {
 
   if(!ret) {
     int n = 0;
-    fd_t fd;
+    fd_type fd;
 
     buffer_puts(&output, "{\n");
 

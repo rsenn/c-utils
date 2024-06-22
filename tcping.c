@@ -199,7 +199,7 @@ put_taia(buffer* b, const struct taia* t) {
 
 int
 main(int argc, char* argv[]) {
-  fd_t sock;
+  fd_type sock;
   int error = 0;
   int ret = 0;
   int verbose = 1;

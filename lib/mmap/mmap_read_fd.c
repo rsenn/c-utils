@@ -14,7 +14,7 @@
 char mmap_empty[] = {0};
 
 char*
-mmap_read_fd(fd_t fd, size_t* filesize) {
+mmap_read_fd(fd_type fd, size_t* filesize) {
 #if WINDOWS_NATIVE
   HANDLE h = (HANDLE)_get_osfhandle((int)fd);
   HANDLE m;

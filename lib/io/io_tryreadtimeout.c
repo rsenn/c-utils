@@ -11,7 +11,7 @@
 #endif
 
 int64
-io_tryreadtimeout(fd_t d, char* buf, int64 len) {
+io_tryreadtimeout(fd_type d, char* buf, int64 len) {
   int64 r = io_tryread(d, buf, len);
   if(r == -1) {
     tai6464 x;

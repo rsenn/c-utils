@@ -7,6 +7,6 @@
 #include "../socket_internal.h"
 
 int
-socket_close(fd_t s) {
+socket_close(fd_type s) {
   return closesocket(s);
 }

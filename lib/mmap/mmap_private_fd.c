@@ -14,7 +14,7 @@
 #endif
 
 char*
-mmap_private_fd(fd_t fd, size_t* filesize) {
+mmap_private_fd(fd_type fd, size_t* filesize) {
 #if WINDOWS_NATIVE
   HANDLE h = (HANDLE)_get_osfhandle((int)fd);
   HANDLE m;

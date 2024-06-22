@@ -5,7 +5,7 @@
 #include <assert.h>
 
 tls_err_t
-tls_error(fd_t fd) {
+tls_error(fd_type fd) {
   ssize_t ret;
   tls_instance_t* i = iarray_get(&tls_list, fd);
   assert(i);

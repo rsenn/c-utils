@@ -13,7 +13,7 @@
 #include <fcntl.h>
 
 int
-open_filename(fd_t fd, stralloc* sa) {
+open_filename(fd_type fd, stralloc* sa) {
 #ifdef F_GETPATH
   stralloc_ready(sa, MAXPATHLEN + 1);
   if(fcntl(fd, F_GETPATH, sa.s) != -1) {

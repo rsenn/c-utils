@@ -14,7 +14,7 @@
 extern char mmap_empty[];
 
 char*
-mmap_read_fd_range(fd_t fd, size_t* size, size_t offset, size_t len) {
+mmap_read_fd_range(fd_type fd, size_t* size, size_t offset, size_t len) {
   char* map;
 #if WINDOWS_NATIVE
   /*HANDLE h = (HANDLE)_get_osfhandle((int)fd);

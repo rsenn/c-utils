@@ -9,7 +9,7 @@
 #include <errno.h>
 
 void
-io_closeonexec(fd_t d) {
+io_closeonexec(fd_type d) {
 #if !(defined(_WIN32) || defined(_WIN64))
   fcntl(d, F_SETFL, fcntl(d, F_GETFL, 0) | FD_CLOEXEC);
 #endif

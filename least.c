@@ -740,7 +740,7 @@ main(int argc, char* argv[]) {
   io_wantread(watchfd);
 
   while(running) {
-    fd_t fd;
+    fd_type fd;
     int on_terminal = 0, on_input = 0;
 
     read_content(&input, 0);

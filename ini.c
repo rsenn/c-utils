@@ -8,7 +8,7 @@
 #include "lib/scan.h"
 
 ssize_t
-buffer_write_utf16le(fd_t fd, void* buf, size_t len, void* arg) {
+buffer_write_utf16le(fd_type fd, void* buf, size_t len, void* arg) {
   size_t i = 0;
   ssize_t r = 0;
   unsigned int ch;

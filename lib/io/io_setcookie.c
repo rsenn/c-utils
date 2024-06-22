@@ -6,7 +6,7 @@
 #endif
 
 void
-io_setcookie(fd_t d, void* cookie) {
+io_setcookie(fd_type d, void* cookie) {
   io_entry* e;
   if((e = (io_entry*)iarray_get((iarray*)io_getfds(), d)))
     e->cookie = cookie;

@@ -81,14 +81,14 @@
 // typedef enum { true = 1, false = 0 }
 // bool;
 typedef struct socketbuf_s {
-  fd_t sock;
+  fd_type sock;
   buffer buf;
   stralloc host;
   uint16 af;
   uint16 port;
   char addr[16];
   uint32 scope_id;
-  fd_t dump;
+  fd_type dump;
   int force_write : 1;
 } socketbuf_t;
 
@@ -114,17 +114,17 @@ void dump_strarray(buffer*, const strarray* a, const char* quote, const char* se
 size_t dump_fds(array*);
 void dump_io(void);
 
-connection_t* connection_new(fd_t, char addr[16], uint16 port);
+connection_t* connection_new(fd_type, char addr[16], uint16 port);
 void connection_delete(connection_t*);
-connection_t* connection_find(fd_t, fd_t proxy);
-fd_t connection_open_log(connection_t*, const char* prefix, const char* suffix);
+connection_t* connection_find(fd_type, fd_type proxy);
+fd_type connection_open_log(connection_t*, const char* prefix, const char* suffix);
 
-socketbuf_t* socket_find(fd_t);
-socketbuf_t* socket_other(fd_t);
-ssize_t socket_send(fd_t, void* x, size_t n, void* ptr);
-int socket_getlocal_addr(fd_t, int af, char ip[16], uint16* port, uint32* scope_id);
+socketbuf_t* socket_find(fd_type);
+socketbuf_t* socket_other(fd_type);
+ssize_t socket_send(fd_type, void* x, size_t n, void* ptr);
+int socket_getlocal_addr(fd_type, int af, char ip[16], uint16* port, uint32* scope_id);
 int socket_connect(socketbuf_t*);
-void socket_accept(fd_t, char addr[16], uint16 port);
+void socket_accept(fd_type, char addr[16], uint16 port);
 
 void sockbuf_init(socketbuf_t*);
 size_t sockbuf_fmt_addr(socketbuf_t*, char* dest, char sep);
@@ -134,8 +134,8 @@ void sockbuf_check(socketbuf_t*);
 void sockbuf_log_data(socketbuf_t*, bool send, char* x, size_t len);
 ssize_t sockbuf_forward_data(socketbuf_t*, socketbuf_t* destination);
 
-fd_t server_socket(void);
-fd_t server_listen(uint16);
+fd_type server_socket(void);
+fd_type server_listen(uint16);
 
 char* search_path(const char*, const char* what, stralloc* out);
 
@@ -151,7 +151,7 @@ void usage(const char*);
 
 static socketbuf_t server, remote;
 static const char* fileBase;
-fd_t server_sock;
+fd_type server_sock;
 int64 connections_processed = 0, max_length = -1;
 char *remote_host, *cmd_in, *cmd_out;
 bool foreground = false, use_syslog = false, line_buffer = false, dump = false;
@@ -360,13 +360,13 @@ dump_strarray(buffer* b, const strarray* a, const char* quote, const char* sep) 
 size_t
 dump_fds(array* arr) {
   slink* sl;
-  array_catb(arr, &server_sock, sizeof(fd_t));
+  array_catb(arr, &server_sock, sizeof(fd_type));
   for(sl = connections; sl; sl = sl->next) {
     connection_t* c = (connection_t*)sl;
-    array_catb(arr, &c->client.sock, sizeof(fd_t));
-    array_catb(arr, &c->proxy.sock, sizeof(fd_t));
+    array_catb(arr, &c->client.sock, sizeof(fd_type));
+    array_catb(arr, &c->proxy.sock, sizeof(fd_type));
   }
-  return array_length(arr, sizeof(fd_t));
+  return array_length(arr, sizeof(fd_type));
 }
 
 /*void
@@ -390,7 +390,7 @@ dump_io() {
 
   num_fds = dump_fds(&fds);
   for(i = 0; i < num_fds; i++) {
-    fd_t fd = *(fd_t*)array_get(&fds, sizeof(fd_t), i);
+    fd_type fd = *(fd_type*)array_get(&fds, sizeof(fd_type), i);
 
     io_entry* e = io_getentry(fd);
 
@@ -414,7 +414,7 @@ dump_io() {
 }
 
 connection_t*
-connection_new(fd_t sock, char addr[16], uint16 port) {
+connection_new(fd_type sock, char addr[16], uint16 port) {
   connection_t* c = alloc_zero(sizeof(connection_t));
   sockbuf_init(&c->client);
   sockbuf_init(&c->proxy);
@@ -442,7 +442,7 @@ connection_delete(connection_t* c) {
 }
 
 connection_t*
-connection_find(fd_t client, fd_t proxy) {
+connection_find(fd_type client, fd_type proxy) {
   slink* sl;
   for(sl = connections; sl; sl = sl->next) {
     connection_t* c = (connection_t*)sl;
@@ -452,7 +452,7 @@ connection_find(fd_t client, fd_t proxy) {
   return NULL;
 }
 
-fd_t
+fd_type
 connection_open_log(connection_t* c, const char* prefix, const char* suffix) {
   stralloc filename;
   char *x, buf[1024];
@@ -487,7 +487,7 @@ connection_open_log(connection_t* c, const char* prefix, const char* suffix) {
 }
 
 socketbuf_t*
-socket_find(fd_t sock) {
+socket_find(fd_type sock) {
   connection_t* c;
   if((c = connection_find(sock, -1)))
     return &c->client;
@@ -497,7 +497,7 @@ socket_find(fd_t sock) {
 }
 
 socketbuf_t*
-socket_other(fd_t sock) {
+socket_other(fd_type sock) {
   connection_t* c;
   if((c = connection_find(sock, -1)))
     return &c->proxy;
@@ -507,7 +507,7 @@ socket_other(fd_t sock) {
 }
 
 ssize_t
-socket_send(fd_t fd, void* x, size_t n, void* ptr) {
+socket_send(fd_type fd, void* x, size_t n, void* ptr) {
   ssize_t r = send(fd, x, n, 0);
 
   if(r > 0) {
@@ -527,7 +527,7 @@ socket_send(fd_t fd, void* x, size_t n, void* ptr) {
 } /*
 
  int
- socket_getlocal_addr(fd_t sock, int af,
+ socket_getlocal_addr(fd_type sock, int af,
  char ip[16], uint16* port, uint32*
  scope_id) { int ret = af == AF_INET6 ?
  socket_local6(sock, ip, port, scope_id)
@@ -574,7 +574,7 @@ socket_connect(socketbuf_t* sb) {
 
 /* Handle client connection */
 void
-socket_accept(fd_t sock, char addr[16], uint16 port) {
+socket_accept(fd_type sock, char addr[16], uint16 port) {
   connection_t* c = connection_new(sock, addr, port);
   if((c->proxy.sock = socket_connect(&remote)) < 0)
     goto cleanup;
@@ -767,9 +767,9 @@ sockbuf_forward_data(socketbuf_t* source, socketbuf_t* destination) {
   return n <= 0 ? n : (ssize_t)written;
 }
 
-fd_t
+fd_type
 server_socket() {
-  fd_t s = server.af == AF_INET6 ? socket_tcp6() : socket_tcp4();
+  fd_type s = server.af == AF_INET6 ? socket_tcp6() : socket_tcp4();
   if(s == -1)
     return s;
 
@@ -788,9 +788,9 @@ server_socket() {
 }
 
 /* Create server socket */
-fd_t
+fd_type
 server_listen(uint16 port) {
-  fd_t sock;
+  fd_type sock;
 
   if((sock = server_socket()) == -1)
     return SERVER_BIND_ERROR;
@@ -841,7 +841,7 @@ server_finalize() {
   size_t i, n;
   // time_t t;
   buffer w;
-  fd_t in, out;
+  fd_type in, out;
   // struct tm lt;
   strlist_init(&syspath, ':');
   stralloc_copys(&syspath.sa, env_get("PATH"));
@@ -868,8 +868,8 @@ server_finalize() {
   strlist_foreach(&output_files, s, n) {
     size_t filesize;
     ssize_t ret;
-    fd_t wr = s[str_find(s, "recv")] ? in : out;
-    fd_t file = open_read(s);
+    fd_type wr = s[str_find(s, "recv")] ? in : out;
+    fd_type file = open_read(s);
     if(!(fstat(file, &st) == 0 && (filesize = st.st_size)))
       filesize = 0;
     //    t = st.st_ctime;
@@ -915,7 +915,7 @@ server_tar_files(const char* cmd, const stralloc* archive, strlist* files) {
   char* const* v;
   int32 pid, child_pid;
   int status;
-  fd_t out = STDOUT_FILENO;
+  fd_type out = STDOUT_FILENO;
   base = path_basename(cmd);
 
   strarray_from_argv(strlist_count(files), (const char* const*)strlist_to_argv(files), &argv);
@@ -1123,7 +1123,7 @@ server_loop() {
 
     while((sock = io_canread()) != -1) {
       if(sock == server_sock) {
-        fd_t sock;
+        fd_type sock;
         char addr[16];
         uint16 port;
         socklen_t addrlen = sizeof(addr);

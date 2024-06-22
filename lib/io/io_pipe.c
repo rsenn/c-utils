@@ -10,7 +10,7 @@
 #include <fcntl.h>
 
 int
-io_pipe(fd_t* d) {
+io_pipe(fd_type* d) {
 #if WINDOWS_NATIVE
 
   SECURITY_ATTRIBUTES security_attributes;
@@ -27,7 +27,7 @@ io_pipe(fd_t* d) {
   d[1] = _open_osfhandle((intptr_t)fds[1], _O_WRONLY | _O_BINARY);
   return 1;
 #else
-  fd_t fds[2];
+  fd_type fds[2];
   if(pipe(fds) == -1)
     return 0;
   if(io_fd((size_t)fds[1]) && io_fd((size_t)fds[0])) {

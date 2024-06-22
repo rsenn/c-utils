@@ -91,7 +91,7 @@ long alt_firstwrite;
 
 /* put d on internal data structure, return 1 on success, 0 on error */
 static io_entry*
-io_fd_internal(fd_t d, int flags) {
+io_fd_internal(fd_type d, int flags) {
   io_entry* e;
 #if !WINDOWS_NATIVE
   long r;
@@ -196,7 +196,7 @@ io_fd_internal(fd_t d, int flags) {
 }
 
 int
-io_fd(fd_t d) {
+io_fd(fd_type d) {
   io_entry* e;
 #ifdef DEBUG_IO
   buffer_putspad(buffer_2, "io_fd", 30);
@@ -209,7 +209,7 @@ io_fd(fd_t d) {
 }
 
 int
-io_fd_canwrite(fd_t d) {
+io_fd_canwrite(fd_type d) {
   io_entry* e = io_fd_internal(d, 0);
   if(e)
     e->canwrite = 1;
@@ -217,7 +217,7 @@ io_fd_canwrite(fd_t d) {
 }
 
 int
-io_fd_flags(fd_t d, int flags) {
+io_fd_flags(fd_type d, int flags) {
   io_entry* e = io_fd_internal(d, flags);
   if(e && (flags & IO_FD_CANWRITE))
     e->canwrite = 1;

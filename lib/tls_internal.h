@@ -22,7 +22,7 @@
 #include <openssl/x509.h>
 #include <openssl/bio.h>
 
-typedef void want_func(fd_t);
+typedef void want_func(fd_type);
 
 typedef enum { TLS_OP_WRITE = 0, TLS_OP_READ, TLS_OP_ACCEPT, TLS_OP_CONNECT, TLS_OP_SHUTDOWN } tls_op_t;
 
@@ -81,9 +81,9 @@ extern tls_ctx_t *tls_client_ctx, *tls_server_ctx;
 
 void tls_instance_debug(tls_instance_t* i);
 int tls_instance_errno(tls_instance_t* i);
-tls_instance_t* tls_instance_get(fd_t fd);
+tls_instance_t* tls_instance_get(fd_type fd);
 int tls_instance_handshake(tls_instance_t* i);
-tls_instance_t* tls_instance_new(fd_t fd);
+tls_instance_t* tls_instance_new(fd_type fd);
 ssize_t tls_instance_return(tls_instance_t* i, tls_op_t op, int ret);
 const char* tls_instance_strerror(tls_instance_t* i);
 const char* tls_instance_strerror(tls_instance_t* i);

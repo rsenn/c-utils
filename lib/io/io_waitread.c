@@ -16,7 +16,7 @@
 #if WINDOWS_NATIVE
 
 int64
-io_waitread(fd_t d, char* buf, int64 len) {
+io_waitread(fd_type d, char* buf, int64 len) {
   long r;
   io_entry* e = (io_entry*)iarray_get((iarray*)io_getfds(), d);
   if(!e) {
@@ -40,7 +40,7 @@ io_waitread(fd_t d, char* buf, int64 len) {
 #else
 
 int64
-io_waitread(fd_t d, char* buf, int64 len) {
+io_waitread(fd_type d, char* buf, int64 len) {
   long r;
   struct pollfd p;
   io_entry* e = (io_entry*)iarray_get((iarray*)io_getfds(), d);

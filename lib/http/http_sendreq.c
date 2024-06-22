@@ -8,7 +8,7 @@
 #include "../fmt.h"
 
 static ssize_t
-do_send(fd_t s, const void* buf, size_t len) {
+do_send(fd_type s, const void* buf, size_t len) {
   return send(s, buf, len, 0);
 }
 
