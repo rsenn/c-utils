@@ -163,7 +163,11 @@ cpp_macro_expand(cpp* cpp, tokenizer* t, buffer* out, const char* name, unsigned
     }
 
     if(is_define) {
+<<<<<<< HEAD:lib/cpp/cpp_macro_expand.c
       if(MAP_GET(cpp->macros, argvalues[0].buf, argvalues[0].len + 1))
+=======
+      if(cpp_macro_get(cpp, argvalues[0].buf))
+>>>>>>> 06552e715f8313425863943b2f65ee7cd9bb5516:lib/cpp/cpp_expand_macro.c
         buffer_puts(out, "1");
       else
         buffer_puts(out, "0");

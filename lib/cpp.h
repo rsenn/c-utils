@@ -50,6 +50,7 @@ int cpp_stringify(cpp*, tokenizer* t, buffer* output);
 int cpp_tchain_parens_follows(cpp*, int rec_level);
 
 #define cpp_macro_add(cpp, name, m) MAP_ADD((cpp)->macros, (char*)name, m)
+ 
 
 #endif
 /** @} */

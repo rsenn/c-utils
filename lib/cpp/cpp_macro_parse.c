@@ -172,7 +172,7 @@ cpp_macro_parse(cpp* cpp, tokenizer* t) {
       }
 
       buffer_putc(contents.f, '\0');
-      buffer_flush(contents.f);
+       buffer_flush(contents.f);
 
       if(contents.buf) {
         buffer_copybuf(&new.str_contents, contents.buf, contents.len);

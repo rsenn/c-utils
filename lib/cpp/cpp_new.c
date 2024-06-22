@@ -2,7 +2,7 @@
 
 cpp*
 cpp_new(void) {
-  cpp* ret;
+   cpp* ret; 
   cpp_macro m = {/*.num_args =*/1};
 
   if(!(ret = alloc_zero(sizeof(struct cpp_s))))
