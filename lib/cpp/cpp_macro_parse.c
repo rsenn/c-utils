@@ -166,6 +166,12 @@ cpp_macro_parse(cpp* pp, tokenizer* t) {
   if(contents.buf) {
     buffer_copybuf(&new.str_contents, contents.buf, contents.len);
 
+#ifdef DEBUG_CPP
+    buffer_putm_internal(buffer_2, "parsed macro '", macroname, "': '", 0);
+    buffer_put(buffer_2, contents.buf, contents.len);
+    buffer_putsflush(buffer_2, "'\n");
+#endif
+
     // new.str_contents_buf = new.str_contents.x;
   }
 

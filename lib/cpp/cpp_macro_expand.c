@@ -11,7 +11,7 @@ cpp_macro_expand(cpp* pp, tokenizer* t, buffer* out, const char* name, int rec_l
   cpp_macro* m;
   token tok;
   unsigned num_args, c;
-  cpp_file* argvalues;
+  cpp_file* args;
 
   m = (is_define && rec_level != -1) ? NULL : cpp_macro_get(pp, name);
 
@@ -60,10 +60,10 @@ cpp_macro_expand(cpp* pp, tokenizer* t, buffer* out, const char* name, int rec_l
 
   num_args = MACRO_ARGCOUNT(m);
   c = (MACRO_VARIADIC(m) ? num_args + 1 : num_args);
-  argvalues = c ? alloc_zero(c * sizeof(cpp_file)) : 0;
+  args = c ? alloc_zero(c * sizeof(cpp_file)) : 0;
 
   for(i = 0; i < num_args; i++)
-    argvalues[i].f = memstream_open(&argvalues[i].buf, &argvalues[i].len);
+    args[i].f = memstream_open(&args[i].buf, &args[i].len);
 
   /* replace named arguments in the contents of the macro call */
   if(FUNCTIONLIKE(m)) {
@@ -139,26 +139,26 @@ cpp_macro_expand(cpp* pp, tokenizer* t, buffer* out, const char* name, int rec_l
       }
 
       need_arg = 0;
-      emit_token(argvalues[curr_arg].f, &tok, t->buf);
+      emit_token(args[curr_arg].f, &tok, t->buf);
     }
   }
 
   for(i = 0; i < num_args; i++) {
-    argvalues[i].f = memstream_reopen(argvalues[i].f, &argvalues[i].buf, &argvalues[i].len);
+    args[i].f = memstream_reopen(args[i].f, &args[i].buf, &args[i].len);
 
-    tokenizer_from_file(&argvalues[i].t, argvalues[i].f);
+    tokenizer_from_file(&args[i].t, args[i].f);
 
 #ifdef DEBUG_CPP
     buffer_putm_internal(buffer_2, "macro argument ", 0);
     buffer_putlong(buffer_2, (long)i);
     buffer_puts(buffer_2, ": ");
-    buffer_put(buffer_2, argvalues[i].buf, argvalues[i].len);
+    buffer_put(buffer_2, args[i].buf, args[i].len);
     buffer_putnlflush(buffer_2);
 #endif
   }
 
   if(is_define)
-    buffer_puts(out, cpp_macro_get(pp, argvalues[0].buf) ? "1" : "0");
+    buffer_puts(out, cpp_macro_get(pp, args[0].buf) ? "1" : "0");
 
   if(!m->str_contents_buf)
     goto cleanup;
@@ -194,19 +194,19 @@ cpp_macro_expand(cpp* pp, tokenizer* t, buffer* out, const char* name, int rec_l
         arg_nr = cpp_macro_arglist_pos(m, id);
 
         if(arg_nr != (size_t)-1) {
-          tokenizer_rewind(&argvalues[arg_nr].t);
+          tokenizer_rewind(&args[arg_nr].t);
 
           if(hash_count == 1)
-            /*ret = */ cpp_stringify(pp, &argvalues[arg_nr].t, output);
+            /*ret = */ cpp_stringify(pp, &args[arg_nr].t, output);
           else
             for(;;) {
-              if(!tokenizer_next(&argvalues[arg_nr].t, &tok))
+              if(!tokenizer_next(&args[arg_nr].t, &tok))
                 return 0;
 
               if(tok.type == TT_EOF)
                 break;
 
-              emit_token(output, &tok, argvalues[arg_nr].t.buf);
+              emit_token(output, &tok, args[arg_nr].t.buf);
             }
 
           hash_count = 0;
@@ -388,10 +388,10 @@ cpp_macro_expand(cpp* pp, tokenizer* t, buffer* out, const char* name, int rec_l
   }
 cleanup:
   for(i = 0; i < num_args; i++) {
-    memstream_free(argvalues[i].f);
-    // alloc_free(argvalues[i].buf);
+    memstream_free(args[i].f);
+    // alloc_free(args[i].buf);
   }
 
-  alloc_free(argvalues);
+  alloc_free(args);
   return 1;
 }

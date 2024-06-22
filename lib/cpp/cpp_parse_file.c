@@ -51,8 +51,8 @@ cpp_parse_file(cpp* pp, buffer* f, const char* fn, buffer* out) {
   while((ret = tokenizer_next(&t, &tok)) && tok.type != TT_EOF) {
 
     if((newline = tok.column == 0))
-      if(!(ret = cpp_parse_whitespace(&t, &tok, &ws_count)))
-        return ret;
+      if(!cpp_parse_whitespace(&t, &tok, &ws_count))
+        return 0;
 
     if(tok.type == TT_EOF)
       break;
@@ -90,29 +90,29 @@ cpp_parse_file(cpp* pp, buffer* f, const char* fn, buffer* out) {
 
       switch(index) {
         case 0: {
-          if(!(ret = cpp_include_file(pp, &t, out)))
-            return ret;
+          if(!cpp_include_file(pp, &t, out))
+            return 0;
 
           break;
         }
 
         case 1: {
-          if(!(ret = cpp_parse_error(&t, 1)))
-            return ret;
+          if(!cpp_parse_error(&t, 1))
+            return 0;
 
           break;
         }
 
         case 2: {
-          if(!(ret = cpp_parse_error(&t, 0)))
-            return ret;
+          if(!cpp_parse_error(&t, 0))
+            return 0;
 
           break;
         }
 
         case 3: {
-          if(!(ret = cpp_macro_parse(pp, &t)))
-            return ret;
+          if(!cpp_macro_parse(pp, &t))
+            return 0;
 
           break;
         }

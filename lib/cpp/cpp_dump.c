@@ -6,7 +6,16 @@ visit(const void* key, size_t key_len, const void* value, size_t value_len, void
   cpp_macro* m = (void*)value;
   buffer* b = user_data;
 
-  buffer_putm_internal(b, "key '", n, "' str: '", m->str_contents_buf, "'", 0);
+  if(m->num_args & (MACRO_FLAG_OBJECTLIKE | MACRO_FLAG_VARIADIC))
+    buffer_putm_internal(b, (m->num_args & MACRO_FLAG_OBJECTLIKE) ? "objectlike " : (m->num_args & MACRO_FLAG_VARIADIC) ? "variadic   " : "default    ", 0);
+
+  if(m->num_args & MACRO_ARGCOUNT_MASK) {
+    buffer_putulong(b, (m->num_args & MACRO_ARGCOUNT_MASK));
+    buffer_puts(b, " args ");
+  }
+
+  buffer_putm_internal(b, n, "=", m->str_contents_buf, 0);
+
   buffer_putnlflush(b);
 }
 

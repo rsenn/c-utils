@@ -52,6 +52,10 @@ cpp_evaluate_condition(cpp* pp, tokenizer* t, int* result, char* visited[]) {
   token tok;
   tokenizer t2;
 
+#ifdef DEBUG_CPP
+  cpp_location(t, buffer_2);
+#endif
+
   tokenizer_set_flags(t, flags | TF_PARSE_WIDE_STRINGS);
 
   if(!tokenizer_next(t, &tok))
