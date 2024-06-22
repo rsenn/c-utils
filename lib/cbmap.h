@@ -44,10 +44,7 @@ cbmap_t cbmap_new_with_static_keys_and_values(void);
  WARNING: Of course, expect undefined behaviour if keys and values are changed
  during the map lifetime.
 */
-cbmap_t cbmap_new_with_custom_allocation(cbmap_allocator_fn key_allocator,
-                                         cbmap_deallocator_fn key_deallocator,
-                                         cbmap_allocator_fn value_allocator,
-                                         cbmap_deallocator_fn value_deallocator);
+cbmap_t cbmap_new_with_custom_allocation(cbmap_allocator_fn key_allocator, cbmap_deallocator_fn key_deallocator, cbmap_allocator_fn value_allocator, cbmap_deallocator_fn value_deallocator);
 
 /** Frees a map (invokes appropriate deallocators on keys and values) */
 void cbmap_destroy(cbmap_t* cmap_ptr);

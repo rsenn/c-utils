@@ -342,8 +342,8 @@ build_dep_tree32or64(pe_loaded_image* img, build_tree_config* cfg, struct dep_tr
   if(idata->size > 0 && idata->virtual_address != 0) {
     idd = pe_rva2ptr(img->base, uint32_get(&idata->virtual_address));
     if(idd)
-      for(i = 0; idd[i].attributes.all_attributes || idd[i].dll_name_rva || idd[i].module_handle_rva || idd[i].import_address_table_rva || idd[i].import_name_table_rva ||
-                 idd[i].bound_import_address_table_rva || idd[i].unload_information_table_rva || idd[i].time_date_stamp;
+      for(i = 0; idd[i].attributes.all_attributes || idd[i].dll_name_rva || idd[i].module_handle_rva || idd[i].import_address_table_rva || idd[i].import_name_table_rva || idd[i].bound_import_address_table_rva ||
+                 idd[i].unload_information_table_rva || idd[i].time_date_stamp;
           i++) {
         struct dep_tree_element* dll;
         uint64 impaddress;
@@ -389,8 +389,8 @@ build_dep_tree32or64(pe_loaded_image* img, build_tree_config* cfg, struct dep_tr
   if(idata->size > 0 && idata->virtual_address != 0) {
     idd = pe_rva2ptr(img->base, uint32_get(&idata->virtual_address));
     if(idd)
-      for(i = 0; idd[i].attributes.all_attributes || idd[i].dll_name_rva || idd[i].module_handle_rva || idd[i].import_address_table_rva || idd[i].import_name_table_rva ||
-                 idd[i].bound_import_address_table_rva || idd[i].unload_information_table_rva || idd[i].time_date_stamp;
+      for(i = 0; idd[i].attributes.all_attributes || idd[i].dll_name_rva || idd[i].module_handle_rva || idd[i].import_address_table_rva || idd[i].import_name_table_rva || idd[i].bound_import_address_table_rva ||
+                 idd[i].unload_information_table_rva || idd[i].time_date_stamp;
           i++)
         process_dep(cfg, idd[i].dll_name_rva, root, self, 1);
   }
@@ -586,30 +586,19 @@ Written by LRN.");
 
 void
 printhelp(char* argv0) {
-  buffer_putm_internal(
-      buffer_1,
-      "Usage: ",
-      argv0,
-      " [OPTION]... FILE...\n\ OPTIONS:\n\ --version         Displays version\n\ -v, --verbose         Does not work\n\ -u, --unused          Does not work\n\ -d, --data-relocs   "
-      "  Does not work\n\ -r, --function-relocs Does not work\n\ -R, --recursive       Lists dependencies recursively,\n\ eliminating duplicates\n\ -D, --search-dir      "
-      "Additional search directory\n\ --list-exports        Lists exports of a module (single file only)\n\ --list-imports        Lists imports of modules\n\ --help               "
-      " Displays this message\n\ \n\ Use -- option to pass filenames that start with `--' or `-'\n\ For bug reporting instructions, please see:\n\ <somewhere>.",
-      NULL);
+  buffer_putm_internal(buffer_1,
+                       "Usage: ",
+                       argv0,
+                       " [OPTION]... FILE...\n\ OPTIONS:\n\ --version         Displays version\n\ -v, --verbose         Does not work\n\ -u, --unused          Does not work\n\ -d, --data-relocs   "
+                       "  Does not work\n\ -r, --function-relocs Does not work\n\ -R, --recursive       Lists dependencies recursively,\n\ eliminating duplicates\n\ -D, --search-dir      "
+                       "Additional search directory\n\ --list-exports        Lists exports of a module (single file only)\n\ --list-imports        Lists imports of modules\n\ --help               "
+                       " Displays this message\n\ \n\ Use -- option to pass filenames that start with `--' or `-'\n\ For bug reporting instructions, please see:\n\ <somewhere>.",
+                       NULL);
   buffer_putnlflush(buffer_1);
 }
 
 int
-print_image_links(int first,
-                  int verbose,
-                  int unused,
-                  int datarelocs,
-                  int functionrelocs,
-                  struct dep_tree_element* self,
-                  int recursive,
-                  int list_exports,
-                  int list_imports,
-                  int depth,
-                  const char* file) {
+print_image_links(int first, int verbose, int unused, int datarelocs, int functionrelocs, struct dep_tree_element* self, int recursive, int list_exports, int list_imports, int depth, const char* file) {
   size_t i;
   int unresolved = 0;
   self->flags |= DEPTREE_VISITED;

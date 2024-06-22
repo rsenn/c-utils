@@ -102,10 +102,9 @@ struct ns {
   char* ns;
 };
 
-GEN_ALLOC_typedef(ns_alloc, struct ns, s, len, a) GEN_ALLOC_readyplus(ns_alloc, struct ns, s, len, a, i, n, x, 30, ns_alloc_readyplus)
-    GEN_ALLOC_append(ns_alloc, struct ns, s, len, a, i, n, x, 30, ns_alloc_readyplus, ns_alloc_append)
+GEN_ALLOC_typedef(ns_alloc, struct ns, s, len, a) GEN_ALLOC_readyplus(ns_alloc, struct ns, s, len, a, i, n, x, 30, ns_alloc_readyplus) GEN_ALLOC_append(ns_alloc, struct ns, s, len, a, i, n, x, 30, ns_alloc_readyplus, ns_alloc_append)
 
-        static ns_alloc ns;
+    static ns_alloc ns;
 
 struct query {
   char* owner;
@@ -124,10 +123,9 @@ struct qt {
   char ip[16];
 };
 
-GEN_ALLOC_typedef(qt_alloc, struct qt, s, len, a) GEN_ALLOC_readyplus(qt_alloc, struct qt, s, len, a, i, n, x, 30, qt_alloc_readyplus)
-    GEN_ALLOC_append(qt_alloc, struct qt, s, len, a, i, n, x, 30, qt_alloc_readyplus, qt_alloc_append)
+GEN_ALLOC_typedef(qt_alloc, struct qt, s, len, a) GEN_ALLOC_readyplus(qt_alloc, struct qt, s, len, a, i, n, x, 30, qt_alloc_readyplus) GEN_ALLOC_append(qt_alloc, struct qt, s, len, a, i, n, x, 30, qt_alloc_readyplus, qt_alloc_append)
 
-        static qt_alloc qt;
+    static qt_alloc qt;
 
 void
 qt_add(const char* q, const char type[2], const char* control, const char ip[16]) {

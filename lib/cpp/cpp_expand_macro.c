@@ -144,7 +144,7 @@ cpp_expand_macro(cpp_t* cpp, tokenizer* t, buffer* out, const char* name, unsign
         buffer_puts(out, "0");
     }
 
-    if(!m->str_contents)
+    if(!m->str_contents_buf)
       goto cleanup;
 
     {
@@ -156,7 +156,8 @@ cpp_expand_macro(cpp_t* cpp, tokenizer* t, buffer* out, const char* name, unsign
       cwae.f = memstream_open(&cwae.buf, &cwae.len);
       output = cwae.f;
 
-      tokenizer_from_file(&t2, m->str_contents);
+      tokenizer_from_file(&t2, &m->str_contents);
+
       while(1) {
         int ret;
         ret = tokenizer_next(&t2, &tok);
@@ -330,8 +331,7 @@ cpp_expand_macro(cpp_t* cpp, tokenizer* t, buffer* out, const char* name, unsign
           tokenizer_next(&cwae.t, &tok);
           if(tok.type == TT_EOF)
             break;
-          if(tok.type == TT_IDENTIFIER && tokenizer_peek(&cwae.t) == TOKENIZER_EOF && (ma = cpp_get_macro(cpp, cwae.t.buf)) && FUNCTIONLIKE(ma) &&
-             cpp_tchain_parens_follows(cpp, rec_level) != -1) {
+          if(tok.type == TT_IDENTIFIER && tokenizer_peek(&cwae.t) == TOKENIZER_EOF && (ma = cpp_get_macro(cpp, cwae.t.buf)) && FUNCTIONLIKE(ma) && cpp_tchain_parens_follows(cpp, rec_level) != -1) {
             int ret = cpp_expand_macro(cpp, &cwae.t, out, cwae.t.buf, rec_level + 1, visited);
             if(!ret)
               return ret;

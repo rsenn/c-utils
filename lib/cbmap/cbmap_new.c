@@ -4,10 +4,7 @@
 /** mark - cbmap_new */
 
 cbmap_t
-cbmap_new_with_custom_allocation(cbmap_allocator_fn key_allocator,
-                                 cbmap_deallocator_fn key_deallocator,
-                                 cbmap_allocator_fn value_allocator,
-                                 cbmap_deallocator_fn value_deallocator) {
+cbmap_new_with_custom_allocation(cbmap_allocator_fn key_allocator, cbmap_deallocator_fn key_deallocator, cbmap_allocator_fn value_allocator, cbmap_deallocator_fn value_deallocator) {
   cbmap_t map = (cbmap_t)CBM_MALLOC(sizeof(struct cbmap));
   if(map == NULL) {
     return NULL;

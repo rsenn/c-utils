@@ -64,8 +64,7 @@ parse_offset(const char* arg, uint64* dest) {
     } \
   } while(0)
 
-#define ELF_DUMP_FIELD(base, ptr, st, field) \
-  buffer_putspad(b, #field, 30), buffer_puts(b, " "), putnum(b, ELF_GET(base, ptr, st, field), ELF_SIZE(base, st, field) * 2), buffer_putnlflush(b)
+#define ELF_DUMP_FIELD(base, ptr, st, field) buffer_putspad(b, #field, 30), buffer_puts(b, " "), putnum(b, ELF_GET(base, ptr, st, field), ELF_SIZE(base, st, field) * 2), buffer_putnlflush(b)
 
 void
 elf_print_prefix(buffer* b) {
@@ -131,9 +130,8 @@ elf_dump_dynamic(range map) {
   const char* dynstrtab = NULL;
   int col_width = ELF_BITS(map.start) / 4 + 2;
   static const char* const dynamic_types[] = {
-      "NULL",     "NEEDED",     "PLTRELSZ",   "PLTGOT",       "HASH",         "STRTAB",  "SYMTAB", "RELA",     "RELASZ",        "RELAENT",         "STRSZ",   "SYMENT",
-      "INIT",     "FINI",       "SONAME",     "RPATH",        "SYMBOLIC",     "REL",     "RELSZ",  "RELENT",   "PLTREL",        "DEBUG",           "TEXTREL", "JMPREL",
-      "BIND_NOW", "INIT_ARRAY", "FINI_ARRAY", "INIT_ARRAYSZ", "FINI_ARRAYSZ", "RUNPATH", "FLAGS",  "ENCODING", "PREINIT_ARRAY", "PREINIT_ARRAYSZ",
+      "NULL", "NEEDED", "PLTRELSZ", "PLTGOT", "HASH",  "STRTAB",  "SYMTAB", "RELA",     "RELASZ",     "RELAENT",    "STRSZ",        "SYMENT",       "INIT",    "FINI",  "SONAME",   "RPATH",         "SYMBOLIC",
+      "REL",  "RELSZ",  "RELENT",   "PLTREL", "DEBUG", "TEXTREL", "JMPREL", "BIND_NOW", "INIT_ARRAY", "FINI_ARRAY", "INIT_ARRAYSZ", "FINI_ARRAYSZ", "RUNPATH", "FLAGS", "ENCODING", "PREINIT_ARRAY", "PREINIT_ARRAYSZ",
   };
 
   if(di == -1)

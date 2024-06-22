@@ -247,10 +247,7 @@ http_io_handler(http* h, buffer* out) {
           buffer_puts(buffer_2, " errno=");
           buffer_puts(buffer_2, strerror(errno));
           buffer_puts(buffer_2, " status=");
-          buffer_puts(
-              buffer_2,
-              ((const char* const[]){
-                  "-1", "HTTP_RECV_HEADER", "HTTP_RECV_DATA", "HTTP_STATUS_CLOSED", "HTTP_STATUS_ERROR", "HTTP_STATUS_BUSY", "HTTP_STATUS_FINISH", 0})[h->response->status + 1]);
+          buffer_puts(buffer_2, ((const char* const[]){"-1", "HTTP_RECV_HEADER", "HTTP_RECV_DATA", "HTTP_STATUS_CLOSED", "HTTP_STATUS_ERROR", "HTTP_STATUS_BUSY", "HTTP_STATUS_FINISH", 0})[h->response->status + 1]);
           buffer_puts(buffer_2, " len=");
           buffer_putlong(buffer_2, len);
           buffer_puts(buffer_2, " data='");
@@ -365,9 +362,7 @@ http_process(http* h, strlist* urls, uri_t* uri) {
   const char* type = http_get_header(h, "Content-Type");
   size_t typelen = str_chrs(type, "\r\n\0", 3);
   buffer_puts(buffer_2, "STATUS: ");
-  buffer_puts(
-      buffer_2,
-      ((const char* const[]){"-1", "HTTP_RECV_HEADER", "HTTP_RECV_DATA", "HTTP_STATUS_CLOSED", "HTTP_STATUS_ERROR", "HTTP_STATUS_BUSY", "HTTP_STATUS_FINISH", 0})[r->status + 1]);
+  buffer_puts(buffer_2, ((const char* const[]){"-1", "HTTP_RECV_HEADER", "HTTP_RECV_DATA", "HTTP_STATUS_CLOSED", "HTTP_STATUS_ERROR", "HTTP_STATUS_BUSY", "HTTP_STATUS_FINISH", 0})[r->status + 1]);
   buffer_putnlflush(buffer_2);
   buffer_puts(buffer_2, "PTR: ");
   buffer_putulong(buffer_2, r->ptr);
@@ -505,9 +500,7 @@ main(int argc, char* argv[]) {
       }
 
       buffer_puts(buffer_2, " status=");
-      buffer_puts(buffer_2,
-                  ((const char* const[]){
-                      "-1", "HTTP_RECV_HEADER", "HTTP_RECV_DATA", "HTTP_STATUS_CLOSED", "HTTP_STATUS_ERROR", "HTTP_STATUS_BUSY", "HTTP_STATUS_FINISH", 0})[h.response->status + 1]);
+      buffer_puts(buffer_2, ((const char* const[]){"-1", "HTTP_RECV_HEADER", "HTTP_RECV_DATA", "HTTP_STATUS_CLOSED", "HTTP_STATUS_ERROR", "HTTP_STATUS_BUSY", "HTTP_STATUS_FINISH", 0})[h.response->status + 1]);
       buffer_putnlflush(buffer_2);
 
       // buffer_dump(buffer_1, &h.q.in);

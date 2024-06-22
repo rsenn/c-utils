@@ -425,8 +425,7 @@ output_script(buffer* b, target* rule, bool shell, bool batch, const char quote_
   }
 
   if(str_equal(rule->name, "all")) {
-    buffer_putm_internal(
-        b, newline, ":SUCCESS", newline, "ECHO Done.", newline, "GOTO QUIT", newline, newline, ":FAIL", newline, "ECHO Fail.", newline, newline, ":QUIT", newline, 0);
+    buffer_putm_internal(b, newline, ":SUCCESS", newline, "ECHO Done.", newline, "GOTO QUIT", newline, newline, ":FAIL", newline, "ECHO Fail.", newline, newline, ":QUIT", newline, 0);
   }
 
   buffer_putnl(b, flush);

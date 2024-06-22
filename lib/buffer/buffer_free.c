@@ -6,4 +6,5 @@ void
 buffer_free(void* buf) {
   buffer* b = (buffer*)buf;
   alloc_free(b->x);
+  b->x = 0;
 }

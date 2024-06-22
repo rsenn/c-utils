@@ -35,7 +35,7 @@ struct cpp_s {
 
 struct macro_s {
   unsigned num_args;
-  buffer* str_contents;
+  buffer str_contents;
   char* str_contents_buf;
   LIST_T argnames;
 };

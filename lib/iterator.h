@@ -23,8 +23,7 @@ extern "C" {
 
 #define iterator_dereference(container, it) _Generic((container), array * : array_iterator_dereference, slist * : slist_iterator_dereference)(&it)
 
-#define iterator_distance(container, it1, it2) \
-  _Generic((container), array * : array_iterator_distance, stralloc * : stralloc_iterator_distance, slist * : slist_iterator_distance)(&it1, &it2)
+#define iterator_distance(container, it1, it2) _Generic((container), array * : array_iterator_distance, stralloc * : stralloc_iterator_distance, slist * : slist_iterator_distance)(&it1, &it2)
 
 #define iterator_equal(container, it1, it2) _Generic((container), array * : array_iterator_equal, stralloc * : stralloc_iterator_equal, slist * : slist_iterator_equal)(&it1, &it2)
 

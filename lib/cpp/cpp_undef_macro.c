@@ -11,9 +11,7 @@ cpp_undef_macro(cpp_t* cpp, const char* name) {
   m = MAP_VALUE(k);
   /*  alloc_free(hbmap_getkey(cpp->macros, k));*/
 
-  if(m->str_contents)
-    buffer_close(m->str_contents);
-
+  buffer_free(&m->str_contents);
   alloc_free(m->str_contents_buf);
 
   LIST_DESTROY(m->argnames);

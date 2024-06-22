@@ -589,14 +589,7 @@ ftp_clean(int send, char* buf, ssize_t* bytes, int ftpsrv) {
   if(ftpsrv == 0) {
     /* send the new port and ipaddress
      * to the server */
-    (*bytes) = sprintf(buf,
-                       "PORT %d,%d,%d,%d,%d,%d\n",
-                       sockname.sin_addr.s_addr & 0xff,
-                       (sockname.sin_addr.s_addr >> 8) & 0xff,
-                       (sockname.sin_addr.s_addr >> 16) & 0xff,
-                       sockname.sin_addr.s_addr >> 24,
-                       lporthi,
-                       lportlo);
+    (*bytes) = sprintf(buf, "PORT %d,%d,%d,%d,%d,%d\n", sockname.sin_addr.s_addr & 0xff, (sockname.sin_addr.s_addr >> 8) & 0xff, (sockname.sin_addr.s_addr >> 16) & 0xff, sockname.sin_addr.s_addr >> 24, lporthi, lportlo);
   } else {
     /* send the new port and ipaddress
      * to the client */

@@ -57,9 +57,7 @@ http_read_internal(fd_t fd, char* buf, size_t received, buffer* b) {
   buffer_puts(buffer_2, "HTTP_TRANSFER_");
   buffer_puts(buffer_2, ((const char* const[]){"UNDEF", "CHUNKED", "LENGTH", "BOUNDARY", 0})[r->transfer]);
   buffer_puts(buffer_2, " status=");
-  buffer_puts(
-      buffer_2,
-      ((const char* const[]){"-1", "HTTP_RECV_HEADER", "HTTP_RECV_DATA", "HTTP_STATUS_CLOSED", "HTTP_STATUS_ERROR", "HTTP_STATUS_BUSY", "HTTP_STATUS_FINISH", 0})[status + 1]);
+  buffer_puts(buffer_2, ((const char* const[]){"-1", "HTTP_RECV_HEADER", "HTTP_RECV_DATA", "HTTP_STATUS_CLOSED", "HTTP_STATUS_ERROR", "HTTP_STATUS_BUSY", "HTTP_STATUS_FINISH", 0})[status + 1]);
   buffer_putnlflush(buffer_2);
 
 #endif

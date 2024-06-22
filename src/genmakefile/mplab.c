@@ -9,6 +9,26 @@
 #include "is.h"
 
 static void
+to_backslash_b(void* x, size_t n) {
+  byte_replace(x, n, '/', '\\');
+}
+
+static void
+to_backslash_sa(stralloc* sa) {
+  stralloc_replacec(sa, '/', '\\');
+}
+
+static void
+to_slash_b(void* x, size_t n) {
+  byte_replace(x, n, '\\', '/');
+}
+
+static void
+to_slash_sa(stralloc* sa) {
+  stralloc_replacec(sa, '\\', '/');
+}
+
+static void
 make_fileno(stralloc* sa, int i) {
   stralloc_zero(sa);
   stralloc_copys(sa, "file_");
@@ -42,21 +62,15 @@ get_suite() {
   return 0;
 }
 static const char* compiler_suites[] = {
-    "38171385-97B2-4EC5-BF2C-"
-    "C2C027BA5B04", //!< xc8 guid
-    "507D93FD-16F1-4270-980F-"
-    "0C7C0207E6D3", //!< htc guid
-    "DBB37D42-EAE0-43C3-A936-"
-    "355514C2170D" //!< sdcc guid
+    "38171385-97B2-4EC5-BF2C-C2C027BA5B04", //!< xc8 guid
+    "507D93FD-16F1-4270-980F-0C7C0207E6D3", //!< htc guid
+    "DBB37D42-EAE0-43C3-A936-355514C2170D"  //!< sdcc guid
 };
 
 static const char* compiler_settings[] = {
-    "F42384DA-C7ED-4A02-880F-"
-    "0F5E88735CE2", //!< xc8 guid
-    "3FF1D5F2-E530-4850-9F70-"
-    "F61D55BD1AC9", //!< htc guid
-    "43F7CD89-1294-495E-9525-"
-    "F268225EB77A" //!< sdcc guid
+    "F42384DA-C7ED-4A02-880F-0F5E88735CE2", //!< xc8 guid
+    "3FF1D5F2-E530-4850-9F70-F61D55BD1AC9", //!< htc guid
+    "43F7CD89-1294-495E-9525-F268225EB77A"  //!< sdcc guid
 };
 
 static const char*
@@ -98,11 +112,11 @@ output_mplab_project(buffer* b, MAP_T* _rules, MAP_T* vars, const strlist* inclu
   MAP_PAIR_T it;
   MAP_T toolcfg;
   strlist incdirs, srcdirs;
-  const char *dir, *s;
+  const char* dir;
   char** p = 0;
   size_t n;
   unsigned int i = 0, num_sources = 0;
-  stralloc sa, file, dirname;
+  stralloc sa, file;
   strlist defines, tcfg, *vdefs;
   mplab_config_t mplab_cfg = {/* .warning_level = */ 0,
                               /* .verbose_messages = */ 1,
@@ -138,13 +152,9 @@ output_mplab_project(buffer* b, MAP_T* _rules, MAP_T* vars, const strlist* inclu
 
   stralloc_init(&sa);
   stralloc_init(&file);
-  stralloc_init(&dirname);
 
   section = ini_new(&ini, "HEADER");
-  ini_set(section,
-          "magic_cookie",
-          "{66E99B07-E706-4689-9E80-"
-          "9B2582898A13}");
+  ini_set(section, "magic_cookie", "{66E99B07-E706-4689-9E80-9B2582898A13}");
   ini_set(section, "file_version", "1.0");
 
   stralloc_copys(&sa, "PIC");
@@ -154,26 +164,40 @@ output_mplab_project(buffer* b, MAP_T* _rules, MAP_T* vars, const strlist* inclu
 
   ini_set(section, "device", sa.s);
 
-  //debug_sa("dirs.work", &dirs.work.sa);
-  //debug_sa("dirs.build", &dirs.build.sa);
-  //debug_sa("dirs.out", &dirs.out.sa);
+  // debug_sa("dirs.work", &dirs.work.sa);
+  // debug_sa("dirs.build", &dirs.build.sa);
+  // debug_sa("dirs.out", &dirs.out.sa);
   //
   strlist_init(&incdirs, ';');
   strlist_init(&srcdirs, ';');
 
   strlist_foreach_s(include_dirs, dir) {
 
-    stralloc_zero(&sa);
-    path_relative_to(dir, dirs.out.sa.s, &sa);
+    stralloc absdir;
+    stralloc_init(&absdir);
+
+    if(dirs.this.sa.len) {
+      stralloc_copy(&absdir, &dirs.this.sa);
+      stralloc_catc(&absdir, '/');
+    }
+
+    stralloc_cats(&absdir, dir);
+    stralloc_nul(&absdir);
+
+    path_relative_to(absdir.s, dirs.out.sa.s, &sa);
+    stralloc_free(&absdir);
+
     if(stralloc_endb(&sa, "/", 1))
       sa.len -= 1;
 
     if(stralloc_endb(&sa, "/.", 2))
       sa.len -= 2;
-    stralloc_replacec(&sa, '/', '\\');
+
+    to_backslash_sa(&sa);
 
     strlist_push_sa(&incdirs, &sa);
   }
+
   stralloc_nul(&incdirs.sa);
 
   section = ini_new(&section->next, "PATH_INFO");
@@ -183,7 +207,7 @@ output_mplab_project(buffer* b, MAP_T* _rules, MAP_T* vars, const strlist* inclu
   stralloc_zero(&sa);
 
   stralloc_copy(&sa, &dirs.work.sa);
-  stralloc_replacec(&sa, '/', '\\');
+  to_backslash_sa(&sa);
 
   stralloc_nul(&sa);
 
@@ -217,23 +241,18 @@ output_mplab_project(buffer* b, MAP_T* _rules, MAP_T* vars, const strlist* inclu
     set_iterator_t it;
     const char* x;
 
-    /*  buffer_puts(b, "; Number of
-      rules: "); buffer_putuint(b,
-      hmap_count(rules));
-      buffer_putsflush(b, "\r\n");*/
+    /*buffer_puts(b, "; Number of rules: ");
+    buffer_putuint(b, hmap_count(rules));
+    buffer_putsflush(b, "\r\n");*/
 
     stralloc_zero(&incdirs.sa);
 
     set_foreach(&sources_set, it, x, n) {
       bool is_inc = is_include_b(x, n);
-      bool is_src = is_source_b(x, n);
 
-      debug_byte("x", x, n);
-      debug_int("is_src", is_src);
-
-      s = x;
-      if(!is_src && num_sources == 0)
+      if(is_inc && num_sources == 0)
         num_sources = i;
+
       stralloc_zero(&sa);
 
       if(dirs.this.sa.len) {
@@ -243,38 +262,69 @@ output_mplab_project(buffer* b, MAP_T* _rules, MAP_T* vars, const strlist* inclu
 
       stralloc_catb(&sa, x, n);
       stralloc_nul(&sa);
-      stralloc_zero(&dirname);
 
-      path_dirname(s, &dirname);
-      stralloc_nul(&dirname);
+      {
+        stralloc dirname;
 
-      s = dirname.s;
-    
-      while(s[0] == '.' && s[1] == '.' && (s[2] == '/' || s[2] == '\\'))
-        s += 3;
+        stralloc_init(&dirname);
 
-      if(!str_equal(s, "."))
-        strlist_push_unique(is_inc ? &incdirs : &srcdirs, s);
+        path_dirname_b(x, n, &dirname);
+        to_backslash_sa(&dirname);
 
-      //debug_sa("sa", &sa);
-      //debug_sa("dirs.build", &dirs.build.sa);
-      //debug_sa("dirs.work", &dirs.work.sa);
-      //debug_sa("dirs.out", &dirs.out.sa);
+        stralloc_nul(&dirname);
 
-      path_relative_to(sa.s, dirs.out.sa.s, &file);
+        char* s = dirname.s;
 
-      //debug_sa("file", &file);
+        while(s[0] == '.' && s[1] == '.' && (s[2] == '/' || s[2] == '\\'))
+          s += 3;
 
-      stralloc_replacec(&file, '/', '\\');
-      stralloc_nul(&file);
-      make_fileno(&sa, i++);
-      ini_set(generated_files, sa.s, "no");
-      ini_set(other_files, sa.s, "no");
-      ini_set_sa(section, &sa, &file);
-      stralloc_zero(&file);
-      path_dirname(p ? *p : s, &file);
-      ini_set_sa(file_subfolders, &sa, &file);
-      stralloc_free(&file);
+        if(!str_equal(s, ".")) {
+          debug_str("incdir", s);
+          strlist_push_unique(is_inc ? &incdirs : &srcdirs, s);
+        }
+
+        // debug_sa("sa", &sa);
+        // debug_sa("dirs.build", &dirs.build.sa);
+        // debug_sa("dirs.work", &dirs.work.sa);
+        // debug_sa("dirs.out", &dirs.out.sa);
+
+        path_relative_to(sa.s, dirs.out.sa.s, &file);
+
+        // debug_sa("file", &file);
+
+        to_backslash_sa(&file);
+
+        {
+          stralloc key;
+          stralloc_init(&key);
+
+          stralloc_nul(&file);
+          make_fileno(&key, i++);
+          ini_set(generated_files, key.s, "no");
+          ini_set(other_files, key.s, "no");
+          ini_set_sa(section, &key, &file);
+          // debug_sa("file", &file);
+
+          {
+            stralloc subdir;
+            stralloc_init(&subdir);
+            stralloc_copy(&subdir, &file);
+
+            subdir.len = byte_rchrs(subdir.s, subdir.len, "/\\", 2);
+            stralloc_nul(&subdir);
+
+            // debug_sa("subdir", &subdir);
+
+            ini_set_sa(file_subfolders, &key, &subdir);
+            stralloc_free(&file);
+            stralloc_free(&subdir);
+          }
+
+          stralloc_free(&key);
+        }
+
+        stralloc_free(&dirname);
+      }
     }
   }
   stralloc_nul(&incdirs.sa);
@@ -309,25 +359,32 @@ output_mplab_project(buffer* b, MAP_T* _rules, MAP_T* vars, const strlist* inclu
   strlist_init(&tcfg, ',');
 
   vdefs = &var_list("DEFS", ' ')->value;
-  strlist_foreach(vdefs, s, n) {
-    n = byte_chr(s, n, ' ');
-    if(str_start(s, "-D")) {
-      s += 2;
-      n -= 2;
-    }
-    strlist_pushb(&defines, s, n);
-  }
-  vdefs = &var_list("CPPFLAGS", ' ')->value;
-  strlist_foreach(vdefs, s, n) {
-    n = byte_chr(s, n, ' ');
-    if(str_start(s, "-D") || str_start(s, "-d")) {
-      s += 2;
-      n -= 2;
 
-      if(s[str_chr(s, '$')] == '\0')
-        strlist_pushb_unique(&defines, s, n);
+  {
+    const char* s;
+
+    strlist_foreach(vdefs, s, n) {
+      n = byte_chr(s, n, ' ');
+      if(str_start(s, "-D")) {
+        s += 2;
+        n -= 2;
+      }
+      strlist_pushb(&defines, s, n);
+    }
+
+    vdefs = &var_list("CPPFLAGS", ' ')->value;
+    strlist_foreach(vdefs, s, n) {
+      n = byte_chr(s, n, ' ');
+      if(str_start(s, "-D") || str_start(s, "-d")) {
+        s += 2;
+        n -= 2;
+
+        if(s[str_chr(s, '$')] == '\0')
+          strlist_pushb_unique(&defines, s, n);
+      }
     }
   }
+
   stralloc_nul(&defines.sa);
 
   section = tool_settings = ini_new(&section->next, "TOOL_SETTINGS");
@@ -336,65 +393,38 @@ output_mplab_project(buffer* b, MAP_T* _rules, MAP_T* vars, const strlist* inclu
   if(cfg.build_type == BUILD_TYPE_DEBUG || cfg.build_type == BUILD_TYPE_RELWITHDEBINFO)
     set_debug(toolcfg);
 
-  set_int(toolcfg,
-          "DB",
-          mplab_cfg.warning_level); //!< Warning
-                                    //!< level
+  set_int(toolcfg, "DB", mplab_cfg.warning_level); //!< Warning
+                                                   //!< level
   set_str(toolcfg, "D1", defines.sa.s);
-  set_int(toolcfg,
-          "DF",
-          mplab_cfg.verbose_messages); //!< verbose
-                                       //!< messages
-  set_int(toolcfg,
-          "DD",
-          mplab_cfg.optimize_global); //!< optimize
-                                      //!< global
-  set_int(toolcfg,
-          "C2",
-          mplab_cfg.optimize_speed); //!< optimize
-                                     //!< speed
-  set_int(toolcfg,
-          "C3",
-          mplab_cfg.optimize_debug); //!< optmize
-                                     //!< debug
-  set_int(toolcfg,
-          "DE",
-          mplab_cfg.optimize_assembler); //!< optimize
-                                         //!< assembler
+  set_int(toolcfg, "DF", mplab_cfg.verbose_messages);   //!< verbose
+                                                        //!< messages
+  set_int(toolcfg, "DD", mplab_cfg.optimize_global);    //!< optimize
+                                                        //!< global
+  set_int(toolcfg, "C2", mplab_cfg.optimize_speed);     //!< optimize
+                                                        //!< speed
+  set_int(toolcfg, "C3", mplab_cfg.optimize_debug);     //!< optmize
+                                                        //!< debug
+  set_int(toolcfg, "DE", mplab_cfg.optimize_assembler); //!< optimize
+                                                        //!< assembler
   set_int(toolcfg, "C6", 255);
-  set_int(toolcfg, "D7",
-          mplab_cfg.preprocess_assembler); //!< preprocess assembler
+  set_int(toolcfg, "D7", mplab_cfg.preprocess_assembler); //!< preprocess assembler
   set_int(toolcfg, "DC", 9);
 
-  set_int(toolcfg,
-          "FE",
-          mplab_cfg.debugger); //!< debugger: 39
-                               //!< = PicKit3, 31
-                               //!< = Auto
-  set_int(toolcfg,
-          "EC",
-          mplab_cfg.clear_bss); //!< clear
-                                //!< BSS
-  set_int(toolcfg, "F0",
-          mplab_cfg.keep_generated_startup_as); //!< keep generated startup.as
-  set_int(toolcfg,
-          "EF",
-          mplab_cfg.initialize_data); //!< initialize
-                                      //!< data
-  set_int(toolcfg, "F8",
-          mplab_cfg.calibrate_oscillator); //!< calibrate oscillator
-  set_int(toolcfg, "F9",
-          mplab_cfg.backup_reset_condition_flags); //!< backup reset co ndition flags
-  set_int(toolcfg, "FA",
-          mplab_cfg.format_hex_file_for_download); //!< format hex file for download
-  set_int(toolcfg,
-          "C1",
-          mplab_cfg.managed_stack); //!< managed
-                                    //!< stack
-  set_int(toolcfg, "10E",
-          mplab_cfg.program_default_config_words); //!< program default config words
-  set_int(toolcfg, "110",
-          mplab_cfg.link_in_peripheral_library); //!< link in peripheral library
+  set_int(toolcfg, "FE", mplab_cfg.debugger);                      //!< debugger: 39
+                                                                   //!< = PicKit3, 31
+                                                                   //!< = Auto
+  set_int(toolcfg, "EC", mplab_cfg.clear_bss);                     //!< clear
+                                                                   //!< BSS
+  set_int(toolcfg, "F0", mplab_cfg.keep_generated_startup_as);     //!< keep generated startup.as
+  set_int(toolcfg, "EF", mplab_cfg.initialize_data);               //!< initialize
+                                                                   //!< data
+  set_int(toolcfg, "F8", mplab_cfg.calibrate_oscillator);          //!< calibrate oscillator
+  set_int(toolcfg, "F9", mplab_cfg.backup_reset_condition_flags);  //!< backup reset co ndition flags
+  set_int(toolcfg, "FA", mplab_cfg.format_hex_file_for_download);  //!< format hex file for download
+  set_int(toolcfg, "C1", mplab_cfg.managed_stack);                 //!< managed
+                                                                   //!< stack
+  set_int(toolcfg, "10E", mplab_cfg.program_default_config_words); //!< program default config words
+  set_int(toolcfg, "110", mplab_cfg.link_in_peripheral_library);   //!< link in peripheral library
   set_int(toolcfg, "11E", 0);
   set_int(toolcfg, "121", 0);
   set_int(toolcfg, "122", 0);
@@ -418,18 +448,14 @@ output_mplab_project(buffer* b, MAP_T* _rules, MAP_T* vars, const strlist* inclu
   stralloc_nul(&sa);
   /*set_str(toolcfg, "F5", "");*/
 
-  set_str(toolcfg,
-          "E3",
-          sa.s); //!< additional command
-                 //!< line options
+  set_str(toolcfg, "E3", sa.s); //!< additional command
+                                //!< line options
   /*set_int(toolcfg, "FB", 0);
   set_int(toolcfg, "C0", 0);*/
-  set_int(toolcfg,
-          "E5",
-          mplab_cfg.memory_model); //!< memory
-                                   //!< model:
-                                   //!< 0=small,
-                                   //!< 1=large
+  set_int(toolcfg, "E5", mplab_cfg.memory_model); //!< memory
+                                                  //!< model:
+                                                  //!< 0=small,
+                                                  //!< 1=large
   set_int(toolcfg, "BD", 0);
   set_int(toolcfg, "BC", 0);
   set_int(toolcfg, "BB", 0);
@@ -447,19 +473,15 @@ output_mplab_project(buffer* b, MAP_T* _rules, MAP_T* vars, const strlist* inclu
   set_int(toolcfg, "10A", 1);
   set_int(toolcfg, "10B", 0);
   set_int(toolcfg, "10C", 0);
-  set_int(toolcfg,
-          "E8",
-          mplab_cfg.size_of_double); //!< size of
-                                     //!< double:
-                                     //!< 0=24,
-                                     //!< 1=32
+  set_int(toolcfg, "E8", mplab_cfg.size_of_double); //!< size of
+                                                    //!< double:
+                                                    //!< 0=24,
+                                                    //!< 1=32
   set_int(toolcfg, "10F", 1);
-  set_int(toolcfg,
-          "126",
-          mplab_cfg.size_of_float); //!< size of
-                                    //!< float:
-                                    //!< 0=24,
-                                    //!< 1=32
+  set_int(toolcfg, "126", mplab_cfg.size_of_float); //!< size of
+                                                    //!< float:
+                                                    //!< 0=24,
+                                                    //!< 1=32
   set_int(toolcfg, "F1", 0);
   set_str(toolcfg, "F6", "");
   set_str(toolcfg, "F7", "");
@@ -486,11 +508,13 @@ output_mplab_project(buffer* b, MAP_T* _rules, MAP_T* vars, const strlist* inclu
     strlist_push_sa(&tcfg, &sa);
     set_int(toolcfg, "E7", 0);
   }
+
   stralloc_nul(&tcfg.sa);
 
   ini_set(tool_settings, make_tool_key(&sa, ""), tcfg.sa.s);
 
   if(get_suite() <= 1) {
+
     for(i = 0; i < num_sources; i++) {
       size_t len;
       stralloc_zero(&file);
@@ -613,10 +637,7 @@ set_debug(MAP_T map) {
   set_str(map, "111", "0");
   set_str(map, "115", "-1");
   set_str(map, "F5", "0");
-  set_str(map,
-          "E3",
-          "--output=default%2C-inhx032,"
-          "--output=+mcof%2C-elf");
+  set_str(map, "E3", "--output=default%2C-inhx032,--output=+mcof%2C-elf");
   set_str(map, "E5", "1");
   set_str(map, "E7", "0");
   set_str(map, "E8", "1");

@@ -24,8 +24,7 @@ int
 socket_tcp6(void) {
   int s;
 #if defined(LIBC_HAS_IP6) && defined(SOCK_NONBLOCK)
-  if((s = socket(noipv6 ? AF_INET : AF_INET6, SOCK_STREAM | SOCK_NONBLOCK, IPPROTO_TCP)) > -1 ||
-     (errno != EINVAL && errno != EAFNOSUPPORT && errno != EPFNOSUPPORT && errno != EPROTONOSUPPORT))
+  if((s = socket(noipv6 ? AF_INET : AF_INET6, SOCK_STREAM | SOCK_NONBLOCK, IPPROTO_TCP)) > -1 || (errno != EINVAL && errno != EAFNOSUPPORT && errno != EPFNOSUPPORT && errno != EPROTONOSUPPORT))
     return s;
 #endif
   s = socket_tcp6b();

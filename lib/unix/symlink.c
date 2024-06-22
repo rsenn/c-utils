@@ -144,9 +144,7 @@ CreateSymlink(LPCTSTR lpLinkName, LPCTSTR lpTargetName, LPSECURITY_ATTRIBUTES lp
     rdb.u.SymbolicLinkReparseBuffer.SubstituteNameOffset = rdb.u.SymbolicLinkReparseBuffer.PrintNameOffset + rdb.u.SymbolicLinkReparseBuffer.PrintNameLength;
     rdb.u.SymbolicLinkReparseBuffer.SubstituteNameLength = wcslen(namebuf_w) * sizeof(WCHAR);
 
-    byte_copy((char*)rdb.u.SymbolicLinkReparseBuffer.PathBuffer + rdb.u.SymbolicLinkReparseBuffer.SubstituteNameOffset,
-              rdb.u.SymbolicLinkReparseBuffer.SubstituteNameLength,
-              namebuf_w);
+    byte_copy((char*)rdb.u.SymbolicLinkReparseBuffer.PathBuffer + rdb.u.SymbolicLinkReparseBuffer.SubstituteNameOffset, rdb.u.SymbolicLinkReparseBuffer.SubstituteNameLength, namebuf_w);
 
     rdb.u.SymbolicLinkReparseBuffer.Flags = isRelative ? 1 : 0;
     rdb.ReparseDataLength = 12 + rdb.u.SymbolicLinkReparseBuffer.SubstituteNameOffset + rdb.u.SymbolicLinkReparseBuffer.SubstituteNameLength;

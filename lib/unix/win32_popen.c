@@ -503,8 +503,7 @@ static IDpair* __cdecl idtab(FILE* pstream) {
    * the extra entries as being free (i.e., set their stream fields to
    * to NULL).
    */
-  if((pstream != NULL) || ((__idtabsiz + 1) < __idtabsiz) || ((__idtabsiz + 1) >= (SIZE_MAX / sizeof(IDpair))) ||
-     ((newptr = (IDpair*)_recalloc_crt((void*)__idpairs, (__idtabsiz + 1), sizeof(IDpair))) == NULL))
+  if((pstream != NULL) || ((__idtabsiz + 1) < __idtabsiz) || ((__idtabsiz + 1) >= (SIZE_MAX / sizeof(IDpair))) || ((newptr = (IDpair*)_recalloc_crt((void*)__idpairs, (__idtabsiz + 1), sizeof(IDpair))) == NULL))
     /* either pstream was non-NULL or the attempt to create/expand
      * the table failed. in either case, return a NULL to indicate
      * failure.

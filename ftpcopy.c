@@ -441,8 +441,7 @@ download(struct ftpparse* x, stralloc* r_dir, stralloc* l_dir) {
   {
     char nb[FMT_ULONG];
     tmpfn.len--; /* \0 */
-    if(!stralloc_catb(&tmpfn, ".", 1) || !stralloc_catb(&tmpfn, nb, fmt_uint64(nb, mtime)) || !stralloc_catb(&tmpfn, ".", 1) ||
-       !stralloc_catb(&tmpfn, nb, fmt_uint64(nb, x->size)) || !stralloc_0(&tmpfn))
+    if(!stralloc_catb(&tmpfn, ".", 1) || !stralloc_catb(&tmpfn, nb, fmt_uint64(nb, mtime)) || !stralloc_catb(&tmpfn, ".", 1) || !stralloc_catb(&tmpfn, nb, fmt_uint64(nb, x->size)) || !stralloc_0(&tmpfn))
       if(!o_no_rest)
         unlink(tmpfn.s);
   }

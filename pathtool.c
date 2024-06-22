@@ -210,8 +210,7 @@ mounts_match(MAP_T map, const char* path, size_t pathlen, size_t* matchlen, int 
     cols[0] = KEY(t);
     cols[1] = VAL(t);
 
-    matched =
-        search->n >= ret.n && search->n <= pathlen && !path_diffb(path, search->n, search->s) && (search->n == pathlen || (search->n < pathlen && path_issep(path[search->n])));
+    matched = search->n >= ret.n && search->n <= pathlen && !path_diffb(path, search->n, search->s) && (search->n == pathlen || (search->n < pathlen && path_issep(path[search->n])));
 
 #ifdef DEBUG_OUTPUT_
     buffer_putulong(buffer_2, matched);
@@ -503,15 +502,8 @@ main(int argc, char* argv[]) {
   int digit_optind = 0;
   const char* rel_to = NULL;
   int index = 0;
-  struct unix_longopt opts[] = {{"help", 0, NULL, 'h'},
-                                {"relative-to", 1, NULL, 'r'},
-                                {"separator", 1, NULL, 's'},
-                                {"mixed", 0, NULL, 'm'},
-                                {"unix", 0, NULL, 'u'},
-                                {"windows", 0, NULL, 'w'},
-                                {"absolute", 0, NULL, 'a'},
-                                {"canonicalize", 0, NULL, 'f'},
-                                {0, 0, 0, 0}};
+  struct unix_longopt opts[] = {
+      {"help", 0, NULL, 'h'}, {"relative-to", 1, NULL, 'r'}, {"separator", 1, NULL, 's'}, {"mixed", 0, NULL, 'm'}, {"unix", 0, NULL, 'u'}, {"windows", 0, NULL, 'w'}, {"absolute", 0, NULL, 'a'}, {"canonicalize", 0, NULL, 'f'}, {0, 0, 0, 0}};
 
   MAP_NEW(mtab);
 

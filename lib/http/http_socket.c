@@ -43,8 +43,7 @@ http_socket(http* h, int nonblock) {
 
   buffer_init_free(&h->q.in, (buffer_op_sys*)(void*)&http_socket_read, h->sock, h->q.in.x ? h->q.in.x : (char*)alloc(HTTP_RECV_BUFSIZE), h->q.in.a ? h->q.in.a : HTTP_RECV_BUFSIZE);
   h->q.in.cookie = (void*)h;
-  buffer_init_free(
-      &h->q.out, (buffer_op_sys*)(void*)&http_socket_write, h->sock, h->q.out.x ? h->q.out.x : (char*)alloc(HTTP_SEND_BUFSIZE), h->q.out.a ? h->q.out.a : HTTP_SEND_BUFSIZE);
+  buffer_init_free(&h->q.out, (buffer_op_sys*)(void*)&http_socket_write, h->sock, h->q.out.x ? h->q.out.x : (char*)alloc(HTTP_SEND_BUFSIZE), h->q.out.a ? h->q.out.a : HTTP_SEND_BUFSIZE);
   h->q.out.cookie = (void*)h;
 
 #if DEBUG_HTTP
@@ -124,9 +123,7 @@ http_socket_read(fd_t fd, void* buf, size_t len, void* b) {
     buffer_puts(buffer_2, ((const char* const[]){"UNDEF", "CHUNKED", "LENGTH", "BOUNDARY", 0})[h->response->transfer]);
 
     buffer_puts(buffer_2, " status=");
-    buffer_puts(buffer_2,
-                ((const char* const[]){
-                    "-1", "HTTP_RECV_HEADER", "HTTP_RECV_DATA", "HTTP_STATUS_CLOSED", "HTTP_STATUS_ERROR", "HTTP_STATUS_BUSY", "HTTP_STATUS_FINISH", 0})[h->response->status + 1]);
+    buffer_puts(buffer_2, ((const char* const[]){"-1", "HTTP_RECV_HEADER", "HTTP_RECV_DATA", "HTTP_STATUS_CLOSED", "HTTP_STATUS_ERROR", "HTTP_STATUS_BUSY", "HTTP_STATUS_FINISH", 0})[h->response->status + 1]);
   }
   buffer_putnlflush(buffer_2);
 #endif
@@ -207,9 +204,7 @@ http_socket_write(fd_t fd, void* buf, size_t len, void* b) {
     buffer_puts(buffer_2, ((const char* const[]){"UNDEF", "CHUNKED", "LENGTH", "BOUNDARY", 0})[h->response->transfer]);
 
     buffer_puts(buffer_2, " status=");
-    buffer_puts(buffer_2,
-                ((const char* const[]){
-                    "-1", "HTTP_RECV_HEADER", "HTTP_RECV_DATA", "HTTP_STATUS_CLOSED", "HTTP_STATUS_ERROR", "HTTP_STATUS_BUSY", "HTTP_STATUS_FINISH", 0})[h->response->status + 1]);
+    buffer_puts(buffer_2, ((const char* const[]){"-1", "HTTP_RECV_HEADER", "HTTP_RECV_DATA", "HTTP_STATUS_CLOSED", "HTTP_STATUS_ERROR", "HTTP_STATUS_BUSY", "HTTP_STATUS_FINISH", 0})[h->response->status + 1]);
   }
   buffer_putnlflush(buffer_2);
 #endif

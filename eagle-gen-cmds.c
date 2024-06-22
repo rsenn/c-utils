@@ -1340,19 +1340,7 @@ print_script(buffer* b, xmlnode* e) {
     buffer_putm_internal(b, xml_get_attribute(e, "extent"), " ", xml_get_attribute(e, "shape"), " ", NULL);
     print_xml_xy(b, e);
   } else if(str_equal(e->name, "pad")) {
-    buffer_putm_internal(b,
-                         cmd.s,
-                         "'",
-                         xml_get_attribute(e, "name"),
-                         "'",
-                         " ",
-                         xml_get_attribute(e, "diameter"),
-                         " ",
-                         xml_get_attribute(e, "shape"),
-                         " ",
-                         xml_get_attribute(e, "orientation"),
-                         " ",
-                         NULL);
+    buffer_putm_internal(b, cmd.s, "'", xml_get_attribute(e, "name"), "'", " ", xml_get_attribute(e, "diameter"), " ", xml_get_attribute(e, "shape"), " ", xml_get_attribute(e, "orientation"), " ", NULL);
     print_xml_xy(b, e);
   } else if(str_equal(e->name, "hole")) {
     buffer_putm_internal(b, cmd.s, xml_get_attribute(e, "diameter"), " ", NULL);
@@ -1571,14 +1559,7 @@ main(int argc, char* argv[]) {
   int c;
   int index = 0;
   rect extent, extent2;
-  struct unix_longopt opts[] = {{"help", 0, NULL, 'h'},
-                                {"layer", 1, NULL, 'l'},
-                                {"layers", 0, NULL, 'L'},
-                                {"draw", 0, NULL, 'd'},
-                                {"align", 0, NULL, 'a'},
-                                {"align-by", 0, NULL, 'A'},
-                                {"comments", 0, NULL, 'c'},
-                                {0, 0, 0, 0}};
+  struct unix_longopt opts[] = {{"help", 0, NULL, 'h'}, {"layer", 1, NULL, 'l'}, {"layers", 0, NULL, 'L'}, {"draw", 0, NULL, 'd'}, {"align", 0, NULL, 'a'}, {"align-by", 0, NULL, 'A'}, {"comments", 0, NULL, 'c'}, {0, 0, 0, 0}};
 
   for(;;) {
     c = unix_getopt_long(argc, argv, "LdhaA:l:c", opts, &index);

@@ -573,21 +573,7 @@ generate_program_rule(const char* filename, char psa) {
     stralloc_zero(&compile->recipe);
 
 #ifdef DEBUG_OUTPUT
-    buffer_putm_internal(buffer_2,
-                         "[2]",
-                         GREEN256,
-                         "generate_program_rule(",
-                         NC,
-                         filename,
-                         GREEN256,
-                         ") ",
-                         NC,
-                         "\033[38;5;82mcompile rule" NC " '",
-                         compile->name,
-                         "' recipe '",
-                         compile->recipe.s,
-                         "'",
-                         NULL);
+    buffer_putm_internal(buffer_2, "[2]", GREEN256, "generate_program_rule(", NC, filename, GREEN256, ") ", NC, "\033[38;5;82mcompile rule" NC " '", compile->name, "' recipe '", compile->recipe.s, "'", NULL);
     buffer_putnlflush(buffer_2);
 #endif
   }
@@ -648,8 +634,7 @@ generate_program_rule(const char* filename, char psa) {
     stralloc_nul(&rule->recipe);
 
 #ifdef DEBUG_OUTPUT
-    buffer_putm_internal(
-        buffer_2, "[3]", GREEN256, "generate_program_rule(", NC, filename, GREEN256, ") ", NC, "link rule" NC " '", rule->name, "' recipe '", rule->recipe.s, "'", NULL);
+    buffer_putm_internal(buffer_2, "[3]", GREEN256, "generate_program_rule(", NC, filename, GREEN256, ") ", NC, "link rule" NC " '", rule->name, "' recipe '", rule->recipe.s, "'", NULL);
     buffer_putnlflush(buffer_2);
 #endif
 
@@ -765,8 +750,7 @@ generate_install_rules() {
     target* rule = MAP_ITER_VALUE(t);
     bool do_lib, do_bin;
 
-    do_lib = (inst_libs &&
-              (str_end(MAP_ITER_KEY(t), ".lib") || str_end(MAP_ITER_KEY(t), ".a") || MAP_ITER_KEY(t)[str_find(MAP_ITER_KEY(t), ".so")] || rule->recipe.s == commands.lib.s));
+    do_lib = (inst_libs && (str_end(MAP_ITER_KEY(t), ".lib") || str_end(MAP_ITER_KEY(t), ".a") || MAP_ITER_KEY(t)[str_find(MAP_ITER_KEY(t), ".so")] || rule->recipe.s == commands.lib.s));
     do_bin = (inst_bins && (str_end(MAP_ITER_KEY(t), ".dll") || str_end(MAP_ITER_KEY(t), ".exe") || rule->recipe.s == commands.link.s));
 
     if(!(do_lib || do_bin))
