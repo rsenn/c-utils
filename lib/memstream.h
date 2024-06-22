@@ -12,22 +12,20 @@ typedef struct memstream_s {
 
 static inline void
 memstream_free(buffer* b) {
-  /*if(b->x)
-    alloc_free(b->x);
-  b->x = 0;*/
+  buffer_free(b);
   alloc_free(b);
 }
 
 static inline ssize_t
 memstream_write(int fd, void* data, size_t len, void* arg) {
   buffer* b = arg;
-  memstream* ms = (memstream*)&b[1];
+  memstream* ms = b->cookie; //(memstream*)&b[1];
   size_t n = *ms->psize;
 
   if(alloc_re(ms->pdata, n, n + len)) {
     byte_copy((*ms->pdata) + n, len, data);
 
-    *ms->psize += len;
+    *ms->psize = n += len;
     return len;
   }
 
@@ -36,13 +34,13 @@ memstream_write(int fd, void* data, size_t len, void* arg) {
 
 static inline buffer*
 memstream_open(char** ptr, size_t* sizeloc) {
-  buffer* b = alloc(sizeof(buffer) + sizeof(memstream) + 1024);
+  buffer* b = alloc(sizeof(buffer) + sizeof(memstream));
   memstream* ms = (memstream*)&b[1];
 
   ms->pdata = ptr;
   ms->psize = sizeloc;
 
-  buffer_init(b, &memstream_write, -1, (char*)&ms[1], 1024);
+  buffer_init(b, &memstream_write, -1, alloc(1024), 1024);
 
   b->cookie = ms;
   b->deinit = &memstream_free;
@@ -50,14 +48,31 @@ memstream_open(char** ptr, size_t* sizeloc) {
   return b;
 }
 
-/*static inline buffer*
-memstream_reopen(buffer* b, char** ptr, size_t* sizeloc) {
-  memstream* ms = (memstream*)&b[1];
+ssize_t buffer_dummyread(fd_type fd, void* buf, size_t len, void* arg);
 
-  ms->pdata = ptr;
-  ms->psize = sizeloc;
+static inline buffer*
+memstream_reopen(buffer* f, char** buf, size_t* size) {
+  buffer nb;
+  buffer_flush(f);
 
-  return b;
-}*/
+  buffer_copybuf(&nb, *buf, *size);
+
+  /*  if((nb = alloc_zero(sizeof(buffer)))) {
+      buffer_init(nb, &buffer_dummyread, -1, *buf, *size);
+
+      nb->x = *buf;
+      nb->p = 0;
+      nb->n = nb->a = *size;
+      nb->fd = -1;
+      nb->op = &buffer_dummyreadbuf;
+      nb->deinit = &memstream_free;
+    }
+
+    buffer_free(f);*/
+
+  *f = nb;
+
+  return f;
+}
 
 #endif /* !defined(MEMSTREAM_H) */

@@ -1,6 +1,6 @@
 #include "../cpp_internal.h"
 
 void
-cpp_add_includedir(cpp* cpp, const char* includedir) {
-  LIST_PUSH_BACK(cpp->includedirs, includedir);
+cpp_add_includedir(cpp* pp, const char* includedir) {
+  LIST_PUSH_BACK(pp->includedirs, includedir);
 }

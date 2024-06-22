@@ -1,7 +1,7 @@
 #include "../cpp_internal.h"
 
 int
-cpp_parse_file(cpp* cpp, buffer* f, const char* fn, buffer* out) {
+cpp_parse_file(cpp* pp, buffer* f, const char* fn, buffer* out) {
   tokenizer t;
   token tok;
   int ret, newline = 1, ws_count = 0, if_level = 0, if_level_active = 0, if_level_satisfied = 0;
@@ -90,7 +90,7 @@ cpp_parse_file(cpp* cpp, buffer* f, const char* fn, buffer* out) {
 
       switch(index) {
         case 0: {
-          if(!(ret = cpp_include_file(cpp, &t, out)))
+          if(!(ret = cpp_include_file(pp, &t, out)))
             return ret;
 
           break;
@@ -110,7 +110,7 @@ cpp_parse_file(cpp* cpp, buffer* f, const char* fn, buffer* out) {
           break;
         }
         case 3: {
-          if(!(ret = cpp_macro_parse(cpp, &t)))
+          if(!(ret = cpp_macro_parse(pp, &t)))
             return ret;
 
           break;
@@ -124,14 +124,14 @@ cpp_parse_file(cpp* cpp, buffer* f, const char* fn, buffer* out) {
             return 0;
           }
 
-          cpp_macro_undef(cpp, t.buf);
+          cpp_macro_undef(pp, t.buf);
           break;
         }
         case 5: { // if
           if(all_levels_active()) {
             char* visited[MAX_RECURSION] = {0};
 
-            if(!cpp_evaluate_condition(cpp, &t, &ret, visited))
+            if(!cpp_evaluate_condition(pp, &t, &ret, visited))
               return 0;
 
             free_visited(visited);
@@ -146,7 +146,7 @@ cpp_parse_file(cpp* cpp, buffer* f, const char* fn, buffer* out) {
           if(prev_level_active() && if_level_satisfied < if_level) {
             char* visited[MAX_RECURSION] = {0};
 
-            if(!cpp_evaluate_condition(cpp, &t, &ret, visited))
+            if(!cpp_evaluate_condition(pp, &t, &ret, visited))
               return 0;
 
             free_visited(visited);
@@ -178,7 +178,7 @@ cpp_parse_file(cpp* cpp, buffer* f, const char* fn, buffer* out) {
           if(!skip_next_and_ws(&t, &tok) || tok.type == TT_EOF)
             return 0;
 
-          ret = !!cpp_macro_get(cpp, t.buf);
+          ret = !!cpp_macro_get(pp, t.buf);
 
           if(index == 9)
             ret = !ret;
@@ -250,7 +250,7 @@ cpp_parse_file(cpp* cpp, buffer* f, const char* fn, buffer* out) {
     if(tok.type == TT_IDENTIFIER) {
       char* visited[MAX_RECURSION] = {0};
 
-      if(!cpp_macro_expand(cpp, &t, out, t.buf, 0, visited))
+      if(!cpp_macro_expand(pp, &t, out, t.buf, 0, visited))
         return 0;
 
       free_visited(visited);

@@ -61,6 +61,7 @@ cpp_macro_parse(cpp* cpp, tokenizer* t) {
       error("\"defined\" cannot be used as a macro name", t, &curr);
       return 0;
     }
+
     redefined = 1;
   }
 

@@ -42,13 +42,13 @@ do_eval(tokenizer* t, int* result) {
 }
 
 int
-cpp_evaluate_condition(cpp* cpp, tokenizer* t, int* result, char* visited[]) {
+cpp_evaluate_condition(cpp* pp, tokenizer* t, int* result, char* visited[]) {
   int ret, backslash_seen = 0;
   token tok;
   char* x = 0;
   size_t n = 0;
   int flags = tokenizer_get_flags(t);
-  buffer* f;
+  buffer* mst;
   tokenizer t2;
 
   tokenizer_set_flags(t, flags | TF_PARSE_WIDE_STRINGS);
@@ -57,18 +57,18 @@ cpp_evaluate_condition(cpp* cpp, tokenizer* t, int* result, char* visited[]) {
     return ret;
 
   if(!is_whitespace_token(&tok)) {
-    error("expected whitespace after if/elif", t, &tok);
+    cpp_error("expected whitespace after if/elif", t, &tok);
     return 0;
   }
 
-  f = memstream_open(&x, &n);
+  mst = memstream_open(&x, &n);
 
   while(1) {
     if(!(ret = tokenizer_next(t, &tok)))
       return ret;
 
     if(tok.type == TT_IDENTIFIER) {
-      if(!cpp_macro_expand(cpp, t, f, t->buf, -1, visited))
+      if(!cpp_macro_expand(pp, t, mst, t->buf, -1, visited))
         return 0;
 
     } else if(tok.type == TT_SEP) {
@@ -79,18 +79,18 @@ cpp_evaluate_condition(cpp* cpp, tokenizer* t, int* result, char* visited[]) {
           if(!backslash_seen)
             break;
         } else {
-          emit_token(f, &tok, t->buf);
+          emit_token(mst, &tok, t->buf);
         }
 
         backslash_seen = 0;
       }
     } else {
-      emit_token(f, &tok, t->buf);
+      emit_token(mst, &tok, t->buf);
     }
   }
 
-  if(!(f = buffer_reopen(f, &x, &n)) /* || n == 0*/) {
-    error("#(el)if with no expression", t, &tok);
+  if(!(mst = memstream_reopen(mst, &x, &n)) /* || n == 0*/) {
+    cpp_error("#(el)if with no expression", t, &tok);
     return 0;
   }
 
@@ -100,10 +100,12 @@ cpp_evaluate_condition(cpp* cpp, tokenizer* t, int* result, char* visited[]) {
   buffer_putnlflush(buffer_2);
 #endif
 
-  tokenizer_from_file(&t2, f);
+  tokenizer_from_file(&t2, mst);
   ret = do_eval(&t2, result);
-  memstream_free(f);
-  alloc_free(x);
+  memstream_free(mst);
+  if(x)
+    alloc_free(x);
+
   tokenizer_set_flags(t, flags);
   return ret;
 }

@@ -5,7 +5,7 @@
    cpp_macro_expand from the if-evaluator code, which means activating
    the "define" macro */
 int
-cpp_macro_expand(cpp* cpp, tokenizer* t, buffer* out, const char* name, unsigned rec_level, char* visited[]) {
+cpp_macro_expand(cpp* pp, tokenizer* t, buffer* out, const char* name, unsigned rec_level, char* visited[]) {
   int is_define = !str_diff(name, "defined");
   size_t i;
   cpp_macro* m;
@@ -13,7 +13,7 @@ cpp_macro_expand(cpp* cpp, tokenizer* t, buffer* out, const char* name, unsigned
   if(is_define && rec_level != -1)
     m = NULL;
   else
-    m = cpp_macro_get(cpp, name);
+    m = cpp_macro_get(pp, name);
 
   if(!m) {
     buffer_puts(out, name);
@@ -24,7 +24,7 @@ cpp_macro_expand(cpp* cpp, tokenizer* t, buffer* out, const char* name, unsigned
     rec_level = 0;
 
   if(rec_level >= MAX_RECURSION) {
-    error("max recursion level reached", t, 0);
+    cpp_error("max recursion level reached", t, 0);
     return 0;
   }
 
@@ -36,17 +36,17 @@ cpp_macro_expand(cpp* cpp, tokenizer* t, buffer* out, const char* name, unsigned
 #endif
 
   if(rec_level == 0 && str_diff(t->filename, "<macro>")) {
-    cpp->last_file = t->filename;
-    cpp->last_line = t->line;
+    pp->last_file = t->filename;
+    pp->last_line = t->line;
   }
 
   if(!str_diff(name, "__FILE__")) {
     buffer_puts(out, "\"");
-    buffer_puts(out, cpp->last_file);
+    buffer_puts(out, pp->last_file);
     buffer_puts(out, "\"");
     return 1;
   } else if(!str_diff(name, "__LINE__")) {
-    buffer_putlong(out, cpp->last_line);
+    buffer_putlong(out, pp->last_line);
     return 1;
   }
 
@@ -54,12 +54,13 @@ cpp_macro_expand(cpp* cpp, tokenizer* t, buffer* out, const char* name, unsigned
     alloc_free(visited[rec_level]);
 
   visited[rec_level] = str_dup(name);
-  cpp->tchain[rec_level] = t;
+  pp->tchain[rec_level] = t;
 
   {
     token tok;
     unsigned num_args = MACRO_ARGCOUNT(m);
-    cpp_file* argvalues = alloc_zero((MACRO_VARIADIC(m) ? num_args + 1 : num_args) * sizeof(cpp_file));
+    unsigned c = (MACRO_VARIADIC(m) ? num_args + 1 : num_args);
+    cpp_file* argvalues = c ? alloc_zero(c * sizeof(cpp_file)) : 0;
 
     for(i = 0; i < num_args; i++)
       argvalues[i].f = memstream_open(&argvalues[i].buf, &argvalues[i].len);
@@ -70,9 +71,9 @@ cpp_macro_expand(cpp* cpp, tokenizer* t, buffer* out, const char* name, unsigned
 
       if((ret = tokenizer_peek(t)) != '(') {
         /* function-like macro shall not be expanded if not followed by '(' */
-        if(ret == TOKENIZER_EOF && rec_level > 0 && (ret = cpp_tchain_parens_follows(cpp, rec_level - 1)) != -1) {
+        if(ret == TOKENIZER_EOF && rec_level > 0 && (ret = cpp_tchain_parens_follows(pp, rec_level - 1)) != -1) {
           // warning("Replacement text involved subsequent text", t, 0);
-          t = cpp->tchain[ret];
+          t = pp->tchain[ret];
         } else {
           buffer_puts(out, name);
           goto cleanup;
@@ -116,7 +117,7 @@ cpp_macro_expand(cpp* cpp, tokenizer* t, buffer* out, const char* name, unsigned
             if(curr_arg + 1 == num_args && MACRO_VARIADIC(m)) {
               varargs = 1;
             } else if(curr_arg >= num_args) {
-              error("too many arguments for function macro", t, &tok);
+              cpp_error("too many arguments for function macro", t, &tok);
               return 0;
             }
 
@@ -129,7 +130,7 @@ cpp_macro_expand(cpp* cpp, tokenizer* t, buffer* out, const char* name, unsigned
           } else if(is_char(&tok, ')')) {
             if(!parens) {
               if(curr_arg + num_args && curr_arg < num_args - 1) {
-                error("too few args for function macro", t, &tok);
+                cpp_error("too few args for function macro", t, &tok);
                 return 0;
               }
 
@@ -149,7 +150,7 @@ cpp_macro_expand(cpp* cpp, tokenizer* t, buffer* out, const char* name, unsigned
     }
 
     for(i = 0; i < num_args; i++) {
-      argvalues[i].f = buffer_reopen(argvalues[i].f, &argvalues[i].buf, &argvalues[i].len);
+      argvalues[i].f = memstream_reopen(argvalues[i].f, &argvalues[i].buf, &argvalues[i].len);
 
       tokenizer_from_file(&argvalues[i].t, argvalues[i].f);
 
@@ -163,7 +164,7 @@ cpp_macro_expand(cpp* cpp, tokenizer* t, buffer* out, const char* name, unsigned
     }
 
     if(is_define) {
-      if(MAP_GET(cpp->macros, argvalues[0].buf, argvalues[0].len + 1))
+      if(cpp_macro_get(pp, argvalues[0].buf))
         buffer_puts(out, "1");
       else
         buffer_puts(out, "0");
@@ -207,7 +208,7 @@ cpp_macro_expand(cpp* cpp, tokenizer* t, buffer* out, const char* name, unsigned
             tokenizer_rewind(&argvalues[arg_nr].t);
 
             if(hash_count == 1)
-              ret = cpp_stringify(cpp, &argvalues[arg_nr].t, output);
+              ret = cpp_stringify(pp, &argvalues[arg_nr].t, output);
             else
               while(1) {
                 ret = tokenizer_next(&argvalues[arg_nr].t, &tok);
@@ -225,7 +226,7 @@ cpp_macro_expand(cpp* cpp, tokenizer* t, buffer* out, const char* name, unsigned
           } else {
             if(hash_count == 1) {
             hash_err:
-              error("'#' is not followed by macro parameter", &t2, &tok);
+              cpp_error("'#' is not followed by macro parameter", &t2, &tok);
               return 0;
             }
 
@@ -239,7 +240,7 @@ cpp_macro_expand(cpp* cpp, tokenizer* t, buffer* out, const char* name, unsigned
           while(1) {
             ++hash_count;
 
-            /* in a real cpp we'd need to look for '\\' first */
+            /* in a real pp we'd need to look for '\\' first */
             while(tokenizer_peek(&t2) == '\n') {
               x_tokenizer_next(&t2, &tok);
             }
@@ -252,7 +253,7 @@ cpp_macro_expand(cpp* cpp, tokenizer* t, buffer* out, const char* name, unsigned
           if(hash_count == 1)
             flush_whitespace(output, &ws_count);
           else if(hash_count > 2) {
-            error("only two '#' characters allowed for macro expansion", &t2, &tok);
+            cpp_error("only two '#' characters allowed for macro expansion", &t2, &tok);
             return 0;
           }
 
@@ -281,7 +282,7 @@ cpp_macro_expand(cpp* cpp, tokenizer* t, buffer* out, const char* name, unsigned
       /* we need to expand macros after the macro arguments have been inserted */
       if(1) {
         size_t mac_cnt = 0;
-        cwae.f = buffer_reopen(cwae.f, &cwae.buf, &cwae.len);
+        cwae.f = memstream_reopen(cwae.f, &cwae.buf, &cwae.len);
 #ifdef DEBUG_CPP
         buffer_putm_internal(buffer_2, "contents with args expanded: ", cwae.buf, NULL);
         buffer_putnlflush(buffer_2);
@@ -293,7 +294,7 @@ cpp_macro_expand(cpp* cpp, tokenizer* t, buffer* out, const char* name, unsigned
             return ret;
           if(tok.type == TT_EOF)
             break;
-          if(tok.type == TT_IDENTIFIER && cpp_macro_get(cpp, cwae.t.buf))
+          if(tok.type == TT_IDENTIFIER && cpp_macro_get(pp, cwae.t.buf))
             ++mac_cnt;
         }
 
@@ -302,7 +303,7 @@ cpp_macro_expand(cpp* cpp, tokenizer* t, buffer* out, const char* name, unsigned
 
         {
           size_t mac_iter = 0;
-          cpp_macro_get_info(cpp, &cwae.t, mcs, &mac_iter, 0, 0, "null", visited, rec_level);
+          cpp_macro_get_info(pp, &cwae.t, mcs, &mac_iter, 0, 0, "null", visited, rec_level);
           /* some of the macros might not expand at this stage (without braces)*/
           while(mac_cnt && mcs[mac_cnt - 1].name == 0)
             --mac_cnt;
@@ -333,10 +334,10 @@ cpp_macro_expand(cpp* cpp, tokenizer* t, buffer* out, const char* name, unsigned
 
                 t2.f = memstream_open(&t2.buf, &t2.len);
 
-                if(!cpp_macro_expand(cpp, &cwae.t, t2.f, mi->name, rec_level + 1, visited))
+                if(!cpp_macro_expand(pp, &cwae.t, t2.f, mi->name, rec_level + 1, visited))
                   return 0;
 
-                t2.f = buffer_reopen(t2.f, &t2.buf, &t2.len);
+                t2.f = memstream_reopen(t2.f, &t2.buf, &t2.len);
                 tokenizer_from_file(&t2.t, t2.f);
 
                 /* manipulating the stream in case more stuff has been consumed */
@@ -388,8 +389,8 @@ cpp_macro_expand(cpp* cpp, tokenizer* t, buffer* out, const char* name, unsigned
           if(tok.type == TT_EOF)
             break;
 
-          if(tok.type == TT_IDENTIFIER && tokenizer_peek(&cwae.t) == TOKENIZER_EOF && (ma = cpp_macro_get(cpp, cwae.t.buf)) && FUNCTIONLIKE(ma) && cpp_tchain_parens_follows(cpp, rec_level) != -1) {
-            int ret = cpp_macro_expand(cpp, &cwae.t, out, cwae.t.buf, rec_level + 1, visited);
+          if(tok.type == TT_IDENTIFIER && tokenizer_peek(&cwae.t) == TOKENIZER_EOF && (ma = cpp_macro_get(pp, cwae.t.buf)) && FUNCTIONLIKE(ma) && cpp_tchain_parens_follows(pp, rec_level) != -1) {
+            int ret = cpp_macro_expand(pp, &cwae.t, out, cwae.t.buf, rec_level + 1, visited);
 
             if(!ret)
               return ret;

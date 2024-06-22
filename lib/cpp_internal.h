@@ -1,13 +1,14 @@
 #include <assert.h>
 
-//#define MAP_USE_HMAP 1
-#define MAP_USE_HASHMAP 1
+#define MAP_USE_HMAP 1
+//#define MAP_USE_HASHMAP 1
 
 #include "cpp.h"
 #include "map.h"
 #include "pplist.h"
 #include "buffer.h"
 #include "memstream.h"
+#include "alloc.h"
 #include "tokenizer.h"
 #include "alloc.h"
 #include "str.h"
@@ -38,7 +39,7 @@ static int bp(int);
 static int charlit_to_int(const char*);
 static int eat_whitespace(tokenizer*, token* token, int* count);
 static int emit_error_or_warning(tokenizer*, int is_error);
-static void error(const char*, tokenizer* t, token* curr);
+static void cpp_error(const char*, tokenizer* t, token* curr);
 static void error_or_warning(const char*, const char* type, tokenizer* t, token* curr);
 static int expect(tokenizer*, enum tokentype tt, const char* const values[], token* token);
 static int expr(tokenizer*, int rbp, int* err);
@@ -57,41 +58,14 @@ static int x_tokenizer_next_of(tokenizer*, token* tok, int fail_unk);
 
 static inline void
 free_file_container(cpp_file* fc) {
-  buffer_free(fc->f);
-  alloc_free(fc->buf);
-}
-
-ssize_t buffer_dummyreadbuf(fd_type, void*, size_t, void*);
-
-static inline buffer*
-buffer_reopen(buffer* f, char** buf, size_t* size) {
-  buffer* nb;
-  buffer_flush(f);
-
-  if((nb = alloc(sizeof(buffer)))) {
-    buffer_init_free(nb, &buffer_dummyreadbuf, -1, *buf, *size);
+  /*if(fc->f) {
+    buffer_close(fc->f);
   }
 
-  alloc_free(f);
-
-  return nb;
-
-  /*buffer_close(f);
-
-  char* x = 0;
-  size_t n;
-
-  buffer_flush(f);
-
-  if(*buf && (n = *size)) {
-    if(!(x = str_ndup(*buf, n))) {
-      return 0;
-    }
-  }
-
-  buffer_close(f);
-  buffer_init_free(f, (void*)f->op, -1, x, n);
-  return f;*/
+  if(fc->buf) {
+    alloc_free(fc->buf);
+    fc->buf = 0;
+  }*/
 }
 
 static inline void
@@ -155,7 +129,7 @@ error_or_warning(const char* err, const char* type, tokenizer* t, token* curr) {
 }
 
 static inline void
-error(const char* err, tokenizer* t, token* curr) {
+cpp_error(const char* err, tokenizer* t, token* curr) {
   error_or_warning(err, "error", t, curr);
 }
 
@@ -198,10 +172,10 @@ static inline int
 x_tokenizer_next_of(tokenizer* t, token* tok, int fail_unk) {
   int ret = tokenizer_next(t, tok);
   if(tok->type == TT_OVERFLOW) {
-    error("max token length of 4095 exceeded!", t, tok);
+    cpp_error("max token length of 4095 exceeded!", t, tok);
     return 0;
   } else if(fail_unk && ret == 0) {
-    error("tokenizer encountered unknown token", t, tok);
+    cpp_error("tokenizer encountered unknown token", t, tok);
     return 0;
   }
   return 1;
@@ -240,7 +214,7 @@ mem_tokenizers_join(cpp_file* org, cpp_file* inj, cpp_file* result, int first, o
     emit_token(result->f, &tok, org->t.buf);
   }
 
-  result->f = buffer_reopen(result->f, &result->buf, &result->len);
+  result->f = memstream_reopen(result->f, &result->buf, &result->len);
   tokenizer_from_file(&result->t, result->f);
   return diff;
 }
@@ -301,8 +275,10 @@ bp(int tokentype) {
       //    TTENT(TT_LPAREN, 0),
       TTENT(TT_RPAREN, 0)*/
   };
+
   if(TTINT(tokentype) < sizeof(bplist) / sizeof(bplist[0]))
     return bplist[TTINT(tokentype)];
+
   return 0;
 }
 
@@ -335,13 +311,18 @@ skip_next_and_ws(tokenizer* t, token* tok) {
 static inline int
 led(tokenizer* t, int left, token* tok, int* err) {
   int right;
+
   switch((unsigned)tok->type) {
     case TT_LAND:
-    case TT_LOR:
+    case TT_LOR: {
       right = expr(t, bp(tok->type), err);
+
       if(tok->type == TT_LAND)
         return left && right;
+
       return left || right;
+    }
+
     case TT_LTE: return left <= expr(t, bp(tok->type), err);
     case TT_GTE: return left >= expr(t, bp(tok->type), err);
     case TT_SHL: return left << expr(t, bp(tok->type), err);
@@ -357,20 +338,24 @@ led(tokenizer* t, int left, token* tok, int* err) {
     case TT_MINUS: return left - expr(t, bp(tok->type), err);
     case TT_MUL: return left * expr(t, bp(tok->type), err);
     case TT_DIV:
-    case TT_MOD:
-      right = expr(t, bp(tok->type), err);
-      if(right == 0) {
-        error("eval: div by zero", t, tok);
+    case TT_MOD: {
+      if((right = expr(t, bp(tok->type), err)) == 0) {
+        cpp_error("eval: div by zero", t, tok);
         *err = 1;
-      } else if(tok->type == TT_DIV)
+      } else if(tok->type == TT_DIV) {
         return left / right;
-      else if(tok->type == TT_MOD)
+      } else if(tok->type == TT_MOD) {
         return left % right;
+      }
+
       return 0;
-    default:
-      error("eval: unexpect token", t, tok);
+    }
+
+    default: {
+      cpp_error("eval: unexpect token", t, tok);
       *err = 1;
       return 0;
+    }
   }
 }
 
@@ -386,11 +371,15 @@ expr(tokenizer* t, int rbp, int* err) {
 
   while(1) {
     ret = tokenizer_peek_next_non_ws(t, &tok);
+
     if(bp(tok.type) <= rbp)
       break;
+
     ret = tokenizer_next(t, &tok);
+
     if(tok.type == TT_EOF)
       break;
+
     left = led(t, left, &tok, err);
   }
 
@@ -412,7 +401,7 @@ emit_error_or_warning(tokenizer* t, int is_error) {
   ret = tokenizer_read_until(t, "\n", 1);
 
   if(is_error) {
-    error(t->buf, t, &tmp);
+    cpp_error(t->buf, t, &tmp);
     return 0;
   }
 
@@ -433,7 +422,7 @@ expect(tokenizer* t, enum tokentype tt, const char* const values[], token* token
 
   if(token->type != tt) {
   err:
-    error("unexpected token", t, token);
+    cpp_error("unexpected token", t, token);
     return -1;
   }
 
@@ -447,6 +436,7 @@ expect(tokenizer* t, enum tokentype tt, const char* const values[], token* token
 static inline void
 free_visited(char* visited[]) {
   size_t i;
+
   for(i = 0; i < MAX_RECURSION; i++)
     if(visited[i])
       alloc_free(visited[i]);
@@ -462,11 +452,13 @@ charlit_to_int(const char* lit) {
       case 'n': ret = 10; break;
       case 't': ret = 9; break;
       case 'r': ret = 13; break;
-      case 'x':
+      case 'x': {
         if(scan_xint(lit + 3, &ret))
           break;
+      }
       default: return lit[2];
     }
+
   return ret;
 }
 
@@ -484,26 +476,31 @@ nud(tokenizer* t, token* tok, int* err) {
     case TT_LPAREN: {
       int inner = expr(t, 0, err);
       const char* values[] = {")", 0};
+
       if(0 != expect(t, TT_RPAREN, values, tok)) {
-        error("missing ')'", t, tok);
+        cpp_error("missing ')'", t, tok);
         return 0;
       }
       return inner;
     }
-    case TT_FLOAT_LIT:
-      error("floating constant in preprocessor expression", t, tok);
+
+    case TT_FLOAT_LIT: {
+      cpp_error("floating constant in preprocessor expression", t, tok);
       *err = 1;
       return 0;
+    }
+
     case TT_HEX_INT_LIT: scan_xint(t->buf, (unsigned int*)&ret); break;
     case TT_OCT_INT_LIT: scan_8int(t->buf, (unsigned int*)&ret); break;
     case TT_DEC_INT_LIT: scan_int(t->buf, &ret); break;
 
     case TT_RPAREN:
 
-    default:
-      error("unexpected token", t, tok);
+    default: {
+      cpp_error("unexpected token", t, tok);
       *err = 1;
       return 0;
+    }
   }
   return ret;
 }
@@ -511,22 +508,26 @@ nud(tokenizer* t, token* tok, int* err) {
 static inline int
 tokenizer_peek_next_non_ws(tokenizer* t, token* tok) {
   int ret;
+
   while(1) {
     ret = tokenizer_peek_token(t, tok);
+
     if(is_whitespace_token(tok))
       x_tokenizer_next(t, tok);
     else
       break;
   }
+
   return ret;
 }
 
 static inline int
 was_visited(const char* name, char* visited[], unsigned rec_level) {
   int x;
-  for(x = rec_level; x >= 0; --x) {
+
+  for(x = rec_level; x >= 0; --x)
     if(!str_diff(visited[x], name))
       return 1;
-  }
+
   return 0;
 }

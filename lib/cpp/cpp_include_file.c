@@ -4,7 +4,7 @@
 #include "../path.h"
 
 int
-cpp_include_file(cpp* cpp, tokenizer* t, buffer* out) {
+cpp_include_file(cpp* pp, tokenizer* t, buffer* out) {
   static const char* const inc_chars[] = {"\"", "<", 0};
   static const char* const inc_chars_end[] = {"\"", ">", 0};
   token tok;
@@ -19,12 +19,12 @@ cpp_include_file(cpp* cpp, tokenizer* t, buffer* out) {
   tokenizer_set_flags(t, 0); // disable string tokenization
 
   if((inc1sep = expect(t, TT_SEP, inc_chars, &tok)) == -1) {
-    error("expected one of [\"<]", t, &tok);
+    cpp_error("expected one of [\"<]", t, &tok);
     return 0;
   }
 
   if(!(ret = tokenizer_read_until(t, inc_chars_end[inc1sep], 1))) {
-    error("error parsing filename", t, &tok);
+    cpp_error("error parsing filename", t, &tok);
     return 0;
   }
 
@@ -37,8 +37,8 @@ cpp_include_file(cpp* cpp, tokenizer* t, buffer* out) {
 
   if(fd == -1) {
     // TODO: different path lookup depending on whether " or <
-    LIST_FOREACH(cpp->includedirs, i) {
-      stralloc_copys(&sa, LIST_DATA(cpp->includedirs, i));
+    LIST_FOREACH(pp->includedirs, i) {
+      stralloc_copys(&sa, LIST_DATA(pp->includedirs, i));
 
       path_appends(t->buf, &sa);
 
@@ -60,7 +60,7 @@ cpp_include_file(cpp* cpp, tokenizer* t, buffer* out) {
   tokenizer_set_flags(t, TF_PARSE_STRINGS);
 
   buffer_read_fd(&in, fd);
-  ret = cpp_parse_file(cpp, &in, fn, out);
+  ret = cpp_parse_file(pp, &in, fn, out);
   buffer_close(&in);
   buffer_free(&in);
 

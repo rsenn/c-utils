@@ -33,22 +33,22 @@ typedef struct {
 
 typedef struct cpp_s cpp;
 
-int cpp_add_define(cpp*, const char* mdecl);
-void cpp_add_includedir(cpp*, const char* includedir);
-int cpp_evaluate_condition(cpp*, tokenizer* t, int* result, char* visited[]);
+int cpp_add_define(cpp*, const char*);
+void cpp_add_includedir(cpp*, const char*);
+int cpp_evaluate_condition(cpp*, tokenizer*, int*, char* visited[]);
 void cpp_free(cpp*);
-int cpp_include_file(cpp*, tokenizer* t, buffer* out);
-int cpp_macro_expand(cpp*, tokenizer* t, buffer* out, const char* name, unsigned rec_level, char* visited[]);
-cpp_macro* cpp_macro_get(cpp*, const char* name);
-unsigned cpp_macro_get_info(cpp*, tokenizer* t, cpp_macro_info* mi_list, size_t* mi_cnt, unsigned nest, unsigned tpos, const char* name, char* visited[], unsigned rec_level);
-int cpp_macro_parse(cpp*, tokenizer* t);
-int cpp_macro_undef(cpp*, const char* name);
+int cpp_include_file(cpp*, tokenizer*, buffer*);
+int cpp_macro_add(cpp*, const char*, cpp_macro*);
+int cpp_macro_expand(cpp*, tokenizer*, buffer*, const char*, unsigned, char* visited[]);
+cpp_macro* cpp_macro_get(cpp*, const char*);
+unsigned cpp_macro_get_info(cpp*, tokenizer*, cpp_macro_info*, size_t*, unsigned, unsigned, const char*, char* visited[], unsigned);
+int cpp_macro_parse(cpp*, tokenizer*);
+int cpp_macro_undef(cpp*, const char*);
 cpp* cpp_new(void);
-int cpp_parse_file(cpp*, buffer* f, const char* fn, buffer* out);
-int cpp_run(cpp*, buffer* in, buffer* out, const char* inname);
-int cpp_stringify(cpp*, tokenizer* t, buffer* output);
-int cpp_tchain_parens_follows(cpp*, int rec_level);
-int cpp_macro_add(cpp* pp, const char* name, cpp_macro* m);
+int cpp_parse_file(cpp*, buffer*, const char*, buffer*);
+int cpp_run(cpp*, buffer*, buffer*, const char*);
+int cpp_stringify(cpp*, tokenizer*, buffer*);
+int cpp_tchain_parens_follows(cpp*, int);
 
 #endif
 /** @} */

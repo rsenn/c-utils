@@ -1,22 +1,26 @@
 #include "../cpp_internal.h"
 
 int
-cpp_macro_undef(cpp* cpp, const char* name) {
+cpp_macro_undef(cpp* pp, const char* name) {
   MAP_PAIR_T k;
-  cpp_macro* m;
 
-  if(!MAP_SEARCH(cpp->macros, name, str_len(name) + 1, &k))
-    return 0;
+  if(MAP_SEARCH(pp->macros, name, str_len(name) + 1, &k)) {
+    cpp_macro* m = MAP_VALUE(k);
 
-  m = MAP_VALUE(k);
-  /*  alloc_free(hbmap_getkey(cpp->macros, k));*/
+    /*  alloc_free(hbmap_getkey(pp->macros, k));*/
+    /*buffer_free(&m->str_contents);
+    m->str_contents_buf=0;*/
 
-  /*buffer_free(&m->str_contents);
-  m->str_contents_buf=0;*/
-  alloc_free(m->str_contents_buf);
+    if(m->str_contents_buf)
+      alloc_free(m->str_contents_buf);
 
-  LIST_DESTROY(m->argnames);
-  MAP_DELETE(cpp->macros, MAP_KEY(k), MAP_KEY_LEN(k));
+    LIST_DESTROY(m->argnames);
+    MAP_DELETE(pp->macros, MAP_KEY(k), MAP_KEY_LEN(k));
 
-  return 1;
+    alloc_free(m);
+
+    return 1;
+  }
+
+  return 0;
 }

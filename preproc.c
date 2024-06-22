@@ -14,10 +14,12 @@
 static unsigned
 string_hash(const char* s) {
   uint_fast32_t h = 0;
+
   while(*s) {
     h = 16 * h + *s++;
     h ^= h >> 24 & 0xf0;
   }
+
   return h & 0xfffffff;
 }
 
@@ -30,21 +32,23 @@ tokenizer_from_file(tokenizer* t, buffer* f) {
 
 static int
 strptrcmp(const void* a, const void* b) {
-  const char* const* x = a;
-  const char* const* y = b;
-  return str_diff(*x, *y);
+  return str_diff(*(const char* const*)a, *(const char* const*)b);
 }
 
 static int
 x_tokenizer_next_of(tokenizer* t, struct token* tok, int fail_unk) {
   int ret = tokenizer_next(t, tok);
+
   if(tok->type == TT_OVERFLOW) {
     error("max token length of 4095 exceeded!", t, tok);
     return 0;
-  } else if(fail_unk && ret == 0) {
+  }
+
+  if(fail_unk && ret == 0) {
     error("tokenizer encountered unknown token", t, tok);
     return 0;
   }
+
   return 1;
 }
 
@@ -63,10 +67,8 @@ is_char(struct token* tok, int ch) {
 
 static void
 flush_whitespace(buffer* out, int* ws_count) {
-  while(*ws_count > 0) {
+  for(; *ws_count > 0; --(*ws_count))
     buffer_puts(out, " ");
-    --(*ws_count);
-  }
 }
 
 static void
@@ -97,30 +99,38 @@ eat_whitespace(tokenizer* t, struct token* token, int* count) {
   }
   return ret;
 }
+
 static int
 emit_error_or_warning(tokenizer* t, int is_error) {
-  int ws_count;
-  int ret = tokenizer_skip_chars(t, " \t", &ws_count);
-  if(!ret)
-    return ret;
-  struct token tmp = {.column = t->column, .line = t->line};
-  ret = tokenizer_read_until(t, "\n", 1);
-  if(is_error) {
-    error(t->buf, t, &tmp);
-    return 0;
+  int ws_count, ret;
+
+  if((ret = tokenizer_skip_chars(t, " \t", &ws_count))) {
+    struct token tmp = {.column = t->column, .line = t->line};
+
+    ret = tokenizer_read_until(t, "\n", 1);
+
+    if(is_error) {
+      error(t->buf, t, &tmp);
+      return 0;
+    }
+
+    warning(t->buf, t, &tmp);
+
+    return 1;
   }
-  warning(t->buf, t, &tmp);
-  return 1;
+
+  return ret;
 }
 
 /* return index of matching item in values array, or -1 on error */
 static int
 expect(tokenizer* t, enum tokentype tt, const char* values[], struct token* token) {
   int ret;
+
   do {
-    ret = tokenizer_next(t, token);
-    if(ret == 0 || token->type == TT_EOF)
+    if((ret = tokenizer_next(t, token)) == 0 || token->type == TT_EOF)
       goto err;
+
   } while(is_whitespace_token(token));
 
   if(token->type != tt) {
@@ -128,19 +138,17 @@ expect(tokenizer* t, enum tokentype tt, const char* values[], struct token* toke
     error("unexpected token", t, token);
     return -1;
   }
-  int i = 0;
-  while(values[i]) {
+
+  for(int i = 0; values[i]; ++i)
     if(!str_diff(values[i], t->buf))
       return i;
-    ++i;
-  }
+
   return -1;
 }
 
 static void
 free_visited(char* visited[]) {
-  size_t i;
-  for(i = 0; i < MAX_RECURSION; i++)
+  for(size_t i = 0; i < MAX_RECURSION; i++)
     if(visited[i])
       alloc_free(visited[i]);
 }
@@ -148,13 +156,18 @@ free_visited(char* visited[]) {
 static int
 led(tokenizer* t, int left, struct token* tok, int* err) {
   int right;
+
   switch((unsigned)tok->type) {
     case TT_LAND:
-    case TT_LOR:
+    case TT_LOR: {
       right = expr(t, bp(tok->type), err);
+
       if(tok->type == TT_LAND)
         return left && right;
+
       return left || right;
+    }
+
     case TT_LTE: return left <= expr(t, bp(tok->type), err);
     case TT_GTE: return left >= expr(t, bp(tok->type), err);
     case TT_SHL: return left << expr(t, bp(tok->type), err);
@@ -170,20 +183,24 @@ led(tokenizer* t, int left, struct token* tok, int* err) {
     case TT_MINUS: return left - expr(t, bp(tok->type), err);
     case TT_MUL: return left * expr(t, bp(tok->type), err);
     case TT_DIV:
-    case TT_MOD:
-      right = expr(t, bp(tok->type), err);
-      if(right == 0) {
+    case TT_MOD: {
+      if((right = expr(t, bp(tok->type), err)) == 0) {
         error("eval: div by zero", t, tok);
         *err = 1;
-      } else if(tok->type == TT_DIV)
+      } else if(tok->type == TT_DIV) {
         return left / right;
-      else if(tok->type == TT_MOD)
+      } else if(tok->type == TT_MOD) {
         return left % right;
+      }
+
       return 0;
-    default:
+    }
+
+    default: {
       error("eval: unexpect token", t, tok);
       *err = 1;
       return 0;
+    }
   }
 }
 
@@ -200,70 +217,69 @@ nud(tokenizer* t, struct token* tok, int* err) {
     case TT_PLUS: return expr(t, bp(tok->type), err);
     case TT_MINUS: return -expr(t, bp(tok->type), err);
     case TT_LNOT: return !expr(t, bp(tok->type), err);
+
     case TT_LPAREN: {
       int inner = expr(t, 0, err);
+
       if(0 != expect(t, TT_RPAREN, (const char*[]){")", 0}, tok)) {
         error("missing ')'", t, tok);
         return 0;
       }
+
       return inner;
     }
-    case TT_FLOAT_LIT:
+
+    case TT_FLOAT_LIT: {
       error("floating constant in preprocessor expression", t, tok);
       *err = 1;
       return 0;
+    }
+
     case TT_RPAREN:
-    default:
+    default: {
       error("unexpected token", t, tok);
       *err = 1;
       return 0;
+    }
   }
 }
 
 /* fetches the next token until it is non-whitespace */
 static int
 skip_next_and_ws(tokenizer* t, struct token* tok) {
-  int ret = tokenizer_next(t, tok);
-  if(!ret)
+  int ret, ws_count;
+
+  if(!(ret = tokenizer_next(t, tok)))
     return ret;
-  int ws_count;
-  ret = eat_whitespace(t, tok, &ws_count);
-  return ret;
+
+  return eat_whitespace(t, tok, &ws_count);
 }
 
 static int
 tokenizer_peek_next_non_ws(tokenizer* t, struct token* tok) {
   int ret;
+
   while(1) {
     ret = tokenizer_peek_token(t, tok);
+
     if(is_whitespace_token(tok))
       x_tokenizer_next(t, tok);
     else
       break;
   }
+
   return ret;
 }
 
 static int
 was_visited(const char* name, char* visited[], unsigned rec_level) {
-  int x;
-  for(x = rec_level; x >= 0; --x) {
+  for(int x = rec_level; x >= 0; --x)
     if(!str_diff(visited[x], name))
       return 1;
-  }
+
   return 0;
 }
-
-static buffer*
-buffer_reopen(buffer* f, char** buf, size_t* size) {
-  buffer_flush(f);
-  buffer_close(f);
-
-  buffer_mmapread(f, *buf);
-  *size = f->a;
-  return f;
-}
-
+ 
 static int
 consume_nl_and_ws(tokenizer* t, struct token* tok, int expected) {
   if(!x_tokenizer_next(t, tok)) {
@@ -271,9 +287,11 @@ consume_nl_and_ws(tokenizer* t, struct token* tok, int expected) {
     error("unexpected", t, tok);
     return 0;
   }
+
   if(expected) {
     if(tok->type != TT_SEP || tok->value != expected)
       goto err;
+
     switch(expected) {
       case '\\': expected = '\n'; break;
       case '\n': expected = 0; break;
@@ -286,6 +304,7 @@ consume_nl_and_ws(tokenizer* t, struct token* tok, int expected) {
     else
       return 1;
   }
+
   return consume_nl_and_ws(t, tok, expected);
 }
 
@@ -295,9 +314,11 @@ macro_arglist_pos(struct macro* m, const char* iden) {
 
   for(i = 0; i < len; i++) {
     char* item = LIST_GET(m->argnames, i);
+
     if(!str_diff(item, iden))
       return i;
   }
+
   return (size_t)-1;
 }
 
@@ -355,8 +376,10 @@ bp(int tokentype) {
       //		TTENT(TT_LPAREN, 0),
       TTENT(TT_RPAREN, 0),
   };
+
   if(TTINT(tokentype) < sizeof(bplist) / sizeof(bplist[0]))
     return bplist[TTINT(tokentype)];
+
   return 0;
 }
 
@@ -364,7 +387,7 @@ static int expr(tokenizer* t, int rbp, int* err);
 
 static int
 charlit_to_int(const char* lit) {
-  if(lit[1] == '\\')
+  if(lit[1] == '\\') {
     switch(lit[2]) {
       case '0': return 0;
       case 'n': return 10;
@@ -373,31 +396,44 @@ charlit_to_int(const char* lit) {
       case 'x': return strtol(lit + 3, NULL, 16);
       default: return lit[2];
     }
+  }
+
   return lit[1];
 }
 
 static int
 expr(tokenizer* t, int rbp, int* err) {
   struct token tok;
-  int ret = skip_next_and_ws(t, &tok);
+  int left, ret = skip_next_and_ws(t, &tok);
+
   if(tok.type == TT_EOF)
     return 0;
-  int left = nud(t, &tok, err);
+
+  left = nud(t, &tok, err);
+
   while(1) {
     ret = tokenizer_peek_next_non_ws(t, &tok);
+
     if(bp(tok.type) <= rbp)
       break;
+
     ret = tokenizer_next(t, &tok);
+
     if(tok.type == TT_EOF)
       break;
+
     left = led(t, left, &tok, err);
   }
+
   (void)ret;
+
   return left;
 }
 
 static int
 do_eval(tokenizer* t, int* result) {
+  int err = 0;
+
   tokenizer_register_custom_token(t, TT_LAND, "&&");
   tokenizer_register_custom_token(t, TT_LOR, "||");
   tokenizer_register_custom_token(t, TT_LTE, "<=");
@@ -425,7 +461,6 @@ do_eval(tokenizer* t, int* result) {
   tokenizer_register_custom_token(t, TT_RPAREN, ")");
   tokenizer_register_custom_token(t, TT_LNOT, "!");
 
-  int err = 0;
   *result = expr(t, 0, &err);
 #ifdef DEBUG
   dprintf(2, "eval result: %d\n", *result);

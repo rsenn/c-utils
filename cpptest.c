@@ -38,8 +38,8 @@ main(int argc, char** argv) {
       }
 
       case 'D': {
-        if(*(tmp = unix_optarg + str_chr(unix_optarg, '=')) == '=')
-          *tmp = ' ';
+        /*  if(*(tmp = unix_optarg + str_chr(unix_optarg, '=')) == '=')
+         *tmp = ' ';*/
         cpp_add_define(pp, unix_optarg);
         break;
       }
