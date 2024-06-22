@@ -63,7 +63,7 @@ main(int argc, char** argv) {
   }
 
   buffer_read_fd(&in, fd);
-  ret = cpp_run(pp, &in, buffer_1, fn);
+  ret = cpp_parse_file(pp, &in, fn, buffer_1);
   cpp_free(pp);
 
   if(in.fd != STDIN_FILENO)

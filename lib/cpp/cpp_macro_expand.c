@@ -91,9 +91,7 @@ cpp_macro_expand(cpp* pp, tokenizer* t, buffer* out, const char* name, int rec_l
       varargs = 1;
 
     for(;;) {
-      int ret = tokenizer_next(t, &tok);
-
-      if(!ret)
+      if(!tokenizer_next(t, &tok))
         return 0;
 
       if(tok.type == TT_EOF) {
@@ -118,8 +116,8 @@ cpp_macro_expand(cpp* pp, tokenizer* t, buffer* out, const char* name, int rec_l
           return 0;
         }
 
-        if(!(ret = tokenizer_skip_chars(t, " \t", &ws_count)))
-          return ret;
+        if(!tokenizer_skip_chars(t, " \t", &ws_count))
+          return 0;
 
         continue;
       } else if(token_is_char(&tok, '(')) {
@@ -177,19 +175,18 @@ cpp_macro_expand(cpp* pp, tokenizer* t, buffer* out, const char* name, int rec_l
     tokenizer_from_file(&t2, &m->str_contents);
 
     for(;;) {
-      int ret;
 
-      if(!(ret = tokenizer_next(&t2, &tok)))
+      if(!tokenizer_next(&t2, &tok))
         return 0;
 
       if(tok.type == TT_EOF)
         break;
 
       if(tok.type == TT_IDENTIFIER) {
-        size_t arg_nr;
-        char* id;
+        char* id = t2.buf;
+        size_t arg_nr = 0;
+
         flush_whitespace(output, &ws_count);
-        id = t2.buf;
 
         if(MACRO_VARIADIC(m) && !str_diff(t2.buf, "__VA_ARGS__"))
           id = "...";
@@ -200,13 +197,11 @@ cpp_macro_expand(cpp* pp, tokenizer* t, buffer* out, const char* name, int rec_l
           tokenizer_rewind(&argvalues[arg_nr].t);
 
           if(hash_count == 1)
-            ret = cpp_stringify(pp, &argvalues[arg_nr].t, output);
+            /*ret = */ cpp_stringify(pp, &argvalues[arg_nr].t, output);
           else
             for(;;) {
-              ret = tokenizer_next(&argvalues[arg_nr].t, &tok);
-
-              if(!ret)
-                return ret;
+              if(!tokenizer_next(&argvalues[arg_nr].t, &tok))
+                return 0;
 
               if(tok.type == TT_EOF)
                 break;
@@ -249,13 +244,9 @@ cpp_macro_expand(cpp* pp, tokenizer* t, buffer* out, const char* name, int rec_l
           return 0;
         }
 
-        if(hash_count == 2)
-          ret = tokenizer_skip_chars(&t2, " \t\n", &ws_count);
-        else
-          ret = tokenizer_skip_chars(&t2, " \t", &ws_count);
+        if(!tokenizer_skip_chars(&t2, hash_count == 2 ? " \t\n" : " \t", &ws_count))
+          return 0;
 
-        if(!ret)
-          return ret;
         ws_count = 0;
 
       } else if(token_is_whitespace(&tok)) {
@@ -281,11 +272,12 @@ cpp_macro_expand(cpp* pp, tokenizer* t, buffer* out, const char* name, int rec_l
 #endif
       tokenizer_from_file(&cwae.t, cwae.f);
       for(;;) {
-        int ret = tokenizer_next(&cwae.t, &tok);
-        if(!ret)
-          return ret;
+        if(!tokenizer_next(&cwae.t, &tok))
+          return 0;
+
         if(tok.type == TT_EOF)
           break;
+
         if(tok.type == TT_IDENTIFIER && cpp_macro_get(pp, cwae.t.buf))
           ++mac_cnt;
       }
@@ -382,10 +374,8 @@ cpp_macro_expand(cpp* pp, tokenizer* t, buffer* out, const char* name, int rec_l
           break;
 
         if(tok.type == TT_IDENTIFIER && tokenizer_peek(&cwae.t) == TOKENIZER_EOF && (ma = cpp_macro_get(pp, cwae.t.buf)) && FUNCTIONLIKE(ma) && cpp_tchain_parens_follows(pp, rec_level) != -1) {
-          int ret = cpp_macro_expand(pp, &cwae.t, out, cwae.t.buf, rec_level + 1, visited);
-
-          if(!ret)
-            return ret;
+          if(!cpp_macro_expand(pp, &cwae.t, out, cwae.t.buf, rec_level + 1, visited))
+            return 0;
 
         } else
           emit_token(out, &tok, cwae.t.buf);

@@ -45,7 +45,6 @@ unsigned cpp_macro_get_info(cpp*, tokenizer* t, cpp_macro_info* mi_list, size_t*
 int cpp_macro_parse(cpp*, tokenizer* t);
 int cpp_macro_undef(cpp*, const char* name);
 cpp* cpp_new(void);
-int cpp_run(cpp*, buffer* in, buffer* out, const char* inname);
 int cpp_stringify(cpp*, tokenizer* t, buffer* out);
 int cpp_tchain_parens_follows(cpp*, int rec_level);
 
