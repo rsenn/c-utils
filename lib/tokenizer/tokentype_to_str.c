@@ -19,5 +19,8 @@ tokentype_to_str(enum tokentype tt) {
     case TT_EOF: return "eof";
   }
 
+  if((int)tt >= TT_CUSTOM)
+    return "custom";
+
   return "????";
 }

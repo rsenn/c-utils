@@ -4,13 +4,9 @@
 
 int
 cpp_macro_add(cpp* pp, const char* name, cpp_macro* macro) {
-  cpp_macro* a;
+  MAP_ITER_T it;
 
-  if((a = alloc_zero(sizeof(cpp_macro)))) {
-    byte_copy(a, sizeof(cpp_macro), macro);
-    MAP_ADD(pp->macros, (char*)name, a);
-    return 1;
-  }
+  it = MAP_INSERT(pp->macros, name, str_len(name), macro, sizeof(cpp_macro));
 
-  return 0;
+  return it != 0;
 }

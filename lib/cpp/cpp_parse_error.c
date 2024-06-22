@@ -14,10 +14,10 @@ cpp_parse_error(tokenizer* t, int is_error) {
   ret = tokenizer_read_until(t, "\n", 1);
 
   if(is_error) {
-    cpp_msg_error(t->buf, t, &tmp);
+    error(t->buf, t, &tmp);
     return 0;
   }
 
-  cpp_msg_warning(t->buf, t, &tmp);
+  warning(t->buf, t, &tmp);
   return 1;
 }

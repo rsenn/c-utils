@@ -2,22 +2,23 @@
 
 cpp*
 cpp_new(void) {
-  cpp* ret;
-  cpp_macro m = {/*.num_args =*/1};
+  cpp* pp;
+  cpp_macro macro = {0};
 
-  if(!(ret = alloc_zero(sizeof(struct cpp_s))))
-    return ret;
+  if(!(pp = alloc_zero(sizeof(struct cpp_s))))
+    return pp;
 
-  LIST_NEW(ret->includedirs);
-  cpp_add_includedir(ret, ".");
+  LIST_NEW(pp->includedirs);
+  cpp_add_includedir(pp, ".");
 
-  MAP_NEW(ret->macros);
+  MAP_NEW(pp->macros);
 
-  cpp_macro_add(ret, "defined", &m);
+  macro.num_args = 1;
+  cpp_macro_add(pp, "defined", &macro);
 
-  m.num_args = MACRO_FLAG_OBJECTLIKE;
-  cpp_macro_add(ret, "__FILE__", &m);
-  cpp_macro_add(ret, "__LINE__", &m);
+  macro.num_args = MACRO_FLAG_OBJECTLIKE;
+  cpp_macro_add(pp, "__FILE__", &macro);
+  cpp_macro_add(pp, "__LINE__", &macro);
 
-  return ret;
+  return pp;
 }

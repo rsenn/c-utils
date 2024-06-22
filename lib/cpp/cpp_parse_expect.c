@@ -13,7 +13,7 @@ cpp_parse_expect(tokenizer* t, enum tokentype tt, const char* const values[], to
 
   if(token->type != tt) {
   err:
-    cpp_msg_error("unexpected token", t, token);
+    error("unexpected token", t, token);
     return -1;
   }
 

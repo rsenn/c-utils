@@ -18,7 +18,7 @@ cpp_parse_unary(tokenizer* t, token* tok, int* err) {
       const char* values[] = {")", 0};
 
       if(0 != cpp_parse_expect(t, TT_RPAREN, values, tok)) {
-        cpp_msg_error("missing ')'", t, tok);
+        error("missing ')'", t, tok);
         return 0;
       }
 
@@ -26,7 +26,7 @@ cpp_parse_unary(tokenizer* t, token* tok, int* err) {
     }
 
     case TT_FLOAT_LIT: {
-      cpp_msg_error("floating constant in preprocessor expression", t, tok);
+      error("floating constant in preprocessor expression", t, tok);
       *err = 1;
       return 0;
     }
@@ -37,7 +37,7 @@ cpp_parse_unary(tokenizer* t, token* tok, int* err) {
 
     case TT_RPAREN:
     default: {
-      cpp_msg_error("unexpected token", t, tok);
+      error("unexpected token", t, tok);
       *err = 1;
       return 0;
     }

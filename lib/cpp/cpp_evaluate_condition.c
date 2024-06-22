@@ -45,38 +45,37 @@ do_eval(tokenizer* t, int* result) {
 
 int
 cpp_evaluate_condition(cpp* pp, tokenizer* t, int* result, char* visited[]) {
-  int ret, backslash_seen = 0;
-  token tok;
+  int ret = 0, backslash_seen = 0, flags = tokenizer_get_flags(t);
+  buffer* mst;
   char* x = 0;
   size_t n = 0;
-  int flags = tokenizer_get_flags(t);
-  buffer* mst;
+  token tok;
   tokenizer t2;
 
   tokenizer_set_flags(t, flags | TF_PARSE_WIDE_STRINGS);
 
-  if(!(ret = tokenizer_next(t, &tok)))
-    return ret;
+  if(!tokenizer_next(t, &tok))
+    return 0;
 
   if(!token_is_whitespace(&tok)) {
-    cpp_msg_error("expected whitespace after if/elif", t, &tok);
+    error("expected whitespace after if/elif", t, &tok);
     return 0;
   }
 
   mst = memstream_open(&x, &n);
 
   for(;;) {
-    if(!(ret = tokenizer_next(t, &tok)))
-      return ret;
+    if(!tokenizer_next(t, &tok))
+      goto fail;
 
     if(tok.type == TT_IDENTIFIER) {
       if(!cpp_macro_expand(pp, t, mst, t->buf, -1, visited))
-        return 0;
+        goto fail;
 
     } else if(tok.type == TT_SEP) {
-      if(tok.value == '\\')
+      if(tok.value == '\\') {
         backslash_seen = 1;
-      else {
+      } else {
         if(tok.value == '\n') {
           if(!backslash_seen)
             break;
@@ -92,23 +91,25 @@ cpp_evaluate_condition(cpp* pp, tokenizer* t, int* result, char* visited[]) {
   }
 
   if(!(mst = memstream_reopen(mst, &x, &n)) /* || n == 0*/) {
-    cpp_msg_error("#(el)if with no expression", t, &tok);
-    return 0;
+    error("#(el)if with no expression", t, &tok);
+    goto fail;
   }
 
 #ifdef DEBUG_CPP
-  buffer_putm_internal(buffer_2, "evaluating condition ", NULL);
+  buffer_putm_internal(buffer_2, "evaluating condition '", NULL);
   buffer_put(buffer_2, x, n);
-  buffer_putnlflush(buffer_2);
+  buffer_putsflush(buffer_2, "'\n");
 #endif
 
   tokenizer_from_file(&t2, mst);
   ret = do_eval(&t2, result);
   memstream_free(mst);
 
+  tokenizer_set_flags(t, flags);
+
+fail:
   if(x)
     alloc_free(x);
 
-  tokenizer_set_flags(t, flags);
   return ret;
 }

@@ -5,7 +5,6 @@
 
 int
 hmap_add(HMAP_DB** hmap_db, const void* key, size_t k_len, int dup_flag, int data_type, ...) {
-
   TUPLE *new_tuple = NULL, *ptr_tuple = NULL, *root_tuple = NULL;
   int r = 0;
   size_t d_len = 0;

@@ -33,7 +33,7 @@ cpp_parse_binary(tokenizer* t, int left, token* tok, int* err) {
     case TT_DIV:
     case TT_MOD: {
       if((right = cpp_parse_expr(t, cpp_bp(tok->type), err)) == 0) {
-        cpp_msg_error("eval: div by zero", t, tok);
+        error("eval: div by zero", t, tok);
         *err = 1;
       } else if(tok->type == TT_DIV) {
         return left / right;
@@ -45,7 +45,7 @@ cpp_parse_binary(tokenizer* t, int left, token* tok, int* err) {
     }
 
     default: {
-      cpp_msg_error("eval: unexpect token", t, tok);
+      error("eval: unexpect token", t, tok);
       *err = 1;
       return 0;
     }

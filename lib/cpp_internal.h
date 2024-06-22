@@ -18,7 +18,7 @@
 #define MACRO_FLAG_VARIADIC (1U << 30)
 #define MACRO_ARGCOUNT_MASK (~(0 | MACRO_FLAG_OBJECTLIKE | MACRO_FLAG_VARIADIC))
 
-#define OBJECTLIKE(M) (M->num_args & MACRO_FLAG_OBJECTLIKE)
+#define OBJECTLIKE(M) ((M)->num_args & MACRO_FLAG_OBJECTLIKE)
 #define FUNCTIONLIKE(M) (!(OBJECTLIKE(M)))
 #define MACRO_ARGCOUNT(M) (M->num_args & MACRO_ARGCOUNT_MASK)
 #define MACRO_VARIADIC(M) (M->num_args & MACRO_FLAG_VARIADIC)
@@ -70,17 +70,17 @@ emit_token(buffer* out, token* tok, const char* strbuf) {
 }
 
 static inline void
-cpp_msg_error(const char* err, tokenizer* t, token* curr) {
+error(const char* err, tokenizer* t, token* curr) {
   cpp_error_or_warning(err, "error", t, curr);
 }
 
 static inline void
-cpp_msg_warning(const char* err, tokenizer* t, token* curr) {
+warning(const char* err, tokenizer* t, token* curr) {
   cpp_error_or_warning(err, "warning", t, curr);
 }
 
 static inline void
-cpp_flush_whitespace(buffer* out, int* ws_count) {
+flush_whitespace(buffer* out, int* ws_count) {
 
   while(*ws_count > 0) {
     buffer_puts(out, " ");
@@ -93,12 +93,12 @@ parse_next_of_x(tokenizer* t, token* tok, int fail_unk) {
   int ret = tokenizer_next(t, tok);
 
   if(tok->type == TT_OVERFLOW) {
-    cpp_msg_error("max token length of 4095 exceeded!", t, tok);
+    error("max token length of 4095 exceeded!", t, tok);
     return 0;
   }
 
   if(fail_unk && ret == 0) {
-    cpp_msg_error("tokenizer encountered unknown token", t, tok);
+    error("tokenizer encountered unknown token", t, tok);
     return 0;
   }
 

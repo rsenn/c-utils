@@ -2,14 +2,13 @@
 
 int
 cpp_stringify(cpp* pp, tokenizer* t, buffer* out) {
-  int ret = 1;
   token tok;
 
   buffer_puts(out, "\"");
 
   for(;;) {
-    if(!(ret = tokenizer_next(t, &tok)))
-      return ret;
+    if(!tokenizer_next(t, &tok))
+      return 0;
 
     if(tok.type == TT_EOF)
       break;
@@ -41,5 +40,5 @@ cpp_stringify(cpp* pp, tokenizer* t, buffer* out) {
   }
 
   buffer_puts(out, "\"");
-  return ret;
+  return 1;
 }

@@ -58,6 +58,7 @@ tokenizer_next(tokenizer* t, token* out) {
       tokenizer_ungetc(t, c);
       break;
     }
+
     if((t->flags & TF_PARSE_WIDE_STRINGS) && s == t->buf && c == 'L') {
       c = tokenizer_getc(t);
 
@@ -100,20 +101,17 @@ tokenizer_next(tokenizer* t, token* out) {
       return apply_coords(t, out, s + 3, 1);
     }
 
-    {
-      int i;
-      for(int i = 0; i < t->custom_count; i++)
-        if(sequence_follows(t, c, t->custom_tokens[i])) {
-          const char* p = t->custom_tokens[i];
-          while(*p) {
-            s = assign_bufchar(t, s, *p);
-            p++;
-          }
-          *s = 0;
-          out->type = TT_CUSTOM + i;
-          return apply_coords(t, out, s, 1);
+    for(int i = 0; i < t->custom_count; i++)
+      if(sequence_follows(t, c, t->custom_tokens[i])) {
+        const char* p = t->custom_tokens[i];
+        while(*p) {
+          s = assign_bufchar(t, s, *p);
+          p++;
         }
-    }
+        *s = 0;
+        out->type = TT_CUSTOM + i;
+        return apply_coords(t, out, s, 1);
+      }
 
   string_handling:
     s = assign_bufchar(t, s, c);

@@ -19,18 +19,19 @@ cpp_include_file(cpp* pp, tokenizer* t, buffer* out) {
   tokenizer_set_flags(t, 0); // disable string tokenization
 
   if((inc1sep = cpp_parse_expect(t, TT_SEP, inc_chars, &tok)) == -1) {
-    cpp_msg_error("expected one of [\"<]", t, &tok);
+    error("expected one of [\"<]", t, &tok);
     return 0;
   }
 
   if(!(ret = tokenizer_read_until(t, inc_chars_end[inc1sep], 1))) {
-    cpp_msg_error("error parsing filename", t, &tok);
+    error("error parsing filename", t, &tok);
     return 0;
   }
 
   if(!path_is_absolute(t->buf)) {
     path_dirname(t->filename, &sa);
     path_appends(t->buf, &sa);
+    path_collapse_sa(&sa);
 
     fd = open_read(sa.s);
   }
@@ -41,6 +42,7 @@ cpp_include_file(cpp* pp, tokenizer* t, buffer* out) {
       stralloc_copys(&sa, LIST_DATA(pp->includedirs, i));
 
       path_appends(t->buf, &sa);
+      path_collapse_sa(&sa);
 
       if((fd = open_read(sa.s)) != -1)
         break;
@@ -51,6 +53,12 @@ cpp_include_file(cpp* pp, tokenizer* t, buffer* out) {
     errmsg_warnsys("cpp_include_file: '", sa.s, "'", 0);
     return 0;
   }
+
+#ifdef DEBUG_CPP
+  buffer_puts(buffer_2, "including file '");
+  buffer_putsa(buffer_2, &sa);
+  buffer_putsflush(buffer_2, "'\n");
+#endif
 
   stralloc_free(&sa);
 

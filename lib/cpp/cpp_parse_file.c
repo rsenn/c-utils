@@ -64,7 +64,7 @@ cpp_parse_file(cpp* pp, buffer* f, const char* fn, buffer* out) {
       int index;
 
       if(!newline) {
-        cpp_msg_error("stray #", &t, &tok);
+        error("stray #", &t, &tok);
         return 0;
       }
 
@@ -72,7 +72,7 @@ cpp_parse_file(cpp* pp, buffer* f, const char* fn, buffer* out) {
         if(skip_conditional_block)
           continue;
 
-        cpp_msg_error("invalid preprocessing directive", &t, &tok);
+        error("invalid preprocessing directive", &t, &tok);
         return 0;
       }
 
@@ -122,7 +122,7 @@ cpp_parse_file(cpp* pp, buffer* f, const char* fn, buffer* out) {
             return 0;
 
           if(tok.type != TT_IDENTIFIER) {
-            cpp_msg_error("expected identifier", &t, &tok);
+            error("expected identifier", &t, &tok);
             return 0;
           }
 
@@ -200,7 +200,7 @@ cpp_parse_file(cpp* pp, buffer* f, const char* fn, buffer* out) {
 
         case 11: { // line
           if(!(ret = tokenizer_read_until(&t, "\n", 1))) {
-            cpp_msg_error("unknown", &t, &tok);
+            error("unknown", &t, &tok);
             return 0;
           }
 
@@ -270,7 +270,7 @@ cpp_parse_file(cpp* pp, buffer* f, const char* fn, buffer* out) {
   }
 
   if(if_level) {
-    cpp_msg_error("unterminated #if", &t, &tok);
+    error("unterminated #if", &t, &tok);
     return 0;
   }
 

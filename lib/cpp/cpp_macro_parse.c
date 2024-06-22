@@ -5,7 +5,7 @@ static int
 consume_nl_and_ws(tokenizer* t, token* tok, int expected) {
   if(!x_tokenizer_next(t, tok)) {
   err:
-    cpp_msg_error("unexpected", t, tok);
+    error("unexpected", t, tok);
     return 0;
   }
 
@@ -30,21 +30,25 @@ consume_nl_and_ws(tokenizer* t, token* tok, int expected) {
 }
 
 int
-cpp_macro_parse(cpp* cpp, tokenizer* t) {
+cpp_macro_parse(cpp* pp, tokenizer* t) {
   const char* macroname;
-  int ws_count, ret, redefined = 0;
-  token curr; // tmp = {.column = t->column, .line = t->line};
+  int ws_count, redefined = 0, backslash_seen = 0;
+  unsigned macro_flags = MACRO_FLAG_OBJECTLIKE;
+  cpp_file contents = {0, 0, 0};
+  cpp_macro new = {0};
+  token curr;
+  char* tmps;
 
-  if(!(ret = tokenizer_skip_chars(t, " \t", &ws_count)))
-    return ret;
+  if(!tokenizer_skip_chars(t, " \t", &ws_count))
+    return 0;
 
-  if(!(ret = tokenizer_next(t, &curr) && curr.type != TT_EOF)) {
-    cpp_msg_error("parsing macro name", t, &curr);
-    return ret;
+  if(!tokenizer_next(t, &curr) && curr.type != TT_EOF) {
+    error("parsing macro name", t, &curr);
+    return 0;
   }
 
   if(curr.type != TT_IDENTIFIER) {
-    cpp_msg_error("expected identifier", t, &curr);
+    error("expected identifier", t, &curr);
     return 0;
   }
 
@@ -56,152 +60,134 @@ cpp_macro_parse(cpp* cpp, tokenizer* t) {
   buffer_putnlflush(buffer_2);
 #endif
 
-  if(cpp_macro_get(cpp, macroname)) {
+  if(cpp_macro_get(pp, macroname)) {
     if(!str_diff(macroname, "defined")) {
-      cpp_msg_error("\"defined\" cannot be used as a macro name", t, &curr);
+      error("\"defined\" cannot be used as a macro name", t, &curr);
       return 0;
     }
 
     redefined = 1;
   }
 
-  {
-    cpp_macro new = {0};
-    unsigned macro_flags = MACRO_FLAG_OBJECTLIKE;
+  LIST_NEW(new.argnames);
 
-    LIST_NEW(new.argnames);
+  if(!x_tokenizer_next(t, &curr) && curr.type != TT_EOF)
+    return 0;
 
-    if(!(ret = x_tokenizer_next(t, &curr) && curr.type != TT_EOF))
-      return ret;
+  if(token_is_char(&curr, '(')) {
+    unsigned expected = 0;
 
-    if(token_is_char(&curr, '(')) {
-      unsigned expected = 0;
+    macro_flags = 0;
 
-      macro_flags = 0;
-
-      for(;;) {
-        /* process next function argument identifier */
-        ret = consume_nl_and_ws(t, &curr, expected);
-
-        if(!ret) {
-          cpp_msg_error("unexpected", t, &curr);
-          return ret;
-        }
-
-        expected = 0;
-
-        if(curr.type == TT_SEP) {
-          switch(curr.value) {
-            case '\\': expected = '\n'; continue;
-            case ',': continue;
-            case ')':
-              ret = tokenizer_skip_chars(t, " \t", &ws_count);
-              if(!ret)
-                return ret;
-
-              goto break_loop1;
-
-            default: cpp_msg_error("unexpected character", t, &curr); return 0;
-          }
-
-        } else if(!(curr.type == TT_IDENTIFIER || curr.type == TT_ELLIPSIS)) {
-          cpp_msg_error("expected identifier for macro arg", t, &curr);
-          return 0;
-        }
-
-        {
-          char* tmps;
-
-          if(curr.type == TT_ELLIPSIS) {
-            if(macro_flags & MACRO_FLAG_VARIADIC) {
-              cpp_msg_error("\"...\" isn't the last parameter", t, &curr);
-              return 0;
-            }
-
-            macro_flags |= MACRO_FLAG_VARIADIC;
-          }
-
-          tmps = str_dup(t->buf);
-          LIST_PUSH_BACK(new.argnames, tmps);
-        }
-
-        ++new.num_args;
+    for(;;) {
+      /* process next function argument identifier */
+      if(!consume_nl_and_ws(t, &curr, expected)) {
+        error("unexpected", t, &curr);
+        return 0;
       }
 
-    break_loop1:
+      expected = 0;
 
-    } else if(token_is_whitespace(&curr)) {
-      ret = tokenizer_skip_chars(t, " \t", &ws_count);
+      if(curr.type == TT_SEP) {
+        switch(curr.value) {
+          case '\\': expected = '\n'; continue;
+          case ',': continue;
+          case ')':
+            if(!tokenizer_skip_chars(t, " \t", &ws_count))
+              return 0;
 
-      if(!ret)
-        return ret;
+            goto break_loop1;
 
-    } else if(token_is_char(&curr, '\n')) {
-      /* content-less macro */
-      goto done;
+          default: error("unexpected character", t, &curr); return 0;
+        }
+
+      } else if(!(curr.type == TT_IDENTIFIER || curr.type == TT_ELLIPSIS)) {
+        error("expected identifier for macro arg", t, &curr);
+        return 0;
+      }
+
+      {
+
+        if(curr.type == TT_ELLIPSIS) {
+          if(macro_flags & MACRO_FLAG_VARIADIC) {
+            error("\"...\" isn't the last parameter", t, &curr);
+            return 0;
+          }
+
+          macro_flags |= MACRO_FLAG_VARIADIC;
+        }
+
+        tmps = str_dup(t->buf);
+        LIST_PUSH_BACK(new.argnames, tmps);
+      }
+
+      ++new.num_args;
     }
 
-    {
-      int backslash_seen = 0;
-      cpp_file contents = {0, 0, 0};
+  break_loop1:
 
-      contents.f = memstream_open(&contents.buf, &contents.len);
+  } else if(token_is_whitespace(&curr)) {
+    if(!tokenizer_skip_chars(t, " \t", &ws_count))
+      return 0;
 
-      for(;;) {
-        /* ignore unknown tokens in macro body */
-        ret = tokenizer_next(t, &curr);
+  } else if(token_is_char(&curr, '\n')) {
+    /* content-less macro */
+    goto done;
+  }
 
-        if(!ret)
-          return 0;
+  contents.f = memstream_open(&contents.buf, &contents.len);
 
-        if(curr.type == TT_EOF)
+  for(;;) {
+    /* ignore unknown tokens in macro body */
+    if(!tokenizer_next(t, &curr))
+      return 0;
+
+    if(curr.type == TT_EOF)
+      break;
+
+    if(curr.type == TT_SEP) {
+      if(curr.value == '\\')
+        backslash_seen = 1;
+      else {
+        if(curr.value == '\n' && !backslash_seen)
           break;
 
-        if(curr.type == TT_SEP) {
-          if(curr.value == '\\')
-            backslash_seen = 1;
-          else {
-            if(curr.value == '\n' && !backslash_seen)
-              break;
-
-            emit_token(contents.f, &curr, t->buf);
-            backslash_seen = 0;
-          }
-        } else {
-          emit_token(contents.f, &curr, t->buf);
-        }
+        emit_token(contents.f, &curr, t->buf);
+        backslash_seen = 0;
       }
-
-      buffer_putc(contents.f, '\0');
-      buffer_flush(contents.f);
-
-      if(contents.buf) {
-        buffer_copybuf(&new.str_contents, contents.buf, contents.len);
-
-        // new.str_contents_buf = new.str_contents.x;
-      }
+    } else {
+      emit_token(contents.f, &curr, t->buf);
     }
-
-  done:
-    if(redefined) {
-      cpp_macro* old = cpp_macro_get(cpp, macroname);
-      char* s_old = old->str_contents_buf ? old->str_contents_buf : "";
-      char* s_new = new.str_contents_buf ? new.str_contents_buf : "";
-
-      if(str_diff(s_old, s_new)) {
-        char buf[128];
-        size_t n;
-
-        n = str_copy(buf, "redefinition of macro ");
-        str_copyn(&buf[n], macroname, sizeof(buf) - n);
-
-        cpp_msg_warning(buf, t, 0);
-      }
-    }
-
-    new.num_args |= macro_flags;
-    cpp_macro_add(cpp, macroname, &new);
   }
+
+  buffer_putc(contents.f, '\0');
+  buffer_flush(contents.f);
+
+  if(contents.buf) {
+    buffer_copybuf(&new.str_contents, contents.buf, contents.len);
+
+    // new.str_contents_buf = new.str_contents.x;
+  }
+
+done:
+  if(redefined) {
+    cpp_macro* old = cpp_macro_get(pp, macroname);
+    char* s_old = old->str_contents_buf ? old->str_contents_buf : "";
+    char* s_new = new.str_contents_buf ? new.str_contents_buf : "";
+
+    if(str_diff(s_old, s_new)) {
+      char buf[128];
+      size_t n;
+
+      n = str_copy(buf, "redefinition of macro ");
+      str_copyn(&buf[n], macroname, sizeof(buf) - n);
+
+      warning(buf, t, 0);
+    }
+  }
+
+  new.num_args |= macro_flags;
+  cpp_macro_add(pp, macroname, &new);
 
   return 1;
 }
