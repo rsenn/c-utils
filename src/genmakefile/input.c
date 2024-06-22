@@ -2,6 +2,7 @@
 #include "var.h"
 #include "generate.h"
 #include "../../lib/path.h"
+#include "../../lib/hashmap.h"
 #include "../../genmakefile.h"
 #include <errno.h>
 
@@ -621,8 +622,8 @@ input_process_rules(target* all, char psa) {
 
   stralloc_zero(&commands.compile);
 
-  hashmap_free(&(vars));
-  // MAP_DESTROY(vars);
+  // hashmap_free(&(vars));
+  MAP_DESTROY(vars);
   MAP_NEW(vars);
 
   MAP_FOREACH(rules, t) {

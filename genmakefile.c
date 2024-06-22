@@ -1585,7 +1585,7 @@ main(int argc, char* argv[]) {
     else if(cfg.mach.bits == 0)
       set_machine(tools.compiler);
   }
-  // debug_sa("dirs.build"", &dirs.build.sa);
+  //debug_sa("dirs.build"", &dirs.build.sa);
   set_init(&toks, 0);
   {
     strlist tmp;
@@ -1702,9 +1702,9 @@ main(int argc, char* argv[]) {
   strlist_nul(&dirs.build);
   strlist_nul(&dirs.work);
 
-  // debug_sa("dirs.this", &dirs.this.sa);
-  // debug_sa("dirs.out", &dirs.out.sa);
-  // debug_sa("dirs.build", &dirs.build.sa);
+  //debug_sa("dirs.this", &dirs.this.sa);
+  //debug_sa("dirs.out", &dirs.out.sa);
+  //debug_sa("dirs.build", &dirs.build.sa);
   if(tools.preproc)
     var_set("CPP", tools.preproc);
 
@@ -1714,29 +1714,29 @@ main(int argc, char* argv[]) {
 
   includes_cppflags();
 
-  // debug_sa("dirs.work", &dirs.work.sa);
+  //debug_sa("dirs.work", &dirs.work.sa);
   strlist_nul(&dirs.this);
   strlist_nul(&dirs.out);
   path_relative_to(dirs.this.sa.s, dirs.out.sa.s, &sources_dir);
   stralloc_nul(&sources_dir);
-  // debug_sa("srcdir", &srcdir);
+  //debug_sa("srcdir", &srcdir);
   if(dirs.out.sa.len) {
     stralloc_replacec(&dirs.this.sa, PATHSEP_C == '/' ? '\\' : '/', PATHSEP_C);
     stralloc_replacec(&dirs.out.sa, PATHSEP_C == '/' ? '\\' : '/', PATHSEP_C);
-    // debug_sa("dirs.this", &dirs.this.sa);
-    // debug_sa("dirs.out", &dirs.out.sa);
+    //debug_sa("dirs.this", &dirs.this.sa);
+    //debug_sa("dirs.out", &dirs.out.sa);
     path_absolute_sa(&dirs.out.sa);
     stralloc_zero(&tmp);
     path_relative_to(dirs.this.sa.s, dirs.out.sa.s, &tmp);
     // if(tmp.len) {
     stralloc_copy(&sources_dir, &tmp);
-    // debug_sa("sources_dir", &sources_dir);
-    //}
+    //debug_sa("sources_dir", &sources_dir);
+    // }
     stralloc_zero(&tmp);
   }
-  // debug_sa("sources_dir", &sources_dir);
+  //debug_sa("sources_dir", &sources_dir);
   path_relative_to(dirs.build.sa.s, dirs.out.sa.s, &tmp);
-  // debug_sa("tmp", &tmp);
+  //debug_sa("tmp", &tmp);
   /* if(dirs.build.sa.len > dirs.out.sa.len && byte_equal(dirs.out.sa.s, dirs.out.sa.len, dirs.build.sa.s)) {
      const char* x = dirs.build.sa.s + dirs.out.sa.len;
      size_t n = dirs.build.sa.len - dirs.out.sa.len;
@@ -1866,7 +1866,7 @@ main(int argc, char* argv[]) {
     if(stralloc_contains(&arg, "=")) {
       size_t eqpos;
       const char* v;
-      // debug_sa("Setting var", &arg);
+      //debug_sa("Setting var", &arg);
       eqpos = str_chr(arg.s, '=');
       arg.s[eqpos++] = '\0';
       v = &arg.s[eqpos];

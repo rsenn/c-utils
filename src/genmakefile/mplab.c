@@ -4,6 +4,7 @@
 #include "../../lib/map.h"
 #include "mplab.h"
 #include "../../lib/set.h"
+#include "../../debug.h"
 #include "sources.h"
 #include "is.h"
 
@@ -152,14 +153,11 @@ output_mplab_project(buffer* b, MAP_T* _rules, MAP_T* vars, const strlist* inclu
   stralloc_nul(&sa);
 
   ini_set(section, "device", sa.s);
-  /*
-    //debug_sa("dirs.work",
-    &dirs.work.sa);
-    //debug_sa("dirs.build",
-    &dirs.build.sa);
-    //debug_sa("dirs.out",
-    &dirs.out.sa);*/
 
+  //debug_sa("dirs.work", &dirs.work.sa);
+  //debug_sa("dirs.build", &dirs.build.sa);
+  //debug_sa("dirs.out", &dirs.out.sa);
+  //
   strlist_init(&incdirs, ';');
   strlist_init(&srcdirs, ';');
 
@@ -185,9 +183,6 @@ output_mplab_project(buffer* b, MAP_T* _rules, MAP_T* vars, const strlist* inclu
   stralloc_zero(&sa);
 
   stralloc_copy(&sa, &dirs.work.sa);
-  /*  stralloc_catb(&sa, tools.compiler,
-    3); stralloc_catc(&sa, '-');
-    stralloc_cat(&sa, &cfg.chip);*/
   stralloc_replacec(&sa, '/', '\\');
 
   stralloc_nul(&sa);
@@ -230,36 +225,46 @@ output_mplab_project(buffer* b, MAP_T* _rules, MAP_T* vars, const strlist* inclu
     stralloc_zero(&incdirs.sa);
 
     set_foreach(&sources_set, it, x, n) {
+      bool is_inc = is_include_b(x, n);
+      bool is_src = is_source_b(x, n);
+
+      debug_byte("x", x, n);
+      debug_int("is_src", is_src);
+
       s = x;
-      if(!is_source(s) && num_sources == 0)
+      if(!is_src && num_sources == 0)
         num_sources = i;
       stralloc_zero(&sa);
-      stralloc_copy(&sa, &dirs.this.sa);
-      stralloc_catc(&sa, '/');
+
+      if(dirs.this.sa.len) {
+        stralloc_copy(&sa, &dirs.this.sa);
+        stralloc_catc(&sa, '/');
+      }
+
       stralloc_catb(&sa, x, n);
       stralloc_nul(&sa);
       stralloc_zero(&dirname);
+
       path_dirname(s, &dirname);
       stralloc_nul(&dirname);
+
       s = dirname.s;
-      n = str_rchrs(dirname.s, "/\\", 2);
-      if(s[n])
-        s += n;
+    
       while(s[0] == '.' && s[1] == '.' && (s[2] == '/' || s[2] == '\\'))
         s += 3;
 
-      if(!str_equal(s, ".")) {
-        strlist_push_unique(is_source(*p) ? &srcdirs : &incdirs, s);
-      }
-      // debug_sa("sa", &sa);
-      // debug_sa("dirs.build",
-      // &dirs.build.sa);
-      // debug_sa("dirs.work",
-      // &dirs.work.sa);
-      // debug_sa("dirs.out",
-      // &dirs.out.sa);
+      if(!str_equal(s, "."))
+        strlist_push_unique(is_inc ? &incdirs : &srcdirs, s);
+
+      //debug_sa("sa", &sa);
+      //debug_sa("dirs.build", &dirs.build.sa);
+      //debug_sa("dirs.work", &dirs.work.sa);
+      //debug_sa("dirs.out", &dirs.out.sa);
+
       path_relative_to(sa.s, dirs.out.sa.s, &file);
-      // debug_sa("file", &file);
+
+      //debug_sa("file", &file);
+
       stralloc_replacec(&file, '/', '\\');
       stralloc_nul(&file);
       make_fileno(&sa, i++);
@@ -278,26 +283,22 @@ output_mplab_project(buffer* b, MAP_T* _rules, MAP_T* vars, const strlist* inclu
   ini_set(cat_subfolders, "subfolder_inc", incdirs.sa.s);
   ini_set(cat_subfolders, "subfolder_src", srcdirs.sa.s);
 
-  /*
-    hmap_foreach(rules, it) {
-      target* t =
-    (target*)it->vals.val_chars;
+  /*hmap_foreach(rules, it) {
+    target* t = (target*)it->vals.val_chars;
 
-      if(!is_object(t->name) ||
-    stralloc_end(&t->prereq.sa,
-    exts.pps)) continue;
+    if(!is_object(t->name) || stralloc_end(&t->prereq.sa, exts.pps)) continue;
 
-      //debug_target(t);
+    //debug_target(t);
 
 
-      ini_set(file_subfolders, sa.s,
-    "."); ini_set(generated_files, sa.s,
-    "no"); ini_set(other_files, sa.s,
-    "no"); ini_set_sa(section, &sa,
-    &t->prereq.sa);
+    ini_set(file_subfolders, sa.s, ".");
+    ini_set(generated_files, sa.s, "no");
+    ini_set(other_files, sa.s, "no");
+    ini_set_sa(section, &sa, &t->prereq.sa);
 
-      i++;
-    }*/
+    i++;
+  }*/
+
   section = ini_new(&section->next, "SUITE_INFO");
   ini_set(section, "suite_guid", suite_guid(&sa));
   ini_set(section, "suite_state", "");
@@ -513,31 +514,18 @@ output_mplab_project(buffer* b, MAP_T* _rules, MAP_T* vars, const strlist* inclu
     ini_set(section, make_tool_key(&sa, "_alt"), "yes");
   }
 
-  /*  ini_set(section,
-    make_tool_key(&sa, "000_active"),
-    "yes"); ini_set(section,
-    make_tool_key(&sa, "001_active"),
-    "yes"); ini_set(section,
-    make_tool_key(&sa, "002_active"),
-    "yes"); ini_set(section,
-    make_tool_key(&sa, "003_active"),
-    "yes"); ini_set(section,
-    make_tool_key(&sa, "004_active"),
-    "yes"); ini_set(section,
-    make_tool_key(&sa, "005_active"),
-    "yes"); ini_set(section,
-    make_tool_key(&sa, "006_active"),
-    "yes"); ini_set(section,
-    make_tool_key(&sa, "007_active"),
-    "yes"); ini_set(section,
-    make_tool_key(&sa, "008_active"),
-    "yes"); ini_set(section,
-    make_tool_key(&sa, "009_active"),
-    "yes"); ini_set(section,
-    make_tool_key(&sa, "010_active"),
-    "yes"); ini_set(section,
-    make_tool_key(&sa, "011_active"),
-    "yes");*/
+  /*ini_set(section, make_tool_key(&sa, "000_active"), "yes");
+  ini_set(section, make_tool_key(&sa, "001_active"), "yes");
+  ini_set(section, make_tool_key(&sa, "002_active"), "yes");
+  ini_set(section, make_tool_key(&sa, "003_active"), "yes");
+  ini_set(section, make_tool_key(&sa, "004_active"), "yes");
+  ini_set(section, make_tool_key(&sa, "005_active"), "yes");
+  ini_set(section, make_tool_key(&sa, "006_active"), "yes");
+  ini_set(section, make_tool_key(&sa, "007_active"), "yes");
+  ini_set(section, make_tool_key(&sa, "008_active"), "yes");
+  ini_set(section, make_tool_key(&sa, "009_active"), "yes");
+  ini_set(section, make_tool_key(&sa, "010_active"), "yes");
+  ini_set(section, make_tool_key(&sa, "011_active"), "yes");*/
 
   section = ini_new(&section->next, "INSTRUMENTED_TRACE");
   ini_set_long(section, "enable", 0);

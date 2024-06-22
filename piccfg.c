@@ -598,8 +598,10 @@ main(int argc, char* argv[]) {
       cfgdata = argv[unix_optind++];
   }
 
-  if(!hexfile)
-    hexfile = "/home/roman/Sources/pictest/bootloaders/usb-msd-bootloader-18f2550.hex";
+  if(!hexfile) {
+    usage(argv[0]);
+    return 1;
+  }
 
   if(cfgdata) {
     if(!path_exists(cfgdata))
