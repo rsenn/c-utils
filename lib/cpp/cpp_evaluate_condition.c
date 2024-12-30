@@ -52,7 +52,7 @@ cpp_evaluate_condition(cpp* pp, tokenizer* t, int* result, char* visited[]) {
   token tok;
   tokenizer t2;
 
-t2=*t;
+  t2 = *t;
 
 #ifdef DEBUG_CPP
 #endif
@@ -101,8 +101,8 @@ t2=*t;
   }
 
 #ifdef DEBUG_CPP
-   cpp_location(&t2, buffer_2);
- buffer_putm_internal(buffer_2, " evaluating condition '", NULL);
+  cpp_location(&t2, buffer_2);
+  buffer_putm_internal(buffer_2, " evaluating condition '", NULL);
   buffer_put(buffer_2, x, n);
   buffer_putsflush(buffer_2, "'\n");
 #endif

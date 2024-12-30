@@ -59,7 +59,7 @@ int cpp_parse_unary(tokenizer*, token* tok, int* err);
 int cpp_parse_whitespace(tokenizer*, token* token, int* count);
 int cpp_stringify(cpp*, tokenizer* t, buffer* out);
 int cpp_tchain_parens_follows(cpp*, int rec_level);
-void cpp_location( tokenizer* t,buffer*out);
+void cpp_location(tokenizer* t, buffer* out);
 
 #endif
 /** @} */
