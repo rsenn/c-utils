@@ -9,5 +9,6 @@ stralloc_trunc(stralloc* sa, size_t n) {
     sa->len = n;
     return 1;
   }
+
   return 0;
 }

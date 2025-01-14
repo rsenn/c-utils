@@ -358,15 +358,22 @@ output_all_rules(buffer* b, bool ninja, bool batch, bool shell, const char quote
 void
 output_build_rules(buffer* b, const char* name, const stralloc* cmd) {
   static stralloc out;
+
   stralloc_zero(&out);
+
   buffer_putm_internal(b, "rule ", name, "\n  command = ", NULL);
+
   var_subst(cmd, &out, "$", "", 1);
+
   stralloc_replaces(&out, "$@", "$out");
   stralloc_replaces(&out, "$<", "$in");
   stralloc_replaces(&out, "$^", "$in");
+
   stralloc_remove_all(&out, "\"", 1);
+
   stralloc_removesuffixs(&out, newline);
   stralloc_removesuffixs(&out, "\r");
+
   buffer_putsa(b, &out);
   buffer_putsflush(b, newline);
 }
