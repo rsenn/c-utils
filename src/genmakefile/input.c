@@ -41,6 +41,7 @@ libdirs_add(const char* dir) {
 
   stralloc_free(&abs);
 }
+
 static void
 builddir_enter(const char* x, size_t len) {
   stralloc dir;
@@ -74,10 +75,12 @@ builddir_leave(const char* x, size_t len) {
   buffer_putnlflush(buffer_2);
 #endif
 
-  stralloc_free(&dirs.build.sa);
+  if(strarray_size(&dirstack)) {
+    stralloc_free(&dirs.build.sa);
 
-  dirs.build.sa.s = strarray_pop(&dirstack);
-  dirs.build.sa.len = str_len(dirs.build.sa.s);
+    dirs.build.sa.s = strarray_pop(&dirstack);
+    dirs.build.sa.len = dirs.build.sa.s ? str_len(dirs.build.sa.s) : 0;
+  }
 }
 
 void
@@ -95,6 +98,7 @@ input_process_path_b(const char* y, size_t len, stralloc* out) {
   stralloc_nul(out);
   path_relative_to(out->s, dirs.out.sa.s, out);
   path_prepends(".", out);
+  stralloc_nul(out);
 
   path_collapse_sa(out);
   stralloc_nul(out);
@@ -618,9 +622,10 @@ input_process_line(const char* x, size_t n, const char* file, size_t line) {
 
     } else if(byte_chrs(x, i, "*?[", 3) < i) {
       bool same_dir;
-      stralloc cwd;
+      stralloc cwd, fullpath;
 
       stralloc_init(&cwd);
+      stralloc_init(&fullpath);
       path_getcwd(&cwd);
       stralloc_nul(&cwd);
       strlist_nul(&dirs.build);
@@ -634,9 +639,14 @@ input_process_line(const char* x, size_t n, const char* file, size_t line) {
           errmsg_warnsys("chdir(): ", dirs.build.sa.s, 0);
       }
 
-      strarray_glob_b(&args, x, i);
+      stralloc_copy(&fullpath, &dirs.build.sa);
+      stralloc_catc(&fullpath, PATHSEP_C);
+      stralloc_catb(&fullpath, x, i);
+      stralloc_nul(&fullpath);
 
-#ifdef DEBUG_OUTPUT_
+      strarray_glob(&args, fullpath.s);
+
+#ifdef DEBUG_OUTPUT
       if(strarray_size(&args) >= 1) {
         buffer_puts(buffer_2, "glob = ");
         strarray_dump(buffer_2, &args);
@@ -648,6 +658,7 @@ input_process_line(const char* x, size_t n, const char* file, size_t line) {
         (void)chdir(cwd.s);
 
       stralloc_free(&cwd);
+      stralloc_free(&fullpath);
 
     } else if(i == 2 && byte_equal(x, 2, "&&")) {
       break;
@@ -864,12 +875,13 @@ input_process_rules(target* all, char psa) {
       /*if(link && (i = stralloc_findb(&cmd, "\n", 1)) < cmd.len)
         stralloc_trunc(&cmd, i);*/
 
-      stralloc_trimr(&cmd, "\0\r\n", 3);
-      stralloc_nul(&cmd);
+      stralloc_0(&cmd);
 
       strlist_foreach(&args, x, n) { REMOVE(&cmd, i, x, n); }
 
       set_foreach(&rule->prereq, it, x, n) { REMOVE(&cmd, i, x, n); }
+
+      stralloc_trimr(&cmd, "\0\r\n", 3);
       stralloc_nul(&cmd);
 
 #ifdef DEBUG_OUTPUT_

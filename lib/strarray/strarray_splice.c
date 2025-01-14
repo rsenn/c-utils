@@ -10,7 +10,7 @@ int64
 strarray_splice(strarray* a, uint64 start, uint64 del, uint64 insert, const char** x) {
   char** s;
   uint64 i, len, newlen;
-  if(strarray_begin(a) == NULL) {
+  if(strarray_BEGIN(a) == NULL) {
     array_allocate(&a->a, sizeof(char*), 0);
     array_trunc(&a->a);
   }
@@ -23,8 +23,8 @@ strarray_splice(strarray* a, uint64 start, uint64 del, uint64 insert, const char
   newlen = len - del + insert;
   if(insert != del) {
     size_t nmove = len - (start + del);
-    size_t movepos = &s[i] - strarray_begin(a);
-    char** end = strarray_end(a);
+    size_t movepos = &s[i] - strarray_BEGIN(a);
+    char** end = strarray_END(a);
     if(insert > del) {
       end = (char**)array_allocate(&a->a, sizeof(char*), newlen);
       s = end - newlen + start;

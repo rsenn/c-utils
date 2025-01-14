@@ -3,9 +3,11 @@
 
 void
 strarray_dump(buffer* b, const strarray* arr) {
-  char **p = strarray_begin(arr), **e = strarray_end(arr);
+  char **p = strarray_BEGIN(arr), **e = strarray_END(arr);
   size_t i = 0;
+
   buffer_puts(b, "[\n");
+
   while(p < e) {
     buffer_puts(b, "  ");
     buffer_putulong(b, i);
@@ -15,5 +17,6 @@ strarray_dump(buffer* b, const strarray* arr) {
     p++;
     i++;
   }
+
   buffer_putsflush(b, "]\n");
 }

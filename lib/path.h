@@ -59,6 +59,7 @@ int path_exists(const char* p);
 int path_find(const char* path, const char* name, stralloc* out);
 int path_fnmatch(const char* pattern, unsigned int plen, const char* string, unsigned int slen, int flags);
 void path_getcwd(stralloc* sa);
+char* path_getcwd_s(void);
 char* path_gethome(int uid);
 int path_getsep(const char* path);
 int path_is_absolute(const char* p);

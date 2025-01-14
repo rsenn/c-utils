@@ -3,7 +3,7 @@
 
 void
 strarray_intersection(const strarray* s1, const strarray* s2, strarray* out) {
-  char **a = strarray_begin(s1), **b = strarray_begin(s2);
+  char **a = strarray_BEGIN(s1), **b = strarray_BEGIN(s2);
   size_t alen = strarray_size(s1), blen = strarray_size(s2);
   size_t i = 0, j = 0;
   while(i < alen && j < blen) {

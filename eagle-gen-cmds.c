@@ -419,7 +419,7 @@ get_layer(const char* str) {
 
 const char*
 layer_name(int i) {
-  return strarray_at(&layers, i);
+  return strarray_AT(&layers, i);
 }
 
 const char*
@@ -431,7 +431,7 @@ layer_by_id(const char* str) {
 }
 const char*
 layer_index(long idx) {
-  return strarray_at(&layers, idx);
+  return strarray_AT(&layers, idx);
 }
 
 void
@@ -1620,7 +1620,7 @@ main(int argc, char* argv[]) {
 
       size_t i, n = strarray_size(&layers);
       for(i = 0; i < n; ++i) {
-        const char* s = strarray_at(&layers, i);
+        const char* s = strarray_AT(&layers, i);
 
         if(s) {
           stralloc num;

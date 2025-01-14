@@ -343,7 +343,7 @@ main(int argc, char* argv[]) {
 
   for(i = 1; i < strarray_size(&v); ++i) {
     size_t pos;
-    stralloc_copys(&arg, strarray_at(&v, i));
+    stralloc_copys(&arg, strarray_AT(&v, i));
     stralloc_nul(&arg);
 
     if(i == 1 && !tlib) {

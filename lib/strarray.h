@@ -41,12 +41,12 @@ strarray_size(const strarray* l) {
   return array_length(&l->a, sizeof(char*));
 }
 
-#define strarray_begin(l) (char**)array_start(&(l)->a)
-#define strarray_end(l) (strarray_begin(l) + strarray_size(l))
+#define strarray_BEGIN(l) (char**)array_start(&(l)->a)
+#define strarray_END(l) (strarray_BEGIN(l) + strarray_size(l))
 
-#define strarray_at(l, pos) (((char**)((l)->p))[(pos)])
+#define strarray_AT(l, pos) (((char**)((l)->p))[(pos)])
 
-#define strarray_foreach(a, ptr) for((ptr) = (char**)strarray_begin(a); ((char**)(ptr)) != strarray_end(a) && *(char**)(ptr); ++ptr)
+#define strarray_foreach(a, ptr) for((ptr) = (char**)strarray_BEGIN(a); ((char**)(ptr)) != strarray_END(a) && *(char**)(ptr); ++ptr)
 
 char** strarray_to_argv(strarray*);
 int strarray_from_argv(int argc, const char* const argv[], strarray* arr);

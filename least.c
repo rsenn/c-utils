@@ -56,7 +56,7 @@ line_range(void) {
 
 static const char*
 line_at(size_t i) {
-  return strarray_at(&lines, i);
+  return strarray_AT(&lines, i);
 }
 
 size_t

@@ -911,7 +911,7 @@ pkg_conf(strarray* modules, id code, int mode) {
   strlist_init(&output, '\0');
   strlist_init(&require, ' ');
   for(i = 0; i < strarray_size(modules); ++i) {
-    const char* pkgname = strarray_at(modules, i);
+    const char* pkgname = strarray_AT(modules, i);
 #ifdef DEBUG_OUTPUT_
     buffer_puts(buffer_2, "pkgname: ");
     buffer_puts(buffer_2, pkgname);

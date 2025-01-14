@@ -5,7 +5,7 @@
 int
 strarray_appends(strarray* arr, const char* s) {
   size_t i, n = strarray_size(arr);
-  char** p = strarray_begin(arr);
+  char** p = strarray_BEGIN(arr);
 
   for(i = 0; i < n; ++i) {
     size_t len = str_len(*p);

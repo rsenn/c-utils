@@ -492,7 +492,7 @@ static char*
 resolve_etc(const strarray* arr, uint32 id) {
   uint64 len = strarray_size(arr);
   if(id < len)
-    return strarray_at(arr, id);
+    return strarray_AT(arr, id);
   return 0;
 }
 

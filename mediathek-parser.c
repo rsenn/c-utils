@@ -485,7 +485,7 @@ process_input(buffer* input) {
       strarray_init(&arr);
       strarray_from_argv(c > 21 ? 21 : c, (const char**)v, &arr);
 
-      if(!process_entry(strarray_begin(&arr), strarray_size(&arr)))
+      if(!process_entry(strarray_BEGIN(&arr), strarray_size(&arr)))
         strlist_dump(buffer_2, &fields);
 
       strarray_free(&arr);

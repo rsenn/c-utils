@@ -360,7 +360,7 @@ main(int argc, char* argv[], char* envp[]) {
     buffer_putsa(buffer_2, &fullcmd);
     buffer_putnlflush(buffer_2);
 #endif
-    av = strarray_begin(&args);
+    av = strarray_BEGIN(&args);
     if(-1 == (ret = process_create(fullcmd.s, av, NULL, NULL))) {
       errmsg_warnsys("process_create:", 0);
       return 1;

@@ -152,7 +152,7 @@ get_ports(strarray* ports) {
   strarray_zero(ports);
   dir_entries("/dev/", &temp);
   n = strarray_size(&temp);
-  pvec = strarray_begin(&temp);
+  pvec = strarray_BEGIN(&temp);
   for(j = 0; j < n; j++) {
     const char* port = pvec[j];
     size_t i = str_rchr(port, '/');
@@ -710,7 +710,7 @@ getopt_end:
         usleep(250 * 1000);
         continue;
       }
-      portname = strarray_at(&portArr, 0);
+      portname = strarray_AT(&portArr, 0);
       //  strarray_free(&portArr);
     }
 
@@ -754,7 +754,7 @@ getopt_end:
 
       /*buffer_puts(buffer_2, "removed
       port: "); buffer_puts(buffer_2,
-      strarray_at(&ports, idx));
+      strarray_AT(&ports, idx));
       buffer_putnlflush(buffer_2); */
       strarray_splice(&ports, idx, 1, 0, NULL);
     }
@@ -767,7 +767,7 @@ getopt_end:
     buffer_puts(buffer_1, "): "); */
     /*for(i = 0; i <
     strarray_size(&ports); i++) { const
-    char* portstr = strarray_at(&ports,
+    char* portstr = strarray_AT(&ports,
     i); if(portstr == NULL) continue;
       if(i > 0)
         buffer_puts(buffer_1, " ");

@@ -4,7 +4,7 @@
 int
 buffer_putstra(buffer* b, const strarray* stra, const char* sep) {
   size_t i, n = strarray_size(stra);
-  char** s = strarray_begin(stra);
+  char** s = strarray_BEGIN(stra);
 
   for(i = 0; i < n; ++i) {
     if(i > 0)

@@ -10,7 +10,7 @@ strarray_copy(strarray* dst, const strarray* src) {
     return 0;
 
   *d = NULL;
-  d = strarray_begin(dst);
+  d = strarray_BEGIN(dst);
 
   strarray_foreach(src, s) {
     *d = str_dup(*s);

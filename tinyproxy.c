@@ -344,7 +344,7 @@ dump_strarray(buffer* b, const strarray* a, const char* quote, const char* sep) 
   for(i = 0; i < n; i++) {
     if(i)
       buffer_putm_internal(b, sep, NULL);
-    s = strarray_at(a, i);
+    s = strarray_AT(a, i);
     if(s[str_chrs(s, quote_chars, str_len(quote_chars))])
 
       buffer_putm_internal(b, quote, s, quote, NULL);
