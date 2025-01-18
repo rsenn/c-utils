@@ -508,6 +508,7 @@ generate_lib_rules(bool shell, bool batch, bool batchmode, char psa, char psm) {
     target* rule;
     sourcedir* srcdir = *(sourcedir**)MAP_ITER_VALUE(t);
     const char* base = path_basename(MAP_ITER_KEY(t));
+
     if(str_equal(base, ".")) {
       stralloc_zero(&abspath);
       path_absolute(MAP_ITER_KEY(t), &abspath);

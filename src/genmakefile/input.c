@@ -192,6 +192,7 @@ input_process_command(stralloc* cmd, int argc, char* argv[], const char* file, s
       if(src)
         sources_add_b(x, byte_chrs(x, len, " \t\n\v\r", 5));
     }
+
     for(p = argv; (len = *p ? str_len(*p) : 0, x = *p, p < end); p++) {
       len = str_len(x);
 
@@ -254,6 +255,7 @@ input_process_command(stralloc* cmd, int argc, char* argv[], const char* file, s
 
         if(n >= 2 && y[n - 1] == '.' && y[n - 2] == '/')
           n -= 2;
+
         includes_add_b(y, n);
         x = y;
         stralloc_free(&path);
@@ -306,8 +308,10 @@ input_process_command(stralloc* cmd, int argc, char* argv[], const char* file, s
 #endif
           if(is_source_sa(&path))
             sources_add_b(path.s, path.len);
+
           stralloc_free(&path);
         }
+
         x = y;
         continue;
       }

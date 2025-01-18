@@ -22,9 +22,11 @@ void
 path_prefix_b(const stralloc* prefix, const char* x, size_t n, stralloc* out, char psm) {
   if(prefix->len && !stralloc_equals(prefix, ".")) {
     stralloc_cat(out, prefix);
+
     if(!stralloc_endb(prefix, &psm, 1) && !stralloc_endb(prefix, ")", 1))
       stralloc_catc(out, psm);
   }
+
   stralloc_catb(out, x, n);
   stralloc_nul(out);
 }
@@ -47,9 +49,11 @@ void
 path_prefix_sa(const stralloc* prefix, stralloc* sa, char psm) {
   if(prefix->len && !stralloc_equals(prefix, ".")) {
     stralloc_insertb(sa, prefix->s, 0, prefix->len);
+
     if(!stralloc_endb(prefix, &psm, 1))
       stralloc_insertb(sa, &psm, prefix->len, 1);
   }
+
   stralloc_nul(sa);
 }
 
@@ -63,6 +67,7 @@ path_extension(const char* in, stralloc* out, const char* ext) {
   stralloc_catb(out, in, extpos);
   stralloc_cats(out, ext);
   stralloc_nul(out);
+
   return out->s;
 }
 
@@ -77,6 +82,7 @@ char*
 path_output(const char* in, stralloc* out, const char* ext, char psa) {
   stralloc_copy(out, &dirs.build.sa);
   stralloc_catc(out, psa);
+
   return path_extension(str_basename(in), out, ext);
 }
 
@@ -92,17 +98,22 @@ path_wildcard(stralloc* sa, const char* wildchar) {
   size_t n, e;
   stralloc_nul(sa);
   x = sa->s;
+
   if(sa->s[(n = str_rchrs(sa->s, "/\\ ", 3))]) {
     x += n;
+
     if(*x)
       x++;
   }
+
   n = x - sa->s;
   e = byte_rchr(x, sa->len - n, '.');
+
   if(e != sa->len - n) {
     stralloc_remove(sa, n, e);
     stralloc_insertb(sa, wildchar, n, str_len(wildchar));
   }
+
   stralloc_nul(sa);
   return sa->s;
 }
@@ -111,11 +122,14 @@ char*
 path_clean_s(const char* path) {
   if(str_startb(path, dirs.this.sa.s, dirs.this.sa.len)) {
     path += dirs.this.sa.len;
+
     if(path[0] == PATHSEP_C)
       path++;
   }
+
   while(str_start(path, "./"))
     path += 2;
+
   return (char*)path;
 }
 
@@ -124,15 +138,18 @@ path_clean_b(const char* path, size_t* len) {
   if(byte_startb(path, *len, dirs.this.sa.s, dirs.this.sa.len)) {
     path += dirs.this.sa.len;
     *len -= dirs.this.sa.len;
+
     if(*len > 0 && path[0] == PATHSEP_C) {
       path++;
       (*len)--;
     }
   }
+
   while(byte_starts(path, *len, "./")) {
     path += 2;
     (*len) -= 2;
   }
+
   return (char*)path;
 }
 
@@ -141,14 +158,17 @@ path_mmap_read(const char* path, size_t* n, char psm) {
   const char* x;
   stralloc sa;
   stralloc_init(&sa);
+
   if(dirs.this.sa.s) {
     path_prefix_s(&dirs.this.sa, path, &sa, psm);
     stralloc_replacec(&sa, psm, PATHSEP_C);
   }
+
   if((x = mmap_read(sa.s, n)) == NULL) {
     errmsg_warnsys("error opening '", path, "'", 0);
     buffer_putnlflush(buffer_2);
   }
+
   stralloc_free(&sa);
   return x;
 }
@@ -201,7 +221,9 @@ char*
 path_dirname_alloc(const char* p) {
   size_t len = str_len(p);
   size_t pos = str_rchrs(p, PATHSEP_S_MIXED, sizeof(PATHSEP_S_MIXED) - 1);
+
   if(pos < len)
     return str_ndup(p, pos);
+
   return str_dup(".");
 }

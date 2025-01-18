@@ -65,6 +65,7 @@ var_isset(const char* name) {
 var_t*
 var_list(const char* name, char psa) {
   MAP_PAIR_T t;
+
   if(!MAP_SEARCH(vars, name, str_len(name) + 1, &t)) {
     var_t var;
     var.serial = 0;
@@ -156,20 +157,25 @@ void
 var_subst(const stralloc* in, stralloc* out, const char* pfx, const char* sfx, int tolower) {
   size_t i;
   stralloc_zero(out);
+
   for(i = 0; i < in->len; ++i) {
     const char* p = &in->s[i];
+
     if(i + 4 <= in->len && *p == '$' && p[1] == '(') {
       size_t vlen;
       stralloc_cats(out, pfx);
       i += 2;
       vlen = byte_chr(&in->s[i], in->len - i, ')');
       stralloc_catb(out, &in->s[i], vlen);
+
       if(tolower)
         byte_lower(&out->s[out->len - vlen], vlen);
+
       stralloc_cats(out, sfx);
       i += vlen;
       continue;
     }
+
     stralloc_append(out, p);
   }
 }

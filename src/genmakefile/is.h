@@ -38,31 +38,43 @@ static inline int
 is_source_b(const char* filename, size_t len) {
   if(byte_ends(filename, len, exts.src))
     return 1;
+
   if(byte_ends(filename, len, exts.inc))
     return 1;
 
   if(byte_ends(filename, len, ".c"))
     return 1;
+
   if(byte_ends(filename, len, ".S"))
     return 1;
+
   if(byte_ends(filename, len, ".s"))
     return 1;
+
   if(byte_ends(filename, len, ".asm"))
     return 1;
+
   if(byte_ends(filename, len, ".inc"))
     return 1;
+
   /*if(cfg.lang != LANG_CXX)
     return 0;*/
+
   if(byte_ends(filename, len, ".C"))
     return 1;
+
   if(byte_ends(filename, len, ".cc"))
     return 1;
+
   if(byte_ends(filename, len, ".cpp"))
     return 1;
+
   if(byte_ends(filename, len, ".cxx"))
     return 1;
+
   if(byte_ends(filename, len, ".c++"))
     return 1;
+
   return 0;
 }
 
@@ -106,18 +118,25 @@ static inline int
 is_include_b(const char* filename, size_t len) {
   if(byte_ends(filename, len, ".h"))
     return 1;
+
   if(cfg.lang != LANG_CXX)
     return 0;
+
   if(byte_ends(filename, len, ".H"))
     return 1;
+
   if(byte_ends(filename, len, ".hh"))
     return 1;
+
   if(byte_ends(filename, len, ".hpp"))
     return 1;
+
   if(byte_ends(filename, len, ".hxx"))
     return 1;
+
   if(byte_ends(filename, len, ".h++"))
     return 1;
+
   return 0;
 }
 
@@ -167,13 +186,16 @@ is_command_b(const char* filename, size_t len) {
   const char* x;
   stralloc path;
   strlist system_path;
+
   if(path_is_absolute(filename))
     return path_exists(filename);
+
   stralloc_init(&path);
   strlist_init(&system_path, ':');
 
   if((x = env_get("PATH")) == 0)
     x = "/usr/local/bin:/usr/bin:/bin";
+
   path_split(x, &system_path);
 
   strlist_foreach(&system_path, x, n) {
@@ -181,11 +203,13 @@ is_command_b(const char* filename, size_t len) {
     stralloc_catc(&path, PATHSEP_C);
     stralloc_catb(&path, filename, len);
     stralloc_nul(&path);
+
     if(path_exists(path.s)) {
       stralloc_free(&path);
       return 1;
     }
   }
+
   stralloc_free(&path);
   return 0;
 }
@@ -196,16 +220,21 @@ is_version_b(const char* x, size_t n) {
     x++;
     n--;
   }
+
   if(!n || !isdigit(*x))
     return 0;
+
   x++;
   n--;
+
   while(n > 0) {
     if(byte_chr("0123456789.-_", 13, *x) == 13)
       return 0;
+
     x++;
     n--;
   }
+
   return 1;
 }
 
@@ -213,17 +242,22 @@ static inline int
 is_var_b(const char* x, size_t n) {
   if(n == 0 || !(isalpha(*x) || *x == '_'))
     return 0;
+
   x++;
   n--;
+
   while(n > 0) {
     if(byte_chr("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_", 63, *x) == 63) {
       if(*x == '=')
         return 1;
+
       break;
     }
+
     x++;
     n--;
   }
+
   return 0;
 }
 

@@ -34,9 +34,11 @@ output_cmake_cmd(buffer* b, const char* cmd, const strlist* list, char quote) {
     needle[0] = quote;
     needle[1] = '\\';
     buffer_putm_internal(b, cmd, "(\n", NULL);
+
     strlist_foreach(list, s, n) {
       size_t i;
       buffer_puts(b, "  ");
+
       if(quote)
         buffer_PUTC(b, quote);
 
@@ -45,10 +47,13 @@ output_cmake_cmd(buffer* b, const char* cmd, const strlist* list, char quote) {
           buffer_putc(b, '\\');
         buffer_putc(b, s[i]);
       }
+
       if(quote)
         buffer_PUTC(b, quote);
+
       buffer_puts(b, "\n");
     }
+
     buffer_puts(b, ")\n");
     buffer_putnlflush(b);
   }
@@ -64,9 +69,11 @@ output_cmake_set(buffer* b, const char* cmd, const set_t* list, char quote) {
     needle[0] = quote;
     needle[1] = '\\';
     buffer_putm_internal(b, cmd, "(\n", NULL);
+
     set_foreach(list, it, s, n) {
       size_t i;
       buffer_puts(b, "  ");
+
       if(quote)
         buffer_PUTC(b, quote);
 
@@ -75,10 +82,13 @@ output_cmake_set(buffer* b, const char* cmd, const set_t* list, char quote) {
           buffer_putc(b, '\\');
         buffer_putc(b, s[i]);
       }
+
       if(quote)
         buffer_PUTC(b, quote);
+
       buffer_puts(b, "\n");
     }
+
     buffer_puts(b, ")\n");
     buffer_putnlflush(b);
   }
@@ -87,6 +97,7 @@ output_cmake_set(buffer* b, const char* cmd, const set_t* list, char quote) {
 void
 output_cmake_subst(stralloc* str, const char* varname) {
   const char* value;
+
   if((value = var_get(varname))) {
     stralloc ref;
     stralloc_init(&ref);
@@ -143,13 +154,17 @@ output_cmake_rule(buffer* b, target* rule) {
       buffer_puts(b, lib ? "add_library(\n  " : "add_executable(\n  ");
       if(lib || link) {
         pos = byte_rchr(x, n, '/');
+
         if(pos < n)
           pos++;
+
         if(lib) {
           if(n - pos >= 3 && byte_equal(x + pos, 3, "lib"))
             pos += 3;
+
           if(byte_ends(x + pos, n - pos, exts.lib))
             n -= str_len(exts.lib);
+
           rule_prereq_recursive(rule, &deps);
         }
       }
@@ -162,6 +177,7 @@ output_cmake_rule(buffer* b, target* rule) {
         const char* s;
         size_t n;
         set_iterator_t it;
+
         set_foreach(&rule->prereq, it, s, n) {
           target* compile;
 
@@ -287,6 +303,7 @@ output_cmake_project(buffer* b, MAP_T* rules, MAP_T* vars, const strlist* includ
     buffer_puts(buffer_2, name);
     buffer_putnlflush(buffer_2);
   }
+
   set_init(&libraries, 0);
 
   MAP_FOREACH(*rules, t) {
@@ -325,6 +342,7 @@ output_cmake_project(buffer* b, MAP_T* rules, MAP_T* vars, const strlist* includ
 
   if(var_isset("CFLAGS"))
     output_cmake_var(b, "CMAKE_C_FLAGS", &var_list("CFLAGS", ' ')->value);
+
   if(var_isset("CXXFLAGS"))
     output_cmake_var(b, "CMAKE_CXX_FLAGS", &var_list("CXXFLAGS", ' ')->value);
 
