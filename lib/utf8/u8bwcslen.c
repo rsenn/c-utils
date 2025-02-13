@@ -5,7 +5,7 @@ u8bwcslen(const char* u8, size_t n) {
   int len = 0;
 
   for(size_t i = 0; i < n;) {
-    char c = u8[i];
+    const char c = u8[i];
 
     if(!(c & 0x80)) {
       len++;

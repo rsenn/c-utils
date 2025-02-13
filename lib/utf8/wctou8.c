@@ -11,27 +11,34 @@ wctou8(char* out, wchar_t w) {
   */
 
   if(!(w & ~0x7f)) {
-    out[0] = w & 0x7f;
-    out[1] = '\0';
+    *out++ = w & 0x7f;
+    *out++ = '\0';
     return 1;
-  } else if(!(w & ~0x7ff)) {
-    out[0] = ((w >> 6) & 0x1f) | 0xc0;
-    out[1] = (w & 0x3f) | 0x80;
-    out[2] = '\0';
+  }
+
+  if(!(w & ~0x7ff)) {
+    *out++ = ((w >> 6) & 0x1f) | 0xc0;
+    *out++ = (w & 0x3f) | 0x80;
+    *out++ = '\0';
     return 2;
-  } else if(!(w & ~0xffff)) {
-    out[0] = ((w >> 12) & 0x0f) | 0xe0;
-    out[1] = ((w >> 6) & 0x3f) | 0x80;
-    out[2] = (w & 0x3f) | 0x80;
-    out[3] = '\0';
+  }
+
+  if(!(w & ~0xffff)) {
+    *out++ = ((w >> 12) & 0x0f) | 0xe0;
+    *out++ = ((w >> 6) & 0x3f) | 0x80;
+    *out++ = (w & 0x3f) | 0x80;
+    *out++ = '\0';
     return 3;
-  } else if(!(w & ~0x1fffff)) {
-    out[0] = ((w >> 18) & 0x07) | 0xf0;
-    out[1] = ((w >> 12) & 0x3f) | 0x80;
-    out[2] = ((w >> 6) & 0x3f) | 0x80;
-    out[3] = (w & 0x3f) | 0x80;
-    out[4] = '\0';
+  }
+
+  if(!(w & ~0x1fffff)) {
+    *out++ = ((w >> 18) & 0x07) | 0xf0;
+    *out++ = ((w >> 12) & 0x3f) | 0x80;
+    *out++ = ((w >> 6) & 0x3f) | 0x80;
+    *out++ = (w & 0x3f) | 0x80;
+    *out++ = '\0';
     return 4;
-  } else
-    return -1;
+  }
+
+  return -1;
 }

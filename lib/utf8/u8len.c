@@ -1,12 +1,12 @@
 #include "../utf8.h"
+#include <assert.h>
 
 int
 u8len(const char* u8, size_t count) {
   if(0 == count)
     return 0;
 
-  if(NULL == u8)
-    return 0;
+  assert(u8);
 
   if(0 == *u8)
     return 0;

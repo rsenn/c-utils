@@ -8,7 +8,7 @@ u8stowcs(wchar_t* out, const char* u8, size_t count) {
     return u8swcslen(u8);
 
   while(*u8 && clen < count) {
-    int ulen = u8towc(&out[clen], u8);
+    const int ulen = u8towc(&out[clen], u8);
 
     if(ulen < 0)
       return (size_t)-1;

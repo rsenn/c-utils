@@ -30,6 +30,8 @@ size_t u8b_chrs(const char*, size_t, const char needles[], size_t);
 size_t u8b_rchrs(const char*, size_t, const char needles[], size_t);
 size_t u8s_chrs(const char*, const char needles[], size_t);
 size_t u8s_rchrs(const char*, const char needles[], size_t);
+int u8b_diff(const char*, size_t, const char*, size_t);
+int u8s_diff(const char*, const char*);
 
 #ifdef __cplusplus
 }
