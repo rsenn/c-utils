@@ -92,7 +92,7 @@ static inline int
 is_filename_b(const char* filename, size_t len) {
   size_t dirpos = byte_rchrs(filename, len, PATHSEP_S_MIXED, sizeof(PATHSEP_S_MIXED) - 1);
   size_t extpos = byte_rchr(filename, len, '.');
- 
+
   if(dirpos < len)
     return 1;
   if(extpos + 1 < len) {

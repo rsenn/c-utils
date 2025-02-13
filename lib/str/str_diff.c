@@ -7,16 +7,15 @@
  * first difference. */
 int
 str_diff(const char* a, const char* b) {
-  const unsigned char* s = (const unsigned char*)a;
-  const unsigned char* t = (const unsigned char*)b;
   int j;
-  for(;;) {
-    if((j = (*s - *t)))
+
+  for(;; ++a, ++b) {
+    if((j = (*a - *b)))
       break;
-    if(!*t)
+
+    if(!*b)
       break;
-    ++s;
-    ++t;
   }
+
   return j;
 }

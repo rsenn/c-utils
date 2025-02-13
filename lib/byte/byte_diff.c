@@ -19,12 +19,13 @@ byte_diff(const void* a, size_t len, const void* b) {
   }
   return j;
 #else
-  size_t i;
-  for(i = 0; i < len; ++i) {
-    int r = ((unsigned char*)a)[i] - ((unsigned char*)b)[i];
-    if(r)
+  for(size_t i = 0; i < len; ++i) {
+    int r;
+
+    if((r = ((unsigned char*)a)[i] - ((unsigned char*)b)[i]))
       return r;
   }
+
   return 0;
 #endif
 }
