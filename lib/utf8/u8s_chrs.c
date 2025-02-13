@@ -1,4 +1,5 @@
-#include "../str.h"
+#include "../utf8.h"
+#include <string.h>
 
 size_t
 u8s_chrs(const char* in, const char needles[], size_t nn) {

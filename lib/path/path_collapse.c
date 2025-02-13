@@ -1,7 +1,6 @@
 #include "../path_internal.h"
-#include "../byte.h"
+#include "../utf8.h"
 #include <string.h>
-#include <stdlib.h>
 
 size_t
 path_collapse(char* path, size_t n) {
@@ -13,7 +12,7 @@ path_collapse(char* path, size_t n) {
     while(i < n && x[i] == sep)
       ++i;
 
-    if((l = i + byte_chr(&x[i], n - i, sep)) < n) {
+    if((l = i + u8b_chrs(&x[i], n - i, &sep, 1)) < n) {
       j = l;
 
       while(l < n && x[l] == sep)

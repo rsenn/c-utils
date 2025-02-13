@@ -30,6 +30,7 @@ path_dirname_b(const char* path, size_t size, stralloc* dir) {
 
     stralloc_copyb(dir, path, i);
   }
+
   stralloc_nul(dir);
   return dir->s;
 }

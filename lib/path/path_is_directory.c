@@ -27,10 +27,11 @@ path_is_directory(const char* p) {
 #else
   struct _stat st;
   int r;
-  if((r = lstat(p, &st) == 0)) {
+
+  if((r = lstat(p, &st) == 0))
     if(S_ISDIR(st.st_mode))
       return 1;
-  }
+
   return 0;
 #endif
 }

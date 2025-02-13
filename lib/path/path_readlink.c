@@ -14,8 +14,8 @@ int
 path_readlink(const char* path, stralloc* sa) {
   /* do not allocate PATH_MAX from the beginning,
      most paths will be smaller */
-  ssize_t n = (START ? START : 32);
-  ssize_t sz;
+  ssize_t sz, n = (START ? START : 32);
+
   do {
     /* reserve some space */
     n <<= 1;
@@ -30,5 +30,6 @@ path_readlink(const char* path, stralloc* sa) {
       stralloc_trunc(sa, sz);
       return 0;
     }*/
+
   return sa->len;
 }

@@ -1,4 +1,5 @@
-#include "../str.h"
+#include "../utf8.h"
+#include <string.h>
 
 size_t
 u8s_rchrs(const char* in, const char needles[], size_t nn) {
@@ -10,6 +11,7 @@ u8s_rchrs(const char* in, const char needles[], size_t nn) {
 
     for(size_t j = 0; j < nn;) {
       size_t nlen = u8len(&needles[j], 1);
+
       if(!memcmp(&in[i], &needles[j], nlen)) {
         pos = i;
         found = 1;

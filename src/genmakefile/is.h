@@ -196,7 +196,7 @@ is_command_b(const char* filename, size_t len) {
   if((x = env_get("PATH")) == 0)
     x = "/usr/local/bin:/usr/bin:/bin";
 
-  path_split(x, &system_path);
+  path_split(x, &system_path, PATHSEP_C);
 
   strlist_foreach(&system_path, x, n) {
     stralloc_copyb(&path, x, n);

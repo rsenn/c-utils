@@ -17,6 +17,7 @@ path_find(const char* path, const char* name, stralloc* out) {
         stralloc_copys(out, path);
         stralloc_catc(out, PATHSEP_C);
       }
+
       stralloc_cats(out, s);
       ret = 1;
       break;

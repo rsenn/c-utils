@@ -104,7 +104,7 @@ void path_prepend(const char*, size_t, stralloc*);
 void path_prepends(const char*, stralloc*);
 
 #ifdef STRLIST_H
-int path_split(const char* p, strlist* sl);
+int path_split(const char*, strlist*, char);
 #endif
 
 #ifndef PATH_MAX

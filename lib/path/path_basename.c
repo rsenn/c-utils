@@ -15,6 +15,7 @@ char*
 path_basename(const char* path) {
   char* x = (char*)path;
   size_t n;
+
 again:
   n = u8s_rchrs(x, "/\\", 2);
 

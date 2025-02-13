@@ -1437,7 +1437,8 @@ main(int argc, char* argv[]) {
   pathsep_make = cfg.sys.type == NTOS ? '\\' : '/';
   if((s = env_get("PATH")) == 0)
     s = "/usr/local/bin:/usr/bin:/bin";
-  path_split(s, &system_path);
+  
+  path_split(s, &system_path, PATHSEP_C);
   strlist_init(&vpath, ' ');
   strlist_init(&cmdline, ' ');
   strlist_fromv(&cmdline, (const char**)argv, argc);

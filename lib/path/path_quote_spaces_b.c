@@ -2,15 +2,15 @@
 #include "../utf8.h"
 
 int
-path_quote_spaces(stralloc* sa, const char* s) {
-  size_t i;
+path_quote_spaces_b(stralloc* sa, const char* x, size_t n) {
+  size_t i = 0;
   int has_spaces = 0;
 
-  for(i = 0; s[i];) {
-    size_t len = u8len(&s[i], 1);
+  while(i < n) {
+    size_t len = u8len(&x[i], 1);
     wchar_t w;
 
-    if(u8towc(&w, &s[i]) < 1)
+    if(u8towc(&w, &x[i]) < 1)
       return -1;
 
     if(w == ' ') {
@@ -24,7 +24,7 @@ path_quote_spaces(stralloc* sa, const char* s) {
   if(has_spaces)
     stralloc_catc(sa, '"');
 
-  stralloc_cats(sa, s);
+  stralloc_catb(sa, x, n);
 
   if(has_spaces)
     stralloc_catc(sa, '"');

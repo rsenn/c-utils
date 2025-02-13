@@ -7,16 +7,22 @@ u8len(const char* u8, size_t count) {
 
   if(NULL == u8)
     return 0;
-  else if(0 == *u8)
+
+   if(0 == *u8)
     return 0;
-  else if(!(*u8 & ~0x7f))
+
+   if(!(*u8 & ~0x7f))
     return 1;
-  else if((*u8 & 0xe0) == 0xc0)
+
+   if((*u8 & 0xe0) == 0xc0)
     return 2;
-  else if((*u8 & 0xf0) == 0xe0)
+
+   if((*u8 & 0xf0) == 0xe0)
     return 3;
-  else if((*u8 & 0xf8) == 0xf0)
+  
+   if((*u8 & 0xf8) == 0xf0)
     return 4;
-  else /* error */
+  
+  /* error */
     return -1;
 }
