@@ -597,7 +597,7 @@ main(int argc, char* argv[]) {
         buffer_putnlflush(buffer_2);
       }
     } else {
-      buffer_init(&b, (buffer_op_sys*)(void*)&read, STDIN_FILENO, inbuf, sizeof(inbuf));
+      buffer_init(&b, (buffer_op_proto*)(void*)&read, STDIN_FILENO, inbuf, sizeof(inbuf));
     }
     process_input(&b);
     ++unix_optind;

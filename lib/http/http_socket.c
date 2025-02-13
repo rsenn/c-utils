@@ -41,9 +41,9 @@ http_socket(http* h, int nonblock) {
   if(nonblock)
     ndelay_on(h->sock);
 
-  buffer_init_free(&h->q.in, (buffer_op_sys*)(void*)&http_socket_read, h->sock, h->q.in.x ? h->q.in.x : (char*)alloc(HTTP_RECV_BUFSIZE), h->q.in.a ? h->q.in.a : HTTP_RECV_BUFSIZE);
+  buffer_init_free(&h->q.in, (buffer_op_proto*)(void*)&http_socket_read, h->sock, h->q.in.x ? h->q.in.x : (char*)alloc(HTTP_RECV_BUFSIZE), h->q.in.a ? h->q.in.a : HTTP_RECV_BUFSIZE);
   h->q.in.cookie = (void*)h;
-  buffer_init_free(&h->q.out, (buffer_op_sys*)(void*)&http_socket_write, h->sock, h->q.out.x ? h->q.out.x : (char*)alloc(HTTP_SEND_BUFSIZE), h->q.out.a ? h->q.out.a : HTTP_SEND_BUFSIZE);
+  buffer_init_free(&h->q.out, (buffer_op_proto*)(void*)&http_socket_write, h->sock, h->q.out.x ? h->q.out.x : (char*)alloc(HTTP_SEND_BUFSIZE), h->q.out.a ? h->q.out.a : HTTP_SEND_BUFSIZE);
   h->q.out.cookie = (void*)h;
 
 #if DEBUG_HTTP

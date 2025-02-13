@@ -581,8 +581,8 @@ socket_accept(fd_type sock, char addr[16], uint16 port) {
   byte_copy(c->proxy.addr, remote.af == AF_INET6 ? 16 : 4, remote.addr);
   c->proxy.port = remote.port;
   c->proxy.af = remote.af;
-  buffer_init_free(&c->client.buf, (buffer_op_sys*)(void*)&socket_send, c->client.sock, alloc_zero(1024), 1024);
-  buffer_init_free(&c->proxy.buf, (buffer_op_sys*)(void*)&socket_send, c->proxy.sock, alloc_zero(1024), 1024);
+  buffer_init_free(&c->client.buf, (buffer_op_proto*)(void*)&socket_send, c->client.sock, alloc_zero(1024), 1024);
+  buffer_init_free(&c->proxy.buf, (buffer_op_proto*)(void*)&socket_send, c->proxy.sock, alloc_zero(1024), 1024);
 
   io_fd(c->client.sock);
   io_nonblock(c->client.sock);
@@ -873,7 +873,7 @@ server_finalize() {
     if(!(fstat(file, &st) == 0 && (filesize = st.st_size)))
       filesize = 0;
     //    t = st.st_ctime;
-    buffer_init_free(&w, (buffer_op_sys*)(void*)&write, wr, alloc(1024), 1024);
+    buffer_init_free(&w, (buffer_op_proto*)(void*)&write, wr, alloc(1024), 1024);
     buffer_puts(&w, "\n-- File '");
     buffer_put(&w, s, n);
     buffer_puts(&w, "' -- ");

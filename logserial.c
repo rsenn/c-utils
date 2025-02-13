@@ -463,7 +463,7 @@ process_loop(fd_type serial_fd, int64 timeout) {
     char* x;
 
     if((x = mmap_read(send_file, &n))) {
-      buffer_init_free(&send_buf, (buffer_op_sys*)(void*)&write, serial_fd, alloc_zero(MAX(n, 1024)), MAX(n, 1024));
+      buffer_init_free(&send_buf, (buffer_op_proto*)(void*)&write, serial_fd, alloc_zero(MAX(n, 1024)), MAX(n, 1024));
       buffer_put(&send_buf, x, n);
       mmap_unmap(x, n);
     }

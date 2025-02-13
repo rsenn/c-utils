@@ -430,8 +430,8 @@ main(int argc, char* argv[]) {
     errmsg_warnsys("open error: ", outname, 0);
     return 126;
   }
-  buffer_init(&out, (buffer_op_sys*)(void*)&write, outfile, outbuf, sizeof(outbuf));
-  buffer_init(&in, (buffer_op_sys*)(void*)&http_read, (uintptr_t)&h, inbuf, sizeof(inbuf));
+  buffer_init(&out, (buffer_op_proto*)(void*)&write, outfile, outbuf, sizeof(outbuf));
+  buffer_init(&in, (buffer_op_proto*)(void*)&http_read, (uintptr_t)&h, inbuf, sizeof(inbuf));
   in.cookie = &h;
 
   http_init(&h, url_host, url_port);
