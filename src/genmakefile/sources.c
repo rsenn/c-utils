@@ -91,8 +91,8 @@ sources_add_b(const char* x, size_t len) {
 
 int
 sources_sort(const char** a, const char** b) {
-  size_t alen = str_rchrs(*a, "/\\", 2);
-  size_t blen = str_rchrs(*b, "/\\", 2);
+  size_t alen = str_rchrs(*a, PATHSEP_S_MIXED, sizeof(PATHSEP_S_MIXED) - 1);
+  size_t blen = str_rchrs(*b, PATHSEP_S_MIXED, sizeof(PATHSEP_S_MIXED) - 1);
   int er, rdir, rfile;
   const char *ext_a, *ext_b;
   ext_a = *a + str_rchr(*a, '.');

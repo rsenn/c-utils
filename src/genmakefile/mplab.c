@@ -310,7 +310,7 @@ output_mplab_project(buffer* b, MAP_T* _rules, MAP_T* vars, const strlist* inclu
             stralloc_init(&subdir);
             stralloc_copy(&subdir, &file);
 
-            subdir.len = byte_rchrs(subdir.s, subdir.len, "/\\", 2);
+            subdir.len = byte_rchrs(subdir.s, subdir.len, PATHSEP_S_MIXED, sizeof(PATHSEP_S_MIXED) - 1);
             stralloc_nul(&subdir);
 
             // debug_sa("subdir", &subdir);

@@ -17,7 +17,7 @@ path_basename(const char* path) {
   size_t n;
 
 again:
-  n = u8s_rchrs(x, "/\\", 2);
+  n = u8s_rchrs(x, PATHSEP_S_MIXED, sizeof(PATHSEP_S_MIXED) - 1);
 
   if(x[n] == '\0')
     return x;

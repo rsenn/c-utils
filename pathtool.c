@@ -573,7 +573,7 @@ main(int argc, char* argv[]) {
     }
   }
 
-  stralloc_catb(&delims, "/\\", 2);
+  stralloc_catb(&delims, PATHSEP_S_MIXED, sizeof(PATHSEP_S_MIXED) - 1);
   stralloc_catb(&delims, separator, 1);
   stralloc_nul(&delims);
 
