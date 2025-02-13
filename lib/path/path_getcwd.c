@@ -1,5 +1,6 @@
 #include "../path_internal.h"
 #include "../windoze.h"
+#include "../utf8.h"
 #if WINDOWS_NATIVE
 #include <direct.h>
 #else
@@ -13,13 +14,13 @@ void
 path_getcwd(stralloc* sa) {
 #if WINDOWS_NATIVE
   const size_t len = PATH_MAX;
-  wchar_t* w = alloca((len + 1) * sizeof(wchar_t));
+  wchar_t w[len + 1];
 
   stralloc_zero(sa);
   stralloc_ready(sa, PATH_MAX * 4);
 
   if(_wgetcwd(w, len)) {
-    sa.len = wcstou8s(sa.s, w, sa.a);
+    sa->len = wcstou8s(sa->s, w, sa->a);
   }
 #else
   char *p, sep;
@@ -49,12 +50,14 @@ path_getcwd_s(void) {
   static char buf[PATH_MAX * 4 + 1];
 
   if(_wgetcwd(w, len)) {
-    size_t n = wcstou8s(buf, w, sa.a);
+    size_t n = wcstou8s(buf, w, sizeof(buf));
+
     if(n < sizeof(buf))
       buf[n] = '\0';
+
     return buf;
   }
-  
+
   return NULL;
 #else
   static char pathbuf[PATH_MAX];

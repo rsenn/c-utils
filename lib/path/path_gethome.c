@@ -1,11 +1,31 @@
-#include "../buffer.h"
 #include "../path_internal.h"
-#include "../scan.h"
 #include "../windoze.h"
+
+#if WINDOWS_NATIVE
+#include <shlobj.h> // need to include definitions of constants
+#else
+#include "../buffer.h"
+#include "../scan.h"
+#endif
 
 /* get home directory into a char buf not smaller than PATH_MAX + 1 chars */
 char*
 path_gethome(int uid) {
+#if WINDOWS_NATIVE
+  static char home[PATH_MAX * 4 + 1];
+  wchar_t path[MAX_PATH];
+
+  if(SUCCEEDED(SHGetFolderPathW(NULL, CSIDL_PROFILE, NULL, 0, path))) {
+
+    size_t n = wcstou8s(home, path, sizeof(home));
+
+    if(n < sizeof(home))
+      home[n] = '\0';
+
+    return home;
+  }
+
+#else
   buffer b;
   long id;
   size_t n;
@@ -49,5 +69,6 @@ path_gethome(int uid) {
   }
 
   buffer_close(&b);
+#endif
   return NULL;
 }
