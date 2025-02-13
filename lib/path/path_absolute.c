@@ -1,4 +1,5 @@
 #include "../path_internal.h"
+#include "../utf8.h"
 
 int
 path_absolute(const char* path, stralloc* sa) {
@@ -8,7 +9,7 @@ path_absolute(const char* path, stralloc* sa) {
   if(!path_isabs(path)) {
     path_getcwd(sa);
 
-    if(!str_equal(path, ".")) {
+    if(u8s_diff(path, ".")) {
       stralloc_catc(sa, PATHSEP_C);
       stralloc_cats(sa, path);
     }

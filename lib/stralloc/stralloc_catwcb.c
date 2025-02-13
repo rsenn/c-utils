@@ -9,10 +9,10 @@ int
 stralloc_catwcb(stralloc* sa, const wchar_t* buf, size_t len) {
   size_t i, n = 0;
   for(i = 0; buf[i]; ++i)
-    n += wcu8len(buf[i]);
+    n += wc_u8len(buf[i]);
 
   if(stralloc_readyplus(sa, n)) {
-    wcstou8s(&sa->s[sa->len], buf, len);
+    wcs_to_u8s(&sa->s[sa->len], buf, len);
     sa->len += n;
     return 1;
   }

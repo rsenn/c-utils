@@ -1,20 +1,20 @@
 #include "../utf8.h"
 
 size_t
-wcstou8s(char* u8, const wchar_t* in, size_t count) {
+wcs_to_u8s(char* u8, const wchar_t* in, size_t count) {
   size_t clen = 0;
   wchar_t w;
-  const int len = wcsu8slen(in);
+  const int len = wcs_u8slen(in);
 
   if(NULL == u8)
     return (size_t)len;
 
   while((w = *in++)) {
-    const int ulen = wcu8len(w);
+    const int ulen = wc_u8len(w);
 
     if(ulen >= 0) {
-      if((clen + wcu8len(w)) <= count) {
-        clen += wctou8(u8, w);
+      if((clen + wc_u8len(w)) <= count) {
+        clen += wc_to_u8(u8, w);
         u8 += ulen;
       } else
         break;

@@ -4,33 +4,23 @@
 #include <ctype.h>
 
 int
-path_split(const char* p, strlist* sl, char sep) {
+path_split(const char* p, strlist* sl, int sep) {
   size_t i, j = 0;
 
   for(i = 0; p[i];) {
-    size_t len = u8len(&p[i], 1);
+    wchar_t w;
+    size_t len = u8_to_wc(&w, &p[i]);
 
-    if(len == 1 && p[i] == sep) {
+    if(len >= 1 && w == sep) {
       strlist_pushb(sl, &p[j], i - j);
-      i += len;
-      j = i;
+      j = i + len;
     }
 
-    if(i > j)
-      strlist_pushb(sl, &p[j], i - j);
-
-    return strlist_count(sl);
+    i += len;
   }
 
-  /* size_t len = str_len(p);
-   char sep = ':';
+  if(i > j)
+    strlist_pushb(sl, &p[j], i - j);
 
- #if WINDOWS
-   if(len > 2 && isalnum(p[0]) && p[1] == ':' && path_issep(p[2]))
-     sep = ';';
- #endif
-
-   strlist_froms(sl, p, sep);
-
-   return strlist_count(sl) > 1;*/
+  return strlist_count(sl);
 }

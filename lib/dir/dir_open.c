@@ -45,10 +45,10 @@ dir_open(struct dir_s* d, const char* p) {
 
 #if USE_WIDECHAR
     {
-      size_t wlen = u8swcslen(path.s);
+      size_t wlen = u8s_len(path.s);
       wchar_t* wpath = malloc((wlen + 1) * sizeof(wchar_t));
 
-      u8stowcs(wpath, path.s, wlen);
+      u8s_to_wcs(wpath, path.s, wlen);
       free(path.s);
 
       wpath[wlen] = '\0';

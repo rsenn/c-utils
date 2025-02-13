@@ -17,7 +17,7 @@ path_gethome(int uid) {
 
   if(SUCCEEDED(SHGetFolderPathW(NULL, CSIDL_PROFILE, NULL, 0, path))) {
 
-    size_t n = wcstou8s(home, path, sizeof(home));
+    size_t n = wcs_to_u8s(home, path, sizeof(home));
 
     if(n < sizeof(home))
       home[n] = '\0';

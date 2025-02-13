@@ -1,6 +1,6 @@
 #include "../path_internal.h"
 #include "../dir.h"
-#include "../str.h"
+#include "../utf8.h"
 
 int
 path_find(const char* path, const char* name, stralloc* out) {
@@ -12,8 +12,8 @@ path_find(const char* path, const char* name, stralloc* out) {
     return 0;
 
   while((s = dir_read(&dir))) {
-    if(str_case_equal(s, name)) {
-      if(*path && str_diff(path, ".")) {
+    if(!u8s_diff(s, name)) {
+      if(*path && u8s_diff(path, ".")) {
         stralloc_copys(out, path);
         stralloc_catc(out, PATHSEP_C);
       }

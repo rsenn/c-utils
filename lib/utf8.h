@@ -16,16 +16,16 @@
 extern "C" {
 #endif
 
-size_t u8btowcs(wchar_t*, const char*, size_t, size_t);
-int u8bwcslen(const char*, size_t);
-int u8len(const char*, size_t);
-size_t u8stowcs(wchar_t*, const char*, size_t);
-int u8swcslen(const char*);
-int u8towc(wchar_t*, const char*);
-size_t wcstou8s(char*, const wchar_t*, size_t);
-int wcsu8slen(const wchar_t*);
-int wctou8(char*, wchar_t);
-int wcu8len(const wchar_t);
+size_t u8b_to_wcs(wchar_t*, const char*, size_t, size_t);
+int u8b_len(const char*, size_t);
+int u8_len(const char*, size_t);
+size_t u8s_to_wcs(wchar_t*, const char*, size_t);
+int u8s_len(const char*);
+int u8_to_wc(wchar_t*, const char*);
+size_t wcs_to_u8s(char*, const wchar_t*, size_t);
+int wcs_u8slen(const wchar_t*);
+int wc_to_u8(char*, wchar_t);
+int wc_u8len(const wchar_t);
 size_t u8b_chrs(const char*, size_t, const char needles[], size_t);
 size_t u8b_rchrs(const char*, size_t, const char needles[], size_t);
 size_t u8s_chrs(const char*, const char needles[], size_t);

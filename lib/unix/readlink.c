@@ -59,7 +59,7 @@ ssize_t
 readlink(const char* LinkPath, char* buf, size_t maxlen) {
   REPARSE_DATA_BUFFER rdb;
   wchar_t* wbuf = 0;
-  unsigned int u8len, len, wlen;
+  unsigned int u8_len, len, wlen;
 
   if(!get_reparse_data(LinkPath, &rdb)) {
     return -1;
@@ -82,21 +82,21 @@ readlink(const char* LinkPath, char* buf, size_t maxlen) {
     return 0;
 
   for(len = 0; len < wlen; ++len) {
-    u8len += wcu8len(wbuf[len]);
+    u8_len += wc_u8len(wbuf[len]);
 
-    if(u8len >= maxlen)
+    if(u8_len >= maxlen)
       break;
   }
-  if(u8len > maxlen) {
+  if(u8_len > maxlen) {
     len--;
   }
 
-  u8len = wcstou8s(buf, wbuf, len);
-  if(u8len >= maxlen)
-    u8len = maxlen - 1;
+  u8_len = wcs_to_u8s(buf, wbuf, len);
+  if(u8_len >= maxlen)
+    u8_len = maxlen - 1;
 
-  buf[u8len] = '\0';
-  return u8len;
+  buf[u8_len] = '\0';
+  return u8_len;
 }
 #endif
 

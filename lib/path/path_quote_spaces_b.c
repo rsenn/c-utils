@@ -7,10 +7,10 @@ path_quote_spaces_b(stralloc* sa, const char* x, size_t n) {
   int has_spaces = 0;
 
   while(i < n) {
-    size_t len = u8len(&x[i], 1);
+    size_t len = u8_len(&x[i], 1);
     wchar_t w;
 
-    if(u8towc(&w, &x[i]) < 1)
+    if(u8_to_wc(&w, &x[i]) < 1)
       return -1;
 
     if(w == ' ') {

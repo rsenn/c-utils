@@ -20,7 +20,7 @@ path_getcwd(stralloc* sa) {
   stralloc_ready(sa, PATH_MAX * 4);
 
   if(_wgetcwd(w, len)) {
-    sa->len = wcstou8s(sa->s, w, sa->a);
+    sa->len = wcs_to_u8s(sa->s, w, sa->a);
   }
 #else
   char *p, sep;
@@ -50,7 +50,7 @@ path_getcwd_s(void) {
   static char buf[PATH_MAX * 4 + 1];
 
   if(_wgetcwd(w, len)) {
-    size_t n = wcstou8s(buf, w, sizeof(buf));
+    size_t n = wcs_to_u8s(buf, w, sizeof(buf));
 
     if(n < sizeof(buf))
       buf[n] = '\0';

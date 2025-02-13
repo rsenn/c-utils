@@ -14,13 +14,13 @@
 int
 path_is_absolute_b(const char* x, size_t n) {
 #if WINDOWS_NATIVE
-  size_t len = u8bwcslen(x, n);
+  size_t len = u8b_len(x, n);
 #ifdef HAVE_ALLOCA
   wchar_t* w = alloca((len + 1) * sizeof(wchar_t));
 #else
   wchar_t w[len + 1];
 #endif
-  u8btowcs(w, x, n, len);
+  u8b_to_wcs(w, x, n, len);
   w[len] = '\0';
 
   return !PathIsRelativeW(w);

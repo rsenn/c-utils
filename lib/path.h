@@ -72,7 +72,7 @@ int path_is_absolute(const char* p);
 int path_is_absolute_b(const char*, size_t);
 int path_is_absolute_sa(const stralloc*);
 int path_is_directory(const char* p);
-int path_is_separator(char c);
+int path_is_separator(const char*);
 size_t path_len(const char* s, size_t n);
 size_t path_len_s(const char* s);
 size_t path_num(const char* p, size_t len, int n);
@@ -104,8 +104,10 @@ void path_prepend(const char*, size_t, stralloc*);
 void path_prepends(const char*, stralloc*);
 
 #ifdef STRLIST_H
-int path_split(const char*, strlist*, char);
+int path_split(const char*, strlist*, int);
 #endif
+
+size_t path_trim_b(const char*, size_t);
 
 #ifndef PATH_MAX
 #if WINDOWS

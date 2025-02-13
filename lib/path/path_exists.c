@@ -21,10 +21,10 @@
 int
 path_exists(const char* p) {
 #if WINDOWS_NATIVE
-  size_t len = u8swcslen(p);
+  size_t len = u8s_len(p);
   wchar_t w[len + 1];
 
-  u8stowcs(w, p, len);
+  u8s_to_wcs(w, p, len);
   w[len] = '\0';
 
   return !!PathFileExistsW(w);

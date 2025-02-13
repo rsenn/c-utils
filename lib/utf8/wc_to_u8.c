@@ -1,7 +1,7 @@
 #include "../utf8.h"
 
 int
-wctou8(char* out, wchar_t w) {
+wc_to_u8(char* out, wchar_t w) {
   /* Unicode Table 3-5. UTF-8 Bit Distribution
   Unicode                     1st Byte 2nd Byte 3rd Byte 4th Byte
   00000000 0xxxxxxx           0xxxxxxx

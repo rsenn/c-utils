@@ -1,7 +1,7 @@
 #include "../utf8.h"
 
 int
-wcu8len(const wchar_t w) {
+wc_u8len(const wchar_t w) {
   if(!(w & ~0x7f))
     return 1;
 

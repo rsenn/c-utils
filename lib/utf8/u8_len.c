@@ -2,7 +2,7 @@
 #include <assert.h>
 
 int
-u8len(const char* u8, size_t count) {
+u8_len(const char* u8, size_t count) {
   if(0 == count)
     return 0;
 

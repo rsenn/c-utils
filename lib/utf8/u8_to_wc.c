@@ -2,12 +2,12 @@
 #include <assert.h>
 
 int
-u8towc(wchar_t* out, const char* u8) {
+u8_to_wc(wchar_t* out, const char* u8) {
   int len;
 
   assert(out);
 
-  if((len = u8len(u8, 1)) < 1)
+  if((len = u8_len(u8, 1)) < 1)
     return len;
 
   if(1 == len) {
