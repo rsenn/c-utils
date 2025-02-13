@@ -1,11 +1,11 @@
 #include "../utf8.h"
 
 int
-wcsu8slen(const wchar_t* pw) {
+wcsu8slen(const wchar_t* in) {
   int len = 0;
   wchar_t w;
 
-  while((w = *pw++)) {
+  while((w = *in++)) {
     if(!(w & ~0x7f))
       len += 1;
     else if(!(w & ~0x7ff))

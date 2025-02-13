@@ -126,6 +126,8 @@ cpp_macro_parse(cpp* pp, tokenizer* t) {
 
   break_loop1:
 
+      ;
+
   } else if(token_is_whitespace(&curr)) {
     if(!tokenizer_skip_chars(t, " \t", &ws_count))
       return 0;

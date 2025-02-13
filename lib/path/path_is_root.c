@@ -1,9 +1,15 @@
 #include "../path.h"
 #include "../utf8.h"
 
+#if WINDOWS_NATIVE
+#include <shlwapi.h>
+#else
+#include <sys/stat.h>
+#endif
+
 int
 path_is_root(const char* p) {
-#ifdef WINDOWS_NATIVE
+#if WINDOWS_NATIVE
   size_t len = u8swcslen(p);
   wchar_t* w = alloc((len + 1) * sizeof(wchar_t));
   u8stowcs(w, p, len);

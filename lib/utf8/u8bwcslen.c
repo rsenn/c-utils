@@ -1,13 +1,13 @@
 #include "../utf8.h"
 
 int
-u8bwcslen(const char* pu, size_t n) {
+u8bwcslen(const char* u8, size_t n) {
   int len = 0;
   char c;
   size_t i = 0;
 
   while(i < n) {
-    c = pu[i];
+    c = u8[i];
 
     if(!(c & 0x80)) {
       len++;

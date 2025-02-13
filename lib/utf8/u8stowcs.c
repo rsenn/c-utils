@@ -1,24 +1,24 @@
 #include "../utf8.h"
 
 size_t
-u8stowcs(wchar_t* pw, const char* pu, size_t count) {
+u8stowcs(wchar_t* out, const char* u8, size_t count) {
   size_t clen = 0;
 
-  if(NULL == pw)
-    return u8swcslen(pu);
+  if(NULL == out)
+    return u8swcslen(u8);
 
-  while(*pu && clen < count) {
-    int ulen = u8towc(&pw[clen], pu, 1);
+  while(*u8 && clen < count) {
+    int ulen = u8towc(&out[clen], u8);
 
     if(ulen < 0)
       return (size_t)-1;
 
     clen++;
-    pu += ulen;
+    u8 += ulen;
   }
 
-  if('\0' == *pu && clen < count)
-    pw[clen++] = L'\0';
+  if('\0' == *u8 && clen < count)
+    out[clen++] = L'\0';
 
   return clen;
 }

@@ -5,7 +5,7 @@
 
 int
 path_is_absolute_b(const char* x, size_t n) {
-#ifdef WINDOWS_NATIVE
+#if WINDOWS_NATIVE
   size_t len = u8bwcslen(x, n);
   wchar_t* w = alloca((len + 1) * sizeof(wchar_t));
   u8btowcs(w, x, n, len);

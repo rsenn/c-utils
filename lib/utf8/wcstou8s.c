@@ -1,32 +1,32 @@
 #include "../utf8.h"
 
 size_t
-wcstou8s(char* pu, const wchar_t* pw, size_t count) {
+wcstou8s(char* u8, const wchar_t* in, size_t count) {
   size_t clen;
   wchar_t w;
-  int len = wcsu8slen(pw);
+  int len = wcsu8slen(in);
 
-  if(NULL == pu)
+  if(NULL == u8)
     return (size_t)len;
 
   clen = 0;
-  while((w = *pw++)) {
+  while((w = *in++)) {
     int ulen = wcu8len(w);
 
     if(ulen >= 0) {
       if((clen + wcu8len(w)) <= count) {
-        clen += wctou8(pu, w);
-        pu += ulen;
+        clen += wctou8(u8, w);
+        u8 += ulen;
       } else
         break;
     } else {
       if((clen + 6) <= count) {
-        *pu++ = '&';
-        *pu++ = '#';
-        *pu++ = 'x';
-        *pu++ = '0';
-        *pu++ = '0';
-        *pu++ = ';';
+        *u8++ = '&';
+        *u8++ = '#';
+        *u8++ = 'x';
+        *u8++ = '0';
+        *u8++ = '0';
+        *u8++ = ';';
       } else
         break;
     }

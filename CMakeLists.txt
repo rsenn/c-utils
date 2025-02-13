@@ -404,6 +404,12 @@ check_functions(glob)
 check_functions(tcgetattr tcsetattr)
 check_functions(access)
 
+if(HAVE_LSTAT)
+  add_definitions(-DHAVE_LSTAT=1)
+else(HAVE_LSTAT)
+  add_definitions(-Dlstat=stat)
+endif(HAVE_LSTAT)
+
 if(HAVE_ACCESS)
   add_definitions(-DHAVE_ACCESS=1)
 else(HAVE_ACCESS)
