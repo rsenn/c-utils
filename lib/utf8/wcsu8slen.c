@@ -17,6 +17,6 @@ wcsu8slen(const wchar_t* pw) {
     else /* error: add width of null character entity &#x00; */
       len += 6;
   }
-  
+
   return len;
 }

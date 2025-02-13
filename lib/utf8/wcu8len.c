@@ -4,7 +4,7 @@ int
 wcu8len(const wchar_t w) {
   if(!(w & ~0x7f))
     return 1;
-  
+
   if(!(w & ~0x7ff))
     return 2;
 

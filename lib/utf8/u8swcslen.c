@@ -23,6 +23,6 @@ u8swcslen(const char* pu) {
       pu += 1;
     }
   }
-  
+
   return len;
 }

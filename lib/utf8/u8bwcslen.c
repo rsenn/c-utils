@@ -26,6 +26,6 @@ u8bwcslen(const char* pu, size_t n) {
       i += 1;
     }
   }
-  
+
   return len;
 }
