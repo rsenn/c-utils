@@ -1,4 +1,5 @@
 #include "../path_internal.h"
+#include "../utf8.h"
 #include "../windoze.h"
 
 #include <sys/stat.h>
@@ -20,7 +21,12 @@
 int
 path_exists(const char* p) {
 #if WINDOWS_NATIVE
-  return !!PathFileExistsA(p);
+  size_t len= u8swcslen(p);
+  wchar_t *w = alloc((len + 1) * sizeof(wchar_t));
+u8stowcs(w, p, len);
+w[len]='\0';
+
+  return !!PathFileExistsW(w);
 #else
   struct _stat st;
   int r;
@@ -31,6 +37,7 @@ path_exists(const char* p) {
   r = lstat(p, &st);
   if(r == 0)
     return 1;
+  
   return 0;
 #endif
 }

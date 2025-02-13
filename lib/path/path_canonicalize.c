@@ -49,26 +49,33 @@ static int
 is_link(const char* path) {
   if(is_symlink(path))
     return 1;
+  
 #ifdef HAVE_LSTAT
   {
     struct stat st;
+
     if(lstat(path, &st) != -1)
       return S_ISLNK(st.st_mode);
   }
 #endif
+
   return 0;
 }
 #elif defined(HAVE_LSTAT)
 static int
 is_link(const char* path) {
   struct stat st;
+
   if(lstat(path, &st) == -1)
     return 0;
+
   return S_ISLNK(st.st_mode);
 }
 #endif
+
 //#define lstat lstat64
 #define issep(c) ((c) == '/' || (c) == '\\')
+
 /* canonicalizes a <path> and puts it into <sa>
  *
  * <path>, without trailing '\0', should not be longer than PATH_MAX or it
