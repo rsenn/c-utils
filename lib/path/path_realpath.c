@@ -42,6 +42,6 @@ path_realpath(const char* path, stralloc* sa, int symbolic, stralloc* cwd) {
     /* run canonicalize with the concatenated path */
     return path_canonicalize(buf, sa, symbolic);
   }
-  
+
   return path_canonicalize(path, sa, symbolic);
 }

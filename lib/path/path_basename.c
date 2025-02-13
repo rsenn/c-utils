@@ -17,15 +17,17 @@ path_basename(const char* path) {
   size_t n;
 again:
   n = str_rchrs(x, "/\\", 2);
+
   if(x[n] == '\0')
     return x;
+
   if(x[n + 1] == 0) {
     if(n == 0)
       return x;
-    else {
-      (x)[n] = 0;
-      goto again;
-    }
+
+    (x)[n] = 0;
+    goto again;
   }
+
   return &x[n + 1];
 }

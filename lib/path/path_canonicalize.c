@@ -49,7 +49,7 @@ static int
 is_link(const char* path) {
   if(is_symlink(path))
     return 1;
-  
+
 #ifdef HAVE_LSTAT
   {
     struct stat st;

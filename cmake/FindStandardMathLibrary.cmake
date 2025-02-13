@@ -17,8 +17,7 @@ int main() { sin(0.0); log(0.0f); }")
 
 set(CMAKE_REQUIRED_FLAGS "")
 set(CMAKE_REQUIRED_LIBRARIES "")
-check_c_source_compiles("${find_standard_math_library_test_program}"
-                        standard_math_library_linked_to_automatically)
+check_c_source_compiles("${find_standard_math_library_test_program}" standard_math_library_linked_to_automatically)
 
 if(NOT DEFINED CACHE{LIBMATH})
   if(standard_math_library_linked_to_automatically)
@@ -31,8 +30,7 @@ if(NOT DEFINED CACHE{LIBMATH})
     # the test program did not link successfully without any linker flag. This is a very uncommon case that so far we only saw on QNX. The next try is the standard name 'm' for the standard math library.
 
     set(CMAKE_REQUIRED_LIBRARIES "m")
-    check_c_source_compiles("${find_standard_math_library_test_program}"
-                            standard_math_library_linked_to_as_m)
+    check_c_source_compiles("${find_standard_math_library_test_program}" standard_math_library_linked_to_as_m)
 
     if(standard_math_library_linked_to_as_m)
 

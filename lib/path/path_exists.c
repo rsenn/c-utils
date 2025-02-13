@@ -21,10 +21,10 @@
 int
 path_exists(const char* p) {
 #if WINDOWS_NATIVE
-  size_t len= u8swcslen(p);
-  wchar_t *w = alloc((len + 1) * sizeof(wchar_t));
-u8stowcs(w, p, len);
-w[len]='\0';
+  size_t len = u8swcslen(p);
+  wchar_t* w = alloc((len + 1) * sizeof(wchar_t));
+  u8stowcs(w, p, len);
+  w[len] = '\0';
 
   return !!PathFileExistsW(w);
 #else
@@ -37,7 +37,7 @@ w[len]='\0';
   r = lstat(p, &st);
   if(r == 0)
     return 1;
-  
+
   return 0;
 #endif
 }

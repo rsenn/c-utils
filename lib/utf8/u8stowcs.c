@@ -12,9 +12,9 @@ u8stowcs(wchar_t* pw, const char* pu, size_t count) {
 
     if(ulen < 0)
       return (size_t)-1;
-    
-      clen++;
-      pu += ulen;
+
+    clen++;
+    pu += ulen;
   }
 
   if('\0' == *pu && clen < count)

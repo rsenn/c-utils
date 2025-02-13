@@ -1,7 +1,7 @@
 #include "../utf8.h"
 
 int
-u8towc(wchar_t* w, const char* u, size_t count) {
+u8towc(wchar_t* w, const char* u) {
   int len;
   /* assert */
 

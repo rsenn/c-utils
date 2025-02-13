@@ -26,9 +26,7 @@ macro(CXX11_CHECK_FEATURE FEATURE_NAME FEATURE_NUMBER RESULT_VAR)
     set(_bindir "${CMAKE_CURRENT_BINARY_DIR}/cxx11/cxx11_${FEATURE_NAME}")
 
     if(${FEATURE_NUMBER})
-      set(_SRCFILE_BASE
-          ${CMAKE_CURRENT_LIST_DIR}/c++11-test-${FEATURE_NAME}-N${FEATURE_NUMBER}
-      )
+      set(_SRCFILE_BASE ${CMAKE_CURRENT_LIST_DIR}/c++11-test-${FEATURE_NAME}-N${FEATURE_NUMBER})
       set(_LOG_NAME "\"${FEATURE_NAME}\" (N${FEATURE_NUMBER})")
     else(${FEATURE_NUMBER})
       set(_SRCFILE_BASE ${CMAKE_CURRENT_LIST_DIR}/c++11-test-${FEATURE_NAME})
@@ -53,8 +51,7 @@ macro(CXX11_CHECK_FEATURE FEATURE_NAME FEATURE_NUMBER RESULT_VAR)
         set(${RESULT_VAR} FALSE)
       endif(_COMPILE_RESULT_VAR AND NOT _RUN_RESULT_VAR)
       if(${RESULT_VAR} AND EXISTS ${_SRCFILE_FAIL})
-        try_run(_RUN_RESULT_VAR _COMPILE_RESULT_VAR "${_bindir}_fail"
-                "${_SRCFILE_FAIL}")
+        try_run(_RUN_RESULT_VAR _COMPILE_RESULT_VAR "${_bindir}_fail" "${_SRCFILE_FAIL}")
         if(_COMPILE_RESULT_VAR AND _RUN_RESULT_VAR)
           set(${RESULT_VAR} TRUE)
         else(_COMPILE_RESULT_VAR AND _RUN_RESULT_VAR)
@@ -63,8 +60,7 @@ macro(CXX11_CHECK_FEATURE FEATURE_NAME FEATURE_NUMBER RESULT_VAR)
       endif(${RESULT_VAR} AND EXISTS ${_SRCFILE_FAIL})
     endif(CROSS_COMPILING)
     if(${RESULT_VAR} AND EXISTS ${_SRCFILE_FAIL_COMPILE})
-      try_compile(_TMP_RESULT "${_bindir}_fail_compile"
-                  "${_SRCFILE_FAIL_COMPILE}")
+      try_compile(_TMP_RESULT "${_bindir}_fail_compile" "${_SRCFILE_FAIL_COMPILE}")
       if(_TMP_RESULT)
         set(${RESULT_VAR} FALSE)
       else(_TMP_RESULT)
@@ -78,8 +74,7 @@ macro(CXX11_CHECK_FEATURE FEATURE_NAME FEATURE_NUMBER RESULT_VAR)
     else(${RESULT_VAR})
       message(STATUS "Checking C++11 support for ${_LOG_NAME} -- not supported")
     endif(${RESULT_VAR})
-    set(${RESULT_VAR} ${${RESULT_VAR}} CACHE INTERNAL
-                                             "C++11 support for ${_LOG_NAME}")
+    set(${RESULT_VAR} ${${RESULT_VAR}} CACHE INTERNAL "C++11 support for ${_LOG_NAME}")
   endif(NOT DEFINED ${RESULT_VAR})
 endmacro(CXX11_CHECK_FEATURE)
 
@@ -96,8 +91,7 @@ cxx11_check_feature("constexpr" 2235 HAS_CXX11_CONSTEXPR)
 cxx11_check_feature("sizeof_member" 2253 HAS_CXX11_SIZEOF_MEMBER)
 cxx11_check_feature("__func__" 2340 HAS_CXX11_FUNC)
 
-set(CXX11_FEATURE_LIST ${CXX11_FEATURE_LIST} CACHE STRING
-                                                   "C++11 feature support list")
+set(CXX11_FEATURE_LIST ${CXX11_FEATURE_LIST} CACHE STRING "C++11 feature support list")
 mark_as_advanced(FORCE CXX11_FEATURE_LIST)
 
 set(CMAKE_CXX_FLAGS ${CHECK_CXX11_OLD_CMAKE_CXX_FLAGS})

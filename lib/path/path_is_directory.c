@@ -18,7 +18,12 @@
 int
 path_is_directory(const char* p) {
 #if WINDOWS_NATIVE
-  return !!PathIsDirectoryA(p);
+  size_t len = u8swcslen(p);
+  wchar_t* w = alloc((len + 1) * sizeof(wchar_t));
+  u8stowcs(w, p, len);
+  w[len] = '\0';
+
+  return !!PathIsDirectoryW(w);
 #else
   struct _stat st;
   int r;
