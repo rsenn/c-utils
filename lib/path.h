@@ -20,6 +20,12 @@ typedef struct {
   size_t sz1, sz2;
 } SizePair;
 
+typedef enum path_format {
+  MIX = 0,
+  UNX,
+  WIN,
+} path_format;
+
 #if WINDOWS_NATIVE
 #define PATHSEP_C '\\'
 #define PATHSEP_S "\\"

@@ -18,12 +18,14 @@
 #define MAX(a, b) ((a) > (b) ? (a) : (b))
 /*
 typedef enum {
-  MIXED, UNIX, WIN
+  MIX, UNX, WIN
 } path_format;*/
-typedef int path_format;
-#define MIXED 0
-#define UNIX 1
-#define WIN 2
+
+/*typedef int path_format;
+
+#define MIX 0
+#define UNX 1
+#define WIN 2*/
 
 struct mount_entry {
   const char* device;
@@ -62,6 +64,7 @@ path_diffb(const char* s, size_t len, const char* t) {
     ++s;
     ++t;
   }
+
   return 0;
 }
 
@@ -97,23 +100,23 @@ pathconv(const char* path, stralloc* sa) {
   stralloc_ready(sa, MAX_PATH);
 
   switch(format) {
-    case MIXED:
+    case MIX:
     case WIN:
       cygwin_conv_to_win32_path(path, sa->s);
       sa->len = str_len(sa->s);
       break;
-    case UNIX:
+    case UNX:
       cygwin_conv_to_posix_path(path, sa->s);
       sa->len = str_len(sa->s);
       break;
   }
 
-  if(format == MIXED) {
+  if(format == MIX) {
     size_t i;
-    for(i = 0; i < sa->len; ++i) {
+
+    for(i = 0; i < sa->len; ++i)
       if(sa->s[i] == '\\')
         sa->s[i] = '/';
-    }
   }
 }
 #endif
@@ -137,6 +140,7 @@ mounts_read(MAP_T map) {
 
   while(buffer_getnewline_sa(&in, &line) > 0) {
     stralloc_nul(&line);
+
     dev.s = line.s;
     dev.n = str_find(dev.s, " /");
     dev.s[dev.n] = '\0';
@@ -178,12 +182,7 @@ typedef struct {
   const char* s;
   size_t n;
 } column_t;
-/*
-#define KEY(t) \
-  (column_t) { MAP_ITER_KEY(t), MAP_ITER_KEY_LEN(t) - 1 }
-#define VAL(t) \
-  (column_t) { MAP_ITER_VALUE(t), MAP_ITER_VALUE_LEN(t) - 1 }
-*/
+
 static column_t
 KEY(const MAP_PAIR_T pair) {
   column_t ret;
@@ -231,6 +230,7 @@ mounts_match(MAP_T map, const char* path, size_t pathlen, size_t* matchlen, int 
     if(matched) {
       if(matchlen)
         *matchlen = search->n;
+
       ret.s = replacement->s;
       ret.n = search->n;
 
@@ -238,6 +238,7 @@ mounts_match(MAP_T map, const char* path, size_t pathlen, size_t* matchlen, int 
         break;
     }
   }
+
   return ret.s;
 }
 
@@ -292,13 +293,16 @@ msys_root(stralloc* sa) {
   char buf[PATH_MAX + 1];
   int ret = 0;
   const char* s;
+
   stralloc_zero(sa);
+
 #if defined(__MSYS__) || defined(__CYGWIN__)
   if(cygwin_conv_path(CCP_POSIX_TO_WIN_A, "/", buf, sizeof(buf)) == 0) {
     path_dirname(buf, sa);
     ret = 1;
   }
 #endif
+
   if(!ret && (s = getenv("MSYS_PREFIX"))) {
     path_dirname(s, sa);
     ret = 1;
@@ -311,8 +315,10 @@ msys_root(stralloc* sa) {
     ret = 1;
   }
 #endif
+
   if(ret)
     stralloc_replacec(sa, '\\', '/');
+
   return ret;
 }
 
@@ -361,8 +367,6 @@ pathtool(const char* arg, stralloc* sa) {
   if(absolute) {
     path_realpath(arg, sa, !dereference, NULL);
     stralloc_nul(sa);
-    /* path_absolute(arg, sa);
-     path_canonical_sa(sa);*/
 
 #ifdef DEBUG_OUTPUT_
     buffer_puts(buffer_2, "absolute: ");
@@ -406,10 +410,10 @@ pathtool(const char* arg, stralloc* sa) {
 #endif
 
 #if defined(__MINGW32__) || defined(__MSYS__)
-  mounts_replace(mtab, sa, format != UNIX, false);
+  mounts_replace(mtab, sa, format != UNX, false);
 
 #if defined(__MINGW32__)
-  if(format == UNIX) {
+  if(format == UNX) {
     if(sa->len >= 2 && sa->s[1] == ':') {
       sa->s[1] = tolower(sa->s[0]);
       sa->s[0] = '/';
@@ -522,13 +526,13 @@ main(int argc, char* argv[]) {
   errmsg_iam(argv[0]);
   strlist_init(&relative_to, PATHSEP_C);
 
-  /*#if WINDOWS_NATIVE
-    format = WIN;
-  #elif defined(WINDOWS) && !(defined(__CYGWIN__) || defined(__MSYS__))
-    format = MIXED;
-  #else*/
-  format = UNIX;
-  /*#endif*/
+#if WINDOWS_NATIVE
+  format = WIN;
+#elif defined(WINDOWS) && !(defined(__CYGWIN__) || defined(__MSYS__))
+  format = MIX;
+#else
+  format = UNX;
+#endif
 
   for(;;) {
     c = unix_getopt_long(argc, argv, "afhr:s:muwL", opts, &index);
@@ -541,8 +545,8 @@ main(int argc, char* argv[]) {
       case 'h': usage(argv[0]); return 0;
       case 'r': rel_to = unix_optarg; break;
       case 's': separator[0] = unix_optarg[0]; break;
-      case 'm': format = MIXED; break;
-      case 'u': format = UNIX; break;
+      case 'm': format = MIX; break;
+      case 'u': format = UNX; break;
       case 'w': format = WIN; break;
       case 'a': absolute = 1; break;
       case 'f': canonical = 1; break;
@@ -563,8 +567,8 @@ main(int argc, char* argv[]) {
 
   if(separator[0] == '\0') {
     switch(format) {
-      case UNIX:
-      case MIXED: separator[0] = '/'; break;
+      case UNX:
+      case MIX: separator[0] = '/'; break;
       case WIN: separator[0] = '\\'; break;
     }
   }
@@ -575,7 +579,7 @@ main(int argc, char* argv[]) {
 
 #ifdef DEBUG_OUTPUT_
   buffer_puts(buffer_2, "format: ");
-  buffer_puts(buffer_2, ((const char*[]){"MIXED", "UNIX", "WIN"})[format]);
+  buffer_puts(buffer_2, ((const char*[]){"MIX", "UNX", "WIN"})[format]);
   buffer_putnlflush(buffer_2);
 #endif
 
@@ -614,20 +618,20 @@ main(int argc, char* argv[]) {
       path_collapse_sa(&relative_to.sa);
     }
 
-    //    char tmpsep = separator[0];
-    //    stralloc rel;
+    /*char tmpsep = separator[0];
+    stralloc rel;
 
-    //    stralloc_init(&rel);
-    //    absolute = 1;
+    stralloc_init(&rel);
+    absolute = 1;
 
-    //    separator[0] = PATHSEP_C;
+    separator[0] = PATHSEP_C;
 
-    //    if(pathtool(rel_to, &rel)) {
-    //      stralloc_copy(&relative_to.sa, &rel);
-    //      relative_to.sep = separator[0];
-    //    } else {
-    //      errmsg_warnsys(str_basename(argv[0]), ": relative to", NULL);
-    //    }
+    if(pathtool(rel_to, &rel)) {
+      stralloc_copy(&relative_to.sa, &rel);
+      relative_to.sep = separator[0];
+    } else {
+      errmsg_warnsys(str_basename(argv[0]), ": relative to", NULL);
+    }*/
 
 #ifdef DEBUG_OUTPUT_
     buffer_puts(buffer_2, "relative-to: ");
