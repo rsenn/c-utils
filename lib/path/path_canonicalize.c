@@ -130,6 +130,7 @@ start:
         path++;
         continue;
       }
+
       /* if we have ".." we have to truncate the resulting path */
       if(path[1] == '.' && (path_issep(path[2]) || path[2] == '\0')) {
         sa->len = path_right(sa->s, sa->len);
@@ -137,12 +138,15 @@ start:
         continue;
       }
     }
+
     /* exit now if we're done */
     if(*path == '\0')
       break;
+
     /* begin a new path component */
     if(sa->len && (sa->s[sa->len - 1] != '/' && sa->s[sa->len - 1] != '\\'))
       stralloc_catc(sa, sep);
+
     /* look for the next path separator and then copy the component */
     n = path_len_s(path);
     stralloc_catb(sa, path, n);
@@ -150,16 +154,19 @@ start:
       stralloc_catc(sa, sep);
     stralloc_nul(sa);
     path += n;
+
     /* now stat() the thing to verify it */
     byte_zero(&st, sizeof(st));
 
     /* is it a symbolic link? */
     if(stat_fn(sa->s, &st) != -1 && is_link(sa->s)) {
       ret++;
+
       /* read the link, return if failed and then nul-terminate the buffer */
       if((ssize_t)(n = readlink(sa->s, buf, PATH_MAX)) == (ssize_t)-1)
         return 0;
       // buf[n] = '\0';
+
       /* if the symlink is absolute we clear the stralloc,
          set the path to buf and repeat the whole procedure */
       if(path_is_absolute(buf)) {
@@ -168,25 +175,15 @@ start:
         stralloc_catc(sa, sep);
         path = buf;
         goto start;
-        /* if the symlink is relative we remove the symlink path
-         component and recurse */
+        /* if the symlink is relative we remove the symlink path component and recurse */
       } else {
         int rret;
 
         sa->len = path_right(sa->s, sa->len);
         buf[n] = '\0';
-        /*
-                buffer_puts(buffer_2, "recursive path_canonicalize(\"");
-                buffer_puts(buffer_2, buf);
-                buffer_puts(buffer_2, "\", \"");
-                buffer_putsa(buffer_2, sa);
-                buffer_puts(buffer_2, "\", ");
-                buffer_putlong(buffer_2, symbolic);
-                buffer_puts(buffer_2, ") = ");*/
+
         rret = path_canonicalize(buf, sa, symbolic);
 
-        /*buffer_putlong(buffer_2, rret);
-        buffer_putnlflush(buffer_2);*/
         if(!rret)
           return 0;
       }
@@ -199,7 +196,9 @@ start:
     }
 #endif
   }
+
   if(sa->len == 0)
     stralloc_catc(sa, sep);
+
   return ret;
 }

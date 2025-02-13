@@ -283,8 +283,8 @@ main_present(const char* filename) {
     mmap_unmap(x, n);
     return ret;
   }
-  
-  return - 1;
+
+  return -1;
 }
 
 /**

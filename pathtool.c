@@ -34,7 +34,7 @@ static strlist relative_to;
 static char separator[2];
 static stralloc delims;
 static path_format format;
-static int absolute = 0, canonical = 0;
+static int absolute = 0, canonical = 0, dereference = 0;
 static stralloc cwd;
 #if defined(__MINGW32__) || defined(__MSYS__)
 static stralloc mingw, msys;
@@ -359,9 +359,10 @@ pathtool(const char* arg, stralloc* sa) {
 #endif
 
   if(absolute) {
-    path_absolute(arg, sa);
+    path_realpath(arg, sa, !dereference, NULL);
     stralloc_nul(sa);
-    path_canonical_sa(sa);
+    /* path_absolute(arg, sa);
+     path_canonical_sa(sa);*/
 
 #ifdef DEBUG_OUTPUT_
     buffer_puts(buffer_2, "absolute: ");
@@ -369,7 +370,7 @@ pathtool(const char* arg, stralloc* sa) {
     buffer_putnlflush(buffer_2);
 #endif
   } else if(canonical) {
-    path_canonicalize(arg, sa, 1);
+    path_canonicalize(arg, sa, !dereference);
 #ifdef DEBUG_OUTPUT_
     buffer_putsflush(buffer_2, "path_canonicalize");
 #endif
@@ -490,6 +491,7 @@ usage(char* av0) {
                        "  -f, --canonicalize     Canonicalize by following every symlink in\n"
                        "                         every component of the given name recursively;\n"
                        "                         all but the last component must exist\n",
+                       "  -L, --dereference      Resolve symlinks\n",
                        "\n",
                        NULL);
   buffer_flush(buffer_1);
@@ -503,7 +505,17 @@ main(int argc, char* argv[]) {
   const char* rel_to = NULL;
   int index = 0;
   struct unix_longopt opts[] = {
-      {"help", 0, NULL, 'h'}, {"relative-to", 1, NULL, 'r'}, {"separator", 1, NULL, 's'}, {"mixed", 0, NULL, 'm'}, {"unix", 0, NULL, 'u'}, {"windows", 0, NULL, 'w'}, {"absolute", 0, NULL, 'a'}, {"canonicalize", 0, NULL, 'f'}, {0, 0, 0, 0}};
+      {"help", 0, NULL, 'h'},
+      {"relative-to", 1, NULL, 'r'},
+      {"separator", 1, NULL, 's'},
+      {"mixed", 0, NULL, 'm'},
+      {"unix", 0, NULL, 'u'},
+      {"windows", 0, NULL, 'w'},
+      {"absolute", 0, NULL, 'a'},
+      {"canonicalize", 0, NULL, 'f'},
+      {"dereference", 0, NULL, 'L'},
+      {0, 0, 0, 0},
+  };
 
   MAP_NEW(mtab);
 
@@ -534,6 +546,7 @@ main(int argc, char* argv[]) {
       case 'w': format = WIN; break;
       case 'a': absolute = 1; break;
       case 'f': canonical = 1; break;
+      case 'L': dereference = 1; break;
       default: usage(argv[0]); return 1;
     }
   }
