@@ -246,6 +246,9 @@ check_compile(HAVE_INT128 "int main() { __int128_t tmp; }\n")
 
 check_compile(HAVE_ALLOCA "#include <stdlib.h>\n#ifdef A\n#include <alloca.h>\n#else\n#include <malloc.h>\n#endif\n\nint main() { char* c = alloca(23);\n  (void)c;\n  return 0;\n}\n")
 
+if(HAVE_ALLOCA)
+endif(HAVE_ALLOCA)
+
 check_include_file(signal.h HAVE_SIGNAL_H)
 if(HAVE_SIGNAL_H)
   set(CMAKE_EXTRA_INCLUDE_FILES signal.h ${CMAKE_EXTRA_INCLUDE_FILES})

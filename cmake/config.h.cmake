@@ -11,7 +11,7 @@
 #cmakedefine HAVE_ALLOCA_H 1
 
 /* Define this if you have the alloca() function */
-#cmakedefine HAVE_ALLOCA_FUNC 1
+#cmakedefine HAVE_ALLOCA 1
 
 /* Define this if you have sys/stat.h */
 #cmakedefine HAVE_SYS_STAT_H 1
