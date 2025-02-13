@@ -1,6 +1,6 @@
 /* from dietlibc by felix leitner, adapted to libowfat */
 #include "../path_internal.h"
-#include "../str.h"
+#include "../utf8.h"
 
 /*
        path           dirname        basename
@@ -16,7 +16,7 @@ path_basename(const char* path) {
   char* x = (char*)path;
   size_t n;
 again:
-  n = str_rchrs(x, "/\\", 2);
+  n = u8s_rchrs(x, "/\\", 2);
 
   if(x[n] == '\0')
     return x;

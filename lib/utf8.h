@@ -26,6 +26,10 @@ size_t wcstou8s(char*, const wchar_t*, size_t);
 int wcsu8slen(const wchar_t*);
 int wctou8(char*, wchar_t);
 int wcu8len(const wchar_t);
+size_t u8b_chrs(const char*, size_t, const char needles[], size_t);
+size_t u8b_rchrs(const char*, size_t, const char needles[], size_t);
+size_t u8s_chrs(const char*, const char needles[], size_t);
+size_t u8s_rchrs(const char*, const char needles[], size_t);
 
 #ifdef __cplusplus
 }
