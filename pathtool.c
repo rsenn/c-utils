@@ -373,7 +373,7 @@ pathtool(const char* arg, stralloc* sa) {
     buffer_putsa(buffer_2, sa);
     buffer_putnlflush(buffer_2);
 #endif
-  } else if(canonical) {
+  } else if(canonical || dereference) {
     path_canonicalize(arg, sa, !dereference);
 #ifdef DEBUG_OUTPUT_
     buffer_putsflush(buffer_2, "path_canonicalize");
