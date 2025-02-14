@@ -31,9 +31,12 @@ last_error_str() {
   DWORD len;
   char* err = 0;
   tmpbuf[0] = '\0';
+
   if(errCode == 0)
     return tmpbuf;
+
   SetLastError(0);
+
   if(!FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER |
                         FORMAT_MESSAGE_FROM_SYSTEM,
                     NULL,
@@ -46,9 +49,12 @@ last_error_str() {
     return 0;
 
   byte_copy(tmpbuf, 7, "ERROR: ");
+
   len = strlen(err);
+
   if(len > sizeof(tmpbuf) - 8)
     len = sizeof(tmpbuf) - 8;
+
   byte_copy(tmpbuf + 7, len, err);
 
   LocalFree(err);
@@ -102,13 +108,11 @@ process_create(const char* filename,
 #elif WINDOWS_NATIVE
   {
     size_t i;
-    stralloc joined_argv;
-
-    PROCESS_INFORMATION piProcessInfo;
     int status;
-    STARTUPINFOA siStartInfo;
-
-    SECURITY_ATTRIBUTES saAttr;
+    stralloc joined_argv;
+    PROCESS_INFORMATION piProcessInfo; /* receives PROCESS_INFORMATION */
+    STARTUPINFOA siStartInfo;          /* STARTUPINFO pointer */
+    SECURITY_ATTRIBUTES saAttr;        /* process security attributes */
     BOOL retval = FALSE;
 
     stralloc_init(&joined_argv);
@@ -122,10 +126,13 @@ process_create(const char* filename,
 
       if(quote)
         stralloc_catc(&joined_argv, '"');
+
       stralloc_cats(&joined_argv, arg);
+
       if(quote)
         stralloc_catc(&joined_argv, '"');
     }
+
     stralloc_nul(&joined_argv);
 
     saAttr.nLength = sizeof(SECURITY_ATTRIBUTES);
@@ -147,20 +154,18 @@ process_create(const char* filename,
     siStartInfo.dwFlags |= STARTF_USESTDHANDLES;
 
     /* Create the child process */
-
-    retval =
-        CreateProcessA(filename,
-                       joined_argv.s,
-                       &saAttr, // process security attributes
-                       NULL,    // primary thread security attributes
-                       TRUE,    // handles are inherited
-                       /*(TODO: set CREATE_NEW CONSOLE/PROCESS_GROUP to
-                          make GetExitCodeProcess() work?) */
-                       CREATE_NO_WINDOW, // creation flags
-                       NULL,
-                       cwd,             // use parent's current directory
-                       &siStartInfo,    // STARTUPINFO pointer
-                       &piProcessInfo); // receives PROCESS_INFORMATION
+    retval = CreateProcessA(filename,
+                            joined_argv.s,
+                            &saAttr,
+                            NULL, /* primary thread security attributes */
+                            TRUE, /* handles are inherited */
+                            /*(TODO: set CREATE_NEW CONSOLE/PROCESS_GROUP
+                               to make GetExitCodeProcess() work?) */
+                            CREATE_NO_WINDOW,
+                            NULL,
+                            cwd,
+                            &siStartInfo,
+                            &piProcessInfo);
 
     if(retval == FALSE) {
       int error = GetLastError();
