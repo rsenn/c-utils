@@ -134,7 +134,7 @@ sources_get(const char* basedir) {
 
       if(sources_add(s)) {
       }
-      
+
       {
 
 #ifdef DEBUG_OUTPUT_

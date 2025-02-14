@@ -18,7 +18,7 @@ static const char* const dot = ".";
 char*
 path_dirname_b(const char* path, size_t size, stralloc* dir) {
   size_t i;
-  
+
   stralloc_zero(dir);
   i = path_dirlen_b(path, size);
 
