@@ -15,7 +15,9 @@ typedef struct ini_section {
   MAP_T map;
 } ini_section_t;
 
-ini_section_t* ini_newb(ini_section_t** ptr, const char* name, size_t namelen);
+ini_section_t* ini_newb(ini_section_t** ptr,
+                        const char* name,
+                        size_t namelen);
 ini_section_t* ini_new(ini_section_t** ptr, const char* name);
 ini_section_t* ini_section(ini_section_t* ini, const char* name);
 strarray ini_keys(ini_section_t* ini);

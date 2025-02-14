@@ -8,7 +8,8 @@
 #include "../scan.h"
 #endif
 
-/* get home directory into a char buf not smaller than PATH_MAX + 1 chars */
+/* get home directory into a char buf not smaller than PATH_MAX + 1 chars
+ */
 char*
 path_gethome(int uid) {
 #if WINDOWS_NATIVE

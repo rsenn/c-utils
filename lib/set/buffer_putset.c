@@ -2,7 +2,10 @@
 #include "../buffer.h"
 
 void
-buffer_putset(buffer* b, const set_t* set, const char* sep, size_t seplen) {
+buffer_putset(buffer* b,
+              const set_t* set,
+              const char* sep,
+              size_t seplen) {
   char* x;
   size_t i = 0, n;
   set_iterator_t it;

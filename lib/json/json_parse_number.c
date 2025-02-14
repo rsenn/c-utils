@@ -26,7 +26,8 @@ json_parse_number(jsonval* val, charbuf* b) {
         val->type = JSON_DOUBLE;
     }
     stralloc_nul(&num);
-    n = val->type == JSON_INT ? scan_longlong(num.s, &val->intv) : scan_double(num.s, &val->doublev);
+    n = val->type == JSON_INT ? scan_longlong(num.s, &val->intv)
+                              : scan_double(num.s, &val->doublev);
     stralloc_free(&num);
     if(n > 0) {
       return 1;

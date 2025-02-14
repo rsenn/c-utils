@@ -1,7 +1,10 @@
 #include "../scan.h"
 
 size_t
-scan_pb_tag(const char* in, size_t len, size_t* fieldno, unsigned char* type) {
+scan_pb_tag(const char* in,
+            size_t len,
+            size_t* fieldno,
+            unsigned char* type) {
   uint64 l;
   size_t n = scan_varint(in, len, &l);
   if(n == 0)

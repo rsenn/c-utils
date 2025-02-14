@@ -18,7 +18,8 @@ sig_action(int sig, struct sigaction const* new, struct sigaction* old) {
   if(sigaction(sig, &sanew, &saold) < 0)
     return -1;
   if(old) {
-    int r = sigismember(&saold.sa_mask, (sig == SIGTERM) ? SIGPIPE : SIGTERM);
+    int r =
+        sigismember(&saold.sa_mask, (sig == SIGTERM) ? SIGPIPE : SIGTERM);
     if(r < 0)
       return -1;
     old->sa_flags = 0;

@@ -86,13 +86,16 @@ strlist_from_path(strlist* sl, const char* p) {
 #define MAX_PATH 260
 #endif
 
-#if(!defined(__MSYS__) && !defined(HAVE_CYGWIN_CONV_PATH)) || (defined(__MSYS__) && defined(__x86_64__))
+#if(!defined(__MSYS__) && !defined(HAVE_CYGWIN_CONV_PATH)) || \
+    (defined(__MSYS__) && defined(__x86_64__))
 #define HAVE_CYGWIN_CONV_PATH 1
 #endif
 
 #ifdef HAVE_CYGWIN_CONV_PATH
-#define cygwin_conv_to_win32_path(from, to) cygwin_conv_path(CCP_POSIX_TO_WIN_A, (from), (to), MAX_PATH)
-#define cygwin_conv_to_posix_path(from, to) cygwin_conv_path(CCP_WIN_A_TO_POSIX, (from), (to), MAX_PATH)
+#define cygwin_conv_to_win32_path(from, to) \
+  cygwin_conv_path(CCP_POSIX_TO_WIN_A, (from), (to), MAX_PATH)
+#define cygwin_conv_to_posix_path(from, to) \
+  cygwin_conv_path(CCP_WIN_A_TO_POSIX, (from), (to), MAX_PATH)
 #endif
 
 void
@@ -167,8 +170,13 @@ mounts_read(MAP_T map) {
     MAP_INSERT(map, dev.s, dev.n + 1, mnt.s, mnt.n + 1);
 
 #ifdef DEBUG_OUTPUT_
-    buffer_putm_internal(buffer_2, "mounts_read() device: ", dev.s ? dev.s : "(null)", " ", NULL);
-    buffer_putm_internal(buffer_2, "mountpoint: ", mnt.s ? mnt.s : "(null)", "\n", NULL);
+    buffer_putm_internal(buffer_2,
+                         "mounts_read() device: ",
+                         dev.s ? dev.s : "(null)",
+                         " ",
+                         NULL);
+    buffer_putm_internal(
+        buffer_2, "mountpoint: ", mnt.s ? mnt.s : "(null)", "\n", NULL);
     buffer_flush(buffer_2);
 #endif
 
@@ -200,16 +208,25 @@ VAL(const MAP_PAIR_T pair) {
 }
 
 static const char*
-mounts_match(MAP_T map, const char* path, size_t pathlen, size_t* matchlen, int col, bool first) {
+mounts_match(MAP_T map,
+             const char* path,
+             size_t pathlen,
+             size_t* matchlen,
+             int col,
+             bool first) {
   bool matched;
   MAP_PAIR_T t;
-  column_t cols[2], ret = {0, 0}, *search = &cols[!!col], *replacement = &cols[!col];
+  column_t cols[2], ret = {0, 0}, *search = &cols[!!col],
+                    *replacement = &cols[!col];
 
   MAP_FOREACH(map, t) {
     cols[0] = KEY(t);
     cols[1] = VAL(t);
 
-    matched = search->n >= ret.n && search->n <= pathlen && !path_diffb(path, search->n, search->s) && (search->n == pathlen || (search->n < pathlen && path_issep(path[search->n])));
+    matched = search->n >= ret.n && search->n <= pathlen &&
+              !path_diffb(path, search->n, search->s) &&
+              (search->n == pathlen ||
+               (search->n < pathlen && path_issep(path[search->n])));
 
 #ifdef DEBUG_OUTPUT_
     buffer_putulong(buffer_2, matched);
@@ -451,12 +468,19 @@ pathtool(const char* arg, stralloc* sa) {
     stralloc_nul(&relative_to.sa);
 
 #ifdef DEBUG_OUTPUT_
-    buffer_putm_internal(buffer_2, "relative(\"", path.sa.s, "\", \"", relative_to.sa.s, "\")", NULL);
+    buffer_putm_internal(buffer_2,
+                         "relative(\"",
+                         path.sa.s,
+                         "\", \"",
+                         relative_to.sa.s,
+                         "\")",
+                         NULL);
     buffer_putsa(buffer_2, sa);
     buffer_putnlflush(buffer_2);
 #endif
 
-    path_relative_to_b(path.sa.s, path.sa.len, relative_to.sa.s, relative_to.sa.len, sa);
+    path_relative_to_b(
+        path.sa.s, path.sa.len, relative_to.sa.s, relative_to.sa.len, sa);
 
   } else {
 
@@ -478,26 +502,32 @@ pathtool(const char* arg, stralloc* sa) {
 
 void
 usage(char* av0) {
-  buffer_putm_internal(buffer_1,
-                       "Usage: ",
-                       str_basename(av0),
-                       " [OPTIONS] <path...>\n",
-                       "\n",
-                       "Options:\n",
-                       "\n",
-                       "  -h, --help             Show this help\n",
-                       "  -r, --relative-to DIR  Print the resolved path relative to DIR\n",
-                       "  -s, --separator SEP    Use SEP as directory separator\n",
-                       "  -w, --windows          Print Windows form of path(s) (C:\\WINNT)\n",
-                       "  -m, --mixed            Like --windows, but with regular slashes (C:/WINNT)\n",
-                       "  -u, --unix   (default) Print Unix form of path(s) (/cygdrive/c/winnt)\n",
-                       "  -a, --absolute         Output absolute path\n",
-                       "  -f, --canonicalize     Canonicalize by following every symlink in\n"
-                       "                         every component of the given name recursively;\n"
-                       "                         all but the last component must exist\n",
-                       "  -L, --dereference      Resolve symlinks\n",
-                       "\n",
-                       NULL);
+  buffer_putm_internal(
+      buffer_1,
+      "Usage: ",
+      str_basename(av0),
+      " [OPTIONS] <path...>\n",
+      "\n",
+      "Options:\n",
+      "\n",
+      "  -h, --help             Show this help\n",
+      "  -r, --relative-to DIR  Print the resolved path relative to DIR\n",
+      "  -s, --separator SEP    Use SEP as directory separator\n",
+      "  -w, --windows          Print Windows form of path(s) "
+      "(C:\\WINNT)\n",
+      "  -m, --mixed            Like --windows, but with regular slashes "
+      "(C:/WINNT)\n",
+      "  -u, --unix   (default) Print Unix form of path(s) "
+      "(/cygdrive/c/winnt)\n",
+      "  -a, --absolute         Output absolute path\n",
+      "  -f, --canonicalize     Canonicalize by following every symlink "
+      "in\n"
+      "                         every component of the given name "
+      "recursively;\n"
+      "                         all but the last component must exist\n",
+      "  -L, --dereference      Resolve symlinks\n",
+      "\n",
+      NULL);
   buffer_flush(buffer_1);
 }
 

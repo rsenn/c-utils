@@ -27,8 +27,8 @@ bmap_hash(const char* str) {
 
 static int
 bmap_bucketidx(bmap_base_t* m, unsigned hash) {
-  /* If the implementation is changed to allow a non-power-of-2 bucket count,
-   * the line below should be changed to use mod instead of AND */
+  /* If the implementation is changed to allow a non-power-of-2 bucket
+   * count, the line below should be changed to use mod instead of AND */
   return hash & (m->nbuckets - 1);
 }
 #endif

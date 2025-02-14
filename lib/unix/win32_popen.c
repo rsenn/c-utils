@@ -39,12 +39,12 @@
 #define XSLASHCHAR _T('/')
 #define DELIMITER _T(";")
 
-/* definitions for table of stream pointer - process handle pairs. the table
- * is created, maintained and accessed by the idtab function. _popen and
- * _pclose gain access to table entries only by calling idtab. Note that the
- * table is expanded as necessary (by idtab) and free table entries are reused
- * (an entry is free if its stream field is NULL), but the table is never
- * contracted.
+/* definitions for table of stream pointer - process handle pairs. the
+ * table is created, maintained and accessed by the idtab function. _popen
+ * and _pclose gain access to table entries only by calling idtab. Note
+ * that the table is expanded as necessary (by idtab) and free table
+ * entries are reused (an entry is free if its stream field is NULL), but
+ * the table is never contracted.
  */
 
 typedef struct {
@@ -77,11 +77,11 @@ static IDpair* __cdecl idtab(FILE*);
  *FILE *_popen(cmdstring,type) - initiate a pipe and a child command
  *
  *Purpose:
- *       Creates a pipe and asynchronously executes a child copy of the command
- *       processor with cmdstring (see system()). If the type string contains
- *       an 'r', the calling process can read child command's standard output
- *       via the returned stream. If the type string contains a 'w', the calling
- *       process can write to the child command's standard input via the
+ *       Creates a pipe and asynchronously executes a child copy of the
+ *command processor with cmdstring (see system()). If the type string
+ *contains an 'r', the calling process can read child command's standard
+ *output via the returned stream. If the type string contains a 'w', the
+ *calling process can write to the child command's standard input via the
  *       returned stream.
  *
  *Entry:
@@ -91,9 +91,9 @@ static IDpair* __cdecl idtab(FILE*);
  *write-only, binary vs text mode)
  *
  *Exit:
- *       If successful, returns a stream associated with one end of the created
- *       pipe (the other end of the pipe is associated with either the child
- *       command's standard input or standard output).
+ *       If successful, returns a stream associated with one end of the
+ *created pipe (the other end of the pipe is associated with either the
+ *child command's standard input or standard output).
  *
  *       If an error occurs, NULL is returned.
  *
@@ -146,13 +146,18 @@ FILE* __cdecl popen(const char* cmdstring, const char* type) {
   while(*type == _T(' ')) {
     type++;
   }
-  _VALIDATE_RETURN(((*type == _T('w')) || (*type == _T('r'))), EINVAL, NULL);
+  _VALIDATE_RETURN(((*type == _T('w')) || (*type == _T('r'))),
+                   EINVAL,
+                   NULL);
   _type[0] = *type;
   ++type;
   while(*type == _T(' ')) {
     ++type;
   }
-  _VALIDATE_RETURN(((*type == 0) || (*type == _T('t')) || (*type == _T('b'))), EINVAL, NULL);
+  _VALIDATE_RETURN(((*type == 0) || (*type == _T('t')) ||
+                    (*type == _T('b'))),
+                   EINVAL,
+                   NULL);
   _type[1] = *type;
 
   /* do the _pipe(). note that neither of the resulting handles will
@@ -224,7 +229,8 @@ FILE* __cdecl popen(const char* cmdstring, const char* type) {
       goto error3;
 
     /* Find what to use. command.com or cmd.exe */
-    if((_EINVAL(_tdupenv_s_crt(&envbuf, NULL, _T("COMSPEC"))) != 0) || (envbuf == NULL)) {
+    if((_EINVAL(_tdupenv_s_crt(&envbuf, NULL, _T("COMSPEC"))) != 0) ||
+       (envbuf == NULL)) {
       unsigned int osver = 0;
       _get_osver(&osver);
       cmdexe = (osver & 0x8000) ? _T("command.com") : _T("cmd.exe");
@@ -242,11 +248,14 @@ FILE* __cdecl popen(const char* cmdstring, const char* type) {
     /* Used by os for duplicating the Handles. */
 
     StartupInfo.dwFlags = STARTF_USESTDHANDLES;
-    StartupInfo.hStdInput = stdhdl == STDIN ? (HANDLE)newhnd : (HANDLE)_osfhnd(0);
-    StartupInfo.hStdOutput = stdhdl == STDOUT ? (HANDLE)newhnd : (HANDLE)_osfhnd(1);
+    StartupInfo.hStdInput =
+        stdhdl == STDIN ? (HANDLE)newhnd : (HANDLE)_osfhnd(0);
+    StartupInfo.hStdOutput =
+        stdhdl == STDOUT ? (HANDLE)newhnd : (HANDLE)_osfhnd(1);
     StartupInfo.hStdError = (HANDLE)_osfhnd(2);
 
-    CommandLineSize = strlen(cmdexe) + strlen(_T(" /c ")) + (strlen(cmdstring)) + 1;
+    CommandLineSize =
+        strlen(cmdexe) + strlen(_T(" /c ")) + (strlen(cmdstring)) + 1;
     if((CommandLine = calloc(CommandLineSize, sizeof(char))) == NULL)
       goto error3;
     (lstrcpyn(CommandLine, cmdexe, CommandLineSize));
@@ -258,7 +267,16 @@ FILE* __cdecl popen(const char* cmdstring, const char* type) {
      */
     save_errno = errno;
     if(_taccess_s(cmdexe, 0) == 0) {
-      childstatus = CreateProcess((LPTSTR)cmdexe, (LPTSTR)CommandLine, NULL, NULL, TRUE, 0, NULL, NULL, &StartupInfo, &ProcessInfo);
+      childstatus = CreateProcess((LPTSTR)cmdexe,
+                                  (LPTSTR)CommandLine,
+                                  NULL,
+                                  NULL,
+                                  TRUE,
+                                  0,
+                                  NULL,
+                                  NULL,
+                                  &StartupInfo,
+                                  &ProcessInfo);
     } else {
       TCHAR* envPath = NULL;
       size_t envPathSize = 0;
@@ -282,9 +300,11 @@ FILE* __cdecl popen(const char* cmdstring, const char* type) {
       env = envPath;
 
 #ifdef WPRFLAG
-      while((env = (char*)_wgetpath((char*)env, buf, _MAX_PATH - 1)) && (*buf)) {
+      while((env = (char*)_wgetpath((char*)env, buf, _MAX_PATH - 1)) &&
+            (*buf)) {
 #else  /* WPRFLAG */
-      while((env = (char*)_getpath((char*)env, buf, _MAX_PATH - 1)) && (*buf)) {
+      while((env = (char*)_getpath((char*)env, buf, _MAX_PATH - 1)) &&
+            (*buf)) {
 #endif /* WPRFLAG */
         pfin = buf + strlen(buf) - 1;
 
@@ -312,7 +332,16 @@ FILE* __cdecl popen(const char* cmdstring, const char* type) {
          * again.
          */
         if(_taccess_s(buf, 0) == 0) {
-          childstatus = CreateProcess((LPTSTR)buf, CommandLine, NULL, NULL, TRUE, 0, NULL, NULL, &StartupInfo, &ProcessInfo);
+          childstatus = CreateProcess((LPTSTR)buf,
+                                      CommandLine,
+                                      NULL,
+                                      NULL,
+                                      TRUE,
+                                      0,
+                                      NULL,
+                                      NULL,
+                                      &StartupInfo,
+                                      &ProcessInfo);
           break;
         }
       }
@@ -378,23 +407,23 @@ error1:
 #ifndef _UNICODE
 
 /***
- *int _pclose(pstream) - wait on a child command and close the stream on the
- *   associated pipe
+ *int _pclose(pstream) - wait on a child command and close the stream on
+ *the associated pipe
  *
  *Purpose:
  *       Closes pstream then waits on the associated child command. The
- *       argument, pstream, must be the return value from a previous call to
- *       _popen. _pclose first looks up the process handle of child command
- *       started by that _popen and does a cwait on it. Then, it closes pstream
- *       and returns the exit status of the child command to the caller.
+ *       argument, pstream, must be the return value from a previous call
+ *to _popen. _pclose first looks up the process handle of child command
+ *       started by that _popen and does a cwait on it. Then, it closes
+ *pstream and returns the exit status of the child command to the caller.
  *
  *Entry:
  *       FILE *pstream - file stream returned by a previous call to _popen
  *
  *Exit:
- *       If successful, _pclose returns the exit status of the child command.
- *       The format of the return value is that same as for cwait, except that
- *       the low order and high order bytes are swapped.
+ *       If successful, _pclose returns the exit status of the child
+ *command. The format of the return value is that same as for cwait, except
+ *that the low order and high order bytes are swapped.
  *
  *       If an error occurs, -1 is returned.
  *
@@ -431,7 +460,8 @@ int __cdecl _pclose(FILE* pstream) {
      */
     save_errno = errno;
     errno = 0;
-    if((cwait(&termstat, locidpair->prochnd, WAIT_GRANDCHILD) != -1) || (errno == EINTR))
+    if((cwait(&termstat, locidpair->prochnd, WAIT_GRANDCHILD) != -1) ||
+       (errno == EINTR))
       retval = termstat;
     errno = save_errno;
 
@@ -459,21 +489,21 @@ int __cdecl _pclose(FILE* pstream) {
  *
  *Purpose:
  *   Find an entry in the idpairs table.  This function finds the entry the
- *   idpairs table entry corresponding to pstream. In the case where pstream
- *   is NULL, the entry being searched for is any free entry. In this case,
- *   idtab will create the idpairs table if it doesn't exist, or expand it (by
- *   exactly one entry) if there are no free entries.
+ *   idpairs table entry corresponding to pstream. In the case where
+ *pstream is NULL, the entry being searched for is any free entry. In this
+ *case, idtab will create the idpairs table if it doesn't exist, or expand
+ *it (by exactly one entry) if there are no free entries.
  *
  *   [MTHREAD NOTE:  This routine assumes that the caller has acquired the
  *   idpairs table lock.]
  *
  *Entry:
- *   FILE *pstream - stream corresponding to table entry to be found (if NULL
- *                   then find any free table entry)
+ *   FILE *pstream - stream corresponding to table entry to be found (if
+ *NULL then find any free table entry)
  *
  *Exit:
- *   if successful, returns a pointer to the idpairs table entry. otherwise,
- *   returns NULL.
+ *   if successful, returns a pointer to the idpairs table entry.
+ *otherwise, returns NULL.
  *
  *Exceptions:
  *
@@ -503,7 +533,11 @@ static IDpair* __cdecl idtab(FILE* pstream) {
    * the extra entries as being free (i.e., set their stream fields to
    * to NULL).
    */
-  if((pstream != NULL) || ((__idtabsiz + 1) < __idtabsiz) || ((__idtabsiz + 1) >= (SIZE_MAX / sizeof(IDpair))) || ((newptr = (IDpair*)_recalloc_crt((void*)__idpairs, (__idtabsiz + 1), sizeof(IDpair))) == NULL))
+  if((pstream != NULL) || ((__idtabsiz + 1) < __idtabsiz) ||
+     ((__idtabsiz + 1) >= (SIZE_MAX / sizeof(IDpair))) ||
+     ((newptr = (IDpair*)_recalloc_crt((void*)__idpairs,
+                                       (__idtabsiz + 1),
+                                       sizeof(IDpair))) == NULL))
     /* either pstream was non-NULL or the attempt to create/expand
      * the table failed. in either case, return a NULL to indicate
      * failure.

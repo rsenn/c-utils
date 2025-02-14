@@ -116,7 +116,8 @@ input_process_path(const char* y, stralloc* out) {
 }
 
 int
-input_process_command(stralloc* cmd, int argc, char* argv[], const char* file, size_t line) {
+input_process_command(
+    stralloc* cmd, int argc, char* argv[], const char* file, size_t line) {
   size_t n, len;
   bool do_rule;
   int i, compile = 0, link = 0, lib = 0, objects = 0;
@@ -126,7 +127,11 @@ input_process_command(stralloc* cmd, int argc, char* argv[], const char* file, s
   strlist args, files, flags, libs;
   stralloc reldir = {0, 0, 0};
 
-  path_relative_to_b(dirs.out.sa.s, dirs.out.sa.len, dirs.build.sa.s, dirs.build.sa.len, &reldir);
+  path_relative_to_b(dirs.out.sa.s,
+                     dirs.out.sa.len,
+                     dirs.build.sa.s,
+                     dirs.build.sa.len,
+                     &reldir);
 
   stralloc_init(&output);
   stralloc_init(&dir);
@@ -350,7 +355,8 @@ input_process_command(stralloc* cmd, int argc, char* argv[], const char* file, s
   for(p = argv; (len = *p ? str_len(*p) : 0, x = *p); p++) {
     len = str_len(x);
 
-    if(byte_finds(x, len, exts.obj) < len || byte_finds(x, len, exts.lib) < len) {
+    if(byte_finds(x, len, exts.obj) < len ||
+       byte_finds(x, len, exts.lib) < len) {
       objects++;
 
       if(!compile && !lib) {
@@ -365,9 +371,12 @@ input_process_command(stralloc* cmd, int argc, char* argv[], const char* file, s
   if(output.len == 0) {
     stralloc sa;
     stralloc_init(&sa);
-    // path_normalize_b(files.sa.s, byte_chr(files.sa.s, files.sa.len, files.sep), &sa);
+    // path_normalize_b(files.sa.s, byte_chr(files.sa.s, files.sa.len,
+    // files.sep), &sa);
 
-    stralloc_copyb(&sa, files.sa.s, byte_chr(files.sa.s, files.sa.len, files.sep));
+    stralloc_copyb(&sa,
+                   files.sa.s,
+                   byte_chr(files.sa.s, files.sa.len, files.sep));
     stralloc_nul(&sa);
 
     if(compile)
@@ -377,7 +386,8 @@ input_process_command(stralloc* cmd, int argc, char* argv[], const char* file, s
   }
 
   if(!output.len) {
-    if((n = strlist_count_pred(&files, &is_source_b)) < strlist_count(&files)) {
+    if((n = strlist_count_pred(&files, &is_source_b)) <
+       strlist_count(&files)) {
       stralloc sa;
 
       stralloc_init(&sa);
@@ -457,7 +467,11 @@ input_process_command(stralloc* cmd, int argc, char* argv[], const char* file, s
 
 #ifdef DEBUG_OUTPUT
     buffer_puts(buffer_2, "Create ");
-    buffer_puts(buffer_2, lib ? "lib" : link ? "link" : compile ? "compile" : "other");
+    buffer_puts(buffer_2,
+                lib       ? "lib"
+                : link    ? "link"
+                : compile ? "compile"
+                          : "other");
     buffer_puts(buffer_2, " RULE\n\toutput = ");
     buffer_putsa(buffer_2, &output);
 
@@ -557,7 +571,10 @@ input_process_command(stralloc* cmd, int argc, char* argv[], const char* file, s
 }
 
 int
-input_process_line(const char* x, size_t n, const char* file, size_t line) {
+input_process_line(const char* x,
+                   size_t n,
+                   const char* file,
+                   size_t line) {
   size_t idx = 0;
   int ret = 0;
   char** av;
@@ -719,7 +736,8 @@ input_process_rules(target* all, char psa) {
       strlist cmds;
 
       strlist_init(&cmds, '\0');
-      strlist_fromq(&cmds, rule->recipe.s, rule->recipe.len, " \t\r\n", "\"'`");
+      strlist_fromq(
+          &cmds, rule->recipe.s, rule->recipe.len, " \t\r\n", "\"'`");
 
       if(strlist_count(&args) == 0)
         strlist_copy(&args, &cmds);
@@ -738,7 +756,9 @@ input_process_rules(target* all, char psa) {
       if(strlist_count(&builddir) == 0)
         strlist_copy(&builddir, &path);
       else
-        strlist_intersection(&builddir, &path, compile ? &builddir : &outdir);
+        strlist_intersection(&builddir,
+                             &path,
+                             compile ? &builddir : &outdir);
 
       strlist_free(&path);
     }
@@ -747,7 +767,13 @@ input_process_rules(target* all, char psa) {
       path_dirname(rule->name, &outdir.sa);
 
 #ifdef DEBUG_OUTPUT_
-    buffer_putm_internal(buffer_2, "Rule: ", name, link ? " (link)" : compile ? " (compile)" : 0, NULL);
+    buffer_putm_internal(buffer_2,
+                         "Rule: ",
+                         name,
+                         link      ? " (link)"
+                         : compile ? " (compile)"
+                                   : 0,
+                         NULL);
     buffer_putnlflush(buffer_2);
 #endif
   }
@@ -781,7 +807,9 @@ input_process_rules(target* all, char psa) {
   {
     size_t count;
     ssize_t found;
-    var_t *cflags = var_list("CFLAGS", psa), *cc = var_list("CC", psa), *defs = var_list("DEFS", psa), *common = var_list("COMMON_FLAGS", psa);
+    var_t *cflags = var_list("CFLAGS", psa), *cc = var_list("CC", psa),
+          *defs = var_list("DEFS", psa),
+          *common = var_list("COMMON_FLAGS", psa);
 
     stralloc_zero(&defs->value.sa);
 
@@ -819,7 +847,10 @@ input_process_rules(target* all, char psa) {
     strlist_filter(&cflags->value, &defs->value, &cflags->value, "-D*");
 
     common->value.sep = '\0';
-    strlist_filter(&cflags->value, &common->value, &cflags->value, "--*format=*");
+    strlist_filter(&cflags->value,
+                   &common->value,
+                   &cflags->value,
+                   "--*format=*");
 
     if(common->value.sa.len)
       strlist_push(&cflags->value, "$(COMMON_FLAGS)");
@@ -837,7 +868,8 @@ input_process_rules(target* all, char psa) {
       strlist_foreach(&compiler, s, n) {
         if(is_version_b(s, n)) {
           var_setb("VER", s, n);
-          stralloc_replace(&cc->value.sa, s - compiler.sa.s + 1, n, "$(VER)", 6);
+          stralloc_replace(
+              &cc->value.sa, s - compiler.sa.s + 1, n, "$(VER)", 6);
           break;
         }
       }
@@ -896,7 +928,8 @@ input_process_rules(target* all, char psa) {
 
       stralloc_prepends(&cmd, "$(CC) $(CFLAGS) ");
 
-      if(cmd.len && cmd.s[cmd.len - 1] != ' ' && cmd.s[cmd.len - 1] != PATHSEP_C)
+      if(cmd.len && cmd.s[cmd.len - 1] != ' ' &&
+         cmd.s[cmd.len - 1] != PATHSEP_C)
         stralloc_catc(&cmd, ' ');
 
       stralloc_cats(&cmd, set_size(&rule->prereq) > 1 ? "$^" : "$<");
@@ -916,7 +949,14 @@ input_process_rules(target* all, char psa) {
     }
 
 #ifdef DEBUG_OUTPUT_
-    buffer_putm_internal(buffer_2, "Rule: ", name, compile ? " (compile)" : link ? " (link)" : "", "\n\t", NULL);
+    buffer_putm_internal(buffer_2,
+                         "Rule: ",
+                         name,
+                         compile ? " (compile)"
+                         : link  ? " (link)"
+                                 : "",
+                         "\n\t",
+                         NULL);
     buffer_putsa(buffer_2, &rule->recipe);
     buffer_putnlflush(buffer_2);
 #endif

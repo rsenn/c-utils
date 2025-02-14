@@ -1,7 +1,8 @@
 #define __wasm_basics___struct_timespec_h 1
 #include "../windoze.h"
 
-#if !defined(_DIRENT_HAVE_D_TYPE) && (defined(__MSYS__) || defined(__CYGWIN__))
+#if !defined(_DIRENT_HAVE_D_TYPE) && \
+    (defined(__MSYS__) || defined(__CYGWIN__))
 #include "../buffer.h"
 #include "../stralloc.h"
 
@@ -9,7 +10,8 @@
 #endif
 
 #define __wasilibc_unmodified_upstream 1
-#if USE_READDIR || defined(__wasi__) || !(defined(_WIN32) || defined(_WIN32) || defined(__MSYS__))
+#if USE_READDIR || defined(__wasi__) || \
+    !(defined(_WIN32) || defined(_WIN32) || defined(__MSYS__))
 #include <dirent.h>
 #endif
 
@@ -21,8 +23,10 @@
 int
 dir_type(struct dir_s* d) {
   int r = 0;
-#if !USE_READDIR && (defined(_WIN32) || defined(_WIN32) || defined(__MSYS__))
-  if(dir_INTERNAL(d)->dir_finddata.dwFileAttributes & FILE_ATTRIBUTE_REPARSE_POINT)
+#if !USE_READDIR && \
+    (defined(_WIN32) || defined(_WIN32) || defined(__MSYS__))
+  if(dir_INTERNAL(d)->dir_finddata.dwFileAttributes &
+     FILE_ATTRIBUTE_REPARSE_POINT)
     r |= D_SYMLINK;
   else if(dir_INTERNAL(d)->dir_finddata.dwFileAttributes & 0x10)
     r |= D_DIRECTORY;
@@ -41,7 +45,8 @@ dir_type(struct dir_s* d) {
 #define DT_LNK 10
 #endif
 
-#if defined(_DIRENT_HAVE_D_TYPE) || (!defined(__MSYS__) && !defined(__CYGWIN__))
+#if defined(_DIRENT_HAVE_D_TYPE) || \
+    (!defined(__MSYS__) && !defined(__CYGWIN__))
   switch((dir_TYPE(d))) {
     case DT_DIR: r |= D_DIRECTORY; break;
     case DT_REG: r |= D_FILE; break;

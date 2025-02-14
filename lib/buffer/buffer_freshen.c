@@ -25,7 +25,8 @@ buffer_freshen(buffer* b) {
 
   if(b->n < b->a) {
     ssize_t w;
-    if((w = buffer_stubborn_read(b->op, b->fd, &b->x[b->n], b->a - b->n, b)) > 0)
+    if((w = buffer_stubborn_read(
+            b->op, b->fd, &b->x[b->n], b->a - b->n, b)) > 0)
       b->n += w;
     if(w == -1)
       return -1;

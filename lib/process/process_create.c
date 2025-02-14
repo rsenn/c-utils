@@ -34,10 +34,12 @@ last_error_str() {
   if(errCode == 0)
     return tmpbuf;
   SetLastError(0);
-  if(!FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
+  if(!FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER |
+                        FORMAT_MESSAGE_FROM_SYSTEM,
                     NULL,
                     errCode,
-                    MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), /* default language */
+                    MAKELANGID(LANG_NEUTRAL,
+                               SUBLANG_DEFAULT), /* default language */
                     (LPTSTR)&err,
                     0,
                     NULL))
@@ -55,7 +57,10 @@ last_error_str() {
 #endif
 
 int
-process_create(const char* filename, char* const argv[], fd_type std[3], const char* cwd) {
+process_create(const char* filename,
+               char* const argv[],
+               fd_type std[3],
+               const char* cwd) {
   fd_type fds[3];
   int32 pid;
   int status = 0;
@@ -82,7 +87,8 @@ process_create(const char* filename, char* const argv[], fd_type std[3], const c
       posix_spawn_file_actions_adddup2(&actions, std[2], 2);
     }
 
-    if(posix_spawnp(&pid, filename, std ? &actions : 0, &attr, argv, NULL)) {
+    if(posix_spawnp(
+           &pid, filename, std ? &actions : 0, &attr, argv, NULL)) {
       errmsg_warnsys("execvpe error: ", 0);
       exit(1);
     }
@@ -124,7 +130,8 @@ process_create(const char* filename, char* const argv[], fd_type std[3], const c
 
     saAttr.nLength = sizeof(SECURITY_ATTRIBUTES);
     saAttr.bInheritHandle = TRUE;
-    /* TODO: should we set explicit security attributes? (#2046, comment 5) */
+    /* TODO: should we set explicit security attributes? (#2046, comment 5)
+     */
     saAttr.lpSecurityDescriptor = NULL;
 
     /* Assume failure to start process */
@@ -141,18 +148,19 @@ process_create(const char* filename, char* const argv[], fd_type std[3], const c
 
     /* Create the child process */
 
-    retval = CreateProcessA(filename,
-                            joined_argv.s,
-                            &saAttr, // process security attributes
-                            NULL,    // primary thread security attributes
-                            TRUE,    // handles are inherited
-                            /*(TODO: set CREATE_NEW CONSOLE/PROCESS_GROUP to
-                               make GetExitCodeProcess() work?) */
-                            CREATE_NO_WINDOW, // creation flags
-                            NULL,
-                            cwd,             // use parent's current directory
-                            &siStartInfo,    // STARTUPINFO pointer
-                            &piProcessInfo); // receives PROCESS_INFORMATION
+    retval =
+        CreateProcessA(filename,
+                       joined_argv.s,
+                       &saAttr, // process security attributes
+                       NULL,    // primary thread security attributes
+                       TRUE,    // handles are inherited
+                       /*(TODO: set CREATE_NEW CONSOLE/PROCESS_GROUP to
+                          make GetExitCodeProcess() work?) */
+                       CREATE_NO_WINDOW, // creation flags
+                       NULL,
+                       cwd,             // use parent's current directory
+                       &siStartInfo,    // STARTUPINFO pointer
+                       &piProcessInfo); // receives PROCESS_INFORMATION
 
     if(retval == FALSE) {
       int error = GetLastError();

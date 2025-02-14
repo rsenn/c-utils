@@ -113,14 +113,19 @@ int io_timedout(fd_type d);
 enum io_fd_flags {
   IO_FD_CANWRITE = 1, /* new TCP connection, we know it's writable */
   IO_FD_BLOCK = 2,    /* skip the fcntl, assume fd is set to blocking */
-  IO_FD_NONBLOCK = 4, /* skip the fcntl, assume fd is set to non-blocking */
+  IO_FD_NONBLOCK =
+      4, /* skip the fcntl, assume fd is set to non-blocking */
 };
 #endif
 
 /* put d on internal data structure, return 1 on success, 0 on error */
-int io_fd(fd_type d);                  /* use this for sockets before you called connect() or accept() */
-int io_fd_canwrite(fd_type d);         /* use this for connected sockets (assumes socket is writable) */
-int io_fd_flags(fd_type d, int flags); /* can be used to tell io_fd to skip one syscall */
+int io_fd(fd_type d); /* use this for sockets before you called connect()
+                         or accept() */
+int io_fd_canwrite(fd_type d); /* use this for connected sockets (assumes
+                                  socket is writable) */
+int
+io_fd_flags(fd_type d,
+            int flags); /* can be used to tell io_fd to skip one syscall */
 
 void io_setcookie(fd_type d, void* cookie);
 void* io_getcookie(fd_type d);
@@ -165,7 +170,11 @@ int io_queueforwrite(fd_type d);
 typedef int64 (*io_write_callback)(fd_type sfd, const void* buf, uint64 n);
 
 /* used internally, but hey, who knows */
-int64 io_mmapwritefile(fd_type out, fd_type in, uint64 off, uint64 bytes, io_write_callback writecb);
+int64 io_mmapwritefile(fd_type out,
+                       fd_type in,
+                       uint64 off,
+                       uint64 bytes,
+                       io_write_callback writecb);
 
 /* only needed for debugging, will print some stats into the buffer to
  * aid in debugging the state machine if a descriptor loops or so */

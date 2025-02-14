@@ -8,7 +8,7 @@ wcs_to_u8sa(stralloc* sa, const wchar_t* in) {
   const size_t len = wcs_u8slen(in);
 
   if(NULL == sa)
-    return (size_t)len;
+    return len;
 
   while((w = *in++)) {
     const size_t ulen = wc_u8len(w);
@@ -23,5 +23,5 @@ wcs_to_u8sa(stralloc* sa, const wchar_t* in) {
     }
   }
 
-  return (size_t)clen;
+  return clen;
 }

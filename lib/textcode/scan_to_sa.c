@@ -3,7 +3,9 @@
 #include "../textcode.h"
 
 size_t
-scan_to_sa(size_t (*func)(const char*, char*, size_t*), const char* src, stralloc* sa) {
+scan_to_sa(size_t (*func)(const char*, char*, size_t*),
+           const char* src,
+           stralloc* sa) {
   size_t written;
   size_t r;
   if(!stralloc_readyplus(sa, str_len(src)))

@@ -65,18 +65,22 @@ http_read_header(http* h, stralloc* sa, http_response* r) {
       }
     }
 
-    if(sa->len - start >= 23 && !case_diffb(x, 23, "Content-Type: multipart")) {
+    if(sa->len - start >= 23 &&
+       !case_diffb(x, 23, "Content-Type: multipart")) {
       size_t p = str_find(x, "boundary=");
       if(x[p]) {
         stralloc_copys(&r->boundary, &x[p + str_len("boundary=")]);
       }
       r->transfer = HTTP_TRANSFER_BOUNDARY;
       r->ptr = 0;
-    } else if(sa->len - start >= 15 && !case_diffb(x, 15, "Content-Length:")) {
+    } else if(sa->len - start >= 15 &&
+              !case_diffb(x, 15, "Content-Length:")) {
       scan_ulonglong(&x[16], &r->content_length);
       r->transfer = HTTP_TRANSFER_LENGTH;
       r->ptr = 0;
-    } else if(sa->len - start >= 18 && case_diffb(x, 18, "Transfer-Encoding:") && str_contains(x, "chunked")) {
+    } else if(sa->len - start >= 18 &&
+              case_diffb(x, 18, "Transfer-Encoding:") &&
+              str_contains(x, "chunked")) {
       r->ptr = 0;
       r->chunk_length = 0;
       r->content_length = 0;
@@ -109,7 +113,15 @@ http_read_header(http* h, stralloc* sa, http_response* r) {
     buffer_putlong(buffer_2, r->content_length);
   }
   buffer_puts(buffer_2, " status=");
-  buffer_puts(buffer_2, ((const char* const[]){"-1", "HTTP_RECV_HEADER", "HTTP_RECV_DATA", "HTTP_STATUS_CLOSED", "HTTP_STATUS_ERROR", "HTTP_STATUS_BUSY", "HTTP_STATUS_FINISH", 0})[r->status + 1]);
+  buffer_puts(buffer_2,
+              ((const char* const[]){"-1",
+                                     "HTTP_RECV_HEADER",
+                                     "HTTP_RECV_DATA",
+                                     "HTTP_STATUS_CLOSED",
+                                     "HTTP_STATUS_ERROR",
+                                     "HTTP_STATUS_BUSY",
+                                     "HTTP_STATUS_FINISH",
+                                     0})[r->status + 1]);
   buffer_putnlflush(buffer_2);
 #endif
   return ret > 0 && bytesread > 0 ? bytesread : ret;

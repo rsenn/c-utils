@@ -17,7 +17,11 @@ var_t* var_set(const char*, const char* value);
 void var_unset(const char*);
 void var_push(const char*, const char* value);
 void var_push_sa(const char*, stralloc* value);
-void var_subst(const stralloc*, stralloc* out, const char* pfx, const char* sfx, int tolower);
+void var_subst(const stralloc*,
+               stralloc* out,
+               const char* pfx,
+               const char* sfx,
+               int tolower);
 void push_lib(const char*, const char* lib);
 void push_linkdir(const char*, const char* dir);
 void with_lib(const char*);

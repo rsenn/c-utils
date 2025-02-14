@@ -57,7 +57,13 @@ pathlist_lookup(const char* bin, stralloc* out) {
       stralloc_nul(&name);
 
 #ifdef DEBUG_OUTPUT
-      buffer_putm_internal(buffer_2, "path_find(\"", dir, "\", \"", name.s, "\", out);", NULL);
+      buffer_putm_internal(buffer_2,
+                           "path_find(\"",
+                           dir,
+                           "\", \"",
+                           name.s,
+                           "\", out);",
+                           NULL);
       buffer_putnlflush(buffer_2);
 #endif
 

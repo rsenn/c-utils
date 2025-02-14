@@ -56,14 +56,16 @@ init(char ip[256]) {
 #if WINDOWS
   FIXED_INFO* pFixedInfo;
   ULONG ulOutBufLen;
-  typedef DWORD(WINAPI get_network_params_fn)(PFIXED_INFO pFixedInfo, PULONG pOutBufLen);
+  typedef DWORD(WINAPI get_network_params_fn)(PFIXED_INFO pFixedInfo,
+                                              PULONG pOutBufLen);
   static get_network_params_fn* get_network_params;
 
   if(get_network_params == 0) {
     HANDLE iphlpapi = LoadLibraryA("iphlpapi.dll");
 
     if(iphlpapi != INVALID_HANDLE_VALUE) {
-      if((get_network_params = (get_network_params_fn*)GetProcAddress(iphlpapi, "GetNetworkParams")) == 0)
+      if((get_network_params = (get_network_params_fn*)
+              GetProcAddress(iphlpapi, "GetNetworkParams")) == 0)
         return -1;
     }
   }
@@ -76,13 +78,14 @@ init(char ip[256]) {
 #define MALLOC(x) HeapAlloc(GetProcessHeap(), 0, (x))
 #define FREE(x) HeapFree(GetProcessHeap(), 0, (x))
   if(!x) {
-    /* Make an initial call to GetAdaptersInfo to get the necessary size into
-     * the ulOutBufLen variable */
+    /* Make an initial call to GetAdaptersInfo to get the necessary size
+     * into the ulOutBufLen variable */
 
     pFixedInfo = (FIXED_INFO*)MALLOC(sizeof(FIXED_INFO));
     if(pFixedInfo) {
       ulOutBufLen = sizeof(FIXED_INFO);
-      if((*get_network_params)(pFixedInfo, &ulOutBufLen) == ERROR_BUFFER_OVERFLOW) {
+      if((*get_network_params)(pFixedInfo, &ulOutBufLen) ==
+         ERROR_BUFFER_OVERFLOW) {
         FREE(pFixedInfo);
         pFixedInfo = (FIXED_INFO*)MALLOC(ulOutBufLen);
       }

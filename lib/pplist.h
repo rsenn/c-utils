@@ -18,9 +18,11 @@ typedef const char* LIST_ITER_T;
 #define LIST_SEARCH(list, value) strlist_index_of(&(list), (value))
 
 #define LIST_DATA(list, iter) ((char*)(iter))
-#define LIST_DATA_LEN(list, iter) byte_chr((iter), strlist_end((list)) - (iter), (list)->sep)
+#define LIST_DATA_LEN(list, iter) \
+  byte_chr((iter), strlist_end((list)) - (iter), (list)->sep)
 
-#define LIST_SET(list, index, value) LIST_INSERT(list, (key), str_len(key) + 1, (value), str_len(value) + 1)
+#define LIST_SET(list, index, value) \
+  LIST_INSERT(list, (key), str_len(key) + 1, (value), str_len(value) + 1)
 #define LIST_VISIT_ALL(list, fn, arg) \
   { \
     LIST_PAIR_T t; \

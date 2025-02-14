@@ -12,7 +12,12 @@
 #include "list.h"
 #include "buffer.h"
 
-enum ihex_type_e { IHEX_DATA = 0, IHEX_EOF = 1, IHEX_EXTSEGADDR = 2, IHEX_EXTLINADDR = 4 };
+enum ihex_type_e {
+  IHEX_DATA = 0,
+  IHEX_EOF = 1,
+  IHEX_EXTSEGADDR = 2,
+  IHEX_EXTLINADDR = 4
+};
 
 typedef union ihex_addr_u {
   uint32 off32;
@@ -68,7 +73,8 @@ int ihex_write(ihex_file*, buffer* b);
 
 static inline const char*
 ihex_typestr(enum ihex_type_e type) {
-  static const char* const types[] = {"DATA", "EOF", "EXTSEGADDR", 0, "EXTLINADDR"};
+  static const char* const types[] = {
+      "DATA", "EOF", "EXTSEGADDR", 0, "EXTLINADDR"};
   return types[type];
 }
 

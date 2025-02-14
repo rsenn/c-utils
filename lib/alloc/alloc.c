@@ -14,7 +14,8 @@ typedef union {
 
 static aligned realspace[SPACE / ALIGNMENT];
 #define space ((char*)realspace)
-static unsigned int avail = SPACE; /* multiple of ALIGNMENT; 0<=avail<=SPACE */
+static unsigned int avail =
+    SPACE; /* multiple of ALIGNMENT; 0<=avail<=SPACE */
 
 void*
 alloc(size_t n) {

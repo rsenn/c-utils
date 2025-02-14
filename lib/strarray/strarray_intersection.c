@@ -2,7 +2,9 @@
 #include "../str.h"
 
 void
-strarray_intersection(const strarray* s1, const strarray* s2, strarray* out) {
+strarray_intersection(const strarray* s1,
+                      const strarray* s2,
+                      strarray* out) {
   char **a = strarray_BEGIN(s1), **b = strarray_BEGIN(s2);
   size_t alen = strarray_size(s1), blen = strarray_size(s2);
   size_t i = 0, j = 0;

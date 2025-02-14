@@ -46,7 +46,10 @@ strarray_size(const strarray* l) {
 
 #define strarray_AT(l, pos) (((char**)((l)->p))[(pos)])
 
-#define strarray_foreach(a, ptr) for((ptr) = (char**)strarray_BEGIN(a); ((char**)(ptr)) != strarray_END(a) && *(char**)(ptr); ++ptr)
+#define strarray_foreach(a, ptr) \
+  for((ptr) = (char**)strarray_BEGIN(a); \
+      ((char**)(ptr)) != strarray_END(a) && *(char**)(ptr); \
+      ++ptr)
 
 char** strarray_to_argv(strarray*);
 int strarray_from_argv(int argc, const char* const argv[], strarray* arr);
@@ -89,20 +92,25 @@ int strarray_removesuffixs(strarray* arr, const char* s);
 
 int strarray_joins(const strarray* arr, stralloc* sa, const char* sep);
 
-int strarray_transform(strarray* in, strarray* out, char* (*pred)(const char*));
+int strarray_transform(strarray* in,
+                       strarray* out,
+                       char* (*pred)(const char*));
 int strarray_each(strarray* arr, void (*pred)(char**));
 
 int strarray_glob(strarray* arr, const char* pattern);
 int strarray_glob_b(strarray* arr, const char* x, size_t len);
 
-int64 strarray_splice(strarray*, uint64 start, uint64 del, uint64 insert, const char** x);
+int64 strarray_splice(
+    strarray*, uint64 start, uint64 del, uint64 insert, const char** x);
 void strarray_free(strarray*);
 
 int strarray_push_unique(strarray* arr, const char* s);
 
 int strarray_pushb_unique(strarray* arr, const char* b, size_t n);
 
-void strarray_intersection(const strarray* s1, const strarray* s2, strarray* out);
+void strarray_intersection(const strarray* s1,
+                           const strarray* s2,
+                           strarray* out);
 void strarray_union(const strarray* s1, const strarray* s2, strarray* out);
 
 #ifdef BUFFER_H

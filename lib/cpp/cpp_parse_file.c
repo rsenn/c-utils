@@ -4,7 +4,8 @@ int
 cpp_parse_file(cpp* pp, buffer* f, const char* fn, buffer* out) {
   tokenizer t;
   token tok;
-  int ret, newline = 1, ws_count = 0, if_level = 0, if_level_active = 0, if_level_satisfied = 0;
+  int ret, newline = 1, ws_count = 0, if_level = 0, if_level_active = 0,
+           if_level_satisfied = 0;
   static const char* directives[] = {
       "include",
       "error",
@@ -68,7 +69,8 @@ cpp_parse_file(cpp* pp, buffer* f, const char* fn, buffer* out) {
         return 0;
       }
 
-      if((index = cpp_parse_expect(&t, TT_IDENTIFIER, directives, &tok)) == -1) {
+      if((index = cpp_parse_expect(&t, TT_IDENTIFIER, directives, &tok)) ==
+         -1) {
         if(skip_conditional_block)
           continue;
 
@@ -236,7 +238,8 @@ cpp_parse_file(cpp* pp, buffer* f, const char* fn, buffer* out) {
     }
 
 #if DEBUG_CPP_TOKEN
-    buffer_putm_internal(buffer_2, "token (", fn ? fn : "stdin", ":", NULL);
+    buffer_putm_internal(
+        buffer_2, "token (", fn ? fn : "stdin", ":", NULL);
     buffer_putulong(buffer_2, tok.line);
     buffer_putc(buffer_2, ':');
     buffer_putulong(buffer_2, tok.column);
@@ -251,7 +254,8 @@ cpp_parse_file(cpp* pp, buffer* f, const char* fn, buffer* out) {
       buffer_putxlong(buffer_2, sep);
 
     } else {
-      buffer_putm_internal(buffer_2, tokentype_to_str(tok.type), ": ", t.buf, NULL);
+      buffer_putm_internal(
+          buffer_2, tokentype_to_str(tok.type), ": ", t.buf, NULL);
     }
 
     buffer_putnlflush(buffer_2);

@@ -40,7 +40,8 @@ wsa_socketpair(int af, int type, int proto, fd_type sock[2]) {
   if(bind(listen_sock, (SOCKADDR*)&addr1, addr1_len) == SOCKET_ERROR)
     goto error;
 
-  if(getsockname(listen_sock, (SOCKADDR*)&addr1, &addr1_len) == SOCKET_ERROR)
+  if(getsockname(listen_sock, (SOCKADDR*)&addr1, &addr1_len) ==
+     SOCKET_ERROR)
     goto error;
 
   if(listen(listen_sock, 1))
@@ -61,7 +62,9 @@ wsa_socketpair(int af, int type, int proto, fd_type sock[2]) {
   if(getsockname(sock[1], (SOCKADDR*)&addr2, &addr2_len) == SOCKET_ERROR)
     goto error;
 
-  if(addr1_len != addr2_len || addr1.sin_addr.s_addr != addr2.sin_addr.s_addr || addr1.sin_port != addr2.sin_port)
+  if(addr1_len != addr2_len ||
+     addr1.sin_addr.s_addr != addr2.sin_addr.s_addr ||
+     addr1.sin_port != addr2.sin_port)
     goto error;
 
   closesocket(listen_sock);
@@ -88,9 +91,9 @@ error:
 /*
  * Create a sync-async socketpair using the protocol specified,
  * returning a synchronous socket and an asynchronous socket.
- * Upon completion asyncSocket is opened with the WSA_FLAG_OVERLAPPED flag set,
- * syncSocket won't have it set.
- * Currently supports TCP/IPv4 socket pairs only
+ * Upon completion asyncSocket is opened with the WSA_FLAG_OVERLAPPED flag
+ * set, syncSocket won't have it set. Currently supports TCP/IPv4 socket
+ * pairs only
  */
 /*int
 wsa_sync_async_socketpair(int af, int type, int proto, SOCKET* syncSocket,
@@ -116,8 +119,8 @@ proto == IPPROTO_TCP));
   if(bind(listen_sock, (SOCKADDR*)&addr1, addr1_len) == SOCKET_ERROR)
     goto error;
 
-  if(getsockname(listen_sock, (SOCKADDR*)&addr1, &addr1_len) == SOCKET_ERROR)
-    goto error;
+  if(getsockname(listen_sock, (SOCKADDR*)&addr1, &addr1_len) ==
+SOCKET_ERROR) goto error;
 
   if(listen(listen_sock, 1))
     goto error;
@@ -137,8 +140,8 @@ proto == IPPROTO_TCP));
   if(getsockname(sock2, (SOCKADDR*)&addr2, &addr2_len) == SOCKET_ERROR)
     goto error;
 
-  if(addr1_len != addr2_len || addr1.sin_addr.s_addr != addr2.sin_addr.s_addr ||
-addr1.sin_port != addr2.sin_port) goto error;
+  if(addr1_len != addr2_len || addr1.sin_addr.s_addr !=
+addr2.sin_addr.s_addr || addr1.sin_port != addr2.sin_port) goto error;
 
   closesocket(listen_sock);
 

@@ -38,7 +38,8 @@ make_fileno(stralloc* sa, int i) {
 
 static void
 set_str(MAP_T map, const char* key, const char* value) {
-  MAP_SET(map, (char*)key, str_len(key) + 1, (char*)value, str_len(value) + 1);
+  MAP_SET(
+      map, (char*)key, str_len(key) + 1, (char*)value, str_len(value) + 1);
 }
 
 static void
@@ -53,11 +54,14 @@ set_int(MAP_T map, const char* key, int value) {
 
 static int
 get_suite() {
-  if(!case_diffs(tools.compiler, "xc8") || str_start(tools.compiler, "xc8"))
+  if(!case_diffs(tools.compiler, "xc8") ||
+     str_start(tools.compiler, "xc8"))
     return 0;
-  if(!case_diffs(tools.compiler, "htc") || str_start(tools.compiler, "htc"))
+  if(!case_diffs(tools.compiler, "htc") ||
+     str_start(tools.compiler, "htc"))
     return 1;
-  if(!case_diffs(tools.compiler, "sdcc") || str_start(tools.compiler, "sdcc"))
+  if(!case_diffs(tools.compiler, "sdcc") ||
+     str_start(tools.compiler, "sdcc"))
     return 2;
   return 0;
 }
@@ -87,14 +91,16 @@ make_tool_key(stralloc* sa, const char* key) {
   int suite = get_suite();
 
   stralloc_zero(sa);
-  stralloc_catm_internal(sa, "TS{", compiler_settings[suite], "}", key, NULL);
+  stralloc_catm_internal(
+      sa, "TS{", compiler_settings[suite], "}", key, NULL);
   stralloc_nul(sa);
   return sa->s;
 }
 
 static inline int
 is_debug() {
-  return cfg.build_type == BUILD_TYPE_RELWITHDEBINFO || cfg.build_type == BUILD_TYPE_DEBUG;
+  return cfg.build_type == BUILD_TYPE_RELWITHDEBINFO ||
+         cfg.build_type == BUILD_TYPE_DEBUG;
 }
 static inline int
 opt_size() {
@@ -102,13 +108,17 @@ opt_size() {
 }
 static inline int
 opt_speed() {
-  return cfg.build_type == BUILD_TYPE_RELWITHDEBINFO || cfg.build_type == BUILD_TYPE_RELEASE;
+  return cfg.build_type == BUILD_TYPE_RELWITHDEBINFO ||
+         cfg.build_type == BUILD_TYPE_RELEASE;
 }
 
 static void set_debug(MAP_T map);
 
 void
-output_mplab_project(buffer* b, MAP_T* _rules, MAP_T* vars, const strlist* include_dirs) {
+output_mplab_project(buffer* b,
+                     MAP_T* _rules,
+                     MAP_T* vars,
+                     const strlist* include_dirs) {
   MAP_PAIR_T it;
   MAP_T toolcfg;
   strlist incdirs, srcdirs;
@@ -142,7 +152,9 @@ output_mplab_project(buffer* b, MAP_T* _rules, MAP_T* vars, const strlist* inclu
                               /* .size_of_double = */ 1,
                               /* .size_of_float = */ 1};
 
-  ini_section_t *ini, *section, *cat_subfolders, *file_subfolders, *generated_files, *other_files /*, *file_info*/, *active_file_settings, *tool_settings;
+  ini_section_t *ini, *section, *cat_subfolders, *file_subfolders,
+      *generated_files, *other_files /*, *file_info*/,
+      *active_file_settings, *tool_settings;
 
   mplab_cfg.warning_level = (is_debug() ? 3 : -3);
   mplab_cfg.verbose_messages = 1;
@@ -154,7 +166,9 @@ output_mplab_project(buffer* b, MAP_T* _rules, MAP_T* vars, const strlist* inclu
   stralloc_init(&file);
 
   section = ini_new(&ini, "HEADER");
-  ini_set(section, "magic_cookie", "{66E99B07-E706-4689-9E80-9B2582898A13}");
+  ini_set(section,
+          "magic_cookie",
+          "{66E99B07-E706-4689-9E80-9B2582898A13}");
   ini_set(section, "file_version", "1.0");
 
   stralloc_copys(&sa, "PIC");
@@ -201,7 +215,9 @@ output_mplab_project(buffer* b, MAP_T* _rules, MAP_T* vars, const strlist* inclu
   stralloc_nul(&incdirs.sa);
 
   section = ini_new(&section->next, "PATH_INFO");
-  ini_set(section, "BuildDirPolicy", 1 ? "BuildDirIsProjectDir" : "BuildDirIsSourceDir");
+  ini_set(section,
+          "BuildDirPolicy",
+          1 ? "BuildDirIsProjectDir" : "BuildDirIsSourceDir");
   ini_set(section, "dir_src", "");
 
   stralloc_zero(&sa);
@@ -310,7 +326,10 @@ output_mplab_project(buffer* b, MAP_T* _rules, MAP_T* vars, const strlist* inclu
             stralloc_init(&subdir);
             stralloc_copy(&subdir, &file);
 
-            subdir.len = byte_rchrs(subdir.s, subdir.len, PATHSEP_S_MIXED, sizeof(PATHSEP_S_MIXED) - 1);
+            subdir.len = byte_rchrs(subdir.s,
+                                    subdir.len,
+                                    PATHSEP_S_MIXED,
+                                    sizeof(PATHSEP_S_MIXED) - 1);
             stralloc_nul(&subdir);
 
             // debug_sa("subdir", &subdir);
@@ -336,7 +355,8 @@ output_mplab_project(buffer* b, MAP_T* _rules, MAP_T* vars, const strlist* inclu
   /*hmap_foreach(rules, it) {
     target* t = (target*)it->vals.val_chars;
 
-    if(!is_object(t->name) || stralloc_end(&t->prereq.sa, exts.pps)) continue;
+    if(!is_object(t->name) || stralloc_end(&t->prereq.sa, exts.pps))
+  continue;
 
     //debug_target(t);
 
@@ -388,9 +408,11 @@ output_mplab_project(buffer* b, MAP_T* _rules, MAP_T* vars, const strlist* inclu
   stralloc_nul(&defines.sa);
 
   section = tool_settings = ini_new(&section->next, "TOOL_SETTINGS");
-  section = active_file_settings = ini_new(&section->next, "ACTIVE_FILE_SETTINGS");
+  section = active_file_settings =
+      ini_new(&section->next, "ACTIVE_FILE_SETTINGS");
 
-  if(cfg.build_type == BUILD_TYPE_DEBUG || cfg.build_type == BUILD_TYPE_RELWITHDEBINFO)
+  if(cfg.build_type == BUILD_TYPE_DEBUG ||
+     cfg.build_type == BUILD_TYPE_RELWITHDEBINFO)
     set_debug(toolcfg);
 
   set_int(toolcfg, "DB", mplab_cfg.warning_level); //!< Warning
@@ -407,24 +429,43 @@ output_mplab_project(buffer* b, MAP_T* _rules, MAP_T* vars, const strlist* inclu
   set_int(toolcfg, "DE", mplab_cfg.optimize_assembler); //!< optimize
                                                         //!< assembler
   set_int(toolcfg, "C6", 255);
-  set_int(toolcfg, "D7", mplab_cfg.preprocess_assembler); //!< preprocess assembler
+  set_int(toolcfg,
+          "D7",
+          mplab_cfg.preprocess_assembler); //!< preprocess assembler
   set_int(toolcfg, "DC", 9);
 
-  set_int(toolcfg, "FE", mplab_cfg.debugger);                      //!< debugger: 39
-                                                                   //!< = PicKit3, 31
-                                                                   //!< = Auto
-  set_int(toolcfg, "EC", mplab_cfg.clear_bss);                     //!< clear
-                                                                   //!< BSS
-  set_int(toolcfg, "F0", mplab_cfg.keep_generated_startup_as);     //!< keep generated startup.as
-  set_int(toolcfg, "EF", mplab_cfg.initialize_data);               //!< initialize
-                                                                   //!< data
-  set_int(toolcfg, "F8", mplab_cfg.calibrate_oscillator);          //!< calibrate oscillator
-  set_int(toolcfg, "F9", mplab_cfg.backup_reset_condition_flags);  //!< backup reset co ndition flags
-  set_int(toolcfg, "FA", mplab_cfg.format_hex_file_for_download);  //!< format hex file for download
-  set_int(toolcfg, "C1", mplab_cfg.managed_stack);                 //!< managed
-                                                                   //!< stack
-  set_int(toolcfg, "10E", mplab_cfg.program_default_config_words); //!< program default config words
-  set_int(toolcfg, "110", mplab_cfg.link_in_peripheral_library);   //!< link in peripheral library
+  set_int(toolcfg, "FE", mplab_cfg.debugger);  //!< debugger: 39
+                                               //!< = PicKit3, 31
+                                               //!< = Auto
+  set_int(toolcfg, "EC", mplab_cfg.clear_bss); //!< clear
+                                               //!< BSS
+  set_int(
+      toolcfg,
+      "F0",
+      mplab_cfg.keep_generated_startup_as); //!< keep generated startup.as
+  set_int(toolcfg, "EF", mplab_cfg.initialize_data); //!< initialize
+                                                     //!< data
+  set_int(toolcfg,
+          "F8",
+          mplab_cfg.calibrate_oscillator); //!< calibrate oscillator
+  set_int(toolcfg,
+          "F9",
+          mplab_cfg.backup_reset_condition_flags); //!< backup reset co
+                                                   //!< ndition flags
+  set_int(toolcfg,
+          "FA",
+          mplab_cfg.format_hex_file_for_download); //!< format hex file for
+                                                   //!< download
+  set_int(toolcfg, "C1", mplab_cfg.managed_stack); //!< managed
+                                                   //!< stack
+  set_int(toolcfg,
+          "10E",
+          mplab_cfg.program_default_config_words); //!< program default
+                                                   //!< config words
+  set_int(toolcfg,
+          "110",
+          mplab_cfg
+              .link_in_peripheral_library); //!< link in peripheral library
   set_int(toolcfg, "11E", 0);
   set_int(toolcfg, "121", 0);
   set_int(toolcfg, "122", 0);

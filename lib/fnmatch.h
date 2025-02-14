@@ -1,7 +1,7 @@
 /* Copyright (C) 1991, 1992, 1993 Free Software Foundation, Inc.
 
-NOTE: The canonical source of this file is maintained with the GNU C Library.
-Bugs can be reported to bug-glibc@prep.ai.mit.edu.
+NOTE: The canonical source of this file is maintained with the GNU C
+Library. Bugs can be reported to bug-glibc@prep.ai.mit.edu.
 
 This program is free software; you can redistribute it and/or modify it
 under the terms of the GNU General Public License as published by the
@@ -44,8 +44,10 @@ extern "C" {
 
 /* Bits set in the FLAGS argument to `fnmatch'.  */
 #define FNM_PATHNAME (1 << 0) /* No wildcard can ever match `/'.  */
-#define FNM_NOESCAPE (1 << 1) /* Backslashes don't quote special chars.  */
-#define FNM_PERIOD (1 << 2)   /* Leading `.' is matched only explicitly.  */
+#define FNM_NOESCAPE \
+  (1 << 1)                  /* Backslashes don't quote special chars. \
+                             */
+#define FNM_PERIOD (1 << 2) /* Leading `.' is matched only explicitly. */
 
 #define FNM_FILE_NAME FNM_PATHNAME /* Preferred GNU name.  */
 #define FNM_LEADING_DIR (1 << 3)   /* Ignore `/...' after a match.  */

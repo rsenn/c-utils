@@ -63,7 +63,8 @@ cpp_include_file(cpp* pp, tokenizer* t, buffer* out) {
   stralloc_free(&sa);
 
   fn = str_dup(t->buf);
-  assert(tokenizer_next(t, &tok) && token_is_char(&tok, inc_chars_end[inc1sep][0]));
+  assert(tokenizer_next(t, &tok) &&
+         token_is_char(&tok, inc_chars_end[inc1sep][0]));
 
   tokenizer_set_flags(t, TF_PARSE_STRINGS);
 

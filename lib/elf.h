@@ -76,7 +76,8 @@ elf64_ehdr;
 #define ELF_EI_MAG3 3   /* File identification byte 3 index */
 #define ELF_ELFMAG3 'F' /* Magic number byte 3 */
 
-/* Conglomeration of the identification bytes, for easy testing as a word.  */
+/* Conglomeration of the identification bytes, for easy testing as a word.
+ */
 #define ELF_ELFMAG "\177ELF"
 #define ELF_SELFMAG 4
 
@@ -95,21 +96,23 @@ elf64_ehdr;
 #define ELF_EI_VERSION 6 /* File version byte index */
                          /* Value must be ELF_EV_CURRENT */
 
-#define ELF_EI_OSABI 7              /* OS ABI identification */
-#define ELF_ELFOSABI_NONE 0         /* UNIX System V ABI */
-#define ELF_ELFOSABI_SYSV 0         /* Alias. */
-#define ELF_ELFOSABI_HPUX 1         /* HP-UX */
-#define ELF_ELFOSABI_NETBSD 2       /* NetBSD. */
-#define ELF_ELFOSABI_LINUX 3        /* Linux. */
-#define ELF_ELFOSABI_SOLARIS 6      /* Sun Solaris. */
-#define ELF_ELFOSABI_AIX 7          /* IBM AIX. */
-#define ELF_ELFOSABI_IRIX 8         /* SGI Irix. */
-#define ELF_ELFOSABI_FREEBSD 9      /* FreeBSD. */
-#define ELF_ELFOSABI_TRU64 10       /* Compaq TRU64 UNIX. */
-#define ELF_ELFOSABI_MODESTO 11     /* Novell Modesto. */
-#define ELF_ELFOSABI_OPENBSD 12     /* OpenBSD. */
-#define ELF_ELFOSABI_ARM 97         /* ARM */
-#define ELF_ELFOSABI_STANDALONE 255 /* Standalone (embedded) application */
+#define ELF_EI_OSABI 7          /* OS ABI identification */
+#define ELF_ELFOSABI_NONE 0     /* UNIX System V ABI */
+#define ELF_ELFOSABI_SYSV 0     /* Alias. */
+#define ELF_ELFOSABI_HPUX 1     /* HP-UX */
+#define ELF_ELFOSABI_NETBSD 2   /* NetBSD. */
+#define ELF_ELFOSABI_LINUX 3    /* Linux. */
+#define ELF_ELFOSABI_SOLARIS 6  /* Sun Solaris. */
+#define ELF_ELFOSABI_AIX 7      /* IBM AIX. */
+#define ELF_ELFOSABI_IRIX 8     /* SGI Irix. */
+#define ELF_ELFOSABI_FREEBSD 9  /* FreeBSD. */
+#define ELF_ELFOSABI_TRU64 10   /* Compaq TRU64 UNIX. */
+#define ELF_ELFOSABI_MODESTO 11 /* Novell Modesto. */
+#define ELF_ELFOSABI_OPENBSD 12 /* OpenBSD. */
+#define ELF_ELFOSABI_ARM 97     /* ARM */
+#define ELF_ELFOSABI_STANDALONE \
+  255 /* Standalone (embedded) application \
+       */
 
 #define ELF_EI_ABIVERSION 8 /* ABI version */
 
@@ -186,14 +189,17 @@ elf64_ehdr;
 #define ELF_EM_SVX 73     /* Silicon Graphics SVx */
 #define ELF_EM_ST19 74    /* STMicroelectronics ST19 8 bit mc */
 #define ELF_EM_VAX 75     /* Digital VAX */
-#define ELF_EM_CRIS 76    /* Axis Communications 32-bit embedded processor */
+#define ELF_EM_CRIS \
+  76 /* Axis Communications 32-bit embedded processor \
+      */
 #define ELF_EM_JAVELIN \
-  77                       /* Infineon Technologies 32-bit embedded processor \
-                            */
+  77 /* Infineon Technologies 32-bit embedded processor \
+      */
 #define ELF_EM_FIREPATH 78 /* Element 14 64-bit DSP Processor */
 #define ELF_EM_ZSP 79      /* LSI Logic 16-bit DSP Processor */
-#define ELF_EM_MMIX 80     /* Donald Knuth's educational 64-bit processor */
-#define ELF_EM_HUANY 81    /* Harvard University machine-independent object files */
+#define ELF_EM_MMIX 80 /* Donald Knuth's educational 64-bit processor */
+#define ELF_EM_HUANY \
+  81 /* Harvard University machine-independent object files */
 #define ELF_EM_PRISM 82    /* SiTera Prism */
 #define ELF_EM_AVR 83      /* Atmel AVR 8-bit microcontroller */
 #define ELF_EM_FR30 84     /* Fujitsu FR30 */
@@ -264,25 +270,25 @@ typedef struct {
 
 /* Legal values for sh_type (section type).  */
 
-#define ELF_SHT_NULL 0                 /* Section header table entry unused */
-#define ELF_SHT_PROGBITS 1             /* Program data */
-#define ELF_SHT_SYMTAB 2               /* Symbol table */
-#define ELF_SHT_STRTAB 3               /* String table */
-#define ELF_SHT_RELA 4                 /* Relocation entries with addends */
-#define ELF_SHT_HASH 5                 /* Symbol hash table */
-#define ELF_SHT_DYNAMIC 6              /* Dynamic linking information */
-#define ELF_SHT_NOTE 7                 /* Notes */
-#define ELF_SHT_NOBITS 8               /* Program space with no data (bss) */
-#define ELF_SHT_REL 9                  /* Relocation entries, no addends */
-#define ELF_SHT_SHLIB 10               /* Reserved */
-#define ELF_SHT_DYNSYM 11              /* Dynamic linker symbol table */
-#define ELF_SHT_INIT_ARRAY 14          /* Array of constructors */
-#define ELF_SHT_FINI_ARRAY 15          /* Array of destructors */
-#define ELF_SHT_PREINIT_ARRAY 16       /* Array of pre-constructors */
-#define ELF_SHT_GROUP 17               /* Section group */
-#define ELF_SHT_SYMTAB_SHNDX 18        /* Extended section indeces */
-#define ELF_SHT_NUM 19                 /* Number of defined types. */
-#define ELF_SHT_LOOS 0x60000000        /* Start OS-specific */
+#define ELF_SHT_NULL 0           /* Section header table entry unused */
+#define ELF_SHT_PROGBITS 1       /* Program data */
+#define ELF_SHT_SYMTAB 2         /* Symbol table */
+#define ELF_SHT_STRTAB 3         /* String table */
+#define ELF_SHT_RELA 4           /* Relocation entries with addends */
+#define ELF_SHT_HASH 5           /* Symbol hash table */
+#define ELF_SHT_DYNAMIC 6        /* Dynamic linking information */
+#define ELF_SHT_NOTE 7           /* Notes */
+#define ELF_SHT_NOBITS 8         /* Program space with no data (bss) */
+#define ELF_SHT_REL 9            /* Relocation entries, no addends */
+#define ELF_SHT_SHLIB 10         /* Reserved */
+#define ELF_SHT_DYNSYM 11        /* Dynamic linker symbol table */
+#define ELF_SHT_INIT_ARRAY 14    /* Array of constructors */
+#define ELF_SHT_FINI_ARRAY 15    /* Array of destructors */
+#define ELF_SHT_PREINIT_ARRAY 16 /* Array of pre-constructors */
+#define ELF_SHT_GROUP 17         /* Section group */
+#define ELF_SHT_SYMTAB_SHNDX 18  /* Extended section indeces */
+#define ELF_SHT_NUM 19           /* Number of defined types. */
+#define ELF_SHT_LOOS 0x60000000  /* Start OS-specific */
 #define ELF_SHT_GNU_LIBLIST 0x6ffffff7 /* Prelink library list */
 #define ELF_SHT_CHECKSUM 0x6ffffff8    /* Checksum for DSO content. */
 #define ELF_SHT_LOSUNW 0x6ffffffa      /* Sun-specific low bound. */
@@ -301,18 +307,19 @@ typedef struct {
 
 /* Legal values for sh_flags (section flags).  */
 
-#define ELF_SHF_WRITE (1 << 0)            /* Writable */
-#define ELF_SHF_ALLOC (1 << 1)            /* Occupies memory during execution */
-#define ELF_SHF_EXECINSTR (1 << 2)        /* Executable */
-#define ELF_SHF_MERGE (1 << 4)            /* Might be merged */
-#define ELF_SHF_STRINGS (1 << 5)          /* Contains nul-terminated strings */
-#define ELF_SHF_INFO_LINK (1 << 6)        /* `sh_info' contains SHT index */
-#define ELF_SHF_LINK_ORDER (1 << 7)       /* Preserve order after combining */
-#define ELF_SHF_OS_NONCONFORMING (1 << 8) /* Non-standard OS specific handling required */
-#define ELF_SHF_GROUP (1 << 9)            /* Section is member of a group. */
-#define ELF_SHF_TLS (1 << 10)             /* Section hold thread-local data. */
-#define ELF_SHF_MASKOS 0x0ff00000         /* OS-specific. */
-#define ELF_SHF_MASKPROC 0xf0000000       /* Processor-specific */
+#define ELF_SHF_WRITE (1 << 0)      /* Writable */
+#define ELF_SHF_ALLOC (1 << 1)      /* Occupies memory during execution */
+#define ELF_SHF_EXECINSTR (1 << 2)  /* Executable */
+#define ELF_SHF_MERGE (1 << 4)      /* Might be merged */
+#define ELF_SHF_STRINGS (1 << 5)    /* Contains nul-terminated strings */
+#define ELF_SHF_INFO_LINK (1 << 6)  /* `sh_info' contains SHT index */
+#define ELF_SHF_LINK_ORDER (1 << 7) /* Preserve order after combining */
+#define ELF_SHF_OS_NONCONFORMING \
+  (1 << 8) /* Non-standard OS specific handling required */
+#define ELF_SHF_GROUP (1 << 9)      /* Section is member of a group. */
+#define ELF_SHF_TLS (1 << 10)       /* Section hold thread-local data. */
+#define ELF_SHF_MASKOS 0x0ff00000   /* OS-specific. */
+#define ELF_SHF_MASKPROC 0xf0000000 /* Processor-specific */
 
 /* Section group handling.  */
 #define ELF_GRP_COMDAT 0x1 /* Mark group as COMDAT. */
@@ -355,15 +362,18 @@ typedef struct __unaligned {
 elf64_syminfo;
 
 /* Possible values for si_boundto.  */
-#define ELF_SYMINFO_BT_SELF 0xffff       /* Symbol bound to self */
-#define ELF_SYMINFO_BT_PARENT 0xfffe     /* Symbol bound to parent */
-#define ELF_SYMINFO_BT_LOWRESERVE 0xff00 /* Beginning of reserved entries */
+#define ELF_SYMINFO_BT_SELF 0xffff   /* Symbol bound to self */
+#define ELF_SYMINFO_BT_PARENT 0xfffe /* Symbol bound to parent */
+#define ELF_SYMINFO_BT_LOWRESERVE \
+  0xff00 /* Beginning of reserved entries */
 
 /* Possible bitmasks for si_flags.  */
-#define ELF_SYMINFO_FLG_DIRECT 0x0001   /* Direct bound symbol */
-#define ELF_SYMINFO_FLG_PASSTHRU 0x0002 /* Pass-thru symbol for translator */
-#define ELF_SYMINFO_FLG_COPY 0x0004     /* Symbol is a copy-reloc */
-#define ELF_SYMINFO_FLG_LAZYLOAD 0x0008 /* Symbol bound to object to be lazy loaded */
+#define ELF_SYMINFO_FLG_DIRECT 0x0001 /* Direct bound symbol */
+#define ELF_SYMINFO_FLG_PASSTHRU \
+  0x0002                            /* Pass-thru symbol for translator */
+#define ELF_SYMINFO_FLG_COPY 0x0004 /* Symbol is a copy-reloc */
+#define ELF_SYMINFO_FLG_LAZYLOAD \
+  0x0008 /* Symbol bound to object to be lazy loaded */
 /* Syminfo version values.  */
 #define ELF_SYMINFO_NONE 0
 #define ELF_SYMINFO_CURRENT 1
@@ -408,7 +418,8 @@ elf64_syminfo;
 
 /* Symbol table indices are found in the hash buckets and chain table
    of a symbol hash table section.  This special index value indicates
-   the end of a chain, meaning no further symbols are found in that bucket.  */
+   the end of a chain, meaning no further symbols are found in that bucket.
+ */
 
 #define ELF_STN_UNDEF 0 /* End of a chain. */
 
@@ -425,7 +436,8 @@ elf64_syminfo;
 #define ELF_STV_HIDDEN 2    /* Sym unavailable in other modules */
 #define ELF_STV_PROTECTED 3 /* Not preemptible, not exported */
 
-/* Relocation table entry without addend (in section of type ELF_SHT_REL).  */
+/* Relocation table entry without addend (in section of type ELF_SHT_REL).
+ */
 
 typedef struct {
   uint32 r_offset; /* Address */
@@ -442,7 +454,7 @@ typedef struct {
   uint64 r_info;   /* Relocation type and symbol index */
 } elf64_rel;
 
-/* Relocation table entry with addend (in section of type ELF_SHT_RELA).  */
+/* Relocation table entry with addend (in section of type ELF_SHT_RELA). */
 
 typedef struct {
   uint32 r_offset; /* Address */
@@ -585,48 +597,49 @@ typedef struct {
 
 /* Legal values for d_tag (dynamic entry type).  */
 
-#define ELF_DT_NULL 0             /* Marks end of dynamic section */
-#define ELF_DT_NEEDED 1           /* Name of needed library */
-#define ELF_DT_PLTRELSZ 2         /* Size in bytes of PLT relocs */
-#define ELF_DT_PLTGOT 3           /* Processor defined value */
-#define ELF_DT_HASH 4             /* Address of symbol hash table */
-#define ELF_DT_STRTAB 5           /* Address of string table */
-#define ELF_DT_SYMTAB 6           /* Address of symbol table */
-#define ELF_DT_RELA 7             /* Address of Rela relocs */
-#define ELF_DT_RELASZ 8           /* Total size of Rela relocs */
-#define ELF_DT_RELAENT 9          /* Size of one Rela reloc */
-#define ELF_DT_STRSZ 10           /* Size of string table */
-#define ELF_DT_SYMENT 11          /* Size of one symbol table entry */
-#define ELF_DT_INIT 12            /* Address of init function */
-#define ELF_DT_FINI 13            /* Address of termination function */
-#define ELF_DT_SONAME 14          /* Name of shared object */
-#define ELF_DT_RPATH 15           /* Library search path (deprecated) */
-#define ELF_DT_SYMBOLIC 16        /* Start symbol search here */
-#define ELF_DT_REL 17             /* Address of Rel relocs */
-#define ELF_DT_RELSZ 18           /* Total size of Rel relocs */
-#define ELF_DT_RELENT 19          /* Size of one Rel reloc */
-#define ELF_DT_PLTREL 20          /* Type of reloc in PLT */
-#define ELF_DT_DEBUG 21           /* For debugging; unspecified */
-#define ELF_DT_TEXTREL 22         /* Reloc might modify .text */
-#define ELF_DT_JMPREL 23          /* Address of PLT relocs */
-#define ELF_DT_BIND_NOW 24        /* Process relocations of object */
-#define ELF_DT_INIT_ARRAY 25      /* Array with addresses of init fct */
-#define ELF_DT_FINI_ARRAY 26      /* Array with addresses of fini fct */
-#define ELF_DT_INIT_ARRAYSZ 27    /* Size in bytes of ELF_DT_INIT_ARRAY */
-#define ELF_DT_FINI_ARRAYSZ 28    /* Size in bytes of ELF_DT_FINI_ARRAY */
-#define ELF_DT_RUNPATH 29         /* Library search path */
-#define ELF_DT_FLAGS 30           /* Flags for the object being loaded */
-#define ELF_DT_ENCODING 32        /* Start of encoded range */
-#define ELF_DT_PREINIT_ARRAY 32   /* Array with addresses of preinit fct*/
-#define ELF_DT_PREINIT_ARRAYSZ 33 /* size in bytes of ELF_DT_PREINIT_ARRAY */
-#define ELF_DT_NUM 34             /* Number used */
-#define ELF_DT_LOOS 0x6000000d    /* Start of OS-specific */
-#define ELF_DT_HIOS 0x6ffff000    /* End of OS-specific */
-#define ELF_DT_LOPROC 0x70000000  /* Start of processor-specific */
-#define ELF_DT_HIPROC 0x7fffffff  /* End of processor-specific */
+#define ELF_DT_NULL 0           /* Marks end of dynamic section */
+#define ELF_DT_NEEDED 1         /* Name of needed library */
+#define ELF_DT_PLTRELSZ 2       /* Size in bytes of PLT relocs */
+#define ELF_DT_PLTGOT 3         /* Processor defined value */
+#define ELF_DT_HASH 4           /* Address of symbol hash table */
+#define ELF_DT_STRTAB 5         /* Address of string table */
+#define ELF_DT_SYMTAB 6         /* Address of symbol table */
+#define ELF_DT_RELA 7           /* Address of Rela relocs */
+#define ELF_DT_RELASZ 8         /* Total size of Rela relocs */
+#define ELF_DT_RELAENT 9        /* Size of one Rela reloc */
+#define ELF_DT_STRSZ 10         /* Size of string table */
+#define ELF_DT_SYMENT 11        /* Size of one symbol table entry */
+#define ELF_DT_INIT 12          /* Address of init function */
+#define ELF_DT_FINI 13          /* Address of termination function */
+#define ELF_DT_SONAME 14        /* Name of shared object */
+#define ELF_DT_RPATH 15         /* Library search path (deprecated) */
+#define ELF_DT_SYMBOLIC 16      /* Start symbol search here */
+#define ELF_DT_REL 17           /* Address of Rel relocs */
+#define ELF_DT_RELSZ 18         /* Total size of Rel relocs */
+#define ELF_DT_RELENT 19        /* Size of one Rel reloc */
+#define ELF_DT_PLTREL 20        /* Type of reloc in PLT */
+#define ELF_DT_DEBUG 21         /* For debugging; unspecified */
+#define ELF_DT_TEXTREL 22       /* Reloc might modify .text */
+#define ELF_DT_JMPREL 23        /* Address of PLT relocs */
+#define ELF_DT_BIND_NOW 24      /* Process relocations of object */
+#define ELF_DT_INIT_ARRAY 25    /* Array with addresses of init fct */
+#define ELF_DT_FINI_ARRAY 26    /* Array with addresses of fini fct */
+#define ELF_DT_INIT_ARRAYSZ 27  /* Size in bytes of ELF_DT_INIT_ARRAY */
+#define ELF_DT_FINI_ARRAYSZ 28  /* Size in bytes of ELF_DT_FINI_ARRAY */
+#define ELF_DT_RUNPATH 29       /* Library search path */
+#define ELF_DT_FLAGS 30         /* Flags for the object being loaded */
+#define ELF_DT_ENCODING 32      /* Start of encoded range */
+#define ELF_DT_PREINIT_ARRAY 32 /* Array with addresses of preinit fct*/
+#define ELF_DT_PREINIT_ARRAYSZ \
+  33                           /* size in bytes of ELF_DT_PREINIT_ARRAY */
+#define ELF_DT_NUM 34          /* Number used */
+#define ELF_DT_LOOS 0x6000000d /* Start of OS-specific */
+#define ELF_DT_HIOS 0x6ffff000 /* End of OS-specific */
+#define ELF_DT_LOPROC 0x70000000 /* Start of processor-specific */
+#define ELF_DT_HIPROC 0x7fffffff /* End of processor-specific */
 
-/* DT_* entries which fall between ELF_DT_VALRNGHI & ELF_DT_VALRNGLO use the
-   Dyn.d_un.d_val field of the Elf*_dyn structure.  This follows Sun's
+/* DT_* entries which fall between ELF_DT_VALRNGHI & ELF_DT_VALRNGLO use
+   the Dyn.d_un.d_val field of the Elf*_dyn structure.  This follows Sun's
    approach.  */
 #define ELF_DT_VALRNGLO 0x6ffffd00
 #define ELF_DT_GNU_PRELINKED 0x6ffffdf5  /* Prelinking timestamp */
@@ -637,15 +650,18 @@ typedef struct {
 #define ELF_DT_MOVEENT 0x6ffffdfa
 #define ELF_DT_MOVESZ 0x6ffffdfb
 #define ELF_DT_FEATURE_1 0x6ffffdfc /* Feature selection (DTF_*). */
-#define ELF_DT_POSFLAG_1 0x6ffffdfd /* Flags for DT_* entries, effecting the following DT_* entry. */
-#define ELF_DT_SYMINSZ 0x6ffffdfe   /* Size of syminfo table (in bytes) */
-#define ELF_DT_SYMINENT 0x6ffffdff  /* Entry size of syminfo */
+#define ELF_DT_POSFLAG_1 \
+  0x6ffffdfd /* Flags for DT_* entries, effecting the following DT_* \
+                entry. */
+#define ELF_DT_SYMINSZ 0x6ffffdfe  /* Size of syminfo table (in bytes) */
+#define ELF_DT_SYMINENT 0x6ffffdff /* Entry size of syminfo */
 #define ELF_DT_VALRNGHI 0x6ffffdff
-#define ELF_DT_VALTAGIDX(tag) (ELF_DT_VALRNGHI - (tag)) /* Reverse order! */
+#define ELF_DT_VALTAGIDX(tag) \
+  (ELF_DT_VALRNGHI - (tag)) /* Reverse order! */
 #define ELF_DT_VALNUM 12
 
-/* DT_* entries which fall between ELF_DT_ADDRRNGHI & ELF_DT_ADDRRNGLO use the
-   Dyn.d_un.d_ptr field of the Elf*_dyn structure.
+/* DT_* entries which fall between ELF_DT_ADDRRNGHI & ELF_DT_ADDRRNGLO use
+   the Dyn.d_un.d_ptr field of the Elf*_dyn structure.
 
    If any adjustment is made to the ELF object after it has been
    built these entries will need to be adjusted.  */
@@ -662,7 +678,8 @@ typedef struct {
 #define ELF_DT_MOVETAB 0x6ffffefe      /* Move table. */
 #define ELF_DT_SYMINFO 0x6ffffeff      /* Syminfo table. */
 #define ELF_DT_ADDRRNGHI 0x6ffffeff
-#define ELF_DT_ADDRTAGIDX(tag) (ELF_DT_ADDRRNGHI - (tag)) /* Reverse order! */
+#define ELF_DT_ADDRTAGIDX(tag) \
+  (ELF_DT_ADDRRNGHI - (tag)) /* Reverse order! */
 #define ELF_DT_ADDRNUM 10
 
 /* The versioning entry types.  The next are defined as part of the
@@ -673,55 +690,75 @@ typedef struct {
 #define ELF_DT_RELCOUNT 0x6ffffffa
 
 /* These were chosen by Sun.  */
-#define ELF_DT_FLAGS_1 0x6ffffffb                             /* State flags, see DF_1_* below. */
-#define ELF_DT_VERDEF 0x6ffffffc                              /* Address of version definition table */
-#define ELF_DT_VERDEFNUM 0x6ffffffd                           /* Number of version definitions */
-#define ELF_DT_VERNEED 0x6ffffffe                             /* Address of table with needed versions */
-#define ELF_DT_VERNEEDNUM 0x6fffffff                          /* Number of needed versions */
-#define ELF_DT_VERSIONTAGIDX(tag) (ELF_DT_VERNEEDNUM - (tag)) /* Reverse order! */
+#define ELF_DT_FLAGS_1 0x6ffffffb /* State flags, see DF_1_* below. */
+#define ELF_DT_VERDEF \
+  0x6ffffffc /* Address of version definition table \
+              */
+#define ELF_DT_VERDEFNUM 0x6ffffffd /* Number of version definitions */
+#define ELF_DT_VERNEED \
+  0x6ffffffe /* Address of table with needed versions */
+#define ELF_DT_VERNEEDNUM 0x6fffffff /* Number of needed versions */
+#define ELF_DT_VERSIONTAGIDX(tag) \
+  (ELF_DT_VERNEEDNUM - (tag)) /* Reverse order! */
 #define ELF_DT_VERSIONTAGNUM 16
 
-/* Sun added these machine-independent extensions in the "processor-specific"
-   range.  Be compatible.  */
-#define ELF_DT_AUXILIARY 0x7ffffffd /* Shared object to load before self */
-#define ELF_DT_FILTER 0x7fffffff    /* Shared object to get values from */
+/* Sun added these machine-independent extensions in the
+   "processor-specific" range.  Be compatible.  */
+#define ELF_DT_AUXILIARY \
+  0x7ffffffd                     /* Shared object to load before self \
+                                  */
+#define ELF_DT_FILTER 0x7fffffff /* Shared object to get values from */
 #define ELF_DT_EXTRATAGIDX(tag) ((uint32) - ((int32)(tag) << 1 >> 1) - 1)
 #define ELF_DT_EXTRANUM 3
 
 /* Values of `d_un.d_val' in the ELF_DT_FLAGS entry.  */
-#define ELF_DF_ORIGIN 0x00000001     /* Object may use ELF_DF_ORIGIN */
-#define ELF_DF_SYMBOLIC 0x00000002   /* Symbol resolutions starts here */
-#define ELF_DF_TEXTREL 0x00000004    /* Object contains text relocations */
-#define ELF_DF_BIND_NOW 0x00000008   /* No lazy binding for this object */
-#define ELF_DF_STATIC_TLS 0x00000010 /* Module uses the static TLS model */
+#define ELF_DF_ORIGIN 0x00000001   /* Object may use ELF_DF_ORIGIN */
+#define ELF_DF_SYMBOLIC 0x00000002 /* Symbol resolutions starts here */
+#define ELF_DF_TEXTREL 0x00000004  /* Object contains text relocations */
+#define ELF_DF_BIND_NOW 0x00000008 /* No lazy binding for this object */
+#define ELF_DF_STATIC_TLS \
+  0x00000010 /* Module uses the static TLS model \
+              */
 
 /* State flags selectable in the `d_un.d_val' element of the ELF_DT_FLAGS_1
    entry in the dynamic section.  */
-#define ELF_DF_1_NOW 0x00000001       /* Set RTLD_NOW for this object. */
-#define ELF_DF_1_GLOBAL 0x00000002    /* Set RTLD_GLOBAL for this object. */
-#define ELF_DF_1_GROUP 0x00000004     /* Set RTLD_GROUP for this object. */
-#define ELF_DF_1_NODELETE 0x00000008  /* Set RTLD_NODELETE for this object.*/
-#define ELF_DF_1_LOADFLTR 0x00000010  /* Trigger filtee loading at runtime.*/
-#define ELF_DF_1_INITFIRST 0x00000020 /* Set RTLD_INITFIRST for this object*/
-#define ELF_DF_1_NOOPEN 0x00000040    /* Set RTLD_NOOPEN for this object. */
-#define ELF_DF_1_ORIGIN 0x00000080    /* $ORIGIN must be handled. */
-#define ELF_DF_1_DIRECT 0x00000100    /* Direct binding enabled. */
+#define ELF_DF_1_NOW 0x00000001    /* Set RTLD_NOW for this object. */
+#define ELF_DF_1_GLOBAL 0x00000002 /* Set RTLD_GLOBAL for this object. */
+#define ELF_DF_1_GROUP 0x00000004  /* Set RTLD_GROUP for this object. */
+#define ELF_DF_1_NODELETE \
+  0x00000008 /* Set RTLD_NODELETE for this object.*/
+#define ELF_DF_1_LOADFLTR \
+  0x00000010 /* Trigger filtee loading at runtime.*/
+#define ELF_DF_1_INITFIRST \
+  0x00000020                       /* Set RTLD_INITFIRST for this object*/
+#define ELF_DF_1_NOOPEN 0x00000040 /* Set RTLD_NOOPEN for this object. */
+#define ELF_DF_1_ORIGIN 0x00000080 /* $ORIGIN must be handled. */
+#define ELF_DF_1_DIRECT 0x00000100 /* Direct binding enabled. */
 #define ELF_DF_1_TRANS 0x00000200
-#define ELF_DF_1_INTERPOSE 0x00000400  /* Object is used to interpose. */
-#define ELF_DF_1_NODEFLIB 0x00000800   /* Ignore default lib search path. */
-#define ELF_DF_1_NODUMP 0x00001000     /* Object can't be dldump'ed. */
-#define ELF_DF_1_CONFALT 0x00002000    /* Configuration alternative created.*/
-#define ELF_DF_1_ENDFILTEE 0x00004000  /* Filtee terminates filters search. */
-#define ELF_DF_1_DISPRELDNE 0x00008000 /* Disp reloc applied at build time. */
-#define ELF_DF_1_DISPRELPND 0x00010000 /* Disp reloc applied at run-time. */
+#define ELF_DF_1_INTERPOSE 0x00000400 /* Object is used to interpose. */
+#define ELF_DF_1_NODEFLIB \
+  0x00000800                       /* Ignore default lib search path. \
+                                    */
+#define ELF_DF_1_NODUMP 0x00001000 /* Object can't be dldump'ed. */
+#define ELF_DF_1_CONFALT \
+  0x00002000 /* Configuration alternative \
+                created.*/
+#define ELF_DF_1_ENDFILTEE \
+  0x00004000 /* Filtee terminates filters search. */
+#define ELF_DF_1_DISPRELDNE \
+  0x00008000 /* Disp reloc applied at build time. */
+#define ELF_DF_1_DISPRELPND \
+  0x00010000 /* Disp reloc applied at run-time. */
 
 /* Flags for the feature selection in ELF_DT_FEATURE_1.  */
 #define ELF_DTF_1_PARINIT 0x00000001
 #define ELF_DTF_1_CONFEXP 0x00000002
 
-/* Flags in the ELF_DT_POSFLAG_1 entry effecting only the next DT_* entry.  */
-#define ELF_DF_P1_LAZYLOAD 0x00000001  /* Lazyload following object. */
-#define ELF_DF_P1_GROUPPERM 0x00000002 /* Symbols from next object are not generally available. */
+/* Flags in the ELF_DT_POSFLAG_1 entry effecting only the next DT_* entry.
+ */
+#define ELF_DF_P1_LAZYLOAD 0x00000001 /* Lazyload following object. */
+#define ELF_DF_P1_GROUPPERM \
+  0x00000002 /* Symbols from next object are not generally available. */
 
 /* Version definition sections.  */
 
@@ -880,7 +917,8 @@ typedef struct {
 
 /* Some more special a_type values describing the hardware.  */
 #define ELF_AT_PLATFORM 15 /* String identifying platform. */
-#define ELF_AT_HWCAP 16    /* Machine dependent hints about processor capabilities. */
+#define ELF_AT_HWCAP \
+  16 /* Machine dependent hints about processor capabilities. */
 
 /* This entry gives some information about the FPU initialization
    performed by the kernel.  */
@@ -901,7 +939,8 @@ typedef struct {
 
 #define ELF_AT_RANDOM 25 /* Address of 16 random bytes. */
 
-#define ELF_AT_HWCAP2 26 /* More machine-dependent hints about processor capabilities. */
+#define ELF_AT_HWCAP2 \
+  26 /* More machine-dependent hints about processor capabilities. */
 
 #define ELF_AT_EXECFN 31 /* Filename of executable. */
 
@@ -1009,32 +1048,41 @@ elf64_move;
 #define ELF_R_386_GOTPC 10   /* 32 bit PC relative offset to GOT */
 #define ELF_R_386_32PLT 11
 #define ELF_R_386_TLS_TPOFF 14 /* Offset in static TLS block */
-#define ELF_R_386_TLS_IE 15    /* Address of GOT entry for static TLS block offset */
-#define ELF_R_386_TLS_GOTIE 16 /* GOT entry for static TLS block offset */
-#define ELF_R_386_TLS_LE 17    /* Offset relative to static TLS block */
+#define ELF_R_386_TLS_IE \
+  15 /* Address of GOT entry for static TLS block offset */
+#define ELF_R_386_TLS_GOTIE \
+  16                        /* GOT entry for static TLS block offset \
+                             */
+#define ELF_R_386_TLS_LE 17 /* Offset relative to static TLS block */
 #define ELF_R_386_TLS_GD \
-  18 /* Direct 32 bit for GNU version of general dynamic thread local data \
+  18 /* Direct 32 bit for GNU version of general dynamic thread local \
+      * data \
       */
 #define ELF_R_386_TLS_LDM \
-  19 /* Direct 32 bit for GNU version of local dynamic thread local data in LE \
-        code */
+  19 /* Direct 32 bit for GNU version of local dynamic thread local data \
+        in LE code */
 #define ELF_R_386_16 20
 #define ELF_R_386_PC16 21
 #define ELF_R_386_8 22
 #define ELF_R_386_PC8 23
-#define ELF_R_386_TLS_GD_32 24    /* Direct 32 bit for general dynamic thread local data */
-#define ELF_R_386_TLS_GD_PUSH 25  /* Tag for pushl in GD TLS code */
-#define ELF_R_386_TLS_GD_CALL 26  /* Relocation for call to __tls_get_addr() */
-#define ELF_R_386_TLS_GD_POP 27   /* Tag for popl in GD TLS code */
-#define ELF_R_386_TLS_LDM_32 28   /* Direct 32 bit for local dynamic thread local data in LE code */
+#define ELF_R_386_TLS_GD_32 \
+  24 /* Direct 32 bit for general dynamic thread local data */
+#define ELF_R_386_TLS_GD_PUSH 25 /* Tag for pushl in GD TLS code */
+#define ELF_R_386_TLS_GD_CALL \
+  26 /* Relocation for call to __tls_get_addr() */
+#define ELF_R_386_TLS_GD_POP 27 /* Tag for popl in GD TLS code */
+#define ELF_R_386_TLS_LDM_32 \
+  28 /* Direct 32 bit for local dynamic thread local data in LE code */
 #define ELF_R_386_TLS_LDM_PUSH 29 /* Tag for pushl in LDM TLS code */
-#define ELF_R_386_TLS_LDM_CALL 30 /* Relocation for call to __tls_get_addr() in LDM code */
-#define ELF_R_386_TLS_LDM_POP 31  /* Tag for popl in LDM TLS code */
-#define ELF_R_386_TLS_LDO_32 32   /* Offset relative to TLS block */
-#define ELF_R_386_TLS_IE_32 33    /* GOT entry for negated static TLS block offset */
+#define ELF_R_386_TLS_LDM_CALL \
+  30 /* Relocation for call to __tls_get_addr() in LDM code */
+#define ELF_R_386_TLS_LDM_POP 31 /* Tag for popl in LDM TLS code */
+#define ELF_R_386_TLS_LDO_32 32  /* Offset relative to TLS block */
+#define ELF_R_386_TLS_IE_32 \
+  33 /* GOT entry for negated static TLS block offset */
 #define ELF_R_386_TLS_LE_32 \
-  34                              /* Negated offset relative to static TLS block \
-                                   */
+  34 /* Negated offset relative to static TLS block \
+      */
 #define ELF_R_386_TLS_DTPMOD32 35 /* ID of module containing symbol */
 #define ELF_R_386_TLS_DTPOFF32 36 /* Offset in TLS block */
 #define ELF_R_386_TLS_TPOFF32 37  /* Negated offset in static TLS block */
@@ -1081,10 +1129,10 @@ elf_options;
 #define ELF_ODK_EXCEPTIONS 2 /* Exception processing options. */
 #define ELF_ODK_PAD 3        /* Section padding options. */
 #define ELF_ODK_HWPATCH 4    /* Hardware workarounds performed */
-#define ELF_ODK_FILL 5       /* record the fill value used by the linker. */
-#define ELF_ODK_TAGS 6       /* reserve space for desktop tools to write. */
-#define ELF_ODK_HWAND 7      /* HW workarounds. 'AND' bits when merging. */
-#define ELF_ODK_HWOR 8       /* HW workarounds. 'OR' bits when merging. */
+#define ELF_ODK_FILL 5  /* record the fill value used by the linker. */
+#define ELF_ODK_TAGS 6  /* reserve space for desktop tools to write. */
+#define ELF_ODK_HWAND 7 /* HW workarounds. 'AND' bits when merging. */
+#define ELF_ODK_HWOR 8  /* HW workarounds. 'OR' bits when merging. */
 
 /* Values for `info' in elf_options for ELF_ODK_EXCEPTIONS entries.  */
 
@@ -1120,7 +1168,8 @@ typedef struct {
   uint32 hwp_flags2; /* Extra flags.  */
 } elf_options_hw;
 
-/* Masks for `info' in ElfOptions for ELF_ODK_HWAND and ELF_ODK_HWOR entries. */
+/* Masks for `info' in ElfOptions for ELF_ODK_HWAND and ELF_ODK_HWOR
+ * entries. */
 
 #define ELF_OHWA0_R4KEOP_CHECKED 0x00000001
 #define ELF_OHWA1_R4KEOP_CLEAN 0x00000002
@@ -1187,11 +1236,16 @@ typedef uint32 elf32_conflict;
 #define ELF_STT_ARM_TFUNC 0xd
 
 /* ARM-specific values for sh_flags */
-#define ELF_SHF_ARM_ENTRYSECT 0x10000000 /* Section contains an entry point */
-#define ELF_SHF_ARM_COMDEF 0x80000000    /* Section may be multiply defined in the input to a link step */
+#define ELF_SHF_ARM_ENTRYSECT \
+  0x10000000 /* Section contains an entry point */
+#define ELF_SHF_ARM_COMDEF \
+  0x80000000 /* Section may be multiply defined in the input to a link \
+                step */
 
 /* ARM-specific program header flags */
-#define ELF_PF_ARM_SB 0x10000000 /* Segment contains the location addressed by the static base */
+#define ELF_PF_ARM_SB \
+  0x10000000 /* Segment contains the location addressed by the static \
+                base */
 
 /* ARM relocs.  */
 #define ELF_R_ARM_NONE 0  /* No reloc */
@@ -1249,21 +1303,27 @@ typedef uint32 elf32_conflict;
 #define ELF_R_X86_64_GLOB_DAT 6  /* Create GOT entry */
 #define ELF_R_X86_64_JUMP_SLOT 7 /* Create PLT entry */
 #define ELF_R_X86_64_RELATIVE 8  /* Adjust by program base */
-#define ELF_R_X86_64_GOTPCREL 9  /* 32 bit signed PC relative offset to GOT */
-#define ELF_R_X86_64_32 10       /* Direct 32 bit zero extended */
-#define ELF_R_X86_64_32S 11      /* Direct 32 bit sign extended */
-#define ELF_R_X86_64_16 12       /* Direct 16 bit zero extended */
-#define ELF_R_X86_64_PC16 13     /* 16 bit sign extended pc relative */
-#define ELF_R_X86_64_8 14        /* Direct 8 bit sign extended */
-#define ELF_R_X86_64_PC8 15      /* 8 bit sign extended pc relative */
+#define ELF_R_X86_64_GOTPCREL \
+  9                          /* 32 bit signed PC relative offset to GOT */
+#define ELF_R_X86_64_32 10   /* Direct 32 bit zero extended */
+#define ELF_R_X86_64_32S 11  /* Direct 32 bit sign extended */
+#define ELF_R_X86_64_16 12   /* Direct 16 bit zero extended */
+#define ELF_R_X86_64_PC16 13 /* 16 bit sign extended pc relative */
+#define ELF_R_X86_64_8 14    /* Direct 8 bit sign extended */
+#define ELF_R_X86_64_PC8 15  /* 8 bit sign extended pc relative */
 #define ELF_R_X86_64_DTPMOD64 16 /* ID of module containing symbol */
 #define ELF_R_X86_64_DTPOFF64 17 /* Offset in module's TLS block */
 #define ELF_R_X86_64_TPOFF64 18  /* Offset in initial TLS block */
-#define ELF_R_X86_64_TLSGD 19    /* 32 bit signed PC relative offset to two GOT entries for GD symbol */
-#define ELF_R_X86_64_TLSLD 20    /* 32 bit signed PC relative offset to two GOT entries for LD symbol */
+#define ELF_R_X86_64_TLSGD \
+  19 /* 32 bit signed PC relative offset to two GOT entries for GD symbol \
+      */
+#define ELF_R_X86_64_TLSLD \
+  20 /* 32 bit signed PC relative offset to two GOT entries for LD symbol \
+      */
 #define ELF_R_X86_64_DTPOFF32 21 /* Offset in TLS block */
-#define ELF_R_X86_64_GOTTPOFF 22 /* 32 bit signed PC relative offset to GOT entry for IE symbol */
-#define ELF_R_X86_64_TPOFF32 23  /* Offset in initial TLS block */
+#define ELF_R_X86_64_GOTTPOFF \
+  22 /* 32 bit signed PC relative offset to GOT entry for IE symbol */
+#define ELF_R_X86_64_TPOFF32 23 /* Offset in initial TLS block */
 
 #define ELF_R_X86_64_NUM 24
 
@@ -1274,7 +1334,12 @@ range elf_get_section_r(void*, const char* name);
 void* elf_get_section(void*, const char* name, size_t* szp);
 range elf_get_symtab_r(void*);
 void* elf_get_symtab(void*, size_t* szp);
-uint64 elf_get_value(void*, void* ptr, unsigned off32, unsigned size32, unsigned off64, unsigned size64);
+uint64 elf_get_value(void*,
+                     void* ptr,
+                     unsigned off32,
+                     unsigned size32,
+                     unsigned off64,
+                     unsigned size64);
 uint8* elf_header_ident(void*);
 void* elf_header_sections(void*);
 range elf_program_headers(void*);
@@ -1293,24 +1358,40 @@ void* elf_find_segment_vaddr(range map, uint64 addr);
 int64 elf_address_to_offset(range map, uint64 addr);
 int64 elf_offset_to_addr(range map, uint64 offs);
 
-#define ELF_BITS(elf) (elf_header_ident((elf))[ELF_EI_CLASS] == ELF_ELFCLASS64 ? 64 : 32)
-#define ELF_32(elf) (elf_header_ident((elf))[ELF_EI_CLASS] == ELF_ELFCLASS32)
-#define ELF_64(elf) (elf_header_ident((elf))[ELF_EI_CLASS] == ELF_ELFCLASS64)
+#define ELF_BITS(elf) \
+  (elf_header_ident((elf))[ELF_EI_CLASS] == ELF_ELFCLASS64 ? 64 : 32)
+#define ELF_32(elf) \
+  (elf_header_ident((elf))[ELF_EI_CLASS] == ELF_ELFCLASS32)
+#define ELF_64(elf) \
+  (elf_header_ident((elf))[ELF_EI_CLASS] == ELF_ELFCLASS64)
 
 #define ELF_FIELD_OFFS(type, field) ((size_t)(uint8*)&(((type*)0)->field))
 #define ELF_FIELD_SIZE(type, field) sizeof(((type*)0)->field)
 
 #define ELF_STRUCT_OFFSETS(st, field) ELF_FIELD_OFFS(elf32_##st, field), ELF_FIELD_SIZE(elf32_##st, field), ELF_FIELD_OFFS(elf64_##st, field), ELF_FIELD_SIZE(elf64_##st, field))
-#define ELF_STRUCT_SIZE(elf, st) (ELF_64(elf) ? sizeof(elf64_##st) : sizeof(elf32_##st))
+#define ELF_STRUCT_SIZE(elf, st) \
+  (ELF_64(elf) ? sizeof(elf64_##st) : sizeof(elf32_##st))
 
-#define ELF_GET(elf, ptr, st, field) elf_get_value(elf, ptr, ELF_FIELD_OFFS(elf32_##st, field), ELF_FIELD_SIZE(elf32_##st, field), ELF_FIELD_OFFS(elf64_##st, field), ELF_FIELD_SIZE(elf64_##st, field))
+#define ELF_GET(elf, ptr, st, field) \
+  elf_get_value(elf, \
+                ptr, \
+                ELF_FIELD_OFFS(elf32_##st, field), \
+                ELF_FIELD_SIZE(elf32_##st, field), \
+                ELF_FIELD_OFFS(elf64_##st, field), \
+                ELF_FIELD_SIZE(elf64_##st, field))
 
-#define ELF_FIELD_OFFSET(type, field) ((size_t)(uint8*)&(((type*)0)->field))
+#define ELF_FIELD_OFFSET(type, field) \
+  ((size_t)(uint8*)&(((type*)0)->field))
 #define ELF_FIELD_SIZE(type, field) sizeof(((type*)0)->field)
 
-#define ELF_ADDR(elf, ptr, st, field) ((void*)(((char*)ptr) + ELF_OFFSET(elf, st, field)))
-#define ELF_OFFSET(elf, st, field) (ELF_64(elf) ? ELF_FIELD_OFFSET(elf64_##st, field) : ELF_FIELD_OFFSET(elf32_##st, field))
-#define ELF_SIZE(elf, st, field) (ELF_64(elf) ? ELF_FIELD_SIZE(elf64_##st, field) : ELF_FIELD_SIZE(elf32_##st, field))
+#define ELF_ADDR(elf, ptr, st, field) \
+  ((void*)(((char*)ptr) + ELF_OFFSET(elf, st, field)))
+#define ELF_OFFSET(elf, st, field) \
+  (ELF_64(elf) ? ELF_FIELD_OFFSET(elf64_##st, field) \
+               : ELF_FIELD_OFFSET(elf32_##st, field))
+#define ELF_SIZE(elf, st, field) \
+  (ELF_64(elf) ? ELF_FIELD_SIZE(elf64_##st, field) \
+               : ELF_FIELD_SIZE(elf32_##st, field))
 
 #ifdef __cplusplus
 };

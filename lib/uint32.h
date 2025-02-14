@@ -63,7 +63,10 @@ typedef int32_t int32;
 
 #if !defined(NO_UINT32_MACROS)
 
-#if(defined(__i386__) || defined(_M_IX86) || defined(_X86_) || defined(__x86_64__) || defined(_M_AMD64) || defined(__LITTLE_ENDIAN__) || (BYTE_ORDER == _LITTLE_ENDIAN) || defined(_AMD64_) || defined(I_X86_))
+#if(defined(__i386__) || defined(_M_IX86) || defined(_X86_) || \
+    defined(__x86_64__) || defined(_M_AMD64) || \
+    defined(__LITTLE_ENDIAN__) || (BYTE_ORDER == _LITTLE_ENDIAN) || \
+    defined(_AMD64_) || defined(I_X86_))
 inline static void
 uint32_pack(char* out, uint32 in) {
   *(uint32*)out = in;
@@ -112,10 +115,14 @@ int uint32_seed(const void*, unsigned long n);
 uint32 uint32_prng(uint32, uint32 seed);
 
 /* bit rotating macros */
-#define uint32_ror(v, c) (((uint32)(v) >> (c)) | ((uint32)(v) << (32 - (c))))
-#define uint32_rol(v, c) (((uint32)(v) << (c)) | ((uint32)(v) >> (32 - (c))))
-#define uint32_ror_safe(v, c) (((uint32)(v) >> uint32rc(c)) | ((uint32)(v) << (32 - uint32rc(c))))
-#define uint32_rol_safe(v, c) (((uint32)(v) << uint32rc(c)) | ((uint32)(v) >> (32 - uint32rc(c))))
+#define uint32_ror(v, c) \
+  (((uint32)(v) >> (c)) | ((uint32)(v) << (32 - (c))))
+#define uint32_rol(v, c) \
+  (((uint32)(v) << (c)) | ((uint32)(v) >> (32 - (c))))
+#define uint32_ror_safe(v, c) \
+  (((uint32)(v) >> uint32rc(c)) | ((uint32)(v) << (32 - uint32rc(c))))
+#define uint32_rol_safe(v, c) \
+  (((uint32)(v) << uint32rc(c)) | ((uint32)(v) >> (32 - uint32rc(c))))
 
 #ifdef __cplusplus
 }

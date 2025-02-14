@@ -86,7 +86,8 @@
   }
 #define COMMON_OPT_data_connect_retries \
   { \
-    '\0', "data-connect-retries", uogo_ulong, 0, &o_data_connect_retries, 0, \
+    '\0', "data-connect-retries", uogo_ulong, 0, &o_data_connect_retries, \
+        0, \
         "Number of tries to connect " \
         "to data port.", \
         "The program will try to " \
@@ -182,7 +183,8 @@
   }
 #define COMMON_OPT_list_options \
   { \
-    'L', "list-options", uogo_string, 0, &o_list_options, 1, "Add OPTS to LIST command.", \
+    'L', "list-options", uogo_string, 0, &o_list_options, 1, \
+        "Add OPTS to LIST command.", \
         "This allows to pass " \
         "arbitrary options to the " \
         "FTP servers LIST command. " \
@@ -252,7 +254,8 @@
   }
 #define COMMON_OPT_force_select \
   { \
-    0, "force-select", uogo_flag, UOGO_NOARG, &iopause_force_select, 1, "Use select, not poll.", \
+    0, "force-select", uogo_flag, UOGO_NOARG, &iopause_force_select, 1, \
+        "Use select, not poll.", \
         "Do not use the poll() " \
         "system call even if it's " \
         "available, but use select() " \
@@ -291,7 +294,11 @@ extern stralloc pasv_response_ips; /* list of IP
                                     */
 
 int do_pasv(void);
-int connect_auth(const char* host, const char* o_user, const char* o_pass, const char* o_acct, int tries);
+int connect_auth(const char* host,
+                 const char* o_user,
+                 const char* o_pass,
+                 const char* o_acct,
+                 int tries);
 char* ccread(void);
 char* ccread_oneline(void);
 void cmdwrite2(const char* s1, const unsigned char* s2);
@@ -301,14 +308,19 @@ void sx2(const char* what);
 void do_log1(const char* s1);
 void do_log2(const char* s1, const char* s2);
 void do_log3(const char* s1, const char* s2, const char* s3);
-void do_log4(const char* s1, const char* s2, const char* s3, const char* s4);
+void
+do_log4(const char* s1, const char* s2, const char* s3, const char* s4);
 void do_logmem(const char* s1, unsigned int l);
 void warn_broken_mlsx(void);
 stralloc* canon(stralloc* l_dir); /* feed me with 0
                                      terminated
                                      strings only */
 
-void eof_or_error(int ec, int e, const char* s1, const char* s2, const char* s3) attribute_noreturn;
+void eof_or_error(int ec,
+                  int e,
+                  const char* s1,
+                  const char* s2,
+                  const char* s3) attribute_noreturn;
 void sockrecbuf(int, unsigned long);
 extern unsigned int window_x;
 extern unsigned int window_y;

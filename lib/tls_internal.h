@@ -24,7 +24,13 @@
 
 typedef void want_func(fd_type);
 
-typedef enum { TLS_OP_WRITE = 0, TLS_OP_READ, TLS_OP_ACCEPT, TLS_OP_CONNECT, TLS_OP_SHUTDOWN } tls_op_t;
+typedef enum {
+  TLS_OP_WRITE = 0,
+  TLS_OP_READ,
+  TLS_OP_ACCEPT,
+  TLS_OP_CONNECT,
+  TLS_OP_SHUTDOWN
+} tls_op_t;
 
 #if 1 // ndef HEADER_BIO_H
 struct bio_method_st {
@@ -39,7 +45,9 @@ struct bio_method_st {
   long (*ctrl)(struct bio_st*, int, long, void*);
   int (*create)(struct bio_st*);
   int (*destroy)(struct bio_st*);
-  long (*callback_ctrl)(struct bio_st*, int, int (*info_cb)(BIO*, int, int));
+  long (*callback_ctrl)(struct bio_st*,
+                        int,
+                        int (*info_cb)(BIO*, int, int));
 };
 
 struct bio_st {

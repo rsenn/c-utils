@@ -75,7 +75,8 @@ main(int argc, char* argv[]) {
 
     nexp = uint32_get(&exports->number_of_names);
     name_rvas = pe_rva2ptr(base, uint32_get(&exports->address_of_names));
-    ord_rvas = pe_rva2ptr(base, uint32_get(&exports->address_of_name_ordinals));
+    ord_rvas =
+        pe_rva2ptr(base, uint32_get(&exports->address_of_name_ordinals));
 
     buffer_putm_internal(buffer_1, "LIBRARY ", dll_name, "\n", NULL);
     buffer_puts(buffer_1, "EXPORTS\n");
@@ -85,7 +86,11 @@ main(int argc, char* argv[]) {
      */
 
     for(i = 0; i < nexp; i++) {
-      buffer_putm_internal(buffer_1, "  ", pe_rva2ptr(base, uint32_get(&name_rvas[i])), " @ ", NULL);
+      buffer_putm_internal(buffer_1,
+                           "  ",
+                           pe_rva2ptr(base, uint32_get(&name_rvas[i])),
+                           " @ ",
+                           NULL);
       buffer_putulong(buffer_1, uint16_get(&ord_rvas[i]));
       buffer_putnlflush(buffer_1);
     }

@@ -1,6 +1,7 @@
 #include "../cpp_internal.h"
 
-/* skips until the next non-whitespace token (if the current one is one too)*/
+/* skips until the next non-whitespace token (if the current one is one
+ * too)*/
 int
 cpp_parse_whitespace(tokenizer* t, token* token, int* count) {
   int ret = 1;

@@ -28,7 +28,8 @@ static stralloc quote_chars;
 static buffer output;
 static const char* add_quotes = 0;
 static int tab_size = -1;
-static int quote_newline = 0, quote_tabs = 0, quote_nul = 0, quote_backslash = 0;
+static int quote_newline = 0, quote_tabs = 0, quote_nul = 0,
+           quote_backslash = 0;
 
 typedef size_t fmt_function(char*, int, int);
 
@@ -75,7 +76,11 @@ void
 put_str_escaped(buffer* b, const char* str) {
   stralloc esc;
   stralloc_init(&esc);
-  stralloc_fmt_pred(&esc, str, str_len(str), (stralloc_fmt_fn*)&fmt_escapecharc, iscntrl);
+  stralloc_fmt_pred(&esc,
+                    str,
+                    str_len(str),
+                    (stralloc_fmt_fn*)&fmt_escapecharc,
+                    iscntrl);
   buffer_putsa(b, &esc);
 }
 
@@ -277,31 +282,38 @@ add_chars(const char* x, size_t len) {
 
 void
 usage(char* av0) {
-  buffer_putm_internal(buffer_1,
-                       "Usage: ",
-                       str_basename(av0),
-                       " [OPTIONS] [FILES...]\n"
-                       "\n"
-                       "Options:\n"
-                       "\n"
-                       "  -h, --help                       Show this help\n"
-                       "  -i, --in-place                   Write to input file\n"
-                       "  -q, --quote-chars CHARS          Characters to quote\n"
-                       "  -n, --quote-newline              Quote newline (\\n)\n"
-                       "      --quote-tabs                 Quote tabs (\\t)\n"
-                       "      --quote-nul                  Quote nul (\\0)\n"
-                       "  -b, --quote-backslash            Quote backslash (\\)\n"
-                       "  -c, --escape-c                   Escape characters for C strings\n"
-                       "  -C, --escape-cmake               Escape characters for CMake strings\n"
-                       "  -S, --escape-shell               Escape characters for shell strings\n"
-                       "  -D, --escape-doublequoted-shell  Escape characters for double-quoted shell strings\n"
-                       "  -Q, --escape-quoted-shell        Escape characters for single-quoted shell strings\n"
-                       "  -X, --escape-xml                 Escape characters for XML\n"
-                       "  -J, --escape-json                Escape characters for JSON\n"
-                       "  -P, --escape-printable           Escape non-printable characters\n"
-                       "  -a, --add-quotes QUOTE           Add quotes of type\n"
-                       "\n",
-                       NULL);
+  buffer_putm_internal(
+      buffer_1,
+      "Usage: ",
+      str_basename(av0),
+      " [OPTIONS] [FILES...]\n"
+      "\n"
+      "Options:\n"
+      "\n"
+      "  -h, --help                       Show this help\n"
+      "  -i, --in-place                   Write to input file\n"
+      "  -q, --quote-chars CHARS          Characters to quote\n"
+      "  -n, --quote-newline              Quote newline (\\n)\n"
+      "      --quote-tabs                 Quote tabs (\\t)\n"
+      "      --quote-nul                  Quote nul (\\0)\n"
+      "  -b, --quote-backslash            Quote backslash (\\)\n"
+      "  -c, --escape-c                   Escape characters for C "
+      "strings\n"
+      "  -C, --escape-cmake               Escape characters for CMake "
+      "strings\n"
+      "  -S, --escape-shell               Escape characters for shell "
+      "strings\n"
+      "  -D, --escape-doublequoted-shell  Escape characters for "
+      "double-quoted shell strings\n"
+      "  -Q, --escape-quoted-shell        Escape characters for "
+      "single-quoted shell strings\n"
+      "  -X, --escape-xml                 Escape characters for XML\n"
+      "  -J, --escape-json                Escape characters for JSON\n"
+      "  -P, --escape-printable           Escape non-printable "
+      "characters\n"
+      "  -a, --add-quotes QUOTE           Add quotes of type\n"
+      "\n",
+      NULL);
   buffer_flush(buffer_1);
 }
 
@@ -316,27 +328,28 @@ main(int argc, char* argv[]) {
   buffer input;
   char* tmpl = "/tmp/quote.XXXXXX";
 
-  struct unix_longopt opts[] = {{"help", 0, NULL, 'h'},
-                                {"in-place", 0, NULL, 'i'},
-                                {"add-quotes", 1, NULL, 'a'},
-                                {"tab-size", 1, NULL, 't'},
-                                {"quote-chars", 1, NULL, 'q'},
-                                {"quote-newline", 0, NULL, 'n'},
-                                {"quote-tabs", 0, NULL, 9},
-                                {"quote-nul", 0, NULL, '0'},
-                                {"quote-backslash", 0, NULL, 'b'},
-                                {"no-quote-newline", 0, &quote_newline, false},
-                                {"no-quote-tabs", 0, &quote_tabs, false},
-                                {"no-quote-nul", 0, &quote_nul, false},
-                                {"escape-cmake", 1, NULL, 'C'},
-                                {"escape-shell", 0, NULL, 'S'},
-                                {"escape-doublequoted-shell", 0, NULL, 'D'},
-                                {"escape-quoted-shell", 0, NULL, 'Q'},
-                                {"escape-c", 0, NULL, 'c'},
-                                {"escape-xml", 0, NULL, 'X'},
-                                {"escape-json", 0, NULL, 'J'},
-                                {"escape-printable", 0, NULL, 'P'},
-                                {0, 0, 0, 0}};
+  struct unix_longopt opts[] = {
+      {"help", 0, NULL, 'h'},
+      {"in-place", 0, NULL, 'i'},
+      {"add-quotes", 1, NULL, 'a'},
+      {"tab-size", 1, NULL, 't'},
+      {"quote-chars", 1, NULL, 'q'},
+      {"quote-newline", 0, NULL, 'n'},
+      {"quote-tabs", 0, NULL, 9},
+      {"quote-nul", 0, NULL, '0'},
+      {"quote-backslash", 0, NULL, 'b'},
+      {"no-quote-newline", 0, &quote_newline, false},
+      {"no-quote-tabs", 0, &quote_tabs, false},
+      {"no-quote-nul", 0, &quote_nul, false},
+      {"escape-cmake", 1, NULL, 'C'},
+      {"escape-shell", 0, NULL, 'S'},
+      {"escape-doublequoted-shell", 0, NULL, 'D'},
+      {"escape-quoted-shell", 0, NULL, 'Q'},
+      {"escape-c", 0, NULL, 'c'},
+      {"escape-xml", 0, NULL, 'X'},
+      {"escape-json", 0, NULL, 'J'},
+      {"escape-printable", 0, NULL, 'P'},
+      {0, 0, 0, 0}};
 
   stralloc_init(&quote_chars);
   stralloc_ready(&quote_chars, 4);
@@ -384,9 +397,15 @@ main(int argc, char* argv[]) {
         fmt_call = (fmt_function*)(void*)&fmt_escapecharc;
         stralloc_copys(&quote_chars, "\"\n\\");
         break;
-      case 'J': fmt_call = (fmt_function*)(void*)&fmt_escapecharjson; break;
-      case 'P': fmt_call = (fmt_function*)(void*)&fmt_escapecharquotedprintable; break;
-      case 'S': fmt_call = (fmt_function*)(void*)&fmt_escapecharshell; break;
+      case 'J':
+        fmt_call = (fmt_function*)(void*)&fmt_escapecharjson;
+        break;
+      case 'P':
+        fmt_call = (fmt_function*)(void*)&fmt_escapecharquotedprintable;
+        break;
+      case 'S':
+        fmt_call = (fmt_function*)(void*)&fmt_escapecharshell;
+        break;
       case 'Q':
         add_quotes = "'";
         fmt_call = (fmt_function*)(void*)&fmt_escapecharquotedshell;
@@ -424,7 +443,8 @@ main(int argc, char* argv[]) {
 
   if(unix_optind < argc) {
 #ifdef DEBUG_OUTPUT
-    buffer_putm_internal(buffer_2, "Opening input file '", argv[unix_optind], "'...", NULL);
+    buffer_putm_internal(
+        buffer_2, "Opening input file '", argv[unix_optind], "'...", NULL);
     buffer_putnlflush(buffer_2);
 #endif
     in_fd = open_read((in_path = argv[unix_optind]));
@@ -432,14 +452,19 @@ main(int argc, char* argv[]) {
   }
   if(unix_optind < argc) {
 #ifdef DEBUG_OUTPUT
-    buffer_putm_internal(buffer_2, "Opening output file '", argv[unix_optind], "'...", NULL);
+    buffer_putm_internal(buffer_2,
+                         "Opening output file '",
+                         argv[unix_optind],
+                         "'...",
+                         NULL);
     buffer_putnlflush(buffer_2);
 #endif
     out_fd = open_trunc((out_path = argv[unix_optind]));
     unix_optind++;
   }
 
-  buffer_init_free(&input, (buffer_op_proto*)(void*)&read, in_fd, alloc(1024), 1024);
+  buffer_init_free(
+      &input, (buffer_op_proto*)(void*)&read, in_fd, alloc(1024), 1024);
 
 again:
   if(in_place) {

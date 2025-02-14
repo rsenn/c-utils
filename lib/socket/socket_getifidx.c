@@ -23,7 +23,8 @@ if_nametoindex(const char* name) {
     HANDLE iphlpapi = LoadLibraryA("iphlpapi.dll");
 
     if(iphlpapi != INVALID_HANDLE_VALUE) {
-      if((ifn2idx = (ifn2idx_fn*)GetProcAddress(iphlpapi, "if_nametoindex")) == 0)
+      if((ifn2idx = (ifn2idx_fn*)GetProcAddress(iphlpapi,
+                                                "if_nametoindex")) == 0)
         return -1;
     }
   }

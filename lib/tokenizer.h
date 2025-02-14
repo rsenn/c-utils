@@ -88,8 +88,12 @@ int tokenizer_next(tokenizer*, token* out);
 int tokenizer_peek(tokenizer*);
 int tokenizer_peek_token(tokenizer*, token* tok);
 int tokenizer_read_until(tokenizer*, const char* marker, int stop_at_nl);
-void tokenizer_register_custom_token(tokenizer*, int tokentype, const char* str);
-void tokenizer_register_marker(tokenizer*, enum markertype mt, const char* marker);
+void tokenizer_register_custom_token(tokenizer*,
+                                     int tokentype,
+                                     const char* str);
+void tokenizer_register_marker(tokenizer*,
+                               enum markertype mt,
+                               const char* marker);
 int tokenizer_rewind(tokenizer*);
 void tokenizer_set_filename(tokenizer*, const char* fn);
 void tokenizer_set_flags(tokenizer*, int flags);
@@ -130,7 +134,8 @@ token_is_char(token* tok, int ch) {
 
 static inline int
 token_is_whitespace(token* token) {
-  return token->type == TT_SEP && (token->value == ' ' || token->value == '\t');
+  return token->type == TT_SEP &&
+         (token->value == ' ' || token->value == '\t');
 }
 
 #endif /* defined(TOKENIZER_H) */

@@ -103,7 +103,8 @@ path_canonicalize(const char* path, stralloc* sa, int symbolic) {
   int ret = 1;
   char buf[PATH_MAX + 1];
   char sep;
-  int (*stat_fn)(const char*, struct _stat*) = (int (*)(const char*, struct _stat*)) & stat;
+  int (*stat_fn)(const char*, struct _stat*) =
+      (int (*)(const char*, struct _stat*)) & stat;
 #ifdef HAVE_LSTAT
 #if !WINDOWS_NATIVE
   if(symbolic)
@@ -151,7 +152,8 @@ start:
       break;
 
     /* begin a new path component */
-    if(sa->len && (sa->s[sa->len - 1] != '/' && sa->s[sa->len - 1] != '\\'))
+    if(sa->len &&
+       (sa->s[sa->len - 1] != '/' && sa->s[sa->len - 1] != '\\'))
       stralloc_catc(sa, sep);
 
     /* look for the next path separator and then copy the component */
@@ -169,7 +171,8 @@ start:
     if(stat_fn(sa->s, &st) != -1 && is_link(sa->s)) {
       ret++;
 
-      /* read the link, return if failed and then nul-terminate the buffer */
+      /* read the link, return if failed and then nul-terminate the buffer
+       */
       if((ssize_t)(n = readlink(sa->s, buf, PATH_MAX)) == (ssize_t)-1)
         return 0;
       // buf[n] = '\0';
@@ -182,7 +185,8 @@ start:
         stralloc_catc(sa, sep);
         path = buf;
         goto start;
-        /* if the symlink is relative we remove the symlink path component and recurse */
+        /* if the symlink is relative we remove the symlink path component
+         * and recurse */
       } else {
         int rret;
 

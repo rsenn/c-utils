@@ -26,7 +26,8 @@ buffer_indent_write(fd_type fd, char* x, size_t n, void* ptr) {
     if(*x == '\n') {
       size_t i;
       for(i = 0; i < iw->level; i++)
-        if((ret = iw->realop(fd, (void*)iw->indent, str_len(iw->indent), ptr)) < 0)
+        if((ret = iw->realop(
+                fd, (void*)iw->indent, str_len(iw->indent), ptr)) < 0)
           return ret;
     }
     x++;
@@ -44,7 +45,8 @@ buffer_indent(buffer* b, struct indent_write* iw) {
   b->cookie = iw;
 }
 
-static void json_print_val(jsonval* val, buffer* b, int depth, json_print_fn*);
+static void
+json_print_val(jsonval* val, buffer* b, int depth, json_print_fn*);
 
 static int
 byte_fullfils_predicate(const char* x, size_t len, int (*pred)(int)) {
@@ -56,7 +58,10 @@ byte_fullfils_predicate(const char* x, size_t len, int (*pred)(int)) {
 }
 
 static void
-json_print_separator(jsonval* val, buffer* b, int what, const jsonfmt* printer) {
+json_print_separator(jsonval* val,
+                     buffer* b,
+                     int what,
+                     const jsonfmt* printer) {
   const char* s;
 
   s = printer->ws[what];
@@ -67,9 +72,16 @@ json_print_separator(jsonval* val, buffer* b, int what, const jsonfmt* printer) 
 }
 
 static void
-json_print_key(buffer* b, const char* key, size_t key_len, const jsonfmt* fmt) {
+json_print_key(buffer* b,
+               const char* key,
+               size_t key_len,
+               const jsonfmt* fmt) {
   char quote;
-  quote = ((!isdigit(key[0]) && byte_fullfils_predicate(key, key_len, json_is_identifier_char))) ? fmt->quote[1] : fmt->quote[0];
+  quote =
+      ((!isdigit(key[0]) &&
+        byte_fullfils_predicate(key, key_len, json_is_identifier_char)))
+          ? fmt->quote[1]
+          : fmt->quote[0];
   if(fmt->compliant) {
     if(quote != '"')
       quote = '"';
@@ -167,8 +179,12 @@ json_print_val(jsonval* val, buffer* b, int depth, json_print_fn* p) {
   switch(val->type) {
     case JSON_UNDEFINED: break;
     case JSON_NULL: buffer_puts(b, "null"); break;
-    case JSON_STRING: json_print_str(b, val->stringv.s, val->stringv.len, &printer); break;
-    case JSON_DOUBLE: buffer_putdouble(b, val->doublev, printer.precision); break;
+    case JSON_STRING:
+      json_print_str(b, val->stringv.s, val->stringv.len, &printer);
+      break;
+    case JSON_DOUBLE:
+      buffer_putdouble(b, val->doublev, printer.precision);
+      break;
     case JSON_BOOL: buffer_puts(b, val->boolv ? "true" : "false"); break;
     case JSON_INT: buffer_putlonglong(b, val->intv); break;
     case JSON_OBJECT: json_print_object(val, b, depth, p); break;

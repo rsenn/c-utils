@@ -41,7 +41,8 @@
  */
 
 #pragma argsused
-#ifndef _UNICODE // we only need one copy of this and rather than move it...
+#ifndef _UNICODE // we only need one copy of this and rather than move
+                 // it...
 int
 _dummy_add_pid(DWORD pid, HANDLE handle) {
   return (int)pid;

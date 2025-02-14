@@ -10,7 +10,8 @@ set_iterator_next(set_iterator_t* it) {
   if(!(b = it->current))
     return 0;
 
-  // check if there are overflowed buckets in our current position in the array
+  // check if there are overflowed buckets in our current position in the
+  // array
   if(b->next) {
     it->current = b->next;
     return 1;

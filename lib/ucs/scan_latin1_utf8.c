@@ -7,6 +7,7 @@ size_t
 scan_latin1_utf8(const char* x, size_t n, char* out) {
   uint32 wc;
   size_t ret;
+
   if((ret = scan_utf8(x, n, &wc))) {
     *out = ucs_to_latin1_char(wc);
     /*if(ret > 1 || wc > 0x7f) {
@@ -17,5 +18,6 @@ scan_latin1_utf8(const char* x, size_t n, char* out) {
       buffer_putsflush(buffer_2, "'\n");
     }*/
   }
+
   return ret;
 }

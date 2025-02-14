@@ -4,7 +4,10 @@
 #include <errno.h>
 
 int
-buffer_get_token_sa_pred(buffer* b, stralloc* sa, sa_predicate p, void* arg) {
+buffer_get_token_sa_pred(buffer* b,
+                         stralloc* sa,
+                         sa_predicate p,
+                         void* arg) {
   for(;;) {
     char x;
     if(!stralloc_readyplus(sa, 1))

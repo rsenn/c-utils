@@ -42,7 +42,8 @@ socket_accept4(int s, char* ip, uint16* port) {
           io_entry* f = array_get(io_getfds(), sizeof(io_entry), fd);
           if(f) {
             f->nonblock = 1;
-            /*      printf("setting fd %lu to non-blocking\n",(int64)fd); */
+            /*      printf("setting fd %lu to non-blocking\n",(int64)fd);
+             */
           }
         }
       }
@@ -54,7 +55,14 @@ socket_accept4(int s, char* ip, uint16* port) {
       if(e == INVALID_HANDLE_VALUE)
         return winsock2errno(-1);
     }
-    if(AcceptEx(s, e->next_accept, e->inbuf, 0, 200, 200, &e->errorcode, &e->or))
+    if(AcceptEx(s,
+                e->next_accept,
+                e->inbuf,
+                0,
+                200,
+                200,
+                &e->errorcode,
+                &e->or))
       goto incoming;
     if(WSAGetLastError() != ERROR_IO_PENDING)
       return winsock2errno(-1);

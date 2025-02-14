@@ -87,7 +87,13 @@ includes_cppflags(void) {
     // path_relative_to(dir, dirs.this.sa.s, &arg);
 
 #ifdef DEBUG_OUTPUT
-    buffer_putm_internal(buffer_2, "[1]", PINK256, "includes_cppflags", NC, " include_dir=", 0);
+    buffer_putm_internal(buffer_2,
+                         "[1]",
+                         PINK256,
+                         "includes_cppflags",
+                         NC,
+                         " include_dir=",
+                         0);
     buffer_putsa(buffer_2, &arg);
     buffer_putnlflush(buffer_2);
 #endif
@@ -129,7 +135,8 @@ includes_add_b(const char* dir, size_t len) {
 
   if(strlist_push_unique_sa(&include_dirs, &abs)) {
 #ifdef DEBUG_OUTPUT
-    buffer_putm_internal(buffer_2, "[1]", PINK256, "includes_add_b", NC, " abs=", 0);
+    buffer_putm_internal(
+        buffer_2, "[1]", PINK256, "includes_add_b", NC, " abs=", 0);
     buffer_putsa(buffer_2, &abs);
     buffer_putnlflush(buffer_2);
 #endif
@@ -163,7 +170,8 @@ includes_to_libs(const set_t* includes, strlist* libs) {
     stralloc_zero(&sa);
     path_append(s, n, &sa);
 
-    if(!(n > str_len(libpfx) && byte_equal(s, str_len(libpfx), libpfx)) && byte_chr(s, n, PATHSEP_C) == n)
+    if(!(n > str_len(libpfx) && byte_equal(s, str_len(libpfx), libpfx)) &&
+       byte_chr(s, n, PATHSEP_C) == n)
       path_concatb(libpfx, str_len(libpfx), sa.s, sa.len, &sa);
 
     path_concatb(dirs.this.sa.s, dirs.this.sa.len, sa.s, sa.len, &sa);

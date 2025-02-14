@@ -95,11 +95,13 @@ typedef int col_t[8];
 typedef col_t offsets_lengths_t[2];
 
 static void print_strarray(buffer* b, array* a);
-static int fnmatch_strarray(buffer* b, array* a, const char* string, int flags);
+static int
+fnmatch_strarray(buffer* b, array* a, const char* string, int flags);
 static strlist extensions, exclude_masks, include_masks;
 static char opt_separator = DIRSEP_C;
 
-static int opt_list = 0, opt_numeric = 0, opt_relative = 0, opt_deref = 0, opt_samedev = 1, opt_crc = 0, opt_human = 0;
+static int opt_list = 0, opt_numeric = 0, opt_relative = 0, opt_deref = 0,
+           opt_samedev = 1, opt_crc = 0, opt_human = 0;
 static int64 opt_minsize = -1;
 static long opt_depth = -1, opt_force = 0, opt_quiet = 0;
 static uint32 opt_types = (uint32)(int32)-1;
@@ -124,7 +126,8 @@ last_error() {
   if(errCode == 0)
     return tmpbuf;
   SetLastError(0);
-  if(!FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
+  if(!FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER |
+                        FORMAT_MESSAGE_FROM_SYSTEM,
                     0,
                     errCode,
                     MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), /* default
@@ -150,7 +153,13 @@ get_file_size(char* path) {
   typedef LONG(WINAPI getfilesizeex_fn)(HANDLE, PLARGE_INTEGER);
   static getfilesizeex_fn* api_fn;
 
-  HANDLE hFile = CreateFileA(path, GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
+  HANDLE hFile = CreateFileA(path,
+                             GENERIC_READ,
+                             FILE_SHARE_READ | FILE_SHARE_WRITE,
+                             0,
+                             OPEN_EXISTING,
+                             FILE_ATTRIBUTE_NORMAL,
+                             0);
   if(hFile == INVALID_HANDLE_VALUE)
     return -1; /* error condition, could
                   call GetLastError to
@@ -159,7 +168,8 @@ get_file_size(char* path) {
   if(!api_fn) {
     HANDLE kernel;
     if((kernel = LoadLibraryA("kernel32.dll")) != INVALID_HANDLE_VALUE)
-      api_fn = (getfilesizeex_fn*)(void*)GetProcAddress(kernel, "GetFileSizeEx");
+      api_fn = (getfilesizeex_fn*)(void*)GetProcAddress(kernel,
+                                                        "GetFileSizeEx");
   }
 
   if(!api_fn)
@@ -183,7 +193,13 @@ uint64
 get_file_time(const char* path) {
   FILETIME c, la, lw;
   int64 t;
-  HANDLE hFile = CreateFileA(path, GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
+  HANDLE hFile = CreateFileA(path,
+                             GENERIC_READ,
+                             FILE_SHARE_READ | FILE_SHARE_WRITE,
+                             0,
+                             OPEN_EXISTING,
+                             FILE_ATTRIBUTE_NORMAL,
+                             0);
   if(hFile == INVALID_HANDLE_VALUE)
     return -1; /* error condition, could
                   call GetLastError to
@@ -235,12 +251,25 @@ get_file_owner(const char* path) {
   PSECURITY_DESCRIPTOR pSD = 0;
   LPSTR strsid = 0;
   DWORD dwErrorCode = 0;
-  static DWORD(WINAPI * get_security_info)(HANDLE, DWORD, SECURITY_INFORMATION, PSID*, PSID*, PACL*, PACL*, PSECURITY_DESCRIPTOR*);
+  static DWORD(WINAPI * get_security_info)(HANDLE,
+                                           DWORD,
+                                           SECURITY_INFORMATION,
+                                           PSID*,
+                                           PSID*,
+                                           PACL*,
+                                           PACL*,
+                                           PSECURITY_DESCRIPTOR*);
   static BOOL(WINAPI * convert_sid_to_string_sid_a)(PSID, LPSTR*);
   tmpbuf[0] = '\0';
   /* Get the handle of the file object.
    */
-  hFile = CreateFileA(path, GENERIC_READ, FILE_SHARE_READ, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
+  hFile = CreateFileA(path,
+                      GENERIC_READ,
+                      FILE_SHARE_READ,
+                      0,
+                      OPEN_EXISTING,
+                      FILE_ATTRIBUTE_NORMAL,
+                      0);
   /* Check GetLastError for CreateFile
    * error code. */
   if(hFile == INVALID_HANDLE_VALUE) {
@@ -252,11 +281,20 @@ get_file_owner(const char* path) {
   }
   if(get_win_api(&get_security_info, "advapi32", "GetSecurityInfo") == -1)
     return 0;
-  if(get_win_api(&convert_sid_to_string_sid_a, "advapi32", "ConvertSidToStringSidA") == -1)
+  if(get_win_api(&convert_sid_to_string_sid_a,
+                 "advapi32",
+                 "ConvertSidToStringSidA") == -1)
     return 0;
 
   /* Get the owner SID of the file. */
-  dwRtnCode = get_security_info(hFile, SE_FILE_OBJECT, OWNER_SECURITY_INFORMATION, &pSidOwner, 0, 0, 0, &pSD);
+  dwRtnCode = get_security_info(hFile,
+                                SE_FILE_OBJECT,
+                                OWNER_SECURITY_INFORMATION,
+                                &pSidOwner,
+                                0,
+                                0,
+                                0,
+                                &pSD);
   /* Check GetLastError for
    * GetSecurityInfo error condition. */
   if(dwRtnCode != ERROR_SUCCESS) {
@@ -303,12 +341,12 @@ get_file_owner(const char* path) {
   }
   /* Second call to LookupAccountSid to
    * get the account name. */
-  bRtnBool = LookupAccountSid(0,                      /* name of local or remote
-                                                         computer */
-                              pSidOwner,              /* security identifier
-                                                       */
-                              AcctName,               /* account name tmpbuf
-                                                       */
+  bRtnBool = LookupAccountSid(0,         /* name of local or remote
+                                            computer */
+                              pSidOwner, /* security identifier
+                                          */
+                              AcctName,  /* account name tmpbuf
+                                          */
                               (LPDWORD)&dwAcctName,   /* size of
                                                          account
                                                          name
@@ -344,7 +382,8 @@ get_file_owner(const char* path) {
 
 static uint64
 filetime_to_unix(const FILETIME* ft) {
-  uint64 windowsTicks = ((uint64)ft->dwHighDateTime << 32) + ft->dwLowDateTime;
+  uint64 windowsTicks =
+      ((uint64)ft->dwHighDateTime << 32) + ft->dwLowDateTime;
   return (uint64)(windowsTicks / 10000000 - SEC_TO_UNIX_EPOCH);
 }
 
@@ -365,8 +404,8 @@ is_junction_point(const char* fn) {
       /* http://msdn.microsoft.com/en-us/library/dd541667(prot.20).aspx
        */
       switch(FindFileData.dwReserved0) {
-        case IO_REPARSE_TAG_MOUNT_POINT: /* ocb.error_filename(fn, "Junction
-                                            point, skipping"); */
+        case IO_REPARSE_TAG_MOUNT_POINT: /* ocb.error_filename(fn,
+                                            "Junction point, skipping"); */
           break;
         case IO_REPARSE_TAG_SYMLINK:
           /* TODO: Maybe have the option
@@ -497,7 +536,10 @@ resolve_etc(const strarray* arr, uint32 id) {
 }
 
 static void
-make_num(stralloc* out, uint64 num, uint32 width, size_t (*fmt)(char*, uint64)) {
+make_num(stralloc* out,
+         uint64 num,
+         uint32 width,
+         size_t (*fmt)(char*, uint64)) {
   char buf[FMT_ULONG + 1];
   if(!fmt)
     fmt = &fmt_ulonglong;
@@ -581,7 +623,8 @@ fnmatch_strarray(buffer* b, array* a, const char* string, int flags) {
     char* s = x[i];
     if(s == 0)
       break;
-    if((ret = path_fnmatch(s, str_len(s), string, string_len, flags)) != FNM_NOMATCH)
+    if((ret = path_fnmatch(s, str_len(s), string, string_len, flags)) !=
+       FNM_NOMATCH)
       break;
   }
   return ret;
@@ -719,7 +762,14 @@ stat_type(const char* path, int mode) {
   return dtype;
 }
 
-static const char* type_strs[] = {"D_PIPE", "D_CHARDEV", "D_BLKDEV", "D_SYMLINK", "D_DIRECTORY", "D_FILE", "D_SOCKET", 0};
+static const char* type_strs[] = {"D_PIPE",
+                                  "D_CHARDEV",
+                                  "D_BLKDEV",
+                                  "D_SYMLINK",
+                                  "D_DIRECTORY",
+                                  "D_FILE",
+                                  "D_SOCKET",
+                                  0};
 
 static const char*
 type_str(dir_type_t type) {
@@ -836,7 +886,12 @@ file_crc32(const char* path, size_t size, uint32* crc) {
 }
 
 int
-list_file(stralloc* path, const char* name, int mode, long depth, int root_dev, struct dir_s* dir_p) {
+list_file(stralloc* path,
+          const char* name,
+          int mode,
+          long depth,
+          int root_dev,
+          struct dir_s* dir_p) {
   size_t l;
   struct stat st;
   static stralloc pre;
@@ -937,7 +992,8 @@ list_file(stralloc* path, const char* name, int mode, long depth, int root_dev, 
   if(path->len > PATH_MAX) {
     buffer_puts(buffer_2, "ERROR: Directory ");
     buffer_putsa(buffer_2, path);
-    buffer_puts(buffer_2, " longer than PATH_MAX (" STRINGIFY(PATH_MAX) ")!\n");
+    buffer_puts(buffer_2,
+                " longer than PATH_MAX (" STRINGIFY(PATH_MAX) ")!\n");
     buffer_flush(buffer_2);
     return 1;
   }
@@ -956,7 +1012,11 @@ list_file(stralloc* path, const char* name, int mode, long depth, int root_dev, 
     strlist_foreach_s(&include_masks, pattern) {
       int has_slash = !!pattern[str_chr(pattern, '/')];
       const char* mask = has_slash ? s : name;
-      if(path_fnmatch(pattern, str_len(pattern), mask, str_len(mask), FNM_PATHNAME) == 0) {
+      if(path_fnmatch(pattern,
+                      str_len(pattern),
+                      mask,
+                      str_len(mask),
+                      FNM_PATHNAME) == 0) {
         match = 1;
         break;
       }
@@ -969,7 +1029,9 @@ list_file(stralloc* path, const char* name, int mode, long depth, int root_dev, 
   strlist_foreach_s(&exclude_masks, pattern) {
     int has_slash = !!pattern[str_chr(pattern, '/')];
     const char* mask = has_slash ? s : name;
-    if(path_fnmatch(pattern, str_len(pattern), mask, str_len(mask), FNM_PATHNAME) == 0) {
+    if(path_fnmatch(
+           pattern, str_len(pattern), mask, str_len(mask), FNM_PATHNAME) ==
+       0) {
       match = 1;
       break;
     }
@@ -1009,17 +1071,20 @@ list_file(stralloc* path, const char* name, int mode, long depth, int root_dev, 
       stralloc_catb(&pre, " ", 1);
       /* uid */
       s = opt_numeric ? NULL : resolve_etc(&etc_users, uid);
-      s ? make_str(&pre, s, 8) : make_num(&pre, uid, opt_numeric ? 5 : 8, 0);
+      s ? make_str(&pre, s, 8)
+        : make_num(&pre, uid, opt_numeric ? 5 : 8, 0);
       stralloc_catb(&pre, " ", 1);
       /* gid */
       s = opt_numeric ? NULL : resolve_etc(&etc_groups, gid);
-      s ? make_str(&pre, s, 8) : make_num(&pre, gid, opt_numeric ? 5 : 8, 0);
+      s ? make_str(&pre, s, 8)
+        : make_num(&pre, gid, opt_numeric ? 5 : 8, 0);
       stralloc_catb(&pre, " ", 1);
       /* size */
       make_num(&pre, size, 10, &fmt_human);
       stralloc_catb(&pre, " ", 1);
       /* time */
-      opt_numeric ? make_num(&pre, mtime, 10, 0) : make_time(&pre, mtime, 10);
+      opt_numeric ? make_num(&pre, mtime, 10, 0)
+                  : make_time(&pre, mtime, 10);
       /*     make_time(&pre, mtime, 10);
        */
       stralloc_catb(&pre, " ", 1);
@@ -1097,7 +1162,8 @@ list_dir_internal(stralloc* dir, int type, long depth) {
     dtype = dir_type(&d);
     dir_name(&d);
     dir->len = l;
-    if(str_equal(name, "") || str_equal(name, ".") || str_equal(name, ".."))
+    if(str_equal(name, "") || str_equal(name, ".") ||
+       str_equal(name, ".."))
       continue;
     stralloc_readyplus(dir, str_len(name) + 1);
     str_copy(dir->s + dir->len, name);
@@ -1146,35 +1212,38 @@ count_non_negative(const int* x, size_t n) {
 void
 usage(char* argv0) {
   const char* prog = str_basename(argv0);
-  buffer_putm_internal(buffer_1,
-                       "Usage: ",
-                       prog,
-                       " [-o output] [infile or stdin]\n\n",
-                       "  -1 ... -9           compression level; default is 3\n",
-                       "\n",
-                       "Options\n",
-                       "  -h, --help                show this help\n",
-                       "  -f, --force               force\n",
-                       "  -l, --list                long list\n",
-                       "  -n, --numeric             numeric user/group\n",
-                       "  -r, --relative            relative path\n",
-                       "  -i, --input       FILE     read files to list from FILE\n",
-                       "  -o, --output      FILE     write output to FILE\n",
-                       "  -I, --include     PATTERN  include entries matching PATTERN\n",
-                       "  -X, --exclude     PATTERN  exclude entries matching PATTERN\n",
-                       "  -t, --time-style  FORMAT   format time according to FORMAT\n",
-                       "  -m, --MIN-size    BYTES    minimum file size\n",
-                       "  -L, --dereference          dereference symlinks\n",
-                       "      --no-dereferen1ce\n",
-                       "  -D, --one-filesystem\n",
-                       "      --cross-filesystem\n",
-                       "  -C, --chdir       DIR      in directory\n",
-                       "  -c, --crc                  cyclic redundancy check\n",
-                       "  -d, --depth       NUM      MAX depth\n",
-                       "  -F, --filter-type TYPES    filter by type:\n\n    d = directory, b = "
-                       "block dev s = socket\n    f = file,      c = char dev\n    l = symlink, "
-                       "  p = pipe (fifo)\n\n",
-                       NULL);
+  buffer_putm_internal(
+      buffer_1,
+      "Usage: ",
+      prog,
+      " [-o output] [infile or stdin]\n\n",
+      "  -1 ... -9           compression level; default is 3\n",
+      "\n",
+      "Options\n",
+      "  -h, --help                show this help\n",
+      "  -f, --force               force\n",
+      "  -l, --list                long list\n",
+      "  -n, --numeric             numeric user/group\n",
+      "  -r, --relative            relative path\n",
+      "  -i, --input       FILE     read files to list from FILE\n",
+      "  -o, --output      FILE     write output to FILE\n",
+      "  -I, --include     PATTERN  include entries matching PATTERN\n",
+      "  -X, --exclude     PATTERN  exclude entries matching PATTERN\n",
+      "  -t, --time-style  FORMAT   format time according to FORMAT\n",
+      "  -m, --MIN-size    BYTES    minimum file size\n",
+      "  -L, --dereference          dereference symlinks\n",
+      "      --no-dereferen1ce\n",
+      "  -D, --one-filesystem\n",
+      "      --cross-filesystem\n",
+      "  -C, --chdir       DIR      in directory\n",
+      "  -c, --crc                  cyclic redundancy check\n",
+      "  -d, --depth       NUM      MAX depth\n",
+      "  -F, --filter-type TYPES    filter by type:\n\n    d = directory, "
+      "b = "
+      "block dev s = socket\n    f = file,      c = char dev\n    l = "
+      "symlink, "
+      "  p = pipe (fifo)\n\n",
+      NULL);
   buffer_putnlflush(buffer_1);
 }
 
@@ -1182,35 +1251,50 @@ typedef const char* ext_class_t[2];
 
 static const ext_class_t ext_classes[] = {
     {"archives",
-     "^rar^zip^7z^cab^tar^tar.Z^tar.gz^tar.xz^tar.bz2^tar.lzma^tgz^txz^tbz2^"
+     "^rar^zip^7z^cab^tar^tar.Z^tar.gz^tar.xz^tar.bz2^tar.lzma^tgz^txz^"
+     "tbz2^"
      "tlzma"},
     {"audio", "^aif^aiff^flac^m4a^m4b^mp2^mp3^mpc^ogg^raw^rm^wav^wma"},
     {"books", "^pdf^epub^mobi^azw3^djv^djvu"},
-    {"documents", "^cdr^doc^docx^odf^odg^odp^ods^odt^pdf^ppt^pptx^rtf^vsd^xls^xlsx^html"},
+    {"documents",
+     "^cdr^doc^docx^odf^odg^odp^ods^odt^pdf^ppt^pptx^rtf^vsd^xls^xlsx^"
+     "html"},
     {"fonts", "^CompositeFont^pcf^ttc^otf^afm^pfb^fon^ttf"},
     {"images",
-     "^bmp^cin^cod^dcx^djvu^emf^fig^gif^ico^im1^im24^im8^jin^jpeg^jpg^lss^miff^"
-     "opc^pbm^pcx^pgm^pgx^png^pnm^ppm^psd^rle^rmp^sgi^shx^svg^tga^tif^tiff^wim^"
+     "^bmp^cin^cod^dcx^djvu^emf^fig^gif^ico^im1^im24^im8^jin^jpeg^jpg^lss^"
+     "miff^"
+     "opc^pbm^pcx^pgm^pgx^png^pnm^ppm^psd^rle^rmp^sgi^shx^svg^tga^tif^"
+     "tiff^wim^"
      "xcf^xpm^xwd^mng"},
     {"incomplete", "^*.part^*.!??^INCOMPL*"},
-    {"music", "^mp3^ogg^flac^mpc^m4a^m4b^wma^wav^aif^aiff^mod^s3m^xm^it^669^mp4"},
+    {"music",
+     "^mp3^ogg^flac^mpc^m4a^m4b^wma^wav^aif^aiff^mod^s3m^xm^it^669^mp4"},
     {"packages", "^tgz^txz^rpm^deb"},
     {"scripts", "^sh^py^rb^bat^cmd^js^ts^jsx^tsx"},
     {"software",
-     "^*setup*.exe^*install*.exe^*.msi^*.msu^*.cab^*.vbox-extpack^*.apk^*.run^*"
-     ".dmg^*.app^*.apk^7z^app^bin^daa^deb^dmg^exe^iso^msi^msu^cab^vbox-extpack^"
-     "apk^nrg^pkg^rar^rpm^run^sh^tar.Z^tar.bz2^tar.gz^tar.xz^tbz2^tgz^txz^zip"},
-    {"sources", "^c^cs^cc^cpp^cxx^h^hh^hpp^hxx^ipp^mm^r^java^rb^py^S^s^asm^inc"},
+     "^*setup*.exe^*install*.exe^*.msi^*.msu^*.cab^*.vbox-extpack^*.apk^*."
+     "run^*"
+     ".dmg^*.app^*.apk^7z^app^bin^daa^deb^dmg^exe^iso^msi^msu^cab^vbox-"
+     "extpack^"
+     "apk^nrg^pkg^rar^rpm^run^sh^tar.Z^tar.bz2^tar.gz^tar.xz^tbz2^tgz^txz^"
+     "zip"},
+    {"sources",
+     "^c^cs^cc^cpp^cxx^h^hh^hpp^hxx^ipp^mm^r^java^rb^py^S^s^asm^inc"},
     {"scripts",
-     "^lua^etlua^moon^py^rb^sh^js^jsx^es^es5^es6^es7^coffee^scss^sass^css^jsx^"
+     "^lua^etlua^moon^py^rb^sh^js^jsx^es^es5^es6^es7^coffee^scss^sass^css^"
+     "jsx^"
      "tcl^pl^awk^m4^php"},
     {"web", "^js^css^htm^html^xml^svg"},
-    {"videos", "^3gp^avi^f4v^flv^m4v^m2v^mkv^mov^mp4^mpeg^mpg^ogm^vob^webm^wmv"},
+    {"videos",
+     "^3gp^avi^f4v^flv^m4v^m2v^mkv^mov^mp4^mpeg^mpg^ogm^vob^webm^wmv"},
     {"vmdisk", "^vdi^vmdk^vhd^qed^qcow^qcow2^vhdx^hdd"},
     {"project",
-     "^avrgccproj^bdsproj^cbproj^coproj^cproj^cproject^csproj^dproj^fsproj^"
-     "groupproj^jsproj^jucer^lproj^lsxproj^metaproj^packproj^pbxproj^pkgproj^"
-     "pmproj^pnproj^pro^proj^project^pssproj^shfbproj^sln^tmproj^unityproj^"
+     "^avrgccproj^bdsproj^cbproj^coproj^cproj^cproject^csproj^dproj^"
+     "fsproj^"
+     "groupproj^jsproj^jucer^lproj^lsxproj^metaproj^packproj^pbxproj^"
+     "pkgproj^"
+     "pmproj^pnproj^pro^proj^project^pssproj^shfbproj^sln^tmproj^"
+     "unityproj^"
      "uvproj^vbproj^vcproj^vcxproj^vdproj^vfproj^webproj^winproj^wixproj^"
      "zdsproj^zfpproj"},
     {"spice", "^sp^cir^spc^spi"},
@@ -1311,7 +1395,8 @@ main(int argc, char* argv[]) {
   strlist_init(&extensions, ',');
 
   for(;;) {
-    c = unix_getopt_long(argc, argv, "fhlLne:qri:o:I:X:t:m:cd:C:F:SD", opts, &index);
+    c = unix_getopt_long(
+        argc, argv, "fhlLne:qri:o:I:X:t:m:cd:C:F:SD", opts, &index);
     if(c == -1)
       break;
     if(c == 0)

@@ -20,7 +20,9 @@
  * @return     -1 on error
  */
 ssize_t
-http_canread(http* h, void (*wantread)(fd_type), void (*wantwrite)(fd_type)) {
+http_canread(http* h,
+             void (*wantread)(fd_type),
+             void (*wantwrite)(fd_type)) {
   http_response* r;
   int err;
   size_t len;
@@ -89,13 +91,17 @@ http_canread(http* h, void (*wantread)(fd_type), void (*wantwrite)(fd_type)) {
       }
       break;
     }
-    if(!case_diffb(&r->data.s[pos], str_len("Content-Type: multipart"), "Content-Type: multipart")) {
+    if(!case_diffb(&r->data.s[pos],
+                   str_len("Content-Type: multipart"),
+                   "Content-Type: multipart")) {
       size_t p = pos + str_find(&r->data.s[pos], "boundary=");
       if(r->data.s[p]) {
         stralloc_copys(&r->boundary, &r->data.s[p + str_len("boundary=")]);
       }
       r->transfer = HTTP_TRANSFER_BOUNDARY;
-    } else if(!case_diffb(&r->data.s[pos], str_len("Content-Length: "), "Content-Length: ")) {
+    } else if(!case_diffb(&r->data.s[pos],
+                          str_len("Content-Length: "),
+                          "Content-Length: ")) {
       scan_ulonglong(&r->data.s[pos + 16], &r->content_length);
       r->transfer = HTTP_TRANSFER_LENGTH;
     } else {
@@ -110,7 +116,9 @@ http_canread(http* h, void (*wantread)(fd_type), void (*wantwrite)(fd_type)) {
   if(r->status == HTTP_RECV_HEADER || r->status == HTTP_RECV_DATA) {
     if(ret > 0) {
       stralloc_readyplus(&h->response->data, ret);
-      buffer_get(&h->q.in, &h->response->data.s[h->response->data.len], ret);
+      buffer_get(&h->q.in,
+                 &h->response->data.s[h->response->data.len],
+                 ret);
       h->response->data.len += ret;
 
 #ifdef DEBUG_HTTP
@@ -214,7 +222,15 @@ fail:
     buffer_putlong(buffer_2, h->response->code);
   }
   buffer_puts(buffer_2, " status=");
-  buffer_puts(buffer_2, ((const char* const[]){"-1", "HTTP_RECV_HEADER", "HTTP_RECV_DATA", "HTTP_STATUS_CLOSED", "HTTP_STATUS_ERROR", "HTTP_STATUS_BUSY", "HTTP_STATUS_FINISH", 0})[h->response->status + 1]);
+  buffer_puts(buffer_2,
+              ((const char* const[]){"-1",
+                                     "HTTP_RECV_HEADER",
+                                     "HTTP_RECV_DATA",
+                                     "HTTP_STATUS_CLOSED",
+                                     "HTTP_STATUS_ERROR",
+                                     "HTTP_STATUS_BUSY",
+                                     "HTTP_STATUS_FINISH",
+                                     0})[h->response->status + 1]);
   buffer_putnlflush(buffer_2);
 #endif
 

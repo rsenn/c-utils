@@ -40,7 +40,8 @@ extern "C" {
  * 16, the indices on page 0 are 0, 16, 32, ...
  * To get to element 0, you'd go to iarray->pages[0].data,
  * to get to element 1, you'd go to iarray->pages[1].data,
- * to get to element 16, you'd go to iarray->pages[0].data+iarray->elemsize.
+ * to get to element 16, you'd go to
+ * iarray->pages[0].data+iarray->elemsize.
  */
 typedef struct _iarray_page {
   struct _iarray_page* next;

@@ -90,7 +90,10 @@ is_source(const char* s) {
 
 static inline int
 is_filename_b(const char* filename, size_t len) {
-  size_t dirpos = byte_rchrs(filename, len, PATHSEP_S_MIXED, sizeof(PATHSEP_S_MIXED) - 1);
+  size_t dirpos = byte_rchrs(filename,
+                             len,
+                             PATHSEP_S_MIXED,
+                             sizeof(PATHSEP_S_MIXED) - 1);
   size_t extpos = byte_rchr(filename, len, '.');
 
   if(dirpos < len)
@@ -248,7 +251,10 @@ is_var_b(const char* x, size_t n) {
   n--;
 
   while(n > 0) {
-    if(byte_chr("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_", 63, *x) == 63) {
+    if(byte_chr("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz01234"
+                "56789_",
+                63,
+                *x) == 63) {
       if(*x == '=')
         return 1;
 

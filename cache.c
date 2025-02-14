@@ -118,7 +118,10 @@ hash(const char* key, unsigned int keylen) {
 }
 
 char*
-cache_find(const char* key, unsigned int keylen, unsigned int* datalen, struct tai* expire) {
+cache_find(const char* key,
+           unsigned int keylen,
+           unsigned int* datalen,
+           struct tai* expire) {
   uint32 pos, prevpos, nextpos, u;
   unsigned int loop;
   double d;
@@ -159,7 +162,10 @@ cache_find(const char* key, unsigned int keylen, unsigned int* datalen, struct t
 }
 
 char*
-cache_get(const char* key, unsigned int keylen, unsigned int* datalen, uint32* ttl) {
+cache_get(const char* key,
+          unsigned int keylen,
+          unsigned int* datalen,
+          uint32* ttl) {
   struct tai expire, now;
   double d;
   char* data;
@@ -180,7 +186,11 @@ cache_get(const char* key, unsigned int keylen, unsigned int* datalen, uint32* t
 }
 
 void
-cache_set(const char* key, unsigned int keylen, const char* data, unsigned int datalen, uint32 ttl) {
+cache_set(const char* key,
+          unsigned int keylen,
+          const char* data,
+          unsigned int datalen,
+          uint32 ttl) {
   struct tai now;
   struct tai expire;
   unsigned int entrylen;

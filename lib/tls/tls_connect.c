@@ -13,7 +13,8 @@ tls_connect(fd_type fd) {
   assert(i);
   assert(i->ssl);
 
-  if((ret = tls_instance_return(i, TLS_OP_CONNECT, SSL_connect(i->ssl))) < 0) {
+  if((ret = tls_instance_return(i, TLS_OP_CONNECT, SSL_connect(i->ssl))) <
+     0) {
     errno = tls_instance_errno(i);
   }
 
@@ -32,19 +33,20 @@ tls_connect(fd_type fd) {
   if(i->error != SSL_ERROR_NONE) {
     buffer_puts(buffer_2, " error=");
     buffer_puts(buffer_2,
-                ((const char* const[]){"SSL_ERROR_NONE",
-                                       "SSL_ERROR_SSL",
-                                       "SSL_ERROR_WANT_READ",
-                                       "SSL_ERROR_WANT_WRITE",
-                                       "SSL_ERROR_WANT_X509_LOOKUP",
-                                       "SSL_ERROR_SYSCALL",
-                                       "SSL_ERROR_ZERO_RETURN",
-                                       "SSL_ERROR_WANT_CONNECT",
-                                       "SSL_ERROR_WANT_ACCEPT",
-                                       "SSL_ERROR_WANT_ASYNC",
-                                       "SSL_ERROR_WANT_ASYNC",
-                                       "SSL_ERROR_WANT_ASYNC_JOB",
-                                       "SSL_ERROR_WANT_CLIENT_HELLO_CB"})[i->error]);
+                ((const char* const[]){
+                    "SSL_ERROR_NONE",
+                    "SSL_ERROR_SSL",
+                    "SSL_ERROR_WANT_READ",
+                    "SSL_ERROR_WANT_WRITE",
+                    "SSL_ERROR_WANT_X509_LOOKUP",
+                    "SSL_ERROR_SYSCALL",
+                    "SSL_ERROR_ZERO_RETURN",
+                    "SSL_ERROR_WANT_CONNECT",
+                    "SSL_ERROR_WANT_ACCEPT",
+                    "SSL_ERROR_WANT_ASYNC",
+                    "SSL_ERROR_WANT_ASYNC",
+                    "SSL_ERROR_WANT_ASYNC_JOB",
+                    "SSL_ERROR_WANT_CLIENT_HELLO_CB"})[i->error]);
   }
   buffer_putnlflush(buffer_2);
 #endif

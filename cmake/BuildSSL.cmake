@@ -57,8 +57,12 @@ if(BUILD_SSL)
   include_directories(${CMAKE_BINARY_DIR}/3rdparty/openssl/include)
 
   # set(OPENSSL_SSL_LIBRARY "${CMAKE_BINARY_DIR}/3rdparty/openssl/ssl/libssl.a" CACHE FILEPATH "SSL library") set(OPENSSL_CRYPTO_LIBRARY "${CMAKE_BINARY_DIR}/3rdparty/openssl/crypto/libcrypto.a" CACHE  FILEPATH "Cryptography library")
-  set(OPENSSL_SSL_LIBRARY libssl CACHE STRING "SSL library")
-  set(OPENSSL_CRYPTO_LIBRARY libcrypto CACHE FILEPATH "Cryptography library")
+  if(NOT DEFINED OPENSSL_SSL_LIBRARY)
+     set(OPENSSL_SSL_LIBRARY ssl CACHE STRING "SSL library")
+  endif(NOT DEFINED OPENSSL_SSL_LIBRARY)
+  if(NOT DEFINED OPENSSL_CRYPTO_LIBRARY)
+    set(OPENSSL_CRYPTO_LIBRARY crypto CACHE FILEPATH "Cryptography library")
+  endif(NOT DEFINED OPENSSL_CRYPTO_LIBRARY)
 
 endif()
 

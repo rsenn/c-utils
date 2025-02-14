@@ -18,7 +18,11 @@
 #define BUFSIZE 16384
 
 int64
-io_mmapwritefile(fd_type out, fd_type in, uint64 off, uint64 bytes, io_write_callback writecb) {
+io_mmapwritefile(fd_type out,
+                 fd_type in,
+                 uint64 off,
+                 uint64 bytes,
+                 io_write_callback writecb) {
   char buf[BUFSIZE];
   int64 n, m;
   uint64 sent = 0;
@@ -28,7 +32,8 @@ io_mmapwritefile(fd_type out, fd_type in, uint64 off, uint64 bytes, io_write_cal
     unsigned long left;
 #if WINDOWS_NATIVE
     if(!e->mh)
-      e->mh = CreateFileMapping((HANDLE)(size_t)in, 0, PAGE_READONLY, 0, 0, NULL);
+      e->mh = CreateFileMapping(
+          (HANDLE)(size_t)in, 0, PAGE_READONLY, 0, 0, NULL);
     if(!e->mh)
       goto readwrite;
 #endif
@@ -49,9 +54,15 @@ io_mmapwritefile(fd_type out, fd_type in, uint64 off, uint64 bytes, io_write_cal
       else
         e->maplen = 0x10000;
 #if WINDOWS_NATIVE
-      if((e->mmapped = MapViewOfFile(e->mh, FILE_MAP_READ, (DWORD)(e->mapofs >> 32), (DWORD)e->mapofs, e->maplen)) == 0)
+      if((e->mmapped = MapViewOfFile(e->mh,
+                                     FILE_MAP_READ,
+                                     (DWORD)(e->mapofs >> 32),
+                                     (DWORD)e->mapofs,
+                                     e->maplen)) == 0)
 #else
-      if((e->mmapped = mmap(0, e->maplen, PROT_READ, MAP_SHARED, in, e->mapofs)) == MAP_FAILED)
+      if((e->mmapped =
+              mmap(0, e->maplen, PROT_READ, MAP_SHARED, in, e->mapofs)) ==
+         MAP_FAILED)
 #endif
       {
         e->mmapped = 0;

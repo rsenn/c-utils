@@ -1,7 +1,10 @@
 #include "../case.h"
 
 size_t
-case_findb(const void* haystack, size_t hlen, const void* what, size_t wlen) {
+case_findb(const void* haystack,
+           size_t hlen,
+           const void* what,
+           size_t wlen) {
   size_t i, last;
   const char* s = haystack;
   if(hlen < wlen)

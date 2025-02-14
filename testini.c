@@ -15,7 +15,9 @@ main(int argc, char* argv[]) {
 
   stralloc_init(&file);
   stralloc_copys(&file, path_gethome(getuid()));
-  stralloc_cats(&file, "/Sources/pictest/build/mplab/7segtest-16f876a-xc8-debug.mcp");
+  stralloc_cats(
+      &file,
+      "/Sources/pictest/build/mplab/7segtest-16f876a-xc8-debug.mcp");
   stralloc_nul(&file);
   buffer_mmapread(&input, argv[1] ? argv[1] : file.s);
   stralloc_free(&file);

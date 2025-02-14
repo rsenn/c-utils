@@ -5,7 +5,10 @@
   otherwise return hlen
 */
 size_t
-byte_findb(const void* haystack, size_t hlen, const void* what, size_t wlen) {
+byte_findb(const void* haystack,
+           size_t hlen,
+           const void* what,
+           size_t wlen) {
   size_t i, last;
   const char* s = (const char*)haystack;
   if(hlen < wlen)

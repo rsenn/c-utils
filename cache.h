@@ -8,7 +8,8 @@ extern uint64 cache_motion;
 
 char* cache_find(const char*, unsigned int, unsigned int*, struct tai*);
 char* cache_get(const char*, unsigned int, unsigned int*, uint32*);
-void cache_set(const char*, unsigned int, const char*, unsigned int, uint32);
+void
+cache_set(const char*, unsigned int, const char*, unsigned int, uint32);
 void cache_update(void);
 void cache_free(void);
 int cache_init(size_t);

@@ -18,7 +18,10 @@ int main_present(const char*);
  * @return
  */
 sourcefile*
-sources_new(const char* name, const char* binext, strarray* progs, strarray* bins) {
+sources_new(const char* name,
+            const char* binext,
+            strarray* progs,
+            strarray* bins) {
   sourcefile* ret;
   if((ret = (sourcefile*)malloc(sizeof(sourcefile)))) {
     byte_zero(ret, sizeof(sourcefile));
@@ -68,14 +71,16 @@ sources_add(const char* source) {
 int
 sources_add_b(const char* x, size_t len) {
 
-  if(byte_chr(x, len, '/') == len && byte_ends(x, len, "strlist_shift.c")) {
+  if(byte_chr(x, len, '/') == len &&
+     byte_ends(x, len, "strlist_shift.c")) {
 
 #ifdef SIGTRAP
     raise(SIGTRAP);
 #endif
   }
   if(is_source_b(x, len) || is_include_b(x, len)) {
-    if(len > dirs.this.sa.len && byte_startb(x, len, dirs.this.sa.s, dirs.this.sa.len)) {
+    if(len > dirs.this.sa.len &&
+       byte_startb(x, len, dirs.this.sa.s, dirs.this.sa.len)) {
       size_t dirlen = dirs.this.sa.len + 1;
       x += dirlen;
       len -= dirlen;
@@ -91,8 +96,10 @@ sources_add_b(const char* x, size_t len) {
 
 int
 sources_sort(const char** a, const char** b) {
-  size_t alen = str_rchrs(*a, PATHSEP_S_MIXED, sizeof(PATHSEP_S_MIXED) - 1);
-  size_t blen = str_rchrs(*b, PATHSEP_S_MIXED, sizeof(PATHSEP_S_MIXED) - 1);
+  size_t alen =
+      str_rchrs(*a, PATHSEP_S_MIXED, sizeof(PATHSEP_S_MIXED) - 1);
+  size_t blen =
+      str_rchrs(*b, PATHSEP_S_MIXED, sizeof(PATHSEP_S_MIXED) - 1);
   int er, rdir, rfile;
   const char *ext_a, *ext_b;
   ext_a = *a + str_rchr(*a, '.');
@@ -128,7 +135,9 @@ sources_get(const char* basedir) {
     const char* s;
     while((s = rdir_read(&rdir))) {
       size_t len = str_len(s);
-      if(len + 1 > dirs.this.sa.len && byte_equal(s, dirs.this.sa.len, dirs.this.sa.s) && path_is_separator(&s[dirs.this.sa.len])) {
+      if(len + 1 > dirs.this.sa.len &&
+         byte_equal(s, dirs.this.sa.len, dirs.this.sa.s) &&
+         path_is_separator(&s[dirs.this.sa.len])) {
         s += dirs.this.sa.len + 1;
       }
 
@@ -209,7 +218,9 @@ sources_deps(sourcefile* file, strlist* out) {
   set_iterator_t it, it2;
   sourcefile* src;
   sourcedir* dir;
-  strlist_foreach(&file->includes, x, len) { strlist_pushb_unique(out, x, len); }
+  strlist_foreach(&file->includes, x, len) {
+    strlist_pushb_unique(out, x, len);
+  }
   set_foreach(&file->deps, it, x, len) {
     stralloc_nul(&sources_dir);
 
@@ -224,7 +235,9 @@ sources_deps(sourcefile* file, strlist* out) {
     if((dir = sourcedir_findb(x, len))) {
       const char* s;
       size_t n;
-      set_foreach(&dir->deps, it2, s, n) { strlist_pushb_unique(out, s, n); }
+      set_foreach(&dir->deps, it2, s, n) {
+        strlist_pushb_unique(out, s, n);
+      }
       slist_foreach(dir->sources, src) {
 
 #ifdef DEBUG_OUTPUT_
@@ -254,7 +267,8 @@ sources_readdir(stralloc* dir, strarray* out) {
   buffer_putnlflush(buffer_2);
 #endif
 
-  // path_concatb(dirs.this.sa.s, dirs.this.sa.len, dir->s, dir->len, &srcdir);
+  // path_concatb(dirs.this.sa.s, dirs.this.sa.len, dir->s, dir->len,
+  // &srcdir);
   if(!rdir_open(&d, srcdir.s)) {
     const char* s;
     while((s = rdir_read(&d))) {
@@ -277,7 +291,10 @@ sources_readdir(stralloc* dir, strarray* out) {
 }
 
 void
-sources_addincludes(sourcefile* file, sourcedir* sdir, const strlist* includes, strarray* sources) {
+sources_addincludes(sourcefile* file,
+                    sourcedir* sdir,
+                    const strlist* includes,
+                    strarray* sources) {
   const char* x;
   size_t n;
   stralloc basedir, dir, path, real, relative;
@@ -304,7 +321,19 @@ sources_addincludes(sourcefile* file, sourcedir* sdir, const strlist* includes, 
   stralloc_nul(&relative);
 
 #ifdef DEBUG_OUTPUT_
-  buffer_putm_internal(buffer_2, "[1]", YELLOW256, "sources_addincludes(", NC, file->name, YELLOW256, ")", NC, "(2) file=", file->name, " relative=", 0);
+  buffer_putm_internal(buffer_2,
+                       "[1]",
+                       YELLOW256,
+                       "sources_addincludes(",
+                       NC,
+                       file->name,
+                       YELLOW256,
+                       ")",
+                       NC,
+                       "(2) file=",
+                       file->name,
+                       " relative=",
+                       0);
   buffer_putsa(buffer_2, &relative);
   buffer_puts(buffer_2, "\nIncludes: ");
   strlist_dump(buffer_2, includes);
@@ -319,7 +348,8 @@ sources_addincludes(sourcefile* file, sourcedir* sdir, const strlist* includes, 
 
     path_concatb(relative.s, relative.len, x, len, &path);
     path_collapse_sa(&path);
-    path_concatb(dirs.this.sa.s, dirs.this.sa.len, path.s, path.len, &real);
+    path_concatb(
+        dirs.this.sa.s, dirs.this.sa.len, path.s, path.len, &real);
 
     path_canonical_sa(&real);
     path_collapse_sa(&real);
@@ -364,7 +394,18 @@ sources_addincludes(sourcefile* file, sourcedir* sdir, const strlist* includes, 
         stralloc_nul(&path);
 
 #ifdef DEBUG_OUTPUT_
-        buffer_putm_internal(buffer_2, "[4]", YELLOW256, "sources_addincludes(", NC, file->name, YELLOW256, ")", NC, ": ", "Adding ", 0);
+        buffer_putm_internal(buffer_2,
+                             "[4]",
+                             YELLOW256,
+                             "sources_addincludes(",
+                             NC,
+                             file->name,
+                             YELLOW256,
+                             ")",
+                             NC,
+                             ": ",
+                             "Adding ",
+                             0);
         buffer_putsa(buffer_2, &path);
         buffer_putnlflush(buffer_2);
 #endif

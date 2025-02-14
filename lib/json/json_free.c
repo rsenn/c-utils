@@ -42,7 +42,8 @@ json_free_val(jsonval* val, jsonval* parent) {
     default: break;
   }
 
-  if(!parent || (parent->type != JSON_OBJECT && parent->type != JSON_ARRAY))
+  if(!parent ||
+     (parent->type != JSON_OBJECT && parent->type != JSON_ARRAY))
     alloc_free(val);
 }
 

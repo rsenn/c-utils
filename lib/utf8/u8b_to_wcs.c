@@ -11,7 +11,7 @@ u8b_to_wcs(wchar_t* out, const char* u8, size_t n, size_t count) {
     const size_t ulen = u8_to_wc(&out[clen], &u8[i]);
 
     if(ulen < 0)
-      return (size_t)-1;
+      return -1;
 
     clen++;
     i += ulen;

@@ -18,14 +18,19 @@ tokenizer_next(tokenizer* t, token* out) {
     if(c == TOKENIZER_EOF)
       break;
 
-    /* components of multi-line comment marker might be terminals themselves */
+    /* components of multi-line comment marker might be terminals
+     * themselves */
     if(sequence_follows(t, c, t->marker[MT_MULTILINE_COMMENT_START])) {
-      ignore_until(t, t->marker[MT_MULTILINE_COMMENT_END], str_len(t->marker[MT_MULTILINE_COMMENT_START]));
+      ignore_until(t,
+                   t->marker[MT_MULTILINE_COMMENT_END],
+                   str_len(t->marker[MT_MULTILINE_COMMENT_START]));
       continue;
     }
 
     if(sequence_follows(t, c, t->marker[MT_SINGLELINE_COMMENT_START])) {
-      ignore_until(t, "\n", str_len(t->marker[MT_SINGLELINE_COMMENT_START]));
+      ignore_until(t,
+                   "\n",
+                   str_len(t->marker[MT_SINGLELINE_COMMENT_START]));
       continue;
     }
 
@@ -37,9 +42,12 @@ tokenizer_next(tokenizer* t, token* out) {
 
         tokenizer_ungetc(t, c);
         c = '\\';
-      } else if(is_plus_or_minus(c) && s > t->buf + 1 && (s[-1] == 'E' || s[-1] == 'e') && is_valid_float_until(t->buf, s - 1)) {
+      } else if(is_plus_or_minus(c) && s > t->buf + 1 &&
+                (s[-1] == 'E' || s[-1] == 'e') &&
+                is_valid_float_until(t->buf, s - 1)) {
         goto process_char;
-      } else if(c == '.' && s != t->buf && is_valid_float_until(t->buf, s) == 1) {
+      } else if(c == '.' && s != t->buf &&
+                is_valid_float_until(t->buf, s) == 1) {
         goto process_char;
       } else if(c == '.' && s == t->buf) {
         int jump = 0;

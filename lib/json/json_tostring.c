@@ -3,7 +3,8 @@
 #include "../fmt.h"
 
 static void
-json_tostring_printer(jsonfmt* p, jsonval* v, int depth, int index, char q) {
+json_tostring_printer(
+    jsonfmt* p, jsonval* v, int depth, int index, char q) {
   p->indent = "";
   p->newline = "";
   p->spacing = " ";

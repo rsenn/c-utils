@@ -101,7 +101,8 @@ cpp_macro_parse(cpp* pp, tokenizer* t) {
           default: error("unexpected character", t, &curr); return 0;
         }
 
-      } else if(!(curr.type == TT_IDENTIFIER || curr.type == TT_ELLIPSIS)) {
+      } else if(!(curr.type == TT_IDENTIFIER ||
+                  curr.type == TT_ELLIPSIS)) {
         error("expected identifier for macro arg", t, &curr);
         return 0;
       }

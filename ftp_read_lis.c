@@ -19,7 +19,8 @@ ftp_read_list(int fd, stralloc* dir) {
   stralloc direntry;
   sralloc_init(&direntry);
 
-  buffer_init(&io, (buffer_op)TIMEOUTREADFN(o_timeout), fd, buf, BUFFER_INSIZE);
+  buffer_init(
+      &io, (buffer_op)TIMEOUTREADFN(o_timeout), fd, buf, BUFFER_INSIZE);
   dir->len = 0;
   for(;;) {
     int gotlf;

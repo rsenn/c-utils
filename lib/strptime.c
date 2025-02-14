@@ -11,7 +11,18 @@ int isleap(int year);
 
 extern const short __spm[];
 
-static const char* months[12] = {"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
+static const char* months[12] = {"January",
+                                 "February",
+                                 "March",
+                                 "April",
+                                 "May",
+                                 "June",
+                                 "July",
+                                 "August",
+                                 "September",
+                                 "October",
+                                 "November",
+                                 "December"};
 
 static int
 getint(const char** s, int max) {
@@ -162,8 +173,8 @@ strptime(const char* s, const char* format, struct tm* tm) {
             tm->tm_year = i - 1900;
             break;
           case 'Z':
-            /* time zone.  Not sure what I'm expected to do here. We'll just
-             * skip to the next whitespace */
+            /* time zone.  Not sure what I'm expected to do here. We'll
+             * just skip to the next whitespace */
             while(*s != ' ' && *s != '\t')
               ++s;
             break;
@@ -180,7 +191,8 @@ strptime(const char* s, const char* format, struct tm* tm) {
   }
 
   day = (tm->tm_year - 70) * 365 + (tm->tm_year - 69) / 4;
-  day += tm->tm_yday = __spm[tm->tm_mon] + tm->tm_mday - 1 + (isleap(tm->tm_year + 1900) & (tm->tm_mon > 1));
+  day += tm->tm_yday = __spm[tm->tm_mon] + tm->tm_mday - 1 +
+                       (isleap(tm->tm_year + 1900) & (tm->tm_mon > 1));
   tm->tm_wday = (day + 4) % 7;
 
   return (char*)s;

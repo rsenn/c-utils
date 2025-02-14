@@ -2,7 +2,11 @@
 #include "../hmap_internal.h"
 
 TUPLE*
-hmap_set(HMAP_DB** hmap_db, const void* key, size_t k_len, void* data, size_t d_len) {
+hmap_set(HMAP_DB** hmap_db,
+         const void* key,
+         size_t k_len,
+         void* data,
+         size_t d_len) {
   TUPLE* t = 0;
 
   if(!VALID_DB(hmap_db, key, k_len))

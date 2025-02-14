@@ -18,7 +18,8 @@
 
 static jsonval xml_to_json_obj(xmlnode* node);
 
-static int one_line = 0, indent = 2, compact = 0, numbers = 0, no_quote = 0;
+static int one_line = 0, indent = 2, compact = 0, numbers = 0,
+           no_quote = 0;
 static stralloc indent_str = {"  ", 1, 0};
 static const char* children_property = "children";
 static const char* tag_property = "tagName";
@@ -191,14 +192,19 @@ xml_to_json_obj(xmlnode* node) {
      node_types[] = {"(null)",
      "XML_DOCUMENT", "XML_ELEMENT",
      "XML_ATTRIBUTE", "XML_TEXT" };
-      buffer_putm_internal(buffer_2, node_types[(int)node->type], " ", node->name, "\n", NULL);*/
+      buffer_putm_internal(buffer_2, node_types[(int)node->type], " ",
+     node->name, "\n", NULL);*/
   if(node->type == XML_ELEMENT) {
     jsonval obj = json_object();
-    json_property_set(&obj, json_string(tag_property), json_string(node->name));
+    json_property_set(&obj,
+                      json_string(tag_property),
+                      json_string(node->name));
     if(node->attributes && node->attributes->list_tuple)
       hmap_to_jsonobj(node->attributes, &obj);
     if(node->children)
-      json_property_set(&obj, json_string(children_property), xmllist_to_jsonarray(node->children));
+      json_property_set(&obj,
+                        json_string(children_property),
+                        xmllist_to_jsonarray(node->children));
     return obj;
   }
   if(node->type == XML_TEXT) {

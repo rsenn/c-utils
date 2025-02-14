@@ -19,7 +19,11 @@
  * here
  */
 void
-path_prefix_b(const stralloc* prefix, const char* x, size_t n, stralloc* out, char psm) {
+path_prefix_b(const stralloc* prefix,
+              const char* x,
+              size_t n,
+              stralloc* out,
+              char psm) {
   if(prefix->len && !stralloc_equals(prefix, ".")) {
     stralloc_cat(out, prefix);
 
@@ -40,7 +44,10 @@ path_prefix_b(const stralloc* prefix, const char* x, size_t n, stralloc* out, ch
  * here
  */
 void
-path_prefix_s(const stralloc* prefix, const char* path, stralloc* out, char psm) {
+path_prefix_s(const stralloc* prefix,
+              const char* path,
+              stralloc* out,
+              char psm) {
   path_prefix_b(prefix, path, str_len(path), out, psm);
   stralloc_nul(out);
 }
@@ -87,7 +94,8 @@ path_output(const char* in, stralloc* out, const char* ext, char psa) {
 }
 
 /**
- * @brief path_wildcard  Replaces the path basename (without extensions) with a wildcard
+ * @brief path_wildcard  Replaces the path basename (without extensions)
+ * with a wildcard
  * @param path           The path to replace
  * @param sa             Write output here
  * @return               Output string
@@ -189,7 +197,8 @@ path_normalize(const char* dir, stralloc* out) {
 
   // stralloc_nul(&tmp);
   if(dirs.out.sa.s)
-    path_relative_to_b(tmp.s, tmp.len, dirs.out.sa.s, dirs.out.sa.len, out);
+    path_relative_to_b(
+        tmp.s, tmp.len, dirs.out.sa.s, dirs.out.sa.len, out);
   else
     stralloc_copy(out, &tmp);
 
@@ -213,7 +222,8 @@ path_normalize_b(const char* x, size_t len, stralloc* out) {
 }
 
 /**
- * @brief path_dirname_alloc  Gets directory name from a file path (allocated).
+ * @brief path_dirname_alloc  Gets directory name from a file path
+ * (allocated).
  * @param p
  * @return
  */

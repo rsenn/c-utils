@@ -10,7 +10,10 @@ struct tag_attr_value {
 };
 
 static int
-xml_tag_attr_value_pred(xmlnode* node, const char* tag, const char* attr, const char* value) {
+xml_tag_attr_value_pred(xmlnode* node,
+                        const char* tag,
+                        const char* attr,
+                        const char* value) {
 
   if(node->type == XML_ELEMENT && str_equal(tag, node->name)) {
     const char* a = xml_get_attribute(node, attr);
@@ -21,8 +24,12 @@ xml_tag_attr_value_pred(xmlnode* node, const char* tag, const char* attr, const 
 }
 
 xmlnode*
-xml_find_element_attr(xmlnode* node, const char* tag, const char* attr, const char* value) {
-  return xml_find_pred_3(node, (pred_fn_t*)&xml_tag_attr_value_pred, tag, attr, value);
+xml_find_element_attr(xmlnode* node,
+                      const char* tag,
+                      const char* attr,
+                      const char* value) {
+  return xml_find_pred_3(
+      node, (pred_fn_t*)&xml_tag_attr_value_pred, tag, attr, value);
 }
 
 xmlnode*
@@ -50,7 +57,10 @@ xml_find_all_attrs(xmlnode* node, const char* attrs) {
   // strlist_froms(&attrlist, attrs, '|');
   stralloc_copys(&attrlist.sa, attrs);
 
-  r = xml_find_all_2(node, (xml_pred_t*)(void*)&xml_has_attr, NULL, &attrlist);
+  r = xml_find_all_2(node,
+                     (xml_pred_t*)(void*)&xml_has_attr,
+                     NULL,
+                     &attrlist);
   strlist_free(&attrlist);
   return r;
 }

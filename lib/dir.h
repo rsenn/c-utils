@@ -12,7 +12,8 @@
 extern "C" {
 #endif
 
-#if(defined(_WIN32) || defined(_WIN64)) && !defined(__MSYS__) && !defined(__CYGWIN__)
+#if(defined(_WIN32) || defined(_WIN64)) && !defined(__MSYS__) && \
+    !defined(__CYGWIN__)
 #define DIRSEP_C '\\'
 #define DIRSEP_S "\\"
 #define IS_DIRSEP(c) ((c) == '\\' || (c) == '/')

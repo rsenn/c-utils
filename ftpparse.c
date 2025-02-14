@@ -159,7 +159,18 @@ getmod(struct tai* t, const unsigned char* p, unsigned int l) {
   return 1;
 }
 
-static const char* months[12] = {"jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"};
+static const char* months[12] = {"jan",
+                                 "feb",
+                                 "mar",
+                                 "apr",
+                                 "may",
+                                 "jun",
+                                 "jul",
+                                 "aug",
+                                 "sep",
+                                 "oct",
+                                 "nov",
+                                 "dec"};
 
 static int
 get_month(char* buf, unsigned int len) {
@@ -201,14 +212,16 @@ parse_eplf(struct ftpparse* f, char* buf, unsigned int len) {
       case 's':
         if(pos - start - 1 == 0)
           return 0;
-        if(get_uint64(buf + start + 1, pos - start - 1, &f->size) != pos - start - 1)
+        if(get_uint64(buf + start + 1, pos - start - 1, &f->size) !=
+           pos - start - 1)
           return 0;
         f->sizetype = FTPPARSE_SIZE_BINARY;
         break;
       case 'm':
         if(pos - start - 1 == 0)
           return 0;
-        if(get_ulong(buf + start + 1, pos - start - 1, &ul) != pos - start - 1)
+        if(get_ulong(buf + start + 1, pos - start - 1, &ul) !=
+           pos - start - 1)
           return 0;
         tai_unix(&f->mtime, ul);
         f->mtimetype = FTPPARSE_MTIME_LOCAL;
@@ -229,7 +242,12 @@ parse_eplf(struct ftpparse* f, char* buf, unsigned int len) {
 }
 
 static int
-scan_time(const char* buf, const unsigned int len, unsigned long* h, unsigned long* m, unsigned long* s, int* type) {
+scan_time(const char* buf,
+          const unsigned int len,
+          unsigned long* h,
+          unsigned long* m,
+          unsigned long* s,
+          int* type) {
   /* 11:48:54 */
   /* 01:48:54 */
   /*  1:48:54 */
@@ -352,7 +370,8 @@ parse_msdos(struct ftpparse* f, char* buf, unsigned int len) {
         start = pos;
         /* FALL THROUGH */
       case 4: /* time */
-        x = scan_time(buf + start, len - pos, &hour, &min, &sec, &mtimetype);
+        x = scan_time(
+            buf + start, len - pos, &hour, &min, &sec, &mtimetype);
         if(!x)
           return 0;
         pos += x;
@@ -440,7 +459,10 @@ dosplit(char* buf, int len, char* p[], unsigned int l[]) {
 }
 
 static int
-parse_multinet(struct ftpparse* f, char* p[], int l[], unsigned int count) {
+parse_multinet(struct ftpparse* f,
+               char* p[],
+               int l[],
+               unsigned int count) {
   /* "CORE.DIR;1          1  8-SEP-1996
    * 16:09 [SYSTEM] (RWE,RWE,RE,RE)" */
   /* "[VMSSERV.FILES]ALARM.DIR;1 1/3
@@ -495,7 +517,8 @@ parse_multinet(struct ftpparse* f, char* p[], int l[], unsigned int count) {
     if(p[0][x] == ';')
       break;
   if(x > 4)
-    if(p[0][x - 4] == '.' && p[0][x - 3] == 'D' && p[0][x - 2] == 'I' && p[0][x - 1] == 'R') {
+    if(p[0][x - 4] == '.' && p[0][x - 3] == 'D' && p[0][x - 2] == 'I' &&
+       p[0][x - 1] == 'R') {
       x -= 4;
       f->flagtrycwd = 1;
     }
@@ -520,7 +543,12 @@ parse_multinet(struct ftpparse* f, char* p[], int l[], unsigned int count) {
   return 1;
 }
 static int
-parse_unix(struct ftpparse* f, char* buf, int len, char* p[], int l[], unsigned int count) {
+parse_unix(struct ftpparse* f,
+           char* buf,
+           int len,
+           char* p[],
+           int l[],
+           unsigned int count) {
 
   /* the horror ... */
 
@@ -702,7 +730,8 @@ parse_unix(struct ftpparse* f, char* buf, int len, char* p[], int l[], unsigned 
     unsigned int j;
     for(j = 1; j < f->namelen - 4; j++) /* 1, -4: no empty names,
                                            please */
-      if(f->name[j] == ' ' && f->name[j + 1] == '-' && f->name[j + 2] == '>' && f->name[j + 3] == ' ') {
+      if(f->name[j] == ' ' && f->name[j + 1] == '-' &&
+         f->name[j + 2] == '>' && f->name[j + 3] == ' ') {
         f->symlink = f->name + j + 4;
         f->symlinklen = f->namelen - j - 4;
         f->namelen = j;
@@ -712,7 +741,10 @@ parse_unix(struct ftpparse* f, char* buf, int len, char* p[], int l[], unsigned 
   return 1;
 }
 static int
-parse_supertcp(struct ftpparse* f, char* p[], int l[], unsigned int count) {
+parse_supertcp(struct ftpparse* f,
+               char* p[],
+               int l[],
+               unsigned int count) {
   unsigned long mon;
   unsigned long day;
   unsigned long year;
@@ -891,7 +923,8 @@ ftpparse_mlsx(struct ftpparse* fp, char* x, int ll, int is_mlst) {
     int j = 0, k = 0;
     if(x[i] == ' ')
       break; /* end of facts */
-    while(i + j < ll && x[i + j] != ';' && x[i + j] != ' ' && x[i + j] != '=')
+    while(i + j < ll && x[i + j] != ';' && x[i + j] != ' ' &&
+          x[i + j] != '=')
       j++;
     if(i + j == ll)
       return 0;
@@ -1039,7 +1072,8 @@ ftpparse(struct ftpparse* fp, char* buf, int len, int eat_leading_spaces) {
   int x = ftpparse_int(fp, buf, len);
   if(!x)
     return x;
-  if(eat_leading_spaces && fp->format != FTPPARSE_FORMAT_EPLF && fp->format != FTPPARSE_FORMAT_MLSX)
+  if(eat_leading_spaces && fp->format != FTPPARSE_FORMAT_EPLF &&
+     fp->format != FTPPARSE_FORMAT_MLSX)
     while(fp->namelen > 1 && fp->name[0] == ' ') {
       /* leave at least a " " in the
        * name */

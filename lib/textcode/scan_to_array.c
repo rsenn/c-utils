@@ -3,7 +3,9 @@
 #include "../textcode.h"
 
 size_t
-scan_to_array(size_t (*func)(const char*, char*, size_t*), const char* src, array* dest) {
+scan_to_array(size_t (*func)(const char*, char*, size_t*),
+              const char* src,
+              array* dest) {
   size_t scanned;
   size_t needed = str_len(src);
   char* x = ((char*)array_start(dest)) + array_bytes(dest);

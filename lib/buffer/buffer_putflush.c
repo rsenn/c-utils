@@ -21,13 +21,15 @@
 #define __unlikely(x) (x)
 #endif
 
-int buffer_stubborn(buffer_op_proto*, fd_type fd, const char* buf, size_t len, void* b);
+int buffer_stubborn(
+    buffer_op_proto*, fd_type fd, const char* buf, size_t len, void* b);
 
 ssize_t
 buffer_putflush(buffer* b, const char* x, size_t len) {
   /* Since we know we are going to flush anyway, let's see if we can
    * optimize a bit */
-  if(!b->p) /* if the buffer is empty, just call buffer_stubborn directly */
+  if(!b->p) /* if the buffer is empty, just call buffer_stubborn directly
+             */
     return buffer_stubborn(b->op, b->fd, x, len, b);
 #if !defined(_DEBUG) && !WINDOWS_NATIVE && defined(HAVE_WRITEV)
   if(b->op == (buffer_op_proto*)&write) {
@@ -46,13 +48,19 @@ buffer_putflush(buffer* b, const char* x, size_t len) {
     if(__unlikely((size_t)w != cl)) {
       /* partial write. ugh. */
       if((size_t)w < v[0].iov_len) {
-        if(buffer_stubborn(b->op, b->fd, (char*)v[0].iov_base + w, v[0].iov_len - w, b) ||
+        if(buffer_stubborn(b->op,
+                           b->fd,
+                           (char*)v[0].iov_base + w,
+                           v[0].iov_len - w,
+                           b) ||
 
-           buffer_stubborn(b->op, b->fd, (char*)v[1].iov_base, v[0].iov_len, b))
+           buffer_stubborn(
+               b->op, b->fd, (char*)v[1].iov_base, v[0].iov_len, b))
           return -1;
       } else {
         w -= v[0].iov_len;
-        return buffer_stubborn(b->op, b->fd, (char*)v[1].iov_base + w, v[1].iov_len - w, b);
+        return buffer_stubborn(
+            b->op, b->fd, (char*)v[1].iov_base + w, v[1].iov_len - w, b);
       }
     }
     b->p = 0;

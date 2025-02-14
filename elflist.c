@@ -23,7 +23,8 @@ strlist flaglist;
 void elf_dump_dynamic(range map);
 void elf_dump_sections(range map);
 void elf_dump_segments(range map);
-void elf_dump_symbols(range map, range section, range text, const char* stname, int binding);
+void elf_dump_symbols(
+    range map, range section, range text, const char* stname, int binding);
 void elf_print_prefix(buffer* b);
 
 int
@@ -64,7 +65,12 @@ parse_offset(const char* arg, uint64* dest) {
     } \
   } while(0)
 
-#define ELF_DUMP_FIELD(base, ptr, st, field) buffer_putspad(b, #field, 30), buffer_puts(b, " "), putnum(b, ELF_GET(base, ptr, st, field), ELF_SIZE(base, st, field) * 2), buffer_putnlflush(b)
+#define ELF_DUMP_FIELD(base, ptr, st, field) \
+  buffer_putspad(b, #field, 30), buffer_puts(b, " "), \
+      putnum(b, \
+             ELF_GET(base, ptr, st, field), \
+             ELF_SIZE(base, st, field) * 2), \
+      buffer_putnlflush(b)
 
 void
 elf_print_prefix(buffer* b) {
@@ -130,8 +136,23 @@ elf_dump_dynamic(range map) {
   const char* dynstrtab = NULL;
   int col_width = ELF_BITS(map.start) / 4 + 2;
   static const char* const dynamic_types[] = {
-      "NULL", "NEEDED", "PLTRELSZ", "PLTGOT", "HASH",  "STRTAB",  "SYMTAB", "RELA",     "RELASZ",     "RELAENT",    "STRSZ",        "SYMENT",       "INIT",    "FINI",  "SONAME",   "RPATH",         "SYMBOLIC",
-      "REL",  "RELSZ",  "RELENT",   "PLTREL", "DEBUG", "TEXTREL", "JMPREL", "BIND_NOW", "INIT_ARRAY", "FINI_ARRAY", "INIT_ARRAYSZ", "FINI_ARRAYSZ", "RUNPATH", "FLAGS", "ENCODING", "PREINIT_ARRAY", "PREINIT_ARRAYSZ",
+      "NULL",          "NEEDED",
+      "PLTRELSZ",      "PLTGOT",
+      "HASH",          "STRTAB",
+      "SYMTAB",        "RELA",
+      "RELASZ",        "RELAENT",
+      "STRSZ",         "SYMENT",
+      "INIT",          "FINI",
+      "SONAME",        "RPATH",
+      "SYMBOLIC",      "REL",
+      "RELSZ",         "RELENT",
+      "PLTREL",        "DEBUG",
+      "TEXTREL",       "JMPREL",
+      "BIND_NOW",      "INIT_ARRAY",
+      "FINI_ARRAY",    "INIT_ARRAYSZ",
+      "FINI_ARRAYSZ",  "RUNPATH",
+      "FLAGS",         "ENCODING",
+      "PREINIT_ARRAY", "PREINIT_ARRAYSZ",
   };
 
   if(di == -1)
@@ -241,7 +262,11 @@ extern ssize_t buffer_putptr_size_2;
  * @param binding
  */
 void
-elf_dump_symbols(range map, range section, range text, const char* stname, int binding) {
+elf_dump_symbols(range map,
+                 range section,
+                 range text,
+                 const char* stname,
+                 int binding) {
   void* symbol;
   int si = elf_section_find(map.start, stname);
   const char* strtab = elf_section_offset(map.start, si);
@@ -260,7 +285,8 @@ elf_dump_symbols(range map, range section, range text, const char* stname, int b
       "TLS",
   };
   range symtab = section;
-  symtab.elem_size = ELF_BITS(map.start) == 64 ? sizeof(elf64_sym) : sizeof(elf32_sym);
+  symtab.elem_size =
+      ELF_BITS(map.start) == 64 ? sizeof(elf64_sym) : sizeof(elf32_sym);
 
   /*  buffer_putspad(buffer_1, "symbol
     name", 33); buffer_putspad(buffer_1,
@@ -484,7 +510,12 @@ elf_dump_segments(range map) {
     putnum(buffer_1, filesz, col_width);
     buffer_putspace(buffer_1);
     putnum(buffer_1, memsz, col_width);
-    buffer_putm_internal(buffer_1, " ", (flags & ELF_PF_R) ? "r" : "-", (flags & ELF_PF_W) ? "w" : "-", (flags & ELF_PF_W) ? "x" : "-", NULL);
+    buffer_putm_internal(buffer_1,
+                         " ",
+                         (flags & ELF_PF_R) ? "r" : "-",
+                         (flags & ELF_PF_W) ? "w" : "-",
+                         (flags & ELF_PF_W) ? "x" : "-",
+                         NULL);
     buffer_putnlflush(buffer_1);
   }
 }
@@ -495,22 +526,23 @@ elf_dump_segments(range map) {
  */
 void
 usage(char* av0) {
-  buffer_putm_internal(buffer_1,
-                       "Usage: ",
-                       str_basename(av0),
-                       " [OPTIONS] <file...>\n",
-                       "\n",
-                       "Options:\n",
-                       "\n",
-                       "  -h, --help              Show this help\n",
-                       "  -D, --defined           List defined symbols\n",
-                       "  -U, --undefined         List undefined symbols\n",
-                       "  -F, --file-header       Dump file header\n",
-                       "  -S, --sections          Dump sections\n",
-                       "  -o, --offset-rva        Print RVA of given offset\n",
-                       "  -a, --rva-offset        Print offset of given RVA\n",
-                       "  -n, --needed            Print needed libraries\n\n",
-                       NULL);
+  buffer_putm_internal(
+      buffer_1,
+      "Usage: ",
+      str_basename(av0),
+      " [OPTIONS] <file...>\n",
+      "\n",
+      "Options:\n",
+      "\n",
+      "  -h, --help              Show this help\n",
+      "  -D, --defined           List defined symbols\n",
+      "  -U, --undefined         List undefined symbols\n",
+      "  -F, --file-header       Dump file header\n",
+      "  -S, --sections          Dump sections\n",
+      "  -o, --offset-rva        Print RVA of given offset\n",
+      "  -a, --rva-offset        Print offset of given RVA\n",
+      "  -n, --needed            Print needed libraries\n\n",
+      NULL);
   buffer_flush(buffer_1);
 }
 
@@ -518,7 +550,8 @@ int
 main(int argc, char** argv) {
   static range map;
   size_t filesize;
-  static int dump_file_header = false, dump_sections = false, dump_segments = false;
+  static int dump_file_header = false, dump_sections = false,
+             dump_segments = false;
   int i, c, index = 0;
 
   struct unix_longopt opts[] = {

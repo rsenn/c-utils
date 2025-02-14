@@ -14,7 +14,8 @@ umult64(uint64 a, uint64 b, uint64* c) {
 
 /* #include "haveuint128.h" */
 
-#if defined(__x86_64__) && defined(__OPTIMIZE__) && defined(__GNUC__) && !defined(__clang__)
+#if defined(__x86_64__) && defined(__OPTIMIZE__) && defined(__GNUC__) && \
+    !defined(__clang__)
 
 /* WARNING: this only works if compiled with -fomit-frame-pointer */
 int

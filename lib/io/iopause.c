@@ -10,7 +10,10 @@
 //#include <alloca.h>
 
 void
-iopause(iopause_fd* x, unsigned int len, struct taia* deadline, struct taia* stamp) {
+iopause(iopause_fd* x,
+        unsigned int len,
+        struct taia* deadline,
+        struct taia* stamp) {
   struct taia t;
   int millisecs;
   double d;
@@ -62,7 +65,8 @@ iopause(iopause_fd* x, unsigned int len, struct taia* deadline, struct taia* sta
     if((evlist = alloc_zero(sizeof(struct io_event) * len)) == 0)
       goto aio_fail;
 
-    if((r = io_getevents(ctx, 1, len, evlist, millisecs == -1 ? 0 : &ts)) == -1)
+    if((r = io_getevents(
+            ctx, 1, len, evlist, millisecs == -1 ? 0 : &ts)) == -1)
       goto aio_fail;
 
     for(i = 0; i < len; ++i) {

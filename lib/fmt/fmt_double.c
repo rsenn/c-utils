@@ -15,7 +15,8 @@ fmt_double(char* dest, double d, int maxlen, int prec) {
     uint64 x;
   } __u;
 
-  if(__u.x == 0x8000000000000LU || (__u.x & 0x7FF0000000000000LU) == 0x7FF0000000000000LU || isnan(d)) {
+  if(__u.x == 0x8000000000000LU ||
+     (__u.x & 0x7FF0000000000000LU) == 0x7FF0000000000000LU || isnan(d)) {
     str_copy(dest, "NaN");
     return 3;
   }

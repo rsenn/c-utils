@@ -76,10 +76,11 @@ coff_file_header;
 
 #define COFF_SECTION_NAME_SIZE 8
 
-/* Quoting pecoff_v8.docx: "Entries in the section table are numbered starting
- * from one (1)". */
+/* Quoting pecoff_v8.docx: "Entries in the section table are numbered
+ * starting from one (1)". */
 typedef struct __unaligned {
-  char name[COFF_SECTION_NAME_SIZE]; /* TODO: Should we use char instead? */
+  char
+      name[COFF_SECTION_NAME_SIZE]; /* TODO: Should we use char instead? */
   union {
     uint32 physical_address; /* same value as next field */
     uint32 virtual_size;
@@ -97,12 +98,15 @@ coff_section_header;
 
 #define COFF_SECTION_UNDEF ((int16)0)     // external symbol
 #define COFF_SECTION_ABSOLUTE ((int16)-1) // value of symbol is absolute
-#define COFF_SECTION_DEBUG ((int16)-2)    // debugging symbol - value is meaningless
-#define COFF_SECTION_N_TV ((int16)-3)     // indicates symbol needs preload transfer vector
-#define COFF_SECTION_P_TV ((int16)-4)     // indicates symbol needs postload transfer vector
+#define COFF_SECTION_DEBUG \
+  ((int16)-2) // debugging symbol - value is meaningless
+#define COFF_SECTION_N_TV \
+  ((int16)-3) // indicates symbol needs preload transfer vector
+#define COFF_SECTION_P_TV \
+  ((int16)-4) // indicates symbol needs postload transfer vector
 #define COFF_SECTION_REMOVE_ME \
-  ((int16)-99) // Specific for objconv program: Debug or exception section being
-               // removed
+  ((int16)-99) // Specific for objconv program: Debug or exception section
+               // being removed
 
 typedef struct __unaligned {
   uint16 magic;
@@ -132,7 +136,8 @@ coff_opt_header_microchip;
 typedef struct __unaligned {
   union {
     uint32 fname; // function name symbol table index, if Line == 0
-    uint32 addr;  // section-relative address of code that corresponds to line
+    uint32
+        addr; // section-relative address of code that corresponds to line
   };
   uint16 line; // line number
 }
@@ -199,8 +204,8 @@ typedef union {
   filename;
 
   // String table index
-  struct {         // MS COFF uses multiple aux records rather than a string table
-                   // entry!
+  struct { // MS COFF uses multiple aux records rather than a string table
+           // entry!
     uint32 zeroes; // zeroes if name file name longer than 18
     uint32 offset; // string table entry
   } stringindex;
@@ -224,7 +229,8 @@ typedef union {
 /* symbol table entry */
 typedef struct __unaligned {
   union __unaligned {
-    char name[COFF_SSYMBOL_NAME_MAX]; /* symbol name if less than 8 characters */
+    char name[COFF_SSYMBOL_NAME_MAX]; /* symbol name if less than 8
+                                         characters */
     struct __unaligned {
       uint32 zeroes; /* first four characters are 0 */
       uint32 offset; /* pointer to the string table */
@@ -303,10 +309,13 @@ const char* coff_symbol_name(void*, coff_symtab_entry* sym);
 range coff_symbol_table(void*);
 
 #define COFF_TYPE(coff) ((coff_type) * (uint16*)coff_header_opt((coff)))
-#define COFF_FIELD_OFFSET(type, field) ((size_t)(uint8*)&(((type*)0)->field))
+#define COFF_FIELD_OFFSET(type, field) \
+  ((size_t)(uint8*)&(((type*)0)->field))
 #define COFF_FIELD_SIZE(type, field) sizeof(((type*)0)->field)
-#define COFF_ADDR(coff, ptr, st, field) ((void*)(((char*)ptr) + COFF_OFFSET(coff, st, field)))
-#define COFF_ADDR(coff, ptr, st, field) ((void*)(((char*)ptr) + COFF_OFFSET(coff, st, field)))
+#define COFF_ADDR(coff, ptr, st, field) \
+  ((void*)(((char*)ptr) + COFF_OFFSET(coff, st, field)))
+#define COFF_ADDR(coff, ptr, st, field) \
+  ((void*)(((char*)ptr) + COFF_OFFSET(coff, st, field)))
 #define COFF_MAGIC(coff) uint16_read(coff_header_opt(coff))
 
 #ifdef __cplusplus

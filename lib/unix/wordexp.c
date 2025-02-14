@@ -18,7 +18,8 @@
 
 static int
 is_valid_variable_char(char c, int pos) {
-  if((pos && c >= '0' && c <= '9') || c == '_' || (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z'))
+  if((pos && c >= '0' && c <= '9') || c == '_' || (c >= 'a' && c <= 'z') ||
+     (c >= 'A' && c <= 'Z'))
     return 1;
   return 0;
 }
@@ -75,8 +76,8 @@ expand_variables(const char* in) {
  * shall perform word expansion as described in the Shell
  * expansion of ´$NAME´ or ´${NAME}´
  * expansion of ´*´ and ´?´
- * @param words: pointer to a string containing one or more words to be expanded
- * but here only one word supported
+ * @param words: pointer to a string containing one or more words to be
+ * expanded but here only one word supported
  */
 int
 wordexp(const char* words, wordexp_t* we, int flags) {

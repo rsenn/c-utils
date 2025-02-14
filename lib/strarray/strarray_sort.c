@@ -13,5 +13,8 @@ void
 strarray_sort(strarray* arr, int (*compare)(const char**, const char**)) {
   if(!compare)
     compare = &strarray_sort_compare;
-  qsort(strarray_BEGIN(arr), strarray_size(arr), sizeof(char*), (cmp_fn_t*)compare);
+  qsort(strarray_BEGIN(arr),
+        strarray_size(arr),
+        sizeof(char*),
+        (cmp_fn_t*)compare);
 }

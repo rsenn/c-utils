@@ -47,7 +47,8 @@ fmt_escapecharjson(char* dest, int c, int quote) {
     if(dest) {
       dest[0] = '\\';
       dest[1] = 'u';
-      fmt_hex4(dest + 2, (uint16)(0xd800 | (((ch - 0x10000) >> 10) & 0x3ff)));
+      fmt_hex4(dest + 2,
+               (uint16)(0xd800 | (((ch - 0x10000) >> 10) & 0x3ff)));
       dest += 6;
     }
     ch = (ch & 0x3ff) | 0xdc00;

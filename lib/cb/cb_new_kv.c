@@ -2,7 +2,11 @@
 #include "../byte.h"
 
 size_t
-cb_new_kv(const char* key, size_t keylen, const void* value, size_t len, void* out) {
+cb_new_kv(const char* key,
+          size_t keylen,
+          const void* value,
+          size_t len,
+          void* out) {
   char* dst = (char*)out;
   if(dst != key)
     byte_copyr(dst, keylen, key);

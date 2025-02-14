@@ -7,14 +7,13 @@ wcs_to_u8s(char* u8, const wchar_t* in, size_t count) {
   const size_t len = wcs_u8slen(in);
 
   if(NULL == u8)
-    return (size_t)len;
+    return len;
 
   while((w = *in++)) {
     const size_t ulen = wc_u8len(w);
 
     if(ulen >= 0) {
-      size_t l = wc_u8len(w);
-      if((clen + l) <= count) {
+      if((clen + ulen) <= count) {
         clen += wc_to_u8(u8, w);
         u8 += ulen;
       } else
@@ -32,5 +31,5 @@ wcs_to_u8s(char* u8, const wchar_t* in, size_t count) {
     }
   }
 
-  return (size_t)clen;
+  return clen;
 }

@@ -29,7 +29,11 @@ json_parse_stralloc(charbuf* b, stralloc* out, int quoted) {
       unsigned int n;
       if((r = scan_utf8(&sa.s[i], sa.len - i, &n)) > 1) {
         stralloc_cats(out, "\\u");
-        stralloc_catxlong0(out, n, n > 0xffffffu ? 8 : n > 0xffffu ? 6 : 4);
+        stralloc_catxlong0(out,
+                           n,
+                           n > 0xffffffu ? 8
+                           : n > 0xffffu ? 6
+                                         : 4);
         i += r - 1;
       } else {
         ch = n;

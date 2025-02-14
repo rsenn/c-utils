@@ -19,16 +19,32 @@ hasAccessRight(LPCSTR path, DWORD genericAccessRights) {
   DWORD privilegesLen = sizeof(privileges);
   BOOL success, result = FALSE;
 
-  if(GetFileSecurityA(path, OWNER_SECURITY_INFORMATION | GROUP_SECURITY_INFORMATION | DACL_SECURITY_INFORMATION, 0, 0, &len) == FALSE)
+  if(GetFileSecurityA(path,
+                      OWNER_SECURITY_INFORMATION |
+                          GROUP_SECURITY_INFORMATION |
+                          DACL_SECURITY_INFORMATION,
+                      0,
+                      0,
+                      &len) == FALSE)
     return -1;
 
-  if(GetFileSecurityA(path, OWNER_SECURITY_INFORMATION | GROUP_SECURITY_INFORMATION | DACL_SECURITY_INFORMATION, &secDesc, len, &len) == FALSE)
+  if(GetFileSecurityA(path,
+                      OWNER_SECURITY_INFORMATION |
+                          GROUP_SECURITY_INFORMATION |
+                          DACL_SECURITY_INFORMATION,
+                      &secDesc,
+                      len,
+                      &len) == FALSE)
     return -1;
 
-  if(OpenProcessToken(GetCurrentProcess(), TOKEN_IMPERSONATE | TOKEN_QUERY | TOKEN_DUPLICATE | STANDARD_RIGHTS_READ, &hToken) == FALSE)
+  if(OpenProcessToken(GetCurrentProcess(),
+                      TOKEN_IMPERSONATE | TOKEN_QUERY | TOKEN_DUPLICATE |
+                          STANDARD_RIGHTS_READ,
+                      &hToken) == FALSE)
     return -1;
 
-  if(DuplicateToken(hToken, SecurityImpersonation, &hImpersonatedToken) == FALSE) {
+  if(DuplicateToken(hToken, SecurityImpersonation, &hImpersonatedToken) ==
+     FALSE) {
     CloseHandle(hToken);
     return -1;
   }
@@ -39,7 +55,14 @@ hasAccessRight(LPCSTR path, DWORD genericAccessRights) {
   mapping.GenericAll = FILE_ALL_ACCESS;
 
   MapGenericMask(&genericAccessRights, &mapping);
-  success = AccessCheck(&secDesc, hImpersonatedToken, genericAccessRights, &mapping, &privileges, &privilegesLen, &grantedAccess, &result);
+  success = AccessCheck(&secDesc,
+                        hImpersonatedToken,
+                        genericAccessRights,
+                        &mapping,
+                        &privileges,
+                        &privilegesLen,
+                        &grantedAccess,
+                        &result);
   CloseHandle(hImpersonatedToken);
   CloseHandle(hToken);
 
@@ -75,8 +98,11 @@ path_access(const char* path, int rights) {
 
     case X_OK: return hasExecuteAccess(path);
     case X_OK | R_OK: return hasExecuteAccess(path) && hasReadAccess(path);
-    case X_OK | W_OK: return hasExecuteAccess(path) && hasWriteAccess(path);
-    case X_OK | R_OK | W_OK: return hasExecuteAccess(path) && hasReadAccess(path) && hasWriteAccess(path);
+    case X_OK | W_OK:
+      return hasExecuteAccess(path) && hasWriteAccess(path);
+    case X_OK | R_OK | W_OK:
+      return hasExecuteAccess(path) && hasReadAccess(path) &&
+             hasWriteAccess(path);
   }
 #else
 #ifndef NO_ACCESS

@@ -2,7 +2,10 @@
 
 /* return index of matching item in values array, or -1 on error */
 int
-cpp_parse_expect(tokenizer* t, enum tokentype tt, const char* const values[], token* token) {
+cpp_parse_expect(tokenizer* t,
+                 enum tokentype tt,
+                 const char* const values[],
+                 token* token) {
   int ret;
 
   do {

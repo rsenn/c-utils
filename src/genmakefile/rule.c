@@ -27,13 +27,21 @@ rule_get(const char* name) {
     set_adds(&tgt.output, name);
     set_init(&tgt.prereq, 0);
     strlist_init(&tgt.cmds, ' ');
-    MAP_INSERT(rules, name, len + 1, &tgt, ((sizeof(struct target_s) + 3) / 4) * 4);
+    MAP_INSERT(rules,
+               name,
+               len + 1,
+               &tgt,
+               ((sizeof(struct target_s) + 3) / 4) * 4);
     (MAP_SEARCH(rules, name, len + 1, &t));
     // ret = MAP_ITER_VALUE(t);
 
 #ifdef DEBUG_OUTPUT_
     if(t) {
-      buffer_putm_internal(buffer_2, "Created rule '", ((target*)MAP_ITER_VALUE(t))->name, "'\n", NULL);
+      buffer_putm_internal(buffer_2,
+                           "Created rule '",
+                           ((target*)MAP_ITER_VALUE(t))->name,
+                           "'\n",
+                           NULL);
       buffer_flush(buffer_2);
     }
 #endif
@@ -127,7 +135,10 @@ rule_find_b(const char* x, size_t n) {
 }
 
 target*
-rule_find_lib(const char* name, size_t namelen, const char* libext, const char* slibext) {
+rule_find_lib(const char* name,
+              size_t namelen,
+              const char* libext,
+              const char* slibext) {
   target* t;
   stralloc pattern;
   size_t dot;
@@ -187,7 +198,15 @@ rule_match(target* rule, const char* pattern) {
  * @param plen
  */
 void
-rule_command_subst(target* rule, stralloc* out, const char* prereq, size_t plen, bool shell, bool batch, const char quote_args[], char psa, const char* make_sep_inline) {
+rule_command_subst(target* rule,
+                   stralloc* out,
+                   const char* prereq,
+                   size_t plen,
+                   bool shell,
+                   bool batch,
+                   const char quote_args[],
+                   char psa,
+                   const char* make_sep_inline) {
   size_t i;
   stralloc* in = &rule->recipe;
 
@@ -213,7 +232,10 @@ rule_command_subst(target* rule, stralloc* out, const char* prereq, size_t plen,
         case '@': {
           size_t p = out->len;
           stralloc_catq(out, rule->name, str_len(rule->name), quote_args);
-          byte_replace(&out->s[p], out->len - p, psa == '/' ? '\\' : '/', psa);
+          byte_replace(&out->s[p],
+                       out->len - p,
+                       psa == '/' ? '\\' : '/',
+                       psa);
           break;
         }
         case '^': {
@@ -221,7 +243,11 @@ rule_command_subst(target* rule, stralloc* out, const char* prereq, size_t plen,
           break;
         }
         case '|': {
-          stralloc_subst(out, prereq, plen, " ", make_sep_inline ? make_sep_inline : "\n ");
+          stralloc_subst(out,
+                         prereq,
+                         plen,
+                         " ",
+                         make_sep_inline ? make_sep_inline : "\n ");
           break;
         }
         case '<': {
@@ -249,7 +275,14 @@ rule_command_subst(target* rule, stralloc* out, const char* prereq, size_t plen,
  * @param out
  */
 void
-rule_command(target* rule, stralloc* out, bool shell, bool batch, const char quote_args[], char psa, const char* make_sep_inline, const char* maketool) {
+rule_command(target* rule,
+             stralloc* out,
+             bool shell,
+             bool batch,
+             const char quote_args[],
+             char psa,
+             const char* make_sep_inline,
+             const char* maketool) {
   size_t len;
   const char* pfx = 0;
   char *s, from = psa == '/' ? '\\' : '/';
@@ -301,15 +334,33 @@ rule_command(target* rule, stralloc* out, bool shell, bool batch, const char quo
       if(n > 0 && r.start[n - 1] == ' ')
         n--;
 
-      rule_command_subst(rule, out, r.start, n, shell, batch, quote_args, psa, make_sep_inline);
+      rule_command_subst(rule,
+                         out,
+                         r.start,
+                         n,
+                         shell,
+                         batch,
+                         quote_args,
+                         psa,
+                         make_sep_inline);
 
       if(r.start + n < r.end && r.start[n] == ' ')
         n++;
 
       r.start += n;
     }
-  } else if(!str_start(maketool, "g") && !(rule->name[0] == '.' && strchr(&rule->name[1], '.') && prereq.sa.len == 0)) {
-    rule_command_subst(rule, out, prereq.sa.s, prereq.sa.len, shell, batch, quote_args, psa, make_sep_inline);
+  } else if(!str_start(maketool, "g") &&
+            !(rule->name[0] == '.' && strchr(&rule->name[1], '.') &&
+              prereq.sa.len == 0)) {
+    rule_command_subst(rule,
+                       out,
+                       prereq.sa.s,
+                       prereq.sa.len,
+                       shell,
+                       batch,
+                       quote_args,
+                       psa,
+                       make_sep_inline);
   } else {
     const char *p, *end;
 
@@ -475,7 +526,8 @@ rule_prereq_recursive(target* t, set_t* s) {
 void
 rule_dump(target* rule) {
 #ifdef DEBUG_OUTPUT
-  buffer_putm_internal(buffer_2, "\n  ", YELLOW256, "NAME   ", NC, " ", NULL);
+  buffer_putm_internal(
+      buffer_2, "\n  ", YELLOW256, "NAME   ", NC, " ", NULL);
   buffer_puts(buffer_2, rule->name);
   buffer_puts(buffer_2, "\n  " PURPLE256 "RECIPE " NC " ");
   buffer_putsa_escaped(buffer_2, &rule->recipe, fmt_escapecharshell);
@@ -507,7 +559,8 @@ rule_dump(target* rule) {
 
   if(rule->recipe.len) {
     stralloc_nul(&rule->recipe);
-    buffer_putm_internal(buffer_2, "\n  recipe: ", rule->recipe.s, "\n", NULL);
+    buffer_putm_internal(
+        buffer_2, "\n  recipe: ", rule->recipe.s, "\n", NULL);
   }
 
   if(array_length(&rule->deps, sizeof(target*))) {
@@ -575,7 +628,8 @@ rule_is_link(target* rule) {
 }
 
 /**
- * @brief rule_list  Given a list of target names, outputs an array of pointers to those targets.
+ * @brief rule_list  Given a list of target names, outputs an array of
+ * pointers to those targets.
  * @param targets      Target names
  * @param out          Output array
  */

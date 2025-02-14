@@ -8,7 +8,8 @@ dir_size(struct dir_s* d) {
 #if !USE_READDIR && WINDOWS
   struct dir_internal_s* internal = dir_INTERNAL(d);
 
-  r = ((uint64)(internal->dir_finddata.nFileSizeHigh) << 32) + internal->dir_finddata.nFileSizeLow;
+  r = ((uint64)(internal->dir_finddata.nFileSizeHigh) << 32) +
+      internal->dir_finddata.nFileSizeLow;
 #endif
 
   return r;

@@ -14,7 +14,8 @@
 #endif
 
 int
-socket_fastopen_connect4(int s, const char* ip, uint16 port, const char* buf, size_t len) {
+socket_fastopen_connect4(
+    int s, const char* ip, uint16 port, const char* buf, size_t len) {
 #ifndef MSG_FASTOPEN
   int r;
   {

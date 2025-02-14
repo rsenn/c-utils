@@ -26,7 +26,10 @@ append_cmake_var(buffer* b, const char* name, const strlist* list) {
 }
 
 void
-output_cmake_cmd(buffer* b, const char* cmd, const strlist* list, char quote) {
+output_cmake_cmd(buffer* b,
+                 const char* cmd,
+                 const strlist* list,
+                 char quote) {
   if(strlist_count(list)) {
     char needle[2];
     const char* s;
@@ -60,7 +63,10 @@ output_cmake_cmd(buffer* b, const char* cmd, const strlist* list, char quote) {
 }
 
 void
-output_cmake_set(buffer* b, const char* cmd, const set_t* list, char quote) {
+output_cmake_set(buffer* b,
+                 const char* cmd,
+                 const set_t* list,
+                 char quote) {
   if(set_size(list)) {
     char needle[2];
     const char* s;
@@ -108,7 +114,9 @@ output_cmake_subst(stralloc* str, const char* varname) {
 }
 
 void
-output_cmake_subst_path(const char* path, const char* varname, stralloc* out) {
+output_cmake_subst_path(const char* path,
+                        const char* varname,
+                        stralloc* out) {
   const char* value;
   stralloc_zero(out);
   path_normalize(path, out);
@@ -289,10 +297,20 @@ output_cmake_rules(buffer* b, MAP_T rules) {
 }
 
 void
-output_cmake_project(buffer* b, MAP_T* rules, MAP_T* vars, const strlist* include_dirs, const strlist* link_dirs) {
+output_cmake_project(buffer* b,
+                     MAP_T* rules,
+                     MAP_T* vars,
+                     const strlist* include_dirs,
+                     const strlist* link_dirs) {
   MAP_PAIR_T t;
   set_t libraries;
-  buffer_putm_internal(b, "project(", project_name, " ", sources_iscplusplus() ? "CXX" : "C", ")", NULL);
+  buffer_putm_internal(b,
+                       "project(",
+                       project_name,
+                       " ",
+                       sources_iscplusplus() ? "CXX" : "C",
+                       ")",
+                       NULL);
   buffer_putnlflush(b);
   buffer_putnlflush(b);
 
@@ -336,18 +354,25 @@ output_cmake_project(buffer* b, MAP_T* rules, MAP_T* vars, const strlist* includ
     }
   }
 
-  output_cmake_subst((stralloc*)&include_dirs->sa, "CMAKE_CURRENT_SOURCE_DIR");
-  output_cmake_subst((stralloc*)&include_dirs->sa, "CMAKE_CURRENT_BINARY_DIR");
-  output_cmake_subst((stralloc*)&link_dirs->sa, "CMAKE_CURRENT_BINARY_DIR");
+  output_cmake_subst((stralloc*)&include_dirs->sa,
+                     "CMAKE_CURRENT_SOURCE_DIR");
+  output_cmake_subst((stralloc*)&include_dirs->sa,
+                     "CMAKE_CURRENT_BINARY_DIR");
+  output_cmake_subst((stralloc*)&link_dirs->sa,
+                     "CMAKE_CURRENT_BINARY_DIR");
 
   if(var_isset("CFLAGS"))
     output_cmake_var(b, "CMAKE_C_FLAGS", &var_list("CFLAGS", ' ')->value);
 
   if(var_isset("CXXFLAGS"))
-    output_cmake_var(b, "CMAKE_CXX_FLAGS", &var_list("CXXFLAGS", ' ')->value);
+    output_cmake_var(b,
+                     "CMAKE_CXX_FLAGS",
+                     &var_list("CXXFLAGS", ' ')->value);
 
   if(var_isset("LDFLAGS"))
-    output_cmake_var(b, "CMAKE_EXE_LINKER_FLAGS", &var_list("LDFLAGS", ' ')->value);
+    output_cmake_var(b,
+                     "CMAKE_EXE_LINKER_FLAGS",
+                     &var_list("LDFLAGS", ' ')->value);
 
   /*  if(var_isset("DEFS")) {
       buffer_puts(b, "add_definitions(");

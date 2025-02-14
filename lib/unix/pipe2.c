@@ -24,7 +24,8 @@
 int pipe(int*, unsigned int, int);
 #endif
 
-#if defined(__MINGW32__) || defined(__MINGW64__) || defined(_MSC_VER) || defined(__BORLANDC__)
+#if defined(__MINGW32__) || defined(__MINGW64__) || defined(_MSC_VER) || \
+    defined(__BORLANDC__)
 #define pipe _pipe
 #endif
 
@@ -33,8 +34,8 @@ int
 pipe(fd_type fd[2]) {
   HANDLE phandles[2];
 
-  /* To get non-blocking pipes we could use CreateNamedPipe here. But it isn't
-      implemented under Win9x. */
+  /* To get non-blocking pipes we could use CreateNamedPipe here. But it
+     isn't implemented under Win9x. */
   if(!CreatePipe((HANDLE*)&phandles[0], (HANDLE*)&phandles[1], NULL, 0)) {
     errno = EMFILE;
     return -1;
@@ -70,7 +71,8 @@ pipe2(int fd[2], int flags) {
     return -1;
   }
 
-#if defined(_WIN32) && !(defined(__CYGWIN__) || defined(__MSYS__)) && !defined(__DMC__)
+#if defined(_WIN32) && !(defined(__CYGWIN__) || defined(__MSYS__)) && \
+    !defined(__DMC__)
   /* Native Windows API.  */
 
   if(pipe(fd, 4096, flags & ~O_NONBLOCK) < 0) {
@@ -100,24 +102,31 @@ pipe2(int fd[2], int flags) {
     return -1;
 
     /* POSIX
-       <http://www.opengroup.org/onlinepubs/9699919799/functions/pipe.html> says
-       that initially, the O_NONBLOCK and FD_CLOEXEC flags are cleared on both
-       fd[0] and fd[1].  */
+       <http://www.opengroup.org/onlinepubs/9699919799/functions/pipe.html>
+       says that initially, the O_NONBLOCK and FD_CLOEXEC flags are cleared
+       on both fd[0] and fd[1].  */
 
     /* O_NONBLOCK handling.
-       On Unix platforms, O_NONBLOCK is defined by the system.  Use fcntl().  */
+       On Unix platforms, O_NONBLOCK is defined by the system.  Use
+       fcntl().  */
 #ifdef F_SETFL
   if(flags & O_NONBLOCK) {
     int fcntl_flags;
 
-    if((fcntl_flags = fcntl(fd[1], F_GETFL, 0)) < 0 || fcntl(fd[1], F_SETFL, fcntl_flags | O_NONBLOCK) == -1 || (fcntl_flags = fcntl(fd[0], F_GETFL, 0)) < 0 || fcntl(fd[0], F_SETFL, fcntl_flags | O_NONBLOCK) == -1)
+    if((fcntl_flags = fcntl(fd[1], F_GETFL, 0)) < 0 ||
+       fcntl(fd[1], F_SETFL, fcntl_flags | O_NONBLOCK) == -1 ||
+       (fcntl_flags = fcntl(fd[0], F_GETFL, 0)) < 0 ||
+       fcntl(fd[0], F_SETFL, fcntl_flags | O_NONBLOCK) == -1)
       goto fail;
   }
 
   if(flags & O_CLOEXEC) {
     int fcntl_flags;
 
-    if((fcntl_flags = fcntl(fd[1], F_GETFD, 0)) < 0 || fcntl(fd[1], F_SETFD, fcntl_flags | FD_CLOEXEC) == -1 || (fcntl_flags = fcntl(fd[0], F_GETFD, 0)) < 0 || fcntl(fd[0], F_SETFD, fcntl_flags | FD_CLOEXEC) == -1)
+    if((fcntl_flags = fcntl(fd[1], F_GETFD, 0)) < 0 ||
+       fcntl(fd[1], F_SETFD, fcntl_flags | FD_CLOEXEC) == -1 ||
+       (fcntl_flags = fcntl(fd[0], F_GETFD, 0)) < 0 ||
+       fcntl(fd[0], F_SETFD, fcntl_flags | FD_CLOEXEC) == -1)
       goto fail;
   }
 #endif

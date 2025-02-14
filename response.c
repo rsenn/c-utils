@@ -58,7 +58,10 @@ response_addname(response* resp, const char* d) {
 }
 
 int
-response_query(response* resp, const char* q, const char qtype[2], const char qclass[2]) {
+response_query(response* resp,
+               const char* q,
+               const char qtype[2],
+               const char qclass[2]) {
   stralloc_zero((stralloc*)resp);
   name.num = 0;
   if(!response_addbytes(resp, "\0\0\201\200\0\1\0\0\0\0\0\0", 12))
@@ -74,7 +77,10 @@ response_query(response* resp, const char* q, const char qtype[2], const char qc
 }
 
 int
-response_rstart(response* resp, const char* d, const char type[2], uint32 ttl) {
+response_rstart(response* resp,
+                const char* d,
+                const char type[2],
+                uint32 ttl) {
   char ttlstr[4];
   if(!response_addname(resp, d))
     return 0;

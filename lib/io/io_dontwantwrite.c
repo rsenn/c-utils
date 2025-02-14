@@ -35,7 +35,10 @@ io_dontwantwrite_really(fd_type d, io_entry* e) {
     if(e->wantread)
       x.events |= EPOLLIN;
     x.data.fd = d;
-    epoll_ctl(io_master, e->kernelwantread ? EPOLL_CTL_MOD : EPOLL_CTL_DEL, d, &x);
+    epoll_ctl(io_master,
+              e->kernelwantread ? EPOLL_CTL_MOD : EPOLL_CTL_DEL,
+              d,
+              &x);
   }
 #endif
 

@@ -8,7 +8,11 @@
 #define NOTFIRST 0x80
 
 int
-path_fnmatch(const char* pattern, unsigned int plen, const char* string, unsigned int slen, int flags) {
+path_fnmatch(const char* pattern,
+             unsigned int plen,
+             const char* string,
+             unsigned int slen,
+             int flags) {
 /*buffer_puts(buffer_2, "fnmatch: ");
   buffer_put(buffer_2, pattern, plen);
   buffer_putspace(buffer_2);
@@ -43,7 +47,8 @@ start:
     if(!(flags & NOTFIRST))
       return PATH_FNM_NOMATCH;
 
-    /* don't match if PATH_FNM_PERIOD and PATH_FNM_PATHNAME and previous was '/' */
+    /* don't match if PATH_FNM_PERIOD and PATH_FNM_PATHNAME and previous
+     * was '/' */
     if((flags & PATH_FNM_PATHNAME) && string[-1] == '/')
       return PATH_FNM_NOMATCH;
   }
@@ -81,8 +86,8 @@ start:
 
         if(*pattern == '[' && pattern[1] == ':') {
           /* MEMBER - stupid POSIX char classes */
-          /* TODO: implement them, but maybe not because POSIX sucks here! HARR
-           * HARR */
+          /* TODO: implement them, but maybe not because POSIX sucks here!
+           * HARR HARR */
         } else {
           /* MEMBER - character range */
           if(plen > 1 && pattern[1] == '-' && pattern[2] != ']') {
@@ -140,7 +145,8 @@ start:
 
     case '*': {
       /* this is the only situation where we really need to recurse */
-      if((*string == '/' && (flags & PATH_FNM_PATHNAME)) || path_fnmatch(pattern, plen, string + 1, slen - 1, flags)) {
+      if((*string == '/' && (flags & PATH_FNM_PATHNAME)) ||
+         path_fnmatch(pattern, plen, string + 1, slen - 1, flags)) {
         pattern++;
         plen--;
         goto start;

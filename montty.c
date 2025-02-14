@@ -39,7 +39,8 @@ init_term(int fd, int s) {
   tio.c_cflag |= CS8;
   tio.c_cflag &= ~(CRTSCTS);
   tio.c_lflag |= NOFLSH;
-  tio.c_lflag &= ~(ISIG | ICANON | IEXTEN | ECHO | ECHOE | ECHOK | ECHOCTL | ECHOKE);
+  tio.c_lflag &=
+      ~(ISIG | ICANON | IEXTEN | ECHO | ECHOE | ECHOK | ECHOCTL | ECHOKE);
   if(cfsetspeed(&tio, s) < 0) {
     syslog(LOG_ERR, "unable to set speed to %d: %m", s);
     exit(1);

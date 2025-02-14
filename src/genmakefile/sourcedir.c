@@ -12,8 +12,11 @@ MAP_T srcdir_map;
 const char* srcdir_varname = "DISTDIR";
 
 static const char tok_charset[] = {
-    '_', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'a', 'b', 'c', 'd', 'e',
-    'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
+    '_', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L',
+    'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y',
+    'Z', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l',
+    'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y',
+    'z', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
 };
 
 static inline bool
@@ -38,7 +41,8 @@ extract_tokens(const char* x, size_t n, set_t* tokens) {
     if(is_newline(*x))
       break;
 
-    if((i = scan_charsetnskip(x, tok_charset, n)) > 0 && !(i == 7 && byte_equal(x, 7, "defined")))
+    if((i = scan_charsetnskip(x, tok_charset, n)) > 0 &&
+       !(i == 7 && byte_equal(x, 7, "defined")))
       if(!(*x >= '0' && *x <= '9')) {
         if(set_add(tokens, x, i) == 1) {
 
@@ -132,7 +136,11 @@ extract_pptok(const char* x, size_t n, set_t* tokens) {
  * @{
  */
 void
-sourcedir_addsource(const char* source, strarray* sources, strarray* progs, strarray* bins, char psm) {
+sourcedir_addsource(const char* source,
+                    strarray* sources,
+                    strarray* progs,
+                    strarray* bins,
+                    char psm) {
   stralloc r, dir, tmp;
   strlist list;
   size_t n, dlen;
@@ -149,7 +157,16 @@ sourcedir_addsource(const char* source, strarray* sources, strarray* progs, stra
   strlist_zero(&list);
 
 #ifdef DEBUG_OUTPUT_
-  buffer_putm_internal(buffer_2, "[1]", BLUE256, "sourcedir_addsource(", NC, source, BLUE256, ") ", NC, NULL);
+  buffer_putm_internal(buffer_2,
+                       "[1]",
+                       BLUE256,
+                       "sourcedir_addsource(",
+                       NC,
+                       source,
+                       BLUE256,
+                       ") ",
+                       NC,
+                       NULL);
   buffer_putnlflush(buffer_2);
 #endif
 
@@ -207,7 +224,17 @@ sourcedir_addsource(const char* source, strarray* sources, strarray* progs, stra
     if(path_exists(r.s) || includes_find_sa(s, n, &r)) {
 
 #ifdef DEBUG_OUTPUT_
-      buffer_putm_internal(buffer_2, "[2]", GREEN256, "sourcedir_addsource(", NC, source, GREEN256, ") ", NC, "Adding include ", 0);
+      buffer_putm_internal(buffer_2,
+                           "[2]",
+                           GREEN256,
+                           "sourcedir_addsource(",
+                           NC,
+                           source,
+                           GREEN256,
+                           ") ",
+                           NC,
+                           "Adding include ",
+                           0);
       buffer_putsa(buffer_2, &r);
       buffer_putnlflush(buffer_2);
 #endif
@@ -351,7 +378,10 @@ sourcedir_dump_all(buffer* b) {
 }
 
 void
-sourcedir_dep_recursive(sourcedir* sources_dir, strlist* out, uint32 serial, sourcedir* parent) {
+sourcedir_dep_recursive(sourcedir* sources_dir,
+                        strlist* out,
+                        uint32 serial,
+                        sourcedir* parent) {
   const char* s;
   size_t n;
   set_iterator_t it;

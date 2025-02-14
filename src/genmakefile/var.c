@@ -3,7 +3,8 @@
 #include "../../genmakefile.h"
 
 MAP_T vars;
-linklib_fmt *format_linklib_fn = 0, *format_linkdir_fn = &format_linkdir_switch;
+linklib_fmt *format_linklib_fn = 0,
+            *format_linkdir_fn = &format_linkdir_switch;
 
 /**
  * @brief format_linklib_lib  Output library name (+".lib")
@@ -69,7 +70,8 @@ var_list(const char* name, char psa) {
   if(!MAP_SEARCH(vars, name, str_len(name) + 1, &t)) {
     var_t var;
     var.serial = 0;
-    strlist_init(&var.value, (name[0] >= 'A' && name[0] <= 'Z') ? ' ' : psa);
+    strlist_init(&var.value,
+                 (name[0] >= 'A' && name[0] <= 'Z') ? ' ' : psa);
     MAP_INSERT(vars, name, str_len(name) + 1, &var, sizeof(strlist));
     MAP_SEARCH(vars, name, str_len(name) + 1, &t);
   }
@@ -154,7 +156,11 @@ var_push_sa(const char* name, stralloc* value) {
  * @param tolower
  */
 void
-var_subst(const stralloc* in, stralloc* out, const char* pfx, const char* sfx, int tolower) {
+var_subst(const stralloc* in,
+          stralloc* out,
+          const char* pfx,
+          const char* sfx,
+          int tolower) {
   size_t i;
   stralloc_zero(out);
 

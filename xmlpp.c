@@ -31,7 +31,11 @@ static stralloc indent_str;
 buffer* output;
 
 int
-xml_read_function(xmlreader* reader, xmlnodeid id, stralloc* name, stralloc* value, HMAP_DB** attrs) {
+xml_read_function(xmlreader* reader,
+                  xmlnodeid id,
+                  stralloc* name,
+                  stralloc* value,
+                  HMAP_DB** attrs) {
   static int newline_written = 0;
   switch(id) {
     case XML_TEXT: {
@@ -55,7 +59,9 @@ xml_read_function(xmlreader* reader, xmlnodeid id, stralloc* name, stralloc* val
         --depth;
       }
 
-      if(!(reader->closing && !prev_closing && stralloc_equal(&prev_element, name)) && stralloc_length(&prev_element)) {
+      if(!(reader->closing && !prev_closing &&
+           stralloc_equal(&prev_element, name)) &&
+         stralloc_length(&prev_element)) {
 
         if(!newline_written && !one_line) {
           buffer_puts(output, "\n");
@@ -66,7 +72,8 @@ xml_read_function(xmlreader* reader, xmlnodeid id, stralloc* name, stralloc* val
         }
       }
 
-      buffer_putm_internal(output, "<", reader->closing ? "/" : "", name->s, NULL);
+      buffer_putm_internal(
+          output, "<", reader->closing ? "/" : "", name->s, NULL);
 
       if(attrs && *attrs && (*attrs)->list_tuple) {
         buffer_putspace(output);
@@ -74,11 +81,14 @@ xml_read_function(xmlreader* reader, xmlnodeid id, stralloc* name, stralloc* val
       }
 
       if(terminate && !reader->self_closing) {
-        if(str_equal(name->s, "img") || str_equal(name->s, "link") || str_equal(name->s, "br"))
+        if(str_equal(name->s, "img") || str_equal(name->s, "link") ||
+           str_equal(name->s, "br"))
           reader->self_closing = 1;
       }
 
-      buffer_puts(output, reader->self_closing ? (name->s[0] == '?' ? "?>" : " />") : ">");
+      buffer_puts(output,
+                  reader->self_closing ? (name->s[0] == '?' ? "?>" : " />")
+                                       : ">");
 
       stralloc_copy(&prev_element, name);
       prev_closing = closing;
@@ -150,7 +160,8 @@ xmlpp_fmt(xmlnode* node, buffer* b, int depth, char ch, int n) {
   if(one_line)
     return;
   if(compact) {
-    if(inner && xmlpp_get_depth(node, 0) <= 1 && xml_num_children(node) <= 1) {
+    if(inner && xmlpp_get_depth(node, 0) <= 1 &&
+       xml_num_children(node) <= 1) {
       parent = node;
       return;
     }

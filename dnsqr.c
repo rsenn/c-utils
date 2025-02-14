@@ -219,7 +219,9 @@ main(int argc, char** argv) {
       oops();
     dns_resolve_tx.packet[2] &= ~1;
     dns_resolve_tx.packet[3] &= ~128;
-    if(!printpacket_cat(&out, dns_resolve_tx.packet, dns_resolve_tx.packetlen))
+    if(!printpacket_cat(&out,
+                        dns_resolve_tx.packet,
+                        dns_resolve_tx.packetlen))
       oops();
   }
 

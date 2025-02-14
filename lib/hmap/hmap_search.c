@@ -4,7 +4,10 @@
 #include <string.h>
 
 int
-hmap_search(HMAP_DB* hmap_db, const void* key, size_t k_len, TUPLE** data) {
+hmap_search(HMAP_DB* hmap_db,
+            const void* key,
+            size_t k_len,
+            TUPLE** data) {
   int32 index = hmap_hash((void*)key, k_len) % hmap_db->bucket_size;
   TUPLE* ptr_tuple = (hmap_db->tuple + index);
   TUPLE* ptr_hash_tuple = NULL;
@@ -21,7 +24,10 @@ hmap_search(HMAP_DB* hmap_db, const void* key, size_t k_len, TUPLE** data) {
     ptr_hash_tuple = itr_tuple;
     while(ptr_hash_tuple) {
 
-      if(hmap_cmp(ptr_hash_tuple->key, ptr_hash_tuple->key_len, (void*)key, k_len) == 0) {
+      if(hmap_cmp(ptr_hash_tuple->key,
+                  ptr_hash_tuple->key_len,
+                  (void*)key,
+                  k_len) == 0) {
         if(data != NULL) {
           *data = ptr_hash_tuple;
         }

@@ -89,11 +89,16 @@ buffer_deflate(buffer* b, buffer* out, int level) {
 
   byte_zero(b, sizeof(buffer));
 
-  buffer_init(b, (buffer_op_fn*)&buffer_deflate_write, -1, ctx->buf, sizeof(ctx->buf));
+  buffer_init(b,
+              (buffer_op_fn*)&buffer_deflate_write,
+              -1,
+              ctx->buf,
+              sizeof(ctx->buf));
   b->cookie = ctx;
   b->deinit = &buffer_deflate_close;
 
-  ret = deflateInit2(&ctx->z, level, Z_DEFLATED, 15 + 16, 8, Z_DEFAULT_STRATEGY);
+  ret = deflateInit2(
+      &ctx->z, level, Z_DEFLATED, 15 + 16, 8, Z_DEFAULT_STRATEGY);
   //
   byte_zero(&ctx->hdr, sizeof(gz_header));
   ctx->hdr.text = 0;

@@ -2,7 +2,8 @@
 
 size_t
 scan_8short(const char* src, unsigned short* dest) {
-  /* make a copy of src so we can return the number of bytes we progressed */
+  /* make a copy of src so we can return the number of bytes we progressed
+   */
   const char* tmp = src;
   /* this is called l because we copy and pasted from 8long, where l
    * stood for "long" */

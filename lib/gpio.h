@@ -34,7 +34,8 @@ void gpio_set_input_pull_down(int const pin_nr);
 
 /** Write to pin with given nr.
  *  Pin MUST be set to output mode, before.
- *  Use int parameter value true for high level, false for low level output.
+ *  Use int parameter value true for high level, false for low level
+ * output.
  */
 void gpio_write(int const pin_nr, int const high);
 

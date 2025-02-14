@@ -59,7 +59,8 @@ struct cbmap_internal_node {
 /** mark - cbmap */
 
 #define IS_INTERNAL_NODE(p) (1 & (size_t)(p))
-#define GET_INTERNAL_NODE(p) ((struct cbmap_internal_node*)(((size_t)(p)) - 1))
+#define GET_INTERNAL_NODE(p) \
+  ((struct cbmap_internal_node*)(((size_t)(p)) - 1))
 
 #define IS_DATA_NODE(p) (!(IS_INTERNAL_NODE(p)))
 #define GET_DATA_NODE(p) ((struct cbmap_data_node*)(p))
@@ -67,5 +68,7 @@ struct cbmap_internal_node {
 struct cbmap_internal_node* cbmap_internal_node_new(void);
 
 void cbmap_internal_node_destroy(struct cbmap_internal_node* node);
-void cbmap_data_node_destroy(struct cbmap_data_node* data, cbmap_allocator_t key_allocator, cbmap_allocator_t value_allocator);
+void cbmap_data_node_destroy(struct cbmap_data_node* data,
+                             cbmap_allocator_t key_allocator,
+                             cbmap_allocator_t value_allocator);
 #endif

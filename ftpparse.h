@@ -103,8 +103,10 @@ struct ftpparse {
   1 /* unique identifier for files on \
        this FTP server */
 
-extern int ftpparse(struct ftpparse* fp, char* buf, int len, int eat_leading_spaces);
+extern int
+ftpparse(struct ftpparse* fp, char* buf, int len, int eat_leading_spaces);
 /* MLST listings start with a space */
-extern int ftpparse_mlsx(struct ftpparse* fp, char* buf, int len, int is_mslt);
+extern int
+ftpparse_mlsx(struct ftpparse* fp, char* buf, int len, int is_mslt);
 
 #endif

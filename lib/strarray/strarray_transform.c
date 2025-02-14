@@ -4,7 +4,9 @@
 #include <stdlib.h>
 
 int
-strarray_transform(strarray* in, strarray* out, char* (*pred)(const char*)) {
+strarray_transform(strarray* in,
+                   strarray* out,
+                   char* (*pred)(const char*)) {
   size_t i, n = strarray_size(in);
   char **d, **s = strarray_BEGIN(in);
 

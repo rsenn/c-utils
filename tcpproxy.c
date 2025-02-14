@@ -133,10 +133,20 @@ main(int argc, char** argv) {
     errmsg_warnsys("error in socket create", 0);
     return -1;
   }
-  setsockopt(proxy_in, SOL_SOCKET, SO_REUSEADDR, (const char*)&opt_val, sizeof(int));
-  setsockopt(proxy_out, SOL_SOCKET, SO_REUSEADDR, (const char*)&opt_val, sizeof(int));
+  setsockopt(proxy_in,
+             SOL_SOCKET,
+             SO_REUSEADDR,
+             (const char*)&opt_val,
+             sizeof(int));
+  setsockopt(proxy_out,
+             SOL_SOCKET,
+             SO_REUSEADDR,
+             (const char*)&opt_val,
+             sizeof(int));
 
-  status = bind(proxy_in, (const struct sockaddr*)&addr_from, sizeof(struct sockaddr_in));
+  status = bind(proxy_in,
+                (const struct sockaddr*)&addr_from,
+                sizeof(struct sockaddr_in));
   if(status < 0) {
     errmsg_warnsys("error in bind", 0);
     return -1;
@@ -149,13 +159,16 @@ main(int argc, char** argv) {
   }
 
   addrlen = sizeof(struct sockaddr_in);
-  proxy_client = accept(proxy_in, (struct sockaddr*)&client_addr, &addrlen);
+  proxy_client =
+      accept(proxy_in, (struct sockaddr*)&client_addr, &addrlen);
   if(proxy_client < 0) {
     errmsg_warnsys("error in accept", 0);
     return -1;
   }
 
-  status = connect(proxy_out, (struct sockaddr*)&addr_dest, sizeof(struct sockaddr));
+  status = connect(proxy_out,
+                   (struct sockaddr*)&addr_dest,
+                   sizeof(struct sockaddr));
   if(status < 0) {
     errmsg_warnsys("error in connect", 0);
     return -1;

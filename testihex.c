@@ -203,18 +203,19 @@ hex_print(ihex_file* ihf, buffer* out) {
  */
 void
 usage(char* argv0) {
-  buffer_putm_internal(buffer_1,
-                       "Usage: ",
-                       path_basename(argv0),
-                       " <hex-files...>\n"
-                       "\n"
-                       "Options\n"
-                       "  -h, --help                show this help\n"
-                       "  -b, --bits N              max address bits\n"
-                       "  -o, --output FILE         combine into output file\n"
-                       "  -v, --verbose             show verbose messages\n"
-                       "\n",
-                       NULL);
+  buffer_putm_internal(
+      buffer_1,
+      "Usage: ",
+      path_basename(argv0),
+      " <hex-files...>\n"
+      "\n"
+      "Options\n"
+      "  -h, --help                show this help\n"
+      "  -b, --bits N              max address bits\n"
+      "  -o, --output FILE         combine into output file\n"
+      "  -v, --verbose             show verbose messages\n"
+      "\n",
+      NULL);
   buffer_putnlflush(buffer_1);
 }
 
@@ -223,13 +224,20 @@ main(int argc, char* argv[]) {
   ssize_t ret;
   static buffer input, output;
   int verbose = 0, bits = 32;
-  const char* filename = argv[1] ? argv[1]
-                                 : "/home/roman/Dokumente/Sources/xc8/pictest/bootloaders/18f2550-usb-hid-xc8/FIRMWARE/"
-                                   "PIC18F2550/18F2550-MPLAB.X/dist/default/production/18F2550-MPLAB.X.production.hex";
+  const char* filename = argv[1]
+                             ? argv[1]
+                             : "/home/roman/Dokumente/Sources/xc8/pictest/"
+                               "bootloaders/18f2550-usb-hid-xc8/FIRMWARE/"
+                               "PIC18F2550/18F2550-MPLAB.X/dist/default/"
+                               "production/18F2550-MPLAB.X.production.hex";
   int c, index = 0;
   const char *cfgdata = 0, *input_file = 0, *output_file = 0;
 
-  struct unix_longopt opts[] = {{"help", 0, NULL, 'h'}, {"bits", 0, NULL, 'b'}, {"output", 1, NULL, 'o'}, {"verbose", 0, &verbose, 1}, {0, 0, 0, 0}};
+  struct unix_longopt opts[] = {{"help", 0, NULL, 'h'},
+                                {"bits", 0, NULL, 'b'},
+                                {"output", 1, NULL, 'o'},
+                                {"verbose", 0, &verbose, 1},
+                                {0, 0, 0, 0}};
 
   for(;;) {
     c = unix_getopt_long(argc, argv, "hvb:o:", opts, &index);
@@ -280,7 +288,8 @@ main(int argc, char* argv[]) {
     }
     bottom = mem_bottom(&hex_input);
     top = mem_top(&hex_input, mask);
-    buffer_putm_internal(buffer_2, "Input Hex File '", input_file, "':\n", NULL);
+    buffer_putm_internal(
+        buffer_2, "Input Hex File '", input_file, "':\n", NULL);
     hex_print(&hex_input, buffer_2);
 
     puthex("mem bottom", bottom);

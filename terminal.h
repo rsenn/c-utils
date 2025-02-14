@@ -76,7 +76,8 @@ int terminal_getheight(void);
 int terminal_getwidth(void);
 void terminal_goto_xy(int x, int y);
 int terminal_init(void);
-void terminal_numbers_sequence(buffer* b, int numbers[], size_t len, char c);
+void
+terminal_numbers_sequence(buffer* b, int numbers[], size_t len, char c);
 void terminal_number_sequence(buffer* b, int n, char c);
 void terminal_restore(void);
 void terminal_rgb_background(buffer* buf, uint8 r, uint8 g, uint8 b);

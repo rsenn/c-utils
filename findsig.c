@@ -19,7 +19,8 @@
 
 int
 is_hex_char(char c) {
-  return (c >= '0' && c <= '9') || (c >= 'A' && c <= 'F') || (c >= 'a' && c <= 'f');
+  return (c >= '0' && c <= '9') || (c >= 'A' && c <= 'F') ||
+         (c >= 'a' && c <= 'f');
 }
 
 uint8_t*
@@ -94,7 +95,11 @@ read_file(FILE* f, size_t* file_sz) {
 }
 
 long
-find_sig(uint8_t* file_buf, size_t file_sz, uint8_t* pat_buf, int pat_len, char* mask) {
+find_sig(uint8_t* file_buf,
+         size_t file_sz,
+         uint8_t* pat_buf,
+         int pat_len,
+         char* mask) {
   if(pat_len > file_sz) {
     return -1;
   }

@@ -19,7 +19,10 @@ extern "C" {
 
 struct playlist;
 
-typedef void(playlist_callback)(struct playlist*, stralloc* title, stralloc* path, uint32 len);
+typedef void(playlist_callback)(struct playlist*,
+                                stralloc* title,
+                                stralloc* path,
+                                uint32 len);
 typedef playlist_callback* playlist_callback_ptr;
 
 typedef enum playlist_type {

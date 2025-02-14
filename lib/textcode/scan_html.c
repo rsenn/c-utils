@@ -28,17 +28,21 @@ lookup(size_t ofs, const char* t) {
   return NULL;
 }
 
-enum htmlmode {          /* <a href="http://example.com/&quot;foo">libowfat&lt;home</a>
+enum htmlmode {          /* <a
+                          * href="http://example.com/&quot;foo">libowfat&lt;home</a>
                           */
                 OUTSIDE, /*                                        ^^^^^^^^^^^^^^^^
                           * -> libowfat<home
                           */
-                TAGARG,  /*         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ ->
-                            http://example.com/"foo */
+                TAGARG, /*         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ ->
+                           http://example.com/"foo */
 };
 
 static size_t
-scan_html_inner(const char* src, char* dest, size_t* destlen, enum htmlmode mode) {
+scan_html_inner(const char* src,
+                char* dest,
+                size_t* destlen,
+                enum htmlmode mode) {
   register const unsigned char* s = (const unsigned char*)src;
   size_t written = 0, i;
   int dq = 0;
@@ -85,7 +89,8 @@ scan_html_inner(const char* src, char* dest, size_t* destlen, enum htmlmode mode
         continue;
       }
       break;
-    } else if(mode == TAGARG && !dq && (s[i] == ' ' || s[i] == '\t' || s[i] == '\n'))
+    } else if(mode == TAGARG && !dq &&
+              (s[i] == ' ' || s[i] == '\t' || s[i] == '\n'))
       break;
     else if(dest)
       dest[written] = s[i];
@@ -120,30 +125,38 @@ scan_html(const char* src, char* dest, size_t* destlen) {
 
 int
 unittest_main() {
-  char* html = "<a href=\"http://example.com/&quot;foo\">libowfat&lt;home</a>";
+  char* html =
+      "<a href=\"http://example.com/&quot;foo\">libowfat&lt;home</a>";
   char buf[100];
   size_t destlen;
   /* check that we stop at < */
   assert(scan_html(html, buf, &destlen) == 0 && destlen == 0);
   /* check that we properly decode &lt; */
   byte_fill(buf, sizeof(buf), '?');
-  assert(scan_html(strchr(html, '>') + 1, buf, &destlen) == 16 && destlen == 13 && !memcmp(buf, "libowfat<home?", 14));
+  assert(scan_html(strchr(html, '>') + 1, buf, &destlen) == 16 &&
+         destlen == 13 && !memcmp(buf, "libowfat<home?", 14));
   /* check that we stop at " and properly decode &quot; */
   byte_fill(buf, sizeof(buf), '?');
-  assert(scan_html_tagarg(strchr(html, '"') + 1, buf, &destlen) == 28 && destlen == 23 && !memcmp(buf, "http://example.com/\"foo?", 24));
+  assert(scan_html_tagarg(strchr(html, '"') + 1, buf, &destlen) == 28 &&
+         destlen == 23 && !memcmp(buf, "http://example.com/\"foo?", 24));
   /* check that we pass through invalid escapes */
   byte_fill(buf, sizeof(buf), '?');
-  assert(scan_html("&fnord;", buf, &destlen) == 7 && destlen == 7 && !memcmp(buf, "&fnord;?", 8));
+  assert(scan_html("&fnord;", buf, &destlen) == 7 && destlen == 7 &&
+         !memcmp(buf, "&fnord;?", 8));
   byte_fill(buf, sizeof(buf), '?');
-  assert(scan_html("&#x;", buf, &destlen) == 4 && destlen == 4 && !memcmp(buf, "&#x;?", 5));
+  assert(scan_html("&#x;", buf, &destlen) == 4 && destlen == 4 &&
+         !memcmp(buf, "&#x;?", 5));
   byte_fill(buf, sizeof(buf), '?');
-  assert(scan_html("&#;", buf, &destlen) == 3 && destlen == 3 && !memcmp(buf, "&#;?", 4));
+  assert(scan_html("&#;", buf, &destlen) == 3 && destlen == 3 &&
+         !memcmp(buf, "&#;?", 4));
   /* check that &#x[hex]; is decoded properly */
   byte_fill(buf, sizeof(buf), '?');
-  assert(scan_html("&#x1;", buf, &destlen) == 5 && destlen == 1 && buf[0] == 1 && buf[1] == '?');
+  assert(scan_html("&#x1;", buf, &destlen) == 5 && destlen == 1 &&
+         buf[0] == 1 && buf[1] == '?');
   /* check that &#[decimal]; is decoded properly */
   byte_fill(buf, sizeof(buf), '?');
-  assert(scan_html("&#1;", buf, &destlen) == 4 && destlen == 1 && buf[0] == 1 && buf[1] == '?');
+  assert(scan_html("&#1;", buf, &destlen) == 4 && destlen == 1 &&
+         buf[0] == 1 && buf[1] == '?');
 }
 #endif
 #endif

@@ -18,7 +18,8 @@ path_collapse(char* path, size_t n) {
       while(l < n && x[l] == sep)
         ++l;
 
-      if(l + 2 < n && x[l] == '.' && x[l + 1] == '.' && (l + 2 >= n || x[l + 2] == sep)) {
+      if(l + 2 < n && x[l] == '.' && x[l + 1] == '.' &&
+         (l + 2 >= n || x[l + 2] == sep)) {
         l += 3;
 
       move:

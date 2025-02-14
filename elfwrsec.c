@@ -27,13 +27,23 @@ static const char* section = ".rodata";
 
 const char*
 get_p_type(int type) {
-  static const char* const p_types[] = {"PT_NULL   ", "PT_LOAD   ", "PT_DYNAMIC", "PT_INTERP ", "PT_NOTE   ", "PT_SHLIB  ", "PT_PHDR   ", "PT_TLS    ", "PT_NUM    "};
+  static const char* const p_types[] = {"PT_NULL   ",
+                                        "PT_LOAD   ",
+                                        "PT_DYNAMIC",
+                                        "PT_INTERP ",
+                                        "PT_NOTE   ",
+                                        "PT_SHLIB  ",
+                                        "PT_PHDR   ",
+                                        "PT_TLS    ",
+                                        "PT_NUM    "};
 
   if(type < (int)(sizeof(p_types) / sizeof(p_types[0])))
     return p_types[type];
 
   if(type >= 0x6474e550 && type <= 0x6474e552) {
-    static const char* const gnu_p_types[] = {"PT_GNU_EH_FRAME", "PT_GNU_STACK", "PT_GNU_RELRO"};
+    static const char* const gnu_p_types[] = {"PT_GNU_EH_FRAME",
+                                              "PT_GNU_STACK",
+                                              "PT_GNU_RELRO"};
     return gnu_p_types[type % 3];
   }
 
@@ -142,7 +152,9 @@ elfwrsec(const char* file) {
 
   header = base = mmap_shared(file, &size);
 
-  ret = (header->e_ident[ELF_EI_CLASS] == ELF_ELFCLASS64 ? process64(base) : process32(base));
+  ret =
+      (header->e_ident[ELF_EI_CLASS] == ELF_ELFCLASS64 ? process64(base)
+                                                       : process32(base));
 
   mmap_unmap(base, size);
 

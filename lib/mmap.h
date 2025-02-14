@@ -24,7 +24,8 @@ char* mmap_read_fd(fd_type fd, size_t* filesize);
 
 /* map fd for reading
  * return pointer to map */
-char* mmap_read_fd_range(fd_type fd, size_t* size, size_t offset, size_t len);
+char*
+mmap_read_fd_range(fd_type fd, size_t* size, size_t offset, size_t len);
 
 /* open file for reading, mmap whole file, close file, write length of
  * map in filesize and return pointer to map. */

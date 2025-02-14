@@ -51,7 +51,13 @@ extern int charbuf_colors;
 
 ssize_t charbuf_stubborn_read(charbuf*, size_t max);
 
-#define charbuf_colorstr(str, color, out) buffer_putm_internal(out, charbuf_colors ? CHARBUF_NC : "", charbuf_colors ? color : "", str, charbuf_colors ? CHARBUF_NC : "", 0);
+#define charbuf_colorstr(str, color, out) \
+  buffer_putm_internal(out, \
+                       charbuf_colors ? CHARBUF_NC : "", \
+                       charbuf_colors ? color : "", \
+                       str, \
+                       charbuf_colors ? CHARBUF_NC : "", \
+                       0);
 #define charbuf_dumpname(lbl, out) charbuf_colorstr(lbl, CHARBUF_GRAY, out)
 #define charbuf_dumplabel(lbl, out) \
   do { \
@@ -70,8 +76,10 @@ ssize_t charbuf_stubborn_read(charbuf*, size_t max);
     charbuf_colorstr(buf, CHARBUF_YELLOW, out); \
   } while(0)
 
-#define charbuf_dumpint64(lbl, val, out) charbuf_dumpfmt((lbl), ((int64)(val)), fmt_longlong, out)
-#define charbuf_dumpuint32(lbl, val, out) charbuf_dumpfmt((lbl), ((uint32)(val)), fmt_uint, out)
+#define charbuf_dumpint64(lbl, val, out) \
+  charbuf_dumpfmt((lbl), ((int64)(val)), fmt_longlong, out)
+#define charbuf_dumpuint32(lbl, val, out) \
+  charbuf_dumpfmt((lbl), ((uint32)(val)), fmt_uint, out)
 
 static inline void
 charbuf_dumpchar(int c, buffer* out, int pad) {

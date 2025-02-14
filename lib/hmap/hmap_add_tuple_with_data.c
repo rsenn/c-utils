@@ -2,7 +2,10 @@
 #include "../hmap_internal.h"
 
 int
-hmap_add_tuple_with_data(HMAP_DB** hmap_db, const void* key, size_t k_len, void* data) {
+hmap_add_tuple_with_data(HMAP_DB** hmap_db,
+                         const void* key,
+                         size_t k_len,
+                         void* data) {
   TUPLE *new_tuple = NULL, *ptr_tuple = NULL, *root_tuple = NULL;
   int r = 0;
   int index = hmap_hash(key, k_len) % (*hmap_db)->bucket_size;
@@ -28,7 +31,9 @@ hmap_add_tuple_with_data(HMAP_DB** hmap_db, const void* key, size_t k_len, void*
       root_tuple->data = data;
       root_tuple->data_len = -1;
 
-      HMAP_DUMP("add[%d] primary data[%s]\n", index, (char*)root_tuple->data);
+      HMAP_DUMP("add[%d] primary data[%s]\n",
+                index,
+                (char*)root_tuple->data);
       byte_copy(root_tuple->key, k_len, key);
       root_tuple->key[k_len] = 0;
       root_tuple->key_len = k_len;
@@ -52,7 +57,9 @@ hmap_add_tuple_with_data(HMAP_DB** hmap_db, const void* key, size_t k_len, void*
       new_tuple->data = data;
       new_tuple->data_len = -1;
 
-      HMAP_DUMP("add[%d] secondary data[%s]\n", index, (char*)new_tuple->data);
+      HMAP_DUMP("add[%d] secondary data[%s]\n",
+                index,
+                (char*)new_tuple->data);
       byte_copy(new_tuple->key, k_len, key);
       new_tuple->key[k_len] = 0;
       new_tuple->key_len = k_len;

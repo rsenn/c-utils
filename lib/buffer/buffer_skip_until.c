@@ -1,8 +1,8 @@
 #include "../buffer.h"
 #include "../byte.h"
 
-/* skips bytes in buffer until a char in charset occurs, the char itself will be
- * skipped also */
+/* skips bytes in buffer until a char in charset occurs, the char itself
+ * will be skipped also */
 int
 buffer_skip_until(buffer* b, const char* charset, size_t setlen) {
   int n = 0;

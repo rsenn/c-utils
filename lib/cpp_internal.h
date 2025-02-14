@@ -16,7 +16,8 @@
 
 #define MACRO_FLAG_OBJECTLIKE (1U << 31)
 #define MACRO_FLAG_VARIADIC (1U << 30)
-#define MACRO_ARGCOUNT_MASK (~(0 | MACRO_FLAG_OBJECTLIKE | MACRO_FLAG_VARIADIC))
+#define MACRO_ARGCOUNT_MASK \
+  (~(0 | MACRO_FLAG_OBJECTLIKE | MACRO_FLAG_VARIADIC))
 
 #define OBJECTLIKE(M) ((M)->num_args & MACRO_FLAG_OBJECTLIKE)
 #define FUNCTIONLIKE(M) (!(OBJECTLIKE(M)))
@@ -106,7 +107,11 @@ parse_next_of_x(tokenizer* t, token* tok, int fail_unk) {
 }
 
 static inline int
-mem_tokenizers_join(cpp_file* org, cpp_file* inj, cpp_file* result, int first, off_t lastpos) {
+mem_tokenizers_join(cpp_file* org,
+                    cpp_file* inj,
+                    cpp_file* result,
+                    int first,
+                    off_t lastpos) {
   size_t i;
   token tok;
   int ret, diff, cnt = 0, last = first;
@@ -177,11 +182,20 @@ mem_tokenizers_join(cpp_file* org, cpp_file* inj, cpp_file* result, int first, o
 static inline int
 cpp_bp(int type) {
   static const int list[] = {
-      /*0x20, 0x10,   0x400,  0x400,  0x800,  0x800,  0x200,  0x200,  0x400, 0x400, 0x100, 0x40,
-      0x80, 0x4000, 0x1000, 0x1000, 0x2000, 0x2000, 0x2000, 0x8000, 0,     0x4000*/
-      TTENT(TT_LOR, 1 << 4),  TTENT(TT_LAND, 1 << 5), TTENT(TT_BOR, 1 << 6),  TTENT(TT_XOR, 1 << 7),   TTENT(TT_BAND, 1 << 8),    TTENT(TT_EQ, 1 << 9),    TTENT(TT_NEQ, 1 << 9),    TTENT(TT_LTE, 1 << 10),
-      TTENT(TT_GTE, 1 << 10), TTENT(TT_LT, 1 << 10),  TTENT(TT_GT, 1 << 10),  TTENT(TT_SHL, 1 << 11),  TTENT(TT_SHR, 1 << 11),    TTENT(TT_PLUS, 1 << 12), TTENT(TT_MINUS, 1 << 12), TTENT(TT_MUL, 1 << 13),
-      TTENT(TT_DIV, 1 << 13), TTENT(TT_MOD, 1 << 13), TTENT(TT_NEG, 1 << 14), TTENT(TT_LNOT, 1 << 14), TTENT(TT_LPAREN, 1 << 15), TTENT(TT_RPAREN, 0),
+      /*0x20, 0x10,   0x400,  0x400,  0x800,  0x800,  0x200,  0x200, 0x400,
+      0x400, 0x100, 0x40, 0x80, 0x4000, 0x1000, 0x1000, 0x2000, 0x2000,
+      0x2000, 0x8000, 0,     0x4000*/
+      TTENT(TT_LOR, 1 << 4),     TTENT(TT_LAND, 1 << 5),
+      TTENT(TT_BOR, 1 << 6),     TTENT(TT_XOR, 1 << 7),
+      TTENT(TT_BAND, 1 << 8),    TTENT(TT_EQ, 1 << 9),
+      TTENT(TT_NEQ, 1 << 9),     TTENT(TT_LTE, 1 << 10),
+      TTENT(TT_GTE, 1 << 10),    TTENT(TT_LT, 1 << 10),
+      TTENT(TT_GT, 1 << 10),     TTENT(TT_SHL, 1 << 11),
+      TTENT(TT_SHR, 1 << 11),    TTENT(TT_PLUS, 1 << 12),
+      TTENT(TT_MINUS, 1 << 12),  TTENT(TT_MUL, 1 << 13),
+      TTENT(TT_DIV, 1 << 13),    TTENT(TT_MOD, 1 << 13),
+      TTENT(TT_NEG, 1 << 14),    TTENT(TT_LNOT, 1 << 14),
+      TTENT(TT_LPAREN, 1 << 15), TTENT(TT_RPAREN, 0),
 
       // TTENT(TT_RPAREN, 1 << 15),
       // TTENT(TT_LPAREN, 0),

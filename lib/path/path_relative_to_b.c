@@ -8,7 +8,8 @@
 #endif
 
 int
-path_relative_to_b(const char* s1, size_t n1, const char* s2, size_t n2, stralloc* out) {
+path_relative_to_b(
+    const char* s1, size_t n1, const char* s2, size_t n2, stralloc* out) {
   SizePair p;
   size_t i;
 

@@ -45,7 +45,9 @@ serverfailed(const char* buf, unsigned int len) {
 }
 
 static int
-irrelevant(const struct dns_transmit* d, const char* buf, unsigned int len) {
+irrelevant(const struct dns_transmit* d,
+           const char* buf,
+           unsigned int len) {
   char out[12];
   char* dn;
   unsigned int pos;
@@ -125,7 +127,8 @@ randombind(struct dns_transmit* d) {
       if(socket_bind4(d->s1 - 1, ip, 1025 + dns_random(64510)) == 0)
         return 0;
     } else {
-      if(socket_bind6(d->s1 - 1, ip, 1025 + dns_random(64510), d->scope_id) == 0)
+      if(socket_bind6(
+             d->s1 - 1, ip, 1025 + dns_random(64510), d->scope_id) == 0)
         return 0;
     }
   }
@@ -175,7 +178,8 @@ thisudp(struct dns_transmit* d) {
           ret = socket_connect4(d->s1 - 1, ip, 53);
         err = errno;
         if(ret == 0)
-          if(send(d->s1 - 1, d->query + 2, d->querylen - 2, 0) == (long)d->querylen - 2) {
+          if(send(d->s1 - 1, d->query + 2, d->querylen - 2, 0) ==
+             (long)d->querylen - 2) {
             struct taia now;
             taia_now(&now);
             taia_uint(&d->deadline, timeouts[d->udploop]);
@@ -272,7 +276,12 @@ nexttcp(struct dns_transmit* d) {
 }
 
 int
-dns_transmit_start(struct dns_transmit* d, const char servers[256], int flagrecursive, const char* q, const char qtype[2], const char localip[16]) {
+dns_transmit_start(struct dns_transmit* d,
+                   const char servers[256],
+                   int flagrecursive,
+                   const char* q,
+                   const char qtype[2],
+                   const char localip[16]) {
   unsigned int len;
 
   dns_transmit_free(d);
@@ -285,7 +294,10 @@ dns_transmit_start(struct dns_transmit* d, const char servers[256], int flagrecu
     return -1;
 
   uint16_pack_big(d->query, len + 16);
-  byte_copy(d->query + 2, 12, flagrecursive ? "\0\0\1\0\0\1\0\0\0\0\0\0" : "\0\0\0\0\0\1\0\0\0\0\0\0gcc-bug-workaround");
+  byte_copy(d->query + 2,
+            12,
+            flagrecursive ? "\0\0\1\0\0\1\0\0\0\0\0\0"
+                          : "\0\0\0\0\0\1\0\0\0\0\0\0gcc-bug-workaround");
   byte_copy(d->query + 14, len, q);
   byte_copy(d->query + 14 + len, 2, qtype);
   byte_copy(d->query + 16 + len, 2, DNS_C_IN);
@@ -302,7 +314,9 @@ dns_transmit_start(struct dns_transmit* d, const char servers[256], int flagrecu
 }
 
 void
-dns_transmit_io(struct dns_transmit* d, iopause_fd* x, struct taia* deadline) {
+dns_transmit_io(struct dns_transmit* d,
+                iopause_fd* x,
+                struct taia* deadline) {
   x->fd = d->s1 - 1;
 
   switch(d->tcpstate) {
@@ -319,7 +333,9 @@ dns_transmit_io(struct dns_transmit* d, iopause_fd* x, struct taia* deadline) {
 }
 
 int
-dns_transmit_get(struct dns_transmit* d, const iopause_fd* x, const struct taia* when) {
+dns_transmit_get(struct dns_transmit* d,
+                 const iopause_fd* x,
+                 const struct taia* when) {
   char udpbuf[513];
   unsigned char ch;
   int r;

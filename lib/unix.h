@@ -48,7 +48,8 @@ int pipe2(int fd[2], int flags);
 int ftruncate(int, off_t);
 
 int unix_getopt(int, char* const[], const char*);
-int unix_getopt_long(int, char* const[], const char*, const struct unix_longopt*, int*);
+int unix_getopt_long(
+    int, char* const[], const char*, const struct unix_longopt*, int*);
 
 extern char* unix_optarg;
 extern int unix_optind;

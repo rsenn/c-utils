@@ -10,7 +10,8 @@ elf_dynamic_section(void* elf) {
   if(di != -1) {
     dyn.start = elf_section_offset(elf, di);
     dyn.end = dyn.start + elf_section_size(elf, di);
-    dyn.elem_size = ELF_BITS(elf) == 64 ? sizeof(elf64_dyn) : sizeof(elf32_dyn);
+    dyn.elem_size =
+        ELF_BITS(elf) == 64 ? sizeof(elf64_dyn) : sizeof(elf32_dyn);
   }
   return dyn;
 }

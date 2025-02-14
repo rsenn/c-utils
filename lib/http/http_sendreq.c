@@ -26,7 +26,11 @@ http_sendreq(http* h) {
   buffer_putsa(out, &h->host);
   buffer_puts(out, "\r\n");
   if(!h->keepalive)
-    buffer_putm_internal(out, "Connection: ", h->keepalive ? "keep-alive" : "close", "\r\n", NULL);
+    buffer_putm_internal(out,
+                         "Connection: ",
+                         h->keepalive ? "keep-alive" : "close",
+                         "\r\n",
+                         NULL);
   buffer_puts(out, "Accept: */*\r\n");
   // buffer_puts(out, "Accept-Encoding: br, xz, lzma, bzip2, gzip,
   // deflate\r\n");
@@ -70,7 +74,15 @@ http_sendreq(http* h) {
     buffer_putfmt(buffer_2, out->x, out->p, &fmt_escapecharnonprintable);
   }
   buffer_puts(buffer_2, " status=");
-  buffer_puts(buffer_2, ((const char* const[]){"-1", "HTTP_RECV_HEADER", "HTTP_RECV_DATA", "HTTP_STATUS_CLOSED", "HTTP_STATUS_ERROR", "HTTP_STATUS_BUSY", "HTTP_STATUS_FINISH", 0})[h->response->status + 1]);
+  buffer_puts(buffer_2,
+              ((const char* const[]){"-1",
+                                     "HTTP_RECV_HEADER",
+                                     "HTTP_RECV_DATA",
+                                     "HTTP_STATUS_CLOSED",
+                                     "HTTP_STATUS_ERROR",
+                                     "HTTP_STATUS_BUSY",
+                                     "HTTP_STATUS_FINISH",
+                                     0})[h->response->status + 1]);
   buffer_putnlflush(buffer_2);
   buffer_flush(buffer_2);
 #endif

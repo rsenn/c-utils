@@ -10,7 +10,8 @@ set_insert(set_t* set, const void* val, const size_t size) {
   uint32 hash, index;
   bucket_t* b;
 
-  if(set->entries == 0 && set->len == 0 && set->array == 0 && set->hash_fp == 0)
+  if(set->entries == 0 && set->len == 0 && set->array == 0 &&
+     set->hash_fp == 0)
     set_init(set, 0);
 
   if(set_has(set, val, size))

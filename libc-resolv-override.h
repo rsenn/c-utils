@@ -92,7 +92,8 @@ typedef enum {
 
 struct dns_resolver;
 
-typedef void(dns_event_handler)(struct dns_resolver* dns, dns_event_type type);
+typedef void(dns_event_handler)(struct dns_resolver* dns,
+                                dns_event_type type);
 
 struct dns_resolver {
   struct dns_transmit t;
@@ -155,14 +156,17 @@ dns_set_timeout(struct dns_resolver* dns, time_t seconds) {
    start an A or a PTR query.
  */
 extern int dns_name_lookup(struct dns_resolver* dns, const char* name);
-extern int dns_addr_lookup(struct dns_resolver* dns, struct in_addr address);
+extern int dns_addr_lookup(struct dns_resolver* dns,
+                           struct in_addr address);
 
 /*
    returns 1 when the fdset has been
    modified.
  */
 extern int dns_pre_poll(struct dns_resolver* dns, struct pollfd* pfds);
-extern int dns_pre_select(struct dns_resolver* dns, fd_set* readset, fd_set* writeset);
+extern int dns_pre_select(struct dns_resolver* dns,
+                          fd_set* readset,
+                          fd_set* writeset);
 
 /*
    returns 0 when lookup is in progress,
@@ -171,8 +175,11 @@ extern int dns_pre_select(struct dns_resolver* dns, fd_set* readset, fd_set* wri
    point to a free location in your
    pollfd array.
  */
-extern int dns_post_poll(struct dns_resolver* dns, const struct pollfd* pfds);
-extern int dns_post_select(struct dns_resolver* dns, const fd_set* readset, const fd_set* writeset);
+extern int dns_post_poll(struct dns_resolver* dns,
+                         const struct pollfd* pfds);
+extern int dns_post_select(struct dns_resolver* dns,
+                           const fd_set* readset,
+                           const fd_set* writeset);
 
 /*
    when the post poll call returned 1

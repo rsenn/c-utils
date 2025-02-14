@@ -2,7 +2,11 @@
 #include "../strlist.h"
 
 void
-strlist_fromq(strlist* sl, const char* s, size_t len, const char* delim, const char* quote) {
+strlist_fromq(strlist* sl,
+              const char* s,
+              size_t len,
+              const char* delim,
+              const char* quote) {
   size_t ndelim = str_len(delim), nquote = str_len(quote);
   const char *x = s, *end = s + len;
   size_t n;
