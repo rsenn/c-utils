@@ -1,8 +1,8 @@
 #include "../utf8.h"
 
-int
+size_t
 u8b_len(const char* u8, size_t n) {
-  int len = 0;
+  size_t len = 0;
 
   for(size_t i = 0; i < n;) {
     const char c = u8[i];

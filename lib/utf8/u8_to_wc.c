@@ -1,7 +1,7 @@
 #include "../utf8.h"
 #include <assert.h>
 
-int
+size_t
 u8_to_wc(wchar_t* out, const char* u8) {
   int len;
 
@@ -49,5 +49,5 @@ u8_to_wc(wchar_t* out, const char* u8) {
   }
 
   /* error */
-  return -1;
+  return 0;
 }

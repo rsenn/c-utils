@@ -5,13 +5,13 @@ size_t
 wcs_to_u8sa(stralloc* sa, const wchar_t* in) {
   size_t clen = 0;
   wchar_t w;
-  const int len = wcs_u8slen(in);
+  const size_t len = wcs_u8slen(in);
 
   if(NULL == sa)
     return (size_t)len;
 
   while((w = *in++)) {
-    const int ulen = wc_u8len(w);
+    const size_t ulen = wc_u8len(w);
 
     if(ulen >= 0) {
       if(!stralloc_readyplus(sa, ulen))

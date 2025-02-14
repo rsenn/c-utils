@@ -1,7 +1,7 @@
 #include "../utf8.h"
 #include <assert.h>
 
-int
+size_t
 u8_len(const char* u8, size_t count) {
   if(0 == count)
     return 0;
@@ -24,5 +24,5 @@ u8_len(const char* u8, size_t count) {
     return 4;
 
   /* error */
-  return -1;
+  return 0;
 }

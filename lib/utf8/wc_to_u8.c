@@ -1,6 +1,6 @@
 #include "../utf8.h"
 
-int
+size_t
 wc_to_u8(char* u8, wchar_t w) {
   /* Unicode Table 3-5. UTF-8 Bit Distribution
   Unicode                     1st Byte 2nd Byte 3rd Byte 4th Byte
@@ -40,5 +40,5 @@ wc_to_u8(char* u8, wchar_t w) {
     return 4;
   }
 
-  return -1;
+  return 0;
 }

@@ -1,8 +1,8 @@
 #include "../utf8.h"
 
-int
+size_t
 wcs_u8slen(const wchar_t* in) {
-  int len = 0;
+  size_t len = 0;
   wchar_t w;
 
   while((w = *in++)) {

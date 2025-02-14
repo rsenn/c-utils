@@ -1,8 +1,8 @@
 #include "../utf8.h"
 
-int
+size_t
 u8s_len(const char* u8) {
-  int len = 0;
+  size_t len = 0;
   char c;
 
   while((c = *u8)) {

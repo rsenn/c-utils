@@ -1,6 +1,6 @@
 #include "../utf8.h"
 
-int
+size_t
 wc_u8len(const wchar_t w) {
   if(!(w & ~0x7f))
     return 1;
@@ -14,5 +14,5 @@ wc_u8len(const wchar_t w) {
   if(!(w & ~0x1fffff))
     return 4;
 
-  return -1; /* error */
+  return 0; /* error */
 }
