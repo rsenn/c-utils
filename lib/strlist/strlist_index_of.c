@@ -7,8 +7,10 @@ int64
 strlist_index_of(strlist* sl, const char* str) {
   size_t p, l = str_len(str);
   const char* s = sl->sa.s;
+
   for(p = 0; p < sl->sa.len;) {
     size_t l2 = byte_chr(&sl->sa.s[p], sl->sa.len - p, sl->sep);
+
     if((l2 == 0 && p + 1 == sl->sa.len))
       break;
 
@@ -17,5 +19,6 @@ strlist_index_of(strlist* sl, const char* str) {
 
     p += l2 + 1;
   }
+
   return -1;
 }

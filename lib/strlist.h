@@ -92,7 +92,7 @@ size_t strlist_diff(const strlist*, const strlist* b, strlist* out);
 void strlist_fromb(strlist*, const char* x, size_t n, const char* delim);
 void strlist_froms(strlist*, const char*, char delim);
 void strlist_fromv(strlist*, const char*[], int c);
-int64 strlist_indexofb(strlist*, const char* x, size_t n);
+int64 strlist_index_of_b(strlist*, const char* x, size_t n);
 int64 strlist_index_of(strlist*, const char* str);
 int strlist_pop(strlist*);
 int64 strlist_pos(const strlist*, size_t index);

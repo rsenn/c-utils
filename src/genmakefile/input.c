@@ -446,6 +446,8 @@ input_process_command(stralloc* cmd, int argc, char* argv[], const char* file, s
 
     input_process_path_b(out.s, out.len, &tmp);
 
+    strlist_replaceb(&args, out.s, out.len, tmp.s, tmp.len);
+
     stralloc_copy(&out, &tmp);
     stralloc_nul(&out);
 
