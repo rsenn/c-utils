@@ -2,8 +2,7 @@
 #include "../alloc.h"
 #include "../byte.h"
 
-extern ssize_t
-buffer_dummyreadbuf(fd_type fd, void* buf, size_t len, void* arg);
+extern ssize_t buffer_dummyreadbuf(fd_type fd, void* buf, size_t len, void* arg);
 
 int
 buffer_copybuf(buffer* b, const char* x, size_t l) {

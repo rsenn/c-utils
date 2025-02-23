@@ -27,6 +27,7 @@ strlist_slice(strlist* out, const strlist* in, int start, int end) {
     strlist_pushb(out, &x[i], len);
 
     i += len;
+
     if(i < j)
       i++;
   }

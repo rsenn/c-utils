@@ -52,12 +52,8 @@ void set_init(set_t*, uint32 (*const)(const void*, size_t));
 int set_cat(set_t*, const set_t*);
 
 int set_sub(const set_t* a, const set_t* b, set_t* c);
-int set_filter(const set_t* in,
-               set_t* out,
-               int (*pred)(const char*, size_t));
-int set_filter_out(const set_t* in,
-                   set_t* out,
-                   int (*pred)(const char*, size_t));
+int set_filter(const set_t* in, set_t* out, int (*pred)(const char*, size_t));
+int set_filter_out(const set_t* in, set_t* out, int (*pred)(const char*, size_t));
 
 int set_iterator_erase(set_iterator_t*);
 int set_iterator_find(set_iterator_t*, const void*, size_t);
@@ -92,16 +88,11 @@ set_iterator_new(const set_t* s) {
   return it;
 }
 
-#define set_foreach_it(s, it) \
-  for(set_iterator_init(&(it), (s)); set_iterator_value(&(it), 0); \
-      set_iterator_next(&(it)))
+#define set_foreach_it(s, it) for(set_iterator_init(&(it), (s)); set_iterator_value(&(it), 0); set_iterator_next(&(it)))
 
-#define set_foreach(s, it, x, n) \
-  for(it = set_iterator_new((s)); (x = set_iterator_value(&(it), &n)); \
-      set_iterator_next(&(it)))
+#define set_foreach(s, it, x, n) for(it = set_iterator_new((s)); (x = set_iterator_value(&(it), &n)); set_iterator_next(&(it)))
 
-#define set_foreach_ordered(s, b, x, n) \
-  for(b = (s)->list; b && (n = b->size, x = b->value); b = b->list_next)
+#define set_foreach_ordered(s, b, x, n) for(b = (s)->list; b && (n = b->size, x = b->value); b = b->list_next)
 
 #ifdef STRALLOC_H
 char* set_at_sa(const set_t*, int64 pos, stralloc* out);

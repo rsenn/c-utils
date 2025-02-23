@@ -29,10 +29,7 @@ io_dontwantread_really(fd_type d, io_entry* e) {
     if(e->kernelwantwrite)
       x.events |= EPOLLOUT;
     x.data.fd = d;
-    epoll_ctl(io_master,
-              e->kernelwantwrite ? EPOLL_CTL_MOD : EPOLL_CTL_DEL,
-              d,
-              &x);
+    epoll_ctl(io_master, e->kernelwantwrite ? EPOLL_CTL_MOD : EPOLL_CTL_DEL, d, &x);
   }
 #endif
 

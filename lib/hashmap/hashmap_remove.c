@@ -12,8 +12,7 @@ hashmap_remove(hashmap* map, void* key) {
   previous_node = list->head;
   current_node = previous_node->next;
   for(;;) {
-    if(map->comparator(((hashmap_pair*)current_node->data)->key, key) ==
-       0) {
+    if(map->comparator(((hashmap_pair*)current_node->data)->key, key) == 0) {
       previous_node->next = current_node->next;
       if(list->free_data) {
         list->free_data(current_node->data);

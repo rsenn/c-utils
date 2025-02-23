@@ -11,8 +11,7 @@ env_addmodif(stralloc* sa, const char* s, const char* t) {
     return 1;
   if(!stralloc_cats(sa, s))
     return 0;
-  if((t && (!stralloc_catb(sa, "=", 1) || !stralloc_cats(sa, t))) ||
-     !stralloc_0(sa)) {
+  if((t && (!stralloc_catb(sa, "=", 1) || !stralloc_cats(sa, t))) || !stralloc_0(sa)) {
     sa->len = oldlen;
     return 0;
   }

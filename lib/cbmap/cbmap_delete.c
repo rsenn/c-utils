@@ -28,15 +28,12 @@ cbmap_delete(cbmap_t map, void* key, size_t key_len) {
   }
 
   data = (struct cbmap_data_node*)p;
-  if(data->key_len != key_len ||
-     KEY_COMPARE(data->key, key, key_len) != 0) {
+  if(data->key_len != key_len || KEY_COMPARE(data->key, key, key_len) != 0) {
     return NOT_FOUND;
   }
 
   map->count--;
-  cbmap_data_node_destroy(data,
-                          &map->key_allocator,
-                          &map->value_allocator);
+  cbmap_data_node_destroy(data, &map->key_allocator, &map->value_allocator);
 
   if(whereq == NULL) {
     map->root = NULL;

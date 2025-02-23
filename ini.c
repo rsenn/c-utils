@@ -37,11 +37,7 @@ ini_get(ini_section_t* ini, const char* key) {
 
 void
 ini_set(ini_section_t* ini, const char* key, const char* value) {
-  MAP_INSERT(ini->map,
-             (char*)key,
-             str_len(key) + 1,
-             (char*)value,
-             str_len(value) + 1);
+  MAP_INSERT(ini->map, (char*)key, str_len(key) + 1, (char*)value, str_len(value) + 1);
 }
 
 void
@@ -89,11 +85,7 @@ void
 ini_write(buffer* b, ini_section_t* ini, int utf16) {
   buffer out;
   char x[1024];
-  buffer_init(&out,
-              (buffer_op_proto*)(void*)&buffer_write_utf16le,
-              0,
-              x,
-              sizeof(x));
+  buffer_init(&out, (buffer_op_proto*)(void*)&buffer_write_utf16le, 0, x, sizeof(x));
   out.cookie = b;
   if(utf16) {
     buffer_putsflush(b, "\377\376");
@@ -193,8 +185,7 @@ ini_read(buffer* b, ini_section_t** ptr) {
     getc_fn = &getchar_utf16;
   }
 
-  for(stralloc_init(&line); getline_sa(b, &line, getc_fn);
-      stralloc_zero(&line)) {
+  for(stralloc_init(&line); getline_sa(b, &line, getc_fn); stralloc_zero(&line)) {
     size_t i, e;
 
     stralloc_trimr(&line, "\r\n", 2);
@@ -225,11 +216,7 @@ ini_read(buffer* b, ini_section_t** ptr) {
     if(i + e < line.len) {
       line.s[i + e] = '\0';
       e++;
-      MAP_INSERT(s->map,
-                 &line.s[i],
-                 e - i - 1,
-                 &line.s[i + e],
-                 line.len - (i + e));
+      MAP_INSERT(s->map, &line.s[i], e - i - 1, &line.s[i + e], line.len - (i + e));
 
       /*buffer_putsa(buffer_2, &line);
       buffer_putnlflush(buffer_2);*/

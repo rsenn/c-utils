@@ -55,22 +55,15 @@ void array_chop(array* x, uint64 membersize, uint64 members);
 #define array_empty(x) (array_bytes(x) == 0)
 #define array_unallocated(x) (array_bytes(x) == 0)
 
-#define array_foreach_t(a, p) \
-  for((p) = array_start(a); (char*)(p) < (char*)array_end(a); ++(p))
-#define array_foreach(a, msz, p) \
-  for((p) = array_start(a); (char*)(p) < (char*)array_end(a); \
-      (p) = (void*)(((char*)p) + msz))
+#define array_foreach_t(a, p) for((p) = array_start(a); (char*)(p) < (char*)array_end(a); ++(p))
+#define array_foreach(a, msz, p) for((p) = array_start(a); (char*)(p) < (char*)array_end(a); (p) = (void*)(((char*)p) + msz))
 
 /* inline static void
 array_sort(array* x, uint64 membersize, int (*compare_fn)(const void*,const
 void*)) { qsort(array_start(x), array_length(x, membersize), membersize,
 compare_fn);
 } */
-#define array_sort(x, membersize, compare_fn) \
-  qsort(array_start((x)), \
-        array_length((x), (membersize)), \
-        (membersize), \
-        (compare_fn))
+#define array_sort(x, membersize, compare_fn) qsort(array_start((x)), array_length((x), (membersize)), (membersize), (compare_fn))
 
 inline static void
 array_iterator_increment(void** it, uint64 membersize) {
@@ -87,12 +80,7 @@ array_iterator_dereference(void** it) {
   return *it;
 }
 
-int64 array_splice(array*,
-                   uint64 membersize,
-                   uint64 start,
-                   uint64 del,
-                   uint64 insert,
-                   const void* x);
+int64 array_splice(array*, uint64 membersize, uint64 start, uint64 del, uint64 insert, const void* x);
 
 #ifdef __cplusplus
 }

@@ -50,17 +50,13 @@ last_error(void) {
   static char retbuf[MAX_PATH + 1] = {0};
 
   err = GetLastError();
-  ret = FormatMessageA(
-      FORMAT_MESSAGE_FROM_SYSTEM, NULL, err, 0, errbuf, MAX_PATH, NULL);
+  ret = FormatMessageA(FORMAT_MESSAGE_FROM_SYSTEM, NULL, err, 0, errbuf, MAX_PATH, NULL);
   if(ret != 0) {
     /* CRLF fun */
     errbuf[ret - 2] = 0;
     snprintf(retbuf, MAX_PATH, "LastError: %s (%d)", errbuf, ret);
   } else
-    snprintf(retbuf,
-             MAX_PATH,
-             "LastError: %d (FormatMessageA failed)",
-             ret);
+    snprintf(retbuf, MAX_PATH, "LastError: %d (FormatMessageA failed)", ret);
 
   return retbuf;
 }
@@ -176,10 +172,7 @@ serial_open(const char* port, int baud) {
 
   int fd = open(port, O_RDWR | O_NOCTTY | O_NDELAY);
   if(fd == -1) {
-    fprintf(stderr,
-            "Couldn't open port \"%s\": %s\n",
-            port,
-            strerror(errno));
+    fprintf(stderr, "Couldn't open port \"%s\": %s\n", port, strerror(errno));
     return -1;
   }
 
@@ -353,8 +346,7 @@ serial_open(const char* port, int baud) {
   options.c_cc[VSTART] = XON;
 #endif
 
-  if(tcsetattr(fd, TCSANOW, &options) == -1 ||
-     tcflush(fd, TCIOFLUSH) == -1) {
+  if(tcsetattr(fd, TCSANOW, &options) == -1 || tcflush(fd, TCIOFLUSH) == -1) {
     close(fd);
     return -1;
   }
@@ -604,11 +596,7 @@ serial_baud_rate(int fd) {
 #ifdef B4000000
     case B4000000: rate = 4000000; break;
 #endif
-    default:
-      fprintf(stderr,
-              "Warning: Unhandled baud rate constant: %d\n",
-              speed);
-      return -1;
+    default: fprintf(stderr, "Warning: Unhandled baud rate constant: %d\n", speed); return -1;
   }
 #endif /* !NO_SERIAL */
   return rate;

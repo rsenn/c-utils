@@ -12,16 +12,10 @@ void
 hashmap_default_key_free_func(const void* pair) {}
 
 void
-hashmap_init(hashmap* map,
-             size_t capacity,
-             hashmap_comparator comparator,
-             hashmap_hash_func hash_func,
-             hashmap_key_dup_func key_dup_func,
-             hashmap_key_free_func key_free_func) {
+hashmap_init(hashmap* map, size_t capacity, hashmap_comparator comparator, hashmap_hash_func hash_func, hashmap_key_dup_func key_dup_func, hashmap_key_free_func key_free_func) {
   map->capacity = capacity;
   map->size = 0;
-  map->table =
-      (linked_list**)alloc_zero(sizeof(linked_list*) * map->capacity);
+  map->table = (linked_list**)alloc_zero(sizeof(linked_list*) * map->capacity);
   // byte_zero(map->table, sizeof(linked_list*) * map->capacity);
   if(comparator) {
     map->comparator = comparator;

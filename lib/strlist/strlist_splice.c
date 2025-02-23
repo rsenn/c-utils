@@ -1,8 +1,7 @@
 #include "../strlist.h"
 
 int
-strlist_splice(
-    strlist* l, size_t pos, size_t ndelete, char* buf, size_t len) {
+strlist_splice(strlist* l, size_t pos, size_t ndelete, char* buf, size_t len) {
   int64 start, p;
   size_t i, end = l->sa.len;
   char* x = l->sa.s;

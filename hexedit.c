@@ -172,9 +172,7 @@ print(unsigned char* p, size_t i, unsigned char from, unsigned char to) {
 
 patch_t*
 patch_new(const char* name, size_t file_size, uint32 crc32) {
-  patch_t* patch = array_allocate(&patches,
-                                  sizeof(patch_t),
-                                  array_length(&patches, sizeof(patch_t)));
+  patch_t* patch = array_allocate(&patches, sizeof(patch_t), array_length(&patches, sizeof(patch_t)));
 
   patch->name = name;
   patch->file_size = file_size;
@@ -185,13 +183,8 @@ patch_new(const char* name, size_t file_size, uint32 crc32) {
 
 void
 patch(size_t i, unsigned char from, unsigned char to) {
-  patch_t* patch = array_get(&patches,
-                             sizeof(patch_t),
-                             array_length(&patches, sizeof(patch_t)) - 1);
-  record_t* rec =
-      array_allocate(&patch->records,
-                     sizeof(record_t),
-                     array_length(&patch->records, sizeof(record_t)));
+  patch_t* patch = array_get(&patches, sizeof(patch_t), array_length(&patches, sizeof(patch_t)) - 1);
+  record_t* rec = array_allocate(&patch->records, sizeof(record_t), array_length(&patch->records, sizeof(record_t)));
 
   rec->offset = i;
   rec->from = from;
@@ -245,8 +238,7 @@ patch_check(unsigned char* x, size_t n, patch_t* p) {
     buffer_putxlong0(buffer_2, x[r->offset] == r->to ? r->to : r->from, 2);
     if(x[r->offset] == r->from || x[r->offset] == r->to) {
 
-      buffer_puts(buffer_2,
-                  x[r->offset] == r->from ? " OK" : " ALREADY PATCHED");
+      buffer_puts(buffer_2, x[r->offset] == r->from ? " OK" : " ALREADY PATCHED");
       buffer_putnlflush(buffer_2);
     } else {
       buffer_puts(buffer_2, " NO (0x");
@@ -283,10 +275,7 @@ patch_find(unsigned char* x, size_t n) {
 }
 
 void
-record_apply(unsigned char* p,
-             size_t i,
-             unsigned char from,
-             unsigned char to) {
+record_apply(unsigned char* p, size_t i, unsigned char from, unsigned char to) {
   buffer_puts(buffer_2, "Patch ");
   print(p, i, from, to);
   if(p[i] == from) {
@@ -344,10 +333,8 @@ main(int argc, char* argv[]) {
     return 1;
   }
 
-  if((fd = open_read(argv[index])) == -1 ||
-     buffer_mmapread_fd(&file, fd)) {
-    errmsg_warnsys(
-        str_basename(argv[0]), ": opening file: ", argv[index], 0);
+  if((fd = open_read(argv[index])) == -1 || buffer_mmapread_fd(&file, fd)) {
+    errmsg_warnsys(str_basename(argv[0]), ": opening file: ", argv[index], 0);
     return 1;
   }
 
@@ -721,8 +708,7 @@ main(int argc, char* argv[]) {
   if((p = patch_find(x, n))) {
     int check = patch_check(x, n, p);
 
-    buffer_puts(buffer_2,
-                check == 1 ? "Already patched: " : "Found patch: ");
+    buffer_puts(buffer_2, check == 1 ? "Already patched: " : "Found patch: ");
     buffer_puts(buffer_2, p->name);
     buffer_putnlflush(buffer_2);
 

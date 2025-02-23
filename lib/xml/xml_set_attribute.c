@@ -7,6 +7,5 @@ xml_set_attribute(xmlnode* node, const char* a, const char* v) {
   if(node->attributes == NULL)
     hmap_init(1024, &node->attributes);
 
-  hmap_set(
-      &node->attributes, (char*)a, str_len(a), (void*)v, str_len(v) + 1);
+  hmap_set(&node->attributes, (char*)a, str_len(a), (void*)v, str_len(v) + 1);
 }

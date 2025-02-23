@@ -15,13 +15,7 @@ mmap_read(const char* filename, size_t* filesize) {
 #ifdef _WIN32
   HANDLE fd, m;
   char* map;
-  fd = CreateFile(filename,
-                  GENERIC_READ,
-                  FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
-                  0,
-                  OPEN_EXISTING,
-                  FILE_ATTRIBUTE_NORMAL,
-                  0);
+  fd = CreateFile(filename, GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
   if(fd == INVALID_HANDLE_VALUE)
     return 0;
   m = CreateFileMapping(fd, 0, PAGE_READONLY, 0, 0, NULL);
@@ -38,8 +32,7 @@ mmap_read(const char* filename, size_t* filesize) {
   if(fd >= 0) {
     seek_end(fd);
     uint64 o = seek_cur(fd);
-    if(o == 0 ||
-       (sizeof(off_t) != sizeof(size_t) && o > (off_t)(size_t)-1)) {
+    if(o == 0 || (sizeof(off_t) != sizeof(size_t) && o > (off_t)(size_t)-1)) {
       close(fd);
       return 0;
     }

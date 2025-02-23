@@ -30,24 +30,12 @@ xml_print_attrs(HMAP_DB* db, buffer* b) {
 
     switch(tpl->data_type) {
       case HMAP_DATA_TYPE_INT: buffer_putlong(b, tpl->vals.val_int); break;
-      case HMAP_DATA_TYPE_UINT:
-        buffer_putulong(b, tpl->vals.val_uint);
-        break;
-      case HMAP_DATA_TYPE_INT64:
-        buffer_putlonglong(b, tpl->vals.val_longlong);
-        break;
-      case HMAP_DATA_TYPE_UINT64:
-        buffer_putulonglong(b, tpl->vals.val_ulonglong);
-        break;
-      case HMAP_DATA_TYPE_DOUBLE:
-        buffer_putdouble(b, tpl->vals.val_double, 15);
-        break;
-      case HMAP_DATA_TYPE_CHARS:
-        buffer_put(b, tpl->vals.val_chars, tpl->data_len - 1);
-        break;
-      case HMAP_DATA_TYPE_CUSTOM:
-        buffer_putptr(b, tpl->vals.val_custom);
-        break;
+      case HMAP_DATA_TYPE_UINT: buffer_putulong(b, tpl->vals.val_uint); break;
+      case HMAP_DATA_TYPE_INT64: buffer_putlonglong(b, tpl->vals.val_longlong); break;
+      case HMAP_DATA_TYPE_UINT64: buffer_putulonglong(b, tpl->vals.val_ulonglong); break;
+      case HMAP_DATA_TYPE_DOUBLE: buffer_putdouble(b, tpl->vals.val_double, 15); break;
+      case HMAP_DATA_TYPE_CHARS: buffer_put(b, tpl->vals.val_chars, tpl->data_len - 1); break;
+      case HMAP_DATA_TYPE_CUSTOM: buffer_putptr(b, tpl->vals.val_custom); break;
     }
     buffer_puts(b, "\"");
     if(tpl->next == db->list_tuple)
@@ -115,8 +103,7 @@ xml_print_node(xmlnode* node, buffer* b, int depth, const char* nl) {
       xml_print_list(node->children, b, depth + 1, "\n");
       buffer_putnspace(b, depth * 2);
     }
-  } else if(node->name[0] == '/' ||
-            (node->next && node_is_closing(node->next))) {
+  } else if(node->name[0] == '/' || (node->next && node_is_closing(node->next))) {
     // buffer_putc(b, '>');
   } else {
     // buffer_puts(b, node->name[0] ==

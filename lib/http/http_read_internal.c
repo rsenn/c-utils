@@ -55,22 +55,11 @@ http_read_internal(fd_type fd, char* buf, size_t received, buffer* b) {
   }
   buffer_puts(buffer_2, " transfer=");
   buffer_puts(buffer_2, "HTTP_TRANSFER_");
-  buffer_puts(buffer_2,
-              ((const char* const[]){"UNDEF",
-                                     "CHUNKED",
-                                     "LENGTH",
-                                     "BOUNDARY",
-                                     0})[r->transfer]);
+  buffer_puts(buffer_2, ((const char* const[]){"UNDEF", "CHUNKED", "LENGTH", "BOUNDARY", 0})[r->transfer]);
   buffer_puts(buffer_2, " status=");
-  buffer_puts(buffer_2,
-              ((const char* const[]){"-1",
-                                     "HTTP_RECV_HEADER",
-                                     "HTTP_RECV_DATA",
-                                     "HTTP_STATUS_CLOSED",
-                                     "HTTP_STATUS_ERROR",
-                                     "HTTP_STATUS_BUSY",
-                                     "HTTP_STATUS_FINISH",
-                                     0})[status + 1]);
+  buffer_puts(
+      buffer_2,
+      ((const char* const[]){"-1", "HTTP_RECV_HEADER", "HTTP_RECV_DATA", "HTTP_STATUS_CLOSED", "HTTP_STATUS_ERROR", "HTTP_STATUS_BUSY", "HTTP_STATUS_FINISH", 0})[status + 1]);
   buffer_putnlflush(buffer_2);
 
 #endif
@@ -98,8 +87,7 @@ http_read_internal(fd_type fd, char* buf, size_t received, buffer* b) {
   }
 
   if(r->status == HTTP_RECV_HEADER) {
-    while(r->status == HTTP_RECV_HEADER &&
-          http_read_header(h, &r->data, r) > 0) {
+    while(r->status == HTTP_RECV_HEADER && http_read_header(h, &r->data, r) > 0) {
     }
     if(r->status == HTTP_RECV_DATA)
       r->ptr = r->data.len;
@@ -134,9 +122,7 @@ http_read_internal(fd_type fd, char* buf, size_t received, buffer* b) {
             }
 
 #ifdef DEBUG_HTTP
-            buffer_putspad(buffer_2,
-                           "\033[1;36mparsed chunk_length\033[0m ",
-                           30);
+            buffer_putspad(buffer_2, "\033[1;36mparsed chunk_length\033[0m ", 30);
             buffer_puts(buffer_2, "i=");
             buffer_putlong(buffer_2, i);
             buffer_puts(buffer_2, " r->ptr=");

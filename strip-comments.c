@@ -30,11 +30,7 @@ void
 put_str_escaped(buffer* b, const char* str) {
   stralloc esc;
   stralloc_init(&esc);
-  stralloc_fmt_pred(&esc,
-                    str,
-                    str_len(str),
-                    (stralloc_fmt_fn*)&fmt_escapecharc,
-                    iscntrl);
+  stralloc_fmt_pred(&esc, str, str_len(str), (stralloc_fmt_fn*)&fmt_escapecharc, iscntrl);
   buffer_putsa(b, &esc);
 }
 
@@ -235,8 +231,7 @@ main(int argc, char* argv[]) {
 
   if(unix_optind < argc) {
 #ifdef DEBUG_OUTPUT
-    buffer_putm_internal(
-        buffer_2, "Opening input file '", argv[unix_optind], "'...", NULL);
+    buffer_putm_internal(buffer_2, "Opening input file '", argv[unix_optind], "'...", NULL);
     buffer_putnlflush(buffer_2);
 #endif
     in_fd = open_read((in_path = argv[unix_optind]));
@@ -244,11 +239,7 @@ main(int argc, char* argv[]) {
   }
   if(unix_optind < argc) {
 #ifdef DEBUG_OUTPUT
-    buffer_putm_internal(buffer_2,
-                         "Opening output file '",
-                         argv[unix_optind],
-                         "'...",
-                         NULL);
+    buffer_putm_internal(buffer_2, "Opening output file '", argv[unix_optind], "'...", NULL);
     buffer_putnlflush(buffer_2);
 #endif
     out_fd = open_trunc((out_path = argv[unix_optind]));

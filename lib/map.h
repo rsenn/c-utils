@@ -17,31 +17,17 @@ typedef linked_list_node* MAP_ITER_T;
 #define MAP_SIZE(map) hashmap_size(&(map))
 #define MAP_ZERO(map) byte_zero(&(map), sizeof(map))
 #define MAP_ISNULL(map) (byte_count(&(map), sizeof(map), 0) == sizeof(map))
-#define MAP_NEW(map) \
-  hashmap_init(&(map), \
-               64, \
-               MAP_COMPARATOR, \
-               &hashfunc, \
-               (hashmap_key_dup_func)&str_dup, \
-               (hashmap_key_free_func)&alloc_free)
+#define MAP_NEW(map) hashmap_init(&(map), 64, MAP_COMPARATOR, &hashfunc, (hashmap_key_dup_func)&str_dup, (hashmap_key_free_func)&alloc_free)
 #define MAP_GET(map, key, klen) hashmap_get(&(map), (void*)(key))
 #define MAP_DESTROY(map) hashmap_free(&(map))
 #define MAP_FOREACH(map, pair) \
   MAP_ITER_T iter; \
-  for(iter = linked_list_head(hashmap_keys(&(map))); \
-      iter && ((pair) = hashmap_find(&(map), iter->data)); \
-      (iter) = (iter)->next)
+  for(iter = linked_list_head(hashmap_keys(&(map))); iter && ((pair) = hashmap_find(&(map), iter->data)); (iter) = (iter)->next)
 #define MAP_FOREACH_SAFE(map, pair) \
   MAP_ITER_T next, iter; \
-  for(iter = linked_list_head(hashmap_keys(&(map))); \
-      iter && ((next = (iter)->next), \
-               ((pair) = hashmap_find(&(map), iter->data))); \
-      (iter) = next)
+  for(iter = linked_list_head(hashmap_keys(&(map))); iter && ((next = (iter)->next), ((pair) = hashmap_find(&(map), iter->data))); (iter) = next)
 #define MAP_FOREACH_VALUE(map, pair, value) \
-  for(MAP_ITER_T iter = linked_list_head(hashmap_keys(&(map))); \
-      iter && (((pair) = hashmap_find(&(map), iter->data)), \
-               ((value) = MAP_VALUE((pair)))); \
-      (iter) = (iter)->next)
+  for(MAP_ITER_T iter = linked_list_head(hashmap_keys(&(map))); iter && (((pair) = hashmap_find(&(map), iter->data)), ((value) = MAP_VALUE((pair)))); (iter) = (iter)->next)
 #define MAP_ITER_KEY(iter) ((char*)MAP_DATA(iter)->key)
 #define MAP_ITER_KEY_LEN(iter) str_len(MAP_ITER_KEY(iter))
 #define MAP_ITER_VALUE(iter) (MAP_DATA(iter)->value)
@@ -51,8 +37,7 @@ typedef linked_list_node* MAP_ITER_T;
 #define MAP_VALUE(pair) ((pair)->value)
 #define MAP_DATA(iter) ((MAP_PAIR_T)(iter)->data)
 #define MAP_DELETE(map, key, klen) hashmap_remove(&(map), (key))
-#define MAP_SEARCH(map, key, klen, pair) \
-  (*(pair) = MAP_DATA(hashmap_search(&(map), (void*)(key))))
+#define MAP_SEARCH(map, key, klen, pair) (*(pair) = MAP_DATA(hashmap_search(&(map), (void*)(key))))
 
 #define MAP_ADD(map, key, value) hashmap_put(&(map), (key), (value))
 #define MAP_VISIT_ALL(map, fn, arg) \
@@ -62,12 +47,10 @@ typedef linked_list_node* MAP_ITER_T;
     fn(MAP_KEY(t), str_len(MAP_KEY(t)), MAP_VALUE(t), 0, arg); \
   }
 
-#define MAP_INSERT(map, key, klen, data, dlen) \
-  hashmap_insert(&(map), (void*)(key), klen, (void*)(data), dlen)
+#define MAP_INSERT(map, key, klen, data, dlen) hashmap_insert(&(map), (void*)(key), klen, (void*)(data), dlen)
 
 static linked_list_node*
-hashmap_insert(
-    MAP_T* map, void* key, size_t klen, void* data, size_t dlen) {
+hashmap_insert(MAP_T* map, void* key, size_t klen, void* data, size_t dlen) {
   char *k, *v;
   klen = (klen > 0 && ((char*)key)[klen - 1] == '\0') ? klen : klen + 1;
   k = alloc(klen);
@@ -207,8 +190,7 @@ typedef TUPLE* MAP_ITER_T;
 #define MAP_VISIT_ALL(map, fn, arg) \
   { \
     TUPLE* t; \
-    hmap_foreach(map, t) \
-        fn(t->key, t->key_len, t->vals.val_chars, t->data_len, arg); \
+    hmap_foreach(map, t) fn(t->key, t->key_len, t->vals.val_chars, t->data_len, arg); \
   }
 #define MAP_GET(map, key, klen) hmap_get(map, key, klen)
 
@@ -227,20 +209,12 @@ MAP_GET2(HMAP_DB* map, const void* key, size_t klen) {
 
 #define MAP_DUMP hmap_dump
 #define MAP_DELETE(map, key, klen) hmap_delete(&(map), (key), (klen))
-#define MAP_ERASE(map, iter) \
-  MAP_DELETE((map), MAP_KEY(iter), MAP_KEY_LEN(iter))
-#define MAP_SET(map, key, klen, value, vlen) \
-  MAP_INSERT(map, (key), (klen), (value), (vlen))
-#define MAP_INSERT(map, key, klen, data, dlen) \
-  hmap_set(&(map), (key), (klen), (data), (dlen))
-#define MAP_ADD(map, key, data) \
-  hmap_add( \
-      &(map), (key), str_len(key) + 1, 0, HMAP_DATA_TYPE_CUSTOM, (data))
-#define MAP_ADD_LEN(map, key, klen, data, dlen) \
-  hmap_add(&(map), (key), (klen), 0, HMAP_DATA_TYPE_CHARS, (data), (dlen))
-#define MAP_SEARCH(map, key, klen, tuple) \
-  (hmap_search((map), (key), (klen), (tuple)) == HMAP_SUCCESS ? *(tuple) \
-                                                              : 0)
+#define MAP_ERASE(map, iter) MAP_DELETE((map), MAP_KEY(iter), MAP_KEY_LEN(iter))
+#define MAP_SET(map, key, klen, value, vlen) MAP_INSERT(map, (key), (klen), (value), (vlen))
+#define MAP_INSERT(map, key, klen, data, dlen) hmap_set(&(map), (key), (klen), (data), (dlen))
+#define MAP_ADD(map, key, data) hmap_add(&(map), (key), str_len(key) + 1, 0, HMAP_DATA_TYPE_CUSTOM, (data))
+#define MAP_ADD_LEN(map, key, klen, data, dlen) hmap_add(&(map), (key), (klen), 0, HMAP_DATA_TYPE_CHARS, (data), (dlen))
+#define MAP_SEARCH(map, key, klen, tuple) (hmap_search((map), (key), (klen), (tuple)) == HMAP_SUCCESS ? *(tuple) : 0)
 
 #else
 

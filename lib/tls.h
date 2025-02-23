@@ -52,9 +52,7 @@ ssize_t tls_read(fd_type fd, void* data, size_t len);
 tls_t* tls_server(fd_type fd);
 const char* tls_strerror(fd_type fd);
 int tls_verify(int ok, tls_cert_t* cert);
-int tls_want(fd_type fd,
-             void (*wantread)(fd_type),
-             void (*wantwrite)(fd_type));
+int tls_want(fd_type fd, void (*wantread)(fd_type), void (*wantwrite)(fd_type));
 ssize_t tls_write(fd_type fd, const void* data, size_t len);
 int tls_want(fd_type fd, void (*)(fd_type), void (*)(fd_type));
 

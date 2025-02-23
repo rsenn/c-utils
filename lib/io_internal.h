@@ -46,8 +46,7 @@ extern void* io_getfds();
 
 my_extern intptr_t io_comport;
 
-#elif !defined(__MSYS__) && !defined(__CYGWIN__) && !defined(_WIN32) && \
-    !defined(__APPLE__)
+#elif !defined(__MSYS__) && !defined(__CYGWIN__) && !defined(_WIN32) && !defined(__APPLE__)
 //# define HAVE_EPOLL 1
 //# define HAVE_SIGIO 1
 
@@ -155,8 +154,7 @@ typedef struct ioent {
 #if WINDOWS_NATIVE
   HANDLE /* fd, */ mh;
 #if 1
-  OVERLAPPED or, ow,
-      os; /* overlapped for read+accept, write+connect, sendfile */
+  OVERLAPPED or, ow, os; /* overlapped for read+accept, write+connect, sendfile */
   int bytes_read, bytes_written;
   DWORD errorcode;
   int64 next_accept;
@@ -238,9 +236,7 @@ extern int close();
 #define debug_printf(x)
 
 #ifdef DEBUG
-#define DEBUG_MSG(msg, fd) \
-  buffer_puts(buffer_2, msg), buffer_putlong(buffer_2, fd), \
-      buffer_putnlflush(buffer_2)
+#define DEBUG_MSG(msg, fd) buffer_puts(buffer_2, msg), buffer_putlong(buffer_2, fd), buffer_putnlflush(buffer_2)
 #else
 #define DEBUG_MSG(msg, fd)
 #endif
@@ -289,11 +285,7 @@ io_submit(aio_context_t ctx, long nr, struct iocb** iocbpp) {
 #endif
 #ifndef HAVE_IO_GETEVENTS
 static inline int
-io_getevents(aio_context_t ctx,
-             long min_nr,
-             long max_nr,
-             struct io_event* events,
-             struct timespec* timeout) {
+io_getevents(aio_context_t ctx, long min_nr, long max_nr, struct io_event* events, struct timespec* timeout) {
   return syscall(__NR_io_getevents, ctx, min_nr, max_nr, events, timeout);
 }
 #endif

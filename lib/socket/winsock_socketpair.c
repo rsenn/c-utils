@@ -40,8 +40,7 @@ wsa_socketpair(int af, int type, int proto, fd_type sock[2]) {
   if(bind(listen_sock, (SOCKADDR*)&addr1, addr1_len) == SOCKET_ERROR)
     goto error;
 
-  if(getsockname(listen_sock, (SOCKADDR*)&addr1, &addr1_len) ==
-     SOCKET_ERROR)
+  if(getsockname(listen_sock, (SOCKADDR*)&addr1, &addr1_len) == SOCKET_ERROR)
     goto error;
 
   if(listen(listen_sock, 1))
@@ -62,9 +61,7 @@ wsa_socketpair(int af, int type, int proto, fd_type sock[2]) {
   if(getsockname(sock[1], (SOCKADDR*)&addr2, &addr2_len) == SOCKET_ERROR)
     goto error;
 
-  if(addr1_len != addr2_len ||
-     addr1.sin_addr.s_addr != addr2.sin_addr.s_addr ||
-     addr1.sin_port != addr2.sin_port)
+  if(addr1_len != addr2_len || addr1.sin_addr.s_addr != addr2.sin_addr.s_addr || addr1.sin_port != addr2.sin_port)
     goto error;
 
   closesocket(listen_sock);

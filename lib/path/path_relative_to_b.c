@@ -8,12 +8,9 @@
 #endif
 
 int
-path_relative_to_b(
-    const char* s1, size_t n1, const char* s2, size_t n2, stralloc* out) {
-  SizePair p;
+path_relative_to_b(const char* s1, size_t n1, const char* s2, size_t n2, stralloc* out) {
   size_t i;
-
-  p = path_common_prefix(s1, n1, s2, n2);
+  SizePair p = path_common_prefix(s1, n1, s2, n2);
 
   stralloc_zero(out);
 
@@ -29,6 +26,7 @@ path_relative_to_b(
 
   while((i = path_skip(s2, n2))) {
     stralloc_cats(out, ".." PATHSEP_S);
+
     s2 += i;
     n2 -= i;
   }

@@ -24,8 +24,7 @@
 int pipe(int*, unsigned int, int);
 #endif
 
-#if defined(__MINGW32__) || defined(__MINGW64__) || defined(_MSC_VER) || \
-    defined(__BORLANDC__)
+#if defined(__MINGW32__) || defined(__MINGW64__) || defined(_MSC_VER) || defined(__BORLANDC__)
 #define pipe _pipe
 #endif
 
@@ -71,8 +70,7 @@ pipe2(int fd[2], int flags) {
     return -1;
   }
 
-#if defined(_WIN32) && !(defined(__CYGWIN__) || defined(__MSYS__)) && \
-    !defined(__DMC__)
+#if defined(_WIN32) && !(defined(__CYGWIN__) || defined(__MSYS__)) && !defined(__DMC__)
   /* Native Windows API.  */
 
   if(pipe(fd, 4096, flags & ~O_NONBLOCK) < 0) {
@@ -113,9 +111,7 @@ pipe2(int fd[2], int flags) {
   if(flags & O_NONBLOCK) {
     int fcntl_flags;
 
-    if((fcntl_flags = fcntl(fd[1], F_GETFL, 0)) < 0 ||
-       fcntl(fd[1], F_SETFL, fcntl_flags | O_NONBLOCK) == -1 ||
-       (fcntl_flags = fcntl(fd[0], F_GETFL, 0)) < 0 ||
+    if((fcntl_flags = fcntl(fd[1], F_GETFL, 0)) < 0 || fcntl(fd[1], F_SETFL, fcntl_flags | O_NONBLOCK) == -1 || (fcntl_flags = fcntl(fd[0], F_GETFL, 0)) < 0 ||
        fcntl(fd[0], F_SETFL, fcntl_flags | O_NONBLOCK) == -1)
       goto fail;
   }
@@ -123,9 +119,7 @@ pipe2(int fd[2], int flags) {
   if(flags & O_CLOEXEC) {
     int fcntl_flags;
 
-    if((fcntl_flags = fcntl(fd[1], F_GETFD, 0)) < 0 ||
-       fcntl(fd[1], F_SETFD, fcntl_flags | FD_CLOEXEC) == -1 ||
-       (fcntl_flags = fcntl(fd[0], F_GETFD, 0)) < 0 ||
+    if((fcntl_flags = fcntl(fd[1], F_GETFD, 0)) < 0 || fcntl(fd[1], F_SETFD, fcntl_flags | FD_CLOEXEC) == -1 || (fcntl_flags = fcntl(fd[0], F_GETFD, 0)) < 0 ||
        fcntl(fd[0], F_SETFD, fcntl_flags | FD_CLOEXEC) == -1)
       goto fail;
   }

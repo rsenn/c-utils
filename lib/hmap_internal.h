@@ -125,21 +125,15 @@ int hmap_free_data(TUPLE* tuple);
         break; \
       case HMAP_DATA_TYPE_INT64: \
         new_tuple->vals.val_longlong = va_arg(args, long int); \
-        HMAP_DUMP("add[%d] data[%ld]\n", \
-                  index, \
-                  new_tuple->vals.val_longlong); \
+        HMAP_DUMP("add[%d] data[%ld]\n", index, new_tuple->vals.val_longlong); \
         break; \
       case HMAP_DATA_TYPE_UINT64: \
         new_tuple->vals.val_ulonglong = va_arg(args, unsigned long int); \
-        HMAP_DUMP("add[%d] data[%lu]\n", \
-                  index, \
-                  new_tuple->vals.val_ulonglong); \
+        HMAP_DUMP("add[%d] data[%lu]\n", index, new_tuple->vals.val_ulonglong); \
         break; \
       case HMAP_DATA_TYPE_DOUBLE: \
         new_tuple->vals.val_double = va_arg(args, double); \
-        HMAP_DUMP("add[%d] data[%f]\n", \
-                  index, \
-                  new_tuple->vals.val_double); \
+        HMAP_DUMP("add[%d] data[%f]\n", index, new_tuple->vals.val_double); \
         break; \
       case HMAP_DATA_TYPE_CHARS: \
         data = va_arg(args, char*); \
@@ -153,15 +147,11 @@ int hmap_free_data(TUPLE* tuple);
 \
         ((char*)new_tuple->vals.val_chars)[d_len] = 0; \
         new_tuple->data_len = d_len; \
-        HMAP_DUMP("add[%d] data[%s]\n", \
-                  index, \
-                  (char*)new_tuple->vals.val_chars); \
+        HMAP_DUMP("add[%d] data[%s]\n", index, (char*)new_tuple->vals.val_chars); \
         break; \
       case HMAP_DATA_TYPE_CUSTOM: \
         new_tuple->vals.val_custom = va_arg(args, void*); \
-        HMAP_DUMP("add[%d] data[%p]\n", \
-                  index, \
-                  new_tuple->vals.val_custom); \
+        HMAP_DUMP("add[%d] data[%p]\n", index, new_tuple->vals.val_custom); \
         break; \
       default: return HMAP_DATA_TYPE_INVALID; \
     } \

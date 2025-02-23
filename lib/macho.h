@@ -148,8 +148,7 @@
 /* skip  CPU_TYPE_ALPHA    ((cpu_type_t) 16)  */
 /* skip        ((cpu_type_t) 17)  */
 #define MACHO_CPU_TYPE_POWERPC ((cpu_type_t)18)
-#define MACHO_CPU_TYPE_POWERPC64 \
-  (MACHO_CPU_TYPE_POWERPC | MACHO_CPU_ARCH_ABI64)
+#define MACHO_CPU_TYPE_POWERPC64 (MACHO_CPU_TYPE_POWERPC | MACHO_CPU_ARCH_ABI64)
 
 /*
  *  Machine subtypes (these are defined here, instead of in a machine
@@ -234,8 +233,7 @@
 #define MACHO_CPU_SUBTYPE_I386_ALL MACHO_CPU_SUBTYPE_INTEL(3, 0)
 #define MACHO_CPU_SUBTYPE_386 MACHO_CPU_SUBTYPE_INTEL(3, 0)
 #define MACHO_CPU_SUBTYPE_486 MACHO_CPU_SUBTYPE_INTEL(4, 0)
-#define MACHO_CPU_SUBTYPE_486SX \
-  MACHO_CPU_SUBTYPE_INTEL(4, 8) // 8 << 4 = 128
+#define MACHO_CPU_SUBTYPE_486SX MACHO_CPU_SUBTYPE_INTEL(4, 8) // 8 << 4 = 128
 #define MACHO_CPU_SUBTYPE_586 MACHO_CPU_SUBTYPE_INTEL(5, 0)
 #define MACHO_CPU_SUBTYPE_PENT MACHO_CPU_SUBTYPE_INTEL(5, 0)
 #define MACHO_CPU_SUBTYPE_PENTPRO MACHO_CPU_SUBTYPE_INTEL(6, 1)
@@ -415,16 +413,16 @@ typedef struct macho_segment_command {
 
 typedef struct macho_segment_command_64 { /* for 64-bit architectures */
   uint32 cmd;                             /* LC_SEGMENT_64 */
-  uint32 cmdsize;     /* includes sizeof macho_section_64 structs */
-  char segname[16];   /* segment name */
-  uint64 vmaddr;      /* memory address of this segment */
-  uint64 vmsize;      /* memory size of this segment */
-  uint64 fileoff;     /* file offset of this segment */
-  uint64 filesize;    /* amount to map from the file */
-  vm_prot_t maxprot;  /* maximum VM protection */
-  vm_prot_t initprot; /* initial VM protection */
-  uint32 nsects;      /* number of sections in segment */
-  uint32 flags;       /* flags */
+  uint32 cmdsize;                         /* includes sizeof macho_section_64 structs */
+  char segname[16];                       /* segment name */
+  uint64 vmaddr;                          /* memory address of this segment */
+  uint64 vmsize;                          /* memory size of this segment */
+  uint64 fileoff;                         /* file offset of this segment */
+  uint64 filesize;                        /* amount to map from the file */
+  vm_prot_t maxprot;                      /* maximum VM protection */
+  vm_prot_t initprot;                     /* initial VM protection */
+  uint32 nsects;                          /* number of sections in segment */
+  uint32 flags;                           /* flags */
 } macho_segment_command_64;
 
 typedef struct macho_section {
@@ -444,16 +442,16 @@ typedef struct macho_section {
 typedef struct macho_section_64 { /* for 64-bit architectures */
   char sectname[16];              /* name of this macho_section */
   char segname[16];               /* segment this macho_section goes in */
-  uint64 addr;      /* memory address of this macho_section */
-  uint64 size;      /* size in bytes of this macho_section */
-  uint32 offset;    /* file offset of this macho_section */
-  uint32 align;     /* macho_section alignment (power of 2) */
-  uint32 reloff;    /* file offset of relocation entries */
-  uint32 nreloc;    /* number of relocation entries */
-  uint32 flags;     /* flags (macho_section type and attributes)*/
-  uint32 reserved1; /* reserved (for offset or index) */
-  uint32 reserved2; /* reserved (for count or sizeof) */
-  uint32 reserved3; /* reserved */
+  uint64 addr;                    /* memory address of this macho_section */
+  uint64 size;                    /* size in bytes of this macho_section */
+  uint32 offset;                  /* file offset of this macho_section */
+  uint32 align;                   /* macho_section alignment (power of 2) */
+  uint32 reloff;                  /* file offset of relocation entries */
+  uint32 nreloc;                  /* number of relocation entries */
+  uint32 flags;                   /* flags (macho_section type and attributes)*/
+  uint32 reserved1;               /* reserved (for offset or index) */
+  uint32 reserved2;               /* reserved (for count or sizeof) */
+  uint32 reserved3;               /* reserved */
 } macho_section_64;
 
 union lc_str {
@@ -555,12 +553,10 @@ typedef struct macho_nlist {
 ** unsigned char [N_STAB:3 | N_PEXT:1 | N_TYPE:3 | N_EXT:1]
 ** which are used via the following masks
 */
-#define MACHO_N_STAB \
-  0xe0 /* if any of these bits set, a symbolic debugging entry */
+#define MACHO_N_STAB 0xe0 /* if any of these bits set, a symbolic debugging entry */
 #define MACHO_N_PEXT 0x10 /* private external symbol bit */
 #define MACHO_N_TYPE 0x0e /* mask for the type bits */
-#define MACHO_N_EXT \
-  0x01 /* external symbol bit, set for external symbols */
+#define MACHO_N_EXT 0x01  /* external symbol bit, set for external symbols */
 
 /* Values for N_TYPE bits of the n_type field */
 #define MACHO_N_UNDF 0x0 /* undefined, n_sect == NO_SECT */

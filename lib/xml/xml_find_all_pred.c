@@ -5,16 +5,12 @@
 #include <stdarg.h>
 
 static int
-xml_find_all_predicate(xmlnode* node,
-                       array* a,
-                       xml_pred_t* pred,
-                       const void* vptr[]) {
+xml_find_all_predicate(xmlnode* node, array* a, xml_pred_t* pred, const void* vptr[]) {
   do {
 
     if(pred(node, vptr[0], vptr[1], vptr[2])) {
       xmlnode** nptr;
-      if(!(nptr = (xmlnode**)array_allocate(
-               a, sizeof(xmlnode*), array_length(a, sizeof(xmlnode*)))))
+      if(!(nptr = (xmlnode**)array_allocate(a, sizeof(xmlnode*), array_length(a, sizeof(xmlnode*)))))
         return 0;
       *nptr = node;
     }
@@ -46,11 +42,7 @@ xml_pfind_all(xmlnode* node, xml_pred_t* pred, const void* ptr[4]) {
 }
 
 xmlnodeset
-xml_find_all_3(xmlnode* node,
-               xml_pred_t* pred,
-               const void* a1,
-               const void* a2,
-               const void* a3) {
+xml_find_all_3(xmlnode* node, xml_pred_t* pred, const void* a1, const void* a2, const void* a3) {
   const void* vptr[4];
   vptr[0] = a1;
   vptr[1] = a2;
@@ -60,10 +52,7 @@ xml_find_all_3(xmlnode* node,
 }
 
 xmlnodeset
-xml_find_all_2(xmlnode* node,
-               xml_pred_t* pred,
-               const void* a1,
-               const void* a2) {
+xml_find_all_2(xmlnode* node, xml_pred_t* pred, const void* a1, const void* a2) {
   const void* vptr[4];
   vptr[0] = a1;
   vptr[1] = a2;

@@ -57,8 +57,7 @@ x_tokenizer_next_of(tokenizer* t, struct token* tok, int fail_unk) {
 
 static int
 is_whitespace_token(struct token* token) {
-  return token->type == TT_SEP &&
-         (token->value == ' ' || token->value == '\t');
+  return token->type == TT_SEP && (token->value == ' ' || token->value == '\t');
 }
 
 static int
@@ -126,10 +125,7 @@ emit_error_or_warning(tokenizer* t, int is_error) {
 
 /* return index of matching item in values array, or -1 on error */
 static int
-expect(tokenizer* t,
-       enum tokentype tt,
-       const char* values[],
-       struct token* token) {
+expect(tokenizer* t, enum tokentype tt, const char* values[], struct token* token) {
   int ret;
 
   do {

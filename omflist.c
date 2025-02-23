@@ -136,8 +136,7 @@ main(int argc, char** argv) {
             //  //|| r->type == 0x96
             buffer_putptr(buffer_1, p);
 
-            if((r->type & 0xfe) == 0x90 || r->type == 0x96 ||
-               r->type == 0x8c) {
+            if((r->type & 0xfe) == 0x90 || r->type == 0x96 || r->type == 0x8c) {
               buffer_putspace(buffer_1);
               buffer_puts(buffer_1, omf_name(r));
               buffer_putspace(buffer_1);
@@ -151,10 +150,7 @@ main(int argc, char** argv) {
         }
 
 #ifdef DEBUG
-        buffer_putm_internal(buffer_2,
-                             name ? name : "<null>",
-                             " (0x",
-                             NULL);
+        buffer_putm_internal(buffer_2, name ? name : "<null>", " (0x", NULL);
         buffer_putxlong0(buffer_2, r->type, 2);
         buffer_puts(buffer_2, ") : ");
 

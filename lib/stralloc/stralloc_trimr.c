@@ -2,9 +2,7 @@
 #include "../stralloc.h"
 
 void
-stralloc_trimr(stralloc* sa,
-               const char* trimchars,
-               unsigned int trimcharslen) {
+stralloc_trimr(stralloc* sa, const char* trimchars, unsigned int trimcharslen) {
   if(!sa->s)
     return;
 

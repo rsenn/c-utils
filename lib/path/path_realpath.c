@@ -13,10 +13,7 @@ extern int path_canonicalize(const char* path, stralloc* sa, int symbolic);
  * relative paths will be resolved to absolute ones.
  */
 int
-path_realpath(const char* path,
-              stralloc* sa,
-              int symbolic,
-              stralloc* cwd) {
+path_realpath(const char* path, stralloc* sa, int symbolic, stralloc* cwd) {
   static stralloc tmpcwd;
 
   if(cwd == NULL) {

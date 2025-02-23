@@ -31,8 +31,7 @@ mmap_rw_fd(fd_type fd, size_t* filesize) {
   struct stat st;
   char* map = mmap_empty;
   if(fstat(fd, &st) == 0 && (*filesize = st.st_size)) {
-    map = (char*)
-        mmap(0, *filesize, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+    map = (char*)mmap(0, *filesize, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
     if(map == (char*)-1)
       map = 0;
   }

@@ -34,8 +34,7 @@ socket_tcp6b(void) {
     goto compat;
   s = winsock2errno(socket(AF_INET6, SOCK_STREAM, 0));
   if(s == -1) {
-    if(errno == EINVAL || errno == EAFNOSUPPORT || errno == EPFNOSUPPORT ||
-       errno == EPROTONOSUPPORT) {
+    if(errno == EINVAL || errno == EAFNOSUPPORT || errno == EPFNOSUPPORT || errno == EPROTONOSUPPORT) {
     compat:
       s = winsock2errno(socket(AF_INET, SOCK_STREAM, 0));
       noipv6 = 1;
@@ -47,8 +46,7 @@ socket_tcp6b(void) {
 #ifdef IPV6_V6ONLY
   {
     int zero = 0;
-    winsock2errno(setsockopt(
-        s, IPPROTO_IPV6, IPV6_V6ONLY, (void*)&zero, sizeof(zero)));
+    winsock2errno(setsockopt(s, IPPROTO_IPV6, IPV6_V6ONLY, (void*)&zero, sizeof(zero)));
   }
 #endif
   return s;

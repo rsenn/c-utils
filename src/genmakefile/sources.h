@@ -17,10 +17,7 @@ typedef struct {
   set_t pptoks;
 } sourcefile;
 
-sourcefile* sources_new(const char*,
-                        const char* binext,
-                        strarray* progs,
-                        strarray* bins);
+sourcefile* sources_new(const char*, const char* binext, strarray* progs, strarray* bins);
 int sources_add(const char*);
 int sources_add_b(const char*, size_t len);
 int sources_sort(const char**, const char** b);
@@ -29,10 +26,7 @@ const char* sources_find(const char*, size_t len, size_t* cptr);
 bool sources_iscplusplus(void);
 void sources_deps(sourcefile*, strlist* out);
 void sources_readdir(stralloc*, strarray* out);
-void sources_addincludes(sourcefile*,
-                         sourcedir* sdir,
-                         const strlist* includes,
-                         strarray* sources);
+void sources_addincludes(sourcefile*, sourcedir* sdir, const strlist* includes, strarray* sources);
 
 extern set_t sources_set;
 extern stralloc sources_dir;

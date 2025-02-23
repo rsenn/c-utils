@@ -8,9 +8,7 @@ strarray_push_sa(strarray* arr, const stralloc* sa) {
 
 int
 strarray_emplace_sa(strarray* arr, stralloc* sa) {
-  char** d = array_allocate((array*)arr,
-                            sizeof(char*),
-                            array_length((array*)arr, sizeof(char*)));
+  char** d = array_allocate((array*)arr, sizeof(char*), array_length((array*)arr, sizeof(char*)));
 
   stralloc_nul(sa);
 

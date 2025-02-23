@@ -3,10 +3,7 @@
 #include "../strlist.h"
 
 void
-strlist_filter(const strlist* sl,
-               strlist* matching,
-               strlist* not_matching,
-               const char* pattern) {
+strlist_filter(const strlist* sl, strlist* matching, strlist* not_matching, const char* pattern) {
   const char* x;
   size_t n, plen = str_len(pattern);
 
@@ -34,9 +31,7 @@ strlist_filter(const strlist* sl,
    strlist_zero(not_matching);*/
 
   strlist_foreach(sl, x, n) {
-    strlist* out = fnmatch_b(pattern, plen, x, n, FNM_CASEFOLD) == 0
-                       ? matching
-                       : not_matching;
+    strlist* out = fnmatch_b(pattern, plen, x, n, FNM_CASEFOLD) == 0 ? matching : not_matching;
     if(out)
       strlist_pushb(out, x, n);
   }

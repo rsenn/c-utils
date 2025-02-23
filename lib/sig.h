@@ -49,8 +49,7 @@ typedef long sigset_t;
 #include "byte.h"
 #include <sys/signal.h>
 
-#define __sigmask(sig) \
-  (((unsigned long)1) << (((sig)-1) % (8 * sizeof(unsigned long))))
+#define __sigmask(sig) (((unsigned long)1) << (((sig)-1) % (8 * sizeof(unsigned long))))
 #define __sigword(sig) (((sig)-1) / (8 * sizeof(unsigned long)))
 
 #ifndef sigemptyset
@@ -60,16 +59,13 @@ typedef long sigset_t;
 #define sigfillset(s) byte_fill((s), sizeof(*(s)), 0xff)
 #endif
 #ifndef sigaddset
-#define sigaddset(s, n) \
-  (((unsigned long*)(s))[__sigword((n))] |= __sigmask((n)))
+#define sigaddset(s, n) (((unsigned long*)(s))[__sigword((n))] |= __sigmask((n)))
 #endif
 #ifndef sigdelset
-#define sigdelset(s, n) \
-  (((unsigned long*)(s))[__sigword((n))] |= __sigmask((n)))
+#define sigdelset(s, n) (((unsigned long*)(s))[__sigword((n))] |= __sigmask((n)))
 #endif
 #ifndef sigismember
-#define sigismember(s, n) \
-  ((((unsigned long*)(s))[__sigword((n))] & __sigmask((n))) ? 1 : 0)
+#define sigismember(s, n) ((((unsigned long*)(s))[__sigword((n))] & __sigmask((n))) ? 1 : 0)
 #endif
 
 #endif
@@ -83,8 +79,7 @@ typedef long sigset_t;
 typedef void sighandler_t_fn(int);
 typedef sighandler_t_fn* sighandler_t_ref;
 
-#if !defined(_POSIX_SOURCE) && !defined(__linux__) && \
-    !defined(__unix__) && !defined(__wasi__)
+#if !defined(_POSIX_SOURCE) && !defined(__linux__) && !defined(__unix__) && !defined(__wasi__)
 struct sigaction {
   sighandler_t_ref sa_handler;
   unsigned int sa_flags : 2;
@@ -106,9 +101,7 @@ extern struct sigaction const sig_ign;
 #define sig_catcha(sig, ac) sig_action(sig, (ac), 0)
 #define sig_restore(sig) sig_action((sig), &sig_dfl, 0)
 
-int sig_action(int sig,
-               struct sigaction const* new,
-               struct sigaction* old);
+int sig_action(int sig, struct sigaction const* new, struct sigaction* old);
 void sig_block(int);
 void sig_blocknone(void);
 void sig_blockset(const void*);

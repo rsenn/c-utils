@@ -58,8 +58,7 @@ struct dep_tree_element {
 
 int clear_dep_status(struct dep_tree_element* self, uint64 flags);
 
-void add_dep(struct dep_tree_element* parent,
-             struct dep_tree_element* child);
+void add_dep(struct dep_tree_element* parent, struct dep_tree_element* child);
 
 typedef struct build_tree_config_t {
   int datarelocs;
@@ -73,10 +72,7 @@ typedef struct build_tree_config_t {
   strlist* search_paths;
 } build_tree_config;
 
-int build_dep_tree(build_tree_config* cfg,
-                   char* name,
-                   struct dep_tree_element* root,
-                   struct dep_tree_element* self);
+int build_dep_tree(build_tree_config* cfg, char* name, struct dep_tree_element* root, struct dep_tree_element* self);
 
 #define FALSE 0
 #define TRUE 1

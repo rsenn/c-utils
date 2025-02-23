@@ -48,8 +48,7 @@ void charbuf_free(charbuf*);
 void charbuf_froms(charbuf*, char* s, unsigned lookahead);
 ssize_t charbuf_get(charbuf*);
 ssize_t charbuf_getc(charbuf*, unsigned char* ch);
-void
-charbuf_init(charbuf*, read_fn* op, fd_type fd, unsigned int lookahead);
+void charbuf_init(charbuf*, read_fn* op, fd_type fd, unsigned int lookahead);
 ssize_t charbuf_next(charbuf*);
 ssize_t charbuf_nextc(charbuf*, unsigned char* ch);
 ssize_t charbuf_peek(charbuf*);
@@ -72,17 +71,10 @@ charbuf_is_ctype(int c, size_t pos, void* ptr) {
   return fn(c);
 }
 
-ssize_t charbuf_pred_skip(charbuf*,
-                          int (*pred)(int, size_t, void*),
-                          void* ptr);
-ssize_t charbuf_pred_lookahead(charbuf*,
-                               int (*pred)(int, size_t, void*),
-                               void* ptr);
+ssize_t charbuf_pred_skip(charbuf*, int (*pred)(int, size_t, void*), void* ptr);
+ssize_t charbuf_pred_lookahead(charbuf*, int (*pred)(int, size_t, void*), void* ptr);
 #ifdef STRALLOC_H
-ssize_t charbuf_pred_get(charbuf*,
-                         stralloc* sa,
-                         int (*pred)(int, size_t, void*),
-                         void* ptr);
+ssize_t charbuf_pred_get(charbuf*, stralloc* sa, int (*pred)(int, size_t, void*), void* ptr);
 #endif
 
 static inline ssize_t

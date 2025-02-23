@@ -17,14 +17,12 @@ pe_header_sig(void* pe) {
 
 pe32_nt_headers*
 pe_header_nt32(void* pe) {
-  return PE_32(pe) ? (pe32_nt_headers*)pe_header_nt(pe)
-                   : (pe32_nt_headers*)0;
+  return PE_32(pe) ? (pe32_nt_headers*)pe_header_nt(pe) : (pe32_nt_headers*)0;
 }
 
 pe64_nt_headers*
 pe_header_nt64(void* pe) {
-  return PE_64(pe) ? (pe64_nt_headers*)pe_header_nt(pe)
-                   : (pe64_nt_headers*)0;
+  return PE_64(pe) ? (pe64_nt_headers*)pe_header_nt(pe) : (pe64_nt_headers*)0;
 }
 
 pe_coff_header*

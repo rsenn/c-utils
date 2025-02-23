@@ -75,8 +75,7 @@ debug_sl(const char* name, const strlist* l) {
   strlist_foreach(l, x, n) {
     if(tmp.len)
       stralloc_catc(&tmp, ' ');
-    if((pos = byte_rchr(x, n, '/')) < n ||
-       (pos = byte_rchr(x, n, '\\')) < n)
+    if((pos = byte_rchr(x, n, '/')) < n || (pos = byte_rchr(x, n, '\\')) < n)
       stralloc_catb(&tmp, x + pos + 1, n - pos - 1);
     else
       stralloc_catb(&tmp, x, n);
@@ -138,13 +137,7 @@ pathlist_lookup(const char* bin, stralloc* out) {
       stralloc_nul(&name);
 
 #ifdef DEBUG_OUTPUT
-      buffer_putm_internal(buffer_2,
-                           "path_find(\"",
-                           dir,
-                           "\", \"",
-                           name.s,
-                           "\", out);",
-                           NULL);
+      buffer_putm_internal(buffer_2, "path_find(\"", dir, "\", \"", name.s, "\", out);", NULL);
       buffer_putnlflush(buffer_2);
 #endif
 

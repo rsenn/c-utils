@@ -38,6 +38,7 @@ add_path(set_t* s, const char* path) {
 static void
 add_srcpath(set_t* s, const char* path, char psm) {
   stralloc sa;
+
   stralloc_init(&sa);
 
   if(sources_dir.len && !stralloc_equals(&sources_dir, ".")) {
@@ -55,6 +56,7 @@ add_srcpath(set_t* s, const char* path, char psm) {
 static void
 add_source(set_t* s, const char* path, char psm) {
   stralloc sa;
+
   stralloc_init(&sa);
 
   if(sources_dir.len && !stralloc_equals(&sources_dir, ".")) {
@@ -114,8 +116,7 @@ generate_clean_rule(char psm) {
   strlist_init(&delete_args, '\0');
 
   if(commands.delete.len == 0)
-    stralloc_copys(&commands.delete,
-                   cfg.sys.type == NTOS ? "DEL /F /Q" : "$(RM)");
+    stralloc_copys(&commands.delete, cfg.sys.type == NTOS ? "DEL /F /Q" : "$(RM)");
 
   cmdoffs = commands.delete.len;
 
@@ -142,10 +143,7 @@ generate_clean_rule(char psm) {
         stralloc_catb(&fn, &(MAP_ITER_KEY(t)[bpos + 1]), epos);
         stralloc_catc(&fn, psm);
         stralloc_cats(&fn, "*");
-        stralloc_catb(&fn,
-                      &(MAP_ITER_KEY(t)[bpos + 1 + epos + 1]),
-                      str_chr(&(MAP_ITER_KEY(t)[bpos + 1 + epos + 1]),
-                              ':'));
+        stralloc_catb(&fn, &(MAP_ITER_KEY(t)[bpos + 1 + epos + 1]), str_chr(&(MAP_ITER_KEY(t)[bpos + 1 + epos + 1]), ':'));
         stralloc_nul(&fn);
         arg = fn.s;
       } else {
@@ -185,11 +183,11 @@ generate_clean_rule(char psm) {
 target*
 generate_mkdir_rule(stralloc* dir) {
   target* rule = 0;
-  if(stralloc_length(dir) && !stralloc_equals(dir, ".")) {
-    if((rule = rule_get_sa(dir))) {
+
+  if(stralloc_length(dir) && !stralloc_equals(dir, "."))
+    if((rule = rule_get_sa(dir)))
       stralloc_weak(&rule->recipe, &commands.mkdir);
-    }
-  }
+
   return rule;
 }
 
@@ -202,13 +200,7 @@ generate_mkdir_rule(stralloc* dir) {
  * @return
  */
 target*
-generate_srcdir_compile_rules(sourcedir* srcdir,
-                              const char* dir,
-                              bool shell,
-                              bool batch,
-                              bool batchmode,
-                              char psa,
-                              char psm) {
+generate_srcdir_compile_rules(sourcedir* srcdir, const char* dir, bool shell, bool batch, bool batchmode, char psa, char psm) {
   sourcefile* src;
   target* rule = 0;
   MAP_PAIR_T t;
@@ -274,17 +266,7 @@ generate_srcdir_compile_rules(sourcedir* srcdir,
       stralloc_cat(&target, &source);
     } else if(batchmode) {
       stralloc_zero(&target);
-      stralloc_catm_internal(&target,
-                             "{",
-                             dir,
-                             "}",
-                             ext,
-                             "{",
-                             dirs.work.sa.s,
-                             "}",
-                             exts.obj,
-                             ":",
-                             NULL);
+      stralloc_catm_internal(&target, "{", dir, "}", ext, "{", dirs.work.sa.s, "}", exts.obj, ":", NULL);
     } else {
     }
 
@@ -321,8 +303,7 @@ generate_srcdir_compile_rules(sourcedir* srcdir,
           stralloc_copy(&rule->recipe, &commands.compile);
           x = stralloc_begin(&rule->recipe);
           p = e = stralloc_finds(&rule->recipe, "$@");
-          while(p > 0 &&
-                !((x[p + 1] == '/' || x[p + 1] == '-') && x[p] == ' '))
+          while(p > 0 && !((x[p + 1] == '/' || x[p + 1] == '-') && x[p] == ' '))
             p--;
           e += 2;
           if(x[e] == '"')
@@ -353,12 +334,7 @@ generate_srcdir_compile_rules(sourcedir* srcdir,
  * @return
  */
 target*
-generate_simple_compile_rules(sourcedir* srcdir,
-                              const char* dir,
-                              const char* fromext,
-                              const char* toext,
-                              stralloc* cmd,
-                              char psa) {
+generate_simple_compile_rules(sourcedir* srcdir, const char* dir, const char* fromext, const char* toext, stralloc* cmd, char psa) {
   sourcefile* src;
   stralloc ppsrc, obj;
 
@@ -366,14 +342,7 @@ generate_simple_compile_rules(sourcedir* srcdir,
   stralloc_init(&obj);
 
 #ifdef DEBUG_OUTPUT_
-  buffer_putm_internal(buffer_2,
-                       "generate_simple_compile_rules '",
-                       dir,
-                       "' ",
-                       fromext,
-                       " ",
-                       toext,
-                       NULL);
+  buffer_putm_internal(buffer_2, "generate_simple_compile_rules '", dir, "' ", fromext, " ", toext, NULL);
   buffer_putnlflush(buffer_2);
 #endif
 
@@ -428,15 +397,10 @@ generate_simple_compile_rules(sourcedir* srcdir,
  * @return
  */
 target*
-generate_srcdir_lib_rule(sourcedir* srcdir,
-                         const char* name,
-                         bool shell,
-                         bool batch,
-                         bool batchmode,
-                         char psa,
-                         char psm) {
+generate_srcdir_lib_rule(sourcedir* srcdir, const char* name, bool shell, bool batch, bool batchmode, char psa, char psm) {
   target *dep = 0, *rule;
   stralloc sa;
+
   stralloc_init(&sa);
   path_prefix_s(&dirs.work.sa, name, &sa, psm);
   stralloc_cats(&sa, exts.lib);
@@ -447,14 +411,11 @@ generate_srcdir_lib_rule(sourcedir* srcdir,
 #endif
 
   if((str_start(tools.make, "g") || batchmode) && cfg.mach.arch != PIC) {
-    buffer_putm_internal(
-        buffer_2, "generate_srcdir_compile_rules: ", name, NULL);
+    buffer_putm_internal(buffer_2, "generate_srcdir_compile_rules: ", name, NULL);
     buffer_flush(buffer_2);
-    dep = generate_srcdir_compile_rules(
-        srcdir, name, shell, batch, batchmode, psa, psm);
+    dep = generate_srcdir_compile_rules(srcdir, name, shell, batch, batchmode, psa, psm);
   } else {
-    dep = generate_simple_compile_rules(
-        srcdir, name, exts.src, exts.obj, &commands.compile, psa);
+    dep = generate_simple_compile_rules(srcdir, name, exts.src, exts.obj, &commands.compile, psa);
   }
 
   if((rule = rule_get_sa(&sa))) {
@@ -496,13 +457,11 @@ generate_srcdir_lib_rule(sourcedir* srcdir,
  * @param name source dir name
  */
 void
-generate_srcdir_rule(sourcedir* sdir,
-                     const char* name,
-                     bool batchmode,
-                     char psm) {
+generate_srcdir_rule(sourcedir* sdir, const char* name, bool batchmode, char psm) {
   sourcefile* src;
   target* rule;
   stralloc mask;
+
   stralloc_init(&mask);
 
   slist_foreach(sdir->sources, src) {
@@ -545,13 +504,14 @@ generate_srcdir_rule(sourcedir* sdir,
  * @param srcdirs
  */
 void
-generate_lib_rules(
-    bool shell, bool batch, bool batchmode, char psa, char psm) {
+generate_lib_rules(bool shell, bool batch, bool batchmode, char psa, char psm) {
   MAP_PAIR_T t;
   target* all;
   stralloc inc, abspath;
+
   stralloc_init(&inc);
   stralloc_init(&abspath);
+
   all = rule_get("all");
 
   MAP_FOREACH(srcdir_map, t) {
@@ -571,12 +531,10 @@ generate_lib_rules(
     debug_str("base", base);
 #endif
 
-    if(strlist_contains(&build_as_lib, base) || base[0] == '.' ||
-       base[0] == '\0')
+    if(strlist_contains(&build_as_lib, base) || base[0] == '.' || base[0] == '\0')
       continue;
 
-    rule = generate_srcdir_lib_rule(
-        srcdir, base, shell, batch, batchmode, psa, psm);
+    rule = generate_srcdir_lib_rule(srcdir, base, shell, batch, batchmode, psa, psm);
     set_adds(&link_libraries, rule->name);
     set_adds(&all->prereq, rule->name);
     array_catb(&srcdir->rules, &rule, sizeof(target*));
@@ -602,16 +560,7 @@ generate_program_rule(const char* filename, char psa) {
   stralloc_init(&bin);
 
 #ifdef DEBUG_OUTPUT_
-  buffer_putm_internal(buffer_2,
-                       "[1]",
-                       GREEN256,
-                       "generate_program_rule(",
-                       NC,
-                       filename,
-                       GREEN256,
-                       ") ",
-                       NC,
-                       0);
+  buffer_putm_internal(buffer_2, "[1]", GREEN256, "generate_program_rule(", NC, filename, GREEN256, ") ", NC, 0);
   buffer_putnlflush(buffer_2);
   debug_str("generate_program_rule", filename);
 #endif
@@ -658,6 +607,7 @@ generate_program_rule(const char* filename, char psa) {
 
   if(!cmd_libs) {
     stralloc outname;
+
     stralloc_init(&outname);
     stralloc_cats(&outname, path_basename(filename));
 
@@ -666,6 +616,7 @@ generate_program_rule(const char* filename, char psa) {
 
     stralloc_nul(&outname);
     path_output(outname.s, &bin, exts.bin, psa);
+    stralloc_free(&outname);
   } else {
     path_extension(obj.s, &bin, exts.bin);
   }
@@ -677,6 +628,7 @@ generate_program_rule(const char* filename, char psa) {
     size_t n;
     sourcefile* pfile;
     set_iterator_t it;
+
     add_path_sa(&rule->prereq, &obj);
 
     if(1 || cmd_libs) {
@@ -693,6 +645,7 @@ generate_program_rule(const char* filename, char psa) {
       dlist_foreach_down(&sources_list, source) {
         sourcefile* sfile = dlist_data(source, sourcefile*);
         char* filename = (char*)sfile->name;
+
         stralloc_zero(&dir);
         path_dirname(filename, &dir);
 
@@ -710,21 +663,8 @@ generate_program_rule(const char* filename, char psa) {
     stralloc_nul(&rule->recipe);
 
 #ifdef DEBUG_OUTPUT
-    buffer_putm_internal(buffer_2,
-                         "[3]",
-                         GREEN256,
-                         "generate_program_rule(",
-                         NC,
-                         filename,
-                         GREEN256,
-                         ") ",
-                         NC,
-                         "link rule" NC " '",
-                         rule->name,
-                         "' recipe '",
-                         rule->recipe.s,
-                         "'",
-                         NULL);
+    buffer_putm_internal(
+        buffer_2, "[3]", GREEN256, "generate_program_rule(", NC, filename, GREEN256, ") ", NC, "link rule" NC " '", rule->name, "' recipe '", rule->recipe.s, "'", NULL);
     buffer_putnlflush(buffer_2);
 #endif
 
@@ -737,7 +677,9 @@ generate_program_rule(const char* filename, char psa) {
       const char* s;
       size_t len;
       target* lib = rule_find_b(link_lib, n);
+
       set_foreach(&lib->prereq, it, s, len) { set_add(&deps, s, len); }
+
       add_path(&all->prereq, lib->name);
     }
 
@@ -750,7 +692,6 @@ generate_program_rule(const char* filename, char psa) {
   stralloc_free(&bin);
   stralloc_free(&obj);
   stralloc_free(&dir);
-
   return rule;
 }
 
@@ -775,15 +716,7 @@ generate_link_rules(char psa, char psm) {
   strlist_init(&indir, ' ');
 
 #ifdef DEBUG_OUTPUT
-  buffer_putm_internal(buffer_2,
-                       "[1]",
-                       GREEN256,
-                       "generate_link_rules(",
-                       NC,
-                       GREEN256,
-                       ") ",
-                       NC,
-                       0);
+  buffer_putm_internal(buffer_2, "[1]", GREEN256, "generate_link_rules(", NC, GREEN256, ") ", NC, 0);
   buffer_putnlflush(buffer_2);
 #endif
 
@@ -792,8 +725,7 @@ generate_link_rules(char psa, char psm) {
     char* filename = (char*)file->name;
 
 #ifdef DEBUG_OUTPUT_
-    buffer_putm_internal(
-        buffer_2, "GEN_LINK_RULES file = ", filename, NULL);
+    buffer_putm_internal(buffer_2, "GEN_LINK_RULES file = ", filename, NULL);
     buffer_putnlflush(buffer_2);
 #endif
 
@@ -825,6 +757,7 @@ generate_link_rules(char psa, char psm) {
 
     stralloc_nul(&output_name);
     rule_rename(link, output_name.s, psm);
+    stralloc_free(&oldname);
   }
 
   set_free(&incs);
@@ -850,14 +783,9 @@ generate_install_rules() {
     target* rule = MAP_ITER_VALUE(t);
     bool do_lib, do_bin;
 
-    do_lib =
-        (inst_libs && (str_end(MAP_ITER_KEY(t), ".lib") ||
-                       str_end(MAP_ITER_KEY(t), ".a") ||
-                       MAP_ITER_KEY(t)[str_find(MAP_ITER_KEY(t), ".so")] ||
-                       rule->recipe.s == commands.lib.s));
-    do_bin = (inst_bins && (str_end(MAP_ITER_KEY(t), ".dll") ||
-                            str_end(MAP_ITER_KEY(t), ".exe") ||
-                            rule->recipe.s == commands.link.s));
+    do_lib = (inst_libs &&
+              (str_end(MAP_ITER_KEY(t), ".lib") || str_end(MAP_ITER_KEY(t), ".a") || MAP_ITER_KEY(t)[str_find(MAP_ITER_KEY(t), ".so")] || rule->recipe.s == commands.lib.s));
+    do_bin = (inst_bins && (str_end(MAP_ITER_KEY(t), ".dll") || str_end(MAP_ITER_KEY(t), ".exe") || rule->recipe.s == commands.link.s));
 
     if(!(do_lib || do_bin))
       continue;
@@ -872,41 +800,25 @@ generate_install_rules() {
 
     if(!var_isset("prefix")) {
       var_set("prefix", "/usr");
-      stralloc_catm_internal(&inst->recipe,
-                             newline,
-                             "\t$(INSTALL_DIR) $(DESTDIR)$(prefix)",
-                             NULL);
+      stralloc_catm_internal(&inst->recipe, newline, "\t$(INSTALL_DIR) $(DESTDIR)$(prefix)", NULL);
 
       if(!v) {
         v = var_set("INSTALL", "install")->value.sa.s;
-        var_set("INSTALL_DIR",
-                str_start(v, "install") ? "$(INSTALL) -d" : "mkdir");
+        var_set("INSTALL_DIR", str_start(v, "install") ? "$(INSTALL) -d" : "mkdir");
 
         if(do_lib)
-          var_set("INSTALL_DATA",
-                  str_start(v, "install") ? "$(INSTALL) -m 644"
-                                          : "$(INSTALL)");
+          var_set("INSTALL_DATA", str_start(v, "install") ? "$(INSTALL) -m 644" : "$(INSTALL)");
       }
     }
 
     if(do_bin) {
       if(!var_isset("bindir")) {
         var_set("bindir", "$(prefix)/bin");
-        stralloc_catm_internal(&inst->recipe,
-                               newline,
-                               "\t$(INSTALL_DIR) $(DESTDIR)$(bindir)",
-                               NULL);
+        stralloc_catm_internal(&inst->recipe, newline, "\t$(INSTALL_DIR) $(DESTDIR)$(bindir)", NULL);
       }
 
-      var_set("INSTALL_EXEC",
-              str_start(v, "install") ? "$(INSTALL) -m 755"
-                                      : "$(INSTALL)");
-      stralloc_catm_internal(&inst->recipe,
-                             newline,
-                             "\t$(INSTALL_EXEC) ",
-                             MAP_ITER_KEY(t),
-                             " $(DESTDIR)$(bindir)",
-                             NULL);
+      var_set("INSTALL_EXEC", str_start(v, "install") ? "$(INSTALL) -m 755" : "$(INSTALL)");
+      stralloc_catm_internal(&inst->recipe, newline, "\t$(INSTALL_EXEC) ", MAP_ITER_KEY(t), " $(DESTDIR)$(bindir)", NULL);
     }
 
     if(do_lib) {
@@ -916,18 +828,10 @@ generate_install_rules() {
         if(str_end(tools.compiler, "64"))
           var_push("libdir", "$(X64)");
 
-        stralloc_catm_internal(&inst->recipe,
-                               newline,
-                               "\t$(INSTALL_DIR) $(DESTDIR)$(libdir)",
-                               NULL);
+        stralloc_catm_internal(&inst->recipe, newline, "\t$(INSTALL_DIR) $(DESTDIR)$(libdir)", NULL);
       }
 
-      stralloc_catm_internal(&inst->recipe,
-                             newline,
-                             "\t$(INSTALL_DATA) ",
-                             MAP_ITER_KEY(t),
-                             " $(DESTDIR)$(libdir)",
-                             NULL);
+      stralloc_catm_internal(&inst->recipe, newline, "\t$(INSTALL_DATA) ", MAP_ITER_KEY(t), " $(DESTDIR)$(libdir)", NULL);
     }
   }
 

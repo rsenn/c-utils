@@ -3,9 +3,7 @@
 #include "../byte.h"
 
 void
-strlist_sorted_intersection(const strlist* s1,
-                            const strlist* s2,
-                            strlist* out) {
+strlist_sorted_intersection(const strlist* s1, const strlist* s2, strlist* out) {
   char *a = stralloc_begin(&s1->sa), *b = stralloc_begin(&s2->sa);
   char *aend = stralloc_end(&s1->sa), *bend = stralloc_end(&s2->sa);
   while(a < aend && b < bend) {

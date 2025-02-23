@@ -1,10 +1,7 @@
 #include "../strlist.h"
 
 void
-strlist_difference(const strlist* s1,
-                   const strlist* s2,
-                   strlist* out1,
-                   strlist* out2) {
+strlist_difference(const strlist* s1, const strlist* s2, strlist* out1, strlist* out2) {
   char* x;
   size_t n;
   strlist_foreach(s1, x, n) {

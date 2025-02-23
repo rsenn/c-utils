@@ -115,9 +115,7 @@ unsigned int serial_read_raw(int fd, char* data, unsigned int length);
  * \returns number of bytes really
  * written
  */
-unsigned int serial_write_raw(int fd,
-                              const char* data,
-                              unsigned int length);
+unsigned int serial_write_raw(int fd, const char* data, unsigned int length);
 
 /*!
  * \brief wait until data is sent

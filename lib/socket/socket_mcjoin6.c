@@ -29,8 +29,7 @@ socket_mcjoin6(int s, const char ip[16], int _interface) {
 #ifdef LIBC_HAS_IP6
   byte_copy(&opt.ipv6mr_multiaddr, 16, ip);
   opt.ipv6mr_interface = _interface;
-  return winsock2errno(
-      setsockopt(s, IPPROTO_IPV6, IPV6_ADD_MEMBERSHIP, &opt, sizeof opt));
+  return winsock2errno(setsockopt(s, IPPROTO_IPV6, IPV6_ADD_MEMBERSHIP, &opt, sizeof opt));
 #else
   errno = EPROTONOSUPPORT;
   return -1;

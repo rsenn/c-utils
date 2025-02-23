@@ -33,10 +33,7 @@ io_wantwrite_really(fd_type d, io_entry* e) {
     if(e->kernelwantread)
       x.events |= EPOLLIN;
     x.data.fd = d;
-    epoll_ctl(io_master,
-              e->kernelwantread ? EPOLL_CTL_MOD : EPOLL_CTL_ADD,
-              d,
-              &x);
+    epoll_ctl(io_master, e->kernelwantread ? EPOLL_CTL_MOD : EPOLL_CTL_ADD, d, &x);
   }
 #endif
 
@@ -78,8 +75,7 @@ io_wantwrite_really(fd_type d, io_entry* e) {
     e->next_write = first_writeable;
     e->canwrite = 1;
     first_writeable = d;
-    debug_printf(
-        ("queueing write, setting first_writeable to %ld\n", (long)d));
+    debug_printf(("queueing write, setting first_writeable to %ld\n", (long)d));
   }
 #endif
   e->wantwrite = 1;

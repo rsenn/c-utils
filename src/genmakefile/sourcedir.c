@@ -12,11 +12,8 @@ MAP_T srcdir_map;
 const char* srcdir_varname = "DISTDIR";
 
 static const char tok_charset[] = {
-    '_', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L',
-    'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y',
-    'Z', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l',
-    'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y',
-    'z', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
+    '_', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'a', 'b', 'c', 'd', 'e',
+    'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
 };
 
 static inline bool
@@ -41,8 +38,7 @@ extract_tokens(const char* x, size_t n, set_t* tokens) {
     if(is_newline(*x))
       break;
 
-    if((i = scan_charsetnskip(x, tok_charset, n)) > 0 &&
-       !(i == 7 && byte_equal(x, 7, "defined")))
+    if((i = scan_charsetnskip(x, tok_charset, n)) > 0 && !(i == 7 && byte_equal(x, 7, "defined")))
       if(!(*x >= '0' && *x <= '9')) {
         if(set_add(tokens, x, i) == 1) {
 
@@ -136,11 +132,7 @@ extract_pptok(const char* x, size_t n, set_t* tokens) {
  * @{
  */
 void
-sourcedir_addsource(const char* source,
-                    strarray* sources,
-                    strarray* progs,
-                    strarray* bins,
-                    char psm) {
+sourcedir_addsource(const char* source, strarray* sources, strarray* progs, strarray* bins, char psm) {
   stralloc r, dir, tmp;
   strlist list;
   size_t n, dlen;
@@ -157,16 +149,7 @@ sourcedir_addsource(const char* source,
   strlist_zero(&list);
 
 #ifdef DEBUG_OUTPUT_
-  buffer_putm_internal(buffer_2,
-                       "[1]",
-                       BLUE256,
-                       "sourcedir_addsource(",
-                       NC,
-                       source,
-                       BLUE256,
-                       ") ",
-                       NC,
-                       NULL);
+  buffer_putm_internal(buffer_2, "[1]", BLUE256, "sourcedir_addsource(", NC, source, BLUE256, ") ", NC, NULL);
   buffer_putnlflush(buffer_2);
 #endif
 
@@ -224,17 +207,7 @@ sourcedir_addsource(const char* source,
     if(path_exists(r.s) || includes_find_sa(s, n, &r)) {
 
 #ifdef DEBUG_OUTPUT_
-      buffer_putm_internal(buffer_2,
-                           "[2]",
-                           GREEN256,
-                           "sourcedir_addsource(",
-                           NC,
-                           source,
-                           GREEN256,
-                           ") ",
-                           NC,
-                           "Adding include ",
-                           0);
+      buffer_putm_internal(buffer_2, "[2]", GREEN256, "sourcedir_addsource(", NC, source, GREEN256, ") ", NC, "Adding include ", 0);
       buffer_putsa(buffer_2, &r);
       buffer_putnlflush(buffer_2);
 #endif
@@ -258,8 +231,10 @@ sourcedir_addsource(const char* source,
 sourcedir*
 sourcedir_find(const char* path) {
   sourcedir** ptr;
+
   if((ptr = MAP_GET(srcdir_map, path, str_len(path) + 1)))
     return *ptr;
+
   return 0;
 }
 
@@ -271,9 +246,12 @@ sourcedir_find(const char* path) {
 sourcedir*
 sourcedir_findsa(stralloc* path) {
   sourcedir** ptr;
+
   stralloc_nul(path);
+
   if((ptr = MAP_GET(srcdir_map, path->s, path->len + 1)))
     return *ptr;
+
   return 0;
 }
 
@@ -287,6 +265,7 @@ sourcedir*
 sourcedir_findb(const char* x, size_t n) {
   sourcedir* ret;
   stralloc p;
+
   stralloc_init(&p);
   stralloc_copyb(&p, x, n);
   ret = sourcedir_findsa(&p);
@@ -297,20 +276,24 @@ sourcedir_findb(const char* x, size_t n) {
 sourcedir*
 sourcedir_getb(const char* x, size_t n) {
   sourcedir *s, **ptr;
+
   if(!(s = sourcedir_findb(x, n))) {
-    sourcedir* newdir;
-    newdir = alloc_zero(sizeof(sourcedir));
+    sourcedir* newdir = alloc_zero(sizeof(sourcedir));
+
     set_init(&newdir->pptoks, 0);
     MAP_INSERT(srcdir_map, x, n + 1, &newdir, sizeof(newdir));
+
     if((ptr = (sourcedir**)MAP_GET(srcdir_map, x, n + 1)))
       s = *ptr;
   }
+
   return s;
 }
 
 sourcedir*
 sourcedir_getsa(stralloc* path) {
   stralloc_nul(path);
+
   return sourcedir_getb(path->s, path->len);
 }
 
@@ -325,6 +308,7 @@ sourcedir_populate(strarray* sources_set) {
   strlist d;
   const char* x;
   size_t n;
+
   strlist_init(&d, '\0');
 
   MAP_FOREACH(srcdir_map, t) {
@@ -339,17 +323,21 @@ sourcedir_populate(strarray* sources_set) {
 #endif
 
     strlist_zero(&d);
+
     slist_foreach(dir->sources, file) {
       sources_deps(file, &d);
       strlist_foreach(&d, x, n) { set_add(&file->deps, x, n); }
     }
   }
+
   MAP_FOREACH(srcdir_map, t) {
     sourcedir* dir = *(sourcedir**)MAP_ITER_VALUE(t);
     strlist_zero(&d);
     sourcedir_deps(dir, &d);
     strlist_foreach(&d, x, n) { set_add(&dir->deps, x, n); }
   }
+
+  strlist_free(&d);
 }
 
 /**
@@ -360,41 +348,46 @@ sourcedir_populate(strarray* sources_set) {
 void
 sourcedir_dump_all(buffer* b) {
   MAP_PAIR_T t;
+
   MAP_FOREACH(srcdir_map, t) {
     sourcedir* srcdir = *(sourcedir**)MAP_ITER_VALUE(t);
     sourcefile* pfile;
+
     buffer_puts(b, " '");
     buffer_put(b, MAP_ITER_KEY(t), str_len(MAP_ITER_KEY(t)));
     buffer_puts(b, "' (");
     buffer_putulong(b, srcdir->n_sources);
     buffer_puts(b, "): [");
+
     slist_foreach(srcdir->sources, pfile) {
       buffer_putspace(b);
       buffer_puts(b, pfile->name);
     }
+
     buffer_puts(b, " ]");
     buffer_putnlflush(b);
   }
 }
 
 void
-sourcedir_dep_recursive(sourcedir* sources_dir,
-                        strlist* out,
-                        uint32 serial,
-                        sourcedir* parent) {
+sourcedir_dep_recursive(sourcedir* sources_dir, strlist* out, uint32 serial, sourcedir* parent) {
   const char* s;
   size_t n;
   set_iterator_t it;
   sourcedir* sdir;
+
   if(sources_dir->serial == serial)
     return;
+
   set_foreach(&sources_dir->deps, it, s, n) {
     if(!strlist_containsb(out, s, n)) {
       if((sdir = sourcedir_findb(s, n)) && sdir != sources_dir) {
         if(sdir->serial == serial)
           continue;
+
         if(sdir == parent)
           continue;
+
         sources_dir->serial = serial;
         sourcedir_dep_recursive(sdir, out, serial, sources_dir);
         strlist_pushb(out, s, n);
@@ -419,9 +412,13 @@ sourcedir_deps_s(const char* sources_dir, strlist* out) {
 void
 sourcedir_deps_b(const char* sdir, size_t sdirlen, strlist* out) {
   stralloc sa;
+
   stralloc_init(&sa);
   stralloc_copyb(&sa, sdir, sdirlen);
-  return sourcedir_deps_s(sa.s, out);
+
+  sourcedir_deps_s(sa.s, out);
+
+  stralloc_free(&sa);
 }
 
 void
@@ -431,16 +428,20 @@ sourcedir_printdeps(sourcedir* sources_dir, buffer* b, int depth) {
   set_iterator_t it;
   sourcedir* sdir;
   strlist deps;
+
   strlist_init(&deps, '\0');
+
   set_foreach(&sources_dir->deps, it, s, n) {
     if(strlist_pushb_unique(&deps, s, n)) {
       buffer_putnspace(buffer_2, depth * 2);
       buffer_put(buffer_2, s, n);
       buffer_putnlflush(buffer_2);
+
       if((sdir = sourcedir_findb(s, n)))
         sourcedir_printdeps(sdir, b, depth + 1);
     }
   }
+
   strlist_free(&deps);
 }
 

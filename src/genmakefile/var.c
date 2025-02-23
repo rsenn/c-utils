@@ -3,8 +3,7 @@
 #include "../../genmakefile.h"
 
 MAP_T vars;
-linklib_fmt *format_linklib_fn = 0,
-            *format_linkdir_fn = &format_linkdir_switch;
+linklib_fmt *format_linklib_fn = 0, *format_linkdir_fn = &format_linkdir_switch;
 
 /**
  * @brief format_linklib_lib  Output library name (+".lib")
@@ -69,12 +68,16 @@ var_list(const char* name, char psa) {
 
   if(!MAP_SEARCH(vars, name, str_len(name) + 1, &t)) {
     var_t var;
+    char s = (name[0] >= 'A' && name[0] <= 'Z') ? ' ' : psa;
+
     var.serial = 0;
-    strlist_init(&var.value,
-                 (name[0] >= 'A' && name[0] <= 'Z') ? ' ' : psa);
+
+    strlist_init(&var.value, s);
+
     MAP_INSERT(vars, name, str_len(name) + 1, &var, sizeof(strlist));
     MAP_SEARCH(vars, name, str_len(name) + 1, &t);
   }
+
   return (var_t*)MAP_ITER_VALUE(t);
 }
 
@@ -156,11 +159,7 @@ var_push_sa(const char* name, stralloc* value) {
  * @param tolower
  */
 void
-var_subst(const stralloc* in,
-          stralloc* out,
-          const char* pfx,
-          const char* sfx,
-          int tolower) {
+var_subst(const stralloc* in, stralloc* out, const char* pfx, const char* sfx, int tolower) {
   size_t i;
   stralloc_zero(out);
 
@@ -194,6 +193,7 @@ var_subst(const stralloc* in,
 void
 push_lib(const char* name, const char* lib) {
   stralloc sa;
+
   stralloc_init(&sa);
 
   if(format_linklib_fn) {
@@ -212,6 +212,7 @@ push_lib(const char* name, const char* lib) {
 void
 push_linkdir(const char* name, const char* dir) {
   stralloc sa;
+
   stralloc_init(&sa);
 
   if(format_linkdir_fn) {
@@ -229,6 +230,7 @@ push_linkdir(const char* name, const char* dir) {
 void
 with_lib(const char* lib) {
   stralloc def, lib64;
+
   stralloc_init(&def);
   stralloc_init(&lib64);
 

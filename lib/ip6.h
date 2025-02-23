@@ -31,10 +31,9 @@ size_t fmt_ip6_flat(char* dest, const char*);
 #define IP6_FMT 40
 #define FMT_IP6 40
 
-extern const char
-    V4mappedprefix[12];           /*={0,0,0,0,0,0,0,0,0,0,0xff,0xff}; */
-extern const char V6loopback[16]; /*={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1}; */
-extern const char V6any[16];      /*={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}; */
+extern const char V4mappedprefix[12]; /*={0,0,0,0,0,0,0,0,0,0,0xff,0xff}; */
+extern const char V6loopback[16];     /*={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1}; */
+extern const char V6any[16];          /*={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}; */
 
 #define ip6_isv4mapped(ip) (byte_equal(ip, 12, V4mappedprefix))
 

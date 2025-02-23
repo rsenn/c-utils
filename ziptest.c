@@ -63,8 +63,7 @@ compression_from_ext(const char* ext) {
   if(str_case_equal(ext, "gz") || str_case_equal(ext, "tgz"))
     return C_GZ;
 
-  if(str_case_equal(ext, "bz2") || str_case_equal(ext, "tbz2") ||
-     str_case_equal(ext, "tbz"))
+  if(str_case_equal(ext, "bz2") || str_case_equal(ext, "tbz2") || str_case_equal(ext, "tbz"))
     return C_BZ2;
 
   if(str_case_equal(ext, "xz") || str_case_equal(ext, "txz"))
@@ -147,8 +146,7 @@ main(int argc, char* argv[]) {
     output = buffer_1;
   } else {
     if(buffer_truncfile(&outfile, out_filename) < 0) {
-      buffer_putm_internal(
-          buffer_2, "ERROR opening: ", out_filename, NULL);
+      buffer_putm_internal(buffer_2, "ERROR opening: ", out_filename, NULL);
       buffer_putnlflush(buffer_2);
       return 1;
     }

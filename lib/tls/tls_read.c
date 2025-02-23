@@ -26,9 +26,7 @@ tls_read(fd_type fd, void* data, size_t len) {
     }
   }
 
-  if((tls_instance_return(i,
-                          TLS_OP_READ,
-                          ret = SSL_read(i->ssl, data, len))) < 0)
+  if((tls_instance_return(i, TLS_OP_READ, ret = SSL_read(i->ssl, data, len))) < 0)
     errno = tls_instance_errno(i);
 
 #ifdef DEBUG_TLS
@@ -44,20 +42,19 @@ tls_read(fd_type fd, void* data, size_t len) {
   if(i->error != SSL_ERROR_NONE) {
     buffer_puts(buffer_2, " error: ");
     buffer_puts(buffer_2,
-                ((const char* const[]){
-                    "SSL_ERROR_NONE",
-                    "SSL_ERROR_SSL",
-                    "SSL_ERROR_WANT_READ",
-                    "SSL_ERROR_WANT_WRITE",
-                    "SSL_ERROR_WANT_X509_LOOKUP",
-                    "SSL_ERROR_SYSCALL",
-                    "SSL_ERROR_ZERO_RETURN",
-                    "SSL_ERROR_WANT_CONNECT",
-                    "SSL_ERROR_WANT_ACCEPT",
-                    "SSL_ERROR_WANT_ASYNC",
-                    "SSL_ERROR_WANT_ASYNC",
-                    "SSL_ERROR_WANT_ASYNC_JOB",
-                    "SSL_ERROR_WANT_CLIENT_HELLO_CB"})[i->error]);
+                ((const char* const[]){"SSL_ERROR_NONE",
+                                       "SSL_ERROR_SSL",
+                                       "SSL_ERROR_WANT_READ",
+                                       "SSL_ERROR_WANT_WRITE",
+                                       "SSL_ERROR_WANT_X509_LOOKUP",
+                                       "SSL_ERROR_SYSCALL",
+                                       "SSL_ERROR_ZERO_RETURN",
+                                       "SSL_ERROR_WANT_CONNECT",
+                                       "SSL_ERROR_WANT_ACCEPT",
+                                       "SSL_ERROR_WANT_ASYNC",
+                                       "SSL_ERROR_WANT_ASYNC",
+                                       "SSL_ERROR_WANT_ASYNC_JOB",
+                                       "SSL_ERROR_WANT_CLIENT_HELLO_CB"})[i->error]);
   }
   if(ret > 0) {
     size_t len = ret;

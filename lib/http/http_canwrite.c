@@ -14,9 +14,7 @@
 #include <string.h>
 
 ssize_t
-http_canwrite(http* h,
-              void (*wantread)(fd_type),
-              void (*wantwrite)(fd_type)) {
+http_canwrite(http* h, void (*wantread)(fd_type), void (*wantwrite)(fd_type)) {
   ssize_t ret = 0;
   if(h->tls) {
     if(!h->connected) {
@@ -79,10 +77,7 @@ fail:
   }
   if(h->response->data.len > 0) {
     buffer_puts(buffer_2, " data=");
-    buffer_putfmt(buffer_2,
-                  h->response->data.s,
-                  h->response->data.len,
-                  &fmt_escapecharnonprintable);
+    buffer_putfmt(buffer_2, h->response->data.s, h->response->data.len, &fmt_escapecharnonprintable);
   }
   buffer_puts(buffer_2, " ret=");
   buffer_putlong(buffer_2, ret);
@@ -104,14 +99,8 @@ fail:
   }
   buffer_puts(buffer_2, " status=");
   buffer_puts(buffer_2,
-              ((const char* const[]){"-1",
-                                     "HTTP_RECV_HEADER",
-                                     "HTTP_RECV_DATA",
-                                     "HTTP_STATUS_CLOSED",
-                                     "HTTP_STATUS_ERROR",
-                                     "HTTP_STATUS_BUSY",
-                                     "HTTP_STATUS_FINISH",
-                                     0})[h->response->status + 1]);
+              ((const char* const[]){
+                  "-1", "HTTP_RECV_HEADER", "HTTP_RECV_DATA", "HTTP_STATUS_CLOSED", "HTTP_STATUS_ERROR", "HTTP_STATUS_BUSY", "HTTP_STATUS_FINISH", 0})[h->response->status + 1]);
   buffer_putnlflush(buffer_2);
 #endif
   return ret;

@@ -60,10 +60,7 @@ xml_find_pred_1(xmlnode* node, xml_pred_t* pred, const void* arg) {
 }
 
 xmlnode*
-xml_find_pred_2(xmlnode* node,
-                xml_pred_t* pred,
-                const void* a0,
-                const void* a1) {
+xml_find_pred_2(xmlnode* node, xml_pred_t* pred, const void* a0, const void* a1) {
   const void* vptr[4];
   vptr[0] = a0;
   vptr[1] = a1;
@@ -72,11 +69,7 @@ xml_find_pred_2(xmlnode* node,
   return xml_pfind_pred(node, pred, vptr);
 }
 xmlnode*
-xml_find_pred_3(xmlnode* node,
-                xml_pred_t* pred,
-                const void* a0,
-                const void* a1,
-                const void* a2) {
+xml_find_pred_3(xmlnode* node, xml_pred_t* pred, const void* a0, const void* a1, const void* a2) {
   const void* vptr[4];
   vptr[0] = a0;
   vptr[1] = a1;

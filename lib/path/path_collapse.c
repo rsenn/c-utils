@@ -1,6 +1,7 @@
 #include "../path_internal.h"
-#include "../utf8.h"
+#include "../byte.h"
 #include <string.h>
+#include <stdlib.h>
 
 size_t
 path_collapse(char* path, size_t n) {
@@ -9,17 +10,16 @@ path_collapse(char* path, size_t n) {
   size_t l, i, j = 0;
 
   for(x = path, end = path + n, i = 0; i < n;) {
-    while(i < n && x[i] == sep)
+    while(x[i] == sep)
       ++i;
 
-    if((l = i + u8b_chrs(&x[i], n - i, &sep, 1)) < n) {
+    if((l = i + byte_chr(&x[i], n - i, sep)) < n) {
       j = l;
 
-      while(l < n && x[l] == sep)
+      while(x[l] == sep)
         ++l;
 
-      if(l + 2 < n && x[l] == '.' && x[l + 1] == '.' &&
-         (l + 2 >= n || x[l + 2] == sep)) {
+      if(l + 2 <= n && x[l] == '.' && x[l + 1] == '.' && (l + 2 >= n || x[l + 2] == sep)) {
         l += 3;
 
       move:
@@ -29,8 +29,9 @@ path_collapse(char* path, size_t n) {
         n = i + (n - l);
         x[n] = '\0';
 
-        while(i > 0 && x[--i] == sep)
+        while(x[--i] == sep)
           ;
+
         while(i > 0 && x[i] != sep)
           i--;
 
@@ -45,6 +46,9 @@ path_collapse(char* path, size_t n) {
 
         if(x[l + 1] == sep) {
           l += 2;
+
+          if(j < n && x[j] == sep)
+            ++j;
           i = j;
           goto move;
         }

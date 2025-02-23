@@ -3,7 +3,6 @@
 
 uint16
 uint16_read_big(const char* in) {
-  return (unsigned short)((((unsigned char)in[0]) << 8) +
-                          (unsigned char)in[1]);
+  return (unsigned short)((((unsigned char)in[0]) << 8) + (unsigned char)in[1]);
 }
 #undef NO_UINT16_MACROS

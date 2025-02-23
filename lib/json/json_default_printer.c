@@ -14,8 +14,7 @@ get_depth(const jsonval* v) {
 }
 
 void
-json_default_printer(
-    jsonfmt* p, jsonval* v, int depth, int index, char quote) {
+json_default_printer(jsonfmt* p, jsonval* v, int depth, int index, char quote) {
   int pretty = v && get_depth(v) > 1;
   static char q[2] = {'"', '\0'};
   p->indent = pretty ? " " : "";

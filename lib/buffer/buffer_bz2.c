@@ -136,8 +136,7 @@ buffer_bz2(buffer* b, buffer* other, int compress) {
   b->deinit = &buffer_bz_close;
   b->op = (void*)(compress ? &buffer_bzwrite_op : &buffer_bzread_op);
 
-  ret = compress ? BZ2_bzCompressInit(&ctx->strm, compress, 0, 1)
-                 : BZ2_bzDecompressInit(&ctx->strm, 0, 0);
+  ret = compress ? BZ2_bzCompressInit(&ctx->strm, compress, 0, 1) : BZ2_bzDecompressInit(&ctx->strm, 0, 0);
 
   if(ret != BZ_OK)
     return 0;

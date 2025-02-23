@@ -106,18 +106,14 @@ dns_ip6(stralloc* out, stralloc* fqdn) {
     if(!stralloc_copys(out, ""))
       return -1;
     if(dns_resolve(q, DNS_T_AAAA) != -1)
-      if(dns_ip6_packet_add(out,
-                            dns_resolve_tx.packet,
-                            dns_resolve_tx.packetlen) != -1) {
+      if(dns_ip6_packet_add(out, dns_resolve_tx.packet, dns_resolve_tx.packetlen) != -1) {
         dns_transmit_free(&dns_resolve_tx);
         dns_domain_free(&q);
       }
     if(!dns_domain_fromdot(&q, fqdn->s, fqdn->len))
       return -1;
     if(dns_resolve(q, DNS_T_A) != -1)
-      if(dns_ip6_packet_add(out,
-                            dns_resolve_tx.packet,
-                            dns_resolve_tx.packetlen) != -1) {
+      if(dns_ip6_packet_add(out, dns_resolve_tx.packet, dns_resolve_tx.packetlen) != -1) {
         dns_transmit_free(&dns_resolve_tx);
         dns_domain_free(&q);
       }

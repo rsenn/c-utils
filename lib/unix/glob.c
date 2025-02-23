@@ -53,10 +53,7 @@ strrpbrk(char const* s, char const* charset) {
  */
 
 int
-glob(char const* pattern,
-     int flags,
-     int (*errfunc)(char const*, int),
-     glob_t* pglob) {
+glob(char const* pattern, int flags, int (*errfunc)(char const*, int), glob_t* pglob) {
   int result;
   char szRelative[1 + _MAX_PATH];
   char const* file_part;
@@ -81,20 +78,15 @@ glob(char const* pattern,
   }
 
   if(flags & GLOB_TILDE) {
-    if('~' == pattern[0] &&
-       ('\0' == pattern[1] || '/' == pattern[1] || '\\' == pattern[1])) {
+    if('~' == pattern[0] && ('\0' == pattern[1] || '/' == pattern[1] || '\\' == pattern[1])) {
       DWORD dw;
 
       (void)lstrcpyA(&szPattern2[0], "%HOMEDRIVE%%HOMEPATH%");
 
-      dw = ExpandEnvironmentStringsA(&szPattern2[0],
-                                     &szPattern3[0],
-                                     NUM_ELEMENTS(szPattern3) - 1);
+      dw = ExpandEnvironmentStringsA(&szPattern2[0], &szPattern3[0], NUM_ELEMENTS(szPattern3) - 1);
 
       if(0 != dw) {
-        (void)lstrcpynA(&szPattern3[0] + dw - 1,
-                        &pattern[1],
-                        (int)(NUM_ELEMENTS(szPattern3) - dw));
+        (void)lstrcpynA(&szPattern3[0] + dw - 1, &pattern[1], (int)(NUM_ELEMENTS(szPattern3) - dw));
         szPattern3[NUM_ELEMENTS(szPattern3) - 1] = '\0';
 
         effectivePattern = szPattern3;
@@ -158,8 +150,7 @@ glob(char const* pattern,
 
         if(bMagic0 && GLOB_NODOTSDIRS == (flags & GLOB_NODOTSDIRS)) {
           /* Pattern must begin with '.' to match either dots directory */
-          if(0 == lstrcmpA(".", find_data.cFileName) ||
-             0 == lstrcmpA("..", find_data.cFileName)) {
+          if(0 == lstrcmpA(".", find_data.cFileName) || 0 == lstrcmpA("..", find_data.cFileName)) {
             continue;
           }
         }
@@ -206,9 +197,7 @@ glob(char const* pattern,
         cbAlloc = new_cbAlloc;
       }
 
-      (void)lstrcpynA(buffer + cbCurr,
-                      szRelative,
-                      1 + (file_part - effectivePattern));
+      (void)lstrcpynA(buffer + cbCurr, szRelative, 1 + (file_part - effectivePattern));
       (void)lstrcatA(buffer + cbCurr, find_data.cFileName);
       cbCurr += cch + 1;
 
@@ -252,8 +241,7 @@ glob(char const* pattern,
           /* The way we need in order to test the removal of dots in the
            * findfile_sequence. */
           *end = NULL;
-          for(begin = pp, next_str = buffer + cbPointers; begin != end;
-              --end) {
+          for(begin = pp, next_str = buffer + cbPointers; begin != end; --end) {
             *(end - 1) = next_str;
 
             /* Find the next s. */
@@ -261,8 +249,7 @@ glob(char const* pattern,
           }
         } else {
           /* The normal way. */
-          for(begin = pp, next_str = buffer + cbPointers; begin != end;
-              ++begin) {
+          for(begin = pp, next_str = buffer + cbPointers; begin != end; ++begin) {
             *begin = next_str;
 
             /* Find the next s. */
@@ -291,8 +278,7 @@ glob(char const* pattern,
     if((flags & GLOB_TILDE_CHECK) && effectivePattern == szPattern3) {
       result = GLOB_NOMATCH;
     } else if(bNoMagic || (flags & GLOB_NOCHECK)) {
-      size_t cbNeeded = ((2 + pglob->gl_offs) * sizeof(char*)) +
-                        (1 + strlen(effectivePattern));
+      size_t cbNeeded = ((2 + pglob->gl_offs) * sizeof(char*)) + (1 + strlen(effectivePattern));
       char** pp = (char**)realloc(buffer, cbNeeded);
 
       if(NULL == pp) {
@@ -386,10 +372,7 @@ close_dir_keep_errno(DIR* dp) {
 
 static int
 add_entry(const char* name, glob_t* pglob, int* nfound) {
-  pglob->gl_pathv =
-      (char**)realloc(pglob->gl_pathv,
-                      (pglob->gl_pathc + pglob->gl_offs + 2) *
-                          sizeof(char*));
+  pglob->gl_pathv = (char**)realloc(pglob->gl_pathv, (pglob->gl_pathc + pglob->gl_offs + 2) * sizeof(char*));
   if(pglob->gl_pathv == NULL)
     return 1;
   pglob->gl_pathv[pglob->gl_offs + pglob->gl_pathc] = strdup(name);
@@ -400,9 +383,7 @@ add_entry(const char* name, glob_t* pglob, int* nfound) {
 }
 
 static void
-build_fullname(char* fullname,
-               const char* directory,
-               const char* filename) {
+build_fullname(char* fullname, const char* directory, const char* filename) {
   char* dest = fullname;
   if(directory[0] == '/' && !directory[1]) {
     *dest = '/';
@@ -417,11 +398,7 @@ build_fullname(char* fullname,
 }
 
 static int
-glob_in_dir(const char* pattern,
-            const char* directory,
-            int flags,
-            int errfunc(const char* epath, int eerrno),
-            glob_t* pglob) {
+glob_in_dir(const char* pattern, const char* directory, int flags, int errfunc(const char* epath, int eerrno), glob_t* pglob) {
   DIR* dp = opendir(directory);
   int nfound = 0;
 
@@ -429,13 +406,10 @@ glob_in_dir(const char* pattern,
   char* ptr;
 
   if(!dp) {
-    if(errno != ENOTDIR &&
-       ((errfunc != NULL && (*errfunc)(directory, errno)) ||
-        (flags & GLOB_ERR)))
+    if(errno != ENOTDIR && ((errfunc != NULL && (*errfunc)(directory, errno)) || (flags & GLOB_ERR)))
       return GLOB_ABORTED;
   } else {
-    int fnm_flags = ((!(flags & GLOB_PERIOD) ? FNM_PERIOD : 0) |
-                     ((flags & GLOB_NOESCAPE) ? FNM_NOESCAPE : 0));
+    int fnm_flags = ((!(flags & GLOB_PERIOD) ? FNM_PERIOD : 0) | ((flags & GLOB_NOESCAPE) ? FNM_NOESCAPE : 0));
     struct dirent* ep;
     while((ep = readdir(dp))) {
       i = strlen(directory) + strlen(ep->d_name) + 2;
@@ -477,17 +451,11 @@ memory_error:
 }
 
 #define __GLOB_FLAGS \
-  (GLOB_ABEND | GLOB_ABORTED | GLOB_APPEND | GLOB_BRACE | GLOB_DOOFFS | \
-   GLOB_ERR | GLOB_LIMIT | GLOB_MAGCHAR | GLOB_MARK | GLOB_NOCHECK | \
-   GLOB_NODOTSDIRS | GLOB_NOESCAPE | GLOB_NOMAGIC | GLOB_NOMATCH | \
-   GLOB_NOSORT | GLOB_NOSPACE | GLOB_NOSYS | GLOB_ONLYDIR | \
-   GLOB_ONLYFILE | GLOB_PERIOD | GLOB_TILDE | GLOB_TILDE_CHECK)
+  (GLOB_ABEND | GLOB_ABORTED | GLOB_APPEND | GLOB_BRACE | GLOB_DOOFFS | GLOB_ERR | GLOB_LIMIT | GLOB_MAGCHAR | GLOB_MARK | GLOB_NOCHECK | GLOB_NODOTSDIRS | GLOB_NOESCAPE | \
+   GLOB_NOMAGIC | GLOB_NOMATCH | GLOB_NOSORT | GLOB_NOSPACE | GLOB_NOSYS | GLOB_ONLYDIR | GLOB_ONLYFILE | GLOB_PERIOD | GLOB_TILDE | GLOB_TILDE_CHECK)
 
 int
-glob(const char* pattern,
-     int flags,
-     int errfunc(const char* epath, int eerrno),
-     glob_t* pglob) {
+glob(const char* pattern, int flags, int errfunc(const char* epath, int eerrno), glob_t* pglob) {
   char* pattern_;
   char* filename;
   char* dirname;
@@ -531,8 +499,7 @@ glob(const char* pattern,
         home_dir = p->pw_dir;
     }
     if(home_dir != NULL) {
-      i = strlen(home_dir) +
-          strlen(pattern_); /* pessimistic (the ~ case) */
+      i = strlen(home_dir) + strlen(pattern_); /* pessimistic (the ~ case) */
       ptr = alloca(i);
       strncpy(ptr, home_dir, i);
       ptr2 = pattern_ + 1;
@@ -565,8 +532,7 @@ glob(const char* pattern,
       /* "pattern/".  Expand "pattern", appending slashes.  */
       j = glob(dirname, flags | GLOB_MARK, errfunc, pglob);
       if(j == 0)
-        pglob->gl_flags =
-            ((pglob->gl_flags & ~GLOB_MARK) | (flags & GLOB_MARK));
+        pglob->gl_flags = ((pglob->gl_flags & ~GLOB_MARK) | (flags & GLOB_MARK));
       return j;
     }
   }
@@ -577,8 +543,7 @@ glob(const char* pattern,
     if(!(flags & GLOB_DOOFFS))
       pglob->gl_pathv = NULL;
     else {
-      pglob->gl_pathv =
-          (char**)malloc((pglob->gl_offs + 1) * sizeof(char*));
+      pglob->gl_pathv = (char**)malloc((pglob->gl_offs + 1) * sizeof(char*));
       if(pglob->gl_pathv == NULL)
         return GLOB_NOSPACE;
       for(i = 0; i <= pglob->gl_offs; i++)
@@ -589,9 +554,7 @@ glob(const char* pattern,
   oldcount = pglob->gl_pathc + pglob->gl_offs;
 
   /* Begin real work */
-  if(!strcmp(dirname, "/") || !strcmp(dirname, ".") ||
-     (!strchr(dirname, '*') && !strchr(dirname, '?') &&
-      !strchr(dirname, '['))) {
+  if(!strcmp(dirname, "/") || !strcmp(dirname, ".") || (!strchr(dirname, '*') && !strchr(dirname, '?') && !strchr(dirname, '['))) {
     /* Approx of a terminal state, glob directly in dir. */
     j = glob_in_dir(filename, dirname, flags, errfunc, pglob);
     if(j != 0)
@@ -602,12 +565,7 @@ glob(const char* pattern,
        directory found. */
     glob_t dirs;
 
-    j = glob(dirname,
-             ((flags & (GLOB_ERR | GLOB_NOCHECK | GLOB_NOESCAPE |
-                        GLOB_ALTDIRFUNC)) |
-              GLOB_NOSORT | GLOB_ONLYDIR),
-             errfunc,
-             &dirs);
+    j = glob(dirname, ((flags & (GLOB_ERR | GLOB_NOCHECK | GLOB_NOESCAPE | GLOB_ALTDIRFUNC)) | GLOB_NOSORT | GLOB_ONLYDIR), errfunc, &dirs);
     if(j != 0)
       return j;
 
@@ -615,11 +573,7 @@ glob(const char* pattern,
        For each name we found, call glob_in_dir on it and FILENAME,
        appending the results to PGLOB.  */
     for(i = 0; i < dirs.gl_pathc; i++) {
-      j = glob_in_dir(filename,
-                      dirs.gl_pathv[i],
-                      ((flags | GLOB_APPEND) & ~GLOB_NOCHECK),
-                      errfunc,
-                      pglob);
+      j = glob_in_dir(filename, dirs.gl_pathv[i], ((flags | GLOB_APPEND) & ~GLOB_NOCHECK), errfunc, pglob);
       if(j == GLOB_NOMATCH)
         /* No matches in this directory.  Try the next.  */
         continue;
@@ -644,8 +598,7 @@ glob(const char* pattern,
           /* stat is okay, we will add the entry, but before let's resize
            * the pathv */
           j = pglob->gl_pathc + pglob->gl_offs;
-          pglob->gl_pathv =
-              (char**)realloc(pglob->gl_pathv, (j + 2) * sizeof(char*));
+          pglob->gl_pathv = (char**)realloc(pglob->gl_pathv, (j + 2) * sizeof(char*));
           if(pglob->gl_pathv == NULL) {
             globfree(&dirs);
             return GLOB_NOSPACE;
@@ -686,10 +639,7 @@ glob(const char* pattern,
   }
 
   if(!(flags & GLOB_NOSORT)) {
-    qsort(&pglob->gl_pathv[oldcount],
-          pglob->gl_pathc + pglob->gl_offs - oldcount,
-          sizeof(char*),
-          cmp_func);
+    qsort(&pglob->gl_pathv[oldcount], pglob->gl_pathc + pglob->gl_offs - oldcount, sizeof(char*), cmp_func);
   }
 
   return 0;

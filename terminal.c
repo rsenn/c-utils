@@ -16,14 +16,11 @@
 #endif
 
 static char terminal_out_buf[32], terminal_in_buf[64];
-buffer terminal_out_buffer =
-    BUFFER_INIT(write, 1, terminal_out_buf, sizeof(terminal_out_buf));
-buffer terminal_in_buffer =
-    BUFFER_INIT(read, 0, terminal_in_buf, sizeof(terminal_in_buf));
+buffer terminal_out_buffer = BUFFER_INIT(write, 1, terminal_out_buf, sizeof(terminal_out_buf));
+buffer terminal_in_buffer = BUFFER_INIT(read, 0, terminal_in_buf, sizeof(terminal_in_buf));
 
 #if WINDOWS
-static WORD COLOR_DEFAULT = FOREGROUND_RED | FOREGROUND_GREEN |
-                            FOREGROUND_BLUE | FOREGROUND_INTENSITY;
+static WORD COLOR_DEFAULT = FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY;
 static HANDLE hConsole;
 #else
 static struct termios oldterm;
@@ -253,14 +250,9 @@ terminal_erase_in_display(int n) {
   if(n == 2) {
     GetConsoleScreenBufferInfo(hConsole, &csbi);
     dwConSize = csbi.dwSize.X * csbi.dwSize.Y;
-    FillConsoleOutputCharacter(
-        hConsole, TEXT(' '), dwConSize, coordScreen, &cCharsWritten);
+    FillConsoleOutputCharacter(hConsole, TEXT(' '), dwConSize, coordScreen, &cCharsWritten);
     GetConsoleScreenBufferInfo(hConsole, &csbi);
-    FillConsoleOutputAttribute(hConsole,
-                               csbi.wAttributes,
-                               dwConSize,
-                               coordScreen,
-                               &cCharsWritten);
+    FillConsoleOutputAttribute(hConsole, csbi.wAttributes, dwConSize, coordScreen, &cCharsWritten);
     SetConsoleCursorPosition(hConsole, coordScreen);
   }
 #else
@@ -325,10 +317,7 @@ terminal_set_bg(int color) {
   if(color == COLOR_RESET)
     terminal_command_number_char(49, 'm');
   else
-    terminal_numbers_sequence(&terminal_out_buffer,
-                              (int[]){bright ? 0 : 1, 40 + c},
-                              2,
-                              'm');
+    terminal_numbers_sequence(&terminal_out_buffer, (int[]){bright ? 0 : 1, 40 + c}, 2, 'm');
 //    printf("\033[%d;%dm", bright ? 0 : 1, 40 + c);
 #endif
 }
@@ -356,10 +345,7 @@ terminal_set_fg(int color) {
   if(color == COLOR_RESET)
     terminal_command_number_char(39, 'm');
   else
-    terminal_numbers_sequence(&terminal_out_buffer,
-                              (int[]){bright ? 0 : 2, 30 + c},
-                              2,
-                              'm');
+    terminal_numbers_sequence(&terminal_out_buffer, (int[]){bright ? 0 : 2, 30 + c}, 2, 'm');
     // printf("\033[%d;%dm", bright ? 0 : 2, 30 + c);
 #endif
 }

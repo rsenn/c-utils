@@ -317,38 +317,37 @@ progname(char* arg0) {
 
 static void
 parse_args(int argc, char* argv[]) {
-  static struct option long_options[] = {
-      {"help", no_argument, 0, 'h'},
-      {"bind_addr", required_argument, 0, 'b'},
-      {"bind", required_argument, 0, 'b'},
-      {"timeout", required_argument, 0, 't'},
-      {"inetd", no_argument, 0, 'i'},
-      {"ident", required_argument, 0, 'I'},
-      {"loglevel", required_argument, 0, 'l'},
-      {"name", required_argument, 0, 'I'},
-      {"syslog", no_argument, 0, 's'},
-      {"connect", required_argument, 0, 'x'},
+  static struct option long_options[] = {{"help", no_argument, 0, 'h'},
+                                         {"bind_addr", required_argument, 0, 'b'},
+                                         {"bind", required_argument, 0, 'b'},
+                                         {"timeout", required_argument, 0, 't'},
+                                         {"inetd", no_argument, 0, 'i'},
+                                         {"ident", required_argument, 0, 'I'},
+                                         {"loglevel", required_argument, 0, 'l'},
+                                         {"name", required_argument, 0, 'I'},
+                                         {"syslog", no_argument, 0, 's'},
+                                         {"connect", required_argument, 0, 'x'},
 #ifndef NO_FTP
-      {"ftp", required_argument, 0, 'f'},
+                                         {"ftp", required_argument, 0, 'f'},
 #endif
-      {"transproxy", no_argument, 0, 'p'},
+                                         {"transproxy", no_argument, 0, 'p'},
 #ifndef NO_SHAPER
-      {"bufsize", required_argument, 0, 'z'},
-      {"max_bandwidth", required_argument, 0, 'm'}, /* compat */
-      {"max-bandwidth", required_argument, 0, 'm'},
-      {"random_wait", required_argument, 0, 'w'}, /* compat */
-      {"random-wait", required_argument, 0, 'w'},
-      {"wait_in_out", required_argument, 0, 'o'}, /* compat */
-      {"wait-in-out", required_argument, 0, 'o'},
+                                         {"bufsize", required_argument, 0, 'z'},
+                                         {"max_bandwidth", required_argument, 0, 'm'}, /* compat */
+                                         {"max-bandwidth", required_argument, 0, 'm'},
+                                         {"random_wait", required_argument, 0, 'w'}, /* compat */
+                                         {"random-wait", required_argument, 0, 'w'},
+                                         {"wait_in_out", required_argument, 0, 'o'}, /* compat */
+                                         {"wait-in-out", required_argument, 0, 'o'},
 #endif
 #ifdef COMPAT_OPTIONS
-      {"caddr", required_argument, 0, 128},
-      {"cport", required_argument, 0, 129},
-      {"laddr", required_argument, 0, 130},
-      {"lport", required_argument, 0, 131},
+                                         {"caddr", required_argument, 0, 128},
+                                         {"cport", required_argument, 0, 129},
+                                         {"laddr", required_argument, 0, 130},
+                                         {"lport", required_argument, 0, 131},
 #endif
-      {"version", no_argument, 0, 'v'},
-      {0, 0, 0, 0}};
+                                         {"version", no_argument, 0, 'v'},
+                                         {0, 0, 0, 0}};
 
   extern int unix_optind;
   int opt, compat = 0;
@@ -366,11 +365,7 @@ parse_args(int argc, char* argv[]) {
 #define SHAPER_OPTS ""
 #endif
   const char* prognm = progname(argv[0]);
-  while((opt = unix_getopt_long(argc,
-                                argv,
-                                "b:hiI:l:npst:vx:" FTP_OPTS SHAPER_OPTS,
-                                long_options,
-                                NULL)) != -1) {
+  while((opt = unix_getopt_long(argc, argv, "b:hiI:l:npst:vx:" FTP_OPTS SHAPER_OPTS, long_options, NULL)) != -1) {
     switch(opt) {
       case 'b': bind_addr = unix_optarg; break;
 
@@ -540,14 +535,7 @@ ftp_clean(int send, char* buf, ssize_t* bytes, int ftpsrv) {
      * buffer */
     port_start = strchr(buf, ' ');
 
-    sscanf(port_start,
-           " %d,%d,%d,%d,%d,%d",
-           &remip[0],
-           &remip[1],
-           &remip[2],
-           &remip[3],
-           &rporthi,
-           &rportlo);
+    sscanf(port_start, " %d,%d,%d,%d,%d,%d", &remip[0], &remip[1], &remip[2], &remip[3], &rporthi, &rportlo);
   } else {
     /* is this a passive mode return ?
      */
@@ -560,14 +548,7 @@ ftp_clean(int send, char* buf, ssize_t* bytes, int ftpsrv) {
      * buffer */
     port_start = strchr(buf, '(');
 
-    sscanf(port_start,
-           "(%d,%d,%d,%d,%d,%d",
-           &remip[0],
-           &remip[1],
-           &remip[2],
-           &remip[3],
-           &rporthi,
-           &rportlo);
+    sscanf(port_start, "(%d,%d,%d,%d,%d,%d", &remip[0], &remip[1], &remip[2], &remip[3], &rporthi, &rportlo);
   }
 
   /* get the outside interface so we can
@@ -631,8 +612,7 @@ ftp_clean(int send, char* buf, ssize_t* bytes, int ftpsrv) {
   }
   newsession.sin_port = htons(rport);
   newsession.sin_family = AF_INET;
-  newsession.sin_addr.s_addr =
-      remip[0] | (remip[1] << 8) | (remip[2] << 16) | (remip[3] << 24);
+  newsession.sin_addr.s_addr = remip[0] | (remip[1] << 8) | (remip[2] << 16) | (remip[3] << 24);
 
   // syslog(LOG_DEBUG, "ftpdata server
   // ip: %s",
@@ -663,9 +643,7 @@ ftp_clean(int send, char* buf, ssize_t* bytes, int ftpsrv) {
      the client.*/
 
   switch(fork()) {
-    case -1: /* Error */
-      syslog(LOG_ERR, "Failed calling fork(): %s", strerror(errno));
-      exit(1);
+    case -1: /* Error */ syslog(LOG_ERR, "Failed calling fork(): %s", strerror(errno)); exit(1);
 
     case 0: /* Child */
       /* turn off ftp checking while the
@@ -724,11 +702,7 @@ copyloop(int insock, int outsock, int timeout_secs) {
     timeout.tv_sec = timeout_secs;
     timeout.tv_usec = 0;
 
-    if(select(max_fd + 1,
-              &iofds,
-              NULL,
-              NULL,
-              (timeout_secs ? &timeout : NULL)) <= 0) {
+    if(select(max_fd + 1, &iofds, NULL, NULL, (timeout_secs ? &timeout : NULL)) <= 0) {
       // syslog(LOG_DEBUG, "Connection
       // timeout: %d sec",
       // timeout_secs);
@@ -1026,9 +1000,7 @@ client_accept(int sd, struct sockaddr_in* target) {
   /* We are now the first child. Fork
    * again and exit */
   switch(fork()) {
-    case -1: /* Error */
-      syslog(LOG_ERR, "Failed duoble fork(): %s", strerror(errno));
-      exit(1);
+    case -1: /* Error */ syslog(LOG_ERR, "Failed duoble fork(): %s", strerror(errno)); exit(1);
 
     case 0: /* Child */ break;
 
@@ -1120,8 +1092,7 @@ server_socket(char* addr, int port, int fail) {
     server.sin_addr.s_addr = htonl(inet_addr("0.0.0.0"));
   }
 
-  ret = setsockopt(
-      sd, SOL_SOCKET, SO_REUSEADDR, &reuse_addr, sizeof(reuse_addr));
+  ret = setsockopt(sd, SOL_SOCKET, SO_REUSEADDR, &reuse_addr, sizeof(reuse_addr));
   if(ret != 0) {
     if(fail) {
       close(sd);
@@ -1134,8 +1105,7 @@ server_socket(char* addr, int port, int fail) {
     exit(1);
   }
 
-  ret = setsockopt(
-      sd, SOL_SOCKET, SO_LINGER, &linger_opt, sizeof(linger_opt));
+  ret = setsockopt(sd, SOL_SOCKET, SO_LINGER, &linger_opt, sizeof(linger_opt));
   if(ret != 0) {
     if(fail) {
       close(sd);

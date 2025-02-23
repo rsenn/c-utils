@@ -38,9 +38,7 @@ io_debugstring(fd_type s, char* buf, unsigned int bufsize) {
   if(bufsize - i < 100)
     return 0;
   i += fmt_str(buf + i, "timeout ");
-  i += fmt_ulonglong(buf + i,
-                     e->timeout.sec.x - (uint64)4611686018427387914 -
-                         time(NULL));
+  i += fmt_ulonglong(buf + i, e->timeout.sec.x - (uint64)4611686018427387914 - time(NULL));
   i += fmt_str(buf + i, ".");
   i += fmt_ulong(buf + i, e->timeout.nano);
   i += fmt_str(buf + i, " ");

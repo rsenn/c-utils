@@ -50,9 +50,7 @@ output_hex(const char* x, int64 n, int offset, char space) {
 
       for(j = 0; j < r; ++j) {
         buffer_PUTC(buffer_1, space);
-        buffer_putxlong0(buffer_1,
-                         (long)(unsigned long)(unsigned char)x[i + j],
-                         2);
+        buffer_putxlong0(buffer_1, (long)(unsigned long)(unsigned char)x[i + j], 2);
       }
       buffer_putnlflush(buffer_1);
     }
@@ -88,8 +86,7 @@ buffer_getint64(buffer* b, int64* i) {
 
 void
 buffer_offset(buffer* from, buffer* to, int64 offset) {
-  buffer_init(
-      to, (buffer_op_proto*)(void*)from->op, from->fd, from->x, from->a);
+  buffer_init(to, (buffer_op_proto*)(void*)from->op, from->fd, from->x, from->a);
   to->n = from->n;
   to->p = from->p + offset;
 }
@@ -175,13 +172,9 @@ bsdiff_read(buffer* ctrl, buffer* data, buffer* extra) {
             buffer_puts(buffer_1, "  patch(0x");
             buffer_putxlonglong0(buffer_1, w + j, 8);
             buffer_puts(buffer_1, ", 0x");
-            buffer_putxlong0(buffer_1,
-                             (unsigned long)(unsigned char)from,
-                             2);
+            buffer_putxlong0(buffer_1, (unsigned long)(unsigned char)from, 2);
             buffer_puts(buffer_1, ", 0x");
-            buffer_putxlong0(buffer_1,
-                             (unsigned long)(unsigned char)to,
-                             2);
+            buffer_putxlong0(buffer_1, (unsigned long)(unsigned char)to, 2);
             buffer_puts(buffer_1, ");");
             buffer_putnlflush(buffer_1);
           }
@@ -282,8 +275,7 @@ main(int argc, char* argv[]) {
       bsdiff_read(&patch, &data, &extra);
 
     } else {
-      errmsg_infosys(
-          path_basename(argv[0]), ": ", "read header", ": ", NULL);
+      errmsg_infosys(path_basename(argv[0]), ": ", "read header", ": ", NULL);
       exitcode = 2;
     }
   } else {

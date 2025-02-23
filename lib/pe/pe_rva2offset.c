@@ -10,6 +10,5 @@ pe_rva2offset(void* base, uint32 rva) {
 
   sections = pe_header_sections(base, NULL);
 
-  return rva - sections[i].virtual_address +
-         sections[i].pointer_to_raw_data;
+  return rva - sections[i].virtual_address + sections[i].pointer_to_raw_data;
 }

@@ -20,21 +20,9 @@
 extern "C" {
 #endif
 
-typedef enum {
-  JSON_UNDEFINED = -1,
-  JSON_NULL = 0,
-  JSON_BOOL,
-  JSON_INT,
-  JSON_DOUBLE,
-  JSON_STRING,
-  JSON_ARRAY,
-  JSON_OBJECT
-} jsontype;
+typedef enum { JSON_UNDEFINED = -1, JSON_NULL = 0, JSON_BOOL, JSON_INT, JSON_DOUBLE, JSON_STRING, JSON_ARRAY, JSON_OBJECT } jsontype;
 
-typedef enum key_type {
-  JSON_KEY_OBJECT = 0,
-  JSON_KEY_ARRAY = 1
-} jsonkey_type;
+typedef enum key_type { JSON_KEY_OBJECT = 0, JSON_KEY_ARRAY = 1 } jsonkey_type;
 
 typedef struct {
   jsonkey_type is_array;
@@ -91,11 +79,7 @@ enum {
   JSON_FMT_QUOTE = 4,
 };
 
-typedef int json_read_callback_fn(jsonreader* r,
-                                  jsontype id,
-                                  stralloc* name,
-                                  stralloc* value,
-                                  MAP_T* attrs);
+typedef int json_read_callback_fn(jsonreader* r, jsontype id, stralloc* name, stralloc* value, MAP_T* attrs);
 typedef void json_print_fn(jsonfmt*, jsonval*, int, int, char);
 typedef void json_format_fn(jsonfmt*, jsonval*, int, int, char);
 typedef int json_predicate_fn();
@@ -129,10 +113,8 @@ int64 json_toint(jsonval);
 void json_tosa(jsonval, stralloc*, json_print_fn* p);
 const char* json_tostring(jsonval, stralloc*);
 
-void
-json_compact_printer(jsonfmt*, jsonval*, int depth, int index, char quote);
-void
-json_default_printer(jsonfmt*, jsonval*, int depth, int index, char quote);
+void json_compact_printer(jsonfmt*, jsonval*, int depth, int index, char quote);
+void json_default_printer(jsonfmt*, jsonval*, int depth, int index, char quote);
 
 int json_parse_null_or_undefined(jsonval*, charbuf*);
 

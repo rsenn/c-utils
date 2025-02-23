@@ -19,13 +19,10 @@ io_passfd(fd_type sock, fd_type fd) {
 #endif
 
 #ifdef __OpenBSD__
-#pragma warning This is a HORRIBLE kludge around yet another thing \
-    OpenBSD broke
+#pragma warning This is a HORRIBLE kludge around yet another thing OpenBSD broke
 #pragma warning If they make it possible to do file descriptor passing with
-#pragma warning _XOPEN_SOURCE defined, \
-    please send me an email so I can remove this.
-#pragma warning _XOPEN_SOURCE needs to be defined for this to work on \
-    Solaris.
+#pragma warning _XOPEN_SOURCE defined, please send me an email so I can remove this.
+#pragma warning _XOPEN_SOURCE needs to be defined for this to work on Solaris.
 #else
 #ifndef _XOPEN_SOURCE
 #define _XOPEN_SOURCE

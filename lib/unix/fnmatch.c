@@ -52,8 +52,7 @@ fnmatch(const char* pattern, const char* string, int flags) {
           return FNM_NOMATCH;
         else if((flags & FNM_FILE_NAME) && *n == '/')
           return FNM_NOMATCH;
-        else if((flags & FNM_PERIOD) && *n == '.' &&
-                (n == string || ((flags & FNM_FILE_NAME) && n[-1] == '/')))
+        else if((flags & FNM_PERIOD) && *n == '.' && (n == string || ((flags & FNM_FILE_NAME) && n[-1] == '/')))
           return FNM_NOMATCH;
         break;
 
@@ -67,13 +66,11 @@ fnmatch(const char* pattern, const char* string, int flags) {
         break;
 
       case '*':
-        if((flags & FNM_PERIOD) && *n == '.' &&
-           (n == string || ((flags & FNM_FILE_NAME) && n[-1] == '/')))
+        if((flags & FNM_PERIOD) && *n == '.' && (n == string || ((flags & FNM_FILE_NAME) && n[-1] == '/')))
           return FNM_NOMATCH;
 
         for(c = *p++; c == '?' || c == '*'; c = *p++, ++n)
-          if(((flags & FNM_FILE_NAME) && *n == '/') ||
-             (c == '?' && *n == '\0'))
+          if(((flags & FNM_FILE_NAME) && *n == '/') || (c == '?' && *n == '\0'))
             return FNM_NOMATCH;
 
         if(c == '\0')
@@ -83,8 +80,7 @@ fnmatch(const char* pattern, const char* string, int flags) {
           char c1 = (!(flags & FNM_NOESCAPE) && c == '\\') ? *p : c;
           c1 = FOLD(c1);
           for(--p; *n != '\0'; ++n)
-            if((c == '[' || FOLD(*n) == c1) &&
-               fnmatch(p, n, flags & ~FNM_PERIOD) == 0)
+            if((c == '[' || FOLD(*n) == c1) && fnmatch(p, n, flags & ~FNM_PERIOD) == 0)
               return 0;
           return FNM_NOMATCH;
         }
@@ -96,8 +92,7 @@ fnmatch(const char* pattern, const char* string, int flags) {
         if(*n == '\0')
           return FNM_NOMATCH;
 
-        if((flags & FNM_PERIOD) && *n == '.' &&
-           (n == string || ((flags & FNM_FILE_NAME) && n[-1] == '/')))
+        if((flags & FNM_PERIOD) && *n == '.' && (n == string || ((flags & FNM_FILE_NAME) && n[-1] == '/')))
           return FNM_NOMATCH;
 
         not = (*p == '!' || *p == '^');
@@ -119,8 +114,7 @@ fnmatch(const char* pattern, const char* string, int flags) {
           c = *p++;
           c = FOLD(c);
 
-          if((flags & FNM_FILE_NAME) &&
-             c == '/') /* [/] can never match.  */
+          if((flags & FNM_FILE_NAME) && c == '/') /* [/] can never match.  */
             return FNM_NOMATCH;
 
           if(c == '-' && *p != ']') {
@@ -151,8 +145,7 @@ fnmatch(const char* pattern, const char* string, int flags) {
             return FNM_NOMATCH;
 
           c = *p++;
-          if(!(flags & FNM_NOESCAPE) &&
-             c == '\\') /* XXX 1003.2d11 is unclear if this is right.  */
+          if(!(flags & FNM_NOESCAPE) && c == '\\') /* XXX 1003.2d11 is unclear if this is right.  */
             ++p;
         }
         if(not )
@@ -170,9 +163,8 @@ fnmatch(const char* pattern, const char* string, int flags) {
   if(*n == '\0')
     return 0;
 
-  if((flags & FNM_LEADING_DIR) &&
-     *n == '/') /* The FNM_LEADING_DIR flag says that "foo*" matches
-                   "foobar/frobozz".  */
+  if((flags & FNM_LEADING_DIR) && *n == '/') /* The FNM_LEADING_DIR flag says that "foo*" matches
+                                                "foobar/frobozz".  */
     return 0;
 
   return FNM_NOMATCH;

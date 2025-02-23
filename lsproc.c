@@ -11,24 +11,14 @@
 
 static strlist pidlist;
 
-static const char* stat_fields[] = {
-    "pid",         "comm",        "state",
-    "ppid",        "pgrp",        "session",
-    "tty_nr",      "tpgid",       "flags",
-    "minflt",      "cminflt",     "majflt",
-    "cmajflt",     "utime",       "stime",
-    "cutime",      "cstime",      "priority",
-    "nice",        "num_threads", "itrealvalue",
-    "starttime",   "vsize",       "rss",
-    "rsslim",      "startcode",   "endcode",
-    "startstack",  "kstkesp",     "kstkeip",
-    "signal",      "blocked",     "sigignore",
-    "sigcatch",    "wchan",       "nswap",
-    "cnswap",      "exit_signal", "processor",
-    "rt_priority", "policy",      "delayacct_blkio_ticks",
-    "guest_time",  "cguest_time"};
-static const char* statm_fields[] = {
-    "size", "resident", "share", "text", "lib", "data", "dt"};
+static const char* stat_fields[] = {"pid",        "comm",       "state",       "ppid",      "pgrp",        "session",     "tty_nr",
+                                    "tpgid",      "flags",      "minflt",      "cminflt",   "majflt",      "cmajflt",     "utime",
+                                    "stime",      "cutime",     "cstime",      "priority",  "nice",        "num_threads", "itrealvalue",
+                                    "starttime",  "vsize",      "rss",         "rsslim",    "startcode",   "endcode",     "startstack",
+                                    "kstkesp",    "kstkeip",    "signal",      "blocked",   "sigignore",   "sigcatch",    "wchan",
+                                    "nswap",      "cnswap",     "exit_signal", "processor", "rt_priority", "policy",      "delayacct_blkio_ticks",
+                                    "guest_time", "cguest_time"};
+static const char* statm_fields[] = {"size", "resident", "share", "text", "lib", "data", "dt"};
 
 void
 usage(char* argv0) {
@@ -81,8 +71,7 @@ proc_list(strlist* pids) {
 
   while((name = dir_read(&d))) {
     type = dir_type(&d);
-    if(str_equal(name, "") || str_equal(name, ".") ||
-       str_equal(name, ".."))
+    if(str_equal(name, "") || str_equal(name, ".") || str_equal(name, ".."))
       continue;
     if(type != D_DIRECTORY || !(name[0] >= '0' && name[0] <= '9'))
       continue;
@@ -99,8 +88,7 @@ main(int argc, char* argv[]) {
   stralloc data;
   strlist stat, statm, cmdline;
   const char* pid;
-  static const struct unix_longopt opts[] = {{"help", 0, 0, 'h'},
-                                             {0, 0, 0, 0}};
+  static const struct unix_longopt opts[] = {{"help", 0, 0, 'h'}, {0, 0, 0, 0}};
 
   while((c = unix_getopt_long(argc, argv, "h", opts, &index)) != -1) {
     switch(c) {

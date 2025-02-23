@@ -171,10 +171,8 @@ ssltest_loop(fd_type s) {
   size_t iter = 0;
   stralloc line;
   stralloc_init(&line);
-  buffer_init_free(
-      &in, (buffer_op_proto*)(void*)&tls_read, s, alloc(1024), 1024);
-  buffer_init_free(
-      &out, (buffer_op_proto*)(void*)&tls_write, s, alloc(1024), 1024);
+  buffer_init_free(&in, (buffer_op_proto*)(void*)&tls_read, s, alloc(1024), 1024);
+  buffer_init_free(&out, (buffer_op_proto*)(void*)&tls_write, s, alloc(1024), 1024);
   ssl = tls_client(s);
   tls_io(s);
   for(;; iter++) {

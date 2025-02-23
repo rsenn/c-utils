@@ -18,8 +18,7 @@
 
 static int
 is_valid_variable_char(char c, int pos) {
-  if((pos && c >= '0' && c <= '9') || c == '_' || (c >= 'a' && c <= 'z') ||
-     (c >= 'A' && c <= 'Z'))
+  if((pos && c >= '0' && c <= '9') || c == '_' || (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z'))
     return 1;
   return 0;
 }

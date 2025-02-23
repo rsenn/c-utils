@@ -3,10 +3,7 @@
 #include "../str.h"
 
 size_t
-fmt_cescape2(char* dest,
-             const char* src,
-             size_t len,
-             const char* escapeme) {
+fmt_cescape2(char* dest, const char* src, size_t len, const char* escapeme) {
   register const unsigned char* s = (const unsigned char*)src;
   size_t written = 0, i;
   char c;

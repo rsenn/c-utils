@@ -157,12 +157,7 @@ nscache_droproot(const char* fatal) {
 }
 
 static int
-packetquery(char* buf,
-            unsigned int len,
-            char** q,
-            char qtype[2],
-            char qclass[2],
-            char id[2]) {
+packetquery(char* buf, unsigned int len, char** q, char qtype[2], char qclass[2], char id[2]) {
   unsigned int pos;
   char header[12];
 
@@ -221,8 +216,7 @@ udp_respond(int j) {
     response_tc(resp);
 
   response_send(resp, udp53, u[j].ip, u[j].port);
-  log_querydone(
-      &u[j].active, u[j].ip, u[j].port, udp53, u[j].id, resp->pos);
+  log_querydone(&u[j].active, u[j].ip, u[j].port, udp53, u[j].id, resp->pos);
 
   u[j].active = 0;
   --uactive;
@@ -251,8 +245,7 @@ udp_new(void) {
   x = u + j;
   taia_now(&x->start);
 
-  if((ret = socket_recv6(
-          udp53, buf, sizeof buf, x->ip, &x->port, &x->scope_id)) == -1)
+  if((ret = socket_recv6(udp53, buf, sizeof buf, x->ip, &x->port, &x->scope_id)) == -1)
     return;
   len = (size_t)ret;
   if(len >= sizeof buf)
@@ -341,8 +334,7 @@ tcp_respond(int j) {
   if(!t[j].active)
     return;
   resp = &t[j].q.response;
-  log_querydone(
-      &t[j].active, t[j].ip, t[j].port, t[j].tcp, t[j].id, resp->pos);
+  log_querydone(&t[j].active, t[j].ip, t[j].port, t[j].tcp, t[j].id, resp->pos);
   response_id(resp, t[j].id);
   t[j].len = resp->pos + 2;
   tcp_free(j);
@@ -535,8 +527,7 @@ nscache_run(void) {
           if(taia_less(&t[j].timeout, &deadline))
             deadline = t[j].timeout;
           t[j].io->fd = t[j].tcp;
-          t[j].io->events =
-              (t[j].state > 0) ? IOPAUSE_READ : IOPAUSE_WRITE;
+          t[j].io->events = (t[j].state > 0) ? IOPAUSE_READ : IOPAUSE_WRITE;
         }
       }
 

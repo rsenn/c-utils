@@ -15,8 +15,7 @@ static void
 print_attr_names(xmlnode* elm) {
   int param = !str_diff((const char*)elm->name, "Param");
   TUPLE* attr_p;
-  for(attr_p = (TUPLE*)elm->attributes; attr_p;
-      attr_p = (TUPLE*)attr_p->next) {
+  for(attr_p = (TUPLE*)elm->attributes; attr_p; attr_p = (TUPLE*)attr_p->next) {
     const char* content = (const char*)xml_content((xmlnode*)attr_p);
     int name = !str_diff((const char*)attr_p->key, "name");
     if(param) {
@@ -72,8 +71,7 @@ print_element_names(xmlnode* a_node) {
       if(!str_diff((const char*)elm->name, "Url")) {
         xmlnode* child_node = NULL;
         print_attr_names(elm);
-        for(child_node = elm->children; child_node;
-            child_node = child_node->next) {
+        for(child_node = elm->children; child_node; child_node = child_node->next) {
           { print_attr_names((xmlnode*)child_node); }
         }
       }

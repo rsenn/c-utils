@@ -70,8 +70,7 @@ const char* const mediathek_urls[] = {
     "http://verteiler6.mediathekview.de/Filmliste-akt.xz",
 };
 
-const char* mediathek_url =
-    "https://verteiler1.mediathekview.de/Filmliste-akt.xz";
+const char* mediathek_url = "https://verteiler1.mediathekview.de/Filmliste-akt.xz";
 const char* mediathek_file = 0;
 
 static unsigned long min_length;
@@ -177,11 +176,7 @@ read_mediathek_list(const char* url, buffer* b) {
 
   io_onlywantwrite(h.sock);
 
-  buffer_init(&in,
-              (buffer_op_proto*)(void*)&http_read,
-              (fd_type)(size_t)(void*)&h,
-              malloc(8192),
-              8192);
+  buffer_init(&in, (buffer_op_proto*)(void*)&http_read, (fd_type)(size_t)(void*)&h, malloc(8192), 8192);
   in.cookie = &h;
   in.deinit = &buffer_free;
   buffer_lzma(b, &in, 0);
@@ -349,8 +344,7 @@ mktime_r(struct tm* const t, time_t* ret) {
       years--;
     day -= years;
   }
-  day += t->tm_yday = __spm[t->tm_mon] + t->tm_mday - 1 +
-                      (isleap(t->tm_year + 1900) & (t->tm_mon > 1));
+  day += t->tm_yday = __spm[t->tm_mon] + t->tm_mday - 1 + (isleap(t->tm_year + 1900) & (t->tm_mon > 1));
   i = 7;
   t->tm_wday = (day + 4) % i;
   i = 24;
@@ -513,8 +507,7 @@ match_tokens(char* toks, const char* x, size_t n) {
   }
 
   if(ret && debug > 1) {
-    buffer_putm_internal(
-        console, "token list '", toks, "' matched '", NULL);
+    buffer_putm_internal(console, "token list '", toks, "' matched '", NULL);
     buffer_put(console, x, n);
     buffer_puts(console, "'.");
     buffer_putnlflush(console);
@@ -625,26 +618,13 @@ print_entry(buffer* b, const mediathek_entry_t* e) {
 
   const char* sep = ", ";
 
-  buffer_putm_internal(b,
-                       "Kanal:\t",
-                       e->channel.s ? e->channel.s
-                                    : "<null>" /*strlist_at(sl, 1)*/,
-                       sep,
-                       NULL);
-  buffer_putm_internal(b,
-                       "Thema:\t",
-                       e->topic.s ? e->topic.s
-                                  : "<null>" /*strlist_at(sl, 2)*/,
-                       sep,
-                       NULL);
-  buffer_putm_internal(
-      b, "Titel:\t", e->title.s /*strlist_at(sl, 3)*/, sep, NULL);
+  buffer_putm_internal(b, "Kanal:\t", e->channel.s ? e->channel.s : "<null>" /*strlist_at(sl, 1)*/, sep, NULL);
+  buffer_putm_internal(b, "Thema:\t", e->topic.s ? e->topic.s : "<null>" /*strlist_at(sl, 2)*/, sep, NULL);
+  buffer_putm_internal(b, "Titel:\t", e->title.s /*strlist_at(sl, 3)*/, sep, NULL);
 
-  buffer_putm_internal(
-      b, "Datum:\t", format_datetime(e->tm, dt_fmt), sep, NULL);
+  buffer_putm_internal(b, "Datum:\t", format_datetime(e->tm, dt_fmt), sep, NULL);
   buffer_putm_internal(b, "Dauer:\t", format_time(e->dr), sep, NULL);
-  buffer_putm_internal(
-      b, "Grösse:\t", format_num(e->mbytes), "MB", sep, NULL);
+  buffer_putm_internal(b, "Grösse:\t", format_num(e->mbytes), "MB", sep, NULL);
 
   /* buffer_putm_internal(b, "URL:\t",
    url , sep, NULL);
@@ -719,8 +699,7 @@ parse_mediathek_list(buffer* inbuf, buffer* outbuf) {
           break;
 
         ret += ret2;
-        ret2 = buffer_get_token(
-            inbuf, &buf2[ret], sizeof(buf2) - ret, "]", 1);
+        ret2 = buffer_get_token(inbuf, &buf2[ret], sizeof(buf2) - ret, "]", 1);
         if(ret2 > 0)
           ret += ret2;
       }
@@ -762,8 +741,7 @@ parse_mediathek_list(buffer* inbuf, buffer* outbuf) {
   }
 #endif
 
-  if((h.response && h.response->err && h.response->err != EAGAIN) ||
-     ret == -1) {
+  if((h.response && h.response->err && h.response->err != EAGAIN) || ret == -1) {
     buffer_puts(console, "Return value: ");
     buffer_putlong(console, ret);
     buffer_puts(console, " ");
@@ -779,13 +757,7 @@ parse_mediathek_list(buffer* inbuf, buffer* outbuf) {
       char status[FMT_ULONG + 1], error[1024];
       status[fmt_ulong(status, h.response->status)] = '\0';
       http_strerror(&h, ret);
-      errmsg_warn("STATUS: ",
-                  status,
-                  " error: ",
-                  error,
-                  " connected: ",
-                  h.connected ? "1" : "0",
-                  0);
+      errmsg_warn("STATUS: ", status, " error: ", error, " connected: ", h.connected ? "1" : "0", 0);
     }
   }
   if(ret == 0) {
@@ -813,22 +785,21 @@ parse_mediathek_list(buffer* inbuf, buffer* outbuf) {
  */
 void
 usage(char* errmsg_argv0) {
-  buffer_putm_internal(
-      buffer_1,
-      "Usage: ",
-      str_basename(errmsg_argv0),
-      "[OPTIONS] [KEYWORDS...]\n",
-      "\n",
-      "Options\n",
-      "  -h, --help                show this help\n",
-      "  -u, --url=URL             set URL\n",
-      "  -F                        date/time format\n",
-      "  -t HH:MM:SS               minimum length\n",
-      "  -i KEYWORD                include entries matching\n",
-      "  -x KEYWORD                exclude entries matching\n",
-      "  -o FILE                   output file\n",
-      "\n",
-      NULL);
+  buffer_putm_internal(buffer_1,
+                       "Usage: ",
+                       str_basename(errmsg_argv0),
+                       "[OPTIONS] [KEYWORDS...]\n",
+                       "\n",
+                       "Options\n",
+                       "  -h, --help                show this help\n",
+                       "  -u, --url=URL             set URL\n",
+                       "  -F                        date/time format\n",
+                       "  -t HH:MM:SS               minimum length\n",
+                       "  -i KEYWORD                include entries matching\n",
+                       "  -x KEYWORD                exclude entries matching\n",
+                       "  -o FILE                   output file\n",
+                       "\n",
+                       NULL);
   buffer_putnlflush(buffer_1);
 }
 

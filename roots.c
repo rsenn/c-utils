@@ -105,8 +105,7 @@ roots_init2(dir_t* dir, bool ip6) {
       for(i = 0; i < text.len; ++i)
         if(text.s[i] == '\n') {
           if(serverslen <= sizeof(servers) - iplen)
-            if((ip6 ? scan_ip6 : scan_ip4)(text.s + j,
-                                           servers + serverslen))
+            if((ip6 ? scan_ip6 : scan_ip4)(text.s + j, servers + serverslen))
               serverslen += iplen;
           j = i + 1;
         }

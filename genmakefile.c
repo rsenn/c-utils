@@ -50,14 +50,9 @@ void debug_sa(const char* name, stralloc* sa);
 void debug_sl(const char* name, const strlist* l, const char* sep);
 void debug_str(const char* name, const char* s);
 
-const char* const build_types[] = {"Release",
-                                   "RelWithDebInfo",
-                                   "MinSizeRel",
-                                   "Debug"};
+const char* const build_types[] = {"Release", "RelWithDebInfo", "MinSizeRel", "Debug"};
 
-static const char *make_begin_inline, *make_sep_inline, *make_end_inline,
-    *comment = "#", *cross_compile = "", *builddir_varname = "BUILDDIR",
-    *quote_args = "";
+static const char *make_begin_inline, *make_sep_inline, *make_end_inline, *comment = "#", *cross_compile = "", *builddir_varname = "BUILDDIR", *quote_args = "";
 static char pathsep_make = DEFAULT_PATHSEP, pathsep_args = DEFAULT_PATHSEP;
 static bool batch, shell, ninja, batchmode, cygming;
 static strlist system_path;
@@ -66,16 +61,16 @@ strarray dirstack = {0};
 int cmd_objs = 0, cmd_libs = 0, cmd_bins = 0, cmd_module = 0;
 union commands commands;
 strlist vpath = {0}, build_as_lib = {0}, link_dirs = {0};
-set_t link_libraries = {0, 0, 0, byte_hash},
-      build_directories = {0, 0, 0, byte_hash};
+set_t link_libraries = {0, 0, 0, byte_hash}, build_directories = {0, 0, 0, byte_hash};
 bool inst_bins = false, inst_libs = false;
-const char *libpfx = DEFAULT_LIBPFX, *newline = "\n", *outfile = NULL,
-           *infile = NULL, *project_name = NULL;
-exts_t exts = {DEFAULT_OBJEXT,
-               DEFAULT_LIBEXT,
-               DEFAULT_DSOEXT,
-               DEFAULT_EXEEXT,
-               DEFAULT_PPSEXT};
+const char *libpfx = DEFAULT_LIBPFX, *newline = "\n", *outfile = NULL, *infile = NULL, *project_name = NULL;
+exts_t exts = {
+    .obj = DEFAULT_OBJEXT,
+    .lib = DEFAULT_LIBEXT,
+    .slib = DEFAULT_DSOEXT,
+    .bin = DEFAULT_EXEEXT,
+    .pps = DEFAULT_PPSEXT,
+};
 dirs_t dirs;
 tools_t tools;
 config_t cfg = {{0, 0}, {0, 0}, {0, 0, 0}, 1, LANG_CXX};
@@ -112,7 +107,9 @@ dump_map_keys(const MAP_T* m) {
 
 static int
 mkdir_sa(const stralloc* dir, int mode) {
+  int ret;
   stralloc sa;
+
   stralloc_init(&sa);
   stralloc_copy(&sa, dir);
 
@@ -120,7 +117,9 @@ mkdir_sa(const stralloc* dir, int mode) {
     sa.len -= 1;
 
   stralloc_nul(&sa);
-  return _mkdir(sa.s, mode);
+  ret = _mkdir(sa.s, mode);
+  stralloc_free(&sa);
+  return ret;
 }
 
 static int
@@ -342,14 +341,12 @@ deps_for_libs(void) {
     sourcedir* srcdir = *(sourcedir**)MAP_ITER_VALUE(t);
     target* lib;
     stralloc_zero(&sa);
-    path_prefix_s(&dirs.work.sa,
-                  str_basename(MAP_ITER_KEY(t)),
-                  &sa,
-                  pathsep_make);
+    path_prefix_s(&dirs.work.sa, str_basename(MAP_ITER_KEY(t)), &sa, pathsep_make);
     stralloc_cats(&sa, exts.lib);
 
     if((lib = rule_find_sa(&sa))) {
       strlist libs;
+
       strlist_init(&libs, ' ');
       includes_to_libs(&srcdir->includes, &libs);
       strlist_removes(&libs, lib->name);
@@ -357,8 +354,7 @@ deps_for_libs(void) {
       deps_indirect(&indir, &libs);
 
 #ifdef DEBUG_OUTPUT_
-      buffer_putm_internal(
-          buffer_2, "Deps for library '", lib->name, "': ", NULL);
+      buffer_putm_internal(buffer_2, "Deps for library '", lib->name, "': ", NULL);
       buffer_putsa(buffer_2, &libs.sa);
       buffer_putnlflush(buffer_2);
 #endif
@@ -382,8 +378,7 @@ deps_for_libs(void) {
  * @param depth
  */
 static void
-print_rule_deps_r(
-    buffer* b, target* t, set_t* deplist, strlist* hierlist, int depth) {
+print_rule_deps_r(buffer* b, target* t, set_t* deplist, strlist* hierlist, int depth) {
   target** ptr;
   size_t l = hierlist->sa.len;
 
@@ -523,8 +518,7 @@ set_chip(const char* s) {
   if(s[(pos = str_find(s, "16f"))] || s[(pos = str_find(s, "16F"))]) {
     cfg.mach.arch = PIC;
     cfg.mach.bits = _14;
-  } else if(s[(pos = str_find(s, "18f"))] ||
-            s[(pos = str_find(s, "18F"))]) {
+  } else if(s[(pos = str_find(s, "18f"))] || s[(pos = str_find(s, "18F"))]) {
     cfg.mach.arch = PIC;
     cfg.mach.bits = _16;
   }
@@ -578,14 +572,11 @@ set_make_type() {
   newline = "\n";
 #endif
 
-  stralloc_copys(&commands.mkdir,
-                 cfg.sys.os == OS_WIN ? "IF NOT EXIST $@ MKDIR $@"
-                                      : "mkdir -p $@");
+  stralloc_copys(&commands.mkdir, cfg.sys.os == OS_WIN ? "IF NOT EXIST $@ MKDIR $@" : "mkdir -p $@");
   if(str_start(tools.make, "batch") || str_start(tools.make, "cmd")) {
     pathsep_args = '\\';
     pathsep_make = '\\';
-  } else if(str_start(tools.make, "bmake") ||
-            str_start(tools.make, "borland")) {
+  } else if(str_start(tools.make, "bmake") || str_start(tools.make, "borland")) {
     /* Borland LANG_C++ Builder Make */
     pathsep_make = '\\';
     make_begin_inline = "@&&|\r\n ";
@@ -603,14 +594,12 @@ set_make_type() {
     stralloc_copys(&commands.delete, "DEL /F");
     newline = "\r\n";
     inst = "COPY /Y";
-  } else if(str_start(tools.make, "gmake") ||
-            str_start(tools.make, "gnu")) {
+  } else if(str_start(tools.make, "gmake") || str_start(tools.make, "gnu")) {
     newline = "\n";
     pathsep_make = '/';
     stralloc_copys(&commands.mkdir, "test -d $@ || mkdir -p $@");
     stralloc_copys(&commands.delete, "rm -f");
-  } else if(str_start(tools.make, "omake") ||
-            str_start(tools.make, "orange")) {
+  } else if(str_start(tools.make, "omake") || str_start(tools.make, "orange")) {
     pathsep_make = '\\';
 
     if(inst_bins || inst_libs)
@@ -646,36 +635,25 @@ static int
 set_compiler_type(const char* compiler) {
   var_set("CC", "cc");
   var_set("CXX", "c++");
-  stralloc_copys(
-      &commands.compile,
-      "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) $(DEFS) -c -o $@ $<");
+  stralloc_copys(&commands.compile, "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) $(DEFS) -c -o $@ $<");
   set_command(&commands.lib, "$(LIB) /out:$@", "$^");
-  set_command(
-      &commands.link,
-      "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(LDFLAGS) $(EXTRA_LDFLAGS) -o $@",
-      "$^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
-  set_command(&commands.preprocess,
-              "$(CPP) $(CPPFLAGS) $(DEFS) -o$@",
-              "$<");
+  set_command(&commands.link, "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(LDFLAGS) $(EXTRA_LDFLAGS) -o $@", "$^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
+  set_command(&commands.preprocess, "$(CPP) $(CPPFLAGS) $(DEFS) -o$@", "$<");
 
   /*
    * Visual C++ compiler
    */
-  if(str_start(compiler, "msvc") || str_start(compiler, "icl") ||
-     str_start(compiler, "vs20") || str_start(compiler, "vc") ||
-     compiler[str_find(compiler, "-cl")]) {
+  if(str_start(compiler, "msvc") || str_start(compiler, "icl") || str_start(compiler, "vs20") || str_start(compiler, "vc") || compiler[str_find(compiler, "-cl")]) {
     exts.obj = ".obj";
     exts.bin = ".exe";
     exts.lib = ".lib";
     var_set("CC", "cl -nologo");
     var_set("LIB", "lib");
     var_set("LINK", "link");
-    var_push("CFLAGS",
-             cfg.build_type == BUILD_TYPE_DEBUG ? "-MTd" : "-MT");
+    var_push("CFLAGS", cfg.build_type == BUILD_TYPE_DEBUG ? "-MTd" : "-MT");
     var_push("CPPFLAGS", "-Dinline=__inline");
 
-    if(cfg.build_type == BUILD_TYPE_DEBUG ||
-       cfg.build_type == BUILD_TYPE_RELWITHDEBINFO)
+    if(cfg.build_type == BUILD_TYPE_DEBUG || cfg.build_type == BUILD_TYPE_RELWITHDEBINFO)
       var_push("CFLAGS", "-Zi");
     if(cfg.build_type == BUILD_TYPE_MINSIZEREL)
       var_push("CFLAGS", "-Os");
@@ -704,8 +682,7 @@ set_compiler_type(const char* compiler) {
       var_push("CFLAGS", "-Qunroll4");
       var_push("CFLAGS", "-Qauto-ilp32");
       if(cfg.mach.bits == _64)
-        var_push("LDFLAGS",
-                 "-libpath:\"$(ROOT)\\compiler\\lib\\intel64\"");
+        var_push("LDFLAGS", "-libpath:\"$(ROOT)\\compiler\\lib\\intel64\"");
       else
         var_push("LDFLAGS", "-libpath:\"$(ROOT)\\compiler\\lib\"");
       // stralloc_copys(&commands.compile, "$(CC) $(CFLAGS) $(EXTRA_CFLAGS)
@@ -717,12 +694,10 @@ set_compiler_type(const char* compiler) {
     var_push("LDFLAGS",
              "-libpath:\"$(WINDOWSSDKDIR)lib\\$(WINDOWSSDKLIBVERSION)um\\$"
              "(MACHINE)\"");
-    var_push("LDFLAGS",
-             "-libpath:\"$(VCTOOLSINSTALLDIR)lib\\$(MACHINE)\"");
+    var_push("LDFLAGS", "-libpath:\"$(VCTOOLSINSTALLDIR)lib\\$(MACHINE)\"");
     var_push("LDFLAGS", "-libpath:\"$(WINDOWSSDKDIR)lib$(X64)\"");
     var_push("LDFLAGS", "-libpath:\"$(VCINSTALLDIR)\\lib$(AMD64)\"");
-    var_push("LDFLAGS",
-             "-libpath:\"$(VCINSTALLDIR)\\PlatformSDK\\lib$(AMD64)\"");
+    var_push("LDFLAGS", "-libpath:\"$(VCINSTALLDIR)\\PlatformSDK\\lib$(AMD64)\"");
     var_push("LDFLAGS", "-incremental -manifest");
 
     if(cfg.build_type == BUILD_TYPE_DEBUG)
@@ -747,13 +722,8 @@ set_compiler_type(const char* compiler) {
       var_set("X64", "");
     }
 
-    set_command(
-        &commands.link,
-        "$(LINK) -out:$@ $(LDFLAGS) $(EXTRA_LDFLAGS) -pdb:\"$@.pdb\"",
-        "$^ $(LIBS) $(EXTRA_LIBS)");
-  } else if(str_start(compiler, "gnu") || str_start(compiler, "gcc") ||
-            cygming || str_start(compiler, "clang") ||
-            str_start(compiler, "llvm") || str_start(compiler, "zapcc")) {
+    set_command(&commands.link, "$(LINK) -out:$@ $(LDFLAGS) $(EXTRA_LDFLAGS) -pdb:\"$@.pdb\"", "$^ $(LIBS) $(EXTRA_LIBS)");
+  } else if(str_start(compiler, "gnu") || str_start(compiler, "gcc") || cygming || str_start(compiler, "clang") || str_start(compiler, "llvm") || str_start(compiler, "zapcc")) {
     exts.lib = ".a";
     exts.obj = ".o";
 
@@ -773,24 +743,20 @@ set_compiler_type(const char* compiler) {
     if(str_end(compiler, "64"))
       var_push("CFLAGS", "-m64");
 
-    if(cfg.build_type == BUILD_TYPE_DEBUG ||
-       cfg.build_type == BUILD_TYPE_RELWITHDEBINFO) {
+    if(cfg.build_type == BUILD_TYPE_DEBUG || cfg.build_type == BUILD_TYPE_RELWITHDEBINFO) {
       var_push("CFLAGS", "-g");
       var_push("LDFLAGS", "-g");
     }
     /*
      * GNU GCC compatible compilers
      */
-    if(str_start(compiler, "gnu") || str_start(compiler, "gcc") ||
-       cygming) {
+    if(str_start(compiler, "gnu") || str_start(compiler, "gcc") || cygming) {
       var_set("CC", "gcc");
       var_set("CXX", "g++");
       var_set("AR", str_start(compiler, "gcc") ? "gcc-ar" : "ar");
-      if(cfg.build_type == BUILD_TYPE_DEBUG ||
-         cfg.build_type == BUILD_TYPE_RELWITHDEBINFO)
+      if(cfg.build_type == BUILD_TYPE_DEBUG || cfg.build_type == BUILD_TYPE_RELWITHDEBINFO)
         var_push("CFLAGS", "-ggdb");
-    } else if(str_start(compiler, "clang") ||
-              str_start(compiler, "llvm")) {
+    } else if(str_start(compiler, "clang") || str_start(compiler, "llvm")) {
       pathsep_args = '/';
       var_set("CC", "clang");
       var_set("CXX", "clang++");
@@ -814,8 +780,7 @@ set_compiler_type(const char* compiler) {
     // var_push("DEFS", "-DWIN32_LEAN_AND_MEAN");
     if(cfg.build_type == BUILD_TYPE_MINSIZEREL)
       var_set("CFLAGS", "-O1");
-    else if(cfg.build_type == BUILD_TYPE_RELEASE ||
-            cfg.build_type == BUILD_TYPE_RELWITHDEBINFO)
+    else if(cfg.build_type == BUILD_TYPE_RELEASE || cfg.build_type == BUILD_TYPE_RELWITHDEBINFO)
       var_set("CFLAGS", "-O -O2");
     // var_push("CFLAGS", "-q");
     var_push("CFLAGS", "-tWC -tWM");
@@ -835,27 +800,22 @@ set_compiler_type(const char* compiler) {
       /* C99 standard */
       var_push("CFLAGS", "-An");
 
-      if(cfg.build_type == BUILD_TYPE_DEBUG ||
-         cfg.build_type == BUILD_TYPE_RELWITHDEBINFO)
+      if(cfg.build_type == BUILD_TYPE_DEBUG || cfg.build_type == BUILD_TYPE_RELWITHDEBINFO)
         var_push("CFLAGS", "-v");
       /*if(cfg.build_type !=
          BUILD_TYPE_DEBUG)
           var_push("CFLAGS", "-Or");*/
-      set_command(&commands.link,
-                  "$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) -o $@ ",
-                  "$^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
+      set_command(&commands.link, "$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) -o $@ ", "$^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
       /* Borland C++ Builder 5.5 */
     } else {
       var_set("CC", "bcc32");
       var_set("CXX", "bcc32");
       var_push("CFLAGS", "-ff -fp");
 
-      if(cfg.build_type == BUILD_TYPE_DEBUG ||
-         cfg.build_type == BUILD_TYPE_RELWITHDEBINFO)
+      if(cfg.build_type == BUILD_TYPE_DEBUG || cfg.build_type == BUILD_TYPE_RELWITHDEBINFO)
         var_push("CFLAGS", "-y");
 
-      if(cfg.build_type == BUILD_TYPE_DEBUG ||
-         cfg.build_type == BUILD_TYPE_RELWITHDEBINFO) {
+      if(cfg.build_type == BUILD_TYPE_DEBUG || cfg.build_type == BUILD_TYPE_RELWITHDEBINFO) {
         var_push("CFLAGS", "-v");
         var_push("LDFLAGS", "-v");
       }
@@ -868,9 +828,7 @@ set_compiler_type(const char* compiler) {
       stralloc_copys(&commands.compile,
                      "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) $(DEFS) "
                      "-c -o$@ $<");
-      set_command(&commands.link,
-                  "$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) -e$@",
-                  "$^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
+      set_command(&commands.link, "$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) -e$@", "$^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
     }
 
     var_set("LINK", "ilink32");
@@ -907,10 +865,9 @@ set_compiler_type(const char* compiler) {
       var_push("STDC_LIBS", "libc.lib");
     }
 
-    stralloc_copys(
-        &commands.link,
-        "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(LDFLAGS) $(EXTRA_LDFLAGS) -o "
-        "$@ $^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
+    stralloc_copys(&commands.link,
+                   "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(LDFLAGS) $(EXTRA_LDFLAGS) -o "
+                   "$@ $^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
     stralloc_copys(&commands.link,
                    "$(LINK) $(LDFLAGS) $(EXTRA_LDFLAGS) -o $@ $^ $(LIBS) "
                    "$(EXTRA_LIBS) $(STDC_LIBS)");
@@ -924,8 +881,7 @@ set_compiler_type(const char* compiler) {
     var_set("CC", "tcc");
     var_set("AR", "$(CC) -ar");
 
-    if(cfg.build_type == BUILD_TYPE_DEBUG ||
-       cfg.build_type == BUILD_TYPE_RELWITHDEBINFO)
+    if(cfg.build_type == BUILD_TYPE_DEBUG || cfg.build_type == BUILD_TYPE_RELWITHDEBINFO)
       var_push("CFLAGS", "-g");
     // var_push("LDFLAGS",  "-Wl,-subsystem=console");
 
@@ -934,9 +890,7 @@ set_compiler_type(const char* compiler) {
       var_push("CFLAGS", "-Wall");
     var_push("CPPFLAGS", "-D__TCC__=1");
     set_command(&commands.lib, "$(AR) r $@", "$^");
-    set_command(&commands.link,
-                "$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) -o $@",
-                "$^ $(LIBS) $(EXTRA_LIBS)");
+    set_command(&commands.link, "$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) -o $@", "$^ $(LIBS) $(EXTRA_LIBS)");
   } else if(str_start(compiler, "occ") || str_start(compiler, "orange")) {
     var_set("CC", "occ");
     var_set("LIB", "olib");
@@ -947,8 +901,7 @@ set_compiler_type(const char* compiler) {
     // var_push("LDFLAGS", "/Wcm");
     var_push("CFLAGS", "-C+? +1 -v -E-36 -E-39");
 
-    if(cfg.build_type == BUILD_TYPE_DEBUG ||
-       cfg.build_type == BUILD_TYPE_RELWITHDEBINFO) {
+    if(cfg.build_type == BUILD_TYPE_DEBUG || cfg.build_type == BUILD_TYPE_RELWITHDEBINFO) {
       var_push("CFLAGS", "+v");
       var_push("LDFLAGS", "-v -c+");
     }
@@ -965,22 +918,18 @@ set_compiler_type(const char* compiler) {
                    "$(CC) /! /c $(CFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) "
                    "$(DEFS) -o$@ $<");
     set_command(&commands.lib, "$(LIB) /! $@", "$^");
-    set_command(&commands.link,
-                "$(LINK) -c /! $(LDFLAGS) $(EXTRA_LDFLAGS) -o$@",
-                "$^ c0xpe.o $(LIBS) $(DEFAULT_LIBS)");
+    set_command(&commands.link, "$(LINK) -c /! $(LDFLAGS) $(EXTRA_LDFLAGS) -o$@", "$^ c0xpe.o $(LIBS) $(DEFAULT_LIBS)");
   } else if(str_start(compiler, "8cc")) {
     exts.lib = ".a";
     exts.obj = ".o";
     var_set("CC", "8cc");
-  } else if(str_start(compiler, "dmc") ||
-            str_start(compiler, "digitalmars")) {
+  } else if(str_start(compiler, "dmc") || str_start(compiler, "digitalmars")) {
     // pathsep_args = '\\';
     var_set("CC", "dmc");
     var_set("LIB", "lib");
     var_set("CFLAGS", "");
 
-    if(cfg.build_type == BUILD_TYPE_DEBUG ||
-       cfg.build_type == BUILD_TYPE_RELWITHDEBINFO) {
+    if(cfg.build_type == BUILD_TYPE_DEBUG || cfg.build_type == BUILD_TYPE_RELWITHDEBINFO) {
       var_push("CFLAGS", "-g");
       var_push("LDFLAGS", "-g");
     }
@@ -995,13 +944,8 @@ set_compiler_type(const char* compiler) {
     }
     // set_command(&commands.lib, "$(LIB) -c $@", "$^");
     set_command(&commands.lib, "$(LIB) -c $@", "$^");
-    stralloc_copys(
-        &commands.compile,
-        "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) $(DEFS) -c -o$@ $<");
-    set_command(
-        &commands.link,
-        "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(LDFLAGS) $(EXTRA_LDFLAGS) -o$@",
-        "$^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
+    stralloc_copys(&commands.compile, "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) $(DEFS) -c -o$@ $<");
+    set_command(&commands.link, "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(LDFLAGS) $(EXTRA_LDFLAGS) -o$@", "$^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
   } else if(str_start(compiler, "pelles") || str_start(compiler, "po")) {
     var_set("CC", "cc");
     var_set("LINK", "polink");
@@ -1043,15 +987,12 @@ set_compiler_type(const char* compiler) {
        BUILD_TYPE_MINSIZEREL)
           var_push("CFLAGS", "-Os");
         else*/
-    if(cfg.build_type == BUILD_TYPE_DEBUG ||
-       cfg.build_type == BUILD_TYPE_RELWITHDEBINFO) {
+    if(cfg.build_type == BUILD_TYPE_DEBUG || cfg.build_type == BUILD_TYPE_RELWITHDEBINFO) {
       var_push("CFLAGS", "-Zi");
       var_push("LDFLAGS", "-DEBUG");
     }
 
-    stralloc_copys(
-        &commands.compile,
-        "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) $(DEFS) -c $< -Fo$@");
+    stralloc_copys(&commands.compile, "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) $(DEFS) -c $< -Fo$@");
     stralloc_copys(&commands.link,
                    "$(CC) $^ -Fe $@ $(LDFLAGS) $(EXTRA_LDFLAGS) $(LIBS) "
                    "$(EXTRA_LIBS) $(STDC_LIBS)");
@@ -1069,8 +1010,7 @@ set_compiler_type(const char* compiler) {
     exts.src = ".asm";
     exts.inc = ".inc";
 
-    if(cfg.build_type == BUILD_TYPE_DEBUG ||
-       cfg.build_type == BUILD_TYPE_RELWITHDEBINFO) {
+    if(cfg.build_type == BUILD_TYPE_DEBUG || cfg.build_type == BUILD_TYPE_RELWITHDEBINFO) {
       var_push("CFLAGS", "-g");
       var_push("LDFLAGS", "-g");
     }
@@ -1095,8 +1035,7 @@ set_compiler_type(const char* compiler) {
     } else if(cfg.build_type != BUILD_TYPE_DEBUG) {
     }
 
-    if(cfg.build_type == BUILD_TYPE_DEBUG ||
-       cfg.build_type == BUILD_TYPE_RELWITHDEBINFO) {
+    if(cfg.build_type == BUILD_TYPE_DEBUG || cfg.build_type == BUILD_TYPE_RELWITHDEBINFO) {
       var_push("CFLAGS", "-d");
     }
     var_push("CFLAGS", "-p$(CHIP)");
@@ -1109,9 +1048,7 @@ set_compiler_type(const char* compiler) {
           var_push("LIBS", "-llibm.lib");
         }*/
     set_command(&commands.lib, "$(LIB) rcs $@", "$^");
-    stralloc_copys(
-        &commands.compile,
-        "$(AS) $(CFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) $(DEFS) -c $< -o $@");
+    stralloc_copys(&commands.compile, "$(AS) $(CFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) $(DEFS) -c $< -o $@");
     stralloc_copys(&commands.link,
                    "$(LINK) $(LDFLAGS) $(EXTRA_LDFLAGS) -o $@ $^ $(LIBS) "
                    "$(EXTRA_LIBS) $(STDC_LIBS)");
@@ -1169,8 +1106,7 @@ set_compiler_type(const char* compiler) {
     else if(cfg.build_type != BUILD_TYPE_DEBUG)
       var_push("CFLAGS", "--opt-code-speed");
 
-    if(cfg.build_type == BUILD_TYPE_DEBUG ||
-       cfg.build_type == BUILD_TYPE_RELWITHDEBINFO) {
+    if(cfg.build_type == BUILD_TYPE_DEBUG || cfg.build_type == BUILD_TYPE_RELWITHDEBINFO) {
       var_push("CFLAGS", "--debug");
       // var_push("LDFLAGS", "--debug");
     }
@@ -1185,13 +1121,10 @@ set_compiler_type(const char* compiler) {
       var_push("LIBS", "-llibm.lib");
 
     set_command(&commands.lib, "$(LIB) rcs $@", "$^");
-    stralloc_copys(
-        &commands.compile,
-        "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) $(DEFS) -c $< -o $@");
-    stralloc_copys(
-        &commands.link,
-        "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(LDFLAGS) $(EXTRA_LDFLAGS) -o "
-        "$@ $^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
+    stralloc_copys(&commands.compile, "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) $(DEFS) -c $< -o $@");
+    stralloc_copys(&commands.link,
+                   "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(LDFLAGS) $(EXTRA_LDFLAGS) -o "
+                   "$@ $^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
   } else if(str_start(compiler, "htc")) {
     var_unset("CXX");
     var_set("LIB", "libr");
@@ -1228,8 +1161,7 @@ set_compiler_type(const char* compiler) {
     else
       var_push("CFLAGS", "--opt=all");
 
-    if(cfg.build_type == BUILD_TYPE_DEBUG ||
-       cfg.build_type == BUILD_TYPE_RELWITHDEBINFO) {
+    if(cfg.build_type == BUILD_TYPE_DEBUG || cfg.build_type == BUILD_TYPE_RELWITHDEBINFO) {
       var_push("CFLAGS", "-g");
       var_push("CFLAGS", "--debugger=pickit3");
     }
@@ -1250,10 +1182,9 @@ set_compiler_type(const char* compiler) {
     stralloc_copys(&commands.compile,
                    "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) $(DEFS) "
                    "--pass1 -c $< -o$@");
-    stralloc_copys(
-        &commands.link,
-        "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(LDFLAGS) $(EXTRA_LDFLAGS) -o$@ "
-        "$^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
+    stralloc_copys(&commands.link,
+                   "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(LDFLAGS) $(EXTRA_LDFLAGS) -o$@ "
+                   "$^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
   } else if(str_start(compiler, "xc8") || str_start(compiler, "picc")) {
     // no_libs = 1;
     var_unset("CXX");
@@ -1277,14 +1208,11 @@ set_compiler_type(const char* compiler) {
     var_push("CFLAGS", "--double=32");
 
     if(cfg.build_type == BUILD_TYPE_MINSIZEREL)
-      var_push("CFLAGS",
-               "--opt=default,+asm,-asmfile,-speed,+space,+debug,3");
+      var_push("CFLAGS", "--opt=default,+asm,-asmfile,-speed,+space,+debug,3");
     else if(cfg.build_type != BUILD_TYPE_DEBUG)
-      var_push("CFLAGS",
-               "--opt=default,+asm,+asmfile,+speed,-space,-debug,9");
+      var_push("CFLAGS", "--opt=default,+asm,+asmfile,+speed,-space,-debug,9");
     else {
-      var_push("CFLAGS",
-               "--opt=default,+asm,+asmfile,-speed,-space,+debug");
+      var_push("CFLAGS", "--opt=default,+asm,+asmfile,-speed,-space,+debug");
       var_push("CFLAGS", "-g");
       var_push("CFLAGS", "--debugger=pickit3");
     }
@@ -1307,21 +1235,18 @@ set_compiler_type(const char* compiler) {
     %s\""); var_push("CFLAGS",
     "--warnformat=\"%f:%l:%c warning
     [%n]: %s\"");*/
-    stralloc_copys(&commands.preprocess,
-                   "$(CPP) $(CPPFLAGS) $(DEFS) $< -o$@");
+    stralloc_copys(&commands.preprocess, "$(CPP) $(CPPFLAGS) $(DEFS) $< -o$@");
     stralloc_copys(&commands.compile,
                    "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(EXTRA_CFLAGS) "
                    "$(CPPFLAGS) $(DEFS) --pass1 -c $< -o$@");
-    stralloc_copys(
-        &commands.link,
-        "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(LDFLAGS) $(EXTRA_LDFLAGS) -o$@ "
-        "$^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
-    stralloc_copys(
-        &commands.lib,
-        "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(LDFLAGS) $(EXTRA_LDFLAGS) "
-        "--OUTPUT=lpp --memorysummary -G -m$@.map -P --asmlist "
-        "--output=default,-inhx032 --output=-mcof,+elf:multilocs -o$@.elf "
-        "$^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
+    stralloc_copys(&commands.link,
+                   "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(LDFLAGS) $(EXTRA_LDFLAGS) -o$@ "
+                   "$^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
+    stralloc_copys(&commands.lib,
+                   "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(LDFLAGS) $(EXTRA_LDFLAGS) "
+                   "--OUTPUT=lpp --memorysummary -G -m$@.map -P --asmlist "
+                   "--output=default,-inhx032 --output=-mcof,+elf:multilocs -o$@.elf "
+                   "$^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
   } else {
     return 0;
   }
@@ -1330,19 +1255,22 @@ set_compiler_type(const char* compiler) {
     var_push("DEFS", "-D_DEBUG=1");
   } else {
     var_push("DEFS", "-DNDEBUG=1");
+
     if(str_equal(exts.src, ".c"))
-      var_push("CFLAGS",
-               cfg.build_type == BUILD_TYPE_MINSIZEREL ? "-O1" : "-O2");
+      var_push("CFLAGS", cfg.build_type == BUILD_TYPE_MINSIZEREL ? "-O1" : "-O2");
   }
 
   if(cfg.mach.arch == PIC) {
     stralloc chipdef;
+
     stralloc_init(&chipdef);
     stralloc_cat(&chipdef, &cfg.chip);
     stralloc_lower(&chipdef);
     stralloc_cats(&chipdef, "=1");
     stralloc_inserts(&chipdef, "-D__", 0);
+
     var_push_sa("CPPFLAGS", &chipdef);
+    stralloc_free(&chipdef);
   }
 
   if(cfg.sys.os == OS_WIN) {
@@ -1358,22 +1286,13 @@ set_compiler_type(const char* compiler) {
     if(!ninja)
       pathsep_args = '/';
     var_set("prefix", "/");
-    var_push("prefix",
-             str_start(tools.toolchain, "mingw") ? tools.toolchain
-                                                 : "usr");
+    var_push("prefix", str_start(tools.toolchain, "mingw") ? tools.toolchain : "usr");
 
     if(cygming && 0) {
-      var_t* cross =
-          var_set("CROSS_COMPILE",
-                  str_end(tools.toolchain, "64") ? "x86_64" : "i686");
+      var_t* cross = var_set("CROSS_COMPILE", str_end(tools.toolchain, "64") ? "x86_64" : "i686");
       // cross->sep = '-';
-      stralloc_cats(&cross->value.sa,
-                    str_start(tools.toolchain, "mingw") ? "-w64-"
-                                                        : "-pc-");
-      stralloc_cats(&cross->value.sa,
-                    str_start(tools.toolchain, "mingw")  ? "mingw32"
-                    : str_start(tools.toolchain, "msys") ? "msys"
-                                                         : "cygwin");
+      stralloc_cats(&cross->value.sa, str_start(tools.toolchain, "mingw") ? "-w64-" : "-pc-");
+      stralloc_cats(&cross->value.sa, str_start(tools.toolchain, "mingw") ? "mingw32" : str_start(tools.toolchain, "msys") ? "msys" : "cygwin");
       stralloc_catc(&cross->value.sa, '-');
     }
   }
@@ -1393,83 +1312,82 @@ set_compiler_type(const char* compiler) {
  */
 static void
 usage(char* errmsg_argv0) {
-  buffer_putm_internal(
-      buffer_1,
-      "Usage: ",
-      str_basename(errmsg_argv0),
-      " [sources...]\n"
-      "\n"
-      "Options\n"
-      "  -h, --help                show this help\n"
-      "\n"
-      "  -o, --output FILE         write to file\n"
-      "  -f, --input-file FILE     read from input file\n"
-      "\n"
-      "  -T, --objext EXT          object file extension\n"
-      "  -B, --exeext EXT          binary file extension\n"
-      "  -X, --libext EXT          library file extension\n"
-      "\n"
-      "      --create-libs         create rules for libraries\n"
-      "      --create-objs         create rules for objects\n"
-      "      --create-bins         create rules for programs\n"
-      "      --create-module       create rules for loadable module\n"
-      "  -i, --install             create installation rules\n"
-      "\n"
-      //"  -R, --objdir   DIR        object directory\n"
-      "  -O, --outdir   DIR        output directory\n"
-      "  -d, --builddir DIR        build directory\n"
-      "  -a, --arch                set architecture\n"
-      "  -s, --system OS           set operating system\n"
-      "  -c, --cross TARGET        set cross compiler\n"
-      "\n"
-      "  -D, --define NAME[=VALUE] add a preprocessor definition\n"
-      "  -I, --include-path DIR    add an include directory\n"
-      "  -L, --library-path DIR    add a library directory\n"
-      "  -l, --link LIB            link a library\n"
-      "\n"
-      "  -t, --compiler-type TYPE  compiler type, one of:\n"
-      "\n"
-      "  -S, --build-as-lib TARGET build target as library\n"
-      "\n"
-      "     gcc         GNU make\n"
-      "     bcc55       Borland C++ Builder 5.5\n"
-      "     bcc         Borland C++ Builder >= 6.0\n"
-      "     lcc         lcc\n"
-      "     tcc         TinyCC\n"
-      "     msvc        Visual C++\n"
-      "     icl         Intel C++\n"
-      "     clang       LLVM\n"
-      "     occ         OrangeC\n"
-      "     dmc         Digital Mars C++\n"
-      "     pocc        Pelles-C\n"
-      "     zapcc[-cl]  ZapCC\n"
-      "     zapcc[-cl]  ZapCC\n"
-      "     htc         Hi-Tech C for PIC or PIC18\n"
-      "     xc8         Microchip C Compiler for 8-bit PIC\n"
-      "     sdcc        Small Device C Compiler\n"
-      "\n"
-      "  -m, --make-type TYPE      make program type, one of:\n"
-      "     nmake       Microsoft NMake\n"
-      "     borland     Borland Make\n"
-      "     gmake       GNU Make\n"
-      "     omake       OrangeCC Make\n"
-      "     pomake      Pelles-C Make\n"
-      "     make        Other make\n"
-      "     batch       Windows batch (.bat .cmd)\n"
-      "     ninja       Ninja build\n"
-      "     mplab       MPLAB project (.mcp)\n"
-      "     mplabx      MPLAB X project (NetBeans)\n"
-      "     cmake       KitWare CMake\n"
-      "\n"
-      "  Specify build type:\n\n"
-      "    --debug            with debugging information, no "
-      "optimization\n"
-      "    --relwithdebinfo   with debugging information, optimize for "
-      "speed\n"
-      "    --release          optimize for speed\n"
-      "    --minsizerel       optimize for size\n"
-      "\n",
-      NULL);
+  buffer_putm_internal(buffer_1,
+                       "Usage: ",
+                       str_basename(errmsg_argv0),
+                       " [sources...]\n"
+                       "\n"
+                       "Options\n"
+                       "  -h, --help                show this help\n"
+                       "\n"
+                       "  -o, --output FILE         write to file\n"
+                       "  -f, --input-file FILE     read from input file\n"
+                       "\n"
+                       "  -T, --objext EXT          object file extension\n"
+                       "  -B, --exeext EXT          binary file extension\n"
+                       "  -X, --libext EXT          library file extension\n"
+                       "\n"
+                       "      --create-libs         create rules for libraries\n"
+                       "      --create-objs         create rules for objects\n"
+                       "      --create-bins         create rules for programs\n"
+                       "      --create-module       create rules for loadable module\n"
+                       "  -i, --install             create installation rules\n"
+                       "\n"
+                       //"  -R, --objdir   DIR        object directory\n"
+                       "  -O, --outdir   DIR        output directory\n"
+                       "  -d, --builddir DIR        build directory\n"
+                       "  -a, --arch                set architecture\n"
+                       "  -s, --system OS           set operating system\n"
+                       "  -c, --cross TARGET        set cross compiler\n"
+                       "\n"
+                       "  -D, --define NAME[=VALUE] add a preprocessor definition\n"
+                       "  -I, --include-path DIR    add an include directory\n"
+                       "  -L, --library-path DIR    add a library directory\n"
+                       "  -l, --link LIB            link a library\n"
+                       "\n"
+                       "  -t, --compiler-type TYPE  compiler type, one of:\n"
+                       "\n"
+                       "  -S, --build-as-lib TARGET build target as library\n"
+                       "\n"
+                       "     gcc         GNU make\n"
+                       "     bcc55       Borland C++ Builder 5.5\n"
+                       "     bcc         Borland C++ Builder >= 6.0\n"
+                       "     lcc         lcc\n"
+                       "     tcc         TinyCC\n"
+                       "     msvc        Visual C++\n"
+                       "     icl         Intel C++\n"
+                       "     clang       LLVM\n"
+                       "     occ         OrangeC\n"
+                       "     dmc         Digital Mars C++\n"
+                       "     pocc        Pelles-C\n"
+                       "     zapcc[-cl]  ZapCC\n"
+                       "     zapcc[-cl]  ZapCC\n"
+                       "     htc         Hi-Tech C for PIC or PIC18\n"
+                       "     xc8         Microchip C Compiler for 8-bit PIC\n"
+                       "     sdcc        Small Device C Compiler\n"
+                       "\n"
+                       "  -m, --make-type TYPE      make program type, one of:\n"
+                       "     nmake       Microsoft NMake\n"
+                       "     borland     Borland Make\n"
+                       "     gmake       GNU Make\n"
+                       "     omake       OrangeCC Make\n"
+                       "     pomake      Pelles-C Make\n"
+                       "     make        Other make\n"
+                       "     batch       Windows batch (.bat .cmd)\n"
+                       "     ninja       Ninja build\n"
+                       "     mplab       MPLAB project (.mcp)\n"
+                       "     mplabx      MPLAB X project (NetBeans)\n"
+                       "     cmake       KitWare CMake\n"
+                       "\n"
+                       "  Specify build type:\n\n"
+                       "    --debug            with debugging information, no "
+                       "optimization\n"
+                       "    --relwithdebinfo   with debugging information, optimize for "
+                       "speed\n"
+                       "    --release          optimize for speed\n"
+                       "    --minsizerel       optimize for size\n"
+                       "\n",
+                       NULL);
   buffer_putnlflush(buffer_1);
 }
 
@@ -1486,13 +1404,12 @@ main(int argc, char* argv[]) {
   int c, ret = 0, index = 0;
   const char *s, /**dir = NULL,*/ *objdir = NULL;
   set_t toks;
-  strarray args;
+  strarray args, sources;
   strlist cmdline;
   buffer filebuf, *out = buffer_1;
   size_t n;
   target *all = 0, *compile = 0;
   char **it, **arg, **ptr, *x;
-  strarray sources;
   struct unix_longopt opts[] = {
       {"help", 0, NULL, 'h'},
       {"objext", 1, NULL, 'T'},
@@ -1540,6 +1457,8 @@ main(int argc, char* argv[]) {
   };
 
   strarray_init(&sources);
+  strarray_init(&args);
+
 #if !WINDOWS_NATIVE
   sig_ignore(SIGTRAP);
 #endif
@@ -1553,10 +1472,8 @@ main(int argc, char* argv[]) {
 
   byte_zero(&cfg, sizeof(cfg));
   byte_zero(&dirs, sizeof(dirs));
-  // byte_zero(&sources_list, sizeof(sources_list));
   byte_zero(&rules, sizeof(rules));
   byte_zero(&vars, sizeof(vars));
-  // byte_zero(&sources_set, sizeof(sources_set));
   byte_zero(&bins, sizeof(bins));
   byte_zero(&tools, sizeof(tools));
   set_init(&link_libraries, 0);
@@ -1596,12 +1513,7 @@ main(int argc, char* argv[]) {
 
   for(;;) {
     const char* arg;
-    c = unix_getopt_long(
-        argc,
-        argv,
-        "habo:O:B:E:d:t:m:n:a:D:l:I:c:s:p:P:R:S:if:Cw:L:O:T:",
-        opts,
-        &index);
+    c = unix_getopt_long(argc, argv, "habo:O:B:E:d:t:m:n:a:D:l:I:c:s:p:P:R:S:if:Cw:L:O:T:", opts, &index);
 
     if(c == -1)
       break;
@@ -1809,9 +1721,7 @@ main(int argc, char* argv[]) {
   }
 
   if(tools.toolchain)
-    cygming = str_start(tools.toolchain, "mingw") ||
-              str_start(tools.toolchain, "cyg") ||
-              str_start(tools.toolchain, "msys");
+    cygming = str_start(tools.toolchain, "mingw") || str_start(tools.toolchain, "cyg") || str_start(tools.toolchain, "msys");
 
   if(cygming) {
     tools.compiler = "gcc";
@@ -1875,8 +1785,7 @@ main(int argc, char* argv[]) {
       }
 
       if(cfg.build_type == -1) {
-        for(i = 0; i < (sizeof(build_types) / sizeof(build_types[0]));
-            ++i) {
+        for(i = 0; i < (sizeof(build_types) / sizeof(build_types[0])); ++i) {
           if(s[case_find(s, build_types[i])]) {
             cfg.build_type = i;
             break;
@@ -1898,25 +1807,20 @@ main(int argc, char* argv[]) {
     var_set("CROSS_COMPILE", cross_compile);
 
     if(var_isset("CC"))
-      stralloc_prepends(&var_list("CC", pathsep_args)->value.sa,
-                        "$(CROSS_COMPILE)");
+      stralloc_prepends(&var_list("CC", pathsep_args)->value.sa, "$(CROSS_COMPILE)");
 
     if(var_isset("CXX"))
-      stralloc_prepends(&var_list("CXX", pathsep_args)->value.sa,
-                        "$(CROSS_COMPILE)");
+      stralloc_prepends(&var_list("CXX", pathsep_args)->value.sa, "$(CROSS_COMPILE)");
 
     if(var_isset("AR"))
-      stralloc_prepends(&var_list("AR", pathsep_args)->value.sa,
-                        "$(CROSS_COMPILE)");
+      stralloc_prepends(&var_list("AR", pathsep_args)->value.sa, "$(CROSS_COMPILE)");
   }
 
   batchmode = batch && stralloc_contains(&commands.compile, "-Fo");
   if(batch)
     pathsep_args = pathsep_make;
 
-  stralloc_replacec(&dirs.out.sa,
-                    PATHSEP_C == '/' ? '\\' : '/',
-                    PATHSEP_C);
+  stralloc_replacec(&dirs.out.sa, PATHSEP_C == '/' ? '\\' : '/', PATHSEP_C);
 
   strlist_nul(&dirs.out);
   strlist_nul(&dirs.this);
@@ -1930,8 +1834,7 @@ main(int argc, char* argv[]) {
     path_concat_sa(&dirs.this.sa, &dirs.work.sa, &dirs.out.sa);
 
   if(dirs.build.sa.len == 0) {
-    if(strlist_contains(&dirs.work, "build") &&
-       strlist_count(&dirs.work) > 1) {
+    if(strlist_contains(&dirs.work, "build") && strlist_count(&dirs.work) > 1) {
       stralloc_copy(&dirs.build.sa, &dirs.work.sa);
 
     } else if(tools.toolchain && !strlist_contains(&dirs.this, "build")) {
@@ -1959,9 +1862,7 @@ main(int argc, char* argv[]) {
       stralloc_free(&target);
     }
 
-    stralloc_replacec(&dirs.build.sa,
-                      PATHSEP_C == '/' ? '\\' : '/',
-                      PATHSEP_C);
+    stralloc_replacec(&dirs.build.sa, PATHSEP_C == '/' ? '\\' : '/', PATHSEP_C);
   }
 
   if(dirs.work.sa.len == 0)
@@ -2000,12 +1901,8 @@ main(int argc, char* argv[]) {
   // debug_sa("srcdir", &srcdir);
 
   if(dirs.out.sa.len) {
-    stralloc_replacec(&dirs.this.sa,
-                      PATHSEP_C == '/' ? '\\' : '/',
-                      PATHSEP_C);
-    stralloc_replacec(&dirs.out.sa,
-                      PATHSEP_C == '/' ? '\\' : '/',
-                      PATHSEP_C);
+    stralloc_replacec(&dirs.this.sa, PATHSEP_C == '/' ? '\\' : '/', PATHSEP_C);
+    stralloc_replacec(&dirs.out.sa, PATHSEP_C == '/' ? '\\' : '/', PATHSEP_C);
     // debug_sa("dirs.this", &dirs.this.sa);
     // debug_sa("dirs.out", &dirs.out.sa);
     path_absolute_sa(&dirs.out.sa);
@@ -2022,9 +1919,7 @@ main(int argc, char* argv[]) {
   path_relative_to(dirs.build.sa.s, dirs.out.sa.s, &tmp);
 
   strlist_nul(&dirs.work);
-  stralloc_replacec(&dirs.work.sa,
-                    pathsep_make == '/' ? '\\' : '/',
-                    pathsep_make);
+  stralloc_replacec(&dirs.work.sa, pathsep_make == '/' ? '\\' : '/', pathsep_make);
 
   mkdir_components(&dirs.out, 0755);
 
@@ -2061,6 +1956,7 @@ main(int argc, char* argv[]) {
   if(tool_config & (MAKE_PATTERN_RULES | MAKE_IMPLICIT_RULES)) {
     stralloc rn;
     bool outputs = false;
+
     stralloc_init(&rn);
 
     if(tool_config & MAKE_PATTERN_RULES) {
@@ -2087,11 +1983,10 @@ main(int argc, char* argv[]) {
     stralloc_copy(&assemble->recipe, &commands.compile);
   }
 
-  strarray_init(&args);
   // strarray_init(&sources_list);
 
   if(infile) {
-    input_process(infile, all, pathsep_args);
+    input_process(infile, all);
 
 #ifdef DEBUG_OUTPUT_
     buffer_puts(buffer_2, "build_directories =\n\t");
@@ -2101,6 +1996,7 @@ main(int argc, char* argv[]) {
     // stralloc_free(&dirs.work.sa);
     {
       stralloc builddir;
+
       stralloc_init(&builddir);
 
       set_at_sa(&build_directories, 0, &builddir);
@@ -2168,6 +2064,8 @@ main(int argc, char* argv[]) {
 
       strarray_push(&args, arg.s);
     ++unix_optind;
+
+    stralloc_free(&arg);
   }
 
   path_canonical_sa(&dirs.out.sa);
@@ -2243,8 +2141,7 @@ main(int argc, char* argv[]) {
 #endif
 
       if(!path_exists(p)) {
-        buffer_putm_internal(
-            buffer_2, "ERROR: Doesn't exist: ", p, newline, NULL);
+        buffer_putm_internal(buffer_2, "ERROR: Doesn't exist: ", p, newline, NULL);
         buffer_flush(buffer_2);
         ret = 127;
         goto fail;
@@ -2275,13 +2172,16 @@ main(int argc, char* argv[]) {
 
   if(str_start(tools.make, "g")) {
     stralloc builddir;
+
     stralloc_init(&builddir);
     path_relative_to(dirs.build.sa.s, dirs.work.sa.s, &builddir);
     stralloc_nul(&builddir);
+
     if(!stralloc_endc(&dirs.work.sa, PATHSEP_C))
       stralloc_catc(&dirs.work.sa, PATHSEP_C);
     var_set(builddir_varname, dirs.work.sa.s);
     stralloc_copys(&dirs.build.sa, "$(BUILDDIR)");
+    stralloc_free(&builddir);
   }
 
   if(((batch | shell) && stralloc_equals(&dirs.work.sa, ".")))
@@ -2291,6 +2191,7 @@ main(int argc, char* argv[]) {
     project_name = str_ndup(output_name.s, output_name.len);
   } else {
     stralloc abspath;
+
     stralloc_init(&abspath);
     path_absolute(dirs.this.sa.s, &abspath);
     stralloc_nul(&abspath);
@@ -2314,9 +2215,7 @@ main(int argc, char* argv[]) {
     strarray_init(&sources2);
     strarray_copy(&sources2, &sources);
 
-    strarray_foreach(&sources2, ptr) {
-      sourcedir_addsource(*ptr, &sources, &progs, &bins, pathsep_make);
-    }
+    strarray_foreach(&sources2, ptr) { sourcedir_addsource(*ptr, &sources, &progs, &bins, pathsep_make); }
 
     sourcedir_populate(&sources);
     strarray_free(&sources);
@@ -2359,8 +2258,7 @@ main(int argc, char* argv[]) {
 #endif
 
     if(cmd_libs) {
-      generate_lib_rules(
-          shell, batch, batchmode, pathsep_args, pathsep_make);
+      generate_lib_rules(shell, batch, batchmode, pathsep_args, pathsep_make);
       deps_for_libs();
     } else {
       MAP_PAIR_T t;
@@ -2371,14 +2269,7 @@ main(int argc, char* argv[]) {
         exts.src, exts.pps, &commands.preprocess);
           generate_simple_compile_rules(rules, srcdir, MAP_ITER_KEY(t),
         exts.pps, exts.obj, &commands.compile); } else */
-        {
-          generate_simple_compile_rules(srcdir,
-                                        MAP_ITER_KEY(t),
-                                        exts.src,
-                                        exts.obj,
-                                        &commands.compile,
-                                        pathsep_args);
-        }
+        { generate_simple_compile_rules(srcdir, MAP_ITER_KEY(t), exts.src, exts.obj, &commands.compile, pathsep_args); }
       }
     }
 
@@ -2467,7 +2358,7 @@ fail:
     goto quit;
   }
 
-#ifdef DEBUG_OUTPUT
+#ifdef DEBUG_OUTPUT_
   {
     strlist rule_names;
     strlist_init(&rule_names, '\0');
@@ -2475,7 +2366,7 @@ fail:
     get_map_keys(&rules, &rule_names);
 
     buffer_puts(buffer_2, "rule_names:\n\t");
-    buffer_putsl(buffer_2, &rule_names, "\n\t");
+    buffer_putsl(buffer_2, &rule_names, " \\\n\t");
     buffer_putnlflush(buffer_2);
     strlist_free(&rule_names);
   }
@@ -2486,8 +2377,7 @@ fail:
     goto quit;
   }
 
-  buffer_putm_internal(
-      out, comment, " Generated by:", newline, comment, "  ", NULL);
+  buffer_putm_internal(out, comment, " Generated by:", newline, comment, "  ", NULL);
   buffer_putsa(out, &cmdline.sa);
   buffer_putsflush(out, newline);
   stralloc_nul(&cfg.chip);
@@ -2495,6 +2385,7 @@ fail:
 
   if(ninja) {
     stralloc tmp;
+
     stralloc_init(&tmp);
     path_relative_to_sa(&dirs.build.sa, &dirs.out.sa, &tmp);
 
@@ -2504,6 +2395,7 @@ fail:
     var_setb("objdir", tmp.s, tmp.len);
     var_set("extra_cflags", "$$EXTRA_CFLAGS");
     var_set("extra_ldflags", "$$EXTRA_LDFLAGS");
+
     stralloc_free(&tmp);
   }
 
@@ -2561,22 +2453,9 @@ fail:
     } else {
       buffer_putm_internal(out, "cd \"$(dirname \"$0\")\"\n\n", NULL);
     }
-    output_script(out,
-                  NULL,
-                  shell,
-                  batch,
-                  quote_args,
-                  pathsep_args,
-                  make_sep_inline);
+    output_script(out, NULL, shell, batch, quote_args, pathsep_args, make_sep_inline);
   } else {
-    output_all_rules(out,
-                     ninja,
-                     batch,
-                     shell,
-                     quote_args,
-                     pathsep_args,
-                     pathsep_make,
-                     make_sep_inline);
+    output_all_rules(out, ninja, batch, shell, quote_args, pathsep_args, pathsep_make, make_sep_inline);
   }
 
 quit : {
@@ -2592,11 +2471,7 @@ quit : {
       sourcedir_deps(sdir, &deps);
 
 #ifdef DEBUG_OUTPUT_
-      buffer_putm_internal(buffer_2,
-                           "source directory '",
-                           MAP_ITER_KEY(t),
-                           "' deps =\n",
-                           NULL);
+      buffer_putm_internal(buffer_2, "source directory '", MAP_ITER_KEY(t), "' deps =\n", NULL);
       strlist_dump(buffer_2, &deps);
       buffer_putnlflush(buffer_2);
 #endif
@@ -2613,8 +2488,7 @@ quit : {
       sourcefile* source = dlist_data(link, sourcefile*);
 
       if(0 && 1) {
-        buffer_putm_internal(
-            buffer_2, "source: ", source->name, " deps: ", NULL);
+        buffer_putm_internal(buffer_2, "source: ", source->name, " deps: ", NULL);
         strlist_zero(&deps);
         sources_deps(source, &deps);
         buffer_puts(buffer_2, " includes: ");
@@ -2623,6 +2497,10 @@ quit : {
       }
     }
   }
+
+  strarray_free(&args);
+  strarray_free(&sources);
+  strlist_free(&cmdline);
 
   // MAP_DESTROY(srcdir_map);
   return ret;

@@ -39,8 +39,7 @@ mmap_shared_fd(fd_type fd, size_t* filesize) {
   char* map;
   if(fd >= 0) {
     *filesize = io_seek(fd, 0, SEEK_END);
-    map = (char*)
-        mmap(0, *filesize, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+    map = (char*)mmap(0, *filesize, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
     if(map == (char*)-1)
       map = 0;
     close(fd);

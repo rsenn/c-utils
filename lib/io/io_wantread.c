@@ -44,10 +44,7 @@ io_wantread_really(fd_type d, io_entry* e) {
     if(e->kernelwantwrite)
       x.events |= EPOLLOUT;
     x.data.fd = d;
-    epoll_ctl(io_master,
-              e->kernelwantwrite ? EPOLL_CTL_MOD : EPOLL_CTL_ADD,
-              d,
-              &x);
+    epoll_ctl(io_master, e->kernelwantwrite ? EPOLL_CTL_MOD : EPOLL_CTL_ADD, d, &x);
   }
 #endif
 
@@ -89,16 +86,11 @@ io_wantread_really(fd_type d, io_entry* e) {
     if(e->next_accept == 0)
       e->next_accept = socket(AF_INET, SOCK_STREAM, 0);
     if(e->next_accept != -1) {
-      AcceptEx(
-          d, e->next_accept, e->inbuf, 0, 200, 200, &e->errorcode, &e->or);
+      AcceptEx(d, e->next_accept, e->inbuf, 0, 200, 200, &e->errorcode, &e->or);
       e->acceptqueued = 1;
     }
   } else if(!e->wantread) {
-    if(ReadFile((HANDLE)(size_t)d,
-                e->inbuf,
-                sizeof(e->inbuf),
-                &e->errorcode,
-                &e->or)) {
+    if(ReadFile((HANDLE)(size_t)d, e->inbuf, sizeof(e->inbuf), &e->errorcode, &e->or)) {
     queueread:
       /* had something to read immediately.  Damn! */
       e->readqueued = 0;

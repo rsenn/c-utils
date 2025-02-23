@@ -22,8 +22,8 @@
          encountered and either GLOB_ERR was set or \
          (*errfunc)() returned non-zero. */
 #define GLOB_NOMATCH \
-  (3) /**< (Error result code:) The pattern does not match any existing \
-         pathname, and GLOB_NOCHECK was not set int flags. */
+  (3)                           /**< (Error result code:) The pattern does not match any existing \
+                                   pathname, and GLOB_NOCHECK was not set int flags. */
 #define GLOB_NOSYS (4)          /**< (Error result code:) . */
 #define GLOB_ABEND GLOB_ABORTED /**< (Error result code:) . */
 
@@ -120,10 +120,7 @@ extern "C" {
  * @param pglob Pointer to a glob_t structure to receive the search results
  * @return 0 on success, otherwise one of the <b>GLOB_*</b> error codes
  */
-int glob(char const* pattern,
-         int flags,
-         int (*errfunc)(char const*, int),
-         glob_t* pglob);
+int glob(char const* pattern, int flags, int (*errfunc)(char const*, int), glob_t* pglob);
 
 /** Frees the results of a call to glob
  *

@@ -88,12 +88,7 @@ typedef union {
   uint8_t u8[6];
 } u8seq;
 
-typedef enum {
-  CONNECTED = 1,
-  LOGGED_IN = 2,
-  PASSIVE = 3,
-  TRANSFERRING = 4
-} ftp_state;
+typedef enum { CONNECTED = 1, LOGGED_IN = 2, PASSIVE = 3, TRANSFERRING = 4 } ftp_state;
 
 typedef struct {
   fd_type control_sock;
@@ -169,8 +164,7 @@ read_hosts(const char* file) {
 #endif
         stralloc_nul(&hostname);
 
-        MAP_INSERT(
-            hosts_db, hostname.s, hostname.len + 1, &addr, sizeof(addr));
+        MAP_INSERT(hosts_db, hostname.s, hostname.len + 1, &addr, sizeof(addr));
 
         s += hlen;
         s += scan_whitenskip(&p[s], l - s);
@@ -285,11 +279,7 @@ handle_ftp(ftp_client* ftp, stralloc* line) {
       socket_connect4(ftp->data_sock, passive.addr.ip, passive.port);
       io_wantwrite(ftp->data_sock);
 
-      buffer_init_free(&ftp->data,
-                       (buffer_op_proto*)(void*)&ftp_read,
-                       ftp->data_sock,
-                       alloc(1024),
-                       1024);
+      buffer_init_free(&ftp->data, (buffer_op_proto*)(void*)&ftp_read, ftp->data_sock, alloc(1024), 1024);
 
       break;
     }
@@ -309,16 +299,8 @@ list_ftp(ftp_client* ftp) {
   stralloc meld;
   stralloc_init(&meld);
   stralloc_ready(&meld, 256);
-  buffer_init_free(&in,
-                   (buffer_op_proto*)(void*)&ftp_read,
-                   ftp->control_sock,
-                   alloc(1024),
-                   1024);
-  buffer_init_free(&out,
-                   (buffer_op_proto*)(void*)&ftp_write,
-                   ftp->control_sock,
-                   alloc(1024),
-                   1024);
+  buffer_init_free(&in, (buffer_op_proto*)(void*)&ftp_read, ftp->control_sock, alloc(1024), 1024);
+  buffer_init_free(&out, (buffer_op_proto*)(void*)&ftp_write, ftp->control_sock, alloc(1024), 1024);
 
   for(;;) {
     io_wait();
@@ -370,8 +352,7 @@ list_ftp(ftp_client* ftp) {
         b = &ftp->data;
         buffer_feed(b);
         stralloc_zero(&meld);
-        while(b->p < b->n &&
-              byte_chr(&b->x[b->p], b->n - b->p, '\n') < (b->n - b->p)) {
+        while(b->p < b->n && byte_chr(&b->x[b->p], b->n - b->p, '\n') < (b->n - b->p)) {
           buffer_getline_sa(b, &meld);
         }
 
@@ -385,8 +366,7 @@ list_ftp(ftp_client* ftp) {
         b = &in;
         buffer_feed(b);
 
-        while(b->p < b->n &&
-              byte_chr(&b->x[b->p], b->n - b->p, '\n') < (b->n - b->p)) {
+        while(b->p < b->n && byte_chr(&b->x[b->p], b->n - b->p, '\n') < (b->n - b->p)) {
           int done = 0;
 
           buffer_getnewline_sa(b, &meld);
@@ -466,15 +446,13 @@ main(int argc, char* argv[]) {
   buffer_putnlflush(buffer_1);
 #endif
 
-  if(!address_scan(host.s, &addr) && !lookup_hosts(&host, &addr) &&
-     !address_lookup(&host, &addr, no_ip6)) {
+  if(!address_scan(host.s, &addr) && !lookup_hosts(&host, &addr) && !address_lookup(&host, &addr, no_ip6)) {
     ret = 111;
     goto fail;
   }
 
 #ifdef DEBUG_OUTPUT
-  buffer_putm_internal(
-      buffer_1, "IP address for ", argv[unix_optind], ": ", NULL);
+  buffer_putm_internal(buffer_1, "IP address for ", argv[unix_optind], ": ", NULL);
   buffer_put(buffer_1, ipbuf, address_fmt(ipbuf, &addr));
   buffer_putnlflush(buffer_1);
 #endif
@@ -493,20 +471,14 @@ main(int argc, char* argv[]) {
 
   io_fd(sock);
 
-  if((ret = addr.ip6 ? socket_connect6(sock, addr.ip, port, addr.scope_id)
-                     : socket_connect4(sock, addr.ip, port)) != 0) {
+  if((ret = addr.ip6 ? socket_connect6(sock, addr.ip, port, addr.scope_id) : socket_connect4(sock, addr.ip, port)) != 0) {
     if(errno != EINPROGRESS) {
 #if 1 // def HAVE_SOLARIS
       /* solaris immediately returns
        * ECONNREFUSED on local ports */
       if(errno == ECONNREFUSED) {
         if(verbose) {
-          buffer_putm_internal(buffer_1,
-                               argv[unix_optind],
-                               " port ",
-                               argv[unix_optind + 1],
-                               " closed.",
-                               NULL);
+          buffer_putm_internal(buffer_1, argv[unix_optind], " port ", argv[unix_optind + 1], " closed.", NULL);
           buffer_putnlflush(buffer_1);
         }
         closesocket(sock);
@@ -515,12 +487,7 @@ main(int argc, char* argv[]) {
 #endif
       {
         if(verbose)
-          errmsg_warnsys("error: ",
-                         argv[unix_optind],
-                         " port ",
-                         argv[unix_optind + 1],
-                         ": ",
-                         0);
+          errmsg_warnsys("error: ", argv[unix_optind], " port ", argv[unix_optind + 1], ": ", 0);
 
         return 4;
       }
@@ -556,12 +523,7 @@ main(int argc, char* argv[]) {
       /* timeout */
       closesocket(sock);
       if(verbose) {
-        buffer_putm_internal(buffer_1,
-                             argv[unix_optind],
-                             " port ",
-                             argv[unix_optind + 1],
-                             " user timeout.",
-                             NULL);
+        buffer_putm_internal(buffer_1, argv[unix_optind], " port ", argv[unix_optind + 1], " user timeout.", NULL);
         buffer_putnlflush(buffer_1);
       }
       ret = 2;
@@ -572,12 +534,7 @@ main(int argc, char* argv[]) {
       if(socket_error(sock, &error) == 0) {
         /* getsockopt error */
         if(verbose) {
-          errmsg_warn("error: ",
-                      argv[unix_optind],
-                      " port ",
-                      argv[unix_optind + 1],
-                      ": getsockopt: ",
-                      0);
+          errmsg_warn("error: ", argv[unix_optind], " port ", argv[unix_optind + 1], ": getsockopt: ", 0);
           buffer_putnlflush(buffer_2);
         }
 
@@ -588,17 +545,9 @@ main(int argc, char* argv[]) {
       if(error != 0) {
         if(verbose) {
           if(error == EHOSTUNREACH)
-            buffer_putm_internal(buffer_1,
-                                 argv[unix_optind],
-                                 ": host is down",
-                                 NULL);
+            buffer_putm_internal(buffer_1, argv[unix_optind], ": host is down", NULL);
           else
-            buffer_putm_internal(buffer_1,
-                                 argv[unix_optind],
-                                 " port ",
-                                 argv[unix_optind + 1],
-                                 " closed.",
-                                 NULL);
+            buffer_putm_internal(buffer_1, argv[unix_optind], " port ", argv[unix_optind + 1], " closed.", NULL);
           buffer_putnlflush(buffer_1);
         }
         closesocket(sock);
@@ -616,12 +565,7 @@ main(int argc, char* argv[]) {
   }
   /* OK, connection established */
   if(verbose) {
-    buffer_putm_internal(buffer_1,
-                         argv[unix_optind],
-                         " port ",
-                         argv[unix_optind + 1],
-                         " open.",
-                         NULL);
+    buffer_putm_internal(buffer_1, argv[unix_optind], " port ", argv[unix_optind + 1], " open.", NULL);
     buffer_putnlflush(buffer_1);
   }
   {

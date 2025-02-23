@@ -55,16 +55,14 @@ static ihex_file hex;
 static uint32 baseaddr;
 static stralloc cfg;
 static strlist pragmas;
-static int nodefault = false, oneline = false, comments = true,
-           names = true, output_name = false, verbose = 0;
+static int nodefault = false, oneline = false, comments = true, names = true, output_name = false, verbose = 0;
 
 static void
 cfg_add_item(strlist* output, const char* name, const char* value) {
   stralloc out;
 
   stralloc_init(&out);
-  stralloc_catm_internal(
-      &out, value ? name : "// ", value ? " = " : name, value, NULL);
+  stralloc_catm_internal(&out, value ? name : "// ", value ? " = " : name, value, NULL);
   strlist_push_sa(output, &out);
   stralloc_free(&out);
 }
@@ -118,8 +116,7 @@ cfg_data_at(uint32 addr) {
 
   if(offset >= cfg.len) {
 #ifdef DEBUG_OUTPUT_
-    buffer_putm_internal(
-        buffer_2, __FUNCTION__, "(): ", "offset >= cfg.len (", 0);
+    buffer_putm_internal(buffer_2, __FUNCTION__, "(): ", "offset >= cfg.len (", 0);
     buffer_putlonglong(buffer_2, offset);
     buffer_puts(buffer_2, " >= ");
     buffer_putulong(buffer_2, cfg.len);
@@ -133,12 +130,7 @@ cfg_data_at(uint32 addr) {
   // assert(offset < cfg.len);
 
 #ifdef DEBUG_OUTPUT_
-  buffer_putm_internal(buffer_2,
-                       __FUNCTION__,
-                       "(): ",
-                       "result = ",
-                       result >= 0 ? "0x" : 0,
-                       0);
+  buffer_putm_internal(buffer_2, __FUNCTION__, "(): ", "result = ", result >= 0 ? "0x" : 0, 0);
   if(result < 0)
     buffer_putlonglong(buffer_2, result);
   else
@@ -159,11 +151,7 @@ cfg_read_word(cfg_word* word, cfg_setting* setting) {
 }
 
 cfg_value**
-cfg_read_value(cfg_value** vptr,
-               cfg_word* w,
-               cfg_setting* s,
-               const char* x,
-               size_t n) {
+cfg_read_value(cfg_value** vptr, cfg_word* w, cfg_setting* s, const char* x, size_t n) {
   cfg_value* v = *vptr = alloc(sizeof(cfg_value));
   size_t i;
   unsigned long value;
@@ -191,10 +179,7 @@ cfg_read_value(cfg_value** vptr,
 }
 
 cfg_setting**
-cfg_read_setting(cfg_setting** sptr,
-                 cfg_word* word,
-                 const char* buf,
-                 size_t len) {
+cfg_read_setting(cfg_setting** sptr, cfg_word* word, const char* buf, size_t len) {
   cfg_setting* setting = *sptr = alloc(sizeof(cfg_setting));
   size_t i;
   unsigned long value;
@@ -283,10 +268,7 @@ cfg_print(buffer* b, stralloc* sa) {
   size_t i, n = sa->len >> 1;
 
   for(i = 0; i < n; i++) {
-    buffer_putxlong0u(b,
-                      (((uint8_t*)sa->s)[i * 2] << 8) |
-                          ((uint8_t*)sa->s)[i * 2 + 1],
-                      4);
+    buffer_putxlong0u(b, (((uint8_t*)sa->s)[i * 2] << 8) | ((uint8_t*)sa->s)[i * 2 + 1], 4);
     buffer_putnlflush(b);
     /*if(i < n - 1) buffer_putc(b, '\n');*/
   }
@@ -298,8 +280,7 @@ cfg_get_value(cfg_word* word, cfg_setting* setting) {
   uint16 byteval = cfg_read_word(word, setting);
 
 #ifdef DEBUG_OUTPUT_
-  buffer_putm_internal(
-      buffer_2, word->name, ": ", setting->name, " = 0x", NULL);
+  buffer_putm_internal(buffer_2, word->name, ": ", setting->name, " = 0x", NULL);
   buffer_putxlong0(buffer_2, byteval, 2);
   buffer_putnlflush(buffer_2);
 #endif
@@ -325,13 +306,7 @@ cfg_find_setting(const char* str) {
   cfg_word* word;
   cfg_setting* setting;
 
-  slink_foreach(words, word) for(
-      setting = word->settings; setting;
-      setting =
-          setting->next) if(!str_diffn(str,
-                                       setting->name,
-                                       str_len(
-                                           setting->name))) return setting;
+  slink_foreach(words, word) for(setting = word->settings; setting; setting = setting->next) if(!str_diffn(str, setting->name, str_len(setting->name))) return setting;
 
   return NULL;
 }
@@ -348,10 +323,7 @@ cfg_find_value(const char* str) {
     while(*str == '=' || *str == ' ')
       ++str;
 
-    slink_foreach(setting->values,
-                  value) if(!str_diffn(str,
-                                       value->name,
-                                       str_len(value->name))) return value;
+    slink_foreach(setting->values, value) if(!str_diffn(str, value->name, str_len(value->name))) return value;
   }
 
   return NULL;
@@ -552,14 +524,12 @@ cfg_process(cfg_item add_item, cfg_comment add_comment, strlist* output) {
     if(comments && output_name)
       add_comment(output, word->name);
 
-    for(cfg_setting* setting = word->settings; setting;
-        setting = setting->next) {
+    for(cfg_setting* setting = word->settings; setting; setting = setting->next) {
 
       if((value = cfg_get_value(word, setting)) == NULL) {
         buffer_puts(buffer_2, "WARNING:  value ");
         buffer_putxlong(buffer_2, cfg_read_word(word, setting));
-        buffer_putm_internal(
-            buffer_2, " for setting ", setting->name, " not found!", NULL);
+        buffer_putm_internal(buffer_2, " for setting ", setting->name, " not found!", NULL);
         buffer_putnlflush(buffer_2);
 
         continue;
@@ -567,12 +537,7 @@ cfg_process(cfg_item add_item, cfg_comment add_comment, strlist* output) {
 
       if(value->is_default && nodefault) {
         if(verbose > 1) {
-          buffer_putm_internal(buffer_2,
-                               "skip default value ",
-                               value->name,
-                               " for setting ",
-                               setting->name,
-                               NULL);
+          buffer_putm_internal(buffer_2, "skip default value ", value->name, " for setting ", setting->name, NULL);
           buffer_putnlflush(buffer_2);
         }
 
@@ -605,10 +570,7 @@ cfg_output(const strlist* items) {
 
   strlist_foreach(items, x, n) {
     if(x[0] != '/') {
-      buffer_puts(buffer_1,
-                  i == 0    ? "#pragma config "
-                  : oneline ? ((i < 1 || col < 1) ? " " : ", ")
-                            : "\n#pragma config ");
+      buffer_puts(buffer_1, i == 0 ? "#pragma config " : oneline ? ((i < 1 || col < 1) ? " " : ", ") : "\n#pragma config ");
 
     } else if(comments) {
       if(i != 0) {
@@ -649,24 +611,23 @@ cfg_output(const strlist* items) {
  */
 void
 usage(char* argv0) {
-  buffer_putm_internal(
-      buffer_1,
-      "Usage: ",
-      str_basename(argv0),
-      " <hex-file> <cfgdata-file>\n"
-      "\n"
-      "Options\n"
-      "  -h, --help                show this help\n"
-      "  -o, --oneline             output oneliner\n"
-      "  -D, --no-default          don't output settings with default "
-      "value\n"
-      "  -d, --default             output settings with default value\n"
-      "  -C, --no-comments         don't output description comments\n"
-      "  -n, --name                output register name\n"
-      "  -N, --no-name             don't output register name\n"
-      "  -v, --verbose             show verbose messages\n"
-      "\n",
-      NULL);
+  buffer_putm_internal(buffer_1,
+                       "Usage: ",
+                       str_basename(argv0),
+                       " <hex-file> <cfgdata-file>\n"
+                       "\n"
+                       "Options\n"
+                       "  -h, --help                show this help\n"
+                       "  -o, --oneline             output oneliner\n"
+                       "  -D, --no-default          don't output settings with default "
+                       "value\n"
+                       "  -d, --default             output settings with default value\n"
+                       "  -C, --no-comments         don't output description comments\n"
+                       "  -n, --name                output register name\n"
+                       "  -N, --no-name             don't output register name\n"
+                       "  -v, --verbose             show verbose messages\n"
+                       "\n",
+                       NULL);
 
   buffer_putnlflush(buffer_1);
 }

@@ -37,12 +37,10 @@ last_error_str() {
 
   SetLastError(0);
 
-  if(!FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER |
-                        FORMAT_MESSAGE_FROM_SYSTEM,
+  if(!FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
                     NULL,
                     errCode,
-                    MAKELANGID(LANG_NEUTRAL,
-                               SUBLANG_DEFAULT), /* default language */
+                    MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), /* default language */
                     (LPTSTR)&err,
                     0,
                     NULL))
@@ -63,10 +61,7 @@ last_error_str() {
 #endif
 
 int
-process_create(const char* filename,
-               char* const argv[],
-               fd_type std[3],
-               const char* cwd) {
+process_create(const char* filename, char* const argv[], fd_type std[3], const char* cwd) {
   fd_type fds[3];
   int32 pid;
   int status = 0;
@@ -93,8 +88,7 @@ process_create(const char* filename,
       posix_spawn_file_actions_adddup2(&actions, std[2], 2);
     }
 
-    if(posix_spawnp(
-           &pid, filename, std ? &actions : 0, &attr, argv, NULL)) {
+    if(posix_spawnp(&pid, filename, std ? &actions : 0, &attr, argv, NULL)) {
       errmsg_warnsys("execvpe error: ", 0);
       exit(1);
     }

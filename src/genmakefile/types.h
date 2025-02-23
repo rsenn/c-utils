@@ -10,15 +10,7 @@
 
 typedef enum { OS_WIN, OS_MAC, OS_LINUX } os_type;
 typedef enum { LANG_C, LANG_CXX } lang_type;
-typedef enum {
-  PREPROCESS = 0,
-  COMPILE,
-  LIB,
-  LINK,
-  MKDIR,
-  CLEAN,
-  NUM_COMMANDS
-} command_type;
+typedef enum { PREPROCESS = 0, COMPILE, LIB, LINK, MKDIR, CLEAN, NUM_COMMANDS } command_type;
 
 typedef struct {
   enum { X86, ARM, PIC } arch;

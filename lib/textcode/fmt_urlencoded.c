@@ -5,15 +5,11 @@
 static inline int
 issafe(unsigned char c) {
   const char safe[] = "$/.=~-_";
-  return ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') ||
-          (c >= '0' && c <= '9') || safe[str_chr(safe, c)]);
+  return ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || (c >= '0' && c <= '9') || safe[str_chr(safe, c)]);
 }
 
 size_t
-fmt_urlencoded2(char* dest,
-                const char* src,
-                size_t len,
-                const char* escapeme) {
+fmt_urlencoded2(char* dest, const char* src, size_t len, const char* escapeme) {
   register const unsigned char* s = (const unsigned char*)src;
   size_t written = 0, i;
   for(i = 0; i < len; ++i) {

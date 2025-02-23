@@ -4,11 +4,7 @@
 /** mark - cbmap_get */
 
 int
-cbmap_get(cbmap_t map,
-          void* key,
-          size_t key_len,
-          void** value,
-          size_t* value_len) {
+cbmap_get(cbmap_t map, void* key, size_t key_len, void** value, size_t* value_len) {
   unsigned char* p = (unsigned char*)map->root;
   const unsigned char* key_bytes = (const unsigned char*)key;
   struct cbmap_data_node* data;

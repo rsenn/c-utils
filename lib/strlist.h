@@ -38,24 +38,16 @@ typedef struct strlist_s {
 #if defined(__BORLANDC__) || defined(__LCC__)
 #define strlist_pushm(sa, args) strlist_pushm_internal(sa, args, (char*)0)
 #else
-#define strlist_pushm(sa, ...) \
-  strlist_pushm_internal(sa, __VA_ARGS__, (char*)0)
+#define strlist_pushm(sa, ...) strlist_pushm_internal(sa, __VA_ARGS__, (char*)0)
 #endif
 
 #define strlist_end(sl) ((sl)->sa.s + (sl)->sa.len)
 
-#define strlist_foreach(sl, str, n) \
-  for((str) = (sl)->sa.s; \
-      ((str) < strlist_end(sl) && \
-       ((n) = byte_chr((str), strlist_end(sl) - (str), (sl)->sep)) > 0); \
-      (str) += (n) + 1)
+#define strlist_foreach(sl, str, n) for((str) = (sl)->sa.s; ((str) < strlist_end(sl) && ((n) = byte_chr((str), strlist_end(sl) - (str), (sl)->sep)) > 0); (str) += (n) + 1)
 
-#define strlist_foreach_s(sl, str) \
-  for(str = (sl)->sa.s; str < strlist_end(sl); \
-      str += byte_chr((str), strlist_end(sl) - str, (sl)->sep) + 1)
+#define strlist_foreach_s(sl, str) for(str = (sl)->sa.s; str < strlist_end(sl); str += byte_chr((str), strlist_end(sl) - str, (sl)->sep) + 1)
 
-#define strlist_len(sl, ptr) \
-  (byte_chr(ptr, strlist_end((sl)) - (ptr), (sl)->sep))
+#define strlist_len(sl, ptr) (byte_chr(ptr, strlist_end((sl)) - (ptr), (sl)->sep))
 
 static inline size_t
 strlist_skip(const strlist* sl, char* ptr) {
@@ -125,10 +117,8 @@ char** strlist_to_argv(const strlist*);
 int strlist_trunc(strlist*, size_t items);
 int strlist_unshiftb(strlist*, const char* x, size_t len);
 int strlist_unshift(strlist*, const char* s);
-int
-strlist_splice(strlist*, size_t pos, size_t ndelete, char* x, size_t n);
-int strlist_replaceb(
-    strlist*, const char* x, size_t n, const char* y, size_t len);
+int strlist_splice(strlist*, size_t pos, size_t ndelete, char* x, size_t n);
+int strlist_replaceb(strlist*, const char* x, size_t n, const char* y, size_t len);
 
 #ifdef STRALLOC_H
 int strlist_append_sa(strlist*, const stralloc* sa);
@@ -151,36 +141,18 @@ void strlist_dump(buffer*, const strlist* sl);
 void strlist_dump_named(buffer*, const strlist* sl, const char* names[]);
 #endif
 
-void strlist_intersection(const strlist* s1,
-                          const strlist* s2,
-                          strlist* out);
-void strlist_sorted_intersection(const strlist* s1,
-                                 const strlist* s2,
-                                 strlist* out);
-void strlist_difference(const strlist* s1,
-                        const strlist* s2,
-                        strlist* out1,
-                        strlist* out2);
+void strlist_intersection(const strlist* s1, const strlist* s2, strlist* out);
+void strlist_sorted_intersection(const strlist* s1, const strlist* s2, strlist* out);
+void strlist_difference(const strlist* s1, const strlist* s2, strlist* out1, strlist* out2);
 void strlist_union(const strlist* s1, const strlist* s2, strlist* out);
 
-void strlist_fromq(strlist* sl,
-                   const char* s,
-                   size_t len,
-                   const char* delim,
-                   const char* quote);
-void strlist_fromsq(strlist* sl,
-                    const char* s,
-                    const char* delim,
-                    const char* quote);
+void strlist_fromq(strlist* sl, const char* s, size_t len, const char* delim, const char* quote);
+void strlist_fromsq(strlist* sl, const char* s, const char* delim, const char* quote);
 void strlist_slice(strlist* out, const strlist* in, int start, int end);
-void
-strlist_joinq(const strlist* sl, stralloc* sa, char delim, char quote);
+void strlist_joinq(const strlist* sl, stralloc* sa, char delim, char quote);
 
 ssize_t strlist_match(const strlist* sl, const char* pattern, int start);
-void strlist_filter(const strlist*,
-                    strlist* matching,
-                    strlist* not_matching,
-                    const char* pattern);
+void strlist_filter(const strlist*, strlist* matching, strlist* not_matching, const char* pattern);
 void strlist_copy(strlist*, const strlist* in);
 
 #ifdef __cplusplus

@@ -47,8 +47,7 @@ pathlist_get(strarray* list, const char* varname) {
     const char* e = p + str_len(p);
     char sep = ':';
 
-    if(((p[0] != '/' && p[1] == ':') && p[byte_chr(p, e - p, ';')]) ||
-       varname[4] == 'E')
+    if(((p[0] != '/' && p[1] == ':') && p[byte_chr(p, e - p, ';')]) || varname[4] == 'E')
       sep = ';';
 
     while(p < e) {
@@ -61,10 +60,7 @@ pathlist_get(strarray* list, const char* varname) {
 }
 
 const char*
-pathlist_lookup(const strarray* path,
-                const strarray* pathext,
-                const char* bin,
-                stralloc* out) {
+pathlist_lookup(const strarray* path, const strarray* pathext, const char* bin, stralloc* out) {
   char **dir_p, **ext_p;
   stralloc name;
   stralloc_init(&name);
@@ -86,15 +82,7 @@ pathlist_lookup(const strarray* path,
       exist = path_exists(name.s);
 
 #ifdef DEBUG_OUTPUT
-      buffer_putm_internal(buffer_2,
-                           "path_find(\"",
-                           *dir_p,
-                           "\", \"",
-                           name.s,
-                           "\", out) = ",
-                           exist ? "true" : "false",
-                           ";",
-                           NULL);
+      buffer_putm_internal(buffer_2, "path_find(\"", *dir_p, "\", \"", name.s, "\", out) = ", exist ? "true" : "false", ";", NULL);
       buffer_putnlflush(buffer_2);
 #endif
 
@@ -298,15 +286,7 @@ main(int argc, char* argv[], char* envp[]) {
         stralloc expanded = expand_env(value);
 
 #ifdef DEBUG_OUTPUT
-        buffer_putm_internal(buffer_2,
-                             "env_set(\"",
-                             name,
-                             "\", \"",
-                             expanded.s,
-                             "\"); (",
-                             value,
-                             ")",
-                             NULL);
+        buffer_putm_internal(buffer_2, "env_set(\"", name, "\", \"", expanded.s, "\"); (", value, ")", NULL);
         buffer_putnlflush(buffer_2);
 #endif
 
@@ -334,10 +314,7 @@ main(int argc, char* argv[], char* envp[]) {
         }
       }
 
-      if(realcmd.len == byte_chrs(realcmd.s,
-                                  realcmd.len,
-                                  PATHSEP_S_MIXED,
-                                  sizeof(PATHSEP_S_MIXED) - 1)) {
+      if(realcmd.len == byte_chrs(realcmd.s, realcmd.len, PATHSEP_S_MIXED, sizeof(PATHSEP_S_MIXED) - 1)) {
         search_path(&fullcmd, realcmd.s);
       } else if(path_exists(realcmd.s)) {
         stralloc_copy(&fullcmd, &realcmd);
@@ -362,8 +339,7 @@ main(int argc, char* argv[], char* envp[]) {
       stralloc_cats(&fullcmd, EXEEXT);
 
     if(!path_exists(fullcmd.s)) {
-      errmsg_warnsys(
-          "doesn't exist: ", fullcmd.s, " ('", sa.s, "''): ", 0);
+      errmsg_warnsys("doesn't exist: ", fullcmd.s, " ('", sa.s, "''): ", 0);
       return 127;
     }
 

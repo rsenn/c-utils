@@ -167,8 +167,7 @@ parse_line(const char* x, ssize_t n) {
 
 #ifdef DEBUG_OUTPUT
   stralloc_nul(&str);
-  buffer_putm_internal(
-      buffer_2, "Command: ", str.s, "\n", "Arguments: ", NULL);
+  buffer_putm_internal(buffer_2, "Command: ", str.s, "\n", "Arguments: ", NULL);
   strlist_dump(buffer_2, &args);
   buffer_putnlflush(buffer_2);
 #endif
@@ -219,10 +218,7 @@ main(int argc, char* argv[]) {
       case 'f': in_type = unix_optarg; break;
 
       case 'h': usage(str_basename(argv[0])); exit(EXIT_SUCCESS);
-      default: /* '?' */
-        buffer_putm_internal(
-            buffer_2, "Usage: ", argv[0], "[-t TYPE] [file]\n", NULL);
-        exit(EXIT_FAILURE);
+      default: /* '?' */ buffer_putm_internal(buffer_2, "Usage: ", argv[0], "[-t TYPE] [file]\n", NULL); exit(EXIT_FAILURE);
     }
   }
 
@@ -232,11 +228,7 @@ main(int argc, char* argv[]) {
     if(!str_diff(in_file, "-")) {
       in_fd = 0;
     } else if(in_file == NULL || (in_fd = open_read(in_file)) == -1) {
-      buffer_putm_internal(buffer_2,
-                           "No such file: ",
-                           in_file ? in_file : "(null)",
-                           "\n",
-                           NULL);
+      buffer_putm_internal(buffer_2, "No such file: ", in_file ? in_file : "(null)", "\n", NULL);
       buffer_flush(buffer_2);
       exit(1);
     }
@@ -244,8 +236,7 @@ main(int argc, char* argv[]) {
 
   buffer_read_fd(input, in_fd);
 
-  for(stralloc_init(&sa); buffer_getline_sa(input, &sa);
-      stralloc_zero(&sa)) {
+  for(stralloc_init(&sa); buffer_getline_sa(input, &sa); stralloc_zero(&sa)) {
     ++line;
     stralloc_trimr(&sa, "\r\n", 2);
 

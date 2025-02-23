@@ -19,11 +19,7 @@
  * here
  */
 void
-path_prefix_b(const stralloc* prefix,
-              const char* x,
-              size_t n,
-              stralloc* out,
-              char psm) {
+path_prefix_b(const stralloc* prefix, const char* x, size_t n, stralloc* out, char psm) {
   if(prefix->len && !stralloc_equals(prefix, ".")) {
     stralloc_cat(out, prefix);
 
@@ -44,10 +40,7 @@ path_prefix_b(const stralloc* prefix,
  * here
  */
 void
-path_prefix_s(const stralloc* prefix,
-              const char* path,
-              stralloc* out,
-              char psm) {
+path_prefix_s(const stralloc* prefix, const char* path, stralloc* out, char psm) {
   path_prefix_b(prefix, path, str_len(path), out, psm);
   stralloc_nul(out);
 }
@@ -165,6 +158,7 @@ const char*
 path_mmap_read(const char* path, size_t* n, char psm) {
   const char* x;
   stralloc sa;
+
   stralloc_init(&sa);
 
   if(dirs.this.sa.s) {
@@ -184,23 +178,34 @@ path_mmap_read(const char* path, size_t* n, char psm) {
 void
 path_normalize(const char* dir, stralloc* out) {
   stralloc tmp;
+
   stralloc_init(&tmp);
   stralloc_zero(out);
 
+  if(str_start(dir, "./"))
+    dir += 2;
+
   if(!path_is_absolute(dir)) {
-    stralloc_copy(&tmp, &dirs.build.sa);
+    // stralloc_copy(&tmp, &dirs.build.sa);
+    stralloc_copy(&tmp, &dirs.this.sa);
+    path_absolute_sa(&tmp);
+
     path_appends(dir, &tmp);
     path_canonical_sa(&tmp);
   } else {
+
     path_canonical(dir, &tmp);
   }
 
-  // stralloc_nul(&tmp);
-  if(dirs.out.sa.s)
-    path_relative_to_b(
-        tmp.s, tmp.len, dirs.out.sa.s, dirs.out.sa.len, out);
-  else
-    stralloc_copy(out, &tmp);
+  /*if(dirs.out.sa.s) {
+    stralloc outdir;
+    stralloc_init(&outdir);
+    stralloc_copy(&outdir, &dirs.out.sa);
+    path_absolute_sa(&outdir);
+    path_relative_to_b(tmp.s, tmp.len, outdir.s, outdir.len, out);
+    stralloc_free(&outdir);
+  } else*/
+  stralloc_copy(out, &tmp);
 
   stralloc_free(&tmp);
 }
@@ -208,6 +213,7 @@ path_normalize(const char* dir, stralloc* out) {
 void
 path_normalize_b(const char* x, size_t len, stralloc* out) {
   stralloc tmp;
+
   stralloc_init(&tmp);
   stralloc_copyb(&tmp, x, len);
   stralloc_nul(&tmp);

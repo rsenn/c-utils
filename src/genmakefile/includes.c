@@ -10,7 +10,7 @@
 #include "../../debug.h"
 #include "../../genmakefile.h"
 
-strlist include_dirs = {0};
+strlist include_dirs = {0, 0, 0};
 
 /**
  * @brief includes_extract  Extract #include directives
@@ -78,22 +78,16 @@ void
 includes_cppflags(void) {
   const char* dir;
   stralloc arg;
+
   stralloc_init(&arg);
 
   strlist_foreach_s(&include_dirs, dir) {
-
     stralloc_zero(&arg);
     stralloc_cats(&arg, dir);
     // path_relative_to(dir, dirs.this.sa.s, &arg);
 
 #ifdef DEBUG_OUTPUT
-    buffer_putm_internal(buffer_2,
-                         "[1]",
-                         PINK256,
-                         "includes_cppflags",
-                         NC,
-                         " include_dir=",
-                         0);
+    buffer_putm_internal(buffer_2, "[1]", PINK256, "includes_cppflags", NC, " include_dir=", 0);
     buffer_putsa(buffer_2, &arg);
     buffer_putnlflush(buffer_2);
 #endif
@@ -101,6 +95,7 @@ includes_cppflags(void) {
     stralloc_prepends(&arg, "-I");
     var_push_sa("CPPFLAGS", &arg);
   }
+
   stralloc_free(&arg);
 }
 
@@ -127,20 +122,27 @@ includes_get(const char* srcfile, strlist* includes, int sys, char psm) {
 
 void
 includes_add_b(const char* dir, size_t len) {
-  static stralloc abs;
-  stralloc_zero(&abs);
+  stralloc d, tmp, to;
 
-  stralloc_copyb(&abs, dir, len);
-  // path_normalize_b(dir, len, &abs);
+  stralloc_init(&d);
+  stralloc_init(&tmp);
+  stralloc_init(&to);
 
-  if(strlist_push_unique_sa(&include_dirs, &abs)) {
+  path_normalize_b(dir, len, &d);
+  path_absolute(dirs.work.sa.s, &to);
+  path_relative_to_b(d.s, d.len, to.s, to.len, &tmp);
+  stralloc_free(&d);
+
+  if(strlist_push_unique_sa(&include_dirs, &tmp)) {
 #ifdef DEBUG_OUTPUT
-    buffer_putm_internal(
-        buffer_2, "[1]", PINK256, "includes_add_b", NC, " abs=", 0);
-    buffer_putsa(buffer_2, &abs);
+    buffer_putm_internal(buffer_2, "[1]", PINK256, "includes_add_b", NC, " tmp=", 0);
+    buffer_putsa(buffer_2, &tmp);
     buffer_putnlflush(buffer_2);
 #endif
   }
+
+  stralloc_free(&tmp);
+  stralloc_free(&to);
 }
 
 void
@@ -170,8 +172,7 @@ includes_to_libs(const set_t* includes, strlist* libs) {
     stralloc_zero(&sa);
     path_append(s, n, &sa);
 
-    if(!(n > str_len(libpfx) && byte_equal(s, str_len(libpfx), libpfx)) &&
-       byte_chr(s, n, PATHSEP_C) == n)
+    if(!(n > str_len(libpfx) && byte_equal(s, str_len(libpfx), libpfx)) && byte_chr(s, n, PATHSEP_C) == n)
       path_concatb(libpfx, str_len(libpfx), sa.s, sa.len, &sa);
 
     path_concatb(dirs.this.sa.s, dirs.this.sa.len, sa.s, sa.len, &sa);

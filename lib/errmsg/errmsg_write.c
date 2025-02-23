@@ -3,10 +3,7 @@
 #include <stdarg.h>
 
 void
-errmsg_write(int64 fd,
-             const char* err,
-             const char* message,
-             va_list list) {
+errmsg_write(int64 fd, const char* err, const char* message, va_list list) {
   errmsg_start(fd);
   errmsg_puts(fd, message);
   for(;;) {

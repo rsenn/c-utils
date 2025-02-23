@@ -4,11 +4,7 @@
 #include "../scan.h"
 
 static int
-json_read_value(jsonreader* reader,
-                jsontype id,
-                stralloc* name,
-                stralloc* value,
-                MAP_T* attrs) {
+json_read_value(jsonreader* reader, jsontype id, stralloc* name, stralloc* value, MAP_T* attrs) {
   return 1;
 }
 

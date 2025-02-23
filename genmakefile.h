@@ -70,10 +70,7 @@ typedef struct {
   const char *toolchain, *compiler, *make, *preproc;
 } tools_t;
 
-typedef enum {
-  MAKE_IMPLICIT_RULES = 0x01,
-  MAKE_PATTERN_RULES = 0x02
-} tool_config_t;
+typedef enum { MAKE_IMPLICIT_RULES = 0x01, MAKE_PATTERN_RULES = 0x02 } tool_config_t;
 
 typedef enum {
   BUILD_TYPE_RELEASE = 0,
