@@ -95,13 +95,15 @@ is_filename_b(const char* filename, size_t len) {
 
   if(dirpos < len)
     return 1;
+
   if(extpos + 1 < len) {
-    size_t i;
-    for(i = extpos + 1; i < len; i++)
+    for(size_t i = extpos + 1; i < len; i++)
       if(!isalnum(filename[i]))
         return 0;
+
     return 1;
   }
+
   return 0;
 }
 

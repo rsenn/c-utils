@@ -16,11 +16,25 @@ static const char tok_charset[] = {
     'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
 };
 
+/**
+ * @brief      Determines whether the specified ch is newline.
+ *
+ * @param[in]  ch    { parameter_description }
+ *
+ * @return     True if the specified ch is newline, False otherwise.
+ */
 static inline bool
 is_newline(const char ch) {
   return ch == '\r' || ch == '\n';
 }
 
+/**
+ * @brief      Extract tokens from a buffer
+ *
+ * @param[in]  x       Buffer
+ * @param[in]  n       Buffer length
+ * @param      tokens  Set that receives tokens
+ */
 static void
 extract_tokens(const char* x, size_t n, set_t* tokens) {
   size_t i;
@@ -54,11 +68,11 @@ extract_tokens(const char* x, size_t n, set_t* tokens) {
 }
 
 /**
- * @brief extract_pptok  Extract preprocessor tokens directives
- * @param x
- * @param n
- * @param includes
- * @param sys
+ * @brief     Extracts preprocessor tokens from a buffer
+ *
+ * @param[in]  x       Buffer
+ * @param[in]  n       Buffer length
+ * @param      tokens  Set that receives tokens
  */
 static void
 extract_pptok(const char* x, size_t n, set_t* tokens) {
@@ -128,10 +142,18 @@ extract_pptok(const char* x, size_t n, set_t* tokens) {
 }
 
 /**
- * @defgroup source dir functions
+ * @defgroup   Source directory functions
  * @{
+ *
+ * @brief      Add source file to source directory
+ *
+ * @param[in]  source   Source file
+ * @param      sources  Global sources array
+ * @param      progs    Programs array
+ * @param      bins     Binaries array
+ * @param[in]  psm      Path separator for makefile
  */
-void
+struct sourcefile_s*
 sourcedir_addsource(const char* source, strarray* sources, strarray* progs, strarray* bins, char psm) {
   stralloc r, dir, tmp;
   strlist list;
@@ -142,41 +164,48 @@ sourcedir_addsource(const char* source, strarray* sources, strarray* progs, stra
   sourcefile* file;
   struct dnode* node;
 
+  if(!path_exists(source)) {
+#ifdef DEBUG_OUTPUT
+    buffer_puts(buffer_2, "Path doesn't exist: ");
+    buffer_puts(buffer_2, source);
+    buffer_putnlflush(buffer_2);
+#endif
+
+    return 0;
+
+#if defined(__x86_64__) || defined(__i386__)
+    __asm__("int3");
+#endif
+  }
+
+  if(!(file = sources_new(source, exts.bin, progs, bins)))
+    return 0;
+
   stralloc_init(&dir);
   stralloc_init(&tmp);
   stralloc_init(&r);
   strlist_init(&list, '\0');
   strlist_zero(&list);
 
-#ifdef DEBUG_OUTPUT_
+#ifdef DEBUG_OUTPUT
   buffer_putm_internal(buffer_2, "[1]", BLUE256, "sourcedir_addsource(", NC, source, BLUE256, ") ", NC, NULL);
   buffer_putnlflush(buffer_2);
 #endif
 
-  file = sources_new(source, exts.bin, progs, bins);
   path_dirname(source, &dir);
   stralloc_nul(&dir);
   dlen = dir.len;
   source = path_clean_s(source);
   srcdir = sourcedir_getsa(&dir);
+
   slist_add(&srcdir->sources, &file->link);
+
   node = alloc(sizeof(struct dnode) + sizeof(sourcefile*));
+
   dlist_data(node, sourcefile*) = file;
   dlist_push(&sources_list, node);
+
   ++srcdir->n_sources;
-
-  if(!path_exists(source)) {
-
-#ifdef DEBUG_OUTPUT
-    buffer_puts(buffer_2, "Path doesn't exist: ");
-    buffer_puts(buffer_2, source);
-    buffer_putnlflush(buffer_2);
-#endif
-    return;
-#if defined(__x86_64__) || defined(__i386__)
-    __asm__("int3");
-#endif
-  }
 
   if((x = path_mmap_read(source, &n, psm)) != 0) {
     includes_extract(x, n, &list, 0);
@@ -188,6 +217,7 @@ sourcedir_addsource(const char* source, strarray* sources, strarray* progs, stra
 
   set_foreach_it(&file->pptoks, it) {
     x = set_iterator_value(&it, &n);
+
     if(n >= 5 && (byte_equal(x, 4, "USE_") || byte_equal(x, 5, "HAVE_")))
       set_add(&srcdir->pptoks, x, n);
   }
@@ -217,16 +247,21 @@ sourcedir_addsource(const char* source, strarray* sources, strarray* progs, stra
   }
 
   dir.len = dlen;
+
   strlist_free(&list);
   stralloc_free(&dir);
   stralloc_free(&tmp);
   stralloc_free(&r);
+
+  return file;
 }
 
 /**
- * @brief sourcedir_find  Searches for a source directory
- * @param path           Path string
- * @return               Pointer to sourcedir structure or NULL
+ * @brief      Searches for a source directory
+ *
+ * @param      path  Path string
+ *
+ * @return     Pointer to sourcedir structure or NULL
  */
 sourcedir*
 sourcedir_find(const char* path) {
@@ -239,9 +274,11 @@ sourcedir_find(const char* path) {
 }
 
 /**
- * @brief sourcedir_findsa Searches for a source directory
- * @param path             Path stralloc
- * @return                 Pointer to sourcedir structure or NULL
+ * @brief      Searches for a source directory
+ *
+ * @param      path  Path stralloc
+ *
+ * @return     Pointer to sourcedir structure or NULL
  */
 sourcedir*
 sourcedir_findsa(stralloc* path) {
@@ -256,10 +293,12 @@ sourcedir_findsa(stralloc* path) {
 }
 
 /**
- * @brief sourcedir_findb  Searches for a source directory
- * @param x                Path buffer
- * @param n                Length of path
- * @return               Pointer to sourcedir structure or NULL
+ * @brief      Searches for a source directory
+ *
+ * @param      x     Path buffer
+ * @param      n     Length of path
+ *
+ * @return     Pointer to sourcedir structure or NULL
  */
 sourcedir*
 sourcedir_findb(const char* x, size_t n) {
@@ -273,6 +312,14 @@ sourcedir_findb(const char* x, size_t n) {
   return ret;
 }
 
+/**
+ * @brief      Gets a source directory (searches first, if not found, create it)
+ *
+ * @param[in]  x     Source directory name
+ * @param[in]  n     Source directory name length
+ *
+ * @return     Pointer to sourcedir structure
+ */
 sourcedir*
 sourcedir_getb(const char* x, size_t n) {
   sourcedir *s, **ptr;
@@ -290,6 +337,13 @@ sourcedir_getb(const char* x, size_t n) {
   return s;
 }
 
+/**
+ * @brief      Gets a source directory (searches first, if not found, create it)
+ *
+ * @param      path  Source directory path
+ *
+ * @return     Pointer to sourcedir structure
+ */
 sourcedir*
 sourcedir_getsa(stralloc* path) {
   stralloc_nul(path);
@@ -298,9 +352,9 @@ sourcedir_getsa(stralloc* path) {
 }
 
 /**
- * @brief sourcedir_populate  Creates a hash-map of all source directories
- * @param sources_set
- * @param srcdir_map
+ * @brief      Creates a hash-map of all source directories
+ *
+ * @param      sources_set  The sources set
  */
 void
 sourcedir_populate(strarray* sources_set) {
@@ -332,6 +386,7 @@ sourcedir_populate(strarray* sources_set) {
 
   MAP_FOREACH(srcdir_map, t) {
     sourcedir* dir = *(sourcedir**)MAP_ITER_VALUE(t);
+
     strlist_zero(&d);
     sourcedir_deps(dir, &d);
     strlist_foreach(&d, x, n) { set_add(&dir->deps, x, n); }
@@ -341,9 +396,9 @@ sourcedir_populate(strarray* sources_set) {
 }
 
 /**
- * @brief sourcedir_dump_all
- * @param b
- * @param srcdir_map
+ * @brief      Dumps all source directories
+ *
+ * @param      b     Output buffer
  */
 void
 sourcedir_dump_all(buffer* b) {
@@ -369,80 +424,84 @@ sourcedir_dump_all(buffer* b) {
   }
 }
 
+/**
+ * @brief      Gets recursive dependencies of a source directory
+ *
+ * @param      srcdir       The source directory
+ * @param      out          Output list
+ * @param[in]  serial       Serial number
+ * @param      parent       Parent directory
+ */
 void
-sourcedir_dep_recursive(sourcedir* sources_dir, strlist* out, uint32 serial, sourcedir* parent) {
+sourcedir_dep_recursive(sourcedir* srcdir, strlist* out, uint32 serial, sourcedir* parent) {
   const char* s;
   size_t n;
   set_iterator_t it;
   sourcedir* sdir;
 
-  if(sources_dir->serial == serial)
+  if(srcdir->serial == serial)
     return;
 
-  set_foreach(&sources_dir->deps, it, s, n) {
+  set_foreach(&srcdir->deps, it, s, n) {
     if(!strlist_containsb(out, s, n)) {
-      if((sdir = sourcedir_findb(s, n)) && sdir != sources_dir) {
+      if((sdir = sourcedir_findb(s, n)) && sdir != srcdir) {
         if(sdir->serial == serial)
           continue;
 
         if(sdir == parent)
           continue;
 
-        sources_dir->serial = serial;
-        sourcedir_dep_recursive(sdir, out, serial, sources_dir);
+        srcdir->serial = serial;
+        sourcedir_dep_recursive(sdir, out, serial, srcdir);
         strlist_pushb(out, s, n);
       }
     }
   }
 }
 
+/**
+ * @brief      Get all dependencies of a source directory
+ *
+ * @param      srcdir  The source directory
+ * @param      out          Output list
+ */
 void
-sourcedir_deps(sourcedir* sources_dir, strlist* out) {
+sourcedir_deps(sourcedir* srcdir, strlist* out) {
   uint32 serial = uint32_random();
-  return sourcedir_dep_recursive(sources_dir, out, serial, 0);
+
+  return sourcedir_dep_recursive(srcdir, out, serial, 0);
 }
 
+/**
+ * @brief      Get all dependencies of a source directory
+ *
+ * @param[in]  name  Source directory name
+ * @param      out   Output list
+ */
 void
-sourcedir_deps_s(const char* sources_dir, strlist* out) {
-  sourcedir* sdir = sourcedir_getb(sources_dir, str_len(sources_dir) + 1);
+sourcedir_deps_s(const char* name, strlist* out) {
+  sourcedir* sdir = sourcedir_getb(name, str_len(name) + 1);
   assert(sdir);
   return sourcedir_deps(sdir, out);
 }
 
+/**
+ * @brief      Get all dependencies of a source directory
+ *
+ * @param[in]  name     Source directory name
+ * @param[in]  namelen  Source directory name length
+ * @param      out      Output list
+ */
 void
-sourcedir_deps_b(const char* sdir, size_t sdirlen, strlist* out) {
+sourcedir_deps_b(const char* name, size_t namelen, strlist* out) {
   stralloc sa;
 
   stralloc_init(&sa);
-  stralloc_copyb(&sa, sdir, sdirlen);
+  stralloc_copyb(&sa, name, namelen);
 
   sourcedir_deps_s(sa.s, out);
 
   stralloc_free(&sa);
-}
-
-void
-sourcedir_printdeps(sourcedir* sources_dir, buffer* b, int depth) {
-  const char* s;
-  size_t n;
-  set_iterator_t it;
-  sourcedir* sdir;
-  strlist deps;
-
-  strlist_init(&deps, '\0');
-
-  set_foreach(&sources_dir->deps, it, s, n) {
-    if(strlist_pushb_unique(&deps, s, n)) {
-      buffer_putnspace(buffer_2, depth * 2);
-      buffer_put(buffer_2, s, n);
-      buffer_putnlflush(buffer_2);
-
-      if((sdir = sourcedir_findb(s, n)))
-        sourcedir_printdeps(sdir, b, depth + 1);
-    }
-  }
-
-  strlist_free(&deps);
 }
 
 /**

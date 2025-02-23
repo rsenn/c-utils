@@ -9,6 +9,7 @@
 #include "windoze.h"
 #include "stralloc.h"
 #include "str.h"
+#include "set.h"
 
 #include <limits.h>
 

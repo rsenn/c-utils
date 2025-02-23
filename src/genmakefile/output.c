@@ -2,30 +2,43 @@
 #include "../../debug.h"
 #include "ansi.h"
 
+/**
+ * @brief      Extract variables from buffer
+ *
+ * @param[in]  x     Buffer
+ * @param[in]  len   Length
+ * @param      s     Output set
+ */
 static void
-extract_vars(const char* x, size_t len, set_t* s) {
-  size_t i;
+extract_vars(const char* x, size_t len, set_t* out) {
+  set_clear(out);
 
-  set_clear(s);
-
-  for(i = 0; i < len; ++i) {
+  for(size_t i = 0; i < len; ++i) {
     const char* p = &x[i];
 
     if(i + 4 <= len && *p == '$' && p[1] == '(') {
       size_t vlen;
+
       i += 2;
       vlen = byte_chr(&x[i], len - i, ')');
-      set_add(s, &x[i], vlen);
+      set_add(out, &x[i], vlen);
       i += vlen;
+
       continue;
     }
   }
 }
 
 /**
- * @brief output_all_vars  Output all variables
- * @param b
- * @param vars
+ * @brief      Output variable
+ *
+ * @param      b       { parameter_description }
+ * @param      vars    The variables
+ * @param[in]  name    The name
+ * @param[in]  serial  The serial
+ * @param[in]  ninja   The ninja
+ * @param[in]  batch   The batch
+ * @param[in]  shell   The shell
  */
 void
 output_var(buffer* b, MAP_T* vars, const char* name, int serial, bool ninja, bool batch, bool shell) {
@@ -58,6 +71,7 @@ output_var(buffer* b, MAP_T* vars, const char* name, int serial, bool ninja, boo
 
       if(!infile) {
         extract_vars(var->value.sa.s, var->value.sa.len, &refvars);
+
         set_foreach(&refvars, it, ref, len) {
 #ifdef DEBUG_OUTPUT
           buffer_putm_internal(buffer_2, "Var ", name, " ref: ", ref, NULL);
@@ -107,6 +121,7 @@ output_var(buffer* b, MAP_T* vars, const char* name, int serial, bool ninja, boo
     }
 
     stralloc_free(&v);
+
     MAP_DELETE(*vars, MAP_ITER_KEY(t), str_len(MAP_ITER_KEY(t)));
   }
 
@@ -114,9 +129,14 @@ output_var(buffer* b, MAP_T* vars, const char* name, int serial, bool ninja, boo
 }
 
 /**
- * @brief output_all_vars  Output all variables
- * @param b
- * @param vars
+ * @brief       Output all variables
+ *
+ * @param      b         { parameter_description }
+ * @param      vars      The variables
+ * @param      varnames  The varnames
+ * @param[in]  ninja     The ninja
+ * @param[in]  batch     The batch
+ * @param[in]  shell     The shell
  */
 void
 output_all_vars(buffer* b, MAP_T* vars, strlist* varnames, bool ninja, bool batch, bool shell) {
@@ -125,25 +145,36 @@ output_all_vars(buffer* b, MAP_T* vars, strlist* varnames, bool ninja, bool batc
 
   stralloc_nul(&varnames->sa);
   ++serial;
+
   strlist_foreach_s(varnames, name) { output_var(b, vars, name, serial, ninja, batch, shell); }
+
   buffer_putnl(b, 1);
 }
 
 /**
- * @brief output_make_rule  Output rule to buffer
- * @param b
- * @param rule
+ * @brief      Output a make rule
+ *
+ * @param      b                Output buffer
+ * @param      rule             The rule
+ * @param[in]  batch            Batch file?
+ * @param[in]  shell            Shell script?
+ * @param[in]  quote_args
+ * @param[in]  psa              Path separator for arguments
+ * @param[in]  psm              Path separator in Makefile
+ * @param[in]  make_sep_inline  Make separator inline
  */
-
 void
 output_make_rule(buffer* b, target* rule, bool batch, bool shell, const char quote_args[], char psa, char psm, const char* make_sep_inline) {
   const char* x;
-  static stralloc output, sa, name;
-  size_t n, num_prereqs;
-  num_prereqs = set_size(&rule->prereq);
+  stralloc output, sa, name;
+  size_t n, num_prereqs = set_size(&rule->prereq);
+
   debug_nl = "\n";
 
-  stralloc_zero(&name);
+  stralloc_init(&output);
+  stralloc_init(&sa);
+  stralloc_init(&name);
+
   stralloc_copys(&name, rule->name);
 
 #ifdef DEBUG_OUTPUT
@@ -178,7 +209,6 @@ output_make_rule(buffer* b, target* rule, bool batch, bool shell, const char quo
 #endif
 
   strlist_foreach(&rule->vars, x, n) {
-    // buffer_puts(b, "output: ");
     buffer_putsa(b, &sa);
     buffer_puts(b, ": ");
     buffer_put(b, x, n);
@@ -214,8 +244,6 @@ output_make_rule(buffer* b, target* rule, bool batch, bool shell, const char quo
 
     stralloc_cats(&output, num_prereqs > 1 ? " \\\n\t" : " ");
 
-    /*set_join(&rule->prereq, num_prereqs > 1 ? " \\\n\t" : " ",
-     * &output);*/
     set_foreach_ordered(&rule->prereq, it, str, len) {
       if(stralloc_endb(&output, str, len))
         continue;
@@ -226,18 +254,18 @@ output_make_rule(buffer* b, target* rule, bool batch, bool shell, const char quo
       stralloc_catb(&output, str, len);
       i++;
     }
-    // stralloc_replacec(&output, psm == '/' ? '\\' : '/', psm);
   }
 
-  // stralloc_zero(&output);
   if(rule->recipe.s) {
     stralloc cmd;
+
     stralloc_init(&cmd);
 
+    /* XXX
     if(infile && (signed)rule->type >= 0)
       stralloc_copy(&cmd, &commands.v[rule->type]);
-    else
-      rule_command(rule, &cmd, shell, batch, quote_args, psa, make_sep_inline, tools.make);
+    else*/
+    rule_command(rule, &cmd, shell, batch, quote_args, psa, make_sep_inline, tools.make);
 
     stralloc_remove_all(&cmd, "\0", 1);
 
@@ -251,6 +279,7 @@ output_make_rule(buffer* b, target* rule, bool batch, bool shell, const char quo
 
     if(str_end(rule->name, ":")) {
       bucket_t* b;
+
       stralloc_catc(&output, '\n');
       stralloc_catc(&output, '\n');
 
@@ -275,21 +304,25 @@ output_make_rule(buffer* b, target* rule, bool batch, bool shell, const char quo
 
   buffer_putsa(b, &output);
   buffer_flush(b);
+
+  stralloc_free(&name);
+  stralloc_free(&sa);
+  stralloc_free(&output);
 }
 
 /**
- * @brief generate_clean_rule
- * @param rules
- */
-/**
- * @brief output_ninja_rule
- * @param b
- * @param rule
+ * @brief      Output a Ninja target
+ *
+ * @param      b     Output buffer
+ * @param      rule  The rule
+ * @param[in]  psa   Path separator for arguments
  */
 void
-output_ninja_rule(buffer* b, target* rule, char psa) {
+output_ninja_target(buffer* b, target* rule, char psa) {
   const char* rule_name = 0;
-  stralloc source_file, obj_dir;
+  stralloc obj_dir;
+
+  stralloc_init(&obj_dir);
 
   if(rule_is_compile(rule) || rule->recipe.s == commands.compile.s)
     rule_name = "cc";
@@ -300,23 +333,20 @@ output_ninja_rule(buffer* b, target* rule, char psa) {
 
   if(rule_name) {
     stralloc path;
+
     stralloc_init(&path);
     set_at_sa(&rule->output, 0, &path);
 
     stralloc_replaces(&path, dirs.build.sa.s, "$objdir");
-    // stralloc_replaces(&path, dirs.out.sa.s, "$distdir");
 
-    /*stralloc_subst(
-        &path, rule->name, str_len(rule->name), psa == '/' ? "\\" : "/",
-       psa == '/' ? "/" : "\\");*/
     buffer_puts(b, "build ");
     buffer_putsa(b, &path);
     buffer_puts(b, ": ");
     buffer_puts(b, rule_name);
     buffer_puts(b, " ");
+
     stralloc_zero(&path);
-    stralloc_init(&source_file);
-    stralloc_init(&obj_dir);
+
     path_relative_to_sa(&dirs.out.sa, &dirs.work.sa, &obj_dir);
 
     {
@@ -324,6 +354,7 @@ output_ninja_rule(buffer* b, target* rule, char psa) {
       size_t n, i = 0;
       set_iterator_t it;
       stralloc tmp, outdir;
+
       stralloc_init(&tmp);
       stralloc_init(&outdir);
       path_concat_sa(&dirs.this.sa, &dirs.out.sa, &outdir);
@@ -331,15 +362,9 @@ output_ninja_rule(buffer* b, target* rule, char psa) {
       set_foreach(&rule->prereq, it, x, n) {
         if(i)
           stralloc_catc(&path, ' ');
-        /*     path_concatb(dirs.this.sa.s, dirs.this.sa.len, x, n,
-           &source_file);
 
-             path_relative_to_sa(&source_file, &dirs.build.sa, &tmp);
-             stralloc_cat(&path, &tmp);
-     */
         stralloc_catb(&path, x, n);
         stralloc_zero(&tmp);
-        stralloc_zero(&source_file);
         i++;
       }
 
@@ -347,65 +372,32 @@ output_ninja_rule(buffer* b, target* rule, char psa) {
       stralloc_free(&outdir);
     }
 
-    stralloc_free(&source_file);
     stralloc_nul(&path);
 
-    // stralloc_catset(&path, &rule->prereq, " ");
     stralloc_replacec(&path, psa == '/' ? '\\' : '/', psa == '/' ? '/' : '\\');
     stralloc_replaces(&path, dirs.build.sa.s, "$objdir");
-    // stralloc_replaces(&path, dirs.out.sa.s, "$distdir/");
 
     buffer_putsa(b, &path);
     buffer_putnlflush(b);
-    stralloc_free(&obj_dir);
+
     stralloc_free(&path);
   }
+
+  stralloc_free(&obj_dir);
 }
 
 /**
- * @brief output_all_rules  Output the rule set
- * @param b
- * @param hmap
+ * @brief      Output a Ninja build rule
+ *
+ * @param      b     Output buffer
+ * @param      name  Rule name
+ * @param      cmd   Command
  */
 void
-output_all_rules(buffer* b, bool ninja, bool batch, bool shell, const char quote_args[], char psa, char psm, const char* make_sep_inline) {
-  MAP_PAIR_T t;
+output_ninja_rule(buffer* b, const char* name, const stralloc* cmd) {
+  stralloc out;
 
-  MAP_FOREACH(rules, t) {
-    // target* rule = MAP_ITER_VALUE(t);
-    const char* name = MAP_ITER_KEY(t);
-    target* rule = MAP_ITER_VALUE(t);
-    if(!cmd_libs && str_end(name, ".a"))
-      continue;
-
-    if(rule->disabled)
-      continue;
-
-#ifdef DEBUG_OUTPUT
-    buffer_puts(buffer_2, "Outputting rule '");
-    buffer_puts(buffer_2, name);
-    buffer_putc(buffer_2, '\'');
-    buffer_putnlflush(buffer_2);
-#endif
-
-    if(ninja)
-      output_ninja_rule(b, rule, psa);
-    else
-      output_make_rule(b, rule, batch, shell, quote_args, psa, psm, make_sep_inline);
-  }
-}
-
-/**
- * @brief output_build_rules
- * @param b
- * @param name
- * @param cmd
- */
-void
-output_build_rules(buffer* b, const char* name, const stralloc* cmd) {
-  static stralloc out;
-
-  stralloc_zero(&out);
+  stralloc_init(&out);
 
   buffer_putm_internal(b, "rule ", name, "\n  command = ", NULL);
 
@@ -422,12 +414,60 @@ output_build_rules(buffer* b, const char* name, const stralloc* cmd) {
 
   buffer_putsa(b, &out);
   buffer_putsflush(b, newline);
+
+  stralloc_free(&out);
 }
 
 /**
- * @brief output_script
- * @param b
- * @param rule
+ * @brief       Output the rule set
+ *
+ * @param      b                Output buffer
+ * @param[in]  ninja            Is Ninja rule?
+ * @param[in]  batch            is Batch file?
+ * @param[in]  shell            is Shell script?
+ * @param[in]  quote_args       Quote arguments
+ * @param[in]  psa              Path separator for arguments
+ * @param[in]  psm              Path separator for Makefile
+ * @param[in]  make_sep_inline  Make separator inline
+ */
+void
+output_all_rules(buffer* b, bool ninja, bool batch, bool shell, const char quote_args[], char psa, char psm, const char* make_sep_inline) {
+  MAP_PAIR_T t;
+
+  MAP_FOREACH(rules, t) {
+    const char* name = MAP_ITER_KEY(t);
+    target* rule = MAP_ITER_VALUE(t);
+
+    if(!cmd_libs && str_end(name, ".a"))
+      continue;
+
+    if(rule->disabled)
+      continue;
+
+#ifdef DEBUG_OUTPUT
+    buffer_puts(buffer_2, "Outputting rule '");
+    buffer_puts(buffer_2, name);
+    buffer_putc(buffer_2, '\'');
+    buffer_putnlflush(buffer_2);
+#endif
+
+    if(ninja)
+      output_ninja_target(b, rule, psa);
+    else
+      output_make_rule(b, rule, batch, shell, quote_args, psa, psm, make_sep_inline);
+  }
+}
+
+/**
+ * @brief      Output a script
+ *
+ * @param      b                { parameter_description }
+ * @param      rule             The rule
+ * @param[in]  shell            The shell
+ * @param[in]  batch            The batch
+ * @param[in]  quote_args       The quote arguments
+ * @param[in]  psa              The psa
+ * @param[in]  make_sep_inline  The make separator inline
  */
 void
 output_script(buffer* b, target* rule, bool shell, bool batch, const char quote_args[], char psa, const char* make_sep_inline) {
@@ -446,10 +486,9 @@ output_script(buffer* b, target* rule, bool shell, bool batch, const char quote_
   if(rule->serial == serial)
     return;
 
-  if(!rule->name[str_chr(rule->name, '%')]) {
+  if(!rule->name[str_chr(rule->name, '%')])
     if(rule->recipe.s != commands.compile.s)
       buffer_putm_internal(b, newline, "REM Rules for '", rule->name, "'", newline, NULL);
-  }
 
   set_foreach(&rule->prereq, it, x, n) {
     target* dep = rule_find_b(x, n);
@@ -462,6 +501,7 @@ output_script(buffer* b, target* rule, bool shell, bool batch, const char quote_
 
   if(array_length(&rule->objs, sizeof(target*))) {
     target** tptr;
+
     array_foreach_t(&rule->objs, tptr) {
       target* dep = *tptr;
 
@@ -474,17 +514,19 @@ output_script(buffer* b, target* rule, bool shell, bool batch, const char quote_
 
   if(rule->recipe.len) {
     stralloc cmd;
+
     stralloc_init(&cmd);
+
     rule_command(rule, &cmd, shell, batch, quote_args, psa, make_sep_inline, tools.make);
     buffer_putsa(b, &cmd);
-    stralloc_free(&cmd);
     buffer_puts(b, " || GOTO FAIL");
+
+    stralloc_free(&cmd);
   }
 
-  if(str_equal(rule->name, "all")) {
+  if(str_equal(rule->name, "all"))
     buffer_putm_internal(
         b, newline, ":SUCCESS", newline, "ECHO Done.", newline, "GOTO QUIT", newline, newline, ":FAIL", newline, "ECHO Fail.", newline, newline, ":QUIT", newline, 0);
-  }
 
   buffer_putnl(b, flush);
   rule->serial = serial;

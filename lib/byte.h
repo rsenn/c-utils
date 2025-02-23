@@ -91,7 +91,7 @@ size_t byte_ccopy(void* dst, size_t count, const void* src, char c);
 /* read only trim-left */
 const char* byte_triml(const char* x, size_t* len, const char* charset, unsigned int charsetlen);
 
-size_t byte_trimr(char* x, size_t n, const char* trimchars, unsigned int trimcharslen);
+size_t byte_trimr(const char* x, size_t n, const char* trimchars, unsigned int trimcharslen);
 
 static inline char*
 byte_trim(char* x, size_t* n, const char* trimchars, unsigned int trimcharslen) {

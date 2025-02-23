@@ -8,15 +8,15 @@
  * @defgroup path functions
  * @{
  */
+
 /**
- * @brief path_prefix_b Adds a prefix to
- * the specified path
- * @param prefix        Prefix to add
- * @param x             The path buffer
- * @param n             Length of path
- * buffer
- * @param out           Write output
- * here
+ * @brief       Adds a prefix to the specified path
+ *
+ * @param      prefix  Prefix to add
+ * @param      x       The path buffer
+ * @param      n       Length of path buffer
+ * @param      out     Write output here
+ * @param[in]  psm     The psm
  */
 void
 path_prefix_b(const stralloc* prefix, const char* x, size_t n, stralloc* out, char psm) {
@@ -32,12 +32,12 @@ path_prefix_b(const stralloc* prefix, const char* x, size_t n, stralloc* out, ch
 }
 
 /**
- * @brief path_prefix_s Adds a prefix to
- * the specified path
- * @param prefix        Prefix to add
- * @param path          The path string
- * @param out           Write output
- * here
+ * @brief       Adds a prefix to the specified path
+ *
+ * @param      prefix  Prefix to add
+ * @param      path    The path string
+ * @param      out     Write output here
+ * @param[in]  psm     Path separator for makefile
  */
 void
 path_prefix_s(const stralloc* prefix, const char* path, stralloc* out, char psm) {
@@ -45,6 +45,13 @@ path_prefix_s(const stralloc* prefix, const char* path, stralloc* out, char psm)
   stralloc_nul(out);
 }
 
+/**
+ * @brief      Adds a prefix to the specified path
+ *
+ * @param      prefix  Prefix to add
+ * @param      sa      Path string
+ * @param[in]  psm     Path separator for makefile
+ */
 void
 path_prefix_sa(const stralloc* prefix, stralloc* sa, char psm) {
   if(prefix->len && !stralloc_equals(prefix, ".")) {
@@ -58,12 +65,18 @@ path_prefix_sa(const stralloc* prefix, stralloc* sa, char psm) {
 }
 
 /**
- * Change file extension and concatenate
- * it to out.
+ * @brief      Changes extension of a path
+ *
+ * @param[in]  in    Input path
+ * @param      out   Output path
+ * @param[in]  ext   Extension
+ *
+ * @return     Path string
  */
 char*
 path_extension(const char* in, stralloc* out, const char* ext) {
   size_t extpos = str_rchr(in, '.');
+
   stralloc_catb(out, in, extpos);
   stralloc_cats(out, ext);
   stralloc_nul(out);
@@ -72,31 +85,51 @@ path_extension(const char* in, stralloc* out, const char* ext) {
 }
 
 /**
- * @brief path_output  Convert source
- * file name to object file name
- * @param in
- * @param out
- * @return
+ * @brief      Returns an output path
+ *
+ * @param[in]  in    Input path
+ * @param      out   Output path
+ * @param[in]  ext   Extension
+ * @param[in]  psa    Path separator for arguments
+ *
+ * @return     Path string
  */
 char*
-path_output(const char* in, stralloc* out, const char* ext, char psa) {
+path_output2(const char* in, stralloc* out, const char* ext, char psa) {
   stralloc_copy(out, &dirs.build.sa);
   stralloc_catc(out, psa);
 
-  return path_extension(str_basename(in), out, ext);
+  return path_extension(in, out, ext);
 }
 
 /**
- * @brief path_wildcard  Replaces the path basename (without extensions)
- * with a wildcard
- * @param path           The path to replace
- * @param sa             Write output here
- * @return               Output string
+ * @brief      Returns an output path
+ *
+ * @param[in]  in    Input path
+ * @param      out   Output path
+ * @param[in]  ext   Extension
+ * @param[in]  psa    Path separator for arguments
+ *
+ * @return     Path string
+ */
+char*
+path_output(const char* in, stralloc* out, const char* ext, char psa) {
+  return path_output2(str_basename(in), out, ext, psa);
+}
+
+/**
+ * @brief       Replaces the path basename (without extensions)  with a wildcard
+ *
+ * @param      sa        Write output here
+ * @param[in]  wildchar  The wildchar
+ *
+ * @return     Output string
  */
 char*
 path_wildcard(stralloc* sa, const char* wildchar) {
   const char* x;
   size_t n, e;
+
   stralloc_nul(sa);
   x = sa->s;
 
@@ -119,6 +152,13 @@ path_wildcard(stralloc* sa, const char* wildchar) {
   return sa->s;
 }
 
+/**
+ * @brief      Cleans a path
+ *
+ * @param[in]  path  Path string
+ *
+ * @return     Cleaned path string
+ */
 char*
 path_clean_s(const char* path) {
   if(str_startb(path, dirs.this.sa.s, dirs.this.sa.len)) {
@@ -134,6 +174,14 @@ path_clean_s(const char* path) {
   return (char*)path;
 }
 
+/**
+ * @brief      Cleans a path
+ *
+ * @param[in]  path  Path string
+ * @param      len   Path length
+ *
+ * @return     Cleaned path string
+ */
 char*
 path_clean_b(const char* path, size_t* len) {
   if(byte_startb(path, *len, dirs.this.sa.s, dirs.this.sa.len)) {
@@ -154,6 +202,15 @@ path_clean_b(const char* path, size_t* len) {
   return (char*)path;
 }
 
+/**
+ * @brief     Reads a path into a buffer
+ *
+ * @param[in]  path  Path sting
+ * @param      n     Pointer to buffer length
+ * @param[in]  psm   Path separator for makefile
+ *
+ * @return    Pointer to buffer or NULL
+ */
 const char*
 path_mmap_read(const char* path, size_t* n, char psm) {
   const char* x;
@@ -175,6 +232,12 @@ path_mmap_read(const char* path, size_t* n, char psm) {
   return x;
 }
 
+/**
+ * @brief      Normalizes a path
+ *
+ * @param[in]  dir   Directory path
+ * @param      out   Output buffer
+ */
 void
 path_normalize(const char* dir, stralloc* out) {
   stralloc tmp;
@@ -186,7 +249,6 @@ path_normalize(const char* dir, stralloc* out) {
     dir += 2;
 
   if(!path_is_absolute(dir)) {
-    // stralloc_copy(&tmp, &dirs.build.sa);
     stralloc_copy(&tmp, &dirs.this.sa);
     path_absolute_sa(&tmp);
 
@@ -210,6 +272,13 @@ path_normalize(const char* dir, stralloc* out) {
   stralloc_free(&tmp);
 }
 
+/**
+ * @brief      Normalizes a path
+ *
+ * @param[in]  x     Input path
+ * @param[in]  len   Input path length
+ * @param      out   Output path
+ */
 void
 path_normalize_b(const char* x, size_t len, stralloc* out) {
   stralloc tmp;
@@ -228,10 +297,11 @@ path_normalize_b(const char* x, size_t len, stralloc* out) {
 }
 
 /**
- * @brief path_dirname_alloc  Gets directory name from a file path
- * (allocated).
- * @param p
- * @return
+ * @brief      Gets directory name from a file path (allocated).
+ *
+ * @param      p     Path string
+ *
+ * @return     Directory string
  */
 char*
 path_dirname_alloc(const char* p) {
@@ -242,4 +312,42 @@ path_dirname_alloc(const char* p) {
     return str_ndup(p, pos);
 
   return str_dup(".");
+}
+
+/**
+ * @brief      Adds a path to a set
+ *
+ * @param      out     Output set
+ * @param[in]  path  Path string
+ * @param[in]  len   Path length
+ */
+int
+add_path_b(set_t* out, const char* path, size_t len) {
+  if(set_has(out, path, len))
+    return 0;
+
+  set_insert(out, path, len);
+  return 1;
+}
+
+/**
+ * @brief      Adds a path to a set
+ *
+ * @param      out     Output set
+ * @param[in]  path  Path string
+ */
+int
+add_path(set_t* out, const char* path) {
+  return add_path_b(out, path, str_len(path));
+}
+
+/**
+ * @brief      Adds a path to a set
+ *
+ * @param      out   Output set
+ * @param      path  Path string
+ */
+int
+add_path_sa(set_t* out, stralloc* path) {
+  return add_path_b(out, path->s, path->len);
 }

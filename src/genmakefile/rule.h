@@ -55,10 +55,13 @@ extern MAP_T rules;
 
 target* rule_get(const char*);
 target* rule_get_sa(stralloc*);
+target* rule_new(const char*);
+target* rule_new_sa(stralloc*);
+target* rule_new_b(const char*, size_t);
 target* rule_find(const char*);
-void rule_rename(target*, const char*, char);
 target* rule_find_sa(stralloc*);
 target* rule_find_b(const char*, size_t);
+void rule_rename(target*, const char*, char);
 target* rule_find_lib(const char*, size_t, const char*, const char*);
 int rule_match(target*, const char*);
 void rule_command_subst(target*, stralloc*, const char*, size_t, bool, bool, const char quote_args[], char, const char*);

@@ -1,4 +1,5 @@
 #include "generate.h"
+#include "path.h"
 #include "ansi.h"
 #include "../../debug.h"
 #include "../../genmakefile.h"
@@ -6,85 +7,81 @@
 strarray bins = {0}, progs = {0};
 stralloc output_name = {0};
 
+/**
+ * @brief      Filter preprocessor tokens
+ *
+ * @param[in]  x     Token buffer
+ * @param[in]  n     Token length
+ *
+ * @return     1 if matches USE_*, 0 otherwise
+ */
 static inline int
 filter_pptoks(const void* x, size_t n) {
   return byte_equal(x, n > 4 ? 4 : n, "USE_");
 }
 
 /**
- * Add a path to a strlist
+ * @brief      Adds a source path
+ *
+ * @param      s     Output set
+ * @param[in]  path  Path string
+ * @param[in]  psm   Path separator for makefile
  */
 static void
-add_path_b(set_t* s, const char* path, size_t len) {
-  if(set_has(s, path, len))
-    return;
+add_srcpath(set_t* out, const char* path, char psm) {
+  stralloc tmp;
 
-  set_insert(s, path, len);
-}
-
-/**
- * Add a path to a strlist
- */
-static void
-add_path(set_t* s, const char* path) {
-  add_path_b(s, path, str_len(path));
-}
-
-/**
- * @brief add_srcpath
- * @param list
- * @param path
- */
-static void
-add_srcpath(set_t* s, const char* path, char psm) {
-  stralloc sa;
-
-  stralloc_init(&sa);
+  stralloc_init(&tmp);
 
   if(sources_dir.len && !stralloc_equals(&sources_dir, ".")) {
-    stralloc_zero(&sa);
-    path_prefix_s(&sources_dir, path, &sa, psm);
-    set_addsa(s, &sa);
-    stralloc_free(&sa);
+    stralloc_zero(&tmp);
+    path_prefix_s(&sources_dir, path, &tmp, psm);
+    set_addsa(out, &tmp);
+    stralloc_free(&tmp);
   } else {
-    set_adds(s, path);
+    set_adds(out, path);
   }
 
-  stralloc_free(&sa);
-}
-
-static void
-add_source(set_t* s, const char* path, char psm) {
-  stralloc sa;
-
-  stralloc_init(&sa);
-
-  if(sources_dir.len && !stralloc_equals(&sources_dir, ".")) {
-    stralloc_zero(&sa);
-    path_prefix_s(&sources_dir, path, &sa, psm);
-    set_addsa(s, &sa);
-  } else {
-    set_adds(s, path);
-  }
-
-  stralloc_free(&sa);
+  stralloc_free(&tmp);
 }
 
 /**
- * @brief add_path_sa
- * @param list
- * @param path
+ * @brief      Adds a source.
+ *
+ * @param      out     Output set
+ * @param[in]  path  Path string
+ * @param[in]  psm   Path separator for makefile
  */
-void
-add_path_sa(set_t* s, stralloc* path) {
-  add_path_b(s, path->s, path->len);
+static void
+add_source(set_t* out, const char* path, char psm) {
+  stralloc tmp;
+
+  stralloc_init(&tmp);
+
+  if(sources_dir.len && !stralloc_equals(&sources_dir, ".")) {
+    stralloc_zero(&tmp);
+    path_prefix_s(&sources_dir, path, &tmp, psm);
+    set_addsa(out, &tmp);
+  } else {
+    set_adds(out, path);
+  }
+
+  stralloc_free(&tmp);
 }
 
+/**
+ * @brief      Generates a rule for a specific name file
+ *
+ * @param      name    Output file (rule name)
+ * @param      cmd     Command string
+ *
+ * @return     Rule
+ */
 target*
-generate_single_rule(stralloc* output, stralloc* cmd) {
+generate_single_rule(stralloc* name, stralloc* cmd) {
   target* rule;
 
-  if((rule = rule_get_sa(output))) {
+  if((rule = rule_new_sa(name))) {
     set_init(&rule->prereq, 0);
 
     if(cmd && !(rule->recipe.len && stralloc_equal(&rule->recipe, cmd))) {
@@ -99,9 +96,9 @@ generate_single_rule(stralloc* output, stralloc* cmd) {
 }
 
 /**
- * @brief generate_clean_rule  Generate clean rule which removes all target
- * outputs
- * @param rules
+ * @brief      Generate clean rule which removes all target outputs
+ *
+ * @param      psm   Path separator for makefile
  */
 void
 generate_clean_rule(char psm) {
@@ -139,15 +136,18 @@ generate_clean_rule(char psm) {
 
       if((MAP_ITER_KEY(t))[(bpos = str_rchr(MAP_ITER_KEY(t), '{'))]) {
         size_t epos = str_rchr(&(MAP_ITER_KEY(t))[bpos + 1], '}');
+
         stralloc_zero(&fn);
         stralloc_catb(&fn, &(MAP_ITER_KEY(t)[bpos + 1]), epos);
         stralloc_catc(&fn, psm);
         stralloc_cats(&fn, "*");
         stralloc_catb(&fn, &(MAP_ITER_KEY(t)[bpos + 1 + epos + 1]), str_chr(&(MAP_ITER_KEY(t)[bpos + 1 + epos + 1]), ':'));
         stralloc_nul(&fn);
+
         arg = fn.s;
       } else {
         stralloc_copys(&fn, name);
+
         /* If possible, transform file name into a wildcard pattern */
         arg = path_wildcard(&fn, "*");
       }
@@ -180,24 +180,36 @@ generate_clean_rule(char psm) {
   stralloc_free(&fn);
 }
 
+/**
+ * @brief      Generates a rule which creates a directory
+ *
+ * @param      name   Directory path
+ *
+ * @return     Rule
+ */
 target*
-generate_mkdir_rule(stralloc* dir) {
+generate_mkdir_rule(stralloc* name) {
   target* rule = 0;
 
-  if(stralloc_length(dir) && !stralloc_equals(dir, "."))
-    if((rule = rule_get_sa(dir)))
+  if(stralloc_length(name) && !stralloc_equals(name, "."))
+    if((rule = rule_new_sa(name)))
       stralloc_weak(&rule->recipe, &commands.mkdir);
 
   return rule;
 }
 
 /**
- * @brief generate_srcdir_compile_rules Generate compile rules for every
- * source file given
- * @param rules                     All rules
- * @param srcdir source dir structure
- * @param dir source dir path
- * @return
+ * @brief      Generate compile rules for every source file given
+ *
+ * @param      srcdir     source directory structure
+ * @param      dir        source directory path
+ * @param      shell      Is shell script
+ * @param      batch      Is batch file
+ * @param      batchmode  The batchmode
+ * @param      psa        Path separator for arguments
+ * @param      psm        Path separator for makfeile
+ *
+ * @return     Compile rule
  */
 target*
 generate_srcdir_compile_rules(sourcedir* srcdir, const char* dir, bool shell, bool batch, bool batchmode, char psa, char psm) {
@@ -211,12 +223,14 @@ generate_srcdir_compile_rules(sourcedir* srcdir, const char* dir, bool shell, bo
   set_iterator_t it;
 
   stralloc_init(&target);
+  stralloc_init(&source);
+  stralloc_init(&obj);
+  stralloc_init(&defines);
+  strlist_init(&pptoks, '\0');
+
   path_output("%", &target, exts.obj, psa);
   stralloc_cats(&target, ": ");
-  stralloc_init(&source);
   tlen = target.len;
-  stralloc_init(&obj);
-  strlist_init(&pptoks, '\0');
 
   set_foreach(&srcdir->pptoks, it, tok, len) {
     if(filter_pptoks(tok, len))
@@ -230,7 +244,6 @@ generate_srcdir_compile_rules(sourcedir* srcdir, const char* dir, bool shell, bo
 #endif
 
   strlist_free(&pptoks);
-  stralloc_init(&defines);
 
   if(set_size(&srcdir->pptoks) > 0) {
     stralloc_copys(&defines, "DEFS +=");
@@ -274,6 +287,9 @@ generate_srcdir_compile_rules(sourcedir* srcdir, const char* dir, bool shell, bo
       rule = rule_get_sa(&target);
 
     if(rule) {
+      size_t p, e;
+      char* x;
+
       stralloc_copy(&rule->vars.sa, &defines);
 
       if(rule->recipe.s == 0) {
@@ -295,23 +311,22 @@ generate_srcdir_compile_rules(sourcedir* srcdir, const char* dir, bool shell, bo
         continue;
       }
 
-      {
-        size_t p, e;
-        char* x;
+      if(dirs.work.sa.len == 0 || stralloc_equals(&dirs.work.sa, ".")) {
+        stralloc_copy(&rule->recipe, &commands.compile);
+        x = stralloc_begin(&rule->recipe);
+        p = e = stralloc_finds(&rule->recipe, "$@");
 
-        if(dirs.work.sa.len == 0 || stralloc_equals(&dirs.work.sa, ".")) {
-          stralloc_copy(&rule->recipe, &commands.compile);
-          x = stralloc_begin(&rule->recipe);
-          p = e = stralloc_finds(&rule->recipe, "$@");
-          while(p > 0 && !((x[p + 1] == '/' || x[p + 1] == '-') && x[p] == ' '))
-            p--;
-          e += 2;
-          if(x[e] == '"')
-            e++;
-          stralloc_remove(&rule->recipe, p, e - p);
-        } else {
-          stralloc_weak(&rule->recipe, &commands.compile);
-        }
+        while(p > 0 && !((x[p + 1] == '/' || x[p + 1] == '-') && x[p] == ' '))
+          p--;
+
+        e += 2;
+
+        if(x[e] == '"')
+          e++;
+
+        stralloc_remove(&rule->recipe, p, e - p);
+      } else {
+        stralloc_weak(&rule->recipe, &commands.compile);
       }
     }
   }
@@ -326,12 +341,16 @@ generate_srcdir_compile_rules(sourcedir* srcdir, const char* dir, bool shell, bo
 }
 
 /**
- * @brief generate_simple_compile_rules  compile rules for every  source
- * file in srcdir
- * @param rules                     All  rules
- * @param srcdir source dir structure
- * @param dir source dir path
- * @return
+ * @brief      Generate compile rules for every source file in srcdir
+ *
+ * @param      srcdir   source directory structure
+ * @param      dir      Directory path
+ * @param      fromext  The fromext
+ * @param      toext    The toext
+ * @param      cmd      Command
+ * @param      psa      Path separator for arguments
+ *
+ * @return     Rule
  */
 target*
 generate_simple_compile_rules(sourcedir* srcdir, const char* dir, const char* fromext, const char* toext, stralloc* cmd, char psa) {
@@ -390,11 +409,17 @@ generate_simple_compile_rules(sourcedir* srcdir, const char* dir, const char* fr
 }
 
 /**
- * @brief generate_srcdir_lib_rule  Generate  lib rule for source dir
- * @param rules                     All rules
- * @param srcdir source dir structure
- * @param dir source dir path
- * @return
+ * @brief      Generate library rule for source dir
+ *
+ * @param      srcdir     source directory structure
+ * @param      name       library name
+ * @param      shell      Is shell script
+ * @param      batch      Is batch file
+ * @param      batchmode  The batchmode
+ * @param      psa        Path separator for arguments
+ * @param      psm        Path separator for makefile
+ *
+ * @return     Rule
  */
 target*
 generate_srcdir_lib_rule(sourcedir* srcdir, const char* name, bool shell, bool batch, bool batchmode, char psa, char psm) {
@@ -451,20 +476,21 @@ generate_srcdir_lib_rule(sourcedir* srcdir, const char* name, bool shell, bool b
 }
 
 /**
- * @brief generate_srcdir_rule
- * @param rules                     All rules
- * @param srcdir source dir structure
- * @param name source dir name
+ * @brief      Generates a source directory rule
+ *
+ * @param      srcdir       Source directory structure
+ * @param[in]  batchmode
+ * @param[in]  psm        Path separator for makefile
  */
 void
-generate_srcdir_rule(sourcedir* sdir, const char* name, bool batchmode, char psm) {
+generate_srcdir_rule(sourcedir* srcdir, bool batchmode, char psm) {
   sourcefile* src;
-  target* rule;
+  target* rule = 0;
   stralloc mask;
 
   stralloc_init(&mask);
 
-  slist_foreach(sdir->sources, src) {
+  slist_foreach(srcdir->sources, src) {
     const char* s;
 
 #ifdef DEBUG_OUTPUT_
@@ -499,9 +525,13 @@ generate_srcdir_rule(sourcedir* sdir, const char* name, bool batchmode, char psm
 }
 
 /**
- * @brief generate_lib_rules  Generate library rules for every source dir
- * @param rules
- * @param srcdirs
+ * @brief      Generate library rules for every source directory
+ *
+ * @param      shell      Is shell script
+ * @param      batch      Is batch file
+ * @param      batchmode  The batchmode
+ * @param      psa        Path separator for arguments
+ * @param      psm        Path separator for makfeile
  */
 void
 generate_lib_rules(bool shell, bool batch, bool batchmode, char psa, char psm) {
@@ -544,8 +574,16 @@ generate_lib_rules(bool shell, bool batch, bool batchmode, char psa, char psm) {
   stralloc_free(&abspath);
 }
 
+/**
+ * @brief      Generates a rule for creating a program
+ *
+ * @param[in]  name      Rule name
+ * @param[in]  psa       Path separator for arguments
+ *
+ * @return    Rule
+ */
 target*
-generate_program_rule(const char* filename, char psa) {
+generate_program_rule(const char* name, char psa) {
   target *preprocess = 0, *compile = 0, *rule = 0, *all = 0;
   const char *x, *link_lib;
   set_t incs = SET(), deps = SET();
@@ -560,26 +598,26 @@ generate_program_rule(const char* filename, char psa) {
   stralloc_init(&bin);
 
 #ifdef DEBUG_OUTPUT_
-  buffer_putm_internal(buffer_2, "[1]", GREEN256, "generate_program_rule(", NC, filename, GREEN256, ") ", NC, 0);
+  buffer_putm_internal(buffer_2, "[1]", GREEN256, "generate_program_rule(", NC, name, GREEN256, ") ", NC, 0);
   buffer_putnlflush(buffer_2);
-  debug_str("generate_program_rule", filename);
+  debug_str("generate_program_rule", name);
 #endif
 
-  path_dirname(filename, &dir);
+  path_dirname(name, &dir);
   srcdir = sourcedir_getsa(&dir);
 
   if(tools.preproc)
-    path_output(filename, &ppsrc, exts.pps, psa);
+    path_output(name, &ppsrc, exts.pps, psa);
 
-  path_output(filename, &obj, exts.obj, psa);
+  path_output(name, &obj, exts.obj, psa);
 
   if(tools.preproc && (preprocess = rule_get_sa(&ppsrc))) {
-    add_source(&preprocess->prereq, filename, psa);
+    add_source(&preprocess->prereq, name, psa);
     stralloc_weak(&preprocess->recipe, &commands.preprocess);
   }
 
   if((compile = rule_get_sa(&obj))) {
-    add_source(&compile->prereq, filename, psa);
+    add_source(&compile->prereq, name, psa);
     stralloc_weak(&compile->recipe, &commands.compile);
     stralloc_zero(&compile->recipe);
 
@@ -589,7 +627,7 @@ generate_program_rule(const char* filename, char psa) {
                          GREEN256,
                          "generate_program_rule(",
                          NC,
-                         filename,
+                         name,
                          GREEN256,
                          ") ",
                          NC,
@@ -609,7 +647,7 @@ generate_program_rule(const char* filename, char psa) {
     stralloc outname;
 
     stralloc_init(&outname);
-    stralloc_cats(&outname, path_basename(filename));
+    stralloc_cats(&outname, path_basename(name));
 
     if(stralloc_endb(&outname, exts.src, 2))
       outname.len -= 2;
@@ -644,17 +682,17 @@ generate_program_rule(const char* filename, char psa) {
 
       dlist_foreach_down(&sources_list, source) {
         sourcefile* sfile = dlist_data(source, sourcefile*);
-        char* filename = (char*)sfile->name;
+        char* name = (char*)sfile->name;
 
         stralloc_zero(&dir);
-        path_dirname(filename, &dir);
+        path_dirname(name, &dir);
 
-        if(str_end(filename, exts.inc))
+        if(str_end(name, exts.inc))
           continue;
 
         strlist_push_unique_sa(&vpath, &dir);
         stralloc_zero(&obj);
-        path_output(filename, &obj, exts.obj, psa);
+        path_output(name, &obj, exts.obj, psa);
         add_path_sa(&rule->prereq, &obj);
       }
     }
@@ -664,7 +702,7 @@ generate_program_rule(const char* filename, char psa) {
 
 #ifdef DEBUG_OUTPUT
     buffer_putm_internal(
-        buffer_2, "[3]", GREEN256, "generate_program_rule(", NC, filename, GREEN256, ") ", NC, "link rule" NC " '", rule->name, "' recipe '", rule->recipe.s, "'", NULL);
+        buffer_2, "[3]", GREEN256, "generate_program_rule(", NC, name, GREEN256, ") ", NC, "link rule" NC " '", rule->name, "' recipe '", rule->recipe.s, "'", NULL);
     buffer_putnlflush(buffer_2);
 #endif
 
@@ -692,28 +730,23 @@ generate_program_rule(const char* filename, char psa) {
   stralloc_free(&bin);
   stralloc_free(&obj);
   stralloc_free(&dir);
+
   return rule;
 }
 
 /**
- * @brief generate_link_rules  Generate compile rules for every source file
- * with a main()
- * @param rules
- * @param sources
- * @return
+ * @brief      Generates linker rules
+ *
+ * @param[in]  psa   Path separator for arguments
+ * @param[in]  psm   Path separator for makefile
+ *
+ * @return     Number of rules generated
  */
 int
 generate_link_rules(char psa, char psm) {
   int num_main = 0, count = 0;
   target* link = 0;
-  set_t incs, deps;
-  strlist libs, indir;
   struct dnode* node;
-
-  set_init(&incs, 0);
-  set_init(&deps, 0);
-  strlist_init(&libs, ' ');
-  strlist_init(&indir, ' ');
 
 #ifdef DEBUG_OUTPUT
   buffer_putm_internal(buffer_2, "[1]", GREEN256, "generate_link_rules(", NC, GREEN256, ") ", NC, 0);
@@ -728,11 +761,6 @@ generate_link_rules(char psa, char psm) {
     buffer_putm_internal(buffer_2, "GEN_LINK_RULES file = ", filename, NULL);
     buffer_putnlflush(buffer_2);
 #endif
-
-    set_clear(&incs);
-    strlist_zero(&libs);
-    set_clear(&deps);
-    strlist_zero(&indir);
 
     if(is_source(filename) && main_present(filename)) {
       target* rule;
@@ -749,6 +777,7 @@ generate_link_rules(char psa, char psm) {
 
   if(num_main <= 1 && link && output_name.len) {
     stralloc oldname;
+
     stralloc_init(&oldname);
     stralloc_catset(&oldname, &link->output, " ");
 
@@ -757,42 +786,35 @@ generate_link_rules(char psa, char psm) {
 
     stralloc_nul(&output_name);
     rule_rename(link, output_name.s, psm);
+
     stralloc_free(&oldname);
   }
-
-  set_free(&incs);
-  strlist_free(&libs);
-  set_free(&deps);
-  strlist_free(&indir);
 
   return count + num_main;
 }
 
 /**
- * @brief generate_install_rules
- * @param rules
- * @return
+ * @brief      Generates installation rule
+ *
+ * @return     Rule
  */
 target*
-generate_install_rules() {
+generate_install_rules(void) {
   MAP_PAIR_T t;
   target* inst = NULL;
   const char* v = 0;
 
   MAP_FOREACH(rules, t) {
     target* rule = MAP_ITER_VALUE(t);
-    bool do_lib, do_bin;
-
-    do_lib = (inst_libs &&
-              (str_end(MAP_ITER_KEY(t), ".lib") || str_end(MAP_ITER_KEY(t), ".a") || MAP_ITER_KEY(t)[str_find(MAP_ITER_KEY(t), ".so")] || rule->recipe.s == commands.lib.s));
-    do_bin = (inst_bins && (str_end(MAP_ITER_KEY(t), ".dll") || str_end(MAP_ITER_KEY(t), ".exe") || rule->recipe.s == commands.link.s));
+    bool do_lib =
+        inst_libs && (str_end(MAP_ITER_KEY(t), ".lib") || str_end(MAP_ITER_KEY(t), ".a") || MAP_ITER_KEY(t)[str_find(MAP_ITER_KEY(t), ".so")] || rule->recipe.s == commands.lib.s);
+    bool do_bin = inst_bins && (str_end(MAP_ITER_KEY(t), ".dll") || str_end(MAP_ITER_KEY(t), ".exe") || rule->recipe.s == commands.link.s);
 
     if(!(do_lib || do_bin))
       continue;
 
     if(!inst) {
       inst = rule_get("install");
-      // inst->recipe = malloc(sizeof(stralloc));
 
       stralloc_init(&inst->recipe);
       set_adds(&inst->prereq, "all");

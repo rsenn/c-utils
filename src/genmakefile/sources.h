@@ -5,7 +5,7 @@
 #include "sourcedir.h"
 #include "../../lib/dlist.h"
 
-typedef struct {
+typedef struct sourcefile_s {
   union {
     struct slink link;
     struct sourcefile* next;
@@ -20,7 +20,7 @@ typedef struct {
 sourcefile* sources_new(const char*, const char* binext, strarray* progs, strarray* bins);
 int sources_add(const char*);
 int sources_add_b(const char*, size_t len);
-int sources_sort(const char**, const char** b);
+int sources_sort_callback(const char**, const char** b);
 void sources_get(const char*);
 const char* sources_find(const char*, size_t len, size_t* cptr);
 bool sources_iscplusplus(void);

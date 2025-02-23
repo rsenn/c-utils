@@ -19,7 +19,7 @@ typedef struct {
   uint32 serial;
 } sourcedir;
 
-void sourcedir_addsource(const char*, strarray*, strarray*, strarray*, char);
+struct sourcefile_s* sourcedir_addsource(const char*, strarray*, strarray*, strarray*, char);
 void sourcedir_dep_recursive(sourcedir*, strlist*, uint32, sourcedir*);
 void sourcedir_deps_b(const char*, size_t, strlist*);
 void sourcedir_deps_s(const char*, strlist*);
@@ -31,7 +31,6 @@ sourcedir* sourcedir_findsa(stralloc*);
 sourcedir* sourcedir_getb(const char*, size_t);
 sourcedir* sourcedir_getsa(stralloc*);
 void sourcedir_populate(strarray*);
-void sourcedir_printdeps(sourcedir*, buffer*, int);
 
 extern MAP_T srcdir_map;
 extern const char* srcdir_varname;

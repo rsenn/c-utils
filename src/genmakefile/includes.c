@@ -13,11 +13,12 @@
 strlist include_dirs = {0, 0, 0};
 
 /**
- * @brief includes_extract  Extract #include directives
- * @param x
- * @param n
- * @param includes
- * @param sys
+ * @brief      Extract #include directives
+ *
+ * @param      x         Input buffer
+ * @param      n         Input length
+ * @param      includes  Output list
+ * @param      sys       Include system includes
  */
 void
 includes_extract(const char* x, size_t n, strlist* includes, int sys) {
@@ -52,6 +53,7 @@ includes_extract(const char* x, size_t n, strlist* includes, int sys) {
 
         if((sys && quote == '<') || quote == '"') {
           char set[3];
+
           set[0] = (quote == '<' ? '>' : '"');
           set[1] = '\n';
           set[2] = '\0';
@@ -74,6 +76,9 @@ includes_extract(const char* x, size_t n, strlist* includes, int sys) {
   }
 }
 
+/**
+ * @brief      Puts include directories into CPPFLAGS
+ */
 void
 includes_cppflags(void) {
   const char* dir;
@@ -100,11 +105,14 @@ includes_cppflags(void) {
 }
 
 /**
- * @brief includes_get
- * @param srcfile
- * @param includes
- * @param sys
- * @return
+ * @brief      Extract includes from file
+ *
+ * @param      srcfile   Source file
+ * @param      includes  Include file list
+ * @param      sys       System includes
+ * @param[in]  psm       Path separator character
+ *
+ * @return     1 on success
  */
 int
 includes_get(const char* srcfile, strlist* includes, int sys, char psm) {
@@ -120,6 +128,12 @@ includes_get(const char* srcfile, strlist* includes, int sys, char psm) {
   return 0;
 }
 
+/**
+ * @brief      Add include path
+ *
+ * @param[in]  dir   Directory string
+ * @param[in]  len   Directory length
+ */
 void
 includes_add_b(const char* dir, size_t len) {
   stralloc d, tmp, to;
@@ -145,16 +159,21 @@ includes_add_b(const char* dir, size_t len) {
   stralloc_free(&to);
 }
 
+/**
+ * @brief      Add include path
+ *
+ * @param[in]  dir   Directory string
+ */
 void
 includes_add(const char* dir) {
   includes_add_b(dir, str_len(dir));
 }
 
 /**
- * @brief includes_to_libs  Include list
- * to library list
- * @param includes
- * @param libs
+ * @brief      Include list to library list
+ *
+ * @param      includes  The includes
+ * @param      libs      The libs
  */
 void
 includes_to_libs(const set_t* includes, strlist* libs) {
@@ -199,6 +218,15 @@ includes_to_libs(const set_t* includes, strlist* libs) {
   stralloc_free(&sa);
 }
 
+/**
+ * @brief      Find a file in include directories
+ *
+ * @param[in]  x     File name buffer
+ * @param[in]  n     File name length
+ * @param      out   Output stralloc
+ *
+ * @return     1 if found, 0 otherwise
+ */
 int
 includes_find_sa(const char* x, size_t n, stralloc* out) {
   const char* dir;
@@ -223,6 +251,14 @@ includes_find_sa(const char* x, size_t n, stralloc* out) {
   return 0;
 }
 
+/**
+ * @brief      Find file in include path
+ *
+ * @param[in]  x     File name buffer
+ * @param[in]  n     File name length
+ *
+ * @return     Path of found file or NULL
+ */
 char*
 includes_find_b(const char* x, size_t n) {
   stralloc path;
@@ -235,6 +271,13 @@ includes_find_b(const char* x, size_t n) {
   return 0;
 }
 
+/**
+ * @brief      Find file in include path
+ *
+ * @param[in]  s     File name
+ *
+ * @return     Path of found file or NULL
+ */
 char*
 includes_find(const char* s) {
   return includes_find_b(s, str_len(s));

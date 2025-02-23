@@ -88,6 +88,7 @@ char* path_dirname_alloc(const char*);
 void rule_list(const strlist*, array*);
 int input_command_line(const char*, size_t);
 void print_rule_deps(buffer* b, target* t);
+void libdirs_add(const char*);
 
 /*void add_path_b(set_t*, const char*, size_t);
 void add_path(set_t*, const char*);
@@ -113,5 +114,7 @@ extern const char* infile;
 extern const char* libpfx;
 extern strarray dirstack;
 extern set_t build_directories;
+extern char pathsep_make;
+extern char pathsep_args;
 
 #endif

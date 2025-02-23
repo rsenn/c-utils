@@ -44,6 +44,7 @@ set_str(MAP_T map, const char* key, const char* value) {
 static void
 set_int(MAP_T map, const char* key, int value) {
   stralloc v;
+
   stralloc_init(&v);
   stralloc_catint(&v, value);
   stralloc_nul(&v);
@@ -56,12 +57,16 @@ static int
 get_suite() {
   if(!case_diffs(tools.compiler, "xc8") || str_start(tools.compiler, "xc8"))
     return 0;
+
   if(!case_diffs(tools.compiler, "htc") || str_start(tools.compiler, "htc"))
     return 1;
+
   if(!case_diffs(tools.compiler, "sdcc") || str_start(tools.compiler, "sdcc"))
     return 2;
+
   return 0;
 }
+
 static const char* compiler_suites[] = {
     "38171385-97B2-4EC5-BF2C-C2C027BA5B04", //!< xc8 guid
     "507D93FD-16F1-4270-980F-0C7C0207E6D3", //!< htc guid
@@ -77,9 +82,11 @@ static const char* compiler_settings[] = {
 static const char*
 suite_guid(stralloc* sa) {
   int suite = get_suite();
+
   stralloc_zero(sa);
   stralloc_catm_internal(sa, "{", compiler_suites[suite], "}", NULL);
   stralloc_nul(sa);
+
   return sa->s;
 }
 
@@ -90,6 +97,7 @@ make_tool_key(stralloc* sa, const char* key) {
   stralloc_zero(sa);
   stralloc_catm_internal(sa, "TS{", compiler_settings[suite], "}", key, NULL);
   stralloc_nul(sa);
+
   return sa->s;
 }
 
@@ -97,10 +105,12 @@ static inline int
 is_debug() {
   return cfg.build_type == BUILD_TYPE_RELWITHDEBINFO || cfg.build_type == BUILD_TYPE_DEBUG;
 }
+
 static inline int
 opt_size() {
   return cfg.build_type == BUILD_TYPE_MINSIZEREL;
 }
+
 static inline int
 opt_speed() {
   return cfg.build_type == BUILD_TYPE_RELWITHDEBINFO || cfg.build_type == BUILD_TYPE_RELEASE;
@@ -118,31 +128,32 @@ output_mplab_project(buffer* b, MAP_T* _rules, MAP_T* vars, const strlist* inclu
   size_t n;
   unsigned int i = 0, num_sources = 0;
   stralloc sa, file;
-  mplab_config_t mplab_cfg = {/* .warning_level = */ 0,
-                              /* .verbose_messages = */ 1,
-                              /* .optimize_global = */ 0,
-                              /* .optimize_speed = */ 0,
-                              /* .optimize_debug = */ 0,
-                              /* .optimize_assembler = */ 1,
-                              /* .preprocess_assembler = */ 1,
-                              /* .debugger = */ 39,
-                              /* .clear_bss = */ 1,
-                              /* .keep_generated_startup_as = */ 1,
-                              /* .initialize_data = */ 0,
-                              /* .calibrate_oscillator = */ 0,
-                              /* .backup_reset_condition_flags = */ 0,
-                              /* .format_hex_file_for_download = */ 1,
-                              /* .managed_stack = */ 1,
-                              /* .program_default_config_words = */ 0,
-                              /* .link_in_peripheral_library = */ 0,
-                              /* .additional_command_line_options = */
-                              "--output=default,-inhx032 "
-                              "--output=+mcof,-elf",
-                              /* .memory_model = */ 1,
-                              /* .size_of_double = */ 1,
-                              /* .size_of_float = */ 1};
-
-  ini_section_t *ini, *section, *cat_subfolders, *file_subfolders, *generated_files, *other_files /*, *file_info*/, *active_file_settings, *tool_settings;
+  ini_section_t *ini, *section, *cat_subfolders, *file_subfolders, *generated_files, *other_files, *active_file_settings, *tool_settings;
+  mplab_config_t mplab_cfg = {
+      /* .warning_level = */ 0,
+      /* .verbose_messages = */ 1,
+      /* .optimize_global = */ 0,
+      /* .optimize_speed = */ 0,
+      /* .optimize_debug = */ 0,
+      /* .optimize_assembler = */ 1,
+      /* .preprocess_assembler = */ 1,
+      /* .debugger = */ 39,
+      /* .clear_bss = */ 1,
+      /* .keep_generated_startup_as = */ 1,
+      /* .initialize_data = */ 0,
+      /* .calibrate_oscillator = */ 0,
+      /* .backup_reset_condition_flags = */ 0,
+      /* .format_hex_file_for_download = */ 1,
+      /* .managed_stack = */ 1,
+      /* .program_default_config_words = */ 0,
+      /* .link_in_peripheral_library = */ 0,
+      /* .additional_command_line_options = */
+      "--output=default,-inhx032 "
+      "--output=+mcof,-elf",
+      /* .memory_model = */ 1,
+      /* .size_of_double = */ 1,
+      /* .size_of_float = */ 1,
+  };
 
   mplab_cfg.warning_level = (is_debug() ? 3 : -3);
   mplab_cfg.verbose_messages = 1;
@@ -164,16 +175,12 @@ output_mplab_project(buffer* b, MAP_T* _rules, MAP_T* vars, const strlist* inclu
 
   ini_set(section, "device", sa.s);
 
-  // debug_sa("dirs.work", &dirs.work.sa);
-  // debug_sa("dirs.build", &dirs.build.sa);
-  // debug_sa("dirs.out", &dirs.out.sa);
-  //
   strlist_init(&incdirs, ';');
   strlist_init(&srcdirs, ';');
 
   strlist_foreach_s(include_dirs, dir) {
-
     stralloc absdir;
+
     stralloc_init(&absdir);
 
     if(dirs.this.sa.len) {
@@ -185,6 +192,7 @@ output_mplab_project(buffer* b, MAP_T* _rules, MAP_T* vars, const strlist* inclu
     stralloc_nul(&absdir);
 
     path_relative_to(absdir.s, dirs.out.sa.s, &sa);
+
     stralloc_free(&absdir);
 
     if(stralloc_endb(&sa, "/", 1))
@@ -241,10 +249,6 @@ output_mplab_project(buffer* b, MAP_T* _rules, MAP_T* vars, const strlist* inclu
     set_iterator_t it;
     const char* x;
 
-    /*buffer_puts(b, "; Number of rules: ");
-    buffer_putuint(b, hmap_count(rules));
-    buffer_putsflush(b, "\r\n");*/
-
     stralloc_zero(&incdirs.sa);
 
     set_foreach(&sources_set, it, x, n) {
@@ -282,11 +286,6 @@ output_mplab_project(buffer* b, MAP_T* _rules, MAP_T* vars, const strlist* inclu
           debug_str("incdir", s);
           strlist_push_unique(is_inc ? &incdirs : &srcdirs, s);
         }
-
-        // debug_sa("sa", &sa);
-        // debug_sa("dirs.build", &dirs.build.sa);
-        // debug_sa("dirs.work", &dirs.work.sa);
-        // debug_sa("dirs.out", &dirs.out.sa);
 
         path_relative_to(sa.s, dirs.out.sa.s, &file);
 
@@ -327,28 +326,12 @@ output_mplab_project(buffer* b, MAP_T* _rules, MAP_T* vars, const strlist* inclu
       }
     }
   }
+
   stralloc_nul(&incdirs.sa);
   stralloc_nul(&srcdirs.sa);
 
   ini_set(cat_subfolders, "subfolder_inc", incdirs.sa.s);
   ini_set(cat_subfolders, "subfolder_src", srcdirs.sa.s);
-
-  /*hmap_foreach(rules, it) {
-    target* t = (target*)it->vals.val_chars;
-
-    if(!is_object(t->name) || stralloc_end(&t->prereq.sa, exts.pps))
-  continue;
-
-    //debug_target(t);
-
-
-    ini_set(file_subfolders, sa.s, ".");
-    ini_set(generated_files, sa.s, "no");
-    ini_set(other_files, sa.s, "no");
-    ini_set_sa(section, &sa, &t->prereq.sa);
-
-    i++;
-  }*/
 
   section = ini_new(&section->next, "SUITE_INFO");
   ini_set(section, "suite_guid", suite_guid(&sa));
@@ -366,16 +349,20 @@ output_mplab_project(buffer* b, MAP_T* _rules, MAP_T* vars, const strlist* inclu
 
     strlist_foreach(vdefs, s, n) {
       n = byte_chr(s, n, ' ');
+
       if(str_start(s, "-D")) {
         s += 2;
         n -= 2;
       }
+
       strlist_pushb(&defines, s, n);
     }
 
     vdefs = &var_list("CPPFLAGS", ' ')->value;
+
     strlist_foreach(vdefs, s, n) {
       n = byte_chr(s, n, ' ');
+
       if(str_start(s, "-D") || str_start(s, "-d")) {
         s += 2;
         n -= 2;
@@ -412,33 +399,25 @@ output_mplab_project(buffer* b, MAP_T* _rules, MAP_T* vars, const strlist* inclu
           mplab_cfg.preprocess_assembler); //!< preprocess assembler
   set_int(toolcfg, "DC", 9);
 
-  set_int(toolcfg, "FE", mplab_cfg.debugger);  //!< debugger: 39
-                                               //!< = PicKit3, 31
-                                               //!< = Auto
-  set_int(toolcfg, "EC", mplab_cfg.clear_bss); //!< clear
-                                               //!< BSS
-  set_int(toolcfg, "F0",
-          mplab_cfg.keep_generated_startup_as);      //!< keep generated startup.as
-  set_int(toolcfg, "EF", mplab_cfg.initialize_data); //!< initialize
-                                                     //!< data
-  set_int(toolcfg, "F8",
-          mplab_cfg.calibrate_oscillator); //!< calibrate oscillator
-  set_int(toolcfg,
-          "F9",
-          mplab_cfg.backup_reset_condition_flags); //!< backup reset co
-                                                   //!< ndition flags
-  set_int(toolcfg,
-          "FA",
-          mplab_cfg.format_hex_file_for_download); //!< format hex file for
-                                                   //!< download
-  set_int(toolcfg, "C1", mplab_cfg.managed_stack); //!< managed
-                                                   //!< stack
-  set_int(toolcfg,
-          "10E",
-          mplab_cfg.program_default_config_words); //!< program default
-                                                   //!< config words
-  set_int(toolcfg, "110",
-          mplab_cfg.link_in_peripheral_library); //!< link in peripheral library
+  set_int(toolcfg, "FE", mplab_cfg.debugger);                  //!< debugger: 39
+                                                               //!< = PicKit3, 31
+                                                               //!< = Auto
+  set_int(toolcfg, "EC", mplab_cfg.clear_bss);                 //!< clear
+                                                               //!< BSS
+  set_int(toolcfg, "F0", mplab_cfg.keep_generated_startup_as); //!< keep generated startup.as
+
+  set_int(toolcfg, "EF", mplab_cfg.initialize_data);               //!< initialize
+                                                                   //!< data
+  set_int(toolcfg, "F8", mplab_cfg.calibrate_oscillator);          //!< calibrate oscillator
+  set_int(toolcfg, "F9", mplab_cfg.backup_reset_condition_flags);  //!< backup reset co
+                                                                   //!< ndition flags
+  set_int(toolcfg, "FA", mplab_cfg.format_hex_file_for_download);  //!< format hex file for
+                                                                   //!< download
+  set_int(toolcfg, "C1", mplab_cfg.managed_stack);                 //!< managed
+                                                                   //!< stack
+  set_int(toolcfg, "10E", mplab_cfg.program_default_config_words); //!< program default
+                                                                   //!< config words
+  set_int(toolcfg, "110", mplab_cfg.link_in_peripheral_library);   //!< link in peripheral library
   set_int(toolcfg, "11E", 0);
   set_int(toolcfg, "121", 0);
   set_int(toolcfg, "122", 0);
@@ -531,6 +510,7 @@ output_mplab_project(buffer* b, MAP_T* _rules, MAP_T* vars, const strlist* inclu
 
     for(i = 0; i < num_sources; i++) {
       size_t len;
+
       stralloc_zero(&file);
       stralloc_catlong0(&file, i, 3);
 

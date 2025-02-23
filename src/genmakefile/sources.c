@@ -9,13 +9,22 @@ set_t sources_set = {0};
 stralloc sources_dir = {0, 0, 0};
 dlist sources_list = {0};
 
+/**
+ * @brief main_present  Checks for main() routine in source file
+ * @param filename  Path to source file
+ * @return          1 when yes, 0 when no, -1 on error
+ */
 int main_present(const char*);
 
 /**
- * @brief sources_new  Create new source
- * file entry.
- * @param name
- * @return
+ * @brief
+ *
+ * @param[in]  name    Source file name
+ * @param[in]  binext  Binary file extensions
+ * @param      progs   Programs list
+ * @param      bins    Binaries list
+ *
+ * @return     sourcefile struct or NULL on allocation error
  */
 sourcefile*
 sources_new(const char* name, const char* binext, strarray* progs, strarray* bins) {
@@ -27,30 +36,27 @@ sources_new(const char* name, const char* binext, strarray* progs, strarray* bin
     ret->has_main = is_source(ret->name) && main_present(ret->name) == 1;
 
     if(ret->has_main) {
+      stralloc bin;
+      size_t n = str_len(ret->name);
 
 #ifdef DEBUG_OUTPUT
       debug_str("Source has main()", ret->name);
 #endif
 
-      {
-        stralloc bin;
-        size_t n = str_len(ret->name);
+      stralloc_init(&bin);
 
-        stralloc_init(&bin);
+      while(n > 0 && ret->name[n - 1] != '.')
+        n--;
 
-        while(n > 0 && ret->name[n - 1] != '.')
-          n--;
-
-        path_extension(ret->name, &bin, binext);
-        strarray_push_unique(progs, ret->name);
-        strarray_push_sa(bins, &bin);
+      path_extension(ret->name, &bin, binext);
+      strarray_push_unique(progs, ret->name);
+      strarray_push_sa(bins, &bin);
 
 #ifdef DEBUG_OUTPUT
-        debug_sa("bin", &bin);
+      debug_sa("bin", &bin);
 #endif
 
-        stralloc_free(&bin);
-      }
+      stralloc_free(&bin);
     }
 
     set_init(&ret->pptoks, 0);
@@ -62,16 +68,25 @@ sources_new(const char* name, const char* binext, strarray* progs, strarray* bin
 }
 
 /**
- * @brief sources_add  Adds a source
- * file to the given list.
- * @param filename
- * @param sources
+ * @brief      { function_description }
+ *
+ * @param[in]  source  The source
+ *
+ * @return     { description_of_the_return_value }
  */
 int
 sources_add(const char* source) {
   return sources_add_b(source, str_len(source));
 }
 
+/**
+ * @brief      Add a source file
+ *
+ * @param[in]  x     File name
+ * @param[in]  len   File name length
+ *
+ * @return      1 on success
+ */
 int
 sources_add_b(const char* x, size_t len) {
   if(byte_chr(x, len, '/') == len && byte_ends(x, len, "strlist_shift.c")) {
@@ -92,14 +107,23 @@ sources_add_b(const char* x, size_t len) {
 #ifdef DEBUG_OUTPUT_
       debug_byte("sources_add", x, len);
 #endif
+      return 1;
     }
   }
 
   return 0;
 }
 
+/**
+ * @brief      Sort source files
+ *
+ * @param      a     Pointer to string 1
+ * @param      b     Pointer to string 2
+ *
+ * @return     -1 if less, 1 if greater, 0 if equal
+ */
 int
-sources_sort(const char** a, const char** b) {
+sources_sort_callback(const char** a, const char** b) {
   size_t alen = str_rchrs(*a, PATHSEP_S_MIXED, sizeof(PATHSEP_S_MIXED) - 1);
   size_t blen = str_rchrs(*b, PATHSEP_S_MIXED, sizeof(PATHSEP_S_MIXED) - 1);
   int er, rdir, rfile;
@@ -121,11 +145,9 @@ sources_sort(const char** a, const char** b) {
 }
 
 /**
- * @brief sources_get Searches all
- * source files in the given directory
- * and creates a string-array.
- * @param basedir
- * @param sources
+ * @brief      Get all sources from a directory
+ *
+ * @param[in]  basedir  Directory
  */
 void
 sources_get(const char* basedir) {
@@ -158,6 +180,15 @@ sources_get(const char* basedir) {
   }
 }
 
+/**
+ * @brief      Find source file
+ *
+ * @param[in]  name  Filename
+ * @param[in]  len   Filename length
+ * @param      cptr  Count pointer
+ *
+ * @return        Source filename
+ */
 const char*
 sources_find(const char* name, size_t len, size_t* cptr) {
   char* x;
@@ -203,6 +234,11 @@ sources_find(const char* name, size_t len, size_t* cptr) {
   return ret;
 }
 
+/**
+ * @brief      Check whether source files contain C++ sources
+ *
+ * @return     true if C++, false if not
+ */
 bool
 sources_iscplusplus() {
   char* x;
@@ -220,6 +256,12 @@ sources_iscplusplus() {
   return false;
 }
 
+/**
+ * @brief      Get all dependencies for a source file
+ *
+ * @param      file  Source file
+ * @param      out   Output list
+ */
 void
 sources_deps(sourcefile* file, strlist* out) {
   const char* x;
@@ -231,7 +273,6 @@ sources_deps(sourcefile* file, strlist* out) {
   strlist_foreach(&file->includes, x, len) { strlist_pushb_unique(out, x, len); }
 
   set_foreach(&file->deps, it, x, len) {
-    stralloc_nul(&sources_dir);
 
 #ifdef DEBUG_OUTPUT_I_q
     buffer_puts(buffer_2, "sources_deps '");
@@ -261,6 +302,12 @@ sources_deps(sourcefile* file, strlist* out) {
   }
 }
 
+/**
+ * @brief      Get all source files from directory
+ *
+ * @param      dir   Directory name
+ * @param      out   Output array
+ */
 void
 sources_readdir(stralloc* dir, strarray* out) {
   rdir_t d;
@@ -276,25 +323,18 @@ sources_readdir(stralloc* dir, strarray* out) {
   buffer_putnlflush(buffer_2);
 #endif
 
-  // path_concatb(dirs.this.sa.s, dirs.this.sa.len, dir->s, dir->len,
-  // &srcdir);
   if(!rdir_open(&d, srcdir.s)) {
     const char* s;
+
     while((s = rdir_read(&d))) {
       if(!is_source(s) && !is_include(s))
         continue;
 
-      if(str_start(s, dirs.out.sa.s))
-        s += dirs.out.sa.len;
-      else
-        s += dir->len;
+      s += str_start(s, dirs.out.sa.s) ? dirs.out.sa.len : dir->len;
 
       if(*s == PATHSEP_C)
         s++;
-      /*  buffer_puts(buffer_2,
-        "rdir_read: ");
-        buffer_puts(buffer_2, s);
-        buffer_putnlflush(buffer_2);*/
+
       strarray_push_unique(out, s);
     }
   }
@@ -302,6 +342,14 @@ sources_readdir(stralloc* dir, strarray* out) {
   stralloc_free(&srcdir);
 }
 
+/**
+ * @brief      Add includes for the specified source file
+ *
+ * @param      file      Source file
+ * @param      sdir      Source directory
+ * @param[in]  includes  Include list
+ * @param      sources   Global sources list
+ */
 void
 sources_addincludes(sourcefile* file, sourcedir* sdir, const strlist* includes, strarray* sources) {
   const char* x;
@@ -318,10 +366,9 @@ sources_addincludes(sourcefile* file, sourcedir* sdir, const strlist* includes, 
 
   path_dirname(file->name, &basedir);
   path_absolute_sa(&basedir);
+  stralloc_nul(&basedir);
 
   strlist_init(&file->includes, '\0');
-
-  stralloc_nul(&basedir);
 
   if(stralloc_starts(&basedir, dirs.this.sa.s))
     stralloc_remove(&basedir, 0, dirs.this.sa.len + 1);
@@ -329,7 +376,7 @@ sources_addincludes(sourcefile* file, sourcedir* sdir, const strlist* includes, 
   stralloc_copy(&relative, &basedir);
   stralloc_nul(&relative);
 
-#ifdef DEBUG_OUTPUT_
+#ifdef DEBUG_OUTPUT
   buffer_putm_internal(buffer_2, "[1]", YELLOW256, "sources_addincludes(", NC, file->name, YELLOW256, ")", NC, "(2) file=", file->name, " relative=", 0);
   buffer_putsa(buffer_2, &relative);
   buffer_puts(buffer_2, "\nIncludes: ");
@@ -372,6 +419,7 @@ sources_addincludes(sourcefile* file, sourcedir* sdir, const strlist* includes, 
       if(stralloc_diff(&basedir, &dir)) {
         if(exists) {
           strarray a;
+
           strarray_init(&a);
           sources_readdir(&real, &a);
           sources_get(real.s);

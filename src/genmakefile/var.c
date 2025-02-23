@@ -6,9 +6,10 @@ MAP_T vars;
 linklib_fmt *format_linklib_fn = 0, *format_linkdir_fn = &format_linkdir_switch;
 
 /**
- * @brief format_linklib_lib  Output library name (+".lib")
- * @param libname
- * @param out
+ * @brief      Output library name (+".lib")
+ *
+ * @param      libname  Library name
+ * @param      out      Output
  */
 void
 format_linklib_lib(const char* libname, stralloc* out) {
@@ -18,9 +19,10 @@ format_linklib_lib(const char* libname, stralloc* out) {
 }
 
 /**
- * @brief format_linklib_switch  Output library name (+ leading "-l")
- * @param libname
- * @param out
+ * @brief      Output library name (+ leading "-l")
+ *
+ * @param      libname  Library name
+ * @param      out      Output
  */
 void
 format_linklib_switch(const char* libname, stralloc* out) {
@@ -30,13 +32,20 @@ format_linklib_switch(const char* libname, stralloc* out) {
 }
 
 /**
- * @brief format_linklib_dummy
- * @param libname
- * @param out
+ * @brief      { function_description }
+ *
+ * @param      libname  Library name
+ * @param      out      Output
  */
 void
 format_linklib_dummy(const char* libname, stralloc* out) {}
 
+/**
+ * @brief      Output library directory (+ leading "-L")
+ *
+ * @param[in]  libdir  The libdir
+ * @param      out     Output
+ */
 void
 format_linkdir_switch(const char* libdir, stralloc* out) {
   stralloc_cats(out, "-L");
@@ -44,13 +53,16 @@ format_linkdir_switch(const char* libdir, stralloc* out) {
 }
 
 /**
- * @defgroup var functions
+ * @defgroup   var functions
  * @{
- */
-/**
- * @brief var_isset
- * @param name
- * @return
+ * /
+ * /**
+ *
+ * @brief      Checks whether variable is set
+ *
+ * @param      name  Variable name
+ *
+ * @return     1 if set, 0 if not
  */
 int
 var_isset(const char* name) {
@@ -58,9 +70,12 @@ var_isset(const char* name) {
 }
 
 /**
- * @brief var_list  Find or create variable
- * @param name
- * @return
+ * @brief      Find or create variable
+ *
+ * @param      name  Variable name
+ * @param      psa   Path separator for arguments
+ *
+ * @return    var_t struct
  */
 var_t*
 var_list(const char* name, char psa) {
@@ -82,9 +97,11 @@ var_list(const char* name, char psa) {
 }
 
 /**
- * @brief var
- * @param name
- * @return
+ * @brief      Get variable value by name
+ *
+ * @param[in]  name  Variable name
+ *
+ * @return     Value
  */
 const char*
 var_get(const char* name) {
@@ -93,6 +110,15 @@ var_get(const char* name) {
   return v->value.sa.s;
 }
 
+/**
+ * @brief      Set variable value
+ *
+ * @param[in]  name   Variable name
+ * @param[in]  value  New value
+ * @param[in]  vlen   Value length
+ *
+ * @return     var_t struct
+ */
 var_t*
 var_setb(const char* name, const char* value, size_t vlen) {
   var_t* var;
@@ -111,16 +137,23 @@ var_setb(const char* name, const char* value, size_t vlen) {
 }
 
 /**
- * @brief var_set  Set variable
- * @param name
- * @param value
- * @return
+ * @brief       Set variable
+ *
+ * @param      name   Variable name
+ * @param      value  Value
+ *
+ * @return     var_t struct
  */
 var_t*
 var_set(const char* name, const char* value) {
   return var_setb(name, value, str_len(value));
 }
 
+/**
+ * @brief     Unset variable
+ *
+ * @param[in]  name  Variable name
+ */
 void
 var_unset(const char* name) {
   if(var_isset(name))
@@ -128,10 +161,10 @@ var_unset(const char* name) {
 }
 
 /**
- * @brief var_push  Add value to
- * variable
- * @param name
- * @param value
+ * @brief      Add value to variable
+ *
+ * @param      name   Variable name
+ * @param      value  Value
  */
 void
 var_push(const char* name, const char* value) {
@@ -140,9 +173,10 @@ var_push(const char* name, const char* value) {
 }
 
 /**
- * @brief var_push_sa
- * @param name
- * @param value
+ * @brief      Add value to variable
+ *
+ * @param      name   Variable name
+ * @param      value  Value
  */
 void
 var_push_sa(const char* name, stralloc* value) {
@@ -151,23 +185,24 @@ var_push_sa(const char* name, stralloc* value) {
 }
 
 /**
- * @brief var_subst
- * @param in
- * @param out
- * @param pfx
- * @param sfx
- * @param tolower
+ * @brief      Substitute variable substitutions
+ *
+ * @param[in]  in       Input string
+ * @param      out      Output
+ * @param[in]  pfx      Prefix; add before substitution
+ * @param[in]  sfx      Suffix; add after substitution
+ * @param[in]  tolower  Transform to lowercase
  */
 void
 var_subst(const stralloc* in, stralloc* out, const char* pfx, const char* sfx, int tolower) {
-  size_t i;
   stralloc_zero(out);
 
-  for(i = 0; i < in->len; ++i) {
+  for(size_t i = 0; i < in->len; ++i) {
     const char* p = &in->s[i];
 
     if(i + 4 <= in->len && *p == '$' && p[1] == '(') {
       size_t vlen;
+
       stralloc_cats(out, pfx);
       i += 2;
       vlen = byte_chr(&in->s[i], in->len - i, ')');
@@ -186,9 +221,10 @@ var_subst(const stralloc* in, stralloc* out, const char* pfx, const char* sfx, i
 }
 
 /**
- * @brief push_lib  Add library spec to variable
- * @param name
- * @param lib
+ * @brief      Add library spec to variable
+ *
+ * @param      name  Variable name
+ * @param      lib   Library name
  */
 void
 push_lib(const char* name, const char* lib) {
@@ -205,9 +241,10 @@ push_lib(const char* name, const char* lib) {
 }
 
 /**
- * @brief push_linkdir  Add library directory to variable
- * @param name
- * @param dir
+ * @brief      Add library directory to variable
+ *
+ * @param      name  Variable name
+ * @param      dir   Directory
  */
 void
 push_linkdir(const char* name, const char* dir) {
@@ -224,8 +261,9 @@ push_linkdir(const char* name, const char* dir) {
 }
 
 /**
- * @brief with_lib
- * @param lib
+ * @brief      Add library to DEFS and LIBS variable
+ *
+ * @param[in]  lib   Library name
  */
 void
 with_lib(const char* lib) {
@@ -253,8 +291,9 @@ with_lib(const char* lib) {
 }
 
 /**
- * @brief push_define
- * @param def
+ * @brief      Pushes a define.
+ *
+ * @param[in]  def  Definition name
  */
 void
 push_define(const char* def) {

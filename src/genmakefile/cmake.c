@@ -9,6 +9,13 @@
 #include "../../lib/bool.h"
 #include "is.h"
 
+/**
+ * @brief      Output a variable to CMakeLists.txt
+ *
+ * @param      b     Output buffer
+ * @param[in]  name  Variable name
+ * @param[in]  list  Variable value
+ */
 void
 output_cmake_var(buffer* b, const char* name, const strlist* list) {
   buffer_putm_internal(b, "set(", name, " ", NULL);
@@ -17,6 +24,13 @@ output_cmake_var(buffer* b, const char* name, const strlist* list) {
   buffer_putnlflush(b);
 }
 
+/**
+ * @brief      Appends to a variable in CMakeLists.txt
+ *
+ * @param      b     Output buffer
+ * @param[in]  name  Variable name
+ * @param[in]  list  Variable value
+ */
 void
 append_cmake_var(buffer* b, const char* name, const strlist* list) {
   buffer_putm_internal(b, "set(", name, " ${", name, "} ", NULL);
@@ -25,6 +39,14 @@ append_cmake_var(buffer* b, const char* name, const strlist* list) {
   buffer_putnlflush(b);
 }
 
+/**
+ * @brief      Output a CMake command
+ *
+ * @param      b      Output buffer
+ * @param[in]  cmd    The command name
+ * @param[in]  list   Argument list
+ * @param[in]  quote  Quote character
+ */
 void
 output_cmake_cmd(buffer* b, const char* cmd, const strlist* list, char quote) {
   if(strlist_count(list)) {
@@ -62,6 +84,14 @@ output_cmake_cmd(buffer* b, const char* cmd, const strlist* list, char quote) {
   }
 }
 
+/**
+ * @brief      Output a CMake command
+ *
+ * @param      b      Output buffer
+ * @param[in]  cmd    The command name
+ * @param[in]  list   Argument set
+ * @param[in]  quote  Quote character
+ */
 void
 output_cmake_set(buffer* b, const char* cmd, const set_t* list, char quote) {
   if(set_size(list)) {
@@ -69,8 +99,10 @@ output_cmake_set(buffer* b, const char* cmd, const set_t* list, char quote) {
     const char* s;
     size_t n;
     set_iterator_t it;
+
     needle[0] = quote;
     needle[1] = '\\';
+
     buffer_putm_internal(b, cmd, "(\n", NULL);
 
     set_foreach(list, it, s, n) {
@@ -97,6 +129,12 @@ output_cmake_set(buffer* b, const char* cmd, const set_t* list, char quote) {
   }
 }
 
+/**
+ * @brief      Substitute variable in stralloc
+ *
+ * @param      str      The stralloc
+ * @param[in]  varname  Variable name
+ */
 void
 output_cmake_subst(stralloc* str, const char* varname) {
   const char* value;
@@ -115,6 +153,13 @@ output_cmake_subst(stralloc* str, const char* varname) {
   }
 }
 
+/**
+ * @brief      { function_description }
+ *
+ * @param[in]  path     The path
+ * @param[in]  varname  The varname
+ * @param      out      The out
+ */
 void
 output_cmake_subst_path(const char* path, const char* varname, stralloc* out) {
   const char* value;
@@ -124,13 +169,14 @@ output_cmake_subst_path(const char* path, const char* varname, stralloc* out) {
   output_cmake_subst(out, varname);
 }
 
-/*
-void
+/*void
 output_cmake_libs(buffer* b) {
   strlist* libs = var_list("LIBS");
   const char* s;
   size_t n;
+
   buffer_puts(b, "\nlink_libraries(");
+
   strlist_foreach(libs, s, n) {
     if(n < 2 || !byte_equal(s, 2, "-l"))
       continue;
@@ -138,10 +184,17 @@ output_cmake_libs(buffer* b) {
     buffer_puts(b, "\n  ");
     buffer_put(b, s + 2, byte_finds(s + 2, n - 2, "$("));
   }
+
   buffer_puts(b, "\n)");
   buffer_putnlflush(b);
-}
-*/
+}*/
+
+/**
+ * @brief      Output a CMake rule
+ *
+ * @param      b     Output buffer
+ * @param      rule  The rule
+ */
 void
 output_cmake_rule(buffer* b, target* rule) {
   bool compile = stralloc_contains(&rule->recipe, " -c ");
@@ -155,12 +208,12 @@ output_cmake_rule(buffer* b, target* rule) {
       bool link = !(rule_is_compile(rule) || lib);
       size_t pos = 0, len;
       const char* s;
-      set_t deps, libs, sources_list;
+      set_t deps, libs, srcs;
       set_iterator_t it;
 
       set_init(&libs, 0);
       set_init(&deps, 0);
-      set_init(&sources_list, 0);
+      set_init(&srcs, 0);
       buffer_puts(b, lib ? "add_library(\n  " : "add_executable(\n  ");
 
       if(lib || link) {
@@ -186,7 +239,7 @@ output_cmake_rule(buffer* b, target* rule) {
 
       /*if(link) {
          set_filter_out(&rule->prereq, &deps, is_source_b);
-         set_filter(&rule->prereq, &sources_list, is_source_b);
+         set_filter(&rule->prereq, &srcs, is_source_b);
        } else */
 
       set_foreach(&rule->prereq, it, s, len) {
@@ -199,7 +252,7 @@ output_cmake_rule(buffer* b, target* rule) {
 
         if(is_object_b(s, len)) {
           if((compile = rule_find_b(s, len))) {
-            rule_prereq(compile, &sources_list);
+            rule_prereq(compile, &srcs);
 #ifdef DEBUG_OUTPUT_
             buffer_puts(buffer_2, "compile rule '");
             buffer_puts(buffer_2, compile->name);
@@ -217,13 +270,13 @@ output_cmake_rule(buffer* b, target* rule) {
         } else if(is_lib_b(s, len)) {
           set_add(&libs, s, len);
         } else if(is_source_b(s, len)) {
-          set_add(&sources_list, s, len);
+          set_add(&srcs, s, len);
         } else {
           set_add(&deps, s, len);
         }
       }
 
-      if(n - pos == 0 /* || 0 == set_size(lib ? &deps : &sources_list)*/)
+      if(n - pos == 0 /* || 0 == set_size(lib ? &deps : &srcs)*/)
         continue;
 
       buffer_put(b, x + pos, n - pos);
@@ -232,7 +285,7 @@ output_cmake_rule(buffer* b, target* rule) {
       if(lib && is_lib(rule->name))
         buffer_puts(b, "STATIC\n  ");
 
-      buffer_putset(b, lib ? &deps : &sources_list, "\n  ", 3);
+      buffer_putset(b, lib ? &deps : &srcs, "\n  ", 3);
       buffer_puts(b, "\n)");
       buffer_putnlflush(b);
 
@@ -250,13 +303,13 @@ output_cmake_rule(buffer* b, target* rule) {
         strarray v;
 
         strarray_init(&v);
-        set_tostrarray(&sources_list, &v);
+        set_tostrarray(&srcs, &v);
         strarray_sort(&v, 0);
 
         buffer_puts(buffer_2, "deps:\n  ");
         buffer_putset(buffer_2, &deps, "\n  ", 3);
         buffer_putnlflush(buffer_2);
-        buffer_puts(buffer_2, "sources_list:\n  ");
+        buffer_puts(buffer_2, "srcs:\n  ");
         buffer_putstra(buffer_2, &v, "\n  ");
         buffer_putnlflush(buffer_2);
 
@@ -267,11 +320,17 @@ output_cmake_rule(buffer* b, target* rule) {
   }
 }
 
+/**
+ * @brief      Output all CMake rules
+ *
+ * @param      b      Output buffer
+ * @param[in]  rules  The rules
+ */
 void
 output_cmake_rules(buffer* b, MAP_T rules) {
   MAP_PAIR_T t;
+
   MAP_FOREACH(rules, t) {
-    // target* rule = MAP_ITER_VALUE(t);
     const char* name = MAP_ITER_KEY(t);
     target* rule = MAP_ITER_VALUE(t);
 
@@ -281,8 +340,10 @@ output_cmake_rules(buffer* b, MAP_T rules) {
 #endif
     if(!cmd_libs && str_end(name, ".a"))
       continue;
+
     /* if(str_end(name, ".o"))
        continue;*/
+
     if(str_equal(name, "all") || str_equal(name, "clean"))
       continue;
 
@@ -292,14 +353,28 @@ output_cmake_rules(buffer* b, MAP_T rules) {
     buffer_putc(buffer_2, '\'');
     buffer_putnlflush(buffer_2);
 #endif
+
     output_cmake_rule(b, rule);
   }
 }
 
+/**
+ * @brief      Outptus a CMake project() command
+ *
+ * @param      b             Output buffer
+ * @param      rules         rules
+ * @param      vars          Variables
+ * @param[in]  include_dirs  include dirs
+ * @param[in]  link_dirs     link dirs
+ */
 void
 output_cmake_project(buffer* b, MAP_T* rules, MAP_T* vars, const strlist* include_dirs, const strlist* link_dirs) {
   MAP_PAIR_T t;
   set_t libraries;
+  const char* s;
+  size_t n;
+  set_iterator_t it;
+
   buffer_putm_internal(b, "project(", project_name, " ", sources_iscplusplus() ? "CXX" : "C", ")", NULL);
   buffer_putnlflush(b);
   buffer_putnlflush(b);
@@ -323,29 +398,24 @@ output_cmake_project(buffer* b, MAP_T* rules, MAP_T* vars, const strlist* includ
     set_filter(&rule->prereq, &libraries, is_lib_b);
   }
 
-  {
-    const char* s;
-    size_t n;
-    set_iterator_t it;
+  set_foreach(&libraries, it, s, n) {
+    stralloc sa;
 
-    set_foreach(&libraries, it, s, n) {
-      stralloc sa;
-
-      stralloc_init(&sa);
-      // path_dirname_b(s, n, &sa);
+    stralloc_init(&sa);
+    // path_dirname_b(s, n, &sa);
 
 #ifdef DEBUG_OUTPUT
-      buffer_puts(buffer_2, "libdir: ");
-      buffer_put(buffer_2, s, path_dirlen_b(s, n));
-      buffer_putnlflush(buffer_2);
+    buffer_puts(buffer_2, "libdir: ");
+    buffer_put(buffer_2, s, path_dirlen_b(s, n));
+    buffer_putnlflush(buffer_2);
 #endif
 #ifdef DEBUG_OUTPUT
-      buffer_puts(buffer_2, "lib: ");
-      buffer_put(buffer_2, s, n);
-      buffer_putnlflush(buffer_2);
+    buffer_puts(buffer_2, "lib: ");
+    buffer_put(buffer_2, s, n);
+    buffer_putnlflush(buffer_2);
 #endif
-      stralloc_free(&sa);
-    }
+
+    stralloc_free(&sa);
   }
 
   output_cmake_subst((stralloc*)&include_dirs->sa, "CMAKE_CURRENT_SOURCE_DIR");
@@ -367,6 +437,7 @@ output_cmake_project(buffer* b, MAP_T* rules, MAP_T* vars, const strlist* includ
     buffer_puts(b, ")");
     buffer_putnlflush(b);
   }*/
+
   buffer_putnlflush(b);
   output_cmake_cmd(b, "add_definitions", &var_list("DEFS", ' ')->value, 0);
   output_cmake_set(b, "link_libraries", &link_libraries, 0);
@@ -374,4 +445,6 @@ output_cmake_project(buffer* b, MAP_T* rules, MAP_T* vars, const strlist* includ
   output_cmake_cmd(b, "link_directories", link_dirs, 0);
 
   output_cmake_rules(b, *rules);
+
+  set_free(&libraries);
 }
