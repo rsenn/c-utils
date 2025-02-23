@@ -53,8 +53,9 @@ void debug_str(const char* name, const char* s);
 const char* const build_types[] = {"Release", "RelWithDebInfo", "MinSizeRel", "Debug"};
 
 static const char *make_begin_inline, *make_sep_inline, *make_end_inline, *comment = "#", *cross_compile = "", *builddir_varname = "BUILDDIR", *quote_args = "";
-static bool batch, shell, ninja, batchmode, cygming;
+static bool batchmode, cygming;
 static strlist system_path;
+static build_tool_t build_tool = 0;
 
 char pathsep_make = DEFAULT_PATHSEP, pathsep_args = DEFAULT_PATHSEP;
 strarray dirstack = {0};
@@ -214,7 +215,7 @@ set_command(stralloc* sa, const char* cmd, const char* args) {
   if(args) {
     stralloc_catc(sa, ' ');
 
-    if(!(ninja || batch) && (make_begin_inline && make_end_inline)) {
+    if(!(build_tool == BUILD_TOOL_NINJA || build_tool == BUILD_TOOL_BATCH) && (make_begin_inline && make_end_inline)) {
       stralloc_cats(sa, make_begin_inline);
 
       if(!str_start(tools.make, "nmake"))
@@ -655,7 +656,7 @@ set_make_type() {
     if(inst_bins || inst_libs)
       var_set("INSTALL", "copy /y");
   } else if(str_start(tools.make, "ninja")) {
-    ninja = 1;
+    build_tool = BUILD_TOOL_NINJA;
     pathsep_make = pathsep_args = PATHSEP_C;
     make_begin_inline = make_sep_inline = make_end_inline = 0;
   } else if(str_start(tools.make, "po")) {
@@ -1333,7 +1334,7 @@ set_compiler_type(const char* compiler) {
   }
 
   if(cygming) {
-    if(!ninja)
+    if(build_tool != BUILD_TOOL_NINJA)
       pathsep_args = '/';
     var_set("prefix", "/");
     var_push("prefix", str_start(tools.toolchain, "mingw") ? tools.toolchain : "usr");
@@ -1813,11 +1814,12 @@ main(int argc, char* argv[]) {
   if(tools.make == NULL)
     tools.make = "make";
 
-  batch = str_start(tools.make, "bat") || str_start(tools.make, "cmd");
-  ninja = tools.make[str_find(tools.make, "ninja")] != '\0';
-  shell = str_start(tools.make, "sh");
+  build_tool = (str_start(tools.make, "bat") || str_start(tools.make, "cmd")) ? BUILD_TOOL_BATCH
+               : tools.make[str_find(tools.make, "ninja")] != '\0'            ? BUILD_TOOL_NINJA
+               : str_start(tools.make, "sh")                                  ? BUILD_TOOL_SHELL
+                                                                              : 0;
 
-  if(batch)
+  if(build_tool == BUILD_TOOL_BATCH)
     comment = "REM ";
 
   if(tools.compiler == NULL) {
@@ -1896,8 +1898,8 @@ main(int argc, char* argv[]) {
       stralloc_prepends(&var_list("AR", pathsep_args)->value.sa, "$(CROSS_COMPILE)");
   }
 
-  batchmode = batch && stralloc_contains(&commands.compile, "-Fo");
-  if(batch)
+  batchmode = build_tool == BUILD_TOOL_BATCH && stralloc_contains(&commands.compile, "-Fo");
+  if(build_tool == BUILD_TOOL_BATCH)
     pathsep_args = pathsep_make;
 
   stralloc_replacec(&dirs.out.sa, PATHSEP_C == '/' ? '\\' : '/', PATHSEP_C);
@@ -2262,7 +2264,7 @@ main(int argc, char* argv[]) {
     stralloc_free(&builddir);
   }
 
-  if(((batch | shell) && stralloc_equals(&dirs.work.sa, ".")))
+  if(((build_tool == BUILD_TOOL_BATCH || build_tool == BUILD_TOOL_SHELL) && stralloc_equals(&dirs.work.sa, ".")))
     batchmode = 1;
 
   if(output_name.len) {
@@ -2339,7 +2341,7 @@ main(int argc, char* argv[]) {
 #endif
 
     if(cmd_libs) {
-      generate_lib_rules(shell, batch, batchmode, pathsep_args, pathsep_make);
+      generate_lib_rules(build_tool == BUILD_TOOL_SHELL, build_tool == BUILD_TOOL_BATCH, batchmode, pathsep_args, pathsep_make);
       deps_for_libs();
     } else {
       MAP_PAIR_T t;
@@ -2472,7 +2474,7 @@ fail:
   stralloc_nul(&cfg.chip);
   var_set("CHIP", cfg.chip.s);
 
-  if(ninja) {
+  if(build_tool == BUILD_TOOL_NINJA) {
     stralloc tmp;
 
     stralloc_init(&tmp);
@@ -2496,7 +2498,7 @@ fail:
     map_keys_get(&vars, &varnames);
     buffer_puts(buffer_2, "varnames: ");
     strlist_dump(buffer_2, &varnames);
-    output_all_vars(out, &vars, &varnames, ninja, batch, shell);
+    output_all_vars(out, &vars, &varnames, build_tool);
     strlist_free(&varnames);
   }
 #endif
@@ -2509,7 +2511,7 @@ fail:
     buffer_flush(out);
   }
 
-  if(ninja) {
+  if(build_tool == BUILD_TOOL_NINJA) {
     output_ninja_rule(out, "cc", &commands.compile);
     output_ninja_rule(out, "link", &commands.link);
     output_ninja_rule(out, "lib", &commands.lib);
@@ -2539,15 +2541,15 @@ fail:
     }
   }
 
-  if(batch || shell) {
-    if(batch)
+  if(build_tool == BUILD_TOOL_BATCH || build_tool == BUILD_TOOL_SHELL) {
+    if(build_tool == BUILD_TOOL_BATCH)
       buffer_putm_internal(out, "CD %~dp0", newline, NULL);
     else
       buffer_putm_internal(out, "cd \"$(dirname \"$0\")\"\n\n", NULL);
 
-    output_script(out, NULL, shell, batch, quote_args, pathsep_args, make_sep_inline);
+    output_script(out, NULL, build_tool, quote_args, pathsep_args, make_sep_inline);
   } else {
-    output_all_rules(out, ninja, batch, shell, quote_args, pathsep_args, pathsep_make, make_sep_inline);
+    output_all_rules(out, build_tool, quote_args, pathsep_args, pathsep_make, make_sep_inline);
   }
 
 quit : {

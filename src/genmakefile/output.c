@@ -36,12 +36,10 @@ extract_vars(const char* x, size_t len, set_t* out) {
  * @param      vars    The variables
  * @param[in]  name    The name
  * @param[in]  serial  The serial
- * @param[in]  ninja   The ninja
- * @param[in]  batch   The batch
- * @param[in]  shell   The shell
+ * @param[in]  tool    Build tool
  */
 void
-output_var(buffer* b, MAP_T* vars, const char* name, int serial, bool ninja, bool batch, bool shell) {
+output_var(buffer* b, MAP_T* vars, const char* name, int serial, build_tool_t tool) {
   stralloc v;
   var_t* var;
   set_t refvars;
@@ -63,7 +61,7 @@ output_var(buffer* b, MAP_T* vars, const char* name, int serial, bool ninja, boo
     if(var->value.sa.len) {
       stralloc_copys(&v, MAP_ITER_KEY(t));
 
-      if(ninja)
+      if(tool == BUILD_TOOL_NINJA)
         stralloc_lower(&v);
 
       stralloc_nul(&v);
@@ -77,13 +75,13 @@ output_var(buffer* b, MAP_T* vars, const char* name, int serial, bool ninja, boo
           buffer_putm_internal(buffer_2, "Var ", name, " ref: ", ref, NULL);
           buffer_putnlflush(buffer_2);
 #endif
-          output_var(b, vars, ref, serial, ninja, batch, shell);
+          output_var(b, vars, ref, serial, tool);
         }
       }
 
-      if(batch)
+      if(tool == BUILD_TOOL_BATCH)
         buffer_putm_internal(b, "@SET ", v.s, "=", NULL);
-      else if(shell)
+      else if(tool == BUILD_TOOL_SHELL)
         buffer_putm_internal(b, v.s, "=\"", NULL);
       else
         buffer_putm_internal(b, v.s, " = ", NULL);
@@ -93,15 +91,15 @@ output_var(buffer* b, MAP_T* vars, const char* name, int serial, bool ninja, boo
         stralloc u;
         stralloc_init(&u);
 
-        if(ninja)
+        if(tool == BUILD_TOOL_NINJA)
           stralloc_copy(&u, &var->value.sa);
         else
           strlist_joinq(&var->value, &u, ' ', '"');
 
-        if(ninja || shell) {
+        if(tool == BUILD_TOOL_NINJA || tool == BUILD_TOOL_SHELL) {
           stralloc_zero(&v);
           var_subst(&u, &v, "$", "", 1);
-        } else if(batch) {
+        } else if(tool == BUILD_TOOL_BATCH) {
           stralloc_zero(&v);
           var_subst(&u, &v, "%", "%", 1);
         } else {
@@ -113,7 +111,7 @@ output_var(buffer* b, MAP_T* vars, const char* name, int serial, bool ninja, boo
 
       buffer_putsa(b, &v);
 
-      if(shell)
+      if(tool == BUILD_TOOL_SHELL)
         buffer_putc(b, '"');
 
       buffer_putnl(b, 0);
@@ -134,19 +132,17 @@ output_var(buffer* b, MAP_T* vars, const char* name, int serial, bool ninja, boo
  * @param      b         { parameter_description }
  * @param      vars      The variables
  * @param      varnames  The varnames
- * @param[in]  ninja     The ninja
- * @param[in]  batch     The batch
- * @param[in]  shell     The shell
+ * @param[in]  tool      Build tool
  */
 void
-output_all_vars(buffer* b, MAP_T* vars, strlist* varnames, bool ninja, bool batch, bool shell) {
+output_all_vars(buffer* b, MAP_T* vars, strlist* varnames, build_tool_t tool) {
   const char* name;
   static int serial = 0;
 
   stralloc_nul(&varnames->sa);
   ++serial;
 
-  strlist_foreach_s(varnames, name) { output_var(b, vars, name, serial, ninja, batch, shell); }
+  strlist_foreach_s(varnames, name) { output_var(b, vars, name, serial, tool); }
 
   buffer_putnl(b, 1);
 }
@@ -156,15 +152,14 @@ output_all_vars(buffer* b, MAP_T* vars, strlist* varnames, bool ninja, bool batc
  *
  * @param      b                Output buffer
  * @param      rule             The rule
- * @param[in]  batch            Batch file?
- * @param[in]  shell            Shell script?
+ * @param[in]  tool             Build tool
  * @param[in]  quote_args
  * @param[in]  psa              Path separator for arguments
  * @param[in]  psm              Path separator in Makefile
  * @param[in]  make_sep_inline  Make separator inline
  */
 void
-output_make_rule(buffer* b, target* rule, bool batch, bool shell, const char quote_args[], char psa, char psm, const char* make_sep_inline) {
+output_make_rule(buffer* b, target* rule, build_tool_t tool, const char quote_args[], char psa, char psm, const char* make_sep_inline) {
   const char* x;
   stralloc output, sa, name;
   size_t n, num_prereqs = set_size(&rule->prereq);
@@ -265,7 +260,7 @@ output_make_rule(buffer* b, target* rule, bool batch, bool shell, const char quo
     if(infile && (signed)rule->type >= 0)
       stralloc_copy(&cmd, &commands.v[rule->type]);
     else*/
-    rule_command(rule, &cmd, shell, batch, quote_args, psa, make_sep_inline, tools.make);
+    rule_command(rule, &cmd, tool == BUILD_TOOL_SHELL, tool == BUILD_TOOL_BATCH, quote_args, psa, make_sep_inline, tools.make);
 
     stralloc_remove_all(&cmd, "\0", 1);
 
@@ -419,19 +414,17 @@ output_ninja_rule(buffer* b, const char* name, const stralloc* cmd) {
 }
 
 /**
- * @brief       Output the rule set
+ * @brief      Output the rule set
  *
  * @param      b                Output buffer
- * @param[in]  ninja            Is Ninja rule?
- * @param[in]  batch            is Batch file?
- * @param[in]  shell            is Shell script?
+ * @param[in]  tool             Build tool
  * @param[in]  quote_args       Quote arguments
  * @param[in]  psa              Path separator for arguments
  * @param[in]  psm              Path separator for Makefile
  * @param[in]  make_sep_inline  Make separator inline
  */
 void
-output_all_rules(buffer* b, bool ninja, bool batch, bool shell, const char quote_args[], char psa, char psm, const char* make_sep_inline) {
+output_all_rules(buffer* b, build_tool_t tool, const char quote_args[], char psa, char psm, const char* make_sep_inline) {
   MAP_PAIR_T t;
 
   MAP_FOREACH(rules, t) {
@@ -451,10 +444,10 @@ output_all_rules(buffer* b, bool ninja, bool batch, bool shell, const char quote
     buffer_putnlflush(buffer_2);
 #endif
 
-    if(ninja)
+    if(tool == BUILD_TOOL_NINJA)
       output_ninja_target(b, rule, psa);
     else
-      output_make_rule(b, rule, batch, shell, quote_args, psa, psm, make_sep_inline);
+      output_make_rule(b, rule, tool, quote_args, psa, psm, make_sep_inline);
   }
 }
 
@@ -463,14 +456,13 @@ output_all_rules(buffer* b, bool ninja, bool batch, bool shell, const char quote
  *
  * @param      b                Output buffer
  * @param      rule             The rule
- * @param[in]  shell            The shell
- * @param[in]  batch            The batch
+ * @param[in]  tool             Build tool
  * @param[in]  quote_args       The quote arguments
  * @param[in]  psa              The psa
  * @param[in]  make_sep_inline  The make separator inline
  */
 void
-output_script(buffer* b, target* rule, bool shell, bool batch, const char quote_args[], char psa, const char* make_sep_inline) {
+output_script(buffer* b, target* rule, build_tool_t tool, const char quote_args[], char psa, const char* make_sep_inline) {
   static uint32 serial;
   char* x;
   size_t n;
@@ -489,7 +481,7 @@ output_script(buffer* b, target* rule, bool shell, bool batch, const char quote_
 
   if(!rule->name[str_chr(rule->name, '%')])
     if(rule->recipe.s != commands.compile.s)
-      buffer_putm_internal(b, newline, shell ? "#" : "REM", " Rules for '", rule->name, "'", newline, NULL);
+      buffer_putm_internal(b, newline, tool == BUILD_TOOL_BATCH ? "REM" : "#", " Rules for '", rule->name, "'", newline, NULL);
 
   set_foreach(&rule->prereq, it, x, n) {
     target* dep = rule_find_b(x, n);
@@ -497,7 +489,7 @@ output_script(buffer* b, target* rule, bool shell, bool batch, const char quote_
     if(!dep || dep->serial == serial)
       continue;
 
-    output_script(b, dep, shell, batch, quote_args, psa, make_sep_inline);
+    output_script(b, dep, tool, quote_args, psa, make_sep_inline);
   }
 
   if(array_length(&rule->objs, sizeof(target*))) {
@@ -509,7 +501,7 @@ output_script(buffer* b, target* rule, bool shell, bool batch, const char quote_
       if(dep == 0 || dep->serial == serial)
         continue;
 
-      output_script(b, dep, shell, batch, quote_args, psa, make_sep_inline);
+      output_script(b, dep, tool, quote_args, psa, make_sep_inline);
     }
   }
 
@@ -518,17 +510,17 @@ output_script(buffer* b, target* rule, bool shell, bool batch, const char quote_
 
     stralloc_init(&cmd);
 
-    rule_command(rule, &cmd, shell, batch, quote_args, psa, make_sep_inline, tools.make);
+    rule_command(rule, &cmd, tool == BUILD_TOOL_SHELL, tool == BUILD_TOOL_BATCH, quote_args, psa, make_sep_inline, tools.make);
     buffer_putsa(b, &cmd);
 
-    if(!shell)
+    if(tool == BUILD_TOOL_BATCH)
       buffer_puts(b, " || GOTO FAIL");
 
     stralloc_free(&cmd);
   }
 
   if(str_equal(rule->name, "all")) {
-    if(!shell)
+    if(tool == BUILD_TOOL_BATCH)
       buffer_putm_internal(
           b, newline, ":SUCCESS", newline, "ECHO Done.", newline, "GOTO QUIT", newline, newline, ":FAIL", newline, "ECHO Fail.", newline, newline, ":QUIT", newline, 0);
   }

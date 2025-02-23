@@ -79,6 +79,12 @@ typedef enum {
   BUILD_TYPE_DEBUG,
 } build_type_t;
 
+typedef enum {
+  BUILD_TOOL_NINJA = 1,
+  BUILD_TOOL_BATCH,
+  BUILD_TOOL_SHELL,
+} build_tool_t;
+
 void stralloc_weak(stralloc*, const stralloc*);
 void buffer_putnl(buffer*, int);
 
