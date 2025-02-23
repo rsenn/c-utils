@@ -80,9 +80,9 @@ typedef enum {
 } build_type_t;
 
 typedef enum {
-  BUILD_TOOL_NINJA = 1,
-  BUILD_TOOL_BATCH,
-  BUILD_TOOL_SHELL,
+  TOOL_NINJA = 1,
+  TOOL_BATCH,
+  TOOL_SHELL,
 } build_tool_t;
 
 void stralloc_weak(stralloc*, const stralloc*);
@@ -95,12 +95,6 @@ void rule_list(const strlist*, array*);
 int input_command_line(const char*, size_t);
 void print_rule_deps(buffer* b, target* t);
 void libdirs_add(const char*);
-
-/*void add_path_b(set_t*, const char*, size_t);
-void add_path(set_t*, const char*);
-void add_srcpath(set_t*, const char*);
-void add_source(set_t*, const char*);
-void add_path_sa(set_t*, stralloc*);*/
 
 // extern config_t cfg;
 extern dirs_t dirs;

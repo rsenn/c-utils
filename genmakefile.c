@@ -215,7 +215,7 @@ set_command(stralloc* sa, const char* cmd, const char* args) {
   if(args) {
     stralloc_catc(sa, ' ');
 
-    if(!(build_tool == BUILD_TOOL_NINJA || build_tool == BUILD_TOOL_BATCH) && (make_begin_inline && make_end_inline)) {
+    if(!(build_tool == TOOL_NINJA || build_tool == TOOL_BATCH) && (make_begin_inline && make_end_inline)) {
       stralloc_cats(sa, make_begin_inline);
 
       if(!str_start(tools.make, "nmake"))
@@ -656,7 +656,7 @@ set_make_type() {
     if(inst_bins || inst_libs)
       var_set("INSTALL", "copy /y");
   } else if(str_start(tools.make, "ninja")) {
-    build_tool = BUILD_TOOL_NINJA;
+    build_tool = TOOL_NINJA;
     pathsep_make = pathsep_args = PATHSEP_C;
     make_begin_inline = make_sep_inline = make_end_inline = 0;
   } else if(str_start(tools.make, "po")) {
@@ -1334,7 +1334,7 @@ set_compiler_type(const char* compiler) {
   }
 
   if(cygming) {
-    if(build_tool != BUILD_TOOL_NINJA)
+    if(build_tool != TOOL_NINJA)
       pathsep_args = '/';
     var_set("prefix", "/");
     var_push("prefix", str_start(tools.toolchain, "mingw") ? tools.toolchain : "usr");
@@ -1814,12 +1814,12 @@ main(int argc, char* argv[]) {
   if(tools.make == NULL)
     tools.make = "make";
 
-  build_tool = (str_start(tools.make, "bat") || str_start(tools.make, "cmd")) ? BUILD_TOOL_BATCH
-               : tools.make[str_find(tools.make, "ninja")] != '\0'            ? BUILD_TOOL_NINJA
-               : str_start(tools.make, "sh")                                  ? BUILD_TOOL_SHELL
+  build_tool = (str_start(tools.make, "bat") || str_start(tools.make, "cmd")) ? TOOL_BATCH
+               : tools.make[str_find(tools.make, "ninja")] != '\0'            ? TOOL_NINJA
+               : str_start(tools.make, "sh")                                  ? TOOL_SHELL
                                                                               : 0;
 
-  if(build_tool == BUILD_TOOL_BATCH)
+  if(build_tool == TOOL_BATCH)
     comment = "REM ";
 
   if(tools.compiler == NULL) {
@@ -1898,8 +1898,8 @@ main(int argc, char* argv[]) {
       stralloc_prepends(&var_list("AR", pathsep_args)->value.sa, "$(CROSS_COMPILE)");
   }
 
-  batchmode = build_tool == BUILD_TOOL_BATCH && stralloc_contains(&commands.compile, "-Fo");
-  if(build_tool == BUILD_TOOL_BATCH)
+  batchmode = build_tool == TOOL_BATCH && stralloc_contains(&commands.compile, "-Fo");
+  if(build_tool == TOOL_BATCH)
     pathsep_args = pathsep_make;
 
   stralloc_replacec(&dirs.out.sa, PATHSEP_C == '/' ? '\\' : '/', PATHSEP_C);
@@ -2264,7 +2264,7 @@ main(int argc, char* argv[]) {
     stralloc_free(&builddir);
   }
 
-  if(((build_tool == BUILD_TOOL_BATCH || build_tool == BUILD_TOOL_SHELL) && stralloc_equals(&dirs.work.sa, ".")))
+  if(((build_tool == TOOL_BATCH || build_tool == TOOL_SHELL) && stralloc_equals(&dirs.work.sa, ".")))
     batchmode = 1;
 
   if(output_name.len) {
@@ -2341,7 +2341,7 @@ main(int argc, char* argv[]) {
 #endif
 
     if(cmd_libs) {
-      generate_lib_rules(build_tool == BUILD_TOOL_SHELL, build_tool == BUILD_TOOL_BATCH, batchmode, pathsep_args, pathsep_make);
+      generate_lib_rules(build_tool == TOOL_SHELL, build_tool == TOOL_BATCH, batchmode, pathsep_args, pathsep_make);
       deps_for_libs();
     } else {
       MAP_PAIR_T t;
@@ -2474,7 +2474,7 @@ fail:
   stralloc_nul(&cfg.chip);
   var_set("CHIP", cfg.chip.s);
 
-  if(build_tool == BUILD_TOOL_NINJA) {
+  if(build_tool == TOOL_NINJA) {
     stralloc tmp;
 
     stralloc_init(&tmp);
@@ -2511,7 +2511,7 @@ fail:
     buffer_flush(out);
   }
 
-  if(build_tool == BUILD_TOOL_NINJA) {
+  if(build_tool == TOOL_NINJA) {
     output_ninja_rule(out, "cc", &commands.compile);
     output_ninja_rule(out, "link", &commands.link);
     output_ninja_rule(out, "lib", &commands.lib);
@@ -2541,8 +2541,8 @@ fail:
     }
   }
 
-  if(build_tool == BUILD_TOOL_BATCH || build_tool == BUILD_TOOL_SHELL) {
-    if(build_tool == BUILD_TOOL_BATCH)
+  if(build_tool == TOOL_BATCH || build_tool == TOOL_SHELL) {
+    if(build_tool == TOOL_BATCH)
       buffer_putm_internal(out, "CD %~dp0", newline, NULL);
     else
       buffer_putm_internal(out, "cd \"$(dirname \"$0\")\"\n\n", NULL);

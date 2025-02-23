@@ -61,7 +61,7 @@ output_var(buffer* b, MAP_T* vars, const char* name, int serial, build_tool_t to
     if(var->value.sa.len) {
       stralloc_copys(&v, MAP_ITER_KEY(t));
 
-      if(tool == BUILD_TOOL_NINJA)
+      if(tool == TOOL_NINJA)
         stralloc_lower(&v);
 
       stralloc_nul(&v);
@@ -79,9 +79,9 @@ output_var(buffer* b, MAP_T* vars, const char* name, int serial, build_tool_t to
         }
       }
 
-      if(tool == BUILD_TOOL_BATCH)
+      if(tool == TOOL_BATCH)
         buffer_putm_internal(b, "@SET ", v.s, "=", NULL);
-      else if(tool == BUILD_TOOL_SHELL)
+      else if(tool == TOOL_SHELL)
         buffer_putm_internal(b, v.s, "=\"", NULL);
       else
         buffer_putm_internal(b, v.s, " = ", NULL);
@@ -91,15 +91,15 @@ output_var(buffer* b, MAP_T* vars, const char* name, int serial, build_tool_t to
         stralloc u;
         stralloc_init(&u);
 
-        if(tool == BUILD_TOOL_NINJA)
+        if(tool == TOOL_NINJA)
           stralloc_copy(&u, &var->value.sa);
         else
           strlist_joinq(&var->value, &u, ' ', '"');
 
-        if(tool == BUILD_TOOL_NINJA || tool == BUILD_TOOL_SHELL) {
+        if(tool == TOOL_NINJA || tool == TOOL_SHELL) {
           stralloc_zero(&v);
           var_subst(&u, &v, "$", "", 1);
-        } else if(tool == BUILD_TOOL_BATCH) {
+        } else if(tool == TOOL_BATCH) {
           stralloc_zero(&v);
           var_subst(&u, &v, "%", "%", 1);
         } else {
@@ -111,7 +111,7 @@ output_var(buffer* b, MAP_T* vars, const char* name, int serial, build_tool_t to
 
       buffer_putsa(b, &v);
 
-      if(tool == BUILD_TOOL_SHELL)
+      if(tool == TOOL_SHELL)
         buffer_putc(b, '"');
 
       buffer_putnl(b, 0);
@@ -260,7 +260,7 @@ output_make_rule(buffer* b, target* rule, build_tool_t tool, const char quote_ar
     if(infile && (signed)rule->type >= 0)
       stralloc_copy(&cmd, &commands.v[rule->type]);
     else*/
-    rule_command(rule, &cmd, tool == BUILD_TOOL_SHELL, tool == BUILD_TOOL_BATCH, quote_args, psa, make_sep_inline, tools.make);
+    rule_command(rule, &cmd, tool == TOOL_SHELL, tool == TOOL_BATCH, quote_args, psa, make_sep_inline, tools.make);
 
     stralloc_remove_all(&cmd, "\0", 1);
 
@@ -444,7 +444,7 @@ output_all_rules(buffer* b, build_tool_t tool, const char quote_args[], char psa
     buffer_putnlflush(buffer_2);
 #endif
 
-    if(tool == BUILD_TOOL_NINJA)
+    if(tool == TOOL_NINJA)
       output_ninja_target(b, rule, psa);
     else
       output_make_rule(b, rule, tool, quote_args, psa, psm, make_sep_inline);
@@ -481,7 +481,7 @@ output_script(buffer* b, target* rule, build_tool_t tool, const char quote_args[
 
   if(!rule->name[str_chr(rule->name, '%')])
     if(rule->recipe.s != commands.compile.s)
-      buffer_putm_internal(b, newline, tool == BUILD_TOOL_BATCH ? "REM" : "#", " Rules for '", rule->name, "'", newline, NULL);
+      buffer_putm_internal(b, newline, tool == TOOL_BATCH ? "REM" : "#", " Rules for '", rule->name, "'", newline, NULL);
 
   set_foreach(&rule->prereq, it, x, n) {
     target* dep = rule_find_b(x, n);
@@ -510,17 +510,17 @@ output_script(buffer* b, target* rule, build_tool_t tool, const char quote_args[
 
     stralloc_init(&cmd);
 
-    rule_command(rule, &cmd, tool == BUILD_TOOL_SHELL, tool == BUILD_TOOL_BATCH, quote_args, psa, make_sep_inline, tools.make);
+    rule_command(rule, &cmd, tool == TOOL_SHELL, tool == TOOL_BATCH, quote_args, psa, make_sep_inline, tools.make);
     buffer_putsa(b, &cmd);
 
-    if(tool == BUILD_TOOL_BATCH)
+    if(tool == TOOL_BATCH)
       buffer_puts(b, " || GOTO FAIL");
 
     stralloc_free(&cmd);
   }
 
   if(str_equal(rule->name, "all")) {
-    if(tool == BUILD_TOOL_BATCH)
+    if(tool == TOOL_BATCH)
       buffer_putm_internal(
           b, newline, ":SUCCESS", newline, "ECHO Done.", newline, "GOTO QUIT", newline, newline, ":FAIL", newline, "ECHO Fail.", newline, newline, ":QUIT", newline, 0);
   }
