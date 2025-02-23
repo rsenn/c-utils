@@ -433,6 +433,7 @@ input_process_command(stralloc* cmd, int argc, char* argv[], const char* file, s
     }
   }
 
+  /* Relocate output file */
   if(compile || link) {
     stralloc tmp;
 

@@ -1448,6 +1448,7 @@ usage(char* argv0) {
                        "     pomake      Pelles-C Make\n"
                        "     make        Other make\n"
                        "     batch       Windows batch (.bat .cmd)\n"
+                       "     shell       Bourne shell script\n"
                        "     ninja       Ninja build\n"
                        "     mplab       MPLAB project (.mcp)\n"
                        "     mplabx      MPLAB X project (NetBeans)\n"

@@ -461,7 +461,7 @@ output_all_rules(buffer* b, bool ninja, bool batch, bool shell, const char quote
 /**
  * @brief      Output a script
  *
- * @param      b                { parameter_description }
+ * @param      b                Output buffer
  * @param      rule             The rule
  * @param[in]  shell            The shell
  * @param[in]  batch            The batch
@@ -478,9 +478,10 @@ output_script(buffer* b, target* rule, bool shell, bool batch, const char quote_
   int flush = 0;
 
   if(rule == NULL) {
-    ++serial;
     flush = 1;
+    ++serial;
     rule = rule_get("all");
+    ++serial;
   }
 
   if(rule->serial == serial)
@@ -488,7 +489,7 @@ output_script(buffer* b, target* rule, bool shell, bool batch, const char quote_
 
   if(!rule->name[str_chr(rule->name, '%')])
     if(rule->recipe.s != commands.compile.s)
-      buffer_putm_internal(b, newline, "REM Rules for '", rule->name, "'", newline, NULL);
+      buffer_putm_internal(b, newline, shell ? "#" : "REM", " Rules for '", rule->name, "'", newline, NULL);
 
   set_foreach(&rule->prereq, it, x, n) {
     target* dep = rule_find_b(x, n);
@@ -519,14 +520,18 @@ output_script(buffer* b, target* rule, bool shell, bool batch, const char quote_
 
     rule_command(rule, &cmd, shell, batch, quote_args, psa, make_sep_inline, tools.make);
     buffer_putsa(b, &cmd);
-    buffer_puts(b, " || GOTO FAIL");
+
+    if(!shell)
+      buffer_puts(b, " || GOTO FAIL");
 
     stralloc_free(&cmd);
   }
 
-  if(str_equal(rule->name, "all"))
-    buffer_putm_internal(
-        b, newline, ":SUCCESS", newline, "ECHO Done.", newline, "GOTO QUIT", newline, newline, ":FAIL", newline, "ECHO Fail.", newline, newline, ":QUIT", newline, 0);
+  if(str_equal(rule->name, "all")) {
+    if(!shell)
+      buffer_putm_internal(
+          b, newline, ":SUCCESS", newline, "ECHO Done.", newline, "GOTO QUIT", newline, newline, ":FAIL", newline, "ECHO Fail.", newline, newline, ":QUIT", newline, 0);
+  }
 
   buffer_putnl(b, flush);
   rule->serial = serial;
