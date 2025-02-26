@@ -46,14 +46,12 @@ setup_env() {
   if(!env_get("MSYS2_PREFIX"))
     env_set("MSYS2_PREFIX",
             "B:"
-            "\\PortableApps\\MSYS2Porta"
-            "ble\\App\\msys32\\usr");
+            "\\PortableApps\\MSYS2Porta            le\\App\\msys32\\usr");
 
   if(!env_get("MSYS2_ROOT"))
     env_set("MSYS2_ROOT",
             "B:"
-            "\\PortableApps\\MSYS2Porta"
-            "ble\\App\\msys32");
+            "\\PortableApps\\MSYS2Porta            le\\App\\msys32");
 
   if(!env_get("MSYSTEM"))
     env_set("MSYSTEM", "MSYS");
@@ -79,8 +77,7 @@ usage(char* errmsg_argv0) {
                        " [sources...]\n",
                        "\n",
                        "Options\n",
-                       "  -h, --help                "
-                       "show this help\n",
+                       "  -h, --help                                       how this help\n",
                        "\n",
                        NULL);
   buffer_putnlflush(buffer_1);
@@ -130,8 +127,7 @@ main(int argc, char* argv[], char* envp[]) {
                              "'\n",
                              "Try `",
                              argv[0],
-                             "\" --help' for more "
-                             "information");
+                             "\" --help' for more                              nformation");
         buffer_putnlflush(buffer_2);
         return 1;
     }

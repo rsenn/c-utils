@@ -363,8 +363,7 @@ output_m3u_entry(const char* sender, const char* thema, const char* title, unsig
     buffer_puts(&output_buf, description);
     buffer_put(&output_buf, "\r\n", 2);
     buffer_puts(&output_buf,
-                "#EXTVLCOPT:network-"
-                "caching=2500\r\n");
+                "#EXTVLCOPT:network-                aching=2500\r\n");
     buffer_puts(&output_buf, url);
   } else {
     put_quoted_string(sender);

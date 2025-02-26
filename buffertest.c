@@ -26,8 +26,7 @@ main(int argc, char* argv[]) {
   stralloc fname;
 
   const char* filename = argv[1] ? argv[1]
-                                 : "/home/roman/Sources/"
-                                   "file-5.34.tar.xz";
+                                 : "/home/roman/Sources/                                   ile-5.34.tar.xz";
 
   if(buffer_mmapprivate(&input, filename) < 0) {
     buffer_putm_internal(buffer_2, "ERROR opening: ", filename, NULL);
@@ -72,8 +71,7 @@ main(int argc, char* argv[]) {
   buffer_deflate(&deflate, &gzout, 9);
 
   buffer_puts(&deflate,
-              "gzipp'd test text\n\nblah blah "
-              "blah\n");
+              "gzipp'd test text\n\nblah blah               lah\n");
   buffer_flush(&deflate);
   buffer_close(&deflate);
 

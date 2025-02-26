@@ -169,8 +169,7 @@ usage(char* prog) {
   buffer_putm_internal(buffer_2,
                        "Usage: ",
                        str_basename(prog),
-                       " [-4q] [-t timeout_sec] [-u "
-                       "timeout_usec] <host> <port>",
+                       " [-4q] [-t timeout_sec] [-u                        imeout_usec] <host> <port>",
                        NULL);
   buffer_putnlflush(buffer_2);
 }

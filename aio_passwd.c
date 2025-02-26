@@ -75,8 +75,7 @@ main() {
     PFATAL("io_getevents()");
   }
 
-  printf("read %lld bytes from "
-         "/etc/passwd\n",
+  printf("read %lld bytes from          etc/passwd\n",
          events[0].res);
   io_destroy(ctx);
   close(fd);

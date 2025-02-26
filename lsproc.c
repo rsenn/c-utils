@@ -28,8 +28,7 @@ usage(char* argv0) {
                        prog,
                        "\n",
                        "Options\n",
-                       "  -h, --help                "
-                       "show this help\n",
+                       "  -h, --help                                       how this help\n",
                        "\n",
                        NULL);
   buffer_putnlflush(buffer_1);
@@ -64,8 +63,7 @@ proc_list(strlist* pids) {
   const char* name;
 
   if(dir_open(&d, "/proc") != 0) {
-    errmsg_warnsys("ERROR: Opening "
-                   "directory /proc: ",
+    errmsg_warnsys("ERROR: Opening                    irectory /proc: ",
                    0);
     exit(1);
   }

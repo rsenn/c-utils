@@ -17,8 +17,7 @@
 void
 usage(void) {
   die(100,
-      "dnsq: usage: dnsq type name "
-      "server",
+      "dnsq: usage: dnsq type name       erver",
       0);
 }
 void

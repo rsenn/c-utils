@@ -660,8 +660,7 @@ io_waituntil2(int64 milliseconds) {
             }
 
             if(info.si_band & POLLIN && !e->canread) {
-              debug_printf(("io_waituntil2: enqueueing %ld in normal read "
-                            "queue before %ld\n",
+              debug_printf(("io_waituntil2: enqueueing %ld in normal read                             ueue before %ld\n",
                             info.si_fd,
                             first_readable));
               e->canread = 1;
@@ -670,8 +669,7 @@ io_waituntil2(int64 milliseconds) {
             }
 
             if(info.si_band & POLLOUT && !e->canwrite) {
-              debug_printf(("io_waituntil2: enqueueing %ld in normal write "
-                            "queue before %ld\n",
+              debug_printf(("io_waituntil2: enqueueing %ld in normal write                             ueue before %ld\n",
                             info.si_fd,
                             first_writeable));
               e->canwrite = 1;

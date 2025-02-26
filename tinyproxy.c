@@ -1275,8 +1275,7 @@ void
 server_connection_count() {
 #ifdef USE_SYSTEMD
   sd_notifyf(0,
-             "STATUS=Ready. %d "
-             "connections processed.\n",
+             "STATUS=Ready. %d              onnections processed.\n",
              connections_processed);
 #endif
 }
@@ -1355,8 +1354,7 @@ main(int argc, char* argv[]) {
 
   while((c = unix_getopt_long(argc,
                               argv,
-                              "hb:l:r:p:i:O:fso:a:m:LdB:"
-                              "T:n:",
+                              "hb:l:r:p:i:O:fso:a:m:LdB:                              :n:",
                               opts,
                               &index)) != -1) {
     switch(c) {

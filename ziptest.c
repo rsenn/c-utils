@@ -28,11 +28,8 @@ usage(char* argv0) {
   buffer_putm_internal(buffer_1,
                        "Usage: ",
                        argv0,
-                       " [-o output] [infile or "
-                       "stdin]\n\n",
-                       "  -1 ... -9           "
-                       "compression level; default is "
-                       "3\n",
+                       " [-o output] [infile or                        tdin]\n\n",
+                       "  -1 ... -9                                  ompression level; default is                        \n",
                        "\n",
                        "Supported types are:",
                        NULL);
@@ -117,8 +114,7 @@ main(int argc, char* argv[]) {
         buffer_putm_internal(buffer_2,
                              "Usage: ",
                              argv[0],
-                             "[-t TYPE] [-o OUTPUT] "
-                             "[file]\n",
+                             "[-t TYPE] [-o OUTPUT]                              file]\n",
                              NULL);
         exit(EXIT_FAILURE);
     }
@@ -198,8 +194,7 @@ main(int argc, char* argv[]) {
     /*      break; */
     default:
       buffer_putm_internal(buffer_2,
-                           "ERROR: Unable to detect "
-                           "compression type from ",
+                           "ERROR: Unable to detect                            ompression type from ",
                            in_filename,
                            NULL);
       buffer_putnlflush(buffer_2);
@@ -208,8 +203,7 @@ main(int argc, char* argv[]) {
 
   if(decompress == 0 && output == buffer_1) {
     buffer_putsflush(buffer_2,
-                     "ERROR: Won't write compressed "
-                     "data to a terminal\n");
+                     "ERROR: Won't write compressed                      ata to a terminal\n");
     exit(EXIT_FAILURE);
   }
 

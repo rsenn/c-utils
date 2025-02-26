@@ -30,8 +30,7 @@ main(int argc, char** argv) {
     if(dns_ip4_qualify(&out, &fqdn, &in) == -1)
       diesys(111,
              FATAL,
-             "unable to find IP "
-             "address for ",
+             "unable to find IP              ddress for ",
              *argv,
              ": ",
              0);

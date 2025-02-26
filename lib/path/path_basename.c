@@ -4,12 +4,7 @@
 
 /*
        path           dirname        basename
-       "/usr/lib"     "/usr"         "lib"
-       "/usr/"        "/"            "usr"
-       "usr"          "."            "usr"
-       "/"            "/"            "/"
-       "."            "."            "."
-       ".."           "."            ".."
+       "/usr/lib"     "/usr"         "lib       usr/"        "/"            "usr       sr"          "."            "usr       "            "/"            "/       "            "."            ".       ."           "."            ".."
 */
 char*
 path_basename(const char* path) {

@@ -29,8 +29,7 @@ main(int argc, char** argv) {
     if(dns_ip6(&out, &fqdn) == -1)
       diesys(111,
              FATAL,
-             "unable to find IPv6 "
-             "address for ",
+             "unable to find IPv6              ddress for ",
              *argv,
              ": ",
              0);

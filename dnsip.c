@@ -40,8 +40,7 @@ main(int argc, char* argv[]) {
     }
 
     if(dns_ip4(&out, &fqdn) == -1) {
-      errmsg_warnsys("unable to find "
-                     "IP address for ",
+      errmsg_warnsys("unable to find                      P address for ",
                      *argv,
                      0);
       return 111;

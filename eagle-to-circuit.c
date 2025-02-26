@@ -1075,8 +1075,7 @@ int
 main(int argc, char* argv[]) {
   xmlnode* doc;
   int argi = 1, output_fd = 1;
-  const char* input_file = "/home/roman/Sources/an-tronics/"
-                           "eagle/40106-4069-Synth.brd";
+  const char* input_file = "/home/roman/Sources/an-tronics/                           agle/40106-4069-Synth.brd";
   const char* output_file = NULL;
 
   MAP_NEW(devicesets);
@@ -1119,8 +1118,7 @@ main(int argc, char* argv[]) {
   match_foreach(doc, "symbol", build_sym);
 
   buffer_puts(&output,
-              "# Stripboard\n# board "
-              "<width>,<height>\n\nboard ");
+              "# Stripboard\n# board               width>,<height>\n\nboard ");
 
   buffer_putlong(&output, ((bounds.max.x + 9) / 10 + 2) * 10);
   buffer_putc(&output, ',');
@@ -1128,23 +1126,15 @@ main(int argc, char* argv[]) {
   buffer_puts(&output, "\n");
 
   buffer_puts(&output,
-              "\n# Packages\n# <package name>  "
-              " <pin coordinates relative to "
-              "pin 0>\n\n");
+              "\n# Packages\n# <package name>                <pin coordinates relative to               in 0>\n\n");
   MAP_VISIT_ALL(packages, dump_package, "package");
 
   buffer_puts(&output,
-              "\n# Components\n# <component "
-              "name> <package name>    "
-              "<absolute position of "
-              "component pin 0>\n\n");
+              "\n# Components\n# <component               ame> <package name>                  absolute position of               omponent pin 0>\n\n");
   MAP_VISIT_ALL(parts, output_part, "part");
 
   buffer_puts(&output,
-              "\n# Connections\n# <from "
-              "component name>.<pin index> <to "
-              "component name>.<pin "
-              "index>\n\n");
+              "\n# Connections\n# <from               omponent name>.<pin index> <to               omponent name>.<pin               ndex>\n\n");
 
   MAP_VISIT_ALL(parts, dump_part, "part");
   MAP_VISIT_ALL(nets, dump_net, 0);

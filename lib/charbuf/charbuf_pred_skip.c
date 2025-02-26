@@ -12,7 +12,6 @@ charbuf_pred_skip(charbuf* b, int (*pred)(int, size_t, void*), void* ptr) {
 #endif
 
   for(; (ret = charbuf_peekc(b, &ch)) > 0;) {
-
     if(pred((unsigned int)(unsigned char)ch, n, ptr)) {
       n++;
 

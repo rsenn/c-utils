@@ -177,10 +177,8 @@ main(int argc, char* argv[]) {
 
   if(argc < 2) {
     fprintf(stderr,
-            "usage: %s line "
-            "[initialisation string] ...\n"
-            "e.g. %s ttyACM0 "
-            "'ATS82=76\\r\\n'\n",
+            "usage: %s line             initialisation string] ...\n"
+            "e.g. %s ttyACM0             ATS82=76\\r\\n'\n",
             argv[0],
             argv[0]);
     exit(1);
@@ -194,8 +192,7 @@ main(int argc, char* argv[]) {
 
   if((f = fopen(buff, "w")) == NULL) {
     syslog(LOG_ERR,
-           "unable to open pid file "
-           "%s: %m",
+           "unable to open pid file            s: %m",
            buff);
     exit(1);
   } else {
@@ -206,8 +203,7 @@ main(int argc, char* argv[]) {
 
   if((pfd[0].fd = open(devname, O_RDWR | O_NONBLOCK)) < 0) {
     syslog(LOG_ERR,
-           "unable to open monitor "
-           "file %s: %m",
+           "unable to open monitor            ile %s: %m",
            devname);
     exit(1);
   }
@@ -248,8 +244,7 @@ main(int argc, char* argv[]) {
 
             if((pfd[0].fd = open(devname, O_RDWR | O_NONBLOCK)) < 0) {
               syslog(LOG_ERR,
-                     "unable to re-open "
-                     "monitor file %s: %m",
+                     "unable to re-open                      onitor file %s: %m",
                      devname);
               exit(1);
             }

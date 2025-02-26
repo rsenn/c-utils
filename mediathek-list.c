@@ -59,15 +59,9 @@ static http h;
 #include "lib/http.h"
 
 const char* const mediathek_urls[] = {
-    "http://download10.onlinetvrecorder.com/mediathekview/"
-    "Filmliste-akt.xz",
+    "http://download10.onlinetvrecorder.com/mediathekview/Filmliste-akt.xz",
     "http://mediathekview.jankal.me/Filmliste-akt.xz",
     "http://verteiler1.mediathekview.de/Filmliste-akt.xz",
-    "http://verteiler2.mediathekview.de/Filmliste-akt.xz",
-    "http://verteiler3.mediathekview.de/Filmliste-akt.xz",
-    "http://verteiler4.mediathekview.de/Filmliste-akt.xz",
-    "http://verteiler5.mediathekview.de/Filmliste-akt.xz",
-    "http://verteiler6.mediathekview.de/Filmliste-akt.xz",
 };
 
 const char* mediathek_url = "https://verteiler1.mediathekview.de/Filmliste-akt.xz";
@@ -196,6 +190,7 @@ read_mediathek_list(const char* url, buffer* b) {
       if(http_canwrite(&h, &io_onlywantread, &io_onlywantwrite) == -1) {
         if(h.err == EWOULDBLOCK)
           continue;
+
         errmsg_warnerr(h.err, "send error: ", 0);
         return 2;
       }
@@ -203,10 +198,10 @@ read_mediathek_list(const char* url, buffer* b) {
 
     while((fd = io_canread()) != -1) {
       if(h.sock == fd) {
-
         if(http_canread(&h, &io_onlywantread, &io_onlywantwrite) == -1) {
           if(h.err == EAGAIN)
             continue;
+
           errmsg_warnerr(h.err, "send error: ", 0);
           return 2;
         }
@@ -240,6 +235,7 @@ parse_time(const char* s) {
 
       if(l == 0)
         break;
+
       r += n;
       s += l;
 
@@ -264,6 +260,7 @@ parse_time(const char* s) {
 char*
 format_num(time_t num) {
   static char buf[FMT_LONG];
+
   byte_zero(buf, sizeof(buf));
   buf[fmt_ulonglong(buf, num)] = '\0';
   return buf;
@@ -288,16 +285,19 @@ format_time(time_t ti) {
 
   if(h < 10)
     buf[i++] = '0';
+
   i += fmt_ulong(&buf[i], h);
   buf[i++] = ':';
 
   if(m < 10)
     buf[i++] = '0';
+
   i += fmt_ulong(&buf[i], m);
   buf[i++] = ':';
 
   if(s < 10)
     buf[i++] = '0';
+
   i += fmt_ulong(&buf[i], s);
   buf[i] = '\0';
 
@@ -337,8 +337,10 @@ mktime_r(struct tm* const t, time_t* ret) {
     if(t->tm_mon == 1 && isleap(t->tm_year + 1900)) {
       if(t->tm_mon == 31 + 29)
         break;
+
       --t->tm_mday;
     }
+
     t->tm_mday -= __spm[t->tm_mon];
     ++t->tm_mon;
 
@@ -352,6 +354,7 @@ mktime_r(struct tm* const t, time_t* ret) {
     *ret = -1;
     return;
   }
+
   day = years * 365 + (years + 1) / 4;
 
   if((years -= 131) >= 0) {
@@ -362,6 +365,7 @@ mktime_r(struct tm* const t, time_t* ret) {
       years--;
     day -= years;
   }
+
   day += t->tm_yday = __spm[t->tm_mon] + t->tm_mday - 1 + (isleap(t->tm_year + 1900) & (t->tm_mon > 1));
   i = 7;
   t->tm_wday = (day + 4) % i;
@@ -381,10 +385,12 @@ time_t
 parse_datetime(const char* s, const char* fmt) {
   struct tm tm_s;
   time_t t;
+
   byte_zero(&tm_s, sizeof(struct tm));
 
   if(str_ptime(s, fmt, &tm_s) == s)
     return 0;
+
   mktime_r(&tm_s, &t);
   return t;
 }
@@ -401,11 +407,11 @@ parse_anydate(const char* s) {
   if(s) {
     size_t len = str_len(s);
 
-    if(len != 8) /* len - str_rchr(s,
-                    '.') == 4) */
+    if(len != 8) /* len - str_rchr(s, '.') == 4) */
       fmt = "%d.%m.%Y";
     else
       fmt = "%Y%m%d";
+
     return parse_datetime(s, fmt);
   }
   return 0;
@@ -443,7 +449,6 @@ format_datetime(size_t t, const char* fmt) {
 char*
 make_url(const char* base, const char* trail) {
   static stralloc url;
-
   unsigned int n = 0;
   size_t i;
 
@@ -453,10 +458,11 @@ make_url(const char* base, const char* trail) {
 
   if(trail[i] != '|')
     return 0;
-  stralloc_copyb(&url, base, n);
 
+  stralloc_copyb(&url, base, n);
   stralloc_cats(&url, &trail[++i]);
   stralloc_0(&url);
+
   return url.s;
 }
 
@@ -582,15 +588,14 @@ match_toklists(strlist* sl) {
  */
 mediathek_entry_t*
 parse_entry(strlist* sl) {
-
   mediathek_entry_t* e = 0;
   time_t dt = parse_anydate(strlist_at(sl, 3));
-
   time_t tm = parse_time(strlist_at(sl, 4));
   time_t dr = parse_time(strlist_at(sl, 5)); /* duration */
 
   if((unsigned)dr < min_length)
     return 0;
+
   {
     unsigned int mbytes = 0;
     const char* mb = strlist_at(sl, 6);
@@ -631,6 +636,7 @@ parse_entry(strlist* sl) {
       return e;
     }
   }
+
   return 0;
 }
 
@@ -641,7 +647,6 @@ parse_entry(strlist* sl) {
  */
 void
 print_entry(buffer* b, const mediathek_entry_t* e) {
-
   const char* sep = ", ";
 
   buffer_putm_internal(b, "Kanal:\t", e->channel.s ? e->channel.s : "<null>" /*strlist_at(sl, 1)*/, sep, NULL);
@@ -652,11 +657,9 @@ print_entry(buffer* b, const mediathek_entry_t* e) {
   buffer_putm_internal(b, "Dauer:\t", format_time(e->dr), sep, NULL);
   buffer_putm_internal(b, "Grösse:\t", format_num(e->mbytes), "MB", sep, NULL);
 
-  /* buffer_putm_internal(b, "URL:\t",
-   url , sep, NULL);
-   buffer_putm_internal(b, "URL lo:\t", make_url(url, strlist_at(sl, 13)),
-   sep, NULL); buffer_putm_internal(b, "URL hi:\t", make_url(url,
-   strlist_at(sl, 15)), sep, NULL);*/
+  /* buffer_putm_internal(b, "URL:\t",  url , sep, NULL);
+   buffer_putm_internal(b, "URL lo:\t", make_url(url, strlist_at(sl, 13)), sep, NULL); buffer_putm_internal(b, "URL hi:\t", make_url(url, strlist_at(sl, 15)), sep, NULL);*/
+
   buffer_putnlflush(b);
 }
 
@@ -667,7 +670,6 @@ print_entry(buffer* b, const mediathek_entry_t* e) {
  */
 void
 output_entry(buffer* b, strlist* sl) {
-
   size_t i, n = strlist_count(sl);
 
   buffer_puts(b, "\"X\":[");
@@ -683,6 +685,7 @@ output_entry(buffer* b, strlist* sl) {
     while((c = *s++)) {
       if(c == '"')
         buffer_putc(b, '\\');
+
       buffer_PUTC(b, c);
     }
 
@@ -717,12 +720,10 @@ parse_mediathek_list(buffer* inbuf, buffer* outbuf) {
 
       if(ret + 1 >= BUFSIZE)
         break;
-      // buf2[ret++] = ']';
-      //  ++ret;
+
       ret2 = buffer_get(inbuf, &buf2[ret], 1);
 
       if(ret2 > 0) {
-
         if(ret > 1 && buf2[ret - 2] == '"' && buf2[ret] == ',')
           break;
 
@@ -791,7 +792,6 @@ parse_mediathek_list(buffer* inbuf, buffer* outbuf) {
   }
 
   if(ret == 0) {
-
     if(debug) {
       buffer_puts(console, "\nprocessed ");
       buffer_putulong(console, matched);

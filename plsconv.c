@@ -62,13 +62,11 @@ usage(char* argv0) {
   buffer_putm_internal(buffer_1,
                        "Usage: ",
                        argv0,
-                       " [-f type] [-t type] [-o "
-                       "output] [input or stdin]\n\n",
+                       " [-f type] [-t type] [-o                        utput] [input or stdin]\n\n",
                        "  -f type  Input type\n"
                        "  -t type  Output type\n"
                        "\n"
-                       "Supported types are: m3u pls "
-                       "xspf\n",
+                       "Supported types are: m3u pls                        spf\n",
                        NULL);
   buffer_flush(buffer_1);
   exit(0);

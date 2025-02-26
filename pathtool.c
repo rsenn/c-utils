@@ -492,17 +492,12 @@ usage(char* av0) {
                        "  -h, --help             Show this help\n",
                        "  -r, --relative-to DIR  Print the resolved path relative to DIR\n",
                        "  -s, --separator SEP    Use SEP as directory separator\n",
-                       "  -w, --windows          Print Windows form of path(s) "
-                       "(C:\\WINNT)\n",
-                       "  -m, --mixed            Like --windows, but with regular slashes "
-                       "(C:/WINNT)\n",
-                       "  -u, --unix   (default) Print Unix form of path(s) "
-                       "(/cygdrive/c/winnt)\n",
+                       "  -w, --windows          Print Windows form of path(s)                        C:\\WINNT)\n",
+                       "  -m, --mixed            Like --windows, but with regular slashes                        C:/WINNT)\n",
+                       "  -u, --unix   (default) Print Unix form of path(s)                        /cygdrive/c/winnt)\n",
                        "  -a, --absolute         Output absolute path\n",
-                       "  -f, --canonicalize     Canonicalize by following every symlink "
-                       "in\n"
-                       "                         every component of the given name "
-                       "recursively;\n"
+                       "  -f, --canonicalize     Canonicalize by following every symlink                        n\n"
+                       "                         every component of the given name                        ecursively;\n"
                        "                         all but the last component must exist\n",
                        "  -L, --dereference      Resolve symlinks\n",
                        "\n",

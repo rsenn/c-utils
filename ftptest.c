@@ -111,8 +111,7 @@ usage(char* prog) {
   buffer_putm_internal(buffer_2,
                        "Usage: ",
                        str_basename(prog),
-                       " [-q] [-t timeout_sec] [-u "
-                       "timeout_usec] <host> <port>",
+                       " [-q] [-t timeout_sec] [-u                        imeout_usec] <host> <port>",
                        NULL);
   buffer_putnlflush(buffer_2);
 }
@@ -326,9 +325,7 @@ list_ftp(ftp_client* ftp) {
         switch(ftp->state) {
           case CONNECTED: {
             ftplib_write_cmd_s(&out,
-                               "USER "
-                               "anonymous\r\nPASS "
-                               "ftp@");
+                               "USER                                nonymous\r\nPASS                                tp@");
             ftp->state = LOGGED_IN;
             break;
           }

@@ -334,8 +334,7 @@ new_name:
   }
 
   if(dns_domain_equal(d,
-                      "\0011\0010\0010\003127\7in-"
-                      "addr\4arpa\0")) {
+                      "\0011\0010\0010\003127\7in-                      ddr\4arpa\0")) {
     if(z->level)
       goto lower_level;
 

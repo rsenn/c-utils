@@ -66,8 +66,7 @@ io_wantwrite_really(fd_type d, io_entry* e) {
     }
 
     if(e->canwrite) {
-      debug_printf(("io_wantwrite: enqueueing %lld in normal write queue "
-                    "before %ld\n",
+      debug_printf(("io_wantwrite: enqueueing %lld in normal write queue                     efore %ld\n",
                     d,
                     first_readable));
       e->next_write = first_writeable;

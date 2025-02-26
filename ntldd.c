@@ -648,17 +648,7 @@ printhelp(char* argv0) {
   buffer_putm_internal(buffer_1,
                        "Usage: ",
                        argv0,
-                       " [OPTION]... FILE...\n OPTIONS:\n --version         Displays "
-                       "     Does not work\n -d, --data-relocs   "
-                       "  Does not work\n -r, --function-relocs Does not work\n -R, "
-                       "--recursive       Lists dependencies recursively,\n eliminating "
-                       "duplicates\n -D, --search-dir      "
-                       "Additional search directory\n --list-exports        Lists exports "
-                       "of a module (single file only)\n --list-imports        Lists "
-                       "imports of modules\n --help               "
-                       " Displays this message\n \n Use -- option to pass filenames that "
-                       "start with `--' or `-'\n For bug reporting instructions, please "
-                       "see:\n <somewhere>.",
+                       " [OPTION]... FILE...\n OPTIONS:\n --version         Displays                            Does not work\n -d, --data-relocs                           Does not work\n -r, --function-relocs Does not work\n -R,                        -recursive       Lists dependencies recursively,\n eliminating                        uplicates\n -D, --search-dir                             dditional search directory\n --list-exports        Lists exports                        f a module (single file only)\n --list-imports        Lists                        mports of modules\n --help                                      Displays this message\n \n Use -- option to pass filenames that                        tart with `--' or `-'\n For bug reporting instructions, please                        ee:\n <somewhere>.",
                        NULL);
   buffer_putnlflush(buffer_1);
 }
@@ -953,8 +943,7 @@ main(int argc, char** argv) {
                              "Unrecognized option `",
                              argv[unix_optind],
                              "'\n",
-                             "Try `ntldd --help' for "
-                             "more information",
+                             "Try `ntldd --help' for                              ore information",
                              NULL);
         buffer_putnlflush(buffer_2);
         return 1;
@@ -977,9 +966,7 @@ main(int argc, char** argv) {
 #if WINDOWS
   {
     const char* const keys[] = {"HKCU\\Environment",
-                                "HKLM\\SYSTEM\\CurrentControlSe"
-                                "t\\Control\\Session "
-                                "Manager\\Environment",
+                                "HKLM\\SYSTEM\\CurrentControlSe                                \\Control\\Session                                 anager\\Environment",
                                 0};
     int kidx;
     stralloc rpath;

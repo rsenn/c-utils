@@ -20,6 +20,7 @@ http_sendreq(http* h) {
 
   if(h->request == NULL)
     return 0;
+
   buffer_puts(out, "GET ");
   buffer_putsa(out, &h->request->location);
   buffer_puts(out, h->version == 11 ? " HTTP/1.1\r\n" : " HTTP/1.0\r\n");
@@ -30,10 +31,10 @@ http_sendreq(http* h) {
   if(!h->keepalive)
     buffer_putm_internal(out, "Connection: ", h->keepalive ? "keep-alive" : "close", "\r\n", NULL);
   buffer_puts(out, "Accept: */*\r\n");
-  // buffer_puts(out, "Accept-Encoding: br, xz, lzma, bzip2, gzip,
-  // deflate\r\n");
+  // buffer_puts(out, "Accept-Encoding: br, xz, lzma, bzip2, gzip, deflate\r\n");
   buffer_puts(out, "\r\n");
-#if DEBUG_HTTP
+
+#ifdef DEBUG_HTTP
   {
     const char* x = out->x;
     ssize_t i, n = out->p;
@@ -55,9 +56,10 @@ http_sendreq(http* h) {
 
   buffer_flush(buffer_2);
 #endif
-  len = out->p;
-#ifdef DEBUG_HTTP
 
+  len = out->p;
+
+#ifdef DEBUG_HTTP
   buffer_putspad(buffer_2, "http_sendreq ", 30);
   buffer_puts(buffer_2, "location=");
   buffer_putsa(buffer_2, &h->request->location);
@@ -84,8 +86,8 @@ http_sendreq(http* h) {
   buffer_putnlflush(buffer_2);
   buffer_flush(buffer_2);
 #endif
+
   ret = buffer_flush(out);
-  // ret = len;
 
 #ifdef DEBUG_HTTP
   buffer_putspad(buffer_2, "http_sendreq ", 30);

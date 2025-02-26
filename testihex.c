@@ -230,10 +230,7 @@ main(int argc, char* argv[]) {
   static buffer input, output;
   int verbose = 0, bits = 32;
   const char* filename = argv[1] ? argv[1]
-                                 : "/home/roman/Dokumente/Sources/xc8/pictest/"
-                                   "bootloaders/18f2550-usb-hid-xc8/FIRMWARE/"
-                                   "PIC18F2550/18F2550-MPLAB.X/dist/default/"
-                                   "production/18F2550-MPLAB.X.production.hex";
+                                 : "/home/roman/Dokumente/Sources/xc8/pictest/                                   ootloaders/18f2550-usb-hid-xc8/FIRMWARE/                                   IC18F2550/18F2550-MPLAB.X/dist/default/                                   roduction/18F2550-MPLAB.X.production.hex";
   int c, index = 0;
   const char *cfgdata = 0, *input_file = 0, *output_file = 0;
 

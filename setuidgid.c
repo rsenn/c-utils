@@ -95,8 +95,7 @@ main(int argc, char* argv[] /*, char* envp[]*/) {
     buffer_putm_internal(buffer_2, "account: ", account ? account : "NULL", " args[0]: ", args[0], NULL);
     buffer_putnlflush(buffer_2);
     errmsg_warn(prog,
-                ": usage: setuidgid "
-                "account child",
+                ": usage: setuidgid                 ccount child",
                 0);
     return 100;
   }

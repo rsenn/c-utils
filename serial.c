@@ -482,8 +482,7 @@ serial_read_char(int fd, char* c) {
   if(*c == XON) {
     if(tcflow(fd, TCOON) == -1) {
       fprintf(stderr,
-              "Could not restart flow: "
-              "%s\n",
+              "Could not restart flow:               s\n",
               strerror(errno));
     }
     serial_read_char(fd, c);

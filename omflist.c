@@ -75,12 +75,9 @@ usage(char* av0) {
                        "\n",
                        "Options:\n",
                        "\n",
-                       "  -h, --help              Show "
-                       "this help\n",
-                       "  -i, --imports           List "
-                       "imports\n",
-                       "  -e, --exports           List "
-                       "exports\n",
+                       "  -h, --help              Show                        his help\n",
+                       "  -i, --imports           List                        mports\n",
+                       "  -e, --exports           List                        xports\n",
                        "\n",
                        NULL);
   buffer_flush(buffer_1);

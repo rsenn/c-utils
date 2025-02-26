@@ -50,6 +50,7 @@ tls_connect(fd_type fd) {
   }
   buffer_putnlflush(buffer_2);
 #endif
+
   return ret;
 }
 #endif

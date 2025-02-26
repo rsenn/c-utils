@@ -19,7 +19,6 @@ http_canwrite(http* h, void (*wantread)(fd_type), void (*wantwrite)(fd_type)) {
 
   if(h->tls) {
     if(!h->connected) {
-
       ret = tls_connect(h->sock);
 
       if(ret == -1)
@@ -27,6 +26,7 @@ http_canwrite(http* h, void (*wantread)(fd_type), void (*wantwrite)(fd_type)) {
 
       if(ret != 1)
         goto fail;
+
       h->connected = 1;
     }
   } else {
@@ -37,13 +37,13 @@ http_canwrite(http* h, void (*wantread)(fd_type), void (*wantwrite)(fd_type)) {
   if(h->connected && h->sent == 0) {
     ret = http_sendreq(h);
 
-    if(ret == -1) {
+    if(ret == -1)
       if(h->tls)
         tls_want(h->sock, wantread, wantwrite);
-    }
 
     if(ret <= 0)
       goto fail;
+
     h->sent = 1;
   }
 
@@ -120,5 +120,6 @@ fail:
                   "-1", "HTTP_RECV_HEADER", "HTTP_RECV_DATA", "HTTP_STATUS_CLOSED", "HTTP_STATUS_ERROR", "HTTP_STATUS_BUSY", "HTTP_STATUS_FINISH", 0})[h->response->status + 1]);
   buffer_putnlflush(buffer_2);
 #endif
+
   return ret;
 }

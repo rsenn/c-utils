@@ -25,8 +25,7 @@ main(int argc, char** argv) {
     if(dns_txt(&out, &fqdn) == -1)
       diesys(111,
              FATAL,
-             "unable to find TXT "
-             "records for ",
+             "unable to find TXT              ecords for ",
              *argv,
              ": ",
              0);

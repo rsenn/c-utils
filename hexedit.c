@@ -316,8 +316,7 @@ usage(const char* av0) {
                        av0,
                        " <file> [edit-specifier]\n"
                        "\n"
-                       "  [edit-specifier] is "
-                       "<address>=<value>\n"
+                       "  [edit-specifier] is                        address>=<value>\n"
                        "\n",
                        NULL);
   buffer_putnlflush(buffer_2);

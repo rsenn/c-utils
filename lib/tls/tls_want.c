@@ -15,19 +15,21 @@ tls_want(fd_type fd, void (*wantread)(fd_type), void (*wantwrite)(fd_type)) {
       assert(wantread);
       wantread(fd);
       break;
+
     case SSL_ERROR_WANT_WRITE:
       assert(wantwrite);
       wantwrite(fd);
       break;
+
     default: break;
   }
+
 #ifdef DEBUG_TLS
   buffer_putspad(buffer_2, "tls_want ", 30);
   buffer_puts(buffer_2, "fd=");
   buffer_putlong(buffer_2, fd);
   buffer_puts(buffer_2, " retval=");
   buffer_putlong(buffer_2, inst->retval);
-
   buffer_puts(buffer_2, " op=");
   buffer_puts(buffer_2, ((const char* const[]){"TLS_OP_WRITE", "TLS_OP_READ", "TLS_OP_ACCEPT", "TLS_OP_CONNECT", 0})[inst->op]);
 
@@ -37,7 +39,6 @@ tls_want(fd_type fd, void (*wantread)(fd_type), void (*wantwrite)(fd_type)) {
   }
 
   if(inst->error != SSL_ERROR_NONE) {
-
     buffer_puts(buffer_2, " error=");
     buffer_puts(buffer_2,
                 ((const char* const[]){"SSL_ERROR_NONE",
@@ -56,6 +57,7 @@ tls_want(fd_type fd, void (*wantread)(fd_type), void (*wantwrite)(fd_type)) {
   }
   buffer_putnlflush(buffer_2);
 #endif
+  
   return inst->error;
 }
 #endif
