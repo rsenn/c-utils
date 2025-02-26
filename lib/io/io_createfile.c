@@ -19,6 +19,7 @@ io_createfile(fd_type* d, const char* s) {
                  0600
 #endif
   );
+
   if(fd != -1) {
     *d = fd;
     return 1;

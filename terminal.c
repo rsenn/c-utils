@@ -114,6 +114,7 @@ terminal_getheight() {
 void
 terminal_number_sequence(buffer* b, int n, char c) {
   put_escape(b);
+
   if(n > 1)
     buffer_putulong(b, n);
   buffer_putc(b, c);
@@ -123,6 +124,7 @@ void
 terminal_numbers_sequence(buffer* b, int numbers[], size_t len, char c) {
   size_t i;
   put_escape(b);
+
   for(i = 0; i < len; i++) {
     if(i > 0)
       buffer_putc(b, ';');
@@ -224,11 +226,13 @@ void
 terminal_cursor_position(int* x, int* y) {
 #if WINDOWS
   CONSOLE_SCREEN_BUFFER_INFO csbi;
+
   if(!GetConsoleScreenBufferInfo(hConsole, &csbi))
     return;
 
   if(x)
     *x = csbi.dwCursorPosition.X;
+
   if(y)
     *y = csbi.dwCursorPosition.Y;
 #else

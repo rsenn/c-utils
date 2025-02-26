@@ -96,6 +96,7 @@ setb(uint32 pos, size_t len, const void* b) {
 static inline uint32
 get4(uint32 pos) {
   uint32 result;
+
   if(pos > size - 4)
     cache_impossible();
   uint32_unpack(x + pos, &result);
@@ -121,10 +122,12 @@ char*
 cache_find(const char* key, unsigned int keylen, unsigned int* datalen, struct tai* expire) {
   uint32 pos, prevpos, nextpos, u;
   unsigned int loop;
+
   double d;
 
   if(!x)
     return 0;
+
   if(keylen > MAXKEYLEN)
     return 0;
 
@@ -136,10 +139,12 @@ cache_find(const char* key, unsigned int keylen, unsigned int* datalen, struct t
     if(get4(pos + 4) == keylen) {
       if(pos + 20 + keylen > size)
         cache_impossible();
+
       if(byte_equal(key, keylen, x + pos + 20)) {
         tai_unpack(x + pos + 12, expire);
 
         u = get4(pos + 8);
+
         if(u > size - pos - 20 - keylen)
           cache_impossible();
         *datalen = u;
@@ -150,6 +155,7 @@ cache_find(const char* key, unsigned int keylen, unsigned int* datalen, struct t
     nextpos = prevpos ^ get4(pos);
     prevpos = pos;
     pos = nextpos;
+
     if(++loop > 100)
       return 0; /* to protect against
                    hash flooding */
@@ -161,16 +167,19 @@ cache_find(const char* key, unsigned int keylen, unsigned int* datalen, struct t
 char*
 cache_get(const char* key, unsigned int keylen, unsigned int* datalen, uint32* ttl) {
   struct tai expire, now;
+
   double d;
   char* data;
 
   if((data = cache_find(key, keylen, datalen, &expire))) {
     tai_now(&now);
+
     if(tai_less(&expire, &now))
       return 0;
 
     tai_sub(&expire, &expire, &now);
     d = tai_approx(&expire);
+
     if(d > 604800)
       d = 604800;
     *ttl = d;
@@ -189,13 +198,16 @@ cache_set(const char* key, unsigned int keylen, const char* data, unsigned int d
 
   if(!x)
     return;
+
   if(keylen > MAXKEYLEN)
     return;
+
   if(datalen > MAXDATALEN)
     return;
 
   if(!ttl)
     return;
+
   if(ttl > 604800)
     ttl = 604800;
 
@@ -214,8 +226,10 @@ cache_set(const char* key, unsigned int keylen, const char* data, unsigned int d
     set4(pos, get4(pos) ^ oldest);
 
     oldest += get4(oldest + 4) + get4(oldest + 8) + 20;
+
     if(oldest > unused)
       cache_impossible();
+
     if(oldest == unused) {
       unused = size;
       oldest = size;
@@ -229,6 +243,7 @@ cache_set(const char* key, unsigned int keylen, const char* data, unsigned int d
   tai_add(&expire, &expire, &now);
 
   pos = get4(keyhash);
+
   if(pos)
     set4(pos, get4(pos) ^ keyhash ^ writer);
   set4(writer, pos ^ keyhash);
@@ -278,15 +293,18 @@ cache_init(size_t cachesize) {
 
   if(cachesize > 1000000000)
     cachesize = 1000000000;
+
   if(cachesize < 100)
     cachesize = 100;
   size = cachesize;
 
   hsize = 4;
+
   while(hsize <= (size >> 5))
     hsize <<= 1;
 
   x = alloc_zero(size);
+
   if(!x)
     return 0;
 
@@ -305,6 +323,7 @@ cache_open(const char* file, size_t cachesize) {
 
   if(cachesize > 1000000000)
     cachesize = 1000000000;
+
   if(cachesize < 100)
     cachesize = 100;
 
@@ -329,6 +348,7 @@ cache_open(const char* file, size_t cachesize) {
   size = cachesize - sizeof(uint32) * 3;
 
   hsize = 4;
+
   while(hsize <= (size >> 5))
     hsize <<= 1;
 

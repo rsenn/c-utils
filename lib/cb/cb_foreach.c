@@ -18,6 +18,7 @@ cb_foreach_i(void* ptr, const void* key, size_t keylen, int (*match_cb)(const vo
     size_t len;
 
     from_external_node(ptr, &match, &len);
+
     if(len >= keylen && byte_diff(key, keylen, match) == 0)
       return match_cb(match, key, keylen, data);
   }

@@ -3,6 +3,7 @@
 void
 io_eagain_write(fd_type d) {
   io_entry* e = (io_entry*)iarray_get((iarray*)io_getfds(), d);
+
   if(e) {
     e->canwrite = 0;
 #if defined(HAVE_SIGIO)

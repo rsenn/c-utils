@@ -26,8 +26,10 @@ roots_find(char* q) {
   size_t i, j;
 
   i = 0;
+
   while(i < data.len) {
     j = dns_domain_length(&data.s[i]);
+
     if(dns_domain_equal(&data.s[i], q))
       return i + j;
     i += j;
@@ -42,8 +44,10 @@ roots_search(char* q) {
 
   for(;;) {
     r = roots_find(q);
+
     if(r >= 0)
       return r;
+
     if(!*q)
       return -1; /* user
                     misconfiguration */
@@ -56,6 +60,7 @@ int
 roots(char servers[64], char* q) {
   int r;
   r = roots_find(q);
+
   if(r == -1)
     return 0;
   byte_copy(servers, 64, data.s + r);
@@ -82,6 +87,7 @@ roots_init2(dir_t* dir, bool ip6) {
   for(;;) {
     errno = 0;
     d = dir_read(dir);
+
     if(!d) {
       if(errno)
         return 0;
@@ -91,20 +97,26 @@ roots_init2(dir_t* dir, bool ip6) {
     if(d[0] != '.') {
       if(openreadclose(d, &text, 1024) != 1)
         return 0;
+
       if(!stralloc_append(&text, "\n"))
         return 0;
 
       fqdn = d;
+
       if(str_equal(fqdn, "@"))
         fqdn = ".";
+
       if(!dns_domain_fromdot(&q, fqdn, str_len(fqdn)))
         return 0;
 
       serverslen = 0;
       j = 0;
+
       for(i = 0; i < text.len; ++i)
+
         if(text.s[i] == '\n') {
           if(serverslen <= sizeof(servers) - iplen)
+
             if((ip6 ? scan_ip6 : scan_ip4)(text.s + j, servers + serverslen))
               serverslen += iplen;
           j = i + 1;
@@ -113,6 +125,7 @@ roots_init2(dir_t* dir, bool ip6) {
 
       if(!stralloc_catb(&data, q, dns_domain_length(q)))
         return 0;
+
       if(!stralloc_catb(&data, servers, sizeof(servers)))
         return 0;
     }
@@ -126,6 +139,7 @@ roots_init1(void) {
 
   if(chdir("servers") == -1)
     return 0;
+
   if(dir_open(&dir, "."))
     return 0;
   r = roots_init2(&dir, false);
@@ -142,6 +156,7 @@ roots_init(void) {
     return 0;
 
   fddir = open_read(".");
+
   if(fddir == -1)
     return 0;
   r = roots_init1();

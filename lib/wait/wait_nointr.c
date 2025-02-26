@@ -14,6 +14,7 @@ wait_nointr(int* wstat) {
   return -1;
 #else
   int r;
+
   do {
     r = wait(wstat);
   } while((r == (int)-1) && (errno == EINTR));

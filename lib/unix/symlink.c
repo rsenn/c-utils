@@ -57,6 +57,7 @@ CreateSymlink(LPCTSTR lpLinkName, LPCTSTR lpTargetName, LPSECURITY_ATTRIBUTES lp
   BOOL isRelative = FALSE;
 
   attr = GetFileAttributes(lpTargetName);
+
   if(attr == INVALID_FILE_ATTRIBUTES)
     return FALSE;
   isDirectory = attr & FILE_ATTRIBUTE_DIRECTORY;
@@ -68,14 +69,17 @@ CreateSymlink(LPCTSTR lpLinkName, LPCTSTR lpTargetName, LPSECURITY_ATTRIBUTES lp
   if(*lpTargetName == '\\' || isalpha(*lpTargetName) && lpTargetName[1] == ':') {
     BOOL rv;
     _tcscpy(namebuf, _T("\\?\?\\"));
+
     if(lpTargetName[0] == '\\' && lpTargetName[1] == '\\') {
       rv = GetFullPathName(lpTargetName, sizeof(namebuf) / sizeof(namebuf[0]) - 6, namebuf + 6, NULL);
+
       if(!rv) {
         return FALSE;
       }
       _tcsncpy(namebuf + 4, _T("UNC\\"), 4);
     } else {
       rv = GetFullPathName(lpTargetName, sizeof(namebuf) / sizeof(namebuf[0]) - 4, namebuf + 4, NULL);
+
       if(!rv) {
         return FALSE;
       }
@@ -83,12 +87,14 @@ CreateSymlink(LPCTSTR lpLinkName, LPCTSTR lpTargetName, LPSECURITY_ATTRIBUTES lp
   } else {
     LPCWSTR p = (LPCWSTR)lpTargetName;
     LPWSTR q = (LPWSTR)namebuf, root = (LPWSTR)namebuf;
+
     while(*p) {
       for(;;) {
         if(p[0] == L'.' && p[1] == L'.' && p[2] == L'\\') {
           if(q > root) {
             p += 3;
             q--;
+
             while(q > root && q[-1] != '\\')
               q--;
           } else {
@@ -118,6 +124,7 @@ CreateSymlink(LPCTSTR lpLinkName, LPCTSTR lpTargetName, LPSECURITY_ATTRIBUTES lp
   } else {
     hFile = CreateFile(lpLinkName, GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE, lpsa, CREATE_NEW, 0, NULL);
   }
+
   if(hFile == INVALID_HANDLE_VALUE) {
     return FALSE;
   }
@@ -175,12 +182,14 @@ CreateJunction(LPCTSTR lpLinkName, LPCTSTR lpTargetName, LPSECURITY_ATTRIBUTES l
   BOOL(WINAPI * deletefunc)();
 
   attr = GetFileAttributes(lpTargetName);
+
   if(attr == INVALID_FILE_ATTRIBUTES)
     return FALSE;
   isDirectory = attr & FILE_ATTRIBUTE_DIRECTORY;
   deletefunc = isDirectory ? RemoveDirectory : DeleteFile;
 
   _tcscpy(namebuf, _T("\\?\?\\"));
+
   if(!GetFullPathName(lpTargetName, sizeof(namebuf) / sizeof(namebuf[0]) - 4, namebuf + 4, NULL)) {
     return FALSE;
   }
@@ -201,6 +210,7 @@ CreateJunction(LPCTSTR lpLinkName, LPCTSTR lpTargetName, LPSECURITY_ATTRIBUTES l
   } else {
     hFile = CreateFile(lpLinkName, GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE, lpsa, CREATE_NEW, 0, NULL);
   }
+
   if(hFile == INVALID_HANDLE_VALUE) {
     return FALSE;
   }
@@ -214,6 +224,7 @@ CreateJunction(LPCTSTR lpLinkName, LPCTSTR lpTargetName, LPSECURITY_ATTRIBUTES l
   byte_zero((char*)rdb.u.MountPointReparseBuffer.PathBuffer + rdb.u.MountPointReparseBuffer.SubstituteNameLength, 4);
   rdb.ReparseDataLength = 8 + rdb.u.MountPointReparseBuffer.PrintNameOffset + rdb.u.MountPointReparseBuffer.PrintNameLength + 2;
   cb = 8 + rdb.ReparseDataLength;
+
   if(!DeviceIoControl(hFile, FSCTL_SET_REPARSE_POINT, &rdb, cb, NULL, 0, &cb, NULL)) {
 
     CloseHandle(hFile);

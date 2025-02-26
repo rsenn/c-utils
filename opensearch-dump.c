@@ -15,9 +15,11 @@ static void
 print_attr_names(xmlnode* elm) {
   int param = !str_diff((const char*)elm->name, "Param");
   TUPLE* attr_p;
+
   for(attr_p = (TUPLE*)elm->attributes; attr_p; attr_p = (TUPLE*)attr_p->next) {
     const char* content = (const char*)xml_content((xmlnode*)attr_p);
     int name = !str_diff((const char*)attr_p->key, "name");
+
     if(param) {
       stralloc_catb(&url, name ? &sep : "=", 1);
       stralloc_cats(&url, content);
@@ -30,6 +32,7 @@ print_attr_names(xmlnode* elm) {
        buffer_puts(buffer_2, param ? "="
        : "\n  attribute value: ");
        buffer_puts(buffer_2, content);*/
+
     if(!str_diff((const char*)attr_p->key, "template")) {
       stralloc_copys(&templ, content);
       // templ = content;
@@ -53,11 +56,13 @@ print_element_names(xmlnode* a_node) {
   stralloc_init(&url);
   stralloc_init(&templ);
   a_node = a_node->children;
+
   for(cur_node = a_node; cur_node; cur_node = cur_node->next) {
     if(cur_node->type == XML_ELEMENT) {
       xmlnode* elm = (xmlnode*)cur_node;
       /*    buffer_puts(buffer_2, "node
          type: Element, name: ");
+
            if(nsStr) {
              buffer_puts(buffer_2,
          nsStr); buffer_put(buffer_2,
@@ -68,9 +73,11 @@ print_element_names(xmlnode* a_node) {
            buffer_puts(buffer_2, ",
          value: ");
        */
+
       if(!str_diff((const char*)elm->name, "Url")) {
         xmlnode* child_node = NULL;
         print_attr_names(elm);
+
         for(child_node = elm->children; child_node; child_node = child_node->next) {
           { print_attr_names((xmlnode*)child_node); }
         }
@@ -92,6 +99,7 @@ print_element_names(xmlnode* a_node) {
     /* buffer_puts(buffer_1, "url: ");
       buffer_putsa(buffer_1, &url);
       buffer_putnlflush(buffer_1);*/
+
     for(i = 0; i < url.len; ++i) {
       if(url.s[i] == '{') {
         /*  buffer_put(buffer_2,
@@ -99,6 +107,7 @@ print_element_names(xmlnode* a_node) {
           buffer_putnlflush(buffer_2);
         */
         stralloc_cats(&newurl, "%s");
+
         while(++i < url.len) {
           if(url.s[i] == '}') {
             break;
@@ -153,10 +162,13 @@ parse_xml(const char* filename) {
 int
 main(int argc, char** argv) {
   int ai;
+
   if(argc < 2)
     return 1;
+
   for(ai = 1; ai < argc; ++ai) {
     int ret = parse_xml(argv[ai]);
+
     if(ret == -1)
       return 1;
   }

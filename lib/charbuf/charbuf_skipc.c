@@ -7,6 +7,7 @@ charbuf_skipc(charbuf* b, uint8* ch) {
   int debug = charbuf_debug;
   charbuf_debug = 0;
 #endif
+
   for(;;) {
     if(b->p) {
       if(b->chrs[0] == '\n') {
@@ -15,8 +16,10 @@ charbuf_skipc(charbuf* b, uint8* ch) {
       } else {
         b->loc.column++;
       }
+
       if(ch)
         *ch = b->chrs[0];
+
       if(--b->p > 0)
         byte_copy(b->chrs, b->p, b->chrs + 1);
       b->offset++;
@@ -33,9 +36,11 @@ charbuf_skipc(charbuf* b, uint8* ch) {
     charbuf_dumpint64("ret", ret, buffer_2);
     buffer_puts(buffer_2, CHARBUF_SEP);
     charbuf_dumplabel("c", buffer_2);
+
     if(charbuf_colors)
       buffer_puts(buffer_2, CHARBUF_CYAN);
     charbuf_dumpchar(*ch, buffer_2, -6);
+
     if(charbuf_colors)
       buffer_puts(buffer_2, CHARBUF_NC);
     buffer_puts(buffer_2, CHARBUF_SEP);

@@ -7,6 +7,7 @@ fmt_cescape2(char* dest, const char* src, size_t len, const char* escapeme) {
   register const unsigned char* s = (const unsigned char*)src;
   size_t written = 0, i;
   char c;
+
   for(i = 0; i < len; ++i) {
     switch(s[i]) {
       case '\a': c = 'a'; goto doescape;
@@ -19,7 +20,9 @@ fmt_cescape2(char* dest, const char* src, size_t len, const char* escapeme) {
       case '\v': c = 'v'; goto doescape;
       case '\\':
         c = '\\';
+
       doescape:
+
         if(dest) {
           dest[written] = '\\';
           dest[written + 1] = c;
@@ -27,6 +30,7 @@ fmt_cescape2(char* dest, const char* src, size_t len, const char* escapeme) {
         written += 2;
         break;
       default:
+
         if(s[i] < ' ' || escapeme[str_chr(escapeme, s[i])] == s[i]) {
           if(dest) {
             dest[written] = '\\';
@@ -43,6 +47,7 @@ fmt_cescape2(char* dest, const char* src, size_t len, const char* escapeme) {
         break;
     }
     /* in case someone gives us malicious input */
+
     if(written > ((size_t)-1) / 2)
       return (size_t)-1;
   }

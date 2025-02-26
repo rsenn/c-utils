@@ -13,9 +13,11 @@ buffer_write_utf16le(fd_type fd, void* buf, size_t len, void* arg) {
   ssize_t r = 0;
   unsigned int ch;
   buffer* b = arg;
+
   while(i < len) {
     char x[2];
     size_t n = scan_utf8(&((char*)buf)[i], len - i, &ch);
+
     if(n > 0) {
       uint16_pack(x, ch);
     } else {
@@ -87,10 +89,12 @@ ini_write(buffer* b, ini_section_t* ini, int utf16) {
   char x[1024];
   buffer_init(&out, (buffer_op_proto*)(void*)&buffer_write_utf16le, 0, x, sizeof(x));
   out.cookie = b;
+
   if(utf16) {
     buffer_putsflush(b, "\377\376");
     b = &out;
   }
+
   while(ini) {
     MAP_PAIR_T t;
 
@@ -117,6 +121,7 @@ getchar_utf16(buffer* b, int* ptr) {
   char d[2];
   uint16 ch;
   int ret = buffer_get(b, d, 2);
+
   if(ret == 2) {
     uint16_unpack(d, &ch);
     *ptr = ch;
@@ -128,6 +133,7 @@ static int
 getchar_utf8(buffer* b, int* ptr) {
   char c;
   int ret = buffer_get(b, &c, 1);
+
   if(ret == 1)
     *ptr = c;
   return ret;
@@ -137,6 +143,7 @@ static int
 getline_sa(buffer* b, stralloc* line, getchar_fn* getbyte) {
   int prev = -1, ch;
   stralloc_zero(line);
+
   while(getbyte(b, &ch) >= 1) {
     if(ch > 255) {
       char chars[4];
@@ -144,10 +151,13 @@ getline_sa(buffer* b, stralloc* line, getchar_fn* getbyte) {
 
     } else if(ch == '\\') {
       prev = ch;
+
       if(getbyte(b, &ch) <= 0)
         break;
+
       if(ch == '\n')
         continue;
+
       if(ch == 'n')
         ch = '\n';
       else if(ch == 'r')
@@ -157,6 +167,7 @@ getline_sa(buffer* b, stralloc* line, getchar_fn* getbyte) {
       stralloc_catc(line, ch);
     } else {
       stralloc_catc(line, ch);
+
       if(ch == '\n')
         break;
     }
@@ -173,6 +184,7 @@ ini_read(buffer* b, ini_section_t** ptr) {
   getchar_fn* getc_fn = &getchar_utf8;
 
   *ptr = NULL;
+
   if(buffer_prefetch(b, 2) < 2)
     return;
 
@@ -203,6 +215,7 @@ ini_read(buffer* b, ini_section_t** ptr) {
       i++;
       e = byte_chr(&line.s[i], line.len - i, ']');
       s = ini_newb(ptr, &line.s[i], e);
+
       if(ini == 0)
         ini = *ptr;
       continue;
@@ -229,6 +242,7 @@ ini_read(buffer* b, ini_section_t** ptr) {
 ini_section_t*
 ini_section(ini_section_t* ini, const char* name) {
   do
+
     if(stralloc_case_equals(&ini->name, name))
       return ini;
 

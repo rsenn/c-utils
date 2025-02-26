@@ -85,6 +85,7 @@ put_line(stralloc* sa, const char* x, ssize_t len) {
     if((x[len - 1] == '\n' || x[len - 1] == '\r'))
 
       len--;
+
     while(len >= 1 && isspace(x[len - 1]))
       len--;
   }
@@ -114,8 +115,10 @@ eat_line(const char** s, size_t n, buffer* out) {
   size_t p, q;
   const char* x = *s;
   p = scan_noncharsetnskip(x, "\n\r", n);
+
   if(p < n) {
     q = scan_charsetnskip(&x[p], "\n\r", n - p);
+
     if(p == 0 && q == n)
       return p;
     buffer_put(out, x, p + (q > 2 ? 2 : q));
@@ -134,6 +137,7 @@ consume_output(stralloc* sa, buffer* out) {
 
   while(s < e) {
     size_t r = eat_line(&s, e - s, out);
+
     if(r == 0) {
       if(prevlen)
         break;
@@ -183,8 +187,10 @@ add_output(const char* x, size_t len, buffer* out) {
       {
         n = 0;
         tmp[n++] = '\\';
+
         if(ch <= 63)
           tmp[n++] = '0';
+
         if(ch <= 7)
           tmp[n++] = '0';
 
@@ -221,6 +227,7 @@ run_quote(buffer* in, buffer* out) {
   if(add_quotes)
     buffer_puts(out, add_quotes);
   c = 0;
+
   while(buffer_getc(in, (char*)&c) > 0) {
 
     if(c == ' ' && prev_c != ' ') {
@@ -228,6 +235,7 @@ run_quote(buffer* in, buffer* out) {
       stralloc_zero(&buf);
       ws = true;
     }
+
     if(c != ' ') {
       if(ws)
         ws = false;
@@ -250,6 +258,7 @@ run_quote(buffer* in, buffer* out) {
     add_output(buf.s, buf.len, out);
     stralloc_zero(&buf);
   }
+
   if(add_quotes)
     buffer_puts(out, add_quotes);
 
@@ -351,8 +360,10 @@ main(int argc, char* argv[]) {
 
   for(;;) {
     c = unix_getopt_long(argc, argv, "0a:CcDhiJq:nPQSt:X", opts, &index);
+
     if(c == -1)
       break;
+
     if(c == 0)
       continue;
 
@@ -412,11 +423,13 @@ main(int argc, char* argv[]) {
 
   if(quote_newline)
     add_chars("\n", 1);
+
   if(quote_tabs)
     add_chars("\t", 1);
 
   if(quote_chars.len > 0) {
     add_chars("\\", 1);
+
     if(quote_backslash == 0)
       quote_backslash++;
   }
@@ -436,6 +449,7 @@ main(int argc, char* argv[]) {
     in_fd = open_read((in_path = argv[unix_optind]));
     unix_optind++;
   }
+
   if(unix_optind < argc) {
 #ifdef DEBUG_OUTPUT
     buffer_putm_internal(buffer_2, "Opening output file '", argv[unix_optind], "'...", NULL);
@@ -448,6 +462,7 @@ main(int argc, char* argv[]) {
   buffer_init_free(&input, (buffer_op_proto*)(void*)&read, in_fd, alloc(1024), 1024);
 
 again:
+
   if(in_place) {
     stralloc_zero(&tmp);
     path_dirname(in_path, &tmp);
@@ -473,12 +488,14 @@ again:
     buffer_puts(buffer_1, tmpl);
     buffer_putnlflush(buffer_1);
   }
+
   if(out_path) {
     buffer_puts(buffer_1, "out_path: ");
     buffer_puts(buffer_1, out_path);
     buffer_putnlflush(buffer_1);
   }
   /*
+
     if((x = mmap_read(out_path, &n)) &&
     n > 1) {
 
@@ -493,6 +510,7 @@ again:
 
   if(in_place) {
     // buffer inplace;
+
     if(unlink(in_path) != 0)
       errmsg_warnsys("unlink: ", in_path, 0);
 

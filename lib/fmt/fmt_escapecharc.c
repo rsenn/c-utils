@@ -15,8 +15,10 @@ size_t
 fmt_escapecharc(char* dest, int chr) {
   char c;
   uint32 ch = chr;
+
   if(ch > 0xff)
     return 0;
+
   switch(ch) {
     case '\a': c = 'a'; goto doescape;
     case '\b': c = 'b'; goto doescape;
@@ -28,13 +30,16 @@ fmt_escapecharc(char* dest, int chr) {
     case '\v': c = 'v'; goto doescape;
     case '\\':
       c = '\\';
+
     doescape:
+
       if(dest) {
         dest[0] = '\\';
         dest[1] = c;
       }
       return 2;
     default:
+
       if(dest) {
         dest[0] = '\\';
         fmt_oct3(dest + 1, ch & 0xff);

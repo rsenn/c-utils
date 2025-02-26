@@ -127,19 +127,23 @@ print_stat(const char* property, const struct stat* st) {
 
   buffer_putm_internal(buffer_1, " [ mode 0", NULL);
   buffer_put8long(buffer_1, st->st_mode & 07777);
+
   if(st->st_dev) {
     print_number_nonl_base(", dev", st->st_dev, 16); /*
                      buffer_putm_internal(buffer_1, ", dev", 0);
                      buffer_putxlong0(buffer_1, st->st_dev, 3);*/
   }
+
   if(st->st_rdev) {
     buffer_putm_internal(buffer_1, ", rdev 0x", NULL);
     buffer_putxlong0(buffer_1, st->st_rdev, 3);
   }
+
   if(st->st_ino) {
     buffer_putm_internal(buffer_1, ", inode 0x", NULL);
     buffer_putxlong0(buffer_1, st->st_ino, 3);
   }
+
   if(st->st_size) {
     buffer_putm_internal(buffer_1, ", size ", NULL);
     buffer_putulonglong(buffer_1, st->st_size);
@@ -149,6 +153,7 @@ print_stat(const char* property, const struct stat* st) {
     buffer_putm_internal(buffer_1, ", blocks ", NULL);
     buffer_putulonglong(buffer_1, st->st_blocks);
   }
+
   if(st->st_blksize) {
     buffer_putm_internal(buffer_1, ", blksize 0x", NULL);
     buffer_putxlonglong(buffer_1, st->st_blksize);
@@ -203,6 +208,7 @@ proc_subdir_path(int32 pid, const char* subdir, stralloc* out) {
 const char*
 proc_fd_path(int32 pid, fd_type fd, stralloc* out) {
   proc_subdir_path(pid, "fd", out);
+
   if(fd >= 0)
     stralloc_catulong(out, fd);
   stralloc_nul(out);
@@ -211,6 +217,7 @@ proc_fd_path(int32 pid, fd_type fd, stralloc* out) {
 const char*
 proc_fdinfo_path(int32 pid, fd_type fd, stralloc* out) {
   proc_subdir_path(pid, "fdinfo", out);
+
   if(fd >= 0)
     stralloc_catulong(out, fd);
   stralloc_nul(out);
@@ -245,15 +252,19 @@ read_proc() {
 
   if(dir_open(&procdir, "/proc"))
     return;
+
   while((s = dir_read(&procdir))) {
     if(!isdigit(s[0]))
       continue;
+
     if(scan_uint(s, &pid) > 0) {
       fdPath = proc_fd_path(pid, -1, &procfd);
       stralloc_copys(&current, fdPath);
       stralloc_nul(&current);
+
       if(dir_open(&fddir, fdPath))
         continue;
+
       while((fdStr = dir_read(&fddir))) {
         if(!isdigit(fdStr[0]))
           continue;
@@ -274,13 +285,16 @@ read_proc() {
         stralloc_zero(&real);
         path_realpath(fdPath, &real, 0, &current);
         stralloc_nul(&real);
+
         if(stralloc_start(&real, &current))
           stralloc_remove(&real, 0, current.len);
         n = -1;
+
         if((tmpfd = open_read(real.s)) != -1) {
           stralloc filename;
           stralloc_init(&filename);
           x = mmap_read_fd_range(tmpfd, &len, 0, getpagesize());
+
           if(x) {
             n = len;
             mmap_filename(x, &filename);
@@ -288,6 +302,7 @@ read_proc() {
           } else {
             errmsg_warnsys("mmap", 0);
           }
+
           if(n == -1) {
             n = seek_cur(tmpfd);
             seek_end(tmpfd);
@@ -305,6 +320,7 @@ read_proc() {
               }
           }
 #endif
+
         if(S_ISFIFO(st.st_mode)) {
           p = get_pipe(pipeId);
           pfd = alloc_zero(sizeof(procfd_t));
@@ -343,10 +359,13 @@ procfd_dump(const procfd_t* pfd) {
   print_number_nonl_base(" dev", pfd->st.st_dev, 16);
   print_number_nonl(" uid", pfd->st.st_uid);
   print_number_nonl(" gid", pfd->st.st_gid);
+
   if(0) {
     print_number_nonl(" atime", pfd->st.st_atime);
+
     if(pfd->st.st_atime != pfd->st.st_mtime)
       print_number_nonl(" mtime", pfd->st.st_mtime);
+
     if(pfd->st.st_mtime != pfd->st.st_ctime)
       print_number_nonl(" ctime", pfd->st.st_ctime);
   }
@@ -367,8 +386,10 @@ main(int argc, char* argv[]) {
 
   for(;;) {
     c = unix_getopt_long(argc, argv, "hv", opts, &index);
+
     if(c == -1)
       break;
+
     if(c == '\0')
       continue;
 
@@ -403,6 +424,7 @@ main(int argc, char* argv[]) {
 
       slist_foreach(p->list, pfd) {
         buffer_putc(buffer_1, '\n');
+
         if(prev != pfd->pid) {
           print_number_nonl("  pid", pfd->pid);
           buffer_putc(buffer_1, '\n');

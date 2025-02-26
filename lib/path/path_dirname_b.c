@@ -26,6 +26,7 @@ path_dirname_b(const char* path, size_t size, stralloc* dir) {
     stralloc_copys(dir, dot);
   } else {
     /* remove trailing slashes */
+
     while(i > 0 && path_issep(path[i - 1]))
       --i;
 

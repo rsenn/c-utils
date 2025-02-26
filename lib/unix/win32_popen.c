@@ -149,6 +149,7 @@ FILE* __cdecl popen(const char* cmdstring, const char* type) {
   _VALIDATE_RETURN(((*type == _T('w')) || (*type == _T('r'))), EINVAL, NULL);
   _type[0] = *type;
   ++type;
+
   while(*type == _T(' ')) {
     ++type;
   }
@@ -171,6 +172,7 @@ FILE* __cdecl popen(const char* cmdstring, const char* type) {
 
   /* test _type[0] and set stdhdl, i1 and i2 accordingly.
    */
+
   if(_type[0] == _T('w')) {
     stdhdl = STDIN;
     i1 = 0;
@@ -215,15 +217,18 @@ FILE* __cdecl popen(const char* cmdstring, const char* type) {
     /* associate a stream with phdls[i2]. note that if there are no
      * errors, pstream is the return value to the caller.
      */
+
     if((pstream = _fdopen(phdls[i2], (const char*)_type)) == NULL)
       goto error2;
 
     /* next, set locidpair to a free entry in the idpairs table.
      */
+
     if((locidpair = idtab(NULL)) == NULL)
       goto error3;
 
     /* Find what to use. command.com or cmd.exe */
+
     if((_EINVAL(_tdupenv_s_crt(&envbuf, NULL, _T("COMSPEC"))) != 0) || (envbuf == NULL)) {
       unsigned int osver = 0;
       _get_osver(&osver);
@@ -247,6 +252,7 @@ FILE* __cdecl popen(const char* cmdstring, const char* type) {
     StartupInfo.hStdError = (HANDLE)_osfhnd(2);
 
     CommandLineSize = strlen(cmdexe) + strlen(_T(" /c ")) + (strlen(cmdstring)) + 1;
+
     if((CommandLine = calloc(CommandLineSize, sizeof(char))) == NULL)
       goto error3;
     (lstrcpyn(CommandLine, cmdexe, CommandLineSize));
@@ -257,11 +263,13 @@ FILE* __cdecl popen(const char* cmdstring, const char* type) {
      * searching path.
      */
     save_errno = errno;
+
     if(_taccess_s(cmdexe, 0) == 0) {
       childstatus = CreateProcess((LPTSTR)cmdexe, (LPTSTR)CommandLine, NULL, NULL, TRUE, 0, NULL, NULL, &StartupInfo, &ProcessInfo);
     } else {
       TCHAR* envPath = NULL;
       size_t envPathSize = 0;
+
       if((buf = calloc(_MAX_PATH, sizeof(char))) == NULL) {
         free(buf);
         free(CommandLine);
@@ -270,6 +278,7 @@ FILE* __cdecl popen(const char* cmdstring, const char* type) {
         errno = save_errno;
         goto error3;
       }
+
       if(_EINVAL(_tdupenv_s_crt(&envPath, NULL, _T("PATH"))) != 0) {
         free(envPath);
         free(buf);
@@ -303,6 +312,7 @@ FILE* __cdecl popen(const char* cmdstring, const char* type) {
          * build it. otherwise, return to the caller (return value
          * and errno rename set from initial call to _spawnve()).
          */
+
         if((strlen(buf) + strlen(cmdexe)) < _MAX_PATH)
           (lstrcatn(buf, cmdexe, _MAX_PATH));
         else
@@ -311,6 +321,7 @@ FILE* __cdecl popen(const char* cmdstring, const char* type) {
         /* Check if buf can be accessed. If yes CreateProcess else try
          * again.
          */
+
         if(_taccess_s(buf, 0) == 0) {
           childstatus = CreateProcess((LPTSTR)buf, CommandLine, NULL, NULL, TRUE, 0, NULL, NULL, &StartupInfo, &ProcessInfo);
           break;
@@ -328,6 +339,7 @@ FILE* __cdecl popen(const char* cmdstring, const char* type) {
 
     /* check if the CreateProcess was sucessful.
      */
+
     if(childstatus)
       childhnd = (intptr_t)ProcessInfo.hProcess;
     else
@@ -362,8 +374,10 @@ FILE* __cdecl popen(const char* cmdstring, const char* type) {
 
     if(ph_open[i1])
       _close(phdls[i1]);
+
     if(ph_open[i2])
       _close(phdls[i2]);
+
   done:
 
       ;
@@ -431,6 +445,7 @@ int __cdecl _pclose(FILE* pstream) {
      */
     save_errno = errno;
     errno = 0;
+
     if((cwait(&termstat, locidpair->prochnd, WAIT_GRANDCHILD) != -1) || (errno == EINTR))
       retval = termstat;
     errno = save_errno;
@@ -443,6 +458,7 @@ int __cdecl _pclose(FILE* pstream) {
 
   /* only return path!
    */
+
   done:
 
       ;
@@ -487,12 +503,15 @@ static IDpair* __cdecl idtab(FILE* pstream) {
   /* search the table. if table is empty, appropriate action should
    * fall out automatically.
    */
+
   for(pairptr = __idpairs; pairptr < (__idpairs + __idtabsiz); pairptr++)
+
     if(pairptr->stream == pstream)
       break;
 
   /* if we found an entry, return it.
    */
+
   if(pairptr < (__idpairs + __idtabsiz))
     return (pairptr);
 
@@ -503,6 +522,7 @@ static IDpair* __cdecl idtab(FILE* pstream) {
    * the extra entries as being free (i.e., set their stream fields to
    * to NULL).
    */
+
   if((pstream != NULL) || ((__idtabsiz + 1) < __idtabsiz) || ((__idtabsiz + 1) >= (SIZE_MAX / sizeof(IDpair))) ||
      ((newptr = (IDpair*)_recalloc_crt((void*)__idpairs, (__idtabsiz + 1), sizeof(IDpair))) == NULL))
     /* either pstream was non-NULL or the attempt to create/expand

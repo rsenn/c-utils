@@ -42,22 +42,28 @@ void
 setup_env() {
   if(!env_get("MSYS2_PATH"))
     env_set("MSYS2_PATH", "/usr/local/bin:/usr/bin:/bin");
+
   if(!env_get("MSYS2_PREFIX"))
     env_set("MSYS2_PREFIX",
             "B:"
             "\\PortableApps\\MSYS2Porta"
             "ble\\App\\msys32\\usr");
+
   if(!env_get("MSYS2_ROOT"))
     env_set("MSYS2_ROOT",
             "B:"
             "\\PortableApps\\MSYS2Porta"
             "ble\\App\\msys32");
+
   if(!env_get("MSYSTEM"))
     env_set("MSYSTEM", "MSYS");
+
   if(!env_get("MSYSTEM_CARCH"))
     env_set("MSYSTEM_CARCH", "i686");
+
   if(!env_get("MSYSTEM_CHOST"))
     env_set("MSYSTEM_CHOST", "i686-pc-msys");
+
   if(!env_get("MSYSTEM_PREFIX"))
     env_set("MSYSTEM_PREFIX", "/usr");
 }
@@ -100,10 +106,13 @@ main(int argc, char* argv[], char* envp[]) {
   strlist_init(&args, '\0');
 
   errmsg_iam(argv[0]);
+
   for(;;) {
     c = unix_getopt_long(argc, argv, "hve:", opts, &index);
+
     if(c == -1)
       break;
+
     if(c == 0)
       continue;
 
@@ -151,6 +160,7 @@ main(int argc, char* argv[], char* envp[]) {
 
   stralloc_copys(&specs, "-specs=");
   stralloc_cat(&specs, &execbin);
+
   if((i = stralloc_finds(&specs, ".real"))) {
     specs.len = i;
   }

@@ -31,7 +31,9 @@ io_nonblock(fd_type d) {
 #endif
 #if WINDOWS_NATIVE
   unsigned long i = 1;
+
   if(ioctlsocket(d, FIONBIO, &i) == 0)
+
     if(e)
       e->nonblock = 1;
 #else

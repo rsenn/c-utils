@@ -46,11 +46,13 @@ uri_scan_host(const char* x, size_t len) {
 size_t
 uri_scan(uri_t* u, const char* x, size_t len) {
   size_t s, e, e2, e3;
+
   if(u->anchor) {
     free((void*)u->anchor);
     u->anchor = 0;
   }
   e = byte_finds(x, len, "://");
+
   if(e < len) {
     u->proto = str_ndup(x, e);
     s = e + 3;
@@ -60,6 +62,7 @@ uri_scan(uri_t* u, const char* x, size_t len) {
     s = 0;
   }
   e = s + byte_chrs(&x[s], len - s, "/", 1);
+
   if(!(s == 0 && e == 0) /*&& !(e == len)*/) {
     e2 = s + byte_chr(&x[s], e - s, '@');
     u->port = 0;
@@ -69,6 +72,7 @@ uri_scan(uri_t* u, const char* x, size_t len) {
 
     if(e2 < e) {
       e3 = s + byte_chr(&x[s], e2 - s, ':');
+
       if(e3 < e2) {
         u->password = str_ndup(&x[e3 + 1], e2 - (e3 + 1));
       }
@@ -76,8 +80,10 @@ uri_scan(uri_t* u, const char* x, size_t len) {
       s = e2 + 1;
     }
     e2 = s + uri_scan_host(&x[s], len - s);
+
     if(e2 > s) {
       u->host = str_ndup(&x[s], e2 - s);
+
       if(x[e2] == ':') {
         if((e3 = scan_ushort(&x[e2 + 1], &u->port)) > 0)
           e2 += 1 + e3;
@@ -87,6 +93,7 @@ uri_scan(uri_t* u, const char* x, size_t len) {
   } else {
     s = e;
   }
+
   if(s == len) {
     alloc_clear(&u->location);
     u->location = str_dup("/");
@@ -101,6 +108,7 @@ uri_scan(uri_t* u, const char* x, size_t len) {
     if(e2 > s) {
       stralloc loc;
       stralloc_init(&loc);
+
       if(x[s] != '/') {
         if(u->location)
           stralloc_copyb(&loc, u->location, str_rchr(u->location, '/'));
@@ -116,6 +124,7 @@ uri_scan(uri_t* u, const char* x, size_t len) {
       s = e = e2;
     }
   }
+
   if(s < len && x[s] == '#') {
     e = s + byte_chrs(&x[s], len - s, "\r\n\t\"'\0", 7);
     u->anchor = str_ndup(&x[s], e - s);
@@ -123,6 +132,7 @@ uri_scan(uri_t* u, const char* x, size_t len) {
   } else {
     alloc_clear(&u->anchor);
   }
+
   if(u->port == 0 && u->proto != 0) {
     if(str_equal(u->proto, "https"))
       u->port = 443;
@@ -135,28 +145,35 @@ uri_scan(uri_t* u, const char* x, size_t len) {
 size_t
 uri_fmt(char* x, const uri_t* u) {
   size_t r = 0;
+
   if(u->proto) {
     r += fmt_str(x ? &x[r] : 0, u->proto);
     r += fmt_str(x ? &x[r] : 0, "://");
   }
+
   if(u->username) {
     r += fmt_str(x ? &x[r] : 0, u->username);
+
     if(u->password) {
       r += fmt_str(x ? &x[r] : 0, ":");
       r += fmt_str(x ? &x[r] : 0, u->password);
     }
     r += fmt_str(x ? &x[r] : 0, "@");
   }
+
   if(u->host)
     r += fmt_str(x ? &x[r] : 0, u->host);
+
   if(u->port) {
     if(!u->proto || !((str_equal(u->proto, "http") && u->port == 80) || str_equal(u->proto, "https") && u->port == 443)) {
       r += fmt_str(x ? &x[r] : 0, ":");
       r += fmt_ulong(x ? &x[r] : 0, u->port);
     }
   }
+
   if(u->location)
     r += fmt_str(x ? &x[r] : 0, u->location);
+
   if(u->anchor)
     r += fmt_str(x ? &x[r] : 0, u->anchor);
   return r;
@@ -166,14 +183,19 @@ void
 uri_free(uri_t* uri) {
   if(uri->proto)
     free((char*)uri->proto);
+
   if(uri->username)
     free((char*)uri->username);
+
   if(uri->password)
     free((char*)uri->password);
+
   if(uri->host)
     free((char*)uri->host);
+
   if(uri->location)
     free((char*)uri->location);
+
   if(uri->anchor)
     free((char*)uri->anchor);
   uri->port = 0;
@@ -202,6 +224,7 @@ uri_dump(buffer* b, const uri_t* u) {
   }
   buffer_puts(b, ", location = ");
   buffer_putstr(b, u->location);
+
   if(u->anchor) {
     buffer_puts(b, ", anchor = ");
     buffer_putstr(b, u->anchor);
@@ -235,6 +258,7 @@ size_t
 uri_find(const char* x, size_t len) {
   size_t i;
   i = byte_finds(x, len, "://");
+
   if(i < len) {
     while(i > 0 && (isalnum(x[i - 1]) || x[i - 1] == '+'))
       i--;

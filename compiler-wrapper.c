@@ -97,6 +97,7 @@ get_compiler_dir(const char* basedir, stralloc* out) {
 
     if(dtype != D_DIRECTORY)
       continue;
+
     if(name[0] == '.')
       continue;
 
@@ -224,6 +225,7 @@ strlist_execve(const strlist* sl) {
       exit(127);
   } else {
     int status = 0;
+
     if(waitpid(pid, &status, 0) == -1)
       return 127;
 
@@ -264,12 +266,14 @@ read_arguments() {
       } else {
         argv0 = &s[2];
       }
+
       if(strchr(argv0, '/'))
         stralloc_copys(&compiler, argv0);
       argv0 = str_dup(str_basename(argv0));
     } else if(!str_diffn("-o", s, 2)) {
       stralloc output;
       stralloc_init(&output);
+
       if(str_len(s) == 2 && i + 1 < n) {
         stralloc_copys(&output, s2);
         ++i;
@@ -278,6 +282,7 @@ read_arguments() {
       }
       stralloc_0(&output);
       stralloc_copys(&output_file, str_basename(output.s));
+
       if(strchr(output.s, '/') || strchr(output.s, '\\')) {
         stralloc_copys(&output_dir, output.s);
         output_dir.len = str_rchr(output.s, '/');
@@ -304,17 +309,21 @@ read_arguments() {
 
   if(err_format.len == 0)
     stralloc_copys(&err_format, "\n%f:%l: error: (%n) %s");
+
   if(warn_format.len == 0)
     stralloc_copys(&warn_format, "\n%f:%l: warning: (%n) %s");
+
   if(msg_format.len == 0)
     stralloc_copys(&msg_format, "\n%f:%l: advisory: (%n) %s");
 
   if(!str_case_diffn(argv0, "sdcc", 4)) {
     type = SDCC;
+
     if(compiler.len == 0)
       stralloc_copys(&compiler, "C:/Program Files/SDCC");
   } else if(!str_case_diffn(argv0, "picc18", 6)) {
     type = PICC18;
+
     if(compiler.len == 0)
       get_compiler_dir("C:/Program Files "
                        "(x86)/HI-TECH "
@@ -322,12 +331,14 @@ read_arguments() {
                        &compiler);
   } else if(!str_case_diffn(argv0, "picc", 4)) {
     type = PICC;
+
     if(compiler.len == 0)
       get_compiler_dir("C:/Program Files "
                        "(x86)/HI-TECH Software/PICC",
                        &compiler);
   } else if(strstr(argv0, "xc8") != NULL) {
     type = XC8;
+
     if(compiler.len == 0)
       get_compiler_dir("C:/Program Files "
                        "(x86)/Microchip/xc8",
@@ -335,19 +346,23 @@ read_arguments() {
   }
 
   stralloc_0(&compiler);
+
   if(strstr(compiler.s, "/bin") == NULL)
     stralloc_cats(&compiler, "/bin/");
 
   stralloc_0(&compiler);
+
   if(strstr(compiler.s, "/bin/") == NULL)
     stralloc_cats(&compiler, compiler_strs[type]);
 
   dump_stralloc("compiler", &compiler);
+
   if(output_file.len == 0 && (mode == COMPILE_AND_ASSEMBLE || mode == COMPILE || mode == PREPROCESS)) {
     size_t n;
     stralloc_copys(&output_file, str_basename(strlist_at(&params, 0)));
 
     n = byte_rchr(output_file.s, output_file.len, '.');
+
     if(n < output_file.len) {
       output_file.len = n + 1;
 
@@ -414,14 +429,17 @@ execute_cmd() {
   strlist_cat(&cmd, &longopts);
 
   n = strlist_count(&includedirs);
+
   for(i = 0; i < n; ++i) {
     strlist_pushm_internal(&cmd, "-I", strlist_at(&includedirs, i), NULL);
   }
 
   n = strlist_count(&defines);
+
   for(i = 0; i < n; ++i) {
     strlist_pushm_internal(&cmd, "-D", strlist_at(&defines, i), NULL);
   }
+
   if(type == PICC || type == PICC18 || type == XC8) {
     char nbuf[FMT_ULONG];
 
@@ -433,22 +451,27 @@ execute_cmd() {
         stralloc_0(&runtime);
         strlist_pushm_internal(&cmd, "--runtime=", runtime.s, NULL);
       }
+
       if(optimization.len > 0) {
         stralloc_0(&optimization);
         strlist_pushm_internal(&cmd, "--opt=", optimization.s, NULL);
       }
+
       if(debugger.len > 0) {
         stralloc_0(&debugger);
         strlist_pushm_internal(&cmd, "--debugger=", debugger.s, NULL);
       }
+
       if(err_format.len > 0) {
         stralloc_0(&err_format);
         strlist_pushm_internal(&cmd, "--errformat=", err_format.s, NULL);
       }
+
       if(warn_format.len > 0) {
         stralloc_0(&warn_format);
         strlist_pushm_internal(&cmd, "--warnformat=", warn_format.s, NULL);
       }
+
       if(msg_format.len > 0) {
         stralloc_0(&msg_format);
         strlist_pushm_internal(&cmd, "--msgformat=", msg_format.s, NULL);
@@ -464,6 +487,7 @@ execute_cmd() {
         nbuf[fmt_ulong(nbuf, warn)] = '\0';
         strlist_pushm_internal(&cmd, "--warn=", nbuf, NULL);
       }
+
       if(debug)
         strlist_push(&cmd, "-G");
 
@@ -471,10 +495,12 @@ execute_cmd() {
         nbuf[fmt_ulong(nbuf, ident_len)] = '\0';
         strlist_pushm_internal(&cmd, "-N", nbuf, NULL);
       }
+
       if(fltbits != 0) {
         nbuf[fmt_ulong(nbuf, fltbits)] = '\0';
         strlist_pushm_internal(&cmd, "--float=", nbuf, NULL);
       }
+
       if(dblbits != 0) {
         nbuf[fmt_ulong(nbuf, dblbits)] = '\0';
         strlist_pushm_internal(&cmd, "--double=", nbuf, NULL);
@@ -550,14 +576,17 @@ execute_cmd() {
     if(debug) {
       strlist_pushm_internal(&cmd, "--debug", "--debug-xtra", NULL);
     }
+
     if(output_dir.len > 0) {
       stralloc_copy(&outp, &output_dir);
     }
+
     if(output_file.len > 0) {
       if(outp.len > 0)
         stralloc_cats(&outp, "/");
       stralloc_cat(&outp, &output_file);
     }
+
     if(outp.len > 0) {
       stralloc_0(&outp);
       strlist_push(&cmd, "-o");
@@ -576,6 +605,7 @@ execute_cmd() {
   if(output_dir.len > 0) {
     struct stat st;
     stralloc_0(&output_dir);
+
     if(stat(output_dir.s, &st) == -1)
       mkdir(output_dir.s, 0755);
   }
@@ -628,6 +658,7 @@ print_strlist(buffer* b, const strlist* sl, const char* separator, const char* q
           buffer_put(b, s, 1);
         ++s;
       }
+
       if(need_quote)
         buffer_puts(b, quot);
     }

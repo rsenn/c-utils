@@ -18,6 +18,7 @@ set_realloc(set_t* set) {
   assert(new_set.array);
 
   // copy over old set
+
   for(set_index = 0; set_index < set->len; ++set_index) {
     b = &(set->array[set_index]);
 

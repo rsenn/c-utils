@@ -245,6 +245,7 @@ extract_build_type(const stralloc* s) {
   size_t i;
 
   for(i = 0; i < sizeof(build_types) / sizeof(build_types[0]); ++i)
+
     if(stralloc_contains(s, build_types[i]))
       return i;
 
@@ -485,10 +486,12 @@ remove_indirect_deps_recursive(array* top, array* a, int depth) {
       continue;
 
     if(depth > 0)
+
       if((found = array_find(top, sizeof(target*), &t)))
         *found = NULL;
 
     if(a != &t->deps)
+
       if(depth < 100 && array_length(&t->deps, sizeof(target*)) > 0)
         remove_indirect_deps_recursive(top, &t->deps, depth + 1);
   }
@@ -512,6 +515,7 @@ remove_indirect_deps(array* deps) {
   a = array_start(deps);
 
   for(w = 0, r = 0; r < n; ++r)
+
     if(a[r])
       a[w++] = a[r];
 
@@ -698,6 +702,7 @@ set_compiler_type(const char* compiler) {
   /*
    * Visual C++ compiler
    */
+
   if(str_start(compiler, "msvc") || str_start(compiler, "icl") || str_start(compiler, "vs20") || str_start(compiler, "vc") || compiler[str_find(compiler, "-cl")]) {
     exts.obj = ".obj";
     exts.bin = ".exe";
@@ -710,6 +715,7 @@ set_compiler_type(const char* compiler) {
 
     if(cfg.build_type == BUILD_TYPE_DEBUG || cfg.build_type == BUILD_TYPE_RELWITHDEBINFO)
       var_push("CFLAGS", "-Zi");
+
     if(cfg.build_type == BUILD_TYPE_MINSIZEREL)
       var_push("CFLAGS", "-Os");
     else if(cfg.build_type != BUILD_TYPE_DEBUG)
@@ -728,6 +734,7 @@ set_compiler_type(const char* compiler) {
     /*
      * Intel C++ compiler
      */
+
     if(str_start(compiler, "icl")) {
       var_set("CC", "icl -nologo");
       var_set("CXX", "icl -nologo");
@@ -736,6 +743,7 @@ set_compiler_type(const char* compiler) {
       var_push("CFLAGS", "-Qip");
       var_push("CFLAGS", "-Qunroll4");
       var_push("CFLAGS", "-Qauto-ilp32");
+
       if(cfg.mach.bits == _64)
         var_push("LDFLAGS", "-libpath:\"$(ROOT)\\compiler\\lib\\intel64\"");
       else
@@ -806,6 +814,7 @@ set_compiler_type(const char* compiler) {
     /*
      * GNU GCC compatible compilers
      */
+
     if(str_start(compiler, "gnu") || str_start(compiler, "gcc") || cygming) {
       var_set("CC", "gcc");
       var_set("CXX", "g++");
@@ -827,6 +836,7 @@ set_compiler_type(const char* compiler) {
                 "$(EXTRA_LDFLAGS) -o $@",
                 "$^ $(LIBS)");
     exts.bin = "";
+
     format_linklib_fn = &format_linklib_switch;
 
     /*
@@ -835,6 +845,7 @@ set_compiler_type(const char* compiler) {
   } else if(str_start(compiler, "bcc")) {
     // pathsep_args = '\\';
     // var_push("DEFS", "-DWIN32_LEAN_AND_MEAN");
+
     if(cfg.build_type == BUILD_TYPE_MINSIZEREL)
       var_set("CFLAGS", "-O1");
     else if(cfg.build_type == BUILD_TYPE_RELEASE || cfg.build_type == BUILD_TYPE_RELWITHDEBINFO)
@@ -851,6 +862,7 @@ set_compiler_type(const char* compiler) {
       var_push("CFLAGS", "-d -a-");
 
     /* Embracadero C++ */
+
     if(!str_contains(compiler, "55") && !str_contains(compiler, "60")) {
       var_set("CC", "bcc32c");
       var_set("CXX", "bcc32x");
@@ -937,6 +949,7 @@ set_compiler_type(const char* compiler) {
   } else if(str_start(compiler, "tcc")) {
     exts.lib = ".a";
     exts.obj = ".o";
+
     format_linklib_fn = &format_linklib_switch;
     var_set("CC", "tcc");
     var_set("AR", "$(CC) -ar");
@@ -1041,6 +1054,7 @@ set_compiler_type(const char* compiler) {
     /*    if(cfg.build_type == BUILD_TYPE_MINSIZEREL)
           var_push("CFLAGS", "-Os");
         else*/
+
     if(cfg.build_type == BUILD_TYPE_DEBUG || cfg.build_type == BUILD_TYPE_RELWITHDEBINFO) {
       var_push("CFLAGS", "-Zi");
       var_push("LDFLAGS", "-DEBUG");
@@ -1200,6 +1214,7 @@ set_compiler_type(const char* compiler) {
 
     /*stralloc_nul(&cfg.chip);
     var_set("CHIP", cfg.chip.s);*/
+
     if(!var_isset("MACH")) {
       if(cfg.mach.bits == _14)
         var_set("MACH", "pic14");
@@ -1576,6 +1591,7 @@ main(int argc, char* argv[]) {
 
   pathsep_args = WINDOWS_NATIVE ? '\\' : '/';
   pathsep_make = cfg.sys.type == NTOS ? '\\' : '/';
+
   if((s = env_get("PATH")) == 0)
     s = "/usr/local/bin:/usr/bin:/bin";
 
@@ -1773,12 +1789,15 @@ main(int argc, char* argv[]) {
     inst_libs = 0;
 
   if(!format_linklib_fn)
+
     format_linklib_fn = &format_linklib_lib;
 
   path_getcwd(&dirs.this.sa);
 
   if(cfg.build_type == -1)
+
     if((cfg.build_type = extract_build_type(&dirs.build.sa)) == -1)
+
       if((cfg.build_type = extract_build_type(&dirs.this.sa)) == -1)
         cfg.build_type = extract_build_type(&dirs.out.sa);
 
@@ -1825,6 +1844,7 @@ main(int argc, char* argv[]) {
   if(tools.compiler == NULL) {
     if(cfg.mach.arch == PIC)
       tools.compiler = "xc8";
+
     if(tools.compiler == NULL)
       tools.compiler = "gcc";
     else if(cfg.mach.bits == 0)
@@ -1837,6 +1857,7 @@ main(int argc, char* argv[]) {
     strlist tmp;
     strlist_init(&tmp, '\0');
     stralloc_copy(&tmp.sa, &dirs.build.sa);
+
     if(outfile)
       strlist_push(&tmp, outfile);
     stralloc_replacec(&tmp.sa, '/', '\0');
@@ -1899,6 +1920,7 @@ main(int argc, char* argv[]) {
   }
 
   batchmode = build_tool == TOOL_BATCH && stralloc_contains(&commands.compile, "-Fo");
+
   if(build_tool == TOOL_BATCH)
     pathsep_args = pathsep_make;
 
@@ -1966,6 +1988,7 @@ main(int argc, char* argv[]) {
   // debug_sa("dirs.this", &dirs.this.sa);
   // debug_sa("dirs.out", &dirs.out.sa);
   // debug_sa("dirs.build", &dirs.build.sa);
+
   if(tools.preproc)
     var_set("CPP", tools.preproc);
 
@@ -2011,6 +2034,7 @@ main(int argc, char* argv[]) {
   if(outfile) {
     if('\\' != PATHSEP_C)
       stralloc_replacec(&dirs.out.sa, '\\', PATHSEP_C);
+
     if(stralloc_equals(&dirs.out.sa, "."))
       stralloc_zero(&dirs.out.sa);
     else
@@ -2160,6 +2184,7 @@ main(int argc, char* argv[]) {
 #endif
 
   /* No arguments given */
+
   if(strarray_size(&args) == 0 && !infile) {
     buffer_putsflush(buffer_2, "ERROR: No arguments given\n\n");
     usage(argv[0]);
@@ -2202,11 +2227,13 @@ main(int argc, char* argv[]) {
 #if 0 // WINDOWS_NATIVE
     glob_t gl;
     size_t i;
+
     if(glob(*arg, GLOB_TILDE | GLOB_BRACE, 0, &gl)) {
       buffer_putm_internal(buffer_2, "ERROR: glob() ", *arg, newline, NULL);
       buffer_flush(buffer_2);
       continue;
     }
+
     for(i = 0; i < gl.gl_matchc; i++)
 #else
 
@@ -2243,6 +2270,7 @@ main(int argc, char* argv[]) {
       buffer_put(buffer_2, x, n);
       buffer_putnlflush(buffer_2);
 #endif
+
       if(is_source_b(x, n))
         strarray_pushb(&sources, x, n);
     }
@@ -2364,6 +2392,7 @@ main(int argc, char* argv[]) {
       buffer_putulong(buffer_2, dlist_length(&sources_list));
       buffer_putnlflush(buffer_2);
 #endif
+
       if(!(ret = generate_link_rules(pathsep_args, pathsep_make)))
         cmd_bins = 0;
 
@@ -2443,6 +2472,7 @@ main(int argc, char* argv[]) {
   }
 #endif
 fail:
+
   if(!case_diffs(tools.make, "mplab")) {
     output_mplab_project(out, 0, 0, &include_dirs);
     goto quit;
@@ -2529,6 +2559,7 @@ fail:
         continue;
 
       if(str_end(name, exts.obj))
+
         if(!str_end(tools.make, "make"))
           stralloc_weak(&rule->recipe, &commands.compile);
 

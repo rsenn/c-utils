@@ -15,6 +15,7 @@ dir_path(struct dir_s* d, stralloc* sa) {
 #endif
 
 #endif
+
   if(sa->len > 0 && sa->s[sa->len - 1] == '*')
     --sa->len;
 

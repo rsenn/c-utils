@@ -16,6 +16,7 @@ static const char* months[12] = {"January", "February", "March", "April", "May",
 static int
 getint(const char** s, int max) {
   int i, j;
+
   for(i = j = 0; j < max; ++j) {
     if(!isdigit(**s)) {
       if(j == 0)
@@ -33,11 +34,13 @@ char*
 strptime(const char* s, const char* format, struct tm* tm) {
   int i, j;
   time_t day;
+
   while(*format) {
     switch(*format) {
       case ' ':
       case '\t':
         /* match zero or more white space in input string */
+
         while(isblank(*s))
           ++s;
         ++format;
@@ -68,6 +71,7 @@ strptime(const char* s, const char* format, struct tm* tm) {
                 break;
               };
             }
+
             if(!j)
               return 0;
             s += j;
@@ -76,6 +80,7 @@ strptime(const char* s, const char* format, struct tm* tm) {
           case 'c': s = strptime(s, "%b %a %d %k:%M:%S %Z %Y", tm); break;
           case 'C':
             i = getint(&s, 2);
+
             if(i == -1)
               return 0;
             tm->tm_year = (tm->tm_year % 100) + (i * 100);
@@ -83,6 +88,7 @@ strptime(const char* s, const char* format, struct tm* tm) {
           case 'd':
           case 'e':
             i = getint(&s, 2);
+
             if(i == -1 || i > 31)
               return 0;
             tm->tm_mday = i;
@@ -91,6 +97,7 @@ strptime(const char* s, const char* format, struct tm* tm) {
           case 'H':
           case 'k':
             i = getint(&s, 2);
+
             if(i == -1 || i > 23)
               return 0;
             tm->tm_hour = i;
@@ -98,6 +105,7 @@ strptime(const char* s, const char* format, struct tm* tm) {
           case 'I':
           case 'l':
             i = getint(&s, 2);
+
             if(i == -1 || i > 12)
               return 0;
             tm->tm_hour = (tm->tm_hour / 12) * 12 + i;
@@ -107,12 +115,14 @@ strptime(const char* s, const char* format, struct tm* tm) {
             break;
           case 'm':
             i = getint(&s, 2);
+
             if(i <= 0 || i > 12)
               return 0;
             tm->tm_mon = i - 1;
             break;
           case 'M':
             i = getint(&s, 2);
+
             if(i == -1 || i > 59)
               return 0;
             tm->tm_min = i;
@@ -132,6 +142,7 @@ strptime(const char* s, const char* format, struct tm* tm) {
           case 'R': s = strptime(s, "%H:%M", tm); break;
           case 'S':
             i = getint(&s, 2);
+
             if(i == -1 || i > 60)
               return 0;
             tm->tm_sec = i;
@@ -151,12 +162,14 @@ strptime(const char* s, const char* format, struct tm* tm) {
           case 'X': s = strptime(s, "%k:%M:%S", tm); break;
           case 'y':
             i = getint(&s, 2);
+
             if(i < 0)
               return 0;
             tm->tm_year = (i < 69) ? i + 100 : i;
             break;
           case 'Y':
             i = getint(&s, 4);
+
             if(i == -1)
               return 0;
             tm->tm_year = i - 1900;
@@ -164,6 +177,7 @@ strptime(const char* s, const char* format, struct tm* tm) {
           case 'Z':
             /* time zone.  Not sure what I'm expected to do here. We'll
              * just skip to the next whitespace */
+
             while(*s != ' ' && *s != '\t')
               ++s;
             break;
@@ -171,6 +185,7 @@ strptime(const char* s, const char* format, struct tm* tm) {
         ++format;
         break;
       default:
+
         if(*s != *format)
           return 0;
         ++format;

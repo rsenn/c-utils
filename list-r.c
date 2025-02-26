@@ -121,9 +121,11 @@ last_error() {
   static char tmpbuf[1024];
   char* err;
   tmpbuf[0] = '\0';
+
   if(errCode == 0)
     return tmpbuf;
   SetLastError(0);
+
   if(!FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
                     0,
                     errCode,
@@ -151,6 +153,7 @@ get_file_size(char* path) {
   static getfilesizeex_fn* api_fn;
 
   HANDLE hFile = CreateFileA(path, GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
+
   if(hFile == INVALID_HANDLE_VALUE)
     return -1; /* error condition, could
                   call GetLastError to
@@ -158,6 +161,7 @@ get_file_size(char* path) {
 
   if(!api_fn) {
     HANDLE kernel;
+
     if((kernel = LoadLibraryA("kernel32.dll")) != INVALID_HANDLE_VALUE)
       api_fn = (getfilesizeex_fn*)(void*)GetProcAddress(kernel, "GetFileSizeEx");
   }
@@ -184,10 +188,12 @@ get_file_time(const char* path) {
   FILETIME c, la, lw;
   int64 t;
   HANDLE hFile = CreateFileA(path, GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
+
   if(hFile == INVALID_HANDLE_VALUE)
     return -1; /* error condition, could
                   call GetLastError to
                   find out more */
+
   if(!GetFileTime(hFile, &c, &la, &lw)) {
     CloseHandle(hFile);
     return -1; /* error condition, could
@@ -195,7 +201,9 @@ get_file_time(const char* path) {
                   find out more */
   }
   CloseHandle(hFile);
+
   if((t = filetime_to_unix(&lw)) <= 0)
+
     if((t = filetime_to_unix(&c)) <= 0)
       t = filetime_to_unix(&la);
   /*  fprintf(stderr, "get_file_size: %s
@@ -210,6 +218,7 @@ get_win_api(void* ptr, const char* dll, const char* func) {
   if(*(void**)ptr == 0) {
     HANDLE h;
     void* fn;
+
     if((h = LoadLibraryA(dll)) != 0) {
       if((fn = (void*)GetProcAddress(h, func))) {
         *(void**)ptr = fn;
@@ -243,6 +252,7 @@ get_file_owner(const char* path) {
   hFile = CreateFileA(path, GENERIC_READ, FILE_SHARE_READ, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
   /* Check GetLastError for CreateFile
    * error code. */
+
   if(hFile == INVALID_HANDLE_VALUE) {
     dwErrorCode = GetLastError();
     /*     snprintf(tmpbuf,
@@ -250,8 +260,10 @@ get_file_owner(const char* path) {
      * = %d\n", dwErrorCode); */
     return 0;
   }
+
   if(get_win_api(&get_security_info, "advapi32", "GetSecurityInfo") == -1)
     return 0;
+
   if(get_win_api(&convert_sid_to_string_sid_a, "advapi32", "ConvertSidToStringSidA") == -1)
     return 0;
 
@@ -259,6 +271,7 @@ get_file_owner(const char* path) {
   dwRtnCode = get_security_info(hFile, SE_FILE_OBJECT, OWNER_SECURITY_INFORMATION, &pSidOwner, 0, 0, 0, &pSD);
   /* Check GetLastError for
    * GetSecurityInfo error condition. */
+
   if(dwRtnCode != ERROR_SUCCESS) {
     dwErrorCode = GetLastError();
     /*   snprintf(tmpbuf,
@@ -266,6 +279,7 @@ get_file_owner(const char* path) {
      * error = %d\n", dwErrorCode); */
     return 0;
   }
+
   if(convert_sid_to_string_sid_a(pSidOwner, &strsid)) {
     str_copy(tmpbuf, strsid);
     LocalFree(strsid);
@@ -284,6 +298,7 @@ get_file_owner(const char* path) {
   AcctName = (LPTSTR)GlobalAlloc(GMEM_FIXED, dwAcctName);
   /* Check GetLastError for GlobalAlloc
    * error condition. */
+
   if(AcctName == 0) {
     dwErrorCode = GetLastError();
     /* snprintf(tmpbuf, sizeof(tmpbuf),
@@ -294,6 +309,7 @@ get_file_owner(const char* path) {
   DomainName = (LPTSTR)GlobalAlloc(GMEM_FIXED, dwDomainName);
   /* Check GetLastError for GlobalAlloc
    * error condition. */
+
   if(DomainName == 0) {
     dwErrorCode = GetLastError();
     /* snprintf(tmpbuf, sizeof(tmpbuf),
@@ -315,6 +331,7 @@ get_file_owner(const char* path) {
                                                          tmpbuf */
                               DomainName,             /* domain name */
                               (LPDWORD)&dwDomainName, /* size of
+
                                                          domain
                                                          name
                                                          tmpbuf
@@ -323,8 +340,10 @@ get_file_owner(const char* path) {
   /* Check GetLastError for
    * LookupAccountSid error condition.
    */
+
   if(bRtnBool == FALSE) {
     dwErrorCode = GetLastError();
+
     if(dwErrorCode == ERROR_NONE_MAPPED)
       str_copy(tmpbuf, "Account owner not found for specified SID.\n");
     else
@@ -354,6 +373,7 @@ is_junction_point(const char* fn) {
   WIN32_FIND_DATA FindFileData;
   HANDLE hFind;
   hFind = FindFirstFile(fn, &FindFileData);
+
   if(INVALID_HANDLE_VALUE != hFind) {
     if(FindFileData.dwFileAttributes & FILE_ATTRIBUTE_REPARSE_POINT) {
       /* We're probably going to skip
@@ -364,6 +384,7 @@ is_junction_point(const char* fn) {
       /* Tag values come from */
       /* http://msdn.microsoft.com/en-us/library/dd541667(prot.20).aspx
        */
+
       switch(FindFileData.dwReserved0) {
         case IO_REPARSE_TAG_MOUNT_POINT: /* ocb.error_filename(fn,
                                             "Junction point, skipping"); */
@@ -424,8 +445,10 @@ type_mask(const char* arg) {
   size_t i;
   uint32 mask = 0;
   int inv = 0;
+
   for(i = 0; arg[i]; i++) {
     uint32 bit = 0;
+
     switch(arg[i]) {
       case 'f': bit = D_FILE; break;
       case 'd': bit = D_DIRECTORY; break;
@@ -442,6 +465,7 @@ type_mask(const char* arg) {
         continue;
       default: break;
     }
+
     if(inv)
       mask &= ~bit;
     else
@@ -461,23 +485,28 @@ read_etc(strarray* out, const char* path) {
       const char* name = x;
       size_t len, namelen = byte_chr(x, n, ':');
       uint32 uid = 0;
+
       if(namelen == n)
         break;
       x += namelen + 1;
       n -= namelen - 1;
       len = byte_chr(x, n, ':');
+
       if(len == n)
         break;
       x += len + 1;
       n -= len - 1;
       len = scan_uint(x, &uid);
+
       if(len == n)
         break;
+
       if(len > 0) {
         strarray_setb(out, uid, name, namelen);
         count++;
       }
       len = byte_chr(x, n, '\n');
+
       if(len == n)
         break;
       x += len + 1;
@@ -491,6 +520,7 @@ read_etc(strarray* out, const char* path) {
 static char*
 resolve_etc(const strarray* arr, uint32 id) {
   uint64 len = strarray_size(arr);
+
   if(id < len)
     return strarray_AT(arr, id);
   return 0;
@@ -499,11 +529,13 @@ resolve_etc(const strarray* arr, uint32 id) {
 static void
 make_num(stralloc* out, uint64 num, uint32 width, size_t (*fmt)(char*, uint64)) {
   char buf[FMT_ULONG + 1];
+
   if(!fmt)
     fmt = &fmt_ulonglong;
   {
     size_t sz = fmt(buf, num);
     ssize_t n = width - sz;
+
     while(n-- > 0)
       stralloc_catb(out, " ", 1);
     stralloc_catb(out, buf, sz);
@@ -514,6 +546,7 @@ static void
 make_time(stralloc* out, uint64 t, uint32 width) {
   char fmt[21];
   size_t i, sz = fmt_iso8601(fmt, t);
+
   for(i = 0; i + sz < width; i++)
     stralloc_catc(out, ' ');
 
@@ -534,6 +567,7 @@ make_taia(stralloc* out, const uint64* epoch) {
   struct taia t = {0};
   char *s, tpack[TAIA_PACK];
   size_t i;
+
   if(epoch)
     taia_uint(&t, *epoch);
   else
@@ -542,6 +576,7 @@ make_taia(stralloc* out, const uint64* epoch) {
   stralloc_readyplus(out, 25);
   s = &out->s[out->len];
   s[0] = '@';
+
   for(i = 0; i < 12; ++i) {
     s[i * 2 + 1] = hex[(tpack[i] >> 4) & 15];
     s[i * 2 + 2] = hex[tpack[i] & 15];
@@ -553,6 +588,7 @@ static void
 make_str(stralloc* out, const char* s, uint32 width) {
   size_t i, sz = str_len(s);
   stralloc_catb(out, s, sz);
+
   for(i = 0; i + sz < width; i++)
     stralloc_catc(out, ' ');
 }
@@ -561,8 +597,10 @@ static void
 print_strarray(buffer* b, array* a) {
   size_t i, n = array_length(a, sizeof(char*));
   char** x = array_start(a);
+
   for(i = 0; i < n; ++i) {
     char* s = x[i];
+
     if(s == 0)
       break;
     buffer_puts(b, x[i]);
@@ -577,10 +615,13 @@ fnmatch_strarray(buffer* b, array* a, const char* string, int flags) {
   char** x = array_start(a);
   int ret = FNM_NOMATCH;
   size_t string_len = str_len(string);
+
   for(i = 0; i < n; ++i) {
     char* s = x[i];
+
     if(s == 0)
       break;
+
     if((ret = path_fnmatch(s, str_len(s), string, string_len, flags)) != FNM_NOMATCH)
       break;
   }
@@ -603,6 +644,7 @@ size_t width) { if(opt_numeric) {
 #endif
     sz = strftime(buf, sizeof(buf),
 opt_timestyle, &ltime); n = width - sz;
+
     while(n-- > 0) {
       stralloc_catb(out, " ", 1);
     }
@@ -614,7 +656,9 @@ static void
 mode_octal(stralloc* out, int mode) {
   char buf[6];
   size_t i, n = fmt_8long(buf, mode & 07777);
+
   if(mode)
+
     for(i = 0; i + n < 4; i++)
       stralloc_catc(out, '0');
   stralloc_catb(out, buf, n);
@@ -624,6 +668,7 @@ static void
 mode_flags(stralloc* out, int mode) {
   char mchars[10];
   byte_fill(mchars, sizeof(mchars), '-');
+
   switch(mode & S_IFMT) {
 #ifdef S_IFLNK
     case S_IFLNK: mchars[0] = 'l'; break;
@@ -725,10 +770,12 @@ static const char*
 type_str(dir_type_t type) {
   int shift = 0;
   type &= 0x7f;
+
   for(shift = 0; type_strs[shift]; shift++) {
     if((type >> shift) & 1)
       break;
   }
+
   if(!type_strs[shift])
     return "";
   return type_strs[shift];
@@ -746,6 +793,7 @@ match_extensions(const stralloc* path) {
   const char *pattern, *ext, *str;
   size_t elen, plen, slen, pos;
   int match = 0, ret = 0;
+
   if(extensions.sa.len == 0)
     return 1;
 
@@ -760,6 +808,7 @@ match_extensions(const stralloc* path) {
 
     if(elen == slen) {
       match = byte_equal(path->s + pos, slen, str);
+
       if(match ^ invert) {
 
 #ifdef DEBUG_OUTPUT
@@ -807,6 +856,7 @@ match_extensions(const stralloc* path) {
 /*static inline mode_t
 type_mode(dir_type_t dtype) {
   mode_t mode;
+
   switch(dtype) {
     case D_DIRECTORY: mode |= S_IFDIR; break;
     case D_SYMLINK: mode |= S_IFLNK; break;
@@ -823,10 +873,12 @@ static int
 file_crc32(const char* path, size_t size, uint32* crc) {
   size_t n;
   const char* x;
+
   if(size == 0) {
     *crc = 0;
     return 0;
   }
+
   if((x = mmap_read(path, &n))) {
     *crc = crc32(0, x, n);
     mmap_unmap(x, n);
@@ -861,6 +913,7 @@ list_file(stralloc* path, const char* name, int mode, long depth, int root_dev, 
     dump_newline();
   }
 #endif
+
   if(!match)
     return 0;
 
@@ -868,6 +921,7 @@ list_file(stralloc* path, const char* name, int mode, long depth, int root_dev, 
   byte_zero(&st, sizeof(st));
 #endif
   dtype = stat_type(path->s, mode);
+
   if(dtype) {
     is_dir = !!(dtype & D_DIRECTORY);
     is_symlink = !!(dtype & D_SYMLINK);
@@ -876,8 +930,10 @@ list_file(stralloc* path, const char* name, int mode, long depth, int root_dev, 
   if((opt_deref ? stat : lstat)(path->s, &st) == -1) {
     if(!opt_quiet)
       errmsg_warnsys(opt_force ? "warning: " : "error: ", path->s, 0);
+
     if(opt_force < 1)
       exit(1);
+
     if(opt_force < 2)
       return 0;
   }
@@ -893,12 +949,14 @@ list_file(stralloc* path, const char* name, int mode, long depth, int root_dev, 
   gid = st.st_gid;
   size = st.st_size;
   mtime = st.st_mtime;
+
   if(opt_samedev && root_dev && st.st_dev) {
     if(st.st_dev != root_dev)
       return 0;
   }
   is_dir = S_ISDIR(mode);
   is_symlink = S_ISLNK(mode);
+
   if(opt_deref && is_symlink) {
     is_symlink = 0;
     is_dir = S_ISDIR(st.st_mode);
@@ -946,6 +1004,7 @@ list_file(stralloc* path, const char* name, int mode, long depth, int root_dev, 
 
   s = path->s;
   len = path->len;
+
   if(len > 2 && s[0] == '.' && IS_DIRSEP(s[1])) {
     len -= 2;
     s += 2;
@@ -956,11 +1015,13 @@ list_file(stralloc* path, const char* name, int mode, long depth, int root_dev, 
     strlist_foreach_s(&include_masks, pattern) {
       int has_slash = !!pattern[str_chr(pattern, '/')];
       const char* mask = has_slash ? s : name;
+
       if(path_fnmatch(pattern, str_len(pattern), mask, str_len(mask), FNM_PATHNAME) == 0) {
         match = 1;
         break;
       }
     }
+
     if(!match)
       return 0;
   }
@@ -969,6 +1030,7 @@ list_file(stralloc* path, const char* name, int mode, long depth, int root_dev, 
   strlist_foreach_s(&exclude_masks, pattern) {
     int has_slash = !!pattern[str_chr(pattern, '/')];
     const char* mask = has_slash ? s : name;
+
     if(path_fnmatch(pattern, str_len(pattern), mask, str_len(mask), FNM_PATHNAME) == 0) {
       match = 1;
       break;
@@ -993,6 +1055,7 @@ list_file(stralloc* path, const char* name, int mode, long depth, int root_dev, 
         stralloc_cats(&pre, "\t");
       } else {
         stralloc_catxlong(&pre, crc);
+
         if(pre.len < 8)
           stralloc_insertb(&pre, "00000000", 0, 8 - pre.len);
       }
@@ -1032,9 +1095,11 @@ list_file(stralloc* path, const char* name, int mode, long depth, int root_dev, 
 
     if(opt_relative_to) {
       size_t sz = str_len(opt_relative_to);
+
       if(str_diffn(s, opt_relative_to, sz) == 0) {
         s += sz;
         len -= sz;
+
         while(*s == '\\' || *s == '/') {
           s++;
           len--;
@@ -1049,6 +1114,7 @@ list_file(stralloc* path, const char* name, int mode, long depth, int root_dev, 
 
   if(is_dir && (opt_deref || !is_symlink)) {
     path->len--;
+
     if(opt_depth == -1 || depth + 1 < opt_depth)
       list_dir_internal(path, mode, depth + 1);
   }
@@ -1066,6 +1132,7 @@ list_dir_internal(stralloc* dir, int type, long depth) {
   byte_zero(&st, sizeof(st));
 
   (void)type;
+
   while(dir->len > 1 && IS_DIRSEP(dir->s[dir->len - 1]))
     dir->len--;
   stralloc_nul(dir);
@@ -1083,6 +1150,7 @@ list_dir_internal(stralloc* dir, int type, long depth) {
     }
   }
 #endif
+
   if(dir_open(&d, dir->s) != 0) {
     buffer_puts(buffer_2, "ERROR: Opening directory ");
     buffer_putsa(buffer_2, dir);
@@ -1090,13 +1158,16 @@ list_dir_internal(stralloc* dir, int type, long depth) {
     buffer_flush(buffer_2);
     goto end;
   }
+
   if(dir->s[dir->len - 1] != DIRSEP_C)
     stralloc_cats(dir, DIRSEP_S);
   l = dir->len;
+
   while((name = dir_read(&d))) {
     dtype = dir_type(&d);
     dir_name(&d);
     dir->len = l;
+
     if(str_equal(name, "") || str_equal(name, ".") || str_equal(name, ".."))
       continue;
     stralloc_readyplus(dir, str_len(name) + 1);
@@ -1125,6 +1196,7 @@ io_err_check(ssize_t ret) {
 static ssize_t
 write_err_check(int fd, const void* buf, size_t len) {
   int ret = write(fd, buf, len);
+
   if(ret == -1) {
     buffer_putm_internal(buffer_2, "ERROR: ", strerror(errno), "\n", NULL);
     buffer_flush(buffer_2);
@@ -1137,7 +1209,9 @@ write_err_check(int fd, const void* buf, size_t len) {
 int
 count_non_negative(const int* x, size_t n) {
   size_t i;
+
   for(i = 0; i < n; i++)
+
     if(x[i] == -1)
       break;
   return i;
@@ -1240,6 +1314,7 @@ static const char*
 find_ext_class(const char* name) {
   size_t i, namelen = str_chr(name, ',');
   size_t n = sizeof(ext_classes) / sizeof(ext_classes[0]);
+
   for(i = 0; i < n; i++) {
     if(byte_equal(name, namelen, ext_classes[i][0]))
       return ext_classes[i][1];
@@ -1264,14 +1339,17 @@ add_ext_class(const char* ext) {
   size_t len;
   invert = str_chr("^!-", *ext) < 3;
   //
+
   if(ext[invert] == ':') {
     char* group;
+
     if((group = (char*)find_ext_class((char*)&ext[invert + 1])) == 0) {
       buffer_putm_internal(buffer_2, "class ", ext, " not found", NULL);
       buffer_putnlflush(buffer_2);
       // usage(argv[0]);
       return 0;
     }
+
     while(*group) {
       if(!invert && *group == '^')
         group++;
@@ -1326,8 +1404,10 @@ main(int argc, char* argv[]) {
 
   for(;;) {
     c = unix_getopt_long(argc, argv, "fhlLne:qri:o:I:X:t:m:cd:C:F:SD", opts, &index);
+
     if(c == -1)
       break;
+
     if(c == 0)
       continue;
 
@@ -1336,8 +1416,10 @@ main(int argc, char* argv[]) {
       case 'e': {
         char* x = unix_optarg;
         ssize_t n;
+
         while(*x) {
           x += add_ext_class(x);
+
           if(*x == ',')
             x++;
         }
@@ -1430,6 +1512,7 @@ main(int argc, char* argv[]) {
 
     if(*base_path) {
       stralloc_copys(&file, base_path);
+
       if(file.len && file.s[file.len - 1] != '/')
         stralloc_catc(&file, '/');
     }
@@ -1442,6 +1525,7 @@ main(int argc, char* argv[]) {
 
     while(buffer_getnewline_sa(&input, &line) > 0) {
       const char* x = line.s;
+
       while(line.len > 0 && isspace(line.s[line.len - 1])) {
         line.len--;
       }
@@ -1456,12 +1540,16 @@ main(int argc, char* argv[]) {
       byte_copy(lengths, sizeof(lengths), init);
       n = line.len;
       column = 0;
+
       for(i = 0; i < n; column++) {
         j = i;
+
         while(isspace(x[i]))
           i++;
         offsets[column] = i;
+
         for(j = i; j < n; j++)
+
           if(isspace(x[j]))
             break;
         lengths[column] = j - i;

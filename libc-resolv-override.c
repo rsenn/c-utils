@@ -87,6 +87,7 @@ dns_event(struct dns_resolver* d) {
 
     if(r <= 0) {
       if(errno == ECONNREFUSED)
+
         if(d->udploop == 2)
           return 0;
 
@@ -98,8 +99,10 @@ dns_event(struct dns_resolver* d) {
 
     if(irrelevant(d, udpbuf, r))
       return 0;
+
     if(serverwantstcp(udpbuf, r))
       return firsttcp(d);
+
     if(serverfailed(udpbuf, r)) {
       if(d->udploop == 2)
         return 0;
@@ -110,6 +113,7 @@ dns_event(struct dns_resolver* d) {
 
     d->packetlen = r;
     d->packet = malloc(d->packetlen);
+
     if(!d->packet) {
       dns_free(d);
       return -1;
@@ -123,6 +127,7 @@ dns_event(struct dns_resolver* d) {
     /* have sent connection attempt to curserver on TCP socket s
        pos not defined
      */
+
     if(!socket_connected(fd))
       return nexttcp(d);
     d->pos = 0;
@@ -135,9 +140,11 @@ dns_event(struct dns_resolver* d) {
        have sent pos bytes of query
      */
     r = write(fd, d->query + d->pos, d->querylen - d->pos);
+
     if(r <= 0)
       return nexttcp(d);
     d->pos += r;
+
     if(d->pos == d->querylen) {
       d->deadline = time(0) + 10;
       d->tcpstate = 3;
@@ -151,6 +158,7 @@ dns_event(struct dns_resolver* d) {
        pos not defined
      */
     r = read(fd, &ch, 1);
+
     if(r <= 0)
       return nexttcp(d);
     d->packetlen = ch;
@@ -164,6 +172,7 @@ dns_event(struct dns_resolver* d) {
        length into packetlen
      */
     r = read(fd, &ch, 1);
+
     if(r <= 0)
       return nexttcp(d);
     d->packetlen <<= 8;
@@ -171,6 +180,7 @@ dns_event(struct dns_resolver* d) {
     d->tcpstate = 5;
     d->pos = 0;
     d->packet = malloc(d->packetlen);
+
     if(!d->packet) {
       dns_free(d);
       return -1;
@@ -184,17 +194,22 @@ dns_event(struct dns_resolver* d) {
        packet is allocated have received pos bytes of packet
      */
     r = read(fd, d->packet + d->pos, d->packetlen - d->pos);
+
     if(r <= 0)
       return nexttcp(d);
     d->pos += r;
+
     if(d->pos < d->packetlen)
       return 0;
 
     socketfree(d);
+
     if(irrelevant(d, d->packet, d->packetlen))
       return nexttcp(d);
+
     if(serverwantstcp(d->packet, d->packetlen))
       return nexttcp(d);
+
     if(serverfailed(d->packet, d->packetlen))
       return nexttcp(d);
 
@@ -261,6 +276,7 @@ dns->t.packetlen, pos, header, 10);
 &datalen);
 
     if(byte_equal(header, 2, DNS_T_PTR))
+
       if(byte_equal(header + 2, 2,
 DNS_C_IN)) {
         if(!dns_packet_getname(dns->t.packet,
@@ -310,6 +326,7 @@ const struct pollfd* x) { int fd;
     if(time(0) < d->deadline)
       return 0;
     errno = ETIMEDOUT;
+
     if(d->tcpstate == 0)
       return nextudp(d);
 
@@ -395,27 +412,35 @@ utoa(char* buf, unsigned int i) {
   if((v = i / 1000000000) || n)
     p[n++] = v + '0';
   i %= 1000000000;
+
   if((v = i / 100000000) || n)
     p[n++] = v + '0';
   i %= 100000000;
+
   if((v = i / 10000000) || n)
     p[n++] = v + '0';
   i %= 10000000;
+
   if((v = i / 1000000) || n)
     p[n++] = v + '0';
   i %= 1000000;
+
   if((v = i / 100000) || n)
     p[n++] = v + '0';
   i %= 100000;
+
   if((v = i / 10000) || n)
     p[n++] = v + '0';
   i %= 10000;
+
   if((v = i / 1000) || n)
     p[n++] = v + '0';
   i %= 1000;
+
   if((v = i / 100) || n)
     p[n++] = v + '0';
   i %= 100;
+
   if((v = i / 10) || n)
     p[n++] = v + '0';
   i %= 10;
@@ -451,10 +476,12 @@ dns_init() {
       const char* rcf;
       stralloc tmp;
       stralloc_init(&tmp);
+
       if((rcf = env_get("RESOLVCONF"))
     == NULL) rcf = "/etc/resolv.conf";
       openreadclose(rcf, &tmp, 1024);
       stralloc_nul(&tmp);
+
       do {
         p += case_finds(&tmp.s[p],
     tmp.len - p, "nameserver"); if(p +
@@ -487,13 +514,16 @@ main(int argc, char* argv[]) {
   char str[IP4_FMT];
   unsigned int i;
   dns_init();
+
   if(*argv)
     ++argv;
+
   while(*argv) {
     if(!stralloc_copys(&fqdn, *argv)) {
       errmsg_warnsys("out of memory", 0);
       return 111;
     }
+
     if(dns_ip4(&out, &fqdn) == -1) {
       errmsg_warnsys("unable to find "
                      "IP address for ",
@@ -543,6 +573,7 @@ resolve_ip6(const char* name, int* nptr) {
     b[fmt_ip6(b, addrlist[n])] = '\0';
     errmsg_info("result: ", b, 0);
   }
+
   if(nptr)
     *nptr = n;
   return addrlist;
@@ -553,6 +584,7 @@ gethostbyname(const char* name) {
   size_t i;
   static struct hostent ret;
   static char* a[2] = {NULL, NULL};
+
   if(ret.h_addr_list)
     alloc_free(ret.h_addr_list);
 

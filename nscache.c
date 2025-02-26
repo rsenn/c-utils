@@ -115,6 +115,7 @@ nscache_okclient(char ip[16], bool ip6) {
     /* treat temporary error as
      * rejection */
     i = str_rchr(fn, '.');
+
     if(!fn[i])
       return 0;
     fn[i] = 0;
@@ -148,6 +149,7 @@ nscache_droproot(const char* fatal) {
 
   if((x = env_get("UID"))) {
     scan_ulong(x, &id);
+
     if(setuid((int)id) == -1)
       diesys(111, fatal, "unable to setuid: ");
   } else {
@@ -163,31 +165,41 @@ packetquery(char* buf, unsigned int len, char** q, char qtype[2], char qclass[2]
 
   errno = EPROTO;
   pos = dns_packet_copy(buf, len, 0, header, 12);
+
   if(!pos)
     return 0;
+
   if(header[2] & 128)
     return 0; /* must not respond to
                  responses */
+
   if(!(header[2] & 1))
     return 0; /* do not respond to
                  non-recursive queries
                */
+
   if(header[2] & 120)
     return 0;
+
   if(header[2] & 2)
     return 0;
+
   if(byte_diff(header + 4, 2, "\0\1"))
     return 0;
 
   pos = dns_packet_getname(buf, len, pos, q);
+
   if(!pos)
     return 0;
   pos = dns_packet_copy(buf, len, pos, qtype, 2);
+
   if(!pos)
     return 0;
   pos = dns_packet_copy(buf, len, pos, qclass, 2);
+
   if(!pos)
     return 0;
+
   if(byte_diff(qclass, 2, DNS_C_IN) && byte_diff(qclass, 2, DNS_C_ANY))
     return 0;
 
@@ -208,10 +220,12 @@ udp_drop(int j) {
 void
 udp_respond(int j) {
   response* resp;
+
   if(!u[j].active)
     return;
   resp = &u[j].q.response;
   response_id(resp, u[j].id);
+
   if(resp->pos > 512)
     response_tc(resp);
 
@@ -230,12 +244,15 @@ udp_new(void) {
   char *q = 0, qtype[2], qclass[2];
 
   for(j = 0; j < MAXUDP; ++j)
+
     if(!u[j].active)
       break;
 
   if(j >= MAXUDP) {
     j = 0;
+
     for(i = 1; i < MAXUDP; ++i)
+
       if(taia_less(&u[i].start, &u[j].start))
         j = i;
     errno = ETIMEDOUT;
@@ -248,11 +265,15 @@ udp_new(void) {
   if((ret = socket_recv6(udp53, buf, sizeof buf, x->ip, &x->port, &x->scope_id)) == -1)
     return;
   len = (size_t)ret;
+
   if(len >= sizeof buf)
     return;
+
   if(x->port < 1024)
+
     if(x->port != 53)
       return;
+
   if(!nscache_okclient(x->ip, true))
     return;
 
@@ -275,6 +296,7 @@ udp_new(void) {
 int
 udp_num(const void* ptr) {
   size_t n = ((size_t)ptr - (size_t)u) / sizeof(struct udpclient);
+
   if(n >= MAXUDP)
     return -1;
   return n;
@@ -301,6 +323,7 @@ tcp_free(int j) {
 void
 tcp_timeout(int j) {
   struct taia now;
+
   if(!t[j].active)
     return;
   taia_now(&now);
@@ -331,6 +354,7 @@ tcp_drop(int j) {
 void
 tcp_respond(int j) {
   response* resp;
+
   if(!t[j].active)
     return;
   resp = &t[j].q.response;
@@ -339,6 +363,7 @@ tcp_respond(int j) {
   t[j].len = resp->pos + 2;
   tcp_free(j);
   t[j].buf = alloc(resp->pos + 2);
+
   if(!t[j].buf) {
     tcp_close(j);
     return;
@@ -359,13 +384,16 @@ tcp_rw(int j) {
   int r;
 
   x = t + j;
+
   if(x->state == -1) {
     r = write(x->tcp, x->buf + x->pos, x->len - x->pos);
+
     if(r <= 0) {
       tcp_close(j);
       return;
     }
     x->pos += r;
+
     if(x->pos == x->len) {
       tcp_free(j);
       x->state = 1; /* could drop connection
@@ -375,11 +403,13 @@ tcp_rw(int j) {
   }
 
   r = read(x->tcp, &ch, 1);
+
   if(r == 0) {
     errno = EPIPE;
     tcp_close(j);
     return;
   }
+
   if(r < 0) {
     tcp_close(j);
     return;
@@ -391,14 +421,17 @@ tcp_rw(int j) {
     x->state = 2;
     return;
   }
+
   if(x->state == 2) {
     x->len += (unsigned char)ch;
+
     if(!x->len) {
       errno = EPROTO;
       tcp_close(j);
       return;
     }
     x->buf = alloc(x->len);
+
     if(!x->buf) {
       tcp_close(j);
       return;
@@ -412,6 +445,7 @@ tcp_rw(int j) {
     return; /* impossible */
 
   x->buf[x->pos++] = ch;
+
   if(x->pos < x->len)
     return;
 
@@ -423,6 +457,7 @@ tcp_rw(int j) {
   x->active = ++numqueries;
   log_query(&x->active, x->ip, x->port, x->tcp, x->id, q, qtype);
   log_query(&x->active, x->ip, x->port, x->tcp, x->id, q, qtype);
+
   switch(query_start(&x->q, q, qtype, qclass, sendaddr)) {
     case -1: tcp_drop(j); return;
     case 1: tcp_respond(j); return;
@@ -438,15 +473,19 @@ tcp_new(void) {
   struct tcpclient* x;
 
   for(j = 0; j < MAXTCP; ++j)
+
     if(!t[j].active)
       break;
 
   if(j >= MAXTCP) {
     j = 0;
+
     for(i = 1; i < MAXTCP; ++i)
+
       if(taia_less(&t[i].start, &t[j].start))
         j = i;
     errno = ETIMEDOUT;
+
     if(t[j].state == 0)
       tcp_drop(j);
     else
@@ -457,17 +496,22 @@ tcp_new(void) {
   taia_now(&x->start);
 
   x->tcp = socket_accept6(tcp53, x->ip, &x->port, &x->scope_id);
+
   if(x->tcp == -1)
     return;
+
   if(x->port < 1024)
+
     if(x->port != 53) {
       close(x->tcp);
       return;
     }
+
   if(!nscache_okclient(x->ip, true)) {
     close(x->tcp);
     return;
   }
+
   if(ndelay_on(x->tcp) == -1) {
     close(x->tcp);
     return;
@@ -484,6 +528,7 @@ tcp_new(void) {
 int
 tcp_num(const void* ptr) {
   size_t n = ((size_t)ptr - (size_t)t) / sizeof(struct tcpclient);
+
   if(n >= MAXTCP)
     return -1;
   return n;
@@ -513,14 +558,17 @@ nscache_run(void) {
     tcp53io->events = IOPAUSE_READ;
 
     for(j = 0; j < MAXUDP; ++j)
+
       if(u[j].active) {
         u[j].io = io + iolen++;
         query_io(&u[j].q, u[j].io, &deadline);
       }
 
     for(j = 0; j < MAXTCP; ++j)
+
       if(t[j].active) {
         t[j].io = io + iolen++;
+
         if(t[j].state == 0)
           query_io(&t[j].q, t[j].io, &deadline);
         else {
@@ -534,24 +582,31 @@ nscache_run(void) {
     iopause(io, iolen, &deadline, &stamp);
 
     for(j = 0; j < MAXUDP; ++j)
+
       if(u[j].active) {
 
         r = query_get(&u[j].q, u[j].io, &stamp);
+
         if(r == -1)
           udp_drop(j);
+
         if(r == 1)
           udp_respond(j);
         query_dump(&u[j].q);
       }
 
     for(j = 0; j < MAXTCP; ++j)
+
       if(t[j].active) {
         if(t[j].io->revents)
           tcp_timeout(j);
+
         if(t[j].state == 0) {
           r = query_get(&t[j].q, t[j].io, &stamp);
+
           if(r == -1)
             tcp_drop(j);
+
           if(r == 1)
             tcp_respond(j);
         } else if(t[j].io->revents || taia_less(&t[j].timeout, &stamp))
@@ -560,10 +615,12 @@ nscache_run(void) {
       }
 
     if(udp53io)
+
       if(udp53io->revents)
         udp_new();
 
     if(tcp53io)
+
       if(tcp53io->revents)
         tcp_new();
   }
@@ -582,8 +639,10 @@ main(int argc, char* argv[]) {
     env_put(argv[i]);
 
   x = env_get("IP");
+
   if(!x)
     die(111, FATAL, "$IP not set");
+
   if(!scan_ip6if(x, bindaddr, &bindscope))
     die(111, FATAL, "unable to parse IP address ", x);
 
@@ -596,6 +655,7 @@ main(int argc, char* argv[]) {
            FATAL,
            "unable to create UDP "
            "socket: ");
+
   if(socket_bind6_reuse(udp53, bindaddr, 53, bindscope) == -1)
     diesys(111, FATAL, "unable to bind UDP socket: ");
 
@@ -608,6 +668,7 @@ main(int argc, char* argv[]) {
            FATAL,
            "unable to create TCP "
            "socket: ");
+
   if(socket_bind6_reuse(tcp53, bindaddr, 53, bindscope) == -1)
     diesys(111, FATAL, "unable to bind TCP socket: ");
 
@@ -621,17 +682,21 @@ main(int argc, char* argv[]) {
   dns_random_init(seed.u8);
 
   x = env_get("IPSEND");
+
   if(!x)
     die(111, FATAL, "$IPSEND not set");
+
   if(!scan_ip6(x, sendaddr))
     die(111, FATAL, "unable to parse IP address ", x);
 
   x = env_get("CACHESIZE");
+
   if(!x)
     die(111, FATAL, "$CACHESIZE not set");
   scan_ulong(x, &cachesize);
 
   y = env_get("CACHEFILE");
+
   if(y) {
     if(!cache_open(y, cachesize))
       diesys(111, FATAL, "unable to open cache file ", y);

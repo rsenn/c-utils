@@ -12,11 +12,13 @@ static iarray_page*
 new_page(size_t pagesize) {
 #if WINDOWS_NATIVE
   void* x = malloc(pagesize);
+
   if(x == 0)
     return 0;
   ZeroMemory(x, pagesize);
 #else
   void* x = mmap(0, pagesize, PROT_READ | PROT_WRITE, MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);
+
   if(x == MAP_FAILED)
     return 0;
 #endif
@@ -38,18 +40,23 @@ iarray_allocate(iarray* ia, size_t pos) {
   size_t realpos = pos;
   pos /= sizeof(ia->pages) / sizeof(ia->pages[0]);
   /* now walk the linked list of pages until we reach the one we want */
+
   for(index = 0;; index += ia->elemperpage) {
     if(!*p) {
       if(!newpage)
+
         if(!(newpage = new_page(ia->bytesperpage)))
           return 0;
+
       if(__CAS((long*)p, 0, (long)newpage) == 0)
         newpage = 0;
     }
+
     if(index + ia->elemperpage > pos)
       break;
     p = &(*p)->next;
   }
+
   if(newpage)
 #if WINDOWS_NATIVE
     free(newpage);
@@ -59,6 +66,7 @@ iarray_allocate(iarray* ia, size_t pos) {
   {
     size_t l;
     size_t newlen = realpos + 1;
+
     do {
       l = __CAS((long*)&ia->len, prevlen, newlen);
     } while(l < newlen);

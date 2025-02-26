@@ -40,19 +40,23 @@ init_term(int fd, int s) {
   tio.c_cflag &= ~(CRTSCTS);
   tio.c_lflag |= NOFLSH;
   tio.c_lflag &= ~(ISIG | ICANON | IEXTEN | ECHO | ECHOE | ECHOK | ECHOCTL | ECHOKE);
+
   if(cfsetspeed(&tio, s) < 0) {
     syslog(LOG_ERR, "unable to set speed to %d: %m", s);
     exit(1);
   }
+
   if(tcsetattr(fd, TCSAFLUSH, &tio) < 0) {
     syslog(LOG_ERR, "unable set termios: %m");
     exit(1);
   }
+
   if((val = fcntl(fd, F_GETFL, 0)) < 0) {
     syslog(LOG_ERR, "fcntl(F_GETFL) failed: %m");
     exit(1);
   }
   val &= ~O_NONBLOCK;
+
   if(fcntl(fd, F_SETFL, val) < 0) {
     syslog(LOG_ERR, "fcntl(F_SETFL) failed: %m");
     exit(1);
@@ -68,7 +72,9 @@ expand(char* src, char* dst, int len) {
   char* p;
 
   for(p = src, n = 0; *p && n < len - 1; p++, n++)
+
     if(*p == '\\')
+
       switch(*++p) {
         case '\\': *dst++ = '\\'; break;
         case 'a': *dst++ = '\a'; break;
@@ -112,14 +118,17 @@ uu_lock(const char* ttyname) {
   snprintf(try, sizeof(try), "/var/lock/LCK..%s.%d", ttyname, lockpid);
   snprintf(final, sizeof(final), "/var/lock/LCK..%s", ttyname);
   (void)unlink(try);
+
   if((fd = open(try, O_CREAT | O_TRUNC | O_WRONLY, 0755)) == -1)
     return UU_LOCK_CREAT_ERR;
   sprintf(buff, "%d\n", lockpid);
+
   if(write(fd, buff, strlen(buff)) != strlen(buff)) {
     close(fd);
     return UU_LOCK_WRITE_ERR;
   }
   close(fd);
+
   if(rename(try, final) == -1) {
     (void)unlink(try);
     return UU_LOCK_INUSE;
@@ -182,6 +191,7 @@ main(int argc, char* argv[]) {
   openlog(logname, 0, LOG_LOCAL0);
   syslog(LOG_INFO, "starting up: pid %d", getpid());
   snprintf(buff, sizeof(buff), "/var/run/montty.%s.pid", argv[1]);
+
   if((f = fopen(buff, "w")) == NULL) {
     syslog(LOG_ERR,
            "unable to open pid file "
@@ -193,6 +203,7 @@ main(int argc, char* argv[]) {
     fclose(f);
   }
   snprintf(devname, sizeof(devname), "/dev/%s", argv[1]);
+
   if((pfd[0].fd = open(devname, O_RDWR | O_NONBLOCK)) < 0) {
     syslog(LOG_ERR,
            "unable to open monitor "
@@ -202,11 +213,13 @@ main(int argc, char* argv[]) {
   }
   syslog(LOG_INFO, "monitoring %s", devname);
   pfd[0].events = POLLIN | POLLRDNORM | POLLERR;
+
   for(;;) {
     if(!need_init) {
       /* No initialisation needed, just
        * wait for input */
       syslog(LOG_DEBUG, "waiting for input");
+
       if(poll(pfd, 1, -1) < 0) {
         syslog(LOG_ERR, "poll(INFTIM) failed: %m");
         exit(1);
@@ -217,6 +230,7 @@ main(int argc, char* argv[]) {
      * initialise the device; acquire a
      * lock.
      */
+
     switch(lockresult = uu_lock(argv[1])) {
       case UU_LOCK_OK:
         syslog(LOG_DEBUG, "acquired lock");
@@ -225,11 +239,13 @@ main(int argc, char* argv[]) {
          * check if we need to write the
          * initialisation data.
          */
+
         if(need_init) {
           if(init_index == INIT_ARGV) {
             syslog(LOG_DEBUG, "recycle fd");
             /* Refresh fd */
             close(pfd[0].fd);
+
             if((pfd[0].fd = open(devname, O_RDWR | O_NONBLOCK)) < 0) {
               syslog(LOG_ERR,
                      "unable to re-open "
@@ -239,9 +255,11 @@ main(int argc, char* argv[]) {
             }
             init_term(pfd[0].fd, B115200);
           }
+
           if(init_index < argc) {
             expand(argv[init_index], buff, sizeof(buff));
             syslog(LOG_DEBUG, "write: %s", buff);
+
             if(write(pfd[0].fd, buff, strlen(buff)) != strlen(buff)) {
               syslog(LOG_ERR, "write failed: %m");
               exit(1);
@@ -249,16 +267,19 @@ main(int argc, char* argv[]) {
             init_index++;
             sleep(1);
           }
+
           if(init_index == argc)
             need_init = 0;
           syslog(LOG_DEBUG, "sent init string");
         }
         /* Check if there is still
          * something to read. */
+
         if(poll(pfd, 1, 0) < 0) {
           syslog(LOG_ERR, "poll(0) failed: %m");
           exit(1);
         }
+
         if(pfd[0].revents & (POLLIN | POLLRDNORM)) {
           if((n = read(pfd[0].fd, buff, sizeof(buff))) == -1) {
             syslog(LOG_ERR, "read failed: %m");
@@ -268,6 +289,7 @@ main(int argc, char* argv[]) {
           buff[n] = 0;
           syslog(LOG_INFO, "%s", buff);
         }
+
         if(uu_unlock(argv[1]) == -1) {
           syslog(LOG_ERR, "uu_unlock error %m");
           exit(1);

@@ -7,12 +7,14 @@ int
 strarray_removeprefixs(strarray* arr, const char* s) {
   size_t i, n = strarray_size(arr);
   size_t prefixlen = str_len(s);
+
   for(i = 0; i < n; ++i) {
     char** p = (char**)array_get((array*)arr, sizeof(char*), i);
     size_t len = str_len(*p);
     stralloc sa;
     sa.s = *p;
     sa.len = sa.a = len;
+
     if(stralloc_starts(&sa, s)) {
       byte_copy(sa.s, sa.len - prefixlen, &sa.s[prefixlen]);
       sa.len -= prefixlen;

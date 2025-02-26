@@ -5,6 +5,7 @@ void
 dlist_remove(dlist* l, node* p) {
   /* If there is a prev p, update its next-
      reference, otherwise update the head */
+
   if(p == l->head)
     l->head = p->next;
   else
@@ -12,6 +13,7 @@ dlist_remove(dlist* l, node* p) {
 
   /* If there is a next p, update its prev-
      reference otherwise update the tail */
+
   if(l->tail == p)
     l->tail = p->prev;
   else

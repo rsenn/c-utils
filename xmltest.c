@@ -48,9 +48,11 @@ xml_dump(xmlnode* n, buffer* b, const char* parent, int depth) {
   xmlnode* prev = 0;
   stralloc name;
   stralloc_init(&name);
+
   do {
     do_assign = 0;
     chained_attributes = 0;
+
     if(n->type == XML_DOCUMENT) {
       n = n->children;
       continue;
@@ -63,6 +65,7 @@ xml_dump(xmlnode* n, buffer* b, const char* parent, int depth) {
 
     if(n->type == XML_TEXT) {
       const char* x = xml_get_text(n, &name);
+
       if(x[0]) {
         buffer_putm_internal(b,
                              "",
@@ -76,18 +79,23 @@ xml_dump(xmlnode* n, buffer* b, const char* parent, int depth) {
       }
     } else if(n->type == XML_ELEMENT) {
       size_t p = 0;
+
       if(n->name[0] == '/')
         continue;
       stralloc_decamelize(n->name, &name, '_');
       stralloc_remove_all(&name, "-.", 2);
       stralloc_lower(&name);
       stralloc_nul(&name);
+
       if(parent)
         p = scan_noncharsetnskip(parent, "0123456789", str_len(parent));
+
       if((parent && !stralloc_diffb(&name, parent, p)) || strlist_contains(&vars, name.s)) {
         long num = 1;
+
         if(name.len > 0) {
           size_t i = scan_noncharsetnskip(name.s, "0123456789", name.len);
+
           if(isdigit(parent[p])) {
             scan_longn(&parent[p], str_len(parent) - p, &num);
             ++num;
@@ -109,6 +117,7 @@ xml_dump(xmlnode* n, buffer* b, const char* parent, int depth) {
       text_children = (n->children && n->children->next == 0 && n->children->type == XML_TEXT);
 
       chained_attributes = num_attrs > 0 && (!text_children || n->children == 0);
+
       if(n->children) {
         if(/*!text_children &&
             */
@@ -119,6 +128,7 @@ xml_dump(xmlnode* n, buffer* b, const char* parent, int depth) {
             strlist_push(&vars, name.s);
           }
           buffer_putm_internal(b, name.s, " = ", NULL);
+
           do_assign = 1;
         }
       }
@@ -150,6 +160,7 @@ xml_dump(xmlnode* n, buffer* b, const char* parent, int depth) {
           buffer_put(b, t->key, t->key_len);
           buffer_putm_internal(b, "\", \"", t->vals.val_chars, "\"", NULL);
         }
+
         if(attrs_str[1] == 't' || attrs_str[1] == 'a')
           buffer_puts(b, ", 0");
       }
@@ -228,7 +239,9 @@ main(int argc, char* argv[1]) {
  */
   strlist_init(&vars, '\0');
   buffer_skip_until(&infile, "\r\n", 2);
+
   doc = xml_read_tree(&infile);
+
   if(doc) {
     xml_dump(doc->children, buffer_1, 0, 1);
     xml_print(doc->children, buffer_2, 0);

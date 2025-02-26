@@ -71,6 +71,7 @@ read_hosts(const char* file) {
 
     if(s >= l)
       continue;
+
     if(p[s] == '#')
       continue;
 
@@ -109,6 +110,7 @@ int
 lookup_hosts(stralloc* name, stralloc* ips) {
   void* ptr;
   stralloc_nul(name);
+
   if((ptr = MAP_GET(hosts_db, name->s, name->len))) {
     stralloc_copyb(ips, ptr, 4);
     return 1;
@@ -199,6 +201,7 @@ main(int argc, char* argv[]) {
 #if 1 // def HAVE_SOLARIS
       /* solaris immediately returns
        * ECONNREFUSED on local ports */
+
       if(errno) {
         if(verbose) {
           buffer_putm_internal(buffer_1, argv[unix_optind], " port ", argv[unix_optind + 1], " closed.", NULL);
@@ -238,6 +241,7 @@ main(int argc, char* argv[]) {
     if((ret = io_timeouted()) == sock) {
       /* timeout */
       closesocket(sock);
+
       if(verbose) {
         buffer_putm_internal(buffer_1, argv[unix_optind], " port ", argv[unix_optind + 1], " user timeout.", NULL);
         buffer_putnlflush(buffer_1);
@@ -248,6 +252,7 @@ main(int argc, char* argv[]) {
     if(io_canread() == sock || io_canwrite() == sock) {
       if(socket_error(sock, &error) == 0) {
         /* getsockopt error */
+
         if(verbose) {
           errmsg_warn("error: ", argv[unix_optind], " port ", argv[unix_optind + 1], ": getsockopt: ", 0);
           buffer_putnlflush(buffer_2);
@@ -255,6 +260,7 @@ main(int argc, char* argv[]) {
         closesocket(sock);
         return error;
       }
+
       if(error != 0) {
         if(verbose) {
           buffer_putm_internal(buffer_1, argv[unix_optind], " port ", argv[unix_optind + 1], " closed.", NULL);
@@ -273,6 +279,7 @@ main(int argc, char* argv[]) {
   }
   /* OK, connection established */
   closesocket(sock);
+
   if(verbose) {
     buffer_putm_internal(buffer_1, argv[unix_optind], " port ", argv[unix_optind + 1], " open.", NULL);
     buffer_putnlflush(buffer_1);

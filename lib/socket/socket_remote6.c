@@ -31,12 +31,15 @@ socket_remote6(int s, char ip[16], uint16* port, uint32* scope_id) {
       byte_copy(ip, 12, V4mappedprefix);
       byte_copy(ip + 12, 4, (char*)&si4->sin_addr);
     }
+
     if(port)
       uint16_unpack_big((char*)&si4->sin_port, port);
     return 0;
   }
+
   if(ip)
     byte_copy(ip, 16, (char*)&si.sin6_addr);
+
   if(port)
     uint16_unpack_big((char*)&si.sin6_port, port);
 #ifdef LIBC_HAS_SCOPE_ID
@@ -51,8 +54,10 @@ socket_remote6(int s, char ip[16], uint16* port, uint32* scope_id) {
     byte_copy(ip, 12, V4mappedprefix);
     byte_copy(ip + 12, 4, (char*)&si.sin_addr);
   }
+
   if(port)
     uint16_unpack_big((char*)&si.sin_port, port);
+
   if(scope_id)
     *scope_id = 0;
 #endif

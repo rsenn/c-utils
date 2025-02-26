@@ -26,8 +26,10 @@
 void*
 array_get(const array* const x, uint64 membersize, int64 pos) {
   uint64 wanted;
+
   if(__unlikely(pos + 1 < 1))
     return 0;
+
   if(__unlikely(!umult64(membersize, pos, &wanted)))
     return 0;
 

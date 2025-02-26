@@ -63,6 +63,7 @@ xml_read_callback(xmlreader* r, xml_read_callback_fn* fn) {
         break;
       continue;
     }
+
     if((n = buffer_gettok_sa(b, &tag, " \n\t\r\v/>", 7)) < 0)
       break;
     stralloc_nul(&tag);
@@ -76,8 +77,10 @@ xml_read_callback(xmlreader* r, xml_read_callback_fn* fn) {
       size_t setlen;
       stralloc_zero(&attr);
       stralloc_zero(&val);
+
       if((n = buffer_gettok_sa(b, &attr, "=", 1)) < 0)
         break;
+
       if(buffer_skipc(b) < 0)
         break;
 
@@ -88,13 +91,16 @@ xml_read_callback(xmlreader* r, xml_read_callback_fn* fn) {
       }
       charset = quoted ? &ch : "/> \t\r\n\v";
       setlen = quoted ? 1 : str_len("/> \t\r\n\v");
+
       if((n = buffer_gettok_sa(b, &val, charset, setlen)) < 0)
         break;
+
       if(quoted && buffer_skipc(b) < 0)
         break;
       stralloc_nul(&attr);
       stralloc_nul(&val);
       hmap_set(&r->attrmap, attr.s, attr.len, val.s, val.len + 1);
+
       if(!fn(r, XML_ATTRIBUTE, &attr, &val, NULL))
         break;
       buffer_skipspace(b);
@@ -107,22 +113,26 @@ xml_read_callback(xmlreader* r, xml_read_callback_fn* fn) {
       buffer_skipc(b);
     }
     buffer_skipspace(b);
+
     if((s = buffer_peek(b)) && *s == '>')
       buffer_skipc(b);
 
     fn(r, XML_ELEMENT, &tag, NULL, &r->attrmap);
     buffer_skipspace(b);
+
     if(!(s = buffer_peek(b)))
       break;
 
     if(*s != '<' && !(r->closing || r->self_closing)) {
       stralloc_zero(&tag);
       buffer_gettok_sa(b, &tag, "<", 1);
+
       if(tag.len && !is_whitespace(tag.s, tag.len)) {
         stralloc_nul(&tag);
         fn(r, XML_TEXT, &tag, NULL, NULL);
       }
     }
+
     if(r->attrmap) {
       hmap_destroy(&r->attrmap);
       r->attrmap = NULL;

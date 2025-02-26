@@ -15,11 +15,13 @@ ihex_record_insert(ihex_file* ihf, uint32 at, uint8 len) {
   } else {
     list_for_each(p.link, &ihf->records) {
       ihex_record_address(p.rec, &o);
+
       if(o.off32 > at)
         break;
       prevAddr = o.off32;
       prev = p.rec;
     }
+
     if(p.link == 0) {
       p.link = &ihf->records;
     } else {

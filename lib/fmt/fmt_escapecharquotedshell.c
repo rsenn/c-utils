@@ -6,9 +6,11 @@ size_t
 fmt_escapecharquotedshell(char* dest, int chr) {
   uint32 ch = chr;
   char c;
+
   switch(ch) {
     case '\'':
       c = '\'';
+
       if(dest) {
         dest[0] = c;
         dest[1] = '\\';

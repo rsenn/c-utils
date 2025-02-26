@@ -23,6 +23,7 @@ path_realpath(const char* path, stralloc* sa, int symbolic, stralloc* cwd) {
   }
 
   /* if its not absolute on the first recursion level then make it so */
+
   if(!path_is_absolute(path) && sa->len == 0) {
     char buf[PATH_MAX + 1];
 

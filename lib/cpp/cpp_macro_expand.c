@@ -66,6 +66,7 @@ cpp_macro_expand(cpp* pp, tokenizer* t, buffer* out, const char* name, int rec_l
     args[i].f = memstream_open(&args[i].buf, &args[i].len);
 
   /* replace named arguments in the contents of the macro call */
+
   if(FUNCTIONLIKE(m)) {
     int ret, ws_count, varargs = 0;
     unsigned curr_arg = 0, need_arg = 1, parens = 0;
@@ -73,6 +74,7 @@ cpp_macro_expand(cpp* pp, tokenizer* t, buffer* out, const char* name, int rec_l
     if((ret = tokenizer_peek(t)) != '(') {
       /* function-like macro shall not be expanded if not followed by '('
        */
+
       if(ret == TOKENIZER_EOF && rec_level > 0 && (ret = cpp_tchain_parens_follows(pp, rec_level - 1)) != -1) {
         // warning("Replacement text involved subsequent text", t, 0);
         t = pp->tchain[ret];
@@ -200,6 +202,7 @@ cpp_macro_expand(cpp* pp, tokenizer* t, buffer* out, const char* name, int rec_l
           if(hash_count == 1)
             /*ret = */ cpp_stringify(pp, &args[arg_nr].t, output);
           else
+
             for(;;) {
               if(!tokenizer_next(&args[arg_nr].t, &tok))
                 return 0;
@@ -229,6 +232,7 @@ cpp_macro_expand(cpp* pp, tokenizer* t, buffer* out, const char* name, int rec_l
           ++hash_count;
 
           /* in a real pp we'd need to look for '\\' first */
+
           while(tokenizer_peek(&t2) == '\n') {
             x_tokenizer_next(&t2, &tok);
           }
@@ -238,6 +242,7 @@ cpp_macro_expand(cpp* pp, tokenizer* t, buffer* out, const char* name, int rec_l
           else
             break;
         }
+
         if(hash_count == 1)
           flush_whitespace(output, &ws_count);
         else if(hash_count > 2) {
@@ -265,6 +270,7 @@ cpp_macro_expand(cpp* pp, tokenizer* t, buffer* out, const char* name, int rec_l
 
     /* we need to expand macros after the macro arguments have been
      * inserted */
+
     if(1) {
       size_t mac_cnt = 0;
       cwae.f = memstream_reopen(cwae.f, &cwae.buf, &cwae.len);
@@ -273,6 +279,7 @@ cpp_macro_expand(cpp* pp, tokenizer* t, buffer* out, const char* name, int rec_l
       buffer_putnlflush(buffer_2);
 #endif
       tokenizer_from_file(&cwae.t, cwae.f);
+
       for(;;) {
         if(!tokenizer_next(&cwae.t, &tok))
           return 0;
@@ -292,6 +299,7 @@ cpp_macro_expand(cpp* pp, tokenizer* t, buffer* out, const char* name, int rec_l
         cpp_macro_get_info(pp, &cwae.t, mcs, &mac_iter, 0, 0, "null", visited, rec_level);
         /* some of the macros might not expand at this stage (without
          * braces)*/
+
         while(mac_cnt && mcs[mac_cnt - 1].name == 0)
           --mac_cnt;
       }
@@ -301,11 +309,13 @@ cpp_macro_expand(cpp* pp, tokenizer* t, buffer* out, const char* name, int rec_l
         int depth = 0;
 
         for(i = 0; i < mac_cnt; ++i)
+
           if(mcs[i].nest > depth)
             depth = mcs[i].nest;
 
         while(depth > -1) {
           for(i = 0; i < mac_cnt; ++i)
+
             if(mcs[i].nest == depth) {
               cpp_macro_info* mi = &mcs[i];
               size_t j;
@@ -343,16 +353,19 @@ cpp_macro_expand(cpp* pp, tokenizer* t, buffer* out, const char* name, int rec_l
               buffer_putm_internal(buffer_2, "result: ", cwae.buf, NULL);
               buffer_putnlflush(buffer_2);
 #endif
+
               if(diff == 0)
                 continue;
 
               for(j = 0; j < mac_cnt; ++j) {
                 cpp_macro_info* mi2 = &mcs[j];
+
                 if(j == i)
                   continue;
                 /* modified element mi can be either inside, after or
                    before
                    another macro. the after case doesn't affect us. */
+
                 if(mi->first >= mi2->first && mi->last <= mi2->last) {
                   /* inside m2 */
                   mi2->last += diff;
@@ -393,6 +406,7 @@ cpp_macro_expand(cpp* pp, tokenizer* t, buffer* out, const char* name, int rec_l
     free_file_container(&cwae);
   }
 cleanup:
+
   for(i = 0; i < num_args; i++) {
     memstream_free(args[i].f);
     // alloc_free(args[i].buf);

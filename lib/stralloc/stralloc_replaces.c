@@ -14,6 +14,7 @@ stralloc_replaces(stralloc* sa, const char* from, const char* to) {
   for(p = 0; p < sa->len;) {
     size_t i = byte_findb(&sa->s[p], sa->len - p, from, flen);
     p += i;
+
     if(p == sa->len)
       break;
 
@@ -21,6 +22,7 @@ stralloc_replaces(stralloc* sa, const char* from, const char* to) {
       if(!stralloc_readyplus(sa, tlen - flen))
         return 0;
     }
+
     if(flen < tlen) {
       byte_copyr(&sa->s[p + tlen], sa->len - p - flen, &sa->s[p + flen]);
       sa->len += tlen - flen;

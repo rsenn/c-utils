@@ -53,6 +53,7 @@ compression_from_ext(const char* ext) {
 compression_type
 compression_from_filename(const char* fn) {
   const char* ext = fn + str_rchr(fn, '.');
+
   if(*ext)
     return compression_from_ext(++ext);
   return C_UNKNOWN;
@@ -151,8 +152,10 @@ main(int argc, char* argv[]) {
       return 1;
     }
     input = &infile;
+
     if(in_type == C_UNKNOWN) {
       in_type = compression_from_filename(in_filename);
+
       if(in_type != C_UNKNOWN && decompress == -1)
         decompress = 1;
     }
@@ -177,8 +180,10 @@ main(int argc, char* argv[]) {
       return 1;
     }
     output = &outfile;
+
     if(out_type == C_UNKNOWN)
       out_type = compression_from_filename(out_filename);
+
     if(out_type != C_UNKNOWN && decompress == -1)
       decompress = 0;
   }
@@ -186,6 +191,7 @@ main(int argc, char* argv[]) {
   if(type != C_UNKNOWN) {
     if(in_type == C_UNKNOWN && decompress == 1)
       in_type = type;
+
     if(out_type == C_UNKNOWN && decompress == 0)
       out_type = type;
   }

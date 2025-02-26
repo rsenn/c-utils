@@ -11,22 +11,27 @@ pls_reader(playlist* pl) {
   buffer* inbuf = pl->ptr;
   stralloc line;
   stralloc_init(&line);
+
   if((ret = buffer_getline_sa(inbuf, &line))) {
     size_t index2, index;
     index2 = index = 0;
+
     while(line.len > 1 && (line.s[line.len - 1] == '\r' || line.s[line.len - 1] == '\n'))
       line.len--;
     stralloc_0(&line);
+
     if(!str_diffn(&line.s[index], "Number", 6)) {
     } else if(line.s[index] == '[') {
     } else if((index2 = str_chr(&line.s[index], '=')) > 0) {
       unsigned long trackno = 0;
       index = index2;
       index2++;
+
       do {
         index--;
       } while(isdigit(line.s[index]) && index > 0);
       scan_ulong(&line.s[index], &trackno);
+
       if(!str_diffn(&line.s[index], "File", 4)) {
         stralloc_copys(&entry.path, &line.s[index2]);
         stralloc_0(&entry.path);
@@ -50,6 +55,7 @@ pls_reader(playlist* pl) {
       /*
       stralloc_copy(&entry.path, &line);
       stralloc_0(&entry.path);
+
       if(pl->callback) {
       pl->callback(pl, &entry.title, &entry.path, entry.length);
       }*/

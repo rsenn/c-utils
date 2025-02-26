@@ -111,6 +111,7 @@ path_canonicalize(const char* path, stralloc* sa, int symbolic) {
 #endif
 
 #endif
+
   if(path_issep(*path)) {
     stralloc_catc(sa, (sep = *path));
     path++;
@@ -126,19 +127,23 @@ path_canonicalize(const char* path, stralloc* sa, int symbolic) {
 start:
   /* loop once for every /path/component/
      we canonicalize absolute paths, so we must always have a '/' here */
+
   while(*path) {
     while(path_issep(*path))
       sep = *path++;
 
     /* check for various relative directory parts beginning with '.' */
+
     if(path[0] == '.') {
       /* strip any "./" inside the path or a trailing "." */
+
       if(path_issep(path[1]) || path[1] == '\0') {
         path++;
         continue;
       }
 
       /* if we have ".." we have to truncate the resulting path */
+
       if(path[1] == '.' && (path_issep(path[2]) || path[2] == '\0')) {
         sa->len = path_right(sa->s, sa->len);
         path += 2;
@@ -147,16 +152,19 @@ start:
     }
 
     /* exit now if we're done */
+
     if(*path == '\0')
       break;
 
     /* begin a new path component */
+
     if(sa->len && (sa->s[sa->len - 1] != '/' && sa->s[sa->len - 1] != '\\'))
       stralloc_catc(sa, sep);
 
     /* look for the next path separator and then copy the component */
     n = path_len_s(path);
     stralloc_catb(sa, path, n);
+
     if(n == 2 && path[1] == ':')
       stralloc_catc(sa, sep);
     stralloc_nul(sa);
@@ -166,17 +174,20 @@ start:
     byte_zero(&st, sizeof(st));
 
     /* is it a symbolic link? */
+
     if(stat_fn(sa->s, &st) != -1 && is_link(sa->s)) {
       ret++;
 
       /* read the link, return if failed and then nul-terminate the buffer
        */
+
       if((ssize_t)(n = readlink(sa->s, buf, PATH_MAX)) == (ssize_t)-1)
         return 0;
       // buf[n] = '\0';
 
       /* if the symlink is absolute we clear the stralloc,
          set the path to buf and repeat the whole procedure */
+
       if(path_is_absolute(buf)) {
         str_copyn(&buf[n], path, PATH_MAX - n);
         stralloc_zero(sa);
@@ -199,6 +210,7 @@ start:
     }
 #if 0 // def S_ISDIR
     /* it isn't a directory :( */
+
     if(!S_ISDIR(st.st_mode)) {
       errno = ENOTDIR;
       return 0;

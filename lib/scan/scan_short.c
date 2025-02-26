@@ -12,10 +12,12 @@ scan_short(const char* src, short* dest) {
   tmp = src;
   l = 0;
   ok = neg = 0;
+
   switch(*tmp) {
     case '-': neg = 1;
     case '+': ++tmp;
   }
+
   while((c = (unsigned char)(*tmp - '0')) < 10) {
     unsigned short int n;
     /* we want to do: l=l*10+c
@@ -26,20 +28,25 @@ scan_short(const char* src, short* dest) {
      * so instead of *10 we do (l<<3) (i.e. *8) + (l<<1) (i.e. *2)
      * and check for overflow on all the intermediate steps */
     n = (unsigned short)(l << 3);
+
     if((n >> 3) != (unsigned short)l)
       break;
+
     if(n + (l << 1) < n)
       break;
     n = (unsigned short)(n + (l << 1));
+
     if(n + c < n)
       break;
     n = (unsigned short)(n + c);
+
     if(n > maxshort + neg)
       break;
     l = (short)n;
     ++tmp;
     ok = 1;
   }
+
   if(!ok)
     return 0;
   *dest = (short)(neg ? -l : l);

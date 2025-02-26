@@ -89,6 +89,7 @@ debug_sl(const char* name, const strlist* l) {
   strlist_foreach(l, x, n) {
     if(tmp.len)
       stralloc_catc(&tmp, ' ');
+
     if((pos = byte_rchr(x, n, '/')) < n || (pos = byte_rchr(x, n, '\\')) < n)
       stralloc_catb(&tmp, x + pos + 1, n - pos - 1);
     else
@@ -159,6 +160,7 @@ char*
 base_file(const char* suffix) {
   stralloc_zero(&real);
   stralloc_cat(&real, &prog);
+
   if(stralloc_endb(&real, EXEEXT, str_len(EXEEXT))) {
     real.len -= str_len(EXEEXT);
     ext = EXEEXT;
@@ -287,6 +289,7 @@ main(int argc, char* argv[]) {
   stralloc_init(&lib);
 
   get_prog_name(&prog);
+
   if(stralloc_endb(&prog, EXEEXT, str_len(EXEEXT)))
     prog.len -= str_len(EXEEXT);
   stralloc_nul(&prog);
@@ -310,6 +313,7 @@ main(int argc, char* argv[]) {
   debug_sa("base", &base);
 
   base_file(".real");
+
   if(!stralloc_endb(&real, ext, str_len(ext)))
     stralloc_cats(&real, ext);
 
@@ -333,6 +337,7 @@ main(int argc, char* argv[]) {
   if(path_exists(base_file(".env"))) {
     size_t n;
     char* x;
+
     if((x = (char*)mmap_read(real.s, &n)))
       read_env(x, n);
     mmap_unmap(x, n);
@@ -371,6 +376,7 @@ main(int argc, char* argv[]) {
         while(it < end) {
           size_t n;
           it += scan_whitenskip(it, end - it);
+
           if(it == end)
             break;
           n = scan_nonwhitenskip(it, end - it);
@@ -462,6 +468,7 @@ main(int argc, char* argv[]) {
   buffer_puts(buffer_2, "'");
   buffer_putnlflush(buffer_2);
 #endif
+
   if(logfile)
     write_log(&opts, logfile);
 

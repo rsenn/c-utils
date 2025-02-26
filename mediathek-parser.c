@@ -127,6 +127,7 @@ get_domain(const char* url, stralloc* d) {
   while(*url && *url != ':')
     ++url;
   ++url;
+
   while(*url && *url == '/')
     ++url;
   stralloc_copyb(d, url, str_chr(url, '/'));
@@ -146,6 +147,7 @@ cleanup_text(char** t) {
 
   for(i = 0; i < len; ++i) {
     c = (*t)[i];
+
     if(isdelim(c) && isdelim(prev))
       continue;
 
@@ -185,12 +187,14 @@ cleanup_domain(stralloc* d) {
   size_t i;
   const char* remove_parts[] = {"ondemand", "storage", "files", "stream", "mvideos", "online", 0};
   d->len = byte_rchr(d->s, d->len, '.');
+
   for(i = 0; i < d->len; ++i)
     d->s[i] = toupper(d->s[i]);
   stralloc_nul(d);
 
   for(i = 0; remove_parts[i]; ++i) {
     char *s2, *s = strtok(d->s, remove_parts[i]);
+
     if(s && (s2 = strchr(s, '.')) && s2 > s) {
       ++s2;
       s = str_dup(s2);
@@ -262,6 +266,7 @@ process_entry(char** av, int ac) {
 
     {
       int h = 0, m = 0, s = 0;
+
       if(sscanf(duration, "%d:%d:%d", &h, &m, &s) >= 2) {
         d = h * 3600 + m * 60 + s;
       } else {
@@ -317,8 +322,10 @@ process_entry(char** av, int ac) {
 void
 put_quoted_string(const char* str) {
   buffer_putc(&output_buf, '"');
+
   while(*str) {
     char c = *str++;
+
     if(c == '"' || c == '\\') {
       buffer_puts(&output_buf, c == '\\' ? "\\\\" : "\"\"");
     } else {
@@ -394,6 +401,7 @@ output_wget_entry(const char* sender, const char* thema, const char* title, unsi
   buffer_puts_escaped(&output_buf, title, &fmt_escapecharnonprintable);
 
   buffer_putm_internal(&output_buf, ".mp4'", "\ntouch -c -d '", datetime, "' '", NULL);
+
   if(!skipSender) {
     buffer_puts_escaped(&output_buf, sender, &fmt_escapecharnonprintable);
     buffer_puts(&output_buf, " - ");
@@ -433,6 +441,7 @@ get_line(buffer* input, stralloc* sa) {
     done = byte_equal(&input->x[input->p], 5, ",\"X\":");
 
     if(!done)
+
       done = byte_equal(&input->x[input->p], 6, ",\n\"X\":");
 
     stralloc_append(sa, &input->x[input->p]);

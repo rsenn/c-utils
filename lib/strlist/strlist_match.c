@@ -26,6 +26,7 @@ strlist_match(const strlist* sl, const char* pattern, int start) {
       return i;
 
     x += n;
+
     if(x < end)
       x++;
     i++;

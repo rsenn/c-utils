@@ -70,6 +70,7 @@ _tpopen(const char* command, const char* mode) {
 
   /* Set up file handle numbers depending on whether this is a read or write.
    */
+
   if(mode[0] == _TEXT('w')) {
     stdfile = STDIN;
     parentpipe = 1;
@@ -92,6 +93,7 @@ _tpopen(const char* command, const char* mode) {
    * If the mode string contains a 'b', use binary.  If it contains
    * a 't', use text.  If it contains neither, use _fmode.
    */
+
   if(strchr(mode, 'b') != NULL)
     textmode = O_BINARY;
   else if(strchr(mode, 't') != NULL)
@@ -108,17 +110,20 @@ _tpopen(const char* command, const char* mode) {
 
   /* Create the pipe.
    */
+
   if(_pipe(hpipe, 512, textmode) == -1)
     return NULL;
 
   /* Save the standard output/input file that we're going to change later.
    */
+
   if((oldstdio = __dup(stdfile)) == -1)
     goto error;
 
   /* Map the child's end of the pipe onto the appropriate standard
    * input/output handle.
    */
+
   if(__dup2(hpipe[childpipe], stdfile) == -1)
     goto error;
 
@@ -130,6 +135,7 @@ _tpopen(const char* command, const char* mode) {
   /* Get the name of the command processor from COMSPEC environment
    * variable.  If not defined, search the path for cmd.exe.
    */
+
   if((comspec = _tgetenv(_TEXT("COMSPEC"))) == NULL) {
     comspec = _TEXT("cmd.exe");
     usepath = 1;
@@ -143,12 +149,14 @@ _tpopen(const char* command, const char* mode) {
   argv[1] = _TEXT("/c");
   argv[2] = (char*)command;
   argv[3] = NULL;
+
   if((pid = _tLoadProg(P_NOWAIT, comspec, (const char* const*)argv, NULL, usepath)) == -1)
     goto error;
 
   /* Restore the standard I/O file we temporarily changed, then
    * convert the parent's end of the pipe to a file stream.
    */
+
   if(__dup2(oldstdio, stdfile) == -1)
     goto error;
   __close(oldstdio);
@@ -162,6 +170,7 @@ _tpopen(const char* command, const char* mode) {
 error:
   __close(hpipe[0]);
   __close(hpipe[1]);
+
   if(oldstdio != -1) {
     __dup2(oldstdio, stdfile);
     __close(oldstdio);
@@ -197,8 +206,10 @@ _pclose(FILE* stream) {
 
   /* Get the process ID associated with this pipe.
    */
+
   if((unsigned)(fd = (int)stream->fd) >= _nfile)
     return __IOerror(-EBADF);
+
   if((pid = _pidtab[fd]) == 0)
     return __IOerror(-EBADF);
 
@@ -210,6 +221,7 @@ _pclose(FILE* stream) {
   /* Wait for the child to complete.  Return the same value
    * that cwait returns.
    */
+
   if(_cwait(&termstat, pid, WAIT_CHILD) == -1)
     return (-1);
   return (termstat);

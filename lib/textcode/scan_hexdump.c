@@ -6,20 +6,25 @@ size_t
 scan_hexdump(const char* src, char* dest, size_t* destlen) {
   register const unsigned char* s = (const unsigned char*)src;
   size_t written = 0, i;
+
   for(i = 0; s[i]; ++i) {
     int j = scan_fromhex(s[i]);
     unsigned char k;
+
     if(j < 0)
       break;
     k = j << 4;
     j = scan_fromhex(s[i + 1]);
+
     if(j < 0)
       break;
+
     if(dest)
       dest[written] = k | j;
     ++i;
     ++written;
   }
+
   if(destlen)
     *destlen = written;
   return i;

@@ -49,6 +49,7 @@ main() {
 
   /* now negative testing */
   /* start off with some continuation bytes outside a sequence */
+
   for(i = 0x80; i <= 0xbf; ++i) {
     buf[0] = i;
     assert(scan_utf8(buf, 2, &l) == 0);
@@ -56,6 +57,7 @@ main() {
 
   /* now check lonely sequence start characters */
   buf[1] = ' ';
+
   for(i = 0xc0; i <= 0xfd; ++i) {
     buf[0] = i;
     assert(scan_utf8(buf, 2, &l) == 0);

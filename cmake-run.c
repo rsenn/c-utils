@@ -75,6 +75,7 @@ debug_sl(const char* name, const strlist* l) {
   strlist_foreach(l, x, n) {
     if(tmp.len)
       stralloc_catc(&tmp, ' ');
+
     if((pos = byte_rchr(x, n, '/')) < n || (pos = byte_rchr(x, n, '\\')) < n)
       stralloc_catb(&tmp, x + pos + 1, n - pos - 1);
     else
@@ -161,6 +162,7 @@ char*
 base_file(const char* suffix) {
   stralloc_zero(&real);
   stralloc_cat(&real, &prog);
+
   if(stralloc_endb(&real, EXEEXT, str_len(EXEEXT))) {
     real.len -= str_len(EXEEXT);
     ext = EXEEXT;
@@ -284,6 +286,7 @@ main(int argc, char* argv[], char* envp[]) {
   strlist_init(&args, '\0');
 
   get_prog_name(&prog);
+
   if(stralloc_endb(&prog, EXEEXT, str_len(EXEEXT)))
     prog.len -= str_len(EXEEXT);
   stralloc_nul(&prog);

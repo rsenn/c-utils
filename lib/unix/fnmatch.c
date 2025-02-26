@@ -61,6 +61,7 @@ fnmatch(const char* pattern, const char* string, int flags) {
           c = *p++;
           c = FOLD(c);
         }
+
         if(FOLD(*n) != c)
           return FNM_NOMATCH;
         break;
@@ -70,6 +71,7 @@ fnmatch(const char* pattern, const char* string, int flags) {
           return FNM_NOMATCH;
 
         for(c = *p++; c == '?' || c == '*'; c = *p++, ++n)
+
           if(((flags & FNM_FILE_NAME) && *n == '/') || (c == '?' && *n == '\0'))
             return FNM_NOMATCH;
 
@@ -79,7 +81,9 @@ fnmatch(const char* pattern, const char* string, int flags) {
         {
           char c1 = (!(flags & FNM_NOESCAPE) && c == '\\') ? *p : c;
           c1 = FOLD(c1);
+
           for(--p; *n != '\0'; ++n)
+
             if((c == '[' || FOLD(*n) == c1) && fnmatch(p, n, flags & ~FNM_PERIOD) == 0)
               return 0;
           return FNM_NOMATCH;
@@ -96,10 +100,12 @@ fnmatch(const char* pattern, const char* string, int flags) {
           return FNM_NOMATCH;
 
         not = (*p == '!' || *p == '^');
+
         if(not )
           ++p;
 
         c = *p++;
+
         for(;;) {
           char cstart = c, cend = c;
 
@@ -119,8 +125,10 @@ fnmatch(const char* pattern, const char* string, int flags) {
 
           if(c == '-' && *p != ']') {
             cend = *p++;
+
             if(!(flags & FNM_NOESCAPE) && cend == '\\')
               cend = *p++;
+
             if(cend == '\0')
               return FNM_NOMATCH;
             cend = FOLD(cend);
@@ -134,25 +142,30 @@ fnmatch(const char* pattern, const char* string, int flags) {
           if(c == ']')
             break;
         }
+
         if(!not )
           return FNM_NOMATCH;
         break;
 
       matched:;
         /* Skip the rest of the [...] that already matched.  */
+
         while(c != ']') {
           if(c == '\0') /* [... (unterminated) loses.  */
             return FNM_NOMATCH;
 
           c = *p++;
+
           if(!(flags & FNM_NOESCAPE) && c == '\\') /* XXX 1003.2d11 is unclear if this is right.  */
             ++p;
         }
+
         if(not )
           return FNM_NOMATCH;
       } break;
 
       default:
+
         if(c != FOLD(*n))
           return FNM_NOMATCH;
     }

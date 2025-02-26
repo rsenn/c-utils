@@ -9,6 +9,7 @@
 
 typedef union {
   char irrelevant[ALIGNMENT];
+
   double d;
 } aligned;
 
@@ -20,11 +21,13 @@ void*
 alloc(size_t n) {
   char* x;
   n = ALIGNMENT + n - (n & (ALIGNMENT - 1)); /* XXX: could overflow */
+
   if(n <= avail) {
     avail -= n;
     return space + avail;
   }
   x = malloc(n);
+
   if(!x)
     errno = ENOMEM;
   return x;
@@ -33,6 +36,7 @@ alloc(size_t n) {
 void
 alloc_free(void* x) {
   if(x >= space)
+
     if(x < space + SPACE)
       return; /* XXX: assuming that pointers are flat */
   free(x);

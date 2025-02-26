@@ -162,8 +162,10 @@ main(int argc, char* argv[]) {
 
   for(;;) {
     c = unix_getopt_long(argc, argv, "hsdOl:cD:S:W:iCo:", opts, &index);
+
     if(c == -1)
       break;
+
     if(c == 0)
       continue;
 
@@ -188,11 +190,13 @@ main(int argc, char* argv[]) {
       default: usage(argv[0]); return 1;
     }
   }
+
   if(!no_compliant) {
     quote[0] = quote[1] = '"';
   }
 
   stralloc_init(&indent_str);
+
   for(c = 0; c < indent; ++c)
     stralloc_cats(&indent_str, " ");
   stralloc_nul(&indent_str);
@@ -266,6 +270,7 @@ main(int argc, char* argv[]) {
         errmsg_infosys("unlink", 0);
         return 1;
       }
+
       if(rename(out_file, in_file) == -1) {
         errmsg_infosys("rename", 0);
         return 1;

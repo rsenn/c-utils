@@ -5,6 +5,7 @@ void
 byte_fill(void* out, size_t len, int c) {
   char* s = (char*)out;
   const char* t = s + len;
+
   for(;;) {
     if(s == t) {
       break;

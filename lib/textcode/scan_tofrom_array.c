@@ -8,10 +8,12 @@ scan_tofrom_array(size_t (*func)(const char*, char*, size_t*), array* src, array
   size_t needed;
   char* x;
   array_cat0(src);
+
   if(array_failed(src) || array_failed(dest))
     return 0;
   needed = array_bytes(src);
   x = ((char*)array_start(dest)) + array_bytes(dest);
+
   if(!array_allocate(dest, 1, array_bytes(dest) + needed - 1))
     return 0;
   needed = func((const char*)array_start(src), x, &scanned);

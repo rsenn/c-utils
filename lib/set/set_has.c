@@ -19,6 +19,7 @@ set_has(const set_t* set, const void* val, const size_t size) {
 
   for(b = &set->array[i]; (b && b->value); b = b->next) {
     if(size == b->size && b->hash == hash)
+
       if(memcmp(b->value, val, size) == 0) {
         return 1;
       }

@@ -22,6 +22,7 @@ stralloc sa;
 void
 zap() {
   size_t i;
+
   for(i = 0; i < sizeof(buf); ++i)
     buf[i] = '_';
 }
@@ -29,6 +30,7 @@ zap() {
 void
 zap2() {
   size_t i;
+
   for(i = 0; i < sizeof(buf); ++i)
     buf[i] = i;
 }
@@ -288,6 +290,7 @@ main() {
   assert(scan_xlonglong("23.", &ll) == 2 && ll == 0x23);
 
   assert(scan_ulong("46halbe", &ul) == 2 && ul == 46);
+
   if(sizeof(ul) == 4) {
     assert(scan_ulong("4294967295", &ul) == 10 && ul == 0xffffffff);
     assert(scan_ulong("4294967296", &ul) == 9 && ul == 429496729);
@@ -414,6 +417,7 @@ main() {
     uint32 ui;
     uint64 ul;
     size_t i;
+
     for(i = 0; i < 3; ++i) {
       uint16_unpack(buf + i, &us);
       assert(us == uint16_read(buf + i));
@@ -532,10 +536,12 @@ main() {
 
     stralloc_free(&s);
     buffer_tosa(&b, &s);
+
     for(i = 0; i < 100; ++i)
       buffer_puts(&b, "foo bar baz!\n");
     buffer_flush(&b);
     assert(s.len == 100 * sizeof("foo bar baz!"));
+
     for(i = 0; i < 100; ++i)
       assert(byte_equal(s.s + i * sizeof("foo bar baz!"), sizeof("foo bar baz!"), "foo bar baz!\n"));
   }

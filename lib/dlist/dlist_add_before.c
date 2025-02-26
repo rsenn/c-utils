@@ -3,6 +3,7 @@
 void
 dlist_add_before(dlist* l, node* p, node* before) {
   /* If <before> is the dlist head, then a dlist_add_head() does the job */
+
   if(before == l->head) {
     dlist_unshift(l, p);
     return;

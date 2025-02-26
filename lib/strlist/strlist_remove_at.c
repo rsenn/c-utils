@@ -6,6 +6,7 @@ strlist_remove_at(strlist* l, size_t n) {
 
   if(x) {
     size_t i = x - l->sa.s;
+
     if(i + n < l->sa.len) {
       if(l->sa.s[i + n] == l->sep)
         n++;

@@ -15,11 +15,13 @@ tokenizer_next(tokenizer* t, token* out) {
 
   for(;;) {
     c = tokenizer_getc(t);
+
     if(c == TOKENIZER_EOF)
       break;
 
     /* components of multi-line comment marker might be terminals
      * themselves */
+
     if(sequence_follows(t, c, t->marker[MT_MULTILINE_COMMENT_START])) {
       ignore_until(t, t->marker[MT_MULTILINE_COMMENT_END], str_len(t->marker[MT_MULTILINE_COMMENT_START]));
       continue;
@@ -103,8 +105,10 @@ tokenizer_next(tokenizer* t, token* out) {
     }
 
     for(int i = 0; i < t->custom_count; i++)
+
       if(sequence_follows(t, c, t->custom_tokens[i])) {
         const char* p = t->custom_tokens[i];
+
         while(*p) {
           s = assign_bufchar(t, s, *p);
           p++;
@@ -120,6 +124,7 @@ tokenizer_next(tokenizer* t, token* out) {
     // s = assign_bufchar(t, s, 0);
 
     if(c == '"' || c == '\'')
+
       if(t->flags & TF_PARSE_STRINGS)
         return get_string(t, c, out, wide);
 

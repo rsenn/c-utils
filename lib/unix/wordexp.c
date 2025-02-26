@@ -35,14 +35,18 @@ expand_variables(const char* in) {
   char *var, *pos, *ret = strdup(in);
   char *val, *str;
   pos = ret;
+
   while((var = strchr(pos, '$'))) {
     char *name, *begin = var + 1;
     int npos = 0, bpos = 0, slen, elen;
     *var = '\0';
+
     if(var[1] == '{') {
       begin++;
+
       while(begin[npos]) {
         bpos = npos;
+
         if(begin[npos++] == '}')
           break;
       }
@@ -55,6 +59,7 @@ expand_variables(const char* in) {
     name[bpos] = '\0';
     val = getenv(name);
     free(name);
+
     if(!val)
       val = "";
     slen = strlen(ret) + strlen(val);
@@ -95,11 +100,13 @@ wordexp(const char* words, wordexp_t* we, int flags) {
 #ifdef HAVE_API_WIN32_BASE
   /* expansion of ´*´, ´?´ */
   error = glob(words_expanded, 0, NULL, &pglob);
+
   if(!error) {
     /* copy the content of struct of glob into struct of wordexp */
     we->we_wordc = pglob.gl_pathc;
     we->we_offs = pglob.gl_offs;
     we->we_wordv = malloc(we->we_wordc * sizeof(char*));
+
     for(i = 0; i < we->we_wordc; i++) {
       we->we_wordv[i] = strdup(pglob.gl_pathv[i]);
     }

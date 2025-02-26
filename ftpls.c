@@ -79,9 +79,12 @@ static void
 ulong_pad(stralloc* out, unsigned long l, unsigned int ml) {
   char buf[FMT_ULONG];
   l = fmt_ulong(buf, l);
+
   if(l < ml)
+
     if(!stralloc_catb(out, "    ", ml - l))
       oom();
+
   if(!stralloc_catb(out, buf, l))
     oom();
 }
@@ -90,21 +93,26 @@ static void
 mksize(stralloc* out, uint64 l) {
   if(l < 10000) {
     ulong_pad(out, l, 4);
+
     if(!stralloc_cats(out, "    B"))
       oom();
   } else if(l < 9 * MB) {
     ulong_pad(out, l / KB, 4);
+
     if(!stralloc_cats(out, "."))
       oom();
 
     ulong_pad(out, (l - (l / KB) * KB) / 102, 1);
+
     if(!stralloc_cats(out, " KB"))
       oom();
   } else {
     ulong_pad(out, l / MB, 4);
+
     if(!stralloc_cats(out, "."))
       oom();
     ulong_pad(out, (l - (l / MB) * MB) / (102 * KB), 1);
+
     if(!stralloc_cats(out, " MB"))
       oom();
   }
@@ -120,59 +128,93 @@ entity(stralloc* d, struct ftpparse* x) {
   s70 = TAI2UNIX(&x->mtime);
   uo_sec702dt(&dt, &s70);
   yyyy_mm_dd_hh_mm_ss(db, &dt, '-');
+
   if(o_machine) {
     do_log1("N");
+
     if(d->s[dirprintoffset])
+
       do_log2(d->s + dirprintoffset, "/");
+
     do_logmem(x->name, x->namelen);
+
     do_log1("\nK");
+
     if(x->symlink)
+
       do_log1("link"); /* guess */
     else if(x->flagtrycwd)
+
       do_log1("dir");
     else
+
       do_log1("file");
+
     do_log1("\nS");
     nb[fmt_uint64(nb, x->size)] = 0;
+
     do_log4(nb, "\nT", db, "\n");
   } else if(o_html) {
     do_log1("<dt><a href=\"");
+
     do_logmem(urlprefix.s, urlprefix.len);
+
     if(d->s[dirprintoffset])
+
       do_log2(d->s + dirprintoffset, "/");
+
     do_logmem(x->name, x->namelen);
 
     /* this is certainly not the right
      * way to do it, but what is the
      * right way? */
+
     if(x->flagtrycwd && !x->flagtryretr && !x->symlink)
+
       do_logmem("/", 1);
 
     do_log1("\">");
+
     if(d->s[dirprintoffset])
+
       do_log2(d->s + dirprintoffset, "/");
+
     do_logmem(x->name, x->namelen);
+
     do_log1("</a><br>\n");
+
     do_log3("<dd> last modified ", db, ", ");
     sizebuf.len = 0;
     mksize(&sizebuf, x->size);
+
     do_logmem(sizebuf.s, sizebuf.len);
+
     do_log1("\n");
   } else {
     if(x->flagtrycwd && x->flagtryretr)
+
       do_log1("link "); /* guess */
     else if(x->flagtrycwd)
+
       do_log1("dir  ");
     else
+
       do_log1("file ");
+
     do_log2(db, "  ");
     sizebuf.len = 0;
     mksize(&sizebuf, x->size);
+
     do_logmem(sizebuf.s, sizebuf.len);
+
     do_log1(" ");
+
     if(d->s[dirprintoffset])
+
       do_log2(d->s + dirprintoffset, "/");
+
     do_logmem(x->name, x->namelen);
+
     do_log1("\n");
   }
 }
@@ -189,18 +231,22 @@ get_listing(stralloc* r_dir, stralloc* dirdata, int* dirlines) {
   cmdwrite2(r_dir->s[0] == '/' ? "CWD " : "CWD /", r_dir->s);
 
   p = ccread();
+
   if(!p)
     eof_or_error(111, errno, "failed to read `CWD /", r_dir->s, " answer");
+
   if(*p != '2') {
     warning(0, "unwanted answer to CWD ", r_dir->s, ": ", p);
     return 0;
   }
   got_it = 0;
+
   if(may_mlsx)
     listno = 0;
   else
     listno = 1;
 retry_listing:
+
   if(listno == 0)
     cmdwrite1("MLSD");
   else if(o_list_options)
@@ -209,16 +255,20 @@ retry_listing:
     cmdwrite1("LIST");
 
   p = ccread();
+
   if(!p) {
     const char* x;
+
     if(!listno)
       x = "MLSD";
     else
       x = "LIST";
     eof_or_error(111, errno, "failed to read ", x, " answer");
   }
+
   if(listno == 0 && *p == '5') {
     listno = 1;
+
     if(!str_start(p, "501"))
       may_mlsx = 0;
     goto retry_listing;
@@ -229,6 +279,7 @@ retry_listing:
     return 0;
   }
   *dirlines = ftp_read_list(data_sock, dirdata);
+
   if(-1 == *dirlines)
     xbailout(111,
              errno,
@@ -253,6 +304,7 @@ parseit(stralloc* r_dir, stralloc* dirdata, int dirlines) {
   p = dirdata->s;
   e = dirdata->s + dirdata->len;
   parsed = (struct ftpparse*)alloc(sizeof(*parsed) * dirlines);
+
   if(!parsed)
     oom();
   ind = 0;
@@ -260,24 +312,32 @@ parseit(stralloc* r_dir, stralloc* dirdata, int dirlines) {
   while(p != e) {
     unsigned int l = str_len(p);
     int ok;
+
     if(o_raw) {
       do_logmem(p, l);
+
       do_logmem("\n", 1);
     }
+
     if(may_mlsx) {
       ok = ftpparse_mlsx(&parsed[ind], p, l, 0);
+
       if(ok && parsed[ind].flagbrokenmlsx)
         warn_broken_mlsx();
     } else {
       ok = ftpparse(&parsed[ind], p, l, o_eat_leading_spaces);
     }
+
     if(!ok) {
       if(!str_start(p, "total") && !str_start(p, "Total"))
+
         do_log3("cannot parse LIST line: ", p, "\r\n");
     } else if(parsed[ind].name[0] == '.' && (parsed[ind].namelen == 1 || (parsed[ind].namelen == 2 && parsed[ind].name[1] == '.'))) {
       if(o_loglevel > 1) {
         do_log2(r_dir->s, "/");
+
         do_logmem(parsed[ind].name, parsed[ind].namelen);
+
         do_log1(": ignored\n");
       }
     } else {
@@ -285,34 +345,44 @@ parseit(stralloc* r_dir, stralloc* dirdata, int dirlines) {
     }
     p += l + 1;
   }
+
   if(!o_raw)
     sort_it(parsed, ind);
   /* output */
+
   if(!o_raw)
+
     for(i = 0; i < ind; i++)
       entity(r_dir, &parsed[i]);
+
   if(o_recursive)
+
     for(i = 0; i < ind; i++) {
       struct ftpparse* x;
       stralloc t = STRALLOC_INIT;
       char* id;
       unsigned int idlen;
       x = &parsed[i];
+
       if(x->flagtryretr || !x->flagtrycwd)
         continue;
+
       if(x->idlen) {
         idlen = x->idlen;
         id = x->id;
       } else {
         if(!stralloc_copy(&t, r_dir))
           oom();
+
         if(!stralloc_append(&t, "/"))
           oom();
+
         if(!stralloc_catb(&t, x->name, x->namelen))
           oom();
         id = t.s;
         idlen = t.len;
       }
+
       if(strhash_lookup(&hash, id, idlen, 0, 0)) {
       } else if(o_max_depth) {
         unsigned int pos;
@@ -325,29 +395,39 @@ parseit(stralloc* r_dir, stralloc* dirdata, int dirlines) {
           oom();
 
         if(r_dir->s[r_dir->len - 1] != '/')
+
           if(!stralloc_append(r_dir, "/"))
             oom();
+
         if(!stralloc_catb(r_dir, x->name, x->namelen))
           oom();
+
         if(!stralloc_0(r_dir))
           oom();
+
         if(get_listing(r_dir, &dd, &dl)) {
           if(o_html) {
             do_log2("<dt>Listing of:<dd>", r_dir->s);
+
             do_log1("<dl>\n");
           }
+
           if(!o_html && o_print_dir) {
             do_logmem(r_dir->s, r_dir->len - 1);
+
             do_logmem(":\n", 2);
           }
           o_max_depth--;
           parseit(r_dir, &dd, dl);
           o_max_depth++;
+
           if(o_html)
+
             do_log1("</dl>\n");
         }
         stralloc_free(&dd);
         r_dir->len = pos;
+
         if(!stralloc_0(r_dir))
           oom();
       }
@@ -360,10 +440,12 @@ static int
 callback_ip(uogetopt_env* e, uogetopt2* g, char* s) {
   (void)g;
   (void)e;
+
   while(s && *s) {
     char ip[4];
     unsigned int x;
     x = ip4_scan(s, ip);
+
     if(!x || (s[x] != ',' && s[x] != 0))
       xbailout(2,
                0,
@@ -372,9 +454,11 @@ callback_ip(uogetopt_env* e, uogetopt2* g, char* s) {
                s,
                "'",
                0);
+
     if(!stralloc_catb(&pasv_response_ips, ip, 4))
       oom();
     s += x;
+
     if(*s)
       s++;
   }
@@ -638,27 +722,38 @@ onelisting(stralloc* d) {
   static int dirlines = 0;
   dirprintoffset = d->len - 1; /* \0 */
   strhash_destroy(&hash);
+
   if(-1 == strhash_create(&hash, 16, 32, strhash_hash))
     oom();
 
   if(!get_listing(d, &dirdata, &dirlines))
     return 1;
+
   if(o_html) {
     do_log1("<html><head>\n");
+
     if(o_title)
+
       do_log3("<title>", o_title, "</title>\n");
+
     do_log1("</head><body>\n");
+
     if(o_title) {
       do_log3("<h1>", o_title, "</h1>\n");
     }
+
     do_log1("<dl>\n");
   }
   parseit(d, &dirdata, dirlines);
+
   if(o_html) {
     do_log1("</dl></body></html>\n");
   }
+
   if(o_interactive)
+
     if(!o_html)
+
       do_log1("END-OF-LISTING\n");
   return 0;
 }
@@ -709,103 +804,138 @@ main(int argc, char** argv) {
              0,
              0,
              0);
+
   if(o_v4_only)
     socket_flag_noipv6 = 1;
+
   if(o_v6_only)
     socket_flag_noipv4 = 1;
 
   if(argc < 2 || argc > 3)
     usage();
   callback_ip(0, 0, env_get("FTPCOPY_ALLOW_PASV_IP"));
+
   if(o_max_depth != 4294967295UL)
     o_recursive = 1;
 
   if(urlparse(argv[1], &proto, &user, &pass, &hostport, &rest)) {
     if(!stralloc_0(&proto))
       oom();
+
     if(!str_equal(proto.s, "ftp"))
       xbailout(100, 0, "URL type `", proto.s, "' is not supported", 0);
+
     if(!hostport.len)
       xbailout(100, 0, "empty host in url", 0, 0, 0);
+
     if(!stralloc_0(&hostport))
       oom();
     host = hostport.s;
+
     if(!rest.len)
+
       if(!stralloc_append(&rest, "/"))
         oom();
+
     if(!stralloc_0(&rest))
       oom();
     remotedir = rest.s;
+
     if(!o_user && user.len) {
       if(!stralloc_0(&user))
         oom();
       o_user = user.s;
     }
+
     if(!o_pass && pass.len) {
       if(!stralloc_0(&pass))
         oom();
       o_user = pass.s;
     }
+
     if(argv[2])
       usage();
 
     if(!stralloc_copys(&urlprefix, argv[1]))
       oom();
+
     if(urlprefix.s[urlprefix.len - 1] != '/')
+
       if(!stralloc_append(&urlprefix, "/"))
         oom();
   } else {
     host = argv[1];
     remotedir = argv[2];
+
     if(!remotedir || !*remotedir)
       remotedir = "/";
+
     if(o_html && !o_interactive) {
       if(!stralloc_copys(&urlprefix, "ftp://"))
         oom();
+
       if(!stralloc_cats(&urlprefix, host))
         oom();
+
       if(!stralloc_cats(&urlprefix, remotedir))
         oom();
+
       if(urlprefix.s[urlprefix.len - 1] != '/')
+
         if(!stralloc_append(&urlprefix, "/"))
           oom();
     } else if(!stralloc_0(&urlprefix))
       oom();
   }
+
   if(!o_user)
     o_user = "anonymous";
+
   if(!o_pass)
     o_pass = "anonymous@example.invalid";
+
   if(o_urlprefix)
+
     if(!stralloc_copys(&urlprefix, o_urlprefix))
       oom();
 
   connect_auth(host, o_user, o_pass, o_acct, o_tries);
+
   if(o_ascii_listings)
     sx2("TYPE A");
   else
     sx2("TYPE I");
   retcode = 0;
+
   if(o_interactive) {
     buffer io_stdin;
     char spc[BUFFER_INSIZE];
     buffer_init(&io_stdin, (buffer_op)read, 0, spc, sizeof(spc));
+
     for(;;) {
       int gotlf;
+
       if(-1 == getln(&io_stdin, &d1, &gotlf, '\n'))
         xbailout(111, errno, "failed to read from stdin", 0, 0, 0);
+
       if(d1.len == 0)
         break;
       d1.len--;
+
       if(!stralloc_copys(&urlprefix, "ftp://"))
         oom();
+
       if(!stralloc_cats(&urlprefix, host))
         oom();
+
       if(!stralloc_cat(&urlprefix, &d1))
         oom();
+
       if(urlprefix.s[urlprefix.len - 1] != '/')
+
         if(!stralloc_append(&urlprefix, "/"))
           oom();
+
       if(!stralloc_0(&d1))
         oom();
       retcode = onelisting(&d1);

@@ -20,6 +20,7 @@ xml_print_attributes(HMAP_DB* db, buffer* b, const char* sep, const char* eq, co
       case HMAP_DATA_TYPE_CUSTOM: buffer_putptr(b, tpl->vals.val_custom); break;
     }
     buffer_puts(b, quot);
+
     if(tpl->next == db->list_tuple)
       break;
     tpl = tpl->next;

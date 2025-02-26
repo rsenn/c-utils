@@ -23,6 +23,7 @@ hmap_add_tuple_with_data(HMAP_DB** hmap_db, const void* key, size_t k_len, void*
       return HMAP_TUPUL_EMPTY;
     }
     /* free slot */
+
     if(root_tuple->key_len == 0) {
 
       root_tuple->data = data;

@@ -14,9 +14,11 @@ fmt_stripwhitespace(char* dest, const char* src, size_t len) {
     if(i) {
       s += i;
       len -= i;
+
       if(d > dest)
         *d++ = ' ';
     }
+
     if(len == 0)
       break;
 

@@ -26,6 +26,7 @@ worker(void* arg) {
 int
 main() {
   iom_init(&c);
+
   if(iom_add(&c, 0, IOM_READ) == -1) {
     perror("iom_add");
     return 1;
@@ -33,7 +34,9 @@ main() {
   thrd_t x[4];
   int i;
   puts("launching threads");
+
   for(i = 0; i < 4; ++i)
+
     if(thrd_create(&x[i], worker, (void*)(uintptr_t)i) == -1) {
       perror("thrd_create");
       return 111;
@@ -44,6 +47,7 @@ main() {
 
   puts("joining threads");
   int r;
+
   for(i = 0; i < 4; ++i) {
     if(thrd_join(x[i], &r) == -1) {
       perror("thrd_join");

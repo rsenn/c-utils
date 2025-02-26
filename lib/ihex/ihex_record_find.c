@@ -11,6 +11,7 @@ ihex_record_find(ihex_file* ihf, uint32 at, uint32* roffs) {
       continue;
 
     o.lo16 = p.rec->offset;
+
     if(at >= o.off32 && at < o.off32 + p.rec->length) {
       if(roffs)
         *roffs = o.off32;

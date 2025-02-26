@@ -74,6 +74,7 @@ coff_print_func(buffer* b, void* coff, coff_symtab_entry* fn) {
 
     buffer_putulong0(b, i++, 3);
     buffer_putspace(b);
+
     if(p->line) {
       buffer_puts(b, "line: ");
       buffer_putulong(b, p->line);
@@ -216,6 +217,7 @@ coff_list_symbols(buffer* b, void* coff) {
         buffer_putspace(b);
         buffer_putspad(b, sclass ? sclass : "(null)", 16);
         buffer_putlong0(b, e->e.numaux, 4);
+
         if(fn) {
           buffer_putspace(b);
           buffer_putulong0(b, (unsigned long)fn->func.code_size, 6);
@@ -360,8 +362,10 @@ main(int argc, char** argv) {
 
   for(;;) {
     c = unix_getopt_long(argc, argv, "hiedsEDO", opts, &index);
+
     if(c == -1)
       break;
+
     if(c == '\0')
       continue;
 
@@ -437,17 +441,20 @@ main(int argc, char** argv) {
                 coff_dump_opthdr(buffer_1,
            base);
         */
+
         if(list_sections)
           coff_dump_sections(base);
 
         if(list_imports || list_exports)
           coff_list_symbols(buffer_1, base);
         /*
+
         if(list_imports)
           coff_dump_imports(base);
 
          if(list_exports)
            coff_dump_exports(base);
+
         if(print_export_dir) {
           coff_data_directory* data_dir
         =
@@ -459,6 +466,7 @@ main(int argc, char** argv) {
           coff_print_export_directory(buffer_2,
         base, export_dir);
         }
+
         if(print_data_dir) {
           uint32 num_dirs;
           coff_data_directory* data_dir

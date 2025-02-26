@@ -12,6 +12,7 @@ set_iterator_next(set_iterator_t* it) {
 
   // check if there are overflowed buckets in our current position in the
   // array
+
   if(b->next) {
     it->current = b->next;
     return 1;
@@ -20,6 +21,7 @@ set_iterator_next(set_iterator_t* it) {
   // no more buckets in our current index, so increment index
   // and seach for non-empty bucket
   index = it->index + 1;
+
   if(index >= it->set->len) {
     it->current = NULL;
     return 3;
@@ -29,6 +31,7 @@ set_iterator_next(set_iterator_t* it) {
 
   while(!b->value) {
     ++index;
+
     if(index >= it->set->len) {
       it->current = NULL;
       return 3;

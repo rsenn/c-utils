@@ -21,8 +21,10 @@ ftp_read_list(int fd, stralloc* dir) {
 
   buffer_init(&io, (buffer_op)TIMEOUTREADFN(o_timeout), fd, buf, BUFFER_INSIZE);
   dir->len = 0;
+
   for(;;) {
     int gotlf;
+
     if(-1 == getln(&io, &direntry, &gotlf, '\n')) {
       int e;
     error:
@@ -31,18 +33,23 @@ ftp_read_list(int fd, stralloc* dir) {
       errno = e;
       return -1;
     }
+
     if(direntry.len == 0)
       break;
+
     if(!gotlf) {
       errno = error_proto;
       goto error;
     }
     direntry.len--;
+
     if(direntry.s[direntry.len - 1] == '\r')
       direntry.len--;
     direntry.s[direntry.len] = 0;
+
     if(case_starts(direntry.s, "total"))
       continue;
+
     if(!stralloc_catb(dir, direntry.s, direntry.len + 1))
       goto error;
     lines++;

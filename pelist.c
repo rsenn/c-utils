@@ -50,6 +50,7 @@ pe_search_sections(uint8* base, const char* x, size_t len) {
 
     while(j < length) {
       j += byte_findb(base + start + j, length - j, x, len);
+
       if(j < length) {
         uint64 offset = start + j;
 
@@ -169,6 +170,7 @@ pe_dump_exports(uint8* base) {
 
   mintextptr = uint32_get(&text->virtual_address);
   maxtextptr = mintextptr + uint32_get(&text->size_of_raw_data);
+
   if((dllname = pe_dllname(base)))
     buffer_putm_internal(buffer_1, "LIBRARY ", dllname, "\n", NULL);
 
@@ -221,6 +223,7 @@ pe_dump_imports(uint8* base) {
   for(i = 0; imports[i].original_first_thunk; ++i) {
     const char* name = pe_rva2ptr(base, uint32_get(&imports[i].name));
     void* thunk;
+
     if(name[0] == '\0')
       break;
 
@@ -284,8 +287,10 @@ pe_dump_dependencies(uint8* base) {
 int
 parse_offset(const char* arg, uint64* dest) {
   int ret = 0;
+
   if(str_start(arg, "0x"))
     ret = scan_xlonglong(arg + 2, dest) > 0;
+
   if(!ret)
     ret = scan_ulonglong(arg, dest) > 0;
 
@@ -297,6 +302,7 @@ parse_search(const char* arg, stralloc* dest) {
   int ret = 0;
   uint64 n;
   ret = scan_xlonglong(str_start(arg, "0x") ? arg + 2 : arg, &n);
+
   if(ret > 0) {
     ret = (ret + 1) / 2;
     stralloc_ready(dest, 16);
@@ -312,6 +318,7 @@ parse_search(const char* arg, stralloc* dest) {
 void
 put_search(buffer* b, const stralloc* search) {
   size_t i;
+
   for(i = 0; i < search->len; i++) {
     if(i > 0)
       buffer_putspace(b);
@@ -381,8 +388,10 @@ main(int argc, char** argv) {
 
   for(;;) {
     c = unix_getopt_long(argc, argv, "hiedsEDOo:ra:S:R", opts, &index);
+
     if(c == -1)
       break;
+
     if(c == '\0')
       continue;
 
@@ -430,6 +439,7 @@ main(int argc, char** argv) {
         buffer_putnlflush(buffer_1);
         continue;
       }
+
       if(print_rva_offset) {
         uint64 offset = pe_rva2offset(base, rva);
 
@@ -457,13 +467,16 @@ main(int argc, char** argv) {
       // DLL\n"); return -1;
       // }
       //
+
       if(print_opt_header)
         pe_dump_opthdr(buffer_1, base);
 
       if(list_sections)
         pe_dump_sections(base);
+
       if(list_imports)
         pe_dump_imports(base);
+
       if(list_deps)
         pe_dump_dependencies(base);
 
@@ -478,6 +491,7 @@ main(int argc, char** argv) {
 
         pe_print_export_directory(buffer_2, base, export_dir);
       }
+
       if(print_data_dir) {
         uint32 num_dirs;
         pe_data_directory* data_dir = pe_get_datadir(base, &num_dirs);
@@ -502,21 +516,25 @@ pe_dump_sections(uint8* base) {
 
   buffer_putspad(buffer_1, "section name", 16);
   buffer_putspace(buffer_1);
+
   if(!print_range) {
     buffer_putspad(buffer_1, "vsize", sizeof(sections[i].physical_address) * 2);
     buffer_putnspace(buffer_1, 3);
   }
   buffer_putspad(buffer_1, "rva", sizeof(sections[i].virtual_address) * 2);
   buffer_putnspace(buffer_1, 3);
+
   if(print_range) {
     buffer_putspad(buffer_1, "vend", sizeof(sections[i].physical_address) * 2);
     buffer_putnspace(buffer_1, 3);
   }
+
   if(!print_range) {
     buffer_putspad(buffer_1, "rawsize", sizeof(sections[i].size_of_raw_data) * 2);
     buffer_putnspace(buffer_1, 3);
   }
   buffer_putspad(buffer_1, "pointer", sizeof(sections[i].pointer_to_raw_data) * 2);
+
   if(print_range) {
     buffer_putnspace(buffer_1, 3);
     buffer_putspad(buffer_1, "raw end", sizeof(sections[i].size_of_raw_data) * 2);
@@ -525,22 +543,26 @@ pe_dump_sections(uint8* base) {
 
   for(i = 0; i < n; i++) {
     buffer_putspad(buffer_1, sections[i].name, 16);
+
     if(!print_range) {
       buffer_puts(buffer_1, " 0x");
       buffer_putxlong0(buffer_1, uint32_get(&sections[i].physical_address), sizeof(sections[i].physical_address) * 2);
     }
     buffer_puts(buffer_1, " 0x");
     buffer_putxlong0(buffer_1, uint32_get(&sections[i].virtual_address), sizeof(sections[i].virtual_address) * 2);
+
     if(print_range) {
       buffer_puts(buffer_1, " 0x");
       buffer_putxlong0(buffer_1, uint32_get(&sections[i].virtual_address) + uint32_get(&sections[i].physical_address), sizeof(sections[i].physical_address) * 2);
     }
+
     if(!print_range) {
       buffer_puts(buffer_1, " 0x");
       buffer_putxlong0(buffer_1, uint32_get(&sections[i].size_of_raw_data), sizeof(sections[i].size_of_raw_data) * 2);
     }
     buffer_puts(buffer_1, " 0x");
     buffer_putxlong0(buffer_1, uint32_get(&sections[i].pointer_to_raw_data), sizeof(sections[i].pointer_to_raw_data) * 2);
+
     if(print_range) {
       buffer_puts(buffer_1, " 0x");
       buffer_putxlong0(buffer_1, uint32_get(&sections[i].pointer_to_raw_data) + uint32_get(&sections[i].size_of_raw_data), sizeof(sections[i].size_of_raw_data) * 2);

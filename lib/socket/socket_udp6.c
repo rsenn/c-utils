@@ -26,14 +26,17 @@ socket_udp6b(void) {
   int s;
 
   __winsock_init();
+
   if(noipv6)
     goto compat;
   s = winsock2errno(socket(AF_INET6, SOCK_DGRAM, 0));
+
   if(s == -1) {
     if(errno == EINVAL || errno == EAFNOSUPPORT || errno == EPFNOSUPPORT || errno == EPROTONOSUPPORT) {
     compat:
       s = winsock2errno(socket(AF_INET, SOCK_DGRAM, 0));
       noipv6 = 1;
+
       if(s == -1)
         return -1;
     } else
@@ -54,6 +57,7 @@ socket_udp6b(void) {
 int
 socket_udp6(void) {
   int s = socket_udp6b();
+
   if(s != -1 && ndelay_on(s) == -1) {
     closesocket(s);
     return -1;

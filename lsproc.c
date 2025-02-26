@@ -47,6 +47,7 @@ proc_openreadclose(const char* pid, const char* file, stralloc* out) {
   stralloc_nul(&path);
 
   ret = openreadclose(path.s, out, 1024);
+
   if(ret) {
     stralloc_trimr(out, "\n", 1);
     stralloc_nul(out);
@@ -71,8 +72,10 @@ proc_list(strlist* pids) {
 
   while((name = dir_read(&d))) {
     type = dir_type(&d);
+
     if(str_equal(name, "") || str_equal(name, ".") || str_equal(name, ".."))
       continue;
+
     if(type != D_DIRECTORY || !(name[0] >= '0' && name[0] <= '9'))
       continue;
 
@@ -110,6 +113,7 @@ main(int argc, char* argv[]) {
 
   strlist_foreach_s(&pidlist, pid) {
     stralloc_zero(&data);
+
     if(!proc_openreadclose(pid, "stat", &data))
       exit(1);
 

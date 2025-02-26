@@ -110,6 +110,7 @@ cfg_data_at(uint32 addr) {
   } else {
 
     offset = (ssize_t)addr & 0x0fff;
+
     if(offset < cfg.len)
       result = cfg.s[offset];
   }
@@ -131,6 +132,7 @@ cfg_data_at(uint32 addr) {
 
 #ifdef DEBUG_OUTPUT_
   buffer_putm_internal(buffer_2, __FUNCTION__, "(): ", "result = ", result >= 0 ? "0x" : 0, 0);
+
   if(result < 0)
     buffer_putlonglong(buffer_2, result);
   else
@@ -381,6 +383,7 @@ cfg_get_data(const char* chip) {
 
     for(i = 0; i < sizeof(search_dirs) / sizeof(search_dirs[0]); i++) {
       dir = search_dirs[i];
+
       if(path_exists(dir))
         break;
     }

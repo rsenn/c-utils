@@ -13,6 +13,7 @@
 int
 io_readfile(fd_type* d, const char* s) {
   long fd = open(s, O_RDONLY);
+
   if(fd != -1) {
     *d = fd;
     return 1;

@@ -5,9 +5,11 @@ size_t
 scan_yenc(const char* src, char* dest, size_t* destlen) {
   register const unsigned char* s = (const unsigned char*)src;
   size_t written = 0, i;
+
   for(i = 0; s[i]; ++i) {
     if(s[i] == '=') {
       ++i;
+
       if(s[i] == 'y')
         break;
       dest[written] = s[i] - 64 - 42;

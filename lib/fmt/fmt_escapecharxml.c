@@ -6,6 +6,7 @@ fmt_escapecharxml(char* dest, unsigned int ch) {
   char a[FMT_LONG], b[FMT_XLONG];
   const char* s;
   size_t i, j;
+
   switch(ch) {
     case '&': s = "&amp;"; goto string;
     case '<': s = "&lt;"; goto string;
@@ -17,10 +18,12 @@ fmt_escapecharxml(char* dest, unsigned int ch) {
       b[0] = 'x';
       b[j = fmt_xlong(b + 1, ch) + 1] = 0;
       s = a;
+
       if(i > j) {
         s = b;
         i = j;
       }
+
       if(dest) {
         dest[0] = '&';
         dest[1] = '#';

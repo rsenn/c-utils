@@ -28,6 +28,7 @@ setitimer(int which, const struct itimerval* value, struct itimerval* ovalue) {
   if(timerHandle == INVALID_HANDLE_VALUE) {
     /* First call in this backend, create new timer object */
     timerHandle = CreateWaitableTimer(NULL, TRUE, NULL);
+
     if(timerHandle == NULL)
       ereport(FATAL, (errmsg_internal("failed to create waitable timer: %i", GetLastError())));
   }
@@ -36,6 +37,7 @@ setitimer(int which, const struct itimerval* value, struct itimerval* ovalue) {
     errno = EFAULT;
     return -1;
   }
+
   if(value->it_value.tv_sec == 0 && value->it_value.tv_usec == 0) {
     /* Turn timer off */
     CancelWaitableTimer(timerHandle);
@@ -46,6 +48,7 @@ setitimer(int which, const struct itimerval* value, struct itimerval* ovalue) {
   dueTime.QuadPart = -(value->it_value.tv_usec * 10 + value->it_value.tv_sec * 10000000L);
 
   /* Turn timer on, or change timer */
+
   if(!SetWaitableTimer(timerHandle, &dueTime, 0, timer_completion, NULL, FALSE))
     errmsg_warnsys("failed to set waitable timer: ",0);
 

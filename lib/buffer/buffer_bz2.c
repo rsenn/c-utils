@@ -109,6 +109,7 @@ buffer_bz_close(buffer* b) {
 
     if(ret == BZ_FLUSH_OK)
       ctx->a = BZ_FINISH;
+
     if(ret == BZ_FINISH_OK)
       break;
 
@@ -126,6 +127,7 @@ int
 buffer_bz2(buffer* b, buffer* other, int compress) {
   int ret;
   bz_ctx* ctx = calloc(1, sizeof(bz_ctx));
+
   if(ctx == NULL)
     return 0;
 

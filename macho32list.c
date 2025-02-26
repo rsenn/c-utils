@@ -28,6 +28,7 @@ main(int argc, char** argv) {
     macho_mach_header* header;
 
     header = (macho_mach_header*)content;
+
     if(header->magic != MACHO_MH_MAGIC) {
       printf("not Mach-O 32\n");
       return -1;
@@ -41,6 +42,7 @@ main(int argc, char** argv) {
     macho_load_command* load;
 
     load = (macho_load_command*)(content + offset);
+
     switch(load->cmd) {
       case MACHO_LC_SEGMENT: {
         macho_segment_command* segment;
@@ -48,14 +50,17 @@ main(int argc, char** argv) {
         size_t j;
 
         segment = (macho_segment_command*)(content + offset);
+
         if(!!str_diff(segment->segname, "__TEXT")) {
           section_index += segment->nsects;
           break;
         }
 
         section = (macho_section*)(content + offset + sizeof(macho_segment_command));
+
         for(j = 0; j < segment->nsects; j++, section++) {
           section_index++;
+
           if(!str_diff(section->sectname, "__text"))
             text_section_index = section_index;
         }
@@ -70,6 +75,7 @@ main(int argc, char** argv) {
         table = (macho_symtab_command*)(content + offset);
         symbol = (macho_nlist*)(content + table->symoff);
         string_table = content + table->stroff;
+
         for(j = 0; j < table->nsyms; j++, symbol++) {
           int defined_in_section = 0;
 

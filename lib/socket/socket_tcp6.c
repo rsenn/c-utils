@@ -29,8 +29,10 @@ socket_tcp6(void) {
     return s;
 #endif
   s = socket_tcp6b();
+
   if(s == -1)
     return -1;
+
   if(ndelay_on(s) == -1) {
     closesocket(s);
     return -1;

@@ -53,6 +53,7 @@ static inline size_t
 strlist_skip(const strlist* sl, char* ptr) {
   const char* end = sl->sa.s + sl->sa.len;
   size_t ret = strlist_len(sl, ptr);
+
   if(ptr + ret < end && ptr[ret] == sl->sep)
     ++ret;
   return ret;
@@ -61,6 +62,7 @@ strlist_skip(const strlist* sl, char* ptr) {
 static inline char*
 strlist_next(const strlist* sl, char* ptr) {
   ptr += strlist_len(sl, ptr);
+
   if(ptr < strlist_end(sl) && *ptr == sl->sep)
     ++ptr;
   return ptr;
@@ -70,6 +72,7 @@ static inline char*
 strlist_next_b(const strlist* sl, const char* ptr, size_t* n) {
   const char* end = sl->sa.s + sl->sa.len;
   ptr += strlist_len(sl, ptr);
+
   if(ptr < end && *ptr == sl->sep) {
     if(++ptr < end && n) {
       *n = strlist_len(sl, ptr);

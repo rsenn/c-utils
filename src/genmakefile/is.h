@@ -98,6 +98,7 @@ is_filename_b(const char* filename, size_t len) {
 
   if(extpos + 1 < len) {
     for(size_t i = extpos + 1; i < len; i++)
+
       if(!isalnum(filename[i]))
         return 0;
 

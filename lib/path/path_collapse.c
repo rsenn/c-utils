@@ -23,6 +23,7 @@ path_collapse(char* path, size_t n) {
         l += 3;
 
       move:
+
         if(l < n)
           memmove(&x[i], &x[l], n - l);
 

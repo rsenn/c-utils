@@ -13,10 +13,12 @@ path_skip(const char* s, size_t n) {
   }
 
   /*for(i = 0; i < n; i += len)
+
     if((len = u8_len(&s[i], 1)) == 1 && path_issep(s[i]))
       break;
 
   for(i = 0; i < n; i += len)
+
     if((len = u8_len(&s[i], 1)) > 1 || !path_issep(s[i]))
       break;*/
 

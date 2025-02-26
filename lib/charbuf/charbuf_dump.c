@@ -9,6 +9,7 @@ charbuf_dump_chrs(charbuf* b, buffer* out) {
   if(b->p > 0) {
     size_t i;
     charbuf_colorstr("[ ", CHARBUF_CYAN30, out);
+
     for(i = 0; i < b->p; i++) {
       if(i > 0)
         buffer_puts(out, " ");
@@ -38,11 +39,13 @@ charbuf_dump(charbuf* b, buffer* out) {
     buffer_puts(out, CHARBUF_PROPSEP);
     charbuf_dumpint64("eof", b->eof, out);
   }
+
   if(b->err) {
     buffer_puts(out, CHARBUF_PROPSEP);
 
     charbuf_dumpint64("err", b->err, out);
   }
+
   if(b->loc.column > 0 || b->loc.line > 0) {
     buffer_puts(out, CHARBUF_PROPSEP);
     charbuf_dumplabel("loc", out);

@@ -41,9 +41,11 @@ header_complete(struct http_data* r) {
   long i;
   long l = array_bytes(&r->r);
   const char* c = array_start(&r->r);
+
   for(i = 0; i + 1 < l; ++i) {
     if(c[i] == '\n' && c[i + 1] == '\n')
       return i + 2;
+
     if(i + 3 < l && c[i] == '\r' && c[i + 1] == '\n' && c[i + 2] == '\r' && c[i + 3] == '\n')
       return i + 4;
   }
@@ -54,6 +56,7 @@ void
 httperror(struct http_data* r, const char* title, const char* message) {
   char* c;
   c = r->hdrbuf = (char*)malloc(str_len(message) + str_len(title) + 200);
+
   if(!c) {
     r->hdrbuf = "HTTP/1.0 500 internal error\r\nContent-Type: text/plain\r\nConnection: close\r\n\r\nout of memory\n";
     r->hlen = str_len(r->hdrbuf);
@@ -109,10 +112,13 @@ static struct mimeentry {
 const char*
 mimetype(const char* filename) {
   int i, e = str_rchr(filename, '.');
+
   if(filename[e] == 0)
     return "text/plain";
   ++e;
+
   for(i = 0; mimetab[i].name; ++i)
+
     if(str_equal(mimetab[i].name, filename + e))
       return mimetab[i].type;
   return "application/octet-stream";
@@ -124,9 +130,12 @@ http_header(struct http_data* r, const char* h) {
   long l = array_bytes(&r->r);
   long sl = str_len(h);
   const char* c = array_start(&r->r);
+
   for(i = 0; i + sl + 2 < l; ++i)
+
     if(c[i] == '\n' && case_equalb(c + i + 1, sl, h) && c[i + sl + 1] == ':') {
       c += i + sl + 1;
+
       if(*c == ' ' || *c == '\t')
         ++c;
       return c;
@@ -140,6 +149,7 @@ httpresponse(struct http_data* h, int64 s) {
   const char* m;
   array_cat0(&h->r);
   c = array_start(&h->r);
+
   if(byte_diff(c, 4, "GET ")) {
   e400:
     httperror(h, "400 Invalid Request", "This server only understands GET.");
@@ -148,15 +158,20 @@ httpresponse(struct http_data* h, int64 s) {
     int64 fd;
     struct stat s;
     c += 4;
+
     for(d = c; *d != ' ' && *d != '\t' && *d != '\n' && *d != '\r'; ++d)
       ;
+
     if(*d != ' ')
       goto e400;
     *d = 0;
+
     if(c[0] != '/')
       goto e404;
+
     while(c[1] == '/')
       ++c;
+
     if(!io_readfile(&fd, c + 1)) {
     e404:
       httperror(h, "404 Not Found", "No such file or directory.");
@@ -165,6 +180,7 @@ httpresponse(struct http_data* h, int64 s) {
         io_close(fd);
         goto e404;
       }
+
       if((m = http_header(h, "Connection"))) {
         if(str_equal(m, "keep-alive"))
           h->keepalive = 1;
@@ -198,6 +214,7 @@ httpresponse(struct http_data* h, int64 s) {
 void
 cleanup(int64 socket) {
   struct http_data* x = io_getcookie(socket);
+
   if(x) {
     array_reset(&x->r);
     iob_free(&x->iob);
@@ -212,19 +229,25 @@ main() {
   uint32 scope_id;
   char ip[16];
   uint16 port;
+
   if(socket_bind6_reuse(s, V6any, 8000, 0) == -1)
     panic("socket_bind6_reuse");
+
   if(socket_listen(s, 16) == -1)
     panic("socket_listen");
+
   if(!io_fd(s))
     panic("io_fd");
   io_wantread(s);
+
   for(;;) {
     int64 i;
     io_wait();
+
     while((i = io_canread()) != -1) {
       if(i == s) {
         int n;
+
         while((n = socket_accept6(s, ip, &port, &scope_id)) != -1) {
           char buf[IP6_FMT];
           buffer_puts(buffer_2, "accepted new connection from ");
@@ -234,9 +257,11 @@ main() {
           buffer_puts(buffer_2, " (fd ");
           buffer_putulong(buffer_2, n);
           buffer_puts(buffer_2, ")");
+
           if(io_fd(n)) {
             struct http_data* h = (struct http_data*)malloc(sizeof(struct http_data));
             io_wantread(n);
+
             if(h) {
               byte_zero(h, sizeof(struct http_data));
               io_setcookie(n, h);
@@ -248,6 +273,7 @@ main() {
           }
           buffer_putnlflush(buffer_2);
         }
+
         if(errno == EAGAIN)
           io_eagain_read(s);
         else
@@ -256,6 +282,7 @@ main() {
         char buf[8192];
         struct http_data* h = io_getcookie(i);
         int l = io_tryread(i, buf, sizeof buf);
+
         if(l == -3) {
           if(h) {
             array_reset(&h->r);
@@ -284,6 +311,7 @@ main() {
           io_close(i);
         } else if(l > 0) {
           array_catb(&h->r, buf, l);
+
           if(array_failed(&h->r)) {
             httperror(h, "500 Server Error", "request too long.");
           emerge:
@@ -297,10 +325,12 @@ main() {
         }
       }
     }
+
     while((i = io_canwrite()) != -1) {
       struct http_data* h = io_getcookie(i);
       int64 r = iob_send(i, &h->iob);
       /*      printf("iob_send returned %lld\n",r); */
+
       if(r == -1)
         io_eagain_write(i);
       else if(r <= 0) {
@@ -308,6 +338,7 @@ main() {
         iob_reset(&h->iob);
         free(h->hdrbuf);
         h->hdrbuf = 0;
+
         if(h->keepalive) {
           io_dontwantwrite(i);
           io_wantread(i);

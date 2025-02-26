@@ -24,6 +24,7 @@ socket_mcleave6(int s, const char ip[16]) {
 #ifdef LIBC_HAS_IP6
   struct ipv6_mreq opt;
 #endif
+
   if(ip6_isv4mapped(ip))
     return socket_mcleave4(s, ip + 12);
 #ifdef LIBC_HAS_IP6

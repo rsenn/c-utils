@@ -15,8 +15,10 @@ socket_remote4(int s, char ip[4], uint16* port) {
 
   if(getpeername(s, (struct sockaddr*)&si, &len) == -1)
     return winsock2errno(-1);
+
   if(ip)
     *(uint32*)ip = *(uint32*)&si.sin_addr;
+
   if(port)
     uint16_unpack_big((char*)&si.sin_port, port);
   return 0;

@@ -138,6 +138,7 @@ read_hosts(const char* file) {
 
     if(s >= l)
       continue;
+
     if(p[s] == '#')
       continue;
 
@@ -179,6 +180,7 @@ int
 lookup_hosts(stralloc* name, address_t* addr) {
   address_t* ptr;
   stralloc_nul(name);
+
   if((ptr = MAP_GET(hosts_db, name->s, name->len + 1))) {
     byte_copy(addr, sizeof(address_t), ptr);
     return 1;
@@ -260,11 +262,13 @@ handle_ftp(ftp_client* ftp, stralloc* line) {
       byte_zero(&bytes, sizeof(u8seq));
       pos = stralloc_findb(line, "(", 1);
       i = 0;
+
       while(pos < line->len) {
         pos++;
         n = scan_uint(&line->s[pos], &num);
         bytes.u8[i++] = num;
         pos += n;
+
         if(line->s[pos] == ')')
           break;
       }
@@ -316,6 +320,7 @@ list_ftp(ftp_client* ftp) {
         io_wantwrite(ftp->control_sock);
         break;
       }
+
       if(w == ftp->control_sock /*|| w == ftp->data_sock*/) {
 
         switch(ftp->state) {
@@ -341,10 +346,12 @@ list_ftp(ftp_client* ftp) {
             break;
           }
         }
+
         if(in.p == 0 && ftp->state >= TRANSFERRING)
           io_dontwantwrite(ftp->control_sock);
       }
     }
+
     while((r = io_canread()) != -1) {
       buffer* b;
 
@@ -352,6 +359,7 @@ list_ftp(ftp_client* ftp) {
         b = &ftp->data;
         buffer_feed(b);
         stralloc_zero(&meld);
+
         while(b->p < b->n && byte_chr(&b->x[b->p], b->n - b->p, '\n') < (b->n - b->p)) {
           buffer_getline_sa(b, &meld);
         }
@@ -476,6 +484,7 @@ main(int argc, char* argv[]) {
 #if 1 // def HAVE_SOLARIS
       /* solaris immediately returns
        * ECONNREFUSED on local ports */
+
       if(errno == ECONNREFUSED) {
         if(verbose) {
           buffer_putm_internal(buffer_1, argv[unix_optind], " port ", argv[unix_optind + 1], " closed.", NULL);
@@ -522,6 +531,7 @@ main(int argc, char* argv[]) {
     if((ret = io_timeouted()) == sock) {
       /* timeout */
       closesocket(sock);
+
       if(verbose) {
         buffer_putm_internal(buffer_1, argv[unix_optind], " port ", argv[unix_optind + 1], " user timeout.", NULL);
         buffer_putnlflush(buffer_1);
@@ -533,6 +543,7 @@ main(int argc, char* argv[]) {
     if(io_canread() == sock || io_canwrite() == sock) {
       if(socket_error(sock, &error) == 0) {
         /* getsockopt error */
+
         if(verbose) {
           errmsg_warn("error: ", argv[unix_optind], " port ", argv[unix_optind + 1], ": getsockopt: ", 0);
           buffer_putnlflush(buffer_2);
@@ -542,6 +553,7 @@ main(int argc, char* argv[]) {
         ret = error;
         goto fail;
       }
+
       if(error != 0) {
         if(verbose) {
           if(error == EHOSTUNREACH)
@@ -564,6 +576,7 @@ main(int argc, char* argv[]) {
     }
   }
   /* OK, connection established */
+
   if(verbose) {
     buffer_putm_internal(buffer_1, argv[unix_optind], " port ", argv[unix_optind + 1], " open.", NULL);
     buffer_putnlflush(buffer_1);

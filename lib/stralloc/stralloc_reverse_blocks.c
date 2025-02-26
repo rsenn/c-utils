@@ -17,6 +17,7 @@ stralloc_reverse_blocks(stralloc* sa, size_t size) {
 #else
   char* tmp = malloc(size);
 #endif
+
   for(; i < n; i++) {
     byte_copy(tmp, size, sa->s + i * size);
     byte_copy(sa->s + i * size, size, sa->s + (2 * n - 1 - i) * size);

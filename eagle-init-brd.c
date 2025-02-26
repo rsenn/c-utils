@@ -45,10 +45,13 @@ void
 update_minmax_xy(double x, double y) {
   if(x < min_x)
     min_x = x;
+
   if(y < min_y)
     min_y = y;
+
   if(x > max_x)
     max_x = x;
+
   if(y > max_y)
     max_y = y;
 };
@@ -65,12 +68,15 @@ typedef struct part {
   char deviceset[NAMELEN];
   char device[NAMELEN];
   char value[NAMELEN];
+
   double x, y, rot;
 } part_t;
 typedef struct instance {
   char part[NAMELEN];
   char gate[NAMELEN];
+
   double x, y;
+
   double rot;
 } instance_t;
 
@@ -154,8 +160,10 @@ each_part(part_t* p) {
 
     if(fabs(p->rot) >= 0.1) {
       int angle = (int)((p->rot / 90)) * 90.0;
+
       while(angle < 0)
         angle += 360;
+
       while(angle > 360)
         angle -= 360;
 
@@ -175,6 +183,7 @@ get_part(const char* part) {
   TUPLE* ptr_tuple = NULL;
   part_t* p = NULL;
   hmap_search(parts_db, (char*)part, str_len(part), &ptr_tuple);
+
   if(ptr_tuple)
     p = ptr_tuple->vals.val_custom;
   return p;
@@ -192,6 +201,7 @@ create_instance(const char* part, const char* gate, double x, double y, double r
   stralloc_cats(&key, ":");
   stralloc_cats(&key, gate);
   i = malloc(sizeof(instance_t));
+
   if(i == NULL)
     return NULL;
   str_copyn(i->part, part, sizeof(i->part) - 1);
@@ -212,11 +222,13 @@ create_instance(const char* part, const char* gate, double x, double y, double r
 part_t*
 create_part(const char* name, const char* library, const char* deviceset, const char* device, const char* value) {
   part_t* p;
+
   if(value == NULL)
     value = "";
   /*if(deviceset == NULL) deviceset =
   ""; if(device == NULL) device = "";*/
   p = malloc(sizeof(*p));
+
   if(p == NULL)
     return NULL;
   str_copyn(p->name, name, sizeof(p->name) - 1);
@@ -239,6 +251,7 @@ create_part(const char* name, const char* library, const char* deviceset, const 
 void
 update_part(const char* name, double x, double y, double rot) {
   part_t* p = get_part(name);
+
   if(p == NULL)
     return;
 
@@ -249,6 +262,7 @@ update_part(const char* name, double x, double y, double rot) {
     p->x /= 2;
     p->x = round(p->x * 100) / 100;
   }
+
   if(p->y == 0.0 || isnan(p->y)) {
     p->y = y;
   } else {
@@ -256,6 +270,7 @@ update_part(const char* name, double x, double y, double rot) {
     p->y /= 2;
     p->y = round(p->y * 100) / 100;
   }
+
   if(p->rot == 0.0 || isnan(p->rot)) {
     p->rot = rot;
   } else {
@@ -273,11 +288,15 @@ update_part(const char* name, double x, double y, double rot) {
 void
 hmap_each(HMAP_DB* hmap, void (*foreach_fn)(void*)) {
   TUPLE* t;
+
   if(hmap == NULL)
     return;
+
   for(t = hmap->list_tuple; t; t = t->next) {
     if(t->data_type == HMAP_DATA_TYPE_CUSTOM)
+
       foreach_fn(t->vals.val_custom);
+
     if(t->next == hmap->list_tuple)
       break;
   }
@@ -288,6 +307,7 @@ hmap_each(HMAP_DB* hmap, void (*foreach_fn)(void*)) {
 int
 get_attribute_double(double* d, xmlnode* e, const char* name) {
   char* value;
+
   if(!(value = xml_get_attribute(e, name)))
     return 0;
   return value[scan_double(value, d)] != '\0';
@@ -298,14 +318,17 @@ get_attribute_double(double* d, xmlnode* e, const char* name) {
 void
 cat_attributes(stralloc* sa, xmlnode* e) {
   TUPLE* a;
+
   for(a = hmap_begin(e->attributes); a; a = hmap_next(e->attributes, a)) {
     const char* value = (const char*)a->vals.val_chars;
     stralloc_cats(sa, "\n  ");
     stralloc_catb(sa, a->key, a->key_len);
     stralloc_cats(sa, "=\"");
+
     if(value)
       stralloc_cats(sa, value);
     stralloc_catb(sa, "\"", 1);
+
     if(a->next == hmap_begin(e->attributes))
       break;
   }
@@ -323,8 +346,10 @@ process_instance(xmlnode* e) {
   xml_get_attribute_sa(e, &gate, "gate");
   stralloc_init(&rot);
   xml_get_attribute_sa(e, &rot, "rot");
+
   if(rot.len > 0) {
     const char* r = rot.s;
+
     while(*r && !isdigit(*r))
       ++r;
     scan_double(r, &rotate);
@@ -335,6 +360,7 @@ process_instance(xmlnode* e) {
   y /= unit_factor;*/
   /*x *= scale_factor;
   y *= scale_factor;*/
+
   if(part.s) {
     instance_t* newinst = create_instance(part.s, gate.s, round_to_mil(x * scale_factor / unit_factor, grid_mils), round_to_mil(y * scale_factor / unit_factor, grid_mils), rotate);
   }
@@ -366,8 +392,10 @@ process_part(xmlnode* e) {
 void
 print_element_names(xmlnode* a_node) {
   xmlnode* n = NULL;
+
   if(a_node->type == XML_DOCUMENT)
     a_node = a_node->children;
+
   for(n = a_node; n; n = n->next) {
     if(n->type == XML_ELEMENT) {
       stralloc attrs;
@@ -376,6 +404,7 @@ print_element_names(xmlnode* a_node) {
       stralloc_init(&attrs);
       cat_attributes(&attrs, e);
       stralloc_nul(&attrs);
+
       if(!str_diff((const char*)e->name, "instance")) {
         process_instance(e);
       } else if(!str_diff((const char*)e->name, "part")) {
@@ -383,6 +412,7 @@ print_element_names(xmlnode* a_node) {
       } else {
       }
       stralloc_free(&attrs);
+
       if(n->children)
         print_element_names(n->children);
     }
@@ -400,8 +430,10 @@ const char*
 mystr_basename(const char* filename) {
   char* s1 = strrchr(filename, '\\');
   char* s2 = strrchr(filename, '/');
+
   if(s2 > s1)
     s1 = s2;
+
   if(s1)
     return s1 + 1;
   return 0;
@@ -417,6 +449,7 @@ main(int argc, char* argv[]) {
   hmap_init(1024, &hashmap);
   hmap_init(1024, &instances_db);
   hmap_init(1024, &parts_db);
+
   if(argc > 1) {
     filename = argv[1];
   } else {

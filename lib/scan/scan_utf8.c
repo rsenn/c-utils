@@ -11,11 +11,13 @@ scan_utf8(const char* in, size_t len, unsigned int* num) {
   i = (*(unsigned char*)in++); /* grab first byte */
 
   /* 0xfe and 0xff are invalid encodings in utf-8 for the first byte */
+
   if(i >= 0xfe)
     return 0;
 
   /* first bits being 10 marks continuation chars, invalid sequence for
    * first byte */
+
   if((i & 0xc0) == 0x80)
     return 0;
 
@@ -72,6 +74,7 @@ scan_utf8(const char* in, size_t len, unsigned int* num) {
   }
 
   /* if the encoded value was less than m, reject */
+
   if(i < m)
     return 0;
 

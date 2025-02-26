@@ -9,6 +9,7 @@ cbmap_new_with_custom_allocation(cbmap_allocator_fn key_allocator,
                                  cbmap_allocator_fn value_allocator,
                                  cbmap_deallocator_fn value_deallocator) {
   cbmap_t map = (cbmap_t)CBM_MALLOC(sizeof(struct cbmap));
+
   if(map == NULL) {
     return NULL;
   }
@@ -24,6 +25,7 @@ cbmap_new_with_custom_allocation(cbmap_allocator_fn key_allocator,
 void*
 cbmap_default_allocator(void* data, size_t data_len) {
   void* data_copy = CBM_MALLOC(data_len);
+
   if(data_copy == NULL) {
     return NULL;
   }

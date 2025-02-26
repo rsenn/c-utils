@@ -5,6 +5,7 @@
 void
 stralloc_alloc(stralloc* sa) {
   assert(sa->a == 0);
+
   if(sa->len == 0 && sa->s)
     sa->len = str_len(sa->s);
 

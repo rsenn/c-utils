@@ -8,6 +8,7 @@ strarray_unshiftm(strarray* arr, ...) {
   va_list args;
   const char* s;
   va_start(args, arr);
+
   while((s = va_arg(args, const char*))) {
     if(strarray_splice(arr, i, 0, 1, &s) != -1) {
       i++;

@@ -20,6 +20,7 @@ rdir_read(rdir_t* d) {
   for(;;) {
     if((s = dir_read(&d->dir))) {
       int type = dir_type(&d->dir);
+
       if(!(str_diff(s, "..") && str_diff(s, ".")))
         continue;
 

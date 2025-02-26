@@ -8,8 +8,10 @@ charbuf_skip_until(charbuf* b, int c) {
   for(;;) {
     if((ret = charbuf_peek(b)) <= 0)
       return ret;
+
     if(ret == (unsigned int)(unsigned char)c)
       return n;
+
     if((ret = charbuf_skip(b)) <= 0)
       return ret;
     ++n;

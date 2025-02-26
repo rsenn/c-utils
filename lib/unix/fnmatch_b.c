@@ -39,8 +39,10 @@ charclass_lookup(const char* pattern) {
 
   for(i = 0; i < sizeof(allclasses) / sizeof(*allclasses); i++) {
     int len = str_len(allclasses[i].class);
+
     if(!str_diffn(pattern, allclasses[i].class, len)) {
       pattern += len;
+
       if(str_diffn(pattern, ":]", 2))
         goto noclass;
       return &allclasses[i];
@@ -58,38 +60,47 @@ match(char c, char d, int flags) {
 int
 fnmatch_b(const char* p, size_t plen, const char* s, size_t slen, int flags) {
   size_t i = 0, j = 0;
+
   if(s[j] == 0) {
     while(p[i] == '*')
       ++i;
     return i < plen ? FNM_NOMATCH : 0;
   }
+
   if(s[j] == '.' && p[i] != '.' && (flags & FNM_PERIOD)) {
     /* don't match if FNM_PERIOD and this is the first char */
+
     if(!(flags & NOTFIRST))
       return FNM_NOMATCH;
     /* don't match if FNM_PERIOD and FNM_PATHNAME and previous was '/' */
+
     if((flags & (FNM_PATHNAME)) && s[-1] == '/')
       return FNM_NOMATCH;
   }
   flags |= NOTFIRST;
+
   switch(p[i]) {
     case '[': {
       int neg = 0;
       const char* start; /* first member of character class */
 
       ++i;
+
       if(s[j] == '/' && flags & FNM_PATHNAME)
         return FNM_NOMATCH;
+
       if(p[i] == '!') {
         neg = 1;
         ++i;
       }
       start = p;
+
       while(p[i]) {
         int res = 0;
 
         if(p[i] == ']' && p != start)
           break;
+
         if(p[i] == '[' && p[1] == ':') {
           /* MEMBER - stupid POSIX char classes */
           const struct charclass* cc;
@@ -97,6 +108,7 @@ fnmatch_b(const char* p, size_t plen, const char* s, size_t slen, int flags) {
           if(!(cc = charclass_lookup(p + 2)))
             goto invalidclass;
           p += str_len(cc->class) + 4;
+
           if(flags & FNM_CASEFOLD && (cc->istype == isupper || cc->istype == islower)) {
             res = islower(tolower(s[j]));
           } else {
@@ -104,10 +116,13 @@ fnmatch_b(const char* p, size_t plen, const char* s, size_t slen, int flags) {
           }
         } else {
         invalidclass:
+
           if(p[1] == '-' && p[2] != ']') {
             /* MEMBER - character range */
+
             if(s[j] >= p[i] && s[j] <= p[2])
               res = 1;
+
             if(flags & FNM_CASEFOLD) {
               if(tolower(s[j]) >= tolower(p[i]) && tolower(s[j]) <= tolower(p[2]))
                 res = 1;
@@ -119,6 +134,7 @@ fnmatch_b(const char* p, size_t plen, const char* s, size_t slen, int flags) {
             ++i;
           }
         }
+
         if((res && !neg) || ((neg && !res) && p[i] == ']')) {
           while(p[i] && p[i] != ']')
             ++i;

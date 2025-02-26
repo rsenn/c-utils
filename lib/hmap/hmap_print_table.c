@@ -7,6 +7,7 @@ hmap_print(HMAP_DB* hmap) {
   int i = 0;
   TUPLE* t = NULL;
   t = hmap->tuple;
+
   for(i = 0; i < hmap->bucket_size; i++) {
     buffer_puts(buffer_1, "index[");
     buffer_putlong(buffer_1, t->index);

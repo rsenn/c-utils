@@ -54,6 +54,7 @@ static int
 find_char(char ch, char* buffer, unsigned int n) {
   unsigned int i;
   int ret = 0;
+
   for(i = 0; i < n; i++) {
     if(buffer[i] == ch)
       ret++;
@@ -64,6 +65,7 @@ find_char(char ch, char* buffer, unsigned int n) {
 static ssize_t
 collapse_unicode(char* buffer, size_t n) {
   size_t i = 0, o = 0;
+
   while(buffer[i] == '\0')
     i++;
 
@@ -176,6 +178,7 @@ regfilter() {
     }
 
     pos = 0;
+
     if(line.len) {
       for(; pos < len; pos++) {
         if(buffer[pos] != ' ')
@@ -233,6 +236,7 @@ regfilter() {
         rr = ROOT_HKCC;
 
       o = strchr(key, '\\');
+
       if(o) {
         ++o;
         stralloc_copys(&subkey, o);
@@ -246,13 +250,16 @@ regfilter() {
           keyend++;
           continue;
         }
+
         if(!inquote && line.s[keyend] == '=') {
           valuestart = keyend + 1;
+
           if(keystart > 0) {
             keyend--;
           }
           break;
         }
+
         if(line.s[keyend] == '"')
           inquote = !inquote;
       }
@@ -265,6 +272,7 @@ regfilter() {
           pos++;
           continue;
         }
+
         if(line.s[pos] == '"')
           inquote = !inquote;
       }
@@ -338,6 +346,7 @@ regfilter() {
 
       if(valueend == valuestart && rt == REGISTRY_BINARY)
         type = "REG_SZ";
+
       if(has_newline && rt == REGISTRY_SZ)
         type = "REG_BINARY";
       else
@@ -352,6 +361,7 @@ regfilter() {
         switch(rt) {
           case REGISTRY_EXPAND_SZ: {
             buffer_putc(buffer_1, '"');
+
             for(pos = valuestart; pos < valueend; pos++) {
               if(line.s[pos] == '%')
                 buffer_putc(buffer_1, '^');
@@ -362,6 +372,7 @@ regfilter() {
           }
           case REGISTRY_SZ: {
             buffer_putc(buffer_1, '"');
+
             if(has_newline) {
               for(pos = valuestart; pos < valueend; pos++) {
                 buffer_putc(buffer_1, hexchar((unsigned char)line.s[pos] >> 4));
@@ -383,6 +394,7 @@ regfilter() {
           }
           case REGISTRY_BINARY: {
             buffer_putc(buffer_1, '"');
+
             for(pos = valuestart; pos < valueend; pos++) {
               if(scan_fromhex(line.s[pos]) != -1)
                 buffer_putc(buffer_1, char_tolower(line.s[pos]));
@@ -441,6 +453,7 @@ main(int argc, char* argv[]) {
 
   for(argi = 1; argi < argc; argi++) {
     char* arg = argv[argi];
+
     if(arg[0] == '-') {
       switch(arg[1]) {
         case 'f': force++; break;
@@ -450,6 +463,7 @@ main(int argc, char* argv[]) {
     } else
       break;
   }
+
   if(argi < argc) {
     buffer_puts(buffer_2, "Opening file for reading '");
     buffer_puts(buffer_2, argv[argi]);
@@ -461,11 +475,13 @@ main(int argc, char* argv[]) {
 
     argi++;
   }
+
   if(argi < argc) {
     buffer_puts(buffer_2, "Opening file for writing '");
     buffer_puts(buffer_2, argv[argi]);
     buffer_puts(buffer_2, "' ...\n");
     buffer_flush(buffer_2);
+
     if((buffer_1->fd = open_trunc(argv[argi])) < 0)
       usage(argv[0]);
 

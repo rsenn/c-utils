@@ -15,6 +15,7 @@
 /* Error codes */
 #define GLOB_NOSPACE \
   (1) /**< (Error result code:) An attempt to allocate memory failed, or \
+
          if errno was 0 GLOB_LIMIT was specified in the flags and ARG_MAX \
          patterns were matched. */
 #define GLOB_ABORTED \

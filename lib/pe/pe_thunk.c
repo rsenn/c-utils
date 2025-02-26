@@ -3,6 +3,7 @@
 uint64
 pe_thunk(void* pe, void* ptr, int64 index) {
   uint64 ret = 0;
+
   switch(PE_TYPE(pe)) {
     case PE_MAGIC_PE32: {
       uint32 u = uint32_get(((uint32*)ptr + index));

@@ -882,14 +882,18 @@ YY_DECL {
 
       yy_current_state = (yy_start);
     yy_match:
+
       do {
         YY_CHAR yy_c = yy_ec[YY_SC_TO_UI(*yy_cp)];
+
         if(yy_accept[yy_current_state]) {
           (yy_last_accepting_state) = yy_current_state;
           (yy_last_accepting_cpos) = yy_cp;
         }
+
         while(yy_chk[yy_base[yy_current_state] + yy_c] != yy_current_state) {
           yy_current_state = (int)yy_def[yy_current_state];
+
           if(yy_current_state >= 385)
             yy_c = yy_meta[yy_c];
         }
@@ -899,6 +903,7 @@ YY_DECL {
 
     yy_find_action:
       yy_act = yy_accept[yy_current_state];
+
       if(yy_act == 0) { /* have to back up */
         yy_cp = (yy_last_accepting_cpos);
         yy_current_state = (yy_last_accepting_state);
@@ -909,7 +914,9 @@ YY_DECL {
 
       if(yy_act != YY_END_OF_BUFFER && yy_rule_can_match_eol[yy_act]) {
         int yyl;
+
         for(yyl = 0; yyl < yyleng; ++yyl)
+
           if(yytext[yyl] == '\n')
 
             yylineno++;
@@ -1711,6 +1718,7 @@ YY_DECL {
            * end-of-buffer state).  Contrast this with the test
            * in input().
            */
+
           if((yy_c_buf_p) <= &YY_CURRENT_BUFFER_LVALUE->yy_ch_buf[(yy_n_chars)]) { /* This was really a NUL. */
             yy_state_type yy_next_state;
 
@@ -1745,6 +1753,7 @@ YY_DECL {
           }
 
           else
+
             switch(yy_get_next_buffer()) {
               case EOB_ACT_END_OF_FILE: {
                 (yy_did_buffer_switch_on_eof) = 0;
@@ -1817,6 +1826,7 @@ yy_get_next_buffer(void) {
     YY_FATAL_ERROR("fatal flex scanner internal error--end of buffer missed");
 
   if(YY_CURRENT_BUFFER_LVALUE->yy_fill_buffer == 0) { /* Don't try to fill the buffer, so this is an EOF. */
+
     if((yy_c_buf_p) - (yytext_ptr)-YY_MORE_ADJ == 1) {
       /* We matched a single character, the EOB, so
        * treat this as a final EOF.
@@ -1908,6 +1918,7 @@ yy_get_next_buffer(void) {
     int new_size = (yy_n_chars) + number_to_move + ((yy_n_chars) >> 1);
     YY_CURRENT_BUFFER_LVALUE->yy_ch_buf =
         (char*)yyrealloc((void*)YY_CURRENT_BUFFER_LVALUE->yy_ch_buf, (yy_size_t)new_size);
+
     if(!YY_CURRENT_BUFFER_LVALUE->yy_ch_buf)
       YY_FATAL_ERROR("out of dynamic memory in yy_get_next_buffer()");
     /* "- 2" to take care of EOB's */
@@ -1934,12 +1945,15 @@ yy_get_previous_state(void) {
 
   for(yy_cp = (yytext_ptr) + YY_MORE_ADJ; yy_cp < (yy_c_buf_p); ++yy_cp) {
     YY_CHAR yy_c = (*yy_cp ? yy_ec[YY_SC_TO_UI(*yy_cp)] : 1);
+
     if(yy_accept[yy_current_state]) {
       (yy_last_accepting_state) = yy_current_state;
       (yy_last_accepting_cpos) = yy_cp;
     }
+
     while(yy_chk[yy_base[yy_current_state] + yy_c] != yy_current_state) {
       yy_current_state = (int)yy_def[yy_current_state];
+
       if(yy_current_state >= 385)
         yy_c = yy_meta[yy_c];
     }
@@ -1960,12 +1974,15 @@ yy_try_NUL_trans(yy_state_type yy_current_state) {
   char* yy_cp = (yy_c_buf_p);
 
   YY_CHAR yy_c = 1;
+
   if(yy_accept[yy_current_state]) {
     (yy_last_accepting_state) = yy_current_state;
     (yy_last_accepting_cpos) = yy_cp;
   }
+
   while(yy_chk[yy_base[yy_current_state] + yy_c] != yy_current_state) {
     yy_current_state = (int)yy_def[yy_current_state];
+
     if(yy_current_state >= 385)
       yy_c = yy_meta[yy_c];
   }
@@ -2035,6 +2052,7 @@ input(void)
      * If this occurs *before* the EOB characters, then it's a
      * valid NUL; if not, then we've hit the end of the buffer.
      */
+
     if((yy_c_buf_p) < &YY_CURRENT_BUFFER_LVALUE->yy_ch_buf[(yy_n_chars)])
       /* This was really a NUL. */
       *(yy_c_buf_p) = '\0';
@@ -2121,6 +2139,7 @@ yy_switch_to_buffer(YY_BUFFER_STATE new_buffer) {
    *		yypush_buffer_state(new_buffer);
    */
   yyensure_buffer_stack();
+
   if(YY_CURRENT_BUFFER == new_buffer)
     return;
 
@@ -2161,6 +2180,7 @@ yy_create_buffer(FILE* file, int size) {
   YY_BUFFER_STATE b;
 
   b = (YY_BUFFER_STATE)yyalloc(sizeof(struct yy_buffer_state));
+
   if(!b)
     YY_FATAL_ERROR("out of dynamic memory in yy_create_buffer()");
 
@@ -2170,6 +2190,7 @@ yy_create_buffer(FILE* file, int size) {
    * we need to put in 2 end-of-buffer characters.
    */
   b->yy_ch_buf = (char*)yyalloc((yy_size_t)(b->yy_buf_size + 2));
+
   if(!b->yy_ch_buf)
     YY_FATAL_ERROR("out of dynamic memory in yy_create_buffer()");
 
@@ -2218,6 +2239,7 @@ yy_init_buffer(YY_BUFFER_STATE b, FILE* file)
    * called from yyrestart() or through yy_get_next_buffer.
    * In that case, we don't want to reset the lineno or column.
    */
+
   if(b != YY_CURRENT_BUFFER) {
     b->yy_bs_lineno = 1;
     b->yy_bs_column = 0;
@@ -2269,6 +2291,7 @@ yypush_buffer_state(YY_BUFFER_STATE new_buffer) {
   yyensure_buffer_stack();
 
   /* This block is copied from yy_switch_to_buffer. */
+
   if(YY_CURRENT_BUFFER) {
     /* Flush out information for old buffer. */
     *(yy_c_buf_p) = (yy_hold_char);
@@ -2277,6 +2300,7 @@ yypush_buffer_state(YY_BUFFER_STATE new_buffer) {
   }
 
   /* Only push if top exists. Otherwise, replace top. */
+
   if(YY_CURRENT_BUFFER)
     (yy_buffer_stack_top)++;
   YY_CURRENT_BUFFER_LVALUE = new_buffer;
@@ -2297,6 +2321,7 @@ yypop_buffer_state(void) {
 
   yy_delete_buffer(YY_CURRENT_BUFFER);
   YY_CURRENT_BUFFER_LVALUE = NULL;
+
   if((yy_buffer_stack_top) > 0)
     --(yy_buffer_stack_top);
 
@@ -2321,6 +2346,7 @@ yyensure_buffer_stack(void) {
      */
     num_to_alloc = 1; /* After all that talk, this was set to 1 anyways... */
     (yy_buffer_stack) = (struct yy_buffer_state**)yyalloc(num_to_alloc * sizeof(struct yy_buffer_state*));
+
     if(!(yy_buffer_stack))
       YY_FATAL_ERROR("out of dynamic memory in yyensure_buffer_stack()");
 
@@ -2339,6 +2365,7 @@ yyensure_buffer_stack(void) {
     num_to_alloc = (yy_buffer_stack_max) + grow_size;
     (yy_buffer_stack) =
         (struct yy_buffer_state**)yyrealloc((yy_buffer_stack), num_to_alloc * sizeof(struct yy_buffer_state*));
+
     if(!(yy_buffer_stack))
       YY_FATAL_ERROR("out of dynamic memory in yyensure_buffer_stack()");
 
@@ -2363,6 +2390,7 @@ yy_scan_buffer(char* base, yy_size_t size) {
     return NULL;
 
   b = (YY_BUFFER_STATE)yyalloc(sizeof(struct yy_buffer_state));
+
   if(!b)
     YY_FATAL_ERROR("out of dynamic memory in yy_scan_buffer()");
 
@@ -2409,6 +2437,7 @@ yy_scan_bytes(const char* yybytes, int _yybytes_len) {
   /* Get memory for full buffer, including space for trailing EOB's. */
   n = (yy_size_t)(_yybytes_len + 2);
   buf = (char*)yyalloc(n);
+
   if(!buf)
     YY_FATAL_ERROR("out of dynamic memory in yy_scan_bytes()");
 
@@ -2418,6 +2447,7 @@ yy_scan_bytes(const char* yybytes, int _yybytes_len) {
   buf[_yybytes_len] = buf[_yybytes_len + 1] = YY_END_OF_BUFFER_CHAR;
 
   b = yy_scan_buffer(buf, n);
+
   if(!b)
     YY_FATAL_ERROR("bad buffer in yy_scan_bytes()");
 
@@ -2570,6 +2600,7 @@ int
 yylex_destroy(void) {
 
   /* Pop the buffer stack, destroying each element. */
+
   while(YY_CURRENT_BUFFER) {
     yy_delete_buffer(YY_CURRENT_BUFFER);
     YY_CURRENT_BUFFER_LVALUE = NULL;
@@ -2596,6 +2627,7 @@ static void
 yy_flex_strncpy(char* s1, const char* s2, int n) {
 
   int i;
+
   for(i = 0; i < n; ++i)
     s1[i] = s2[i];
 }
@@ -2605,6 +2637,7 @@ yy_flex_strncpy(char* s1, const char* s2, int n) {
 static int
 yy_flex_strlen(const char* s) {
   int n;
+
   for(n = 0; s[n]; ++n)
     ;
 
@@ -2650,6 +2683,7 @@ comment(void) {
   int c;
 
   while((c = input()) != 0)
+
     if(c == '*') {
       while((c = input()) == '*')
         ;

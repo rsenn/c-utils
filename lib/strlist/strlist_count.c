@@ -22,6 +22,7 @@ strlist_count(const strlist* sl) {
 
       if(c == sl->sep) {
         p++;
+
         if(p == n)
           break;
       }

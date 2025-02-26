@@ -30,10 +30,12 @@ tls_want(fd_type fd, void (*wantread)(fd_type), void (*wantwrite)(fd_type)) {
 
   buffer_puts(buffer_2, " op=");
   buffer_puts(buffer_2, ((const char* const[]){"TLS_OP_WRITE", "TLS_OP_READ", "TLS_OP_ACCEPT", "TLS_OP_CONNECT", 0})[inst->op]);
+
   if(errno) {
     buffer_puts(buffer_2, " errno=");
     buffer_putstr(buffer_2, strerror(errno));
   }
+
   if(inst->error != SSL_ERROR_NONE) {
 
     buffer_puts(buffer_2, " error=");

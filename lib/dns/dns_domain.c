@@ -9,6 +9,7 @@ dns_domain_length(const char* dn) {
   unsigned char c;
 
   x = dn;
+
   while((c = *x++))
     x += (unsigned int)c;
   return x - dn;
@@ -28,9 +29,11 @@ dns_domain_copy(char** out, const char* in) {
   char* x;
 
   len = dns_domain_length(in);
+
   if(!(x = malloc(len)))
     return 0;
   byte_copy(x, len, in);
+
   if(*out)
     free(*out);
   *out = x;
@@ -51,6 +54,7 @@ dns_domain_equal(const char* dn1, const char* dn2) {
   unsigned int len;
 
   len = dns_domain_length(dn1);
+
   if(len != dns_domain_length(dn2))
     return 0;
 
@@ -68,6 +72,7 @@ dns_domain_diff(const char* dn1, const char* dn2) {
 
   if(len1 < len2)
     return -(unsigned int)(unsigned char)dn2[len1];
+
   if(len1 > len2)
     return (unsigned int)(unsigned char)dn1[len2];
 
@@ -81,6 +86,7 @@ dns_domain_suffix(const char* big, const char* little) {
   for(;;) {
     if(dns_domain_equal(big, little))
       return 1;
+
     if(!(c = *big++))
       return 0;
     big += c;
@@ -95,6 +101,7 @@ dns_domain_suffixpos(const char* big, const char* little) {
   for(;;) {
     if(dns_domain_equal(big, little))
       return big - orig;
+
     if(!(c = *big++))
       return 0;
     big += c;

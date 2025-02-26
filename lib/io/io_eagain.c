@@ -3,9 +3,11 @@
 void
 io_eagain(fd_type d) {
   io_entry* e = (io_entry*)iarray_get((iarray*)io_getfds(), d);
+
   if(e) {
     if(e->wantread)
       e->canread = 0;
+
     if(e->wantwrite)
       e->canwrite = 0;
 #if defined(HAVE_SIGIO)
@@ -14,6 +16,7 @@ io_eagain(fd_type d) {
       alt_firstread = e->next_read;
       e->next_read = -1;
     }
+
     if(d == alt_firstwrite) {
       debug_printf(("io_eagain: dequeueing %lld from alt write queue "
                     "(next is %ld)\n",

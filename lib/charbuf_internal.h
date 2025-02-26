@@ -87,12 +87,14 @@ charbuf_dumpchar(int c, buffer* out, int pad) {
       buf[i++] = '\'';
 
     buf[i++] = c;
+
     if(quote)
       buf[i++] = '\'';
   } else if(isspace(c) /*&& !iscntrl(c)*/) {
     if(quote)
       buf[i++] = '\'';
     i += fmt_escapecharc(&buf[i], c);
+
     if(quote)
       buf[i++] = '\'';
   } else {
@@ -100,6 +102,7 @@ charbuf_dumpchar(int c, buffer* out, int pad) {
     buf[i++] = '\\';
     buf[i++] = 'u';
     pad = 4 - fmt_xlong(0, c);
+
     while(pad-- > 0)
       buf[i++] = '0';
     i += fmt_xlong(&buf[i], c);
@@ -110,6 +113,7 @@ charbuf_dumpchar(int c, buffer* out, int pad) {
     buffer_putnspace(out, l);
   }
   buffer_put(out, buf, i);
+
   if(l + i < pad) {
     size_t r = pad - (l + i);
     buffer_putnspace(out, r);
@@ -120,6 +124,7 @@ static inline void
 charbuf_dumpchars(uint8* chrs, size_t n, buffer* out, int pad) {
   size_t i = 0;
   buffer_puts(buffer_2, "'");
+
   for(i = 0; i < n; i++) {
     if(chrs[i] == '\'')
       buffer_puts(out, "\\'");

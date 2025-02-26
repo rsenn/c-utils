@@ -19,6 +19,7 @@ cbmap_delete(cbmap_t map, void* key, size_t key_len) {
     unsigned char c = 0;
     whereq = wherep;
     q = GET_INTERNAL_NODE(p);
+
     if(q->byte < key_len) {
       c = key_bytes[q->byte];
     }
@@ -28,6 +29,7 @@ cbmap_delete(cbmap_t map, void* key, size_t key_len) {
   }
 
   data = (struct cbmap_data_node*)p;
+
   if(data->key_len != key_len || KEY_COMPARE(data->key, key, key_len) != 0) {
     return NOT_FOUND;
   }

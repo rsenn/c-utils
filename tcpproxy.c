@@ -44,18 +44,23 @@ parse_args(int argc, char** argv) {
     } else {
       return 0;
     }
+
     if(strcmp(argv[1], "-f") == 0) {
       strcpy(forward_addr, argv[2]);
+
       if(strstr(forward_addr, ":")) {
         char* ptr = strstr(forward_addr, ":");
         ptr[0] = 0;
+
         forward_port = atoi(ptr + 1);
       }
     } else if(strcmp(argv[3], "-f") == 0) {
       strcpy(forward_addr, argv[4]);
+
       if(strstr(forward_addr, ":")) {
         char* ptr = strstr(forward_addr, ":");
         ptr[0] = 0;
+
         forward_port = atoi(ptr + 1);
       }
     } else {
@@ -64,9 +69,11 @@ parse_args(int argc, char** argv) {
   } else if(argc == 3) {
     if(strcmp(argv[1], "-f") == 0) {
       strcpy(forward_addr, argv[2]);
+
       if(strstr(forward_addr, ":")) {
         char* ptr = strstr(forward_addr, ":");
         ptr[0] = 0;
+
         forward_port = atoi(ptr + 1);
       }
     }
@@ -100,7 +107,9 @@ main(int argc, char** argv) {
   printf("proxy listening on 127.0.0.1:%d "
          "forward to %s:%d\n",
          proxy_port,
+
          forward_addr,
+
          forward_port);
 
   int opt_val = 1;
@@ -125,10 +134,12 @@ main(int argc, char** argv) {
   /* create & connect sockets */
   proxy_in = socket_tcp4b();
   proxy_out = socket_tcp4b();
+
   if(proxy_in < 0) {
     errmsg_warnsys("error in socket create", 0);
     return -1;
   }
+
   if(proxy_out < 0) {
     errmsg_warnsys("error in socket create", 0);
     return -1;
@@ -137,12 +148,14 @@ main(int argc, char** argv) {
   setsockopt(proxy_out, SOL_SOCKET, SO_REUSEADDR, (const char*)&opt_val, sizeof(int));
 
   status = bind(proxy_in, (const struct sockaddr*)&addr_from, sizeof(struct sockaddr_in));
+
   if(status < 0) {
     errmsg_warnsys("error in bind", 0);
     return -1;
   }
 
   status = listen(proxy_in, 1);
+
   if(status < 0) {
     errmsg_warnsys("error in listen", 0);
     return -1;
@@ -150,12 +163,14 @@ main(int argc, char** argv) {
 
   addrlen = sizeof(struct sockaddr_in);
   proxy_client = accept(proxy_in, (struct sockaddr*)&client_addr, &addrlen);
+
   if(proxy_client < 0) {
     errmsg_warnsys("error in accept", 0);
     return -1;
   }
 
   status = connect(proxy_out, (struct sockaddr*)&addr_dest, sizeof(struct sockaddr));
+
   if(status < 0) {
     errmsg_warnsys("error in connect", 0);
     return -1;
@@ -165,6 +180,7 @@ main(int argc, char** argv) {
     char c1, c2;
 
     int var1 = recv(proxy_client, &c1, 1, MSG_DONTWAIT);
+
     if(var1 > 0) {
       buffer_put(&local_file, &c1, 1);
       buffer_flush(&local_file);
@@ -177,6 +193,7 @@ main(int argc, char** argv) {
     }
 
     int var2 = recv(proxy_out, &c2, 1, MSG_DONTWAIT);
+
     if(var2 > 0) {
       buffer_put(&dist_file, &c2, 1);
       buffer_flush(&dist_file);
@@ -187,6 +204,7 @@ main(int argc, char** argv) {
         g_running = 0;
       }
     }
+
     if((var1 <= 0) && (var2 <= 0)) {
       struct timespec tts;
       tts.tv_sec = 0;

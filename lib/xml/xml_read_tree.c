@@ -82,6 +82,7 @@ xml_read_node(xmlreader* r, xmlnodeid id, stralloc* name, stralloc* value, HMAP_
       buffer_putm_internal(buffer_2, "reading element '", name->s, "'", NULL);
       buffer_putnlflush(buffer_2);
 #endif /* defined XML_DEBUG */
+
       if(*r->ptr)
         r->ptr = &(*r->ptr)->next;
 

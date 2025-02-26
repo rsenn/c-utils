@@ -84,6 +84,7 @@ xml_print_node(xmlnode* node, buffer* b, int depth, xml_print_fmt_t* fmt) {
   //    if(node_is_closing(next) && !str_diff(&next->name[1], node->name))
   //    return xml_print_node(next, b, depth);
   //  }
+
   if(closing)
     fmt(node->parent, b, depth, '\n', 1);
 
@@ -93,6 +94,7 @@ xml_print_node(xmlnode* node, buffer* b, int depth, xml_print_fmt_t* fmt) {
 static void
 xml_print_list(xmlnode* list, buffer* b, int depth, xml_print_fmt_t* fmt) {
   xmlnode* node;
+
   for(node = list; node; node = node->next)
     xml_print_node(node, b, depth, fmt);
 }

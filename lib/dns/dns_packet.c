@@ -26,10 +26,13 @@ dns_packet_skipname(const char* buf, unsigned int len, unsigned int pos) {
 
   for(; pos < len; pos += ch) {
     ch = buf[pos++];
+
     if(ch >= 192)
       return pos + 1;
+
     if(ch >= 64)
       break;
+
     if(!ch)
       return pos;
   }
@@ -49,6 +52,7 @@ dns_packet_getname(const char* buf, unsigned int len, unsigned int pos, char** d
     if(pos >= len)
       goto PROTO;
     ch = buf[pos++];
+
     if(++loop >= 1000)
       goto PROTO;
 
@@ -62,23 +66,30 @@ dns_packet_getname(const char* buf, unsigned int len, unsigned int pos, char** d
         where = ch;
         where -= 192;
         where <<= 8;
+
         if(pos >= len)
           goto PROTO;
         ch = buf[pos++];
+
         if(!firstcompress)
           firstcompress = pos;
         pos = where + ch;
+
         if(pos >= len)
           goto PROTO;
         ch = buf[pos++];
+
         if(++loop >= 1000)
           goto PROTO;
       }
+
       if(ch >= 64)
         goto PROTO;
+
       if(namelen + 1 > sizeof name)
         goto PROTO;
       name[namelen++] = ch;
+
       if(!ch)
         break;
       state = ch;

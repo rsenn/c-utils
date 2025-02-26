@@ -164,6 +164,7 @@ static void
 unit_test_cleanup(struct unit_test* mu_) {
   if(mu_->testlog)
     buffer_close(mu_->testlog);
+
   if(mu_->faillog)
     buffer_close(mu_->faillog);
 }

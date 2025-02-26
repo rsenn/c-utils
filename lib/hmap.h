@@ -64,6 +64,7 @@ typedef struct tuple {
     unsigned int val_uint;
     long int val_longlong;
     unsigned long int val_ulonglong;
+
     double val_double;
     char* val_chars;
     struct tuple* val_tuple;

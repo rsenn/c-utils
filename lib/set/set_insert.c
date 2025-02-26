@@ -45,6 +45,7 @@ set_insert(set_t* set, const void* val, const size_t size) {
       ++set->overflow;
     } else {
       //    bucket_t* b = set->array[index].next;
+
       while(b->next)
         b = b->next;
 

@@ -33,6 +33,7 @@ dump_hex(buffer* b, const char* x, const char* y, size_t offset) {
 
   for(i = 0; i < n; ++i) {
     size_t li = i % 16;
+
     if(li == 0) {
       if(linesa.len) {
         buffer_puts(b, "  |");
@@ -54,6 +55,7 @@ dump_hex(buffer* b, const char* x, const char* y, size_t offset) {
     buffer_putnspace(b, 3);
     ++i;
   }
+
   if(linesa.len) {
     buffer_puts(b, "  |");
     buffer_putsa(b, &linesa);
@@ -99,8 +101,10 @@ main(int argc, char** argv) {
 
   for(;;) {
     c = unix_getopt_long(argc, argv, "hiedsEDO", opts, &index);
+
     if(c == -1)
       break;
+
     if(c == '\0')
       continue;
 

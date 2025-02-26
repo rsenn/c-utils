@@ -9,12 +9,14 @@ scan_jsonescape(const char* src, char* dest, size_t* destlen) {
   char c;
   unsigned int prev, cur, todo;
   prev = cur = (unsigned int)-1;
+
   for(i = 0; s[i]; ++i) {
     if(s[i] == '"') {
       if(prev != (unsigned int)-1)
         goto abort;
       goto done;
     }
+
     if((c = s[i]) == '\\') {
       switch(s[i + 1]) {
         case '\\':
@@ -28,15 +30,19 @@ scan_jsonescape(const char* src, char* dest, size_t* destlen) {
         case 't': c = '\t'; break;
         case 'u': {
           size_t j;
+
           for(cur = j = 0; j < 4; ++j) {
             char x = scan_fromhex(s[i + 2 + j]);
+
             if(x < 0)
               goto abort; // not hex -> invalid input
             cur = (cur << 4) | x;
           }
+
           if(cur >= 0xd800 && cur <= 0xdbff) {
             // utf-16 surrogate pair; needs to be followed by another
             // surrogate. We need to read both and convert to UTF-8
+
             if(prev != (unsigned int)-1)
               goto abort; // two lead surrogates
             prev = cur;
@@ -57,11 +63,14 @@ scan_jsonescape(const char* src, char* dest, size_t* destlen) {
       }
       ++i;
     }
+
     if(prev != (unsigned int)-1)
       goto abort;
     /* We expect utf-8 incoming. Make sure it's valid. */
+
     if(!scan_utf8(src + i, 4, NULL))
       goto abort;
+
     if(dest)
       dest[written] = c;
     ++written;
@@ -70,6 +79,7 @@ done:
   *destlen = written;
   return i;
 abort:
+
   if(prev != (unsigned int)-1)
     i -= 6; // if we abort and there still was an open surrogate pair,
             // cancel it

@@ -4,6 +4,7 @@
 void
 dlist_move_head(dlist* from, dlist* to) {
   /* Nothing in to-dlist */
+
   if(to->head == NULL) {
     /* Copy to to-dlist */
     to->head = from->head;

@@ -16,19 +16,23 @@ int64
 io_waitwrite(fd_type d, const char* buf, int64 len) {
   long r;
   io_entry* e = (io_entry*)iarray_get((iarray*)io_getfds(), d);
+
   if(!e) {
     errno = EBADF;
     return -3;
   }
+
   if(e->nonblock) {
     unsigned long i = 0;
     ioctlsocket(d, FIONBIO, &i);
   }
   r = write(d, buf, len);
+
   if(e->nonblock) {
     unsigned long i = 1;
     ioctlsocket(d, FIONBIO, &i);
   }
+
   if(r == -1)
     r = -3;
   return r;
@@ -42,13 +46,16 @@ io_waitwrite(fd_type d, const char* buf, int64 len) {
   struct pollfd p;
   io_entry* e = (io_entry*)iarray_get((iarray*)io_getfds(), d);
   io_sigpipe();
+
   if(!e) {
     errno = EBADF;
     return -3;
   }
+
   if(e->nonblock) {
   again:
     p.fd = d;
+
     if(p.fd != d) {
       errno = EBADF;
       return -3;
@@ -62,6 +69,7 @@ io_waitwrite(fd_type d, const char* buf, int64 len) {
     }
   }
   r = write(d, buf, len);
+
   if(r == -1) {
     if(errno == EAGAIN)
       goto again;

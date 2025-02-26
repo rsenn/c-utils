@@ -27,6 +27,7 @@ if_nametoindex(const char* name) {
         return -1;
     }
   }
+
   if(ifn2idx)
     return ifn2idx(name);
   return -1;

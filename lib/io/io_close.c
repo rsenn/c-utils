@@ -23,13 +23,17 @@ io_close(fd_type d) {
   buffer_putlonglong(buffer_2, d);
   buffer_putnlflush(buffer_2);
 #endif
+
   if((e = (io_entry*)iarray_get((iarray*)io_getfds(), d))) {
     e->inuse = 0;
     e->cookie = 0;
+
     if(e->kernelwantread)
       io_dontwantread_really(d, e);
+
     if(e->kernelwantwrite)
       io_dontwantwrite_really(d, e);
+
     if(e->mmapped) {
 #if WINDOWS_NATIVE
       UnmapViewOfFile(e->mmapped);

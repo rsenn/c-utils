@@ -16,6 +16,7 @@ struct critbit_node {
 static inline int
 decode_pointer(void** ptr) {
   ptrdiff_t numvalue = (char*)*ptr - (char*)0;
+
   if(numvalue & 1) {
     *ptr = (void*)(numvalue - 1);
     return EXTERNAL_NODE;

@@ -18,7 +18,9 @@ io_block(fd_type d) {
   io_entry* e = (io_entry*)iarray_get((iarray*)io_getfds(), d);
 #if WINDOWS_NATIVE
   unsigned long i = 0;
+
   if(ioctlsocket(d, FIONBIO, &i) == 0)
+
     if(e)
       e->nonblock = 0;
 #else

@@ -41,6 +41,7 @@ xml_dump(xmlnode* n, buffer* b) {
       xml_print_attributes(n->attributes, b, ", ", ":", "");
     }
     buffer_putnlflush(b);
+
     if(n->children)
       xml_dump(n->children, b);
   } while((n = n->next));
@@ -52,6 +53,7 @@ main(int argc, char* argv[1]) {
   stralloc tmp;
   stralloc_init(&tmp);
   buffer_mmapprivate(&infile, argc > 1 ? argv[1] : "../dirlist/test.xml");
+
   if(argc > 2)
     elem_name = argv[2];
   {

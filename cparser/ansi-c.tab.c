@@ -1389,6 +1389,7 @@ yytnamerr(char* yyres, const char* yystr) {
     char const* yyp = yystr;
 
     for(;;)
+
       switch(*++yyp) {
         case '\'':
         case ',': goto do_not_strip_quotes;
@@ -1401,6 +1402,7 @@ yytnamerr(char* yyres, const char* yystr) {
 
         append:
         default:
+
           if(yyres)
             yyres[yyn] = *yyp;
           yyn++;
@@ -1411,6 +1413,7 @@ yytnamerr(char* yyres, const char* yystr) {
             yyres[yyn] = '\0';
           return yyn;
       }
+
   do_not_strip_quotes:;
   }
 
@@ -1465,11 +1468,13 @@ yysyntax_error(YYPTRDIFF_T* yymsg_alloc, char** yymsg, yy_state_t* yyssp, int yy
        one exception: it will still contain any token that will not be
        accepted due to an error action in a later state.
   */
+
   if(yytoken != YYEMPTY) {
     int yyn = yypact[+*yyssp];
     YYPTRDIFF_T yysize0 = yytnamerr(YY_NULLPTR, yytname[yytoken]);
     yysize = yysize0;
     yyarg[yycount++] = yytname[yytoken];
+
     if(!yypact_value_is_default(yyn)) {
       /* Start YYX at -YYN if negative to avoid negative indexes in
          YYCHECK.  In other words, skip the first -YYN actions for
@@ -1481,6 +1486,7 @@ yysyntax_error(YYPTRDIFF_T* yymsg_alloc, char** yymsg, yy_state_t* yyssp, int yy
       int yyx;
 
       for(yyx = yyxbegin; yyx < yyxend; ++yyx)
+
         if(yycheck[yyx + yyn] == yyx && yyx != YYTERROR && !yytable_value_is_error(yytable[yyx + yyn])) {
           if(yycount == YYERROR_VERBOSE_ARGS_MAXIMUM) {
             yycount = 1;
@@ -1490,6 +1496,7 @@ yysyntax_error(YYPTRDIFF_T* yymsg_alloc, char** yymsg, yy_state_t* yyssp, int yy
           yyarg[yycount++] = yytname[yyx];
           {
             YYPTRDIFF_T yysize1 = yysize + yytnamerr(YY_NULLPTR, yytname[yyx]);
+
             if(yysize <= yysize1 && yysize1 <= YYSTACK_ALLOC_MAXIMUM)
               yysize = yysize1;
             else
@@ -1516,6 +1523,7 @@ yysyntax_error(YYPTRDIFF_T* yymsg_alloc, char** yymsg, yy_state_t* yyssp, int yy
     /* Don't count the "%s"s in the final size, but reserve room for
        the terminator.  */
     YYPTRDIFF_T yysize1 = yysize + (yystrlen(yyformat) - 2 * yycount) + 1;
+
     if(yysize <= yysize1 && yysize1 <= YYSTACK_ALLOC_MAXIMUM)
       yysize = yysize1;
     else
@@ -1524,6 +1532,7 @@ yysyntax_error(YYPTRDIFF_T* yymsg_alloc, char** yymsg, yy_state_t* yyssp, int yy
 
   if(*yymsg_alloc < yysize) {
     *yymsg_alloc = 2 * yysize;
+
     if(!(yysize <= *yymsg_alloc && *yymsg_alloc <= YYSTACK_ALLOC_MAXIMUM))
       *yymsg_alloc = YYSTACK_ALLOC_MAXIMUM;
     return 1;
@@ -1535,7 +1544,9 @@ yysyntax_error(YYPTRDIFF_T* yymsg_alloc, char** yymsg, yy_state_t* yyssp, int yy
   {
     char* yyp = *yymsg;
     int yyi = 0;
+
     while((*yyp = *yyformat) != '\0')
+
       if(*yyp == '%' && yyformat[1] == 's' && yyi < yycount) {
         yyp += yytnamerr(yyp, yyarg[yyi++]);
         yyformat += 2;
@@ -1556,6 +1567,7 @@ static void
 yydestruct(const char* yymsg, int yytype, YYSTYPE* yyvaluep, YYLTYPE* yylocationp) {
   YYUSE(yyvaluep);
   YYUSE(yylocationp);
+
   if(!yymsg)
     yymsg = "Deleting";
   YY_SYMBOL_PRINT(yymsg, yytype, yyvaluep, yylocationp);
@@ -1706,21 +1718,25 @@ yysetstate:
     }
 #else /* defined YYSTACK_RELOCATE */
     /* Extend the stack our own way.  */
+
     if(YYMAXDEPTH <= yystacksize)
       goto yyexhaustedlab;
     yystacksize *= 2;
+
     if(YYMAXDEPTH < yystacksize)
       yystacksize = YYMAXDEPTH;
 
     {
       yy_state_t* yyss1 = yyss;
       union yyalloc* yyptr = YY_CAST(union yyalloc*, YYSTACK_ALLOC(YY_CAST(YYSIZE_T, YYSTACK_BYTES(yystacksize))));
+
       if(!yyptr)
         goto yyexhaustedlab;
       YYSTACK_RELOCATE(yyss_alloc, yyss);
       YYSTACK_RELOCATE(yyvs_alloc, yyvs);
       YYSTACK_RELOCATE(yyls_alloc, yyls);
 #undef YYSTACK_RELOCATE
+
       if(yyss1 != yyssa)
         YYSTACK_FREE(yyss1);
     }
@@ -1753,12 +1769,14 @@ yybackup:
 
   /* First try to decide what to do without reference to lookahead token.  */
   yyn = yypact[yystate];
+
   if(yypact_value_is_default(yyn))
     goto yydefault;
 
   /* Not known => get a lookahead token if don't already have one.  */
 
   /* YYCHAR is either YYEMPTY or YYEOF or a valid lookahead symbol.  */
+
   if(yychar == YYEMPTY) {
     YYDPRINTF((stderr, "Reading a token: "));
     yychar = yylex();
@@ -1775,9 +1793,11 @@ yybackup:
   /* If the proper action on seeing token YYTOKEN is to reduce or to
      detect an error, take that action.  */
   yyn += yytoken;
+
   if(yyn < 0 || YYLAST < yyn || yycheck[yyn] != yytoken)
     goto yydefault;
   yyn = yytable[yyn];
+
   if(yyn <= 0) {
     if(yytable_value_is_error(yyn))
       goto yyerrlab;
@@ -1787,6 +1807,7 @@ yybackup:
 
   /* Count tokens shifted since error; after three, turn off error
      status.  */
+
   if(yyerrstatus)
     yyerrstatus--;
 
@@ -1807,6 +1828,7 @@ yybackup:
 `-----------------------------------------------------------*/
 yydefault:
   yyn = yydefact[yystate];
+
   if(yyn == 0)
     goto yyerrlab;
   goto yyreduce;
@@ -1832,6 +1854,7 @@ yyreduce:
   YYLLOC_DEFAULT(yyloc, (yylsp - yylen), yylen);
   yyerror_range[1] = yyloc;
   YY_REDUCE_PRINT(yyn);
+
   switch(yyn) {
 
 #line 2276 "ansi-c.tab.c"
@@ -1844,6 +1867,7 @@ yyreduce:
      One alternative is translating here after every semantic action,
      but that translation would be missed if the semantic action invokes
      YYABORT, YYACCEPT, or YYERROR immediately after altering yychar or
+
      if it invokes YYBACKUP.  In the case of YYABORT or YYACCEPT, an
      incorrect destructor might then be invoked immediately.  In the
      case of YYERROR or YYBACKUP, subsequent parser actions might lead
@@ -1878,6 +1902,7 @@ yyerrlab:
   yytoken = yychar == YYEMPTY ? YYEMPTY : YYTRANSLATE(yychar);
 
   /* If not already recovering from an error, report this error.  */
+
   if(!yyerrstatus) {
     ++yynerrs;
 #if !YYERROR_VERBOSE
@@ -1888,12 +1913,14 @@ yyerrlab:
       char const* yymsgp = YY_("syntax error");
       int yysyntax_error_status;
       yysyntax_error_status = YYSYNTAX_ERROR;
+
       if(yysyntax_error_status == 0)
         yymsgp = yymsg;
       else if(yysyntax_error_status == 1) {
         if(yymsg != yymsgbuf)
           YYSTACK_FREE(yymsg);
         yymsg = YY_CAST(char*, YYSTACK_ALLOC(YY_CAST(YYSIZE_T, yymsg_alloc)));
+
         if(!yymsg) {
           yymsg = yymsgbuf;
           yymsg_alloc = sizeof yymsgbuf;
@@ -1904,6 +1931,7 @@ yyerrlab:
         }
       }
       yyerror(yymsgp);
+
       if(yysyntax_error_status == 2)
         goto yyexhaustedlab;
     }
@@ -1919,6 +1947,7 @@ yyerrlab:
 
     if(yychar <= YYEOF) {
       /* Return failure if at end of input.  */
+
       if(yychar == YYEOF)
         YYABORT;
     } else {
@@ -1937,6 +1966,7 @@ yyerrlab:
 yyerrorlab:
   /* Pacify compilers when the user code never invokes YYERROR and the
      label yyerrorlab therefore never appears in user code.  */
+
   if(0)
     YYERROR;
 
@@ -1956,16 +1986,20 @@ yyerrlab1:
 
   for(;;) {
     yyn = yypact[yystate];
+
     if(!yypact_value_is_default(yyn)) {
       yyn += YYTERROR;
+
       if(0 <= yyn && yyn <= YYLAST && yycheck[yyn] == YYTERROR) {
         yyn = yytable[yyn];
+
         if(0 < yyn)
           break;
       }
     }
 
     /* Pop the current state because it cannot handle the error token.  */
+
     if(yyssp == yyss)
       YYABORT;
 
@@ -2020,6 +2054,7 @@ yyexhaustedlab:
 | yyreturn -- parsing is finished, return the result.  |
 `-----------------------------------------------------*/
 yyreturn:
+
   if(yychar != YYEMPTY) {
     /* Make sure we have latest lookahead translation.  See comments at
        user semantic actions for why this is necessary.  */
@@ -2030,6 +2065,7 @@ yyreturn:
      this YYABORT or YYACCEPT.  */
   YYPOPSTACK(yylen);
   YY_STACK_PRINT(yyss, yyssp);
+
   while(yyssp != yyss) {
     yydestruct("Cleanup: popping", yystos[+*yyssp], yyvsp, yylsp);
     YYPOPSTACK(1);
@@ -2073,8 +2109,10 @@ print_token_value(FILE* file, int kind, YYSTYPE value) {
 const char*
 yytokname(int tok) {
   static char chbuf[2];
+
   if(tok >= 255) {
     tok -= 255;
+
     if(tok >= 0 && tok < sizeof(yytname) / sizeof(yytname[0]))
       return yytname[tok];
   } else {

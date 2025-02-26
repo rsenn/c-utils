@@ -13,8 +13,10 @@ static const char*
 lookup(size_t ofs, const char* t) {
   if(ofs > entities.tab[0])
     return 0;
+
   while(ofs < entities.tab[0]) {
     unsigned char ch = entities.tab[ofs] & 0xff;
+
     if(ch == (unsigned char)*t || (!ch && *t == ';')) {
       if(!ch || *t == ';')
         return (const char*)entities.data + (entities.tab[ofs] >> 8);
@@ -22,6 +24,7 @@ lookup(size_t ofs, const char* t) {
         return lookup(entities.tab[ofs] >> 8, t + 1);
     } else
       ++ofs;
+
     if(!ch)
       break;
   }
@@ -43,21 +46,27 @@ scan_html_inner(const char* src, char* dest, size_t* destlen, enum htmlmode mode
   register const unsigned char* s = (const unsigned char*)src;
   size_t written = 0, i;
   int dq = 0;
+
   for(i = 0; s[i]; ++i) {
     if(s[i] == '&') {
       const char* utf8;
+
       if(s[i + 1] == '#') {
         unsigned long l;
         size_t j;
+
         if((s[i + 2] & ~32) == 'X') {
           j = scan_xlong(src + i + 3, &l);
+
           if(j)
             j += 3;
         } else {
           j = scan_ulong(src + i + 2, &l);
+
           if(j)
             j += 2;
         }
+
         if(s[i + j] == ';') {
           i += j;
           written += fmt_utf8(dest ? dest + written : 0, l);
@@ -69,8 +78,10 @@ scan_html_inner(const char* src, char* dest, size_t* destlen, enum htmlmode mode
         continue;
       }
       utf8 = lookup(1, src + i + 1);
+
       if(utf8) {
         size_t l = str_len(utf8);
+
         if(dest)
           byte_copy(dest + written, l, utf8);
         written += l;
@@ -92,6 +103,7 @@ scan_html_inner(const char* src, char* dest, size_t* destlen, enum htmlmode mode
       dest[written] = s[i];
     ++written;
   }
+
   if(destlen)
     *destlen = written;
   return i;

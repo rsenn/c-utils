@@ -72,6 +72,7 @@ int
 buffer_getint64(buffer* b, int64* i) {
   char buffer[8];
   uint64 u;
+
   if(buffer_get(b, buffer, 8) != 8)
     return 0;
   uint64_unpack(buffer, &u);
@@ -103,8 +104,10 @@ bsdiff_read_header(buffer* b, bsdiff_header* hdr) {
 
   if(!buffer_getint64(b, &hdr->ctrl_len))
     return 0;
+
   if(!buffer_getint64(b, &hdr->data_len))
     return 0;
+
   if(!buffer_getint64(b, &hdr->new_size))
     return 0;
 
@@ -117,8 +120,10 @@ bsdiff_read_ctrl(buffer* b, bsdiff_control* ctrl) {
 
   if(!buffer_getint64(b, &ctrl->add_len))
     return 0;
+
   if(!buffer_getint64(b, &ctrl->extra_len))
     return 0;
+
   if(!buffer_getint64(b, &ctrl->seek_off))
     return 0;
   return 1;
@@ -137,6 +142,7 @@ bsdiff_read(buffer* ctrl, buffer* data, buffer* extra) {
 
   for(;;) {
     int64 len;
+
     if(!bsdiff_read_ctrl(&bctrl, &rec))
       break;
 
@@ -151,17 +157,20 @@ bsdiff_read(buffer* ctrl, buffer* data, buffer* extra) {
         free(add);
         break;
       }
+
       if(!old.x)
         output_hex(add, len, r, '+');
 
       if(old.x) {
         char* src = malloc(len);
         int64 j;
+
         if(buffer_get(&old, src, len) != len) {
           free(add);
           free(src);
           break;
         }
+
         for(j = 0; j < len; ++j) {
 
           char to, from = src[j];
@@ -193,6 +202,7 @@ bsdiff_read(buffer* ctrl, buffer* data, buffer* extra) {
 
     if((len = rec.extra_len)) {
       char* extra = malloc(len);
+
       if(buffer_get(&bextra, extra, len) != len) {
         free(extra);
         break;
@@ -209,6 +219,7 @@ bsdiff_read(buffer* ctrl, buffer* data, buffer* extra) {
     }
 
     r += rec.seek_off;
+
     if(old.x)
       old.p += rec.seek_off;
   }
@@ -238,6 +249,7 @@ main(int argc, char* argv[]) {
   if(argc > 2) {
     if(buffer_mmapread(&old, argv[2]))
       byte_zero(&old, sizeof(old));
+
     if(argc > 3) {
       if(buffer_truncfile(&new, argv[3]))
         byte_zero(&new, sizeof(new));

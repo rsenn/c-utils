@@ -103,10 +103,12 @@ file_size(int fd) {
   off_t pos, end;
   /* if(_llseek(fd, 0, 0, &pos,
    * SEEK_CUR) < 0)  return -1; */
+
   if((pos = lseek(fd, 0, SEEK_CUR)) == (off_t)-1)
     return -1;
   /* if(_llseek(fd, 0, 0, &end,
    * SEEK_END) < 0) return -1; */
+
   if((end = lseek(fd, 0, SEEK_END)) == (off_t)-1)
     return -1;
 
@@ -124,10 +126,12 @@ last_error_str() {
   DWORD errCode = GetLastError();
   static stralloc buffer;
   char* err;
+
   if(errCode == 0)
     return NULL;
 
   SetLastError(0);
+
   if(!FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
                     NULL,
                     errCode,
@@ -157,6 +161,7 @@ static buffer infile = BUFFER_INIT(NULL, -1, 0, 0);
 int
 check_block_zero(char* b, size_t n) {
   size_t i;
+
   for(i = 0; i < n; i++) {
     if(b[i] != '\0')
       return 0;
@@ -175,6 +180,7 @@ int
 main(int argc, char* argv[]) {
   int ai;
   infile.op = (buffer_op_proto*)(void*)&read;
+
   for(ai = 1; ai < argc; ++ai) {
     char* av = argv[ai];
 
@@ -190,6 +196,7 @@ main(int argc, char* argv[]) {
     }
   }
 next:
+
   for(; ai < argc; ++ai) {
     uint64 all_blocks = 0, zero_blocks = 0, nonzero_blocks;
     unsigned int percent;
@@ -263,6 +270,7 @@ next:
 
       /* int remain = msz - (blocks *
        * BLOCK_SIZE); */
+
       for(bi = 0; bi < blocks; bi++) {
         /* get_block(m); */
 

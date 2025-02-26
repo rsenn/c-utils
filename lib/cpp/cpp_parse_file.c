@@ -77,6 +77,7 @@ cpp_parse_file(cpp* pp, buffer* f, const char* fn, buffer* out) {
       }
 
       if(skip_conditional_block)
+
         switch(index) {
           case 0:
           case 1:
@@ -157,6 +158,7 @@ cpp_parse_file(cpp* pp, buffer* f, const char* fn, buffer* out) {
 
             if(ret) {
               if_level_active = if_level;
+
               if_level_satisfied = if_level;
             }
           } else if(if_level_active == if_level) {
@@ -170,6 +172,7 @@ cpp_parse_file(cpp* pp, buffer* f, const char* fn, buffer* out) {
           if(prev_level_active() && if_level_satisfied < if_level) {
             if(1) {
               if_level_active = if_level;
+
               if_level_satisfied = if_level;
             }
           } else if(if_level_active == if_level) {
@@ -212,6 +215,7 @@ cpp_parse_file(cpp* pp, buffer* f, const char* fn, buffer* out) {
 
           while((ret = x_tokenizer_next(&t, &tok)) && tok.type != TT_EOF) {
             emit_token(out, &tok, t.buf);
+
             if(token_is_char(&tok, '\n'))
               break;
           }

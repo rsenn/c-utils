@@ -15,25 +15,31 @@ scan_double(const char* in, double* dest) {
   double d = 0;
   const char* c = in;
   char neg = 0;
+
   switch(*c) {
     case '-': neg = 1;
     case '+': c++; break;
     default: break;
   }
+
   while(isdigit(*c)) {
     d = d * 10 + (*c - '0');
     ++c;
   }
+
   if(*c == '.') {
     double factor = .1;
+
     while(isdigit(*++c)) {
       d = d + (factor * (*c - '0'));
       factor /= 10;
     }
   }
+
   if((*c | 32) == 'e') {
     int exp = 0;
     char neg = 0;
+
     if(c[1] < '0') {
       switch(*c) {
         case '-': neg = 1;
@@ -44,14 +50,18 @@ scan_double(const char* in, double* dest) {
           goto done;
       }
     }
+
     while(isdigit(*++c))
       exp = exp * 10 + (*c - '0');
+
     if(neg)
+
       while(exp) { /* XXX: this introduces rounding errors */
         d /= 10;
         --exp;
       }
     else
+
       while(exp) { /* XXX: this introduces rounding errors */
         d *= 10;
         --exp;

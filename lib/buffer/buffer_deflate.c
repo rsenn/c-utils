@@ -77,6 +77,7 @@ buffer_deflate(buffer* b, buffer* out, int level) {
   int ret;
   z_stream* z;
   deflate_ctx* ctx = calloc(1, sizeof(deflate_ctx));
+
   if(ctx == NULL)
     return 0;
 

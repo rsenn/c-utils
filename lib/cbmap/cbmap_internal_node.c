@@ -5,6 +5,7 @@ struct cbmap_internal_node*
 cbmap_internal_node_new(void) {
   struct cbmap_internal_node* node;
   int fail = CBM_MEMALIGN((void**)&node, sizeof(unsigned char*), sizeof(struct cbmap_internal_node));
+
   if(fail) {
     return NULL;
   }
@@ -18,6 +19,7 @@ cbmap_internal_node_new(void) {
 void
 cbmap_internal_node_destroy(struct cbmap_internal_node* node) {
   /* Note: Children must have been previously freed */
+
   if(node != NULL) {
     CBM_FREE(node);
   }

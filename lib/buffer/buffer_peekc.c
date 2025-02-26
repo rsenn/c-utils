@@ -3,6 +3,7 @@
 int
 buffer_peekc(buffer* b, char* c) {
   ssize_t r;
+
   if((r = buffer_prefetch(b, 1)) > 0) {
     *c = b->x[b->p];
     return 1;

@@ -9,6 +9,7 @@ stralloc_diffb(const stralloc* sa, const void* d, unsigned int dlen) {
     get shortest len
   */
   len = sa->len;
+
   if(len > dlen) {
     len = dlen;
   }
@@ -16,6 +17,7 @@ stralloc_diffb(const stralloc* sa, const void* d, unsigned int dlen) {
     compare common lengths
   */
   r = byte_diff(sa->s, len, d);
+
   if(r)
     return r;
   return (int)sa->len - (int)dlen;

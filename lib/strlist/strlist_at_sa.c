@@ -6,6 +6,7 @@ strlist_at_sa(const strlist* sl, size_t i) {
   stralloc sa;
   size_t p, l = 0;
   stralloc_init(&sa);
+
   for(p = 0; p < sl->sa.len; ++p) {
     if(l == i) {
       sa.s = &sl->sa.s[p];

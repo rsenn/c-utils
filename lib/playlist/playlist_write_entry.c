@@ -13,6 +13,7 @@ int
 playlist_write_entry(buffer* b, playlist* pl, playlist_entry* e) {
   stralloc* title = e->title.len ? &e->title : &e->path;
   ++pl->count;
+
   switch(pl->type) {
     case M3U: {
       buffer_puts(b, "#EXTINF:");

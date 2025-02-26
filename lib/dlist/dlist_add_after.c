@@ -3,6 +3,7 @@
 void
 dlist_add_after(dlist* l, node* p, node* after) {
   /* If <after> is the dlist tail, then a dlist_add_tail() does the job */
+
   if(after == l->tail) {
     dlist_push(l, p);
     return;

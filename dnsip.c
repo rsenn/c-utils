@@ -32,11 +32,13 @@ main(int argc, char* argv[]) {
 
   if(*argv)
     ++argv;
+
   while(*argv) {
     if(!stralloc_copys(&fqdn, *argv)) {
       buffer_putsflush(buffer_2, "out of memory\n");
       return 111;
     }
+
     if(dns_ip4(&out, &fqdn) == -1) {
       errmsg_warnsys("unable to find "
                      "IP address for ",

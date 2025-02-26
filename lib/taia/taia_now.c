@@ -19,6 +19,7 @@ void
 taia_now(struct taia* t) {
 #if 0 // WINDOWS_NATIVE
   LARGE_INTEGER ticks, freq;
+
   if(QueryPerformanceFrequency(&freq)) {
     if(QueryPerformanceCounter(&ticks)) {
       const int microseconds = 1000000;

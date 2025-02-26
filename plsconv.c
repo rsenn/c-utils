@@ -32,6 +32,7 @@ static buffer inbuf;
 static const char*
 mybasename(char* name) {
   size_t n = str_rchr(name, '/');
+
   if(name[n] != '\0')
     return &name[n + 1];
   return name;
@@ -117,6 +118,7 @@ main(int argc, char* argv[]) {
     if(in_type == NULL) {
       size_t i = str_rchr(in_file, '.');
       in_type = &in_file[i];
+
       if(*in_type == '.')
         ++in_type;
     }
@@ -145,6 +147,7 @@ main(int argc, char* argv[]) {
 
     if(out_file != NULL) {
       out_fd = open_trunc(out_file);
+
       if(out_fd == -1) {
         buffer_putm_internal(buffer_2, "Error writing: ", out_file ? out_file : "(null)", "\n", NULL);
         buffer_flush(buffer_2);

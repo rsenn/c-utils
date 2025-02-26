@@ -9,6 +9,7 @@ stralloc_case_diff(const stralloc* sa1, const stralloc* sa2) {
     get shortest len
   */
   len = sa1->len;
+
   if(len > sa2->len) {
     len = sa2->len;
   }
@@ -16,6 +17,7 @@ stralloc_case_diff(const stralloc* sa1, const stralloc* sa2) {
     compare common lengths
   */
   r = byte_case_diff(sa1->s, len, sa2->s);
+
   if(r)
     return r;
   return (int)sa1->len - (int)sa2->len;

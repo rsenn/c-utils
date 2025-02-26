@@ -21,11 +21,13 @@ mmap_filename(void* map, stralloc* sa) {
 
   if(get_mmaped_filename == 0) {
     HINSTANCE psapi = LoadLibraryA("psapi.dll");
+
     if((get_mmaped_filename = (get_mmaped_filename_fn*)GetProcAddress(psapi, "GetMappedFileNameA")) == 0)
       return 0;
   }
 
   stralloc_ready(sa, MAX_PATH + 1);
+
   if((sa->len = (size_t)(*get_mmaped_filename)(GetCurrentProcess(), map, sa->s, sa->a))) {
 
     /* Translate path with device name to drive letters. */
@@ -43,6 +45,7 @@ mmap_filename(void* map, stralloc* sa) {
         *szDrive = *p;
 
         /* Look up each device name */
+
         if(QueryDosDevice(szDrive, szName, MAX_PATH)) {
           size_t uNameLen = str_len(szName);
 
@@ -60,6 +63,7 @@ mmap_filename(void* map, stralloc* sa) {
         }
 
         /* Go to the next NULL character. */
+
         while(*p++)
           ;
       } while(!bFound && *p); /* end of string */
@@ -78,6 +82,7 @@ mmap_filename(void* map, stralloc* sa) {
     uint64 start, end;
 
     p += scan_xlonglong(p, &start);
+
     if(*p == '-') {
       char* e = line + n - 1;
       int i = 4;

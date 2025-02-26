@@ -12,6 +12,7 @@ size_t
 scan_netstring(const char* in, size_t len, char** dest, size_t* slen) {
   unsigned long l;
   size_t n = scan_ulongn(in, len, &l);
+
   if(!n ||              /* did not start with a number */
      n + 2 + l < l ||   /* overflow */
      n + 2 + l > len || /* longer than we have input data */

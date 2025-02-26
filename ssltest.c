@@ -28,13 +28,16 @@ fd_type
 ssltest_connect(const address_t* addr, uint16 port) {
   fd_type s;
   int ret;
+
   if((s = (addr->ip6 ? socket_tcp6 : socket_tcp4)()) != -1) {
     ndelay_on(s);
     io_fd(s);
+
     if(addr->ip6)
       ret = socket_connect6(s, addr->ip, port, addr->scope_id);
     else
       ret = socket_connect4(s, addr->ip, port);
+
     if(ret == 0 || (ret == -1 && errno == EINPROGRESS)) {
       errno = 0;
       io_wantwrite(s);
@@ -67,7 +70,9 @@ sendline_m(buffer* b, ...) {
   stralloc sa;
   stralloc_init(&sa);
   va_start(a, b);
+
   while((s = va_arg(a, const char*)))
+
     if(stralloc_cats(&sa, s) == -1) {
       r = -1;
       break;
@@ -83,6 +88,7 @@ void
 ssltest_process_message(int ac, char** av, buffer* b) {
   if(isdigit(av[1][0])) {
     unsigned int num;
+
     if(scan_uint(av[1], &num) > 0) {
 
       switch(num) {
@@ -125,24 +131,30 @@ ssltest_process_line(stralloc* line, buffer* b) {
   x = line->s;
   n = line->len;
   p = 0;
+
   if(n == 0)
     return;
   strlist_init(&toks, '\0');
+
   if(*x == ':') {
     x++;
     n--;
   } else {
     strlist_push(&toks, "");
   }
+
   while(p < n) {
     size_t i = scan_nonwhitenskip(&x[p], n - p);
     strlist_pushb(&toks, &x[p], i);
     p += i;
+
     if(p == n)
       break;
     p += scan_whitenskip(&x[p], n - p);
+
     if(p == n)
       break;
+
     if(x[p] == ':') {
       p++;
       strlist_pushb(&toks, &x[p], n - p);
@@ -175,6 +187,7 @@ ssltest_loop(fd_type s) {
   buffer_init_free(&out, (buffer_op_proto*)(void*)&tls_write, s, alloc(1024), 1024);
   ssl = tls_client(s);
   tls_io(s);
+
   for(;; iter++) {
 #ifdef DEBUG_OUTPUT_
     buffer_puts(buffer_2, "Iteration ");
@@ -182,6 +195,7 @@ ssltest_loop(fd_type s) {
     buffer_putnlflush(buffer_2);
 #endif
     io_wait();
+
     while((fd = io_canread()) != -1) {
       if(fd == s) {
 #ifdef DEBUG_OUTPUT
@@ -189,6 +203,7 @@ ssltest_loop(fd_type s) {
         buffer_putlong(buffer_2, fd);
         buffer_putnlflush(buffer_2);
 #endif
+
         if((ret = buffer_feed(&in)) > 0) {
           while(buffer_getnewline_sa(&in, &line) > 0) {
             stralloc_trimr(&line, "\r\n", 2);
@@ -198,6 +213,7 @@ ssltest_loop(fd_type s) {
         } else if(ret == -1) {
           if(errno != EAGAIN) {
             errmsg_warnsys("Socket read error: ", 0);
+
             if(errno > 0)
               return;
           }
@@ -207,6 +223,7 @@ ssltest_loop(fd_type s) {
         }
       }
     }
+
     while((fd = io_canwrite()) != -1) {
       if(fd == s) {
 #ifdef DEBUG_OUTPUT
@@ -217,6 +234,7 @@ ssltest_loop(fd_type s) {
         buffer_putspace(buffer_2);
         buffer_putlong(buffer_2, out.p);
         buffer_puts(buffer_2, ": ");
+
         for(i = 0; i < out.p; i++) {
           if(out.x[i] >= ' ')
             buffer_putc(buffer_2, out.x[i]);
@@ -229,14 +247,17 @@ ssltest_loop(fd_type s) {
         buffer_putnlflush(buffer_2);
 #endif
         buffer_flush(&out);
+
         if(out.p == 0)
           io_onlywantread(s);
       }
     }
     ret = 0;
+
     if(!tls_established(s)) {
       ret = tls_connect(s);
     }
+
     if((ret == 1 || tls_established(s)) && !login_sent) {
       buffer_puts(buffer_2, "Handshake complete.");
       buffer_putnlflush(buffer_2);
@@ -280,8 +301,10 @@ main(int argc, char* argv[]) {
 
   for(;;) {
     c = unix_getopt_long(argc, argv, "ho:", opts, &index);
+
     if(c == -1)
       break;
+
     if(c == 0)
       continue;
 
@@ -301,6 +324,7 @@ main(int argc, char* argv[]) {
     usage(argv[0]);
     return 1;
   }
+
   if(unix_optind < argc) {
     if(!scan_ushort(argv[unix_optind++], &port))
       port = 6679;

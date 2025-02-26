@@ -16,6 +16,7 @@ cb_erase(critbit_tree* cb, const void* key, size_t keylen) {
     int type;
 
     type = decode_pointer(&ptr);
+
     if(type == INTERNAL_NODE) {
       iter = parent ? &parent->child[branch] : &cb->root;
       parent = (struct critbit_node*)ptr;
@@ -25,8 +26,10 @@ cb_erase(critbit_tree* cb, const void* key, size_t keylen) {
       void* str;
       size_t len;
       from_external_node(ptr, &str, &len);
+
       if(len == keylen && byte_diff(key, len, str) == 0) {
         free(ptr);
+
         if(iter) {
           *iter = parent->child[1 - branch];
           free(parent);

@@ -11,6 +11,7 @@
 static void
 buffer_bzip_close(buffer* b) {
   BZFILE* f;
+
   if((f = (BZFILE*)b->cookie)) {
     BZ2_bzflush(f);
     BZ2_bzclose(f);
@@ -26,6 +27,7 @@ buffer_bunzip_read(fd_type fd, void* x, size_t n, void* b) {
 int
 buffer_bunzip(buffer* b, const char* filename) {
   BZFILE* f;
+
   if((f = BZ2_bzopen(filename, "rb")) == NULL)
     return -1;
   b->fd = -1;
@@ -40,6 +42,7 @@ buffer_bunzip(buffer* b, const char* filename) {
 int
 buffer_bunzip_fd(buffer* b, fd_type fd) {
   BZFILE* f;
+
   if((f = BZ2_bzdopen(fd, "rb")) == NULL)
     return -1;
   b->fd = -1;
@@ -63,6 +66,7 @@ buffer_bzip(buffer* b, const char* filename, int level) {
   BZFILE* f;
   char mode[4] = "wb0";
   mode[2] = '0' + (level % 10);
+
   if((f = BZ2_bzopen(filename, mode)) == NULL)
     return -1;
   b->fd = -1;
@@ -80,6 +84,7 @@ buffer_bzip_fd(buffer* b, fd_type fd, int level) {
   BZFILE* f;
   char mode[4] = "wb0";
   mode[2] = '0' + (level % 10);
+
   if((f = BZ2_bzdopen(fd, mode)) == NULL)
     return -1;
   b->fd = -1;

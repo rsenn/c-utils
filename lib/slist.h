@@ -84,6 +84,7 @@ slist_islast(slink* list) {
 static inline size_t
 slink_size(slink** link) {
   size_t i = 0;
+
   while(!slink_last(link)) {
     ++i;
     link = slink_next(link);
@@ -93,6 +94,7 @@ slink_size(slink** link) {
 static inline size_t
 slist_size(slink* list) {
   size_t i = 0;
+
   while(list) {
     ++i;
     list = list->next;
@@ -173,6 +175,7 @@ inline static size_t
 slist_iterator_distance(slink** list, slink** from, slink** to) {
   size_t i = 0;
   (void)list;
+
   while(*from && from != to) {
     from = &(*from)->next;
     ++i;

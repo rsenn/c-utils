@@ -94,8 +94,10 @@ charbuf_skip_ifeq(charbuf* b, unsigned char c) {
   return charbuf_pred_skip(b, charbuf_is_samechar, (void*)(size_t)c);
   /* unsigned char ch;
    ssize_t ret;
+
    if((ret = charbuf_peekc(b, &ch)) <= 0)
      return ret;
+
    if((ret = (ch == c)))
      charbuf_skip(b);
    return ret;*/
@@ -104,8 +106,10 @@ charbuf_skip_ifeq(charbuf* b, unsigned char c) {
 static inline ssize_t
 charbuf_skip_ifset(charbuf* b, const char* set, size_t setlen) {
   unsigned char c;
+
   if(!charbuf_peekc(b, &c))
     return 0;
+
   if(byte_chr(set, setlen, c) == setlen)
     return 0;
   return charbuf_skip(b);

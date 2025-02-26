@@ -3,10 +3,12 @@
 int
 stralloc_chomp(stralloc* sa) {
   size_t max = sa->len;
+
   if(max > 0) {
     char x;
     --max;
     x = sa->s[max];
+
     if(x == '\n' || x == '\r') {
       if(x == '\n' && max > 1 && sa->s[max - 1] == '\r') {
         sa->len -= 2;

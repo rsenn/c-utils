@@ -33,6 +33,7 @@ if_indextoname(uint32 idx, const char* name) {
         return 0;
     }
   }
+
   if(idx2ifn)
     return idx2ifn(idx, name);
   return 0;
@@ -44,6 +45,7 @@ static char ifname[IF_NAMESIZE];
 const char*
 socket_getifname(uint32 _interface) {
   char* tmp = if_indextoname(_interface, ifname);
+
   if(tmp)
     return tmp;
   else

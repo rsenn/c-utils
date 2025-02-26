@@ -8,6 +8,7 @@ str_istr(char* s, char* find) {
 
   if((c = *find++) != 0) {
     len = str_len(find);
+
     do {
       do {
         if((sc = *s++) == 0)

@@ -13,6 +13,7 @@ void
 iopause(iopause_fd* x, unsigned int len, struct taia* deadline, struct taia* stamp) {
   struct taia t;
   int millisecs;
+
   double d;
   unsigned int i;
 
@@ -22,6 +23,7 @@ iopause(iopause_fd* x, unsigned int len, struct taia* deadline, struct taia* sta
     t = *stamp;
     taia_sub(&t, deadline, &t);
     d = taia_approx(&t);
+
     if(d > 1000.0)
       d = 1000.0;
     millisecs = (int)(d * 1000.0 + 20.0);
@@ -50,6 +52,7 @@ iopause(iopause_fd* x, unsigned int len, struct taia* deadline, struct taia* sta
 
       ptrlist[i] = cb;
     }
+
     if((r = io_setup(len, &ctx)) == -1)
       goto aio_fail;
 
@@ -76,6 +79,7 @@ iopause(iopause_fd* x, unsigned int len, struct taia* deadline, struct taia* sta
     if(ctx)
       io_destroy(ctx);
     alloc_free(cblist);
+
     if(evlist)
       alloc_free(evlist);
   }
@@ -99,19 +103,25 @@ iopause(iopause_fd* x, unsigned int len, struct taia* deadline, struct taia* sta
     FD_ZERO(&wfds);
 
     nfds = 1;
+
     for(i = 0; i < len; ++i) {
       fd = x[i].fd;
+
       if(fd != x[i].fd)
         continue;
+
       if(fd < 0)
         continue;
+
       if(fd >= (int)(8 * sizeof(fd_set)))
         continue; /*XXX*/
 
       if(fd >= nfds)
         nfds = fd + 1;
+
       if(x[i].events & IOPAUSE_READ)
         FD_SET(fd, &rfds);
+
       if(x[i].events & IOPAUSE_WRITE)
         FD_SET(fd, &wfds);
     }
@@ -125,15 +135,20 @@ iopause(iopause_fd* x, unsigned int len, struct taia* deadline, struct taia* sta
 
     for(i = 0; i < len; ++i) {
       fd = x[i].fd;
+
       if(fd < 0)
         continue;
+
       if(fd >= (fd_type)(8 * sizeof(fd_set)))
         continue; /*XXX*/
 
       if(x[i].events & IOPAUSE_READ)
+
         if(FD_ISSET(fd, &rfds))
           x[i].revents |= IOPAUSE_READ;
+
       if(x[i].events & IOPAUSE_WRITE)
+
         if(FD_ISSET(fd, &wfds))
           x[i].revents |= IOPAUSE_WRITE;
     }

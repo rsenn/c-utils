@@ -18,6 +18,7 @@ ihex_read_buf(ihex_file* ihf, const char* in, size_t n) {
     pos.link = p.link;
 
     x += len;
+
     while(*x == '\r' || *x == '\n')
       ++x;
 

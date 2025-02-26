@@ -10,6 +10,7 @@ ihex_record_checksum(const ihex_record* ihr) {
   uint16_pack_big(offs, ihr->offset);
 
   ret = ihr->length + offs[0] + offs[1] + ihr->type;
+
   for(i = 0; i < ihr->length; i++)
     ret += ihr->data[i];
 

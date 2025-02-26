@@ -28,8 +28,10 @@ io_pipe(fd_type* d) {
   return 1;
 #else
   fd_type fds[2];
+
   if(pipe(fds) == -1)
     return 0;
+
   if(io_fd((size_t)fds[1]) && io_fd((size_t)fds[0])) {
     d[0] = (size_t)fds[0];
     d[1] = (size_t)fds[1];

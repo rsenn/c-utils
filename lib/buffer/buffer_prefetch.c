@@ -16,15 +16,20 @@ buffer_prefetch(buffer* b, size_t len) {
     b->n -= b->p;
     b->p = 0;
   }
+
   if(m > buffer_AVAIL(b))
     m = buffer_AVAIL(b);
+
   if(m == 0)
     return -1;
+
   while(b->n < b->p + len) {
     int w;
+
     if((w = buffer_stubborn_read(b->op, b->fd, buffer_END(b), b->a - b->n, b)) < 0)
       return -1;
     b->n += w;
+
     if(!w)
       break;
   }

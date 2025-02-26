@@ -25,6 +25,7 @@ main(int argc, char** argv) {
   while(*argv) {
     if(!stralloc_copys(&fqdn, *argv))
       die(111, FATAL, "out of memory", 0);
+
     if(dns_ip6(&out, &fqdn) == -1)
       diesys(111,
              FATAL,

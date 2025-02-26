@@ -27,6 +27,7 @@ fmt_escapecharjson(char* dest, int c, int quote) {
       return 1;
     }
   }
+
   switch(ch) {
     case '\b': ch = 'b'; goto simple;
     case '\n': ch = 'n'; goto simple;
@@ -35,15 +36,18 @@ fmt_escapecharjson(char* dest, int c, int quote) {
     case '\\':
     case '/':
     simple:
+
       if(dest) {
         dest[0] = '\\';
         dest[1] = (char)ch;
       }
       return 2;
   }
+
   if(ch > 0xffff) {
     if(ch > 0x10ffff)
       return 0; // highest representable unicode codepoint
+
     if(dest) {
       dest[0] = '\\';
       dest[1] = 'u';
@@ -54,6 +58,7 @@ fmt_escapecharjson(char* dest, int c, int quote) {
     n = 6;
   } else
     n = 0;
+
   if(dest) {
     dest[0] = '\\';
     dest[1] = 'u';

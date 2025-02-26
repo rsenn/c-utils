@@ -35,10 +35,12 @@ tls_read(fd_type fd, void* data, size_t len) {
   buffer_putlong(buffer_2, fd);
   buffer_puts(buffer_2, " ret: ");
   buffer_putlonglong(buffer_2, ret);
+
   if(errno) {
     buffer_puts(buffer_2, " errno: ");
     buffer_putstr(buffer_2, strerror(errno));
   }
+
   if(i->error != SSL_ERROR_NONE) {
     buffer_puts(buffer_2, " error: ");
     buffer_puts(buffer_2,
@@ -56,6 +58,7 @@ tls_read(fd_type fd, void* data, size_t len) {
                                        "SSL_ERROR_WANT_ASYNC_JOB",
                                        "SSL_ERROR_WANT_CLIENT_HELLO_CB"})[i->error]);
   }
+
   if(ret > 0) {
     size_t len = ret;
     buffer_puts(buffer_2,
@@ -67,6 +70,7 @@ tls_read(fd_type fd, void* data, size_t len) {
       len = 16;
     buffer_putfmt(buffer_2, data, len, &fmt_escapecharnonprintable);
     buffer_puts(buffer_2, "\"");
+
     if(len < ret) {
       buffer_puts(buffer_2, "... more (");
 

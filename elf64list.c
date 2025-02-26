@@ -36,6 +36,7 @@ main(int argc, char** argv) {
     const char* section_names;
 
     header = (elf64_ehdr*)content;
+
     if(memcmp(header->e_ident, ELF_ELFMAG, ELF_SELFMAG) != 0) {
 
       buffer_putsflush(buffer_2, "not ELF\n");
@@ -99,6 +100,7 @@ main(int argc, char** argv) {
     symbol_section_offset = dynsym->sh_offset;
     symbol_entry_size = dynsym->sh_entsize;
     name_section_offset = dynstr->sh_offset;
+
     if(symbol_entry_size > 0)
       n_entries = dynsym->sh_size / symbol_entry_size;
     else

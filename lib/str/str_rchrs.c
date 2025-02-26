@@ -10,6 +10,7 @@ str_rchrs(const char* in, const char needles[], size_t nn) {
       break;
 
     for(i = 0; i < nn; ++i)
+
       if(*s == needles[i])
         found = s;
 

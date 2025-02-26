@@ -16,6 +16,7 @@ dns_domain_fromdot(char** out, const char* buf, size_t n) {
       break;
     ch = *buf++;
     --n;
+
     if(ch == '.') {
       if(labellen) {
         if(namelen + labellen + 1 > sizeof name)
@@ -27,18 +28,22 @@ dns_domain_fromdot(char** out, const char* buf, size_t n) {
       }
       continue;
     }
+
     if(ch == '\\') {
       if(!n)
         break;
       ch = *buf++;
       --n;
+
       if((ch >= '0') && (ch <= '7')) {
         ch -= '0';
+
         if(n && (*buf >= '0') && (*buf <= '7')) {
           ch <<= 3;
           ch += *buf - '0';
           ++buf;
           --n;
+
           if(n && (*buf >= '0') && (*buf <= '7')) {
             ch <<= 3;
             ch += *buf - '0';
@@ -48,6 +53,7 @@ dns_domain_fromdot(char** out, const char* buf, size_t n) {
         }
       }
     }
+
     if(labellen >= sizeof label)
       return 0;
     label[labellen++] = ch;

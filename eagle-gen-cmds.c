@@ -60,6 +60,7 @@
 
 struct pad {
   stralloc name;
+
   double x, y;
 };
 struct package {
@@ -69,6 +70,7 @@ struct package {
 //};
 struct pin {
   stralloc name;
+
   double x, y, r;
   int visible;
 };
@@ -97,6 +99,7 @@ struct part {
   struct device* dev;
   struct deviceset* dset;
   struct net* pins;
+
   double x, y;
 };
 struct ref {
@@ -121,6 +124,7 @@ typedef struct pos point;
 union vec2 {
   struct {
     double x1, y1;
+
     double x2, y2;
   };
   point p[2];
@@ -242,6 +246,7 @@ get_double(xmlnode* node, const char* key) {
 
   if(xml_has_attribute(node, key)) {
     dstr = xml_get_attribute(node, key);
+
     if(scan_double(dstr, &ret) <= 0)
       ret = DBL_MAX;
   }
@@ -260,6 +265,7 @@ get_int(xmlnode* node, const char* key) {
   if(istr) {
     while(*istr && str_chr("-0123456789", *istr) >= 11)
       ++istr;
+
     if(!scan_long(istr, &ret))
       ret = INT_MAX;
   }
@@ -276,6 +282,7 @@ get_parent(void* n, const char* parent) {
   for(node = n; node; node = node->parent) {
     if(node->name == NULL)
       continue;
+
     if(str_equal(node->name, parent))
       break;
   }
@@ -321,6 +328,7 @@ void*
 get(cbmap_t m, char* name, size_t datasz) {
   void* ptr;
   size_t len = datasz;
+
   if(!cbmap_get(m, name, str_len(name) + 1, &ptr, &len))
     ptr = NULL;
   return ptr;
@@ -342,6 +350,7 @@ get_or_create(cbmap_t m, char* name, size_t datasz) {
     char* data = malloc(datasz);
 #endif
     byte_zero(data, datasz);
+
     if(cbmap_insert(m, name, str_len(name) + 1, data, datasz))
       ptr = get(m, name, datasz);
 #if !defined(HAVE_ALLOCA) && !defined(HAVE_DYNSTACK)
@@ -373,6 +382,7 @@ print_base(buffer* b) {
 void
 print_name_value(buffer* b, const char* name, const char* value) {
   print_base(b);
+
   if(name)
     buffer_putm_internal(b, name, ": ", NULL);
   buffer_puts(b, value ? value : "(null)");
@@ -385,6 +395,7 @@ package_pin(struct package* pkg, const char* name) {
 
   for(i = 0; i < len; ++i) {
     struct pad* p = array_get(&pkg->pads, sizeof(struct pad), i);
+
     if(p->name.len == nlen && !str_diffn(p->name.s, name, str_len(name)))
       return i;
   }
@@ -394,6 +405,7 @@ package_pin(struct package* pkg, const char* name) {
 int
 layer_id(const char* str) {
   int id = -1;
+
   if(scan_uint(str, (unsigned int*)&id)) {
     // if(id >= 0 && id <
     // strarray_size(&layers))
@@ -411,6 +423,7 @@ get_layer(const char* str) {
 
   if((i = layer_id(str)) != -1)
     return i;
+
   if(scan_long(str, &i) > 0)
     return i;
 
@@ -425,6 +438,7 @@ layer_name(int i) {
 const char*
 layer_by_id(const char* str) {
   int id;
+
   if((id = get_layer(str)) != -1)
     return layer_name(id);
   return NULL;
@@ -498,10 +512,13 @@ void
 rect_update(rect* r, double x, double y) {
   if(x < r->x1 || r->x1 == DBL_MAX)
     r->x1 = x;
+
   if(x > r->x2 || r->x2 == DBL_MAX)
     r->x2 = x;
+
   if(y < r->y1 || r->y1 == DBL_MAX)
     r->y1 = y;
+
   if(y > r->y2 || r->y2 == DBL_MAX)
     r->y2 = y;
 }
@@ -618,11 +635,13 @@ build_part(xmlnode* part) {
   char* pkgname = xml_get_attribute(part, "package");
   size_t pins;
   struct part p;
+
   if(!name || str_len(name) == 0)
     return;
   byte_zero(&p, sizeof(struct part));
   stralloc_copys(&p.name, name);
   val = xml_get_attribute(part, "value");
+
   if(val)
     stralloc_copys(&p.value, val);
   p.x = get_double(part, "x") / 0.127;
@@ -632,11 +651,13 @@ build_part(xmlnode* part) {
     p.pkg = get_entry(packages, pkgname);
   }
   // assert(p.pkg);
+
   if(p.pkg) {
     pins = array_length(&p.pkg->pads, sizeof(struct net*));
     p.pins = calloc(sizeof(struct net*), pins);
   }
   dsname = xml_get_attribute(part, "deviceset");
+
   if(dsname)
     p.dset = get_entry(devicesets, dsname);
   cbmap_insert(parts, (void*)name, str_len(name) + 1, &p, sizeof(struct part));
@@ -652,6 +673,7 @@ build_sym(xmlnode* part) {
   struct symbol* sym;
   xmlnode* pin;
   char* name = xml_get_attribute(part, "name");
+
   if(!name || str_len(name) == 0)
     return;
   sym = get_or_create(symbols, name, sizeof(struct symbol));
@@ -660,11 +682,14 @@ build_sym(xmlnode* part) {
   for(pin = part->children; pin; pin = pin->next) {
     char* pin_name;
     struct pin* p;
+
     if(pin->type != XML_ELEMENT)
       continue;
+
     if(str_diff(pin->name, "pin"))
       continue;
     pin_name = xml_get_attribute(pin, "name");
+
     if(pin_name == NULL)
       continue;
     p = array_allocate(&sym->pins, sizeof(struct ref), i++);
@@ -688,6 +713,7 @@ build_reflist(xmlnode* node, struct net* n, int* index) {
     char *nn, *part_name;
     struct ref* r;
     int is_pin;
+
     if(node->type != XML_ELEMENT)
       continue;
     nn = node->name;
@@ -697,6 +723,7 @@ build_reflist(xmlnode* node, struct net* n, int* index) {
       continue;
     }
     is_pin = str_equal(nn, "pinref");
+
     if(str_diff(nn, is_pin ? "pinref" : "contactref"))
       continue;
     part_name = xml_get_attribute(node, is_pin ? "part" : "element");
@@ -737,6 +764,7 @@ build_nets(xmlnode* node) {
   xmlnode* sn;
   char *sign, *name = node->name;
   assert(str_equal(name, "net") || str_equal(name, "signal"));
+
   if(!(sign = xml_get_attribute(node, "name")))
     return;
 
@@ -761,15 +789,18 @@ build_package(xmlnode* set) {
   char *pn, *name = xml_get_attribute(set, "name");
   struct package pkg;
   byte_zero(&pkg, sizeof(struct package));
+
   if(name == NULL)
     name = "";
   stralloc_copys(&pkg.name, name);
 
   for(node = set->children; node; node = node->next) {
     struct pad p;
+
     if(node->type != XML_ELEMENT || str_diff(node->name, "pad"))
       continue;
     pn = xml_get_attribute(node, "name");
+
     if(!pn || str_len(pn) == 0)
       continue;
 
@@ -805,6 +836,7 @@ build_deviceset(xmlnode* set) {
 
   for(node = gates ? gates->children : NULL; node; node = node->next) {
     struct gate g;
+
     if(node->type != XML_ELEMENT)
       continue;
     byte_zero(&g, sizeof(struct gate));
@@ -818,9 +850,11 @@ build_deviceset(xmlnode* set) {
     struct pinmapping pm;
     struct package* pkg;
     size_t len;
+
     if(node->type != XML_ELEMENT)
       continue;
     name = xml_get_attribute(node, "name");
+
     if(!name || str_len(name) == 0)
       continue;
     package = xml_get_attribute(node, "package");
@@ -872,6 +906,7 @@ getparts(xmlnode* doc) {
 void
 for_set(xmlnodeset* ns, void (*fn)(xmlnode*)) {
   xmlnodeset_iter_t it, e;
+
   if(!ns)
     return;
 
@@ -889,6 +924,7 @@ void
 nodeset_topleft(xmlnodeset* s, double* x, double* y) {
   xmlnode* node;
   int i, len = xmlnodeset_size(s);
+
   if(len == 0)
     return;
   node = xmlnodeset_item(s, 0);
@@ -900,8 +936,10 @@ nodeset_topleft(xmlnodeset* s, double* x, double* y) {
     node = xmlnodeset_item(s, i);
     nx = get_double(node, "x");
     ny = get_double(node, "y");
+
     if(nx < *x)
       *x = nx;
+
     if(ny < *y)
       *y = ny;
   }
@@ -913,8 +951,10 @@ nodeset_topleft(xmlnodeset* s, double* x, double* y) {
 void
 tree_topleft(xmlnode* elem, const char* elems, double* x, double* y) {
   xmlnode* node = elem->children;
+
   if(node == 0)
     return;
+
   while(node && node->type != XML_ELEMENT && str_diff(node->name, elems))
     node = node->next;
   *x = get_double(node, "x");
@@ -922,12 +962,15 @@ tree_topleft(xmlnode* elem, const char* elems, double* x, double* y) {
 
   while((node = node->next)) {
     double nx, ny;
+
     if(node->type != XML_ELEMENT || str_diff(node->name, elems))
       continue;
     nx = get_double(node, "x");
     ny = get_double(node, "y");
+
     if(nx < *x)
       *x = nx;
+
     if(ny < *y)
       *y = ny;
   }
@@ -978,6 +1021,7 @@ net_connects(const struct net* net, struct part* part, int pin) {
 
   for(i = 0; i < len; ++i) {
     struct ref* r = array_get(&net->contacts, sizeof(struct ref), i);
+
     if(r->part == part && (r->pin == pin || pin == -1))
       return r;
   }
@@ -990,12 +1034,14 @@ dump_net(const void* key, size_t key_len, const void* value, size_t value_len, v
   struct part* p = user_data;
   struct ref* rc;
   int64 i, len;
+
   if(!(rc = net_connects(n, p, -1)))
     return 1;
   len = array_length(&n->contacts, sizeof(struct ref));
 
   for(i = 0; i < len; ++i) {
     struct ref* r = array_get(&n->contacts, sizeof(struct ref), i);
+
     if(r == rc)
       continue;
     assert(r->part);
@@ -1029,6 +1075,7 @@ node_print(xmlnode* node) {
 int
 node_depth(xmlnode* node) {
   size_t i = 0;
+
   while((node = node->next))
     ++i;
   return i;
@@ -1078,13 +1125,16 @@ print_element_name(xmlnode* a_node) {
      }
      print_element_name(p);
    } */
+
   if(!(name = a_node->name))
     return;
 
   if(str_diff(name, "eagle") && str_diff(name, "drawing")) {
     buffer_putm_internal(buffer_1, a_node->parent ? "/" : "", name, NULL);
+
     if(!(name = xml_get_attribute(a_node, "name")))
       return;
+
     if(str_len(name))
       buffer_putm_internal(buffer_1, "[@name='", name, "']", NULL);
   }
@@ -1101,6 +1151,7 @@ print_attrs(HMAP_DB* a) {
   for(t = a->list_tuple; t; t = t->next) {
     char* v = t->vals.val_chars;
     buffer_putm_internal(buffer_1, " ", t->key, str_isdoublenum(v) ? "=" : "=\"", v, str_isdoublenum(v) ? "" : "\"", NULL);
+
     if(t->next == a->list_tuple)
       break;
   }
@@ -1119,6 +1170,7 @@ print_element_content(xmlnode* node) {
   if((s = xml_content(node))) {
     if(str_isspace(s))
       s = "";
+
     if(str_len(s))
       buffer_putm_internal(buffer_1, " \"", s, "\"", NULL);
   }
@@ -1131,6 +1183,7 @@ print_element_content(xmlnode* node) {
 void
 print_element_children(xmlnode* a_node) {
   xmlnode* node;
+
   if(!a_node->children)
     return;
 
@@ -1209,6 +1262,7 @@ print_rect(buffer* b, const char* name, const rect* r) {
   print_vertex(b, r->a);
   buffer_putspace(b);
   print_vertex(b, r->b);
+
   if(name)
     buffer_putnlflush(b);
 }
@@ -1240,6 +1294,7 @@ print_bounds(buffer* b, const rect r, const char* sep) {
 void
 print_xml_xy(buffer* b, xmlnode* e) {
   double x = xml_get_attribute_double(e, "x");
+
   double y = xml_get_attribute_double(e, "y");
   xy_align(&x, &y);
   buffer_puts(b, "(");
@@ -1280,8 +1335,10 @@ void
 print_script(buffer* b, xmlnode* e) {
   stralloc cmd;
   stralloc_init(&cmd);
+
   if(e->name)
     stralloc_copys(&cmd, e->name);
+
   if(cmd.len)
     cmd.s[0] = toupper(cmd.s[0]);
   stralloc_append(&cmd, " ");
@@ -1289,6 +1346,7 @@ print_script(buffer* b, xmlnode* e) {
 
   if(xml_has_attribute(e, "layer")) {
     int layer = get_layer(xml_get_attribute(e, "layer"));
+
     if(layer != -1 && layer != active_layer) {
       buffer_putm_internal(b, "Layer ", layer_name(layer), "; ", NULL);
       active_layer = layer;
@@ -1304,6 +1362,7 @@ print_script(buffer* b, xmlnode* e) {
 
     if((a = xml_get_attribute(e, "align"))) {
       stralloc_subst(&align, a, str_len(a), "-", " ");
+
       if(align.len) {
         if(!stralloc_case_equal(&align, &current_alignment)) {
           stralloc_copy(&current_alignment, &align);
@@ -1319,6 +1378,7 @@ print_script(buffer* b, xmlnode* e) {
     buffer_putm_internal(b, "MOVE ", xml_get_attribute(e, "name"), " ", NULL);
 
     print_xml_xy(b, e);
+
     if(rot) {
       buffer_putm_internal(b, "; ROTATE ", rot, " '", xml_get_attribute(e, "name"), "'", NULL);
     }
@@ -1327,6 +1387,7 @@ print_script(buffer* b, xmlnode* e) {
     print_xml_layer(b, e);
 
     buffer_putsa(b, &cmd);
+
     if(current_signal)
       buffer_putm_internal(b, "'", current_signal, "' ", NULL);
     buffer_putm_internal(b, xml_get_attribute(e, "width"), " ", NULL);
@@ -1334,6 +1395,7 @@ print_script(buffer* b, xmlnode* e) {
     print_xml_rect(b, e);
   } else if(str_equal(e->name, "via")) {
     buffer_putsa(b, &cmd);
+
     if(current_signal)
       buffer_putm_internal(b, "'", current_signal, "' ", NULL);
 
@@ -1416,6 +1478,7 @@ match_query(xmlnode* doc, const char* q) {
         char* attr_name = a->key;
         char* v = a->vals.val_chars;
         strlist_init(&part_names, ' ');
+
         if(!v || str_len(v) == 0)
           continue;
 
@@ -1503,6 +1566,7 @@ draw_measures(xmlnode* doc) {
 
      xml_add_child(gnd_signal, polygon);
    }
+
     if(polygon->children) {
      xml_free(polygon->children);
      polygon->children = NULL;
@@ -1582,8 +1646,10 @@ main(int argc, char* argv[]) {
 
   for(;;) {
     c = unix_getopt_long(argc, argv, "LdhaA:l:c", opts, &index);
+
     if(c == -1)
       break;
+
     if(c == 0)
       continue;
 
@@ -1629,6 +1695,7 @@ main(int argc, char* argv[]) {
     base = str_basename(argv[unix_optind]);
     buffer_mmapprivate(&input, argv[unix_optind]);
     buffer_skip_until(&input, "\r\n", 2);
+
     doc = xml_read_tree(&input);
 
     match_foreach(doc, "layer", build_layers);
@@ -1638,6 +1705,7 @@ main(int argc, char* argv[]) {
     if(do_list_layers) {
 
       size_t i, n = strarray_size(&layers);
+
       for(i = 0; i < n; ++i) {
         const char* s = strarray_AT(&layers, i);
 
@@ -1709,6 +1777,7 @@ main(int argc, char* argv[]) {
 
     {
       int n;
+
       double top_y, right_x;
       xmlnodeset_iter_t it, e;
       xmlnodeset ns;
@@ -1749,6 +1818,7 @@ main(int argc, char* argv[]) {
 
       for(it = xmlnodeset_begin(&ns), e = xmlnodeset_end(&ns); it != e; ++it) {
         xmlnode* node = xmlnodeset_iter_ref(it);
+
         double x1, x2, y1, y2;
 
         if(print_comments) {
@@ -1769,6 +1839,7 @@ main(int argc, char* argv[]) {
 
         if(xml_has_attribute(node, "x1") && xml_has_attribute(node, "y1"))
           rect_update(&extent, get_double(node, "x1"), get_double(node, "y1"));
+
         if(xml_has_attribute(node, "x2") && xml_has_attribute(node, "x2"))
           rect_update(&extent, get_double(node, "x2"), get_double(node, "x2"));
 
@@ -1800,6 +1871,7 @@ main(int argc, char* argv[]) {
           //      print_xy(buffer_2,
           //      layer, x1, y1);
         }
+
         if(print_comments)
           buffer_putsflush(buffer_1, "\n\n");
         print_script(buffer_1, node);

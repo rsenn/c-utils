@@ -28,10 +28,12 @@
 int64
 io_tryread(fd_type d, char* buf, int64 len) {
   io_entry* e = (io_entry*)iarray_get((iarray*)io_getfds(), d);
+
   if(!e) {
     errno = EBADF;
     return -3;
   }
+
   if(len < 0) {
     errno = EINVAL;
     return -3;
@@ -49,19 +51,25 @@ io_tryread(fd_type d, char* buf, int64 len) {
       e->canread = 0;
       return -3;
     }
+
     if(x > len)
       x = len;
+
     if(x) {
       byte_copy(buf, x, e->inbuf);
       byte_copy(e->inbuf, e->bytes_read - x, e->inbuf + x);
       e->bytes_read -= x;
     }
+
     if(!e->bytes_read) {
       e->canread = 0;
+
       if(len > x) {
         /* queue next read */
+
         if(len > sizeof(e->inbuf))
           len = sizeof(e->inbuf);
+
         if(ReadFile((HANDLE)(size_t)d, e->inbuf, len, 0, &e->or)) {
           e->canread = 1;
           e->readqueued = 2;
@@ -80,9 +88,11 @@ io_tryread(fd_type d, char* buf, int64 len) {
     }
     return x;
   }
+
   if(!e->readqueued) {
     if(len > sizeof(e->inbuf))
       len = sizeof(e->inbuf);
+
     if(ReadFile((HANDLE)(size_t)d, e->inbuf, len, 0, &e->or)) {
       e->readqueued = 1;
     } else {
@@ -96,17 +106,21 @@ io_tryread(fd_type d, char* buf, int64 len) {
     struct itimerval old, new;
     struct pollfd p;
     io_entry* e = (io_entry*)iarray_get((iarray*)io_getfds(), d);
+
     if(!e) {
       errno = EBADF;
       return -3;
     }
+
     if(!e->nonblock) {
       p.fd = d;
+
       if(p.fd != d) {
         errno = EBADF;
         return -3;
       } /* catch integer truncation */
       p.events = POLLIN;
+
       switch(poll(&p, 1, 0)) {
         case -1: return -3;
         case 0:
@@ -122,15 +136,19 @@ io_tryread(fd_type d, char* buf, int64 len) {
       setitimer(ITIMER_REAL, &new, &old);
     }
     r = read(d, buf, len);
+
     if(!e->nonblock) {
       setitimer(ITIMER_REAL, &old, 0);
     }
+
     if(r == -1) {
       if(errno == EINTR)
         errno = EAGAIN;
+
       if(errno != EAGAIN)
         r = -3;
     }
+
     if(r != len) {
       e->canread = 0;
 #if defined(HAVE_SIGIO)

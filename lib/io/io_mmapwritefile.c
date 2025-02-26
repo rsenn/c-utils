@@ -23,6 +23,7 @@ io_mmapwritefile(fd_type out, fd_type in, uint64 off, uint64 bytes, io_write_cal
   int64 n, m;
   uint64 sent = 0;
   io_entry* e = (io_entry*)iarray_get((iarray*)io_getfds(), out);
+
   if(e) {
     const char* c;
     unsigned long left;
@@ -32,9 +33,11 @@ io_mmapwritefile(fd_type out, fd_type in, uint64 off, uint64 bytes, io_write_cal
     if(!e->mh)
       goto readwrite;
 #endif
+
     do {
       if(e->mmapped) {
         /* did we already map the right chunk? */
+
         if(off >= e->mapofs && off < e->mapofs + e->maplen)
           goto mapok; /* ok; mmapped the right chunk*/
 #if WINDOWS_NATIVE
@@ -44,6 +47,7 @@ io_mmapwritefile(fd_type out, fd_type in, uint64 off, uint64 bytes, io_write_cal
 #endif
       }
       e->mapofs = off & (uint64)0xffffffffffff0000;
+
       if(e->mapofs + 0x10000 > off + bytes)
         e->maplen = off + bytes - e->mapofs;
       else
@@ -60,12 +64,16 @@ io_mmapwritefile(fd_type out, fd_type in, uint64 off, uint64 bytes, io_write_cal
     mapok:
       c = (const char*)(e->mmapped) + (off & 0xffff);
       left = e->maplen - (off & 0xffff);
+
       if(left > bytes)
         left = bytes;
+
       while(left > 0) {
         m = writecb(out, c, left);
+
         if(m < 0) {
           io_eagain(out);
+
           if(errno != EAGAIN) {
 #if WINDOWS_NATIVE
             UnmapViewOfFile(e->mmapped);
@@ -77,6 +85,7 @@ io_mmapwritefile(fd_type out, fd_type in, uint64 off, uint64 bytes, io_write_cal
           }
           return sent ? (int64)sent : -1;
         }
+
         if(m == 0)
           return sent;
         sent += m;
@@ -84,6 +93,7 @@ io_mmapwritefile(fd_type out, fd_type in, uint64 off, uint64 bytes, io_write_cal
         bytes -= m;
         off += m;
         c += m;
+
         if(e && left > 0) {
           e->canwrite = 0;
           e->next_write = -1;
@@ -91,6 +101,7 @@ io_mmapwritefile(fd_type out, fd_type in, uint64 off, uint64 bytes, io_write_cal
         }
       }
     } while(bytes);
+
     if(e->mmapped) {
 #if WINDOWS_NATIVE
       UnmapViewOfFile(e->mmapped);
@@ -106,6 +117,7 @@ readwrite:
   if((uint64)io_seek(in, off, SEEK_SET) != off)
     return -1;
 #endif
+
   while(bytes > 0) {
     char* tmp = buf;
 #ifdef HAVE_PREAD
@@ -116,6 +128,7 @@ readwrite:
     if((n = read(in, tmp, (bytes < BUFSIZE) ? bytes : BUFSIZE)) <= 0)
       return sent ? (int64)sent : -1;
 #endif
+
     while(n > 0) {
       if((m = writecb(out, tmp, n)) < 0) {
         if(m == -1) {
@@ -131,6 +144,7 @@ readwrite:
       n -= m;
       bytes -= m;
       tmp += m;
+
       if(e && m != n) {
         e->canwrite = 0;
         e->next_write = -1;

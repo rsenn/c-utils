@@ -53,6 +53,7 @@ uint32
 crc32(uint32 crc, const char* buf, unsigned int len) {
   const unsigned char* b = (const unsigned char*)buf;
   crc = crc ^ 0xfffffffful;
+
   while(len) {
     crc = (crc >> 8) ^ crc_table[(crc & 0xff) ^ *b];
     ++b;
@@ -83,6 +84,7 @@ main(int argc, char* argv[]) {
 
   if(argc > 1) {
     fd = open_read(argv[1]);
+
     if(fd < 0) {
       buffer_puts(buffer_2, "error: could not open \"");
       buffer_puts(buffer_2, argv[1]);
@@ -92,15 +94,18 @@ main(int argc, char* argv[]) {
   }
   buffer_init(&filein, read, fd, buf, sizeof buf);
   /* skip to "^begin " */
+
   for(;;) {
     if((l = buffer_getline(&filein, line, (sizeof line) - 1)) == 0 && line[l] != '\n') {
     hiteof:
+
       if(state != BEFOREBEGIN) {
         if(mode != MIME) {
           buffer_puts(buffer_1, "premature end of file in line ");
           buffer_putulong(buffer_1, lineno);
           buffer_putsflush(buffer_1, "!\n");
         }
+
         if(ofd >= 0) {
           buffer_flush(&fileout);
           fchmod(ofd, fmode);
@@ -108,19 +113,23 @@ main(int argc, char* argv[]) {
         }
         ++found;
       }
+
       if(!found)
         buffer_putsflush(buffer_2, "warning: hit end of file without finding any uuencoded data!\n");
       return 0;
     }
     ++lineno;
+
     if(l > 0 && line[l - 1] == '\r')
       --l; /* kill DOS line endings */
     line[l] = 0;
+
     if(str_start(line, "begin ")) {
       if(state != BEFOREBEGIN) {
         buffer_puts(buffer_1, "new begin without previous end in line ");
         buffer_putulong(buffer_1, lineno);
         buffer_putsflush(buffer_1, "!\n");
+
         if(ofd >= 0) {
           buffer_flush(&fileout);
           fchmod(ofd, fmode);
@@ -129,24 +138,30 @@ main(int argc, char* argv[]) {
         ++found;
       }
       state = BEFOREBEGIN;
+
       if(line[l = 6 + scan_8long(line + 6, &fmode)] == ' ' && fmode) {
         int i;
         ++l;
         mode = UUDECODE;
       foundfilename:
+
         if(line[l] == '"') {
           ++l;
           line[str_chr(line + l, '"')] = 0;
         }
+
         if(line[l + (i = str_rchr(line + l, '/'))])
           l += i + 1;
+
         while(line[l] == '.')
           ++l;
+
         if(line[l]) {
           if(mode == YENC)
             ofd = open_write(line + l);
           else
             ofd = open_excl(line + l);
+
           if(ofd < 0) {
             buffer_puts(buffer_2, "error: could not create file \"");
             buffer_puts(buffer_2, line + l);
@@ -178,26 +193,32 @@ main(int argc, char* argv[]) {
       continue;
     } else if(str_start(line, "Content-Disposition: ")) {
       char* c = strstr(line, "filename=");
+
       if(!c) {
         if((l = buffer_getline(&filein, line, (sizeof line) - 1)) == 0 && line[l] != '\n')
           goto hiteof;
         c = strstr(line, "filename=");
       }
+
       if(c) {
         mode = MIME;
         filename[0] = 0;
         c += 9;
+
         if(*c == '"') {
           char* d = strchr(c + 1, '"');
+
           if(d) {
             *d = 0;
             strcpy(filename, c + 1);
           }
         }
+
         if(!filename[0]) {
           strcpy(filename, c);
           /* TODO: truncate at space */
         }
+
         if(state != BEFOREBEGIN) {
           if(ofd >= 0) {
             buffer_flush(&fileout);
@@ -225,8 +246,10 @@ main(int argc, char* argv[]) {
       }
     } else if(!line[0]) {
       /* empty line */
+
       if(ofd == -1 && filename[0]) {
         ofd = open_excl(filename);
+
         if(ofd < 0) {
           buffer_puts(buffer_2, "error: could not create file \"");
           buffer_puts(buffer_2, filename);
@@ -241,12 +264,14 @@ main(int argc, char* argv[]) {
           continue;
         }
       }
+
       if(state == AFTERBEGIN)
         state = SKIPHEADER;
       else if(state == SKIPHEADER)
         state = AFTERBEGIN;
     } else if(str_start(line, "=ybegin ")) {
       char* filename = strstr(line, " name=");
+
       if(!filename) {
       invalidybegin:
         buffer_puts(buffer_2, "invalid =ybegin at line ");
@@ -255,18 +280,24 @@ main(int argc, char* argv[]) {
         continue;
       }
       l = filename - line + 6;
+
       if(!(filename = strstr(line, " part="))) {
         part = 1;
       } else if(filename[6 + scan_ulong(filename + 6, &part)] != ' ')
         goto invalidybegin;
+
       if(part == 1)
         reconstructed = 0;
+
       if(!(filename = strstr(line, " size=")))
         goto invalidybegin;
+
       if(filename[6 + scan_ulong(filename + 6, &totalsize)] != ' ')
         goto invalidybegin;
+
       if(!(filename = strstr(line, " line=")))
         goto invalidybegin;
+
       if(filename[6 + scan_ulong(filename + 6, &linelen)] != ' ')
         goto invalidybegin;
       mode = YENC;
@@ -276,6 +307,7 @@ main(int argc, char* argv[]) {
     } else if(str_start(line, "=ypart ")) {
       char* tmp = strstr(line, " begin=");
       char c;
+
       if(!tmp) {
       invalidpart:
         buffer_puts(buffer_2, "invalid =ypart at line ");
@@ -284,16 +316,21 @@ main(int argc, char* argv[]) {
         continue;
       }
       c = tmp[7 + scan_ulong(tmp + 7, &offset)];
+
       if(c != ' ' && c != 0)
         goto invalidpart;
+
       if(!(tmp = strstr(line, " end=")))
         goto invalidpart;
       c = tmp[5 + scan_ulong(tmp + 5, &endoffset)];
+
       if(c != ' ' && c != 0)
         goto invalidpart;
+
       if(offset > 0)
         --offset;
       --endoffset;
+
       if(endoffset < offset || endoffset > totalsize)
         goto invalidpart;
       lseek(ofd, offset, SEEK_SET);
@@ -312,8 +349,10 @@ main(int argc, char* argv[]) {
         gotcrc = 1;
       } else if(part == 1) {
         tmp = strstr(line, " crc32=");
+
         if(!tmp)
           goto invalidpart;
+
         if(!scan_xlong(tmp + 7, &wantedcrc))
           goto invalidpart;
         wantedcrc &= 0xfffffffful;
@@ -324,6 +363,7 @@ main(int argc, char* argv[]) {
       stralloc_init(&out);
       stralloc_0(&yencpart);
       stralloc_ready(&out, yencpart.len);
+
       for(i = 0; i < yencpart.len;) {
         unsigned long x, scanned;
         x = scan_yenc(yencpart.s + i, out.s + out.len, &scanned);
@@ -331,10 +371,13 @@ main(int argc, char* argv[]) {
         out.len += scanned;
       }
       i = crc32(0, out.s, out.len);
+
       if(endoffset == offset + out.len - 1)
         ++endoffset;
+
       if(out.len == endoffset - offset && i == wantedcrc) {
         /* ok, save block */
+
         if(buffer_put(&fileout, out.s, out.len)) {
         writeerror:
           buffer_putmflush(buffer_1, "write error: ", strerror(errno), "\n");
@@ -342,8 +385,10 @@ main(int argc, char* argv[]) {
         }
       } else {
         out.len = 0;
+
         for(i = 0; i < yencpart.len;) {
           unsigned long x, scanned;
+
           if(yencpart.s[i] == '.' && yencpart.s[i + 1] == '.')
             ++i;
           x = scan_yenc(yencpart.s + i, out.s + out.len, &scanned);
@@ -351,8 +396,10 @@ main(int argc, char* argv[]) {
           out.len += scanned;
         }
         i = crc32(0, out.s, out.len);
+
         if(!gotcrc)
           wantedcrc = i;
+
         if(out.len == endoffset - offset && i == wantedcrc) {
           if(buffer_put(&fileout, out.s, out.len))
             goto writeerror;
@@ -370,14 +417,17 @@ main(int argc, char* argv[]) {
           buffer_puts(buffer_2, ", got crc ");
           buffer_putxlong(buffer_2, i);
           buffer_putsflush(buffer_2, ")\n");
+
           if(buffer_put(&fileout, out.s, out.len))
             goto writeerror;
         }
       }
       stralloc_free(&out);
+
       if(buffer_flush(&fileout) || close(ofd))
         goto writeerror;
       ofd = -1;
+
       if(endoffset == totalsize && reconstructed) {
         buffer_puts(buffer_2, "warning: had to reconstruct ");
         buffer_putulong(buffer_2, reconstructed);
@@ -396,6 +446,7 @@ main(int argc, char* argv[]) {
             case QP: x = scan_quotedprintable(line, tmp, &scanned); break;
             default: break;
           }
+
           if(line[x])
             x = 0;
           break;
@@ -405,6 +456,7 @@ main(int argc, char* argv[]) {
           stralloc_cats(&yencpart, "\n");
           continue;
       }
+
       if(!x) {
         if(state == AFTERBEGIN) {
           buffer_puts(buffer_1, "parse error in line ");
@@ -416,6 +468,7 @@ main(int argc, char* argv[]) {
         }
       } else {
         if(ofd >= 0)
+
           if(buffer_put(&fileout, tmp, scanned))
             goto writeerror;
       }

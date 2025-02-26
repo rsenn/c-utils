@@ -75,18 +75,22 @@ init(char ip[256]) {
 
 #define MALLOC(x) HeapAlloc(GetProcessHeap(), 0, (x))
 #define FREE(x) HeapFree(GetProcessHeap(), 0, (x))
+
   if(!x) {
     /* Make an initial call to GetAdaptersInfo to get the necessary size
      * into the ulOutBufLen variable */
 
     pFixedInfo = (FIXED_INFO*)MALLOC(sizeof(FIXED_INFO));
+
     if(pFixedInfo) {
       ulOutBufLen = sizeof(FIXED_INFO);
+
       if((*get_network_params)(pFixedInfo, &ulOutBufLen) == ERROR_BUFFER_OVERFLOW) {
         FREE(pFixedInfo);
         pFixedInfo = (FIXED_INFO*)MALLOC(ulOutBufLen);
       }
     }
+
     if(pFixedInfo) {
       if((*get_network_params)(pFixedInfo, &ulOutBufLen) == NO_ERROR) {
         x = pFixedInfo->DnsServerList.IpAddress.String;
@@ -96,11 +100,13 @@ init(char ip[256]) {
 #endif
 
   if(x)
+
     while(iplen <= 60) {
       if(*x == '.')
         ++x;
       else {
         i = scan_ip6(x, ip + iplen);
+
         if(!i)
           break;
         x += i;
@@ -111,13 +117,17 @@ init(char ip[256]) {
   if(!iplen) {
     const char* rcf;
     rcf = getenv("RESOLVCONF");
+
     if(rcf == NULL)
       rcf = "/etc/resolv.conf";
     i = openreadclose(rcf, &data, 64);
+
     if(i == (unsigned long int)-1)
       return -1;
+
     if(i) {
       size_t i, n, p = 0;
+
       if(!stralloc_append(&data, "\n"))
         return -1;
       i = 0;
@@ -131,6 +141,7 @@ init(char ip[256]) {
           p += scan_whitenskip(&data.s[p], data.len - p);
 
           if(iplen <= 60)
+
             if((i = scan_ip6(data.s + p, ip + iplen)))
               iplen += 16;
         }
@@ -157,8 +168,10 @@ dns_resolvconfip(char s[256]) {
   struct taia now;
 
   taia_now(&now);
+
   if(taia_less(&deadline, &now))
     ok = 0;
+
   if(!uses)
     ok = 0;
 

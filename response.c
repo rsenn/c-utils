@@ -37,11 +37,14 @@ response_addname(response* resp, const char* d) {
 
   while(*d) {
     for(i = 0; i < name.num; ++i)
+
       if(dns_domain_equal(d, name.str[i])) {
         uint16_pack_big(buf, 49152 + name.ptr[i]);
         return response_addbytes(resp, buf, 2);
       }
+
     if(dlen <= 128)
+
       if(name.num < NAMES) {
         byte_copy(name.str[name.num], dlen, d);
         name.ptr[name.num] = resp->pos;
@@ -49,6 +52,7 @@ response_addname(response* resp, const char* d) {
       }
     i = (unsigned char)*d;
     ++i;
+
     if(!response_addbytes(resp, d, i))
       return 0;
     d += i;
@@ -61,12 +65,16 @@ int
 response_query(response* resp, const char* q, const char qtype[2], const char qclass[2]) {
   stralloc_zero((stralloc*)resp);
   name.num = 0;
+
   if(!response_addbytes(resp, "\0\0\201\200\0\1\0\0\0\0\0\0", 12))
     return 0;
+
   if(!response_addname(resp, q))
     return 0;
+
   if(!response_addbytes(resp, qtype, 2))
     return 0;
+
   if(!response_addbytes(resp, qclass, 2))
     return 0;
   resp->tctarget = resp->pos;
@@ -76,15 +84,20 @@ response_query(response* resp, const char* q, const char qtype[2], const char qc
 int
 response_rstart(response* resp, const char* d, const char type[2], uint32 ttl) {
   char ttlstr[4];
+
   if(!response_addname(resp, d))
     return 0;
+
   if(!response_addbytes(resp, type, 2))
     return 0;
+
   if(!response_addbytes(resp, DNS_C_IN, 2))
     return 0;
   uint32_pack_big(ttlstr, response_hidettl ? 0 : ttl);
+
   if(!response_addbytes(resp, ttlstr, 4))
     return 0;
+
   if(!response_addbytes(resp, "\0\0", 2))
     return 0;
   resp->dpos = resp->pos;
@@ -96,6 +109,7 @@ response_rfinish(response* resp, int x) {
   assert(resp->pos > (unsigned)x + 1);
 
   uint16_pack_big(&resp->buf[resp->dpos - 2], resp->pos - resp->dpos);
+
   if(!++resp->buf[(unsigned)x + 1])
     ++resp->buf[(unsigned)x];
 
@@ -123,6 +137,7 @@ int
 response_cname(response* resp, const char* c, const char* d, uint32 ttl) {
   if(!response_rstart(resp, c, DNS_T_CNAME, ttl))
     return 0;
+
   if(!response_addname(resp, d))
     return 0;
   response_rfinish(resp, RESPONSE_ANSWER);

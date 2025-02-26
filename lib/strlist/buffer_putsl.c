@@ -10,12 +10,14 @@ buffer_putsl(buffer* out, const strlist* sl, const char* separator) {
   x = sl->sa.s;
   n = sl->sa.len;
   end = sl->sa.s + n;
+
   do {
     size_t p = byte_chr(x, end - x, sl->sep);
 
     if(i)
       buffer_puts(out, separator);
     buffer_put(out, x, p);
+
     if(p + x < end && x[p] == sl->sep)
       p++;
     x += p;

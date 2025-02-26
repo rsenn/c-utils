@@ -51,17 +51,21 @@
 void*
 array_allocate(array* x, uint64 membersize, int64 pos) {
   uint64 wanted;
+
   if(__unlikely(x->allocated < 0))
     return 0; /* array is failed */
+
   if(__unlikely(pos + 1 < 1))
     return 0;
   /* second case of overflow: pos * membersize too large */
+
   if(__unlikely(!umult64(membersize, pos + 1, &wanted)))
     return 0;
 
   if(wanted > (uint64)x->initialized) {
     if(__unlikely(wanted >= (uint64)x->allocated)) {
       /* round up a little */
+
       if(membersize < 8)
         wanted = (wanted + 127) & (int64)(-128); /* round up to multiple of 128 */
       else
@@ -74,6 +78,7 @@ array_allocate(array* x, uint64 membersize, int64 pos) {
         return 0;
       {
         char* tmp = (char*)realloc((void*)x->p, wanted);
+
         if(__unlikely(!tmp))
           return 0;
         x->p = tmp;

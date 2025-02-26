@@ -40,6 +40,7 @@ umult64(uint64 a, uint64 b, uint64* c) {
 int
 umult64(uint64 a, uint64 b, uint64* c) {
   __uint128_t x = ((__uint128_t)a) * b;
+
   if((*c = (uint64)x) != x)
     return 0;
   return 1;
@@ -60,14 +61,17 @@ umult64(uint64 a, uint64 b, uint64* c) {
   //     = ahi*x*bhi*x + ahi*x*blo + alo*bhi*x + alo*blo
 
   // -> overflow if ahi*bhi != zero */
+
   if(ahi && bhi)
     return 0;
 
   a = (uint64)(ahi)*blo + (uint64)(alo)*bhi;
+
   if(a > 0xffffffff)
     return 0;
   {
     uint64 x = (uint64)(alo)*blo;
+
     if(x + (a << 32) < x)
       return 0;
     *c = x + (a << 32);

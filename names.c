@@ -12,6 +12,7 @@ void
 names_get(const char* x, size_t len, array* a) {
   size_t n, pos;
   const char* p;
+
   for(pos = 0; pos < len; pos = n) {
     n = dns_packet_skipname(x, len, pos);
     p = &x[pos];

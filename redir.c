@@ -100,6 +100,7 @@ static int server_socket(char* addr, int port, int fail);
    something in a socket, it has the
    same parameters and return value as
    "write", but with the flag "in": true
+
    if
    it's the "in" socket and false if
    it's the "out" socket */
@@ -109,6 +110,7 @@ redir_write(int fd, const void* buf, size_t size, int in) {
   int wait;
 
   wait = in ? wait_in : wait_out;
+
   if(random_wait > 0 && wait) {
     fd_set empty;
     struct timeval waitbw; /* for bandwidth */
@@ -277,6 +279,7 @@ parse_port(char* arg) {
   struct servent* s;
 
   s = getservbyname(arg, "tcp");
+
   if(s != NULL)
     port = ntohs(s->s_port);
   else
@@ -293,6 +296,7 @@ parse_ipport(char* arg, char* buf, size_t len) {
     return -1;
 
   port = strchr(arg, ':');
+
   if(!port)
     return -1;
   *port++ = 0;
@@ -307,6 +311,7 @@ progname(char* arg0) {
   char* nm;
 
   nm = strrchr(arg0, '/');
+
   if(nm)
     nm++;
   else
@@ -365,6 +370,7 @@ parse_args(int argc, char* argv[]) {
 #define SHAPER_OPTS ""
 #endif
   const char* prognm = progname(argv[0]);
+
   while((opt = unix_getopt_long(argc, argv, "b:hiI:l:npst:vx:" FTP_OPTS SHAPER_OPTS, long_options, NULL)) != -1) {
     switch(opt) {
       case 'b': bind_addr = unix_optarg; break;
@@ -372,6 +378,7 @@ parse_args(int argc, char* argv[]) {
 #ifndef NO_FTP
       case 'f':
         ftp_type = unix_optarg;
+
         if(!ftp_type)
           exit(usage(prognm, 1));
         break;
@@ -389,12 +396,14 @@ parse_args(int argc, char* argv[]) {
 
       case 'l':
         loglevel = loglvl(unix_optarg);
+
         if(-1 == loglevel)
           exit(usage(prognm, 1));
         break;
 
       case 'n':
         background = 0;
+
         do_syslog--;
         break;
 
@@ -417,6 +426,7 @@ parse_args(int argc, char* argv[]) {
 
       case 'z':
         bufsize = (unsigned int)atol(unix_optarg);
+
         if(bufsize < 256) {
           // syslog(LOG_ERR, "Too small
           // buffer (%zd), must be at
@@ -456,6 +466,7 @@ parse_args(int argc, char* argv[]) {
 
   if(compat) {
     background = 0;
+
     do_syslog--;
     goto done;
   }
@@ -467,6 +478,7 @@ parse_args(int argc, char* argv[]) {
     /* In inetd mode we redirect from
      * src=stdin to dst:port */
     target_port = parse_ipport(argv[unix_optind], dst, sizeof(dst));
+
     if(strlen(dst) > 1)
       target_addr = strdup(dst);
   } else {
@@ -474,23 +486,28 @@ parse_args(int argc, char* argv[]) {
      * src is left out we listen to any
      */
     local_port = parse_ipport(argv[unix_optind++], src, sizeof(src));
+
     if(-1 == local_port)
       exit(usage(prognm, 3));
+
     if(strlen(src) > 1)
       local_addr = strdup(src);
 
     target_port = parse_ipport(argv[unix_optind], dst, sizeof(dst));
+
     if(strlen(dst) > 1)
       target_addr = strdup(dst);
   }
 
 done:
+
   if(!ident)
     ident = (char*)prognm;
 
 #ifndef NO_FTP
   /* some kind of ftp being forwarded?
    */
+
   if(ftp_type) {
     if(!strncasecmp(ftp_type, "port", 4))
       ftp = FTP_PORT;
@@ -527,6 +544,7 @@ ftp_clean(int send, char* buf, ssize_t* bytes, int ftpsrv) {
 
   if(ftpsrv == 0) {
     /* is this a port commando ? */
+
     if(strncmp(buf, "PORT", 4)) {
       redir_write(send, buf, (*bytes), REDIR_OUT);
       return;
@@ -539,6 +557,7 @@ ftp_clean(int send, char* buf, ssize_t* bytes, int ftpsrv) {
   } else {
     /* is this a passive mode return ?
      */
+
     if(strncmp(buf, "227", 3)) {
       redir_write(send, buf, (*bytes), REDIR_OUT);
       return;
@@ -553,6 +572,7 @@ ftp_clean(int send, char* buf, ssize_t* bytes, int ftpsrv) {
 
   /* get the outside interface so we can
    * listen */
+
   if(getsockname(send, (struct sockaddr*)&sockname, &socksize) != 0) {
     // syslog(LOG_ERR, "Failed
     // getsockname(): %s",
@@ -567,6 +587,7 @@ ftp_clean(int send, char* buf, ssize_t* bytes, int ftpsrv) {
      the port 0, so let the system pick
      one. */
   sd = server_socket(inet_ntoa(sockname.sin_addr), 0, 1);
+
   if(sd == -1) {
     // syslog(LOG_ERR, "Failed creating
     // server socket: %s",
@@ -575,6 +596,7 @@ ftp_clean(int send, char* buf, ssize_t* bytes, int ftpsrv) {
   }
 
   /* get the real info */
+
   if(getsockname(sd, (struct sockaddr*)&sockname, &socksize) < 0) {
     // syslog(LOG_ERR, "Failed
     // getsockname(): %s",
@@ -678,6 +700,7 @@ copyloop(int insock, int outsock, int timeout_secs) {
     max_fd = outsock;
 
   buf = malloc(bufsize);
+
   if(!buf) {
     // syslog(LOG_ERR, "Failed
     // allocating session buffer: %s",
@@ -688,6 +711,7 @@ copyloop(int insock, int outsock, int timeout_secs) {
   // syslog(LOG_DEBUG, "Entering
   // copyloop() - timeout is %d",
   // timeout_secs);
+
   for(;;) {
     fd_set iofds;
 
@@ -711,6 +735,7 @@ copyloop(int insock, int outsock, int timeout_secs) {
 
     if(FD_ISSET(insock, &iofds)) {
       bytes = read(insock, buf, bufsize);
+
       if(bytes <= 0)
         break;
 
@@ -729,6 +754,7 @@ copyloop(int insock, int outsock, int timeout_secs) {
         ftp_clean(outsock, buf, &bytes, 0);
       else
 #endif
+
           if(redir_write(outsock, buf, bytes, REDIR_OUT) != bytes)
         break;
       bytes_out += bytes;
@@ -736,6 +762,7 @@ copyloop(int insock, int outsock, int timeout_secs) {
 
     if(FD_ISSET(outsock, &iofds)) {
       bytes = read(outsock, buf, bufsize);
+
       if(bytes <= 0)
         break;
 
@@ -749,10 +776,12 @@ copyloop(int insock, int outsock, int timeout_secs) {
        * ftp redirections, then fix buf
        * and bytes to have the new
        * address, among other things */
+
       if(ftp & FTP_PASV)
         ftp_clean(insock, buf, &bytes, 1);
       else
 #endif
+
           if(redir_write(insock, buf, bytes, REDIR_IN) != bytes)
         break;
       bytes_in += bytes;
@@ -780,6 +809,7 @@ doproxyconnect(int socket) {
   /* write CONNECT string to proxy */
   sprintf((char*)&buf, "CONNECT %s HTTP/1.0\n\n", connect_str);
   x = write(socket, (char*)&buf, strlen(buf));
+
   if(x < 1) {
     // syslog(LOG_ERR, "Failed writing
     // to proxy: %s", strerror(errno));
@@ -788,6 +818,7 @@ doproxyconnect(int socket) {
 
   /* now read result */
   x = read(socket, (char*)&buf, sizeof(buf));
+
   if(x < 1) {
     // syslog(LOG_ERR, "Failed reading
     // reply from proxy: %s",
@@ -829,10 +860,12 @@ static int
 target_init(char* addr, int port, struct sockaddr_in* target) {
   target->sin_family = AF_INET;
   target->sin_port = htons(port);
+
   if(addr) {
     struct hostent* hp;
 
     hp = gethostbyname(addr);
+
     if(!hp) {
       // syslog(LOG_ERR, "Unknown host
       // %s", addr);
@@ -885,12 +918,14 @@ target_connect(int client, struct sockaddr_in* target) {
 
   /* Set up outgoing IP addr (optional)
    */
+
   if(bind_addr && !transproxy) {
     struct hostent* hp;
 
     addr_out.sin_family = AF_INET;
     addr_out.sin_port = 0;
     hp = gethostbyname(bind_addr);
+
     if(!hp) {
       // syslog(LOG_ERR, "Failed
       // resolving outbound IP address,
@@ -906,6 +941,7 @@ target_connect(int client, struct sockaddr_in* target) {
   }
 
   sd = socket(AF_INET, SOCK_STREAM, 0);
+
   if(sd < 0) {
     // syslog(LOG_ERR, "Failed creating
     // target socket: %s",
@@ -950,6 +986,7 @@ client_accept(int sd, struct sockaddr_in* target) {
   // client to connect on server socket
   // ...");
   client = accept(sd, NULL, NULL);
+
   if(client < 0) {
     // syslog(LOG_ERR, "Failed calling
     // accept(): %s", strerror(errno));
@@ -977,6 +1014,7 @@ client_accept(int sd, struct sockaddr_in* target) {
    * extended hosts_access options
    * expect to be run from a child.
    */
+
   switch(fork()) {
     case -1: /* Error */
       // syslog(LOG_ERR, "Server failed
@@ -999,6 +1037,7 @@ client_accept(int sd, struct sockaddr_in* target) {
 
   /* We are now the first child. Fork
    * again and exit */
+
   switch(fork()) {
     case -1: /* Error */ syslog(LOG_ERR, "Failed duoble fork(): %s", strerror(errno)); exit(1);
 
@@ -1009,16 +1048,20 @@ client_accept(int sd, struct sockaddr_in* target) {
 
   /* We are now the grandchild */
   sd = target_connect(client, target);
+
   if(sd < 0)
     exit(1);
 
   /* do proxy stuff */
+
   if(connect_str)
+
     doproxyconnect(sd);
 
 #ifndef NO_SHAPER
   /* initialise random number if
    * necessary */
+
   if(random_wait > 0)
     srand(getpid());
 #endif
@@ -1053,6 +1096,7 @@ server_socket(char* addr, int port, int fail) {
    * socket.
    */
   sd = socket(AF_INET, SOCK_STREAM, 0);
+
   if(sd < 0) {
     if(fail)
       return -1;
@@ -1066,10 +1110,12 @@ server_socket(char* addr, int port, int fail) {
   memset(&server, 0, sizeof(server));
   server.sin_family = AF_INET;
   server.sin_port = htons(port);
+
   if(addr != NULL) {
     struct hostent* hp;
 
     hp = gethostbyname(addr);
+
     if(!hp) {
       if(fail) {
         close(sd);
@@ -1093,6 +1139,7 @@ server_socket(char* addr, int port, int fail) {
   }
 
   ret = setsockopt(sd, SOL_SOCKET, SO_REUSEADDR, &reuse_addr, sizeof(reuse_addr));
+
   if(ret != 0) {
     if(fail) {
       close(sd);
@@ -1106,6 +1153,7 @@ server_socket(char* addr, int port, int fail) {
   }
 
   ret = setsockopt(sd, SOL_SOCKET, SO_LINGER, &linger_opt, sizeof(linger_opt));
+
   if(ret != 0) {
     if(fail) {
       close(sd);
@@ -1122,6 +1170,7 @@ server_socket(char* addr, int port, int fail) {
    * Try to bind the address to the
    * socket.
    */
+
   if(bind(sd, (struct sockaddr*)&server, sizeof(server)) < 0) {
     if(fail) {
       close(sd);
@@ -1137,6 +1186,7 @@ server_socket(char* addr, int port, int fail) {
   /*
    * Listen on the socket.
    */
+
   if(listen(sd, 10) < 0) {
     if(fail) {
       close(sd);
@@ -1156,14 +1206,19 @@ int
 daemonize(int nochdir, int noclose) {
   if(!nochdir && chdir("/"))
     return -1;
+
   if(!noclose) {
     int fd, failed = 0;
+
     if((fd = open("/dev/null", O_RDWR)) < 0)
       return -1;
+
     if(dup2(fd, 0) < 0 || dup2(fd, 1) < 0 || dup2(fd, 2) < 0)
       failed++;
+
     if(fd > 2)
       close(fd);
+
     if(failed)
       return -1;
   }
@@ -1204,10 +1259,12 @@ main(int argc, char* argv[]) {
     struct sockaddr_in target;
 
     memset(&target, 0, sizeof(target));
+
     if(target_init(target_addr, target_port, &target))
       return 1;
 
     sd = target_connect(STDIN_FILENO, &target);
+
     if(sd < 0)
       return 1;
 
@@ -1218,6 +1275,7 @@ main(int argc, char* argv[]) {
     if(background) {
       // syslog(LOG_DEBUG, "Daemonizing
       // ...");
+
       if(-1 == daemonize(0, 0)) {
         // syslog(LOG_ERR, "Failed
         // daemonizing: %s",
@@ -1227,6 +1285,7 @@ main(int argc, char* argv[]) {
     }
 
     sd = server_socket(local_addr, local_port, 0);
+
     if(sd == -1) {
       // syslog(LOG_ERR, "Failed
       // server_socket(): %s",
@@ -1238,6 +1297,7 @@ main(int argc, char* argv[]) {
       struct sockaddr_in target;
 
       memset(&target, 0, sizeof(target));
+
       if(target_init(target_addr, target_port, &target))
         return 1;
 

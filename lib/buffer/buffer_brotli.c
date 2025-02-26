@@ -29,6 +29,7 @@ buffer_brotli_read(fd_type fd, void* data, size_t n, buffer* b) {
   size_t a, avail_in, avail_out;
   const uint8* next_in;
   uint8* next_out;
+
   if((r = buffer_prefetch(ctx->b, 1024)) > 0) {
   } else {
     return r;
@@ -37,14 +38,18 @@ buffer_brotli_read(fd_type fd, void* data, size_t n, buffer* b) {
   avail_in = a = ctx->b->n - ctx->b->p;
   next_out = data;
   avail_out = n;
+
   while(avail_out > 0) {
     ret = BrotliDecoderDecompressStream(ctx->state, &avail_in, &next_in, &avail_out, &next_out, 0);
+
     if(ret == BROTLI_DECODER_RESULT_NEEDS_MORE_INPUT) {
       errno = EAGAIN;
       return -1;
     }
+
     if(ret == BROTLI_DECODER_RESULT_NEEDS_MORE_OUTPUT) {
       size_t offset = (char*)data - b->x;
+
       if(alloc_re(&b->x, b->a, b->a << 1)) {
         b->a <<= 1;
         next_out = data = (char*)b->x + offset;
@@ -52,13 +57,17 @@ buffer_brotli_read(fd_type fd, void* data, size_t n, buffer* b) {
         continue;
       }
     }
+
     if(avail_in == 0 || ret == BROTLI_DECODER_RESULT_SUCCESS || ret == BROTLI_DECODER_RESULT_ERROR)
       break;
   }
+
   if(avail_in < a)
     ctx->b->p += a - avail_in;
+
   if(ret == BROTLI_DECODER_RESULT_ERROR)
     return -1;
+
   if(avail_out < n)
     return n - avail_out;
   return 0;
@@ -96,8 +105,10 @@ buffer_brotli_write(fd_type fd, void* data, size_t n, buffer* b) {
 
   if(avail_out < a)
     other->p = pos + (a - avail_out);
+
   if(avail_in < n)
     r = n - avail_in;
+
   if(ret == BROTLI_FALSE)
     return -1;
   return r;
@@ -154,6 +165,7 @@ buffer_brotli(buffer* b, buffer* other, int compress) {
     return 0;
 
   ctx = alloc_zero(sizeof(brotli_ctx));
+
   if(ctx == NULL)
     return 0;
 

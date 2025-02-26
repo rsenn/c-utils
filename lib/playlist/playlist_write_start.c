@@ -15,6 +15,7 @@
 int
 playlist_write_start(buffer* b, playlist* pl) {
   pl->count = 0;
+
   switch(pl->type) {
     case M3U: {
       buffer_puts(b, "#EXTM3U\n");

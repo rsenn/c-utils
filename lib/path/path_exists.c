@@ -36,6 +36,7 @@ path_exists(const char* p) {
 #endif
     return 1;
   r = lstat(p, &st);
+
   if(r == 0)
     return 1;
 

@@ -8,6 +8,7 @@
 int
 main() {
   char buf[100];
+
   double pi = M_PI;
   float fpi = pi;
 

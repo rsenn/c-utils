@@ -8,6 +8,7 @@
 const char*
 env_get_b(const char* s, size_t namelen) {
   char** e;
+
   for(e = environ; *e; e++) {
     size_t len = str_chr(*e, '=');
 

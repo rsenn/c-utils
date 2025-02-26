@@ -10,6 +10,7 @@ dns_sortip(char* s, unsigned int n) {
   char tmp[4];
 
   n >>= 2;
+
   while(n > 1) {
     i = dns_random(n);
     --n;

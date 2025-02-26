@@ -18,6 +18,7 @@ cpp_parse_expect(tokenizer* t, enum tokentype tt, const char* const values[], to
   }
 
   for(int i = 0; values[i]; i++)
+
     if(!str_diff(values[i], t->buf))
       return i;
 

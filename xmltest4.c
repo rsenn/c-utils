@@ -62,6 +62,7 @@ xml_print_node(xmlnode* node, buffer* b, int depth, const char* nl) {
   //    node->name)) return
   //    xml_print_node(next, b, depth);
   //  }
+
   if(closing)
     buffer_puts(b, nl);
   buffer_flush(b);
@@ -102,9 +103,11 @@ main(int argc, char* argv[]) {
 
   buffer_mmapprivate(&input, argv[1]);
   buffer_skip_until(&input, "\r\n", 2);
+
   doc = xml_read_tree(&input);
   xml_print_tree(doc->children, buffer_1);
   /*
+
     for(it = xmlnodeset_begin(&ns), e =
     xmlnodeset_end(&ns); it != e; ++it)
     { xmlnode* n = *it;

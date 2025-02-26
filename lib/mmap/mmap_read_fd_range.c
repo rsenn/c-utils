@@ -21,6 +21,7 @@ mmap_read_fd_range(fd_type fd, size_t* size, size_t offset, size_t len) {
   HANDLE m;
   m = CreateFileMapping(h, 0, PAGE_READONLY, 0, 0, NULL);
   map = 0;
+
   if(m) {
     DWORD lo = offset;
     DWORD hi = offset >> sizeof(DWORD) * 8;
@@ -39,6 +40,7 @@ mmap_read_fd_range(fd_type fd, size_t* size, size_t offset, size_t len) {
       *size = len;
 
     map = (char*)mmap(0, *size, PROT_READ, MAP_SHARED, fd, offset);
+
     if(map == (char*)-1)
       map = 0;
   }

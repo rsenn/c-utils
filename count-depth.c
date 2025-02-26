@@ -35,6 +35,7 @@ int
 count_depth() {
   char buffer[MAXIMUM_PATH_LENGTH];
   size_t len, i, c;
+
   for(;;) {
     buffer[0] = '\0';
     len = buffer_getline(buffer_0, buffer, sizeof(buffer));
@@ -46,6 +47,7 @@ count_depth() {
       len--;
 
     c = 0;
+
     for(i = 0; i < len; i++) {
       if(buffer[i] == '/')
         c++;

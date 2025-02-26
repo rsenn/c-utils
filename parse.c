@@ -101,18 +101,22 @@ parse_strlist(const char* x, ssize_t n, strlist* out) {
   ssize_t i;
   stralloc arg;
   stralloc_init(&arg);
+
   if(*x != '[')
     return 0;
   x += 1;
   n -= 1;
+
   for(; (i = parse_string(x, n, &arg));) {
     strlist_push_sa(out, &arg);
     x += i, n -= i;
+
     if(byte_diff(x, 2, ", "))
       break;
     x += 2;
     n -= 2;
   }
+
   if(x[0] == ']') {
     x += 1, n -= 1;
   }
@@ -138,27 +142,33 @@ parse_line(const char* x, ssize_t n) {
   strlist_init(&args, '\0');
   stralloc_init(&str);
   i = byte_chr(x, n, '(');
+
   if(x[i] == '\0')
     return 0;
   i += 1;
   x += i;
   n -= i;
+
   if(n <= 0)
     return 0;
+
   for(;;) {
     /*  buffer_puts(buffer_2, "char: ");
       buffer_putc(buffer_2, x[0]);
       buffer_putnlflush(buffer_2);*/
+
     if(x[0] == '[')
       i = parse_strlist(x, n, &args);
     else if(x[0] == '"')
       i = parse_string(x, n, &str);
     else
       break;
+
     if(i <= 0)
       break;
     x += i;
     n -= i;
+
     if(byte_equal(x, 2, ", ")) {
       x += 2;
       n -= 2;

@@ -8,6 +8,7 @@ xml_get_attribute_double(xmlnode* node, const char* attr) {
   if((str = xml_get_attribute(node, attr))) {
     double ret = 0;
     size_t n;
+
     if((n = scan_double(str, &ret)))
       return ret;
   }

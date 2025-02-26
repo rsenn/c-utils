@@ -7,6 +7,7 @@ pe_get_value(void* pe, void* ptr, unsigned off32, unsigned size32, unsigned off6
   uint8* p = (uint8*)ptr;
   unsigned off, size;
   uint64 ret = 0;
+
   if(PE_32(base)) {
     off = off32;
     size = size32;
@@ -14,6 +15,7 @@ pe_get_value(void* pe, void* ptr, unsigned off32, unsigned size32, unsigned off6
     off = off64;
     size = size64;
   }
+
   switch(size) {
     case 8: ret = uint64_get(&p[off]); break;
     case 4: ret = uint32_get(&p[off]); break;

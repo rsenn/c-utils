@@ -34,6 +34,7 @@ path_is_root(const char* p) {
 
   if(lstat(p, &st[0]) == -1)
     return -1;
+
   if(lstat(sa.s, &st[1]) == -1)
     return -1;
 

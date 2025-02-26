@@ -10,6 +10,7 @@ xml_find_all_predicate(xmlnode* node, array* a, xml_pred_t* pred, const void* vp
 
     if(pred(node, vptr[0], vptr[1], vptr[2])) {
       xmlnode** nptr;
+
       if(!(nptr = (xmlnode**)array_allocate(a, sizeof(xmlnode*), array_length(a, sizeof(xmlnode*)))))
         return 0;
       *nptr = node;
@@ -30,6 +31,7 @@ xml_pfind_all(xmlnode* node, xml_pred_t* pred, const void* ptr[4]) {
   strlist names;
   array_init(&a);
   strlist_init(&names, '\0');
+
   if(ptr[0]) {
     strlist_froms(&names, (const char*)ptr[0], '|');
     byte_zero(&a, sizeof(array));

@@ -17,21 +17,25 @@ hashmap_init(hashmap* map, size_t capacity, hashmap_comparator comparator, hashm
   map->size = 0;
   map->table = (linked_list**)alloc_zero(sizeof(linked_list*) * map->capacity);
   // byte_zero(map->table, sizeof(linked_list*) * map->capacity);
+
   if(comparator) {
     map->comparator = comparator;
   } else {
     map->comparator = hashmap_default_comparator;
   }
+
   if(hash_func) {
     map->hash_func = hash_func;
   } else {
     map->hash_func = hashmap_default_hash_func;
   }
+
   if(key_dup_func) {
     map->key_dup_func = key_dup_func;
   } else {
     map->key_dup_func = hashmap_default_key_dup_func;
   }
+
   if(key_free_func) {
     map->key_free_func = key_free_func;
   } else {

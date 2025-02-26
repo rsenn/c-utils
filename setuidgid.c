@@ -50,18 +50,22 @@ int
 get_account(const char* name, int* uid, int* gid) {
   size_t p = 0, n, i, len;
   char* x;
+
   if((x = (char*)mmap_read("/etc/passwd", &n)) == NULL || n == 0)
     return 0;
   // end = x + n;
   len = str_len(name);
+
   while(p + len + 1 < n) {
     if(x[p + len] == ':' && !byte_diff(&x[p], len, name)) {
       p += len + 1;
       p += 1 + byte_chr(&x[p], n - p, ':');
+
       if(p < n) {
         i = scan_int(&x[p], uid);
         p += i;
         i = !!i;
+
         if(p < n && x[p] == ':')
           i += !!scan_int(&x[p + 1], gid);
         return i;

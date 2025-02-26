@@ -11,6 +11,7 @@ tokenizer_getc(tokenizer* t) {
     ++t->chb.cnt;
   } else {
     char ch;
+
     if((ret = buffer_getc(t->input, &ch)) > 0) {
       t->chb.buf[t->chb.cnt % countof(t->chb.buf)] = ch;
       ++t->chb.cnt;
@@ -27,6 +28,7 @@ tokenizer_getc(tokenizer* t) {
         buffer_putfmt(buffer_2, (const char*)&ret, 1, &fmt_escapecharc);
       else
         buffer_putc(buffer_2, ret);
+
       if(ret >= 'A')
         buffer_putc(buffer_2, '\'');
       else {

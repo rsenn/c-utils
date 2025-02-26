@@ -45,8 +45,10 @@ resolve(char* q, char qtype[2], char servers[256]) {
     dns_transmit_io(&tx, x, &deadline);
     iopause(x, 1, &deadline, &stamp);
     r = dns_transmit_get(&tx, x, &stamp);
+
     if(r == -1)
       return -1;
+
     if(r == 1)
       break;
   }
@@ -66,9 +68,11 @@ static stralloc out;
 static char seed[128];
 
 #define X(s) \
+
   if(!stralloc_cats(out, s)) \
     return 0;
 #define NUM(u) \
+
   if(!stralloc_catulong0(out, u, 0)) \
     return 0;
 
@@ -83,6 +87,7 @@ printpacket_cat(stralloc* out, char* buf, unsigned int len) {
   uint16 type;
 
   pos = dns_packet_copy(buf, len, 0, data, 12);
+
   if(!pos)
     return 0;
 
@@ -104,16 +109,22 @@ printpacket_cat(stralloc* out, char* buf, unsigned int len) {
 
   if(data[2] & 128)
     X(", response")
+
   if(data[2] & 120)
     X(", weird op")
+
   if(data[2] & 4)
     X(", authoritative")
+
   if(data[2] & 2)
     X(", truncated")
+
   if(data[2] & 1)
     X(", weird rd")
+
   if(data[3] & 128)
     X(", weird ra")
+
   switch(data[3] & 15) {
     case 0: X(", noerror"); break;
     case 3: X(", nxdomain"); break;
@@ -121,6 +132,7 @@ printpacket_cat(stralloc* out, char* buf, unsigned int len) {
     case 5: X(", refused"); break;
     default: X(", weird rcode");
   }
+
   if(data[3] & 112)
     X(", weird z")
 
@@ -131,9 +143,11 @@ printpacket_cat(stralloc* out, char* buf, unsigned int len) {
     X("query: ")
 
     pos = dns_packet_getname(buf, len, pos, &d);
+
     if(!pos)
       return 0;
     pos = dns_packet_copy(buf, len, pos, data, 4);
+
     if(!pos)
       return 0;
 
@@ -143,6 +157,7 @@ printpacket_cat(stralloc* out, char* buf, unsigned int len) {
       uint16_unpack_big(data, &type);
       NUM(type)
       X(" ")
+
       if(!dns_domain_todot_cat(out, d))
         return 0;
     }
@@ -163,6 +178,7 @@ printpacket_cat(stralloc* out, char* buf, unsigned int len) {
       break;
 
     pos = printrecord_cat(out, buf, len, pos, 0, 0);
+
     if(!pos)
       return 0;
   }
@@ -222,22 +238,28 @@ main(int argc, char** argv) {
 
   if(!*argv)
     usage();
+
   if(!*++argv)
     usage();
+
   if(!parsetype(*argv, type))
     usage();
 
   if(!*++argv)
     usage();
+
   if(!dns_domain_fromdot(&q, *argv, str_len(*argv)))
     oops();
 
   if(!*++argv)
     usage();
+
   if(!stralloc_copys(&out, *argv))
     oops();
+
   if(dns_ip6_qualify(&ip, &fqdn, &out) == -1)
     oops();
+
   if(ip.len >= 256)
     ip.len = 256;
   byte_zero(servers, 256);
@@ -246,18 +268,23 @@ main(int argc, char** argv) {
   if(!stralloc_copys(&out, ""))
     oops();
   uint16_unpack_big(type, &u16);
+
   if(!stralloc_catulong0(&out, u16, 0))
     oops();
+
   if(!stralloc_cats(&out, " "))
     oops();
+
   if(!dns_domain_todot_cat(&out, q))
     oops();
+
   if(!stralloc_cats(&out, ":\n"))
     oops();
 
   if(resolve(q, type, servers) == -1) {
     if(!stralloc_cats(&out, strerror(errno)))
       oops();
+
     if(!stralloc_cats(&out, "\n"))
       oops();
   } else {

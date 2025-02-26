@@ -16,6 +16,7 @@ buffer_stubborn_read(buffer_op_proto* op, fd_type fd, const void* buf, size_t le
 
   for(;;) {
     if((w = (*op)(fd, (void*)buf, len, ptr)) < 0)
+
       if(errno == EINTR)
         continue;
 

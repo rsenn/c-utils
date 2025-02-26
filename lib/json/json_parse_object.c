@@ -11,13 +11,16 @@ json_parse_object(jsonval* val, charbuf* b) {
     stralloc_init(&str);
 
     charbuf_skip_ws(b);
+
     for(; (ret = charbuf_peekc(b, &c)) > 0;) {
       jsonval *itemv, key = {JSON_UNDEFINED}, member = {JSON_UNDEFINED};
+
       if(c == '}') {
         charbuf_nextc(b, &c);
         return 1;
       }
       stralloc_zero(&str);
+
       if(json_parse_string(&key, b) > 0)
         stralloc_copy(&str, &key.stringv);
       else if(json_parse_number(&key, b) > 0)
@@ -26,6 +29,7 @@ json_parse_object(jsonval* val, charbuf* b) {
       stralloc_nul(&str);
 
 /*      stralloc_zero(&key);
+
       if((ret = json_parse_stralloc(b, &key, charbuf_skip_ifeq(b, '"'))) <=
    0) return ret;
 */
@@ -35,8 +39,10 @@ json_parse_object(jsonval* val, charbuf* b) {
 #endif
 
       charbuf_skip_ws(b);
+
       if(charbuf_skip_ifeq(b, ':')) {
         charbuf_skip_ws(b);
+
         if(json_parse(&member, b) > 0) {
           MAP_PAIR_T pair;
           MAP_INSERT(val->dictv, str.s, str.len, &member, sizeof(jsonval));
@@ -44,10 +50,12 @@ json_parse_object(jsonval* val, charbuf* b) {
           MAP_SEARCH(val->dictv, str.s, str.len, &pair);
 
           charbuf_skip_ws(b);
+
           if(charbuf_peekc(b, &c) > 0) {
             if(c == ',' || c == '}') {
               charbuf_skip(b);
               charbuf_skip_ws(b);
+
               if(c == ',')
                 continue;
             }

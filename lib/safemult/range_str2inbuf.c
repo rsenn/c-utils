@@ -8,9 +8,11 @@ int
 range_str2inbuf(const void* buf, size_t len, const void* stringstart) {
   const uint16* x;
   const uint16* y;
+
   if(!range_ptrinbuf(buf, len, x = (const uint16*)stringstart))
     return 0;
   y = (const uint16*)((char*)x + len);
+
   for(; x + 1 <= y && *x; ++x)
     ;
   return (x + 1 <= y);

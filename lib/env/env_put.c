@@ -29,6 +29,7 @@ env_putb(const char* x, size_t n) {
   char* name;
   const char* value;
   int ret;
+
   if(namelen == n)
     return 0;
   name = str_ndup(x, namelen);
@@ -63,6 +64,7 @@ env_put2(const char* name, const char* value) {
   size_t len = str_len(name) + str_len(value) + 2;
   char* tmp;
   int ret = 0;
+
   if((tmp = malloc(len))) {
     str_copy(tmp, name);
     str_cat(tmp, "=");
@@ -133,6 +135,7 @@ env_expand(void) {
     return 1;
 
   newenviron = (char**)malloc((size_t)((ea + EXPAND + 1) * sizeof(char*)));
+
   if(!newenviron)
     return 0;
   ea += 30;
@@ -157,9 +160,11 @@ static size_t
 env_add(char* s) {
   const char* t;
   t = env_findeq(s);
+
   if(t) {
     env_unsetlen(s, (size_t)(t - s));
   }
+
   if(!env_expand())
     return 0;
   environ[en++] = s;
@@ -170,14 +175,17 @@ env_add(char* s) {
 int
 env_putb(const char* x, size_t n) {
   char* u;
+
   if(!env_isinit) {
     if(!env_init())
       return 0;
   }
   u = (char*)alloc(n + 1);
+
   if(!u)
     return 0;
   str_copyn(u, x, n);
+
   if(!env_add(u)) {
     free(u);
     return 0;
@@ -201,12 +209,14 @@ env_put2b(const char* s, const char* t, size_t n) {
   }
   slen = str_len(s);
   u = (char*)alloc(slen + n + 2);
+
   if(!u)
     return 0;
   str_copy(u, s);
   u[slen] = '=';
   byte_copy(u + slen + 1, n, t);
   u[slen + 1 + n] = '\0';
+
   if(!env_add(u)) {
     free(u);
     return 0;
@@ -229,10 +239,13 @@ env_init(void) {
   }
   ea = en + 10;
   newenviron = (char**)malloc((size_t)((ea + 1) * sizeof(char*)));
+
   if(!newenviron)
     return 0;
+
   for(en = 0; environ[en]; ++en) {
     newenviron[en] = (char*)alloc(str_len(environ[en]) + 1);
+
     if(!newenviron[en]) {
       for(i = 0; i < en; ++i) {
         free(newenviron[i]);

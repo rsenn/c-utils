@@ -105,6 +105,7 @@ char*
 base_file(const char* suffix) {
   stralloc_zero(&base);
   stralloc_cat(&base, &prog);
+
   if(stralloc_endb(&base, ".exe", 4)) {
     base.len -= 4;
     ext = ".exe";
@@ -139,14 +140,17 @@ expand_env(const char* src) {
 
   while(s < e) {
     size_t i, j;
+
     if((i = byte_chr(s, e - s, '%'))) {
       stralloc_catb(&ret, s, i);
       s += i;
       continue;
     }
     ++s;
+
     if((i = byte_chr(s, e - s, '%'))) {
       const char* value;
+
       if((value = env_get_b(s, i)))
         stralloc_cats(&ret, value);
       else
@@ -308,6 +312,7 @@ main(int argc, char* argv[], char* envp[]) {
           stralloc_replacec(&tmp, PATHSEP_S_MIXED[1], PATHSEP_S_MIXED[0]);
 
         stralloc_nul(&tmp);
+
         if(path_exists(tmp.s)) {
           stralloc_free(&realcmd);
           stralloc_move(&realcmd, &tmp);
@@ -361,6 +366,7 @@ main(int argc, char* argv[], char* envp[]) {
     buffer_putnlflush(buffer_2);
 #endif
     av = strarray_BEGIN(&args);
+
     if(-1 == (ret = process_create(fullcmd.s, av, NULL, NULL))) {
       errmsg_warnsys("process_create:", 0);
       return 1;

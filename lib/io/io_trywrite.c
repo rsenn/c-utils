@@ -26,6 +26,7 @@ io_trywrite(fd_type d, const char* buf, int64 len) {
 #ifdef USE_SELECT
   io_entry* e = (io_entry*)iarray_get((iarray*)io_getfds(), d);
   int r;
+
   if(!e) {
     errno = EBADF;
     return -3;
@@ -35,12 +36,15 @@ io_trywrite(fd_type d, const char* buf, int64 len) {
 #elif WINDOWS_NATIVE
   io_entry* e = (io_entry*)iarray_get((iarray*)io_getfds(), d);
   int r;
+
   if(!e) {
     errno = EBADF;
     return -3;
   }
+
   if(!e->nonblock) {
     DWORD written;
+
     if(WriteFile((HANDLE)(size_t)d, buf, len, &written, 0)) {
       return written;
     } else {
@@ -51,9 +55,11 @@ io_trywrite(fd_type d, const char* buf, int64 len) {
       errno = EAGAIN;
       return -1;
     }
+
     if(e->canwrite) {
       e->canwrite = 0;
       e->next_write = -1;
+
       if(e->errorcode) {
         errno = winsock2errno(e->errorcode);
         return -3;
@@ -80,17 +86,21 @@ io_trywrite(fd_type d, const char* buf, int64 len) {
   struct pollfd p;
   io_entry* e = (io_entry*)iarray_get((iarray*)io_getfds(), d);
   io_sigpipe();
+
   if(!e) {
     errno = EBADF;
     return -3;
   }
+
   if(!e->nonblock) {
     p.fd = d;
+
     if(p.fd != d) {
       errno = EBADF;
       return -3;
     } /* catch overflow */
     p.events = POLLOUT;
+
     switch(poll(&p, 1, 0)) {
       case -1: return -3;
       case 0:
@@ -106,15 +116,19 @@ io_trywrite(fd_type d, const char* buf, int64 len) {
     setitimer(ITIMER_REAL, &new, &old);
   }
   r = write(d, buf, len);
+
   if(!e->nonblock) {
     setitimer(ITIMER_REAL, &old, 0);
   }
+
   if(r == -1) {
     if(errno == EINTR)
       errno = EAGAIN;
+
     if(errno != EAGAIN)
       r = -3;
   }
+
   if(r != len) {
     e->canwrite = 0;
 #if defined(HAVE_SIGIO)

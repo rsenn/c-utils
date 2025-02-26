@@ -14,6 +14,7 @@ xml_tag_attr_value_pred(xmlnode* node, const char* tag, const char* attr, const 
 
   if(node->type == XML_ELEMENT && str_equal(tag, node->name)) {
     const char* a = xml_get_attribute(node, attr);
+
     if(a && str_equal(value, a))
       return 1;
   }

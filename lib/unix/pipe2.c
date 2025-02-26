@@ -35,6 +35,7 @@ pipe(fd_type fd[2]) {
 
   /* To get non-blocking pipes we could use CreateNamedPipe here. But it
      isn't implemented under Win9x. */
+
   if(!CreatePipe((HANDLE*)&phandles[0], (HANDLE*)&phandles[1], NULL, 0)) {
     errno = EMFILE;
     return -1;
@@ -57,6 +58,7 @@ pipe2(int fd[2], int flags) {
   tmp[1] = fd[1];
 
   /* Check the supported flags.  */
+
   if((flags & ~(O_CLOEXEC
 #ifdef O_BINARY
                 | O_BINARY

@@ -81,6 +81,7 @@ cpp_macro_parse(cpp* pp, tokenizer* t) {
 
     for(;;) {
       /* process next function argument identifier */
+
       if(!consume_nl_and_ws(t, &curr, expected)) {
         error("unexpected", t, &curr);
         return 0;
@@ -141,6 +142,7 @@ cpp_macro_parse(cpp* pp, tokenizer* t) {
 
   for(;;) {
     /* ignore unknown tokens in macro body */
+
     if(!tokenizer_next(t, &curr))
       return 0;
 
@@ -178,6 +180,7 @@ cpp_macro_parse(cpp* pp, tokenizer* t) {
   }
 
 done:
+
   if(redefined) {
     cpp_macro* old = cpp_macro_get(pp, macroname);
     char* s_old = old->str_contents_buf ? old->str_contents_buf : "";

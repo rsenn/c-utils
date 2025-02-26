@@ -19,6 +19,7 @@ bmap_node_t** bmap_getref(bmap_base_t* m, const char* key);
 static unsigned
 bmap_hash(const char* str) {
   unsigned hash = 5381;
+
   while(*str) {
     hash = ((hash << 5) + hash) ^ *str++;
   }

@@ -23,6 +23,7 @@ socket_recv6(int s, char* buf, size_t len, char ip[16], uint16* port, uint32* sc
   ssize_t r;
 
   byte_zero(&si, Len);
+
   if((r = recvfrom(s, buf, len, 0, (struct sockaddr*)&si, &Len)) < 0)
     return winsock2errno(-1);
 
@@ -33,12 +34,15 @@ socket_recv6(int s, char* buf, size_t len, char ip[16], uint16* port, uint32* sc
       byte_copy(ip, 12, V4mappedprefix);
       byte_copy(ip + 12, 4, (char*)&si4->sin_addr);
     }
+
     if(port)
       uint16_unpack_big((char*)&si4->sin_port, port);
     return r;
   }
+
   if(ip)
     byte_copy(ip, 16, (char*)&si.sin6_addr);
+
   if(port)
     uint16_unpack_big((char*)&si.sin6_port, port);
 #ifdef LIBC_HAS_SCOPE_ID
@@ -53,8 +57,10 @@ socket_recv6(int s, char* buf, size_t len, char ip[16], uint16* port, uint32* sc
     byte_copy(ip, 12, (char*)V4mappedprefix);
     byte_copy(ip + 12, 4, (char*)&si.sin_addr);
   }
+
   if(port)
     uint16_unpack_big((char*)&si.sin_port, port);
+
   if(scope_id)
     *scope_id = 0;
 #endif

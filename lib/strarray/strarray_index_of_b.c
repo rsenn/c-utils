@@ -5,6 +5,7 @@
 int64
 strarray_index_of_b(strarray* arr, const char* s, size_t len) {
   size_t i, n = strarray_size(arr);
+
   for(i = 0; i < n; ++i) {
     const char* x = strarray_AT(arr, i);
 

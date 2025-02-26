@@ -27,9 +27,12 @@
 #if 0
 static void handleevent(fd_type fd, int readable, int writable, int error) {
   io_entry* e = array_get(io_getfds(), sizeof(io_entry), fd);
+
   if(e) {
     int curevents = 0, newevents;
+
     if(e->kernelwantread) curevents |= POLLIN;
+
     if(e->kernelwantwrite) curevents |= POLLOUT;
 
 #ifdef DEBUG
@@ -38,6 +41,7 @@ static void handleevent(fd_type fd, int readable, int writable, int error) {
       buffer_putlong(buffer_2, fd);
       buffer_putnlflush(buffer_2);
     }
+
     if(writable && !e->kernelwantwrite) {
       buffer_puts(buffer_2, "got unexpected write event on fd #");
       buffer_putlong(buffer_2, fd);
@@ -47,19 +51,24 @@ static void handleevent(fd_type fd, int readable, int writable, int error) {
 
     if(error) {
       /* signal whatever app is looking for */
+
       if(e->wantread) readable = 1;
+
       if(e->wantwrite) writable = 1;
     }
 
     if(readable && !e->canread) {
       e->canread = 1;
+
       if(e->wantread) {
         e->next_read = first_readable;
         first_readable = y[i].data.fd;
       }
     }
+
     if(writable && !e->canwrite) {
       e->canwrite = 1;
+
       if(e->wantwrite) {
         e->next_write = first_writeable;
         first_writeable = y[i].data.fd;
@@ -70,16 +79,19 @@ static void handleevent(fd_type fd, int readable, int writable, int error) {
      * Bitfeld-Integer? */
 
     newevents = 0;
+
     if(!e->canread || e->wantread) {
       newevents |= EPOLLIN;
       e->kernelwantread = 1;
     } else
       e->kernelwantread = 0;
+
     if(!e->canwrite || e->wantwrite) {
       newevents |= EPOLLOUT;
       e->kernelwantwrite = 1;
     } else
       e->kernelwantwrite = 0;
+
     if(newevents != curevents) {
 #if 0
       printf("canread %d, wantread %d, kernelwantread %d, canwrite %d, wantwrite %d, kernelwantwrite %d\n",
@@ -87,6 +99,7 @@ static void handleevent(fd_type fd, int readable, int writable, int error) {
       printf("newevents: read %d write %d\n", !!(newevents & EPOLLIN), !!(newevents & EPOLLOUT));
 #endif
       y[i].events = newevents;
+
       if(newevents) {
         epoll_ctl(io_master, EPOLL_CTL_MOD, y[i].data.fd, y + i);
       } else {
@@ -104,6 +117,7 @@ static void
 put_fdset(buffer* b, const char* name, const fd_set* fds, fd_type maxfd) {
   fd_type i;
   buffer_putm_internal(b, "fd_set ", name, "=[", NULL);
+
   for(i = 0; i <= maxfd; ++i) {
     if(FD_ISSET(i, fds)) {
       buffer_putspace(b);
@@ -119,6 +133,7 @@ io_waituntil2(int64 milliseconds) {
   struct pollfd* p;
 #endif
   long i, j, r;
+
   if(!io_wanted_fds)
     return 0;
 
@@ -142,8 +157,10 @@ io_waituntil2(int64 milliseconds) {
     for(i = j = r = 0; i <= nfds; ++i) {
       io_entry* e;
       struct iocb* cb = 0;
+
       if(!(e = (io_entry*)iarray_get(fds, i)))
         continue;
+
       if(e->cb.aio_lio_opcode) {
         cb = &e->cb;
         cb->aio_fildes = i;
@@ -151,8 +168,10 @@ io_waituntil2(int64 milliseconds) {
         int events = 0;
         cb = &cblist[j++];
         ;
+
         if(e->wantread)
           events |= POLLIN;
+
         if(e->wantwrite)
           events |= POLLOUT;
         cb->aio_fildes = i;
@@ -174,6 +193,7 @@ io_waituntil2(int64 milliseconds) {
     byte_zero(&ts, sizeof(ts));
     ts.tv_sec = milliseconds / 1000;
     ts.tv_nsec = (milliseconds % 1000ull) * 1000000ull;
+
     if((r = io_getevents(ctx, 1, j, evlist, milliseconds == -1 ? 0 : &ts)) == -1)
       goto fail;
 
@@ -185,16 +205,20 @@ io_waituntil2(int64 milliseconds) {
 
       if(ev->res & (POLLERR | POLLHUP | POLLNVAL)) {
         /* error; signal whatever app is looking for */
+
         if(e->wantread)
           revents |= POLLIN;
+
         if(e->wantwrite)
           revents |= POLLOUT;
       }
+
       if(!e->canread && (ev->res & POLLIN)) {
         e->canread = 1;
         e->next_read = first_readable;
         first_readable = cb->aio_fildes;
       }
+
       if(!e->canwrite && (ev->res & POLLOUT)) {
         e->canwrite = 1;
         e->next_write = first_writeable;
@@ -203,11 +227,13 @@ io_waituntil2(int64 milliseconds) {
       p++;
     }
   fail:
+
     if(ctx)
       io_destroy(ctx);
 
     alloc_free(cblist);
     alloc_free(ptrlist);
+
     if(evlist)
       alloc_free(evlist);
 
@@ -223,15 +249,19 @@ io_waituntil2(int64 milliseconds) {
     size_t nfds = iarray_length(fds);
     FD_ZERO(&rfds);
     FD_ZERO(&wfds);
+
     for(i = r = 0; i <= nfds; ++i) {
       if(!(e = (io_entry*)iarray_get(fds, i)))
         continue;
       e->canread = e->canwrite = 0;
+
       if(e->wantread || e->wantwrite) {
         if(e->wantread)
           FD_SET(i, &rfds);
+
         if(e->wantwrite)
           FD_SET(i, &wfds);
+
         if(i > maxfd)
           maxfd = i;
       }
@@ -255,6 +285,7 @@ io_waituntil2(int64 milliseconds) {
     put_fdset(buffer_2, "wfds2", &wfds, maxfd);
     buffer_putnlflush(buffer_2);
 #endif
+
     for(j = maxfd; j >= 0; --j) {
       if(!(e = (io_entry*)iarray_get((iarray*)io_getfds(), j)))
         continue;
@@ -264,6 +295,7 @@ io_waituntil2(int64 milliseconds) {
         e->next_read = first_readable;
         first_readable = j;
       }
+
       if(!e->canwrite && FD_ISSET(j, &wfds)) {
         e->canwrite = 1;
         e->next_write = first_writeable;
@@ -277,14 +309,18 @@ io_waituntil2(int64 milliseconds) {
     DWORD numberofbytes;
     DWORD x;
     LPOVERLAPPED o;
+
     if(first_readable != -1 || first_writeable != -1) {
       return 1;
     }
+
     if(GetQueuedCompletionStatus((HANDLE)(ptrdiff_t)io_comport, &numberofbytes, &x, &o, milliseconds == -1 ? INFINITE : milliseconds)) {
       io_entry* e = (io_entry*)iarray_get((iarray*)io_getfds(), x);
+
       if(!e)
         return 0;
       e->errorcode = 0;
+
       if(o == &e->or &&e->readqueued == 1) {
         e->readqueued = 2;
         e->canread = 1;
@@ -319,16 +355,20 @@ io_waituntil2(int64 milliseconds) {
       /* either the overlapped I/O request failed or we timed out */
       DWORD err;
       io_entry* e;
+
       if(!o)
         return 0; /* timeout */
       /* we got a completion packet for a failed I/O operation */
       err = GetLastError();
+
       if(err == WAIT_TIMEOUT)
         return 0; /* or maybe not */
       e = (io_entry*)iarray_get((iarray*)io_getfds(), x);
+
       if(!e)
         return 0; /* WTF?! */
       e->errorcode = err;
+
       if(o == &e->or &&(e->readqueued || e->acceptqueued)) {
         if(e->readqueued)
           e->readqueued = 2;
@@ -358,14 +398,19 @@ io_waituntil2(int64 milliseconds) {
   if(io_waitmode == EPOLL) {
     int n;
     struct epoll_event y[100];
+
     if((n = epoll_wait(io_master, y, 100, milliseconds)) == -1)
       return -1;
+
     for(i = 0; i < n; ++i) {
       io_entry* e = (io_entry*)iarray_get((iarray*)io_getfds(), y[i].data.fd);
+
       if(e) {
         int curevents = 0, newevents;
+
         if(e->kernelwantread)
           curevents |= EPOLLIN;
+
         if(e->kernelwantwrite)
           curevents |= EPOLLOUT;
 
@@ -378,18 +423,22 @@ io_waituntil2(int64 milliseconds) {
 
         if(y[i].events & (POLLERR | POLLHUP)) {
           /* error; signal whatever app is looking for */
+
           if(e->wantread)
             y[i].events |= POLLIN;
+
           if(e->wantwrite)
             y[i].events |= POLLOUT;
         }
 
         newevents = 0;
+
         if(!e->canread || e->wantread) {
           newevents |= EPOLLIN;
           e->kernelwantread = 1;
         } else
           e->kernelwantread = 0;
+
         if(!e->canwrite || e->wantwrite) {
           newevents |= EPOLLOUT;
           e->kernelwantwrite = 1;
@@ -398,11 +447,13 @@ io_waituntil2(int64 milliseconds) {
 
         /* if we think we can not read, but the kernel tells us that we
          * can, put this fd in the relevant data structures */
+
         if(!e->canread && (y[i].events & (EPOLLIN | EPOLLPRI | EPOLLRDNORM | EPOLLRDBAND))) {
           if(e->canread) {
             newevents &= ~EPOLLIN;
           } else {
             e->canread = 1;
+
             if(e->wantread) {
               e->next_read = first_readable;
               first_readable = y[i].data.fd;
@@ -411,6 +462,7 @@ io_waituntil2(int64 milliseconds) {
         }
 
         /* if the kernel says the fd is writable, ... */
+
         if(y[i].events & EPOLLOUT) {
           /* Usually, if the kernel says a descriptor is writable, we
            * note it and do not tell the kernel not to tell us again.
@@ -423,6 +475,7 @@ io_waituntil2(int64 milliseconds) {
            * got another write event.  Clearly the user is implementing
            * some kind of throttling and we can tell the kernel to leave
            * us alone for now. */
+
           if(e->canwrite) {
             newevents &= ~EPOLLOUT;
             e->kernelwantwrite = 0;
@@ -433,6 +486,7 @@ io_waituntil2(int64 milliseconds) {
              * Now we know we could write if we wanted; remember that
              * and then go on. */
             e->canwrite = 1;
+
             if(e->wantwrite) {
               e->next_write = first_writeable;
               first_writeable = y[i].data.fd;
@@ -447,6 +501,7 @@ io_waituntil2(int64 milliseconds) {
           printf("newevents: read %d write %d\n", !!(newevents & EPOLLIN), !!(newevents & EPOLLOUT));
 #endif
           y[i].events = newevents;
+
           if(newevents) {
             epoll_ctl(io_master, EPOLL_CTL_MOD, y[i].data.fd, y + i);
           } else {
@@ -477,23 +532,29 @@ io_waituntil2(int64 milliseconds) {
     struct timespec ts;
     ts.tv_sec = milliseconds / 1000;
     ts.tv_nsec = (milliseconds % 1000) * 1000000;
+
     if((n = kevent(io_master, 0, 0, y, 100, milliseconds != -1 ? &ts : 0)) == -1)
       return -1;
+
     for(i = n - 1; i >= 0; --i) {
       io_entry* e = (io_entry*)iarray_get((iarray*)io_getfds(), y[--n].ident);
+
       if(e) {
         if(y[n].flags & EV_ERROR) {
           /* error; signal whatever app is looking for */
+
           if(e->wantread)
             y[n].filter = EVFILT_READ;
           else if(e->wantwrite)
             y[n].filter = EVFILT_WRITE;
         }
+
         if(!e->canread && (y[n].filter == EVFILT_READ)) {
           e->canread = 1;
           e->next_read = first_readable;
           first_readable = y[n].ident;
         }
+
         if(!e->canwrite && (y[n].filter == EVFILT_WRITE)) {
           e->canwrite = 1;
           e->next_write = first_writeable;
@@ -514,27 +575,36 @@ io_waituntil2(int64 milliseconds) {
     timeout.dp_timeout = milliseconds;
     timeout.dp_nfds = 100;
     timeout.dp_fds = y;
+
     if((n = ioctl(io_master, DP_POLL, &timeout)) == -1)
       return -1;
+
     for(i = n - 1; i >= 0; --i) {
       io_entry* e = (io_entry*)iarray_get((iarray*)io_getfds(), y[--n].fd);
+
       if(e) {
         if(y[n].revents & (POLLERR | POLLHUP | POLLNVAL)) {
           /* error; signal whatever app is looking for */
+
           if(e->wantread)
             y[n].revents = POLLIN;
+
           if(e->wantwrite)
             y[n].revents = POLLOUT;
         }
+
         if(!e->canread && (y[n].revents & POLLIN)) {
           e->canread = 1;
+
           if(e->next_read == -1) {
             e->next_read = first_readable;
             first_readable = y[n].fd;
           }
         }
+
         if(!e->canwrite && (y[n].revents & POLLOUT)) {
           e->canwrite = 1;
+
           if(e->next_write == -1) {
             e->next_write = first_writeable;
             first_writeable = y[i].fd;
@@ -553,10 +623,13 @@ io_waituntil2(int64 milliseconds) {
     struct timespec ts;
     int r;
     io_entry* e;
+
     if(alt_firstread >= 0 && (e = (io_entry*)iarray_get((iarray*)io_getfds(), alt_firstread)) && e->canread)
       return 1;
+
     if(alt_firstwrite >= 0 && (e = (io_entry*)iarray_get((iarray*)io_getfds(), alt_firstwrite)) && e->canwrite)
       return 1;
+
     if(milliseconds == -1)
       r = sigwaitinfo(&io_ss, &info);
     else {
@@ -564,22 +637,28 @@ io_waituntil2(int64 milliseconds) {
       ts.tv_nsec = (milliseconds % 1000) * 1000000;
       r = sigtimedwait(&io_ss, &info, &ts);
     }
+
     switch(r) {
       case SIGIO:
         /* signal queue overflow */
         signal(io_signum, SIG_DFL);
         goto dopoll;
       default:
+
         if(r == io_signum) {
           io_entry* e = (io_entry*)iarray_get((iarray*)io_getfds(), info.si_fd);
+
           if(e) {
             if(info.si_band & (POLLERR | POLLHUP)) {
               /* error; signal whatever app is looking for */
+
               if(e->wantread)
                 info.si_band |= POLLIN;
+
               if(e->wantwrite)
                 info.si_band |= POLLOUT;
             }
+
             if(info.si_band & POLLIN && !e->canread) {
               debug_printf(("io_waituntil2: enqueueing %ld in normal read "
                             "queue before %ld\n",
@@ -589,6 +668,7 @@ io_waituntil2(int64 milliseconds) {
               e->next_read = first_readable;
               first_readable = info.si_fd;
             }
+
             if(info.si_band & POLLOUT && !e->canwrite) {
               debug_printf(("io_waituntil2: enqueueing %ld in normal write "
                             "queue before %ld\n",
@@ -617,11 +697,14 @@ dopoll :
 
 {
   struct pollfd* p;
+
   for(i = r = 0; (size_t)i <= iarray_length((iarray*)io_getfds()); ++i) {
     io_entry* e = (io_entry*)iarray_get((iarray*)io_getfds(), i);
+
     if(!e)
       continue;
     e->canread = e->canwrite = 0;
+
     if(e->wantread || e->wantwrite) {
       if((p = (struct pollfd*)array_allocate(&io_pollfds, sizeof(struct pollfd), r))) {
         p->fd = i;
@@ -638,22 +721,27 @@ dopoll :
   buffer_puts(buffer_2, ") ");
   buffer_putlong(buffer_2, r);
   buffer_putsflush(buffer_2, " fds\n");
+
   for(i = 0; i < r; ++i) {
     buffer_puts(buffer_2, "pollfd[");
     buffer_putlong(buffer_2, i);
     buffer_puts(buffer_2, "] { .fd=");
     buffer_putlong(buffer_2, p[i].fd);
     buffer_puts(buffer_2, ", events=");
+
     if(p[i].events & POLLIN)
       buffer_puts(buffer_2, "IN ");
+
     if(p[i].events & POLLOUT)
       buffer_puts(buffer_2, "OUT ");
+
     if(p[i].events & POLLERR)
       buffer_puts(buffer_2, "ERR ");
     buffer_puts(buffer_2, "}");
     buffer_putnlflush(buffer_2);
   }
 #endif
+
   if((i = poll((struct pollfd*)array_start(&io_pollfds), r, milliseconds)) < 1)
     return -1;
 #ifdef DEBUG_IO
@@ -663,31 +751,40 @@ dopoll :
     buffer_puts(buffer_2, "] { .fd=");
     buffer_putlong(buffer_2, p[i].fd);
     buffer_puts(buffer_2, ", revents=");
+
     if(p[i].revents & POLLIN)
       buffer_puts(buffer_2, "IN ");
+
     if(p[i].revents & POLLOUT)
       buffer_puts(buffer_2, "OUT ");
+
     if(p[i].revents & POLLERR)
       buffer_puts(buffer_2, "ERR ");
     buffer_puts(buffer_2, "}");
     buffer_putnlflush(buffer_2);
   }
 #endif
+
   for(j = r - 1; j >= 0; --j) {
     p = array_get(&io_pollfds, sizeof(struct pollfd), j);
     io_entry* e = (io_entry*)iarray_get((iarray*)io_getfds(), p->fd);
+
     if(p->revents & (POLLERR | POLLHUP | POLLNVAL)) {
       /* error; signal whatever app is looking for */
+
       if(e->wantread)
         p->revents |= POLLIN;
+
       if(e->wantwrite)
         p->revents |= POLLOUT;
     }
+
     if(!e->canread && (p->revents & POLLIN)) {
       e->canread = 1;
       e->next_read = first_readable;
       first_readable = p->fd;
     }
+
     if(!e->canwrite && (p->revents & POLLOUT)) {
       e->canwrite = 1;
       e->next_write = first_writeable;

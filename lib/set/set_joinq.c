@@ -6,8 +6,10 @@ void
 set_joinq(const set_t* set, stralloc* out, char sep, char quote) {
   bucket_t* b;
   size_t i = 0;
+
   for(b = set->list; b; b = b->list_next) {
     int q;
+
     if(i > 0)
       stralloc_catc(out, sep);
 

@@ -12,6 +12,7 @@ uint32_random(void) {
   uint32 r = 0;
 
   /* seed if not seeded */
+
   if(uint32_bytes_seeded == 0) {
     struct taia t;
     taia_now(&t);

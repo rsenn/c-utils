@@ -84,6 +84,7 @@ main(int argc, char* argv[]) {
 
   if(argc > 1)
     fn = argv[1];
+
   if(argc > 2)
     section = argv[2];
 

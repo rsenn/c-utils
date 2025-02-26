@@ -38,6 +38,7 @@ imult64(int64 a, int64 b, int64* c) {
 int
 imult64(int64 a, int64 b, int64* c) {
   __int128_t x = ((__int128_t)a) * b;
+
   if((*c = (int64)x) != x)
     return 0;
   return 1;
@@ -49,14 +50,18 @@ int
 imult64(int64 a, int64 b, int64* c) {
   int neg = (a < 0);
   uint64 d;
+
   if(neg)
     a = -a;
+
   if(b < 0) {
     neg ^= 1;
     b = -b;
   }
+
   if(!umult64(a, b, &d))
     return 0;
+
   if(d > (uint64)0x7fffffffffffffff + neg)
     return 0;
   *c = (neg ? -d : d);

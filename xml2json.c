@@ -98,8 +98,10 @@ static jsonval
 xmllist_to_jsonarray(xmlnode* list) {
   jsonval arr = json_array();
   xmlnode* n;
+
   for(n = list; n; n = n->next) {
     jsonval v = json_undefined();
+
     if(n->type == XML_TEXT) {
       if(!n->name[0] || str_is(n->name, isspace))
         continue;
@@ -129,6 +131,7 @@ xml_style_json(char* x, size_t n) {
     char* value = (s && *s == '\0') ? s : byte_trim(s, &nv, whitespace, 6);
     char* prop = byte_trim(x, &np, whitespace, 6);
     np = byte_camelize(prop, np);
+
     if(np > 0) {
       jsonval name = json_stringn(prop, np);
       jsonval val = json_undefined();
@@ -157,18 +160,22 @@ hmap_to_jsonobj(HMAP_DB* db, jsonval* obj) {
     hmap_foreach(db, t) {
       const char* prop = t->key;
       jsonval v = json_undefined();
+
       if(str_equal(prop, "style")) {
         v = xml_style_json(t->vals.val_chars, t->data_len);
       } else {
         size_t len = t->data_len;
         charbuf b;
         char* ptr;
+
         if(len > 0 && t->vals.val_chars[len - 1] == '\0')
           --len;
+
         if(str_equal(prop, "class") || str_equal(prop, "className"))
           prop = class_property;
         ptr = t->vals.val_chars;
         charbuf_froms(&b, ptr, 2);
+
         if(!numbers || !json_parse_number(&v, &b))
           v = json_stringn(t->vals.val_chars, len);
       }
@@ -193,15 +200,19 @@ xml_to_json_obj(xmlnode* node) {
      "XML_ATTRIBUTE", "XML_TEXT" };
       buffer_putm_internal(buffer_2, node_types[(int)node->type], " ",
      node->name, "\n", NULL);*/
+
   if(node->type == XML_ELEMENT) {
     jsonval obj = json_object();
     json_property_set(&obj, json_string(tag_property), json_string(node->name));
+
     if(node->attributes && node->attributes->list_tuple)
       hmap_to_jsonobj(node->attributes, &obj);
+
     if(node->children)
       json_property_set(&obj, json_string(children_property), xmllist_to_jsonarray(node->children));
     return obj;
   }
+
   if(node->type == XML_TEXT) {
   }
   return json_undefined();
@@ -220,6 +231,7 @@ xml_to_json(xmlnode* node) {
 static int
 xml_depth(xmlnode* node) {
   int i = 0;
+
   while(node) {
     node = node->parent;
     ++i;
@@ -306,8 +318,10 @@ main(int argc, char* argv[]) {
 
   for(;;) {
     c = unix_getopt_long(argc, argv, "hsdol:cT:C:N:nQ", opts, &index);
+
     if(c == -1)
       break;
+
     if(c == 0)
       continue;
 
@@ -333,6 +347,7 @@ main(int argc, char* argv[]) {
       input->fd = open_read(argv[unix_optind]);
 
     buffer_skip_until(input, "\r\n", 2);
+
     doc = xml_read_tree(input);
     // xml_walk(doc, testwalk);
 

@@ -10,6 +10,7 @@ xml_set_attribute_double(xmlnode* node, const char* a, double d, int prec) {
 
   /* if(byte_chr(buf, n, '.') < n) {
     while(n > 0 && buf[n - 1] == '0') --n;
+
     if(n > 0 && buf[n - 1] == '.')
       --n;
   } */

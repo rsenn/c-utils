@@ -47,6 +47,7 @@ void
 unit_test_cleanup(struct unit_test* mu_) {
   if(mu_->testlog != muout)
     buffer_close(mu_->testlog);
+
   if(mu_->faillog != muerr)
     buffer_close(mu_->faillog);
 }
@@ -86,6 +87,7 @@ unit_test_empty(buffer* b) {
 void
 unit_test_closetemp(buffer* b) {
   buffer_flush(b);
+
   if(unit_test_empty(b)) {
     stralloc filename;
     stralloc_init(&filename);
@@ -100,6 +102,7 @@ unit_test_closetemp(buffer* b) {
 
     if(filename.len) {
       int ret = unlink(filename.s);
+
       if(ret)
         errmsg_warnsys("unlink(", filename.s, "): ", 0);
     }
@@ -109,6 +112,7 @@ unit_test_closetemp(buffer* b) {
 buffer*
 unit_test_tmpfile(buffer* b, char** tmpl) {
   int fd;
+
   if((fd = open_temp(tmpl)) == -1) {
     buffer_puts(muerr, "ERROR: tmpfile failed");
     buffer_putnlflush(muerr);
@@ -132,6 +136,7 @@ unit_test_run(struct unit_test* mu_, unit_test_func_t func, const char* name) {
 
   if(testlog_filename)
     alloc_free(testlog_filename);
+
   if(faillog_filename)
     alloc_free(faillog_filename);
   testlog_filename = "testlog-XXXXXX";
@@ -148,6 +153,7 @@ unit_test_run(struct unit_test* mu_, unit_test_func_t func, const char* name) {
 
   if(running->failure == 0) {
     buffer_putm_internal(mu_->testlog, PASS("."), NULL);
+
     if(muconf_ptr()->v) {
       TESTLOG_STR("  ");
       TESTLOG_STR(name);
@@ -155,6 +161,7 @@ unit_test_run(struct unit_test* mu_, unit_test_func_t func, const char* name) {
     }
   } else {
     TESTLOG_STR(FAIL("F"));
+
     if(muconf_ptr()->v) {
       TESTLOG_STR("  ");
       TESTLOG_STR(name);
@@ -195,6 +202,7 @@ unit_test_usage(const char* cmd) {
 void
 unit_test_optparse(int argc, char** argv) {
   size_t i, j;
+
   for(i = 1; i < (size_t)argc; i++) {
     if(argv[i][0] != '-') {
       unit_test_usage(argv[0]);

@@ -8,6 +8,7 @@ byte_chrns(const char* x, size_t len, const char charset[], size_t setlen) {
   for(;;) {
     if(s == end)
       break;
+
     if(byte_chr(charset, setlen, *s) == setlen)
       break;
     ++s;

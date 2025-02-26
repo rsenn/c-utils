@@ -57,6 +57,7 @@ cbmap_mem_debug_calloc(size_t count, size_t size, const char* file, int line) {
   void* p;
 
   p = calloc(count, size);
+
   if(p != NULL) {
     CBM_DEBUG_ALLOCATIONS += 1;
     CBM_DEBUG_ALLOCATED_BYTES += ((unsigned int)count * (unsigned int)size);
@@ -70,6 +71,7 @@ cbmap_mem_debug_calloc(size_t count, size_t size, const char* file, int line) {
 char*
 cbmap_mem_debug_strndup(const char* p, size_t size, const char* file, int line) {
   char* result = str_ndup(p, size);
+
   if(result != NULL) {
     CBM_DEBUG_ALLOCATIONS += 1;
     CBM_DEBUG_ALLOCATED_BYTES += size;
@@ -89,6 +91,7 @@ cbmap_mem_debug_strdup(const char* p, const char* file, int line) {
     return NULL;
 
   result = str_dup(p);
+
   if(result != NULL) {
     CBM_DEBUG_ALLOCATIONS += 1;
     size = str_len(p);
@@ -108,6 +111,7 @@ cbmap_mem_mem_dup(const void* p, size_t size, const char* file, int line) {
     return NULL;
 
   result = malloc(size);
+
   if(result != NULL) {
     CBM_DEBUG_ALLOCATIONS += 1;
     CBM_DEBUG_ALLOCATED_BYTES += size;

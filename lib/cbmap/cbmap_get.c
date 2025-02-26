@@ -26,6 +26,7 @@ cbmap_get(cbmap_t map, void* key, size_t key_len, void** value, size_t* value_le
   }
 
   data = (struct cbmap_data_node*)p;
+
   if(data->key_len == key_len) {
     if(KEY_COMPARE(data->key, key, key_len) == 0) {
       *value = (void*)data->value;

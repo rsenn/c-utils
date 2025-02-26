@@ -23,10 +23,12 @@ json_parse_stralloc(charbuf* b, stralloc* out, int quoted) {
     }
     stralloc_APPEND(&sa, &ch);
   }
+
   if(quoted || sa.len) {
     for(i = 0; i < sa.len; i++) {
       size_t r;
       unsigned int n;
+
       if((r = scan_utf8(&sa.s[i], sa.len - i, &n)) > 1) {
         stralloc_cats(out, "\\u");
         stralloc_catxlong0(out, n, n > 0xffffffu ? 8 : n > 0xffffu ? 6 : 4);

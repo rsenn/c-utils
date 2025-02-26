@@ -156,6 +156,7 @@ main(int argc, char* argv[1]) {
   buffer out;
   byte_zero(&out, sizeof(out));
   buffer_truncfile(&out, "configuration.xml");
+
   doc = create_xml_document();
   xml_print(doc, buffer_1, 0);
   xml_free(doc);

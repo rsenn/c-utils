@@ -24,6 +24,7 @@ gpio_init() {
   }
 
   mem_dev = open_rwsync("/dev/mem");
+
   if(mem_dev == -1) {
     buffer_puts(buffer_1, "gpio_init : Error: Can't open \"/dev/mem\"!");
     buffer_putnlflush(buffer_1);

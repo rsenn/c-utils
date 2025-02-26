@@ -6,12 +6,15 @@ static void
 hmap_print_tree_tuple(HMAP_DB* hmap) {
   int i = 0;
   TUPLE *root_tuple, *t;
+
   for(; i < hmap->bucket_size; i++) {
     t = root_tuple = (hmap->tuple + i);
+
     if(root_tuple == NULL) {
       continue;
     }
     printf("index[%d]\n", t->index);
+
     while(t) {
       if(t->key_len > 0) {
         buffer_puts(buffer_1, "index[");

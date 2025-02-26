@@ -8,11 +8,13 @@ charbuf_stubborn_read(charbuf* b, size_t max) {
 
   if(b->eof)
     return 0;
+
   if(b->err)
     return -1;
 
   for(;;) {
     n = b->a - b->p;
+
     if(n >= max)
       n = max;
 
@@ -22,6 +24,7 @@ charbuf_stubborn_read(charbuf* b, size_t max) {
       errno = 0;
       continue;
     }
+
     if(ret < 0)
       b->err = 1;
     else if(ret == 0)

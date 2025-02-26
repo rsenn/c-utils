@@ -165,6 +165,7 @@ xml_add_text(xmlnode* parent, const char* text) {
 static size_t
 xml_num_attrs(xmlnode* node) {
   assert(node->type == XML_ELEMENT);
+
   if(node->attributes == 0)
     return 0;
   return hmap_count(node->attributes);

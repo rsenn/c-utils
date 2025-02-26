@@ -53,6 +53,7 @@ extract_tokens(const char* x, size_t n, set_t* tokens) {
       break;
 
     if((i = scan_charsetnskip(x, tok_charset, n)) > 0 && !(i == 7 && byte_equal(x, 7, "defined")))
+
       if(!(*x >= '0' && *x <= '9')) {
         if(set_add(tokens, x, i) == 1) {
 

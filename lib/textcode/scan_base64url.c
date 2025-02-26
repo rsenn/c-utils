@@ -4,10 +4,13 @@ static inline int
 scan_base64url_decimal(unsigned char x) {
   if(x >= 'A' && x <= 'Z')
     return x - 'A';
+
   if(x >= 'a' && x <= 'z')
     return x - 'a' + 26;
+
   if(x >= '0' && x <= '9')
     return x - '0' + 26 + 26;
+
   switch(x) {
     case '-': return 62;
     case '_': return 63;
@@ -20,20 +23,25 @@ scan_base64url(const char* src, char* dest, size_t* destlen) {
   unsigned short tmp = 0, bits = 0;
   register const unsigned char* s = (const unsigned char*)src;
   size_t i;
+
   for(i = 0;;) {
     int a = scan_base64url_decimal(*s);
+
     if(a < 0)
       break; /* base64url does not have padding */
     tmp = (tmp << 6) | a;
     bits += 6;
     ++s;
+
     if(bits >= 8) {
       bits -= 8;
+
       if(dest)
         dest[i] = (tmp >> bits);
       ++i;
     }
   }
+
   if(destlen)
     *destlen = i;
   return (const char*)s - src;

@@ -37,6 +37,7 @@ path_is_directory(const char* p) {
   int r;
 
   if((r = lstat(p, &st) == 0))
+
     if(S_ISDIR(st.st_mode))
       return 1;
 

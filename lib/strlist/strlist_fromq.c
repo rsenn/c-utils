@@ -7,8 +7,10 @@ strlist_fromq(strlist* sl, const char* s, size_t len, const char* delim, const c
   const char *x = s, *end = s + len;
   size_t n;
   int q;
+
   if(sl->sa.len)
     stralloc_catc(&sl->sa, sl->sep);
+
   while(x < end) {
     if(byte_chr(quote, nquote, *x) < nquote) {
       x++;
@@ -26,6 +28,7 @@ strlist_fromq(strlist* sl, const char* s, size_t len, const char* delim, const c
 
     if(q && *x && byte_chr(quote, nquote, *x) < nquote)
       x++;
+
     if(*x)
       x++;
   }

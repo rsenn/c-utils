@@ -21,17 +21,21 @@ xml_pfind_parent(xmlnode* node, int (*pred)(xmlnode*, const void*, const void*, 
   strlist names, attrs;
   strlist_init(&names, '\0');
   strlist_init(&attrs, '\0');
+
   if(ptr[0]) {
     strlist_froms(&names, (const char*)ptr[0], '|');
     ptr[0] = (const void*)&names;
   }
+
   if(ptr[1]) {
     strlist_froms(&attrs, (const char*)ptr[1], '|');
     ptr[1] = (const void*)&attrs;
   }
   ret = (xmlnode*)xml_find_parent_predicate(node, pred, ptr);
+
   if(names.sa.a)
     strlist_free(&names);
+
   if(attrs.sa.a)
     strlist_free(&attrs);
   return ret;

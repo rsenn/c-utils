@@ -19,6 +19,7 @@ socket_sctp4b(void) {
   int s;
   __winsock_init();
   s = winsock2errno(socket(AF_INET, SOCK_STREAM, IPPROTO_SCTP));
+
   if(s == -1)
     return -1;
   return s;

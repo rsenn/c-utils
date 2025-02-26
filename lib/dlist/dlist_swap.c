@@ -5,6 +5,7 @@ dlist_swap(dlist* l, node* p1, node* p2) {
   node l1, l2;
 
   /* Return if its twice the same node */
+
   if(p1 == p2)
     return;
 

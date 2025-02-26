@@ -5,6 +5,7 @@
 size_t
 scan_xmlescape(const char* src, char* dest) {
   size_t n = 0;
+
   if(*src == '&') {
     ++n;
 

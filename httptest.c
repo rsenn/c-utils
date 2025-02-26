@@ -139,9 +139,11 @@ put_abbreviate(buffer* b, size_t len) {
 static void
 put_escaped_n(buffer* b, const char* x, size_t len, size_t maxlen) {
   size_t pos, n = len;
+
   if(n > maxlen)
     n = maxlen;
   put_escaped_x(b, x, n, 0x20);
+
   if(n < len) {
     put_abbreviate(b, len);
     pos = (len - maxlen) >= maxlen ? len - maxlen : maxlen;
@@ -158,9 +160,11 @@ static void
 put_indented(buffer* b, const char* x, size_t len) {
   size_t i;
   char buf[32];
+
   for(i = 0; i < len; i++) {
     char c = x[i];
     buffer_putc(b, c);
+
     if(c == '\n')
       buffer_putc(b, '\t');
   }
@@ -170,6 +174,7 @@ static void
 put_indented_n(buffer* b, const char* x, size_t len, size_t maxlen) {
   size_t pos;
   size_t n = len;
+
   if(n > maxlen)
     n = maxlen;
 
@@ -187,6 +192,7 @@ http_io_handler(http* h, buffer* out) {
   fd_type r, w;
   int nr = 0, nw = 0;
   ssize_t nb, ret = 0;
+
   while((w = io_canwrite()) != -1) {
     if(h->sock == w) {
       if((nb = http_canwrite(h, io_wantread)) <= 0) {
@@ -208,6 +214,7 @@ http_io_handler(http* h, buffer* out) {
 
     buffer_putnlflush(buffer_2);
 #endif
+
     if(h->sock == r) {
       nb = http_canread(h, io_wantwrite);
 
@@ -222,6 +229,7 @@ http_io_handler(http* h, buffer* out) {
       buffer_putlong(buffer_2, !!h->connected);
       buffer_puts(buffer_2, " sent=");
       buffer_putlong(buffer_2, !!h->sent);
+
       if(nb < 0) {
         buffer_puts(buffer_2, "  errno=");
         buffer_puts(buffer_2, strerror(errno));
@@ -232,8 +240,10 @@ http_io_handler(http* h, buffer* out) {
          ret = nb;
          continue;
        }
+
        if(nb > 0)
          ret += nb;
+
        if(h->connected && h->sent)*/
       {
         char buf[8192];
@@ -261,6 +271,7 @@ http_io_handler(http* h, buffer* out) {
             errmsg_warnsys("write error: ", 0);
             return 2;
           }
+
           if(len == -1 || h->response->status == HTTP_STATUS_ERROR) {
             errmsg_warnsys("read error: ", 0);
             return 1;
@@ -417,8 +428,10 @@ main(int argc, char* argv[]) {
 
   for(;;) {
     c = unix_getopt_long(argc, argv, "ho:", opts, &index);
+
     if(c == -1)
       break;
+
     if(c == 0)
       continue;
 
@@ -429,6 +442,7 @@ main(int argc, char* argv[]) {
       default: usage(argv[0]); return 1;
     }
   }
+
   if(outname && str_equal(outname, "-"))
     outfile = 1;
   else if((outfile = outname ? open_trunc(outname) : open_temp(&tmpl)) == -1) {
@@ -444,12 +458,14 @@ main(int argc, char* argv[]) {
   h.keepalive = 1;
   h.version = 11;
   argi = unix_optind;
+
   if(argv[unix_optind] == 0) {
     argv[unix_optind++] = (char*)default_url;
     // argv[1] =
     // "http://127.0.0.1:5555/show";
     argv[unix_optind] = 0;
   }
+
   for(; argv[argi]; ++argi) {
     int ret;
     uri_t uri;
@@ -470,6 +486,7 @@ main(int argc, char* argv[]) {
     buffer_putnlflush(buffer_2);
     free(str);
     ret = http_get(&h, argv[argi]);
+
     for(;;) {
 
       int doread = 1;
@@ -499,6 +516,7 @@ main(int argc, char* argv[]) {
 
       buffer_puts(buffer_2, " err=");
       buffer_puts(buffer_2, http_strerror(&h, ret));
+
       if(h.response->code != -1) {
         buffer_puts(buffer_2, " code=");
         buffer_putlong(buffer_2, h.response->code);
@@ -515,6 +533,7 @@ main(int argc, char* argv[]) {
       if(h.response->status == HTTP_STATUS_FINISH || h.response->status == HTTP_STATUS_CLOSED)
         break;
     }
+
     if(0) {
       const char* s = stralloc_begin(&h.response->data);
       const char* e = stralloc_end(&h.response->data);
@@ -524,6 +543,7 @@ main(int argc, char* argv[]) {
       //      buffer_put(buffer_1, s, e
       //      - s);
     }
+
     if(h.response->data.len) {
       const char* url;
       queue_entry** ptr = 0;

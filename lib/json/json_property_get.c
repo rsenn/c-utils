@@ -3,10 +3,12 @@
 jsonval
 json_property_get(jsonval obj, jsonval name) {
   jsonval ret = json_undefined();
+
   if(obj.type == JSON_ARRAY || obj.type == JSON_STRING) {
     if(str_equal(json_string_cstr(&name), "length"))
       return json_int(json_length(obj));
   }
+
   if(obj.type == JSON_OBJECT) {
     stralloc key;
     stralloc_init(&key);

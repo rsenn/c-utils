@@ -138,10 +138,12 @@ int
 find_dep(struct dep_tree_element* root, char* name, struct dep_tree_element** result) {
   int ret = -1;
   uint64 i;
+
   if(root->flags & DEPTREE_VISITED) {
     return -2;
   }
   root->flags |= DEPTREE_VISITED;
+
   for(i = 0; i < root->childs_len; i++) {
     if(str_case_diff(root->childs[i]->module, name) == 0) {
       if(result != NULL)
@@ -150,6 +152,7 @@ find_dep(struct dep_tree_element* root, char* name, struct dep_tree_element** re
       return (root->childs[i]->flags & DEPTREE_UNRESOLVED) ? 1 : 0;
     }
   }
+
   for(i = 0; i < root->childs_len && ret < 0; i++) {
     ret = find_dep(root->childs[i], name, result);
   }
@@ -165,30 +168,37 @@ process_dep(build_tree_config* cfg, uint32 name, struct dep_tree_element* root, 
   int found;
   int64 i;
   char* dllname = pe_rva2ptr(self->mapped_address, uint32_get(&name));
+
   if(dllname == NULL)
     return NULL;
+
   if(str_len(dllname) > 10 && str_case_diffn("api-ms-win", dllname, 10) == 0) {
     /* TODO: find a better way to
      * identify api stubs. Versioninfo,
      * maybe? */
     return NULL;
   }
+
   for(i = (int64)*cfg->stack_len - 1; i >= 0; i--) {
     if((*cfg->stack)[i] && str_case_diff((*cfg->stack)[i], dllname) == 0)
       return NULL;
+
     if(i == 0)
       break;
   }
   found = find_dep(root, dllname, &child);
+
   if(found < 0) {
     child = (struct dep_tree_element*)malloc(sizeof(struct dep_tree_element));
     byte_zero(child, sizeof(struct dep_tree_element));
+
     if(deep == 0) {
       child->module = str_dup(dllname);
 
       add_dep(self, child);
     }
   }
+
   if(deep == 1) {
 
     build_dep_tree(cfg, dllname, root, child);
@@ -210,6 +220,7 @@ export_ordinal)
 int
 clear_dep_status(struct dep_tree_element* self, uint64 flags) {
   uint64 i;
+
   for(i = 0; i < self->childs_len; i++)
     clear_dep_status(self->childs[i], flags);
   self->flags &= ~flags;
@@ -262,15 +273,19 @@ build_dep_tree32or64(pe_loaded_image* img, build_tree_config* cfg, struct dep_tr
   uint32 i, j;
 
   idata = &pe_get_datadir(img->base, NULL)[PE_DIRECTORY_ENTRY_EXPORT];
+
   if(idata->size > 0 && idata->virtual_address != 0) {
     ied = pe_rva2ptr(img->base, uint32_get(&idata->virtual_address));
+
     if(ied && ied->name != 0) {
       char* export_module = pe_rva2ptr(img->base, uint32_get(&ied->name));
+
       if(export_module != NULL) {
         if(self->export_module == NULL)
           self->export_module = str_dup(export_module);
       }
     }
+
     if(ied && ied->number_of_functions > 0) {
       uint32 *addrs, *names;
       uint16* ords;
@@ -280,17 +295,22 @@ build_dep_tree32or64(pe_loaded_image* img, build_tree_config* cfg, struct dep_tr
       addrs = pe_rva2ptr(img->base, uint32_get(&ied->address_of_functions));
       ords = pe_rva2ptr(img->base, uint32_get(&ied->address_of_name_ordinals));
       names = pe_rva2ptr(img->base, uint32_get(&ied->address_of_names));
+
       for(i = 0; i < ied->number_of_names; i++) {
         self->exports[ords[i]].ordinal = ords[i] + ied->base;
+
         if(names[i] != 0) {
           char* s_name = pe_rva2ptr(img->base, uint32_get(&names[i]));
+
           if(s_name != NULL)
             self->exports[ords[i]].name = str_dup(s_name);
         }
       }
+
       for(i = 0; i < ied->number_of_functions; i++) {
         if(addrs[i] != 0) {
           int section_index = pe_rva2section(img->base, addrs[i]);
+
           if((idata->virtual_address <= addrs[i]) && (idata->virtual_address + idata->size > addrs[i])) {
             self->exports[i].address = NULL;
             self->exports[i].forward_str = str_dup(pe_rva2ptr(img->base, uint32_get(&addrs[i])));
@@ -305,13 +325,17 @@ build_dep_tree32or64(pe_loaded_image* img, build_tree_config* cfg, struct dep_tr
   }
 
   idata = &pe_get_datadir(img->base, NULL)[PE_DIRECTORY_ENTRY_IMPORT];
+
   if(idata->size > 0 && idata->virtual_address != 0) {
     iid = pe_rva2ptr(img->base, uint32_get(&idata->virtual_address));
+
     if(iid)
+
       for(i = 0; iid[i].characteristics || iid[i].time_date_stamp || iid[i].forwarder_chain || iid[i].name || iid[i].first_thunk; i++) {
         struct dep_tree_element* dll;
         uint64 impaddress;
         dll = process_dep(cfg, iid[i].name, root, self, 0);
+
         if(dll == NULL)
           continue;
         ith = pe_rva2ptr(img->base, uint32_get(&iid[i].first_thunk));
@@ -321,16 +345,20 @@ build_dep_tree32or64(pe_loaded_image* img, build_tree_config* cfg, struct dep_tr
           struct import_table_item* imp = add_import(self);
           imp->dll = dll;
           imp->ordinal = -1;
+
           if(oith) {
           }
           imp->orig_address = thunk_data_u1_function(img->base, oith, j, cfg);
+
           if(cfg->on_self) {
             imp->address = impaddress;
           }
+
           if(oith && imp->orig_address & (1 << (sizeof(uint32) * 8 - 1))) {
             imp->ordinal = imp->orig_address & ~(1 << (sizeof(uint32) * 8 - 1));
           } else if(oith) {
             pe_import_by_name* byname = pe_rva2ptr(img->base, uint32_get(&imp->orig_address));
+
             if(byname != NULL)
               imp->name = str_dup((char*)byname->name);
           }
@@ -339,17 +367,22 @@ build_dep_tree32or64(pe_loaded_image* img, build_tree_config* cfg, struct dep_tr
   }
 
   idata = &pe_get_datadir(img->base, NULL)[PE_DIRECTORY_ENTRY_DELAY_IMPORT];
+
   if(idata->size > 0 && idata->virtual_address != 0) {
     idd = pe_rva2ptr(img->base, uint32_get(&idata->virtual_address));
+
     if(idd)
+
       for(i = 0; idd[i].attributes.all_attributes || idd[i].dll_name_rva || idd[i].module_handle_rva || idd[i].import_address_table_rva || idd[i].import_name_table_rva ||
                  idd[i].bound_import_address_table_rva || idd[i].unload_information_table_rva || idd[i].time_date_stamp;
           i++) {
         struct dep_tree_element* dll;
         uint64 impaddress;
         dll = process_dep(cfg, idd[i].dll_name_rva, root, self, 0);
+
         if(dll == NULL)
           continue;
+
         if(idd[i].attributes.all_attributes & 0x00000001) {
           ith = pe_rva2ptr(img->base, uint32_get(&idd[i].import_address_table_rva));
           oith = pe_rva2ptr(img->base, uint32_get(&idd[i].import_name_table_rva));
@@ -357,19 +390,24 @@ build_dep_tree32or64(pe_loaded_image* img, build_tree_config* cfg, struct dep_tr
           ith = (void*)(uintptr_t)idd[i].import_address_table_rva;
           oith = (void*)(uintptr_t)idd[i].import_name_table_rva;
         }
+
         for(j = 0; (impaddress = thunk_data_u1_function(img->base, ith, j, cfg)) != 0; j++) {
           struct import_table_item* imp = add_import(self);
           imp->dll = dll;
           imp->ordinal = -1;
+
           if(oith)
             imp->orig_address = thunk_data_u1_function(img->base, oith, j, cfg);
+
           if(cfg->on_self) {
             imp->address = impaddress;
           }
+
           if(oith && imp->orig_address & (1 << (sizeof(uint32) * 8 - 1))) {
             imp->ordinal = imp->orig_address & ~(1 << (sizeof(uint32) * 8 - 1));
           } else if(oith) {
             pe_import_by_name* byname = pe_rva2ptr(img->base, uint32_get(&imp->orig_address));
+
             if(byname != NULL)
               imp->name = str_dup((char*)byname->name);
           }
@@ -378,17 +416,23 @@ build_dep_tree32or64(pe_loaded_image* img, build_tree_config* cfg, struct dep_tr
   }
 
   idata = &pe_get_datadir(img->base, NULL)[PE_DIRECTORY_ENTRY_IMPORT];
+
   if(idata->size > 0 && idata->virtual_address != 0) {
     iid = pe_rva2ptr(img->base, uint32_get(&idata->virtual_address));
+
     if(iid)
+
       for(i = 0; iid[i].characteristics || iid[i].time_date_stamp || iid[i].forwarder_chain || iid[i].name || iid[i].first_thunk; i++)
         process_dep(cfg, iid[i].name, root, self, 1);
   }
 
   idata = &pe_get_datadir(img->base, NULL)[PE_DIRECTORY_ENTRY_DELAY_IMPORT];
+
   if(idata->size > 0 && idata->virtual_address != 0) {
     idd = pe_rva2ptr(img->base, uint32_get(&idata->virtual_address));
+
     if(idd)
+
       for(i = 0; idd[i].attributes.all_attributes || idd[i].dll_name_rva || idd[i].module_handle_rva || idd[i].import_address_table_rva || idd[i].import_name_table_rva ||
                  idd[i].bound_import_address_table_rva || idd[i].unload_information_table_rva || idd[i].time_date_stamp;
           i++)
@@ -404,13 +448,16 @@ try_map_and_load(char* name, char* path, pe_loaded_image* loaded_image, int requ
   pe_dos_header* dhdr;
 
   stralloc_init(&sa);
+
   if(path == 0)
     path = search_path(name);
+
   if(path)
     stralloc_copys(&sa, path);
   stralloc_cats(&sa, name);
   stralloc_nul(&sa);
 /*
+
   if(!path_exists(sa.s))
     return success;
 */
@@ -470,20 +517,25 @@ build_dep_tree(build_tree_config* cfg, char* name, struct dep_tree_element* root
       if(path_find(dir, str_basename(name), &sa)) {
         stralloc_nul(&sa);
         success = try_map_and_load(str_basename(sa.s), dir, &loaded_image, cfg->machine_type);
+
         if(success)
           break;
       }
     }
     stralloc_free(&sa);
+
     if(!success)
       success = try_map_and_load(name, NULL, &loaded_image, cfg->machine_type);
+
     if(!success) {
       self->flags |= DEPTREE_UNRESOLVED;
       return 1;
     }
+
     if(self->resolved_module == NULL)
       self->resolved_module = str_dup(loaded_image.module_name);
   }
+
   if(cfg->machine_type == -1)
     cfg->machine_type = (int)loaded_image.file_header->coff_header.machine;
   img = &loaded_image;
@@ -502,6 +554,7 @@ build_dep_tree(build_tree_config* cfg, char* name, struct dep_tree_element* root
   /* Not sure if a forwarded export
   warrants an import. If it doesn't,
   then the dll to which the export is
+
   forwarded will NOT
    * be among the dependencies of this
   dll and it will be necessary to do yet
@@ -515,13 +568,16 @@ build_dep_tree(build_tree_config* cfg, char* name, struct dep_tree_element* root
       char *forward_str_copy = NULL,
   *export_name = NULL, *rdot = NULL;
       uint32 export_ordinal = 0;
+
       forward_str_copy = str_dup
   (self->exports[i]->forward_str); rdot
   = strrchr (forward_str_copy, '.');
+
       if(rdot != NULL && rdot[1] != 0)
       {
         rdot[0] = 0;
         export_name = &rdot[1];
+
         if(export_name[0] == '#' &&
   export_name[1] >= '0' &&
   export_name[1] <= '9')
@@ -538,9 +594,11 @@ build_dep_tree(build_tree_config* cfg, char* name, struct dep_tree_element* root
     }
   }
   */
+
   for(i = 0; i < self->imports_len; i++) {
     if(self->imports[i].mapped == NULL && self->imports[i].dll != NULL && (self->imports[i].name != NULL || self->imports[i].ordinal > 0)) {
       struct dep_tree_element* dll = self->imports[i].dll;
+
       for(j = 0; j < dll->exports_len; j++) {
         if((self->imports[i].name != NULL && dll->exports[j].name != NULL && str_equal(self->imports[i].name, dll->exports[j].name)) ||
            (self->imports[i].ordinal > 0 && dll->exports[j].ordinal > 0 && self->imports[i].ordinal == dll->exports[j].ordinal)) {
@@ -549,6 +607,7 @@ build_dep_tree(build_tree_config* cfg, char* name, struct dep_tree_element* root
         }
       }
       /*
+
             if(self->imports[i].mapped
          == NULL) printf("Could not
          match %s (%d) in %s to %s\n",
@@ -739,6 +798,7 @@ registry_query(const char* key, const char* value, stralloc* sa) {
 
   if(!api_fn) {
     HANDLE advapi;
+
     if((advapi = LoadLibraryA("advapi32.dll")) != INVALID_HANDLE_VALUE)
       api_fn = (reggetvalue_fn*)GetProcAddress(advapi, "RegGetValueA");
   }
@@ -760,6 +820,7 @@ registry_query(const char* key, const char* value, stralloc* sa) {
   len = sa->a;
   ret = (*api_fn)(hkey, strchr(key, '\\') + 1, value, RRF_RT_ANY, &type, sa->s, &len);
   sa->len = len;
+
   if(ret == ERROR_SUCCESS) {
     if(type == REG_EXPAND_SZ)
       stralloc_expand(sa);
@@ -793,6 +854,7 @@ add_path(strlist* sp, const char* path) {
         sep = dir.s;
 
       stralloc_nul(&dir);
+
       if(!path_is_absolute(dir.s))
         stralloc_prepend(&dir, &cwd);
 
@@ -857,10 +919,13 @@ main(int argc, char** argv) {
 
   // byte_zero(&sp, sizeof(sp));
   // sp.path = calloc(1, sizeof(char*));
+
   for(;;) {
     c = unix_getopt_long(argc, argv, "hvudrReiD:", opts, &index);
+
     if(c == -1)
       break;
+
     if(c == 0)
       continue;
 
@@ -936,11 +1001,13 @@ main(int argc, char** argv) {
 
   if(!skip && files_start > 0) {
     files_count = argc - files_start;
+
     for(i = 0; i < files_count; ++i) {
       char* p;
       char buff[MAX_PATH];
       str_copyn(buff, argv[files_start + i], sizeof(buff));
       p = str_basename(buff);
+
       if(p)
         *p = '\0';
 

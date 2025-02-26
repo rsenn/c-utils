@@ -25,6 +25,7 @@ hmap_free_data(TUPLE* tuple) {
       break;
     case HMAP_DATA_TYPE_CHARS:
       HMAP_DUMP("remove[%d] data[%s]\n", tuple->index, (char*)tuple->vals.val_chars);
+
       if(tuple->vals.val_chars != NULL) {
         free(tuple->vals.val_chars);
       }

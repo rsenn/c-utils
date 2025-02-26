@@ -24,6 +24,7 @@ socket_mcjoin6(int s, const char ip[16], int _interface) {
 #ifdef LIBC_HAS_IP6
   struct ipv6_mreq opt;
 #endif
+
   if(ip6_isv4mapped(ip))
     return socket_mcjoin4(s, ip + 12, ip);
 #ifdef LIBC_HAS_IP6

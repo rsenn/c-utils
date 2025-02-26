@@ -27,6 +27,7 @@ ssize_t
 buffer_putflush(buffer* b, const char* x, size_t len) {
   /* Since we know we are going to flush anyway, let's see if we can
    * optimize a bit */
+
   if(!b->p) /* if the buffer is empty, just call buffer_stubborn directly
              */
     return buffer_stubborn(b->op, b->fd, x, len, b);
@@ -39,13 +40,16 @@ buffer_putflush(buffer* b, const char* x, size_t len) {
     v[0].iov_len = b->p;
     v[1].iov_base = (char*)x;
     v[1].iov_len = len;
+
     while((w = writev(b->fd, v, 2)) < 0) {
       if(errno == EINTR)
         continue;
       return -1;
     }
+
     if(__unlikely((size_t)w != cl)) {
       /* partial write. ugh. */
+
       if((size_t)w < v[0].iov_len) {
         if(buffer_stubborn(b->op, b->fd, (char*)v[0].iov_base + w, v[0].iov_len - w, b) ||
 
@@ -60,8 +64,10 @@ buffer_putflush(buffer* b, const char* x, size_t len) {
     return 0;
   }
 #endif
+
   if(buffer_put(b, x, len) < 0)
     return -1;
+
   if(buffer_flush(b) < 0)
     return -1;
   return 0;

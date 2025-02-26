@@ -198,6 +198,7 @@ cpp_bp(int type) {
 static inline void
 free_visited(char* visited[]) {
   for(size_t i = 0; i < MAX_RECURSION; i++)
+
     if(visited[i])
       alloc_free(visited[i]);
 }
@@ -207,6 +208,7 @@ charlit_to_int(const char* lit) {
   unsigned int ret = lit[1];
 
   if(lit[1] == '\\')
+
     switch(lit[2]) {
       case '0': ret = 0; break;
       case 'n': ret = 10; break;
@@ -229,6 +231,7 @@ was_visited(const char* name, char* visited[], unsigned rec_level) {
   int x;
 
   for(x = rec_level; x >= 0; --x)
+
     if(!str_diff(visited[x], name))
       return 1;
 

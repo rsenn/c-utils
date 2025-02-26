@@ -8,6 +8,7 @@ fmt_hexb(void* out, const void* d, unsigned int len) {
   unsigned int i;
   s = (char*)out;
   buf = (const char*)d;
+
   if(s) {
     for(i = 0; i < len; ++i) {
       *s++ = hexchars[(*buf >> 4) & 15];

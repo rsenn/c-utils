@@ -49,6 +49,7 @@ open_temp(char** pt) {
   pos = str_chr(tmpl, 'X');
 
   tmp = (char*)tmpl + pos;
+
   if(tmp < tmpl)
     goto error;
 

@@ -24,12 +24,16 @@ io_dump(buffer* p) {
     buffer_puts(p, "fd #");
     buffer_putlong(p, i);
     //   buffer_puts(p, "fd #");
+
     if(e->canread)
       buffer_puts(p, " canread");
+
     if(e->canwrite)
       buffer_puts(p, " canwrite");
+
     if(e->wantread)
       buffer_puts(p, " wantread");
+
     if(e->wantwrite)
       buffer_puts(p, " wantwrite");
 

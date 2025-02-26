@@ -42,6 +42,7 @@ hmap_add(HMAP_DB** hmap_db, const void* key, size_t k_len, int dup_flag, int dat
       new_tuple->index = index;
       new_tuple->type = HMAP_TUPLE_PRIMARY;
       new_tuple->data_type = data_type;
+
       if(root_tuple->hash_next == NULL && root_tuple->hash_prev == NULL) {
         root_tuple->hash_next = root_tuple->hash_prev = root_tuple;
       } else {

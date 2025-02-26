@@ -30,8 +30,10 @@ pat2bytes(char* pat_str, int* pat_len) {
   int nbytes = 0;
 
   int i = 0;
+
   while(i < pat_str_len) {
     char c = pat_str[i];
+
     if(c == '?') {
       pat_buf[nbytes] = 0;
       nbytes++;
@@ -57,8 +59,10 @@ pat2mask(char* pat_str, int* mask_len) {
   int nbytes = 0;
 
   int i = 0;
+
   while(i < pat_str_len) {
     char c = pat_str[i];
+
     if(c == '?') {
       mask[nbytes] = '?';
       nbytes++;
@@ -100,14 +104,17 @@ find_sig(uint8_t* file_buf, size_t file_sz, uint8_t* pat_buf, int pat_len, char*
   }
 
   // naive searching algorithm (slow)
+
   for(long i = 0; i < file_sz; i++) {
     int found = 1;
+
     for(int j = 0; j < pat_len; j++) {
       if(mask[j] != '?' && file_buf[i + j] != pat_buf[j]) {
         found = 0;
         break;
       }
     }
+
     if(found) {
       return i;
     }
@@ -126,6 +133,7 @@ main(int argc, char** argv) {
   }
 
   FILE* f = fopen(argv[1], "rb");
+
   if(!f) {
     printf("fatal: file could not be opened\n");
     return 1;
@@ -142,12 +150,14 @@ main(int argc, char** argv) {
 
 #ifdef PRINT_EXTRA
   printf("mask: ");
+
   for(int i = 0; i < mask_len; i++) {
     putchar(mask[i]);
   }
   putchar('\n');
 
   printf("pattern bytes: ");
+
   for(int i = 0; i < pat_len; i++) {
     printf("\\x%02x", pat_buf[i]);
   }
@@ -155,11 +165,13 @@ main(int argc, char** argv) {
 #endif
 
   long addr = find_sig(file_buf, file_sz, pat_buf, pat_len, mask);
+
   if(addr == -1) {
     printf("pattern not found\n");
   } else {
     printf("found at addr: 0x%lx\n", addr);
     printf("matched bytes: ");
+
     for(int i = addr; i < addr + pat_len; i++) {
       printf("\\x%02x", file_buf[i]);
     }

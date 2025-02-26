@@ -48,7 +48,9 @@
 int
 winsock2errno(long l) {
   long x;
+
   if(l == -1)
+
     switch((x = WSAGetLastError())) {
       case WSANOTINITIALISED:
         // buffer_putsflush(buffer_1, "WSANOTINITIALISED!\n");

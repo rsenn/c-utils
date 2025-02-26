@@ -25,6 +25,7 @@ omf_record_next(omf_record* rec, void* ptr) {
       p += p[0] + 1;
       p = (unsigned char*)omf_read_index(p, &type_index);
       /* checksum?  */
+
       if(p[0] == 0 || p + 1 == omf_record_end(rec))
         p += 1;
       break;

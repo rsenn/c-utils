@@ -9,6 +9,7 @@ put_tuple(buffer* b, TUPLE* t) {
   buffer_put(b, "#", 1);
   buffer_putulong0(b, (t)->index, 5);
   buffer_puts(b, " ");
+
   while(n > 0 && x[n - 1] == '\0')
     --n;
   buffer_put(b, x, n);

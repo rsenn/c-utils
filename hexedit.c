@@ -194,9 +194,11 @@ patch(size_t i, unsigned char from, unsigned char to) {
 int
 patch_match(unsigned char* x, size_t n, patch_t* p) {
   uint32 crc;
+
   if(p->file_size && p->file_size != n)
     return 0;
   crc = byte_crc32((const char*)x, n);
+
   if(p->crc32 && p->crc32 != crc)
     return 0;
   return 1;
@@ -207,9 +209,11 @@ patch_check(unsigned char* x, size_t n, patch_t* p) {
   size_t i, nrec = array_length(&p->records, sizeof(record_t));
   size_t done = 0;
   uint32 crc;
+
   if(p->file_size && p->file_size != n)
     return -1;
   /* crc = byte_crc32((const char*)x, n);
+
    if(p->crc32 && p->crc32 != crc)
      return -1;*/
 
@@ -236,6 +240,7 @@ patch_check(unsigned char* x, size_t n, patch_t* p) {
     buffer_putxlong0(buffer_2, r->offset, 8);
     buffer_puts(buffer_2, " is 0x");
     buffer_putxlong0(buffer_2, x[r->offset] == r->to ? r->to : r->from, 2);
+
     if(x[r->offset] == r->from || x[r->offset] == r->to) {
 
       buffer_puts(buffer_2, x[r->offset] == r->from ? " OK" : " ALREADY PATCHED");
@@ -259,12 +264,14 @@ patch_check(unsigned char* x, size_t n, patch_t* p) {
 patch_t*
 patch_find(unsigned char* x, size_t n) {
   size_t i, np = array_length(&patches, sizeof(patch_t));
+
   for(i = 0; i < np; ++i) {
     patch_t* p = array_get(&patches, sizeof(patch_t), i);
 
     if(patch_match(x, n, p))
       return p;
   }
+
   for(i = 0; i < np; ++i) {
     patch_t* p = array_get(&patches, sizeof(patch_t), i);
 
@@ -278,6 +285,7 @@ void
 record_apply(unsigned char* p, size_t i, unsigned char from, unsigned char to) {
   buffer_puts(buffer_2, "Patch ");
   print(p, i, from, to);
+
   if(p[i] == from) {
     p[i] = to;
     buffer_puts(buffer_2, " ok");
@@ -356,31 +364,40 @@ main(int argc, char* argv[]) {
 
       while((sym = *spec++)) {
         size_t n = 0;
+
         if(sym == '@' && isdigit(*spec)) {
           n = scan_xlonglong(spec, &addr);
           spec += n;
           continue;
         }
+
         if(sym == '\0')
           break;
+
         if(sym == '?') {
         }
+
         if((sym == '+' || sym == '*') && isdigit(*spec)) {
           int64 num;
           n = scan_xlonglong(spec, &num);
+
           if(n > 0) {
             if(sym == '+')
               offset += num;
+
             if(sym == '*')
               offset *= num;
           }
           spec += n;
           continue;
         }
+
         if(sym == '=') {
           uint8 ch = 0;
+
           do {
             n = scan_xchar(spec, &ch);
+
             if(n >= 1) {
               patch(offset + addr, file.x[offset + addr], ch);
             }
@@ -395,6 +412,7 @@ main(int argc, char* argv[]) {
           buffer_putnlflush(buffer_2);
           return 2;
         }*/
+
         if(n == 0)
           break;
         spec += n;

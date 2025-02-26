@@ -24,10 +24,12 @@ mmap_shared_fd(fd_type fd, size_t* filesize) {
   HANDLE h = (HANDLE)_get_osfhandle((int)fd);
   HANDLE m;
   char* map;
+
   if(h == INVALID_HANDLE_VALUE)
     return 0;
   m = CreateFileMapping(h, 0, PAGE_READWRITE, 0, 0, NULL);
   map = 0;
+
   if(m) {
     if((map = MapViewOfFile(m, FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, 0)))
       *filesize = GetFileSize((HANDLE)fd, NULL);
@@ -37,9 +39,11 @@ mmap_shared_fd(fd_type fd, size_t* filesize) {
   return map;
 #else
   char* map;
+
   if(fd >= 0) {
     *filesize = io_seek(fd, 0, SEEK_END);
     map = (char*)mmap(0, *filesize, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+
     if(map == (char*)-1)
       map = 0;
     close(fd);

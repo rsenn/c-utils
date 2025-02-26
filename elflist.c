@@ -208,6 +208,7 @@ elf_dump_needed(buffer* b, range map) {
   range_foreach(&dyn, entry) {
     int64 tag = ELF_GET(map.start, entry, dyn, d_tag);
     uint64 val = ELF_GET(map.start, entry, dyn, d_un.d_val);
+
     if(tag == ELF_DT_STRTAB) {
       dynstrtab = map.start + val;
       RANGE_CHECK(dynstrtab);
@@ -224,6 +225,7 @@ elf_dump_needed(buffer* b, range map) {
       buffer_puts(b, value ? value : "(null)");
       buffer_putnlflush(b);
     }
+
     if(tag == ELF_DT_NULL)
       break;
   }
@@ -289,6 +291,7 @@ elf_dump_symbols(range map, range section, range text, const char* stname, int b
 
     if(range_empty(&code) && !list_undefined)
       continue;
+
     if(!range_empty(&code) && !list_defined)
       continue;
 
@@ -325,6 +328,7 @@ elf_dump_symbols(range map, range section, range text, const char* stname, int b
       buffer_putnspace(buffer_1,
     col_width + 3);
     }*/
+
     if(binding < 0) {
       buffer_putspace(buffer_1);
       buffer_putspad(buffer_1, binding_types[ELF_ELF32_ST_BIND(info)], 16);
@@ -343,30 +347,43 @@ elf_section_flags(uint64 flags, strlist* list) {
 
   if(flags & ELF_SHF_WRITE)
     strlist_push(list, "WRITE");
+
   if(flags & ELF_SHF_ALLOC)
     strlist_push(list, "ALLOC");
+
   if(flags & ELF_SHF_EXECINSTR)
     strlist_push(list, "EXECINSTR");
+
   if(flags & ELF_SHF_MERGE)
     strlist_push(list, "MERGE");
+
   if(flags & ELF_SHF_STRINGS)
     strlist_push(list, "STRINGS");
+
   if(flags & ELF_SHF_INFO_LINK)
     strlist_push(list, "INFO_LINK");
+
   if(flags & ELF_SHF_LINK_ORDER)
     strlist_push(list, "LINK_ORDER");
+
   if(flags & ELF_SHF_OS_NONCONFORMING)
     strlist_push(list, "OS_NONCONFORMING");
+
   if(flags & ELF_SHF_GROUP)
     strlist_push(list, "GROUP");
+
   if(flags & ELF_SHF_TLS)
     strlist_push(list, "TLS");
+
   if(flags & ELF_SHF_MASKOS)
     strlist_push(list, "MASKOS");
+
   if(flags & ELF_SHF_MASKPROC)
     strlist_push(list, "MASKPROC");
+
   if(flags & ELF_SHF_ARM_ENTRYSECT)
     strlist_push(list, "ARM_ENTRYSECT");
+
   if(flags & ELF_SHF_ARM_COMDEF)
     strlist_push(list, "ARM_COMDEF");
   stralloc_nul(&list->sa);
@@ -540,8 +557,10 @@ main(int argc, char** argv) {
 
   for(;;) {
     c = unix_getopt_long(argc, argv, "hDUFSlr:o:a:n", opts, &index);
+
     if(c == -1)
       break;
+
     if(c == '\0')
       continue;
 
@@ -592,6 +611,7 @@ main(int argc, char** argv) {
     range symtab, text;
 
     filename = argv[i];
+
     if(argc - unix_optind >= 2) {
       buffer_putm_internal(buffer_2, filename, ":", NULL);
       buffer_putnlflush(buffer_2);
@@ -620,6 +640,7 @@ main(int argc, char** argv) {
       buffer_putnlflush(buffer_1);
       continue;
     }
+
     if(print_rva_offset) {
       uint64 offset = elf_address_to_offset(map, rva);
 
@@ -640,6 +661,7 @@ main(int argc, char** argv) {
 
     if(dump_sections)
       elf_dump_sections(map);
+
     if(dump_segments)
       elf_dump_segments(map);
     elf_dump_dynamic(map);

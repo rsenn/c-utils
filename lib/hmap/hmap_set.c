@@ -11,6 +11,7 @@ hmap_set(HMAP_DB** hmap_db, const void* key, size_t k_len, void* data, size_t d_
   if(hmap_search(*hmap_db, key, k_len, &t) == HMAP_SUCCESS) {
     hmap_free_data(t);
     t->vals.val_chars = (char*)alloc_zero(d_len);
+
     if(t->vals.val_chars == NULL)
       return 0;
     byte_copy(t->vals.val_chars, d_len, data);

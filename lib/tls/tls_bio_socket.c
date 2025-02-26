@@ -20,6 +20,7 @@ tls_bio_socket(fd_type fd) {
   bio = BIO_new_socket(fd, 0);
 
   /*
+
     if((bio = BIO_new((void*)tls_bio_method())))
       BIO_set_fd(bio, fd, 0);*/
 

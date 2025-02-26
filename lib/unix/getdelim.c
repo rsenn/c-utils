@@ -18,22 +18,28 @@ ssize_t
 getdelim(char** lineptr, size_t* n, int delim, FILE* stream) {
   size_t i;
   char* new = 0;
+
   if(!lineptr || !n) {
     errno = EINVAL;
     return -1;
   }
+
   if(!*lineptr)
     *n = 0;
+
   for(i = 0;;) {
     int x;
+
     if(i >= *n) {
       int tmp = *n + 100;
+
       if(!alloc_re(lineptr, *n, tmp))
         return -1;
       *lineptr = new;
       *n = tmp;
     }
     x = fgetc(stream);
+
     if(x == EOF) {
       if(!i)
         return -1;
@@ -42,6 +48,7 @@ getdelim(char** lineptr, size_t* n, int delim, FILE* stream) {
     }
     (*lineptr)[i] = x;
     ++i;
+
     if(x == delim || i >= *n)
       break;
   }

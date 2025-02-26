@@ -5,6 +5,7 @@ static ssize_t
 charbuf_readstr(int fd, void* buf, size_t len, void* b) {
   char* src = ((charbuf*)b)->ptr;
   size_t n;
+
   if((n = (*src == '\0' ? 0 : str_len(src))) > len)
     n = len;
 

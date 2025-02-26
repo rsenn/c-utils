@@ -16,6 +16,7 @@ int
 socket_udp4(void) {
   int s;
   s = socket_udp4b();
+
   if(s != -1 && ndelay_on(s) == -1) {
     closesocket(s);
     return -1;

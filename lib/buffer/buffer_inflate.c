@@ -43,6 +43,7 @@ buffer_inflate(buffer* b, buffer* in) {
   z_stream* z;
 
   inflate_ctx* ctx = calloc(1, sizeof(inflate_ctx));
+
   if(ctx == NULL)
     return 0;
 

@@ -86,8 +86,10 @@ static buffer output, *console;
 void
 count_field_lengths(strlist* sl, int lengths[21]) {
   int i;
+
   for(i = 0; i < 21; i++) {
     const char* s = strlist_at(sl, i);
+
     if(s) {
       if(str_len(s) >= (unsigned)lengths[i])
         lengths[i] = str_len(s);
@@ -225,6 +227,7 @@ read_mediathek_list(const char* url, buffer* b) {
 unsigned long
 parse_time(const char* s) {
   size_t r = 0;
+
   if(s) {
     unsigned short n;
     size_t l;
@@ -234,15 +237,18 @@ parse_time(const char* s) {
 
     for(;;) {
       l = scan_ushort(s, &n);
+
       if(l == 0)
         break;
       r += n;
       s += l;
+
       if(*s == ':') {
         r *= 60;
         ++s;
         continue;
       }
+
       if(*s == '\0')
         break;
     }
@@ -284,10 +290,12 @@ format_time(time_t ti) {
     buf[i++] = '0';
   i += fmt_ulong(&buf[i], h);
   buf[i++] = ':';
+
   if(m < 10)
     buf[i++] = '0';
   i += fmt_ulong(&buf[i], m);
   buf[i++] = ':';
+
   if(s < 10)
     buf[i++] = '0';
   i += fmt_ulong(&buf[i], s);
@@ -301,24 +309,30 @@ mktime_r(struct tm* const t, time_t* ret) {
   time_t day;
   time_t i;
   time_t years = t->tm_year - 70;
+
   if(t->tm_sec > 60) {
     t->tm_min += t->tm_sec / 60;
     t->tm_sec %= 60;
   }
+
   if(t->tm_min > 60) {
     t->tm_hour += t->tm_min / 60;
     t->tm_min %= 60;
   }
+
   if(t->tm_hour > 60) {
     t->tm_mday += t->tm_hour / 60;
     t->tm_hour %= 60;
   }
+
   if(t->tm_mon > 12) {
     t->tm_year += t->tm_mon / 12;
     t->tm_mon %= 12;
   }
+
   if(t->tm_mon < 0)
     t->tm_mon = 0;
+
   while(t->tm_mday > __spm[1 + t->tm_mon]) {
     if(t->tm_mon == 1 && isleap(t->tm_year + 1900)) {
       if(t->tm_mon == 31 + 29)
@@ -327,19 +341,23 @@ mktime_r(struct tm* const t, time_t* ret) {
     }
     t->tm_mday -= __spm[t->tm_mon];
     ++t->tm_mon;
+
     if(t->tm_mon > 11) {
       t->tm_mon = 0;
       ++t->tm_year;
     }
   }
+
   if(t->tm_year < 70) {
     *ret = -1;
     return;
   }
   day = years * 365 + (years + 1) / 4;
+
   if((years -= 131) >= 0) {
     years /= 100;
     day -= (years >> 2) * 3 + 1;
+
     if((years &= 3) == 3)
       years--;
     day -= years;
@@ -364,6 +382,7 @@ parse_datetime(const char* s, const char* fmt) {
   struct tm tm_s;
   time_t t;
   byte_zero(&tm_s, sizeof(struct tm));
+
   if(str_ptime(s, fmt, &tm_s) == s)
     return 0;
   mktime_r(&tm_s, &t);
@@ -378,8 +397,10 @@ parse_datetime(const char* s, const char* fmt) {
 time_t
 parse_anydate(const char* s) {
   const char* fmt;
+
   if(s) {
     size_t len = str_len(s);
+
     if(len != 8) /* len - str_rchr(s,
                     '.') == 4) */
       fmt = "%d.%m.%Y";
@@ -403,6 +424,7 @@ format_datetime(size_t t, const char* fmt) {
   struct tm* tms;
 
   tms = localtime(&tim);
+
   if(tms == 0)
     return "(invalid time)";
 
@@ -428,6 +450,7 @@ make_url(const char* base, const char* trail) {
   if(trail == 0)
     return 0;
   i = scan_uint(trail, &n);
+
   if(trail[i] != '|')
     return 0;
   stralloc_copyb(&url, base, n);
@@ -471,8 +494,10 @@ void
 delete_mediathek_entry(mediathek_entry_t* e) {
   if(e->channel.s)
     stralloc_free(&e->channel);
+
   if(e->topic.s)
     stralloc_free(&e->topic);
+
   if(e->title.s)
     stralloc_free(&e->title);
 
@@ -569,6 +594,7 @@ parse_entry(strlist* sl) {
   {
     unsigned int mbytes = 0;
     const char* mb = strlist_at(sl, 6);
+
     if(mb)
       scan_uint(mb, &mbytes);
 
@@ -688,11 +714,13 @@ parse_mediathek_list(buffer* inbuf, buffer* outbuf) {
 
     for(;;) {
       ret2 = 0;
+
       if(ret + 1 >= BUFSIZE)
         break;
       // buf2[ret++] = ']';
       //  ++ret;
       ret2 = buffer_get(inbuf, &buf2[ret], 1);
+
       if(ret2 > 0) {
 
         if(ret > 1 && buf2[ret - 2] == '"' && buf2[ret] == ',')
@@ -700,6 +728,7 @@ parse_mediathek_list(buffer* inbuf, buffer* outbuf) {
 
         ret += ret2;
         ret2 = buffer_get_token(inbuf, &buf2[ret], sizeof(buf2) - ret, "]", 1);
+
         if(ret2 > 0)
           ret += ret2;
       }
@@ -710,6 +739,7 @@ parse_mediathek_list(buffer* inbuf, buffer* outbuf) {
 
     if((e = parse_entry(&sl))) {
       total++;
+
       if(debug > 2)
         print_entry(console, e);
 
@@ -759,6 +789,7 @@ parse_mediathek_list(buffer* inbuf, buffer* outbuf) {
       errmsg_warn("STATUS: ", status, " error: ", error, " connected: ", h.connected ? "1" : "0", 0);
     }
   }
+
   if(ret == 0) {
 
     if(debug) {

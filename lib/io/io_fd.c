@@ -95,6 +95,7 @@ io_fd_internal(fd_type d, int flags) {
   io_entry* e;
 #if !WINDOWS_NATIVE
   long r;
+
   if((flags & (IO_FD_BLOCK | IO_FD_NONBLOCK)) == 0) {
     if((r = fcntl(d, F_GETFL, 0)) == -1)
       return 0; /* file descriptor not open */
@@ -108,17 +109,21 @@ io_fd_internal(fd_type d, int flags) {
    * and not to 1.  We know we are done when it is 1.  We know we need
    * to do something when it is 0.  We know somebody else is doing it
    * when it is 2. */
+
   if(__CAS(&io_fds_inited, 0, 2) == 0) {
     iarray_init(&io_fds, sizeof(io_entry));
     io_fds_inited = 1;
   } else
+
     do {
 #ifdef __GNUC__
       __asm__("" : : : "memory");
 #endif
     } while(io_fds_inited != 1);
+
   if(!(e = (io_entry*)iarray_allocate(&io_fds, (size_t)d)))
     return 0;
+
   if(e->inuse)
     return e;
   byte_zero(e, sizeof(io_entry));
@@ -130,10 +135,12 @@ io_fd_internal(fd_type d, int flags) {
     e->nonblock = 1;
 #endif
   e->next_read = e->next_write = -1;
+
   if(io_waitmode == UNDECIDED) {
     first_readable = first_writeable = -1;
 #if defined(HAVE_EPOLL)
     io_master = epoll_create(1000);
+
     if(io_master != -1)
       io_waitmode = EPOLL;
 #endif
@@ -156,8 +163,10 @@ io_fd_internal(fd_type d, int flags) {
 
 #if defined(HAVE_SIGIO)
     alt_firstread = alt_firstwrite = -1;
+
     if(io_waitmode == UNDECIDED) {
       io_signum = SIGRTMIN + 1;
+
       if(sigemptyset(&io_ss) == 0 && sigaddset(&io_ss, io_signum) == 0 && sigaddset(&io_ss, SIGIO) == 0 && sigprocmask(SIG_BLOCK, &io_ss, 0) == 0)
         io_waitmode = _SIGIO;
     }
@@ -165,6 +174,7 @@ io_fd_internal(fd_type d, int flags) {
 
 #if WINDOWS_NATIVE && !defined(USE_SELECT)
     io_comport = CreateIoCompletionPort(INVALID_HANDLE_VALUE, NULL, 0, 0);
+
     if(io_comport) {
       io_waitmode = COMPLETIONPORT;
     } else {
@@ -211,6 +221,7 @@ io_fd(fd_type d) {
 int
 io_fd_canwrite(fd_type d) {
   io_entry* e = io_fd_internal(d, 0);
+
   if(e)
     e->canwrite = 1;
   return !!e;
@@ -219,6 +230,7 @@ io_fd_canwrite(fd_type d) {
 int
 io_fd_flags(fd_type d, int flags) {
   io_entry* e = io_fd_internal(d, flags);
+
   if(e && (flags & IO_FD_CANWRITE))
     e->canwrite = 1;
   return !!e;

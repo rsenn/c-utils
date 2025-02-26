@@ -4,10 +4,12 @@ const char*
 bmap_next_(bmap_base_t* m, bmap_iter_t* iter) {
   if(iter->node) {
     iter->node = iter->node->next;
+
     if(iter->node == NULL)
       goto nextBucket;
   } else {
   nextBucket:
+
     do {
       if(++iter->bucketidx >= m->nbuckets) {
         return NULL;

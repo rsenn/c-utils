@@ -7,6 +7,7 @@ json_length(jsonval v) {
     case JSON_ARRAY: {
       jsonitem* item;
       uint64 n = 0;
+
       for(item = json_array_items(v); item; item = item->next)
         n++;
       return n;

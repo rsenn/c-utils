@@ -80,6 +80,7 @@ _tsearch(const char* pathP, char* fullname, const char* ext, int UsePath) {
 
   strcpy(name, pathP); /* make a copy of program name */
   strcat(name, ext);   /* append the extension */
+
   if(UsePath)           /* search the PATH */
   {
     _tsearchenv(name, _TEXT("PATH"), fullname);
@@ -135,6 +136,7 @@ _tmake_cmdline(const char* arg0, const char* arg1, const char* const* argP) {
   /* Compute the required allocation size, then allocate the buffer.
    */
   len = 0;
+
   if(arg0 != NULL)
     len += strlen(arg0) + 1; /* length of arg0 */
 
@@ -142,12 +144,14 @@ _tmake_cmdline(const char* arg0, const char* arg1, const char* const* argP) {
     len += strlen(arg1) + 1; /* length of second optional arg */
 
   for(argv = argP; *argv != NULL; argv++) len += strlen(*argv) + 1; /* length of each argument */
+
   if((buf = malloc(len * sizeof(char))) == NULL)
     return (NULL);
 
   /* Copy arg0 (typically the program name) to the buffer.
    */
   p = buf;
+
   if(arg0 != NULL) {
     p = stpcpy(p, arg0);
     *p++ = _TEXT(' ');
@@ -155,6 +159,7 @@ _tmake_cmdline(const char* arg0, const char* arg1, const char* const* argP) {
 
   /* Concatenate the optional prefix argument.
    */
+
   if(arg1 != NULL) {
     p = stpcpy(p, arg1);
     *p++ = _TEXT(' ');
@@ -162,6 +167,7 @@ _tmake_cmdline(const char* arg0, const char* arg1, const char* const* argP) {
 
   /* Concatenate the arguments, separated by spaces.
    */
+
   if(arg0 != NULL) {
     for(argv = argP; *argv != NULL; argv++) {
       p = stpcpy(p, *argv);
@@ -203,6 +209,7 @@ _tmake_env(const char* const* envV) {
    * The length includes space for each environment string and
    * its null terminator, and the null that follows the last string.
    */
+
   for(len = 1, envp = envV; *envp != NULL; envp++) len += strlen(*envp) + 1;
 
   if((buf = malloc(len * sizeof(char))) == NULL)
@@ -211,6 +218,7 @@ _tmake_env(const char* const* envV) {
   /* Copy each environment string into the buffer.  If file info
    * is enabled, the last string is _C_FILE_INFO.
    */
+
   for(envp = envV, p = buf; *envp != NULL; envp++) p = stpcpy(p, *envp) + sizeof(char);
   *p = _TEXT('\0');
   return (buf);
@@ -257,6 +265,7 @@ Description     _Loadprog loads  and runs another  program, known as  child
                   extension
 
                 UsePath, if  true, specifies that the  function will search
+
                 for  the child  in those  directories specified  by the DOS
                 PATH  environment   variable.  If  false,   _LoadProg  only
                 searches the root and current working directory.
@@ -295,8 +304,10 @@ _tLoadProg(int mode, const char* pathP, const char* const* argP, const char* con
   /* If the program name contains a drive specifier or directory separators,
    * don't search the path.
    */
+
   if((c = pathP[0]) >= _TEXT('a'))
     c -= _TEXT('a') - _TEXT('A');
+
   if((c >= _TEXT('A') && c <= _TEXT('Z') && pathP[1] == _TEXT(':')) || strchr(pathP, _TEXT('/')) != NULL ||
      strchr(pathP, _TEXT('\\')) != NULL)
     UsePath = 0;
@@ -305,6 +316,7 @@ _tLoadProg(int mode, const char* pathP, const char* const* argP, const char* con
    * try .EXE and then .BAT, and finally .CMD.
    */
   batch = 0;
+
   if((lslash = strrchr(pathP, _TEXT('\\'))) != NULL) /* Find last slash in string */
     lslash++;                                         /* skip past this last slash */
   else
@@ -314,17 +326,20 @@ _tLoadProg(int mode, const char* pathP, const char* const* argP, const char* con
   {
     if((found = _tsearch(pathP, fullname, _TEXT(""), UsePath)) != 0)
       /* is it a batch file? */
+
       if((stricmp(ext, _TEXT(".BAT")) == 0) || (stricmp(ext, _TEXT(".CMD")) == 0))
         batch = 1;
   } else /* file has no extension */
   {
     if((found = _tsearch(pathP, fullname, _TEXT(".EXE"), UsePath)) == 0)
+
       if((batch = found = _tsearch(pathP, fullname, _TEXT(".BAT"), UsePath)) == 0)
         batch = found = _tsearch(pathP, fullname, _TEXT(".CMD"), UsePath);
     /* use shell to run .BAT
      * or .CMD files
      */
   }
+
   if(!found || (batch && (comspec = _tgetenv(_TEXT("COMSPEC"))) == NULL)) {
     errno = ENOENT;
     return -1;
@@ -332,6 +347,7 @@ _tLoadProg(int mode, const char* pathP, const char* const* argP, const char* con
 
   /* Concatenate arguments to make the command line.
    */
+
   if(batch)
     cmdP = _tmake_cmdline(comspec, _TEXT("/c"), argP);
   else
@@ -345,6 +361,7 @@ _tLoadProg(int mode, const char* pathP, const char* const* argP, const char* con
   /* Concatenate environment strings.  If NULL is specified,
    * use the current process's environment strings.
    */
+
   if(envV == NULL)
     envP = NULL;
   else if((envP = _tmake_env(envV)) == NULL) {
@@ -377,6 +394,7 @@ _tLoadProg(int mode, const char* pathP, const char* const* argP, const char* con
        codeguard does not track.  This way no one knows that we
        haven't freed it.  (fear not, the OS will free it for us)
     */
+
     if((start.lpReserved2 =
 #if defined(_BUILDRTLDLL)
             malloc
@@ -442,6 +460,7 @@ _tLoadProg(int mode, const char* pathP, const char* const* argP, const char* con
    * with an overlay request, like from spawnxx(P_OVERLAY...) then we'll
    * just do a synchronous exec and then an _exit(0) to sort of fake it.
    */
+
   if(CreateProcess(batch ? comspec : fullname, /* program name */
                    cmdP,                       /* command line */
                    &sec,                       /* process attributes */
@@ -483,6 +502,7 @@ _tLoadProg(int mode, const char* pathP, const char* const* argP, const char* con
       case P_WAIT:
         WaitForSingleObject(pinfo.hProcess, -1);
         GetExitCodeProcess(pinfo.hProcess, &exitcode);
+
         if(!(mode & P_NOCLOSE))
           CloseHandle(pinfo.hProcess);
         rc = exitcode;
@@ -510,6 +530,7 @@ _tLoadProg(int mode, const char* pathP, const char* const* argP, const char* con
 
       default: rc = -1; break;
     }
+
     if(!(mode & P_SUSPENDED) && !(mode & P_NOCLOSE))
       CloseHandle(pinfo.hThread);
   }

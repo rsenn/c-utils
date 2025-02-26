@@ -39,6 +39,7 @@ main(int argc, char** argv) {
       errmsg_warnsys("unable to parse IP address ", *argv, 0);
       return 111;
     }
+
     if(dns_name6(&out, ip) == -1) {
       errmsg_warnsys("unable to find "
                      "host name for ",

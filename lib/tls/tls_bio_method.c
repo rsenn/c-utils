@@ -54,6 +54,7 @@ static int
 tls_bio_destroy(tls_bio_t* a) {
   if(a == NULL)
     return (0);
+
   if(a->shutdown) {
     if(a->init) {
       BIO_closesocket(a->num);
@@ -72,6 +73,7 @@ tls_bio_recv(tls_bio_t* b, char* out, size_t outl, size_t* lptr) {
     clear_socket_error();
     ret = recv(b->num, out, outl, 0);
     BIO_clear_retry_flags(b);
+
     if(ret <= 0 && errno == EAGAIN) {
       if(BIO_fd_should_retry(b->num))
         BIO_set_retry_read(b);
@@ -87,6 +89,7 @@ tls_bio_send(tls_bio_t* b, const char* in, size_t inl, size_t* lptr) {
   clear_socket_error();
   ret = send(b->num, in, inl, 0);
   BIO_clear_retry_flags(b);
+
   if(ret <= 0 && errno == EWOULDBLOCK) {
     if(BIO_fd_should_retry(b->num))
       BIO_set_retry_write(b);

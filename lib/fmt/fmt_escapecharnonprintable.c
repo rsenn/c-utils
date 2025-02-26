@@ -17,6 +17,7 @@ fmt_escapecharnonprintable(char* dest, int c) {
 
   if(dest) {
     *dest++ = '\\';
+
     if(ch)
       fmt_8long(dest, ch);
     else

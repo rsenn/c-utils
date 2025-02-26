@@ -89,6 +89,7 @@ void* omf_record_next(omf_record*, void* ptr);
 static inline void*
 omf_read_index(void* readptr, int16* idxptr) {
   unsigned char* p = (unsigned char*)readptr;
+
   if(p[0] & 0x80) {
     *idxptr = (p[0] & 0x7f) * 0x100 + p[1];
     ++p;

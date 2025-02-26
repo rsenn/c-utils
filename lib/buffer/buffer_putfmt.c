@@ -8,6 +8,7 @@ int
 buffer_putfmt_args(buffer* b, const char* x, size_t len, format_function* escape, void* args[]) {
   char buf[16];
   size_t i, n, r = 0;
+
   for(i = 0; i < len; i++) {
     uint32 c = (unsigned int)(unsigned char)x[i];
     n = escape(buf, c, args[0], args[1], args[2], args[3]);

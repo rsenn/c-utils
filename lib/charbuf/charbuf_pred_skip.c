@@ -10,10 +10,12 @@ charbuf_pred_skip(charbuf* b, int (*pred)(int, size_t, void*), void* ptr) {
   int debug = charbuf_debug;
   charbuf_debug = 0;
 #endif
+
   for(; (ret = charbuf_peekc(b, &ch)) > 0;) {
 
     if(pred((unsigned int)(unsigned char)ch, n, ptr)) {
       n++;
+
       if(charbuf_skip(b) > 0)
         continue;
     }
@@ -34,10 +36,12 @@ charbuf_pred_skip(charbuf* b, int (*pred)(int, size_t, void*), void* ptr) {
     buffer_puts(buffer_2, CHARBUF_SEP);
     charbuf_dumplabel("c", buffer_2);
     buffer_puts(buffer_2, CHARBUF_SEP);
+
     if(charbuf_colors)
       buffer_puts(buffer_2, CHARBUF_CYAN);
     charbuf_peekc(b, &ch);
     charbuf_dumpchar(ch, buffer_2, -6);
+
     if(charbuf_colors)
       buffer_puts(buffer_2, CHARBUF_NC);
 

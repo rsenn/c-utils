@@ -106,13 +106,16 @@ do_symlink(const char* f, const char* t) {
   unsigned int l1 = 0;
   unsigned int slash = 0;
   const char* p;
+
   if(o_dry_run)
     return 0;
+
   while(f[l1] && t[l1] == f[l1]) {
     if(t[l1] == '/')
       slash = l1;
     l1++;
   }
+
   if(!f[l1] && t[l1] == '/')
     slash = l1;
 
@@ -121,12 +124,16 @@ do_symlink(const char* f, const char* t) {
       oom();
     return symlink(s.s, t);
   }
+
   if(!f[l1]) {
     static stralloc x;
+
     if(!stralloc_copys(&x, f))
       oom();
+
     if(!stralloc_append(&x, "/"))
       oom();
+
     if(!stralloc_0(&x))
       oom();
     f = x.s;
@@ -134,17 +141,23 @@ do_symlink(const char* f, const char* t) {
   slash++;
   p = t + slash + 1;
   s.len = 0;
+
   while(*p) {
     if(*p == '/')
+
       if(!stralloc_cats(&s, "../"))
         oom();
     p++;
   }
+
   if(!stralloc_cats(&s, f + slash))
     oom();
+
   if(s.len == 0)
+
     if(!stralloc_cats(&s, "."))
       oom();
+
   if(!stralloc_0(&s))
     oom();
   return symlink(s.s, t);
@@ -170,28 +183,37 @@ hash_it(struct ftpparse* x, stralloc* l_dir, int id_also) {
 static void
 handle_rate_limit(struct taia* start, unsigned long bytes, struct taia* now) {
   struct taia diff;
+
   double sec;
+
   double bps;
+
   double slp;
 
   /* no use */
+
   if(bytes < 8192)
     return;
+
   if(bytes < o_rate_limit * 2)
     return;
 
   taia_sub(&diff, now, start);
   sec = taia_approx(&diff);
+
   if(sec <= 0.001)
     sec = 0.01;
 
   bps = bytes / sec;
+
   if(bps <= o_rate_limit)
     return;
 
   slp = sec * (bps / (double)o_rate_limit) - sec;
+
   if(slp <= 0)
     return;
+
   if(slp > MAX_SLEEP)
     /* try to not cause timeouts: this
      * should get the TCP recv windows
@@ -209,8 +231,10 @@ remove_dir(stralloc* s) {
   stralloc sa = STRALLOC_INIT;
   const char* e;
   int flag;
+
   if(o_dry_run)
     return;
+
   if(0 == unlink(s->s) || errno == error_noent)
     return;
 
@@ -218,22 +242,28 @@ remove_dir(stralloc* s) {
     xbailout(100, errno, "failed to open/read ", s->s, 0, 0);
 
   s->len--;
+
   if(!stralloc_append(s, "/"))
     oom();
 
   for(e = api_dir_walkstart(&sa, &flag); e; e = api_dir_walknext(&sa, &flag)) {
     int pos;
+
     if(e[0] == '.') {
       if(e[1] == '.' && e[2] == '\0')
         continue;
+
       if(e[1] == '\0')
         continue;
     }
     pos = s->len;
+
     if(!stralloc_cats(s, e))
       oom();
+
     if(!stralloc_0(s))
       oom();
+
     if(-1 == unlink(s->s))
       remove_dir(s);
     s->len = pos;
@@ -241,6 +271,7 @@ remove_dir(stralloc* s) {
   api_dir_free(&sa);
   s->len--; /* remove trailing / */
   s->s[s->len++] = 0;
+
   if(-1 == rmdir(s->s))
     xbailout(100, errno, "failed to rmdir ", s->s, 0, 0);
 }
@@ -272,10 +303,12 @@ identical_time(time_t there, int theretype, time_t here) {
       allowed = 86400;
       break;
   }
+
   if(here > there)
     d = here - there;
   else
     d = there - here;
+
   if(d > allowed)
     return 0;
   return 1;
@@ -309,22 +342,29 @@ download(struct ftpparse* x, stralloc* r_dir, stralloc* l_dir) {
     hash_it(x, l_dir, 1);
     return 0;
   }
+
   if(o_bps || o_rate_limit)
     taia_now(&start);
 
   e = l_dir->s + l_dir->len;
+
   for(cc = slash = l_dir->s; cc != e; cc++)
+
     if(*cc == '/')
       slash = cc;
+
   if(*slash == '/')
     slash++;
+
   if(!stralloc_copys(&tmpfn, ".tmp.") || !stralloc_catb(&tmpfn, slash, e - slash)) /* l_dir has \0 */
     oom();
 
   mtime = TAI2UNIX(&x->mtime);
   mtimetype = x->mtimetype;
+
   if(o_mdtm) {
     struct tai t;
+
     switch(modtime_request(r_dir->s, &t)) {
       case -1: o_mdtm = 0; break;
       case 0: break;
@@ -347,8 +387,10 @@ download(struct ftpparse* x, stralloc* r_dir, stralloc* l_dir) {
   if(0 == stat(l_dir->s, &st)) {
 
     int identical = 1;
+
     if(!o_ignore_size && st.st_size != (off_t)x->size)
       identical = 0;
+
     if(identical && !o_ignore_time)
       identical = identical_time(mtime, x->mtimetype, st.st_mtime);
 
@@ -359,13 +401,16 @@ download(struct ftpparse* x, stralloc* r_dir, stralloc* l_dir) {
            * files are links to the
            * same inode */
           unlink(l_dir->s);
+
           if(-1 == rename(tmpfn.s, l_dir->s)) {
             int er = errno;
             unlink(tmpfn.s);
             xbailout(100, er, "failed to rename ", tmpfn.s, " to ", l_dir->s);
           }
           hash_it(x, l_dir, 0);
+
           if(o_loglevel > 1)
+
             do_log2(l_dir->s, ": is a link\n");
           return 1;
         }
@@ -378,16 +423,22 @@ download(struct ftpparse* x, stralloc* r_dir, stralloc* l_dir) {
                  l_dir->s);
       }
       hash_it(x, l_dir, !found);
+
       if(o_loglevel > 1)
+
         do_log2(l_dir->s, ": identical file found\n");
       return 1;
     }
+
     if(o_loglevel > 2) {
       char nb[FMT_ULONG];
+
       do_log2(l_dir->s, ": lfacts: ");
       nb[fmt_ulong(nb, st.st_mtime)] = 0;
+
       do_log2(nb, " ");
       nb[fmt_ulong(nb, st.st_size)] = 0;
+
       do_log2(nb, "\n");
     }
   }
@@ -395,40 +446,52 @@ download(struct ftpparse* x, stralloc* r_dir, stralloc* l_dir) {
   if(found) {
     if(o_dry_run) {
       if(o_loglevel > 1)
+
         do_log4(l_dir->s, "would be (sym)linked to ", fptr, "\n");
       return 1;
     }
+
     if(0 == link(fptr, tmpfn.s) || 0 == do_symlink(fptr, tmpfn.s)) {
       if(-1 == rename(tmpfn.s, l_dir->s)) {
         int er = errno;
         unlink(tmpfn.s);
         xbailout(100, er, "failed to rename ", tmpfn.s, " to ", l_dir->s);
       }
+
       if(o_loglevel > 1)
+
         do_log4(l_dir->s, " (sym)linked to ", fptr, "\n");
       hash_it(x, l_dir, 1);
       return 1;
     }
   }
+
   if(o_max_size && x->size > o_max_size) {
     if(o_loglevel > 1)
+
       do_log2(l_dir->s, ": too large\n");
     return 1;
   }
+
   if(o_max_days && mtime + o_max_days * 86400 < uo_now()) {
     hash_it(x, l_dir, 1);
+
     if(o_loglevel > 1)
+
       do_log2(l_dir->s, ": too old\n");
     return 1;
   }
+
   if(o_dry_run) {
     if(o_loglevel)
+
       do_log2(l_dir->s,
               ": dry-run non-download "
               "successful\n");
     hash_it(x, l_dir, 1);
     return 1;
   }
+
   if(o_ascii_listings) {
     if(data_sock != -1) {
       close(data_sock);
@@ -441,32 +504,40 @@ download(struct ftpparse* x, stralloc* r_dir, stralloc* l_dir) {
   {
     char nb[FMT_ULONG];
     tmpfn.len--; /* \0 */
+
     if(!stralloc_catb(&tmpfn, ".", 1) || !stralloc_catb(&tmpfn, nb, fmt_uint64(nb, mtime)) || !stralloc_catb(&tmpfn, ".", 1) ||
        !stralloc_catb(&tmpfn, nb, fmt_uint64(nb, x->size)) || !stralloc_0(&tmpfn))
+
       if(!o_no_rest)
         unlink(tmpfn.s);
   }
   expected_bytes = x->size;
 retry_open:
   fd = open_excl_mode(tmpfn.s, 0644);
+
   if(-1 == fd) {
     if(error_exist != errno)
       xbailout(100, errno, "failed to open_excl ", tmpfn.s, ", temporary file for ", l_dir->s);
     fd = open_append(tmpfn.s);
+
     if(-1 == fd)
       xbailout(100, errno, "failed to open_append ", tmpfn.s, ", temporary file for ", l_dir->s);
     rest_flag = 1;
   }
+
   if(!stralloc_ready(&savemem, BUFFER_OUTSIZE))
     oom();
   buffer_init(&save, (buffer_op)write, fd, savemem.s, BUFFER_OUTSIZE);
 
 retry_pasv:
+
   if(data_sock == -1)
     data_sock = do_pasv();
+
   if(o_rate_limit) {
     /* set socket receive buffer to low
      * value */
+
     if(o_rate_limit * 8 < 65536)
       sockrecbuf(data_sock, MAX_SLEEP * o_rate_limit);
     else {
@@ -478,11 +549,14 @@ retry_pasv:
                                            some systems. */
     }
   }
+
   if(rest_flag) {
     char nb[FMT_ULONG];
     uint64 pos = 0;
+
     if(1 == rest_flag) {
       struct stat fs;
+
       if(-1 == fstat(fd, &fs))
         xbailout(100, errno, "failed to fstat ", tmpfn.s, ", temporary file for ", l_dir->s);
       pos = fs.st_size;
@@ -498,22 +572,28 @@ retry_pasv:
     nb[fmt_uint64(nb, pos)] = 0;
     cmdwrite2("REST ", nb);
     p = ccread();
+
     if(*p != '3' || p[1] != '5') {
       cmdwrite2("REST ", "0");
       ccread();
       rest_flag = 0;
+
       if(-1 == unlink(tmpfn.s))
         xbailout(100, errno, "failed to unlink ", tmpfn.s, ", temporary file for ", l_dir->s);
       close(fd);
       goto retry_open;
     }
+
     if(rest_flag)
+
       do_log4(l_dir->s, ": restarting at ", nb, "\n");
   }
   cmdwrite2("RETR ", r_dir->s);
   p = ccread();
+
   if(!p)
     eof_or_error(111, errno, "failed to read RETR answer", 0, 0);
+
   if(*p != '1') {
     if(!pasv_retry++ && str_start(p, "425")) {
       /* at least one ftp server seems
@@ -533,22 +613,27 @@ retry_pasv:
   buffer_init(&io_d, (buffer_op)TIMEOUTREADFN(o_timeout), data_sock, io_d_mem.s, BUFFER_INSIZE);
   progress_flag = 0;
   taia_now(&last_report);
+
   for(;;) {
     int l;
     char* q;
     struct taia now;
     l = buffer_feed(&io_d);
+
     if(l == -1)
       xbailout(111, errno, "failed to read from remote", 0, 0, 0);
     bytes += l;
+
     if(o_progress || o_rate_limit)
       taia_now(&now);
+
     if(o_progress) {
       char nb[FMT_ULONG];
       static unsigned int back;
       unsigned int t;
       struct taia d;
       taia_sub(&d, &now, &last_report);
+
       if(taia_approx(&d) >= 1 || (back && !l)) {
         static uint32 old_window_x;
         /* note: should be larger than
@@ -559,12 +644,15 @@ retry_pasv:
                            "\b\b\b\b\b\b\b\b\b\b\b\b\b"
                            "\b\b\b\b\b\b\b\b\b\b\b\b\b"
                            "\b";
+
         if(!old_window_x)
           old_window_x = window_x;
+
         if(old_window_x != window_x) {
           while(old_window_x) {
             int written;
             written = write(2, bs, old_window_x > sizeof(bs) ? sizeof(bs) : old_window_x);
+
             if(written <= 0) {
               write(2, "\n", 1);
               break;
@@ -574,15 +662,18 @@ retry_pasv:
           old_window_x = window_x;
           progress_flag = 0;
         }
+
         if(!progress_flag) {
           int off = 0;
           uint32 need;
           uint32 space = window_x;
           need = fmt_uint64(nb, expected_bytes ? expected_bytes : 0xffffffffUL);
           space -= need * 2 + 4 + 2;
+
           if(expected_bytes) {
             space -= 8;
           }
+
           if(l_dir->len - 1 > space) {
             off = l_dir->len - 1 - space + 3;
             write(2, "...", 3);
@@ -592,6 +683,7 @@ retry_pasv:
           progress_flag = 1;
           back = 0;
         }
+
         if(back)
           write(2, bs, back);
         t = fmt_uint64(nb, bytes);
@@ -601,6 +693,7 @@ retry_pasv:
         t = fmt_uint64(nb, expected_bytes);
         write(2, nb, t);
         back += t;
+
         if(expected_bytes) {
           write(2, " (", 2);
           back += 2;
@@ -618,45 +711,55 @@ retry_pasv:
         last_report = now;
       }
     }
+
     if(l == 0)
       break;
 
     q = buffer_peek(&io_d);
+
     if(-1 == buffer_put(&save, q, l))
       xbailout(111, errno, "failed to write to ", tmpfn.s, 0, 0);
     buffer_seek(&io_d, l);
+
     if(o_rate_limit)
       handle_rate_limit(&start, bytes, &now);
   }
+
   if(o_progress && progress_flag)
     write(2, "\n", 1);
   close(data_sock);
   x2("RETR finish");
+
   if(buffer_flush(&save))
     xbailout(111, errno, "failed to write to ", tmpfn.s, 0, 0);
   data_sock = -1;
+
   if(-1 == fsync(fd))
     xbailout(111, errno, "failed to fsync ", tmpfn.s, 0, 0);
 
   if(-1 == api_futimes_1(fd, mtime, 0, mtime, 0))
     warning(errno, "failed to futimes ", tmpfn.s, 0, 0);
+
   if(-1 == close(fd))
     xbailout(111, errno, "failed to close ", tmpfn.s, 0, 0);
 
   /* some version of reiserfs on linux
    * didn't honor utimes() if it was
    * called before the close(). */
+
   if(-1 == api_futimes_2(tmpfn.s, mtime, 0, mtime, 0))
     warning(errno, "failed to utimes ", tmpfn.s, 0, 0);
 
   if(-1 == rename(tmpfn.s, l_dir->s)) {
     remove_dir(l_dir);
+
     if(-1 == rename(tmpfn.s, l_dir->s)) {
       int er = errno;
       unlink(tmpfn.s);
       xbailout(100, er, "failed to rename ", tmpfn.s, " to ", l_dir->s);
     }
   }
+
   if(expected_bytes != bytes) {
     char nb[FMT_ULONG];
     /* This _most_ often means that the
@@ -676,14 +779,20 @@ retry_pasv:
      * ulong
      */
     nb[fmt_uint64(nb, expected_bytes)] = 0;
+
     do_log2(l_dir->s, ": warning: expected ");
+
     do_log2(nb, " bytes, but got ");
     nb[fmt_ulong(nb, bytes)] = 0;
+
     do_log2(nb, "\n");
   }
   hash_it(x, l_dir, 1);
+
   if(o_loglevel)
+
     do_log2(l_dir->s, ": download successful");
+
   if(o_bps) {
     struct taia stop;
     struct taia diff;
@@ -696,10 +805,13 @@ retry_pasv:
     taia_now(&stop);
     taia_sub(&diff, &stop, &start);
     sec = taia_approx(&diff);
+
     if(sec == 0)
       sec = 1;
+
     do_log1(", ");
     bps = bytes / sec;
+
     if(bps < 10000) {
       nb[fmt_ulong(nb, bps)] = 0;
       what = " B/s";
@@ -710,9 +822,12 @@ retry_pasv:
       nb[fmt_ulong(nb, bps / (1024 * 1024))] = 0;
       what = " MB/s";
     }
+
     do_log2(nb, what);
   }
+
   if(o_loglevel)
+
     do_log1("\n");
   return 1;
 }
@@ -723,15 +838,19 @@ handle_exclude(stralloc* ca) {
   char* ptr = o_exclude.s;
   const char* info = 0; /* keep gcc quiet */
   int exclude = 0;
+
   while(ptr != end) {
     int flag = (*ptr == '-');
     ptr++;
+
     if(uo_wildmat(ptr, ca->s, ca->len - 1)) {
       if(exclude != flag) {
         exclude = flag;
         info = ptr;
+
         if(o_loglevel > 3) {
           write(1, ca->s, ca->len - 1);
+
           do_log4(": matched `", info, "', -> ", exclude ? "exclude" : "include");
           write(1, "\n", 1);
         }
@@ -739,17 +858,22 @@ handle_exclude(stralloc* ca) {
     }
     ptr += str_len(ptr) + 1;
   }
+
   if(!info)
     info = "end-of-list (default)";
+
   if(exclude) {
     if(o_loglevel > 1) {
       write(1, ca->s, ca->len - 1);
+
       do_log3(": excluded, matched `", info, "'\n");
     }
     return 1;
   }
+
   if(o_loglevel > 3) {
     write(1, ca->s, ca->len - 1);
+
     do_log3(": included, matched `", info, "'\n");
   }
   return 0;
@@ -763,6 +887,7 @@ handle_hackish_symlink(struct ftpparse* x, stralloc* l_dir) {
 
   if(!x->symlink)
     xbailout(100, 0, "bad coding", 0, 0, 0);
+
   if(!*x->symlink)
     xbailout(100, 0, "bad coding", 0, 0, 0);
 
@@ -770,31 +895,44 @@ handle_hackish_symlink(struct ftpparse* x, stralloc* l_dir) {
     oom();
   t.s[t.len - 1] = '/';
   pos = t.len;
+
   if(!stralloc_catb(&t, x->symlink, x->symlinklen) || !stralloc_0(&t))
     oom();
+
   if(o_tolower)
     case_lowers(t.s + pos);
+
   if(o_loglevel > 1) {
     do_log1("symlink '");
+
     do_logmem(x->name, x->namelen);
+
     do_logmem(" -> ", 4);
+
     do_logmem(t.s, t.len - 1);
+
     do_log1("'\n");
   }
+
   if(!stralloc_copy(&idstr, canon(&t)))
     oom();
+
   if(!stralloc_copy(&t, l_dir))
     oom();
   t.s[t.len - 1] = '/';
+
   if(!stralloc_catb(&t, x->name, x->namelen))
     oom();
+
   if(!stralloc_0(&t))
     oom();
   unlink(t.s);
   remove_dir(&t);
+
   if(0 != do_symlink(idstr.s, t.s)) {
     if(errno == error_isdir)
       remove_dir(&t);
+
     if(0 != do_symlink(idstr.s, t.s))
       xbailout(100,
                errno,
@@ -819,19 +957,24 @@ handle_directory(struct ftpparse* x, stralloc* r_dir, stralloc* l_dir) {
   unsigned int lpos = l_dir->len;
 
   l_dir->s[l_dir->len - 1] = '/';
+
   if(!stralloc_catb(l_dir, x->name, x->namelen) || !stralloc_0(l_dir))
     oom();
+
   if(o_tolower)
     case_lowers(l_dir->s + lpos);
   found = strhash_lookup(&hash_ids, x->id, x->idlen, &fptr, &flen);
+
   if(found) {
     if(o_loglevel > 1)
+
       do_log4(l_dir->s,
               ": (sym)linking, ID "
               "identical to `",
               fptr,
               "'\n");
     remove_dir(l_dir);
+
     if(0 != do_symlink(fptr, l_dir->s))
       xbailout(111,
                errno,
@@ -841,13 +984,16 @@ handle_directory(struct ftpparse* x, stralloc* r_dir, stralloc* l_dir) {
                " to ",
                l_dir->s);
     hash_it(x, l_dir, 1);
+
     done = 1;
   } else {
     /* remote is a new directory. */
     /* local may be a symlink to a
      * directory we already saw */
     struct stat st;
+
     if(0 == lstat(l_dir->s, &st))
+
       if(!S_ISDIR(st.st_mode))
         unlink(l_dir->s);
 
@@ -857,6 +1003,7 @@ handle_directory(struct ftpparse* x, stralloc* r_dir, stralloc* l_dir) {
 
     if(1 == loop(r_dir, l_dir)) {
       if(!o_dry_run)
+
         if(-1 == api_utimes(l_dir->s, TAI2UNIX(&x->mtime), 0, TAI2UNIX(&x->mtime), 0))
           warning(errno,
                   "failed to call "
@@ -864,6 +1011,7 @@ handle_directory(struct ftpparse* x, stralloc* r_dir, stralloc* l_dir) {
                   l_dir->s,
                   0,
                   0);
+
       done = 1;
     }
   }
@@ -891,13 +1039,17 @@ fcmp(const void* va, const void* vb) {
   const struct ftpparse* b = vb;
   unsigned int ml = a->namelen;
   int x;
+
   if(b->namelen < ml)
     ml = b->namelen;
   x = byte_diff(a->name, ml, b->name);
+
   if(x)
     return x;
+
   if(a->namelen < b->namelen)
     return 1;
+
   if(a->namelen > b->namelen)
     return -1;
   return 0; /* shouldn't happen, though
@@ -911,25 +1063,32 @@ parsethem(stralloc* d, int is_mlsx, uint32* rcount) {
   uint32 count = 0;
   s = d->s;
   e = s + d->len;
+
   while(s < e) {
     count++;
     s += str_len(s) + 1;
   }
   x = (void*)alloc(count * sizeof(*x));
+
   if(!x)
     oom();
   count = 0;
   s = d->s;
+
   while(s < e) {
     int ok;
     unsigned int l = str_len(s);
+
     if(is_mlsx)
       ok = ftpparse_mlsx(x + count, s, l, 0);
     else
       ok = ftpparse(x + count, s, l, o_eat_leading_spaces);
+
     if(ok && x[count].flagbrokenmlsx)
       warn_broken_mlsx();
+
     if(!ok)
+
       do_log3("cannot parse LIST line: ", s, "\r\n");
     else
       count++;
@@ -956,14 +1115,20 @@ loop(stralloc* r_dir, stralloc* l_dir) {
   cmdwrite2("CWD ", r_dir->s);
 
   ans = ccread();
+
   if(!ans)
     eof_or_error(111, errno, "failed to read CWD answer", 0, 0);
+
   if(*ans != '2')
     return 0;
+
   if(initial_dirname.s)
+
     if(initial_dirname.len == r_dir->len)
+
       if(byte_equal(initial_dirname.s, r_dir->len, r_dir->s))
         flag_is_initial = 1;
+
   if(flag_is_initial)
     goto skip_listing;
 
@@ -971,6 +1136,7 @@ loop(stralloc* r_dir, stralloc* l_dir) {
     listno = 0;
   else
     listno = 1;
+
   if(o_ascii_listings) {
     if(data_sock != -1) {
       close(data_sock);
@@ -979,9 +1145,11 @@ loop(stralloc* r_dir, stralloc* l_dir) {
     sx2("TYPE A");
   }
 retry_listing_pasv:
+
   if(data_sock == -1)
     data_sock = do_pasv();
 retry_listing:
+
   if(listno == 0) {
     cmdwrite1("MLSD");
     is_mlsx = 1;
@@ -990,8 +1158,10 @@ retry_listing:
   else
     cmdwrite1("LIST");
   ans = ccread();
+
   if(!ans)
     eof_or_error(111, errno, "failed to read LIST answer", 0, 0);
+
   if(!pasv_retries++ && str_start(ans, "425")) {
     /* in case ftp server lost track of
      * the open PASV connection */
@@ -999,8 +1169,10 @@ retry_listing:
     data_sock = -1;
     goto retry_listing_pasv;
   }
+
   if(listno == 0 && *ans == '5') {
     listno = 1;
+
     if(!str_start(ans, "501")) { /* 501: MSLD
                                     on file */
       may_mlsx = 0;
@@ -1008,20 +1180,25 @@ retry_listing:
     }
     goto retry_listing;
   }
+
   if(*ans != '1')
     return 0;
 skip_listing:
   olddirfd = open_read(".");
 
   if(!o_dry_run)
+
     if(-1 == chdir(l_dir->s)) {
       if(errno != error_exist)
         remove_dir(l_dir);
+
       if(-1 == mkdir(l_dir->s, 0755))
         xbailout(100, errno, "failed to mkdir ", l_dir->s, 0, 0);
+
       if(-1 == chdir(l_dir->s))
         xbailout(100, errno, "failed to chdir ", l_dir->s, 0, 0);
     }
+
   if(flag_is_initial) {
     if(!stralloc_copy(&dirdata, &initial_dirdata))
       oom();
@@ -1040,86 +1217,121 @@ skip_listing:
     x2("LIST");
   }
   parsed = parsethem(&dirdata, is_mlsx, &count);
+
   for(i = 0; i < count; i++) {
     if(parsed[i].name[0] == '.' && (parsed[i].namelen == 1 || (parsed[i].namelen == 2 && parsed[i].name[1] == '.'))) {
       if(o_loglevel > 1) {
         do_log2(l_dir->s, "/");
+
         if(o_tolower)
           case_lowerb(parsed[i].name, parsed[i].namelen);
+
         do_logmem(parsed[i].name, parsed[i].namelen);
+
         do_log1(": ignored\n");
       }
     } else if(parsed[i].name[byte_chr(parsed[i].name, parsed[i].namelen, '/')] == '/') {
       /* file name with a slash in it:
        * no good. Can't happen and has
        * security implications. */
+
       do_log2(l_dir->s, "/");
+
       if(o_tolower)
         case_lowerb(parsed[i].name, parsed[i].namelen);
+
       do_logmem(parsed[i].name, parsed[i].namelen);
+
       do_log1(": ignored\n");
     } else {
       size_t rpos = r_dir->len;
       size_t lpos = l_dir->len;
       int done = 0;
+
       if(o_loglevel > 2) {
         char nb1[FMT_ULONG];
         char nb2[FMT_ULONG];
         static stralloc lo;
         nb1[fmt_ulong(nb1, TAI2UNIX(&parsed[i].mtime))] = 0;
         nb2[fmt_ulong(nb2, parsed[i].size)] = 0;
+
         if(!stralloc_copyb(&lo, parsed[i].name, parsed[i].namelen))
           oom();
+
         if(o_tolower)
           case_lowerb(lo.s, lo.len);
+
         do_log2(l_dir->s, "/");
+
         do_logmem(lo.s, lo.len);
+
         do_log4(": facts: ", nb1, " ", nb2);
+
         do_log1("\n");
       }
 
       r_dir->s[r_dir->len - 1] = '/';
+
       if(!stralloc_catb(r_dir, parsed[i].name, parsed[i].namelen) || !stralloc_0(r_dir))
         oom();
+
       if(o_exclude.len) {
         stralloc* ca;
         ca = canon(r_dir);
+
         if(o_tolower)
           case_lowerb(ca->s, ca->len);
+
         done = handle_exclude(ca);
       }
+
       if(!done && o_symlink_hack && parsed[i].symlink)
+
         if(parsed[i].format == FTPPARSE_FORMAT_LS)
+
           done = handle_hackish_symlink(&parsed[i], l_dir);
+
       if(parsed[i].flagtrycwd && !done) {
         if(o_max_depth) {
           o_max_depth--;
+
           done = handle_directory(&parsed[i], r_dir, l_dir);
           o_max_depth++;
         } else {
           done = 1;
+
           if(o_loglevel) {
             stralloc sa = STRALLOC_INIT;
+
             if(!stralloc_cats(&sa, l_dir->s))
               oom();
+
             if(!stralloc_cats(&sa, "/"))
               oom();
+
             if(!stralloc_catb(&sa, parsed[i].name, parsed[i].namelen))
               oom();
+
             if(!stralloc_0(&sa))
               oom();
+
             do_log2(sa.s, ": not entered\n");
             stralloc_free(&sa);
           }
         }
       }
+
       if(parsed[i].flagtryretr && !done) {
         l_dir->s[l_dir->len - 1] = '/';
+
         if(!stralloc_catb(l_dir, parsed[i].name, parsed[i].namelen) || !stralloc_0(l_dir))
           oom();
+
         if(o_tolower)
           case_lowers(l_dir->s + lpos);
+
         if(1 == download(&parsed[i], r_dir, l_dir))
+
           done = 1;
         l_dir->len = lpos;
         l_dir->s[l_dir->len - 1] = '\0';
@@ -1130,6 +1342,7 @@ skip_listing:
   }
   alloc_free((char*)parsed);
   stralloc_free(&dirdata);
+
   if(-1 == fchdir(olddirfd)) /* ECANTHAPPEN,
                                 but we'd be in
                                 trouble */
@@ -1149,8 +1362,10 @@ cwd_slash(void) {
   char* p;
   cmdwrite1("CWD /");
   p = ccread();
+
   if(!p)
     eof_or_error(111, errno, "failed to read 'CWD /' answer", 0, 0);
+
   if(*p != '2')
     xbailout(100, 0, "failed to 'CWD /': ", p, 0, 0);
 }
@@ -1165,13 +1380,16 @@ static void
 initialdirectory(stralloc* dirdata, struct ftpparse* fp, stralloc* r_dir) {
   char* p;
   int count;
+
   if(data_sock == -1)
     data_sock = do_pasv();
 
   cmdwrite2("LIST ", r_dir->s);
   p = ccread();
+
   if(!p)
     eof_or_error(111, errno, "failed to read LIST answer", 0, 0);
+
   if(*p != '1')
     xbailout(111,
              errno,
@@ -1184,12 +1402,15 @@ initialdirectory(stralloc* dirdata, struct ftpparse* fp, stralloc* r_dir) {
   close(data_sock);
   data_sock = -1;
   x2("LIST");
+
   if(1 != count)
     /* XXX could try LIST .. and parse
      * the answer */
     return; /* doesn't help us. */
+
   if(1 != ftpparse(fp, dirdata->s, str_len(dirdata->s), o_eat_leading_spaces))
     return;
+
   if(fp->namelen != r_dir->len - 1 || byte_diff(fp->name, fp->namelen, r_dir->s))
     fp->idlen = 0; /* used in onedirpair() */
 }
@@ -1216,57 +1437,74 @@ initialentity(struct ftpparse* fp, stralloc* r_dir) {
   cwd_slash();
   cmdwrite2("MLST ", r_dir->s);
   p = ccread_oneline();
+
   if(!p)
     eof_or_error(111, errno, "failed to read MLST answer", 0, 0);
+
   if(*p == '2') {
     for(;;) {
       p = ccread_oneline();
+
       if(str_start(p, "250 "))
         break;
+
       if(str_start(p, "250-"))
         continue;
+
       if(!stralloc_copys(&dirdata, p))
         oom();
     }
+
     if(ftpparse_mlsx(fp, dirdata.s, dirdata.len, 1))
+
       if(fp->flagtrycwd && !fp->flagtryretr)
         return 1;
     return 0;
   }
+
   while(str_len(p) > 3 && p[3] == '-') {
     /* we were in single-line mode */
     p = ccread();
+
     if(!p)
       eof_or_error(111, errno, "failed to read MLST answer", 0, 0);
   }
 
   cmdwrite2("CWD ", r_dir->s);
   p = ccread();
+
   if(!p)
     eof_or_error(111, errno, "failed to read CWD answer", 0, 0);
+
   if(*p == '2') {
     /* may be a directory.
      * Note: publicfile allows "CWD" to
      * a file, but LIST fails.
      */
+
     if(data_sock == -1)
       data_sock = do_pasv();
 
     cmdwrite1("LIST");
     p = ccread();
+
     if(!p)
       eof_or_error(111, errno, "failed to read LIST answer", 0, 0);
+
     if(*p == '1') {
       count = ftp_read_list(data_sock, &dirdata);
       close(data_sock);
       data_sock = -1;
       x2("LIST");
       cwd_slash();
+
       if(-1 != count) {
         /* it's a directory */
         initial_count = count;
+
         if(!stralloc_copy(&initial_dirdata, &dirdata))
           oom();
+
         if(!stralloc_copy(&initial_dirname, r_dir))
           oom();
         initialdirectory(&dirdata, fp, r_dir);
@@ -1284,8 +1522,10 @@ initialentity(struct ftpparse* fp, stralloc* r_dir) {
 
   cmdwrite2("LIST ", r_dir->s);
   p = ccread();
+
   if(!p)
     eof_or_error(111, errno, "failed to read LIST answer", 0, 0);
+
   if(*p != '1')
     xbailout(100,
              0,
@@ -1296,11 +1536,13 @@ initialentity(struct ftpparse* fp, stralloc* r_dir) {
              0);
 
   count = ftp_read_list(data_sock, &dirdata);
+
   if(-1 == count)
     xbailout(111, errno, "cannot read remote directory", 0, 0, 0);
   close(data_sock);
   data_sock = -1;
   x2("LIST");
+
   if(count == 0) /* typically happens if first
                     entity is nonexistant */
     xbailout(111,
@@ -1310,6 +1552,7 @@ initialentity(struct ftpparse* fp, stralloc* r_dir) {
              0,
              0,
              0);
+
   if(count != 1)
     xbailout(111,
              0,
@@ -1333,24 +1576,31 @@ static void delete(stralloc* dn) {
   const char* e;
   int flag;
   size_t pos;
+
   if(-1 == api_dir_read(&sa, dn->s))
     xbailout(111, errno, "failed to open/read ", dn->s, 0, 0);
   dn->len--;
   pos = dn->len;
+
   for(e = api_dir_walkstart(&sa, &flag); e; e = api_dir_walknext(&sa, &flag)) {
     struct stat st;
     int found;
 
     stralloc* t;
     dn->len = pos;
+
     if(e[0] == '.' && (!e[1] || (e[1] == '.' && e[2] == 0)))
       continue;
+
     if(!stralloc_append(dn, "/"))
       oom();
+
     if(!stralloc_cats(dn, e))
       oom();
+
     if(!stralloc_0(dn))
       oom();
+
     if(-1 == lstat(dn->s, &st))
       continue;
 
@@ -1358,36 +1608,45 @@ static void delete(stralloc* dn) {
       delete(dn);
       t = canon(dn);
       found = strhash_lookup(&hash_fns, t->s, t->len, 0, 0);
+
       if(!found) {
         if(o_dry_run)
+
           do_log2(dn->s,
                   ": not found on remote, "
                   "would be deleted\n");
         else {
           if(-1 == rmdir(dn->s))
             xbailout(100, errno, "failed to rmdir ", dn->s, 0, 0);
+
           if(o_loglevel)
+
             do_log2(dn->s,
                     ": not found on "
                     "remote, deleted\n");
         }
       } else {
         if(o_loglevel > 3)
+
           do_log2(dn->s, ": found on remote\n");
       }
       continue;
     }
     t = canon(dn);
     found = strhash_lookup(&hash_fns, t->s, t->len, 0, 0);
+
     if(!found) {
       if(o_max_deletes)
+
         if(count_deletes++ >= o_max_deletes) {
           if(o_loglevel)
+
             do_log2(dn->s,
                     ": not deleted due to "
                     "--max-deletes\n");
           continue;
         }
+
       if(o_dry_run) {
         do_log2(dn->s,
                 ": not found on remote, "
@@ -1395,20 +1654,25 @@ static void delete(stralloc* dn) {
       } else {
         if(-1 == unlink(dn->s)) {
           unsigned int er = errno;
+
           if(-1 == rmdir(dn->s))
             xbailout(111, er, "failed to unlink ", dn->s, 0, 0);
         }
+
         if(o_loglevel)
+
           do_log2(dn->s,
                   ": not found on "
                   "remote, deleted\n");
       }
     } else {
       if(o_loglevel > 3)
+
         do_log2(dn->s, ": found on remote\n");
     }
   }
   dn->len = pos;
+
   if(!stralloc_0(dn))
     oom();
   api_dir_free(&sa);
@@ -1435,6 +1699,7 @@ static int
 callback_exclude(uogetopt_env* e, uogetopt2* g, char* s) {
   (void)g;
   (void)e;
+
   if(!stralloc_catb(&o_exclude, "-", 1) || !stralloc_cats(&o_exclude, s) || !stralloc_0(&o_exclude))
     oom();
   return 0;
@@ -1443,6 +1708,7 @@ static int
 callback_include(uogetopt_env* e, uogetopt2* g, char* s) {
   (void)g;
   (void)e;
+
   if(!stralloc_catb(&o_exclude, "+", 1) || !stralloc_cats(&o_exclude, s) || !stralloc_0(&o_exclude))
     oom();
   return 0;
@@ -1457,12 +1723,16 @@ include_exclude_file(const char* fname) {
   if(-1 == fd)
     xbailout(111, errno, "failed to open_read ", fname, 0, 0);
   buffer_init(&io, (buffer_op)read, fd, spc, sizeof(spc));
+
   for(;;) {
     int gotlf;
+
     if(-1 == getln(&io, &s, &gotlf, '\n'))
       xbailout(111, errno, "failed to read from ", fname, 0, 0);
+
     if(s.len == 0)
       break;
+
     if(!gotlf)
       xbailout(111,
                errno,
@@ -1472,10 +1742,13 @@ include_exclude_file(const char* fname) {
                0,
                0);
     s.len--;
+
     if(!s.len)
       continue; /* ignore empty lines */
+
     if(!stralloc_0(&s))
       oom(); /* cant happen */
+
     if(s.s[0] == '+')
       callback_include(0, 0, s.s + 1);
     else if(s.s[0] == '-')
@@ -1496,10 +1769,12 @@ static int
 callback_ip(uogetopt_env* e, uogetopt2* g, char* s) {
   (void)g;
   (void)e;
+
   while(s && *s) {
     char ip[4];
     unsigned int x;
     x = ip4_scan(s, ip);
+
     if(!x || (s[x] != ',' && s[x] != 0))
       xbailout(2,
                0,
@@ -1508,9 +1783,11 @@ callback_ip(uogetopt_env* e, uogetopt2* g, char* s) {
                s,
                "'",
                0);
+
     if(!stralloc_catb(&pasv_response_ips, ip, 4))
       oom();
     s += x;
+
     if(*s)
       s++;
   }
@@ -2064,6 +2341,7 @@ chdir_mkdir(const char* s) {
       if(errno != error_exist)
         xbailout(111, errno, "failed to mkdir ", s, 0, 0);
     }
+
     if(-1 == chdir(s))
       xbailout(111, errno, "failed to chdir to ", s, 0, 0);
   }
@@ -2075,22 +2353,29 @@ onedirpair(stralloc* remote, stralloc* local) {
   struct ftpparse fp;
   strhash_destroy(&hash_ids);
   strhash_destroy(&hash_fns);
+
   if(-1 == strhash_create(&hash_ids, 16, 32, strhash_hash))
     oom();
+
   if(-1 == strhash_create(&hash_fns, 16, 32, strhash_hash))
     oom();
   byte_zero((char*)&fp, sizeof(fp));
+
   if(remote->s[0] != '/') {
     /* i like absolute paths. */
     stralloc t = STRALLOC_INIT;
+
     if(!stralloc_copy(&t, remote))
       oom();
+
     if(!stralloc_copyb(remote, "/", 1))
       oom();
+
     if(!stralloc_cat(remote, &t))
       oom();
     stralloc_free(&t);
   }
+
   if(!initialentity(&fp, remote)) {
     /* 'remote' is a file */
     unsigned int slash;
@@ -2099,12 +2384,15 @@ onedirpair(stralloc* remote, stralloc* local) {
     local->s[slash] = 0;
     chdir_mkdir(local->s);
     local->s[slash] = '/';
+
     if(0 == stat(local->s, &st) && S_ISDIR(st.st_mode)) {
       slash = str_rchr(remote->s, '/');
       local->len--;
+
       if(local->s[local->len - 1] == '/')
         slash++; /* don't need a second
                     / */
+
       if(!stralloc_cats(local, remote->s + slash) || !stralloc_0(local))
         oom();
     }
@@ -2114,10 +2402,12 @@ onedirpair(stralloc* remote, stralloc* local) {
   }
   /* 'remote' is a directory */
   chdir_mkdir(local->s);
+
   if(fp.idlen)
     /* for the weird symlinks to the
      * servers root */
     hash_it(&fp, local, 1);
+
   if(loop(remote, local)) {
     if(o_do_delete)
       delete(local);
@@ -2187,8 +2477,10 @@ main(int argc, char** argv) {
              0,
              0,
              0);
+
   if(o_v4_only)
     socket_flag_noipv6 = 1;
+
   if(o_v6_only)
     socket_flag_noipv4 = 1;
 
@@ -2196,51 +2488,67 @@ main(int argc, char** argv) {
     usage();
   setup_window_size();
   callback_ip(0, 0, env_get("FTPCOPY_ALLOW_PASV_IP"));
+
   if(o_inex_file)
     include_exclude_file(o_inex_file);
 
   if(urlparse(argv[1], &proto, &user, &pass, &hostport, &rest)) {
     if(!stralloc_0(&proto))
       oom();
+
     if(!str_equal(proto.s, "ftp"))
       xbailout(100, 0, "URL type `", proto.s, "' is not supported", 0);
+
     if(!hostport.len)
       xbailout(100, 0, "empty host in URL", 0, 0, 0);
+
     if(!stralloc_0(&hostport))
       oom();
     host = hostport.s;
+
     if(!rest.len)
+
       if(!stralloc_append(&rest, "/"))
         oom();
+
     if(!stralloc_0(&rest))
       oom();
     remotedir = rest.s;
+
     if(!o_user && user.len) {
       if(!stralloc_0(&user))
         oom();
       o_user = user.s;
     }
+
     if(!o_pass && pass.len) {
       if(!stralloc_0(&pass))
         oom();
       o_pass = pass.s;
     }
+
     if(argv[2]) {
       localdir = argv[2];
+
       if(argv[3])
         usage();
     }
   } else {
     host = argv[1];
+
     if(!argv[2])
+
       if(!o_interactive)
         usage();
     remotedir = argv[2];
+
     if(argv[3])
       localdir = argv[3];
   }
+
   if(!localdir && !o_interactive) {
     char dotdir[] = ".";
+
     if(o_do_delete)
       xbailout(100,
                0,
@@ -2252,20 +2560,25 @@ main(int argc, char** argv) {
                0);
     localdir = dotdir;
   }
+
   if(!o_user)
     o_user = "anonymous";
+
   if(!o_pass)
     o_pass = "anonymous@example.invalid";
 
   if(remotedir) { /* might be empty in
                      interactive mode */
+
     if(!stralloc_copys(&d1, remotedir))
       oom();
+
     if(!stralloc_0(&d1))
       oom();
   }
 
   local_start_dir = get_cwd();
+
   if(!local_start_dir)
     xbailout(111,
              errno,
@@ -2276,24 +2589,30 @@ main(int argc, char** argv) {
              0);
 
   ldirfd = open_read(".");
+
   if(ldirfd == -1)
     xbailout(111, errno, "failed to open . for reading", 0, 0, 0);
 
   connect_auth(host, o_user, o_pass, o_acct, o_tries);
 
   sx2("TYPE I");
+
   if(o_interactive) {
     int retcode = 0;
     buffer io_stdin;
     char spc[BUFFER_INSIZE];
     buffer_init(&io_stdin, (buffer_op)read, 0, spc, sizeof(spc));
+
     for(;;) {
       int gotlf;
       char* p;
+
       if(-1 == getln(&io_stdin, &d1, &gotlf, '\n'))
         xbailout(111, errno, "failed to read from stdin", 0, 0, 0);
+
       if(d1.len == 0)
         break;
+
       if(!gotlf)
         xbailout(111,
                  errno,
@@ -2303,13 +2622,16 @@ main(int argc, char** argv) {
                  0,
                  0);
       d1.len--;
+
       if(!stralloc_0(&d1))
         oom();
 
       if(-1 == getln(&io_stdin, &d2, &gotlf, '\n'))
         xbailout(111, errno, "failed to read from stdin", 0, 0, 0);
+
       if(d2.len == 0)
         break;
+
       if(!gotlf)
         xbailout(111,
                  errno,
@@ -2319,16 +2641,22 @@ main(int argc, char** argv) {
                  0,
                  0);
       d2.len--;
+
       if(!stralloc_0(&d2))
         oom();
+
       if(d2.s[0] != '/') {
         stralloc x = STRALLOC_INIT;
+
         if(!stralloc_copys(&x, local_start_dir))
           oom();
+
         if(!stralloc_append(&x, "/"))
           oom();
+
         if(!stralloc_cat(&x, &d2))
           oom();
+
         if(!stralloc_copy(&d2, &x))
           oom();
         stralloc_free(&x);
@@ -2337,6 +2665,7 @@ main(int argc, char** argv) {
       /* back to local start dir. make
        * non-absolute directories work
        */
+
       if(-1 == fchdir(ldirfd))
         xbailout(111,
                  errno,
@@ -2348,30 +2677,39 @@ main(int argc, char** argv) {
       /* back to remote root */
       cmdwrite1("CWD /");
       p = ccread();
+
       if(!p)
         eof_or_error(111, errno, "failed to read CWD answer", 0, 0);
+
       if(*p != '2') {
         do_log1(p);
+
         do_log1("\n");
         retcode = 1;
       } else
         retcode = onedirpair(&d1, &d2);
+
       do_log1("END-OF-COPY\n");
     }
     return retcode;
   }
+
   if(*localdir == '/') {
     if(!stralloc_copys(&d2, localdir))
       oom();
+
     if(!stralloc_0(&d2))
       oom();
   } else {
     if(!stralloc_copys(&d2, local_start_dir))
       oom();
+
     if(!stralloc_append(&d2, "/"))
       oom();
+
     if(!stralloc_cats(&d2, localdir))
       oom();
+
     if(!stralloc_0(&d2))
       oom();
   }

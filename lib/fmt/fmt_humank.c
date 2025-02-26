@@ -4,8 +4,10 @@ size_t
 fmt_humank(char* dest, uint64 l) {
   char unit;
   size_t i;
+
   if(l < 1000)
     return fmt_ulong(dest, l);
+
   if(l > (uint64)1024 * (uint64)1024 * (uint64)1024 * (uint64)1024) {
     l = (l + ((uint64)1024 * (uint64)1024 * (uint64)1024 * (uint64)1024 / 20)) / ((uint64)1024 * (uint64)1024 * (uint64)1024 * (uint64)1024 / 10);
     unit = 'T';
@@ -19,6 +21,7 @@ fmt_humank(char* dest, uint64 l) {
     l = (l + (1024 / 20)) / (1024 / 10);
     unit = 'k';
   }
+
   if(!dest)
     return fmt_ulong(0, l) + 2;
   i = fmt_ulong(dest, l / 10);

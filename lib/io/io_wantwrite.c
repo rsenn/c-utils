@@ -115,6 +115,7 @@ io_wantwrite(fd_type d) {
   }
 
   /* the harder case: do as before */
+
   if(!e->kernelwantwrite)
     io_wantwrite_really(d, e);
   else

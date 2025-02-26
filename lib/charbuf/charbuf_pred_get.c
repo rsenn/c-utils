@@ -9,8 +9,10 @@ charbuf_pred_get(charbuf* b, stralloc* sa, int (*pred)(int, size_t, void*), void
 
   for(;;) {
     unsigned char c;
+
     if((ret = charbuf_peekc(b, &c)) > 0 && pred((unsigned int)(unsigned char)c, sa->len, ptr)) {
       stralloc_CATC(sa, c);
+
       if(charbuf_skip(b) > 0)
         continue;
     }

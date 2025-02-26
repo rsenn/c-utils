@@ -19,6 +19,7 @@ strlist_sort(strlist* sl, strlist_cmpfn_t* cmp_fn) {
   stralloc_readyplus(&sl->sa, 1);
 
   p = strlist_count(sl);
+
   if(p <= 1)
     return p;
 

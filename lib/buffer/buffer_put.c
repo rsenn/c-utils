@@ -15,6 +15,7 @@ extern int buffer_stubborn(buffer_op_proto* op, fd_type fd, const char* buf, siz
 int
 buffer_put(buffer* b, const char* buf, size_t len) {
   if(__unlikely(len > b->a - b->p)) { /* doesn't fit */
+
     if(buffer_flush(b) == -1)
       return -1;
 

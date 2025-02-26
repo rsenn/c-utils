@@ -12,6 +12,7 @@ size_t
 fmt_urlencoded2(char* dest, const char* src, size_t len, const char* escapeme) {
   register const unsigned char* s = (const unsigned char*)src;
   size_t written = 0, i;
+
   for(i = 0; i < len; ++i) {
     if(!issafe(s[i]) || escapeme[str_chr(escapeme, s[i])] == s[i]) {
       if(dest) {
@@ -26,6 +27,7 @@ fmt_urlencoded2(char* dest, const char* src, size_t len, const char* escapeme) {
       ++written;
     }
     /* in case someone gives us malicious input */
+
     if(written > ((size_t)-1) / 2)
       return (size_t)-1;
   }

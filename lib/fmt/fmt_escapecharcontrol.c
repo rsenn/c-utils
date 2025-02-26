@@ -14,8 +14,10 @@ fmt_escapecharcontrol(char* dest, int c) {
   }
 
   r = ch == '\0' || ch == '\r' || ch == '\n' || ch == '\t' ? 2 : 4;
+
   if(dest) {
     *dest++ = '\\';
+
     if(ch == '\r')
       *dest = 'r';
     else if(ch == '\n')

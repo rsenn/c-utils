@@ -148,10 +148,13 @@ static int
 get_field_index(int flags) {
   if(flags & (PRINT_LIBS | LIBS_ONLY_L | LIBS_ONLY_LIBPATH | LIBS_ONLY_OTHER))
     return 2;
+
   if(flags & (PRINT_CFLAGS | CFLAGS_ONLY_I | CFLAGS_ONLY_OTHER))
     return 1;
+
   if(flags & (PRINT_REQUIRES))
     return 3;
+
   if(flags & (PRINT_VERSION))
     return 0;
 
@@ -168,8 +171,10 @@ static const char*
 get_field_name(int flags) {
   if(flags == -1)
     return NULL;
+
   if(flags & PRINT_PATH)
     return 0;
+
   if(flags & VARIABLE)
     return variable;
   return field_names[get_field_index(flags)];
@@ -178,6 +183,7 @@ get_field_name(int flags) {
 static int
 get_op_index(const stralloc* op) {
   int i;
+
   for(i = 0; op_strings[i]; i++) {
     if(stralloc_equals(op, op_strings[i]))
       return i;
@@ -221,11 +227,14 @@ extract_paths(const stralloc* sa, strlist* paths) {
   size_t n;
   s = sa->s;
   e = sa->s + sa->len;
+
   while(s < e) {
     n = scan_whitenskip(s, e - s);
+
     if((s += n) == e)
       break;
     n = scan_nonwhitenskip(s, e - s);
+
     if(*s == PATHSEP_C) {
       strlist_pushb(paths, s, n);
     }
@@ -311,6 +320,7 @@ host_arch(const char* compiler, stralloc* out) {
     strlist_foreach_s(&paths, p) {
       if(path_exists(p)) {
         size_t pos = str_find(p, PATHSEP_S "lib" PATHSEP_S);
+
         if(p[pos]) {
           const char* h = &p[pos + 5];
           size_t hlen = str_chr(h, PATHSEP_C);
@@ -419,13 +429,17 @@ pkg_expand(pkg* pf, const char* key, stralloc* out) {
   stralloc_copys(&k, key);
   stralloc_nul(&k);
   k.s[0] = toupper(k.s[0]);
+
   if((s = pkg_get(pf, key)) == NULL)
     return 0;
   stralloc_copys(&v, s);
+
   for(;;) {
     stralloc_nul(&v);
+
     if(!wordexp_sa(v.s, out, pf->vars))
       return 0;
+
     if(stralloc_finds(out, "${") == out->len)
       break;
     stralloc_copy(&v, out);
@@ -450,12 +464,15 @@ void
 pkg_parse_version(uint64* v, const char* x, size_t n) {
   int s;
   *v = 0;
+
   for(s = 48; s >= 0; s -= 16) {
     uint16 num = 0xffff;
+
     if(n) {
       size_t i, j;
       i = scan_ushort(x, &num);
       j = scan_noncharsetnskip(&x[i], "0123456789", n - i);
+
       if(i + j > 0) {
         x += i + j;
         n -= i + j;
@@ -471,10 +488,13 @@ size_t
 pkg_format_version(uint64 v, stralloc* sa) {
   int s;
   stralloc_zero(sa);
+
   for(s = 48; s >= 0; s -= 16) {
     uint16 num = (v >> s) & 0xffff;
+
     if(num == 0xffff)
       break;
+
     if(sa->len)
       stralloc_catb(sa, ".", 1);
     stralloc_catlong(sa, num);
@@ -510,13 +530,16 @@ pkg_read(buffer* b, pkg* p) {
     if((ret = buffer_get_new_token_sa(b, &name, ":=\r\n", 4)) == -1)
       goto fail;
     stralloc_chomp(&name);
+
     if(name.len > 0 && name.s[0] == '#')
       continue;
+
     if(ret == 1 && isspace(name.s[0]))
       continue;
 
     if(ret == 0 || name.s[0] == '\0')
       break;
+
     if(name.len > 1) {
       sep = name.s[--name.len];
     }
@@ -525,6 +548,7 @@ pkg_read(buffer* b, pkg* p) {
       buffer_skipc(b);
 
     stralloc_zero(&value);
+
     if((ret = buffer_getline_sa(b, &value)) == -1)
       goto fail;
 
@@ -577,6 +601,7 @@ visit_set(const void* key, size_t key_len, const void* value, size_t value_len, 
   stralloc_nul(&var);
 
   stralloc_init(&v);
+
   if(value_len && ((char*)value)[value_len - 1] == '\0')
     --value_len;
   stralloc_catb(&v, value, value_len);
@@ -720,6 +745,7 @@ pkg_list(id code) {
         buffer_putsa(buffer_2, &path);
         buffer_putnlflush(buffer_2);
 #endif
+
         if(match_pattern && path_fnmatch(match_pattern, str_len(match_pattern), path.s, path.len, FNM_CASEFOLD) == FNM_NOMATCH)
           continue;
 
@@ -728,15 +754,18 @@ pkg_list(id code) {
         if(!buffer_mmapread(&pc, path.s)) {
           stralloc_zero(&line);
           i = byte_rchr(path.s, path.len, '/');
+
           if(i == path.len)
             i = 0;
           else
             i++;
           n = path.len - i - 3;
+
           if(code == LIST_FILE)
             stralloc_cat(&line, &path);
           else
             stralloc_catb(&line, path.s + i, n);
+
           if(code == LIST_PATH) {
             if(verbose == 1)
               stralloc_zero(&line);
@@ -745,6 +774,7 @@ pkg_list(id code) {
             stralloc_catb(&line, path.s, verbose == 0 ? i - 1 : path.len);
           } else if(pkg_read(&pc, &pf)) {
             const char* desc;
+
             if((desc = pkg_get(&pf, "Description"))) {
               stralloc_cats(&line, " - ");
               stralloc_cats(&line, desc);
@@ -753,12 +783,14 @@ pkg_list(id code) {
           stralloc_catc(&line, '\n');
           stralloc_nul(&line);
           n = byte_chr(line.s, line.len, ' ');
+
           if(line.s[n])
             n++;
           i = 0;
           found = 0;
           slist_foreach(pkgs, item) {
             char* s = *(char**)slist_data(item);
+
             if(!str_diffn(s, line.s, n)) {
               found = 1;
               break;
@@ -783,6 +815,7 @@ pkg_list(id code) {
       path.len = len;
     }
   }
+
   while(pkgs) {
     char* x = *(char**)slist_data(pkgs);
     buffer_putsflush(buffer_1, x);
@@ -810,9 +843,11 @@ pkg_open(const char* pkgname, pkg* pf) {
     stralloc_copyb(&pf->name, s, n);
     stralloc_catm_internal(&pf->name, "/", pkgname, ".pc", NULL);
     stralloc_nul(&pf->name);
+
     if(!buffer_mmapread(&pc, pf->name.s))
       break;
   }
+
   if(pc.x) {
 #ifdef DEBUG_OUTPUT_
     buffer_puts(buffer_2, "opened: ");
@@ -910,6 +945,7 @@ pkg_conf(strarray* modules, id code, int mode) {
   stralloc_init(&value);
   strlist_init(&output, '\0');
   strlist_init(&require, ' ');
+
   for(i = 0; i < strarray_size(modules); ++i) {
     const char* pkgname = strarray_AT(modules, i);
 #ifdef DEBUG_OUTPUT_
@@ -925,12 +961,16 @@ pkg_conf(strarray* modules, id code, int mode) {
     stralloc_copys(&name, pkgname);
     stralloc_zero(&cond);
     n = byte_chr(name.s, name.len, ' ');
+
     do_cond = 0;
+
     if(n < name.len) {
       pos = n;
+
       if(pos < name.len)
         pos += scan_whitenskip(&name.s[pos], name.len - pos);
       pkg_parse_cond(&condition, &name.s[pos], name.len - pos);
+
       do_cond = 1;
       name.len = n;
     }
@@ -942,18 +982,22 @@ pkg_conf(strarray* modules, id code, int mode) {
     buffer_putnlflush(buffer_2);
 #endif
     stralloc_nul(&name);
+
     if(!pkg_open(name.s, &pf)) {
       buffer_putm_internal(buffer_2, "No package '", name.s, "' found", NULL);
       buffer_putnlflush(buffer_2);
       return 1;
     }
+
     if(do_cond) {
       int r = pkg_check_cond(&condition, &pf);
+
       if(r == -1) {
       } else if(r == 0) {
         continue;
       }
     }
+
     if(mode & PKGCFG_EXISTS)
       return 0;
 #ifdef DEBUG_OUTPUT
@@ -973,11 +1017,13 @@ pkg_conf(strarray* modules, id code, int mode) {
     }
     {
       const char* fn = 0;
+
       if(code & PRINT_PATH) {
         if(value.len)
           stralloc_catc(&value, '\n');
         stralloc_cat(&value, &pf.name);
       }
+
       if(code & VARIABLE) {
 #ifdef DEBUG_OUTPUT_
         buffer_putm_internal(buffer_2, "Variable '", variable, "': ", NULL);
@@ -989,8 +1035,10 @@ pkg_conf(strarray* modules, id code, int mode) {
         fn = get_field_name(code);
       }
       pkg_set(&pf);
+
       if(fn) {
         stralloc_zero(&value);
+
         if(!pkg_expand(&pf, fn, &value)) {
           buffer_flush(buffer_1);
           buffer_flush(buffer_2);
@@ -1000,6 +1048,7 @@ pkg_conf(strarray* modules, id code, int mode) {
           return 0;
         }
       }
+
       if((code == PRINT_LIBS && libs_mode) || (code == PRINT_CFLAGS && cflags_mode)) {
         strlist sl;
         const char* s;
@@ -1011,29 +1060,37 @@ pkg_conf(strarray* modules, id code, int mode) {
           if((code == PRINT_LIBS) && libs_mode) {
             if((libs_mode == LIBS_ONLY_L) && !str_start(s, "-l"))
               continue;
+
             if((libs_mode == LIBS_ONLY_LIBPATH) && !str_start(s, "-L"))
               continue;
+
             if((libs_mode == LIBS_ONLY_OTHER) && str_case_start(s, "-l"))
               continue;
           }
+
           if((code == PRINT_CFLAGS) && libs_mode) {
             int flag = !!(str_start(s, "-I"));
+
             if((libs_mode == CFLAGS_ONLY_I) ^ (flag != 0))
               continue;
           }
+
           if(value.len > 0)
             stralloc_catc(&value, ' ');
           stralloc_cats(&value, s);
         }
       }
     }
+
     if(!(mode & PKGCFG_EXISTS)) {
       char *x, *end;
       size_t n, i;
+
       for(x = value.s, n = value.len, end = x + n; x < end; x += i + 1) {
         i = byte_chr(x, end - x, ' ');
         strlist_pushb_unique(&output, x, i);
       }
+
       if(value.len) {
         pkg_output(value.s, value.len);
       }
@@ -1044,6 +1101,7 @@ pkg_conf(strarray* modules, id code, int mode) {
     pkg_unset(&pf);
     pkg_free(&pf);
   }
+
   if(!(mode & PKGCFG_EXISTS)) {
     if(value.len) {
       buffer_putsa(buffer_1, &value);
@@ -1132,10 +1190,12 @@ pkgcfg_init(const char* self) {
   stralloc_init(&cmd.self);
   stralloc_init(&cmd.host);
   stralloc_init(&cmd.prefix);
+
   if(!self[str_chr(self, '/')]) {
     if((x = search_path(env_get("PATH"), self, &dir)))
       self = x;
   }
+
   if(!self[str_chr(self, '/')]) {
     path_readlink("/proc/self/exe", &dir);
     stralloc_nul(&dir);
@@ -1150,6 +1210,7 @@ pkgcfg_init(const char* self) {
   buffer_putsa(buffer_2, &cmd.self);
   buffer_putnlflush(buffer_2);
 #endif
+
   if(str_contains(self, "/bin/")) {
     path_dirname(self, &cmd.prefix);
     stralloc_trunc(&cmd.prefix, stralloc_finds(&cmd.prefix, "/bin"));
@@ -1162,17 +1223,20 @@ pkgcfg_init(const char* self) {
   buffer_putnlflush(buffer_2);
 #endif
   pos = stralloc_finds(&cmd.self, "pkg");
+
   if(cmd.host.len == 0) {
     if((pos = stralloc_finds(&cmd.self, "pkg")) > 0 && byte_count(cmd.self.s, pos, '-') >= 2) {
       stralloc_copyb(&cmd.host, cmd.self.s, pos);
     } else {
       const char* compiler = env_get("CC");
+
       if(compiler && compiler[0]) {
         if(!host_arch(compiler, &cmd.host)) {
           errmsg_warnsys("Failed executing compiler '", compiler, "': ", 0);
         }
       } else {
         if(!host_arch("cc", &cmd.host))
+
           if(!host_arch("gcc", &cmd.host))
             host_arch("clang", &cmd.host);
       }
@@ -1193,6 +1257,7 @@ pkgcfg_init(const char* self) {
   buffer_putsa(buffer_2, &dir);
   buffer_putnlflush(buffer_2);
 #endif
+
   if(path_exists(dir.s) && sysroot == 0) {
     sysroot = str_dup(dir.s);
   }
@@ -1219,6 +1284,7 @@ pkgcfg_setpath(const char* path) {
   stralloc dir;
   stralloc_init(&dir);
   strlist_init(&cmd.path, ':');
+
   if(path) {
     strlist_froms(&cmd.path, path, ':');
   } else {
@@ -1229,11 +1295,13 @@ pkgcfg_setpath(const char* path) {
     stralloc_copy(&dir, &cmd.prefix);
     stralloc_nul(&dir);
     add_paths(&dir);
+
     if(str_end(dir.s, local)) {
       dir.len -= str_len(local);
       stralloc_nul(&dir);
       add_paths(&dir);
     }
+
     if(str_end(dir.s, PATHSEP_S "usr")) {
       dir.len -= 4;
       stralloc_nul(&dir);
@@ -1368,8 +1436,10 @@ main(int argc, char* argv[], char* envp[]) {
 
   for(;;) {
     c = unix_getopt_long(argc, argv, "dhm:ilLp:aPSvV:F", opts, &index);
+
     if(c == -1 || unix_opterr /* || argv[unix_optind] == 0 */)
       break;
+
     if(c == 0)
       continue;
 
@@ -1426,9 +1496,11 @@ main(int argc, char* argv[], char* envp[]) {
       case 'E': mode |= PKGCFG_EXISTS; break;
       case '?': {
         const char* arg = argv[unix_optind];
+
         if(!str_diffn(arg, "--libs", 6) || !str_diffn(arg, "--cflags", 8)) {
           int i = arg[2] == 'l' ? PRINT_LIBS : PRINT_CFLAGS;
           add_cmd(i);
+
           if(i == PRINT_LIBS)
             libs_mode = arg[str_find(arg, "only")] ? (arg[str_find(arg, "other")] ? LIBS_ONLY_OTHER : (arg[str_find(arg, "L")] ? LIBS_ONLY_LIBPATH : LIBS_ONLY_L)) : 0;
           else
@@ -1468,11 +1540,14 @@ getopt_end:
     buffer_putnlflush(buffer_1);
     return 0;
   }
+
   if(atleast_version) {
     return 0;
   }
+
   if(libs_mode)
     add_cmd(PRINT_LIBS);
+
   if(cflags_mode)
     add_cmd(PRINT_CFLAGS);
 
@@ -1543,12 +1618,14 @@ getopt_end:
     buffer_putulong(buffer_2, *code);
     buffer_putnlflush(buffer_2);
 #endif
+
     if(*code == LIST_ALL || *code == LIST_PATH || *code == LIST_FILE) {
       pkg_list(*code);
     } else if(unix_optind < argc) {
       int exitCode;
 
       exitCode = pkg_conf(&modules, *code, mode);
+
       if(exitCode)
         error_exit(exitCode);
     }

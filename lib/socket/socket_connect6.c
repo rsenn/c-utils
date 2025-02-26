@@ -21,8 +21,10 @@ socket_connect6(int s, const char ip[16], uint16 port, uint32 scope_id) {
 
   if(noipv6) {
 #endif
+
     if(ip6_isv4mapped(ip))
       return winsock2errno(socket_connect4(s, ip + 12, port));
+
     if(byte_equal(ip, 16, V6loopback))
       return winsock2errno(socket_connect4(s, ip4loopback, port));
 #ifdef LIBC_HAS_IP6

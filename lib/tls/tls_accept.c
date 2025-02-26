@@ -21,12 +21,14 @@ tls_accept(fd_type fd) {
   buffer_putlong(buffer_2, fd);
   buffer_puts(buffer_2, " ret=");
   buffer_putlong(buffer_2, ret);
+
   if(errno) {
     buffer_puts(buffer_2, " errno=");
     buffer_putstr(buffer_2, strerror(errno));
   }
   buffer_puts(buffer_2, " retval=");
   buffer_putlong(buffer_2, i->retval);
+
   if(i->error != SSL_ERROR_NONE) {
     buffer_puts(buffer_2, " error=");
     buffer_puts(buffer_2,

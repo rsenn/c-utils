@@ -76,6 +76,7 @@ char*
 base_file(const char* suffix) {
   stralloc_zero(&base);
   stralloc_cat(&base, &prog);
+
   if(stralloc_endb(&base, ".exe", 4)) {
     base.len -= 4;
     ext = ".exe";
@@ -218,6 +219,7 @@ main(int argc, char* argv[], char* envp[]) {
   if(path_exists(base_file(".env"))) {
     size_t n;
     char* x;
+
     if((x = (char*)mmap_read(base.s, &n)))
       read_env(x, n);
     mmap_unmap(x, n);

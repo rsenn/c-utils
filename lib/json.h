@@ -39,6 +39,7 @@ typedef struct {
   union {
     unsigned boolv : 1;
     int64 intv;
+
     double doublev;
     stralloc stringv;
     slink* listv;

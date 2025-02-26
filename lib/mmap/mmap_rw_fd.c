@@ -21,6 +21,7 @@ mmap_rw_fd(fd_type fd, size_t* filesize) {
   char* map;
   m = CreateFileMapping(h, 0, PAGE_READWRITE, 0, 0, NULL);
   map = 0;
+
   if(m) {
     if((map = MapViewOfFile(m, FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, 0)))
       *filesize = GetFileSize((HANDLE)fd, NULL);
@@ -30,8 +31,10 @@ mmap_rw_fd(fd_type fd, size_t* filesize) {
 #else
   struct stat st;
   char* map = mmap_empty;
+
   if(fstat(fd, &st) == 0 && (*filesize = st.st_size)) {
     map = (char*)mmap(0, *filesize, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+
     if(map == (char*)-1)
       map = 0;
   }

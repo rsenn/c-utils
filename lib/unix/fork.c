@@ -80,10 +80,12 @@ fork(void) {
   NTSTATUS result;
 
   mod = GetModuleHandle("ntdll.dll");
+
   if(!mod)
     return -ENOSYS;
 
   clone_p = GetProcAddress(mod, "RtlCloneUserProcess");
+
   if(clone_p == NULL)
     return -ENOSYS;
 

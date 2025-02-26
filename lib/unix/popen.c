@@ -65,12 +65,15 @@ popen(const char* program, const char* type) {
   if(pids == NULL) {
     if((fds = getdtablesize()) <= 0)
       return (NULL);
+
     if((pids = (int*)malloc(fds * sizeof(int))) == NULL)
       return (NULL);
     bzero((char*)pids, fds * sizeof(int));
   }
+
   if(pipe(pdes) < 0)
     return (NULL);
+
   switch(pid = vfork()) {
     case -1: /* error */
       (void)close(pdes[0]);
@@ -96,6 +99,7 @@ popen(const char* program, const char* type) {
       /* NOTREACHED */
   }
   /* parent; assume fdopen can't fail...  */
+
   if(*type == 'r') {
     iop = fdopen(pdes[0], type);
     (void)close(pdes[1]);
@@ -119,6 +123,7 @@ pclose(FILE* iop) {
    * `popened' command, if already `pclosed', or waitpid
    * returns an error.
    */
+
   if(pids == NULL || pids[fdes = fileno(iop)] == 0)
     return (-1);
   (void)fclose(iop);

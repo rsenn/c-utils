@@ -9,6 +9,7 @@ static void
 xml_debug_nodelist(xmlnode* node, buffer* b, int depth) {
   do {
     int closing = node_is_closing(node);
+
     if(!closing)
       buffer_putnspace(b, depth * 2);
 
@@ -36,6 +37,7 @@ xml_debug_nodelist(xmlnode* node, buffer* b, int depth) {
     buffer_putm_internal(b, "element[", node_is_closing(node) ? &node->name[1] : node->name, NULL);
     buffer_putm_internal(b, "] ", NULL);
     buffer_putm_internal(b, node_is_closing(node) ? " closing" : NULL, NULL);
+
     if(node->attributes)
       xml_print_attributes(node->attributes, b, " ", "=", "'");
 
@@ -56,6 +58,7 @@ xml_debug_nodelist(xmlnode* node, buffer* b, int depth) {
       buffer_puts(b, node->name[0] == '?' ? "?" : " self-closing");
       closing = 1;
     }
+
     if(closing)
       buffer_puts(b, ",");
 

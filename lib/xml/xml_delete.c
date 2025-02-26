@@ -5,6 +5,7 @@ void
 xml_delete(xmlnode* node) {
   if(node->children) {
     xmlnode* child = node->children;
+
     do {
       xml_delete(child);
     } while((child = child->next));
@@ -12,6 +13,7 @@ xml_delete(xmlnode* node) {
 
   if(node->name)
     free(node->name);
+
   if(node->attributes)
     hmap_destroy(&node->attributes);
 

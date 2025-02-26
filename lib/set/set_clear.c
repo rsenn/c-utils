@@ -12,9 +12,11 @@ set_clear(set_t* set) {
 
   if(set->overflow) {
     // free all 'overflow' bucket entries
+
     for(i = 0; i < set->len; ++i) {
       next = set->array[i].next;
       free(set->array[i].value);
+
       while(next) {
         set->array[i].next = next->next;
         free(next->value);

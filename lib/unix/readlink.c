@@ -39,6 +39,7 @@ get_reparse_data(const char* LinkPath, REPARSE_DATA_BUFFER* rdb) {
   }
 
   /* Get the link */
+
   if(!DeviceIoControl(hFile, FSCTL_GET_REPARSE_POINT, 0, 0, &rdb->u, 1024, &returnedLength, 0)) {
 
     CloseHandle(hFile);
@@ -87,11 +88,13 @@ readlink(const char* LinkPath, char* buf, size_t maxlen) {
     if(u8_len >= maxlen)
       break;
   }
+
   if(u8_len > maxlen) {
     len--;
   }
 
   u8_len = wcs_to_u8s(buf, wbuf, len);
+
   if(u8_len >= maxlen)
     u8_len = maxlen - 1;
 
@@ -130,6 +133,7 @@ is_junction(const char* LinkPath) {
 int
 is_symlink(const char* path) {
   struct stat st;
+
   if(lstat(path, &st) == 0) {
     if(S_ISLNK(st.st_mode))
       return 1;
@@ -141,6 +145,7 @@ int
 is_junction(const char* path) {
   struct stat st;
   int fd, ret = 0;
+
   if(stat(path, &st) == 0) {
 
     if((fd = open("/proc/mounts", O_RDONLY)) != -1) {

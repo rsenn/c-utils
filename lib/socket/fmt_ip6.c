@@ -14,12 +14,14 @@ fmt_ip6(char* s, const char ip[16]) {
         compr = 1;
         pos1 = k;
       }
+
       if(k == 14) {
         k = 16;
         goto last;
       }
     } else if(compr) {
     last:
+
       if((temp = k - pos1) > len0) {
         len0 = temp;
         pos0 = pos1;
@@ -33,13 +35,16 @@ fmt_ip6(char* s, const char ip[16]) {
       len += ip4_fmt(s, ip + 12);
       break;
     }
+
     if(pos0 == k && len0) {
       if(k == 0) {
         ++len;
+
         if(s)
           *s++ = ':';
       }
       ++len;
+
       if(s)
         *s++ = ':';
       k += len0 - 2;
@@ -48,10 +53,13 @@ fmt_ip6(char* s, const char ip[16]) {
     temp = ((unsigned long)(unsigned char)ip[k] << 8) + (unsigned long)(unsigned char)ip[k + 1];
     temp = fmt_xlong(s, temp);
     len += temp;
+
     if(s)
       s += temp;
+
     if(k < 14) {
       ++len;
+
       if(s)
         *s++ = ':';
     }

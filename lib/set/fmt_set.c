@@ -13,6 +13,7 @@ fmt_set(char* out, const set_t* set, const char* separator) {
         byte_copy(&out[pos], slen, separator);
       pos += slen;
     }
+
     if(out)
       byte_copy(&out[pos], b->size, b->value);
     pos += b->size;

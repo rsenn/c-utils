@@ -124,6 +124,7 @@ serial_open(const char* port, int baud) {
   if(fd != INVALID_HANDLE_VALUE) {
     DCB dcbSerialParams;
     COMMTIMEOUTS timeouts;
+
     if(!GetCommState(fd, &dcbSerialParams)) {
       CloseHandle(fd); /* Sets port to null. Necessary? */
       return -1;
@@ -149,6 +150,7 @@ serial_open(const char* port, int baud) {
     dcbSerialParams.fAbortOnError = TRUE;
 
     /* Note to self: Forgot the indirection operator here- W. Jones... */
+
     if(!SetCommState(port, &dcbSerialParams)) {
       return -2;
     }
@@ -171,6 +173,7 @@ serial_open(const char* port, int baud) {
   struct termios options;
 
   int fd = open(port, O_RDWR | O_NOCTTY | O_NDELAY);
+
   if(fd == -1) {
     fprintf(stderr, "Couldn't open port \"%s\": %s\n", port, strerror(errno));
     return -1;
@@ -183,6 +186,7 @@ serial_open(const char* port, int baud) {
   options.c_iflag = 0;
 
   // Set Baudrate
+
   switch(baud) {
     case 0:
       cfsetispeed(&options, B0);
@@ -371,6 +375,7 @@ serial_has_char_timeout(int fd, int64 msecs) {
   struct pollfd fds;
   fds.fd = fd;
   fds.events = (POLLIN | POLLPRI); // Data may be read
+
   if(poll(&fds, 1, msecs) > 0) {
     return 1;
   } else {
@@ -379,6 +384,7 @@ serial_has_char_timeout(int fd, int64 msecs) {
 #else
   COMSTAT ComStat;
   DWORD errors = 0;
+
   if(!ClearCommError(fd, &errors, &ComStat))
     return 0;
   return ComStat.cbInQue > 0;
@@ -413,10 +419,12 @@ serial_write_raw(int fd, const char* d, unsigned int len) {
 #if !WINDOWS_NATIVE
 
     t = write(fd, (d + processed), (len - processed));
+
     if(t == -1)
 #else
     DWORD sentSize;
     t = WriteFile(fd, (d + processed), (len - processed), &sentSize, NULL);
+
     if(!t)
 #endif
 
@@ -515,6 +523,7 @@ serial_ports(void) {
 
   int i = 0;
   dir_open(&dir, "/dev/");
+
   while((entry = dir_read(&dir)) != NULL && (i < size)) {
 
 #ifdef SEARCH
@@ -529,6 +538,7 @@ serial_ports(void) {
 
 #ifdef TRY_TO_OPEN_PORTS
       int fdtmp = serial_open(files[i], 9600);
+
       if(fdtmp != -1) {
         serial_close(fdtmp);
 #endif
@@ -560,6 +570,7 @@ serial_baud_rate(int fd) {
     return -1;
 
   speed = cfgetospeed(&options);
+
   switch(speed) {
     case B0: rate = 0; break;
     case B50: rate = 50; break;

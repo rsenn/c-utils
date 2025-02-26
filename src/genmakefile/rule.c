@@ -233,6 +233,7 @@ rule_find_lib(const char* name, size_t namelen, const char* libext, const char* 
 
   stralloc_cats(&pattern, "lib");
   stralloc_catb(&pattern, name, namelen);
+
   dot = pattern.len;
   stralloc_cats(&pattern, libext);
 
@@ -681,6 +682,7 @@ rule_is_compile(target* rule) {
     return true;
 
   if((x = set_at_n(&rule->prereq, 0, &n)))
+
     if(is_source_b(x, n))
       return true;
 

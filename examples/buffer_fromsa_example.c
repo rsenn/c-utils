@@ -14,6 +14,7 @@ main() {
 
   while(buffer_getline_sa(&b, &line) == 0) {
     buffer_puts(buffer_1, "got line: \"");
+
     if(stralloc_chop(&line) != '\n')
       break;
     buffer_putsa(buffer_1, &line);

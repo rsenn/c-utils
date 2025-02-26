@@ -92,9 +92,11 @@ static int
 eat_whitespace(tokenizer* t, struct token* token, int* count) {
   *count = 0;
   int ret = 1;
+
   while(is_whitespace_token(token)) {
     ++(*count);
     ret = x_tokenizer_next(t, token);
+
     if(!ret)
       break;
   }
@@ -141,6 +143,7 @@ expect(tokenizer* t, enum tokentype tt, const char* values[], struct token* toke
   }
 
   for(int i = 0; values[i]; ++i)
+
     if(!str_diff(values[i], t->buf))
       return i;
 
@@ -150,6 +153,7 @@ expect(tokenizer* t, enum tokentype tt, const char* values[], struct token* toke
 static void
 free_visited(char* visited[]) {
   for(size_t i = 0; i < MAX_RECURSION; i++)
+
     if(visited[i])
       alloc_free(visited[i]);
 }
@@ -275,6 +279,7 @@ tokenizer_peek_next_non_ws(tokenizer* t, struct token* tok) {
 static int
 was_visited(const char* name, char* visited[], unsigned rec_level) {
   for(int x = rec_level; x >= 0; --x)
+
     if(!str_diff(visited[x], name))
       return 1;
 

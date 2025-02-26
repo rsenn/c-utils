@@ -115,6 +115,7 @@ pathconv(const char* path, stralloc* sa) {
     size_t i;
 
     for(i = 0; i < sa->len; ++i)
+
       if(sa->s[i] == '\\')
         sa->s[i] = '/';
   }
@@ -331,6 +332,7 @@ mingw_prefix(stralloc* sa) {
   msys_root(&root);
 
   stralloc_zero(sa);
+
   if((s = getenv("MINGW_PREFIX"))) {
     path_relative_to(s, root.s, sa);
     stralloc_inserts(sa, "/", 0);
@@ -355,6 +357,7 @@ pathtool(const char* arg, stralloc* sa) {
 
   /*#if defined(__MINGW32__) || defined(__MSYS__)
     len = str_len(arg);
+
     if(len >= mingw.len && stralloc_equalb(&mingw, arg, mingw.len)) {
     }
   #endif*/
@@ -542,8 +545,10 @@ main(int argc, char* argv[]) {
 
   for(;;) {
     c = unix_getopt_long(argc, argv, "afhr:s:muwL", opts, &index);
+
     if(c == -1)
       break;
+
     if(c == 0)
       continue;
 
@@ -601,10 +606,12 @@ main(int argc, char* argv[]) {
 #endif
 
   msys_root(&msys);
+
   if(!mounts_replace(mtab, &msys, 1, false)) {
   }
 
   // mounts_add(mtab, "/", msys.s);
+
   if(msys.s)
     mounts_add(mtab, msys.s, "/");
 

@@ -27,8 +27,10 @@ seek_by_read(fd_type fd, int64 amount) {
 #else
       alloc(amount);
 #endif
+
   if(amount) {
     ssize_t n = 0, r;
+
     while(n < amount && (r = read(fd, &buf[n], amount - n)) > 0) {
       n += r;
     }

@@ -18,8 +18,10 @@ path_fnmatch(const char* pattern, unsigned int plen, const char* string, unsigne
 /* label to jump back instead of recursion */
 start:
   /* when string is empty, only a pattern consisting of asteriks matches */
+
   if(slen == 0) {
     /* skip all asterikses */
+
     while(plen && *pattern == '*') {
       pattern++;
       plen--;
@@ -30,6 +32,7 @@ start:
   }
 
   /* there is still some string left but pattern ended */
+
   if(plen == 0)
     return PATH_FNM_NOMATCH;
 
@@ -38,13 +41,16 @@ start:
    * to be leading if it is the first character in string, or if both
    * PATH_FNM_PATHNAME  is set and the period immediately follows a slash.
    */
+
   if(*string == '.' && *pattern != '.' && (flags & PATH_FNM_PERIOD)) {
     /* don't match if PATH_FNM_PERIOD and this is the first char */
+
     if(!(flags & NOTFIRST))
       return PATH_FNM_NOMATCH;
 
     /* don't match if PATH_FNM_PERIOD and PATH_FNM_PATHNAME and previous
      * was '/' */
+
     if((flags & PATH_FNM_PATHNAME) && string[-1] == '/')
       return PATH_FNM_NOMATCH;
   }
@@ -61,6 +67,7 @@ start:
 
       /* unterminated character class because in a pathname the '/' is a
          separator and can't be matched. this means we have a mismatch */
+
       if(*string == '/' && (flags & PATH_FNM_PATHNAME))
         return PATH_FNM_NOMATCH;
 
@@ -77,6 +84,7 @@ start:
 
         /* if there is a closing bracket and it's not
            the first char the class is terminated */
+
         if(*pattern == ']' && pattern != start)
           break;
 
@@ -86,6 +94,7 @@ start:
            * HARR HARR */
         } else {
           /* MEMBER - character range */
+
           if(plen > 1 && pattern[1] == '-' && pattern[2] != ']') {
             /* check wheter char is within the specified range */
             res = (*string >= *pattern && *string <= pattern[2]);
@@ -101,6 +110,7 @@ start:
         }
 
         /* character class seems terminated and matched */
+
         if((res && !neg) || ((!res && neg) && *pattern == ']')) {
           while(plen && *pattern != ']') {
             pattern++;
@@ -124,11 +134,13 @@ start:
 
     case '\\': {
       /* do we escape chars? */
+
       if(!(flags & PATH_FNM_NOESCAPE)) {
         /* escape next character... */
         pattern++;
         plen--;
         /* ...if there is one */
+
         if(plen)
           goto match;
       }
@@ -141,6 +153,7 @@ start:
 
     case '*': {
       /* this is the only situation where we really need to recurse */
+
       if((*string == '/' && (flags & PATH_FNM_PATHNAME)) || path_fnmatch(pattern, plen, string + 1, slen - 1, flags)) {
         pattern++;
         plen--;
@@ -152,6 +165,7 @@ start:
 
     case '?': {
       /* it can't match a / when we're matching a pathname */
+
       if(*string == '/' && (flags & PATH_FNM_PATHNAME))
         break;
       pattern++;
@@ -165,6 +179,7 @@ start:
     default:
     match : {
       /* perform literal match */
+
       if(*pattern == *string) {
         pattern++;
         plen--;

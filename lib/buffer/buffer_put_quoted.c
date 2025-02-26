@@ -6,8 +6,10 @@ int
 buffer_put_quoted(buffer* b, const char* x, size_t len) {
   char buf[16];
   size_t i, n, r = 0;
+
   for(i = 0; i < len; i++) {
     uint32 c = (unsigned int)(unsigned char)x[i];
+
     if(c < 0x20) {
       buffer_put(b, buf, (n = fmt_8long(buf, c)));
     } else {

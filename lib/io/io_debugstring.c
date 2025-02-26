@@ -16,8 +16,10 @@ io_debugstring(fd_type s, char* buf, unsigned int bufsize) {
   unsigned int i;
   io_entry* e;
   e = (io_entry*)iarray_get((iarray*)io_getfds(), s);
+
   if(!e)
     return 0;
+
   if(bufsize < 100)
     return 0;
   i = fmt_str(buf, "first_readable ");
@@ -35,6 +37,7 @@ io_debugstring(fd_type s, char* buf, unsigned int bufsize) {
   i += fmt_str(buf + i, "fd # ");
   i += fmt_ulong(buf + i, s);
   i += fmt_str(buf + i, ": ");
+
   if(bufsize - i < 100)
     return 0;
   i += fmt_str(buf + i, "timeout ");
@@ -42,26 +45,37 @@ io_debugstring(fd_type s, char* buf, unsigned int bufsize) {
   i += fmt_str(buf + i, ".");
   i += fmt_ulong(buf + i, e->timeout.nano);
   i += fmt_str(buf + i, " ");
+
   if(bufsize - i < 100)
     return 0;
+
   if(e->wantread)
     i += fmt_str(buf + i, "wr ");
+
   if(e->wantwrite)
     i += fmt_str(buf + i, "ww ");
+
   if(e->canread)
     i += fmt_str(buf + i, "cr ");
+
   if(e->canwrite)
     i += fmt_str(buf + i, "cw ");
+
   if(e->nonblock)
     i += fmt_str(buf + i, "nb ");
+
   if(!e->inuse)
     i += fmt_str(buf + i, "!inuse ");
+
   if(e->kernelwantread)
     i += fmt_str(buf + i, "kwr ");
+
   if(e->kernelwantwrite)
     i += fmt_str(buf + i, "kww ");
+
   if(e->epolladded)
     i += fmt_str(buf + i, "ea ");
+
   if(e->mmapped) {
     i += fmt_str(buf + i, "mmap(");
     i += fmt_xlonglong(buf + i, (ptrdiff_t)e->mmapped);
@@ -70,6 +84,7 @@ io_debugstring(fd_type s, char* buf, unsigned int bufsize) {
     i += fmt_str(buf + i, "@");
     i += fmt_xlong(buf + i, (unsigned long)e->mapofs);
   }
+
   if(bufsize - i < 100)
     return 0;
   i += fmt_str(buf + i, "next_read ");

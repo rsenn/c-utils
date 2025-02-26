@@ -35,11 +35,14 @@ fmt_yenc(char* dest, const char* src, size_t len) {
         c += 64;
       /* fall through */
       default:
+
       dontescape:
         ++linelen;
+
         if(dest)
           dest[written] = c;
         ++written;
+
         if(linelen > 253) {
           if(dest)
             dest[written] = '\n';
@@ -48,9 +51,11 @@ fmt_yenc(char* dest, const char* src, size_t len) {
         }
     }
     /* in case someone gives us malicious input */
+
     if(written > ((size_t)-1) / 2)
       return (size_t)-1;
   }
+
   if(linelen) {
     if(dest)
       dest[written] = '\n';

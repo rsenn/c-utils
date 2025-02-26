@@ -31,11 +31,13 @@ tls_context(tls_method_t const* method) {
   tls_ctx_t* ctx;
 
   ctx = SSL_CTX_new(method);
+
   if(ctx == NULL) {
     ERR_print_errors_fp(stderr);
     abort();
     return 0;
   }
+
   if(tls_key) {
     if(!SSL_CTX_use_RSAPrivateKey_file(ctx, tls_key, SSL_FILETYPE_PEM)) {
       buffer_putm_internal(buffer_2, "ERROR loading key: ", ERR_lib_error_string(ERR_get_error()), NULL);
@@ -49,6 +51,7 @@ tls_context(tls_method_t const* method) {
       buffer_putnlflush(buffer_2);
     }
   }
+
   if(tls_key && tls_certificate) {
     if(!SSL_CTX_check_private_key(ctx)) {
       buffer_putm_internal(buffer_2, "ERROR checking key: ", ERR_lib_error_string(ERR_get_error()), NULL);

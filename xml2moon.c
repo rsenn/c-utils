@@ -21,6 +21,7 @@ xml_print_attrs(HMAP_DB* db, buffer* b) {
 
   while(tpl) {
     buffer_putm_internal(b, tpl == db->list_tuple ? "" : ", ", NULL);
+
     if(tpl->key[str_chr(tpl->key, '-')])
       buffer_putm_internal(b, "\"", tpl->key, "\"", NULL);
     else
@@ -38,6 +39,7 @@ xml_print_attrs(HMAP_DB* db, buffer* b) {
       case HMAP_DATA_TYPE_CUSTOM: buffer_putptr(b, tpl->vals.val_custom); break;
     }
     buffer_puts(b, "\"");
+
     if(tpl->next == db->list_tuple)
       break;
     tpl = tpl->next;
@@ -153,6 +155,7 @@ main(int argc, char* argv[]) {
 
   buffer_mmapprivate(&input, argv[1]);
   buffer_skip_until(&input, "\r\n", 2);
+
   doc = xml_read_tree(&input);
   xml_print_tree(doc->children, buffer_1);
 

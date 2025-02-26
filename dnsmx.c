@@ -35,6 +35,7 @@ main(int argc, char** argv) {
   while(*argv) {
     if(!stralloc_copys(&fqdn, *argv))
       nomem();
+
     if(dns_mx(&out, &fqdn) == -1)
       diesys(111,
              FATAL,
@@ -47,15 +48,19 @@ main(int argc, char** argv) {
     if(!out.len) {
       if(!dns_domain_fromdot(&q, *argv, str_len(*argv)))
         nomem();
+
       if(!stralloc_copys(&out, "0 "))
         nomem();
+
       if(!dns_domain_todot_cat(&out, q))
         nomem();
+
       if(!stralloc_cats(&out, "\n"))
         nomem();
       buffer_put(buffer_1, out.s, out.len);
     } else {
       i = 0;
+
       while(i + 2 < out.len) {
         j = byte_chr(out.s + i + 2, out.len - i - 2, 0);
         uint16_unpack_big(out.s + i, &pref);

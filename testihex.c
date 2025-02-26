@@ -26,6 +26,7 @@ typedef union {
 static void
 putdata(buffer* out, const uint8* x, size_t n) {
   size_t i;
+
   for(i = 0; i < n; i++) {
     if(i)
       buffer_putspace(out);
@@ -50,8 +51,10 @@ mem_top(ihex_file* h, uint32 mask) {
       uint16_unpack_big(p.r->data, &a.hi16);
     else
       a.lo16 = p.r->offset;
+
     if(a.off32 & (~mask))
       break;
+
     if(top < a.off32 + p.r->length)
       top = a.off32 + p.r->length;
   }
@@ -68,8 +71,10 @@ mem_bottom(ihex_file* h) {
       uint16_unpack_big(p.r->data, &a.hi16);
     else
       a.lo16 = p.r->offset;
+
     if(a.off32 & (~mask))
       break;
+
     if(bottom > a.off32)
       bottom = a.off32;
   }
@@ -115,6 +120,7 @@ hex_copy(ihex_file* h, uint8_t* m) {
     if(p.r->type == 0) {
       if((a.off32 & (~mask)))
         break;
+
       if((a.off32 & (~mask)) == 0)
         byte_copy(&m[a.off32], p.r->length, p.r->data);
     }
@@ -235,8 +241,10 @@ main(int argc, char* argv[]) {
 
   for(;;) {
     c = unix_getopt_long(argc, argv, "hvb:o:", opts, &index);
+
     if(c == -1)
       break;
+
     if(c == 0)
       continue;
 
@@ -306,6 +314,7 @@ main(int argc, char* argv[]) {
       msize = top;
     } else {
       size_t n = MAX(msize, top) - msize;
+
       if(n) {
         alloc_re(&m, msize, msize + n);
         byte_fill(&m[msize], n, 0xff);

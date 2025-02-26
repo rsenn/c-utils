@@ -46,12 +46,14 @@ io_getevents(aio_context_t ctx, long min_nr, long max_nr, struct io_event* event
 int
 main() {
   int fd = open("/etc/passwd", O_RDONLY);
+
   if(fd < 0) {
     PFATAL("open(/etc/passwd)");
   }
 
   aio_context_t ctx = 0;
   int r = io_setup(128, &ctx);
+
   if(r < 0) {
     PFATAL("io_setup()");
   }
@@ -61,12 +63,14 @@ main() {
   struct iocb* list_of_iocb[1] = {&cb};
 
   r = io_submit(ctx, 1, list_of_iocb);
+
   if(r != 1) {
     PFATAL("io_submit()");
   }
 
   struct io_event events[1] = {};
   r = io_getevents(ctx, 1, 1, events, NULL);
+
   if(r != 1) {
     PFATAL("io_getevents()");
   }

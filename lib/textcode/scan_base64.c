@@ -4,10 +4,13 @@ static inline int
 dec(unsigned char x) {
   if(x >= 'A' && x <= 'Z')
     return x - 'A';
+
   if(x >= 'a' && x <= 'z')
     return x - 'a' + 26;
+
   if(x >= '0' && x <= '9')
     return x - '0' + 26 + 26;
+
   switch(x) {
     case '+': return 62;
     case '/': return 63;
@@ -21,13 +24,17 @@ scan_base64(const char* src, char* dest, size_t* destlen) {
   register const unsigned char* s = (const unsigned char*)src;
   const char* orig = src;
   size_t i, j = 0;
+
   for(i = 0;;) {
     int a = dec(*s);
+
     if(a < 0) {
       int equal = (*s == '=');
+
       while(*s == '=' && ((s - (const unsigned char*)src) & 3))
         ++s;
       tmp &= ((1 << bits) - 1);
+
       if(!tmp || equal) {
         j = i;
         orig = (const char*)s;
@@ -37,17 +44,21 @@ scan_base64(const char* src, char* dest, size_t* destlen) {
     tmp = (tmp << 6) | a;
     bits += 6;
     ++s;
+
     if(bits >= 8) {
       bits -= 8;
+
       if(dest)
         dest[i] = (tmp >> bits);
       ++i;
+
       if(!bits) {
         j = i;
         orig = (const char*)s;
       }
     }
   }
+
   if(destlen)
     *destlen = j;
   return orig - src;

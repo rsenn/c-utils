@@ -72,10 +72,12 @@ void
 dir_entries(const char* dir, strarray* arr) {
   rdir_t d;
   const char* entry;
+
   if(rdir_open(&d, dir) != 0) {
     errmsg_warnsys("ERROR: Opening directory /dev", 0);
     return;
   }
+
   while((entry = rdir_read(&d)))
     strarray_push(arr, entry);
   rdir_close(&d);
@@ -153,17 +155,21 @@ get_ports(strarray* ports) {
   dir_entries("/dev/", &temp);
   n = strarray_size(&temp);
   pvec = strarray_BEGIN(&temp);
+
   for(j = 0; j < n; j++) {
     const char* port = pvec[j];
     size_t i = str_rchr(port, '/');
+
     if(port[i]) {
       i++;
+
       if(str_start(&port[i], "ttyAMA") || str_start(&port[i], "ttyACM") || str_start(&port[i], "ttyUSB") || port[i + 3] == 'S') {
         if(!path_access(port, R_OK)) {
           if(errno != ENOENT && errno != ENODEV && errno != EACCES)
             errmsg_warnsys(port, 0);
           continue;
         }
+
         if(!strarray_contains(ports, port)) {
           strarray_push(ports, port);
 #ifdef DEBUG_OUTPUT_
@@ -248,6 +254,7 @@ detect_ports(strarray* ports) {
       buffer_putnlflush(buffer_2);
     }
   }
+
   for(entry = port_list; entry; entry = entry->next) {
 
     char* port = entry->name;
@@ -286,6 +293,7 @@ detect_ports(strarray* ports) {
 ssize_t
 serial_read(fd_type serial_fd, char* buf, size_t len, void* ptr) {
   ssize_t ret = read(serial_fd, buf, len);
+
   if(ret <= 0)
     return 0;
   return ret;
@@ -301,10 +309,12 @@ term_init(fd_type fd, struct termios* state) {
   tcflush(fd, TCIOFLUSH);
 
   /* Get current terminal settings. */
+
   if(tcgetattr(fd, &old))
     return;
 
   /* Store state, if requested. */
+
   if(state)
     *state = old; /* Structures can be
                      assigned! */
@@ -333,12 +343,14 @@ term_init(fd_type fd, struct termios* state) {
   }
 
   /* Set the new terminal settings. */
+
   if(tcsetattr(fd, TCSAFLUSH, &raw))
     return;
 
   /* tcsetattr() is happy even if it did
    * not set *all* settings.
    * We need to verify. */
+
   if(tcgetattr(fd, &actual)) {
     const int saved_errno = errno;
     /* Try restoring the old settings!
@@ -361,11 +373,13 @@ term_restore(fd_type fd, const struct termios* state) {
   int result;
   /* Discard all unread input and
    * untransmitted output. */
+
   do {
     result = tcflush(fd, TCIOFLUSH);
   } while(result == -1 && errno == EINTR);
 
   /* Restore terminal state. */
+
   do {
     result = tcsetattr(fd, TCSAFLUSH, (struct termios*)state);
   } while(result == -1 && errno == EINTR);
@@ -403,6 +417,7 @@ process_serial(fd_type serial_fd) {
   char x[1024];
   ssize_t ret;
   size_t bytes = 0;
+
   if((ret = read(serial_fd, x, sizeof(x))) > 0) {
 
     buffer_put(buffer_1, x, ret);
@@ -458,6 +473,7 @@ process_loop(fd_type serial_fd, int64 timeout) {
   /*  io_fd(STDIN_FILENO);
     io_nonblock(STDIN_FILENO);
   */
+
   if(send_file) {
     size_t n;
     char* x;
@@ -483,6 +499,7 @@ process_loop(fd_type serial_fd, int64 timeout) {
 
     taia_sub(&diff, &deadline, &t);
     int64 wait_msecs = taia_approx(&diff) * 1000;
+
     if(wait_msecs < 0)
       wait_msecs = 0;
     fd_type read_fd, write_fd;
@@ -497,12 +514,14 @@ process_loop(fd_type serial_fd, int64 timeout) {
 
       io_dump(buffer_2);
     }
+
     if((ret = io_waituntil2(wait_msecs)) < 0) {
       errmsg_warnsys("wait error: ", 0);
       break;
     } else {
       ret = 1;
     }
+
     while((write_fd = io_canwrite()) != -1) {
       if(write_fd == serial_fd) {
         ssize_t bytes;
@@ -526,6 +545,7 @@ process_loop(fd_type serial_fd, int64 timeout) {
         }
       }
     }
+
     while((read_fd = io_canread()) != -1) {
       if(read_fd == serial_fd) {
         if((ret = process_serial(serial_fd) <= 0)) {
@@ -533,20 +553,24 @@ process_loop(fd_type serial_fd, int64 timeout) {
             goto end;
         }
       }
+
       if(read_fd == term_buf.fd) {
         size_t bytes = 0;
+
         while((ret = read(STDIN_FILENO, &ch, 1)) > 0) {
           if(debugmode) {
             buffer_puts(buffer_2, "Read char '");
             buffer_putulong(buffer_2, (unsigned long)(unsigned char)ch);
             buffer_putsflush(buffer_2, "'\n");
           }
+
           if(ch == '\r' || ch == '\n')
             buffer_puts(&send_buf, "\r\n");
           else
             buffer_putc(&send_buf, ch);
           bytes++;
         }
+
         if(bytes && queue == 0) {
           queue = 1;
           io_wantwrite(serial_fd);
@@ -562,6 +586,7 @@ process_loop(fd_type serial_fd, int64 timeout) {
         }
       }
     }
+
     if(stralloc_length(&serial_buf)) {
       buffer_putsa(buffer_1, &serial_buf);
       buffer_flush(buffer_1);
@@ -635,8 +660,10 @@ main(int argc, char* argv[]) {
 
   for(;;) {
     c = unix_getopt_long(argc, argv, "b:hvri:xl", opts, &index);
+
     if(c == -1)
       break;
+
     if(c == 0)
       continue;
 
@@ -665,6 +692,7 @@ main(int argc, char* argv[]) {
     }
   }
 getopt_end:
+
   if(unix_optind < argc) {
     portname = argv[unix_optind++];
 
@@ -708,6 +736,7 @@ getopt_end:
       buffer_putlonglong(buffer_2,
       newports);
       buffer_putnlflush(buffer_2);*/
+
       if(newports == 0) {
         usleep(250 * 1000);
         continue;
@@ -723,6 +752,7 @@ getopt_end:
 #endif
 
     serial_fd = serial_open(portname, baudrate);
+
     if(serial_fd == -1) {
       usleep(250 * 1000);
       continue;
@@ -744,6 +774,7 @@ getopt_end:
     // serial_fd);
 
     // serial.op = &read;
+
     if((ret = process_loop(serial_fd, 30000)) > 0) {
     }
 
@@ -752,6 +783,7 @@ getopt_end:
     remove_port(portname);
 
     int64 idx = strarray_index_of(&ports, portname);
+
     if(idx != -1) {
 
       /*buffer_puts(buffer_2, "removed
@@ -771,6 +803,7 @@ getopt_end:
     strarray_size(&ports); i++) { const
     char* portstr = strarray_AT(&ports,
     i); if(portstr == NULL) continue;
+
       if(i > 0)
         buffer_puts(buffer_1, " ");
       buffer_puts(buffer_1, portstr);

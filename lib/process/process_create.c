@@ -81,6 +81,7 @@ process_create(const char* filename, char* const argv[], fd_type std[3], const c
     posix_spawnattr_t attr;
 
     posix_spawnattr_setflags(&attr, 0);
+
     if(std) {
       posix_spawn_file_actions_init(&actions);
       posix_spawn_file_actions_adddup2(&actions, std[0], 0);
@@ -178,6 +179,7 @@ process_create(const char* filename, char* const argv[], fd_type std[3], const c
 
     if((pid = fork()) == 0) {
       fd_type i;
+
       for(i = 0; i <= 2; ++i) {
         if(fds[i] != i) {
           dup2(fds[i], i);

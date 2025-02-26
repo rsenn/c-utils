@@ -21,11 +21,15 @@ buffer_indent_write(fd_type fd, char* x, size_t n, void* ptr) {
   buffer* b = (buffer*)ptr;
   struct indent_write* iw = (struct indent_write*)b->cookie;
   ssize_t ret;
+
   while(n > 0) {
     ret = iw->realop(fd, x, 1, ptr);
+
     if(*x == '\n') {
       size_t i;
+
       for(i = 0; i < iw->level; i++)
+
         if((ret = iw->realop(fd, (void*)iw->indent, str_len(iw->indent), ptr)) < 0)
           return ret;
     }
@@ -49,7 +53,9 @@ static void json_print_val(jsonval* val, buffer* b, int depth, json_print_fn*);
 static int
 byte_fullfils_predicate(const char* x, size_t len, int (*pred)(int)) {
   size_t i;
+
   for(i = 0; i < len; ++i)
+
     if(!pred(x[i]))
       return 0;
   return !!i;
@@ -70,13 +76,16 @@ static void
 json_print_key(buffer* b, const char* key, size_t key_len, const jsonfmt* fmt) {
   char quote;
   quote = ((!isdigit(key[0]) && byte_fullfils_predicate(key, key_len, json_is_identifier_char))) ? fmt->quote[1] : fmt->quote[0];
+
   if(fmt->compliant) {
     if(quote != '"')
       quote = '"';
   }
+
   if(quote)
     buffer_putc(b, quote);
   buffer_put(b, key, key_len);
+
   if(quote)
     buffer_putc(b, quote);
 }
@@ -85,16 +94,20 @@ static void
 json_print_str(buffer* b, const char* x, size_t len, const jsonfmt* fmt) {
   char tmp[6];
   char quote = fmt->quote[0];
+
   if(quote)
     buffer_putc(b, quote);
+
   while(len--) {
     assert(*x);
+
     if(*x == quote || (*x == '\\' && !(len > 0 && x[1] == 'u')))
       buffer_put(b, tmp, fmt_escapecharjson(tmp, *x, quote));
     else
       buffer_PUTC(b, *x);
     ++x;
   }
+
   if(quote)
     buffer_putc(b, quote);
 }
@@ -104,6 +117,7 @@ json_print_object(jsonval* val, buffer* b, int depth, json_print_fn* p) {
   int index = 0;
   jsonfmt printer;
   p(&printer, val, depth + 1, index, 0);
+
   if(MAP_ISNULL(val->dictv)) {
     buffer_puts(b, "null");
     return;
@@ -141,14 +155,17 @@ json_print_array(jsonval* val, buffer* b, int depth, json_print_fn* p) {
   jsonitem* item;
   int index = 0;
   buffer_puts(b, "[");
+
   if(val->listv == NULL) {
     buffer_puts(b, "]");
     return;
   }
   p(&printer, val, depth + 1, index, 0);
   json_print_separator(val, b, JSON_FMT_NEWLINE, &printer);
+
   for(item = val->itemv; item; item = item->next) {
     p(&printer, val, depth + 1, index, 0);
+
     if(index > 0)
       json_print_separator(val, b, JSON_FMT_SEPARATOR, &printer);
     json_print_val(&item->value, b, depth + 1, p);
@@ -179,6 +196,7 @@ json_print_val(jsonval* val, buffer* b, int depth, json_print_fn* p) {
 void
 json_print(jsonval val, buffer* b, json_print_fn* p) {
   jsonfmt printer;
+
   if(p == NULL)
     p = &json_default_printer;
   p(&printer, &val, 0, -1, '"');

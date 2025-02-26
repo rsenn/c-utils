@@ -112,6 +112,7 @@ input_process_path_b(const char* y, size_t len, stralloc* out) {
   }
 
   size_t n;
+
   if((n = byte_finds(y, len, ".dir/")) < len) {
     n += 5;
     y += n;
@@ -434,6 +435,7 @@ input_process_command(stralloc* cmd, int argc, char* argv[], const char* file, s
   }
 
   /* Relocate output file */
+
   if(compile || link) {
     stralloc tmp;
 
@@ -571,6 +573,7 @@ input_process_command(stralloc* cmd, int argc, char* argv[], const char* file, s
   do_rule = (n || strlist_count_pred(&files, &is_object_b)) || out.len;
 
   if(stralloc_starts(&out, "@") || stralloc_starts(&out, "/tmp"))
+
     do_rule = false;
 
   if(do_rule && (lib || link || compile)) {

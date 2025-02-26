@@ -11,6 +11,7 @@ dlist_unshift(dlist* l, node* p) {
 
   /* If there already is a p at the head update
      its prev-reference, else update the tail */
+
   if(l->head)
     l->head->prev = p;
   else

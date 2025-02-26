@@ -235,6 +235,7 @@ buffer_lzma(buffer* b, buffer* other, int compress) {
     return 0;
   }
   ctx = alloc_zero(sizeof(lzma_ctx));
+
   if(ctx == NULL)
     return 0;
 

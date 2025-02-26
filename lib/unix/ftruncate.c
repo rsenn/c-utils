@@ -10,6 +10,7 @@ ftruncate(int fd, off_t length) {
 
   if(lseek64(fd, length, SEEK_SET) == length) {
     HANDLE h = (HANDLE)_get_osfhandle(fd);
+
     if(SetEndOfFile(h)) {
       if(pos > length)
         pos = length;

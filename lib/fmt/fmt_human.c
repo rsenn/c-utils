@@ -4,8 +4,10 @@ size_t
 fmt_human(char* dest, uint64 l) {
   char unit;
   size_t i;
+
   if(l < 1000)
     return fmt_ulong(dest, l);
+
   if(l > 1000000000000) {
     /* dang!  overflow! */
     l /= 1000;
@@ -21,6 +23,7 @@ fmt_human(char* dest, uint64 l) {
     l = (l + 50) / 100;
     unit = 'k';
   }
+
   if(!dest)
     return fmt_ulong(0, l) + 2;
   i = fmt_ulong(dest, l / 10);

@@ -33,6 +33,7 @@ buffer* output;
 int
 xml_read_function(xmlreader* reader, xmlnodeid id, stralloc* name, stralloc* value, HMAP_DB** attrs) {
   static int newline_written = 0;
+
   switch(id) {
     case XML_TEXT: {
       if(name) {
@@ -45,6 +46,7 @@ xml_read_function(xmlreader* reader, xmlnodeid id, stralloc* name, stralloc* val
 
       /* buffer_puts(buffer_2, "Element:
       "); buffer_putsa(buffer_2, name);
+
       if(value)
         buffer_putsa(buffer_2, value);
       buffer_putnlflush(buffer_2); */
@@ -127,6 +129,7 @@ static int max_depth;
 static int
 xmlpp_get_depth(xmlnode* node, int d) {
   xmlnode* n;
+
   if(d == 0)
     max_depth = 0;
   else if(d > max_depth)
@@ -147,8 +150,10 @@ xmlpp_fmt(xmlnode* node, buffer* b, int depth, char ch, int n) {
   int inner = depth < 0;
 
   depth = depth < 0 ? -depth : depth;
+
   if(one_line)
     return;
+
   if(compact) {
     if(inner && xmlpp_get_depth(node, 0) <= 1 && xml_num_children(node) <= 1) {
       parent = node;
@@ -200,8 +205,10 @@ main(int argc, char* argv[]) {
 
   for(;;) {
     c = unix_getopt_long(argc, argv, "hsdol:cti", opts, &index);
+
     if(c == -1)
       break;
+
     if(c == 0)
       continue;
 
@@ -225,6 +232,7 @@ main(int argc, char* argv[]) {
 
   if(inplace) {
     fd_type out_fd = open_temp(&tmpl);
+
     if(out_fd == -1) {
       errmsg_warn("output file", 0);
       return 1;
@@ -239,6 +247,7 @@ main(int argc, char* argv[]) {
   }
 
   // xml_reader(&r, &infile);
+
   doc = xml_read_tree(&infile);
 
   xml_print(doc, output, xmlpp_fmt);
@@ -254,6 +263,7 @@ main(int argc, char* argv[]) {
       errmsg_infosys("unlink");
       return 1;
     }
+
     if(rename(tmpl, input_file) == -1) {
       errmsg_infosys("rename");
       return 1;

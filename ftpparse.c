@@ -25,7 +25,9 @@
 static int
 my_byte_equal(const char* s, unsigned int n, const char* t) {
   unsigned int i;
+
   for(i = 0; i < n; i++)
+
     if(s[i] != t[i])
       return 0;
   return 1;
@@ -47,6 +49,7 @@ static unsigned int
 get_ulong(const char* p, unsigned int len, unsigned long* ul) {
   unsigned long u = 0;
   unsigned int i;
+
   for(i = 0; i < len; i++) {
     if(p[i] > '9' || p[i] < '0')
       break;
@@ -60,6 +63,7 @@ static unsigned int
 get_uint64(const char* p, unsigned int len, uint64* ul) {
   uint64 u = 0;
   unsigned int i;
+
   for(i = 0; i < len; i++) {
     if(p[i] > '9' || p[i] < '0')
       break;
@@ -90,14 +94,17 @@ guess_year(unsigned long month, unsigned long day) {
     struct tai n;
     tai_now(&n);
     this_year = 1970;
+
     for(;;) {
       utcdate2tai(&yearstart, this_year + 1, 0, 1, 0, 0, 0);
+
       if(tai_less(&n, &yearstart))
         break;
       this_year++;
     }
   }
   utcdate2tai(&x, this_year, month, day, 0, 0, 0);
+
   if(tai_less(&now, &x))
     return this_year - 1;
   return this_year;
@@ -115,6 +122,7 @@ getmod(struct tai* t, const unsigned char* p, unsigned int l) {
 
   for(i = 0; i < l; i++) {
     unsigned int u;
+
     if(p[i] < '0' || p[i] > '9')
       return 0;
     u = (p[i] - '0');
@@ -164,11 +172,13 @@ static const char* months[12] = {"jan", "feb", "mar", "apr", "may", "jun", "jul"
 static int
 get_month(char* buf, unsigned int len) {
   int i;
+
   if(len < 3)
     return -1;
 #define CMP(x) (months[i][x] == buf[x] || months[i][x] == buf[x] + 32)
 
   for(i = 0; i < 12; ++i)
+
     if(CMP(0) && CMP(1) && CMP(2))
       return i;
   return -1;
@@ -180,21 +190,26 @@ static int
 parse_eplf(struct ftpparse* f, char* buf, unsigned int len) {
   unsigned int start, pos;
   unsigned long ul;
+
   if(buf[0] != '+')
     return 0;
 
   start = 1;
+
   for(pos = 1; pos < len; pos++) {
     if('\t' == buf[pos]) {
       f->name = buf + pos + 1;
       f->namelen = len - pos - 1;
+
       if(!f->namelen)
         return 0; /* huh? */
       f->format = FTPPARSE_FORMAT_EPLF;
       return 1;
     }
+
     if(',' != buf[pos])
       continue;
+
     switch(buf[start]) {
       case '/': f->flagtrycwd = 1; break;
       case 'r': f->flagtryretr = 1; break;
@@ -216,6 +231,7 @@ parse_eplf(struct ftpparse* f, char* buf, unsigned int len) {
       case 'i':
         /* refuse zero bytes length ids
          */
+
         if(pos - start - 1 == 0)
           return 0;
         f->idtype = FTPPARSE_ID_FULL;
@@ -243,17 +259,21 @@ scan_time(const char* buf, const unsigned int len, unsigned long* h, unsigned lo
   *h = *m = *s = 0;
 
   x = get_ulong(buf, len, h);
+
   if(len == x)
     return 0;
+
   if(!x || x > 2)
     return 0;
 
   if(':' != buf[x])
     return 0;
+
   if(len == ++x)
     return 0;
 
   y = get_ulong(buf + x, len - x, m);
+
   if(y != 2)
     return 0;
   x += y;
@@ -263,6 +283,7 @@ scan_time(const char* buf, const unsigned int len, unsigned long* h, unsigned lo
       return 0;
 
     y = get_ulong(buf + x, len - x, s);
+
     if(y != 2)
       return 0;
     x += y;
@@ -274,14 +295,18 @@ scan_time(const char* buf, const unsigned int len, unsigned long* h, unsigned lo
     if('P' == buf[x])
       *h += 12;
     x++;
+
     if(len == x)
       return 0;
+
     if('M' != buf[x])
       return 0;
     x++;
+
     if(len == x)
       return 0;
   }
+
   if(len == x || buf[x] == ' ')
     return x;
   return 0;
@@ -341,6 +366,7 @@ parse_msdos(struct ftpparse* f, char* buf, unsigned int len) {
           if(get_ulong(buf + start, pos - start, &year) != pos - start)
             return 0;
           start = pos + 1;
+
           if(!fix_year(&year))
             return 0;
         }
@@ -353,9 +379,11 @@ parse_msdos(struct ftpparse* f, char* buf, unsigned int len) {
         /* FALL THROUGH */
       case 4: /* time */
         x = scan_time(buf + start, len - pos, &hour, &min, &sec, &mtimetype);
+
         if(!x)
           return 0;
         pos += x;
+
         if(pos == len)
           return 0;
         state++;
@@ -394,10 +422,12 @@ parse_msdos(struct ftpparse* f, char* buf, unsigned int len) {
         f->flagtrycwd = flagtrycwd;
         f->flagtryretr = flagtryretr;
         f->mtimetype = mtimetype;
+
         if(flagtryretr) {
           f->size = size;
           f->sizetype = FTPPARSE_SIZE_BINARY;
         }
+
         if(!fix_year(&year))
           return 0;
         utcdate2tai(&f->mtime, year, mon - 1, day, hour, min, sec);
@@ -414,11 +444,13 @@ dosplit(char* buf, int len, char* p[], unsigned int l[]) {
   int inword = 0;
   int pos;
   int start;
+
   for(pos = start = 0; pos < len; pos++) {
     if(inword) {
       if(' ' == buf[pos]) {
         inword = 0;
         l[count++] = pos - start;
+
         if(count == MAXWORDS) {
           l[count - 1] = len - start;
           break;
@@ -432,6 +464,7 @@ dosplit(char* buf, int len, char* p[], unsigned int l[]) {
       }
     }
   }
+
   if(inword) {
     l[count] = buf + pos - p[count];
     count++;
@@ -455,6 +488,7 @@ parse_multinet(struct ftpparse* f, char* p[], int l[], unsigned int count) {
   int x;
   char* q;
   int m;
+
   if(count < 4)
     return 0;
 
@@ -462,28 +496,36 @@ parse_multinet(struct ftpparse* f, char* p[], int l[], unsigned int count) {
   m = l[2];
 
   x = get_ulong(q, m, &day);
+
   if(!x || x > 2 || day > 31)
     return 0;
+
   if(q[x] != '-')
     return 0;
   q += x + 1;
   m -= x + 1;
   mon = get_month(q, m);
+
   if(-1 == mon)
     return 0;
+
   if(q[3] != '-')
     return 0;
   q += 4;
+
   if(m < 5)
     return 0;
   m -= 4;
   x = get_ulong(q, m, &year);
+
   if(!x || q[x] != ' ')
     return 0;
+
   if(!fix_year(&year))
     return 0;
 
   x = scan_time(p[3], l[3], &hour, &min, &sec, &mtimetype);
+
   if(x != l[3])
     return 0;
 
@@ -492,26 +534,35 @@ parse_multinet(struct ftpparse* f, char* p[], int l[], unsigned int count) {
   utcdate2tai(&f->mtime, year, mon, day, hour, min, sec);
 
   for(x = 0; x < l[0]; x++)
+
     if(p[0][x] == ';')
       break;
+
   if(x > 4)
+
     if(p[0][x - 4] == '.' && p[0][x - 3] == 'D' && p[0][x - 2] == 'I' && p[0][x - 1] == 'R') {
       x -= 4;
       f->flagtrycwd = 1;
     }
+
   if(!f->flagtrycwd)
     f->flagtryretr = 1;
 
   f->namelen = x;
   f->name = p[0];
+
   if(f->name[0] == '[') {
     /* [dir]file.maybe */
     unsigned int y;
+
     for(y = 1; y < f->namelen; y++)
+
       if(f->name[y] == ']')
         break;
+
     if(y != f->namelen)
       y++; /* skip ] */
+
     if(y != f->namelen) {
       f->name += y;
       f->namelen -= y;
@@ -609,42 +660,54 @@ parse_unix(struct ftpparse* f, char* buf, int len, char* p[], int l[], unsigned 
     case 'l': flagtryretr = flagtrycwd = 1; break;
   }
   i = 3;
+
   if(l[1] == 6 && my_byte_equal(p[1], l[1], "folder"))
     i = 2;
 
   x = get_uint64(p[i], l[i], &size);
+
   if(x == l[i])
     may_have_size = 1;
   i++;
 
   while(i < count) {
     mon = get_month(p[i], l[i]);
+
     if(-1 == mon) {
       /* may be size */
       x = get_uint64(p[i], l[i], &size);
+
       if(x == l[i])
         may_have_size = 1;
     }
     i++;
+
     if(-1 != mon)
       break;
   }
+
   if(i == count)
     return 0;
 
   x = get_ulong(p[i], l[i], &day);
+
   if(!x)
     return 0;
+
   if(p[i][x] != ' ')
     return 0;
+
   if(++i == count)
     return 0;
 
   x = get_ulong(p[i], l[i], &year);
+
   if(!x)
     return 0;
+
   if(p[i][x] == ':') {
     x = scan_time(p[i], l[i], &hour, &min, &sec, &mtimetype);
+
     if(x != l[i])
       return 0;
     year = guess_year(mon, day);
@@ -654,17 +717,21 @@ parse_unix(struct ftpparse* f, char* buf, int len, char* p[], int l[], unsigned 
     /* may be this case: */
     /* - [-RWCE-F-] mlm 11820 Feb  3
      * 93 12:00  drivers.doc */
+
     if(i + 2 < count) {
       x = scan_time(p[i + 1], l[i + 1], &hour, &min, &sec, &mtimetype);
+
       if(x != l[i + 1]) {
         hour = min = sec = 0;
         mtimetype = FTPPARSE_MTIME_REMOTEDAY;
       } else
         i++;
     }
+
     if(!fix_year(&year))
       return 0;
   }
+
   if(++i == count)
     return 0;
   /* note: dosplit eats spaces - but we
@@ -678,12 +745,14 @@ parse_unix(struct ftpparse* f, char* buf, int len, char* p[], int l[], unsigned 
   /* but: */
   /* "d [R----F--] supervisor 512
    * Jan 16 18:53    login" */
+
   if(p[0][1] != ' ') {
     while(f->name[-2] == ' ') {
       f->name--;
       f->namelen++;
     }
   }
+
   if(may_have_size) {
     f->sizetype = FTPPARSE_SIZE_BINARY;
     f->size = size;
@@ -700,8 +769,10 @@ parse_unix(struct ftpparse* f, char* buf, int len, char* p[], int l[], unsigned 
 
   if('l' == *buf) {
     unsigned int j;
+
     for(j = 1; j < f->namelen - 4; j++) /* 1, -4: no empty names,
                                            please */
+
       if(f->name[j] == ' ' && f->name[j + 1] == '-' && f->name[j + 2] == '>' && f->name[j + 3] == ' ') {
         f->symlink = f->name + j + 4;
         f->symlinklen = f->namelen - j - 4;
@@ -732,26 +803,33 @@ parse_supertcp(struct ftpparse* f, char* p[], int l[], unsigned int count) {
   if(count < 4)
     return 0;
   x = scan_time(p[3], l[3], &hour, &min, &sec, &mtimetype);
+
   if(x != l[3])
     return 0;
 
   x = get_ulong(p[2], l[2], &mon);
+
   if(x != 2 || p[2][x] != '-')
     return 0;
   x++;
   x += get_ulong(p[2] + x, l[2] - x, &day);
+
   if(x != 5 || p[2][x] != '-')
     return 0;
   x++;
   x += get_ulong(p[2] + x, l[2] - x, &year);
+
   if((x != 8 && x != 10) || p[2][x] != ' ')
     return 0;
+
   if(!fix_year(&year))
     return 0;
+
   if(my_byte_equal(p[1], 5, "<DIR>"))
     dir = 1;
   else {
     x = get_uint64(p[1], l[1], &size);
+
     if(!x || p[1][x] != ' ')
       return 0;
   }
@@ -759,10 +837,12 @@ parse_supertcp(struct ftpparse* f, char* p[], int l[], unsigned int count) {
   f->name = p[0];
   f->namelen = l[0];
   f->size = size;
+
   if(!dir)
     f->sizetype = FTPPARSE_SIZE_BINARY;
   utcdate2tai(&f->mtime, year, mon, day, hour, min, sec);
   f->mtimetype = mtimetype;
+
   if(dir)
     f->flagtrycwd = 1;
   else
@@ -878,35 +958,46 @@ ftpparse_mlsx(struct ftpparse* fp, char* x, int ll, int is_mlst) {
   int sizetype = FTPPARSE_SIZE_UNKNOWN;
   int flagbrokenmlsx = 0;
   SETUP();
+
   if(is_mlst)
+
     if(ll > 1) {
       ll--;
       x++;
     }
+
   if(ll < 2) /* empty facts, space,
                 one-byte-filename */
     return 0;
 
   for(i = 0; i < ll; i++) {
     int j = 0, k = 0;
+
     if(x[i] == ' ')
       break; /* end of facts */
+
     while(i + j < ll && x[i + j] != ';' && x[i + j] != ' ' && x[i + j] != '=')
       j++;
+
     if(i + j == ll)
       return 0;
+
     if(x[i + j] == ' ')
       return 0;
+
     if(x[i + j] == ';')
       return 0;
     /* x[i+j] is now '=' */
+
     while(i + j + k < ll && x[i + j + k] != ';' && x[i + j + k] != ' ')
       k++;
+
     if(i + j + k == ll)
       return 0;
       /* x[i+j+k] is space or semicolon,
        * so use of getlong is safe */
 #define ISFACT(name) (j == sizeof(name) - 1 && case_startb(x + i, j, name))
+
     if(ISFACT("size")) {
       get_uint64(x + i + j + 1, k - 1, &size);
       sizetype = FTPPARSE_SIZE_BINARY;
@@ -933,14 +1024,17 @@ ftpparse_mlsx(struct ftpparse* fp, char* x, int ll, int is_mlst) {
       idlen = k - 1;
     }
     i += j + k;
+
     if(x[i] == ' ') {
       flagbrokenmlsx = 1;
       break;
     }
   }
+
   if(ll == i)
     return 0;
   i++;
+
   if(ll == i)
     return 0;
   fp->name = x + i;
@@ -951,6 +1045,7 @@ ftpparse_mlsx(struct ftpparse* fp, char* x, int ll, int is_mlst) {
   fp->mtime = mtime;
   fp->flagtrycwd = flagtrycwd;
   fp->flagtryretr = flagtryretr;
+
   if(id) {
     fp->idtype = FTPPARSE_ID_FULL;
     fp->id = id;
@@ -1029,6 +1124,7 @@ ftpparse_int(struct ftpparse* fp, char* buf, int len) {
 
   if(parse_multinet(fp, p, l, count))
     return 1;
+
   if(parse_supertcp(fp, p, l, count))
     return 1;
 
@@ -1037,9 +1133,12 @@ ftpparse_int(struct ftpparse* fp, char* buf, int len) {
 int
 ftpparse(struct ftpparse* fp, char* buf, int len, int eat_leading_spaces) {
   int x = ftpparse_int(fp, buf, len);
+
   if(!x)
     return x;
+
   if(eat_leading_spaces && fp->format != FTPPARSE_FORMAT_EPLF && fp->format != FTPPARSE_FORMAT_MLSX)
+
     while(fp->namelen > 1 && fp->name[0] == ' ') {
       /* leave at least a " " in the
        * name */

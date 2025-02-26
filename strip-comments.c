@@ -57,6 +57,7 @@ put_line(stralloc* sa, const char* x, ssize_t len) {
     if((x[len - 1] == '\n' || x[len - 1] == '\r'))
 
       len--;
+
     while(len >= 1 && isspace(x[len - 1]))
       len--;
   }
@@ -86,10 +87,13 @@ eat_line(const char** s, size_t n, buffer* out) {
   size_t p, q;
   const char* x = *s;
   p = scan_noncharsetnskip(x, "\n\r", n);
+
   if(p < n) {
     q = scan_charsetnskip(&x[p], "\n\r", n - p);
+
     if(p == 0 && q == n)
       return p;
+
     if(!remove_blank_lines || p > 0)
       buffer_put(out, x, p + (q > 2 ? 2 : q));
     x += p + q;
@@ -107,6 +111,7 @@ consume_output(stralloc* sa, buffer* out) {
 
   while(s < e) {
     size_t r = eat_line(&s, e - s, out);
+
     if(r == 0) {
       if(prevlen)
         break;
@@ -143,10 +148,12 @@ strip_comments(charbuf* in, buffer* out) {
   stralloc line;
   stralloc_init(&line);
   n = 0;
+
   while((c = charbuf_get(in)) > 0) {
 
     if(c == '/') {
       int c2 = charbuf_peek(in);
+
       if(c2 == '/') {
         if(prev_c != '\\') {
           charbuf_skip_until(in, '\n');
@@ -154,6 +161,7 @@ strip_comments(charbuf* in, buffer* out) {
         }
       } else if(c2 == '*') {
         charbuf_skip(in);
+
         do {
           if(charbuf_skip_until(in, '*') <= 0)
             break;
@@ -168,6 +176,7 @@ strip_comments(charbuf* in, buffer* out) {
     prev_c = c;
 
     n++;
+
     if(c == '\n') {
       put_line(&queue, line.s, line.len);
       stralloc_zero(&line);
@@ -177,6 +186,7 @@ strip_comments(charbuf* in, buffer* out) {
   }
 end:
   put_line(&queue, line.s, line.len);
+
   if(queue.len > 0)
     consume_output(&queue, out);
 
@@ -212,8 +222,10 @@ main(int argc, char* argv[]) {
 
   for(;;) {
     c = unix_getopt_long(argc, argv, "hib", opts, &index);
+
     if(c == -1)
       break;
+
     if(c == 0)
       continue;
 
@@ -237,6 +249,7 @@ main(int argc, char* argv[]) {
     in_fd = open_read((in_path = argv[unix_optind]));
     unix_optind++;
   }
+
   if(unix_optind < argc) {
 #ifdef DEBUG_OUTPUT
     buffer_putm_internal(buffer_2, "Opening output file '", argv[unix_optind], "'...", NULL);
@@ -249,6 +262,7 @@ main(int argc, char* argv[]) {
   charbuf_init(&input, (read_fn*)(void*)&read, in_fd, 2);
 
 again:
+
   if(in_place) {
     stralloc_zero(&tmp);
     path_dirname(in_path, &tmp);
@@ -274,12 +288,14 @@ again:
     buffer_puts(buffer_1, tmpl);
     buffer_putnlflush(buffer_1);
   }
+
   if(out_path) {
     buffer_puts(buffer_1, "out_path: ");
     buffer_puts(buffer_1, out_path);
     buffer_putnlflush(buffer_1);
   }
   /*
+
     if((x = mmap_read(out_path, &n)) &&
     n > 1) {
 
@@ -294,6 +310,7 @@ again:
 
   if(in_place) {
     // buffer inplace;
+
     if(unlink(in_path) != 0)
       errmsg_warnsys("unlink: ", in_path, 0);
 

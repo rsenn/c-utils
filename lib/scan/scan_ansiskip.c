@@ -10,6 +10,7 @@ scan_ansiskip(const char* s, size_t limit) {
       while(++i < limit && !isalpha(s[i]))
         ;
       ++i;
+
       if(i < limit && s[i] == '~')
         ++i;
       return i;

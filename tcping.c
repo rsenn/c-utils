@@ -99,6 +99,7 @@ read_hosts(const char* file) {
 
     if(s >= l)
       continue;
+
     if(p[s] == '#')
       continue;
 
@@ -140,6 +141,7 @@ int
 lookup_hosts(stralloc* name, address_t* addr) {
   address_t* ptr;
   stralloc_nul(name);
+
   if((ptr = MAP_GET(hosts_db, name->s, name->len + 1))) {
     byte_copy(addr, sizeof(address_t), ptr);
     return 1;
@@ -177,6 +179,7 @@ size_t
 fmt_taia(char* dest, const struct taia* t) {
   size_t i = 0;
   uint64 secs = t->sec.x;
+
   double frac = taia_frac(t);
 
   if(secs > 0) {
@@ -287,6 +290,7 @@ main(int argc, char* argv[]) {
 #if 1 // def HAVE_SOLARIS
       /* solaris immediately returns
        * ECONNREFUSED on local ports */
+
       if(errno == ECONNREFUSED) {
         if(verbose) {
           buffer_putm_internal(buffer_1, argv[unix_optind], " port ", argv[unix_optind + 1], " closed.", NULL);
@@ -333,6 +337,7 @@ main(int argc, char* argv[]) {
     if((ret = io_timeouted()) == sock) {
       /* timeout */
       closesocket(sock);
+
       if(verbose) {
         buffer_putm_internal(buffer_1, argv[unix_optind], " port ", argv[unix_optind + 1], " user timeout.", NULL);
         buffer_putnlflush(buffer_1);
@@ -344,6 +349,7 @@ main(int argc, char* argv[]) {
     if(io_canread() == sock || io_canwrite() == sock) {
       if(socket_error(sock, &error) == 0) {
         /* getsockopt error */
+
         if(verbose) {
           errmsg_warn("error: ", argv[unix_optind], " port ", argv[unix_optind + 1], ": getsockopt: ", 0);
           buffer_putnlflush(buffer_2);
@@ -352,6 +358,7 @@ main(int argc, char* argv[]) {
         ret = error;
         goto fail;
       }
+
       if(error != 0) {
         if(verbose) {
           if(error == EHOSTUNREACH)

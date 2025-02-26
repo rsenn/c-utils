@@ -94,6 +94,7 @@ log_ip(const char* x, size_t iplen) {
     buffer_put(buffer_2, buf, (iplen == 4 ? fmt_ip4 : fmt_ip6)(buf, x));
   } else {
     int j;
+
     for(j = ip6_isv4mapped(x) ? 12 : 0; j < 16; j++)
       log_hex(x[j]);
   }
@@ -103,6 +104,7 @@ void
 log_iplist(const char* x, size_t n, size_t iplen) {
   size_t i;
   char buf[FMT_IP4];
+
   for(i = 0; i + iplen <= n; i += iplen) {
     if(i > 0)
       log_string(",");
@@ -139,6 +141,7 @@ log_logid(const char id[2]) {
 void
 log_logtype(const char type[2]) {
   uint16 u;
+
   if(byte_equal(type, 2, DNS_T_A))
     log_string("a");
   else if(byte_equal(type, 2, DNS_T_NS))
@@ -191,12 +194,15 @@ log_name(const char* name) {
     log_string(".");
     return 1;
   }
+
   while((state = *q++)) {
     while(state) {
       ch = *q++;
       --state;
+
       if((ch <= 32) || (ch > 126))
         ch = '?';
+
       if((ch >= 'A') && (ch <= 'Z'))
         ch += 32;
       buffer_put(buffer_2, &ch, 1);
@@ -281,7 +287,9 @@ log_tx(const char* q, const char qtype[2], const char* control, const char serve
   log_name(q);
   log_space();
   log_name(control);
+
   for(i = 0; i < 64; i += 4)
+
     if(byte_diff(servers + i, 4, "\0\0\0\0")) {
       log_space();
       log_ip(servers + i, 4);
@@ -305,6 +313,7 @@ log_cachedanswer(const char* q, const char type[2], const char* cached, size_t c
     log_iplist(cached, cachedlen, 16);
   } else if(byte_equal(type, 2, DNS_T_MX)) {
     uint16 prio;
+
     for(i = 0; i < cachedlen;) {
       uint16_unpack_big(&cached[i], &prio);
 
@@ -434,6 +443,7 @@ log_rr(const char server[16], const char* q, const char type[2], const char* buf
   } else {
     for(i = 0; i < len; ++i) {
       log_hex(buf[i]);
+
       if(i > 30) {
         log_string("...");
         break;
@@ -515,6 +525,7 @@ log_rrsoa(const char server[16], const char* q, const char* n1, const char* n2, 
   log_name(n1);
   log_space();
   log_name(n2);
+
   for(i = 0; i < 20; i += 4) {
     uint32_unpack_big(misc + i, &u);
     log_space();

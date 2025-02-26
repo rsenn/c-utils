@@ -34,6 +34,7 @@ reduce(stralloc* sa) {
   for(i = sa->len - 1; i >= 0; --i) {
     if(!(isdigit(sa->s[i]) || sa->s[i] == '.'))
       break;
+
     if(i == j + 3 || sa->s[i] == '.') {
       sa->len = i;
       return 1;
@@ -168,8 +169,10 @@ main(int argc, char* argv[]) {
 
   for(;;) {
     c = unix_getopt_long(argc, argv, "hv", opts, &index);
+
     if(c == -1)
       break;
+
     if(c == '\0')
       continue;
 
@@ -189,6 +192,7 @@ main(int argc, char* argv[]) {
 
     if(str_equal(&a[i], ".list")) {
       buffer in;
+
       if(!buffer_mmapread(&in, a)) {
         stralloc target, link;
         ssize_t ret;
@@ -201,6 +205,7 @@ main(int argc, char* argv[]) {
 
           if(ret == 0 || target.s[0] == '\0')
             break;
+
           if(target.len > 0)
             --target.len;
 

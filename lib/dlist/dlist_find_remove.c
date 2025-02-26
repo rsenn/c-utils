@@ -9,6 +9,7 @@ dlist_find_delete(dlist* l, int (*pred)(void*)) {
     if(pred(&p[1])) {
       /* If there is a prev node, update its next-
          reference, otherwise update the head */
+
       if(p->prev)
         p->prev->next = p->next;
       else
@@ -16,6 +17,7 @@ dlist_find_delete(dlist* l, int (*pred)(void*)) {
 
       /* If there is a next node, update its prev-
          reference otherwise update the tail */
+
       if(p->next)
         p->next->prev = p->prev;
       else

@@ -81,11 +81,13 @@ filepos_dump(const struct file_pos* pos) {
     prev = pos->offset;
     buffer_puts(buffer_2, " / ");
   }
+
   if(pos->file) {
     buffer_puts(buffer_2, pos->file);
     buffer_puts(buffer_2, ":");
   }
   buffer_putulong(buffer_2, pos->line);
+
   if(pos->column) {
     buffer_puts(buffer_2, ":");
     buffer_putulong(buffer_2, pos->column);
@@ -120,6 +122,7 @@ token_dump(const tokenizer* t, const token* tok, size_t len) {
     buffer_puts(buffer_2, " value=");
     buffer_putulong(buffer_2, tok->value);
   }
+
   if(len > 0) {
     buffer_puts(buffer_2, " len=");
     buffer_putulong(buffer_2, len);
@@ -138,14 +141,18 @@ main(int argc, char** argv) {
   char *tmp, *fn;
   fd_type fd;
   errmsg_iam(argv[0]);
+
   while((c = unix_getopt(argc, argv, "h")) != -1)
+
     switch(c) {
       default: return usage(argv[0]);
     }
   fn = 0;
   fd = STDIN_FILENO;
+
   if(argv[unix_optind] && str_diff(argv[unix_optind], "-")) {
     fn = argv[unix_optind];
+
     if((fd = open_read(fn)) == -1) {
       errmsg_warnsys("open_read", 0);
       return 1;
@@ -157,18 +164,23 @@ main(int argc, char** argv) {
   {
     token tok;
     uint64 offset = 0;
+
     while((ret = tokenizer_next(&t, &tok)) > 0) {
       struct file_pos pos;
+
       if(tok.type != TT_SEP) {
         pos = filepos_from_token(&tok);
       } else {
         pos = filepos_from_buffer(&in, offset);
       }
+
       if(pos.file == 0)
         pos.file = t.filename;
+
       if(pos.offset == -1)
         pos.offset = offset;
       filepos_dump(&pos);
+
       if(tok.type != TT_SEP)
         token_dump(&t, &tok, t.chb.cnt - offset);
       dump_charbuf(&t.chb);
@@ -176,6 +188,7 @@ main(int argc, char** argv) {
       offset = t.chb.cnt;
     }
   }
+
   if(in.fd != STDIN_FILENO)
     buffer_close(&in);
   return !ret;

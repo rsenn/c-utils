@@ -16,6 +16,7 @@ umult32(uint32 a, uint32 b, uint32* c) {
 int
 umult32(uint32 a, uint32 b, uint32* c) {
   uint64 x = (uint64)a * b;
+
   if(x > 0xffffffff)
     return 0;
   *c = x & 0xffffffff;

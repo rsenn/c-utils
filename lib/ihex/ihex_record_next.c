@@ -9,6 +9,7 @@ ihex_record_next(ihex_file* ihf, ihex_record* rec, int type) {
   while((p.link = p.link->next)) {
     if(p.link == &ihf->records)
       break;
+
     if(p.rec->type == type)
       break;
   }

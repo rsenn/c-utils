@@ -61,6 +61,7 @@ main(int argc, char* argv[]) {
   stralloc_init(&tmp);
 
   in_fd = open_read(argc > 1 ? argv[1] : "../dirlist/test.json");
+
   if(argc > 2)
     out_fd = open_trunc(argv[2]);
 

@@ -5,6 +5,7 @@
 char*
 stralloc_moveb(stralloc* from, size_t* len) {
   char* s;
+
   if(len)
     *len = from->len;
 

@@ -230,6 +230,7 @@ output_cmake_rule(buffer* b, target* rule) {
 
           if(byte_ends(x + pos, n - pos, exts.lib))
             n -= str_len(exts.lib);
+
           if(byte_ends(x + pos, n - pos, exts.slib))
             n -= str_len(exts.slib);
 
@@ -338,6 +339,7 @@ output_cmake_rules(buffer* b, MAP_T rules) {
     buffer_putm_internal(buffer_2, "Outputting cmake ", NULL);
     rule_dump(rule);
 #endif
+
     if(!cmd_libs && str_end(name, ".a"))
       continue;
 

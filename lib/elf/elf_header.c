@@ -8,6 +8,7 @@ elf_header_ident(void* elf) {
 void*
 elf_header_sections(void* elf) {
   uint8* base = elf;
+
   switch(base[ELF_EI_CLASS]) {
     case ELF_ELFCLASS32: {
       elf32_ehdr* ehdr = elf;

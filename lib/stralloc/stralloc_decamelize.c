@@ -4,6 +4,7 @@
 size_t
 stralloc_decamelize(const char* s, stralloc* sa, char sep) {
   const char* x = s;
+
   while(*x) {
     stralloc_catb(sa, x, 1);
 

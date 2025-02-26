@@ -23,6 +23,7 @@ serverwantstcp(const char* buf, unsigned int len) {
 
   if(!dns_packet_copy(buf, len, 0, out, 12))
     return 1;
+
   if(out[2] & 2)
     return 1;
   return 0;
@@ -37,6 +38,7 @@ serverfailed(const char* buf, unsigned int len) {
     return 1;
   rcode = out[3];
   rcode &= 15;
+
   if(rcode && (rcode != 3)) {
     errno = EAGAIN;
     return 1;
@@ -51,19 +53,25 @@ irrelevant(const struct dns_transmit* d, const char* buf, unsigned int len) {
   unsigned int pos;
 
   pos = dns_packet_copy(buf, len, 0, out, 12);
+
   if(!pos)
     return 1;
+
   if(byte_diff(out, 2, d->query + 2))
     return 1;
+
   if(out[4] != 0)
     return 1;
+
   if(out[5] != 1)
     return 1;
 
   dn = 0;
   pos = dns_packet_getname(buf, len, pos, &dn);
+
   if(!pos)
     return 1;
+
   if(!dns_domain_equal(dn, d->query + 14)) {
     free(dn);
     return 1;
@@ -71,10 +79,13 @@ irrelevant(const struct dns_transmit* d, const char* buf, unsigned int len) {
   free(dn);
 
   pos = dns_packet_copy(buf, len, pos, out, 4);
+
   if(!pos)
     return 1;
+
   if(byte_diff(out, 2, d->qtype))
     return 1;
+
   if(byte_diff(out + 2, 2, DNS_C_IN))
     return 1;
 
@@ -110,6 +121,7 @@ dns_transmit_free(struct dns_transmit* d) {
   queryfree(d);
   socketfree(d);
   packetfree(d);
+
   if(d->iplen == 0)
     d->iplen = 16;
 }
@@ -129,6 +141,7 @@ randombind(struct dns_transmit* d) {
         return 0;
     }
   }
+
   if((v4mapped || d->iplen != 16) && socket_is4(d->s1 - 1)) {
     if(socket_bind4(d->s1 - 1, ip, 0) == 0)
       return 0;
@@ -153,28 +166,34 @@ thisudp(struct dns_transmit* d) {
   while(d->udploop < 4) {
     for(; d->curserver < 16; ++d->curserver) {
       ip = d->servers + d->iplen * d->curserver;
+
       if(byte_diff(ip, d->iplen, V6any)) {
         d->query[2] = dns_random(256);
         d->query[3] = dns_random(256);
 
         d->s1 = 1 + (d->iplen == 16 ? socket_udp6() : socket_udp4());
         err = errno;
+
         if(!d->s1) {
           dns_transmit_free(d);
           return -1;
         }
+
         if(randombind(d) == -1) {
           dns_transmit_free(d);
           return -1;
         }
         err = errno;
         // v4mapped = ip6_isv4mapped(ip);
+
         if(d->iplen == 16)
           ret = socket_connect6(d->s1 - 1, ip, 53, d->scope_id);
         else
           ret = socket_connect4(d->s1 - 1, ip, 53);
         err = errno;
+
         if(ret == 0)
+
           if(send(d->s1 - 1, d->query + 2, d->querylen - 2, 0) == (long)d->querylen - 2) {
             struct taia now;
             taia_now(&now);
@@ -219,15 +238,18 @@ thistcp(struct dns_transmit* d) {
 
   for(; d->curserver < 16; ++d->curserver) {
     ip = d->servers + d->iplen * d->curserver;
+
     if(byte_diff(ip, d->iplen, V6any)) {
       d->query[2] = dns_random(256);
       d->query[3] = dns_random(256);
 
       d->s1 = 1 + (d->iplen == 16 ? socket_tcp6() : socket_tcp4());
+
       if(!d->s1) {
         dns_transmit_free(d);
         return -1;
       }
+
       if(randombind(d) == -1) {
         dns_transmit_free(d);
         return -1;
@@ -246,6 +268,7 @@ thistcp(struct dns_transmit* d) {
         d->tcpstate = 2;
         return 0;
       }
+
       if((errno == EINPROGRESS) || (errno == EWOULDBLOCK)) {
         d->tcpstate = 1;
         return 0;
@@ -281,6 +304,7 @@ dns_transmit_start(struct dns_transmit* d, const char servers[256], int flagrecu
   len = dns_domain_length(q);
   d->querylen = len + 18;
   d->query = malloc(d->querylen);
+
   if(!d->query)
     return -1;
 
@@ -332,6 +356,7 @@ dns_transmit_get(struct dns_transmit* d, const iopause_fd* x, const struct taia*
     if(taia_less(when, &d->deadline))
       return 0;
     errno = ETIMEDOUT;
+
     if(d->tcpstate == 0)
       return nextudp(d);
     return nexttcp(d);
@@ -343,19 +368,24 @@ dns_transmit_get(struct dns_transmit* d, const iopause_fd* x, const struct taia*
     have sent query to curserver on UDP socket s
     */
     r = recv(fd, udpbuf, sizeof udpbuf, 0);
+
     if(r <= 0) {
       if(errno == ECONNREFUSED)
+
         if(d->udploop == 2)
           return 0;
       return nextudp(d);
     }
+
     if((unsigned long)r + 1 > sizeof udpbuf)
       return 0;
 
     if(irrelevant(d, udpbuf, r))
       return 0;
+
     if(serverwantstcp(udpbuf, r))
       return firsttcp(d);
+
     if(serverfailed(udpbuf, r)) {
       if(d->udploop == 2)
         return 0;
@@ -365,6 +395,7 @@ dns_transmit_get(struct dns_transmit* d, const iopause_fd* x, const struct taia*
 
     d->packetlen = r;
     d->packet = malloc(d->packetlen);
+
     if(!d->packet) {
       dns_transmit_free(d);
       return -1;
@@ -379,6 +410,7 @@ dns_transmit_get(struct dns_transmit* d, const iopause_fd* x, const struct taia*
     have sent connection attempt to curserver on TCP socket s
     pos not defined
     */
+
     if(!socket_connected(fd))
       return nexttcp(d);
     d->pos = 0;
@@ -392,9 +424,11 @@ dns_transmit_get(struct dns_transmit* d, const iopause_fd* x, const struct taia*
     have sent pos bytes of query
     */
     r = send(fd, d->query + d->pos, d->querylen - d->pos, 0);
+
     if(r <= 0)
       return nexttcp(d);
     d->pos += r;
+
     if(d->pos == d->querylen) {
       struct taia now;
       taia_now(&now);
@@ -411,6 +445,7 @@ dns_transmit_get(struct dns_transmit* d, const iopause_fd* x, const struct taia*
     pos not defined
     */
     r = recv(fd, (void*)&ch, 1, 0);
+
     if(r <= 0)
       return nexttcp(d);
     d->packetlen = ch;
@@ -425,6 +460,7 @@ dns_transmit_get(struct dns_transmit* d, const iopause_fd* x, const struct taia*
     have received one byte of packet length into packetlen
     */
     r = recv(fd, (void*)&ch, 1, 0);
+
     if(r <= 0)
       return nexttcp(d);
     d->packetlen <<= 8;
@@ -432,6 +468,7 @@ dns_transmit_get(struct dns_transmit* d, const iopause_fd* x, const struct taia*
     d->tcpstate = 5;
     d->pos = 0;
     d->packet = malloc(d->packetlen);
+
     if(!d->packet) {
       dns_transmit_free(d);
       return -1;
@@ -447,17 +484,22 @@ dns_transmit_get(struct dns_transmit* d, const iopause_fd* x, const struct taia*
     have received pos bytes of packet
     */
     r = recv(fd, d->packet + d->pos, d->packetlen - d->pos, 0);
+
     if(r <= 0)
       return nexttcp(d);
     d->pos += r;
+
     if(d->pos < d->packetlen)
       return 0;
 
     socketfree(d);
+
     if(irrelevant(d, d->packet, d->packetlen))
       return nexttcp(d);
+
     if(serverwantstcp(d->packet, d->packetlen))
       return nexttcp(d);
+
     if(serverfailed(d->packet, d->packetlen))
       return nexttcp(d);
 

@@ -139,13 +139,15 @@ int hmap_free_data(TUPLE* tuple);
         data = va_arg(args, char*); \
         d_len = va_arg(args, size_t); \
         new_tuple->vals.val_chars = (char*)calloc(1, d_len + 1); \
+        \
         if(new_tuple->vals.val_chars == NULL) { \
           free(new_tuple); \
           return HMAP_ALLOCATED_ERROR; \
         } \
-        byte_copy(new_tuple->vals.val_chars, d_len, data); \
-\
-        ((char*)new_tuple->vals.val_chars)[d_len] = 0; \
+        \
+         byte_copy(new_tuple->vals.val_chars, d_len, data); \
+        \
+  ((char*)new_tuple->vals.val_chars)[d_len] = 0; \
         new_tuple->data_len = d_len; \
         HMAP_DUMP("add[%d] data[%s]\n", index, (char*)new_tuple->vals.val_chars); \
         break; \

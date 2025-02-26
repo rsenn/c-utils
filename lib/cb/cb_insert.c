@@ -6,14 +6,17 @@ cb_insert(critbit_tree* cb, const void* key, size_t keylen) {
   unsigned char* bytes = (unsigned char*)key;
   assert(cb);
   assert(key);
+
   if(!cb->root) {
     cb->root = make_external_node(key, keylen);
     return CB_SUCCESS;
   } else {
     void** iter = &cb->root;
     struct critbit_node* prev = 0;
+
     for(;;) {
       void* ptr = *iter;
+
       if(decode_pointer(&ptr) == INTERNAL_NODE) {
         int branch;
         node = (struct critbit_node*)ptr;
@@ -50,11 +53,14 @@ cb_insert(critbit_tree* cb, const void* key, size_t keylen) {
 
         /* find the right place to insert, iff prev's crit-bit is later in
          * the string than new crit-bit */
+
         if(prev && cb_less(node, prev)) {
           for(iter = &cb->root;;) {
             ptr = *iter;
+
             if(decode_pointer(&ptr) == INTERNAL_NODE) {
               struct critbit_node* next = (struct critbit_node*)ptr;
+
               if(cb_less(next, node)) {
                 branch = ((1 + ((bytes[next->byte] | next->mask) & 0xFF)) >> 8);
                 iter = &next->child[branch];

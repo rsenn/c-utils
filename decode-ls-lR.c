@@ -43,6 +43,7 @@ is_delimiter(char c) {
 size_t
 skip_field(int n, char* s, size_t len) {
   size_t ret = 0;
+
   while(n-- && ret < len) {
     if(ret == len)
       return ret;
@@ -138,15 +139,18 @@ main(int argc, char* argv[]) {
 
   for(argi = 1; argi < argc; argi++) {
     char* arg = argv[argi];
+
     if(arg[0] == '-') {
       switch(arg[1]) {
         case 's':
           argi++;
+
           if(argi < argc)
             skip_fields = atoi(argv[argi]);
           break;
         case 'd':
           argi++;
+
           if(argi < argc) {
 
             delimiters = argv[argi];
@@ -155,8 +159,10 @@ main(int argc, char* argv[]) {
           break;
         case 'p':
           argi++;
+
           if(argi < argc) {
             stralloc_copys(&dirp, argv[argi]);
+
             if(dirp.len && dirp.s[dirp.len - 1] != '/')
               stralloc_catb(&dirp, "/", 1);
           }
@@ -166,11 +172,13 @@ main(int argc, char* argv[]) {
     } else
       break;
   }
+
   if(argi < argc) {
     buffer_puts(buffer_2, "Opening file ");
     buffer_puts(buffer_2, argv[argi]);
     buffer_puts(buffer_2, "...\n");
     buffer_flush(buffer_2);
+
     if((buffer_0->fd = open(argv[argi], O_RDONLY)) < 0)
       usage(argv[0]);
   }

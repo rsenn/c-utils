@@ -145,6 +145,7 @@ io_wantread(fd_type d) {
   }
 
   /* the harder case: do as before */
+
   if(!e->kernelwantread)
     io_wantread_really(d, e);
   else

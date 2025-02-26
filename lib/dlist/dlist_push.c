@@ -11,6 +11,7 @@ dlist_push(dlist* l, node* p) {
 
   /* If there already is a p at the tail update
      its prev-reference, else update the head */
+
   if(l->tail)
     l->tail->next = p;
   else

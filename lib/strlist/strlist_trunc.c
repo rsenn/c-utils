@@ -4,6 +4,7 @@ int
 strlist_trunc(strlist* l, size_t items) {
   size_t n;
   char* x;
+
   if(items == 0) {
     stralloc_trunc(&l->sa, 0);
     return 0;

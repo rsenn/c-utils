@@ -257,6 +257,7 @@ output_make_rule(buffer* b, target* rule, build_tool_t tool, const char quote_ar
     stralloc_init(&cmd);
 
     /* XXX
+
     if(infile && (signed)rule->type >= 0)
       stralloc_copy(&cmd, &commands.v[rule->type]);
     else*/
@@ -480,6 +481,7 @@ output_script(buffer* b, target* rule, build_tool_t tool, const char quote_args[
     return;
 
   if(!rule->name[str_chr(rule->name, '%')])
+
     if(rule->recipe.s != commands.compile.s)
       buffer_putm_internal(b, newline, tool == TOOL_BATCH ? "REM" : "#", " Rules for '", rule->name, "'", newline, NULL);
 

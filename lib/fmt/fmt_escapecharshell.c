@@ -29,18 +29,22 @@ fmt_escapecharshell(char* dest, int chr) {
     case '\v': c = 'v'; goto doescape;
     case '\\':
       c = '\\';
+
     doescape:
+
       if(dest) {
         dest[0] = '\\';
         dest[1] = c;
       }
       return 2;
     default:
+
       if(ch >= 32 /* && ch < 127*/) {
         if(dest)
           dest[0] = ch;
         return 1;
       }
+
       if(dest) {
         dest[0] = '\\';
         dest[1] = 'x';

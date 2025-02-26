@@ -5,9 +5,11 @@ byte_lower(void* s, size_t len) {
   unsigned char c;
   unsigned char* x;
   x = (unsigned char*)s;
+
   while(len) {
     --len;
     c = *x;
+
     if(c >= 'A' && c <= 'Z') { /* upper case */
       *x = (unsigned char)(c + 32);
     }

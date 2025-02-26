@@ -61,6 +61,7 @@ void
 dump_bytes(const char* x, size_t n) {
   size_t i;
   char buf[FMT_ULONG];
+
   for(i = 0; i < n; i++) {
     if(isspace(x[i]) || isprint(x[i])) {
       dump_char(x[i]);
@@ -75,9 +76,11 @@ void
 dump_ints(const int* x, size_t n) {
   size_t i;
   buffer_puts(buffer_2, "[");
+
   for(i = 0; i < n; i++) {
     if(x[i] == -1)
       break;
+
     if(i > 0)
       dump_str(",");
     buffer_putlong(buffer_2, x[i]);

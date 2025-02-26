@@ -9,8 +9,10 @@ cb_find(critbit_tree* cb, const void* key, size_t keylen) {
 
   assert(cb);
   assert(key);
+
   if(!cb->root)
     return 0;
+
   for(ptr = cb->root; decode_pointer(&ptr) == INTERNAL_NODE;) {
     int branch;
     node = (struct critbit_node*)ptr;
@@ -18,6 +20,7 @@ cb_find(critbit_tree* cb, const void* key, size_t keylen) {
     ptr = node->child[branch];
   }
   from_external_node(ptr, &str, &len);
+
   if(len >= keylen && byte_diff(key, keylen, str) == 0)
     return str;
 

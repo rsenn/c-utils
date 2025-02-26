@@ -7,6 +7,7 @@ scan_cescape(const char* src, char* dest, size_t* destlen) {
   register const unsigned char* s = (const unsigned char*)src;
   size_t written = 0, i;
   char c;
+
   for(i = 0; s[i]; ++i) {
     if((c = s[i]) == '\\') {
       switch(s[i + 1]) {
@@ -24,6 +25,7 @@ scan_cescape(const char* src, char* dest, size_t* destlen) {
           unsigned char a, b;
           a = scan_fromhex(s[i + 2]);
           b = scan_fromhex(s[i + 3]);
+
           if(a < 16) {
             if(b < 16) {
               c = (a << 4) + b;
@@ -38,8 +40,10 @@ scan_cescape(const char* src, char* dest, size_t* destlen) {
         case 'U': // C99 unicode escape: \U0000000a -> 10
         {
           unsigned int j, k = 0, l = (s[i + 1] == 'U' ? 10 : 6);
+
           for(j = 2; j < l; ++j) {
             unsigned char c = scan_fromhex(s[i + j]);
+
             if(c >= 16)   // error
               goto error; // don't allow short sequences
             k = k * 16 + c;
@@ -49,15 +53,19 @@ scan_cescape(const char* src, char* dest, size_t* destlen) {
           continue;
         }
         default:
+
           if(s[i + 1] >= '0' && s[i + 1] <= '7') { // octal escape; \012 -> 10
             unsigned int j, k;
+
             for(k = 0, j = 1; j < 4; ++j) {
               unsigned int l = s[i + j] - '0';
+
               if(l < 8)
                 k = k * 8 + l;
               else
                 break;
             }
+
             if(dest)
               dest[written++] = k;
             i += j - 1;
@@ -68,11 +76,13 @@ scan_cescape(const char* src, char* dest, size_t* destlen) {
       ++i;
     } else if(c == '"')
       break;
+
     if(dest)
       dest[written] = c;
     ++written;
   }
 error:
+
   if(destlen)
     *destlen = written;
   return i;

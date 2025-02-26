@@ -114,6 +114,7 @@ cpp_evaluate_condition(cpp* pp, tokenizer* t, int* result, char* visited[]) {
   tokenizer_set_flags(t, flags);
 
 fail:
+
   if(x)
     alloc_free(x);
 

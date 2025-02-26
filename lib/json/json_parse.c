@@ -14,9 +14,13 @@ json_parse(jsonval* j, charbuf* b) {
   charbuf_pred_skip(b, charbuf_is_ctype, isspace);
 
   if((r = json_parse_object(j, b)) < 1)
+
     if((r = json_parse_array(j, b)) < 1)
+
       if((r = json_parse_null(j, b)) < 1)
+
         if((r = json_parse_boolean(j, b)) < 1)
+
           if((r = json_parse_number(j, b)) < 1)
             r = json_parse_string(j, b);
   return r;

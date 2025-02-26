@@ -136,8 +136,10 @@ main(int argc, char* argv[]) {
                            "pictest/eagle/"
                            "PIC18F2550-USB+ICSP-Board.brd";
   const char* output_file = NULL;
+
   if(argv[argi])
     input_file = argv[argi++];
+
   if(argv[argi])
     output_file = argv[argi++];
 
@@ -220,6 +222,7 @@ main(int argc, char* argv[]) {
 
     xmlnode* line = make_line(&rect);
     xml_set_attribute(line, "stroke", get_color(*nptr));
+
     if(width > 0)
       xml_set_attribute_double(line, "stroke-width", width, 3);
 

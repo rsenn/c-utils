@@ -7,6 +7,7 @@ cbmap_data_node_destroy(struct cbmap_data_node* data, cbmap_allocator_t key_allo
       value_allocator->free(data->value);
       data->value = NULL;
     }
+
     if(data->key != NULL) {
       key_allocator->free(data->key);
       data->key = NULL;

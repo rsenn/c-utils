@@ -5,22 +5,28 @@ int
 case_starts(const char* a, const char* b) {
   const char* s = a;
   const char* t = b;
+
   for(;;) {
     unsigned char x, y;
+
     if(!*t)
       return 1;
     x = *s - 'A';
+
     if(x <= 'Z' - 'A')
       x += 'a';
     else
       x += 'A';
     y = *t - 'A';
+
     if(y <= 'Z' - 'A')
       y += 'a';
     else
       y += 'A';
+
     if(x != y)
       break;
+
     if(!x)
       break;
     ++s;

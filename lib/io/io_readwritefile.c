@@ -13,6 +13,7 @@
 int
 io_readwritefile(fd_type* d, const char* s) {
   long fd = open(s, O_RDWR);
+
   if(fd != -1) {
     *d = fd;
     return 1;

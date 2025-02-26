@@ -131,6 +131,7 @@ generate_clean_rule(char psm) {
 
     /* If the rule has prerequisites  and a recipe, it must be a producing
      * rule */
+
     if(set_size(&rule->prereq) && rule->recipe.s) {
       size_t bpos;
 
@@ -192,6 +193,7 @@ generate_mkdir_rule(stralloc* name) {
   target* rule = 0;
 
   if(stralloc_length(name) && !stralloc_equals(name, "."))
+
     if((rule = rule_new_sa(name)))
       stralloc_weak(&rule->recipe, &commands.mkdir);
 

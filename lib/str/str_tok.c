@@ -7,6 +7,7 @@ str_tok(char* s, const char* delims, char** ptrptr) {
 
   if(s == NULL) {
     s = *ptrptr;
+
     while(*s && strchr(delims, *s))
       ++s;
   }

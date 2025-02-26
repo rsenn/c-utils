@@ -4,6 +4,7 @@
 static void
 json_recurse_val(jsonval* val, void (*fn)(), void* arg, int depth) {
   fn(val, arg, depth);
+
   switch(val->type) {
     case JSON_UNDEFINED:
     case JSON_STRING:
@@ -20,6 +21,7 @@ json_recurse_val(jsonval* val, void (*fn)(), void* arg, int depth) {
     }
     case JSON_ARRAY: {
       slink* link;
+
       for(link = val->listv; link; link = link->next) {
         json_recurse_val((jsonval*)&(link)[1], fn, arg, depth + 1);
       }

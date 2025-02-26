@@ -12,12 +12,14 @@ fmt_jsonescape(char* dest, const char* src, size_t len) {
   register const unsigned char* s = (const unsigned char*)src;
   size_t written = 0, i;
   char c;
+
   for(i = 0; i < len; ++i) {
     switch(s[i]) {
       case '\\':
       case '"':
         c = s[i];
       escape:
+
         if(dest) {
           dest[written] = '\\';
           dest[written + 1] = c;
@@ -30,6 +32,7 @@ fmt_jsonescape(char* dest, const char* src, size_t len) {
       case '\t': c = 't'; goto escape;
       case '\f': c = 'f'; goto escape;
       default:
+
         if(s[i] < ' ') {
           if(dest) {
             dest[written] = '\\';
@@ -44,6 +47,7 @@ fmt_jsonescape(char* dest, const char* src, size_t len) {
           /* UTF-8! Convert to surrogate pair if needed. */
           uint32 u;
           size_t j = scan_utf8_sem((const char*)s + i, len - i, &u);
+
           if(j == 0) { /* Invalid UTF-8! Try to limp on! */
             written += fmt_utf8(dest ? dest + written : 0, s[i]);
             break;
@@ -78,6 +82,7 @@ fmt_jsonescape(char* dest, const char* src, size_t len) {
         break;
     }
     /* in case someone gives us malicious input */
+
     if(written > ((size_t)-1) / 2)
       return (size_t)-1;
   }

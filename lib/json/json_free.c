@@ -9,6 +9,7 @@ struct free_stats {
 static void
 json_free_count(jsonval* val, struct free_stats* st, size_t depth) {
   ++st->num;
+
   if(st->max_depth < depth)
     st->max_depth = depth;
 }
@@ -30,6 +31,7 @@ json_free_val(jsonval* val, jsonval* parent) {
     }
     case JSON_ARRAY: {
       jsonitem *item, *next;
+
       for(item = val->itemv; item; item = next) {
         next = item->next;
 

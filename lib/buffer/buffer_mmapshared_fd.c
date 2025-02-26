@@ -14,6 +14,7 @@ extern void buffer_munmap(void* buf);
 int
 buffer_mmapshared_fd(buffer* b, fd_type fd) {
   b->fd = dup(fd);
+
   if(!(b->x = mmap_shared_fd(fd, &b->n)))
     return -1;
   b->p = 0;

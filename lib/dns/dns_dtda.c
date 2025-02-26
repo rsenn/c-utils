@@ -14,10 +14,13 @@ dns_domain_todot_cat(stralloc* out, const char* d) {
 
   for(;;) {
     ch = *d++;
+
     while(ch--) {
       ch2 = *d++;
+
       if((ch2 >= 'A') && (ch2 <= 'Z'))
         ch2 = (char)(ch2 + 32);
+
       if(((ch2 >= 'a') && (ch2 <= 'z')) || ((ch2 >= '0') && (ch2 <= '9')) || (ch2 == '-') || (ch2 == '_')) {
         if(!stralloc_append(out, &ch2))
           return 0;
@@ -29,12 +32,15 @@ dns_domain_todot_cat(stralloc* out, const char* d) {
         ch3 >>= 3;
         buf[1] = (char)('0' + (ch3 & 7));
         buf[0] = '\\';
+
         if(!stralloc_catb(out, buf, 4))
           return 0;
       }
     }
+
     if(!*d)
       return 1;
+
     if(!stralloc_append(out, "."))
       return 0;
   }
@@ -50,6 +56,7 @@ dns_domain_todot_inline(char* x) {
 
     while(ch--) {
       ++d;
+
       if((*d >= 'A') && (*d <= 'Z'))
         *d = (char)(*d + 32);
     }
@@ -65,6 +72,7 @@ dns_domain_todot(char* out, const char* in) {
 
   x = in;
   y = out;
+
   while((c = *x++)) {
     byte_copy(y, c, x);
     y += c;

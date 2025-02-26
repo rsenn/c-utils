@@ -8,9 +8,11 @@ byte_count(const void* s, size_t n, char c) {
   t = (unsigned char*)s;
   count = 0;
   ch = (unsigned char)c;
+
   for(;;) {
     if(!n)
       break;
+
     if(*t == ch) {
       ++count;
     }
@@ -19,6 +21,7 @@ byte_count(const void* s, size_t n, char c) {
 
     if(!n)
       break;
+
     if(*t == ch) {
       ++count;
     }
@@ -27,6 +30,7 @@ byte_count(const void* s, size_t n, char c) {
 
     if(!n)
       break;
+
     if(*t == ch) {
       ++count;
     }
@@ -35,6 +39,7 @@ byte_count(const void* s, size_t n, char c) {
 
     if(!n)
       break;
+
     if(*t == ch) {
       ++count;
     }
