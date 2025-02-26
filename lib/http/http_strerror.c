@@ -13,5 +13,6 @@ http_strerror(http* h, int ret) {
     else
       err = strerror(errno);
   }
+
   return err;
 }

@@ -23,17 +23,23 @@
 void
 io_dontwantwrite_really(fd_type d, io_entry* e) {
   int64 newfd;
+
   (void)d;
+
   assert(e->kernelwantwrite);
   newfd = !e->kernelwantread;
   io_wanted_fds -= newfd;
+
 #ifdef HAVE_EPOLL
   if(io_waitmode == EPOLL) {
     struct epoll_event x;
+
     byte_zero(&x, sizeof(x)); /* to shut up valgrind */
     x.events = 0;
+
     if(e->wantread)
       x.events |= EPOLLIN;
+
     x.data.fd = d;
     epoll_ctl(io_master, e->kernelwantread ? EPOLL_CTL_MOD : EPOLL_CTL_DEL, d, &x);
   }
@@ -57,16 +63,18 @@ io_dontwantwrite_really(fd_type d, io_entry* e) {
 void
 io_dontwantwrite(fd_type d) {
   io_entry* e;
+
 #ifdef DEBUG_IO
   buffer_putspad(buffer_2, "io_dontwantwrite", 30);
   buffer_puts(buffer_2, "d=");
   buffer_putlonglong(buffer_2, d);
   buffer_putnlflush(buffer_2);
 #endif
-  e = (io_entry*)iarray_get((iarray*)io_getfds(), d);
-  if(e) {
+
+  if((e = (io_entry*)iarray_get((iarray*)io_getfds(), d))) {
     if(e->canwrite)
       io_dontwantwrite_really(d, e);
+
     e->wantwrite = 0;
   }
 }

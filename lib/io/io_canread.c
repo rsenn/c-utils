@@ -15,6 +15,7 @@ int64
 io_canread() {
   ssize_t ret = -1;
   io_entry* e;
+
   if(first_readable == -1)
 #if defined(HAVE_SIGIO)
   {
@@ -31,11 +32,13 @@ io_canread() {
 #else
     return -1;
 #endif
+
   for(;;) {
     int64 r;
-    e = (io_entry*)iarray_get((iarray*)io_getfds(), first_readable);
-    if(!e)
+
+    if(!(e = (io_entry*)iarray_get((iarray*)io_getfds(), first_readable)))
       break;
+
     r = first_readable;
     first_readable = e->next_read;
     e->next_read = -1;
@@ -55,8 +58,10 @@ io_canread() {
       if(io_waitmode != _SIGIO)
 #endif
         e->canread = 0;
+
       if(!e->kernelwantread)
         io_wantread_really(r, e);
+
       ret = r;
       break;
     }

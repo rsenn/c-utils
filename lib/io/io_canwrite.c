@@ -9,6 +9,7 @@ int64
 io_canwrite() {
   ssize_t ret = -1;
   io_entry* e;
+
   if(first_writeable == -1)
 #if defined(HAVE_SIGIO)
   {
@@ -25,11 +26,13 @@ io_canwrite() {
 #else
     return -1;
 #endif
+
   for(;;) {
     int64 r;
-    e = (io_entry*)iarray_get((iarray*)io_getfds(), first_writeable);
-    if(!e)
+
+    if(!(e = (io_entry*)iarray_get((iarray*)io_getfds(), first_writeable)))
       break;
+
     r = first_writeable;
     first_writeable = e->next_write;
     e->next_write = -1;
@@ -37,6 +40,7 @@ io_canwrite() {
                   "(next is %ld)\n",
                   r,
                   first_writeable));
+
     if(e->wantwrite &&
 #if WINDOWS_NATIVE && !defined(USE_SELECT)
        (e->canwrite || e->sendfilequeued == 1)
@@ -51,8 +55,10 @@ io_canwrite() {
       if(io_waitmode != _SIGIO)
 #endif
         e->canwrite = 0;
+
       if(!e->kernelwantwrite)
         io_wantwrite_really(r, e);
+
       ret = r;
       break;
     }

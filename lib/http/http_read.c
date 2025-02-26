@@ -39,6 +39,7 @@ http_read(fd_type fd, char* buf, size_t len, void* ptr) {
 again:
 
   r = h->response;
+
   if(len) {
     const char* x;
     int st = r->status;
@@ -47,6 +48,7 @@ again:
     if((n = (r->status == HTTP_RECV_HEADER ? buffer_freshen(b) : buffer_feed(b))) <= 0) {
       if(n == bytes || n == 0) {
         r->status = HTTP_STATUS_CLOSED;
+
         if(n == 0)
           goto end;
       }
@@ -73,6 +75,7 @@ again:
 
     if((received > 0 || r->status == HTTP_RECV_HEADER) && (ret = http_read_internal(h->sock, buf, received, &h->q.in)) > 0) {
     }
+
     if(r->status == HTTP_STATUS_FINISH) {
       goto end;
     } /*else {
@@ -90,9 +93,11 @@ again:
       buffer_skipn(b, n);
       r->ptr += n;
     }
+
     if((r->status == HTTP_STATUS_CLOSED) || r->status == HTTP_STATUS_FINISH)
       goto end;
   }
+
 end:
 
   /*if(r->status == HTTP_STATUS_FINISH || r->status == HTTP_STATUS_CLOSED)
@@ -104,23 +109,28 @@ end:
     location = http_get_header(h, "Location");
     pos = 0;
     end = len = str_chrs(location, "\r\n\0", 3);
+
     if(pos = byte_finds(location, len, "://")) {
       pos += 3;
       len -= pos;
     }
+
     pos += byte_chr(&location[pos], len, '/');
+
     if(http_get(h, &location[pos])) {
       io_onlywantwrite(h->sock);
       errno = EAGAIN;
       ret = -1;
     }
   }
+
   if(r->status == HTTP_STATUS_CLOSED) {
     http_close(h);
     // ret = 0;
   }
 
 #ifdef DEBUG_HTTP
+
   if(r->status == HTTP_STATUS_BUSY || r->status == HTTP_RECV_HEADER || r->status == HTTP_RECV_DATA) {
     buffer_putspad(buffer_2, "\x1b[38;5;201mhttp_read\x1b[0m ", 30);
     buffer_puts(buffer_2, "s=");
@@ -128,18 +138,22 @@ end:
     buffer_putlong(buffer_2, h->sock);
     buffer_puts(buffer_2, " ret=");
     buffer_putlong(buffer_2, ret);
+
     if(ret < 0) {
       buffer_puts(buffer_2, " err=");
       buffer_putstr(buffer_2, http_strerror(h, ret));
     }
+
     if(ret < 0) {
       buffer_puts(buffer_2, " errno=");
       buffer_putstr(buffer_2, strerror(errno));
     }
+
     if(h->response->code != -1) {
       buffer_puts(buffer_2, " code=");
       buffer_putlong(buffer_2, r->code);
     }
+
     buffer_puts(buffer_2, " transfer=");
     buffer_puts(buffer_2, "HTTP_TRANSFER_");
     buffer_puts(buffer_2, ((const char* const[]){"UNDEF", "CHUNKED", "LENGTH", "BOUNDARY", 0})[r->transfer]);
@@ -153,6 +167,7 @@ end:
       buffer_puts(buffer_2, " buf=");
       int len = MIN(ret, 30);
       buffer_putfmt(buffer_2, buf, len, &fmt_escapecharnonprintable);
+
       if(len < ret)
         buffer_puts(buffer_2, " {...}");
     }

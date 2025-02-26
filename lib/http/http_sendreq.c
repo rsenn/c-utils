@@ -17,6 +17,7 @@ http_sendreq(http* h) {
   int ret;
   size_t len;
   buffer* out = &h->q.out;
+
   if(h->request == NULL)
     return 0;
   buffer_puts(out, "GET ");
@@ -25,6 +26,7 @@ http_sendreq(http* h) {
   buffer_puts(out, "Host: ");
   buffer_putsa(out, &h->host);
   buffer_puts(out, "\r\n");
+
   if(!h->keepalive)
     buffer_putm_internal(out, "Connection: ", h->keepalive ? "keep-alive" : "close", "\r\n", NULL);
   buffer_puts(out, "Accept: */*\r\n");
@@ -35,6 +37,7 @@ http_sendreq(http* h) {
   {
     const char* x = out->x;
     ssize_t i, n = out->p;
+
     while(n > 0) {
       i = byte_chr(x, n, '\r');
       buffer_puts(buffer_2, "Request: ");
@@ -42,12 +45,14 @@ http_sendreq(http* h) {
       buffer_putnlflush(buffer_2);
       x += i + 1;
       n -= i + 1;
+
       if(*x == '\n') {
         x++;
         n--;
       }
     }
   }
+
   buffer_flush(buffer_2);
 #endif
   len = out->p;
@@ -61,14 +66,17 @@ http_sendreq(http* h) {
     buffer_puts(buffer_2, " code=");
     buffer_putlong(buffer_2, h->response->code);
   }
+
   if(len > 0) {
     buffer_puts(buffer_2, " len=");
     buffer_putlong(buffer_2, len);
   }
+
   if(out->n > out->p) {
     buffer_puts(buffer_2, " code=");
     buffer_putfmt(buffer_2, out->x, out->p, &fmt_escapecharnonprintable);
   }
+
   buffer_puts(buffer_2, " status=");
   buffer_puts(buffer_2,
               ((const char* const[]){
@@ -83,17 +91,21 @@ http_sendreq(http* h) {
   buffer_putspad(buffer_2, "http_sendreq ", 30);
   buffer_puts(buffer_2, "ret=");
   buffer_putlong(buffer_2, ret);
+
   if(ret < 0) {
     buffer_puts(buffer_2, " err=");
     buffer_putstr(buffer_2, http_strerror(h, ret));
   }
+
   buffer_putnlflush(buffer_2);
 #endif
+
   if(ret != -1) {
     h->sent = 1;
     h->response->status = HTTP_RECV_HEADER;
 
     io_onlywantread(h->sock);
   }
+
   return ret;
 }

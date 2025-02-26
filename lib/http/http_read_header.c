@@ -18,12 +18,14 @@ putline(const char* what, const char* b, ssize_t l, int i) {
   buffer_putulong(buffer_2, i);
   buffer_puts(buffer_2, "]");
   buffer_puts(buffer_2, ": ");
+
   if(l <= 0)
     buffer_puts(buffer_2, b);
   else {
     while(l-- > 0)
       buffer_put(buffer_2, b++, 1);
   }
+
   buffer_putnlflush(buffer_2);
 }
 
@@ -38,6 +40,7 @@ http_read_header(http* h, stralloc* sa, http_response* r) {
     size_t bytesavail = in->n - in->p;
     // h->q.in.op = NULL;
     start = sa->len;
+
     if((ret = buffer_getline_sa(&h->q.in, sa)) <= 0)
       break;
 
@@ -45,6 +48,7 @@ http_read_header(http* h, stralloc* sa, http_response* r) {
     stralloc_nul(sa);
     x = &sa->s[start];
     n = byte_trimr(x, sa->len - start, "\r\n", 2);
+
     if(n == 0) {
       // r->ptr = in->p;
       r->status = HTTP_RECV_DATA;
@@ -54,12 +58,14 @@ http_read_header(http* h, stralloc* sa, http_response* r) {
 #if DEBUG_HTTP
     putline("Header", x, n, byte_count(sa->s, sa->len, '\n'));
 #endif
+
     if(r->code == -1) {
 
       if(str_start(sa->s, "HTTP")) {
         unsigned int code;
         size_t p = scan_nonwhitenskip(sa->s, sa->len);
         p += scan_whitenskip(&sa->s[p], sa->len - p);
+
         if(scan_uint(&sa->s[p], &code) > 0)
           r->code = code;
       }
@@ -67,9 +73,11 @@ http_read_header(http* h, stralloc* sa, http_response* r) {
 
     if(sa->len - start >= 23 && !case_diffb(x, 23, "Content-Type: multipart")) {
       size_t p = str_find(x, "boundary=");
+
       if(x[p]) {
         stralloc_copys(&r->boundary, &x[p + str_len("boundary=")]);
       }
+
       r->transfer = HTTP_TRANSFER_BOUNDARY;
       r->ptr = 0;
     } else if(sa->len - start >= 15 && !case_diffb(x, 15, "Content-Length:")) {
@@ -94,6 +102,7 @@ http_read_header(http* h, stralloc* sa, http_response* r) {
   buffer_putlong(buffer_2, bytesread);
   buffer_puts(buffer_2, " ret=");
   buffer_putlong(buffer_2, ret);
+
   if(ret < 0) {
     buffer_puts(buffer_2, " err=");
     buffer_putstr(buffer_2, http_strerror(h, ret));
@@ -104,10 +113,12 @@ http_read_header(http* h, stralloc* sa, http_response* r) {
     buffer_putlong(buffer_2, r->code);
     buffer_puts(buffer_2, "\x1b[0m");
   }
+
   if(r->content_length > 0) {
     buffer_puts(buffer_2, " content_length=");
     buffer_putlong(buffer_2, r->content_length);
   }
+
   buffer_puts(buffer_2, " status=");
   buffer_puts(
       buffer_2,

@@ -25,14 +25,17 @@ http_response_dump(http_response* r) {
     buffer_putspad(buffer_2, "\n\tline", 18);
     buffer_putulonglong(buffer_2, r->line);
   }*/
+
   if(r->content_length != 0) {
     buffer_putspad(buffer_2, "\n\tcontent_length", 18);
     buffer_putulonglong(buffer_2, r->content_length);
   }
+
   if(stralloc_length(&r->boundary)) {
     buffer_putspad(buffer_2, "\n\tboundary", 18);
     buffer_putsa(buffer_2, &r->boundary);
   }
+
   if((len = r->data.len) > 0) {
     x = r->data.s;
     buffer_putspad(buffer_2, "\n\tdata", 18);
@@ -45,6 +48,7 @@ http_response_dump(http_response* r) {
         buffer_put_quoted(buffer_2, x, len);
         buffer_puts(buffer_2, " \"");*/
   }
+
   buffer_putnlflush(buffer_2);
 #endif
 }

@@ -49,10 +49,12 @@ http_read_internal(fd_type fd, char* buf, size_t received, buffer* b) {
     buffer_puts(buffer_2, " err=");
     buffer_putstr(buffer_2, http_strerror(h, received));
   }
+
   if(h->response->code != -1) {
     buffer_puts(buffer_2, " code=");
     buffer_putlong(buffer_2, h->response->code);
   }
+
   buffer_puts(buffer_2, " transfer=");
   buffer_puts(buffer_2, "HTTP_TRANSFER_");
   buffer_puts(buffer_2, ((const char* const[]){"UNDEF", "CHUNKED", "LENGTH", "BOUNDARY", 0})[r->transfer]);
@@ -89,6 +91,7 @@ http_read_internal(fd_type fd, char* buf, size_t received, buffer* b) {
   if(r->status == HTTP_RECV_HEADER) {
     while(r->status == HTTP_RECV_HEADER && http_read_header(h, &r->data, r) > 0) {
     }
+
     if(r->status == HTTP_RECV_DATA)
       r->ptr = r->data.len;
     return n;
@@ -101,20 +104,25 @@ http_read_internal(fd_type fd, char* buf, size_t received, buffer* b) {
       case HTTP_TRANSFER_CHUNKED: {
         if(r->chunk_length >= r->content_length) {
           size_t skip;
+
           if((skip = scan_eolskip(&in->x[in->p], in->n - in->p))) {
             buffer_skipn(in, skip);
             r->chunk_length = 0;
           }
         }
+
         if(r->chunk_length == 0) {
           size_t i, bytes = in->n - in->p;
+
           if((i = byte_chr(&in->x[in->p], bytes, '\n')) < bytes) {
             i = scan_xlonglong(&in->x[in->p], &r->chunk_length);
 
             buffer_skipn(in, i);
+
             if((i = scan_eolskip(&in->x[in->p], in->n - in->p)))
               buffer_skipn(in, i);
             //   r->ptr = 0;
+
             if(r->chunk_length) {
               r->content_length += r->chunk_length;
             } else {
@@ -136,8 +144,10 @@ http_read_internal(fd_type fd, char* buf, size_t received, buffer* b) {
 #endif
           }
         }
+
         break;
       }
+
       case HTTP_TRANSFER_LENGTH: {
         if(r->chunk_length >= r->content_length)
           r->status = HTTP_STATUS_FINISH;

@@ -12,5 +12,6 @@ http_response_new(void) {
     r->status = HTTP_RECV_HEADER;
     r->code = -1;
   }
+
   return r;
 }

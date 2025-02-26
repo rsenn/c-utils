@@ -38,7 +38,6 @@ tls_new(tls_ctx_t* ctx, fd_type fd) {
   } else {
     i = tls_instance_new(fd);
     i->ssl = ssl;
-
     i->bio = tls_bio_socket(fd);
 
     SSL_set_bio(ssl, i->bio, i->bio);
@@ -51,8 +50,10 @@ tls_t*
 tls_client(fd_type fd) {
   if(!tls_initialized)
     tls_init(0, 0);
+
   if(tls_client_ctx == 0)
     tls_client_ctx = tls_context(tls_client_method);
+
   return tls_new(tls_client_ctx, fd);
 }
 
@@ -60,8 +61,10 @@ tls_t*
 tls_server(fd_type fd) {
   if(!tls_initialized)
     tls_init(0, 0);
+
   if(tls_server_ctx == 0)
     tls_server_ctx = tls_context(tls_server_method);
+
   return tls_new(tls_server_ctx, fd);
 }
 #endif

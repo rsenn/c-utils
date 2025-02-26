@@ -733,7 +733,6 @@ parse_mediathek_list(buffer* inbuf, buffer* outbuf) {
   }
 
 #ifdef DEBUG_OUTPUT
-
   if(read_bytes) {
     buffer_puts(console, "Read ");
     buffer_putlong(console, read_bytes);
@@ -793,6 +792,7 @@ usage(char* errmsg_argv0) {
                        "Options\n",
                        "  -h, --help                show this help\n",
                        "  -u, --url=URL             set URL\n",
+                       "  -f, --file=FILE           input file\n",
                        "  -F                        date/time format\n",
                        "  -t HH:MM:SS               minimum length\n",
                        "  -i KEYWORD                include entries matching\n",
@@ -896,9 +896,9 @@ main(int argc, char* argv[]) {
 
     if(mediathek_file) {
       int r;
+
       do {
-        r = parse_mediathek_list(&in, &output);
-        if(r > 0)
+        if((r = parse_mediathek_list(&in, &output)) > 0)
           n += r;
       } while(!buffer_EOF(&in));
 

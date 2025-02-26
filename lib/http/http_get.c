@@ -32,28 +32,34 @@ http_get(http* h, const char* location) {
   if(location[0] != '/') {
     size_t pos;
     pos = str_findb(location, "://", 3);
+
     if(location[pos]) {
       h->tls = len >= 5 && !byte_diff(location, 5, "https");
       location += pos + 3;
     }
+
     pos = str_chrs(location, "/:", 2);
     stralloc_copyb(&h->host, location, pos);
+
     if(location[pos] == ':') {
       pos += 1;
       pos += scan_ushort(&location[pos], &h->port);
     } else {
       h->port = h->tls ? 443 : 80;
     }
+
     location += pos;
   }
 
   if(byte_equal(&h->addr, sizeof(ipv4addr), &IPV4ADDR_ANY)) {
     stralloc_nul(&h->host);
     stralloc_init(&dns);
+
     if(dns_ip4(&dns, &h->host) == -1) {
       errmsg_warnsys("ERROR: resolving ", h->host.s, ": ", NULL);
       return 0;
     }
+
     a = (ipv4addr*)dns.s;
     byte_copy(&h->addr, sizeof(ipv4addr), &a->iaddr);
 #ifdef DEBUG_HTTP
@@ -102,12 +108,14 @@ http_get(http* h, const char* location) {
   http_socket(h, h->nonblocking);
 
   ret = socket_connect4(h->sock, (const char*)&h->addr, h->port);
+
   if(ret == -1) {
     if(errno == EINPROGRESS) {
       ret = 0;
       errno = 0;
     }
   }
+
   io_onlywantwrite(h->sock);
 #ifdef DEBUG_HTTP
   buffer_putspad(buffer_2, "\x1b[32mhttp_get\x1b[0m", 30);

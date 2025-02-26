@@ -30,6 +30,7 @@ http_canread(http* h, void (*wantread)(fd_type), void (*wantwrite)(fd_type)) {
     if(!h->connected) {
 
       ret = tls_connect(h->sock);
+
       if(ret == -1) {
         h->err = tls_errno(h->sock);
         tls_want(h->sock, wantread, wantwrite);
@@ -39,10 +40,13 @@ http_canread(http* h, void (*wantread)(fd_type), void (*wantwrite)(fd_type)) {
         goto fail;
       h->connected = 1;
     }
+
     if(h->connected && h->sent == 0) {
       ret = http_sendreq(h);
+
       if(ret == -1)
         tls_want(h->sock, wantread, wantwrite);
+
       if(ret <= 0)
         goto fail;
       h->sent = 1;
@@ -78,22 +82,28 @@ http_canread(http* h, void (*wantread)(fd_type), void (*wantwrite)(fd_type)) {
       break;
     //   stralloc_trimr(&r->data, "\r\n", 2);
     stralloc_nul(&r->data);
+
     if(r->data.len == 0) {
       r->ptr = 0;
       r->status = HTTP_RECV_DATA;
+
       if(h->q.in.p < h->q.in.n) {
         ret = 1;
       } else {
         ret = 0;
         errno = EWOULDBLOCK;
       }
+
       break;
     }
+
     if(!case_diffb(&r->data.s[pos], str_len("Content-Type: multipart"), "Content-Type: multipart")) {
       size_t p = pos + str_find(&r->data.s[pos], "boundary=");
+
       if(r->data.s[p]) {
         stralloc_copys(&r->boundary, &r->data.s[p + str_len("boundary=")]);
       }
+
       r->transfer = HTTP_TRANSFER_BOUNDARY;
     } else if(!case_diffb(&r->data.s[pos], str_len("Content-Length: "), "Content-Length: ")) {
       scan_ulonglong(&r->data.s[pos + 16], &r->content_length);
@@ -103,6 +113,7 @@ http_canread(http* h, void (*wantread)(fd_type), void (*wantwrite)(fd_type)) {
       r->content_length = 0;
       r->chunk_length = 0;
     }
+
     r->ptr = 0;
     stralloc_zero(&r->data);
   }
@@ -128,6 +139,7 @@ http_canread(http* h, void (*wantread)(fd_type), void (*wantwrite)(fd_type)) {
   }
 
 fail:
+
   if(ret == -1) {
     err = h->err = h->tls ? tls_errno(h->sock) : errno;
   } else {
@@ -153,32 +165,40 @@ fail:
     buffer_puts(buffer_2, " tls=");
     buffer_putlong(buffer_2, !!h->tls);
   }
+
   if(h->connected) {
     buffer_puts(buffer_2, " connected=");
     buffer_putlong(buffer_2, !!h->connected);
   }
+
   if(h->keepalive) {
     buffer_puts(buffer_2, " keepalive=");
     buffer_putlong(buffer_2, !!h->keepalive);
   }
+
   if(h->nonblocking) {
     buffer_puts(buffer_2, " nonblocking=");
     buffer_putlong(buffer_2, !!h->nonblocking);
   }
+
   if(h->sent) {
     buffer_puts(buffer_2, " sent=");
     buffer_putlong(buffer_2, !!h->sent);
   }
+
   if(h->response->code != -1) {
     buffer_puts(buffer_2, " code=");
     buffer_putlong(buffer_2, h->response->code);
   }
+
   if(received > 0) {
     size_t len = received;
     const char* s = stralloc_end(&r->data) - len;
     const char* e = stralloc_end(&r->data);
+
     if(len > 30)
       len = 30;
+
     if(r->status <= HTTP_RECV_DATA) {
       buffer_puts(buffer_2, " data:received=");
       buffer_putlonglong(buffer_2, received);
@@ -201,18 +221,22 @@ fail:
 
   buffer_puts(buffer_2, " tls=");
   buffer_putlong(buffer_2, !!h->tls);
+
   if(ret < 0) {
     buffer_puts(buffer_2, " err=");
     buffer_putstr(buffer_2, http_strerror(h, ret));
   }
+
   if(ret < 0) {
     buffer_puts(buffer_2, " errno=");
     buffer_putstr(buffer_2, strerror(errno));
   }
+
   if(h->response->code != -1) {
     buffer_puts(buffer_2, " code=");
     buffer_putlong(buffer_2, h->response->code);
   }
+
   buffer_puts(buffer_2, " status=");
   buffer_puts(buffer_2,
               ((const char* const[]){

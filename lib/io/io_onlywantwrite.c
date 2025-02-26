@@ -9,6 +9,7 @@ io_onlywantwrite(fd_type d) {
   buffer_putlonglong(buffer_2, d);
   buffer_putnlflush(buffer_2);
 #endif
+
   io_dontwantread(d);
   io_wantwrite(d);
 }

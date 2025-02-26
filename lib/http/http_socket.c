@@ -37,6 +37,7 @@ http_socket(http* h, int nonblock) {
       return -1;
     tls_io(h->sock);
   }
+
   io_fd(h->sock);
   if(nonblock)
     ndelay_on(h->sock);
@@ -76,6 +77,7 @@ http_socket_read(fd_type fd, void* buf, size_t len, void* b) {
       h->connected = 1;
     ret = io_tryread(fd, (char*)buf, len);
   }
+
   if(!connected && h->connected) {
     //    if(h->response->status <= HTTP_RECV_HEADER)
     h->response->status = HTTP_RECV_HEADER;
@@ -115,6 +117,7 @@ http_socket_read(fd_type fd, void* buf, size_t len, void* b) {
     buffer_puts(buffer_2, " errno=");
     buffer_putstr(buffer_2, strerror(errno));
   }
+
   if(h->response) {
     buffer_puts(buffer_2, " err=");
     buffer_putstr(buffer_2, strerror(h->response->err));
@@ -129,6 +132,7 @@ http_socket_read(fd_type fd, void* buf, size_t len, void* b) {
                 ((const char* const[]){
                     "-1", "HTTP_RECV_HEADER", "HTTP_RECV_DATA", "HTTP_STATUS_CLOSED", "HTTP_STATUS_ERROR", "HTTP_STATUS_BUSY", "HTTP_STATUS_FINISH", 0})[h->response->status + 1]);
   }
+
   buffer_putnlflush(buffer_2);
 #endif
   /* if(ret > 0) {
@@ -139,7 +143,8 @@ http_socket_read(fd_type fd, void* buf, size_t len, void* b) {
        byte_copy(&h->q.in.x[h->q.in.n], ret, buf);
        h->q.in.n += ret;
      }
-     iret = http_read_internal(fd, (char*)buf, ret, &h->q.in);
+
+iret = http_read_internal(fd, (char*)buf, ret, &h->q.in);
      if(st == HTTP_RECV_HEADER)
        h->q.in.n = n;
    }*/
@@ -168,6 +173,7 @@ http_socket_write(fd_type fd, void* buf, size_t len, void* b) {
 
     ret = winsock2errno(send(fd, buf, len, 0));
   }
+
   if(!connected && h->connected) {
     //    if(h->response->status <= HTTP_RECV_HEADER)
     h->response->status = HTTP_RECV_HEADER;
@@ -212,6 +218,7 @@ http_socket_write(fd_type fd, void* buf, size_t len, void* b) {
                 ((const char* const[]){
                     "-1", "HTTP_RECV_HEADER", "HTTP_RECV_DATA", "HTTP_STATUS_CLOSED", "HTTP_STATUS_ERROR", "HTTP_STATUS_BUSY", "HTTP_STATUS_FINISH", 0})[h->response->status + 1]);
   }
+
   buffer_putnlflush(buffer_2);
 #endif
   return ret;
