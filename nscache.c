@@ -584,7 +584,6 @@ nscache_run(void) {
     for(j = 0; j < MAXUDP; ++j)
 
       if(u[j].active) {
-
         r = query_get(&u[j].q, u[j].io, &stamp);
 
         if(r == -1)

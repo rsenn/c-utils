@@ -151,7 +151,6 @@ main(int argc, char* argv[]) {
           argi++;
 
           if(argi < argc) {
-
             delimiters = argv[argi];
             delimiters_len = str_len(delimiters);
           }

@@ -53,7 +53,6 @@ buffer_lzmaread_op(fd_type fd, void* data, size_t n, buffer* b) {
 
   if(/* strm->avail_out == 0 */
      ret == LZMA_OK || ret == LZMA_STREAM_END) {
-
     buffer_SEEK(ctx->b, a - strm->avail_in);
     r = n - strm->avail_out;
 

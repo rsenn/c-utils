@@ -2,7 +2,6 @@
 
 int
 strlist_cat_unique(strlist* sl, const strlist* l) {
-
   const char* x;
   size_t n;
   int ret = 0;

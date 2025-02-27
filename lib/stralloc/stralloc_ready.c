@@ -17,7 +17,6 @@ stralloc_ready(stralloc* sa, size_t len) {
     return 1;
 
   if(sa->a == 0 || sa->s == NULL) {
-
     if(!(tmp = malloc(wanted)))
       return 0;
 
@@ -27,7 +26,6 @@ stralloc_ready(stralloc* sa, size_t len) {
       byte_zero(tmp, wanted);
 
   } else {
-
     if(!(tmp = realloc(sa->s, wanted)))
       return 0;
   }

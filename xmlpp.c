@@ -43,7 +43,6 @@ xml_read_function(xmlreader* reader, xmlnodeid id, stralloc* name, stralloc* val
       break;
     }
     case XML_ELEMENT: {
-
       /* buffer_puts(buffer_2, "Element:
       "); buffer_putsa(buffer_2, name);
 
@@ -58,7 +57,6 @@ xml_read_function(xmlreader* reader, xmlnodeid id, stralloc* name, stralloc* val
       }
 
       if(!(reader->closing && !prev_closing && stralloc_equal(&prev_element, name)) && stralloc_length(&prev_element)) {
-
         if(!newline_written && !one_line) {
           buffer_puts(output, "\n");
           buffer_flush(output);

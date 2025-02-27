@@ -357,7 +357,6 @@ cache_open(const char* file, size_t cachesize) {
     uint32_unpack((const char*)&data->oldest, &oldest);
     uint32_unpack((const char*)&data->unused, &unused);
   } else {
-
     // byte_zero(x, size);
 
     writer = hsize;

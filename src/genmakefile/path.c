@@ -255,7 +255,6 @@ path_normalize(const char* dir, stralloc* out) {
     path_appends(dir, &tmp);
     path_canonical_sa(&tmp);
   } else {
-
     path_canonical(dir, &tmp);
   }
 

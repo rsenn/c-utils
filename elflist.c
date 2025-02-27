@@ -124,7 +124,6 @@ elf_dump_header(buffer* b, range map) {
  */
 void
 elf_dump_dynamic(range map) {
-
   int i = 0, di = elf_section_find(map.start, ".dynamic");
   range dyn;
   void* entry;

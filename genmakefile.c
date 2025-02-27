@@ -2197,7 +2197,6 @@ main(int argc, char* argv[]) {
 #endif
 
   strarray_foreach(&args, arg) {
-
 #ifdef DEBUG_OUTPUT_
     buffer_puts(buffer_2, "argument: ");
     buffer_puts(buffer_2, *arg);
@@ -2219,7 +2218,6 @@ main(int argc, char* argv[]) {
 #endif
 
     {
-
 #if 0 // WINDOWS_NATIVE
       const char* p = gl.gl_pathv[i];
 #else

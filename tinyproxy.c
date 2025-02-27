@@ -679,7 +679,6 @@ sockbuf_put_addr(buffer* b, socketbuf_t* sb) {
 
 void
 sockbuf_close(socketbuf_t* sb) {
-
   buffer_flush(&sb->buf);
   buffer_close(&sb->buf);
   io_close(sb->sock);
@@ -976,7 +975,6 @@ server_tar_files(const char* cmd, const stralloc* archive, strlist* files) {
   strarray_from_argv(strlist_count(files), (const char* const*)strlist_to_argv(files), &argv);
 
   if(str_start(base, "7z")) {
-
     strarray_unshiftm(&argv, "a", "-ssc", archive->s, 0);
   } else {
     if(str_equal(base, "star"))
@@ -1023,7 +1021,6 @@ server_tar_files(const char* cmd, const stralloc* archive, strlist* files) {
   pid = wait_pid(child_pid, &status);
 
   if(pid != -1) {
-
     buffer_puts(buffer_2, cmd);
     dump_strarray(buffer_2, &argv, "'", " ");
     buffer_puts(buffer_2, " (");
@@ -1043,7 +1040,6 @@ server_exit(int code) {
 
 void
 server_sigint(int sig) {
-
   buffer_puts(&log, "SIGINT received");
   buffer_putnlflush(&log);
   buffer_close(&log);
@@ -1086,7 +1082,6 @@ server_spawn() {
 /* Main server loop */
 void
 server_loop() {
-
   int sock;
   connection_t* c;
   socketbuf_t* sb;
@@ -1139,7 +1134,6 @@ server_loop() {
 #endif
 
         while(sb->buf.p > 0) {
-
           /*   if(line_buffer && !buffer_is_binary(&sb->buf) &&
              !sb->force_write) { size_t num_lines, end_pos; socketbuf_t*
              other; if((num_lines = buffer_numlines(&sb->buf, &end_pos)) >
@@ -1198,7 +1192,6 @@ server_loop() {
         connections_processed++;
 
       } else {
-
         if((c = connection_find(sock, -1))) {
 
           n = sockbuf_forward_data(&c->client, &c->proxy);
@@ -1214,7 +1207,6 @@ server_loop() {
 #endif
           }
         } else if((c = connection_find(-1, sock))) {
-
           n = sockbuf_forward_data(&c->proxy, &c->client);
 
           if(n > 0) {

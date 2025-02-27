@@ -103,15 +103,19 @@ cfg-diet() {
   export CC
 
   if [ "${PKG_CONFIG-unset}" = unset ]; then
-    if type pkgcfg >/dev/null; then
-      export PKG_CONFIG=`type pkgcfg 2>&1 |sed 's,.* is ,,'`
+    if type ${host}-pkg-config >/dev/null; then
+      export PKG_CONFIG=`type ${host}-pkg-config 2>&1 |sed 's,.*(\(.*\)).*,\1,'`
+    elif type pkgcfg >/dev/null; then
+      export PKG_CONFIG=`type pkgcfg 2>&1 |sed 's,.*(\(.*\)).*,\1,'`
     elif type pkg-config >/dev/null; then
-      export PKG_CONFIG=`type pkg-config 2>&1 |sed 's,.* is ,,'`
+      export PKG_CONFIG=`type pkg-config 2>&1 |sed 's,.*(\(.*\)).*,\1,'`
     fi
   fi
 
   : ${builddir=build/${host%-*}-diet}
   prefix=/opt/diet
+
+  echo "PKG_CONFIG='${PKG_CONFIG}'" 1>&2
 
   export builddir prefix
   PKG_CONFIG_PATH=/opt/diet/lib-x86_64/pkgconfig:/opt/diet/lib/pkgconfig:/usr/lib/diet/lib/pkgconfig \
@@ -125,7 +129,7 @@ cfg-diet() {
     -DCMAKE_FIND_ROOT_PATH="$prefix" \
     -DCMAKE_SYSTEM_LIBRARY_PATH="$prefix/lib-${host%%-*}" \
       ${launcher:+-DCMAKE_C_COMPILER_LAUNCHER="$launcher"} \
-  -DPKG_CONFIG_EXECUTABLE="$PKG_CONFIG" \
+      -DPKG_CONFIG_EXECUTABLE="$PKG_CONFIG" \
     "$@")
 }
 

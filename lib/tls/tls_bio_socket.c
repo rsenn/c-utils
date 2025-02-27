@@ -14,7 +14,6 @@
 
 tls_bio_t*
 tls_bio_socket(fd_type fd) {
-
   tls_bio_t* bio;
 
   bio = BIO_new_socket(fd, 0);

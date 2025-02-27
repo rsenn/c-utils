@@ -178,7 +178,6 @@ cpp_macro_expand(cpp* pp, tokenizer* t, buffer* out, const char* name, int rec_l
     tokenizer_from_file(&t2, &m->str_contents);
 
     for(;;) {
-
       if(!tokenizer_next(&t2, &tok))
         return 0;
 

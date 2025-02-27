@@ -84,7 +84,6 @@ print_phdr64(elf64_phdr* phdr) {
 
 int
 print_shdr64(elf64_shdr* shdr) {
-
   elf64_ehdr* ehdr = (elf64_ehdr*)base;
   elf64_shdr* shdrs = (elf64_shdr*)((char*)base + ehdr->e_shoff);
 
@@ -124,7 +123,6 @@ process64(elf64_ehdr* hdr) {
   }
 
   for(i = 0; i < hdr->e_phnum; ++i) {
-
     if(!(phdrs[i].p_flags & ELF_PF_W)) {
       print_phdr64(&phdrs[i]);
 
@@ -151,7 +149,6 @@ elfwrsec(const char* file) {
 
 int
 main(int argc, char* argv[]) {
-
   const char* fn = NULL;
 
   if(argc > 1)

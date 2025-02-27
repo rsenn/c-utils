@@ -32,7 +32,8 @@ if(CMAKE_BUILD_TYPE STREQUAL "")
   set(CMAKE_BUILD_TYPE Debug)
 endif()
 
-set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS Debug Release MinSizeRel RelWithDebInfo)
+set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS Debug Release MinSizeRel
+                                             RelWithDebInfo)
 
 option(USE_LZMA "lzma compression" ON)
 option(USE_BZIP "bzip2 compression" ON)
@@ -139,7 +140,8 @@ endif(WIN32)
 
 check_c_compiler_flag("-Wl,--no-export-dynamic" LINK_NO_EXPORT_DYNAMIC)
 if(LINK_NO_EXPORT_DYNAMIC)
-  set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,--no-export-dynamic" CACHE STRING "Linker flags for executables")
+  set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,--no-export-dynamic"
+      CACHE STRING "Linker flags for executables")
 endif(LINK_NO_EXPORT_DYNAMIC)
 
 # if(EXISTS "${CMAKE_SOURCE_DIR}/3rdparty/openssl/CMakeLists.txt") add_subdirectory(3rdparty/openssl) endif()
@@ -164,10 +166,19 @@ if(WINDOWS)
   check_winsock()
   # dump(LIBMSWSOCK)
 else(WINDOWS)
-  check_compile(LIBC_HAS_IP6 "#include <sys/types.h>\n#include <sys/socket.h>\n#include <netinet/in.h>\n\nint main() {\n  struct sockaddr_in6 sa;\n  sa.sin6_family = PF_INET6;\n  (void)sa;\n  return 0;\n}\n")
-  check_compile(LIBC_HAS_SCOPE_ID "#include <sys/types.h>\n#include <sys/socket.h>\n#include <netinet/in.h>\n\nint main() {\n  struct sockaddr_in6 sa;\n  sa.sin6_family = PF_INET6;\n  sa.sin6_scope_id = 23;\n  (void)sa;\n  return 0;\n}\n")
+  check_compile(
+    LIBC_HAS_IP6
+    "#include <sys/types.h>\n#include <sys/socket.h>\n#include <netinet/in.h>\n\nint main() {\n  struct sockaddr_in6 sa;\n  sa.sin6_family = PF_INET6;\n  (void)sa;\n  return 0;\n}\n"
+  )
+  check_compile(
+    LIBC_HAS_SCOPE_ID
+    "#include <sys/types.h>\n#include <sys/socket.h>\n#include <netinet/in.h>\n\nint main() {\n  struct sockaddr_in6 sa;\n  sa.sin6_family = PF_INET6;\n  sa.sin6_scope_id = 23;\n  (void)sa;\n  return 0;\n}\n"
+  )
 
-  check_compile(HAVE_SYSCALL "#define _GNU_SOURCE\n#include <unistd.h>\n#include <sys/syscall.h>\n\nstatic inline ssize_t\nsys_write(int fd, const void* buf, size_t n) {\n  return syscall(SYS_write, fd, buf, n);\n}\n\nint main() { return sys_write(1, \"test\\\\n\", 5);\n}\n")
+  check_compile(
+    HAVE_SYSCALL
+    "#define _GNU_SOURCE\n#include <unistd.h>\n#include <sys/syscall.h>\n\nstatic inline ssize_t\nsys_write(int fd, const void* buf, size_t n) {\n  return syscall(SYS_write, fd, buf, n);\n}\n\nint main() { return sys_write(1, \"test\\\\n\", 5);\n}\n"
+  )
 
   if(NOT USE_SELECT)
     check_compile(
@@ -198,7 +209,10 @@ else(WINDOWS)
       ${LIBMSWSOCK})
   endif(NOT USE_SELECT)
 
-  check_compile(HAVE_N2I "#include <sys/types.h>\n#include <sys/socket.h>\n#include <net/if.h>\n\nint main() { static char ifname[IFNAMSIZ];\n  char* tmp = if_indextoname(0, ifname);\n  (void)tmp;\n  return 0;\n}\n")
+  check_compile(
+    HAVE_N2I
+    "#include <sys/types.h>\n#include <sys/socket.h>\n#include <net/if.h>\n\nint main() { static char ifname[IFNAMSIZ];\n  char* tmp = if_indextoname(0, ifname);\n  (void)tmp;\n  return 0;\n}\n"
+  )
 
   check_compile(
     HAVE_BSDSENDFILE
@@ -220,21 +234,33 @@ endif(WINDOWS)
 #
 # if(HAVE_LINUX_AIO) message(STATUS "Support Linux AIO: ${SUPPORT_LINUX_AIO}") add_definitions(-DHAVE_LINUX_AIO=1) endif(HAVE_LINUX_AIO)
 
-check_compile(HAVE_SOCKLEN_T "#include <sys/types.h>\n#ifdef __MINGW32__\n#include <winsock2.h>\n#include <ws2tcpip.h>\n#else\n#include <sys/socket.h>\n#include <netinet/in.h>\n#endif\n\nint main() { socklen_t t;\n  (void)t;\n  return 0;\n}\n")
+check_compile(
+  HAVE_SOCKLEN_T
+  "#include <sys/types.h>\n#ifdef __MINGW32__\n#include <winsock2.h>\n#include <ws2tcpip.h>\n#else\n#include <sys/socket.h>\n#include <netinet/in.h>\n#endif\n\nint main() { socklen_t t;\n  (void)t;\n  return 0;\n}\n"
+)
 
 if(NOT HAVE_SOCKLEN_T)
   # add_definitions(-Dsocklen_t=int)
 endif(NOT HAVE_SOCKLEN_T)
 
-check_compile(HAVE___INLINE__ "static __inline__ int\nfoo(int bar) {\n  return bar + 1;\n}\nint main() { return foo(42); }\n")
+check_compile(
+  HAVE___INLINE__
+  "static __inline__ int\nfoo(int bar) {\n  return bar + 1;\n}\nint main() { return foo(42); }\n"
+)
 if(HAVE___INLINE__)
   add_definitions(-Dinline=__inline)
 else(HAVE___INLINE__)
-  check_compile(HAVE___INLINE "static __inline int\nfoo(int bar) {\n  return bar + 1;\n}\nint main() { return foo(42); }\n")
+  check_compile(
+    HAVE___INLINE
+    "static __inline int\nfoo(int bar) {\n  return bar + 1;\n}\nint main() { return foo(42); }\n"
+  )
   if(HAVE___INLINE)
     add_definitions(-Dinline=__inline)
   else(HAVE___INLINE)
-    check_compile(HAVE_INLINE "static inline int\nfoo(int bar) {\n  return bar + 1;\n}\nint main() { return foo(42); }\n")
+    check_compile(
+      HAVE_INLINE
+      "static inline int\nfoo(int bar) {\n  return bar + 1;\n}\nint main() { return foo(42); }\n"
+    )
     if(NOT HAVE_INLINE)
       add_definitions(-Dinline=)
     endif(NOT HAVE_INLINE)
@@ -244,9 +270,13 @@ endif(HAVE___INLINE__)
 check_compile(HAVE_UINT128 "int main() { __uint128_t tmp; }\n")
 check_compile(HAVE_INT128 "int main() { __int128_t tmp; }\n")
 
-check_compile(HAVE_ALLOCA "#include <stdlib.h>\n#ifdef A\n#include <alloca.h>\n#else\n#include <malloc.h>\n#endif\n\nint main() { char* c = alloca(23);\n  (void)c;\n  return 0;\n}\n")
+check_compile(
+  HAVE_ALLOCA
+  "#include <stdlib.h>\n#ifdef A\n#include <alloca.h>\n#else\n#include <malloc.h>\n#endif\n\nint main() { char* c = alloca(23);\n  (void)c;\n  return 0;\n}\n"
+)
 
 if(HAVE_ALLOCA)
+
 endif(HAVE_ALLOCA)
 
 check_include_file(signal.h HAVE_SIGNAL_H)
@@ -284,7 +314,10 @@ endif(NOT CROSS)
 
 # check_symbol_exists(__sync_val_compare_and_swap "" HAVE___SYNC_VAL_COMPARE_AND_SWAP)
 
-check_compile(INTRINSIC_CAS "#include <stdlib.h>\n\nint main() {\n  long v;\n  __sync_val_compare_and_swap(&v, 1, 0);\n  return 0;\n}")
+check_compile(
+  INTRINSIC_CAS
+  "#include <stdlib.h>\n\nint main() {\n  long v;\n  __sync_val_compare_and_swap(&v, 1, 0);\n  return 0;\n}"
+)
 
 if(NOT INTRINSIC_CAS)
   add_definitions(-DUSE_INLINE_COMPARE_AND_SWAP=1)
@@ -307,14 +340,18 @@ if(COMPILER_TCC)
 endif(COMPILER_TCC)
 # message("sigset_t size = ${SIGSET_T_SIZE}")
 if(SIGSET_T_SIZE)
-  set(HAVE_SIGSET_TYPE TRUE CACHE BOOL "Define this if you have the sigset_t type")
+  set(HAVE_SIGSET_TYPE TRUE CACHE BOOL
+                                  "Define this if you have the sigset_t type")
 else(SIGSET_T_SIZE)
   check_symbol_exists(sigset_t "signal.h" HAVE_SIGSET_T)
 endif(SIGSET_T_SIZE)
 
 if(NOT HAVE_SIGSET_T OR NOT SIZEOF_SIGSET_T)
 
-  check_compile(HAVE_SIGSET_T "#define _GNU_SOURCE\n#include <sys/types.h>\n#include <signal.h>\n#include <fcntl.h>\n#include <stdio.h>\n\nint main() {\n  sigset_t ss;\nprintf(\"%lu\\\\n\", sizeof(ss));\n  return 0;\n}\n" SIZEOF_SIGSET_T)
+  check_compile(
+    HAVE_SIGSET_T
+    "#define _GNU_SOURCE\n#include <sys/types.h>\n#include <signal.h>\n#include <fcntl.h>\n#include <stdio.h>\n\nint main() {\n  sigset_t ss;\nprintf(\"%lu\\\\n\", sizeof(ss));\n  return 0;\n}\n"
+    SIZEOF_SIGSET_T)
   # message("SIZEOF_SIGSET_T = ${SIZEOF_SIGSET_T}")
 endif(NOT HAVE_SIGSET_T OR NOT SIZEOF_SIGSET_T)
 
@@ -389,9 +426,11 @@ if(ENABLE_LTO)
 endif(ENABLE_LTO)
 
 if(LINK_STATIC)
-  if(CMAKE_COMPILER_IS_GNUCC OR "${CMAKE_C_COMPILER_ID}" STREQUAL "Clang" OR "${CMAKE_C_COMPILER_ID}" STREQUAL "GNU")
+  if(CMAKE_COMPILER_IS_GNUCC OR "${CMAKE_C_COMPILER_ID}" STREQUAL "Clang"
+     OR "${CMAKE_C_COMPILER_ID}" STREQUAL "GNU")
     set(EXE_LINKER_FLAGS "${EXE_LINKER_FLAGS} -static")
-  endif(CMAKE_COMPILER_IS_GNUCC OR "${CMAKE_C_COMPILER_ID}" STREQUAL "Clang" OR "${CMAKE_C_COMPILER_ID}" STREQUAL "GNU")
+  endif(CMAKE_COMPILER_IS_GNUCC OR "${CMAKE_C_COMPILER_ID}" STREQUAL "Clang"
+        OR "${CMAKE_C_COMPILER_ID}" STREQUAL "GNU")
   set(CHK_DLFCN FALSE)
 else(LINK_STATIC)
   # set(EXE_LINKER_FLAGS "-Wl,-rpath=${OPENSSL_LIB_DIR}")
@@ -400,7 +439,9 @@ endif(LINK_STATIC)
 #
 set(CMAKE_STATIC_LINKER_FLAGS "")
 
-check_functions(__write aligned_alloc clock_gettime getdelim lstat pipe2 popen posix_memalign pread sendfile sigaddset sigemptyset sigprocmask waitpid writev)
+check_functions(
+  __write aligned_alloc clock_gettime getdelim lstat pipe2 popen posix_memalign
+  pread sendfile sigaddset sigemptyset sigprocmask waitpid writev)
 check_functions(sigismember sigsuspend)
 check_functions(ftruncate)
 check_functions(glob)
@@ -440,7 +481,8 @@ if(HAVE_GLOB)
 endif(HAVE_GLOB)
 
 if(WIN32 OR CYGWIN OR MSYS OR MINGW)
-  check_functions(cygwin_conv_path cygwin_conv_to_posix_path cygwin_conv_to_win32_path pathconv)
+  check_functions(cygwin_conv_path cygwin_conv_to_posix_path
+                  cygwin_conv_to_win32_path pathconv)
 endif(WIN32 OR CYGWIN OR MSYS OR MINGW)
 # check_functions(setuid setgid execve lstat waitpid aligned_alloc fnmatch getdelim getopt getopt_long pipe2 popen posix_memalign pread sendfile sigaddset sigemptyset sigprocmask strerror_r __write writev posix_spawnattr_setflags posix_spawn_file_actions_init posix_spawn_file_actions_adddup2 posix_spawnp clock_gettime)
 
@@ -450,7 +492,8 @@ endif(WIN32 OR CYGWIN OR MSYS OR MINGW)
 #
 # #[[foreach(H HAVE_IO_SETUP HAVE_IO_DESTROY HAVE_IO_SUBMIT HAVE_IO_GETEVENTS) add_definitions(-D"${H}=1") endforeach()]] endif(HAVE_LINUX_AIO_ABI_H)
 
-if(HAVE_POSIX_SPAWNATTR_SETFLAGS AND HAVE_POSIX_SPAWN_FILE_ACTIONS_INIT AND HAVE_POSIX_SPAWN_FILE_ACTIONS_ADDDUP2 AND HAVE_POSIX_SPAWNP)
+if(HAVE_POSIX_SPAWNATTR_SETFLAGS AND HAVE_POSIX_SPAWN_FILE_ACTIONS_INIT
+   AND HAVE_POSIX_SPAWN_FILE_ACTIONS_ADDDUP2 AND HAVE_POSIX_SPAWNP)
   add_definitions(-DPOSIX_SPAWN=1)
 endif()
 
@@ -463,22 +506,27 @@ else(HAVE_OFF_T OR SIZEOF_OFF_T)
   # add_definitions(-Doff_t=int64)
 endif(HAVE_OFF_T OR SIZEOF_OFF_T)
 
-check_function_exists(lseek64 HAVE_LSEEK64)
-if(NOT HAVE_LSEEK64)
+check_function_exists(_llseek HAVE__LLSEEK)
+if(NOT HAVE__LLSEEK)
   check_function_exists(llseek HAVE_LLSEEK)
   if(NOT HAVE_LLSEEK)
-    check_function_exists(lseek HAVE_LSEEK)
-    if(NOT HAVE_LSEEK)
+    check_function_exists(lseek64 HAVE_LSEEK64)
+    if(NOT HAVE_LSEEK64)
+      check_function_exists(lseek HAVE_LSEEK)
+      if(NOT HAVE_LSEEK)
 
-    else(NOT HAVE_LSEEK)
-      add_definitions(-Dio_seek=lseek)
-    endif(NOT HAVE_LSEEK)
+      else(NOT HAVE_LSEEK)
+        add_definitions(-Dio_seek=lseek)
+      endif(NOT HAVE_LSEEK)
+    else(NOT HAVE_LSEEK64)
+      add_definitions(-Dio_seek=lseek64)
+    endif(NOT HAVE_LSEEK64)
   else(NOT HAVE_LLSEEK)
     add_definitions(-Dio_seek=llseek)
   endif(NOT HAVE_LLSEEK)
-else(NOT HAVE_LSEEK64)
-  add_definitions(-Dio_seek=lseek64)
-endif(NOT HAVE_LSEEK64)
+else(NOT HAVE__LLSEEK)
+  add_definitions(-Dio_seek=_llseek)
+endif(NOT HAVE__LLSEEK)
 
 if(USE_POLL STREQUAL "OFF" AND NOT USE_SELECT STREQUAL "ON")
   message(INFO "Checking for poll()...")
@@ -600,7 +648,8 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
   endif(DEBUG_OUTPUT)
 endif(CMAKE_BUILD_TYPE STREQUAL "Debug")
 
-set(CompilerFlags CMAKE_C_FLAGS CMAKE_C_FLAGS_DEBUG CMAKE_C_FLAGS_RELEASE CMAKE_C_FLAGS_RELWITHDEBINFO CMAKE_C_FLAGS_MINSIZEREL)
+set(CompilerFlags CMAKE_C_FLAGS CMAKE_C_FLAGS_DEBUG CMAKE_C_FLAGS_RELEASE
+                  CMAKE_C_FLAGS_RELWITHDEBINFO CMAKE_C_FLAGS_MINSIZEREL)
 foreach(CompilerFlag ${CompilerFlags})
   unset(FLAG)
   string(REPLACE "/MD" "/MT" FLAG "${${CompilerFlag}}")
@@ -717,7 +766,8 @@ if(NOT "${MUX_METHOD}" STREQUAL "")
   message(STATUS "I/O multiplex method: ${MUX_METHOD}")
 
   add_definitions("-DHAVE_${MUX_METHOD}=1" "-DUSE_${MUX_METHOD}=1")
-  set(io_COMPILE_FLAGS "-DMUX_METHOD=${MUX_METHOD} -DHAVE_${MUX_METHOD}=1 -DUSE_${MUX_METHOD}=1")
+  set(io_COMPILE_FLAGS
+      "-DMUX_METHOD=${MUX_METHOD} -DHAVE_${MUX_METHOD}=1 -DUSE_${MUX_METHOD}=1")
 endif(NOT "${MUX_METHOD}" STREQUAL "")
 
 if(WIN32 OR MSVC)
@@ -827,44 +877,60 @@ if(NOT LIBLZMA_LIBRARY)
   set(LIBLZMA_LIBRARY "${LIBLZMA_LIBRARY}")
 endif(NOT LIBLZMA_LIBRARY)
 
-set(BROTLI_LIBRARIES CACHE STRING "${pkgcfg_lib_BROTLIENC_brotlienc};${pkgcfg_lib_BROTLIDEC_brotlidec};${pkgcfg_lib_BROTLICOMMON_brotlicommon}")
+set(BROTLI_LIBRARIES
+    CACHE
+      STRING
+      "${pkgcfg_lib_BROTLIENC_brotlienc};${pkgcfg_lib_BROTLIDEC_brotlidec};${pkgcfg_lib_BROTLICOMMON_brotlicommon}"
+)
 
 #if(NOT COMPRESSION_LIBRARIES OR "${COMPRESSION_LIBRARIES}" STREQUAL "")
 set(COMPRESSION_LIBRARIES "")
-foreach(VAR LIBLZMA_LIBRARY ZLIB_LIBRARY BZIP2_LIBRARY pkgcfg_lib_BROTLIENC_brotlienc pkgcfg_lib_BROTLIDEC_brotlidec pkgcfg_lib_BROTLICOMMON_brotlicommon)
+foreach(
+  VAR LIBLZMA_LIBRARY ZLIB_LIBRARY BZIP2_LIBRARY pkgcfg_lib_BROTLIENC_brotlienc
+      pkgcfg_lib_BROTLIDEC_brotlidec pkgcfg_lib_BROTLICOMMON_brotlicommon)
   set(LIB "${${VAR}}")
   if(LIB)
     list(APPEND COMPRESSION_LIBRARIES "${LIB}")
   endif(LIB)
-endforeach(VAR LIBLZMA_LIBRARY ZLIB_LIBRARY BZIP2_LIBRARY pkgcfg_lib_BROTLIENC_brotlienc pkgcfg_lib_BROTLIDEC_brotlidec pkgcfg_lib_BROTLICOMMON_brotlicommon)
+endforeach(
+  VAR LIBLZMA_LIBRARY ZLIB_LIBRARY BZIP2_LIBRARY pkgcfg_lib_BROTLIENC_brotlienc
+  pkgcfg_lib_BROTLIDEC_brotlidec pkgcfg_lib_BROTLICOMMON_brotlicommon)
 
-set(COMPRESSION_LIBRARIES "${COMPRESSION_LIBRARIES}" CACHE STRING "Compression libraries")
+set(COMPRESSION_LIBRARIES "${COMPRESSION_LIBRARIES}"
+    CACHE STRING "Compression libraries")
 #endif(NOT COMPRESSION_LIBRARIES OR "${COMPRESSION_LIBRARIES}" STREQUAL "")
 
 set(LINK_DIRS "")
 # dump(BROTLICOMMON_LIBRARY_DIRS BROTLI_LIBRARY_DIR BROTLI_LIBRARY_DIRS BZIP2_LIBRARY_DIR BZIP2_LIBRARY_DIRS OPENSSL_LIBRARY_DIRS)
-foreach(VAR BROTLICOMMON_LIBRARY_DIRS BROTLI_LIBRARY_DIR BROTLI_LIBRARY_DIRS BZIP2_LIBRARY_DIR BZIP2_LIBRARY_DIRS OPENSSL_LIBRARY_DIRS)
+foreach(VAR BROTLICOMMON_LIBRARY_DIRS BROTLI_LIBRARY_DIR BROTLI_LIBRARY_DIRS
+            BZIP2_LIBRARY_DIR BZIP2_LIBRARY_DIRS OPENSSL_LIBRARY_DIRS)
   set(DIR "${${VAR}}")
   if(DIR)
     list(APPEND LINK_DIRS "${DIR}")
   endif(DIR)
-endforeach(VAR BROTLICOMMON_LIBRARY_DIRS BROTLI_LIBRARY_DIR BROTLI_LIBRARY_DIRS BZIP2_LIBRARY_DIR BZIP2_LIBRARY_DIRS OPENSSL_LIBRARY_DIRS OPENSSL_LIB_DIR)
+endforeach(
+  VAR BROTLICOMMON_LIBRARY_DIRS BROTLI_LIBRARY_DIR BROTLI_LIBRARY_DIRS
+  BZIP2_LIBRARY_DIR BZIP2_LIBRARY_DIRS OPENSSL_LIBRARY_DIRS OPENSSL_LIB_DIR)
 
 # dump(LINK_DIRS)
 link_directories(${LINK_DIRS})
 
 if(LINK_STATIC)
   message(STATUS "Static linking")
-  if(CMAKE_COMPILER_IS_GNUCC OR "${CMAKE_C_COMPILER_ID}" STREQUAL "Clang" OR "${CMAKE_C_COMPILER_ID}" STREQUAL "GNU")
+  if(CMAKE_COMPILER_IS_GNUCC OR "${CMAKE_C_COMPILER_ID}" STREQUAL "Clang"
+     OR "${CMAKE_C_COMPILER_ID}" STREQUAL "GNU")
     if(NOT CMAKE_EXE_LINKER_FLAGS MATCHES "-static")
-      set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -static" CACHE STRING "Executable linker flags")
+      set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -static"
+          CACHE STRING "Executable linker flags")
     endif(NOT CMAKE_EXE_LINKER_FLAGS MATCHES "-static")
-  endif(CMAKE_COMPILER_IS_GNUCC OR "${CMAKE_C_COMPILER_ID}" STREQUAL "Clang" OR "${CMAKE_C_COMPILER_ID}" STREQUAL "GNU")
+  endif(CMAKE_COMPILER_IS_GNUCC OR "${CMAKE_C_COMPILER_ID}" STREQUAL "Clang"
+        OR "${CMAKE_C_COMPILER_ID}" STREQUAL "GNU")
 endif(LINK_STATIC)
 
 add_definitions(-DHAVE_CONFIG_H=1)
 include_directories("${CMAKE_CURRENT_BINARY_DIR}")
-configure_file("${CMAKE_CURRENT_SOURCE_DIR}/cmake/config.h.cmake" "${CMAKE_CURRENT_BINARY_DIR}/config.h")
+configure_file("${CMAKE_CURRENT_SOURCE_DIR}/cmake/config.h.cmake"
+               "${CMAKE_CURRENT_BINARY_DIR}/config.h")
 
 # ------------------------------------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------------------------------------
@@ -878,53 +944,90 @@ add_subdirectory(lib ${CMAKE_BINARY_DIR}/lib)
 
 set(COMMON_LIBS strlist array safemult scan str byte mmap open fmt)
 
-set(genmakefile_SOURCES ini.c ini.h genmakefile.h debug.c debug.h src/genmakefile/cmake.c src/genmakefile/mplab.c src/genmakefile/path.c src/genmakefile/rule.c src/genmakefile/includes.c src/genmakefile/sourcedir.c src/genmakefile/sources.c src/genmakefile/var.c src/genmakefile/generate.c
-                        src/genmakefile/input.c src/genmakefile/output.c)
+set(genmakefile_SOURCES
+    ini.c
+    ini.h
+    genmakefile.h
+    debug.c
+    debug.h
+    src/genmakefile/cmake.c
+    src/genmakefile/mplab.c
+    src/genmakefile/path.c
+    src/genmakefile/rule.c
+    src/genmakefile/includes.c
+    src/genmakefile/sourcedir.c
+    src/genmakefile/sources.c
+    src/genmakefile/var.c
+    src/genmakefile/generate.c
+    src/genmakefile/input.c
+    src/genmakefile/output.c)
 
 #dump(LIBMATH)
 
 if(USE_BZIP)
-  add_program(bsdiffcat path array safemult str byte errmsg buffer stralloc uint32 uint64 ${COMPRESSION_LIBRARIES})
-  add_program(ccat path case buffer open str unix ${ZLIB_LIBRARY} ${BROTLI_LIBRARIES} ${COMPRESSION_LIBRARIES} ${LIBMATH} ${LIBSHLWAPI})
+  add_program(bsdiffcat path array safemult str byte errmsg buffer stralloc
+              uint32 uint64 ${COMPRESSION_LIBRARIES})
+  add_program(
+    ccat path case buffer open str unix ${ZLIB_LIBRARY} ${BROTLI_LIBRARIES}
+    ${COMPRESSION_LIBRARIES} ${LIBMATH} ${LIBSHLWAPI})
 endif(USE_BZIP)
 add_program(compiler-wrapper stralloc buffer byte fmt str strlist dir)
 add_program(count-depth buffer fmt)
 add_program(decode-ls-lR stralloc buffer byte fmt io open str)
 add_program(dnsip dns stralloc buffer errmsg socket ${LIBIPHLPAPI})
 add_program(dnsname dns stralloc buffer errmsg ${LIBIPHLPAPI})
-add_program(dnsip6 dns stralloc buffer errmsg socket ${LIBIPHLPAPI} ${LIBMSWSOCK})
-add_program(dnsip6q dns stralloc buffer errmsg socket ${LIBIPHLPAPI} ${LIBMSWSOCK})
-add_program(dnsipq dns stralloc buffer errmsg socket ${LIBIPHLPAPI} ${LIBMSWSOCK})
-add_program(dnsmx dns stralloc buffer errmsg socket ${LIBIPHLPAPI} ${LIBMSWSOCK})
+add_program(dnsip6 dns stralloc buffer errmsg socket ${LIBIPHLPAPI}
+            ${LIBMSWSOCK})
+add_program(dnsip6q dns stralloc buffer errmsg socket ${LIBIPHLPAPI}
+            ${LIBMSWSOCK})
+add_program(dnsipq dns stralloc buffer errmsg socket ${LIBIPHLPAPI}
+            ${LIBMSWSOCK})
+add_program(dnsmx dns stralloc buffer errmsg socket ${LIBIPHLPAPI}
+            ${LIBMSWSOCK})
 #[[add_program(dnsq dns case stralloc buffer errmsg socket ${LIBIPHLPAPI} ${LIBMSWSOCK})
 add_program(dnsqr dns stralloc buffer errmsg socket ${LIBIPHLPAPI} ${LIBMSWSOCK})]]
 # add_program(dnstrace dns stralloc buffer errmsg socket ${LIBIPHLPAPI} ${LIBMSWSOCK})
-add_program(dnstxt dns stralloc buffer errmsg socket ${LIBIPHLPAPI} ${LIBMSWSOCK})
+add_program(dnstxt dns stralloc buffer errmsg socket ${LIBIPHLPAPI}
+            ${LIBMSWSOCK})
 
-add_program(eagle-gen-cmds xml stralloc buffer strarray array byte cb cbmap errmsg fmt hmap mmap scan str unix ${LIBMATH})
+add_program(eagle-gen-cmds xml stralloc buffer strarray array byte cb cbmap
+            errmsg fmt hmap mmap scan str unix ${LIBMATH})
 add_program(eagle-init-brd xml stralloc buffer hmap strlist scan str ${LIBMATH})
-add_program(eagle-to-circuit xml stralloc buffer strlist array byte cb cbmap fmt hashmap hmap mmap scan str ${LIBMATH})
-add_program(eagle-to-svg xml stralloc buffer strlist array byte cb cbmap fmt hashmap hmap mmap scan str)
+add_program(eagle-to-circuit xml stralloc buffer strlist array byte cb cbmap
+            fmt hashmap hmap mmap scan str ${LIBMATH})
+add_program(eagle-to-svg xml stralloc buffer strlist array byte cb cbmap fmt
+            hashmap hmap mmap scan str)
 add_program(elf64list buffer elf mmap uint16 uint32 uint64)
 add_program(elflist strlist buffer alloc errmsg unix elf mmap str)
 add_program(elfwrsec buffer alloc elf mmap)
 add_program(pemkwingui buffer alloc pe mmap)
-add_program(genmakefile set env sig set case errmsg strarray dlist slist rdir dir path strarray strlist hashmap hmap stralloc buffer mmap unix open scan fmt byte str array safemult alloc)
-add_program(piccfg ihex errmsg strarray slist rdir dir path strlist hashmap hmap stralloc buffer mmap unix open scan fmt byte str array safemult alloc)
-add_program(hexedit stralloc buffer array io errmsg mmap open path scan uint64 unix ${ZLIB_LIBRARY})
+add_program(
+  genmakefile set env sig set case errmsg strarray dlist slist rdir dir path
+  strarray strlist hashmap hmap stralloc buffer mmap unix open scan fmt byte
+  str array safemult alloc)
+add_program(
+  piccfg ihex errmsg strarray slist rdir dir path strlist hashmap hmap stralloc
+  buffer mmap unix open scan fmt byte str array safemult alloc)
+add_program(hexedit stralloc buffer array io errmsg mmap open path scan uint64
+            unix ${ZLIB_LIBRARY})
 set(httptest_SOURCES uri.c uri.h)
 
 # set(ssltest_SOURCES address.c address.h)
 
 add_program(impgen pe buffer byte mmap open)
 set(list_r_SOURCES dump.c dump.h)
-add_program(list-r errmsg path strarray strlist stralloc buffer array unix dir array fmt open str uint64 ${LIBADVAPI32})
+add_program(list-r errmsg path strarray strlist stralloc buffer array unix dir
+            array fmt open str uint64 ${LIBADVAPI32})
 # add_program(macho32list mmap uint32)
 if(USE_LZMA)
-  add_program(mediathek-list errmsg stralloc buffer alloc byte fmt http tls scan slist str unix strarray strlist ${LIBLZMA_LIBRARY} ${TLS_LIBRARIES} ${LIBCOMPAT} ${LIBDL} ${LIBPTHREAD})
+  add_program(
+    mediathek-list errmsg stralloc buffer alloc byte fmt http tls scan slist
+    str unix strarray strlist ${LIBLZMA_LIBRARY} ${TLS_LIBRARIES} ${LIBCOMPAT}
+    ${LIBDL} ${LIBPTHREAD})
 endif(USE_LZMA)
 
-add_program(mediathek-parser case ucs errmsg strarray strlist stralloc buffer array byte open str unix strlist)
+add_program(mediathek-parser case ucs errmsg strarray strlist stralloc buffer
+            array byte open str unix strlist)
 add_program(ntldd stralloc buffer pe strlist byte path str unix uint64)
 add_program(opensearch-dump xml stralloc buffer)
 
@@ -933,7 +1036,8 @@ add_program(pathtool set hmap stralloc buffer errmsg path strlist unix)
 
 add_program(pelist buffer errmsg mmap pe str unix)
 add_program(omflist stralloc buffer errmsg omf mmap str unix)
-add_program(pkgcfg process wait path unix hashmap hmap stralloc buffer byte cbmap dir env errmsg slist case str strarray strlist)
+add_program(pkgcfg process wait path unix hashmap hmap stralloc buffer byte
+            cbmap dir env errmsg slist case str strarray strlist)
 add_program(plsconv stralloc buffer byte open playlist str unix)
 add_program(reg2cmd stralloc buffer byte fmt open scan str uint64)
 add_program(regfilter stralloc buffer byte fmt open scan str uint64)
@@ -941,18 +1045,61 @@ add_program(sln unix stralloc buffer byte errmsg path)
 add_program(pipeinfo slist seek unix stralloc buffer array byte errmsg path)
 add_program(torrent-progress stralloc buffer io mmap open uint64)
 add_program(xmlpp errmsg xml stralloc buffer hmap io unix)
-add_program(cc-wrap process errmsg env buffer path dir strarray strlist stralloc fmt)
-add_program(exe-wrap ini.c hashmap process errmsg env buffer path dir strarray strlist stralloc fmt)
-add_program(ar-wrap path process errmsg env buffer dir strarray strlist stralloc fmt alloc)
+add_program(cc-wrap process errmsg env buffer path dir strarray strlist
+            stralloc fmt)
+add_program(exe-wrap ini.c hashmap process errmsg env buffer path dir strarray
+            strlist stralloc fmt)
+add_program(ar-wrap path process errmsg env buffer dir strarray strlist
+            stralloc fmt alloc)
 add_program(cofflist coff unix errmsg stralloc buffer mmap)
 add_program(msys-shell unix errmsg env buffer path strarray strlist stralloc)
 set(tcping_SOURCES address.c)
-add_program(tcping hmap unix dns case io array socket ndelay errmsg taia tai buffer stralloc mmap open fmt scan str byte uint16 ${LIBMSWSOCK} ${LIBIPHLPAPI})
+add_program(
+  tcping hmap unix dns case io array socket ndelay errmsg taia tai buffer
+  stralloc mmap open fmt scan str byte uint16 ${LIBMSWSOCK} ${LIBIPHLPAPI})
 set(ftptest_SOURCES address.c ftplib.c)
 
-set(nscache_SOURCES cache.c cache.h log.c log.h query.c query.h response.c response.h roots.c roots.h names.c names.h lib/alloc.h lib/array.h lib/buffer.h lib/byte.h lib/case.h lib/dir.h lib/dns.h lib/env.h lib/errmsg.h lib/fmt.h lib/iopause.h lib/ip4.h lib/ip6.h lib/mmap.h lib/ndelay.h lib/open.h
-                    lib/path.h lib/scan.h lib/socket.h lib/str.h lib/stralloc.h lib/tai.h lib/taia.h lib/uint16.h lib/uint32.h lib/uint64.h)
-add_program(nscache dns path errmsg dir array stralloc alloc env byte uint16 ${LIBMSWSOCK} ${LIBIPHLPAPI} ${LIBSHLWAPI})
+set(nscache_SOURCES
+    cache.c
+    cache.h
+    log.c
+    log.h
+    query.c
+    query.h
+    response.c
+    response.h
+    roots.c
+    roots.h
+    names.c
+    names.h
+    lib/alloc.h
+    lib/array.h
+    lib/buffer.h
+    lib/byte.h
+    lib/case.h
+    lib/dir.h
+    lib/dns.h
+    lib/env.h
+    lib/errmsg.h
+    lib/fmt.h
+    lib/iopause.h
+    lib/ip4.h
+    lib/ip6.h
+    lib/mmap.h
+    lib/ndelay.h
+    lib/open.h
+    lib/path.h
+    lib/scan.h
+    lib/socket.h
+    lib/str.h
+    lib/stralloc.h
+    lib/tai.h
+    lib/taia.h
+    lib/uint16.h
+    lib/uint32.h
+    lib/uint64.h)
+add_program(nscache dns path errmsg dir array stralloc alloc env byte uint16
+            ${LIBMSWSOCK} ${LIBIPHLPAPI} ${LIBSHLWAPI})
 add_program(crc errmsg buffer mmap open ${ZLIB_LIBRARY})
 add_program(cmake-run errmsg env buffer path dir strarray strlist stralloc fmt)
 set(jsonpp_SOURCES terminal.c terminal.h)
@@ -960,16 +1107,21 @@ set(jsonpp_SOURCES terminal.c terminal.h)
 add_program(jsonpp json errmsg charbuf unix)
 add_program(xml2json json xml charbuf errmsg unix)
 add_program(xml2moon xml charbuf textcode errmsg)
-add_program(strip-comments errmsg env charbuf buffer path dir strarray strlist stralloc fmt unix)
-add_program(q textcode unix errmsg env charbuf buffer path dir strarray strlist stralloc fmt)
+add_program(strip-comments errmsg env charbuf buffer path dir strarray strlist
+            stralloc fmt unix)
+add_program(q textcode unix errmsg env charbuf buffer path dir strarray strlist
+            stralloc fmt)
 
 add_program(httpproxy unix http io hmap)
 # add_program(montty io hmap)
 if(UNIX)
-  add_program(logserial sig charbuf hmap path unix rdir dir errmsg io ndelay strarray stralloc buffer taia tai)
+  add_program(logserial sig charbuf hmap path unix rdir dir errmsg io ndelay
+              strarray stralloc buffer taia tai)
 endif(UNIX)
 
-add_program(tinyproxy process unix path wait range dns taia tai hmap env ndelay buffer strarray array strlist stralloc errmsg sig socket fmt scan io uint32)
+add_program(
+  tinyproxy process unix path wait range dns taia tai hmap env ndelay buffer
+  strarray array strlist stralloc errmsg sig socket fmt scan io uint32)
 link_program(tinyproxy ${LIBMSWSOCK})
 # if(NOT WIN32) add_program(tcpproxy http io errmsg buffer open ) endif(NOT WIN32)
 
@@ -982,10 +1134,13 @@ add_program(lsproc strlist errmsg mmap buffer unix dir)
 if(BUILD_TESTS)
   # add_program(ssltest strlist unix dns stralloc buffer errmsg byte io  tls socket alloc taia ${TLS_LIBRARIES} ${LIBMSWSOCK} ${LIBDL} ${LIBPTHREAD}) add_program(ziptest buffer str unix ${COMPRESSION_LIBRARIES})
   add_program(binfmttest binfmt)
-  add_program(buffertest stralloc buffer array case mmap ${COMPRESSION_LIBRARIES})
+  add_program(buffertest stralloc buffer array case mmap
+              ${COMPRESSION_LIBRARIES})
   add_program(cpptest cpp tokenizer path unix buffer open)
   #add_program(dnstest dns stralloc buffer errmsg ${LIBIPHLPAPI} ${LIBMSWSOCK})
-  add_program(ftptest hmap unix dns case io array socket ndelay errmsg taia tai stralloc buffer mmap open fmt scan str byte uint16 ${LIBMSWSOCK} ${LIBIPHLPAPI})
+  add_program(
+    ftptest hmap unix dns case io array socket ndelay errmsg taia tai stralloc
+    buffer mmap open fmt scan str byte uint16 ${LIBMSWSOCK} ${LIBIPHLPAPI})
   #add_program(httptest unix slist xml sig http dns stralloc buffer errmsg byte io socket alloc taia ${TLS_LIBRARIES} ${LIBMSWSOCK} ${LIBPTHREAD})
   #link_program(httptest ${LIBDL})
   add_program(jsontest json stralloc charbuf buffer byte fmt hmap mmap open)
@@ -1031,7 +1186,8 @@ endif(BUILD_EXAMPLES)
 
 set(CPACK_PACKAGE_VERSION_MAJOR 1)
 set(CPACK_PACKAGE_VERSION_MINOR 0)
-set(C_UTILS_VERSION ${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR})
+set(C_UTILS_VERSION
+    ${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR})
 # set(CPACK_INSTALL_CMAKE_PROJECTS ${CMAKE_CURRENT_BINARY_DIR};${CMAKE_PROJECT_NAME};ALL)
 set(CPACK_PACKAGE_FILE_NAME "c-utils-${C_UTILS_VERSION}")
 set(CPACK_PACKAGE_NAME "")
@@ -1039,7 +1195,9 @@ set(CPACK_PACKAGE_NAME "")
 set(CPACK_GENERATOR "TZST")
 set(CPACK_RESOURCE_FILE_README ${CMAKE_CURRENT_SOURCE_DIR}/README.txt)
 set(CPACK_SOURCE_GENERATOR "TXZ")
-set(CPACK_SOURCE_IGNORE_FILES "\\.git/" "build/" "inst/" "build.*" ".*~$" ".*\\.tar\\..*" "\\.o$" "\\.obj$" "\\.log$" "\\.tar\\..*")
+set(CPACK_SOURCE_IGNORE_FILES
+    "\\.git/" "build/" "inst/" "build.*" ".*~$" ".*\\.tar\\..*" "\\.o$"
+    "\\.obj$" "\\.log$" "\\.tar\\..*")
 set(CPACK_SOURCE_PACKAGE_FILE_NAME "c-utils-${C_UTILS_VERSION}-src")
 set(CPACK_VERBATIM_VARIABLES YES)
 

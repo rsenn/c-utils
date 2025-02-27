@@ -160,7 +160,6 @@ CreateSymlink(LPCTSTR lpLinkName, LPCTSTR lpTargetName, LPSECURITY_ATTRIBUTES lp
     cb = 8 + rdb.ReparseDataLength;
 
     if(!DeviceIoControl(hFile, FSCTL_SET_REPARSE_POINT, &rdb, cb, NULL, 0, &cb, NULL)) {
-
       CloseHandle(hFile);
       deletefunc(lpLinkName);
       return FALSE;
@@ -226,7 +225,6 @@ CreateJunction(LPCTSTR lpLinkName, LPCTSTR lpTargetName, LPSECURITY_ATTRIBUTES l
   cb = 8 + rdb.ReparseDataLength;
 
   if(!DeviceIoControl(hFile, FSCTL_SET_REPARSE_POINT, &rdb, cb, NULL, 0, &cb, NULL)) {
-
     CloseHandle(hFile);
     deletefunc(lpLinkName);
     return FALSE;

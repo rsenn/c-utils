@@ -43,7 +43,6 @@ buffer_bzread_op(fd_type fd, void* data, size_t n, buffer* b) {
 
   if(/* strm->avail_out == 0 */
      ret == BZ_OK || ret == BZ_STREAM_END) {
-
     ctx->b->p += a - strm->avail_in;
 
     return n - strm->avail_out;

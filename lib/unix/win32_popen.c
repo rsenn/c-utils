@@ -102,7 +102,6 @@ static IDpair* __cdecl idtab(FILE*);
  *******************************************************************************/
 
 FILE* __cdecl popen(const char* cmdstring, const char* type) {
-
   int phdls[2];   /* I/O handles for pipe */
   int ph_open[2]; /* flags, set if correspond phdls is open */
   int i1;         /* index into phdls[] */
@@ -192,7 +191,6 @@ FILE* __cdecl popen(const char* cmdstring, const char* type) {
     }
     _mlock(_POPEN_LOCK);*/
   __try {
-
     /* set flags to indicate pipe handles are open. note, these are only
      * used for error recovery.
      */
@@ -428,7 +426,6 @@ int __cdecl _pclose(FILE* pstream) {
       return -1;
     _mlock(_POPEN_LOCK);*/
   __try {
-
     if((locidpair = idtab(pstream)) == NULL) {
       /* invalid pstream, exit with retval == -1
        */
@@ -496,7 +493,6 @@ int __cdecl _pclose(FILE* pstream) {
  *******************************************************************************/
 
 static IDpair* __cdecl idtab(FILE* pstream) {
-
   IDpair* pairptr; /* ptr to entry */
   IDpair* newptr;  /* ptr to newly malloc'd memory */
 

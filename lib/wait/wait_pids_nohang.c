@@ -21,7 +21,6 @@ wait_pids_nohang(int const* pids, unsigned int len, int* wstat) {
   }
 
   for(;;) {
-
     ret = WaitForMultipleObjects(len, handles, FALSE, 0);
 
     if(ret == WAIT_TIMEOUT)

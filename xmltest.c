@@ -103,7 +103,6 @@ xml_dump(xmlnode* n, buffer* b, const char* parent, int depth) {
         }
 
         do {
-
           stralloc_catlong(&name, num);
           stralloc_nul(&name);
 

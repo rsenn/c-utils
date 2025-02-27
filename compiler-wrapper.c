@@ -181,7 +181,6 @@ process_option(const char* optstr, const char* nextopt, int* i) {
     else
       optlevel = atoi(&optstr[1]) * 3;
   } else if(*optstr == 'o') {
-
     stralloc_copys(&output_file, &optstr[1]);
   } else if(tolower(*optstr) == 'm') {
     stralloc_copys(&map_file, &optstr[1]);
@@ -220,7 +219,6 @@ strlist_execve(const strlist* sl) {
     return -1;
 
   if(pid == 0) {
-
     if(execv(p, av) == -1)
       exit(127);
   } else {
@@ -292,7 +290,6 @@ read_arguments() {
       if(process_option(s, s2, &i))
         strlist_push(&longopts, s);
     } else if(s[0] == '-') {
-
       if(process_option(s, s2, &i))
         strlist_push(&opts, s);
     } else {
@@ -414,7 +411,6 @@ read_arguments() {
 
 void
 execute_cmd() {
-
   size_t i, n;
 
   strlist cmd;
@@ -442,7 +438,6 @@ execute_cmd() {
     strlist_pushm_internal(&cmd, "--chip=", chip.s, NULL);
 
     if(mode != PREPROCESS) {
-
       if(runtime.len > 0) {
         stralloc_0(&runtime);
         strlist_pushm_internal(&cmd, "--runtime=", runtime.s, NULL);
@@ -626,7 +621,6 @@ print_strlist(buffer* b, const strlist* sl, const char* separator, const char* q
     const char* s = strlist_at(sl, i);
 
     if(str_len(s)) {
-
       if(i > 0)
         buffer_puts(b, separator);
 

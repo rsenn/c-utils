@@ -17,7 +17,6 @@ path_gethome(int uid) {
   wchar_t path[MAX_PATH];
 
   if(SUCCEEDED(SHGetFolderPathW(NULL, CSIDL_PROFILE, NULL, 0, path))) {
-
     size_t n = wcs_to_u8s(home, path, sizeof(home));
 
     if(n < sizeof(home))

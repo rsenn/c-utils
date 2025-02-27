@@ -81,7 +81,6 @@ warning(const char* err, tokenizer* t, token* curr) {
 
 static inline void
 flush_whitespace(buffer* out, int* ws_count) {
-
   while(*ws_count > 0) {
     buffer_puts(out, " ");
     --(*ws_count);

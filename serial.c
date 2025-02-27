@@ -524,7 +524,6 @@ serial_ports(void) {
   dir_open(&dir, "/dev/");
 
   while((entry = dir_read(&dir)) != NULL && (i < size)) {
-
 #ifdef SEARCH
     if(strstr(entry, SEARCH) != NULL) {
 #endif

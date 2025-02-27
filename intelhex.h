@@ -19,7 +19,6 @@
 #endif
 
 namespace intelhex {
-
 #define HEX_FORMAT_INHX8M 0x01
 #define HEX_FORMAT_INHX32 0x02
 

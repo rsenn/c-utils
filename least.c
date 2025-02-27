@@ -526,7 +526,6 @@ read_command(void) {
       //  terminal_cursor_horizontal_absolute(command_buf.len + 2);
       //      terminal_erase_in_line(0);
     } else if(c >= 0x20) {
-
       stralloc_catc(&command_buf, c);
       buffer_put(buffer_1, &c, 1);
       buffer_flush(buffer_1);

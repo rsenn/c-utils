@@ -205,7 +205,6 @@ includes_to_libs(const set_t* includes, strlist* libs) {
     stralloc_cats(&lib, exts.lib);
 
     if((rule = rule_find_sa(&lib))) {
-
 #ifdef DEBUG_OUTPUT
       debug_str("lib", rule->name);
 #endif

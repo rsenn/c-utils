@@ -200,7 +200,6 @@ process_dep(build_tree_config* cfg, uint32 name, struct dep_tree_element* root, 
   }
 
   if(deep == 1) {
-
     build_dep_tree(cfg, dllname, root, child);
   }
   return child;

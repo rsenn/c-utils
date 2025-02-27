@@ -7,7 +7,6 @@
 
 int
 main(int argc, char* argv[]) {
-
   struct rdir_s rd;
   char* s;
   int r = rdir_open(&rd, argc > 1 ? argv[1] : "build");

@@ -38,7 +38,6 @@ fmt_default(char* dest, int c, int quote) {
   uint8 ch = c;
 
   if(byte_chr(quote_chars.s, quote_chars.len, ch) < quote_chars.len) {
-
     if(c == '\t')
       c = 't';
     else if(c == '\n')
@@ -229,7 +228,6 @@ run_quote(buffer* in, buffer* out) {
   c = 0;
 
   while(buffer_getc(in, (char*)&c) > 0) {
-
     if(c == ' ' && prev_c != ' ') {
       add_output(buf.s, buf.len, out);
       stralloc_zero(&buf);
@@ -492,7 +490,6 @@ again:
 
     if((x = mmap_read(out_path, &n)) &&
     n > 1) {
-
       buffer_puts(buffer_1, "out: ");
       buffer_put(buffer_1, x, n);
       buffer_putnlflush(buffer_1);

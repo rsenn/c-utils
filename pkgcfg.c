@@ -1125,7 +1125,6 @@ pkg_conf(strarray* modules, id code, int mode) {
 
 static int
 add_path(const stralloc* dir) {
-
   if(path_exists(dir->s)) {
     strlist_push_sa(&cmd.path, dir);
 
@@ -1440,7 +1439,6 @@ main(int argc, char* argv[], char* envp[]) {
       c = opts[index].val;
 
     switch(c) {
-
       case ATLEAST_PKGCONFIG_VERSION: atleast_version = 1; break;
       case 'm': {
         stralloc_copys(&cmd.host, unix_optarg);
@@ -1551,7 +1549,6 @@ getopt_end:
     stralloc_nul(&cmd.prefix);
 
     if((pos = stralloc_finds(&cmd.prefix, "/sys-root/")) < cmd.prefix.len || (pos = stralloc_finds(&cmd.prefix, "/sysroot/")) < cmd.prefix.len) {
-
       sysroot = str_ndup(cmd.prefix.s, pos + 9);
     } else {
       sysroot = "";

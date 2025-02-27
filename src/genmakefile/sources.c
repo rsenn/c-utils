@@ -273,7 +273,6 @@ sources_deps(sourcefile* file, strlist* out) {
   strlist_foreach(&file->includes, x, len) { strlist_pushb_unique(out, x, len); }
 
   set_foreach(&file->deps, it, x, len) {
-
 #ifdef DEBUG_OUTPUT_I_q
     buffer_puts(buffer_2, "sources_deps '");
     buffer_puts(buffer_2, file->name);

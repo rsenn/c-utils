@@ -488,7 +488,6 @@ _tLoadProg(int mode, const char* pathP, const char* const* argP, const char* con
     errno = err;
     rc = -1;
   } else {
-
     if(mode == P_DETACH) {
       /* handle the case where the user specified only the or'able
          version of P_DETACH (called P_DETACH) because it is the name

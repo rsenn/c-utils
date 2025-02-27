@@ -71,7 +71,6 @@ coff_print_func(buffer* b, void* coff, coff_symtab_entry* fn) {
   buffer_putnlflush(b);
 
   range_foreach(&ln, p) {
-
     buffer_putulong0(b, i++, 3);
     buffer_putspace(b);
 
@@ -189,7 +188,6 @@ coff_list_symbols(buffer* b, void* coff) {
       buffer_putnlflush(b);
 
     } else {
-
       if(e->e.zeroes != 0)
         stralloc_copyb(&name, e->e.name, sizeof(e->e.name));
       /* else

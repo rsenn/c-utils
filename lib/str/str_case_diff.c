@@ -6,7 +6,6 @@ str_case_diff(const void* p1, const void* p2) {
   const char *s, *t;
 
   for(s = p1, t = p2;;) {
-
     if((x = *s++) >= 'A' && x <= 'Z') /* upper case */
       x += 'a' - 'A';
 

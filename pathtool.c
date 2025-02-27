@@ -275,7 +275,6 @@ mounts_replace(MAP_T map, stralloc* sa, int col, bool first) {
 
 static void
 mounts_add(MAP_T map, const char* dev, const char* mnt) {
-
 #ifdef DEBUG_OUTPUT_
   buffer_puts(buffer_2, "mounts_add(map, \"");
   buffer_puts(buffer_2, dev);
@@ -444,7 +443,6 @@ pathtool(const char* arg, stralloc* sa) {
 #endif
 
   if(relative_to.sa.s) {
-
     stralloc_nul(&path.sa);
 
     if(!path_is_absolute(path.sa.s)) {
@@ -463,7 +461,6 @@ pathtool(const char* arg, stralloc* sa) {
     path_relative_to_b(path.sa.s, path.sa.len, relative_to.sa.s, relative_to.sa.len, sa);
 
   } else {
-
 #ifdef DEBUG_OUTPUT_
     buffer_puts(buffer_2, "PATHSEP_S_MIXED: ");
     buffer_puts(buffer_2, PATHSEP_S_MIXED);
@@ -654,7 +651,6 @@ main(int argc, char* argv[]) {
     stralloc_init(&sa);
 
     if(pathtool(argv[unix_optind++], &sa)) {
-
       if(format == WIN)
         stralloc_replacec(&sa, '/', '\\');
       else

@@ -108,7 +108,6 @@ cpp_macro_parse(cpp* pp, tokenizer* t) {
       }
 
       {
-
         if(curr.type == TT_ELLIPSIS) {
           if(macro_flags & MACRO_FLAG_VARIADIC) {
             error("\"...\" isn't the last parameter", t, &curr);

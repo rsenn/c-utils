@@ -11,7 +11,6 @@ struct tag_attr_value {
 
 static int
 xml_tag_attr_value_pred(xmlnode* node, const char* tag, const char* attr, const char* value) {
-
   if(node->type == XML_ELEMENT && str_equal(tag, node->name)) {
     const char* a = xml_get_attribute(node, attr);
 

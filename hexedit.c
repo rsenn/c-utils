@@ -242,7 +242,6 @@ patch_check(unsigned char* x, size_t n, patch_t* p) {
     buffer_putxlong0(buffer_2, x[r->offset] == r->to ? r->to : r->from, 2);
 
     if(x[r->offset] == r->from || x[r->offset] == r->to) {
-
       buffer_puts(buffer_2, x[r->offset] == r->from ? " OK" : " ALREADY PATCHED");
       buffer_putnlflush(buffer_2);
     } else {

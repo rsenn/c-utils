@@ -2,7 +2,6 @@
 
 int
 hmap_init(int bucket_size, HMAP_DB** hmap_db) {
-
   HMAP_DB* new_hmap_db = (HMAP_DB*)calloc(1, sizeof(HMAP_DB));
 
   if(new_hmap_db == NULL) {

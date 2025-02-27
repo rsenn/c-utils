@@ -7,7 +7,6 @@
  * first difference. */
 int
 byte_diff2(const char* a, size_t alen, const char* b, size_t blen) {
-
   if(alen < blen)
     return -b[alen];
 

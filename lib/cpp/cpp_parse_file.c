@@ -49,7 +49,6 @@ cpp_parse_file(cpp* pp, buffer* f, const char* fn, buffer* out) {
 #define skip_conditional_block (if_level > if_level_active)
 
   while((ret = tokenizer_next(&t, &tok)) && tok.type != TT_EOF) {
-
     if((newline = tok.column == 0))
       if(!cpp_parse_whitespace(&t, &tok, &ws_count))
         return 0;

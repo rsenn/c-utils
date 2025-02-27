@@ -190,7 +190,6 @@ get_int(xmlnode* node, const char* key) {
  */
 xmlnode*
 get_child(xmlnode* node, const char* name) {
-
   for(node = node->children; node; node = node->next) {
     if(!str_diff(node->name, name))
       return node;
@@ -369,7 +368,6 @@ compare_ref(const struct ref* a, const struct ref* b) {
  */
 void
 build_reflist(xmlnode* node, struct net* n, int* index) {
-
   for(; node; node = node->next) {
     struct ref* r;
     int is_pin;
@@ -869,7 +867,6 @@ node_depth(xmlnode* node) {
 
 int
 str_ischarset(const char* s, const char* set) {
-
   while(*s) {
     if(set[str_chr(set, *s)] == '\0')
       return 0;

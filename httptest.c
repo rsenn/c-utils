@@ -127,7 +127,6 @@ put_escaped_x(buffer* b, const char* x, size_t len, int unescaped) {
 
 static void
 put_abbreviate(buffer* b, size_t len) {
-
   buffer_puts(b, "\n\033[1;31m... more (");
   buffer_putulong(b, len);
   buffer_puts(b, " bytes total ...\033[0m\n");
@@ -349,7 +348,6 @@ process_xml(const char* x, size_t len, strlist* urls, uri_t* uri) {
         stralloc_free(&url);
       }
     } else if(tok.id == XML_DATA) {
-
       process_uris(tok.x, tok.len, urls, uri);
 #ifdef DEBUG_OUTPUT_
       buffer_puts(buffer_2, tok.id < (sizeof(token_colors) / sizeof(token_colors[0])) ? token_colors[tok.id] : "?");
@@ -483,7 +481,6 @@ main(int argc, char* argv[]) {
     ret = http_get(&h, argv[argi]);
 
     for(;;) {
-
       int doread = 1;
       fd_type sock;
       

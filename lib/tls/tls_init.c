@@ -65,7 +65,6 @@ tls_context(tls_method_t const* method) {
 
 int
 tls_init(const char* key_file, const char* cert_file) {
-
 #if OPENSSL_API_COMPAT >= 0x10100000L
   const OPENSSL_INIT_SETTINGS* settings = OPENSSL_INIT_new();
   OPENSSL_init_ssl(OPENSSL_INIT_LOAD_SSL_STRINGS | OPENSSL_INIT_LOAD_CRYPTO_STRINGS | OPENSSL_INIT_ADD_ALL_CIPHERS, settings);

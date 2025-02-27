@@ -150,7 +150,6 @@ strip_comments(charbuf* in, buffer* out) {
   n = 0;
 
   while((c = charbuf_get(in)) > 0) {
-
     if(c == '/') {
       int c2 = charbuf_peek(in);
 
@@ -298,7 +297,6 @@ again:
 
     if((x = mmap_read(out_path, &n)) &&
     n > 1) {
-
       buffer_puts(buffer_1, "out: ");
       buffer_put(buffer_1, x, n);
       buffer_putnlflush(buffer_1);

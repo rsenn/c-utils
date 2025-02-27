@@ -22,7 +22,6 @@ hmap_dump(HMAP_DB* hmap, buffer* b) {
   TUPLE* tuple = hmap->list_tuple;
 
   while(tuple) {
-
     put_tuple(b, tuple);
 
     switch(tuple->data_type) {

@@ -206,7 +206,6 @@ input_process_command(stralloc* cmd, int argc, char* argv[], const char* file, s
   }
 
   if(compile || link || lib) {
-
   } else if(!is_command_b(cmd->s, cmd->len)) {
     return 0;
   }
@@ -577,7 +576,6 @@ input_process_command(stralloc* cmd, int argc, char* argv[], const char* file, s
     do_rule = false;
 
   if(do_rule && (lib || link || compile)) {
-
 #ifdef DEBUG_OUTPUT_
     buffer_puts(buffer_2, "Create ");
     buffer_puts(buffer_2, lib ? "lib" : link ? "link" : compile ? "compile" : "other");

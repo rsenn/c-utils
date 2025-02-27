@@ -1,4 +1,5 @@
-option(WARN_WERROR "Halt the compilation with an error on compiler warnings." OFF)
+option(WARN_WERROR "Halt the compilation with an error on compiler warnings."
+       OFF)
 
 include(CheckCCompilerFlag)
 
@@ -6,7 +7,8 @@ check_c_compiler_flag("-Wno-unused-variable" WARN_NO_UNUSED_VARIABLE)
 if(WARN_NO_UNUSED_VARIABLE)
   set(WERROR_FLAG "${WERROR_FLAG} -Wno-unused-variable")
 endif()
-check_c_compiler_flag("-Wno-unused-but-set-variable" WARN_NO_UNUSED_BUT_SET_VARIABLE)
+check_c_compiler_flag("-Wno-unused-but-set-variable"
+                      WARN_NO_UNUSED_BUT_SET_VARIABLE)
 if(WARN_NO_UNUSED_BUT_SET_VARIABLE)
   set(WERROR_FLAG "${WERROR_FLAG} -Wno-unused-but-set-variable")
 endif()
@@ -18,22 +20,49 @@ endif()
 # message(INFO "Compiler Id: ${CMAKE_C_COMPILER_ID}")
 
 if(CMAKE_C_COMPILER_ID MATCHES "GNU")
-  set(PEDANTIC_COMPILE_FLAGS -pedantic-errors -Wall -Wextra -pedantic -Wold-style-cast -Wundef -Wredundant-decls -Wwrite-strings -Wpointer-arith -Wcast-qual -Wformat=2 -Wmissing-include-dirs -Wcast-align -Wnon-virtual-dtor -Wctor-dtor-privacy -Wdisabled-optimization -Winvalid-pch
-                             -Woverloaded-virtual -Wconversion -Wno-ctor-dtor-privacy -Wno-format-nonliteral -Wno-shadow)
+  set(PEDANTIC_COMPILE_FLAGS
+      -pedantic-errors
+      -Wall
+      -Wextra
+      -pedantic
+      -Wold-style-cast
+      -Wundef
+      -Wredundant-decls
+      -Wwrite-strings
+      -Wpointer-arith
+      -Wcast-qual
+      -Wformat=2
+      -Wmissing-include-dirs
+      -Wcast-align
+      -Wnon-virtual-dtor
+      -Wctor-dtor-privacy
+      -Wdisabled-optimization
+      -Winvalid-pch
+      -Woverloaded-virtual
+      -Wconversion
+      -Wno-ctor-dtor-privacy
+      -Wno-format-nonliteral
+      -Wno-shadow)
   if(NOT CMAKE_C_COMPILER_VERSION VERSION_LESS 4.6)
-    set(PEDANTIC_COMPILE_FLAGS ${PEDANTIC_COMPILE_FLAGS} -Wnoexcept -Wno-dangling-else -Wno-unused-local-typedefs)
+    set(PEDANTIC_COMPILE_FLAGS ${PEDANTIC_COMPILE_FLAGS} -Wnoexcept
+                               -Wno-dangling-else -Wno-unused-local-typedefs)
   endif()
   if(NOT CMAKE_C_COMPILER_VERSION VERSION_LESS 5.0)
-    set(PEDANTIC_COMPILE_FLAGS ${PEDANTIC_COMPILE_FLAGS} -Wdouble-promotion -Wtrampolines -Wzero-as-null-pointer-constant -Wuseless-cast -Wvector-operation-performance -Wsized-deallocation)
+    set(PEDANTIC_COMPILE_FLAGS
+        ${PEDANTIC_COMPILE_FLAGS} -Wdouble-promotion -Wtrampolines
+        -Wzero-as-null-pointer-constant -Wuseless-cast
+        -Wvector-operation-performance -Wsized-deallocation)
   endif()
   if(NOT CMAKE_C_COMPILER_VERSION VERSION_LESS 6.0)
-    set(PEDANTIC_COMPILE_FLAGS ${PEDANTIC_COMPILE_FLAGS} -Wshift-overflow=2 -Wnull-dereference -Wduplicated-cond)
+    set(PEDANTIC_COMPILE_FLAGS ${PEDANTIC_COMPILE_FLAGS} -Wshift-overflow=2
+                               -Wnull-dereference -Wduplicated-cond)
   endif()
   set(WERROR_FLAG "${WERROR_FLAG} -Werror")
 endif()
 
 if(CMAKE_C_COMPILER_ID MATCHES "Clang")
-  set(PEDANTIC_COMPILE_FLAGS -Wall -Wextra -pedantic -Wconversion -Wno-sign-conversion)
+  set(PEDANTIC_COMPILE_FLAGS -Wall -Wextra -pedantic -Wconversion
+                             -Wno-sign-conversion)
   # check_c_compiler_flag(-Wzero-as-null-pointer-constant HAS_NULLPTR_WARNING) if(HAS_NULLPTR_WARNING) set(PEDANTIC_COMPILE_FLAGS ${PEDANTIC_COMPILE_FLAGS} -Wzero-as-null-pointer-constant) endif()
   set(WERROR_FLAG "${WERROR_FLAG} -Werror")
 endif()

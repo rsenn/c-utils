@@ -21,7 +21,6 @@ wait_pid(int pid, int* wstat) {
   hproc = OpenProcess(SYNCHRONIZE | PROCESS_QUERY_INFORMATION, FALSE, pid);
 
   for(;;) {
-
     ret = WaitForSingleObject(hproc, INFINITE);
 
     if(ret == WAIT_TIMEOUT)

@@ -213,7 +213,6 @@ cleanup_domain(stralloc* d) {
  */
 int
 process_entry(char** av, int ac) {
-
   if(!str_start(av[0], "\"X") && !str_start(av[0], "["))
     return 0;
 
@@ -347,7 +346,6 @@ put_quoted_string(const char* str) {
  */
 void
 output_m3u_entry(const char* sender, const char* thema, const char* title, unsigned duration, const char* datetime, const char* url, const char* description) {
-
   if(csv == 0) {
     buffer_puts(&output_buf, "#EXTINF:");
     buffer_putulong(&output_buf, duration);
@@ -415,7 +413,6 @@ output_wget_entry(const char* sender, const char* thema, const char* title, unsi
 
 void
 output_curl_entry(const char* sender, const char* thema, const char* title, unsigned duration, const char* datetime, const char* url, const char* description) {
-
   buffer_putm_internal(&output_buf, "curl -L -k ", url, NULL);
   buffer_putm_internal(&output_buf, " -o '", sender, " - ", thema, " - ", title, ".mp4'", NULL);
   /*    buffer_puts(&output_buf, "|");
@@ -591,7 +588,6 @@ main(int argc, char* argv[]) {
   }
 
   while(unix_optind < argc) {
-
     if(str_diff(argv[unix_optind], "-")) {
       buffer_puts(buffer_2, "Processing '");
       buffer_puts(buffer_2, argv[unix_optind]);

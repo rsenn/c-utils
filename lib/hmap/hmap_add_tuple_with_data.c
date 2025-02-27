@@ -16,7 +16,6 @@ hmap_add_tuple_with_data(HMAP_DB** hmap_db, const void* key, size_t k_len, void*
   }
 
   if(r == HMAP_TUPLE_NOT_FOUND) {
-
     root_tuple = ((*hmap_db)->tuple + index);
 
     if(root_tuple == NULL) {
@@ -25,7 +24,6 @@ hmap_add_tuple_with_data(HMAP_DB** hmap_db, const void* key, size_t k_len, void*
     /* free slot */
 
     if(root_tuple->key_len == 0) {
-
       root_tuple->data = data;
       root_tuple->data_len = -1;
 

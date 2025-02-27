@@ -118,7 +118,6 @@ main(int argc, char** argv) {
     omf_file omf;
 
     if(omf_open(&omf, argv[unix_optind])) {
-
       omf_record* r;
       char* p;
 
@@ -131,7 +130,6 @@ main(int argc, char** argv) {
         const char* name = omf_name(r);
 
         if((p = omf_record_begin(r))) {
-
           omf_record_foreach(r, p) {
 
             //  //|| r->type == 0x96

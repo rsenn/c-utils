@@ -458,7 +458,6 @@ main(int argc, char* argv[]) {
     return 1;
   }
   {
-
     buffer input;
     buffer_mmapprivate(&input, filename);
 

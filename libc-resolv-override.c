@@ -597,7 +597,6 @@ gethostbyname(const char* name) {
 
 int
 getaddrinfo(const char* node, const char* service, const struct addrinfo* hints, struct addrinfo** res) {
-
   struct hostent* h = gethostbyname(node);
   static struct addrinfo r;
   struct addrinfo* info;

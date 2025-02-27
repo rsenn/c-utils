@@ -52,7 +52,6 @@ ssltest_connect(const address_t* addr, uint16 port) {
 
 int
 sendline_sa(buffer* b, const stralloc* data) {
-
   buffer_puts(buffer_2, "DATA → ");
   buffer_putsa(buffer_2, data);
   buffer_putnlflush(buffer_2);
@@ -90,7 +89,6 @@ ssltest_process_message(int ac, char** av, buffer* b) {
     unsigned int num;
 
     if(scan_uint(av[1], &num) > 0) {
-
       switch(num) {
 
         case 422:

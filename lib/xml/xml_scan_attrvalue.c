@@ -13,7 +13,6 @@ xml_scan_attrvalue(const char* x, size_t len, size_t* toklen) {
     j = 0;
     i = 0;
   } else if(byte_chr("\"'", 2, *x) < 2) {
-
     for(i = 1; i < len; i++) {
       i += scan_noncharsetnskip(&x[i], quote, len - i);
 

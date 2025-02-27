@@ -23,7 +23,6 @@ main(int argc, char* argv[]) {
   ini_read(&input, &ini);
 
   for(ptr = ini; ptr; ptr = ptr->next) {
-
     /*   buffer_puts(buffer_1, "[");
        buffer_putsa(buffer_1, &ptr->name);
        buffer_puts(buffer_1, "]");

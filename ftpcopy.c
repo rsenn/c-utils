@@ -385,7 +385,6 @@ download(struct ftpparse* x, stralloc* r_dir, stralloc* l_dir) {
   found = strhash_lookup(&hash_ids, x->id, x->idlen, &fptr, &flen);
 
   if(0 == stat(l_dir->s, &st)) {
-
     int identical = 1;
 
     if(!o_ignore_size && st.st_size != (off_t)x->size)

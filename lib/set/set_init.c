@@ -8,7 +8,6 @@
 
 void
 set_init(set_t* set, uint32 (*const hash_fp)(const void*, size_t)) {
-
   assert(set);
 
   set->entries = 0;

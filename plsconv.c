@@ -74,7 +74,6 @@ usage(char* argv0) {
 
 int
 main(int argc, char* argv[]) {
-
   int opt;
 
   const char *out_file = NULL, *in_type = NULL;

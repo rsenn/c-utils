@@ -41,7 +41,6 @@ get_reparse_data(const char* LinkPath, REPARSE_DATA_BUFFER* rdb) {
   /* Get the link */
 
   if(!DeviceIoControl(hFile, FSCTL_GET_REPARSE_POINT, 0, 0, &rdb->u, 1024, &returnedLength, 0)) {
-
     CloseHandle(hFile);
     return FALSE;
   }
@@ -147,7 +146,6 @@ is_junction(const char* path) {
   int fd, ret = 0;
 
   if(stat(path, &st) == 0) {
-
     if((fd = open("/proc/mounts", O_RDONLY)) != -1) {
       char *p, *e;
 

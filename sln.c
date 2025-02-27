@@ -120,7 +120,6 @@ sln(const char* path) {
   stralloc_copy(&d, &s);
 
   while(reduce(&d)) {
-
     buffer_puts(buffer_2, "'");
     buffer_putsa(buffer_2, &d);
     buffer_puts(buffer_2, "' -> '");

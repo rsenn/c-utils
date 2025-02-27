@@ -3,7 +3,6 @@
 
 char*
 xml_get_attribute(xmlnode* node, const char* attr) {
-
   if(node->attributes) {
     TUPLE* data;
 

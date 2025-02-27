@@ -129,7 +129,6 @@ is_float_literal(const char* str) {
 
       got_dot = 1;
     } else if(l == 'f') {
-
       if(s[1] == 0 && (got_dot || got_e) && got_digits)
         return 1;
 

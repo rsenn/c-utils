@@ -236,7 +236,6 @@ sourcedir_addsource(const char* source, strarray* sources, strarray* progs, stra
     path_canonical_sa(&r);
 
     if(path_exists(r.s) || includes_find_sa(s, n, &r)) {
-
 #ifdef DEBUG_OUTPUT_
       buffer_putm_internal(buffer_2, "[2]", GREEN256, "sourcedir_addsource(", NC, source, GREEN256, ") ", NC, "Adding include ", 0);
       buffer_putsa(buffer_2, &r);

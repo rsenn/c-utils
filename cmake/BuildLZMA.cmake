@@ -54,16 +54,24 @@ if(BUILD_LZMA)
   if(NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/xz/CMakeLists.txt")
     if(NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/xz-${LZMA_VERSION}.tar.gz")
       file(REMOVE_RECURSE "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/xz")
-      file(DOWNLOAD "https://distfiles.macports.org/xz/xz-${LZMA_VERSION}.tar.bz2" "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/xz-${LZMA_VERSION}.tar.bz2" SHOW_PROGRESS)
+      file(
+        DOWNLOAD "https://distfiles.macports.org/xz/xz-${LZMA_VERSION}.tar.bz2"
+        "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/xz-${LZMA_VERSION}.tar.bz2"
+        SHOW_PROGRESS)
     endif()
 
-    exec_program("${TAR}" ARGS -C "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty" -xjf "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/xz-${LZMA_VERSION}.tar.bz2")
-    file(RENAME "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/xz-${LZMA_VERSION}" "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/xz")
+    exec_program(
+      "${TAR}" ARGS
+      -C "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty" -xjf
+      "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/xz-${LZMA_VERSION}.tar.bz2")
+    file(RENAME "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/xz-${LZMA_VERSION}"
+         "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/xz")
 
   endif()
   include("${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/xz.cmake")
 
-  configure_file("${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/xz-config.h.cmake" "${CMAKE_CURRENT_BINARY_DIR}/3rdparty/xz/config.h")
+  configure_file("${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/xz-config.h.cmake"
+                 "${CMAKE_CURRENT_BINARY_DIR}/3rdparty/xz/config.h")
 
   # configure_file("${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/lzma-config.h.cmake" "${CMAKE_CURRENT_BINARY_DIR}/3rdparty/xz/config.h")
 
@@ -99,18 +107,39 @@ if(BUILD_LZMA)
 
   if(LIBLZMA_SOURCES)
     add_library(lzma ${LIBLZMA_SOURCES})
-    set_target_properties(lzma PROPERTIES ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/xz" LIBRARY_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/xz")
+    set_target_properties(
+      lzma PROPERTIES ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/xz"
+                      LIBRARY_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/xz")
     set(LZMA_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/xz")
-    set(LIBLZMA_INCLUDE_DIRS ${LZMA_SOURCE_DIR}/src/common ${LZMA_SOURCE_DIR}/src/liblzma/lzma ${LZMA_SOURCE_DIR}/src/liblzma/lz ${LZMA_SOURCE_DIR}/src/liblzma/check ${LZMA_SOURCE_DIR}/src/liblzma/simple ${LZMA_SOURCE_DIR}/src/liblzma/delta ${LZMA_SOURCE_DIR}/src/liblzma/rangecoder
-                             ${LZMA_SOURCE_DIR}/src/liblzma/common ${LZMA_SOURCE_DIR}/src/liblzma/api ${CMAKE_CURRENT_BINARY_DIR}/3rdparty/xz)
-    define_have(LIBLZMA_DEFS HAVE_STDINT_H HAVE_STDLIB_H HAVE_STDBOOL_H HAVE_INTTYPES_H HAVE_LIMITS_H HAVE_STRING_H HAVE_STRINGS_H HAVE_MEMORY_H HAVE_SYS_PARAM_H HAVE_SYS_TIME_H HAVE_SYS_TYPES_H HAVE_LZMA_H)
+    set(LIBLZMA_INCLUDE_DIRS
+        ${LZMA_SOURCE_DIR}/src/common
+        ${LZMA_SOURCE_DIR}/src/liblzma/lzma
+        ${LZMA_SOURCE_DIR}/src/liblzma/lz
+        ${LZMA_SOURCE_DIR}/src/liblzma/check
+        ${LZMA_SOURCE_DIR}/src/liblzma/simple
+        ${LZMA_SOURCE_DIR}/src/liblzma/delta
+        ${LZMA_SOURCE_DIR}/src/liblzma/rangecoder
+        ${LZMA_SOURCE_DIR}/src/liblzma/common
+        ${LZMA_SOURCE_DIR}/src/liblzma/api
+        ${CMAKE_CURRENT_BINARY_DIR}/3rdparty/xz)
+    define_have(
+      LIBLZMA_DEFS HAVE_STDINT_H HAVE_STDLIB_H HAVE_STDBOOL_H HAVE_INTTYPES_H
+      HAVE_LIMITS_H HAVE_STRING_H HAVE_STRINGS_H HAVE_MEMORY_H HAVE_SYS_PARAM_H
+      HAVE_SYS_TIME_H HAVE_SYS_TYPES_H HAVE_LZMA_H)
     list(APPEND LIBLZMA_DEFS HAVE_CONFIG_H)
 
     # message("LIBLZMA_DEFS: ${LIBLZMA_DEFS}")
-    set_target_properties(lzma PROPERTIES COMPILE_DEFINITIONS "${LIBLZMA_DEFS}" INCLUDE_DIRECTORIES "${LIBLZMA_INCLUDE_DIRS};${CMAKE_CURRENT_SOURCE_DIR}/lib;${CMAKE_CURRENT_BINARY_DIR}/3rdparty/xz")
+    set_target_properties(
+      lzma
+      PROPERTIES
+        COMPILE_DEFINITIONS "${LIBLZMA_DEFS}"
+        INCLUDE_DIRECTORIES
+        "${LIBLZMA_INCLUDE_DIRS};${CMAKE_CURRENT_SOURCE_DIR}/lib;${CMAKE_CURRENT_BINARY_DIR}/3rdparty/xz"
+    )
   endif(LIBLZMA_SOURCES)
 
   link_directories(BEFORE "${CMAKE_CURRENT_BINARY_DIR}/xz")
   set(LIBLZMA_LIBRARY lzma CACHE FILEPATH "")
-  set(LIBLZMA_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/3rdparty/xz/src/liblzma/api" CACHE FILEPATH "")
+  set(LIBLZMA_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/3rdparty/xz/src/liblzma/api"
+      CACHE FILEPATH "")
 endif(BUILD_LZMA)

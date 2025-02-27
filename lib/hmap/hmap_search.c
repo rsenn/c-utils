@@ -22,7 +22,6 @@ hmap_search(HMAP_DB* hmap_db, const void* key, size_t k_len, TUPLE** data) {
     ptr_hash_tuple = itr_tuple;
 
     while(ptr_hash_tuple) {
-
       if(hmap_cmp(ptr_hash_tuple->key, ptr_hash_tuple->key_len, (void*)key, k_len) == 0) {
         if(data != NULL) {
           *data = ptr_hash_tuple;

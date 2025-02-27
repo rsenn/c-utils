@@ -228,7 +228,6 @@ ftp_read(int fd, void* b, size_t len, void* arg) {
 
 ssize_t
 ftp_write(int fd, void* b, size_t len, void* arg) {
-
 #ifdef DEBUG_OUTPUT
   buffer_puts(buffer_1, "Write ");
   buffer_putulong(buffer_1, len);
@@ -321,7 +320,6 @@ list_ftp(ftp_client* ftp) {
       }
 
       if(w == ftp->control_sock /*|| w == ftp->data_sock*/) {
-
         switch(ftp->state) {
           case CONNECTED: {
             ftplib_write_cmd_s(&out,

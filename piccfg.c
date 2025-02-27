@@ -108,7 +108,6 @@ cfg_data_at(uint32 addr) {
     if(offset + 1 < cfg.len)
       result = uint16_read(&cfg.s[offset]);
   } else {
-
     offset = (ssize_t)addr & 0x0fff;
 
     if(offset < cfg.len)
@@ -253,7 +252,6 @@ cfg_get_bytes(ihex_file* ihf, stralloc* sa, uint32* addr) {
     *addr = 0x00300000;
 
   } else {
-
     if((bytes = ihex_read_at(&hex, 0x8007 << 1, sa->s, 4)) == 4)
       *addr = 0x8007;
     else if((bytes = ihex_read_at(&hex, 0x400e, sa->s, 2)) == 2)
@@ -470,7 +468,6 @@ cfg_data(cfg_word** wptr, const char* buf, size_t len) {
   cfg_value *value = 0, **vptr = NULL;
 
   while(len > 0) {
-
     eol = byte_chr(buf, len, '\n');
 
     if(eol > 0 && buf[0] == 'C') {
@@ -527,7 +524,6 @@ cfg_process(cfg_item add_item, cfg_comment add_comment, strlist* output) {
       add_comment(output, word->name);
 
     for(cfg_setting* setting = word->settings; setting; setting = setting->next) {
-
       if((value = cfg_get_value(word, setting)) == NULL) {
         buffer_puts(buffer_2, "WARNING:  value ");
         buffer_putxlong(buffer_2, cfg_read_word(word, setting));
@@ -653,7 +649,6 @@ main(int argc, char* argv[]) {
   };
 
   for(;;) {
-
     if((c = unix_getopt_long(argc, argv, "hodcCnNvp", opts, &index)) == -1)
       break;
 

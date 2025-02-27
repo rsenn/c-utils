@@ -810,7 +810,6 @@ match_extensions(const stralloc* path) {
       match = byte_equal(path->s + pos, slen, str);
 
       if(match ^ invert) {
-
 #ifdef DEBUG_OUTPUT
         dump_key("match");
         dump_ulong(match);
@@ -1047,7 +1046,6 @@ list_file(stralloc* path, const char* name, int mode, long depth, int root_dev, 
     show = 0;
 
   if(show) {
-
     stralloc_zero(&pre);
 
     if(opt_crc) {

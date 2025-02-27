@@ -7,7 +7,6 @@
 using std::string;
 
 // namespace util {
-
 class directory_iterator {
 public:
   typedef struct dir_s handle_type;

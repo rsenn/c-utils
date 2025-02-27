@@ -79,7 +79,6 @@ pewrsec(const char* file) {
 
 int
 main(int argc, char* argv[]) {
-
   const char* fn = NULL;
 
   if(argc > 1)

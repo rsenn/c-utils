@@ -7,7 +7,6 @@ xml_vset_attributes(xmlnode* node, va_list args) {
   const char *name, *value;
 
   while((name = va_arg(args, const char*))) {
-
     if((value = va_arg(args, const char*)) == 0)
       return -1;
 

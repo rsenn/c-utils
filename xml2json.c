@@ -333,7 +333,6 @@ main(int argc, char* argv[]) {
   }
 
   while(unix_optind < argc) {
-
     if(argv[unix_optind])
       input->fd = open_read(argv[unix_optind]);
 

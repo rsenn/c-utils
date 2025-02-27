@@ -47,6 +47,7 @@ tls_bio_create(tls_bio_t* bi) {
   bi->num = 0;
   bi->ptr = NULL;
   bi->flags = 0;
+
   return (1);
 }
 
@@ -56,9 +57,9 @@ tls_bio_destroy(tls_bio_t* a) {
     return (0);
 
   if(a->shutdown) {
-    if(a->init) {
+    if(a->init)
       BIO_closesocket(a->num);
-    }
+
     a->init = 0;
     a->flags = 0;
   }
@@ -74,11 +75,11 @@ tls_bio_recv(tls_bio_t* b, char* out, size_t outl, size_t* lptr) {
     ret = recv(b->num, out, outl, 0);
     BIO_clear_retry_flags(b);
 
-    if(ret <= 0 && errno == EAGAIN) {
+    if(ret <= 0 && errno == EAGAIN)
       if(BIO_fd_should_retry(b->num))
         BIO_set_retry_read(b);
-    }
   }
+
   return (ret);
 }
 
@@ -90,10 +91,10 @@ tls_bio_send(tls_bio_t* b, const char* in, size_t inl, size_t* lptr) {
   ret = send(b->num, in, inl, 0);
   BIO_clear_retry_flags(b);
 
-  if(ret <= 0 && errno == EWOULDBLOCK) {
+  if(ret <= 0 && errno == EWOULDBLOCK)
     if(BIO_fd_should_retry(b->num))
       BIO_set_retry_write(b);
-  }
+
   return ret;
 }
 
@@ -109,15 +110,19 @@ tls_bio_ctrl(tls_bio_t* b, int cmd, long num, void* ptr) {
       b->shutdown = (fd_type)num;
       b->init = 1;
       break;
+
     case BIO_C_GET_FD:
       if(b->init) {
         ip = (fd_type*)ptr;
+
         if(ip != NULL)
           *ip = b->num;
+
         ret = b->num;
       } else
         ret = -1;
       break;
+
     case BIO_CTRL_GET_CLOSE: ret = b->shutdown; break;
     case BIO_CTRL_SET_CLOSE: b->shutdown = (fd_type)num; break;
     case BIO_CTRL_DUP:
@@ -133,6 +138,7 @@ tls_bio_puts(tls_bio_t* bp, const char* str) {
 
   n = str_len(str);
   ret = tls_bio_send(bp, str, n, 0);
+
   return (ret);
 }
 #endif

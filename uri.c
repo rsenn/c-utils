@@ -235,7 +235,6 @@ uri_dump(buffer* b, const uri_t* u) {
 
 void
 uri_copy(uri_t* to, const uri_t* from) {
-
   to->proto = from->proto ? str_dup(from->proto) : 0;
   to->host = from->host ? str_dup(from->host) : 0;
   to->username = from->username ? str_dup(from->username) : 0;
@@ -247,7 +246,6 @@ uri_copy(uri_t* to, const uri_t* from) {
 
 void
 uri_clear_anchor(uri_t* uri) {
-
   if(uri->anchor) {
     free((void*)uri->anchor);
     uri->anchor = 0;

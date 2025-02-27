@@ -3,7 +3,6 @@
 
 void
 dlist_move_tail(dlist* from, dlist* to) {
-
   if(to->tail == NULL) {
     /* Copy to to-dlist */
     to->head = from->head;

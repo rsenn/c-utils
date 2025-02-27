@@ -572,7 +572,6 @@ parse_multinet(struct ftpparse* f, char* p[], int l[], unsigned int count) {
 }
 static int
 parse_unix(struct ftpparse* f, char* buf, int len, char* p[], int l[], unsigned int count) {
-
   /* the horror ... */
 
   /* this list has been taken from

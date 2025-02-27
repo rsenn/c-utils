@@ -183,7 +183,6 @@ read_env(const char* x, size_t n) {
   char* line;
   size_t len, skip, num_read = 0;
   byte_foreach_skip(x, n, line, skip) {
-
     skip = scan_lineskip(line, n - (line - x));
     len = scan_line(line, skip);
 

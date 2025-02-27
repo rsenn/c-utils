@@ -38,7 +38,6 @@ main(int argc, char** argv) {
     header = (elf64_ehdr*)content;
 
     if(memcmp(header->e_ident, ELF_ELFMAG, ELF_SELFMAG) != 0) {
-
       buffer_putsflush(buffer_2, "not ELF\n");
       return 1;
     }

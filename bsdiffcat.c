@@ -44,7 +44,6 @@ output_hex(const char* x, int64 n, int offset, char space) {
     uint64 r = n - i < 16 ? n - i : 16;
 
     if(n <= 16 || byte_count(&x[i], r, '\0') < r) {
-
       buffer_putxlong0(buffer_1, offset + i, 8);
       buffer_putnspace(buffer_1, 2);
 
@@ -172,7 +171,6 @@ bsdiff_read(buffer* ctrl, buffer* data, buffer* extra) {
         }
 
         for(j = 0; j < len; ++j) {
-
           char to, from = src[j];
 
           to = add[j] += src[j];
@@ -267,7 +265,6 @@ main(int argc, char* argv[]) {
   }
 
   if(buffer_mmapread(&patch, argv[1]) == 0) {
-
     if(bsdiff_read_header(&patch, &h)) {
 
       buffer data, extra;

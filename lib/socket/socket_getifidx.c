@@ -15,7 +15,6 @@
 #if WINDOWS_NATIVE
 static uint32
 if_nametoindex(const char* name) {
-
   typedef uint32(WINAPI ifn2idx_fn)(const char*);
   static ifn2idx_fn* ifn2idx;
 

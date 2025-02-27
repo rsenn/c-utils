@@ -506,7 +506,6 @@ output_mplab_project(buffer* b, MAP_T* _rules, MAP_T* vars, const strlist* inclu
   ini_set(tool_settings, make_tool_key(&sa, ""), tcfg.sa.s);
 
   if(get_suite() <= 1) {
-
     for(i = 0; i < num_sources; i++) {
       size_t len;
 

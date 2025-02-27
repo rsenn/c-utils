@@ -47,7 +47,6 @@ get_depth(const jsonval* v) {
 
 static void
 compact_printer(jsonfmt* p, jsonval* v, int depth, int index, char q) {
-
   int valdepth = v ? get_depth(v) : 0;
   int multi_line = !one_line && depth < depth_arg;
 

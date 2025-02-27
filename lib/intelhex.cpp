@@ -16,7 +16,6 @@
 #include "intelhex.h"
 
 namespace intelhex {
-
 #define INH32M_HEADER ":020000040000FA"
 
 /* Array access operator */

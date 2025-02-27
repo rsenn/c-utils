@@ -10,7 +10,10 @@ macro(check_compile RESULT_VAR SOURCE)
   set(RESULT "${${RESULT_VAR}}")
   # message("${RESULT_VAR} = ${RESULT}" )
   if(RESULT STREQUAL "")
-    string(RANDOM LENGTH 6 ALPHABET "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789" C_NAME)
+    string(
+      RANDOM LENGTH 6
+      ALPHABET "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+               C_NAME)
     string(REPLACE SUPPORT_ "" NAME "${RESULT_VAR}")
     string(REPLACE _ - NAME "${NAME}")
     string(TOLOWER "${NAME}" C_NAME)
@@ -18,7 +21,8 @@ macro(check_compile RESULT_VAR SOURCE)
     string(REPLACE "\\" "\\\\" SOURCE "${SOURCE}")
     file(WRITE "${C_SOURCE}" "${SOURCE}")
     message(STATUS "Trying to compile try-${C_NAME}.c ... ")
-    try_compile(COMPILE_RESULT "${CMAKE_CURRENT_BINARY_DIR}" "${C_SOURCE}" OUTPUT_VARIABLE "OUTPUT" LINK_LIBRARIES "${ARGN}")
+    try_compile(COMPILE_RESULT "${CMAKE_CURRENT_BINARY_DIR}" "${C_SOURCE}"
+                OUTPUT_VARIABLE "OUTPUT" LINK_LIBRARIES "${ARGN}")
     # file(REMOVE "${C_SOURCE}")
 
     if(COMPILE_RESULT)
@@ -26,7 +30,8 @@ macro(check_compile RESULT_VAR SOURCE)
       # add_definitions(-D${RESULT_VAR})
     else(COMPILE_RESULT)
       set(COMPILE_LOG "${CMAKE_CURRENT_BINARY_DIR}/compile-${C_NAME}.log")
-      message(STATUS "Trying to compile try-${C_NAME}.c ... FAIL: ${COMPILE_LOG}")
+      message(
+        STATUS "Trying to compile try-${C_NAME}.c ... FAIL: ${COMPILE_LOG}")
       file(WRITE "${COMPILE_LOG}" "${OUTPUT}")
       string(REPLACE "\n" ";" OUTPUT "${OUTPUT}")
       list(FILTER OUTPUT INCLUDE REGEX "error")
@@ -38,11 +43,15 @@ macro(check_compile RESULT_VAR SOURCE)
 endmacro(check_compile RESULT_VAR SOURCE)
 
 macro(check_run RESULT_VAR SOURCE)
-  string(RANDOM LENGTH 6 ALPHABET "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789" C_SOURCE)
+  string(
+    RANDOM LENGTH 6
+    ALPHABET "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+             C_SOURCE)
   set(C_SOURCE "${CMAKE_CURRENT_BINARY_DIR}/try-${C_SOURCE}.c")
   string(REPLACE "\\" "\\\\" SOURCE "${SOURCE}")
   file(WRITE "${C_SOURCE}" "${SOURCE}")
-  try_run(RUN_RESULT COMPILE_RESULT "${CMAKE_CURRENT_BINARY_DIR}" "${C_SOURCE}" RUN_OUTPUT_VARIABLE RUN_OUTPUT COMPILE_OUTPUT_VARIABLE COMPILE_OUTPUT)
+  try_run(RUN_RESULT COMPILE_RESULT "${CMAKE_CURRENT_BINARY_DIR}" "${C_SOURCE}"
+          RUN_OUTPUT_VARIABLE RUN_OUTPUT COMPILE_OUTPUT_VARIABLE COMPILE_OUTPUT)
 
   if("${RUN_RESULT}" STREQUAL 0)
     set(RUN_OK TRUE)

@@ -101,7 +101,6 @@ count_field_lengths(strlist* sl, int lengths[21]) {
  */
 int
 split_fields(strlist* sl, strlist* prev, char* buf, size_t n) {
-
   size_t i;
   size_t offs = byte_finds(buf, n, "[\"");
 
@@ -842,7 +841,6 @@ usage(char* errmsg_argv0) {
  */
 int
 main(int argc, char* argv[]) {
-
   int opt, ret;
   static buffer in;
   static const char* outfile;
@@ -867,7 +865,6 @@ main(int argc, char* argv[]) {
   }
 
   while(unix_optind < argc) {
-
     strlist_push(&include, argv[unix_optind++]);
   }
 
