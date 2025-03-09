@@ -170,12 +170,6 @@ cbmap_mem_debug_mem(const char* file, int line) {
   unsigned int check = allocations - deallocations;
 
 #ifdef DEBUG
-  printf("CBM_MEM_LOG %-20s (%d) ALLOCATIONS %d DEALLOCATIONS %d CHECK %d          YTES %d\n",
-         file,
-         line,
-         allocations,
-         deallocations,
-         check,
-         CBM_DEBUG_ALLOCATED_BYTES);
+  printf("CBM_MEM_LOG %-20s (%d) ALLOCATIONS %d DEALLOCATIONS %d CHECK %d          YTES %d\n", file, line, allocations, deallocations, check, CBM_DEBUG_ALLOCATED_BYTES);
 #endif
 }

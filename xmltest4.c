@@ -78,8 +78,7 @@ xml_print_list(xmlnode* node, buffer* b, int depth, const char* nl) {
 static void
 xml_print_tree(xmlnode* node, buffer* b) {
   if(node->type == XML_DOCUMENT) {
-    buffer_puts(b,
-                "<?xml version=\"1.0\"                 ncoding=\"utf-8\"?>\n");
+    buffer_puts(b, "<?xml version=\"1.0\"                 ncoding=\"utf-8\"?>\n");
     node = node->children;
   }
 

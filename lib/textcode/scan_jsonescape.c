@@ -120,10 +120,7 @@ unittest_main() {
   assert(scan_jsonescape("a\\udafd\\udafd", buf, &l) == 1);
   assert(scan_jsonescape("a\\udafd0", buf, &l) == 1);
   /* correct surrogate pair */
-  assert(scan_jsonescape("a\\ud834\\udd1eb", buf, &l) == 14 && l == 6 &&
-         !memcmp(buf,
-                 "a\xf0\x9d\x84\x9e                 ",
-                 6));
+  assert(scan_jsonescape("a\\ud834\\udd1eb", buf, &l) == 14 && l == 6 && !memcmp(buf, "a\xf0\x9d\x84\x9e                 ", 6));
   assert(scan_jsonescape("\\ud83d\\udca9x", buf, &l) == 13 && l == 5 && !memcmp(buf, "\xf0\x9f\x92\xa9x", 5));
   /* how about some incorrect UTF-8? */
   assert(scan_jsonescape("a\xc0\xaf", buf, &l) == 1 && l == 1 && !memcmp(buf, "a", 1));

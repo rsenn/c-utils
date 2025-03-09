@@ -23,12 +23,7 @@ main(int argc, char** argv) {
       die(111, FATAL, "out of memory", 0);
 
     if(dns_txt(&out, &fqdn) == -1)
-      diesys(111,
-             FATAL,
-             "unable to find TXT              ecords for ",
-             *argv,
-             ": ",
-             0);
+      diesys(111, FATAL, "unable to find TXT              ecords for ", *argv, ": ", 0);
 
     buffer_put(buffer_1, out.s, out.len);
     buffer_puts(buffer_1, "\n");

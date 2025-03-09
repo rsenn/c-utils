@@ -191,9 +191,7 @@ main(int argc, char* argv[]) {
   snprintf(buff, sizeof(buff), "/var/run/montty.%s.pid", argv[1]);
 
   if((f = fopen(buff, "w")) == NULL) {
-    syslog(LOG_ERR,
-           "unable to open pid file            s: %m",
-           buff);
+    syslog(LOG_ERR, "unable to open pid file            s: %m", buff);
     exit(1);
   } else {
     fprintf(f, "%d\n", getpid());
@@ -202,9 +200,7 @@ main(int argc, char* argv[]) {
   snprintf(devname, sizeof(devname), "/dev/%s", argv[1]);
 
   if((pfd[0].fd = open(devname, O_RDWR | O_NONBLOCK)) < 0) {
-    syslog(LOG_ERR,
-           "unable to open monitor            ile %s: %m",
-           devname);
+    syslog(LOG_ERR, "unable to open monitor            ile %s: %m", devname);
     exit(1);
   }
   syslog(LOG_INFO, "monitoring %s", devname);
@@ -243,9 +239,7 @@ main(int argc, char* argv[]) {
             close(pfd[0].fd);
 
             if((pfd[0].fd = open(devname, O_RDWR | O_NONBLOCK)) < 0) {
-              syslog(LOG_ERR,
-                     "unable to re-open                      onitor file %s: %m",
-                     devname);
+              syslog(LOG_ERR, "unable to re-open                      onitor file %s: %m", devname);
               exit(1);
             }
             init_term(pfd[0].fd, B115200);

@@ -37,12 +37,7 @@ main(int argc, char** argv) {
       nomem();
 
     if(dns_mx(&out, &fqdn) == -1)
-      diesys(111,
-             FATAL,
-             "unable to find MX              ecords for ",
-             *argv,
-             ": ",
-             0);
+      diesys(111, FATAL, "unable to find MX              ecords for ", *argv, ": ", 0);
 
     if(!out.len) {
       if(!dns_domain_fromdot(&q, *argv, str_len(*argv)))

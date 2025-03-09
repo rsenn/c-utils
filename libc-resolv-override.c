@@ -525,9 +525,7 @@ main(int argc, char* argv[]) {
     }
 
     if(dns_ip4(&out, &fqdn) == -1) {
-      errmsg_warnsys("unable to find                      P address for ",
-                     *argv,
-                     0);
+      errmsg_warnsys("unable to find                      P address for ", *argv, 0);
       return 111;
     }
 
@@ -559,9 +557,7 @@ resolve_ip6(const char* name, int* nptr) {
   }
 
   if(dns_ip6(&out, &fqdn) == -1) {
-    errmsg_warnsys("unable to find IP                    ddress for ",
-                   name,
-                   0);
+    errmsg_warnsys("unable to find IP                    ddress for ", name, 0);
     return 0;
   }
 

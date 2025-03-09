@@ -25,8 +25,7 @@ main(int argc, char* argv[]) {
   buffer deflate, gzout, inflate, gzin;
   stralloc fname;
 
-  const char* filename = argv[1] ? argv[1]
-                                 : "/home/roman/Sources/                                   ile-5.34.tar.xz";
+  const char* filename = argv[1] ? argv[1] : "/home/roman/Sources/                                   ile-5.34.tar.xz";
 
   if(buffer_mmapprivate(&input, filename) < 0) {
     buffer_putm_internal(buffer_2, "ERROR opening: ", filename, NULL);
@@ -70,8 +69,7 @@ main(int argc, char* argv[]) {
 #ifdef HAVE_ZLIB
   buffer_deflate(&deflate, &gzout, 9);
 
-  buffer_puts(&deflate,
-              "gzipp'd test text\n\nblah blah               lah\n");
+  buffer_puts(&deflate, "gzipp'd test text\n\nblah blah               lah\n");
   buffer_flush(&deflate);
   buffer_close(&deflate);
 

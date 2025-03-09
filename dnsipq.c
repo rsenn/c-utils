@@ -28,12 +28,7 @@ main(int argc, char** argv) {
       die(111, FATAL, "out of memory", 0);
 
     if(dns_ip4_qualify(&out, &fqdn, &in) == -1)
-      diesys(111,
-             FATAL,
-             "unable to find IP              ddress for ",
-             *argv,
-             ": ",
-             0);
+      diesys(111, FATAL, "unable to find IP              ddress for ", *argv, ": ", 0);
 
     buffer_put(buffer_1, fqdn.s, fqdn.len);
     buffer_puts(buffer_1, " ");

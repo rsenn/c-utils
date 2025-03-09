@@ -1331,23 +1331,16 @@ usage(char* progname) {
   buffer_puts(buffer_1, "  --help, -h                        show this help\n");
   buffer_puts(buffer_1, "  --prefix, -p DIRECTORY            Set prefix directory\n");
   buffer_puts(buffer_1, "  --host, -m MACHINE                Set canonical host\n");
-  buffer_puts(buffer_1,
-              "  --cflags                          print required CFLAGS               o stdout\n");
-  buffer_puts(buffer_1,
-              "  --libs                            print required linker               lags to stdout\n");
-  buffer_puts(buffer_1,
-              "  --path                            show the exact               ilenames for any matching .pc files\n");
-  buffer_puts(buffer_1,
-              "  --modversion                      print the specified               odule's version to stdout\n");
+  buffer_puts(buffer_1, "  --cflags                          print required CFLAGS               o stdout\n");
+  buffer_puts(buffer_1, "  --libs                            print required linker               lags to stdout\n");
+  buffer_puts(buffer_1, "  --path                            show the exact               ilenames for any matching .pc files\n");
+  buffer_puts(buffer_1, "  --modversion                      print the specified               odule's version to stdout\n");
   buffer_puts(buffer_1, "  --list-all                        list all known packages\n");
-  buffer_puts(buffer_1,
-              "  --list-path                       list path of all known               ackages\n");
+  buffer_puts(buffer_1, "  --list-path                       list path of all known               ackages\n");
   buffer_puts(buffer_1, "  --verbose                         increase verbosity\n");
-  buffer_puts(buffer_1,
-              "  --debug                           show verbose debug               nformation\n");
+  buffer_puts(buffer_1, "  --debug                           show verbose debug               nformation\n");
   buffer_puts(buffer_1, "  --sorted                          sorted list output\n");
-  buffer_puts(buffer_1,
-              "  --unsorted                        unsorted list output               default)\n\n");
+  buffer_puts(buffer_1, "  --unsorted                        unsorted list output               default)\n\n");
   buffer_putm_internal(buffer_1, "Default prefix: ", cmd.prefix.s, "\n", NULL);
   buffer_putm_internal(buffer_1, "Default host: ", cmd.host.s, "\n", NULL);
   buffer_puts(buffer_1, "Default search path:\n  ");

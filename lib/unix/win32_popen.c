@@ -453,8 +453,8 @@ int __cdecl _pclose(FILE* pstream) {
     locidpair->stream = NULL;
     locidpair->prochnd = 0;
 
-  /* only return path!
-   */
+    /* only return path!
+     */
 
   done:
 

@@ -21,7 +21,7 @@ putline(const char* what, const char* b, ssize_t l, int i) {
 
   if(l <= 0)
     buffer_puts(buffer_2, b);
-  else 
+  else
     while(l-- > 0)
       buffer_put(buffer_2, b++, 1);
 
@@ -37,7 +37,7 @@ http_read_header(http* h, stralloc* sa, http_response* r) {
 
   while(r->status == HTTP_RECV_HEADER) {
     size_t bytesavail = in->n - in->p;
-    
+
     start = sa->len;
 
     if((ret = buffer_getline_sa(&h->q.in, sa)) <= 0)
@@ -73,7 +73,7 @@ http_read_header(http* h, stralloc* sa, http_response* r) {
     if(sa->len - start >= 23 && !case_diffb(x, 23, "Content-Type: multipart")) {
       size_t p = str_find(x, "boundary=");
 
-      if(x[p]) 
+      if(x[p])
         stralloc_copys(&r->boundary, &x[p + str_len("boundary=")]);
 
       r->transfer = HTTP_TRANSFER_BOUNDARY;

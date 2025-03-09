@@ -18,7 +18,7 @@ enum nod_id {
   /* compound */ N_SUBSHELL, /* execute the list in a subshell */
   N_CMDLIST,                 /* execute the list in the current env */
   /* for      */ N_FOR,      /* execute body for each arg,
-
+     
                                 while putting the arg into var */
   /* case */ N_CASE,         /* execute the case matching the expr */
   /* casenode */ N_CASENODE,

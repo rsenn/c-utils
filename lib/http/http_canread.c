@@ -62,7 +62,7 @@ http_canread(http* h, void (*wantread)(fd_type), void (*wantwrite)(fd_type)) {
   len = buffer_LEN(&h->q.in);
 
   if((ret = buffer_freshen(&h->q.in)) <= 0) {
-    //if(!(ret == -1 && errno == EAGAIN))
+    // if(!(ret == -1 && errno == EAGAIN))
     goto fail;
   }
 
@@ -83,7 +83,7 @@ http_canread(http* h, void (*wantread)(fd_type), void (*wantwrite)(fd_type)) {
     if((ret = buffer_getline_sa(&h->q.in, &r->data)) <= 0)
       break;
 
-    //stralloc_trimr(&r->data, "\r\n", 2);
+    // stralloc_trimr(&r->data, "\r\n", 2);
     stralloc_nul(&r->data);
 
     if(r->data.len == 0) {
@@ -103,7 +103,7 @@ http_canread(http* h, void (*wantread)(fd_type), void (*wantwrite)(fd_type)) {
     if(!case_diffb(&r->data.s[pos], str_len("Content-Type: multipart"), "Content-Type: multipart")) {
       size_t p = pos + str_find(&r->data.s[pos], "boundary=");
 
-      if(r->data.s[p]) 
+      if(r->data.s[p])
         stralloc_copys(&r->boundary, &r->data.s[p + str_len("boundary=")]);
 
       r->transfer = HTTP_TRANSFER_BOUNDARY;
@@ -141,9 +141,9 @@ http_canread(http* h, void (*wantread)(fd_type), void (*wantwrite)(fd_type)) {
   }
 
 fail:
-  if(ret == -1) 
+  if(ret == -1)
     err = h->err = h->tls ? tls_errno(h->sock) : errno;
-  else 
+  else
     err = h->err = 0;
 
   if(h->tls) {

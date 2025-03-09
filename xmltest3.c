@@ -84,19 +84,11 @@ create_xml_document() {
 
   xml_child_element_text("makeCustomizationPreStepEnabled", make_customization_type, "false");
   xml_child_element("makeCustomizationPreStep", make_customization_type);
-  xml_child_element_text("makeCustomizationPostStepEnable                         ",
-                         make_customization_type,
-                         "false");
+  xml_child_element_text("makeCustomizationPostStepEnable                         ", make_customization_type, "false");
   xml_child_element("makeCustomizationPostStep", make_customization_type);
-  xml_child_element_text("makeCustomizationPutChecksumInUs                         rID",
-                         make_customization_type,
-                         "false");
-  xml_child_element_text("makeCustomizationEnableLongLine                         ",
-                         make_customization_type,
-                         "false");
-  xml_child_element_text("makeCustomizationNormalizeHexFil                         ",
-                         make_customization_type,
-                         "false");
+  xml_child_element_text("makeCustomizationPutChecksumInUs                         rID", make_customization_type, "false");
+  xml_child_element_text("makeCustomizationEnableLongLine                         ", make_customization_type, "false");
+  xml_child_element_text("makeCustomizationNormalizeHexFil                         ", make_customization_type, "false");
 
   hitechcomp = xml_child_element("HI-TECH-COMP", conf);
 
@@ -109,16 +101,11 @@ create_xml_document() {
                           "key",
                           "define-macros",
                           "value",
-                          "__18f2550=1;XTAL_FREQ=20000000;                          ART_BAUD=38400;USE_TIMER0=1;                          SE_TIMER1=1;USE_TIMER2=1;USE_                          OFTPWM=1;USE_SOFTSER=1;HAVE_                          OMPARATOR=1",
+                          "__18f2550=1;XTAL_FREQ=20000000;                          ART_BAUD=38400;USE_TIMER0=1;                          SE_TIMER1=1;USE_TIMER2=1;USE_            "
+                          "              OFTPWM=1;USE_SOFTSER=1;HAVE_                          OMPARATOR=1",
                           0);
   xml_child_element_attrs("property", hitechcomp, "key", "disable-optimizations", "value", "false", 0);
-  xml_child_element_attrs("property",
-                          hitechcomp,
-                          "key",
-                          "extra-include-directories",
-                          "value",
-                          "../../..;../../../lib;../../../                          rc",
-                          0);
+  xml_child_element_attrs("property", hitechcomp, "key", "extra-include-directories", "value", "../../..;../../../lib;../../../                          rc", 0);
   xml_child_element_attrs("property", hitechcomp, "key", "favor-optimization-for", "value", "-speed,+space", 0);
   xml_child_element_attrs("property", hitechcomp, "key", "garbage-collect-data", "value", "true", 0);
   xml_child_element_attrs("property", hitechcomp, "key", "garbage-collect-functions", "value", "true", 0);

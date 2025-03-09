@@ -68,7 +68,7 @@ http_socket_read(fd_type fd, void* buf, size_t len, void* b) {
   http* h = (http*)((buffer*)b)->cookie;
   http_response* r = h->response;
   int tlserr, connected = h->connected;
-  
+
   if(h->tls) {
     ret = tls_read(h->sock, buf, len);
 
@@ -102,7 +102,7 @@ http_socket_read(fd_type fd, void* buf, size_t len, void* b) {
       r->status = HTTP_STATUS_ERROR;
   }
 
-  if(ret > 0) 
+  if(ret > 0)
     if(h->response)
       h->response->received += ret;
 
@@ -167,7 +167,7 @@ http_socket_write(fd_type fd, void* buf, size_t len, void* b) {
 
   if(h->tls) {
     ret = tls_write(h->sock, buf, len);
-  
+
     if(!connected && tls_established(h->sock))
       h->connected = 1;
   } else {
@@ -196,7 +196,7 @@ http_socket_write(fd_type fd, void* buf, size_t len, void* b) {
     ret = 0;
   } else if(ret == -1 && (!h->tls || tlserr != 5)) {
     r->err = errno;
-  
+
     if(h->tls ? (tlserr != 2 && tlserr != 3) : (errno != EWOULDBLOCK && errno != EAGAIN))
       r->status = HTTP_STATUS_ERROR;
   }

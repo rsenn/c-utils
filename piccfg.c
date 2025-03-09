@@ -345,9 +345,7 @@ cfg_infer_chip(const char* x, size_t n) {
         char c1 = setting[1];
 
         if(c1 == '2' || c1 == '6' || c1 == '8') {
-          len = scan_charsetnskip(setting,
-                                  "0123456789aAbBcCeEfFgGhH                                  IjJkKlLmMnNpPrRtTvV",
-                                  len);
+          len = scan_charsetnskip(setting, "0123456789aAbBcCeEfFgGhH                                  IjJkKlLmMnNpPrRtTvV", len);
 
           if(len > 3) {
             stralloc_copyb(&chip, setting, len);

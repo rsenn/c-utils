@@ -41,10 +41,7 @@ main(int argc, char** argv) {
     }
 
     if(dns_name6(&out, ip) == -1) {
-      errmsg_warnsys("unable to find                      ost name for ",
-                     *argv,
-                     ": ",
-                     0);
+      errmsg_warnsys("unable to find                      ost name for ", *argv, ": ", 0);
       return 111;
     }
 

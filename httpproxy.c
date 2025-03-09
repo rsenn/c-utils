@@ -40,11 +40,8 @@ static char ipbuf[IP4_FMT];
 
 void
 usage(char* prog) {
-  buffer_putm_internal(buffer_2,
-                       "Usage: ",
-                       str_basename(prog),
-                       " [-q] [-t timeout_sec] [-u                        imeout_usec] <host> <port>                        target>",
-                       NULL);
+  buffer_putm_internal(
+      buffer_2, "Usage: ", str_basename(prog), " [-q] [-t timeout_sec] [-u                        imeout_usec] <host> <port>                        target>", NULL);
   buffer_putnlflush(buffer_2);
 }
 
@@ -164,9 +161,7 @@ main(int argc, char* argv[]) {
 
   if(!lookup_hosts(&host, &ips)) {
     if(dns_ip4(&ips, &host) == -1) {
-      errmsg_warnsys("unable to find                      P address for ",
-                     argv[unix_optind],
-                     0);
+      errmsg_warnsys("unable to find                      P address for ", argv[unix_optind], 0);
       return 111;
     }
   }
@@ -268,8 +263,7 @@ main(int argc, char* argv[]) {
       }
     } else {
       if(verbose)
-        buffer_putsflush(buffer_2,
-                         "error: select: sock not                          et\n");
+        buffer_putsflush(buffer_2, "error: select: sock not                          et\n");
       return 3;
     }
   }

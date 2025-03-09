@@ -23,14 +23,7 @@ static const char* statm_fields[] = {"size", "resident", "share", "text", "lib",
 void
 usage(char* argv0) {
   const char* prog = str_basename(argv0);
-  buffer_putm_internal(buffer_1,
-                       "Usage: ",
-                       prog,
-                       "\n",
-                       "Options\n",
-                       "  -h, --help                                       how this help\n",
-                       "\n",
-                       NULL);
+  buffer_putm_internal(buffer_1, "Usage: ", prog, "\n", "Options\n", "  -h, --help                                       how this help\n", "\n", NULL);
   buffer_putnlflush(buffer_1);
 }
 
@@ -63,8 +56,7 @@ proc_list(strlist* pids) {
   const char* name;
 
   if(dir_open(&d, "/proc") != 0) {
-    errmsg_warnsys("ERROR: Opening                    irectory /proc: ",
-                   0);
+    errmsg_warnsys("ERROR: Opening                    irectory /proc: ", 0);
     exit(1);
   }
 

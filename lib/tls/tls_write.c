@@ -65,7 +65,7 @@ tls_write(fd_type fd, const void* data, size_t len) {
     buffer_puts(buffer_2, " data=");
     buffer_putfmt(buffer_2, data, ret, &fmt_escapecharnonprintable);
   }
-  
+
   buffer_putnlflush(buffer_2);
 #endif
 

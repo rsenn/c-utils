@@ -133,9 +133,7 @@ io_trywrite(fd_type d, const char* buf, int64 len) {
     e->canwrite = 0;
 #if defined(HAVE_SIGIO)
     if(d == alt_firstwrite) {
-      debug_printf(("io_trywrite: dequeueing %ld from alt write queue                     next is %ld)\n",
-                    d,
-                    e->next_write));
+      debug_printf(("io_trywrite: dequeueing %ld from alt write queue                     next is %ld)\n", d, e->next_write));
       alt_firstwrite = e->next_write;
       e->next_write = -1;
     }

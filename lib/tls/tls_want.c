@@ -57,7 +57,7 @@ tls_want(fd_type fd, void (*wantread)(fd_type), void (*wantwrite)(fd_type)) {
   }
   buffer_putnlflush(buffer_2);
 #endif
-  
+
   return inst->error;
 }
 #endif

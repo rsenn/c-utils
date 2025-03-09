@@ -281,12 +281,7 @@ retry_listing:
   *dirlines = ftp_read_list(data_sock, dirdata);
 
   if(-1 == *dirlines)
-    xbailout(111,
-             errno,
-             "failed to read directory              isting",
-             0,
-             0,
-             0);
+    xbailout(111, errno, "failed to read directory              isting", 0, 0, 0);
   close(data_sock);
   data_sock = -1;
   x2("LIST/MLSD");
@@ -446,12 +441,7 @@ callback_ip(uogetopt_env* e, uogetopt2* g, char* s) {
     x = ip4_scan(s, ip);
 
     if(!x || (s[x] != ',' && s[x] != 0))
-      xbailout(2,
-               0,
-               "cannot parse IP                ddress at `",
-               s,
-               "'",
-               0);
+      xbailout(2, 0, "cannot parse IP                ddress at `", s, "'", 0);
 
     if(!stralloc_catb(&pasv_response_ips, ip, 4))
       oom();
@@ -464,15 +454,7 @@ callback_ip(uogetopt_env* e, uogetopt2* g, char* s) {
 }
 
 static uogetopt2 myopts[] = {
-    {0,
-     "",
-     uogo_label,
-     0,
-     0,
-     0,
-     "Connect / login / username /      assword options:",
-     0,
-     0},
+    {0, "", uogo_label, 0, 0, 0, "Connect / login / username /      assword options:", 0, 0},
     COMMON_OPT_user,
     COMMON_OPT_pass,
     COMMON_OPT_account,
@@ -490,7 +472,8 @@ static uogetopt2 myopts[] = {
      &o_interactive,
      1,
      "Read directories from stdin.",
-     "This option tells ftpls to      gnore any directories given on      he      ommand line, and to read the      irectories to list from the      tandard      nput, reading one directory per      ine.     tpls will print an END-OF-COPY      ine after each operation. Do      ot      se this option together with      -html.\n"
+     "This option tells ftpls to      gnore any directories given on      he      ommand line, and to read the      irectories to list from the      tandard      nput, reading "
+     "one directory per      ine.     tpls will print an END-OF-COPY      ine after each operation. Do      ot      se this option together with      -html.\n"
      "This option was added in version      .3.6 and will be removed in      uture versions, unless someone      bjects.",
      0},
     COMMON_OPT_timeout,
@@ -501,17 +484,10 @@ static uogetopt2 myopts[] = {
      &o_recursive,
      1,
      "Do recursive listing.",
-     "This option makes ftpls descend      hrough the directory hierarchy      nd list      ll the directories and files it      iles. A top level directories      ontent      ill be printed completely      efore the sub directories will      e traversed.",
+     "This option makes ftpls descend      hrough the directory hierarchy      nd list      ll the directories and files it      iles. A top level directories      ontent      "
+     "ill be printed completely      efore the sub directories will      e traversed.",
      0},
-    {0,
-     "raw",
-     uogo_flag,
-     UOGO_NOARG,
-     &o_raw,
-     1,
-     "Raw output in original format.",
-     "This will preserve the original      ormat and sort order.",
-     0},
+    {0, "raw", uogo_flag, UOGO_NOARG, &o_raw, 1, "Raw output in original format.", "This will preserve the original      ormat and sort order.", 0},
     {0,
      "max-depth",
      uogo_ulong,
@@ -540,18 +516,11 @@ static uogetopt2 myopts[] = {
      1,
      "Create HTML index.",
      "The index will contain all files      ogether with modification      ime and size.\n"
-     "Note: The links in this index      ill contain username and      assword if you      nclude them into an URL given      o ftpls on the command line      either as      rgument or through the      -urlprefix option). They will      ot be included      therwise, for security and      rivacy reasons.",
+     "Note: The links in this index      ill contain username and      assword if you      nclude them into an URL given      o ftpls on the command line      either as      "
+     "rgument or through the      -urlprefix option). They will      ot be included      therwise, for security and      rivacy reasons.",
      0},
     {'m', "machine", uogo_flag, UOGO_NOARG, &o_machine, 1, "Create machine parsable output.", 0, 0},
-    {'t',
-     "title",
-     uogo_string,
-     0,
-     &o_title,
-     0,
-     "Title text to use on the HTML      utput.",
-     0,
-     "TEXT"},
+    {'t', "title", uogo_string, 0, &o_title, 0, "Title text to use on the HTML      utput.", 0, "TEXT"},
     {'U',
      "urlprefix",
      uogo_string,
@@ -559,7 +528,8 @@ static uogetopt2 myopts[] = {
      &o_urlprefix,
      0,
      "URL-Prefix to use in listings.",
-     "If this option is not given then      n URL given on the command line      ill      e used instead, and if this       as not been given an URL will      e created      rom host, port and directory      iven on the command line.",
+     "If this option is not given then      n URL given on the command line      ill      e used instead, and if this       as not been given an URL will      e created      rom "
+     "host, port and directory      iven on the command line.",
      "URL"},
     {0,
      "print-dir",
@@ -568,7 +538,8 @@ static uogetopt2 myopts[] = {
      &o_print_dir,
      1,
      "Print sub directory names.",
-     "This option makes ftpls print      he name of a directory before      t lists      t's content. Note that the name      f the top level directory of      ach      isting will not be printed.      his option is meant to be used      ogether      ith --raw, and will not create      seful output together with      -html.",
+     "This option makes ftpls print      he name of a directory before      t lists      t's content. Note that the name      f the top level directory of      ach      isting "
+     "will not be printed.      his option is meant to be used      ogether      ith --raw, and will not create      seful output together with      -html.",
      0},
 
     {0, "", uogo_label, 0, 0, 0, "Workaround options:", 0, 0},
@@ -606,7 +577,8 @@ static uogetopt2 myopts[] = {
      "Show copyright.",
      "Copyright (C) 2003 Uwe Ohse.\n\n"
      "The software comes with NO      ARRANTY, to the extent      ermitted by law.\n\n"
-     "This package is published unter      he terms of the GNU General      ublic License      ersion 2. Later versions of the      PL may or may not apply, see      ttp://www.ohse.de/uwe/licenses/"
+     "This package is published unter      he terms of the GNU General      ublic License      ersion 2. Later versions of the      PL may or may not apply, see      "
+     "ttp://www.ohse.de/uwe/licenses/"
      "\n",
      0},
     {0,
@@ -681,7 +653,9 @@ static uogetopt_env optenv = {0,
                               "usage: ftpls [options]                               ost[:port] [remotedir]\n"
                               "   or: ftpls [options] URL",
                               "generate a ftp directory listing.",
-                              "ftpls generates a listing of                               iles and directories in a FTP                               irectory.                               y default it prints a human                               eadable ascii output, but may                               lso create                               TML and machine parsable output.",
+                              "ftpls generates a listing of                               iles and directories in a FTP                               irectory.                    "
+                              "           y default it prints a human                               eadable ascii output, but may                               lso create         "
+                              "                      TML and machine parsable output.",
                               COMMON_BUGREPORT_INFO,
                               0,
                               0,
@@ -707,12 +681,7 @@ main(int argc, char** argv) {
   uogetopt_parse(&optenv, &argc, argv);
 
   if(o_v4_only && o_v6_only)
-    xbailout(2,
-             0,
-             "the --v4 and --v6 options are              utally exclusive",
-             0,
-             0,
-             0);
+    xbailout(2, 0, "the --v4 and --v6 options are              utally exclusive", 0, 0, 0);
 
   if(o_v4_only)
     socket_flag_noipv6 = 1;

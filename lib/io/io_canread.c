@@ -20,8 +20,7 @@ io_canread() {
 #if defined(HAVE_SIGIO)
   {
     if(alt_firstread >= 0 && (e = (io_entry*)iarray_get((iarray*)io_getfds(), alt_firstread)) && e->canread) {
-      debug_printf(("io_canread: normal read queue is empty, swapping in alt                     ead queue (starting                     ith %ld)\n",
-                    alt_firstread));
+      debug_printf(("io_canread: normal read queue is empty, swapping in alt                     ead queue (starting                     ith %ld)\n", alt_firstread));
       first_readable = alt_firstread;
       alt_firstread = -1;
     } else

@@ -27,12 +27,7 @@ main(int argc, char** argv) {
       die(111, FATAL, "out of memory", 0);
 
     if(dns_ip6(&out, &fqdn) == -1)
-      diesys(111,
-             FATAL,
-             "unable to find IPv6              ddress for ",
-             *argv,
-             ": ",
-             0);
+      diesys(111, FATAL, "unable to find IPv6              ddress for ", *argv, ": ", 0);
 
     for(i = 0; i + 16 <= out.len; i += 16) {
       buffer_put(buffer_1, str, fmt_ip6(str, out.s + i));

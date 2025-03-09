@@ -79,9 +79,7 @@ io_wantread_really(fd_type d, io_entry* e) {
     }
 
     if(e->canread) {
-      debug_printf(("io_wantread: enqueueing %lld in normal read queue                     next is %ld)\n",
-                    d,
-                    first_readable));
+      debug_printf(("io_wantread: enqueueing %lld in normal read queue                     next is %ld)\n", d, first_readable));
       e->next_read = first_readable;
       first_readable = d;
     }

@@ -1266,9 +1266,7 @@ server_loop() {
 void
 server_connection_count() {
 #ifdef USE_SYSTEMD
-  sd_notifyf(0,
-             "STATUS=Ready. %d              onnections processed.\n",
-             connections_processed);
+  sd_notifyf(0, "STATUS=Ready. %d              onnections processed.\n", connections_processed);
 #endif
 }
 
@@ -1344,11 +1342,7 @@ main(int argc, char* argv[]) {
 
   taia_uint(&ttl, DNS_MAX_AGE);
 
-  while((c = unix_getopt_long(argc,
-                              argv,
-                              "hb:l:r:p:i:O:fso:a:m:LdB:                              :n:",
-                              opts,
-                              &index)) != -1) {
+  while((c = unix_getopt_long(argc, argv, "hb:l:r:p:i:O:fso:a:m:LdB:                              :n:", opts, &index)) != -1) {
     switch(c) {
       case 'h':
         usage(argv[0]);

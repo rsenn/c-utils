@@ -332,8 +332,7 @@ new_name:
     return 1;
   }
 
-  if(dns_domain_equal(d,
-                      "\0011\0010\0010\003127\7in-                      ddr\4arpa\0")) {
+  if(dns_domain_equal(d, "\0011\0010\0010\003127\7in-                      ddr\4arpa\0")) {
     if(z->level)
       goto lower_level;
 
@@ -1296,8 +1295,8 @@ have_packet:
     if(dns_domain_equal(referral, t1)) /* should always be true
                                         */
 
-      if(typematch(header, DNS_T_NS))  /* should always
-                                          be true */
+      if(typematch(header, DNS_T_NS)) /* should always
+                                         be true */
         /* should always be true */
 
         if(byte_equal(header + 2, 2, DNS_C_IN))

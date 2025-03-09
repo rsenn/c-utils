@@ -1114,24 +1114,20 @@ main(int argc, char* argv[]) {
   match_foreach(doc, "net|signal", build_nets);
   match_foreach(doc, "symbol", build_sym);
 
-  buffer_puts(&output,
-              "# Stripboard\n# board               width>,<height>\n\nboard ");
+  buffer_puts(&output, "# Stripboard\n# board               width>,<height>\n\nboard ");
 
   buffer_putlong(&output, ((bounds.max.x + 9) / 10 + 2) * 10);
   buffer_putc(&output, ',');
   buffer_putlong(&output, ((bounds.max.y + 9) / 10 + 2) * 10);
   buffer_puts(&output, "\n");
 
-  buffer_puts(&output,
-              "\n# Packages\n# <package name>                <pin coordinates relative to               in 0>\n\n");
+  buffer_puts(&output, "\n# Packages\n# <package name>                <pin coordinates relative to               in 0>\n\n");
   MAP_VISIT_ALL(packages, dump_package, "package");
 
-  buffer_puts(&output,
-              "\n# Components\n# <component               ame> <package name>                  absolute position of               omponent pin 0>\n\n");
+  buffer_puts(&output, "\n# Components\n# <component               ame> <package name>                  absolute position of               omponent pin 0>\n\n");
   MAP_VISIT_ALL(parts, output_part, "part");
 
-  buffer_puts(&output,
-              "\n# Connections\n# <from               omponent name>.<pin index> <to               omponent name>.<pin               ndex>\n\n");
+  buffer_puts(&output, "\n# Connections\n# <from               omponent name>.<pin index> <to               omponent name>.<pin               ndex>\n\n");
 
   MAP_VISIT_ALL(parts, dump_part, "part");
   MAP_VISIT_ALL(nets, dump_net, 0);

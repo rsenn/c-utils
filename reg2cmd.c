@@ -235,8 +235,7 @@ reg2cmd() {
         rr = ROOT_HKCR;
       else if(KEY_EQ(key, "HKU") || KEY_EQ(key, "HKEY_USERS"))
         rr = ROOT_HKU;
-      else if(KEY_EQ(key, "HKCC") || KEY_EQ(key,
-                                            "HKEY_CURRENT_                                            ONFIG"))
+      else if(KEY_EQ(key, "HKCC") || KEY_EQ(key, "HKEY_CURRENT_                                            ONFIG"))
         rr = ROOT_HKCC;
 
       if((o = strchr(key, '\\'))) {
@@ -443,8 +442,7 @@ void
 usage(char* arg0) {
   buffer_puts(buffer_2, "Usage: ");
   buffer_puts(buffer_2, mystr_basename(arg0));
-  buffer_puts(buffer_2,
-              " [-f] [input - file]               output - file]\n");
+  buffer_puts(buffer_2, " [-f] [input - file]               output - file]\n");
   buffer_flush(buffer_2);
   exit(1);
 }

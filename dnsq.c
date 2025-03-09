@@ -16,9 +16,7 @@
 
 void
 usage(void) {
-  die(100,
-      "dnsq: usage: dnsq type name       erver",
-      0);
+  die(100, "dnsq: usage: dnsq type name       erver", 0);
 }
 void
 oops(void) {
@@ -66,14 +64,14 @@ static stralloc out;
 
 static char seed[128];
 
-#define X(s) \
+#define X(s)
 
-  if(!stralloc_cats(out, s)) \
-    return 0;
-#define NUM(u) \
+if(!stralloc_cats(out, s))
+  return 0;
+#define NUM(u)
 
-  if(!stralloc_catulong0(out, u, 0)) \
-    return 0;
+if(!stralloc_catulong0(out, u, 0))
+  return 0;
 
 unsigned int
 printpacket_cat(stralloc* out, char* buf, unsigned int len) {

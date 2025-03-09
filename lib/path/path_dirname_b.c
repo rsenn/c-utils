@@ -4,8 +4,8 @@
 
 /*
         path           dirname        basename
-        "/usr/lib"     "/usr"         "lib        usr/"        "/"            "usr        sr"          "."            "usr        "            "/"            "/        "            "."            ".        ."           "."            ".."
-        NULL           "."            ".                     "."            "."
+        "/usr/lib"     "/usr"         "lib        usr/"        "/"            "usr        sr"          "."            "usr        "            "/"            "/        " "." ". ."
+   "."            ".." NULL           "."            ".                     "."            "."
 */
 static const char* const dot = ".";
 

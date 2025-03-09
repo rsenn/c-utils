@@ -23,9 +23,7 @@ nomem(void) {
 }
 void
 usage(void) {
-  die(100,
-      "dnstrace: usage: dnstrace type       ame rootip ...",
-      0);
+  die(100, "dnstrace: usage: dnstrace type       ame rootip ...", 0);
 }
 
 static stralloc querystr;
@@ -82,8 +80,7 @@ resolve(char* q, char qtype[2], char ip[16]) {
 
   if(taia_less(&deadline, &stamp)) {
     buffer_put(buffer_1, querystr.s, querystr.len);
-    buffer_puts(buffer_1,
-                "ALERT:took more than                  second\n");
+    buffer_puts(buffer_1, "ALERT:took more than                  second\n");
   }
 
   return 0;
@@ -391,8 +388,7 @@ parsepacket(const char* buf, unsigned int len, const char* d, const char dtype[2
 
     if(dns_domain_equal(referral, control) || !dns_domain_suffix(referral, control)) {
       buffer_put(buffer_1, querystr.s, querystr.len);
-      buffer_puts(buffer_1,
-                  "ALERT:lame server;                   efers to ");
+      buffer_puts(buffer_1, "ALERT:lame server;                   efers to ");
       printdomain(referral);
       buffer_puts(buffer_1, "\n");
       return;
@@ -481,8 +477,7 @@ parsepacket(const char* buf, unsigned int len, const char* d, const char dtype[2
 DIE:
   x = strerror(errno);
   buffer_put(buffer_1, querystr.s, querystr.len);
-  buffer_puts(buffer_1,
-              "ALERT:unable to parse               esponse packet; ");
+  buffer_puts(buffer_1, "ALERT:unable to parse               esponse packet; ");
   buffer_puts(buffer_1, x);
   buffer_puts(buffer_1, "\n");
 }
@@ -601,15 +596,13 @@ main(int argc, char** argv) {
 
     if(dns_domain_equal(q, "\011localhost\0")) {
       buffer_put(buffer_1, querystr.s, querystr.len);
-      buffer_puts(buffer_1,
-                  "ALERT:some caches do not                   andle localhost                   nternally\n");
+      buffer_puts(buffer_1, "ALERT:some caches do not                   andle localhost                   nternally\n");
       address_add(q, "\177\0\0\1");
     }
 
     if(dd(q, "", ip) == 4) {
       buffer_put(buffer_1, querystr.s, querystr.len);
-      buffer_puts(buffer_1,
-                  "ALERT:some caches do not                   andle IP addresses                   nternally\n");
+      buffer_puts(buffer_1, "ALERT:some caches do not                   andle IP addresses                   nternally\n");
       address_add(q, ip);
     }
 

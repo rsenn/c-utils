@@ -15,7 +15,7 @@
 #include <assert.h>
 #include <stdlib.h>
 
-int list_imports, list_exports, list_deps, list_sections;
+int list_imports = 0, list_exports = 0, list_deps = 0, list_sections = 0;
 static int print_export_dir, print_data_dir, print_opt_header, print_offset_rva, print_rva_offset, print_range, print_as_rva;
 static uint64 offset, rva;
 static stralloc search;
@@ -416,8 +416,8 @@ main(int argc, char** argv) {
     }
   }
 
-  if(!(list_deps | list_exports | list_imports | list_sections))
-    list_imports = list_exports = 1;
+  /*if(!(list_deps | list_exports | list_imports | list_sections))
+    list_imports = list_exports = 1;*/
 
   for(; argv[unix_optind]; ++unix_optind) {
     base = (uint8*)mmap_read(argv[unix_optind], &filesize);

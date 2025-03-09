@@ -322,20 +322,17 @@ read_arguments() {
     type = PICC18;
 
     if(compiler.len == 0)
-      get_compiler_dir("C:/Program Files                        x86)/HI-TECH                        oftware/PICC18",
-                       &compiler);
+      get_compiler_dir("C:/Program Files                        x86)/HI-TECH                        oftware/PICC18", &compiler);
   } else if(!str_case_diffn(argv0, "picc", 4)) {
     type = PICC;
 
     if(compiler.len == 0)
-      get_compiler_dir("C:/Program Files                        x86)/HI-TECH Software/PICC",
-                       &compiler);
+      get_compiler_dir("C:/Program Files                        x86)/HI-TECH Software/PICC", &compiler);
   } else if(strstr(argv0, "xc8") != NULL) {
     type = XC8;
 
     if(compiler.len == 0)
-      get_compiler_dir("C:/Program Files                        x86)/Microchip/xc8",
-                       &compiler);
+      get_compiler_dir("C:/Program Files                        x86)/Microchip/xc8", &compiler);
   }
 
   stralloc_0(&compiler);

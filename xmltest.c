@@ -67,13 +67,7 @@ xml_dump(xmlnode* n, buffer* b, const char* parent, int depth) {
       const char* x = xml_get_text(n, &name);
 
       if(x[0]) {
-        buffer_putm_internal(b,
-                             "",
-                             parent,
-                             "->children =                              ml_textnode(\"",
-                             x,
-                             "\");",
-                             NULL);
+        buffer_putm_internal(b, "", parent, "->children =                              ml_textnode(\"", x, "\");", NULL);
         newline_indent(b, depth);
       }
     } else if(n->type == XML_ELEMENT) {
@@ -178,8 +172,7 @@ xml_dump(xmlnode* n, buffer* b, const char* parent, int depth) {
             buffer_putsa(b, &name);
           } else {
           }
-          buffer_puts(b,
-                      "->attributes =                       ml_attributes(");
+          buffer_puts(b, "->attributes =                       ml_attributes(");
           i = 0;
           hmap_foreach(n->attributes, t) {
             if(1)

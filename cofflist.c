@@ -126,8 +126,7 @@ coff_list_symbols(buffer* b, void* coff) {
 
   symtab = coff_symbol_table(coff);
 
-  buffer_puts(b,
-              "number of symbol table               ntries: ");
+  buffer_puts(b, "number of symbol table               ntries: ");
   buffer_putulong(b, range_size(&symtab));
   buffer_putnlflush(b);
 
@@ -231,25 +230,20 @@ coff_list_symbols(buffer* b, void* coff) {
           buffer_puts(b, "Aux .bf/.ef def: ");
           buffer_puts(b, ".source_line_number: ");
           buffer_putulong(b, aux->bfef.source_line_number);
-          buffer_puts(b,
-                      ",                       pointer_to_next_                      unction: ");
+          buffer_puts(b, ",                       pointer_to_next_                      unction: ");
           buffer_putulong(b, aux->bfef.pointer_to_next_function);
           buffer_putnlflush(b);
 
         } else if(e->e.type & 0x20 && e->e.scnum > 0 && e->e.sclass == COFF_C_EXT) {
-          buffer_puts(b,
-                      "\t\t\tAux                       unction def: ");
-          buffer_puts(b,
-                      "\n\t\t\t.bf_tag_                      ndex: ");
+          buffer_puts(b, "\t\t\tAux                       unction def: ");
+          buffer_puts(b, "\n\t\t\t.bf_tag_                      ndex: ");
           buffer_putulong(b, aux->func.tag_index);
 
           buffer_puts(b, "\n\t\t\t.code_size: ");
           buffer_putulong(b, aux->func.code_size);
-          buffer_puts(b,
-                      "\n\t\t\t.pointer_to_                      ine_number: 0x");
+          buffer_puts(b, "\n\t\t\t.pointer_to_                      ine_number: 0x");
           buffer_putxlong0(b, aux->func.pointer_to_line_number, 8);
-          buffer_puts(b,
-                      "\n\t\t\t.pointer_to_                      ext_function: ");
+          buffer_puts(b, "\n\t\t\t.pointer_to_                      ext_function: ");
           buffer_putulong(b, aux->func.pointer_to_next_function);
           buffer_putnlflush(b);
 
@@ -264,23 +258,18 @@ coff_list_symbols(buffer* b, void* coff) {
           buffer_putnlflush(b);
         } else if(e->e.sclass == COFF_C_FILE) {
         } else if(e->e.sclass == COFF_C_STATIC) {
-          buffer_puts(b,
-                      "\n\t\t\tAux                       ection def:");
+          buffer_puts(b, "\n\t\t\tAux                       ection def:");
           buffer_puts(b, "\n\t\t\t.length:\t\t");
           buffer_putulong(b, aux->section.length);
-          buffer_puts(b,
-                      "\n\t\t\t.number_of_                      elocations:\t");
+          buffer_puts(b, "\n\t\t\t.number_of_                      elocations:\t");
           buffer_putulong(b, aux->section.number_of_relocations);
-          buffer_puts(b,
-                      "\n\t\t\t.number_of_line_                      umbers:");
+          buffer_puts(b, "\n\t\t\t.number_of_line_                      umbers:");
           buffer_putulong(b, aux->section.number_of_line_numbers);
-          buffer_puts(b,
-                      "\n\t\t\t.check_                      um:\t\t");
+          buffer_puts(b, "\n\t\t\t.check_                      um:\t\t");
           buffer_putxlong0(b, aux->section.check_sum, sizeof(aux->section.check_sum) * 2);
           buffer_puts(b, "\n\t\t\t.number:\t\t");
           buffer_putulong(b, aux->section.number);
-          buffer_puts(b,
-                      "\n\t\t\t.                      election:\t\t");
+          buffer_puts(b, "\n\t\t\t.                      election:\t\t");
           buffer_putulong(b, aux->section.selection);
           buffer_putnlflush(b);
         }

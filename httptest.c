@@ -60,7 +60,8 @@ typedef struct queue_entry_s {
 
 /* https://github.com/rsenn/lc-meter/raw/master/doc/LCmeter0-LCD-8pinlcd-PIC_COMP.pdf
  */
-static const char default_url[] = "https://www.google.com/                                  earch?q=SSL_bio"; //"https://raw.githubusercontent.com/rsenn/lc-meter/master/doc/LCmeter0-LCD-8pinlcd-PIC_COMP.pdf";
+static const char default_url[] =
+    "https://www.google.com/                                  earch?q=SSL_bio"; //"https://raw.githubusercontent.com/rsenn/lc-meter/master/doc/LCmeter0-LCD-8pinlcd-PIC_COMP.pdf";
 static const char* const url_host = "127.0.0.1";
 static const char* const url_location = "/login";
 static const uint16 url_port = 8080;
@@ -215,9 +216,7 @@ http_io_handler(http* h, buffer* out) {
       nb = http_canread(h, io_wantwrite);
 
 #ifdef DEBUG_OUTPUT
-      buffer_putspad(buffer_2,
-                     "\x1b[1;31mhttp_io_handler                      anread\x1b[0m",
-                     30);
+      buffer_putspad(buffer_2, "\x1b[1;31mhttp_io_handler                      anread\x1b[0m", 30);
       buffer_puts(buffer_2, "nb=");
       buffer_putlong(buffer_2, nb);
       buffer_puts(buffer_2, " connected=");
@@ -245,9 +244,7 @@ http_io_handler(http* h, buffer* out) {
         ssize_t len;
 
         if((len = buffer_get(&in, buf, sizeof(buf))) > 0) {
-          buffer_putspad(buffer_2,
-                         "\x1b[1;31mbuffer_                         et\x1b[0m",
-                         30);
+          buffer_putspad(buffer_2, "\x1b[1;31mbuffer_                         et\x1b[0m", 30);
           buffer_puts(buffer_2, " errno=");
           buffer_puts(buffer_2, strerror(errno));
           buffer_puts(buffer_2, " status=");
@@ -483,7 +480,7 @@ main(int argc, char* argv[]) {
     for(;;) {
       int doread = 1;
       fd_type sock;
-      
+
       buffer_putsflush(buffer_2, "htttpest start loop\n");
 
       io_wait();

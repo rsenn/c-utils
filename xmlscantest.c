@@ -44,8 +44,7 @@ main(int argc, char* argv[]) {
   char* x;
   size_t len;
   xmltoken tok;
-  const char* path = argc > 1 ? argv[1]
-                              : "3rdparty/zlib/                                reebuild.xml";
+  const char* path = argc > 1 ? argv[1] : "3rdparty/zlib/                                reebuild.xml";
   errmsg_iam(argv[0]);
 
   if(buffer_readfile(&infile, path)) {
