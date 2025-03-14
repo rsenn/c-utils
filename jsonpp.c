@@ -142,20 +142,21 @@ main(int argc, char* argv[]) {
   int index = 0;
   int out_fd = 1;
   char* out_file = 0;
-
-  struct unix_longopt opts[] = {{"help", 0, NULL, 'h'},
-                                {"single-quote", 0, NULL, 's'},
-                                {"double-quote", 0, NULL, 'd'},
-                                {"depth", 0, NULL, 'D'},
-                                {"separator", 0, NULL, 'S'},
-                                {"spacing", 0, NULL, 'W'},
-                                {"one-line", 0, NULL, 'O'},
-                                {"compact", 0, NULL, 'c'},
-                                {"no-compliant", 0, NULL, 'C'},
-                                {"inplace", 0, NULL, 'i'},
-                                {"indent", 0, NULL, 'l'},
-                                {"output", 1, NULL, 'o'},
-                                {0, 0, 0, 0}};
+  struct unix_longopt opts[] = {
+      {"help", 0, NULL, 'h'},
+      {"single-quote", 0, NULL, 's'},
+      {"double-quote", 0, NULL, 'd'},
+      {"depth", 0, NULL, 'D'},
+      {"separator", 0, NULL, 'S'},
+      {"spacing", 0, NULL, 'W'},
+      {"one-line", 0, NULL, 'O'},
+      {"compact", 0, NULL, 'c'},
+      {"no-compliant", 0, NULL, 'C'},
+      {"inplace", 0, NULL, 'i'},
+      {"indent", 0, NULL, 'l'},
+      {"output", 1, NULL, 'o'},
+      {0, 0, 0, 0},
+  };
 
   errmsg_iam(argv[0]);
 
@@ -205,6 +206,7 @@ main(int argc, char* argv[]) {
   if(unix_optind == argc) {
     argv[++argc] = NULL;
   }
+
 #ifdef DEBUG_OUTPUT_
   if(out_file) {
     buffer_puts(buffer_2, "out file: ");
@@ -249,13 +251,16 @@ main(int argc, char* argv[]) {
       buffer_putnlflush(buffer_2);
     }
 #endif
+
     buffer_write_fd(&out_buf, out_fd);
 
     doc = json_read_tree(&in_buf);
+
 #ifdef DEBUG_CHARBUF
     charbuf_dump(&in_buf, buffer_2);
     buffer_putnlflush(buffer_2);
 #endif
+
     json_pretty_print(*doc, &out_buf);
     (one_line ? &buffer_putnlflush : &buffer_flush)(&out_buf);
 

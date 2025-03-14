@@ -39,7 +39,6 @@ typedef struct {
   union {
     unsigned boolv : 1;
     int64 intv;
-
     double doublev;
     stralloc stringv;
     slink* listv;
@@ -118,7 +117,6 @@ void json_compact_printer(jsonfmt*, jsonval*, int depth, int index, char quote);
 void json_default_printer(jsonfmt*, jsonval*, int depth, int index, char quote);
 
 int json_parse_null_or_undefined(jsonval*, charbuf*);
-
 int json_parse_array(jsonval*, charbuf*);
 int json_parse_boolean(jsonval*, charbuf*);
 int json_parse_null(jsonval*, charbuf*);
