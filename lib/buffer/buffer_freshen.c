@@ -8,22 +8,21 @@ ssize_t buffer_stubborn_read(ssize_t (*)(), int, void*, size_t, void*);
 
 int
 buffer_freshen(buffer* b) {
-  size_t n;
-
   assert((void*)b->op != (void*)&buffer_dummyread);
   assert((void*)b->op != (void*)&buffer_dummyreadmmap);
 
   if(b->p > 0)
     buffer_MOVE(b);
 
-  if((n = buffer_HEADROOM(b)) > 0) {
+  if(b->n < b->a) {
+    size_t n = b->a - b->n;
     ssize_t w;
 
-    if((w = buffer_stubborn_read(b->op, b->fd, buffer_END(b), n, b)) < 0)
+    if((w = buffer_stubborn_read(b->op, b->fd, b->x + b->n, n, b)) < 0)
       return -1;
 
-    buffer_SEEK(b, w);
+    b->n += w;
   }
 
-  return buffer_LEN(b);
+  return b->n - b->p;
 }

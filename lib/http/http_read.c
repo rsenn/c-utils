@@ -31,13 +31,13 @@ http_read(fd_type fd, char* x, size_t n, void* headers_len) {
   buffer* in = &h->q.in;
   http_response* response = h->response;
   http_status st = response->status;
-  ssize_t r, ret = 0, received, oldlen;
+  ssize_t r, ret = 0 /*, received, oldlen*/;
 
   if(!n)
     return 0;
 
 again:
-  oldlen = buffer_LEN(in);
+  // oldlen = buffer_LEN(in);
   r = response->status == HTTP_RECV_HEADER ? buffer_freshen(in) : buffer_feed(in);
   int err = errno;
 
@@ -57,24 +57,23 @@ again:
     goto end;
   }
 
-  received = buffer_LEN(in) - oldlen;
+  //  received = buffer_LEN(in) - oldlen;
 
   if((response->status == HTTP_RECV_HEADER || response->status == HTTP_RECV_DATA)) {
-    ret = http_read_internal(h->sock, x, received, &h->q.in);
-    goto end;
-  }
 
-  if(response->status == HTTP_STATUS_FINISH)
+    ret = http_read_internal(h->sock, x, n, &h->q.in);
+
+  } else if(response->status == HTTP_STATUS_FINISH)
     goto end;
 
-  if(response->status == HTTP_RECV_DATA) {
-    ret = MIN(r, n);
-    byte_copy(x, ret, buffer_PEEK(in));
-    buffer_SKIP(in, ret);
-    goto end;
-  }
+  /*  if(response->status == HTTP_RECV_DATA) {
+      ret = MIN(r, n);
+      byte_copy(x, ret, buffer_PEEK(in));
+      buffer_SKIP(in, ret);
+      goto end;
+    }*/
 
-  if((response->status == HTTP_STATUS_CLOSED) || response->status == HTTP_STATUS_FINISH)
+  else if((response->status == HTTP_STATUS_CLOSED) || response->status == HTTP_STATUS_FINISH)
     goto end;
 
 end:

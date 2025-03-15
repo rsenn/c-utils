@@ -224,7 +224,7 @@ http_io_handler(http* h, buffer* out) {
 
         if((len = buffer_get(&in, buf, sizeof(buf))) > 0) {
 
-#ifdef DEBUG_OUTPUT
+#ifdef DEBUG_OUTPUT_
           buffer_putspad(buffer_2, "\x1b[1;31mbuffer_get\x1b[0m", 30);
           buffer_puts(buffer_2, " errno=");
           buffer_puts(buffer_2, unix_errno(errno));
@@ -239,10 +239,14 @@ http_io_handler(http* h, buffer* out) {
           buffer_putnlflush(buffer_2);
 #endif
 
+          buffer_puts(out, "DATA:\n");
+
           if(buffer_put(out, buf, len)) {
             errmsg_warnsys("write error: ", 0);
             return 2;
           }
+
+          buffer_putnlflush(out);
 
           if(len == -1 || h->response->status == HTTP_STATUS_ERROR) {
             errmsg_warnsys("read error: ", 0);

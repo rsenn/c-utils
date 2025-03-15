@@ -3,15 +3,20 @@
 #include "../byte.h"
 #include "../util.h"
 
-void http_response_read(buffer* in, http_response* response) {
+ssize_t
+http_response_read(buffer* in, http_response* response) {
+  ssize_t ret = 0;
+
   switch(response->transfer) {
     case HTTP_TRANSFER_BOUNDARY: {
       break;
     }
 
     case HTTP_TRANSFER_CHUNKED: {
+      size_t n = buffer_LEN(in);
+
       if(response->chunk_length == 0) {
-        size_t i, n = buffer_LEN(in);
+        size_t i;
         char* x = buffer_PEEK(in);
 
         if((i = byte_chrs(x, n, "\r\n", 2)) < n) {
@@ -39,14 +44,10 @@ void http_response_read(buffer* in, http_response* response) {
           buffer_putnlflush(buffer_2);
 #endif
         }
-      }
-
-      if(response->chunk_length == response->data_pos) {
-      }
-
-      if(0) {
-        buffer_SCAN(in, scan_eolskip);
+      } else if(response->chunk_length == response->data_pos) {
         response->chunk_length = 0;
+
+        buffer_SCAN(in, scan_eolskip);
 
         /*size_t skip;
 
@@ -54,7 +55,10 @@ void http_response_read(buffer* in, http_response* response) {
           buffer_SKIP(in, skip);
           response->chunk_length = 0;
         }*/
+      } else {
+        ret = response->chunk_length - response->data_pos;
       }
+      // ret = buffer_LEN(in) - n;
 
       break;
     }
@@ -66,4 +70,6 @@ void http_response_read(buffer* in, http_response* response) {
       break;
     }
   }
+
+  return ret;
 }

@@ -5,8 +5,8 @@
       "shell_cmd": "ls -l",
     },
     {
-      "name": "Build debug",
-      "shell_cmd": "make DEBUG=1 SELECT=1 CC=clang",
+      "name": "Build CMake",
+      "shell_cmd": "make -C build/x86_64-linux-debug -j10 install",
       "working_dir": "${project_path:${folder:${file_path}}}",
     },
     {

@@ -12,11 +12,11 @@
  * @return
  */
 ssize_t
-http_read_internal(fd_type fd, char* x, size_t received, buffer* b) {
+http_read_internal(fd_type fd, char* x, size_t n, buffer* b) {
   http* h = b->cookie;
   buffer* in = &h->q.in;
   http_response* response = h->response;
-  ssize_t ret = received;
+  ssize_t ret = 0;
 
   switch(response->status) {
     case HTTP_RECV_HEADER: {
@@ -34,19 +34,17 @@ http_read_internal(fd_type fd, char* x, size_t received, buffer* b) {
     }
 
     case HTTP_RECV_DATA: {
-      http_response_read(in, response);
+      ssize_t r = http_response_read(in, response);
 
-      if(response->chunk_length > response->data_pos) {
-        size_t avail = buffer_LEN(in), remain = response->chunk_length - response->data_pos;
-        size_t num = MIN(avail, MIN(remain, received));
+      if(r) {
+        size_t avail = buffer_LEN(in);
+        size_t num = MIN(avail, MIN(r, n));
 
         byte_copy(x, num, buffer_PEEK(in));
         buffer_SKIP(in, num);
 
         response->data_pos += num;
         ret = num;
-      } else if(response->chunk_length == response->data_pos) {
-        response->chunk_length = 0;
       }
 
       break;
