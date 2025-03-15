@@ -3,8 +3,7 @@
 #include "../byte.h"
 #include "../util.h"
 
-void
-http_response_read(buffer* in, http_response* response) {
+void http_response_read(buffer* in, http_response* response) {
   switch(response->transfer) {
     case HTTP_TRANSFER_BOUNDARY: {
       break;
@@ -40,6 +39,9 @@ http_response_read(buffer* in, http_response* response) {
           buffer_putnlflush(buffer_2);
 #endif
         }
+      }
+
+      if(response->chunk_length == response->data_pos) {
       }
 
       if(0) {

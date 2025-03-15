@@ -45,6 +45,8 @@ http_read_internal(fd_type fd, char* x, size_t received, buffer* b) {
 
         response->data_pos += num;
         ret = num;
+      } else if(response->chunk_length == response->data_pos) {
+        response->chunk_length = 0;
       }
 
       break;
