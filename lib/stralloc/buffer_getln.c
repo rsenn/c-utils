@@ -29,7 +29,8 @@ buffer_getln(buffer* b, stralloc* sa, int* gotit, int termchar) {
 
     if(!stralloc_catb(sa, p, r))
       return -1;
-    buffer_SEEK(b, r);
+
+    buffer_SKIP(b, r);
 
     if(off != r) {
       *gotit = 1;

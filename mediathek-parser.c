@@ -433,16 +433,16 @@ get_line(buffer* input, stralloc* sa) {
     if(buffer_prefetch(input, 6) < 6)
       break;
 
-    done = byte_equal(&input->x[input->p], 5, ",\"X\":");
+    done = byte_equal(buffer_PEEK(input), 5, ",\"X\":");
 
     if(!done)
 
-      done = byte_equal(&input->x[input->p], 6, ",\n\"X\":");
+      done = byte_equal(buffer_PEEK(input), 6, ",\n\"X\":");
 
-    stralloc_append(sa, &input->x[input->p]);
+    stralloc_append(sa, buffer_PEEK(input));
     buffer_skipc(input);
 
-    if(input->x[input->p] == '\n')
+    if(*buffer_PEEK(input) == '\n')
       buffer_skipc(input);
   }
 

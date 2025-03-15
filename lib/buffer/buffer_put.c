@@ -14,7 +14,7 @@ extern int buffer_stubborn(buffer_op_proto* op, fd_type fd, const char* buf, siz
 
 int
 buffer_put(buffer* b, const char* buf, size_t len) {
-  if(__unlikely(len > b->a - b->p)) { /* doesn't fit */
+  if(__unlikely(len > buffer_SPACE(b))) { /* doesn't fit */
 
     if(buffer_flush(b) == -1)
       return -1;
@@ -27,7 +27,7 @@ buffer_put(buffer* b, const char* buf, size_t len) {
     }
   }
 
-  byte_copy(b->x + b->p, len, buf);
+  byte_copy(buffer_PEEK(b), len, buf);
   b->p += len;
 
   return 0;

@@ -30,27 +30,31 @@ http_read_internal(fd_type fd, char* buf, size_t received, buffer* b) {
 
   switch(r->status) {
     case HTTP_RECV_HEADER: {
-      while(r->status == HTTP_RECV_HEADER)
-        if(http_read_header(h, &r->data, r) <= 0)
+      while(r->status == HTTP_RECV_HEADER) {
+        ssize_t ret;
+
+        if((ret = http_read_header(&h->q.in, &r->data, r)) <= 0)
           break;
+      }
 
       if(r->status == HTTP_RECV_DATA)
-        r->ptr = r->data.len;
+        r->headers_len = r->data.len;
 
       goto end;
     }
 
     case HTTP_RECV_DATA: {
-      if(r->chunk_length < r->content_length) {
-        const char* s = buffer_PEEK(in);
-        size_t remain = r->content_length - r->chunk_length;
+      size_t len = r->content_length;
+
+      if(len > r->data_pos) {
+        size_t remain = len - r->data_pos;
         size_t num = MIN(received, remain);
 
-        byte_copy(buf, num, s);
+        byte_copy(buf, num, buffer_PEEK(in));
 
-        in->p += num;
+        buffer_SKIP(in, num);
 
-        r->chunk_length += num;
+        r->data_pos += num;
         n = num;
       }
 
@@ -58,27 +62,27 @@ http_read_internal(fd_type fd, char* buf, size_t received, buffer* b) {
         case HTTP_TRANSFER_BOUNDARY: break;
 
         case HTTP_TRANSFER_CHUNKED: {
-          if(r->chunk_length >= r->content_length) {
-            size_t skip;
+          /* if(r->chunk_length >= r->content_length) {
+             size_t skip;
 
-            if((skip = scan_eolskip(&in->x[in->p], in->n - in->p))) {
-              buffer_skipn(in, skip);
-              r->chunk_length = 0;
-            }
-          }
+             if((skip = scan_eolskip(buffer_PEEK(in), buffer_LEN(in)))) {
+               buffer_SKIP(in, skip);
+               r->chunk_length = 0;
+             }
+           }*/
 
           if(r->chunk_length == 0) {
-            size_t i, bytes = in->n - in->p;
+            size_t i;
 
-            if((i = byte_chr(&in->x[in->p], bytes, '\n')) < bytes) {
-              i = scan_xlonglong(&in->x[in->p], &r->chunk_length);
+            if((i = byte_chr(buffer_PEEK(in), buffer_LEN(in), '\n')) < buffer_LEN(in)) {
+              i = scan_xlonglong(buffer_PEEK(in), &r->chunk_length);
 
-              buffer_skipn(in, i);
+              buffer_SKIP(in, i);
 
-              if((i = scan_eolskip(&in->x[in->p], in->n - in->p)))
-                buffer_skipn(in, i);
+              if((i = scan_eolskip(buffer_PEEK(in), buffer_LEN(in))))
+                buffer_SKIP(in, i);
 
-              // r->ptr = 0;
+              // r->headers_len = 0;
 
               if(r->chunk_length)
                 r->content_length += r->chunk_length;
@@ -89,8 +93,8 @@ http_read_internal(fd_type fd, char* buf, size_t received, buffer* b) {
               buffer_putspad(buffer_2, "\033[1;36mparsed chunk_length\033[0m ", 30);
               buffer_puts(buffer_2, "i=");
               buffer_putlong(buffer_2, i);
-              buffer_puts(buffer_2, " r->ptr=");
-              buffer_putulonglong(buffer_2, r->ptr);
+              buffer_puts(buffer_2, " r->headers_len=");
+              buffer_putulonglong(buffer_2, r->headers_len);
               buffer_puts(buffer_2, " r->chunk_length=");
               buffer_putulonglong(buffer_2, r->chunk_length);
               buffer_puts(buffer_2, " r->content_length=");
@@ -139,8 +143,8 @@ end:
   buffer_puts(buffer_2, " ret=");
   buffer_putlong(buffer_2, n);
 
-  buffer_puts(buffer_2, " ptr=");
-  buffer_putulonglong(buffer_2, r->ptr);
+  buffer_puts(buffer_2, " headers_len=");
+  buffer_putulonglong(buffer_2, r->headers_len);
   buffer_puts(buffer_2, " chunk_length=");
   buffer_putulonglong(buffer_2, r->chunk_length);
 

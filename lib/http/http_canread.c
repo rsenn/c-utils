@@ -93,7 +93,7 @@ http_canread(http* h, void (*wantread)(fd_type), void (*wantwrite)(fd_type)) {
     stralloc_nul(&r->data);
 
     if(len == 0) {
-      r->ptr = r->data.len;
+      r->headers_len = r->data.len;
       r->status = HTTP_RECV_DATA;
 
       if(h->q.in.p < h->q.in.n) {
@@ -126,7 +126,7 @@ http_canread(http* h, void (*wantread)(fd_type), void (*wantwrite)(fd_type)) {
       r->header(h, r->data.s + pos, len);
     }
 
-    /*   r->ptr = 0;
+    /*   r->headers_len = 0;
        stralloc_zero(&r->data);*/
   }
 

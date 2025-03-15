@@ -17,7 +17,8 @@ buffer_get(buffer* b, char* x, size_t len) {
 
     if(blen >= (ssize_t)len)
       blen = (ssize_t)len;
-    byte_copy(x, (size_t)blen, b->x + b->p);
+
+    byte_copy(x, (size_t)blen, buffer_PEEK(b));
     b->p += (size_t)blen;
     len -= (size_t)blen;
     x += blen;

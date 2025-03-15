@@ -12,7 +12,7 @@ buffer_flush(buffer* b) {
 
   b->p = 0;
 
-  if((r = buffer_stubborn(b->op, b->fd, b->x, p, b)) > 0)
+  if((r = buffer_stubborn(b->op, b->fd, buffer_BEGIN(b), p, b)) > 0)
     r = 0;
 
   return (int)r;

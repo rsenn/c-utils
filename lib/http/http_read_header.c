@@ -29,77 +29,69 @@ putline(const char* what, const char* b, ssize_t l, int i) {
 }
 
 ssize_t
-http_read_header(http* h, stralloc* sa, http_response* r) {
+http_read_header(buffer* in, stralloc* out, http_response* response) {
   ssize_t ret = 0, bytesread = 0;
-  buffer* in = &h->q.in;
 
-  while(r->status == HTTP_RECV_HEADER) {
-    size_t n, bytesavail = in->n - in->p, start = sa->len;
-    char* x;
+  while(response->status == HTTP_RECV_HEADER) {
+    size_t len, bytesavail = buffer_LEN(in), start = out->len;
+    char* buf;
 
-    if((ret = buffer_getline_sa(&h->q.in, sa)) <= 0)
+    if((ret = buffer_getline_sa(in, out)) <= 0)
       break;
 
-    bytesread += bytesavail - (in->n - in->p);
-    stralloc_nul(sa);
-    x = &sa->s[start];
+    bytesread += bytesavail - (buffer_LEN(in));
+    stralloc_nul(out);
+    buf = &out->s[start];
 
-    if((n = byte_trimr(x, sa->len - start, "\r\n", 2)) == 0) {
-      r->status = HTTP_RECV_DATA;
+    if((len = byte_trimr(buf, out->len - start, "\r\n", 2)) == 0) {
+      response->status = HTTP_RECV_DATA;
       ret = 1;
       break;
     }
 
 #ifdef DEBUG_HTTP
-    putline("Header", x, n, byte_count(sa->s, sa->len, '\n'));
+    putline("Header", buf, len, byte_count(out->s, out->len, '\n'));
 #endif
 
-    if(r->code == -1) {
-      if(str_start(sa->s, "HTTP")) {
+    if(response->code == -1) {
+      if(str_start(out->s, "HTTP")) {
         unsigned int code;
 
-        size_t p = scan_nonwhitenskip(sa->s, sa->len);
-        p += scan_whitenskip(&sa->s[p], sa->len - p);
+        size_t p = scan_nonwhitenskip(out->s, out->len);
+        p += scan_whitenskip(&out->s[p], out->len - p);
 
-        if(scan_uint(&sa->s[p], &code) > 0)
-          r->code = code;
+        if(scan_uint(&out->s[p], &code) > 0)
+          response->code = code;
       }
     }
 
-    if(sa->len - start >= 23 && !case_diffb(x, 23, "Content-Type: multipart")) {
-      size_t p = str_find(x, "boundary=");
+    if(out->len - start >= 23 && !case_diffb(buf, 23, "Content-Type: multipart")) {
+      size_t p = str_find(buf, "boundary=");
 
-      if(x[p])
-        stralloc_copys(&r->boundary, &x[p + str_len("boundary=")]);
+      if(buf[p])
+        stralloc_copys(&response->boundary, &buf[p + str_len("boundary=")]);
 
-      r->transfer = HTTP_TRANSFER_BOUNDARY;
-      // r->ptr = 0;
-    } else if(sa->len - start >= 15 && !case_diffb(x, 15, "Content-Length:")) {
-      scan_ulonglong(&x[16], &r->content_length);
-      r->transfer = HTTP_TRANSFER_LENGTH;
-      // r->ptr = 0;
-    } else if(sa->len - start >= 18 && !case_diffb(x, 18, "Transfer-Encoding:") && str_contains(x, "chunked")) {
-      // r->ptr = 0;
-      r->chunk_length = 0;
-      r->content_length = 0;
-      r->transfer = HTTP_TRANSFER_CHUNKED;
+      response->transfer = HTTP_TRANSFER_BOUNDARY;
+      // response->headers_len = 0;
+    } else if(out->len - start >= 15 && !case_diffb(buf, 15, "Content-Length:")) {
+      scan_ulonglong(&buf[16], &response->content_length);
+      response->transfer = HTTP_TRANSFER_LENGTH;
+      // response->headers_len = 0;
+    } else if(out->len - start >= 18 && !case_diffb(buf, 18, "Transfer-Encoding:") && str_contains(buf, "chunked")) {
+      // response->headers_len = 0;
+      response->chunk_length = 0;
+      response->content_length = 0;
+      response->transfer = HTTP_TRANSFER_CHUNKED;
     }
   }
 
-#ifdef DEBUG_HTTP
+#ifdef DEBUG_HTTP_
   buffer_putspad(buffer_2, "\x1b[1;33mhttp_read_header\x1b[0m", 30);
 
   buffer_puts(buffer_2, " bytesread=");
   buffer_putlong(buffer_2, bytesread);
   buffer_puts(buffer_2, " ret=");
   buffer_putlong(buffer_2, ret);
-
-  if(ret < 0) {
-    buffer_puts(buffer_2, " err=");
-    buffer_putstr(buffer_2, http_strerror(h, ret));
-  }
-
-  http_dump(h);
 #endif
 
   return ret > 0 && bytesread > 0 ? bytesread : ret;

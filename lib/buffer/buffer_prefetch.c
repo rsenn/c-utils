@@ -6,32 +6,31 @@ ssize_t buffer_stubborn_read(buffer_op_proto*, fd_type fd, const void* buf, size
 
 int
 buffer_prefetch(buffer* b, size_t len) {
-  size_t n = buffer_LEN(b);
-  size_t m = len - n;
+  size_t m = len - buffer_LEN(b);
 
-  if(buffer_LEN(b) && m > buffer_AVAIL(b)) {
+  if(m > buffer_HEADROOM(b)) {
     if((buffer_op_proto*)b->op == (buffer_op_proto*)(void*)&buffer_dummyreadmmap || b->deinit == (void (*)()) & buffer_munmap)
       return buffer_LEN(b);
-    byte_copy(b->x, n, buffer_PEEK(b));
-    b->n -= b->p;
-    b->p = 0;
+
+    if(b->p > 0)
+      buffer_MOVE(b);
   }
 
-  if(m > buffer_AVAIL(b))
-    m = buffer_AVAIL(b);
+  if(m > buffer_HEADROOM(b))
+    if(!(m = buffer_HEADROOM(b)))
+      return -1;
 
-  if(m == 0)
-    return -1;
-
-  while(b->n < b->p + len) {
+  while(b->p + len > b->n) {
     int w;
 
-    if((w = buffer_stubborn_read(b->op, b->fd, buffer_END(b), b->a - b->n, b)) < 0)
+    if((w = buffer_stubborn_read(b->op, b->fd, buffer_END(b), buffer_HEADROOM(b), b)) < 0)
       return -1;
-    b->n += w;
 
     if(!w)
       break;
+
+    buffer_SEEK(b, w);
   }
-  return b->n - b->p;
+
+  return buffer_LEN(b);
 }

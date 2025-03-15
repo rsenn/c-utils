@@ -9,9 +9,10 @@ buffer_skipc(buffer* b) {
       return r;
   }
 
-  if(b->p < b->n) {
+  if(!buffer_EMPTY(b)) {
     ++b->p;
     return 1;
   }
+
   return 0;
 }

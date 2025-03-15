@@ -128,13 +128,25 @@ int buffer_prefetch(buffer*, size_t n);
 #define buffer_EOF(b) (buffer_feed((b)) == 0)
 #define buffer_PEEK(b) ((b)->x + (b)->p)
 #define buffer_LEN(b) ((b)->n - (b)->p)
-#define buffer_SEEK(b, len) ((b)->p += (len))
+#define buffer_SKIP(b, len) ((b)->p += (len))
+#define buffer_SEEK(b, len) ((b)->n += (len))
 
-#define buffer_GETC(b, c) (((b)->p < (b)->n) ? (*(c) = *buffer_PEEK(b), buffer_SEEK((b), 1), 1) : buffer_get((b), (c), 1))
+#define buffer_EMPTY(b) ((b)->p == (b)->n)
 
-#define buffer_BEGIN(b) buffer_PEEK(b)
+#define buffer_GETC(b, c) (((b)->p < (b)->n) ? (*(c) = *buffer_PEEK(b), buffer_SKIP((b), 1), 1) : buffer_get((b), (c), 1))
+
+#define buffer_BEGIN(b) ((b)->x)
 #define buffer_END(b) ((b)->x + (b)->n)
-#define buffer_AVAIL(b) ((b)->a - (b)->n)
+#define buffer_HEADROOM(b) ((b)->a - (b)->n)
+#define buffer_SPACE(b) ((b)->a - (b)->p)
+
+#define buffer_MOVE(b) \
+  do { \
+    if(buffer_LEN(b) > 0) \
+      byte_copy(b->x, buffer_LEN(b), buffer_PEEK(b)); \
+    b->n -= b->p; \
+    b->p = 0; \
+  } while(0);
 
 int buffer_putulong(buffer*, unsigned long int l);
 int buffer_put8long(buffer*, unsigned long int l);

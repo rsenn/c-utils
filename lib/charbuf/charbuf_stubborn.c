@@ -13,7 +13,7 @@ charbuf_stubborn_read(charbuf* b, size_t max) {
     return -1;
 
   for(;;) {
-    n = b->a - b->p;
+    n = buffer_SPACE(b);
 
     if(n >= max)
       n = max;

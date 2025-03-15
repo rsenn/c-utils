@@ -1,15 +1,15 @@
 #include "../buffer.h"
 
 int
-buffer_skipn(buffer* b, size_t n) {
-  if(b->p + n > b->n) {
-    if(buffer_prefetch(b, n) < n)
+buffer_skipn(buffer* b, size_t len) {
+  if(b->p + len > b->n) 
+    if(buffer_prefetch(b, len) < len)
       return 0;
+
+  if(b->p + len <= b->n) {
+    b->p += len;
+    return len;
   }
 
-  if(b->p + n <= b->n) {
-    b->p += n;
-    return n;
-  }
   return 0;
 }

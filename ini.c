@@ -191,7 +191,7 @@ ini_read(buffer* b, ini_section_t** ptr) {
   x = buffer_peek(b);
 
   if(x[0] == '\377' && x[1] == '\376') {
-    buffer_skipn(b, 2);
+    buffer_SKIP(b, 2);
     getc_fn = &getchar_utf16;
   } else if(x[1] == '\0') {
     getc_fn = &getchar_utf16;

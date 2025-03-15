@@ -60,12 +60,12 @@ buffer_bzwrite_op(fd_type fd, void* data, size_t n, buffer* b) {
   bz_stream* strm = &ctx->strm;
   int ret;
   buffer* other = ctx->b;
-  ssize_t r, a = other->a - other->p;
+  ssize_t r, a = buffer_SPACE(other);
   int eof = 0;
 
   strm->next_in = data;
   strm->avail_in = n;
-  strm->next_out = (char*)&other->x[other->p];
+  strm->next_out = (char*)buffer_PEEK(other);
   strm->avail_out = a;
 
   ctx->a = BZ_RUN;
@@ -76,7 +76,7 @@ buffer_bzwrite_op(fd_type fd, void* data, size_t n, buffer* b) {
     r = n - strm->avail_in;
 
     if(r > 0) {
-      a = (other->a - other->p) - strm->avail_out;
+      a = (buffer_SPACE(other)) - strm->avail_out;
       other->p += a;
       return r;
     }
@@ -97,12 +97,12 @@ buffer_bz_close(buffer* b) {
 
   ctx->a = BZ_FLUSH;
 
-  strm->next_in = (char*)&b->x[b->p];
-  strm->avail_in = b->n - b->p;
+  strm->next_in = (char*)buffer_PEEK(b);
+  strm->avail_in = buffer_LEN(b);
 
   do {
-    strm->next_out = (char*)&other->x[other->p];
-    strm->avail_out = a = other->a - other->p;
+    strm->next_out = (char*)buffer_PEEK(other);
+    strm->avail_out = a = buffer_SPACE(other);
 
     ret = BZ2_bzCompress(strm, ctx->a);
 

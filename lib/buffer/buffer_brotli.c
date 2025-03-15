@@ -127,8 +127,8 @@ buffer_brotli_close(buffer* b) {
 
   r = 0;
   next_in = (const uint8*)&b->x[b->p];
-  avail_in = b->n - b->p;
-  a = other->a - other->p;
+  avail_in = buffer_LEN(b);
+  a = buffer_SPACE(other);
   next_out = (uint8*)&other->x[other->p];
   avail_out = a;
 

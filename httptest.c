@@ -349,7 +349,7 @@ http_process(http* h, strlist* urls, uri_t* uri) {
   size_t len;
   http_response* r = h->response;
 
-  const char* type = http_get_header(r->data.s, r->ptr, "Content-Type", &len);
+  const char* type = http_get_header(r->data.s, r->headers_len, "Content-Type", &len);
   size_t typelen = type ? str_chrs(type, "\r\n\0", 3) : 0;
 
   size_t received = r->data.len;
@@ -362,7 +362,7 @@ http_process(http* h, strlist* urls, uri_t* uri) {
 
   buffer_putnlflush(buffer_2);
   buffer_puts(buffer_2, "PTR: ");
-  buffer_putulong(buffer_2, r->ptr);
+  buffer_putulong(buffer_2, r->headers_len);
   buffer_putnlflush(buffer_2);
   buffer_puts(buffer_2, "TYPE: ");
   buffer_put(buffer_2, type, typelen);
@@ -372,7 +372,7 @@ http_process(http* h, strlist* urls, uri_t* uri) {
   buffer_puts(buffer_2, "HEADERS: ");
   put_indented(buffer_2, stralloc_begin(&r->data), pos);
   buffer_puts(buffer_2, "RESPONSE LENGTH: ");
-  buffer_putulonglong(buffer_2, r->data.len - r->ptr);
+  buffer_putulonglong(buffer_2, r->data.len - r->headers_len);
   buffer_puts(buffer_2, "\nRESPONSE DATA: ");
 
   if(0 && byte_finds(type, typelen, "html") < typelen || byte_finds(type, typelen, "xml") < typelen) {
@@ -505,7 +505,7 @@ main(int argc, char* argv[]) {
 
       if(h.response->code == 302) {
         size_t sz;
-        s = http_get_header(h.response->data.s, h.response->ptr, "Location", &sz);
+        s = http_get_header(h.response->data.s, h.response->headers_len, "Location", &sz);
         buffer_puts(buffer_2, "Location: ");
         buffer_put(buffer_2, s, sz);
         buffer_putnlflush(buffer_2);
@@ -547,7 +547,7 @@ main(int argc, char* argv[]) {
 
     if(h.response->data.len) {
       const char* url;
-      queue_entry** ptr = 0;
+      queue_entry** headers_len = 0;
 
       // buffer_fromsa(&data, &h.response->data);
       http_process(&h, &urls, &uri);
@@ -555,8 +555,8 @@ main(int argc, char* argv[]) {
       strlist_sort(&urls, 0);
 
       strlist_foreach_s(&urls, url) {
-        queue_entry* entry = queue_put(ptr, url);
-        ptr = &entry->next;
+        queue_entry* entry = queue_put(headers_len, url);
+        headers_len = &entry->next;
       }
 
 #ifdef DEBUG_OUTPUT_

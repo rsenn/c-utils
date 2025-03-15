@@ -26,14 +26,14 @@ putnum(const char* what, ssize_t n) {
 }
 
 ssize_t
-http_read(fd_type fd, char* buf, size_t len, void* ptr) {
-  http* h = ((buffer*)ptr)->cookie ? ((buffer*)ptr)->cookie : (http*)(ptrdiff_t)fd;
-  size_t bytes, received, pos = 0, end;
+http_read(fd_type fd, char* buf, size_t len, void* headers_len) {
+  http* h = ((buffer*)headers_len)->cookie ? ((buffer*)headers_len)->cookie : (http*)(ptrdiff_t)fd;
   ssize_t n, ret = 0;
   const char *x, *location = 0;
   buffer* b = &h->q.in;
   http_response* r = h->response;
   http_status st = r->status;
+  size_t bytes, received, pos = 0, end;
 
   if(!len)
     return 0;
@@ -62,15 +62,7 @@ again:
 
   received = n - bytes;
 
-  /*if(r->status == HTTP_RECV_HEADER) {
-    if((ret = http_read_header(h, &r->data, r)) <= 0)
-      goto end;
-    ret = -1;
-    errno = EAGAIN;
-  }*/
-
   if((received > 0 || (r->status == HTTP_RECV_HEADER || r->status == HTTP_RECV_DATA))) {
-
     ret = http_read_internal(h->sock, buf, received, &h->q.in);
     goto end;
   }
@@ -80,10 +72,10 @@ again:
 
   if(r->status == HTTP_RECV_DATA) {
     n = MIN(n, len);
-    byte_copy(buf, n, buffer_BEGIN(b));
+    byte_copy(buf, n, buffer_PEEK(b));
 
     ret = n;
-    buffer_skipn(b, n);
+    buffer_SKIP(b, n);
   }
 
   if((r->status == HTTP_STATUS_CLOSED) || r->status == HTTP_STATUS_FINISH)
@@ -97,7 +89,7 @@ end:
   if(r->code == 302) {
     size_t len;
 
-    location = http_get_header(r->data.s, r->ptr, "Location", &len);
+    location = http_get_header(r->data.s, r->headers_len, "Location", &len);
     end = len; //  = str_chrs(location, "\r\n\0", 3);
 
     if((pos = byte_finds(location, len, "://"))) {

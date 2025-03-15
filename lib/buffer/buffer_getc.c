@@ -9,7 +9,7 @@ buffer_getc(buffer* b, char* x) {
     if((blen = buffer_feed(b)) <= 0)
       return blen;
   }
-  *x = b->x[b->p];
+  *x = *buffer_PEEK(b);
   ++b->p;
   return 1;
 }

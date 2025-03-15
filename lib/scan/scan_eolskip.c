@@ -8,5 +8,6 @@ scan_eolskip(const char* s, size_t limit) {
     n += 2;
   else if(n < limit && s[0] == '\n')
     n += 1;
+
   return n;
 }

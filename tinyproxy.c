@@ -1149,7 +1149,7 @@ server_loop() {
 
                      if(b->p) {
                        other = socket_other(sb->sock);
-                       r = io_tryread(other->sock, &b->x[b->p], b->a -
+                       r = io_tryread(other->sock, buffer_PEEK(b), b->a -
              b->p); if(r > 0) { b->p += r; continue;
                        }
                      }

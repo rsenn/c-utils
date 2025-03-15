@@ -101,11 +101,7 @@ http_socket_read(fd_type fd, void* buf, size_t len, void* b) {
       r->status = HTTP_STATUS_ERROR;
   }
 
-  if(ret > 0)
-    if(h->response)
-      h->response->received += ret;
-
-#ifdef DEBUG_HTTP
+#ifdef DEBUG_HTTP_
   buffer_putspad(buffer_2, "\x1b[38;5;64mhttp_socket_read\x1b[0m", 30);
   buffer_puts(buffer_2, " ret=");
   buffer_putlong(buffer_2, ret);
@@ -135,7 +131,7 @@ http_socket_read(fd_type fd, void* buf, size_t len, void* b) {
   }*/
   //  iret = http_read_internal(fd, (char*)buf, ret, &h->q.in);
 
-  if(ret == 0) {
+  if(ret <= 0) {
     io_dontwantwrite(fd);
     io_dontwantread(fd);
   }
@@ -184,7 +180,7 @@ http_socket_write(fd_type fd, void* buf, size_t len, void* b) {
       r->status = HTTP_STATUS_ERROR;
   }
 
-#ifdef DEBUG_HTTP
+#ifdef DEBUG_HTTP_
   buffer_putspad(buffer_2, "\x1b[38;5;88mhttp_socket_write\x1b[0m ", 30);
   buffer_puts(buffer_2, "s=");
   buffer_putlong(buffer_2, h->sock);
@@ -196,26 +192,13 @@ http_socket_write(fd_type fd, void* buf, size_t len, void* b) {
     buffer_puts(buffer_2, unix_errno(errno));
   }
 
-  if(h->response) {
-    buffer_puts(buffer_2, " transfer=");
-    buffer_puts(buffer_2, "HTTP_TRANSFER_");
-    buffer_puts(buffer_2,
-                ((const char* const[]){
-                    "UNDEF",
-                    "CHUNKED",
-                    "LENGTH",
-                    "BOUNDARY",
-                    0,
-                })[h->response->transfer]);
-
-    buffer_puts(buffer_2, " status=");
-    buffer_puts(buffer_2,
-                ((const char* const[]){
-                    "0", "HTTP_RECV_HEADER", "HTTP_RECV_DATA", "HTTP_STATUS_CLOSED", "HTTP_STATUS_ERROR", "HTTP_STATUS_BUSY", "HTTP_STATUS_FINISH", 0})[h->response->status]);
-  }
-
-  buffer_putnlflush(buffer_2);
+  http_dump(h);
 #endif
+
+  if(ret < 0) {
+    io_dontwantwrite(fd);
+    io_dontwantread(fd);
+  }
 
   return ret;
 }

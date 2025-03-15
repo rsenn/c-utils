@@ -139,7 +139,7 @@ xml_read_callback(xmlreader* r, xml_read_callback_fn* fn) {
     }
     hmap_init(XML_HMAP_BUCKETS, &r->attrmap);
 
-    if(b->n - b->p <= 1)
+    if(buffer_LEN(b) <= 1)
       break;
 
     /*  if(n <= 0)

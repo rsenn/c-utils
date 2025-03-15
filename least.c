@@ -317,16 +317,16 @@ handle_key_modifier(buffer* b) {
   float multiplier = 1;
 
   if(buffer_LEN(b) && (i = scan_ulong(buffer_PEEK(b), &key))) {
-    buffer_SEEK(b, i);
+    buffer_SKIP(b, i);
 
     if(buffer_LEN(b) > 1 && *buffer_PEEK(b) == ';') {
-      buffer_SEEK(b, 1);
+      buffer_SKIP(b, 1);
       i = scan_ulong(buffer_PEEK(b), &modifier);
-      buffer_SEEK(b, i);
+      buffer_SKIP(b, i);
     }
 
     if(buffer_LEN(b) && *buffer_PEEK(b) == '~')
-      buffer_SEEK(b, 1);
+      buffer_SKIP(b, 1);
 
     switch(modifier) {
       case 2 /*shift*/: multiplier = 10; break;

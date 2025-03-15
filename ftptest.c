@@ -350,7 +350,7 @@ list_ftp(ftp_client* ftp) {
         buffer_feed(b);
         stralloc_zero(&meld);
 
-        while(b->p < b->n && byte_chr(&b->x[b->p], b->n - b->p, '\n') < (b->n - b->p)) {
+        while(!buffer_EMPTY(b) && byte_chr(buffer_PEEK(b), buffer_LEN(b), '\n') < (buffer_LEN(b))) {
           buffer_getline_sa(b, &meld);
         }
 
@@ -364,7 +364,7 @@ list_ftp(ftp_client* ftp) {
         b = &in;
         buffer_feed(b);
 
-        while(b->p < b->n && byte_chr(&b->x[b->p], b->n - b->p, '\n') < (b->n - b->p)) {
+        while(!buffer_EMPTY(b) && byte_chr(buffer_PEEK(b), buffer_LEN(b), '\n') < (buffer_LEN(b))) {
           int done = 0;
 
           buffer_getnewline_sa(b, &meld);

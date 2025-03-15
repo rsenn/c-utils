@@ -53,7 +53,7 @@ buffer_lzmaread_op(fd_type fd, void* data, size_t n, buffer* b) {
 
   if(/* strm->avail_out == 0 */
      ret == LZMA_OK || ret == LZMA_STREAM_END) {
-    buffer_SEEK(ctx->b, a - strm->avail_in);
+    buffer_SKIP(ctx->b, a - strm->avail_in);
     r = n - strm->avail_out;
 
   } else if(ret != LZMA_OK) {
@@ -101,12 +101,12 @@ buffer_lzmawrite_op(fd_type fd, void* data, size_t n, buffer* b) {
   lzma_stream* strm = &ctx->strm;
   lzma_ret ret;
   buffer* other = ctx->b;
-  ssize_t r, a = other->a - other->p;
+  ssize_t r, a = buffer_SPACE(other);
   int eof = 0;
 
   strm->next_in = data;
   strm->avail_in = n;
-  strm->next_out = (uint8*)&other->x[other->p];
+  strm->next_out = (uint8*)buffer_PEEK(other);
   strm->avail_out = a;
 
   ctx->a = LZMA_RUN;
@@ -117,7 +117,7 @@ buffer_lzmawrite_op(fd_type fd, void* data, size_t n, buffer* b) {
     r = n - strm->avail_in;
 
     if(r > 0) {
-      a = (other->a - other->p) - strm->avail_out;
+      a = (buffer_SPACE(other)) - strm->avail_out;
       other->p += a;
     }
 
@@ -170,12 +170,12 @@ buffer_lzma_close(buffer* b) {
 
   ctx->a = LZMA_FINISH;
 
-  strm->next_in = (uint8*)&b->x[b->p];
-  strm->avail_in = b->n - b->p;
+  strm->next_in = (uint8*)buffer_PEEK(b);
+  strm->avail_in = buffer_LEN(b);
 
   do {
-    strm->next_out = (uint8*)&other->x[other->p];
-    strm->avail_out = a = other->a - other->p;
+    strm->next_out = (uint8*)buffer_PEEK(other);
+    strm->avail_out = a = buffer_SPACE(other);
 
     ret = lzma_code(strm, ctx->a);
   } while(ret != LZMA_STREAM_END);
@@ -206,10 +206,10 @@ buffer_lzma_close(buffer* b) {
                                      "LZMA_PROG_ERROR"})[ret]);
 
   buffer_puts(buffer_2, " avail_in=");
-  buffer_putlong(buffer_2, (b->n - b->p));
+  buffer_putlong(buffer_2, (buffer_LEN(b)));
 
   buffer_puts(buffer_2, " consumed=");
-  buffer_putlong(buffer_2, (b->n - b->p) - strm->avail_in);
+  buffer_putlong(buffer_2, (buffer_LEN(b)) - strm->avail_in);
 
   buffer_putnlflush(buffer_2);
 #endif

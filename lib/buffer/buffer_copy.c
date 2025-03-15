@@ -15,6 +15,6 @@ buffer_copy(buffer* out, buffer* in) {
 
     if(buffer_put(out, x, n) == -1)
       return -3;
-    buffer_SEEK(in, n);
+    buffer_SKIP(in, n);
   }
 }
