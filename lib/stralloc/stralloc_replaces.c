@@ -4,14 +4,10 @@
 
 int
 stralloc_replaces(stralloc* sa, const char* from, const char* to) {
-  size_t p;
   char* x = sa->s;
-  size_t tlen, flen, n = sa->len;
+  size_t tlen = str_len(to), flen = str_len(from), n = sa->len;
 
-  flen = str_len(from);
-  tlen = str_len(to);
-
-  for(p = 0; p < sa->len;) {
+  for(size_t p = 0; p < sa->len;) {
     size_t i = byte_findb(&sa->s[p], sa->len - p, from, flen);
     p += i;
 

@@ -27,9 +27,8 @@ readclose_append(int64 fd, stralloc* sa, size_t bufsize) {
       close(fd);
       return -1;
     }
-    r = read(fd, sa->s + sa->len, bufsize);
 
-    if(r == -1)
+    if((r = read(fd, sa->s + sa->len, bufsize)) == -1)
 
       if(errno == EINTR)
         continue;
@@ -38,6 +37,7 @@ readclose_append(int64 fd, stralloc* sa, size_t bufsize) {
       close(fd);
       return r;
     }
+
     sa->len += (size_t)r;
   }
 }
@@ -48,5 +48,6 @@ readclose(int64 fd, stralloc* sa, size_t bufsize) {
     close(fd);
     return -1;
   }
+
   return readclose_append(fd, sa, bufsize);
 }

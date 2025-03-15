@@ -4,10 +4,10 @@
 
 size_t
 stralloc_case_starts(const stralloc* sa, const char* prefix) {
-  unsigned int prefix_len;
-  prefix_len = str_len(prefix);
+  size_t prefix_len;
 
-  if(sa->len < prefix_len)
+  if(sa->len < (prefix_len = str_len(prefix)))
     return 0;
+
   return byte_case_equal(sa->s, prefix_len, prefix);
 }

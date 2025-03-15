@@ -51,8 +51,8 @@ http_dump(http* h) {
     }
     buffer_puts(buffer_2, " err=");
     buffer_putlong(buffer_2, h->response->err);
-    buffer_puts(buffer_2, " received=");
-    buffer_putlong(buffer_2, h->response->received);
+    buffer_puts(buffer_2, " data_pos=");
+    buffer_putlong(buffer_2, h->response->data_pos);
 
     if(h->response->data.len > 0) {
       buffer_puts(buffer_2, " data='");

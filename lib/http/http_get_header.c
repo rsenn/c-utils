@@ -6,16 +6,13 @@
 
 char*
 http_get_header(char* data, size_t n, const char* name, size_t* result_len) {
-  size_t len, p, pos, namelen = str_len(name);
+  size_t len, p, namelen = str_len(name);
   char* x;
 
-  if((pos = byte_chr(data, n, '\n')) < n)
-    ++pos;
+  if((p = byte_chr(data, n, '\n')) < n)
+    ++p;
 
-  len = n - pos;
-  x = &x[pos];
-
-  while(len > 0) {
+  for(len = n - p, x = &data[p]; len > 0;) {
     if((p = byte_chr(x, len, ':')) == namelen && !case_diffb(name, p, x)) {
       x += p;
       len -= p;

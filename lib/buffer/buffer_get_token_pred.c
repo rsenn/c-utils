@@ -20,6 +20,6 @@ buffer_get_token_pred(buffer* b, char* x, size_t n, string_predicate p, void* ar
 
     ++x;
   }
-  
+
   return bytes;
 }

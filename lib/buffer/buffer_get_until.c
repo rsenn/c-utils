@@ -17,7 +17,7 @@ buffer_get_until(buffer* b, char* x, size_t n, const char* charset, size_t setle
       break;
     }
 
-   ++ bytes;
+    ++bytes;
 
     if(byte_chr(charset, setlen, *x++) < setlen)
       break;

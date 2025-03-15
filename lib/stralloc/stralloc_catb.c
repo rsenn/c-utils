@@ -7,11 +7,13 @@
  * stralloc_copyb. If it runs out of memory, stralloc_catb leaves sa
  * alone and returns 0. */
 int
-stralloc_catb(stralloc* sa, const char* buf, size_t len) {
-  if(stralloc_readyplus(sa, len)) {
-    byte_copy(sa->s + sa->len, len, buf);
-    sa->len += len;
+stralloc_catb(stralloc* sa, const char* x, size_t n) {
+  if(stralloc_readyplus(sa, n)) {
+    byte_copy(sa->s + sa->len, n, x);
+    sa->len += n;
+
     return 1;
   }
+
   return 0;
 }

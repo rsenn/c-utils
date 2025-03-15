@@ -18,13 +18,14 @@ buffer_gettok_sa(buffer* b, stralloc* sa, const char* charset, size_t setlen) {
 
     if(!stralloc_readyplus(sa, 1))
       goto nomem;
+
     stralloc_APPEND(sa, &c);
 
     if(buffer_skipc(b) <= 0)
       return 0;
   }
-  return i;
 
+  return i;
 nomem:
   errno = ENOMEM;
   return -1;

@@ -19,12 +19,12 @@ json_tostring(jsonval val, stralloc* sa) {
     }
     case JSON_DOUBLE: {
       stralloc_readyplus(sa, 63);
-      sa->len += fmt_double(&sa->s[sa->len], val.doublev, 0, 0);
+      sa->len += fmt_double(stralloc_end(sa), val.doublev, 0, 0);
       break;
     }
     case JSON_INT: {
       stralloc_readyplus(sa, FMT_LONG);
-      sa->len += fmt_longlong(&sa->s[sa->len], val.intv);
+      sa->len += fmt_longlong(stralloc_end(sa), val.intv);
       break;
     }
     case JSON_STRING: {

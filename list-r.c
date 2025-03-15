@@ -574,7 +574,7 @@ make_taia(stralloc* out, const uint64* epoch) {
     taia_now(&t);
   taia_pack(tpack, &t);
   stralloc_readyplus(out, 25);
-  s = &out->s[out->len];
+  s = stralloc_end(out);
   s[0] = '@';
 
   for(i = 0; i < 12; ++i) {

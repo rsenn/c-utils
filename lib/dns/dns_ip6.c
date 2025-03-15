@@ -85,14 +85,17 @@ dns_ip6(stralloc* out, stralloc* fqdn) {
 
   if(!stralloc_readyplus(fqdn, 1))
     return -1;
+
   fqdn->s[fqdn->len] = 0;
 
   if((i = scan_ip6(fqdn->s, ip))) {
     if(fqdn->s[i])
       return -1;
+
     stralloc_copyb(out, ip, 16);
     return 0;
   }
+
   code = 0;
 
   for(i = 0; i <= fqdn->len; ++i) {
@@ -124,7 +127,6 @@ dns_ip6(stralloc* out, stralloc* fqdn) {
       return -1;
 
     if(dns_resolve(q, DNS_T_AAAA) != -1)
-
       if(dns_ip6_packet_add(out, dns_resolve_tx.packet, dns_resolve_tx.packetlen) != -1) {
         dns_transmit_free(&dns_resolve_tx);
         dns_domain_free(&q);
@@ -134,11 +136,11 @@ dns_ip6(stralloc* out, stralloc* fqdn) {
       return -1;
 
     if(dns_resolve(q, DNS_T_A) != -1)
-
       if(dns_ip6_packet_add(out, dns_resolve_tx.packet, dns_resolve_tx.packetlen) != -1) {
         dns_transmit_free(&dns_resolve_tx);
         dns_domain_free(&q);
       }
+
     return out->a > 0 ? 0 : -1;
   }
 

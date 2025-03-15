@@ -9,7 +9,7 @@ stralloc_utf8_to_latin1(stralloc* out, const char* s, size_t len) {
 
   stralloc_readyplus(out, n);
 
-  p = &out->s[out->len];
+  p = stralloc_end(out);
 
   while(n > 0) {
     i = scan_latin1_utf8(x, n, p);
@@ -20,7 +20,7 @@ stralloc_utf8_to_latin1(stralloc* out, const char* s, size_t len) {
     ++p;
   }
 
-  n = p - &out->s[out->len];
+  n = p - stralloc_end(out);
   out->len += n;
   return n;
 }

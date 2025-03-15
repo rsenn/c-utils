@@ -8,13 +8,14 @@
  * stralloc_copyb. If it runs out of memory, stralloc_catb leaves sa
  * alone and returns 0. */
 int
-stralloc_write(int fd, const char* buf, size_t len, buffer* b) {
+stralloc_write(int fd, const char* x, size_t n, buffer* b) {
   stralloc* sa = (stralloc*)b->cookie;
 
-  if(stralloc_readyplus(sa, len)) {
-    byte_copy(sa->s + sa->len, len, buf);
-    sa->len += len;
-    return len;
+  if(stralloc_readyplus(sa, n)) {
+    byte_copy(sa->s + sa->len, n, x);
+    sa->len += n;
+    return n;
   }
+
   return 0;
 }

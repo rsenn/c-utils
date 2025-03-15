@@ -9,6 +9,7 @@
 int
 stralloc_expand(stralloc* sa) {
   size_t n = 0;
+
 #if WINDOWS
   char* s;
   stralloc_nul(sa);
@@ -21,16 +22,16 @@ stralloc_expand(stralloc* sa) {
   do {
     /* reserve some space */
     stralloc_ready(sa, n);
+
     /* repeat until we have reserved enough space */
   } while((n = ExpandEnvironmentStrings(s, sa->s, sa->a)) > sa->a);
 
   /* now truncate to effective length */
-
   if(n > 0)
     stralloc_trunc(sa, n - 1);
 
   free(s);
-
 #endif
+
   return n;
 }

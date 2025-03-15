@@ -8,11 +8,11 @@
 #include "../buffer.h"
 
 static ssize_t
-b0read(fd_type fd, char* buf, size_t len) {
+b0read(fd_type fd, char* x, size_t n) {
   if(buffer_flush(buffer_1) < 0)
     return -1;
 
-  return read(fd, buf, len);
+  return read(fd, x, n);
 }
 
 char buffer_0_space[BUFFER_INSIZE];

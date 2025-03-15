@@ -129,6 +129,7 @@ int buffer_prefetch(buffer*, size_t n);
 #define buffer_PEEK(b) ((b)->x + (b)->p)
 #define buffer_LEN(b) ((b)->n - (b)->p)
 #define buffer_SKIP(b, len) ((b)->p += (len))
+
 #define buffer_SEEK(b, len) ((b)->n += (len))
 
 #define buffer_EMPTY(b) ((b)->p == (b)->n)
@@ -142,10 +143,17 @@ int buffer_prefetch(buffer*, size_t n);
 
 #define buffer_MOVE(b) \
   do { \
-    if(buffer_LEN(b) > 0) \
-      byte_copy(b->x, buffer_LEN(b), buffer_PEEK(b)); \
-    b->n -= b->p; \
-    b->p = 0; \
+    size_t len; \
+    if((len = buffer_LEN(b)) > 0) \
+      byte_copy((b)->x, len, buffer_PEEK(b)); \
+    (b)->n -= (b)->p; \
+    (b)->p = 0; \
+  } while(0);
+
+#define buffer_SCAN(b, fn) \
+  do { \
+    size_t len = (fn)(buffer_PEEK(b), buffer_LEN(b)); \
+    buffer_SKIP((b), (len)); \
   } while(0);
 
 int buffer_putulong(buffer*, unsigned long int l);

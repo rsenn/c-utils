@@ -6,9 +6,9 @@
 int
 stralloc_append(stralloc* sa, const char* in) {
   if(stralloc_readyplus(sa, 1)) {
-    sa->s[sa->len] = *in;
-    ++sa->len;
+    sa->s[sa->len++] = *in;
     return 1;
   }
+
   return 0;
 }

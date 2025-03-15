@@ -16,7 +16,7 @@ wcs_to_u8sa(stralloc* sa, const wchar_t* in) {
     if(ulen >= 0) {
       if(!stralloc_readyplus(sa, ulen))
         break;
-      clen += wc_to_u8(&sa->s[sa->len], w);
+      clen += wc_to_u8(stralloc_end(sa), w);
     } else {
       if(!stralloc_cats(sa, "&#x00;"))
         break;

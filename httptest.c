@@ -491,10 +491,6 @@ main(int argc, char* argv[]) {
       int doread = 1;
       fd_type sock;
 
-#ifdef DEBUG_OUTPUT
-      buffer_putsflush(buffer_2, "httptest \n");
-#endif
-
       io_wait();
 
       /*if(io_waituntil2(-1) == -1) {

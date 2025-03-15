@@ -9,10 +9,9 @@ stralloc_replace(stralloc* sa, size_t pos, size_t len, const char* to, size_t to
 
   assert(pos + len <= sa->len);
 
-  if(tolen > len) {
+  if(tolen > len)
     if(!stralloc_readyplus(sa, tolen - len))
       return 0;
-  }
 
   x = &sa->s[pos];
   n = sa->len - pos;

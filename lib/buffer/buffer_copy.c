@@ -2,10 +2,10 @@
 
 int
 buffer_copy(buffer* out, buffer* in) {
-  ssize_t r;
-  char* x;
-
   for(;;) {
+    ssize_t r;
+    char* x;
+
     if((r = buffer_feed(in)) < 0)
       return -2;
 

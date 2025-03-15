@@ -5,6 +5,7 @@ byte_trimr(const char* x, size_t n, const char* trimchars, unsigned int trimchar
   while(n > 0) {
     if(byte_chr(trimchars, trimcharslen, x[n - 1]) == trimcharslen)
       break;
+
     --n;
   }
 

@@ -21,31 +21,31 @@
 #define __unlikely(x) (x)
 #endif
 
-int buffer_stubborn(buffer_op_proto*, fd_type fd, const char* buf, size_t len, void* b);
+int buffer_stubborn(buffer_op_proto*, fd_type, const char*, size_t, void*);
 
 ssize_t
-buffer_putflush(buffer* b, const char* x, size_t len) {
+buffer_putflush(buffer* b, const char* x, size_t n) {
   /* Since we know we are going to flush anyway, let's see if we can
    * optimize a bit */
 
   if(!b->p) /* if the buffer is empty, just call buffer_stubborn directly
              */
-    return buffer_stubborn(b->op, b->fd, x, len, b);
+    return buffer_stubborn(b->op, b->fd, x, n, b);
 #if !defined(_DEBUG) && !WINDOWS_NATIVE && defined(HAVE_WRITEV)
   if(b->op == (buffer_op_proto*)&write) {
     struct iovec v[2];
     ssize_t w;
-    size_t cl = b->p + len;
-    
+    size_t cl = b->p + n;
+
     v[0].iov_base = b->x;
     v[0].iov_len = b->p;
     v[1].iov_base = (char*)x;
-    v[1].iov_len = len;
+    v[1].iov_len = n;
 
     while((w = writev(b->fd, v, 2)) < 0) {
       if(errno == EINTR)
         continue;
-     
+
       return -1;
     }
 
@@ -62,13 +62,13 @@ buffer_putflush(buffer* b, const char* x, size_t len) {
         return buffer_stubborn(b->op, b->fd, (char*)v[1].iov_base + w, v[1].iov_len - w, b);
       }
     }
-    
+
     b->p = 0;
     return 0;
   }
 #endif
 
-  if(buffer_put(b, x, len) < 0)
+  if(buffer_put(b, x, n) < 0)
     return -1;
 
   if(buffer_flush(b) < 0)

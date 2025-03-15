@@ -1,6 +1,6 @@
 #include "../buffer.h"
 
 ssize_t
-buffer_getline(buffer* b, char* x, size_t len) {
-  return buffer_get_token(b, x, len, "\n", 1);
+buffer_getline(buffer* b, char* x, size_t n) {
+  return buffer_get_token(b, x, n, "\n", 1);
 }

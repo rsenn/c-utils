@@ -14,9 +14,9 @@ buffer_getn(buffer* b, char* x, size_t n) {
     if((r = buffer_getc(b, x)) < 0)
       return r;
 
-    if(r == 0) 
+    if(r == 0)
       break;
-   
+
     ++x;
   }
   return (ssize_t)bytes;

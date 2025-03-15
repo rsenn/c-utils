@@ -3,22 +3,16 @@
 
 int
 stralloc_diffb(const stralloc* sa, const void* d, unsigned int dlen) {
-  size_t len;
   int r;
-  /*
-    get shortest len
-  */
-  len = sa->len;
+  size_t len;
 
-  if(len > dlen) {
+  /* get shortest len */
+  if((len = sa->len) > dlen)
     len = dlen;
-  }
-  /*
-    compare common lengths
-  */
-  r = byte_diff(sa->s, len, d);
 
-  if(r)
+  /* compare common lengths */
+  if((r = byte_diff(sa->s, len, d)))
     return r;
+
   return (int)sa->len - (int)dlen;
 }

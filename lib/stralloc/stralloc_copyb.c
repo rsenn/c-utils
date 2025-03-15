@@ -5,11 +5,12 @@
  * sa, allocating space if necessary, and returns 1. If it runs out of
  * memory, stralloc_copyb leaves sa alone and returns 0. */
 int
-stralloc_copyb(stralloc* sa, const char* buf, size_t len) {
-  if(stralloc_ready(sa, len)) {
-    sa->len = len;
-    byte_copy(sa->s, len, buf);
+stralloc_copyb(stralloc* sa, const char* x, size_t n) {
+  if(stralloc_ready(sa, n)) {
+    sa->len = n;
+    byte_copy(sa->s, n, x);
     return 1;
   }
+
   return 0;
 }

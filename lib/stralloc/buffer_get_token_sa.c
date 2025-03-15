@@ -15,12 +15,13 @@ buffer_get_token_sa(buffer* b, stralloc* sa, const char* charset, size_t setlen)
       case -1: return -1;
       case 0: return 0;
     }
+
     stralloc_APPEND(sa, &x);
 
-    if(byte_chr(charset, setlen, x) < setlen) {
+    if(byte_chr(charset, setlen, x) < setlen)
       break;
-    };
   }
+
   return 1;
 nomem:
   errno = ENOMEM;

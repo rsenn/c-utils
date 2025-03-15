@@ -1,10 +1,10 @@
 #include "../buffer.h"
 
 ssize_t
-buffer_dummyreadbuf(fd_type fd, void* buf, size_t len, void* arg) {
+buffer_dummyreadbuf(fd_type fd, void* x, size_t n, void* arg) {
   (void)fd;
-  (void)buf;
-  (void)len;
+  (void)x;
+  (void)n;
   return 0;
 }
 

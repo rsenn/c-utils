@@ -6,16 +6,17 @@
  * sa, allocating space if necessary, and returns 1. If it runs out of
  * memory, stralloc_catb leaves sa alone and returns 0. */
 int
-stralloc_catwcb(stralloc* sa, const wchar_t* buf, size_t len) {
-  size_t i, n = 0;
+stralloc_catwcb(stralloc* sa, const wchar_t* x, size_t n) {
+  size_t bytes = 0;
 
-  for(i = 0; buf[i]; ++i)
-    n += wc_u8len(buf[i]);
+  for(size_t i = 0; x[i]; ++i)
+    bytes += wc_u8len(x[i]);
 
-  if(stralloc_readyplus(sa, n)) {
-    wcs_to_u8s(&sa->s[sa->len], buf, len);
-    sa->len += n;
+  if(stralloc_readyplus(sa, bytes)) {
+    wcs_to_u8s(stralloc_end(sa), x, n);
+    sa->len += bytes;
     return 1;
   }
+
   return 0;
 }

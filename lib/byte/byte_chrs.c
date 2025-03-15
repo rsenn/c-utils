@@ -7,7 +7,6 @@ byte_chrs(const char* haystack, size_t len, const char needle[], size_t nl) {
   const char *s, *end;
 
   for(s = haystack, end = haystack + len; s != end; ++s)
-
     if(byte_chr(needle, nl, *s) < nl)
       break;
 

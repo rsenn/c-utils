@@ -6,21 +6,22 @@ int
 buffer_getln(buffer* b, stralloc* sa, int* gotit, int termchar) {
   if(!stralloc_ready(sa, 0))
     return -1;
+
   sa->len = 0;
 
   for(;;) {
-    int r;
     char* p;
-    int off;
-    r = buffer_feed(b);
+    size_t off;
+    ssize_t r;
 
-    if(r < 0)
+    if((r = buffer_feed(b)) < 0)
       return -1;
 
     if(r == 0) {
       *gotit = 0;
       return 0;
     }
+
     p = buffer_PEEK(b);
     off = byte_chr(p, r, termchar);
 
@@ -34,6 +35,7 @@ buffer_getln(buffer* b, stralloc* sa, int* gotit, int termchar) {
 
     if(off != r) {
       *gotit = 1;
+
       return 0;
     }
   }

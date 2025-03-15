@@ -26,78 +26,73 @@ putnum(const char* what, ssize_t n) {
 }
 
 ssize_t
-http_read(fd_type fd, char* buf, size_t len, void* headers_len) {
+http_read(fd_type fd, char* x, size_t n, void* headers_len) {
   http* h = ((buffer*)headers_len)->cookie ? ((buffer*)headers_len)->cookie : (http*)(ptrdiff_t)fd;
-  ssize_t n, ret = 0;
-  const char *x, *location = 0;
-  buffer* b = &h->q.in;
-  http_response* r = h->response;
-  http_status st = r->status;
-  size_t bytes, received, pos = 0, end;
+  buffer* in = &h->q.in;
+  http_response* response = h->response;
+  http_status st = response->status;
+  ssize_t r, ret = 0, received, oldlen;
 
-  if(!len)
+  if(!n)
     return 0;
 
 again:
-  bytes = buffer_LEN(b);
+  oldlen = buffer_LEN(in);
+  r = response->status == HTTP_RECV_HEADER ? buffer_freshen(in) : buffer_feed(in);
+  int err = errno;
 
-  if((n = (r->status == HTTP_RECV_HEADER ? buffer_freshen(b) : buffer_feed(b))) <= 0) {
-    if(n == bytes || n == 0) {
-      r->status = HTTP_STATUS_CLOSED;
+  if(r < 0 && err != EAGAIN && err != EWOULDBLOCK)
+    response->status = HTTP_STATUS_ERROR;
+  else if(/*r == received ||*/ r == 0)
+    response->status = HTTP_STATUS_CLOSED;
 
-      if(n == 0)
-        goto end;
-    }
-
-    if((int)r->status == st) {
-      if(r->err != 0) {
-        errno = r->err;
-        ret = -1;
+  if(r <= 0) {
+    if(r < 0)
+      if((int)response->status == st) {
+        if(response->err != 0) {
+          errno = response->err;
+          ret = -1;
+        }
       }
-    }
-  }
-
-  x = buffer_BEGIN(b);
-  n = buffer_LEN(b);
-
-  received = n - bytes;
-
-  if((received > 0 || (r->status == HTTP_RECV_HEADER || r->status == HTTP_RECV_DATA))) {
-    ret = http_read_internal(h->sock, buf, received, &h->q.in);
     goto end;
   }
 
-  if(r->status == HTTP_STATUS_FINISH)
+  received = buffer_LEN(in) - oldlen;
+
+  if((response->status == HTTP_RECV_HEADER || response->status == HTTP_RECV_DATA)) {
+    ret = http_read_internal(h->sock, x, received, &h->q.in);
     goto end;
-
-  if(r->status == HTTP_RECV_DATA) {
-    n = MIN(n, len);
-    byte_copy(buf, n, buffer_PEEK(b));
-
-    ret = n;
-    buffer_SKIP(b, n);
   }
 
-  if((r->status == HTTP_STATUS_CLOSED) || r->status == HTTP_STATUS_FINISH)
+  if(response->status == HTTP_STATUS_FINISH)
+    goto end;
+
+  if(response->status == HTTP_RECV_DATA) {
+    ret = MIN(r, n);
+    byte_copy(x, ret, buffer_PEEK(in));
+    buffer_SKIP(in, ret);
+    goto end;
+  }
+
+  if((response->status == HTTP_STATUS_CLOSED) || response->status == HTTP_STATUS_FINISH)
     goto end;
 
 end:
 
-  /*if(r->status == HTTP_STATUS_FINISH || r->status == HTTP_STATUS_CLOSED) {
+  /*if(response->status == HTTP_STATUS_FINISH || response->status == HTTP_STATUS_CLOSED) {
   }*/
 
-  if(r->code == 302) {
-    size_t len;
+  if(response->code == 302) {
+    size_t pos = 0, hlen, end;
+    const char* location = http_get_header(response->data.s, response->headers_len, "Location", &hlen);
+    end = hlen;
 
-    location = http_get_header(r->data.s, r->headers_len, "Location", &len);
-    end = len; //  = str_chrs(location, "\r\n\0", 3);
-
-    if((pos = byte_finds(location, len, "://"))) {
+    if((pos = byte_finds(location, hlen, "://"))) {
       pos += 3;
-      len -= pos;
+      hlen -= pos;
     }
 
-    pos += byte_chr(&location[pos], len, '/');
+    pos += byte_chr(&location[pos], hlen, '/');
 
     if(http_get(h, &location[pos])) {
       io_onlywantwrite(h->sock);
@@ -106,11 +101,11 @@ end:
     }
   }
 
-  if(r->status == HTTP_STATUS_CLOSED)
+  if(response->status == HTTP_STATUS_CLOSED)
     http_close(h);
 
 #ifdef DEBUG_HTTP
-  if(r->status == HTTP_STATUS_BUSY || r->status == HTTP_RECV_HEADER || r->status == HTTP_RECV_DATA) {
+  if(response->status == HTTP_STATUS_BUSY || response->status == HTTP_RECV_HEADER || response->status == HTTP_RECV_DATA) {
     buffer_putspad(buffer_2, "\x1b[38;5;201mhttp_read\x1b[0m ", 30);
     buffer_puts(buffer_2, "s=");
 
@@ -130,7 +125,7 @@ end:
 
     if(h->response->code != -1) {
       buffer_puts(buffer_2, " code=");
-      buffer_putlong(buffer_2, r->code);
+      buffer_putlong(buffer_2, response->code);
     }
 
     buffer_puts(buffer_2, " transfer=");
@@ -142,25 +137,25 @@ end:
                     "LENGTH",
                     "BOUNDARY",
                     0,
-                })[r->transfer]);
+                })[response->transfer]);
     buffer_puts(buffer_2, " status=");
-    buffer_puts(
-        buffer_2,
-        ((const char* const[]){"0", "HTTP_RECV_HEADER", "HTTP_RECV_DATA", "HTTP_STATUS_CLOSED", "HTTP_STATUS_ERROR", "HTTP_STATUS_BUSY", "HTTP_STATUS_FINISH", 0})[r->status]);
+    buffer_puts(buffer_2,
+                ((const char* const[]){
+                    "0", "HTTP_RECV_HEADER", "HTTP_RECV_DATA", "HTTP_STATUS_CLOSED", "HTTP_STATUS_ERROR", "HTTP_STATUS_BUSY", "HTTP_STATUS_FINISH", 0})[response->status]);
 
-    if(ret > 0 && r->status == HTTP_RECV_DATA) {
-      int len = MIN(ret, 30);
+    if(ret > 0 && response->status == HTTP_RECV_DATA) {
+      int n = MIN(ret, 30);
 
-      buffer_puts(buffer_2, " buf=");
-      buffer_putfmt(buffer_2, buf, len, &fmt_escapecharnonprintable);
+      buffer_puts(buffer_2, " x=");
+      buffer_putfmt(buffer_2, x, n, &fmt_escapecharnonprintable);
 
-      if(len < ret)
+      if(n < ret)
         buffer_puts(buffer_2, " {...}");
     }
 
     buffer_putnlflush(buffer_2);
 
-    http_response_dump(r);
+    // http_response_dump(response);
   }
 #endif
 

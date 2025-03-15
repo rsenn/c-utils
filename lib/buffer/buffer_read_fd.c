@@ -15,11 +15,7 @@
 
 int
 buffer_read_fd(buffer* b, fd_type fd) {
-  /*struct stat st;
-  if(fstat(fd, &st) == -1) return -1;
-  if((st.st_mode & S_IFMT) == S_IFREG) return buffer_mmapread_fd(b, fd);*/
   b->fd = fd;
-
   b->p = b->n = 0;
   b->a = BUFFER_INSIZE;
   b->x = (char*)alloc(BUFFER_INSIZE);

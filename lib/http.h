@@ -108,6 +108,8 @@ ssize_t http_read_internal(fd_type, char*, size_t, buffer*);
 void http_response_dump(http_response* r);
 void http_response_free(http_response* r);
 http_response* http_response_new(http*);
+void http_response_read(buffer*, http_response*);
+
 void http_request_dump(http_request*);
 http_request* http_request_new(http*);
 int http_sendreq(http* h);
