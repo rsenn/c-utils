@@ -1,7 +1,9 @@
 #define NO_BUILTINS
+#include "../uint64.h"
 #include "../buffer.h"
 #include "../http.h"
 #include "../fmt.h"
+#include "../unix.h"
 
 void
 http_dump(http* h) {
