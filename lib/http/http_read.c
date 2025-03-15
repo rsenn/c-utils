@@ -85,7 +85,7 @@ again:
 
     ret = n;
     buffer_skipn(b, n);
-    r->ptr += n;
+ //    r->ptr += n;
   }
 
   if((r->status == HTTP_STATUS_CLOSED) || r->status == HTTP_STATUS_FINISH)

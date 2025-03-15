@@ -223,6 +223,7 @@ http_io_handler(http* h, buffer* out) {
         ssize_t len;
 
         if((len = buffer_get(&in, buf, sizeof(buf))) > 0) {
+
 #ifdef DEBUG_OUTPUT
           buffer_putspad(buffer_2, "\x1b[1;31mbuffer_get\x1b[0m", 30);
           buffer_puts(buffer_2, " errno=");
