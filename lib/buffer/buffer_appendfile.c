@@ -7,5 +7,6 @@ buffer_appendfile(buffer* b, const char* fn) {
 
   if((fd = open_append(fn)) == -1)
     return -1;
+
   return buffer_write_fd(b, fd);
 }

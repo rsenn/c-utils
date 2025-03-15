@@ -9,13 +9,12 @@ buffer_putm_internal_flush(buffer* b, ...) {
   va_start(a, b);
 
   while((s = va_arg(a, const char*)))
-
     if(buffer_puts(b, s) == -1) {
       r = -1;
       break;
     }
-  va_end(a);
 
+  va_end(a);
   buffer_flush(b);
   return r;
 }

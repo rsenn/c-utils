@@ -5,7 +5,6 @@ extern int buffer_stubborn(buffer_op_proto* op, fd_type fd, const char* buf, siz
 int
 buffer_putc(buffer* b, char c) {
   if(b->a == b->p) { /* doesn't fit */
-
     if(buffer_flush(b) == -1)
       return -1;
 

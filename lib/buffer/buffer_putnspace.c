@@ -22,12 +22,16 @@ buffer_putnspace(buffer* b, int n) {
 #else
         alloc(n);
 #endif
+
     byte_fill(space, n, ' ');
     ret = buffer_put(b, space, n);
+
 #ifndef HAVE_ALLOCA
     alloc_free(space);
 #endif
+
     return ret;
   }
+
   return 0;
 }

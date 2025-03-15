@@ -15,12 +15,9 @@
 
 int
 buffer_read_fd(buffer* b, fd_type fd) {
-  /*  struct stat st;
-
-    if(fstat(fd, &st) == -1) return -1;
-
-    if((st.st_mode & S_IFMT) == S_IFREG) return buffer_mmapread_fd(b, fd);
-  */
+  /*struct stat st;
+  if(fstat(fd, &st) == -1) return -1;
+  if((st.st_mode & S_IFMT) == S_IFREG) return buffer_mmapread_fd(b, fd);*/
   b->fd = fd;
 
   b->p = b->n = 0;
@@ -29,6 +26,7 @@ buffer_read_fd(buffer* b, fd_type fd) {
 
   if(b->x == NULL)
     return -1;
+
   b->op = (buffer_op_proto*)(void*)read;
   b->deinit = (void (*)()) & buffer_free;
   return 0;

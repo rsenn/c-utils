@@ -8,6 +8,7 @@ int
 buffer_mmapread_fd(buffer* b, fd_type fd) {
   if(!(b->x = mmap_read_fd(fd, &b->n)))
     return -1;
+
   b->p = 0;
   b->a = b->n;
   b->fd = fd;
@@ -15,5 +16,6 @@ buffer_mmapread_fd(buffer* b, fd_type fd) {
 
   if(b->n)
     b->deinit = (void (*)()) & buffer_munmap; /*    b->todo=MUNMAP; */
+
   return 0;
 }

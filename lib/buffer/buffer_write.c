@@ -7,6 +7,6 @@
 #endif
 
 int
-buffer_unixwrite(int fd, const char* buf, unsigned int len) {
-  return write(fd, buf, len);
+buffer_unixwrite(int fd, const char* x, unsigned int n) {
+  return write(fd, x, n);
 }

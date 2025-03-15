@@ -5,19 +5,20 @@
  * will be skipped also */
 int
 buffer_skip_until(buffer* b, const char* charset, size_t setlen) {
-  int n = 0;
+  int bytes = 0;
 
   for(;;) {
     ssize_t r;
 
-    if(b->p == b->n)
-
+    if(buffer_EMPTY(b))
       if((r = buffer_feed(b)) <= 0)
         return r;
-    n++;
+
+    ++bytes;
 
     if(byte_chr(charset, setlen, b->x[b->p++]) < setlen)
       break;
   }
-  return n;
+
+  return bytes;
 }

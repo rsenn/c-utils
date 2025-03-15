@@ -3,20 +3,24 @@
 #include "../fmt.h"
 
 int
-buffer_put_quoted(buffer* b, const char* x, size_t len) {
-  char buf[16];
-  size_t i, n, r = 0;
+buffer_put_quoted(buffer* b, const char* x, size_t n) {
+  size_t bytes = 0;
 
-  for(i = 0; i < len; i++) {
+  for(size_t i = 0; i < n; i++) {
+    size_t r;
     uint32 c = (unsigned int)(unsigned char)x[i];
 
     if(c < 0x20) {
-      buffer_put(b, buf, (n = fmt_8long(buf, c)));
+      char buf[16];
+      r = fmt_8long(buf, c);
+      buffer_put(b, buf, r);
     } else {
       buffer_putc(b, c);
-      n = 1;
+      r = 1;
     }
-    r += n;
+
+    bytes += r;
   }
-  return r;
+
+  return bytes;
 }

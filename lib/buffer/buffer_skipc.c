@@ -2,7 +2,7 @@
 
 int
 buffer_skipc(buffer* b) {
-  if(b->p == b->n) {
+  if(buffer_EMPTY(b)) {
     ssize_t r;
 
     if((r = buffer_feed(b)) <= 0)

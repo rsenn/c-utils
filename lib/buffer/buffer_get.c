@@ -2,28 +2,28 @@
 #include "../byte.h"
 
 ssize_t
-buffer_get(buffer* b, char* x, size_t len) {
-  ssize_t blen, r = 0;
+buffer_get(buffer* b, char* x, size_t n) {
+  ssize_t bytes = 0, r;
 
-  if((ssize_t)len < 0)
-    len = (ssize_t)(((size_t)-1) >> 1);
+  if((ssize_t)n < 0)
+    n = (ssize_t)(((size_t)-1) >> 1);
 
-  while(len) {
-    if((blen = buffer_feed(b)) < 0)
-      return blen;
+  for(ssize_t len = (ssize_t)n; len > 0; len -= r) {
+    if((r = buffer_feed(b)) < 0)
+      return r;
 
-    if(blen == 0)
+    if(r == 0)
       break;
 
-    if(blen >= (ssize_t)len)
-      blen = (ssize_t)len;
+    if(r >= len)
+      r = len;
 
-    byte_copy(x, (size_t)blen, buffer_PEEK(b));
-    b->p += (size_t)blen;
-    len -= (size_t)blen;
-    x += blen;
-    r += blen;
+    byte_copy(x, (size_t)r, buffer_PEEK(b));
+    buffer_SKIP(b, (size_t)r);
+
+    x += r;
+    bytes += r;
   }
 
-  return r;
+  return bytes;
 }

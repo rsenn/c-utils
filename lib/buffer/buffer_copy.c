@@ -2,19 +2,21 @@
 
 int
 buffer_copy(buffer* out, buffer* in) {
-  ssize_t n;
+  ssize_t r;
   char* x;
 
   for(;;) {
-    if((n = buffer_feed(in)) < 0)
+    if((r = buffer_feed(in)) < 0)
       return -2;
 
-    if(!n)
+    if(!r)
       return 0;
+
     x = buffer_PEEK(in);
 
-    if(buffer_put(out, x, n) == -1)
+    if(buffer_put(out, x, r) == -1)
       return -3;
-    buffer_SKIP(in, n);
+
+    buffer_SKIP(in, r);
   }
 }

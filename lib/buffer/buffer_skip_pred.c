@@ -2,19 +2,20 @@
 
 int
 buffer_skip_pred(buffer* b, int (*pred)(int)) {
-  int n = 0;
+  int bytes = 0;
 
   for(;;) {
     ssize_t r;
 
-    if(b->p == b->n)
-
+    if(buffer_EMPTY(b))
       if((r = buffer_feed(b)) <= 0)
         return r;
-    n++;
+
+    ++bytes;
 
     if(!pred(b->x[b->p++]))
       break;
   }
-  return n;
+
+  return bytes;
 }

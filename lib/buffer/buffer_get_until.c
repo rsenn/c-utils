@@ -3,11 +3,11 @@
 #include "../scan.h"
 
 int
-buffer_get_until(buffer* b, char* x, size_t len, const char* charset, size_t setlen) {
-  size_t blen;
+buffer_get_until(buffer* b, char* x, size_t n, const char* charset, size_t setlen) {
+  size_t bytes;
 
-  for(blen = 0; blen < len;) {
-    int r;
+  for(bytes = 0; bytes < n;) {
+    ssize_t r;
 
     if((r = buffer_getc(b, x)) < 0)
       return r;
@@ -16,11 +16,12 @@ buffer_get_until(buffer* b, char* x, size_t len, const char* charset, size_t set
       *x = 0;
       break;
     }
-    blen++;
 
-    if(byte_chr(charset, setlen, *x++) < setlen) {
+   ++ bytes;
+
+    if(byte_chr(charset, setlen, *x++) < setlen)
       break;
-    };
   }
-  return blen;
+
+  return bytes;
 }

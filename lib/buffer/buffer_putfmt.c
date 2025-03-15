@@ -11,10 +11,12 @@ buffer_putfmt_args(buffer* b, const char* x, size_t len, format_function* escape
 
   for(i = 0; i < len; i++) {
     uint32 c = (unsigned int)(unsigned char)x[i];
+   
     n = escape(buf, c, args[0], args[1], args[2], args[3]);
     buffer_put(b, buf, n);
     r += n;
   }
+  
   return r;
 }
 

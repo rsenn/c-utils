@@ -3,13 +3,15 @@
 
 ssize_t
 buffer_getc(buffer* b, char* x) {
-  if(b->p == b->n) {
-    ssize_t blen;
+  if(buffer_EMPTY(b)) {
+    ssize_t bytes;
 
-    if((blen = buffer_feed(b)) <= 0)
-      return blen;
+    if((bytes = buffer_feed(b)) <= 0)
+      return bytes;
   }
+
   *x = *buffer_PEEK(b);
-  ++b->p;
+  buffer_SKIP(b, 1);
+
   return 1;
 }

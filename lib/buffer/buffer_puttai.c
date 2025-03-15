@@ -4,6 +4,7 @@
 
 int
 buffer_puttai(buffer* b, const tai64* t) {
-  char buf[FMT_ISO8601];
-  return buffer_put(b, buf, fmt_tai(buf, t));
+  char x[FMT_ISO8601];
+
+  return buffer_put(b, x, fmt_tai(x, t));
 }

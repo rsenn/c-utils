@@ -7,5 +7,6 @@ buffer_truncfile(buffer* b, const char* fn) {
 
   if((fd = open_trunc(fn)) == -1)
     return -1;
+
   return buffer_write_fd(b, fd);
 }

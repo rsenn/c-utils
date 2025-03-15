@@ -7,5 +7,6 @@ buffer_readfile(buffer* b, const char* fn) {
 
   if((fd = open_read(fn)) == -1)
     return -1;
+
   return buffer_read_fd(b, fd);
 }

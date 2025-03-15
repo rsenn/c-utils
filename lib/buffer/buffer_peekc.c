@@ -8,5 +8,6 @@ buffer_peekc(buffer* b, char* c) {
     *c = *buffer_PEEK(b);
     return 1;
   }
+
   return r;
 }

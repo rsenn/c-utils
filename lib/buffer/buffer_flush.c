@@ -4,16 +4,16 @@ extern int buffer_stubborn(buffer_op_proto*, fd_type, const char*, size_t, void*
 
 int
 buffer_flush(buffer* b) {
-  size_t p;
+  size_t pos = b->p;
   ssize_t r;
 
-  if(!(p = b->p))
+  if(!(pos = b->p))
     return 0; /* buffer already empty */
 
   b->p = 0;
 
-  if((r = buffer_stubborn(b->op, b->fd, buffer_BEGIN(b), p, b)) > 0)
+  if((r = buffer_stubborn(b->op, b->fd, buffer_BEGIN(b), pos, b)) > 0)
     r = 0;
 
-  return (int)r;
+  return r;
 }

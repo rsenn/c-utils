@@ -3,6 +3,7 @@
 
 int
 buffer_putxlonglong(buffer* b, uint64 l) {
-  char buf[FMT_XLONG];
-  return buffer_put(b, buf, fmt_xlonglong(buf, l));
+  char x[FMT_XLONG];
+
+  return buffer_put(b, x, fmt_xlonglong(x, l));
 }

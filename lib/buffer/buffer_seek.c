@@ -1,13 +1,12 @@
 #include "../buffer.h"
+#include <assert.h>
 
 void
 buffer_seek(buffer* b, size_t len) {
-  size_t n = b->p + len;
+  size_t pos = b->p + len;
 
-  if(n < b->p)
-    n = b->p;
+  assert(pos >= b->p);
+  assert(pos <= b->n);
 
-  if(n > b->n)
-    n = b->n;
-  b->p = n;
+  b->p = pos;
 }

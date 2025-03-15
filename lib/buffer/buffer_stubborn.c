@@ -11,19 +11,21 @@
 #endif
 
 int
-buffer_stubborn(buffer_op_proto* op, fd_type fd, const char* buf, size_t len, void* b) {
+buffer_stubborn(buffer_op_proto* op, fd_type fd, const char* x, size_t n, void* b) {
   ssize_t w;
   errno = 0;
 
-  while(len) {
-    if((w = ((buffer_op_proto*)op)(fd, (void*)buf, len, b)) <= 0) {
+  while(n) {
+    if((w = ((buffer_op_proto*)op)(fd, (void*)x, n, b)) <= 0) {
       if(errno == EINTR)
         continue;
+
       return -1;
     }
 
-    buf += w;
-    len -= (size_t)w;
+    x += w;
+    n -= (size_t)w;
   }
+
   return 0;
 }

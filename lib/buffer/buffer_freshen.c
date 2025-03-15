@@ -8,7 +8,7 @@ ssize_t buffer_stubborn_read(ssize_t (*)(), int, void*, size_t, void*);
 
 int
 buffer_freshen(buffer* b) {
-  size_t bytes;
+  size_t len;
 
   assert((void*)b->op != (void*)&buffer_dummyread);
   assert((void*)b->op != (void*)&buffer_dummyreadmmap);
@@ -16,12 +16,12 @@ buffer_freshen(buffer* b) {
   if(b->p > 0)
     buffer_MOVE(b);
 
-  if((bytes = buffer_HEADROOM(b)) > 0) {
+  if((len = buffer_HEADROOM(b)) > 0) {
     ssize_t w;
 
-    if((w = buffer_stubborn_read(b->op, b->fd, buffer_END(b), bytes, b)) < 0)
+    if((w = buffer_stubborn_read(b->op, b->fd, buffer_END(b), len, b)) < 0)
       return -1;
- 
+
     buffer_SEEK(b, w);
   }
 
