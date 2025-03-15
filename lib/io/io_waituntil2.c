@@ -115,15 +115,15 @@ static void handleevent(fd_type fd, int readable, int writable, int error) {
 
 static void
 put_fdset(buffer* b, const char* name, const fd_set* fds, fd_type maxfd) {
-  fd_type i;
   buffer_putm_internal(b, "fd_set ", name, "=[", NULL);
 
-  for(i = 0; i <= maxfd; ++i) {
+  for(fd_type i = 0; i <= maxfd; ++i) {
     if(FD_ISSET(i, fds)) {
       buffer_putspace(b);
       buffer_putlong(b, i);
     }
   }
+
   buffer_puts(b, " ]");
 }
 
@@ -708,16 +708,17 @@ dopoll :
         return -1;
     }
   }
+
 #ifdef DEBUG_IO
   p = (struct pollfd*)array_start(&io_pollfds);
   buffer_puts(buffer_2, "io_waituntil2(");
-  buffer_putulonglong(buffer_2, milliseconds);
+  buffer_putlonglong(buffer_2, milliseconds);
   buffer_puts(buffer_2, ") ");
   buffer_putlong(buffer_2, r);
   buffer_putsflush(buffer_2, " fds\n");
 
   for(i = 0; i < r; ++i) {
-    buffer_puts(buffer_2, "pollfd[");
+    buffer_puts(buffer_2, "\tpollfd[");
     buffer_putlong(buffer_2, i);
     buffer_puts(buffer_2, "] { .fd=");
     buffer_putlong(buffer_2, p[i].fd);
@@ -754,6 +755,7 @@ dopoll :
 
     if(p[i].revents & POLLERR)
       buffer_puts(buffer_2, "ERR ");
+
     buffer_puts(buffer_2, "}");
     buffer_putnlflush(buffer_2);
   }

@@ -55,82 +55,12 @@ fail:
   h->err = h->tls ? tls_errno(h->sock) : errno;
 
 #ifdef DEBUG_HTTP
-  buffer_putspad(buffer_2, "http_canwrite ", 30);
-  buffer_puts(buffer_2, "s=");
-  buffer_putlong(buffer_2, h->sock);
-
-  if(h->tls) {
-    buffer_puts(buffer_2, " tls=");
-    buffer_putlong(buffer_2, !!h->tls);
-  }
-
-  if(h->connected) {
-    buffer_puts(buffer_2, " connected=");
-    buffer_putlong(buffer_2, !!h->connected);
-  }
-
-  if(h->keepalive) {
-    buffer_puts(buffer_2, " keepalive=");
-    buffer_putlong(buffer_2, !!h->keepalive);
-  }
-
-  if(h->nonblocking) {
-    buffer_puts(buffer_2, " nonblocking=");
-    buffer_putlong(buffer_2, !!h->nonblocking);
-  }
-
-  if(h->sent) {
-    buffer_puts(buffer_2, " sent=");
-    buffer_putlong(buffer_2, !!h->sent);
-  }
-
-  if(h->response->code != -1) {
-    buffer_puts(buffer_2, " code=");
-    buffer_putlong(buffer_2, h->response->code);
-  }
-
-  if(h->response->data.len > 0) {
-    buffer_puts(buffer_2, " data=");
-    buffer_putfmt(buffer_2, h->response->data.s, h->response->data.len, &fmt_escapecharnonprintable);
-  }
-
+  buffer_putspad(buffer_2, "\x1b[38;5;112mhttp_canwrite\x1b[0m ", 30);
   buffer_puts(buffer_2, " ret=");
   buffer_putlong(buffer_2, ret);
-
-  if(ret < 0) {
-    buffer_puts(buffer_2, " err=");
-    buffer_putstr(buffer_2, http_strerror(h, ret));
-  }
-
-  if(h->err) {
-    buffer_puts(buffer_2, " h->err=");
-    /* clang-format off */
-    buffer_puts(buffer_2, unix_errnos[h->err]);
-    /* clang-format on */
-  }
-  /* buffer_puts(buffer_2, " tls=");
-    buffer_putlong(buffer_2, !!h->tls);
-    buffer_puts(buffer_2, " connected=");
-    buffer_putlong(buffer_2, !!h->connected);*/
-
-  if(h->response->code != -1) {
-    buffer_puts(buffer_2, " code=");
-    buffer_putlong(buffer_2, h->response->code);
-  }
-
-  buffer_puts(buffer_2, " status=");
-  buffer_puts(buffer_2,
-              ((const char* const[]){
-                  "-1",
-                  "HTTP_RECV_HEADER",
-                  "HTTP_RECV_DATA",
-                  "HTTP_STATUS_CLOSED",
-                  "HTTP_STATUS_ERROR",
-                  "HTTP_STATUS_BUSY",
-                  "HTTP_STATUS_FINISH",
-                  0,
-              })[h->response->status + 1]);
-  buffer_putnlflush(buffer_2);
+  buffer_puts(buffer_2, " err=");
+  buffer_putstr(buffer_2, http_strerror(h, ret));
+  http_dump(h);
 #endif
 
   return ret;

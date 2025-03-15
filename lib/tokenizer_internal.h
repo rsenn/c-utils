@@ -1,14 +1,13 @@
 #include "tokenizer.h"
 #include "byte.h"
 #include "str.h"
-//#include <ctype.h>
+#include "util.h"
 #include <assert.h>
+#include <ctype.h>
 
-#define countof(arr) (sizeof((arr)) / sizeof((arr)[0]))
-
-#define isdigit(c) ((c) >= '0' && (c) <= '9')
+/*#define isdigit(c) ((c) >= '0' && (c) <= '9')
 #define isspace(c) ((c) == ' ' || (c) == '\r' || (c) == '\n' || (c) == '\t' || (c) == '\v')
-#define tolower(c) ((c) >= 'A' && (c) <= 'Z' ? (c) + 0x20 : (c))
+#define tolower(c) ((c) >= 'A' && (c) <= 'Z' ? (c) + 0x20 : (c))*/
 
 #define TOKENIZER_ERROR -1
 #define TOKENIZER_EOF -2

@@ -106,9 +106,7 @@ http_socket_read(fd_type fd, void* buf, size_t len, void* b) {
       h->response->received += ret;
 
 #ifdef DEBUG_HTTP
-  buffer_putspad(buffer_2, "http_socket_read", 30);
-  buffer_puts(buffer_2, "s=");
-  buffer_putlong(buffer_2, h->sock);
+  buffer_putspad(buffer_2, "\x1b[38;5;64mhttp_socket_read\x1b[0m", 30);
   buffer_puts(buffer_2, " ret=");
   buffer_putlong(buffer_2, ret);
   buffer_puts(buffer_2, " len=");
@@ -116,41 +114,10 @@ http_socket_read(fd_type fd, void* buf, size_t len, void* b) {
 
   if(errno) {
     buffer_puts(buffer_2, " errno=");
-    /* clang-format off */
-    buffer_puts(buffer_2, unix_errnos[errno]);
-    /* clang-format on */
+    buffer_puts(buffer_2, unix_errno(errno));
   }
 
-  if(h->response) {
-    buffer_puts(buffer_2, " err=");
-    buffer_putlong(buffer_2, h->response->err);
-    buffer_puts(buffer_2, " received=");
-    buffer_putlong(buffer_2, h->response->received);
-    buffer_puts(buffer_2, " transfer=");
-    buffer_puts(buffer_2, "HTTP_TRANSFER_");
-    buffer_puts(buffer_2,
-                ((const char* const[]){
-                    "UNDEF",
-                    "CHUNKED",
-                    "LENGTH",
-                    "BOUNDARY",
-                    0,
-                })[h->response->transfer]);
-    buffer_puts(buffer_2, " status=");
-    buffer_puts(buffer_2,
-                ((const char* const[]){
-                    "-1",
-                    "HTTP_RECV_HEADER",
-                    "HTTP_RECV_DATA",
-                    "HTTP_STATUS_CLOSED",
-                    "HTTP_STATUS_ERROR",
-                    "HTTP_STATUS_BUSY",
-                    "HTTP_STATUS_FINISH",
-                    0,
-                })[h->response->status + 1]);
-  }
-
-  buffer_putnlflush(buffer_2);
+  http_dump(h);
 #endif
 
   /*if(ret > 0) {
@@ -162,10 +129,11 @@ http_socket_read(fd_type fd, void* buf, size_t len, void* b) {
       h->q.in.n += ret;
     }
 
-  iret = http_read_internal(fd, (char*)buf, ret, &h->q.in);
+  i
     if(st == HTTP_RECV_HEADER)
       h->q.in.n = n;
   }*/
+  //  iret = http_read_internal(fd, (char*)buf, ret, &h->q.in);
 
   if(ret == 0) {
     io_dontwantwrite(fd);
@@ -217,7 +185,7 @@ http_socket_write(fd_type fd, void* buf, size_t len, void* b) {
   }
 
 #ifdef DEBUG_HTTP
-  buffer_putspad(buffer_2, "http_socket_write ", 30);
+  buffer_putspad(buffer_2, "\x1b[38;5;88mhttp_socket_write\x1b[0m ", 30);
   buffer_puts(buffer_2, "s=");
   buffer_putlong(buffer_2, h->sock);
   buffer_puts(buffer_2, " ret=");
@@ -225,9 +193,7 @@ http_socket_write(fd_type fd, void* buf, size_t len, void* b) {
 
   if(ret < 0) {
     buffer_puts(buffer_2, " errno=");
-    /* clang-format off */
-    buffer_puts(buffer_2, unix_errnos[errno]);
-    /* clang-format on */
+    buffer_puts(buffer_2, unix_errno(errno));
   }
 
   if(h->response) {
@@ -245,15 +211,7 @@ http_socket_write(fd_type fd, void* buf, size_t len, void* b) {
     buffer_puts(buffer_2, " status=");
     buffer_puts(buffer_2,
                 ((const char* const[]){
-                    "-1",
-                    "HTTP_RECV_HEADER",
-                    "HTTP_RECV_DATA",
-                    "HTTP_STATUS_CLOSED",
-                    "HTTP_STATUS_ERROR",
-                    "HTTP_STATUS_BUSY",
-                    "HTTP_STATUS_FINISH",
-                    0,
-                })[h->response->status + 1]);
+                    "0", "HTTP_RECV_HEADER", "HTTP_RECV_DATA", "HTTP_STATUS_CLOSED", "HTTP_STATUS_ERROR", "HTTP_STATUS_BUSY", "HTTP_STATUS_FINISH", 0})[h->response->status]);
   }
 
   buffer_putnlflush(buffer_2);

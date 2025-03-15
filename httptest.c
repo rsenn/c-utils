@@ -124,7 +124,7 @@ put_escaped_x(buffer* b, const char* x, size_t len, int unescaped) {
 
 static void
 put_abbreviate(buffer* b, size_t len) {
-  buffer_puts(b, "\n\033[1;31m... more (");
+  buffer_puts(b, "\n\033[38;5;230m... more (");
   buffer_putulong(b, len);
   buffer_puts(b, " bytes total ...\033[0m\n");
 }
@@ -198,32 +198,25 @@ http_io_handler(http* h, buffer* out) {
   }
 
   while((r = io_canread()) != -1) {
-#ifdef DEBUG_OUTPUT
-    buffer_putspad(buffer_2, "io_canread", 30);
-    buffer_puts(buffer_2, "r=");
-    buffer_putlong(buffer_2, r);
-    buffer_putnlflush(buffer_2);
-#endif
-
     if(h->sock == r) {
       nb = http_canread(h, io_wantread, io_wantwrite);
 
-#ifdef DEBUG_OUTPUT
-      buffer_putspad(buffer_2, "\x1b[1;31mhttp_canread\x1b[0m", 30);
-      buffer_puts(buffer_2, "nb=");
-      buffer_putlong(buffer_2, nb);
-      buffer_puts(buffer_2, " connected=");
-      buffer_putlong(buffer_2, !!h->connected);
-      buffer_puts(buffer_2, " sent=");
-      buffer_putlong(buffer_2, !!h->sent);
+      /*#ifdef DEBUG_OUTPUT
+            buffer_putspad(buffer_2, "\x1b[1;31mhttp_canread\x1b[0m", 30);
+            buffer_puts(buffer_2, "nb=");
+            buffer_putlong(buffer_2, nb);
+            buffer_puts(buffer_2, " connected=");
+            buffer_putlong(buffer_2, !!h->connected);
+            buffer_puts(buffer_2, " sent=");
+            buffer_putlong(buffer_2, !!h->sent);
 
-      if(nb < 0) {
-        buffer_puts(buffer_2, "  errno=");
-        buffer_puts(buffer_2, strerror(errno));
-      }
+            if(nb < 0) {
+              buffer_puts(buffer_2, " errno=");
+              buffer_puts(buffer_2, unix_errno(errno));
+            }
 
-      buffer_putnlflush(buffer_2);
-#endif
+            buffer_putnlflush(buffer_2);
+      #endif*/
 
       {
         char buf[8192];
@@ -233,19 +226,11 @@ http_io_handler(http* h, buffer* out) {
 #ifdef DEBUG_OUTPUT
           buffer_putspad(buffer_2, "\x1b[1;31mbuffer_get\x1b[0m", 30);
           buffer_puts(buffer_2, " errno=");
-          buffer_puts(buffer_2, strerror(errno));
+          buffer_puts(buffer_2, unix_errno(errno));
           buffer_puts(buffer_2, " status=");
           buffer_puts(buffer_2,
                       ((const char* const[]){
-                          "-1",
-                          "HTTP_RECV_HEADER",
-                          "HTTP_RECV_DATA",
-                          "HTTP_STATUS_CLOSED",
-                          "HTTP_STATUS_ERROR",
-                          "HTTP_STATUS_BUSY",
-                          "HTTP_STATUS_FINISH",
-                          0,
-                      })[h->response->status + 1]);
+                          "0", "HTTP_RECV_HEADER", "HTTP_RECV_DATA", "HTTP_STATUS_CLOSED", "HTTP_STATUS_ERROR", "HTTP_STATUS_BUSY", "HTTP_STATUS_FINISH", 0})[h->response->status]);
           buffer_puts(buffer_2, " len=");
           buffer_putlong(buffer_2, len);
           buffer_puts(buffer_2, " data='");
@@ -361,21 +346,17 @@ process_xml(const char* x, size_t len, strlist* urls, uri_t* uri) {
 static void
 http_process(http* h, strlist* urls, uri_t* uri) {
   http_response* r = h->response;
-  const char* type = http_get_header(h, "Content-Type");
-  size_t received = r->data.len, pos = http_skip_header(stralloc_begin(&r->data), stralloc_length(&r->data)), typelen = str_chrs(type, "\r\n\0", 3);
+
+  const char* type = http_get_header(&h->response->data, "Content-Type");
+  size_t typelen = type ? str_chrs(type, "\r\n\0", 3) : 0;
+
+  size_t received = r->data.len;
+  size_t pos = http_skip_header(stralloc_begin(&r->data), stralloc_length(&r->data));
 
   buffer_puts(buffer_2, "STATUS: ");
-  buffer_puts(buffer_2,
-              ((const char* const[]){
-                  "-1",
-                  "HTTP_RECV_HEADER",
-                  "HTTP_RECV_DATA",
-                  "HTTP_STATUS_CLOSED",
-                  "HTTP_STATUS_ERROR",
-                  "HTTP_STATUS_BUSY",
-                  "HTTP_STATUS_FINISH",
-                  0,
-              })[r->status + 1]);
+  buffer_puts(
+      buffer_2,
+      ((const char* const[]){"0", "HTTP_RECV_HEADER", "HTTP_RECV_DATA", "HTTP_STATUS_CLOSED", "HTTP_STATUS_ERROR", "HTTP_STATUS_BUSY", "HTTP_STATUS_FINISH", 0})[r->status]);
 
   buffer_putnlflush(buffer_2);
   buffer_puts(buffer_2, "PTR: ");
@@ -401,6 +382,14 @@ http_process(http* h, strlist* urls, uri_t* uri) {
     // stralloc_length(&r->data) - pos, 1024);
   }
 
+  buffer_putnlflush(buffer_2);
+}
+
+int
+response_header(http* h, const char* x, size_t n) {
+
+  buffer_puts(buffer_2, "response_header: ");
+  buffer_put(buffer_2, x, n);
   buffer_putnlflush(buffer_2);
 }
 
@@ -495,6 +484,8 @@ main(int argc, char* argv[]) {
     free(str);
     ret = http_get(&h, argv[argi]);
 
+    h.response->header = response_header;
+
     for(;;) {
       int doread = 1;
       fd_type sock;
@@ -512,7 +503,7 @@ main(int argc, char* argv[]) {
       ret = http_io_handler(&h, &out);
 
       if(h.response->code == 302) {
-        s = http_get_header(&h, "Location");
+        s = http_get_header(&h.response->data, "Location");
         buffer_puts(buffer_2, "Location: ");
         buffer_put(buffer_2, s, str_chrs(s, "\r\n", 2));
         buffer_putnlflush(buffer_2);
@@ -534,15 +525,7 @@ main(int argc, char* argv[]) {
       buffer_puts(buffer_2, " status=");
       buffer_puts(buffer_2,
                   ((const char* const[]){
-                      "-1",
-                      "HTTP_RECV_HEADER",
-                      "HTTP_RECV_DATA",
-                      "HTTP_STATUS_CLOSED",
-                      "HTTP_STATUS_ERROR",
-                      "HTTP_STATUS_BUSY",
-                      "HTTP_STATUS_FINISH",
-                      0,
-                  })[h.response->status + 1]);
+                      "0", "HTTP_RECV_HEADER", "HTTP_RECV_DATA", "HTTP_STATUS_CLOSED", "HTTP_STATUS_ERROR", "HTTP_STATUS_BUSY", "HTTP_STATUS_FINISH", 0})[h.response->status]);
       buffer_putnlflush(buffer_2);
 #endif
 

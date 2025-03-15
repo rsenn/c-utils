@@ -74,24 +74,15 @@ http_get(http* h, const char* location) {
   }
 
   {
-    http_request* req = (http_request*)alloc_zero(sizeof(http_request));
+    http_request* req = http_request_new(h);
+
     req->serial = serial;
-    req->type = GET;
-    stralloc_init(&req->location);
+
     stralloc_catb(&req->location, location, MIN(len, str_len(location)));
     stralloc_nul(&req->location);
-    stralloc_init(&req->headers);
-    req->next = h->request;
-    h->request = req;
   }
 
-  {
-    http_response* res = http_response_new();
-    res->next = h->response;
-    res->status = -1;
-    res->code = -1;
-    h->response = res;
-  }
+  http_response_new(h);
 
   h->connected = 0;
   h->sent = 0;

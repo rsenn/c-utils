@@ -37,7 +37,7 @@ tls_write(fd_type fd, const void* data, size_t len) {
 
   if(errno) {
     buffer_puts(buffer_2, " errno=");
-    buffer_putstr(buffer_2, strerror(errno));
+    buffer_putstr(buffer_2, unix_errno(errno));
   }
 
   buffer_puts(buffer_2, " retval=");

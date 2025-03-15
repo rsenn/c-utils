@@ -67,7 +67,7 @@ io_canread() {
 
 #ifdef DEBUG_IO
   if(ret != -1) {
-    buffer_putspad(buffer_2, "io_canread ", 30);
+    buffer_putspad(buffer_2, "\x1b[38;5;165mio_canread\x1b[0m ", 30);
     buffer_puts(buffer_2, "ret=");
     buffer_putlong(buffer_2, ret);
     buffer_putnlflush(buffer_2);

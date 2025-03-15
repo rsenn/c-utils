@@ -135,7 +135,7 @@ end:
 
     if(ret < 0) {
       buffer_puts(buffer_2, " errno=");
-      buffer_puts(buffer_2, unix_errnos[errno]);
+      buffer_puts(buffer_2, unix_errno(errno));
     }
 
     if(h->response->code != -1) {
@@ -154,17 +154,9 @@ end:
                     0,
                 })[r->transfer]);
     buffer_puts(buffer_2, " status=");
-    buffer_puts(buffer_2,
-                ((const char* const[]){
-                    "-1",
-                    "HTTP_RECV_HEADER",
-                    "HTTP_RECV_DATA",
-                    "HTTP_STATUS_CLOSED",
-                    "HTTP_STATUS_ERROR",
-                    "HTTP_STATUS_BUSY",
-                    "HTTP_STATUS_FINISH",
-                    0,
-                })[r->status + 1]);
+    buffer_puts(
+        buffer_2,
+        ((const char* const[]){"0", "HTTP_RECV_HEADER", "HTTP_RECV_DATA", "HTTP_STATUS_CLOSED", "HTTP_STATUS_ERROR", "HTTP_STATUS_BUSY", "HTTP_STATUS_FINISH", 0})[r->status]);
 
     if(ret > 0 && r->status == HTTP_RECV_DATA) {
       int len = MIN(ret, 30);

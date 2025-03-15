@@ -35,7 +35,7 @@ tls_want(fd_type fd, void (*wantread)(fd_type), void (*wantwrite)(fd_type)) {
 
   if(errno) {
     buffer_puts(buffer_2, " errno=");
-    buffer_putstr(buffer_2, strerror(errno));
+    buffer_putstr(buffer_2, unix_errno(errno));
   }
 
   if(inst->error != SSL_ERROR_NONE) {

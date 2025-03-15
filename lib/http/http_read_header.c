@@ -88,8 +88,6 @@ http_read_header(http* h, stralloc* sa, http_response* r) {
 
 #ifdef DEBUG_HTTP
   buffer_putspad(buffer_2, "\x1b[1;33mhttp_read_header\x1b[0m", 30);
-  buffer_puts(buffer_2, "s=");
-  buffer_putlong(buffer_2, h->sock);
 
   buffer_puts(buffer_2, " bytesread=");
   buffer_putlong(buffer_2, bytesread);
@@ -101,30 +99,7 @@ http_read_header(http* h, stralloc* sa, http_response* r) {
     buffer_putstr(buffer_2, http_strerror(h, ret));
   }
 
-  if(r->code != -1) {
-    buffer_puts(buffer_2, " code=\x1b[1;36m");
-    buffer_putlong(buffer_2, r->code);
-    buffer_puts(buffer_2, "\x1b[0m");
-  }
-
-  if(r->content_length > 0) {
-    buffer_puts(buffer_2, " content_length=");
-    buffer_putlong(buffer_2, r->content_length);
-  }
-
-  buffer_puts(buffer_2, " status=");
-  buffer_puts(buffer_2,
-              ((const char* const[]){
-                  "-1",
-                  "HTTP_RECV_HEADER",
-                  "HTTP_RECV_DATA",
-                  "HTTP_STATUS_CLOSED",
-                  "HTTP_STATUS_ERROR",
-                  "HTTP_STATUS_BUSY",
-                  "HTTP_STATUS_FINISH",
-                  0,
-              })[r->status + 1]);
-  buffer_putnlflush(buffer_2);
+  http_dump(h);
 #endif
 
   return ret > 0 && bytesread > 0 ? bytesread : ret;

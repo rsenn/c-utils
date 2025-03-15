@@ -18,7 +18,7 @@ tls_instance_strerror(tls_instance_t* i) {
 #endif
     case SSL_ERROR_SYSCALL:
       str_copyn(i->errstr, "syscall ", sizeof(i->errstr));
-      str_catn(i->errstr, strerror(errno), sizeof(i->errstr));
+      str_catn(i->errstr, unix_errno(errno), sizeof(i->errstr));
       break;
     case SSL_ERROR_ZERO_RETURN: str_copy(i->errstr, "zero return"); break;
     case SSL_ERROR_NONE: str_copy(i->errstr, "none"); break;

@@ -25,7 +25,7 @@ ssize_t
 http_canread(http* h, void (*wantread)(fd_type), void (*wantwrite)(fd_type)) {
   http_response* r;
   int err;
-  size_t len;
+  size_t n;
   ssize_t ret = 0, received;
 
   if(h->tls) {
@@ -61,17 +61,18 @@ http_canread(http* h, void (*wantread)(fd_type), void (*wantwrite)(fd_type)) {
       h->connected = 1;
   }
 
-  len = buffer_LEN(&h->q.in);
+  n = buffer_LEN(&h->q.in);
 
   if((ret = buffer_freshen(&h->q.in)) <= 0) {
     // if(!(ret == -1 && errno == EAGAIN))
     goto fail;
   }
 
-  received = ret > 0 ? ret - len : 0;
+  received = ret > 0 ? ret - n : 0;
 
 #ifdef DEBUG_HTTP
-  buffer_puts(buffer_2, "buffer_freshen ret=");
+  buffer_putspad(buffer_2, "\x1b[1;32mhttp_canread\x1b[0m(1)", 30);
+  buffer_puts(buffer_2, "buffer_freshen() = ");
   buffer_putlong(buffer_2, ret);
   buffer_putnlflush(buffer_2);
 #endif
@@ -80,16 +81,19 @@ http_canread(http* h, void (*wantread)(fd_type), void (*wantwrite)(fd_type)) {
     goto fail;
 
   while(r->status == HTTP_RECV_HEADER) {
-    size_t pos = r->data.len;
+    size_t len, pos = r->data.len;
 
     if((ret = buffer_getline_sa(&h->q.in, &r->data)) <= 0)
       break;
 
     // stralloc_trimr(&r->data, "\r\n", 2);
+
+    len = byte_trimr(&r->data.s[pos], r->data.len - pos, "\r\n", 2);
+
     stralloc_nul(&r->data);
 
-    if(r->data.len == 0) {
-      r->ptr = 0;
+    if(len == 0) {
+      r->ptr = r->data.len;
       r->status = HTTP_RECV_DATA;
 
       if(h->q.in.p < h->q.in.n) {
@@ -118,25 +122,29 @@ http_canread(http* h, void (*wantread)(fd_type), void (*wantwrite)(fd_type)) {
       r->chunk_length = 0;
     }
 
-    r->ptr = 0;
-    stralloc_zero(&r->data);
+    if(r->header) {
+      r->header(h, r->data.s + pos, len);
+    }
+
+    /*   r->ptr = 0;
+       stralloc_zero(&r->data);*/
   }
 
   if(r->status == HTTP_RECV_HEADER || r->status == HTTP_RECV_DATA) {
     if(ret > 0) {
-      stralloc_readyplus(&h->response->data, ret);
-      buffer_get(&h->q.in, &h->response->data.s[h->response->data.len], ret);
-      h->response->data.len += ret;
+      stralloc_readyplus(&r->data, ret);
+      buffer_get(&h->q.in, &r->data.s[r->data.len], ret);
+      r->data.len += ret;
 
 #ifdef DEBUG_HTTP
-      buffer_putspad(buffer_2, "http_canread DATA ", 30);
+      buffer_putspad(buffer_2, "\x1b[1;32mhttp_canread\x1b[0m(2) DATA ", 30);
       buffer_puts(buffer_2, "s=");
       buffer_putlong(buffer_2, h->sock);
       buffer_puts(buffer_2, " ret=");
       buffer_putlong(buffer_2, ret);
 
-      buffer_puts(buffer_2, " data.len=");
-      buffer_putulonglong(buffer_2, h->response->data.len);
+      buffer_puts(buffer_2, " r->data.len=");
+      buffer_putulonglong(buffer_2, r->data.len);
       buffer_putnlflush(buffer_2);
 #endif
     }
@@ -156,93 +164,12 @@ fail:
   }
 
 #ifdef DEBUG_HTTP
-  buffer_putspad(buffer_2, "\x1b[1;32mhttp_canread\x1b[0m ", 30);
-  buffer_puts(buffer_2, "s=");
-  buffer_putlong(buffer_2, h->sock);
-  buffer_puts(buffer_2, " ret=\x1b[1;36m");
+  buffer_putspad(buffer_2, "\x1b[1;32mhttp_canread\x1b[0m(3)", 30);
+  buffer_puts(buffer_2, " ret=");
   buffer_putlong(buffer_2, ret);
-  buffer_puts(buffer_2, "\x1b[0m");
-
-  if(h->tls) {
-    buffer_puts(buffer_2, " tls=");
-    buffer_putlong(buffer_2, !!h->tls);
-  }
-
-  if(h->connected) {
-    buffer_puts(buffer_2, " connected=");
-    buffer_putlong(buffer_2, !!h->connected);
-  }
-
-  if(h->keepalive) {
-    buffer_puts(buffer_2, " keepalive=");
-    buffer_putlong(buffer_2, !!h->keepalive);
-  }
-
-  if(h->nonblocking) {
-    buffer_puts(buffer_2, " nonblocking=");
-    buffer_putlong(buffer_2, !!h->nonblocking);
-  }
-
-  if(h->sent) {
-    buffer_puts(buffer_2, " sent=");
-    buffer_putlong(buffer_2, !!h->sent);
-  }
-
-  if(h->response->code != -1) {
-    buffer_puts(buffer_2, " code=");
-    buffer_putlong(buffer_2, h->response->code);
-  }
-
-  if(received > 0) {
-    size_t len = received;
-    const char* s = stralloc_end(&r->data) - len;
-    const char* e = stralloc_end(&r->data);
-
-    if(len > 30)
-      len = 30;
-
-    if(r->status <= HTTP_RECV_DATA) {
-      buffer_puts(buffer_2, " data:received=");
-      buffer_putlonglong(buffer_2, received);
-
-      buffer_puts(buffer_2, " data:len=");
-      buffer_putlonglong(buffer_2, r->data.len);
-    }
-  }
-
-  buffer_puts(buffer_2, " tls=");
-  buffer_putlong(buffer_2, !!h->tls);
-
-  if(ret < 0) {
-    buffer_puts(buffer_2, " err=");
-    buffer_putstr(buffer_2, http_strerror(h, ret));
-  }
-
-  if(ret < 0) {
-    buffer_puts(buffer_2, " errno=");
-    /* clang-format off */
-    buffer_puts(buffer_2, unix_errnos[errno]);
-    /* clang-format on */
-  }
-
-  if(h->response->code != -1) {
-    buffer_puts(buffer_2, " code=");
-    buffer_putlong(buffer_2, h->response->code);
-  }
-
-  buffer_puts(buffer_2, " status=");
-  buffer_puts(buffer_2,
-              ((const char* const[]){
-                  "-1",
-                  "HTTP_RECV_HEADER",
-                  "HTTP_RECV_DATA",
-                  "HTTP_STATUS_CLOSED",
-                  "HTTP_STATUS_ERROR",
-                  "HTTP_STATUS_BUSY",
-                  "HTTP_STATUS_FINISH",
-                  0,
-              })[h->response->status + 1]);
-  buffer_putnlflush(buffer_2);
+  buffer_puts(buffer_2, " err=");
+  buffer_putstr(buffer_2, http_strerror(h, ret));
+  http_dump(h);
 #endif
 
   return ret;

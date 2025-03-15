@@ -62,7 +62,7 @@ http_sendreq(http* h) {
   len = out->p;
 
 #ifdef DEBUG_HTTP
-  buffer_putspad(buffer_2, "http_sendreq ", 30);
+  buffer_putspad(buffer_2, "\x1b[38;5;208mhttp_sendreq\x1b[0m ", 30);
   buffer_puts(buffer_2, "location=");
   buffer_putsa(buffer_2, &h->request->location);
 
@@ -84,15 +84,7 @@ http_sendreq(http* h) {
   buffer_puts(buffer_2, " status=");
   buffer_puts(buffer_2,
               ((const char* const[]){
-                  "-1",
-                  "HTTP_RECV_HEADER",
-                  "HTTP_RECV_DATA",
-                  "HTTP_STATUS_CLOSED",
-                  "HTTP_STATUS_ERROR",
-                  "HTTP_STATUS_BUSY",
-                  "HTTP_STATUS_FINISH",
-                  0,
-              })[h->response->status + 1]);
+                  "0", "HTTP_RECV_HEADER", "HTTP_RECV_DATA", "HTTP_STATUS_CLOSED", "HTTP_STATUS_ERROR", "HTTP_STATUS_BUSY", "HTTP_STATUS_FINISH", 0})[h->response->status]);
   buffer_putnlflush(buffer_2);
   buffer_flush(buffer_2);
 #endif
@@ -100,7 +92,7 @@ http_sendreq(http* h) {
   ret = buffer_flush(out);
 
 #ifdef DEBUG_HTTP
-  buffer_putspad(buffer_2, "http_sendreq ", 30);
+  buffer_putspad(buffer_2, "\x1b[38;5;208mhttp_sendreq\x1b[0m ", 30);
   buffer_puts(buffer_2, "ret=");
   buffer_putlong(buffer_2, ret);
 
@@ -114,7 +106,6 @@ http_sendreq(http* h) {
 
   if(ret != -1) {
     h->sent = 1;
-    h->response->status = 0 /*HTTP_RECV_HEADER*/;
 
     io_onlywantread(h->sock);
   }

@@ -24,7 +24,7 @@ tls_strerror(fd_type fd) {
 #endif
     case SSL_ERROR_SYSCALL:
       str_copyn(i->errstr, "syscall ", sizeof(i->errstr));
-      str_catn(i->errstr, strerror(i->syserr), sizeof(i->errstr));
+      str_catn(i->errstr, unix_errno(i->syserr), sizeof(i->errstr));
       break;
     case SSL_ERROR_ZERO_RETURN: str_copy(i->errstr, "zero return"); break;
     case SSL_ERROR_NONE: str_copy(i->errstr, "none"); break;

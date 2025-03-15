@@ -26,7 +26,7 @@ tls_connect(fd_type fd) {
 
   if(errno) {
     buffer_puts(buffer_2, " errno=");
-    buffer_putstr(buffer_2, strerror(errno));
+    buffer_putstr(buffer_2, unix_errno(errno));
   }
   buffer_puts(buffer_2, " retval=");
   buffer_putlong(buffer_2, i->retval);

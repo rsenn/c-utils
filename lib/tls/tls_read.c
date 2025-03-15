@@ -40,7 +40,7 @@ tls_read(fd_type fd, void* data, size_t len) {
 
   if(errno) {
     buffer_puts(buffer_2, " errno: ");
-    buffer_putstr(buffer_2, strerror(errno));
+    buffer_putstr(buffer_2, unix_errno(errno));
   }
 
   if(i->error != SSL_ERROR_NONE) {

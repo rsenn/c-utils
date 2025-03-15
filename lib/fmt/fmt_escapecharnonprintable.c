@@ -18,10 +18,14 @@ fmt_escapecharnonprintable(char* dest, int c) {
   if(dest) {
     *dest++ = '\\';
 
-    if(ch)
-      fmt_8long(dest, ch);
-    else
-      *dest = '0';
+    switch(ch) {
+      case '\n': *dest = 'n'; break;
+      case '\r': *dest = 'r'; break;
+      case '\t': *dest = 't'; break;
+      case '\b': *dest = 'b'; break;
+      case '\0': *dest = '0'; break;
+      default: fmt_8long(dest, ch); break;
+    }
   }
 
   return r;
