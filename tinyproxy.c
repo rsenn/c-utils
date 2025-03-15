@@ -1,4 +1,6 @@
 #define USE_WS2_32 1
+#include "lib/buffer.h"
+#include "lib/set.h"
 #include "lib/windoze.h"
 #include "lib/socket_internal.h"
 #include "lib/io_internal.h"
@@ -8,7 +10,6 @@
 #include "lib/stralloc.h"
 #include "lib/strlist.h"
 #include "lib/strarray.h"
-#include "lib/buffer.h"
 #include "lib/ip4.h"
 #include "lib/ip6.h"
 #include "lib/open.h"

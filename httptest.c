@@ -199,7 +199,7 @@ http_io_handler(http* h, buffer* out) {
 
   while((r = io_canread()) != -1) {
     if(h->sock == r) {
-      nb = http_canread(h, io_wantread, io_wantwrite);
+  //  nb = http_canread(h, io_wantread, io_wantwrite);
 
       /*#ifdef DEBUG_OUTPUT
             buffer_putspad(buffer_2, "\x1b[1;31mhttp_canread\x1b[0m", 30);

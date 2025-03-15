@@ -1,5 +1,6 @@
 #include "../tls_internal.h"
 #include "../buffer.h"
+#include "../unix.h"
 #include <assert.h>
 
 #ifdef HAVE_OPENSSL

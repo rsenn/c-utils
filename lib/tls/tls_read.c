@@ -3,6 +3,7 @@
 #include "../buffer.h"
 #include "../fmt.h"
 #include "../uint64.h"
+#include "../unix.h"
 #include <assert.h>
 #include <errno.h>
 

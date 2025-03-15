@@ -18,6 +18,7 @@ include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/Macros.cmake)
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/CheckInline.cmake)
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/Profile.cmake)
 
+dump(CMAKE_SYSTEM_NAME SYSTEM_NAME)
 if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
   set(CMAKE_INSTALL_PREFIX "/usr/local" CACHE PATH "Installation prefix")
 endif()

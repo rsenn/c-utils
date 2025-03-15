@@ -2,6 +2,7 @@
 #include "../stralloc.h"
 #include "../buffer.h"
 #include "../fmt.h"
+#include "../unix.h"
 #include <assert.h>
 
 #ifdef HAVE_OPENSSL

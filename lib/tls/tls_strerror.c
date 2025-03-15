@@ -1,6 +1,7 @@
 #include "../tls_internal.h"
 #include "../buffer.h"
 #include "../str.h"
+#include "../unix.h"
 #include <errno.h>
 #include <string.h>
 
