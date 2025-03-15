@@ -69,7 +69,7 @@ http_dump(http* h) {
     }
     if(h->response->chunk_length > 0) {
       buffer_puts(buffer_2, " chunk_length=");
-      buffer_putulonglong(buffer_2, h->response->chunk_length);
+      buffer_putlonglong(buffer_2, h->response->chunk_length);
     }
     buffer_puts(buffer_2, " transfer=");
     buffer_puts(buffer_2, "HTTP_TRANSFER_");
