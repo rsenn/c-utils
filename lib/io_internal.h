@@ -167,7 +167,7 @@ typedef struct ioent {
 
 extern int io_multithreaded;
 extern int io_sockets[2];
-  my_extern uint64 io_wanted_fds;
+my_extern uint64 io_wanted_fds;
 my_extern array io_pollfds;
 
 my_extern long first_readable;

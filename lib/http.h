@@ -96,7 +96,8 @@ ssize_t http_canwrite(http* h, void (*wantread)(fd_type), void (*wantwrite)(fd_t
 void http_close(http* h);
 
 void http_dump(http*);
-const char* http_get_header(stralloc* data, const char* name);
+
+char* http_get_header(char* data, size_t n, const char* name, size_t* result_len);
 int http_get(http* h, const char* location);
 void http_init(http* h, const char* host, uint16 port);
 ssize_t http_read(fd_type fd, char* buf, size_t len, void* ptr);

@@ -69,23 +69,21 @@ again:
     errno = EAGAIN;
   }*/
 
-  if((received > 0 || r->status == HTTP_RECV_HEADER) && (ret = http_read_internal(h->sock, buf, received, &h->q.in)) > 0) {
+  if((received > 0 || (r->status == HTTP_RECV_HEADER || r->status == HTTP_RECV_DATA))) {
+
+    ret = http_read_internal(h->sock, buf, received, &h->q.in);
+    goto end;
   }
 
   if(r->status == HTTP_STATUS_FINISH)
     goto end;
 
   if(r->status == HTTP_RECV_DATA) {
-    // n = MIN(n, r->content_length - r->chunk_length);
     n = MIN(n, len);
     byte_copy(buf, n, buffer_BEGIN(b));
 
-    // len -= (size_t)n;
-    // buf += n;
-
     ret = n;
     buffer_skipn(b, n);
- //    r->ptr += n;
   }
 
   if((r->status == HTTP_STATUS_CLOSED) || r->status == HTTP_STATUS_FINISH)
@@ -99,8 +97,8 @@ end:
   if(r->code == 302) {
     size_t len;
 
-    location = http_get_header(h, "Location");
-    end = len = str_chrs(location, "\r\n\0", 3);
+    location = http_get_header(r->data.s, r->ptr, "Location", &len);
+    end = len; //  = str_chrs(location, "\r\n\0", 3);
 
     if((pos = byte_finds(location, len, "://"))) {
       pos += 3;

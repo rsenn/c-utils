@@ -4,16 +4,16 @@
 #include "../scan.h"
 #include "../str.h"
 
-const char*
-http_get_header(stralloc* data, const char* name) {
+char*
+http_get_header(char* data, size_t n, const char* name, size_t* result_len) {
   size_t len, p, pos, namelen = str_len(name);
-  const char* x;
+  char* x;
 
-  if((pos = byte_chr(data->s, data->len, '\n')) < data->len)
+  if((pos = byte_chr(data, n, '\n')) < n)
     ++pos;
 
-  len = data->len - pos;
-  x = &data->s[pos];
+  len = n - pos;
+  x = &x[pos];
 
   while(len > 0) {
     if((p = byte_chr(x, len, ':')) == namelen && !case_diffb(name, p, x)) {
@@ -28,6 +28,10 @@ http_get_header(stralloc* data, const char* name) {
       p = scan_whitenskip(x, len);
       x += p;
       len -= p;
+
+      if(result_len)
+        *result_len = byte_chrs(x, len, "\r\n", 2);
+
       return x;
     }
 
@@ -40,6 +44,12 @@ http_get_header(stralloc* data, const char* name) {
       len--;
     }
   }
+
+  return 0;
+}
+
+const char*
+http_get_header_n(stralloc* data, const char* name, size_t* lenp) {
 
   return 0;
 }

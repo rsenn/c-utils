@@ -43,7 +43,7 @@ typedef struct queue_entry_s {
   http* http;
 } queue_entry;
 
-static const char default_url[] = "https://www.google.com/                                  earch?q=SSL_bio";
+static const char default_url[] = "http://www.google.ch/search?q=SSL_bio";
 
 static const char* const url_host = "127.0.0.1";
 static const char* const url_location = "/login";
@@ -199,7 +199,7 @@ http_io_handler(http* h, buffer* out) {
 
   while((r = io_canread()) != -1) {
     if(h->sock == r) {
-  //  nb = http_canread(h, io_wantread, io_wantwrite);
+      //  nb = http_canread(h, io_wantread, io_wantwrite);
 
       /*#ifdef DEBUG_OUTPUT
             buffer_putspad(buffer_2, "\x1b[1;31mhttp_canread\x1b[0m", 30);
@@ -346,9 +346,10 @@ process_xml(const char* x, size_t len, strlist* urls, uri_t* uri) {
 
 static void
 http_process(http* h, strlist* urls, uri_t* uri) {
+  size_t len;
   http_response* r = h->response;
 
-  const char* type = http_get_header(&h->response->data, "Content-Type");
+  const char* type = http_get_header(r->data.s, r->ptr, "Content-Type", &len);
   size_t typelen = type ? str_chrs(type, "\r\n\0", 3) : 0;
 
   size_t received = r->data.len;
@@ -426,7 +427,6 @@ main(int argc, char* argv[]) {
 
     if(c == 0)
       continue;
-
     switch(c) {
       case 'o': outname = unix_optarg; break;
       case 'h': usage(argv[0]); return 0;
@@ -492,7 +492,7 @@ main(int argc, char* argv[]) {
       fd_type sock;
 
 #ifdef DEBUG_OUTPUT
-      buffer_putsflush(buffer_2, "httptest start loop\n");
+      buffer_putsflush(buffer_2, "httptest \n");
 #endif
 
       io_wait();
@@ -504,9 +504,10 @@ main(int argc, char* argv[]) {
       ret = http_io_handler(&h, &out);
 
       if(h.response->code == 302) {
-        s = http_get_header(&h.response->data, "Location");
+        size_t sz;
+        s = http_get_header(h.response->data.s, h.response->ptr, "Location", &sz);
         buffer_puts(buffer_2, "Location: ");
-        buffer_put(buffer_2, s, str_chrs(s, "\r\n", 2));
+        buffer_put(buffer_2, s, sz);
         buffer_putnlflush(buffer_2);
       }
 
