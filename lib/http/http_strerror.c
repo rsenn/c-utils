@@ -7,12 +7,8 @@ const char*
 http_strerror(http* h, int ret) {
   const char* err = "success";
 
-  if(ret == -1) {
-    if(h->tls)
-      err = tls_strerror(h->sock);
-    else
-      err = strerror(errno);
-  }
+  if(ret == -1)
+    err = h->tls ? tls_strerror(h->sock) : strerror(errno);
 
   return err;
 }

@@ -1,3 +1,4 @@
+#define NO_BUILTINS
 #include "../tls_internal.h"
 #include "../http.h"
 #include "../scan.h"
@@ -9,6 +10,7 @@
 #include "../errmsg.h"
 #include "../socket.h"
 #include "../fmt.h"
+#include "../unix.h"
 #include <errno.h>
 #include <assert.h>
 #include <string.h>
@@ -101,8 +103,10 @@ fail:
   }
 
   if(h->err) {
-    buffer_puts(buffer_2, " errno=");
-    buffer_putlong(buffer_2, h->err);
+    buffer_puts(buffer_2, " h->err=");
+    /* clang-format off */
+    buffer_puts(buffer_2, unix_errnos[h->err]);
+    /* clang-format on */
   }
   /* buffer_puts(buffer_2, " tls=");
     buffer_putlong(buffer_2, !!h->tls);
@@ -117,7 +121,15 @@ fail:
   buffer_puts(buffer_2, " status=");
   buffer_puts(buffer_2,
               ((const char* const[]){
-                  "-1", "HTTP_RECV_HEADER", "HTTP_RECV_DATA", "HTTP_STATUS_CLOSED", "HTTP_STATUS_ERROR", "HTTP_STATUS_BUSY", "HTTP_STATUS_FINISH", 0})[h->response->status + 1]);
+                  "-1",
+                  "HTTP_RECV_HEADER",
+                  "HTTP_RECV_DATA",
+                  "HTTP_STATUS_CLOSED",
+                  "HTTP_STATUS_ERROR",
+                  "HTTP_STATUS_BUSY",
+                  "HTTP_STATUS_FINISH",
+                  0,
+              })[h->response->status + 1]);
   buffer_putnlflush(buffer_2);
 #endif
 

@@ -1,3 +1,4 @@
+#define NO_BUILTINS
 #include "../typedefs.h"
 #include "../windoze.h"
 #include "../alloc.h"
@@ -9,6 +10,7 @@
 #include "../ndelay.h"
 #include "../tls.h"
 #include "../byte.h"
+#include "../unix.h"
 
 #if WINDOWS_NATIVE
 #include <io.h>
@@ -22,10 +24,9 @@
 #define HTTP_RECV_BUFSIZE 16384
 #define HTTP_SEND_BUFSIZE 32768
 
-ssize_t http_read_internal(fd_type fd, char* buf, size_t received, buffer* b);
-
-ssize_t http_socket_read(fd_type fd, void* buf, size_t len, void* b);
-ssize_t http_socket_write(fd_type fd, void* buf, size_t len, void* b);
+ssize_t http_read_internal(fd_type, char*, size_t, buffer*);
+ssize_t http_socket_read(fd_type, void*, size_t, void*);
+ssize_t http_socket_write(fd_type, void*, size_t, void*);
 
 int
 http_socket(http* h, int nonblock) {
@@ -64,10 +65,10 @@ http_socket(http* h, int nonblock) {
 
 ssize_t
 http_socket_read(fd_type fd, void* buf, size_t len, void* b) {
-  ssize_t ret = -1, iret = -1;
   http* h = (http*)((buffer*)b)->cookie;
   http_response* r = h->response;
   int tlserr, connected = h->connected;
+  ssize_t ret = -1, iret = -1;
 
   if(h->tls) {
     ret = tls_read(h->sock, buf, len);
@@ -81,10 +82,8 @@ http_socket_read(fd_type fd, void* buf, size_t len, void* b) {
     ret = io_tryread(fd, (char*)buf, len);
   }
 
-  if(!connected && h->connected) {
-    //    if(h->response->status <= HTTP_RECV_HEADER)
+  if(!h->response->status && h->connected)
     h->response->status = HTTP_RECV_HEADER;
-  }
 
   tlserr = h->tls ? tls_error(h->sock) : 0;
 
@@ -117,25 +116,43 @@ http_socket_read(fd_type fd, void* buf, size_t len, void* b) {
 
   if(errno) {
     buffer_puts(buffer_2, " errno=");
-    buffer_putstr(buffer_2, strerror(errno));
+    /* clang-format off */
+    buffer_puts(buffer_2, unix_errnos[errno]);
+    /* clang-format on */
   }
 
   if(h->response) {
     buffer_puts(buffer_2, " err=");
-    buffer_putstr(buffer_2, strerror(h->response->err));
+    buffer_putlong(buffer_2, h->response->err);
     buffer_puts(buffer_2, " received=");
     buffer_putlong(buffer_2, h->response->received);
     buffer_puts(buffer_2, " transfer=");
     buffer_puts(buffer_2, "HTTP_TRANSFER_");
-    buffer_puts(buffer_2, ((const char* const[]){"UNDEF", "CHUNKED", "LENGTH", "BOUNDARY", 0})[h->response->transfer]);
+    buffer_puts(buffer_2,
+                ((const char* const[]){
+                    "UNDEF",
+                    "CHUNKED",
+                    "LENGTH",
+                    "BOUNDARY",
+                    0,
+                })[h->response->transfer]);
     buffer_puts(buffer_2, " status=");
     buffer_puts(buffer_2,
                 ((const char* const[]){
-                    "-1", "HTTP_RECV_HEADER", "HTTP_RECV_DATA", "HTTP_STATUS_CLOSED", "HTTP_STATUS_ERROR", "HTTP_STATUS_BUSY", "HTTP_STATUS_FINISH", 0})[h->response->status + 1]);
+                    "-1",
+                    "HTTP_RECV_HEADER",
+                    "HTTP_RECV_DATA",
+                    "HTTP_STATUS_CLOSED",
+                    "HTTP_STATUS_ERROR",
+                    "HTTP_STATUS_BUSY",
+                    "HTTP_STATUS_FINISH",
+                    0,
+                })[h->response->status + 1]);
   }
 
   buffer_putnlflush(buffer_2);
 #endif
+
   /*if(ret > 0) {
     int st = h->response->status;
     size_t n = h->q.in.n;
@@ -177,10 +194,8 @@ http_socket_write(fd_type fd, void* buf, size_t len, void* b) {
     ret = winsock2errno(send(fd, buf, len, 0));
   }
 
-  if(!connected && h->connected) {
-    //    if(h->response->status <= HTTP_RECV_HEADER)
+  if(!h->response->status && h->connected)
     h->response->status = HTTP_RECV_HEADER;
-  }
 
   tlserr = h->tls ? tls_error(h->sock) : 0;
 
@@ -210,18 +225,35 @@ http_socket_write(fd_type fd, void* buf, size_t len, void* b) {
 
   if(ret < 0) {
     buffer_puts(buffer_2, " errno=");
-    buffer_putstr(buffer_2, strerror(errno));
+    /* clang-format off */
+    buffer_puts(buffer_2, unix_errnos[errno]);
+    /* clang-format on */
   }
 
   if(h->response) {
     buffer_puts(buffer_2, " transfer=");
     buffer_puts(buffer_2, "HTTP_TRANSFER_");
-    buffer_puts(buffer_2, ((const char* const[]){"UNDEF", "CHUNKED", "LENGTH", "BOUNDARY", 0})[h->response->transfer]);
+    buffer_puts(buffer_2,
+                ((const char* const[]){
+                    "UNDEF",
+                    "CHUNKED",
+                    "LENGTH",
+                    "BOUNDARY",
+                    0,
+                })[h->response->transfer]);
 
     buffer_puts(buffer_2, " status=");
     buffer_puts(buffer_2,
                 ((const char* const[]){
-                    "-1", "HTTP_RECV_HEADER", "HTTP_RECV_DATA", "HTTP_STATUS_CLOSED", "HTTP_STATUS_ERROR", "HTTP_STATUS_BUSY", "HTTP_STATUS_FINISH", 0})[h->response->status + 1]);
+                    "-1",
+                    "HTTP_RECV_HEADER",
+                    "HTTP_RECV_DATA",
+                    "HTTP_STATUS_CLOSED",
+                    "HTTP_STATUS_ERROR",
+                    "HTTP_STATUS_BUSY",
+                    "HTTP_STATUS_FINISH",
+                    0,
+                })[h->response->status + 1]);
   }
 
   buffer_putnlflush(buffer_2);

@@ -8,6 +8,7 @@ errmsg_iam(const char* who) {
 
   if(who == NULL)
     return s;
+
   errmsg_argv0 = who;
   return s;
 }

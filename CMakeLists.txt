@@ -1141,8 +1141,6 @@ if(BUILD_TESTS)
   add_program(
     ftptest hmap unix dns case io array socket ndelay errmsg taia tai stralloc
     buffer mmap open fmt scan str byte uint16 ${LIBMSWSOCK} ${LIBIPHLPAPI})
-  #add_program(httptest unix slist xml sig http dns stralloc buffer errmsg byte io socket alloc taia ${TLS_LIBRARIES} ${LIBMSWSOCK} ${LIBPTHREAD})
-  #link_program(httptest ${LIBDL})
   add_program(jsontest json stralloc charbuf buffer byte fmt hmap mmap open)
   add_program(rdir-test rdir stralloc buffer)
   #add_program(strarraytest xml dns stralloc buffer mmap strarray unix)
@@ -1155,6 +1153,8 @@ if(BUILD_TESTS)
   add_program(xmltest2 xml stralloc buffer byte fmt hmap)
   add_program(xmltest3 xml stralloc buffer byte fmt hmap)
   #add_program(xmltest4 xml stralloc buffer array byte cb cbmap fmt hmap mmap scan str strlist)
+  add_program(httptest slist xml sig http unix dns stralloc buffer errmsg byte io socket alloc taia ${TLS_LIBRARIES} ${LIBMSWSOCK} ${LIBPTHREAD})
+ link_program(httptest ${LIBDL})
 endif(BUILD_TESTS)
 
 set(least_SOURCES terminal.c terminal.h)

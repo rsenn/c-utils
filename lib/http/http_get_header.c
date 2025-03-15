@@ -7,39 +7,36 @@
 const char*
 http_get_header(http* h, const char* name) {
   http_response* r;
-  size_t pos, len, namelen = str_len(name);
-  const char* x;
 
   if((r = h->response)) {
-    pos = byte_chr(r->data.s, r->data.len, '\n');
+    size_t len, p, pos, namelen = str_len(name);
+    const char* x;
 
-    if(pos < r->data.len)
+    if((pos = byte_chr(r->data.s, r->data.len, '\n')) < r->data.len)
       ++pos;
 
     len = r->data.len - pos;
     x = &r->data.s[pos];
 
     while(len > 0) {
-      size_t pos = byte_chr(x, len, ':');
-
-      if(pos == namelen && !case_diffb(name, pos, x)) {
-        x += pos;
-        len -= pos;
+      if((p = byte_chr(x, len, ':')) == namelen && !case_diffb(name, p, x)) {
+        x += p;
+        len -= p;
 
         if(len > 0) {
           x++;
           len--;
         }
 
-        pos = scan_whitenskip(x, len);
-        x += pos;
-        len -= pos;
+        p = scan_whitenskip(x, len);
+        x += p;
+        len -= p;
         return x;
       }
 
-      pos = byte_chr(x, len, '\n');
-      x += pos;
-      len += pos;
+      p = byte_chr(x, len, '\n');
+      x += p;
+      len += p;
 
       if(len > 0) {
         x++;

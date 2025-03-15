@@ -1,28 +1,16 @@
 #include "lib/windoze.h"
 #include "lib/http.h"
-#include "lib/byte.h"
+#include "lib/strlist.h"
 #include "lib/io.h"
 #include "lib/iopause.h"
-#include "lib/socket.h"
-#include "lib/taia.h"
 #include "lib/errmsg.h"
-#include "lib/open.h"
-#include "lib/dns.h"
 #include "lib/fmt.h"
-#include "lib/iarray.h"
-#include "lib/scan.h"
+#include "lib/byte.h"
+#include "lib/open.h"
 #include "lib/str.h"
-#include "lib/stralloc.h"
-#include "lib/tai.h"
-#include "lib/case.h"
-#include "lib/buffer.h"
-#include "lib/getopt.h"
-#include "lib/tls.h"
-#include "lib/sig.h"
-#include "lib/xml.h"
-#include "lib/strlist.h"
+#include "lib/unix.h"
 #include "lib/slist.h"
-
+#include "lib/xml.h"
 #include "uri.h"
 
 #include <errno.h>
@@ -36,9 +24,11 @@
 #else
 #include <unistd.h>
 #endif
+
 static int last_errno = 0;
 static struct taia deadline, stamp;
 static void
+
 set_timeouts(int seconds) {
   taia_uint(&deadline, seconds);
   taia_uint(&stamp, 0);
@@ -52,16 +42,9 @@ typedef struct queue_entry_s {
   uri_t uri;
   http* http;
 } queue_entry;
-/*
- *
- *  URL:
- * http://verteiler1.mediathekview.de/Filmliste-akt.xz
- */
 
-/* https://github.com/rsenn/lc-meter/raw/master/doc/LCmeter0-LCD-8pinlcd-PIC_COMP.pdf
- */
-static const char default_url[] =
-    "https://www.google.com/                                  earch?q=SSL_bio"; //"https://raw.githubusercontent.com/rsenn/lc-meter/master/doc/LCmeter0-LCD-8pinlcd-PIC_COMP.pdf";
+static const char default_url[] = "https://www.google.com/                                  earch?q=SSL_bio";
+
 static const char* const url_host = "127.0.0.1";
 static const char* const url_location = "/login";
 static const uint16 url_port = 8080;
@@ -71,10 +54,26 @@ static io_entry* g_iofd;
 static http h;
 static buffer in, out;
 
-const char* token_types[] = {"XML_EOF", "XML_DATA", "XML_TAG_NAME", "XML_TAG_CLOSE", "XML_ATTR_NAME", "XML_ATTR_VALUE", "XML_COMMENT"};
-const char* token_colors[] = {"\x1b[1;37m", "\x1b[1;31m", "\x1b[1;35m", "\x1b[1;33m", "\x1b[1;36m", "\x1b[1;32m"};
+static const char* token_types[] = {
+    "XML_EOF",
+    "XML_DATA",
+    "XML_TAG_NAME",
+    "XML_TAG_CLOSE",
+    "XML_ATTR_NAME",
+    "XML_ATTR_VALUE",
+    "XML_COMMENT",
+};
 
-void
+static const char* token_colors[] = {
+    "\x1b[1;37m",
+    "\x1b[1;31m",
+    "\x1b[1;35m",
+    "\x1b[1;33m",
+    "\x1b[1;36m",
+    "\x1b[1;32m",
+};
+
+static void
 usage(char* av0) {
   buffer_putm_internal(buffer_1,
                        "Usage: ",
@@ -90,7 +89,7 @@ usage(char* av0) {
   buffer_flush(buffer_1);
 }
 
-queue_entry*
+static queue_entry*
 queue_put(void* head, const char* x) {
   queue_entry* e = alloc_zero(sizeof(queue_entry));
 
@@ -98,6 +97,7 @@ queue_put(void* head, const char* x) {
   uri_scan(&e->uri, x, str_len(x));
 
   slist_push(head ? (slink**)head : (slink**)&queue, (slink*)e);
+
 #ifdef DEBUG_OUTPUT_
   buffer_putspad(buffer_2, "queue_put", 12);
   buffer_puts(buffer_2, " len=");
@@ -106,23 +106,19 @@ queue_put(void* head, const char* x) {
   buffer_puts(buffer_2, x);
   buffer_putnlflush(buffer_2);
 #endif
+
   return e;
 }
 
 static void
 put_escaped_x(buffer* b, const char* x, size_t len, int unescaped) {
-  size_t i;
-  char buf[32];
+  for(size_t i = 0; i < len; i++) {
+    char buf[32], c = x[i];
 
-  for(i = 0; i < len; i++) {
-    char c = x[i];
-
-    if(c >= unescaped) {
+    if(c >= unescaped)
       buffer_putc(b, c);
-    } else {
-      /*buffer_putc(b, '\\'); */
+    else
       buffer_put(b, buf, fmt_escapecharc(buf, (uint64)(unsigned char)c));
-    }
   }
 }
 
@@ -135,16 +131,17 @@ put_abbreviate(buffer* b, size_t len) {
 
 static void
 put_escaped_n(buffer* b, const char* x, size_t len, size_t maxlen) {
-  size_t pos, n = len;
+  size_t n = len;
 
   if(n > maxlen)
     n = maxlen;
+
   put_escaped_x(b, x, n, 0x20);
 
   if(n < len) {
     put_abbreviate(b, len);
-    pos = (len - maxlen) >= maxlen ? len - maxlen : maxlen;
-    put_escaped_x(b, &x[pos], len - pos, 0x20);
+    n = (len - maxlen) >= maxlen ? len - maxlen : maxlen;
+    put_escaped_x(b, &x[n], len - n, 0x20);
   }
 }
 
@@ -155,10 +152,7 @@ put_escaped(buffer* b, const char* x, size_t len) {
 
 static void
 put_indented(buffer* b, const char* x, size_t len) {
-  size_t i;
-  char buf[32];
-
-  for(i = 0; i < len; i++) {
+  for(size_t i = 0; i < len; i++) {
     char c = x[i];
     buffer_putc(b, c);
 
@@ -167,9 +161,8 @@ put_indented(buffer* b, const char* x, size_t len) {
   }
 }
 
-static void
+/*static void
 put_indented_n(buffer* b, const char* x, size_t len, size_t maxlen) {
-  size_t pos;
   size_t n = len;
 
   if(n > maxlen)
@@ -179,10 +172,10 @@ put_indented_n(buffer* b, const char* x, size_t len, size_t maxlen) {
 
   if(n < len) {
     put_abbreviate(b, len);
-    pos = (len - maxlen) >= maxlen ? len - maxlen : maxlen;
-    put_indented(b, &x[pos], len - pos);
+    n = (len - maxlen) >= maxlen ? len - maxlen : maxlen;
+    put_indented(b, &x[n], len - n);
   }
-}
+}*/
 
 static int
 http_io_handler(http* h, buffer* out) {
@@ -192,13 +185,14 @@ http_io_handler(http* h, buffer* out) {
 
   while((w = io_canwrite()) != -1) {
     if(h->sock == w) {
-      if((nb = http_canwrite(h, io_wantread)) <= 0) {
+      if((nb = http_canwrite(h, io_wantread, io_wantwrite)) <= 0) {
         ret = nb;
         continue;
       }
 
       if(nb > 0)
         ret += nb;
+
       nw++;
     }
   }
@@ -208,15 +202,14 @@ http_io_handler(http* h, buffer* out) {
     buffer_putspad(buffer_2, "io_canread", 30);
     buffer_puts(buffer_2, "r=");
     buffer_putlong(buffer_2, r);
-
     buffer_putnlflush(buffer_2);
 #endif
 
     if(h->sock == r) {
-      nb = http_canread(h, io_wantwrite);
+      nb = http_canread(h, io_wantread, io_wantwrite);
 
 #ifdef DEBUG_OUTPUT
-      buffer_putspad(buffer_2, "\x1b[1;31mhttp_io_handler                      anread\x1b[0m", 30);
+      buffer_putspad(buffer_2, "\x1b[1;31mhttp_canread\x1b[0m", 30);
       buffer_puts(buffer_2, "nb=");
       buffer_putlong(buffer_2, nb);
       buffer_puts(buffer_2, " connected=");
@@ -228,35 +221,37 @@ http_io_handler(http* h, buffer* out) {
         buffer_puts(buffer_2, "  errno=");
         buffer_puts(buffer_2, strerror(errno));
       }
+
       buffer_putnlflush(buffer_2);
 #endif
-      /* if(nb <= 0) {
-         ret = nb;
-         continue;
-       }
 
-       if(nb > 0)
-         ret += nb;
-
-       if(h->connected && h->sent)*/
       {
         char buf[8192];
         ssize_t len;
 
         if((len = buffer_get(&in, buf, sizeof(buf))) > 0) {
-          buffer_putspad(buffer_2, "\x1b[1;31mbuffer_                         et\x1b[0m", 30);
+#ifdef DEBUG_OUTPUT
+          buffer_putspad(buffer_2, "\x1b[1;31mbuffer_get\x1b[0m", 30);
           buffer_puts(buffer_2, " errno=");
           buffer_puts(buffer_2, strerror(errno));
           buffer_puts(buffer_2, " status=");
-          buffer_puts(
-              buffer_2,
-              ((const char* const[]){
-                  "-1", "HTTP_RECV_HEADER", "HTTP_RECV_DATA", "HTTP_STATUS_CLOSED", "HTTP_STATUS_ERROR", "HTTP_STATUS_BUSY", "HTTP_STATUS_FINISH", 0})[h->response->status + 1]);
+          buffer_puts(buffer_2,
+                      ((const char* const[]){
+                          "-1",
+                          "HTTP_RECV_HEADER",
+                          "HTTP_RECV_DATA",
+                          "HTTP_STATUS_CLOSED",
+                          "HTTP_STATUS_ERROR",
+                          "HTTP_STATUS_BUSY",
+                          "HTTP_STATUS_FINISH",
+                          0,
+                      })[h->response->status + 1]);
           buffer_puts(buffer_2, " len=");
           buffer_putlong(buffer_2, len);
           buffer_puts(buffer_2, " data='");
           put_escaped_n(buffer_2, buf, len, 20);
           buffer_putnlflush(buffer_2);
+#endif
 
           if(buffer_put(out, buf, len)) {
             errmsg_warnsys("write error: ", 0);
@@ -269,20 +264,24 @@ http_io_handler(http* h, buffer* out) {
           }
         }
 
+#ifdef DEBUG_OUTPUT
         buffer_puts(buffer_2, "h->response->status = ");
         buffer_putlong(buffer_2, h->response->status);
         buffer_putnlflush(buffer_2);
+#endif
+
         return len;
       }
 
-      nr++;
+      ++nr;
     }
   }
+
 fail:
   return ret;
 }
 
-int
+static int
 process_uris(const char* x, size_t len, strlist* urls, const uri_t* uri) {
   size_t i, pos = 0;
   uri_t link;
@@ -309,7 +308,7 @@ process_uris(const char* x, size_t len, strlist* urls, const uri_t* uri) {
   }
 }
 
-int
+static int
 process_xml(const char* x, size_t len, strlist* urls, uri_t* uri) {
   xmlscanner s;
   xmltoken tok;
@@ -328,11 +327,12 @@ process_xml(const char* x, size_t len, strlist* urls, uri_t* uri) {
       if(stralloc_equals(&attr_name, "href") || stralloc_equals(&attr_name, "src") || stralloc_equals(&attr_name, "url") || byte_finds(tok.x, tok.len, "://") < tok.len) {
         stralloc url;
         uri_t link;
+
         uri_init(&link);
         uri_copy(&link, uri);
         stralloc_init(&url);
         process_uris(tok.x + 1, tok.len - 2, urls, uri);
-        ///        uri_scan(&link, tok.x + 1, tok.len - 2);
+        // uri_scan(&link, tok.x + 1, tok.len - 2);
 
 #ifdef DEBUG_OUTPUT_
         buffer_puts(buffer_2, "attr: ");
@@ -358,17 +358,25 @@ process_xml(const char* x, size_t len, strlist* urls, uri_t* uri) {
   } while(tok.id != XML_EOF);
 }
 
-void
+static void
 http_process(http* h, strlist* urls, uri_t* uri) {
   http_response* r = h->response;
-  size_t received = r->data.len;
-  size_t pos = http_skip_header(stralloc_begin(&r->data), stralloc_length(&r->data));
   const char* type = http_get_header(h, "Content-Type");
-  size_t typelen = str_chrs(type, "\r\n\0", 3);
+  size_t received = r->data.len, pos = http_skip_header(stralloc_begin(&r->data), stralloc_length(&r->data)), typelen = str_chrs(type, "\r\n\0", 3);
+
   buffer_puts(buffer_2, "STATUS: ");
-  buffer_puts(
-      buffer_2,
-      ((const char* const[]){"-1", "HTTP_RECV_HEADER", "HTTP_RECV_DATA", "HTTP_STATUS_CLOSED", "HTTP_STATUS_ERROR", "HTTP_STATUS_BUSY", "HTTP_STATUS_FINISH", 0})[r->status + 1]);
+  buffer_puts(buffer_2,
+              ((const char* const[]){
+                  "-1",
+                  "HTTP_RECV_HEADER",
+                  "HTTP_RECV_DATA",
+                  "HTTP_STATUS_CLOSED",
+                  "HTTP_STATUS_ERROR",
+                  "HTTP_STATUS_BUSY",
+                  "HTTP_STATUS_FINISH",
+                  0,
+              })[r->status + 1]);
+
   buffer_putnlflush(buffer_2);
   buffer_puts(buffer_2, "PTR: ");
   buffer_putulong(buffer_2, r->ptr);
@@ -376,7 +384,7 @@ http_process(http* h, strlist* urls, uri_t* uri) {
   buffer_puts(buffer_2, "TYPE: ");
   buffer_put(buffer_2, type, typelen);
   buffer_putnlflush(buffer_2);
-  pos--;
+  --pos;
 
   buffer_puts(buffer_2, "HEADERS: ");
   put_indented(buffer_2, stralloc_begin(&r->data), pos);
@@ -389,9 +397,10 @@ http_process(http* h, strlist* urls, uri_t* uri) {
   } else {
     put_escaped(buffer_2, stralloc_begin(&r->data) + pos, stralloc_length(&r->data) - pos);
 
-    //    put_indented_n(buffer_2, stralloc_begin(&r->data) + pos,
-    //    stralloc_length(&r->data) - pos, 1024);
+    // put_indented_n(buffer_2, stralloc_begin(&r->data) + pos,
+    // stralloc_length(&r->data) - pos, 1024);
   }
+
   buffer_putnlflush(buffer_2);
 }
 
@@ -399,14 +408,17 @@ int
 main(int argc, char* argv[]) {
   int argi;
   iopause_fd iop;
-  static char inbuf[128 * 1024];
-  static char outbuf[256 * 1024];
+  static char inbuf[128 * 1024], outbuf[256 * 1024];
   fd_type fd, outfile;
   int c, index;
   buffer data;
   const char *s, *outname = 0;
   char* tmpl = "output-XXXXXX.txt";
-  struct unix_longopt opts[] = {{"help", 0, NULL, 'h'}, {"output", 0, NULL, 'o'}, {0, 0, 0, 0}};
+  struct unix_longopt opts[] = {
+      {"help", 0, NULL, 'h'},
+      {"output", 0, NULL, 'o'},
+      {0, 0, 0, 0},
+  };
 
   errmsg_iam(argv[0]);
 #if !WINDOWS_NATIVE
@@ -428,7 +440,6 @@ main(int argc, char* argv[]) {
     switch(c) {
       case 'o': outname = unix_optarg; break;
       case 'h': usage(argv[0]); return 0;
-
       default: usage(argv[0]); return 1;
     }
   }
@@ -439,6 +450,7 @@ main(int argc, char* argv[]) {
     errmsg_warnsys("open error: ", outname, 0);
     return 126;
   }
+
   buffer_init(&out, (buffer_op_proto*)(void*)&write, outfile, outbuf, sizeof(outbuf));
   buffer_init(&in, (buffer_op_proto*)(void*)&http_read, (uintptr_t)&h, inbuf, sizeof(inbuf));
   in.cookie = &h;
@@ -451,8 +463,6 @@ main(int argc, char* argv[]) {
 
   if(argv[unix_optind] == 0) {
     argv[unix_optind++] = (char*)default_url;
-    // argv[1] =
-    // "http://127.0.0.1:5555/show";
     argv[unix_optind] = 0;
   }
 
@@ -461,19 +471,27 @@ main(int argc, char* argv[]) {
     uri_t uri;
     char* str;
     strlist urls;
+
     strlist_init(&urls, '\0');
     uri_init(&uri);
 
     uri_scan(&uri, argv[argi], str_len(argv[argi]));
+
+#ifdef DEBUG_OUTPUT
     uri_dump(buffer_2, &uri);
+    buffer_putnlflush(buffer_2);
+#endif
 
     // uri.port = 443;
 
     str = uri_str(&uri);
 
+#ifdef DEBUG_OUTPUT
     buffer_puts(buffer_2, "URI: ");
     buffer_puts(buffer_2, str);
     buffer_putnlflush(buffer_2);
+#endif
+
     free(str);
     ret = http_get(&h, argv[argi]);
 
@@ -481,13 +499,14 @@ main(int argc, char* argv[]) {
       int doread = 1;
       fd_type sock;
 
-      buffer_putsflush(buffer_2, "htttpest start loop\n");
+#ifdef DEBUG_OUTPUT
+      buffer_putsflush(buffer_2, "httptest start loop\n");
+#endif
 
       io_wait();
 
       /*if(io_waituntil2(-1) == -1) {
-        errmsg_warnsys("wait error: ",
-      0); return 3;
+        errmsg_warnsys("wait error: ", 0); return 3;
       }*/
 
       ret = http_io_handler(&h, &out);
@@ -499,6 +518,7 @@ main(int argc, char* argv[]) {
         buffer_putnlflush(buffer_2);
       }
 
+#ifdef DEBUG_OUTPUT
       buffer_putspad(buffer_2, "httptest", 30);
       buffer_puts(buffer_2, "ret=");
       buffer_putlong(buffer_2, ret);
@@ -514,8 +534,17 @@ main(int argc, char* argv[]) {
       buffer_puts(buffer_2, " status=");
       buffer_puts(buffer_2,
                   ((const char* const[]){
-                      "-1", "HTTP_RECV_HEADER", "HTTP_RECV_DATA", "HTTP_STATUS_CLOSED", "HTTP_STATUS_ERROR", "HTTP_STATUS_BUSY", "HTTP_STATUS_FINISH", 0})[h.response->status + 1]);
+                      "-1",
+                      "HTTP_RECV_HEADER",
+                      "HTTP_RECV_DATA",
+                      "HTTP_STATUS_CLOSED",
+                      "HTTP_STATUS_ERROR",
+                      "HTTP_STATUS_BUSY",
+                      "HTTP_STATUS_FINISH",
+                      0,
+                  })[h.response->status + 1]);
       buffer_putnlflush(buffer_2);
+#endif
 
       // buffer_dump(buffer_1, &h.q.in);
 
@@ -524,18 +553,17 @@ main(int argc, char* argv[]) {
     }
 
     if(0) {
-      const char* s = stralloc_begin(&h.response->data);
-      const char* e = stralloc_end(&h.response->data);
+      const char *s = stralloc_begin(&h.response->data), *e = stralloc_end(&h.response->data);
       s += http_skip_header(s, e - s);
 
       put_escaped_n(buffer_1, s, e - s, 300);
-      //      buffer_put(buffer_1, s, e
-      //      - s);
+      // buffer_put(buffer_1, s, e - s);
     }
 
     if(h.response->data.len) {
       const char* url;
       queue_entry** ptr = 0;
+
       // buffer_fromsa(&data, &h.response->data);
       http_process(&h, &urls, &uri);
 
@@ -545,6 +573,7 @@ main(int argc, char* argv[]) {
         queue_entry* entry = queue_put(ptr, url);
         ptr = &entry->next;
       }
+
 #ifdef DEBUG_OUTPUT_
       strlist_dump(buffer_2, &urls);
       buffer_putnlflush(buffer_2);
@@ -554,5 +583,6 @@ main(int argc, char* argv[]) {
     buffer_flush(&out);
     buffer_putnlflush(buffer_1);
   }
+
   return 0;
 }

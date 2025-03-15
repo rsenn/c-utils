@@ -31,14 +31,11 @@ putline(const char* what, const char* b, ssize_t l, int i) {
 ssize_t
 http_read_header(http* h, stralloc* sa, http_response* r) {
   ssize_t ret = 0, bytesread = 0;
-  size_t start, n;
-  char* x;
   buffer* in = &h->q.in;
 
   while(r->status == HTTP_RECV_HEADER) {
-    size_t bytesavail = in->n - in->p;
-
-    start = sa->len;
+    size_t n, bytesavail = in->n - in->p, start = sa->len;
+    char* x;
 
     if((ret = buffer_getline_sa(&h->q.in, sa)) <= 0)
       break;
@@ -46,9 +43,8 @@ http_read_header(http* h, stralloc* sa, http_response* r) {
     bytesread += bytesavail - (in->n - in->p);
     stralloc_nul(sa);
     x = &sa->s[start];
-    n = byte_trimr(x, sa->len - start, "\r\n", 2);
 
-    if(n == 0) {
+    if((n = byte_trimr(x, sa->len - start, "\r\n", 2)) == 0) {
       r->status = HTTP_RECV_DATA;
       ret = 1;
       break;
@@ -117,9 +113,17 @@ http_read_header(http* h, stralloc* sa, http_response* r) {
   }
 
   buffer_puts(buffer_2, " status=");
-  buffer_puts(
-      buffer_2,
-      ((const char* const[]){"-1", "HTTP_RECV_HEADER", "HTTP_RECV_DATA", "HTTP_STATUS_CLOSED", "HTTP_STATUS_ERROR", "HTTP_STATUS_BUSY", "HTTP_STATUS_FINISH", 0})[r->status + 1]);
+  buffer_puts(buffer_2,
+              ((const char* const[]){
+                  "-1",
+                  "HTTP_RECV_HEADER",
+                  "HTTP_RECV_DATA",
+                  "HTTP_STATUS_CLOSED",
+                  "HTTP_STATUS_ERROR",
+                  "HTTP_STATUS_BUSY",
+                  "HTTP_STATUS_FINISH",
+                  0,
+              })[r->status + 1]);
   buffer_putnlflush(buffer_2);
 #endif
 

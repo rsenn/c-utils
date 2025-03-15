@@ -1,3 +1,4 @@
+#define NO_BUILTINS
 #include "../http.h"
 #include "../scan.h"
 #include "../str.h"
@@ -10,6 +11,7 @@
 #include "../socket.h"
 #include "../case.h"
 #include "../tls.h"
+#include "../unix.h"
 #include <errno.h>
 #include <assert.h>
 #include <string.h>
@@ -218,7 +220,9 @@ fail:
 
   if(ret < 0) {
     buffer_puts(buffer_2, " errno=");
-    buffer_putstr(buffer_2, strerror(errno));
+    /* clang-format off */
+    buffer_puts(buffer_2, unix_errnos[errno]);
+    /* clang-format on */
   }
 
   if(h->response->code != -1) {
@@ -229,7 +233,15 @@ fail:
   buffer_puts(buffer_2, " status=");
   buffer_puts(buffer_2,
               ((const char* const[]){
-                  "-1", "HTTP_RECV_HEADER", "HTTP_RECV_DATA", "HTTP_STATUS_CLOSED", "HTTP_STATUS_ERROR", "HTTP_STATUS_BUSY", "HTTP_STATUS_FINISH", 0})[h->response->status + 1]);
+                  "-1",
+                  "HTTP_RECV_HEADER",
+                  "HTTP_RECV_DATA",
+                  "HTTP_STATUS_CLOSED",
+                  "HTTP_STATUS_ERROR",
+                  "HTTP_STATUS_BUSY",
+                  "HTTP_STATUS_FINISH",
+                  0,
+              })[h->response->status + 1]);
   buffer_putnlflush(buffer_2);
 #endif
 

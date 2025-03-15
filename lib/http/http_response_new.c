@@ -9,7 +9,7 @@ http_response_new(void) {
     stralloc_init(&r->data);
     stralloc_init(&r->boundary);
     r->content_length = (uint64)-1;
-    r->status = HTTP_RECV_HEADER;
+    r->status = 0;
     r->code = -1;
   }
 

@@ -41,9 +41,11 @@ http_sendreq(http* h) {
 
     while(n > 0) {
       i = byte_chr(x, n, '\r');
+
       buffer_puts(buffer_2, "Request: ");
       buffer_put(buffer_2, x, i);
       buffer_putnlflush(buffer_2);
+
       x += i + 1;
       n -= i + 1;
 
@@ -82,7 +84,15 @@ http_sendreq(http* h) {
   buffer_puts(buffer_2, " status=");
   buffer_puts(buffer_2,
               ((const char* const[]){
-                  "-1", "HTTP_RECV_HEADER", "HTTP_RECV_DATA", "HTTP_STATUS_CLOSED", "HTTP_STATUS_ERROR", "HTTP_STATUS_BUSY", "HTTP_STATUS_FINISH", 0})[h->response->status + 1]);
+                  "-1",
+                  "HTTP_RECV_HEADER",
+                  "HTTP_RECV_DATA",
+                  "HTTP_STATUS_CLOSED",
+                  "HTTP_STATUS_ERROR",
+                  "HTTP_STATUS_BUSY",
+                  "HTTP_STATUS_FINISH",
+                  0,
+              })[h->response->status + 1]);
   buffer_putnlflush(buffer_2);
   buffer_flush(buffer_2);
 #endif
@@ -104,7 +114,7 @@ http_sendreq(http* h) {
 
   if(ret != -1) {
     h->sent = 1;
-    h->response->status = HTTP_RECV_HEADER;
+    h->response->status = 0 /*HTTP_RECV_HEADER*/;
 
     io_onlywantread(h->sock);
   }

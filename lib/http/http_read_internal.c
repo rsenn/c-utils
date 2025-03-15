@@ -24,8 +24,6 @@ ssize_t
 http_read_internal(fd_type fd, char* buf, size_t received, buffer* b) {
   http* h = b->cookie;
   buffer* in = &h->q.in;
-  /*  char* x = buffer_PEEK(in);
-    char* y = buf + received;*/
   http_response* r = h->response;
   ssize_t n = received;
   int status = r->status;
@@ -57,22 +55,31 @@ http_read_internal(fd_type fd, char* buf, size_t received, buffer* b) {
 
   buffer_puts(buffer_2, " transfer=");
   buffer_puts(buffer_2, "HTTP_TRANSFER_");
-  buffer_puts(buffer_2, ((const char* const[]){"UNDEF", "CHUNKED", "LENGTH", "BOUNDARY", 0})[r->transfer]);
+  buffer_puts(buffer_2,
+              ((const char* const[]){
+                  "UNDEF",
+                  "CHUNKED",
+                  "LENGTH",
+                  "BOUNDARY",
+                  0,
+              })[r->transfer]);
   buffer_puts(buffer_2, " status=");
-  buffer_puts(
-      buffer_2,
-      ((const char* const[]){"-1", "HTTP_RECV_HEADER", "HTTP_RECV_DATA", "HTTP_STATUS_CLOSED", "HTTP_STATUS_ERROR", "HTTP_STATUS_BUSY", "HTTP_STATUS_FINISH", 0})[status + 1]);
+  buffer_puts(buffer_2,
+              ((const char* const[]){
+                  "-1",
+                  "HTTP_RECV_HEADER",
+                  "HTTP_RECV_DATA",
+                  "HTTP_STATUS_CLOSED",
+                  "HTTP_STATUS_ERROR",
+                  "HTTP_STATUS_BUSY",
+                  "HTTP_STATUS_FINISH",
+                  0,
+              })[status + 1]);
   buffer_putnlflush(buffer_2);
 
 #endif
 
   if(r->status == HTTP_RECV_DATA) {
-    /*         size_t remain = r->content_length - r->ptr;
-          size_t num = MIN(received, remain);
-
-       byte_copy(buf, num, buffer_PEEK(in));
-       buffer_skipn(in, num);*/
-
     if(r->chunk_length < r->content_length) {
       const char* s = buffer_PEEK(in);
       size_t remain = r->content_length - r->chunk_length;
@@ -94,6 +101,7 @@ http_read_internal(fd_type fd, char* buf, size_t received, buffer* b) {
 
     if(r->status == HTTP_RECV_DATA)
       r->ptr = r->data.len;
+
     return n;
   }
 
@@ -121,13 +129,13 @@ http_read_internal(fd_type fd, char* buf, size_t received, buffer* b) {
 
             if((i = scan_eolskip(&in->x[in->p], in->n - in->p)))
               buffer_skipn(in, i);
-            //   r->ptr = 0;
 
-            if(r->chunk_length) {
+            // r->ptr = 0;
+
+            if(r->chunk_length)
               r->content_length += r->chunk_length;
-            } else {
+            else
               r->status = HTTP_STATUS_FINISH;
-            }
 
 #ifdef DEBUG_HTTP
             buffer_putspad(buffer_2, "\033[1;36mparsed chunk_length\033[0m ", 30);
@@ -139,7 +147,6 @@ http_read_internal(fd_type fd, char* buf, size_t received, buffer* b) {
             buffer_putulonglong(buffer_2, r->chunk_length);
             buffer_puts(buffer_2, " r->content_length=");
             buffer_putulonglong(buffer_2, r->content_length);
-
             buffer_putnlflush(buffer_2);
 #endif
           }
@@ -151,19 +158,29 @@ http_read_internal(fd_type fd, char* buf, size_t received, buffer* b) {
       case HTTP_TRANSFER_LENGTH: {
         if(r->chunk_length >= r->content_length)
           r->status = HTTP_STATUS_FINISH;
+
         break;
       }
     }
   }
 
-  if(r->status == HTTP_STATUS_ERROR) {
-    n = -1;
-  } else if(r->status == HTTP_STATUS_CLOSED) {
-    io_dontwantread(h->sock);
-    io_dontwantwrite(h->sock);
-    n = 0;
-  } else {
-    n = received;
+  switch(r->status) {
+    case HTTP_STATUS_ERROR: {
+      n = -1;
+      break;
+    }
+
+    case HTTP_STATUS_CLOSED: {
+      io_dontwantread(h->sock);
+      io_dontwantwrite(h->sock);
+      n = 0;
+      break;
+    }
+
+    default: {
+      n = received;
+      break;
+    }
   }
 
   return n;

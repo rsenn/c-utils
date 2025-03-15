@@ -58,6 +58,8 @@ extern int unix_optopt;
 extern buffer* unix_optbuf;
 #endif
 
+extern const char* const unix_errnos[];
+
 #if WINDOWS_NATIVE
 size_t getpagesize();
 #endif

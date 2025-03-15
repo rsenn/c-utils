@@ -62,6 +62,7 @@ http_get(http* h, const char* location) {
 
     a = (ipv4addr*)dns.s;
     byte_copy(&h->addr, sizeof(ipv4addr), &a->iaddr);
+
 #ifdef DEBUG_HTTP
     buffer_putspad(buffer_2, "http_get resolved ", 30);
     buffer_putsa(buffer_2, &h->host);
@@ -71,6 +72,7 @@ http_get(http* h, const char* location) {
     buffer_putnlflush(buffer_2);
 #endif
   }
+
   {
     http_request* req = (http_request*)alloc_zero(sizeof(http_request));
     req->serial = serial;
@@ -93,6 +95,7 @@ http_get(http* h, const char* location) {
 
   h->connected = 0;
   h->sent = 0;
+
 #ifdef DEBUG_HTTP
   buffer_putspad(buffer_2, "\x1b[1;34mhttp_get\x1b[0m", 30);
   buffer_puts(buffer_2, "location=");
@@ -105,6 +108,7 @@ http_get(http* h, const char* location) {
   buffer_putulong(buffer_2, h->port);
   buffer_putnlflush(buffer_2);
 #endif
+
   http_socket(h, h->nonblocking);
 
   ret = socket_connect4(h->sock, (const char*)&h->addr, h->port);
@@ -117,6 +121,7 @@ http_get(http* h, const char* location) {
   }
 
   io_onlywantwrite(h->sock);
+
 #ifdef DEBUG_HTTP
   buffer_putspad(buffer_2, "\x1b[32mhttp_get\x1b[0m", 30);
   buffer_puts(buffer_2, "s=");
@@ -129,5 +134,6 @@ http_get(http* h, const char* location) {
   buffer_putulong(buffer_2, h->port);
   buffer_putnlflush(buffer_2);
 #endif
+
   return ret == 0;
 }

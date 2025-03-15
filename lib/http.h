@@ -39,7 +39,7 @@ typedef struct http_return_s {
 struct http_response_s;
 typedef enum { HTTP_TRANSFER_UNDEF = 0, HTTP_TRANSFER_CHUNKED, HTTP_TRANSFER_LENGTH, HTTP_TRANSFER_BOUNDARY } http_transfer_type;
 
-typedef enum { HTTP_RECV_HEADER = 0, HTTP_RECV_DATA, HTTP_STATUS_CLOSED, HTTP_STATUS_ERROR, HTTP_STATUS_BUSY, HTTP_STATUS_FINISH } http_status;
+typedef enum { HTTP_RECV_HEADER = 1, HTTP_RECV_DATA, HTTP_STATUS_CLOSED, HTTP_STATUS_ERROR, HTTP_STATUS_BUSY, HTTP_STATUS_FINISH } http_status;
 
 typedef struct http_response_s {
   http_transfer_type transfer;
@@ -71,11 +71,11 @@ typedef struct http_s {
   http_response* response;
   tls_t* ssl;
   int err;
-  int nonblocking : 1;
-  int keepalive : 1;
-  int connected : 1;
-  int tls : 1;
-  int sent : 1;
+  unsigned nonblocking : 1;
+  unsigned keepalive : 1;
+  unsigned connected : 1;
+  unsigned tls : 1;
+  unsigned sent : 1;
   uint16 version;
 } http;
 
