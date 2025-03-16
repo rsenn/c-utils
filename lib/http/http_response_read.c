@@ -13,7 +13,7 @@ http_response_read(buffer* in, http_response* response) {
     }
 
     case HTTP_TRANSFER_CHUNKED: {
-
+    again:
       if(response->chunk_length == 0) {
         size_t i;
         size_t n = buffer_LEN(in);
@@ -49,9 +49,14 @@ http_response_read(buffer* in, http_response* response) {
 #endif
         }
       } else if(response->chunk_length == response->data_pos) {
+        response->data_pos = 0;
         response->chunk_length = 0;
 
         buffer_SCAN(in, scan_eolskip);
+
+        /*        if(buffer_LEN(in))
+                  goto again;*/
+
       } else {
         ssize_t n = buffer_LEN(in);
         ssize_t remain = response->chunk_length - response->data_pos;

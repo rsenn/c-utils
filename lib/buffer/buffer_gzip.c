@@ -43,6 +43,7 @@ buffer_gunzip(buffer* b, const char* filename) {
 
   if((f = gzopen(filename, "rb")) == NULL)
     return -1;
+
   b->fd = -1;
   b->cookie = f;
   b->op = &buffer_gunzip_read;

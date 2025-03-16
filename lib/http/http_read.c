@@ -24,6 +24,7 @@ putnum(const char* what, ssize_t n) {
   buffer_putlonglong(buffer_2, n);
   buffer_putnlflush(buffer_2);
 }
+static int seq = 0;
 
 ssize_t
 http_read(fd_type fd, char* x, size_t n, void* headers_len) {
@@ -32,6 +33,8 @@ http_read(fd_type fd, char* x, size_t n, void* headers_len) {
   http_response* response = h->response;
   http_status st = response->status;
   ssize_t r, ret = 0 /*, received, oldlen*/;
+
+  ++seq;
 
   if(!n)
     return 0;
@@ -63,22 +66,23 @@ again:
 
     ret = http_read_internal(h->sock, x, n, &h->q.in);
 
-    if(response->status == HTTP_RECV_DATA && ret == 0)
-      goto again;
+    /* if(response->status == HTTP_RECV_DATA && ret == 0)
+       goto again;*/
+    if(response->status == HTTP_RECV_DATA && ret == 0) {
+      ret = -1;
+      errno = EAGAIN;
+    }
+    goto end;
+  } else if(response->status == HTTP_STATUS_FINISH) {
+    goto end;
+  } else if(response->status == HTTP_STATUS_CLOSED) {
+    goto end;
+  } else if(response->status == HTTP_STATUS_ERROR) {
+    goto end;
   }
-
-  if(response->status == HTTP_STATUS_FINISH)
-    goto end;
-
-  if(response->status == HTTP_STATUS_CLOSED)
-    goto end;
-
-  if(response->status == HTTP_STATUS_ERROR)
-    goto end;
 
   /* if(response->status >= HTTP_STATUS_CLOSED)
      http_close(h);*/
-end:
 
   /*if(response->status == HTTP_STATUS_FINISH || response->status == HTTP_STATUS_CLOSED) {
   }*/
@@ -102,12 +106,18 @@ end:
     }
   }
 
+end:
+
 #ifdef DEBUG_HTTP
   if(response->status == HTTP_STATUS_BUSY || response->status == HTTP_RECV_HEADER || response->status == HTTP_RECV_DATA) {
     buffer_putspad(buffer_2, "\x1b[38;5;201mhttp_read\x1b[0m ", 30);
-    buffer_puts(buffer_2, "s=");
 
+    buffer_puts(buffer_2, "seq=");
+    buffer_putlong(buffer_2, seq);
+
+    buffer_puts(buffer_2, " s=");
     buffer_putlong(buffer_2, h->sock);
+
     buffer_puts(buffer_2, " ret=");
     buffer_putlong(buffer_2, ret);
 
