@@ -20,8 +20,10 @@ http_read_internal(fd_type fd, char* x, size_t n, buffer* b) {
 
   switch(response->status) {
     case HTTP_RECV_HEADER: {
+      ssize_t r;
+
       while(response->status == HTTP_RECV_HEADER)
-        if((ret = http_read_header(&h->q.in, &response->data, response)) <= 0)
+        if((r = http_read_header(&h->q.in, &response->data, response)) <= 0)
           goto end;
 
       if(response->status == HTTP_RECV_DATA) {
@@ -36,9 +38,8 @@ http_read_internal(fd_type fd, char* x, size_t n, buffer* b) {
     case HTTP_RECV_DATA: {
       ssize_t r = http_response_read(in, response);
 
-      if(r) {
-        size_t avail = buffer_LEN(in);
-        size_t num = MIN(avail, MIN(r, n));
+      if(r > 0) {
+        size_t num = MIN(r, n);
 
         byte_copy(x, num, buffer_PEEK(in));
         buffer_SKIP(in, num);
@@ -71,12 +72,9 @@ http_read_internal(fd_type fd, char* x, size_t n, buffer* b) {
 end:
 
 #ifdef DEBUG_HTTP
-  buffer_putspad(buffer_2, "\033[1;33mhttp_read_internal\033[0m ", 30);
+  buffer_putspad(buffer_2, "\033[1;33mhttp_read_internal\033[0m", 30);
 
-  buffer_puts(buffer_2, " ret=");
-  buffer_putlong(buffer_2, ret);
-
-  buffer_puts(buffer_2, " headers_len=");
+  buffer_puts(buffer_2, "headers_len=");
   buffer_putulonglong(buffer_2, response->headers_len);
   buffer_puts(buffer_2, " chunk_length=");
   buffer_putulonglong(buffer_2, response->chunk_length);
@@ -84,15 +82,21 @@ end:
   buffer_puts(buffer_2, " content_length=");
   buffer_putulonglong(buffer_2, response->content_length);
 
+  buffer_puts(buffer_2, " data_pos=");
+  buffer_putulonglong(buffer_2, response->data_pos);
+
   if(ret < 0) {
     buffer_puts(buffer_2, " err=");
-    buffer_putstr(buffer_2, http_strerror(h, received));
+    buffer_putstr(buffer_2, http_strerror(h, ret));
   }
 
   if(h->response->code != -1) {
     buffer_puts(buffer_2, " code=");
     buffer_putlong(buffer_2, h->response->code);
   }
+
+  buffer_puts(buffer_2, " ret=");
+  buffer_putlong(buffer_2, ret);
 
   buffer_putnlflush(buffer_2);
 #endif

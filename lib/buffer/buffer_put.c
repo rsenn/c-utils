@@ -14,8 +14,7 @@ int buffer_stubborn(buffer_op_proto*, fd_type, const char*, size_t, void*);
 
 int
 buffer_put(buffer* b, const char* x, size_t n) {
-  if(__unlikely(n > buffer_SPACE(b))) { /* doesn't fit */
-
+  if(__unlikely(b->p + n > b->a)) { /* doesn't fit */
     if(buffer_flush(b) == -1)
       return -1;
 
@@ -27,8 +26,8 @@ buffer_put(buffer* b, const char* x, size_t n) {
     }
   }
 
-  byte_copy(buffer_PEEK(b), n, x);
-  buffer_SKIP(b, n);
+  byte_copy(b->x + b->p, n, x);
+  b->p += n;
 
   return 0;
 }

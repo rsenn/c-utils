@@ -55,8 +55,8 @@ fail:
   h->err = h->tls ? tls_errno(h->sock) : errno;
 
 #ifdef DEBUG_HTTP
-  buffer_putspad(buffer_2, "\x1b[38;5;112mhttp_canwrite\x1b[0m ", 30);
-  buffer_puts(buffer_2, " ret=");
+  buffer_putspad(buffer_2, "\x1b[38;5;112mhttp_canwrite\x1b[0m", 30);
+  buffer_puts(buffer_2, "ret=");
   buffer_putlong(buffer_2, ret);
   buffer_puts(buffer_2, " err=");
   buffer_putstr(buffer_2, http_strerror(h, ret));

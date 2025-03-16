@@ -13,10 +13,10 @@ http_response_read(buffer* in, http_response* response) {
     }
 
     case HTTP_TRANSFER_CHUNKED: {
-      size_t n = buffer_LEN(in);
 
       if(response->chunk_length == 0) {
         size_t i;
+        size_t n = buffer_LEN(in);
         char* x = buffer_PEEK(in);
 
         if((i = byte_chrs(x, n, "\r\n", 2)) < n) {
@@ -32,8 +32,10 @@ http_response_read(buffer* in, http_response* response) {
             response->status = HTTP_STATUS_FINISH;
 
 #ifdef DEBUG_HTTP
-          buffer_putspad(buffer_2, "\033[1;36mparsed chunk_length\033[0m ", 30);
-          buffer_puts(buffer_2, "i=");
+          buffer_putspad(buffer_2, "\033[1;36mparsed chunk_length\033[0m", 30);
+          buffer_puts(buffer_2, "chunk_len='");
+          buffer_put(buffer_2, x, i);
+          buffer_puts(buffer_2, "' i=");
           buffer_putlong(buffer_2, i);
           buffer_puts(buffer_2, " response->headers_len=");
           buffer_putulonglong(buffer_2, response->headers_len);
@@ -41,6 +43,8 @@ http_response_read(buffer* in, http_response* response) {
           buffer_putulonglong(buffer_2, response->chunk_length);
           buffer_puts(buffer_2, " response->content_length=");
           buffer_putulonglong(buffer_2, response->content_length);
+          buffer_puts(buffer_2, " response->data_pos=");
+          buffer_putulonglong(buffer_2, response->data_pos);
           buffer_putnlflush(buffer_2);
 #endif
         }
@@ -48,17 +52,12 @@ http_response_read(buffer* in, http_response* response) {
         response->chunk_length = 0;
 
         buffer_SCAN(in, scan_eolskip);
-
-        /*size_t skip;
-
-        if((skip = scan_eolskip(buffer_PEEK(in), buffer_LEN(in)))) {
-          buffer_SKIP(in, skip);
-          response->chunk_length = 0;
-        }*/
       } else {
-        ret = response->chunk_length - response->data_pos;
+        ssize_t n = buffer_LEN(in);
+        ssize_t remain = response->chunk_length - response->data_pos;
+
+        ret = MIN(remain, n);
       }
-      // ret = buffer_LEN(in) - n;
 
       break;
     }

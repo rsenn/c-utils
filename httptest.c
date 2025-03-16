@@ -239,14 +239,12 @@ http_io_handler(http* h, buffer* out) {
           buffer_putnlflush(buffer_2);
 #endif
 
-          buffer_puts(out, "DATA:\n");
-
           if(buffer_put(out, buf, len)) {
             errmsg_warnsys("write error: ", 0);
             return 2;
           }
 
-          buffer_putnlflush(out);
+          buffer_flush(out);
 
           if(len == -1 || h->response->status == HTTP_STATUS_ERROR) {
             errmsg_warnsys("read error: ", 0);

@@ -137,7 +137,7 @@ http_canread(http* h, void (*wantread)(fd_type), void (*wantwrite)(fd_type)) {
       r->data.len += ret;
 
 #ifdef DEBUG_HTTP
-      buffer_putspad(buffer_2, "\x1b[1;32mhttp_canread\x1b[0m(2) DATA ", 30);
+      buffer_putspad(buffer_2, "\x1b[1;32mhttp_canread\x1b[0m(2) DATA", 30);
       buffer_puts(buffer_2, "s=");
       buffer_putlong(buffer_2, h->sock);
       buffer_puts(buffer_2, " ret=");
@@ -165,7 +165,7 @@ fail:
 
 #ifdef DEBUG_HTTP
   buffer_putspad(buffer_2, "\x1b[1;32mhttp_canread\x1b[0m(3)", 30);
-  buffer_puts(buffer_2, " ret=");
+  buffer_puts(buffer_2, "ret=");
   buffer_putlong(buffer_2, ret);
   buffer_puts(buffer_2, " err=");
   buffer_putstr(buffer_2, http_strerror(h, ret));

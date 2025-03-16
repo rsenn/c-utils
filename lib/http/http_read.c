@@ -63,19 +63,21 @@ again:
 
     ret = http_read_internal(h->sock, x, n, &h->q.in);
 
-  } else if(response->status == HTTP_STATUS_FINISH)
+    if(response->status == HTTP_RECV_DATA && ret == 0)
+      goto again;
+  }
+
+  if(response->status == HTTP_STATUS_FINISH)
     goto end;
 
-  /*  if(response->status == HTTP_RECV_DATA) {
-      ret = MIN(r, n);
-      byte_copy(x, ret, buffer_PEEK(in));
-      buffer_SKIP(in, ret);
-      goto end;
-    }*/
-
-  else if((response->status == HTTP_STATUS_CLOSED) || response->status == HTTP_STATUS_FINISH)
+  if(response->status == HTTP_STATUS_CLOSED)
     goto end;
 
+  if(response->status == HTTP_STATUS_ERROR)
+    goto end;
+
+  /* if(response->status >= HTTP_STATUS_CLOSED)
+     http_close(h);*/
 end:
 
   /*if(response->status == HTTP_STATUS_FINISH || response->status == HTTP_STATUS_CLOSED) {
@@ -99,9 +101,6 @@ end:
       ret = -1;
     }
   }
-
-  if(response->status == HTTP_STATUS_CLOSED)
-    http_close(h);
 
 #ifdef DEBUG_HTTP
   if(response->status == HTTP_STATUS_BUSY || response->status == HTTP_RECV_HEADER || response->status == HTTP_RECV_DATA) {

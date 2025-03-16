@@ -18,10 +18,10 @@ buffer_get(buffer* b, char* x, size_t n) {
     if(r >= len)
       r = len;
 
-    byte_copy(x, (size_t)r, buffer_PEEK(b));
-    buffer_SKIP(b, (size_t)r);
+    byte_copy(x, (size_t)r, b->x + b->p);
+    b->p += (size_t)r;
 
-    x += r;
+    x += (size_t)r;
     bytes += r;
   }
 
