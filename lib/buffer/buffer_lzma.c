@@ -117,7 +117,7 @@ buffer_lzmawrite_op(fd_type fd, void* data, size_t n, buffer* b) {
     r = n - strm->avail_in;
 
     if(r > 0) {
-      a = (buffer_SPACE(other)) - strm->avail_out;
+      a = buffer_SPACE(other) - strm->avail_out;
       other->p += a;
     }
 
@@ -209,7 +209,7 @@ buffer_lzma_close(buffer* b) {
   buffer_putlong(buffer_2, (buffer_LEN(b)));
 
   buffer_puts(buffer_2, " consumed=");
-  buffer_putlong(buffer_2, (buffer_LEN(b)) - strm->avail_in);
+  buffer_putlong(buffer_2, buffer_LEN(b) - strm->avail_in);
 
   buffer_putnlflush(buffer_2);
 #endif

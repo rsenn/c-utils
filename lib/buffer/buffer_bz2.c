@@ -76,7 +76,7 @@ buffer_bzwrite_op(fd_type fd, void* data, size_t n, buffer* b) {
     r = n - strm->avail_in;
 
     if(r > 0) {
-      a = (buffer_SPACE(other)) - strm->avail_out;
+      a = buffer_SPACE(other) - strm->avail_out;
       other->p += a;
       return r;
     }
