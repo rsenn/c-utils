@@ -2,6 +2,7 @@
 #include "../mmap.h"
 
 ssize_t buffer_dummyreadmmap(fd_type, void*, size_t, void*);
+void buffer_munmap(buffer*);
 
 int
 buffer_mmapread(buffer* b, const char* filename) {
@@ -12,6 +13,6 @@ buffer_mmapread(buffer* b, const char* filename) {
   b->a = b->n;
   b->fd = -1;
   b->op = &buffer_dummyreadmmap;
-  b->deinit = (void (*)())buffer_munmap;
+  b->deinit = &buffer_munmap;
   return 0;
 }

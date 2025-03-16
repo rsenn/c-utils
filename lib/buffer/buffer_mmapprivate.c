@@ -1,8 +1,8 @@
 #include "../buffer.h"
 #include "../mmap.h"
 
-extern ssize_t buffer_dummyreadmmap();
-extern void buffer_munmap(void* buf);
+ssize_t buffer_dummyreadmmap(fd_type, void*, size_t, void*);
+void buffer_munmap(buffer*);
 
 int
 buffer_mmapprivate(buffer* b, const char* filename) {
@@ -12,7 +12,7 @@ buffer_mmapprivate(buffer* b, const char* filename) {
   b->p = 0;
   b->a = b->n;
   b->fd = -1;
-  b->op = (buffer_op_proto*)&buffer_dummyreadmmap;
-  b->deinit = (void (*)()) & buffer_munmap;
+  b->op = &buffer_dummyreadmmap;
+  b->deinit = &buffer_munmap;
   return 0;
 }

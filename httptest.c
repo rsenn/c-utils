@@ -52,7 +52,7 @@ static queue_entry* queue;
 
 static io_entry* g_iofd;
 static http h;
-static buffer in, out;
+static buffer htb, out;
 
 static const char* token_types[] = {
     "XML_EOF",
@@ -182,6 +182,7 @@ http_io_handler(http* h, buffer* out) {
   fd_type r, w;
   int nr = 0, nw = 0;
   ssize_t nb, ret = 0;
+  http_response* response = h->response;
 
   while((w = io_canwrite()) != -1) {
     if(h->sock == w) {
@@ -222,7 +223,7 @@ http_io_handler(http* h, buffer* out) {
         char buf[8192];
         ssize_t len;
 
-        if((len = buffer_get(&in, buf, sizeof(buf))) > 0) {
+        if((len = buffer_get(&htb, buf, sizeof(buf))) > 0) {
 
 #ifdef DEBUG_OUTPUT_
           buffer_putspad(buffer_2, "\x1b[1;31mbuffer_get\x1b[0m", 30);
@@ -231,7 +232,7 @@ http_io_handler(http* h, buffer* out) {
           buffer_puts(buffer_2, " status=");
           buffer_puts(buffer_2,
                       ((const char* const[]){
-                          "0", "HTTP_RECV_HEADER", "HTTP_RECV_DATA", "HTTP_STATUS_CLOSED", "HTTP_STATUS_ERROR", "HTTP_STATUS_BUSY", "HTTP_STATUS_FINISH", 0})[h->response->status]);
+                          "0", "HTTP_RECV_HEADER", "HTTP_RECV_DATA", "HTTP_STATUS_CLOSED", "HTTP_STATUS_ERROR", "HTTP_STATUS_BUSY", "HTTP_STATUS_FINISH", 0})[response->status]);
           buffer_puts(buffer_2, " len=");
           buffer_putlong(buffer_2, len);
           buffer_puts(buffer_2, " data='");
@@ -246,15 +247,15 @@ http_io_handler(http* h, buffer* out) {
 
           buffer_flush(out);
 
-          if(len == -1 || h->response->status == HTTP_STATUS_ERROR) {
+          if(len == -1 || response->status == HTTP_STATUS_ERROR) {
             errmsg_warnsys("read error: ", 0);
             return 1;
           }
         }
 
-#ifdef DEBUG_OUTPUT
-        buffer_puts(buffer_2, "h->response->status = ");
-        buffer_putlong(buffer_2, h->response->status);
+#ifdef DEBUG_OUTPUT_
+        buffer_puts(buf fer_2, "response->status = ");
+        buffer_putlong(buffer_2, response->status);
         buffer_putnlflush(buffer_2);
 #endif
 
@@ -444,8 +445,8 @@ main(int argc, char* argv[]) {
   }
 
   buffer_init(&out, (buffer_op_proto*)(void*)&write, outfile, outbuf, sizeof(outbuf));
-  buffer_init(&in, (buffer_op_proto*)(void*)&http_read, (uintptr_t)&h, inbuf, sizeof(inbuf));
-  in.cookie = &h;
+  buffer_init(&htb, (buffer_op_proto*)(void*)&http_read, (uintptr_t)&h, inbuf, sizeof(inbuf));
+  htb.cookie = &h;
 
   http_init(&h, url_host, url_port);
   h.nonblocking = 1;
@@ -487,7 +488,9 @@ main(int argc, char* argv[]) {
     free(str);
     ret = http_get(&h, argv[argi]);
 
-    h.response->header = response_header;
+    http_response* response = h.response;
+
+    response->header = response_header;
 
     for(;;) {
       int doread = 1;
@@ -501,15 +504,15 @@ main(int argc, char* argv[]) {
 
       ret = http_io_handler(&h, &out);
 
-      if(h.response->code == 302) {
+      if(response->code == 302) {
         size_t sz;
-        s = http_get_header(h.response->data.s, h.response->headers_len, "Location", &sz);
+        s = http_get_header(response->data.s, response->headers_len, "Location", &sz);
         buffer_puts(buffer_2, "Location: ");
         buffer_put(buffer_2, s, sz);
         buffer_putnlflush(buffer_2);
       }
 
-#ifdef DEBUG_OUTPUT
+#ifdef DEBUG_HTTP
       buffer_putspad(buffer_2, "httptest", 30);
       buffer_puts(buffer_2, "ret=");
       buffer_putlong(buffer_2, ret);
@@ -517,37 +520,37 @@ main(int argc, char* argv[]) {
       buffer_puts(buffer_2, " err=");
       buffer_puts(buffer_2, http_strerror(&h, ret));
 
-      if(h.response->code != -1) {
+      if(response->code != -1) {
         buffer_puts(buffer_2, " code=");
-        buffer_putlong(buffer_2, h.response->code);
+        buffer_putlong(buffer_2, response->code);
       }
 
       buffer_puts(buffer_2, " status=");
       buffer_puts(buffer_2,
                   ((const char* const[]){
-                      "0", "HTTP_RECV_HEADER", "HTTP_RECV_DATA", "HTTP_STATUS_CLOSED", "HTTP_STATUS_ERROR", "HTTP_STATUS_BUSY", "HTTP_STATUS_FINISH", 0})[h.response->status]);
+                      "0", "HTTP_RECV_HEADER", "HTTP_RECV_DATA", "HTTP_STATUS_CLOSED", "HTTP_STATUS_ERROR", "HTTP_STATUS_BUSY", "HTTP_STATUS_FINISH", 0})[response->status]);
       buffer_putnlflush(buffer_2);
 #endif
 
-      // buffer_dump(buffer_1, &h.q.in);
+      // buffer_dump(buffer_1, &h.q.htb);
 
-      if(h.response->status == HTTP_STATUS_FINISH || h.response->status == HTTP_STATUS_CLOSED)
+      if(response->status == HTTP_STATUS_FINISH || response->status == HTTP_STATUS_CLOSED)
         break;
     }
 
     if(0) {
-      const char *s = stralloc_begin(&h.response->data), *e = stralloc_end(&h.response->data);
+      const char *s = stralloc_begin(&response->data), *e = stralloc_end(&response->data);
       s += http_skip_header(s, e - s);
 
       put_escaped_n(buffer_1, s, e - s, 300);
       // buffer_put(buffer_1, s, e - s);
     }
 
-    if(h.response->data.len) {
+    if(response->data.len) {
       const char* url;
       queue_entry** headers_len = 0;
 
-      // buffer_fromsa(&data, &h.response->data);
+      // buffer_fromsa(&data, &response->data);
       http_process(&h, &urls, &uri);
 
       strlist_sort(&urls, 0);

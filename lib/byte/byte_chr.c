@@ -14,7 +14,9 @@ byte_chr(const void* haystack, size_t len, char needle) {
 
     if(*s == c)
       break;
+
     ++s;
   }
+
   return s - (const char*)haystack;
 }

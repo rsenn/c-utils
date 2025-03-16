@@ -1,39 +1,36 @@
 #include "../buffer.h"
 #include "../byte.h"
-#include <assert.h>
 
-ssize_t buffer_dummyreadmmap(fd_type, char*, unsigned long int);
+ssize_t buffer_dummyreadmmap(fd_type, void*, size_t, void*);
+ssize_t buffer_dummyread(fd_type, char*, size_t, void*);
 ssize_t buffer_stubborn_read(buffer_op_proto*, fd_type, const void*, size_t, void*);
 
-int
+ssize_t
 buffer_prefetch(buffer* b, size_t n) {
-  ssize_t need = n - buffer_LEN(b);
+  if(b->p > 0 && b->p + n > b->a) {
+    if(b->op == &buffer_dummyreadmmap || (void*)b->deinit == (void*)&buffer_munmap)
+      return b->n - b->p;
 
-  if(b->p > 0) {
-    if(need > buffer_HEADROOM(b))
-      if((buffer_op_proto*)b->op == (buffer_op_proto*)(void*)&buffer_dummyreadmmap || b->deinit == (void*)&buffer_munmap)
-        goto end;
-
-    if(buffer_LEN(b) == 0 || need > buffer_HEADROOM(b))
-      buffer_MOVE(b);
+    buffer_MOVE(b);
   }
 
-  assert(need <= buffer_HEADROOM(b));
+  if(b->p + n > b->a)
+    n = b->a - b->p;
 
-  while(need > 0)
-  /*while(buffer_LEN(b) < n) while(b->p + n > b->n)*/ {
-    ssize_t r;
+  if(n == 0)
+    return -1;
 
-    if((r = buffer_stubborn_read(b->op, b->fd, buffer_END(b), buffer_HEADROOM(b), b)) < 0)
+  while(b->n < b->p + n) {
+    int w;
+
+    if((w = buffer_stubborn_read(b->op, b->fd, &b->x[b->n], b->a - b->n, b)) < 0)
       return -1;
 
-    if(!r)
+    if(!w)
       break;
 
-    buffer_SEEK(b, r);
-    need -= r;
+    b->n += w;
   }
 
-end:
-  return buffer_LEN(b);
+  return b->n - b->p;
 }

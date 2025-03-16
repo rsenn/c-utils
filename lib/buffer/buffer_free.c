@@ -3,9 +3,7 @@
 #include <stdlib.h>
 
 void
-buffer_free(void* buf) {
-  buffer* b = (buffer*)buf;
-
+buffer_free(buffer* b) {
   if(b->x) {
     alloc_free(b->x);
     b->x = 0;

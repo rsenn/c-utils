@@ -13,7 +13,6 @@ http_response_read(buffer* in, http_response* response) {
     }
 
     case HTTP_TRANSFER_CHUNKED: {
-    again:
       if(response->chunk_length == 0) {
         size_t i;
         size_t n = buffer_LEN(in);
@@ -31,20 +30,21 @@ http_response_read(buffer* in, http_response* response) {
           else
             response->status = HTTP_STATUS_FINISH;
 
-#ifdef DEBUG_HTTP
+#ifdef DEBUG_OUTPUT
           buffer_putspad(buffer_2, "\033[1;36mparsed chunk_length\033[0m", 30);
           buffer_puts(buffer_2, "chunk_len='");
           buffer_put(buffer_2, x, i);
           buffer_puts(buffer_2, "' i=");
           buffer_putlong(buffer_2, i);
-          buffer_puts(buffer_2, " response->headers_len=");
-          buffer_putulonglong(buffer_2, response->headers_len);
-          buffer_puts(buffer_2, " response->chunk_length=");
+          buffer_puts(buffer_2, " response { chunk_length=");
           buffer_putulonglong(buffer_2, response->chunk_length);
-          buffer_puts(buffer_2, " response->content_length=");
+          buffer_puts(buffer_2, " content_length=");
           buffer_putulonglong(buffer_2, response->content_length);
-          buffer_puts(buffer_2, " response->data_pos=");
+          buffer_puts(buffer_2, " data_pos=");
           buffer_putulonglong(buffer_2, response->data_pos);
+          buffer_puts(buffer_2, " headers_len=");
+          buffer_putulonglong(buffer_2, response->headers_len);
+          buffer_puts(buffer_2, " }");
           buffer_putnlflush(buffer_2);
 #endif
         }
@@ -54,8 +54,8 @@ http_response_read(buffer* in, http_response* response) {
 
         buffer_SCAN(in, scan_eolskip);
 
-        /*        if(buffer_LEN(in))
-                  goto again;*/
+        /*if(buffer_LEN(in))
+        goto again;*/
 
       } else {
         ssize_t n = buffer_LEN(in);

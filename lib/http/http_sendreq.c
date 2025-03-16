@@ -34,7 +34,9 @@ http_sendreq(http* h) {
   // buffer_puts(out, "Accept-Encoding: br, xz, lzma, bzip2, gzip, deflate\r\n");
   buffer_puts(out, "\r\n");
 
-#ifdef DEBUG_HTTP
+#ifdef DEBUG_OUTPUT
+  buffer_puts(buffer_2, "Request:\n");
+
   {
     const char* x = out->x;
     ssize_t i, n = out->p;
@@ -42,7 +44,6 @@ http_sendreq(http* h) {
     while(n > 0) {
       i = byte_chr(x, n, '\r');
 
-      buffer_puts(buffer_2, "Request: ");
       buffer_put(buffer_2, x, i);
       buffer_putnlflush(buffer_2);
 

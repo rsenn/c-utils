@@ -2,8 +2,7 @@
 
 size_t
 scan_lineskip(const char* s, size_t limit) {
-  const char *t, *u;
-  u = s + limit;
+  const char *t, *u = s + limit;
 
   for(t = s; t < u; ++t) {
     if(*t == '\n') {
@@ -11,6 +10,7 @@ scan_lineskip(const char* s, size_t limit) {
       break;
     }
   }
+
   return (size_t)(t - s);
 }
 

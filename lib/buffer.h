@@ -13,23 +13,23 @@
 extern "C" {
 #endif
 
-typedef ssize_t(buffer_op_sys)(fd_type fd, void* buf, size_t len);
-typedef ssize_t(buffer_op_proto)(fd_type fd, void* buf, size_t len, void* arg);
-typedef ssize_t(buffer_op_fn)(
-    /*fd_type fd, void* buf, size_t len, void* arg*/);
+typedef ssize_t(buffer_op_sys)(fd_type, void*, size_t);
+typedef ssize_t(buffer_op_proto)(fd_type, void*, size_t, void*);
+typedef ssize_t(buffer_op_fn)();
+
 typedef buffer_op_fn* buffer_op_ptr;
 
 typedef struct buffer {
-  char* x;             /* actual buffer space */
-  size_t p;            /* current position */
-  size_t n;            /* current size of string in buffer */
-  size_t a;            /* allocated buffer size */
-  buffer_op_proto* op; /* use read(2) or write(2) */
-  void* cookie;        /* used internally by the to-stralloc buffers,  and for
-                          buffer     chaini(ng */
-  void (*deinit)();    /* called to munmap/free cleanup,  with a pointer to
-                          the buffer as argument */
-  fd_type fd;          /* passed as first argument to op */
+  char* x;                        /* actual buffer space */
+  size_t p;                       /* current position */
+  size_t n;                       /* current size of string in buffer */
+  size_t a;                       /* allocated buffer size */
+  buffer_op_proto* op;            /* use read(2) or write(2) */
+  void* cookie;                   /* used internally by the to-stralloc
+                                   * buffers, and for buffer chaining */
+  void (*deinit)(struct buffer*); /* called to munmap/free cleanup,
+                                   * with a pointer to the buffer as argument */
+  fd_type fd;                     /* passed as first argument to op */
 } buffer;
 
 #define BUFFER_INIT(op, fd, buf, len) \
@@ -42,8 +42,8 @@ typedef struct buffer {
 
 void buffer_init(buffer*, buffer_op_proto*, fd_type fd, char* y, size_t ylen);
 void buffer_init_free(buffer*, buffer_op_proto*, fd_type fd, char* y, size_t ylen);
-void buffer_free(void* buf);
-void buffer_munmap(void* buf);
+void buffer_free(buffer*);
+void buffer_munmap(buffer*);
 int buffer_mmapread(buffer*, const char* filename);
 int buffer_mmapread_fd(buffer*, fd_type fd);
 int buffer_mmapprivate(buffer*, const char* filename);
@@ -90,48 +90,43 @@ int buffer_putm_internal_flush(buffer* b, ...);
 #define buffer_putm_6(b, a1, a2, a3, a4, a5, a6) buffer_putm_internal(b, a1, a2, a3, a4, a5, a6, (char*)0)
 #define buffer_putm_7(b, a1, a2, a3, a4, a5, a6, a7) buffer_putm_internal(b, a1, a2, a3, a4, a5, a6, a7, (char*)0)
 
-int buffer_putspace(buffer* b);
-int buffer_putnlflush(buffer* b); /* put \n and flush */
+int buffer_putspace(buffer*);
+int buffer_putnlflush(buffer*); /* put \n and flush */
 
 #define buffer_PUTC(s, c) (((s)->a != (s)->p) ? ((s)->x[(s)->p++] = (c), 0) : buffer_putc((s), (c)))
 
-ssize_t buffer_get(buffer*, char* x, size_t len);
-ssize_t buffer_feed(buffer* b);
-ssize_t buffer_getc(buffer*, char* x);
-ssize_t buffer_getn(buffer*, char* x, size_t len);
+ssize_t buffer_get(buffer*, char*, size_t);
+ssize_t buffer_getc(buffer*, char*);
+ssize_t buffer_getn(buffer*, char*, size_t);
 
 /* read bytes until the destination buffer is full (len bytes),  end of
  * file is reached or the read char is in charset (setlen bytes).  An
  * empty line when looking for \n will write '\n' to x and return 0.  If
  * EOF is reached,  \0 is written to the buffer */
-ssize_t buffer_get_token(buffer*, char* x, size_t len, const char* charset, size_t setlen);
-ssize_t buffer_getline(buffer*, char* x, size_t len);
-int buffer_skip_until(buffer*, const char* charset, size_t setlen);
+ssize_t buffer_get_token(buffer*, char*, size_t, const char*, size_t);
+ssize_t buffer_getline(buffer*, char*, size_t);
+int buffer_skip_until(buffer*, const char*, size_t);
 
 /* this predicate is given the string as currently read from the buffer
  * and is supposed to return 1 if the token is complete,  0 if not. */
-typedef int (*string_predicate)(const char* x, size_t len, void* arg);
+typedef int (*string_predicate)(const char*, size_t, void*);
 
 /* like buffer_get_token but the token ends when your predicate says so */
-ssize_t buffer_get_token_pred(buffer*, char* x, size_t len, string_predicate p, void*);
+ssize_t buffer_get_token_pred(buffer*, char*, size_t, string_predicate, void*);
 
-char* buffer_peek(buffer* b);
-int buffer_peekc(buffer*, char* c);
-void buffer_seek(buffer*, size_t len);
-void buffer_rewind(buffer* b);
+char* buffer_peek(buffer*);
+int buffer_peekc(buffer*, char*);
+void buffer_seek(buffer*, size_t);
+void buffer_rewind(buffer*);
 
-int buffer_skipc(buffer* b);
-int buffer_skipn(buffer*, size_t n);
-
-int buffer_prefetch(buffer*, size_t n);
+int buffer_skipc(buffer*);
+int buffer_skipn(buffer*, size_t);
 
 #define buffer_EOF(b) (buffer_feed((b)) == 0)
 #define buffer_PEEK(b) ((b)->x + (b)->p)
 #define buffer_LEN(b) ((b)->n - (b)->p)
 #define buffer_SKIP(b, len) ((b)->p += (len))
-
 #define buffer_SEEK(b, len) ((b)->n += (len))
-
 #define buffer_EMPTY(b) ((b)->p == (b)->n)
 
 #define buffer_GETC(b, c) (((b)->p < (b)->n) ? (*(c) = *buffer_PEEK(b), buffer_SKIP((b), 1), 1) : buffer_get((b), (c), 1))
@@ -156,15 +151,15 @@ int buffer_prefetch(buffer*, size_t n);
     buffer_SKIP((b), (len)); \
   } while(0);
 
-int buffer_putulong(buffer*, unsigned long int l);
-int buffer_put8long(buffer*, unsigned long int l);
-int buffer_putxlong(buffer*, unsigned long int l);
-int buffer_putlong(buffer*, signed long int l);
+int buffer_putulong(buffer*, unsigned long);
+int buffer_put8long(buffer*, unsigned long);
+int buffer_putxlong(buffer*, unsigned long);
+int buffer_putlong(buffer*, signed long);
 
-int buffer_putdouble(buffer*, double d, int prec);
+int buffer_putdouble(buffer*, double, int);
 
-int buffer_puterror(buffer* b);
-int buffer_puterror2(buffer*, int errnum);
+int buffer_puterror(buffer*);
+int buffer_puterror2(buffer*, int);
 
 extern buffer* buffer_0;
 extern buffer* buffer_0small;
@@ -245,7 +240,31 @@ int buffer_puts_escaped(buffer* b, const char* s, size_t (*escape)(char*, int));
 
 int buffer_put_quoted(buffer* b, const char* x, size_t len);
 
-int buffer_freshen(buffer* b);
+/** If buffer is empty, read in more data
+ *
+ * @param      b     buffer object
+ *
+ * @return     new available bytes
+ */
+ssize_t buffer_feed(buffer* b);
+
+/** Read as much bytes as possible. If read position is not 0,
+ *  move buffer contents to the beginning of the buffer.
+ *
+ * @param      b     buffer object
+ *
+ * @return     new available bytes
+ */
+ssize_t buffer_freshen(buffer* b);
+
+/** Prefetch \param n bytes from current read position
+ *
+ * @param      b     buffer object
+ * @param      n     bytes to prefetch
+ *
+ * @return     new available bytes
+ */
+ssize_t buffer_prefetch(buffer*, size_t n);
 
 int buffer_appendfile(buffer* b, const char* fn);
 int buffer_readfile(buffer* b, const char* fn);

@@ -50,7 +50,7 @@ buffer_gunzip(buffer* b, const char* filename) {
   b->n = b->p = 0;
   b->a = BUFFER_OUTSIZE;
   b->x = malloc(b->a);
-  b->deinit = buffer_gz_close;
+  b->deinit = &buffer_gz_close;
   return 0;
 }
 
@@ -66,7 +66,7 @@ buffer_gunzip_fd(buffer* b, fd_type fd) {
   b->n = b->p = 0;
   b->a = BUFFER_OUTSIZE;
   b->x = malloc(b->a);
-  b->deinit = buffer_gz_close;
+  b->deinit = &buffer_gz_close;
   return 0;
 }
 
@@ -90,7 +90,7 @@ buffer_gzip(buffer* b, const char* filename, int level) {
   b->n = b->p = 0;
   b->a = BUFFER_OUTSIZE;
   b->x = malloc(b->a);
-  b->deinit = buffer_gz_close;
+  b->deinit = &buffer_gz_close;
   return 0;
 }
 
@@ -108,7 +108,7 @@ buffer_gzip_fd(buffer* b, fd_type fd, int level) {
   b->n = b->p = 0;
   b->a = BUFFER_OUTSIZE;
   b->x = malloc(b->a);
-  b->deinit = buffer_gz_close;
+  b->deinit = &buffer_gz_close;
   return 0;
 }
 #endif

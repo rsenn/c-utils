@@ -101,7 +101,7 @@ int buffer_chunked(buffer*, buffer*);
 char* http_get_header(char* data, size_t n, const char* name, size_t* result_len);
 int http_get(http* h, const char* location);
 void http_init(http* h, const char* host, uint16 port);
-ssize_t http_read(fd_type, char*, size_t, void*);
+ssize_t http_read(fd_type, char*, size_t, buffer*);
 ssize_t http_read_header(buffer*, stralloc*, http_response*);
 ssize_t http_read_internal(fd_type, char*, size_t, buffer*);
 ssize_t http_read_internal(fd_type, char*, size_t, buffer*);

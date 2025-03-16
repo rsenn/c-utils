@@ -35,7 +35,7 @@ buffer_bunzip(buffer* b, const char* filename) {
   b->n = b->p = 0;
   b->a = BUFFER_OUTSIZE;
   b->x = malloc(b->a);
-  b->deinit = buffer_bzip_close;
+  b->deinit = &buffer_bzip_close;
   return 0;
 }
 
@@ -51,7 +51,7 @@ buffer_bunzip_fd(buffer* b, fd_type fd) {
   b->n = b->p = 0;
   b->a = BUFFER_OUTSIZE;
   b->x = malloc(b->a);
-  b->deinit = buffer_bzip_close;
+  b->deinit = &buffer_bzip_close;
   return 0;
 }
 
@@ -75,7 +75,7 @@ buffer_bzip(buffer* b, const char* filename, int level) {
   b->n = b->p = 0;
   b->a = BUFFER_OUTSIZE;
   b->x = malloc(b->a);
-  b->deinit = buffer_bzip_close;
+  b->deinit = &buffer_bzip_close;
   return 0;
 }
 
@@ -93,7 +93,7 @@ buffer_bzip_fd(buffer* b, fd_type fd, int level) {
   b->n = b->p = 0;
   b->a = BUFFER_OUTSIZE;
   b->x = malloc(b->a);
-  b->deinit = buffer_bzip_close;
+  b->deinit = &buffer_bzip_close;
   return 0;
 }
 #endif

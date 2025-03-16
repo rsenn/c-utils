@@ -30,7 +30,7 @@ putline(const char* what, const char* b, ssize_t l, int i) {
 
 ssize_t
 http_read_header(buffer* in, stralloc* out, http_response* response) {
-  ssize_t ret = 0, bytesread = 0;
+  ssize_t ret = 0, bytesread = 0, byteswritten = 0;
 
   while(response->status == HTTP_RECV_HEADER) {
     size_t len, bytesavail = buffer_LEN(in), start = out->len;
@@ -39,13 +39,15 @@ http_read_header(buffer* in, stralloc* out, http_response* response) {
     if((ret = buffer_getline_sa(in, out)) <= 0)
       break;
 
-    bytesread += bytesavail - (buffer_LEN(in));
+    ret = out->len - start;
+    byteswritten += ret;
+    bytesread += bytesavail - buffer_LEN(in);
     stralloc_nul(out);
     buf = &out->s[start];
 
-    if((len = byte_trimr(buf, out->len - start, "\r\n", 2)) == 0) {
+    if((len = byte_trimr(buf, ret, "\r\n", 2)) == 0) {
+      response->headers_len = out->len;
       response->status = HTTP_RECV_DATA;
-      ret = 1;
       break;
     }
 
@@ -85,14 +87,17 @@ http_read_header(buffer* in, stralloc* out, http_response* response) {
     }
   }
 
-#ifdef DEBUG_HTTP_
+#ifdef DEBUG_OUTPUT
   buffer_putspad(buffer_2, "\x1b[1;33mhttp_read_header\x1b[0m", 30);
 
-  buffer_puts(buffer_2, " bytesread=");
+  buffer_puts(buffer_2, "bytesread=");
   buffer_putlong(buffer_2, bytesread);
+  buffer_puts(buffer_2, " byteswritten=");
+  buffer_putlong(buffer_2, byteswritten);
   buffer_puts(buffer_2, " ret=");
   buffer_putlong(buffer_2, ret);
+  buffer_putnlflush(buffer_2);
 #endif
 
-  return ret > 0 && bytesread > 0 ? bytesread : ret;
+  return ret /*> 0 && bytesread > 0 ? bytesread : ret*/;
 }

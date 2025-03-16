@@ -27,20 +27,25 @@ putnum(const char* what, ssize_t n) {
 static int seq = 0;
 
 ssize_t
-http_read(fd_type fd, char* x, size_t n, void* headers_len) {
-  http* h = ((buffer*)headers_len)->cookie ? ((buffer*)headers_len)->cookie : (http*)(ptrdiff_t)fd;
+http_read(fd_type fd, char* y, size_t l, buffer* b) {
+  http* h = b->cookie ? b->cookie : (http*)(ptrdiff_t)fd;
   buffer* in = &h->q.in;
   http_response* response = h->response;
   http_status st = response->status;
-  ssize_t r, ret = 0 /*, received, oldlen*/;
+  ssize_t r, ret = 0;
+  char* x = y;
+  size_t n = l;
 
   ++seq;
 
   if(!n)
     return 0;
 
+  uint32_t iteration = 0;
+
 again:
-  // oldlen = buffer_LEN(in);
+  ++iteration;
+
   r = response->status == HTTP_RECV_HEADER ? buffer_freshen(in) : buffer_feed(in);
   int err = errno;
 
@@ -64,14 +69,20 @@ again:
 
   if((response->status == HTTP_RECV_HEADER || response->status == HTTP_RECV_DATA)) {
 
-    ret = http_read_internal(h->sock, x, n, &h->q.in);
+    ret = http_read_internal(h->sock, x, n, in);
 
     /* if(response->status == HTTP_RECV_DATA && ret == 0)
        goto again;*/
-    if(response->status == HTTP_RECV_DATA && ret == 0) {
-      ret = -1;
-      errno = EAGAIN;
+    if(response->status == HTTP_RECV_DATA) {
+      if(buffer_LEN(in)) {
+        n -= ret;
+        x += ret;
+        ret = 0;
+
+        goto again;
+      }
     }
+
     goto end;
   } else if(response->status == HTTP_STATUS_FINISH) {
     goto end;

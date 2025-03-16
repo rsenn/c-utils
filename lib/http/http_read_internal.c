@@ -12,41 +12,57 @@
  * @return
  */
 ssize_t
-http_read_internal(fd_type fd, char* x, size_t n, buffer* b) {
+http_read_internal(fd_type fd, char* y, size_t l, buffer* b) {
   http* h = b->cookie;
   buffer* in = &h->q.in;
   http_response* response = h->response;
   ssize_t ret = 0;
+  char* x = y;
+  size_t n = l;
+  uint32_t iteration = 0;
+
+again:
+  ++iteration;
 
   switch(response->status) {
     case HTTP_RECV_HEADER: {
-      ssize_t r;
+      while(response->status == HTTP_RECV_HEADER) {
+        ssize_t r = http_read_header(in, &response->data, response);
 
-      while(response->status == HTTP_RECV_HEADER)
-        if((r = http_read_header(&h->q.in, &response->data, response)) <= 0)
+        if(r <= 0)
           goto end;
+      }
 
       if(response->status == HTTP_RECV_DATA) {
         response->headers_len = response->data.len;
 
-        if(!buffer_LEN(in))
-          break;
-      } else
-        break;
+        if(buffer_LEN(in))
+          goto again;
+      }
+
+      break;
     }
 
     case HTTP_RECV_DATA: {
       ssize_t r = http_response_read(in, response);
 
       if(r > 0) {
-        size_t num = MIN(r, n);
+        r = MIN(r, n);
 
-        byte_copy(x, num, buffer_PEEK(in));
-        buffer_SKIP(in, num);
+        byte_copy(x, r, buffer_PEEK(in));
+        buffer_SKIP(in, r);
 
-        response->data_pos += num;
-        ret = num;
+        response->data_pos += r;
+        ret += r;
+
+        x += r;
+        n -= r;
       }
+
+      if(r >= 0)
+        if(n > 0)
+          if(buffer_LEN(in))
+            goto again;
 
       break;
     }
