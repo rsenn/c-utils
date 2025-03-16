@@ -6,19 +6,19 @@
 
 /**
  * @brief http_read_internal
- * @param h       http* struct
- * @param buf     buffer we've just written to
- * @param received     number of bytes we've just written
+ * @param h          http* struct
+ * @param buf        buffer we've just written to
+ * @param len        number of bytes we've just written
  * @return
  */
 ssize_t
-http_read_internal(fd_type fd, char* y, size_t l, buffer* b) {
+http_read_internal(fd_type fd, char* buf, size_t len, buffer* b) {
   http* h = b->cookie;
   buffer* in = &h->q.in;
   http_response* response = h->response;
   ssize_t ret = 0;
-  char* x = y;
-  size_t n = l;
+  char* x = buf;
+  size_t n = len;
   uint32_t iteration = 0;
 
 again:
@@ -106,9 +106,9 @@ end:
     buffer_putstr(buffer_2, http_strerror(h, ret));
   }
 
-  if(h->response->code != -1) {
+  if(response->code != -1) {
     buffer_puts(buffer_2, " code=");
-    buffer_putlong(buffer_2, h->response->code);
+    buffer_putlong(buffer_2, response->code);
   }
 
   buffer_puts(buffer_2, " ret=");

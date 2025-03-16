@@ -104,7 +104,6 @@ void http_init(http* h, const char* host, uint16 port);
 ssize_t http_read(fd_type, char*, size_t, buffer*);
 ssize_t http_read_header(buffer*, stralloc*, http_response*);
 ssize_t http_read_internal(fd_type, char*, size_t, buffer*);
-ssize_t http_read_internal(fd_type, char*, size_t, buffer*);
 
 void http_response_dump(http_response* r);
 void http_response_free(http_response* r);
@@ -115,10 +114,12 @@ void http_request_dump(http_request*);
 http_request* http_request_new(http*);
 int http_sendreq(http* h);
 size_t http_skip_header(const char* x, size_t len);
-int http_socket(http* h, int nonblock);
-ssize_t http_socket_read(fd_type fd, void* buf, size_t len, void* b);
-ssize_t http_socket_write(fd_type fd, void* buf, size_t len, void* b);
-const char* http_strerror(http* h, int ret);
+
+int http_socket(http*, int);
+ssize_t http_socket_read(fd_type, void*, size_t, buffer*);
+ssize_t http_socket_write(fd_type, void*, size_t, buffer*);
+
+const char* http_strerror(http*, int);
 
 #ifdef __cplusplus
 }

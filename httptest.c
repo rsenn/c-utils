@@ -27,8 +27,9 @@
 
 static int last_errno = 0;
 static struct taia deadline, stamp;
-static void
+static int ioserial;
 
+int
 set_timeouts(int seconds) {
   taia_uint(&deadline, seconds);
   taia_uint(&stamp, 0);
@@ -350,22 +351,22 @@ process_xml(const char* x, size_t len, strlist* urls, uri_t* uri) {
 static void
 http_process(http* h, strlist* urls, uri_t* uri) {
   size_t len;
-  http_response* r = h->response;
+  http_response* response = h->response;
 
-  const char* type = http_get_header(r->data.s, r->headers_len, "Content-Type", &len);
+  const char* type = http_get_header(response->data.s, response->headers_len, "Content-Type", &len);
   size_t typelen = type ? str_chrs(type, "\r\n\0", 3) : 0;
 
-  size_t received = r->data.len;
-  size_t pos = http_skip_header(stralloc_begin(&r->data), stralloc_length(&r->data));
+  size_t received = response->data.len;
+  size_t pos = http_skip_header(stralloc_begin(&response->data), stralloc_length(&response->data));
 
   buffer_puts(buffer_2, "STATUS: ");
   buffer_puts(
       buffer_2,
-      ((const char* const[]){"0", "HTTP_RECV_HEADER", "HTTP_RECV_DATA", "HTTP_STATUS_CLOSED", "HTTP_STATUS_ERROR", "HTTP_STATUS_BUSY", "HTTP_STATUS_FINISH", 0})[r->status]);
+      ((const char* const[]){"0", "HTTP_RECV_HEADER", "HTTP_RECV_DATA", "HTTP_STATUS_CLOSED", "HTTP_STATUS_ERROR", "HTTP_STATUS_BUSY", "HTTP_STATUS_FINISH", 0})[response->status]);
 
   buffer_putnlflush(buffer_2);
   buffer_puts(buffer_2, "PTR: ");
-  buffer_putulong(buffer_2, r->headers_len);
+  buffer_putulong(buffer_2, response->headers_len);
   buffer_putnlflush(buffer_2);
   buffer_puts(buffer_2, "TYPE: ");
   buffer_put(buffer_2, type, typelen);
@@ -373,18 +374,18 @@ http_process(http* h, strlist* urls, uri_t* uri) {
   --pos;
 
   buffer_puts(buffer_2, "HEADERS: ");
-  put_indented(buffer_2, stralloc_begin(&r->data), pos);
+  put_indented(buffer_2, stralloc_begin(&response->data), pos);
   buffer_puts(buffer_2, "RESPONSE LENGTH: ");
-  buffer_putulonglong(buffer_2, r->data.len - r->headers_len);
+  buffer_putulonglong(buffer_2, response->data.len - response->headers_len);
   buffer_puts(buffer_2, "\nRESPONSE DATA: ");
 
   if(0 && byte_finds(type, typelen, "html") < typelen || byte_finds(type, typelen, "xml") < typelen) {
-    process_xml(stralloc_begin(&r->data) + pos, stralloc_length(&r->data) - pos, urls, uri);
+    process_xml(stralloc_begin(&response->data) + pos, stralloc_length(&response->data) - pos, urls, uri);
   } else {
-    put_escaped(buffer_2, stralloc_begin(&r->data) + pos, stralloc_length(&r->data) - pos);
+    put_escaped(buffer_2, stralloc_begin(&response->data) + pos, stralloc_length(&response->data) - pos);
 
-    // put_indented_n(buffer_2, stralloc_begin(&r->data) + pos,
-    // stralloc_length(&r->data) - pos, 1024);
+    // put_indented_n(buffer_2, stralloc_begin(&response->data) + pos,
+    // stralloc_length(&response->data) - pos, 1024);
   }
 
   buffer_putnlflush(buffer_2);
@@ -498,6 +499,8 @@ main(int argc, char* argv[]) {
 
       io_wait();
 
+      ++ioserial;
+
       /*if(io_waituntil2(-1) == -1) {
         errmsg_warnsys("wait error: ", 0); return 3;
       }*/
@@ -534,6 +537,8 @@ main(int argc, char* argv[]) {
 
       // buffer_dump(buffer_1, &h.q.htb);
 
+      if(response->status == HTTP_STATUS_ERROR)
+        break;
       if(response->status == HTTP_STATUS_FINISH || response->status == HTTP_STATUS_CLOSED)
         break;
     }

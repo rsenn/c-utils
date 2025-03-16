@@ -38,6 +38,7 @@ io_waitread(fd_type d, char* buf, int64 len) {
 
   if(r == -1)
     r = -3;
+
   return r;
 }
 
@@ -45,7 +46,7 @@ io_waitread(fd_type d, char* buf, int64 len) {
 
 int64
 io_waitread(fd_type d, char* buf, int64 len) {
-  long r;
+  ssize_t r;
   struct pollfd p;
   io_entry* e = (io_entry*)iarray_get((iarray*)io_getfds(), d);
 
@@ -62,21 +63,27 @@ io_waitread(fd_type d, char* buf, int64 len) {
       errno = EBADF;
       return -3;
     } /* catch overflow */
+
     p.events = POLLIN;
+
     switch(poll(&p, 1, -1)) {
       case -1:
         if(errno == EAGAIN)
           goto again;
+
         return -3;
     }
   }
+
   r = read(d, buf, len);
 
   if(r == -1) {
     if(errno == EAGAIN)
       goto again;
+
     r = -3;
   }
+
   return r;
 }
 

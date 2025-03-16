@@ -137,12 +137,13 @@ io_waituntil2(int64 milliseconds) {
   if(!io_wanted_fds)
     return 0;
 
-#ifdef DEBUG_IO
+#ifdef DEBUG_IO_
   buffer_putspad(buffer_2, "io_waituntil2", 30);
   buffer_puts(buffer_2, "milliseconds=");
   buffer_putlonglong(buffer_2, milliseconds);
   buffer_putnlflush(buffer_2);
 #endif
+
 #ifdef USE_LINUX_AIO
 #warning USE_LINUX_AIO
   {
@@ -711,18 +712,20 @@ dopoll :
 
 #ifdef DEBUG_IO
   p = (struct pollfd*)array_start(&io_pollfds);
-  buffer_puts(buffer_2, "io_waituntil2(");
+  buffer_puts(buffer_2, "io_waituntil2( timeout=");
   buffer_putlonglong(buffer_2, milliseconds);
-  buffer_puts(buffer_2, ") ");
-  buffer_putlong(buffer_2, r);
-  buffer_putsflush(buffer_2, " fds\n");
+  buffer_puts(buffer_2, " ) ");
+  buffer_putsflush(buffer_2, "  [ ");
 
   for(i = 0; i < r; ++i) {
-    buffer_puts(buffer_2, "\tpollfd[");
+    if(i > 0)
+      buffer_puts(buffer_2, ", ");
+    /*buffer_puts(buffer_2, "    pollfd[");
     buffer_putlong(buffer_2, i);
-    buffer_puts(buffer_2, "] { .fd=");
+    buffer_puts(buffer_2, "] ");*/
+    buffer_puts(buffer_2, "{ ");
     buffer_putlong(buffer_2, p[i].fd);
-    buffer_puts(buffer_2, ", events=");
+    buffer_puts(buffer_2, " ");
 
     if(p[i].events & POLLIN)
       buffer_puts(buffer_2, "IN ");
@@ -732,20 +735,34 @@ dopoll :
 
     if(p[i].events & POLLERR)
       buffer_puts(buffer_2, "ERR ");
+
     buffer_puts(buffer_2, "}");
-    buffer_putnlflush(buffer_2);
+    // buffer_putnlflush(buffer_2);
   }
+
+  buffer_puts(buffer_2, " ]");
+  buffer_putnlflush(buffer_2);
+
 #endif
 
   if((i = poll((struct pollfd*)array_start(&io_pollfds), r, milliseconds)) < 1)
     return -1;
+
 #ifdef DEBUG_IO
+  buffer_puts(buffer_2, "io_waituntil2( timeout=");
+  buffer_putlonglong(buffer_2, milliseconds);
+  buffer_puts(buffer_2, " ) ");
+  buffer_putsflush(buffer_2, "  [ ");
+
   for(i = 0; i < r; ++i) {
-    buffer_puts(buffer_2, "pollfd[");
-    buffer_putlong(buffer_2, i);
-    buffer_puts(buffer_2, "] { .fd=");
+    if(i > 0)
+      buffer_puts(buffer_2, ", ");
+    /*buffer_puts(buffer_2, "    pollfd[");
+         buffer_putlong(buffer_2, i);
+         buffer_puts(buffer_2, "] ");*/
+    buffer_puts(buffer_2, "{ ");
     buffer_putlong(buffer_2, p[i].fd);
-    buffer_puts(buffer_2, ", revents=");
+    buffer_puts(buffer_2, " ");
 
     if(p[i].revents & POLLIN)
       buffer_puts(buffer_2, "IN ");
@@ -757,8 +774,11 @@ dopoll :
       buffer_puts(buffer_2, "ERR ");
 
     buffer_puts(buffer_2, "}");
-    buffer_putnlflush(buffer_2);
+    //  buffer_putnlflush(buffer_2);
   }
+
+  buffer_puts(buffer_2, " ]");
+  buffer_putnlflush(buffer_2);
 #endif
 
   for(j = r - 1; j >= 0; --j) {

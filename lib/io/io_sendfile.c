@@ -39,8 +39,10 @@ io_sendfile(fd_type s, fd_type fd, uint64 off, uint64 n) {
       e->canwrite = 0;
       e->next_write = -1;
     }
+
     return errno == EAGAIN ? (sbytes ? sbytes : -1) : -3;
   }
+
   return n;
 }
 
@@ -63,6 +65,7 @@ io_sendfile(int64 out, int64 in, uint64 off, uint64 bytes) {
       e->next_write = -1;
     }
   }
+
   return r;
 }
 
@@ -86,6 +89,7 @@ io_sendfile(int64 out, int64 in, uint64 off, uint64 bytes) {
       e->next_write = -1;
     }
   }
+
   return r;
 }
 
@@ -112,6 +116,7 @@ io_sendfile(int64 out, int64 in, uint64 off, uint64 bytes) {
         e->next_write = -1;
       }
     }
+
     return p.bytes_sent;
   }
 
@@ -148,6 +153,7 @@ io_sendfile(fd_type s, fd_type fd, uint64 off, uint64 n) {
   io_entry* e = (io_entry*)iarray_get((iarray*)io_getfds(), s);
   off_t i;
   uint64 done = 0;
+
   /* What a spectacularly broken design for sendfile64.
    * The offset is 64-bit for sendfile64, but the count is not. */
 
@@ -161,6 +167,7 @@ io_sendfile(fd_type s, fd_type fd, uint64 off, uint64 n) {
 
       if(n == 0)
         return done;
+
       continue;
     } else {
       if(e) {
@@ -173,9 +180,9 @@ io_sendfile(fd_type s, fd_type fd, uint64 off, uint64 n) {
       else
         return done + i;
     }
+
+    return 0;
   }
-  return 0;
-}
 #endif
 
 #elif(defined(_WIN32) || defined(_WIN64) || defined(__CYGWIN__)) && !defined(__MSYS__)

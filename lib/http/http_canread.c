@@ -23,7 +23,7 @@
  */
 ssize_t
 http_canread(http* h, void (*wantread)(fd_type), void (*wantwrite)(fd_type)) {
-  http_response* r;
+  http_response* response;
   int err;
   size_t n;
   ssize_t ret = 0, received;
@@ -77,24 +77,24 @@ http_canread(http* h, void (*wantread)(fd_type), void (*wantwrite)(fd_type)) {
   buffer_putnlflush(buffer_2);
 #endif
 
-  if((r = h->response) == NULL)
+  if((response = h->response) == NULL)
     goto fail;
 
-  while(r->status == HTTP_RECV_HEADER) {
-    size_t len, pos = r->data.len;
+  while(response->status == HTTP_RECV_HEADER) {
+    size_t len, pos = response->data.len;
 
-    if((ret = buffer_getline_sa(&h->q.in, &r->data)) <= 0)
+    if((ret = buffer_getline_sa(&h->q.in, &response->data)) <= 0)
       break;
 
-    // stralloc_trimr(&r->data, "\r\n", 2);
+    // stralloc_trimr(&response->data, "\r\n", 2);
 
-    len = byte_trimr(&r->data.s[pos], r->data.len - pos, "\r\n", 2);
+    len = byte_trimr(&response->data.s[pos], response->data.len - pos, "\r\n", 2);
 
-    stralloc_nul(&r->data);
+    stralloc_nul(&response->data);
 
     if(len == 0) {
-      r->headers_len = r->data.len;
-      r->status = HTTP_RECV_DATA;
+      response->headers_len = response->data.len;
+      response->status = HTTP_RECV_DATA;
 
       if(h->q.in.p < h->q.in.n) {
         ret = 1;
@@ -106,35 +106,35 @@ http_canread(http* h, void (*wantread)(fd_type), void (*wantwrite)(fd_type)) {
       break;
     }
 
-    if(!case_diffb(&r->data.s[pos], str_len("Content-Type: multipart"), "Content-Type: multipart")) {
-      size_t p = pos + str_find(&r->data.s[pos], "boundary=");
+    if(!case_diffb(&response->data.s[pos], str_len("Content-Type: multipart"), "Content-Type: multipart")) {
+      size_t p = pos + str_find(&response->data.s[pos], "boundary=");
 
-      if(r->data.s[p])
-        stralloc_copys(&r->boundary, &r->data.s[p + str_len("boundary=")]);
+      if(response->data.s[p])
+        stralloc_copys(&response->boundary, &response->data.s[p + str_len("boundary=")]);
 
-      r->transfer = HTTP_TRANSFER_BOUNDARY;
-    } else if(!case_diffb(&r->data.s[pos], str_len("Content-Length: "), "Content-Length: ")) {
-      scan_ulonglong(&r->data.s[pos + 16], &r->content_length);
-      r->transfer = HTTP_TRANSFER_LENGTH;
+      response->transfer = HTTP_TRANSFER_BOUNDARY;
+    } else if(!case_diffb(&response->data.s[pos], str_len("Content-Length: "), "Content-Length: ")) {
+      scan_ulonglong(&response->data.s[pos + 16], &response->content_length);
+      response->transfer = HTTP_TRANSFER_LENGTH;
     } else {
-      r->transfer = HTTP_TRANSFER_CHUNKED;
-      r->content_length = 0;
-      r->chunk_length = 0;
+      response->transfer = HTTP_TRANSFER_CHUNKED;
+      response->content_length = 0;
+      response->chunk_length = 0;
     }
 
-    if(r->header) {
-      r->header(h, r->data.s + pos, len);
+    if(response->header) {
+      response->header(h, response->data.s + pos, len);
     }
 
-    /*   r->headers_len = 0;
-       stralloc_zero(&r->data);*/
+    /*   response->headers_len = 0;
+       stralloc_zero(&response->data);*/
   }
 
-  if(r->status == HTTP_RECV_HEADER || r->status == HTTP_RECV_DATA) {
+  if(response->status == HTTP_RECV_HEADER || response->status == HTTP_RECV_DATA) {
     if(ret > 0) {
-      stralloc_readyplus(&r->data, ret);
-      buffer_get(&h->q.in, &r->data.s[r->data.len], ret);
-      r->data.len += ret;
+      stralloc_readyplus(&response->data, ret);
+      buffer_get(&h->q.in, &response->data.s[response->data.len], ret);
+      response->data.len += ret;
 
 #ifdef DEBUG_HTTP
       buffer_putspad(buffer_2, "\x1b[1;32mhttp_canread\x1b[0m(2) DATA", 30);
@@ -143,8 +143,8 @@ http_canread(http* h, void (*wantread)(fd_type), void (*wantwrite)(fd_type)) {
       buffer_puts(buffer_2, " ret=");
       buffer_putlong(buffer_2, ret);
 
-      buffer_puts(buffer_2, " r->data.len=");
-      buffer_putulonglong(buffer_2, r->data.len);
+      buffer_puts(buffer_2, " response->data.len=");
+      buffer_putulonglong(buffer_2, response->data.len);
       buffer_putnlflush(buffer_2);
 #endif
     }

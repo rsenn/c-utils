@@ -13,9 +13,12 @@
 extern "C" {
 #endif
 
-typedef ssize_t(buffer_op_sys)(fd_type, void*, size_t);
-typedef ssize_t(buffer_op_proto)(fd_type, void*, size_t, void*);
-typedef ssize_t(buffer_op_fn)();
+struct buffer;
+
+typedef ssize_t buffer_op_sys(fd_type, void*, size_t);
+typedef ssize_t buffer_op_proto(fd_type, void*, size_t, struct buffer*);
+typedef ssize_t buffer_op_fn();
+typedef void buffer_deinit(struct buffer*);
 
 typedef buffer_op_fn* buffer_op_ptr;
 

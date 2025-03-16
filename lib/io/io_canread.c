@@ -73,5 +73,6 @@ io_canread() {
     buffer_putnlflush(buffer_2);
   }
 #endif
+
   return ret;
 }

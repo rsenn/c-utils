@@ -9,8 +9,6 @@
 #include <errno.h>
 #include <assert.h>
 
-ssize_t http_socket_read(fd_type fd, void* buf, size_t len, void* b);
-
 static inline void
 putline(const char* what, const char* b, ssize_t l, int i) {
   buffer_puts(buffer_2, what);

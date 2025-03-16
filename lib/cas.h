@@ -26,7 +26,7 @@ __atomic_compare_and_swap(volatile long* ptr, long oldval, long newval) {
 #define __CAS __atomic_compare_and_swap
 #define __CAS_PTR __atomic_compare_and_swap
 
-#elif(defined(__i386__) || defined(__x86_64__)) && (defined(__TINYC__) || defined(TCC) || defined(__GNUC__) || USE_INLINE_COMPARE_AND_SWAP) && !defined(__BORLANDC__)
+#elif(defined(__i386__) || defined(__x86_64__)) && (defined(__TINYC__) || defined(__GNUC__) || USE_INLINE_COMPARE_AND_SWAP) && !defined(__BORLANDC__)
 //#warning x86
 
 #ifdef __TINYC__
@@ -44,15 +44,32 @@ __atomic_compare_and_swap(volatile long* ptr, long oldval, long newval) {
 
 #if defined(__TINYC__) || __GNUC__ == 3
 #warning __TINYC__
-static inline uint64_t
-__compare_and_swap(uint64_t* ptr, uint64_t new_val, uint64_t old_val) {
-  uint64_t out;
+#include <stdint.h>
 
+#if defined(__x86_64__)
+static inline uint64_t
+__compare_and_swap(uint64_t* ptr, uint64_t old_val, uint64_t new_val) {
+  uint64_t out;
   // newline after `lock' for the work around of apple's gas(?) bug.
-  asm volatile("lock cmpxchgq %2,%1" : "=a"(out), "+m"(*ptr) : "q"(new_val), "0"(old_val) : "cc");
+  asm volatile("lock "
+      "cmpxchgq %2,%1"
+      : "=a"(out), "+m"(*ptr) : "q"(new_val), "0"(old_val) : "cc");
 
   return out;
 }
+
+#else
+static inline uint32_t
+__compare_and_swap(uint32_t* ptr, uint32_t old_val, uint32_t new_val) {
+  uint32_t out;
+  // newline after `lock' for the work around of apple's gas(?) bug.
+  asm volatile("lock "
+      "cmpxchgl %2,%1"
+      : "=a"(out), "+m"(*ptr) : "q"(new_val), "0"(old_val) : "cc");
+
+  return out;
+}
+#endif
 #endif
 
 #define __CAS __compare_and_swap

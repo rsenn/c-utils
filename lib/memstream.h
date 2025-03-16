@@ -5,6 +5,9 @@
 #include "alloc.h"
 #include "byte.h"
 
+ssize_t buffer_dummyreadmmap(fd_type, void*, size_t, buffer*);
+void buffer_munmap(buffer*);
+
 typedef struct memstream_s {
   char** pdata;
   size_t* psize;
@@ -17,8 +20,7 @@ memstream_free(buffer* b) {
 }
 
 static inline ssize_t
-memstream_write(int fd, void* data, size_t len, void* arg) {
-  buffer* b = arg;
+memstream_write(fd_type fd, void* data, size_t len, buffer* b) {
   memstream* ms = b->cookie; //(memstream*)&b[1];
   size_t n = *ms->psize;
 
@@ -47,8 +49,6 @@ memstream_open(char** ptr, size_t* sizeloc) {
 
   return b;
 }
-
-ssize_t buffer_dummyread(fd_type fd, void* buf, size_t len, void* arg);
 
 static inline buffer*
 memstream_reopen(buffer* f, char** buf, size_t* size) {

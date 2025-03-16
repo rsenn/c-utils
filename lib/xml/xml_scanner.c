@@ -10,5 +10,5 @@ xml_scanner(xmlscanner* s, const char* x, size_t len) {
   s->b = alloc_zero(sizeof(buffer));
 
   buffer_frombuf(s->b, x, len);
-  s->b->deinit = &alloc_free;
+  s->b->deinit = (buffer_deinit*)&alloc_free;
 }

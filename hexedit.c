@@ -41,7 +41,8 @@ typedef struct {
 
 static array patches;
 
-extern ssize_t buffer_dummyreadmmap();
+ssize_t buffer_dummyreadmmap(fd_type, void*, size_t, buffer*);
+void buffer_munmap(buffer*);
 
 uint32
 crc32(uint32 crc, const char* data, size_t size) {
@@ -121,9 +122,9 @@ buffer_backup(buffer* b) {
   stralloc_init(&orig);
   stralloc_init(&backup);
 
-  if(b->op == (buffer_op_proto*)&buffer_dummyreadmmap) {
+  if(b->op == (buffer_op_proto*)&buffer_dummyreadmmap) 
     buffer_munmap(b);
-  }
+  
   buffer_filename(b, &orig);
 
   stralloc_copy(&backup, &orig);

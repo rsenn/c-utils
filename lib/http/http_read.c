@@ -27,14 +27,14 @@ putnum(const char* what, ssize_t n) {
 static int seq = 0;
 
 ssize_t
-http_read(fd_type fd, char* y, size_t l, buffer* b) {
+http_read(fd_type fd, char* buf, size_t len, buffer* b) {
   http* h = b->cookie ? b->cookie : (http*)(ptrdiff_t)fd;
   buffer* in = &h->q.in;
   http_response* response = h->response;
   http_status st = response->status;
   ssize_t r, ret = 0;
-  char* x = y;
-  size_t n = l;
+  char* x = buf;
+  size_t n = len;
 
   ++seq;
 
@@ -47,7 +47,7 @@ again:
   ++iteration;
 
   r = response->status == HTTP_RECV_HEADER ? buffer_freshen(in) : buffer_feed(in);
-  int err = errno;
+  int err = response->err;
 
   if(r < 0 && err != EAGAIN && err != EWOULDBLOCK)
     response->status = HTTP_STATUS_ERROR;
@@ -142,7 +142,7 @@ end:
       buffer_puts(buffer_2, unix_errno(errno));
     }
 
-    if(h->response->code != -1) {
+    if(response->code != -1) {
       buffer_puts(buffer_2, " code=");
       buffer_putlong(buffer_2, response->code);
     }
