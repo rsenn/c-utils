@@ -1,5 +1,5 @@
 #ifdef __MINGW32__
-#include "io_internal.h"
+#include "../io_internal.h"
 #include <errno.h>
 int io_passfd(int64 sock,int64 fd) {
   errno=EINVAL;
@@ -27,7 +27,7 @@ int io_passfd(int64 sock,int64 fd) {
 #include <sys/uio.h>
 #include <errno.h>
 #include <string.h>
-#include "io_internal.h"
+#include "../io_internal.h"
 
 union fdmsg {
   struct cmsghdr h;

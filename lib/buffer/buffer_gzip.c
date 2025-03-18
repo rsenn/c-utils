@@ -32,8 +32,8 @@ buffer_gz_close(buffer* b) {
 }
 
 static ssize_t
-buffer_gunzip_read(fd_type fd, void* x, size_t n, void* b) {
-  gzFile f = ((buffer*)b)->cookie;
+buffer_gunzip_read(fd_type fd, void* x, size_t n, buffer* b) {
+  gzFile f = b->cookie;
   return gzread(f, x, n);
 }
 
@@ -71,8 +71,8 @@ buffer_gunzip_fd(buffer* b, fd_type fd) {
 }
 
 static ssize_t
-buffer_gzip_write(fd_type fd, void* x, size_t n, void* b) {
-  gzFile f = ((buffer*)b)->cookie;
+buffer_gzip_write(fd_type fd, void* x, size_t n, buffer* b) {
+  gzFile f = b->cookie;
   return gzwrite(f, x, n);
 }
 
