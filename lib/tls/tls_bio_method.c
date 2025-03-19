@@ -116,4 +116,5 @@ tls_bio_puts(tls_bio_t* bp, const char* str) {
 
   return (ret);
 }
-*
+*/
+#endif
