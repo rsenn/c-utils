@@ -103,12 +103,10 @@ cfg-diet() {
   export CC
 
   if [ "${PKG_CONFIG-unset}" = unset ]; then
-    if type ${host}-pkg-config >/dev/null; then
-      export PKG_CONFIG=`type ${host}-pkg-config 2>&1 |sed 's,.*(\(.*\)).*,\1,'`
-    elif type pkgcfg >/dev/null; then
-      export PKG_CONFIG=`type pkgcfg 2>&1 |sed 's,.*(\(.*\)).*,\1,'`
+    if type pkgcfg >/dev/null; then
+      export PKG_CONFIG=`LC_ALL=C type pkgcfg 2>&1 |sed 's,.* is ,,'`
     elif type pkg-config >/dev/null; then
-      export PKG_CONFIG=`type pkg-config 2>&1 |sed 's,.*(\(.*\)).*,\1,'`
+      export PKG_CONFIG=`LC_ALL=C type pkg-config 2>&1 |sed 's,.* is ,,'`
     fi
   fi
 
