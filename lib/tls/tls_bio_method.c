@@ -15,33 +15,8 @@
 
 #define clear_socket_error() errno = 0
 
-static long tls_bio_ctrl(tls_bio_t*, int, long, void*);
-static int tls_bio_send(tls_bio_t*, const char*, size_t, size_t*);
-static int tls_bio_recv(tls_bio_t*, char*, size_t, size_t*);
-static int tls_bio_puts(tls_bio_t*, const char*);
-static int tls_bio_create(tls_bio_t*);
-static int tls_bio_destroy(tls_bio_t*);
 
-static const bio_method_t tls_method_sockp = {
-    /* .type =  */ BIO_TYPE_SOCKET,
-    /* .name =  */ "socket",
-    /* .bwrite =  */ tls_bio_send,
-    /* .bwrite_old =  */ NULL,
-    /* .bread =  */ tls_bio_recv,
-    /* .bread_old =  */ NULL,
-    /* .bputs =  */ tls_bio_puts,
-    /* .bgets =  */ NULL,
-    /* .ctrl =  */ tls_bio_ctrl,
-    /* .create =  */ tls_bio_create,
-    /* .destroy =  */ tls_bio_destroy,
-    /* .callback_ctrl =  */ NULL};
-
-const BIO_METHOD*
-tls_bio_method(void) {
-  return (&tls_method_sockp);
-}
-
-static int
+/*static int
 tls_bio_create(tls_bio_t* bi) {
   bi->init = 0;
   bi->num = 0;
@@ -141,4 +116,4 @@ tls_bio_puts(tls_bio_t* bp, const char* str) {
 
   return (ret);
 }
-#endif
+*

@@ -45,7 +45,10 @@ int unix_fnmatch(const char* pattern, const char* string, int flags);
 int fnmatch_b(const char*, size_t, const char*, size_t slen, int flags);
 int isleap(int year);
 int pipe2(int fd[2], int flags);
+
+#if WINDOWS_NATIVE
 int ftruncate(int, off_t);
+#endif
 
 int unix_getopt(int, char* const[], const char*);
 int unix_getopt_long(int, char* const[], const char*, const struct unix_longopt*, int*);

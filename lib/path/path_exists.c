@@ -2,14 +2,13 @@
 #include "../utf8.h"
 #include "../windoze.h"
 
-#include <sys/stat.h>
-
 #if WINDOWS_NATIVE
 #include <windows.h>
 #include <shlwapi.h>
 #define lstat stat
 #else
 #include <unistd.h>
+#include <sys/stat.h>
 #endif
 
 #if !defined(__LCC__) || defined(_WIN64)
