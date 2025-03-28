@@ -25,6 +25,7 @@ set(MODSUBDIRS
     cbmap
     charbuf
     coff
+    cpp
     dir
     dlist
     dns
