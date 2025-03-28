@@ -11,5 +11,5 @@ xml_scanner_sa(xmlscanner* s, const stralloc* sa) {
   s->b = alloc_zero(sizeof(buffer));
 
   buffer_fromsa(s->b, sa);
-  s->b->deinit = &alloc_free;
+  s->b->deinit = (void(*)(buffer*))&alloc_free;
 }

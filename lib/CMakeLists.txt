@@ -47,7 +47,6 @@ set(MODSUBDIRS
     path
     pe
     playlist
-    cpp
     process
     range
     rdir
@@ -163,7 +162,7 @@ target_link_libraries(uint32 PRIVATE taia tai)
 target_link_libraries(tls PRIVATE unix io iarray buffer byte str ${TLS_LIBRARIES})
 target_link_libraries(http PRIVATE dns errmsg byte io scan tls socket stralloc str)
 target_link_libraries(tokenizer PRIVATE buffer byte str)
-target_link_libraries(cpp PRIVATE errmsg tokenizer strlist hashmap hmap)
+#target_link_libraries(cpp PRIVATE errmsg tokenizer strlist hashmap hmap)
 
 if(BUILD_SHARED)
   file(GLOB LIB_SOURCES */*.c)

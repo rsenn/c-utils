@@ -1137,7 +1137,6 @@ if(BUILD_TESTS)
   add_program(binfmttest binfmt)
   add_program(buffertest stralloc buffer array case mmap
               ${COMPRESSION_LIBRARIES})
-  add_program(cpptest cpp tokenizer path unix buffer open)
   #add_program(dnstest dns stralloc buffer errmsg ${LIBIPHLPAPI} ${LIBMSWSOCK})
   add_program(
     ftptest hmap unix dns case io array socket ndelay errmsg taia tai stralloc
