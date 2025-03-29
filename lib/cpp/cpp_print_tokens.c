@@ -8,7 +8,7 @@ cpp_print_tokens(buffer* out, cpp_token* tok, bool line_directives) {
   const char* filename = "";
   int line_no = 0;
 
-  for(; tok->kind != TK_EOF; tok = tok->next) {
+  for(; tok && tok->kind != TK_EOF; tok = tok->next) {
     if(line > 1 && tok->at_bol)
       buffer_putnlflush(out);
 

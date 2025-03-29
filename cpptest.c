@@ -159,11 +159,12 @@ main(int argc, char** argv) {
   cpp_print_tokens(out, tok2, !(no_line || no_process));
 
   for(cpp_macro* m = cpp_macro_list; m; m = m->next) {
+    cpp_print_macro(buffer_2, m);
 
-    buffer_putm_internal(buffer_2, "macro '", m->name, "'", 0);
-    buffer_putnlflush(buffer_2);
+    buffer_flush(buffer_2);
 
-    // if(&m->next == cpp_macro_ptr) break;
+    if(&m->next == cpp_macro_ptr)
+      break;
   }
 
 #ifndef test_x
