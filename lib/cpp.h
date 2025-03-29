@@ -88,6 +88,7 @@ cpp_token* cpp_subst(cpp_token*, cpp_macro_arg*);
 cpp_token* cpp_timestamp_macro(cpp_token*);
 void cpp_undef_macro(char*);
 void cpp_error_tok(cpp_token*, char*, ...);
+void cpp_error_at(char* loc, char* fmt, ...);
 
 #ifdef __cplusplus
 }

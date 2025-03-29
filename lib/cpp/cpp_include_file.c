@@ -10,13 +10,13 @@ cpp_token *cpp_include_file(cpp_token *tok, char *path, cpp_token *filename_tok)
 
   // If we read the same file before, and if the file was guarded
   // by the usual #ifndef ... #endif pattern, we may be able to
-  // skip the file without opening it.
+  // cpp_skip the file without opening it.
   static hashmap include_guards;
   char *guard_name = hashmap_get(&include_guards, path);
   if (guard_name && hashmap_get(&macros, guard_name))
     return tok;
 
-  cpp_token *tok2 = tokenize_file(path);
+  cpp_token *tok2 = cpp_tokenize_file(path);
   if (!tok2)
     cpp_error_tok(filename_tok, "%s: cannot open file: %s", path, strerror(errno));
 

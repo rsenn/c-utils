@@ -21,7 +21,7 @@ cpp_read_const_expr(cpp_token** rest, cpp_token* tok) {
       tok = tok->next;
 
       if(has_paren)
-        tok = skip(tok, ")");
+        tok = cpp_skip(tok, ")");
 
       cur = cur->next = cpp_new_num_token(m ? 1 : 0, start);
       continue;

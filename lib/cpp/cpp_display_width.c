@@ -2,10 +2,10 @@
 
 // Returns the number of columns needed to display a given
 // string in a fixed-width font.
-int
-cpp_display_width(char* p, int len) {
+size_t
+cpp_display_width(char* p, size_t len) {
   char *start = p, *end = p + len;
-  int w = 0;
+  size_t w = 0;
 
   while(p < end) {
     wchar_t c;

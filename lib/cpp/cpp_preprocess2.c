@@ -141,7 +141,7 @@ cpp_preprocess2(cpp_token* tok) {
     if(cpp_equal(tok, "pragma")) {
       do {
         tok = tok->next;
-      } while(!tok->at_bol);
+      } while(!tok->cpp_at_bol);
       continue;
     }
 
@@ -149,7 +149,7 @@ cpp_preprocess2(cpp_token* tok) {
       cpp_error_tok(tok, "error");
 
     // `#`-only line is legal. It's called a null directive.
-    if(tok->at_bol)
+    if(tok->cpp_at_bol)
       continue;
 
     cpp_error_tok(tok, "invalid preprocessor directive");

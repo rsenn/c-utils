@@ -9,7 +9,7 @@ cpp_read_macro_definition(cpp_token** rest, cpp_token* tok) {
   char* name = str_ndup(tok->loc, tok->len);
   tok = tok->next;
 
-  if(!tok->has_space && cpp_equal(tok, "(")) {
+  if(!tok->cpp_has_space && cpp_equal(tok, "(")) {
     // Function-like macro
     char* va_args_name = NULL;
     cpp_macro_param* params = cpp_read_macro_params(&tok, tok->next, &va_args_name);

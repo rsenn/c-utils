@@ -3,11 +3,12 @@
 size_t
 wc_to_u8(char* u8, wchar_t w) {
   /* Unicode Table 3-5. UTF-8 Bit Distribution
-  Unicode                     1st Byte 2nd Byte 3rd Byte 4th Byte
-  00000000 0xxxxxxx           0xxxxxxx
-  00000yyy yyxxxxxx           110yyyyy 10xxxxxx
-  zzzzyyyy yyxxxxxx           1110zzzz 10yyyyyy 10xxxxxx
-  000uuuuu zzzzyyyy yyxxxxxx  11110uuu 10uuzzzz 10yyyyyy 10xxxxxx
+   
+    Unicode                     1st Byte 2nd Byte 3rd Byte 4th Byte
+    00000000 0xxxxxxx           0xxxxxxx
+    00000yyy yyxxxxxx           110yyyyy 10xxxxxx
+    zzzzyyyy yyxxxxxx           1110zzzz 10yyyyyy 10xxxxxx
+    000uuuuu zzzzyyyy yyxxxxxx  11110uuu 10uuzzzz 10yyyyyy 10xxxxxx
   */
 
   if(!(w & ~0x7f)) {

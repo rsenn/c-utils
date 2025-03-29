@@ -2,6 +2,7 @@
 #include "../cpp_internal.h"
 #include "../alloc.h"
 #include "../byte.h"
+#include <assert.h>
 
 // as per the C spec.
 void

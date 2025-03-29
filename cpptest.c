@@ -1,11 +1,12 @@
 #include "lib/cpp.h"
+#include "lib/cpp_internal.h"
+#include "lib/buffer.h"
 #include "lib/unix.h"
 #include "lib/open.h"
 #include "lib/errmsg.h"
 #include "lib/str.h"
 
-cpp* pp;
-
+ 
 static int
 usage(char* a0) {
   buffer_putm_internal(buffer_2,
@@ -28,19 +29,24 @@ main(int argc, char** argv) {
 
   errmsg_iam(str_basename(argv[0]));
 
-  pp = cpp_new();
-
+ 
   while((c = unix_getopt(argc, argv, "D:I:")) != -1) {
     switch(c) {
       case 'I': {
-        cpp_add_includedir(pp, unix_optarg);
+        strarray_push(&cpp_include_paths, unix_optarg);
         break;
       }
 
       case 'D': {
         /*  if(*(tmp = unix_optarg + str_chr(unix_optarg, '=')) == '=')
          *tmp = ' ';*/
-        cpp_add_define(pp, unix_optarg);
+        
+size_t namelen=str_chr(unix_optarg, '=');
+char* name=str_ndup(unix_optarg, namelen);
+
+        cpp_define_macro(name,  &unix_optarg[namelen+1]);
+
+        alloc_free(name);
         break;
       }
 
@@ -62,14 +68,18 @@ main(int argc, char** argv) {
     }
   }
 
-  buffer_read_fd(&in, fd);
+
+cpp_token*tok=cpp_tokenize_file(fn);
+
+
+/*  buffer_read_fd(&in, fd);
   ret = cpp_parse_file(pp, &in, fn, buffer_1);
 
   cpp_dump(pp, buffer_2);
   cpp_free(pp);
 
   if(in.fd != STDIN_FILENO)
-    buffer_close(&in);
+    buffer_close(&in);*/
 
   return !ret;
 }

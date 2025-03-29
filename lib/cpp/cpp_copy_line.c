@@ -9,7 +9,7 @@ cpp_copy_line(cpp_token** rest, cpp_token* tok) {
   cpp_token head = {};
   cpp_token* cur = &head;
 
-  for(; !tok->at_bol; tok = tok->next)
+  for(; !tok->cpp_at_bol; tok = tok->next)
     cur = cur->next = cpp_copy_token(tok);
 
   cur->next = cpp_new_eof(tok);

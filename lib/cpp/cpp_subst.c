@@ -87,7 +87,7 @@ cpp_subst(cpp_token* tok, cpp_macro_arg* args) {
       if(cpp_has_varargs(args))
         for(cpp_token* t = arg->tok; t->kind != TK_EOF; t = t->next)
           cur = cur->next = t;
-      tok = skip(tok, ")");
+      tok = cpp_skip(tok, ")");
       continue;
     }
 
@@ -95,8 +95,8 @@ cpp_subst(cpp_token* tok, cpp_macro_arg* args) {
     // before they are substituted into a macro body.
     if(arg) {
       cpp_token* t = cpp_preprocess2(arg->tok);
-      t->at_bol = tok->at_bol;
-      t->has_space = tok->has_space;
+      t->cpp_at_bol = tok->cpp_at_bol;
+      t->cpp_has_space = tok->cpp_has_space;
       for(; t->kind != TK_EOF; t = t->next)
         cur = cur->next = cpp_copy_token(t);
       tok = tok->next;

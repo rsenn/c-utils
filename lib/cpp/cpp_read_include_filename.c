@@ -25,7 +25,7 @@ cpp_read_include_filename(cpp_token** rest, cpp_token* tok, bool* is_dquote) {
 
     // Find closing ">".
     for(; !cpp_equal(tok, ">"); tok = tok->next)
-      if(tok->at_bol || tok->kind == TK_EOF)
+      if(tok->cpp_at_bol || tok->kind == TK_EOF)
         cpp_error_tok(tok, "expected '>'");
 
     *is_dquote = false;

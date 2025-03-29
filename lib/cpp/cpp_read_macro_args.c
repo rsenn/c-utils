@@ -13,7 +13,7 @@ cpp_read_macro_args(cpp_token** rest, cpp_token* tok, cpp_macro_param* params, c
   cpp_macro_param* pp = params;
   for(; pp; pp = pp->next) {
     if(cur != &head)
-      tok = skip(tok, ",");
+      tok = cpp_skip(tok, ",");
     cur = cur->next = cpp_read_macro_arg_one(&tok, tok, false);
     cur->name = pp->name;
   }
@@ -25,7 +25,7 @@ cpp_read_macro_args(cpp_token** rest, cpp_token* tok, cpp_macro_param* params, c
       arg->tok = cpp_new_eof(tok);
     } else {
       if(pp != params)
-        tok = skip(tok, ",");
+        tok = cpp_skip(tok, ",");
       arg = cpp_read_macro_arg_one(&tok, tok, true);
     }
     arg->name = va_args_name;
@@ -36,7 +36,7 @@ cpp_read_macro_args(cpp_token** rest, cpp_token* tok, cpp_macro_param* params, c
     cpp_error_tok(start, "too many arguments");
   }
 
-  skip(tok, ")");
+  cpp_skip(tok, ")");
   *rest = tok;
   return head.next;
 }
