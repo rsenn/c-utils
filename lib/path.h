@@ -109,6 +109,19 @@ int path_split(const char*, strlist*, int);
 
 size_t path_trim_b(const char*, size_t);
 
+static inline size_t
+path_is_dotslash(char* s) {
+  size_t l = str_len(s);
+  size_t n = path_skip_component(s, l);
+
+  if(n == 1 && *s == '.') {
+    n += path_skip_separator(s + n, l - n);
+    return n;
+  }
+
+  return 0;
+}
+
 #ifndef PATH_MAX
 #if WINDOWS
 #include <windows.h>

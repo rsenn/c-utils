@@ -30,7 +30,8 @@ typedef struct {
   };
 } strarray;
 
-#define STRARRAY_INIT() (strarray){ 0, 0, 0 }
+#define STRARRAY_INIT() \
+  (strarray) { 0, 0, 0 }
 
 /* strarray_init will initialize a strarray. */
 #define strarray_zero(l) array_trunc(&(l)->a)
@@ -63,6 +64,7 @@ int strarray_from_vec(strarray* arr, char* vec[]);
 */
 int64 strarray_index_of(strarray*, const char* s);
 int64 strarray_index_of_b(strarray*, const char* s, size_t n);
+char* strarray_at(strarray*, size_t);
 char* strarray_pop(strarray*);
 int strarray_pushb(strarray*, const char* b, size_t n);
 int strarray_pushd(strarray*, const char* s);
