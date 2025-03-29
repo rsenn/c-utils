@@ -28,7 +28,7 @@ int
 main(int argc, char** argv) {
   int ret, c, index = 0;
   char *tmp, *fn;
-  int no_process = 0, no_line = 0, dump_defines = 0;
+  int no_process = 0, no_line = 0, dump_defines = 0, show_deps=0;
   struct unix_longopt opts[] = {
       {"help", 0, NULL, 'h'},
       {"debug", 0, NULL, 'd'},
@@ -36,6 +36,7 @@ main(int argc, char** argv) {
       {"no-process", 1, &no_process, 'P'},
       {"no-line", 1, &no_line, 'L'},
       {"dump-defines", 1, &dump_defines, 'x'},
+      {"MM", 1, &show_deps, 64},
       {0, 0, 0, 0},
   };
 
@@ -89,6 +90,10 @@ main(int argc, char** argv) {
 
       case 'x': {
         dump_defines = 1;
+        break;
+      }
+    case 64: {
+        show_deps = 1;
         break;
       }
 
