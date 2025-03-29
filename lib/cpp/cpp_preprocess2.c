@@ -8,33 +8,7 @@
 hashmap cpp_pragma_once = HASHMAP_INIT();
 cpp_cond_incl* cond_incl = 0;
 
-static cpp_token*
-include_file(cpp_token* tok, char* path, cpp_token* filename_tok) {
-  static hashmap include_guards;
-  cpp_token* tok2;
-  char* guard_name;
-
-  buffer_putm_internal(buffer_2, "include_file '", path, "'", tok->file ? " from '" : 0, tok->file ? tok->file->name : 0, "'", 0);
-  buffer_putnlflush(buffer_2);
-
-  /* Check for "#pragma once" */
-  if(hashmap_get(&cpp_pragma_once, path))
-    return tok;
-
-  /* If we read the same file before, and if the file was guarded
-     by the usual #ifndef ... #endif pattern, we may be able to
-     cpp_skip the file without opening it. */
-  if((guard_name = hashmap_get(&include_guards, path)) && hashmap_get(&cpp_macros, guard_name))
-    return tok;
-
-  if(!(tok2 = cpp_tokenize_file(path)))
-    cpp_error_tok(filename_tok, "%s: cannot open file: %s", path, strerror(errno));
-
-  if((guard_name = cpp_detect_include_guard(tok2)))
-    hashmap_put(&include_guards, path, guard_name);
-
-  return cpp_token_append(tok2, tok);
-}
+static cpp_token* include_file(cpp_token* tok, char* path, cpp_token* filename_tok);
 
 static cpp_cond_incl*
 push_cond_incl(cpp_token* tok, bool included) {
@@ -50,6 +24,15 @@ push_cond_incl(cpp_token* tok, bool included) {
   cond_incl = ci;
 
   return ci;
+}
+
+static void
+pop_cond_incl(void) {
+  cpp_cond_incl* ci = cond_incl;
+
+  alloc_free(ci);
+
+  cond_incl = cond_incl->next;
 }
 
 cpp_token*
@@ -181,7 +164,8 @@ cpp_preprocess2(cpp_token* tok) {
     if(cpp_equal(tok, "endif")) {
       if(!cond_incl)
         cpp_error_tok(start, "stray #endif");
-      cond_incl = cond_incl->next;
+
+      pop_cond_incl();
       tok = cpp_skip_line(tok->next);
       continue;
     }
@@ -227,4 +211,34 @@ cpp_preprocess2(cpp_token* tok) {
 
   cur->next = tok;
   return head.next;
+}
+
+static cpp_token*
+include_file(cpp_token* tok, char* path, cpp_token* filename_tok) {
+  static hashmap include_guards;
+  cpp_token* tok2;
+  char* guard_name;
+
+#ifdef DEBUG_OUTPUT
+  buffer_putm_internal(buffer_2, "include_file '", path, "'", tok->file ? " from '" : 0, tok->file ? tok->file->name : 0, "'", 0);
+  buffer_putnlflush(buffer_2);
+#endif
+  
+  /* Check for "#pragma once" */
+  if(hashmap_get(&cpp_pragma_once, path))
+    return tok;
+
+  /* If we read the same file before, and if the file was guarded
+     by the usual #ifndef ... #endif pattern, we may be able to
+     cpp_skip the file without opening it. */
+  if((guard_name = hashmap_get(&include_guards, path)) && hashmap_get(&cpp_macros, guard_name))
+    return tok;
+
+  if(!(tok2 = cpp_tokenize_file(path)))
+    cpp_error_tok(filename_tok, "%s: cannot open file: %s", path, strerror(errno));
+
+  if((guard_name = cpp_detect_include_guard(tok2)))
+    hashmap_put(&include_guards, path, guard_name);
+
+  return cpp_token_append(tok2, tok);
 }

@@ -16,7 +16,10 @@ cpp_print_tokens(buffer* out, cpp_token* tok, bool line_directives) {
       ++line_no;
 
       if(!str_equal(filename, tok->filename) || line_no != tok->line_no) {
-        buffer_puts(out, "#line ");
+        /*   buffer_puts(out, "#line ");
+           buffer_putulong(out, tok->line_no);
+           buffer_putm_internal(out, " \"", tok->filename, "\"\n", 0);*/
+        buffer_puts(out, "# ");
         buffer_putulong(out, tok->line_no);
         buffer_putm_internal(out, " \"", tok->filename, "\"\n", 0);
 

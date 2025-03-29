@@ -11,6 +11,7 @@ set_at_n(const set_t* set, int64 pos, size_t* len) {
         *len = b->size;
         return b->value;
       }
+
       i++;
     }
   } else {
@@ -21,8 +22,10 @@ set_at_n(const set_t* set, int64 pos, size_t* len) {
         *len = b->size;
         return b->value;
       }
+
       i++;
     }
   }
+
   return 0;
 }

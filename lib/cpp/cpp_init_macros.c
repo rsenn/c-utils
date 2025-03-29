@@ -7,6 +7,8 @@ char* cpp_base_file = 0;
 static char* format_time(struct tm* tm);
 static char* format_date(struct tm* tm);
 
+static void define_gnu_macros(void);
+
 static cpp_token*
 file_macro(cpp_token* tmpl) {
   while(tmpl->origin)
@@ -94,6 +96,8 @@ cpp_init_macros(void) {
   cpp_macro_define("linux", "1");
   cpp_macro_define("unix", "1");*/
 
+  define_gnu_macros();
+
   cpp_add_builtin("__FILE__", file_macro);
   cpp_add_builtin("__LINE__", line_macro);
   cpp_add_builtin("__COUNTER__", counter_macro);
@@ -108,9 +112,8 @@ cpp_init_macros(void) {
   }
 }
 
-void
-cpp_define_gnu_macros(void) {
-
+static void
+define_gnu_macros(void) {
   cpp_macro_define("__amd64", "1");
   cpp_macro_define("__amd64__", "1");
   cpp_macro_define("__ATOMIC_ACQ_REL", "4");

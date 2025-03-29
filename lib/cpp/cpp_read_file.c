@@ -18,6 +18,27 @@ cpp_read_file(char* path) {
   }
 
   seek_pos size = seek_end(fd);
+
+  if(size < 0) {
+    stralloc sa;
+    stralloc_init(&sa);
+
+    if(readclose(fd, &sa, 4096) == -1) {
+      errmsg_infosys("readclose", 0);
+      stralloc_free(&sa);
+      close(fd);
+      return 0;
+    }
+
+    stralloc_catc(&sa, '\0');
+    close(fd);
+    return sa.s;
+  }
+
+  buffer_puts(buffer_2, "file size: ");
+  buffer_putlong(buffer_2, size);
+  buffer_putnlflush(buffer_2);
+
   seek_begin(fd);
   char* s = alloc(size + 1);
 
@@ -29,46 +50,4 @@ cpp_read_file(char* path) {
   }
 
   return s;
-
-#if 0
-  FILE* fp;
-
-  if(str_equal(path, "-")) {
-    /* By convention, read from stdin if a given filename is "-". */
-    fp = stdin;
-  } else {
-    if(!(fp = fopen(path, "r")))
-      return NULL;
-  }
-
-  {
-    char* buf;
-    size_t buflen;
-    FILE* out = open_memstream(&buf, &buflen);
-
-    /* Read the entire file. */
-    for(;;) {
-      char buf2[4096];
-      int n;
-
-      if((n = fread(buf2, 1, sizeof(buf2), fp)) == 0)
-        break;
-
-      fwrite(buf2, 1, n, out);
-    }
-
-    if(fp != stdin)
-      fclose(fp);
-
-    /* Make sure that the last line is properly terminated with '\n'. */
-    fflush(out);
-
-    if(buflen == 0 || buf[buflen - 1] != '\n')
-      fputc('\n', out);
-
-    fputc('\0', out);
-    fclose(out);
-    return buf;
-  }
-#endif
 }

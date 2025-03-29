@@ -128,6 +128,8 @@ cpp_token* cpp_tokenize_file(char*);
 cpp_type* cpp_type_new(cpp_type_kind, int, int);
 cpp_type* cpp_type_copy(cpp_type*);
 void cpp_type_free(cpp_type*);
+void cpp_convert_number(cpp_token*);
+void cpp_convert_tokens(cpp_token*);
 
 #ifdef __cplusplus
 }

@@ -12,5 +12,6 @@ set_at_sa(const set_t* set, int64 pos, stralloc* out) {
     stralloc_nul(out);
     return out->s;
   }
+
   return 0;
 }

@@ -22,7 +22,7 @@ cpp_token_new(cpp_token_kind kind, char* start, char* end) {
 
 cpp_token*
 cpp_token_eof(cpp_token* tok) {
-  cpp_token* t;
+cpp_token* t;
 
   if((t = cpp_token_copy(tok))) {
     t->kind = TK_EOF;

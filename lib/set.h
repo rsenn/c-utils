@@ -49,7 +49,11 @@ void set_free(set_t*);
 int set_has(const set_t*, const void*, const size_t);
 int set_has_s(const set_t*, const char* s);
 void set_init(set_t*, uint32 (*const)(const void*, size_t));
+
 int set_cat(set_t*, const set_t*);
+int set_intersection(set_t* out, const set_t* a, const set_t* b);
+int set_union(set_t* out, const set_t* a, const set_t* b);
+int set_difference(set_t* in_a, set_t* in_b, const set_t* a, const set_t* b);
 
 int set_sub(const set_t* a, const set_t* b, set_t* c);
 int set_filter(const set_t* in, set_t* out, int (*pred)(const char*, size_t));
