@@ -165,7 +165,7 @@ mounts_read(MAP_T map) {
       dev = tmp;
     }
 
-    MAP_INSERT(map, dev.s, dev.n + 1, mnt.s, mnt.n + 1);
+    MAP_INSERT2(map, dev.s, dev.n + 1, mnt.s, mnt.n + 1);
 
 #ifdef DEBUG_OUTPUT_
     buffer_putm_internal(buffer_2, "mounts_read() device: ", dev.s ? dev.s : "(null)", " ", NULL);
@@ -285,7 +285,7 @@ mounts_add(MAP_T map, const char* dev, const char* mnt) {
   buffer_putnlflush(buffer_2);
 #endif
 
-  MAP_INSERT(map, dev, str_len(dev) + 1, (void*)mnt, str_len(mnt) + 1);
+  MAP_INSERT2(map, dev, str_len(dev) + 1, (void*)mnt, str_len(mnt) + 1);
 }
 
 #if defined(__MINGW32__) || defined(__MSYS__)

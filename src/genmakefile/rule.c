@@ -35,7 +35,7 @@ rule_get(const char* name) {
     set_init(&tgt.prereq, 0);
     strlist_init(&tgt.cmds, ' ');
 
-    MAP_INSERT(rules, name, len + 1, &tgt, ((sizeof(struct target_s) + 3) / 4) * 4);
+    MAP_INSERT2(rules, name, len + 1, &tgt, ((sizeof(struct target_s) + 3) / 4) * 4);
     MAP_SEARCH(rules, name, len + 1, &t);
     // ret = MAP_ITER_VALUE(t);
 

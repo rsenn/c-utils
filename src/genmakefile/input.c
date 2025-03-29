@@ -550,7 +550,7 @@ input_process_command(stralloc* cmd, int argc, char* argv[], const char* file, s
     if(!(count_ptr = MAP_GET(targetdirs, dir.s, dir.len + 1))) {
       uint32 count = 0;
 
-      MAP_INSERT(targetdirs, dir.s, dir.len + 1, &count, sizeof(count));
+      MAP_INSERT2(targetdirs, dir.s, dir.len + 1, &count, sizeof(count));
       count_ptr = MAP_GET(targetdirs, dir.s, dir.len + 1);
     }
 

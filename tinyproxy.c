@@ -247,7 +247,7 @@ dns_lookup(stralloc* h) {
 
   if(result == NULL && (result = dns_query(h))) {
     if(result->data.end > result->data.start && result->data.elem_size) {
-      MAP_INSERT(dns_cache, h->s, h->len + 1, result, sizeof(dns_response_t));
+      MAP_INSERT2(dns_cache, h->s, h->len + 1, result, sizeof(dns_response_t));
       alloc_free(result);
 
       result = (dns_response_t*)MAP_GET(dns_cache, h->s, h->len + 1);

@@ -5,7 +5,7 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
 link_directories(${CMAKE_BINARY_DIR})
 
-link_libraries(iarray strlist errmsg path stralloc mmap str taia tai buffer open uint32)
+link_libraries(cpp hashmap iarray strlist errmsg path stralloc mmap str taia tai buffer open uint32)
 
 file(GLOB TESTS test_*.c)
 

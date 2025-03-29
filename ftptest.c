@@ -160,7 +160,7 @@ read_hosts(const char* file) {
 #endif
         stralloc_nul(&hostname);
 
-        MAP_INSERT(hosts_db, hostname.s, hostname.len + 1, &addr, sizeof(addr));
+        MAP_INSERT2(hosts_db, hostname.s, hostname.len + 1, &addr, sizeof(addr));
 
         s += hlen;
         s += scan_whitenskip(&p[s], l - s);

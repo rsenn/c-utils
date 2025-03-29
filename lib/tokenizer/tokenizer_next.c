@@ -94,7 +94,7 @@ tokenizer_next(tokenizer* t, token* out) {
 
     if((t->flags & TF_PARSE_WIDE_STRINGS) && c == 'L') {
       c = tokenizer_getc(t);
-      // assert(c == '\'' || c == '\"');
+      /* assert(c == '\'' || c == '\"');*/
       wide = 1;
       goto string_handling;
     } else if(c == '.' && sequence_follows(t, c, "...")) {
@@ -121,7 +121,7 @@ tokenizer_next(tokenizer* t, token* out) {
   string_handling:
     s = assign_bufchar(t, s, c);
     *s = 0;
-    // s = assign_bufchar(t, s, 0);
+    /* s = assign_bufchar(t, s, 0);*/
 
     if(c == '"' || c == '\'')
 
@@ -141,7 +141,7 @@ tokenizer_next(tokenizer* t, token* out) {
     return apply_coords(t, out, s, 1);
   }
 
-  // s = assign_bufchar(t, s, 0);
+  /* s = assign_bufchar(t, s, 0);*/
   *s = 0;
   out->type = categorize(t->buf);
 

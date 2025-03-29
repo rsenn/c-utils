@@ -256,8 +256,8 @@ exec_program(const char* compiler, const char* arg, stralloc* out) {
   char* envp[1];
   const char* bin;
   stralloc dir;
-  argv[0] = compiler;
-  argv[1] = arg;
+  argv[0] = (char*)compiler;
+  argv[1] = (char*)arg;
   argv[2] = NULL;
   envp[0] = NULL;
 
@@ -577,7 +577,7 @@ pkg_read(buffer* b, pkg* p) {
 
       {
         MAP_T map = sep == '=' ? p->vars : p->fields;
-        MAP_INSERT(map, name.s, name.len + 1, value.s, value.len + 1);
+        MAP_INSERT2(map, name.s, name.len + 1, value.s, value.len + 1);
       }
     }
   }
@@ -1580,7 +1580,7 @@ getopt_end:
   cmd_dump(&cmd, buffer_2);
 #endif
 
-  strarray_from_argv(argc - unix_optind, argv + unix_optind, &modules);
+  strarray_from_argv(argc - unix_optind, (const char * const*)argv + unix_optind, &modules);
 
 #ifdef DEBUG_OUTPUT_
   buffer_puts(buffer_2, "Dump cmd:\n");

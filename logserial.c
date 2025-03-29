@@ -39,6 +39,7 @@
 typedef struct port {
   struct taia time;
 } port_t;
+
 typedef struct link {
   union {
     struct slink link;
@@ -227,7 +228,7 @@ detect_ports(strarray* ports) {
       taia_add(&p.time, &p.time, &t);
       taia_now(&p.time);
 
-      MAP_INSERT(port_map, *port, str_len(*port) + 1, &p, sizeof(port_t));
+      MAP_INSERT2(port_map, *port, str_len(*port) + 1, &p, sizeof(port_t));
 
       struct link* l = alloc_zero(sizeof(struct link));
 

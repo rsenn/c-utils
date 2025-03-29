@@ -12,7 +12,7 @@ json_property_set_str(jsonval* obj, const char* key, jsonval value) {
 
     if(MAP_ISNULL(obj->dictv))
       MAP_NEW(obj->dictv);
-    MAP_INSERT(obj->dictv, key, str_len(key), &value, sizeof(jsonval));
+    MAP_INSERT2(obj->dictv, key, str_len(key), &value, sizeof(jsonval));
     ret = MAP_GET(obj->dictv, key, str_len(key));
   } else if(obj->type == JSON_ARRAY) {
     int64 i;

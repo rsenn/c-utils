@@ -328,7 +328,7 @@ sourcedir_getb(const char* x, size_t n) {
     sourcedir* newdir = alloc_zero(sizeof(sourcedir));
 
     set_init(&newdir->pptoks, 0);
-    MAP_INSERT(srcdir_map, x, n + 1, &newdir, sizeof(newdir));
+    MAP_INSERT2(srcdir_map, x, n + 1, &newdir, sizeof(newdir));
 
     if((ptr = (sourcedir**)MAP_GET(srcdir_map, x, n + 1)))
       s = *ptr;

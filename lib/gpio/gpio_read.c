@@ -1,4 +1,5 @@
 #include "../gpio_internal.h"
+#include <assert.h>
 
 int
 gpio_read(int const pin_nr) {

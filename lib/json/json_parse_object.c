@@ -45,7 +45,7 @@ json_parse_object(jsonval* val, charbuf* b) {
 
         if(json_parse(&member, b) > 0) {
           MAP_PAIR_T pair;
-          MAP_INSERT(val->dictv, str.s, str.len, &member, sizeof(jsonval));
+          MAP_INSERT2(val->dictv, str.s, str.len, &member, sizeof(jsonval));
           pair = 0;
           MAP_SEARCH(val->dictv, str.s, str.len, &pair);
 

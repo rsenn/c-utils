@@ -1,4 +1,5 @@
 #include "../gpio_internal.h"
+#include <assert.h>
 
 void
 gpio_set_pin_mode(int const pin_nr, int const mode) {

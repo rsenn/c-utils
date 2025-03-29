@@ -39,7 +39,7 @@ ini_get(ini_section_t* ini, const char* key) {
 
 void
 ini_set(ini_section_t* ini, const char* key, const char* value) {
-  MAP_INSERT(ini->map, (char*)key, str_len(key) + 1, (char*)value, str_len(value) + 1);
+  MAP_INSERT2(ini->map, (char*)key, str_len(key) + 1, (char*)value, str_len(value) + 1);
 }
 
 void
@@ -229,7 +229,7 @@ ini_read(buffer* b, ini_section_t** ptr) {
     if(i + e < line.len) {
       line.s[i + e] = '\0';
       e++;
-      MAP_INSERT(s->map, &line.s[i], e - i - 1, &line.s[i + e], line.len - (i + e));
+      MAP_INSERT2(s->map, &line.s[i], e - i - 1, &line.s[i + e], line.len - (i + e));
 
       /*buffer_putsa(buffer_2, &line);
       buffer_putnlflush(buffer_2);*/

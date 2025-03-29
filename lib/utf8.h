@@ -32,6 +32,7 @@ size_t wcs_to_u8s(char*, const wchar_t*, size_t);
 size_t wcs_u8slen(const wchar_t*);
 size_t wc_to_u8(char*, wchar_t);
 size_t wc_u8len(const wchar_t);
+int wc_charwidth(wchar_t);
 
 #ifdef HAVE_STRALLOC_H
 size_t wcs_to_u8sa(stralloc*, const wchar_t*);

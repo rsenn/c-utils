@@ -156,8 +156,8 @@ main(int argc, char* argv[]) {
     const char* number = xml_get_attribute(*nptr, "number");
     const char* color = xml_get_attribute(*nptr, "color");
 
-    MAP_INSERT(layers, number, str_len(number) + 1, (char*)name, str_len(name) + 1);
-    MAP_INSERT(colors, number, str_len(number) + 1, (char*)color, str_len(color) + 1);
+    MAP_INSERT2(layers, number, str_len(number) + 1, (char*)name, str_len(name) + 1);
+    MAP_INSERT2(colors, number, str_len(number) + 1, (char*)color, str_len(color) + 1);
   }
 
   MAP_FOREACH(layers, t) {

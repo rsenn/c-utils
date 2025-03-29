@@ -89,7 +89,7 @@ var_list(const char* name, char psa) {
 
     strlist_init(&var.value, s);
 
-    MAP_INSERT(vars, name, str_len(name) + 1, &var, sizeof(strlist));
+    MAP_INSERT2(vars, name, str_len(name) + 1, &var, sizeof(strlist));
     MAP_SEARCH(vars, name, str_len(name) + 1, &t);
   }
 

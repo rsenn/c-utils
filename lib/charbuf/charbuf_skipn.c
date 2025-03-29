@@ -17,7 +17,7 @@ charbuf_skipn(charbuf* b, size_t n) {
     uint8 ch;
 
     if((ret = charbuf_peekc(b, &ch)) > 0) {
-      //      charbuf_dumpchar(ch, buffer_2, 2);
+      /*charbuf_dumpchar(ch, buffer_2, 2);*/
       skipped[pos] = ch;
 
       ret = charbuf_skip(b);

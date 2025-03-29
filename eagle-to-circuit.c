@@ -222,7 +222,7 @@ get_or_create(MAP_T m, char* name, size_t datasz) {
     char* data = malloc(datasz);
 #endif
     byte_zero(data, datasz);
-    MAP_INSERT(m, name, str_len(name) + 1, data, datasz);
+    MAP_INSERT2(m, name, str_len(name) + 1, data, datasz);
     ptr = MAP_GET(m, name, str_len(name) + 1);
 #if !defined(HAVE_ALLOCA) && !defined(HAVE_DYNSTACK)
     free(data);
@@ -310,7 +310,7 @@ build_part(xmlnode* part) {
 
   if(dsname)
     p.dset = get_entry(devicesets, dsname);
-  MAP_INSERT(parts, (void*)name, str_len(name) + 1, &p, sizeof(struct part));
+  MAP_INSERT2(parts, (void*)name, str_len(name) + 1, &p, sizeof(struct part));
 }
 
 /**
@@ -456,7 +456,7 @@ build_package(xmlnode* set) {
     stralloc_copys(&p.name, pn);
     array_catb(&pkg.pads, (const void*)&p, sizeof(struct pad));
   }
-  MAP_INSERT(packages, name, str_len(name) + 1, &pkg, sizeof(struct package));
+  MAP_INSERT2(packages, name, str_len(name) + 1, &pkg, sizeof(struct package));
 }
 
 /**
@@ -510,9 +510,9 @@ build_deviceset(xmlnode* set) {
     // &len);
     pm.pkg = MAP_GET(packages, package, str_len(package));
 
-    MAP_INSERT(d.devices, name, str_len(name) + 1, &pm, sizeof(struct pinmapping));
+    MAP_INSERT2(d.devices, name, str_len(name) + 1, &pm, sizeof(struct pinmapping));
   }
-  MAP_INSERT(devicesets, name, str_len(name) + 1, &d, sizeof(struct deviceset));
+  MAP_INSERT2(devicesets, name, str_len(name) + 1, &d, sizeof(struct deviceset));
 }
 
 /**

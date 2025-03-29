@@ -58,7 +58,6 @@ size_t path_collapse(char*, size_t);
 size_t path_collapse_sa(stralloc*);
 size_t path_dirlen_b(const char*, size_t);
 size_t path_dirlen(const char*);
-size_t path_dirlen_b(const char* path, size_t size);
 char* path_dirname_b(const char*, size_t, stralloc* dir);
 char* path_dirname(const char*, stralloc*);
 char* path_dirname_sa(stralloc* dir);

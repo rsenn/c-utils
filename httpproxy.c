@@ -90,7 +90,7 @@ read_hosts(const char* file) {
 #endif
         stralloc_nul(&hostname);
 
-        MAP_INSERT(hosts_db, hostname.s, hostname.len, (void*)&ip, sizeof(ip));
+        MAP_INSERT2(hosts_db, hostname.s, hostname.len, (void*)&ip, sizeof(ip));
 
         s += hlen;
         s += scan_whitenskip(&p[s], l - s);
