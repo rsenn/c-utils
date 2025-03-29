@@ -13,8 +13,10 @@ cpp_search_include_next(char* filename) {
   for(; cpp_include_next_idx < num_include_paths; cpp_include_next_idx++) {
     char* path = cpp_format("%s/%s", strarray_AT(&cpp_include_paths, cpp_include_next_idx), filename);
 
-    if(path_exists(path))
+    if(path_exists(path)) {
+      path[path_collapse(path, str_len(path))] = '\0';
       return path;
+    }
   }
 
   return NULL;
@@ -38,6 +40,8 @@ cpp_search_include_paths(char* filename) {
 
     if(!path_exists(path))
       continue;
+
+    path[path_collapse(path, str_len(path))] = '\0';
 
     hashmap_put(&cache, filename, path);
     cpp_include_next_idx = i + 1;

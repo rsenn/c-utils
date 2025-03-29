@@ -28,7 +28,8 @@ int
 main(int argc, char** argv) {
   int ret, c, index = 0;
   char *tmp, *fn;
-  int no_process = 0, no_line = 0, dump_defines = 0, show_deps = 0;
+  int no_process = 0, no_line = 0, dump_defines = 0;
+  int show_deps = 0;
   struct unix_longopt opts[] = {
       {"help", 0, NULL, 'h'},
       {"debug", 0, NULL, 'd'},
@@ -44,7 +45,7 @@ main(int argc, char** argv) {
 
   errmsg_iam(str_basename(argv[0]));
 
-  while((c = unix_getopt_long(argc, argv, "D:I:o:dhPLxM:", opts, &index)) != -1) {
+  while((c = unix_getopt_long(argc, argv, "D:I:o:dhPLxM", opts, &index)) != -1) {
     switch(c) {
       case 'I': {
         strarray_push(&cpp_include_paths, unix_optarg);
@@ -94,7 +95,7 @@ main(int argc, char** argv) {
       }
       case 'M':
       case 64: {
-        show_deps = 1;
+        show_deps++;
         break;
       }
 
@@ -165,8 +166,9 @@ main(int argc, char** argv) {
     buffer_puts(buffer_1, fn);
 
     strarray_foreach(&include_array, inc) {
-      if(path_is_absolute(*inc))
-        continue;
+      if(show_deps > 1)
+        if(path_is_absolute(*inc))
+          continue;
 
       size_t n = path_is_dotslash(*inc);
 

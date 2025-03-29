@@ -73,6 +73,8 @@ cpp_preprocess2(cpp_token* tok) {
         stralloc_free(&dir);
 
         if(path_exists(path)) {
+          path[path_collapse(path, str_len(path))] = '\0';
+
           tok = include_file(tok, path, start->next->next);
           continue;
         }
@@ -227,7 +229,7 @@ include_file(cpp_token* tok, char* path, cpp_token* filename_tok) {
   cpp_token* tok2;
   char* guard_name;
 
-#ifdef DEBUG_OUTPUT
+#ifdef DEBUG_OUTPUT_
   buffer_putm_internal(buffer_2, "include_file '", path, "'", tok->file ? " from '" : 0, tok->file ? tok->file->name : 0, "'", 0);
   buffer_putnlflush(buffer_2);
 #endif
@@ -245,7 +247,7 @@ include_file(cpp_token* tok, char* path, cpp_token* filename_tok) {
   if(!(tok2 = cpp_tokenize_file(path)))
     cpp_error_tok(filename_tok, "%s: cannot open file: %s", path, strerror(errno));
 
-  if(!(int)hashmap_get(&include_list, path)) {
+  if(!(ptrdiff_t)hashmap_get(&include_list, path)) {
     hashmap_put(&include_list, path, (void*)1);
     strarray_push(&include_array, path);
   }
