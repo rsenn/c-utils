@@ -7,7 +7,9 @@ scan_fromhex(int c) {
   if(c <= 9)
     return c;
 
-  c &= ~0x20;
+  if(c >= 'a' - '0')
+    c &= ~0x20;
+
   c -= 'A' - '0';
 
   if(c < 6)

@@ -44,7 +44,7 @@ cpp_read_file(char* path) {
     return sa.s;
   }
 
-#ifdef DEBUG_OUTPUT
+#ifdef DEBUG_OUTPUT_
   buffer_puts(buffer_2, "file size: ");
   buffer_putlong(buffer_2, size);
   buffer_putnlflush(buffer_2);

@@ -28,13 +28,14 @@ int
 main(int argc, char** argv) {
   int ret, c, index = 0;
   char *tmp, *fn;
-  int no_process = 0, no_line = 0;
+  int no_process = 0, no_line = 0, dump_defines = 0;
   struct unix_longopt opts[] = {
       {"help", 0, NULL, 'h'},
       {"debug", 0, NULL, 'd'},
       {"output", 0, NULL, 'o'},
       {"no-process", 1, &no_process, 'P'},
       {"no-line", 1, &no_line, 'L'},
+      {"dump-defines", 1, &dump_defines, 'x'},
       {0, 0, 0, 0},
   };
 
@@ -42,7 +43,7 @@ main(int argc, char** argv) {
 
   errmsg_iam(str_basename(argv[0]));
 
-  while((c = unix_getopt_long(argc, argv, "D:I:o:dhPL", opts, &index)) != -1) {
+  while((c = unix_getopt_long(argc, argv, "D:I:o:dhPLx", opts, &index)) != -1) {
     switch(c) {
       case 'I': {
         strarray_push(&cpp_include_paths, unix_optarg);
@@ -83,6 +84,11 @@ main(int argc, char** argv) {
 
       case 'L': {
         no_line = 1;
+        break;
+      }
+
+      case 'x': {
+        dump_defines = 1;
         break;
       }
 
@@ -131,13 +137,6 @@ main(int argc, char** argv) {
       if(cpp_equal(t, "endif"))
         continue;
 
-      /*if(!str_start(t->loc, "if") && !str_start(t->loc, "elif") && !str_start(t->loc, "undef"))
-        continue;*/
-
-      buffer_puts(buffer_2, "#");
-      buffer_put(buffer_2, t->loc, t->len);
-      buffer_putnlflush(buffer_2);
-
       for(u = t->next; u->kind != TK_EOF; u = u->next) {
         if(u->at_bol)
           break;
@@ -158,14 +157,15 @@ main(int argc, char** argv) {
 
   cpp_print_tokens(out, tok2, !(no_line || no_process));
 
-  for(cpp_macro* m = *ptr; m; m = m->next) {
-    cpp_print_macro(buffer_2, m);
+  if(dump_defines)
+    for(cpp_macro* m = *ptr; m; m = m->next) {
+      cpp_print_macro(buffer_2, m);
 
-    buffer_flush(buffer_2);
+      buffer_flush(buffer_2);
 
-    if(&m->next == cpp_macro_ptr)
-      break;
-  }
+      if(&m->next == cpp_macro_ptr)
+        break;
+    }
 
 #ifndef test_x
 #define test_x(a, b, c) ((a) && (b) && (c))
