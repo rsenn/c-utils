@@ -12,7 +12,11 @@ display_width(char* p, size_t len) {
 
   while(p < end) {
     wchar_t c;
-    p += u8_to_wc(&c, p);
+    size_t l=u8_to_wc(&c, p);
+
+    if(!l) break;
+    
+    p += l;
     w += wc_charwidth(c);
   }
 

@@ -4,16 +4,22 @@
 #include "../str.h"
 
 hashmap cpp_macros = HASHMAP_INIT();
+cpp_macro* cpp_macro_list = 0;
+static cpp_macro** cpp_macro_ptr = &cpp_macro_list;
 
 cpp_macro*
 cpp_macro_add(char* name, bool is_objlike, cpp_token* body) {
   cpp_macro* m;
 
   if((m = alloc_zero(sizeof(cpp_macro)))) {
-    m->name = str_dup(name);
+    m->name = name;
     m->is_objlike = is_objlike;
     m->body = body;
+
     hashmap_put(&cpp_macros, name, m);
+
+    *cpp_macro_ptr = m;
+    cpp_macro_ptr = &m->next;
   }
 
   return m;

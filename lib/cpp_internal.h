@@ -131,6 +131,7 @@ struct cpp_macro {
   char* va_args_name;
   cpp_token* body;
   macro_handler_fn* handler;
+  cpp_macro* next;
 };
 
 /* `#if` can be nested, so we use a stack to manage nested `#if`s.*/

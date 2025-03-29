@@ -4,11 +4,8 @@
 cpp_token*
 cpp_new_num_token(int val, cpp_token* tmpl) {
   char* buf = cpp_format("%d\n", val);
-
-  cpp_token* tok = cpp_tokenize(cpp_file_new(tmpl->file->name, tmpl->file->file_no, buf));
-
-  cpp_file_free(cpp_current_file);
-  cpp_current_file = 0;
-
+  cpp_file* file = cpp_file_new(tmpl->file->name, tmpl->file->file_no, buf);
+  cpp_token* tok = cpp_tokenize(file);
+  cpp_file_free(file);
   return tok;
 }

@@ -7,7 +7,7 @@ cpp_file* cpp_current_file = 0;
 
 /* Initialize line info for all tokens. */
 static void
-add_line_numbers(cpp_token* tok) {
+add_line_numbers(cpp_file* file, cpp_token* tok) {
   char* p = cpp_current_file->contents;
   size_t n = 1;
 
@@ -26,10 +26,11 @@ add_line_numbers(cpp_token* tok) {
 /* Tokenize a given string and returns new tokens. */
 cpp_token*
 cpp_tokenize(cpp_file* file) {
-  cpp_current_file = file;
   char* p = file->contents;
   cpp_token head = {};
   cpp_token* cur = &head;
+
+cpp_current_file=file;
 
   cpp_at_bol = true;
   cpp_has_space = 0;
@@ -179,7 +180,7 @@ cpp_tokenize(cpp_file* file) {
   }
 
   cur = cur->next = cpp_token_new(TK_EOF, p, p);
-  add_line_numbers(head.next);
+  add_line_numbers(file, head.next);
   return head.next;
 }
 

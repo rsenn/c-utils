@@ -32,5 +32,6 @@ cpp_tokenize_file(char* path) {
   cpp_input_files[cpp_file_no + 1] = NULL;
   cpp_file_no++;
 
+  /*cpp_current_file = file;*/
   return cpp_tokenize(file);
 }

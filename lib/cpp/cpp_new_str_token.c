@@ -4,11 +4,8 @@
 cpp_token*
 cpp_new_str_token(char* str, cpp_token* tmpl) {
   char* buf = cpp_quote_string(str);
-
-  cpp_token* tok = cpp_tokenize(cpp_file_new(tmpl->file->name, tmpl->file->file_no, buf));
-
-  cpp_file_free(cpp_current_file);
-  cpp_current_file = 0;
-
+  cpp_file* file = cpp_file_new(tmpl->file->name, tmpl->file->file_no, buf);
+  cpp_token* tok = cpp_tokenize(file);
+  cpp_file_free(file);
   return tok;
 }
