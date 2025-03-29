@@ -2,7 +2,7 @@
 #include "../cpp_internal.h"
 
 void cpp_init_macros(void) {
-  // Define predefined macros
+  // Define predefined cpp_macros
   cpp_define_macro("_LP64", "1");
   cpp_define_macro("__C99_MACRO_WITH_VA_ARGS", "1");
   cpp_define_macro("__ELF__", "1");

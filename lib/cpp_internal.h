@@ -173,7 +173,7 @@ struct cpp_hideset {
   char* name;
 };
 
-extern hashmap macros;
+extern hashmap cpp_macros;
 extern cpp_cond_incl* cond_incl;
 extern hashmap cpp_pragma_once;
 extern int cpp_include_next_idx;
@@ -183,22 +183,7 @@ extern cpp_file** cpp_input_files;
 extern cpp_file* cpp_current_file;
 extern bool cpp_at_bol, cpp_has_space;
 
-extern cpp_type* ty_void;
-extern cpp_type* ty_bool;
-
-extern cpp_type* ty_char;
-extern cpp_type* ty_short;
-extern cpp_type* ty_int;
-extern cpp_type* ty_long;
-
-extern cpp_type* ty_uchar;
-extern cpp_type* ty_ushort;
-extern cpp_type* ty_uint;
-extern cpp_type* ty_ulong;
-
-extern cpp_type* ty_float;
-extern cpp_type* ty_double;
-extern cpp_type* ty_ldouble;
+extern cpp_type *cpp_ty_void, *cpp_ty_bool, *cpp_ty_char, *cpp_ty_short, *cpp_ty_int, *cpp_ty_long, *cpp_ty_uchar, *cpp_ty_ushort, *cpp_ty_uint, *cpp_ty_ulong, *cpp_ty_float, *cpp_ty_double, *cpp_ty_ldouble;
 
 cpp_token* cpp_preprocess2(cpp_token* tok);
 cpp_macro* cpp_find_macro(cpp_token* tok);
@@ -246,6 +231,17 @@ cpp_skip(cpp_token* tok, char* op) {
   return tok->next;
 }
 
+static inline bool
+cpp_consume(cpp_token** rest, cpp_token* tok, char* str) {
+  if(cpp_equal(tok, str)) {
+    *rest = tok->next;
+    return true;
+  }
+
+  *rest = tok;
+  return false;
+}
+
 static inline cpp_type*
 cpp_array_of(cpp_type* base, int len) {
   cpp_type* ty = cpp_new_type(TY_ARRAY, base->size * len, base->align);
@@ -273,84 +269,6 @@ cpp_is_keyword(cpp_token* tok) {
   }
 
   return hashmap_get2(&map, tok->loc, tok->len);
-}
-
-static inline bool
-cpp_convert_int(cpp_token* tok) {
-  char* p = tok->loc;
-
-  /* Read a binary, octal, decimal or hexadecimal number.*/
-  int base = 10;
-
-  if(!case_diffb(p, 2, "0x") && isxdigit(p[2])) {
-    p += 2;
-    base = 16;
-  } else if(!case_diffb(p, 2, "0b") && (p[2] == '0' || p[2] == '1')) {
-    p += 2;
-    base = 2;
-  } else if(*p == '0') {
-    base = 8;
-  }
-
-  int64_t val = strtoul(p, &p, base);
-
-  /* Read U, L or LL suffixes.*/
-  bool l = false, u = false;
-
-  if(str_start(p, "LLU") || str_start(p, "LLu") || str_start(p, "llU") || str_start(p, "llu") || str_start(p, "ULL") || str_start(p, "Ull") || str_start(p, "uLL") ||
-     str_start(p, "ull")) {
-    p += 3;
-    l = u = true;
-  } else if(!case_diffb(p, 2, "lu") || !case_diffb(p, 2, "ul")) {
-    p += 2;
-    l = u = true;
-  } else if(str_start(p, "LL") || str_start(p, "ll")) {
-    p += 2;
-    l = true;
-  } else if(*p == 'L' || *p == 'l') {
-    p++;
-    l = true;
-  } else if(*p == 'U' || *p == 'u') {
-    p++;
-    u = true;
-  }
-
-  if(p != tok->loc + tok->len)
-    return false;
-
-  /* Infer a type.*/
-  cpp_type* ty;
-
-  if(base == 10) {
-    if(l && u)
-      ty = ty_ulong;
-    else if(l)
-      ty = ty_long;
-    else if(u)
-      ty = (val >> 32) ? ty_ulong : ty_uint;
-    else
-      ty = (val >> 31) ? ty_long : ty_int;
-  } else {
-    if(l && u)
-      ty = ty_ulong;
-    else if(l)
-      ty = (val >> 63) ? ty_ulong : ty_long;
-    else if(u)
-      ty = (val >> 32) ? ty_ulong : ty_uint;
-    else if(val >> 63)
-      ty = ty_ulong;
-    else if(val >> 32)
-      ty = ty_long;
-    else if(val >> 31)
-      ty = ty_uint;
-    else
-      ty = ty_int;
-  }
-
-  tok->kind = TK_NUM;
-  tok->val = val;
-  tok->ty = ty;
-  return true;
 }
 
 /* Replaces \r or \r\n with \n. */
@@ -482,13 +400,13 @@ cpp_convert_number(cpp_token* tok) {
 
   cpp_type* ty;
   if(*end == 'f' || *end == 'F') {
-    ty = ty_float;
+    ty = cpp_ty_float;
     end++;
   } else if(*end == 'l' || *end == 'L') {
-    ty = ty_ldouble;
+    ty = cpp_ty_ldouble;
     end++;
   } else {
-    ty = ty_double;
+    ty = cpp_ty_double;
   }
 
   if(tok->loc + tok->len != end)
@@ -523,7 +441,7 @@ cpp_add_line_numbers(cpp_token* tok) {
 
     if(*p == '\n')
       n++;
-    
+
   } while(*p++);
 }
 
@@ -634,7 +552,7 @@ cpp_read_string_literal(char* start, char* quote) {
   }
 
   cpp_token* tok = cpp_new_token(TK_STR, start, end + 1);
-  tok->ty = cpp_array_of(ty_char, len + 1);
+  tok->ty = cpp_array_of(cpp_ty_char, len + 1);
   tok->str = buf;
   return tok;
 }
@@ -745,194 +663,4 @@ cpp_read_punct(char* p) {
       return str_len(kw[i]);
 
   return ispunct(*p) ? 1 : 0;
-}
-
-/* Tokenize a given string and returns new tokens. */
-static inline cpp_token*
-cpp_tokenize(cpp_file* file) {
-  cpp_current_file = file;
-
-  char* p = file->contents;
-  cpp_token head = {};
-  cpp_token* cur = &head;
-
-  cpp_at_bol = true;
-  cpp_has_space = false;
-
-  while(*p) {
-    /* Skip line comments. */
-    if(str_start(p, "//")) {
-      p += 2;
-
-      while(*p != '\n')
-        p++;
-
-      cpp_has_space = true;
-      continue;
-    }
-
-    /* Skip block comments. */
-    if(str_start(p, "/*")) {
-      size_t q = str_find(p + 2, "*/");
-
-      if(!p[q + 2])
-        cpp_error_at(p, "unclosed block comment");
-
-      p += q + 2;
-      cpp_has_space = true;
-      continue;
-    }
-
-    /* Skip newline. */
-    if(*p == '\n') {
-      p++;
-      cpp_at_bol = true;
-      cpp_has_space = false;
-      continue;
-    }
-
-    /* Skip whitespace characters. */
-    if(isspace(*p)) {
-      p++;
-      cpp_has_space = true;
-      continue;
-    }
-
-    /* Numeric literal */
-    if(isdigit(*p) || (*p == '.' && isdigit(p[1]))) {
-      char* q = p++;
-
-      for(;;) {
-        if(p[0] && p[1] && str_chr("eEpP", p[0]) < 4 && str_chr("+-", p[1]) < 2)
-          p += 2;
-        else if(isalnum(*p) || *p == '.')
-          p++;
-        else
-          break;
-      }
-
-      cur = cur->next = cpp_new_token(TK_PP_NUM, q, p);
-      continue;
-    }
-
-    /* String literal */
-    if(*p == '"') {
-      cur = cur->next = cpp_read_string_literal(p, p);
-      p += cur->len;
-      continue;
-    }
-
-    /* UTF-8 string literal */
-    if(str_start(p, "u8\"")) {
-      cur = cur->next = cpp_read_string_literal(p, p + 2);
-      p += cur->len;
-      continue;
-    }
-
-    /* UTF-16 string literal */
-    /*if(str_start(p, "u\"")) {
-      cur = cur->next = read_utf16_string_literal(p, p + 1);
-      p += cur->len;
-      continue;
-    }*/
-
-    /* Wide string literal */
-    /*if(str_start(p, "L\"")) {
-      cur = cur->next = read_utf32_string_literal(p, p + 1, ty_int);
-      p += cur->len;
-      continue;
-    }*/
-
-    /* UTF-32 string literal */
-    /*if(str_start(p, "U\"")) {
-      cur = cur->next = read_utf32_string_literal(p, p + 1, ty_uint);
-      p += cur->len;
-      continue;
-    }*/
-
-    /* Character literal */
-    if(*p == '\'') {
-      cur = cur->next = cpp_read_char_literal(p, p, ty_int);
-      cur->val = (char)cur->val;
-      p += cur->len;
-      continue;
-    }
-
-    /* UTF-16 character literal */
-    if(str_start(p, "u'")) {
-      cur = cur->next = cpp_read_char_literal(p, p + 1, ty_ushort);
-      cur->val &= 0xffff;
-      p += cur->len;
-      continue;
-    }
-
-    /* Wide character literal */
-    if(str_start(p, "L'")) {
-      cur = cur->next = cpp_read_char_literal(p, p + 1, ty_int);
-      p += cur->len;
-      continue;
-    }
-
-    /* UTF-32 character literal */
-    if(str_start(p, "U'")) {
-      cur = cur->next = cpp_read_char_literal(p, p + 1, ty_uint);
-      p += cur->len;
-      continue;
-    }
-
-    /* Identifier or keyword */
-    size_t ident_len = cpp_read_ident(p);
-
-    if(ident_len) {
-      cur = cur->next = cpp_new_token(TK_IDENT, p, p + ident_len);
-      p += cur->len;
-      continue;
-    }
-
-    /* Punctuators */
-    size_t punct_len = cpp_read_punct(p);
-
-    if(punct_len) {
-      cur = cur->next = cpp_new_token(TK_PUNCT, p, p + punct_len);
-      p += cur->len;
-      continue;
-    }
-
-    cpp_error_at(p, "invalid token");
-  }
-
-  cur = cur->next = cpp_new_token(TK_EOF, p, p);
-  cpp_add_line_numbers(head.next);
-  return head.next;
-}
-
-static inline cpp_token*
-cpp_tokenize_file(char* path) {
-  char* p;
-
-  if(!(p = cpp_read_file(path)))
-    return NULL;
-
-  /* UTF-8 texts may start with a 3-byte "BOM" marker sequence.
-     If exists, just cpp_skip them because they are useless bytes.
-     (It is actually not recommended to add BOM markers to UTF-8
-     texts, but it's not uncommon particularly on Windows.) */
-  if(byte_equal(p, 3, "\xef\xbb\xbf"))
-    p += 3;
-
-  cpp_canonicalize_newline(p);
-  cpp_remove_backslash_newline(p);
-  cpp_convert_universal_chars(p);
-
-  /* Save the filename for assembler .file directive. */
-  static int file_no;
-  cpp_file* file = cpp_new_file(path, file_no + 1, p);
-
-  /* Save the filename for assembler .file directive. */
-  alloc_re(&cpp_input_files, 0, sizeof(char*) * (file_no + 2));
-  cpp_input_files[file_no] = file;
-  cpp_input_files[file_no + 1] = NULL;
-  file_no++;
-
-  return cpp_tokenize(file);
 }

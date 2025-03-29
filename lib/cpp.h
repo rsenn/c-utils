@@ -86,8 +86,15 @@ cpp_token* cpp_skip_line(cpp_token*);
 cpp_token* cpp_stringize(cpp_token*, cpp_token*);
 cpp_token* cpp_subst(cpp_token*, cpp_macro_arg*);
 cpp_token* cpp_timestamp_macro(cpp_token*);
+cpp_cond_incl* cpp_push_cond_incl(cpp_token*, bool);
+cpp_token* cpp_tokenize(cpp_file*);
+cpp_token* cpp_tokenize_file(char*);
+cpp_token* cpp_preprocess2(cpp_token*);
+cpp_token* cpp_preprocess(cpp_token*);
+bool cpp_convert_int(cpp_token*);
 void cpp_undef_macro(char*);
 void cpp_error_tok(cpp_token*, char*, ...);
+void cpp_warn_tok(cpp_token*, char*, ...);
 void cpp_error_at(char* loc, char* fmt, ...);
 
 #ifdef __cplusplus

@@ -13,7 +13,7 @@ cpp_read_const_expr(cpp_token** rest, cpp_token* tok) {
     // is defined. Otherwise "0".
     if(cpp_equal(tok, "defined")) {
       cpp_token* start = tok;
-      bool has_paren = consume(&tok, tok->next, "(");
+      bool has_paren = cpp_consume(&tok, tok->next, "(");
 
       if(tok->kind != TK_IDENT)
         cpp_error_tok(start, "macro name must be an identifier");

@@ -28,7 +28,7 @@ cpp_eval_const_expr(cpp_token** rest, cpp_token* tok) {
 
   cpp_token* rest2;
   long val = const_expr(&rest2, expr);
-  
+
   if(rest2->kind != TK_EOF)
     cpp_error_tok(rest2, "extra token");
 

@@ -9,5 +9,6 @@ cpp_skip_line(cpp_token* tok) {
   warn_tok(tok, "extra token");
   while(tok->cpp_at_bol)
     tok = tok->next;
+
   return tok;
 }

@@ -1,6 +1,7 @@
 #include "../cpp.h"
 #include "../cpp_internal.h"
 #include "../strarray.h"
+#include "../path.h"
 
 strarray cpp_include_paths = STRARRAY_INIT();
 
@@ -9,7 +10,7 @@ cpp_search_include_next(char* filename) {
   for(; cpp_include_next_idx < strarray_size(&cpp_include_paths); cpp_include_next_idx++) {
     char* path = cpp_format("%s/%s", strarray_AT(&cpp_include_paths, cpp_include_next_idx), filename);
 
-    if(file_exists(path))
+    if(path_exists(path))
       return path;
   }
 
@@ -30,7 +31,7 @@ cpp_search_include_paths(char* filename) {
   for(int i = 0; i < strarray_size(&cpp_include_paths); i++) {
     char* path = cpp_format("%s/%s", strarray_AT(&cpp_include_paths, i), filename);
 
-    if(!file_exists(path))
+    if(!path_exists(path))
       continue;
 
     hashmap_put(&cache, filename, path);
