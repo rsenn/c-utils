@@ -111,6 +111,45 @@ main(int argc, char** argv) {
 
   cpp_init_macros();
 
+cpp_macro** ptr=cpp_macro_ptr;
+  cpp_token *t, *u;
+
+  for(t = tok; t->kind != TK_EOF; t = t->next) {
+    if(!t->at_bol)
+      continue;
+
+    if(cpp_is_hash(t)) {
+
+      t = t->next;
+
+      if(cpp_equal(t, "include"))
+        continue;
+
+      if(cpp_equal(t, "define"))
+        continue;
+
+      if(cpp_equal(t, "endif"))
+        continue;
+
+      /*if(!str_start(t->loc, "if") && !str_start(t->loc, "elif") && !str_start(t->loc, "undef"))
+        continue;*/
+
+      buffer_puts(buffer_2, "#");
+      buffer_put(buffer_2, t->loc, t->len);
+      buffer_putnlflush(buffer_2);
+
+      for(u = t->next; u->kind != TK_EOF; u = u->next) {
+        if(u->at_bol)
+          break;
+
+        if(u->kind == TK_IDENT)
+          if(!cpp_equal(u, "defined"))
+            // if(!cpp_is_keyword(u))
+            cpp_token_dump(buffer_2, u);
+      }
+    }
+  }
+
   cpp_token* tok2 = no_process ? tok : cpp_preprocess(tok);
 
   if(opt_dump)
@@ -118,6 +157,13 @@ main(int argc, char** argv) {
       cpp_token_dump(buffer_2, t);
 
   cpp_print_tokens(out, tok2, !(no_line || no_process));
+
+  for(cpp_macro* m = cpp_macro_list; m; m = m->next) {
+
+    buffer_putm_internal(buffer_2, "macro '", m->name,"'", 0); buffer_putnlflush(buffer_2);
+
+//if(&m->next == cpp_macro_ptr) break;
+  }
 
 #ifndef test_x
 #define test_x(a, b, c) ((a) && (b) && (c))

@@ -79,7 +79,12 @@ void
 cpp_token_dump(buffer* out, cpp_token* tok) {
   if(tok->file) {
     buffer_puts(out, "file: ");
-    buffer_putspad(out, tok->file->name, 20);
+    buffer_puts(out, tok->file->name);
+
+    if(tok->line_no) {
+      buffer_puts(out, ":");
+      buffer_putulong(out, tok->line_no);
+    }
   }
 
   if(tok->file) {
