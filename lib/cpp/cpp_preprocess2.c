@@ -1,13 +1,15 @@
 #include "../cpp.h"
 #include "../cpp_internal.h"
 #include "../str.h"
+#include "../strarray.h"
 #include "../path.h"
 #include <string.h>
 #include <errno.h>
 
 hashmap cpp_pragma_once = HASHMAP_INIT();
 cpp_cond_incl* cond_incl = 0;
-  static hashmap include_guards;
+  static hashmap include_guards, include_list;
+    strarray include_array={};
 
 static cpp_token* include_file(cpp_token* tok, char* path, cpp_token* filename_tok);
 
@@ -242,6 +244,11 @@ include_file(cpp_token* tok, char* path, cpp_token* filename_tok) {
 
   if(!(tok2 = cpp_tokenize_file(path)))
     cpp_error_tok(filename_tok, "%s: cannot open file: %s", path, strerror(errno));
+
+if(!(int)hashmap_get(&include_list, path)) {
+    hashmap_put(&include_list, path, (void*)1);
+strarray_push(&include_array, path);
+  }
 
   if((guard_name = cpp_detect_include_guard(tok2)))
     hashmap_put(&include_guards, path, guard_name);
