@@ -2,17 +2,17 @@
 
 int
 scan_fromhex(int c) {
+  if(c >= 'a' && c <= 'z')
+    c -= 0x20;
+
   c -= '0';
 
   if(c <= 9)
     return c;
 
-  if(c >= 'a' - '0')
-    c &= ~0x20;
-
   c -= 'A' - '0';
 
-  if(c < 6)
+  if(c >= 0 && c < 6)
     return c + 10;
 
   return -1;
