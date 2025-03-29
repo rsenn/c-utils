@@ -127,5 +127,7 @@ main(int argc, char** argv) {
   printf("blah\n");
 #endif
 
+  __UINT32_C(102);
+
   return !tok2;
 }

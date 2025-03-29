@@ -97,8 +97,8 @@ cpp_init_macros(void) {
   cpp_macro_define("linux", "1");
   cpp_macro_define("unix", "1");*/
 
-  // define_gnu_macros();
-  define_clang_macros();
+  define_gnu_macros();
+  //define_clang_macros();
 
   cpp_add_builtin("__FILE__", file_macro);
   cpp_add_builtin("__LINE__", line_macro);
