@@ -158,7 +158,7 @@ main(int argc, char** argv) {
 
   cpp_print_tokens(out, tok2, !(no_line || no_process));
 
-  for(cpp_macro* m = cpp_macro_list; m; m = m->next) {
+  for(cpp_macro* m = *ptr; m; m = m->next) {
     cpp_print_macro(buffer_2, m);
 
     buffer_flush(buffer_2);

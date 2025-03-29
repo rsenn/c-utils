@@ -1,23 +1,8 @@
 #include "../cpp.h"
 #include "../cpp_internal.h"
 
-static cpp_macro_arg*
-find_arg(cpp_macro_arg* args, cpp_token* tok) {
-  for(cpp_macro_arg* ap = args; ap; ap = ap->next)
-    if(tok->len == str_len(ap->name) && !str_diffn(tok->loc, ap->name, tok->len))
-      return ap;
-
-  return NULL;
-}
-
-static bool
-has_varargs(cpp_macro_arg* args) {
-  for(cpp_macro_arg* ap = args; ap; ap = ap->next)
-    if(str_equal(ap->name, "__VA_ARGS__"))
-      return ap->tok->kind != TK_EOF;
-
-  return false;
-}
+static cpp_macro_arg* find_arg(cpp_macro_arg*, cpp_token*);
+static bool has_varargs(cpp_macro_arg*);
 
 /* Replace func-like macro parameters with given arguments. */
 cpp_token*
@@ -142,4 +127,22 @@ cpp_subst(cpp_token* tok, cpp_macro_arg* args) {
 
   cur->next = tok;
   return head.next;
+}
+
+static cpp_macro_arg*
+find_arg(cpp_macro_arg* args, cpp_token* tok) {
+  for(cpp_macro_arg* ap = args; ap; ap = ap->next)
+    if(tok->len == str_len(ap->name) && !str_diffn(tok->loc, ap->name, tok->len))
+      return ap;
+
+  return NULL;
+}
+
+static bool
+has_varargs(cpp_macro_arg* args) {
+  for(cpp_macro_arg* ap = args; ap; ap = ap->next)
+    if(str_equal(ap->name, "__VA_ARGS__"))
+      return ap->tok->kind != TK_EOF;
+
+  return false;
 }

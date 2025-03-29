@@ -32,7 +32,6 @@ cpp_read_macro_args(cpp_token** rest, cpp_token* tok, cpp_macro_param* params, c
     }
 
     arg->name = va_args_name;
-    ;
     arg->is_va_args = true;
     cur = cur->next = arg;
   } else if(pp) {
