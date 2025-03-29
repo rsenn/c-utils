@@ -1,4 +1,6 @@
 #include "../scan.h"
+#include "../str.h"
+#include <ctype.h>
 
 size_t
 scan_xlong(const char* src, unsigned long* dest) {
@@ -6,7 +8,7 @@ scan_xlong(const char* src, unsigned long* dest) {
   unsigned long l = 0;
   unsigned char c;
 
-  while((c = scan_fromhex(*tmp)) < 16) {
+  while(  (c = str_chr("0123456789abcdef", tolower(*tmp))) < 16) {
     l = (l << 4) + c;
     ++tmp;
   }
