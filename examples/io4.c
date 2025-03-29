@@ -6,7 +6,7 @@
 int
 main() {
   char buf[2048];
-  fd_t pfd[2];
+  fd_type pfd[2];
   tai6464 t;
   int64 r;
 

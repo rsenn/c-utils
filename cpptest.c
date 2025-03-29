@@ -106,5 +106,5 @@ main(int argc, char** argv) {
 
   cpp_print_tokens(out, tok2, true);
 
-  return !!tok2;
+  return !tok2;
 }

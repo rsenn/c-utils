@@ -24,12 +24,11 @@ if(USE_SSL AND NOT BUILD_SSL)
   #  message(STATUS "pkg_search_module(OPENSSL openssl libssl): ${OPENSSL_FOUND}")
   #find_package(OpenSSL)
   pkg_search_module(OPENSSL libressl openssl libssl)
-  message(STATUS "OpenSSL_DIR=${OpenSSL_DIR}")
-  message(STATUS "OPENSSL_ROOT_DIR=${OPENSSL_ROOT_DIR}")
+  #message(STATUS "OpenSSL_DIR=${OpenSSL_DIR} OPENSSL_ROOT_DIR=${OPENSSL_ROOT_DIR}")
 
   if(NOT OPENSSL_ROOT_DIR)
     pkg_check_modules(OPENSSL REQUIRED openssl libssl)
-    message(STATUS "pkg_check_modules(OPENSSL openssl libssl): ${OPENSSL_FOUND}")
+    #message(STATUS "pkg_check_modules(OPENSSL openssl libssl): ${OPENSSL_FOUND}")
 
     find_library(pkgcfg_lib_OPENSSL_crypto crypto ${OPENSSL_LIBRARY_DIRS})
     find_library(pkgcfg_lib_OPENSSL_ssl ssl ${OPENSSL_LIBRARY_DIRS})
@@ -50,9 +49,7 @@ if(USE_SSL AND NOT BUILD_SSL)
   endif(NOT OPENSSL_ROOT_DIR)
 
   set(OPENSSL_LIBRARIES "${OPENSSL_SSL_LIBRARY};${OPENSSL_CRYPTO_LIBRARY}" CACHE FILEPATH "OpenSSL libraries")
-  message(STATUS "OPENSSL_FOUND=${OPENSSL_FOUND}")
-  message(STATUS "OPENSSL_LIBRARIES=${OPENSSL_LIBRARIES}")
-  message(STATUS "pkgcfg_lib_OPENSSL_ssl=${pkgcfg_lib_OPENSSL_ssl}")
+  #message(STATUS "OPENSSL_FOUND=${OPENSSL_FOUND} OPENSSL_LIBRARIES=${OPENSSL_LIBRARIES}")
 
   #dump(OPENSSL_LIBRARIES OPENSSL_LIBRARY_DIRS OPENSSL_INCLUDE_DIR)
 
@@ -110,9 +107,10 @@ if(USE_SSL AND NOT BUILD_SSL)
     message(CHECK_FAIL "NOT found")
   endif(OPENSSL_FOUND)
 
-  message(STATUS "TLS_LIBRARIES=${TLS_LIBRARIES}")
-
+  
   # dump(OPENSSL_CRYPTO_LIBRARY OPENSSL_SSL_LIBRARY OPENSSL_LIBRARY_DIRS OPENSSL_INCLUDE_DIRS OPENSSL_LIBRARIES)
+  unset(pkgcfg_lib_OPENSSL_crypto CACHE)
+  unset(pkgcfg_lib_OPENSSL_ssl CACHE)
 
 else()
   unset(OPENSSL_LIBRARIES CACHE)
