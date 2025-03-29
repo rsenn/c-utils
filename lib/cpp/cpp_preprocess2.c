@@ -62,7 +62,12 @@ cpp_preprocess2(cpp_token* tok) {
       char* filename = cpp_read_include_filename(&tok, tok->next, &is_dquote);
 
       if(filename[0] != '/' && is_dquote) {
-        char* path = cpp_format("%.*s/%s", (int)path_dirlen(start->file->name), start->file->name, filename);
+        stralloc dir;
+        stralloc_init(&dir);
+        path_dirname(start->file->name, &dir);
+        stralloc_nul(&dir);
+        char* path = cpp_format("%s/%s", dir.s, filename);
+        stralloc_free(&dir);
 
         if(path_exists(path)) {
           tok = include_file(tok, path, start->next->next);

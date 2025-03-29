@@ -171,11 +171,11 @@ main(int argc, char** argv) {
 #define test_x(a, b, c) ((a) && (b) && (c))
 #endif
 
-#if test_x(1, 1, 1)
+/*#if test_x(1, 1, 1)
   printf("blah\n");
 #endif
 
-  __UINT32_C(102);
+  __UINT32_C(102);*/
 
   return !tok2;
 }
