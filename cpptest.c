@@ -111,7 +111,7 @@ main(int argc, char** argv) {
 
   cpp_init_macros();
 
-cpp_macro** ptr=cpp_macro_ptr;
+  cpp_macro** ptr = cpp_macro_ptr;
   cpp_token *t, *u;
 
   for(t = tok; t->kind != TK_EOF; t = t->next) {
@@ -160,9 +160,10 @@ cpp_macro** ptr=cpp_macro_ptr;
 
   for(cpp_macro* m = cpp_macro_list; m; m = m->next) {
 
-    buffer_putm_internal(buffer_2, "macro '", m->name,"'", 0); buffer_putnlflush(buffer_2);
+    buffer_putm_internal(buffer_2, "macro '", m->name, "'", 0);
+    buffer_putnlflush(buffer_2);
 
-//if(&m->next == cpp_macro_ptr) break;
+    // if(&m->next == cpp_macro_ptr) break;
   }
 
 #ifndef test_x

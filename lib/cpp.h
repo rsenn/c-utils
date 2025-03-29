@@ -129,7 +129,8 @@ void cpp_type_free(cpp_type*);
 void cpp_convert_number(cpp_token*);
 void cpp_convert_tokens(cpp_token*);
 
-extern cpp_macro* cpp_macro_list;extern cpp_macro**cpp_macro_ptr;
+extern cpp_macro* cpp_macro_list;
+extern cpp_macro** cpp_macro_ptr;
 
 #ifdef __cplusplus
 }
