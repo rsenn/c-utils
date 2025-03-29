@@ -119,5 +119,13 @@ main(int argc, char** argv) {
 
   cpp_print_tokens(out, tok2, !(no_line || no_process));
 
+#ifndef test_x
+#define test_x(a,b,c) ((a) && (b) && (c))
+#endif
+
+#if test_x(1,1,1)
+  printf("blah\n");
+#endif
+
   return !tok2;
 }
