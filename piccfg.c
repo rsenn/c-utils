@@ -87,7 +87,13 @@ cfg_data_at(uint32 addr) {
   buffer_putnlflush(buffer_2);
 #endif
 
-  if(addr < 0x2007 && addr >= 0x2000) {
+  if(addr >= 0x300000) {
+    offset = (ssize_t)addr - 0x300000;
+
+    if(offset + 1 < cfg.len)
+      result = uint16_read(&cfg.s[offset]);
+
+ } else if(addr < 0x2007 && addr >= 0x2000) {
     offset = (ssize_t)addr - 0x2000;
 
     if(offset + 1 < cfg.len)

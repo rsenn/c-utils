@@ -3,7 +3,7 @@
 int
 scan_fromhex(int c) {
   if(c >= 'a' && c <= 'z')
-    c -= 0x20;
+    c -= 'a' - 'A';
 
   c -= '0';
 
