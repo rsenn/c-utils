@@ -44,7 +44,7 @@ main(int argc, char** argv) {
 
   errmsg_iam(str_basename(argv[0]));
 
-  while((c = unix_getopt_long(argc, argv, "D:I:o:dhPLx", opts, &index)) != -1) {
+  while((c = unix_getopt_long(argc, argv, "D:I:o:dhPLxM:", opts, &index)) != -1) {
     switch(c) {
       case 'I': {
         strarray_push(&cpp_include_paths, unix_optarg);
@@ -92,6 +92,7 @@ main(int argc, char** argv) {
         dump_defines = 1;
         break;
       }
+      case 'M':
       case 64: {
         show_deps = 1;
         break;
@@ -156,6 +157,27 @@ main(int argc, char** argv) {
 
   cpp_token* tok2 = no_process ? tok : cpp_preprocess(tok);
 
+  if(show_deps) {
+    char** inc;
+
+    buffer_put(buffer_1, fn, str_rchr(fn, '.'));
+    buffer_puts(buffer_1, ".o: ");
+    buffer_puts(buffer_1, fn);
+
+    strarray_foreach(&include_array, inc) {
+      if(path_is_absolute(*inc))
+        continue;
+
+      size_t n = path_is_dotslash(*inc);
+
+      buffer_putc(buffer_1, ' ');
+      buffer_puts(buffer_1, *inc + n);
+    }
+
+    buffer_putnlflush(buffer_1);
+    return 0;
+  }
+
   if(opt_dump)
     for(cpp_token* t = tok2; t; t = t->next)
       cpp_token_dump(buffer_2, t);
@@ -171,23 +193,6 @@ main(int argc, char** argv) {
       if(&m->next == cpp_macro_ptr)
         break;
     }
-
-  char** inc;
-
-  buffer_put(buffer_2, fn, str_rchr(fn, '.'));
-  buffer_puts(buffer_2, ".o:");
-
-  strarray_foreach(&include_array, inc) {
-    if(path_is_absolute(*inc))
-      continue;
-
-    size_t n = path_is_dotslash(*inc);
-
-    buffer_putc(buffer_2, ' ');
-    buffer_puts(buffer_2, *inc + n);
-  }
-  
-  buffer_putnlflush(buffer_2);
 
 #ifndef test_x
 #define test_x(a, b, c) ((a) && (b) && (c))
