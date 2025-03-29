@@ -1,28 +1,38 @@
 #include "../cpp.h"
 #include "../cpp_internal.h"
+#include "../uint16.h"
+#include "../uint8.h"
 
-static void add_type(cpp_node* node);
-static int64_t eval2(cpp_node* node, char*** label);
-static int64_t eval_rval(cpp_node* node, char*** label);
-static double eval_double(cpp_node* node);
-static cpp_node* conditional(cpp_token** rest, cpp_token* tok);
-static cpp_node* logor(cpp_token** rest, cpp_token* tok);
-static cpp_node* logand(cpp_token** rest, cpp_token* tok);
-static cpp_node* bitor (cpp_token * *rest, cpp_token* tok);
-static cpp_node* bitxor(cpp_token** rest, cpp_token* tok);
-static cpp_node*bitand(cpp_token** rest, cpp_token* tok);
-static cpp_node* equality(cpp_token** rest, cpp_token* tok);
-static cpp_node* relational(cpp_token** rest, cpp_token* tok);
-static cpp_node* shift(cpp_token** rest, cpp_token* tok);
-static cpp_node* new_add(cpp_node* lhs, cpp_node* rhs, cpp_token* tok);
-static cpp_node* new_sub(cpp_node* lhs, cpp_node* rhs, cpp_token* tok);
-static cpp_node* add(cpp_token** rest, cpp_token* tok);
-static cpp_node* mul(cpp_token** rest, cpp_token* tok);
-static cpp_node* unary(cpp_token** rest, cpp_token* tok);
-static cpp_node* cast(cpp_token** rest, cpp_token* tok);
+static cpp_node* conditional(cpp_token**, cpp_token*);
+static int64 eval(cpp_node* node);
+
+int64
+cpp_const_expr(cpp_token** rest, cpp_token* tok) {
+  cpp_node* node = conditional(rest, tok);
+  return eval(node);
+}
+
+static void add_type(cpp_node*);
+static int64 eval2(cpp_node*, char***);
+static int64 eval_rval(cpp_node*, char***);
+static double eval_double(cpp_node*);
+static cpp_node* logor(cpp_token**, cpp_token*);
+static cpp_node* logand(cpp_token**, cpp_token*);
+static cpp_node* bitor (cpp_token * *rest, cpp_token*);
+static cpp_node* bitxor(cpp_token**, cpp_token*);
+static cpp_node*bitand(cpp_token**, cpp_token*);
+static cpp_node* equality(cpp_token**, cpp_token*);
+static cpp_node* relational(cpp_token**, cpp_token*);
+static cpp_node* shift(cpp_token**, cpp_token*);
+static cpp_node* new_add(cpp_node*, cpp_node*, cpp_token*);
+static cpp_node* new_sub(cpp_node*, cpp_node*, cpp_token*);
+static cpp_node* add(cpp_token**, cpp_token*);
+static cpp_node* mul(cpp_token**, cpp_token*);
+static cpp_node* unary(cpp_token**, cpp_token*);
+static cpp_node* cast(cpp_token**, cpp_token*);
 
 static cpp_scope* scope = &(cpp_scope){};
-cpp_obj *locals = 0, *globals = 0;
+cpp_obj* locals = 0 /*, *globals = 0*/;
 
 static bool
 is_integer(cpp_type* ty) {
@@ -152,14 +162,14 @@ new_var_node(cpp_obj* var, cpp_token* tok) {
 }
 
 static cpp_node*
-new_num(int64_t val, cpp_token* tok) {
+new_num(int64 val, cpp_token* tok) {
   cpp_node* node = new_node(ND_NUM, tok);
   node->val = val;
   return node;
 }
 
 static cpp_node*
-new_long(int64_t val, cpp_token* tok) {
+new_long(int64 val, cpp_token* tok) {
   cpp_node* node = new_node(ND_NUM, tok);
   node->val = val;
   node->ty = cpp_ty_long;
@@ -174,7 +184,7 @@ new_ulong(long val, cpp_token* tok) {
   return node;
 }
 
-static cpp_obj*
+/*static cpp_obj*
 new_gvar(char* name, cpp_type* ty) {
   cpp_obj* var = new_var(name, ty);
   var->next = globals;
@@ -182,7 +192,7 @@ new_gvar(char* name, cpp_type* ty) {
   var->is_definition = true;
   globals = var;
   return var;
-}
+}*/
 
 static char*
 new_unique_name(void) {
@@ -190,14 +200,16 @@ new_unique_name(void) {
   return cpp_format(".L..%d", id++);
 }
 
-static cpp_obj*
+/*static cpp_obj*
 new_anon_gvar(cpp_type* ty) {
   return new_gvar(new_unique_name(), ty);
-}
+}*/
 
 static cpp_obj*
 new_string_literal(char* p, cpp_type* ty) {
-  cpp_obj* var = new_anon_gvar(ty);
+  cpp_obj* var = new_var(new_unique_name(), ty) /*new_anon_gvar(ty)*/;
+  var->is_static = true;
+  var->is_definition = true;
   var->init_data = p;
   return var;
 }
@@ -401,7 +413,7 @@ add_type(cpp_node* node) {
   }
 }
 
-static int64_t
+static int64
 eval(cpp_node* node) {
   return eval2(node, NULL);
 }
@@ -412,7 +424,7 @@ eval(cpp_node* node) {
    is a pointer to a global variable and n is a postiive/negative
    number. The latter form is accepted only as an initialization
    expression for a global variable. */
-static int64_t
+static int64
 eval2(cpp_node* node, char*** label) {
   add_type(node);
 
@@ -426,14 +438,14 @@ eval2(cpp_node* node, char*** label) {
 
     case ND_DIV:
       if(node->ty->is_unsigned)
-        return (uint64_t)eval(node->lhs) / eval(node->rhs);
+        return (uint64)eval(node->lhs) / eval(node->rhs);
       return eval(node->lhs) / eval(node->rhs);
 
     case ND_NEG: return -eval(node->lhs);
 
     case ND_MOD:
       if(node->ty->is_unsigned)
-        return (uint64_t)eval(node->lhs) % eval(node->rhs);
+        return (uint64)eval(node->lhs) % eval(node->rhs);
       return eval(node->lhs) % eval(node->rhs);
 
     case ND_BITAND: return eval(node->lhs) & eval(node->rhs);
@@ -443,7 +455,7 @@ eval2(cpp_node* node, char*** label) {
 
     case ND_SHR:
       if(node->ty->is_unsigned && node->ty->size == 8)
-        return (uint64_t)eval(node->lhs) >> eval(node->rhs);
+        return (uint64)eval(node->lhs) >> eval(node->rhs);
       return eval(node->lhs) >> eval(node->rhs);
 
     case ND_EQ: return eval(node->lhs) == eval(node->rhs);
@@ -451,12 +463,12 @@ eval2(cpp_node* node, char*** label) {
 
     case ND_LT:
       if(node->lhs->ty->is_unsigned)
-        return (uint64_t)eval(node->lhs) < eval(node->rhs);
+        return (uint64)eval(node->lhs) < eval(node->rhs);
       return eval(node->lhs) < eval(node->rhs);
 
     case ND_LE:
       if(node->lhs->ty->is_unsigned)
-        return (uint64_t)eval(node->lhs) <= eval(node->rhs);
+        return (uint64)eval(node->lhs) <= eval(node->rhs);
       return eval(node->lhs) <= eval(node->rhs);
 
     case ND_COND: return eval(node->cond) ? eval2(node->then, label) : eval2(node->els, label);
@@ -467,13 +479,13 @@ eval2(cpp_node* node, char*** label) {
     case ND_LOGOR: return eval(node->lhs) || eval(node->rhs);
 
     case ND_CAST: {
-      int64_t val = eval2(node->lhs, label);
+      int64 val = eval2(node->lhs, label);
 
       if(is_integer(node->ty)) {
         switch(node->ty->size) {
-          case 1: return node->ty->is_unsigned ? (uint8_t)val : (int8_t)val;
-          case 2: return node->ty->is_unsigned ? (uint16_t)val : (int16_t)val;
-          case 4: return node->ty->is_unsigned ? (uint32_t)val : (int32_t)val;
+          case 1: return node->ty->is_unsigned ? (uint8)val : (int8)val;
+          case 2: return node->ty->is_unsigned ? (uint16)val : (int16)val;
+          case 4: return node->ty->is_unsigned ? (uint32)val : (int32)val;
         }
       }
 
@@ -505,7 +517,7 @@ eval2(cpp_node* node, char*** label) {
   cpp_error_tok(node->tok, "not a compile-time constant");
 }
 
-static int64_t
+static int64
 eval_rval(cpp_node* node, char*** label) {
   switch(node->kind) {
     case ND_VAR:
@@ -1269,13 +1281,4 @@ unary(cpp_token** rest, cpp_token* tok) {
 
   return primary(rest, tok);
   /* return postfix(rest, tok); */
-}
-
-int64
-cpp_const_expr(cpp_token** rest, cpp_token* tok) {
-  cpp_node* node = conditional(rest, tok);
-  return eval(node);
-
-  /**rest = cpp_token_new(TK_EOF, 0, 0);
-  return -1;*/
 }
