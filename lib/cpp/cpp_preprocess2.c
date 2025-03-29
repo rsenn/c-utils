@@ -7,6 +7,7 @@
 
 hashmap cpp_pragma_once = HASHMAP_INIT();
 cpp_cond_incl* cond_incl = 0;
+  static hashmap include_guards;
 
 static cpp_token* include_file(cpp_token* tok, char* path, cpp_token* filename_tok);
 
@@ -221,7 +222,6 @@ cpp_preprocess2(cpp_token* tok) {
 
 static cpp_token*
 include_file(cpp_token* tok, char* path, cpp_token* filename_tok) {
-  static hashmap include_guards;
   cpp_token* tok2;
   char* guard_name;
 
