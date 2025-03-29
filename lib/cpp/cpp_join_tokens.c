@@ -3,14 +3,14 @@
 #include "../alloc.h"
 #include "../str.h"
 
-// Concatenates all tokens in `tok` and returns a new string.
+/* Concatenates all tokens in `tok` and returns a new string. */
 char*
 cpp_join_tokens(cpp_token* tok, cpp_token* end) {
-  // Compute the length of the resulting token.
+  /* Compute the length of the resulting token. */
   int len = 1;
 
   for(cpp_token* t = tok; t != end && t->kind != TK_EOF; t = t->next) {
-    if(t != tok && t->cpp_has_space)
+    if(t != tok && t->has_space)
       len++;
 
     len += t->len;
@@ -18,10 +18,11 @@ cpp_join_tokens(cpp_token* tok, cpp_token* end) {
 
   char* buf = alloc_zero(len);
 
-  // Copy token texts.
+  /* Copy token texts. */
   int pos = 0;
+
   for(cpp_token* t = tok; t != end && t->kind != TK_EOF; t = t->next) {
-    if(t != tok && t->cpp_has_space)
+    if(t != tok && t->has_space)
       buf[pos++] = ' ';
 
     str_copyn(buf + pos, t->loc, t->len);

@@ -22,7 +22,7 @@ cpp_read_macro_arg_one(cpp_token** rest, cpp_token* tok, bool read_rest) {
     else if(cpp_equal(tok, ")"))
       level--;
 
-    cur = cur->next = cpp_copy_token(tok);
+    cur = cur->next = cpp_token_copy(tok);
     tok = tok->next;
   }
 

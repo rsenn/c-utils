@@ -1,7 +1,7 @@
 #include "../utf8.h"
 
-// Returns the number of columns needed to display a given
-// string in a fixed-width font.
+/* Returns the number of columns needed to display a given
+   string in a fixed-width font. */
 size_t
 cpp_display_width(char* p, size_t len) {
   char *start = p, *end = p + len;

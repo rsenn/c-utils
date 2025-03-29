@@ -3,6 +3,7 @@
 #include <ctype.h>
 
 bool cpp_at_bol = false, cpp_has_space = false;
+cpp_file* cpp_current_file = 0;
 
 /* Tokenize a given string and returns new tokens. */
 cpp_token*
@@ -35,7 +36,7 @@ cpp_tokenize(cpp_file* file) {
       if(!p[q + 2])
         cpp_error_at(p, "unclosed block comment");
 
-      p += q + 2;
+      p += q + 2 + 2;
       cpp_has_space = true;
       continue;
     }
@@ -68,7 +69,7 @@ cpp_tokenize(cpp_file* file) {
           break;
       }
 
-      cur = cur->next = cpp_new_token(TK_PP_NUM, q, p);
+      cur = cur->next = cpp_token_new(TK_PP_NUM, q, p);
       continue;
     }
 
@@ -141,7 +142,7 @@ cpp_tokenize(cpp_file* file) {
     size_t ident_len = cpp_read_ident(p);
 
     if(ident_len) {
-      cur = cur->next = cpp_new_token(TK_IDENT, p, p + ident_len);
+      cur = cur->next = cpp_token_new(TK_IDENT, p, p + ident_len);
       p += cur->len;
       continue;
     }
@@ -150,7 +151,7 @@ cpp_tokenize(cpp_file* file) {
     size_t punct_len = cpp_read_punct(p);
 
     if(punct_len) {
-      cur = cur->next = cpp_new_token(TK_PUNCT, p, p + punct_len);
+      cur = cur->next = cpp_token_new(TK_PUNCT, p, p + punct_len);
       p += cur->len;
       continue;
     }
@@ -158,7 +159,7 @@ cpp_tokenize(cpp_file* file) {
     cpp_error_at(p, "invalid token");
   }
 
-  cur = cur->next = cpp_new_token(TK_EOF, p, p);
+  cur = cur->next = cpp_token_new(TK_EOF, p, p);
   cpp_add_line_numbers(head.next);
   return head.next;
 }

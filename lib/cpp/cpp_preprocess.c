@@ -1,11 +1,11 @@
 #include "../cpp.h"
 #include "../cpp_internal.h"
 
-// Entry point function of the preprocessor.
+/* Entry point function of the preprocessor. */
 cpp_token*
 cpp_preprocess(cpp_token* tok) {
   tok = cpp_preprocess2(tok);
-  
+
   if(cond_incl)
     cpp_error_tok(cond_incl->tok, "unterminated conditional directive");
 

@@ -1,7 +1,7 @@
 #include "../cpp.h"
 #include "../cpp_internal.h"
 
-// __DATE__ is expanded to the current date, e.g. "May 17 2020".
+/* __DATE__ is expanded to the current date, e.g. "May 17 2020". */
 char*
 cpp_format_date(struct tm* tm) {
   static char mon[][4] = {

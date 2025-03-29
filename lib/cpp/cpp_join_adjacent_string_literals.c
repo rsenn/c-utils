@@ -4,12 +4,13 @@
 #include "../byte.h"
 #include <assert.h>
 
-// as per the C spec.
+/* Concatenate adjacent string literals into a single string literal
+   as per the C spec. */
 void
 cpp_join_adjacent_string_literals(cpp_token* tok) {
-  // First pass: If regular string literals are adjacent to wide
-  // string literals, regular string literals are converted to a wide
-  // type before concatenation. In this pass, we do the conversion.
+  /* First pass: If regular string literals are adjacent to wide
+     string literals, regular string literals are converted to a wide
+     type before concatenation. In this pass, we do the conversion. **/
   for(cpp_token* tok1 = tok; tok1->kind != TK_EOF;) {
     if(tok1->kind != TK_STR || tok1->next->kind != TK_STR) {
       tok1 = tok1->next;
@@ -43,7 +44,7 @@ cpp_join_adjacent_string_literals(cpp_token* tok) {
       tok1 = tok1->next;
   }
 
-  // Second pass: concatenate adjacent string literals.
+  /* Second pass: concatenate adjacent string literals. */
   for(cpp_token* tok1 = tok; tok1->kind != TK_EOF;) {
     if(tok1->kind != TK_STR || tok1->next->kind != TK_STR) {
       tok1 = tok1->next;
@@ -68,7 +69,7 @@ cpp_join_adjacent_string_literals(cpp_token* tok) {
       i = i + t->ty->size - t->ty->base->size;
     }
 
-    *tok1 = *cpp_copy_token(tok1);
+    *tok1 = *cpp_token_copy(tok1);
     tok1->ty = cpp_array_of(tok1->ty->base, len);
     tok1->str = buf;
     tok1->next = tok2;

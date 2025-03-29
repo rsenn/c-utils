@@ -9,15 +9,15 @@ cpp_read_const_expr(cpp_token** rest, cpp_token* tok) {
   cpp_token* cur = &head;
 
   while(tok->kind != TK_EOF) {
-    // "defined(foo)" or "defined foo" becomes "1" if macro "foo"
-    // is defined. Otherwise "0".
+    /* "defined(foo)" or "defined foo" becomes "1" if macro "foo"
+       is defined. Otherwise "0". */
     if(cpp_equal(tok, "defined")) {
       cpp_token* start = tok;
       bool has_paren = cpp_consume(&tok, tok->next, "(");
 
       if(tok->kind != TK_IDENT)
         cpp_error_tok(start, "macro name must be an identifier");
-      cpp_macro* m = cpp_find_macro(tok);
+      cpp_macro* m = cpp_macro_find(tok);
       tok = tok->next;
 
       if(has_paren)

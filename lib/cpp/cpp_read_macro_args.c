@@ -9,17 +9,19 @@ cpp_read_macro_args(cpp_token** rest, cpp_token* tok, cpp_macro_param* params, c
 
   cpp_macro_arg head = {};
   cpp_macro_arg* cur = &head;
-
   cpp_macro_param* pp = params;
+
   for(; pp; pp = pp->next) {
     if(cur != &head)
       tok = cpp_skip(tok, ",");
+
     cur = cur->next = cpp_read_macro_arg_one(&tok, tok, false);
     cur->name = pp->name;
   }
 
   if(va_args_name) {
     cpp_macro_arg* arg;
+
     if(cpp_equal(tok, ")")) {
       arg = alloc_zero(sizeof(cpp_macro_arg));
       arg->tok = cpp_new_eof(tok);
@@ -28,6 +30,7 @@ cpp_read_macro_args(cpp_token** rest, cpp_token* tok, cpp_macro_param* params, c
         tok = cpp_skip(tok, ",");
       arg = cpp_read_macro_arg_one(&tok, tok, true);
     }
+
     arg->name = va_args_name;
     ;
     arg->is_va_args = true;

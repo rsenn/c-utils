@@ -103,7 +103,7 @@ size_t scan_asn1dertag(const char* in, size_t len, uint64* n) __pure__;
 
 /* a few internal function that might be useful independently */
 /* convert from hex ASCII, return 0 to 15 for success or -1 for failure */
-int scan_fromhex(unsigned char c);
+int scan_fromhex(int c);
 
 size_t scan_8long(const char* src, unsigned long* dest);
 size_t scan_octal(const char* src, uint64* dest);

@@ -9,11 +9,11 @@ cpp_preprocess2(cpp_token* tok) {
   cpp_token* cur = &head;
 
   while(tok->kind != TK_EOF) {
-    // If it is a macro, expand it.
-    if(cpp_expand_macro(&tok, tok))
+    /* If it is a macro, expand it. */
+    if(cpp_macro_expand(&tok, tok))
       continue;
 
-    // Pass through if it is not a "#".
+    /* Pass through if it is not a "#". */
     if(!cpp_is_hash(tok)) {
       tok->line_delta = tok->file->line_delta;
       tok->filename = tok->file->display_name;
@@ -58,59 +58,74 @@ cpp_preprocess2(cpp_token* tok) {
 
     if(cpp_equal(tok, "undef")) {
       tok = tok->next;
+
       if(tok->kind != TK_IDENT)
         cpp_error_tok(tok, "macro name must be an identifier");
-      cpp_undef_macro(str_ndup(tok->loc, tok->len));
+
+      cpp_macro_undef(str_ndup(tok->loc, tok->len));
       tok = cpp_skip_line(tok->next);
       continue;
     }
 
     if(cpp_equal(tok, "if")) {
       long val = cpp_eval_const_expr(&tok, tok);
+
       cpp_push_cond_incl(start, val);
+
       if(!val)
         tok = cpp_skip_cond_incl(tok);
+
       continue;
     }
 
     if(cpp_equal(tok, "ifdef")) {
-      bool defined = cpp_find_macro(tok->next);
+      bool defined = cpp_macro_find(tok->next);
+
       cpp_push_cond_incl(tok, defined);
       tok = cpp_skip_line(tok->next->next);
+
       if(!defined)
         tok = cpp_skip_cond_incl(tok);
+
       continue;
     }
 
     if(cpp_equal(tok, "ifndef")) {
-      bool defined = cpp_find_macro(tok->next);
+      bool defined = cpp_macro_find(tok->next);
+
       cpp_push_cond_incl(tok, !defined);
       tok = cpp_skip_line(tok->next->next);
+
       if(defined)
         tok = cpp_skip_cond_incl(tok);
+
       continue;
     }
 
     if(cpp_equal(tok, "elif")) {
       if(!cond_incl || cond_incl->ctx == IN_ELSE)
         cpp_error_tok(start, "stray #elif");
+
       cond_incl->ctx = IN_ELIF;
 
       if(!cond_incl->included && cpp_eval_const_expr(&tok, tok))
         cond_incl->included = true;
       else
         tok = cpp_skip_cond_incl(tok);
+
       continue;
     }
 
     if(cpp_equal(tok, "else")) {
       if(!cond_incl || cond_incl->ctx == IN_ELSE)
         cpp_error_tok(start, "stray #else");
+
       cond_incl->ctx = IN_ELSE;
       tok = cpp_skip_line(tok->next);
 
       if(cond_incl->included)
         tok = cpp_skip_cond_incl(tok);
+
       continue;
     }
 
@@ -139,17 +154,23 @@ cpp_preprocess2(cpp_token* tok) {
     }
 
     if(cpp_equal(tok, "pragma")) {
-      do {
+      do
         tok = tok->next;
-      } while(!tok->cpp_at_bol);
+      while(!tok->at_bol);
+
       continue;
     }
 
     if(cpp_equal(tok, "error"))
       cpp_error_tok(tok, "error");
 
-    // `#`-only line is legal. It's called a null directive.
-    if(tok->cpp_at_bol)
+    if(cpp_equal(tok, "warning")) {
+      cpp_warn_tok(tok, "warning");
+      continue;
+    }
+
+    /* `#`-only line is legal. It's called a null directive. */
+    if(tok->at_bol)
       continue;
 
     cpp_error_tok(tok, "invalid preprocessor directive");

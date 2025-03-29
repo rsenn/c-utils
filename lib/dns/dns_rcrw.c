@@ -1,5 +1,5 @@
 #define _POSIX_SOURCE 1
-#define _BSD_SOURCE 1
+#define _DEFAULT_SOURCE 1
 #define USE_WS2_32 1
 #include "../socket_internal.h"
 #include "../windoze.h"

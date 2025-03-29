@@ -60,12 +60,11 @@ function(check_sockets OUT_VAR LIB INC)
   select(10, &r, &w, &e, &tv);
   AcceptEx(l, a, NULL, 0,  0, 0, NULL, NULL);
   }")
-  message("Program:" "${TRY_SOCK_PROG}")
+  #message("Program:" "${TRY_SOCK_PROG}")
   set(SRC "${CMAKE_CURRENT_BINARY_DIR}/try_sockets.c")
   file(WRITE "${SRC}" "${TRY_SOCK_PROG}")
 
-  try_compile("${OUT_VAR}" "${CMAKE_CURRENT_BINARY_DIR}" "${SRC}"
-              LINK_LIBRARIES "${LIB}" OUTPUT_VARIABLE OUTPUT)
+  try_compile("${OUT_VAR}" "${CMAKE_CURRENT_BINARY_DIR}" "${SRC}" LINK_LIBRARIES "${LIB}" OUTPUT_VARIABLE OUTPUT)
   # message("check_sockets(${INC} ${LIB}) ${OUT_VAR}='${${OUT_VAR}}'")
   if(NOT "${${OUT_VAR}}")
     message("check_sockets ${OUT_VAR} ${LIB} ${INC} failed")

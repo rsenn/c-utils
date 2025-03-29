@@ -13,7 +13,9 @@ cpp_skip_cond_incl(cpp_token* tok) {
 
     if(cpp_is_hash(tok) && (cpp_equal(tok->next, "elif") || cpp_equal(tok->next, "else") || cpp_equal(tok->next, "endif")))
       break;
+
     tok = tok->next;
   }
+
   return tok;
 }

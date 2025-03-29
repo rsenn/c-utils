@@ -29,6 +29,7 @@
 #include "strarray.h"
 #include "cpp.h"
 #include "case.h"
+#include "scan.h"
 #include "str.h"
 #include "utf8.h"
 #include "alloc.h"
@@ -36,17 +37,6 @@
 #include <stdio.h>
 #include <stdarg.h>
 #include <ctype.h>
-
-/* cpp_token*/
-typedef enum {
-  TK_IDENT,   /* Identifiers */
-  TK_PUNCT,   /* Punctuators */
-  TK_KEYWORD, /* Keywords */
-  TK_STR,     /* String literals */
-  TK_NUM,     /* Numeric literals */
-  TK_PP_NUM,  /* Preprocessing numbers */
-  TK_EOF,     /* End-of-file markers */
-} cpp_token_kind;
 
 struct cpp_file {
   char* name;
@@ -56,6 +46,7 @@ struct cpp_file {
   /* For #line directive*/
   char* display_name;
   int line_delta;
+  int ref_count;
 };
 
 /* cpp_token type*/
@@ -66,65 +57,46 @@ struct cpp_token {
   long double fval;    /* If kind is TK_NUM, its value */
   char* loc;           /* cpp_token location */
   size_t len;          /* cpp_token length */
-  struct cpp_type* ty; /* Used if TK_NUM or TK_STR */
+  cpp_type* ty;        /* Used if TK_NUM or TK_STR */
   char* str;           /* String literal contents including terminating '\0' */
 
   cpp_file* file;       /* Source location */
   char* filename;       /* Filename */
   int line_no;          /* Line number */
   int line_delta;       /* Line number */
-  bool cpp_at_bol;      /* True if this token is at beginning of line */
-  bool cpp_has_space;   /* True if this token follows a space character */
+  bool at_bol;          /* True if this token is at beginning of line */
+  bool has_space;       /* True if this token follows a space character */
   cpp_hideset* hideset; /* For macro expansion */
   cpp_token* origin;    /* If this is expanded from a macro, the original token */
 };
 
-typedef enum {
-  TY_VOID,
-  TY_BOOL,
-  TY_CHAR,
-  TY_SHORT,
-  TY_INT,
-  TY_LONG,
-  TY_FLOAT,
-  TY_DOUBLE,
-  TY_LDOUBLE,
-  TY_ENUM,
-  TY_PTR,
-  TY_FUNC,
-  TY_ARRAY,
-  TY_VLA, /* variable-length array */
-  TY_STRUCT,
-  TY_UNION,
-} cpp_type_kind;
-
 struct cpp_type {
   cpp_type_kind kind;
-  size_t size;             /* sizeof() value */
-  size_t align;            /* alignment */
-  bool is_unsigned;        /* unsigned or signed */
-  bool is_atomic;          /* true if _Atomic */
-  struct cpp_type* origin; /* for type compatibility check */
+  size_t size;      /* sizeof() value */
+  size_t align;     /* alignment */
+  bool is_unsigned; /* unsigned or signed */
+  bool is_atomic;   /* true if _Atomic */
+  cpp_type* origin; /* for type compatibility check */
 
-  /* Pointer-to or array-of type. We intentionally use the same member*/
-  /* to represent pointer/array duality in C.*/
-  /**/
-  /* In many contexts in which a pointer is expected, we examine this*/
-  /* member instead of "kind" member to determine whether a type is a*/
-  /* pointer or not. That means in many contexts "array of T" is*/
-  /* naturally handled as if it were "pointer to T", as required by*/
-  /* the C spec.*/
-  struct cpp_type* base;
+  /* Pointer-to or array-of type. We intentionally use the same member
+     to represent pointer/array duality in C. */
+
+  /* In many contexts in which a pointer is expected, we examine this
+     member instead of "kind" member to determine whether a type is a
+     pointer or not. That means in many contexts "array of T" is
+     naturally handled as if it were "pointer to T", as required by
+     the C spec.*/
+  cpp_type* base;
 
   /* Declaration*/
-  struct cpp_token* name;
-  struct cpp_token* name_pos;
+  cpp_token* name;
+  cpp_token* name_pos;
 
   /* Array*/
   size_t array_len;
 
   /* Variable-length array*/
-  struct cpp_node* vla_len; /* # of elements */
+  cpp_node* vla_len;        /* # of elements */
   struct cpp_obj* vla_size; /* sizeof() value */
 
   /* Struct*/
@@ -133,44 +105,218 @@ struct cpp_type {
   bool is_packed;
 
   /* Function type*/
-  struct cpp_type* return_ty;
-  struct cpp_type* params;
+  cpp_type* return_ty;
+  cpp_type* params;
   bool is_variadic;
-  struct cpp_type* next;
+  cpp_type* next;
 };
 
 struct cpp_macro_param {
-  struct cpp_macro_param* next;
+  cpp_macro_param* next;
   char* name;
 };
 
 struct cpp_macro_arg {
-  struct cpp_macro_arg* next;
+  cpp_macro_arg* next;
   char* name;
   bool is_va_args;
-  struct cpp_token* tok;
+  cpp_token* tok;
 };
 
 struct cpp_macro {
   char* name;
   bool is_objlike; /* Object-like or function-like */
-  struct cpp_macro_param* params;
+  cpp_macro_param* params;
   char* va_args_name;
-  struct cpp_token* body;
+  cpp_token* body;
   macro_handler_fn* handler;
 };
 
 /* `#if` can be nested, so we use a stack to manage nested `#if`s.*/
 struct cpp_cond_incl {
-  struct cpp_cond_incl* next;
+  cpp_cond_incl* next;
   enum { IN_THEN, IN_ELIF, IN_ELSE } ctx;
-  struct cpp_token* tok;
+  cpp_token* tok;
   bool included;
 };
 
 struct cpp_hideset {
-  struct cpp_hideset* next;
+  cpp_hideset* next;
   char* name;
+};
+
+/* AST node */
+typedef enum {
+  ND_NULL_EXPR, /* Do nothing */
+  ND_ADD,       /* + */
+  ND_SUB,       /* - */
+  ND_MUL,       /* * */
+  ND_DIV,       /* / */
+  ND_NEG,       /* unary - */
+  ND_MOD,       /* % */
+  ND_BITAND,    /* & */
+  ND_BITOR,     /* | */
+  ND_BITXOR,    /* ^ */
+  ND_SHL,       /* << */
+  ND_SHR,       /* >> */
+  ND_EQ,        /* == */
+  ND_NE,        /* != */
+  ND_LT,        /* < */
+  ND_LE,        /* <= */
+  ND_ASSIGN,    /* = */
+  ND_COND,      /* ?: */
+  ND_COMMA,     /* , */
+  ND_MEMBER,    /* . (struct member access) */
+  ND_ADDR,      /* unary & */
+  ND_DEREF,     /* unary * */
+  ND_NOT,       /* ! */
+  ND_BITNOT,    /* ~ */
+  ND_LOGAND,    /* && */
+  ND_LOGOR,     /* || */
+  ND_RETURN,    /* "return" */
+  ND_IF,        /* "if" */
+  ND_FOR,       /* "for" or "while" */
+  ND_DO,        /* "do" */
+  ND_SWITCH,    /* "switch" */
+  ND_CASE,      /* "case" */
+  ND_BLOCK,     /* { ... } */
+  ND_GOTO,      /* "goto" */
+  ND_GOTO_EXPR, /* "goto" labels-as-values */
+  ND_LABEL,     /* Labeled statement */
+  ND_LABEL_VAL, /* [GNU] Labels-as-values */
+  ND_FUNCALL,   /* Function call */
+  ND_EXPR_STMT, /* Expression statement */
+  ND_STMT_EXPR, /* Statement expression */
+  ND_VAR,       /* Variable */
+  ND_VLA_PTR,   /* VLA designator */
+  ND_NUM,       /* Integer */
+  ND_CAST,      /* cpp_type cast */
+  ND_MEMZERO,   /* Zero-clear a stack variable */
+  ND_ASM,       /* "asm" */
+  ND_CAS,       /* Atomic compare-and-swap */
+  ND_EXCH,      /* Atomic exchange */
+} cpp_node_kind;
+
+/* AST node type */
+struct cpp_node {
+  cpp_node_kind kind; /* cpp_node kind */
+  cpp_node* next;     /* Next node */
+  cpp_type* ty;       /* cpp_type, e.g. int or pointer to int */
+  cpp_token* tok;     /* Representative token */
+
+  cpp_node* lhs; /* Left-hand side */
+  cpp_node* rhs; /* Right-hand side */
+
+  /* "if" or "for" statement */
+  cpp_node* cond;
+  cpp_node* then;
+  cpp_node* els;
+  cpp_node* init;
+  cpp_node* inc;
+
+  /* "break" and "continue" labels */
+  char* brk_label;
+  char* cont_label;
+
+  /* Block or statement expression */
+  cpp_node* body;
+
+  /* Struct member access */
+  struct cpp_member* member;
+
+  /* Function call */
+  cpp_type* func_ty;
+  cpp_node* args;
+  bool pass_by_stack;
+  struct cpp_obj* ret_buffer;
+
+  /* Goto or labeled statement, or labels-as-values */
+  char* label;
+  char* unique_label;
+  cpp_node* goto_next;
+
+  /* Switch */
+  cpp_node* case_next;
+  cpp_node* default_case;
+
+  /* Case */
+  long begin;
+  long end;
+
+  /* "asm" string literal */
+  char* asm_str;
+
+  /* Atomic compare-and-swap */
+  cpp_node* cas_addr;
+  cpp_node* cas_old;
+  cpp_node* cas_new;
+
+  /* Atomic op= operators */
+  struct cpp_obj* atomic_addr;
+  cpp_node* atomic_expr;
+
+  /* Variable */
+  struct cpp_obj* var;
+
+  /* Numeric literal */
+  int64_t val;
+  long double fval;
+};
+
+struct cpp_obj {
+  cpp_obj* next;
+  char* name;     // Variable name
+  cpp_type* ty;   // cpp_type
+  cpp_token* tok; // representative token
+  bool is_local;  // local or global/function
+  int align;      // alignment
+
+  // Local variable
+  int offset;
+
+  // Global variable or function
+  bool is_function;
+  bool is_definition;
+  bool is_static;
+
+  // Global variable
+  bool is_tentative;
+  bool is_tls;
+  char* init_data;
+  struct cpp_relocation* rel;
+
+  // Function
+  bool is_inline;
+  cpp_obj* params;
+  cpp_node* body;
+  cpp_obj* locals;
+  cpp_obj* va_area;
+  cpp_obj* alloca_bottom;
+  int stack_size;
+
+  // Static inline function
+  bool is_live;
+  bool is_root;
+  strarray refs;
+};
+
+// Scope for local variables, global variables, typedefs
+// or enum constants
+typedef struct cpp_var_scope {
+  cpp_obj* var;
+  cpp_type* type_def;
+  cpp_type* enum_ty;
+  int enum_val;
+} cpp_var_scope;
+
+// Represents a block scope.
+struct cpp_scope {
+  cpp_scope* next;
+
+  // C has two block scopes; one is for variables/typedefs and
+  // the other is for struct/union/enum tags.
+  hashmap vars;
+  hashmap tags;
 };
 
 extern hashmap cpp_macros;
@@ -182,23 +328,31 @@ extern char* cpp_base_file;
 extern cpp_file** cpp_input_files;
 extern cpp_file* cpp_current_file;
 extern bool cpp_at_bol, cpp_has_space;
+extern cpp_obj* locals;
 
-extern cpp_type *cpp_ty_void, *cpp_ty_bool, *cpp_ty_char, *cpp_ty_short, *cpp_ty_int, *cpp_ty_long, *cpp_ty_uchar, *cpp_ty_ushort, *cpp_ty_uint, *cpp_ty_ulong, *cpp_ty_float, *cpp_ty_double, *cpp_ty_ldouble;
+extern cpp_type *cpp_ty_void, *cpp_ty_bool, *cpp_ty_char, *cpp_ty_short, *cpp_ty_int, *cpp_ty_long, *cpp_ty_uchar, *cpp_ty_ushort, *cpp_ty_uint, *cpp_ty_ulong, *cpp_ty_float,
+    *cpp_ty_double, *cpp_ty_ldouble;
 
 cpp_token* cpp_preprocess2(cpp_token* tok);
-cpp_macro* cpp_find_macro(cpp_token* tok);
+cpp_macro* cpp_macro_find(cpp_token* tok);
 void cpp_verror_at(char*, char*, int, char*, char*, va_list ap);
-cpp_type* cpp_new_type(cpp_type_kind, int, int);
+cpp_type* cpp_type_new(cpp_type_kind, int, int);
 size_t cpp_display_width(char*, size_t);
 char* cpp_read_file(char*);
 
 static inline bool
-cpp_in_range(uint32* range, uint32 c) {
+cpp_in_range(const uint32* range, uint32 c) {
   for(size_t i = 0; range[i] != -1; i += 2)
     if(range[i] <= c && c <= range[i + 1])
       return true;
 
   return false;
+}
+
+static inline cpp_file*
+cpp_file_dup(cpp_file* file) {
+  ++file->ref_count;
+  return file;
 }
 
 /* Takes a printf-style cpp_format string and returns a formatted string.*/
@@ -242,9 +396,14 @@ cpp_consume(cpp_token** rest, cpp_token* tok, char* str) {
   return false;
 }
 
+static inline bool
+cpp_is_hash(cpp_token* tok) {
+  return tok->at_bol && cpp_equal(tok, "#");
+}
+
 static inline cpp_type*
 cpp_array_of(cpp_type* base, int len) {
-  cpp_type* ty = cpp_new_type(TY_ARRAY, base->size * len, base->align);
+  cpp_type* ty = cpp_type_new(TY_ARRAY, base->size * len, base->align);
 
   ty->base = base;
   ty->array_len = len;
@@ -257,7 +416,7 @@ cpp_is_keyword(cpp_token* tok) {
   static hashmap map;
 
   if(map.capacity == 0) {
-    static char* kw[] = {
+    static const char* const kw[] = {
         "return",    "if",       "else",   "for",    "while",    "int",           "sizeof",   "char",     "struct",        "union",    "short",      "long",
         "void",      "typedef",  "_Bool",  "enum",   "static",   "goto",          "break",    "continue", "switch",        "case",     "default",    "extern",
         "_Alignof",  "_Alignas", "do",     "signed", "unsigned", "const",         "volatile", "auto",     "register",      "restrict", "__restrict", "__restrict__",
@@ -321,17 +480,6 @@ cpp_remove_backslash_newline(char* p) {
   p[j] = '\0';
 }
 
-static inline int
-cpp_from_hex(char c) {
-  if('0' <= c && c <= '9')
-    return c - '0';
-
-  if('a' <= c && c <= 'f')
-    return c - 'a' + 10;
-
-  return c - 'A' + 10;
-}
-
 static inline wchar_t
 cpp_read_universal_char(char* p, size_t len) {
   wchar_t c = 0;
@@ -340,7 +488,7 @@ cpp_read_universal_char(char* p, size_t len) {
     if(!isxdigit(p[i]))
       return 0;
 
-    c = (c << 4) | cpp_from_hex(p[i]);
+    c = (c << 4) | scan_fromhex(p[i]);
   }
 
   return c;
@@ -427,7 +575,7 @@ cpp_convert_tokens(cpp_token* tok) {
   }
 }
 
-// Initialize line info for all tokens.
+/* Initialize line info for all tokens. */
 static inline void
 cpp_add_line_numbers(cpp_token* tok) {
   char* p = cpp_current_file->contents;
@@ -443,23 +591,6 @@ cpp_add_line_numbers(cpp_token* tok) {
       n++;
 
   } while(*p++);
-}
-
-/* Create a new token. */
-static inline cpp_token*
-cpp_new_token(cpp_token_kind kind, char* start, char* end) {
-  cpp_token* tok = alloc_zero(sizeof(cpp_token));
-
-  tok->kind = kind;
-  tok->loc = start;
-  tok->len = end - start;
-  tok->file = cpp_current_file;
-  tok->filename = cpp_current_file->display_name;
-  tok->cpp_at_bol = cpp_at_bol;
-  tok->cpp_has_space = cpp_has_space;
-
-  cpp_at_bol = cpp_has_space = false;
-  return tok;
 }
 
 static inline int
@@ -489,7 +620,7 @@ cpp_read_escaped_char(char** new_pos, char* p) {
     int c = 0;
 
     for(; isxdigit(*p); p++)
-      c = (c << 4) + cpp_from_hex(*p);
+      c = (c << 4) + scan_fromhex(*p);
 
     *new_pos = p;
     return c;
@@ -551,7 +682,7 @@ cpp_read_string_literal(char* start, char* quote) {
       buf[len++] = *p++;
   }
 
-  cpp_token* tok = cpp_new_token(TK_STR, start, end + 1);
+  cpp_token* tok = cpp_token_new(TK_STR, start, end + 1);
   tok->ty = cpp_array_of(cpp_ty_char, len + 1);
   tok->str = buf;
   return tok;
@@ -576,25 +707,25 @@ cpp_read_char_literal(char* start, char* quote, cpp_type* ty) {
   if(!p[n])
     cpp_error_at(p, "unclosed char literal");
 
-  cpp_token* tok = cpp_new_token(TK_NUM, start, (p + n) + 1);
+  cpp_token* tok = cpp_token_new(TK_NUM, start, (p + n) + 1);
   tok->val = c;
   tok->ty = ty;
   return tok;
 }
 
-// [https://www.sigbus.info/n1570#D] C11 allows not only ASCII but
-// some multibyte characters in certan Unicode ranges to be used in an
-// identifier.
-//
-// This function returns true if a given character is acceptable as
-// the first character of an identifier.
-//
-// For example, ¾ (U+00BE) is a valid identifier because characters in
-// 0x00BE-0x00C0 are allowed, while neither ⟘ (U+27D8) nor '　'
-// (U+3000, full-width space) are allowed because they are out of range.
+/* [https://www.sigbus.info/n1570#D] C11 allows not only ASCII but
+   some multibyte characters in certan Unicode ranges to be used in an
+   identifier.
+
+   This function returns true if a given character is acceptable as
+   the first character of an identifier.
+
+   For example, ¾ (U+00BE) is a valid identifier because characters in
+   0x00BE-0x00C0 are allowed, while neither ⟘ (U+27D8) nor '　'
+   (U+3000, full-width space) are allowed because they are out of range. */
 static inline bool
 cpp_is_ident1(uint32 c) {
-  static uint32 range[] = {
+  static const uint32 range[] = {
       '_',     '_',     'a',     'z',     'A',     'Z',     '$',     '$',     0x00A8,  0x00A8,  0x00AA,  0x00AA,  0x00AD,  0x00AD,  0x00AF,  0x00AF,  0x00B2,  0x00B5,
       0x00B7,  0x00BA,  0x00BC,  0x00BE,  0x00C0,  0x00D6,  0x00D8,  0x00F6,  0x00F8,  0x00FF,  0x0100,  0x02FF,  0x0370,  0x167F,  0x1681,  0x180D,  0x180F,  0x1DBF,
       0x1E00,  0x1FFF,  0x200B,  0x200D,  0x202A,  0x202E,  0x203F,  0x2040,  0x2054,  0x2054,  0x2060,  0x206F,  0x2070,  0x20CF,  0x2100,  0x218F,  0x2460,  0x24FF,
@@ -606,11 +737,11 @@ cpp_is_ident1(uint32 c) {
   return cpp_in_range(range, c);
 }
 
-// Returns true if a given character is acceptable as a non-first
-// character of an identifier.
+/* Returns true if a given character is acceptable as a non-first
+   character of an identifier. */
 static inline bool
 cpp_is_ident2(uint32 c) {
-  static uint32 range[] = {
+  static const uint32 range[] = {
       '0',
       '9',
       '$',
@@ -641,20 +772,22 @@ cpp_read_ident(char* start) {
   if(!cpp_is_ident1(c))
     return 0;
 
-  for(;;) {
+  for(; *p;) {
     char* q = p + u8_to_wc(&c, p);
 
     if(!cpp_is_ident2(c))
-      return p - start;
+      break;
 
     p = q;
   }
+
+  return p - start;
 }
 
 /* Read a punctuator token from p and returns its length. */
 static inline size_t
 cpp_read_punct(char* p) {
-  static char* kw[] = {
+  static const char* const kw[] = {
       "<<=", ">>=", "...", "==", "!=", "<=", ">=", "->", "+=", "-=", "*=", "/=", "++", "--", "%=", "&=", "|=", "^=", "&&", "||", "<<", ">>", "##",
   };
 

@@ -13,6 +13,7 @@ scan_hexdump(const char* src, char* dest, size_t* destlen) {
 
     if(j < 0)
       break;
+
     k = j << 4;
     j = scan_fromhex(s[i + 1]);
 
@@ -21,12 +22,14 @@ scan_hexdump(const char* src, char* dest, size_t* destlen) {
 
     if(dest)
       dest[written] = k | j;
+
     ++i;
     ++written;
   }
 
   if(destlen)
     *destlen = written;
+
   return i;
 }
 

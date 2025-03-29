@@ -1,17 +1,20 @@
 #include "../scan.h"
 
 int
-scan_fromhex(unsigned char c) {
+scan_fromhex(int c) {
   c -= '0';
 
   if(c <= 9)
     return c;
+
   c &= ~0x20;
   c -= 'A' - '0';
 
   if(c < 6)
     return c + 10;
+
   return -1;
+
   /* more readable but creates worse code:
 
     if(c>='0' && c<='9')
@@ -20,6 +23,7 @@ scan_fromhex(unsigned char c) {
       return c-'A'+10;
     else if(c>='a' && c<='f')
       return c-'a'+10;
+
     return -1;
   */
 }

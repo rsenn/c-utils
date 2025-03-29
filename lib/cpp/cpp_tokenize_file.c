@@ -2,7 +2,7 @@
 #include "../byte.h"
 #include "../alloc.h"
 
-cpp_file **cpp_input_files = 0, *cpp_current_file = 0;
+cpp_file** cpp_input_files = 0;
 
 cpp_token*
 cpp_tokenize_file(char* path) {
@@ -24,7 +24,7 @@ cpp_tokenize_file(char* path) {
 
   /* Save the filename for assembler .file directive. */
   static int file_no;
-  cpp_file* file = cpp_new_file(path, file_no + 1, p);
+  cpp_file* file = cpp_file_new(path, file_no + 1, p);
 
   /* Save the filename for assembler .file directive. */
   alloc_re(&cpp_input_files, 0, sizeof(char*) * (file_no + 2));

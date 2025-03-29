@@ -7,17 +7,12 @@ if(BUILD_BZIP2)
   if(NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/bzip2/blocksort.c")
     if(NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/bzip2-${BZIP2_VERSION}.tar.gz")
       file(REMOVE_RECURSE "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/bzip2")
-      file(
-        DOWNLOAD
-        "https://sourceware.org/pub/bzip2/bzip2-${BZIP2_VERSION}.tar.gz"
-        "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/bzip2-${BZIP2_VERSION}.tar.gz"
-        SHOW_PROGRESS)
+      file(DOWNLOAD "https://sourceware.org/pub/bzip2/bzip2-${BZIP2_VERSION}.tar.gz"
+           "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/bzip2-${BZIP2_VERSION}.tar.gz" SHOW_PROGRESS)
     endif()
 
-    exec_program(
-      "${TAR}" ARGS
-      -C "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty" -xzf
-      "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/bzip2-${BZIP2_VERSION}.tar.gz")
+    exec_program("${TAR}" ARGS -C "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty" -xzf
+                               "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/bzip2-${BZIP2_VERSION}.tar.gz")
 
     file(RENAME "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/bzip2-${BZIP2_VERSION}"
          "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/bzip2")
@@ -29,23 +24,16 @@ if(BUILD_BZIP2)
   include("${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/bzip2.cmake")
 
   set(LIBBZ2_SOURCES
-      3rdparty/bzip2/blocksort.c
-      3rdparty/bzip2/bzlib.c
-      3rdparty/bzip2/compress.c
-      3rdparty/bzip2/crctable.c
-      3rdparty/bzip2/decompress.c
-      3rdparty/bzip2/huffman.c
-      3rdparty/bzip2/randtable.c)
+      3rdparty/bzip2/blocksort.c 3rdparty/bzip2/bzlib.c 3rdparty/bzip2/compress.c 3rdparty/bzip2/crctable.c
+      3rdparty/bzip2/decompress.c 3rdparty/bzip2/huffman.c 3rdparty/bzip2/randtable.c)
   add_library(bz2 ${LIBBZ2_SOURCES})
-  set_target_properties(
-    bz2 PROPERTIES ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/bzip2"
-                   LIBRARY_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/bzip2")
+  set_target_properties(bz2 PROPERTIES ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/bzip2"
+                                       LIBRARY_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/bzip2")
 
   set(BZIP2_LIBRARY_DEBUG bz2 CACHE FILEPATH "")
   set(BZIP2_LIBRARY_RELEASE bz2 CACHE FILEPATH "")
   set(BZIP2_LIBRARY bz2 CACHE FILEPATH "")
-  set(BZIP2_LIBRARY_DIR "${CMAKE_CURRENT_BINARY_DIR}/bzip2"
-      CACHE PATH "BZip2 library directory")
+  set(BZIP2_LIBRARY_DIR "${CMAKE_CURRENT_BINARY_DIR}/bzip2" CACHE PATH "BZip2 library directory")
   set(BZIP2_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/3rdparty/bzip2" CACHE PATH "")
 
   link_directories(BEFORE "${BZIP2_LIBRARY_DIR}")

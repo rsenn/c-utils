@@ -7,8 +7,7 @@ file(
 int main() {
   char* x = alloca(1024);
 }")
-try_compile(HAVE_ALLOCA "${CMAKE_CURRENT_BINARY_DIR}"
-            SOURCES "${CMAKE_CURRENT_BINARY_DIR}/try_alloca.c")
+try_compile(HAVE_ALLOCA "${CMAKE_CURRENT_BINARY_DIR}" SOURCES "${CMAKE_CURRENT_BINARY_DIR}/try_alloca.c")
 
 if(HAVE_ALLOCA)
   message("Checking for alloca - found")
