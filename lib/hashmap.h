@@ -15,7 +15,7 @@ extern "C" {
 #endif
 
 typedef struct {
-  const char* key;
+  char* key;
   size_t keylen;
   void* val;
 } hashentry;
@@ -34,7 +34,6 @@ void hashmap_delete(hashmap*, const char*);
 void* hashmap_get2(hashmap*, const char*, size_t);
 void* hashmap_get(hashmap*, const char*);
 hashentry* hashmap_get_entry(hashmap*, const char*, size_t);
-hashentry* hashmap_get_or_insert_entry(hashmap*, const char*, size_t);
 bool hashmap_match(hashentry*, const char*, size_t);
 void hashmap_put2(hashmap*, const char*, size_t, void*);
 void hashmap_put(hashmap*, const char*, void*);

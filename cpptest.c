@@ -28,10 +28,13 @@ int
 main(int argc, char** argv) {
   int ret, c, index = 0;
   char *tmp, *fn;
+  int no_process = 0, no_line = 0;
   struct unix_longopt opts[] = {
       {"help", 0, NULL, 'h'},
       {"debug", 0, NULL, 'd'},
       {"output", 0, NULL, 'o'},
+      {"no-process", 1, &no_process, 'P'},
+      {"no-line", 1, &no_line, 'L'},
       {0, 0, 0, 0},
   };
 
@@ -39,7 +42,7 @@ main(int argc, char** argv) {
 
   errmsg_iam(str_basename(argv[0]));
 
-  while((c = unix_getopt_long(argc, argv, "D:I:o:dh", opts, &index)) != -1) {
+  while((c = unix_getopt_long(argc, argv, "D:I:o:dhPL", opts, &index)) != -1) {
     switch(c) {
       case 'I': {
         strarray_push(&cpp_include_paths, unix_optarg);
@@ -73,6 +76,16 @@ main(int argc, char** argv) {
         break;
       }
 
+      case 'P': {
+        no_process = 1;
+        break;
+      }
+
+      case 'L': {
+        no_line = 1;
+        break;
+      }
+
       case 'h':
       default: {
         return usage(argv[0]);
@@ -98,13 +111,13 @@ main(int argc, char** argv) {
 
   cpp_init_macros();
 
-  cpp_token *t, *tok2 = cpp_preprocess(tok);
+  cpp_token* tok2 = no_process ? tok : cpp_preprocess(tok);
 
   if(opt_dump)
-    for(t = tok2; t; t = t->next)
+    for(cpp_token* t = tok2; t; t = t->next)
       cpp_token_dump(buffer_2, t);
 
-  cpp_print_tokens(out, tok2, true);
+  cpp_print_tokens(out, tok2, !(no_line || no_process));
 
   return !tok2;
 }

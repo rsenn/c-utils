@@ -22,7 +22,6 @@ typedef struct cpp_token cpp_token;
 typedef struct cpp_file cpp_file;
 typedef struct cpp_macro_param cpp_macro_param;
 typedef struct cpp_macro_arg cpp_macro_arg;
-typedef cpp_token* macro_handler_fn(cpp_token*);
 typedef struct cpp_macro cpp_macro;
 typedef struct cpp_cond_incl cpp_cond_incl;
 typedef struct cpp_hideset cpp_hideset;
@@ -69,7 +68,6 @@ typedef enum {
   TY_UNION,
 } cpp_type_kind;
 
-cpp_macro* cpp_add_builtin(char*, macro_handler_fn*);
 int64 cpp_const_expr(cpp_token**, cpp_token*);
 bool cpp_convert_int(cpp_token*);
 cpp_token* cpp_copy_line(cpp_token**, cpp_token*);

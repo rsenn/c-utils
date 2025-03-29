@@ -65,7 +65,7 @@ struct cpp_token {
   int line_no;          /* Line number */
   int line_delta;       /* Line number */
   bool at_bol;          /* True if this token is at beginning of line */
-  bool has_space;       /* True if this token follows a space character */
+  int has_space;        /* True if this token follows a space character */
   cpp_hideset* hideset; /* For macro expansion */
   cpp_token* origin;    /* If this is expanded from a macro, the original token */
 };
@@ -122,6 +122,7 @@ struct cpp_macro_arg {
   bool is_va_args;
   cpp_token* tok;
 };
+typedef cpp_token* macro_handler_fn(cpp_token*);
 
 struct cpp_macro {
   char* name;
@@ -327,7 +328,7 @@ extern strarray cpp_include_paths;
 extern char* cpp_base_file;
 extern cpp_file** cpp_input_files;
 extern cpp_file* cpp_current_file;
-extern bool cpp_at_bol, cpp_has_space;
+extern int cpp_at_bol, cpp_has_space;
 extern cpp_obj* locals;
 
 extern cpp_type *cpp_ty_void, *cpp_ty_bool, *cpp_ty_char, *cpp_ty_short, *cpp_ty_int, *cpp_ty_long, *cpp_ty_uchar, *cpp_ty_ushort, *cpp_ty_uint, *cpp_ty_ulong, *cpp_ty_float,
@@ -339,6 +340,7 @@ void cpp_verror_at(char*, char*, int, char*, char*, va_list ap);
 cpp_type* cpp_type_new(cpp_type_kind, int, int);
 size_t cpp_display_width(char*, size_t);
 char* cpp_read_file(char*);
+cpp_macro* cpp_add_builtin(char*, macro_handler_fn*);
 
 static inline bool
 cpp_in_range(const uint32* range, uint32 c) {

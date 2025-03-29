@@ -2,8 +2,26 @@
 #include "../str.h"
 #include <ctype.h>
 
-bool cpp_at_bol = false, cpp_has_space = false;
+int cpp_at_bol = 0, cpp_has_space = 0;
 cpp_file* cpp_current_file = 0;
+
+/* Initialize line info for all tokens. */
+static void
+add_line_numbers(cpp_token* tok) {
+  char* p = cpp_current_file->contents;
+  size_t n = 1;
+
+  do {
+    if(p == tok->loc) {
+      tok->line_no = n;
+      tok = tok->next;
+    }
+
+    if(*p == '\n')
+      n++;
+
+  } while(*p++);
+}
 
 /* Tokenize a given string and returns new tokens. */
 cpp_token*
@@ -14,17 +32,19 @@ cpp_tokenize(cpp_file* file) {
   cpp_token* cur = &head;
 
   cpp_at_bol = true;
-  cpp_has_space = false;
+  cpp_has_space = 0;
 
   while(*p) {
     /* Skip line comments. */
     if(str_start(p, "//")) {
+      char* q = p;
+
       p += 2;
 
       while(*p != '\n')
         p++;
 
-      cpp_has_space = true;
+      cpp_has_space += p - q;
       continue;
     }
 
@@ -36,7 +56,7 @@ cpp_tokenize(cpp_file* file) {
         cpp_error_at(p, "unclosed block comment");
 
       p += q + 2 + 2;
-      cpp_has_space = true;
+      cpp_has_space += q + 2 + 2;
       continue;
     }
 
@@ -44,14 +64,14 @@ cpp_tokenize(cpp_file* file) {
     if(*p == '\n') {
       p++;
       cpp_at_bol = true;
-      cpp_has_space = false;
+      cpp_has_space++;
       continue;
     }
 
     /* Skip whitespace characters. */
     if(isspace(*p)) {
       p++;
-      cpp_has_space = true;
+      cpp_has_space++;
       continue;
     }
 
@@ -159,7 +179,7 @@ cpp_tokenize(cpp_file* file) {
   }
 
   cur = cur->next = cpp_token_new(TK_EOF, p, p);
-  cpp_add_line_numbers(head.next);
+  add_line_numbers(head.next);
   return head.next;
 }
 

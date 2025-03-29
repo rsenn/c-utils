@@ -165,7 +165,8 @@ cpp_preprocess2(cpp_token* tok) {
       if(!cond_incl)
         cpp_error_tok(start, "stray #endif");
 
-      pop_cond_incl();
+      cond_incl = cond_incl->next;
+      //  pop_cond_incl();
       tok = cpp_skip_line(tok->next);
       continue;
     }
@@ -223,7 +224,7 @@ include_file(cpp_token* tok, char* path, cpp_token* filename_tok) {
   buffer_putm_internal(buffer_2, "include_file '", path, "'", tok->file ? " from '" : 0, tok->file ? tok->file->name : 0, "'", 0);
   buffer_putnlflush(buffer_2);
 #endif
-  
+
   /* Check for "#pragma once" */
   if(hashmap_get(&cpp_pragma_once, path))
     return tok;

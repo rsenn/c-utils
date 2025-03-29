@@ -35,9 +35,11 @@ cpp_read_file(char* path) {
     return sa.s;
   }
 
+#ifdef DEBUG_OUTPUT
   buffer_puts(buffer_2, "file size: ");
   buffer_putlong(buffer_2, size);
   buffer_putnlflush(buffer_2);
+#endif
 
   seek_begin(fd);
   char* s = alloc(size + 1);
