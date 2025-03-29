@@ -4,8 +4,12 @@
 #include "../seek.h"
 #include "../errmsg.h"
 #include "../alloc.h"
-#include "../unistd.h"
 #include <stdio.h>
+#if WINDOWS_NATIVE
+#include <io.h>
+#else
+#include <unistd.h>
+#endif
 
 /* Returns the contents of a given file. */
 char*

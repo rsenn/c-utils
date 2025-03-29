@@ -337,7 +337,6 @@ extern cpp_type *cpp_ty_void, *cpp_ty_bool, *cpp_ty_char, *cpp_ty_short, *cpp_ty
     *cpp_ty_double, *cpp_ty_ldouble;
 
 cpp_token* cpp_preprocess2(cpp_token* tok);
-cpp_macro* cpp_macro_find(cpp_token* tok);
 void cpp_verror_at(char*, char*, int, char*, char*, va_list ap);
 cpp_type* cpp_type_new(cpp_type_kind, int, int);
 size_t cpp_display_width(char*, size_t);
@@ -372,6 +371,14 @@ cpp_format(char* fmt, ...) {
   va_end(ap);
   fclose(out);
   return buf;
+}
+
+static inline cpp_macro*
+cpp_macro_find(cpp_token* tok) {
+  if(tok->kind != TK_IDENT)
+    return NULL;
+
+  return hashmap_get2(&cpp_macros, tok->loc, tok->len);
 }
 
 /* Consumes the current token if it matches `op`.*/

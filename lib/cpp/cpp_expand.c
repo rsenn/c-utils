@@ -10,6 +10,9 @@ cpp_expand(cpp_token** rest, cpp_token* tok) {
 
   cpp_macro* m;
 
+  if(tok->kind != TK_IDENT) 
+    return false;
+
   if(!(m = cpp_macro_find(tok)))
     return false;
 

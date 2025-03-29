@@ -91,7 +91,6 @@ char* cpp_join_tokens(cpp_token*, cpp_token*);
 cpp_macro* cpp_macro_add(char*, bool, cpp_token*);
 void cpp_define(char*, char*);
 bool cpp_expand(cpp_token**, cpp_token*);
-cpp_macro* cpp_macro_find(cpp_token*);
 void cpp_undefine(char*);
 cpp_token* cpp_new_num_token(int, cpp_token*);
 cpp_token* cpp_new_str_token(char*, cpp_token*);

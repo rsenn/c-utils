@@ -1,7 +1,6 @@
 #include "../cpp.h"
 #include "../cpp_internal.h"
 #include "../str.h"
-#include <alloca.h>
 
 void
 cpp_define(char* name, char* buf) {

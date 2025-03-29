@@ -30,14 +30,6 @@ cpp_macro_add(char* name, bool is_objlike, cpp_token* body) {
   return m;
 }
 
-cpp_macro*
-cpp_macro_find(cpp_token* tok) {
-  if(tok->kind != TK_IDENT)
-    return NULL;
-
-  return hashmap_get2(&cpp_macros, tok->loc, tok->len);
-}
-
 void
 cpp_undefine(char* name) {
   /*cpp_macro* m = hashmap_get(&cpp_macros, name);
