@@ -34,7 +34,7 @@ cpp_macro_find(cpp_token* tok) {
 }
 
 void
-cpp_macro_undef(char* name) {
+cpp_undefine(char* name) {
   cpp_macro* m = hashmap_get(&cpp_macros, name);
 
   if(m) {

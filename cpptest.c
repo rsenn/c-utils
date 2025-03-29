@@ -54,7 +54,7 @@ main(int argc, char** argv) {
         char* name = str_ndup(unix_optarg, namelen);
         char* value = unix_optarg[namelen] ? &unix_optarg[namelen + 1] : "";
 
-        cpp_macro_define(name, value);
+        cpp_define(name, value);
 
         alloc_free(name);
         break;
@@ -120,10 +120,10 @@ main(int argc, char** argv) {
   cpp_print_tokens(out, tok2, !(no_line || no_process));
 
 #ifndef test_x
-#define test_x(a,b,c) ((a) && (b) && (c))
+#define test_x(a, b, c) ((a) && (b) && (c))
 #endif
 
-#if test_x(1,1,1)
+#if test_x(1, 1, 1)
   printf("blah\n");
 #endif
 

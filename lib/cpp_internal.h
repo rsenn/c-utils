@@ -122,6 +122,7 @@ struct cpp_macro_arg {
   bool is_va_args;
   cpp_token* tok;
 };
+
 typedef cpp_token* macro_handler_fn(cpp_token*);
 
 struct cpp_macro {

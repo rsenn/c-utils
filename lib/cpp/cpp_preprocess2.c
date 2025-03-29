@@ -42,7 +42,7 @@ cpp_preprocess2(cpp_token* tok) {
 
   while(tok->kind != TK_EOF) {
     /* If it is a macro, expand it. */
-    if(cpp_macro_expand(&tok, tok))
+    if(cpp_expand(&tok, tok))
       continue;
 
     /* Pass through if it is not a "#". */
@@ -94,7 +94,7 @@ cpp_preprocess2(cpp_token* tok) {
       if(tok->kind != TK_IDENT)
         cpp_error_tok(tok, "macro name must be an identifier");
 
-      cpp_macro_undef(str_ndup(tok->loc, tok->len));
+      cpp_undefine(str_ndup(tok->loc, tok->len));
       tok = cpp_skip_line(tok->next);
       continue;
     }

@@ -11,6 +11,7 @@ cpp_read_macro_arg_one(cpp_token** rest, cpp_token* tok, bool read_rest) {
   for(;;) {
     if(level == 0 && cpp_equal(tok, ")"))
       break;
+
     if(level == 0 && !read_rest && cpp_equal(tok, ","))
       break;
 

@@ -11,13 +11,18 @@
 char*
 cpp_read_file(char* path) {
   fd_type fd;
+  seek_pos size;
 
-  if((fd = open_read(path)) < 0) {
-    errmsg_infosys("open", 0);
-    return 0;
+  if(str_equal(path, "-")) {
+    fd = 0;
+    size = -1;
+  } else {
+    if((fd = open_read(path)) < 0) {
+      errmsg_infosys("open", 0);
+      return 0;
+    }
+    size = seek_end(fd);
   }
-
-  seek_pos size = seek_end(fd);
 
   if(size < 0) {
     stralloc sa;

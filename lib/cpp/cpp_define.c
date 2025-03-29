@@ -1,9 +1,10 @@
 #include "../cpp.h"
 #include "../cpp_internal.h"
-#include "../alloc.h"
+#include "../str.h"
+#include <alloca.h>
 
 void
-cpp_macro_define(char* name, char* buf) {
+cpp_define(char* name, char* buf) {
   size_t nlen = str_len(name), blen = str_len(buf);
   char* b = alloca(nlen + 1 + blen + 1);
 
