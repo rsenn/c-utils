@@ -3,6 +3,7 @@
 #include "../io_internal.h"
 #include "../mmap.h"
 #include "../open.h"
+#include "../seek.h"
 
 #if WINDOWS_NATIVE
 #include <windows.h>
@@ -36,7 +37,7 @@ mmap_private_fd(fd_type fd, size_t* filesize) {
   char* map;
 
   if(fd >= 0) {
-    *filesize = lseek(fd, 0, SEEK_END);
+    *filesize = seek_end(fd);
     map = (char*)mmap(0, *filesize, PROT_READ | PROT_WRITE, MAP_PRIVATE, fd, 0);
 
     if(map == (char*)-1)

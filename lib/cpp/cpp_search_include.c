@@ -8,7 +8,9 @@ int cpp_include_next_idx = 0;
 
 char*
 cpp_search_include_next(char* filename) {
-  for(; cpp_include_next_idx < strarray_size(&cpp_include_paths); cpp_include_next_idx++) {
+  size_t num_include_paths = strarray_size(&cpp_include_paths);
+
+  for(; cpp_include_next_idx < num_include_paths; cpp_include_next_idx++) {
     char* path = cpp_format("%s/%s", strarray_AT(&cpp_include_paths, cpp_include_next_idx), filename);
 
     if(path_exists(path))
@@ -28,8 +30,10 @@ cpp_search_include_paths(char* filename) {
   if(cached)
     return cached;
 
+  size_t num_include_paths = strarray_size(&cpp_include_paths);
+
   /* Search a file from the include paths. */
-  for(int i = 0; i < strarray_size(&cpp_include_paths); i++) {
+  for(size_t i = 0; i < num_include_paths; i++) {
     char* path = cpp_format("%s/%s", strarray_AT(&cpp_include_paths, i), filename);
 
     if(!path_exists(path))

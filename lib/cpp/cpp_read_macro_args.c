@@ -24,7 +24,7 @@ cpp_read_macro_args(cpp_token** rest, cpp_token* tok, cpp_macro_param* params, c
 
     if(cpp_equal(tok, ")")) {
       arg = alloc_zero(sizeof(cpp_macro_arg));
-      arg->tok = cpp_new_eof(tok);
+      arg->tok = cpp_token_eof(tok);
     } else {
       if(pp != params)
         tok = cpp_skip(tok, ",");

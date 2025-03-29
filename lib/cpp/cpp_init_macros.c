@@ -1,5 +1,54 @@
 #include "../cpp.h"
 #include "../cpp_internal.h"
+#include <sys/stat.h>
+
+char* cpp_base_file = 0;
+
+static char* format_time(struct tm* tm);
+static char* format_date(struct tm* tm);
+
+static cpp_token*
+file_macro(cpp_token* tmpl) {
+  while(tmpl->origin)
+    tmpl = tmpl->origin;
+
+  return cpp_new_str_token(tmpl->file->display_name, tmpl);
+}
+
+static cpp_token*
+line_macro(cpp_token* tmpl) {
+  while(tmpl->origin)
+    tmpl = tmpl->origin;
+
+  int i = tmpl->line_no + tmpl->file->line_delta;
+  return cpp_new_num_token(i, tmpl);
+}
+
+/* __COUNTER__ is expanded to serial values starting from 0. */
+static cpp_token*
+counter_macro(cpp_token* tmpl) {
+  static int i = 0;
+  return cpp_new_num_token(i++, tmpl);
+}
+
+/* "Fri Jul 24 01:32:50 2020" */
+static cpp_token*
+timestamp_macro(cpp_token* tmpl) {
+  struct stat st;
+
+  if(stat(tmpl->file->name, &st) != 0)
+    return cpp_new_str_token("??? ??? ?? ??:??:?? ????", tmpl);
+
+  char buf[30];
+  ctime_r(&st.st_mtime, buf);
+  buf[24] = '\0';
+  return cpp_new_str_token(buf, tmpl);
+}
+
+static cpp_token*
+base_file_macro(cpp_token* tmpl) {
+  return cpp_new_str_token(cpp_base_file, tmpl);
+}
 
 void
 cpp_init_macros(void) {
@@ -44,6 +93,23 @@ cpp_init_macros(void) {
   cpp_macro_define("__x86_64__", "1");
   cpp_macro_define("linux", "1");
   cpp_macro_define("unix", "1");*/
+
+  cpp_add_builtin("__FILE__", file_macro);
+  cpp_add_builtin("__LINE__", line_macro);
+  cpp_add_builtin("__COUNTER__", counter_macro);
+  cpp_add_builtin("__TIMESTAMP__", timestamp_macro);
+  cpp_add_builtin("__BASE_FILE__", base_file_macro);
+
+  {
+    time_t now = time(NULL);
+    struct tm* tm = localtime(&now);
+    cpp_macro_define("__DATE__", format_date(tm));
+    cpp_macro_define("__TIME__", format_time(tm));
+  }
+}
+
+void
+cpp_define_gnu_macros(void) {
 
   cpp_macro_define("__amd64", "1");
   cpp_macro_define("__amd64__", "1");
@@ -444,17 +510,30 @@ cpp_init_macros(void) {
   cpp_macro_define("__WINT_WIDTH__", "32");
   cpp_macro_define("__x86_64", "1");
   cpp_macro_define("__x86_64__", "1");
+}
+/* __DATE__ is expanded to the current date, e.g. "May 17 2020". */
+static char*
+format_date(struct tm* tm) {
+  static char mon[][4] = {
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec",
+  };
 
-  cpp_add_builtin("__FILE__", cpp_file_macro);
-  cpp_add_builtin("__LINE__", cpp_line_macro);
-  cpp_add_builtin("__COUNTER__", cpp_counter_macro);
-  cpp_add_builtin("__TIMESTAMP__", cpp_timestamp_macro);
-  cpp_add_builtin("__BASE_FILE__", cpp_base_file_macro);
+  return cpp_format("\"%s %2d %d\"", mon[tm->tm_mon], tm->tm_mday, tm->tm_year + 1900);
+}
 
-  {
-    time_t now = time(NULL);
-    struct tm* tm = localtime(&now);
-    cpp_macro_define("__DATE__", cpp_format_date(tm));
-    cpp_macro_define("__TIME__", cpp_format_time(tm));
-  }
+/* __TIME__ is expanded to the current time, e.g. "13:34:03". */
+static char*
+format_time(struct tm* tm) {
+  return cpp_format("\"%02d:%02d:%02d\"", tm->tm_hour, tm->tm_min, tm->tm_sec);
 }

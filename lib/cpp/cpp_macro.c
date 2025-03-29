@@ -58,7 +58,7 @@ cpp_macro_expand(cpp_token** rest, cpp_token* tok) {
     for(cpp_token* t = body; t->kind != TK_EOF; t = t->next)
       t->origin = tok;
 
-    *rest = cpp_append(body, tok->next);
+    *rest = cpp_token_append(body, tok->next);
     (*rest)->at_bol = tok->at_bol;
     (*rest)->has_space = tok->has_space;
     return true;
@@ -88,7 +88,7 @@ cpp_macro_expand(cpp_token** rest, cpp_token* tok) {
   for(cpp_token* t = body; t->kind != TK_EOF; t = t->next)
     t->origin = macro_token;
 
-  *rest = cpp_append(body, tok->next);
+  *rest = cpp_token_append(body, tok->next);
   (*rest)->at_bol = macro_token->at_bol;
   (*rest)->has_space = macro_token->has_space;
   return true;

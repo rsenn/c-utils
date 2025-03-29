@@ -9,7 +9,6 @@ cpp_file* cpp_current_file = 0;
 cpp_token*
 cpp_tokenize(cpp_file* file) {
   cpp_current_file = file;
-
   char* p = file->contents;
   cpp_token head = {};
   cpp_token* cur = &head;

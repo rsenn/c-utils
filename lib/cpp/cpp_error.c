@@ -1,6 +1,23 @@
 #include "../cpp_internal.h"
 #include "../buffer.h"
+#include "../utf8.h"
 #include <stdio.h>
+
+/* Returns the number of columns needed to display a given
+   string in a fixed-width font. */
+static size_t
+display_width(char* p, size_t len) {
+  char *start = p, *end = p + len;
+  size_t w = 0;
+
+  while(p < end) {
+    wchar_t c;
+    p += u8_to_wc(&c, p);
+    w += wc_charwidth(c);
+  }
+
+  return w;
+}
 
 /* Reports an error message in the following format.
 
@@ -28,7 +45,7 @@ cpp_verror_at(char* filename, char* input, int line_no, char* loc, char* fmt, va
   buffer_putc(buffer_2, '\n');
 
   /* Show the error message. */
-  buffer_putnspace(buffer_2, cpp_display_width(line, loc - line) + indent);
+  buffer_putnspace(buffer_2, display_width(line, loc - line) + indent);
   buffer_puts(buffer_2, "^ ");
 
   {

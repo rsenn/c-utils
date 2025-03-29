@@ -11,6 +11,8 @@
 #include <sys/stat.h>
 #endif
 
+ssize_t fd_filesize(fd_type);
+
 char mmap_empty[] = {0};
 
 char*
@@ -32,12 +34,13 @@ mmap_read_fd(fd_type fd, size_t* filesize) {
   struct stat st;
   char* map = mmap_empty;
 
-  if(fstat(fd, &st) == 0 && (*filesize = st.st_size)) {
+  if((ssize_t)(*filesize = fd_filesize(fd)) >= 0) {
     map = (char*)mmap(0, *filesize, PROT_READ, MAP_SHARED, fd, 0);
 
     if(map == (char*)-1)
       map = 0;
   }
+
   return map;
 #endif
 }

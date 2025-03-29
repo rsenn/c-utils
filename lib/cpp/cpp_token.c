@@ -21,6 +21,18 @@ cpp_token_new(cpp_token_kind kind, char* start, char* end) {
 }
 
 cpp_token*
+cpp_token_eof(cpp_token* tok) {
+  cpp_token* t;
+
+  if((t = cpp_token_copy(tok))) {
+    t->kind = TK_EOF;
+    t->len = 0;
+  }
+
+  return t;
+}
+
+cpp_token*
 cpp_token_free(cpp_token* tok) {
   cpp_token* next = tok->next;
 
@@ -45,6 +57,22 @@ cpp_token_copy(cpp_token* tok) {
   }
 
   return t;
+}
+
+/* Append tok2 to the end of tok1. */
+cpp_token*
+cpp_token_append(cpp_token* tok1, cpp_token* tok2) {
+  if(tok1->kind == TK_EOF)
+    return tok2;
+
+  cpp_token head = {};
+  cpp_token* cur = &head;
+
+  for(; tok1->kind != TK_EOF; tok1 = tok1->next)
+    cur = cur->next = cpp_token_copy(tok1);
+
+  cur->next = tok2;
+  return head.next;
 }
 
 void

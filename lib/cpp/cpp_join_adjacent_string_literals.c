@@ -2,7 +2,23 @@
 #include "../cpp_internal.h"
 #include "../alloc.h"
 #include "../byte.h"
+#include "../str.h"
 #include <assert.h>
+
+static cpp_string_kind
+get_string_kind(cpp_token* tok) {
+  if(str_equal(tok->loc, "u8"))
+    return STR_UTF8;
+
+  switch(tok->loc[0]) {
+    case '"': return STR_NONE;
+    case 'u': return STR_UTF16;
+    case 'U': return STR_UTF32;
+    case 'L': return STR_WIDE;
+  }
+
+  assert(0);
+}
 
 /* Concatenate adjacent string literals into a single string literal
    as per the C spec. */
@@ -17,11 +33,11 @@ cpp_join_adjacent_string_literals(cpp_token* tok) {
       continue;
     }
 
-    cpp_string_kind kind = cpp_get_string_kind(tok1);
+    cpp_string_kind kind = get_string_kind(tok1);
     cpp_type* basety = tok1->ty->base;
 
     for(cpp_token* t = tok1->next; t->kind == TK_STR; t = t->next) {
-      cpp_string_kind k = cpp_get_string_kind(t);
+      cpp_string_kind k = get_string_kind(t);
 
       if(kind == STR_NONE) {
         kind = k;

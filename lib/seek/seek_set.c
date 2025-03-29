@@ -18,5 +18,6 @@ int
 seek_set(fd_type fd, seek_pos pos) {
   if(io_seek(fd, pos, SET) == -1)
     return -1;
+
   return 0;
 }

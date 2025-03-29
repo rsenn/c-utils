@@ -26,7 +26,7 @@ cpp_read_macro_arg_one(cpp_token** rest, cpp_token* tok, bool read_rest) {
     tok = tok->next;
   }
 
-  cur->next = cpp_new_eof(tok);
+  cur->next = cpp_token_eof(tok);
 
   cpp_macro_arg* arg = alloc_zero(sizeof(cpp_macro_arg));
   arg->tok = head.next;

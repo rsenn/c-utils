@@ -7,6 +7,7 @@
 #include "../open.h"
 #endif
 #include "../mmap.h"
+#include "../seek.h"
 
 extern char*
 mmap_shared(const char* filename, size_t* filesize) {
@@ -32,9 +33,9 @@ mmap_shared(const char* filename, size_t* filesize) {
   char* map;
 
   if(fd >= 0) {
-    register off_t o = lseek(fd, 0, SEEK_END);
+    seek_pos o = seek_end(fd);
 
-    if(o == 0 || (sizeof(off_t) != sizeof(size_t) && o > (off_t)(size_t)-1)) {
+    if(o == 0 || (sizeof(seek_pos) != sizeof(size_t) && o > (seek_pos)(size_t)-1)) {
       close(fd);
       return 0;
     }

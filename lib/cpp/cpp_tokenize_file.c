@@ -3,6 +3,7 @@
 #include "../alloc.h"
 
 cpp_file** cpp_input_files = 0;
+int cpp_file_no = 0;
 
 cpp_token*
 cpp_tokenize_file(char* path) {
@@ -23,14 +24,13 @@ cpp_tokenize_file(char* path) {
   cpp_convert_universal_chars(p);
 
   /* Save the filename for assembler .file directive. */
-  static int file_no;
-  cpp_file* file = cpp_file_new(path, file_no + 1, p);
+  cpp_file* file = cpp_file_new(path, cpp_file_no + 1, p);
 
   /* Save the filename for assembler .file directive. */
-  alloc_re(&cpp_input_files, 0, sizeof(char*) * (file_no + 2));
-  cpp_input_files[file_no] = file;
-  cpp_input_files[file_no + 1] = NULL;
-  file_no++;
+  alloc_re(&cpp_input_files, 0, sizeof(char*) * (cpp_file_no + 2));
+  cpp_input_files[cpp_file_no] = file;
+  cpp_input_files[cpp_file_no + 1] = NULL;
+  cpp_file_no++;
 
   return cpp_tokenize(file);
 }

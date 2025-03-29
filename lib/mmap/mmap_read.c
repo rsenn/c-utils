@@ -35,9 +35,9 @@ mmap_read(const char* filename, size_t* filesize) {
 
   if(fd >= 0) {
     seek_end(fd);
-    uint64 o = seek_cur(fd);
+    seek_pos o = seek_cur(fd);
 
-    if(o == 0 || (sizeof(off_t) != sizeof(size_t) && o > (off_t)(size_t)-1)) {
+    if(o == 0 || (sizeof(seek_pos) != sizeof(size_t) && o > (seek_pos)(size_t)-1)) {
       close(fd);
       return 0;
     }

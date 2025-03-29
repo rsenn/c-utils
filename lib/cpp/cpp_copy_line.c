@@ -12,7 +12,7 @@ cpp_copy_line(cpp_token** rest, cpp_token* tok) {
   for(; !tok->at_bol; tok = tok->next)
     cur = cur->next = cpp_token_copy(tok);
 
-  cur->next = cpp_new_eof(tok);
+  cur->next = cpp_token_eof(tok);
   *rest = tok;
   return head.next;
 }

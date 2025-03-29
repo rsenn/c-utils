@@ -11,11 +11,14 @@
 #include <sys/stat.h>
 #endif
 
+ssize_t fd_filesize(fd_type);
+
 extern char mmap_empty[];
 
 char*
 mmap_read_fd_range(fd_type fd, size_t* size, size_t offset, size_t len) {
   char* map;
+
 #if WINDOWS_NATIVE
   /*HANDLE h = (HANDLE)_get_osfhandle((int)fd);
   HANDLE m;
@@ -35,7 +38,7 @@ mmap_read_fd_range(fd_type fd, size_t* size, size_t offset, size_t len) {
   struct stat st;
   map = mmap_empty;
 
-  if(fstat(fd, &st) == 0 && (*size = st.st_size)) {
+  if((ssize_t)(*size = fd_filesize(fd)) >= 0) {
     if(*size > len)
       *size = len;
 
