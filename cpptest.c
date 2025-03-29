@@ -125,7 +125,7 @@ main(int argc, char** argv) {
   cpp_init_macros();
 
   cpp_macro** ptr = cpp_macro_ptr;
-  cpp_token *t, *u;
+  /*cpp_token *t, *u;
 
   for(t = tok; t->kind != TK_EOF; t = t->next) {
     if(!t->at_bol)
@@ -150,11 +150,10 @@ main(int argc, char** argv) {
 
         if(u->kind == TK_IDENT)
           if(!cpp_equal(u, "defined"))
-            // if(!cpp_is_keyword(u))
-            cpp_token_dump(buffer_2, u);
+             cpp_token_dump(buffer_2, u);
       }
     }
-  }
+  }*/
 
   cpp_token* tok2 = no_process ? tok : cpp_preprocess(tok);
 
