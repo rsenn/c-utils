@@ -296,7 +296,8 @@ elf_dump_symbols(range map, range section, range text, const char* stname, int b
 
     elf_print_prefix(buffer_1);
 
-    buffer_putptr_size_2 = ELF_BITS(map.start) / 4 + 2 + 1;
+    int bits = ELF_BITS(map.start);
+    buffer_putptr_size_2 = bits / 4 + 2 + 1;
 
     if(!range_empty(&code))
       buffer_putptr(buffer_1, (char*)(ptrdiff_t)(code.start - map.start));
