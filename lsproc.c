@@ -92,7 +92,7 @@ main(int argc, char* argv[]) {
   }
 
   if(unix_optind < argc)
-    strlist_fromv(&pidlist, &argv[unix_optind], argc - unix_optind);
+    strlist_fromv(&pidlist, (const char**)&argv[unix_optind], argc - unix_optind);
   else
     proc_list(&pidlist);
 

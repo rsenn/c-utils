@@ -7,7 +7,7 @@ ihex_read_buf(ihex_file* ihf, const char* in, size_t n) {
   ihex_recptr p, pos = {NULL};
   ssize_t ret = 0;
 
-  pos.rec = &ihf->records;
+  pos.rec = (struct ihex_record_s*)&ihf->records;
 
   while(x < end) {
     size_t len = byte_chrs(x, end - x, "\r\n", 2);
