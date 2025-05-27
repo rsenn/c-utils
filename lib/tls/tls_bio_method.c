@@ -15,7 +15,6 @@
 
 #define clear_socket_error() errno = 0
 
-
 /*static int
 tls_bio_create(tls_bio_t* bi) {
   bi->init = 0;

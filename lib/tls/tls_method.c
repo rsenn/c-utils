@@ -9,7 +9,7 @@
 #include <sys/socket.h>
 #endif
 
-#if 0 //def HAVE_OPENSSL
+#if 0 // def HAVE_OPENSSL
 #include <openssl/bio.h>
 
 #define clear_socket_error() errno = 0

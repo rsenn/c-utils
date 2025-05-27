@@ -1,8 +1,9 @@
 #ifdef __MINGW32__
 #include "../io_internal.h"
 #include <errno.h>
-int io_passfd(fd_type sock,fd_type fd) {
-  errno=EINVAL;
+int
+io_passfd(fd_type sock, fd_type fd) {
+  errno = EINVAL;
   return -1;
 }
 #else
@@ -32,28 +33,29 @@ int io_passfd(fd_type sock,fd_type fd) {
 union fdmsg {
   struct cmsghdr h;
   /* on NetBSD, CMSG_SPACE is not constant */
-/*  char buf[CMSG_SPACE(sizeof(int))]; */
+  /*  char buf[CMSG_SPACE(sizeof(int))]; */
   char buf[1000];
 };
 
-int io_passfd(fd_type sock,fd_type fd) {
+int
+io_passfd(fd_type sock, fd_type fd) {
   struct msghdr msg;
-  struct iovec  iov;
+  struct iovec iov;
 #ifdef CMSG_FIRSTHDR
-  struct cmsghdr *cmsg;
+  struct cmsghdr* cmsg;
 #ifndef CMSG_SPACE
-#define CMSG_SPACE(x) x+100
+#define CMSG_SPACE(x) x + 100
 #endif
   char buf[CMSG_SPACE(sizeof(int))];
-  memset(buf,0,sizeof(buf));
+  memset(buf, 0, sizeof(buf));
 #endif
-  memset(&msg,0,sizeof(msg));
-  iov.iov_len=1;
-  iov.iov_base="x";
-  msg.msg_iov=&iov;
-  msg.msg_iovlen=1;
-  msg.msg_name=0;
-  msg.msg_namelen=0;
+  memset(&msg, 0, sizeof(msg));
+  iov.iov_len = 1;
+  iov.iov_base = "x";
+  msg.msg_iov = &iov;
+  msg.msg_iovlen = 1;
+  msg.msg_name = 0;
+  msg.msg_namelen = 0;
 #ifdef CMSG_FIRSTHDR
   msg.msg_control = buf;
   msg.msg_controllen = sizeof(buf);
@@ -65,11 +67,11 @@ int io_passfd(fd_type sock,fd_type fd) {
 #endif
   cmsg->cmsg_len = CMSG_LEN(sizeof(int));
   msg.msg_controllen = cmsg->cmsg_len;
-  *((int*)CMSG_DATA(cmsg))=fd;
+  *((int*)CMSG_DATA(cmsg)) = fd;
 #else
   msg.msg_accrights = (char*)&fd;
   msg.msg_accrightslen = sizeof(fd);
 #endif
-  return sendmsg(sock,&msg,0)>=0?0:-1;
+  return sendmsg(sock, &msg, 0) >= 0 ? 0 : -1;
 }
 #endif

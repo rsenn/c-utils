@@ -1580,7 +1580,7 @@ getopt_end:
   cmd_dump(&cmd, buffer_2);
 #endif
 
-  strarray_from_argv(argc - unix_optind, (const char * const*)argv + unix_optind, &modules);
+  strarray_from_argv(argc - unix_optind, (const char* const*)argv + unix_optind, &modules);
 
 #ifdef DEBUG_OUTPUT_
   buffer_puts(buffer_2, "Dump cmd:\n");

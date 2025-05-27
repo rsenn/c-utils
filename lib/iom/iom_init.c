@@ -10,25 +10,26 @@
 #include <fcntl.h>
 #endif
 
-int iom_init(iomux_t* c) {
+int
+iom_init(iomux_t* c) {
 #ifdef HAVE_EPOLL
   c->ctx = epoll_create1(EPOLL_CLOEXEC);
 #elif defined(HAVE_KQUEUE)
-  if ((c->ctx = kqueue()) != -1) {
-    if (fcntl(c->ctx,F_SETFD,FD_CLOEXEC) == -1) {
+  if((c->ctx = kqueue()) != -1) {
+    if(fcntl(c->ctx, F_SETFD, FD_CLOEXEC) == -1) {
       close(c->ctx);
-      c->ctx=-1;
+      c->ctx = -1;
     }
   }
 #else
 #warning "only epoll and kqueue supported for now"
 #endif
   unsigned int i;
-  c->working=0;
-  c->h=c->l=0;	/* no elements in queue */
-  for (i=0; i<SLOTS; ++i) {
-    c->q[i].fd=-1;
-    c->q[i].events=0;
+  c->working = 0;
+  c->h = c->l = 0; /* no elements in queue */
+  for(i = 0; i < SLOTS; ++i) {
+    c->q[i].fd = -1;
+    c->q[i].events = 0;
   }
 #ifdef __dietlibc__
   mtx_init(&c->mtx, mtx_timed);
@@ -36,5 +37,5 @@ int iom_init(iomux_t* c) {
 #else
   sem_init(&c->sem, 0, 1);
 #endif
-  return (c->ctx!=-1);
+  return (c->ctx != -1);
 }

@@ -199,7 +199,7 @@ typedef TUPLE* MAP_ITER_T;
 static inline void*
 MAP_GET2(HMAP_DB* map, const void* key, size_t klen) {
   TUPLE* t = 0;
-  
+
   if(hmap_search(map, key, klen, &t) == HMAP_SUCCESS) {
     if(t->data_type == HMAP_DATA_TYPE_CUSTOM)
       return t->vals.val_custom;
@@ -214,7 +214,11 @@ MAP_GET2(HMAP_DB* map, const void* key, size_t klen) {
 #define MAP_DELETE(map, key, klen) hmap_delete(&(map), (key), (klen))
 #define MAP_ERASE(map, iter) MAP_DELETE((map), MAP_KEY(iter), MAP_KEY_LEN(iter))
 #define MAP_SET(map, key, klen, value, vlen) MAP_INSERT2(map, (key), (klen), (value), (vlen))
-#define MAP_INSERT(map, key, klen, data) do { void*ptr=(data); hmap_set(&(map), (key), (klen), &ptr, sizeof(void*)); } while(0)
+#define MAP_INSERT(map, key, klen, data) \
+  do { \
+    void* ptr = (data); \
+    hmap_set(&(map), (key), (klen), &ptr, sizeof(void*)); \
+  } while(0)
 #define MAP_INSERT2(map, key, klen, data, dlen) hmap_set(&(map), (key), (klen), (data), (dlen))
 #define MAP_ADD(map, key, data) hmap_add(&(map), (key), str_len(key) + 1, 0, HMAP_DATA_TYPE_CUSTOM, (data))
 #define MAP_ADD_LEN(map, key, klen, data, dlen) hmap_add(&(map), (key), (klen), 0, HMAP_DATA_TYPE_CHARS, (data), (dlen))

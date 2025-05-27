@@ -50,7 +50,8 @@ int64 array_indexof(array*, uint64 membersize, void* data);
 void array_shift(array* x, uint64 membersize, uint64 members);
 void array_chop(array* x, uint64 membersize, uint64 members);
 
-#define ARRAY_INIT() (array){ 0, 0, 0, 0 }
+#define ARRAY_INIT() \
+  (array) { 0, 0, 0, 0 }
 #define array_init(ns) byte_zero((ns), sizeof(array))
 #define array_failed(x) (array_bytes(x) == -1)
 #define array_empty(x) (array_bytes(x) == 0)

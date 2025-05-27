@@ -30,7 +30,7 @@ cpp_tokenize(cpp_file* file) {
   cpp_token head = {};
   cpp_token* cur = &head;
 
-cpp_current_file=file;
+  cpp_current_file = file;
 
   cpp_at_bol = true;
   cpp_has_space = 0;

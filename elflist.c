@@ -234,13 +234,10 @@ extern ssize_t buffer_putptr_size_2;
 
 /**
  * @brief elf_dump_symbols
- * @param map               Pointer
- * range of the loaded ELF file
- * @param section           Symbol table
- * section
+ * @param map               Pointer range of the loaded ELF file
+ * @param section           Symbol table section
  * @param text              Code section
- * @param stname            String-table
- * section name
+ * @param stname            String-table section name
  * @param binding
  */
 void
@@ -265,16 +262,12 @@ elf_dump_symbols(range map, range section, range text, const char* stname, int b
   range symtab = section;
   symtab.elem_size = ELF_BITS(map.start) == 64 ? sizeof(elf64_sym) : sizeof(elf32_sym);
 
-  /*  buffer_putspad(buffer_1, "symbol
-    name", 33); buffer_putspad(buffer_1,
-    "value", ELF_BITS(map.start) / 4 + 2
-    + 1); buffer_putspad(buffer_1,
-    "size", col_width + 2
-    + 1); if(binding < 0)
-      buffer_putspad(buffer_1,
-    "binding", 16);
-    buffer_puts(buffer_1, "type");
-    buffer_putnlflush(buffer_1);*/
+  /*  buffer_putspad(buffer_1, "symbol name", 33);
+  buffer_putspad(buffer_1, "value", ELF_BITS(map.start) / 4 + 2 + 1);
+  buffer_putspad(buffer_1, "size", col_width + 2 + 1);
+  if(binding < 0) buffer_putspad(buffer_1, "binding", 16);
+  buffer_puts(buffer_1, "type");
+  buffer_putnlflush(buffer_1);*/
 
   range_foreach(&symtab, symbol) {
     range code = elf_symbol_r(map.start, symbol);
@@ -310,29 +303,29 @@ elf_dump_symbols(range map, range section, range text, const char* stname, int b
       buffer_puts(buffer_1, !range_empty(&code) ? " t " : " u ");
 
     buffer_putspad(buffer_1, &(strtab[name]), 32);
+
     /*buffer_puts(buffer_1, "");
-    buffer_putxlong0(buffer_1, name, 8);
-    */
-    /*jjif(size) {
+    buffer_putxlong0(buffer_1, name, 8);*/
+
+    /*if(size) {
       buffer_putspace(buffer_1);
-      putnum(buffer_1,
-    value, col_width); }
-    else { buffer_putnspace(buffer_1,
-    col_width + 3);
+      putnum(buffer_1, value, col_width);
+    } else {
+      buffer_putnspace(buffer_1, col_width + 3);
     }
 
     if(size) {
       buffer_puts(buffer_1, "   ");
-      buffer_putulong0(buffer_1, size,
-    col_width); } else {
-      buffer_putnspace(buffer_1,
-    col_width + 3);
+      buffer_putulong0(buffer_1, size, col_width);
+    } else {
+      buffer_putnspace(buffer_1, col_width + 3);
     }*/
 
     if(binding < 0) {
       buffer_putspace(buffer_1);
       buffer_putspad(buffer_1, binding_types[ELF_ELF32_ST_BIND(info)], 16);
     }
+
     buffer_putspace(buffer_1);
     buffer_puts(buffer_1, symbol_types[ELF_ELF32_ST_TYPE(info)]);
 
@@ -386,14 +379,14 @@ elf_section_flags(uint64 flags, strlist* list) {
 
   if(flags & ELF_SHF_ARM_COMDEF)
     strlist_push(list, "ARM_COMDEF");
+
   stralloc_nul(&list->sa);
   return list->sa.s;
 }
 
 /**
  * @brief elf_dump_sections
- * @param map               Pointer
- * range of the loaded ELF file
+ * @param map               Pointer range of the loaded ELF file
  */
 void
 elf_dump_sections(range map) {
@@ -446,20 +439,15 @@ elf_dump_sections(range map) {
     buffer_putnlflush(buffer_1);
 
     if(type == ELF_SHT_SYMTAB || type == ELF_SHT_DYNSYM) {
-      //    elf_dump_symbols(map.start,
-      //    elf_section(map.start,
-      //    section), type ==
-      //    ELF_SHT_SYMTAB ?
-      //    ".strtab" :
-      //    ".dynstr");
+      range dummy = {0, 0};
+      elf_dump_symbols(map, elf_section(map.start, section), dummy, type == ELF_SHT_SYMTAB ? ".strtab" : ".dynstr", -1);
     }
   }
 }
 
 /**
  * @brief elf_dump_segments
- * @param map               Pointer
- * range of the loaded ELF file
+ * @param map               Pointer range of the loaded ELF file
  */
 void
 elf_dump_segments(range map) {
@@ -539,7 +527,6 @@ main(int argc, char** argv) {
   size_t filesize;
   static int dump_file_header = false, dump_sections = false, dump_segments = false;
   int i, c, index = 0;
-
   struct unix_longopt opts[] = {
       {"help", 0, NULL, 'h'},
       {"defined", 0, &list_defined, 'D'},
@@ -553,6 +540,7 @@ main(int argc, char** argv) {
       {"needed", 0, &list_needed, 'n'},
       {0, 0, 0, 0},
   };
+
   strlist_init(&flaglist, '|');
 
   for(;;) {
@@ -670,7 +658,8 @@ main(int argc, char** argv) {
       buffer_putm_internal(buffer_1, "Interpreter: ", interp, NULL);
       buffer_putnlflush(buffer_1);
     }
-    /*    elf_dump_imports(map.start);*/
+
+    /*elf_dump_imports(map.start);*/
 
     symtab = elf_get_symtab_r(map.start);
     text = elf_get_section_r(map.start, ".text");

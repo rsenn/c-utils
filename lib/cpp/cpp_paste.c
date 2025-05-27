@@ -12,7 +12,7 @@ cpp_paste(cpp_token* lhs, cpp_token* rhs) {
   /* Tokenize the resulting string. */
   cpp_token* tok = cpp_tokenize(file);
 
-  //cpp_file_free(file);
+  // cpp_file_free(file);
 
   if(tok->next->kind != TK_EOF)
     cpp_error_tok(lhs, "pasting forms '%s', an invalid token", buf);
