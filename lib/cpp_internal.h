@@ -322,16 +322,35 @@ struct cpp_scope {
   hashmap tags;
 };
 
+/* used by cpp_macro.c */
 extern hashmap cpp_macros;
-extern cpp_cond_incl* cond_incl;
+extern cpp_macro* cpp_macro_list;
+extern cpp_macro** cpp_macro_ptr;
+
+/* used by cpp_preprocess2.c */
 extern hashmap cpp_pragma_once;
-extern int cpp_include_next_idx;
+extern hashmap include_guards, include_list;
+extern cpp_cond_incl* cond_incl;
+extern strarray include_array;
+
+/* used by cpp_search_include.c */
 extern strarray cpp_include_paths;
-extern char* cpp_base_file;
-extern cpp_file** cpp_input_files;
-extern cpp_file* cpp_current_file;
+extern int cpp_include_next_idx;
+
+/* used by cpp_tokenize.c */
 extern int cpp_at_bol, cpp_has_space;
+
+extern cpp_file* cpp_current_file;
+
+/* used by cpp_const_expr.c */
 extern cpp_obj* locals;
+
+/* used by cpp_init_macros.c */
+extern char* cpp_base_file;
+
+/* used by cpp_tokenize_file.c */
+extern cpp_file** cpp_input_files;
+extern int cpp_file_no;
 
 extern cpp_type *cpp_ty_void, *cpp_ty_bool, *cpp_ty_char, *cpp_ty_short, *cpp_ty_int, *cpp_ty_long, *cpp_ty_uchar, *cpp_ty_ushort, *cpp_ty_uint, *cpp_ty_ulong, *cpp_ty_float,
     *cpp_ty_double, *cpp_ty_ldouble;

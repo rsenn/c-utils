@@ -3,6 +3,8 @@
 #include "../uint16.h"
 #include "../uint8.h"
 
+static cpp_scope* scope = &(cpp_scope){};
+
 static cpp_node* conditional(cpp_token**, cpp_token*);
 static int64 eval(cpp_node* node);
 
@@ -31,8 +33,6 @@ static cpp_node* mul(cpp_token**, cpp_token*);
 static cpp_node* unary(cpp_token**, cpp_token*);
 static cpp_node* cast(cpp_token**, cpp_token*);
 
-static cpp_scope* scope = &(cpp_scope){};
-cpp_obj* locals = 0 /*, *globals = 0*/;
 
 static bool
 is_integer(cpp_type* ty) {

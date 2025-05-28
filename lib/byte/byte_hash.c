@@ -1,4 +1,3 @@
-#include "../byte.h"
 #include "../uint32.h"
 
 uint32

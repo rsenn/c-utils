@@ -8,7 +8,8 @@
 #define SCAN_H
 
 /* for size_t: */
-#include "typedefs.h"
+#include <stddef.h>
+#include <time.h>
 
 #include "uint32.h"
 #include "uint64.h"

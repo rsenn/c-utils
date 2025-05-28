@@ -2,9 +2,6 @@
 #include "../str.h"
 #include <ctype.h>
 
-int cpp_at_bol = 0, cpp_has_space = 0;
-cpp_file* cpp_current_file = 0;
-
 /* Initialize line info for all tokens. */
 static void
 add_line_numbers(cpp_file* file, cpp_token* tok) {

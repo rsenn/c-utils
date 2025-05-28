@@ -3,7 +3,7 @@
 
 /* for ssize_t: */
 #define __POCC__OLDNAMES
-#include <sys/types.h>
+//#include <sys/types.h>
 
 /* for size_t & ptrdiff_t */
 #include <stddef.h>
@@ -27,9 +27,9 @@
 && !defined(__BORLANDC__)) #include <stdint.h> #endif
 */
 
-#if defined(__MINGW32__) || defined(__MINGW64__) || defined(__ORANGEC__) || defined(__DMC__) || defined(__STDC_IEC_559__)
+/*#if defined(__MINGW32__) || defined(__MINGW64__) || defined(__ORANGEC__) || defined(__DMC__) || defined(__STDC_IEC_559__)
 #include <stdint.h>
-#endif
+#endif*/
 
 #ifdef __cplusplus
 extern "C" {

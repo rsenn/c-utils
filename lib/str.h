@@ -6,7 +6,7 @@
 #ifndef STR_H
 #define STR_H
 
-#include "typedefs.h"
+#include <stddef.h>
 
 #ifdef __cplusplus
 extern "C" {

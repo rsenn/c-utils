@@ -2,8 +2,6 @@
 #include "../cpp_internal.h"
 #include <sys/stat.h>
 
-char* cpp_base_file = 0;
-
 static char* format_time(struct tm* tm);
 static char* format_date(struct tm* tm);
 

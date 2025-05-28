@@ -3,9 +3,6 @@
 #include "../alloc.h"
 #include "../str.h"
 
-hashmap cpp_macros = HASHMAP_INIT();
-cpp_macro* cpp_macro_list = 0;
-cpp_macro** cpp_macro_ptr = &cpp_macro_list;
 
 cpp_macro*
 cpp_macro_add(char* name, bool is_objlike, cpp_token* body) {

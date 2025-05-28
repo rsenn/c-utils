@@ -1,4 +1,4 @@
-#include "../byte.h"
+#include "../typedefs.h"
 #include <ctype.h>
 
 size_t
@@ -13,5 +13,6 @@ byte_camelize(char* x, size_t len) {
       x[o++] = x[i];
     }
   }
+
   return o;
 }

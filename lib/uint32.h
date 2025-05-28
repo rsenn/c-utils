@@ -6,7 +6,10 @@
 #ifndef UINT32_H
 #define UINT32_H
 
-#if __STDC_VERSION__ >= 199901L
+#if defined(_WIN32) || defined(__MINGW32__)
+#define __MS_types__
+#include <sys/types.h>
+#elif __STDC_VERSION__ >= 199901L
 #include <stdint.h>
 #elif defined(__BORLANDC__)
 #include <systypes.h>
@@ -15,9 +18,6 @@
 /*#elif !defined(_MSC_VER) && !defined(__MSYS__) && !defined(__CYGWIN__)
 #include <inttypes.h>
 #include <stdint.h>*/
-#elif defined(_WIN32)
-#define __MS_types__
-#include <sys/types.h>
 #else
 typedef unsigned int uint32_t;
 typedef int int32_t;

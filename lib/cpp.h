@@ -129,10 +129,6 @@ void cpp_convert_number(cpp_token*);
 void cpp_convert_tokens(cpp_token*);
 void cpp_print_macro(buffer* out, cpp_macro* m);
 
-extern cpp_macro* cpp_macro_list;
-extern cpp_macro** cpp_macro_ptr;
-extern strarray include_array;
-
 #ifdef __cplusplus
 }
 #endif

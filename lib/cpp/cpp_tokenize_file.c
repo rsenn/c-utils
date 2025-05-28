@@ -2,9 +2,6 @@
 #include "../byte.h"
 #include "../alloc.h"
 
-cpp_file** cpp_input_files = 0;
-int cpp_file_no = 0;
-
 cpp_token*
 cpp_tokenize_file(char* path) {
   char* p;

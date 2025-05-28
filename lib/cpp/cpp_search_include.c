@@ -3,8 +3,6 @@
 #include "../strarray.h"
 #include "../path.h"
 
-strarray cpp_include_paths = STRARRAY_INIT();
-int cpp_include_next_idx = 0;
 
 char*
 cpp_search_include_next(char* filename) {

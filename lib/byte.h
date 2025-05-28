@@ -8,9 +8,9 @@
 #define BYTE_H
 
 /* for size_t: */
-#include "typedefs.h"
+#include <stddef.h>
 
-#if !defined(_MSC_VER) && !defined(__MSYS__) && !defined(__CYGWIN__) && !defined(__BORLANDC__)
+#if !defined(_MSC_VER) && !defined(__MINGW32__) && !defined(__MSYS__) && !defined(__CYGWIN__) && !defined(__BORLANDC__)
 #include <inttypes.h>
 #include <stdint.h>
 #endif

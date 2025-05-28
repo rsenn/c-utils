@@ -295,7 +295,7 @@ cfg-msys() {
   esac
   echo "builddir: $builddir"
 
-  export PKG_CONFIG=$host-pkg-config
+  export PKG_CONFIG=$(which $host-pkg-config)
   export PKG_CONFIG_PATH="$prefix/lib/pkgconfig"
 
   : ${builddir=build/$host}

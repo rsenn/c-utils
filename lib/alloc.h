@@ -6,7 +6,7 @@
 #ifndef ALLOC_H
 #define ALLOC_H
 
-#include "typedefs.h"
+#include <stddef.h>
 
 #ifdef __cplusplus
 extern "C" {

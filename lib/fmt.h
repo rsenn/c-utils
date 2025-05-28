@@ -7,7 +7,8 @@
 #ifndef FMT_H
 #define FMT_H
 
-#include "typedefs.h"
+#include <stddef.h>
+#include <time.h>
 #include "uint32.h"
 #include "uint64.h"
 

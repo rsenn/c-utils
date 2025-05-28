@@ -6,11 +6,7 @@
 #include <string.h>
 #include <errno.h>
 
-hashmap cpp_pragma_once = HASHMAP_INIT();
-cpp_cond_incl* cond_incl = 0;
-static hashmap include_guards, include_list;
-strarray include_array = {};
-
+  
 static cpp_token* include_file(cpp_token* tok, char* path, cpp_token* filename_tok);
 
 static cpp_cond_incl*
