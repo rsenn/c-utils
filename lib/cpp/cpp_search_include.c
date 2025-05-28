@@ -3,7 +3,6 @@
 #include "../strarray.h"
 #include "../path.h"
 
-
 char*
 cpp_search_include_next(char* filename) {
   size_t num_include_paths = strarray_size(&cpp_include_paths);

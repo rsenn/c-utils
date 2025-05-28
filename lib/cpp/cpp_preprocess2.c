@@ -6,7 +6,6 @@
 #include <string.h>
 #include <errno.h>
 
-  
 static cpp_token* include_file(cpp_token* tok, char* path, cpp_token* filename_tok);
 
 static cpp_cond_incl*
@@ -244,7 +243,8 @@ include_file(cpp_token* tok, char* path, cpp_token* filename_tok) {
     cpp_error_tok(filename_tok, "%s: cannot open file: %s", path, strerror(errno));
 
   if(!(ptrdiff_t)hashmap_get(&include_list, path)) {
-    hashmap_put(&include_list, path, (void*)1);
+    char* name = str_dup(filename_tok->file->name);
+    hashmap_put(&include_list, path, name);
     strarray_push(&include_array, path);
   }
 

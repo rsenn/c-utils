@@ -7,7 +7,12 @@
 #include "lib/str.h"
 #include "lib/path.h"
 
+#undef MAP_USE_HASHMAP
+#define MAP_USE_HMAP 1
+#include "lib/map.h"
+
 static bool opt_dump = false;
+static MAP_T include_map;
 
 static int
 usage(char* a0) {
@@ -42,6 +47,8 @@ main(int argc, char** argv) {
   };
 
   out = buffer_1;
+
+  MAP_NEW(include_map);
 
   errmsg_iam(str_basename(argv[0]));
 
@@ -156,6 +163,39 @@ main(int argc, char** argv) {
   }*/
 
   cpp_token* tok2 = no_process ? tok : cpp_preprocess(tok);
+
+  hashentry* buckets = include_list.buckets;
+
+  for(size_t i = 0; i < include_list.capacity; i++) {
+    if(buckets[i].key) {
+      char* key = buckets[i].val;
+      size_t len = str_len(key);
+      strarray* arr;
+
+      if(!(arr = MAP_GET(include_map, key, len))) {
+        strarray stra;
+        strarray_init(&stra);
+        MAP_ITER_T item = MAP_INSERT2(include_map, key, len, &stra, sizeof(strarray));
+        arr = MAP_ITER_VALUE(item);
+      }
+
+      strarray_pushb_unique(arr, buckets[i].key, buckets[i].keylen);
+    }
+  }
+
+  MAP_ITER_T iter;
+
+  hmap_foreach(include_map, iter) {
+    buffer_put(buffer_2, MAP_ITER_KEY(iter), MAP_ITER_KEY_LEN(iter));
+    buffer_puts(buffer_2, ":\n");
+
+    strarray* a = MAP_ITER_VALUE(iter);
+    char** ptr;
+
+    strarray_foreach(a, ptr) { buffer_putm_internal(buffer_2, "  ", *ptr, "\n", 0); }
+
+    buffer_putnlflush(buffer_2);
+  }
 
   if(show_deps) {
     char** inc;
