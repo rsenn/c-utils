@@ -47,7 +47,7 @@ int isleap(int year);
 int pipe2(int fd[2], int flags);
 
 #if WINDOWS_NATIVE
-int ftruncate(int, off_t);
+int ftruncate(int, long);
 #endif
 
 int unix_getopt(int, char* const[], const char*);

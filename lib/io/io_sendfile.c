@@ -3,6 +3,7 @@
 #include "../socket_internal.h"
 #include "../io_internal.h"
 #include "../windoze.h"
+#include "../typedefs.h"
 
 #if WINDOWS && !defined(__ORANGEC__)
 #include <mswsock.h>

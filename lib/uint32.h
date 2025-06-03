@@ -6,11 +6,11 @@
 #ifndef UINT32_H
 #define UINT32_H
 
-#if defined(_WIN32) || defined(__MINGW32__)
+#if __STDC_VERSION__ >= 199901L
+#include <stdint.h>
+#elif defined(_WIN32) || defined(__MINGW32__)
 #define __MS_types__
 #include <sys/types.h>
-#elif __STDC_VERSION__ >= 199901L
-#include <stdint.h>
 #elif defined(__BORLANDC__)
 #include <systypes.h>
 #elif defined(__LCC__)
@@ -23,7 +23,9 @@ typedef unsigned int uint32_t;
 typedef int int32_t;
 #endif
 
+#if !(defined(_WIN32) || defined(__MINGW32__))
 #include <stddef.h>
+#endif
 
 #ifdef __cplusplus
 extern "C" {

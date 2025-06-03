@@ -5,8 +5,8 @@
 #include <windows.h>
 #include <io.h>
 int
-ftruncate(int fd, off_t length) {
-  off_t pos = lseek64(fd, 0, SEEK_CUR);
+ftruncate(int fd, long length) {
+  long pos = lseek64(fd, 0, SEEK_CUR);
 
   if(lseek64(fd, length, SEEK_SET) == length) {
     HANDLE h = (HANDLE)_get_osfhandle(fd);

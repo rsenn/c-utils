@@ -62,7 +62,7 @@ cfg() {
      */*) ;;
      *) PKG_CONFIG=$(which "$PKG_CONFIG") ;; 
   esac
-  : ${generator:="CodeLite - Unix Makefiles"}
+  : ${generator:="Unix Makefiles"}
   echo "host=$host" 1>&2
   echo "builddir=$builddir" 1>&2
 

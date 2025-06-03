@@ -1,4 +1,5 @@
 #include "../uint32.h"
+#include <stddef.h>
 
 uint32
 byte_hash(const void* x, size_t len) {

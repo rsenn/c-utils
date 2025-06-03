@@ -6,6 +6,7 @@
 #ifndef SOCKET_H
 #define SOCKET_H
 
+#include <sys/types.h>
 #include "typedefs.h"
 #include "uint16.h"
 #include "uint32.h"
