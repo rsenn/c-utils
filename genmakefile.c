@@ -1506,6 +1506,7 @@ main(int argc, char* argv[]) {
       {"chip", 1, 0, 'p'},
       {"preprocessor", 1, 0, 'P'},
       {"lang-c", 0, &cfg.lang, LANG_C},
+      {"width", 0, &output_width, 'W'},
       {"cxx", 0, &cfg.lang, LANG_CXX},
       {"c++", 0, &cfg.lang, LANG_CXX},
       {0, 0, 0, 0},
@@ -1573,7 +1574,7 @@ main(int argc, char* argv[]) {
 
   for(;;) {
     const char* arg;
-    c = unix_getopt_long(argc, argv, "habo:O:B:E:d:t:m:n:a:D:l:I:c:s:p:P:R:S:if:Cw:L:O:T:", opts, &index);
+    c = unix_getopt_long(argc, argv, "habo:O:B:E:d:t:m:n:a:D:l:I:c:s:p:P:R:S:if:CW:w:L:O:T:", opts, &index);
 
     if(c == -1)
       break;
@@ -1644,6 +1645,11 @@ main(int argc, char* argv[]) {
 
       case 'O': {
         stralloc_copys(&dirs.out.sa, arg);
+        break;
+      }
+
+      case 'W': {
+        scan_int(arg,  &output_width);
         break;
       }
 
@@ -1804,7 +1810,7 @@ main(int argc, char* argv[]) {
   if(build_tool == TOOL_BATCH)
     comment = "REM ";
 
-  if(tools.compiler == NULL) {
+  /*if(tools.compiler == NULL) {
     if(cfg.mach.arch == PIC)
       tools.compiler = "xc8";
 
@@ -1812,7 +1818,7 @@ main(int argc, char* argv[]) {
       tools.compiler = "gcc";
     else if(cfg.mach.bits == 0)
       set_machine(tools.compiler);
-  }
+  }*/
 
   set_init(&toks, 0);
 
@@ -1863,6 +1869,7 @@ main(int argc, char* argv[]) {
     stralloc_free(&tok);
   }
 
+if(tools.compiler)
   if(!set_make_type() || !set_compiler_type(tools.compiler)) {
     usage(argv[0]);
     ret = 2;

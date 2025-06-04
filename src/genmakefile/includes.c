@@ -1,12 +1,7 @@
 #include "includes.h"
 #include "rule.h"
-#include "var.h"
-#include "path.h"
 #include "ansi.h"
-#include "../../lib/mmap.h"
-#include "../../lib/str.h"
-#include "../../lib/strlist.h"
-#include "../../lib/path.h"
+//#include "../../lib/mmap.h"
 #include "../../debug.h"
 #include "../../genmakefile.h"
 

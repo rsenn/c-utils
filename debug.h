@@ -1,6 +1,8 @@
 #ifndef DEBUG_H
 #define DEBUG_H
 
+#include "lib/str.h"
+
 extern const char* debug_nl;
 
 void debug_byte(const char*, const char*, size_t);

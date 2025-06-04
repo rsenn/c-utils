@@ -3,6 +3,7 @@
 
 #include "types.h"
 #include "rule.h"
+#include "../../lib/stralloc.h"
 
 int input_process_command(stralloc*, int, char* argv[], const char* file, size_t line);
 int input_process_file(const char*, target*);

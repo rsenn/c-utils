@@ -190,25 +190,25 @@ main(int argc, char** argv) {
     }
   }*/
 
-char** str;
+  char** str;
 
-    strarray_foreach(&include_array, str) {
-      char* included_by = hashmap_get(&include_list, *str);
-      int len = str_len(included_by);
+  strarray_foreach(&include_array, str) {
+    char* included_by = hashmap_get(&include_list, *str);
+    int len = str_len(included_by);
 
-      strarray_push_unique(&includer_list, included_by);
+    strarray_push_unique(&includer_list, included_by);
 
-      strarray* arr;
+    strarray* arr;
 
-      if(!(arr = MAP_GET(include_map, included_by, len))) {
-        strarray stra;
-        strarray_init(&stra);
-        MAP_ITER_T item = MAP_INSERT2(include_map, included_by, len, &stra, sizeof(strarray));
-        arr = MAP_ITER_VALUE(item);
-      }
-
-      strarray_push_unique(arr, *str);
+    if(!(arr = MAP_GET(include_map, included_by, len))) {
+      strarray stra;
+      strarray_init(&stra);
+      MAP_ITER_T item = MAP_INSERT2(include_map, included_by, len, &stra, sizeof(strarray));
+      arr = MAP_ITER_VALUE(item);
     }
+
+    strarray_push_unique(arr, *str);
+  }
 
   if(show_deps >= 256) {
 
@@ -216,17 +216,16 @@ char** str;
       char* included_by;
 
       if((included_by = hashmap_get(&include_list, *str))) {
-      buffer_puts(buffer_1, *str);
-      buffer_puts(buffer_1, ": ");
-      buffer_puts(buffer_1, included_by);
-      buffer_putnlflush(buffer_1);
-    }
+        buffer_puts(buffer_1, *str);
+        buffer_puts(buffer_1, ": ");
+        buffer_puts(buffer_1, included_by);
+        buffer_putnlflush(buffer_1);
+      }
     }
 
     return 0;
 
   } else if(show_deps >= 128) {
-    
 
     strarray_foreach(&includer_list, str) {
       int len = str_len(*str);

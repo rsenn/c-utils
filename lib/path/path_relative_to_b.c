@@ -8,16 +8,17 @@
 #endif
 
 int
-path_relative_to_b(const char* s1, size_t n1, const char* s2, size_t n2, stralloc* out) {
-  size_t i;
-  SizePair p = path_common_prefix(s1, n1, s2, n2);
+path_relative_to_b(const char* p, size_t plen, const char* to, size_t tolen, stralloc* out) {
+  const char *s1 = p, *s2 = to;
+  size_t i, n1 = plen, n2 = tolen;
+  SizePair sp = path_common_prefix(s1, n1, s2, n2);
 
   stralloc_zero(out);
 
-  s1 += p.sz1;
-  n1 -= p.sz1;
-  s2 += p.sz2;
-  n2 -= p.sz2;
+  s1 += sp.sz1;
+  n1 -= sp.sz1;
+  s2 += sp.sz2;
+  n2 -= sp.sz2;
 
   while(n2 > 0 && s2[0] == PATHSEP_C) {
     s2++;

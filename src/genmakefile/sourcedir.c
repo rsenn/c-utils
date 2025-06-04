@@ -3,9 +3,6 @@
 #include "is.h"
 #include "ansi.h"
 #include "includes.h"
-#include "../../lib/dlist.h"
-#include "../../lib/mmap.h"
-#include "../../lib/scan.h"
 #include "../../genmakefile.h"
 
 MAP_T srcdir_map;

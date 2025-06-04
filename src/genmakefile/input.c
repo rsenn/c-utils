@@ -2,8 +2,8 @@
 #include "ansi.h"
 #include "var.h"
 #include "generate.h"
-#include "../../lib/path.h"
-#include "../../lib/hashmap.h"
+//#include "../../lib/path.h"
+//#include "../../lib/hashmap.h"
 #include "../../genmakefile.h"
 #include <errno.h>
 
@@ -199,7 +199,7 @@ input_process_command(stralloc* cmd, int argc, char* argv[], const char* file, s
   strlist_init(&libs, ' ');
 
   for(i = 0; i < argc; i++) {
-    if(is_source(argv[i])) {
+    if(is_source(argv[i]) || str_equal(argv[i], "-c")) {
       compile = 1;
       break;
     }
@@ -440,7 +440,7 @@ input_process_command(stralloc* cmd, int argc, char* argv[], const char* file, s
 
     stralloc_init(&tmp);
 
-    if(link) {
+    if(path_is_absolute_sa(&out)) {
       path_relative_to_sa(&out, &dirs.out.sa, &tmp);
       stralloc_copy(&out, &tmp);
       stralloc_nul(&out);
@@ -919,10 +919,12 @@ input_process_rules(target* all) {
   buffer_putnlflush(buffer_2);
 #endif
 
-  stralloc_copy(&dirs.work.sa, &builddir.sa);
+  if(builddir.sa.s) {
+    stralloc_copy(&dirs.work.sa, &builddir.sa);
 
-  if(!stralloc_endc(&dirs.work.sa, PATHSEP_C))
-    stralloc_catc(&dirs.work.sa, PATHSEP_C);
+    if(!stralloc_endc(&dirs.work.sa, PATHSEP_C))
+      stralloc_catc(&dirs.work.sa, PATHSEP_C);
+  }
 
   strlist_nul(&dirs.work);
 

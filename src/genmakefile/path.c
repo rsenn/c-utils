@@ -1,7 +1,4 @@
 #include "is.h"
-#include "../../lib/path_internal.h"
-#include "../../lib/mmap.h"
-#include "../../lib/errmsg.h"
 #include "../../genmakefile.h"
 
 /**

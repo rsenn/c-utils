@@ -4,28 +4,12 @@
 #define MAP_USE_HMAP 1
 
 #include "types.h"
-#include "../../lib/windoze.h"
-#include "../../lib/unix.h"
-#include "../../lib/mmap.h"
-#include "../../lib/open.h"
-#include "../../lib/rdir.h"
-#include "../../lib/scan.h"
-#include "../../lib/slist.h"
-#include "../../lib/str.h"
-#include "../../lib/stralloc.h"
-#include "../../lib/strarray.h"
-#include "../../lib/strlist.h"
-#include "../../lib/uint32.h"
-#include "../../lib/errmsg.h"
+//#include "../../lib/str.h"
 #include "../../lib/array.h"
-#include "../../lib/byte.h"
-#include "../../lib/fmt.h"
-#include "../../lib/dir.h"
-#include "../../lib/range.h"
-#include "../../lib/case.h"
 #include "../../lib/set.h"
-#include "../../lib/map.h"
 #include "../../lib/bool.h"
+#include "../../lib/uint32.h"
+#include "../../lib/map.h"
 
 // typedef enum { PREPROCESS = 0, COMPILE, LIB, LINK, MKDIR, CLEAN,
 // NUM_COMMANDS } command_type;

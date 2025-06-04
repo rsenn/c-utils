@@ -1,12 +1,12 @@
 #define MAP_USE_HMAP 1
-#include "../../lib/stralloc.h"
+//#include "../../lib/stralloc.h"
 #include "../../genmakefile.h"
 #include "cmake.h"
-#include "../../lib/buffer.h"
-#include "../../lib/strarray.h"
-#include "../../lib/map.h"
-#include "../../lib/set.h"
-#include "../../lib/bool.h"
+//#include "../../lib/buffer.h"
+//#include "../../lib/strarray.h"
+//#include "../../lib/map.h"
+//#include "../../lib/set.h"
+//#include "../../lib/bool.h"
 #include "is.h"
 
 /**

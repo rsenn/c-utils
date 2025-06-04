@@ -1,6 +1,8 @@
 #ifndef _MPLAB_H
 #define _MPLAB_H
 
+#include "../../lib/map.h"
+
 typedef struct mplab_config_s {
   int warning_level : 4;
   int verbose_messages : 1;

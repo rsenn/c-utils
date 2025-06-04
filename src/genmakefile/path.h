@@ -2,7 +2,7 @@
 #define GENMAKEFILE_PATH_H
 
 #include "../../lib/stralloc.h"
-#include "../../lib/strlist.h"
+#include "../../lib/set.h"
 
 void path_prefix_b(const stralloc*, const char* x, size_t n, stralloc* out, char psm);
 void path_prefix_s(const stralloc*, const char* path, stralloc* out, char psm);

@@ -8,6 +8,7 @@ path_prepend(const char* x, size_t len, stralloc* out) {
     stralloc_insertb(out, &c, 0, 1);
 
   stralloc_insertb(out, x, len, 0);
+  stralloc_nul(out);
 }
 
 void
@@ -18,4 +19,5 @@ path_prepends(const char* s, stralloc* out) {
     stralloc_insertb(out, &c, 0, 1);
 
   stralloc_inserts(out, s, 0);
+  stralloc_nul(out);
 }

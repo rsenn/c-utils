@@ -3,6 +3,13 @@
 
 #include "types.h"
 #include "rule.h"
+#include "../../lib/buffer.h"
+#include "../../lib/strlist.h"
+#include "../../lib/map.h"
+
+extern int output_width;
+
+#define OUTPUT_PREREQ_SEPARATOR " \\\n  "
 
 void output_all_rules(buffer*, build_tool_t, const char quote_args[], char psa, char psm, const char* make_sep_inline);
 void output_all_vars(buffer*, MAP_T*, strlist* varnames, build_tool_t);

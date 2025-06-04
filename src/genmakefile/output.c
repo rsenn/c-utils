@@ -1,6 +1,9 @@
 #include "../../genmakefile.h"
 #include "../../debug.h"
+#include "output.h"
 #include "ansi.h"
+
+int output_width = 40;
 
 /**
  * @brief      Extract variables from buffer
@@ -162,7 +165,7 @@ void
 output_make_rule(buffer* b, target* rule, build_tool_t tool, const char quote_args[], char psa, char psm, const char* make_sep_inline) {
   const char* x;
   stralloc output, sa, name;
-  size_t n, num_prereqs = set_size(&rule->prereq);
+  size_t n, num_prereqs = set_size(&rule->prereq), line_start = 0;
 
   debug_nl = "\n";
 
@@ -234,21 +237,21 @@ output_make_rule(buffer* b, target* rule, build_tool_t tool, const char quote_ar
   if(num_prereqs) {
     const char* str;
     size_t len;
-    bucket_t* it;
-    int i = 0;
-
-    stralloc_cats(&output, num_prereqs > 1 ? " \\\n\t" : " ");
-
+    bucket_t* it; 
+    
     set_foreach_ordered(&rule->prereq, it, str, len) {
       if(stralloc_endb(&output, str, len))
         continue;
 
-      if(i)
-        stralloc_cats(&output, num_prereqs > 1 ? " \\\n\t" : " ");
+      bool break_line = (output.len - line_start) + len + 1 + 2 >= output_width;
+
+      stralloc_cats(&output, break_line ? OUTPUT_PREREQ_SEPARATOR : " ");
+
+      if(break_line)
+        line_start += scan_lineskip(&output.s[line_start], output.len - line_start);
 
       stralloc_catb(&output, str, len);
-      i++;
-    }
+     }
   }
 
   if(rule->recipe.s) {

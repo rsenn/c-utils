@@ -4,10 +4,7 @@
 #include "types.h"
 #include "../../lib/set.h"
 #include "../../lib/slist.h"
-#include "../../lib/stralloc.h"
-#include "../../lib/strlist.h"
 #include "../../lib/strarray.h"
-#include "../../lib/uint32.h"
 
 typedef struct {
   int n_sources;
