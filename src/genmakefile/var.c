@@ -165,7 +165,7 @@ var_set_s(const char* name, char* value) {
   strlist_free(&var->value);
 
   var->value.sa.s = value;
-  var->value.sa.a = var->value.sa.len = strlen(value);
+  var->value.sa.a = var->value.sa.len = str_len(value);
 
   return var;
 }
