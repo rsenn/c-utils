@@ -1,7 +1,6 @@
 #ifndef GENMAKEFILE_INPUT_H
 #define GENMAKEFILE_INPUT_H
 
-#include "types.h"
 #include "rule.h"
 #include "../../lib/stralloc.h"
 

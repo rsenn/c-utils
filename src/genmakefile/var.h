@@ -1,7 +1,16 @@
 #ifndef GENMAKEFILE_VAR_H
 #define GENMAKEFILE_VAR_H
 
-#include "types.h"
+#define MAP_USE_HMAP 1
+#include "../../lib/stralloc.h"
+#include "../../lib/strlist.h"
+#include "../../lib/uint32.h"
+#include "../../lib/map.h"
+
+typedef struct {
+  strlist value;
+  uint32 serial;
+} var_t;
 
 typedef void(linklib_fmt)(const char*, stralloc*);
 

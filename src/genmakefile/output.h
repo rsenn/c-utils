@@ -1,7 +1,7 @@
 #ifndef GENMAKEFILE_OUTPUT_H
 #define GENMAKEFILE_OUTPUT_H
 
-#include "types.h"
+#define MAP_USE_HMAP 1
 #include "rule.h"
 #include "../../lib/buffer.h"
 #include "../../lib/strlist.h"

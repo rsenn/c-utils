@@ -1,7 +1,6 @@
 #ifndef GENMAKEFILE_INCLUDES_H
 #define GENMAKEFILE_INCLUDES_H
 
-#include "types.h"
 #include "../../lib/strlist.h"
 #include "../../lib/set.h"
 

@@ -1,6 +1,7 @@
 #ifndef _MPLAB_H
 #define _MPLAB_H
 
+#define MAP_USE_HMAP 1
 #include "../../lib/map.h"
 
 typedef struct mplab_config_s {

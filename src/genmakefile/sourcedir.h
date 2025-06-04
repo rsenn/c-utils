@@ -1,10 +1,15 @@
 #ifndef GENMAKEFILE_SOURCEDIR_H
 #define GENMAKEFILE_SOURCEDIR_H
 
-#include "types.h"
+#define MAP_USE_HMAP 1
+#include "../../lib/array.h"
+#include "../../lib/buffer.h"
+#include "../../lib/map.h"
 #include "../../lib/set.h"
 #include "../../lib/slist.h"
 #include "../../lib/strarray.h"
+#include "../../lib/strlist.h"
+#include "../../lib/uint32.h"
 
 typedef struct {
   int n_sources;

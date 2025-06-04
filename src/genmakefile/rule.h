@@ -2,17 +2,16 @@
 #define GENMAKEFILE_RULE_H
 
 #define MAP_USE_HMAP 1
+#define MAP_USE_HMAP 1
 
 #include "types.h"
-//#include "../../lib/str.h"
+#include "../../lib/stralloc.h"
+#include "../../lib/strlist.h"
 #include "../../lib/array.h"
 #include "../../lib/set.h"
 #include "../../lib/bool.h"
 #include "../../lib/uint32.h"
 #include "../../lib/map.h"
-
-// typedef enum { PREPROCESS = 0, COMPILE, LIB, LINK, MKDIR, CLEAN,
-// NUM_COMMANDS } command_type;
 
 typedef struct target_s {
   union {

@@ -2,8 +2,6 @@
 #include "ansi.h"
 #include "var.h"
 #include "generate.h"
-//#include "../../lib/path.h"
-//#include "../../lib/hashmap.h"
 #include "../../genmakefile.h"
 #include <errno.h>
 
