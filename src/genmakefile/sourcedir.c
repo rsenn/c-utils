@@ -4,10 +4,9 @@
 #include "ansi.h"
 #include "includes.h"
 #include "../../genmakefile.h"
-#include "../../debug.h"
 
-MAP_T srcdir_map;
-const char* srcdir_varname = "DISTDIR";
+MAP_T sourcedir_map;
+const char* sourcedir_varname = "DISTDIR";
 
 static const char tok_charset[] = {
     '_', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'a', 'b', 'c', 'd', 'e',
@@ -265,7 +264,7 @@ sourcedir*
 sourcedir_find(const char* path) {
   sourcedir** ptr;
 
-  if((ptr = MAP_GET(srcdir_map, path, str_len(path) + 1)))
+  if((ptr = MAP_GET(sourcedir_map, path, str_len(path) + 1)))
     return *ptr;
 
   return 0;
@@ -284,7 +283,7 @@ sourcedir_findsa(stralloc* path) {
 
   stralloc_nul(path);
 
-  if((ptr = MAP_GET(srcdir_map, path->s, path->len + 1)))
+  if((ptr = MAP_GET(sourcedir_map, path->s, path->len + 1)))
     return *ptr;
 
   return 0;
@@ -326,9 +325,9 @@ sourcedir_getb(const char* x, size_t n) {
     sourcedir* newdir = alloc_zero(sizeof(sourcedir));
 
     set_init(&newdir->pptoks, 0);
-    MAP_INSERT2(srcdir_map, x, n + 1, &newdir, sizeof(newdir));
+    MAP_INSERT2(sourcedir_map, x, n + 1, &newdir, sizeof(newdir));
 
-    if((ptr = (sourcedir**)MAP_GET(srcdir_map, x, n + 1)))
+    if((ptr = (sourcedir**)MAP_GET(sourcedir_map, x, n + 1)))
       s = *ptr;
   }
 
@@ -363,7 +362,7 @@ sourcedir_populate(strarray* sources_set) {
 
   strlist_init(&d, '\0');
 
-  MAP_FOREACH(srcdir_map, t) {
+  MAP_FOREACH(sourcedir_map, t) {
     sourcedir* dir = *(sourcedir**)MAP_ITER_VALUE(t);
     sourcefile* file;
 
@@ -382,7 +381,7 @@ sourcedir_populate(strarray* sources_set) {
     }
   }
 
-  MAP_FOREACH(srcdir_map, t) {
+  MAP_FOREACH(sourcedir_map, t) {
     sourcedir* dir = *(sourcedir**)MAP_ITER_VALUE(t);
 
     strlist_zero(&d);
@@ -402,7 +401,7 @@ void
 sourcedir_dump_all(buffer* b) {
   MAP_PAIR_T t;
 
-  MAP_FOREACH(srcdir_map, t) {
+  MAP_FOREACH(sourcedir_map, t) {
     sourcedir* srcdir = *(sourcedir**)MAP_ITER_VALUE(t);
     sourcefile* pfile;
 

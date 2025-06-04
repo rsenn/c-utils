@@ -108,11 +108,13 @@ extern tool_config_t tool_config;
 extern const char* project_name;
 extern int cmd_objs, cmd_libs, cmd_bins;
 extern set_t link_libraries;
-extern MAP_T srcdir_map, targetdirs, rules;
+extern MAP_T  targetdirs, rules;
+
 extern strlist link_dirs;
 extern strlist vpath;
 extern strlist build_as_lib;
-extern union commands commands;
+
+extern commands_t commands;
 extern bool inst_bins, inst_libs;
 extern const char* newline;
 extern const char* infile;

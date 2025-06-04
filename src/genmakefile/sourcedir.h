@@ -15,7 +15,7 @@ typedef struct {
   int n_sources;
   slink* sources;
   set_t includes;
-  array rules;
+  array rule_map;
   set_t pptoks;
   set_t deps;
   uint32 serial;
@@ -34,7 +34,7 @@ sourcedir* sourcedir_getb(const char*, size_t);
 sourcedir* sourcedir_getsa(stralloc*);
 void sourcedir_populate(strarray*);
 
-extern MAP_T srcdir_map;
-extern const char* srcdir_varname;
+extern MAP_T sourcedir_map;
+extern const char* sourcedir_varname;
 
 #endif /* defined(GENMAKEFILE_SOURCEDIR_H) */

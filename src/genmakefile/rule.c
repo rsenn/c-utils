@@ -7,7 +7,7 @@
 #include <string.h>
 #include <assert.h>
 
-MAP_T rules;
+MAP_T rule_map;
 static uint32 rule_dep_serial;
 
 /**
@@ -24,7 +24,7 @@ rule_get(const char* name) {
   MAP_PAIR_T t = NULL;
   size_t len = str_len(name);
 
-  if(!MAP_SEARCH(rules, name, len + 1, &t)) {
+  if(!MAP_SEARCH(rule_map, name, len + 1, &t)) {
     target tgt;
 
     byte_zero(&tgt, sizeof(struct target_s));
@@ -36,8 +36,8 @@ rule_get(const char* name) {
     set_init(&tgt.prereq, 0);
     strlist_init(&tgt.cmds, ' ');
 
-    MAP_INSERT2(rules, name, len + 1, &tgt, ((sizeof(struct target_s) + 3) / 4) * 4);
-    MAP_SEARCH(rules, name, len + 1, &t);
+    MAP_INSERT2(rule_map, name, len + 1, &tgt, ((sizeof(struct target_s) + 3) / 4) * 4);
+    MAP_SEARCH(rule_map, name, len + 1, &t);
     // ret = MAP_ITER_VALUE(t);
 
 #ifdef DEBUG_OUTPUT_
@@ -99,7 +99,7 @@ target*
 rule_find(const char* needle) {
   MAP_PAIR_T t;
 
-  MAP_FOREACH(rules, t) {
+  MAP_FOREACH(rule_map, t) {
     const char* name = MAP_ITER_KEY(t);
 
     if(str_equal(name, needle))
@@ -123,7 +123,7 @@ target*
 rule_find_b(const char* needle, size_t nlen) {
   MAP_PAIR_T t;
 
-  MAP_FOREACH(rules, t) {
+  MAP_FOREACH(rule_map, t) {
     const char* name = MAP_ITER_KEY(t);
     size_t namelen = str_len(name);
 
@@ -742,7 +742,7 @@ rule_is_link(target* rule) {
 }
 
 /**
- * @brief      Given a list of rule names, put rules in output array
+ * @brief      Given a list of rule names, put rule_map in output array
  *
  * @param[in]  targets  Rule name list
  * @param      out      Output array
@@ -764,5 +764,41 @@ rule_list(const strlist* targets, array* out) {
       buffer_puts(buffer_2, "' not found");
       buffer_putnlflush(buffer_2);
     }
+  }
+}
+
+/**
+ * @brief      Substitute variable substitutions
+ *
+ * @param[in]  in       Input string
+ * @param      out      Output
+ * @param[in]  pfx      Prefix; add before substitution
+ * @param[in]  sfx      Suffix; add after substitution
+ * @param[in]  tolower  Transform to lowercase
+ */
+void
+rule_subst_sa(const stralloc* in, stralloc* out, const char* pfx, const char* sfx, int to_lower) {
+  stralloc_zero(out);
+
+  for(size_t i = 0; i < in->len; ++i) {
+    const char* p = &in->s[i];
+
+    if(i + 4 <= in->len && *p == '$' && p[1] == '(') {
+      size_t vlen;
+
+      stralloc_cats(out, pfx);
+      i += 2;
+      vlen = byte_chr(&in->s[i], in->len - i, ')');
+      stralloc_catb(out, &in->s[i], vlen);
+
+      if(to_lower)
+        byte_lower(&out->s[out->len - vlen], vlen);
+
+      stralloc_cats(out, sfx);
+      i += vlen;
+      continue;
+    }
+
+    stralloc_append(out, p);
   }
 }

@@ -34,7 +34,7 @@ typedef struct target_s {
   command_type type;
 } target;
 
-extern MAP_T rules;
+extern MAP_T rule_map;
 
 target* rule_get(const char*);
 target* rule_get_sa(stralloc*);
@@ -61,5 +61,6 @@ bool rule_is_compile(target*);
 bool rule_is_lib(target*);
 bool rule_is_link(target*);
 void rule_list(const strlist*, array*);
+void rule_subst_sa(const stralloc*, stralloc*, const char*, const char*, int);
 
 #endif

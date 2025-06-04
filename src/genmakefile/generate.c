@@ -117,7 +117,7 @@ generate_clean_rule(char psm) {
 
   cmdoffs = commands.delete.len;
 
-  MAP_FOREACH(rules, t) {
+  MAP_FOREACH(rule_map, t) {
     target* rule = MAP_ITER_VALUE(t);
     const char* name = MAP_ITER_KEY(t);
 
@@ -201,7 +201,7 @@ generate_mkdir_rule(stralloc* name) {
 }
 
 /**
- * @brief      Generate compile rules for every source file given
+ * @brief      Generate compile rule_map for every source file given
  *
  * @param      srcdir     source directory structure
  * @param      dir        source directory path
@@ -343,7 +343,7 @@ generate_srcdir_compile_rules(sourcedir* srcdir, const char* dir, bool shell, bo
 }
 
 /**
- * @brief      Generate compile rules for every source file in srcdir
+ * @brief      Generate compile rule_map for every source file in srcdir
  *
  * @param      srcdir   source directory structure
  * @param      dir      Directory path
@@ -399,7 +399,7 @@ generate_simple_compile_rules(sourcedir* srcdir, const char* dir, const char* fr
 
       if(rule->recipe.s == NULL) {
         stralloc_weak(&rule->recipe, cmd);
-        array_catb(&srcdir->rules, &rule, sizeof(target*));
+        array_catb(&srcdir->rule_map, &rule, sizeof(target*));
       }
     }
   }
@@ -527,7 +527,7 @@ generate_srcdir_rule(sourcedir* srcdir, bool batchmode, char psm) {
 }
 
 /**
- * @brief      Generate library rules for every source directory
+ * @brief      Generate library rule_map for every source directory
  *
  * @param      shell      Is shell script
  * @param      batch      Is batch file
@@ -546,7 +546,7 @@ generate_lib_rules(bool shell, bool batch, bool batchmode, char psa, char psm) {
 
   all = rule_get("all");
 
-  MAP_FOREACH(srcdir_map, t) {
+  MAP_FOREACH(sourcedir_map, t) {
     target* rule;
     sourcedir* srcdir = *(sourcedir**)MAP_ITER_VALUE(t);
     const char* base = path_basename(MAP_ITER_KEY(t));
@@ -569,7 +569,7 @@ generate_lib_rules(bool shell, bool batch, bool batchmode, char psa, char psm) {
     rule = generate_srcdir_lib_rule(srcdir, base, shell, batch, batchmode, psa, psm);
     set_adds(&link_libraries, rule->name);
     set_adds(&all->prereq, rule->name);
-    array_catb(&srcdir->rules, &rule, sizeof(target*));
+    array_catb(&srcdir->rule_map, &rule, sizeof(target*));
   }
 
   stralloc_free(&inc);
@@ -737,12 +737,12 @@ generate_program_rule(const char* name, char psa) {
 }
 
 /**
- * @brief      Generates linker rules
+ * @brief      Generates linker rule_map
  *
  * @param[in]  psa   Path separator for arguments
  * @param[in]  psm   Path separator for makefile
  *
- * @return     Number of rules generated
+ * @return     Number of rule_map generated
  */
 int
 generate_link_rules(char psa, char psm) {
@@ -806,7 +806,7 @@ generate_install_rules(void) {
   target* inst = NULL;
   const char* v = 0;
 
-  MAP_FOREACH(rules, t) {
+  MAP_FOREACH(rule_map, t) {
     target* rule = MAP_ITER_VALUE(t);
     bool do_lib =
         inst_libs && (str_end(MAP_ITER_KEY(t), ".lib") || str_end(MAP_ITER_KEY(t), ".a") || MAP_ITER_KEY(t)[str_find(MAP_ITER_KEY(t), ".so")] || rule->recipe.s == commands.lib.s);

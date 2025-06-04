@@ -101,10 +101,10 @@ output_var(buffer* b, MAP_T* vars, const char* name, int serial, build_tool_t to
 
         if(tool == TOOL_NINJA || tool == TOOL_SHELL) {
           stralloc_zero(&v);
-          var_subst(&u, &v, "$", "", 1);
+          rule_subst_sa(&u, &v, "$", "", 1);
         } else if(tool == TOOL_BATCH) {
           stralloc_zero(&v);
-          var_subst(&u, &v, "%", "%", 1);
+          rule_subst_sa(&u, &v, "%", "%", 1);
         } else {
           stralloc_copy(&v, &u);
         }
@@ -237,8 +237,8 @@ output_make_rule(buffer* b, target* rule, build_tool_t tool, const char quote_ar
   if(num_prereqs) {
     const char* str;
     size_t len;
-    bucket_t* it; 
-    
+    bucket_t* it;
+
     set_foreach_ordered(&rule->prereq, it, str, len) {
       if(stralloc_endb(&output, str, len))
         continue;
@@ -251,7 +251,7 @@ output_make_rule(buffer* b, target* rule, build_tool_t tool, const char quote_ar
         line_start += scan_lineskip(&output.s[line_start], output.len - line_start);
 
       stralloc_catb(&output, str, len);
-     }
+    }
   }
 
   if(rule->recipe.s) {
@@ -400,7 +400,7 @@ output_ninja_rule(buffer* b, const char* name, const stralloc* cmd) {
 
   buffer_putm_internal(b, "rule ", name, "\n  command = ", NULL);
 
-  var_subst(cmd, &out, "$", "", 1);
+  rule_subst_sa(cmd, &out, "$", "", 1);
 
   stralloc_replaces(&out, "$@", "$out");
   stralloc_replaces(&out, "$<", "$in");
@@ -431,7 +431,7 @@ void
 output_all_rules(buffer* b, build_tool_t tool, const char quote_args[], char psa, char psm, const char* make_sep_inline) {
   MAP_PAIR_T t;
 
-  MAP_FOREACH(rules, t) {
+  MAP_FOREACH(rule_map, t) {
     const char* name = MAP_ITER_KEY(t);
     target* rule = MAP_ITER_VALUE(t);
 

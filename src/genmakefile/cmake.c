@@ -317,16 +317,16 @@ output_cmake_rule(buffer* b, target* rule) {
 }
 
 /**
- * @brief      Output all CMake rules
+ * @brief      Output all CMake rule_map
  *
  * @param      b      Output buffer
- * @param[in]  rules  The rules
+ * @param[in]  rule_map  The rule_map
  */
 void
-output_cmake_rules(buffer* b, MAP_T rules) {
+output_cmake_rules(buffer* b, MAP_T rule_map) {
   MAP_PAIR_T t;
 
-  MAP_FOREACH(rules, t) {
+  MAP_FOREACH(rule_map, t) {
     const char* name = MAP_ITER_KEY(t);
     target* rule = MAP_ITER_VALUE(t);
 
@@ -359,13 +359,13 @@ output_cmake_rules(buffer* b, MAP_T rules) {
  * @brief      Outptus a CMake project() command
  *
  * @param      b             Output buffer
- * @param      rules         rules
+ * @param      rule_map         rule_map
  * @param      vars          Variables
  * @param[in]  include_dirs  include dirs
  * @param[in]  link_dirs     link dirs
  */
 void
-output_cmake_project(buffer* b, MAP_T* rules, MAP_T* vars, const strlist* include_dirs, const strlist* link_dirs) {
+output_cmake_project(buffer* b, MAP_T* rule_map, MAP_T* vars, const strlist* include_dirs, const strlist* link_dirs) {
   MAP_PAIR_T t;
   set_t libraries;
   const char* s;
@@ -389,7 +389,7 @@ output_cmake_project(buffer* b, MAP_T* rules, MAP_T* vars, const strlist* includ
 
   set_init(&libraries, 0);
 
-  MAP_FOREACH(*rules, t) {
+  MAP_FOREACH(*rule_map, t) {
     target* rule = MAP_ITER_VALUE(t);
 
     set_filter(&rule->prereq, &libraries, is_lib_b);
@@ -441,7 +441,7 @@ output_cmake_project(buffer* b, MAP_T* rules, MAP_T* vars, const strlist* includ
   output_cmake_cmd(b, "include_directories", include_dirs, 0);
   output_cmake_cmd(b, "link_directories", link_dirs, 0);
 
-  output_cmake_rules(b, *rules);
+  output_cmake_rules(b, *rule_map);
 
   set_free(&libraries);
 }

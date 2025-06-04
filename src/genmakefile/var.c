@@ -185,42 +185,6 @@ var_push_sa(const char* name, stralloc* value) {
 }
 
 /**
- * @brief      Substitute variable substitutions
- *
- * @param[in]  in       Input string
- * @param      out      Output
- * @param[in]  pfx      Prefix; add before substitution
- * @param[in]  sfx      Suffix; add after substitution
- * @param[in]  tolower  Transform to lowercase
- */
-void
-var_subst(const stralloc* in, stralloc* out, const char* pfx, const char* sfx, int tolower) {
-  stralloc_zero(out);
-
-  for(size_t i = 0; i < in->len; ++i) {
-    const char* p = &in->s[i];
-
-    if(i + 4 <= in->len && *p == '$' && p[1] == '(') {
-      size_t vlen;
-
-      stralloc_cats(out, pfx);
-      i += 2;
-      vlen = byte_chr(&in->s[i], in->len - i, ')');
-      stralloc_catb(out, &in->s[i], vlen);
-
-      if(tolower)
-        byte_lower(&out->s[out->len - vlen], vlen);
-
-      stralloc_cats(out, sfx);
-      i += vlen;
-      continue;
-    }
-
-    stralloc_append(out, p);
-  }
-}
-
-/**
  * @brief      Add library spec to variable
  *
  * @param      name  Variable name
@@ -306,6 +270,43 @@ push_define(const char* def) {
   var_push_sa("DEFS", &sa);
 
   stralloc_free(&sa);
+}
+
+/**
+ * @brief Substitues
+ * @param name [description]
+ * @param out  [description]
+ * @param in   [description]
+ */
+void
+var_subst_sa(const char* name, stralloc* out, const stralloc* in, const char* prefix, const char* suffix) {
+  if(!prefix)
+    prefix = "$(";
+  if(!suffix)
+    suffix = ")";
+
+  const char* value;
+
+  stralloc_zero(out);
+
+  if((value = var_get(name)) && value[0]) {
+  size_t vlen = str_chrs(value, "\t \0", 3);
+
+    for(size_t i = 0; i < in->len; ++i) {
+      if(i + vlen <= in->len) {
+        if(byte_equal(&in->s[i], vlen, value)) {
+          stralloc_cats(out, prefix);
+          stralloc_cats(out, name);
+          stralloc_cats(out, suffix);
+
+          i += vlen;
+          continue;
+        }
+      }
+
+      stralloc_catc(out, in->s[i]);
+    }
+  }
 }
 
 /**

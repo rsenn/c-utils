@@ -49,7 +49,7 @@ static build_tool_t build_tool = 0;
 char pathsep_make = DEFAULT_PATHSEP, pathsep_args = DEFAULT_PATHSEP;
 strarray dirstack = {0};
 int cmd_objs = 0, cmd_libs = 0, cmd_bins = 0, cmd_module = 0;
-union commands commands;
+commands_t commands;
 strlist vpath = {0}, build_as_lib = {0}, link_dirs = {0};
 set_t link_libraries = {0, 0, 0, byte_hash}, build_directories = {0, 0, 0, byte_hash};
 bool inst_bins = false, inst_libs = false;
@@ -364,7 +364,7 @@ deps_for_libs(void) {
 
   set_init(&indir, 0);
 
-  MAP_FOREACH(srcdir_map, t) {
+  MAP_FOREACH(sourcedir_map, t) {
     sourcedir* srcdir = *(sourcedir**)MAP_ITER_VALUE(t);
     target* lib;
     stralloc sa;
@@ -660,7 +660,7 @@ set_make_type() {
   } else if(str_equal(tools.make, "mplab")) {
   } else if(str_equal(tools.make, "cmake")) {
     builddir_varname = "CMAKE_CURRENT_BINARY_DIR";
-    srcdir_varname = "CMAKE_CURRENT_SOURCE_DIR";
+    sourcedir_varname = "CMAKE_CURRENT_SOURCE_DIR";
   }
 
   if(inst_bins || inst_libs)
@@ -1371,11 +1371,11 @@ usage(char* argv0) {
                        "  -B, --exeext EXT          binary file extension\n"
                        "  -X, --libext EXT          library file extension\n"
                        "\n"
-                       "      --create-libs         create rules for libraries\n"
-                       "      --create-objs         create rules for objects\n"
-                       "      --create-bins         create rules for programs\n"
-                       "      --create-module       create rules for loadable module\n"
-                       "  -i, --install             create installation rules\n"
+                       "      --create-libs         create rule_map for libraries\n"
+                       "      --create-objs         create rule_map for objects\n"
+                       "      --create-bins         create rule_map for programs\n"
+                       "      --create-module       create rule_map for loadable module\n"
+                       "  -i, --install             create installation rule_map\n"
                        "\n"
                        //"  -R, --objdir   DIR        object directory\n"
                        "  -O, --outdir   DIR        output directory\n"
@@ -1520,15 +1520,16 @@ main(int argc, char* argv[]) {
 
   byte_zero(&cfg, sizeof(cfg));
   byte_zero(&dirs, sizeof(dirs));
-  byte_zero(&rules, sizeof(rules));
+  byte_zero(&rule_map, sizeof(rule_map));
   byte_zero(&vars, sizeof(vars));
   byte_zero(&bins, sizeof(bins));
   byte_zero(&tools, sizeof(tools));
   set_init(&link_libraries, 0);
   set_init(&build_directories, 0);
-  MAP_NEW(srcdir_map);
+
+  MAP_NEW(sourcedir_map);
   MAP_NEW(targetdirs);
-  MAP_NEW(rules);
+  MAP_NEW(rule_map);
   MAP_NEW(vars);
 
 #if defined(_WIN32) || defined(_WIN64) || WINDOWS_NATIVE
@@ -1706,9 +1707,9 @@ main(int argc, char* argv[]) {
 
       case 'I': {
 #ifdef DEBUG_OUTPUT_
-        buffer_puts(buffer_2, "Add -I: ");
-        buffer_puts(buffer_2, arg);
-        buffer_putnlflush(buffer_2);
+        buffer_puts(debug_buf, "Add -I: ");
+        buffer_puts(debug_buf, arg);
+        buffer_putnlflush(debug_buf);
 #endif
         strarray_push(&includes, arg);
         break;
@@ -1716,9 +1717,9 @@ main(int argc, char* argv[]) {
 
       case 'L': {
 #ifdef DEBUG_OUTPUT_
-        buffer_puts(buffer_2, "Add -L: ");
-        buffer_puts(buffer_2, arg);
-        buffer_putnlflush(buffer_2);
+        buffer_puts(debug_buf, "Add -L: ");
+        buffer_puts(debug_buf, arg);
+        buffer_putnlflush(debug_buf);
 #endif
         strarray_push(&libdirs, arg);
         break;
@@ -1834,8 +1835,8 @@ main(int argc, char* argv[]) {
     strlist_foreach(&tmp, s, n) { set_add(&toks, s, n); }
 
 #ifdef DEBUG_OUTPUT_
-    buffer_puts(buffer_2, "toks: ");
-    buffer_putset(buffer_2, &toks, " ", 1);
+    buffer_puts(debug_buf, "toks: ");
+    buffer_putset(debug_buf, &toks, " ", 1);
 #endif
   }
 
@@ -2061,12 +2062,69 @@ main(int argc, char* argv[]) {
   if(infile) {
     input_process_file(infile, all);
 
+    MAP_PAIR_T iter;
+
+    MAP_FOREACH(rule_map, iter) {
+      target* rule = MAP_ITER_VALUE(iter);
+      static const char* varnames[] = {
+          "CC",
+          "CFLAGS",
+          "CPPFLAGS",
+          "LDFLAGS",
+          0,
+      };
+      bool modified = false;
+
+      for(size_t i = 0; varnames[i]; ++i) {
+        const char* value;
+        //  char namebuf[64];
+
+        if(!(value = var_get(varnames[i])) || !value[0])
+          continue;
+
+#ifdef DEBUG_OUTPUT_
+        buffer_putm_internal(debug_buf, "Rule: ", rule->name, 0);
+        buffer_putm_internal(debug_buf, " ", "Variable: ", varnames[i], 0);
+        buffer_putm_internal(debug_buf, " ", "Value: ", value, 0);
+        buffer_putnlflush(debug_buf);
+#endif
+        
+        if(stralloc_contains(&rule->recipe, value)) {
+          size_t j = 0;
+          stralloc tmp;
+          stralloc_init(&tmp);
+
+          /*      namebuf[j++] = '$';
+                namebuf[j++] = '(';
+                j += str_copy(&namebuf[j], varnames[i]);
+                namebuf[j++] = ')';
+                namebuf[j++] = '\0';*/
+
+          var_subst_sa(varnames[i], &tmp, &rule->recipe, 0, 0);
+
+          // stralloc_subst(&tmp, rule->recipe.s, rule->recipe.len, value, namebuf);
+
+          stralloc_copy(&rule->recipe, &tmp);
+          stralloc_nul(&rule->recipe);
+          stralloc_free(&tmp);
+
+          modified = true;
+        }
+      }
+
+      if(modified) {
+        buffer_putm_internal(buffer_1, "Modified: ", rule->name, 0);
+        buffer_putm_internal(buffer_1, " ", "Recipe: ", rule->recipe.s, 0);
+        buffer_putnlflush(buffer_1);
+      }
+    }
+
 #ifdef DEBUG_OUTPUT_
     buffer_puts(buffer_2, "build_directories =\n\t");
     buffer_putset(buffer_2, &build_directories, "\n\t", 2);
     buffer_putnlflush(buffer_2);
 #endif
-    // stralloc_free(&dirs.work.sa);
+
     {
       stralloc builddir;
 
@@ -2091,7 +2149,7 @@ main(int argc, char* argv[]) {
 
     set_clear(&compile->output);
 
-    MAP_FOREACH(rules, it) {
+    MAP_FOREACH(rule_map, it) {
       target* rule = MAP_ITER_VALUE(it);
 
       if(rule_is_compile(rule) && rule != compile) {
@@ -2332,7 +2390,7 @@ main(int argc, char* argv[]) {
       buffer_putnlflush(buffer_2);
     }
     buffer_putnlflush(buffer_2);
-    sourcedir_dump_all(buffer_2, srcdir_map);
+    sourcedir_dump_all(buffer_2, sourcedir_map);
 #endif
 
     if(cmd_libs) {
@@ -2340,12 +2398,12 @@ main(int argc, char* argv[]) {
       deps_for_libs();
     } else {
       MAP_PAIR_T t;
-      MAP_FOREACH(srcdir_map, t) {
+      MAP_FOREACH(sourcedir_map, t) {
         sourcedir* srcdir = *(sourcedir**)MAP_ITER_VALUE(t);
         /*if(tools.preproc) {
-          generate_simple_compile_rules(rules, srcdir, MAP_ITER_KEY(t),
+          generate_simple_compile_rules(rule_map, srcdir, MAP_ITER_KEY(t),
         exts.src, exts.pps, &commands.preprocess);
-          generate_simple_compile_rules(rules, srcdir, MAP_ITER_KEY(t),
+          generate_simple_compile_rules(rule_map, srcdir, MAP_ITER_KEY(t),
         exts.pps, exts.obj, &commands.compile); } else */
         { generate_simple_compile_rules(srcdir, MAP_ITER_KEY(t), exts.src, exts.obj, &commands.compile, pathsep_args); }
       }
@@ -2384,7 +2442,7 @@ main(int argc, char* argv[]) {
     if(cmd_bins == 0 || cmd_libs == 1) {
       MAP_PAIR_T t;
 
-      MAP_FOREACH(rules, t) {
+      MAP_FOREACH(rule_map, t) {
         target* tgt = MAP_ITER_VALUE(t);
 
         if(stralloc_equal(&tgt->recipe, &commands.lib) && cmd_libs)
@@ -2397,7 +2455,7 @@ main(int argc, char* argv[]) {
 
   {
     MAP_PAIR_T t;
-    MAP_FOREACH(rules, t) {
+    MAP_FOREACH(rule_map, t) {
       target* rule = MAP_ITER_VALUE(t);
 
       if(rule_is_link(rule))
@@ -2411,7 +2469,7 @@ main(int argc, char* argv[]) {
   {
     MAP_PAIR_T t;
 
-    MAP_FOREACH(srcdir_map, t) {
+    MAP_FOREACH(sourcedir_map, t) {
       sourcedir* srcdir = *(sourcedir**)MAP_ITER_VALUE(t);
 
 #if DEBUG_OUTPUT_
@@ -2422,13 +2480,13 @@ main(int argc, char* argv[]) {
   }
 
 #ifdef DEBUG_OUTPUT
-  buffer_puts(debug_buf, "Dumping all rules...\n");
+  buffer_puts(debug_buf, "Dumping all rule_map...\n");
 
   {
     int i = 0;
     MAP_PAIR_T t;
 
-    MAP_FOREACH(rules, t) {
+    MAP_FOREACH(rule_map, t) {
       target* rule = MAP_ITER_VALUE(t);
 
       buffer_puts(debug_buf, PINK256 "Rule" NC " #");
@@ -2451,7 +2509,7 @@ fail:
 
     strlist_init(&rule_names, '\0');
 
-    map_keys_get(&rules, &rule_names);
+    map_keys_get(&rule_map, &rule_names);
 
     buffer_puts(debug_buf, "rule_names:\n\t");
     buffer_putsl(debug_buf, &rule_names, " \\\n\t");
@@ -2461,7 +2519,7 @@ fail:
 #endif
 
   if(!case_diffs(tools.make, "cmake")) {
-    output_cmake_project(out, &rules, &vars, &include_dirs, &link_dirs);
+    output_cmake_project(out, &rule_map, &vars, &include_dirs, &link_dirs);
     goto quit;
   }
 
@@ -2518,7 +2576,7 @@ fail:
   {
     MAP_PAIR_T t;
 
-    MAP_FOREACH(rules, t) {
+    MAP_FOREACH(rule_map, t) {
       const char* name = MAP_ITER_KEY(t);
       target* rule = MAP_ITER_VALUE(t);
 
@@ -2556,7 +2614,7 @@ quit : {
 
   strlist_init(&deps, '\0');
 
-  MAP_FOREACH(srcdir_map, t) {
+  MAP_FOREACH(sourcedir_map, t) {
     sourcedir* sdir = *(sourcedir**)MAP_ITER_VALUE(t);
 
     if(1 /* && set_size(&sdir->deps)*/) {
@@ -2605,6 +2663,7 @@ quit : {
   strarray_free(&includes);
   stralloc_free(&tmp);
 
-  // MAP_DESTROY(srcdir_map);
+  MAP_DESTROY(sourcedir_map);
+
   return ret;
 }

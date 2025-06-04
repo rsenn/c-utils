@@ -6,6 +6,6 @@
 #include "../../lib/map.h"
 #include "../../lib/strlist.h"
 
-void output_cmake_project(buffer* b, MAP_T* rules, MAP_T* vars, const strlist* include_dirs, const strlist* link_dirs);
+void output_cmake_project(buffer* b, MAP_T* rule_map, MAP_T* vars, const strlist* include_dirs, const strlist* link_dirs);
 
 #endif

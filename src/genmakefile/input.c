@@ -836,7 +836,7 @@ input_process_line(const char* x, size_t n, const char* file, size_t line) {
 }
 
 /**
- * @brief      Process all rules
+ * @brief      Process all rule_map
  *
  * @param      all   "all" rule
  */
@@ -856,14 +856,14 @@ input_process_rules(target* all) {
 
 #ifdef DEBUG_OUTPUT
   buffer_putm_internal(debug_buf, YELLOW256, __func__, NC, " Rules count: ", 0);
-  buffer_putlong(debug_buf, MAP_SIZE(rules));
+  buffer_putlong(debug_buf, MAP_SIZE(rule_map));
   buffer_putnlflush(debug_buf);
 #endif
 
   /* MAP_DESTROY(vars);
    MAP_NEW(vars);*/
 
-  MAP_FOREACH(rules, t) {
+  MAP_FOREACH(rule_map, t) {
     const char* name = MAP_ITER_KEY(t);
     target* rule = MAP_ITER_VALUE(t);
     size_t dlen;
@@ -932,10 +932,10 @@ input_process_rules(target* all) {
   buffer_putnlflush(buffer_2);
 #endif
 
-  if(!var_isset(srcdir_varname)) {
+  if(!var_isset(sourcedir_varname)) {
     path_relative_b(dirs.out.sa.s, dirs.out.sa.len, &dirs.out.sa);
 
-    var_setb(srcdir_varname, dirs.out.sa.s, dirs.out.sa.len);
+    var_setb(sourcedir_varname, dirs.out.sa.s, dirs.out.sa.len);
   }
 
   cflags = var_list("CFLAGS", ' ');
@@ -1018,7 +1018,7 @@ input_process_rules(target* all) {
     strlist_free(&compiler);
   }
 
-  /*MAP_FOREACH(rules, t) {
+  /*MAP_FOREACH(rule_map, t) {
       target* rule = MAP_ITER_VALUE(t);
       stralloc* sa = &commands.v[rule->type];
 
@@ -1026,7 +1026,7 @@ input_process_rules(target* all) {
         stralloc_copy(&rule->recipe, sa);
     }*/
 
-  MAP_FOREACH(rules, t) {
+  MAP_FOREACH(rule_map, t) {
     const char* name = MAP_ITER_KEY(t);
     target* rule = MAP_ITER_VALUE(t);
     size_t dlen;

@@ -33,13 +33,19 @@ typedef struct {
   int lang;
 } config_t;
 
-typedef enum { PREPROCESS = 0, COMPILE, LIB, LINK, MKDIR, CLEAN, NUM_COMMANDS } command_type;
+typedef enum {
+  UNKNOWN = -1,
+  PREPROCESS = 0,
+  COMPILE,
+  LIB,
+  LINK,
+  MKDIR,
+  CLEAN,
+  NUM_COMMANDS,
+} command_type;
 
-union commands {
-  stralloc v[NUM_COMMANDS];
-  struct {
-    stralloc preprocess, compile, lib, link, mkdir, delete;
-  };
-};
+typedef struct commands {
+  stralloc preprocess, compile, lib, link, mkdir, delete;
+} commands_t;
 
 #endif /* defined(GENMAKEFILE_TYPES_H) */
