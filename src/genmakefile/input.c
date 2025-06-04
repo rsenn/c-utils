@@ -412,12 +412,9 @@ input_process_command(stralloc* cmd, int argc, char* argv[], const char* file, s
     strlist_removeb(&files, out.s, out.len);
   }
 
-
-if(out.len  == 0 && compile) {
-  stralloc_copys(&out, path_basename())
-}
-
-
+  if(out.len == 0 && compile) {
+    stralloc_copys(&out, path_basename2(files.sa.s, byte_chr(files.sa.s, files.sa.len, files.sep)));
+  }
 
   stralloc_copy(cmd, &args.sa);
   stralloc_nul(cmd);
@@ -437,8 +434,6 @@ if(out.len  == 0 && compile) {
       }
     }
   }
-
-
 
   /* Relocate output file */
 

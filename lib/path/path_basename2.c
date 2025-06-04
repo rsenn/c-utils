@@ -8,17 +8,17 @@
    ".       ."           "."            ".."
 */
 char*
-path_basename(const char* path) {
+path_basename2(const char* path, size_t len) {
   char* x = (char*)path;
   size_t n;
 
 again:
-  n = u8s_rchrs(x, PATHSEP_S_MIXED, sizeof(PATHSEP_S_MIXED) - 1);
+  n = u8b_rchrs(x, len, PATHSEP_S_MIXED, sizeof(PATHSEP_S_MIXED) - 1);
 
-  if(x[n] == '\0')
+  if(n == len)
     return x;
 
-  if(x[n + 1] == 0) {
+  if(n + 1 == len) {
     if(n == 0)
       return x;
 
