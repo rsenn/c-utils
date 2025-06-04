@@ -202,9 +202,9 @@ output_make_rule(buffer* b, target* rule, build_tool_t tool, const char quote[],
   stralloc_catset(&sa, &rule->output, " \\\n");
 
 #ifdef DEBUG_OUTPUT_
-  buffer_puts(buffer_2, "RULE OUTPUT: ");
-  buffer_putsa_escaped(buffer_2, &sa, &fmt_escapecharcontrol);
-  buffer_putnlflush(buffer_2);
+  buffer_puts(debug_buf, "RULE OUTPUT: ");
+  buffer_putsa_escaped(debug_buf, &sa, &fmt_escapecharcontrol);
+  buffer_putnlflush(debug_buf);
 #endif
 
   strlist_foreach(&rule->vars, x, n) {

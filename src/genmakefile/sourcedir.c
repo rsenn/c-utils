@@ -122,9 +122,9 @@ extract_pptok(const char* x, size_t n, set_t* tokens) {
             len = pos;
 
 #ifdef DEBUG_OUTPUT_
-          buffer_puts(buffer_2, "pptoks: ");
-          buffer_put(buffer_2, x, len);
-          buffer_putnlflush(buffer_2);
+          buffer_puts(debug_buf, "pptoks: ");
+          buffer_put(debug_buf, x, len);
+          buffer_putnlflush(debug_buf);
 #endif
           extract_tokens(x, len, tokens);
         }
@@ -234,9 +234,9 @@ sourcedir_addsource(const char* source, strarray* sources, strarray* progs, stra
 
     if(path_exists(r.s) || includes_find_sa(s, n, &r)) {
 #ifdef DEBUG_OUTPUT_
-      buffer_putm_internal(buffer_2, "[2]", GREEN256, "sourcedir_addsource(", NC, source, GREEN256, ") ", NC, "Adding include ", 0);
-      buffer_putsa(buffer_2, &r);
-      buffer_putnlflush(buffer_2);
+      buffer_putm_internal(debug_buf, "[2]", GREEN256, "sourcedir_addsource(", NC, source, GREEN256, ") ", NC, "Adding include ", 0);
+      buffer_putsa(debug_buf, &r);
+      buffer_putnlflush(debug_buf);
 #endif
 
       set_addsa(&srcdir->includes, &r);

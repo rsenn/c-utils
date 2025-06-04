@@ -1339,9 +1339,9 @@ libdirs_add(const char* dir) {
 
   if(strlist_push_unique_sa(&link_dirs, &tmp)) {
 #ifdef DEBUG_OUTPUT_
-    buffer_puts(buffer_2, "Added to lib dirs: ");
-    buffer_putsa(buffer_2, &tmp);
-    buffer_putnlflush(buffer_2);
+    buffer_puts(debug_buf, "Added to lib dirs: ");
+    buffer_putsa(debug_buf, &tmp);
+    buffer_putnlflush(debug_buf);
 #endif
   }
 
@@ -1790,6 +1790,9 @@ main(int argc, char* argv[]) {
   if(str_equal(tools.make, "gmake"))
     make_capabs |= MAKE_RULE_PATTERN;
 
+  if(str_equal(tools.make, "make"))
+    make_capabs |= MAKE_RULE_IMPLICIT;
+
   if(tools.toolchain)
     cygming = str_start(tools.toolchain, "mingw") || str_start(tools.toolchain, "cyg") || str_start(tools.toolchain, "msys");
 
@@ -2049,6 +2052,9 @@ main(int argc, char* argv[]) {
     compile_target = rule_get_sa(&rn);
     compile_target->outputs = outputs;
 
+    if(stralloc_length(&compile_target->recipe) == 0)
+      stralloc_copy(&compile_target->recipe, &commands.compile);
+
     stralloc_free(&rn);
   }
 
@@ -2122,9 +2128,9 @@ main(int argc, char* argv[]) {
     }
 
 #ifdef DEBUG_OUTPUT_
-    buffer_puts(buffer_2, "build_directories =\n\t");
-    buffer_putset(buffer_2, &build_directories, "\n\t", 2);
-    buffer_putnlflush(buffer_2);
+    buffer_puts(debug_buf, "build_directories =\n\t");
+    buffer_putset(debug_buf, &build_directories, "\n\t", 2);
+    buffer_putnlflush(debug_buf);
 #endif
 
     {
@@ -2262,15 +2268,15 @@ main(int argc, char* argv[]) {
   }
 
 #ifdef DEBUG_OUTPUT_
-  buffer_puts(buffer_2, "args: ");
-  strarray_dump(buffer_2, &args);
+  buffer_puts(debug_buf, "args: ");
+  strarray_dump(debug_buf, &args);
 #endif
 
   strarray_foreach(&args, arg) {
 #ifdef DEBUG_OUTPUT_
-    buffer_puts(buffer_2, "argument: ");
-    buffer_puts(buffer_2, *arg);
-    buffer_putnlflush(buffer_2);
+    buffer_puts(debug_buf, "argument: ");
+    buffer_puts(debug_buf, *arg);
+    buffer_putnlflush(debug_buf);
 #endif
 #if 0 // WINDOWS_NATIVE
     glob_t gl;
@@ -2313,9 +2319,9 @@ main(int argc, char* argv[]) {
     set_foreach(&sources_set, it, x, n) {
 
 #ifdef DEBUG_OUTPUT_
-      buffer_puts(buffer_2, "adding to sources: ");
-      buffer_put(buffer_2, x, n);
-      buffer_putnlflush(buffer_2);
+      buffer_puts(debug_buf, "adding to sources: ");
+      buffer_put(debug_buf, x, n);
+      buffer_putnlflush(debug_buf);
 #endif
 
       if(is_source_b(x, n))
@@ -2362,9 +2368,9 @@ main(int argc, char* argv[]) {
     stralloc_init(&src);
 
 #ifdef DEBUG_OUTPUT_
-    buffer_puts(buffer_2, "strarray sources: ");
-    strarray_dump(buffer_2, &sources);
-    buffer_putnlflush(buffer_2);
+    buffer_puts(debug_buf, "strarray sources: ");
+    strarray_dump(debug_buf, &sources);
+    buffer_putnlflush(debug_buf);
 #endif
 
     strarray_init(&sources2);
@@ -2377,42 +2383,42 @@ main(int argc, char* argv[]) {
     stralloc_free(&src);
 
 #ifdef DEBUG_OUTPUT_
-    buffer_puts(buffer_2, "targetdirs:\n");
+    buffer_puts(debug_buf, "targetdirs:\n");
 
     MAP_FOREACH(targetdirs, t) {
       uint32* count_ptr = (uint32*)MAP_ITER_VALUE(t);
 
-      buffer_puts(buffer_2, "  '");
-      buffer_puts(buffer_2, MAP_ITER_KEY(t));
-      buffer_puts(buffer_2, "' => ");
-      buffer_putulong(buffer_2, *count_ptr);
-      buffer_putnlflush(buffer_2);
+      buffer_puts(debug_buf, "  '");
+      buffer_puts(debug_buf, MAP_ITER_KEY(t));
+      buffer_puts(debug_buf, "' => ");
+      buffer_putulong(debug_buf, *count_ptr);
+      buffer_putnlflush(debug_buf);
     }
-    buffer_putnlflush(buffer_2);
+    buffer_putnlflush(debug_buf);
 #endif
 
 #ifdef DEBUG_OUTPUT_
-    buffer_puts(buffer_2, "cmd_libs = ");
-    buffer_putlong(buffer_2, cmd_libs);
-    buffer_puts(buffer_2, " cmd_bins = ");
-    buffer_putlong(buffer_2, cmd_libs);
-    buffer_puts(buffer_2, " cmd_objs = ");
-    buffer_putlong(buffer_2, cmd_objs);
-    buffer_putnlflush(buffer_2);
+    buffer_puts(debug_buf, "cmd_libs = ");
+    buffer_putlong(debug_buf, cmd_libs);
+    buffer_puts(debug_buf, " cmd_bins = ");
+    buffer_putlong(debug_buf, cmd_libs);
+    buffer_puts(debug_buf, " cmd_objs = ");
+    buffer_putlong(debug_buf, cmd_objs);
+    buffer_putnlflush(debug_buf);
 #endif
 
 #ifdef DEBUG_OUTPUT_
     MAP_FOREACH(targetdirs, t) {
       uint32* count_ptr = (uint32*)MAP_ITER_VALUE(t);
 
-      buffer_puts(buffer_2, "  '");
-      buffer_puts(buffer_2, MAP_ITER_KEY(t));
-      buffer_puts(buffer_2, "' => ");
-      buffer_putulong(buffer_2, *count_ptr);
-      buffer_putnlflush(buffer_2);
+      buffer_puts(debug_buf, "  '");
+      buffer_puts(debug_buf, MAP_ITER_KEY(t));
+      buffer_puts(debug_buf, "' => ");
+      buffer_putulong(debug_buf, *count_ptr);
+      buffer_putnlflush(debug_buf);
     }
-    buffer_putnlflush(buffer_2);
-    sourcedir_dump_all(buffer_2, sourcedir_map);
+    buffer_putnlflush(debug_buf);
+    sourcedir_dump_all(debug_buf, sourcedir_map);
 #endif
 
     if(cmd_libs) {
@@ -2495,8 +2501,8 @@ main(int argc, char* argv[]) {
       sourcedir* srcdir = *(sourcedir**)MAP_ITER_VALUE(t);
 
 #if DEBUG_OUTPUT_
-      buffer_putm_internal(buffer_2, "key: ", t->key, " pptoks: ", NULL);
-      buffer_putset(buffer_2, &srcdir->pptoks, ", ", 2);
+      buffer_putm_internal(debug_buf, "key: ", t->key, " pptoks: ", NULL);
+      buffer_putset(debug_buf, &srcdir->pptoks, ", ", 2);
 #endif
     }
   }

@@ -363,10 +363,10 @@ input_process_command(stralloc* cmd, int argc, char* argv[], const char* file, s
         y = x;
 
 #ifdef DEBUG_OUTPUT_
-        buffer_putm_internal(buffer_2, GREEN256, __func__, NC, " File '", 0);
-        buffer_put(buffer_2, y, len);
-        buffer_puts(buffer_2, "");
-        buffer_putnlflush(buffer_2);
+        buffer_putm_internal(debug_buf, GREEN256, __func__, NC, " File '", 0);
+        buffer_put(debug_buf, y, len);
+        buffer_puts(debug_buf, "");
+        buffer_putnlflush(debug_buf);
 #endif
 
         if(is_filename_b(y, len)) {
@@ -387,10 +387,10 @@ input_process_command(stralloc* cmd, int argc, char* argv[], const char* file, s
           stralloc_nul(&tmp);
 
 #ifdef DEBUG_OUTPUT_
-          buffer_putm_internal(buffer_2, GREEN256, __func__, NC, " File '", 0);
-          buffer_put(buffer_2, tmp.s, tmp.len);
-          buffer_puts(buffer_2, "'");
-          buffer_putnlflush(buffer_2);
+          buffer_putm_internal(debug_buf, GREEN256, __func__, NC, " File '", 0);
+          buffer_put(debug_buf, tmp.s, tmp.len);
+          buffer_puts(debug_buf, "'");
+          buffer_putnlflush(debug_buf);
 #endif
 
           if(is_source_sa(&tmp))
@@ -432,9 +432,9 @@ input_process_command(stralloc* cmd, int argc, char* argv[], const char* file, s
         strlist_pushb_unique(&common_flags_list, x, n);
 
 #ifdef DEBUG_OUTPUT
-        buffer_puts(buffer_1, "Common flag: ");
-        buffer_put(buffer_1, x, n);
-        buffer_putnlflush(buffer_1);
+        buffer_puts(debug_buf, "Common flag: ");
+        buffer_put(debug_buf, x, n);
+        buffer_putnlflush(debug_buf);
 #endif
       }
     }
@@ -499,27 +499,27 @@ input_process_command(stralloc* cmd, int argc, char* argv[], const char* file, s
      link = 1;
  */
 #ifdef DEBUG_OUTPUT_
-  buffer_putm_internal(buffer_2, GREEN256, __func__, NC, " '", 0);
-  buffer_putsa(buffer_2, cmd);
-  buffer_puts(buffer_2, "'\treldir = ");
-  buffer_putsa(buffer_2, &rel);
-  buffer_puts(buffer_2, "\n\tbuilddir = ");
-  buffer_putsa(buffer_2, &dirs.build.sa);
-  buffer_puts(buffer_2, "\n\toutdir = ");
-  buffer_putsa(buffer_2, &dirs.out.sa);
-  buffer_puts(buffer_2, "\n\tcmd = ");
-  buffer_putsa(buffer_2, cmd);
-  buffer_puts(buffer_2, "\n\tcompile = ");
-  buffer_putlong(buffer_2, compile);
-  buffer_puts(buffer_2, "\n\tlink = ");
-  buffer_putlong(buffer_2, link);
-  buffer_puts(buffer_2, "\n\tlib = ");
-  buffer_putlong(buffer_2, lib);
-  buffer_puts(buffer_2, "\n\targs =\n\t\t");
-  buffer_putsl(buffer_2, &args, "\n\t\t");
-  buffer_puts(buffer_2, "\n\tfiles =\n\t\t");
-  buffer_putsl(buffer_2, &files, "\n\t\t");
-  buffer_putnlflush(buffer_2);
+  buffer_putm_internal(debug_buf, GREEN256, __func__, NC, " '", 0);
+  buffer_putsa(debug_buf, cmd);
+  buffer_puts(debug_buf, "'\treldir = ");
+  buffer_putsa(debug_buf, &rel);
+  buffer_puts(debug_buf, "\n\tbuilddir = ");
+  buffer_putsa(debug_buf, &dirs.build.sa);
+  buffer_puts(debug_buf, "\n\toutdir = ");
+  buffer_putsa(debug_buf, &dirs.out.sa);
+  buffer_puts(debug_buf, "\n\tcmd = ");
+  buffer_putsa(debug_buf, cmd);
+  buffer_puts(debug_buf, "\n\tcompile = ");
+  buffer_putlong(debug_buf, compile);
+  buffer_puts(debug_buf, "\n\tlink = ");
+  buffer_putlong(debug_buf, link);
+  buffer_puts(debug_buf, "\n\tlib = ");
+  buffer_putlong(debug_buf, lib);
+  buffer_puts(debug_buf, "\n\targs =\n\t\t");
+  buffer_putsl(debug_buf, &args, "\n\t\t");
+  buffer_puts(debug_buf, "\n\tfiles =\n\t\t");
+  buffer_putsl(debug_buf, &files, "\n\t\t");
+  buffer_putnlflush(debug_buf);
 #endif
 
   if(out.len == 0) {
@@ -565,18 +565,18 @@ input_process_command(stralloc* cmd, int argc, char* argv[], const char* file, s
    }*/
 
 #ifdef DEBUG_OUTPUT_
-  buffer_puts(buffer_2, file);
-  buffer_puts(buffer_2, ":");
-  buffer_putulong(buffer_2, line);
-  buffer_puts(buffer_2, ",\n\tobjects = ");
-  buffer_putulong(buffer_2, objects);
-  buffer_puts(buffer_2, ",\n\toutput = ");
-  buffer_putsa(buffer_2, &out);
-  buffer_puts(buffer_2, ",\n\tcmd = ");
-  buffer_putsa(buffer_2, cmd);
-  buffer_puts(buffer_2, ",\n\tfiles =\n\t\t");
-  buffer_putsl(buffer_2, &files, ",\n\t\t");
-  buffer_putnlflush(buffer_2);
+  buffer_puts(debug_buf, file);
+  buffer_puts(debug_buf, ":");
+  buffer_putulong(debug_buf, line);
+  buffer_puts(debug_buf, ",\n\tobjects = ");
+  buffer_putulong(debug_buf, objects);
+  buffer_puts(debug_buf, ",\n\toutput = ");
+  buffer_putsa(debug_buf, &out);
+  buffer_puts(debug_buf, ",\n\tcmd = ");
+  buffer_putsa(debug_buf, cmd);
+  buffer_puts(debug_buf, ",\n\tfiles =\n\t\t");
+  buffer_putsl(debug_buf, &files, ",\n\t\t");
+  buffer_putnlflush(debug_buf);
 #endif
 
   if(out.len) {
@@ -616,16 +616,16 @@ input_process_command(stralloc* cmd, int argc, char* argv[], const char* file, s
 
   if(do_rule && (lib || link || compile)) {
 #ifdef DEBUG_OUTPUT_
-    buffer_puts(buffer_2, "Create ");
-    buffer_puts(buffer_2, lib ? "lib" : link ? "link" : compile ? "compile" : "other");
-    buffer_puts(buffer_2, " RULE\n\toutput = ");
-    buffer_putsa(buffer_2, &out);
+    buffer_puts(debug_buf, "Create ");
+    buffer_puts(debug_buf, lib ? "lib" : link ? "link" : compile ? "compile" : "other");
+    buffer_puts(debug_buf, " RULE\n\toutput = ");
+    buffer_putsa(debug_buf, &out);
 
-    buffer_puts(buffer_2, "\n\tcommand = ");
-    buffer_put(buffer_2, cmd->s, scan_nonwhitenskip(cmd->s, cmd->len));
-    buffer_puts(buffer_2, "\n\tfiles =\n\t\t");
-    buffer_putsl(buffer_2, &files, ",\n\t\t");
-    buffer_putnlflush(buffer_2);
+    buffer_puts(debug_buf, "\n\tcommand = ");
+    buffer_put(debug_buf, cmd->s, scan_nonwhitenskip(cmd->s, cmd->len));
+    buffer_puts(debug_buf, "\n\tfiles =\n\t\t");
+    buffer_putsl(debug_buf, &files, ",\n\t\t");
+    buffer_putnlflush(debug_buf);
 #endif
 
     stralloc_catc(cmd, ' ');
@@ -680,11 +680,11 @@ input_process_command(stralloc* cmd, int argc, char* argv[], const char* file, s
         }
 
 #ifdef DEBUG_OUTPUT_
-        buffer_puts(buffer_2, "\trule = '");
-        buffer_puts(buffer_2, rule->name);
-        buffer_puts(buffer_2, "'\n\tprereq = ");
-        buffer_putset(buffer_2, &rule->prereq, " ", 1);
-        buffer_putnlflush(buffer_2);
+        buffer_puts(debug_buf, "\trule = '");
+        buffer_puts(debug_buf, rule->name);
+        buffer_puts(debug_buf, "'\n\tprereq = ");
+        buffer_putset(debug_buf, &rule->prereq, " ", 1);
+        buffer_putnlflush(debug_buf);
 #endif
 
         /*if(compile) {
@@ -709,8 +709,8 @@ input_process_command(stralloc* cmd, int argc, char* argv[], const char* file, s
   }
 
 #ifdef DEBUG_OUTPUT_
-  buffer_putm_internal(buffer_2, "end ", GREEN256, __func__, NC, 0);
-  buffer_putnlflush(buffer_2);
+  buffer_putm_internal(debug_buf, "end ", GREEN256, __func__, NC, 0);
+  buffer_putnlflush(debug_buf);
 #endif
 
   stralloc_free(&rel);
@@ -744,10 +744,10 @@ input_process_line(const char* x, size_t n, const char* file, size_t line) {
   strarray args;
 
 #ifdef DEBUG_OUTPUT_
-  buffer_putm_internal(buffer_2, PINK256, __func__, NC, " \"", 0);
-  buffer_put_escaped(buffer_2, x, n, fmt_escapecharshell);
-  buffer_puts(buffer_2, "\"");
-  buffer_putnlflush(buffer_2);
+  buffer_putm_internal(debug_buf, PINK256, __func__, NC, " \"", 0);
+  buffer_put_escaped(debug_buf, x, n, fmt_escapecharshell);
+  buffer_puts(debug_buf, "\"");
+  buffer_putnlflush(debug_buf);
 #endif
 
   stralloc_init(&command);
@@ -831,9 +831,9 @@ input_process_line(const char* x, size_t n, const char* file, size_t line) {
 
 #ifdef DEBUG_OUTPUT_
       if(strarray_size(&args) >= 1) {
-        buffer_puts(buffer_2, "glob = ");
-        strarray_dump(buffer_2, &args);
-        buffer_putnlflush(buffer_2);
+        buffer_puts(debug_buf, "glob = ");
+        strarray_dump(debug_buf, &args);
+        buffer_putnlflush(debug_buf);
       }
 #endif
 
@@ -866,8 +866,8 @@ input_process_line(const char* x, size_t n, const char* file, size_t line) {
   }
 
 #ifdef DEBUG_OUTPUT_
-  buffer_putm_internal(buffer_2, "end ", PINK256, __func__, NC, 0);
-  buffer_putnlflush(buffer_2);
+  buffer_putm_internal(debug_buf, "end ", PINK256, __func__, NC, 0);
+  buffer_putnlflush(debug_buf);
 #endif
 
   stralloc_free(&command);
@@ -968,9 +968,9 @@ input_process_rules(target* all) {
   strlist_nul(&dirs.work);
 
 #ifdef DEBUG_OUTPUT_
-  buffer_puts(buffer_2, "outdir:\n\t");
-  buffer_putsa(buffer_2, &outdir.sa);
-  buffer_putnlflush(buffer_2);
+  buffer_puts(debug_buf, "outdir:\n\t");
+  buffer_putsa(debug_buf, &outdir.sa);
+  buffer_putnlflush(debug_buf);
 #endif
 
   if(!var_isset(sourcedir_varname)) {
@@ -1138,9 +1138,9 @@ input_process_rules(target* all) {
       stralloc_nul(&cmd.sa);
 
 #ifdef DEBUG_OUTPUT_
-      buffer_puts(buffer_2, "Prereq: ");
-      buffer_putset(buffer_2, &rule->prereq, " ", 1);
-      buffer_putnlflush(buffer_2);
+      buffer_puts(debug_buf, "Prereq: ");
+      buffer_putset(debug_buf, &rule->prereq, " ", 1);
+      buffer_putnlflush(debug_buf);
 #endif
 
       stralloc_prepends(&cmd.sa, "$(CC) $(CFLAGS) ");
@@ -1165,9 +1165,9 @@ input_process_rules(target* all) {
     }
 
 #ifdef DEBUG_OUTPUT_
-    buffer_putm_internal(buffer_2, YELLOW256, __func__, NC, " Rule: ", name, compile ? " (compile)" : link ? " (link)" : "", "\n\t", NULL);
-    buffer_putsa(buffer_2, &rule->recipe);
-    buffer_putnlflush(buffer_2);
+    buffer_putm_internal(debug_buf, YELLOW256, __func__, NC, " Rule: ", name, compile ? " (compile)" : link ? " (link)" : "", "\n\t", NULL);
+    buffer_putsa(debug_buf, &rule->recipe);
+    buffer_putnlflush(debug_buf);
 #endif
   }
 
@@ -1257,11 +1257,10 @@ input_process_file(const char* infile, target* all) {
   }
 
   if(set_size(&common_flags)) {
-
 #ifdef DEBUG_OUTPUT
-    buffer_puts(buffer_1, "Common flags: ");
-    buffer_putsl(buffer_1, &common_flags_list, " ");
-    buffer_putnlflush(buffer_1);
+    buffer_puts(debug_buf, "Common flags: ");
+    buffer_putsl(debug_buf, &common_flags_list, " ");
+    buffer_putnlflush(debug_buf);
 #endif
 
     var_t* v = var_list("COMMON_FLAGS", 0);
@@ -1275,9 +1274,9 @@ input_process_file(const char* infile, target* all) {
     const char* val = var_get("COMMON_FLAGS");
 
 #ifdef DEBUG_OUTPUT
-    buffer_puts(buffer_1, "Common flags (2): ");
-    buffer_puts(buffer_1, val);
-    buffer_putnlflush(buffer_1);
+    buffer_puts(debug_buf, "Common flags (2): ");
+    buffer_puts(debug_buf, val);
+    buffer_putnlflush(debug_buf);
 #endif
   }
 
