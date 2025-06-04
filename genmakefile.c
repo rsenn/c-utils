@@ -64,7 +64,7 @@ exts_t exts = {
 dirs_t dirs;
 tools_t tools;
 config_t cfg = {{0, 0}, {0, 0}, {0, 0, 0}, 1, LANG_CXX};
-tool_config_t tool_config = 0;
+make_capabilities_t make_capabs = 0;
 MAP_T targetdirs;
 
 /**
@@ -1781,7 +1781,7 @@ main(int argc, char* argv[]) {
       tools.make = "nmake";
     } else if(str_start(tools.compiler, "g")) {
       tools.make = "gmake";
-      tool_config |= MAKE_PATTERN_RULES;
+      make_capabs |= MAKE_PATTERN_RULES;
     } else if(str_start(tools.compiler, "o")) {
       tools.make = "omake";
     } else if(str_start(tools.compiler, "po")) {
@@ -2027,13 +2027,13 @@ main(int argc, char* argv[]) {
 
   stralloc_catc(&all->recipe, '\n');
 
-  if(tool_config & (MAKE_PATTERN_RULES | MAKE_IMPLICIT_RULES)) {
+  if(make_capabs & (MAKE_PATTERN_RULES | MAKE_IMPLICIT_RULES)) {
     stralloc rn;
     bool outputs = false;
 
     stralloc_init(&rn);
 
-    if(tool_config & MAKE_PATTERN_RULES) {
+    if(make_capabs & MAKE_PATTERN_RULES) {
       stralloc_copys(&rn, "$(BUILDDIR)");
       stralloc_cats(&rn, "%");
       stralloc_cats(&rn, exts.obj);

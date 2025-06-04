@@ -156,13 +156,13 @@ output_all_vars(buffer* b, MAP_T* vars, strlist* varnames, build_tool_t tool) {
  * @param      b                Output buffer
  * @param      rule             The rule
  * @param[in]  tool             Build tool
- * @param[in]  quote_args
+ * @param[in]  quote            Quote
  * @param[in]  psa              Path separator for arguments
  * @param[in]  psm              Path separator in Makefile
- * @param[in]  make_sep_inline  Make separator inline
+ * @param[in]  sep              Inline separator
  */
 void
-output_make_rule(buffer* b, target* rule, build_tool_t tool, const char quote_args[], char psa, char psm, const char* make_sep_inline) {
+output_make_rule(buffer* b, target* rule, build_tool_t tool, const char quote[], char psa, char psm, const char* sep) {
   const char* x;
   stralloc output, sa, name;
   size_t n, num_prereqs = set_size(&rule->prereq), line_start = 0;
@@ -264,7 +264,7 @@ output_make_rule(buffer* b, target* rule, build_tool_t tool, const char quote_ar
     if(infile && (signed)rule->type >= 0)
       stralloc_copy(&cmd, &commands.v[rule->type]);
     else*/
-    rule_command(rule, &cmd, tool, quote_args, psa, make_sep_inline, tools.make);
+    rule_command(rule, &cmd, tool, quote, psa, sep, tools.make);
 
     stralloc_remove_all(&cmd, "\0", 1);
 
@@ -422,13 +422,13 @@ output_ninja_rule(buffer* b, const char* name, const stralloc* cmd) {
  *
  * @param      b                Output buffer
  * @param[in]  tool             Build tool
- * @param[in]  quote_args       Quote arguments
+ * @param[in]  quote            Quote arguments
  * @param[in]  psa              Path separator for arguments
  * @param[in]  psm              Path separator for Makefile
- * @param[in]  make_sep_inline  Make separator inline
+ * @param[in]  sep              Make separator inline
  */
 void
-output_all_rules(buffer* b, build_tool_t tool, const char quote_args[], char psa, char psm, const char* make_sep_inline) {
+output_all_rules(buffer* b, build_tool_t tool, const char quote[], char psa, char psm, const char* sep) {
   MAP_PAIR_T t;
 
   MAP_FOREACH(rule_map, t) {
@@ -451,7 +451,7 @@ output_all_rules(buffer* b, build_tool_t tool, const char quote_args[], char psa
     if(tool == TOOL_NINJA)
       output_ninja_target(b, rule, psa);
     else
-      output_make_rule(b, rule, tool, quote_args, psa, psm, make_sep_inline);
+      output_make_rule(b, rule, tool, quote, psa, psm, sep);
   }
 }
 
@@ -461,12 +461,12 @@ output_all_rules(buffer* b, build_tool_t tool, const char quote_args[], char psa
  * @param      b                Output buffer
  * @param      rule             The rule
  * @param[in]  tool             Build tool
- * @param[in]  quote_args       The quote arguments
+ * @param[in]  quote            The quote arguments
  * @param[in]  psa              The psa
- * @param[in]  make_sep_inline  The make separator inline
+ * @param[in]  sep              The make separator inline
  */
 void
-output_script(buffer* b, target* rule, build_tool_t tool, const char quote_args[], char psa, const char* make_sep_inline) {
+output_script(buffer* b, target* rule, build_tool_t tool, const char quote[], char psa, const char* sep) {
   static uint32 serial;
   char* x;
   size_t n;
@@ -494,7 +494,7 @@ output_script(buffer* b, target* rule, build_tool_t tool, const char quote_args[
     if(!dep || dep->serial == serial)
       continue;
 
-    output_script(b, dep, tool, quote_args, psa, make_sep_inline);
+    output_script(b, dep, tool, quote, psa, sep);
   }
 
   if(array_length(&rule->objs, sizeof(target*))) {
@@ -506,7 +506,7 @@ output_script(buffer* b, target* rule, build_tool_t tool, const char quote_args[
       if(dep == 0 || dep->serial == serial)
         continue;
 
-      output_script(b, dep, tool, quote_args, psa, make_sep_inline);
+      output_script(b, dep, tool, quote, psa, sep);
     }
   }
 
@@ -515,7 +515,7 @@ output_script(buffer* b, target* rule, build_tool_t tool, const char quote_args[
 
     stralloc_init(&cmd);
 
-    rule_command(rule, &cmd, tool, quote_args, psa, make_sep_inline, tools.make);
+    rule_command(rule, &cmd, tool, quote, psa, sep, tools.make);
     buffer_putsa(b, &cmd);
 
     if(tool == TOOL_BATCH)

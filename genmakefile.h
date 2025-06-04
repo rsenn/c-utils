@@ -8,6 +8,7 @@
 #include "src/genmakefile/sources.h"
 #include "src/genmakefile/var.h"
 #include "src/genmakefile/includes.h"
+#include "src/genmakefile/output.h"
 
 #include "debug.h"
 
@@ -73,11 +74,6 @@ typedef struct {
 } tools_t;
 
 typedef enum {
-  MAKE_IMPLICIT_RULES = 0x01,
-  MAKE_PATTERN_RULES = 0x02,
-} tool_config_t;
-
-typedef enum {
   BUILD_TYPE_RELEASE = 0,
   BUILD_TYPE_RELWITHDEBINFO,
   BUILD_TYPE_MINSIZEREL,
@@ -98,7 +94,7 @@ void libdirs_add(const char*);
 // extern config_t cfg;
 extern dirs_t dirs;
 extern tools_t tools;
-extern tool_config_t tool_config;
+extern make_capabilities_t make_capabs;
 extern const char* project_name;
 extern int cmd_objs, cmd_libs, cmd_bins;
 extern set_t link_libraries;

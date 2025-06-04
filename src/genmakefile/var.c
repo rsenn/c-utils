@@ -317,7 +317,7 @@ var_subst_sa(const char* name, stralloc* sa, const char* prefix, const char* suf
   stralloc in;
   stralloc_move(&in, sa);
 
-  var_subst_b(name, in.s, in.len, sa, prefix, suffix);
+  var_subst_b(name, sa, in.s, in.len, prefix, suffix);
   stralloc_free(&in);
 }
 
