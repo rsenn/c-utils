@@ -10,8 +10,17 @@
 extern int output_width;
 
 typedef enum {
-  MAKE_IMPLICIT_RULES = (1 << 0), /**< Standard make implicit rules: .c.o: */
-  MAKE_PATTERN_RULES = (1 << 1),  /**< GNU make like rules: %.o: %.c */
+  MAKE_RULE_EXPLICIT = 0b00, /**< Standard make implicit rules: .c.o: */
+  MAKE_RULE_IMPLICIT = 0b01, /**< Standard make implicit rules: .c.o: */
+  MAKE_RULE_PATTERN = 0b10,  /**< GNU make like rules: %.o: %.c */
+
+  MAKE_RULE_MASK = 0b11,
+
+  MAKE_SUBST_TARGET = 0b100,  /**< Target substitution: $@ */
+  MAKE_SUBST_DEPENDS = 0b1000, /**< Dependencies substitution: $^ */
+  MAKE_SUBST_SOURCE = 0b10000,  /**< Source file substitution: $< */
+
+  MAKE_SUBST_MASK = 0b11100,
 } make_capabilities_t;
 
 #define OUTPUT_PREREQ_SEPARATOR " \\\n  "

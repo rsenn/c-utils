@@ -1781,7 +1781,7 @@ main(int argc, char* argv[]) {
       tools.make = "nmake";
     } else if(str_start(tools.compiler, "g")) {
       tools.make = "gmake";
-      make_capabs |= MAKE_PATTERN_RULES;
+      make_capabs |= MAKE_RULE_PATTERN;
     } else if(str_start(tools.compiler, "o")) {
       tools.make = "omake";
     } else if(str_start(tools.compiler, "po")) {
@@ -2027,13 +2027,13 @@ main(int argc, char* argv[]) {
 
   stralloc_catc(&all->recipe, '\n');
 
-  if(make_capabs & (MAKE_PATTERN_RULES | MAKE_IMPLICIT_RULES)) {
+  if(make_capabs & (MAKE_RULE_PATTERN | MAKE_RULE_IMPLICIT)) {
     stralloc rn;
     bool outputs = false;
 
     stralloc_init(&rn);
 
-    if(make_capabs & MAKE_PATTERN_RULES) {
+    if(make_capabs & MAKE_RULE_PATTERN) {
       stralloc_copys(&rn, "$(BUILDDIR)");
       stralloc_cats(&rn, "%");
       stralloc_cats(&rn, exts.obj);
@@ -2089,7 +2089,6 @@ main(int argc, char* argv[]) {
 #endif
 
         if(stralloc_contains(&rule->recipe, value)) {
-          size_t j = 0;
           stralloc tmp;
           stralloc_init(&tmp);
 
