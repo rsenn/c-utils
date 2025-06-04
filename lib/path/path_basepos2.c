@@ -9,10 +9,9 @@
 size_t
 path_basepos2(const char* path, size_t len) {
   char* x = (char*)path;
-  size_t n;
-
+ 
 again:
-  n = u8b_rchrs(x, len, PATHSEP_S_MIXED, sizeof(PATHSEP_S_MIXED) - 1);
+  size_t n = u8b_rchrs(x, len, PATHSEP_S_MIXED, sizeof(PATHSEP_S_MIXED) - 1);
 
   if(n == len)
     return n;
