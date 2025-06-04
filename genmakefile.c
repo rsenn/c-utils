@@ -2104,7 +2104,7 @@ main(int argc, char* argv[]) {
         }
       }
 
-      set_subst_sa(&rule->prereq, &rule->recipe, "$<");
+      set_subst_sa(&rule->prereq, &rule->recipe, "$^");
       set_subst_sa(&rule->output, &rule->recipe, "$@");
 
       if(modified) {
