@@ -7,6 +7,7 @@
 #include <errno.h>
 
 set_t common_flags = SET();
+strlist common_flags_list = {{0}, ' '};
 
 /**
  * @brief      Remove from stralloc
@@ -422,6 +423,13 @@ input_process_command(stralloc* cmd, int argc, char* argv[], const char* file, s
       common_flags = tmp;
     } else {
       common_flags = fs;
+    }
+
+    strlist_zero(&common_flags_list);
+
+    strlist_foreach(&flags, x, n) {
+      if(set_has(&fs, x, n))
+        strlist_pushb_unique(&common_flags_list, x, n);
     }
   }
 
@@ -961,7 +969,7 @@ input_process_rules(target* all) {
   if(!var_isset(sourcedir_varname)) {
     path_relative_b(dirs.out.sa.s, dirs.out.sa.len, &dirs.out.sa);
 
-    var_setb(sourcedir_varname, dirs.out.sa.s, dirs.out.sa.len);
+    var_set_b(sourcedir_varname, dirs.out.sa.s, dirs.out.sa.len);
   }
 
   cflags = var_list("CFLAGS", ' ');
@@ -1035,7 +1043,7 @@ input_process_rules(target* all) {
 
     strlist_foreach(&compiler, s, n) {
       if(is_version_b(s, n)) {
-        var_setb("VER", s, n);
+        var_set_b("VER", s, n);
         stralloc_replace(&cc->value.sa, s - compiler.sa.s + 1, n, "$(VER)", 6);
         break;
       }
@@ -1241,10 +1249,27 @@ input_process_file(const char* infile, target* all) {
     mmap_unmap(x, n);
   }
 
-  {
-    buffer_puts(buffer_1, "Common flags: ");
-    buffer_putset(buffer_1, &common_flags, " ", 1);
-    buffer_putnlflush(buffer_1);
+  if(set_size(&common_flags)) {
+
+#ifdef DEBUG_OUTPUT
+    buffer_puts(debug_buf, "Common flags: ");
+    buffer_putset(debug_buf, &common_flags, " ", 1);
+    buffer_putnlflush(debug_buf);
+#endif
+
+    var_t* v = var_list("COMMON_FLAGS", 0);
+
+    stralloc_copyb(&v->value.sa, common_flags_list.sa.s, common_flags_list.sa.len);
+    stralloc_nul(&v->value.sa);
+
+    /*    var_set_set("COMMON_FLAGS", &common_flags);*/
+    const char* val = var_get("COMMON_FLAGS");
+
+#ifdef DEBUG_OUTPUT
+    buffer_puts(debug_buf, "Common flags (2): ");
+    buffer_puts(debug_buf, val);
+    buffer_putnlflush(debug_buf);
+#endif
   }
 
   input_process_rules(all);

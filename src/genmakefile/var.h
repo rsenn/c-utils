@@ -21,7 +21,21 @@ void format_linkdir_switch(const char*, stralloc* out);
 int var_isset(const char*);
 var_t* var_list(const char*, char psa);
 const char* var_get(const char*);
-var_t* var_setb(const char*, const char* value, size_t vlen);
+var_t* var_set_b(const char*, const char* value, size_t vlen);
+var_t* var_set_s(const char*, char*);
+
+#ifdef SET_H
+static inline var_t*
+var_set_set(const char* name, set_t* s) {
+  char* str;
+
+  if((str = set_join_s(s, " ")))
+    return var_set_s(name, str);
+
+  return 0;
+}
+#endif
+
 var_t* var_set(const char*, const char* value);
 void var_unset(const char*);
 void var_push(const char*, const char* value);

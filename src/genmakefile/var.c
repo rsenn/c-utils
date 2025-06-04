@@ -120,14 +120,14 @@ var_get(const char* name) {
  * @return     var_t struct
  */
 var_t*
-var_setb(const char* name, const char* value, size_t vlen) {
+var_set_b(const char* name, const char* value, size_t vlen) {
   var_t* var;
   var = var_list(name, ' ');
   stralloc_zero(&var->value.sa);
   stralloc_copyb(&var->value.sa, value, vlen);
 
 #ifdef DEBUG_OUTPUT_
-  buffer_putm_internal(buffer_2, "var_setb(", name, ", \"", 0);
+  buffer_putm_internal(buffer_2, "var_set_b(", name, ", \"", 0);
   buffer_put(buffer_2, value, vlen);
   buffer_puts(buffer_2, "\")");
   buffer_putnlflush(buffer_2);
@@ -146,7 +146,28 @@ var_setb(const char* name, const char* value, size_t vlen) {
  */
 var_t*
 var_set(const char* name, const char* value) {
-  return var_setb(name, value, str_len(value));
+  return var_set_b(name, value, str_len(value));
+}
+
+/**
+ * @brief Sets variable by taking ownership of allocated string
+ *
+ * @param      name   Variable name
+ * @param      value  Allocated string
+ *
+ * @return     var_t struct
+ */
+var_t*
+var_set_s(const char* name, char* value) {
+  var_t* var;
+  var = var_list(name, ' ');
+
+  strlist_free(&var->value);
+
+  var->value.sa.s = value;
+  var->value.sa.a = var->value.sa.len = strlen(value);
+
+  return var;
 }
 
 /**
@@ -273,10 +294,17 @@ push_define(const char* def) {
 }
 
 /**
- * @brief Substitues
- * @param name [description]
- * @param out  [description]
- * @param in   [description]
+ * @brief
+ *   Substitutes all occurences of the value of
+ *   the variable named by \param name from \param in
+ *   and \param len
+ *
+ * @param name    Variable name
+ * @param out     Output stralloc
+ * @param in      Input pointer
+ * @param len     Input length
+ * @param prefix  Variable name prefix
+ * @param suffix  Variable name suffix
  */
 void
 var_subst_b(const char* name, stralloc* out, const char* in, size_t len, const char* prefix, const char* suffix) {

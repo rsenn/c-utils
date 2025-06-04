@@ -2106,19 +2106,19 @@ main(int argc, char* argv[]) {
       set_subst_sa(&rule->prereq, &rule->recipe, rule->type == COMPILE ? "$<" : "$^");
       set_subst_sa(&rule->output, &rule->recipe, "$@");
 
+#ifdef DEBUG_OUTPUT_
       if(modified) {
         buffer_putm_internal(buffer_1, "Modified: ", rule->name, 0);
         buffer_putm_internal(buffer_1, " ", "Recipe: ", rule->recipe.s, 0);
         buffer_putnlflush(buffer_1);
       }
+#endif
 
-      
       if(rule->type == COMPILE && stralloc_length(&rule->recipe)) {
-        if(!stralloc_length(&compile_target->recipe)) {
+        if(compile_target && !stralloc_length(&compile_target->recipe)) {
           stralloc_copy(&compile_target->recipe, &rule->recipe);
         }
       }
-
     }
 
 #ifdef DEBUG_OUTPUT_
@@ -2134,8 +2134,25 @@ main(int argc, char* argv[]) {
 
       set_at_sa(&build_directories, 0, &builddir);
 
-      var_setb(builddir_varname, builddir.s, builddir.len);
+      var_set_b(builddir_varname, builddir.s, builddir.len);
       stralloc_free(&builddir);
+    }
+  }
+
+  {
+    static const char* varnames[] = {
+        "CFLAGS",
+        "CPPFLAGS",
+        "LDFLAGS",
+        0,
+    };
+
+    for(size_t i = 0; varnames[i]; ++i) {
+      var_t* v;
+
+      if((v = var_list(varnames[i], 0))) {
+        var_subst_sa("COMMON_FLAGS", &v->value.sa, NULL, NULL);
+      }
     }
   }
 
@@ -2541,7 +2558,7 @@ fail:
     while(stralloc_endb(&tmp, &pathsep_args, 1))
       tmp.len--;
 
-    var_setb("objdir", tmp.s, tmp.len);
+    var_set_b("objdir", tmp.s, tmp.len);
     var_set("extra_cflags", "$$EXTRA_CFLAGS");
     var_set("extra_ldflags", "$$EXTRA_LDFLAGS");
 

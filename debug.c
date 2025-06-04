@@ -1,9 +1,15 @@
+#include "lib/windoze.h"
+#include "lib/buffer.h"
+#include "lib/io_internal.h"
 #include "lib/str.h"
 #include "lib/stralloc.h"
 #include "lib/strarray.h"
 #include "lib/strlist.h"
 #include "lib/set.h"
-#include "lib/io_internal.h"
+
+#if !WINDOWS_NATIVE
+#include <unistd.h>
+#endif
 
 const char* debug_nl = "\n";
 

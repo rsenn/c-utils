@@ -11,4 +11,7 @@ void input_process_path_b(const char*, size_t, stralloc* out);
 void input_process_path(const char*, stralloc*);
 void input_process_rules(target*);
 
+extern set_t common_flags;
+extern strlist common_flags_list;
+
 #endif /* defined(GENMAKEFILE_INPUT_H) */

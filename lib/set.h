@@ -105,6 +105,15 @@ int set_addsa(set_t*, const stralloc*);
 int set_insertsa(set_t* set, const stralloc* sa);
 size_t stralloc_catset(stralloc*, const set_t*, const char*);
 void set_join(const set_t* set, const char* sep, stralloc* out);
+
+static inline char*
+set_join_s(set_t* set, const char* sep) {
+  stralloc sa;
+  stralloc_init(&sa);
+  set_join(set, sep, &sa);
+  stralloc_nul(&sa);
+  return sa.s;
+}
 #endif
 #ifdef BUFFER_H
 void buffer_putset(buffer*, const set_t*, const char* sep, size_t seplen);

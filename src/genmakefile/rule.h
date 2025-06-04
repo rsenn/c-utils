@@ -70,15 +70,6 @@ void rule_list(const strlist*, array*);
 char* rule_prereq_sa(target*, stralloc*);
 char* rule_output_sa(target*, stralloc*);
 
-static inline char*
-set_join_s(set_t* set, const char* sep) {
-  stralloc sa;
-  stralloc_init(&sa);
-  set_join(set, sep, &sa);
-  stralloc_nul(&sa);
-  return sa.s;
-}
-
 void transform_subst_sa(const stralloc*, stralloc*, const char*, const char*, int);
 void set_subst_b(const set_t*, const char*, size_t, stralloc*, const char*);
 void set_subst_sa(const set_t*, stralloc*, const char*);
