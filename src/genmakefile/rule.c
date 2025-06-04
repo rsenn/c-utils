@@ -811,18 +811,16 @@ transform_subst_sa(const stralloc* in, stralloc* out, const char* pfx, const cha
  */
 char*
 rule_prereq_sa(target* rule, stralloc* out) {
-  stralloc tmp;
-
-  if(!out) {
-    stralloc_init(&tmp);
-    out = &tmp;
-  } else
-    stralloc_zero(out);
-
+  stralloc_zero(out);
   set_join(&rule->prereq, " ", out);
   stralloc_nul(out);
 
   return out->s;
+}
+
+char*
+rule_prereq_s(target* rule) {
+  return set_join_s(&rule->prereq, " ");
 }
 
 /**
@@ -833,18 +831,16 @@ rule_prereq_sa(target* rule, stralloc* out) {
  */
 char*
 rule_output_sa(target* rule, stralloc* out) {
-  stralloc tmp;
-
-  if(!out) {
-    stralloc_init(&tmp);
-    out = &tmp;
-  } else
-    stralloc_zero(out);
-
+  stralloc_zero(out);
   set_join(&rule->output, " ", out);
   stralloc_nul(out);
 
   return out->s;
+}
+
+char*
+rule_output_s(target* rule) {
+  return set_join_s(&rule->output, " ");
 }
 
 void
