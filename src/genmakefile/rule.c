@@ -768,7 +768,7 @@ rule_list(const strlist* targets, array* out) {
 }
 
 /**
- * @brief      Substitute variable substitutions
+ * @brief      Transform variable substitutions
  *
  * @param[in]  in       Input string
  * @param      out      Output
@@ -777,7 +777,7 @@ rule_list(const strlist* targets, array* out) {
  * @param[in]  tolower  Transform to lowercase
  */
 void
-rule_subst_sa(const stralloc* in, stralloc* out, const char* pfx, const char* sfx, int to_lower) {
+transform_subst_sa(const stralloc* in, stralloc* out, const char* pfx, const char* sfx, int to_lower) {
   stralloc_zero(out);
 
   for(size_t i = 0; i < in->len; ++i) {
@@ -831,4 +831,34 @@ rule_output_sa(target* rule, stralloc* out) {
   stralloc_nul(out);
 
   return out->s;
+}
+
+void
+set_subst_b(const set_t* set, const char* in, size_t len, stralloc* out, const char* replacement) {
+  stralloc value;
+  stralloc_init(&value);
+  set_join(set, " ", &value);
+  stralloc_nul(&value);
+
+  for(size_t i = 0; i < len;) {
+    if(i + value.len <= len)
+      if(byte_equal(&in[i], value.len, value.s)) {
+        stralloc_cats(out, replacement);
+        i += value.len;
+        continue;
+      }
+
+    stralloc_catc(out, in[i++]);
+  }
+
+  stralloc_nul(out);
+}
+
+void
+set_subst_sa(const set_t* set, stralloc* sa, const char* replacement) {
+  stralloc in;
+  stralloc_move(&in, sa);
+
+  set_subst_b(set, in.s, in.len, sa, replacement);
+  stralloc_free(&in);
 }

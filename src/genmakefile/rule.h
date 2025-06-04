@@ -61,8 +61,10 @@ bool rule_is_compile(target*);
 bool rule_is_lib(target*);
 bool rule_is_link(target*);
 void rule_list(const strlist*, array*);
-void rule_subst_sa(const stralloc*, stralloc*, const char*, const char*, int);
 char* rule_prereq_sa(target*, stralloc*);
 char* rule_output_sa(target*, stralloc*);
+void transform_subst_sa(const stralloc*, stralloc*, const char*, const char*, int);
+void set_subst_b(const set_t*, const char*, size_t, stralloc*, const char*);
+void set_subst_sa(const set_t*, stralloc*, const char*);
 
 #endif

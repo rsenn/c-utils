@@ -101,10 +101,10 @@ output_var(buffer* b, MAP_T* vars, const char* name, int serial, build_tool_t to
 
         if(tool == TOOL_NINJA || tool == TOOL_SHELL) {
           stralloc_zero(&v);
-          rule_subst_sa(&u, &v, "$", "", 1);
+          transform_subst_sa(&u, &v, "$", "", 1);
         } else if(tool == TOOL_BATCH) {
           stralloc_zero(&v);
-          rule_subst_sa(&u, &v, "%", "%", 1);
+          transform_subst_sa(&u, &v, "%", "%", 1);
         } else {
           stralloc_copy(&v, &u);
         }
@@ -400,7 +400,7 @@ output_ninja_rule(buffer* b, const char* name, const stralloc* cmd) {
 
   buffer_putm_internal(b, "rule ", name, "\n  command = ", NULL);
 
-  rule_subst_sa(cmd, &out, "$", "", 1);
+  transform_subst_sa(cmd, &out, "$", "", 1);
 
   stralloc_replaces(&out, "$@", "$out");
   stralloc_replaces(&out, "$<", "$in");

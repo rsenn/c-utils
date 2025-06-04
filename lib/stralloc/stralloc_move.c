@@ -20,10 +20,10 @@ stralloc_moveb(stralloc* from, size_t* len) {
 
 void
 stralloc_move(stralloc* to, stralloc* from) {
-  if(to->a == 0)
-    to->s = NULL;
+  /*if(to->a == 0)
+    to->s = NULL;*/
 
-  stralloc_free(to);
+  //stralloc_free(to);
 
   to->s = from->s;
   to->a = from->a;

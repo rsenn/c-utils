@@ -2094,15 +2094,7 @@ main(int argc, char* argv[]) {
           stralloc tmp;
           stralloc_init(&tmp);
 
-          /*      namebuf[j++] = '$';
-                namebuf[j++] = '(';
-                j += str_copy(&namebuf[j], varnames[i]);
-                namebuf[j++] = ')';
-                namebuf[j++] = '\0';*/
-
           var_subst_sa(varnames[i], &tmp, &rule->recipe, 0, 0);
-
-          // stralloc_subst(&tmp, rule->recipe.s, rule->recipe.len, value, namebuf);
 
           stralloc_copy(&rule->recipe, &tmp);
           stralloc_nul(&rule->recipe);
@@ -2111,6 +2103,9 @@ main(int argc, char* argv[]) {
           modified = true;
         }
       }
+
+      set_subst_sa(&rule->prereq, &rule->recipe, "$<");
+      set_subst_sa(&rule->output, &rule->recipe, "$@");
 
       if(modified) {
         buffer_putm_internal(buffer_1, "Modified: ", rule->name, 0);
