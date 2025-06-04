@@ -18,9 +18,12 @@ again:
     return n;
 
   if(n + 1 == len) {
-  len=n;
-     goto again;
+    len = n;
+    goto again;
   }
+
+  if(n + 1 <= len)
+    ++n;
 
   return n;
 }
