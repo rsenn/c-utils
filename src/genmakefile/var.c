@@ -290,9 +290,11 @@ var_subst_sa(const char* name, stralloc* out, const stralloc* in, const char* pr
   stralloc_zero(out);
 
   if((value = var_get(name)) && value[0]) {
-  size_t vlen = str_chrs(value, "\t \0", 3);
+    size_t vlen = str_len(value);
 
-    for(size_t i = 0; i < in->len; ++i) {
+    vlen = byte_trimr(value, vlen, " \t\v\n", 3);
+
+    for(size_t i = 0; i < in->len;) {
       if(i + vlen <= in->len) {
         if(byte_equal(&in->s[i], vlen, value)) {
           stralloc_cats(out, prefix);
@@ -304,7 +306,7 @@ var_subst_sa(const char* name, stralloc* out, const stralloc* in, const char* pr
         }
       }
 
-      stralloc_catc(out, in->s[i]);
+      stralloc_catc(out, in->s[i++]);
     }
   }
 }

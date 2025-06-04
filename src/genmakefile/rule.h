@@ -62,5 +62,7 @@ bool rule_is_lib(target*);
 bool rule_is_link(target*);
 void rule_list(const strlist*, array*);
 void rule_subst_sa(const stralloc*, stralloc*, const char*, const char*, int);
+char* rule_prereq_sa(target*, stralloc*);
+char* rule_output_sa(target*, stralloc*);
 
 #endif

@@ -2088,7 +2088,7 @@ main(int argc, char* argv[]) {
         buffer_putm_internal(debug_buf, " ", "Value: ", value, 0);
         buffer_putnlflush(debug_buf);
 #endif
-        
+
         if(stralloc_contains(&rule->recipe, value)) {
           size_t j = 0;
           stralloc tmp;

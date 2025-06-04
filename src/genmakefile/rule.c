@@ -802,3 +802,33 @@ rule_subst_sa(const stralloc* in, stralloc* out, const char* pfx, const char* sf
     stralloc_append(out, p);
   }
 }
+
+/**
+ * @brief      Rule prequisites list as stralloc
+ *
+ * @param      rule    Rule
+ * @param      out     Output stralloc
+ */
+char*
+rule_prereq_sa(target* rule, stralloc* out) {
+  stralloc_zero(out);
+  set_join(&rule->prereq, " ", out);
+  stralloc_nul(out);
+
+  return out->s;
+}
+
+/**
+ * @brief      Rule output file(s) as stralloc
+ *
+ * @param      rule    Rule
+ * @param      out     Output stralloc
+ */
+char*
+rule_output_sa(target* rule, stralloc* out) {
+  stralloc_zero(out);
+  set_join(&rule->output, " ", out);
+  stralloc_nul(out);
+
+  return out->s;
+}
