@@ -288,29 +288,28 @@ rule_match(target* rule, const char* pattern) {
  * @param      out              Output buffer
  * @param[in]  prereq           Prerequisites
  * @param[in]  plen             Prerequisites length
- * @param[in]  shell            Is shell script?
- * @param[in]  batch            Is batch script?
+ * @param[in]  tool             Tool type
  * @param[in]  quote_args       Quote arguments
  * @param[in]  psa              Path separator for arguments
  * @param[in]  make_sep_inline  make separator inline
  */
 void
-rule_command_subst(target* rule, stralloc* out, const char* prereq, size_t plen, bool shell, bool batch, const char quote_args[], char psa, const char* make_sep_inline) {
+rule_command_subst(target* rule, stralloc* out, const char* prereq, size_t plen, build_tool_t tool, const char quote_args[], char psa, const char* make_sep_inline) {
   size_t i;
   stralloc* in = &rule->recipe;
 
   for(i = 0; i < in->len; ++i) {
     const char* p = &in->s[i];
 
-    if((shell || batch) && i + 4 <= in->len && *p == '$' && p[1] == '(') {
+    if((tool == TOOL_SHELL || tool == TOOL_BATCH) && i + 4 <= in->len && *p == '$' && p[1] == '(') {
       size_t vlen;
 
-      stralloc_catc(out, shell ? '$' : '%');
+      stralloc_catc(out, (tool == TOOL_SHELL) ? '$' : '%');
       i += 2;
       vlen = byte_chr(&in->s[i], in->len - i, ')');
       stralloc_catb(out, &in->s[i], vlen);
 
-      if(batch)
+      if((tool == TOOL_BATCH))
         stralloc_catc(out, '%');
 
       i += vlen;
@@ -363,15 +362,14 @@ rule_command_subst(target* rule, stralloc* out, const char* prereq, size_t plen,
  *
  * @param      rule             Rule
  * @param      out              Output buffer
- * @param[in]  shell            is shell script?
- * @param[in]  batch            is  batch file?
+ * @param[in]  tool             Tool type
  * @param[in]  quote_args       Quote arguments
  * @param[in]  psa              Path separator for arguments
  * @param[in]  make_sep_inline  make separator inline
  * @param[in]  maketool         Make tool
  */
 void
-rule_command(target* rule, stralloc* out, bool shell, bool batch, const char quote_args[], char psa, const char* make_sep_inline, const char* maketool) {
+rule_command(target* rule, stralloc* out, build_tool_t tool, const char quote_args[], char psa, const char* make_sep_inline, const char* maketool) {
   size_t len;
   const char* pfx = 0;
   char *s, from = psa == '/' ? '\\' : '/';
@@ -424,7 +422,7 @@ rule_command(target* rule, stralloc* out, bool shell, bool batch, const char quo
       if(n > 0 && r.start[n - 1] == ' ')
         n--;
 
-      rule_command_subst(rule, out, r.start, n, shell, batch, quote_args, psa, make_sep_inline);
+      rule_command_subst(rule, out, r.start, n, tool, quote_args, psa, make_sep_inline);
 
       if(r.start + n < r.end && r.start[n] == ' ')
         n++;
@@ -448,7 +446,7 @@ rule_command(target* rule, stralloc* out, bool shell, bool batch, const char quo
     }
 
   } else {
-    rule_command_subst(rule, out, prereq.sa.s, prereq.sa.len, shell, batch, quote_args, psa, make_sep_inline);
+    rule_command_subst(rule, out, prereq.sa.s, prereq.sa.len, tool, quote_args, psa, make_sep_inline);
   }
 
   strlist_free(&prereq);

@@ -84,12 +84,6 @@ typedef enum {
   BUILD_TYPE_DEBUG,
 } build_type_t;
 
-typedef enum {
-  TOOL_NINJA = 1,
-  TOOL_BATCH,
-  TOOL_SHELL,
-} build_tool_t;
-
 void stralloc_weak(stralloc*, const stralloc*);
 void buffer_putnl(buffer*, int);
 
@@ -108,7 +102,7 @@ extern tool_config_t tool_config;
 extern const char* project_name;
 extern int cmd_objs, cmd_libs, cmd_bins;
 extern set_t link_libraries;
-extern MAP_T  targetdirs, rules;
+extern MAP_T targetdirs, rules;
 
 extern strlist link_dirs;
 extern strlist vpath;

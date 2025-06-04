@@ -13,6 +13,12 @@
 #include "../../lib/uint32.h"
 #include "../../lib/map.h"
 
+typedef enum {
+  TOOL_NINJA = 1,
+  TOOL_BATCH,
+  TOOL_SHELL,
+} build_tool_t;
+
 typedef struct target_s {
   union {
     const char* name;
@@ -47,8 +53,8 @@ target* rule_find_b(const char*, size_t);
 void rule_rename(target*, const char*, char);
 target* rule_find_lib(const char*, size_t, const char*, const char*);
 int rule_match(target*, const char*);
-void rule_command_subst(target*, stralloc*, const char*, size_t, bool, bool, const char quote_args[], char, const char*);
-void rule_command(target*, stralloc*, bool, bool, const char quote_args[], char, const char*, const char*);
+void rule_command_subst(target*, stralloc*, const char*, size_t, build_tool_t, const char quote_args[], char, const char*);
+void rule_command(target*, stralloc*,build_tool_t, const char quote_args[], char, const char*, const char*);
 int rule_add_dep(target*, target*);
 void rule_add_deps(target*, const strlist*);
 void rule_dep_list_recursive(target*, set_t*, int, strlist*);

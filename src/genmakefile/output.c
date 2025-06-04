@@ -264,7 +264,7 @@ output_make_rule(buffer* b, target* rule, build_tool_t tool, const char quote_ar
     if(infile && (signed)rule->type >= 0)
       stralloc_copy(&cmd, &commands.v[rule->type]);
     else*/
-    rule_command(rule, &cmd, tool == TOOL_SHELL, tool == TOOL_BATCH, quote_args, psa, make_sep_inline, tools.make);
+    rule_command(rule, &cmd, tool, quote_args, psa, make_sep_inline, tools.make);
 
     stralloc_remove_all(&cmd, "\0", 1);
 
@@ -515,7 +515,7 @@ output_script(buffer* b, target* rule, build_tool_t tool, const char quote_args[
 
     stralloc_init(&cmd);
 
-    rule_command(rule, &cmd, tool == TOOL_SHELL, tool == TOOL_BATCH, quote_args, psa, make_sep_inline, tools.make);
+    rule_command(rule, &cmd, tool, quote_args, psa, make_sep_inline, tools.make);
     buffer_putsa(b, &cmd);
 
     if(tool == TOOL_BATCH)
