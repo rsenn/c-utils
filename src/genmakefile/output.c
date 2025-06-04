@@ -4,6 +4,7 @@
 #include "ansi.h"
 
 int output_width = 40;
+make_capabilities_t make_capabs = 0;
 
 /**
  * @brief      Extract variables from buffer
@@ -254,7 +255,9 @@ output_make_rule(buffer* b, target* rule, build_tool_t tool, const char quote[],
     }
   }
 
-  if(rule->recipe.s) {
+  bool no_explicit = rule->type == COMPILE && (make_capabs & (MAKE_RULE_PATTERN | MAKE_RULE_IMPLICIT));
+
+  if(rule->recipe.s && !no_explicit) {
     stralloc cmd;
 
     stralloc_init(&cmd);

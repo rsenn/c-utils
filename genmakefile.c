@@ -64,7 +64,6 @@ exts_t exts = {
 dirs_t dirs;
 tools_t tools;
 config_t cfg = {{0, 0}, {0, 0}, {0, 0, 0}, 1, LANG_CXX};
-make_capabilities_t make_capabs = 0;
 MAP_T targetdirs;
 
 /**
