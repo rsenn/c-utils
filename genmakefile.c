@@ -2074,7 +2074,6 @@ main(int argc, char* argv[]) {
     MAP_FOREACH(rule_map, iter) {
       target* rule = MAP_ITER_VALUE(iter);
       static const char* varnames[] = {
-          "CC",
           "CFLAGS",
           "CPPFLAGS",
           "LDFLAGS",

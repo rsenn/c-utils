@@ -410,6 +410,10 @@ input_process_command(stralloc* cmd, int argc, char* argv[], const char* file, s
     }
   }
 
+  if(compile) {
+    var_set_b("CC", cmd->s, cmd->len);
+  }
+
   {
     const char* x;
     size_t n;
@@ -1014,7 +1018,7 @@ input_process_rules(target* all) {
 
   count = strlist_count(&args);
   // strlist_slice(&cflags->value, &args, 1, count);
-  strlist_at_sa(&args, &cc->value.sa, 0);
+  // strlist_at_sa(&args, &cc->value.sa, 0);
 
   if((found = strlist_match(&args, "--chip=*", 0)) >= 0) {
     char* chip = strlist_at(&args, found);

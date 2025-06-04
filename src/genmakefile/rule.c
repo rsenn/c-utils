@@ -430,7 +430,7 @@ rule_command(target* rule, stralloc* out, build_tool_t tool, const char* quote, 
       r.start += n;
     }
 
-  } else if((rule->name[0] == '.' && strchr(&rule->name[1], '.') && prereq.sa.len == 0)) {
+  } /*else if((rule->name[0] == '.' && strchr(&rule->name[1], '.') && prereq.sa.len == 0)) {
 
     const char *p, *end;
 
@@ -445,7 +445,7 @@ rule_command(target* rule, stralloc* out, build_tool_t tool, const char* quote, 
       p += linelen;
     }
 
-  } else if(!(str_equal(tools.make, "gmake") || str_equal(tools.make, "make"))) {
+  } else*/ if(!(str_equal(tools.make, "gmake") || str_equal(tools.make, "make"))) {
     rule_command_subst(rule, out, prereq.sa.s, prereq.sa.len, tool, quote, psa, sep);
   } else {
     stralloc_copy(out, &rule->recipe);

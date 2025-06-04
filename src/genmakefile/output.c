@@ -217,7 +217,7 @@ output_make_rule(buffer* b, target* rule, build_tool_t tool, const char quote[],
   stralloc_zero(&output);
   stralloc_nul(&output);
 
-  bool pattern_rule = str_contains(rule->name, "%") /* && str_contains(rule->name, ": ")*/;
+  bool pattern_rule = (make_capabs & MAKE_RULE_PATTERN) && num_prereqs == 0 && str_contains(rule->name, "%");
 
   if(pattern_rule) {
     stralloc_cats(&sa, ": ");
@@ -235,9 +235,7 @@ output_make_rule(buffer* b, target* rule, build_tool_t tool, const char quote[],
   else
     stralloc_cats(&output, rule->name);
 
-  bool pattern = num_prereqs == 0 && str_contains(rule->name, ": ") && (make_capabs & MAKE_RULE_PATTERN);
-
-  if(!pattern)
+  if(!pattern_rule)
     stralloc_catc(&output, ':');
 
   if(num_prereqs) {
@@ -260,19 +258,22 @@ output_make_rule(buffer* b, target* rule, build_tool_t tool, const char quote[],
     }
   }
 
-  bool no_explicit = rule->type == COMPILE && (make_capabs & (MAKE_RULE_PATTERN | MAKE_RULE_IMPLICIT));
+  /*  bool no_explicit = rule->type == COMPILE && (make_capabs & MAKE_RULE_PATTERN);*/
 
-  if(rule->recipe.s && !no_explicit) {
+  if(rule->recipe.s /* && !no_explicit*/) {
     stralloc cmd;
 
     stralloc_init(&cmd);
 
-    /* XXX
+    if(rule->type == LINK && (make_capabs & MAKE_RULE_IMPLICIT))
+      stralloc_copy(&cmd, &commands.link);
+    else
+      /* XXX
 
-    if(infile && (signed)rule->type >= 0)
-      stralloc_copy(&cmd, &commands.v[rule->type]);
-    else*/
-    rule_command(rule, &cmd, tool, quote, psa, sep, tools.make);
+      if(infile && (signed)rule->type >= 0)
+        stralloc_copy(&cmd, &commands.v[rule->type]);
+      else*/
+      rule_command(rule, &cmd, tool, quote, psa, sep, tools.make);
 
     stralloc_remove_all(&cmd, "\0", 1);
 
