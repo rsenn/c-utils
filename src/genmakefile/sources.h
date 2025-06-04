@@ -1,9 +1,13 @@
 #ifndef GENMAKEFILE_SOURCES_H
 #define GENMAKEFILE_SOURCES_H
 
-#include "../../lib/bool.h"
 #include "sourcedir.h"
+#include "../../lib/bool.h"
+#include "../../lib/slist.h"
 #include "../../lib/dlist.h"
+#include "../../lib/stralloc.h"
+#include "../../lib/strlist.h"
+#include "../../lib/set.h"
 
 typedef struct sourcefile_s {
   union {

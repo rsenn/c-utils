@@ -383,9 +383,9 @@ deps_for_libs(void) {
       deps_indirect(&indir, &libs);
 
 #ifdef DEBUG_OUTPUT_
-      buffer_putm_internal(buffer_2, "Deps for library '", lib->name, "': ", NULL);
-      buffer_putsa(buffer_2, &libs.sa);
-      buffer_putnlflush(buffer_2);
+      buffer_putm_internal(debug_buf, "Deps for library '", lib->name, "': ", NULL);
+      buffer_putsa(debug_buf, &libs.sa);
+      buffer_putnlflush(debug_buf);
 #endif
 
       rule_list(&libs, &lib->deps);
@@ -1563,7 +1563,7 @@ main(int argc, char* argv[]) {
 
   for(;;) {
     const char* arg;
-    c = unix_getopt_long(argc, argv, "habo:O:B:E:d:t:m:n:a:D:l:I:c:s:p:P:R:S:if:CW:w:L:O:T:", opts, &index);
+    c = unix_getopt_long(argc, argv, "habo:O:B:E:d:t:m:n:a:D:l:I:c:s:p:P:R:S:if:CW:w:L:O:T:X:x:", opts, &index);
 
     if(c == -1)
       break;
@@ -1638,7 +1638,7 @@ main(int argc, char* argv[]) {
       }
 
       case 'W': {
-        scan_int(arg,  &output_width);
+        scan_int(arg, &output_width);
         break;
       }
 
@@ -1721,6 +1721,16 @@ main(int argc, char* argv[]) {
         buffer_putnlflush(buffer_2);
 #endif
         strarray_push(&libdirs, arg);
+        break;
+      }
+
+        /* debug log */
+      case 'x': {
+        if(buffer_appendfile(&debug_buffer, arg)) {
+          errmsg_warnsys("Failed opening ", arg, " for output", 0);
+          return 127;
+        }
+
         break;
       }
 
@@ -1858,12 +1868,12 @@ main(int argc, char* argv[]) {
     stralloc_free(&tok);
   }
 
-if(tools.compiler)
-  if(!set_make_type() || !set_compiler_type(tools.compiler)) {
-    usage(argv[0]);
-    ret = 2;
-    goto quit;
-  }
+  if(tools.compiler)
+    if(!set_make_type() || !set_compiler_type(tools.compiler)) {
+      usage(argv[0]);
+      ret = 2;
+      goto quit;
+    }
 
   if(*cross_compile) {
     var_set("CROSS_COMPILE", cross_compile);
@@ -2139,7 +2149,7 @@ if(tools.compiler)
   debug_sa("dirs.build", &dirs.build.sa);
   debug_sa("dirs.out", &dirs.out.sa);
   debug_sa("dirs.this", &dirs.this.sa);
-  buffer_putnlflush(buffer_2);
+  buffer_putnlflush(debug_buf);
 #endif
 
   /* No arguments given */
@@ -2345,9 +2355,9 @@ if(tools.compiler)
       int ret;
 
 #ifdef DEBUG_OUTPUT
-      buffer_puts(buffer_2, "sources_list.length = ");
-      buffer_putulong(buffer_2, dlist_length(&sources_list));
-      buffer_putnlflush(buffer_2);
+      buffer_puts(debug_buf, "sources_list.length = ");
+      buffer_putulong(debug_buf, dlist_length(&sources_list));
+      buffer_putnlflush(debug_buf);
 #endif
 
       if(!(ret = generate_link_rules(pathsep_args, pathsep_make)))
@@ -2356,15 +2366,15 @@ if(tools.compiler)
       link_rules += ret;
 
 #ifdef DEBUG_OUTPUT
-      buffer_puts(buffer_2, "bins = ");
-      buffer_putstra(buffer_2, &bins, ", ");
-      buffer_putnlflush(buffer_2);
+      buffer_puts(debug_buf, "bins = ");
+      buffer_putstra(debug_buf, &bins, ", ");
+      buffer_putnlflush(debug_buf);
 #endif
 
 #ifdef DEBUG_OUTPUT
-      buffer_puts(buffer_2, "progs = ");
-      buffer_putstra(buffer_2, &progs, ", ");
-      buffer_putnlflush(buffer_2);
+      buffer_puts(debug_buf, "progs = ");
+      buffer_putstra(debug_buf, &progs, ", ");
+      buffer_putnlflush(debug_buf);
 #endif
     }
 
@@ -2412,7 +2422,7 @@ if(tools.compiler)
   }
 
 #ifdef DEBUG_OUTPUT
-  buffer_puts(buffer_2, "Dumping all rules...\n");
+  buffer_puts(debug_buf, "Dumping all rules...\n");
 
   {
     int i = 0;
@@ -2421,10 +2431,10 @@ if(tools.compiler)
     MAP_FOREACH(rules, t) {
       target* rule = MAP_ITER_VALUE(t);
 
-      buffer_puts(buffer_2, PINK256 "Rule" NC " #");
-      buffer_putlong(buffer_2, ++i);
+      buffer_puts(debug_buf, PINK256 "Rule" NC " #");
+      buffer_putlong(debug_buf, ++i);
       rule_dump(rule);
-      buffer_putnlflush(buffer_2);
+      buffer_putnlflush(debug_buf);
     }
   }
 #endif
@@ -2443,9 +2453,9 @@ fail:
 
     map_keys_get(&rules, &rule_names);
 
-    buffer_puts(buffer_2, "rule_names:\n\t");
-    buffer_putsl(buffer_2, &rule_names, " \\\n\t");
-    buffer_putnlflush(buffer_2);
+    buffer_puts(debug_buf, "rule_names:\n\t");
+    buffer_putsl(debug_buf, &rule_names, " \\\n\t");
+    buffer_putnlflush(debug_buf);
     strlist_free(&rule_names);
   }
 #endif
@@ -2483,8 +2493,8 @@ fail:
 
     strlist_init(&varnames, '\0');
     map_keys_get(&vars, &varnames);
-    buffer_puts(buffer_2, "varnames: ");
-    strlist_dump(buffer_2, &varnames);
+    buffer_puts(debug_buf, "varnames: ");
+    strlist_dump(debug_buf, &varnames);
     output_all_vars(out, &vars, &varnames, build_tool);
     strlist_free(&varnames);
   }
@@ -2521,10 +2531,10 @@ fail:
           stralloc_weak(&rule->recipe, &commands.compile);
 
 #if DEBUG_OUTPUT_
-      buffer_puts(buffer_2, "Empty RULE '");
-      buffer_puts(buffer_2, name);
-      buffer_putc(buffer_2, '\'');
-      buffer_putnlflush(buffer_2);
+      buffer_puts(debug_buf, "Empty RULE '");
+      buffer_puts(debug_buf, name);
+      buffer_putc(debug_buf, '\'');
+      buffer_putnlflush(debug_buf);
 #endif
     }
   }
@@ -2554,9 +2564,9 @@ quit : {
       sourcedir_deps(sdir, &deps);
 
 #ifdef DEBUG_OUTPUT_
-      buffer_putm_internal(buffer_2, "source directory '", MAP_ITER_KEY(t), "' deps =\n", NULL);
-      strlist_dump(buffer_2, &deps);
-      buffer_putnlflush(buffer_2);
+      buffer_putm_internal(debug_buf, "source directory '", MAP_ITER_KEY(t), "' deps =\n", NULL);
+      strlist_dump(debug_buf, &deps);
+      buffer_putnlflush(debug_buf);
 #endif
     }
   }
@@ -2573,14 +2583,14 @@ quit : {
     dlist_foreach_down(&sources_list, link) {
       sourcefile* source = dlist_data(link, sourcefile*);
 
-      if(0 && 1) {
-        buffer_putm_internal(buffer_2, "source: ", source->name, " deps: ", NULL);
-        strlist_zero(&deps);
-        sources_deps(source, &deps);
-        buffer_puts(buffer_2, " includes: ");
-        strlist_dump(buffer_2, &source->includes);
-        buffer_putnlflush(buffer_2);
-      }
+#ifdef DEBUG_OUTPUT_
+      buffer_putm_internal(debug_buf, "source: ", source->name, " deps: ", NULL);
+      strlist_zero(&deps);
+      sources_deps(source, &deps);
+      buffer_puts(debug_buf, " includes: ");
+      strlist_dump(debug_buf, &source->includes);
+      buffer_putnlflush(debug_buf);
+#endif
     }
 
     strlist_free(&deps);

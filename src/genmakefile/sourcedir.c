@@ -4,6 +4,7 @@
 #include "ansi.h"
 #include "includes.h"
 #include "../../genmakefile.h"
+#include "../../debug.h"
 
 MAP_T srcdir_map;
 const char* srcdir_varname = "DISTDIR";
@@ -164,9 +165,9 @@ sourcedir_addsource(const char* source, strarray* sources, strarray* progs, stra
 
   if(!path_exists(source)) {
 #ifdef DEBUG_OUTPUT
-    buffer_puts(buffer_2, "Path doesn't exist: ");
-    buffer_puts(buffer_2, source);
-    buffer_putnlflush(buffer_2);
+    buffer_puts(debug_buf, "Path doesn't exist: ");
+    buffer_puts(debug_buf, source);
+    buffer_putnlflush(debug_buf);
 #endif
 
     return 0;
@@ -186,8 +187,8 @@ sourcedir_addsource(const char* source, strarray* sources, strarray* progs, stra
   strlist_zero(&list);
 
 #ifdef DEBUG_OUTPUT
-  buffer_putm_internal(buffer_2, "[1]", BLUE256, "sourcedir_addsource(", NC, source, BLUE256, ") ", NC, NULL);
-  buffer_putnlflush(buffer_2);
+  buffer_putm_internal(debug_buf, "[1]", BLUE256, "sourcedir_addsource(", NC, source, BLUE256, ") ", NC, NULL);
+  buffer_putnlflush(debug_buf);
 #endif
 
   path_dirname(source, &dir);

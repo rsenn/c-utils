@@ -86,9 +86,9 @@ includes_cppflags(void) {
     // path_relative_to(dir, dirs.this.sa.s, &arg);
 
 #ifdef DEBUG_OUTPUT
-    buffer_putm_internal(buffer_2, "[1]", PINK256, "includes_cppflags", NC, " include_dir=", 0);
-    buffer_putsa(buffer_2, &arg);
-    buffer_putnlflush(buffer_2);
+    buffer_putm_internal(debug_buf, "[1]", PINK256, "includes_cppflags", NC, " include_dir=", 0);
+    buffer_putsa(debug_buf, &arg);
+    buffer_putnlflush(debug_buf);
 #endif
 
     stralloc_prepends(&arg, "-I");
@@ -143,9 +143,9 @@ includes_add_b(const char* dir, size_t len) {
 
   if(strlist_push_unique_sa(&include_dirs, &tmp)) {
 #ifdef DEBUG_OUTPUT
-    buffer_putm_internal(buffer_2, "[1]", PINK256, "includes_add_b", NC, " tmp=", 0);
-    buffer_putsa(buffer_2, &tmp);
-    buffer_putnlflush(buffer_2);
+    buffer_putm_internal(debug_buf, "[1]", PINK256, "includes_add_b", NC, " tmp=", 0);
+    buffer_putsa(debug_buf, &tmp);
+    buffer_putnlflush(debug_buf);
 #endif
   }
 
@@ -231,10 +231,10 @@ includes_find_sa(const char* x, size_t n, stralloc* out) {
     stralloc_nul(out);
 
 #ifdef DEBUG_OUTPUT_
-    buffer_puts(buffer_2, __func__);
-    buffer_puts(buffer_2, ": ");
-    buffer_putsa(buffer_2, out);
-    buffer_putnlflush(buffer_2);
+    buffer_puts(debug_buf, __func__);
+    buffer_puts(debug_buf, ": ");
+    buffer_putsa(debug_buf, out);
+    buffer_putnlflush(debug_buf);
 #endif
 
     if(path_exists(out->s))

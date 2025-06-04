@@ -1,5 +1,6 @@
 #define MAP_USE_HMAP 1
 #include "../../genmakefile.h"
+#include "../../debug.h"
 #include "cmake.h"
 #include "is.h"
 
@@ -301,12 +302,12 @@ output_cmake_rule(buffer* b, target* rule) {
         set_tostrarray(&srcs, &v);
         strarray_sort(&v, 0);
 
-        buffer_puts(buffer_2, "deps:\n  ");
-        buffer_putset(buffer_2, &deps, "\n  ", 3);
-        buffer_putnlflush(buffer_2);
-        buffer_puts(buffer_2, "srcs:\n  ");
-        buffer_putstra(buffer_2, &v, "\n  ");
-        buffer_putnlflush(buffer_2);
+        buffer_puts(debug_buf, "deps:\n  ");
+        buffer_putset(debug_buf, &deps, "\n  ", 3);
+        buffer_putnlflush(debug_buf);
+        buffer_puts(debug_buf, "srcs:\n  ");
+        buffer_putstra(debug_buf, &v, "\n  ");
+        buffer_putnlflush(debug_buf);
 
         strarray_free(&v);
       }
@@ -330,7 +331,7 @@ output_cmake_rules(buffer* b, MAP_T rules) {
     target* rule = MAP_ITER_VALUE(t);
 
 #ifdef DEBUG_OUTPUT_
-    buffer_putm_internal(buffer_2, "Outputting cmake ", NULL);
+    buffer_putm_internal(debug_buf, "Outputting cmake ", NULL);
     rule_dump(rule);
 #endif
 
@@ -344,10 +345,10 @@ output_cmake_rules(buffer* b, MAP_T rules) {
       continue;
 
 #ifdef DEBUG_OUTPUT_
-    buffer_puts(buffer_2, "Outputting rule '");
-    buffer_puts(buffer_2, MAP_ITER_KEY(t));
-    buffer_putc(buffer_2, '\'');
-    buffer_putnlflush(buffer_2);
+    buffer_puts(debug_buf, "Outputting rule '");
+    buffer_puts(debug_buf, MAP_ITER_KEY(t));
+    buffer_putc(debug_buf, '\'');
+    buffer_putnlflush(debug_buf);
 #endif
 
     output_cmake_rule(b, rule);
@@ -401,14 +402,14 @@ output_cmake_project(buffer* b, MAP_T* rules, MAP_T* vars, const strlist* includ
     // path_dirname_b(s, n, &sa);
 
 #ifdef DEBUG_OUTPUT
-    buffer_puts(buffer_2, "libdir: ");
-    buffer_put(buffer_2, s, path_dirlen_b(s, n));
-    buffer_putnlflush(buffer_2);
+    buffer_puts(debug_buf, "libdir: ");
+    buffer_put(debug_buf, s, path_dirlen_b(s, n));
+    buffer_putnlflush(debug_buf);
 #endif
 #ifdef DEBUG_OUTPUT
-    buffer_puts(buffer_2, "lib: ");
-    buffer_put(buffer_2, s, n);
-    buffer_putnlflush(buffer_2);
+    buffer_puts(debug_buf, "lib: ");
+    buffer_put(debug_buf, s, n);
+    buffer_putnlflush(debug_buf);
 #endif
 
     stralloc_free(&sa);

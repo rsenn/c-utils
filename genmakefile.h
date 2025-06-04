@@ -9,6 +9,8 @@
 #include "src/genmakefile/var.h"
 #include "src/genmakefile/includes.h"
 
+#include "debug.h"
+
 #include "lib/windoze.h"
 #include "lib/unix.h"
 #include "lib/mmap.h"

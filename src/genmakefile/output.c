@@ -75,8 +75,8 @@ output_var(buffer* b, MAP_T* vars, const char* name, int serial, build_tool_t to
 
         set_foreach(&refvars, it, ref, len) {
 #ifdef DEBUG_OUTPUT
-          buffer_putm_internal(buffer_2, "Var ", name, " ref: ", ref, NULL);
-          buffer_putnlflush(buffer_2);
+          buffer_putm_internal(debug_buf, "Var ", name, " ref: ", ref, NULL);
+          buffer_putnlflush(debug_buf);
 #endif
           output_var(b, vars, ref, serial, tool);
         }
@@ -176,21 +176,21 @@ output_make_rule(buffer* b, target* rule, build_tool_t tool, const char quote_ar
   stralloc_copys(&name, rule->name);
 
 #ifdef DEBUG_OUTPUT
-  buffer_puts(buffer_2, "RULE\n  " YELLOW256 "name" NC ": ");
-  buffer_puts(buffer_2, rule->name);
-  buffer_puts(buffer_2, "\n  " PURPLE256 "recipe" NC ": ");
-  buffer_putsa(buffer_2, &rule->recipe);
-  buffer_puts(buffer_2, "\n  " BLUE256 "output" NC ":\n\t");
-  buffer_putset(buffer_2, &rule->output, "\n\t", 2);
-  buffer_puts(buffer_2, "\n  " GREEN256 "prereq" NC ":\n\t");
-  buffer_putset(buffer_2, &rule->prereq, "\n\t", 2);
+  buffer_puts(debug_buf, "RULE\n  " YELLOW256 "name" NC ": ");
+  buffer_puts(debug_buf, rule->name);
+  buffer_puts(debug_buf, "\n  " PURPLE256 "recipe" NC ": ");
+  buffer_putsa(debug_buf, &rule->recipe);
+  buffer_puts(debug_buf, "\n  " BLUE256 "output" NC ":\n\t");
+  buffer_putset(debug_buf, &rule->output, "\n\t", 2);
+  buffer_puts(debug_buf, "\n  " GREEN256 "prereq" NC ":\n\t");
+  buffer_putset(debug_buf, &rule->prereq, "\n\t", 2);
 
   if(array_length(&rule->deps, sizeof(target*))) {
-    buffer_puts(buffer_2, "\n  deps" NC ": ");
-    print_rule_deps(buffer_2, rule);
+    buffer_puts(debug_buf, "\n  deps" NC ": ");
+    print_rule_deps(debug_buf, rule);
   }
 
-  buffer_putnlflush(buffer_2);
+  buffer_putnlflush(debug_buf);
 #endif
 
   if(rule->phony || (num_prereqs == 0 && str_diffn(rule->name, dirs.work.sa.s, dirs.work.sa.len) && !rule->name[str_chr(rule->name, psm)] && str_end(rule->name, ":"))) {
@@ -442,10 +442,10 @@ output_all_rules(buffer* b, build_tool_t tool, const char quote_args[], char psa
       continue;
 
 #ifdef DEBUG_OUTPUT
-    buffer_puts(buffer_2, "Outputting rule '");
-    buffer_puts(buffer_2, name);
-    buffer_putc(buffer_2, '\'');
-    buffer_putnlflush(buffer_2);
+    buffer_puts(debug_buf, "Outputting rule '");
+    buffer_puts(debug_buf, name);
+    buffer_putc(debug_buf, '\'');
+    buffer_putnlflush(debug_buf);
 #endif
 
     if(tool == TOOL_NINJA)

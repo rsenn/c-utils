@@ -240,9 +240,9 @@ generate_srcdir_compile_rules(sourcedir* srcdir, const char* dir, bool shell, bo
   }
 
 #ifdef DEBUG_OUTPUT_
-  buffer_puts(buffer_2, "pptoks: ");
-  strlist_dump(buffer_2, &pptoks);
-  buffer_flush(buffer_2);
+  buffer_puts(debug_buf, "pptoks: ");
+  strlist_dump(debug_buf, &pptoks);
+  buffer_flush(debug_buf);
 #endif
 
   strlist_free(&pptoks);
@@ -363,8 +363,8 @@ generate_simple_compile_rules(sourcedir* srcdir, const char* dir, const char* fr
   stralloc_init(&obj);
 
 #ifdef DEBUG_OUTPUT_
-  buffer_putm_internal(buffer_2, "generate_simple_compile_rules '", dir, "' ", fromext, " ", toext, NULL);
-  buffer_putnlflush(buffer_2);
+  buffer_putm_internal(debug_buf, "generate_simple_compile_rules '", dir, "' ", fromext, " ", toext, NULL);
+  buffer_putnlflush(debug_buf);
 #endif
 
   slist_foreach(srcdir->sources, src) {
@@ -600,8 +600,8 @@ generate_program_rule(const char* name, char psa) {
   stralloc_init(&bin);
 
 #ifdef DEBUG_OUTPUT_
-  buffer_putm_internal(buffer_2, "[1]", GREEN256, "generate_program_rule(", NC, name, GREEN256, ") ", NC, 0);
-  buffer_putnlflush(buffer_2);
+  buffer_putm_internal(debug_buf, "[1]", GREEN256, "generate_program_rule(", NC, name, GREEN256, ") ", NC, 0);
+  buffer_putnlflush(debug_buf);
   debug_str("generate_program_rule", name);
 #endif
 
@@ -624,7 +624,7 @@ generate_program_rule(const char* name, char psa) {
     stralloc_zero(&compile->recipe);
 
 #ifdef DEBUG_OUTPUT
-    buffer_putm_internal(buffer_2,
+    buffer_putm_internal(debug_buf,
                          "[2]",
                          GREEN256,
                          "generate_program_rule(",
@@ -639,7 +639,7 @@ generate_program_rule(const char* name, char psa) {
                          compile->recipe.s,
                          "'",
                          NULL);
-    buffer_putnlflush(buffer_2);
+    buffer_putnlflush(debug_buf);
 #endif
   }
 
@@ -704,8 +704,8 @@ generate_program_rule(const char* name, char psa) {
 
 #ifdef DEBUG_OUTPUT
     buffer_putm_internal(
-        buffer_2, "[3]", GREEN256, "generate_program_rule(", NC, name, GREEN256, ") ", NC, "link rule" NC " '", rule->name, "' recipe '", rule->recipe.s, "'", NULL);
-    buffer_putnlflush(buffer_2);
+        debug_buf, "[3]", GREEN256, "generate_program_rule(", NC, name, GREEN256, ") ", NC, "link rule" NC " '", rule->name, "' recipe '", rule->recipe.s, "'", NULL);
+    buffer_putnlflush(debug_buf);
 #endif
 
     includes_to_libs(&incs, &libs);
@@ -751,8 +751,8 @@ generate_link_rules(char psa, char psm) {
   struct dnode* node;
 
 #ifdef DEBUG_OUTPUT
-  buffer_putm_internal(buffer_2, "[1]", GREEN256, "generate_link_rules(", NC, GREEN256, ") ", NC, 0);
-  buffer_putnlflush(buffer_2);
+  buffer_putm_internal(debug_buf, "[1]", GREEN256, "generate_link_rules(", NC, GREEN256, ") ", NC, 0);
+  buffer_putnlflush(debug_buf);
 #endif
 
   dlist_foreach_down(&sources_list, node) {
@@ -760,8 +760,8 @@ generate_link_rules(char psa, char psm) {
     char* filename = (char*)file->name;
 
 #ifdef DEBUG_OUTPUT_
-    buffer_putm_internal(buffer_2, "GEN_LINK_RULES file = ", filename, NULL);
-    buffer_putnlflush(buffer_2);
+    buffer_putm_internal(debug_buf, "GEN_LINK_RULES file = ", filename, NULL);
+    buffer_putnlflush(debug_buf);
 #endif
 
     if(is_source(filename) && main_present(filename)) {

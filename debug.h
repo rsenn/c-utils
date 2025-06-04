@@ -1,8 +1,10 @@
 #ifndef DEBUG_H
 #define DEBUG_H
 
+#include "lib/buffer.h"
 #include "lib/str.h"
 
+extern buffer debug_buffer, *debug_buf;
 extern const char* debug_nl;
 
 void debug_byte(const char*, const char*, size_t);
@@ -17,9 +19,9 @@ void debug_sa(const char*, stralloc*);
 #ifdef SET_H
 static inline void
 debug_set(const char* name, const set_t* s, const char* sep) {
-  buffer_putm_internal(buffer_2, name, ": ", NULL);
-  buffer_putset(buffer_2, s, sep, str_len(sep));
-  buffer_putsflush(buffer_2, debug_nl);
+  buffer_putm_internal(debug_buf, name, ": ", NULL);
+  buffer_putset(debug_buf, s, sep, str_len(sep));
+  buffer_putsflush(debug_buf, debug_nl);
 }
 #endif
 

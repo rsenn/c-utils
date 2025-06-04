@@ -49,12 +49,12 @@ builddir_enter(const char* x, size_t len) {
   set_addsa(&build_directories, &tmp);
 
 #ifdef DEBUG_OUTPUT_
-  buffer_puts(buffer_2, "Entering [");
-  buffer_putlong(buffer_2, strarray_size(&dirstack));
-  buffer_puts(buffer_2, "] '");
-  buffer_putsa(buffer_2, &tmp);
-  buffer_puts(buffer_2, "'");
-  buffer_putnlflush(buffer_2);
+  buffer_puts(debug_buf, "Entering [");
+  buffer_putlong(debug_buf, strarray_size(&dirstack));
+  buffer_puts(debug_buf, "] '");
+  buffer_putsa(debug_buf, &tmp);
+  buffer_puts(debug_buf, "'");
+  buffer_putnlflush(debug_buf);
 #endif
 
   stralloc_free(&tmp);
@@ -69,12 +69,12 @@ builddir_enter(const char* x, size_t len) {
 static void
 builddir_leave(const char* x, size_t len) {
 #ifdef DEBUG_OUTPUT_
-  buffer_puts(buffer_2, "Leaving [");
-  buffer_putlong(buffer_2, strarray_size(&dirstack));
-  buffer_puts(buffer_2, "] '");
-  buffer_put(buffer_2, x, len);
-  buffer_puts(buffer_2, "'");
-  buffer_putnlflush(buffer_2);
+  buffer_puts(debug_buf, "Leaving [");
+  buffer_putlong(debug_buf, strarray_size(&dirstack));
+  buffer_puts(debug_buf, "] '");
+  buffer_put(debug_buf, x, len);
+  buffer_puts(debug_buf, "'");
+  buffer_putnlflush(debug_buf);
 #endif
 
   if(strarray_size(&dirstack)) {
@@ -95,10 +95,10 @@ builddir_leave(const char* x, size_t len) {
 void
 input_process_path_b(const char* y, size_t len, stralloc* out) {
 #ifdef DEBUG_OUTPUT_
-  buffer_putm_internal(buffer_2, BLUE256, __func__, NC, " '", 0);
-  buffer_put(buffer_2, y, len);
-  buffer_puts(buffer_2, "'");
-  buffer_putnlflush(buffer_2);
+  buffer_putm_internal(debug_buf, BLUE256, __func__, NC, " '", 0);
+  buffer_put(debug_buf, y, len);
+  buffer_puts(debug_buf, "'");
+  buffer_putnlflush(debug_buf);
 #endif
 
   stralloc_init(out);
@@ -139,10 +139,10 @@ input_process_path_b(const char* y, size_t len, stralloc* out) {
   stralloc_nul(out);
 
 #ifdef DEBUG_OUTPUT_
-  buffer_putm_internal(buffer_2, BLUE256, __func__, NC, " out='");
-  buffer_puts(buffer_2, out->s);
-  buffer_puts(buffer_2, "'");
-  buffer_putnlflush(buffer_2);
+  buffer_putm_internal(debug_buf, BLUE256, __func__, NC, " out='");
+  buffer_puts(debug_buf, out->s);
+  buffer_puts(debug_buf, "'");
+  buffer_putnlflush(debug_buf);
 #endif
 }
 
@@ -179,10 +179,10 @@ input_process_command(stralloc* cmd, int argc, char* argv[], const char* file, s
   strlist args, files, flags, libs;
 
 #ifdef DEBUG_OUTPUT_
-  buffer_putm_internal(buffer_2, GREEN256, __func__, NC, " '", 0);
-  buffer_putsa(buffer_2, cmd);
-  buffer_puts(buffer_2, "'");
-  buffer_putnlflush(buffer_2);
+  buffer_putm_internal(debug_buf, GREEN256, __func__, NC, " '", 0);
+  buffer_putsa(debug_buf, cmd);
+  buffer_puts(debug_buf, "'");
+  buffer_putnlflush(debug_buf);
 #endif
 
   stralloc_init(&out);
@@ -855,9 +855,9 @@ input_process_rules(target* all) {
   stralloc_zero(&commands.compile);
 
 #ifdef DEBUG_OUTPUT
-  buffer_putm_internal(buffer_2, YELLOW256, __func__, NC, " Rules count: ", 0);
-  buffer_putlong(buffer_2, MAP_SIZE(rules));
-  buffer_putnlflush(buffer_2);
+  buffer_putm_internal(debug_buf, YELLOW256, __func__, NC, " Rules count: ", 0);
+  buffer_putlong(debug_buf, MAP_SIZE(rules));
+  buffer_putnlflush(debug_buf);
 #endif
 
   /* MAP_DESTROY(vars);
@@ -903,18 +903,18 @@ input_process_rules(target* all) {
       path_dirname(rule->name, &outdir.sa);
 
 #ifdef DEBUG_OUTPUT
-    buffer_putm_internal(buffer_2, YELLOW256, __func__, NC, " Rule: ", name, link ? " (link)" : compile ? " (compile)" : 0, NULL);
-    buffer_putnlflush(buffer_2);
+    buffer_putm_internal(debug_buf, YELLOW256, __func__, NC, " Rule: ", name, link ? " (link)" : compile ? " (compile)" : 0, NULL);
+    buffer_putnlflush(debug_buf);
 #endif
   }
 
 #ifdef DEBUG_OUTPUT_
-  buffer_puts(buffer_2, "args: ");
-  buffer_putsl(buffer_2, &args, " ");
-  buffer_putnlflush(buffer_2);
-  buffer_puts(buffer_2, "builddir: ");
-  buffer_putsl(buffer_2, &builddir, "/");
-  buffer_putnlflush(buffer_2);
+  buffer_puts(debug_buf, "args: ");
+  buffer_putsl(debug_buf, &args, " ");
+  buffer_putnlflush(debug_buf);
+  buffer_puts(debug_buf, "builddir: ");
+  buffer_putsl(debug_buf, &builddir, "/");
+  buffer_putnlflush(debug_buf);
 #endif
 
   if(builddir.sa.s) {
@@ -948,24 +948,24 @@ input_process_rules(target* all) {
   stralloc_zero(&defs->value.sa);
 
 #ifdef DEBUG_OUTPUT
-  buffer_putm_internal(buffer_2, YELLOW256, __func__, NC, " CFLAGS before: ", 0);
-  buffer_putsl(buffer_2, &cflags->value, " ");
-  buffer_putnlflush(buffer_2);
-  buffer_putm_internal(buffer_2, YELLOW256, __func__, NC, " CC before: ", 0);
-  buffer_putsl(buffer_2, &cc->value, " ");
-  buffer_putnlflush(buffer_2);
-  buffer_putm_internal(buffer_2, YELLOW256, __func__, NC, " DEFS before: ", 0);
-  buffer_putsl(buffer_2, &defs->value, " ");
-  buffer_putnlflush(buffer_2);
-  buffer_putm_internal(buffer_2, YELLOW256, __func__, NC, " INCLUDES before: ", 0);
-  buffer_putsl(buffer_2, &includes->value, " ");
-  buffer_putnlflush(buffer_2);
-  buffer_putm_internal(buffer_2, YELLOW256, __func__, NC, " LIBS before: ", 0);
-  buffer_putsl(buffer_2, &libs->value, " ");
-  buffer_putnlflush(buffer_2);
-  buffer_putm_internal(buffer_2, YELLOW256, __func__, NC, " COMMON_FLAGS before: ", 0);
-  buffer_putsl(buffer_2, &common->value, " ");
-  buffer_putnlflush(buffer_2);
+  buffer_putm_internal(debug_buf, YELLOW256, __func__, NC, " CFLAGS before: ", 0);
+  buffer_putsl(debug_buf, &cflags->value, " ");
+  buffer_putnlflush(debug_buf);
+  buffer_putm_internal(debug_buf, YELLOW256, __func__, NC, " CC before: ", 0);
+  buffer_putsl(debug_buf, &cc->value, " ");
+  buffer_putnlflush(debug_buf);
+  buffer_putm_internal(debug_buf, YELLOW256, __func__, NC, " DEFS before: ", 0);
+  buffer_putsl(debug_buf, &defs->value, " ");
+  buffer_putnlflush(debug_buf);
+  buffer_putm_internal(debug_buf, YELLOW256, __func__, NC, " INCLUDES before: ", 0);
+  buffer_putsl(debug_buf, &includes->value, " ");
+  buffer_putnlflush(debug_buf);
+  buffer_putm_internal(debug_buf, YELLOW256, __func__, NC, " LIBS before: ", 0);
+  buffer_putsl(debug_buf, &libs->value, " ");
+  buffer_putnlflush(debug_buf);
+  buffer_putm_internal(debug_buf, YELLOW256, __func__, NC, " COMMON_FLAGS before: ", 0);
+  buffer_putsl(debug_buf, &common->value, " ");
+  buffer_putnlflush(debug_buf);
 #endif
 
   /*strlist_free(&cflags->value);
@@ -986,9 +986,9 @@ input_process_rules(target* all) {
     // stralloc_lower(&cfg.chip);
 
 #ifdef DEBUG_OUTPUT
-    buffer_puts(buffer_2, "Chip: ");
-    buffer_putsa(buffer_2, &cfg.chip);
-    buffer_putnlflush(buffer_2);
+    buffer_puts(debug_buf, "Chip: ");
+    buffer_putsa(debug_buf, &cfg.chip);
+    buffer_putnlflush(debug_buf);
 #endif
   }
 
@@ -1071,9 +1071,9 @@ input_process_rules(target* all) {
               default: {
                 if(strlist_pushb_unique(&cflags->value, x, n)) {
 #ifdef DEBUG_OUTPUT
-                  buffer_puts(buffer_2, "CFLAGS: ");
-                  buffer_put(buffer_2, x, n);
-                  buffer_putnlflush(buffer_2);
+                  buffer_puts(debug_buf, "CFLAGS: ");
+                  buffer_put(debug_buf, x, n);
+                  buffer_putnlflush(debug_buf);
 #endif
                 }
 
@@ -1134,29 +1134,29 @@ input_process_rules(target* all) {
       strlist_push(&cflags->value, "$(COMMON_FLAGS)");*/
 
 #ifdef DEBUG_OUTPUT
-  buffer_putm_internal(buffer_2, YELLOW256, __func__, NC, " CFLAGS after: ", 0);
-  buffer_putsl(buffer_2, &cflags->value, " ");
-  buffer_putnlflush(buffer_2);
-  buffer_putm_internal(buffer_2, YELLOW256, __func__, NC, " CC after: ", 0);
-  buffer_putsl(buffer_2, &cc->value, " ");
-  buffer_putnlflush(buffer_2);
-  buffer_putm_internal(buffer_2, YELLOW256, __func__, NC, " DEFS after: ", 0);
-  buffer_putsl(buffer_2, &defs->value, " ");
-  buffer_putnlflush(buffer_2);
-  buffer_putm_internal(buffer_2, YELLOW256, __func__, NC, " INCLUDES after: ", 0);
-  buffer_putsl(buffer_2, &includes->value, " ");
-  buffer_putnlflush(buffer_2);
-  buffer_putm_internal(buffer_2, YELLOW256, __func__, NC, " LIBS after: ", 0);
-  buffer_putsl(buffer_2, &libs->value, " ");
-  buffer_putnlflush(buffer_2);
-  buffer_putm_internal(buffer_2, YELLOW256, __func__, NC, " COMMON_FLAGS after: ", 0);
-  buffer_putsl(buffer_2, &common->value, " ");
-  buffer_putnlflush(buffer_2);
+  buffer_putm_internal(debug_buf, YELLOW256, __func__, NC, " CFLAGS after: ", 0);
+  buffer_putsl(debug_buf, &cflags->value, " ");
+  buffer_putnlflush(debug_buf);
+  buffer_putm_internal(debug_buf, YELLOW256, __func__, NC, " CC after: ", 0);
+  buffer_putsl(debug_buf, &cc->value, " ");
+  buffer_putnlflush(debug_buf);
+  buffer_putm_internal(debug_buf, YELLOW256, __func__, NC, " DEFS after: ", 0);
+  buffer_putsl(debug_buf, &defs->value, " ");
+  buffer_putnlflush(debug_buf);
+  buffer_putm_internal(debug_buf, YELLOW256, __func__, NC, " INCLUDES after: ", 0);
+  buffer_putsl(debug_buf, &includes->value, " ");
+  buffer_putnlflush(debug_buf);
+  buffer_putm_internal(debug_buf, YELLOW256, __func__, NC, " LIBS after: ", 0);
+  buffer_putsl(debug_buf, &libs->value, " ");
+  buffer_putnlflush(debug_buf);
+  buffer_putm_internal(debug_buf, YELLOW256, __func__, NC, " COMMON_FLAGS after: ", 0);
+  buffer_putsl(debug_buf, &common->value, " ");
+  buffer_putnlflush(debug_buf);
 #endif
 
 #ifdef DEBUG_OUTPUT
-  buffer_putm_internal(buffer_2, "end ", YELLOW256, __func__, NC, 0);
-  buffer_putnlflush(buffer_2);
+  buffer_putm_internal(debug_buf, "end ", YELLOW256, __func__, NC, 0);
+  buffer_putnlflush(debug_buf);
 #endif
 
   strlist_free(&args);

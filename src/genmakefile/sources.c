@@ -2,7 +2,6 @@
 #include "is.h"
 #include "ansi.h"
 #include "../../lib/rdir.h"
-#include "../../debug.h"
 #include "../../genmakefile.h"
 
 set_t sources_set = {0};
@@ -376,11 +375,11 @@ sources_addincludes(sourcefile* file, sourcedir* sdir, const strlist* includes, 
   stralloc_nul(&relative);
 
 #ifdef DEBUG_OUTPUT
-  buffer_putm_internal(buffer_2, "[1]", YELLOW256, "sources_addincludes(", NC, file->name, YELLOW256, ")", NC, "(2) file=", file->name, " relative=", 0);
-  buffer_putsa(buffer_2, &relative);
-  buffer_puts(buffer_2, "\nIncludes: ");
-  strlist_dump(buffer_2, includes);
-  buffer_putnlflush(buffer_2);
+  buffer_putm_internal(debug_buf, "[1]", YELLOW256, "sources_addincludes(", NC, file->name, YELLOW256, ")", NC, "(2) file=", file->name, " relative=", 0);
+  buffer_putsa(debug_buf, &relative);
+  buffer_puts(debug_buf, "\nIncludes: ");
+  strlist_dump(debug_buf, includes);
+  buffer_putnlflush(debug_buf);
 #endif
 
   relative.s = path_clean_b(relative.s, &relative.len);

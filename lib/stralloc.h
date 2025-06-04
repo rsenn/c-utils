@@ -252,8 +252,6 @@ int stralloc_insertb(stralloc* sa, const char* s, size_t pos, size_t n);
 int stralloc_inserts(stralloc* sa, const char* s, size_t pos);
 int stralloc_insert(stralloc* sa, const stralloc* other, size_t pos);
 
-int stralloc_subst(stralloc* out, const char* b, size_t len, const char* from, const char* to);
-
 typedef size_t(stralloc_fmt_fn)(char*, int);
 size_t stralloc_fmt_call(stralloc*, stralloc_fmt_fn*, void* av[4]);
 size_t stralloc_fmt_pred(stralloc*, const char* in, size_t in_len, size_t (*fmt_function)(char*, int), int (*pred)(int));
@@ -291,8 +289,11 @@ int stralloc_removesuffixs(stralloc*, const char* suffix);
 int stralloc_removesuffixb(stralloc*, const char* x, size_t len);
 
 int stralloc_contains(const stralloc* sa, const char* what);
-int stralloc_replaces(stralloc*, const char* from, const char* to);
+
 int stralloc_replace(stralloc*, size_t pos, size_t len, const char* to, size_t tolen);
+
+int stralloc_replaces(stralloc*, const char* from, const char* to);
+int stralloc_subst(stralloc* out, const char* b, size_t len, const char* from, const char* to);
 
 size_t stralloc_case_end(const stralloc*, const stralloc* suffix);
 size_t stralloc_case_starts(const stralloc*, const char* prefix);

@@ -3,6 +3,7 @@
 #include "is.h"
 #include "ansi.h"
 #include "../../genmakefile.h"
+#include "../../debug.h"
 #include <string.h>
 #include <assert.h>
 
@@ -394,7 +395,7 @@ rule_command(target* rule, stralloc* out, bool shell, bool batch, const char quo
 
   stralloc_replacec(&prereq.sa, from, psa);
 
-  if(0 /* make_begin_inline == NULL  && rule->recipe ==  &commands.lib*/) {
+  if(rule->type == LIB) {
     char* x;
     size_t n = 0;
     range r;
@@ -430,9 +431,9 @@ rule_command(target* rule, stralloc* out, bool shell, bool batch, const char quo
 
       r.start += n;
     }
-  } else if(!str_start(maketool, "g") && !(rule->name[0] == '.' && strchr(&rule->name[1], '.') && prereq.sa.len == 0)) {
-    rule_command_subst(rule, out, prereq.sa.s, prereq.sa.len, shell, batch, quote_args, psa, make_sep_inline);
-  } else {
+
+  } else if((rule->name[0] == '.' && strchr(&rule->name[1], '.') && prereq.sa.len == 0)) {
+
     const char *p, *end;
 
     for(p = out->s, end = out->s + out->len; p < end;) {
@@ -445,6 +446,9 @@ rule_command(target* rule, stralloc* out, bool shell, bool batch, const char quo
       stralloc_catb(out, p, linelen);
       p += linelen;
     }
+
+  } else {
+    rule_command_subst(rule, out, prereq.sa.s, prereq.sa.len, shell, batch, quote_args, psa, make_sep_inline);
   }
 
   strlist_free(&prereq);
@@ -616,54 +620,54 @@ rule_prereq_recursive(target* rule, set_t* out) {
 void
 rule_dump(target* rule) {
 #ifdef DEBUG_OUTPUT
-  buffer_putm_internal(buffer_2, "\n  ", YELLOW256, "NAME   ", NC, " ", NULL);
-  buffer_puts(buffer_2, rule->name);
-  buffer_puts(buffer_2, "\n  " PURPLE256 "RECIPE " NC " ");
-  buffer_putsa_escaped(buffer_2, &rule->recipe, fmt_escapecharshell);
-  buffer_puts(buffer_2, "\n  " BLUE256 "OUTPUT " NC " ");
-  buffer_putset(buffer_2, &rule->output, " ", 1);
-  buffer_puts(buffer_2, "\n  " GREEN256 "PREREQ " NC "\n  \t");
-  buffer_putset(buffer_2, &rule->prereq, "\n  \t", 4);
+  buffer_putm_internal(debug_buf, "\n  ", YELLOW256, "NAME   ", NC, " ", NULL);
+  buffer_puts(debug_buf, rule->name);
+  buffer_puts(debug_buf, "\n  " PURPLE256 "RECIPE " NC " ");
+  buffer_putsa_escaped(debug_buf, &rule->recipe, fmt_escapecharshell);
+  buffer_puts(debug_buf, "\n  " BLUE256 "OUTPUT " NC " ");
+  buffer_putset(debug_buf, &rule->output, " ", 1);
+  buffer_puts(debug_buf, "\n  " GREEN256 "PREREQ " NC "\n  \t");
+  buffer_putset(debug_buf, &rule->prereq, "\n  \t", 4);
 
   if(array_length(&rule->deps, sizeof(target*))) {
-    buffer_puts(buffer_2, "\n  DEPS   " NC "\n  \t");
-    print_rule_deps(buffer_2, rule);
+    buffer_puts(debug_buf, "\n  DEPS   " NC "\n  \t");
+    print_rule_deps(debug_buf, rule);
   }
 
-  buffer_putnlflush(buffer_2);
+  buffer_putnlflush(debug_buf);
   return;
 #endif
 
-  buffer_putm_internal(buffer_2, "Rule '", rule->name, 0, "'\n", NULL);
+  buffer_putm_internal(debug_buf, "Rule '", rule->name, 0, "'\n", NULL);
 
   if(set_size(&rule->prereq)) {
-    buffer_puts(buffer_2, "\n  prereq: ");
-    buffer_putset(buffer_2, &rule->prereq, " ", 1);
+    buffer_puts(debug_buf, "\n  prereq: ");
+    buffer_putset(debug_buf, &rule->prereq, " ", 1);
   }
 
   if(set_size(&rule->output)) {
-    buffer_puts(buffer_2, "\n  output: ");
-    buffer_putset(buffer_2, &rule->output, " ", 1);
+    buffer_puts(debug_buf, "\n  output: ");
+    buffer_putset(debug_buf, &rule->output, " ", 1);
   }
 
   if(rule->recipe.len) {
     stralloc_nul(&rule->recipe);
-    buffer_putm_internal(buffer_2, "\n  recipe: ", rule->recipe.s, "\n", NULL);
+    buffer_putm_internal(debug_buf, "\n  recipe: ", rule->recipe.s, "\n", NULL);
   }
 
   if(array_length(&rule->deps, sizeof(target*))) {
     target** t;
-    buffer_puts(buffer_2, "\n  deps:");
+    buffer_puts(debug_buf, "\n  deps:");
 
     array_foreach_t(&rule->deps, t) {
-      buffer_putspace(buffer_2);
-      buffer_puts(buffer_2, (*t)->name);
+      buffer_putspace(debug_buf);
+      buffer_puts(debug_buf, (*t)->name);
     }
 
-    buffer_putc(buffer_2, '\n');
+    buffer_putc(debug_buf, '\n');
   }
 
-  buffer_putnlflush(buffer_2);
+  buffer_putnlflush(debug_buf);
 }
 
 /**
