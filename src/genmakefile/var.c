@@ -279,7 +279,7 @@ push_define(const char* def) {
  * @param in   [description]
  */
 void
-var_subst_sa(const char* name, stralloc* out, const stralloc* in, const char* prefix, const char* suffix) {
+var_subst_b(const char* name, stralloc* out, const char* in, size_t len, const char* prefix, const char* suffix) {
   if(!prefix)
     prefix = "$(";
   if(!suffix)
@@ -294,21 +294,31 @@ var_subst_sa(const char* name, stralloc* out, const stralloc* in, const char* pr
 
     vlen = byte_trimr(value, vlen, " \t\v\n", 3);
 
-    for(size_t i = 0; i < in->len;) {
-      if(i + vlen <= in->len) {
-        if(byte_equal(&in->s[i], vlen, value)) {
-          stralloc_cats(out, prefix);
-          stralloc_cats(out, name);
-          stralloc_cats(out, suffix);
+    for(size_t i = 0; i < len;) {
+      if(i + vlen <= len)
+        if(i == 0 || isspace(in[i - 1]))
+          if(i + vlen == len || isspace(in[i + vlen]))
+            if(byte_equal(&in[i], vlen, value)) {
+              stralloc_cats(out, prefix);
+              stralloc_cats(out, name);
+              stralloc_cats(out, suffix);
 
-          i += vlen;
-          continue;
-        }
-      }
+              i += vlen;
+              continue;
+            }
 
-      stralloc_catc(out, in->s[i++]);
+      stralloc_catc(out, in[i++]);
     }
   }
+}
+
+void
+var_subst_sa(const char* name, stralloc* sa, const char* prefix, const char* suffix) {
+  stralloc in;
+  stralloc_move(&in, sa);
+
+  var_subst_b(name, in.s, in.len, sa, prefix, suffix);
+  stralloc_free(&in);
 }
 
 /**

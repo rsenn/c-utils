@@ -2077,7 +2077,6 @@ main(int argc, char* argv[]) {
 
       for(size_t i = 0; varnames[i]; ++i) {
         const char* value;
-        //  char namebuf[64];
 
         if(!(value = var_get(varnames[i])) || !value[0])
           continue;
@@ -2094,7 +2093,7 @@ main(int argc, char* argv[]) {
           stralloc tmp;
           stralloc_init(&tmp);
 
-          var_subst_sa(varnames[i], &tmp, &rule->recipe, 0, 0);
+          var_subst_b(varnames[i], &tmp, rule->recipe.s, rule->recipe.len, 0, 0);
 
           stralloc_copy(&rule->recipe, &tmp);
           stralloc_nul(&rule->recipe);
@@ -2104,7 +2103,7 @@ main(int argc, char* argv[]) {
         }
       }
 
-      set_subst_sa(&rule->prereq, &rule->recipe, rule->type == COMPILE ? "$[<]" : "$[^]");
+      set_subst_sa(&rule->prereq, &rule->recipe, rule->type == COMPILE ? "$<" : "$^");
       set_subst_sa(&rule->output, &rule->recipe, "$@");
 
       if(modified) {

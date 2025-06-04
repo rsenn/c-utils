@@ -842,13 +842,13 @@ set_subst_b(const set_t* set, const char* in, size_t len, stralloc* out, const c
 
   for(size_t i = 0; i < len;) {
     if(i + value.len <= len)
-
-      if(i + value.len == len || isspace(in[i + value.len]))
-        if(byte_equal(&in[i], value.len, value.s)) {
-          stralloc_cats(out, replacement);
-          i += value.len;
-          continue;
-        }
+      if(i == 0 || isspace(in[i - 1]))
+        if(i + value.len == len || isspace(in[i + value.len]))
+          if(byte_equal(&in[i], value.len, value.s)) {
+            stralloc_cats(out, replacement);
+            i += value.len;
+            continue;
+          }
 
     stralloc_catc(out, in[i++]);
   }
