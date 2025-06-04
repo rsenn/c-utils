@@ -1252,9 +1252,9 @@ input_process_file(const char* infile, target* all) {
   if(set_size(&common_flags)) {
 
 #ifdef DEBUG_OUTPUT
-    buffer_puts(debug_buf, "Common flags: ");
-    buffer_putset(debug_buf, &common_flags, " ", 1);
-    buffer_putnlflush(debug_buf);
+    buffer_puts(buffer_1, "Common flags: ");
+    buffer_putsl(buffer_1, &common_flags_list, " ");
+    buffer_putnlflush(buffer_1);
 #endif
 
     var_t* v = var_list("COMMON_FLAGS", 0);
@@ -1266,9 +1266,9 @@ input_process_file(const char* infile, target* all) {
     const char* val = var_get("COMMON_FLAGS");
 
 #ifdef DEBUG_OUTPUT
-    buffer_puts(debug_buf, "Common flags (2): ");
-    buffer_puts(debug_buf, val);
-    buffer_putnlflush(debug_buf);
+    buffer_puts(buffer_1, "Common flags (2): ");
+    buffer_puts(buffer_1, val);
+    buffer_putnlflush(buffer_1);
 #endif
   }
 
