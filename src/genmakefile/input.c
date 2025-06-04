@@ -3,7 +3,10 @@
 #include "var.h"
 #include "generate.h"
 #include "../../genmakefile.h"
+#include "../../lib/set.h"
 #include <errno.h>
+
+set_t common_flags = SET();
 
 /**
  * @brief      Remove from stralloc
@@ -403,6 +406,22 @@ input_process_command(stralloc* cmd, int argc, char* argv[], const char* file, s
       strlist_push(&args, x);
       strlist_push(&flags, x);
       x = y;
+    }
+  }
+
+  {
+    const char* x;
+    size_t n;
+    set_t fs = SET(), tmp = SET();
+
+    strlist_foreach(&flags, x, n) { set_add(&fs, x, n); }
+
+    if(set_size(&common_flags)) {
+      set_intersection(&tmp, &fs, &common_flags);
+      set_free(&common_flags);
+      common_flags = tmp;
+    } else {
+      common_flags = fs;
     }
   }
 
