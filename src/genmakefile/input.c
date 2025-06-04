@@ -288,8 +288,8 @@ input_process_command(stralloc* cmd, int argc, char* argv[], const char* file, s
         input_process_path(y, &path);
         strlist_push(&args, "-o");
         strlist_push(&args, path.s);
-        strlist_push(&flags, "-o");
-        strlist_push(&flags, path.s);
+        /*       strlist_push(&flags, "-o");
+               strlist_push(&flags, path.s);*/
         stralloc_copyb(&out, y, str_chrs(y, "\r\n", 2));
         stralloc_zero(&path);
         continue;
@@ -428,8 +428,15 @@ input_process_command(stralloc* cmd, int argc, char* argv[], const char* file, s
     strlist_zero(&common_flags_list);
 
     strlist_foreach(&flags, x, n) {
-      if(set_has(&fs, x, n))
+      if(set_has(&fs, x, n)) {
         strlist_pushb_unique(&common_flags_list, x, n);
+
+#ifdef DEBUG_OUTPUT
+        buffer_puts(buffer_1, "Common flag: ");
+        buffer_put(buffer_1, x, n);
+        buffer_putnlflush(buffer_1);
+#endif
+      }
     }
   }
 
@@ -1259,8 +1266,10 @@ input_process_file(const char* infile, target* all) {
 
     var_t* v = var_list("COMMON_FLAGS", 0);
 
-    stralloc_copyb(&v->value.sa, common_flags_list.sa.s, common_flags_list.sa.len);
-    stralloc_nul(&v->value.sa);
+    /*stralloc_copyb(&v->value.sa, common_flags_list.sa.s, common_flags_list.sa.len);
+    stralloc_nul(&v->value.sa);*/
+    strlist_copy(&v->value, &common_flags_list);
+    v->value.sep = ' ';
 
     /*    var_set_set("COMMON_FLAGS", &common_flags);*/
     const char* val = var_get("COMMON_FLAGS");

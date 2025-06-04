@@ -2147,6 +2147,8 @@ main(int argc, char* argv[]) {
         0,
     };
 
+    var_list("COMMON_FLAGS", 0)->value.sep = ' ';
+
     for(size_t i = 0; varnames[i]; ++i) {
       var_t* v;
 
