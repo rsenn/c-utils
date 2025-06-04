@@ -1451,7 +1451,7 @@ main(int argc, char* argv[]) {
   set_t toks;
   buffer filebuf, *out = buffer_1;
   size_t n;
-  target *all = 0, *compile = 0;
+  target *all = 0, *compile_target = 0;
   char **it, **arg, **ptr, *x;
   struct unix_longopt opts[] = {
       {"help", 0, NULL, 'h'},
@@ -2046,8 +2046,8 @@ main(int argc, char* argv[]) {
       stralloc_cats(&rn, exts.obj);
     }
 
-    compile = rule_get_sa(&rn);
-    compile->outputs = outputs;
+    compile_target = rule_get_sa(&rn);
+    compile_target->outputs = outputs;
 
     stralloc_free(&rn);
   }
@@ -2111,6 +2111,14 @@ main(int argc, char* argv[]) {
         buffer_putm_internal(buffer_1, " ", "Recipe: ", rule->recipe.s, 0);
         buffer_putnlflush(buffer_1);
       }
+
+      
+      if(rule->type == COMPILE && stralloc_length(&rule->recipe)) {
+        if(!stralloc_length(&compile_target->recipe)) {
+          stralloc_copy(&compile_target->recipe, &rule->recipe);
+        }
+      }
+
     }
 
 #ifdef DEBUG_OUTPUT_
@@ -2131,30 +2139,31 @@ main(int argc, char* argv[]) {
     }
   }
 
-  if(compile)
-    stralloc_weak(&compile->recipe, &commands.compile);
+  if(compile_target) {
+    // stralloc_weak(&compile_target->recipe, &commands.compile);
+  }
 
-  if(compile) {
+  if(compile_target) {
     MAP_PAIR_T it;
 
     strlist_nul(&dirs.work);
     strlist_push_unique(&vpath, ".");
     strlist_push_unique_sa(&vpath, &dirs.work.sa);
 
-    set_clear(&compile->output);
+    set_clear(&compile_target->output);
 
     MAP_FOREACH(rule_map, it) {
       target* rule = MAP_ITER_VALUE(it);
 
-      if(rule_is_compile(rule) && rule != compile) {
+      if(rule_is_compile(rule) && rule != compile_target) {
         stralloc_free(&rule->recipe);
         stralloc_init(&rule->recipe);
 
         if(str_equal(tools.make, "gmake"))
           rule->disabled = 1;
 
-        // set_cat(&compile->prereq, &rule->prereq);
-        set_cat(&compile->output, &rule->output);
+        // set_cat(&compile_target->prereq, &rule->prereq);
+        set_cat(&compile_target->output, &rule->output);
       }
     }
   }

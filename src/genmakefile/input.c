@@ -1241,6 +1241,12 @@ input_process_file(const char* infile, target* all) {
     mmap_unmap(x, n);
   }
 
+  {
+    buffer_puts(buffer_1, "Common flags: ");
+    buffer_putset(buffer_1, &common_flags, " ", 1);
+    buffer_putnlflush(buffer_1);
+  }
+
   input_process_rules(all);
 
   return ret < 0 ? ret : 0;

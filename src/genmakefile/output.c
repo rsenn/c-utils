@@ -217,7 +217,9 @@ output_make_rule(buffer* b, target* rule, build_tool_t tool, const char quote[],
   stralloc_zero(&output);
   stralloc_nul(&output);
 
-  if(str_contains(rule->name, "%")) {
+  bool pattern_rule = str_contains(rule->name, "%") /* && str_contains(rule->name, ": ")*/;
+
+  if(pattern_rule) {
     stralloc_cats(&sa, ": ");
     stralloc_cats(&sa, rule->name);
 
@@ -233,7 +235,10 @@ output_make_rule(buffer* b, target* rule, build_tool_t tool, const char quote[],
   else
     stralloc_cats(&output, rule->name);
 
-  stralloc_catc(&output, ':');
+  bool pattern = num_prereqs == 0 && str_contains(rule->name, ": ") && (make_capabs & MAKE_RULE_PATTERN);
+
+  if(!pattern)
+    stralloc_catc(&output, ':');
 
   if(num_prereqs) {
     const char* str;
