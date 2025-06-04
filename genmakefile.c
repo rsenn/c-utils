@@ -1780,13 +1780,15 @@ main(int argc, char* argv[]) {
       tools.make = "nmake";
     } else if(str_start(tools.compiler, "g")) {
       tools.make = "gmake";
-      make_capabs |= MAKE_RULE_PATTERN;
     } else if(str_start(tools.compiler, "o")) {
       tools.make = "omake";
     } else if(str_start(tools.compiler, "po")) {
       tools.make = "pomake";
     }
   }
+
+  if(str_equal(tools.make, "gmake"))
+    make_capabs |= MAKE_RULE_PATTERN;
 
   if(tools.toolchain)
     cygming = str_start(tools.toolchain, "mingw") || str_start(tools.toolchain, "cyg") || str_start(tools.toolchain, "msys");
