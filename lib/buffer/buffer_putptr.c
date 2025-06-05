@@ -1,7 +1,7 @@
 #include "../buffer.h"
 #include "../fmt.h"
 
-const size_t buffer_putptr_size_2 = sizeof(void*) * 2;
+size_t buffer_putptr_size_2 = sizeof(void*) * 2;
 
 int
 buffer_putptr(buffer* b, void* ptr) {
