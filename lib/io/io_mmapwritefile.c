@@ -1,5 +1,4 @@
 #include "../io_internal.h"
-#define _LARGEFILE64_SOURCE
 #include "../windoze.h"
 #include "../iob.h"
 

@@ -10,8 +10,6 @@
 #endif
 
 #define _FILE_OFFSET_BITS 64
-//#define _LARGEFILE64_SOURCE 1
-#define _LARGEFILE_SOURCE 1
 
 #include <sys/stat.h>
 

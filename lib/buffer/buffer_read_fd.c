@@ -1,6 +1,5 @@
 #include "../windoze.h"
 
-#define _LARGEFILE64_SOURCE
 #include "../buffer.h"
 #include <stdlib.h>
 #include <sys/stat.h>
