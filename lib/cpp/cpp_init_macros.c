@@ -3,6 +3,7 @@
 #include "../fmt.h"
 #include "../str.h"
 #include <sys/stat.h>
+#include <time.h>
 
 static char* format_time(struct tm* tm);
 static char* format_date(struct tm* tm);
@@ -42,10 +43,10 @@ timestamp_macro(cpp_token* tmpl) {
   if(stat(tmpl->file->name, &st) != 0)
     return cpp_new_str_token("??? ??? ?? ??:??:?? ????", tmpl);
 
-  char buf[30];
+  /*char buf[30];
   ctime_r(&st.st_mtime, buf);
-  buf[24] = '\0';
-  return cpp_new_str_token(buf, tmpl);
+  buf[24] = '\0';*/ 
+  return cpp_new_str_token(ctime(&st.st_mtime), tmpl);
 }
 
 static cpp_token*

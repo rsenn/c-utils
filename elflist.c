@@ -117,10 +117,8 @@ elf_dump_header(buffer* b, range map) {
 }
 
 /**
- * @brief elf_dump_dynamic  Dumps all
- * ELF dynamic entries
- * @param map               Pointer
- * range of the loaded ELF file
+ * @brief elf_dump_dynamic  Dumps all ELF dynamic entries
+ * @param map               Pointer range of the loaded ELF file
  */
 void
 elf_dump_dynamic(range map) {
@@ -187,10 +185,8 @@ elf_dump_dynamic(range map) {
 }
 
 /**
- * @brief elf_dump_needed  Dumps all
- * ELF dynamic entries
- * @param map               Pointer
- * range of the loaded ELF file
+ * @brief elf_dump_needed   Dumps all ELF dynamic entries
+ * @param map               Pointer range of the loaded ELF file
  */
 void
 elf_dump_needed(buffer* b, range map) {

@@ -14,6 +14,7 @@
 #include "taia.h"
 #include "uint64.h"
 #include "typedefs.h"
+#include "config.h"
 
 #ifdef __cplusplus
 extern "C" {

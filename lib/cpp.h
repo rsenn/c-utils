@@ -93,7 +93,7 @@ void cpp_define(char*, char*);
 bool cpp_expand(cpp_token**, cpp_token*);
 void cpp_undefine(char*);
 cpp_token* cpp_new_num_token(int, cpp_token*);
-cpp_token* cpp_new_str_token(char*, cpp_token*);
+cpp_token* cpp_new_str_token(const char*, cpp_token*);
 cpp_token* cpp_paste(cpp_token*, cpp_token*);
 cpp_token* cpp_preprocess2(cpp_token*);
 cpp_token* cpp_preprocess(cpp_token*);

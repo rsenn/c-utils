@@ -100,3 +100,7 @@
 /* size of the `long long' type */
 #define SIZEOF_LONGLONG @SIZEOF_LONGLONG@
 #cmakedefine HAVE_LONGLONG_TYPE 1
+
+/* seek function */
+#define io_seek @IO_SEEK@
+#cmakedefine HAVE_LONGLONG_TYPE 1
