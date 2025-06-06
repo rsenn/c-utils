@@ -21,7 +21,7 @@ usage(char* a0) {
                        "example preprocessor\n"
                        "usage: ",
                        path_basename(a0),
-                       " [-d] [-I includedir...] [-D define] [-o output] file\n"
+                       " [-dPLx] [-I includedir...] [-D define] [-o output] file\n"
                        "if no filename or '-' is passed, stdin is used.\n",
                        NULL);
   buffer_putnlflush(buffer_2);
@@ -43,6 +43,7 @@ main(int argc, char** argv) {
       {"no-process", 1, &no_process, 'P'},
       {"no-line", 1, &no_line, 'L'},
       {"dump-defines", 1, &dump_defines, 'x'},
+      {"dump", 0, NULL, 'd'},
       {"MM", 1, &show_deps, 64},
       {"MX", 1, &show_deps, 128},
       {0, 0, 0, 0},
@@ -102,11 +103,13 @@ main(int argc, char** argv) {
         dump_defines = 1;
         break;
       }
+
       case 'X': {
         if(show_deps)
           show_deps += 128;
         break;
       }
+
       case 'M':
       case 64: {
         show_deps++;
