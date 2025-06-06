@@ -1100,7 +1100,7 @@ if(BUILD_TESTS)
   #program(xmltest4 xml stralloc buffer array byte cb cbmap fmt hmap mmap scan str strlist)
   program(httptest http tls dns slist xml sig stralloc buffer errmsg byte unix io socket alloc taia ${TLS_LIBRARIES}
           ${LIBMSWSOCK} ${LIBPTHREAD} ${LIBDL})
-  program(cpptest cpp hmap)
+  program(cpptest cpp hmap path fmt str)
   #link_program(httptest ${LIBDL})
 endif(BUILD_TESTS)
 

@@ -1,5 +1,7 @@
 #include "../cpp.h"
 #include "../cpp_internal.h"
+#include "../fmt.h"
+#include "../str.h"
 #include <sys/stat.h>
 
 static char* format_time(struct tm* tm);
@@ -934,11 +936,42 @@ format_date(struct tm* tm) {
       "Dec",
   };
 
-  return cpp_format("\"%s %2d %d\"", mon[tm->tm_mon], tm->tm_mday, tm->tm_year + 1900);
+  char buf[64];
+  size_t pos = 0;
+
+  buf[pos++] = '"';
+  pos += str_copy(&buf[pos], mon[tm->tm_mon]);
+  buf[pos++] = ' ';
+
+  if(tm->tm_mday < 10)
+    buf[pos++] = ' ';
+
+  pos += fmt_uint(&buf[pos], tm->tm_mday);
+  buf[pos++] = ' ';
+
+  pos += fmt_uint(&buf[pos], tm->tm_year + 1900);
+  buf[pos++] = '"';
+
+  return str_ndup(buf, pos);
+
+  // return cpp_format("\"%s %2d %d\"", mon[tm->tm_mon], tm->tm_mday, tm->tm_year + 1900);
 }
 
 /* __TIME__ is expanded to the current time, e.g. "13:34:03". */
 static char*
 format_time(struct tm* tm) {
-  return cpp_format("\"%02d:%02d:%02d\"", tm->tm_hour, tm->tm_min, tm->tm_sec);
+  char buf[64];
+  size_t pos = 0;
+
+  buf[pos++] = '"';
+  pos += fmt_uint0(&buf[pos], tm->tm_hour, 2);
+  buf[pos++] = ':';
+  pos += fmt_uint0(&buf[pos], tm->tm_min, 2);
+  buf[pos++] = ':';
+  pos += fmt_uint0(&buf[pos], tm->tm_sec, 2);
+  buf[pos++] = '"';
+
+  return str_ndup(buf, pos);
+
+  //return cpp_format("\"%02d:%02d:%02d\"", tm->tm_hour, tm->tm_min, tm->tm_sec);
 }

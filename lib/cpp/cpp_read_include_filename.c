@@ -42,4 +42,5 @@ cpp_read_include_filename(cpp_token** rest, cpp_token* tok, bool* is_dquote) {
   }
 
   cpp_error_tok(tok, "expected a filename");
+  return 0;
 }

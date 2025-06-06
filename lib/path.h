@@ -104,6 +104,7 @@ void path_append(const char* x, size_t len, stralloc* out);
 void path_appends(const char* s, stralloc* out);
 void path_prepend(const char*, size_t, stralloc*);
 void path_prepends(const char*, stralloc*);
+char* path_join(const char*, const char*);
 
 #ifdef STRLIST_H
 int path_split(const char*, strlist*, int);

@@ -5,7 +5,7 @@
 void
 cpp_define(char* name, char* buf) {
   size_t nlen = str_len(name), blen = str_len(buf);
-  char* b = alloca(nlen + 1 + blen + 1);
+  char* b = alloc(nlen + 1 + blen + 1);
 
   str_copy(b, name);
   b[nlen] = ' ';

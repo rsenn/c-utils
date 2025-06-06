@@ -29,7 +29,6 @@ readclose_append(int64 fd, stralloc* sa, size_t bufsize) {
     }
 
     if((r = read(fd, sa->s + sa->len, bufsize)) == -1)
-
       if(errno == EINTR)
         continue;
 

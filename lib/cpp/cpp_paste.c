@@ -5,7 +5,12 @@
 cpp_token*
 cpp_paste(cpp_token* lhs, cpp_token* rhs) {
   /* Paste the two tokens. */
-  char* buf = cpp_format("%.*s%.*s", lhs->len, lhs->loc, rhs->len, rhs->loc);
+  char* buf = alloc(lhs->len + rhs->len + 1);
+
+  byte_copy(buf, lhs->len, lhs->loc);
+  str_copyn(buf + lhs->len, rhs->loc, rhs->len);
+
+  // char* buf = cpp_format("%.*s%.*s", lhs->len, lhs->loc, rhs->len, rhs->loc);
 
   cpp_file* file = cpp_file_new(lhs->file->name, lhs->file->file_no, buf);
 

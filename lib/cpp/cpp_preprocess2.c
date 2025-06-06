@@ -64,7 +64,8 @@ cpp_preprocess2(cpp_token* tok) {
         stralloc_init(&dir);
         path_dirname(start->file->name, &dir);
         stralloc_nul(&dir);
-        char* path = cpp_format("%s/%s", dir.s, filename);
+
+        char* path = path_join(dir.s, filename);
         stralloc_free(&dir);
 
         if(path_exists(path)) {

@@ -377,21 +377,6 @@ cpp_file_dup(cpp_file* file) {
   return file;
 }
 
-/* Takes a printf-style cpp_format string and returns a formatted string.*/
-static inline char*
-cpp_format(char* fmt, ...) {
-  char* buf;
-  size_t buflen;
-  FILE* out = open_memstream(&buf, &buflen);
-
-  va_list ap;
-  va_start(ap, fmt);
-  vfprintf(out, fmt, ap);
-  va_end(ap);
-  fclose(out);
-  return buf;
-}
-
 static inline cpp_macro*
 cpp_macro_find(cpp_token* tok) {
   if(tok->kind != TK_IDENT)

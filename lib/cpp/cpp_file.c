@@ -10,7 +10,7 @@ cpp_file_new(const char* name, int file_no, char* contents) {
     file->name = str_dup(name);
     file->display_name = str_dup(name);
     file->file_no = file_no;
-    file->contents = str_dup(contents);
+    file->contents = contents;
     file->ref_count = 1;
   }
 

@@ -2,6 +2,8 @@
 #include "../cpp_internal.h"
 #include "../uint16.h"
 #include "../uint8.h"
+#include "../fmt.h"
+#include "../str.h"
 
 static cpp_scope* scope = &(cpp_scope){};
 
@@ -32,7 +34,6 @@ static cpp_node* add(cpp_token**, cpp_token*);
 static cpp_node* mul(cpp_token**, cpp_token*);
 static cpp_node* unary(cpp_token**, cpp_token*);
 static cpp_node* cast(cpp_token**, cpp_token*);
-
 
 static bool
 is_integer(cpp_type* ty) {
@@ -196,8 +197,14 @@ new_gvar(char* name, cpp_type* ty) {
 
 static char*
 new_unique_name(void) {
+  char buf[FMT_LONG + 4] = {'.', 'L', '.', '.'};
+  size_t pos = 4;
   static int id = 0;
-  return cpp_format(".L..%d", id++);
+
+  pos += fmt_int(&buf[pos], id++);
+  return str_ndup(buf, pos);
+
+  // return cpp_format(".L..%d", id++);
 }
 
 /*static cpp_obj*

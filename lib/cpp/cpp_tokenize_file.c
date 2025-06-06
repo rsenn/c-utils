@@ -13,8 +13,8 @@ cpp_tokenize_file(char* path) {
      If exists, just cpp_skip them because they are useless bytes.
      (It is actually not recommended to add BOM markers to UTF-8
      texts, but it's not uncommon particularly on Windows.) */
-  if(byte_equal(p, 3, "\xef\xbb\xbf"))
-    p += 3;
+  /*if(byte_equal(p, 3, "\xef\xbb\xbf"))
+    p += 3;*/
 
   cpp_canonicalize_newline(p);
   cpp_remove_backslash_newline(p);
