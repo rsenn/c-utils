@@ -136,7 +136,7 @@ includes_add_b(const char* dir, size_t len) {
   stralloc_init(&tmp);
   stralloc_init(&to);
 
-  path_normalize_b(dir, len, &d);
+  path_normalize_sa_b(dir, len, &d);
   path_absolute(dirs.work.sa.s, &to);
   path_relative_to_b(d.s, d.len, to.s, to.len, &tmp);
   stralloc_free(&d);

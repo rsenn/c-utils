@@ -160,7 +160,7 @@ output_cmake_subst_path(const char* path, const char* varname, stralloc* out) {
   const char* value;
 
   stralloc_zero(out);
-  path_normalize(path, out);
+  path_normalize_sa(path, out);
   output_cmake_subst(out, varname);
 }
 

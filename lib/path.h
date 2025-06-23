@@ -46,6 +46,19 @@ typedef enum path_format {
                                   */
 #define PATH_FNM_PERIOD (1 << 2) /* Leading .' is matched only explicitly.  */
 
+ 
+#if WINDOWS_NATIVE
+#define PATHSEP_S_MIXED "\\/"
+#define path_issep(c) ((c) == '/' || (c) == '\\')
+#elif WINDOWS
+#define PATHSEP_S_MIXED "\\/"
+#define path_issep(c) ((c) == '/' || (c) == '\\')
+#else
+#define PATHSEP_S_MIXED "/"
+#define path_issep(c) ((c) == '/')
+#endif
+
+
 int path_access(const char*, int rights);
 int path_absolute(const char* path, stralloc* sa);
 char* path_absolute_s(const char* path);
@@ -87,6 +100,9 @@ int path_relative_to_b(const char*, size_t, const char*, size_t n2, stralloc* ou
 int path_relative_to(const char*, const char*, stralloc*);
 int path_relative_to_sa(const stralloc* path, const stralloc* relative_to, stralloc* out);
 
+size_t path_normalize(char* path);
+size_t path_normalize2(char* path, size_t nb);
+
 size_t path_right(const char* s, size_t n);
 size_t path_skip(const char* s, size_t n);
 size_t path_skips(const char* s);
@@ -123,6 +139,94 @@ path_is_dotslash(char* s) {
   }
 
   return 0;
+}
+
+static inline size_t
+path_component1(const char* p) {
+  const char* s = p;
+
+  while(*s && !path_issep(*s))
+    ++s;
+
+  return s - p;
+}
+
+static inline size_t
+path_component2(const char* p, size_t len) {
+  const char *start = p, *end = p + len;
+
+  while(p < end && !path_issep(*p))
+    ++p;
+
+  return p - start;
+}
+
+static inline size_t
+path_component3(const char* p, size_t len, size_t pos) {
+  const char *start = p, *end = p + len;
+
+  if(pos > len)
+      pos = len;
+
+  p += pos;
+
+  while(p < end && !path_issep(*p))
+    ++p;
+
+  return p - start;
+}
+
+static inline size_t
+path_separator1(const char* p) {
+  const char* s = p;
+
+  while(*s && path_issep(*s))
+    ++s;
+
+  return s - p;
+}
+
+static inline size_t
+path_separator2(const char* p, size_t len) {
+  const char *start = p, *end = p + len;
+
+  while(p < end && path_issep(*p))
+    ++p;
+
+  return p - start;
+}
+
+
+static inline size_t
+path_skip3(const char* s, size_t* len, size_t n) {
+  const char *p = s, *e = s + n;
+
+  p += path_component3(s, e - p, 0);
+
+  if(len)
+    *len = p - s;
+
+  p += path_separator2(p, e - p);
+
+  return p - s;
+}
+
+static inline size_t
+path_skip1(const char* s) {
+  const char* p = s;
+  while(*p && !path_issep(*p))
+    ++p;
+  while(*p && path_issep(*p))
+    ++p;
+  return p - s;
+}
+
+static inline size_t
+path_skip2(const char* s, size_t n) {
+  const char *p = s, *e = s + n;
+  p += path_component3(s, n, 0);
+  p += path_separator2(p, e - p);
+  return p - s;
 }
 
 #ifndef PATH_MAX

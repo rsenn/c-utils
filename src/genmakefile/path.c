@@ -236,7 +236,7 @@ path_mmap_read(const char* path, size_t* n, char psm) {
  * @param      out   Output buffer
  */
 void
-path_normalize(const char* dir, stralloc* out) {
+path_normalize_sa(const char* dir, stralloc* out) {
   stralloc tmp;
 
   stralloc_init(&tmp);
@@ -276,14 +276,14 @@ path_normalize(const char* dir, stralloc* out) {
  * @param      out   Output path
  */
 void
-path_normalize_b(const char* x, size_t len, stralloc* out) {
+path_normalize_sa_b(const char* x, size_t len, stralloc* out) {
   stralloc tmp;
 
   stralloc_init(&tmp);
   stralloc_copyb(&tmp, x, len);
   stralloc_nul(&tmp);
 
-  path_normalize(tmp.s, out);
+  path_normalize_sa(tmp.s, out);
 
   if(stralloc_ends(out, "/."))
     out->len -= 2;

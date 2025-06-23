@@ -530,7 +530,7 @@ input_process_command(stralloc* cmd, int argc, char* argv[], const char* file, s
     stralloc tmp;
 
     stralloc_init(&tmp);
-    // path_normalize_b(files.tmp.s, byte_chr(files.tmp.s, files.tmp.len, files.sep), &tmp);
+    // path_normalize_sa_b(files.tmp.s, byte_chr(files.tmp.s, files.tmp.len, files.sep), &tmp);
 
     stralloc_copyb(&tmp, files.sa.s, byte_chr(files.sa.s, files.sa.len, files.sep));
     stralloc_nul(&tmp);

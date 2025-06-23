@@ -1335,7 +1335,7 @@ libdirs_add(const char* dir) {
   stralloc tmp;
 
   stralloc_init(&tmp);
-  path_normalize(dir, &tmp);
+  path_normalize_sa(dir, &tmp);
 
   if(strlist_push_unique_sa(&link_dirs, &tmp)) {
 #ifdef DEBUG_OUTPUT_
