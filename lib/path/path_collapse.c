@@ -5,11 +5,11 @@
 
 size_t
 path_collapse(char* path, size_t n) {
-  char *x=path, *end=path+n, sep = path_getsep(path);
+  char *x = path, *end = path + n, sep = path_getsep(path);
   int count = 0;
-  size_t l, i=0, j = 0;
+  size_t l, i = 0, j = 0;
 
-  while( i < n) {
+  while(i < n) {
     while(x[i] == sep)
       ++i;
 
