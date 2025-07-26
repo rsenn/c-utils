@@ -172,10 +172,19 @@ else(WINDOWS)
     LIBC_HAS_IP6
     "#include <sys/types.h>\n#include <sys/socket.h>\n#include <netinet/in.h>\n\nint main() {\n  struct sockaddr_in6 sa;\n  sa.sin6_family = PF_INET6;\n  (void)sa;\n  return 0;\n}\n"
   )
+
+  if(LIBC_HAS_IP6)
+    add_definitions(-DLIBC_HAS_IP6)
+  endif(LIBC_HAS_IP6)
+
   check_compile(
     LIBC_HAS_SCOPE_ID
     "#include <sys/types.h>\n#include <sys/socket.h>\n#include <netinet/in.h>\n\nint main() {\n  struct sockaddr_in6 sa;\n  sa.sin6_family = PF_INET6;\n  sa.sin6_scope_id = 23;\n  (void)sa;\n  return 0;\n}\n"
   )
+
+  if(LIBC_HAS_SCOPE_ID)
+    add_definitions(-DLIBC_HAS_SCOPE_ID)
+  endif(LIBC_HAS_SCOPE_ID)
 
   check_compile(
     HAVE_SYSCALL
@@ -504,6 +513,7 @@ if(NOT HAVE__LLSEEK)
     if(NOT HAVE_LSEEK64 AND FALSE)
       check_function_exists(lseek HAVE_LSEEK)
       if(NOT HAVE_LSEEK)
+
       else(NOT HAVE_LSEEK)
         set(IO_SEEK lseek CACHE STRING "seek() function")
       endif(NOT HAVE_LSEEK)
@@ -515,7 +525,7 @@ if(NOT HAVE__LLSEEK)
     set(IO_SEEK llseek CACHE STRING "seek() function")
   endif(NOT HAVE_LLSEEK)
 else(NOT HAVE__LLSEEK)
-    set(IO_SEEK _llseek CACHE STRING "seek() function")
+  set(IO_SEEK _llseek CACHE STRING "seek() function")
 endif(NOT HAVE__LLSEEK)
 
 if(USE_POLL STREQUAL "OFF" AND NOT USE_SELECT STREQUAL "ON")
@@ -878,7 +888,6 @@ foreach(VAR LIBLZMA_LIBRARY ZLIB_LIBRARY BZIP2_LIBRARY BROTLI_LIBRARIES)
   endif(LIB)
 endforeach(VAR LIBLZMA_LIBRARY ZLIB_LIBRARY BZIP2_LIBRARY BROTLI_LIBRARIES)
 
-
 set(COMPRESSION_LIBRARIES "${COMPRESSION_LIBRARIES}" CACHE STRING "Compression libraries")
 #endif(NOT COMPRESSION_LIBRARIES OR "${COMPRESSION_LIBRARIES}" STREQUAL "")
 
@@ -933,10 +942,11 @@ if(BUILD_SHARED OR BUILD_STATIC)
     set(OVERRIDE_DEPS c-utils)
   endif(BUILD_STATIC)
 else(BUILD_SHARED OR BUILD_STATIC)
+
 endif(BUILD_SHARED OR BUILD_STATIC)
-  macro(program NAME)
-    add_program(${NAME} ${ARGN})
-  endmacro(program NAME)
+macro(program NAME)
+  add_program(${NAME} ${ARGN})
+endmacro(program NAME)
 
 #dump(LIBMATH)
 
@@ -1009,8 +1019,8 @@ program(ar-wrap path process errmsg env buffer dir strarray strlist stralloc fmt
 program(cofflist coff unix errmsg stralloc buffer mmap)
 program(msys-shell unix errmsg env buffer path strarray strlist stralloc)
 set(tcping_SOURCES address.c)
-program(tcping hmap unix dns case io array socket ndelay errmsg taia tai buffer stralloc mmap open fmt scan str byte
-        uint16 ${LIBMSWSOCK} ${LIBIPHLPAPI})
+program(tcping textcode hmap unix dns case io array socket ndelay errmsg taia tai buffer stralloc mmap open fmt scan
+        str byte uint16 ${LIBMSWSOCK} ${LIBIPHLPAPI})
 set(ftptest_SOURCES address.c ftplib.c)
 
 set(nscache_SOURCES
