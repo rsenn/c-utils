@@ -1,3 +1,6 @@
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
 #define _FILE_OFFSET_BITS 64
 #include "../seek.h"
 #include "../io.h"
@@ -10,7 +13,7 @@
 #include <unistd.h>
 #include <sys/types.h>
 #endif
-#ifdef HAVE_ALLOCA
+#ifdef HAVE_ALLOCA_H
 #include <alloca.h>
 #endif
 
