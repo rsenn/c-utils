@@ -124,6 +124,7 @@ size_t fmt_asn1dertag(char* dest, uint64 l);    /* 1 byte for each 7 bits; upper
 
 /* internal functions, may be independently useful */
 char fmt_tohex(char c);
+extern const char fmt_hexchars[16];
 
 #if defined(__BORLANDC__) || defined(__LCC__)
 #define fmt_strm(b, args) fmt_strm_internal(b, args, (char*)0)
@@ -186,7 +187,6 @@ size_t fmt_tai(char* dest, const struct tai* ta);
 #endif
 size_t fmt_iso8601(char* dest, time_t t);
 
-char fmt_tohex(char c);
 size_t fmt_repeat(char* dest, const char* src, int n);
 
 size_t fmt_escapecharxml(char*, unsigned int ch);

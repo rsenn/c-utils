@@ -8,7 +8,7 @@
 #include <stdlib.h>
 #include <time.h>
 
-#ifdef HAVE_ZLIB
+#if HAVE_ZLIB
 #include <zlib.h>
 
 typedef struct {

@@ -114,8 +114,7 @@ try {
 console.log("parser: ", parser);
 
 */
-console.log("ast: ", ast);
-*/
+  console.log("ast: ", ast);
 } catch(error) {
   console.error("ERROR: ", error);
 }

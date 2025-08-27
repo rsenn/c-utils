@@ -3,7 +3,7 @@
 #include "../uint8.h"
 #include <stdlib.h>
 
-#ifdef HAVE_LIBLZMA
+#if HAVE_LIBLZMA
 #ifdef __BORLANDC__
 #define _MSC_VER 1500
 #endif

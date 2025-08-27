@@ -33,13 +33,13 @@ usage(char* argv0) {
                        "\n",
                        "Supported types are:",
                        NULL);
-#ifdef HAVE_ZLIB
+#if HAVE_ZLIB
   buffer_puts(buffer_1, " gz");
 #endif
-#ifdef HAVE_LIBBZ2
+#if HAVE_LIBBZ2
   buffer_puts(buffer_1, " bz2");
 #endif
-#ifdef HAVE_LIBLZMA
+#if HAVE_LIBLZMA
   buffer_puts(buffer_1, " lzma xz");
 #endif
   buffer_puts(buffer_1, "\n");

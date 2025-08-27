@@ -19,7 +19,8 @@ if(USE_ZLIB)
       endif(ZLIB_LIBRARIES)
 
       if(ZLIB_INCLUDE_DIRS)
-        set(ZLIB_INCLUDE_DIR "${ZLIB_INCLUDE_DIRS}" CACHE PATH "zlib include dir")
+        set(ZLIB_INCLUDE_DIR "${ZLIB_INCLUDE_DIRS}" CACHE PATH
+                                                          "zlib include dir")
       endif(ZLIB_INCLUDE_DIRS)
       #if(ZLIB_LIBRARY_DIRS)
       #  set(ZLIB_LIBRARY_DIR "${ZLIB_LIBRARY_DIRS}" CACHE PATH)
@@ -48,7 +49,7 @@ if(USE_ZLIB)
   endif(BUILD_ZLIB)
 
   #dump(BUILD_ZLIB ZLIB_LIBRARY ZLIB_LIBRARY_DIR ZLIB_INCLUDE_DIR)
- unset(pkgcfg_lib_ZLIB_z CACHE)
+  unset(pkgcfg_lib_ZLIB_z CACHE)
 
 else(USE_ZLIB)
   unset(ZLIB_LIBRARY CACHE)

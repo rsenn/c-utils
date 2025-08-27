@@ -1,4 +1,4 @@
-#ifdef HAVE_LIBBZ2
+#if HAVE_LIBBZ2
 #include <bzlib.h>
 #define BZ_NO_STDIO 1
 #endif

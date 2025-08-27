@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <errno.h>
 
-#ifdef HAVE_BROTLI
+#if HAVE_BROTLI
 #ifdef __BORLANDC__
 #define _MSC_VER 1500
 #endif

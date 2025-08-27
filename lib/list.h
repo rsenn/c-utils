@@ -25,9 +25,7 @@
 #ifndef LIST_H
 #define LIST_H
 
-#ifndef NULL
 #include <stddef.h>
-#endif
 
 struct list_head {
   struct list_head* prev;
@@ -38,7 +36,7 @@ struct list_head {
   { &(el), &(el) }
 
 /* return the pointer of type 'type *' containing 'el' as field 'member' */
-#define list_entry(el, type, member) ((type*)((uint8_t*)(el)-offsetof(type, member)))
+#define list_entry(el, type, member) ((type*)((char*)(el)-offsetof(type, member)))
 
 static inline void
 init_list_head(struct list_head* head) {

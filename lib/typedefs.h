@@ -3,33 +3,17 @@
 
 /* for ssize_t: */
 #define __POCC__OLDNAMES
-//#include <sys/types.h>
+#include <sys/types.h>
 
 /* for size_t & ptrdiff_t */
 #include <stddef.h>
 
 /* for time_t */
-//#include <time.h>
+#include <time.h>
 
 #ifdef __LCC__
 #include <stdint.h>
 #endif
-
-//#include <time.h>
-
-/*
-#if defined(HAVE_INTTYPES_H) || defined(__LCC__) || (!defined(_MSC_VER) &&
-!defined(__MSYS__) && !defined(__CYGWIN__) && !defined(__BORLANDC__))
-#include <inttypes.h> #endif
-
-#if defined(HAVE_STDINT_H) || defined(__LCC__) || (CYGWIN_VERSION_API_MINOR
-> 100) || (!defined(_MSC_VER) && !defined(__MSYS__) && !defined(__CYGWIN__)
-&& !defined(__BORLANDC__)) #include <stdint.h> #endif
-*/
-
-/*#if defined(__MINGW32__) || defined(__MINGW64__) || defined(__ORANGEC__) || defined(__DMC__) || defined(__STDC_IEC_559__)
-#include <stdint.h>
-#endif*/
 
 #ifdef __cplusplus
 extern "C" {
@@ -44,11 +28,6 @@ extern "C" {
 
 #if !defined(__LCC__)
 #if defined(__BORLANDC__)
-/*#if __BORLANDC__ >= 0x570
-typedef int ssize_t;
-#else
-typedef long ssize_t;
-#endif*/
 
 #elif defined(_MSC_VER)
 #include <intsafe.h>

@@ -1,11 +1,11 @@
-#ifdef HAVE_LIBBZ2
+#if HAVE_LIBBZ2
 #include <bzlib.h>
 #endif
 
 #include "../buffer.h"
 #include <stdlib.h>
 
-#ifdef HAVE_LIBBZ2
+#if HAVE_LIBBZ2
 
 #define BZ_BLOCK_SIZE 1024
 

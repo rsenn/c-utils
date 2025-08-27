@@ -228,7 +228,7 @@ void buffer_dump(buffer* out, buffer* b);
 int buffer_putc(buffer*, char c);
 int buffer_putnspace(buffer*, int n);
 
-int buffer_putptr(buffer*, void* ptr);
+int buffer_putptr(buffer*, const void* ptr);
 int buffer_putulong0(buffer*, unsigned long l, int pad);
 int buffer_putlong0(buffer*, long l, int pad);
 int buffer_putxlong0(buffer*, unsigned long l, int pad);

@@ -4,7 +4,7 @@
 size_t buffer_putptr_size_2 = sizeof(void*) * 2;
 
 int
-buffer_putptr(buffer* b, void* ptr) {
+buffer_putptr(buffer* b, const void* ptr) {
   char x[FMT_XLONG + 1];
   size_t n;
 

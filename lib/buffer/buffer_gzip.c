@@ -5,7 +5,7 @@
 #include "../buffer.h"
 #include <stdlib.h>
 
-#ifdef HAVE_ZLIB
+#if HAVE_ZLIB
 #include <zconf.h>
 #include <zlib.h>
 #undef ZEXPORT

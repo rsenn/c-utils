@@ -30,7 +30,6 @@ if(USE_LZMA)
     message(CHECK_FAIL "NOT found")
   endif(LIBLZMA_FOUND)
 
-
   unset(pkgcfg_lib_LIBLZMA_lzma CACHE)
 
   # dump(LIBLZMA_INCLUDE_DIRS LIBLZMA_LIBRARIES)

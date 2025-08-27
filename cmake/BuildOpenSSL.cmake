@@ -209,7 +209,8 @@ file(
   crypto/threads_win.c
   crypto/uid.c)
 
-file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/e_os.h DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/include/openssl)
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/e_os.h
+     DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/include/openssl)
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/../../build/cmake/opensslconf.h.cmake
                ${CMAKE_CURRENT_BINARY_DIR}/include/openssl/opensslconf.h)
