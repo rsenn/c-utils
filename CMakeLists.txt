@@ -1230,8 +1230,7 @@ include(CPack)
 set(socket_intercept_SOURCES
     lib/buffer/buffer_2.c
     lib/alloc/alloc.c
-    lib/open/open_append.c
-    lib/buffer/buffer_appendfile.c
+    lib/open/open_read.c
     lib/buffer/buffer_free.c
     lib/buffer/buffer_write_fd.c
     lib/buffer/buffer_flush.c
@@ -1246,6 +1245,7 @@ set(socket_intercept_SOURCES
     lib/byte/byte_copy.c
     lib/byte/byte_equal.c
     lib/byte/byte_diff.c
+    lib/byte/byte_zero.c
     lib/fmt/fmt_tohex.c
     lib/fmt/fmt_hexbs.c
     lib/fmt/fmt_long.c
@@ -1258,13 +1258,25 @@ set(socket_intercept_SOURCES
     lib/str/str_copy.c
     lib/socket/socket_v4mappedprefix.c
     lib/socket/fmt_ip4.c
-    lib/socket/fmt_ip6.c)
+    lib/socket/fmt_ip6.c
+    lib/stralloc/stralloc_ready.c
+    lib/stralloc/stralloc_readyplus.c
+    lib/stralloc/stralloc_copyb.c
+    lib/stralloc/stralloc_copys.c
+    lib/stralloc/readclose.c
+    lib/stralloc/openreadclose.c)
 
 add_library(socket-intercept SHARED socket-intercept.c
                                     ${socket_intercept_SOURCES})
 
-#target_compile_options(socket-intercept PUBLIC -fPIC)
-#target_link_options(socket-intercept PRIVATE -flto)
+check_flag(-fvisibility=hidden F_VISIBILITY)
+
+if(F_VISIBILITY)
+  target_compile_options(socket-intercept PUBLIC ${F_VISIBILITY})
+  target_compile_definitions(socket-intercept PRIVATE HAVE_VISIBILITY=1)
+else(F_VISIBILITY)
+  target_compile_definitions(socket-intercept PRIVATE HAVE_VISIBILITY=0)
+endif(F_VISIBILITY)
 
 target_compile_definitions(socket-intercept PRIVATE HAVE_BROTLI=0 HAVE_LIBBZ2=0
                                                     HAVE_LIBLZMA=0)
