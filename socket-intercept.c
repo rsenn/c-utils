@@ -39,6 +39,7 @@ typedef struct {
 
 static long intercept_init(void);
 static Sock* intercept_find(struct list_head*, int);
+static Sock* intercept_ssl(int);
 static void intercept_close(Sock*);
 static Sock* intercept_new(int);
 static void intercept_delete(Sock*);
@@ -46,7 +47,7 @@ static void intercept_seterror(Sock*, int);
 static void intercept_cleanup(void);
 
 static thread_local long initialized;
-static thread_local struct list_head intercept_fds, closed_fds;
+static thread_local struct list_head intercept_fds, ssl_fds, closed_fds;
 static thread_local buffer o;
 static thread_local char procname[64];
 
@@ -74,12 +75,15 @@ typedef int close_function(int);
 typedef int shutdown_function(int, int);
 typedef int recvmmsg_function(int sockfd, struct mmsghdr* msgvec, unsigned vlen, int flags, struct timespec* timeout);
 typedef int sendmmsg_function(int sockfd, struct mmsghdr* msgvec, unsigned vlen, int flags);
+typedef void* SSL_connect_function(void*);
+typedef int SSL_accept_function(void*);
 typedef int SSL_read_function(void* ssl, void* buf, int num);
 typedef int SSL_write_function(void* ssl, const void* buf, int num);
 typedef int SSL_get_rfd_function(const void* ssl);
 
 typedef int SSL_get_wfd_function(const void* ssl);
 typedef int SSL_get_error_function(const void* ssl, int ret);
+typedef int SSL_shutdown_function(void*);
 
 static thread_local intercept_function* libc_socket;
 static thread_local listen_function* libc_listen;
@@ -105,11 +109,14 @@ static thread_local getsockname_function* libc_getsockname;
 static thread_local getpeername_function* libc_getpeername;
 static thread_local close_function* libc_close;
 static thread_local shutdown_function* libc_shutdown;
+static thread_local SSL_connect_function* openssl_ssl_connect;
+static thread_local SSL_accept_function* openssl_ssl_accept;
 static thread_local SSL_read_function* openssl_ssl_read;
 static thread_local SSL_write_function* openssl_ssl_write;
-static thread_local SSL_get_rfd_function* openssl_get_rfd;
-static thread_local SSL_get_wfd_function* openssl_get_wfd;
-static thread_local SSL_get_error_function* openssl_get_error;
+static thread_local SSL_get_rfd_function* openssl_ssl_get_rfd;
+static thread_local SSL_get_wfd_function* openssl_ssl_get_wfd;
+static thread_local SSL_get_error_function* openssl_ssl_get_error;
+static thread_local SSL_shutdown_function* openssl_ssl_shutdown;
 
 static const char* const address_families[AF_MAX] = {
     "UNSPEC", "LOCAL",  "INET",   "AX25",   "IPX",     "APPLETALK", "NETROM", "BRIDGE",  "ATMPVC",
@@ -963,21 +970,21 @@ shutdown(int fd, int how) {
   return r;
 }
 
-int
+VISIBLE int
 SSL_read(void* ssl, void* buf, int len) {
   int r = openssl_ssl_read(ssl, buf, len);
 
   if(ssl) {
     int fd;
 
-    if((fd = openssl_get_rfd(ssl)) < 0) {
+    if((fd = openssl_ssl_get_rfd(ssl)) < 0) {
       buffer_putsflush(buffer_2, "SSL_get_rfd error\n");
       exit(EXIT_FAILURE);
     }
 
     Sock* s;
 
-    if((s = intercept_find(&intercept_fds, fd))) {
+    if((s = intercept_ssl(fd))) {
       put_process();
       buffer_puts(&o, "SSL_read(");
       buffer_putlong(&o, fd);
@@ -996,31 +1003,31 @@ SSL_read(void* ssl, void* buf, int len) {
 
       if(r > 0)
         s->read += r;
-      else if(openssl_get_error(ssl, r) == 6 /* SSL_ERROR_ZERO_RETURN */)
+      else if(openssl_ssl_get_error(ssl, r) == 6 /* SSL_ERROR_ZERO_RETURN */)
         s->closed = 1;
       else
-        intercept_seterror(s, openssl_get_error(ssl, r));
+        intercept_seterror(s, openssl_ssl_get_error(ssl, r));
     }
   }
 
   return r;
 }
 
-int
+VISIBLE int
 SSL_write(void* ssl, void* buf, int len) {
   int r = openssl_ssl_write(ssl, buf, len);
 
   if(ssl) {
     int fd;
 
-    if((fd = openssl_get_wfd(ssl)) < 0) {
+    if((fd = openssl_ssl_get_wfd(ssl)) < 0) {
       buffer_putsflush(buffer_2, "SSL_get_wfd error\n");
       exit(EXIT_FAILURE);
     }
 
     Sock* s;
 
-    if((s = intercept_find(&intercept_fds, fd))) {
+    if((s = intercept_ssl(fd))) {
       put_process();
       buffer_puts(&o, "SSL_write(");
       buffer_putlong(&o, fd);
@@ -1035,7 +1042,89 @@ SSL_write(void* ssl, void* buf, int len) {
       if(r >= 0)
         s->written += r;
       else
-        intercept_seterror(s, openssl_get_error(ssl, r));
+        intercept_seterror(s, openssl_ssl_get_error(ssl, r));
+    }
+  }
+
+  return r;
+}
+
+VISIBLE int
+SSL_connect(void* ssl) {
+  int fd, r = openssl_ssl_connect(ssl);
+
+  if((fd = openssl_ssl_get_wfd(ssl)) < 0) {
+    buffer_putsflush(buffer_2, "SSL_get_wfd error\n");
+    exit(EXIT_FAILURE);
+  }
+
+  Sock* s;
+
+  if((s = intercept_ssl(fd))) {
+    put_process();
+    buffer_puts(&o, "SSL_connect(");
+    buffer_putlong(&o, fd);
+    buffer_puts(&o, ") = ");
+    buffer_putlong(&o, r);
+    buffer_putnlflush(&o);
+
+    if(r <= 0)
+      intercept_seterror(s, openssl_ssl_get_error(ssl, r));
+  }
+
+  return r;
+}
+
+VISIBLE int
+SSL_accept(void* ssl) {
+  int fd, r = openssl_ssl_accept(ssl);
+
+  if((fd = openssl_ssl_get_rfd(ssl)) < 0) {
+    buffer_putsflush(buffer_2, "SSL_get_rfd error\n");
+    exit(EXIT_FAILURE);
+  }
+
+  Sock* s;
+
+  if((s = intercept_ssl(fd))) {
+    put_process();
+    buffer_puts(&o, "SSL_accept(");
+    buffer_putlong(&o, fd);
+    buffer_puts(&o, ") = ");
+    buffer_putlong(&o, r);
+    buffer_putnlflush(&o);
+
+    if(r <= 0)
+      intercept_seterror(s, openssl_ssl_get_error(ssl, r));
+  }
+
+  return r;
+}
+
+VISIBLE int
+SSL_shutdown(void* ssl) {
+  int fd, r = openssl_ssl_shutdown(ssl);
+
+  if((fd = openssl_ssl_get_rfd(ssl)) < 0) {
+    buffer_putsflush(buffer_2, "SSL_get_rfd error\n");
+    exit(EXIT_FAILURE);
+  }
+
+  Sock* s;
+
+  if((s = intercept_ssl(fd))) {
+    put_process();
+    buffer_puts(&o, "SSL_shutdown(");
+    buffer_putlong(&o, fd);
+    buffer_puts(&o, ") = ");
+    buffer_putlong(&o, r);
+    buffer_putnlflush(&o);
+
+    if(r <= 0)
+      intercept_seterror(s, openssl_ssl_get_error(ssl, r));
+    else {
+      list_del(&s->link);
+      list_add(&s->link, &intercept_fds);
     }
   }
 
@@ -1062,23 +1151,8 @@ intercept_init(void) {
   long prev_val = __CAS(&initialized, 0, 1);
 
   if(prev_val == 0) {
-    char* file = getenv("SOCKET_INTERCEPT_LOG");
-    int fd;
-    bool append = false;
-
-    if(file[0] == '+') {
-      ++file;
-      append = true;
-    }
-
-    if(!file ||
-       (fd = open(file ? file : "socket-intercept.log", O_WRONLY | (append ? O_APPEND : O_TRUNC) | O_CREAT, 0644)) ==
-           -1)
-      fd = STDERR_FILENO;
-
-    buffer_write_fd(&o, fd);
-
     init_list_head(&intercept_fds);
+    init_list_head(&ssl_fds);
     init_list_head(&closed_fds);
 
     libc_socket = dlsym(RTLD_NEXT, "socket");
@@ -1105,11 +1179,34 @@ intercept_init(void) {
     libc_getpeername = dlsym(RTLD_NEXT, "getpeername");
     libc_close = dlsym(RTLD_NEXT, "close");
     libc_shutdown = dlsym(RTLD_NEXT, "shutdown");
-    openssl_ssl_read = dlsym(RTLD_NEXT, "SSL_read");
-    openssl_ssl_write = dlsym(RTLD_NEXT, "SSL_write");
-    openssl_get_rfd = dlsym(RTLD_NEXT, "SSL_get_rfd");
-    openssl_get_wfd = dlsym(RTLD_NEXT, "SSL_get_wfd");
-    openssl_get_error = dlsym(RTLD_NEXT, "SSL_get_error");
+
+    void* libssl = dlopen("libssl.so", RTLD_NOW);
+
+    openssl_ssl_connect = dlsym(libssl, "SSL_connect");
+    openssl_ssl_accept = dlsym(libssl, "SSL_accept");
+    openssl_ssl_read = dlsym(libssl, "SSL_read");
+    openssl_ssl_write = dlsym(libssl, "SSL_write");
+    openssl_ssl_get_rfd = dlsym(libssl, "SSL_get_rfd");
+    openssl_ssl_get_wfd = dlsym(libssl, "SSL_get_wfd");
+    openssl_ssl_get_error = dlsym(libssl, "SSL_get_error");
+    openssl_ssl_shutdown = dlsym(libssl, "SSL_shutdown");
+
+    char* file = getenv("SOCKET_INTERCEPT_LOG");
+    bool append = false;
+
+    if(file && file[0] == '+') {
+      ++file;
+      append = true;
+    }
+
+    int fd, flags = O_WRONLY | (append ? O_APPEND : O_TRUNC) | O_CREAT;
+
+    if((fd = open(file && file[0] ? file : "socket-intercept.log", flags, 0644)) == -1)
+      fd = STDERR_FILENO;
+
+    buffer_write_fd(&o, fd);
+    o.op = libc_write;
+    buffer_2->op = libc_write;
 
     ssize_t n = 0;
 
@@ -1148,6 +1245,19 @@ intercept_find(struct list_head* list, int fd) {
   }
 
   return 0;
+}
+
+static Sock*
+intercept_ssl(int fd) {
+  Sock* s;
+
+  if(!(s = intercept_find(&intercept_fds, fd)))
+    s = intercept_new(fd);
+
+  list_del(&s->link);
+  list_add(&s->link, &ssl_fds);
+
+  return s;
 }
 
 static Sock*
