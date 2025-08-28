@@ -32,12 +32,15 @@ fmt_cescape2(char* dest, const char* src, size_t len, const char* escapeme) {
         break;
 
       default:
-        if(s[i] < ' ' || escapeme[str_chr(escapeme, s[i])] == s[i]) {
+        if(s[i] < ' ' || s[i] >= 127 || escapeme[str_chr(escapeme, s[i])] == s[i]) {
           if(dest) {
+static   const char hexchars[] = "0123456789ABCDEF";
+
             dest[written] = '\\';
             dest[written + 1] = 'x';
-            dest[written + 2] = fmt_tohex(s[i] >> 4);
-            dest[written + 3] = fmt_tohex(s[i] & 0xf);
+            dest[written + 2] = hexchars[s[i] >> 4];
+            dest[written + 3] = hexchars[
+              s[i] & 0xf];
           }
           written += 4;
         } else {
