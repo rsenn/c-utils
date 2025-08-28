@@ -39,7 +39,7 @@ typedef struct {
 
 static long intercept_init(void);
 static Sock* intercept_find(struct list_head*, int);
-static Sock* intercept_ssl(int);
+static Sock* intercept_ssl(void*);
 static void intercept_close(Sock*);
 static Sock* intercept_new(int);
 static void intercept_delete(Sock*);
@@ -75,7 +75,7 @@ typedef int close_function(int);
 typedef int shutdown_function(int, int);
 typedef int recvmmsg_function(int sockfd, struct mmsghdr* msgvec, unsigned vlen, int flags, struct timespec* timeout);
 typedef int sendmmsg_function(int sockfd, struct mmsghdr* msgvec, unsigned vlen, int flags);
-typedef void* SSL_connect_function(void*);
+typedef int SSL_connect_function(void*);
 typedef int SSL_accept_function(void*);
 typedef int SSL_read_function(void* ssl, void* buf, int num);
 typedef int SSL_write_function(void* ssl, const void* buf, int num);
@@ -961,7 +961,7 @@ shutdown(int fd, int how) {
     buffer_puts(&o, "shutdown(");
     buffer_putlong(&o, fd);
     buffer_puts(&o, ", ");
-    buffer_puts(&o, ((const char*[]){"SHUT_RD", "SHUT_WR", "SHUT_RDWR", "INVALID"})[how & 0b11]);
+    buffer_puts(&o, ((const char* []){"SHUT_RD", "SHUT_WR", "SHUT_RDWR", "INVALID"})[how & 0b11]);
     buffer_puts(&o, ") = ");
     buffer_putlong(&o, r);
     buffer_putnlflush(&o);
@@ -973,41 +973,31 @@ shutdown(int fd, int how) {
 VISIBLE int
 SSL_read(void* ssl, void* buf, int len) {
   int r = openssl_ssl_read(ssl, buf, len);
+  Sock* s;
 
-  if(ssl) {
-    int fd;
+  if(ssl && (s = intercept_ssl(ssl))) {
+    put_process();
+    buffer_puts(&o, "SSL_read(");
+    buffer_putlong(&o, s->fd);
+    buffer_puts(&o, ", ");
 
-    if((fd = openssl_ssl_get_rfd(ssl)) < 0) {
-      buffer_putsflush(buffer_2, "SSL_get_rfd error\n");
-      exit(EXIT_FAILURE);
-    }
+    if(r > 0)
+      put_buf(buf, r);
+    else
+      buffer_puts(&o, "[]");
 
-    Sock* s;
+    buffer_puts(&o, ", ");
+    buffer_putulong(&o, len);
+    buffer_puts(&o, ") = ");
+    buffer_putlong(&o, r);
+    buffer_putnlflush(&o);
 
-    if((s = intercept_ssl(fd))) {
-      put_process();
-      buffer_puts(&o, "SSL_read(");
-      buffer_putlong(&o, fd);
-      buffer_puts(&o, ", ");
-
-      if(r > 0)
-        put_buf(buf, r);
-      else
-        buffer_puts(&o, "[]");
-
-      buffer_puts(&o, ", ");
-      buffer_putulong(&o, len);
-      buffer_puts(&o, ") = ");
-      buffer_putlong(&o, r);
-      buffer_putnlflush(&o);
-
-      if(r > 0)
-        s->read += r;
-      else if(openssl_ssl_get_error(ssl, r) == 6 /* SSL_ERROR_ZERO_RETURN */)
-        s->closed = 1;
-      else
-        intercept_seterror(s, openssl_ssl_get_error(ssl, r));
-    }
+    if(r > 0)
+      s->read += r;
+    else if(openssl_ssl_get_error(ssl, r) == 6 /* SSL_ERROR_ZERO_RETURN */)
+      s->closed = 1;
+    else
+      intercept_seterror(s, openssl_ssl_get_error(ssl, r));
   }
 
   return r;
@@ -1016,34 +1006,24 @@ SSL_read(void* ssl, void* buf, int len) {
 VISIBLE int
 SSL_write(void* ssl, void* buf, int len) {
   int r = openssl_ssl_write(ssl, buf, len);
+  Sock* s;
 
-  if(ssl) {
-    int fd;
+  if(ssl && (s = intercept_ssl(ssl))) {
+    put_process();
+    buffer_puts(&o, "SSL_write(");
+    buffer_putlong(&o, s->fd);
+    buffer_puts(&o, ", ");
+    put_buf(buf, len);
+    buffer_puts(&o, ", ");
+    buffer_putulong(&o, len);
+    buffer_puts(&o, ") = ");
+    buffer_putlong(&o, r);
+    buffer_putnlflush(&o);
 
-    if((fd = openssl_ssl_get_wfd(ssl)) < 0) {
-      buffer_putsflush(buffer_2, "SSL_get_wfd error\n");
-      exit(EXIT_FAILURE);
-    }
-
-    Sock* s;
-
-    if((s = intercept_ssl(fd))) {
-      put_process();
-      buffer_puts(&o, "SSL_write(");
-      buffer_putlong(&o, fd);
-      buffer_puts(&o, ", ");
-      put_buf(buf, len);
-      buffer_puts(&o, ", ");
-      buffer_putulong(&o, len);
-      buffer_puts(&o, ") = ");
-      buffer_putlong(&o, r);
-      buffer_putnlflush(&o);
-
-      if(r >= 0)
-        s->written += r;
-      else
-        intercept_seterror(s, openssl_ssl_get_error(ssl, r));
-    }
+    if(r >= 0)
+      s->written += r;
+    else
+      intercept_seterror(s, openssl_ssl_get_error(ssl, r));
   }
 
   return r;
@@ -1051,19 +1031,13 @@ SSL_write(void* ssl, void* buf, int len) {
 
 VISIBLE int
 SSL_connect(void* ssl) {
-  int fd, r = openssl_ssl_connect(ssl);
-
-  if((fd = openssl_ssl_get_wfd(ssl)) < 0) {
-    buffer_putsflush(buffer_2, "SSL_get_wfd error\n");
-    exit(EXIT_FAILURE);
-  }
-
+  int r = openssl_ssl_connect(ssl);
   Sock* s;
 
-  if((s = intercept_ssl(fd))) {
+  if(ssl && (s = intercept_ssl(ssl))) {
     put_process();
     buffer_puts(&o, "SSL_connect(");
-    buffer_putlong(&o, fd);
+    buffer_putlong(&o, s->fd);
     buffer_puts(&o, ") = ");
     buffer_putlong(&o, r);
     buffer_putnlflush(&o);
@@ -1077,19 +1051,13 @@ SSL_connect(void* ssl) {
 
 VISIBLE int
 SSL_accept(void* ssl) {
-  int fd, r = openssl_ssl_accept(ssl);
-
-  if((fd = openssl_ssl_get_rfd(ssl)) < 0) {
-    buffer_putsflush(buffer_2, "SSL_get_rfd error\n");
-    exit(EXIT_FAILURE);
-  }
-
+  int r = openssl_ssl_accept(ssl);
   Sock* s;
 
-  if((s = intercept_ssl(fd))) {
+  if(ssl && (s = intercept_ssl(ssl))) {
     put_process();
     buffer_puts(&o, "SSL_accept(");
-    buffer_putlong(&o, fd);
+    buffer_putlong(&o, s->fd);
     buffer_puts(&o, ") = ");
     buffer_putlong(&o, r);
     buffer_putnlflush(&o);
@@ -1103,19 +1071,13 @@ SSL_accept(void* ssl) {
 
 VISIBLE int
 SSL_shutdown(void* ssl) {
-  int fd, r = openssl_ssl_shutdown(ssl);
-
-  if((fd = openssl_ssl_get_rfd(ssl)) < 0) {
-    buffer_putsflush(buffer_2, "SSL_get_rfd error\n");
-    exit(EXIT_FAILURE);
-  }
-
+  int r = openssl_ssl_shutdown(ssl);
   Sock* s;
 
-  if((s = intercept_ssl(fd))) {
+  if(ssl && (s = intercept_ssl(ssl))) {
     put_process();
     buffer_puts(&o, "SSL_shutdown(");
-    buffer_putlong(&o, fd);
+    buffer_putlong(&o, s->fd);
     buffer_puts(&o, ") = ");
     buffer_putlong(&o, r);
     buffer_putnlflush(&o);
@@ -1205,9 +1167,8 @@ intercept_init(void) {
       fd = STDERR_FILENO;
 
     buffer_write_fd(&o, fd);
-    o.op = libc_write;
-    buffer_2->op = libc_write;
-
+     buffer_2->op = o.op = (buffer_op_proto*)libc_write;
+   
     ssize_t n = 0;
 
     if((fd = open_read("/proc/self/cmdline")) != -1) {
@@ -1248,8 +1209,15 @@ intercept_find(struct list_head* list, int fd) {
 }
 
 static Sock*
-intercept_ssl(int fd) {
+intercept_ssl(void* ssl) {
+  int fd;
   Sock* s;
+
+  if((fd = openssl_ssl_get_rfd(ssl)) < 0) {
+    buffer_putsflush(buffer_2, "SSL_get_rfd error\n");
+    exit(EXIT_FAILURE);
+    return 0;
+  }
 
   if(!(s = intercept_find(&intercept_fds, fd)))
     s = intercept_new(fd);
