@@ -4,18 +4,7 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <dlfcn.h>
-#include <unistd.h>Ⓜ  _GNU_SOURCE … — macro object
-Ⓣ Sock;
-— typedef ⒡ intercept_init();
-— function declaration ⒡ intercept_find();
-— function declaration ⒡ intercept_findall();
-— function declaration ⒡ intercept_ssl();
-— function declaration ⒡ intercept_close();
-— function declaration ⒡ intercept_new();
-— function declaration ⒡ intercept_delete();
-— function declaration ⒡ intercept_seterror();
-— function declaration ⒡ intercept_cleanup();
-—
+#include <unistd.h>
 //#include <fcntl.h>
 #include <errno.h>
 #include <string.h>
