@@ -779,6 +779,13 @@ read(int fd, void* buf, size_t len) {
     buffer_putulong(&o, len);
     buffer_puts(&o, ") = ");
     buffer_putlong(&o, r);
+
+    if(r < 0) {
+      buffer_puts(&o, " [");
+      buffer_puts(&o, strerror(errno));
+      buffer_puts(&o, "]");
+    }
+
     buffer_putnlflush(&o);
 
     if(r > 0)
@@ -961,7 +968,7 @@ shutdown(int fd, int how) {
     buffer_puts(&o, "shutdown(");
     buffer_putlong(&o, fd);
     buffer_puts(&o, ", ");
-    buffer_puts(&o, ((const char* []){"SHUT_RD", "SHUT_WR", "SHUT_RDWR", "INVALID"})[how & 0b11]);
+    buffer_puts(&o, ((const char*[]){"SHUT_RD", "SHUT_WR", "SHUT_RDWR", "INVALID"})[how & 0b11]);
     buffer_puts(&o, ") = ");
     buffer_putlong(&o, r);
     buffer_putnlflush(&o);
@@ -997,7 +1004,7 @@ SSL_read(void* ssl, void* buf, int len) {
     else if(openssl_ssl_get_error(ssl, r) == 6 /* SSL_ERROR_ZERO_RETURN */)
       s->closed = 1;
     else
-      intercept_seterror(s, openssl_ssl_get_error(ssl, r));
+      intercept_seterror(s, -1);
   }
 
   return r;
@@ -1023,7 +1030,7 @@ SSL_write(void* ssl, void* buf, int len) {
     if(r >= 0)
       s->written += r;
     else
-      intercept_seterror(s, openssl_ssl_get_error(ssl, r));
+      intercept_seterror(s, -1);
   }
 
   return r;
@@ -1043,7 +1050,7 @@ SSL_connect(void* ssl) {
     buffer_putnlflush(&o);
 
     if(r <= 0)
-      intercept_seterror(s, openssl_ssl_get_error(ssl, r));
+      intercept_seterror(s, -1);
   }
 
   return r;
@@ -1063,7 +1070,7 @@ SSL_accept(void* ssl) {
     buffer_putnlflush(&o);
 
     if(r <= 0)
-      intercept_seterror(s, openssl_ssl_get_error(ssl, r));
+      intercept_seterror(s, -1);
   }
 
   return r;
@@ -1083,7 +1090,7 @@ SSL_shutdown(void* ssl) {
     buffer_putnlflush(&o);
 
     if(r <= 0)
-      intercept_seterror(s, openssl_ssl_get_error(ssl, r));
+      intercept_seterror(s, -1);
     else {
       list_del(&s->link);
       list_add(&s->link, &intercept_fds);
@@ -1142,7 +1149,7 @@ intercept_init(void) {
     libc_close = dlsym(RTLD_NEXT, "close");
     libc_shutdown = dlsym(RTLD_NEXT, "shutdown");
 
-    void* libssl = dlopen("libssl.so", RTLD_NOW);
+    void* libssl = dlopen("libssl.so.1.1", RTLD_NOW);
 
     openssl_ssl_connect = dlsym(libssl, "SSL_connect");
     openssl_ssl_accept = dlsym(libssl, "SSL_accept");
@@ -1167,8 +1174,8 @@ intercept_init(void) {
       fd = STDERR_FILENO;
 
     buffer_write_fd(&o, fd);
-     buffer_2->op = o.op = (buffer_op_proto*)libc_write;
-   
+    buffer_2->op = o.op = (buffer_op_proto*)libc_write;
+
     ssize_t n = 0;
 
     if((fd = open_read("/proc/self/cmdline")) != -1) {
