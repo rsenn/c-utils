@@ -4,7 +4,18 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <dlfcn.h>
-#include <unistd.h>
+#include <unistd.h>Ⓜ  _GNU_SOURCE … — macro object
+Ⓣ Sock;
+— typedef ⒡ intercept_init();
+— function declaration ⒡ intercept_find();
+— function declaration ⒡ intercept_findall();
+— function declaration ⒡ intercept_ssl();
+— function declaration ⒡ intercept_close();
+— function declaration ⒡ intercept_new();
+— function declaration ⒡ intercept_delete();
+— function declaration ⒡ intercept_seterror();
+— function declaration ⒡ intercept_cleanup();
+—
 //#include <fcntl.h>
 #include <errno.h>
 #include <string.h>
@@ -31,7 +42,7 @@
 #include "lib/thread.h"
 #include "lib/util.h"
 
-typedef struct {
+    typedef struct {
   struct list_head link;
   int fd, ret_val, error;
   uint64 read, written;
@@ -1039,8 +1050,11 @@ fcntl(int fd, int cmd, ...) {
     buffer_putlong(&o, fd);
     buffer_puts(&o, ", ");
     buffer_putlong(&o, cmd);
-    buffer_puts(&o, ", 0x");
-    buffer_putxlong(&o, (long)arg);
+
+    if(cmd != 3) {
+      buffer_puts(&o, ", 0x");
+      buffer_putxlong(&o, (long)arg);
+    }
     buffer_puts(&o, ") = ");
     buffer_putlong(&o, r);
     buffer_putnlflush(&o);
@@ -1080,7 +1094,7 @@ poll(struct pollfd* pfds, nfds_t nfds, int timeout) {
     Sock* s;
 
     if((s = intercept_findall(pfds[i].fd))) {
-      if(pfds[i].revents == 0)
+      if((pfds[i].events & pfds[i].revents) == 0)
         continue;
 
       put_process();
@@ -1091,7 +1105,7 @@ poll(struct pollfd* pfds, nfds_t nfds, int timeout) {
       buffer_puts(&o, ") socket ");
       buffer_putlong(&o, pfds[i].fd);
       buffer_puts(&o, " got ");
-      put_events(pfds[i].revents);
+      put_events(pfds[i].events & pfds[i].revents);
 
       buffer_putnlflush(&o);
     }
