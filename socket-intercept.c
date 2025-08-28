@@ -1,6 +1,6 @@
 #define _GNU_SOURCE 1
 
-#include <stdatomic.h>
+#include <stdarg.h>
 #include <stdlib.h>
 #include <assert.h>
 #include <dlfcn.h>
@@ -75,6 +75,7 @@ typedef int close_function(int);
 typedef int shutdown_function(int, int);
 typedef int recvmmsg_function(int sockfd, struct mmsghdr* msgvec, unsigned vlen, int flags, struct timespec* timeout);
 typedef int sendmmsg_function(int sockfd, struct mmsghdr* msgvec, unsigned vlen, int flags);
+typedef int fcntl_function(int, int, ...);
 typedef int SSL_connect_function(void*);
 typedef int SSL_accept_function(void*);
 typedef int SSL_read_function(void* ssl, void* buf, int num);
@@ -109,6 +110,7 @@ static thread_local getsockname_function* libc_getsockname;
 static thread_local getpeername_function* libc_getpeername;
 static thread_local close_function* libc_close;
 static thread_local shutdown_function* libc_shutdown;
+static thread_local fcntl_function* libc_fcntl;
 static thread_local SSL_connect_function* openssl_ssl_connect;
 static thread_local SSL_accept_function* openssl_ssl_accept;
 static thread_local SSL_read_function* openssl_ssl_read;
@@ -968,7 +970,32 @@ shutdown(int fd, int how) {
     buffer_puts(&o, "shutdown(");
     buffer_putlong(&o, fd);
     buffer_puts(&o, ", ");
-    buffer_puts(&o, ((const char*[]){"SHUT_RD", "SHUT_WR", "SHUT_RDWR", "INVALID"})[how & 0b11]);
+    buffer_puts(&o, ((const char* []){"SHUT_RD", "SHUT_WR", "SHUT_RDWR", "INVALID"})[how & 0b11]);
+    buffer_puts(&o, ") = ");
+    buffer_putlong(&o, r);
+    buffer_putnlflush(&o);
+  }
+
+  return r;
+}
+
+VISIBLE int
+fcntl(int fd, int cmd, ...) {
+  Sock* s;
+  va_list ptr;
+  va_start(ptr, cmd);
+  void* arg = va_arg(ptr, void*);
+
+  int r = libc_fcntl(fd, cmd, arg);
+
+  if((s = intercept_find(&intercept_fds, fd))) {
+    put_process();
+    buffer_puts(&o, "fcntl(");
+    buffer_putlong(&o, fd);
+    buffer_puts(&o, ", ");
+    buffer_putlong(&o, cmd);
+    buffer_puts(&o, ", ");
+    buffer_putlong(&o, (long)arg);
     buffer_puts(&o, ") = ");
     buffer_putlong(&o, r);
     buffer_putnlflush(&o);
@@ -1148,6 +1175,7 @@ intercept_init(void) {
     libc_getpeername = dlsym(RTLD_NEXT, "getpeername");
     libc_close = dlsym(RTLD_NEXT, "close");
     libc_shutdown = dlsym(RTLD_NEXT, "shutdown");
+    libc_fcntl = dlsym(RTLD_NEXT, "fcntl");
 
     void* libssl = dlopen("libssl.so.1.1", RTLD_NOW);
 
