@@ -352,8 +352,8 @@ extern char* cpp_base_file;
 extern cpp_file** cpp_input_files;
 extern int cpp_file_no;
 
-extern cpp_type *cpp_ty_void, *cpp_ty_bool, *cpp_ty_char, *cpp_ty_short, *cpp_ty_int, *cpp_ty_long, *cpp_ty_uchar, *cpp_ty_ushort, *cpp_ty_uint, *cpp_ty_ulong, *cpp_ty_float,
-    *cpp_ty_double, *cpp_ty_ldouble;
+extern cpp_type *cpp_ty_void, *cpp_ty_bool, *cpp_ty_char, *cpp_ty_short, *cpp_ty_int, *cpp_ty_long, *cpp_ty_uchar,
+    *cpp_ty_ushort, *cpp_ty_uint, *cpp_ty_ulong, *cpp_ty_float, *cpp_ty_double, *cpp_ty_ldouble;
 
 cpp_token* cpp_preprocess2(cpp_token* tok);
 void cpp_verror_at(char*, char*, int, char*, char*, va_list ap);
@@ -432,10 +432,13 @@ cpp_is_keyword(cpp_token* tok) {
 
   if(map.capacity == 0) {
     static const char* const kw[] = {
-        "return",    "if",       "else",   "for",    "while",    "int",           "sizeof",   "char",     "struct",        "union",    "short",      "long",
-        "void",      "typedef",  "_Bool",  "enum",   "static",   "goto",          "break",    "continue", "switch",        "case",     "default",    "extern",
-        "_Alignof",  "_Alignas", "do",     "signed", "unsigned", "const",         "volatile", "auto",     "register",      "restrict", "__restrict", "__restrict__",
-        "_Noreturn", "float",    "double", "typeof", "asm",      "_Thread_local", "__thread", "_Atomic",  "__attribute__",
+        "return",       "if",        "else",          "for",      "while",    "int",      "sizeof",
+        "char",         "struct",    "union",         "short",    "long",     "void",     "typedef",
+        "_Bool",        "enum",      "static",        "goto",     "break",    "continue", "switch",
+        "case",         "default",   "extern",        "_Alignof", "_Alignas", "do",       "signed",
+        "unsigned",     "const",     "volatile",      "auto",     "register", "restrict", "__restrict",
+        "__restrict__", "_Noreturn", "float",         "double",   "typeof",   "asm",      "_Thread_local",
+        "__thread",     "_Atomic",   "__attribute__",
     };
 
     for(int i = 0; i < sizeof(kw) / sizeof(*kw); i++)
@@ -615,7 +618,8 @@ cpp_read_escaped_char(char** new_pos, char* p) {
     case 'n': return '\n';
     case 'v': return '\v';
     case 'f': return '\f';
-    case 'r': return '\r';
+    case 'r':
+      return '\r';
     /* [GNU] \e for the ASCII escape character is a GNU C extension. */
     case 'e': return 27;
     default: return *p;
@@ -695,12 +699,15 @@ cpp_read_char_literal(char* start, char* quote, cpp_type* ty) {
 static inline bool
 cpp_is_ident1(uint32 c) {
   static const uint32 range[] = {
-      '_',     '_',     'a',     'z',     'A',     'Z',     '$',     '$',     0x00A8,  0x00A8,  0x00AA,  0x00AA,  0x00AD,  0x00AD,  0x00AF,  0x00AF,  0x00B2,  0x00B5,
-      0x00B7,  0x00BA,  0x00BC,  0x00BE,  0x00C0,  0x00D6,  0x00D8,  0x00F6,  0x00F8,  0x00FF,  0x0100,  0x02FF,  0x0370,  0x167F,  0x1681,  0x180D,  0x180F,  0x1DBF,
-      0x1E00,  0x1FFF,  0x200B,  0x200D,  0x202A,  0x202E,  0x203F,  0x2040,  0x2054,  0x2054,  0x2060,  0x206F,  0x2070,  0x20CF,  0x2100,  0x218F,  0x2460,  0x24FF,
-      0x2776,  0x2793,  0x2C00,  0x2DFF,  0x2E80,  0x2FFF,  0x3004,  0x3007,  0x3021,  0x302F,  0x3031,  0x303F,  0x3040,  0xD7FF,  0xF900,  0xFD3D,  0xFD40,  0xFDCF,
-      0xFDF0,  0xFE1F,  0xFE30,  0xFE44,  0xFE47,  0xFFFD,  0x10000, 0x1FFFD, 0x20000, 0x2FFFD, 0x30000, 0x3FFFD, 0x40000, 0x4FFFD, 0x50000, 0x5FFFD, 0x60000, 0x6FFFD,
-      0x70000, 0x7FFFD, 0x80000, 0x8FFFD, 0x90000, 0x9FFFD, 0xA0000, 0xAFFFD, 0xB0000, 0xBFFFD, 0xC0000, 0xCFFFD, 0xD0000, 0xDFFFD, 0xE0000, 0xEFFFD, -1,
+      '_',     '_',     'a',     'z',     'A',     'Z',     '$',     '$',     0x00A8,  0x00A8,  0x00AA,  0x00AA,
+      0x00AD,  0x00AD,  0x00AF,  0x00AF,  0x00B2,  0x00B5,  0x00B7,  0x00BA,  0x00BC,  0x00BE,  0x00C0,  0x00D6,
+      0x00D8,  0x00F6,  0x00F8,  0x00FF,  0x0100,  0x02FF,  0x0370,  0x167F,  0x1681,  0x180D,  0x180F,  0x1DBF,
+      0x1E00,  0x1FFF,  0x200B,  0x200D,  0x202A,  0x202E,  0x203F,  0x2040,  0x2054,  0x2054,  0x2060,  0x206F,
+      0x2070,  0x20CF,  0x2100,  0x218F,  0x2460,  0x24FF,  0x2776,  0x2793,  0x2C00,  0x2DFF,  0x2E80,  0x2FFF,
+      0x3004,  0x3007,  0x3021,  0x302F,  0x3031,  0x303F,  0x3040,  0xD7FF,  0xF900,  0xFD3D,  0xFD40,  0xFDCF,
+      0xFDF0,  0xFE1F,  0xFE30,  0xFE44,  0xFE47,  0xFFFD,  0x10000, 0x1FFFD, 0x20000, 0x2FFFD, 0x30000, 0x3FFFD,
+      0x40000, 0x4FFFD, 0x50000, 0x5FFFD, 0x60000, 0x6FFFD, 0x70000, 0x7FFFD, 0x80000, 0x8FFFD, 0x90000, 0x9FFFD,
+      0xA0000, 0xAFFFD, 0xB0000, 0xBFFFD, 0xC0000, 0xCFFFD, 0xD0000, 0xDFFFD, 0xE0000, 0xEFFFD, -1,
   };
 
   return cpp_in_range(range, c);
@@ -757,7 +764,8 @@ cpp_read_ident(char* start) {
 static inline size_t
 cpp_read_punct(char* p) {
   static const char* const kw[] = {
-      "<<=", ">>=", "...", "==", "!=", "<=", ">=", "->", "+=", "-=", "*=", "/=", "++", "--", "%=", "&=", "|=", "^=", "&&", "||", "<<", ">>", "##",
+      "<<=", ">>=", "...", "==", "!=", "<=", ">=", "->", "+=", "-=", "*=", "/=",
+      "++",  "--",  "%=",  "&=", "|=", "^=", "&&", "||", "<<", ">>", "##",
   };
 
   for(size_t i = 0; i < sizeof(kw) / sizeof(*kw); i++)
