@@ -618,8 +618,7 @@ cpp_read_escaped_char(char** new_pos, char* p) {
     case 'n': return '\n';
     case 'v': return '\v';
     case 'f': return '\f';
-    case 'r':
-      return '\r';
+    case 'r': return '\r';
     /* [GNU] \e for the ASCII escape character is a GNU C extension. */
     case 'e': return 27;
     default: return *p;

@@ -31,7 +31,7 @@
 #include "lib/thread.h"
 #include "lib/util.h"
 
-    typedef struct {
+typedef struct {
   struct list_head link;
   int fd, ret_val, error;
   uint64 read, written;
@@ -1015,7 +1015,7 @@ shutdown(int fd, int how) {
     buffer_puts(&o, "shutdown(");
     buffer_putlong(&o, fd);
     buffer_puts(&o, ", ");
-    buffer_puts(&o, ((const char* []){"SHUT_RD", "SHUT_WR", "SHUT_RDWR", "INVALID"})[how & 0b11]);
+    buffer_puts(&o, ((const char*[]){"SHUT_RD", "SHUT_WR", "SHUT_RDWR", "INVALID"})[how & 0b11]);
     buffer_puts(&o, ") = ");
     buffer_putlong(&o, r);
     buffer_putnlflush(&o);
@@ -1071,7 +1071,7 @@ poll(struct pollfd* pfds, nfds_t nfds, int timeout) {
       buffer_putlong(&o, timeout);
       buffer_puts(&o, ") socket ");
       buffer_putlong(&o, pfds[i].fd);
-      buffer_puts(&o, " wants ");
+      buffer_puts(&o, " 234 ");
       put_events(pfds[i].events);
       buffer_putnlflush(&o);
     }
