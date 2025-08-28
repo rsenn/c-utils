@@ -224,6 +224,34 @@ fmt_lenptr(char* x, socklen_t* lenptr) {
   return j;
 }
 
+static size_t
+fmt_events(char* x, int ev) {
+  size_t j = 0;
+
+  if(ev & POLLIN)
+    j += str_copy(&x[j], "IN");
+
+  if(ev & POLLOUT) {
+    if(j > 0)
+      x[j++] = '|';
+    j += str_copy(&x[j], "OUT");
+  }
+
+  if(ev & POLLERR) {
+    if(j > 0)
+      x[j++] = '|';
+    j += str_copy(&x[j], "ERR");
+  }
+
+  if(ev & POLLHUP) {
+    if(j > 0)
+      x[j++] = '|';
+    j += str_copy(&x[j], "HUP");
+  }
+
+  return j;
+}
+
 static void
 put_process(void) {
   pid_t pid = getpid(), tid = gettid();
@@ -298,6 +326,12 @@ put_mmsgs(const struct mmsghdr* msgvec, unsigned vlen) {
   }
 
   buffer_puts(&o, " ]");
+}
+
+static void
+put_events(int ev) {
+  char buf[64];
+  buffer_put(&o, buf, fmt_events(buf, ev));
 }
 
 VISIBLE int
@@ -1019,23 +1053,37 @@ int fcntl64(int fd, int cmd, ...) __attribute__((/*weak,*/ alias("fcntl")));
 
 VISIBLE int
 poll(struct pollfd* pfds, nfds_t nfds, int timeout) {
-  int r = libc_poll(pfds, nfds, timeout);
-
-  for(unsigned i = 0; i < nfds; i++) {
+  for(nfds_t i = 0; i < nfds; i++) {
     Sock* s;
 
     if((s = intercept_find(&intercept_fds, pfds[i].fd))) {
-      if((pfds[i].revents & (POLLIN | POLLOUT | POLLHUP | POLLERR)) == 0)
+      if(pfds[i].events == 0)
+        continue;
+
+      put_process();
+      buffer_puts(&o, "poll() socket ");
+      buffer_putlong(&o, pfds[i].fd);
+      buffer_puts(&o, " wants ");
+      put_events(pfds[i].events);
+      buffer_putnlflush(&o);
+    }
+  }
+
+  int r = libc_poll(pfds, nfds, timeout);
+
+  for(nfds_t i = 0; i < nfds; i++) {
+    Sock* s;
+
+    if((s = intercept_find(&intercept_fds, pfds[i].fd))) {
+      if(pfds[i].revents == 0)
         continue;
 
       put_process();
       buffer_puts(&o, "poll() socket ");
       buffer_putlong(&o, pfds[i].fd);
       buffer_puts(&o, " got ");
-      buffer_puts(&o, (pfds[i].revents & POLLOUT) ? "+writable" : "");
-      buffer_puts(&o, (pfds[i].revents & POLLIN) ? "+readable" : "");
-      buffer_puts(&o, (pfds[i].revents & POLLERR) ? "+error" : "");
-      buffer_puts(&o, (pfds[i].revents & POLLHUP) ? "+hangup" : "");
+      put_events(pfds[i].revents);
+
       buffer_putnlflush(&o);
     }
   }
