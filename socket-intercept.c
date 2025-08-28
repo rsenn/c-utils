@@ -980,7 +980,7 @@ shutdown(int fd, int how) {
     buffer_puts(&o, "shutdown(");
     buffer_putlong(&o, fd);
     buffer_puts(&o, ", ");
-    buffer_puts(&o, ((const char* []){"SHUT_RD", "SHUT_WR", "SHUT_RDWR", "INVALID"})[how & 0b11]);
+    buffer_puts(&o, ((const char*[]){"SHUT_RD", "SHUT_WR", "SHUT_RDWR", "INVALID"})[how & 0b11]);
     buffer_puts(&o, ") = ");
     buffer_putlong(&o, r);
     buffer_putnlflush(&o);
@@ -1025,11 +1025,17 @@ poll(struct pollfd* pfds, nfds_t nfds, int timeout) {
     Sock* s;
 
     if((s = intercept_find(&intercept_fds, pfds[i].fd))) {
+      if((pfds[i].revents & (POLLIN | POLLOUT | POLLHUP | POLLERR)) == 0)
+        continue;
+
       put_process();
       buffer_puts(&o, "poll() socket ");
       buffer_putlong(&o, pfds[i].fd);
       buffer_puts(&o, " got ");
-      buffer_puts(&o, (pfds[i].revents & POLLOUT) ? "writable" : (pfds[i].revents & POLLIN) ? "readable" : "nothing");
+      buffer_puts(&o, (pfds[i].revents & POLLOUT) ? "+writable" : "");
+      buffer_puts(&o, (pfds[i].revents & POLLIN) ? "+readable" : "");
+      buffer_puts(&o, (pfds[i].revents & POLLERR) ? "+error" : "");
+      buffer_puts(&o, (pfds[i].revents & POLLHUP) ? "+hangup" : "");
       buffer_putnlflush(&o);
     }
   }
