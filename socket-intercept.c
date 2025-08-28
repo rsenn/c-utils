@@ -373,6 +373,13 @@ connect(int sockfd, const struct sockaddr* addr, socklen_t addrlen) {
     buffer_putulong(&o, addrlen);
     buffer_puts(&o, ") = ");
     buffer_putlong(&o, r);
+
+    if(r < 0) {
+      buffer_puts(&o, " [");
+      buffer_puts(&o, strerror(errno));
+      buffer_puts(&o, "]");
+    }
+
     buffer_putnlflush(&o);
   }
 
@@ -1003,6 +1010,17 @@ fcntl(int fd, int cmd, ...) {
 
   return r;
 }
+
+VISIBLE
+int
+fcntl64(int fd, int cmd, ...) {
+  va_list ptr;
+  va_start(ptr, cmd);
+  void* arg = va_arg(ptr, void*);
+
+  return fcntl(fd, cmd, arg);
+}
+//__attribute__((weak, alias("fcntl")));
 
 VISIBLE int
 SSL_read(void* ssl, void* buf, int len) {
