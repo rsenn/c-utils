@@ -971,10 +971,10 @@ intercept_init(void) {
 
   if(prev_val == 0) {
     char* file = getenv("SOCKET_INTERCEPT_LOG");
-    int fd = open(file ? file : "socket-intercept.log", O_WRONLY | O_APPEND | O_CREAT, 0644);
+    int fd;
 
-    if(fd == -1)
-      fd = 2;
+    if((fd = open(file ? file : "socket-intercept.log", O_WRONLY | O_APPEND | O_CREAT, 0644)) == -1)
+      fd = STDERR_FILENO;
 
     buffer_write_fd(&o, fd);
 
