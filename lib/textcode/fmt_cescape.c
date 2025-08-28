@@ -10,7 +10,6 @@ fmt_cescape2(char* dest, const char* src, size_t len, const char* escapeme) {
 
   for(i = 0; i < len; ++i) {
     switch(s[i]) {
-      case '\0': c = '0'; goto doescape;
       case '\a': c = 'a'; goto doescape;
       case '\b': c = 'b'; goto doescape;
       case 0x1b: c = 'e'; goto doescape;
@@ -34,13 +33,12 @@ fmt_cescape2(char* dest, const char* src, size_t len, const char* escapeme) {
       default:
         if(s[i] < ' ' || s[i] >= 127 || escapeme[str_chr(escapeme, s[i])] == s[i]) {
           if(dest) {
-static   const char hexchars[] = "0123456789ABCDEF";
+            static const char hexchars[] = "0123456789ABCDEF";
 
             dest[written] = '\\';
             dest[written + 1] = 'x';
             dest[written + 2] = hexchars[s[i] >> 4];
-            dest[written + 3] = hexchars[
-              s[i] & 0xf];
+            dest[written + 3] = hexchars[s[i] & 0xf];
           }
           written += 4;
         } else {
@@ -57,7 +55,7 @@ static   const char hexchars[] = "0123456789ABCDEF";
       return (size_t)-1;
   }
 
-    return written;
+  return written;
 }
 
 size_t
