@@ -40,6 +40,7 @@ typedef struct {
 
 static long intercept_init(void);
 static Sock* intercept_find(struct list_head*, int);
+static Sock* intercept_findall(int);
 static Sock* intercept_ssl(void*);
 static void intercept_close(Sock*);
 static Sock* intercept_new(int);
@@ -1056,12 +1057,16 @@ poll(struct pollfd* pfds, nfds_t nfds, int timeout) {
   for(nfds_t i = 0; i < nfds; i++) {
     Sock* s;
 
-    if((s = intercept_find(&intercept_fds, pfds[i].fd))) {
+    if((s = intercept_findall(pfds[i].fd))) {
       if(pfds[i].events == 0)
         continue;
 
       put_process();
-      buffer_puts(&o, "poll() socket ");
+      buffer_puts(&o, "poll(pfds, ");
+      buffer_putulong(&o, nfds);
+      buffer_puts(&o, ", ");
+      buffer_putlong(&o, timeout);
+      buffer_puts(&o, ") socket ");
       buffer_putlong(&o, pfds[i].fd);
       buffer_puts(&o, " wants ");
       put_events(pfds[i].events);
@@ -1074,12 +1079,16 @@ poll(struct pollfd* pfds, nfds_t nfds, int timeout) {
   for(nfds_t i = 0; i < nfds; i++) {
     Sock* s;
 
-    if((s = intercept_find(&intercept_fds, pfds[i].fd))) {
+    if((s = intercept_findall(pfds[i].fd))) {
       if(pfds[i].revents == 0)
         continue;
 
       put_process();
-      buffer_puts(&o, "poll() socket ");
+      buffer_puts(&o, "poll(pfds, ");
+      buffer_putulong(&o, nfds);
+      buffer_puts(&o, ", ");
+      buffer_putlong(&o, timeout);
+      buffer_puts(&o, ") socket ");
       buffer_putlong(&o, pfds[i].fd);
       buffer_puts(&o, " got ");
       put_events(pfds[i].revents);
@@ -1327,6 +1336,19 @@ intercept_find(struct list_head* list, int fd) {
     if(s->fd == fd)
       return s;
   }
+
+  return 0;
+}
+
+static Sock*
+intercept_findall(int fd) {
+  Sock* s;
+
+  if((s = intercept_find(&ssl_fds, fd)))
+    return s;
+
+  if((s = intercept_find(&intercept_fds, fd)))
+    return s;
 
   return 0;
 }
