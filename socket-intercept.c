@@ -5,7 +5,7 @@
 #include <assert.h>
 #include <dlfcn.h>
 #include <unistd.h>
-#include <fcntl.h>
+//#include <fcntl.h>
 #include <errno.h>
 #include <string.h>
 #include <ctype.h>
@@ -13,6 +13,7 @@
 #include <sys/types.h>
 #include <netinet/in.h>
 #include <sys/un.h>
+#include <sys/poll.h>
 
 #include "lib/alloc.h"
 #include "lib/stralloc.h"
@@ -76,6 +77,7 @@ typedef int shutdown_function(int, int);
 typedef int recvmmsg_function(int sockfd, struct mmsghdr* msgvec, unsigned vlen, int flags, struct timespec* timeout);
 typedef int sendmmsg_function(int sockfd, struct mmsghdr* msgvec, unsigned vlen, int flags);
 typedef int fcntl_function(int, int, ...);
+typedef int poll_function(struct pollfd*, nfds_t, int);
 typedef int SSL_connect_function(void*);
 typedef int SSL_accept_function(void*);
 typedef int SSL_read_function(void* ssl, void* buf, int num);
@@ -111,6 +113,7 @@ static thread_local getpeername_function* libc_getpeername;
 static thread_local close_function* libc_close;
 static thread_local shutdown_function* libc_shutdown;
 static thread_local fcntl_function* libc_fcntl;
+static thread_local poll_function* libc_poll;
 static thread_local SSL_connect_function* openssl_ssl_connect;
 static thread_local SSL_accept_function* openssl_ssl_accept;
 static thread_local SSL_read_function* openssl_ssl_read;
@@ -1001,8 +1004,8 @@ fcntl(int fd, int cmd, ...) {
     buffer_putlong(&o, fd);
     buffer_puts(&o, ", ");
     buffer_putlong(&o, cmd);
-    buffer_puts(&o, ", ");
-    buffer_putlong(&o, (long)arg);
+    buffer_puts(&o, ", 0x");
+    buffer_putxlong(&o, (long)arg);
     buffer_puts(&o, ") = ");
     buffer_putlong(&o, r);
     buffer_putnlflush(&o);
@@ -1012,15 +1015,27 @@ fcntl(int fd, int cmd, ...) {
 }
 
 VISIBLE
-int
-fcntl64(int fd, int cmd, ...) {
-  va_list ptr;
-  va_start(ptr, cmd);
-  void* arg = va_arg(ptr, void*);
+int fcntl64(int fd, int cmd, ...) __attribute__((/*weak,*/ alias("fcntl")));
 
-  return fcntl(fd, cmd, arg);
+VISIBLE int
+poll(struct pollfd* pfds, nfds_t nfds, int timeout) {
+  int r = libc_poll(pfds, nfds, timeout);
+
+  for(unsigned i = 0; i < nfds; i++) {
+    Sock* s;
+
+    if((s = intercept_find(&intercept_fds, pfds[i].fd))) {
+      put_process();
+      buffer_puts(&o, "poll() socket ");
+      buffer_putlong(&o, pfds[i].fd);
+      buffer_puts(&o, " got ");
+      buffer_puts(&o, (pfds[i].revents & POLLOUT) ? "writable" : (pfds[i].revents & POLLIN) ? "readable" : "nothing");
+      buffer_putnlflush(&o);
+    }
+  }
+
+  return r;
 }
-//__attribute__((weak, alias("fcntl")));
 
 VISIBLE int
 SSL_read(void* ssl, void* buf, int len) {
@@ -1194,8 +1209,9 @@ intercept_init(void) {
     libc_close = dlsym(RTLD_NEXT, "close");
     libc_shutdown = dlsym(RTLD_NEXT, "shutdown");
     libc_fcntl = dlsym(RTLD_NEXT, "fcntl");
+    libc_poll = dlsym(RTLD_NEXT, "poll");
 
-    void* libssl = dlopen("libssl.so.1.1", RTLD_NOW);
+    void* libssl = dlopen("libssl.so", RTLD_NOW);
 
     openssl_ssl_connect = dlsym(libssl, "SSL_connect");
     openssl_ssl_accept = dlsym(libssl, "SSL_accept");
@@ -1214,9 +1230,9 @@ intercept_init(void) {
       append = true;
     }
 
-    int fd, flags = O_WRONLY | (append ? O_APPEND : O_TRUNC) | O_CREAT;
+    int fd;
 
-    if((fd = open(file && file[0] ? file : "socket-intercept.log", flags, 0644)) == -1)
+    if((fd = (append ? open_append : open_trunc)(file && file[0] ? file : "socket-intercept.log")) == -1)
       fd = STDERR_FILENO;
 
     buffer_write_fd(&o, fd);

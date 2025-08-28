@@ -1242,6 +1242,7 @@ set(socket_intercept_SOURCES
     lib/buffer/buffer_putnlflush.c
     lib/buffer/buffer_puts.c
     lib/buffer/buffer_putulong.c
+    lib/buffer/buffer_putxlong.c
     lib/buffer/buffer_stubborn.c
     lib/byte/byte_copy.c
     lib/byte/byte_equal.c
@@ -1266,6 +1267,8 @@ set(socket_intercept_SOURCES
     lib/socket/socket_v4mappedprefix.c
     lib/socket/fmt_ip4.c
     lib/socket/fmt_ip6.c
+    lib/open/open_append.c
+    lib/open/open_trunc.c
     lib/stralloc/stralloc_trunc.c
     lib/stralloc/stralloc_ready.c
     lib/stralloc/stralloc_readyplus.c
