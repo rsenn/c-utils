@@ -203,7 +203,6 @@ fmt_lenptr(char* x, socklen_t* lenptr) {
 
 static void
 put_process(void) {
-  char buf[FMT_LONG];
   pid_t pid = getpid(), tid = gettid();
 
   buffer_puts(&o, "[");
@@ -237,7 +236,6 @@ put_lenptr(socklen_t* addrlen) {
 static void
 put_buf(const void* buf, size_t len) {
   char tmp[len * 4 + 2 + 1];
-
   buffer_put(&o, tmp, fmt_buf(tmp, buf, len));
 }
 
@@ -246,7 +244,6 @@ put_msg(const struct msghdr* msg) {
   size_t len;
 
   if(msg->msg_name) {
-    char buf[msg->msg_namelen * 4 + 2 + 1];
     buffer_puts(&o, "Name: ");
     put_buf(msg->msg_name, msg->msg_namelen);
     buffer_puts(&o, ", ");
@@ -357,8 +354,6 @@ accept(int sockfd, struct sockaddr* addr, socklen_t* addrlen) {
   int r = libc_accept(sockfd, addr, addrlen);
 
   if((s = intercept_find(&intercept_fds, sockfd))) {
-    char buf[*addrlen * 3 + 1];
-
     put_process();
     buffer_puts(&o, "accept(");
     buffer_putlong(&o, sockfd);
@@ -388,8 +383,6 @@ accept4(int sockfd, struct sockaddr* addr, socklen_t* addrlen, int flags) {
   int r = libc_accept4(sockfd, addr, addrlen, flags);
 
   if((s = intercept_find(&intercept_fds, sockfd))) {
-    char buf[*addrlen * 3 + 1];
-
     put_process();
     buffer_puts(&o, "accept4(");
     buffer_putlong(&o, sockfd);
