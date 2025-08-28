@@ -26,7 +26,8 @@ __atomic_compare_and_swap(volatile long* ptr, long oldval, long newval) {
 #define __CAS __atomic_compare_and_swap
 #define __CAS_PTR __atomic_compare_and_swap
 
-#elif(defined(__i386__) || defined(__x86_64__)) && (defined(__TINYC__) || defined(__GNUC__) || USE_INLINE_COMPARE_AND_SWAP) && !defined(__BORLANDC__)
+#elif(defined(__i386__) || defined(__x86_64__)) && \
+    (defined(__TINYC__) || defined(__GNUC__) || USE_INLINE_COMPARE_AND_SWAP) && !defined(__BORLANDC__)
 //#warning x86
 
 #ifdef __TINYC__

@@ -13,7 +13,6 @@
 #include <sys/types.h>
 #include <netinet/in.h>
 #include <sys/un.h>
-// #include <pthread.h>
 
 #include "lib/alloc.h"
 #include "lib/stralloc.h"
@@ -46,7 +45,6 @@ static void intercept_delete(Sock*);
 static void intercept_seterror(Sock*, int);
 static void intercept_cleanup(void);
 
-// static pthread_mutex_t log_mut = PTHREAD_MUTEX_INITIALIZER;
 static thread_local long initialized;
 static thread_local struct list_head intercept_fds, closed_fds;
 static thread_local buffer o;
@@ -188,6 +186,21 @@ fmt_buf(char* x, const void* buf, size_t len) {
   return j;
 }
 
+static size_t
+fmt_lenptr(char* x, socklen_t* lenptr) {
+  size_t j = 0;
+
+  if(lenptr == 0)
+    j += str_copy(&x[j], "NULL");
+  else {
+    x[j++] = '[';
+    j += fmt_ulong(&x[j], *lenptr);
+    x[j++] = ']';
+  }
+
+  return j;
+}
+
 static void
 put_process(void) {
   char buf[FMT_LONG];
@@ -215,6 +228,12 @@ put_sockaddr(const struct sockaddr* addr, socklen_t addrlen) {
   return buffer_put(&o, buf, fmt_sockaddr(buf, addr, addrlen));
 }
 
+static inline int
+put_lenptr(socklen_t* addrlen) {
+  char buf[64];
+  return buffer_put(&o, buf, fmt_lenptr(buf, addrlen));
+}
+
 static void
 put_buf(const void* buf, size_t len) {
   char tmp[len * 4 + 2 + 1];
@@ -234,9 +253,6 @@ put_msg(const struct msghdr* msg) {
   }
 
   if((len = msg->msg_iovlen) > 0) {
-    /*buffer_puts(&o, "IOV len: ");
-    buffer_putulong(&o, len);
-    buffer_puts(&o, ", ");*/
     buffer_puts(&o, "[ ");
 
     for(size_t i = 0; i < len; i++) {
@@ -280,7 +296,6 @@ listen(int sockfd, int backlog) {
   int r = libc_listen(sockfd, backlog);
 
   if((s = intercept_find(&intercept_fds, sockfd))) {
-    // pthread_mutex_lock(&log_mut);
     put_process();
     buffer_puts(&o, "listen(");
     buffer_putlong(&o, sockfd);
@@ -289,7 +304,6 @@ listen(int sockfd, int backlog) {
     buffer_puts(&o, ") = ");
     buffer_putlong(&o, r);
     buffer_putnlflush(&o);
-    // pthread_mutex_unlock(&log_mut);
   }
 
   return r;
@@ -301,7 +315,6 @@ bind(int sockfd, const struct sockaddr* addr, socklen_t addrlen) {
   int r = libc_bind(sockfd, addr, addrlen);
 
   if((s = intercept_find(&intercept_fds, sockfd))) {
-    // pthread_mutex_lock(&log_mut);
     put_process();
     buffer_puts(&o, "bind(");
     buffer_putlong(&o, sockfd);
@@ -312,7 +325,6 @@ bind(int sockfd, const struct sockaddr* addr, socklen_t addrlen) {
     buffer_puts(&o, ") = ");
     buffer_putlong(&o, r);
     buffer_putnlflush(&o);
-    // pthread_mutex_unlock(&log_mut);
   }
 
   return r;
@@ -324,7 +336,6 @@ connect(int sockfd, const struct sockaddr* addr, socklen_t addrlen) {
   int r = libc_connect(sockfd, addr, addrlen);
 
   if((s = intercept_find(&intercept_fds, sockfd))) {
-    // pthread_mutex_lock(&log_mut);
     put_process();
     buffer_puts(&o, "connect(");
     buffer_putlong(&o, sockfd);
@@ -335,7 +346,6 @@ connect(int sockfd, const struct sockaddr* addr, socklen_t addrlen) {
     buffer_puts(&o, ") = ");
     buffer_putlong(&o, r);
     buffer_putnlflush(&o);
-    // pthread_mutex_unlock(&log_mut);
   }
 
   return r;
@@ -349,7 +359,6 @@ accept(int sockfd, struct sockaddr* addr, socklen_t* addrlen) {
   if((s = intercept_find(&intercept_fds, sockfd))) {
     char buf[*addrlen * 3 + 1];
 
-    // pthread_mutex_lock(&log_mut);
     put_process();
     buffer_puts(&o, "accept(");
     buffer_putlong(&o, sockfd);
@@ -361,11 +370,10 @@ accept(int sockfd, struct sockaddr* addr, socklen_t* addrlen) {
       buffer_puts(&o, "[]");
 
     buffer_puts(&o, ", ");
-    buffer_putulong(&o, *addrlen);
+    put_lenptr(addrlen);
     buffer_puts(&o, ") = ");
     buffer_putlong(&o, r);
     buffer_putnlflush(&o);
-    // pthread_mutex_unlock(&log_mut);
   }
 
   if(r >= 0)
@@ -382,7 +390,6 @@ accept4(int sockfd, struct sockaddr* addr, socklen_t* addrlen, int flags) {
   if((s = intercept_find(&intercept_fds, sockfd))) {
     char buf[*addrlen * 3 + 1];
 
-    // pthread_mutex_lock(&log_mut);
     put_process();
     buffer_puts(&o, "accept4(");
     buffer_putlong(&o, sockfd);
@@ -394,13 +401,12 @@ accept4(int sockfd, struct sockaddr* addr, socklen_t* addrlen, int flags) {
       buffer_puts(&o, "[]");
 
     buffer_puts(&o, ", ");
-    buffer_putulong(&o, *addrlen);
+    put_lenptr(addrlen);
     buffer_puts(&o, ", ");
     buffer_putlong(&o, flags);
     buffer_puts(&o, ") = ");
     buffer_putlong(&o, r);
     buffer_putnlflush(&o);
-    // pthread_mutex_unlock(&log_mut);
   }
 
   if(r >= 0)
@@ -415,7 +421,6 @@ send(int sockfd, const void* buf, size_t len, int flags) {
   int r = libc_send(sockfd, buf, len, flags);
 
   if((s = intercept_find(&intercept_fds, sockfd))) {
-    // pthread_mutex_lock(&log_mut);
     put_process();
     buffer_puts(&o, "send(");
     buffer_putlong(&o, sockfd);
@@ -428,7 +433,6 @@ send(int sockfd, const void* buf, size_t len, int flags) {
     buffer_puts(&o, ") = ");
     buffer_putlong(&o, r);
     buffer_putnlflush(&o);
-    // pthread_mutex_unlock(&log_mut);
 
     if(r >= 0)
       s->written += r;
@@ -445,7 +449,6 @@ sendto(int sockfd, const void* buf, size_t len, int flags, const struct sockaddr
   int r = libc_sendto(sockfd, buf, len, flags, addr, addrlen);
 
   if((s = intercept_find(&intercept_fds, sockfd))) {
-    // pthread_mutex_lock(&log_mut);
     put_process();
     buffer_puts(&o, "sendto(");
     buffer_putlong(&o, sockfd);
@@ -462,7 +465,6 @@ sendto(int sockfd, const void* buf, size_t len, int flags, const struct sockaddr
     buffer_puts(&o, ") = ");
     buffer_putlong(&o, r);
     buffer_putnlflush(&o);
-    // pthread_mutex_unlock(&log_mut);
 
     if(r >= 0)
       s->written += r;
@@ -479,7 +481,6 @@ sendmsg(int sockfd, const struct msghdr* msg, int flags) {
   int r = libc_sendmsg(sockfd, msg, flags);
 
   if((s = intercept_find(&intercept_fds, sockfd))) {
-    // pthread_mutex_lock(&log_mut);
     put_process();
     buffer_puts(&o, "sendmsg(");
     buffer_putlong(&o, sockfd);
@@ -490,7 +491,6 @@ sendmsg(int sockfd, const struct msghdr* msg, int flags) {
     buffer_puts(&o, ") = ");
     buffer_putlong(&o, r);
     buffer_putnlflush(&o);
-    // pthread_mutex_unlock(&log_mut);
 
     if(r >= 0)
       s->written += r;
@@ -507,7 +507,6 @@ sendmmsg(int sockfd, struct mmsghdr* msgvec, unsigned vlen, int flags) {
   int r = libc_sendmmsg(sockfd, msgvec, vlen, flags);
 
   if((s = intercept_find(&intercept_fds, sockfd))) {
-    // pthread_mutex_lock(&log_mut);
     put_process();
     buffer_puts(&o, "sendmmsg(");
     buffer_putlong(&o, sockfd);
@@ -520,7 +519,6 @@ sendmmsg(int sockfd, struct mmsghdr* msgvec, unsigned vlen, int flags) {
     buffer_puts(&o, ") = ");
     buffer_putlong(&o, r);
     buffer_putnlflush(&o);
-    // pthread_mutex_unlock(&log_mut);
 
     if(r >= 0)
       for(size_t i = 0; i < r; i++)
@@ -538,7 +536,6 @@ write(int fd, const void* buf, size_t len) {
   int r = libc_write(fd, buf, len);
 
   if((s = intercept_find(&intercept_fds, fd))) {
-    // pthread_mutex_lock(&log_mut);
     put_process();
     buffer_puts(&o, "write(");
     buffer_putlong(&o, fd);
@@ -549,7 +546,6 @@ write(int fd, const void* buf, size_t len) {
     buffer_puts(&o, ") = ");
     buffer_putlong(&o, r);
     buffer_putnlflush(&o);
-    // pthread_mutex_unlock(&log_mut);
 
     if(r >= 0)
       s->written += r;
@@ -566,7 +562,6 @@ writev(int fd, const struct iovec* iov, int iovcnt) {
   int r = libc_writev(fd, iov, iovcnt);
 
   if((s = intercept_find(&intercept_fds, fd))) {
-    // pthread_mutex_lock(&log_mut);
     put_process();
     buffer_puts(&o, "writev(");
     buffer_putlong(&o, fd);
@@ -577,7 +572,6 @@ writev(int fd, const struct iovec* iov, int iovcnt) {
     buffer_puts(&o, ") = ");
     buffer_putlong(&o, r);
     buffer_putnlflush(&o);
-    // pthread_mutex_unlock(&log_mut);
 
     if(r >= 0)
       s->written += r;
@@ -594,7 +588,6 @@ recv(int sockfd, void* buf, size_t len, int flags) {
   int r = libc_recv(sockfd, buf, len, flags);
 
   if((s = intercept_find(&intercept_fds, sockfd))) {
-    // pthread_mutex_lock(&log_mut);
     put_process();
     buffer_puts(&o, "recv(");
     buffer_putlong(&o, sockfd);
@@ -612,7 +605,6 @@ recv(int sockfd, void* buf, size_t len, int flags) {
     buffer_puts(&o, ") = ");
     buffer_putlong(&o, r);
     buffer_putnlflush(&o);
-    // pthread_mutex_unlock(&log_mut);
 
     if(r > 0)
       s->read += r;
@@ -631,7 +623,6 @@ recvfrom(int sockfd, void* buf, size_t len, int flags, struct sockaddr* addr, so
   int r = libc_recvfrom(sockfd, buf, len, flags, addr, addrlen);
 
   if((s = intercept_find(&intercept_fds, sockfd))) {
-    // pthread_mutex_lock(&log_mut);
     put_process();
     buffer_puts(&o, "recvfrom(");
     buffer_putlong(&o, sockfd);
@@ -656,14 +647,13 @@ recvfrom(int sockfd, void* buf, size_t len, int flags, struct sockaddr* addr, so
     buffer_puts(&o, ", ");
 
     if(r >= 0)
-      buffer_putulong(&o, *addrlen);
+      put_lenptr(addrlen);
     else
       buffer_puts(&o, "[]");
 
     buffer_puts(&o, ") = ");
     buffer_putlong(&o, r);
     buffer_putnlflush(&o);
-    // pthread_mutex_unlock(&log_mut);
 
     if(r > 0)
       s->read += r;
@@ -682,7 +672,6 @@ recvmsg(int sockfd, struct msghdr* msg, int flags) {
   int r = libc_recvmsg(sockfd, msg, flags);
 
   if((s = intercept_find(&intercept_fds, sockfd))) {
-    // pthread_mutex_lock(&log_mut);
     put_process();
     buffer_puts(&o, "recvmsg(");
     buffer_putlong(&o, sockfd);
@@ -698,7 +687,6 @@ recvmsg(int sockfd, struct msghdr* msg, int flags) {
     buffer_puts(&o, ") = ");
     buffer_putlong(&o, r);
     buffer_putnlflush(&o);
-    // pthread_mutex_unlock(&log_mut);
 
     if(r > 0)
       s->read += r;
@@ -717,7 +705,6 @@ recvmmsg(int sockfd, struct mmsghdr* msgvec, unsigned vlen, int flags, struct ti
   int r = libc_recvmmsg(sockfd, msgvec, vlen, flags, t);
 
   if((s = intercept_find(&intercept_fds, sockfd))) {
-    // pthread_mutex_lock(&log_mut);
     put_process();
     buffer_puts(&o, "recvmmsg(");
     buffer_putlong(&o, sockfd);
@@ -737,7 +724,6 @@ recvmmsg(int sockfd, struct mmsghdr* msgvec, unsigned vlen, int flags, struct ti
     buffer_puts(&o, ") = ");
     buffer_putlong(&o, r);
     buffer_putnlflush(&o);
-    // pthread_mutex_unlock(&log_mut);
 
     if(r > 0)
       for(size_t i = 0; i < r; i++)
@@ -757,7 +743,6 @@ read(int fd, void* buf, size_t len) {
   int r = libc_read(fd, buf, len);
 
   if((s = intercept_find(&intercept_fds, fd))) {
-    // pthread_mutex_lock(&log_mut);
     put_process();
     buffer_puts(&o, "read(");
     buffer_putlong(&o, fd);
@@ -773,7 +758,6 @@ read(int fd, void* buf, size_t len) {
     buffer_puts(&o, ") = ");
     buffer_putlong(&o, r);
     buffer_putnlflush(&o);
-    // pthread_mutex_unlock(&log_mut);
 
     if(r > 0)
       s->read += r;
@@ -792,7 +776,6 @@ readv(int fd, const struct iovec* iov, int iovcnt) {
   int r = libc_readv(fd, iov, iovcnt);
 
   if((s = intercept_find(&intercept_fds, fd))) {
-    // pthread_mutex_lock(&log_mut);
     put_process();
     buffer_puts(&o, "readv(");
     buffer_putlong(&o, fd);
@@ -803,7 +786,6 @@ readv(int fd, const struct iovec* iov, int iovcnt) {
     buffer_puts(&o, ") = ");
     buffer_putlong(&o, r);
     buffer_putnlflush(&o);
-    // pthread_mutex_unlock(&log_mut);
 
     if(r > 0)
       s->read += r;
@@ -822,7 +804,6 @@ getsockopt(int sockfd, int level, int optname, void* optval, socklen_t* optlen) 
   int r = libc_getsockopt(sockfd, level, optname, optval, optlen);
 
   if((s = intercept_find(&intercept_fds, sockfd))) {
-    // pthread_mutex_lock(&log_mut);
     put_process();
     buffer_puts(&o, "getsockopt(");
     buffer_putlong(&o, sockfd);
@@ -847,7 +828,6 @@ getsockopt(int sockfd, int level, int optname, void* optval, socklen_t* optlen) 
     buffer_puts(&o, ") = ");
     buffer_putlong(&o, r);
     buffer_putnlflush(&o);
-    // pthread_mutex_unlock(&log_mut);
   }
 
   return r;
@@ -859,7 +839,6 @@ setsockopt(int sockfd, int level, int optname, const void* optval, socklen_t opt
   int r = libc_setsockopt(sockfd, level, optname, optval, optlen);
 
   if((s = intercept_find(&intercept_fds, sockfd))) {
-    // pthread_mutex_lock(&log_mut);
     put_process();
     buffer_puts(&o, "setsockopt(");
     buffer_putlong(&o, sockfd);
@@ -874,7 +853,6 @@ setsockopt(int sockfd, int level, int optname, const void* optval, socklen_t opt
     buffer_puts(&o, ") = ");
     buffer_putlong(&o, r);
     buffer_putnlflush(&o);
-    // pthread_mutex_unlock(&log_mut);
   }
 
   return r;
@@ -886,7 +864,6 @@ getsockname(int sockfd, struct sockaddr* addr, socklen_t* addrlen) {
   int r = libc_getsockname(sockfd, addr, addrlen);
 
   if((s = intercept_find(&intercept_fds, sockfd))) {
-    // pthread_mutex_lock(&log_mut);
     put_process();
     buffer_puts(&o, "getsockname(");
     buffer_putlong(&o, sockfd);
@@ -898,11 +875,10 @@ getsockname(int sockfd, struct sockaddr* addr, socklen_t* addrlen) {
       buffer_puts(&o, "[]");
 
     buffer_puts(&o, ", ");
-    buffer_putulong(&o, *addrlen);
+    put_lenptr(addrlen);
     buffer_puts(&o, ") = ");
     buffer_putlong(&o, r);
     buffer_putnlflush(&o);
-    // pthread_mutex_unlock(&log_mut);
   }
 
   return r;
@@ -914,7 +890,6 @@ getpeername(int sockfd, struct sockaddr* addr, socklen_t* addrlen) {
   int r = libc_getpeername(sockfd, addr, addrlen);
 
   if((s = intercept_find(&intercept_fds, sockfd))) {
-    // pthread_mutex_lock(&log_mut);
     put_process();
     buffer_puts(&o, "getpeername(");
     buffer_putlong(&o, sockfd);
@@ -926,11 +901,10 @@ getpeername(int sockfd, struct sockaddr* addr, socklen_t* addrlen) {
       buffer_puts(&o, "[]");
 
     buffer_puts(&o, ", ");
-    buffer_putulong(&o, *addrlen);
+    put_lenptr(addrlen);
     buffer_puts(&o, ") = ");
     buffer_putlong(&o, r);
     buffer_putnlflush(&o);
-    // pthread_mutex_unlock(&log_mut);
   }
 
   return r;
@@ -944,14 +918,12 @@ close(int fd) {
   if((s = intercept_find(&intercept_fds, fd))) {
     intercept_close(s);
 
-    // pthread_mutex_lock(&log_mut);
     put_process();
     buffer_puts(&o, "close(");
     buffer_putlong(&o, fd);
     buffer_puts(&o, ") = ");
     buffer_putlong(&o, r);
     buffer_putnlflush(&o);
-    // pthread_mutex_unlock(&log_mut);
   }
 
   return r;
@@ -963,7 +935,6 @@ shutdown(int fd, int how) {
   int r = libc_shutdown(fd, how);
 
   if((s = intercept_find(&intercept_fds, fd))) {
-    // pthread_mutex_lock(&log_mut);
     put_process();
     buffer_puts(&o, "shutdown(");
     buffer_putlong(&o, fd);
@@ -972,7 +943,6 @@ shutdown(int fd, int how) {
     buffer_puts(&o, ") = ");
     buffer_putlong(&o, r);
     buffer_putnlflush(&o);
-    // pthread_mutex_unlock(&log_mut);
   }
 
   return r;
@@ -982,15 +952,22 @@ CTOR static void
 intercept_constructor(void) {
   long was_initialized = intercept_init();
 
+  if(was_initialized)
+    return;
+
   put_process();
   buffer_puts(&o, "intercept_constructor() called (was_initialized = ");
   buffer_putlong(&o, was_initialized);
+  /*buffer_puts(&o, ", ptr = ");
+    buffer_putptr(&o, &initialized);
+    buffer_puts(&o, ", initialized = ");
+    buffer_putlong(&o, initialized);*/
   buffer_putsflush(&o, ")\n");
 }
 
 static long
 intercept_init(void) {
-  long prev_val = __CAS(&initialized, 1, 0);
+  long prev_val = __CAS(&initialized, 0, 1);
 
   if(prev_val == 0) {
     char* file = getenv("SOCKET_INTERCEPT_LOG");
@@ -1073,8 +1050,6 @@ intercept_new(int fd) {
   Sock* s;
 
   intercept_constructor();
-
-  // assert(!intercept_find(&intercept_fds, fd));
 
   if(intercept_find(&intercept_fds, fd)) {
     buffer_puts(buffer_2, "Socket ");
