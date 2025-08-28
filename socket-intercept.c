@@ -13,7 +13,7 @@
 #include <sys/types.h>
 #include <netinet/in.h>
 #include <sys/un.h>
-//#include <pthread.h>
+// #include <pthread.h>
 
 #include "lib/alloc.h"
 #include "lib/stralloc.h"
@@ -50,67 +50,63 @@ static void intercept_cleanup(void);
 static thread_local long initialized;
 static thread_local struct list_head intercept_fds, closed_fds;
 static thread_local buffer o;
-static thread_local stralloc procname;
+static thread_local char procname[64];
 
 typedef int intercept_function(int, int, int);
+typedef int listen_function(int, int);
 typedef int bind_function(int, const struct sockaddr*, socklen_t);
 typedef int connect_function(int, const struct sockaddr*, socklen_t);
 typedef int accept_function(int, struct sockaddr*, socklen_t*);
+typedef int accept4_function(int, struct sockaddr*, socklen_t*, int);
 typedef ssize_t send_function(int, const void*, size_t, int);
-typedef ssize_t
-sendto_function(int, const void*, size_t, int, const struct sockaddr*, socklen_t);
+typedef ssize_t sendto_function(int, const void*, size_t, int, const struct sockaddr*, socklen_t);
 typedef ssize_t sendmsg_function(int, const struct msghdr*, int);
 typedef ssize_t write_function(int, const void*, size_t);
+typedef ssize_t writev_function(int, const struct iovec*, int);
 typedef ssize_t recv_function(int, void*, size_t, int);
-typedef ssize_t
-recvfrom_function(int, void*, size_t, int, struct sockaddr*, socklen_t*);
+typedef ssize_t recvfrom_function(int, void*, size_t, int, struct sockaddr*, socklen_t*);
 typedef ssize_t recvmsg_function(int, struct msghdr*, int);
 typedef ssize_t read_function(int, void*, size_t);
+typedef ssize_t readv_function(int, const struct iovec*, int);
 typedef int getsockopt_function(int, int, int, void*, socklen_t*);
 typedef int setsockopt_function(int, int, int, const void*, socklen_t);
 typedef int getsockname_function(int, struct sockaddr*, socklen_t*);
 typedef int getpeername_function(int, struct sockaddr*, socklen_t*);
 typedef int close_function(int);
+typedef int shutdown_function(int, int);
+typedef int recvmmsg_function(int sockfd, struct mmsghdr* msgvec, unsigned vlen, int flags, struct timespec* timeout);
+typedef int sendmmsg_function(int sockfd, struct mmsghdr* msgvec, unsigned vlen, int flags);
 
 static thread_local intercept_function* libc_socket;
+static thread_local listen_function* libc_listen;
 static thread_local bind_function* libc_bind;
 static thread_local connect_function* libc_connect;
 static thread_local accept_function* libc_accept;
+static thread_local accept4_function* libc_accept4;
 static thread_local send_function* libc_send;
 static thread_local sendto_function* libc_sendto;
 static thread_local sendmsg_function* libc_sendmsg;
+static thread_local sendmmsg_function* libc_sendmmsg;
 static thread_local write_function* libc_write;
+static thread_local writev_function* libc_writev;
 static thread_local recv_function* libc_recv;
 static thread_local recvfrom_function* libc_recvfrom;
 static thread_local recvmsg_function* libc_recvmsg;
+static thread_local recvmmsg_function* libc_recvmmsg;
 static thread_local read_function* libc_read;
+static thread_local readv_function* libc_readv;
 static thread_local getsockopt_function* libc_getsockopt;
 static thread_local setsockopt_function* libc_setsockopt;
 static thread_local getsockname_function* libc_getsockname;
 static thread_local getpeername_function* libc_getpeername;
 static thread_local close_function* libc_close;
+static thread_local shutdown_function* libc_shutdown;
 
 static const char* const address_families[AF_MAX] = {
-    "UNSPEC",   "LOCAL",  "INET",    "AX25",   "IPX",     "APPLETALK", "NETROM",
-    "BRIDGE",   "ATMPVC", "X25",     "INET6",  "ROSE",    "DECnet",    "NETBEUI",
-    "SECURITY", "KEY",    "NETLINK", "PACKET", "ASH",     "ECONET",    "ATMSVC",
-    NULL,       "SNA",    "IRDA",    "PPPOX",  "WANPIPE",
+    "UNSPEC", "LOCAL",  "INET",   "AX25",   "IPX",     "APPLETALK", "NETROM", "BRIDGE",  "ATMPVC",
+    "X25",    "INET6",  "ROSE",   "DECnet", "NETBEUI", "SECURITY",  "KEY",    "NETLINK", "PACKET",
+    "ASH",    "ECONET", "ATMSVC", NULL,     "SNA",     "IRDA",      "PPPOX",  "WANPIPE",
 };
-
-static void
-put_process(buffer* b) {
-  char buf[FMT_LONG];
-
-  buffer_puts(b, "[");
-  buffer_put(b, buf, fmt_ulong(buf, getpid()));
-
-  if(procname.len) {
-    buffer_putc(b, '/');
-    buffer_put(b, procname.s, procname.len);
-  }
-
-  buffer_puts(b, "] ");
-}
 
 static size_t
 fmt_sockaddr(char x[64], const struct sockaddr* addr, socklen_t addrlen) {
@@ -160,8 +156,7 @@ fmt_sockaddr(char x[64], const struct sockaddr* addr, socklen_t addrlen) {
     default: {
       const char* str;
 
-      if((str = (af >= 0 && af < countof(address_families)) ? address_families[af]
-                                                            : 0)) {
+      if((str = (af >= 0 && af < countof(address_families)) ? address_families[af] : 0)) {
         n += str_copy(&x[n], "unhandled address family: AF_");
         n += str_copy(&x[n], str);
       } else {
@@ -181,38 +176,92 @@ fmt_sockaddr(char x[64], const struct sockaddr* addr, socklen_t addrlen) {
   return n;
 }
 
-static inline int
-put_sockaddr(buffer* b, const struct sockaddr* addr, socklen_t addrlen) {
-  char buf[64];
-  return buffer_put(b, buf, fmt_sockaddr(buf, addr, addrlen));
+static size_t
+fmt_buf(char* x, const void* buf, size_t len) {
+  const char* y = (const char*)buf;
+  size_t j = 0;
+
+  x[j++] = '"';
+  j += fmt_cescape(&x[j], buf, len);
+  x[j++] = '"';
+
+  return j;
 }
 
 static void
-put_msg(buffer* b, const struct msghdr* msg) {
-  char buf[msg->msg_namelen * 3 + 1];
+put_process(void) {
+  char buf[FMT_LONG];
+  pid_t pid = getpid(), tid = gettid();
+
+  buffer_puts(&o, "[");
+  buffer_putulong(&o, pid);
+
+  if(tid != pid) {
+    buffer_putc(&o, ',');
+    buffer_putulong(&o, tid);
+  }
+
+  if(procname[0]) {
+    buffer_putc(&o, '/');
+    buffer_puts(&o, procname);
+  }
+
+  buffer_puts(&o, "] ");
+}
+
+static inline int
+put_sockaddr(const struct sockaddr* addr, socklen_t addrlen) {
+  char buf[64];
+  return buffer_put(&o, buf, fmt_sockaddr(buf, addr, addrlen));
+}
+
+static void
+put_buf(const void* buf, size_t len) {
+  char tmp[len * 4 + 2 + 1];
+
+  buffer_put(&o, tmp, fmt_buf(tmp, buf, len));
+}
+
+static void
+put_msg(const struct msghdr* msg) {
   size_t len;
 
-  if((len = fmt_hexbs(buf, msg->msg_name, msg->msg_namelen))) {
-    buffer_puts(b, "Name: ");
-    buffer_put(b, buf, len);
-    buffer_puts(b, ", ");
+  if(msg->msg_name) {
+    char buf[msg->msg_namelen * 4 + 2 + 1];
+    buffer_puts(&o, "Name: ");
+    put_buf(msg->msg_name, msg->msg_namelen);
+    buffer_puts(&o, ", ");
   }
 
   if((len = msg->msg_iovlen) > 0) {
-    buffer_puts(b, "IOV len: ");
-    buffer_putulong(b, len);
-    buffer_puts(b, " [ ");
+    /*buffer_puts(&o, "IOV len: ");
+    buffer_putulong(&o, len);
+    buffer_puts(&o, ", ");*/
+    buffer_puts(&o, "[ ");
+
+    for(size_t i = 0; i < len; i++) {
+      if(i > 0)
+        buffer_puts(&o, ", ");
+
+      put_buf(msg->msg_iov[i].iov_base, msg->msg_iov[i].iov_len);
+    }
+
+    buffer_puts(&o, " ]");
   }
+}
 
-  for(size_t i = 0; i < len; i++) {
-    const struct iovec* const iv = &msg->msg_iov[i];
-    char buf2[iv->iov_len * 3 + 1];
+static void
+put_mmsgs(const struct mmsghdr* msgvec, unsigned vlen) {
+  buffer_puts(&o, "[ ");
 
+  for(unsigned i = 0; i < vlen; i++) {
     if(i > 0)
-      buffer_puts(b, ", ");
+      buffer_puts(&o, ", ");
 
-    buffer_put(b, buf2, fmt_hexbs(buf2, iv->iov_base, iv->iov_len));
+    put_msg(&msgvec[i].msg_hdr);
   }
+
+  buffer_puts(&o, " ]");
 }
 
 VISIBLE int
@@ -226,17 +275,38 @@ socket(int af, int type, int protocol) {
 }
 
 VISIBLE int
+listen(int sockfd, int backlog) {
+  Sock* s;
+  int r = libc_listen(sockfd, backlog);
+
+  if((s = intercept_find(&intercept_fds, sockfd))) {
+    // pthread_mutex_lock(&log_mut);
+    put_process();
+    buffer_puts(&o, "listen(");
+    buffer_putlong(&o, sockfd);
+    buffer_puts(&o, ", ");
+    buffer_putlong(&o, backlog);
+    buffer_puts(&o, ") = ");
+    buffer_putlong(&o, r);
+    buffer_putnlflush(&o);
+    // pthread_mutex_unlock(&log_mut);
+  }
+
+  return r;
+}
+
+VISIBLE int
 bind(int sockfd, const struct sockaddr* addr, socklen_t addrlen) {
   Sock* s;
   int r = libc_bind(sockfd, addr, addrlen);
 
   if((s = intercept_find(&intercept_fds, sockfd))) {
     // pthread_mutex_lock(&log_mut);
-    put_process(&o);
+    put_process();
     buffer_puts(&o, "bind(");
     buffer_putlong(&o, sockfd);
     buffer_puts(&o, ", ");
-    put_sockaddr(&o, addr, addrlen);
+    put_sockaddr(addr, addrlen);
     buffer_puts(&o, ", ");
     buffer_putulong(&o, addrlen);
     buffer_puts(&o, ") = ");
@@ -255,11 +325,11 @@ connect(int sockfd, const struct sockaddr* addr, socklen_t addrlen) {
 
   if((s = intercept_find(&intercept_fds, sockfd))) {
     // pthread_mutex_lock(&log_mut);
-    put_process(&o);
+    put_process();
     buffer_puts(&o, "connect(");
     buffer_putlong(&o, sockfd);
     buffer_puts(&o, ", ");
-    put_sockaddr(&o, addr, addrlen);
+    put_sockaddr(addr, addrlen);
     buffer_puts(&o, ", ");
     buffer_putulong(&o, addrlen);
     buffer_puts(&o, ") = ");
@@ -280,18 +350,53 @@ accept(int sockfd, struct sockaddr* addr, socklen_t* addrlen) {
     char buf[*addrlen * 3 + 1];
 
     // pthread_mutex_lock(&log_mut);
-    put_process(&o);
+    put_process();
     buffer_puts(&o, "accept(");
     buffer_putlong(&o, sockfd);
     buffer_puts(&o, ", ");
 
     if(r >= 0)
-      put_sockaddr(&o, addr, *addrlen);
+      put_sockaddr(addr, *addrlen);
     else
       buffer_puts(&o, "[]");
 
     buffer_puts(&o, ", ");
     buffer_putulong(&o, *addrlen);
+    buffer_puts(&o, ") = ");
+    buffer_putlong(&o, r);
+    buffer_putnlflush(&o);
+    // pthread_mutex_unlock(&log_mut);
+  }
+
+  if(r >= 0)
+    intercept_new(r);
+
+  return r;
+}
+
+VISIBLE int
+accept4(int sockfd, struct sockaddr* addr, socklen_t* addrlen, int flags) {
+  Sock* s;
+  int r = libc_accept4(sockfd, addr, addrlen, flags);
+
+  if((s = intercept_find(&intercept_fds, sockfd))) {
+    char buf[*addrlen * 3 + 1];
+
+    // pthread_mutex_lock(&log_mut);
+    put_process();
+    buffer_puts(&o, "accept4(");
+    buffer_putlong(&o, sockfd);
+    buffer_puts(&o, ", ");
+
+    if(r >= 0)
+      put_sockaddr(addr, *addrlen);
+    else
+      buffer_puts(&o, "[]");
+
+    buffer_puts(&o, ", ");
+    buffer_putulong(&o, *addrlen);
+    buffer_puts(&o, ", ");
+    buffer_putlong(&o, flags);
     buffer_puts(&o, ") = ");
     buffer_putlong(&o, r);
     buffer_putnlflush(&o);
@@ -310,14 +415,12 @@ send(int sockfd, const void* buf, size_t len, int flags) {
   int r = libc_send(sockfd, buf, len, flags);
 
   if((s = intercept_find(&intercept_fds, sockfd))) {
-    char hexbuf[len * 3 + 1];
-
     // pthread_mutex_lock(&log_mut);
-    put_process(&o);
+    put_process();
     buffer_puts(&o, "send(");
     buffer_putlong(&o, sockfd);
     buffer_puts(&o, ", ");
-    buffer_put(&o, hexbuf, fmt_hexbs(hexbuf, buf, len));
+    put_buf(buf, len);
     buffer_puts(&o, ", ");
     buffer_putulong(&o, len);
     buffer_puts(&o, ", ");
@@ -337,30 +440,23 @@ send(int sockfd, const void* buf, size_t len, int flags) {
 }
 
 VISIBLE ssize_t
-sendto(int sockfd,
-       const void* buf,
-       size_t len,
-       int flags,
-       const struct sockaddr* addr,
-       socklen_t addrlen) {
+sendto(int sockfd, const void* buf, size_t len, int flags, const struct sockaddr* addr, socklen_t addrlen) {
   Sock* s;
   int r = libc_sendto(sockfd, buf, len, flags, addr, addrlen);
 
   if((s = intercept_find(&intercept_fds, sockfd))) {
-    char hexbuf[len * 3 + 1];
-
     // pthread_mutex_lock(&log_mut);
-    put_process(&o);
+    put_process();
     buffer_puts(&o, "sendto(");
     buffer_putlong(&o, sockfd);
     buffer_puts(&o, ", ");
-    buffer_put(&o, hexbuf, fmt_hexbs(hexbuf, buf, len));
+    put_buf(buf, len);
     buffer_puts(&o, ", ");
     buffer_putulong(&o, len);
     buffer_puts(&o, ", ");
     buffer_putlong(&o, flags);
     buffer_puts(&o, ", ");
-    put_sockaddr(&o, addr, addrlen);
+    put_sockaddr(addr, addrlen);
     buffer_puts(&o, ", ");
     buffer_putulong(&o, addrlen);
     buffer_puts(&o, ") = ");
@@ -384,11 +480,11 @@ sendmsg(int sockfd, const struct msghdr* msg, int flags) {
 
   if((s = intercept_find(&intercept_fds, sockfd))) {
     // pthread_mutex_lock(&log_mut);
-    put_process(&o);
+    put_process();
     buffer_puts(&o, "sendmsg(");
     buffer_putlong(&o, sockfd);
     buffer_puts(&o, ", ");
-    put_msg(&o, msg);
+    put_msg(msg);
     buffer_puts(&o, ", ");
     buffer_putlong(&o, flags);
     buffer_puts(&o, ") = ");
@@ -405,22 +501,79 @@ sendmsg(int sockfd, const struct msghdr* msg, int flags) {
   return r;
 }
 
+VISIBLE int
+sendmmsg(int sockfd, struct mmsghdr* msgvec, unsigned vlen, int flags) {
+  Sock* s;
+  int r = libc_sendmmsg(sockfd, msgvec, vlen, flags);
+
+  if((s = intercept_find(&intercept_fds, sockfd))) {
+    // pthread_mutex_lock(&log_mut);
+    put_process();
+    buffer_puts(&o, "sendmmsg(");
+    buffer_putlong(&o, sockfd);
+    buffer_puts(&o, ", ");
+    put_mmsgs(msgvec, vlen);
+    buffer_puts(&o, ", ");
+    buffer_putulong(&o, vlen);
+    buffer_puts(&o, ", ");
+    buffer_putlong(&o, flags);
+    buffer_puts(&o, ") = ");
+    buffer_putlong(&o, r);
+    buffer_putnlflush(&o);
+    // pthread_mutex_unlock(&log_mut);
+
+    if(r >= 0)
+      for(size_t i = 0; i < r; i++)
+        s->written += msgvec[i].msg_len;
+    else
+      intercept_seterror(s, r);
+  }
+
+  return r;
+}
+
 VISIBLE ssize_t
 write(int fd, const void* buf, size_t len) {
   Sock* s;
   int r = libc_write(fd, buf, len);
 
   if((s = intercept_find(&intercept_fds, fd))) {
-    char hexbuf[len * 3 + 1];
-
     // pthread_mutex_lock(&log_mut);
-    put_process(&o);
+    put_process();
     buffer_puts(&o, "write(");
     buffer_putlong(&o, fd);
     buffer_puts(&o, ", ");
-    buffer_put(&o, hexbuf, fmt_hexbs(hexbuf, buf, len));
+    put_buf(buf, len);
     buffer_puts(&o, ", ");
     buffer_putulong(&o, len);
+    buffer_puts(&o, ") = ");
+    buffer_putlong(&o, r);
+    buffer_putnlflush(&o);
+    // pthread_mutex_unlock(&log_mut);
+
+    if(r >= 0)
+      s->written += r;
+    else
+      intercept_seterror(s, r);
+  }
+
+  return r;
+}
+
+VISIBLE ssize_t
+writev(int fd, const struct iovec* iov, int iovcnt) {
+  Sock* s;
+  int r = libc_writev(fd, iov, iovcnt);
+
+  if((s = intercept_find(&intercept_fds, fd))) {
+    // pthread_mutex_lock(&log_mut);
+    put_process();
+    buffer_puts(&o, "writev(");
+    buffer_putlong(&o, fd);
+    buffer_puts(&o, ", ");
+    buffer_putptr(&o, iov);
+    buffer_puts(&o, ", ");
+    buffer_putulong(&o, iovcnt);
     buffer_puts(&o, ") = ");
     buffer_putlong(&o, r);
     buffer_putnlflush(&o);
@@ -441,15 +594,16 @@ recv(int sockfd, void* buf, size_t len, int flags) {
   int r = libc_recv(sockfd, buf, len, flags);
 
   if((s = intercept_find(&intercept_fds, sockfd))) {
-    char hexbuf[len * 3 + 1];
-
     // pthread_mutex_lock(&log_mut);
-    put_process(&o);
+    put_process();
     buffer_puts(&o, "recv(");
     buffer_putlong(&o, sockfd);
     buffer_puts(&o, ", ");
 
-    buffer_put(&o, r > 0 ? hexbuf : "[]", r > 0 ? fmt_hexbs(hexbuf, buf, r) : 2);
+    if(r > 0)
+      put_buf(buf, r);
+    else
+      buffer_puts(&o, "[]");
 
     buffer_puts(&o, ", ");
     buffer_putulong(&o, len);
@@ -472,24 +626,22 @@ recv(int sockfd, void* buf, size_t len, int flags) {
 }
 
 VISIBLE ssize_t
-recvfrom(int sockfd,
-         void* buf,
-         size_t len,
-         int flags,
-         struct sockaddr* addr,
-         socklen_t* addrlen) {
+recvfrom(int sockfd, void* buf, size_t len, int flags, struct sockaddr* addr, socklen_t* addrlen) {
   Sock* s;
   int r = libc_recvfrom(sockfd, buf, len, flags, addr, addrlen);
 
   if((s = intercept_find(&intercept_fds, sockfd))) {
-    char hexbuf[len * 3 + 1];
-
     // pthread_mutex_lock(&log_mut);
-    put_process(&o);
+    put_process();
     buffer_puts(&o, "recvfrom(");
     buffer_putlong(&o, sockfd);
     buffer_puts(&o, ", ");
-    buffer_put(&o, r > 0 ? hexbuf : "[]", r > 0 ? fmt_hexbs(hexbuf, buf, r) : 2);
+
+    if(r > 0)
+      put_buf(buf, r);
+    else
+      buffer_puts(&o, "[]");
+
     buffer_puts(&o, ", ");
     buffer_putulong(&o, len);
     buffer_puts(&o, ", ");
@@ -497,7 +649,7 @@ recvfrom(int sockfd,
     buffer_puts(&o, ", ");
 
     if(r >= 0)
-      put_sockaddr(&o, addr, *addrlen);
+      put_sockaddr(addr, *addrlen);
     else
       buffer_puts(&o, "[]");
 
@@ -531,13 +683,13 @@ recvmsg(int sockfd, struct msghdr* msg, int flags) {
 
   if((s = intercept_find(&intercept_fds, sockfd))) {
     // pthread_mutex_lock(&log_mut);
-    put_process(&o);
+    put_process();
     buffer_puts(&o, "recvmsg(");
     buffer_putlong(&o, sockfd);
     buffer_puts(&o, ", ");
 
     if(r >= 0)
-      put_msg(&o, msg);
+      put_msg(msg);
     else
       buffer_puts(&o, "[]");
 
@@ -559,22 +711,95 @@ recvmsg(int sockfd, struct msghdr* msg, int flags) {
   return r;
 }
 
+VISIBLE int
+recvmmsg(int sockfd, struct mmsghdr* msgvec, unsigned vlen, int flags, struct timespec* t) {
+  Sock* s;
+  int r = libc_recvmmsg(sockfd, msgvec, vlen, flags, t);
+
+  if((s = intercept_find(&intercept_fds, sockfd))) {
+    // pthread_mutex_lock(&log_mut);
+    put_process();
+    buffer_puts(&o, "recvmmsg(");
+    buffer_putlong(&o, sockfd);
+    buffer_puts(&o, ", ");
+
+    if(r >= 0)
+      put_mmsgs(msgvec, vlen);
+    else
+      buffer_puts(&o, "[]");
+
+    buffer_puts(&o, ", ");
+    buffer_putulong(&o, vlen);
+    buffer_puts(&o, ", ");
+    buffer_putlong(&o, flags);
+    buffer_puts(&o, ", ");
+    buffer_putptr(&o, t);
+    buffer_puts(&o, ") = ");
+    buffer_putlong(&o, r);
+    buffer_putnlflush(&o);
+    // pthread_mutex_unlock(&log_mut);
+
+    if(r > 0)
+      for(size_t i = 0; i < r; i++)
+        s->read += msgvec[i].msg_len;
+    else if(r == 0)
+      s->closed = 1;
+    else
+      intercept_seterror(s, r);
+  }
+
+  return r;
+}
+
 VISIBLE ssize_t
 read(int fd, void* buf, size_t len) {
   Sock* s;
   int r = libc_read(fd, buf, len);
 
   if((s = intercept_find(&intercept_fds, fd))) {
-    char hexbuf[len * 3 + 1];
-
     // pthread_mutex_lock(&log_mut);
-    put_process(&o);
+    put_process();
     buffer_puts(&o, "read(");
     buffer_putlong(&o, fd);
     buffer_puts(&o, ", ");
-    buffer_put(&o, r > 0 ? hexbuf : "[]", r > 0 ? fmt_hexbs(hexbuf, buf, r) : 2);
+
+    if(r > 0)
+      put_buf(buf, r);
+    else
+      buffer_puts(&o, "[]");
+
     buffer_puts(&o, ", ");
     buffer_putulong(&o, len);
+    buffer_puts(&o, ") = ");
+    buffer_putlong(&o, r);
+    buffer_putnlflush(&o);
+    // pthread_mutex_unlock(&log_mut);
+
+    if(r > 0)
+      s->read += r;
+    else if(r == 0)
+      s->closed = 1;
+    else
+      intercept_seterror(s, r);
+  }
+
+  return r;
+}
+
+VISIBLE ssize_t
+readv(int fd, const struct iovec* iov, int iovcnt) {
+  Sock* s;
+  int r = libc_readv(fd, iov, iovcnt);
+
+  if((s = intercept_find(&intercept_fds, fd))) {
+    // pthread_mutex_lock(&log_mut);
+    put_process();
+    buffer_puts(&o, "readv(");
+    buffer_putlong(&o, fd);
+    buffer_puts(&o, ", ");
+    buffer_putptr(&o, iov);
+    buffer_puts(&o, ", ");
+    buffer_putulong(&o, iovcnt);
     buffer_puts(&o, ") = ");
     buffer_putlong(&o, r);
     buffer_putnlflush(&o);
@@ -597,10 +822,8 @@ getsockopt(int sockfd, int level, int optname, void* optval, socklen_t* optlen) 
   int r = libc_getsockopt(sockfd, level, optname, optval, optlen);
 
   if((s = intercept_find(&intercept_fds, sockfd))) {
-    char hexbuf[*optlen * 3 + 1];
-
     // pthread_mutex_lock(&log_mut);
-    put_process(&o);
+    put_process();
     buffer_puts(&o, "getsockopt(");
     buffer_putlong(&o, sockfd);
     buffer_puts(&o, ", ");
@@ -608,9 +831,12 @@ getsockopt(int sockfd, int level, int optname, void* optval, socklen_t* optlen) 
     buffer_puts(&o, ", ");
     buffer_putlong(&o, optname);
     buffer_puts(&o, ", ");
-    buffer_put(&o,
-               r >= 0 ? hexbuf : "[]",
-               r >= 0 ? fmt_hexbs(hexbuf, optval, *optlen) : 2);
+
+    if(r >= 0)
+      put_buf(optval, *optlen);
+    else
+      buffer_puts(&o, "[]");
+
     buffer_puts(&o, ", ");
 
     if(r >= 0)
@@ -628,16 +854,13 @@ getsockopt(int sockfd, int level, int optname, void* optval, socklen_t* optlen) 
 }
 
 VISIBLE int
-setsockopt(
-    int sockfd, int level, int optname, const void* optval, socklen_t optlen) {
+setsockopt(int sockfd, int level, int optname, const void* optval, socklen_t optlen) {
   Sock* s;
   int r = libc_setsockopt(sockfd, level, optname, optval, optlen);
 
   if((s = intercept_find(&intercept_fds, sockfd))) {
-    char hexbuf[optlen * 3 + 1];
-
     // pthread_mutex_lock(&log_mut);
-    put_process(&o);
+    put_process();
     buffer_puts(&o, "setsockopt(");
     buffer_putlong(&o, sockfd);
     buffer_puts(&o, ", ");
@@ -645,7 +868,7 @@ setsockopt(
     buffer_puts(&o, ", ");
     buffer_putlong(&o, optname);
     buffer_puts(&o, ", ");
-    buffer_put(&o, hexbuf, fmt_hexbs(hexbuf, optval, optlen));
+    put_buf(optval, optlen);
     buffer_puts(&o, ", ");
     buffer_putulong(&o, optlen);
     buffer_puts(&o, ") = ");
@@ -664,13 +887,13 @@ getsockname(int sockfd, struct sockaddr* addr, socklen_t* addrlen) {
 
   if((s = intercept_find(&intercept_fds, sockfd))) {
     // pthread_mutex_lock(&log_mut);
-    put_process(&o);
+    put_process();
     buffer_puts(&o, "getsockname(");
     buffer_putlong(&o, sockfd);
     buffer_puts(&o, ", ");
 
     if(r >= 0)
-      put_sockaddr(&o, addr, *addrlen);
+      put_sockaddr(addr, *addrlen);
     else
       buffer_puts(&o, "[]");
 
@@ -692,14 +915,16 @@ getpeername(int sockfd, struct sockaddr* addr, socklen_t* addrlen) {
 
   if((s = intercept_find(&intercept_fds, sockfd))) {
     // pthread_mutex_lock(&log_mut);
-    put_process(&o);
+    put_process();
     buffer_puts(&o, "getpeername(");
     buffer_putlong(&o, sockfd);
     buffer_puts(&o, ", ");
+
     if(r >= 0)
-      put_sockaddr(&o, addr, *addrlen);
+      put_sockaddr(addr, *addrlen);
     else
       buffer_puts(&o, "[]");
+
     buffer_puts(&o, ", ");
     buffer_putulong(&o, *addrlen);
     buffer_puts(&o, ") = ");
@@ -720,7 +945,7 @@ close(int fd) {
     intercept_close(s);
 
     // pthread_mutex_lock(&log_mut);
-    put_process(&o);
+    put_process();
     buffer_puts(&o, "close(");
     buffer_putlong(&o, fd);
     buffer_puts(&o, ") = ");
@@ -732,11 +957,35 @@ close(int fd) {
   return r;
 }
 
+VISIBLE int
+shutdown(int fd, int how) {
+  Sock* s;
+  int r = libc_shutdown(fd, how);
+
+  if((s = intercept_find(&intercept_fds, fd))) {
+    // pthread_mutex_lock(&log_mut);
+    put_process();
+    buffer_puts(&o, "shutdown(");
+    buffer_putlong(&o, fd);
+    buffer_puts(&o, ", ");
+    buffer_puts(&o, ((const char*[]){"SHUT_RD", "SHUT_WR", "SHUT_RDWR", "INVALID"})[how & 0b11]);
+    buffer_puts(&o, ") = ");
+    buffer_putlong(&o, r);
+    buffer_putnlflush(&o);
+    // pthread_mutex_unlock(&log_mut);
+  }
+
+  return r;
+}
+
 CTOR static void
 intercept_constructor(void) {
-  buffer_puts(buffer_2, "intercept_constructor() called (initialized: ");
-  buffer_putlong(buffer_2, intercept_init());
-  buffer_putsflush(buffer_2, ")\n");
+  long was_initialized = intercept_init();
+
+  put_process();
+  buffer_puts(&o, "intercept_constructor() called (was_initialized = ");
+  buffer_putlong(&o, was_initialized);
+  buffer_putsflush(&o, ")\n");
 }
 
 static long
@@ -744,36 +993,61 @@ intercept_init(void) {
   long prev_val = __CAS(&initialized, 1, 0);
 
   if(prev_val == 0) {
-    buffer_write_fd(&o, open("socket-intercept.log", O_WRONLY | O_TRUNC, 0644));
+    char* file = getenv("SOCKET_INTERCEPT_LOG");
+    int fd = open(file ? file : "socket-intercept.log", O_WRONLY | O_APPEND | O_CREAT, 0644);
+
+    if(fd == -1)
+      fd = 2;
+
+    buffer_write_fd(&o, fd);
 
     init_list_head(&intercept_fds);
     init_list_head(&closed_fds);
 
     libc_socket = dlsym(RTLD_NEXT, "socket");
+    libc_listen = dlsym(RTLD_NEXT, "listen");
     libc_bind = dlsym(RTLD_NEXT, "bind");
     libc_connect = dlsym(RTLD_NEXT, "connect");
     libc_accept = dlsym(RTLD_NEXT, "accept");
+    libc_accept4 = dlsym(RTLD_NEXT, "accept4");
     libc_send = dlsym(RTLD_NEXT, "send");
     libc_sendto = dlsym(RTLD_NEXT, "sendto");
     libc_sendmsg = dlsym(RTLD_NEXT, "sendmsg");
+    libc_sendmmsg = dlsym(RTLD_NEXT, "sendmmsg");
     libc_write = dlsym(RTLD_NEXT, "write");
+    libc_writev = dlsym(RTLD_NEXT, "writev");
     libc_recv = dlsym(RTLD_NEXT, "recv");
     libc_recvfrom = dlsym(RTLD_NEXT, "recvfrom");
     libc_recvmsg = dlsym(RTLD_NEXT, "recvmsg");
+    libc_recvmmsg = dlsym(RTLD_NEXT, "recvmmsg");
     libc_read = dlsym(RTLD_NEXT, "read");
+    libc_readv = dlsym(RTLD_NEXT, "readv");
     libc_getsockopt = dlsym(RTLD_NEXT, "getsockopt");
     libc_setsockopt = dlsym(RTLD_NEXT, "setsockopt");
     libc_getsockname = dlsym(RTLD_NEXT, "getsockname");
     libc_getpeername = dlsym(RTLD_NEXT, "getpeername");
     libc_close = dlsym(RTLD_NEXT, "close");
+    libc_shutdown = dlsym(RTLD_NEXT, "shutdown");
 
-    openreadclose("/proc/self/cmdline", &procname, 64);
+    ssize_t n = 0;
 
-    for(size_t i = 0; i < procname.len; i++) {
-      if(iscntrl(procname.s[i]) || isspace(procname.s[i])) {
-        procname.len = i;
+    if((fd = open_read("/proc/self/cmdline")) != -1) {
+      n = read(fd, procname, sizeof(procname));
+      close(fd);
+    }
+
+    for(ssize_t i = 0; i < n; i++) {
+      if(iscntrl(procname[i]) || isspace(procname[i])) {
+        n = i;
         break;
       }
+    }
+
+    size_t p;
+
+    if((p = byte_rchrs(procname, n, "/\\", 2)) + 1 < n) {
+      size_t l = n - ++p;
+      str_copyn(procname, &procname[p], l);
     }
   }
 

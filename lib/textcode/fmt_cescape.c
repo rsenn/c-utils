@@ -10,6 +10,7 @@ fmt_cescape2(char* dest, const char* src, size_t len, const char* escapeme) {
 
   for(i = 0; i < len; ++i) {
     switch(s[i]) {
+      case '\0': c = '0'; goto doescape;
       case '\a': c = 'a'; goto doescape;
       case '\b': c = 'b'; goto doescape;
       case 0x1b: c = 'e'; goto doescape;
@@ -22,15 +23,15 @@ fmt_cescape2(char* dest, const char* src, size_t len, const char* escapeme) {
         c = '\\';
 
       doescape:
-
         if(dest) {
           dest[written] = '\\';
           dest[written + 1] = c;
         }
+
         written += 2;
         break;
-      default:
 
+      default:
         if(s[i] < ' ' || escapeme[str_chr(escapeme, s[i])] == s[i]) {
           if(dest) {
             dest[written] = '\\';
@@ -44,14 +45,16 @@ fmt_cescape2(char* dest, const char* src, size_t len, const char* escapeme) {
             dest[written] = s[i];
           ++written;
         }
+
         break;
     }
-    /* in case someone gives us malicious input */
 
+    /* in case someone gives us malicious input */
     if(written > ((size_t)-1) / 2)
       return (size_t)-1;
   }
-  return written;
+
+    return written;
 }
 
 size_t

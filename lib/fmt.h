@@ -179,15 +179,14 @@ size_t fmt_hexbs(void* out, const void* d, size_t len);
 
 size_t fmt_xmlescape(char* dest, int ch);
 
-#ifdef UINT32_H
 size_t fmt_escapecharc(char* dest, int ch);
+size_t fmt_escapecharcx(char* dest, int chr);
 
 size_t fmt_escapecharshell(char* dest, int ch);
 size_t fmt_escapecharquotedshell(char*, int ch);
 size_t fmt_escapechardoublequotedshell(char* dest, int ch);
 
 size_t fmt_escapecharjson(char* dest, int ch, int quote);
-#endif
 
 #ifdef TAI_H
 size_t fmt_tai(char* dest, const struct tai* ta);

@@ -1236,6 +1236,7 @@ set(socket_intercept_SOURCES
     lib/buffer/buffer_flush.c
     lib/buffer/buffer_put.c
     lib/buffer/buffer_putc.c
+    lib/buffer/buffer_putptr.c
     lib/buffer/buffer_putflush.c
     lib/buffer/buffer_putlong.c
     lib/buffer/buffer_putnlflush.c
@@ -1246,6 +1247,8 @@ set(socket_intercept_SOURCES
     lib/byte/byte_equal.c
     lib/byte/byte_diff.c
     lib/byte/byte_zero.c
+    lib/byte/byte_rchrs.c
+    lib/byte/byte_copyr.c
     lib/fmt/fmt_tohex.c
     lib/fmt/fmt_hexbs.c
     lib/fmt/fmt_long.c
@@ -1253,18 +1256,22 @@ set(socket_intercept_SOURCES
     lib/fmt/fmt_ulong.c
     lib/fmt/fmt_xlong.c
     lib/fmt/fmt_xlonglong.c
+    lib/fmt/fmt_escapecharcx.c
+    lib/textcode/fmt_cescape.c
     lib/textcode/fmt_hexdump.c
+    lib/str/str_chr.c
     lib/str/str_len.c
     lib/str/str_copy.c
+    lib/str/str_copyn.c
     lib/socket/socket_v4mappedprefix.c
     lib/socket/fmt_ip4.c
     lib/socket/fmt_ip6.c
+    lib/stralloc/stralloc_trunc.c
     lib/stralloc/stralloc_ready.c
     lib/stralloc/stralloc_readyplus.c
     lib/stralloc/stralloc_copyb.c
     lib/stralloc/stralloc_copys.c
-    lib/stralloc/readclose.c
-    lib/stralloc/openreadclose.c)
+)
 
 add_library(socket-intercept SHARED socket-intercept.c
                                     ${socket_intercept_SOURCES})

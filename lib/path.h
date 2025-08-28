@@ -46,7 +46,6 @@ typedef enum path_format {
                                   */
 #define PATH_FNM_PERIOD (1 << 2) /* Leading .' is matched only explicitly.  */
 
- 
 #if WINDOWS_NATIVE
 #define PATHSEP_S_MIXED "\\/"
 #define path_issep(c) ((c) == '/' || (c) == '\\')
@@ -57,7 +56,6 @@ typedef enum path_format {
 #define PATHSEP_S_MIXED "/"
 #define path_issep(c) ((c) == '/')
 #endif
-
 
 int path_access(const char*, int rights);
 int path_absolute(const char* path, stralloc* sa);
@@ -166,7 +164,7 @@ path_component3(const char* p, size_t len, size_t pos) {
   const char *start = p, *end = p + len;
 
   if(pos > len)
-      pos = len;
+    pos = len;
 
   p += pos;
 
@@ -195,7 +193,6 @@ path_separator2(const char* p, size_t len) {
 
   return p - start;
 }
-
 
 static inline size_t
 path_skip3(const char* s, size_t* len, size_t n) {
