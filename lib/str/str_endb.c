@@ -1,4 +1,5 @@
 #include "../str.h"
+#undef __pure__
 #include "../byte.h"
 
 int

@@ -14,6 +14,7 @@ extern "C" {
 
 #ifndef __pure__
 #define __pure__
+#define __pure_defined__
 #endif
 
 /* str_copy copies leading bytes from in to out until \0.
@@ -106,6 +107,11 @@ size_t str_ansilen(const char* in);
 
 #ifdef __cplusplus
 }
+#endif
+
+#ifdef __pure_defined__
+#undef __pure_defined__
+#undef __pure__
 #endif
 
 #endif

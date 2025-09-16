@@ -21,6 +21,7 @@ extern "C" {
 
 #ifndef __pure__
 #define __pure__
+#define __pure_defined__
 #endif
 
 /* byte_chr returns the smallest integer i between 0 and len-1
@@ -119,6 +120,11 @@ uint32 byte_hash(const void* x, size_t len);
 
 #ifdef __cplusplus
 }
+#endif
+
+#ifdef __pure_defined__
+#undef __pure_defined__
+#undef __pure__
 #endif
 
 #endif
