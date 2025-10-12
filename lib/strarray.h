@@ -37,7 +37,7 @@ typedef struct {
 #define strarray_zero(l) array_trunc(&(l)->a)
 #define strarray_init(l) byte_zero((l), sizeof(strarray))
 
-//#define strarray_size(l) array_length(&(l)->a, sizeof(char*))
+// #define strarray_size(l) array_length(&(l)->a, sizeof(char*))
 
 static inline size_t
 strarray_size(const strarray* l) {
@@ -49,7 +49,8 @@ strarray_size(const strarray* l) {
 
 #define strarray_AT(l, pos) (((char**)((l)->p))[(pos)])
 
-#define strarray_foreach(a, ptr) for((ptr) = (char**)strarray_BEGIN(a); ((char**)(ptr)) != strarray_END(a) && *(char**)(ptr); ++ptr)
+#define strarray_foreach(a, ptr) \
+  for((ptr) = (char**)strarray_BEGIN(a); ((char**)(ptr)) != strarray_END(a) && *(char**)(ptr); ++ptr)
 
 char** strarray_to_argv(strarray*);
 int strarray_from_argv(int argc, const char* const argv[], strarray* arr);

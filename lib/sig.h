@@ -21,7 +21,7 @@ typedef long sigset_t;
 #endif
 
 #ifndef sigbit
-#define sigbit(n) (1L << ((n)-1))
+#define sigbit(n) (1L << ((n) - 1))
 #endif
 #ifndef sigemptyset
 #define sigemptyset(s) *(s) = ~SIGALL
@@ -37,7 +37,7 @@ typedef long sigset_t;
 #define sigdelset(s, n) *(s) &= ~sigbit(n)
 #endif
 #ifndef sigismember
-#define sigismember(s, n) (*(s)&sigbit(n))
+#define sigismember(s, n) (*(s) & sigbit(n))
 #endif
 #include <errno.h>
 #ifndef ENOBUFS
@@ -49,8 +49,8 @@ typedef long sigset_t;
 #include "byte.h"
 #include <sys/signal.h>
 
-#define __sigmask(sig) (((unsigned long)1) << (((sig)-1) % (8 * sizeof(unsigned long))))
-#define __sigword(sig) (((sig)-1) / (8 * sizeof(unsigned long)))
+#define __sigmask(sig) (((unsigned long)1) << (((sig) - 1) % (8 * sizeof(unsigned long))))
+#define __sigword(sig) (((sig) - 1) / (8 * sizeof(unsigned long)))
 
 #ifndef sigemptyset
 #define sigemptys(s) byte_zero((s), sizeof(*(s)))

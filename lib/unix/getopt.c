@@ -109,7 +109,8 @@ getopt_real(int argc, char* const argv[], const char* optstring, const struct un
             pos_eq = 0;
 
           while(longopts->name != 0) {
-            if(str_diff(spec_long, longopts->name) == 0 || (spec_long[pos_eq] == '=' && str_diffn(spec_long, longopts->name, spec_len) == 0)) {
+            if(str_diff(spec_long, longopts->name) == 0 ||
+               (spec_long[pos_eq] == '=' && str_diffn(spec_long, longopts->name, spec_len) == 0)) {
               if(optdef != 0) {
                 if(unix_opterr) {
                   buffer_putm_internal(unix_optbuf, "ambiguous option: ", spec_long, NULL);
@@ -243,6 +244,7 @@ unix_getopt(int argc, char* const argv[], const char* optstring) {
 }
 
 int
-unix_getopt_long(int argc, char* const argv[], const char* optstring, const struct unix_longopt* longopts, int* longindex) {
+unix_getopt_long(
+    int argc, char* const argv[], const char* optstring, const struct unix_longopt* longopts, int* longindex) {
   return getopt_real(argc, argv, optstring, longopts, longindex);
 }

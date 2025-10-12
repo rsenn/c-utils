@@ -9,7 +9,7 @@
 int
 wait_nohang(int* wstat) {
 #if WINDOWS_NATIVE
-//#warning No windows implementation
+// #warning No windows implementation
 #elif defined(__unix__) || defined(__linux__)
   return waitpid(-1, wstat, WNOHANG);
 #else

@@ -24,7 +24,15 @@ extern "C" {
 #define __inl static inline
 #endif
 
-typedef enum xmltokid { XML_EOF = -1, XML_DATA = 0, XML_TAG_NAME = 1, XML_TAG_CLOSE = 2, XML_ATTR_NAME = 3, XML_ATTR_VALUE = 4, XML_COMMENT = 5 } xmltokid;
+typedef enum xmltokid {
+  XML_EOF = -1,
+  XML_DATA = 0,
+  XML_TAG_NAME = 1,
+  XML_TAG_CLOSE = 2,
+  XML_ATTR_NAME = 3,
+  XML_ATTR_VALUE = 4,
+  XML_COMMENT = 5
+} xmltokid;
 
 typedef struct {
   char* x;
@@ -178,7 +186,7 @@ HMAP_DB* xml_attributes(const char* arg, ...);
 xmlnode* xml_element(const char*);
 xmlnode* xml_child_element(const char*, xmlnode*);
 
-//#define xml_attributes(node) ((node)->attributes ?
+// #define xml_attributes(node) ((node)->attributes ?
 //(node)->attributes->list_tuple : NULL)
 
 #define xmlnodeset_item(ns, i) ((ns)->nodes[i])

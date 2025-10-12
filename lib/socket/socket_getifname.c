@@ -3,7 +3,7 @@
 #include <sys/types.h>
 
 #if WINDOWS_NATIVE
-//#define _WINSOCKAPI_
+// #define _WINSOCKAPI_
 #define HAVE_N2I
 /*#undef WS2TCPIP_INLINE
 #define WS2TCPIP_INLINE static inline

@@ -2,12 +2,9 @@
 
 size_t
 str_cat(void* p1, const void* p2) {
-  size_t len;
-  char* s;
-  const char* t;
-  s = p1;
-  t = p2;
-  len = str_len(s);
+  char* s = p1;
+  const char* t = p2;
+  size_t len = str_len(s);
   s += len;
 
   for(;;) {

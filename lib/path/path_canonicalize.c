@@ -71,7 +71,7 @@ is_link(const char* path) {
 }
 #endif
 
-//#define lstat lstat64
+// #define lstat lstat64
 #define issep(c) ((c) == '/' || (c) == '\\')
 
 /* canonicalizes a <path> and puts it into <sa>

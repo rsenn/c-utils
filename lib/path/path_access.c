@@ -19,13 +19,21 @@ hasAccessRight(LPCSTR path, DWORD genericAccessRights) {
   DWORD privilegesLen = sizeof(privileges);
   BOOL success, result = FALSE;
 
-  if(GetFileSecurityA(path, OWNER_SECURITY_INFORMATION | GROUP_SECURITY_INFORMATION | DACL_SECURITY_INFORMATION, 0, 0, &len) == FALSE)
+  if(GetFileSecurityA(
+         path, OWNER_SECURITY_INFORMATION | GROUP_SECURITY_INFORMATION | DACL_SECURITY_INFORMATION, 0, 0, &len) ==
+     FALSE)
     return -1;
 
-  if(GetFileSecurityA(path, OWNER_SECURITY_INFORMATION | GROUP_SECURITY_INFORMATION | DACL_SECURITY_INFORMATION, &secDesc, len, &len) == FALSE)
+  if(GetFileSecurityA(path,
+                      OWNER_SECURITY_INFORMATION | GROUP_SECURITY_INFORMATION | DACL_SECURITY_INFORMATION,
+                      &secDesc,
+                      len,
+                      &len) == FALSE)
     return -1;
 
-  if(OpenProcessToken(GetCurrentProcess(), TOKEN_IMPERSONATE | TOKEN_QUERY | TOKEN_DUPLICATE | STANDARD_RIGHTS_READ, &hToken) == FALSE)
+  if(OpenProcessToken(GetCurrentProcess(),
+                      TOKEN_IMPERSONATE | TOKEN_QUERY | TOKEN_DUPLICATE | STANDARD_RIGHTS_READ,
+                      &hToken) == FALSE)
     return -1;
 
   if(DuplicateToken(hToken, SecurityImpersonation, &hImpersonatedToken) == FALSE) {
@@ -39,7 +47,14 @@ hasAccessRight(LPCSTR path, DWORD genericAccessRights) {
   mapping.GenericAll = FILE_ALL_ACCESS;
 
   MapGenericMask(&genericAccessRights, &mapping);
-  success = AccessCheck(&secDesc, hImpersonatedToken, genericAccessRights, &mapping, &privileges, &privilegesLen, &grantedAccess, &result);
+  success = AccessCheck(&secDesc,
+                        hImpersonatedToken,
+                        genericAccessRights,
+                        &mapping,
+                        &privileges,
+                        &privilegesLen,
+                        &grantedAccess,
+                        &result);
   CloseHandle(hImpersonatedToken);
   CloseHandle(hToken);
 

@@ -13,7 +13,7 @@ path_collapse(char* path, size_t n) {
     while(x[i] == sep)
       ++i;
 
-    if((l = i   + byte_chr(&x[i], n - i, sep)) < n) {
+    if((l = i + byte_chr(&x[i], n - i, sep)) < n) {
       j = l;
 
       while(x[l] == sep)

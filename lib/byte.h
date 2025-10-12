@@ -53,7 +53,7 @@ int byte_diff(const void* a, size_t len, const void* b) __pure__;
 /* byte_zero sets the bytes out[0], out[1], ..., out[len-1] to 0 */
 void byte_zero(void* out, size_t len);
 
-//#define byte_equal(s,n,t) (!byte_diff((s),(n),(t)))
+// #define byte_equal(s,n,t) (!byte_diff((s),(n),(t)))
 
 int byte_equal_notimingattack(const void* a, size_t len, const void* b) __pure__;
 
@@ -104,7 +104,8 @@ byte_trim(char* x, size_t* n, const char* trimchars, unsigned int trimcharslen) 
 size_t byte_camelize(char* x, size_t len);
 
 #define byte_foreach(x, n, p) byte_foreach_skip(x, n, p, 1)
-#define byte_foreach_skip(x, n, p, skip) for((p) = (void*)x; (void*)(p) != ((char*)(x) + (n)); (p) = (void*)(((char*)(p)) + (skip)))
+#define byte_foreach_skip(x, n, p, skip) \
+  for((p) = (void*)x; (void*)(p) != ((char*)(x) + (n)); (p) = (void*)(((char*)(p)) + (skip)))
 
 int byte_startb(const void*, size_t, const char*, size_t);
 int byte_starts(const void*, size_t, const char*);

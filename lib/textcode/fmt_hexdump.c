@@ -15,6 +15,6 @@ fmt_hexdump(char* dest, const char* src, size_t len) {
     dest[written + 1] = fmt_tohex(s[i] & 15);
     written += 2;
   }
-  
+
   return written;
 }

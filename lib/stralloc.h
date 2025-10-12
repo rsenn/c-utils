@@ -122,7 +122,7 @@ int stralloc_diffs(const stralloc* a, const char* b) __pure__;
 
 #define stralloc_equal(a, b) (!stralloc_diff((a), (b)))
 #define stralloc_equals(a, b) (!stralloc_diffs((a), (b)))
-//#define stralloc_equalb(a, x, n) ((a)->len == (n) && !byte_diff((a)->s,
+// #define stralloc_equalb(a, x, n) ((a)->len == (n) && !byte_diff((a)->s,
 //(n), (x)))
 
 /* stralloc_0 appends \0 */
@@ -254,7 +254,8 @@ int stralloc_insert(stralloc* sa, const stralloc* other, size_t pos);
 
 typedef size_t(stralloc_fmt_fn)(char*, int);
 size_t stralloc_fmt_call(stralloc*, stralloc_fmt_fn*, void* av[4]);
-size_t stralloc_fmt_pred(stralloc*, const char* in, size_t in_len, size_t (*fmt_function)(char*, int), int (*pred)(int));
+size_t
+stralloc_fmt_pred(stralloc*, const char* in, size_t in_len, size_t (*fmt_function)(char*, int), int (*pred)(int));
 size_t stralloc_fmt(stralloc*, const char* in, size_t in_len, size_t (*fmt_function)(char*, int));
 
 int stralloc_catdouble(stralloc*, double d, int prec);

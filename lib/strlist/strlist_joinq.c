@@ -6,7 +6,7 @@ void
 strlist_joinq(const strlist* sl, stralloc* sa, char delim, char quote) {
   const char* x;
   size_t i = 0, n;
-  
+
   strlist_foreach(sl, x, n) {
     int q = byte_chr(x, n, delim) < n;
 

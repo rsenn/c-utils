@@ -2,8 +2,8 @@
 #define _LIST_H
 
 #include "strlist.h"
-//#include "strarray.h"
-//#include "slist.h"
+// #include "strarray.h"
+// #include "slist.h"
 
 typedef strlist LIST_T;
 typedef const char* LIST_VALUE_T;

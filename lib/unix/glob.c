@@ -410,7 +410,8 @@ build_fullname(char* fullname, const char* directory, const char* filename) {
 }
 
 static int
-glob_in_dir(const char* pattern, const char* directory, int flags, int errfunc(const char* epath, int eerrno), glob_t* pglob) {
+glob_in_dir(
+    const char* pattern, const char* directory, int flags, int errfunc(const char* epath, int eerrno), glob_t* pglob) {
   DIR* dp = opendir(directory);
   int nfound = 0;
 
@@ -469,8 +470,9 @@ memory_error:
 }
 
 #define __GLOB_FLAGS \
-  (GLOB_ABEND | GLOB_ABORTED | GLOB_APPEND | GLOB_BRACE | GLOB_DOOFFS | GLOB_ERR | GLOB_LIMIT | GLOB_MAGCHAR | GLOB_MARK | GLOB_NOCHECK | GLOB_NODOTSDIRS | GLOB_NOESCAPE | \
-   GLOB_NOMAGIC | GLOB_NOMATCH | GLOB_NOSORT | GLOB_NOSPACE | GLOB_NOSYS | GLOB_ONLYDIR | GLOB_ONLYFILE | GLOB_PERIOD | GLOB_TILDE | GLOB_TILDE_CHECK)
+  (GLOB_ABEND | GLOB_ABORTED | GLOB_APPEND | GLOB_BRACE | GLOB_DOOFFS | GLOB_ERR | GLOB_LIMIT | GLOB_MAGCHAR | \
+   GLOB_MARK | GLOB_NOCHECK | GLOB_NODOTSDIRS | GLOB_NOESCAPE | GLOB_NOMAGIC | GLOB_NOMATCH | GLOB_NOSORT | \
+   GLOB_NOSPACE | GLOB_NOSYS | GLOB_ONLYDIR | GLOB_ONLYFILE | GLOB_PERIOD | GLOB_TILDE | GLOB_TILDE_CHECK)
 
 int
 glob(const char* pattern, int flags, int errfunc(const char* epath, int eerrno), glob_t* pglob) {
@@ -584,7 +586,8 @@ glob(const char* pattern, int flags, int errfunc(const char* epath, int eerrno),
 
   /* Begin real work */
 
-  if(!strcmp(dirname, "/") || !strcmp(dirname, ".") || (!strchr(dirname, '*') && !strchr(dirname, '?') && !strchr(dirname, '['))) {
+  if(!strcmp(dirname, "/") || !strcmp(dirname, ".") ||
+     (!strchr(dirname, '*') && !strchr(dirname, '?') && !strchr(dirname, '['))) {
     /* Approx of a terminal state, glob directly in dir. */
     j = glob_in_dir(filename, dirname, flags, errfunc, pglob);
 
@@ -596,7 +599,10 @@ glob(const char* pattern, int flags, int errfunc(const char* epath, int eerrno),
        directory found. */
     glob_t dirs;
 
-    j = glob(dirname, ((flags & (GLOB_ERR | GLOB_NOCHECK | GLOB_NOESCAPE | GLOB_ALTDIRFUNC)) | GLOB_NOSORT | GLOB_ONLYDIR), errfunc, &dirs);
+    j = glob(dirname,
+             ((flags & (GLOB_ERR | GLOB_NOCHECK | GLOB_NOESCAPE | GLOB_ALTDIRFUNC)) | GLOB_NOSORT | GLOB_ONLYDIR),
+             errfunc,
+             &dirs);
 
     if(j != 0)
       return j;

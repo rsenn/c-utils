@@ -11,7 +11,7 @@
 #include "../ip4.h"
 #include "../byte.h"
 
-//#include <netinet/in.h>
+// #include <netinet/in.h>
 
 int
 socket_mcjoin4(int s, const char ip[4], const char _interface[4]) {

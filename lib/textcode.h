@@ -93,7 +93,11 @@ size_t scan_base85(const char* src, char* dest, size_t* destlen);
 /* arg 1 is one of the fmt_* functions from above */
 int fmt_to_sa(size_t (*func)(char*, const char*, size_t), stralloc* sa, const char* src, size_t len);
 
-int fmt_to_sa2(size_t (*func)(char*, const char*, size_t, const char*), stralloc* sa, const char* src, size_t len, const char* escapeme);
+int fmt_to_sa2(size_t (*func)(char*, const char*, size_t, const char*),
+               stralloc* sa,
+               const char* src,
+               size_t len,
+               const char* escapeme);
 
 /* arg 1 is one of the scan_* functions from above */
 /* return number of bytes scanned */
@@ -133,9 +137,16 @@ void fmt_to_array(size_t (*func)(char*, const char*, size_t), array* a, const ch
 
 void fmt_tofrom_array(size_t (*func)(char*, const char*, size_t), array* dest, array* src);
 
-void fmt_to_array2(size_t (*func)(char*, const char*, size_t, const char*), array* a, const char* src, size_t len, const char* escapeme);
+void fmt_to_array2(size_t (*func)(char*, const char*, size_t, const char*),
+                   array* a,
+                   const char* src,
+                   size_t len,
+                   const char* escapeme);
 
-void fmt_tofrom_array2(size_t (*func)(char*, const char*, size_t, const char*), array* dest, array* src, const char* escapeme);
+void fmt_tofrom_array2(size_t (*func)(char*, const char*, size_t, const char*),
+                       array* dest,
+                       array* src,
+                       const char* escapeme);
 
 size_t scan_to_array(size_t (*func)(const char*, char*, size_t*), const char* src, array* dest);
 

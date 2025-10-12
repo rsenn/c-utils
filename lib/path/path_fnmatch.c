@@ -177,7 +177,7 @@ start:
     }
 
     default:
-    match : {
+    match: {
       /* perform literal match */
 
       if(*pattern == *string) {

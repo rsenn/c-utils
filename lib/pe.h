@@ -558,7 +558,7 @@ typedef struct {
 #define PE_NT_SIGNATURE 0x00004550
 #define PE_NT_OPTIONAL_HDR32_MAGIC 0x10b
 #define PE_NT_OPTIONAL_HDR64_MAGIC 0x20b
-//#define PE_NT_OPTIONAL_HDR_MAGIC        PE_NT_OPTIONAL_HDR64_MAGIC
+// #define PE_NT_OPTIONAL_HDR_MAGIC        PE_NT_OPTIONAL_HDR64_MAGIC
 #define PE_NT_OPTIONAL_HDR_MAGIC PE_NT_OPTIONAL_HDR32_MAGIC
 
 #define PE_TYPE(pe) ((pe_type) * (uint16*)pe_header_opt((pe)))
@@ -588,9 +588,11 @@ char* pe_dllname(uint8*);
 #define PE_STRUCT_OFFSETS(st, field) PE_FIELD_OFFSET(pe32_##st, field), PE_FIELD_SIZE(pe32_##st, field), PE_FIELD_OFFSET(pe64_##st, field), PE_FIELD_SIZE(pe64_##st, field))
 
 #define PE32_FIRST_SECTION(ntheader) \
-  ((pe_section_header*)((uint8*)ntheader + PE_FIELD_OFFSET(pe32_nt_headers, optional_header) + ((pe32_nt_headers*)(ntheader))->coff_header.size_of_optional_header))
+  ((pe_section_header*)((uint8*)ntheader + PE_FIELD_OFFSET(pe32_nt_headers, optional_header) + \
+                        ((pe32_nt_headers*)(ntheader))->coff_header.size_of_optional_header))
 #define PE64_FIRST_SECTION(ntheader) \
-  ((pe_section_header*)((uint8*)ntheader + PE_FIELD_OFFSET(pe64_nt_headers, optional_header) + ((pe64_nt_headers*)(ntheader))->coff_header.size_of_optional_header))
+  ((pe_section_header*)((uint8*)ntheader + PE_FIELD_OFFSET(pe64_nt_headers, optional_header) + \
+                        ((pe64_nt_headers*)(ntheader))->coff_header.size_of_optional_header))
 
 #define PE_OFFSET(pe, st, field) (PE_64(pe) ? PE_FIELD_OFFSET(pe64_##st, field) : PE_FIELD_OFFSET(pe32_##st, field))
 
@@ -601,7 +603,12 @@ char* pe_dllname(uint8*);
 #define PE_STRUCT_SIZE(pe, st) (PE_64(pe) ? sizeof(pe64_##st) : sizeof(pe32_##st))
 
 #define PE_GET(pe, ptr, st, field) \
-  pe_get_value(pe, ptr, PE_FIELD_OFFSET(pe32_##st, field), PE_FIELD_SIZE(pe32_##st, field), PE_FIELD_OFFSET(pe64_##st, field), PE_FIELD_SIZE(pe64_##st, field))
+  pe_get_value(pe, \
+               ptr, \
+               PE_FIELD_OFFSET(pe32_##st, field), \
+               PE_FIELD_SIZE(pe32_##st, field), \
+               PE_FIELD_OFFSET(pe64_##st, field), \
+               PE_FIELD_SIZE(pe64_##st, field))
 #define PE_MAGIC(pe) uint16_read((const char*)pe_header_opt(pe))
 
 #define PE_BITS(pe) (PE_MAGIC(pe) == PE_MAGIC_PE64 ? 64 : 32)

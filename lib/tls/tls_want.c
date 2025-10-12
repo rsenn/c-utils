@@ -32,7 +32,8 @@ tls_want(fd_type fd, void (*wantread)(fd_type), void (*wantwrite)(fd_type)) {
   buffer_puts(buffer_2, " retval=");
   buffer_putlong(buffer_2, inst->retval);
   buffer_puts(buffer_2, " op=");
-  buffer_puts(buffer_2, ((const char* const[]){"TLS_OP_WRITE", "TLS_OP_READ", "TLS_OP_ACCEPT", "TLS_OP_CONNECT", 0})[inst->op]);
+  buffer_puts(buffer_2,
+              ((const char* const[]){"TLS_OP_WRITE", "TLS_OP_READ", "TLS_OP_ACCEPT", "TLS_OP_CONNECT", 0})[inst->op]);
 
   if(errno) {
     buffer_puts(buffer_2, " errno=");
