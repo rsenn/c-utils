@@ -32,8 +32,7 @@ typedef struct {
   int64 seek_off;
 } bsdiff_control;
 
-static buffer old;
-static buffer new;
+static buffer old, new;
 
 void
 output_hex(const char* x, int64 n, int offset, char space) {
@@ -54,6 +53,14 @@ output_hex(const char* x, int64 n, int offset, char space) {
       buffer_putnlflush(buffer_1);
     }
   }
+}
+
+void
+debug_size(const char* name, uint64 value) {
+  buffer_puts(buffer_1, name);
+  buffer_puts(buffer_1, ": ");
+  buffer_putlonglong(buffer_1, value);
+  buffer_putnlflush(buffer_1);
 }
 
 void
@@ -125,44 +132,63 @@ bsdiff_read_ctrl(buffer* b, bsdiff_control* ctrl) {
 
   if(!buffer_getint64(b, &ctrl->seek_off))
     return 0;
+
   return 1;
 }
 
 int64
-bsdiff_read(buffer* ctrl, buffer* data, buffer* extra) {
-  bsdiff_control rec;
+bsdiff_dump_control(const bsdiff_control ctrl) {
+  debug_size("add_len", ctrl.add_len);
+  debug_size("extra_len", ctrl.extra_len);
+  debug_int("seek_off", ctrl.seek_off);
+}
+
+int64
+bsdiff_read(buffer* ctrl) {
+  bsdiff_header h = {0};
+  bsdiff_control rec = {0};
+  buffer data, extra;
   buffer bctrl, bdata, bextra;
-  int64 i;
-  int64 r = 0, w = 0;
+  int64 i, r = 0, w = 0;
+
+  if(!bsdiff_read_header(ctrl, &h)) {
+    buffer_puts(buffer_2, "ERROR: could not read bsdiff header");
+    buffer_putnlflush(buffer_2);
+    return -1;
+  }
+
+  buffer_offset(ctrl, &data, h.ctrl_len);
+  buffer_offset(ctrl, &extra, h.ctrl_len + h.data_len);
 
   buffer_bz2(&bctrl, ctrl, 0);
-  buffer_bz2(&bdata, data, 0);
-  buffer_bz2(&bextra, extra, 0);
+  buffer_bz2(&bdata, &data, 0);
+  buffer_bz2(&bextra, &extra, 0);
 
   for(;;) {
-    int64 len;
+    int64 len, j;
+    char *add = 0, *src = 0, *extra = 0;
 
     if(!bsdiff_read_ctrl(&bctrl, &rec))
       break;
 
-    debug_int("add_len", rec.add_len);
-    debug_int("extra_len", rec.extra_len);
-    debug_int("seek_off", rec.seek_off);
+    bsdiff_dump_control(rec);
 
     if((len = rec.add_len)) {
-      char* add = malloc(len);
+      add = malloc(len);
 
       if(buffer_get(&bdata, add, len) != len) {
         free(add);
+
+        buffer_puts(buffer_2, "ERROR: could not get ");
+        buffer_putulonglong(buffer_2, len);
+        buffer_puts(buffer_2, " bytes from BDATA record");
+        buffer_putnlflush(buffer_2);
+
         break;
       }
 
-      if(!old.x)
-        output_hex(add, len, r, '+');
-
       if(old.x) {
-        char* src = malloc(len);
-        int64 j;
+        src = malloc(len);
 
         if(buffer_get(&old, src, len) != len) {
           free(add);
@@ -171,9 +197,8 @@ bsdiff_read(buffer* ctrl, buffer* data, buffer* extra) {
         }
 
         for(j = 0; j < len; ++j) {
-          char to, from = src[j];
-
-          to = add[j] += src[j];
+          char from = src[j];
+          char to = add[j] += src[j];
 
           if(from != to && !new.x) {
             buffer_puts(buffer_1, "  patch(0x");
@@ -186,20 +211,23 @@ bsdiff_read(buffer* ctrl, buffer* data, buffer* extra) {
             buffer_putnlflush(buffer_1);
           }
         }
+
         free(src);
 
-        if(new.x) {
+        if(new.x)
           buffer_put(&new, add, len);
-        }
+      } else {
+        output_hex(add, len, r, '+');
       }
 
       free(add);
+
       r += len;
       w += len;
     }
 
     if((len = rec.extra_len)) {
-      char* extra = malloc(len);
+      extra = malloc(len);
 
       if(buffer_get(&bextra, extra, len) != len) {
         free(extra);
@@ -211,6 +239,7 @@ bsdiff_read(buffer* ctrl, buffer* data, buffer* extra) {
 
       if(!old.x)
         output_hex(extra, len, w, ' ');
+
       free(extra);
 
       w += len;
@@ -227,8 +256,13 @@ bsdiff_read(buffer* ctrl, buffer* data, buffer* extra) {
       buffer_flush(&new);
       buffer_close(&new);
     }
+
     buffer_close(&old);
   }
+
+  buffer_close(&bctrl);
+  buffer_close(&bdata);
+  buffer_close(&bextra);
 
   return r;
 }
@@ -244,52 +278,42 @@ main(int argc, char* argv[]) {
 
   array_init(&records);
 
+  if(argc <= 1 || buffer_mmapread(&patch, argv[1])) {
+    errmsg_infosys(path_basename(argv[1]), ": ", "open file", ": ", NULL);
+    return 1;
+  }
+
   if(argc > 2) {
     if(buffer_mmapread(&old, argv[2]))
       byte_zero(&old, sizeof(old));
 
-    if(argc > 3) {
+    if(argc > 3)
       if(buffer_truncfile(&new, argv[3]))
         byte_zero(&new, sizeof(new));
-    }
   }
 
-  if(!old.x && !isatty(buffer_0->fd)) {
+  if(!old.x && !isatty(buffer_0->fd))
     if(buffer_mmapread_fd(&old, buffer_0->fd))
       byte_zero(&old, sizeof(old));
-  }
 
   if(!new.x && !isatty(buffer_1->fd)) {
     new = *buffer_1;
     buffer_1 = buffer_2;
   }
 
-  if(buffer_mmapread(&patch, argv[1]) == 0) {
-    if(bsdiff_read_header(&patch, &h)) {
+  if(bsdiff_read_header(&patch, &h)) {
 
-      buffer data, extra;
+    debug_size("ctrl_len", h.ctrl_len);
+    debug_size("data_len", h.data_len);
+    debug_size("new_size", h.new_size);
 
-      buffer_offset(&patch, &data, h.ctrl_len);
-      buffer_offset(&patch, &extra, h.ctrl_len + h.data_len);
+    // int64 n = bsdiff_read_ctrl(&patch, &records); debug_int("n", n);
 
-      debug_int("ctrl_len", h.ctrl_len);
-      debug_int("data_len", h.data_len);
-      debug_int("new_size", h.new_size);
+    bsdiff_read(&patch);
 
-      //      int64 n =
-      //      bsdiff_read_ctrl(&patch,
-      //      &records); debug_int("n",
-      //      n);
-
-      bsdiff_read(&patch, &data, &extra);
-
-    } else {
-      errmsg_infosys(path_basename(argv[0]), ": ", "read header", ": ", NULL);
-      exitcode = 2;
-    }
   } else {
-    errmsg_infosys(path_basename(argv[0]), ": ", "open file", ": ", NULL);
-    exitcode = 1;
+    errmsg_infosys(path_basename(argv[0]), ": ", "read header", ": ", NULL);
+    exitcode = 2;
   }
 
   buffer_close(&patch);
