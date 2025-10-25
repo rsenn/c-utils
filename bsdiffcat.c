@@ -299,14 +299,14 @@ main(int argc, char* argv[]) {
         byte_zero(&new, sizeof(new));
   }
 
-  if(!old.x && !isatty(buffer_0->fd))
+  /*if(!old.x && !isatty(buffer_0->fd))
     if(buffer_mmapread_fd(&old, buffer_0->fd))
-      byte_zero(&old, sizeof(old));
+      byte_zero(&old, sizeof(old));*/
 
-  /*  if(!new.x && !isatty(buffer_1->fd)) {
-      new = *buffer_1;
-      buffer_1 = buffer_2;
-    }*/
+  /*if(!new.x && !isatty(buffer_1->fd)) {
+    new = *buffer_1;
+    buffer_1 = buffer_2;
+  }*/
 
   if(bsdiff_read(&patch) == -1) {
     errmsg_infosys(path_basename(argv[0]), ": ", "read header", ": ", NULL);
