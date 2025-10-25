@@ -12,6 +12,7 @@
 #include "lib/path.h"
 #include "lib/errmsg.h"
 #include "lib/uint32.h"
+#include "lib/uint8.h"
 
 #if WINDOWS_NATIVE
 #include <io.h>
@@ -34,7 +35,7 @@ typedef struct {
 
 static buffer old, new;
 
-void
+static void
 output_hex(const char* x, int64 n, int offset, char space) {
   int64 i;
 
@@ -43,19 +44,21 @@ output_hex(const char* x, int64 n, int offset, char space) {
     uint64 r = n - i < 16 ? n - i : 16;
 
     if(n <= 16 || byte_count(&x[i], r, '\0') < r) {
+      buffer_puts(buffer_1, "0x");
       buffer_putxlong0(buffer_1, offset + i, 8);
       buffer_putnspace(buffer_1, 2);
 
       for(j = 0; j < r; ++j) {
         buffer_PUTC(buffer_1, space);
-        buffer_putxlong0(buffer_1, (long)(unsigned long)(unsigned char)x[i + j], 2);
+        buffer_putxlong0(buffer_1, (int32)(uint32)(uint8)x[i + j], 2);
       }
+
       buffer_putnlflush(buffer_1);
     }
   }
 }
 
-void
+static void
 debug_size(const char* name, uint64 value) {
   buffer_puts(buffer_1, name);
   buffer_puts(buffer_1, ": ");
@@ -63,7 +66,7 @@ debug_size(const char* name, uint64 value) {
   buffer_putnlflush(buffer_1);
 }
 
-void
+static void
 debug_int(const char* name, int64 value) {
   buffer_puts(buffer_1, name);
   buffer_puts(buffer_1, ": 0x");
@@ -157,6 +160,10 @@ bsdiff_read(buffer* ctrl) {
     return -1;
   }
 
+  debug_size("ctrl_len", h.ctrl_len);
+  debug_size("data_len", h.data_len);
+  debug_size("new_size", h.new_size);
+
   buffer_offset(ctrl, &data, h.ctrl_len);
   buffer_offset(ctrl, &extra, h.ctrl_len + h.data_len);
 
@@ -204,9 +211,9 @@ bsdiff_read(buffer* ctrl) {
             buffer_puts(buffer_1, "  patch(0x");
             buffer_putxlonglong0(buffer_1, w + j, 8);
             buffer_puts(buffer_1, ", 0x");
-            buffer_putxlong0(buffer_1, (unsigned long)(unsigned char)from, 2);
+            buffer_putxlong0(buffer_1, (uint32)(uint8)from, 2);
             buffer_puts(buffer_1, ", 0x");
-            buffer_putxlong0(buffer_1, (unsigned long)(unsigned char)to, 2);
+            buffer_putxlong0(buffer_1, (uint32)(uint8)to, 2);
             buffer_puts(buffer_1, ");");
             buffer_putnlflush(buffer_1);
           }
@@ -296,22 +303,12 @@ main(int argc, char* argv[]) {
     if(buffer_mmapread_fd(&old, buffer_0->fd))
       byte_zero(&old, sizeof(old));
 
-  if(!new.x && !isatty(buffer_1->fd)) {
-    new = *buffer_1;
-    buffer_1 = buffer_2;
-  }
+  /*  if(!new.x && !isatty(buffer_1->fd)) {
+      new = *buffer_1;
+      buffer_1 = buffer_2;
+    }*/
 
-  if(bsdiff_read_header(&patch, &h)) {
-
-    debug_size("ctrl_len", h.ctrl_len);
-    debug_size("data_len", h.data_len);
-    debug_size("new_size", h.new_size);
-
-    // int64 n = bsdiff_read_ctrl(&patch, &records); debug_int("n", n);
-
-    bsdiff_read(&patch);
-
-  } else {
+  if(bsdiff_read(&patch) == -1) {
     errmsg_infosys(path_basename(argv[0]), ": ", "read header", ": ", NULL);
     exitcode = 2;
   }

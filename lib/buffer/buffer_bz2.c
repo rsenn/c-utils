@@ -100,19 +100,19 @@ buffer_bz_close(buffer* b) {
   strm->next_in = (char*)buffer_PEEK(b);
   strm->avail_in = buffer_LEN(b);
 
-  do {
+  while(strm->avail_in > 0) {
     strm->next_out = (char*)buffer_PEEK(other);
     strm->avail_out = a = buffer_SPACE(other);
 
-    ret = BZ2_bzCompress(strm, ctx->a);
+    ret = b->op == &buffer_bzwrite_op  ? BZ2_bzCompress(strm, ctx->a) : BZ2_bzDecompress(strm);
 
     if(ret == BZ_FLUSH_OK)
       ctx->a = BZ_FINISH;
 
-    if(ret == BZ_FINISH_OK)
+    if(ret == BZ_FINISH_OK||ret == BZ_STREAM_END)
       break;
 
-  } while(ret != BZ_STREAM_END);
+  }
 
   other->p += a - strm->avail_out;
 
