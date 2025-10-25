@@ -150,12 +150,24 @@ bsdiff_read_ctrl(buffer* b, bsdiff_control* ctrl) {
   return 1;
 }
 
+static void
+debug_arr(const char* name, int64 i) {
+  buffer_puts(buffer_1, name);
+  buffer_puts(buffer_1, "[");
+  buffer_putlonglong(buffer_1, i);
+  buffer_puts(buffer_1, "].");
+}
+
 int64
-bsdiff_dump_ctrl(const bsdiff_control ctrl) {
-  debug_int("control.add_len", ctrl.add_len);
-  debug_int("control.extra_len", ctrl.extra_len);
-  debug_int("control.seek_off", ctrl.seek_off);
-  debug_hex("control.offset", ctrl.add_len + ctrl.seek_off);
+bsdiff_dump_ctrl(const bsdiff_control ctrl, int64 i) {
+  debug_arr("control", i);
+  debug_int("add_len", ctrl.add_len);
+  debug_arr("control", i);
+  debug_int("extra_len", ctrl.extra_len);
+  debug_arr("control", i);
+  debug_int("seek_off", ctrl.seek_off);
+  debug_arr("control", i);
+  debug_hex("offset", ctrl.add_len + ctrl.seek_off);
 }
 
 int64
@@ -187,14 +199,14 @@ bsdiff_read(buffer* ctrl) {
   buffer_bz2(&bdata, &data, 0);
   buffer_bz2(&bextra, &extra, 0);
 
-  for(;;) {
+  for(i = 0;; i++) {
     int64 len, j;
     char *add = 0, *src = 0, *extra = 0;
 
     if(!bsdiff_read_ctrl(&bctrl, &rec))
       break;
 
-    bsdiff_dump_ctrl(rec);
+    bsdiff_dump_ctrl(rec, i);
 
     if((len = rec.add_len)) {
       add = malloc(len);
