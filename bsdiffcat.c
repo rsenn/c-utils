@@ -1,3 +1,11 @@
+/*
+ * https://www.daemonology.net/bsdiff/
+ *
+ * https://www.daemonology.net/papers/bsdiff.pdf
+ *
+ * https://www.daemonology.net/papers/thesis.pdf
+ */
+
 #include "lib/windoze.h"
 #include "lib/array.h"
 #include "lib/uint64.h"
@@ -50,7 +58,7 @@ output_hex(const char* x, int64 n, int offset, char space) {
 
       for(j = 0; j < r; ++j) {
         buffer_PUTC(buffer_1, space);
-        buffer_putxlong0(buffer_1, (int32)(uint32)(uint8)x[i + j], 2);
+        buffer_putxlong0(buffer_1, (uint8)x[i + j], 2);
       }
 
       buffer_putnlflush(buffer_1);
@@ -59,7 +67,7 @@ output_hex(const char* x, int64 n, int offset, char space) {
 }
 
 static void
-debug_size(const char* name, uint64 value) {
+debug_int(const char* name, int64 value) {
   buffer_puts(buffer_1, name);
   buffer_puts(buffer_1, ": ");
   buffer_putlonglong(buffer_1, value);
@@ -67,7 +75,7 @@ debug_size(const char* name, uint64 value) {
 }
 
 static void
-debug_int(const char* name, int64 value) {
+debug_hex(const char* name, int64 value) {
   buffer_puts(buffer_1, name);
   buffer_puts(buffer_1, ": 0x");
   buffer_putxlonglong0(buffer_1, value, 8);
@@ -84,6 +92,7 @@ buffer_getint64(buffer* b, int64* i) {
 
   if(buffer_get(b, buffer, 8) != 8)
     return 0;
+
   uint64_unpack(buffer, &u);
 
   *i = (u & 0x7fffffffffffffff);
@@ -94,11 +103,13 @@ buffer_getint64(buffer* b, int64* i) {
   return 1;
 }
 
-void
-buffer_offset(buffer* from, buffer* to, int64 offset) {
-  buffer_init(to, (buffer_op_proto*)(void*)from->op, from->fd, from->x, from->a);
-  to->n = from->n;
-  to->p = from->p + offset;
+static buffer
+buffer_offset(const buffer* from, int64 offset) {
+  buffer r = *from;
+
+  r.p += offset;
+
+  return r;
 }
 
 int
@@ -140,18 +151,25 @@ bsdiff_read_ctrl(buffer* b, bsdiff_control* ctrl) {
 }
 
 int64
-bsdiff_dump_control(const bsdiff_control ctrl) {
-  debug_size("add_len", ctrl.add_len);
-  debug_size("extra_len", ctrl.extra_len);
-  debug_int("seek_off", ctrl.seek_off);
+bsdiff_dump_ctrl(const bsdiff_control ctrl) {
+  debug_int("control.add_len", ctrl.add_len);
+  debug_int("control.extra_len", ctrl.extra_len);
+  debug_int("control.seek_off", ctrl.seek_off);
+  debug_hex("control.offset", ctrl.add_len + ctrl.seek_off);
+}
+
+int64
+bsdiff_dump_header(const bsdiff_header h) {
+  debug_int("header.ctrl_len", h.ctrl_len);
+  debug_int("header.data_len", h.data_len);
+  debug_int("header.new_size", h.new_size);
 }
 
 int64
 bsdiff_read(buffer* ctrl) {
   bsdiff_header h = {0};
   bsdiff_control rec = {0};
-  buffer data, extra;
-  buffer bctrl, bdata, bextra;
+  buffer data, extra, bctrl, bdata, bextra;
   int64 i, r = 0, w = 0;
 
   if(!bsdiff_read_header(ctrl, &h)) {
@@ -160,12 +178,10 @@ bsdiff_read(buffer* ctrl) {
     return -1;
   }
 
-  debug_size("ctrl_len", h.ctrl_len);
-  debug_size("data_len", h.data_len);
-  debug_size("new_size", h.new_size);
+  bsdiff_dump_header(h);
 
-  buffer_offset(ctrl, &data, h.ctrl_len);
-  buffer_offset(ctrl, &extra, h.ctrl_len + h.data_len);
+  data = buffer_offset(ctrl, h.ctrl_len);
+  extra = buffer_offset(&data, h.data_len);
 
   buffer_bz2(&bctrl, ctrl, 0);
   buffer_bz2(&bdata, &data, 0);
@@ -178,7 +194,7 @@ bsdiff_read(buffer* ctrl) {
     if(!bsdiff_read_ctrl(&bctrl, &rec))
       break;
 
-    bsdiff_dump_control(rec);
+    bsdiff_dump_ctrl(rec);
 
     if((len = rec.add_len)) {
       add = malloc(len);
@@ -204,25 +220,24 @@ bsdiff_read(buffer* ctrl) {
         }
 
         for(j = 0; j < len; ++j) {
-          char from = src[j];
-          char to = add[j] += src[j];
+          uint8 from = src[j], to = src[j] += add[j];
 
-          if(from != to && !new.x) {
+          if(add[j] && !new.x) {
             buffer_puts(buffer_1, "  patch(0x");
             buffer_putxlonglong0(buffer_1, w + j, 8);
             buffer_puts(buffer_1, ", 0x");
-            buffer_putxlong0(buffer_1, (uint32)(uint8)from, 2);
+            buffer_putxlong0(buffer_1, from, 2);
             buffer_puts(buffer_1, ", 0x");
-            buffer_putxlong0(buffer_1, (uint32)(uint8)to, 2);
+            buffer_putxlong0(buffer_1, to, 2);
             buffer_puts(buffer_1, ");");
             buffer_putnlflush(buffer_1);
           }
         }
 
-        free(src);
-
         if(new.x)
-          buffer_put(&new, add, len);
+          buffer_put(&new, src, len);
+
+        free(src);
       } else {
         output_hex(add, len, r, '+');
       }

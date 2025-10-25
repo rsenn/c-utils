@@ -28,8 +28,7 @@ char hexdigits[] = "0123456789abcdef";
 
 typedef struct {
   uint64 offset;
-  uint8 from;
-  uint8 to;
+  uint8 from, to;
 } record_t;
 
 typedef struct {
