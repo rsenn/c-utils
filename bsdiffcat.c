@@ -68,21 +68,21 @@ output_hex(const char* x, int64 n, int offset, char space) {
 
 static void
 debug_int(const char* name, int64 value) {
-  buffer_puts(buffer_1, name);
-  buffer_puts(buffer_1, ": ");
-  buffer_putlonglong(buffer_1, value);
-  buffer_putnlflush(buffer_1);
+  buffer_puts(buffer_2, name);
+  buffer_puts(buffer_2, ": ");
+  buffer_putlonglong(buffer_2, value);
+  buffer_putnlflush(buffer_2);
 }
 
 static void
 debug_hex(const char* name, int64 value) {
-  buffer_puts(buffer_1, name);
-  buffer_puts(buffer_1, ": 0x");
-  buffer_putxlonglong0(buffer_1, value, 8);
-  buffer_puts(buffer_1, " (");
-  buffer_putlonglong(buffer_1, value);
-  buffer_puts(buffer_1, ")");
-  buffer_putnlflush(buffer_1);
+  buffer_puts(buffer_2, name);
+  buffer_puts(buffer_2, ": 0x");
+  buffer_putxlonglong0(buffer_2, value, 8);
+  buffer_puts(buffer_2, " (");
+  buffer_putlonglong(buffer_2, value);
+  buffer_puts(buffer_2, ")");
+  buffer_putnlflush(buffer_2);
 }
 
 int
@@ -152,22 +152,20 @@ bsdiff_read_ctrl(buffer* b, bsdiff_control* ctrl) {
 
 static void
 debug_arr(const char* name, int64 i) {
-  buffer_puts(buffer_1, name);
-  buffer_puts(buffer_1, "[");
-  buffer_putlonglong(buffer_1, i);
-  buffer_puts(buffer_1, "].");
+  buffer_puts(buffer_2, name);
+  buffer_puts(buffer_2, "[");
+  buffer_putlonglong(buffer_2, i);
+  buffer_puts(buffer_2, "].");
 }
 
 int64
 bsdiff_dump_ctrl(const bsdiff_control ctrl, int64 i) {
-  debug_arr("control", i);
-  debug_int("add_len", ctrl.add_len);
-  debug_arr("control", i);
-  debug_int("extra_len", ctrl.extra_len);
-  debug_arr("control", i);
-  debug_int("seek_off", ctrl.seek_off);
-  debug_arr("control", i);
-  debug_hex("offset", ctrl.add_len + ctrl.seek_off);
+  /* clang-format off */
+  debug_arr("control", i); debug_int("add_len", ctrl.add_len);
+  debug_arr("control", i); debug_int("extra_len", ctrl.extra_len);
+  debug_arr("control", i); debug_int("seek_off", ctrl.seek_off);
+  //debug_arr("control", i); debug_hex("offset", ctrl.add_len + ctrl.seek_off);
+  /* clang-format on */
 }
 
 int64
