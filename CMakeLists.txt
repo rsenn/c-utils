@@ -893,7 +893,7 @@ endif()
 
 if(USE_EFENCE)
   if(DIET)
-    set(ELECTRICFENCE_LIBRARY efence pthread)
+    set(ELECTRICFENCE_LIBRARY efence ${LIBPTHREAD})
   else(DIET)
     set(ELECTRICFENCE_LIBRARY efence)
   endif(DIET)
@@ -1290,6 +1290,6 @@ endif(F_VISIBILITY)
 
 target_compile_definitions(socket-intercept PRIVATE HAVE_BROTLI=0 HAVE_LIBBZ2=0
                                                     HAVE_LIBLZMA=0)
-target_link_libraries(socket-intercept PUBLIC dl pthread)
+target_link_libraries(socket-intercept PUBLIC dl ${LIBPTHREAD})
 
 install(TARGETS socket-intercept DESTINATION "${CMAKE_ARCH_LIBDIR}")

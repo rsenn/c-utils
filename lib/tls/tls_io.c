@@ -2,6 +2,7 @@
 #include "../io.h"
 #include <assert.h>
 
+#ifdef HAVE_OPENSSL
 void
 tls_io(fd_type fd) {
   ssize_t ret;
@@ -11,3 +12,4 @@ tls_io(fd_type fd) {
   i->wantread = &io_onlywantread;
   i->wantwrite = &io_onlywantwrite;
 }
+#endif
