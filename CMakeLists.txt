@@ -1,10 +1,10 @@
-set(CMAKE_LEGACY_CYGWIN_WIN32 0)
-cmake_minimum_required(VERSION 3.2)
-set(CMAKE_WARN_VS8 OFF)
-
-set(CMAKE_C_STANDARD 11)
-
 project(c-utils C ASM)
+
+cmake_minimum_required(VERSION 3.5)
+
+set(CMAKE_LEGACY_CYGWIN_WIN32 0)
+set(CMAKE_WARN_VS8 OFF)
+set(CMAKE_C_STANDARD 11)
 
 include(FindPkgConfig)
 include(CheckFunctionExists)
