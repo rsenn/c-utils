@@ -2,7 +2,6 @@
 #include "../byte.h"
 #include <assert.h>
 
-#ifdef HAVE_OPENSSL
 tls_instance_t*
 tls_instance_new(fd_type fd) {
   tls_instance_t* i;
@@ -13,4 +12,3 @@ tls_instance_new(fd_type fd) {
   }
   return i;
 }
-#endif

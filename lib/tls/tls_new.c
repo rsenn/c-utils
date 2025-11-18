@@ -11,7 +11,6 @@
 #include <sys/socket.h>
 #endif
 
-#ifdef HAVE_OPENSSL
 iarray tls_list = {
     /* .pages =  */ {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
     /* .elemsize =  */ sizeof(tls_instance_t),
@@ -20,6 +19,7 @@ iarray tls_list = {
     /* .len =  */ 0,
 };
 
+#ifdef HAVE_OPENSSL
 #include <openssl/ssl.h>
 #include <openssl/err.h>
 #include <openssl/bio.h>
