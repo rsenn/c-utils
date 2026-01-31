@@ -13,7 +13,7 @@
 #include <unistd.h>
 #include <sys/types.h>
 #endif
-#ifdef HAVE_ALLOCA_H
+#ifdef HAVE_ALLOCA
 #include <alloca.h>
 #endif
 
