@@ -65,7 +65,8 @@ parse_offset(const char* arg, uint64* dest) {
   } while(0)
 
 #define ELF_DUMP_FIELD(base, ptr, st, field) \
-  buffer_putspad(b, #field, 30), buffer_puts(b, " "), putnum(b, ELF_GET(base, ptr, st, field), ELF_SIZE(base, st, field) * 2), buffer_putnlflush(b)
+  buffer_putspad(b, #field, 30), buffer_puts(b, " "), \
+      putnum(b, ELF_GET(base, ptr, st, field), ELF_SIZE(base, st, field) * 2), buffer_putnlflush(b)
 
 void
 elf_print_prefix(buffer* b) {
@@ -128,9 +129,12 @@ elf_dump_dynamic(range map) {
   const char* dynstrtab = NULL;
   int col_width = ELF_BITS(map.start) / 4 + 2;
   static const char* const dynamic_types[] = {
-      "NULL",     "NEEDED",     "PLTRELSZ",   "PLTGOT",       "HASH",         "STRTAB",  "SYMTAB", "RELA",     "RELASZ",        "RELAENT",         "STRSZ",   "SYMENT",
-      "INIT",     "FINI",       "SONAME",     "RPATH",        "SYMBOLIC",     "REL",     "RELSZ",  "RELENT",   "PLTREL",        "DEBUG",           "TEXTREL", "JMPREL",
-      "BIND_NOW", "INIT_ARRAY", "FINI_ARRAY", "INIT_ARRAYSZ", "FINI_ARRAYSZ", "RUNPATH", "FLAGS",  "ENCODING", "PREINIT_ARRAY", "PREINIT_ARRAYSZ",
+      "NULL",     "NEEDED",     "PLTRELSZ",      "PLTGOT",          "HASH",         "STRTAB",
+      "SYMTAB",   "RELA",       "RELASZ",        "RELAENT",         "STRSZ",        "SYMENT",
+      "INIT",     "FINI",       "SONAME",        "RPATH",           "SYMBOLIC",     "REL",
+      "RELSZ",    "RELENT",     "PLTREL",        "DEBUG",           "TEXTREL",      "JMPREL",
+      "BIND_NOW", "INIT_ARRAY", "FINI_ARRAY",    "INIT_ARRAYSZ",    "FINI_ARRAYSZ", "RUNPATH",
+      "FLAGS",    "ENCODING",   "PREINIT_ARRAY", "PREINIT_ARRAYSZ",
   };
 
   if(di == -1)
@@ -254,6 +258,10 @@ elf_dump_symbols(range map, range section, range text, const char* stname, int b
       "FILE",
       "COMMON",
       "TLS",
+      "LOOS",
+      "HIOS",
+      "LOPROC",
+      "HIPROC",
   };
   range symtab = section;
   symtab.elem_size = ELF_BITS(map.start) == 64 ? sizeof(elf64_sym) : sizeof(elf32_sym);
@@ -487,7 +495,12 @@ elf_dump_segments(range map) {
     putnum(buffer_1, filesz, col_width);
     buffer_putspace(buffer_1);
     putnum(buffer_1, memsz, col_width);
-    buffer_putm_internal(buffer_1, " ", (flags & ELF_PF_R) ? "r" : "-", (flags & ELF_PF_W) ? "w" : "-", (flags & ELF_PF_W) ? "x" : "-", NULL);
+    buffer_putm_internal(buffer_1,
+                         " ",
+                         (flags & ELF_PF_R) ? "r" : "-",
+                         (flags & ELF_PF_W) ? "w" : "-",
+                         (flags & ELF_PF_W) ? "x" : "-",
+                         NULL);
     buffer_putnlflush(buffer_1);
   }
 }
