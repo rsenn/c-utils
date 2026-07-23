@@ -187,9 +187,9 @@ thisudp(struct dns_transmit* d) {
         // v4mapped = ip6_isv4mapped(ip);
 
         if(d->iplen == 16)
-          ret = socket_connect6(d->s1 - 1, ip, 53, d->scope_id);
+          ret = socket_connect6(d->s1 - 1, ip, dns_port, d->scope_id);
         else
-          ret = socket_connect4(d->s1 - 1, ip, 53);
+          ret = socket_connect4(d->s1 - 1, ip, dns_port);
         err = errno;
 
         if(ret == 0)
@@ -260,9 +260,9 @@ thistcp(struct dns_transmit* d) {
       taia_add(&d->deadline, &d->deadline, &now);
 
       if(d->iplen == 16)
-        ret = socket_connect6(d->s1 - 1, ip, 53, d->scope_id);
+        ret = socket_connect6(d->s1 - 1, ip, dns_port, d->scope_id);
       else
-        ret = socket_connect4(d->s1 - 1, ip, 53);
+        ret = socket_connect4(d->s1 - 1, ip, dns_port);
 
       if(ret == 0) {
         d->tcpstate = 2;

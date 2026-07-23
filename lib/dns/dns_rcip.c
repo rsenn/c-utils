@@ -10,6 +10,7 @@
 #include "../taia.h"
 #include "../stralloc.h"
 #include "../scan.h"
+#include "../str.h"
 
 #include <stdlib.h>
 
@@ -47,12 +48,60 @@ typedef struct {
 
 static stralloc data;
 
+unsigned int dns_port = 53;
+
+/* splitport separates "ip:port" (or "[ip6]:port") into buf and *port.
+   a bare IPv6 address (more than one ':') without brackets is returned
+   unchanged, since it cannot be told apart from an ip:port pair. */
+static const char*
+splitport(const char* x, unsigned long* port) {
+  static char buf[256];
+  size_t n = str_len(x);
+  size_t i;
+
+  if(n >= sizeof buf)
+    n = sizeof buf - 1;
+
+  if(x[0] == '[') {
+    i = str_chr(x + 1, ']') + 1;
+
+    if(x[i] == ']') {
+      size_t blen = i - 1;
+
+      if(blen >= sizeof buf)
+        blen = sizeof buf - 1;
+      byte_copy(buf, blen, x + 1);
+      buf[blen] = 0;
+
+      if(x[i + 1] == ':')
+        scan_ulong(x + i + 2, port);
+      return buf;
+    }
+  }
+
+  i = str_rchr(x, ':');
+
+  if(x[i] == ':' && str_chr(x, ':') == i) {
+    if(i >= sizeof buf)
+      i = sizeof buf - 1;
+    byte_copy(buf, i, x);
+    buf[i] = 0;
+    scan_ulong(x + i + 1, port);
+    return buf;
+  }
+
+  byte_copy(buf, n, x);
+  buf[n] = 0;
+  return buf;
+}
+
 static int
 init(char ip[256]) {
   unsigned long int i;
   unsigned long int j;
   int iplen = 0;
   char* x;
+  unsigned long port = 53;
 #if WINDOWS
   FIXED_INFO* pFixedInfo;
   ULONG ulOutBufLen;
@@ -69,7 +118,12 @@ init(char ip[256]) {
   }
 #endif
 
-  x = getenv("DNSCACHEIP");
+  x = getenv("DNSCACHE");
+
+  if(x)
+    x = (char*)splitport(x, &port);
+  else
+    x = getenv("DNSCACHEIP");
 
 #if WINDOWS
 
@@ -155,6 +209,17 @@ init(char ip[256]) {
     iplen = 16;
   }
   byte_zero(ip + iplen, 256 - iplen);
+
+  x = getenv("DNSCACHEPORT");
+
+  if(x) {
+    unsigned long u;
+
+    if(x[scan_ulong(x, &u)] == 0 && u > 0 && u <= 65535)
+      port = u;
+  }
+  dns_port = (unsigned int)port;
+
   return iplen;
 }
 
