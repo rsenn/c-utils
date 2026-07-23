@@ -68,7 +68,12 @@ http_response_read(buffer* in, http_response* response) {
     }
 
     case HTTP_TRANSFER_LENGTH: {
-      if(response->chunk_length >= response->content_length)
+      ssize_t n = buffer_LEN(in);
+      ssize_t remain = response->content_length - response->data_pos;
+
+      ret = MIN(remain, n);
+
+      if(response->data_pos + (uint64)ret >= response->content_length)
         response->status = HTTP_STATUS_FINISH;
 
       break;

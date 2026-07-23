@@ -722,16 +722,17 @@ parse_mediathek_list(buffer* inbuf, buffer* outbuf) {
 
       ret2 = buffer_get(inbuf, &buf2[ret], 1);
 
-      if(ret2 > 0) {
-        if(ret > 1 && buf2[ret - 2] == '"' && buf2[ret] == ',')
-          break;
+      if(ret2 <= 0)
+        break;
 
+      if(ret > 1 && buf2[ret - 2] == '"' && buf2[ret] == ',')
+        break;
+
+      ret += ret2;
+      ret2 = buffer_get_token(inbuf, &buf2[ret], sizeof(buf2) - ret, "]", 1);
+
+      if(ret2 > 0)
         ret += ret2;
-        ret2 = buffer_get_token(inbuf, &buf2[ret], sizeof(buf2) - ret, "]", 1);
-
-        if(ret2 > 0)
-          ret += ret2;
-      }
     }
 
     strlist_zero(&sl);
@@ -770,7 +771,8 @@ parse_mediathek_list(buffer* inbuf, buffer* outbuf) {
   }
 #endif
 
-  if((h.response && h.response->err && h.response->err != EAGAIN) || ret == -1) {
+  if((h.response && h.response->err && h.response->err != EAGAIN) ||
+     (ret == -1 && h.err != EAGAIN && h.err != EWOULDBLOCK)) {
     buffer_puts(console, "Return value: ");
     buffer_putlong(console, ret);
     buffer_puts(console, " ");
@@ -947,6 +949,9 @@ main(int argc, char* argv[]) {
               n += parse_mediathek_list(&in, &output);
           }
         }
+
+        if(h.sent && buffer_EOF(&in))
+          break;
       }
     }
 

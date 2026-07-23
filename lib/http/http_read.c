@@ -47,7 +47,7 @@ again:
   ++iteration;
 
   r = response->status == HTTP_RECV_HEADER ? buffer_freshen(in) : buffer_feed(in);
-  int err = response->err;
+  int err = h->err;
 
   if(r < 0 && err != EAGAIN && err != EWOULDBLOCK)
     response->status = HTTP_STATUS_ERROR;
@@ -57,8 +57,8 @@ again:
   if(r <= 0) {
     if(r < 0)
       if((int)response->status == st) {
-        if(response->err != 0) {
-          errno = response->err;
+        if(h->err != 0) {
+          errno = h->err;
           ret = -1;
         }
       }
@@ -68,16 +68,14 @@ again:
   //  received = buffer_LEN(in) - oldlen;
 
   if((response->status == HTTP_RECV_HEADER || response->status == HTTP_RECV_DATA)) {
+    ssize_t got = http_read_internal(h->sock, x, n, in);
 
-    ret = http_read_internal(h->sock, x, n, in);
+    ret += got;
 
-    /* if(response->status == HTTP_RECV_DATA && ret == 0)
-       goto again;*/
     if(response->status == HTTP_RECV_DATA) {
-      if(buffer_LEN(in)) {
-        n -= ret;
-        x += ret;
-        ret = 0;
+      if(got > 0 && (size_t)got < n && buffer_LEN(in)) {
+        n -= got;
+        x += got;
 
         goto again;
       }

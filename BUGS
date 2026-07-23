@@ -1,0 +1,109 @@
+BUGS
+====
+
+mediathek-list: HTTP(S) client never actually downloaded/parsed the Filmliste [FIXED]
+--------------------------------------------------------------------------
+Turned out to be five separate, independent bugs stacked on top of each
+other. Each one only became visible once the previous one was fixed, since
+each hid the next behind an early abort or an infinite loop. All five are
+now fixed; `./mediathek-list <keyword>` downloads the ~75 MB compressed
+Filmliste over HTTPS, decompresses it, filters it, prints matching entries,
+prints "Processed N entries." and exits.
+
+1. mediathek-list.c: parse_mediathek_list() treated any -1 return from
+   buffer_get_token() as fatal, without checking whether it was just EAGAIN
+   (routine on a non-blocking socket, happens on effectively every call once
+   the first TCP read's worth of data is consumed). This closed the input
+   buffer after the very first read.
+   Fix: only treat ret==-1 as fatal when errno isn't EAGAIN/EWOULDBLOCK.
+
+2. lib/buffer/buffer_lzma.c: buffer_lzmaread_op() treated buffer_feed()'s
+   return value of -1 (EAGAIN, "no new compressed bytes yet") the same as a
+   nonzero success and fell through to run lzma_code() with avail_in==0,
+   which produces a spurious ret==0 — indistinguishable from real
+   end-of-stream. This made an ordinary "not ready yet" look like the input
+   had legitimately closed.
+   Fix: return immediately (propagating -1 or 0 unchanged) whenever
+   buffer_feed() returns <= 0, instead of continuing into lzma_code().
+
+3. lib/http/http_read.c: computed the "was this just EAGAIN?" check using
+   response->err, which is a stale/mostly-unset field for TLS reads (it's
+   only populated by http_socket_read() on the narrow
+   TLS_ERR_SYSCALL/non-TLS path, never on ordinary SSL_ERROR_WANT_READ).
+   The correct, always-populated field is h->err. Because of this, the very
+   first ordinary WANT_READ during body transfer got misclassified as
+   HTTP_STATUS_ERROR, and the *next* raw socket read call then saw that
+   already-set ERROR status and permanently called io_dontwantread() /
+   io_dontwantwrite() on the socket — which is why the process hung forever
+   in `poll([], 0, 1000)` with an empty fd set and no further syscalls.
+   Fix: use h->err (not response->err) for both the status-transition check
+   and the errno set on early return.
+
+4. lib/http/http_canread.c: the header-parsing loop set
+   response->transfer = HTTP_TRANSFER_CHUNKED as an unconditional `else`
+   fallback for *any* header line that wasn't Content-Type: multipart or
+   Content-Length — i.e. every other header (Date, Server, Connection,
+   ETag, ...). Since Content-Length is rarely the last header in a real
+   response, this silently overwrote a correct HTTP_TRANSFER_LENGTH
+   designation (and zeroed content_length) as soon as one more header line
+   was parsed. The body was then fed through the chunked-transfer decoder,
+   which looks for a hex chunk-size line + CRLF in raw compressed binary
+   data that will never contain one — http_response_read() returned 0
+   forever while buffered bytes sat unconsumed, spinning at 100% CPU with
+   zero syscalls.
+   Fix: only set CHUNKED when the header is actually
+   "Transfer-Encoding: chunked", not as a catch-all default.
+
+5. lib/http/http_response_read.c: the HTTP_TRANSFER_LENGTH case (ordinary
+   Content-Length body, which is what this server actually sends) never
+   set `ret` at all — it stayed at its initial 0 forever, regardless of how
+   much body data was buffered and available. Any caller that keeps looping
+   while there's still buffered input and `ret>=0` (http_read_internal's own
+   HTTP_RECV_DATA case, and http_read()'s outer retry loop) span forever
+   making zero progress once this case was reached.
+   Fix: compute `ret = MIN(content_length - data_pos, buffer_LEN(in))` (the
+   same pattern already used by the CHUNKED case) and set
+   HTTP_STATUS_FINISH once fully consumed.
+
+6. lib/http/http_read.c: http_read()'s own outer "again:" retry loop looped
+   whenever `buffer_LEN(in)` (raw buffered bytes) was nonzero, without ever
+   checking whether its *own* destination buffer (n) still had room. Once
+   the destination was fully written in one internal call, every further
+   iteration called http_read_internal() with n==0, which correctly copies
+   zero bytes every time but never breaks the outer loop either — an
+   infinite loop making zero progress, independent of bug #3 above, that
+   also happened to hide bug #5's return-value bug for a while.
+   Fix: only loop again when the last internal call made forward progress
+   and the destination buffer isn't already full
+   (`got > 0 && (size_t)got < n && buffer_LEN(in)`); accumulate `ret`
+   properly across iterations instead of overwriting it.
+
+7. mediathek-list.c: parse_mediathek_list()'s inner `for(;;)` loop (the one
+   scanning one byte at a time past a closing `"],` to find the next
+   record) never broke when buffer_get() returned <= 0. Once the transfer
+   legitimately reached true end-of-stream, this spun forever re-requesting
+   the same unavailable byte at 100% CPU with zero syscalls, right after
+   the download had actually finished successfully (all entries already
+   parsed and written) — the tool would never print the final summary or
+   exit.
+   Fix: break out of the inner loop as soon as buffer_get() returns <= 0.
+
+8. mediathek-list.c: main()'s network-mode event loop (the non `-f` path)
+   had no exit condition at all tied to the transfer completing — it just
+   called io_waituntil2(1000) forever even after all data had been
+   downloaded, decompressed and parsed. This isn't a spin (it blocks
+   correctly in poll()), but the process would never terminate or print
+   "Processed N entries.".
+   Fix: break out of the outer for(;;) once the request has been sent and
+   buffer_EOF(&in) is true (mirrors the termination check already used by
+   the `-f <file>` code path).
+
+Verified: `./mediathek-list test` now completes in one run, ending with
+`Processed 25355 entries.` and well-formed JSON-ish output on stdout.
+
+Unrelated observation, not fixed (cosmetic/noisy, not a functional bug):
+http_socket_read() in lib/http/http_socket.c has an unconditional
+`#if 1 // def DEBUG_OUTPUT` block that writes "recv() = ..." to stderr on
+every single read, plus a "verify callback ok=0" debug line elsewhere from
+the TLS verify callback — these look like leftover debugging output that
+should be gated behind DEBUG_HTTP rather than always-on.

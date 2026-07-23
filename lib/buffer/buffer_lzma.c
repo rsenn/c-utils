@@ -34,11 +34,8 @@ buffer_lzmaread_op(fd_type fd, void* data, size_t n, buffer* b) {
   size_t a;
   int eof = 0;
 
-  if((r = buffer_feed(ctx->b))) {
-    // if((r = buffer_prefetch(ctx->b, LZMA_BLOCK_SIZE)) > 0) {
-  } else {
+  if((r = buffer_feed(ctx->b)) <= 0)
     return r;
-  }
 
   strm->next_in = (uint8*)buffer_PEEK(ctx->b);
   strm->avail_in = a = buffer_LEN(ctx->b);
