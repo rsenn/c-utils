@@ -1,152 +1,84 @@
-BUGS
-====
+- http-socket-read-unconditional-debug-output: `http_socket_read()` in
+  `lib/http/http_socket.c` has an unconditional `#if 1 // def
+  DEBUG_OUTPUT` block that writes "recv() = ..." to stderr on every
+  single read, plus a "verify callback ok=0" debug line elsewhere from
+  the TLS verify callback -- these look like leftover debugging output
+  that should be gated behind `DEBUG_HTTP` rather than always-on.
 
-mediathek-list: HTTP(S) client never actually downloaded/parsed the Filmliste [FIXED]
---------------------------------------------------------------------------
-Turned out to be five separate, independent bugs stacked on top of each
-other. Each one only became visible once the previous one was fixed, since
-each hid the next behind an early abort or an infinite loop. All five are
-now fixed; `./mediathek-list <keyword>` downloads the ~75 MB compressed
-Filmliste over HTTPS, decompresses it, filters it, prints matching entries,
-prints "Processed N entries." and exits.
-
-1. mediathek-list.c: parse_mediathek_list() treated any -1 return from
-   buffer_get_token() as fatal, without checking whether it was just EAGAIN
-   (routine on a non-blocking socket, happens on effectively every call once
-   the first TCP read's worth of data is consumed). This closed the input
-   buffer after the very first read.
-   Fix: only treat ret==-1 as fatal when errno isn't EAGAIN/EWOULDBLOCK.
-
-2. lib/buffer/buffer_lzma.c: buffer_lzmaread_op() treated buffer_feed()'s
-   return value of -1 (EAGAIN, "no new compressed bytes yet") the same as a
-   nonzero success and fell through to run lzma_code() with avail_in==0,
-   which produces a spurious ret==0 — indistinguishable from real
-   end-of-stream. This made an ordinary "not ready yet" look like the input
-   had legitimately closed.
-   Fix: return immediately (propagating -1 or 0 unchanged) whenever
-   buffer_feed() returns <= 0, instead of continuing into lzma_code().
-
-3. lib/http/http_read.c: computed the "was this just EAGAIN?" check using
-   response->err, which is a stale/mostly-unset field for TLS reads (it's
-   only populated by http_socket_read() on the narrow
-   TLS_ERR_SYSCALL/non-TLS path, never on ordinary SSL_ERROR_WANT_READ).
-   The correct, always-populated field is h->err. Because of this, the very
-   first ordinary WANT_READ during body transfer got misclassified as
-   HTTP_STATUS_ERROR, and the *next* raw socket read call then saw that
-   already-set ERROR status and permanently called io_dontwantread() /
-   io_dontwantwrite() on the socket — which is why the process hung forever
-   in `poll([], 0, 1000)` with an empty fd set and no further syscalls.
-   Fix: use h->err (not response->err) for both the status-transition check
-   and the errno set on early return.
-
-4. lib/http/http_canread.c: the header-parsing loop set
-   response->transfer = HTTP_TRANSFER_CHUNKED as an unconditional `else`
-   fallback for *any* header line that wasn't Content-Type: multipart or
-   Content-Length — i.e. every other header (Date, Server, Connection,
-   ETag, ...). Since Content-Length is rarely the last header in a real
-   response, this silently overwrote a correct HTTP_TRANSFER_LENGTH
-   designation (and zeroed content_length) as soon as one more header line
-   was parsed. The body was then fed through the chunked-transfer decoder,
-   which looks for a hex chunk-size line + CRLF in raw compressed binary
-   data that will never contain one — http_response_read() returned 0
-   forever while buffered bytes sat unconsumed, spinning at 100% CPU with
-   zero syscalls.
-   Fix: only set CHUNKED when the header is actually
-   "Transfer-Encoding: chunked", not as a catch-all default.
-
-5. lib/http/http_response_read.c: the HTTP_TRANSFER_LENGTH case (ordinary
-   Content-Length body, which is what this server actually sends) never
-   set `ret` at all — it stayed at its initial 0 forever, regardless of how
-   much body data was buffered and available. Any caller that keeps looping
-   while there's still buffered input and `ret>=0` (http_read_internal's own
-   HTTP_RECV_DATA case, and http_read()'s outer retry loop) span forever
-   making zero progress once this case was reached.
-   Fix: compute `ret = MIN(content_length - data_pos, buffer_LEN(in))` (the
-   same pattern already used by the CHUNKED case) and set
-   HTTP_STATUS_FINISH once fully consumed.
-
-6. lib/http/http_read.c: http_read()'s own outer "again:" retry loop looped
-   whenever `buffer_LEN(in)` (raw buffered bytes) was nonzero, without ever
-   checking whether its *own* destination buffer (n) still had room. Once
-   the destination was fully written in one internal call, every further
-   iteration called http_read_internal() with n==0, which correctly copies
-   zero bytes every time but never breaks the outer loop either — an
-   infinite loop making zero progress, independent of bug #3 above, that
-   also happened to hide bug #5's return-value bug for a while.
-   Fix: only loop again when the last internal call made forward progress
-   and the destination buffer isn't already full
-   (`got > 0 && (size_t)got < n && buffer_LEN(in)`); accumulate `ret`
-   properly across iterations instead of overwriting it.
-
-7. mediathek-list.c: parse_mediathek_list()'s inner `for(;;)` loop (the one
-   scanning one byte at a time past a closing `"],` to find the next
-   record) never broke when buffer_get() returned <= 0. Once the transfer
-   legitimately reached true end-of-stream, this spun forever re-requesting
-   the same unavailable byte at 100% CPU with zero syscalls, right after
-   the download had actually finished successfully (all entries already
-   parsed and written) — the tool would never print the final summary or
-   exit.
-   Fix: break out of the inner loop as soon as buffer_get() returns <= 0.
-
-8. mediathek-list.c: main()'s network-mode event loop (the non `-f` path)
-   had no exit condition at all tied to the transfer completing — it just
-   called io_waituntil2(1000) forever even after all data had been
-   downloaded, decompressed and parsed. This isn't a spin (it blocks
-   correctly in poll()), but the process would never terminate or print
-   "Processed N entries.".
-   Fix: break out of the outer for(;;) once the request has been sent and
-   buffer_EOF(&in) is true (mirrors the termination check already used by
-   the `-f <file>` code path).
-
-Verified: `./mediathek-list test` now completes in one run, ending with
-`Processed 25355 entries.` and well-formed JSON-ish output on stdout.
-
-Unrelated observation, not fixed (cosmetic/noisy, not a functional bug):
-http_socket_read() in lib/http/http_socket.c has an unconditional
-`#if 1 // def DEBUG_OUTPUT` block that writes "recv() = ..." to stderr on
-every single read, plus a "verify callback ok=0" debug line elsewhere from
-the TLS verify callback — these look like leftover debugging output that
-should be gated behind DEBUG_HTTP rather than always-on.
-
-- socket-intercept.c: every intercepted libc call (socket, listen, bind,
-  connect, accept, send*, recv*, read/write/readv/writev, getsockopt,
-  setsockopt, close, shutdown, fcntl, poll, ...) unconditionally logs a
-  line via buffer_puts(&o, ...) with no verbosity/debug flag gating it -
-  there's no way to load this LD_PRELOAD shim without full per-call
-  logging. intercept_init() only lets SOCKET_INTERCEPT_LOG redirect where
-  the log goes (file vs. stderr fallback), never whether it happens at
-  all. Should have an on/off (or level) check, e.g. another env var, so
-  the shim can be used for its actual interception behavior without
-  forcing a log line (with buffer contents via fmt_buf/fmt_sockaddr) for
+- socket-intercept-unconditional-logging: every intercepted libc call in
+  `socket-intercept.c` (socket, listen, bind, connect, accept, send*,
+  recv*, read/write/readv/writev, getsockopt, setsockopt, close,
+  shutdown, fcntl, poll, ...) unconditionally logs a line via
+  `buffer_puts(&o, ...)` with no verbosity/debug flag gating it -- there's
+  no way to load this LD_PRELOAD shim without full per-call logging.
+  `intercept_init()` only lets `SOCKET_INTERCEPT_LOG` redirect where the
+  log goes (file vs. stderr fallback), never whether it happens at all.
+  Should have an on/off (or level) check, e.g. another env var, so the
+  shim can be used for its actual interception behavior without forcing
+  a log line (with buffer contents via `fmt_buf`/`fmt_sockaddr`) for
   every single socket operation.
 
-- lib/byte.h: byte_equal_notimingattack() is declared (with __pure__, no
-  less) but has no implementation anywhere in the tree - no
-  lib/byte/byte_equal_notimingattack.c, no inline definition. Any caller
-  would fail to link. Found while writing tests/test_byte.c; left that
-  test as an empty stub rather than calling a function that doesn't
-  exist.
+- byte-equal-notimingattack-unimplemented: `byte_equal_notimingattack()`
+  is declared in `lib/byte.h` (with `__pure__`, no less) but has no
+  implementation anywhere in the tree -- no
+  `lib/byte/byte_equal_notimingattack.c`, no inline definition. Any
+  caller would fail to link. Found while writing `tests/test_byte.c`;
+  left that test as an empty stub rather than calling a function that
+  doesn't exist.
 
-- lib/array.h: array_shift() and array_chop() are declared but have no
-  implementation anywhere in the tree (no lib/array/array_shift.c or
-  array_chop.c). Any caller would fail to link. Found while writing
-  tests/test_array.c; left those tests as empty stubs.
+- array-shift-chop-unimplemented: `array_shift()` and `array_chop()` are
+  declared in `lib/array.h` but have no implementation anywhere in the
+  tree (no `lib/array/array_shift.c` or `array_chop.c`). Any caller
+  would fail to link. Found while writing `tests/test_array.c`; left
+  those tests as empty stubs.
 
-- lib/buffer.h: buffer_mmapshared() (the filename-taking variant) has no
-  implementation anywhere in the tree - only buffer_mmapshared_fd exists.
-  Its siblings buffer_mmapread/buffer_mmapprivate both have a real
-  filename-based implementation (open + call the _fd form, or call
-  mmap_read/mmap_private directly) in addition to their _fd counterpart;
-  buffer_mmapshared is missing that half. Any caller would fail to link.
-  Found while writing tests/test_buffer.c; left that test as an empty
-  stub.
+- buffer-mmapshared-unimplemented: `buffer_mmapshared()` (the
+  filename-taking variant) has no implementation anywhere in the tree --
+  only `buffer_mmapshared_fd` exists. Its siblings
+  `buffer_mmapread`/`buffer_mmapprivate` both have a real filename-based
+  implementation (open + call the `_fd` form, or call
+  `mmap_read`/`mmap_private` directly) in addition to their `_fd`
+  counterpart; `buffer_mmapshared` is missing that half. Any caller
+  would fail to link. Found while writing `tests/test_buffer.c`; left
+  that test as an empty stub.
 
-- tests/test_path.c: test_path_canonicalize() spins forever (100% CPU,
-  no progress) inside path_canonicalize() -> path_right() - confirmed
-  with gdb, stack sits at path_right() the whole time. This hangs the
-  shared `all_tests` binary completely, since unit_test_runner.c's
-  START() runs EXEC(path) before any of the newer EXEC(...) entries and
-  unit_test_run() has no per-test timeout. Not yet root-caused (didn't
-  dig into path_right()/path_canonicalize() itself). Whoever touches
-  path_canonicalize next should fix this before relying on `all_tests`
-  finishing at all.
+- path-canonicalize-spins-under-gdb: `test_path_canonicalize()` was
+  observed spinning forever (100% CPU, no progress) inside
+  `path_canonicalize()` -> `path_right()` under gdb, stack sitting at
+  `path_right()` the whole time. A later full run of
+  `build/x86_64-linux-debug/tests/all_tests` completed this test in
+  well under a second with no hang, and `lib/path/path_right.c` has
+  since been rewritten to the simpler skip-non-separators-then-skip-
+  separators form (matching the pattern below), so this may already be
+  resolved -- flagging in case it recurs, since a per-test timeout in
+  `unit_test_run()` (`tests/unit_test.c`) still doesn't exist and
+  `unit_test_runner.c`'s `START()` runs `EXEC(path)` before every other
+  group, so any hang there blocks the whole suite.
+
+- path-basename-empty-for-no-separator: `path_basename("path")` (no
+  separator anywhere in the input) returns `""` instead of `"path"`.
+  Root cause in `lib/path/path_basepos2.c`: it computes `n =
+  u8b_rchrs(x, len, PATHSEP_S_MIXED, ...)`, and `u8b_rchrs()` returns
+  `len` specifically to mean "no separator found" (same convention as
+  `byte_rchr`). `path_basepos2()`'s very first check, `if(n == len)
+  return n;`, treats that "not found" sentinel as if it were a valid
+  position, returning an index one past the end of the string (the
+  terminating NUL) instead of 0 (the whole string is the basename when
+  there's no separator). Confirmed via `tests/test_path.c`'s
+  `test_path_basename`.
+
+- path-skips-resets-position: `path_skips()` in `lib/path/path_skips.c`
+  is supposed to skip one path component (a run of non-separator chars)
+  plus its trailing separator run, cumulatively -- e.g. repeated calls
+  over `"//blah/la/lumpur"` should land at offsets 2, 7, 10. Instead it
+  always returns 0 unless the string starts with a separator, and even
+  then only ever returns the length of a single leading separator run.
+  Root cause: the function has two back-to-back for-loops -- the first
+  correctly advances `i` past the non-separator "name" part, but the
+  second loop starts with `for(i = 0; ...)`, resetting `i` back to 0 and
+  discarding everything the first loop found, so only the second loop's
+  separator-skipping ever has any effect. There's a correct, simpler
+  commented-out implementation directly below it in the same file (skip
+  non-separators, then skip separators, return total distance) that
+  matches the behavior `tests/test_path.c`'s `test_path_skips` expects --
+  the active version looks like a botched UTF-8-aware rewrite of it.

@@ -143,6 +143,8 @@ unit_test_run(struct unit_test* mu_, unit_test_func_t func, const char* name) {
   faillog_filename = "faillog-XXXXXX";
   run.testlog = unit_test_tmpfile(&testtmp, &testlog_filename);
   run.faillog = unit_test_tmpfile(&failtmp, &faillog_filename);
+  run.success = 0;
+  run.failure = 0;
 
   /*if(!muconf_ptr()->s) {
     buffer_1small = running->testlog;

@@ -158,18 +158,13 @@ TEST(test_path_absolute_sa) {}
  */
 
 TEST(test_path_collapse) {
+  /* path_collapse() collapses in place and returns the new length; it
+     does not take a stralloc* output argument. */
+  char buf[] = "/this/is/a/test/dir/..";
+  size_t n = path_collapse(buf, str_len(buf));
 
-  stralloc sa;
-  stralloc_init(&sa);
-
-  path_collapse("/this/is/a/test/dir/..", 0);
-
-  buffer_puts(buffer_1, "\n\"");
-  buffer_putsa(buffer_1, &sa);
-  buffer_puts(buffer_1, "\"");
-  buffer_putnlflush(buffer_1);
-
-  ASSERT_STRALLOCEQUALS(&sa, "/this/is/a/test");
+  ASSERT_EQ(str_len("/this/is/a/test"), n);
+  ASSERT_STR_EQUAL_N(buf, "/this/is/a/test", n);
 }
 
 #define RUN_PATH_TESTS() \

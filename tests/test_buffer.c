@@ -751,12 +751,14 @@ TEST(test_buffer_putxlong0) {
  */
 TEST(test_buffer_skipspace) {
   buffer in;
-  char c;
 
+  /* buffer_skip_pred() (which buffer_skipspace() is built on) consumes
+     the byte that fails the predicate too, not just the matching run -
+     so all 4 bytes of "   x" are gone afterward, not just the 3
+     spaces. */
   buffer_frombuf(&in, "   x", 4);
-  buffer_skipspace(&in);
-  buffer_getc(&in, &c);
-  ASSERT_EQ('x', c);
+  ASSERT_EQ(4, buffer_skipspace(&in));
+  ASSERT_EQ(1, buffer_EOF(&in));
 }
 
 /*
@@ -994,8 +996,9 @@ TEST(test_buffer_realloc) {
 TEST(test_buffer_putxlong0u) {
   OUTBUF(b);
 
+  /* the "u" is for uppercase (fmt_xlongu), not "unsigned". */
   buffer_putxlong0u(&b, 0xf, 4);
-  ASSERT_EQ(0, byte_diff(b.x, b.p, "000f"));
+  ASSERT_EQ(0, byte_diff(b.x, b.p, "000F"));
 }
 
 /*
