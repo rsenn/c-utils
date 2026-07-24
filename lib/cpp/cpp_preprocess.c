@@ -6,8 +6,8 @@ cpp_token*
 cpp_preprocess(cpp_token* tok) {
   tok = cpp_preprocess2(tok);
 
-  if(cond_incl)
-    cpp_error_tok(cond_incl->tok, "unterminated conditional directive");
+  if((cpp_ctx_get()->cur_cond_incl))
+    cpp_error_tok((cpp_ctx_get()->cur_cond_incl)->tok, "unterminated conditional directive");
 
   cpp_convert_tokens(tok);
   cpp_join_adjacent_string_literals(tok);

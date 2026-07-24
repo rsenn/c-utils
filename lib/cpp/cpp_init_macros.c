@@ -31,8 +31,7 @@ line_macro(cpp_token* tmpl) {
 /* __COUNTER__ is expanded to serial values starting from 0. */
 static cpp_token*
 counter_macro(cpp_token* tmpl) {
-  static int i = 0;
-  return cpp_new_num_token(i++, tmpl);
+  return cpp_new_num_token((cpp_ctx_get()->counter_val)++, tmpl);
 }
 
 /* "Fri Jul 24 01:32:50 2020" */
@@ -51,12 +50,12 @@ timestamp_macro(cpp_token* tmpl) {
 
 static cpp_token*
 base_file_macro(cpp_token* tmpl) {
-  return cpp_new_str_token(cpp_base_file, tmpl);
+  return cpp_new_str_token((cpp_ctx_get()->base_file_name), tmpl);
 }
 
 void
 cpp_init_macros(void) {
-  /* Define predefined cpp_macros */
+  /* Define predefined (cpp_ctx_get()->macros) */
   /*cpp_define("_LP64", "1");
   cpp_define("__C99_MACRO_WITH_VA_ARGS", "1");
   cpp_define("__ELF__", "1");

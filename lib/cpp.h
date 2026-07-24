@@ -29,6 +29,7 @@ typedef struct cpp_type cpp_type;
 typedef struct cpp_node cpp_node;
 typedef struct cpp_obj cpp_obj;
 typedef struct cpp_scope cpp_scope;
+typedef struct cpp_ctx cpp_ctx;
 
 /* cpp_token*/
 typedef enum {
@@ -67,6 +68,16 @@ typedef enum {
   TY_STRUCT,
   TY_UNION,
 } cpp_type_kind;
+
+/* Per-parser context. All mutable preprocessor state lives in a
+   cpp_ctx; cpp_ctx_get() returns the context implicitly used by the
+   rest of this API (auto-creating one on first use), and cpp_ctx_use()
+   switches it, so multiple independent parses (e.g. one per thread)
+   never share state. */
+cpp_ctx* cpp_ctx_new(void);
+void cpp_ctx_free(cpp_ctx*);
+cpp_ctx* cpp_ctx_get(void);
+void cpp_ctx_use(cpp_ctx*);
 
 int64 cpp_const_expr(cpp_token**, cpp_token*);
 bool cpp_convert_int(cpp_token*);

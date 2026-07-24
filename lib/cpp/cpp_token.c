@@ -10,13 +10,13 @@ cpp_token_new(cpp_token_kind kind, char* start, char* end) {
     tok->kind = kind;
     tok->loc = start;
     tok->len = end - start;
-    tok->file = cpp_current_file ? cpp_file_dup(cpp_current_file) : 0;
-    tok->filename = cpp_current_file ? cpp_current_file->display_name : 0;
-    tok->at_bol = cpp_at_bol;
-    tok->has_space = cpp_has_space;
+    tok->file = (cpp_ctx_get()->cur_file) ? cpp_file_dup((cpp_ctx_get()->cur_file)) : 0;
+    tok->filename = (cpp_ctx_get()->cur_file) ? (cpp_ctx_get()->cur_file)->display_name : 0;
+    tok->at_bol = (cpp_ctx_get()->bol);
+    tok->has_space = (cpp_ctx_get()->has_sp);
   }
 
-  cpp_at_bol = cpp_has_space = 0;
+  (cpp_ctx_get()->bol) = (cpp_ctx_get()->has_sp) = 0;
   return tok;
 }
 

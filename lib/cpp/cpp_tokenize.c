@@ -5,7 +5,7 @@
 /* Initialize line info for all tokens. */
 static void
 add_line_numbers(cpp_file* file, cpp_token* tok) {
-  char* p = cpp_current_file->contents;
+  char* p = (cpp_ctx_get()->cur_file)->contents;
   size_t n = 1;
 
   do {
@@ -27,10 +27,10 @@ cpp_tokenize(cpp_file* file) {
   cpp_token head = {};
   cpp_token* cur = &head;
 
-  cpp_current_file = file;
+  (cpp_ctx_get()->cur_file) = file;
 
-  cpp_at_bol = true;
-  cpp_has_space = 0;
+  (cpp_ctx_get()->bol) = true;
+  (cpp_ctx_get()->has_sp) = 0;
 
   while(*p) {
     /* Skip line comments. */
@@ -42,7 +42,7 @@ cpp_tokenize(cpp_file* file) {
       while(*p != '\n')
         p++;
 
-      cpp_has_space += p - q;
+      (cpp_ctx_get()->has_sp) += p - q;
       continue;
     }
 
@@ -54,22 +54,22 @@ cpp_tokenize(cpp_file* file) {
         cpp_error_at(p, "unclosed block comment");
 
       p += q + 2 + 2;
-      cpp_has_space += q + 2 + 2;
+      (cpp_ctx_get()->has_sp) += q + 2 + 2;
       continue;
     }
 
     /* Skip newline. */
     if(*p == '\n') {
       p++;
-      cpp_at_bol = true;
-      cpp_has_space++;
+      (cpp_ctx_get()->bol) = true;
+      (cpp_ctx_get()->has_sp)++;
       continue;
     }
 
     /* Skip whitespace characters. */
     if(isspace(*p)) {
       p++;
-      cpp_has_space++;
+      (cpp_ctx_get()->has_sp)++;
       continue;
     }
 

@@ -322,35 +322,86 @@ struct cpp_scope {
   hashmap tags;
 };
 
-/* used by cpp_macro.c */
-extern hashmap cpp_macros;
-extern cpp_macro* cpp_macro_list;
-extern cpp_macro** cpp_macro_ptr;
+/* Per-parser preprocessor state. Everything the preprocessor mutates
+   while running lives here instead of in file-scope globals or
+   function-local statics, so that independent cpp_ctx instances (e.g.
+   one per thread, or one per nested/recursive invocation) never bleed
+   state into each other.
 
-/* used by cpp_preprocess2.c */
-extern hashmap cpp_pragma_once;
-extern hashmap include_guards, include_list;
-extern cpp_cond_incl* cond_incl;
-extern strarray include_array;
+   There is still a single "current" context (see cpp_ctx_get()/
+   cpp_ctx_use() below) that the rest of the cpp_* API implicitly
+   operates on, addressed via the macros further down, so existing
+   call sites did not need to change to thread a context parameter
+   through explicitly.
 
-/* used by cpp_search_include.c */
-extern strarray cpp_include_paths;
-extern int cpp_include_next_idx;
+   Field names here are deliberately distinct from the macro names
+   they're exposed as below (e.g. `inc_array` vs. `include_array`) so
+   that `ctx->field` inside cpp_global_data.c itself isn't accidentally
+   re-expanded by those same macros. */
+struct cpp_ctx {
+  /* used by cpp_macro.c */
+  hashmap macros;
+  cpp_macro* macro_list;
+  cpp_macro** macro_ptr;
 
-/* used by cpp_tokenize.c */
-extern int cpp_at_bol, cpp_has_space;
+  /* used by cpp_preprocess2.c */
+  hashmap pragma_once;
+  hashmap inc_guards, inc_list;
+  cpp_cond_incl* cur_cond_incl;
+  strarray inc_array;
 
-extern cpp_file* cpp_current_file;
+  /* used by cpp_search_include.c */
+  strarray inc_paths;
+  int inc_next_idx;
+  hashmap inc_cache;
 
-/* used by cpp_const_expr.c */
-extern cpp_obj* locals;
+  /* used by cpp_tokenize.c */
+  int bol, has_sp;
+  cpp_file* cur_file;
 
-/* used by cpp_init_macros.c */
-extern char* cpp_base_file;
+  /* used by cpp_const_expr.c */
+  cpp_obj* local_vars;
+  cpp_scope* expr_scope;
+  cpp_scope root_scope;
+  int uniq_id;
 
-/* used by cpp_tokenize_file.c */
-extern cpp_file** cpp_input_files;
-extern int cpp_file_no;
+  /* used by cpp_init_macros.c */
+  char* base_file_name;
+  int counter_val; /* __COUNTER__ */
+
+  /* used by cpp_tokenize_file.c */
+  cpp_file** in_files;
+  int in_file_no;
+};
+
+#define cpp_macros (cpp_ctx_get()->macros)
+#define cpp_macro_list (cpp_ctx_get()->macro_list)
+#define cpp_macro_ptr (cpp_ctx_get()->macro_ptr)
+
+#define cpp_pragma_once (cpp_ctx_get()->pragma_once)
+#define include_guards (cpp_ctx_get()->inc_guards)
+#define include_list (cpp_ctx_get()->inc_list)
+#define cond_incl (cpp_ctx_get()->cur_cond_incl)
+#define include_array (cpp_ctx_get()->inc_array)
+
+#define cpp_include_paths (cpp_ctx_get()->inc_paths)
+#define cpp_include_next_idx (cpp_ctx_get()->inc_next_idx)
+#define cpp_include_cache (cpp_ctx_get()->inc_cache)
+
+#define cpp_at_bol (cpp_ctx_get()->bol)
+#define cpp_has_space (cpp_ctx_get()->has_sp)
+
+#define cpp_current_file (cpp_ctx_get()->cur_file)
+
+#define locals (cpp_ctx_get()->local_vars)
+#define cpp_const_expr_scope (cpp_ctx_get()->expr_scope)
+#define cpp_unique_id (cpp_ctx_get()->uniq_id)
+
+#define cpp_base_file (cpp_ctx_get()->base_file_name)
+#define cpp_counter_value (cpp_ctx_get()->counter_val)
+
+#define cpp_input_files (cpp_ctx_get()->in_files)
+#define cpp_file_no (cpp_ctx_get()->in_file_no)
 
 extern cpp_type *cpp_ty_void, *cpp_ty_bool, *cpp_ty_char, *cpp_ty_short, *cpp_ty_int, *cpp_ty_long, *cpp_ty_uchar,
     *cpp_ty_ushort, *cpp_ty_uint, *cpp_ty_ulong, *cpp_ty_float, *cpp_ty_double, *cpp_ty_ldouble;

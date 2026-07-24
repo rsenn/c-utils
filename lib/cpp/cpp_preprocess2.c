@@ -13,24 +13,24 @@ push_cond_incl(cpp_token* tok, bool included) {
   cpp_cond_incl* ci;
 
   if((ci = alloc_zero(sizeof(cpp_cond_incl)))) {
-    ci->next = cond_incl;
+    ci->next = (cpp_ctx_get()->cur_cond_incl);
     ci->ctx = IN_THEN;
     ci->tok = tok;
     ci->included = included;
   }
 
-  cond_incl = ci;
+  (cpp_ctx_get()->cur_cond_incl) = ci;
 
   return ci;
 }
 
 static void
 pop_cond_incl(void) {
-  cpp_cond_incl* ci = cond_incl;
+  cpp_cond_incl* ci = (cpp_ctx_get()->cur_cond_incl);
 
   alloc_free(ci);
 
-  cond_incl = cond_incl->next;
+  (cpp_ctx_get()->cur_cond_incl) = (cpp_ctx_get()->cur_cond_incl)->next;
 }
 
 cpp_token*
@@ -141,13 +141,13 @@ cpp_preprocess2(cpp_token* tok) {
     }
 
     if(cpp_equal(tok, "elif")) {
-      if(!cond_incl || cond_incl->ctx == IN_ELSE)
+      if(!(cpp_ctx_get()->cur_cond_incl) || (cpp_ctx_get()->cur_cond_incl)->ctx == IN_ELSE)
         cpp_error_tok(start, "stray #elif");
 
-      cond_incl->ctx = IN_ELIF;
+      (cpp_ctx_get()->cur_cond_incl)->ctx = IN_ELIF;
 
-      if(!cond_incl->included && cpp_eval_const_expr(&tok, tok))
-        cond_incl->included = true;
+      if(!(cpp_ctx_get()->cur_cond_incl)->included && cpp_eval_const_expr(&tok, tok))
+        (cpp_ctx_get()->cur_cond_incl)->included = true;
       else
         tok = cpp_skip_cond_incl(tok);
 
@@ -155,23 +155,23 @@ cpp_preprocess2(cpp_token* tok) {
     }
 
     if(cpp_equal(tok, "else")) {
-      if(!cond_incl || cond_incl->ctx == IN_ELSE)
+      if(!(cpp_ctx_get()->cur_cond_incl) || (cpp_ctx_get()->cur_cond_incl)->ctx == IN_ELSE)
         cpp_error_tok(start, "stray #else");
 
-      cond_incl->ctx = IN_ELSE;
+      (cpp_ctx_get()->cur_cond_incl)->ctx = IN_ELSE;
       tok = cpp_skip_line(tok->next);
 
-      if(cond_incl->included)
+      if((cpp_ctx_get()->cur_cond_incl)->included)
         tok = cpp_skip_cond_incl(tok);
 
       continue;
     }
 
     if(cpp_equal(tok, "endif")) {
-      if(!cond_incl)
+      if(!(cpp_ctx_get()->cur_cond_incl))
         cpp_error_tok(start, "stray #endif");
 
-      cond_incl = cond_incl->next;
+      (cpp_ctx_get()->cur_cond_incl) = (cpp_ctx_get()->cur_cond_incl)->next;
       //  pop_cond_incl();
       tok = cpp_skip_line(tok->next);
       continue;
@@ -188,7 +188,7 @@ cpp_preprocess2(cpp_token* tok) {
     }
 
     if(cpp_equal(tok, "pragma") && cpp_equal(tok->next, "once")) {
-      hashmap_put(&cpp_pragma_once, tok->file->name, (void*)1);
+      hashmap_put(&(cpp_ctx_get()->pragma_once), tok->file->name, (void*)1);
       tok = cpp_skip_line(tok->next->next);
       continue;
     }
@@ -231,26 +231,26 @@ include_file(cpp_token* tok, char* path, cpp_token* filename_tok) {
 #endif
 
   /* Check for "#pragma once" */
-  if(hashmap_get(&cpp_pragma_once, path))
+  if(hashmap_get(&(cpp_ctx_get()->pragma_once), path))
     return tok;
 
   /* If we read the same file before, and if the file was guarded
      by the usual #ifndef ... #endif pattern, we may be able to
      cpp_skip the file without opening it. */
-  if((guard_name = hashmap_get(&include_guards, path)) && hashmap_get(&cpp_macros, guard_name))
+  if((guard_name = hashmap_get(&(cpp_ctx_get()->inc_guards), path)) && hashmap_get(&(cpp_ctx_get()->macros), guard_name))
     return tok;
 
   if(!(tok2 = cpp_tokenize_file(path)))
     cpp_error_tok(filename_tok, "%s: cannot open file: %s", path, strerror(errno));
 
-  if(!(ptrdiff_t)hashmap_get(&include_list, path)) {
+  if(!(ptrdiff_t)hashmap_get(&(cpp_ctx_get()->inc_list), path)) {
     char* name = str_dup(filename_tok->file->name);
-    hashmap_put(&include_list, path, name);
-    strarray_push(&include_array, path);
+    hashmap_put(&(cpp_ctx_get()->inc_list), path, name);
+    strarray_push(&(cpp_ctx_get()->inc_array), path);
   }
 
   if((guard_name = cpp_detect_include_guard(tok2)))
-    hashmap_put(&include_guards, path, guard_name);
+    hashmap_put(&(cpp_ctx_get()->inc_guards), path, guard_name);
 
   return cpp_token_append(tok2, tok);
 }

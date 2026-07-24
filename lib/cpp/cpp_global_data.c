@@ -1,30 +1,39 @@
 #include "../cpp_internal.h"
+#include "../thread.h"
+#include "../alloc.h"
 
-/* used by cpp_macro.c */
-hashmap cpp_macros = HASHMAP_INIT();
-cpp_macro* cpp_macro_list = 0;
-cpp_macro** cpp_macro_ptr = &cpp_macro_list;
+static thread_local cpp_ctx* cpp_ctx_current;
 
-/* used by cpp_preprocess2.c */
-hashmap cpp_pragma_once = HASHMAP_INIT();
-hashmap include_guards = HASHMAP_INIT(), include_list = HASHMAP_INIT();
-cpp_cond_incl* cond_incl = 0;
-strarray include_array = {};
+cpp_ctx*
+cpp_ctx_new(void) {
+  cpp_ctx* ctx = alloc_zero(sizeof(cpp_ctx));
 
-/* used by cpp_search_include.c */
-strarray cpp_include_paths = STRARRAY_INIT();
-int cpp_include_next_idx = 0;
+  ctx->macro_ptr = &ctx->macro_list;
+  ctx->expr_scope = &ctx->root_scope;
 
-/* used by cpp_tokenize.c */
-int cpp_at_bol = 0, cpp_has_space = 0;
-cpp_file* cpp_current_file = 0;
+  return ctx;
+}
 
-/* used by cpp_const_expr.c */
-cpp_obj* locals = 0;
+void
+cpp_ctx_free(cpp_ctx* ctx) {
+  strarray_free(&ctx->inc_array);
+  strarray_free(&ctx->inc_paths);
 
-/* used by cpp_init_macros.c */
-char* cpp_base_file = 0;
+  if(cpp_ctx_current == ctx)
+    cpp_ctx_current = 0;
 
-/* used by cpp_tokenize_file.c */
-cpp_file** cpp_input_files = 0;
-int cpp_file_no = 0;
+  alloc_free(ctx);
+}
+
+cpp_ctx*
+cpp_ctx_get(void) {
+  if(!cpp_ctx_current)
+    cpp_ctx_current = cpp_ctx_new();
+
+  return cpp_ctx_current;
+}
+
+void
+cpp_ctx_use(cpp_ctx* ctx) {
+  cpp_ctx_current = ctx;
+}

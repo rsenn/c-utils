@@ -5,7 +5,7 @@
 #include "../fmt.h"
 #include "../str.h"
 
-static cpp_scope* scope = &(cpp_scope){};
+#define scope ((cpp_ctx_get()->expr_scope))
 
 static cpp_node* conditional(cpp_token**, cpp_token*);
 static int64 eval(cpp_node* node);
@@ -113,8 +113,8 @@ new_lvar(char* name, cpp_type* ty) {
 
   if((var = new_var(name, ty))) {
     var->is_local = true;
-    var->next = locals;
-    locals = var;
+    var->next = (cpp_ctx_get()->local_vars);
+    (cpp_ctx_get()->local_vars) = var;
   }
 
   return var;
@@ -199,9 +199,8 @@ static char*
 new_unique_name(void) {
   char buf[FMT_LONG + 4] = {'.', 'L', '.', '.'};
   size_t pos = 4;
-  static int id = 0;
 
-  pos += fmt_int(&buf[pos], id++);
+  pos += fmt_int(&buf[pos], (cpp_ctx_get()->uniq_id)++);
   return str_ndup(buf, pos);
 
   // return cpp_format(".L..%d", id++);
