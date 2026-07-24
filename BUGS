@@ -107,3 +107,46 @@ http_socket_read() in lib/http/http_socket.c has an unconditional
 every single read, plus a "verify callback ok=0" debug line elsewhere from
 the TLS verify callback — these look like leftover debugging output that
 should be gated behind DEBUG_HTTP rather than always-on.
+
+- socket-intercept.c: every intercepted libc call (socket, listen, bind,
+  connect, accept, send*, recv*, read/write/readv/writev, getsockopt,
+  setsockopt, close, shutdown, fcntl, poll, ...) unconditionally logs a
+  line via buffer_puts(&o, ...) with no verbosity/debug flag gating it -
+  there's no way to load this LD_PRELOAD shim without full per-call
+  logging. intercept_init() only lets SOCKET_INTERCEPT_LOG redirect where
+  the log goes (file vs. stderr fallback), never whether it happens at
+  all. Should have an on/off (or level) check, e.g. another env var, so
+  the shim can be used for its actual interception behavior without
+  forcing a log line (with buffer contents via fmt_buf/fmt_sockaddr) for
+  every single socket operation.
+
+- lib/byte.h: byte_equal_notimingattack() is declared (with __pure__, no
+  less) but has no implementation anywhere in the tree - no
+  lib/byte/byte_equal_notimingattack.c, no inline definition. Any caller
+  would fail to link. Found while writing tests/test_byte.c; left that
+  test as an empty stub rather than calling a function that doesn't
+  exist.
+
+- lib/array.h: array_shift() and array_chop() are declared but have no
+  implementation anywhere in the tree (no lib/array/array_shift.c or
+  array_chop.c). Any caller would fail to link. Found while writing
+  tests/test_array.c; left those tests as empty stubs.
+
+- lib/buffer.h: buffer_mmapshared() (the filename-taking variant) has no
+  implementation anywhere in the tree - only buffer_mmapshared_fd exists.
+  Its siblings buffer_mmapread/buffer_mmapprivate both have a real
+  filename-based implementation (open + call the _fd form, or call
+  mmap_read/mmap_private directly) in addition to their _fd counterpart;
+  buffer_mmapshared is missing that half. Any caller would fail to link.
+  Found while writing tests/test_buffer.c; left that test as an empty
+  stub.
+
+- tests/test_path.c: test_path_canonicalize() spins forever (100% CPU,
+  no progress) inside path_canonicalize() -> path_right() - confirmed
+  with gdb, stack sits at path_right() the whole time. This hangs the
+  shared `all_tests` binary completely, since unit_test_runner.c's
+  START() runs EXEC(path) before any of the newer EXEC(...) entries and
+  unit_test_run() has no per-test timeout. Not yet root-caused (didn't
+  dig into path_right()/path_canonicalize() itself). Whoever touches
+  path_canonicalize next should fix this before relying on `all_tests`
+  finishing at all.

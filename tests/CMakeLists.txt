@@ -13,4 +13,20 @@ endif(OVERRIDE_DEPS)
 
 file(GLOB TESTS test_*.c)
 
+string(REGEX REPLACE "([^ ;]*/tests/test_|\\.c)" "" TEST_NAMES "${TESTS}")
+#message("Tests: ${TEST_NAMES}")
+#foreach(TEST ${TEST_NAMES})
+#  add_test(NAME test_${TEST} COMMAND test_${TEST})
+#endforeach()
+
 add_executable(all_tests all_tests.c unit_test_runner.c unit_test.h unit_test.c ${TESTS})
+
+
+if(DO_TESTS)                                                                         
+  include(CTest)                                                                   
+                                                               
+add_test(NAME all_tests COMMAND all_tests)
+
+endif()
+
+

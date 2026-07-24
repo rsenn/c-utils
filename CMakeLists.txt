@@ -47,7 +47,9 @@ option(USE_SSL "ssl encryption" ON)
 
 option(BUILD_SHARED_LIBS "build shared library" OFF)
 option(BUILD_EXAMPLES "build examples" OFF)
-option(BUILD_TESTS "build tests" OFF)
+option(BUILD_TESTS "build tests" ON)
+option(DO_TESTS "Perform tests" ON)
+
 
 if(CMAKE_C_COMPILER MATCHES "musl")
   set(MUSL TRUE)

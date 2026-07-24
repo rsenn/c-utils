@@ -13,6 +13,12 @@ TESTS(strlist);
 TESTS(path);
 TESTS(tuple);
 TESTS(iarray);
+TESTS(alloc);
+TESTS(array);
+TESTS(buffer);
+TESTS(byte);
+TESTS(case);
+TESTS(errmsg);
 
 START() {
   EXEC(stralloc);
@@ -20,4 +26,10 @@ START() {
   EXEC(path);
   EXEC(tuple);
   EXEC(iarray);
+  EXEC(alloc);
+  EXEC(array);
+  EXEC(buffer);
+  EXEC(byte);
+  EXEC(case);
+  EXEC(errmsg);
 }
