@@ -188,7 +188,12 @@ unit_test_call(struct unit_test* mu_, unit_test_func_t func) {
 
 #define START() void unit_test_execute(struct unit_test* mu_)
 #define TESTS(name) void unit_test_execute_##name(struct unit_test* mu_)
-#define EXEC(name) unit_test_execute_##name(mu_)
+#define EXEC(name) \
+  do { \
+    buffer_putm_internal(mu_->testlog, "\n", BOLD(#name), "\n", NULL); \
+    buffer_flush(mu_->testlog); \
+    unit_test_execute_##name(mu_); \
+  } while(0)
 
 void unit_test_execute(struct unit_test* mu_);
 
