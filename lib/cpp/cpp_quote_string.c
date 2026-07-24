@@ -4,7 +4,7 @@
 
 /* Double-quote a given string and returns it. */
 char*
-cpp_quote_string(char* str) {
+cpp_quote_string(const char* str) {
   size_t bufsize = 3;
   char *buf, *p;
 

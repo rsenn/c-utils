@@ -9,11 +9,9 @@
 #undef MAP_USE_HASHMAP
 #define MAP_USE_HMAP 1
 #include "lib/map.h"
-
 static bool opt_dump = false;
 static MAP_T include_map;
 static strarray includer_list;
-
 static int
 usage(char* a0) {
   buffer_putm_internal(buffer_2,
@@ -50,8 +48,8 @@ main(int argc, char** argv) {
       {"MX", 1, &show_deps, 128},
       {0, 0, 0, 0},
   };
-  out = buffer_1;
 
+  out = buffer_1;
   MAP_NEW(include_map);
   errmsg_iam(str_basename(argv[0]));
 
@@ -66,7 +64,6 @@ main(int argc, char** argv) {
         char* name = str_ndup(unix_optarg, namelen);
         char* value = unix_optarg[namelen] ? &unix_optarg[namelen + 1] : "";
         cpp_define(pp, name, value);
-
         alloc_free(name);
         break;
       }
@@ -111,30 +108,33 @@ main(int argc, char** argv) {
       }
     }
   }
+
   fn = "/dev/stdin";
 
   if(argv[unix_optind] && str_diff(argv[unix_optind], "-")) {
     fn = argv[unix_optind];
   }
-  cpp_token* tok;
 
+  cpp_token* tok;
   pp->base_file_name = fn;
+
   if(!(tok = cpp_tokenize_file(pp, fn))) {
     errmsg_warnsys("open/read", 0);
     return 1;
   }
-  cpp_init_macros(pp);
 
+  cpp_init_macros(pp);
   cpp_macro** ptr = pp->macro_ptr;
   cpp_token* tok2 = no_process ? tok : cpp_preprocess(pp, tok);
-
   char** str;
+
   strarray_foreach(&pp->inc_array, str) {
     char* included_by = hashmap_get(&pp->inc_list, *str);
     int len = str_len(included_by);
-    strarray_push_unique(&includer_list, included_by);
 
+    strarray_push_unique(&includer_list, included_by);
     strarray* arr;
+
     if(!(arr = MAP_GET(include_map, included_by, len))) {
       strarray stra;
       strarray_init(&stra);
@@ -143,8 +143,8 @@ main(int argc, char** argv) {
     }
     strarray_push_unique(arr, *str);
   }
-  if(show_deps >= 256) {
 
+  if(show_deps >= 256) {
     strarray_foreach(&includer_list, str) {
       char* included_by;
       if((included_by = hashmap_get(&pp->inc_list, *str))) {
@@ -155,7 +155,6 @@ main(int argc, char** argv) {
       }
     }
     return 0;
-
   } else if(show_deps >= 128) {
     strarray_foreach(&includer_list, str) {
       int len = str_len(*str);
@@ -163,19 +162,15 @@ main(int argc, char** argv) {
       buffer_puts(buffer_1, *str);
       buffer_puts(buffer_1, ":\n");
       char** str2;
-
       strarray_foreach(arr, str2) { buffer_putm_internal(buffer_1, "  ", *str2, "\n", 0); }
       buffer_putnlflush(buffer_1);
     }
     return 0;
   }
-  /*{
-    char** ptr;
-    strarray_foreach(a, ptr) { buffer_putm_internal(buffer_2, "  ", *ptr, "\n", 0); }
-
-    buffer_putnlflush(buffer_2);
-  }*/
-
+  /*   ptr;
+      strarray_foreach(a, ptr) { buffer_putm_internal(buffer_2, "  ", *ptr, "\n", 0); }
+      buffer_putnlflush(buffer_2);
+    }*/
   if(show_deps) {
     char** inc;
     buffer_put(buffer_1, fn, str_rchr(fn, '.'));
@@ -186,13 +181,13 @@ main(int argc, char** argv) {
         if(path_is_absolute(*inc))
           continue;
       size_t n = path_is_dotslash(*inc);
-
       buffer_putc(buffer_1, ' ');
       buffer_puts(buffer_1, *inc + n);
     }
     buffer_putnlflush(buffer_1);
     return 0;
   }
+
   if(opt_dump)
     for(cpp_token* t = tok2; t; t = t->next)
       cpp_token_dump(buffer_2, t);
@@ -202,10 +197,8 @@ main(int argc, char** argv) {
     for(cpp_macro* m = *ptr; m; m = m->next) {
       cpp_print_macro(buffer_2, m);
       buffer_flush(buffer_2);
-
       if(&m->next == pp->macro_ptr)
         break;
     }
-
   return !tok2;
 }

@@ -108,7 +108,7 @@ cpp_token* cpp_paste(cpp_ctx*, cpp_token*, cpp_token*);
 cpp_token* cpp_preprocess2(cpp_ctx*, cpp_token*);
 cpp_token* cpp_preprocess(cpp_ctx*, cpp_token*);
 void cpp_print_tokens(buffer*, cpp_token*, bool);
-char* cpp_quote_string(char*);
+char* cpp_quote_string(const char*);
 cpp_token* cpp_read_const_expr(cpp_ctx*, cpp_token**, cpp_token*);
 char* cpp_read_file(char*);
 char* cpp_read_include_filename(cpp_ctx*, cpp_token**, cpp_token*, bool*);
