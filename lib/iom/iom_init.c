@@ -1,4 +1,5 @@
-#include "io_internal.h"
+#include "../io_internal.h"
+#include "../iom.h"
 #ifdef HAVE_EPOLL
 #include <sys/epoll.h>
 #endif

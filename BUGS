@@ -42,19 +42,6 @@
   would fail to link. Found while writing `tests/test_buffer.c`; left
   that test as an empty stub.
 
-- path-canonicalize-spins-under-gdb: `test_path_canonicalize()` was
-  observed spinning forever (100% CPU, no progress) inside
-  `path_canonicalize()` -> `path_right()` under gdb, stack sitting at
-  `path_right()` the whole time. A later full run of
-  `build/x86_64-linux-debug/tests/all_tests` completed this test in
-  well under a second with no hang, and `lib/path/path_right.c` has
-  since been rewritten to the simpler skip-non-separators-then-skip-
-  separators form (matching the pattern below), so this may already be
-  resolved -- flagging in case it recurs, since a per-test timeout in
-  `unit_test_run()` (`tests/unit_test.c`) still doesn't exist and
-  `unit_test_runner.c`'s `START()` runs `EXEC(path)` before every other
-  group, so any hang there blocks the whole suite.
-
 - path-basename-empty-for-no-separator: `path_basename("path")` (no
   separator anywhere in the input) returns `""` instead of `"path"`.
   Root cause in `lib/path/path_basepos2.c`: it computes `n =
@@ -82,3 +69,34 @@
   non-separators, then skip separators, return total distance) that
   matches the behavior `tests/test_path.c`'s `test_path_skips` expects --
   the active version looks like a botched UTF-8-aware rewrite of it.
+
+- fmt-escapecharhtml-undeclared: `fmt_escapecharhtml()` is defined (as a
+  GNU `__attribute__((alias))` to `fmt_escapecharxml` in
+  `lib/fmt/fmt_escapecharxml.c`, or directly in
+  `lib/fmt/fmt_escapecharhtml.c` for non-GNUC compilers) but is never
+  declared in `lib/fmt.h`, unlike every other `fmt_*` function. Any
+  caller outside the `fmt` module needs its own forward declaration to
+  use it without an implicit-declaration warning/error. Found while
+  writing `tests/test_fmt.c`.
+
+- iom-epoll-kqueue-never-enabled: `lib/iom/*.c` (`iom_init`, `iom_add`,
+  `iom_wait`) is written entirely against `HAVE_EPOLL`/`HAVE_KQUEUE`, but
+  neither macro is ever defined by the build: the enabling line in
+  `lib/io_internal.h` (`//# define HAVE_EPOLL 1`) is commented out, the
+  `USE_EPOLL` option in the top-level `CMakeLists.txt` sits inside a
+  `[[...]]`-bracket comment (so it isn't even a live `option()`), and the
+  `check_function_exists(epoll_wait ...)` / `add_definitions(-DHAVE_EPOLL=1)`
+  detection logic right below it is commented out with `#` too. With
+  neither macro defined: `iom_init()` never assigns `c->ctx`, so its
+  `return (c->ctx != -1)` reads an uninitialized field; `iom_add()` falls
+  off the end of a non-`void` function with no `return` at all (the
+  `#else` arm is just a `#warning`); and `iom_wait()`'s "we're the thread
+  responsible for polling" branch skips the actual `epoll_wait`/`kevent`
+  call entirely and falls straight through to `sem_post(&c->sem); return
+  1;`, reporting a fake ready event without ever touching `*s`/`*revents`.
+  `iom` also isn't in `lib/CMakeLists.txt`'s `MODSUBDIRS` list at all, so
+  none of this currently gets built by anything. Found while writing
+  `tests/test_iom.c`; left `iom_add`/`iom_wait` untested (calling them
+  would exercise undefined behavior) with only `iom_init`/`iom_abort`
+  covered, pending someone deciding whether to wire up epoll support for
+  real.

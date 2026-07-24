@@ -1,6 +1,6 @@
 #include <stdlib.h>
-#include "byte.h"
-#include "iob_internal.h"
+#include "../byte.h"
+#include "../iob_internal.h"
 
 io_batch*
 iob_new(int hint_entries) {

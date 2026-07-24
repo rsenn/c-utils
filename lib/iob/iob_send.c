@@ -3,12 +3,12 @@
 #include <windows.h>
 #include <mswsock.h>
 #include <errno.h>
-#include "io_internal.h"
-#include "iob_internal.h"
+#include "../io_internal.h"
+#include "../iob_internal.h"
 #include <stdio.h>
 
 int64
-iob_send(int64 s, io_batch* b) {
+iob_send(fd_type s, io_batch* b) {
   /* Windows has a sendfile called TransmitFile, which can send one
    * header and one trailer buffer. */
   iob_entry *x, *last;
@@ -19,7 +19,7 @@ iob_send(int64 s, io_batch* b) {
   if(b->bytesleft == 0)
     return 0;
   sent = -1;
-  e = iarray_get(&io_fds, s);
+  e = io_getentry(s);
   if(!e) {
     errno = EBADF;
     return -3;
@@ -111,7 +111,6 @@ iob_send(int64 s, io_batch* b) {
 
 #else
 
-#include "havebsdsf.h"
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <sys/uio.h>
@@ -121,12 +120,12 @@ iob_send(int64 s, io_batch* b) {
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
-#include "havealloca.h"
-#include "io_internal.h"
-#include "iob_internal.h"
+#include <alloca.h>
+#include "../io_internal.h"
+#include "../iob_internal.h"
 
 int64
-iob_send(int64 s, io_batch* b) {
+iob_send(fd_type s, io_batch* b) {
   iob_entry *e, *last;
   io_entry* E;
   struct iovec* v;
@@ -149,7 +148,7 @@ iob_send(int64 s, io_batch* b) {
 
   if(b->bytesleft == 0)
     return 0;
-  E = iarray_get(&io_fds, s);
+  E = io_getentry(s);
   if(!E) {
     errno = EBADF;
     return -3;
@@ -253,14 +252,10 @@ iob_send(int64 s, io_batch* b) {
         if(!nozerocopy && sum >= 8 * 1024) {
           /* MSG_ZEROCOPY has page table management overhead,
            * it only pays off after 8k or so */
-          if(E->zerocopy == 0) {
-            if(setsockopt(s, SOL_SOCKET, SO_ZEROCOPY, (int[]){1}, sizeof(int)) == 0) {
-              E->zerocopy = 1;
-              ZEROCOPY = MSG_ZEROCOPY;
-            } else
-              nozerocopy = 1;
-          } else
+          if(setsockopt(s, SOL_SOCKET, SO_ZEROCOPY, (int[]){1}, sizeof(int)) == 0)
             ZEROCOPY = MSG_ZEROCOPY;
+          else
+            nozerocopy = 1;
         }
 #endif
         if(headers == 1) /* cosmetics for strace */

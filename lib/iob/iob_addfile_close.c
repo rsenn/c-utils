@@ -1,4 +1,4 @@
-#include "iob_internal.h"
+#include "../iob_internal.h"
 
 static void
 cleanup(struct iob_entry* x) {
@@ -6,7 +6,7 @@ cleanup(struct iob_entry* x) {
 }
 
 int
-iob_addfile_close(io_batch* b, int64 fd, uint64 off, uint64 n) {
+iob_addfile_close(io_batch* b, fd_type fd, uint64 off, uint64 n) {
   iob_entry* e;
   if(n == 0) {
     io_close(fd);

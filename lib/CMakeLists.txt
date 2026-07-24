@@ -40,6 +40,8 @@ set(MODSUBDIRS
     iarray
     ihex
     io
+    iob
+    iom
     json
     mmap
     ndelay
@@ -136,6 +138,8 @@ if(NOT BUILD_SHARED AND NOT BUILD_STATIC)
   target_link_libraries(hmap PRIVATE str)
   target_link_libraries(http PRIVATE fmt dns errmsg byte io scan socket stralloc str ${TLS_LIBRARIES})
   target_link_libraries(io PRIVATE buffer iarray array byte fmt open taia ${LIBMSWSOCK})
+  target_link_libraries(iob PRIVATE io array byte str)
+  target_link_libraries(iom PRIVATE ${LIBPTHREAD})
   target_link_libraries(json PRIVATE hashmap fmt scan)
   target_link_libraries(bmap PRIVATE str)
   target_link_libraries(mmap PRIVATE seek open scan ${LIBPSAPI})

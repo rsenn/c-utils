@@ -1,5 +1,5 @@
 #include <stdlib.h>
-#include "iob_internal.h"
+#include "../iob_internal.h"
 
 static void
 cleanup(struct iob_entry* x) {

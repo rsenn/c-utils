@@ -1,4 +1,5 @@
-#include "io_internal.h"
+#include "../io_internal.h"
+#include "../iom.h"
 
 int
 iom_abort(iomux_t* c) {

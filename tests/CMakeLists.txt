@@ -8,7 +8,7 @@ link_directories(${CMAKE_BINARY_DIR})
 if(OVERRIDE_DEPS)
   link_libraries(${OVERRIDE_DEPS})
 else(OVERRIDE_DEPS)
-  link_libraries(cpp hashmap iarray strlist errmsg path stralloc mmap str taia tai buffer open uint32)
+  link_libraries(cpp hashmap iarray strlist errmsg path stralloc mmap str taia tai buffer open uint32 fmt iob io iom)
 endif(OVERRIDE_DEPS)
 
 file(GLOB TESTS test_*.c)

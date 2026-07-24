@@ -1,5 +1,5 @@
 #include <stdlib.h>
-#include "iob_internal.h"
+#include "../iob_internal.h"
 
 int
 iob_addbuf_internal(io_batch* b, const void* buf, uint64 n, void (*cleanup)(struct iob_entry* x)) {

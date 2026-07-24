@@ -56,10 +56,26 @@ TEST(test_iarray_get) {
   ASSERT_EQ(5, *(size_t*)iarray_get(&a, 4));
 }
 
+/*
+ * void iarray_free(iarray*);
+ */
+TEST(test_iarray_free) {
+  iarray a;
+  iarray_init(&a, sizeof(ssize_t));
+
+  *(size_t*)iarray_allocate(&a, 0) = 1;
+  *(size_t*)iarray_allocate(&a, 20) = 2;
+
+  iarray_free(&a);
+
+  ASSERT_EQ(0, (size_t)a.pages[0]);
+}
+
 #define RUN_STRALLOC_TESTS() \
   RUN(test_iarray_init); \
   RUN(test_iarray_allocate); \
   RUN(test_iarray_length); \
-  RUN(test_iarray_get);
+  RUN(test_iarray_get); \
+  RUN(test_iarray_free);
 
 TESTS(iarray) { RUN_STRALLOC_TESTS(); }

@@ -19,6 +19,10 @@ TESTS(buffer);
 TESTS(byte);
 TESTS(case);
 TESTS(errmsg);
+TESTS(fmt);
+TESTS(iob);
+TESTS(io);
+TESTS(iom);
 
 START() {
   EXEC(stralloc);
@@ -32,4 +36,8 @@ START() {
   EXEC(byte);
   EXEC(case);
   EXEC(errmsg);
+  EXEC(fmt);
+  EXEC(iob);
+  EXEC(io);
+  EXEC(iom);
 }

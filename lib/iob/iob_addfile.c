@@ -1,7 +1,7 @@
-#include "iob_internal.h"
+#include "../iob_internal.h"
 
 int
-iob_addfile(io_batch* b, int64 fd, uint64 off, uint64 n) {
+iob_addfile(io_batch* b, fd_type fd, uint64 off, uint64 n) {
   iob_entry* e;
   if(n == 0)
     return 1;

@@ -1,4 +1,4 @@
-#include "iob.h"
+#include "../iob.h"
 
 uint64
 iob_bytesleft(const io_batch* b) {
