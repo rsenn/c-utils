@@ -149,7 +149,7 @@ unit_test_run(struct unit_test* mu_, unit_test_func_t func, const char* name) {
     buffer_2 = running->testlog;
   }*/
 
-  fprintf(stderr, "RUN %s mu_->testlog=%p\n", name, (void*)mu_->testlog); rc = unit_test_call(running, func);
+  rc = unit_test_call(running, func);
 
   if(running->failure == 0) {
     buffer_putm_internal(mu_->testlog, PASS("."), NULL);

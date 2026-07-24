@@ -1202,6 +1202,7 @@ if(ENABLE_SHARED AND BUILD_SHARED_LIBS)
 endif(ENABLE_SHARED AND BUILD_SHARED_LIBS)
 
 if(BUILD_TESTS)
+  enable_testing()
   add_subdirectory(tests)
 endif(BUILD_TESTS)
 if(BUILD_EXAMPLES)

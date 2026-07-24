@@ -22,11 +22,8 @@ string(REGEX REPLACE "([^ ;]*/tests/test_|\\.c)" "" TEST_NAMES "${TESTS}")
 add_executable(all_tests all_tests.c unit_test_runner.c unit_test.h unit_test.c ${TESTS})
 
 
-if(DO_TESTS)                                                                         
-  include(CTest)                                                                   
-                                                               
-add_test(NAME all_tests COMMAND all_tests)
-
+if(DO_TESTS)
+  include(CTest)
+  add_test(NAME all_tests COMMAND all_tests)
 endif()
-
 
