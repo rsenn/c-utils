@@ -571,9 +571,13 @@ sendmsg(int sockfd, const struct msghdr* msg, int flags) {
 }
 
 VISIBLE int
-sendmmsg(int sockfd, struct mmsghdr* msgvec, unsigned vlen, int flags) {
+sendmmsg(int sockfd, 
+#ifdef __ANDROID__
+    const
+#endif
+    struct mmsghdr* msgvec, unsigned vlen, int flags) {
   Sock* s;
-  int r = libc_sendmmsg(sockfd, msgvec, vlen, flags);
+  int r = libc_sendmmsg(sockfd, (struct mmsghdr*)msgvec, vlen, flags);
 
   if((s = intercept_find(&intercept_fds, sockfd))) {
     put_process();
@@ -769,9 +773,13 @@ recvmsg(int sockfd, struct msghdr* msg, int flags) {
 }
 
 VISIBLE int
-recvmmsg(int sockfd, struct mmsghdr* msgvec, unsigned vlen, int flags, struct timespec* t) {
+recvmmsg(int sockfd, struct mmsghdr* msgvec, unsigned vlen, int flags, 
+#ifdef __ANDROID__
+    const
+#endif
+    struct timespec* t) {
   Sock* s;
-  int r = libc_recvmmsg(sockfd, msgvec, vlen, flags, t);
+  int r = libc_recvmmsg(sockfd, msgvec, vlen, flags, (struct timespec*)t);
 
   if((s = intercept_find(&intercept_fds, sockfd))) {
     put_process();
