@@ -433,7 +433,7 @@ cpp_macro_find(cpp_token* tok) {
   if(tok->kind != TK_IDENT)
     return NULL;
 
-  return hashmap_get2(&cpp_macros, tok->loc, tok->len);
+  return hashmap_get2(&(cpp_ctx_get()->macros), tok->loc, tok->len);
 }
 
 /* Consumes the current token if it matches `op`.*/
@@ -601,7 +601,7 @@ cpp_convert_universal_chars(char* p) {
 /* Initialize line info for all tokens. */
 static inline void
 cpp_add_line_numbers(cpp_token* tok) {
-  char* p = cpp_current_file->contents;
+  char* p = (cpp_ctx_get()->cur_file)->contents;
   size_t n = 1;
 
   do {
