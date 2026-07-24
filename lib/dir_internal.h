@@ -29,7 +29,7 @@
 #include <stdlib.h>
 
 #ifndef MAXIMUM_PATH_LENGTH
-//#define MAXIMUM_PATH_LENGTH _MAX_PATH
+// #define MAXIMUM_PATH_LENGTH _MAX_PATH
 #define MAXIMUM_PATH_LENGTH 4095
 #endif
 
@@ -46,8 +46,8 @@ struct dir_internal_s {
 #endif
   HANDLE dir_handle;
   int first;
-  void* dir_path;
 #endif
+  void* dir_path;
 };
 
 #ifndef S_IFDIR
@@ -93,7 +93,7 @@ struct dir_internal_s {
 #endif
 
 #if USE_READDIR
-//#define dir_TYPE(d) (dir_INTERNAL(d)->dir_entry->d_type)
+// #define dir_TYPE(d) (dir_INTERNAL(d)->dir_entry->d_type)
 #define dir_TYPE(d) (dir_INTERNAL(d)->dir_entry ? dir_INTERNAL(d)->dir_entry->d_type : 0)
 #else
 #define dir_TYPE(d) (dir_INTERNAL(d)->dir_finddata.cFileType)

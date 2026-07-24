@@ -108,8 +108,9 @@ TEST(test_dir_time) {
   ASSERT_EQ(0, dir_open(&d, path));
 
   while((name = dir_read(&d))) {
-    if(!str_diff(name, "f"))
+    if(!str_diff(name, "f")) {
       ASSERT_NE(0, dir_time(&d, D_TIME_MODIFICATION));
+    }
   }
 
   dir_close(&d);

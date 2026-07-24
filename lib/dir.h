@@ -12,7 +12,7 @@
 extern "C" {
 #endif
 
-#if(defined(_WIN32) || defined(_WIN64)) && !defined(__MSYS__) && !defined(__CYGWIN__)
+#if (defined(_WIN32) || defined(_WIN64)) && !defined(__MSYS__) && !defined(__CYGWIN__)
 #define DIRSEP_C '\\'
 #define DIRSEP_S "\\"
 #define IS_DIRSEP(c) ((c) == '\\' || (c) == '/')
@@ -49,7 +49,7 @@ void dir_close(struct dir_s* d);
 char* dir_name(struct dir_s*);
 int dir_type(struct dir_s*);
 int64 dir_size(struct dir_s*);
-unsigned long dir_time(struct dir_s*, int time_type);
+long dir_time(struct dir_s*, int time_type);
 
 #ifdef STRALLOC_H
 void dir_path(struct dir_s* d, stralloc* sa);

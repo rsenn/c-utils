@@ -1,4 +1,5 @@
 #include "../dir_internal.h"
+#include "../stralloc.h"
 
 #if USE_READDIR
 #include <dirent.h>
@@ -23,14 +24,28 @@ filetime_to_unix(const FILETIME* ft) {
 }
 #endif
 
-unsigned long
+long
 dir_time(struct dir_s* d, int type) {
   unsigned long r = 0;
 #if USE_READDIR
   const char* name = dir_INTERNAL(d)->dir_entry->d_name;
   stat_t st;
+  stralloc path;
+  stralloc_init(&path);
+  stralloc_copys(&path, dir_INTERNAL(d)->dir_path);
+  stralloc_catc(&path, '/');
+  stralloc_cats(&path, name);
+  stralloc_nul(&path);
 
-  lstat(name, &st);
+  int result = lstat(path.s, &st);
+
+  if(result == -1)
+    result = stat(path.s, &st);
+
+  stralloc_free(&path);
+
+  if(result == -1)
+    return result;
 
   switch(type) {
     case D_TIME_CREATION: r = st.st_ctime; break;

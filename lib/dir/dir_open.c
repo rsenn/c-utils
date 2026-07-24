@@ -30,6 +30,8 @@ dir_open(struct dir_s* d, const char* p) {
   memset(d->dir_int, 0, sizeof(struct dir_internal_s));
 #if USE_READDIR
   ret = ((dir_INTERNAL(d)->dir_handle = opendir(p)) == NULL) ? -1 : 0;
+
+  dir_INTERNAL(d)->dir_path = str_dup(p);
 #else
   {
     stralloc path;
