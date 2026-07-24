@@ -6,7 +6,7 @@ static bool has_varargs(cpp_macro_arg*);
 
 /* Replace func-like macro parameters with given arguments. */
 cpp_token*
-cpp_subst(cpp_token* tok, cpp_macro_arg* args) {
+cpp_subst(cpp_ctx* pp, cpp_token* tok, cpp_macro_arg* args) {
   cpp_token head = {};
   cpp_token* cur = &head;
 
@@ -18,7 +18,7 @@ cpp_subst(cpp_token* tok, cpp_macro_arg* args) {
       if(!arg)
         cpp_error_tok(tok->next, "'#' is not followed by a macro parameter");
 
-      cur = cur->next = cpp_stringize(tok, arg->tok);
+      cur = cur->next = cpp_stringize(pp, tok, arg->tok);
       tok = tok->next->next;
       continue;
     }
@@ -50,7 +50,7 @@ cpp_subst(cpp_token* tok, cpp_macro_arg* args) {
       cpp_macro_arg* arg = find_arg(args, tok->next);
       if(arg) {
         if(arg->tok->kind != TK_EOF) {
-          *cur = *cpp_paste(cur, arg->tok);
+          *cur = *cpp_paste(pp, cur, arg->tok);
 
           for(cpp_token* t = arg->tok->next; t->kind != TK_EOF; t = t->next)
             cur = cur->next = cpp_token_copy(t);
@@ -60,7 +60,7 @@ cpp_subst(cpp_token* tok, cpp_macro_arg* args) {
         continue;
       }
 
-      *cur = *cpp_paste(cur, tok->next);
+      *cur = *cpp_paste(pp, cur, tok->next);
       tok = tok->next->next;
       continue;
     }
@@ -107,7 +107,7 @@ cpp_subst(cpp_token* tok, cpp_macro_arg* args) {
     /* Handle a macro token. cpp_macro arguments are completely macro-expanded
        before they are substituted into a macro body. */
     if(arg) {
-      cpp_token* t = cpp_preprocess2(arg->tok);
+      cpp_token* t = cpp_preprocess2(pp, arg->tok);
 
       t->at_bol = tok->at_bol;
       t->has_space = tok->has_space;

@@ -2,7 +2,7 @@
 #include "../cpp_internal.h"
 
 cpp_token*
-cpp_read_const_expr(cpp_token** rest, cpp_token* tok) {
+cpp_read_const_expr(cpp_ctx* pp, cpp_token** rest, cpp_token* tok) {
   tok = cpp_copy_line(rest, tok);
 
   cpp_token head = {};
@@ -17,13 +17,13 @@ cpp_read_const_expr(cpp_token** rest, cpp_token* tok) {
 
       if(tok->kind != TK_IDENT)
         cpp_error_tok(start, "macro name must be an identifier");
-      cpp_macro* m = cpp_macro_find(tok);
+      cpp_macro* m = cpp_macro_find(pp, tok);
       tok = tok->next;
 
       if(has_paren)
         tok = cpp_skip(tok, ")");
 
-      cur = cur->next = cpp_new_num_token(m ? 1 : 0, start);
+      cur = cur->next = cpp_new_num_token(pp, m ? 1 : 0, start);
       continue;
     }
 

@@ -4,8 +4,8 @@
 
 /* Initialize line info for all tokens. */
 static void
-add_line_numbers(cpp_file* file, cpp_token* tok) {
-  char* p = (cpp_ctx_get()->cur_file)->contents;
+add_line_numbers(cpp_ctx* pp, cpp_file* file, cpp_token* tok) {
+  char* p = pp->cur_file->contents;
   size_t n = 1;
 
   do {
@@ -22,15 +22,15 @@ add_line_numbers(cpp_file* file, cpp_token* tok) {
 
 /* Tokenize a given string and returns new tokens. */
 cpp_token*
-cpp_tokenize(cpp_file* file) {
+cpp_tokenize(cpp_ctx* pp, cpp_file* file) {
   char* p = file->contents;
   cpp_token head = {};
   cpp_token* cur = &head;
 
-  (cpp_ctx_get()->cur_file) = file;
+  pp->cur_file = file;
 
-  (cpp_ctx_get()->bol) = true;
-  (cpp_ctx_get()->has_sp) = 0;
+  pp->bol = true;
+  pp->has_sp = 0;
 
   while(*p) {
     /* Skip line comments. */
@@ -42,7 +42,7 @@ cpp_tokenize(cpp_file* file) {
       while(*p != '\n')
         p++;
 
-      (cpp_ctx_get()->has_sp) += p - q;
+      pp->has_sp += p - q;
       continue;
     }
 
@@ -51,25 +51,25 @@ cpp_tokenize(cpp_file* file) {
       size_t q = str_find(p + 2, "*/");
 
       if(!p[q + 2])
-        cpp_error_at(p, "unclosed block comment");
+        cpp_error_at(pp, p, "unclosed block comment");
 
       p += q + 2 + 2;
-      (cpp_ctx_get()->has_sp) += q + 2 + 2;
+      pp->has_sp += q + 2 + 2;
       continue;
     }
 
     /* Skip newline. */
     if(*p == '\n') {
       p++;
-      (cpp_ctx_get()->bol) = true;
-      (cpp_ctx_get()->has_sp)++;
+      pp->bol = true;
+      pp->has_sp++;
       continue;
     }
 
     /* Skip whitespace characters. */
     if(isspace(*p)) {
       p++;
-      (cpp_ctx_get()->has_sp)++;
+      pp->has_sp++;
       continue;
     }
 
@@ -86,20 +86,20 @@ cpp_tokenize(cpp_file* file) {
           break;
       }
 
-      cur = cur->next = cpp_token_new(TK_PP_NUM, q, p);
+      cur = cur->next = cpp_token_new(pp, TK_PP_NUM, q, p);
       continue;
     }
 
     /* String literal */
     if(*p == '"') {
-      cur = cur->next = cpp_read_string_literal(p, p);
+      cur = cur->next = cpp_read_string_literal(pp, p, p);
       p += cur->len;
       continue;
     }
 
     /* UTF-8 string literal */
     if(str_start(p, "u8\"")) {
-      cur = cur->next = cpp_read_string_literal(p, p + 2);
+      cur = cur->next = cpp_read_string_literal(pp, p, p + 2);
       p += cur->len;
       continue;
     }
@@ -127,7 +127,7 @@ cpp_tokenize(cpp_file* file) {
 
     /* Character literal */
     if(*p == '\'') {
-      cur = cur->next = cpp_read_char_literal(p, p, cpp_ty_int);
+      cur = cur->next = cpp_read_char_literal(pp, p, p, cpp_ty_int);
       cur->val = (char)cur->val;
       p += cur->len;
       continue;
@@ -135,7 +135,7 @@ cpp_tokenize(cpp_file* file) {
 
     /* UTF-16 character literal */
     if(str_start(p, "u'")) {
-      cur = cur->next = cpp_read_char_literal(p, p + 1, cpp_ty_ushort);
+      cur = cur->next = cpp_read_char_literal(pp, p, p + 1, cpp_ty_ushort);
       cur->val &= 0xffff;
       p += cur->len;
       continue;
@@ -143,14 +143,14 @@ cpp_tokenize(cpp_file* file) {
 
     /* Wide character literal */
     if(str_start(p, "L'")) {
-      cur = cur->next = cpp_read_char_literal(p, p + 1, cpp_ty_int);
+      cur = cur->next = cpp_read_char_literal(pp, p, p + 1, cpp_ty_int);
       p += cur->len;
       continue;
     }
 
     /* UTF-32 character literal */
     if(str_start(p, "U'")) {
-      cur = cur->next = cpp_read_char_literal(p, p + 1, cpp_ty_uint);
+      cur = cur->next = cpp_read_char_literal(pp, p, p + 1, cpp_ty_uint);
       p += cur->len;
       continue;
     }
@@ -159,7 +159,7 @@ cpp_tokenize(cpp_file* file) {
     size_t ident_len = cpp_read_ident(p);
 
     if(ident_len) {
-      cur = cur->next = cpp_token_new(TK_IDENT, p, p + ident_len);
+      cur = cur->next = cpp_token_new(pp, TK_IDENT, p, p + ident_len);
       p += cur->len;
       continue;
     }
@@ -168,16 +168,16 @@ cpp_tokenize(cpp_file* file) {
     size_t punct_len = cpp_read_punct(p);
 
     if(punct_len) {
-      cur = cur->next = cpp_token_new(TK_PUNCT, p, p + punct_len);
+      cur = cur->next = cpp_token_new(pp, TK_PUNCT, p, p + punct_len);
       p += cur->len;
       continue;
     }
 
-    cpp_error_at(p, "invalid token");
+    cpp_error_at(pp, p, "invalid token");
   }
 
-  cur = cur->next = cpp_token_new(TK_EOF, p, p);
-  add_line_numbers(file, head.next);
+  cur = cur->next = cpp_token_new(pp, TK_EOF, p, p);
+  add_line_numbers(pp, file, head.next);
   return head.next;
 }
 

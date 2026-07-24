@@ -5,14 +5,12 @@
 #include "../fmt.h"
 #include "../str.h"
 
-#define scope ((cpp_ctx_get()->expr_scope))
-
-static cpp_node* conditional(cpp_token**, cpp_token*);
+static cpp_node* conditional(cpp_ctx*, cpp_token**, cpp_token*);
 static int64 eval(cpp_node* node);
 
 int64
-cpp_const_expr(cpp_token** rest, cpp_token* tok) {
-  cpp_node* node = conditional(rest, tok);
+cpp_const_expr(cpp_ctx* pp, cpp_token** rest, cpp_token* tok) {
+  cpp_node* node = conditional(pp, rest, tok);
   return eval(node);
 }
 
@@ -20,20 +18,20 @@ static void add_type(cpp_node*);
 static int64 eval2(cpp_node*, char***);
 static int64 eval_rval(cpp_node*, char***);
 static double eval_double(cpp_node*);
-static cpp_node* logor(cpp_token**, cpp_token*);
-static cpp_node* logand(cpp_token**, cpp_token*);
-static cpp_node* bitor (cpp_token * *rest, cpp_token*);
-static cpp_node* bitxor(cpp_token**, cpp_token*);
-static cpp_node*bitand(cpp_token**, cpp_token*);
-static cpp_node* equality(cpp_token**, cpp_token*);
-static cpp_node* relational(cpp_token**, cpp_token*);
-static cpp_node* shift(cpp_token**, cpp_token*);
+static cpp_node* logor(cpp_ctx*, cpp_token**, cpp_token*);
+static cpp_node* logand(cpp_ctx*, cpp_token**, cpp_token*);
+static cpp_node* bitor (cpp_ctx * pp, cpp_token * *rest, cpp_token*);
+static cpp_node* bitxor(cpp_ctx*, cpp_token**, cpp_token*);
+static cpp_node*bitand(cpp_ctx*, cpp_token**, cpp_token*);
+static cpp_node* equality(cpp_ctx*, cpp_token**, cpp_token*);
+static cpp_node* relational(cpp_ctx*, cpp_token**, cpp_token*);
+static cpp_node* shift(cpp_ctx*, cpp_token**, cpp_token*);
 static cpp_node* new_add(cpp_node*, cpp_node*, cpp_token*);
 static cpp_node* new_sub(cpp_node*, cpp_node*, cpp_token*);
-static cpp_node* add(cpp_token**, cpp_token*);
-static cpp_node* mul(cpp_token**, cpp_token*);
-static cpp_node* unary(cpp_token**, cpp_token*);
-static cpp_node* cast(cpp_token**, cpp_token*);
+static cpp_node* add(cpp_ctx*, cpp_token**, cpp_token*);
+static cpp_node* mul(cpp_ctx*, cpp_token**, cpp_token*);
+static cpp_node* unary(cpp_ctx*, cpp_token**, cpp_token*);
+static cpp_node* cast(cpp_ctx*, cpp_token**, cpp_token*);
 
 static bool
 is_integer(cpp_type* ty) {
@@ -87,34 +85,34 @@ new_cast(cpp_node* expr, cpp_type* ty) {
 }
 
 static struct cpp_var_scope*
-push_scope(char* name) {
+push_scope(cpp_ctx* pp, char* name) {
   struct cpp_var_scope* sc = alloc_zero(sizeof(cpp_var_scope));
-  hashmap_put(&scope->vars, name, sc);
+  hashmap_put(&pp->expr_scope->vars, name, sc);
   return sc;
 }
 
 static cpp_obj*
-new_var(char* name, cpp_type* ty) {
+new_var(cpp_ctx* pp, char* name, cpp_type* ty) {
   cpp_obj* var;
 
   if((var = alloc_zero(sizeof(cpp_obj)))) {
     var->name = name;
     var->ty = ty;
     var->align = ty->align;
-    push_scope(name)->var = var;
+    push_scope(pp, name)->var = var;
   }
 
   return var;
 }
 
 static cpp_obj*
-new_lvar(char* name, cpp_type* ty) {
+new_lvar(cpp_ctx* pp, char* name, cpp_type* ty) {
   cpp_obj* var;
 
-  if((var = new_var(name, ty))) {
+  if((var = new_var(pp, name, ty))) {
     var->is_local = true;
-    var->next = (cpp_ctx_get()->local_vars);
-    (cpp_ctx_get()->local_vars) = var;
+    var->next = pp->local_vars;
+    pp->local_vars = var;
   }
 
   return var;
@@ -196,11 +194,11 @@ new_gvar(char* name, cpp_type* ty) {
 }*/
 
 static char*
-new_unique_name(void) {
+new_unique_name(cpp_ctx* pp) {
   char buf[FMT_LONG + 4] = {'.', 'L', '.', '.'};
   size_t pos = 4;
 
-  pos += fmt_int(&buf[pos], (cpp_ctx_get()->uniq_id)++);
+  pos += fmt_int(&buf[pos], pp->uniq_id++);
   return str_ndup(buf, pos);
 
   // return cpp_format(".L..%d", id++);
@@ -208,12 +206,12 @@ new_unique_name(void) {
 
 /*static cpp_obj*
 new_anon_gvar(cpp_type* ty) {
-  return new_gvar(new_unique_name(), ty);
+  return new_gvar(new_unique_name(pp), ty);
 }*/
 
 static cpp_obj*
-new_string_literal(char* p, cpp_type* ty) {
-  cpp_obj* var = new_var(new_unique_name(), ty) /*new_anon_gvar(ty)*/;
+new_string_literal(cpp_ctx* pp, char* p, cpp_type* ty) {
+  cpp_obj* var = new_var(pp, new_unique_name(pp), ty) /*new_anon_gvar(ty)*/;
   var->is_static = true;
   var->is_definition = true;
   var->init_data = p;
@@ -620,14 +618,14 @@ is_const_expr(cpp_node* node) {
 // converted to `tmp = &A, (*tmp).x = (*tmp).x op C` to handle assignments
 // to bitfields.
 static cpp_node*
-to_assign(cpp_node* binary) {
+to_assign(cpp_ctx* pp, cpp_node* binary) {
   add_type(binary->lhs);
   add_type(binary->rhs);
   cpp_token* tok = binary->tok;
 
   // Convert `A.x op= C` to `tmp = &A, (*tmp).x = (*tmp).x op C`.
   if(binary->lhs->kind == ND_MEMBER) {
-    cpp_obj* var = new_lvar("", pointer_to(binary->lhs->lhs->ty));
+    cpp_obj* var = new_lvar(pp, "", pointer_to(binary->lhs->lhs->ty));
 
     cpp_node* expr1 = new_binary(ND_ASSIGN, new_var_node(var, tok), new_unary(ND_ADDR, binary->lhs->lhs, tok), tok);
 
@@ -655,10 +653,10 @@ to_assign(cpp_node* binary) {
     cpp_node head = {};
     cpp_node* cur = &head;
 
-    cpp_obj* addr = new_lvar("", pointer_to(binary->lhs->ty));
-    cpp_obj* val = new_lvar("", binary->rhs->ty);
-    cpp_obj* old = new_lvar("", binary->lhs->ty);
-    cpp_obj* new = new_lvar("", binary->lhs->ty);
+    cpp_obj* addr = new_lvar(pp, "", pointer_to(binary->lhs->ty));
+    cpp_obj* val = new_lvar(pp, "", binary->rhs->ty);
+    cpp_obj* old = new_lvar(pp, "", binary->lhs->ty);
+    cpp_obj* new = new_lvar(pp, "", binary->lhs->ty);
 
     cur = cur->next = new_unary(ND_EXPR_STMT, new_binary(ND_ASSIGN, new_var_node(addr, tok), new_unary(ND_ADDR, binary->lhs, tok), tok), tok);
 
@@ -667,8 +665,8 @@ to_assign(cpp_node* binary) {
     cur = cur->next = new_unary(ND_EXPR_STMT, new_binary(ND_ASSIGN, new_var_node(old, tok), new_unary(ND_DEREF, new_var_node(addr, tok), tok), tok), tok);
 
     cpp_node* loop = new_node(ND_DO, tok);
-    loop->brk_label = new_unique_name();
-    loop->cont_label = new_unique_name();
+    loop->brk_label = new_unique_name(pp);
+    loop->cont_label = new_unique_name(pp);
 
     cpp_node* body = new_binary(ND_ASSIGN, new_var_node(new, tok), new_binary(binary->kind, new_var_node(old, tok), new_var_node(val, tok), tok), tok);
 
@@ -690,7 +688,7 @@ to_assign(cpp_node* binary) {
   }
 
   // Convert `A op= B` to ``tmp = &A, *tmp = *tmp op B`.
-  cpp_obj* var = new_lvar("", pointer_to(binary->lhs->ty));
+  cpp_obj* var = new_lvar(pp, "", pointer_to(binary->lhs->ty));
 
   cpp_node* expr1 = new_binary(ND_ASSIGN, new_var_node(var, tok), new_unary(ND_ADDR, binary->lhs, tok), tok);
 
@@ -704,41 +702,41 @@ to_assign(cpp_node* binary) {
 // assign-op = "=" | "+=" | "-=" | "*=" | "/=" | "%=" | "&=" | "|=" | "^="
 //           | "<<=" | ">>="
 static cpp_node*
-assign(cpp_token** rest, cpp_token* tok) {
-  cpp_node* node = conditional(&tok, tok);
+assign(cpp_ctx* pp, cpp_token** rest, cpp_token* tok) {
+  cpp_node* node = conditional(pp, &tok, tok);
 
   if(cpp_equal(tok, "="))
-    return new_binary(ND_ASSIGN, node, assign(rest, tok->next), tok);
+    return new_binary(ND_ASSIGN, node, assign(pp, rest, tok->next), tok);
 
   if(cpp_equal(tok, "+="))
-    return to_assign(new_add(node, assign(rest, tok->next), tok));
+    return to_assign(pp, new_add(node, assign(pp, rest, tok->next), tok));
 
   if(cpp_equal(tok, "-="))
-    return to_assign(new_sub(node, assign(rest, tok->next), tok));
+    return to_assign(pp, new_sub(node, assign(pp, rest, tok->next), tok));
 
   if(cpp_equal(tok, "*="))
-    return to_assign(new_binary(ND_MUL, node, assign(rest, tok->next), tok));
+    return to_assign(pp, new_binary(ND_MUL, node, assign(pp, rest, tok->next), tok));
 
   if(cpp_equal(tok, "/="))
-    return to_assign(new_binary(ND_DIV, node, assign(rest, tok->next), tok));
+    return to_assign(pp, new_binary(ND_DIV, node, assign(pp, rest, tok->next), tok));
 
   if(cpp_equal(tok, "%="))
-    return to_assign(new_binary(ND_MOD, node, assign(rest, tok->next), tok));
+    return to_assign(pp, new_binary(ND_MOD, node, assign(pp, rest, tok->next), tok));
 
   if(cpp_equal(tok, "&="))
-    return to_assign(new_binary(ND_BITAND, node, assign(rest, tok->next), tok));
+    return to_assign(pp, new_binary(ND_BITAND, node, assign(pp, rest, tok->next), tok));
 
   if(cpp_equal(tok, "|="))
-    return to_assign(new_binary(ND_BITOR, node, assign(rest, tok->next), tok));
+    return to_assign(pp, new_binary(ND_BITOR, node, assign(pp, rest, tok->next), tok));
 
   if(cpp_equal(tok, "^="))
-    return to_assign(new_binary(ND_BITXOR, node, assign(rest, tok->next), tok));
+    return to_assign(pp, new_binary(ND_BITXOR, node, assign(pp, rest, tok->next), tok));
 
   if(cpp_equal(tok, "<<="))
-    return to_assign(new_binary(ND_SHL, node, assign(rest, tok->next), tok));
+    return to_assign(pp, new_binary(ND_SHL, node, assign(pp, rest, tok->next), tok));
 
   if(cpp_equal(tok, ">>="))
-    return to_assign(new_binary(ND_SHR, node, assign(rest, tok->next), tok));
+    return to_assign(pp, new_binary(ND_SHR, node, assign(pp, rest, tok->next), tok));
 
   *rest = tok;
   return node;
@@ -746,11 +744,11 @@ assign(cpp_token** rest, cpp_token* tok) {
 
 // expr = assign ("," expr)?
 static cpp_node*
-expr(cpp_token** rest, cpp_token* tok) {
-  cpp_node* node = assign(&tok, tok);
+expr(cpp_ctx* pp, cpp_token** rest, cpp_token* tok) {
+  cpp_node* node = assign(pp, &tok, tok);
 
   if(cpp_equal(tok, ","))
-    return new_binary(ND_COMMA, node, expr(rest, tok->next), tok);
+    return new_binary(ND_COMMA, node, expr(pp, rest, tok->next), tok);
 
   *rest = tok;
   return node;
@@ -758,8 +756,8 @@ expr(cpp_token** rest, cpp_token* tok) {
 
 // conditional = logor ("?" expr? ":" conditional)?
 static cpp_node*
-conditional(cpp_token** rest, cpp_token* tok) {
-  cpp_node* cond = logor(&tok, tok);
+conditional(cpp_ctx* pp, cpp_token** rest, cpp_token* tok) {
+  cpp_node* cond = logor(pp, &tok, tok);
 
   if(!cpp_equal(tok, "?")) {
     *rest = tok;
@@ -769,30 +767,30 @@ conditional(cpp_token** rest, cpp_token* tok) {
   if(cpp_equal(tok->next, ":")) {
     // [GNU] Compile `a ?: b` as `tmp = a, tmp ? tmp : b`.
     add_type(cond);
-    struct cpp_obj* var = new_lvar("", cond->ty);
+    struct cpp_obj* var = new_lvar(pp, "", cond->ty);
     cpp_node* lhs = new_binary(ND_ASSIGN, new_var_node(var, tok), cond, tok);
     cpp_node* rhs = new_node(ND_COND, tok);
     rhs->cond = new_var_node(var, tok);
     rhs->then = new_var_node(var, tok);
-    rhs->els = conditional(rest, tok->next->next);
+    rhs->els = conditional(pp, rest, tok->next->next);
     return new_binary(ND_COMMA, lhs, rhs, tok);
   }
 
   cpp_node* node = new_node(ND_COND, tok);
   node->cond = cond;
-  node->then = expr(&tok, tok->next);
+  node->then = expr(pp, &tok, tok->next);
   tok = cpp_skip(tok, ":");
-  node->els = conditional(rest, tok);
+  node->els = conditional(pp, rest, tok);
   return node;
 }
 
 // logor = logand ("||" logand)*
 static cpp_node*
-logor(cpp_token** rest, cpp_token* tok) {
-  cpp_node* node = logand(&tok, tok);
+logor(cpp_ctx* pp, cpp_token** rest, cpp_token* tok) {
+  cpp_node* node = logand(pp, &tok, tok);
   while(cpp_equal(tok, "||")) {
     cpp_token* start = tok;
-    node = new_binary(ND_LOGOR, node, logand(&tok, tok->next), start);
+    node = new_binary(ND_LOGOR, node, logand(pp, &tok, tok->next), start);
   }
   *rest = tok;
   return node;
@@ -800,22 +798,22 @@ logor(cpp_token** rest, cpp_token* tok) {
 
 // logand = bitor ("&&" bitor)*
 static cpp_node*
-logand(cpp_token** rest, cpp_token* tok) {
-  cpp_node* node = bitor (&tok, tok);
+logand(cpp_ctx* pp, cpp_token** rest, cpp_token* tok) {
+  cpp_node* node = bitor (pp, &tok, tok);
   while(cpp_equal(tok, "&&")) {
     cpp_token* start = tok;
-    node = new_binary(ND_LOGAND, node, bitor (&tok, tok->next), start);
+    node = new_binary(ND_LOGAND, node, bitor (pp, &tok, tok->next), start);
   }
   *rest = tok;
   return node;
 }
 
 // bitor = bitxor ("|" bitxor)*
-static cpp_node* bitor (cpp_token * *rest, cpp_token* tok) {
-  cpp_node* node = bitxor(&tok, tok);
+static cpp_node* bitor (cpp_ctx* pp, cpp_token * *rest, cpp_token* tok) {
+  cpp_node* node = bitxor(pp, &tok, tok);
   while(cpp_equal(tok, "|")) {
     cpp_token* start = tok;
-    node = new_binary(ND_BITOR, node, bitxor(&tok, tok->next), start);
+    node = new_binary(ND_BITOR, node, bitxor(pp, &tok, tok->next), start);
   }
   *rest = tok;
   return node;
@@ -823,22 +821,22 @@ static cpp_node* bitor (cpp_token * *rest, cpp_token* tok) {
 
 // bitxor = bitand ("^" bitand)*
 static cpp_node*
-bitxor(cpp_token** rest, cpp_token* tok) {
-  cpp_node* node = bitand(&tok, tok);
+bitxor(cpp_ctx* pp, cpp_token** rest, cpp_token* tok) {
+  cpp_node* node = bitand(pp, &tok, tok);
   while(cpp_equal(tok, "^")) {
     cpp_token* start = tok;
-    node = new_binary(ND_BITXOR, node, bitand(&tok, tok->next), start);
+    node = new_binary(ND_BITXOR, node, bitand(pp, &tok, tok->next), start);
   }
   *rest = tok;
   return node;
 }
 
 // bitand = equality ("&" equality)*
-static cpp_node*bitand(cpp_token** rest, cpp_token* tok) {
-  cpp_node* node = equality(&tok, tok);
+static cpp_node*bitand(cpp_ctx* pp, cpp_token** rest, cpp_token* tok) {
+  cpp_node* node = equality(pp, &tok, tok);
   while(cpp_equal(tok, "&")) {
     cpp_token* start = tok;
-    node = new_binary(ND_BITAND, node, equality(&tok, tok->next), start);
+    node = new_binary(ND_BITAND, node, equality(pp, &tok, tok->next), start);
   }
   *rest = tok;
   return node;
@@ -846,19 +844,19 @@ static cpp_node*bitand(cpp_token** rest, cpp_token* tok) {
 
 // equality = relational ("==" relational | "!=" relational)*
 static cpp_node*
-equality(cpp_token** rest, cpp_token* tok) {
-  cpp_node* node = relational(&tok, tok);
+equality(cpp_ctx* pp, cpp_token** rest, cpp_token* tok) {
+  cpp_node* node = relational(pp, &tok, tok);
 
   for(;;) {
     cpp_token* start = tok;
 
     if(cpp_equal(tok, "==")) {
-      node = new_binary(ND_EQ, node, relational(&tok, tok->next), start);
+      node = new_binary(ND_EQ, node, relational(pp, &tok, tok->next), start);
       continue;
     }
 
     if(cpp_equal(tok, "!=")) {
-      node = new_binary(ND_NE, node, relational(&tok, tok->next), start);
+      node = new_binary(ND_NE, node, relational(pp, &tok, tok->next), start);
       continue;
     }
 
@@ -869,29 +867,29 @@ equality(cpp_token** rest, cpp_token* tok) {
 
 // relational = shift ("<" shift | "<=" shift | ">" shift | ">=" shift)*
 static cpp_node*
-relational(cpp_token** rest, cpp_token* tok) {
-  cpp_node* node = shift(&tok, tok);
+relational(cpp_ctx* pp, cpp_token** rest, cpp_token* tok) {
+  cpp_node* node = shift(pp, &tok, tok);
 
   for(;;) {
     cpp_token* start = tok;
 
     if(cpp_equal(tok, "<")) {
-      node = new_binary(ND_LT, node, shift(&tok, tok->next), start);
+      node = new_binary(ND_LT, node, shift(pp, &tok, tok->next), start);
       continue;
     }
 
     if(cpp_equal(tok, "<=")) {
-      node = new_binary(ND_LE, node, shift(&tok, tok->next), start);
+      node = new_binary(ND_LE, node, shift(pp, &tok, tok->next), start);
       continue;
     }
 
     if(cpp_equal(tok, ">")) {
-      node = new_binary(ND_LT, shift(&tok, tok->next), node, start);
+      node = new_binary(ND_LT, shift(pp, &tok, tok->next), node, start);
       continue;
     }
 
     if(cpp_equal(tok, ">=")) {
-      node = new_binary(ND_LE, shift(&tok, tok->next), node, start);
+      node = new_binary(ND_LE, shift(pp, &tok, tok->next), node, start);
       continue;
     }
 
@@ -902,19 +900,19 @@ relational(cpp_token** rest, cpp_token* tok) {
 
 // shift = add ("<<" add | ">>" add)*
 static cpp_node*
-shift(cpp_token** rest, cpp_token* tok) {
-  cpp_node* node = add(&tok, tok);
+shift(cpp_ctx* pp, cpp_token** rest, cpp_token* tok) {
+  cpp_node* node = add(pp, &tok, tok);
 
   for(;;) {
     cpp_token* start = tok;
 
     if(cpp_equal(tok, "<<")) {
-      node = new_binary(ND_SHL, node, add(&tok, tok->next), start);
+      node = new_binary(ND_SHL, node, add(pp, &tok, tok->next), start);
       continue;
     }
 
     if(cpp_equal(tok, ">>")) {
-      node = new_binary(ND_SHR, node, add(&tok, tok->next), start);
+      node = new_binary(ND_SHR, node, add(pp, &tok, tok->next), start);
       continue;
     }
 
@@ -998,19 +996,19 @@ new_sub(cpp_node* lhs, cpp_node* rhs, cpp_token* tok) {
 
 // add = mul ("+" mul | "-" mul)*
 static cpp_node*
-add(cpp_token** rest, cpp_token* tok) {
-  cpp_node* node = mul(&tok, tok);
+add(cpp_ctx* pp, cpp_token** rest, cpp_token* tok) {
+  cpp_node* node = mul(pp, &tok, tok);
 
   for(;;) {
     cpp_token* start = tok;
 
     if(cpp_equal(tok, "+")) {
-      node = new_add(node, mul(&tok, tok->next), start);
+      node = new_add(node, mul(pp, &tok, tok->next), start);
       continue;
     }
 
     if(cpp_equal(tok, "-")) {
-      node = new_sub(node, mul(&tok, tok->next), start);
+      node = new_sub(node, mul(pp, &tok, tok->next), start);
       continue;
     }
 
@@ -1021,24 +1019,24 @@ add(cpp_token** rest, cpp_token* tok) {
 
 // mul = cast ("*" cast | "/" cast | "%" cast)*
 static cpp_node*
-mul(cpp_token** rest, cpp_token* tok) {
-  cpp_node* node = cast(&tok, tok);
+mul(cpp_ctx* pp, cpp_token** rest, cpp_token* tok) {
+  cpp_node* node = cast(pp, &tok, tok);
 
   for(;;) {
     cpp_token* start = tok;
 
     if(cpp_equal(tok, "*")) {
-      node = new_binary(ND_MUL, node, cast(&tok, tok->next), start);
+      node = new_binary(ND_MUL, node, cast(pp, &tok, tok->next), start);
       continue;
     }
 
     if(cpp_equal(tok, "/")) {
-      node = new_binary(ND_DIV, node, cast(&tok, tok->next), start);
+      node = new_binary(ND_DIV, node, cast(pp, &tok, tok->next), start);
       continue;
     }
 
     if(cpp_equal(tok, "%")) {
-      node = new_binary(ND_MOD, node, cast(&tok, tok->next), start);
+      node = new_binary(ND_MOD, node, cast(pp, &tok, tok->next), start);
       continue;
     }
 
@@ -1049,7 +1047,7 @@ mul(cpp_token** rest, cpp_token* tok) {
 
 // cast = "(" type-name ")" cast | unary
 static cpp_node*
-cast(cpp_token** rest, cpp_token* tok) {
+cast(cpp_ctx* pp, cpp_token** rest, cpp_token* tok) {
   if(cpp_equal(tok, "(") && is_typename(tok->next)) {
     cpp_token* start = tok;
     cpp_type* ty = 0; // typename(&tok, tok->next);
@@ -1057,15 +1055,15 @@ cast(cpp_token** rest, cpp_token* tok) {
 
     // compound literal
     if(cpp_equal(tok, "{"))
-      return unary(rest, start);
+      return unary(pp, rest, start);
 
     // type cast
-    cpp_node* node = new_cast(cast(rest, tok), ty);
+    cpp_node* node = new_cast(cast(pp, rest, tok), ty);
     node->tok = start;
     return node;
   }
 
-  return unary(rest, tok);
+  return unary(pp, rest, tok);
 }
 
 // primary = "(" "{" stmt+ "}" ")"
@@ -1081,7 +1079,7 @@ cast(cpp_token** rest, cpp_token* tok) {
 //         | str
 //         | num
 static cpp_node*
-primary(cpp_token** rest, cpp_token* tok) {
+primary(cpp_ctx* pp, cpp_token** rest, cpp_token* tok) {
   cpp_token* start = tok;
 
   /* This is a GNU statement expresssion. */
@@ -1093,7 +1091,7 @@ primary(cpp_token** rest, cpp_token* tok) {
    }*/
 
   if(cpp_equal(tok, "(")) {
-    cpp_node* node = expr(&tok, tok->next);
+    cpp_node* node = expr(pp, &tok, tok->next);
     *rest = cpp_skip(tok, ")");
     return node;
   }
@@ -1115,7 +1113,7 @@ primary(cpp_token** rest, cpp_token* tok) {
   }*/
 
   if(cpp_equal(tok, "sizeof")) {
-    cpp_node* node = unary(rest, tok->next);
+    cpp_node* node = unary(pp, rest, tok->next);
     add_type(node);
     if(node->ty->kind == TY_VLA)
       return new_var_node(node->ty->vla_size, tok);
@@ -1129,7 +1127,7 @@ primary(cpp_token** rest, cpp_token* tok) {
   }
 */
   if(cpp_equal(tok, "_Alignof")) {
-    cpp_node* node = unary(rest, tok->next);
+    cpp_node* node = unary(pp, rest, tok->next);
     add_type(node);
     return new_ulong(node->ty->align, tok);
   }
@@ -1161,11 +1159,11 @@ primary(cpp_token** rest, cpp_token* tok) {
      if (cpp_equal(tok, "__builtin_compare_and_swap")) {
        cpp_node *node = new_node(ND_CAS, tok);
        tok = cpp_skip(tok->next, "(");
-       node->cas_addr = assign(&tok, tok);
+       node->cas_addr = assign(pp, &tok, tok);
        tok = cpp_skip(tok, ",");
-       node->cas_old = assign(&tok, tok);
+       node->cas_old = assign(pp, &tok, tok);
        tok = cpp_skip(tok, ",");
-       node->cas_new = assign(&tok, tok);
+       node->cas_new = assign(pp, &tok, tok);
        *rest = cpp_skip(tok, ")");
        return node;
      }
@@ -1173,9 +1171,9 @@ primary(cpp_token** rest, cpp_token* tok) {
      if (cpp_equal(tok, "__builtin_atomic_exchange")) {
        cpp_node *node = new_node(ND_EXCH, tok);
        tok = cpp_skip(tok->next, "(");
-       node->lhs = assign(&tok, tok);
+       node->lhs = assign(pp, &tok, tok);
        tok = cpp_skip(tok, ",");
-       node->rhs = assign(&tok, tok);
+       node->rhs = assign(pp, &tok, tok);
        *rest = cpp_skip(tok, ")");
        return node;
      }
@@ -1204,7 +1202,7 @@ primary(cpp_token** rest, cpp_token* tok) {
   }*/
 
   if(tok->kind == TK_STR) {
-    cpp_obj* var = new_string_literal(tok->str, tok->ty);
+    cpp_obj* var = new_string_literal(pp, tok->str, tok->ty);
     *rest = tok->next;
     return new_var_node(var, tok);
   }
@@ -1231,15 +1229,15 @@ primary(cpp_token** rest, cpp_token* tok) {
 //       | "&&" ident
 //       | postfix
 static cpp_node*
-unary(cpp_token** rest, cpp_token* tok) {
+unary(cpp_ctx* pp, cpp_token** rest, cpp_token* tok) {
   if(cpp_equal(tok, "+"))
-    return cast(rest, tok->next);
+    return cast(pp, rest, tok->next);
 
   if(cpp_equal(tok, "-"))
-    return new_unary(ND_NEG, cast(rest, tok->next), tok);
+    return new_unary(ND_NEG, cast(pp, rest, tok->next), tok);
 
   if(cpp_equal(tok, "&")) {
-    cpp_node* lhs = cast(rest, tok->next);
+    cpp_node* lhs = cast(pp, rest, tok->next);
     add_type(lhs);
 
     /*if(lhs->kind == ND_MEMBER && lhs->member->is_bitfield)
@@ -1253,7 +1251,7 @@ unary(cpp_token** rest, cpp_token* tok) {
     // in the C spec, but dereferencing a function shouldn't do
     // anything. If foo is a function, `*foo`, `**foo` or `*****foo`
     // are all equivalent to just `foo`.
-    cpp_node* node = cast(rest, tok->next);
+    cpp_node* node = cast(pp, rest, tok->next);
     add_type(node);
     if(node->ty->kind == TY_FUNC)
       return node;
@@ -1261,18 +1259,18 @@ unary(cpp_token** rest, cpp_token* tok) {
   }
 
   if(cpp_equal(tok, "!"))
-    return new_unary(ND_NOT, cast(rest, tok->next), tok);
+    return new_unary(ND_NOT, cast(pp, rest, tok->next), tok);
 
   if(cpp_equal(tok, "~"))
-    return new_unary(ND_BITNOT, cast(rest, tok->next), tok);
+    return new_unary(ND_BITNOT, cast(pp, rest, tok->next), tok);
 
   /* Read ++i as i+=1 */
   if(cpp_equal(tok, "++"))
-    return to_assign(new_add(unary(rest, tok->next), new_num(1, tok), tok));
+    return to_assign(pp, new_add(unary(pp, rest, tok->next), new_num(1, tok), tok));
 
   /* Read --i as i-=1 */
   if(cpp_equal(tok, "--"))
-    return to_assign(new_sub(unary(rest, tok->next), new_num(1, tok), tok));
+    return to_assign(pp, new_sub(unary(pp, rest, tok->next), new_num(1, tok), tok));
 
   /* [GNU] labels-as-values */
   /* if (cpp_equal(tok, "&&")) {
@@ -1285,6 +1283,6 @@ unary(cpp_token** rest, cpp_token* tok) {
    }
  */
 
-  return primary(rest, tok);
+  return primary(pp, rest, tok);
   /* return postfix(rest, tok); */
 }

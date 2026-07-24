@@ -3,11 +3,11 @@
 
 /* Entry point function of the preprocessor. */
 cpp_token*
-cpp_preprocess(cpp_token* tok) {
-  tok = cpp_preprocess2(tok);
+cpp_preprocess(cpp_ctx* pp, cpp_token* tok) {
+  tok = cpp_preprocess2(pp, tok);
 
-  if((cpp_ctx_get()->cur_cond_incl))
-    cpp_error_tok((cpp_ctx_get()->cur_cond_incl)->tok, "unterminated conditional directive");
+  if(pp->cur_cond_incl)
+    cpp_error_tok(pp->cur_cond_incl->tok, "unterminated conditional directive");
 
   cpp_convert_tokens(tok);
   cpp_join_adjacent_string_literals(tok);

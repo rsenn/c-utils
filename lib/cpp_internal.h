@@ -123,7 +123,7 @@ struct cpp_macro_arg {
   cpp_token* tok;
 };
 
-typedef cpp_token* macro_handler_fn(cpp_token*);
+typedef cpp_token* macro_handler_fn(cpp_ctx*, cpp_token*);
 
 struct cpp_macro {
   char* name;
@@ -326,18 +326,9 @@ struct cpp_scope {
    while running lives here instead of in file-scope globals or
    function-local statics, so that independent cpp_ctx instances (e.g.
    one per thread, or one per nested/recursive invocation) never bleed
-   state into each other.
-
-   There is still a single "current" context (see cpp_ctx_get()/
-   cpp_ctx_use() below) that the rest of the cpp_* API implicitly
-   operates on, addressed via the macros further down, so existing
-   call sites did not need to change to thread a context parameter
-   through explicitly.
-
-   Field names here are deliberately distinct from the macro names
-   they're exposed as below (e.g. `inc_array` vs. `include_array`) so
-   that `ctx->field` inside cpp_global_data.c itself isn't accidentally
-   re-expanded by those same macros. */
+   state into each other. Every cpp_* function that touches this state
+   takes a `cpp_ctx* pp` as its first argument; see cpp_init.c for how
+   to create one. */
 struct cpp_ctx {
   /* used by cpp_macro.c */
   hashmap macros;
@@ -374,44 +365,15 @@ struct cpp_ctx {
   int in_file_no;
 };
 
-#define cpp_macros (cpp_ctx_get()->macros)
-#define cpp_macro_list (cpp_ctx_get()->macro_list)
-#define cpp_macro_ptr (cpp_ctx_get()->macro_ptr)
-
-#define cpp_pragma_once (cpp_ctx_get()->pragma_once)
-#define include_guards (cpp_ctx_get()->inc_guards)
-#define include_list (cpp_ctx_get()->inc_list)
-#define cond_incl (cpp_ctx_get()->cur_cond_incl)
-#define include_array (cpp_ctx_get()->inc_array)
-
-#define cpp_include_paths (cpp_ctx_get()->inc_paths)
-#define cpp_include_next_idx (cpp_ctx_get()->inc_next_idx)
-#define cpp_include_cache (cpp_ctx_get()->inc_cache)
-
-#define cpp_at_bol (cpp_ctx_get()->bol)
-#define cpp_has_space (cpp_ctx_get()->has_sp)
-
-#define cpp_current_file (cpp_ctx_get()->cur_file)
-
-#define locals (cpp_ctx_get()->local_vars)
-#define cpp_const_expr_scope (cpp_ctx_get()->expr_scope)
-#define cpp_unique_id (cpp_ctx_get()->uniq_id)
-
-#define cpp_base_file (cpp_ctx_get()->base_file_name)
-#define cpp_counter_value (cpp_ctx_get()->counter_val)
-
-#define cpp_input_files (cpp_ctx_get()->in_files)
-#define cpp_file_no (cpp_ctx_get()->in_file_no)
-
 extern cpp_type *cpp_ty_void, *cpp_ty_bool, *cpp_ty_char, *cpp_ty_short, *cpp_ty_int, *cpp_ty_long, *cpp_ty_uchar,
     *cpp_ty_ushort, *cpp_ty_uint, *cpp_ty_ulong, *cpp_ty_float, *cpp_ty_double, *cpp_ty_ldouble;
 
-cpp_token* cpp_preprocess2(cpp_token* tok);
+cpp_token* cpp_preprocess2(cpp_ctx* pp, cpp_token* tok);
 void cpp_verror_at(char*, char*, int, char*, char*, va_list ap);
 cpp_type* cpp_type_new(cpp_type_kind, int, int);
 size_t cpp_display_width(char*, size_t);
 char* cpp_read_file(char*);
-cpp_macro* cpp_add_builtin(char*, macro_handler_fn*);
+cpp_macro* cpp_add_builtin(cpp_ctx*, char*, macro_handler_fn*);
 
 static inline bool
 cpp_in_range(const uint32* range, uint32 c) {
@@ -429,11 +391,11 @@ cpp_file_dup(cpp_file* file) {
 }
 
 static inline cpp_macro*
-cpp_macro_find(cpp_token* tok) {
+cpp_macro_find(cpp_ctx* pp, cpp_token* tok) {
   if(tok->kind != TK_IDENT)
     return NULL;
 
-  return hashmap_get2(&(cpp_ctx_get()->macros), tok->loc, tok->len);
+  return hashmap_get2(&pp->macros, tok->loc, tok->len);
 }
 
 /* Consumes the current token if it matches `op`.*/
@@ -600,8 +562,8 @@ cpp_convert_universal_chars(char* p) {
 
 /* Initialize line info for all tokens. */
 static inline void
-cpp_add_line_numbers(cpp_token* tok) {
-  char* p = (cpp_ctx_get()->cur_file)->contents;
+cpp_add_line_numbers(cpp_ctx* pp, cpp_token* tok) {
+  char* p = pp->cur_file->contents;
   size_t n = 1;
 
   do {
@@ -617,7 +579,7 @@ cpp_add_line_numbers(cpp_token* tok) {
 }
 
 static inline int
-cpp_read_escaped_char(char** new_pos, char* p) {
+cpp_read_escaped_char(cpp_ctx* pp, char** new_pos, char* p) {
   if('0' <= *p && *p <= '7') {
     /* Read an octal number. */
     int c = *p++ - '0';
@@ -638,7 +600,7 @@ cpp_read_escaped_char(char** new_pos, char* p) {
     p++;
 
     if(!isxdigit(*p))
-      cpp_error_at(p, "invalid hex escape sequence");
+      cpp_error_at(pp, p, "invalid hex escape sequence");
 
     int c = 0;
 
@@ -678,12 +640,12 @@ cpp_read_escaped_char(char** new_pos, char* p) {
 
 /* Find a closing double-quote. */
 static inline char*
-cpp_string_literal_end(char* p) {
+cpp_string_literal_end(cpp_ctx* pp, char* p) {
   char* start = p;
 
   for(; *p != '"'; p++) {
     if(*p == '\n' || *p == '\0')
-      cpp_error_at(start, "unclosed string literal");
+      cpp_error_at(pp, start, "unclosed string literal");
 
     if(*p == '\\')
       p++;
@@ -693,44 +655,44 @@ cpp_string_literal_end(char* p) {
 }
 
 static inline cpp_token*
-cpp_read_string_literal(char* start, char* quote) {
-  char* end = cpp_string_literal_end(quote + 1);
+cpp_read_string_literal(cpp_ctx* pp, char* start, char* quote) {
+  char* end = cpp_string_literal_end(pp, quote + 1);
   char* buf = alloc_zero(end - quote);
   size_t len = 0;
 
   for(char* p = quote + 1; p < end;) {
     if(*p == '\\')
-      buf[len++] = cpp_read_escaped_char(&p, p + 1);
+      buf[len++] = cpp_read_escaped_char(pp, &p, p + 1);
     else
       buf[len++] = *p++;
   }
 
-  cpp_token* tok = cpp_token_new(TK_STR, start, end + 1);
+  cpp_token* tok = cpp_token_new(pp, TK_STR, start, end + 1);
   tok->ty = cpp_array_of(cpp_ty_char, len + 1);
   tok->str = buf;
   return tok;
 }
 
 static inline cpp_token*
-cpp_read_char_literal(char* start, char* quote, cpp_type* ty) {
+cpp_read_char_literal(cpp_ctx* pp, char* start, char* quote, cpp_type* ty) {
   char* p = quote + 1;
 
   if(*p == '\0')
-    cpp_error_at(start, "unclosed char literal");
+    cpp_error_at(pp, start, "unclosed char literal");
 
   wchar_t c;
 
   if(*p == '\\')
-    c = cpp_read_escaped_char(&p, p + 1);
+    c = cpp_read_escaped_char(pp, &p, p + 1);
   else
     p += u8_to_wc(&c, p);
 
   size_t n = str_chr(p, '\'');
 
   if(!p[n])
-    cpp_error_at(p, "unclosed char literal");
+    cpp_error_at(pp, p, "unclosed char literal");
 
-  cpp_token* tok = cpp_token_new(TK_NUM, start, (p + n) + 1);
+  cpp_token* tok = cpp_token_new(pp, TK_NUM, start, (p + n) + 1);
   tok->val = c;
   tok->ty = ty;
   return tok;

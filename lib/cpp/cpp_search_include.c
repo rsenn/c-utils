@@ -4,11 +4,11 @@
 #include "../path.h"
 
 char*
-cpp_search_include_next(char* filename) {
-  size_t num_include_paths = strarray_size(&(cpp_ctx_get()->inc_paths));
+cpp_search_include_next(cpp_ctx* pp, char* filename) {
+  size_t num_include_paths = strarray_size(&pp->inc_paths);
 
-  for(; (cpp_ctx_get()->inc_next_idx) < num_include_paths; (cpp_ctx_get()->inc_next_idx)++) {
-    char* path = path_join(strarray_AT(&(cpp_ctx_get()->inc_paths), (cpp_ctx_get()->inc_next_idx)), filename);
+  for(; pp->inc_next_idx < num_include_paths; pp->inc_next_idx++) {
+    char* path = path_join(strarray_AT(&pp->inc_paths, pp->inc_next_idx), filename);
 
     if(path_exists(path)) {
       path[path_collapse(path, str_len(path))] = '\0';
@@ -20,27 +20,27 @@ cpp_search_include_next(char* filename) {
 }
 
 char*
-cpp_search_include_paths(char* filename) {
+cpp_search_include_paths(cpp_ctx* pp, char* filename) {
   if(filename[0] == '/')
     return filename;
 
-  char* cached = hashmap_get(&(cpp_ctx_get()->inc_cache), filename);
+  char* cached = hashmap_get(&pp->inc_cache, filename);
   if(cached)
     return cached;
 
-  size_t num_include_paths = strarray_size(&(cpp_ctx_get()->inc_paths));
+  size_t num_include_paths = strarray_size(&pp->inc_paths);
 
   /* Search a file from the include paths. */
   for(size_t i = 0; i < num_include_paths; i++) {
-    char* path = path_join(strarray_AT(&(cpp_ctx_get()->inc_paths), i), filename);
+    char* path = path_join(strarray_AT(&pp->inc_paths, i), filename);
 
     if(!path_exists(path))
       continue;
 
     path[path_collapse(path, str_len(path))] = '\0';
 
-    hashmap_put(&(cpp_ctx_get()->inc_cache), filename, path);
-    (cpp_ctx_get()->inc_next_idx) = i + 1;
+    hashmap_put(&pp->inc_cache, filename, path);
+    pp->inc_next_idx = i + 1;
     return path;
   }
 

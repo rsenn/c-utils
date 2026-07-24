@@ -70,23 +70,22 @@ typedef enum {
 } cpp_type_kind;
 
 /* Per-parser context. All mutable preprocessor state lives in a
-   cpp_ctx; cpp_ctx_get() returns the context implicitly used by the
-   rest of this API (auto-creating one on first use), and cpp_ctx_use()
-   switches it, so multiple independent parses (e.g. one per thread)
-   never share state. */
-cpp_ctx* cpp_ctx_new(void);
-void cpp_ctx_free(cpp_ctx*);
-cpp_ctx* cpp_ctx_get(void);
-void cpp_ctx_use(cpp_ctx*);
+   cpp_ctx; every cpp_* function that needs it takes one explicitly as
+   its first argument, so multiple independent parses (e.g. one per
+   thread) never share state. The caller owns the storage (stack,
+   static, or heap) — cpp_init() only initializes it in place, and
+   cpp_free() only releases resources it came to own, never *pp itself. */
+void cpp_init(cpp_ctx*);
+void cpp_free(cpp_ctx*);
 
-int64 cpp_const_expr(cpp_token**, cpp_token*);
+int64 cpp_const_expr(cpp_ctx*, cpp_token**, cpp_token*);
 bool cpp_convert_int(cpp_token*);
 cpp_token* cpp_copy_line(cpp_token**, cpp_token*);
 char* cpp_detect_include_guard(cpp_token*);
-void cpp_error_at(char*, char*, ...);
+void cpp_error_at(cpp_ctx*, char*, char*, ...);
 void cpp_error_tok(cpp_token*, char*, ...);
 void cpp_warn_tok(cpp_token*, char*, ...);
-long cpp_eval_const_expr(cpp_token**, cpp_token*);
+long cpp_eval_const_expr(cpp_ctx*, cpp_token**, cpp_token*);
 cpp_file* cpp_file_new(const char*, int, char*);
 void cpp_file_free(cpp_file*);
 cpp_hideset* cpp_hideset_new(char*);
@@ -95,44 +94,44 @@ cpp_token* cpp_hideset_add(cpp_token*, cpp_hideset*);
 bool cpp_hideset_contains(cpp_hideset*, char*, int);
 cpp_hideset* cpp_hideset_intersection(cpp_hideset*, cpp_hideset*);
 cpp_hideset* cpp_hideset_union(cpp_hideset*, cpp_hideset*);
-void cpp_init_macros(void);
+void cpp_init_macros(cpp_ctx*);
 void cpp_define_gnu_macros(void);
 void cpp_join_adjacent_string_literals(cpp_token*);
 char* cpp_join_tokens(cpp_token*, cpp_token*);
-cpp_macro* cpp_macro_add(char*, bool, cpp_token*);
-void cpp_define(char*, char*);
-bool cpp_expand(cpp_token**, cpp_token*);
-void cpp_undefine(char*);
-cpp_token* cpp_new_num_token(int, cpp_token*);
-cpp_token* cpp_new_str_token(const char*, cpp_token*);
-cpp_token* cpp_paste(cpp_token*, cpp_token*);
-cpp_token* cpp_preprocess2(cpp_token*);
-cpp_token* cpp_preprocess(cpp_token*);
+cpp_macro* cpp_macro_add(cpp_ctx*, char*, bool, cpp_token*);
+void cpp_define(cpp_ctx*, char*, char*);
+bool cpp_expand(cpp_ctx*, cpp_token**, cpp_token*);
+void cpp_undefine(cpp_ctx*, char*);
+cpp_token* cpp_new_num_token(cpp_ctx*, int, cpp_token*);
+cpp_token* cpp_new_str_token(cpp_ctx*, const char*, cpp_token*);
+cpp_token* cpp_paste(cpp_ctx*, cpp_token*, cpp_token*);
+cpp_token* cpp_preprocess2(cpp_ctx*, cpp_token*);
+cpp_token* cpp_preprocess(cpp_ctx*, cpp_token*);
 void cpp_print_tokens(buffer*, cpp_token*, bool);
 char* cpp_quote_string(char*);
-cpp_token* cpp_read_const_expr(cpp_token**, cpp_token*);
+cpp_token* cpp_read_const_expr(cpp_ctx*, cpp_token**, cpp_token*);
 char* cpp_read_file(char*);
-char* cpp_read_include_filename(cpp_token**, cpp_token*, bool*);
-void cpp_read_line_marker(cpp_token**, cpp_token*);
+char* cpp_read_include_filename(cpp_ctx*, cpp_token**, cpp_token*, bool*);
+void cpp_read_line_marker(cpp_ctx*, cpp_token**, cpp_token*);
 cpp_macro_arg* cpp_read_macro_arg_one(cpp_token**, cpp_token*, bool);
 cpp_macro_arg* cpp_read_macro_args(cpp_token**, cpp_token*, cpp_macro_param*, char*);
-void cpp_read_macro_definition(cpp_token**, cpp_token*);
+void cpp_read_macro_definition(cpp_ctx*, cpp_token**, cpp_token*);
 cpp_macro_param* cpp_read_macro_params(cpp_token**, cpp_token*, char**);
-char* cpp_search_include_next(char*);
-char* cpp_search_include_paths(char*);
+char* cpp_search_include_next(cpp_ctx*, char*);
+char* cpp_search_include_paths(cpp_ctx*, char*);
 cpp_token* cpp_skip_cond_incl2(cpp_token*);
 cpp_token* cpp_skip_cond_incl(cpp_token*);
 cpp_token* cpp_skip_line(cpp_token*);
-cpp_token* cpp_stringize(cpp_token*, cpp_token*);
-cpp_token* cpp_subst(cpp_token*, cpp_macro_arg*);
-cpp_token* cpp_token_new(cpp_token_kind, char*, char*);
+cpp_token* cpp_stringize(cpp_ctx*, cpp_token*, cpp_token*);
+cpp_token* cpp_subst(cpp_ctx*, cpp_token*, cpp_macro_arg*);
+cpp_token* cpp_token_new(cpp_ctx*, cpp_token_kind, char*, char*);
 cpp_token* cpp_token_eof(cpp_token*);
 cpp_token* cpp_token_free(cpp_token*);
 cpp_token* cpp_token_copy(cpp_token*);
 cpp_token* cpp_token_append(cpp_token*, cpp_token*);
 void cpp_token_dump(buffer*, cpp_token*);
-cpp_token* cpp_tokenize(cpp_file*);
-cpp_token* cpp_tokenize_file(char*);
+cpp_token* cpp_tokenize(cpp_ctx*, cpp_file*);
+cpp_token* cpp_tokenize_file(cpp_ctx*, char*);
 cpp_type* cpp_type_new(cpp_type_kind, int, int);
 cpp_type* cpp_type_copy(cpp_type*);
 void cpp_type_free(cpp_type*);

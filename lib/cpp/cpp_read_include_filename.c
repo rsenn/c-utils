@@ -4,7 +4,7 @@
 
 /* Read an #include argument. */
 char*
-cpp_read_include_filename(cpp_token** rest, cpp_token* tok, bool* is_dquote) {
+cpp_read_include_filename(cpp_ctx* pp, cpp_token** rest, cpp_token* tok, bool* is_dquote) {
   /* Pattern 1: #include "foo.h" */
   if(tok->kind == TK_STR) {
     /* A double-quoted filename for #include is a special kind of
@@ -37,8 +37,8 @@ cpp_read_include_filename(cpp_token** rest, cpp_token* tok, bool* is_dquote) {
      In this case FOO must be macro-expanded to either
      a single string token or a sequence of "<" ... ">". */
   if(tok->kind == TK_IDENT) {
-    cpp_token* tok2 = cpp_preprocess2(cpp_copy_line(rest, tok));
-    return cpp_read_include_filename(&tok2, tok2, is_dquote);
+    cpp_token* tok2 = cpp_preprocess2(pp, cpp_copy_line(rest, tok));
+    return cpp_read_include_filename(pp, &tok2, tok2, is_dquote);
   }
 
   cpp_error_tok(tok, "expected a filename");

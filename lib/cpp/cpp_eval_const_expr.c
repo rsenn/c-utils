@@ -4,10 +4,10 @@
 
 /* Read and evaluate a constant expression. */
 long
-cpp_eval_const_expr(cpp_token** rest, cpp_token* tok) {
+cpp_eval_const_expr(cpp_ctx* pp, cpp_token** rest, cpp_token* tok) {
   cpp_token* start = tok;
-  cpp_token* expr = cpp_read_const_expr(rest, tok->next);
-  expr = cpp_preprocess2(expr);
+  cpp_token* expr = cpp_read_const_expr(pp, rest, tok->next);
+  expr = cpp_preprocess2(pp, expr);
 
   if(expr->kind == TK_EOF)
     cpp_error_tok(start, "no expression");
@@ -19,7 +19,7 @@ cpp_eval_const_expr(cpp_token** rest, cpp_token* tok) {
   for(cpp_token* t = expr; t->kind != TK_EOF; t = t->next) {
     if(t->kind == TK_IDENT) {
       cpp_token* next = t->next;
-      *t = *cpp_new_num_token(0, t);
+      *t = *cpp_new_num_token(pp, 0, t);
       t->next = next;
     }
   }
@@ -28,7 +28,7 @@ cpp_eval_const_expr(cpp_token** rest, cpp_token* tok) {
   cpp_convert_tokens(expr);
 
   cpp_token* rest2;
-  long val = cpp_const_expr(&rest2, expr);
+  long val = cpp_const_expr(pp, &rest2, expr);
 
   if(rest2->kind != TK_EOF)
     cpp_error_tok(rest2, "extra token");

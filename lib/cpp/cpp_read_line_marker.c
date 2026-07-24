@@ -3,9 +3,9 @@
 
 /* Read #line arguments */
 void
-cpp_read_line_marker(cpp_token** rest, cpp_token* tok) {
+cpp_read_line_marker(cpp_ctx* pp, cpp_token** rest, cpp_token* tok) {
   cpp_token* start = tok;
-  tok = cpp_preprocess(cpp_copy_line(rest, tok));
+  tok = cpp_preprocess(pp, cpp_copy_line(rest, tok));
 
   if(tok->kind != TK_NUM || tok->ty->kind != TY_INT)
     cpp_error_tok(tok, "invalid line marker");

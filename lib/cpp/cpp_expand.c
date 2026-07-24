@@ -4,7 +4,7 @@
 
 /* Otherwise, do nothing and return false. */
 bool
-cpp_expand(cpp_token** rest, cpp_token* tok) {
+cpp_expand(cpp_ctx* pp, cpp_token** rest, cpp_token* tok) {
   if(cpp_hideset_contains(tok->hideset, tok->loc, tok->len))
     return false;
 
@@ -13,12 +13,12 @@ cpp_expand(cpp_token** rest, cpp_token* tok) {
   if(tok->kind != TK_IDENT)
     return false;
 
-  if(!(m = cpp_macro_find(tok)))
+  if(!(m = cpp_macro_find(pp, tok)))
     return false;
 
   /* Built-in dynamic macro application such as __LINE__ */
   if(m->handler) {
-    *rest = m->handler(tok);
+    *rest = m->handler(pp, tok);
     (*rest)->next = tok->next;
     return true;
   }
@@ -55,7 +55,7 @@ cpp_expand(cpp_token** rest, cpp_token* tok) {
   cpp_hideset* hs = cpp_hideset_intersection(macro_token->hideset, rparen->hideset);
   hs = cpp_hideset_union(hs, cpp_hideset_new(m->name));
 
-  cpp_token* body = cpp_subst(m->body, args);
+  cpp_token* body = cpp_subst(pp, m->body, args);
   body = cpp_hideset_add(body, hs);
 
   for(cpp_token* t = body; t->kind != TK_EOF; t = t->next)

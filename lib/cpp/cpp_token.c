@@ -3,20 +3,20 @@
 
 /* Create a new token. */
 cpp_token*
-cpp_token_new(cpp_token_kind kind, char* start, char* end) {
+cpp_token_new(cpp_ctx* pp, cpp_token_kind kind, char* start, char* end) {
   cpp_token* tok;
 
   if((tok = alloc_zero(sizeof(cpp_token)))) {
     tok->kind = kind;
     tok->loc = start;
     tok->len = end - start;
-    tok->file = (cpp_ctx_get()->cur_file) ? cpp_file_dup((cpp_ctx_get()->cur_file)) : 0;
-    tok->filename = (cpp_ctx_get()->cur_file) ? (cpp_ctx_get()->cur_file)->display_name : 0;
-    tok->at_bol = (cpp_ctx_get()->bol);
-    tok->has_space = (cpp_ctx_get()->has_sp);
+    tok->file = pp->cur_file ? cpp_file_dup(pp->cur_file) : 0;
+    tok->filename = pp->cur_file ? pp->cur_file->display_name : 0;
+    tok->at_bol = pp->bol;
+    tok->has_space = pp->has_sp;
   }
 
-  (cpp_ctx_get()->bol) = (cpp_ctx_get()->has_sp) = 0;
+  pp->bol = pp->has_sp = 0;
   return tok;
 }
 

@@ -3,7 +3,7 @@
 #include "../alloc.h"
 
 cpp_token*
-cpp_tokenize_file(char* path) {
+cpp_tokenize_file(cpp_ctx* pp, char* path) {
   char* p;
 
   if(!(p = cpp_read_file(path)))
@@ -21,14 +21,14 @@ cpp_tokenize_file(char* path) {
   cpp_convert_universal_chars(p);
 
   /* Save the filename for assembler .file directive. */
-  cpp_file* file = cpp_file_new(path, (cpp_ctx_get()->in_file_no) + 1, p);
+  cpp_file* file = cpp_file_new(path, pp->in_file_no + 1, p);
 
   /* Save the filename for assembler .file directive. */
-  alloc_re(&(cpp_ctx_get()->in_files), 0, sizeof(char*) * ((cpp_ctx_get()->in_file_no) + 2));
-  (cpp_ctx_get()->in_files)[(cpp_ctx_get()->in_file_no)] = file;
-  (cpp_ctx_get()->in_files)[(cpp_ctx_get()->in_file_no) + 1] = NULL;
-  (cpp_ctx_get()->in_file_no)++;
+  alloc_re(&pp->in_files, 0, sizeof(char*) * (pp->in_file_no + 2));
+  pp->in_files[pp->in_file_no] = file;
+  pp->in_files[pp->in_file_no + 1] = NULL;
+  pp->in_file_no++;
 
-  /*(cpp_ctx_get()->cur_file) = file;*/
-  return cpp_tokenize(file);
+  /*pp->cur_file = file;*/
+  return cpp_tokenize(pp, file);
 }

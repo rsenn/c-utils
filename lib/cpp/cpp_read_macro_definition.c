@@ -3,7 +3,7 @@
 #include "../str.h"
 
 void
-cpp_read_macro_definition(cpp_token** rest, cpp_token* tok) {
+cpp_read_macro_definition(cpp_ctx* pp, cpp_token** rest, cpp_token* tok) {
   if(tok->kind != TK_IDENT)
     cpp_error_tok(tok, "macro name must be an identifier");
 
@@ -15,11 +15,11 @@ cpp_read_macro_definition(cpp_token** rest, cpp_token* tok) {
     char* va_args_name = NULL;
     cpp_macro_param* params = cpp_read_macro_params(&tok, tok->next, &va_args_name);
 
-    cpp_macro* m = cpp_macro_add(name, false, cpp_copy_line(rest, tok));
+    cpp_macro* m = cpp_macro_add(pp, name, false, cpp_copy_line(rest, tok));
     m->params = params;
     m->va_args_name = va_args_name;
   } else {
     /* Object-like macro */
-    cpp_macro_add(name, true, cpp_copy_line(rest, tok));
+    cpp_macro_add(pp, name, true, cpp_copy_line(rest, tok));
   }
 }
