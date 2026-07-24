@@ -100,3 +100,88 @@
   would exercise undefined behavior) with only `iom_init`/`iom_abort`
   covered, pending someone deciding whether to wire up epoll support for
   real.
+
+- str-str-unimplemented: `str_str()` is declared in `lib/str.h` (with
+  `__pure__`) but has no implementation anywhere in the tree -- no
+  `lib/str/str_str.c`, no inline definition. Any caller would fail to
+  link. Found while writing `tests/test_str.c`; left that test as an
+  empty stub rather than calling a function that doesn't exist.
+
+- str-decamelize-unimplemented: `str_decamelize()` is declared in
+  `lib/str.h` but has no implementation anywhere in the tree -- no
+  `lib/str/str_decamelize.c`, no inline definition. Any caller would fail
+  to link. Found while writing `tests/test_str.c`; left that test as an
+  empty stub rather than calling a function that doesn't exist.
+
+- mmap-anon-unimplemented: `mmap_anon()` is declared in `lib/mmap.h` but
+  has no implementation anywhere in the tree -- no `lib/mmap/mmap_anon.c`,
+  no inline definition. Any caller would fail to link. Found while
+  writing `tests/test_mmap.c`; left that test as an empty stub rather
+  than calling a function that doesn't exist.
+
+- env-unset-desyncs-env-init-bookkeeping: `env_unset()` (`lib/env/env_unset.c`)
+  is a thin wrapper around plain `unsetenv()`, but the rest of the `env`
+  module (`env_put`/`env_put2`/`env_putb` and friends, in
+  `lib/env/env_put.c`) manages `environ` itself once `env_init()` has run:
+  it tracks the array's used/allocated slot counts in file-static `en`
+  and `ea`, and `env_add()` relies on those counts staying accurate to
+  decide whether to grow the array before appending (`environ[en++] = s;
+  environ[en] = 0;`). Calling `env_unset()` after `env_init()` has already
+  taken over `environ` shrinks the array via `unsetenv()` without telling
+  `env_add()`, so `en` ends up one too high. The next `env_put*()` call
+  then writes past the array's real last element, silently dropping the
+  NUL terminator that every `for(e = environ; *e; e++)` scan (`env_get()`,
+  `env_get_b()`, etc.) depends on to stop -- causing an out-of-bounds read
+  and segfault soon after. Found while writing `tests/test_env.c`; worked
+  around by running the `env_unset()` test before any test that triggers
+  `env_init()`, and using plain `setenv()` (not `env_set()`) to seed the
+  variable it removes.
+
+- str-triml-inverted-condition: `str_triml()` (`lib/str/str_triml.c`)
+  breaks out of its skip loop with `if(byte_chr(charset, charsetlen, *s)
+  != charsetlen) break;` -- that condition is true (and so breaks)
+  precisely when `*s` *is* found in `charset`, i.e. on the very first
+  character a caller wants trimmed. Its sibling `byte_triml()`
+  (`lib/byte/byte_triml.c`) has the correct, opposite condition (`==
+  charsetlen`, i.e. stop when the character is *not* in charset, keep
+  skipping while it is). As written, `str_triml(s, charset, n)` returns
+  `s` unchanged whenever `s[0]` is one of the characters to trim. Found
+  while writing `tests/test_str.c`; the test documents the current
+  (no-op) behavior instead of the intended trim.
+
+- dir-size-windows-only: `dir_size()` (`lib/dir/dir_size.c`) initializes
+  its result to -1 and only ever overwrites it inside `#if !USE_READDIR
+  && WINDOWS`. On POSIX builds (`USE_READDIR`, i.e. anything using
+  `opendir`/`readdir`), that branch never compiles in, so `dir_size()`
+  unconditionally returns -1 regardless of the entry's actual size --
+  there is no `fstatat`/`stat`-based fallback for the readdir path. Found
+  while writing `tests/test_dir.c`; the test only checks the Windows
+  branch is skipped (`dir_size` returns -1) rather than asserting an
+  actual size on this platform.
+
+- dir-path-missing-directory-prefix: `dir_path()` (`lib/dir/dir_path.c`)
+  is supposed to build the full path of the current directory entry into
+  `sa`, but on the `USE_READDIR` (POSIX) branch the only line that would
+  populate the directory portion is commented out (`// stralloc_copys(sa,
+  dh->__d_dirname);`). As written, `dir_path()` on Linux/POSIX appends
+  just the entry's basename (via `dir_NAME(d)`) to whatever `sa` already
+  contained -- the directory the entry lives in never gets written, so
+  `sa` ends up holding only the filename instead of `dir/file`. Found
+  while writing `tests/test_dir.c`; the test asserts the current
+  (basename-only) result rather than the intended full path.
+
+- taia-fmtfrac-unimplemented: `taia_fmtfrac()` is declared in
+  `lib/taia.h` but has no implementation anywhere in the tree -- no
+  `lib/taia/taia_fmtfrac.c`, no inline definition. Any caller would fail
+  to link. Found while writing `tests/test_taia.c`; left that test as an
+  empty stub rather than calling a function that doesn't exist.
+
+- str-istr-first-char-case-sensitive: `str_istr()` in
+  `lib/str/str_istr.c` is meant to be a case-insensitive substring search
+  (it compares the remainder of the needle with `str_case_diffn`), but its
+  first-character check (`while(sc != c)`) compares raw bytes instead of
+  folding case. So `str_istr("Hello World", "world")` returns `NULL`
+  instead of finding `"World"`, while `str_istr("Hello World", "World")`
+  (matching first-letter case) works. Found while writing
+  `tests/test_str.c`; the test documents the current (buggy) behavior
+  instead of asserting the case-insensitive result a caller would expect.

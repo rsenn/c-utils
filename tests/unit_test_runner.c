@@ -23,6 +23,23 @@ TESTS(fmt);
 TESTS(iob);
 TESTS(io);
 TESTS(iom);
+TESTS(str);
+TESTS(scan);
+TESTS(unix);
+TESTS(socket);
+TESTS(mmap);
+TESTS(env);
+TESTS(dir);
+TESTS(safemult);
+TESTS(open);
+TESTS(taia);
+TESTS(wait);
+TESTS(uint32);
+TESTS(uint64);
+TESTS(uint16);
+TESTS(seek);
+TESTS(tai);
+TESTS(ndelay);
 
 START() {
   EXEC(stralloc);
@@ -40,4 +57,21 @@ START() {
   EXEC(iob);
   EXEC(io);
   EXEC(iom);
+  EXEC(str);
+  EXEC(scan);
+  EXEC(unix);
+  EXEC(socket);
+  EXEC(mmap);
+  EXEC(env);
+  EXEC(dir);
+  EXEC(safemult);
+  EXEC(open);
+  EXEC(taia);
+  EXEC(wait);
+  EXEC(uint32);
+  EXEC(uint64);
+  EXEC(uint16);
+  EXEC(seek);
+  EXEC(tai);
+  EXEC(ndelay);
 }
