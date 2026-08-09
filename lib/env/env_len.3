@@ -1,0 +1,12 @@
+.TH env_len 3
+.SH NAME
+env_len \- calculate the number of entries in an environment array
+.SH SYNTAX
+.B #include <env.h>
+
+.B size_t env_len(const char* const* \fIe\fP);
+.SH DESCRIPTION
+.B env_len
+counts the number of elements in the null-terminated array of strings \fIe\fP.
+.SH RETURN VALUE
+The number of elements in the array (excluding the terminating NULL pointer).

@@ -1,0 +1,16 @@
+.TH env_get_b 3
+.SH NAME
+env_get_b \- retrieve an environment variable value with a specified length
+.SH SYNTAX
+.B #include <env.h>
+
+.B const char* env_get_b(const char* \fIs\fP, size_t \fInamelen\fP);
+.SH DESCRIPTION
+.B env_get_b
+searches the current process environment (\fIenviron\fP) for an 
+environment variable. It compares the first \fInamelen\fP characters 
+of the string \fIs\fP against the variable names in the environment.
+
+.SH RETURN VALUE
+A pointer to the value part of the environment variable, or NULL 
+if no matching variable is found.

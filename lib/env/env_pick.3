@@ -1,0 +1,12 @@
+.TH env_pick 3
+.SH NAME
+env_pick \- return the first environment variable
+.SH SYNTAX
+.B #include <env.h>
+
+.B char* env_pick(void);
+.SH DESCRIPTION
+.B env_pick
+returns a pointer to the first entry in the current process environment array (\fIenviron\fP).
+.SH RETURN VALUE
+A pointer to the first string in \fIenviron\fP, or NULL if empty.

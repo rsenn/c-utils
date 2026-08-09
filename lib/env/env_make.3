@@ -1,0 +1,13 @@
+.TH env_make 3
+.SH NAME
+env_make \- populate an environment pointer array
+.SH SYNTAX
+.B #include <env.h>
+
+.B int env_make(const char** \fIv\fP, size_t \fIargc\fP, const char* \fIs\fP, size_t \fIlen\fP);
+.SH DESCRIPTION
+.B env_make
+populates the array \fIv\fP with pointers to strings located within the buffer \fIs\fP. 
+It expects a series of null-terminated strings packed sequentially in \fIs\fP.
+.SH RETURN VALUE
+1 on success, 0 if \fIargc\fP exceeds the bounds of \fIlen\fP (sets \fIerrno\fP to EINVAL).

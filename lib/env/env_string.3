@@ -1,0 +1,15 @@
+.TH env_string 3
+.SH NAME
+env_string \- copy an environment array to a stralloc
+.SH SYNTAX
+.B #include <env.h>
+.br
+.B #include <stralloc.h>
+
+.B int env_string(stralloc* \fIsa\fP, const char* const* \fIenvp\fP, size_t \fIenvlen\fP);
+.SH DESCRIPTION
+.B env_string
+copies \fIenvlen\fP environment strings from \fIenvp\fP into the stralloc \fIsa\fP.
+Each string is followed by a null terminator.
+.SH RETURN VALUE
+1 on success, 0 on memory allocation failure (the original state of \fIsa\fP is restored).

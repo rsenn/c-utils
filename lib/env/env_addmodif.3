@@ -1,0 +1,20 @@
+.TH env_addmodif 3
+.SH NAME
+env_addmodif \- append an environment-style key-value pair to a stralloc
+.SH SYNTAX
+.B #include <env.h>
+.br
+.B #include <stralloc.h>
+
+.B int env_addmodif(stralloc* \fIsa\fP, const char* \fIs\fP, const char* \fIt\fP);
+.SH DESCRIPTION
+.B env_addmodif
+appends the string \fIs\fP followed by an optional "=" and string \fIt\fP 
+to the stralloc \fIsa\fP. The resulting string is null-terminated 
+within the stralloc.
+
+If \fIt\fP is non-NULL, the function appends "=" and then the content 
+of \fIt\fP. If \fIs\fP is NULL, the function returns 1 without modifying \fIsa\fP.
+.SH RETURN VALUE
+1 if successful, 0 if memory allocation failed, in which case \fIsa\fP 
+remains unchanged.

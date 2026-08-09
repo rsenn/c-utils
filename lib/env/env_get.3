@@ -1,0 +1,15 @@
+.TH env_get 3
+.SH NAME
+env_get \- retrieve an environment variable value
+.SH SYNTAX
+.B #include <env.h>
+
+.B const char* env_get(const char* \fIs\fP);
+.SH DESCRIPTION
+.B env_get
+searches the current process environment (\fIenviron\fP) for the 
+environment variable named \fIs\fP.
+
+.SH RETURN VALUE
+A pointer to the value part of the environment variable, or NULL 
+if no matching variable is found.

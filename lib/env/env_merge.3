@@ -1,0 +1,15 @@
+.TH env_merge 3
+.SH NAME
+env_merge \- merge environment modifications into an array
+.SH SYNTAX
+.B #include <env.h>
+
+.B size_t env_merge(const char** \fIv\fP, size_t \fIvmax\fP, const char* const* \fIenvp\fP, size_t \fIenvlen\fP, const char* \fImodifs\fP, size_t \fImodiflen\fP);
+.SH DESCRIPTION
+.B env_merge
+merges modifications (\fImodifs\fP) into an existing environment array \fIenvp\fP, 
+storing the results in \fIv\fP. Modifications are expected as a null-terminated 
+concatenation of strings. Variables in \fImodifs\fP replace existing variables 
+in \fIenvp\fP.
+.SH RETURN VALUE
+The new number of elements in the merged array, or 0 if \fIvmax\fP is exceeded.

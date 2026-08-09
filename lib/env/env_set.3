@@ -1,0 +1,14 @@
+.TH env_set 3
+.SH NAME
+env_set \- set an environment variable
+.SH SYNTAX
+.B #include <env.h>
+
+.B int env_set(const char* \fIname\fP, const char* \fIvalue\fP);
+.SH DESCRIPTION
+.B env_set
+sets the environment variable \fIname\fP to \fIvalue\fP. On Windows, 
+it uses the native Win32 API. On POSIX systems, it wraps the environment 
+update functions.
+.SH RETURN VALUE
+1 on success, 0 on failure.

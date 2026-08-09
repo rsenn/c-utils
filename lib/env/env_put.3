@@ -1,0 +1,25 @@
+.TH env_put 3
+.SH NAME
+env_put, env_putb, env_put2, env_put2b \- modify the current environment
+.SH SYNTAX
+.B #include <env.h>
+
+.B int env_put(const char* \fIs\fP);
+.br
+.B int env_putb(const char* \fIx\fP, size_t \fIn\fP);
+.br
+.B int env_put2(const char* \fIs\fP, const char* \fIt\fP);
+.br
+.B int env_put2b(const char* \fIs\fP, const char* \fIt\fP, size_t \fIn\fP);
+.SH DESCRIPTION
+These functions add or update variables in the process environment (\fIenviron\fP).
+.B env_put
+takes a "KEY=VALUE" string.
+.B env_putb
+takes a "KEY=VALUE" string of length \fIn\fP.
+.B env_put2
+and
+.B env_put2b
+take separate arguments for the key and the value.
+.SH RETURN VALUE
+1 on success, 0 on failure (memory allocation).

@@ -1,0 +1,12 @@
+.TH env_unset 3
+.SH NAME
+env_unset \- remove an environment variable
+.SH SYNTAX
+.B #include <env.h>
+
+.B int env_unset(const char* \fIname\fP);
+.SH DESCRIPTION
+.B env_unset
+removes the variable \fIname\fP from the current process environment.
+.SH RETURN VALUE
+1 on success, 0 on failure.

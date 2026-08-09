@@ -1,0 +1,17 @@
+.TH env_get2 3
+.SH NAME
+env_get2 \- retrieve an environment variable value from a custom array
+.SH SYNTAX
+.B #include <env.h>
+
+.B const char* env_get2(const char* const* \fIenvp\fP, const char* \fIs\fP);
+.SH DESCRIPTION
+.B env_get2
+searches the null-terminated environment array \fIenvp\fP for an 
+environment variable named \fIs\fP. It looks for a string in 
+\fIenvp\fP that starts with \fIs\fP followed immediately by an '=' 
+character.
+
+.SH RETURN VALUE
+A pointer to the value part of the environment variable (the string 
+following the '='), or NULL if the variable was not found.
