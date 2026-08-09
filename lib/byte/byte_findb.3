@@ -1,0 +1,18 @@
+.TH byte_findb 3
+.SH NAME
+byte_findb \- find a byte sequence within a byte sequence
+
+.SH SYNTAX
+.B #include <byte.h>
+
+size_t \fBbyte_findb\fP(const void *\fIhaystack\fP, size_t \fIhlen\fP, const void *\fIwhat\fP, size_t \fIwlen\fP);
+
+.SH DESCRIPTION
+\fBbyte_findb\fP searches for the first occurrence of the byte sequence \fIwhat\fP of length \fIwlen\fP within the byte sequence \fIhaystack\fP of length \fIhlen\fP.
+
+If the sequence \fIwhat\fP is found within \fIhaystack\fP, \fBbyte_findb\fP returns the index of the first occurrence (a value between 0 and \fIhlen\fP - \fIwlen\fP).
+
+If the sequence \fIwhat\fP is not found, or if \fIwlen\fP is greater than \fIhlen\fP, \fBbyte_findb\fP returns \fIhlen\fP.
+
+.SH SEE ALSO
+byte_chr(3), byte_rchr(3), byte_finds(3)

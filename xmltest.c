@@ -21,7 +21,7 @@ void
 put_str_escaped(buffer* b, const char* str) {
   stralloc esc;
   stralloc_init(&esc);
-  stralloc_fmt_pred(&esc, str, str_len(str), (stralloc_fmt_fn*)&fmt_escapecharc, (int (*)()) & iscntrl);
+  stralloc_fmt_pred(&esc, str, str_len(str), (stralloc_fmt_fn*)&fmt_escapecharc, (int (*)())&iscntrl);
   buffer_putsa(b, &esc);
 }
 
@@ -67,7 +67,8 @@ xml_dump(xmlnode* n, buffer* b, const char* parent, int depth) {
       const char* x = xml_get_text(n, &name);
 
       if(x[0]) {
-        buffer_putm_internal(b, "", parent, "->children =                              ml_textnode(\"", x, "\");", NULL);
+        buffer_putm_internal(
+            b, "", parent, "->children =                              ml_textnode(\"", x, "\");", NULL);
         newline_indent(b, depth);
       }
     } else if(n->type == XML_ELEMENT) {
@@ -186,7 +187,8 @@ xml_dump(xmlnode* n, buffer* b, const char* parent, int depth) {
         } else {
           hmap_foreach(n->attributes, t) {
             newline_indent(b, depth);
-            buffer_putm_internal(b, "xml_set_attribute(", name.s, ", \"", t->key, "\", \"", t->vals.val_chars, "\")", NULL);
+            buffer_putm_internal(
+                b, "xml_set_attribute(", name.s, ", \"", t->key, "\", \"", t->vals.val_chars, "\")", NULL);
           }
         }
       }

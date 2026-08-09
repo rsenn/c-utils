@@ -305,6 +305,7 @@ main(int argc, char* argv[]) {
       default: usage(argv[0]); return 1;
     }
   }
+
   tls_init("http.key", "http.crt");
 
   if(unix_optind < argc) {

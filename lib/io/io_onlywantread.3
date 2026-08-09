@@ -1,0 +1,20 @@
+.TH io_onlywantread 3
+.SH NAME
+io_onlywantread \- signal that you want to read from a descriptor, but not write
+.SH SYNTAX
+.B #include <io.h>
+
+void \fBio_onlywantread\fP(int64 fd);
+.SH DESCRIPTION
+io_onlywantread tells the next io_wait() that you want to read from this
+descriptor, but do not want to write to it.
+
+This is equivalent to calling io_dontwantwrite(fd) followed by
+io_wantread(fd).
+
+You have to have called io_fd on the descriptor first (io_pipe and
+io_socketpair do this for you).  Waiting on descriptors only works for
+sockets, fifos and pipes.  It may also work on devices and TTYs, but
+that is platform dependent -- you should not rely on that.
+.SH "SEE ALSO"
+io_wait(3), io_wantread(3), io_dontwantwrite(3), io_onlywantwrite(3), io_fd(3)

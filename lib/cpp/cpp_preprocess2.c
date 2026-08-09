@@ -226,7 +226,8 @@ include_file(cpp_ctx* pp, cpp_token* tok, char* path, cpp_token* filename_tok) {
   char* guard_name;
 
 #ifdef DEBUG_OUTPUT_
-  buffer_putm_internal(buffer_2, "include_file '", path, "'", tok->file ? " from '" : 0, tok->file ? tok->file->name : 0, "'", 0);
+  buffer_putm_internal(
+      buffer_2, "include_file '", path, "'", tok->file ? " from '" : 0, tok->file ? tok->file->name : 0, "'", 0);
   buffer_putnlflush(buffer_2);
 #endif
 

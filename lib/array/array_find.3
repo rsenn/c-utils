@@ -1,0 +1,32 @@
+.TH array_find 3
+.SH NAME
+array_find \- search for an element in an array
+.SH SYNTAX
+.B #include <array.h>
+
+void* \fBarray_find\fP(array* \fIa\fR, uint64 \fImembersize\fR, void* \fIdata\fR);
+.SH DESCRIPTION
+.B array_find
+scans the initialized portion of the array pointed to by
+.I a
+to locate an element that matches the memory block pointed to by
+.I data
+with size
+.I membersize
+bytes.
+
+The array is treated as a sequence of elements, each of length
+.I membersize.
+The comparison is performed using 
+.BR byte_equal (3).
+
+.SH RETURN VALUE
+.B array_find
+returns a pointer to the start of the first element in the array that matches
+.I data.
+If no such element is found, it returns
+.B 0
+(NULL).
+
+.SH SEE ALSO
+array_indexof(3), array_start(3), array_length(3), byte_equal(3)

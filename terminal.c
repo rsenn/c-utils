@@ -350,7 +350,7 @@ terminal_set_fg(int color) {
     terminal_command_number_char(39, 'm');
   else
     terminal_numbers_sequence(&terminal_out_buffer, (int[]){bright ? 0 : 2, 30 + c}, 2, 'm');
-    // printf("\033[%d;%dm", bright ? 0 : 2, 30 + c);
+  // printf("\033[%d;%dm", bright ? 0 : 2, 30 + c);
 #endif
 }
 void

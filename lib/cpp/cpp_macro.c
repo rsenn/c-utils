@@ -3,7 +3,6 @@
 #include "../alloc.h"
 #include "../str.h"
 
-
 cpp_macro*
 cpp_macro_add(cpp_ctx* pp, char* name, bool is_objlike, cpp_token* body) {
   cpp_macro* m;

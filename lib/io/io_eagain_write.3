@@ -1,0 +1,29 @@
+.TH io_eagain_write 3
+.SH NAME
+io_eagain_write \- signal that a file descriptor is not ready for writing
+
+.SH SYNTAX
+.B #include <io.h>
+
+void \fBio_eagain_write\fP(fd_type \fId\fP);
+
+.SH DESCRIPTION
+.B io_eagain_write
+marks the file descriptor \fId\fP as currently unable to accept further data for writing. 
+This function should be called when a write operation on the file descriptor returns
+an error code indicating that the resource is temporarily unavailable (e.g., EAGAIN or EWOULDBLOCK).
+
+Internally, this updates the IO management structure to reflect that \fId\fP's
+write readiness state is false. If the system is using a signal-based IO multiplexing
+mechanism (like SIGIO), it also performs the necessary queue management to remove the
+descriptor from the alternative write queue.
+
+.SH ARGUMENTS
+.TP
+.I d
+The file descriptor to be marked as not ready for writing.
+
+.SH SEE ALSO
+.BR io_wait (3),
+.BR io_canwrite (3),
+.BR io_trywrite (3)

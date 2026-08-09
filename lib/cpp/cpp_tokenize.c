@@ -181,8 +181,10 @@ cpp_tokenize(cpp_ctx* pp, cpp_file* file) {
   return head.next;
 }
 
-cpp_type *cpp_ty_void = &(cpp_type){TY_VOID, 1, 1}, *cpp_ty_bool = &(cpp_type){TY_BOOL, 1, 1}, *cpp_ty_char = &(cpp_type){TY_CHAR, 1, 1},
-         *cpp_ty_short = &(cpp_type){TY_SHORT, 2, 2}, *cpp_ty_int = &(cpp_type){TY_INT, 4, 4}, *cpp_ty_long = &(cpp_type){TY_LONG, 8, 8},
-         *cpp_ty_uchar = &(cpp_type){TY_CHAR, 1, 1, true}, *cpp_ty_ushort = &(cpp_type){TY_SHORT, 2, 2, true}, *cpp_ty_uint = &(cpp_type){TY_INT, 4, 4, true},
-         *cpp_ty_ulong = &(cpp_type){TY_LONG, 8, 8, true}, *cpp_ty_float = &(cpp_type){TY_FLOAT, 4, 4}, *cpp_ty_double = &(cpp_type){TY_DOUBLE, 8, 8},
+cpp_type *cpp_ty_void = &(cpp_type){TY_VOID, 1, 1}, *cpp_ty_bool = &(cpp_type){TY_BOOL, 1, 1},
+         *cpp_ty_char = &(cpp_type){TY_CHAR, 1, 1}, *cpp_ty_short = &(cpp_type){TY_SHORT, 2, 2},
+         *cpp_ty_int = &(cpp_type){TY_INT, 4, 4}, *cpp_ty_long = &(cpp_type){TY_LONG, 8, 8},
+         *cpp_ty_uchar = &(cpp_type){TY_CHAR, 1, 1, true}, *cpp_ty_ushort = &(cpp_type){TY_SHORT, 2, 2, true},
+         *cpp_ty_uint = &(cpp_type){TY_INT, 4, 4, true}, *cpp_ty_ulong = &(cpp_type){TY_LONG, 8, 8, true},
+         *cpp_ty_float = &(cpp_type){TY_FLOAT, 4, 4}, *cpp_ty_double = &(cpp_type){TY_DOUBLE, 8, 8},
          *cpp_ty_ldouble = &(cpp_type){TY_LDOUBLE, 16, 16};

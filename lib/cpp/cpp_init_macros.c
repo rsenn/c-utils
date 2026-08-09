@@ -973,5 +973,5 @@ format_time(struct tm* tm) {
 
   return str_ndup(buf, pos);
 
-  //return cpp_format("\"%02d:%02d:%02d\"", tm->tm_hour, tm->tm_min, tm->tm_sec);
+  // return cpp_format("\"%02d:%02d:%02d\"", tm->tm_hour, tm->tm_min, tm->tm_sec);
 }

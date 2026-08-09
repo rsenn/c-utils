@@ -20,9 +20,9 @@ static int64 eval_rval(cpp_node*, char***);
 static double eval_double(cpp_node*);
 static cpp_node* logor(cpp_ctx*, cpp_token**, cpp_token*);
 static cpp_node* logand(cpp_ctx*, cpp_token**, cpp_token*);
-static cpp_node* bitor (cpp_ctx * pp, cpp_token * *rest, cpp_token*);
+static cpp_node* bitor(cpp_ctx* pp, cpp_token** rest, cpp_token*);
 static cpp_node* bitxor(cpp_ctx*, cpp_token**, cpp_token*);
-static cpp_node*bitand(cpp_ctx*, cpp_token**, cpp_token*);
+static cpp_node* bitand(cpp_ctx*, cpp_token**, cpp_token*);
 static cpp_node* equality(cpp_ctx*, cpp_token**, cpp_token*);
 static cpp_node* relational(cpp_ctx*, cpp_token**, cpp_token*);
 static cpp_node* shift(cpp_ctx*, cpp_token**, cpp_token*);
@@ -56,9 +56,10 @@ is_typename(cpp_token* tok) {
 
   if(map.capacity == 0) {
     static char* kw[] = {
-        "void",       "_Bool",        "char",      "short",  "int",      "long",   "struct",   "union",         "typedef",  "enum",
-        "static",     "extern",       "_Alignas",  "signed", "unsigned", "const",  "volatile", "auto",          "register", "restrict",
-        "__restrict", "__restrict__", "_Noreturn", "float",  "double",   "typeof", "inline",   "_Thread_local", "__thread", "_Atomic",
+        "void",     "_Bool",  "char",     "short",         "int",        "long",         "struct",    "union",
+        "typedef",  "enum",   "static",   "extern",        "_Alignas",   "signed",       "unsigned",  "const",
+        "volatile", "auto",   "register", "restrict",      "__restrict", "__restrict__", "_Noreturn", "float",
+        "double",   "typeof", "inline",   "_Thread_local", "__thread",   "_Atomic",
     };
 
     for(int i = 0; i < sizeof(kw) / sizeof(*kw); i++)
@@ -658,17 +659,26 @@ to_assign(cpp_ctx* pp, cpp_node* binary) {
     cpp_obj* old = new_lvar(pp, "", binary->lhs->ty);
     cpp_obj* new = new_lvar(pp, "", binary->lhs->ty);
 
-    cur = cur->next = new_unary(ND_EXPR_STMT, new_binary(ND_ASSIGN, new_var_node(addr, tok), new_unary(ND_ADDR, binary->lhs, tok), tok), tok);
+    cur = cur->next =
+        new_unary(ND_EXPR_STMT,
+                  new_binary(ND_ASSIGN, new_var_node(addr, tok), new_unary(ND_ADDR, binary->lhs, tok), tok),
+                  tok);
 
     cur = cur->next = new_unary(ND_EXPR_STMT, new_binary(ND_ASSIGN, new_var_node(val, tok), binary->rhs, tok), tok);
 
-    cur = cur->next = new_unary(ND_EXPR_STMT, new_binary(ND_ASSIGN, new_var_node(old, tok), new_unary(ND_DEREF, new_var_node(addr, tok), tok), tok), tok);
+    cur = cur->next =
+        new_unary(ND_EXPR_STMT,
+                  new_binary(ND_ASSIGN, new_var_node(old, tok), new_unary(ND_DEREF, new_var_node(addr, tok), tok), tok),
+                  tok);
 
     cpp_node* loop = new_node(ND_DO, tok);
     loop->brk_label = new_unique_name(pp);
     loop->cont_label = new_unique_name(pp);
 
-    cpp_node* body = new_binary(ND_ASSIGN, new_var_node(new, tok), new_binary(binary->kind, new_var_node(old, tok), new_var_node(val, tok), tok), tok);
+    cpp_node* body = new_binary(ND_ASSIGN,
+                                new_var_node(new, tok),
+                                new_binary(binary->kind, new_var_node(old, tok), new_var_node(val, tok), tok),
+                                tok);
 
     loop->then = new_node(ND_BLOCK, tok);
     loop->then->body = new_unary(ND_EXPR_STMT, body, tok);
@@ -693,7 +703,10 @@ to_assign(cpp_ctx* pp, cpp_node* binary) {
   cpp_node* expr1 = new_binary(ND_ASSIGN, new_var_node(var, tok), new_unary(ND_ADDR, binary->lhs, tok), tok);
 
   cpp_node* expr2 =
-      new_binary(ND_ASSIGN, new_unary(ND_DEREF, new_var_node(var, tok), tok), new_binary(binary->kind, new_unary(ND_DEREF, new_var_node(var, tok), tok), binary->rhs, tok), tok);
+      new_binary(ND_ASSIGN,
+                 new_unary(ND_DEREF, new_var_node(var, tok), tok),
+                 new_binary(binary->kind, new_unary(ND_DEREF, new_var_node(var, tok), tok), binary->rhs, tok),
+                 tok);
 
   return new_binary(ND_COMMA, expr1, expr2, tok);
 }
@@ -799,17 +812,18 @@ logor(cpp_ctx* pp, cpp_token** rest, cpp_token* tok) {
 // logand = bitor ("&&" bitor)*
 static cpp_node*
 logand(cpp_ctx* pp, cpp_token** rest, cpp_token* tok) {
-  cpp_node* node = bitor (pp, &tok, tok);
+  cpp_node* node = bitor(pp, &tok, tok);
   while(cpp_equal(tok, "&&")) {
     cpp_token* start = tok;
-    node = new_binary(ND_LOGAND, node, bitor (pp, &tok, tok->next), start);
+    node = new_binary(ND_LOGAND, node, bitor(pp, &tok, tok->next), start);
   }
   *rest = tok;
   return node;
 }
 
 // bitor = bitxor ("|" bitxor)*
-static cpp_node* bitor (cpp_ctx* pp, cpp_token * *rest, cpp_token* tok) {
+static cpp_node*
+bitor(cpp_ctx* pp, cpp_token** rest, cpp_token* tok) {
   cpp_node* node = bitxor(pp, &tok, tok);
   while(cpp_equal(tok, "|")) {
     cpp_token* start = tok;
@@ -832,7 +846,8 @@ bitxor(cpp_ctx* pp, cpp_token** rest, cpp_token* tok) {
 }
 
 // bitand = equality ("&" equality)*
-static cpp_node*bitand(cpp_ctx* pp, cpp_token** rest, cpp_token* tok) {
+static cpp_node*
+bitand(cpp_ctx* pp, cpp_token** rest, cpp_token* tok) {
   cpp_node* node = equality(pp, &tok, tok);
   while(cpp_equal(tok, "&")) {
     cpp_token* start = tok;

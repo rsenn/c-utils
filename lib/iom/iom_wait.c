@@ -54,7 +54,8 @@ iom_wait(iomux_t* c, int64* s, unsigned int* revents, unsigned long timeout) {
       }
       for(i = 0; i < r; ++i) {
         /* convert events */
-        int e = ((ee[i].events & (EPOLLIN | EPOLLHUP | EPOLLERR)) ? IOM_READ : 0) | ((ee[i].events & (EPOLLOUT | EPOLLHUP | EPOLLERR)) ? IOM_WRITE : 0) |
+        int e = ((ee[i].events & (EPOLLIN | EPOLLHUP | EPOLLERR)) ? IOM_READ : 0) |
+                ((ee[i].events & (EPOLLOUT | EPOLLHUP | EPOLLERR)) ? IOM_WRITE : 0) |
                 ((ee[i].events & EPOLLERR) ? IOM_ERROR : 0);
         if(i + 1 == r) {
           /* return last event instead of enqueueing it */

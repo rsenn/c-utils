@@ -1,0 +1,15 @@
+.TH byte_startb 3
+.SH NAME
+byte_startb \- check if a byte string starts with another byte string
+.SH SYNTAX
+.B #include <byte.h>
+
+int \fBbyte_startb\fP(const void *\fIb\fP, size_t \fIblen\fP, const char *\fIx\fP, size_t \fIxlen\fP);
+.SH DESCRIPTION
+.B byte_startb
+returns 1 if the byte string \fIb\fP of length \fIblen\fP starts with the byte string \fIx\fP of length \fIxlen\fP.
+Otherwise, it returns 0.
+
+If \fIblen\fP is less than \fIxlen\fP, it returns 0.
+.SH SEE ALSO
+byte_starts(3), byte_equal(3)

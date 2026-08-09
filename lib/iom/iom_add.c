@@ -21,7 +21,13 @@ iom_add(iomux_t* c, int64 s, unsigned int events) {
 #elif defined(HAVE_KQUEUE)
   struct kevent kev;
   struct timespec ts = {0};
-  EV_SET(&kev, s, (events & IOM_READ ? EVFILT_READ : 0) + (events & IOM_WRITE ? EVFILT_WRITE : 0), EV_ADD | EV_ENABLE | EV_ONESHOT, 0, 0, (void*)s);
+  EV_SET(&kev,
+         s,
+         (events & IOM_READ ? EVFILT_READ : 0) + (events & IOM_WRITE ? EVFILT_WRITE : 0),
+         EV_ADD | EV_ENABLE | EV_ONESHOT,
+         0,
+         0,
+         (void*)s);
   return kevent(c->ctx, &kev, 1, 0, 0, &ts);
 #else
 #warning "only epoll and kqueue supported for now"

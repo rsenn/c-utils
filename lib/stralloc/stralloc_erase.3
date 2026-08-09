@@ -1,0 +1,20 @@
+.TH stralloc_erase 3
+.SH NAME
+stralloc_erase \- clear a stralloc structure
+.SH SYNTAX
+.B #include <stralloc.h>
+
+size_t \fBstralloc_erase\fP(stralloc* \fIsa\fP);
+.SH DESCRIPTION
+\fBstralloc_erase\fP clears the contents of the \fIstralloc\fP structure pointed
+to by \fIsa\fP. It resets the length to 0 and overwrites the first byte of
+the buffer with a 'Z' for diagnostic purposes (offensive programming),
+ensuring that any stale data is marked.
+
+It attempts to ensure that the \fIstralloc\fP buffer remains allocated and ready 
+for reuse by calling \fBstralloc_ready\fP(3).
+.SH RETURN VALUE
+Returns 1 if the operation succeeded, 0 if it failed (e.g. out of memory during
+internal preparation).
+.SH SEE ALSO
+stralloc_free(3), stralloc_init(3), stralloc_zero(3), stralloc_ready(3)

@@ -95,7 +95,8 @@ cpp_token_dump(buffer* out, cpp_token* tok) {
   }
 
   buffer_puts(out, "  kind: ");
-  buffer_puts(out, ((const char*[]){"IDENT  ", "PUNCT  ", "KEYWORD", "STR    ", "NUM    ", "PP_NUM ", "EOF    "}[tok->kind]));
+  buffer_puts(
+      out, ((const char*[]){"IDENT  ", "PUNCT  ", "KEYWORD", "STR    ", "NUM    ", "PP_NUM ", "EOF    "}[tok->kind]));
 
   buffer_puts(out, "  at_bol=");
   buffer_putulong(out, tok->at_bol);

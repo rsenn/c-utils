@@ -25,14 +25,15 @@ buffer_copy(buffer* out, buffer* in) {
 
 void
 usage(char* argv0) {
-  buffer_putm_internal(buffer_1,
-                       "Usage: ",
-                       argv0,
-                       " [-o output] [infile or                        tdin]\n\n",
-                       "  -1 ... -9                                  ompression level; default is                        \n",
-                       "\n",
-                       "Supported types are:",
-                       NULL);
+  buffer_putm_internal(
+      buffer_1,
+      "Usage: ",
+      argv0,
+      " [-o output] [infile or                        tdin]\n\n",
+      "  -1 ... -9                                  ompression level; default is                        \n",
+      "\n",
+      "Supported types are:",
+      NULL);
 #if HAVE_ZLIB
   buffer_puts(buffer_1, " gz");
 #endif
@@ -110,7 +111,10 @@ main(int argc, char* argv[]) {
       case 't': in_type = compression_from_ext(unix_optarg); break;
       case 'o': out_filename = unix_optarg; break;
       case 'h': usage(str_basename(argv[0])); exit(EXIT_SUCCESS);
-      default: /* '?' */ buffer_putm_internal(buffer_2, "Usage: ", argv[0], "[-t TYPE] [-o OUTPUT]                              file]\n", NULL); exit(EXIT_FAILURE);
+      default: /* '?' */
+        buffer_putm_internal(
+            buffer_2, "Usage: ", argv[0], "[-t TYPE] [-o OUTPUT]                              file]\n", NULL);
+        exit(EXIT_FAILURE);
     }
   }
 
@@ -187,7 +191,10 @@ main(int argc, char* argv[]) {
      * decompress ? 0 : level); */
     /*      break; */
     default:
-      buffer_putm_internal(buffer_2, "ERROR: Unable to detect                            ompression type from ", in_filename, NULL);
+      buffer_putm_internal(buffer_2,
+                           "ERROR: Unable to detect                            ompression type from ",
+                           in_filename,
+                           NULL);
       buffer_putnlflush(buffer_2);
       exit(EXIT_FAILURE);
   }

@@ -1,0 +1,21 @@
+.TH io_eagain_read 3
+.SH NAME
+io_eagain_read \- mark a file descriptor as having received an EAGAIN error on read
+.SH SYNTAX
+.B #include <io.h>
+
+void \fBio_eagain_read\fP(\fIfd_type\fP d);
+.SH DESCRIPTION
+.B io_eagain_read
+marks the file descriptor
+.I d
+as having received an
+.B EAGAIN
+or
+.B EWOULDBLOCK
+error during a non-blocking read operation. This informs the underlying I/O multiplexer that no further data is immediately available to be read from this descriptor, preventing unnecessary wake-ups until the multiplexer indicates that the descriptor is ready again.
+
+If the file descriptor is currently tracked in an internal I/O queue, this function performs the necessary state updates, such as dequeuing the descriptor from the alternative read queue if the system is configured to use signal-driven I/O (SIGIO).
+.SH SEE ALSO
+.BR io_eagain_write (3),
+.BR io_wait (3)

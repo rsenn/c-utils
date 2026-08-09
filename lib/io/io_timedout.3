@@ -1,0 +1,24 @@
+.TH IO_TIMEDOUT 3 "Version" "Date"
+.SH NAME
+io_timedout \- Check if an I/O operation has timed out
+.SH SYNOPSIS
+\fB#include \f<lib/io_internal.h>\fR
+
+\fBint io_timedout\fR(\fIfd_type d\fR);
+.SH DESCRIPTION
+The \fBio_timedout\fR function checks if an I/O operation associated with the file descriptor \fId\fR has timed out.
+.SH RETURN VALUE
+\~If \fId\fR is valid and has a non-zero timeout value that has expired, \fBio_timedout\fR returns 1. Otherwise, it returns 0.
+.SH EXAMPLES
+The following example demonstrates how to use the \fBio_timedout\fR function:
+.IR "extern int io_timedout(fd_type d);"
+.PP
+.IR "#include <lib/io_internal.h>"
+.IR
+.IR "fd_type fd = open(\"/path/to/file\", O_RDONLY);"
+.IR
+.IR "if (io_timedout(fd)) {"
+.IR "    printf(\"Operation timed out.\");"
+.IR "}"
+.SH SEE ALSO
+\Bio_getfds\fR(3), \Btaia_now\fR(3)

@@ -104,14 +104,13 @@ buffer_bz_close(buffer* b) {
     strm->next_out = (char*)buffer_PEEK(other);
     strm->avail_out = a = buffer_SPACE(other);
 
-    ret = b->op == &buffer_bzwrite_op  ? BZ2_bzCompress(strm, ctx->a) : BZ2_bzDecompress(strm);
+    ret = b->op == &buffer_bzwrite_op ? BZ2_bzCompress(strm, ctx->a) : BZ2_bzDecompress(strm);
 
     if(ret == BZ_FLUSH_OK)
       ctx->a = BZ_FINISH;
 
-    if(ret == BZ_FINISH_OK||ret == BZ_STREAM_END)
+    if(ret == BZ_FINISH_OK || ret == BZ_STREAM_END)
       break;
-
   }
 
   other->p += a - strm->avail_out;

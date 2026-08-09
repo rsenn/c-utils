@@ -948,7 +948,16 @@ input_process_rules(target* all) {
       path_dirname(rule->name, &outdir.sa);
 
 #ifdef DEBUG_OUTPUT
-    buffer_putm_internal(debug_buf, YELLOW256, __func__, NC, " Rule: ", name, link ? " (link)" : compile ? " (compile)" : 0, NULL);
+    buffer_putm_internal(debug_buf,
+                         YELLOW256,
+                         __func__,
+                         NC,
+                         " Rule: ",
+                         name,
+                         link      ? " (link)"
+                         : compile ? " (compile)"
+                                   : 0,
+                         NULL);
     buffer_putnlflush(debug_buf);
 #endif
   }
@@ -1169,7 +1178,17 @@ input_process_rules(target* all) {
     }
 
 #ifdef DEBUG_OUTPUT_
-    buffer_putm_internal(debug_buf, YELLOW256, __func__, NC, " Rule: ", name, compile ? " (compile)" : link ? " (link)" : "", "\n\t", NULL);
+    buffer_putm_internal(debug_buf,
+                         YELLOW256,
+                         __func__,
+                         NC,
+                         " Rule: ",
+                         name,
+                         compile ? " (compile)"
+                         : link  ? " (link)"
+                                 : "",
+                         "\n\t",
+                         NULL);
     buffer_putsa(debug_buf, &rule->recipe);
     buffer_putnlflush(debug_buf);
 #endif

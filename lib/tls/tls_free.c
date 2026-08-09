@@ -13,7 +13,7 @@ tls_free(fd_type fd) {
   assert(i->bio);
   SSL_free(i->ssl);
   i->ssl = 0;
-  BIO_free(i->bio);
+  // BIO_free(i->bio);
   i->bio = 0;
 }
 #endif

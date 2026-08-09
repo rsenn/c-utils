@@ -1,0 +1,16 @@
+.TH byte_replace 3
+.SH NAME
+byte_replace \- replace occurrences of a character in a buffer
+
+.SH SYNTAX
+.B #include <byte.h>
+
+void byte_replace(char *\fIx\fP, size_t \fIn\fP, char \fIbefore\fP, char \fIafter\fP);
+
+.SH DESCRIPTION
+.B byte_replace
+scans the buffer \fIx\fP of length \fIn\fP. Every occurrence of the character
+\fIbefore\fP is replaced by the character \fIafter\fP.
+
+.SH SEE ALSO
+byte_copy(3), byte_diff(3), byte_zero(3)

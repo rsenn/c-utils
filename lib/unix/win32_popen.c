@@ -101,7 +101,8 @@ static IDpair* __cdecl idtab(FILE*);
  *
  *******************************************************************************/
 
-FILE* __cdecl popen(const char* cmdstring, const char* type) {
+FILE* __cdecl
+popen(const char* cmdstring, const char* type) {
   int phdls[2];   /* I/O handles for pipe */
   int ph_open[2]; /* flags, set if correspond phdls is open */
   int i1;         /* index into phdls[] */
@@ -416,7 +417,8 @@ error1:
  *
  *******************************************************************************/
 
-int __cdecl _pclose(FILE* pstream) {
+int __cdecl
+_pclose(FILE* pstream) {
   IDpair* locidpair; /* pointer to entry in idpairs table */
   int termstat;      /* termination status word */
   int retval = -1;   /* return value (to caller) */
@@ -494,7 +496,8 @@ int __cdecl _pclose(FILE* pstream) {
  *
  *******************************************************************************/
 
-static IDpair* __cdecl idtab(FILE* pstream) {
+static IDpair* __cdecl
+idtab(FILE* pstream) {
   IDpair* pairptr; /* ptr to entry */
   IDpair* newptr;  /* ptr to newly malloc'd memory */
 

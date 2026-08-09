@@ -18,9 +18,9 @@
 #include "lib/fmt.h"
 #include "lib/str.h"
 
-//#if WINDOWS_NATIVE
-//#define snprintf _snprintf
-//#endif
+// #if WINDOWS_NATIVE
+// #define snprintf _snprintf
+// #endif
 
 #include <errno.h>
 #include <fcntl.h>
@@ -259,7 +259,12 @@ next:
       char* m = mmap_map(fd, msz, mofs);
 
       if(m == NULL) {
-        fprintf(stderr, "mmap_map(%d, " FMT_SIZE_T ", " FMT_OFFS_T ") failed: %s\n", fd, (unsigned long long)msz, (long long)mofs, last_error_str());
+        fprintf(stderr,
+                "mmap_map(%d, " FMT_SIZE_T ", " FMT_OFFS_T ") failed: %s\n",
+                fd,
+                (unsigned long long)msz,
+                (long long)mofs,
+                last_error_str());
         exit(2);
       }
 
@@ -281,7 +286,11 @@ next:
       }
 
       if(verbose)
-        fprintf(stderr, "mmap at " FMT_OFFS_T ", size " FMT_SIZE_T "%s\n", (long long)mofs, (unsigned long long)msz, (z < blocks ? "" : " zero"));
+        fprintf(stderr,
+                "mmap at " FMT_OFFS_T ", size " FMT_SIZE_T "%s\n",
+                (long long)mofs,
+                (unsigned long long)msz,
+                (z < blocks ? "" : " zero"));
 
       zero_blocks += z;
 

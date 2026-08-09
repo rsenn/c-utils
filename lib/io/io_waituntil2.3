@@ -1,0 +1,91 @@
+.TH IO_WAITUNTIL2 3 "c-utils" "C Utility Functions"
+.SH NAME
+io_waituntil2 \- wait for I/O events on registered file descriptors with millisecond timeout
+.SH SYNOPSIS
+.B #include <io.h>
+.PP
+.BI "int64 io_waituntil2(int64 " milliseconds ");"
+
+.SH DESCRIPTION
+.BR io_waituntil2 ()
+waits for I/O events (readability or writability) on file descriptors registered with the
+.B io
+library, or until a timeout specified in milliseconds has elapsed.
+
+The
+.I milliseconds
+argument specifies the maximum duration to wait:
+.TP
+.B \-1
+Block indefinitely until at least one registered file descriptor becomes ready.
+.TP
+.B 0
+Return immediately after checking for pending I/O events without blocking.
+.TP
+.B > 0
+Wait up to
+.I milliseconds
+milliseconds for I/O activity.
+
+If no file descriptors are currently registered for reading or writing (\fBio_wanted_fds\fR is 0),
+.BR io_waituntil2 ()
+returns 0 immediately without making multiplexing system calls.
+
+When an event occurs on a file descriptor,
+.BR io_waituntil2 ()
+updates the internal descriptor state (\fBcanread\fR / \fBcanwrite\fR flags) and prepends ready descriptors
+to the internal linked lists (\fBfirst_readable\fR and \fBfirst_writeable\fR) so that subsequent calls to
+.BR io_canread ()
+and
+.BR io_canwrite ()
+can retrieve them.
+
+.SH MULTIPLEXING BACKENDS
+Depending on build configuration and operating system support,
+.BR io_waituntil2 ()
+transparently utilizes one of several multiplexing backends:
+.IP \(bu 3
+.B Linux epoll
+(\fBEPOLL\fR): Uses \fBepoll_wait\fR(2) with lazy kernel event updates via \fBepoll_ctl\fR(2).
+.IP \(bu 3
+.B BSD kqueue
+(\fBKQUEUE\fR): Uses \fBkevent\fR(2).
+.IP \(bu 3
+.B Solaris /dev/poll
+(\fBDEVPOLL\fR): Uses \fBioctl\fR(2) with \fBDP_POLL\fR.
+.IP \(bu 3
+.B Windows I/O Completion Ports
+(\fBCOMPLETIONPORT\fR / \fBGetQueuedCompletionStatus\fR): Handles asynchronous overlapped read, write, connect, accept, and sendfile operations natively.
+.IP \(bu 3
+.B Real-time Signals
+(\fB_SIGIO\fR): Uses \fBsigtimedwait\fR(2) / \fBsigwaitinfo\fR(2).
+.IP \(bu 3
+.B Linux AIO
+(\fBUSE_LINUX_AIO\fR): Uses kernel AIO system calls (\fBio_submit\fR(2), \fBio_getevents\fR(2)).
+.IP \(bu 3
+.B Portable select / poll
+(\fBUSE_SELECT\fR / \fBHAVE_POLL\fR): Uses \fBselect\fR(2) or \fBpoll\fR(2) as a fallback mechanism.
+
+.SH RETURN VALUE
+.BR io_waituntil2 ()
+returns:
+.TP
+.B >= 1
+The number of ready events or file descriptors processed.
+.TP
+.B 0
+No descriptors were active, no events occurred, or the timeout elapsed.
+.TP
+.B \-1
+An error occurred during the multiplexing system call (e.g., \fBpoll\fR(2), \fBselect\fR(2), or \fBepoll_wait\fR(2) failed), and \fBerrno\fR is set appropriately.
+
+.SH SEE ALSO
+.BR io_wait (3),
+.BR io_wantread (3),
+.BR io_wantwrite (3),
+.BR io_canread (3),
+.BR io_canwrite (3),
+.BR epoll_wait (2),
+.BR poll (2),
+.BR select (2),
+.BR kevent (2)

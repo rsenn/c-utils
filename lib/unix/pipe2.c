@@ -101,14 +101,14 @@ pipe2(int fd[2], int flags) {
   if(pipe(fd) < 0)
     return -1;
 
-    /* POSIX
-       <http://www.opengroup.org/onlinepubs/9699919799/functions/pipe.html>
-       says that initially, the O_NONBLOCK and FD_CLOEXEC flags are cleared
-       on both fd[0] and fd[1].  */
+  /* POSIX
+     <http://www.opengroup.org/onlinepubs/9699919799/functions/pipe.html>
+     says that initially, the O_NONBLOCK and FD_CLOEXEC flags are cleared
+     on both fd[0] and fd[1].  */
 
-    /* O_NONBLOCK handling.
-       On Unix platforms, O_NONBLOCK is defined by the system.  Use
-       fcntl().  */
+  /* O_NONBLOCK handling.
+     On Unix platforms, O_NONBLOCK is defined by the system.  Use
+     fcntl().  */
 #ifdef F_SETFL
   if(flags & O_NONBLOCK) {
     int fcntl_flags;

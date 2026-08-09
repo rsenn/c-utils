@@ -165,7 +165,8 @@ uri_fmt(char* x, const uri_t* u) {
     r += fmt_str(x ? &x[r] : 0, u->host);
 
   if(u->port) {
-    if(!u->proto || !((str_equal(u->proto, "http") && u->port == 80) || str_equal(u->proto, "https") && u->port == 443)) {
+    if(!u->proto ||
+       !((str_equal(u->proto, "http") && u->port == 80) || str_equal(u->proto, "https") && u->port == 443)) {
       r += fmt_str(x ? &x[r] : 0, ":");
       r += fmt_ulong(x ? &x[r] : 0, u->port);
     }

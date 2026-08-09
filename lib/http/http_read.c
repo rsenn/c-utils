@@ -118,7 +118,8 @@ again:
 end:
 
 #ifdef DEBUG_HTTP
-  if(response->status == HTTP_STATUS_BUSY || response->status == HTTP_RECV_HEADER || response->status == HTTP_RECV_DATA) {
+  if(response->status == HTTP_STATUS_BUSY || response->status == HTTP_RECV_HEADER ||
+     response->status == HTTP_RECV_DATA) {
     buffer_putspad(buffer_2, "\x1b[38;5;201mhttp_read\x1b[0m ", 30);
 
     buffer_puts(buffer_2, "seq=");
@@ -157,8 +158,14 @@ end:
                 })[response->transfer]);
     buffer_puts(buffer_2, " status=");
     buffer_puts(buffer_2,
-                ((const char* const[]){
-                    "0", "HTTP_RECV_HEADER", "HTTP_RECV_DATA", "HTTP_STATUS_CLOSED", "HTTP_STATUS_ERROR", "HTTP_STATUS_BUSY", "HTTP_STATUS_FINISH", 0})[response->status]);
+                ((const char* const[]){"0",
+                                       "HTTP_RECV_HEADER",
+                                       "HTTP_RECV_DATA",
+                                       "HTTP_STATUS_CLOSED",
+                                       "HTTP_STATUS_ERROR",
+                                       "HTTP_STATUS_BUSY",
+                                       "HTTP_STATUS_FINISH",
+                                       0})[response->status]);
 
     if(ret > 0 && response->status == HTTP_RECV_DATA) {
       int n = MIN(ret, 30);

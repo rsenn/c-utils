@@ -64,7 +64,13 @@ iob_send(fd_type s, io_batch* b) {
       e[i].os.Offset = x[i].offset;
       e[i].os.OffsetHigh = (x[i].offset >> 32);
       fprintf(stderr, "Calling TransmitFile on %p...", s);
-      if(!TransmitFile(s, (HANDLE)x[i].fd, x[i].n + tfb.HeadLength > 0xffff ? 0xffff : x[i].n, 0, &e[i].os, &tfb, TF_USE_KERNEL_APC)) {
+      if(!TransmitFile(s,
+                       (HANDLE)x[i].fd,
+                       x[i].n + tfb.HeadLength > 0xffff ? 0xffff : x[i].n,
+                       0,
+                       &e[i].os,
+                       &tfb,
+                       TF_USE_KERNEL_APC)) {
         if(GetLastError() == ERROR_IO_PENDING) {
           fprintf(stderr, " pending.!\n");
           e->writequeued = 1;

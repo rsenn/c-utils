@@ -1,0 +1,18 @@
+.TH byte_finds 3
+.SH NAME
+byte_finds \- find the first occurrence of a string in a byte array
+.SH SYNTAX
+.B #include <byte.h>
+.PP
+size_t \fBbyte_finds\fP(const void *\fIhaystack\fP, size_t \fIhlen\fP, const char *\fIwhat\fP);
+.SH DESCRIPTION
+\fIbyte_finds\fP scans the memory area starting at \fIhaystack\fP with length
+\fIhlen\fP for the first occurrence of the null-terminated string \fIwhat\fP.
+.PP
+The behavior is equivalent to calling \fBbyte_findb\fP(\fIhaystack\fP, \fIhlen\fP, \fIwhat\fP, \fBstr_len\fP(\fIwhat\fP)).
+.SH RETURN VALUE
+\fIbyte_finds\fP returns the index of the first occurrence of \fIwhat\fP
+within \fIhaystack\fP. If \fIwhat\fP is not found within the first \fIhlen\fP
+bytes, it returns \fIhlen\fP.
+.SH SEE ALSO
+byte_findb(3), str_len(3)

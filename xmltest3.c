@@ -4,8 +4,9 @@
 
 xmlnode*
 create_xml_document() {
-  xmlnode *compile_type, *conf, *configuration_descriptor, *confs, *doc, *hitechcomp, *linker_tool, *loading, *logical_folder, *logical_folder1, *logical_folder2, *logical_folder3,
-      *make_customization_type, *packs, *source_root_list, *tools_set;
+  xmlnode *compile_type, *conf, *configuration_descriptor, *confs, *doc, *hitechcomp, *linker_tool, *loading,
+      *logical_folder, *logical_folder1, *logical_folder2, *logical_folder3, *make_customization_type, *packs,
+      *source_root_list, *tools_set;
 
   doc = xml_newnode(XML_DOCUMENT);
   configuration_descriptor = doc->children = xml_element("configurationDescriptor");
@@ -15,10 +16,20 @@ create_xml_document() {
   logical_folder = xml_child_element("logicalFolder", configuration_descriptor);
   logical_folder->attributes = xml_attributes("name", "root", "displayName", "root", "projectFiles", "true", 0);
 
-  xml_child_element_attrs("logicalFolder", logical_folder, "name", "HeaderFiles", "displayName", "Header Files", "projectFiles", "true", 0);
-  xml_child_element_attrs("logicalFolder", logical_folder, "name", "LinkerScript", "displayName", "Linker Files", "projectFiles", "true", 0);
+  xml_child_element_attrs(
+      "logicalFolder", logical_folder, "name", "HeaderFiles", "displayName", "Header Files", "projectFiles", "true", 0);
+  xml_child_element_attrs("logicalFolder",
+                          logical_folder,
+                          "name",
+                          "LinkerScript",
+                          "displayName",
+                          "Linker Files",
+                          "projectFiles",
+                          "true",
+                          0);
   logical_folder1 = xml_child_element("logicalFolder", logical_folder);
-  logical_folder->attributes = xml_attributes("name", "SourceFiles", "displayName", "Source Files", "projectFiles", "true", 0);
+  logical_folder->attributes =
+      xml_attributes("name", "SourceFiles", "displayName", "Source Files", "projectFiles", "true", 0);
 
   logical_folder2 = xml_child_element("logicalFolder", logical_folder1);
   logical_folder->attributes = xml_attributes("name", "f1", "displayName", "lib", "projectFiles", "true", 0);
@@ -36,7 +47,8 @@ create_xml_document() {
   xml_child_element_text("itemPath", logical_folder1, "../../../blinktest.c");
 
   logical_folder3 = xml_child_element("logicalFolder", logical_folder);
-  logical_folder->attributes = xml_attributes("name", "ExternalFiles", "displayName", "Important Files", "projectFiles", "false", 0);
+  logical_folder->attributes =
+      xml_attributes("name", "ExternalFiles", "displayName", "Important Files", "projectFiles", "false", 0);
 
   xml_child_element_text("itemPath", logical_folder3, "Makefile");
 
@@ -86,7 +98,9 @@ create_xml_document() {
   xml_child_element("makeCustomizationPreStep", make_customization_type);
   xml_child_element_text("makeCustomizationPostStepEnable                         ", make_customization_type, "false");
   xml_child_element("makeCustomizationPostStep", make_customization_type);
-  xml_child_element_text("makeCustomizationPutChecksumInUs                         rID", make_customization_type, "false");
+  xml_child_element_text("makeCustomizationPutChecksumInUs                         rID",
+                         make_customization_type,
+                         "false");
   xml_child_element_text("makeCustomizationEnableLongLine                         ", make_customization_type, "false");
   xml_child_element_text("makeCustomizationNormalizeHexFil                         ", make_customization_type, "false");
 
@@ -101,11 +115,18 @@ create_xml_document() {
                           "key",
                           "define-macros",
                           "value",
-                          "__18f2550=1;XTAL_FREQ=20000000;                          ART_BAUD=38400;USE_TIMER0=1;                          SE_TIMER1=1;USE_TIMER2=1;USE_            "
+                          "__18f2550=1;XTAL_FREQ=20000000;                          ART_BAUD=38400;USE_TIMER0=1;       "
+                          "                   SE_TIMER1=1;USE_TIMER2=1;USE_            "
                           "              OFTPWM=1;USE_SOFTSER=1;HAVE_                          OMPARATOR=1",
                           0);
   xml_child_element_attrs("property", hitechcomp, "key", "disable-optimizations", "value", "false", 0);
-  xml_child_element_attrs("property", hitechcomp, "key", "extra-include-directories", "value", "../../..;../../../lib;../../../                          rc", 0);
+  xml_child_element_attrs("property",
+                          hitechcomp,
+                          "key",
+                          "extra-include-directories",
+                          "value",
+                          "../../..;../../../lib;../../../                          rc",
+                          0);
   xml_child_element_attrs("property", hitechcomp, "key", "favor-optimization-for", "value", "-speed,+space", 0);
   xml_child_element_attrs("property", hitechcomp, "key", "garbage-collect-data", "value", "true", 0);
   xml_child_element_attrs("property", hitechcomp, "key", "garbage-collect-functions", "value", "true", 0);

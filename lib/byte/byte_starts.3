@@ -1,0 +1,21 @@
+.TH BYTE_STARTS 3
+.SH NAME
+byte_starts \- check if a byte array starts with a string
+.SH SYNTAX
+.B #include <byte.h>
+.PP
+int \fBbyte_starts\fP(\fIconst void* x\fP, \fIsize_t n\fP, \fIconst char* s\fP);
+.SH DESCRIPTION
+.B byte_starts
+checks whether the first \fIn\fP bytes of the memory area pointed to by \fIx\fP
+start with the string \fIs\fP.
+.PP
+The length of \fIs\fP is determined using \fBstr_len\fP(3).
+.PP
+If the length of \fIs\fP is greater than \fIn\fP, or if the bytes do not match,
+\fBbyte_starts\fP returns 0.
+.PP
+If the first \fIstrlen(s)\fP bytes of \fIx\fP are identical to \fIs\fP,
+\fBbyte_starts\fP returns 1.
+.SH SEE ALSO
+byte_startb(3), str_len(3)

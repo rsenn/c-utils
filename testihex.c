@@ -4,7 +4,7 @@
 #include "lib/mmap.h"
 #include "lib/open.h"
 #include "lib/byte.h"
-//#include "lib/slist.h"
+// #include "lib/slist.h"
 #include "lib/uint32.h"
 #include "lib/uint8.h"
 #include "lib/str.h"
@@ -230,12 +230,18 @@ main(int argc, char* argv[]) {
   static buffer input, output;
   int verbose = 0, bits = 32;
   const char* filename = argv[1] ? argv[1]
-                                 : "/home/roman/Dokumente/Sources/xc8/pictest/                                   ootloaders/18f2550-usb-hid-xc8/FIRMWARE/                          "
-                                   "         IC18F2550/18F2550-MPLAB.X/dist/default/                                   roduction/18F2550-MPLAB.X.production.hex";
+                                 : "/home/roman/Dokumente/Sources/xc8/pictest/                                   "
+                                   "ootloaders/18f2550-usb-hid-xc8/FIRMWARE/                          "
+                                   "         IC18F2550/18F2550-MPLAB.X/dist/default/                                   "
+                                   "roduction/18F2550-MPLAB.X.production.hex";
   int c, index = 0;
   const char *cfgdata = 0, *input_file = 0, *output_file = 0;
 
-  struct unix_longopt opts[] = {{"help", 0, NULL, 'h'}, {"bits", 0, NULL, 'b'}, {"output", 1, NULL, 'o'}, {"verbose", 0, &verbose, 1}, {0, 0, 0, 0}};
+  struct unix_longopt opts[] = {{"help", 0, NULL, 'h'},
+                                {"bits", 0, NULL, 'b'},
+                                {"output", 1, NULL, 'o'},
+                                {"verbose", 0, &verbose, 1},
+                                {0, 0, 0, 0}};
 
   for(;;) {
     c = unix_getopt_long(argc, argv, "hvb:o:", opts, &index);

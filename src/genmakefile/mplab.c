@@ -126,7 +126,8 @@ output_mplab_project(buffer* b, MAP_T* _rules, MAP_T* vars, const strlist* inclu
   size_t n;
   unsigned int i = 0, num_sources = 0;
   stralloc sa, file;
-  ini_section_t *ini, *section, *cat_subfolders, *file_subfolders, *generated_files, *other_files, *active_file_settings, *tool_settings;
+  ini_section_t *ini, *section, *cat_subfolders, *file_subfolders, *generated_files, *other_files,
+      *active_file_settings, *tool_settings;
   mplab_config_t mplab_cfg = {
       /* .warning_level = */ 0,
       /* .verbose_messages = */ 1,

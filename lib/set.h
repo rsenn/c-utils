@@ -32,8 +32,7 @@ typedef struct set_iterator {
   const set_t* set;
 } set_iterator_t;
 
-#define SET() \
-  /*(struct set)*/ { 0, 0, 0, 0, 0 }
+#define SET() /*(struct set)*/ {0, 0, 0, 0, 0}
 
 size_t fmt_set(char*, const set_t*, const char*);
 

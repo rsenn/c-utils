@@ -3,7 +3,7 @@
 #include <string.h>
 #include <time.h>
 
-#if(defined(__MSYS__) && __MSYS__ == 1)
+#if (defined(__MSYS__) && __MSYS__ == 1)
 #define isblank(c) ((c) == ' ' || (c) == '\t')
 #endif
 

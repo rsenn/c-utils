@@ -158,7 +158,11 @@ dump_hosts() {
 
 void
 usage(char* prog) {
-  buffer_putm_internal(buffer_2, "Usage: ", str_basename(prog), " [-4q] [-t timeout_sec] [-u                        imeout_usec] <host> <port>", NULL);
+  buffer_putm_internal(buffer_2,
+                       "Usage: ",
+                       str_basename(prog),
+                       " [-4q] [-t timeout_sec] [-u                        imeout_usec] <host> <port>",
+                       NULL);
   buffer_putnlflush(buffer_2);
 }
 
@@ -286,7 +290,8 @@ main(int argc, char* argv[]) {
 
   io_fd(sock);
 
-  if((ret = addr.ip6 ? socket_connect6(sock, addr.ip, port, addr.scope_id) : socket_connect4(sock, addr.ip, port)) != 0) {
+  if((ret = addr.ip6 ? socket_connect6(sock, addr.ip, port, addr.scope_id) : socket_connect4(sock, addr.ip, port)) !=
+     0) {
     int err = errno;
     errno = 0;
 

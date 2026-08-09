@@ -22,8 +22,8 @@ cpp_convert_int(cpp_token* tok) {
   /* Read U, L or LL suffixes.*/
   bool l = false, u = false;
 
-  if(str_start(p, "LLU") || str_start(p, "LLu") || str_start(p, "llU") || str_start(p, "llu") || str_start(p, "ULL") || str_start(p, "Ull") || str_start(p, "uLL") ||
-     str_start(p, "ull")) {
+  if(str_start(p, "LLU") || str_start(p, "LLu") || str_start(p, "llU") || str_start(p, "llu") || str_start(p, "ULL") ||
+     str_start(p, "Ull") || str_start(p, "uLL") || str_start(p, "ull")) {
     p += 3;
     l = u = true;
   } else if(!case_diffb(p, 2, "lu") || !case_diffb(p, 2, "ul")) {

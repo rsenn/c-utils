@@ -116,7 +116,9 @@ http_canread(http* h, void (*wantread)(fd_type), void (*wantwrite)(fd_type)) {
     } else if(!case_diffb(&response->data.s[pos], str_len("Content-Length: "), "Content-Length: ")) {
       scan_ulonglong(&response->data.s[pos + 16], &response->content_length);
       response->transfer = HTTP_TRANSFER_LENGTH;
-    } else if(!case_diffb(&response->data.s[pos], str_len("Transfer-Encoding: chunked"), "Transfer-Encoding: chunked")) {
+    } else if(!case_diffb(&response->data.s[pos],
+                          str_len("Transfer-Encoding: chunked"),
+                          "Transfer-Encoding: chunked")) {
       response->transfer = HTTP_TRANSFER_CHUNKED;
       response->content_length = 0;
       response->chunk_length = 0;

@@ -1,0 +1,27 @@
+.TH io_onlywantwrite 3
+.SH NAME
+io_onlywantwrite \- register that a descriptor should only be monitored for writability
+.SH SYNTAX
+.B #include <io.h>
+
+void io_onlywantwrite(fd_type \fId\fP);
+.SH DESCRIPTION
+.B io_onlywantwrite
+registers that the descriptor \fId\fP should only be monitored for
+writability by the I/O multiplexer.
+
+This is a convenience function that is equivalent to:
+.in +4
+.nf
+io_dontwantread(d);
+io_wantwrite(d);
+.fi
+.in
+
+See
+.BR io_wait (3)
+for more information on the I/O multiplexing mechanism.
+.SH SEE ALSO
+.BR io_wantwrite (3),
+.BR io_dontwantread (3),
+.BR io_wait (3)

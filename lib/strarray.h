@@ -30,8 +30,7 @@ typedef struct {
   };
 } strarray;
 
-#define STRARRAY_INIT() \
-  (strarray) { 0, 0, 0 }
+#define STRARRAY_INIT() (strarray){0, 0, 0}
 
 /* strarray_init will initialize a strarray. */
 #define strarray_zero(l) array_trunc(&(l)->a)

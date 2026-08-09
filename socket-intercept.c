@@ -5,11 +5,11 @@
 #include <assert.h>
 #include <dlfcn.h>
 #include <unistd.h>
-//#include <fcntl.h>
+// #include <fcntl.h>
 #include <errno.h>
 #include <string.h>
 #include <ctype.h>
-//#include <sys/socket.h>
+// #include <sys/socket.h>
 #include <sys/types.h>
 #include <netinet/in.h>
 #include <sys/un.h>
@@ -571,11 +571,13 @@ sendmsg(int sockfd, const struct msghdr* msg, int flags) {
 }
 
 VISIBLE int
-sendmmsg(int sockfd, 
+sendmmsg(int sockfd,
 #ifdef __ANDROID__
-    const
+         const
 #endif
-    struct mmsghdr* msgvec, unsigned vlen, int flags) {
+         struct mmsghdr* msgvec,
+         unsigned vlen,
+         int flags) {
   Sock* s;
   int r = libc_sendmmsg(sockfd, (struct mmsghdr*)msgvec, vlen, flags);
 
@@ -773,11 +775,14 @@ recvmsg(int sockfd, struct msghdr* msg, int flags) {
 }
 
 VISIBLE int
-recvmmsg(int sockfd, struct mmsghdr* msgvec, unsigned vlen, int flags, 
+recvmmsg(int sockfd,
+         struct mmsghdr* msgvec,
+         unsigned vlen,
+         int flags,
 #ifdef __ANDROID__
-    const
+         const
 #endif
-    struct timespec* t) {
+         struct timespec* t) {
   Sock* s;
   int r = libc_recvmmsg(sockfd, msgvec, vlen, flags, (struct timespec*)t);
 

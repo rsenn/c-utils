@@ -111,7 +111,8 @@ usage(char* av0) {
                        "  -o, --one-line                                 ne-line\n"
                        "  -c, --compact                                  ompact\n"
                        "  -l, --indent NUM                               ndent level\n"
-                       "  -t, --terminate                                erminate non-closed tags (img,                        ink, br, ...)\n"
+                       "  -t, --terminate                                erminate non-closed tags (img,                "
+                       "        ink, br, ...)\n"
                        "\n",
                        NULL);
   buffer_flush(buffer_1);

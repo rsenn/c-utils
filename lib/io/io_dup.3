@@ -1,0 +1,48 @@
+.TH IO_DUP 3 "c-utils" "C Utility Functions"
+.SH NAME
+io_dup \- duplicate a file descriptor or handle
+.SH SYNOPSIS
+.B #include <io.h>
+.PP
+.BI "int64 io_dup(int64 " fd ");"
+
+.SH DESCRIPTION
+.BR io_dup ()
+duplicates an open file descriptor or handle
+.I fd
+and returns a new descriptor or handle referencing the same open file description, socket, or kernel object.
+
+On POSIX/Unix systems,
+.BR io_dup ()
+wraps the system
+.BR dup (2)
+call to allocate the lowest available file descriptor number.
+
+On native Windows platforms,
+.BR io_dup ()
+uses
+.BR DuplicateHandle ()
+for the current process with
+.B DUPLICATE_SAME_ACCESS
+and no inheritance (\fBFALSE\fR).
+
+The newly created descriptor or handle shares file offsets, flags, and lock states with the original. Note that
+.BR io_dup ()
+duplicates the system descriptor/handle only; it does not automatically register the new descriptor with the
+.B io
+library event loop. To register the duplicated descriptor for I/O event monitoring, pass it to
+.BR io_fd (3).
+
+.SH RETURN VALUE
+On success,
+.BR io_dup ()
+returns the newly allocated file descriptor or handle value. On failure, it returns \-1 (or
+.B INVALID_HANDLE_VALUE
+on Windows) and sets
+.B errno
+accordingly.
+
+.SH SEE ALSO
+.BR io_fd (3),
+.BR io_close (3),
+.BR dup (2)
