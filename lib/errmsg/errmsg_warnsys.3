@@ -1,0 +1,13 @@
+.TH ERRMSG_WARNSYS 3
+.SH NAME
+errmsg_warnsys \- write a warning message with system error
+.SH SYNOPSIS
+.B #include <errmsg.h>
+.P
+.BI "void errmsg_warnsys(const char* " message ", ...);"
+.SH DESCRIPTION
+.BR errmsg_warnsys ()
+writes a formatted warning message to standard error, followed by the
+string representation of the current
+.B errno
+value.

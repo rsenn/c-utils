@@ -1,0 +1,23 @@
+.TH scan_ansiskip 3
+.SH NAME
+scan_ansiskip \- skip an ANSI escape sequence in a string
+.SH SYNTAX
+.B #include <lib/scan.h>
+
+size_t \fBscan_ansiskip\fR(const char *\fIs\fR, size_t \fIlimit\fR);
+.SH DESCRIPTION
+\fBscan_ansiskip\fR inspects the string \fIs\fR to determine if it begins with
+an ANSI escape sequence (starting with the ESC character, 0x1b).
+If an ANSI sequence is detected within the first \fIlimit\fR bytes, it calculates
+the length of the sequence.
+
+The function recognizes standard CSI (Control Sequence Introducer) sequences
+beginning with ESC and '['. It skips over parameters until an alphabetic
+character is found, and optionally handles sequences ending with '~'.
+
+.SH RETURN VALUE
+\fBscan_ansiskip\fR returns the number of bytes that make up the ANSI escape
+sequence. If the string does not begin with an ANSI escape sequence, it returns 0.
+
+.SH SEE ALSO
+scan_ulong(3)

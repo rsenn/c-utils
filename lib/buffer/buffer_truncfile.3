@@ -1,0 +1,16 @@
+.TH BUFFER_TRUNCFILE 3
+.SH NAME
+buffer_truncfile \- initialize a buffer to truncate and write a file
+.SH SYNOPSIS
+.B #include <buffer.h>
+.P
+.BI "int buffer_truncfile(buffer* " b ", const char* " fn ");"
+.SH DESCRIPTION
+.BR buffer_truncfile ()
+opens the file
+.I fn
+for writing (truncating it if it exists) and initializes the buffer
+.I b
+to write to this file.
+.SH RETURN VALUE
+Returns 0 on success, or -1 on error.

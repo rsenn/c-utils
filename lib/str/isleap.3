@@ -1,0 +1,13 @@
+.TH isleap 3
+.SH NAME
+isleap \- check if a year is a leap year
+.SH SYNOPSIS
+.B #include <time.h>
+.PP
+.BI "int isleap(int " year ");"
+.SH DESCRIPTION
+.B isleap
+returns 1 if
+.I year
+is a leap year, and 0 otherwise. A year is a leap year if it is divisible by 4,
+except for century years, which must be divisible by 400.

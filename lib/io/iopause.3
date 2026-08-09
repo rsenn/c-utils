@@ -1,0 +1,24 @@
+.TH IOPAUSE 3
+.SH NAME
+iopause \- wait for I/O events
+.SH SYNOPSIS
+.B #include <iopause.h>
+.P
+.BI "void iopause(iopause_fd* " x ", unsigned int " len ", struct taia* " deadline ", struct taia* " stamp ");"
+.SH DESCRIPTION
+.BR iopause ()
+waits for I/O readiness on an array of file descriptors
+.IR x ,
+of length
+.IR len .
+.P
+The function waits until either the current time reaches
+.I deadline
+or one of the monitored file descriptors becomes ready.
+.I stamp
+should contain the current time.
+.P
+This function abstracts the underlying multiplexing mechanism (e.g.,
+.BR select (2),
+.BR poll (2),
+or Linux AIO).

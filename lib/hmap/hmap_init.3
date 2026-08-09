@@ -1,0 +1,13 @@
+.TH HMAP_INIT 3
+.SH NAME
+hmap_init \- initialize a hash map database
+.SH SYNOPSIS
+.B #include <hmap.h>
+.P
+.BI "int hmap_init(int " bucket_size ", HMAP_DB** " hmap_db ");"
+.SH DESCRIPTION
+.BR hmap_init ()
+allocates and initializes a new hash map database with the specified
+number of buckets.
+.SH RETURN VALUE
+Returns HMAP_SUCCESS (0) on success, or an error code.

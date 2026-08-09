@@ -1,0 +1,15 @@
+.TH scan_eolskip 3
+.SH NAME
+scan_eolskip \- skip line terminator sequences
+.SH SYNTAX
+.B #include <lib/scan.h>
+
+size_t \fBscan_eolskip\fR(const char *\fIs\fR, size_t \fIlimit\fR);
+.SH DESCRIPTION
+\fBscan_eolskip\fR checks if the string \fIs\fR begins with a line terminator.
+It recognizes both CR+LF ("\er\en") and LF ("\en") sequences.
+It will not look beyond \fIlimit\fR bytes.
+
+.SH RETURN VALUE
+\fBscan_eolskip\fR returns the number of bytes consumed (1 for "\en", 2 for "\er\en")
+if a terminator is found. Returns 0 if no terminator is found at the start of \fIs\fR.

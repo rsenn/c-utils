@@ -1,0 +1,16 @@
+.TH stralloc_finds 3
+.SH NAME
+stralloc_finds \- find string in stralloc
+.SH SYNOPSIS
+.B #include "stralloc.h"
+.PP
+.BI "size_t stralloc_finds(const stralloc *" sa ", const char *" what ");"
+.SH DESCRIPTION
+.B stralloc_finds
+searches for the first occurrence of the null-terminated string
+.I what
+within the stralloc
+.IR sa .
+It returns the index of the start of the match, or
+.B sa->len
+if not found.

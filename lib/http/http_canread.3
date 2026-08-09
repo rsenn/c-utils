@@ -1,0 +1,15 @@
+.TH HTTP_CANREAD 3
+.SH NAME
+http_canread \- process readable HTTP socket
+.SH SYNOPSIS
+.B #include <http.h>
+.P
+.BI "ssize_t http_canread(http* " h ", void (*" wantread ")(fd_type), void (*" wantwrite ")(fd_type));"
+.SH DESCRIPTION
+.BR http_canread ()
+handles data available for reading on the HTTP client socket
+.IR h .
+It performs TLS handshake (if enabled), sends the request if not already sent,
+and parses incoming response headers and body data.
+.SH RETURN VALUE
+Returns the number of bytes read, or -1 on error.

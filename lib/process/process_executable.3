@@ -1,0 +1,20 @@
+.Dd March 31, 2025
+.Dt PROCESS_EXECUTABLE 3
+.Os
+.Sh NAME
+.Nm process_executable
+.Nd get the path of the current executable
+.Sh SYNOPSIS
+.In process.h
+.Ft char *
+.Fn process_executable "void"
+.Sh DESCRIPTION
+The
+.Fn process_executable
+function retrieves the absolute path of the currently running executable.
+.Sh RETURN VALUES
+Returns a pointer to a string containing the executable path, or
+.Dv NULL
+on failure.
+.Sh SEE ALSO
+.Xr process_create 3

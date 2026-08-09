@@ -1,0 +1,16 @@
+.TH str_case_equal 3
+.SH NAME
+str_case_equal \- compare two strings case-insensitively
+.SH SYNOPSIS
+.B #include "str.h"
+.PP
+.BI "size_t str_case_equal(const void *" s ", const void *" t ");"
+.SH DESCRIPTION
+.B str_case_equal
+compares the strings
+.I s
+and
+.I t
+case-insensitively. It returns 1 if the strings are equal, and 0 otherwise.
+.SH SEE ALSO
+str_case_diff(3)

@@ -1,0 +1,14 @@
+.TH COFF_GET_STRTAB 3
+.SH NAME
+coff_get_strtab \- retrieve the string table
+.SH SYNOPSIS
+.B #include <coff.h>
+.P
+.BI "const char* coff_get_strtab(void* " coff ", uint32* " szptr ");"
+.SH DESCRIPTION
+.BR coff_get_strtab ()
+returns a pointer to the COFF string table. If
+.I szptr
+is not NULL, it is updated with the total size of the string table.
+.SH RETURN VALUE
+Returns a pointer to the start of the string table.

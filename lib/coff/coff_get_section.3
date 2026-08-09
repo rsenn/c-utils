@@ -1,0 +1,14 @@
+.TH COFF_GET_SECTION 3
+.SH NAME
+coff_get_section \- get a section header by index
+.SH SYNOPSIS
+.B #include <coff.h>
+.P
+.BI "coff_section_header* coff_get_section(void* " coff ", uint16 " index ");"
+.SH DESCRIPTION
+.BR coff_get_section ()
+returns a pointer to the section header of the COFF file at the specified
+1-based
+.IR index .
+.SH RETURN VALUE
+Returns a pointer to the section header, or NULL if the index is invalid.

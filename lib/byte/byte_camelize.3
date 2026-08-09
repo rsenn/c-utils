@@ -1,0 +1,14 @@
+.TH BYTE_CAMELIZE 3
+.SH NAME
+byte_camelize \- convert kebab-case to camelCase
+.SH SYNOPSIS
+.B #include <byte.h>
+.P
+.BI "size_t byte_camelize(char* " x ", size_t " len ");"
+.SH DESCRIPTION
+.BR byte_camelize ()
+modifies the string
+.I x
+in-place, converting kebab-case (e.g., "my-string") to camelCase ("myString").
+.SH RETURN VALUE
+Returns the new length of the modified string.

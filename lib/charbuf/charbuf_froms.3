@@ -1,0 +1,16 @@
+.TH CHARBUF_FROMS 3
+.SH NAME
+charbuf_froms \- initialize a charbuf from a string
+.SH SYNOPSIS
+.B #include <charbuf.h>
+.P
+.BI "void charbuf_froms(charbuf* " b ", char* " s ", unsigned " lookahead ");"
+.SH DESCRIPTION
+.BR charbuf_froms ()
+initializes the character buffer
+.I b
+to read from the null-terminated string
+.IR s .
+The
+.I lookahead
+parameter specifies the maximum number of characters for lookahead.

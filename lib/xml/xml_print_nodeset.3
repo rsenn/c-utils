@@ -1,0 +1,14 @@
+.TH xml_print_nodeset 3
+.SH NAME
+xml_print_nodeset \- print an XML nodeset
+.SH SYNOPSIS
+.B #include "xml.h"
+.PP
+.BI "void xml_print_nodeset(const xmlnodeset *" ns ", buffer *" b ");"
+.SH DESCRIPTION
+.B xml_print_nodeset
+writes information about each node in the nodeset
+.I ns
+to the buffer
+.IR b ,
+including its path and attributes.

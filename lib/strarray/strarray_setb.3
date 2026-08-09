@@ -1,0 +1,17 @@
+.TH strarray_setb 3
+.SH NAME
+strarray_setb \- set element from buffer in strarray
+.SH SYNOPSIS
+.B #include "strarray.h"
+.PP
+.BI "int strarray_setb(strarray *" arr ", size_t " index ", const char *" s ", size_t " n ");"
+.SH DESCRIPTION
+.B strarray_setb
+sets the element at
+.I index
+in
+.I arr
+to a copy of the first
+.I n
+bytes of
+.IR s .

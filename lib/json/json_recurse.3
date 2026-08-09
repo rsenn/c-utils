@@ -1,0 +1,23 @@
+.Dd March 31, 2025
+.Dt JSON_RECURSE 3
+.Os
+.Sh NAME
+.Nm json_recurse
+.Nd recurse over a JSON value tree
+.Sh SYNOPSIS
+.In json.h
+.Ft void
+.Fn json_recurse "jsonval *val" "void (*fn)()" "void *arg"
+.Sh DESCRIPTION
+The
+.Fn json_recurse
+function traverses the JSON value tree rooted at
+.Fa val
+in a depth-first manner, invoking the callback function
+.Fa fn
+for each node encountered.
+The callback receives the current node, the user-supplied pointer
+.Fa arg ,
+and the current recursion depth.
+.Sh SEE ALSO
+.Xr json_free 3

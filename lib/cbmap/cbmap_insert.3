@@ -1,0 +1,14 @@
+.TH CBMAP_INSERT 3
+.SH NAME
+cbmap_insert \- insert or update a value in a map
+.SH SYNOPSIS
+.B #include <cbmap.h>
+.P
+.BI "int cbmap_insert(cbmap_t " map ", void* " key ", size_t " key_len ", void* " value ", size_t " value_len ");"
+.SH DESCRIPTION
+.BR cbmap_insert ()
+inserts the key-value pair into the map, or updates the value if the key
+already exists.
+.SH RETURN VALUE
+Returns INSERT_OK on success, INSERT_UPDATED if a value was updated, or
+an error code on memory allocation failure.

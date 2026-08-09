@@ -1,0 +1,14 @@
+.TH IO_DUMP 3
+.SH NAME
+io_dump \- dump the state of all monitored I/O descriptors
+.SH SYNOPSIS
+.B #include <io.h>
+.P
+.BI "void io_dump(buffer* " p ");"
+.SH DESCRIPTION
+.BR io_dump ()
+writes a debug dump of the internal I/O state to the buffer
+.IR p .
+The dump includes the status of each monitored file descriptor, indicating
+whether it can be read from or written to, and whether read or write
+interest is registered.

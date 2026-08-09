@@ -1,0 +1,18 @@
+.TH dns_sortip 3
+.SH NAME
+dns_sortip \- shuffle a list of IPv4 addresses
+.SH SYNOPSIS
+.B #include "dns.h"
+.PP
+.BI "void dns_sortip(char *" s ", unsigned int " n ");"
+.SH DESCRIPTION
+.B dns_sortip
+takes an array
+.I s
+containing
+.I n
+bytes representing a list of IPv4 addresses (4 bytes each). It performs a
+random shuffle on the list of IP addresses. This is typically used to load-balance
+requests across multiple DNS servers.
+.SH SEE ALSO
+dns_random(3)

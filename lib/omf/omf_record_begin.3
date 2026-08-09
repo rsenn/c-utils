@@ -1,0 +1,13 @@
+.TH omf_record_begin 3
+.SH NAME
+omf_record_begin \- get pointer to start of record data
+.SH SYNTAX
+.B #include "omf.h"
+
+void* \fBomf_record_begin\fP(omf_record* \fIrec\fR);
+.SH DESCRIPTION
+\fBomf_record_begin\fP returns a pointer to the start of the data payload within an OMF record \fIrec\fR.
+
+It parses specific record types (such as PUBDEF) to skip header fields (e.g. group index, segment index, base frame) and return a pointer to the first nested structure or data element. Returns NULL if the record type is not supported for automatic parsing.
+.SH "SEE ALSO"
+omf_record_end(3), omf_record_next(3)

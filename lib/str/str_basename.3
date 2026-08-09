@@ -1,0 +1,16 @@
+.TH str_basename 3
+.SH NAME
+str_basename \- return pointer to the basename of a path
+.SH SYNOPSIS
+.B #include "str.h"
+.PP
+.BI "char *str_basename(const char *" s ");"
+.SH DESCRIPTION
+.B str_basename
+returns a pointer to the last component of the file path
+.IR s .
+If the path contains directory separators ('/' or '\\' on Windows), it returns
+a pointer to the character immediately following the last separator. Otherwise,
+it returns a pointer to the start of the string.
+.SH SEE ALSO
+str_rchrs(3)

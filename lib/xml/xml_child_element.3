@@ -1,0 +1,16 @@
+.TH xml_child_element 3
+.SH NAME
+xml_child_element \- create and add a child element node
+.SH SYNOPSIS
+.B #include "xml.h"
+.PP
+.BI "xmlnode *xml_child_element(const char *" name ", xmlnode *" parent ");"
+.SH DESCRIPTION
+.B xml_child_element
+creates a new XML element node with the specified
+.I name
+and adds it as a child of the provided
+.I parent
+node using
+.BR xml_add_child (3).
+It returns a pointer to the newly created node.

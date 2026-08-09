@@ -1,0 +1,23 @@
+.Dd March 31, 2025
+.Dt JSON_FREE 3
+.Os
+.Sh NAME
+.Nm json_free
+.Nd free a JSON value tree recursively
+.Sh SYNOPSIS
+.In json.h
+.Ft void
+.Fn json_free "jsonval *val"
+.Sh DESCRIPTION
+The
+.Fn json_free
+function recursively deallocates all memory associated with the JSON value
+.Fa val
+and its children (such as object properties, array items, and strings).
+If
+.Fa val
+is
+.Dv NULL ,
+no action is taken.
+.Sh SEE ALSO
+.Xr json_recurse 3

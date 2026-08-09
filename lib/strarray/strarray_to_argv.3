@@ -1,0 +1,14 @@
+.TH strarray_to_argv 3
+.SH NAME
+strarray_to_argv \- convert string array to NULL-terminated argv
+.SH SYNOPSIS
+.B #include "strarray.h"
+.PP
+.BI "char **strarray_to_argv(strarray *" arr ");"
+.SH DESCRIPTION
+.B strarray_to_argv
+converts the string array
+.I arr
+into a NULL-terminated array of strings suitable for use with functions like
+.BR execve (2).
+The caller is responsible for freeing the returned pointer array.

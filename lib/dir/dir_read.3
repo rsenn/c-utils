@@ -1,0 +1,14 @@
+.TH DIR_READ 3
+.SH NAME
+dir_read \- read the next directory entry
+.SH SYNOPSIS
+.B #include <dir.h>
+.P
+.BI "char* dir_read(struct dir_s* " d ");"
+.SH DESCRIPTION
+.BR dir_read ()
+advances the directory stream
+.I d
+to the next entry.
+.SH RETURN VALUE
+Returns the name of the next entry, or NULL if there are no more entries.

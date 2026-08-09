@@ -1,0 +1,14 @@
+.TH xml_read_callback 3
+.SH NAME
+xml_read_callback \- event-driven XML reader
+.SH SYNOPSIS
+.B #include "xml.h"
+.PP
+.BI "void xml_read_callback(xmlreader *" r ", xml_read_callback_fn *" fn ");"
+.SH DESCRIPTION
+.B xml_read_callback
+parses the XML content from the reader
+.I r
+and invokes the provided callback function
+.I fn
+for each element, attribute, or text node encountered.

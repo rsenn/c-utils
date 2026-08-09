@@ -1,0 +1,12 @@
+.TH slist_removes 3
+.SH NAME
+slist_removes \- remove and free a string node from a singly-linked list
+.SH SYNOPSIS
+.B #include "slist.h"
+.PP
+.BI "void slist_removes(slink **" p ");"
+.SH DESCRIPTION
+.B slist_removes
+removes the node pointed to by
+.I p
+from its list, frees the string data contained within it, and frees the node memory.

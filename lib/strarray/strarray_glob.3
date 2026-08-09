@@ -1,0 +1,18 @@
+.TH strarray_glob 3
+.SH NAME
+strarray_glob \- expand glob pattern into strarray
+.SH SYNOPSIS
+.B #include "strarray.h"
+.PP
+.BI "int strarray_glob(strarray *" arr ", const char *" pattern ");"
+.PP
+.BI "int strarray_glob_b(strarray *" arr ", const char *" x ", size_t " len ");"
+.SH DESCRIPTION
+.B strarray_glob
+expands the file pattern
+.I pattern
+using the system
+.BR glob (3)
+function and pushes matching paths onto the string array
+.IR arr .
+Returns the number of items added.

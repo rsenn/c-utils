@@ -1,0 +1,17 @@
+.TH fmt_escapecharc 3
+.SH NAME
+fmt_escapecharc \- escape a character using C-style octal sequences
+.SH SYNTAX
+.B #include <fmt.h>
+.PP
+size_t \fBfmt_escapecharc\fR(char *\fIdest\fR, int \fIchr\fR);
+.SH DESCRIPTION
+\fBfmt_escapecharc\fR encodes the character \fIchr\fR into a C-style escaped representation.
+.PP
+If \fIchr\fR corresponds to a common escape sequence (e.g., '\n', '\t', '\e'), it is encoded as a 2-byte sequence (a backslash followed by the escape character). Otherwise, it is encoded as a 4-byte sequence: a backslash followed by three octal digits.
+.PP
+If \fIdest\fR is not NULL, the encoded character is written to \fIdest\fR.
+.PP
+The function returns the number of bytes required (or written) for the encoding. It returns 0 if \fIchr\fR > 0xff.
+.SH SEE ALSO
+fmt_escapecharcx(3), fmt_escapecharcontrol(3)

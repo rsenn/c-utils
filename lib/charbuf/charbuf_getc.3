@@ -1,0 +1,16 @@
+.TH CHARBUF_GETC 3
+.SH NAME
+charbuf_getc \- read and consume the next character into a pointer
+.SH SYNOPSIS
+.B #include <charbuf.h>
+.P
+.BI "ssize_t charbuf_getc(charbuf* " b ", unsigned char* " ch ");"
+.SH DESCRIPTION
+.BR charbuf_getc ()
+reads the next character from
+.I b
+into
+.I ch
+and advances the read pointer.
+.SH RETURN VALUE
+Returns the number of bytes read (1) on success, or non-positive on EOF or error.

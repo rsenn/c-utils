@@ -1,0 +1,12 @@
+.TH ELF_SHSTRTAB 3
+.SH NAME
+elf_shstrtab \- get the section name string table
+.SH SYNOPSIS
+.B #include <elf.h>
+.P
+.BI "const char* elf_shstrtab(void* " elf ");"
+.SH DESCRIPTION
+.BR elf_shstrtab ()
+returns a pointer to the section header string table of the ELF file.
+.SH RETURN VALUE
+Returns a pointer to the string table.

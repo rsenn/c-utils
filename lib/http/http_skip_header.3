@@ -1,0 +1,14 @@
+.TH HTTP_SKIP_HEADER 3
+.SH NAME
+http_skip_header \- skip HTTP header block
+.SH SYNOPSIS
+.B #include <http.h>
+.P
+.BI "size_t http_skip_header(const char* " x ", size_t " len ");"
+.SH DESCRIPTION
+.BR http_skip_header ()
+scans the provided buffer
+.I x
+and skips over the HTTP header block (ending with an empty line).
+.SH RETURN VALUE
+Returns the number of bytes to skip.

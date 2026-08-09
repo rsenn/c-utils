@@ -1,0 +1,15 @@
+.TH DIR_OPEN 3
+.SH NAME
+dir_open \- open a directory stream
+.SH SYNOPSIS
+.B #include <dir.h>
+.P
+.BI "int dir_open(struct dir_s* " d ", const char* " p ");"
+.SH DESCRIPTION
+.BR dir_open ()
+opens the directory specified by path
+.I p
+and initializes the directory stream object
+.IR d .
+.SH RETURN VALUE
+Returns 0 on success, or non-zero on error.

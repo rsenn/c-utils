@@ -1,0 +1,16 @@
+.TH CBMAP_VISIT_ALL 3
+.SH NAME
+cbmap_visit_all \- traverse all elements in a map
+.SH SYNOPSIS
+.B #include <cbmap.h>
+.P
+.BI "int cbmap_visit_all(cbmap_t " map ", cbmap_visitor " visitor_fn ", void* " user_data ");"
+.SH DESCRIPTION
+.BR cbmap_visit_all ()
+iterates over every entry in the map and invokes
+.I visitor_fn
+with the key, value, and the provided
+.I user_data
+pointer.
+.SH RETURN VALUE
+Returns 0 on success.

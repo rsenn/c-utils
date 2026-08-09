@@ -1,0 +1,14 @@
+.TH xml_get_attribute_double 3
+.SH NAME
+xml_get_attribute_double \- retrieve an attribute as a double
+.SH SYNOPSIS
+.B #include "xml.h"
+.PP
+.BI "double xml_get_attribute_double(xmlnode *" node ", const char *" attr ");"
+.SH DESCRIPTION
+.B xml_get_attribute_double
+retrieves the value of attribute
+.I attr
+and parses it as a floating-point number using
+.BR scan_double (3).
+Returns the parsed value or 0.0 if the attribute is missing or invalid.

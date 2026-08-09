@@ -1,0 +1,24 @@
+.Dd March 31, 2025
+.Dt JSON_TOSA 3
+.Os
+.Sh NAME
+.Nm json_tosa
+.Nd serialize a JSON value into a stralloc buffer
+.Sh SYNOPSIS
+.In json.h
+.Ft void
+.Fn json_tosa "jsonval val" "stralloc *sa" "json_print_fn *p"
+.Sh DESCRIPTION
+The
+.Fn json_tosa
+function serializes the JSON value
+.Fa val
+and appends or writes the resulting representation into the dynamic string allocation structure
+.Fa sa .
+The formatting function
+.Fa p
+controls output styling (or
+.Dv NULL
+for defaults).
+.Sh SEE ALSO
+.Xr json_print 3

@@ -1,0 +1,16 @@
+.TH stralloc_endb 3
+.SH NAME
+stralloc_endb \- check if stralloc ends with a buffer suffix
+.SH SYNOPSIS
+.B #include "stralloc.h"
+.PP
+.BI "size_t stralloc_endb(const stralloc *" sa ", const char *" x ", size_t " n ");"
+.SH DESCRIPTION
+.B stralloc_endb
+returns 1 if the buffer
+.I x
+of length
+.I n
+is a suffix of the contents of
+.IR sa ,
+and 0 otherwise.

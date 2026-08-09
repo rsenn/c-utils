@@ -1,0 +1,12 @@
+.TH ELF_SECTION_HEADERS 3
+.SH NAME
+elf_section_headers \- get section headers range
+.SH SYNOPSIS
+.B #include <elf.h>
+.P
+.BI "range elf_section_headers(void* " elf ");"
+.SH DESCRIPTION
+.BR elf_section_headers ()
+returns a range structure describing the section header table.
+.SH RETURN VALUE
+Returns the range of section headers.

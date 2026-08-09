@@ -1,0 +1,19 @@
+.TH fmt_escapecharcontrol 3
+.SH NAME
+fmt_escapecharcontrol \- escape control characters
+.SH SYNTAX
+.B #include <fmt.h>
+.PP
+size_t \fBfmt_escapecharcontrol\fR(char *\fIdest\fR, int \fIc\fR);
+.SH DESCRIPTION
+\fBfmt_escapecharcontrol\fR encodes a character \fIc\fR, applying escape sequences primarily for control characters.
+.PP
+If \fIc\fR is a printable character (>= 0x20) and not a control character according to \fBiscntrl(3)\fR, the character is copied as-is to \fIdest\fR.
+.PP
+Control characters or those below 0x20 are escaped. Common escapes like '\n', '\r', and '\t' are mapped to their backslash equivalents (2 bytes). Other non-printable characters are encoded using backslash-prefixed sequences (4 bytes).
+.PP
+If \fIdest\fR is not NULL, the result is written to \fIdest\fR.
+.PP
+The function returns the number of bytes required (or written).
+.SH SEE ALSO
+fmt_escapecharc(3)

@@ -1,0 +1,21 @@
+.Dd March 31, 2025
+.Dt PATH_CONCAT_SA 3
+.Os
+.Sh NAME
+.Nm path_concat_sa
+.Nd concatenate two path stralloc structures
+.Sh SYNOPSIS
+.In path.h
+.Ft void
+.Fn path_concat_sa "const stralloc *a" "const stralloc *b" "stralloc *out"
+.Sh DESCRIPTION
+The
+.Fn path_concat_sa
+function combines two path dynamic strings
+.Fa a
+and
+.Fa b
+into a single combined path stored in
+.Fa out .
+.Sh SEE ALSO
+.Xr path_concat 3

@@ -1,0 +1,17 @@
+.TH BUFFER_BROTLI 3
+.SH NAME
+buffer_brotli \- create a Brotli compression/decompression buffer
+.SH SYNOPSIS
+.B #include <buffer.h>
+.P
+.BI "int buffer_brotli(buffer* " b ", buffer* " other ", int " compress ");"
+.SH DESCRIPTION
+.BR buffer_brotli ()
+wraps a Brotli (de)compression stream around an existing buffer
+.IR other .
+If
+.I compress
+is non-zero, it initializes an encoder with the given quality level;
+otherwise, it initializes a decoder.
+.SH RETURN VALUE
+Returns 1 on success, 0 on failure.

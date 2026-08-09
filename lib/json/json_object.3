@@ -1,0 +1,25 @@
+.Dd March 31, 2025
+.Dt JSON_OBJECT 3
+.Os
+.Sh NAME
+.Nm json_object
+.Nd create a new JSON object value
+.Sh SYNOPSIS
+.In json.h
+.Ft jsonval
+.Fn json_object "void"
+.Sh DESCRIPTION
+The
+.Fn json_object
+function initializes and returns a new
+.Vt jsonval
+structure of type
+.Dv JSON_OBJECT
+containing an empty dictionary mapping.
+.Sh RETURN VALUES
+Returns the initialized
+.Vt jsonval
+object.
+.Sh SEE ALSO
+.Xr json_array_push 3 ,
+.Xr json_property_set 3

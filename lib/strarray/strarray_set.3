@@ -1,0 +1,16 @@
+.TH strarray_set 3
+.SH NAME
+strarray_set \- set element in strarray
+.SH SYNOPSIS
+.B #include "strarray.h"
+.PP
+.BI "int strarray_set(strarray *" arr ", size_t " index ", const char *" s ");"
+.SH DESCRIPTION
+.B strarray_set
+sets the element at
+.I index
+in
+.I arr
+to a copy of string
+.IR s .
+If an element already exists at the index, it is freed.

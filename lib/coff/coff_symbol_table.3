@@ -1,0 +1,14 @@
+.TH COFF_SYMBOL_TABLE 3
+.SH NAME
+coff_symbol_table \- get the symbol table range
+.SH SYNOPSIS
+.B #include <coff.h>
+.P
+.BI "range coff_symbol_table(void* " coff ");"
+.SH DESCRIPTION
+.BR coff_symbol_table ()
+returns the
+.I range
+of symbol table entries found in the COFF file.
+.SH RETURN VALUE
+Returns the range structure describing the symbol table.

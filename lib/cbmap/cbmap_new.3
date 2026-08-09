@@ -1,0 +1,16 @@
+.TH CBMAP_NEW 3
+.SH NAME
+cbmap_new \- create a new cbmap
+.SH SYNOPSIS
+.B #include <cbmap.h>
+.P
+.B "cbmap_t cbmap_new(void);"
+.P
+.BI "cbmap_t cbmap_new_with_custom_allocation(...);"
+.SH DESCRIPTION
+.BR cbmap_new ()
+allocates and initializes a new cbmap with default memory allocators.
+.BR cbmap_new_with_custom_allocation ()
+allows defining custom allocation and deallocation functions for keys and values.
+.SH RETURN VALUE
+Returns a pointer to the new map, or NULL on error.

@@ -1,0 +1,15 @@
+.TH stralloc_remove_all 3
+.SH NAME
+stralloc_remove_all \- remove characters from stralloc
+.SH SYNOPSIS
+.B #include "stralloc.h"
+.PP
+.BI "void stralloc_remove_all(stralloc *" sa ", const char *" delchars ", unsigned int " delcharslen ");"
+.SH DESCRIPTION
+.B stralloc_remove_all
+removes all occurrences of characters specified in the
+.I delchars
+buffer of length
+.I delcharslen
+from the stralloc
+.IR sa .

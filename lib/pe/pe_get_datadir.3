@@ -1,0 +1,12 @@
+.TH pe_get_datadir 3
+.SH NAME
+pe_get_datadir \- get pointer to PE data directories
+.SH SYNOPSIS
+.B #include "pe.h"
+.PP
+.BI "pe_data_directory *pe_get_datadir(void *" pe ", uint32 *" num ");"
+.SH DESCRIPTION
+.B pe_get_datadir
+returns a pointer to the array of data directories in the PE header.
+The number of directories is stored in
+.IR num .

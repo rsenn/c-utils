@@ -1,0 +1,16 @@
+.TH xml_child_element_attrs 3
+.SH NAME
+xml_child_element_attrs \- create and add a child element node with attributes
+.SH SYNOPSIS
+.B #include "xml.h"
+.PP
+.BI "xmlnode *xml_child_element_attrs(const char *" name ", xmlnode *" parent ", const char *" arg ", ...);"
+.SH DESCRIPTION
+.B xml_child_element_attrs
+creates a new child element node with the specified
+.I name
+under the given
+.I parent
+node and initializes its attribute map using the provided variable argument list.
+The attribute list follows the same format as
+.BR xml_attributes (3).

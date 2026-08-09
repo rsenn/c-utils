@@ -1,0 +1,16 @@
+.TH HMAP_ADD 3
+.SH NAME
+hmap_add \- add an entry to the hash map
+.SH SYNOPSIS
+.B #include <hmap.h>
+.P
+.BI "int hmap_add(HMAP_DB** " hmap_db ", const void* " key ", size_t " k_len ", int " dup_flag ", int " data_type ", ...);"
+.SH DESCRIPTION
+.BR hmap_add ()
+adds a new entry with the specified
+.I key
+to the hash map database. Additional variadic arguments specify the value
+associated with the key based on
+.IR data_type .
+.SH RETURN VALUE
+Returns the bucket index on success, or a negative error code on failure.

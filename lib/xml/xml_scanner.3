@@ -1,0 +1,15 @@
+.TH xml_scanner 3
+.SH NAME
+xml_scanner \- initialize XML scanner
+.SH SYNOPSIS
+.B #include "xml.h"
+.PP
+.BI "void xml_scanner(xmlscanner *" s ", const char *" x ", size_t " len ");"
+.SH DESCRIPTION
+.B xml_scanner
+initializes the XML scanner
+.I s
+to scan the buffer of length
+.I len
+provided by
+.IR x .

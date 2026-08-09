@@ -1,0 +1,12 @@
+.TH xml_free 3
+.SH NAME
+xml_free \- free an entire XML node tree
+.SH SYNOPSIS
+.B #include "xml.h"
+.PP
+.BI "void xml_free(xmlnode *" node ");"
+.SH DESCRIPTION
+.B xml_free
+recursively frees all nodes in the tree starting at
+.IR node .
+It handles memory cleanup for node names, attribute maps, and children lists.

@@ -1,0 +1,13 @@
+.TH tokenizer_register_custom_token 3
+.SH NAME
+tokenizer_register_custom_token \- register a custom token sequence
+.SH SYNOPSIS
+.B #include "tokenizer.h"
+.PP
+.BI "void tokenizer_register_custom_token(tokenizer *" t ", int " tokentype ", const char *" str ");"
+.SH DESCRIPTION
+.B tokenizer_register_custom_token
+registers a custom sequence
+.I str
+that the tokenizer will recognize as a token of type
+.IR tokentype .

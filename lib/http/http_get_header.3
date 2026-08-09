@@ -1,0 +1,17 @@
+.TH HTTP_GET_HEADER 3
+.SH NAME
+http_get_header \- find a header in response data
+.SH SYNOPSIS
+.B #include <http.h>
+.P
+.BI "char* http_get_header(char* " data ", size_t " n ", const char* " name ", size_t* " result_len ");"
+.SH DESCRIPTION
+.BR http_get_header ()
+searches the HTTP response headers in
+.I data
+of length
+.I n
+for the header named
+.IR name .
+.SH RETURN VALUE
+Returns a pointer to the header value, or NULL if not found.

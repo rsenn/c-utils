@@ -1,0 +1,14 @@
+.TH strarray_index_of 3
+.SH NAME
+strarray_index_of \- find index of string in strarray
+.SH SYNOPSIS
+.B #include "strarray.h"
+.PP
+.BI "int64 strarray_index_of(strarray *" arr ", const char *" s ");"
+.SH DESCRIPTION
+.B strarray_index_of
+searches for the string
+.I s
+within the string array
+.I arr
+and returns the index of the first match, or -1 if not found.

@@ -1,0 +1,14 @@
+.TH xml_read_tree 3
+.SH NAME
+xml_read_tree \- parse XML into a tree structure
+.SH SYNOPSIS
+.B #include "xml.h"
+.PP
+.BI "xmlnode *xml_read_tree(buffer *" b ");"
+.SH DESCRIPTION
+.B xml_read_tree
+parses an XML stream from the buffer
+.I b
+into a DOM-like structure of
+.B xmlnode
+objects. Returns the root of the constructed tree.

@@ -1,0 +1,13 @@
+.TH strarray_from_vec 3
+.SH NAME
+strarray_from_vec \- initialize strarray from NULL-terminated vector
+.SH SYNOPSIS
+.B #include "strarray.h"
+.PP
+.BI "int strarray_from_vec(strarray *" arr ", char *" vec "[]);"
+.SH DESCRIPTION
+.B strarray_from_vec
+initializes the string array
+.I arr
+and populates it from a NULL-terminated vector of strings
+.IR vec .

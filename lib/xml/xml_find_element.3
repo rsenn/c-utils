@@ -1,0 +1,12 @@
+.TH xml_find_element 3
+.SH NAME
+xml_find_element \- find an element by tag name
+.SH SYNOPSIS
+.B #include "xml.h"
+.PP
+.BI "xmlnode *xml_find_element(xmlnode *" node ", const char *" tag ");"
+.SH DESCRIPTION
+.B xml_find_element
+searches for an element node matching the specified
+.I tag
+name. It returns the first matching node in the tree, or NULL.

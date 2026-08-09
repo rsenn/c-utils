@@ -1,0 +1,23 @@
+.Dd March 31, 2025
+.Dt BUFFER_PUTSET 3
+.Os
+.Sh NAME
+.Nm buffer_putset
+.Nd write set elements to a buffer
+.Sh SYNOPSIS
+.In set.h
+.Ft void
+.Fn buffer_putset "buffer *b" "const set_t *set" "const char *sep" "size_t seplen"
+.Sh DESCRIPTION
+The
+.Fn buffer_putset
+function writes all elements of the hash set
+.Fa set
+to the buffer
+.Fa b ,
+separated by the separator string
+.Fa sep
+of length
+.Fa seplen .
+.Sh SEE ALSO
+.Xr set_add 3

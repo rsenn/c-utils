@@ -1,0 +1,13 @@
+.TH ELF_SECTION_TYPENAME 3
+.SH NAME
+elf_section_typename \- get name of section type
+.SH SYNOPSIS
+.B #include <elf.h>
+.P
+.BI "const char* elf_section_typename(uint32 " type ");"
+.SH DESCRIPTION
+.BR elf_section_typename ()
+returns the string name associated with the section type
+.IR type .
+.SH RETURN VALUE
+Returns the section type name string.

@@ -1,0 +1,17 @@
+.TH BYTE_COUNT 3
+.SH NAME
+byte_count \- count occurrences of a byte
+.SH SYNOPSIS
+.B #include <byte.h>
+.P
+.BI "size_t byte_count(const void* " s ", size_t " n ", char " c ");"
+.SH DESCRIPTION
+.BR byte_count ()
+counts the number of occurrences of the byte
+.I c
+in the memory area
+.I s
+of length
+.IR n .
+.SH RETURN VALUE
+Returns the number of occurrences.

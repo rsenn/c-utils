@@ -1,0 +1,13 @@
+.TH ELF_SECTION_OFFSET 3
+.SH NAME
+elf_section_offset \- get memory offset of a section
+.SH SYNOPSIS
+.B #include <elf.h>
+.P
+.BI "void* elf_section_offset(void* " elf ", int " sn ");"
+.SH DESCRIPTION
+.BR elf_section_offset ()
+returns the memory address of the section at index
+.IR sn .
+.SH RETURN VALUE
+Returns a pointer to the section.

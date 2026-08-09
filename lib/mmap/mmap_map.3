@@ -1,0 +1,27 @@
+.TH MMAP_MAP 3
+.SH NAME
+mmap_map \- map a region of a file into memory
+.SH SYNOPSIS
+.B #include "mmap.h"
+.PP
+.BI "char* mmap_map(fd_type " fd ", size_t " sz ", uint64 " offset ");"
+.SH DESCRIPTION
+.B mmap_map
+creates a memory mapping of
+.I sz
+bytes from the file descriptor
+.I fd
+starting at
+.I offset
+.
+On POSIX systems, this creates a private, read-write mapping using
+.BR mmap (2).
+On Windows, it uses
+.BR CreateFileMapping (3)
+and
+.BR MapViewOfFile (3)
+with
+.B PAGE_WRITECOPY
+semantics.
+.SH RETURN VALUE
+Returns a pointer to the mapped memory on success, or NULL on failure.

@@ -1,0 +1,14 @@
+.TH ihex_init 3
+.SH NAME
+ihex_init \- initialize an Intel HEX file structure
+.SH SYNOPSIS
+.B #include "ihex.h"
+.PP
+.BI "void ihex_init(ihex_file *" ihf ");"
+.SH DESCRIPTION
+.B ihex_init
+clears the
+.B ihex_file
+structure
+.I ihf
+and initializes the internal record list.

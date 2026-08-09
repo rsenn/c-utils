@@ -1,0 +1,20 @@
+.Dd March 31, 2025
+.Dt RANGE_ROTATE 3
+.Os
+.Sh NAME
+.Nm range_rotate
+.Nd rotate elements within a range
+.Sh SYNOPSIS
+.In range.h
+.Ft void
+.Fn range_rotate "range *r" "ssize_t n"
+.Sh DESCRIPTION
+The
+.Fn range_rotate
+function rotates the elements within the range
+.Fa r
+by
+.Fa n
+positions.
+.Sh SEE ALSO
+.Xr range_size 3

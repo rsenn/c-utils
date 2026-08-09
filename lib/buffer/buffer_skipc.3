@@ -1,0 +1,14 @@
+.TH BUFFER_SKIPC 3
+.SH NAME
+buffer_skipc \- skip the next character in a buffer
+.SH SYNOPSIS
+.B #include <buffer.h>
+.P
+.BI "int buffer_skipc(buffer* " b ");"
+.SH DESCRIPTION
+.BR buffer_skipc ()
+advances the read pointer of buffer
+.I b
+by one character.
+.SH RETURN VALUE
+Returns 1 on success, or a non-positive value if skip fails.

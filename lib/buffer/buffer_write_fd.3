@@ -1,0 +1,16 @@
+.TH BUFFER_WRITE_FD 3
+.SH NAME
+buffer_write_fd \- initialize a buffer for writing to a file descriptor
+.SH SYNOPSIS
+.B #include <buffer.h>
+.P
+.BI "int buffer_write_fd(buffer* " b ", fd_type " fd ");"
+.SH DESCRIPTION
+.BR buffer_write_fd ()
+initializes buffer
+.I b
+to write to the provided file descriptor
+.IR fd .
+It allocates internal memory for the buffer.
+.SH RETURN VALUE
+Returns 0 on success, or -1 on allocation failure.

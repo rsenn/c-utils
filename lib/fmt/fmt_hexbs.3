@@ -1,0 +1,17 @@
+.TH FMT_HEXBS 3
+.SH NAME
+fmt_hexbs \- format bytes as a space-separated hexadecimal string
+.SH SYNOPSIS
+.B #include <fmt.h>
+.P
+.BI "size_t fmt_hexbs(void* " out ", const void* " d ", size_t " len ");"
+.SH DESCRIPTION
+.BR fmt_hexbs ()
+converts
+.I len
+bytes from
+.I d
+into a space-separated hexadecimal representation, writing the result to
+.IR out .
+.SH RETURN VALUE
+Returns the number of bytes written.

@@ -1,0 +1,12 @@
+.TH ELF_GET_SYMTAB_R 3
+.SH NAME
+elf_get_symtab_r \- get symbol table range
+.SH SYNOPSIS
+.B #include <elf.h>
+.P
+.BI "range elf_get_symtab_r(void* " elf ");"
+.SH DESCRIPTION
+.BR elf_get_symtab_r ()
+returns a range structure covering the symbol table of the ELF file.
+.SH RETURN VALUE
+Returns the symbol table range.

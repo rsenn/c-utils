@@ -1,0 +1,15 @@
+.TH BUFFER_PUTXLONG0 3
+.SH NAME
+buffer_putxlong0 \- write zero-padded hex long to buffer
+.SH SYNOPSIS
+.B #include <buffer.h>
+.P
+.BI "int buffer_putxlong0(buffer* " b ", unsigned long " l ", int " pad ");"
+.SH DESCRIPTION
+.BR buffer_putxlong0 ()
+writes the hex representation of
+.I l
+padded with leading zeros to at least length
+.IR pad .
+.SH RETURN VALUE
+Returns 0 on success, or -1 on failure.

@@ -1,0 +1,11 @@
+.TH pe_dllname 3
+.SH NAME
+pe_dllname \- get name of a DLL
+.SH SYNOPSIS
+.B #include "pe.h"
+.PP
+.BI "char *pe_dllname(uint8 *" base ");"
+.SH DESCRIPTION
+.B pe_dllname
+extracts the export name of a PE file (if it is a DLL) from the export directory.
+Returns the pointer to the name string, or NULL if not a DLL.

@@ -1,0 +1,21 @@
+.Dd March 31, 2025
+.Dt SOCKET_ERROR 3
+.Os
+.Sh NAME
+.Nm socket_error
+.Nd retrieve socket error status
+.Sh SYNOPSIS
+.In socket.h
+.Ft int
+.Fn socket_error "fd_type s" "int *error"
+.Sh DESCRIPTION
+The
+.Fn socket_error
+function retrieves the pending error code for the socket
+.Fa s
+via getsockopt and stores it in
+.Fa error .
+.Sh RETURN VALUES
+Returns non-zero on success, or 0 on error.
+.Sh SEE ALSO
+.Xr socket_v6only 3

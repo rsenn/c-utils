@@ -1,0 +1,14 @@
+.TH tokenizer_read_until 3
+.SH NAME
+tokenizer_read_until \- read input until marker
+.SH SYNOPSIS
+.B #include "tokenizer.h"
+.PP
+.BI "int tokenizer_read_until(tokenizer *" t ", const char *" marker ", int " stop_at_nl ");"
+.SH DESCRIPTION
+.B tokenizer_read_until
+reads characters from the input stream until the specified
+.I marker
+is encountered. If
+.I stop_at_nl
+is non-zero, it also stops reading at newlines. The consumed text is stored in the tokenizer's buffer.

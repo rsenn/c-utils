@@ -1,0 +1,12 @@
+.TH CHARBUF_CLOSE 3
+.SH NAME
+charbuf_close \- close the file descriptor associated with a charbuf
+.SH SYNOPSIS
+.B #include <charbuf.h>
+.P
+.BI "void charbuf_close(charbuf* " b ");"
+.SH DESCRIPTION
+.BR charbuf_close ()
+closes the file descriptor
+.I b->fd
+if it is a valid file descriptor (greater than 2).

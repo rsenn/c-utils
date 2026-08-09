@@ -1,0 +1,21 @@
+.TH TLS_CONNECT 3
+.SH NAME
+tls_connect \- initiate a TLS client handshake
+.SH SYNOPSIS
+.B #include <tls.h>
+.P
+.BI "int tls_connect(fd_type " fd ");"
+.SH DESCRIPTION
+.BR tls_connect ()
+initiates the TLS client handshake on the socket associated with the file descriptor
+.IR fd .
+The file descriptor must have been previously prepared for TLS.
+.P
+The function returns the result of the underlying OpenSSL handshake. If an error
+occurs,
+.B errno
+is updated with the translated OpenSSL error state.
+.SH RETURN VALUE
+Returns 0 on success, or a negative value on failure.
+.SH SEE ALSO
+tls_init(3), tls_free(3)

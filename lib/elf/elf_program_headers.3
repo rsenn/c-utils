@@ -1,0 +1,12 @@
+.TH ELF_PROGRAM_HEADERS 3
+.SH NAME
+elf_program_headers \- get program headers range
+.SH SYNOPSIS
+.B #include <elf.h>
+.P
+.BI "range elf_program_headers(void* " elf ");"
+.SH DESCRIPTION
+.BR elf_program_headers ()
+returns a range structure covering the program header table of the ELF file.
+.SH RETURN VALUE
+Returns the range of program headers.

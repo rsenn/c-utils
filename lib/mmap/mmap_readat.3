@@ -1,0 +1,19 @@
+.TH MMAP_READAT 3
+.SH NAME
+mmap_readat \- map a file relative to a directory file descriptor
+.SH SYNOPSIS
+.B #include "mmap.h"
+.PP
+.BI "const char* mmap_readat(const char* " filename ", size_t* " filesize ", int " dirfd ");"
+.SH DESCRIPTION
+.B mmap_readat
+opens the file
+.I filename
+relative to the directory file descriptor
+.I dirfd
+using
+.BR openat (2),
+then maps the file into memory as a shared, read-only mapping.
+The file is closed after the mapping is created.
+.SH RETURN VALUE
+Returns a pointer to the mapped memory (or an empty string if the file is empty) on success, or NULL on failure.

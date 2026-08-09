@@ -1,0 +1,17 @@
+.TH MMAP_READ_FD 3
+.SH NAME
+mmap_read_fd \- create a shared, read-only mapping of a file descriptor
+.SH SYNOPSIS
+.B #include "mmap.h"
+.PP
+.BI "char* mmap_read_fd(fd_type " fd ", size_t* " filesize ");"
+.SH DESCRIPTION
+.B mmap_read_fd
+maps the entire contents of the file descriptor
+.I fd
+into memory as a shared, read-only mapping.
+The size of the file is stored in
+.I filesize
+upon success.
+.SH RETURN VALUE
+Returns a pointer to the mapped memory (or a pointer to a static empty buffer if the file is empty) on success, or NULL on failure.

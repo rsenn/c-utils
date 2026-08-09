@@ -1,0 +1,15 @@
+.TH xml_content 3
+.SH NAME
+xml_content \- get the text content of an XML node
+.SH SYNOPSIS
+.B #include "xml.h"
+.PP
+.BI "const char *xml_content(xmlnode *" node ");"
+.SH DESCRIPTION
+.B xml_content
+searches the immediate children of the given
+.I node
+for an
+.B XML_TEXT
+type node and returns a pointer to its content. Returns NULL if no text
+child is found.

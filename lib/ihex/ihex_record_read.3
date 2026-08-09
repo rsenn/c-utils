@@ -1,0 +1,17 @@
+.TH ihex_record_read 3
+.SH NAME
+ihex_record_read \- parse a single Intel HEX record
+.SH SYNOPSIS
+.B #include "ihex.h"
+.PP
+.BI "ssize_t ihex_record_read(ihex_record **" pihr ", const char *" in ", size_t " n ");"
+.SH DESCRIPTION
+.B ihex_record_read
+parses a single Intel HEX line from the buffer
+.I in
+of length
+.I n
+and allocates an
+.B ihex_record
+structure, storing the pointer in
+.IR pihr .

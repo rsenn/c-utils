@@ -1,0 +1,28 @@
+.Dd March 31, 2025
+.Dt JSON_PARSE_NUMBER 3
+.Os
+.Sh NAME
+.Nm json_parse_number
+.Nd parse a JSON number from a character buffer
+.Sh SYNOPSIS
+.In json.h
+.Ft int
+.Fn json_parse_number "jsonval *val" "charbuf *b"
+.Sh DESCRIPTION
+The
+.Fn json_parse_number
+function parses a numeric token (integer or floating-point) from the character buffer
+.Fa b
+and stores the result into
+.Fa val .
+The value type in
+.Fa val
+is set to either
+.Dv JSON_INT
+or
+.Dv JSON_DOUBLE
+accordingly.
+.Sh RETURN VALUES
+Returns 1 on success, 0 if no valid number was found, or a negative value on buffer error.
+.Sh SEE ALSO
+.Xr json_read_tree 3

@@ -1,0 +1,16 @@
+.TH BUFFER_PUTSTR 3
+.SH NAME
+buffer_putstr \- write a quoted string to a buffer
+.SH SYNOPSIS
+.B #include <buffer.h>
+.P
+.BI "void buffer_putstr(buffer* " b ", const char* " x ");"
+.SH DESCRIPTION
+.BR buffer_putstr ()
+writes the string
+.I x
+to buffer
+.I b
+enclosed in double quotes. If
+.I x
+is NULL, it writes "NULL".

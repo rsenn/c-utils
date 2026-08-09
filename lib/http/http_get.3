@@ -1,0 +1,15 @@
+.TH HTTP_GET 3
+.SH NAME
+http_get \- initiate an HTTP GET request
+.SH SYNOPSIS
+.B #include <http.h>
+.P
+.BI "int http_get(http* " h ", const char* " location ");"
+.SH DESCRIPTION
+.BR http_get ()
+initializes an HTTP GET request to the specified
+.IR location .
+It handles host resolution, sets up request structures, and initiates the
+connection process.
+.SH RETURN VALUE
+Returns 1 on success, 0 on failure.

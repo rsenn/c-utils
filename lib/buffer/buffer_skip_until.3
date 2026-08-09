@@ -1,0 +1,14 @@
+.TH BUFFER_SKIP_UNTIL 3
+.SH NAME
+buffer_skip_until \- skip bytes until a delimiter is found
+.SH SYNOPSIS
+.B #include <buffer.h>
+.P
+.BI "void buffer_skip_until(buffer* " b ", char " delim ");"
+.SH DESCRIPTION
+.BR buffer_skip_until ()
+advances the read pointer of buffer
+.I b
+until the character
+.I delim
+is encountered or the buffer is exhausted.

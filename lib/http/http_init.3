@@ -1,0 +1,17 @@
+.TH HTTP_INIT 3
+.SH NAME
+http_init \- initialize an HTTP client
+.SH SYNOPSIS
+.B #include <http.h>
+.P
+.BI "void http_init(http* " h ", const char* " host ", uint16 " port ");"
+.SH DESCRIPTION
+.BR http_init ()
+resets and initializes the HTTP client structure
+.I h
+with the specified
+.I host
+and
+.IR port .
+.SH SEE ALSO
+http_get(3)

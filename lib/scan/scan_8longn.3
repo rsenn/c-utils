@@ -1,0 +1,21 @@
+.TH scan_8longn 3
+.SH NAME
+scan_8longn \- parse an unsigned long integer in octal from a string
+.SH SYNTAX
+.B #include <lib/scan.h>
+
+size_t \fBscan_8longn\fR(const char *\fIsrc\fR, size_t \fIn\fR, unsigned long *\fIdest\fR);
+.SH DESCRIPTION
+\fBscan_8longn\fR parses an unsigned long integer in octal (base 8) notation
+from the string \fIsrc\fR, limited to at most \fIn\fR characters.
+The result is stored in \fIdest\fR.
+
+It stops reading when it encounters a non-octal digit, when \fIn\fR
+characters have been consumed, or when it detects that the value would overflow
+an \fBunsigned long\fR.
+
+.SH RETURN VALUE
+\fBscan_8longn\fR returns the number of bytes actually read from \fIsrc\fR.
+
+.SH SEE ALSO
+scan_ulong(3), scan_8long(3)

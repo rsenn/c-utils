@@ -1,0 +1,12 @@
+.TH pe_rva2section 3
+.SH NAME
+pe_rva2section \- find section containing RVA
+.SH SYNOPSIS
+.B #include "pe.h"
+.PP
+.BI "int pe_rva2section(void *" base ", uint32 " rva ");"
+.SH DESCRIPTION
+.B pe_rva2section
+returns the index of the PE section that contains the given
+.IR rva .
+Returns -1 if the RVA is not contained in any section.

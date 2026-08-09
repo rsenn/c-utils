@@ -1,0 +1,16 @@
+.TH DIR_TIME 3
+.SH NAME
+dir_time \- get timestamps for the current directory entry
+.SH SYNOPSIS
+.B #include <dir.h>
+.P
+.BI "long dir_time(struct dir_s* " d ", int " type ");"
+.SH DESCRIPTION
+.BR dir_time ()
+retrieves specific timestamps for the entry currently pointed to by
+.IR d .
+Supported
+.I type
+values are D_TIME_CREATION, D_TIME_ACCESS, and D_TIME_MODIFICATION.
+.SH RETURN VALUE
+Returns the timestamp, or -1 on error.

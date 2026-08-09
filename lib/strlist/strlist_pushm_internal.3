@@ -1,0 +1,12 @@
+.TH strlist_pushm_internal 3
+.SH NAME
+strlist_pushm_internal \- append multiple strings to string list
+.SH SYNOPSIS
+.B #include "strlist.h"
+.PP
+.BI "int strlist_pushm_internal(strlist *" sl ", ...);"
+.SH DESCRIPTION
+.B strlist_pushm_internal
+appends multiple null-terminated strings provided as a variable argument list
+(terminated by NULL) to the string list
+.IR sl .

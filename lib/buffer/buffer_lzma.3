@@ -1,0 +1,16 @@
+.TH BUFFER_LZMA 3
+.SH NAME
+buffer_lzma \- create an LZMA compression/decompression buffer
+.SH SYNOPSIS
+.B #include <buffer.h>
+.P
+.BI "int buffer_lzma(buffer* " b ", buffer* " other ", int " compress ");"
+.SH DESCRIPTION
+.BR buffer_lzma ()
+wraps an LZMA (de)compression stream around the buffer
+.IR other .
+If
+.I compress
+is non-zero, it initializes an encoder; otherwise, it initializes a decoder.
+.SH RETURN VALUE
+Returns 1 on success, 0 on failure.

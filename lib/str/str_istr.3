@@ -1,0 +1,17 @@
+.TH str_istr 3
+.SH NAME
+str_istr \- find a substring, case-insensitively
+.SH SYNOPSIS
+.B #include "str.h"
+.PP
+.BI "char *str_istr(char *" s ", char *" find ");"
+.SH DESCRIPTION
+.B str_istr
+finds the first occurrence of string
+.I find
+within
+.I s
+using a case-insensitive comparison. It returns a pointer to the found
+substring, or NULL if not found.
+.SH SEE ALSO
+str_case_diff(3)

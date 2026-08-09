@@ -1,0 +1,20 @@
+.Dd March 31, 2025
+.Dt SOCKET_IS6 3
+.Os
+.Sh NAME
+.Nm socket_is6
+.Nd check if a socket is IPv6
+.Sh SYNOPSIS
+.In socket.h
+.Ft int
+.Fn socket_is6 "int s"
+.Sh DESCRIPTION
+The
+.Fn socket_is6
+function tests whether the given socket descriptor
+.Fa s
+is an IPv6 socket.
+.Sh RETURN VALUES
+Returns non-zero if the socket is IPv6, or 0 otherwise.
+.Sh SEE ALSO
+.Xr socket_v6only 3

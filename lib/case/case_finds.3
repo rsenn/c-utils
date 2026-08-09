@@ -1,0 +1,20 @@
+.TH CASE_FINDS 3
+.SH NAME
+case_finds \- case-insensitive search for a string in a buffer
+.SH SYNOPSIS
+.B #include <case.h>
+.P
+.BI "size_t case_finds(const void* " haystack ", size_t " hlen ", const char* " what ");"
+.SH DESCRIPTION
+.BR case_finds ()
+searches for the null-terminated string
+.I what
+within the buffer
+.I haystack
+of length
+.I hlen
+in a case-insensitive manner.
+.SH RETURN VALUE
+Returns the offset of the first match, or
+.I hlen
+if no match is found.

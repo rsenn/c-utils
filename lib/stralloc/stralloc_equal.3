@@ -1,0 +1,14 @@
+.TH stralloc_equal 3
+.SH NAME
+stralloc_equal \- check if two strallocs are equal
+.SH SYNOPSIS
+.B #include "stralloc.h"
+.PP
+.BI "size_t stralloc_equal(const stralloc *" sa1 ", const stralloc *" sa2 ");"
+.SH DESCRIPTION
+.B stralloc_equal
+returns 1 if the contents of
+.I sa1
+are identical to
+.IR sa2 ,
+and 0 otherwise.

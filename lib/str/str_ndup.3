@@ -1,0 +1,17 @@
+.TH str_ndup 3
+.SH NAME
+str_ndup \- duplicate up to n characters of a string
+.SH SYNOPSIS
+.B #include "str.h"
+.PP
+.BI "char *str_ndup(const char *" s ", size_t " n ");"
+.SH DESCRIPTION
+.B str_ndup
+allocates a new memory block and copies at most
+.I n
+characters from string
+.I s
+into it, ensuring the result is null-terminated. The caller is responsible for
+freeing the returned pointer.
+.SH SEE ALSO
+malloc(3)

@@ -1,0 +1,17 @@
+.TH CHARBUF_SKIP_UNTIL 3
+.SH NAME
+charbuf_skip_until \- skip characters until a delimiter is found
+.SH SYNOPSIS
+.B #include <charbuf.h>
+.P
+.BI "ssize_t charbuf_skip_until(charbuf* " b ", int " c ");"
+.SH DESCRIPTION
+.BR charbuf_skip_until ()
+advances the read pointer of buffer
+.I b
+until the character
+.I c
+is encountered.
+.SH RETURN VALUE
+Returns the number of characters skipped before reaching the delimiter,
+or a negative value on error or EOF.

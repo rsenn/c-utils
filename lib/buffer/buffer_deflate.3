@@ -1,0 +1,16 @@
+.TH BUFFER_DEFLATE 3
+.SH NAME
+buffer_deflate \- create a zlib deflate buffer
+.SH SYNOPSIS
+.B #include <buffer.h>
+.P
+.BI "int buffer_deflate(buffer* " b ", buffer* " out ", int " level ");"
+.SH DESCRIPTION
+.BR buffer_deflate ()
+initializes the buffer
+.I b
+to compress data using zlib's deflate algorithm, writing the resulting
+compressed data into the buffer
+.IR out .
+.SH RETURN VALUE
+Returns 1 on success, 0 on failure.

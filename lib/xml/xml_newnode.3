@@ -1,0 +1,14 @@
+.TH xml_newnode 3
+.SH NAME
+xml_newnode \- allocate a new XML node
+.SH SYNOPSIS
+.B #include "xml.h"
+.PP
+.BI "xmlnode *xml_newnode(xmlnodeid " type ");"
+.SH DESCRIPTION
+.B xml_newnode
+allocates zero-initialized memory for a new
+.B xmlnode
+of the specified
+.IR type .
+The attributes, children, and next pointers are initialized to NULL.

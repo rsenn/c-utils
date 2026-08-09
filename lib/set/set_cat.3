@@ -1,0 +1,21 @@
+.Dd March 31, 2025
+.Dt SET_CAT 3
+.Os
+.Sh NAME
+.Nm set_cat
+.Nd merge another set into a hash set
+.Sh SYNOPSIS
+.In set.h
+.Ft int
+.Fn set_cat "set_t *set" "const set_t *other"
+.Sh DESCRIPTION
+The
+.Fn set_cat
+function inserts all unique elements from the hash set
+.Fa other
+into the destination hash set
+.Fa set .
+.Sh RETURN VALUES
+Returns the number of new elements added.
+.Sh SEE ALSO
+.Xr set_add 3

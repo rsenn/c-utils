@@ -1,0 +1,14 @@
+.TH omf_data 3
+.SH NAME
+omf_data \- get data range of OMF record
+.SH SYNOPSIS
+.B #include "omf.h"
+.PP
+.BI "range omf_data(omf_record *" rec ");"
+.SH DESCRIPTION
+.B omf_data
+returns a
+.B range
+structure describing the location and size of the data contained within the
+given OMF record
+.IR rec .

@@ -1,0 +1,21 @@
+.Dd March 31, 2025
+.Dt SEEK_END 3
+.Os
+.Sh NAME
+.Nm seek_end
+.Nd set file offset to the end of file
+.Sh SYNOPSIS
+.In seek.h
+.Ft seek_pos
+.Fn seek_end "fd_type fd"
+.Sh DESCRIPTION
+The
+.Fn seek_end
+function sets the file offset for the file descriptor
+.Fa fd
+to the end of the file.
+.Sh RETURN VALUES
+Returns the resulting file offset position from the beginning of the file, or (seek_pos)-1 on error.
+.Sh SEE ALSO
+.Xr seek_set 3 ,
+.Xr seek_cur 3

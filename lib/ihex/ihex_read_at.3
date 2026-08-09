@@ -1,0 +1,18 @@
+.TH ihex_read_at 3
+.SH NAME
+ihex_read_at \- read data from Intel HEX structure at offset
+.SH SYNOPSIS
+.B #include "ihex.h"
+.PP
+.BI "size_t ihex_read_at(ihex_file *" ihf ", uint32 " at ", char *" x ", size_t " n ");"
+.SH DESCRIPTION
+.B ihex_read_at
+reads up to
+.I n
+bytes of data from the Intel HEX structure
+.I ihf
+starting at the memory address
+.I at
+and stores it in the buffer
+.IR x .
+Returns the number of bytes read.

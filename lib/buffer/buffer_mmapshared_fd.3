@@ -1,0 +1,16 @@
+.TH BUFFER_MMAPSHARED_FD 3
+.SH NAME
+buffer_mmapshared_fd \- initialize a buffer from a shared memory mapping of a file descriptor
+.SH SYNOPSIS
+.B #include <buffer.h>
+.P
+.BI "int buffer_mmapshared_fd(buffer* " b ", fd_type " fd ");"
+.SH DESCRIPTION
+.BR buffer_mmapshared_fd ()
+maps the file associated with the file descriptor
+.I fd
+into memory with shared mapping semantics and initializes the buffer
+.I b
+to point to that memory region.
+.SH RETURN VALUE
+Returns 0 on success, or -1 on failure.

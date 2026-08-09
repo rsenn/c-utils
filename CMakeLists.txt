@@ -1296,3 +1296,12 @@ target_compile_definitions(socket-intercept PRIVATE HAVE_BROTLI=0 HAVE_LIBBZ2=0
 target_link_libraries(socket-intercept PUBLIC dl pthread)
 
 install(TARGETS socket-intercept DESTINATION "${CMAKE_ARCH_LIBDIR}")
+
+
+file(GLOB MAN3 
+  lib/*.3
+  lib/*/*.3
+)
+
+install(FILES ${MAN3} DESTINATION share/man/man3)
+

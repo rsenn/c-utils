@@ -1,0 +1,13 @@
+.TH COFF_INDEX_SYMTAB 3
+.SH NAME
+coff_index_symtab \- retrieve a symbol table entry by index
+.SH SYNOPSIS
+.B #include <coff.h>
+.P
+.BI "coff_symtab_entry* coff_index_symtab(void* " coff ", int " index ");"
+.SH DESCRIPTION
+.BR coff_index_symtab ()
+returns a pointer to the symbol table entry at the specified 0-based
+.IR index .
+.SH RETURN VALUE
+Returns a pointer to the entry, or NULL if the index is out of bounds.

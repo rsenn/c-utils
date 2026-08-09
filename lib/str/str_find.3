@@ -1,0 +1,19 @@
+.TH str_find 3
+.SH NAME
+str_find \- find first occurrence of a substring
+.SH SYNOPSIS
+.B #include "str.h"
+.PP
+.BI "size_t str_find(const void *" s ", const void *" what ");"
+.SH DESCRIPTION
+.B str_find
+returns the index of the first occurrence of string
+.I what
+within string
+.IR s .
+If
+.I what
+is not found, it returns the length of
+.IR s .
+.SH SEE ALSO
+str_findb(3)

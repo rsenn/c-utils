@@ -1,0 +1,21 @@
+.Dd March 31, 2025
+.Dt STRALLOC_CATXLONG 3
+.Os
+.Sh NAME
+.Nm stralloc_catxlong
+.Nd append an unsigned long integer in hexadecimal format to a stralloc
+.Sh SYNOPSIS
+.In stralloc.h
+.Ft size_t
+.Fn stralloc_catxlong "stralloc *sa" "unsigned long u"
+.Sh DESCRIPTION
+The
+.Fn stralloc_catxlong
+function formats the unsigned long integer
+.Fa u
+as a hexadecimal string and appends it to the dynamic string
+.Fa sa .
+.Sh RETURN VALUES
+Returns 1 on success, or 0 on memory allocation failure.
+.Sh SEE ALSO
+.Xr stralloc_catlong 3

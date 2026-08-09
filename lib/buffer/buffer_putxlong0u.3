@@ -1,0 +1,15 @@
+.TH BUFFER_PUTXLONG0U 3
+.SH NAME
+buffer_putxlong0u \- write unsigned hex long to buffer
+.SH SYNOPSIS
+.B #include <buffer.h>
+.P
+.BI "int buffer_putxlong0u(buffer* " b ", unsigned long " l ");"
+.SH DESCRIPTION
+.BR buffer_putxlong0u ()
+writes the unsigned hex representation of
+.I l
+to the buffer
+.IR b .
+.SH RETURN VALUE
+Returns the result of buffer_put.

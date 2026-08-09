@@ -1,0 +1,14 @@
+.TH strarray_dump 3
+.SH NAME
+strarray_dump \- debug dump of a string array
+.SH SYNOPSIS
+.B #include "strarray.h"
+.PP
+.BI "void strarray_dump(buffer *" b ", const strarray *" arr ");"
+.SH DESCRIPTION
+.B strarray_dump
+writes a human-readable dump of the string array
+.I arr
+to the buffer
+.IR b ,
+showing index and string value for each element.

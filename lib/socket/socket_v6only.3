@@ -1,0 +1,22 @@
+.Dd March 31, 2025
+.Dt SOCKET_V6ONLY 3
+.Os
+.Sh NAME
+.Nm socket_v6only
+.Nd set or get IPv6-only socket option
+.Sh SYNOPSIS
+.In socket.h
+.Ft int
+.Fn socket_v6only "int fd" "int enable"
+.Sh DESCRIPTION
+The
+.Fn socket_v6only
+function sets the IPV6_V6ONLY socket option on file descriptor
+.Fa fd
+according to
+.Fa enable ,
+returning its previous state.
+.Sh RETURN VALUES
+Returns the previous state of the option, or -1 on error.
+.Sh SEE ALSO
+.Xr socket_is6 3

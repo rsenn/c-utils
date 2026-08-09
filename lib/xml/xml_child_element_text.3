@@ -1,0 +1,14 @@
+.TH xml_child_element_text 3
+.SH NAME
+xml_child_element_text \- create and add a child element node with text content
+.SH SYNOPSIS
+.B #include "xml.h"
+.PP
+.BI "xmlnode *xml_child_element_text(const char *" name ", xmlnode *" parent ", const char *" text ");"
+.SH DESCRIPTION
+.B xml_child_element_text
+creates a new child element node with the specified
+.I name
+and adds a text node containing
+.I text
+as its child. It returns a pointer to the newly created element node.

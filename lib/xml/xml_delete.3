@@ -1,0 +1,14 @@
+.TH xml_delete 3
+.SH NAME
+xml_delete \- remove and free an XML node and its children
+.SH SYNOPSIS
+.B #include "xml.h"
+.PP
+.BI "void xml_delete(xmlnode *" node ");"
+.SH DESCRIPTION
+.B xml_delete
+recursively deletes the specified
+.I node
+and all of its descendants. It also unlinks the node from its parent if
+it has one, frees its name, destroys its attribute map, and frees the
+node memory itself.

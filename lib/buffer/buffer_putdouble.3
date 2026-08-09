@@ -1,0 +1,18 @@
+.TH BUFFER_PUTDOUBLE 3
+.SH NAME
+buffer_putdouble \- format and write a double to a buffer
+.SH SYNOPSIS
+.B #include <buffer.h>
+.P
+.BI "int buffer_putdouble(buffer* " b ", double " d ", int " prec ");"
+.SH DESCRIPTION
+.BR buffer_putdouble ()
+formats the double
+.I d
+with precision
+.I prec
+and writes it into the buffer
+.IR b .
+Trailing zeros are removed from the fractional part.
+.SH RETURN VALUE
+Returns the result of buffer_put.

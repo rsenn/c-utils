@@ -1,0 +1,16 @@
+.TH BUFFER_INFLATE 3
+.SH NAME
+buffer_inflate \- create a zlib inflate buffer
+.SH SYNOPSIS
+.B #include <buffer.h>
+.P
+.BI "int buffer_inflate(buffer* " b ", buffer* " in ");"
+.SH DESCRIPTION
+.BR buffer_inflate ()
+initializes the buffer
+.I b
+to decompress data using zlib's inflate algorithm, reading the compressed
+data from the buffer
+.IR in .
+.SH RETURN VALUE
+Returns 1 on success, 0 on failure.

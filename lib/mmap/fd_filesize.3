@@ -1,0 +1,18 @@
+.TH FD_FILESIZE 3
+.SH NAME
+fd_filesize \- get the size of an open file descriptor
+.SH SYNOPSIS
+.B #include "mmap.h"
+.PP
+.BI "ssize_t fd_filesize(fd_type " fd ");"
+.SH DESCRIPTION
+.B fd_filesize
+returns the size in bytes of the file referred to by the file descriptor
+.IR fd .
+It uses platform-specific mechanisms (e.g.,
+.BR fstat (2)
+on POSIX,
+.BR GetFileSize (3)
+on Windows) to determine the length of the file.
+.SH RETURN VALUE
+Returns the file size in bytes on success, or -1 on error.

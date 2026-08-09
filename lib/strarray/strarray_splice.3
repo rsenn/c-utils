@@ -1,0 +1,20 @@
+.TH strarray_splice 3
+.SH NAME
+strarray_splice \- remove and insert elements in a string array
+.SH SYNOPSIS
+.B #include "strarray.h"
+.PP
+.BI "int64 strarray_splice(strarray *" a ", uint64 " start ", uint64 " del ", uint64 " insert ", const char** " x ");"
+.SH DESCRIPTION
+.B strarray_splice
+removes
+.I del
+elements starting at index
+.I start
+from the string array
+.I a
+and inserts
+.I insert
+elements from the array
+.I x
+at the same position. It returns the new length of the array.

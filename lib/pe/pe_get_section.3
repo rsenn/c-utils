@@ -1,0 +1,12 @@
+.TH pe_get_section 3
+.SH NAME
+pe_get_section \- find section by name
+.SH SYNOPSIS
+.B #include "pe.h"
+.PP
+.BI "pe_section_header *pe_get_section(void *" base ", const char *" name ");"
+.SH DESCRIPTION
+.B pe_get_section
+searches for a section with the given
+.I name
+in the PE file header. Returns a pointer to the section header, or NULL if not found.

@@ -1,0 +1,15 @@
+.TH BUFFER_GZIP 3
+.SH NAME
+buffer_gzip, buffer_gunzip \- high-level gzip file interface
+.SH SYNOPSIS
+.B #include <buffer.h>
+.P
+.BI "int buffer_gzip(buffer* " b ", const char* " filename ", int " level ");"
+.BI "int buffer_gunzip(buffer* " b ", const char* " filename ");"
+.SH DESCRIPTION
+.BR buffer_gzip ()
+initializes a buffer to compress data into a gzip file.
+.BR buffer_gunzip ()
+initializes a buffer to decompress data from a gzip file.
+.SH RETURN VALUE
+Returns 0 on success, or -1 on failure.

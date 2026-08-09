@@ -1,0 +1,15 @@
+.TH str_is 3
+.SH NAME
+str_is \- check if all characters in a string satisfy a predicate
+.SH SYNOPSIS
+.B #include "str.h"
+.PP
+.BI "int str_is(const char *" s ", int (*" pred ")(int));"
+.SH DESCRIPTION
+.B str_is
+tests whether all characters in the string
+.I s
+satisfy the predicate function
+.IR pred .
+It returns 1 if all characters satisfy the predicate (and the string is
+non-empty), and 0 otherwise.

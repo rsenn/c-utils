@@ -1,0 +1,21 @@
+.Dd March 31, 2025
+.Dt PATH_CONCAT 3
+.Os
+.Sh NAME
+.Nm path_concat
+.Nd concatenate two path components
+.Sh SYNOPSIS
+.In path.h
+.Ft void
+.Fn path_concat "const char *a" "const char *b" "stralloc *out"
+.Sh DESCRIPTION
+The
+.Fn path_concat
+function joins path component
+.Fa a
+and path component
+.Fa b
+together with an appropriate directory separator, storing the resulting path into
+.Fa out .
+.Sh SEE ALSO
+.Xr path_concat_sa 3

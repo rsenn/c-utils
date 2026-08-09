@@ -1,0 +1,18 @@
+.TH ihex_put 3
+.SH NAME
+ihex_put \- add data record to Intel HEX structure
+.SH SYNOPSIS
+.B #include "ihex.h"
+.PP
+.BI "ihex_record *ihex_put(ihex_file *" ihf ", uint32 " offset ", const char *" x ", size_t " n ");"
+.SH DESCRIPTION
+.B ihex_put
+inserts a data record of length
+.I n
+with content
+.I x
+at the specified
+.I offset
+into the Intel HEX structure
+.IR ihf .
+It calculates the record checksum and returns a pointer to the created record.

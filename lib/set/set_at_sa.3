@@ -1,0 +1,21 @@
+.Dd March 31, 2025
+.Dt SET_AT_SA 3
+.Os
+.Sh NAME
+.Nm set_at_sa
+.Nd retrieve a set element into a stralloc
+.Sh SYNOPSIS
+.In set.h
+.Ft char *
+.Fn set_at_sa "const set_t *set" "int64 pos" "stralloc *out"
+.Sh DESCRIPTION
+The
+.Fn set_at_sa
+function retrieves the set element at index position
+.Fa pos
+and stores it as a null-terminated string in the dynamic string allocation structure
+.Fa out .
+.Sh RETURN VALUES
+Returns a pointer to the string buffer, or
+.Dv NULL
+if the index is out of bounds.

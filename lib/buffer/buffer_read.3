@@ -1,0 +1,14 @@
+.TH BUFFER_READ 3
+.SH NAME
+buffer_unixread \- low-level read function for buffers
+.SH SYNOPSIS
+.B #include <buffer.h>
+.P
+.BI "int buffer_unixread(fd_type " fd ", char* " x ", size_t " n ");"
+.SH DESCRIPTION
+.BR buffer_unixread ()
+is a thin wrapper around the unix
+.BR read (2)
+system call, provided as an implementation for buffer callbacks.
+.SH RETURN VALUE
+Returns the number of bytes read, or -1 on error.

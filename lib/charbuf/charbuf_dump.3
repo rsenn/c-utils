@@ -1,0 +1,15 @@
+.TH CHARBUF_DUMP 3
+.SH NAME
+charbuf_dump \- debug dump of a charbuf
+.SH SYNOPSIS
+.B #include <charbuf.h>
+.P
+.BI "void charbuf_dump(charbuf* " b ", buffer* " out ");"
+.SH DESCRIPTION
+.BR charbuf_dump ()
+writes a human-readable debug representation of the state of
+.I b
+(including offset, position, error status, and buffered characters)
+to the output buffer
+.IR out .
+This function is only available if DEBUG_CHARBUF is defined.

@@ -1,0 +1,18 @@
+.TH CHARBUF_INIT 3
+.SH NAME
+charbuf_init \- initialize a character buffer
+.SH SYNOPSIS
+.B #include <charbuf.h>
+.P
+.BI "void charbuf_init(charbuf* " b ", read_fn* " op ", fd_type " fd ", unsigned int " lookahead ");"
+.SH DESCRIPTION
+.BR charbuf_init ()
+initializes a character buffer
+.I b
+with the provided read callback function
+.I op
+and file descriptor
+.IR fd .
+It allocates memory based on the specified
+.I lookahead
+size.

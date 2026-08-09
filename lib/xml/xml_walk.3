@@ -1,0 +1,16 @@
+.TH xml_walk 3
+.SH NAME
+xml_walk \- traverse an XML tree
+.SH SYNOPSIS
+.B #include "xml.h"
+.PP
+.BI "void xml_walk(xmlnode *" root ", int (*" func ")(xmlnode *, xmlnode *));"
+.SH DESCRIPTION
+.B xml_walk
+traverses the XML tree rooted at
+.I root
+and calls the user-provided function
+.I func
+for each node. The traversal stops if
+.I func
+returns a non-zero value.

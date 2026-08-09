@@ -1,0 +1,17 @@
+.TH FMT_HEXB 3
+.SH NAME
+fmt_hexb \- format bytes as a hexadecimal string
+.SH SYNOPSIS
+.B #include <fmt.h>
+.P
+.BI "size_t fmt_hexb(void* " out ", const void* " d ", size_t " len ");"
+.SH DESCRIPTION
+.BR fmt_hexb ()
+converts
+.I len
+bytes from
+.I d
+into their hexadecimal representation, writing the result to
+.IR out .
+.SH RETURN VALUE
+Returns the number of bytes written (2 * len).

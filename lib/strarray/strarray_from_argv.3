@@ -1,0 +1,14 @@
+.TH strarray_from_argv 3
+.SH NAME
+strarray_from_argv \- initialize strarray from argv
+.SH SYNOPSIS
+.B #include "strarray.h"
+.PP
+.BI "int strarray_from_argv(int " argc ", const char *const " argv "[], strarray *" arr ");"
+.SH DESCRIPTION
+.B strarray_from_argv
+initializes the string array
+.I arr
+and populates it with strings from the standard
+.I argv
+style argument vector.

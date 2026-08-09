@@ -1,0 +1,18 @@
+.TH ELF_GET_SECTION 3
+.SH NAME
+elf_get_section \- find a section by name
+.SH SYNOPSIS
+.B #include <elf.h>
+.P
+.BI "void* elf_get_section(void* " elf ", const char* " name ", size_t* " szp ");"
+.SH DESCRIPTION
+.BR elf_get_section ()
+finds the section with the given
+.I name
+within the ELF file
+.IR elf .
+If
+.I szp
+is provided, it is updated with the size of the section.
+.SH RETURN VALUE
+Returns a pointer to the section data, or NULL if not found.

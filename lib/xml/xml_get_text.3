@@ -1,0 +1,16 @@
+.TH xml_get_text 3
+.SH NAME
+xml_get_text \- aggregate and clean text content from a node
+.SH SYNOPSIS
+.B #include "xml.h"
+.PP
+.BI "char *xml_get_text(xmlnode *" node ", stralloc *" out ");"
+.SH DESCRIPTION
+.B xml_get_text
+traverses the given
+.I node
+(and its next siblings if they are text nodes) to aggregate text content.
+It skips leading whitespace and appends the content to
+.IR out .
+Returns a pointer to the resulting null-terminated string in
+.IR out .

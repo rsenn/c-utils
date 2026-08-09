@@ -1,0 +1,16 @@
+.TH xml_has_attribute 3
+.SH NAME
+xml_has_attribute \- check if an attribute exists
+.SH SYNOPSIS
+.B #include "xml.h"
+.PP
+.BI "int xml_has_attribute(xmlnode *" node ", const char *" attr ");"
+.PP
+.BI "int xml_has_attribute_n(xmlnode *" node ", const char *" b ", size_t " n ");"
+.SH DESCRIPTION
+.B xml_has_attribute
+checks the attribute map of
+.I node
+to see if an attribute with name
+.I attr
+exists. It returns 1 if present, 0 otherwise.

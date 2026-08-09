@@ -1,0 +1,19 @@
+.TH xml_print_attributes 3
+.SH NAME
+xml_print_attributes \- print XML attributes to a buffer
+.SH SYNOPSIS
+.B #include "xml.h"
+.PP
+.BI "void xml_print_attributes(HMAP_DB *" db ", buffer *" b ", const char *" sep ", const char *" eq ", const char *" quot ");"
+.SH DESCRIPTION
+.B xml_print_attributes
+formats and writes the attributes in the hash map
+.I db
+to the buffer
+.I b
+using the specified separator
+.IR sep ,
+equality sign
+.IR eq ,
+and quote characters
+.IR quot .

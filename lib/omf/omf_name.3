@@ -1,0 +1,12 @@
+.TH omf_name 3
+.SH NAME
+omf_name \- get name of OMF record type
+.SH SYNOPSIS
+.B #include "omf.h"
+.PP
+.BI "const char *omf_name(omf_record *" rec ");"
+.SH DESCRIPTION
+.B omf_name
+returns the human-readable string name for the type of the given OMF record
+.IR rec .
+Returns NULL if the record type is unknown.

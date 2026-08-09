@@ -1,0 +1,16 @@
+.TH BUFFER_APPENDFILE 3
+.SH NAME
+buffer_appendfile \- initialize a buffer to append to a file
+.SH SYNOPSIS
+.B #include <buffer.h>
+.P
+.BI "int buffer_appendfile(buffer* " b ", const char* " filename ");"
+.SH DESCRIPTION
+.BR buffer_appendfile ()
+initializes the buffer
+.I b
+to open the specified
+.I filename
+for writing in append mode.
+.SH RETURN VALUE
+Returns 0 on success, or -1 on error.

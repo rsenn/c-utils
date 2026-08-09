@@ -1,0 +1,22 @@
+.Dd March 31, 2025
+.Dt SCAN_LINE 3
+.Os
+.Sh NAME
+.Nm scan_line
+.Nd find the length of a line in a string
+.Sh SYNOPSIS
+.In scan.h
+.Ft size_t
+.Fn scan_line "const char *s" "size_t limit"
+.Sh DESCRIPTION
+The
+.Fn scan_line
+function scans the string
+.Fn s
+up to
+.Fa limit
+bytes to find the length of the current line (stopping at a newline or carriage return).
+.Sh RETURN VALUES
+Returns the number of bytes up to the end of the line.
+.Sh SEE ALSO
+.Xr scan_lineskip 3

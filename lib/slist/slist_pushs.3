@@ -1,0 +1,14 @@
+.TH slist_pushs 3
+.SH NAME
+slist_pushs \- append a string node to a singly-linked list
+.SH SYNOPSIS
+.B #include "slist.h"
+.PP
+.BI "int slist_pushs(slink **" list ", const char *" s ");"
+.SH DESCRIPTION
+.B slist_pushs
+creates a new node containing a duplicated copy of the string
+.I s
+and appends it to the singly-linked list
+.IR list .
+Returns 1 on success, 0 on failure.

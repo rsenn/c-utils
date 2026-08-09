@@ -1,0 +1,21 @@
+.Dd March 31, 2025
+.Dt SET_ADDS 3
+.Os
+.Sh NAME
+.Nm set_adds
+.Nd add a null-terminated string to a hash set
+.Sh SYNOPSIS
+.In set.h
+.Ft int
+.Fn set_adds "set_t *set" "const char *str"
+.Sh DESCRIPTION
+The
+.Fn set_adds
+function inserts the null-terminated string
+.Fa str
+into the hash set
+.Fa set .
+.Sh RETURN VALUES
+Returns 1 on successful insertion, 2 if already present, or 0 on error.
+.Sh SEE ALSO
+.Xr set_add 3

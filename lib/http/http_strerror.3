@@ -1,0 +1,14 @@
+.TH HTTP_STRERROR 3
+.SH NAME
+http_strerror \- get error message for HTTP client
+.SH SYNOPSIS
+.B #include <http.h>
+.P
+.BI "const char* http_strerror(http* " h ", int " ret ");"
+.SH DESCRIPTION
+.BR http_strerror ()
+returns a human-readable string describing the last error that occurred
+during an HTTP operation on client
+.IR h .
+.SH RETURN VALUE
+Returns an error string.

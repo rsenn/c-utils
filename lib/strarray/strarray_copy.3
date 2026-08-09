@@ -1,0 +1,16 @@
+.TH strarray_copy 3
+.SH NAME
+strarray_copy \- copy a string array
+.SH SYNOPSIS
+.B #include "strarray.h"
+.PP
+.BI "int strarray_copy(strarray *" dst ", const strarray *" src ");"
+.SH DESCRIPTION
+.B strarray_copy
+creates a deep copy of the string array
+.I src
+into
+.IR dst .
+Each string element is duplicated using
+.BR str_dup (3).
+Returns 1 on success, 0 on failure.

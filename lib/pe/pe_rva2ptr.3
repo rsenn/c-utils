@@ -1,0 +1,11 @@
+.TH pe_rva2ptr 3
+.SH NAME
+pe_rva2ptr \- convert RVA to memory pointer
+.SH SYNOPSIS
+.B #include "pe.h"
+.PP
+.BI "void *pe_rva2ptr(void *" base ", uint32 " rva ");"
+.SH DESCRIPTION
+.B pe_rva2ptr
+converts an RVA to a direct pointer within the mapped memory image of the PE file.
+Returns the pointer, or NULL on error.

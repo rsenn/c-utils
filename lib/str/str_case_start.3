@@ -1,0 +1,18 @@
+.TH str_case_start 3
+.SH NAME
+str_case_start \- check if a string starts with another, case-insensitively
+.SH SYNOPSIS
+.B #include "str.h"
+.PP
+.BI "size_t str_case_start(const void *" p1 ", const void *" p2 ");"
+.SH DESCRIPTION
+.B str_case_start
+checks if the string
+.I p2
+is a prefix of
+.I p1
+using a case-insensitive comparison. It returns 1 if
+.I p2
+is a prefix of
+.I p1
+(ignoring case), and 0 otherwise.

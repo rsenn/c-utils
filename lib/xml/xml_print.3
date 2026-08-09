@@ -1,0 +1,18 @@
+.TH xml_print 3
+.SH NAME
+xml_print \- print an XML tree
+.SH SYNOPSIS
+.B #include "xml.h"
+.PP
+.BI "void xml_print(xmlnode *" node ", buffer *" b ", xml_print_fmt_t *" fmt ");"
+.SH DESCRIPTION
+.B xml_print
+writes the XML node tree
+.I node
+to the buffer
+.IR b ,
+using the provided formatting function
+.IR fmt .
+If
+.I fmt
+is NULL, a default formatter is used.

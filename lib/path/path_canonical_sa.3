@@ -1,0 +1,20 @@
+.Dd March 31, 2025
+.Dt PATH_CANONICAL_SA 3
+.Os
+.Sh NAME
+.Nm path_canonical_sa
+.Nd canonicalize a path in a stralloc in-place
+.Sh SYNOPSIS
+.In path.h
+.Ft int
+.Fn path_canonical_sa "stralloc *sa"
+.Sh DESCRIPTION
+The
+.Fn path_canonical_sa
+function normalizes and canonicalizes the path contained within the dynamic string
+.Fa sa
+in-place, ensuring proper null-termination.
+.Sh RETURN VALUES
+Returns 1 on success.
+.Sh SEE ALSO
+.Xr path_collapse_sa 3

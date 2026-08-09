@@ -1,0 +1,18 @@
+.TH dns_resolve 3
+.SH NAME
+dns_resolve \- perform a synchronous DNS query
+.SH SYNOPSIS
+.B #include "dns.h"
+.PP
+.BI "int dns_resolve(const char *" q ", const char " qtype "[2]);"
+.SH DESCRIPTION
+.B dns_resolve
+performs a synchronous DNS query for the query string
+.I q
+with the record type specified in
+.IR qtype .
+It initializes the transmission using the system's DNS configuration and polls for
+a result until the request completes or fails. It returns 0 on success and -1
+on error.
+.SH SEE ALSO
+dns_transmit(3)

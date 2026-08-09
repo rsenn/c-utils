@@ -1,0 +1,16 @@
+.TH xml_get_attribute_sa 3
+.SH NAME
+xml_get_attribute_sa \- retrieve attribute value into stralloc
+.SH SYNOPSIS
+.B #include "xml.h"
+.PP
+.BI "int xml_get_attribute_sa(xmlnode *" n ", stralloc *" sa ", const char *" name ");"
+.SH DESCRIPTION
+.B xml_get_attribute_sa
+retrieves the value of the attribute
+.I name
+from node
+.I n
+and stores it in the stralloc
+.IR sa .
+Returns 1 on success, 0 if the attribute was not found.

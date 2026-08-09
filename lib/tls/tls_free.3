@@ -1,0 +1,14 @@
+.TH TLS_FREE 3
+.SH NAME
+tls_free \- release TLS resources for a file descriptor
+.SH SYNOPSIS
+.B #include <tls.h>
+.P
+.BI "void tls_free(fd_type " fd ");"
+.SH DESCRIPTION
+.BR tls_free ()
+frees the OpenSSL SSL object and associated resources allocated for the file descriptor
+.IR fd .
+This should be called when the TLS connection is closed.
+.SH SEE ALSO
+tls_init(3), tls_connect(3)

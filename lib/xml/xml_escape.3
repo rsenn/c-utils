@@ -1,0 +1,17 @@
+.TH xml_escape 3
+.SH NAME
+xml_escape \- escape special characters for XML
+.SH SYNOPSIS
+.B #include "xml.h"
+.PP
+.BI "size_t xml_escape(const char *" s ", size_t " n ", stralloc *" out ");"
+.SH DESCRIPTION
+.B xml_escape
+escapes characters in the string
+.I s
+(of length
+.IR n )
+that are invalid in XML content (e.g., &, <, >) and appends the result
+to the
+.I out
+stralloc.

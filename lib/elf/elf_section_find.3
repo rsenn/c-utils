@@ -1,0 +1,14 @@
+.TH ELF_SECTION_FIND 3
+.SH NAME
+elf_section_find \- find index of a section by name
+.SH SYNOPSIS
+.B #include <elf.h>
+.P
+.BI "int elf_section_find(void* " elf ", const char* " sname ");"
+.SH DESCRIPTION
+.BR elf_section_find ()
+searches for a section with the name
+.I sname
+and returns its index.
+.SH RETURN VALUE
+Returns the index, or -1 if the section is not found.

@@ -1,0 +1,13 @@
+.TH strlist_dump 3
+.SH NAME
+strlist_dump \- debug dump of a string list
+.SH SYNOPSIS
+.B #include "strlist.h"
+.PP
+.BI "void strlist_dump(buffer *" out ", const strlist *" sl ");"
+.SH DESCRIPTION
+.B strlist_dump
+writes a structured, debug-friendly representation of the string list
+.I sl
+to the buffer
+.IR out .

@@ -1,0 +1,13 @@
+.TH ELF_DYNAMIC_SECTION 3
+.SH NAME
+elf_dynamic_section \- get the dynamic section range
+.SH SYNOPSIS
+.B #include <elf.h>
+.P
+.BI "range elf_dynamic_section(void* " elf ");"
+.SH DESCRIPTION
+.BR elf_dynamic_section ()
+returns the range describing the .dynamic section of the ELF file
+.IR elf .
+.SH RETURN VALUE
+Returns a range structure representing the dynamic section.

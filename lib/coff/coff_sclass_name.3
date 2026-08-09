@@ -1,0 +1,13 @@
+.TH COFF_SCLASS_NAME 3
+.SH NAME
+coff_sclass_name \- get name of storage class
+.SH SYNOPSIS
+.B #include <coff.h>
+.P
+.BI "const char* coff_sclass_name(uint8 " sclass ");"
+.SH DESCRIPTION
+.BR coff_sclass_name ()
+returns the descriptive name of the COFF storage class code
+.IR sclass .
+.SH RETURN VALUE
+Returns the string representation of the storage class, or NULL if unknown.

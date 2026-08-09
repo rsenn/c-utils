@@ -1,0 +1,12 @@
+.TH CHARBUF_PEEK 3
+.SH NAME
+charbuf_peek \- peek at the next character
+.SH SYNOPSIS
+.B #include <charbuf.h>
+.P
+.BI "ssize_t charbuf_peek(charbuf* " b ");"
+.SH DESCRIPTION
+.BR charbuf_peek ()
+returns the next character in the buffer without advancing the read pointer.
+.SH RETURN VALUE
+Returns the character value or a non-positive value if EOF or an error occurs.

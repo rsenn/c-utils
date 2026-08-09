@@ -1,0 +1,14 @@
+.TH tokenizer_peek_token 3
+.SH NAME
+tokenizer_peek_token \- look ahead at the next token
+.SH SYNOPSIS
+.B #include "tokenizer.h"
+.PP
+.BI "int tokenizer_peek_token(tokenizer *" t ", token *" tok ");"
+.SH DESCRIPTION
+.B tokenizer_peek_token
+parses the next token and stores it in
+.I tok
+without advancing the tokenizer's read position. Subsequent calls to
+.BR tokenizer_next (3)
+will return this same token.

@@ -1,0 +1,19 @@
+.TH stralloc_replace 3
+.SH NAME
+stralloc_replace \- replace range in stralloc
+.SH SYNOPSIS
+.B #include "stralloc.h"
+.PP
+.BI "int stralloc_replace(stralloc *" sa ", size_t " pos ", size_t " len ", const char *" to ", size_t " tolen ");"
+.SH DESCRIPTION
+.B stralloc_replace
+replaces a range of
+.I len
+bytes starting at
+.I pos
+in
+.I sa
+with the contents of the buffer
+.I to
+of length
+.IR tolen .

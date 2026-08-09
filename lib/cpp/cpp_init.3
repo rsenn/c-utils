@@ -1,0 +1,15 @@
+.TH cpp_init 3
+.SH NAME
+cpp_init \- initialize preprocessor context
+.SH SYNTAX
+.B #include "cpp.h"
+
+void \fBcpp_init\fP(cpp_ctx* \fIpp\fR);
+.SH DESCRIPTION
+\fBcpp_init\fP initializes the C preprocessor context structure \fIpp\fR.
+
+It zeros out the context state and sets up internal fields, including setting
+the macro list pointer to point to the context's macro list and setting the
+expression scope to the root scope.
+.SH "SEE ALSO"
+cpp_free(3), cpp_init_macros(3)

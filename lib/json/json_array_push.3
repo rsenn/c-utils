@@ -1,0 +1,34 @@
+.Dd March 31, 2025
+.Dt JSON_ARRAY_PUSH 3
+.Os
+.Sh NAME
+.Nm json_array_push
+.Nd append a value to a JSON array
+.Sh SYNOPSIS
+.In json.h
+.Ft jsonval *
+.Fn json_array_push "jsonval *val" "const jsonval v"
+.Sh DESCRIPTION
+The
+.Fn json_array_push
+function appends the JSON value
+.Fa v
+to the JSON array pointed to by
+.Fa val .
+The
+.Fa val
+argument must be of type
+.Dv JSON_ARRAY .
+.Sh RETURN VALUES
+Upon successful completion,
+.Fn json_array_push
+returns a pointer to the newly added
+.Vt jsonval
+item within the array.
+If
+.Fa val
+is not an array or if memory allocation fails, it returns
+.Dv NULL .
+.Sh SEE ALSO
+.Xr json_object 3 ,
+.Xr json_free 3

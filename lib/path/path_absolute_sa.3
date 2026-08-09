@@ -1,0 +1,20 @@
+.Dd March 31, 2025
+.Dt PATH_ABSOLUTE_SA 3
+.Os
+.Sh NAME
+.Nm path_absolute_sa
+.Nd make a path string stored in a stralloc absolute in-place
+.Sh SYNOPSIS
+.In path.h
+.Ft int
+.Fn path_absolute_sa "stralloc *sa"
+.Sh DESCRIPTION
+The
+.Fn path_absolute_sa
+function checks the path stored in the dynamic string allocation structure
+.Fa sa .
+If it is not absolute, it prepends the current working directory to make it absolute, stripping any trailing path separators.
+.Sh RETURN VALUES
+Returns 1 if the path was relative and converted, or 0 if it was already absolute.
+.Sh SEE ALSO
+.Xr path_absolute 3

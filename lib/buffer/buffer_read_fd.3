@@ -1,0 +1,16 @@
+.TH BUFFER_READ_FD 3
+.SH NAME
+buffer_read_fd \- initialize a buffer for reading from a file descriptor
+.SH SYNOPSIS
+.B #include <buffer.h>
+.P
+.BI "int buffer_read_fd(buffer* " b ", fd_type " fd ");"
+.SH DESCRIPTION
+.BR buffer_read_fd ()
+initializes buffer
+.I b
+to read from the provided file descriptor
+.IR fd .
+It allocates internal memory for the read operation.
+.SH RETURN VALUE
+Returns 0 on success, or -1 on allocation failure.

@@ -1,0 +1,31 @@
+.Dd March 31, 2025
+.Dt SET_ADD 3
+.Os
+.Sh NAME
+.Nm set_add ,
+.Nm set_adds
+.Nd add an element to a hash set
+.Sh SYNOPSIS
+.In set.h
+.Ft int
+.Fn set_add "set_t *set" "const void *val" "const size_t size"
+.Ft int
+.Fn set_adds "set_t *set" "const char *str"
+.Sh DESCRIPTION
+The
+.Fn set_add
+function inserts a new element of given
+.Fa size
+pointing to
+.Fa val
+into the hash set
+.Fa set .
+.Pp
+.Fn set_adds
+is a convenience wrapper that adds a null-terminated string
+.Fa str .
+.Sh RETURN VALUES
+Returns 1 if the element was successfully added, 2 if it was already present, or 0 on failure.
+.Sh SEE ALSO
+.Xr set_init 3 ,
+.Xr set_free 3

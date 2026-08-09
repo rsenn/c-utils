@@ -1,0 +1,13 @@
+.TH CHARBUF_SKIP 3
+.SH NAME
+charbuf_skip \- consume the next character
+.SH SYNOPSIS
+.B #include <charbuf.h>
+.P
+.BI "ssize_t charbuf_skip(charbuf* " b ");"
+.SH DESCRIPTION
+.BR charbuf_skip ()
+advances the read pointer of the character buffer
+.IR b .
+.SH RETURN VALUE
+Returns the character that was skipped, or a non-positive value if EOF or an error occurs.

@@ -1,0 +1,16 @@
+.TH xml_attributes 3
+.SH NAME
+xml_attributes \- create an attribute map
+.SH SYNOPSIS
+.B #include "xml.h"
+.PP
+.BI "HMAP_DB *xml_attributes(const char *" arg ", ...);"
+.PP
+.BI "HMAP_DB *xml_vattributes(const char *" arg ", va_list " args ");"
+.SH DESCRIPTION
+.B xml_attributes
+constructs an attribute map (a hash map) from a variable argument list of
+attribute strings. Each attribute is specified as either "name=value" or
+alternating name and value arguments. The list must be terminated by a NULL pointer.
+.SH SEE ALSO
+xml_set_attribute(3)

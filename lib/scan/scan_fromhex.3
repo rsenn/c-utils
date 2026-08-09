@@ -1,0 +1,15 @@
+.TH scan_fromhex 3
+.SH NAME
+scan_fromhex \- convert a single hexadecimal character to its integer value
+.SH SYNTAX
+.B #include <lib/scan.h>
+
+int \fBscan_fromhex\fR(int \fIc\fR);
+.SH DESCRIPTION
+\fBscan_fromhex\fR converts a single character \fIc\fR, representing a
+hexadecimal digit, into its corresponding integer value (0-15).
+It handles '0'-'9', 'a'-'f', and 'A'-'F'.
+
+.SH RETURN VALUE
+Returns the integer value of the hexadecimal digit, or -1 if the character
+is not a valid hexadecimal digit.

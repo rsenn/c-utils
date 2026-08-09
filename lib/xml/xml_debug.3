@@ -1,0 +1,16 @@
+.TH xml_debug 3
+.SH NAME
+xml_debug \- print an XML tree to a buffer for debugging
+.SH SYNOPSIS
+.B #include "xml.h"
+.PP
+.BI "void xml_debug(xmlnode *" node ", buffer *" b ");"
+.SH DESCRIPTION
+.B xml_debug
+recursively writes a human-readable representation of the XML tree rooted
+at
+.I node
+to the provided
+.I buffer
+.IR b .
+This is primarily intended for inspecting the internal structure of the XML tree.

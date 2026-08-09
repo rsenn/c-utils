@@ -1,0 +1,20 @@
+.TH str_chrs 3
+.SH NAME
+str_chrs \- find the first occurrence of any character from a set
+.SH SYNOPSIS
+.B #include "str.h"
+.PP
+.BI "size_t str_chrs(const char *" in ", const char " needles "[], size_t " nn ");"
+.SH DESCRIPTION
+.B str_chrs
+searches the string
+.I in
+for the first occurrence of any character found in the
+.I needles
+array of length
+.IR nn .
+It returns the index of the first matching character, or the length of
+.I in
+if no character is found.
+.SH SEE ALSO
+str_rchrs(3)

@@ -1,0 +1,16 @@
+.TH TLS_ESTABLISHED 3
+.SH NAME
+tls_established \- check if TLS handshake is finished
+.SH SYNOPSIS
+.B #include <tls.h>
+.P
+.BI "int tls_established(fd_type " fd ");"
+.SH DESCRIPTION
+.BR tls_established ()
+checks if the TLS handshake on the file descriptor
+.IR fd
+has successfully completed.
+.SH RETURN VALUE
+Returns 1 if the TLS connection is established, 0 otherwise.
+.SH SEE ALSO
+tls_connect(3), tls_init(3)

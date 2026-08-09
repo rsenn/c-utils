@@ -1,0 +1,21 @@
+.Dd March 31, 2025
+.Dt PATH_SPLIT 3
+.Os
+.Sh NAME
+.Nm path_split
+.Nd split a path string into components
+.Sh SYNOPSIS
+.In path.h
+.Ft int
+.Fn path_split "const char *p" "strlist *sl" "int sep"
+.Sh DESCRIPTION
+The
+.Fn path_split
+function splits the path string
+.Fa p
+into individual components separated by the character
+.Fa sep
+and pushes each component into the string list
+.Fa sl .
+.Sh RETURN VALUES
+Returns the total number of items added to the string list.

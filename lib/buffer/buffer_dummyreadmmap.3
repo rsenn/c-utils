@@ -1,0 +1,13 @@
+.TH BUFFER_DUMMYREADMMAP 3
+.SH NAME
+buffer_dummyreadmmap \- dummy read function for memory-mapped buffers
+.SH SYNOPSIS
+.B #include <buffer.h>
+.P
+.BI "ssize_t buffer_dummyreadmmap(fd_type " fd ", void* " buf ", size_t " len ", buffer* " b ");"
+.SH DESCRIPTION
+.BR buffer_dummyreadmmap ()
+is a placeholder read callback used for memory-mapped buffers where the
+data is already mapped in memory and no further reading is required.
+.SH RETURN VALUE
+Always returns 0.

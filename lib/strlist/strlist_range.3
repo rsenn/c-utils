@@ -1,0 +1,15 @@
+.TH strlist_range 3
+.SH NAME
+strlist_range \- create a subset string list
+.SH SYNOPSIS
+.B #include "strlist.h"
+.PP
+.BI "strlist strlist_range(const strlist *" sl ", size_t " from ", size_t " to ");"
+.SH DESCRIPTION
+.B strlist_range
+returns a new string list structure referencing the subset of elements from index
+.I from
+to
+.I to
+within the source list
+.IR sl .

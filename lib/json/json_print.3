@@ -1,0 +1,28 @@
+.Dd March 31, 2025
+.Dt JSON_PRINT 3
+.Os
+.Sh NAME
+.Nm json_print
+.Nd print a JSON value to a buffer
+.Sh SYNOPSIS
+.In json.h
+.Ft void
+.Fn json_print "jsonval val" "buffer *b" "json_print_fn *p"
+.Sh DESCRIPTION
+The
+.Fn json_print
+function serializes the JSON value
+.Fa val
+and writes it to the output buffer
+.Fa b .
+The formatting and printing behavior can be customized via the printer function callback
+.Fa p .
+If
+.Fa p
+is
+.Dv NULL ,
+the default printer
+.Fn json_default_printer
+is used.
+.Sh SEE ALSO
+.Xr json_tosa 3

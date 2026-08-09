@@ -1,0 +1,17 @@
+.TH xml_path 3
+.SH NAME
+xml_path \- generate the path of an XML node
+.SH SYNOPSIS
+.B #include "xml.h"
+.PP
+.BI "int xml_path(const xmlnode *" node ", stralloc *" out ");"
+.PP
+.BI "int xml_path_relative(const xmlnode *" node ", stralloc *" out ");"
+.SH DESCRIPTION
+.B xml_path
+generates the full path of the given
+.I node
+from the document root and stores it in
+.IR out .
+.B xml_path_relative
+generates a relative path for the node. Returns 1 on success, 0 on error.

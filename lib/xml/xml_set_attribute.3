@@ -1,0 +1,16 @@
+.TH xml_set_attribute 3
+.SH NAME
+xml_set_attribute \- set an attribute value
+.SH SYNOPSIS
+.B #include "xml.h"
+.PP
+.BI "void xml_set_attribute(xmlnode *" node ", const char *" a ", const char *" v ");"
+.SH DESCRIPTION
+.B xml_set_attribute
+sets the attribute
+.I a
+to value
+.I v
+in the specified
+.I node
+element. If the node has no attribute map, one is created.

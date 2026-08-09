@@ -1,0 +1,18 @@
+.Dd March 31, 2025
+.Dt SET_CLEAR 3
+.Os
+.Sh NAME
+.Nm set_clear
+.Nd clear all elements from a hash set
+.Sh SYNOPSIS
+.In set.h
+.Ft void
+.Fn set_clear "set_t *set"
+.Sh DESCRIPTION
+The
+.Fn set_clear
+function removes and deallocates all stored elements from the hash set
+.Fa set ,
+resetting it to an empty state without freeing the primary table allocation.
+.Sh SEE ALSO
+.Xr set_free 3

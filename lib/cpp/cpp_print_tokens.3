@@ -1,0 +1,13 @@
+.TH cpp_print_tokens 3
+.SH NAME
+cpp_print_tokens \- print token stream to buffer
+.SH SYNTAX
+.B #include "cpp.h"
+
+void \fBcpp_print_tokens\fP(buffer* \fIout\fR, cpp_token* \fItok\fR, bool \fIline_directives\fR);
+.SH DESCRIPTION
+\fBcpp_print_tokens\fP writes the preprocessor token stream \fItok\fR to output buffer \fIout\fR.
+
+It formats whitespace, line breaks, and indentation between tokens. If \fIline_directives\fR is true, line directives (\fI# line_no "filename"\fR) are emitted when changing files or jumping across line numbers.
+.SH "SEE ALSO"
+cpp_print_macro(3), cpp_preprocess(3)

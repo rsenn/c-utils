@@ -1,0 +1,11 @@
+.TH pe_rva2offset 3
+.SH NAME
+pe_rva2offset \- convert RVA to file offset
+.SH SYNOPSIS
+.B #include "pe.h"
+.PP
+.BI "int64 pe_rva2offset(void *" base ", uint32 " rva ");"
+.SH DESCRIPTION
+.B pe_rva2offset
+converts an RVA to the physical file offset within the PE image.
+Returns the offset, or -1 on error.

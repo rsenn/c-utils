@@ -1,0 +1,19 @@
+.TH fmt_escapechardoublequotedshell 3
+.SH NAME
+fmt_escapechardoublequotedshell \- escape characters for shell double-quotes
+.SH SYNTAX
+.B #include <fmt.h>
+.PP
+size_t \fBfmt_escapechardoublequotedshell\fR(char *\fIdest\fR, int \fIch\fR);
+.SH DESCRIPTION
+\fBfmt_escapechardoublequotedshell\fR escapes characters that have special meaning inside double-quoted strings in POSIX-compliant shells.
+.PP
+If \fIch\fR is one of '"', '$', '`', or '\\', it is escaped by prepending a backslash, resulting in a 2-byte sequence.
+.PP
+All other characters are copied to \fIdest\fR as a 1-byte sequence.
+.PP
+If \fIdest\fR is not NULL, the result is written to \fIdest\fR.
+.PP
+The function returns the number of bytes required (or written).
+.SH SEE ALSO
+fmt_escapecharc(3)

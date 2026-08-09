@@ -1,0 +1,18 @@
+.TH xml_add_child 3
+.SH NAME
+xml_add_child \- append a child node to an XML element
+.SH SYNOPSIS
+.B #include "xml.h"
+.PP
+.BI "void xml_add_child(xmlnode *" parent ", xmlnode *" node ");"
+.SH DESCRIPTION
+.B xml_add_child
+appends the specified
+.I node
+to the end of the children list of the
+.I parent
+element node. It updates the
+.I parent
+and
+.I next
+pointers of the child node accordingly.

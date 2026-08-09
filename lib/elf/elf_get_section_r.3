@@ -1,0 +1,14 @@
+.TH ELF_GET_SECTION_R 3
+.SH NAME
+elf_get_section_r \- find a section range by name
+.SH SYNOPSIS
+.B #include <elf.h>
+.P
+.BI "range elf_get_section_r(void* " elf ", const char* " name ");"
+.SH DESCRIPTION
+.BR elf_get_section_r ()
+finds the section with the given
+.I name
+and returns a range structure describing it.
+.SH RETURN VALUE
+Returns the range of the section.

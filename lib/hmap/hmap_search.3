@@ -1,0 +1,16 @@
+.TH HMAP_SEARCH 3
+.SH NAME
+hmap_search \- search for a key in the hash map
+.SH SYNOPSIS
+.B #include <hmap.h>
+.P
+.BI "int hmap_search(HMAP_DB* " hmap_db ", const void* " key ", size_t " k_len ", TUPLE** " data ");"
+.SH DESCRIPTION
+.BR hmap_search ()
+searches for the given
+.I key
+in the hash map. If found, it stores the pointer to the corresponding
+TUPLE in
+.IR data .
+.SH RETURN VALUE
+Returns HMAP_SUCCESS if the key is found, HMAP_TUPLE_NOT_FOUND otherwise.

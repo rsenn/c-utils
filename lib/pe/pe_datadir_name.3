@@ -1,0 +1,12 @@
+.TH pe_datadir_name 3
+.SH NAME
+pe_datadir_name \- get name of PE data directory
+.SH SYNOPSIS
+.B #include "pe.h"
+.PP
+.BI "const char *pe_datadir_name(int " i ");"
+.SH DESCRIPTION
+.B pe_datadir_name
+returns the human-readable name of the PE data directory index
+.IR i .
+Returns NULL if the index is out of bounds.

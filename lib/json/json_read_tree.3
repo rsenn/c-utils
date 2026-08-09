@@ -1,0 +1,27 @@
+.Dd March 31, 2025
+.Dt JSON_READ_TREE 3
+.Os
+.Sh NAME
+.Nm json_read_tree
+.Nd read a complete JSON document tree from a character buffer
+.Sh SYNOPSIS
+.In json.h
+.Ft jsonval *
+.Fn json_read_tree "charbuf *b"
+.Sh DESCRIPTION
+The
+.Fn json_read_tree
+function parses a complete JSON document from the character buffer
+.Fa b
+and constructs a corresponding allocated tree of
+.Vt jsonval
+nodes.
+.Sh RETURN VALUES
+Returns a pointer to the root
+.Vt jsonval
+document node, or
+.Dv NULL
+on failure.
+.Sh SEE ALSO
+.Xr json_free 3 ,
+.Xr json_parse_number 3

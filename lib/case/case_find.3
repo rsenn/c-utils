@@ -1,0 +1,20 @@
+.TH CASE_FIND 3
+.SH NAME
+case_find \- case-insensitive search for a string
+.SH SYNOPSIS
+.B #include <case.h>
+.P
+.BI "size_t case_find(const void* " s ", const void* " what ");"
+.SH DESCRIPTION
+.BR case_find ()
+searches for the null-terminated string
+.I what
+within the null-terminated string
+.I s
+in a case-insensitive manner.
+.SH RETURN VALUE
+Returns the index to the first occurrence of
+.IR what ,
+or the length of
+.I s
+if not found.

@@ -1,0 +1,17 @@
+.TH stralloc_fmt 3
+.SH NAME
+stralloc_fmt \- format stralloc contents
+.SH SYNOPSIS
+.B #include "stralloc.h"
+.PP
+.BI "size_t stralloc_fmt(stralloc *" out ", const char *" in ", size_t " len ", size_t (*" fn ")(char*, int));"
+.SH DESCRIPTION
+.B stralloc_fmt
+formats the input buffer
+.I in
+of length
+.I len
+using the provided function
+.I fn
+and appends the result to
+.IR out .

@@ -1,0 +1,16 @@
+.TH fmt_stripwhitespace 3
+.SH NAME
+fmt_stripwhitespace \- remove excess whitespace
+.SH SYNOPSIS
+.B #include "textcode.h"
+.PP
+.BI "size_t fmt_stripwhitespace(char *" dest ", const char *" src ", size_t " len ");"
+.SH DESCRIPTION
+.B fmt_stripwhitespace
+compresses whitespace sequences in the input string
+.I src
+of length
+.I len
+into a single space, removing leading and trailing whitespace, and writes
+the result to
+.IR dest .

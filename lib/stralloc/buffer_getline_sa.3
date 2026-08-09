@@ -1,0 +1,22 @@
+.Dd March 31, 2025
+.Dt BUFFER_GETLINE_SA 3
+.Os
+.Sh NAME
+.Nm buffer_getline_sa
+.Nd read a line from a buffer into a stralloc
+.Sh SYNOPSIS
+.In buffer.h
+.In stralloc.h
+.Ft int
+.Fn buffer_getline_sa "buffer *b" "stralloc *sa"
+.Sh DESCRIPTION
+The
+.Fn buffer_getline_sa
+function reads a newline-terminated line from the buffer
+.Fa b
+and stores it into the dynamic string
+.Fa sa .
+.Sh RETURN VALUES
+Returns 1 on success, 0 on end-of-file, or -1 on error.
+.Sh SEE ALSO
+.Xr buffer_getln 3

@@ -1,0 +1,18 @@
+.TH BUFFER_COPY 3
+.SH NAME
+buffer_copy \- copy data between two buffers
+.SH SYNOPSIS
+.B #include <buffer.h>
+.P
+.BI "int buffer_copy(buffer* " out ", buffer* " in ");"
+.SH DESCRIPTION
+.BR buffer_copy ()
+transfers all data available from the
+.I in
+buffer to the
+.I out
+buffer until the
+.I in
+buffer is exhausted.
+.SH RETURN VALUE
+Returns 0 on success, or negative values on error.

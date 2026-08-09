@@ -1,0 +1,20 @@
+.Dd March 31, 2025
+.Dt PATH_DIRNAME_SA 3
+.Os
+.Sh NAME
+.Nm path_dirname_sa
+.Nd extract directory component from a stralloc path in-place
+.Sh SYNOPSIS
+.In path.h
+.Ft char *
+.Fn path_dirname_sa "stralloc *dir"
+.Sh DESCRIPTION
+The
+.Fn path_dirname_sa
+function modifies the path stored in
+.Fa dir
+in-place to contain only its directory component.
+.Sh RETURN VALUES
+Returns a pointer to the updated path string.
+.Sh SEE ALSO
+.Xr path_dirname 3

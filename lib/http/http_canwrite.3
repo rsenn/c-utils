@@ -1,0 +1,15 @@
+.TH HTTP_CANWRITE 3
+.SH NAME
+http_canwrite \- process writable HTTP socket
+.SH SYNOPSIS
+.B #include <http.h>
+.P
+.BI "ssize_t http_canwrite(http* " h ", void (*" wantread ")(fd_type), void (*" wantwrite ")(fd_type));"
+.SH DESCRIPTION
+.BR http_canwrite ()
+handles socket writability for the HTTP client
+.IR h .
+It performs the TLS handshake if necessary and sends the HTTP request if it
+has not yet been sent.
+.SH RETURN VALUE
+Returns the result of the write operation, or -1 on error.

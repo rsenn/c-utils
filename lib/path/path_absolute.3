@@ -1,0 +1,30 @@
+.Dd March 31, 2025
+.Dt PATH_ABSOLUTE 3
+.Os
+.Sh NAME
+.Nm path_absolute ,
+.Nm path_absolute_s
+.Nd convert a path to an absolute path
+.Sh SYNOPSIS
+.In path.h
+.Ft int
+.Fn path_absolute "const char *path" "stralloc *sa"
+.Ft char *
+.Fn path_absolute_s "const char *path"
+.Sh DESCRIPTION
+The
+.Fn path_absolute
+function converts the relative or absolute pathname
+.Fa path
+into an absolute pathname and stores the result in
+.Fa sa .
+.Pp
+The
+.Fn path_absolute_s
+function performs the same conversion and returns a newly allocated null-terminated string containing the absolute path.
+.Sh RETURN VALUES
+.Fn path_absolute
+returns 1 if the path was relative and converted, or 0 if it was already absolute.
+.Sh SEE ALSO
+.Xr path_absolute_sa 3 ,
+.Xr path_is_absolute 3

@@ -1,0 +1,13 @@
+.TH BUFFER_MUNMAP 3
+.SH NAME
+buffer_munmap \- unmap memory-mapped buffer
+.SH SYNOPSIS
+.B #include <buffer.h>
+.P
+.BI "void buffer_munmap(buffer* " b ");"
+.SH DESCRIPTION
+.BR buffer_munmap ()
+unmaps the memory associated with buffer
+.IR b ,
+performs synchronization if the file was writable, and resets the buffer's
+memory pointers.

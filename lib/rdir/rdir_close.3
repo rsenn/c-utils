@@ -1,0 +1,18 @@
+.Dd March 31, 2025
+.Dt RDIR_CLOSE 3
+.Os
+.Sh NAME
+.Nm rdir_close
+.Nd close a recursive directory traversal handle
+.Sh SYNOPSIS
+.In rdir.h
+.Ft void
+.Fn rdir_close "rdir_t *rd"
+.Sh DESCRIPTION
+The
+.Fn rdir_close
+function closes and deallocates all resources associated with the recursive directory traversal structure
+.Fa rd .
+.Sh SEE ALSO
+.Xr rdir_open 3 ,
+.Xr rdir_read 3

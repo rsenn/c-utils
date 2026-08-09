@@ -1,0 +1,15 @@
+.TH ihex_record_prev 3
+.SH NAME
+ihex_record_prev \- find previous record of specific type
+.SH SYNOPSIS
+.B #include "ihex.h"
+.PP
+.BI "ihex_record *ihex_record_prev(ihex_file *" ihf ", ihex_record *" rec ", int " type ");"
+.SH DESCRIPTION
+.B ihex_record_prev
+searches backward in the record list of
+.I ihf
+for the nearest record of the given
+.I type
+preceding
+.IR rec .

@@ -1,0 +1,14 @@
+.TH DIR_SIZE 3
+.SH NAME
+dir_size \- get the file size of the current directory entry
+.SH SYNOPSIS
+.B #include <dir.h>
+.P
+.BI "int64 dir_size(struct dir_s* " d ");"
+.SH DESCRIPTION
+.BR dir_size ()
+returns the size (in bytes) of the current file being pointed to by
+the directory stream
+.IR d .
+.SH RETURN VALUE
+Returns the file size, or -1 if not available or not applicable.

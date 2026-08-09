@@ -1,0 +1,20 @@
+.TH str_rchrs 3
+.SH NAME
+str_rchrs \- find the last occurrence of any character from a set
+.SH SYNOPSIS
+.B #include "str.h"
+.PP
+.BI "size_t str_rchrs(const char *" in ", const char " needles "[], size_t " nn ");"
+.SH DESCRIPTION
+.B str_rchrs
+searches the string
+.I in
+for the last occurrence of any character found in the
+.I needles
+array of length
+.IR nn .
+It returns the index of the last matching character, or the length of
+.I in
+if no character is found.
+.SH SEE ALSO
+str_chrs(3)

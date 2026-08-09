@@ -1,0 +1,15 @@
+.TH COFF_LINE_NUMBERS 3
+.SH NAME
+coff_line_numbers \- get range of line numbers for a section
+.SH SYNOPSIS
+.B #include <coff.h>
+.P
+.BI "range coff_line_numbers(void* " coff ", coff_section_header* " shdr ");"
+.SH DESCRIPTION
+.BR coff_line_numbers ()
+returns a
+.I range
+structure covering the line number entries associated with the section header
+.IR shdr .
+.SH RETURN VALUE
+Returns the range of line numbers.

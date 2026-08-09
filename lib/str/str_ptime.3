@@ -1,0 +1,21 @@
+.TH str_ptime 3
+.SH NAME
+str_ptime \- parse a date and time string
+.SH SYNOPSIS
+.B #include "str.h"
+.PP
+.BI "char *str_ptime(const char *" s ", const char *" format ", struct tm *" tm ");"
+.SH DESCRIPTION
+.B str_ptime
+parses the string
+.I s
+according to the provided
+.I format
+string, storing the results in the
+.I tm
+structure. It follows a syntax similar to
+.IR strptime (3).
+It returns a pointer to the character following the last character parsed, or
+NULL on error.
+.SH SEE ALSO
+strptime(3)

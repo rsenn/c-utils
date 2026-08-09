@@ -1,0 +1,14 @@
+.TH xml_reader 3
+.SH NAME
+xml_reader \- initialize XML reader
+.SH SYNOPSIS
+.B #include "xml.h"
+.PP
+.BI "void xml_reader(xmlreader *" r ", buffer *" b ");"
+.SH DESCRIPTION
+.B xml_reader
+initializes the XML reader structure
+.I r
+to read from the buffer
+.IR b .
+It sets up the initial document node and parent tracking.

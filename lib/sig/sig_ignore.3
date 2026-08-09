@@ -1,0 +1,19 @@
+.Dd March 31, 2025
+.Dt SIG_IGNORE 3
+.Os
+.Sh NAME
+.Nm sig_ignore
+.Nd ignore a signal
+.Sh SYNOPSIS
+.In sig.h
+.Ft int
+.Fn sig_ignore "int sig"
+.Sh DESCRIPTION
+The
+.Fn sig_ignore
+function sets the disposition of the signal
+.Fa sig
+to be ignored
+.Pq Dv SIG_IGN .
+.Sh RETURN VALUES
+Returns 0 on success, or -1 on error.

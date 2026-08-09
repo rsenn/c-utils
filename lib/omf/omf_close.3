@@ -1,0 +1,12 @@
+.TH omf_close 3
+.SH NAME
+omf_close \- close and unmap OMF file
+.SH SYNOPSIS
+.B #include "omf.h"
+.PP
+.BI "void omf_close(omf_file *" omf ");"
+.SH DESCRIPTION
+.B omf_close
+unmaps the memory-mapped OMF file structure
+.I omf
+and cleans up associated resources.

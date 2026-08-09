@@ -1,0 +1,14 @@
+.TH slist_push 3
+.SH NAME
+slist_push \- append a node to a singly-linked list
+.SH SYNOPSIS
+.B #include "slist.h"
+.PP
+.BI "slink **slist_push(slink **" list ", void *" arg ");"
+.SH DESCRIPTION
+.B slist_push
+appends the node
+.I arg
+to the end of the singly-linked list
+.IR list .
+Returns the address of the next pointer of the appended node.

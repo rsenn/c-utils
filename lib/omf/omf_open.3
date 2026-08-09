@@ -1,0 +1,14 @@
+.TH omf_open 3
+.SH NAME
+omf_open \- open and map an OMF file
+.SH SYNOPSIS
+.B #include "omf.h"
+.PP
+.BI "int omf_open(omf_file *" omf ", const char *" filename ");"
+.SH DESCRIPTION
+.B omf_open
+opens and memory-maps the file specified by
+.I filename
+and initializes the
+.I omf
+structure. Returns 1 on success, 0 on failure.

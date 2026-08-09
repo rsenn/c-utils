@@ -1,0 +1,15 @@
+.TH BYTE_FILL 3
+.SH NAME
+byte_fill \- fill memory with a byte
+.SH SYNOPSIS
+.B #include <byte.h>
+.P
+.BI "void byte_fill(void* " out ", size_t " len ", int " c ");"
+.SH DESCRIPTION
+.BR byte_fill ()
+sets every byte in the memory area
+.I out
+of length
+.I len
+to the value
+.IR c .

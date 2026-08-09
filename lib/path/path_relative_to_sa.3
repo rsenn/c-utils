@@ -1,0 +1,23 @@
+.TH path_relative_to_sa 3
+.SH NAME
+path_relative_to_sa \- compute a relative path using stralloc inputs
+.SH SYNOPSIS
+.B #include "path.h"
+.PP
+.BI "int path_relative_to_sa(const stralloc *" path ", const stralloc *" relative_to ", stralloc *" out ");"
+.SH DESCRIPTION
+.B path_relative_to_sa
+is a version of
+.BR path_relative_to (3)
+that accepts
+.I stralloc
+pointers for the input path and base directory. It computes the relative path
+from
+.I relative_to
+to
+.I path
+and appends the result to
+.IR out .
+Returns 1 on success, 0 otherwise.
+.SH SEE ALSO
+path_relative_to(3)

@@ -1,0 +1,16 @@
+.TH strarray_pushb_unique 3
+.SH NAME
+strarray_pushb_unique \- push buffer to strarray if unique
+.SH SYNOPSIS
+.B #include "strarray.h"
+.PP
+.BI "int strarray_pushb_unique(strarray *" arr ", const char *" b ", size_t " n ");"
+.SH DESCRIPTION
+.B strarray_pushb_unique
+attempts to push the buffer
+.I b
+of length
+.I n
+to
+.I arr
+if no matching string already exists in the array.

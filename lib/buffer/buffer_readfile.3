@@ -1,0 +1,16 @@
+.TH BUFFER_READFILE 3
+.SH NAME
+buffer_readfile \- initialize a buffer to read a file
+.SH SYNOPSIS
+.B #include <buffer.h>
+.P
+.BI "int buffer_readfile(buffer* " b ", const char* " fn ");"
+.SH DESCRIPTION
+.BR buffer_readfile ()
+opens the file
+.I fn
+for reading and initializes the buffer
+.I b
+with the resulting file descriptor.
+.SH RETURN VALUE
+Returns 0 on success, or -1 on error.

@@ -1,0 +1,23 @@
+.TH MMAP_READ_FD_RANGE 3
+.SH NAME
+mmap_read_fd_range \- create a partial shared, read-only mapping of a file descriptor
+.SH SYNOPSIS
+.B #include "mmap.h"
+.PP
+.BI "char* mmap_read_fd_range(fd_type " fd ", size_t* " size ", size_t " offset ", size_t " len ");"
+.SH DESCRIPTION
+.B mmap_read_fd_range
+maps a range of
+.I len
+bytes starting at
+.I offset
+from the file descriptor
+.I fd
+into memory as a shared, read-only mapping.
+The actual number of bytes mapped is stored in
+.I size
+(which will be the lesser of
+.I len
+or the file size).
+.SH RETURN VALUE
+Returns a pointer to the mapped memory on success, or NULL on failure.

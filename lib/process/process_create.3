@@ -1,0 +1,26 @@
+.Dd March 31, 2025
+.Dt PROCESS_CREATE 3
+.Os
+.Sh NAME
+.Nm process_create
+.Nd create a new process
+.Sh SYNOPSIS
+.In process.h
+.Ft int
+.Fn process_create "const char *filename" "char *const argv[]" "fd_type std[3]" "const char *cwd"
+.Sh DESCRIPTION
+The
+.Fn process_create
+function spawns a new process executing the program specified by
+.Fa filename
+with arguments
+.Fa argv .
+Standard file descriptors can be redirected via the
+.Fa std
+array (stdin, stdout, stderr), and working directory can be set using
+.Fa cwd .
+.Sh RETURN VALUES
+Returns the process ID (PID) of the newly created process on success, or -1 on failure.
+.Sh SEE ALSO
+.Xr process_wait 3 ,
+.Xr process_executable 3

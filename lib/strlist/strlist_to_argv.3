@@ -1,0 +1,13 @@
+.TH strlist_to_argv 3
+.SH NAME
+strlist_to_argv \- convert string list to argv
+.SH SYNOPSIS
+.B #include "strlist.h"
+.PP
+.BI "char **strlist_to_argv(const strlist *" sl ");"
+.SH DESCRIPTION
+.B strlist_to_argv
+converts the string list
+.I sl
+into a NULL-terminated array of strings. The caller is responsible for freeing
+the returned pointer array.

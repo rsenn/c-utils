@@ -1,0 +1,20 @@
+.TH CBMAP_GET 3
+.SH NAME
+cbmap_get \- retrieve a value from a map
+.SH SYNOPSIS
+.B #include <cbmap.h>
+.P
+.BI "int cbmap_get(cbmap_t " map ", void* " key ", size_t " key_len ", void** " value ", size_t* " value_len ");"
+.SH DESCRIPTION
+.BR cbmap_get ()
+searches for the
+.I key
+of length
+.I key_len
+in the map. If found, it updates
+.I value
+and
+.I value_len
+with the associated data.
+.SH RETURN VALUE
+Returns 1 (FOUND) if the key exists, 0 (NOT_FOUND) otherwise.

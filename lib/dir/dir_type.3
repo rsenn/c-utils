@@ -1,0 +1,14 @@
+.TH DIR_TYPE 3
+.SH NAME
+dir_type \- get the type of the current directory entry
+.SH SYNOPSIS
+.B #include <dir.h>
+.P
+.BI "int dir_type(struct dir_s* " d ");"
+.SH DESCRIPTION
+.BR dir_type ()
+returns the file type of the current entry in the stream
+.IR d .
+Resulting flags include D_DIRECTORY, D_FILE, and D_SYMLINK.
+.SH RETURN VALUE
+Returns the type flag bitmask.

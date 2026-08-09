@@ -1,0 +1,17 @@
+.TH xml_set_attribute_double 3
+.SH NAME
+xml_set_attribute_double \- set an attribute to a double value
+.SH SYNOPSIS
+.B #include "xml.h"
+.PP
+.BI "void xml_set_attribute_double(xmlnode *" node ", const char *" a ", double " d ", int " prec ");"
+.SH DESCRIPTION
+.B xml_set_attribute_double
+formats the double value
+.I d
+with precision
+.I prec
+and sets it as the value of the attribute
+.I a
+in
+.IR node .

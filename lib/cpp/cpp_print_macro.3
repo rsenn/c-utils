@@ -1,0 +1,13 @@
+.TH cpp_print_macro 3
+.SH NAME
+cpp_print_macro \- print macro definition to buffer
+.SH SYNTAX
+.B #include "cpp.h"
+
+void \fBcpp_print_macro\fP(buffer* \fIout\fR, cpp_macro* \fIm\fR);
+.SH DESCRIPTION
+\fBcpp_print_macro\fP formats and writes a preprocessor macro definition \fIm\fR to output buffer \fIout\fR in standard \fI#define\fR format.
+
+If the macro accepts parameters, parameter names are written in parentheses before formatting the macro body tokens.
+.SH "SEE ALSO"
+cpp_print_tokens(3)

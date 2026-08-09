@@ -1,0 +1,15 @@
+.TH TLS_IO 3
+.SH NAME
+tls_io \- set up I/O interest for TLS
+.SH SYNOPSIS
+.B #include <tls.h>
+.P
+.BI "void tls_io(fd_type " fd ");"
+.SH DESCRIPTION
+.BR tls_io ()
+configures the I/O interest callbacks for the TLS instance associated with
+.IR fd .
+It maps the instance's read and write requirements to the global I/O multiplexer
+state.
+.SH SEE ALSO
+tls_connect(3)

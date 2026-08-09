@@ -1,0 +1,20 @@
+.Dd March 31, 2025
+.Dt PATH_IS_ABSOLUTE 3
+.Os
+.Sh NAME
+.Nm path_is_absolute
+.Nd check if a path is absolute
+.Sh SYNOPSIS
+.In path.h
+.Ft int
+.Fn path_is_absolute "const char *p"
+.Sh DESCRIPTION
+The
+.Fn path_is_absolute
+function tests whether the path string
+.Fa p
+is an absolute pathname (e.g., starting with a slash or drive letter).
+.Sh RETURN VALUES
+Returns non-zero if the path is absolute, or 0 if it is relative.
+.Sh SEE ALSO
+.Xr path_absolute 3

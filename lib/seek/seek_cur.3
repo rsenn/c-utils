@@ -1,0 +1,20 @@
+.Dd March 31, 2025
+.Dt SEEK_CUR 3
+.Os
+.Sh NAME
+.Nm seek_cur
+.Nd get current file offset
+.Sh SYNOPSIS
+.In seek.h
+.Ft seek_pos
+.Fn seek_cur "fd_type fd"
+.Sh DESCRIPTION
+The
+.Fn seek_cur
+function retrieves the current file position offset for the file descriptor
+.Fa fd .
+.Sh RETURN VALUES
+Returns the current file offset position, or (seek_pos)-1 on error.
+.Sh SEE ALSO
+.Xr seek_set 3 ,
+.Xr seek_end 3

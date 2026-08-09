@@ -1,0 +1,13 @@
+.TH pe_offset2rva 3
+.SH NAME
+pe_offset2rva \- convert file offset to RVA
+.SH SYNOPSIS
+.B #include "pe.h"
+.PP
+.BI "uint32 pe_offset2rva(uint8 *" base ", int64 " off ");"
+.SH DESCRIPTION
+.B pe_offset2rva
+converts a physical file offset
+.I off
+into a Relative Virtual Address (RVA) based on the section table of the PE file.
+Returns the RVA, or 0 if conversion fails.

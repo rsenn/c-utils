@@ -1,0 +1,15 @@
+.TH HASHMAP_GET 3
+.SH NAME
+hashmap_get \- retrieve a value by string key
+.SH SYNOPSIS
+.B #include <hashmap.h>
+.P
+.BI "void* hashmap_get(hashmap* " map ", const char* " key ");"
+.SH DESCRIPTION
+.BR hashmap_get ()
+looks up the value associated with the string
+.I key
+in the hashmap
+.IR map .
+.SH RETURN VALUE
+Returns a pointer to the value, or NULL if the key is not found.

@@ -1,0 +1,15 @@
+.TH ELF_OFFSET_TO_ADDR 3
+.SH NAME
+elf_offset_to_addr \- convert file offset to virtual address
+.SH SYNOPSIS
+.B #include <elf.h>
+.P
+.BI "int64 elf_offset_to_addr(range " map ", uint64 " offs ");"
+.SH DESCRIPTION
+.BR elf_offset_to_addr ()
+converts a file offset
+.I offs
+to the corresponding virtual memory address in the mapped ELF binary
+.IR map .
+.SH RETURN VALUE
+Returns the virtual address, or -1 if no mapping exists.

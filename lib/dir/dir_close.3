@@ -1,0 +1,12 @@
+.TH DIR_CLOSE 3
+.SH NAME
+dir_close \- close a directory stream
+.SH SYNOPSIS
+.B #include <dir.h>
+.P
+.BI "void dir_close(struct dir_s* " d ");"
+.SH DESCRIPTION
+.BR dir_close ()
+releases all resources associated with the directory stream
+.IR d ,
+including closing the handle and freeing internal state memory.

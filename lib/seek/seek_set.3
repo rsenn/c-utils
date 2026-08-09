@@ -1,0 +1,22 @@
+.Dd March 31, 2025
+.Dt SEEK_SET 3
+.Os
+.Sh NAME
+.Nm seek_set
+.Nd set absolute file offset
+.Sh SYNOPSIS
+.In seek.h
+.Ft int
+.Fn seek_set "fd_type fd" "seek_pos pos"
+.Sh DESCRIPTION
+The
+.Fn seek_set
+function sets the file offset for the file descriptor
+.Fa fd
+to the absolute position
+.Fa pos .
+.Sh RETURN VALUES
+Returns 0 on success, or -1 on error.
+.Sh SEE ALSO
+.Xr seek_cur 3 ,
+.Xr seek_end 3

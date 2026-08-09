@@ -1,0 +1,16 @@
+.TH ERRMSG_IAM 3
+.SH NAME
+errmsg_iam \- set or retrieve the program name
+.SH SYNOPSIS
+.B #include <errmsg.h>
+.P
+.BI "const char* errmsg_iam(const char* " who ");"
+.SH DESCRIPTION
+.BR errmsg_iam ()
+sets the global program name used by error messaging functions to
+.IR who .
+If
+.I who
+is NULL, it returns the current program name without changing it.
+.SH RETURN VALUE
+Returns the previous program name.

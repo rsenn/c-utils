@@ -1,0 +1,18 @@
+.TH str_cat 3
+.SH NAME
+str_cat \- append a string to another
+.SH SYNOPSIS
+.B #include "str.h"
+.PP
+.BI "size_t str_cat(void *" p1 ", const void *" p2 ");"
+.SH DESCRIPTION
+.B str_cat
+appends the string
+.I p2
+to the null-terminated string
+.IR p1 .
+.I p1
+must have sufficient space to store the result. It returns the length of the
+resulting string.
+.SH SEE ALSO
+str_len(3)

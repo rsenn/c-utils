@@ -1,0 +1,15 @@
+.TH COFF_SYMBOL_NAME 3
+.SH NAME
+coff_symbol_name \- resolve the name of a symbol
+.SH SYNOPSIS
+.B #include <coff.h>
+.P
+.BI "const char* coff_symbol_name(void* " coff ", coff_symtab_entry* " sym ");"
+.SH DESCRIPTION
+.BR coff_symbol_name ()
+returns the name of the symbol entry
+.IR sym .
+If the name is stored in the string table (indicated by a 0 in the
+entry's name field), it looks up the name in the COFF string table.
+.SH RETURN VALUE
+Returns a pointer to the symbol name.

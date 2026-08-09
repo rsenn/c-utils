@@ -1,0 +1,14 @@
+.TH strarray_removesuffixs 3
+.SH NAME
+strarray_removesuffixs \- remove suffix from elements
+.SH SYNOPSIS
+.B #include "strarray.h"
+.PP
+.BI "int strarray_removesuffixs(strarray *" arr ", const char *" s ");"
+.SH DESCRIPTION
+.B strarray_removesuffixs
+iterates through the string array
+.I arr
+and removes the suffix
+.I s
+from any elements that contain it.

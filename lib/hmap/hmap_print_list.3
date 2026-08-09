@@ -1,0 +1,12 @@
+.TH HMAP_PRINT_LIST 3
+.SH NAME
+hmap_print_list \- print all entries in the hash map
+.SH SYNOPSIS
+.B #include <hmap.h>
+.P
+.BI "int hmap_print_list(HMAP_DB* " hmap ");"
+.SH DESCRIPTION
+.BR hmap_print_list ()
+traverses the hash map and prints all entries to standard output.
+.SH RETURN VALUE
+Returns HMAP_SUCCESS on success, or an error code.

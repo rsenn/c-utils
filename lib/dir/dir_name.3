@@ -1,0 +1,13 @@
+.TH DIR_NAME 3
+.SH NAME
+dir_name \- get the name of the current directory entry
+.SH SYNOPSIS
+.B #include <dir.h>
+.P
+.BI "char* dir_name(struct dir_s* " d ");"
+.SH DESCRIPTION
+.BR dir_name ()
+returns the filename of the current directory entry within the stream
+.IR d .
+.SH RETURN VALUE
+Returns a pointer to the entry name.

@@ -1,0 +1,17 @@
+.TH BUFFER_BZ2 3
+.SH NAME
+buffer_bz2 \- create a BZip2 compression/decompression buffer
+.SH SYNOPSIS
+.B #include <buffer.h>
+.P
+.BI "int buffer_bz2(buffer* " b ", buffer* " other ", int " compress ");"
+.SH DESCRIPTION
+.BR buffer_bz2 ()
+wraps a BZip2 (de)compression stream around the buffer
+.IR other .
+If
+.I compress
+is non-zero, it initializes the stream for compression; otherwise,
+it initializes it for decompression.
+.SH RETURN VALUE
+Returns 1 on success, 0 on failure.

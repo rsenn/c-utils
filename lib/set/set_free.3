@@ -1,0 +1,19 @@
+.Dd March 31, 2025
+.Dt SET_FREE 3
+.Os
+.Sh NAME
+.Nm set_free
+.Nd free a hash set and its resources
+.Sh SYNOPSIS
+.In set.h
+.Ft void
+.Fn set_free "set_t *set"
+.Sh DESCRIPTION
+The
+.Fn set_free
+function deallocates all memory associated with the hash set
+.Fa set ,
+including its buckets and stored values.
+.Sh SEE ALSO
+.Xr set_init 3 ,
+.Xr set_clear 3

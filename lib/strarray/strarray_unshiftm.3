@@ -1,0 +1,12 @@
+.TH strarray_unshiftm 3
+.SH NAME
+strarray_unshiftm \- insert multiple strings at start of string array
+.SH SYNOPSIS
+.B #include "strarray.h"
+.PP
+.BI "int strarray_unshiftm(strarray *" arr ", ...);"
+.SH DESCRIPTION
+.B strarray_unshiftm
+inserts multiple strings provided as a variable argument list (terminated by NULL)
+at the beginning of the string array
+.IR arr .

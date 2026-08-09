@@ -1,0 +1,14 @@
+.TH strarray_unshift 3
+.SH NAME
+strarray_unshift \- insert string at start of string array
+.SH SYNOPSIS
+.B #include "strarray.h"
+.PP
+.BI "int strarray_unshift(strarray *" arr ", const char *" s ");"
+.SH DESCRIPTION
+.B strarray_unshift
+inserts the string
+.I s
+at the beginning of the string array
+.IR arr ,
+shifting existing elements to higher indices.

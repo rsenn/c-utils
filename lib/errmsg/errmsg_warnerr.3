@@ -1,0 +1,12 @@
+.TH ERRMSG_WARNERR 3
+.SH NAME
+errmsg_warnerr \- write a warning message with specific error
+.SH SYNOPSIS
+.B #include <errmsg.h>
+.P
+.BI "void errmsg_warnerr(int " err ", const char* " message ", ...);"
+.SH DESCRIPTION
+.BR errmsg_warnerr ()
+writes a formatted warning message to standard error, followed by the
+string representation of the error code
+.IR err .

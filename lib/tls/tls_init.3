@@ -1,0 +1,21 @@
+.TH TLS_INIT 3
+.SH NAME
+tls_init \- initialize the TLS library
+.SH SYNOPSIS
+.B #include <tls.h>
+.P
+.BI "int tls_init(const char* " key_file ", const char* " cert_file ");"
+.SH DESCRIPTION
+.BR tls_init ()
+initializes the global TLS state, including loading OpenSSL error strings and
+creating the client and server SSL contexts.
+.P
+If
+.I key_file
+or
+.I cert_file
+are provided, they are loaded into the contexts for use in secure communication.
+.SH RETURN VALUE
+Returns 1 on success, 0 on failure.
+.SH SEE ALSO
+tls_free(3), tls_connect(3)

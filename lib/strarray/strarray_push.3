@@ -1,0 +1,14 @@
+.TH strarray_push 3
+.SH NAME
+strarray_push \- append a string to strarray
+.SH SYNOPSIS
+.B #include "strarray.h"
+.PP
+.BI "int strarray_push(strarray *" arr ", const char *" s ");"
+.SH DESCRIPTION
+.B strarray_push
+duplicates the string
+.I s
+and appends it to the string array
+.IR arr .
+Returns 1 on success, 0 on failure.

@@ -1,0 +1,14 @@
+.TH stralloc_equals 3
+.SH NAME
+stralloc_equals \- check if stralloc equals a string
+.SH SYNOPSIS
+.B #include "stralloc.h"
+.PP
+.BI "size_t stralloc_equals(const stralloc *" sa ", const char *" s ");"
+.SH DESCRIPTION
+.B stralloc_equals
+returns 1 if the contents of
+.I sa
+are equal to the null-terminated string
+.IR s ,
+and 0 otherwise.

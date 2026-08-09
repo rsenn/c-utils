@@ -1,0 +1,12 @@
+.TH pe_thunk 3
+.SH NAME
+pe_thunk \- resolve PE import thunk
+.SH SYNOPSIS
+.B #include "pe.h"
+.PP
+.BI "uint64 pe_thunk(void *" pe ", void *" ptr ", int64 " index ");"
+.SH DESCRIPTION
+.B pe_thunk
+resolves an entry in a PE import thunk table at the specified
+.I index
+and returns the value as a 64-bit integer, handling both 32-bit and 64-bit PE formats.

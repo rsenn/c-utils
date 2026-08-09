@@ -1,0 +1,12 @@
+.TH stralloc_shrink 3
+.SH NAME
+stralloc_shrink \- shrink stralloc allocation
+.SH SYNOPSIS
+.B #include "stralloc.h"
+.PP
+.BI "int stralloc_shrink(stralloc *" sa ");"
+.SH DESCRIPTION
+.B stralloc_shrink
+reallocates the storage for
+.I sa
+to match its current length, minimizing memory overhead.

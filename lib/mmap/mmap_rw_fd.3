@@ -1,0 +1,18 @@
+.TH MMAP_RW_FD 3
+.SH NAME
+mmap_rw_fd \- create a shared, read-write mapping of a file descriptor
+.SH SYNOPSIS
+.B #include "mmap.h"
+.PP
+.BI "char* mmap_rw_fd(fd_type " fd ", size_t* " filesize ");"
+.SH DESCRIPTION
+.B mmap_rw_fd
+maps the entire contents of the file descriptor
+.I fd
+into memory as a shared, read-write mapping.
+Changes made to the memory are reflected in the file.
+The size of the file is stored in
+.I filesize
+upon success.
+.SH RETURN VALUE
+Returns a pointer to the mapped memory on success, or NULL on failure.

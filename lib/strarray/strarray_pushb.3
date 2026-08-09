@@ -1,0 +1,15 @@
+.TH strarray_pushb 3
+.SH NAME
+strarray_pushb \- append buffer to strarray
+.SH SYNOPSIS
+.B #include "strarray.h"
+.PP
+.BI "int strarray_pushb(strarray *" arr ", const char *" b ", size_t " n ");"
+.SH DESCRIPTION
+.B strarray_pushb
+duplicates the first
+.I n
+bytes of buffer
+.I b
+and appends the resulting null-terminated string to
+.IR arr .

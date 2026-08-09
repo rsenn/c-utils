@@ -1,0 +1,33 @@
+.Dd March 31, 2025
+.Dt PATH_RELATIVE_TO_B 3
+.Os
+.Sh NAME
+.Nm path_relative_to_b ,
+.Nm path_relative_to ,
+.Nm path_relative_to_sa
+.Nd compute a relative path between two paths
+.Sh SYNOPSIS
+.In path.h
+.Ft int
+.Fn path_relative_to_b "const char *p" "size_t plen" "const char *to" "size_t tolen" "stralloc *out"
+.Ft int
+.Fn path_relative_to "const char *path" "const char *relative_to" "stralloc *out"
+.Sh DESCRIPTION
+The
+.Fn path_relative_to_b
+function computes a relative path from the base directory
+.Fa to
+(of length
+.Fa tolen )
+to the target path
+.Fa p
+(of length
+.Fa plen ),
+storing the result in
+.Fa out .
+.Pp
+The
+.Fn path_relative_to
+function is a wrapper that accepts null-terminated strings.
+.Sh RETURN VALUES
+Returns 1 on success.

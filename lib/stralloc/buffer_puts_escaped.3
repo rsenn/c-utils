@@ -1,0 +1,28 @@
+.Dd March 31, 2025
+.Dt BUFFER_PUTS_ESCAPED 3
+.Os
+.Sh NAME
+.Nm buffer_puts_escaped ,
+.Nm buffer_puts_escaped_args
+.Nd write an escaped string to a buffer
+.Sh SYNOPSIS
+.In buffer.h
+.Ft int
+.Fn buffer_puts_escaped "buffer *b" "const char *x" "size_t (*escape)(char *, int)"
+.Ft int
+.Fn buffer_puts_escaped_args "buffer *b" "const char *x" "size_t (*escape)(char *, void *, void *, void *, void *)" "void *args[]"
+.Sh DESCRIPTION
+The
+.Fn buffer_puts_escaped
+function writes the string
+.Fa x
+to buffer
+.Fa b
+with characters transformed by the given
+.Fa escape
+function.
+.Pp
+.Fn buffer_puts_escaped_args
+supports an escape function taking additional context arguments.
+.Sh RETURN VALUES
+Returns the number of bytes written, or -1 on error.

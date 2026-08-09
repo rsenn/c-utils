@@ -1,0 +1,23 @@
+.Dd March 31, 2025
+.Dt SCAN_LONGN 3
+.Os
+.Sh NAME
+.Nm scan_longn
+.Nd parse a signed long integer from a bounded string
+.Sh SYNOPSIS
+.In scan.h
+.Ft size_t
+.Fn scan_longn "const char *src" "size_t n" "long *dest"
+.Sh DESCRIPTION
+The
+.Fn scan_longn
+function parses a signed long integer from the buffer
+.Fa src
+of at most
+.Fa n
+bytes, storing the resulting value in
+.Fa dest .
+.Sh RETURN VALUES
+Returns the number of bytes consumed, or 0 if no valid integer could be parsed.
+.Sh SEE ALSO
+.Xr scan_xlongn 3

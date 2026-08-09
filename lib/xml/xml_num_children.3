@@ -1,0 +1,12 @@
+.TH xml_num_children 3
+.SH NAME
+xml_num_children \- count the children of an XML node
+.SH SYNOPSIS
+.B #include "xml.h"
+.PP
+.BI "size_t xml_num_children(xmlnode *" node ");"
+.SH DESCRIPTION
+.B xml_num_children
+traverses the linked list of children of
+.I node
+and returns the total count of direct children.

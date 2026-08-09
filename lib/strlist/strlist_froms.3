@@ -1,0 +1,16 @@
+.TH strlist_froms 3
+.SH NAME
+strlist_froms \- append string to string list
+.SH SYNOPSIS
+.B #include "strlist.h"
+.PP
+.BI "void strlist_froms(strlist *" sl ", const char *" s ", char " delim ");"
+.SH DESCRIPTION
+.B strlist_froms
+appends the string
+.I s
+to the string list
+.I sl
+using
+.I delim
+to separate the elements.

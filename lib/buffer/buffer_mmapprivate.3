@@ -1,0 +1,16 @@
+.TH BUFFER_MMAPPRIVATE 3
+.SH NAME
+buffer_mmapprivate \- initialize a buffer from a private memory mapping
+.SH SYNOPSIS
+.B #include <buffer.h>
+.P
+.BI "int buffer_mmapprivate(buffer* " b ", const char* " filename ");"
+.SH DESCRIPTION
+.BR buffer_mmapprivate ()
+maps the specified
+.I filename
+into memory privately and initializes the buffer
+.I b
+to point to that memory region.
+.SH RETURN VALUE
+Returns 0 on success, or -1 on failure.

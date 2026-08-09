@@ -1,0 +1,16 @@
+.TH xml_find_element_attr 3
+.SH NAME
+xml_find_element_attr \- find an element by tag name and attribute value
+.SH SYNOPSIS
+.B #include "xml.h"
+.PP
+.BI "xmlnode *xml_find_element_attr(xmlnode *" node ", const char *" tag ", const char *" attr ", const char *" value ");"
+.SH DESCRIPTION
+.B xml_find_element_attr
+searches for an element node with the given
+.I tag
+name where the attribute
+.I attr
+is equal to
+.IR value .
+It returns the first matching node found in the tree, or NULL.

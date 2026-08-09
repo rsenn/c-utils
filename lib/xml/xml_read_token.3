@@ -1,0 +1,12 @@
+.TH xml_read_token 3
+.SH NAME
+xml_read_token \- read the next XML token
+.SH SYNOPSIS
+.B #include "xml.h"
+.PP
+.BI "xmltoken xml_read_token(xmlscanner *" s ");"
+.SH DESCRIPTION
+.B xml_read_token
+scans the XML scanner
+.I s
+and returns the next available token (e.g., tag name, attribute, data).

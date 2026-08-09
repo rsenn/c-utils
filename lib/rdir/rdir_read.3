@@ -1,0 +1,22 @@
+.Dd March 31, 2025
+.Dt RDIR_READ 3
+.Os
+.Sh NAME
+.Nm rdir_read
+.Nd read the next entry in a recursive directory traversal
+.Sh SYNOPSIS
+.In rdir.h
+.Ft char *
+.Fn rdir_read "rdir_t *d"
+.Sh DESCRIPTION
+The
+.Fn rdir_read
+function retrieves the next path entry during a recursive directory traversal initialized by
+.Xr rdir_open 3 .
+.Sh RETURN VALUES
+Returns a pointer to the null-terminated path string of the next entry, or
+.Dv NULL
+when traversal is complete.
+.Sh SEE ALSO
+.Xr rdir_open 3 ,
+.Xr rdir_close 3

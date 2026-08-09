@@ -1,0 +1,23 @@
+.Dd March 31, 2025
+.Dt SET_INIT 3
+.Os
+.Sh NAME
+.Nm set_init
+.Nd initialize a hash set
+.Sh SYNOPSIS
+.In set.h
+.Ft void
+.Fn set_init "set_t *set" "uint32 (*const hash_fp)(const void*, size_t)"
+.Sh DESCRIPTION
+The
+.Fn set_init
+function initializes the hash set structure
+.Fa set .
+An optional custom hash function
+.Fa hash_fp
+may be provided; if
+.Dv NULL ,
+a default byte hash function is used.
+.Sh SEE ALSO
+.Xr set_free 3 ,
+.Xr set_add 3

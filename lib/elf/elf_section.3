@@ -1,0 +1,14 @@
+.TH ELF_SECTION 3
+.SH NAME
+elf_section \- get range for a section header
+.SH SYNOPSIS
+.B #include <elf.h>
+.P
+.BI "range elf_section(void* " elf ", void* " shdr ");"
+.SH DESCRIPTION
+.BR elf_section ()
+returns the range of memory covered by the section described by the
+section header
+.IR shdr .
+.SH RETURN VALUE
+Returns the range of the section.

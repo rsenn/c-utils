@@ -1,0 +1,20 @@
+.Dd March 31, 2025
+.Dt PROCESS_WAIT 3
+.Os
+.Sh NAME
+.Nm process_wait
+.Nd wait for a process to terminate
+.Sh SYNOPSIS
+.In process.h
+.Ft int
+.Fn process_wait "int pid"
+.Sh DESCRIPTION
+The
+.Fn process_wait
+function waits for the process with the specified
+.Fa pid
+to terminate and retrieves its exit status.
+.Sh RETURN VALUES
+Returns the exit status of the terminated process.
+.Sh SEE ALSO
+.Xr process_create 3

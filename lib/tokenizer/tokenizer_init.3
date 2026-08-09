@@ -1,0 +1,18 @@
+.TH tokenizer_init 3
+.SH NAME
+tokenizer_init \- initialize a tokenizer
+.SH SYNOPSIS
+.B #include "tokenizer.h"
+.PP
+.BI "void tokenizer_init(tokenizer *" t ", buffer *" in ", int " flags ");"
+.SH DESCRIPTION
+.B tokenizer_init
+initializes a
+.I tokenizer
+structure
+.I t
+to read tokens from the input buffer
+.I in
+using the specified
+.I flags
+to configure parsing behavior.

@@ -1,0 +1,15 @@
+.TH strarray_joins 3
+.SH NAME
+strarray_joins \- join string array into stralloc
+.SH SYNOPSIS
+.B #include "strarray.h"
+.PP
+.BI "int strarray_joins(const strarray *" arr ", stralloc *" sa ", const char *" sep ");"
+.SH DESCRIPTION
+.B strarray_joins
+concatenates all elements of
+.I arr
+into the stralloc
+.I sa
+using the separator
+.IR sep .

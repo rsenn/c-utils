@@ -1,0 +1,23 @@
+.Dd March 31, 2025
+.Dt STRALLOC_CATDOUBLE 3
+.Os
+.Sh NAME
+.Nm stralloc_catdouble
+.Nd append a formatted double precision float to a stralloc
+.Sh SYNOPSIS
+.In stralloc.h
+.Ft int
+.Fn stralloc_catdouble "stralloc *sa" "double d" "int prec"
+.Sh DESCRIPTION
+The
+.Fn stralloc_catdouble
+function formats the floating-point value
+.Fa d
+with precision
+.Fa prec
+and appends the resulting string representation to the dynamic string
+.Fa sa .
+.Sh RETURN VALUES
+Returns non-zero on success, or 0 on memory allocation failure.
+.Sh SEE ALSO
+.Xr stralloc_catlong 3

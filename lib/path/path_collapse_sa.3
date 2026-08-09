@@ -1,0 +1,20 @@
+.Dd March 31, 2025
+.Dt PATH_COLLAPSE_SA 3
+.Os
+.Sh NAME
+.Nm path_collapse_sa
+.Nd collapse redundant path components in a stralloc
+.Sh SYNOPSIS
+.In path.h
+.Ft size_t
+.Fn path_collapse_sa "stralloc *path"
+.Sh DESCRIPTION
+The
+.Fn path_collapse_sa
+function collapses redundant separators, current directory markers, and parent directory references in the path stored in
+.Fa path
+in-place.
+.Sh RETURN VALUES
+Returns the new length of the path string.
+.Sh SEE ALSO
+.Xr path_canonical_sa 3

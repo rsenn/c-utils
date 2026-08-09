@@ -1,0 +1,13 @@
+.TH ihex_record_write 3
+.SH NAME
+ihex_record_write \- serialize Intel HEX record to buffer
+.SH SYNOPSIS
+.B #include "ihex.h"
+.PP
+.BI "void ihex_record_write(ihex_record *" ihr ", buffer *" b ");"
+.SH DESCRIPTION
+.B ihex_record_write
+formats the Intel HEX record
+.I ihr
+as an ASCII line and writes it to the buffer
+.IR b .

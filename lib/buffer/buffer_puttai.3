@@ -1,0 +1,15 @@
+.TH BUFFER_PUTTAI 3
+.SH NAME
+buffer_puttai \- format and write TAI64 time to a buffer
+.SH SYNOPSIS
+.B #include <buffer.h>
+.P
+.BI "int buffer_puttai(buffer* " b ", const tai64* " t ");"
+.SH DESCRIPTION
+.BR buffer_puttai ()
+formats the TAI64 time
+.I t
+as an ISO 8601 string and writes it to buffer
+.IR b .
+.SH RETURN VALUE
+Returns the result of buffer_put.

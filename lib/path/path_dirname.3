@@ -1,0 +1,21 @@
+.Dd March 31, 2025
+.Dt PATH_DIRNAME 3
+.Os
+.Sh NAME
+.Nm path_dirname
+.Nd extract directory component from a path
+.Sh SYNOPSIS
+.In path.h
+.Ft char *
+.Fn path_dirname "const char *path" "stralloc *dir"
+.Sh DESCRIPTION
+The
+.Fn path_dirname
+function extracts the directory component from the null-terminated string
+.Fa path
+and stores it in
+.Fa dir .
+.Sh RETURN VALUES
+Returns a pointer to the resulting directory string.
+.Sh SEE ALSO
+.Xr path_dirname_sa 3

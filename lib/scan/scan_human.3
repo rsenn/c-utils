@@ -1,0 +1,17 @@
+.TH scan_human 3
+.SH NAME
+scan_human \- parse a number with human-readable suffixes
+.SH SYNTAX
+.B #include <lib/scan.h>
+
+size_t \fBscan_human\fR(const char *\fIsrc\fR, uint64 *\fIdest\fR);
+.SH DESCRIPTION
+\fBscan_human\fR parses a number from \fIsrc\fR, which may be followed by
+a multiplier suffix. The suffixes 'k' or 'K' multiply the value by 1024,
+'M' multiplies by 1024^2, and 'G' multiplies by 1024^3.
+
+The parsed value is stored in \fIdest\fR.
+
+.SH RETURN VALUE
+Returns the number of bytes successfully consumed from the source string.
+If no suffix is found, it acts like \fBscan_ulonglong\fR.

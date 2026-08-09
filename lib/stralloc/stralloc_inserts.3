@@ -1,0 +1,15 @@
+.TH stralloc_inserts 3
+.SH NAME
+stralloc_inserts \- insert string into stralloc
+.SH SYNOPSIS
+.B #include "stralloc.h"
+.PP
+.BI "int stralloc_inserts(stralloc *" sa ", const char *" s ", size_t " pos ");"
+.SH DESCRIPTION
+.B stralloc_inserts
+inserts the null-terminated string
+.I s
+into the stralloc
+.I sa
+at position
+.IR pos .

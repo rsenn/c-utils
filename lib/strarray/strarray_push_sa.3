@@ -1,0 +1,13 @@
+.TH strarray_push_sa 3
+.SH NAME
+strarray_push_sa \- push stralloc to strarray
+.SH SYNOPSIS
+.B #include "strarray.h"
+.PP
+.BI "int strarray_push_sa(strarray *" arr ", const stralloc *" sa ");"
+.SH DESCRIPTION
+.B strarray_push_sa
+duplicates the content of the stralloc
+.I sa
+and appends it as a new element to
+.IR arr .

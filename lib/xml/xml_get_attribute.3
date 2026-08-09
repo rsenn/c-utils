@@ -1,0 +1,15 @@
+.TH xml_get_attribute 3
+.SH NAME
+xml_get_attribute \- retrieve the value of an attribute
+.SH SYNOPSIS
+.B #include "xml.h"
+.PP
+.BI "char *xml_get_attribute(xmlnode *" node ", const char *" attr ");"
+.SH DESCRIPTION
+.B xml_get_attribute
+looks up the value of the attribute
+.I attr
+in the given
+.I node
+using its attribute map. Returns a pointer to the value string, or NULL
+if the attribute does not exist.

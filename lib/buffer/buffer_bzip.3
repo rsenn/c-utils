@@ -1,0 +1,15 @@
+.TH BUFFER_BZIP 3
+.SH NAME
+buffer_bzip, buffer_bunzip \- high-level BZip2 file interface
+.SH SYNOPSIS
+.B #include <buffer.h>
+.P
+.BI "int buffer_bzip(buffer* " b ", const char* " filename ", int " level ");"
+.BI "int buffer_bunzip(buffer* " b ", const char* " filename ");"
+.SH DESCRIPTION
+.BR buffer_bzip ()
+initializes a buffer to compress data into a BZip2 file.
+.BR buffer_bunzip ()
+initializes a buffer to decompress data from a BZip2 file.
+.SH RETURN VALUE
+Returns 0 on success, or -1 on failure.

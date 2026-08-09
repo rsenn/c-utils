@@ -1,0 +1,15 @@
+.TH BUFFER_PEEKC 3
+.SH NAME
+buffer_peekc \- peek at the next character in a buffer
+.SH SYNOPSIS
+.B #include <buffer.h>
+.P
+.BI "int buffer_peekc(buffer* " b ", char* " c ");"
+.SH DESCRIPTION
+.BR buffer_peekc ()
+attempts to read the next character from buffer
+.I b
+without advancing the read pointer.
+.SH RETURN VALUE
+Returns 1 on success, or a non-positive value if reading fails or the buffer
+is empty.

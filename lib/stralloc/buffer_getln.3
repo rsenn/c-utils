@@ -1,0 +1,27 @@
+.Dd March 31, 2025
+.Dt BUFFER_GETLN 3
+.Os
+.Sh NAME
+.Nm buffer_getln
+.Nd read a delimited line from a buffer into a stralloc
+.Sh SYNOPSIS
+.In stralloc.h
+.In buffer.h
+.Ft int
+.Fn buffer_getln "buffer *b" "stralloc *sa" "int *gotit" "int termchar"
+.Sh DESCRIPTION
+The
+.Fn buffer_getln
+function reads from buffer
+.Fa b
+into
+.Fa sa
+until the delimiter character
+.Fa termchar
+is encountered.
+.Fa gotit
+is set to non-zero if the delimiter was found.
+.Sh RETURN VALUES
+Returns 0 on success, or -1 on error.
+.Sh SEE ALSO
+.Xr buffer_getline_sa 3

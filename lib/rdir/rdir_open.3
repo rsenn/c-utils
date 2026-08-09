@@ -1,0 +1,23 @@
+.Dd March 31, 2025
+.Dt RDIR_OPEN 3
+.Os
+.Sh NAME
+.Nm rdir_open
+.Nd open a recursive directory traversal
+.Sh SYNOPSIS
+.In rdir.h
+.Ft int
+.Fn rdir_open "rdir_t *d" "const char *p"
+.Sh DESCRIPTION
+The
+.Fn rdir_open
+function initializes the recursive directory structure
+.Fn d
+and opens the root path
+.Fa p
+for recursive traversal.
+.Sh RETURN VALUES
+Returns 0 on success, or -1 on error.
+.Sh SEE ALSO
+.Xr rdir_read 3 ,
+.Xr rdir_close 3

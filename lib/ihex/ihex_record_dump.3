@@ -1,0 +1,16 @@
+.TH ihex_record_dump 3
+.SH NAME
+ihex_record_dump \- format Intel HEX record for debugging
+.SH SYNOPSIS
+.B #include "ihex.h"
+.PP
+.BI "void ihex_record_dump(ihex_record *" ihr ", uint16 " hi16 ", buffer *" b ");"
+.SH DESCRIPTION
+.B ihex_record_dump
+writes a human-readable representation of the record
+.I ihr
+to the buffer
+.I b
+using
+.I hi16
+as the high-order address component.

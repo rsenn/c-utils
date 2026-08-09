@@ -1,0 +1,20 @@
+.Dd March 31, 2025
+.Dt SOCKET_TRYRESERVEIN 3
+.Os
+.Sh NAME
+.Nm socket_tryreservein
+.Nd try to set receive buffer size for a socket
+.Sh SYNOPSIS
+.In socket.h
+.Ft void
+.Fn socket_tryreservein "int s" "int size"
+.Sh DESCRIPTION
+The
+.Fn socket_tryreservein
+function attempts to set the receive buffer size (SO_RCVBUF) on socket
+.Fa s
+to
+.Fa size ,
+scaling down iteratively if necessary until successful.
+.Sh SEE ALSO
+.Xr socket_error 3

@@ -1,0 +1,13 @@
+.TH ERRMSG_INFOSYS 3
+.SH NAME
+errmsg_infosys \- write an informational message with system error
+.SH SYNOPSIS
+.B #include <errmsg.h>
+.P
+.BI "void errmsg_infosys(const char* " message ", ...);"
+.SH DESCRIPTION
+.BR errmsg_infosys ()
+writes a formatted informational message to standard output, followed by
+the string representation of the current
+.B errno
+value.

@@ -1,0 +1,22 @@
+.TH BUFFER_PUTFMT 3
+.SH NAME
+buffer_putfmt \- write formatted data to a buffer
+.SH SYNOPSIS
+.B #include <buffer.h>
+.P
+.BI "int buffer_putfmt(buffer* " b ", const char* " x ", size_t " n ", size_t (*" escape ")(char*, int), ...);"
+.SH DESCRIPTION
+.BR buffer_putfmt ()
+processes
+.I n
+bytes of data
+.I x
+using the
+.I escape
+function to format characters, writing the output to buffer
+.IR b .
+Additional arguments are passed to the
+.I escape
+function.
+.SH RETURN VALUE
+Returns the total number of bytes written.

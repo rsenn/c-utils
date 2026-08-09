@@ -1,0 +1,22 @@
+.TH CASE_FINDB 3
+.SH NAME
+case_findb \- case-insensitive search for a byte sequence
+.SH SYNOPSIS
+.B #include <case.h>
+.P
+.BI "size_t case_findb(const void* " haystack ", size_t " hlen ", const void* " what ", size_t " wlen ");"
+.SH DESCRIPTION
+.BR case_findb ()
+searches for the byte sequence
+.I what
+of length
+.I wlen
+within the
+.I haystack
+of length
+.I hlen
+in a case-insensitive manner.
+.SH RETURN VALUE
+Returns the offset of the first match, or
+.I hlen
+if no match is found.

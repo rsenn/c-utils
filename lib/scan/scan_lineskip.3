@@ -1,0 +1,27 @@
+.Dd March 31, 2025
+.Dt SCAN_LINESKIP 3
+.Os
+.Sh NAME
+.Nm scan_lineskip ,
+.Nm scan_lineskip_escaped
+.Nd skip a line in a buffer
+.Sh SYNOPSIS
+.In scan.h
+.Ft size_t
+.Fn scan_lineskip "const char *s" "size_t limit"
+.Ft size_t
+.Fn scan_lineskip_escaped "const char *s" "size_t limit"
+.Sh DESCRIPTION
+The
+.Fn scan_lineskip
+function calculates the number of bytes to skip past the next newline character in
+.Fa s
+(up to
+.Fa limit ).
+.Pp
+.Fn scan_lineskip_escaped
+skips lines while respecting escaped newline characters.
+.Sh RETURN VALUES
+Returns the number of bytes skipped.
+.Sh SEE ALSO
+.Xr scan_line 3

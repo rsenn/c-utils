@@ -1,0 +1,16 @@
+.TH ihex_read_buf 3
+.SH NAME
+ihex_read_buf \- parse Intel HEX data from buffer
+.SH SYNOPSIS
+.B #include "ihex.h"
+.PP
+.BI "ssize_t ihex_read_buf(ihex_file *" ihf ", const char *" in ", size_t " n ");"
+.SH DESCRIPTION
+.B ihex_read_buf
+parses Intel HEX formatted records from the input buffer
+.I in
+of length
+.I n
+and appends them to the
+.I ihf
+structure.

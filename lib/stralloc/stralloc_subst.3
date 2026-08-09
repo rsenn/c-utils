@@ -1,0 +1,17 @@
+.TH stralloc_subst 3
+.SH NAME
+stralloc_subst \- perform pattern substitution in stralloc
+.SH SYNOPSIS
+.B #include "stralloc.h"
+.PP
+.BI "int stralloc_subst(stralloc *" sa ", const char *" find ", size_t " find_len ", const char *" subst ");"
+.SH DESCRIPTION
+.B stralloc_subst
+replaces the content matching
+.I find
+of length
+.I find_len
+with the string
+.I subst
+within
+.IR sa .

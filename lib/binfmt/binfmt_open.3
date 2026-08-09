@@ -1,0 +1,16 @@
+.TH BINFMT_OPEN 3
+.SH NAME
+binfmt_open \- open and map a binary file
+.SH SYNOPSIS
+.B #include <binfmt.h>
+.P
+.BI "int binfmt_open(binfmt_file* " bf ", const char* " filename ");"
+.SH DESCRIPTION
+.BR binfmt_open ()
+initializes the provided
+.I binfmt_file
+structure by zeroing it and mapping the file specified by
+.I filename
+into memory using a private memory mapping.
+.SH RETURN VALUE
+Returns 0 on success.

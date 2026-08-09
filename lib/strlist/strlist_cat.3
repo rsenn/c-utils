@@ -1,0 +1,14 @@
+.TH strlist_cat 3
+.SH NAME
+strlist_cat \- concatenate string list to another
+.SH SYNOPSIS
+.B #include "strlist.h"
+.PP
+.BI "int strlist_cat(strlist *" sl ", const strlist *" l ");"
+.SH DESCRIPTION
+.B strlist_cat
+appends the string list
+.I l
+to the string list
+.IR sl ,
+maintaining the internal separator structure.

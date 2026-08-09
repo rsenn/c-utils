@@ -1,0 +1,27 @@
+.Dd March 31, 2025
+.Dt PATH_ACCESS 3
+.Os
+.Sh NAME
+.Nm path_access
+.Nd check file accessibility and permissions
+.Sh SYNOPSIS
+.In path.h
+.Ft int
+.Fn path_access "const char *path" "int rights"
+.Sh DESCRIPTION
+The
+.Fn path_access
+function checks whether the calling process can access the file specified by
+.Fa path
+according to the requested permissions
+.Fa rights
+(such as
+.Dv R_OK ,
+.Dv W_OK ,
+or
+.Dv X_OK ).
+.Sh RETURN VALUES
+Returns non-zero if the requested access is permitted, or 0 if access is denied or an error occurred.
+.Sh SEE ALSO
+.Xr path_exists 3 ,
+.Xr path_is_directory 3

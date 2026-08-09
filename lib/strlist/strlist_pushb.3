@@ -1,0 +1,16 @@
+.TH strlist_pushb 3
+.SH NAME
+strlist_pushb \- append buffer to string list
+.SH SYNOPSIS
+.B #include "strlist.h"
+.PP
+.BI "int strlist_pushb(strlist *" sl ", const char *" s ", size_t " n ");"
+.SH DESCRIPTION
+.B strlist_pushb
+appends the first
+.I n
+bytes of the buffer
+.I s
+as a new element to the string list
+.IR sl ,
+using the list's internal separator.

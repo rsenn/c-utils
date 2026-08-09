@@ -1,0 +1,17 @@
+.TH MMAP_SHARED_FD 3
+.SH NAME
+mmap_shared_fd \- create a shared mapping of a file descriptor and close it
+.SH SYNOPSIS
+.B #include "mmap.h"
+.PP
+.BI "char* mmap_shared_fd(fd_type " fd ", size_t* " filesize ");"
+.SH DESCRIPTION
+.B mmap_shared_fd
+maps the entire contents of the file descriptor
+.I fd
+into memory as a shared, read-write mapping and then closes the file descriptor.
+The size of the file is stored in
+.I filesize
+upon success.
+.SH RETURN VALUE
+Returns a pointer to the mapped memory on success, or NULL on failure.

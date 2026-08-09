@@ -1,0 +1,27 @@
+.Dd March 31, 2025
+.Dt JSON_PROPERTY_SET 3
+.Os
+.Sh NAME
+.Nm json_property_set
+.Nd set a property on a JSON object
+.Sh SYNOPSIS
+.In json.h
+.Ft jsonval *
+.Fn json_property_set "jsonval *obj" "jsonval name" "jsonval value"
+.Sh DESCRIPTION
+The
+.Fn json_property_set
+function sets a property in the JSON object
+.Fa obj .
+The property key is specified by converting the
+.Fa name
+JSON value to a string, and its value is set to
+.Fa value .
+.Sh RETURN VALUES
+Returns a pointer to the stored
+.Vt jsonval
+value within the object, or
+.Dv NULL
+on failure.
+.Sh SEE ALSO
+.Xr json_object 3

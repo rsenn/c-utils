@@ -1,0 +1,14 @@
+.TH ELF_SYMBOL_R 3
+.SH NAME
+elf_symbol_r \- get memory range of a symbol
+.SH SYNOPSIS
+.B #include <elf.h>
+.P
+.BI "range elf_symbol_r(void* " elf ", void* " sym ");"
+.SH DESCRIPTION
+.BR elf_symbol_r ()
+returns the range in memory (within the .text section) that the symbol
+.I sym
+covers.
+.SH RETURN VALUE
+Returns the range of the symbol.

@@ -1,0 +1,20 @@
+.Dd March 31, 2025
+.Dt MMAP_FILENAME 3
+.Os
+.Sh NAME
+.Nm mmap_filename
+.Nd get the filename corresponding to a mapped memory address
+.Sh SYNOPSIS
+.In buffer.h
+.In stralloc.h
+.Ft int
+.Fn mmap_filename "void *map" "stralloc *sa"
+.Sh DESCRIPTION
+The
+.Fn mmap_filename
+function queries the system mapping tables to find the filename backing the memory address
+.Fa map ,
+storing the path in
+.Fa sa .
+.Sh RETURN VALUES
+Returns non-zero on success, or 0 if the mapping filename could not be resolved.

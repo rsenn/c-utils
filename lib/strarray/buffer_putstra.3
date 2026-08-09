@@ -1,0 +1,16 @@
+.TH buffer_putstra 3
+.SH NAME
+buffer_putstra \- write a string array to a buffer with separator
+.SH SYNOPSIS
+.B #include "strarray.h"
+.PP
+.BI "int buffer_putstra(buffer *" b ", const strarray *" stra ", const char *" sep ");"
+.SH DESCRIPTION
+.B buffer_putstra
+writes all elements of the string array
+.I stra
+to the output buffer
+.I b
+separated by the string
+.IR sep .
+Returns the number of elements written.

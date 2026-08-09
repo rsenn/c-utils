@@ -1,0 +1,19 @@
+.TH path_relative_to 3
+.SH NAME
+path_relative_to \- compute a relative path
+.SH SYNOPSIS
+.B #include "path.h"
+.PP
+.BI "int path_relative_to(const char *" path ", const char *" relative_to ", stralloc *" out ");"
+.SH DESCRIPTION
+.B path_relative_to
+computes the relative path from the directory
+.I relative_to
+to the target
+.IR path .
+The resulting relative path string is appended to the
+.I out
+stralloc. It returns 1 on success and 0 if a relative path could not be computed
+(e.g., paths are on different drives/partitions).
+.SH SEE ALSO
+path_relative_to_sa(3)

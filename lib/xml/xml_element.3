@@ -1,0 +1,14 @@
+.TH xml_element 3
+.SH NAME
+xml_element \- create a new XML element node
+.SH SYNOPSIS
+.B #include "xml.h"
+.PP
+.BI "xmlnode *xml_element(const char *" name ");"
+.SH DESCRIPTION
+.B xml_element
+allocates and initializes a new
+.B XML_ELEMENT
+node with the specified
+.IR name .
+The node's attributes and children are initialized to NULL.

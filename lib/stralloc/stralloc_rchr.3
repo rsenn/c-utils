@@ -1,0 +1,16 @@
+.TH stralloc_rchr 3
+.SH NAME
+stralloc_rchr \- find last occurrence of character in stralloc
+.SH SYNOPSIS
+.B #include "stralloc.h"
+.PP
+.BI "size_t stralloc_rchr(const stralloc *" sa ", char " c ");"
+.SH DESCRIPTION
+.B stralloc_rchr
+returns the index of the last occurrence of the character
+.I c
+within the stralloc
+.IR sa ,
+or the length of
+.I sa
+if not found.

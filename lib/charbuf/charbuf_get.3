@@ -1,0 +1,15 @@
+.TH CHARBUF_GET 3
+.SH NAME
+charbuf_get \- read and consume the next character
+.SH SYNOPSIS
+.B #include <charbuf.h>
+.P
+.BI "ssize_t charbuf_get(charbuf* " b ");"
+.SH DESCRIPTION
+.BR charbuf_get ()
+returns the next character from buffer
+.I b
+and advances the read pointer.
+.SH RETURN VALUE
+Returns the character value (as an unsigned char) or a non-positive value
+if EOF or an error occurs.
