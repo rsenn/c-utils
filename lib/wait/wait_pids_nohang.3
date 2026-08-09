@@ -1,0 +1,23 @@
+.TH WAIT_PIDS_NOHANG 3
+.SH NAME
+wait_pids_nohang \- wait for any of multiple child processes without blocking
+.SH SYNOPSIS
+.B #include "wait.h"
+.PP
+.BI "int wait_pids_nohang(int const* " pids ", unsigned int " len ", int* " wstat ");"
+.SH DESCRIPTION
+.B wait_pids_nohang
+checks the list of
+.I len
+processes in
+.I pids
+to see if any have changed state. If one has, its PID is indicated by the
+return value and its status is stored in
+.I wstat.
+It returns 0 immediately if none have changed state.
+.SH RETURN VALUE
+Returns
+.I i+1
+where
+.I i
+is the index of the PID in the array, 0 if none are ready, or -1 on error.

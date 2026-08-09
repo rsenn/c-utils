@@ -1,0 +1,16 @@
+.TH WAIT_PIDS 3
+.SH NAME
+wait_pids \- wait for multiple child processes
+.SH SYNOPSIS
+.B #include "wait.h"
+.PP
+.BI "int wait_pids(int* " pids ", unsigned int " n ");"
+.SH DESCRIPTION
+.B wait_pids
+waits until all
+.I n
+processes listed in the
+.I pids
+array have terminated.
+.SH RETURN VALUE
+Returns 1 on success, 0 on failure.

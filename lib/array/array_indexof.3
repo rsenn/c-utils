@@ -1,0 +1,14 @@
+.TH array_indexof 3
+.SH NAME
+array_indexof \- find the index of an element in an array
+.SH SYNTAX
+.B #include "array.h"
+.LP
+int64 \fBarray_indexof\fP(array* \fIa\fP, uint64 \fImembersize\fP, void* \fIdata\fP);
+.SH DESCRIPTION
+.B array_indexof
+scans the array \fIa\fP for an element matching \fIdata\fP, assuming elements
+are of size \fImembersize\fP. Returns the index of the first match, or -1 if
+no match is found.
+.SH SEE ALSO
+array(3)

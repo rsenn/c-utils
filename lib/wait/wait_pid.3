@@ -1,0 +1,16 @@
+.TH WAIT_PID 3
+.SH NAME
+wait_pid \- wait for a specific child process
+.SH SYNOPSIS
+.B #include "wait.h"
+.PP
+.BI "int wait_pid(int " pid ", int* " wstat ");"
+.SH DESCRIPTION
+.B wait_pid
+waits for the specific child process with ID
+.I pid
+to terminate. The exit status is stored in
+.I wstat.
+It automatically handles interruptions by signals.
+.SH RETURN VALUE
+Returns the PID on success, or -1 on error.

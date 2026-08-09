@@ -1,0 +1,13 @@
+.TH WAIT_NOINTR 3
+.SH NAME
+wait_nointr \- wait for a child process, restarting on interrupt
+.SH SYNOPSIS
+.B #include "wait.h"
+.PP
+.BI "int wait_nointr(int* " wstat ");"
+.SH DESCRIPTION
+.B wait_nointr
+waits for any child process to terminate. If the system call is interrupted
+by a signal (EINTR), it automatically restarts the wait call.
+.SH RETURN VALUE
+Returns the PID of the terminated child, or -1 on error.

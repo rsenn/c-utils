@@ -1,0 +1,14 @@
+.TH array_splice 3
+.SH NAME
+array_splice \- modify an array by removing and inserting elements
+.SH SYNTAX
+.B #include "array.h"
+.LP
+int64 \fBarray_splice\fP(array* \fIa\fP, uint64 \fImembersize\fP, uint64 \fIstart\fP, uint64 \fIdel\fP, uint64 \fIinsert\fP, const void* \fIx\fP);
+.SH DESCRIPTION
+.B array_splice
+removes \fIdel\fP elements starting at \fIstart\fP from array \fIa\fP, and inserts
+\fIinsert\fP elements from \fIx\fP at that position.
+Returns the new length of the array, or -1 on memory error.
+.SH SEE ALSO
+array(3)

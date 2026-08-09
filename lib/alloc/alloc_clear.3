@@ -1,0 +1,13 @@
+.TH alloc_clear 3
+.SH NAME
+alloc_clear \- free memory and clear pointer
+.SH SYNTAX
+.B #include "alloc.h"
+.LP
+void \fBalloc_clear\fP(void* \fIptr\fP);
+.SH DESCRIPTION
+.B alloc_clear
+frees the memory pointed to by the pointer at \fIptr\fP, if it is not NULL,
+and then sets the pointer at \fIptr\fP to 0.
+.SH SEE ALSO
+alloc(3)

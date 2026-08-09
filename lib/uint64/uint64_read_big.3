@@ -1,0 +1,13 @@
+.TH uint64_read_big 3
+.SH NAME
+uint64_read_big \- read a big-endian 64-bit integer
+.SH SYNTAX
+.B #include "uint64.h"
+.LP
+uint64 \fBuint64_read_big\fP(const char* \fIin\fP);
+.SH DESCRIPTION
+.B uint64_read_big
+reads eight bytes from the memory pointed to by \fIin\fP and interprets them
+as a big-endian 64-bit unsigned integer.
+.SH SEE ALSO
+uint64(3)

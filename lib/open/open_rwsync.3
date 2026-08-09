@@ -1,0 +1,15 @@
+.TH open_rwsync 3
+.SH NAME
+open_rwsync \- open a file for read/write with synchronization
+.SH SYNTAX
+.B #include "open.h"
+.LP
+int \fBopen_rwsync\fP(const char* \fIfilename\fP);
+.SH DESCRIPTION
+.B open_rwsync
+opens the file named by \fIfilename\fP for reading and writing.
+It attempts to set the O_SYNC and O_DIRECT flags on the file descriptor
+to ensure synchronous I/O operations. Returns the file descriptor, or -1
+on failure.
+.SH SEE ALSO
+open(2), open_rw(3)

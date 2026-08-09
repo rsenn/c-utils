@@ -1,0 +1,16 @@
+.TH WAIT_PIDS_REAP 3
+.SH NAME
+wait_pids_reap \- reap multiple child processes
+.SH SYNOPSIS
+.B #include "wait.h"
+.PP
+.BI "int wait_pids_reap(int* " pids ", unsigned int " len ");"
+.SH DESCRIPTION
+.B wait_pids_reap
+repeatedly calls
+.B wait_pids_nohang
+to reap any terminated processes from the provided
+.I pids
+list.
+.SH RETURN VALUE
+Returns the number of processes successfully reaped.

@@ -1,0 +1,17 @@
+.TH WAIT_NOHANG 3
+.SH NAME
+wait_nohang \- wait for a child process without blocking
+.SH SYNOPSIS
+.B #include "wait.h"
+.PP
+.BI "int wait_nohang(int* " wstat ");"
+.SH DESCRIPTION
+.B wait_nohang
+waits for a child process to change state. If no child has changed state,
+it returns 0 immediately without blocking. If a child has changed state,
+the exit status is stored in
+.I wstat
+and the process ID of the child is returned.
+.SH RETURN VALUE
+Returns the PID of the child that changed state, 0 if no child is ready,
+or -1 on error.

@@ -1,0 +1,12 @@
+.TH tai_uint 3
+.SH NAME
+tai_uint \- set a TAI64 time value from an unsigned integer
+.SH SYNTAX
+.B #include "tai.h"
+.LP
+void \fBtai_uint\fP(struct tai* \fIt\fP, unsigned int \fIu\fP);
+.SH DESCRIPTION
+.B tai_uint
+initializes the TAI64 structure \fIt\fP to represent the number of seconds \fIu\fP.
+.SH SEE ALSO
+tai(3)

@@ -1,0 +1,13 @@
+.TH uint16_read_big 3
+.SH NAME
+uint16_read_big \- read a big-endian 16-bit integer
+.SH SYNTAX
+.B #include "uint16.h"
+.LP
+uint16 \fBuint16_read_big\fP(const char* \fIin\fP);
+.SH DESCRIPTION
+.B uint16_read_big
+reads two bytes from the memory pointed to by \fIin\fP and interprets them
+as a big-endian 16-bit unsigned integer.
+.SH SEE ALSO
+uint16(3)

@@ -1,0 +1,14 @@
+.TH WAIT_REAP 3
+.SH NAME
+wait_reap \- reap all available child processes
+.SH SYNOPSIS
+.B #include "wait.h"
+.PP
+.BI "unsigned int wait_reap(void);"
+.SH DESCRIPTION
+.B wait_reap
+repeatedly calls
+.B wait_nohang
+until no more child processes are available to be reaped.
+.SH RETURN VALUE
+Returns the total number of child processes reaped.
