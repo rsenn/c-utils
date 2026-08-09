@@ -1,0 +1,16 @@
+.TH PATH_RIGHT 3
+.SH NAME
+path_right \- truncate path to parent directory
+.SH SYNOPSIS
+.B #include "path_internal.h"
+.PP
+.B size_t path_right(const char* s, size_t n);
+.SH DESCRIPTION
+.B path_right
+takes a path string 
+.I s
+of length 
+.I n
+and returns the index of the start of the last path component, effectively trimming the final component.
+.SH RETURN VALUE
+Returns the length of the string up to the parent directory.

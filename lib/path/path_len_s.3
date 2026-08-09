@@ -1,0 +1,14 @@
+.TH PATH_LEN_S 3
+.SH NAME
+path_len_s \- get length of path component
+.SH SYNOPSIS
+.B #include "path_internal.h"
+.PP
+.B size_t path_len_s(const char* s);
+.SH DESCRIPTION
+.B path_len_s
+calculates the length of the first component of the path string 
+.I s
+until the next directory separator is encountered. It handles UTF-8 characters correctly.
+.SH RETURN VALUE
+Returns the number of bytes in the first path component.

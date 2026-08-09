@@ -1,0 +1,16 @@
+.TH SCAN_XCHAR 3
+.SH NAME
+scan_xchar \- parse a hexadecimal character
+.SH SYNOPSIS
+.B #include "scan.h"
+.PP
+.B size_t scan_xchar(const char* src, unsigned char* dest);
+.SH DESCRIPTION
+.B scan_xchar
+parses up to two hexadecimal digits from the string 
+.I src
+and stores the resulting byte in 
+.I dest.
+.SH RETURN VALUE
+Returns the number of bytes consumed from 
+.I src.

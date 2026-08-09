@@ -1,0 +1,17 @@
+.TH buffer_putptr 3
+.SH NAME
+buffer_putptr \- write a pointer address to a buffer
+.SH SYNTAX
+.B #include <buffer.h>
+
+int \fBbuffer_putptr\fP(buffer* \fIb\fP, const void* \fIptr\fP);
+.SH DESCRIPTION
+\fBbuffer_putptr\fP writes the hexadecimal representation of the memory
+address \fIptr\fP to the buffer \fIb\fP. If the pointer is \fINULL\fP,
+the string "(null)" is written instead. The output is zero-padded
+based on the size of the pointer type.
+
+.SH RETURN VALUE
+Returns the number of bytes written, or -1 on error (setting \fIerrno\fP).
+.SH SEE ALSO
+buffer_put(3), fmt_xlonglong(3)

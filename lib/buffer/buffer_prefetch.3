@@ -1,0 +1,32 @@
+.TH buffer_prefetch 3
+.SH NAME
+buffer_prefetch \- ensure a minimum number of bytes are available in the buffer
+.SH SYNTAX
+.B #include <buffer.h>
+
+ssize_t \fBbuffer_prefetch\fP(buffer* \fIb\fP, size_t \fIn\fP);
+.SH DESCRIPTION
+\fBbuffer_prefetch\fP ensures that at least \fIn\fP bytes are available in the 
+buffer \fIb\fP, starting from the current read position (\fIb->p\fP).
+
+If the requested number of bytes (\fIn\fP) is already present in the buffer 
+(i.e., \fIb->n - b->p >= n\fP), the function returns the number of bytes 
+currently available.
+
+If the buffer does not contain enough data, \fBbuffer_prefetch\fP attempts 
+to refill the buffer using the underlying read operation (\fIb->op\fP). 
+If the current read position is not at the beginning of the buffer, the 
+existing data is moved to the start of the buffer first to maximize available 
+space. It continues reading until at least \fIn\fP bytes are available, 
+an error occurs, or end-of-file is reached.
+
+For memory-mapped buffers, if the requested amount is not available because 
+the file is shorter than requested, the function returns the remaining data 
+in the current window.
+
+.SH RETURN VALUE
+Returns the total number of bytes available in the buffer starting from 
+the current pointer \fIb->p\fP, or -1 on error.
+
+.SH SEE ALSO
+buffer_init(3), buffer_feed(3), buffer_freshen(3)

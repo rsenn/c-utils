@@ -1,0 +1,36 @@
+.TH buffer_dump 3
+.SH NAME
+buffer_dump \- print a representation of buffer state to an output buffer
+.SH SYNTAX
+.B #include "buffer.h"
+
+void buffer_dump(buffer* \fIout\fP, buffer* \fIb\fP);
+.SH DESCRIPTION
+.B buffer_dump
+formats the current state of the buffer structure
+.I b
+into a human-readable string and writes it to the output buffer
+.I out\fP.
+
+The output includes:
+.IP \(bu 2
+.B p:
+The current buffer position (offset).
+.IP \(bu 2
+.B n:
+The number of bytes currently stored in the buffer.
+.IP \(bu 2
+.B a:
+The total allocated size of the buffer.
+.IP \(bu 2
+.B fd:
+The file descriptor associated with the buffer.
+.IP \(bu 2
+.B op:
+The function pointer used for I/O operations (represented as a descriptive label
+or memory address if unrecognized).
+
+If the project is compiled with COLOR_DUMP, the output is formatted with ANSI
+escape sequences for better visibility in terminal environments.
+.SH SEE ALSO
+buffer_puts(3), buffer_putnlflush(3)

@@ -1,0 +1,20 @@
+.TH buffer_putm_internal 3
+.SH NAME
+buffer_putm_internal \- write multiple strings to a buffer
+
+.SH SYNTAX
+.B #include <buffer.h>
+
+int \fBbuffer_putm_internal\fP(buffer* \fIb\fP, ...);
+
+.SH DESCRIPTION
+\fBbuffer_putm_internal\fP writes a sequence of null-terminated strings to the buffer \fIb\fP.
+The list of strings must be terminated by a NULL pointer.
+
+Each string is passed to \fBbuffer_puts\fP sequentially.
+
+.SH RETURN VALUE
+0 if all strings were successfully buffered, -1 on error.
+
+.SH SEE ALSO
+buffer_puts(3), buffer_put(3), buffer_putm(3)

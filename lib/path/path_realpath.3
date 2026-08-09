@@ -1,0 +1,16 @@
+.TH PATH_REALPATH 3
+.SH NAME
+path_realpath \- return the absolute canonical path
+.SH SYNOPSIS
+.B #include "path_internal.h"
+.PP
+.B int path_realpath(const char* path, stralloc* sa, int symbolic, stralloc* cwd);
+.SH DESCRIPTION
+.B path_realpath
+resolves relative paths to their absolute canonical form. If 
+.I cwd
+is provided, it uses it as the base directory; otherwise, it determines the current directory automatically. It resolves symlinks if 
+.I symbolic
+is non-zero.
+.SH RETURN VALUE
+Returns non-zero on success, 0 on error.

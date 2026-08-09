@@ -1,0 +1,26 @@
+.TH PATH_FNMATCH 3
+.SH NAME
+path_fnmatch \- shell-style filename pattern matching
+.SH SYNOPSIS
+.B #include "path_internal.h"
+.PP
+.B int path_fnmatch(const char* pattern, unsigned int plen, const char* string, unsigned int slen, int flags);
+.SH DESCRIPTION
+.B path_fnmatch
+checks if the 
+.I string 
+(of length 
+.I slen
+) matches the specified 
+.I pattern 
+(of length 
+.I plen
+).
+.PP
+It supports standard shell wildcards like '*' and '?', as well as character classes '[...]'. The 
+.I flags
+parameter controls behavior such as path separators and period handling (e.g., PATH_FNM_PATHNAME).
+.SH RETURN VALUE
+Returns 0 if the string matches the pattern, or 
+.B PATH_FNM_NOMATCH
+if it does not.

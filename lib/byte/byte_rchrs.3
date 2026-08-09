@@ -1,0 +1,22 @@
+.TH byte_rchrs 3
+.SH NAME
+byte_rchrs \- search for any of a set of bytes in a memory block (reverse)
+
+.SH SYNTAX
+.B #include <byte.h>
+
+size_t \fBbyte_rchrs\fP(const void *\fIin\fP, size_t \fIlen\fP, const char \fIneedles\fP[], size_t \fInn\fP);
+
+.SH DESCRIPTION
+\fBbyte_rchrs\fP searches the memory block starting at \fIin\fP of length \fIlen\fP
+for the last occurrence of any byte contained in the \fIneedles\fP array of length \fInn\fP.
+
+The search proceeds from the end of the memory block (\fIin + len - 1\fP) backwards 
+to the beginning (\fIin\fP).
+
+.SH RETURN VALUE
+\fBbyte_rchrs\fP returns the index of the last byte found that matches any byte in \fIneedles\fP,
+relative to the start of \fIin\fP. If no matching byte is found, it returns \fIlen\fP.
+
+.SH SEE ALSO
+byte_chr(3), byte_rchr(3)

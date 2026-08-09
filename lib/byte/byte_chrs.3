@@ -1,0 +1,13 @@
+.TH byte_chrs 3
+.SH NAME
+byte_chrs \- search for the first occurrence of any of several bytes
+.SH SYNTAX
+.B #include <byte.h>
+
+size_t \fBbyte_chrs\fR(const char *\fIhaystack\fR, size_t \fIlen\fR, const char *\fIneedle\fR, size_t \fInl\fR);
+.SH DESCRIPTION
+\fBbyte_chrs\fR returns the smallest integer \fIi\fR between 0 and \fIlen\fR - 1
+inclusive such that \fIhaystack\fR[\fIi\fR] is present in the \fInl\fR bytes pointed
+to by \fIneedle\fR. If no such byte is found, it returns \fIlen\fR.
+.SH SEE ALSO
+byte_chr(3), byte_chrns(3)

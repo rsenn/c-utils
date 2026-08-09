@@ -1,0 +1,33 @@
+.TH buffer_freshen 3
+.SH NAME
+buffer_freshen \- ensure buffer has data available for reading
+.SH SYNTAX
+.B #include <buffer.h>
+
+ssize_t \fBbuffer_freshen\fP(buffer *\fIb\fP);
+.SH DESCRIPTION
+\fBbuffer_freshen\fP ensures that the buffer \fIb\fP contains pending data by
+invoking the underlying read operation. It is primarily used to prepare
+a buffer for further read operations by ensuring data is present at the
+beginning of the buffer space.
+
+The function performs the following steps:
+.IP 1.
+If there is data already consumed in the buffer (i.e., \fIb->p > 0\fP),
+it shifts the remaining unconsumed data to the beginning of the buffer
+using \fBbuffer_MOVE\fP.
+.IP 2.
+If the buffer still has space available (\fIb->a > b->n\fP), it calls
+\fBbuffer_stubborn_read\fP to read more data from the underlying file
+descriptor \fIb->fd\fP into the empty space.
+.PP
+The function returns the number of bytes currently available for reading
+in the buffer (\fIb->n - b->p\fP). If an error occurs during the read
+operation, it returns -1.
+
+.SH ASSERTIONS
+\fBbuffer_freshen\fP asserts that the buffer operation \fIb->op\fP is not
+configured for dummy reads (\fBbuffer_dummyread\fP or \fBbuffer_dummyreadmmap\fP).
+
+.SH SEE ALSO
+buffer_feed(3), buffer_MOVE(3), buffer_stubborn_read(3)

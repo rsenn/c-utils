@@ -1,0 +1,12 @@
+.TH str_dup 3
+.SH NAME
+str_dup \- duplicate a string
+.SH SYNTAX
+.B #include <str.h>
+
+char* str_dup(const char* \fIs\fP);
+.SH DESCRIPTION
+str_dup allocates sufficient memory to hold the string \fIs\fP and a
+terminating null byte, copies \fIs\fP into it, and returns the pointer.
+.SH RETURN VALUE
+A pointer to the duplicated string, or NULL if memory allocation failed.

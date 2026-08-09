@@ -1,0 +1,16 @@
+.TH SIG_PUSH 3
+.SH NAME
+sig_push \- push a signal handler
+.SH SYNOPSIS
+.B #include "sig.h"
+.PP
+.BI "int sig_push(int " sig ", sighandler_t_ref " f ");"
+.SH DESCRIPTION
+.B sig_push
+configures the handler
+.I f
+for the signal
+.IR sig ,
+utilizing an internal stack mechanism if supported. It is generally used for stacking signal handlers. This function is MT-unsafe.
+.SH RETURN VALUE
+Returns 0 on success, or -1 on failure.

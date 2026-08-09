@@ -1,0 +1,24 @@
+.TH uint32_seed 3
+.SH NAME
+uint32_seed \- feed data to the uint32 pseudo-random number generator
+.SH SYNTAX
+.B #include "uint32.h"
+
+int \fBuint32_seed\fP(const void *\fIp\fP, unsigned long \fIn\fP);
+.SH DESCRIPTION
+.B uint32_seed
+updates the internal state of the 32-bit pseudo-random number generator.
+
+If \fIn\fP is 0, the function attempts to read entropy from the system's 
+random device (\fI/dev/urandom\fP) to seed the generator. It returns the 
+file descriptor used to open the device if successful, or -1 otherwise.
+
+If \fIn\fP is non-zero, the memory pointed to by \fIp\fP is used to XOR 
+the internal state pool of the generator. This allows an application to 
+inject application-specific or additional entropy into the generator.
+.SH RETURN VALUES
+When \fIn\fP is 0, it returns the file descriptor of \fI/dev/urandom\fP if 
+opened, or -1. When \fIn\fP is non-zero, it returns -1 (as no file 
+descriptor is opened).
+.SH SEE ALSO
+uint32_random(3)

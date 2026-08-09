@@ -1,0 +1,14 @@
+.TH SIG_NAME 3
+.SH NAME
+sig_name \- get signal name
+.SH SYNOPSIS
+.B #include "sig.h"
+.PP
+.BI "char const* sig_name(int " sig ");"
+.SH DESCRIPTION
+.B sig_name
+returns the symbolic name (string) associated with the signal number
+.IR sig .
+If the signal number is not found, it returns "???".
+.SH RETURN VALUE
+A pointer to a static string containing the signal name.

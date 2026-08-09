@@ -1,0 +1,44 @@
+.TH wait_pid_nohang 3 "2025" "lib" "Library Functions"
+.SH NAME
+wait_pid_nohang \- wait for a specific child process to exit
+
+.SH SYNOPSIS
+.B #include "wait.h"
+.PP
+.BI "int wait_pid_nohang(int " pid ", int* " wstat ");"
+
+.SH DESCRIPTION
+The
+.B wait_pid_nohang
+function waits for the child process identified by
+.IR pid 
+to terminate.
+
+.SH BEHAVIOR
+.SS Unix
+On Unix-like systems, this function repeatedly calls
+.BR wait_nohang (2)
+to reap terminated child processes until the process with the specified
+.I pid
+is found. If
+.B wait_nohang
+returns 0 (no children have exited) or -1 (error), the function returns that value immediately, without blocking for the specific
+.IR pid .
+The exit status of the reaped process is stored in the integer pointed to by
+.IR wstat .
+
+.SS Windows
+On Windows, the current implementation uses
+.BR WaitForSingleObject (3)
+with an infinite timeout. Note that despite the "nohang" suffix, the Windows implementation will block until the specified process terminates.
+
+.SH RETURN VALUE
+Returns the
+.I pid
+of the terminated process upon success. 
+Returns 0 if no status is currently available (Unix only).
+Returns -1 if the process does not exist or an error occurs.
+
+.SH SEE ALSO
+.BR wait_nohang (3),
+.BR wait_pid (3)

@@ -1,0 +1,15 @@
+.TH buffer_putnc 3
+.SH NAME
+buffer_putnc \- write a character multiple times to a buffer
+.SH SYNTAX
+.B #include <buffer.h>
+
+int \fBbuffer_putnc\fP(buffer* \fIb\fP, char \fIc\fP, int \fIntimes\fP);
+.SH DESCRIPTION
+\fBbuffer_putnc\fP writes the character \fIc\fP to the buffer \fIb\fP,
+\fIntimes\fP consecutive times.
+
+.SH RETURN VALUE
+Returns 0 on success, or -1 on error (setting \fIerrno\fP).
+.SH SEE ALSO
+buffer_putc(3), buffer_put(3)

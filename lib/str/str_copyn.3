@@ -1,0 +1,13 @@
+.TH str_copyn 3
+.SH NAME
+str_copyn \- copy a string with a limit
+.SH SYNTAX
+.B #include <str.h>
+
+size_t str_copyn(void* \fIp1\fP, const void* \fIp2\fP, size_t \fImax\fP);
+.SH DESCRIPTION
+str_copyn copies the null-terminated string from \fIp2\fP into \fIp1\fP,
+copying at most \fImax\fP bytes. If the source is longer than \fImax\fP,
+the result is truncated and null-terminated at the end of the buffer.
+.SH RETURN VALUE
+The number of bytes copied (excluding the null terminator).

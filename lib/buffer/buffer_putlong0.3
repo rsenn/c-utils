@@ -1,0 +1,17 @@
+.TH buffer_putlong0 3
+.SH NAME
+buffer_putlong0 \- write a zero-padded decimal integer to a buffer
+.SH SYNTAX
+.B #include <buffer.h>
+.B #include <fmt.h>
+
+int \fBbuffer_putlong0\fP(buffer* \fIb\fP, long \fIl\fP, int \fIpad\fP);
+.SH DESCRIPTION
+\fBbuffer_putlong0\fP formats the long integer \fIl\fP as a decimal string
+and writes it to the buffer \fIb\fP. If the resulting string is shorter
+than \fIpad\fP, the buffer is padded with leading spaces.
+
+.SH RETURN VALUE
+Returns 0 on success, or -1 on error (setting \fIerrno\fP).
+.SH SEE ALSO
+buffer_put(3), fmt_long(3)

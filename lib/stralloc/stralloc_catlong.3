@@ -1,0 +1,14 @@
+.TH stralloc_catlong 3
+.SH NAME
+stralloc_catlong \- append a long integer to a stralloc
+.SH SYNTAX
+.B #include <stralloc.h>
+
+size_t stralloc_catlong(stralloc* \fIsa\fP, long \fIl\fP);
+.SH DESCRIPTION
+stralloc_catlong converts the long integer \fIl\fP to a string (base 10) and
+appends it to the stralloc \fIsa\fP.
+.SH RETURN VALUE
+The number of characters appended, or 0 if memory allocation failed.
+.SH SEE ALSO
+stralloc_catulong(3)

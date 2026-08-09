@@ -1,0 +1,20 @@
+.TH buffer_putc 3
+.SH NAME
+buffer_putc \- write a single character to a buffer
+.SH SYNTAX
+.B #include "buffer.h"
+
+int buffer_putc(buffer* \fIb\fP, char \fIc\fP);
+.SH DESCRIPTION
+.B buffer_putc
+appends the character
+.I c
+to the buffer
+.I b\fP. If the buffer is full, it triggers a call to
+.B buffer_flush
+to attempt to write the current content to the underlying file descriptor.
+If the flush succeeds (or if the buffer is unbuffered), the character is added.
+.SH RETURN VALUE
+Returns 0 on success, or -1 if an error occurred during writing.
+.SH SEE ALSO
+buffer_puts(3), buffer_flush(3)

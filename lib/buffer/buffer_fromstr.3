@@ -1,0 +1,21 @@
+.TH buffer_fromstr 3
+.SH NAME
+buffer_fromstr \- initialize a buffer as a wrapper around a static string
+.SH SYNTAX
+.B #include "buffer.h"
+
+void buffer_fromstr(buffer* \fIb\fP, char* \fIs\fP, size_t \fIn\fP);
+.SH DESCRIPTION
+.B buffer_fromstr
+initializes the buffer
+.I b
+to treat the string
+.I s
+as its data source. The buffer size is set to
+.I n
+bytes, and the file descriptor is set to -1. An internal dummy operation
+handler is assigned to prevent actual file I/O operations, making this
+function useful for parsing or treating a memory block as a standard
+buffer structure.
+.SH SEE ALSO
+buffer_init(3)

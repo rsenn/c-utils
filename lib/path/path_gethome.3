@@ -1,0 +1,18 @@
+.TH PATH_GETHOME 3
+.SH NAME
+path_gethome \- get home directory for a user
+.SH SYNOPSIS
+.B #include "path_internal.h"
+.PP
+.B char* path_gethome(int uid);
+.SH DESCRIPTION
+.B path_gethome
+attempts to determine the home directory for the given user ID (
+.I uid
+).
+.PP
+On Windows, it retrieves the user profile folder. On Unix, it scans 
+.I /etc/passwd
+to look up the home directory associated with the specified numeric ID.
+.SH RETURN VALUE
+Returns a pointer to a static buffer containing the home directory, or NULL if the user cannot be found.

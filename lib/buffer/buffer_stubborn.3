@@ -1,0 +1,22 @@
+.TH BUFFER_STUBBORN 3
+.SH NAME
+buffer_stubborn \- robustly perform a buffered I/O operation
+.SH SYNTAX
+.B #include <buffer.h>
+.P
+int \fBbuffer_stubborn\fP(\fIop\fP, \fIfd\fP, \fIx\fP, \fIn\fP, \fIb\fP);
+.SH DESCRIPTION
+\fBbuffer_stubborn\fP attempts to perform an I/O operation \fIop\fP on file descriptor \fIfd\fP, ensuring the full amount \fIn\fP bytes is processed from/to buffer \fIx\fP.
+.P
+It repeatedly calls the operation \fIop\fP until either all \fIn\fP bytes are successfully handled or an error occurs. If the operation is interrupted by a signal (\fBEINTR\fP), the call continues automatically.
+.P
+The \fIb\fP argument is passed through to the \fIop\fP function. The \fIop\fP function must match the \fBbuffer_op_proto\fP signature:
+.RS
+.B typedef ssize_t buffer_op_proto(fd_type, void*, size_t, struct buffer*);
+.RE
+.P
+The \fIop\fP function should return the number of bytes processed, 0 for EOF, or -1 on error.
+.SH RETURN VALUE
+Returns 0 upon success (all \fIn\fP bytes processed), or -1 on error. If -1 is returned, \fIerrno\fP is set to indicate the cause of the failure.
+.SH SEE ALSO
+buffer(3)

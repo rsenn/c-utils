@@ -1,0 +1,13 @@
+.TH byte_endb 3
+.SH NAME
+byte_endb \- check if a byte array ends with a specific sequence
+.SH SYNTAX
+.B #include <byte.h>
+
+int \fBbyte_endb\fR(const void *\fIb\fR, size_t \fIblen\fR, const char *\fIx\fR, size_t \fIxlen\fR);
+.SH DESCRIPTION
+\fBbyte_endb\fR checks if the byte array \fIb\fR of length \fIblen\fR ends with the sequence \fIx\fR of length \fIxlen\fR.
+.SH RETURN VALUE
+\fBbyte_endb\fR returns 1 if the array \fIb\fR ends with \fIx\fR, and 0 otherwise.
+.SH SEE ALSO
+byte_equal(3), byte_ends(3), byte_startb(3)

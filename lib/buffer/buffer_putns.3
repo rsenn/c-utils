@@ -1,0 +1,16 @@
+.TH buffer_putns 3
+.SH NAME
+buffer_putns \- write a string multiple times to a buffer
+.SH SYNTAX
+.B #include <buffer.h>
+.B #include <str.h>
+
+int \fBbuffer_putns\fP(buffer* \fIb\fP, const char* \fIs\fP, int \fIntimes\fP);
+.SH DESCRIPTION
+\fBbuffer_putns\fP writes the null-terminated string \fIs\fP to the buffer \fIb\fP,
+\fIntimes\fP consecutive times.
+
+.SH RETURN VALUE
+Returns 0 on success, or -1 on error (setting \fIerrno\fP).
+.SH SEE ALSO
+buffer_puts(3), buffer_put(3)

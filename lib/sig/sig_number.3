@@ -1,0 +1,14 @@
+.TH SIG_NUMBER 3
+.SH NAME
+sig_number \- get signal number
+.SH SYNOPSIS
+.B #include "sig.h"
+.PP
+.BI "int sig_number(char const* " name ");"
+.SH DESCRIPTION
+.B sig_number
+looks up the signal number corresponding to the provided signal
+.IR name .
+The comparison is case-insensitive.
+.SH RETURN VALUE
+The signal number, or 0 if no match is found.

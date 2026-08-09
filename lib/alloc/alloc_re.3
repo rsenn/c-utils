@@ -1,0 +1,17 @@
+.TH alloc_re 3
+.SH NAME
+alloc_re \- resize a memory block
+.SH SYNTAX
+.B #include <alloc.h>
+
+int alloc_re(void* \fIptr\fP, size_t \fIm\fP, size_t \fIn\fP);
+.SH DESCRIPTION
+.B alloc_re
+resizes a memory block pointed to by the pointer at \fIptr\fP.
+\fIptr\fP must be a pointer to a pointer variable holding the address of the existing memory block of size \fIm\fP.
+It attempts to resize the block to size \fIn\fP.
+
+If the operation is successful, it updates the pointer at \fIptr\fP to the new address and returns 1.
+If the operation fails, it returns 0 and the original memory block remains untouched.
+.SH SEE ALSO
+alloc(3), alloc_free(3), alloc_zero(3)

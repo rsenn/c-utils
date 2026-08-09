@@ -1,0 +1,14 @@
+.TH buffer_putnspace 3
+.SH NAME
+buffer_putnspace \- write multiple spaces to a buffer
+.SH SYNTAX
+.B #include <buffer.h>
+
+int \fBbuffer_putnspace\fP(buffer* \fIb\fP, int \fIn\fP);
+.SH DESCRIPTION
+\fBbuffer_putnspace\fP writes \fIn\fP space characters to the buffer \fIb\fP.
+
+.SH RETURN VALUE
+Returns 0 on success, or -1 on error (setting \fIerrno\fP).
+.SH SEE ALSO
+buffer_putnc(3), buffer_put(3)

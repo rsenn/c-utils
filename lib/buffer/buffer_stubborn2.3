@@ -1,0 +1,46 @@
+.TH BUFFER_STUBBORN_READ 3
+.SH NAME
+buffer_stubborn_read \- perform a read operation while ignoring interrupts
+
+.SH SYNTAX
+.B #include <lib/buffer.h>
+.br
+.B ssize_t buffer_stubborn_read(buffer_op_proto* op, fd_type fd, const void* buf, size_t len, void* ptr);
+
+.SH DESCRIPTION
+.B buffer_stubborn_read
+performs a read (or read-like) operation on the file descriptor
+.IR fd ,
+storing the result in
+.IR buf
+of length
+.IR len .
+The actual operation is performed by calling the function pointer
+.IR op ,
+passing
+.IR fd ,
+.IR buf ,
+.IR len ,
+and the opaque pointer
+.IR ptr .
+
+Unlike a standard system read,
+.B buffer_stubborn_read
+automatically retries the operation if
+.IR op
+returns an error with
+.I errno
+set to
+.BR EINTR .
+This is useful for ensuring that signals do not prematurely abort I/O operations.
+
+.SH RETURN VALUE
+Returns the number of bytes read on success (the value returned by
+.IR op ),
+or -1 on error (with
+.I errno
+set appropriately by
+.IR op ).
+
+.SH SEE ALSO
+buffer(3), read(2)

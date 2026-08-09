@@ -1,0 +1,20 @@
+.TH SIG_ACTION 3
+.SH NAME
+sig_action \- set signal action
+.SH SYNOPSIS
+.B #include "sig.h"
+.PP
+.BI "int sig_action(int " sig ", struct sigaction const* " new ", struct sigaction* " old ");"
+.SH DESCRIPTION
+.B sig_action
+sets the action for the signal
+.I sig
+to that specified in
+.IR new .
+If
+.I old
+is not NULL, the previous signal action is stored there. This function wraps the system
+.BR sigaction (2)
+call, applying specific masking and flag policies consistent with the project's signal handling framework.
+.SH RETURN VALUE
+Returns 0 on success, or -1 on failure.

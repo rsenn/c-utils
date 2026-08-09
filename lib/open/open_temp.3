@@ -1,0 +1,27 @@
+.TH OPEN_TEMP 3
+.SH NAME
+open_temp \- create and open a temporary file
+.SH SYNOPSIS
+.B #include "open.h"
+.PP
+.B int open_temp(char** pt);
+.SH DESCRIPTION
+.B open_temp
+creates and opens a temporary file based on a template. 
+If 
+.I pt
+is non-null and points to a string, that string is used as the template.
+Otherwise, it uses the default template "temp-XXXXXX.txt".
+The 'XXXXXX' sequence is replaced by a random string to ensure the file name is unique.
+.PP
+The file is created with 
+.B O_RDWR | O_CREAT | O_TRUNC | O_BINARY
+flags.
+.PP
+On success, it returns a file descriptor to the opened file and updates 
+.I *pt
+with the name of the file created. The caller is responsible for deleting the file when it is no longer needed.
+.SH RETURN VALUE
+Returns a file descriptor on success, or -1 on error with 
+.I errno
+set appropriately.

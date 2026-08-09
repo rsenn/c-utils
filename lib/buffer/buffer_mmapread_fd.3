@@ -1,0 +1,25 @@
+.TH buffer_mmapread_fd 3
+.SH NAME
+buffer_mmapread_fd \- map a file descriptor into a buffer using mmap
+.SH SYNTAX
+.B #include "buffer.h"
+
+int buffer_mmapread_fd(buffer* \fIb\fP, fd_type \fIfd\fP);
+.SH DESCRIPTION
+.B buffer_mmapread_fd
+attempts to memory-map the file associated with the file descriptor
+.I fd
+directly into the buffer structure
+.I b
+using the
+.I mmap_read_fd
+function. 
+
+If successful, the buffer's data pointer is pointed to the mapped memory,
+and the deinitialization function is set to
+.B buffer_munmap
+to ensure the memory is unmapped when the buffer is destroyed.
+.SH RETURN VALUE
+Returns 0 on success, or -1 if the memory mapping fails.
+.SH SEE ALSO
+mmap(2), buffer_munmap(3)

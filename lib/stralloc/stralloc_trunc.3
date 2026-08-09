@@ -1,0 +1,12 @@
+.TH stralloc_trunc 3
+.SH NAME
+stralloc_trunc \- truncate a stralloc
+.SH SYNTAX
+.B #include <stralloc.h>
+
+int stralloc_trunc(stralloc* \fIsa\fP, size_t \fIn\fP);
+.SH DESCRIPTION
+stralloc_trunc truncates the stralloc \fIsa\fP to length \fIn\fP and ensures
+that a null terminator is present at \fIsa->s[n]\fP.
+.SH RETURN VALUE
+1 if successful, 0 if reallocation failed.

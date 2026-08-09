@@ -1,0 +1,20 @@
+.TH uint32_random 3
+.SH NAME
+uint32_random \- generate a pseudo-random 32-bit integer
+.SH SYNTAX
+.B #include "uint32.h"
+
+uint32 \fBuint32_random\fP(void);
+.SH DESCRIPTION
+.B uint32_random
+returns a pseudo-random 32-bit unsigned integer.
+
+The function maintains an internal pool of state. If the pool has not been 
+seeded, it automatically attempts to seed itself using the current time 
+via \fBuint32_seed\fP.
+
+Subsequent calls to \fBuint32_random\fP use a pseudo-random number generation 
+algorithm based on the current state of the pool, which is updated with each 
+call.
+.SH SEE ALSO
+uint32_seed(3)

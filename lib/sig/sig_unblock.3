@@ -1,0 +1,14 @@
+.TH SIG_UNBLOCK 3
+.SH NAME
+sig_unblock \- unblock signals
+.SH SYNOPSIS
+.B #include "sig.h"
+.PP
+.BI "void sig_unblock(int " signum ");"
+.SH DESCRIPTION
+.B sig_unblock
+removes
+.I signum
+from the process signal mask, allowing it to be delivered to the process.
+.SH RETURN VALUE
+None.

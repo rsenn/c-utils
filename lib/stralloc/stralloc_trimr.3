@@ -1,0 +1,10 @@
+.TH stralloc_trimr 3
+.SH NAME
+stralloc_trimr \- trim characters from the right of a stralloc
+.SH SYNTAX
+.B #include <stralloc.h>
+
+void stralloc_trimr(stralloc* \fIsa\fP, const char* \fItrimchars\fP, unsigned int \fItrimcharslen\fP);
+.SH DESCRIPTION
+stralloc_trimr removes trailing characters from the end of \fIsa\fP that are
+contained in the set \fItrimchars\fP of length \fItrimcharslen\fP.

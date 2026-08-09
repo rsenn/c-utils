@@ -1,0 +1,18 @@
+.TH buffer_putspad 3
+.SH NAME
+buffer_putspad \- write a string to a buffer with trailing space padding
+.SH SYNTAX
+.B #include <buffer.h>
+.B #include <str.h>
+
+int \fBbuffer_putspad\fP(buffer* \fIb\fP, const char* \fIx\fP, size_t \fIpad\fP);
+.SH DESCRIPTION
+\fBbuffer_putspad\fP writes the null-terminated string \fIx\fP to the buffer \fIb\fP.
+It calculates the display length of the string using \fBstr_ansilen\fP and, if
+that length is less than \fIpad\fP, it appends the necessary number of space 
+characters to the buffer to reach the specified width.
+
+.SH RETURN VALUE
+Returns 0 on success, or -1 on error (setting \fIerrno\fP).
+.SH SEE ALSO
+buffer_put(3), buffer_putnspace(3), str_ansilen(3)

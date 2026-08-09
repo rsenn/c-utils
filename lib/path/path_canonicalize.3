@@ -1,0 +1,20 @@
+.TH PATH_CANONICALIZE 3
+.SH NAME
+path_canonicalize \- convert path to canonical form
+.SH SYNOPSIS
+.B #include "path.h"
+.PP
+.B int path_canonicalize(const char* path, stralloc* sa, int symbolic);
+.SH DESCRIPTION
+.B path_canonicalize
+processes a path string and appends the canonical version to the 
+.B stralloc 
+buffer 
+.I sa.
+It resolves '.' and '..' components.
+.PP
+If 
+.I symbolic
+is non-zero, it resolves symbolic links encountered in the path.
+.SH RETURN VALUE
+Returns a value greater than 0 on success, representing the number of symlinks processed + 1. Returns 0 on error.

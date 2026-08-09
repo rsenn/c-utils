@@ -1,0 +1,16 @@
+.TH SIG_CATCH 3
+.SH NAME
+sig_catch \- register a signal handler
+.SH SYNOPSIS
+.B #include "sig.h"
+.PP
+.BI "int sig_catch(int " sig ", sighandler_t_ref " f ");"
+.SH DESCRIPTION
+.B sig_catch
+registers a handler function
+.I f
+to catch signal
+.IR sig .
+It configures the signal action with standard masks and flags (SA_MASKALL | SA_NOCLDSTOP). This function is MT-unsafe.
+.SH RETURN VALUE
+Returns 0 on success, or -1 on failure.

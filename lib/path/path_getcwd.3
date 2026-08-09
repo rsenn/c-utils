@@ -1,0 +1,22 @@
+.TH PATH_GETCWD 3
+.SH NAME
+path_getcwd, path_getcwd_s \- get current working directory
+.SH SYNOPSIS
+.B #include "path_internal.h"
+.PP
+.B void path_getcwd(stralloc* sa);
+.br
+.B char* path_getcwd_s(void);
+.SH DESCRIPTION
+.B path_getcwd
+retrieves the current working directory and stores it in the provided 
+.B stralloc 
+buffer.
+.PP
+.B path_getcwd_s
+provides a non-reentrant alternative that returns a pointer to a static internal buffer containing the current working directory.
+.SH RETURN VALUE
+.B path_getcwd
+has no return value. 
+.B path_getcwd_s
+returns a pointer to the directory string or NULL on failure.

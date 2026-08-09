@@ -1,0 +1,12 @@
+.TH SIG_BLOCKNONE 3
+.SH NAME
+sig_blocknone \- clear the signal mask
+.SH SYNOPSIS
+.B #include "sig.h"
+.PP
+.BI "void sig_blocknone(void);"
+.SH DESCRIPTION
+.B sig_blocknone
+clears the signal mask of the current process, ensuring no signals are blocked.
+.SH RETURN VALUE
+None.

@@ -1,0 +1,14 @@
+.TH stralloc_catulong 3
+.SH NAME
+stralloc_catulong \- append an unsigned long integer to a stralloc
+.SH SYNTAX
+.B #include <stralloc.h>
+
+size_t stralloc_catulong(stralloc* \fIsa\fP, unsigned long \fIul\fP);
+.SH DESCRIPTION
+stralloc_catulong converts the unsigned long integer \fIul\fP to a string (base 10)
+and appends it to the stralloc \fIsa\fP.
+.SH RETURN VALUE
+The number of characters appended, or 0 if memory allocation failed.
+.SH SEE ALSO
+stralloc_catlong(3)

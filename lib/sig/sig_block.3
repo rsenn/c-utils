@@ -1,0 +1,14 @@
+.TH SIG_BLOCK 3
+.SH NAME
+sig_block \- block a signal
+.SH SYNOPSIS
+.B #include "sig.h"
+.PP
+.BI "void sig_block(int " signum ");"
+.SH DESCRIPTION
+.B sig_block
+adds
+.I signum
+to the current process signal mask, preventing the signal from being delivered until it is unblocked.
+.SH RETURN VALUE
+None.

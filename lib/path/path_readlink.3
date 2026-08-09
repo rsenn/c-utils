@@ -1,0 +1,18 @@
+.TH PATH_READLINK 3
+.SH NAME
+path_readlink \- read value of a symbolic link
+.SH SYNOPSIS
+.B #include "path_internal.h"
+.PP
+.B int path_readlink(const char* path, stralloc* sa);
+.SH DESCRIPTION
+.B path_readlink
+reads the contents of the symbolic link at 
+.I path 
+and appends it to the 
+.B stralloc 
+buffer 
+.I sa.
+It automatically resizes the buffer to accommodate the link target.
+.SH RETURN VALUE
+Returns the length of the link target string on success, or -1 on error.

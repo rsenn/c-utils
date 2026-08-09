@@ -1,0 +1,28 @@
+.TH buffer_get_until 3
+.SH NAME
+buffer_get_until \- read bytes from buffer until a character from a set is found
+.SH SYNTAX
+.B #include "buffer.h"
+
+int buffer_get_until(buffer* \fIb\fP, char* \fIx\fP, size_t \fIn\fP, const char* \fIcharset\fP, size_t \fIsetlen\fP);
+.SH DESCRIPTION
+.B buffer_get_until
+reads bytes from buffer
+.I b
+into the memory pointed to by
+.I x
+(up to a maximum of
+.I n
+bytes) until a character is encountered that is present in the specified
+.I charset
+(of length
+.I setlen\fP). 
+
+If a character from the set is found, the reading stops, and the character is
+included in the output string. If the end of the buffer is reached (EOF)
+without finding any characters from the set, the function returns the
+number of bytes read and null-terminates the result.
+.SH RETURN VALUE
+Returns the number of bytes read, or a negative value if a buffer error occurs.
+.SH SEE ALSO
+buffer_getc(3), byte_chr(3)

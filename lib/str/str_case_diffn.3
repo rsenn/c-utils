@@ -1,0 +1,13 @@
+.TH str_case_diffn 3
+.SH NAME
+str_case_diffn \- compare two strings case-insensitively up to n bytes
+.SH SYNTAX
+.B #include <str.h>
+
+int str_case_diffn(const void* \fIp1\fP, const void* \fIp2\fP, size_t \fIn\fP);
+.SH DESCRIPTION
+str_case_diffn compares up to \fIn\fP characters of the null-terminated strings
+\fIp1\fP and \fIp2\fP without regard to case.
+.SH RETURN VALUE
+Returns 0 if the strings are equal up to the limit, or the difference between
+the first non-matching characters.

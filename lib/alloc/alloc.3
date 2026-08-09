@@ -1,0 +1,32 @@
+.TH ALLOC 3
+.SH NAME
+alloc \- allocate memory
+.SH SYNOPSIS
+.B #include "alloc.h"
+.LP
+.BI "void *alloc(size_t " n ");"
+.SH DESCRIPTION
+.B alloc
+allocates at least \fIn\fP bytes of memory.
+.PP
+If the build is configured with
+.B DJB_STRICT
+defined,
+.B alloc
+attempts to satisfy the request from a pre-allocated static buffer of 2048 bytes. If the request cannot be satisfied by this buffer, it falls back to
+.BR malloc(3) .
+.PP
+If
+.B DJB_STRICT
+is not defined,
+.B alloc
+is a direct wrapper for
+.BR malloc(3) .
+.SH RETURN VALUE
+.B alloc
+returns a pointer to the allocated memory on success. If the request cannot be satisfied, it returns 0 and sets
+.B errno
+to
+.B ENOMEM.
+.SH SEE ALSO
+alloc_free(3), malloc(3)

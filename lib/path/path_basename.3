@@ -1,0 +1,16 @@
+.TH PATH_BASENAME 3
+.SH NAME
+path_basename \- extract the basename from a path
+.SH SYNOPSIS
+.B #include "path.h"
+.PP
+.B char* path_basename(const char* path);
+.SH DESCRIPTION
+.B path_basename
+returns a pointer to the final component of the file path 
+.I path.
+It identifies the basename by searching for the last directory separator in the string.
+.SH RETURN VALUE
+Returns a pointer to the start of the basename within the original 
+.I path 
+string.

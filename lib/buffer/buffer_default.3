@@ -1,0 +1,22 @@
+.TH buffer_default 3
+.SH NAME
+buffer_default \- initialize a buffer structure with default values
+.SH SYNTAX
+.B #include "buffer.h"
+
+void buffer_default(buffer* \fIb\fP, buffer_op_fn* \fIop\fP);
+.SH DESCRIPTION
+.B buffer_default
+initializes the provided
+.I buffer
+structure
+.I b
+by setting its file descriptor to -1 and its internal pointers and counters to zero.
+It assigns the provided function pointer
+.I op
+as the buffer's operation handler.
+
+This is typically used as the first step in setting up a buffer before
+calling other buffer manipulation functions.
+.SH SEE ALSO
+buffer_init(3)

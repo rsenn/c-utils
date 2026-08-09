@@ -1,0 +1,16 @@
+.TH buffer_putxlonglong 3
+.SH NAME
+buffer_putxlonglong \- write a 64-bit hexadecimal integer to a buffer
+.SH SYNTAX
+.B #include <buffer.h>
+.B #include <fmt.h>
+
+int \fBbuffer_putxlonglong\fP(buffer* \fIb\fP, uint64 \fIl\fP);
+.SH DESCRIPTION
+\fBbuffer_putxlonglong\fP formats the 64-bit integer \fIl\fP as a hexadecimal
+string and writes it to the buffer \fIb\fP.
+
+.SH RETURN VALUE
+Returns the number of bytes written, or -1 on error (setting \fIerrno\fP).
+.SH SEE ALSO
+buffer_put(3), fmt_xlonglong(3)

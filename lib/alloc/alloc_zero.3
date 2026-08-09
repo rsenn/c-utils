@@ -1,0 +1,17 @@
+.TH alloc_zero 3
+.SH NAME
+alloc_zero \- allocate and zero-initialize memory
+.SH SYNTAX
+.B #include <alloc.h>
+
+void* alloc_zero(size_t \fIn\fP);
+.SH DESCRIPTION
+.B alloc_zero
+allocates \fIn\fP bytes of memory using
+.BR alloc (3)
+and initializes the entire block to zero using
+.BR byte_zero (3).
+
+If the allocation fails, it returns NULL.
+.SH SEE ALSO
+alloc(3), alloc_re(3), byte_zero(3)

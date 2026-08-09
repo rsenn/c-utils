@@ -1,0 +1,19 @@
+.TH byte_ends 3
+.SH NAME
+byte_ends \- check if a byte string ends with a specific string
+.SH SYNTAX
+.B #include <byte.h>
+.B #include <str.h>
+
+int \fBbyte_ends\fR(const void *\fIx\fR, size_t \fIn\fR, const char *\fIs\fR);
+.SH DESCRIPTION
+\fBbyte_ends\fR checks if the byte string \fIx\fR of length \fIn\fR
+ends with the null-terminated string \fIs\fR.
+
+It returns 1 if the string \fIx\fR ends with \fIs\fR, 0 otherwise.
+If \fIn\fR is less than the length of \fIs\fR, it returns 0.
+
+This function is implemented as:
+.B byte_endb(x, n, s, str_len(s))
+.SH SEE ALSO
+byte_endb(3), str_len(3)
