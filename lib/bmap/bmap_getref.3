@@ -1,0 +1,51 @@
+.TH BMAP_GETREF 3 "2023-04-01" "1.0" "lib/bmap/bmap_getref"
+.SH NAME
+bmap_getref \- Retrieve a node reference from a hash map
+.SH SYNOPSIS
+#include <lib/bmap/bmap.h>
+
+bmap_node_t** bmap_getref(bmap_base_t *m, const char *key);
+.SH DESCRIPTION
+The \fBbmap_getref\fR function retrieves a pointer to the node associated with a given key from the hash map \fIm\fR. It returns a pointer to the node if the key exists, or \fBNULL\fR if the key does not exist.
+
+This function is useful for accessing the internal node of a hash map based on a specific key.
+.SH ARGUMENTS
+\fIm\fR
+The hash map from which to retrieve the node.
+\fIkey\fR
+The key associated with the node to be retrieved.
+.SH RETURN VALUE
+A pointer to the node associated with the given key, or \fBNULL\fR if the key does not exist.
+.SH EXAMPLE
+The following example demonstrates how to use the \fBbmap_getref\fR function:
+.nf
+#include <lib/bmap/bmap.h>
+#include <stdio.h>
+
+int main() {
+    bmap_base_t *m = bmap_init(100);
+    if (m == NULL) {
+        fprintf(stderr, "Failed to initialize hash map\n");
+        return 1;
+    }
+
+    // Insert some data into the hash map
+    bmap_insert(m, "key1", "value1");
+
+    // Retrieve a node reference from the hash map
+    bmap_node_t **nodeRef = bmap_getref(m, "key1");
+    if (nodeRef != NULL && *nodeRef != NULL) {
+        printf("Retrieved node: %s\n", (char *)(*nodeRef + 1));
+    } else {
+        printf("Key not found\n");
+    }
+
+    bmap_deinit_(m);
+    return 0;
+}
+.ne
+.fi
+.SH AUTHOR
+This manual page was written by John Doe.
+.SH SEE ALSO
+bmap_init(3), bmap_insert(3), bmap_remove(3), bmap_get_(3), bmap_deinit_(3)

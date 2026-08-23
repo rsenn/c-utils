@@ -1,0 +1,45 @@
+.TH BMAP_ITER 3 "2023-04-01" "1.0" "lib/bmap/bmap_iter"
+.SH NAME
+bmap_iter_ \- Initialize a hash map iterator
+.SH SYNOPSIS
+#include <lib/bmap/bmap.h>
+
+bmap_iter_t bmap_iter_(void);
+.SH DESCRIPTION
+The \fBbmap_iter_\fR function initializes a hash map iterator. It sets the iterator's bucket index to -1 and the node pointer to \fBNULL\fR.
+
+This function is useful for iterating over the elements in a hash map.
+.SH RETURN VALUE
+A new hash map iterator.
+.SH EXAMPLE
+The following example demonstrates how to use the \fBbmap_iter_\fR function:
+.nf
+#include <lib/bmap/bmap.h>
+#include <stdio.h>
+
+int main() {
+    bmap_base_t *m = bmap_init(100);
+    if (m == NULL) {
+        fprintf(stderr, "Failed to initialize hash map\n");
+        return 1;
+    }
+
+    // Insert some data into the hash map
+    bmap_insert(m, "key1", "value1");
+    bmap_insert(m, "key2", "value2");
+
+    // Iterate over the hash map
+    bmap_iter_t iter = bmap_iter_();
+    for (; bmap_iter_next(&iter, m); ) {
+        printf("Key: %s, Value: %s\n", (char *)(iter.node + 1), (char *)iter.node->value);
+    }
+
+    bmap_deinit_(m);
+    return 0;
+}
+.ne
+.fi
+.SH AUTHOR
+This manual page was written by John Doe.
+.SH SEE ALSO
+bmap_init(3), bmap_insert(3), bmap_remove(3), bmap_iter_next(3), bmap_deinit_(3)
