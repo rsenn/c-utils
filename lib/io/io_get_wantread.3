@@ -1,0 +1,42 @@
+.TH IO_GET_WANTREAD 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+io_get_wantread \- Check if an I/O entry wants to read
+
+.SH SYNOPSIS
+.IB #include <lib/io_internal.h>
+
+.IB int
+.IB io_get_wantread(
+.IB fd_type d
+.IB );
+
+.SH DESCRIPTION
+The \fBio_get_wantread\fR function checks if an I/O entry associated with a file descriptor wants to read. It takes one parameter:
+
+.IB fd_type d
+The file descriptor for which to check if the I/O entry wants to read.
+
+The function returns 1 if the I/O entry wants to read, or 0 otherwise.
+
+The \fBio_get_wantread\fR function is intended to be used to determine if an I/O entry associated with a file descriptor is currently interested in reading data.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBio_get_wantread\fR function to check if an I/O entry wants to read:
+
+.nf
+#include <stdio.h>
+#include <lib/io_internal.h>
+
+int main() {
+    fd_type s = 123;  // Example file descriptor
+
+    if (io_get_wantread(s)) {
+        printf("I/O entry for fd %d wants to read\n", s);
+    } else {
+        printf("I/O entry for fd %d does not want to read\n", s);
+    }
+
+    return 0;
+}
+.nef

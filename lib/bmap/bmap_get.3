@@ -1,0 +1,51 @@
+.TH BMAP_GET 3 "2023-04-01" "1.0" "lib/bmap/bmap_get"
+.SH NAME
+bmap_get_ \- Retrieve a value from a hash map
+.SH SYNOPSIS
+#include <lib/bmap/bmap.h>
+
+void* bmap_get_(bmap_base_t *m, const char *key);
+.SH DESCRIPTION
+The \fBbmap_get_\fR function retrieves a value associated with a given key from the hash map \fIm\fR. It returns the value if the key exists, or \fBNULL\fR if the key does not exist.
+
+This function is useful for accessing data stored in a hash map based on a specific key.
+.SH ARGUMENTS
+\fIm\fR
+The hash map from which to retrieve the value.
+\fIkey\fR
+The key associated with the value to be retrieved.
+.SH RETURN VALUE
+A pointer to the value associated with the given key, or \fBNULL\fR if the key does not exist.
+.SH EXAMPLE
+The following example demonstrates how to use the \fBbmap_get_\fR function:
+.nf
+#include <lib/bmap/bmap.h>
+#include <stdio.h>
+
+int main() {
+    bmap_base_t *m = bmap_init(100);
+    if (m == NULL) {
+        fprintf(stderr, "Failed to initialize hash map\n");
+        return 1;
+    }
+
+    // Insert some data into the hash map
+    bmap_insert(m, "key1", "value1");
+
+    // Retrieve a value from the hash map
+    void *value = bmap_get_(m, "key1");
+    if (value != NULL) {
+        printf("Retrieved value: %s\n", (char *)value);
+    } else {
+        printf("Key not found\n");
+    }
+
+    bmap_deinit_(m);
+    return 0;
+}
+.ne
+.fi
+.SH AUTHOR
+This manual page was written by John Doe.
+.SH SEE ALSO
+bmap_init(3), bmap_insert(3), bmap_remove(3), bmap_deinit_(3)

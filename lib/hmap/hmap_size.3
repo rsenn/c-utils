@@ -1,0 +1,50 @@
+.TH HMAP_SIZE 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+hmap_size \- Get the number of elements in a hash map
+
+.SH SYNOPSIS
+.IB #include <lib/hmap_internal.h>
+
+.IB size_t
+.IB hmap_size(HMAP_DB* my_hmap_db);
+
+.SH DESCRIPTION
+The \fBhmap_size\fR function retrieves the number of elements stored in a hash map. It takes a pointer to the hash map database as an argument.
+
+The function takes the following parameter:
+.IB HMAP_DB*
+.IB my_hmap_db
+A pointer to the hash map database.
+
+The function returns the number of elements in the hash map as a \fBsize_t\fR value.
+
+The \fBhmap_size\fR function is intended to be used to determine the number of elements currently stored in a hash map.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBhmap_size\fR function to get the number of elements in a hash map:
+
+.nf
+#include <stdio.h>
+#include <lib/hmap_internal.h>
+
+int main() {
+    HMAP_DB* hmap_db = 0;
+    size_t size;
+
+    // Initialize the hash map database
+    hmap_init(&hmap_db);
+
+    // Set some elements in the hash map
+    // ...
+
+    // Get the number of elements in the hash map
+    size = hmap_size(hmap_db);
+    printf("Number of elements in the hash map: %zu\n", size);
+
+    // Free the hash map database
+    hmap_destroy(&hmap_db);
+
+    return 0;
+}
+.nef

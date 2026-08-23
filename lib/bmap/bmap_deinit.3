@@ -1,0 +1,40 @@
+.TH BMAP_DEINIT 3 "2023-04-01" "1.0" "lib/bmap/bmap_deinit"
+.SH NAME
+bmap_deinit_ \- Deinitialize a hash map
+.SH SYNOPSIS
+#include <lib/bmap/bmap.h>
+
+void bmap_deinit_(bmap_base_t *m);
+.SH DESCRIPTION
+The \fBbmap_deinit_\fR function deinitializes a hash map \fIm\fR. It frees all the memory associated with the hash map, including the buckets and the nodes.
+
+This function should be called before the hash map is no longer needed to ensure that all allocated memory is properly released.
+.SH ARGUMENTS
+\fIm\fR
+The hash map to be deinitialized.
+.SH RETURN VALUE
+This function does not return a value.
+.SH EXAMPLE
+The following example demonstrates how to use the \fBbmap_deinit_\fR function:
+.nf
+#include <lib/bmap/bmap.h>
+#include <stdio.h>
+
+int main() {
+    bmap_base_t *m = bmap_init(100);
+    if (m == NULL) {
+        fprintf(stderr, "Failed to initialize hash map\n");
+        return 1;
+    }
+
+    // Perform operations on the hash map
+
+    bmap_deinit_(m);
+    return 0;
+}
+.ne
+.fi
+.SH AUTHOR
+This manual page was written by John Doe.
+.SH SEE ALSO
+bmap_init(3), bmap_insert(3), bmap_lookup(3), bmap_remove(3)

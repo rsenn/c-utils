@@ -1,0 +1,57 @@
+.TH IO_RESET 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+iob_reset \- Reset the I/O batch buffer
+
+.SH SYNOPSIS
+.IB #include <lib/iob_internal.h>
+
+.IB void
+.IB iob_reset(
+.IB io_batch* b
+.IB );
+
+.SH DESCRIPTION
+The \fBiob_reset\fR function resets the I/O batch buffer. This function is used to clear the contents of the I/O batch buffer and free any associated resources.
+
+The function takes the following parameter:
+
+.IB b
+Pointer to the I/O batch buffer.
+
+The function does not return any value.
+
+The function is part of the \fBiob\fR library, which provides a framework for managing I/O operations in batch mode.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBiob_reset\fR function to reset the I/O batch buffer:
+
+.nf
+#include <stdio.h>
+#include <lib/iob.h>
+
+int main() {
+  io_batch* batch = iob_new(100); // Hint for 100 entries
+  if (!batch) {
+    perror("iob_new");
+    return 1;
+  }
+
+  // Add data to the batch buffer
+  iob_adds(batch, "Hello, World!");
+  iob_adds(batch, "This is a test.");
+
+  // Reset the I/O batch buffer
+  iob_reset(batch);
+
+  // Check if the batch buffer is empty
+  if (iob_bytesleft(batch) == 0) {
+    printf("I/O batch buffer is empty after reset\n");
+  }
+
+  // Free the I/O batch buffer
+  iob_free(batch);
+
+  return 0;
+}
+.nef

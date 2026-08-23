@@ -1,0 +1,52 @@
+.TH IO_BYTESLEFT 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+iob_bytesleft \- Get the number of bytes left to be processed in an I/O batch buffer
+
+.SH SYNOPSIS
+.IB #include <lib/iob.h>
+
+.IB uint64
+.IB iob_bytesleft(
+.IB const io_batch* b
+.IB );
+
+.SH DESCRIPTION
+The \fBiob_bytesleft\fR function returns the number of bytes left to be processed in an I/O batch buffer. This function is useful for tracking the progress of batch processing operations.
+
+The function takes the following parameter:
+
+.IB b
+Pointer to the I/O batch buffer.
+
+The function returns the number of bytes left to be processed.
+
+The function is part of the \fBiob\fR library, which provides a framework for managing I/O operations in batch mode.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBiob_bytesleft\fR function to track the progress of batch processing operations:
+
+.nf
+#include <stdio.h>
+#include <lib/iob.h>
+
+int main() {
+  io_batch batch;
+  io_batch_init(&batch);
+
+  // Add data to the batch buffer
+  iob_adds(&batch, "Hello, World!");
+  iob_adds(&batch, "This is a test.");
+
+  // Process the batch buffer
+  while (iob_bytesleft(&batch) > 0) {
+    // Process data in the batch buffer
+    printf("Processing %lu bytes\n", iob_bytesleft(&batch));
+    iob_execute(&batch);
+  }
+
+  printf("Batch processing complete\n");
+
+  return 0;
+}
+.nef

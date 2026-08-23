@@ -1,0 +1,63 @@
+.TH IO_PREFETCH 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+iob_prefetch \- Prefetch data into the I/O batch buffer
+
+.SH SYNOPSIS
+.IB #include <lib/iob_internal.h>
+
+.IB void
+.IB iob_prefetch(
+.IB io_batch* b,
+.IB uint64 bytes
+.IB );
+
+.SH DESCRIPTION
+The \fBiob_prefetch\fR function prefetches data into the I/O batch buffer. This function is used to optimize the performance of I/O operations by loading data into the cache in advance.
+
+The function takes the following parameters:
+
+.IB b
+Pointer to the I/O batch buffer.
+
+.IB bytes
+Number of bytes to prefetch.
+
+The function does not return any value.
+
+The function is part of the \fBiob\fR library, which provides a framework for managing I/O operations in batch mode.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBiob_prefetch\fR function to prefetch data into the I/O batch buffer:
+
+.nf
+#include <stdio.h>
+#include <lib/iob.h>
+
+int main() {
+  io_batch* batch = iob_new(100); // Hint for 100 entries
+  if (!batch) {
+    perror("iob_new");
+    return 1;
+  }
+
+  // Add data to the batch buffer
+  iob_adds(batch, "Hello, World!");
+  iob_adds(batch, "This is a test.");
+
+  // Prefetch data into the batch buffer
+  iob_prefetch(batch, 1024); // Prefetch 1024 bytes
+
+  // Process the batch buffer
+  while (iob_bytesleft(batch) > 0) {
+    iob_execute(batch);
+  }
+
+  // Free the I/O batch buffer
+  iob_free(batch);
+
+  printf("I/O batch buffer created, prefetched, processed, and freed\n");
+
+  return 0;
+}
+.nef

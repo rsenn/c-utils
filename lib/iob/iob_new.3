@@ -1,0 +1,56 @@
+.TH IO_NEW 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+iob_new \- Create a new I/O batch buffer
+
+.SH SYNOPSIS
+.IB #include <lib/iob_internal.h>
+
+.IB io_batch*
+.IB iob_new(
+.IB int hint_entries
+.IB );
+
+.SH DESCRIPTION
+The \fBiob_new\fR function creates a new I/O batch buffer. This function is used to allocate and initialize an I/O batch buffer, which can then be used to manage I/O operations in batch mode.
+
+The function takes the following parameter:
+
+.IB hint_entries
+Hint for the number of entries in the batch buffer. This is used to pre-allocate memory, which can improve performance by reducing the number of memory allocations during batch processing.
+
+The function returns a pointer to the newly created I/O batch buffer, or NULL if the allocation fails.
+
+The function is part of the \fBiob\fR library, which provides a framework for managing I/O operations in batch mode.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBiob_new\fR function to create a new I/O batch buffer:
+
+.nf
+#include <stdio.h>
+#include <lib/iob.h>
+
+int main() {
+  io_batch* batch = iob_new(100); // Hint for 100 entries
+  if (!batch) {
+    perror("iob_new");
+    return 1;
+  }
+
+  // Add data to the batch buffer
+  iob_adds(batch, "Hello, World!");
+  iob_adds(batch, "This is a test.");
+
+  // Process the batch buffer
+  while (iob_bytesleft(batch) > 0) {
+    iob_execute(batch);
+  }
+
+  // Free the I/O batch buffer
+  iob_free(batch);
+
+  printf("I/O batch buffer created, processed, and freed\n");
+
+  return 0;
+}
+.nef

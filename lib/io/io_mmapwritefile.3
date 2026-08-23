@@ -1,0 +1,91 @@
+.TH IO_MMAPWRITEFILE 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+io_mmapwritefile \- Write data from a file to another file using memory mapping
+
+.SH SYNOPSIS
+.IB #include <lib/io_internal.h>
+.IB #include <lib/windoze.h>
+.IB #include <lib/iob.h>
+
+.IB int64
+.IB io_mmapwritefile(
+.IB fd_type out,
+.IB fd_type in,
+.IB uint64 off,
+.IB uint64 bytes,
+.IB io_write_callback writecb
+.IB );
+
+.SH DESCRIPTION
+The \fBio_mmapwritefile\fR function writes data from a file specified by \fBin\fR to another file specified by \fBout\fR starting from offset \fBoff\fR and copying \fBbytes\fR bytes. The data is written in chunks using memory mapping for efficient I/O.
+
+The function takes the following parameters:
+
+.IB out
+File descriptor of the output file where data will be written.
+
+.IB in
+File descriptor of the input file from which data will be read.
+
+.IB off
+Offset in the input file from which data starts to be read.
+
+.IB bytes
+Number of bytes to read from the input file and write to the output file.
+
+.IB writecb
+Callback function to write data to the output file.
+
+The function returns the number of bytes successfully written, or a negative value indicating an error.
+
+The function handles both Windows and POSIX systems by checking the \fBWINDOWS_NATIVE\fR macro. For Windows, it uses the Windows API functions for memory mapping and file operations. For POSIX systems, it uses the POSIX API functions.
+
+The function uses a buffer of size \fBBUFSIZE\fR (currently set to 16384 bytes) to read and write data. It reads data from the input file using \fBread\fR or \fBpread\fR (if available) and writes it to the output file using the \fBwritecb\fR callback function.
+
+The function handles errors such as \fBEAGAIN\fR by setting the \fBcanwrite\fR flag of the output file entry to 0 and returning -1. If an error occurs during the write operation, the function returns -3.
+
+If the function successfully writes all the data, it returns the total number of bytes written.
+
+The function also handles memory mapping by mapping the input file into memory if it's not already mapped. It unmaps the memory after writing the data.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBio_mmapwritefile\fR function to write data from one file to another:
+
+.nf
+#include <stdio.h>
+#include <fcntl.h>
+#include <unistd.h>
+
+int64 writecb(fd_type out, const char* data, uint64 len) {
+  return write(out, data, len);
+}
+
+int main() {
+  fd_type in = open("input.txt", O_RDONLY);
+  fd_type out = open("output.txt", O_WRONLY | O_CREAT, 0644);
+
+  if (in == -1 || out == -1) {
+    perror("open");
+    return 1;
+  }
+
+  uint64 off = 0;
+  uint64 bytes = 1024 * 1024;  // Copy 1MB
+
+  int64 result = io_mmapwritefile(out, in, off, bytes, writecb);
+
+  if (result == -1) {
+    perror("io_mmapwritefile");
+    close(in);
+    close(out);
+    return 1;
+  }
+
+  printf("Written %lld bytes\n", result);
+
+  close(in);
+  close(out);
+  return 0;
+}
+.nef

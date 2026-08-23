@@ -1,0 +1,88 @@
+.TH IO_ADDBUF_INTERNAL 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+iob_addbuf_internal \- Internal function to add data to an I/O batch buffer
+
+.SH SYNOPSIS
+.IB #include <lib/iob_internal.h>
+
+.IB int
+.IB iob_addbuf_internal(
+.IB io_batch* b,
+.IB const void* buf,
+.IB uint64 n,
+.IB void (*cleanup)(struct iob_entry* x)
+.IB );
+
+.SH DESCRIPTION
+The \fBiob_addbuf_internal\fR function is an internal function used by \fBiob_addbuf\fR and \fBiob_addbuf_free\fR to add data from a buffer to an I/O batch buffer. It takes additional parameters for cleanup functions and is responsible for the actual allocation and initialization of the batch entry.
+
+The function takes the following parameters:
+
+.IB b
+Pointer to the I/O batch buffer.
+
+.IB buf
+Pointer to the buffer containing the data to be added.
+
+.IB n
+Number of bytes to add from the buffer.
+
+.IB cleanup
+Pointer to a cleanup function that will be called when the batch entry is no longer needed.
+
+The function returns 0 on success, or a negative value indicating an error.
+
+The function is part of the \fBiob\fR library, which provides a framework for managing I/O operations in batch mode.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBiob_addbuf_internal\fR function directly, although it is typically called indirectly through \fBiob_addbuf\fR or \fBiob_addbuf_free\fR:
+
+.nf
+#include <stdio.h>
+#include <lib/iob_internal.h>
+
+void cleanup_example(struct iob_entry* x) {
+  free((char*)x->buf);
+}
+
+int main() {
+  io_batch batch;
+  char* data = malloc(14);
+  if (data == NULL) {
+    perror("malloc");
+    return 1;
+  }
+
+  strcpy(data, "Hello, World!");
+
+  io_batch_init(&batch);
+
+  iob_entry* entry = array_allocate(&batch.b, sizeof(iob_entry), array_length(&batch.b, sizeof(iob_entry)));
+  if(!entry) {
+    free(data);
+    return 1;
+  }
+
+  entry->type = FROMBUF;
+  entry->fd = -1;
+  entry->buf = data;
+  entry->n = 14;
+  entry->offset = 0;
+  entry->cleanup = cleanup_example;
+
+  batch.bytesleft += 14;
+  batch.bufs++;
+
+  if (iob_execute(&batch) != 0) {
+    perror("iob_execute");
+    iob_free(&batch);
+    return 1;
+  }
+
+  printf("Data added to batch buffer\n");
+
+  iob_free(&batch);
+  return 0;
+}
+.nef

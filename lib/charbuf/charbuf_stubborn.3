@@ -1,0 +1,53 @@
+.TH CHARBUF_STUBBORN 3 "2023-04-01" "1.0" "lib/charbuf/charbuf_stubborn"
+.SH NAME
+charbuf_stubborn_read \- Read data from a character buffer
+.SH SYNOPSIS
+#include <lib/charbuf/charbuf.h>
+
+ssize_t charbuf_stubborn_read(charbuf *b, size_t max);
+.SH DESCRIPTION
+The \fBcharbuf_stubborn_read\fR function reads up to \fImax\fR bytes from the character buffer \fIb\fR. It continues reading until it reaches the end of the file or encounters an error.
+
+The function returns the number of bytes read on success, or -1 if an error occurs.
+.SH ARGUMENTS
+\fIb\fR
+The character buffer from which to read data.
+\fImax\fR
+The maximum number of bytes to read.
+.SH RETURN VALUE
+On success, the number of bytes read. On failure, -1.
+.SH ERRORS
+The function sets the \fIerrno\fR variable to indicate the error that occurred.
+.SH EXAMPLE
+The following example demonstrates how to use the \fBcharbuf_stubborn_read\fR function:
+.nf
+#include <lib/charbuf/charbuf.h>
+#include <stdio.h>
+
+int main() {
+    charbuf *b = charbuf_open("example.txt", "r");
+    if (b == NULL) {
+        fprintf(stderr, "Failed to open file\n");
+        return 1;
+    }
+
+    char buf[1024];
+    ssize_t bytesRead = charbuf_stubborn_read(b, sizeof(buf));
+    if (bytesRead < 0) {
+        fprintf(stderr, "Failed to read from file\n");
+        charbuf_close(b);
+        return 1;
+    }
+
+    buf[bytesRead] = '\0';
+    printf("Read %zd bytes: %s\n", bytesRead, buf);
+
+    charbuf_close(b);
+    return 0;
+}
+.ne
+.fi
+.SH AUTHOR
+This manual page was written by John Doe.
+.SH SEE ALSO
+charbuf_open(3), charbuf_close(3)

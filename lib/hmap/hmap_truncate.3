@@ -1,0 +1,52 @@
+.TH HMAP_TRUNCATE 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+hmap_truncate \- Clear all elements from a hash map
+
+.SH SYNOPSIS
+.IB #include <lib/hmap_internal.h>
+
+.IB int
+.IB hmap_truncate(HMAP_DB** hmap_db);
+
+.SH DESCRIPTION
+The \fBhmap_truncate\fR function clears all elements from a hash map. It takes a double pointer to the hash map database as an argument.
+
+The function takes the following parameter:
+.IB HMAP_DB**
+.IB hmap_db
+A double pointer to the hash map database.
+
+The function returns 0 upon success. If an error occurs during the truncation process, the function may return an error code.
+
+The \fBhmap_truncate\fR function is intended to be used to remove all elements from a hash map, effectively resetting it to an empty state.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBhmap_truncate\fR function to clear all elements from a hash map:
+
+.nf
+#include <stdio.h>
+#include <lib/hmap_internal.h>
+
+int main() {
+    HMAP_DB* hmap_db = 0;
+
+    // Initialize the hash map database
+    hmap_init(&hmap_db);
+
+    // Set some elements in the hash map
+    // ...
+
+    // Clear all elements from the hash map
+    if (hmap_truncate(&hmap_db) != 0) {
+        printf("Failed to truncate the hash map\n");
+    } else {
+        printf("Hash map truncated successfully\n");
+    }
+
+    // Free the hash map database
+    hmap_destroy(&hmap_db);
+
+    return 0;
+}
+.nef

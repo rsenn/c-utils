@@ -1,0 +1,55 @@
+.TH IO_SIGPIPE 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+io_sigpipe \- Ignore the SIGPIPE signal
+
+.SH SYNOPSIS
+.IB #include <lib/io_internal.h>
+
+.IB void
+.IB io_sigpipe()
+.IB ;
+
+.SH DESCRIPTION
+The \fBio_sigpipe\fR function is an internal function used by \fBio_trywrite\fR and \fBio_waitwrite\fR. It is responsible for ignoring the \fBSIGPIPE\fR signal, which is typically sent when writing to a pipe where the reading end has been closed.
+
+The function is designed to be called before performing write operations to ensure that the \fBSIGPIPE\fR signal does not cause the program to terminate unexpectedly.
+
+The function is only relevant for non-Windows systems as it uses the POSIX \fBsignal\fR function to ignore the \fBSIGPIPE\fR signal.
+
+The function is thread-safe and uses a static variable \fBisitdone\fR to ensure that the \fBSIGPIPE\fR signal handler is only set once.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBio_sigpipe\fR function in a write operation:
+
+.nf
+#include <stdio.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <lib/io_internal.h>
+
+int main() {
+  fd_type out = open("output.txt", O_WRONLY | O_CREAT, 0644);
+
+  if (out == -1) {
+    perror("open");
+    return 1;
+  }
+
+  io_sigpipe();
+
+  const char* data = "Hello, World!";
+  ssize_t bytes_written = write(out, data, strlen(data));
+
+  if (bytes_written == -1) {
+    perror("write");
+    close(out);
+    return 1;
+  }
+
+  printf("Written %zd bytes\n", bytes_written);
+
+  close(out);
+  return 0;
+}
+.nef

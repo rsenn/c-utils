@@ -1,0 +1,64 @@
+.TH HMAP_SET_CHARS 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+hmap_set_chars \- Set a string value in a hash map
+
+.SH SYNOPSIS
+.IB #include <lib/hmap.h>
+
+.IB int
+.IB hmap_set_chars(HMAP_DB** hmap_db, const char* key, const char* data);
+
+.SH DESCRIPTION
+The \fBhmap_set_chars\fR function sets a string value in a hash map. It takes a double pointer to the hash map database, a key, and a data string as arguments.
+
+The function takes the following parameters:
+.IB HMAP_DB**
+.IB hmap_db
+A double pointer to the hash map database.
+
+.IB const char*
+.IB key
+A pointer to the key.
+
+.IB const char*
+.IB data
+A pointer to the data string.
+
+The function returns an integer indicating the success or failure of the operation. Possible return values include:
+.IB HMAP_SUCCESS
+The string value was successfully set in the hash map.
+.IB HMAP_FAILURE
+The string value could not be set in the hash map.
+
+The \fBhmap_set_chars\fR function is intended to be used to set a string value in a hash map. It internally uses the \fBhmap_add\fR function to add the key-value pair to the hash map.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBhmap_set_chars\fR function to set a string value in a hash map:
+
+.nf
+#include <stdio.h>
+#include <lib/hmap.h>
+
+int main() {
+    HMAP_DB* hmap_db = 0;
+    // Initialize the hash map database
+    hmap_init(&hmap_db);
+
+    // Set a string value in the hash map
+    const char* key = "example1";
+    const char* data = "data1";
+    int result = hmap_set_chars(&hmap_db, key, data);
+
+    if(result == HMAP_SUCCESS) {
+        printf("String value set successfully\n");
+    } else {
+        printf("Failed to set string value\n");
+    }
+
+    // Free the hash map database
+    hmap_destroy(&hmap_db);
+
+    return 0;
+}
+.nef

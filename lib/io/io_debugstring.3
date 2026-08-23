@@ -1,0 +1,60 @@
+.TH IO_DEBUGSTRING 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+io_debugstring \- Generate a debug string for an I/O entry
+
+.SH SYNOPSIS
+.IB #include <lib/io_internal.h>
+.IB #include <lib/windoze.h>
+.IB #include <lib/socket_internal.h>
+.IB #include <lib/fmt.h>
+.IB #include <lib/iarray.h>
+
+.IB unsigned int
+.IB io_debugstring(
+.IB fd_type s,
+.IB char* buf,
+.IB unsigned int bufsize
+.IB );
+
+.SH DESCRIPTION
+The \fBio_debugstring\fR function generates a debug string for an I/O entry associated with a file descriptor. It takes three parameters:
+
+.IB fd_type s
+The file descriptor for which the debug string is to be generated.
+
+.IB char* buf
+A buffer where the debug string will be stored.
+
+.IB unsigned int bufsize
+The size of the buffer.
+
+The function returns the length of the debug string stored in the buffer, or 0 if an error occurred.
+
+The \fBio_debugstring\fR function is intended to be used for debugging purposes to provide detailed information about the I/O entry associated with a file descriptor.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBio_debugstring\fR function to generate a debug string for an I/O entry:
+
+.nf
+#include <stdio.h>
+#include <lib/io_internal.h>
+#include <lib/windoze.h>
+#include <lib/socket_internal.h>
+#include <lib/fmt.h>
+#include <lib/iarray.h>
+
+int main() {
+    fd_type s = 123;  // Example file descriptor
+    char buf[1024];  // Buffer to store the debug string
+
+    unsigned int len = io_debugstring(s, buf, sizeof(buf));
+    if (len > 0) {
+        printf("Debug string for fd %d: %.*s\n", s, len, buf);
+    } else {
+        printf("Failed to generate debug string for fd %d\n", s);
+    }
+
+    return 0;
+}
+.nef

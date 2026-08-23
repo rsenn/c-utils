@@ -1,0 +1,71 @@
+.TH IO_ADDBUF_FILE_CLOSE 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+iob_addfile_close \- Add a file to an I/O batch buffer and close the file descriptor when done
+
+.SH SYNOPSIS
+.IB #include <lib/iob_internal.h>
+
+.IB int
+.IB iob_addfile_close(
+.IB io_batch* b,
+.IB fd_type fd,
+.IB uint64 off,
+.IB uint64 n
+.IB );
+
+.SH DESCRIPTION
+The \fBiob_addfile_close\fR function adds a file to an I/O batch buffer and closes the file descriptor once the data has been added. This function is useful when the file descriptor is no longer needed after being added to the batch.
+
+The function takes the following parameters:
+
+.IB b
+Pointer to the I/O batch buffer.
+
+.IB fd
+File descriptor of the file to be added.
+
+.IB off
+Offset in the file from which data should be read.
+
+.IB n
+Number of bytes to add from the file.
+
+The function returns 0 on success, or a negative value indicating an error.
+
+The function is part of the \fBiob\fR library, which provides a framework for managing I/O operations in batch mode.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBiob_addfile_close\fR function to add a file to an I/O batch buffer and close the file descriptor:
+
+.nf
+#include <stdio.h>
+#include <lib/iob_internal.h>
+#include <fcntl.h>
+#include <unistd.h>
+
+int main() {
+  io_batch batch;
+  int fd = open("example.txt", O_RDONLY);
+  if (fd < 0) {
+    perror("open");
+    return 1;
+  }
+
+  io_batch_init(&batch);
+
+  if (iob_addfile_close(&batch, fd, 0, 0) != 0) {
+    perror("iob_addfile_close");
+    return 1;
+  }
+
+  if (iob_execute(&batch) != 0) {
+    perror("iob_execute");
+    return 1;
+  }
+
+  printf("File added to batch buffer and file descriptor closed\n");
+
+  return 0;
+}
+.nef

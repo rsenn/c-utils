@@ -1,0 +1,55 @@
+.TH IO_ADDBUF_S 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+iob_adds \- Add a string to an I/O batch buffer
+
+.SH SYNOPSIS
+.IB #include <lib/iob.h>
+
+.IB int
+.IB iob_adds(
+.IB io_batch* b,
+.IB const char* s
+.IB );
+
+.SH DESCRIPTION
+The \fBiob_adds\fR function adds a string to an I/O batch buffer. This function is a convenience wrapper around the \fBiob_addbuf\fR function, which adds a buffer of data to the batch.
+
+The function takes the following parameters:
+
+.IB b
+Pointer to the I/O batch buffer.
+
+.IB s
+Pointer to the string to be added.
+
+The function returns 0 on success, or a negative value indicating an error.
+
+The function is part of the \fBiob\fR library, which provides a framework for managing I/O operations in batch mode.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBiob_adds\fR function to add a string to an I/O batch buffer:
+
+.nf
+#include <stdio.h>
+#include <lib/iob.h>
+
+int main() {
+  io_batch batch;
+  io_batch_init(&batch);
+
+  if (iob_adds(&batch, "Hello, World!") != 0) {
+    perror("iob_adds");
+    return 1;
+  }
+
+  if (iob_execute(&batch) != 0) {
+    perror("iob_execute");
+    return 1;
+  }
+
+  printf("String added to batch buffer\n");
+
+  return 0;
+}
+.nef

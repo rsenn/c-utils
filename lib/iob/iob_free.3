@@ -1,0 +1,53 @@
+.TH IO_FREE 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+iob_free \- Free an I/O batch buffer
+
+.SH SYNOPSIS
+.IB #include <lib/iob_internal.h>
+
+.IB void
+.IB iob_free(
+.IB io_batch* b
+.IB );
+
+.SH DESCRIPTION
+The \fBiob_free\fR function frees an I/O batch buffer. This function is used to clean up resources associated with an I/O batch buffer when it is no longer needed.
+
+The function takes the following parameter:
+
+.IB b
+Pointer to the I/O batch buffer.
+
+The function does not return any value.
+
+The function is part of the \fBiob\fR library, which provides a framework for managing I/O operations in batch mode.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBiob_free\fR function to free an I/O batch buffer:
+
+.nf
+#include <stdio.h>
+#include <lib/iob.h>
+
+int main() {
+  io_batch batch;
+  io_batch_init(&batch);
+
+  // Add data to the batch buffer
+  iob_adds(&batch, "Hello, World!");
+  iob_adds(&batch, "This is a test.");
+
+  // Process the batch buffer
+  while (iob_bytesleft(&batch) > 0) {
+    iob_execute(&batch);
+  }
+
+  // Free the I/O batch buffer
+  iob_free(&batch);
+
+  printf("I/O batch buffer freed\n");
+
+  return 0;
+}
+.nef
