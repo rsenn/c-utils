@@ -144,7 +144,14 @@ if(NOT BUILD_SHARED AND NOT BUILD_STATIC)
   target_link_libraries(bmap PRIVATE str)
   target_link_libraries(mmap PRIVATE seek open scan ${LIBPSAPI})
   target_link_libraries(open PRIVATE str uint32)
-  target_link_libraries(path PRIVATE unix dir strlist ${LIBSHLWAPI})
+  target_link_libraries(path PRIVATE unix dir strlist)
+  # PUBLIC: path's *.c call PathFileExistsW/PathIsRelativeW/PathIsDirectoryW
+  # directly, so every executable linking path needs shlwapi too, not just
+  # path.a itself -- PRIVATE only affects path's own (moot, for a static
+  # lib) link step, not consumers' (this was the actual mingw link failure:
+  # `program(genmakefile ... path ...)` linked path without also getting
+  # shlwapi).
+  target_link_libraries(path PUBLIC ${LIBSHLWAPI})
   target_link_libraries(pe PRIVATE uint64 uint32 uint16)
   target_link_libraries(playlist PRIVATE byte fmt scan str xml)
   target_link_libraries(rdir PRIVATE dir)
@@ -190,7 +197,13 @@ if(BUILD_SHARED)
   endif(MSYS)
   set_target_properties(c-utils PROPERTIES SOVERSION 1.0 PREFIX "${LIBPREFIX}")
 
-  target_link_libraries(c-utils PRIVATE ${TLS_LIBRARIES} ${COMPRESSION_LIBRARIES} ${ZLIB_LIBRARY} ${LIBMSWSOCK})
+  # When BUILD_SHARED/BUILD_STATIC is set, add_program() (cmake/Functions.cmake)
+  # overrides every program()'s per-module deps with just this single combined
+  # target (OVERRIDE_DEPS), discarding any Windows import libs (${LIBSHLWAPI},
+  # ${LIBMSWSOCK}, ...) individual program() calls list -- so any such library
+  # a module here needs (e.g. path/*.c calling PathFileExistsW etc.) has to be
+  # linked here instead, not at the per-module or per-program target_link_libraries.
+  target_link_libraries(c-utils PRIVATE ${TLS_LIBRARIES} ${COMPRESSION_LIBRARIES} ${ZLIB_LIBRARY} ${LIBMSWSOCK} ${LIBSHLWAPI})
 
   install(TARGETS c-utils DESTINATION lib)
 endif(BUILD_SHARED)
@@ -216,7 +229,7 @@ if(BUILD_STATIC)
     endif(CYGWIN)
   endif(MSYS)
 
-  target_link_libraries(c-utils-static PRIVATE ${TLS_LIBRARIES} ${COMPRESSION_LIBRARIES} ${ZLIB_LIBRARY} ${LIBMSWSOCK})
+  target_link_libraries(c-utils-static PRIVATE ${TLS_LIBRARIES} ${COMPRESSION_LIBRARIES} ${ZLIB_LIBRARY} ${LIBMSWSOCK} ${LIBSHLWAPI})
 
   set_target_properties(c-utils-static PROPERTIES OUTPUT_NAME c-utils)
 

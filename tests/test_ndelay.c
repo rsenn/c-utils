@@ -14,10 +14,14 @@ TEST(test_ndelay_on_off) {
   ASSERT_EQ(0, pipe(fds));
 
   ASSERT_NE(-1, ndelay_on(fds[0]));
+#if !WINDOWS_NATIVE
   ASSERT_NE(0, fcntl(fds[0], F_GETFL) & O_NONBLOCK);
+#endif
 
   ASSERT_NE(-1, ndelay_off(fds[0]));
+#if !WINDOWS_NATIVE
   ASSERT_EQ(0, fcntl(fds[0], F_GETFL) & O_NONBLOCK);
+#endif
 
   close(fds[0]);
   close(fds[1]);

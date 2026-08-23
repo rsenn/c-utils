@@ -1,7 +1,7 @@
 #include "unit_test.h"
 #include "../lib/errmsg.h"
 #include "../lib/str.h"
-#include <fcntl.h>
+#include "../lib/ndelay.h"
 #include <unistd.h>
 
 /* Redirects fd to a pipe, runs fn(), restores fd, and returns whatever
@@ -21,7 +21,7 @@ capture_fd(int fd, void (*fn)(void), char* buf, size_t bufsz) {
   dup2(saved, fd);
   close(saved);
 
-  fcntl(p[0], F_SETFL, O_NONBLOCK);
+  ndelay_on(p[0]);
   ssize_t r = read(p[0], buf, bufsz - 1);
   if(r > 0)
     n = (size_t)r;
