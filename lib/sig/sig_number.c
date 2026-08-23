@@ -1,6 +1,6 @@
 #include "../sig.h"
 #include "../case.h"
-#include "sig-internal.h"
+#include "../sig_internal.h"
 
 int
 sig_number(char const* name) {

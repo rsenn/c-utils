@@ -2,7 +2,7 @@
 #include "../sig.h"
 
 #include <signal.h>
-#include "sig-internal.h"
+#include "../sig_internal.h"
 
 sigtable_t const sigtable[] = {
 #if !WINDOWS_NATIVE

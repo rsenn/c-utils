@@ -7,9 +7,12 @@
 #include <sys/signal.h>
 #endif
 
-void
+int
 sig_blockset(const void* set) {
 #if !WINDOWS_NATIVE
-  sigprocmask(SIG_SETMASK, set, 0);
+  return sigprocmask(SIG_SETMASK, set, 0);
+#else
+  (void)set;
+  return -1;
 #endif
 }

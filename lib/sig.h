@@ -53,7 +53,7 @@ typedef long sigset_t;
 #define __sigword(sig) (((sig) - 1) / (8 * sizeof(unsigned long)))
 
 #ifndef sigemptyset
-#define sigemptys(s) byte_zero((s), sizeof(*(s)))
+#define sigemptyset(s) byte_zero((s), sizeof(*(s)))
 #endif
 #ifndef sigfillset
 #define sigfillset(s) byte_fill((s), sizeof(*(s)), 0xff)
@@ -62,7 +62,7 @@ typedef long sigset_t;
 #define sigaddset(s, n) (((unsigned long*)(s))[__sigword((n))] |= __sigmask((n)))
 #endif
 #ifndef sigdelset
-#define sigdelset(s, n) (((unsigned long*)(s))[__sigword((n))] |= __sigmask((n)))
+#define sigdelset(s, n) (((unsigned long*)(s))[__sigword((n))] &= ~__sigmask((n)))
 #endif
 #ifndef sigismember
 #define sigismember(s, n) ((((unsigned long*)(s))[__sigword((n))] & __sigmask((n))) ? 1 : 0)
@@ -70,16 +70,10 @@ typedef long sigset_t;
 
 #endif
 
-#define SA_MASKALL 1
-
-#ifndef SA_NOCLDSTOP
-#define SA_NOCLDSTOP 2
-#endif
-
 typedef void sighandler_t_fn(int);
 typedef sighandler_t_fn* sighandler_t_ref;
 
-#if !defined(_POSIX_SOURCE) && !defined(__linux__) && !defined(__unix__) && !defined(__wasi__)
+#if WINDOWS_NATIVE
 struct sigaction {
   sighandler_t_ref sa_handler;
   unsigned int sa_flags : 2;
@@ -89,22 +83,19 @@ struct sigaction {
 extern struct sigaction const sig_dfl;
 extern struct sigaction const sig_ign;
 
-#ifndef SA_MASKALL
-#define SA_MASKALL ((unsigned long)0x01)
-#endif
-#ifndef SA_NOCLDSTOP
-#define SA_NOCLDSTOP ((unsigned long)0x02)
-#endif
-
 #define SIGSTACKSIZE 16
 
 #define sig_catcha(sig, ac) sig_action(sig, (ac), 0)
 #define sig_restore(sig) sig_action((sig), &sig_dfl, 0)
 
+/* sig_action is a thin, honest wrapper around sigaction(2): `new` and `old`
+ * are real `struct sigaction` (on POSIX), passed through untouched -- every
+ * field (sa_mask, sa_flags including SA_SIGINFO/SA_ONSTACK/..., sa_sigaction)
+ * is under the caller's control, nothing is second-guessed or forced. */
 int sig_action(int sig, struct sigaction const* new, struct sigaction* old);
-void sig_block(int);
-void sig_blocknone(void);
-void sig_blockset(const void*);
+int sig_block(int);
+int sig_blocknone(void);
+int sig_blockset(const void*);
 int sig_catch(int, sighandler_t_ref);
 int sigfpe(void);
 int sig_ignore(int);
@@ -115,10 +106,10 @@ int sig_pop(int sig);
 int sig_push(int, sighandler_t_ref);
 int sig_pusha(int sig, struct sigaction const* ssa);
 void sig_restoreto(const sigset_t*, unsigned int);
-void sig_unblock(int);
+int sig_unblock(int);
 int sigsegv(void);
-void sig_shield(void);
-void sig_unshield(void);
+int sig_shield(void);
+int sig_unshield(void);
 
 #endif
 /** @} */

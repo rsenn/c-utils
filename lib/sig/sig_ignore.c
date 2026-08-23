@@ -10,11 +10,11 @@
 int
 sig_ignore(int sig) {
 #if !WINDOWS_NATIVE
-  struct sigaction sa;
-
-  sigemptyset(&sa.sa_mask);
+  struct sigaction sa = {0};
   sa.sa_handler = SIG_IGN;
-  sa.sa_flags = 0;
   return sigaction(sig, &sa, 0);
+#else
+  (void)sig;
+  return -1;
 #endif
 }

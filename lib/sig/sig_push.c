@@ -12,9 +12,16 @@
 int
 sig_push(int sig, sighandler_t_ref f) {
 #if !WINDOWS_NATIVE
-  struct sigaction ssa;
+  struct sigaction ssa = {0};
   ssa.sa_handler = f;
-  *((unsigned long*)&ssa.sa_mask) = SA_MASKALL | SA_NOCLDSTOP;
+  sigfillset(&ssa.sa_mask);
+#ifdef SA_RESTART
+  ssa.sa_flags = SA_RESTART;
+#endif
   return sig_pusha(sig, &ssa);
+#else
+  (void)sig;
+  (void)f;
+  return -1;
 #endif
 }

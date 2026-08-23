@@ -5,9 +5,13 @@ signal action/block primitives (see `lib/sig.h` in `README.txt`). One
 function per file under `lib/sig/`, following the module convention
 described in `CLAUDE.md`.
 
-Everything degrades to a no-op on `WINDOWS_NATIVE` builds unless noted
-otherwise; `sig.h` supplies `sigset_t`/`sigaction`/`sigemptyset`-family
-shims for that case.
+Everything degrades to a no-op (returning -1) on `WINDOWS_NATIVE` builds
+unless noted otherwise; `sig.h` supplies `sigset_t`/`sigaction`/
+`sigemptyset`-family shims for that case.
+
+Covers only the standard POSIX signal range (1..`NSIG`-1); the
+`SIGRTMIN..SIGRTMAX` real-time range is out of scope (see
+`lib/sig_internal.h`).
 
 ## Installing and removing handlers
 
@@ -17,15 +21,20 @@ int sig_catch(int sig, sighandler_t_ref f);
 int sig_ignore(int sig);
 ```
 
-`sig_action` is the common core: it installs `sigaction(2)`-style behavior
-for `sig` from a simplified `struct sigaction` (just `sa_handler` and a
-2-bit `sa_flags` of `SA_MASKALL`/`SA_NOCLDSTOP`), always adding
-`SA_RESTART` where available, and optionally returns the previous
-disposition in `old`.
+`sig_action` is a thin, honest wrapper around `sigaction(2)` on POSIX: `new`
+and `old` are real `struct sigaction`, passed through untouched. Every
+field -- `sa_mask`, `sa_flags` (`SA_RESTART`, `SA_SIGINFO`, `SA_ONSTACK`,
+`SA_NODEFER`, ...), `sa_sigaction` for siginfo-style handlers -- is under
+the caller's control; nothing is second-guessed, defaulted, or forced.
+Returns 0 on success, -1 on failure with `errno` set (as `sigaction(2)`).
 
-`sig_catch(sig, f)` is the common case: install handler `f` for `sig` with
-`SA_MASKALL | SA_NOCLDSTOP`. `sig_ignore(sig)` sets the disposition to
-`SIG_IGN`. Both are MT-unsafe.
+`sig_catch(sig, f)` is the common-case convenience: install handler `f` for
+`sig` with the full signal set blocked while it runs and `SA_RESTART`
+(where available). `sig_ignore(sig)` sets the disposition to `SIG_IGN`.
+Both are MT-unsafe. For anything `sig_catch` doesn't cover -- `SA_SIGINFO`
+handlers, `SA_ONSTACK` (e.g. catching `SIGSEGV` off a dedicated alternate
+stack after a stack overflow), a partial mask, `SA_NODEFER` -- call
+`sig_action` directly with a fully-populated `struct sigaction`.
 
 Two macros built on `sig_action`:
 
@@ -34,13 +43,13 @@ Two macros built on `sig_action`:
 #define sig_restore(sig)    sig_action((sig), &sig_dfl, 0)
 ```
 
-`sig_catcha` installs a full `struct sigaction const*` directly.
-`sig_restore(sig)` puts `sig` back to its default disposition, using the
-predefined constants:
+`sig_catcha` installs a full `struct sigaction const*` directly (equivalent
+to calling `sig_action` with no `old` output). `sig_restore(sig)` puts
+`sig` back to its default disposition, using the predefined constants:
 
 ```c
-extern struct sigaction const sig_dfl; /* SIG_DFL */
-extern struct sigaction const sig_ign; /* SIG_IGN */
+extern struct sigaction const sig_dfl; /* {.sa_handler = SIG_DFL} */
+extern struct sigaction const sig_ign; /* {.sa_handler = SIG_IGN} */
 ```
 
 ## Handler stack
@@ -53,11 +62,12 @@ int sig_pop(int sig);
 
 `sig_push`/`sig_pusha` install a new handler for `sig` while saving the
 previous disposition on a fixed-depth per-signal stack (`SIGSTACKSIZE` =
-16 entries, `sig.h`). `sig_pop` undoes the most recent push, restoring the
-disposition that was active before it. Both directions are MT-unsafe.
-Returns the resulting stack depth on success, -1 on failure (`errno` is
-`EINVAL` for an out-of-range `sig`, `EFAULT` from `sig_pop` on an empty
-stack, `ENOBUFS` from `sig_push`/`sig_pusha` when the stack is full).
+16 entries, `sig.h`; sized per-signal for `1..NSIG-1`, see `lib/sig_internal.h`).
+`sig_pop` undoes the most recent push, restoring the disposition that was
+active before it. Both directions are MT-unsafe. Returns the resulting
+stack depth on success, -1 on failure (`errno` is `EINVAL` for an
+out-of-range `sig`, `EFAULT` from `sig_pop` on an empty stack, `ENOBUFS`
+from `sig_push`/`sig_pusha` when the stack is full).
 
 ```c
 void sig_restoreto(const sigset_t* ss, unsigned int n);
@@ -71,20 +81,22 @@ was touched.
 ## Blocking
 
 ```c
-void sig_block(int sig);
-void sig_unblock(int sig);
-void sig_blocknone(void);
-void sig_blockset(const void* set);
+int sig_block(int sig);
+int sig_unblock(int sig);
+int sig_blocknone(void);
+int sig_blockset(const void* set);
 ```
 
 `sig_block`/`sig_unblock` add/remove a single signal from the process
 signal mask via `sigprocmask(SIG_BLOCK/SIG_UNBLOCK, ...)`.
 `sig_blocknone` clears the mask entirely (`SIG_SETMASK` to the empty set).
-`sig_blockset` replaces the mask outright with the given `sigset_t*`.
+`sig_blockset` replaces the mask outright with the given `sigset_t*`. All
+four return `sigprocmask`'s result (0 on success, -1 with `errno` set on
+failure) rather than assuming it always succeeds.
 
 ```c
-void sig_shield(void);
-void sig_unshield(void);
+int sig_shield(void);
+int sig_unshield(void);
 ```
 
 Convenience pair that block/unblock a fixed set of signals in one call --
@@ -120,6 +132,16 @@ int sigsegv(void);
 Raise `SIGFPE`/`SIGSEGV` against the current process (`raise(2)`); return
 nonzero on success. Useful for exercising a handler installed with
 `sig_catch`/`sig_push`.
+
+## Not covered (yet)
+
+- **Event-loop integration.** No self-pipe or `signalfd` support -- a
+  handler installed with `sig_catch`/`sig_action` still has to do its work
+  (or hand off some other way) from signal-handler context; there's no
+  built-in way to turn a caught signal into something a `select`/`poll`/
+  `epoll` loop can wait on.
+- **Real-time signals** (`SIGRTMIN..SIGRTMAX`) -- out of scope by design,
+  see `lib/sig_internal.h`.
 
 ## See also
 

@@ -7,7 +7,7 @@
 #include <sys/signal.h>
 #endif
 
-void
+int
 sig_unshield(void) {
 #if !WINDOWS_NATIVE
   sigset_t ss;
@@ -18,6 +18,8 @@ sig_unshield(void) {
   sigaddset(&ss, SIGINT);
   sigaddset(&ss, SIGPIPE);
   sigaddset(&ss, SIGHUP);
-  sigprocmask(SIG_UNBLOCK, &ss, 0);
+  return sigprocmask(SIG_UNBLOCK, &ss, 0);
+#else
+  return -1;
 #endif
 }

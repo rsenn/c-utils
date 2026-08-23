@@ -7,12 +7,15 @@
 #include <sys/signal.h>
 #endif
 
-void
+int
 sig_unblock(int signum) {
 #if !WINDOWS_NATIVE
   sigset_t ss;
   sigemptyset(&ss);
   sigaddset(&ss, signum);
-  sigprocmask(SIG_UNBLOCK, &ss, 0);
+  return sigprocmask(SIG_UNBLOCK, &ss, 0);
+#else
+  (void)signum;
+  return -1;
 #endif
 }

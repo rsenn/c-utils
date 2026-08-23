@@ -1,4 +1,10 @@
 TODO
 ====
 
-(no open items yet)
+- sig-event-loop-integration: `lib/sig` has no self-pipe/`signalfd` support,
+  so a handler installed via `sig_catch`/`sig_action` has to do its work (or
+  hand off some other way) from signal-handler context; there's no built-in
+  way to turn a caught signal into something a `select`/`poll`/`epoll` loop
+  can wait on. Noted while making the module more generally reusable
+  (see `doc/sig.md`) -- this is usually the actual reason a server-oriented
+  program reaches for a signal library.
