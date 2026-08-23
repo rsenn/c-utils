@@ -1,0 +1,37 @@
+.TH http_response_dump 3 "HTTP Library Functions" "QuickJS" "HTTP Library Functions"
+
+.SH NAME
+http_response_dump \- Dump the details of an HTTP response
+
+.SH SYNOPSIS
+.B #include <lib/http.h>
+.B void http_response_dump(http_response* r);
+
+.SH DESCRIPTION
+The .B http_response_dump function dumps the details of an HTTP response.
+
+The function takes one parameter:
+.I r
+The HTTP response structure.
+
+.SH EXAMPLE
+The following example demonstrates how to use the .B http_response_dump function:
+
+.I
+.nf
+#include <stdio.h>
+#include <lib/http.h>
+
+int main() {
+  // Assume r is a valid HTTP response structure
+  http_response r;
+
+  // Initialize r
+
+  http_response_dump(&r);
+
+  return 0;
+}
+.!
+.SH "SEE ALSO"
+http_connect(3)

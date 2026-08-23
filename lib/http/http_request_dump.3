@@ -1,0 +1,37 @@
+.TH http_request_dump 3 "HTTP Library Functions" "QuickJS" "HTTP Library Functions"
+
+.SH NAME
+http_request_dump \- Dump the details of an HTTP request
+
+.SH SYNOPSIS
+.B #include <lib/http.h>
+.B void http_request_dump(http_request* req);
+
+.SH DESCRIPTION
+The .B http_request_dump function dumps the details of an HTTP request.
+
+The function takes one parameter:
+.I req
+The HTTP request structure.
+
+.SH EXAMPLE
+The following example demonstrates how to use the .B http_request_dump function:
+
+.I
+.nf
+#include <stdio.h>
+#include <lib/http.h>
+
+int main() {
+  // Assume req is a valid HTTP request structure
+  http_request req;
+
+  // Initialize req
+
+  http_request_dump(&req);
+
+  return 0;
+}
+.!
+.SH "SEE ALSO"
+http_connect(3)

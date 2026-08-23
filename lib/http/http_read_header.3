@@ -1,0 +1,54 @@
+.TH http_read_header 3 "HTTP Library Functions" "QuickJS" "HTTP Library Functions"
+
+.SH NAME
+http_read_header \- Read the HTTP response header from a connection
+
+.SH SYNOPSIS
+.B #include <lib/http.h>
+.B ssize_t http_read_header(buffer* in, stralloc* out, http_response* response);
+
+.SH DESCRIPTION
+The .B http_read_header function reads the HTTP response header from a connection.
+
+The function takes three parameters:
+.I in
+The buffer to read from.
+.I out
+The buffer to store the header data.
+.I response
+The HTTP response structure.
+
+The function returns the number of bytes read, or -1 on error.
+
+.SH EXAMPLE
+The following example demonstrates how to use the .B http_read_header function:
+
+.I
+.nf
+#include <stdio.h>
+#include <lib/http.h>
+
+int main() {
+  // Assume in is a valid buffer for an HTTP response
+  buffer in;
+  stralloc out;
+  http_response response;
+
+  buffer_init(&in, ...);
+  stralloc_init(&out);
+  http_response_init(&response);
+
+  ssize_t ret = http_read_header(&in, &out, &response);
+
+  if (ret < 0) {
+    perror("http_read_header");
+    return 1;
+  }
+
+  // Use the data in out and response
+
+  return 0;
+}
+.!
+.SH "SEE ALSO"
+http_connect(3)

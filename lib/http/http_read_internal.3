@@ -1,0 +1,49 @@
+.TH http_read_internal 3 "HTTP Library Functions" "QuickJS" "HTTP Library Functions"
+
+.SH NAME
+http_read_internal \- Internal function to read data from an HTTP connection
+
+.SH SYNOPSIS
+.B #include <lib/http.h>
+.B ssize_t http_read_internal(fd_type fd, char* buf, size_t len, buffer* b);
+
+.SH DESCRIPTION
+The .B http_read_internal function is an internal function to read data from an HTTP connection.
+
+The function takes four parameters:
+.I fd
+The file descriptor of the HTTP connection.
+.I buf
+A buffer to store the data.
+.I len
+The maximum number of bytes to read.
+.I b
+A buffer to store the data.
+
+The function returns the number of bytes read, or -1 on error.
+
+.SH EXAMPLE
+The following example demonstrates how to use the .B http_read_internal function:
+
+.I
+.nf
+#include <stdio.h>
+#include <lib/http.h>
+
+int main() {
+  // Assume fd is a valid file descriptor for an HTTP connection
+  char buf[1024];
+  ssize_t ret = http_read_internal(fd, buf, sizeof(buf), ...);
+
+  if (ret < 0) {
+    perror("http_read_internal");
+    return 1;
+  }
+
+  // Use the data in buf
+
+  return 0;
+}
+.!
+.SH "SEE ALSO"
+http_connect(3)

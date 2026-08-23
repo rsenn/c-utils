@@ -1,0 +1,46 @@
+.TH http_response_new 3 "HTTP Library Functions" "QuickJS" "HTTP Library Functions"
+
+.SH NAME
+http_response_new \- Create a new HTTP response
+
+.SH SYNOPSIS
+.B #include <lib/http.h>
+.B http_response* http_response_new(http* h);
+
+.SH DESCRIPTION
+The .B http_response_new function creates a new HTTP response.
+
+The function takes one parameter:
+.I h
+The HTTP structure.
+
+The function returns a pointer to the new HTTP response, or NULL on error.
+
+.SH EXAMPLE
+The following example demonstrates how to use the .B http_response_new function:
+
+.I
+.nf
+#include <stdio.h>
+#include <lib/http.h>
+
+int main() {
+  // Assume h is a valid HTTP structure
+  http h;
+
+  // Initialize h
+
+  http_response* r = http_response_new(&h);
+
+  if (!r) {
+    perror("http_response_new");
+    return 1;
+  }
+
+  // Use the new HTTP response
+
+  return 0;
+}
+.!
+.SH "SEE ALSO"
+http_connect(3)
