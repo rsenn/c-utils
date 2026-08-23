@@ -1,0 +1,49 @@
+.TH SCAN_PB_TAG 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+scan_pb_tag \- Scan a Protocol Buffers tag from a string
+
+.SH SYNOPSIS
+.IB #include <lib/scan.h>
+
+.IB size_t
+.IB scan_pb_tag(const char* in, size_t len, size_t* fieldno, unsigned char* type);
+
+.SH DESCRIPTION
+The \fBscan_pb_tag\fR function scans a Protocol Buffers tag from a given string and extracts the field number and type.
+
+.SH ARGUMENTS
+.TP
+.IB in
+The input string containing the Protocol Buffers tag.
+.TP
+.IB len
+The length of the input string.
+.TP
+.IB fieldno
+The destination where the field number will be stored.
+.TP
+.IB type
+The destination where the type will be stored.
+
+.SH RETURN VALUE
+The function returns the number of characters processed.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBscan_pb_tag\fR function:
+
+.nf
+#include <stdio.h>
+#include <lib/scan.h>
+
+int main() {
+    const char* tag = "\x1a";
+    size_t fieldno, length;
+    unsigned char type;
+    length = scan_pb_tag(tag, 1, &fieldno, &type);
+    printf("Field number: %zu\n", fieldno);
+    printf("Type: %d\n", type);
+    printf("Length processed: %zu\n", length);
+    return 0;
+}
+.nef

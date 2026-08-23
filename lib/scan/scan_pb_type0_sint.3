@@ -1,0 +1,44 @@
+.TH SCAN_PB_TYPE0_SINT 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+scan_pb_type0_sint \- Scan a Protocol Buffers signed integer type 0 from a string
+
+.SH SYNOPSIS
+.IB #include <lib/scan.h>
+
+.IB size_t
+.IB scan_pb_type0_sint(const char* in, size_t len, int64* l);
+
+.SH DESCRIPTION
+The \fBscan_pb_type0_sint\fR function scans a Protocol Buffers signed integer type 0 from a given string and stores the result.
+
+.SH ARGUMENTS
+.TP
+.IB in
+The input string containing the Protocol Buffers signed integer type 0.
+.TP
+.IB len
+The length of the input string.
+.TP
+.IB l
+The destination where the scanned signed integer will be stored.
+
+.SH RETURN VALUE
+The function returns the number of characters processed.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBscan_pb_type0_sint\fR function:
+
+.nf
+#include <stdio.h>
+#include <lib/scan.h>
+
+int main() {
+    const char* sint = "\x0a";
+    int64 result;
+    size_t length = scan_pb_type0_sint(sint, 1, &result);
+    printf("Scanned signed integer: %lld\n", result);
+    printf("Length processed: %zu\n", length);
+    return 0;
+}
+.nef

@@ -1,0 +1,41 @@
+.TH SCAN_OCTAL 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+scan_octal \- Scan an octal number from a string
+
+.SH SYNOPSIS
+.IB #include <lib/scan.h>
+
+.IB size_t
+.IB scan_octal(const char* src, uint64* dest);
+
+.SH DESCRIPTION
+The \fBscan_octal\fR function scans an octal number from a given string and stores the result in a provided destination.
+
+.SH ARGUMENTS
+.TP
+.IB src
+The input string containing the octal number.
+.TP
+.IB dest
+The destination where the scanned octal number will be stored.
+
+.SH RETURN VALUE
+The function returns the number of characters processed.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBscan_octal\fR function:
+
+.nf
+#include <stdio.h>
+#include <lib/scan.h>
+
+int main() {
+    const char* octal = "1234";
+    uint64 dest;
+    size_t length = scan_octal(octal, &dest);
+    printf("Scanned octal: %llu\n", dest);
+    printf("Length processed: %zu\n", length);
+    return 0;
+}
+.nef

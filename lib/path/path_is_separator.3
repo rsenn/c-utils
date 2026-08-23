@@ -1,0 +1,36 @@
+.TH PATH_IS_SEPARATOR 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+path_is_separator \- Check if a character is a directory separator
+
+.SH SYNOPSIS
+.IB #include <lib/path_internal.h>
+
+.IB int
+.IB path_is_separator(const char* c);
+
+.SH DESCRIPTION
+The \fBpath_is_separator\fR function checks if a given character is recognized as a directory separator. It uses the \fBpath_issep\fR function to perform the check.
+
+.SH ARGUMENTS
+.TP
+.IB c
+The character to be checked.
+
+.SH RETURN VALUE
+The function returns 1 if the character is a directory separator, and 0 otherwise.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBpath_is_separator\fR function:
+
+.nf
+#include <stdio.h>
+#include <lib/path_internal.h>
+
+int main() {
+    const char* c = "/";
+    int is_sep = path_is_separator(c);
+    printf("Is separator: %d\n", is_sep);
+    return 0;
+}
+.nef

@@ -1,0 +1,42 @@
+.TH PATH_SKIP_SEPARATOR 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+path_skip_separator \- Skip directory separators in a path
+
+.SH SYNOPSIS
+.IB #include <lib/path_internal.h>
+.IB #include <lib/utf8.h>
+
+.IB size_t
+.IB path_skip_separator(const char* s, size_t n);
+
+.SH DESCRIPTION
+The \fBpath_skip_separator\fR function skips directory separators in a given path.
+
+.SH ARGUMENTS
+.TP
+.IB s
+The input path string.
+.TP
+.IB n
+The length of the input path string.
+
+.SH RETURN VALUE
+The function returns the number of characters skipped.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBpath_skip_separator\fR function:
+
+.nf
+#include <stdio.h>
+#include <lib/path_internal.h>
+#include <lib/utf8.h>
+
+int main() {
+    const char* path = "/usr/lib/bin";
+    size_t len = strlen(path);
+    size_t skipped = path_skip_separator(path, len);
+    printf("Skipped separator length: %zu\n", skipped);
+    return 0;
+}
+.nef

@@ -1,0 +1,49 @@
+.TH PATH_QUOTE_SPACES_B 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+path_quote_spaces_b \- Quote spaces in a string
+
+.SH SYNOPSIS
+.IB #include <lib/path_internal.h>
+.IB #include <lib/utf8.h>
+
+.IB int
+.IB path_quote_spaces_b(stralloc* sa, const char* x, size_t n);
+
+.SH DESCRIPTION
+The \fBpath_quote_spaces_b\fR function quotes spaces in a given string. If any space is found in the string, it will be quoted with double quotes.
+
+.SH ARGUMENTS
+.TP
+.IB sa
+The \fBstralloc\fR structure where the result will be stored.
+.TP
+.IB x
+The input string.
+.TP
+.IB n
+The length of the input string.
+
+.SH RETURN VALUE
+The function returns 1 if any space is found and quoted, and 0 otherwise.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBpath_quote_spaces_b\fR function:
+
+.nf
+#include <stdio.h>
+#include <lib/path_internal.h>
+#include <lib/stralloc.h>
+
+int main() {
+    const char* path = "/usr/lib/bin";
+    size_t len = strlen(path);
+    stralloc sa;
+    stralloc_init(&sa);
+    int has_spaces = path_quote_spaces_b(&sa, path, len);
+    printf("Has spaces: %d\n", has_spaces);
+    printf("Quoted path: %s\n", sa.s);
+    stralloc_free(&sa);
+    return 0;
+}
+.nef

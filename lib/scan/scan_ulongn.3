@@ -1,0 +1,45 @@
+.TH SCAN_ULONGN 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+scan_ulongn \- Scan an unsigned long integer from a string
+
+.SH SYNOPSIS
+.IB #include <lib/scan.h>
+
+.IB size_t
+.IB scan_ulongn(const char* src, size_t n, unsigned long int* dest);
+
+.SH DESCRIPTION
+The \fBscan_ulongn\fR function scans an unsigned long integer from a given string and stores the result. The function reads up to \fIn\fR characters from the string starting at \fIsrc\fR and converts them into an unsigned long integer, storing the result in the location pointed to by \fBdest\fR.
+
+.SH ARGUMENTS
+.TP
+.IB src
+The input string containing the unsigned long integer.
+.TP
+.IB n
+The maximum number of characters to read from the input string.
+.TP
+.IB dest
+The destination where the scanned unsigned long integer will be stored.
+
+.SH RETURN VALUE
+The function returns the number of characters processed.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBscan_ulongn\fR function:
+
+.nf
+#include <stdio.h>
+#include <lib/scan.h>
+
+int main() {
+    const char* input = "123456";
+    size_t len = 6;
+    unsigned long int result;
+    size_t processed = scan_ulongn(input, len, &result);
+    printf("Scanned unsigned long integer: %lu\n", result);
+    printf("Length processed: %zu\n", processed);
+    return 0;
+}
+.nef

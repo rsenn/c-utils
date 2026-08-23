@@ -1,0 +1,54 @@
+.TH PATH_PREPEND 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+path_prepend \- Prepend a path to another path
+
+.SH SYNOPSIS
+.IB #include <lib/path_internal.h>
+
+.IB void
+.IB path_prepend(const char* x, size_t len, stralloc* out);
+
+.IB void
+.IB path_prepends(const char* s, stralloc* out);
+
+.SH DESCRIPTION
+The \fBpath_prepend\fR and \fBpath_prepends\fR functions prepend a path to another path, ensuring that there is a directory separator between them.
+
+.SH ARGUMENTS
+.TP
+.IB x
+The path to be prepended.
+.TP
+.IB len
+The length of the path to be prepended.
+.TP
+.IB s
+The path where the new path will be prepended.
+.TP
+.IB out
+The \fBstralloc\fR structure where the result will be stored.
+
+.SH RETURN VALUE
+No return value.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBpath_prepend\fR function:
+
+.nf
+#include <stdio.h>
+#include <lib/path_internal.h>
+#include <lib/stralloc.h>
+
+int main() {
+    const char* path = "/usr/lib";
+    size_t len = strlen(path);
+    stralloc sa;
+    stralloc_init(&sa);
+    stralloc_sprintf(&sa, "/bin");
+    path_prepend(path, len, &sa);
+    printf("Prepended path: %s\n", sa.s);
+    stralloc_free(&sa);
+    return 0;
+}
+.nef
