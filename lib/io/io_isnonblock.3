@@ -1,0 +1,21 @@
+.TH io_isnonblock 3
+.SH NAME
+io_isnonblock \- query non-blocking mode
+.SH SYNTAX
+.B #include <io.h>
+
+int \fBio_isnonblock\fP(int64 fd);
+.SH DESCRIPTION
+io_isnonblock returns whether descriptor fd is currently in non-blocking
+mode: 1 if non-blocking, 0 if blocking, or -1 if fd is not a tracked
+descriptor (never passed to io_fd(), io_nonblock(), or io_block()).
+
+This reflects the last mode set through io_nonblock()/io_block() (and the
+mode detected when fd was registered via io_fd()), not a live kernel
+query: on native Windows, Winsock's ioctlsocket(FIONBIO) has no documented
+way to read a socket's current blocking mode back from the OS, so the
+result is a cache maintained by this library. If fd's mode was changed by
+some other means bypassing io_nonblock()/io_block(), the result will be
+stale.
+.SH "SEE ALSO"
+io_nonblock(3), io_block(3)
