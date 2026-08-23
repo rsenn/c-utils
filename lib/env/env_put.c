@@ -77,6 +77,27 @@ env_put2(const char* name, const char* value) {
 
 #endif
 
+int
+env_put2b(const char* s, const char* t, size_t n) {
+  char* value = str_ndup(t, n);
+  int ret;
+
+  if(!value)
+    return 0;
+  ret = env_put2(s, value);
+  free(value);
+  return ret;
+}
+
+/* Nothing to initialize here: unlike the POSIX branch below, this doesn't
+ * shadow `environ` with its own reallocated array -- env_put/env_put2 call
+ * straight through to _putenv_s()/putenv(). Exists only so callers don't
+ * need an #if WINDOWS_NATIVE around the env_init() call POSIX code needs. */
+size_t
+env_init(void) {
+  return 1;
+}
+
 #else
 static size_t env_isinit = 0; /* if env_isinit: */
 static size_t ea;             /* environ is a pointer to ea+1 char*'s. */
