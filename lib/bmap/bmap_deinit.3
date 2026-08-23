@@ -23,7 +23,7 @@ The following example demonstrates how to use the \fBbmap_deinit_\fR function:
 int main() {
     bmap_base_t *m = bmap_init(100);
     if (m == NULL) {
-        fprintf(stderr, "Failed to initialize hash map\n");
+        perror("Failed to initialize hash map");
         return 1;
     }
 
