@@ -1,0 +1,30 @@
+.TH FMT_XLONG0 3
+.SH NAME
+fmt_xlong0 \- format an integer as a zero-padded hexadecimal string
+.SH SYNOPSIS
+.B #include <fmt.h>
+.PP
+.BI "size_t fmt_xlong0(char* " dest ", size_t " num ", size_t " n ");"
+.SH DESCRIPTION
+.B fmt_xlong0
+formats the integer
+.I num
+as a hexadecimal string and writes it to the buffer
+.IR dest .
+.PP
+The function ensures that the resulting string has a minimum length of
+.IR n .
+If the hexadecimal representation of
+.I num
+is shorter than
+.IR n ,
+the function pads the beginning of the string with '0' characters until the total length equals
+.IR n .
+.PP
+The resulting string is not null-terminated.
+.SH RETURN VALUE
+Returns the total number of bytes written to
+.IR dest .
+.SH SEE ALSO
+.BR fmt_xlong (3),
+.BR fmt_ulong0 (3)

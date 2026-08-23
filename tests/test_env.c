@@ -2,6 +2,7 @@
 #include "../lib/stralloc.h"
 #include "../lib/env.h"
 #include "../lib/str.h"
+#include "../lib/unix.h"
 
 /*
  * int env_unset(const char* name);

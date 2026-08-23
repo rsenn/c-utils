@@ -1,0 +1,24 @@
+.TH FMT_OCTAL 3
+.SH NAME
+fmt_octal \- format an unsigned 64-bit integer as an octal string
+.SH SYNOPSIS
+.B #include <fmt.h>
+.PP
+.BI "size_t fmt_octal(char* " dest ", uint64 " i ");"
+.SH DESCRIPTION
+.B fmt_octal
+formats the unsigned 64-bit integer
+.I i
+as an octal (base-8) ASCII string and writes it to the buffer pointed to by
+.IR dest .
+.PP
+If
+.I dest
+is not NULL, the octal representation is stored there. The function does not append a null terminator to the resulting string.
+.PP
+The number of bytes required for the conversion is calculated automatically before writing to the buffer.
+.SH RETURN VALUE
+Returns the number of bytes written to the buffer (the length of the octal representation).
+.SH SEE ALSO
+.BR fmt_ulong (3),
+.BR fmt_xlong (3)

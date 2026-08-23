@@ -1,0 +1,38 @@
+.TH IO_WAITWRITE 3
+.SH NAME
+io_waitwrite \- write data to a file descriptor, waiting if necessary
+.SH SYNOPSIS
+.B #include <io.h>
+.PP
+.BI "int64 io_waitwrite(fd_type " d ", const char* " buf ", int64 " len ");"
+.SH DESCRIPTION
+.B io_waitwrite
+writes up to
+.I len
+bytes of data from the buffer
+.I buf
+to the file descriptor
+.IR d .
+.PP
+If the file descriptor
+.I d
+is marked as non-blocking within the library's I/O context, the function will block until the file descriptor is ready for writing (using
+.BR poll (2)
+on POSIX or socket manipulation on Windows) before attempting the write operation.
+.PP
+On POSIX systems, the function also invokes
+.BR io_sigpipe (3)
+to ensure proper handling of SIGPIPE signals.
+.SH RETURN VALUE
+.TP
+.B >= 0
+The number of bytes successfully written.
+.TP
+.B -3
+An error occurred;
+.I errno
+is set to indicate the cause (e.g., EBADF, EPIPE).
+.SH SEE ALSO
+.BR io_waitread (3),
+.BR poll (2),
+.BR write (2)

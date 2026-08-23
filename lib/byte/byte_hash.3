@@ -1,0 +1,19 @@
+.TH BYTE_HASH 3
+.SH NAME
+byte_hash \- compute a DJB2 hash of a byte array
+.SH SYNOPSIS
+.B #include <byte.h>
+.PP
+.BI "uint32 byte_hash(const void* " x ", size_t " len ");"
+.SH DESCRIPTION
+.B byte_hash
+computes a 32-bit hash value for the byte array pointed to by
+.I x
+with length
+.IR len .
+.PP
+The implementation uses the DJB2 algorithm, a widely known hash function designed by Dan Bernstein, which is efficient and produces good distribution for string and byte-array keys.
+.SH RETURN VALUE
+Returns the computed 32-bit unsigned hash value.
+.SH SEE ALSO
+.BR uint32 (3)

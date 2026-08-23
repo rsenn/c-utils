@@ -1,0 +1,31 @@
+.TH PATH_CONCATB 3
+.SH NAME
+path_concatb \- concatenate two path buffers
+.SH SYNOPSIS
+.B #include <path.h>
+.PP
+.BI "void path_concatb(const char* " a ", size_t " alen ", const char* " b ", size_t " blen ", stralloc* " out ");"
+.SH DESCRIPTION
+.B path_concatb
+concatenates two path components,
+.I a
+(length
+.IR alen )
+and
+.I b
+(length
+.IR blen ),
+into the
+.B stralloc
+structure
+.IR out .
+.PP
+The function handles path separators automatically, ensuring one is inserted between the two components if necessary. It also performs a basic cleanup by removing leading "./" sequences from the resulting path if they appear at the very start.
+.PP
+The resulting string in
+.I out
+is null-terminated.
+.SH SEE ALSO
+.BR path_append (3),
+.BR path_join (3),
+.BR stralloc (3)

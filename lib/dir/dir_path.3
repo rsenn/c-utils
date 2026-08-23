@@ -1,0 +1,31 @@
+.TH DIR_PATH 3
+.SH NAME
+dir_path \- construct the full path of a directory entry
+.SH SYNOPSIS
+.B #include <dir.h>
+.PP
+.BI "void dir_path(struct dir_s* " d ", stralloc* " sa ");"
+.SH DESCRIPTION
+.B dir_path
+constructs the full filesystem path for the current entry in the directory
+structure
+.I d
+and appends it to the
+.B stralloc
+pointed to by
+.IR sa .
+.PP
+The function retrieves the base directory path stored within the directory
+context and appends the name of the currently accessed entry. If the base path
+ends with a wildcard character, it is stripped before concatenation.
+.PP
+If wide character support is enabled (see
+.B USE_WIDECHAR
+in the project configuration), the function performs wide character to UTF-8
+conversion to populate the
+.B stralloc
+correctly.
+.SH SEE ALSO
+.BR dir_open (3),
+.BR dir_next (3),
+.BR stralloc (3)

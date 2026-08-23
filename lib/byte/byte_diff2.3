@@ -1,0 +1,50 @@
+.TH BYTE_DIFF2 3
+.SH NAME
+byte_diff2 \- compare two byte arrays of different lengths
+.SH SYNOPSIS
+.B #include <byte.h>
+.PP
+.BI "int byte_diff2(const char* " a ", size_t " alen ", const char* " b ", size_t " blen ");"
+.SH DESCRIPTION
+.B byte_diff2
+performs a lexicographical comparison between the byte array
+.I a
+of length
+.I alen
+and the byte array
+.I b
+of length
+.IR blen .
+.PP
+The comparison logic is as follows:
+.IP \(bu 3
+If
+.I alen
+is less than
+.IR blen ,
+the result is negative (specifically, the negation of the byte at
+.I b[alen]
+).
+.IP \(bu 3
+If
+.I blen
+is less than
+.IR alen ,
+the result is positive (specifically, the byte at
+.I a[blen]
+).
+.IP \(bu 3
+If the lengths are equal, it delegates the comparison to
+.BR byte_diff (3).
+.SH RETURN VALUE
+Returns a negative value if
+.I a
+is lexicographically smaller than
+.IR b ,
+zero if they are equal, or a positive value if
+.I a
+is greater than
+.IR b .
+.SH SEE ALSO
+.BR byte_diff (3),
+.BR str_diff (3)

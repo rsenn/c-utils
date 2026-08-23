@@ -1,0 +1,19 @@
+.TH FMT_TOHEX 3
+.SH NAME
+fmt_tohex \- convert a nibble to its hexadecimal character representation
+.SH SYNOPSIS
+.B #include <fmt.h>
+.PP
+.BI "char fmt_tohex(char " c ");"
+.SH DESCRIPTION
+.B fmt_tohex
+converts the lower four bits (nibble) of the character
+.I c
+into its corresponding lowercase hexadecimal ASCII character ('0'-'9', 'a'-'f').
+.PP
+The function masks the input with 0x0F to isolate the lower nibble and returns the appropriate character constant from the internal hexadecimal digit table.
+.SH RETURN VALUE
+Returns the hexadecimal character representing the value of the lower four bits of the input.
+.SH SEE ALSO
+.BR fmt_xlong (3),
+.BR fmt_tohex_upper (3)

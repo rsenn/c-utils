@@ -1,0 +1,37 @@
+.TH PATH_IS_ABSOLUTE_B 3
+.SH NAME
+path_is_absolute_b \- check if a path buffer contains an absolute path
+.SH SYNOPSIS
+.B #include <path.h>
+.PP
+.BI "int path_is_absolute_b(const char* " x ", size_t " n ");"
+.SH DESCRIPTION
+.B path_is_absolute_b
+determines whether the path string provided in the buffer
+.I x
+of length
+.I n
+is an absolute path.
+.PP
+The definition of an absolute path is platform-dependent:
+.TP
+.B Windows
+Uses the Windows API
+.BR PathIsRelativeW
+(via UTF-8 to UTF-16 conversion) to determine if the path is rooted.
+.TP
+.B POSIX
+A path is considered absolute if it starts with the root directory separator ('/').
+.TP
+.B Windows/MinGW
+Supports both standard POSIX root styles and drive-letter specifications (e.g., "C:\") if the platform is configured for Windows support.
+.SH RETURN VALUE
+.TP
+.B 1
+The path is absolute.
+.TP
+.B 0
+The path is relative.
+.SH SEE ALSO
+.BR path_is_absolute (3),
+.BR path_is_root (3)

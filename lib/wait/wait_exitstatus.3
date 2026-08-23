@@ -1,0 +1,34 @@
+.TH WAIT_EXITSTATUS 3
+.SH NAME
+wait_exitstatus \- extract the exit code from a wait status
+.SH SYNOPSIS
+.B #include "wait.h"
+.PP
+.BI "int wait_exitstatus(int " wstat ");"
+.SH DESCRIPTION
+.B wait_exitstatus
+extracts the numeric exit code a child passed to
+.BR exit (3)/_exit(2)
+from
+.IR wstat ,
+a status previously filled in by
+.BR wait_pid (3),
+.BR wait_nointr (3),
+.BR wait_nohang (3),
+.BR wait_pid_nohang (3),
+or the
+.I *pids
+variants. Portable across platforms:
+.I wstat
+is a packed status requiring this decoding on POSIX, but is already the
+plain exit code on WINDOWS_NATIVE (GetExitCodeProcess()) -- callers should
+always use this instead of the POSIX
+.B WEXITSTATUS()
+macro to stay portable.
+.SH RETURN VALUE
+The exit code, valid only if
+.BR wait_ifexited (3)
+returned nonzero for the same
+.IR wstat .
+.SH SEE ALSO
+wait_ifexited(3), wait_pid(3)

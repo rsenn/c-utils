@@ -1,5 +1,6 @@
 #include "unit_test.h"
 #include "../lib/ndelay.h"
+#include "../lib/unix.h"
 
 #include <fcntl.h>
 #include <unistd.h>

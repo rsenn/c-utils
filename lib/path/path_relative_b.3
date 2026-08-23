@@ -1,0 +1,27 @@
+.TH PATH_RELATIVE_B 3
+.SH NAME
+path_relative_b \- compute a relative path from a buffer
+.SH SYNOPSIS
+.B #include <path.h>
+.PP
+.BI "int path_relative_b(const char* " path ", size_t " len ", stralloc* " out ");"
+.SH DESCRIPTION
+.B path_relative_b
+converts a path specified by a pointer
+.I path
+and length
+.I len
+into a path relative to the current working directory, appending the result to the
+.B stralloc
+pointed to by
+.IR out .
+.PP
+The function internally retrieves the current working directory using
+.BR path_getcwd (3),
+compares it against the provided path, and calculates the necessary navigation steps (e.g., using ".." components) to describe the target path relative to the process's current location.
+.SH RETURN VALUE
+Returns 1 on success, or 0 if the path could not be converted or an error occurred during path resolution.
+.SH SEE ALSO
+.BR path_relative (3),
+.BR path_relative_to_b (3),
+.BR path_getcwd (3)

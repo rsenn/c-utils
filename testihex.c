@@ -4,7 +4,6 @@
 #include "lib/mmap.h"
 #include "lib/open.h"
 #include "lib/byte.h"
-// #include "lib/slist.h"
 #include "lib/uint32.h"
 #include "lib/uint8.h"
 #include "lib/str.h"
@@ -13,6 +12,13 @@
 #include "lib/errmsg.h"
 #include "lib/unix.h"
 #include "lib/alloc.h"
+#include "lib/windoze.h"
+
+#ifdef WINDOWS_NATIVE
+#include <io.h>
+#else
+#include <unistd.h>
+#endif
 
 #define MAX(a, b) ((a) > (b) ? (a) : (b))
 

@@ -1,0 +1,22 @@
+.TH PATH_RELATIVE 3
+.SH NAME
+path_relative \- compute a relative path
+.SH SYNOPSIS
+.B #include <path.h>
+.PP
+.BI "int path_relative(const char* " path ", stralloc* " out ");"
+.SH DESCRIPTION
+.B path_relative
+attempts to convert an absolute or complex path into a relative path representation and appends the result to the
+.B stralloc
+pointed to by
+.IR out .
+.PP
+The function parses the input
+.I path
+(assumed to be a null-terminated string) and resolves it relative to the current working directory or the implied structure of the provided path, depending on the implementation details and environment context.
+.SH RETURN VALUE
+Returns 1 on success, or 0 if the path could not be converted to a relative form or an error occurred.
+.SH SEE ALSO
+.BR path_append (3),
+.BR path_normalize (3)

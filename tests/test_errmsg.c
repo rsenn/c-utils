@@ -2,6 +2,7 @@
 #include "../lib/errmsg.h"
 #include "../lib/str.h"
 #include "../lib/ndelay.h"
+#include "../lib/unix.h"
 #include <unistd.h>
 
 /* Redirects fd to a pipe, runs fn(), restores fd, and returns whatever

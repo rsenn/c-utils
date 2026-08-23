@@ -1,0 +1,20 @@
+.TH PATH_SKIP 3
+.SH NAME
+path_skip \- skip a single path component
+.SH SYNOPSIS
+.B #include <path.h>
+.PP
+.BI "size_t path_skip(const char* " s ", size_t " n ");"
+.SH DESCRIPTION
+.B path_skip
+examines the string
+.I s
+of length
+.I n
+to identify a single path component followed by any trailing path separators.
+.PP
+The function parses the input string to locate the end of the current component, then advances the index past the component and any immediate path separator(s).
+.SH RETURN VALUE
+Returns the number of bytes consumed from the start of the string to reach the beginning of the next component. If no component can be identified, or if the string is empty, returns 0.
+.SH SEE ALSO
+.BR path_append (3)

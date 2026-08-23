@@ -1,0 +1,37 @@
+.TH ERRMSG_PUTS 3
+.SH NAME
+errmsg_puts, errmsg_flush, errmsg_start \- buffered error message output
+.SH SYNOPSIS
+.B #include <errmsg.h>
+.PP
+.BI "void errmsg_puts(int64 " fd ", const char* " s ");"
+.PP
+.BI "void errmsg_flush(int64 " fd ");"
+.PP
+.BI "void errmsg_start(int64 " fd ");"
+.SH DESCRIPTION
+.B errmsg_puts
+queues a null-terminated string
+.I s
+for output to the file descriptor
+.IR fd .
+On systems supporting
+.BR writev (2),
+output is buffered until a certain threshold is reached or
+.B errmsg_flush
+is called. On other systems, or if debug mode is active, the string is written
+immediately.
+
+.B errmsg_flush
+writes all currently buffered strings to the specified file descriptor and
+resets the internal buffer.
+
+.B errmsg_start
+writes the program name (if previously set via
+.B errmsg_argv0
+) followed by a colon and a space to the file descriptor. This is typically used
+at the beginning of error reporting routines to identify the source of the message.
+
+.SH SEE ALSO
+.BR writev (2),
+.BR errmsg_warn (3)

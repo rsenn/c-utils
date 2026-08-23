@@ -1,0 +1,35 @@
+.TH BYTE_CHRNS 3
+.SH NAME
+byte_chrns \- scan a byte array for the first character not in a set
+.SH SYNOPSIS
+.B #include <byte.h>
+.PP
+.BI "size_t byte_chrns(const char* " x ", size_t " n ", const char " charset "[], size_t " setlen ");"
+.SH DESCRIPTION
+.B byte_chrns
+scans the byte array
+.I x
+of length
+.I n
+to find the first occurrence of a byte that is NOT present in the provided
+.I charset
+of length
+.IR setlen .
+.PP
+The function iterates through the buffer
+.I x
+and compares each byte against the characters defined in
+.IR charset .
+The search stops when a byte is found that does not exist in the character set or when the end of the input buffer
+.I n
+is reached.
+.SH RETURN VALUE
+Returns the index (offset) of the first byte in
+.I x
+that is not contained in
+.I charset
+. If all bytes in the input array are present in the character set, the function returns the value of
+.I n
+.
+.SH SEE ALSO
+.BR byte_chr (3)

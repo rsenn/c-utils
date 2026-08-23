@@ -1,0 +1,19 @@
+.TH BYTE_UPPER 3
+.SH NAME
+byte_upper \- convert a byte array to uppercase
+.SH SYNOPSIS
+.B #include <byte.h>
+.PP
+.BI "void byte_upper(void* " s ", size_t " len ");"
+.SH DESCRIPTION
+.B byte_upper
+converts all lowercase ASCII characters ('a'-'z') within the memory area
+pointed to by
+.I s
+of length
+.I len
+to their corresponding uppercase ASCII characters ('A'-'Z').
+.PP
+The conversion is performed in-place. Other characters remain unchanged. The function does not assume any locale-specific behavior and is restricted to the standard ASCII character set.
+.SH SEE ALSO
+.BR byte_lower (3)

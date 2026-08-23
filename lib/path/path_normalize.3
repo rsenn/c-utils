@@ -1,0 +1,40 @@
+.TH PATH_NORMALIZE 3
+.SH NAME
+path_normalize, path_normalize2 \- normalize a filesystem path
+.SH SYNOPSIS
+.B #include <path.h>
+.PP
+.BI "size_t path_normalize(char* " path ");"
+.PP
+.BI "size_t path_normalize2(char* " path ", size_t " nb ");"
+.SH DESCRIPTION
+.B path_normalize
+and
+.B path_normalize2
+modify the provided
+.I path
+in-place to create a canonical, normalized form.
+.PP
+Normalization removes redundant elements from the path string:
+.TP
+.B Redundant separators
+Consecutive path separators (e.g., "//") are collapsed into a single separator.
+.TP
+.B Current directory references
+Elements equivalent to "." are removed.
+.TP
+.B Parent directory references
+Elements equivalent to ".." are resolved by removing the preceding path component, provided the path structure permits.
+.PP
+.B path_normalize
+assumes
+.I path
+is a null-terminated string.
+.B path_normalize2
+operates on a buffer of size
+.I nb
+and does not rely on null-termination.
+.SH RETURN VALUE
+Returns the length of the resulting normalized string in bytes.
+.SH SEE ALSO
+.BR path_append (3)

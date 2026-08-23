@@ -1,0 +1,31 @@
+.TH FMT_REPEAT 3
+.SH NAME
+fmt_repeat \- format a string by repeating it multiple times
+.SH SYNOPSIS
+.B #include <fmt.h>
+.PP
+.BI "size_t fmt_repeat(char* " dest ", const char* " src ", int " n ");"
+.SH DESCRIPTION
+.B fmt_repeat
+copies the null-terminated string pointed to by
+.I src
+into the buffer pointed to by
+.IR dest ,
+repeating the string
+.I n
+times.
+.PP
+The caller must ensure that the buffer at
+.I dest
+is large enough to hold the resulting sequence of bytes, which will have a total length of
+.IR n * strlen(src) .
+.PP
+The function does not append a null terminator to the
+.I dest
+buffer.
+.SH RETURN VALUE
+Returns the total number of bytes written to
+.IR dest .
+.SH SEE ALSO
+.BR byte_copy (3),
+.BR str_len (3)

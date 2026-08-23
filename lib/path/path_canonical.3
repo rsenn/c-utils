@@ -1,0 +1,27 @@
+.TH PATH_CANONICAL 3
+.SH NAME
+path_canonical \- canonicalize a path string
+.SH SYNOPSIS
+.B #include <path.h>
+.PP
+.BI "int path_canonical(const char* " path ", stralloc* " out ");"
+.SH DESCRIPTION
+.B path_canonical
+takes a null-terminated string
+.I path
+and converts it into its canonical form, storing the result in the
+.B stralloc
+pointed to by
+.IR out .
+.PP
+The conversion involves copying the input path into
+.I out
+and then invoking
+.BR path_canonical_sa (3)
+to perform in-place normalization, such as resolving "." and ".." components and collapsing redundant separators.
+.SH RETURN VALUE
+Returns 1 on success, or 0 if an error occurred during canonicalization.
+.SH SEE ALSO
+.BR path_canonical_sa (3),
+.BR path_normalize (3),
+.BR stralloc (3)

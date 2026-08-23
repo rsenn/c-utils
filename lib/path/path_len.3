@@ -1,0 +1,22 @@
+.TH PATH_LEN 3
+.SH NAME
+path_len \- compute the length of a path component
+.SH SYNOPSIS
+.B #include <path.h>
+.PP
+.BI "size_t path_len(const char* " s ", size_t " n ");"
+.SH DESCRIPTION
+.B path_len
+calculates the length in bytes of the first path component within the string
+.I s
+of length
+.IR n .
+.PP
+The function scans the provided buffer and stops upon encountering the first path separator character or reaching the end of the specified length
+.IR n .
+It correctly handles multi-byte UTF-8 sequences, ensuring that path separator detection only triggers on single-byte characters.
+.SH RETURN VALUE
+Returns the number of bytes from the start of the input string to the first path separator character or the end of the string.
+.SH SEE ALSO
+.BR path_skip_component (3),
+.BR path_skip (3)

@@ -1,0 +1,19 @@
+.TH BYTE_LOWER 3
+.SH NAME
+byte_lower \- convert a byte array to lowercase
+.SH SYNOPSIS
+.B #include <byte.h>
+.PP
+.BI "void byte_lower(void* " s ", size_t " len ");"
+.SH DESCRIPTION
+.B byte_lower
+converts all uppercase ASCII characters ('A'-'Z') within the memory area
+pointed to by
+.I s
+of length
+.I len
+to their corresponding lowercase ASCII characters ('a'-'z').
+.PP
+The conversion is performed in-place. Other characters remain unchanged. The function does not assume any locale-specific behavior and is restricted to the standard ASCII character set.
+.SH SEE ALSO
+.BR byte_upper (3)

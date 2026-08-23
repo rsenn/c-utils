@@ -1,0 +1,29 @@
+.TH PATH_JOIN 3
+.SH NAME
+path_join \- concatenate two path components
+.SH SYNOPSIS
+.B #include <path.h>
+.PP
+.BI "char* path_join(const char* " a ", const char* " b ");"
+.SH DESCRIPTION
+.B path_join
+concatenates two path components,
+.I a
+and
+.I b
+, ensuring that a system-specific path separator is inserted if necessary.
+.PP
+The function internally uses a
+.B stralloc
+to perform the concatenation. If
+.I a
+does not already end with a path separator, one is automatically inserted before
+.I b
+is appended.
+.PP
+The resulting string is null-terminated and dynamically allocated. The caller is responsible for freeing the returned memory when it is no longer needed.
+.SH RETURN VALUE
+Returns a pointer to a null-terminated string containing the joined path, or NULL if memory allocation fails.
+.SH SEE ALSO
+.BR path_append (3),
+.BR stralloc (3)

@@ -14,6 +14,7 @@
 #include "lib/alloc.h"
 #include "lib/byte.h"
 #include "lib/uint8.h"
+#include "lib/unix.h"
 
 #include <ctype.h>
 #include "lib/bool.h"

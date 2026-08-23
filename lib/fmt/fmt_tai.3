@@ -1,0 +1,28 @@
+.TH FMT_TAI 3
+.SH NAME
+fmt_tai \- format a TAI timestamp as an ISO 8601 string
+.SH SYNOPSIS
+.B #include <fmt.h>
+.B #include <tai.h>
+.PP
+.BI "size_t fmt_tai(char* " dest ", const struct tai* " ta ");"
+.SH DESCRIPTION
+.B fmt_tai
+formats the TAI (International Atomic Time) timestamp pointed to by
+.I ta
+into an ISO 8601 formatted string and writes it to the buffer pointed to by
+.IR dest .
+.PP
+The function extracts the time value from the
+.B tai
+structure, masks it to ensure compatibility with standard time formats, and delegates the formatting to
+.BR fmt_iso8601 (3).
+.PP
+The resulting string is written to
+.I dest
+without a null terminator.
+.SH RETURN VALUE
+Returns the number of bytes written to the buffer.
+.SH SEE ALSO
+.BR fmt_iso8601 (3),
+.BR tai (3)

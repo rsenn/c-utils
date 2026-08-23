@@ -12,6 +12,7 @@
 
 #if WINDOWS_NATIVE
 #include <io.h>
+#include <process.h>
 #else
 #include <unistd.h>
 #endif

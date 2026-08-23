@@ -1,0 +1,33 @@
+.TH PATH_IS_ABSOLUTE_SA 3
+.SH NAME
+path_is_absolute_sa \- check if a stralloc path is absolute
+.SH SYNOPSIS
+.B #include <path.h>
+.PP
+.BI "int path_is_absolute_sa(const stralloc* " p ");"
+.SH DESCRIPTION
+.B path_is_absolute_sa
+checks whether the path contained in the
+.B stralloc
+structure
+.I p
+is an absolute path.
+.PP
+This function acts as a wrapper around
+.BR path_is_absolute_b (3),
+using the data buffer
+.I p->s
+and length
+.I p->len
+to perform the check according to the platform-specific rules for absolute paths.
+.SH RETURN VALUE
+.TP
+.B 1
+The path is absolute.
+.TP
+.B 0
+The path is relative.
+.SH SEE ALSO
+.BR path_is_absolute_b (3),
+.BR path_is_absolute (3),
+.BR stralloc (3)

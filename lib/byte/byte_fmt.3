@@ -1,0 +1,33 @@
+.TH BYTE_FMT 3
+.SH NAME
+byte_fmt \- format a byte array using a custom formatter
+.SH SYNOPSIS
+.B #include <byte.h>
+.PP
+.BI "size_t byte_fmt(const char* " in ", size_t " in_len ", stralloc* " out ", size_t (*" fmt_function ")(char*, unsigned int ch));"
+.SH DESCRIPTION
+.B byte_fmt
+transforms an input byte array
+.I in
+of length
+.I in_len
+into a formatted representation, appending the result to the
+.B stralloc
+structure
+.IR out .
+.PP
+The function iterates over each byte in
+.I in
+and invokes the provided
+.I fmt_function
+callback for every byte. The callback is expected to write the formatted representation of the byte into the provided character buffer and return the number of bytes written.
+.PP
+The
+.I out
+stralloc is cleared before the formatting process begins, and its length is adjusted to match the final size of the formatted output.
+.SH RETURN VALUE
+Returns the total number of bytes appended to
+.IR out ,
+or 0 if an internal memory allocation failure occurred.
+.SH SEE ALSO
+.BR stralloc (3)

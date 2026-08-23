@@ -1,0 +1,19 @@
+.TH CASE_LOWERC 3
+.SH NAME
+case_lowerc \- convert a character to lowercase
+.SH SYNOPSIS
+.B #include <case.h>
+.PP
+.BI "int case_lowerc(int " c ");"
+.SH DESCRIPTION
+.B case_lowerc
+converts an uppercase ASCII character to its lowercase equivalent.
+.PP
+If the character
+.I c
+is an uppercase letter ('A'-'Z'), it is converted to the corresponding lowercase letter ('a'-'z'). All other characters are returned unchanged. This function operates on ASCII values and does not account for locale-specific character sets.
+.SH RETURN VALUE
+Returns the lowercase version of the input character, or the input character itself if it is not an uppercase letter.
+.SH SEE ALSO
+.BR case_upperc (3),
+.BR byte_lower (3)

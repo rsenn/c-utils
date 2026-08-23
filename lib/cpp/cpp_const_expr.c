@@ -201,8 +201,6 @@ new_unique_name(cpp_ctx* pp) {
 
   pos += fmt_int(&buf[pos], pp->uniq_id++);
   return str_ndup(buf, pos);
-
-  // return cpp_format(".L..%d", id++);
 }
 
 /*static cpp_obj*

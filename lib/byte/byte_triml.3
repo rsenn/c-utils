@@ -1,0 +1,31 @@
+.TH BYTE_TRIML 3
+.SH NAME
+byte_triml \- remove leading characters from a byte array
+.SH SYNOPSIS
+.B #include <byte.h>
+.PP
+.BI "const char* byte_triml(const char* " x ", size_t* " len ", const char* " charset ", unsigned int " charsetlen ");"
+.SH DESCRIPTION
+.B byte_triml
+scans the byte array
+.I x
+of length
+.I *len
+from left to right and skips any leading characters present in the provided
+.I charset
+(of length
+.IR charsetlen ).
+.PP
+Upon returning, the function updates the value pointed to by
+.I len
+to reflect the number of bytes remaining after leading matches are removed, and returns a pointer to the start of the remaining byte sequence within the original buffer
+.IR x .
+.SH RETURN VALUE
+Returns a pointer to the first byte in the sequence that is not contained in
+.I charset
+. The variable pointed to by
+.I len
+is updated to the length of the resulting trimmed buffer.
+.SH SEE ALSO
+.BR byte_trimr (3),
+.BR byte_chr (3)

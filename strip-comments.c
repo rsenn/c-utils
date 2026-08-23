@@ -11,6 +11,7 @@
 #include "lib/path.h"
 #include "lib/unix.h"
 #include "lib/bool.h"
+#include "lib/unix.h"
 #include <ctype.h>
 
 #if WINDOWS_NATIVE

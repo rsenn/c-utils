@@ -4,8 +4,7 @@
 #error "Not CYGWIN"
 #endif
 
-int
-main() {
-  printf("OK\n");
-  return 0;
+int main() {
+	printf("OK\n");
+	return 0;
 }

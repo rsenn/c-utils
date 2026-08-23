@@ -44,7 +44,12 @@ extern const short __spm[13];
 int unix_fnmatch(const char* pattern, const char* string, int flags);
 int fnmatch_b(const char*, size_t, const char*, size_t slen, int flags);
 int isleap(int year);
+int pipe(int fd[2]);
 int pipe2(int fd[2], int flags);
+int link(const char* oldpath, const char* newpath);
+int symlink(const char* oldpath, const char* newpath);
+char* mkdtemp(char* tmpl);
+int setenv(const char* name, const char* value, int overwrite);
 
 #if WINDOWS_NATIVE
 int ftruncate(int, long);

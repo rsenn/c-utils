@@ -9,7 +9,7 @@ if(OVERRIDE_DEPS)
   link_libraries(${OVERRIDE_DEPS})
 else(OVERRIDE_DEPS)
   link_libraries(cpp hashmap iarray strlist errmsg path stralloc mmap str taia tai buffer open uint32 fmt iob io iom
-                  scan unix socket env dir safemult wait uint64 uint16 seek ndelay)
+                  scan unix socket env dir safemult wait uint64 uint16 seek ndelay process)
 endif(OVERRIDE_DEPS)
 
 file(GLOB TESTS test_*.c)

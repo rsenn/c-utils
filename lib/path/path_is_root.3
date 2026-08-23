@@ -1,0 +1,40 @@
+.TH PATH_IS_ROOT 3
+.SH NAME
+path_is_root \- check if a path refers to the filesystem root
+.SH SYNOPSIS
+.B #include <path.h>
+.PP
+.BI "int path_is_root(const char* " p ");"
+.SH DESCRIPTION
+.B path_is_root
+determines whether the given path
+.I p
+refers to the root directory of the filesystem.
+.PP
+The implementation is platform-specific:
+.TP
+.B Windows
+Uses the Windows API function
+.BR PathIsRootW
+to verify if the path represents a drive root (e.g., "C:\").
+.TP
+.B POSIX
+Compares the device and inode numbers of the directory
+.I p
+with those of its parent directory (".."). If the device and inode match,
+.I p
+is considered the root of the filesystem.
+.SH RETURN VALUE
+.TP
+.B 1
+The path is the root of the filesystem.
+.TP
+.B 0
+The path is not the root.
+.TP
+.B -1
+An error occurred (e.g., the path could not be accessed using
+.BR lstat (2)).
+.SH SEE ALSO
+.BR lstat (2),
+.BR path_canonical (3)

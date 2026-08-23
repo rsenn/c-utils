@@ -1,0 +1,21 @@
+.TH PATH_BASENAME2 3
+.SH NAME
+path_basename2 \- return a pointer to the basename of a path
+.SH SYNOPSIS
+.B #include <path.h>
+.PP
+.BI "char* path_basename2(const char* " path ", size_t " len ");"
+.SH DESCRIPTION
+.B path_basename2
+calculates the position of the final component (basename) of the path provided in
+.I path
+with length
+.IR len .
+.PP
+The function identifies the last occurrence of the system's path separator and returns a pointer to the character immediately following it. If the path contains no separators, the original pointer is returned.
+.SH RETURN VALUE
+Returns a pointer to the start of the basename within the original
+.I path
+buffer.
+.SH SEE ALSO
+.BR path_basepos2 (3)

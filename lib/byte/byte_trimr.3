@@ -1,0 +1,26 @@
+.TH BYTE_TRIMR 3
+.SH NAME
+byte_trimr \- trim trailing characters from a byte array
+.SH SYNOPSIS
+.B #include <byte.h>
+.PP
+.BI "size_t byte_trimr(const char* " x ", size_t " n ", const char* " trimchars ", unsigned int " trimcharslen ");"
+.SH DESCRIPTION
+.B byte_trimr
+scans the byte array
+.I x
+of length
+.I n
+from right to left to find the length of the prefix that does not end with any of the characters specified in
+.IR trimchars .
+.PP
+The function iterates backwards from the end of the array, discarding any bytes found in the
+.I trimchars
+set (of length
+.IR trimcharslen ). The process stops as soon as a byte is encountered that is not in the set, or when the entire array is exhausted.
+.SH RETURN VALUE
+Returns the number of bytes remaining in the prefix after trailing characters in
+.I trimchars
+have been removed.
+.SH SEE ALSO
+.BR byte_chr (3)

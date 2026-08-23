@@ -1,0 +1,23 @@
+.TH PATH_DIRLEN_B 3
+.SH NAME
+path_dirlen_b \- find the length of the directory component of a path
+.SH SYNOPSIS
+.B #include <path.h>
+.PP
+.BI "size_t path_dirlen_b(const char* " path ", size_t " size ");"
+.SH DESCRIPTION
+.B path_dirlen_b
+scans the provided
+.I path
+buffer of length
+.I size
+to calculate the length of the directory component.
+.PP
+The function searches for the last occurrence of any path separator character (as defined in the system-specific
+.BR PATHSEP_S_MIXED )
+and returns the offset representing the length of the directory part of the path. This effectively points to the location just before the basename.
+.SH RETURN VALUE
+Returns the number of bytes belonging to the directory part of the path. If no path separator is found, or if the path consists only of a basename, it returns 0.
+.SH SEE ALSO
+.BR path_dirname_b (3),
+.BR path_basename2 (3)

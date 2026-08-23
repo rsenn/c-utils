@@ -1,22 +1,33 @@
 #include "unit_test.h"
 #include "../lib/wait.h"
+#include "../lib/process.h"
 
-#include <sys/wait.h>
-#include <unistd.h>
+#include <stdlib.h>
+
+/* Spawn a copy of the running test executable that immediately exits with
+ * exitcode (see all_tests.c's "--wait-child" handling). Using
+ * process_create() instead of fork() keeps this portable to
+ * WINDOWS_NATIVE, which has no fork(). */
+static int
+spawn_child(const char* exitcode) {
+  char* self = process_executable();
+  char* argv[] = {self, "--wait-child", (char*)exitcode, 0};
+  int pid = process_create(self, argv, 0, 0);
+
+  free(self);
+  return pid;
+}
 
 /*
  * int wait_pid(int, int*);
  */
 TEST(test_wait_pid) {
   int status = 0;
-  pid_t child = fork();
-
-  if(child == 0)
-    _exit(7);
+  int child = spawn_child("7");
 
   ASSERT_EQ(child, wait_pid(child, &status));
-  ASSERT_NE(0, WIFEXITED(status));
-  ASSERT_EQ(7, WEXITSTATUS(status));
+  ASSERT_NE(0, wait_ifexited(status));
+  ASSERT_EQ(7, wait_exitstatus(status));
 }
 
 /*
@@ -24,14 +35,11 @@ TEST(test_wait_pid) {
  */
 TEST(test_wait_nointr) {
   int status = 0;
-  pid_t child = fork();
-
-  if(child == 0)
-    _exit(3);
+  int child = spawn_child("3");
 
   ASSERT_EQ(child, wait_nointr(&status));
-  ASSERT_NE(0, WIFEXITED(status));
-  ASSERT_EQ(3, WEXITSTATUS(status));
+  ASSERT_NE(0, wait_ifexited(status));
+  ASSERT_EQ(3, wait_exitstatus(status));
 }
 
 /*
@@ -39,10 +47,7 @@ TEST(test_wait_nointr) {
  */
 TEST(test_wait_nohang) {
   int status = 0;
-  pid_t child = fork();
-
-  if(child == 0)
-    _exit(0);
+  int child = spawn_child("0");
 
   ASSERT_EQ(child, wait_pid(child, &status));
 
@@ -57,11 +62,7 @@ TEST(test_wait_nohang) {
  */
 TEST(test_wait_pid_nohang) {
   int status = 0;
-  pid_t child = fork();
-
-  if(child == 0) {
-    _exit(0);
-  }
+  int child = spawn_child("0");
 
   /* poll until the child has exited */
   int r;
@@ -71,7 +72,7 @@ TEST(test_wait_pid_nohang) {
   } while(r == 0);
 
   ASSERT_EQ(child, r);
-  ASSERT_NE(0, WIFEXITED(status));
+  ASSERT_NE(0, wait_ifexited(status));
 }
 
 /*

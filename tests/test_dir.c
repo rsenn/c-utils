@@ -2,6 +2,7 @@
 #include "../lib/stralloc.h"
 #include "../lib/str.h"
 #include "../lib/dir.h"
+#include "../lib/unix.h"
 
 #include <fcntl.h>
 #include <sys/stat.h>

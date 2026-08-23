@@ -1,0 +1,37 @@
+.TH ERRMSG_WRITE 3
+.SH NAME
+errmsg_write \- formatted error message output
+.SH SYNOPSIS
+.B #include <errmsg.h>
+.PP
+.BI "void errmsg_write(int64 " fd ", const char* " err ", const char* " message ", va_list " list ");"
+.SH DESCRIPTION
+.B errmsg_write
+constructs and writes a formatted error message to the file descriptor
+.IR fd .
+.PP
+The function performs the following sequence:
+.IP 1. 3
+Calls
+.BR errmsg_start (3)
+to prefix the message with the program name (if available).
+.IP 2. 3
+Writes the primary
+.I message
+string.
+.IP 3. 3
+Iterates through the variable argument list
+.I list
+(terminated by a NULL pointer), writing each provided string component to the output buffer.
+.IP 4. 3
+If
+.I err
+is non-NULL, appends a colon followed by the error string.
+.IP 5. 3
+Appends a newline character and calls
+.BR errmsg_flush (3)
+to finalize the output.
+.SH SEE ALSO
+.BR errmsg_puts (3),
+.BR errmsg_warn (3),
+.BR stdarg (3)

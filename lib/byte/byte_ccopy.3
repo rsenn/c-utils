@@ -1,0 +1,27 @@
+.TH BYTE_CCOPY 3
+.SH NAME
+byte_ccopy \- copy bytes until a delimiter is found
+.SH SYNOPSIS
+.B #include <byte.h>
+.PP
+.BI "size_t byte_ccopy(void* " dst ", size_t " count ", const void* " src ", char " c ");"
+.SH DESCRIPTION
+.B byte_ccopy
+copies up to
+.I count
+bytes from the memory area pointed to by
+.I src
+to the memory area pointed to by
+.IR dst .
+.PP
+The copy operation terminates prematurely if the delimiter character
+.I c
+is encountered in the source data. The delimiter itself is copied to the destination buffer.
+.SH RETURN VALUE
+Returns the number of bytes copied from
+.I src
+to
+.IR dst ,
+including the delimiter if it was encountered.
+.SH SEE ALSO
+.BR byte_copy (3)

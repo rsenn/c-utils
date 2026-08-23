@@ -1,0 +1,39 @@
+.TH PATH_DIRNAME_B 3
+.SH NAME
+path_dirname_b \- extract the directory component of a path
+.SH SYNOPSIS
+.B #include <path.h>
+.PP
+.BI "char* path_dirname_b(const char* " path ", size_t " size ", stralloc* " dir ");"
+.SH DESCRIPTION
+.B path_dirname_b
+extracts the directory portion of the path provided in the buffer
+.I path
+of length
+.IR size ,
+storing the result in the
+.B stralloc
+structure pointed to by
+.IR dir .
+.PP
+The function follows standard directory parsing logic:
+.IP \(bu
+If the path contains a directory component, it is returned minus the final path separator(s) and basename.
+.IP \(bu
+If the path does not contain a directory component, or represents a single component, the current directory (".") is returned.
+.IP \(bu
+Trailing path separators are ignored during the calculation of the directory length.
+.PP
+The resulting string in
+.I dir
+is null-terminated.
+.SH RETURN VALUE
+Returns a pointer to the null-terminated string buffer within the
+.B stralloc
+structure
+.I dir
+on success.
+.SH SEE ALSO
+.BR path_basename2 (3),
+.BR path_dirlen_b (3),
+.BR stralloc (3)

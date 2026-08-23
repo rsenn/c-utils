@@ -1,0 +1,26 @@
+.TH PATH_SKIP_COMPONENT 3
+.SH NAME
+path_skip_component \- skip a single path component
+.SH SYNOPSIS
+.B #include <path.h>
+.PP
+.BI "size_t path_skip_component(const char* " s ", size_t " n ");"
+.SH DESCRIPTION
+.B path_skip_component
+scans the path string
+.I s
+of length
+.I n
+to find the length of the first path component.
+.PP
+The function iterates through the input string until it encounters a path separator character (defined by the system-specific
+.BR path_issep )
+or reaches the end of the input buffer
+.IR n .
+.PP
+The implementation accounts for multi-byte UTF-8 sequences, ensuring that separators are only detected when they occur as single-byte characters.
+.SH RETURN VALUE
+Returns the number of bytes from the start of the string up to, but not including, the first path separator found.
+.SH SEE ALSO
+.BR path_skip (3),
+.BR path_skip_separator (3)

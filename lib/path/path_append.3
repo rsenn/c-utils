@@ -1,0 +1,37 @@
+.TH PATH_APPEND 3
+.SH NAME
+path_append, path_appends \- append a path component to a stralloc
+.SH SYNOPSIS
+.B #include <path.h>
+.PP
+.BI "void path_append(const char* " x ", size_t " len ", stralloc* " out ");"
+.PP
+.BI "void path_appends(const char* " s ", stralloc* " out ");"
+.SH DESCRIPTION
+.B path_append
+appends the path component pointed to by
+.I x
+with length
+.I len
+to the
+.B stralloc
+pointed to by
+.IR out .
+If
+.I out
+is not empty and does not already end with the system's path separator (defined by
+.BR PATHSEP_C ),
+a path separator is automatically inserted before the component.
+.PP
+.B path_appends
+performs the same operation as
+.BR path_append ,
+but takes a null-terminated string
+.I s
+as input.
+.PP
+Both functions ensure the final contents of
+.I out
+are null-terminated, making the buffer suitable for use as a C string.
+.SH SEE ALSO
+.BR stralloc (3)

@@ -1,0 +1,32 @@
+.TH BUFFER_CHUNKED 3
+.SH NAME
+buffer_chunked \- filter a buffered input for HTTP chunked encoding
+.SH SYNOPSIS
+.B #include <http.h>
+.PP
+.BI "int buffer_chunked(buffer* " b ", buffer* " other ");"
+.SH DESCRIPTION
+.B buffer_chunked
+initializes the buffer
+.I b
+to act as a filter for the input source
+.IR other ,
+which is expected to provide data in HTTP chunked transfer encoding.
+.PP
+The filter transparently decodes the chunked stream, stripping chunk size headers and extensions, so that subsequent read operations on
+.I b
+retrieve only the raw data content.
+.PP
+The underlying
+.I other
+buffer should already be initialized. When
+.I b
+is closed, it will automatically handle deinitialization of its internal state, though the
+.I other
+buffer remains open.
+.SH RETURN VALUE
+Returns 1 on success, or 0 if memory allocation for the internal context fails.
+.SH SEE ALSO
+.BR buffer (3),
+.BR buffer_init (3),
+.BR buffer_getline (3)

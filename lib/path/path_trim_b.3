@@ -1,0 +1,25 @@
+.TH PATH_TRIM_B 3
+.SH NAME
+path_trim_b \- find the end of the last path component
+.SH SYNOPSIS
+.B #include <path.h>
+.PP
+.BI "size_t path_trim_b(const char* " path ", size_t " size ");"
+.SH DESCRIPTION
+.B path_trim_b
+scans the provided
+.I path
+buffer of length
+.I size
+to identify the start position of the trailing directory component (usually the basename).
+.PP
+The function iterates through the buffer, tracking path separator occurrences. It returns the index of the last separator that precedes the final component of the path. If the path does not contain a separator, or if the path ends with a separator, the behavior is designed to isolate the path prefix correctly for path manipulation tasks.
+.PP
+The implementation accounts for multi-byte UTF-8 sequences, ensuring separator matching only triggers on valid single-byte characters.
+.SH RETURN VALUE
+Returns the byte index within
+.I path
+that marks the boundary of the last path component.
+.SH SEE ALSO
+.BR path_basename2 (3),
+.BR path_dirlen_b (3)

@@ -1,0 +1,34 @@
+.TH PATH_QUOTE_SPACES 3
+.SH NAME
+path_quote_spaces \- wrap a path in quotes if it contains spaces
+.SH SYNOPSIS
+.B #include <path.h>
+.PP
+.BI "int path_quote_spaces(stralloc* " sa ", const char* " s ");"
+.SH DESCRIPTION
+.B path_quote_spaces
+checks if the null-terminated string
+.I s
+contains any space characters. If spaces are found, the function wraps the string in double quotes ('"') and stores the result in the
+.B stralloc
+structure pointed to by
+.IR sa .
+If no spaces are present, the string is copied to
+.I sa
+as-is.
+.PP
+The implementation accounts for UTF-8 encoded characters. The resulting buffer in
+.I sa
+is null-terminated.
+.SH RETURN VALUE
+.TP
+.B 1
+Spaces were found and the path was quoted.
+.TP
+.B 0
+No spaces were found and the path was copied without quotes.
+.TP
+.B -1
+An error occurred, such as an invalid UTF-8 sequence.
+.SH SEE ALSO
+.BR stralloc (3)

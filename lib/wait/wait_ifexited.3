@@ -1,0 +1,34 @@
+.TH WAIT_IFEXITED 3
+.SH NAME
+wait_ifexited \- check whether a wait status reports normal exit
+.SH SYNOPSIS
+.B #include "wait.h"
+.PP
+.BI "int wait_ifexited(int " wstat ");"
+.SH DESCRIPTION
+.B wait_ifexited
+reports whether
+.IR wstat ,
+a status previously filled in by
+.BR wait_pid (3),
+.BR wait_nointr (3),
+.BR wait_nohang (3),
+.BR wait_pid_nohang (3),
+or the
+.I *pids
+variants, describes a process that terminated normally (as opposed to
+being killed by a signal). Portable across platforms: on WINDOWS_NATIVE
+this is always true by the time a caller has
+.IR wstat ,
+since
+.BR wait_pid (3)
+and
+.BR wait_pid_nohang (3)
+already filter out the still-running case themselves -- callers should
+use this instead of the POSIX
+.B WIFEXITED()
+macro to stay portable.
+.SH RETURN VALUE
+Nonzero if the process exited normally, 0 otherwise.
+.SH SEE ALSO
+wait_exitstatus(3), wait_pid(3)

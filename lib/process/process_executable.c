@@ -2,6 +2,7 @@
 #include "../process.h"
 #include "../stralloc.h"
 #include "../path.h"
+#include "../utf8.h"
 #include <limits.h>
 
 #if WINDOWS

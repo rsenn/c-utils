@@ -1,0 +1,24 @@
+.TH FMT_XLONGU 3
+.SH NAME
+fmt_xlongu \- format an unsigned long as an uppercase hexadecimal string
+.SH SYNOPSIS
+.B #include <fmt.h>
+.PP
+.BI "size_t fmt_xlongu(char* " dest ", unsigned long " i ");"
+.SH DESCRIPTION
+.B fmt_xlongu
+formats the unsigned long integer
+.I i
+as an uppercase hexadecimal string (using '0'-'9' and 'A'-'F') and writes it to the buffer pointed to by
+.IR dest .
+.PP
+If
+.I dest
+is not NULL, the hexadecimal representation is stored there. The function does not append a null terminator to the resulting string.
+.PP
+The number of bytes required for the conversion is calculated automatically before writing to the buffer.
+.SH RETURN VALUE
+Returns the number of bytes written to the buffer (the length of the hexadecimal representation).
+.SH SEE ALSO
+.BR fmt_xlong (3),
+.BR fmt_ulong (3)
