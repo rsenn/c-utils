@@ -1,0 +1,110 @@
+/* This file is part of MCF Gthread.
+ * Copyright (C) 2022-2026 LH_Mouse. All wrongs reserved.
+ *
+ * MCF Gthread is free software. Licensing information is included in
+ * LICENSE.md as a whole. The GCC Runtime Library Exception applies
+ * to this file.  */
+
+#include "xprecompiled.h"
+#define __MCF_SEM_IMPORT  __MCF_DLLEXPORT
+#define __MCF_SEM_INLINE  __MCF_DLLEXPORT
+#include "../sem.h"
+#include "xglobals.h"
+
+__MCF_DLLEXPORT
+int
+_MCF_sem_wait(_MCF_sem* sem, const int64_t* timeout_opt)
+  {
+    __MCF_winnt_timeout nt_timeout = { 0 };
+    _MCF_sem old, new;
+
+    /* Initialize the timeout value if a non-zero duration is specified. A
+     * null pointer denotes infinity.  */
+    if(!timeout_opt || (*timeout_opt != 0))
+      __MCF_initialize_winnt_timeout_v3(&nt_timeout, timeout_opt);
+
+    _MCF_atomic_load_pptr_rlx(&old, sem);
+    for(;;)
+      if(old.__value > 0) {
+        /* The current thread will not block, so just decrement the counter.  */
+        new.__value = old.__value - 1;
+
+        if(_MCF_atomic_cmpxchg_weak_pptr_acq(sem, &old, &new))
+          return 0;
+      }
+      else if(nt_timeout.li.QuadPart == 0) {
+        /* Decrementing the counter will block, but we are not willing to
+         * wait, so fail.  */
+        return -1;
+      }
+      else {
+        /* Allocate a sleeping count for the current thread.  */
+        new.__value = old.__value - 1;
+
+        if(_MCF_atomic_cmpxchg_weak_pptr_rlx(sem, &old, &new))
+          break;
+      }
+
+    /* Try waiting.  */
+    __MCF_check_wait_safety(&nt_timeout);
+    NTSTATUS status = NtWaitForKeyedEvent(NULL, sem, false, &(nt_timeout.li));
+    while(status != STATUS_WAIT_0) {
+      __MCF_ASSERT(status == STATUS_TIMEOUT);
+
+      /* Remove myself from the wait queue. But see below...  */
+      _MCF_atomic_load_pptr_rlx(&old, sem);
+      for(;;) {
+        if(old.__value >= 0)
+          break;
+
+        new.__value = old.__value + 1;
+
+        if(_MCF_atomic_cmpxchg_weak_pptr_rlx(sem, &old, &new))
+          return -1;
+      }
+
+      /* ... It is possible that a second thread has already incremented the
+       * counter. If this does take place, it is going to release the keyed
+       * event soon. We must still wait, otherwise we get a deadlock in the
+       * second thread. However, a third thread could start waiting for this
+       * keyed event before us, so we set the timeout to zero. If we time out
+       * once more, the third thread will have decremented the number of
+       * sleeping threads and we can try incrementing it again.  */
+      status = NtWaitForKeyedEvent(NULL, sem, false, __MCF_NT_TIMEOUT_0);
+    }
+
+    /* We have got notified.  */
+    _MCF_thread_fence_acq();
+    return 0;
+  }
+
+__MCF_DLLEXPORT __MCF_NEVER_INLINE
+int
+_MCF_sem_signal_some(_MCF_sem* sem, intptr_t value_add)
+  {
+    if((value_add < 0) || (value_add > _MCF_SEM_VALUE_MAX))
+      return -1;
+    else if(value_add == 0)
+      return 0;
+
+    size_t wake_num;
+    _MCF_sem old, new;
+
+    /* Get the number of threads to wake up.  */
+    _MCF_atomic_load_pptr_rlx(&old, sem);
+    for(;;) {
+      if(old.__value > _MCF_SEM_VALUE_MAX - value_add)
+        return -2;
+
+      uintptr_t nsleep = -(uintptr_t) (old.__value & (old.__value >> (__MCF_PTR_BITS - 1)));
+      wake_num = _MCF_minz(nsleep, (size_t) value_add);
+      new.__value = old.__value + value_add;
+
+      if(_MCF_atomic_cmpxchg_weak_pptr_rel(sem, &old, &new))
+        break;
+    }
+
+    /* Wake up these threads.  */
+    __MCF_batch_release_common(sem, wake_num);
+    return 0;
+  }

@@ -185,3 +185,17 @@
   (matching first-letter case) works. Found while writing
   `tests/test_str.c`; the test documents the current (buggy) behavior
   instead of asserting the case-insensitive result a caller would expect.
+- iom-sem-calls-on-mingw: `lib/iom.h` switches `iomux_t::sem` to an
+  mcfgthread `cnd_t` (paired with a `mtx_t`) instead of a POSIX `sem_t` when
+  `__MINGW32__`/`__dietlibc__` (see the `#if defined(__MINGW32__) ||
+  defined(__dietlibc__)` block), but `lib/iom/iom_init.c`, `iom_wait.c`, and
+  `iom_abort.c` still call `sem_init`/`sem_post`/`sem_timedwait`
+  unconditionally on that same field regardless of platform. Confirmed by
+  cross-compiling for `x86_64-w64-mingw32` after wiring up
+  `<mcfgthread/c11thread.h>` (see `CMakeLists.txt`, "lib/iom.h includes
+  <mcfgthread/c11thread.h>..."): all three `.c` files compile (so the header
+  wiring itself is fine) but with `-Wimplicit-function-declaration` for
+  every `sem_*` call, since no POSIX semaphore API exists for mingw. These
+  call sites need converting to the `mtx_t`/`cnd_t` API before `iom` can
+  actually work on `WINDOWS_NATIVE`; not fixed since it's a real behavioral
+  rewrite of the module's mingw path, not a header/build-config issue.

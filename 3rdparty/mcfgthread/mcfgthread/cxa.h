@@ -1,0 +1,96 @@
+/* This file is part of MCF Gthread.
+ * Copyright (C) 2022-2026 LH_Mouse. All wrongs reserved.
+ *
+ * MCF Gthread is free software. Licensing information is included in
+ * LICENSE.md as a whole. The GCC Runtime Library Exception applies
+ * to this file.  */
+
+#ifndef __MCFGTHREAD_CXA_
+#define __MCFGTHREAD_CXA_
+
+#include "fwd.h"
+
+__MCF_CXX(extern "C" {)
+#ifndef __MCF_CXA_IMPORT
+#  define __MCF_CXA_IMPORT
+#  define __MCF_CXA_INLINE  __MCF_GNU_INLINE
+#endif
+
+/** This is the identifier of the current dynamic shared object (DSO). This has
+ * to be tentative as it isn't defined by Microsoft CRT, only by mingw-w64.  */
+__MCF_TENTATIVE void* __dso_handle;
+
+/** https://itanium-cxx-abi.github.io/cxx-abi/abi.html
+ * 3.3.3 One-time Construction API
+ * `__cxa_guard_acquire()`  */
+__MCF_CXA_IMPORT
+int
+__MCF_cxa_guard_acquire(int64_t* __guard)
+  __MCF_noexcept;
+
+/** 3.3.3 One-time Construction API
+ * `__cxa_guard_release()`  */
+__MCF_CXA_IMPORT
+void
+__MCF_cxa_guard_release(int64_t* __guard)
+  __MCF_noexcept;
+
+/** 3.3.3 One-time Construction API
+ * `__cxa_guard_abort()`  */
+__MCF_CXA_IMPORT
+void
+__MCF_cxa_guard_abort(int64_t* __guard)
+  __MCF_noexcept;
+
+/** 3.3.6.3 Runtime API
+ * A. Object construction
+ * `__cxa_atexit()`  */
+__MCF_CXA_IMPORT
+int
+__MCF_cxa_atexit(__MCF_cxa_dtor_any_ __dtor, void* __this, void* __dso)
+  __MCF_noexcept;
+
+/** Standard C `atexit()`  */
+__MCF_CXA_IMPORT
+int
+__MCF_atexit(__MCF_atexit_callback_any_ __func)
+  __MCF_noexcept;
+
+/** Non-standard extension
+ * Callbacks that have been registered with `__cxa_at_quick_exit()` in a DLL are
+ * deleted when the DLL is unloaded.  */
+__MCF_CXA_IMPORT
+int
+__MCF_cxa_at_quick_exit(__MCF_cxa_dtor_any_ __dtor, void* __this, void* __dso)
+  __MCF_noexcept;
+
+/** Standard C `at_quick_exit()`  */
+__MCF_CXA_IMPORT
+int
+__MCF_at_quick_exit(__MCF_atexit_callback_any_ __func)
+  __MCF_noexcept;
+
+/** GNU extension
+ * `__cxa_thread_atexit_impl()` is exported from glibc. `__cxa_thread_atexit()`
+ * is exported from libstdc++.  */
+__MCF_CXA_IMPORT
+int
+__MCF_cxa_thread_atexit(__MCF_cxa_dtor_any_ __dtor, void* __this, void* __dso)
+  __MCF_noexcept;
+
+/** Non-standard extension  */
+__MCF_CXA_IMPORT
+int
+__MCF_thread_atexit(__MCF_atexit_callback_any_ __func)
+  __MCF_noexcept;
+
+/** 3.3.6.3 Runtime API
+ * C. Termination
+ * `__cxa_finalize()`  */
+__MCF_CXA_IMPORT
+void
+__MCF_cxa_finalize(void* __dso)
+  __MCF_noexcept;
+
+__MCF_CXX(})  /* extern "C"  */
+#endif  /* __MCFGTHREAD_CXA_  */

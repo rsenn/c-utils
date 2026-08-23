@@ -1,0 +1,15 @@
+/* This file is part of MCF Gthread.
+ * Copyright (C) 2022-2026 LH_Mouse. All wrongs reserved.
+ *
+ * MCF Gthread is free software. Licensing information is included in
+ * LICENSE.md as a whole. The GCC Runtime Library Exception applies
+ * to this file.  */
+
+#ifndef __MCFGTHREAD_VERSION_
+#define __MCFGTHREAD_VERSION_
+
+#define _MCF_ABI_VERSION_MAJOR    @abi_major@
+#define _MCF_ABI_VERSION_MINOR    @abi_minor@
+#define _MCF_ABI_VERSION_STRING   "@abi_string@"
+
+#endif  /* __MCFGTHREAD_VERSION_  */

@@ -1,0 +1,128 @@
+/* This file is part of MCF Gthread.
+ * Copyright (C) 2022-2026 LH_Mouse. All wrongs reserved.
+ *
+ * MCF Gthread is free software. Licensing information is included in
+ * LICENSE.md as a whole. The GCC Runtime Library Exception applies
+ * to this file.  */
+
+#include "xprecompiled.h"
+#define __MCF_COND_IMPORT  __MCF_DLLEXPORT
+#define __MCF_COND_INLINE  __MCF_DLLEXPORT
+#include "../cond.h"
+#include "xglobals.h"
+
+static __MCF_REALIGN_SP
+int
+do_unlock_and_wait(_MCF_cond* cnd, _MCF_cond_unlock_callback* unlock_opt, intptr_t* unlocked,
+                   intptr_t lock_arg, const int64_t* timeout_opt)
+  {
+    __MCF_winnt_timeout nt_timeout = { 0 };
+    _MCF_cond old, new;
+
+    /* Initialize the timeout value if a non-zero duration is specified. A
+     * null pointer denotes infinity.  */
+    if(!timeout_opt || (*timeout_opt != 0))
+      __MCF_initialize_winnt_timeout_v3(&nt_timeout, timeout_opt);
+
+    _MCF_atomic_load_pptr_rlx(&old, cnd);
+    for(;;) {
+      /* Allocate a count for the current thread. A condition variable is on
+       * the slow path, so this always happens.  */
+      new.__reserved_bits = 0;
+      new.__nsleep = (old.__nsleep + 1U) & (UINTPTR_MAX >> 9);
+
+      if(_MCF_atomic_cmpxchg_weak_pptr_rlx(cnd, &old, &new))
+        break;
+    }
+
+    /* Now, unlock the associated mutex. If another thread attempts to signal
+     * this one, it shall block.  */
+    if(unlock_opt)
+      *unlocked = (* unlock_opt) (lock_arg);
+
+    /* Try waiting.  */
+    __MCF_check_wait_safety(&nt_timeout);
+    NTSTATUS status = NtWaitForKeyedEvent(NULL, cnd, false, &(nt_timeout.li));
+    while(status != STATUS_WAIT_0) {
+      __MCF_ASSERT(status == STATUS_TIMEOUT);
+
+      /* Tell another thread which is going to signal this condition variable
+       * that an old waiter has left by decrementing the number of sleeping
+       * threads. But see below...  */
+      _MCF_atomic_load_pptr_rlx(&old, cnd);
+      for(;;) {
+        if(old.__nsleep == 0)
+          break;
+
+        new.__reserved_bits = 0;
+        new.__nsleep = (old.__nsleep - 1U) & (UINTPTR_MAX >> 9);
+
+        if(_MCF_atomic_cmpxchg_weak_pptr_rlx(cnd, &old, &new))
+          return -1;
+      }
+
+      /* ... It is possible that a second thread has already decremented the
+       * counter. If this does take place, it is going to release the keyed
+       * event soon. We must still wait, otherwise we get a deadlock in the
+       * second thread. However, a third thread could start waiting for this
+       * keyed event before us, so we set the timeout to zero. If we time out
+       * once more, the third thread will have incremented the number of
+       * sleeping threads and we can try decrementing it again.  */
+      status = NtWaitForKeyedEvent(NULL, cnd, false, __MCF_NT_TIMEOUT_0);
+    }
+
+    /* We have got notified.  */
+    _MCF_thread_fence_acq();
+    return 0;
+  }
+
+__MCF_DLLEXPORT __MCF_REALIGN_SP
+int
+_MCF_cond_wait(_MCF_cond* cnd, _MCF_cond_unlock_callback* unlock_opt,
+               _MCF_cond_relock_callback* relock_opt, intptr_t lock_arg,
+               const int64_t* timeout_opt)
+  {
+    __MCF_USING_SEH_HANDLER(__MCF_seh_top);
+    intptr_t unlocked;
+    int err = do_unlock_and_wait(cnd, unlock_opt, &unlocked, lock_arg, timeout_opt);
+
+    /* If `relock_opt` is provided and the associated mutex has been unlocked,
+     * relock it. Sometimes the mutex will be unlocked right after this wait
+     * operation times out. As an optimization technique under such
+     * circumstances, a user may pass a null `relock_opt` and do relocking
+     * themself.  */
+    if(unlock_opt && relock_opt)
+      (* relock_opt) (lock_arg, unlocked);
+
+    /* Forward the error code to caller.  */
+    return err;
+  }
+
+__MCF_DLLEXPORT __MCF_NEVER_INLINE
+size_t
+_MCF_cond_signal_some_slow(_MCF_cond* cnd, size_t limit)
+  {
+    if(limit == 0)
+      return 0;
+
+    size_t wake_num;
+    _MCF_cond old, new;
+
+    /* Get the number of threads to wake up.  */
+    _MCF_atomic_load_pptr_rlx(&old, cnd);
+    for(;;) {
+      if(old.__nsleep == 0)
+        return 0;
+
+      wake_num = _MCF_minz(old.__nsleep, limit);
+      new.__reserved_bits = 0;
+      new.__nsleep = (old.__nsleep - wake_num) & (UINTPTR_MAX >> 9);
+
+      if(_MCF_atomic_cmpxchg_weak_pptr_rel(cnd, &old, &new))
+        break;
+    }
+
+    /* Wake up these threads.  */
+    __MCF_batch_release_common(cnd, wake_num);
+    return wake_num;
+  }

@@ -1,0 +1,89 @@
+/* This file is licensed under CC0 for illustrative purposes. You can
+ * do whatever you like with this piece of code. Any warranty, explicit
+ * or implicit, is disclaimed.  */
+
+#if !defined __SEH__ && !defined _MSC_VER
+int main(void) { return 77;  }
+#else  // __SEH__
+
+#include "../mcfgthread/cxx11.hpp"
+#include "../mcfgthread/sem.h"
+#undef NDEBUG
+#include <assert.h>
+#include <stdio.h>
+#include <vector>
+
+#ifdef TEST_STD
+#  include <mutex>
+#  include <thread>
+namespace NS = std;
+#else
+namespace NS = ::_MCF;
+#endif
+
+constexpr std::size_t NTHREADS = 64U;
+static std::vector<NS::thread> threads(NTHREADS);
+static __MCF_ALIGNED(128) _MCF_once once;
+static __MCF_ALIGNED(128) ::_MCF_sem start = _MCF_SEM_INIT(0);
+static __MCF_ALIGNED(128) int resource = 0;
+
+static
+void
+once_do_it(void* add)
+  {
+    /* Perform initialization.  */
+    int old = resource;
+    NS::this_thread::sleep_for(NS::chrono::milliseconds(20));
+    resource = old + (int)(intptr_t) add;
+
+    NS::this_thread::sleep_for(NS::chrono::milliseconds(10));
+    ::fprintf(stderr, "thread %d done\n", ::__MCF_tid());
+
+#if defined __MCF_M_X8664_ASM
+    register void* dummy __asm__("rsi");
+    __asm__ volatile ("xor %k0, %k0" : "=r"(dummy));
+#elif defined __MCF_M_ARM64_ASM
+    register void* dummy __asm__("x25");
+    __asm__ volatile ("mov %x0, xzr" : "=r"(dummy));
+#endif
+    throw 42;
+  }
+
+static
+void
+thread_proc()
+  {
+    ::_MCF_sem_wait(&start, nullptr);
+
+    try {
+#if defined __MCF_M_X8664_ASM
+      register void* dummy __asm__("rsi");
+      __asm__ volatile ("xor %k0, %k0" : "=r"(dummy));
+#elif defined __MCF_M_ARM64_ASM
+      register void* dummy __asm__("x25");
+      __asm__ volatile ("mov %x0, xzr" : "=r"(dummy));
+#endif
+      __MCF_gthr_call_once_seh(&once, once_do_it, (void*) 1);
+      ::std::terminate();
+    }
+    catch(...) {  }
+
+    ::fprintf(stderr, "thread %d quitting\n", ::__MCF_tid());
+  }
+
+int
+main(void)
+  {
+    for(auto& thr : threads)
+      thr = NS::thread(thread_proc);
+
+    ::fprintf(stderr, "main waiting\n");
+    ::_MCF_sem_signal_some(&start, NTHREADS);
+
+    for(auto& thr : threads)
+      thr.join();
+
+    assert(resource == NTHREADS);
+  }
+
+#endif  // __SEH__

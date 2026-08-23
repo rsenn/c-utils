@@ -1,0 +1,57 @@
+/* This file is licensed under CC0 for illustrative purposes. You can
+ * do whatever you like with this piece of code. Any warranty, explicit
+ * or implicit, is disclaimed.  */
+
+#include "../mcfgthread/cond.h"
+#include "../mcfgthread/thread.h"
+#include "../mcfgthread/clock.h"
+#undef NDEBUG
+#include <assert.h>
+#include <stdio.h>
+
+static _MCF_thread* thread1;
+static _MCF_thread* thread2;
+static _MCF_cond cond;
+static int32_t signal_count;
+
+static
+void
+thread_proc(_MCF_thread* self)
+  {
+    (void) self;
+
+    const int64_t start_time = _MCF_tick_count();
+    while(_MCF_tick_count() < start_time + 3000) {
+      _MCF_cond_wait(&cond, NULL, NULL, 0, &(int64_t){ 0 });
+
+      // Check whether a deadlock has occurred.
+      //   https://github.com/lhmouse/mcfgthread/issues/86
+      int32_t c1 = _MCF_atomic_load_32_rlx(&signal_count);
+      if(c1 & 1) {
+        // Main thread is waiting.
+        _MCF_sleep_noninterruptible(&(int64_t){ -10 });
+        int32_t c2 = _MCF_atomic_load_32_rlx(&signal_count);
+        assert(c1 != c2);
+      }
+    }
+  }
+
+int
+main(void)
+  {
+    thread1 = _MCF_thread_new(thread_proc, NULL, 0);
+    assert(thread1);
+    thread2 = _MCF_thread_new(thread_proc, NULL, 0);
+    assert(thread2);
+
+    const int64_t start_time = _MCF_tick_count();
+    while(_MCF_tick_count() < start_time + 3000) {
+      _MCF_atomic_xadd_32_rlx(&signal_count, 1);
+      _MCF_cond_signal_all(&cond);
+      _MCF_atomic_xadd_32_rlx(&signal_count, 1);
+    }
+
+    fprintf(stderr, "main waiting\n");
+    _MCF_thread_wait(thread1, NULL);
+    _MCF_thread_wait(thread2, NULL);
+  }

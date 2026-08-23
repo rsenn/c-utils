@@ -1,0 +1,32 @@
+/* This file is licensed under CC0 for illustrative purposes. You can
+ * do whatever you like with this piece of code. Any warranty, explicit
+ * or implicit, is disclaimed.  */
+
+#include "../mcfgthread/event.h"
+#include "../mcfgthread/clock.h"
+#undef NDEBUG
+#include <assert.h>
+#include <stdio.h>
+
+static _MCF_event event = _MCF_EVENT_INIT(42);
+
+int
+main(void)
+  {
+    assert(_MCF_event_get(&event) == 42);
+
+    assert(_MCF_event_init(&event, -1) == -1);
+    assert(_MCF_event_get(&event) == 42);
+
+    assert(_MCF_event_init(&event, 56) == 0);
+    assert(_MCF_event_get(&event) == 56);
+
+    assert(_MCF_event_init(&event, _MCF_EVENT_VALUE_MAX + 1) == -1);
+    assert(_MCF_event_get(&event) == 56);
+
+    assert(_MCF_event_init(&event, _MCF_EVENT_VALUE_MAX) == 0);
+    assert(_MCF_event_get(&event) == _MCF_EVENT_VALUE_MAX);
+
+    assert(_MCF_event_init(&event, 0) == 0);
+    assert(_MCF_event_get(&event) == 0);
+  }

@@ -1,0 +1,1250 @@
+/* This file is part of MCF Gthread.
+ * Copyright (C) 2022-2026 LH_Mouse. All wrongs reserved.
+ *
+ * MCF Gthread is free software. Licensing information is included in
+ * LICENSE.md as a whole. The GCC Runtime Library Exception applies
+ * to this file.  */
+
+#include "xprecompiled.h"
+#define __MCF_XGLOBALS_IMPORT  __MCF_DLLEXPORT
+#define __MCF_XGLOBALS_INLINE  __MCF_DLLEXPORT
+#define __MCF_XGLOBALS_READONLY
+#include "xglobals.h"
+#include "../once.h"
+#include "../exit.h"
+#include <ntstatus.h>
+#include <libloaderapi.h>
+
+static inline
+void
+do_append_string(WCHAR** sp, const WCHAR* end_of_buffer, WCHAR c)
+  {
+    if(*sp != end_of_buffer)
+      *((*sp) ++) = c;
+  }
+
+static inline
+ULONG
+do_format_message(WCHAR* outptr, const WCHAR* end_of_buffer, HMODULE dll, ULONG code)
+  {
+    return FormatMessageW(FORMAT_MESSAGE_FROM_HMODULE | FORMAT_MESSAGE_IGNORE_INSERTS | 0xFF,
+                          dll, code, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+                          outptr, (ULONG) (end_of_buffer - outptr), nullptr);
+  }
+
+static
+void
+do_notify_runtime_failure(const char* where, HMODULE msg_dll, ULONG msg_code)
+  {
+    WCHAR buffer[1536];
+    WCHAR* sptr = buffer;
+    WCHAR* end_of_buffer = buffer + ARRAYSIZE(buffer);
+
+    /* Get a piece of localized text for the caption of the message box.  */
+    UNICODE_STRING caption;
+    caption.Buffer = sptr;
+    caption.MaximumLength = (USHORT) ((char*) end_of_buffer - (char*) sptr);
+
+    /* #define ERROR_UNHANDLED_EXCEPTION   574L
+     * {Application Error}
+     * The exception %s (0x%08lx) occurred in the application at location 0x%08lx.  */
+    WCHAR* lptr = end_of_buffer - 127;
+    ULONG outlen = do_format_message(lptr, end_of_buffer, __MCF_crt_kernel32, 574);
+    if((outlen != 0) && (*lptr == L'{')) {
+      lptr ++;
+
+      while((*lptr != 0) && (*lptr != L'}'))
+        do_append_string(&sptr, end_of_buffer, *(lptr ++));
+    }
+
+    /* Terminate the caption.  */
+    caption.Length = (USHORT) ((char*) sptr - (char*) caption.Buffer);
+
+    /* Get a piece of localized text for the text of the message box.  */
+    UNICODE_STRING text;
+    text.Buffer = sptr;
+    text.MaximumLength = (USHORT) ((char*) end_of_buffer - (char*) sptr);
+
+    /* Get the file name of the executable.  */
+    outlen = GetModuleFileNameW(NULL, sptr, (ULONG) (end_of_buffer - sptr));
+    if(outlen != 0) {
+      sptr += outlen;
+
+      do_append_string(&sptr, end_of_buffer, L'\r');
+      do_append_string(&sptr, end_of_buffer, L'\n');
+      do_append_string(&sptr, end_of_buffer, L'\r');
+      do_append_string(&sptr, end_of_buffer, L'\n');
+    }
+
+    /* #define ERROR_DEBUG_ATTACH_FAILED   590L
+     * {Unexpected Failure in DebugActiveProcess}
+     * An unexpected failure occurred while processing a DebugActiveProcess API
+     * request. You may choose OK to terminate the process, or Cancel to ignore
+     * the error.  */
+    lptr = end_of_buffer - 127;
+    outlen = do_format_message(lptr, end_of_buffer, __MCF_crt_kernel32, 590);
+    if((outlen != 0) && (*lptr == L'{')) {
+      lptr ++;
+
+      while((*lptr != 0) && (*lptr != L'}'))
+        if((*lptr == L'D') && __MCF_mequal(lptr, L"DebugActiveProcess", 18 * sizeof(WCHAR))) {
+          lptr += 18;
+          do_append_string(&sptr, end_of_buffer, L'`');
+          for(const char* pwh = where;  *pwh;  ++pwh)
+            do_append_string(&sptr, end_of_buffer, (unsigned char) *pwh);
+          do_append_string(&sptr, end_of_buffer, L'`');
+        } else
+          do_append_string(&sptr, end_of_buffer, *(lptr ++));
+
+      do_append_string(&sptr, end_of_buffer, L':');
+      do_append_string(&sptr, end_of_buffer, L' ');
+    }
+
+    outlen = do_format_message(sptr, end_of_buffer, msg_dll, msg_code);
+    sptr += outlen;
+
+    /* Terminate the message text.  */
+    text.Length = (USHORT) ((char*) sptr - (char*) text.Buffer);
+
+    /* If this process has a console, write the message directly into it.
+     * Errors are ignored.  */
+    HANDLE console = GetStdHandle(STD_ERROR_HANDLE);
+    if((console != INVALID_HANDLE_VALUE) && (console != NULL)) {
+      DWORD nwritten;
+      WriteConsoleW(console, text.Buffer, (DWORD) (sptr - text.Buffer), &nwritten, nullptr);
+      (void) nwritten;
+    }
+
+    /* If we are in a DLL entry-point function or a TLS callback, it is not safe
+     * to call `MessageBoxW()` from USER32.DLL, so request CSRSS.EXE to display
+     * the message box for us.  */
+    HARDERROR_RESPONSE rhe_resp = 0;
+    ULONG_PTR rhe_params[4] = { (ULONG_PTR) &text, (ULONG_PTR) &caption, MB_OK | MB_ICONSTOP, 0 };
+    NtRaiseHardError(STATUS_SERVICE_NOTIFICATION, ARRAYSIZE(rhe_params),
+                     0b0011, /* parameters 0 and 1 are `UNICODE_STRING*` */
+                     rhe_params, OptionOk, &rhe_resp);
+    (void) rhe_resp;
+  }
+
+static __MCF_NEVER_RETURN __MCF_FN_COLD
+void
+do_fail_fast(NTSTATUS status, void* addr)
+  {
+    EXCEPTION_RECORD record = { .ExceptionCode = (ULONG) status,
+                                .ExceptionFlags = EXCEPTION_NONCONTINUABLE,
+                                .ExceptionAddress = addr };
+    RaiseFailFastException(&record, nullptr, 0);
+    __builtin_trap();
+  }
+
+__MCF_DLLEXPORT __MCF_NEVER_INLINE
+void
+__MCF_runtime_failure(const char* where)
+  {
+    ULONG code = GetLastError();
+    do_notify_runtime_failure(where, __MCF_crt_kernel32, code);
+    do_fail_fast((NTSTATUS) (0xC0070000 + code), __builtin_return_address(0));
+  }
+
+__MCF_DLLEXPORT __MCF_NEVER_INLINE
+void
+__MCF_runtime_failure_from_ntstatus(const char* where, NTSTATUS status)
+  {
+    do_notify_runtime_failure(where, __MCF_crt_ntdll, (ULONG) status);
+    do_fail_fast(status, __builtin_return_address(0));
+  }
+
+__MCF_DLLEXPORT __MCF_FN_PURE
+uint32_t
+_MCF_get_win32_error(void)
+  {
+    return GetLastError();
+  }
+
+__MCF_DLLEXPORT __MCF_FN_CONST
+size_t
+_MCF_get_page_size(void)
+  {
+    return __MCF_crt_sysinfo.dwPageSize;
+  }
+
+__MCF_DLLEXPORT __MCF_FN_CONST
+size_t
+_MCF_get_processor_count(void)
+  {
+    return __MCF_crt_sysinfo.dwNumberOfProcessors;
+  }
+
+__MCF_DLLEXPORT __MCF_FN_CONST
+uintptr_t
+_MCF_get_active_processor_mask(void)
+  {
+    return __MCF_crt_sysinfo.dwActiveProcessorMask;
+  }
+
+static
+EXCEPTION_DISPOSITION
+do_call_once_seh_unwind(EXCEPTION_RECORD* rec, PVOID estab_frame, CONTEXT* ctx, PVOID disp_ctx);
+
+#if defined __MCF_M_X8632
+
+struct gthr_call_once_seh_record
+  {
+    intptr_t Next;
+    intptr_t Handler;
+    _MCF_once* once;
+  };
+
+__MCF_DLLEXPORT __MCF_REALIGN_SP
+void
+__MCF_gthr_call_once_seh_take_over(_MCF_once* once, __MCF_cxa_dtor_any_ init_proc, void* arg)
+  {
+    /* Set up an exception handler.  */
+    const struct gthr_call_once_seh_record
+      seh_record __attribute__((__cleanup__(__MCF_i386_seh_cleanup)))
+        = { __MCF_teb_load_ptr(0), (intptr_t) do_call_once_seh_unwind, once };
+    __MCF_teb_store_ptr(0, (intptr_t) &seh_record);
+
+    /* Do initialization. This is the normal path.  */
+    __MCF_invoke_cxa_dtor(init_proc, arg);
+
+    /* Disarm the once flag.  */
+    _MCF_once_release(seh_record.once);
+  }
+
+#else  /* non-x86-32 */
+
+__MCF_DLLEXPORT __MCF_REALIGN_SP
+void
+__MCF_gthr_call_once_seh_take_over(_MCF_once* once, __MCF_cxa_dtor_any_ init_proc, void* arg)
+  {
+    /* Set up an exception handler.  */
+    __asm__ (".seh_handler %c0, @except, @unwind" : : "i"(do_call_once_seh_unwind));
+    register _MCF_once* saved_once __asm__(
+#if defined __MCF_M_X8664_ASM
+        "rsi"  /* x86-64 */
+#elif defined __MCF_M_ARM64_ASM
+        "x25"  /* ARM64 or ARM64EC; must be same with x86-64 on ARM64EC */
+#else
+#  error unimplemented
+#endif
+      );
+    saved_once = once;
+    __asm__ volatile ("" : : "r"(saved_once));
+
+    /* Do initialization. This is the normal path.  */
+    __MCF_invoke_cxa_dtor(init_proc, arg);
+
+    /* Disarm the once flag with a tail call.  */
+    _MCF_once_release(saved_once);
+  }
+
+#endif  /* non-x86-32 */
+
+static __MCF_SECTION(".text$$safeseh$0000")
+EXCEPTION_DISPOSITION
+do_call_once_seh_unwind(EXCEPTION_RECORD* rec, PVOID estab_frame, CONTEXT* ctx, PVOID disp_ctx)
+  {
+    (void) estab_frame;
+    (void) ctx;
+    (void) disp_ctx;
+
+    /* If the stack is being unwound, reset the once flag.  */
+    if(rec->ExceptionFlags & EXCEPTION_UNWINDING)
+      _MCF_once_abort(
+#if defined __MCF_M_X8632
+        ((const struct gthr_call_once_seh_record*) estab_frame)->once
+#else
+        (_MCF_once*) ((const DISPATCHER_CONTEXT*) disp_ctx)->ContextRecord->
+#  if defined __MCF_M_X8664
+          Rsi  /* x86-64 or ARM64EC */
+#  elif defined __MCF_M_ARM64
+          X25  /* ARM64 */
+#  else
+#    error unimplemented
+#  endif
+#endif
+        );
+
+    /* Continue unwinding.  */
+    return ExceptionContinueSearch;
+  }
+
+__MCF_DLLEXPORT __MCF_SECTION(".text$$safeseh$0001")
+EXCEPTION_DISPOSITION
+__MCF_seh_top(EXCEPTION_RECORD* rec, PVOID estab_frame, CONTEXT* ctx, PVOID disp_ctx)
+  {
+    (void) estab_frame;
+    (void) ctx;
+    (void) disp_ctx;
+
+    if(rec->ExceptionCode == 0x20474343) {
+      /* GCC raises `0x20474343` to search for an exception handler. If the
+       * control flow resumes after `RaiseException()`, `std::terminate()` will
+       * be called.  */
+      if(!(rec->ExceptionFlags & EXCEPTION_NONCONTINUABLE))
+        return ExceptionContinueExecution;
+    }
+    else if(rec->ExceptionCode == 0xE06D7363) {
+      /* MSVC raises `0xE06D7363` instead. We will not allow the stack to be
+       * unwound, so we must call `std::terminate()`. The CRT may have been
+       * linked statically, but that is to be handled in the fast-fail path.
+       * For the DLL, we look for `__std_terminate()` which is actually a
+       * documented API; see
+       * <https://learn.microsoft.com/en-us/windows/win32/memory/stdterminate>.
+       * Due to possibility of DLL hijacking, the prototype is not declared
+       * `noreturn`.  */
+      HMODULE dll;
+      FARPROC dll_fn = __MCF_get_function_from_loaded_dlls(&dll, "__std_terminate");
+      if(dll_fn) {
+        typedef void typeof_std_terminate(void);
+        (* __MCF_CAST_PTR(typeof_std_terminate, dll_fn)) ();
+        __builtin_trap();
+      }
+    }
+
+    /* The exception is unsolvable, so terminate the process.  */
+    RaiseFailFastException(rec, ctx, 0);
+    __builtin_trap();
+  }
+
+__MCF_DLLEXPORT __MCF_SECTION(".text$$safeseh$0002")
+EXCEPTION_DISPOSITION
+__MCF_seh_process_top(EXCEPTION_RECORD* rec, PVOID estab_frame, CONTEXT* ctx, PVOID disp_ctx)
+  {
+    if(rec->ExceptionFlags & EXCEPTION_EXIT_UNWIND)
+      __MCF_exit((int) rec->ExceptionCode);
+
+    return __MCF_seh_top(rec, estab_frame, ctx, disp_ctx);
+  }
+
+__MCF_DLLEXPORT __MCF_SECTION(".text$$safeseh$0003")
+EXCEPTION_DISPOSITION
+__MCF_seh_thread_top(EXCEPTION_RECORD* rec, PVOID estab_frame, CONTEXT* ctx, PVOID disp_ctx)
+  {
+    if(rec->ExceptionFlags & EXCEPTION_EXIT_UNWIND)
+      _MCF_thread_exit();
+
+    return __MCF_seh_top(rec, estab_frame, ctx, disp_ctx);
+  }
+
+__MCF_DLLEXPORT
+void
+__MCF_initialize_winnt_timeout_v3(__MCF_winnt_timeout* to, const int64_t* ms_opt)
+  {
+    /* Initialize it to an infinite value.  */
+    to->li.QuadPart = INT64_MAX;
+    to->since = 0;
+
+    /* If no timeout is given, wait indefinitely.  */
+    if(!ms_opt)
+      return;
+
+    if(*ms_opt > 0) {
+      /* If `*ms_opt` is positive, it denotes the number of milliseconds since
+       * 1970-01-01T00:00:00Z, and has to be converted into the number of 100
+       * nanoseconds since the 1601-01-01T00:00:00Z.  */
+      if(*ms_opt > 910692730085477)
+        return;
+
+      to->li.QuadPart = (11644473600000 + *ms_opt) * 10000;
+      __MCF_ASSERT(to->li.QuadPart > 0);
+    }
+    else if(*ms_opt < 0) {
+      /* If `*ms_opt` is negative, it denotes the number of milliseconds to
+       * wait, relatively.  */
+      if(*ms_opt < -922337203685477)
+        return;
+
+      to->li.QuadPart = *ms_opt * 10000;
+      __MCF_ASSERT(to->li.QuadPart < 0);
+      QueryUnbiasedInterruptTime(&(to->since));
+    }
+    else
+      to->li.QuadPart = 0;
+  }
+
+__MCF_DLLEXPORT
+void
+__MCF_adjust_winnt_timeout_v3(__MCF_winnt_timeout* to)
+  {
+    /* Absolute timeouts need no adjustment.  */
+    if(to->li.QuadPart >= 0)
+      return;
+
+    /* Add the number of 100 nanoseconds that have elapsed so far, to the
+     * timeout which is negative, using saturation arithmetic.  */
+    ULONGLONG old_since = to->since;
+    QueryUnbiasedInterruptTime(&(to->since));
+    to->li.QuadPart += (LONGLONG) (to->since - old_since);
+    to->li.QuadPart &= to->li.QuadPart >> 63;
+  }
+
+__MCF_DLLEXPORT __MCF_NEVER_INLINE
+void
+__MCF_check_wait_safety(const __MCF_winnt_timeout* to)
+  {
+    /* It's safe to wait if other threads are still running.  */
+    if(!RtlDllShutdownInProgress())
+      return;
+
+    /* Allow a maximum timeout of 3 seconds.  */
+    if((to->li.QuadPart >= -30000000) && (to->li.QuadPart <= 0))
+      return;
+    else if(to->li.QuadPart > 0) {
+      ULONGLONG ull;
+      GetSystemTimeAsFileTime((FILETIME*) &ull);
+      if(to->li.QuadPart <= (LONGLONG) (ull + 30000000))
+        return;
+    }
+
+    /* If all the other threads have been terminated, the current thread would
+     * have to wait forever. This can happen in `DllMain()` or a TLS callback
+     * upon `DLL_PROCESS_DETACH`. Windows Vista+ terminates the process if such
+     * a scenario is detected in `SRWLOCK` or `CRITICAL_SECTION` (but not in
+     * `CONDITION_VARIABLE`), so do the same.  */
+    do_fail_fast(STATUS_THREAD_IS_TERMINATING, __builtin_return_address(0));
+  }
+
+__MCF_DLLEXPORT __MCF_NEVER_INLINE
+void
+__MCF_batch_release_common(const void* key, size_t count)
+  {
+    size_t remaining = count;
+    while(remaining != 0)
+      if(NtReleaseKeyedEvent(NULL, (PVOID) key, false, __MCF_NT_TIMEOUT_1S) == 0)
+        remaining --;
+      else if(RtlDllShutdownInProgress())
+        break;
+  }
+
+__MCF_DLLEXPORT __MCF_NEVER_INLINE
+int
+__MCF_win32_error_i(ULONG code, int val)
+  {
+    SetLastError(code);
+    return val;
+  }
+
+__MCF_DLLEXPORT __MCF_NEVER_INLINE
+void*
+__MCF_win32_error_p(ULONG code, void* ptr)
+  {
+    SetLastError(code);
+    return ptr;
+  }
+
+__MCF_DLLEXPORT __MCF_NEVER_INLINE
+FARPROC
+__MCF_get_function_from_loaded_dlls(HMODULE* module, const char* name)
+  {
+    *module = NULL;
+
+    /* Get a snapshot of DLLs in the current process.  */
+    HMODULE* dlls = __builtin_alloca(64);
+    DWORD dlls_cb = 64;
+    if(!K32EnumProcessModules(NtCurrentProcess(), dlls, dlls_cb, &dlls_cb))
+      return nullptr;
+    else if(dlls_cb > 64) {
+      dlls = __builtin_alloca(dlls_cb);
+      if(!K32EnumProcessModules(NtCurrentProcess(), dlls, dlls_cb, &dlls_cb))
+        return nullptr;
+    }
+
+    HMODULE* end_of_dlls = (void*) ((char*) dlls + dlls_cb);
+    for(HMODULE* p = dlls;  p != end_of_dlls;  ++p) {
+      /* Lock the DLL, in case that another thread unloads it.  */
+      if(!GetModuleHandleExW(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS, (void*) *p, module))
+        continue;
+
+      if(*module == *p) {
+        /* The handle is valid and has been locked in this thread, so look for
+         * the function.  */
+        FARPROC dll_fn = GetProcAddress(*module, name);
+        if(dll_fn)
+          return dll_fn;
+      }
+
+      /* Unlock the DLL.  */
+      FreeLibrary(*module);
+      *module = NULL;
+    }
+
+    /* Not found.  */
+    return nullptr;
+  }
+
+static inline
+int
+do_pop_dtor(__MCF_dtor_element* elem, _MCF_mutex* mtx, __MCF_dtor_queue* queue, void* dso)
+  {
+    _MCF_mutex_lock_slow(mtx, nullptr);
+    int err = __MCF_dtor_queue_pop(elem, queue, dso);
+    _MCF_mutex_unlock_slow(mtx);
+    return err;
+  }
+
+__MCF_DLLEXPORT __MCF_REALIGN_SP
+void
+__MCF_run_static_dtors(_MCF_mutex* mtx, __MCF_dtor_queue* queue, void* dso)
+  {
+    __MCF_USING_SEH_HANDLER(__MCF_seh_top);
+    __MCF_dtor_element elem;
+    while(do_pop_dtor(&elem, mtx, queue, dso) == 0)
+      __MCF_invoke_cxa_dtor(elem.__dtor, elem.__this);
+  }
+
+static inline
+void
+do_hex_encode(wchar_t* ptr, unsigned width, uint64_t value, const char* digits)
+  {
+    for(unsigned k = 0;  k != width;  ++k) {
+      unsigned val = (value >> (width - 1 - k) * 4) & 0x0FU;
+      ptr[k] = (unsigned char) digits[val];
+    }
+  }
+
+static inline
+uint64_t
+do_make_cookie(uint32_t seed)
+  {
+    uintptr_t val = seed * __MCF_64_32(0x100000001ULL, 1U);
+    val = (uintptr_t) EncodePointer((PVOID) ~val);
+    return val * 0x9E3779B97F4A7C15ULL;
+  }
+
+static
+void
+__stdcall
+do_QueryInterruptTime(ULONGLONG* outp)
+  {
+    *outp = __MCF_get_interrupt_time();
+  }
+
+__MCF_DLLEXPORT
+void
+__MCF_gthread_initialize_globals(void)
+  {
+    GetSystemInfo(&__MCF_crt_sysinfo);
+
+    LARGE_INTEGER pfreq;
+    __MCF_CHECK(QueryPerformanceFrequency(&pfreq));
+    __MCF_crt_perf_freq_reciprocal = 1000 / (double) pfreq.QuadPart;
+
+    __MCF_crt_heap = GetProcessHeap();
+    __MCF_CHECK(__MCF_crt_heap);
+#ifdef __MCF_DEBUG
+    HeapSetInformation(__MCF_crt_heap, HeapEnableTerminationOnCorruption, nullptr, 0);
+#endif
+
+#if defined __MCF_M_X86_ASM && defined __BMI__
+    /* Crash if the CPU does not support BMI. This ensures that `tzcnt` will not
+     * be mistakenly executed as `bsf`.  */
+    uint32_t dummy;
+    __asm__ volatile ("andn %k0, esp, esp" : "=r"(dummy) : : "cc");
+    __MCF_ASSERT(dummy == 0);
+#endif
+
+    /* Get handles to system DLLs, by calling `LoadLibraryEx()` with
+     * `LOAD_LIBRARY_SEARCH_SYSTEM32` to prevent DLL hijacking. These DLLs are
+     * pre-loaded and pinned on modern systems, so there's no need to call
+     * `FreeLibrary()`.  */
+    __MCF_crt_ntdll = LoadLibraryExW(L"NTDLL.DLL", NULL, LOAD_LIBRARY_SEARCH_SYSTEM32);
+    __MCF_CHECK(__MCF_crt_ntdll);
+    __MCF_crt_kernel32 = LoadLibraryExW(L"KERNEL32.DLL", NULL, LOAD_LIBRARY_SEARCH_SYSTEM32);
+    __MCF_CHECK(__MCF_crt_kernel32);
+    __MCF_crt_kernelbase = LoadLibraryExW(L"KERNELBASE.DLL", NULL, LOAD_LIBRARY_SEARCH_SYSTEM32);
+    __MCF_CHECK(__MCF_crt_kernelbase);
+
+    /* This function is available since Windows 8.  */
+    FARPROC dll_fn = GetProcAddress(__MCF_crt_kernel32, "GetSystemTimePreciseAsFileTime");
+    __MCF_crt_GetSystemTimePreciseAsFileTime =
+        dll_fn ? __MCF_CAST_PTR(typeof_GetSystemTimePreciseAsFileTime, dll_fn)
+               : GetSystemTimeAsFileTime;
+
+    /* This function is available since Windows 10. Microsoft documentation says
+     * this is exported from KERNEL32.DLL, but it's really only exported from
+     * KERNELBASE.DLL. Strangely, `QueryUnbiasedInterruptTime` is exported from
+     * KERNEL32.DLL since Windows 7, so there's no need to load it dynamically.  */
+    dll_fn = GetProcAddress(__MCF_crt_kernelbase, "QueryUnbiasedInterruptTimePrecise");
+    __MCF_crt_QueryUnbiasedInterruptTimePrecise =
+        dll_fn ? __MCF_CAST_PTR(typeof_QueryUnbiasedInterruptTimePrecise, dll_fn)
+               : __MCF_CAST_PTR(typeof_QueryUnbiasedInterruptTimePrecise, QueryUnbiasedInterruptTime);
+
+    /* This function is available since Windows 10. Microsoft documentation says
+     * this is exported from KERNEL32.DLL, but it's really only exported from
+     * KERNELBASE.DLL.  */
+    dll_fn = GetProcAddress(__MCF_crt_kernelbase, "QueryInterruptTimePrecise");
+    __MCF_crt_QueryInterruptTimePrecise =
+        dll_fn ? __MCF_CAST_PTR(typeof_QueryInterruptTimePrecise, dll_fn)
+               : do_QueryInterruptTime;
+
+    /* This function is available since Windows 10.  */
+    dll_fn = GetProcAddress(__MCF_crt_kernel32, "GetSystemCpuSetInformation");
+    __MCF_crt_GetSystemCpuSetInformation_opt =
+        __MCF_CAST_PTR(typeof_GetSystemCpuSetInformation, dll_fn);
+
+    /* This function is available since Windows 10.  */
+    dll_fn = GetProcAddress(__MCF_crt_kernel32, "GetThreadSelectedCpuSets");
+    __MCF_crt_GetThreadSelectedCpuSets_opt =
+        __MCF_CAST_PTR(typeof_GetThreadSelectedCpuSets, dll_fn);
+
+    /* This function is available since Windows 10.  */
+    dll_fn = GetProcAddress(__MCF_crt_kernel32, "SetThreadSelectedCpuSets");
+    __MCF_crt_SetThreadSelectedCpuSets_opt =
+        __MCF_CAST_PTR(typeof_SetThreadSelectedCpuSets, dll_fn);
+
+    /* This function is available since Windows 11 24H2. It has the same
+     * signature as `TlsGetValue()`, so the latter can be used as a backup.  */
+    dll_fn = GetProcAddress(__MCF_crt_kernel32, "TlsGetValue2");
+    __MCF_crt_TlsGetValue2 =
+        dll_fn ? __MCF_CAST_PTR(typeof_TlsGetValue2, dll_fn) : TlsGetValue;
+
+    /* Allocate or open storage for global data. We are in the DLL main routine,
+     * so locking is not necessary. Unlike `CreateFileMappingW()`, the handle
+     * and view shall not be inherited by child processes.  */
+    static WCHAR s_gname[] = L"Local\\__MCF_crt_xglobals_*?pid???_#?cookie????????";
+    const uint32_t pid = (uint32_t) __MCF_pid();
+    __MCF_ASSERT(s_gname[25] == L'*');
+    do_hex_encode(s_gname + 25, 8, pid, "0123456789ABCDEF");
+    __MCF_ASSERT(s_gname[34] == L'#');
+    do_hex_encode(s_gname + 34, 16, do_make_cookie(pid), "GHJKLMNPQRSTUWXY");
+    __MCF_ASSERT(s_gname[50] == 0);
+
+    OBJECT_ATTRIBUTES gattrs = { .Length = sizeof(gattrs),
+                .ObjectName = &(UNICODE_STRING) __MCF_NT_STRING_INIT(s_gname),
+                .Attributes = OBJ_OPENIF | OBJ_EXCLUSIVE };
+    NTSTATUS status = BaseGetNamedObjectDirectory(&(gattrs.RootDirectory));
+    __MCF_CHECK_NT(status);
+    __MCF_ASSERT(gattrs.RootDirectory);
+
+    HANDLE gfile = NULL;
+    status = NtCreateSection(&gfile, SECTION_ALL_ACCESS, &gattrs,
+                             &(LARGE_INTEGER){ .QuadPart = __MCF_G_SIZE_TOTAL },
+                             PAGE_READWRITE, SEC_COMMIT, NULL);
+    __MCF_CHECK_NT(status);
+    __MCF_ASSERT(gfile);
+
+    SIZE_T gsize = 0;
+    __MCF_g = nullptr;
+    status = NtMapViewOfSection(gfile, NtCurrentProcess(), (void**) &__MCF_g, 0, 0,
+                                nullptr, &gsize, ViewUnmap, 0, PAGE_READWRITE);
+    __MCF_CHECK_NT(status);
+    __MCF_ASSERT(__MCF_g);
+
+    if(__MCF_g->self_size >= __MCF_G_SIZE_TOTAL) {
+      /* Reuse the existent view and close excess handles.  */
+      void* existing_g = __MCF_g->self_ptr;
+      __MCF_ASSERT(existing_g);
+      status = NtUnmapViewOfSection(NtCurrentProcess(), __MCF_g);
+      __MCF_ASSERT(status >= 0);
+      __MCF_g = existing_g;
+      status = NtClose(gfile);
+      __MCF_ASSERT(status >= 0);
+      return;
+    }
+
+    if(__MCF_g->self_size == 0) {
+      /* Initialize the new region. This is the only section where no other
+       * threads may be running, so an atomic operation is unnecessary.  */
+      __MCF_ASSERT(gsize >= __MCF_G_SIZE(interrupt_cond));
+      __MCF_g->self_ptr = __MCF_g;
+      __MCF_g->self_size = __MCF_G_SIZE(interrupt_cond);
+
+      /* Allocate a TLS slot for this library.  */
+      __MCF_g->tls_index = TlsAlloc();
+      __MCF_CHECK(__MCF_g->tls_index != TLS_OUT_OF_INDEXES);
+
+      /* Attach the main thread and make it joinable. The structure should
+       * be all zeroes so no initialization is necessary.  */
+      __MCF_thread_attach_foreign(__MCF_g->main_thread);
+      _MCF_atomic_store_32_rlx(__MCF_g->main_thread[0].__nref, 2);
+    }
+
+    if((__MCF_g->self_size < __MCF_G_SIZE_TOTAL) && (gsize >= __MCF_G_SIZE_TOTAL)) {
+      /* Extend global storage. The remaining fields that are not initialized
+       * explicitly are implicit zeroes. Other threads may be running, so the
+       * size must be updated with an atomic operation.  */
+      _MCF_atomic_store_32_rel(&(__MCF_g->self_size), __MCF_G_SIZE_TOTAL);
+    }
+  }
+
+__MCF_DLLEXPORT __MCF_REALIGN_SP
+void
+__MCF_gthread_on_thread_exit(void)
+  {
+    __MCF_USING_SEH_HANDLER(__MCF_seh_top);
+    _MCF_thread* self = __MCF_crt_TlsGetValue2(__MCF_G(tls_index));
+    if(!self)
+      return;
+
+    /* When there are multiple statically linked copies, this function can
+     * be called multiple times upon a thread's exit. For subsequent calls,
+     * the thread control structure may have been deallocated, so don't do
+     * anything.  */
+    if(self == __MCF_BAD_PTR)
+      return;
+
+    /* Per-thread atexit callbacks may use TLS, so call them before
+     * destructors of thread-local objects.  */
+    __MCF_dtor_element elem;
+    while(__MCF_dtor_queue_pop(&elem, self->__atexit_queue, nullptr) == 0)
+      __MCF_invoke_cxa_dtor(elem.__dtor, elem.__this);
+
+    while(self->__tls_table->__begin) {
+      /* Call destructors of TLS keys. The TLS table may be modified by
+       * destructors, so swap it out first.  */
+      __MCF_tls_element* tls_begin = self->__tls_table->__begin;
+      __MCF_tls_element* tls_end = self->__tls_table->__end;
+
+      self->__tls_table->__begin = nullptr;
+      self->__tls_table->__end = nullptr;
+      self->__tls_table->__size_hint = 0;
+
+      while(tls_begin != tls_end) {
+        tls_end --;
+        _MCF_tls_key* tkey = tls_end->__key_opt;
+        if(!tkey)
+          continue;
+
+        /* POSIX requires that the destructor is called only when the key has
+         * not been deleted and the value is not a null pointer.  */
+        if(!_MCF_atomic_load_b_rlx(tkey->__deleted) && tkey->__dtor_opt && tls_end->__value_opt)
+          __MCF_invoke_cxa_dtor(tkey->__dtor_opt, tls_end->__value_opt);
+
+        _MCF_tls_key_drop_ref_nonnull(tkey);
+      }
+
+      /* Deallocate the table which should be empty now.  */
+      __MCF_mfree_nonnull(tls_begin);
+    }
+
+    /* Poison this value.  */
+    TlsSetValue(__MCF_G(tls_index), __MCF_BAD_PTR);
+    _MCF_thread_drop_ref_nonnull(self);
+    _MCF_signal_fence_acq();
+  }
+
+/** These are constants that have to be initialized at load time. The
+ * initializers prevent them from being placed into the `.bss` section.  */
+const GUID __MCF_crt_gthread_guid = __MCF_GUID(9FB2D15C,C5F2,4AE7,868D,2769591B8E92);
+const LARGE_INTEGER __MCF_crt_timeout_0 = { .QuadPart = 0 };
+const LARGE_INTEGER __MCF_crt_timeout_1s = { .QuadPart = -10000000 };
+
+SYSTEM_INFO __MCF_crt_sysinfo = { .dwPageSize = 1 };
+double __MCF_crt_perf_freq_reciprocal = -1;
+HANDLE __MCF_crt_heap = __MCF_BAD_PTR;
+HMODULE __MCF_crt_ntdll = __MCF_BAD_PTR;
+HMODULE __MCF_crt_kernel32 = __MCF_BAD_PTR;
+HMODULE __MCF_crt_kernelbase = __MCF_BAD_PTR;
+
+/** These point to optional imports.  */
+typeof_GetSystemTimePreciseAsFileTime* __MCF_crt_GetSystemTimePreciseAsFileTime = __MCF_BAD_PTR;
+typeof_QueryUnbiasedInterruptTimePrecise* __MCF_crt_QueryUnbiasedInterruptTimePrecise = __MCF_BAD_PTR;
+typeof_QueryInterruptTimePrecise* __MCF_crt_QueryInterruptTimePrecise = __MCF_BAD_PTR;
+typeof_GetSystemCpuSetInformation* __MCF_crt_GetSystemCpuSetInformation_opt = __MCF_BAD_PTR;
+typeof_GetThreadSelectedCpuSets* __MCF_crt_GetThreadSelectedCpuSets_opt = __MCF_BAD_PTR;
+typeof_SetThreadSelectedCpuSets* __MCF_crt_SetThreadSelectedCpuSets_opt = __MCF_BAD_PTR;
+typeof_TlsGetValue2* __MCF_crt_TlsGetValue2 = __MCF_BAD_PTR;
+
+/** This is a pointer to global data. If this library is linked statically,
+ * all instances of this pointer in the same process should point to the
+ * same memory. The initializer prevents it from being placed into the
+ * `.bss` section.  */
+__MCF_crt_xglobals* restrict __MCF_g = __MCF_BAD_PTR;
+
+#ifdef __MCF_IN_DLL
+
+/** When building the shared library, invoke common routines from the DLL
+ * entry point callback. This has the same signature as `DllMain()`.  */
+#if defined __MSYS__
+#  define DllMainCRTStartup  _msys_dll_entry
+#elif defined __CYGWIN__
+#  define DllMainCRTStartup  _cygwin_dll_entry
+#elif defined _MSC_VER
+#  define DllMainCRTStartup  _DllMainCRTStartup
+#endif
+
+BOOL
+__stdcall
+DllMainCRTStartup(PVOID instance, ULONG reason, PVOID reserved);
+
+BOOL
+__stdcall
+DllMainCRTStartup(PVOID instance, ULONG reason, PVOID reserved)
+  {
+    (void) instance;
+    (void) reserved;
+
+    switch(reason)
+      {
+      case DLL_PROCESS_ATTACH:
+        __MCF_gthread_initialize_globals();
+        VirtualProtect((void*) &__MCF_g, sizeof(__MCF_g), PAGE_READONLY, &(DWORD){ 0 } );
+        return true;
+
+      case DLL_THREAD_DETACH:
+        __MCF_gthread_on_thread_exit();
+        return true;
+
+      default:
+        return true;
+      }
+  }
+
+__MCF_DLLEXPORT __attribute__((__flatten__))
+void*
+memcpy(void* restrict dst, const void* restrict src, size_t size)
+  {
+    return __MCF_mcopy(dst, src, size);
+  }
+
+__MCF_DLLEXPORT __attribute__((__flatten__))
+void*
+memmove(void* dst, const void* src, size_t size)
+  {
+    return ((uintptr_t) dst - (uintptr_t) src >= size)
+           ? __MCF_mcopy(dst, src, size)
+           : __MCF_mcopy_backward(dst, src, size);
+  }
+
+__MCF_DLLEXPORT __attribute__((__flatten__))
+void*
+memset(void* dst, int val, size_t size)
+  {
+    return __MCF_mfill(dst, val, size);
+  }
+
+__MCF_DLLEXPORT __attribute__((__flatten__))
+int
+memcmp(const void* src, const void* dst, size_t size)
+  {
+    return __MCF_mcompare(src, dst, size);
+  }
+
+__asm__ (
+"\n .section .text$___chkstk_ms, \"x\""
+"\n   .p2align 2"
+#if defined __MCF_M_X8632_ASM
+/** This function probes the stack without adjusting ESP or clobbering any
+ * registers. The size of allocation is passed via EAX in number of bytes.  */
+"\n .globl ___chkstk_ms"
+"\n .def ___chkstk_ms; .scl 2; .type 32; .endef"
+"\n ___chkstk_ms:"
+"\n   push eax"
+"\n   push ecx"
+"\n   lea ecx, [esp + 12 - 4096]"
+"\n   sub ecx, eax"
+"\n 20001:"
+"\n   test edx, DWORD PTR [ecx + eax]"
+"\n   sub eax, 4096"
+"\n   jns 20001b"
+"\n   pop ecx"
+"\n   pop eax"
+"\n   ret"
+/** This function probes the stack and adjusts ESP. No registers shall be
+ * clobbered. The size of allocation is passed via EAX in number of bytes.  */
+"\n .globl __alloca"
+"\n .def __alloca; .scl 2; .type 32; .endef"
+"\n __alloca:"
+"\n   call ___chkstk_ms"
+"\n   sub esp, eax"
+"\n   add esp, 4"
+"\n   push DWORD PTR [esp + eax - 4]"
+"\n   ret"
+/** This name is called by Clang for MSVC target.  */
+"\n .globl __chkstk"
+"\n .def __chkstk; .scl 2; .type 32; .endef"
+"\n .equiv __chkstk, __alloca"
+#elif defined __MCF_M_X8664_ASM
+/** This function probes the stack without adjusting RSP. No registers shall
+ * be clobbered. The size of allocation is passed via RAX in number of bytes.  */
+"\n .globl ___chkstk_ms"
+"\n .def ___chkstk_ms; .scl 2; .type 32; .endef"
+"\n ___chkstk_ms:"
+"\n   push rax"
+"\n   push rcx"
+"\n   lea rcx, [rsp + 24 - 4096]"
+"\n   sub rcx, rax"
+"\n 20001:"
+"\n   test edx, DWORD PTR [rcx + rax]"
+"\n   sub rax, 4096"
+"\n   jns 20001b"
+"\n   pop rcx"
+"\n   pop rax"
+"\n   ret"
+/** This name is called by Clang for MSVC target.  */
+"\n .globl __chkstk"
+"\n .def __chkstk; .scl 2; .type 32; .endef"
+"\n .equiv __chkstk, ___chkstk_ms"
+#elif defined __MCF_M_ARM64_ASM
+/** This function probes the stack without adjusting SP. No registers shall
+ * be clobbered. The size of allocation is passed via X15 in number of quad
+ * words.  */
+"\n .globl __chkstk"
+"\n .def __chkstk; .scl 2; .type 32; .endef"
+"\n __chkstk:"
+"\n   stp x15, x16, [sp, -16]!"
+"\n   lsl x15, x15, 2"
+"\n   add x16, sp, 16 - 4096"
+"\n   sub x16, x16, x15, lsl 2"
+"\n 20001:"
+"\n   ldr wzr, [x16, x15, lsl 2]"
+"\n   sub x15, x15, 4096 / 4"
+"\n   tbz x15, 63, 20001b"
+"\n   ldp x15, x16, [sp], 16"
+"\n   ret"
+#  if defined __MCF_M_ARM64EC
+/** This name is used for ARM64EC.  */
+"\n .globl \"#__chkstk_arm64ec\""
+"\n .def \"#__chkstk_arm64ec\"; .scl 2; .type 32; .endef"
+"\n .equiv \"#__chkstk_arm64ec\", __chkstk"
+#  endif
+#endif
+);
+
+#if defined _MSC_VER
+/** Microsoft LINK requires this for a reason.  */
+__MCF_SECTION(".rdata") const int _fltused = 0x9875;
+#endif
+
+#if defined __MCF_M_X8632
+/** On x86-32, the load config directory contains the address and size of the
+ * exception handler table. Exception handlers that are not in this table
+ * will be rejected by the system. `__MCF_i386_se_handler_table` points to a
+ * sorted (!) array of RVAs of valid handlers, and the value of (not the value
+ * it points to) `__MCF_i386_se_handler_count` is the number of handlers.  */
+extern const ULONG __MCF_i386_se_handler_table[];
+extern char __MCF_i386_se_handler_count[];
+__asm__ (
+"\n .section .rdata, \"dr\""
+"\n   .p2align 2"
+"\n .globl ___MCF_i386_se_handler_table"
+"\n ___MCF_i386_se_handler_table:"
+"\n   .rva _do_call_once_seh_unwind"
+"\n   .rva ___MCF_seh_top"
+"\n   .rva ___MCF_seh_process_top"
+"\n   .rva ___MCF_seh_thread_top"
+"\n .globl ___MCF_i386_se_handler_count"
+"\n .equiv ___MCF_i386_se_handler_count, (. - ___MCF_i386_se_handler_table) / 4"
+"\n .text"
+);
+#endif
+
+#if defined __MCF_M_ARM64EC
+/** This section has been heavily modified from 'chpe.S' from mingw-w64. Only
+ * symbols that are documented by Microsoft are kept. Original code is declared
+ * to be in the Public Domain.  */
+extern const ULONG __MCF_arm64ec_chpe_metadata[];
+__asm__ (
+"\n .section .rdata, \"dr\""
+"\n   .p2align 2"
+"\n .globl __MCF_arm64ec_chpe_metadata"
+"\n __MCF_arm64ec_chpe_metadata:"
+"\n   .long 1"  /* Version */
+"\n   .rva __hybrid_code_map"
+"\n   .long __hybrid_code_map_count"
+"\n   .rva __x64_code_ranges_to_entry_points"
+"\n   .rva __arm64x_redirection_metadata"
+"\n   .rva __os_arm64x_dispatch_call_no_redirect"
+"\n   .rva __os_arm64x_dispatch_ret"
+"\n   .rva __os_arm64x_check_call"
+"\n   .rva __os_arm64x_check_icall"
+"\n   .rva __os_arm64x_check_icall_cfg"
+"\n   .rva __arm64x_native_entrypoint"
+"\n   .rva __hybrid_auxiliary_iat"
+"\n   .long __x64_code_ranges_to_entry_points_count"
+"\n   .long __arm64x_redirection_metadata_count"
+"\n   .rva __os_arm64x_get_x64_information"
+"\n   .rva __os_arm64x_set_x64_information"
+"\n   .rva __arm64x_extra_rfe_table"
+"\n   .long __arm64x_extra_rfe_table_size"
+"\n   .rva __os_arm64x_x64_jump"
+"\n   .rva __hybrid_auxiliary_iat_copy"
+"\n   .rva __hybrid_auxiliary_delayload_iat"
+"\n   .rva __hybrid_auxiliary_delayload_iat_copy"
+"\n   .long __hybrid_image_info_bitfield"
+"\n   .rva __os_arm64x_helper3"
+"\n   .rva __os_arm64x_helper4"
+"\n   .rva __os_arm64x_helper5"
+"\n   .rva __os_arm64x_helper6"
+"\n   .rva __os_arm64x_helper7"
+"\n   .rva __os_arm64x_helper8"
+"\n"
+/** These are pointers to helper routines, which will be filled after the image
+ * is loaded by the operating system.  */
+"\n .section .00cfg, \"dr\""
+"\n   .p2align 3"
+"\n .globl __os_arm64x_dispatch_call_no_redirect"
+"\n __os_arm64x_dispatch_call_no_redirect:"
+"\n   .quad 0"
+"\n .globl __os_arm64x_dispatch_ret"
+"\n __os_arm64x_dispatch_ret:"
+"\n   .quad 0"
+"\n .globl __os_arm64x_check_call"
+"\n __os_arm64x_check_call:"
+"\n   .quad 0"
+"\n .globl __os_arm64x_check_icall"
+"\n __os_arm64x_check_icall:"
+"\n   .quad 0"
+"\n .globl __os_arm64x_check_icall_cfg"
+"\n __os_arm64x_check_icall_cfg:"
+"\n   .quad 0"
+"\n .globl __os_arm64x_get_x64_information"
+"\n __os_arm64x_get_x64_information:"
+"\n   .quad 0"
+"\n .globl __os_arm64x_set_x64_information"
+"\n __os_arm64x_set_x64_information:"
+"\n   .quad 0"
+"\n .globl __os_arm64x_x64_jump"
+"\n __os_arm64x_x64_jump:"
+"\n   .quad 0"
+"\n .globl __os_arm64x_helper3"
+"\n __os_arm64x_helper3:"
+"\n   .quad 0"
+"\n .globl __os_arm64x_helper4"
+"\n __os_arm64x_helper4:"
+"\n   .quad 0"
+"\n .globl __os_arm64x_helper5"
+"\n __os_arm64x_helper5:"
+"\n   .quad 0"
+"\n .globl __os_arm64x_helper6"
+"\n __os_arm64x_helper6:"
+"\n   .quad 0"
+"\n .globl __os_arm64x_helper7"
+"\n __os_arm64x_helper7:"
+"\n   .quad 0"
+"\n .globl __os_arm64x_helper8"
+"\n __os_arm64x_helper8:"
+"\n   .quad 0"
+"\n"
+/** This is the ARM64EC Adjustor Thunk. Calls to this function are synthesized
+ * by the compiler.  */
+"\n .section .text$__icall_helper_arm64ec, \"x\""
+"\n   .p2align 2"
+"\n .globl __icall_helper_arm64ec"
+"\n .def __icall_helper_arm64ec; .scl 2; .type 32; .endef"
+"\n __icall_helper_arm64ec:"
+"\n .seh_proc __icall_helper_arm64ec"
+"\n   stp fp, lr, [sp, -16]!"
+"\n .seh_save_fplr_x 16"
+"\n   mov fp, sp"
+"\n .seh_set_fp"
+"\n .seh_endprologue"
+"\n   adrp x16, __os_arm64x_check_icall"
+"\n   ldr x16, [x16, :lo12:__os_arm64x_check_icall]"
+"\n   blr x16"
+"\n .seh_startepilogue"
+"\n   ldp fp, lr, [sp], 16"
+"\n .seh_save_fplr_x 16"
+"\n .seh_endepilogue"
+"\n   br x11"
+"\n .seh_endproc"
+"\n"
+/** This is a common wrapper with an Exit Thunk for x86-64 callback functions
+ * that return either values in RAX, or void.  */
+"\n .globl __MCF_arm64ec_exit_thunk_p"
+"\n .def __MCF_arm64ec_exit_thunk_p; .scl 2; .type 32; .endef"
+"\n __MCF_arm64ec_exit_thunk_p:"
+"\n .seh_proc __MCF_arm64ec_exit_thunk_p"
+"\n   stp fp, lr, [sp, -16]!"
+"\n .seh_save_fplr_x 16"
+"\n   mov fp, sp"
+"\n .seh_set_fp"
+"\n   sub sp, sp, 32"
+"\n .seh_stackalloc 32"
+"\n .seh_endprologue"
+"\n   adrp x16, __os_arm64x_dispatch_call_no_redirect"
+"\n   ldr x16, [x16, :lo12:__os_arm64x_dispatch_call_no_redirect]"
+"\n   blr x16"
+"\n   mov x0, x8"
+"\n .seh_startepilogue"
+"\n   add sp, sp, 32"
+"\n .seh_stackalloc 32"
+"\n   ldp fp, lr, [sp], 16"
+"\n .seh_save_fplr_x 16"
+"\n .seh_endepilogue"
+"\n   ret"
+"\n .seh_endproc"
+"\n .text"
+);
+#endif
+
+/* Implement the stack protector, aka. buffer security check in Microsoft
+ * terminology.  */
+#if defined _MSC_VER
+#  define __stack_chk_guard   __security_cookie
+#  define __stack_chk_fail    __report_gsfailure
+#endif
+
+#if !defined _MSC_VER || defined __MCF_M_X8632
+#  define __MCF_STACK_CHK_FAIL_PARAMETER   void
+#else
+#  define __MCF_STACK_CHK_FAIL_PARAMETER   uintptr_t _ __attribute__((__unused__))
+#endif
+
+#if defined __MCF_M_ARM64EC
+#  define __security_check_cookie   __security_check_cookie_arm64ec
+#endif
+
+__MCF_NEVER_RETURN void __stack_chk_fail(__MCF_STACK_CHK_FAIL_PARAMETER);
+void __fastcall __security_check_cookie(uintptr_t cookie);
+
+/** If the image subsystem version is set to 6.3+, Windows requires that the
+ * security cookie shall exist and shall be initialized to a constant value
+ * when the image is loaded. Otherwise the system will reject the image with
+ * `STATUS_INVALID_IMAGE_FORMAT`.  */
+uintptr_t __stack_chk_guard = __MCF_64_32(0x2B992DDFA232, 0xBB40E64E);
+
+__MCF_NEVER_INLINE __attribute__((__used__, __no_stack_protector__))
+void
+__stack_chk_fail(__MCF_STACK_CHK_FAIL_PARAMETER)
+  {
+    do_fail_fast(STATUS_STACK_BUFFER_OVERRUN, __builtin_return_address(0));
+  }
+
+__MCF_NEVER_INLINE __attribute__((__used__, __no_stack_protector__))
+void
+__fastcall
+__security_check_cookie(uintptr_t cookie)
+  {
+    if(cookie != __stack_chk_guard)
+      do_fail_fast(STATUS_STACK_BUFFER_OVERRUN, __builtin_return_address(0));
+  }
+
+/** This is the load configuration for the DLL. It is essential for various
+ * security features.  */
+struct _IMAGE_LOAD_CONFIG_DIRECTORY_10_0_26100_7175
+  {
+    DWORD Size;
+    DWORD TimeDateStamp;
+    WORD MajorVersion;
+    WORD MinorVersion;
+    DWORD GlobalFlagsClear;
+    DWORD GlobalFlagsSet;
+    DWORD CriticalSectionDefaultTimeout;
+    ULONG_PTR DeCommitFreeBlockThreshold;
+    ULONG_PTR DeCommitTotalFreeThreshold;
+    ULONG_PTR LockPrefixTable;
+    ULONG_PTR MaximumAllocationSize;
+    ULONG_PTR VirtualMemoryThreshold;
+    ULONG_PTR __MCF_64_32(ProcessAffinityMask, ProcessHeapFlags);
+    DWORD __MCF_64_32(ProcessHeapFlags, ProcessAffinityMask);
+    WORD CSDVersion;
+    WORD DependentLoadFlags;
+    ULONG_PTR EditList;
+    ULONG_PTR SecurityCookie;
+    ULONG_PTR SEHandlerTable;
+    ULONG_PTR SEHandlerCount;
+    ULONG_PTR GuardCFCheckFunctionPointer;
+    ULONG_PTR GuardCFDispatchFunctionPointer;
+    ULONG_PTR GuardCFFunctionTable;
+    ULONG_PTR GuardCFFunctionCount;
+    DWORD GuardFlags;
+    WORD CodeIntegrity_Flags;
+    WORD CodeIntegrity_Catalog;
+    DWORD CodeIntegrity_CatalogOffset;
+    DWORD CodeIntegrity_Reserved;
+    ULONG_PTR GuardAddressTakenIatEntryTable;
+    ULONG_PTR GuardAddressTakenIatEntryCount;
+    ULONG_PTR GuardLongJumpTargetTable;
+    ULONG_PTR GuardLongJumpTargetCount;
+    ULONG_PTR DynamicValueRelocTable;
+    ULONG_PTR CHPEMetadataPointer;
+    ULONG_PTR GuardRFFailureRoutine;
+    ULONG_PTR GuardRFFailureRoutineFunctionPointer;
+    DWORD DynamicValueRelocTableOffset;
+    WORD DynamicValueRelocTableSection;
+    WORD Reserved2;
+    ULONG_PTR GuardRFVerifyStackPointerFunctionPointer;
+    DWORD HotPatchTableOffset;
+    DWORD Reserved3;
+    ULONG_PTR EnclaveConfigurationPointer;
+    ULONG_PTR VolatileMetadataPointer;
+    ULONG_PTR GuardEHContinuationTable;
+    ULONG_PTR GuardEHContinuationCount;
+    ULONG_PTR GuardXFGCheckFunctionPointer;
+    ULONG_PTR GuardXFGDispatchFunctionPointer;
+    ULONG_PTR GuardXFGTableDispatchFunctionPointer;
+    ULONG_PTR CastGuardOsDeterminedFailureMode;
+    ULONG_PTR GuardMemcpyFunctionPointer;
+    ULONG_PTR UmaFunctionPointers;
+  }
+const _load_config_used __MCF_SECTION(".rdata") =
+  {
+    .Size = sizeof(_load_config_used),
+    .DependentLoadFlags = LOAD_LIBRARY_SEARCH_SYSTEM32,
+    .SecurityCookie = (ULONG_PTR) &__stack_chk_guard,
+#if defined __MCF_M_X8632
+    .SEHandlerTable = (ULONG_PTR) __MCF_i386_se_handler_table,
+    .SEHandlerCount = (ULONG_PTR) __MCF_i386_se_handler_count,
+#endif
+#if defined __MCF_M_ARM64EC
+    .CHPEMetadataPointer = (ULONG_PTR) __MCF_arm64ec_chpe_metadata,
+#endif
+  };
+
+#else  /* __MCF_IN_DLL  */
+
+/** When building the static library, invoke common routines from a TLS callback.  */
+static
+void
+__stdcall
+do_tls_callback(PVOID module, ULONG reason, PVOID reserved)
+  {
+    (void) module;
+    (void) reserved;
+
+    switch(reason)
+      {
+      case DLL_PROCESS_ATTACH:
+        __MCF_gthread_initialize_globals();
+        return;
+
+      case DLL_THREAD_DETACH:
+        __MCF_gthread_on_thread_exit();
+        return;
+
+      default:
+        return;
+      }
+  }
+
+/** This requires the main executable be linked with 'tlssup.o'. Such
+ * initialization shall happen as early as possible.  */
+extern const IMAGE_TLS_DIRECTORY _tls_used;
+static __MCF_SECTION(".rdata") const void* const refptr__tls_used = &_tls_used;
+static __MCF_SECTION(".CRT$XLB") const PIMAGE_TLS_CALLBACK crt__xl_b = do_tls_callback;
+
+#if defined __CYGWIN__
+/** The Cygwin/MSYS2 runtime does not provide a TLS directory, so a local one has
+ * to be defined. Although Cygwin/MSYS2 executables do not use native TLS, this
+ * facility is fully functional and might be useful in the future.  */
+DWORD _tls_index = UINT32_MAX;
+__MCF_SECTION(".tls") PVOID _tls_start = nullptr;
+__MCF_SECTION(".tls$ZZZ") PVOID _tls_end = nullptr;
+__MCF_SECTION(".CRT$XLA") const PIMAGE_TLS_CALLBACK __xl_a = nullptr;
+__MCF_SECTION(".CRT$XLZ") const PIMAGE_TLS_CALLBACK __xl_z = nullptr;
+
+__MCF_SECTION(".rdata") const IMAGE_TLS_DIRECTORY _tls_used =
+  {
+    .AddressOfIndex = (ULONG_PTR) &_tls_index,
+    .StartAddressOfRawData = (ULONG_PTR) &_tls_start,
+    .EndAddressOfRawData = (ULONG_PTR) &_tls_end,
+    .AddressOfCallBacks = (ULONG_PTR) (&__xl_a + 1),
+  };
+#endif
+
+#if defined __MCF_M_X8632 && defined _MSC_VER
+/** Register SEH handlers. In the DLL we build a handler table by hand which works
+ * on all compilers. In the static library we use the `.safeseh` directive but it
+ * is only supported by Microsoft LINK, or LLD in LINK mode.  */
+__asm__ (
+"\n .safeseh _do_call_once_seh_unwind"
+"\n .safeseh ___MCF_seh_top"
+"\n .safeseh ___MCF_seh_process_top"
+"\n .safeseh ___MCF_seh_thread_top"
+);
+#endif
+
+#endif  /* __MCF_IN_DLL  */
