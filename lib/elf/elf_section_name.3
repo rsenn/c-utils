@@ -1,0 +1,44 @@
+.TH elf_section_name 3 "ELF Library Functions" "QuickJS" "ELF Library Functions"
+
+.SH NAME
+elf_section_name \- Retrieve the name of a section by its index
+
+.SH SYNOPSIS
+.B #include <lib/elf.h>
+.B const char* elf_section_name(void* elf, int sn);
+
+.SH DESCRIPTION
+The .B elf_section_name function retrieves the name of a section by its index.
+
+The function takes two parameters:
+.I elf
+A pointer to the ELF file structure.
+.I sn
+The index of the section to find.
+
+The function returns a pointer to the name of the section if it is found. If the section is not found, the function returns NULL.
+
+.SH EXAMPLE
+The following example demonstrates how to use the .B elf_section_name function:
+
+.I
+.nf
+#include <stdio.h>
+#include <lib/elf.h>
+
+int main() {
+  // Assume elf is a valid pointer to an ELF file structure
+  int sn = 1; // Example section index
+  const char* name = elf_section_name(elf, sn);
+
+  if (name != NULL) {
+    printf("Section name: %s\n", name);
+  } else {
+    printf("Section not found.\n");
+  }
+
+  return 0;
+}
+.!
+.SH "SEE ALSO"
+elf_section_headers(3)

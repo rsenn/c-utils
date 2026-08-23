@@ -1,0 +1,39 @@
+.TH DNS_ND6 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+dns_name6_domain \- Convert an IPv6 address to a DNS domain name
+
+.SH SYNOPSIS
+.IB #include <lib/dns.h>
+
+.IB void
+.IB dns_name6_domain(char name[DNS_NAME6_DOMAIN], const char ip[16]);
+
+.SH DESCRIPTION
+The \fBdns_name6_domain\fR function converts an IPv6 address to a DNS domain name in the reverse domain name notation (ip6.arpa).
+
+.SH ARGUMENTS
+.IB name
+A buffer of size DNS_NAME6_DOMAIN to store the resulting DNS domain name.
+
+.IB ip
+A pointer to a 16-byte array representing the IPv6 address.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBdns_name6_domain\fR function:
+
+.nf
+#include <stdio.h>
+#include <lib/dns.h>
+#include <lib/stralloc.h>
+
+int main() {
+    char name[DNS_NAME6_DOMAIN];
+    const char* ip = "2001:db8::1";
+
+    dns_name6_domain(name, ip);
+    printf("DNS domain name: %s\n", name);
+
+    return 0;
+}
+.nef

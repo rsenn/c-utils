@@ -1,0 +1,58 @@
+.TH DNS_NAME 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+dns_name_packet, dns_name4, dns_name6 \- Retrieve DNS domain names from DNS packets or resolve IP addresses
+
+.SH SYNOPSIS
+.IB #include <lib/dns.h>
+
+.IB int
+.IB dns_name_packet(stralloc* out, const char* buf, unsigned int len);
+
+.IB int
+.IB dns_name4(stralloc* out, const char ip[4]);
+
+.IB int
+.IB dns_name6(stralloc* out, const char ip[16]);
+
+.SH DESCRIPTION
+These functions provide a set of operations for retrieving DNS domain names from DNS packets or resolving IP addresses.
+
+.TP
+.IB dns_name_packet
+Extracts the first qualified domain name (QNAME) with type DNS_T_PTR and class DNS_C_IN from a DNS packet and stores it in an output buffer.
+
+.TP
+.IB dns_name4
+Resolves an IPv4 address to a DNS domain name using DNS records of type DNS_T_PTR and class DNS_C_IN, and stores the result in an output buffer.
+
+.TP
+.IB dns_name6
+Resolves an IPv6 address to a DNS domain name using DNS records of type DNS_T_PTR and class DNS_C_IN, and stores the result in an output buffer. If the IP address is a v4-mapped v6 address, it uses the dns_name4 function.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBdns_name_packet\fR function:
+
+.nf
+#include <stdio.h>
+#include <lib/dns.h>
+#include <lib/stralloc.h>
+
+int main() {
+    stralloc sa;
+    stralloc_init(&sa);
+    const char* buf = ...; // DNS packet data
+    unsigned int len = ...; // Length of the DNS packet
+
+    if (dns_name_packet(&sa, buf, len) != 0) {
+        fprintf(stderr, "Error: dns_name_packet failed\n");
+        return 1;
+    }
+
+    printf("Qualified domain name: %s\n", sa.s);
+
+    stralloc_free(&sa);
+
+    return 0;
+}
+.nef

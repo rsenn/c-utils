@@ -1,0 +1,33 @@
+.TH DNS_RCIp 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+dns_resolvconfip \- Resolve IP address from resolv.conf
+
+.SH SYNOPSIS
+.IB #include <lib/dns.h>
+
+.IB int
+.IB dns_resolvconfip(char s[256]);
+
+.SH DESCRIPTION
+The \fBdns_resolvconfip\fR function resolves the IP address from the resolv.conf file.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBdns_resolvconfip\fR function:
+
+.nf
+#include <stdio.h>
+#include <lib/dns.h>
+
+int main() {
+    char ip[256];
+
+    if (dns_resolvconfip(ip) == 0) {
+        printf("Resolved IP: %s\n", ip);
+    } else {
+        printf("Failed to resolve IP\n");
+    }
+
+    return 0;
+}
+.nef

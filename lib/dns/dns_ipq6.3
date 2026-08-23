@@ -1,0 +1,62 @@
+.TH DNS_IPQ6 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+dns_ip6_qualify_rules, dns_ip6_qualify \- Qualify DNS domain names using IPv6 address rules
+
+.SH SYNOPSIS
+.IB #include <lib/dns.h>
+
+.IB int
+.IB dns_ip6_qualify_rules(stralloc* out, stralloc* fqdn, const stralloc* in, const stralloc* rules);
+
+.IB int
+.IB dns_ip6_qualify(stralloc* out, stralloc* fqdn, const stralloc* in);
+
+.SH DESCRIPTION
+These functions provide a set of operations for qualifying DNS domain names using IPv6 address rules.
+
+.TP
+.IB dns_ip6_qualify_rules
+Qualifies a DNS domain name using a set of IPv6 address rules and stores the result in an output buffer.
+
+.TP
+.IB dns_ip6_qualify
+Qualifies a DNS domain name using the default set of IPv6 address rules and stores the result in an output buffer.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBdns_ip6_qualify_rules\fR function:
+
+.nf
+#include <stdio.h>
+#include <lib/dns.h>
+#include <lib/stralloc.h>
+
+int main() {
+    stralloc sa;
+    stralloc fqdn;
+    stralloc rules;
+    stralloc_init(&sa);
+    stralloc_init(&fqdn);
+    stralloc_init(&rules);
+    const char* in = "example.com";
+    const char* rules_str = "2001:db8::1:example.com";
+
+    if (stralloc_copys(&fqdn, in) != 0 || stralloc_copys(&rules, rules_str) != 0) {
+        fprintf(stderr, "Error: stralloc_copys failed\n");
+        return 1;
+    }
+
+    if (dns_ip6_qualify_rules(&sa, &fqdn, &fqdn, &rules) != 0) {
+        fprintf(stderr, "Error: dns_ip6_qualify_rules failed\n");
+        return 1;
+    }
+
+    printf("Qualified domain name: %s\n", sa.s);
+
+    stralloc_free(&sa);
+    stralloc_free(&fqdn);
+    stralloc_free(&rules);
+
+    return 0;
+}
+.nef

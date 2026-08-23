@@ -1,0 +1,41 @@
+.TH DNS_RANDOM 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+dns_random_init, dns_random \- Generate random numbers
+
+.SH SYNOPSIS
+.IB #include <lib/dns.h>
+
+.IB void
+.IB dns_random_init(const char data[128]);
+
+.IB unsigned int
+.IB dns_random(unsigned int n);
+
+.SH DESCRIPTION
+The \fBdns_random_init\fR function initializes the random number generator with a seed.
+
+.TP
+.IB dns_random
+Generates a random number less than the given argument.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBdns_random_init\fR and \fBdns_random\fR functions:
+
+.nf
+#include <stdio.h>
+#include <lib/dns.h>
+
+int main() {
+    char data[128]; // Seed data
+    unsigned int n = ...; // Upper limit for the random number
+
+    dns_random_init(data);
+
+    unsigned int random_number = dns_random(n);
+
+    printf("Random number: %u\n", random_number);
+
+    return 0;
+}
+.nef

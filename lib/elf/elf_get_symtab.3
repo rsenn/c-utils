@@ -1,0 +1,46 @@
+.TH elf_get_symtab 3 "ELF Library Functions" "QuickJS" "ELF Library Functions"
+
+.SH NAME
+elf_get_symtab \- Retrieve the symbol table from an ELF file
+
+.SH SYNOPSIS
+.B #include <lib/elf.h>
+.B void* elf_get_symtab(void* elf, size_t* szp);
+
+.SH DESCRIPTION
+The .B elf_get_symtab function retrieves the symbol table from an ELF file.
+
+The function takes two parameters:
+.I elf
+A pointer to the ELF file structure.
+.I szp
+A pointer to a size_t variable that will store the size of the symbol table in bytes. If this parameter is NULL, the size is not returned.
+
+The function returns a pointer to the symbol table. If the symbol table is not present in the ELF file, the function returns NULL.
+
+.SH EXAMPLE
+The following example demonstrates how to use the .B elf_get_symtab function:
+
+.I
+.nf
+#include <stdio.h>
+#include <lib/elf.h>
+
+int main() {
+  // Assume elf is a valid pointer to an ELF file structure
+  void* symtab;
+  size_t symtab_size;
+
+  symtab = elf_get_symtab(elf, &symtab_size);
+
+  if (symtab != NULL) {
+    printf("Symbol table found, size: %zu bytes.\n", symtab_size);
+  } else {
+    printf("No symbol table found.\n");
+  }
+
+  return 0;
+}
+.!
+.SH "SEE ALSO"
+elf_section_index(3), elf_section_size(3), elf_section_offset(3)

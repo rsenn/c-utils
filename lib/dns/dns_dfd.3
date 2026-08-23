@@ -1,0 +1,51 @@
+.TH DNS_DFD 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+dns_domain_fromdot \- Convert a DNS domain name from dot-separated format to wire format
+
+.SH SYNOPSIS
+.IB #include <lib/dns.h>
+
+.IB int
+.IB dns_domain_fromdot
+.IB (char** out, const char* buf, size_t n);
+
+.SH DESCRIPTION
+The \fBdns_domain_fromdot\fR function converts a DNS domain name from dot-separated format to wire format. The function takes three arguments:
+
+.TP
+.IB out
+A pointer to a pointer that will be set to the converted domain name.
+.TP
+.IB buf
+A pointer to the input buffer containing the dot-separated domain name.
+.TP
+.IB n
+The length of the input buffer.
+
+The function returns 1 on success and 0 on failure. If the function fails, it sets \fIerrno\fR to an appropriate error code.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBdns_domain_fromdot\fR function:
+
+.nf
+#include <stdio.h>
+#include <lib/dns.h>
+
+int main() {
+    char* out = NULL;
+    const char* buf = "example.com";
+    size_t n = strlen(buf);
+
+    if (dns_domain_fromdot(&out, buf, n) != 1) {
+        fprintf(stderr, "Error: %s\n", strerror(errno));
+        return 1;
+    }
+
+    printf("Converted domain name: %s\n", out);
+
+    free(out);
+
+    return 0;
+}
+.nef

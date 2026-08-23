@@ -1,0 +1,57 @@
+.TH elf_header 3 "ELF Library Functions" "QuickJS" "ELF Library Functions"
+
+.SH NAME
+elf_header, elf_header_sections \- Retrieve information from the ELF header
+
+.SH SYNOPSIS
+.B #include <lib/elf.h>
+.B uint8_t* elf_header_ident(void* elf);
+.B void* elf_header_sections(void* elf);
+
+.SH DESCRIPTION
+The .B elf_header_ident function retrieves the ELF header identification from the given ELF file.
+
+The function takes one parameter:
+.I elf
+A pointer to the ELF file structure.
+
+The function returns a pointer to the ELF header identification.
+
+.SH elf_header_sections
+The .B elf_header_sections function retrieves the sections of the ELF file based on the ELF header.
+
+The function takes one parameter:
+.I elf
+A pointer to the ELF file structure.
+
+The function returns a pointer to the sections of the ELF file. If the ELF header does not specify a valid section offset, the function returns 0.
+
+.SH EXAMPLE
+The following example demonstrates how to use the .B elf_header and .B elf_header_sections functions:
+
+.I
+.nf
+#include <stdio.h>
+#include <lib/elf.h>
+
+int main() {
+  // Assume elf is a valid pointer to an ELF file structure
+  uint8_t* ident = elf_header_ident(elf);
+  printf("ELF Header Identification: ");
+  for (int i = 0; i < EI_NIDENT; i++) {
+    printf("%02x ", ident[i]);
+  }
+  printf("\n");
+
+  void* sections = elf_header_sections(elf);
+  if (sections != 0) {
+    printf("Sections retrieved successfully.\n");
+  } else {
+    printf("Failed to retrieve sections.\n");
+  }
+
+  return 0;
+}
+.!
+.SH "SEE ALSO"
+elf_header_ident(3), elf_header_sections(3)

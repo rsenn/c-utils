@@ -1,0 +1,57 @@
+.TH elf_get_value 3 "ELF Library Functions" "QuickJS" "ELF Library Functions"
+
+.SH NAME
+elf_get_value \- Retrieve a value from a data structure based on its type
+
+.SH SYNOPSIS
+.B #include <lib/elf.h>
+.B #include <lib/uint64.h>
+.B uint64_t elf_get_value(void* elf, void* ptr, unsigned off32, unsigned size32, unsigned off64, unsigned size64);
+
+.SH DESCRIPTION
+The .B elf_get_value function retrieves a value from a data structure based on its type.
+
+The function takes six parameters:
+.I elf
+A pointer to the ELF file structure (not used in this function).
+.I ptr
+A pointer to the data structure containing the value.
+.I off32
+The offset of the value in the data structure for 32-bit mode.
+.I size32
+The size of the value in bytes for 32-bit mode.
+.I off64
+The offset of the value in the data structure for 64-bit mode.
+.I size64
+The size of the value in bytes for 64-bit mode.
+
+The function returns the value as a uint64_t. If the size is not supported, the function returns 0.
+
+.SH EXAMPLE
+The following example demonstrates how to use the .B elf_get_value function:
+
+.I
+.nf
+#include <stdio.h>
+#include <lib/elf.h>
+#include <lib/uint64.h>
+
+int main() {
+  // Assume elf is a valid pointer to an ELF file structure
+  uint32_t value32 = 0x12345678;
+  uint64_t value64 = 0x123456789ABCDEF0;
+  uint64_t ret;
+
+  // Example for 32-bit mode
+  ret = elf_get_value(elf, &value32, 0, sizeof(value32), 0, 0);
+  printf("32-bit value: 0x%llx\n", ret);
+
+  // Example for 64-bit mode
+  ret = elf_get_value(elf, &value64, 0, 0, 0, sizeof(value64));
+  printf("64-bit value: 0x%llx\n", ret);
+
+  return 0;
+}
+.!
+.SH "SEE ALSO"
+uint64_read(3), uint32_read(3), uint16_read(3)

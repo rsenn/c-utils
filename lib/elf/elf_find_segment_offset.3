@@ -1,0 +1,47 @@
+.TH elf_find_segment_offset 3 "ELF Library Functions" "QuickJS" "ELF Library Functions"
+
+.SH NAME
+elf_find_segment_offset \- Find the segment offset in an ELF file
+
+.SH SYNOPSIS
+.B #include <lib/elf.h>
+.B void* elf_find_segment_offset(range map, uint64_t offs);
+
+.SH DESCRIPTION
+The .B elf_find_segment_offset function searches for the segment that contains the specified offset within an ELF file.
+
+The function takes two parameters:
+.I map
+A range structure representing the memory mapping of the ELF file.
+.I offs
+The offset within the ELF file that you want to find the segment for.
+
+The function returns a pointer to the segment that contains the specified offset. If no segment contains the offset, the function returns 0.
+
+.SH EXAMPLE
+The following example demonstrates how to use the .B elf_find_segment_offset function:
+
+.I
+.nf
+#include <stdio.h>
+#include <lib/elf.h>
+
+int main() {
+  // Assume map is a valid range structure representing the memory mapping of an ELF file
+  range map;
+  // Populate map with the appropriate values
+
+  uint64_t offset = 0x1000;
+  void* segment = elf_find_segment_offset(map, offset);
+
+  if (segment != 0) {
+    printf("Segment containing offset 0x%llx found.\n", offset);
+  } else {
+    printf("No segment contains offset 0x%llx.\n", offset);
+  }
+
+  return 0;
+}
+.!
+.SH "SEE ALSO"
+elf_program_headers(3), elf_get(3)

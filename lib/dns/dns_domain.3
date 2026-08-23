@@ -1,0 +1,90 @@
+.TH DNS_DOMAIN 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+dns_domain_length, dns_domain_free, dns_domain_copy, dns_domain_copysa, dns_domain_equal, dns_domain_diff, dns_domain_suffix, dns_domain_suffixpos \- Functions for manipulating DNS domain names
+
+.SH SYNOPSIS
+.IB #include <lib/dns.h>
+
+.IB unsigned int
+.IB dns_domain_length(const char* dn);
+
+.IB void
+.IB dns_domain_free(char** out);
+
+.IB int
+.IB dns_domain_copy(char** out, const char* in);
+
+.IB int
+.IB dns_domain_copysa(stralloc* sa, const char* in);
+
+.IB int
+.IB dns_domain_equal(const char* dn1, const char* dn2);
+
+.IB int
+.IB dns_domain_diff(const char* dn1, const char* dn2);
+
+.IB int
+.IB dns_domain_suffix(const char* big, const char* little);
+
+.IB unsigned int
+.IB dns_domain_suffixpos(const char* big, const char* little);
+
+.SH DESCRIPTION
+These functions provide a set of operations for manipulating DNS domain names in wire format.
+
+.TP
+.IB dns_domain_length
+Computes the length of a DNS domain name in wire format.
+
+.TP
+.IB dns_domain_free
+Frees the memory allocated for a DNS domain name.
+
+.TP
+.IB dns_domain_copy
+Copies a DNS domain name from a string to a dynamically allocated buffer.
+
+.TP
+.IB dns_domain_copysa
+Copies a DNS domain name from a string to a \fIstralloc\fR buffer.
+
+.TP
+.IB dns_domain_equal
+Compares two DNS domain names for equality, ignoring case.
+
+.TP
+.IB dns_domain_diff
+Compares two DNS domain names and returns their difference.
+
+.TP
+.IB dns_domain_suffix
+Checks if one DNS domain name is a suffix of another.
+
+.TP
+.IB dns_domain_suffixpos
+Computes the position of a DNS domain name as a suffix within another.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBdns_domain_copy\fR function:
+
+.nf
+#include <stdio.h>
+#include <lib/dns.h>
+
+int main() {
+    char* out = NULL;
+    const char* in = "example.com";
+
+    if (dns_domain_copy(&out, in) != 1) {
+        fprintf(stderr, "Error: dns_domain_copy failed\n");
+        return 1;
+    }
+
+    printf("Copied domain name: %s\n", out);
+
+    dns_domain_free(&out);
+
+    return 0;
+}
+.nef

@@ -1,0 +1,47 @@
+.TH DNS_SORTIP6 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+dns_sortip6 \- Sort an array of IPv6 addresses
+
+.SH SYNOPSIS
+.IB #include <lib/dns.h>
+
+.IB void
+.IB dns_sortip6(char* s, unsigned int n);
+
+.SH DESCRIPTION
+The \fBdns_sortip6\fR function sorts an array of IPv6 addresses. The function shuffles the array in place using a simple random sort algorithm.
+
+.SH ARGUMENTS
+.IB s
+The array of IPv6 addresses to be sorted.
+
+.IB n
+The number of IPv6 addresses in the array.
+
+.SH RETURN VALUE
+The function returns no value.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBdns_sortip6\fR function:
+
+.nf
+#include <stdio.h>
+#include <lib/dns.h>
+
+int main() {
+    char ip6[16 * 3] = {
+        0x20, 0x01, 0x0d, 0xb8, 0x85, 0xa3, 0x00, 0x00, 0x00, 0x00, 0x8a, 0x2e, 0x03, 0x70, 0x73, 0x73,
+        0x20, 0x01, 0x0d, 0xb8, 0x85, 0xa3, 0x00, 0x00, 0x00, 0x00, 0x8a, 0x2e, 0x03, 0x70, 0x73, 0x74,
+        0x20, 0x01, 0x0d, 0xb8, 0x85, 0xa3, 0x00, 0x00, 0x00, 0x00, 0x8a, 0x2e, 0x03, 0x70, 0x73, 0x75
+    };
+
+    dns_sortip6(ip6, 3);
+
+    for (unsigned int i = 0; i < 3 * 16; i += 16) {
+        printf("%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x\n", ip6[i], ip6[i + 1], ip6[i + 2], ip6[i + 3], ip6[i + 4], ip6[i + 5], ip6[i + 6], ip6[i + 7], ip6[i + 8], ip6[i + 9], ip6[i + 10], ip6[i + 11], ip6[i + 12], ip6[i + 13], ip6[i + 14], ip6[i + 15]);
+    }
+
+    return 0;
+}
+.nef

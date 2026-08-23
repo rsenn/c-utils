@@ -1,0 +1,57 @@
+.TH DNS_DTD 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+dns_domain_todot_cat, dns_domain_todot_inline, dns_domain_todot \- Convert DNS domain names to dot-separated format
+
+.SH SYNOPSIS
+.IB #include <lib/dns.h>
+
+.IB int
+.IB dns_domain_todot_cat(stralloc* out, const char* d);
+
+.IB unsigned int
+.IB dns_domain_todot_inline(char* x);
+
+.IB unsigned int
+.IB dns_domain_todot(char* out, const char* in);
+
+.SH DESCRIPTION
+These functions provide a set of operations for converting DNS domain names to dot-separated format.
+
+.TP
+.IB dns_domain_todot_cat
+Appends a DNS domain name in wire format to an output string, converting it to dot-separated format.
+
+.TP
+.IB dns_domain_todot_inline
+In-place converts a DNS domain name in wire format to dot-separated format.
+
+.TP
+.IB dns_domain_todot
+Converts a DNS domain name in wire format to dot-separated format and stores the result in an output buffer.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBdns_domain_todot_cat\fR function:
+
+.nf
+#include <stdio.h>
+#include <lib/dns.h>
+#include <lib/stralloc.h>
+
+int main() {
+    stralloc sa;
+    stralloc_init(&sa);
+    const char* in = "example.com";
+
+    if (dns_domain_todot_cat(&sa, in) != 1) {
+        fprintf(stderr, "Error: dns_domain_todot_cat failed\n");
+        return 1;
+    }
+
+    printf("Converted domain name: %s\n", sa.s);
+
+    stralloc_free(&sa);
+
+    return 0;
+}
+.nef
