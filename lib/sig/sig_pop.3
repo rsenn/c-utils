@@ -1,0 +1,35 @@
+.TH SIG_POP 3
+.SH NAME
+sig_pop \- pop a signal handler
+.SH SYNOPSIS
+.B #include "sig.h"
+.PP
+.BI "int sig_pop(int " sig ");"
+.SH DESCRIPTION
+.B sig_pop
+undoes the most recent
+.BR sig_push (3)
+or
+.BR sig_pusha (3)
+for the signal
+.IR sig ,
+restoring the handler that was active before it via the internal
+per-signal handler stack. This function is MT-unsafe.
+.SH RETURN VALUE
+Returns the number of handlers remaining on the stack for
+.I sig
+on success, or -1 on failure, with
+.I errno
+set to
+.B EINVAL
+if
+.I sig
+is not a valid signal number,
+.B EFAULT
+if the stack for
+.I sig
+is empty, or an error from
+.BR sig_action (3)
+if restoring the previous handler fails.
+.SH SEE ALSO
+.BR sig_push (3)

@@ -185,3 +185,19 @@
   (matching first-letter case) works. Found while writing
   `tests/test_str.c`; the test documents the current (buggy) behavior
   instead of asserting the case-insensitive result a caller would expect.
+- sig_ignore-missing-return-on-windows: `lib/sig/sig_ignore.c`'s `sig_ignore`
+  is declared `int` and its whole body (including the `return sigaction(...)`)
+  is wrapped in `#if !WINDOWS_NATIVE`. On a `WINDOWS_NATIVE` build the
+  function falls off the end without a `return`, so it returns an
+  indeterminate value. `lib/sig/sig_push.c`'s `sig_push` has the same shape:
+  the entire body, including `return sig_pusha(...)`, is inside
+  `#if !WINDOWS_NATIVE` with no fallback `return` for the Windows branch.
+- sig-duplicate-internal-headers: `lib/sig_internal.h` and
+  `lib/sig/sig-internal.h` declare the same `sigtable_t`/`sigtable` symbols
+  but aren't the same file: only `lib/sig_internal.h` defines `NSIG` (and
+  `SIGSTACKSIZE` comes from `sig.h`). `lib/sig/sig_stack.c` includes
+  `../sig_internal.h` (the one with `NSIG`), while `sig_name.c`, `sig_number.c`,
+  and `sig_table.c` include the sibling `sig-internal.h` (dash, no `NSIG`).
+  Both declare `extern sigtable_t const sigtable[];`, so the setup happens to
+  work today, but it's two headers for one declaration with no clear owner,
+  and a change to one won't propagate to the other.
