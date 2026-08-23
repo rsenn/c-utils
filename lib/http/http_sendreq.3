@@ -1,0 +1,46 @@
+.TH http_sendreq 3 "HTTP Library Functions" "QuickJS" "HTTP Library Functions"
+
+.SH NAME
+http_sendreq \- Send an HTTP request
+
+.SH SYNOPSIS
+.B #include <lib/http.h>
+.B int http_sendreq(http* h);
+
+.SH DESCRIPTION
+The .B http_sendreq function sends an HTTP request.
+
+The function takes one parameter:
+.I h
+The HTTP structure.
+
+The function returns 0 on success, or -1 on error.
+
+.SH EXAMPLE
+The following example demonstrates how to use the .B http_sendreq function:
+
+.I
+.nf
+#include <stdio.h>
+#include <lib/http.h>
+
+int main() {
+  // Assume h is a valid HTTP structure
+  http h;
+
+  // Initialize h
+
+  int ret = http_sendreq(&h);
+
+  if (ret < 0) {
+    perror("http_sendreq");
+    return 1;
+  }
+
+  // Use the result
+
+  return 0;
+}
+.!
+.SH "SEE ALSO"
+http_connect(3)

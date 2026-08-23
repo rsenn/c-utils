@@ -1,0 +1,50 @@
+.TH lib/http/http_socket.c 3 "2023-04-10" "lib/http" "Manual Page"
+.SH NAME
+http_socket - Create an HTTP socket
+.SH SYNOPSIS
+.I #include <lib/http.h>
+.I int
+.I http_socket
+.I (
+.I http *h,
+.I int nonblock
+.I )
+.SH DESCRIPTION
+The .B http_socket function creates an HTTP socket.
+
+The function takes two parameters:
+.I h
+The HTTP structure.
+.I nonblock
+A flag indicating whether the socket should be non-blocking.
+
+The function returns the socket file descriptor on success, or -1 on error.
+
+.SH EXAMPLE
+The following example demonstrates how to use the .B http_socket function:
+
+.I
+.nf
+#include <stdio.h>
+#include <lib/http.h>
+
+int main() {
+  // Assume h is a valid HTTP structure
+  http h;
+
+  // Initialize h
+
+  int fd = http_socket(&h, 1);
+
+  if (fd < 0) {
+    perror("http_socket");
+    return 1;
+  }
+
+  // Use the socket file descriptor
+
+  return 0;
+}
+.!
+.SH "SEE ALSO"
+http_connect(3)
