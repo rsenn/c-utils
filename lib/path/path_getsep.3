@@ -1,0 +1,38 @@
+.TH PATH_GETSEP 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+path_getsep \- Get the directory separator in a path
+
+.SH SYNOPSIS
+.IB #include <lib/path_internal.h>
+.IB #include <lib/utf8.h>
+
+.IB int
+.IB path_getsep(const char* path);
+
+.SH DESCRIPTION
+The \fBpath_getsep\fR function retrieves the directory separator used in a given path. It scans the path and returns the first character that is recognized as a directory separator.
+
+.SH ARGUMENTS
+.TP
+.IB path
+The input path string.
+
+.SH RETURN VALUE
+The function returns the directory separator found in the path. If no directory separator is found, the function returns 0.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBpath_getsep\fR function:
+
+.nf
+#include <stdio.h>
+#include <lib/path_internal.h>
+#include <lib/utf8.h>
+
+int main() {
+    const char* path = "/usr/lib";
+    int sep = path_getsep(path);
+    printf("Directory separator: %c\n", sep);
+    return 0;
+}
+.nef

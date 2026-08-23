@@ -1,0 +1,40 @@
+.TH PATH_DIRLEN 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+path_dirlen \- Calculate the length of the directory part in a path
+
+.SH SYNOPSIS
+.IB #include <lib/path_internal.h>
+.IB #include <lib/utf8.h>
+.IB #include <lib/str.h>
+
+.IB size_t
+.IB path_dirlen(const char* path);
+
+.SH DESCRIPTION
+The \fBpath_dirlen\fR function calculates the length of the directory part in a given path. It searches for the last directory separator in the path.
+
+.SH ARGUMENTS
+.TP
+.IB path
+The input path string.
+
+.SH RETURN VALUE
+The function returns the length of the directory part in the path. If no directory separator is found, the function returns 0.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBpath_dirlen\fR function:
+
+.nf
+#include <stdio.h>
+#include <lib/path_internal.h>
+#include <lib/utf8.h>
+#include <lib/str.h>
+
+int main() {
+    const char* path = "/usr/lib";
+    size_t dirlen = path_dirlen(path);
+    printf("Directory length: %zu\n", dirlen);
+    return 0;
+}
+.nef
