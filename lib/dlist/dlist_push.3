@@ -1,0 +1,48 @@
+.TH DLIST_PUSH 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+dlist_push \- Add a node to the tail of a doubly linked list
+
+.SH SYNOPSIS
+.IB #include <lib/dlist.h>
+
+.IB void
+.IB dlist_push(dlist* l, node* p);
+
+.SH DESCRIPTION
+The \fBdlist_push\fR function adds a node \fBp\fR to the tail of a doubly linked list \fBl\fR. If the list is initially empty, the new node becomes both the head and the tail of the list. Otherwise, the new node is appended to the existing list and the tail reference is updated accordingly.
+
+.SH ARGUMENTS
+.TP
+.IB l
+The doubly linked list to which the node is to be added.
+.TP
+.IB p
+The node to be added to the tail of the list.
+
+.SH RETURN VALUE
+The function does not return a value.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBdlist_push\fR function:
+
+.nf
+#include <lib/dlist.h>
+
+int main() {
+    dlist l;
+    dlist_init(&l);
+
+    node* new_node = malloc(sizeof(node));
+    dlist_node_init(new_node);
+    // Initialize new_node with appropriate values
+
+    dlist_push(&l, new_node); // Add new_node to the tail of the list
+
+    // Use the list as needed
+
+    free(new_node); // Don't forget to free the node when done
+
+    return 0;
+}
+.nef

@@ -1,0 +1,51 @@
+.TH DLIST_SWAP 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+dlist_swap \- Swap the positions of two nodes in a doubly linked list
+
+.SH SYNOPSIS
+.IB #include <lib/dlist.h>
+
+.IB void
+.IB dlist_swap(dlist* l, node* p1, node* p2);
+
+.SH DESCRIPTION
+The \fBdlist_swap\fR function swaps the positions of two nodes \fBp1\fR and \fBp2\fR within a doubly linked list \fBl\fR. The function updates the previous and next references of the adjacent nodes to ensure the list remains consistent after the swap. If either \fBp1\fR or \fBp2\fR is the head or tail of the list, the head or tail reference is updated accordingly. The function also swaps the \fBnext\fR and \fBprev\fR references of \fBp1\fR and \fBp2\fR to complete the swap.
+
+.SH ARGUMENTS
+.TP
+.IB l
+The doubly linked list containing the nodes to be swapped.
+.TP
+.IB p1
+The first node to be swapped.
+.TP
+.IB p2
+The second node to be swapped.
+
+.SH RETURN VALUE
+The function does not return a value.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBdlist_swap\fR function:
+
+.nf
+#include <lib/dlist.h>
+
+int main() {
+    dlist l;
+    dlist_init(&l);
+
+    // Add some elements to the list
+    // ...
+
+    node* node1 = ...; // Get the first node to be swapped
+    node* node2 = ...; // Get the second node to be swapped
+
+    dlist_swap(&l, node1, node2); // Swap the positions of node1 and node2
+
+    // Continue using the list as needed
+
+    return 0;
+}
+.nef

@@ -1,0 +1,47 @@
+.TH DLIST_REMOVE 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+dlist_remove \- Remove a node from a doubly linked list
+
+.SH SYNOPSIS
+.IB #include <lib/dlist.h>
+
+.IB void
+.IB dlist_remove(dlist* l, node* p);
+
+.SH DESCRIPTION
+The \fBdlist_remove\fR function removes a node \fBp\fR from a doubly linked list \fBl\fR. The function updates the previous and next references of the adjacent nodes to exclude \fBp\fR from the list. If \fBp\fR is the head or tail of the list, the head or tail reference is updated accordingly. The function then sets the \fBnext\fR and \fBprev\fR references of \fBp\fR to \fBNULL\fR, effectively removing it from the list.
+
+.SH ARGUMENTS
+.TP
+.IB l
+The doubly linked list from which the node is to be removed.
+.TP
+.IB p
+The node to be removed from the list.
+
+.SH RETURN VALUE
+The function does not return a value.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBdlist_remove\fR function:
+
+.nf
+#include <lib/dlist.h>
+
+int main() {
+    dlist l;
+    dlist_init(&l);
+
+    // Add some elements to the list
+    // ...
+
+    node* node_to_remove = ...; // Get the node to be removed
+
+    dlist_remove(&l, node_to_remove); // Remove the node from the list
+
+    // Continue using the list as needed
+
+    return 0;
+}
+.nef
