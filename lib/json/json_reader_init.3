@@ -1,0 +1,45 @@
+.TH JSON_READER_INIT 3 "JSON Reader" "LIBJSON" "Library Functions"
+.SH NAME
+json_reader_init - Initialize a JSON reader
+.SH SYNOPSIS
+.B #include <lib/json/json.h>
+.PP
+.B void json_reader_init(jsonreader* r, charbuf* b);
+.SH DESCRIPTION
+The
+.B json_reader_init
+function initializes a JSON reader.
+The reader will read data from the specified character buffer.
+.SH ARGUMENTS
+.TP
+.I r
+A pointer to a
+.B jsonreader
+structure representing the JSON reader.
+.TP
+.I b
+A pointer to a
+.B charbuf
+structure representing the character buffer to read from.
+.SH RETURN VALUE
+None.
+.SH EXAMPLE
+The following example demonstrates how to use the
+.B json_reader_init
+function:
+.PP
+.B #include <lib/json/json.h>
+.B #include <stdio.h>
+.PP
+.B int main() {
+.B \tcharbuf b;
+.B \tjsonreader r;
+.B \tcharbuf_init(&b, 1024);
+.B \tjson_reader_init(&r, &b);
+.B \treturn 0;
+.B }
+.SH SEE ALSO
+.B json_init,
+.B json_free,
+.B json_read,
+.B json_write

@@ -1,0 +1,49 @@
+.TH JSON_TOSTRING 3 "JSON Conversion" "LIBJSON" "Library Functions"
+.SH NAME
+json_tostring - Convert a JSON value to a string
+.SH SYNOPSIS
+.B #include <lib/json/json.h>
+.PP
+.B const char* json_tostring(jsonval val, stralloc* sa);
+.SH DESCRIPTION
+The
+.B json_tostring
+function converts a JSON value to a string.
+The resulting string is stored in the specified
+.B stralloc
+structure.
+.SH ARGUMENTS
+.TP
+.I val
+A
+.B jsonval
+structure representing the JSON value to convert.
+.TP
+.I sa
+A pointer to a
+.B stralloc
+structure representing the output buffer.
+.SH RETURN VALUE
+A pointer to the converted string.
+.SH EXAMPLE
+The following example demonstrates how to use the
+.B json_tostring
+function:
+.PP
+.B #include <lib/json/json.h>
+.B #include <stdio.h>
+.PP
+.B int main() {
+.B \tjsonval val = json_int(42);
+.B \tstralloc sa;
+.B \tstralloc_init(&sa, 128);
+.B \tjson_tostring(val, &sa);
+.B \tprintf("Value: %s\n", sa.s);
+.B \tstralloc_free(&sa);
+.B \treturn 0;
+.B }
+.SH SEE ALSO
+.B json_init,
+.B json_free,
+.B json_int,
+.B json_todouble

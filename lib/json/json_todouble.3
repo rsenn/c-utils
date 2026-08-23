@@ -1,0 +1,41 @@
+.TH JSON_TODOUBLE 3 "JSON Conversion" "LIBJSON" "Library Functions"
+.SH NAME
+json_todouble - Convert a JSON value to a double
+.SH SYNOPSIS
+.B #include <lib/json/json.h>
+.PP
+.B double json_todouble(jsonval val);
+.SH DESCRIPTION
+The
+.B json_todouble
+function converts a JSON value to a double.
+If the value cannot be converted, the function returns
+.B DBL_MAX
+.
+.SH ARGUMENTS
+.TP
+.I val
+A
+.B jsonval
+structure representing the JSON value to convert.
+.SH RETURN VALUE
+A double representing the converted value.
+.SH EXAMPLE
+The following example demonstrates how to use the
+.B json_todouble
+function:
+.PP
+.B #include <lib/json/json.h>
+.B #include <stdio.h>
+.PP
+.B int main() {
+.B \tjsonval val = json_int(42);
+.B \tdouble d = json_todouble(val);
+.B \tprintf("Value: %f\n", d);
+.B \treturn 0;
+.B }
+.SH SEE ALSO
+.B json_init,
+.B json_free,
+.B json_int,
+.B json_tostring

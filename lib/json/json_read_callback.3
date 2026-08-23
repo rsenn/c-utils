@@ -1,0 +1,48 @@
+.TH JSON_READ_CALLBACK 3 "JSON Reader" "LIBJSON" "Library Functions"
+.SH NAME
+json_read_callback - Set a callback function for reading JSON data
+.SH SYNOPSIS
+.B #include <lib/json/json.h>
+.PP
+.B void json_read_callback(jsonreader* r, json_read_callback_fn* fn);
+.SH DESCRIPTION
+The
+.B json_read_callback
+function sets a callback function for reading JSON data.
+The callback function will be called when new data is available to be read.
+.SH ARGUMENTS
+.TP
+.I r
+A pointer to a
+.B jsonreader
+structure representing the JSON reader.
+.TP
+.I fn
+A pointer to a
+.B json_read_callback_fn
+function representing the callback function to set.
+.SH RETURN VALUE
+None.
+.SH EXAMPLE
+The following example demonstrates how to use the
+.B json_read_callback
+function:
+.PP
+.B #include <lib/json/json.h>
+.B #include <stdio.h>
+.PP
+.B int callback(jsonreader* r, const char* data, size_t len) {
+.B \tprintf("Data: %.*s\n", len, data);
+.B \treturn 0;
+.B }
+.PP
+.B int main() {
+.B \tjsonreader r;
+.B \tjson_read_callback(&r, callback);
+.B \treturn 0;
+.B }
+.SH SEE ALSO
+.B json_init,
+.B json_free,
+.B json_read,
+.B json_write

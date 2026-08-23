@@ -1,0 +1,54 @@
+.TH JSON_PROPERTY_SET_STR 3 "JSON Utility" "LIBJSON" "Library Functions"
+.SH NAME
+json_property_set_str - Set a JSON property by string key
+.SH SYNOPSIS
+.B #include <lib/json/json.h>
+.PP
+.B jsonval* json_property_set_str(jsonval* obj, const char* key, jsonval value);
+.SH DESCRIPTION
+The
+.B json_property_set_str
+function sets the value of a property in a JSON object by string key.
+If the property does not exist, it is created.
+.SH ARGUMENTS
+.TP
+.I obj
+A pointer to a
+.B jsonval
+structure representing the JSON object.
+.TP
+.I key
+A string key representing the property to set.
+.TP
+.I value
+A
+.B jsonval
+structure representing the value to set.
+.SH RETURN VALUE
+A pointer to the set property, or NULL if the operation failed.
+.SH EXAMPLE
+The following example demonstrates how to use the
+.B json_property_set_str
+function:
+.PP
+.B #include <lib/json/json.h>
+.B #include <stdio.h>
+.PP
+.B int main() {
+.B \tjsonval obj = json_object();
+.B \tjsonval value = json_int(42);
+.B \tjsonval* ret = json_property_set_str(&obj, "length", value);
+.B \tif (ret) {
+.B \t\tprintf("Property set successfully\n");
+.B \t} else {
+.B \t\tprintf("Property set failed\n");
+.B \t}
+.B \tjson_free(&obj);
+.B \tjson_free(&value);
+.B \treturn 0;
+.B }
+.SH SEE ALSO
+.B json_init,
+.B json_free,
+.B json_object,
+.B json_property_set_int

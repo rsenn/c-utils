@@ -1,0 +1,41 @@
+.TH JSON_Toint 3 "JSON Conversion" "LIBJSON" "Library Functions"
+.SH NAME
+json_toint - Convert a JSON value to an integer
+.SH SYNOPSIS
+.B #include <lib/json/json.h>
+.PP
+.B int64 json_toint(jsonval val);
+.SH DESCRIPTION
+The
+.B json_toint
+function converts a JSON value to an integer.
+If the value cannot be converted, the function returns
+.B -1
+.
+.SH ARGUMENTS
+.TP
+.I val
+A
+.B jsonval
+structure representing the JSON value to convert.
+.SH RETURN VALUE
+An integer representing the converted value.
+.SH EXAMPLE
+The following example demonstrates how to use the
+.B json_toint
+function:
+.PP
+.B #include <lib/json/json.h>
+.B #include <stdio.h>
+.PP
+.B int main() {
+.B \tjsonval val = json_int(42);
+.B \tint64 i = json_toint(val);
+.B \tprintf("Value: %lld\n", i);
+.B \treturn 0;
+.B }
+.SH SEE ALSO
+.B json_init,
+.B json_free,
+.B json_int,
+.B json_tostring
