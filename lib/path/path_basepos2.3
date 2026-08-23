@@ -1,0 +1,42 @@
+.TH PATH_BASEPOS2 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+path_basepos2 \- Calculate the base position in a path
+
+.SH SYNOPSIS
+.IB #include <lib/path_internal.h>
+.IB #include <lib/utf8.h>
+
+.IB size_t
+.IB path_basepos2(const char* path, size_t len);
+
+.SH DESCRIPTION
+The \fBpath_basepos2\fR function calculates the base position in a given path. The base position is the position of the last directory separator in the path.
+
+.SH ARGUMENTS
+.TP
+.IB path
+The input path string.
+.TP
+.IB len
+The length of the input path string.
+
+.SH RETURN VALUE
+The function returns the base position in the path. If no directory separator is found, the function returns the length of the input path.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBpath_basepos2\fR function:
+
+.nf
+#include <stdio.h>
+#include <lib/path_internal.h>
+#include <lib/utf8.h>
+
+int main() {
+    const char* path = "/usr/lib";
+    size_t len = strlen(path);
+    size_t basepos = path_basepos2(path, len);
+    printf("Base position: %zu\n", basepos);
+    return 0;
+}
+.nef

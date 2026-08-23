@@ -1,0 +1,48 @@
+.TH PATH_COMMON_PREFIX 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+path_common_prefix \- Find the common prefix between two paths
+
+.SH SYNOPSIS
+.IB #include <lib/path_internal.h>
+.IB #include <lib/byte.h>
+
+.IB SizePair
+.IB path_common_prefix(const char* s1, size_t n1, const char* s2, size_t n2);
+
+.SH DESCRIPTION
+The \fBpath_common_prefix\fR function finds the common prefix between two paths. It compares the components of the paths and returns the lengths of the common parts.
+
+.SH ARGUMENTS
+.TP
+.IB s1
+The first input path string.
+.TP
+.IB n1
+The length of the first input path string.
+.TP
+.IB s2
+The second input path string.
+.TP
+.IB n2
+The length of the second input path string.
+
+.SH RETURN VALUE
+The function returns a structure of type \fBSizePair\fR, which contains the lengths of the common prefix components in the two paths.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBpath_common_prefix\fR function:
+
+.nf
+#include <stdio.h>
+#include <lib/path_internal.h>
+#include <lib/byte.h>
+
+int main() {
+    const char* path1 = "/usr/lib";
+    const char* path2 = "/usr/include";
+    SizePair result = path_common_prefix(path1, strlen(path1), path2, strlen(path2));
+    printf("Common prefix length: %zu\n", result.sz1);
+    return 0;
+}
+.nef
