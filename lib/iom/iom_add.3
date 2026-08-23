@@ -1,0 +1,46 @@
+.TH IOM_ADD 3
+.SH NAME
+iom_add \- add a file descriptor to an I/O multiplexing context
+.SH SYNOPSIS
+.B #include <iom.h>
+.PP
+.BI "int iom_add(iomux_t* " c ", int64 " s ", unsigned int " events ");"
+.SH DESCRIPTION
+.B iom_add
+registers a file descriptor
+.I s
+with the I/O multiplexing context
+.I c
+to monitor for the specified
+.IR events .
+.PP
+The
+.I events
+argument is a bitmask consisting of the following flags:
+.TP
+.B IOM_READ
+Monitor for read availability.
+.TP
+.B IOM_WRITE
+Monitor for write availability.
+.PP
+The implementation automatically configures the underlying system call (epoll or kqueue) with an "oneshot" behavior. This means the file descriptor is automatically removed from the interest list after an event is triggered, preventing multiple threads from receiving redundant notifications for the same file descriptor.
+.SH RETURN VALUE
+.TP
+.B 0
+Success.
+.TP
+.B -1
+Failure. The file descriptor could not be added.
+.I errno
+is set to indicate the error (e.g., EBADF, EEXIST, or ENOMEM).
+.SH NOTES
+The implementation currently requires the underlying operating system to support
+.BR epoll (7)
+or
+.BR kqueue (2).
+.SH SEE ALSO
+.BR iom_init (3),
+.BR iom_wait (3),
+.BR epoll (7),
+.BR kqueue (2)

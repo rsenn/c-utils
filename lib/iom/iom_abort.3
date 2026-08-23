@@ -1,0 +1,29 @@
+.TH IOM_ABORT 3
+.SH NAME
+iom_abort \- abort a blocking iom_wait call
+.SH SYNOPSIS
+.B #include <iom.h>
+.PP
+.BI "int iom_abort(iomux_t* " c ");"
+.SH DESCRIPTION
+.B iom_abort
+signals an I/O multiplexing context
+.I c
+that it should immediately cease all pending blocking operations.
+.PP
+When called, this function marks the context as aborted (setting the internal status to -2) and triggers the synchronization primitive (semaphore or condition variable) associated with the context to wake up any threads currently blocked in
+.BR iom_wait (3).
+.PP
+Subsequent calls to
+.B iom_wait
+using this context will return -2, indicating that the context is no longer in a valid state for multiplexing. This is typically used to perform a clean shutdown of an I/O loop across multiple threads.
+.SH RETURN VALUE
+.TP
+.B 0
+Success.
+.TP
+.B -1
+Failure, the semaphore could not be signaled (this is rare and usually indicates a system resource issue).
+.SH SEE ALSO
+.BR iom_wait (3),
+.BR iom_init (3)

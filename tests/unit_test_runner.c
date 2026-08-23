@@ -12,6 +12,7 @@ TESTS(stralloc);
 TESTS(strlist);
 TESTS(path);
 TESTS(tuple);
+TESTS(hashmap);
 TESTS(iarray);
 TESTS(alloc);
 TESTS(array);
@@ -46,6 +47,7 @@ START() {
   EXEC(strlist);
   EXEC(path);
   EXEC(tuple);
+  EXEC(hashmap);
   EXEC(iarray);
   EXEC(alloc);
   EXEC(array);

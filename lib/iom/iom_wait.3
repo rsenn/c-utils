@@ -1,0 +1,52 @@
+.TH IOM_WAIT 3
+.SH NAME
+iom_wait \- wait for I/O events on an I/O multiplexing context
+.SH SYNOPSIS
+.B #include <iom.h>
+.PP
+.BI "int iom_wait(iomux_t* " c ", int64* " s ", unsigned int* " revents ", unsigned long " timeout ");"
+.SH DESCRIPTION
+.B iom_wait
+waits for I/O events on the file descriptors associated with the I/O multiplexing context
+.IR c .
+.PP
+The function blocks until either an event occurs or the specified
+.I timeout
+(in milliseconds) expires.
+.PP
+If an event occurs, it is stored in the memory locations pointed to by
+.I s
+(the file descriptor that triggered the event) and
+.I revents
+(a bitmask of occurred events, e.g.,
+.BR IOM_READ ,
+.BR IOM_WRITE ,
+.BR IOM_ERROR ).
+.PP
+The function supports multiple threads calling
+.B iom_wait
+simultaneously on the same context. It uses internal synchronization primitives
+(semaphores or condition variables) to ensure that only one thread performs the actual
+system call (epoll or kqueue) while others wait for the results.
+.SH RETURN VALUE
+.TP
+.B 1
+An event was successfully retrieved.
+.TP
+.B 0
+The timeout expired without any events occurring.
+.TP
+.B -1
+An error occurred;
+.I errno
+is set to indicate the error.
+.TP
+.B -2
+The context
+.I c
+has been aborted.
+.SH SEE ALSO
+.BR iom_init (3),
+.BR iom_add (3),
+.BR epoll (7),
+.BR kqueue (2)

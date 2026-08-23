@@ -1,0 +1,37 @@
+.TH IOM_INIT 3
+.SH NAME
+iom_init \- initialize an I/O multiplexing context
+.SH SYNOPSIS
+.B #include <iom.h>
+.PP
+.BI "int iom_init(iomux_t* " c ");"
+.SH DESCRIPTION
+.B iom_init
+initializes an I/O multiplexing context structure
+.IR c .
+This structure is used to manage I/O event notification across multiple threads efficiently.
+.PP
+The function performs the following steps:
+.IP 1. 3
+Creates an underlying kernel multiplexing primitive:
+.BR epoll (7)
+on Linux or
+.BR kqueue (2)
+on BSD-derived systems.
+.IP 2. 3
+Initializes internal thread-safe synchronization primitives (semaphores or condition variables) and a queue for storing pending events.
+.IP 3. 3
+Clears the event queue and sets the context state to idle.
+.SH RETURN VALUE
+.TP
+.B 1
+Success; the context is ready for use.
+.TP
+.B 0
+Failure; the kernel primitive could not be created.
+.SH SEE ALSO
+.BR iom_add (3),
+.BR iom_wait (3),
+.BR iom_abort (3),
+.BR epoll (7),
+.BR kqueue (2)

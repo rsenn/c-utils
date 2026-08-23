@@ -81,7 +81,7 @@ typedef char bool;
 #define ASSERT_NE(x1, x2) unit_test_assert(mu_, x1, x2, not_equal, ==)
 #define ASSERT_LT(x1, x2) unit_test_assert(mu_, x1, x2, less_than, >=)
 #define ASSERT_LE(x1, x2) unit_test_assert(mu_, x1, x2, not_greater, >)
-#define ASSERT_GT(x1, x2) unit_test_assert(mu_, x1, x2, greater_then, >=)
+#define ASSERT_GT(x1, x2) unit_test_assert(mu_, x1, x2, greater_than, >=)
 #define ASSERT_GE(x1, x2) unit_test_assert(mu_, x1, x2, not_less, >)
 
 #define ASSERT_STR_EQUAL(s1, s2) ASSERT_EQ(0, str_diff(s1, s2))
