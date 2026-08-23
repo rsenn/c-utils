@@ -11,7 +11,7 @@ path_skip_separator \- Skip directory separators in a path
 .IB path_skip_separator(const char* s, size_t n);
 
 .SH DESCRIPTION
-The \fBpath_skip_separator\fR function skips directory separators in a given path.
+The \fBpath_skip_separator\fR function skips directory separators in a given path. It returns the number of characters skipped.
 
 .SH ARGUMENTS
 .TP
@@ -40,3 +40,7 @@ int main() {
     return 0;
 }
 .nef
+
+.SH SEE ALSO
+.IB path_issep,
+.IB u8_len

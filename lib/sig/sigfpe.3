@@ -1,0 +1,37 @@
+.TH SIGFPE 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+sigfpe \- Raise a SIGFPE signal
+
+.SH SYNOPSIS
+.IB #include <lib/sig.h>
+
+.IB int
+.IB sigfpe(void);
+
+.SH DESCRIPTION
+The \fBsigfpe\fR function is used to raise a SIGFPE signal.
+
+.SH RETURN VALUE
+The \fBsigfpe\fR function returns 0 on success, and -1 on failure.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBsigfpe\fR function:
+
+.nf
+#include <stdio.h>
+#include <lib/sig.h>
+
+int main() {
+    printf("Raising SIGFPE signal...\n");
+
+    int r = sigfpe();
+
+    if(r == 0)
+        printf("SIGFPE signal raised successfully.\n");
+    else
+        printf("Failed to raise SIGFPE signal.\n");
+
+    return 0;
+}
+.nef

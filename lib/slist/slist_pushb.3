@@ -1,0 +1,40 @@
+.TH SLIST_PUSHB 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+slist_pushb \- Push a byte array to the end of a linked list
+
+.SH SYNOPSIS
+.IB #include <lib/slist.h>
+.IB #include <lib/str.h>
+.IB #include <lib/alloc.h>
+.IB #include <lib/byte.h>
+
+.IB void*
+.IB slist_pushb(slink** list, const void* x, size_t len);
+
+.SH DESCRIPTION
+The \fBslist_pushb\fR function is used to push a byte array to the end of a linked list.
+
+.SH RETURN VALUE
+The \fBslist_pushb\fR function returns a pointer to the new link.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBslist_pushb\fR function:
+
+.nf
+#include <stdio.h>
+#include <lib/slist.h>
+#include <lib/str.h>
+#include <lib/alloc.h>
+#include <lib/byte.h>
+
+int main() {
+    slink* head = NULL;
+    const void* x = "Hello";
+    size_t len = 5;
+
+    slist_pushb(&head, x, len);
+
+    return 0;
+}
+.nef

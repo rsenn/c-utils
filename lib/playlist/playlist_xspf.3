@@ -1,0 +1,60 @@
+.TH PLAYLIST_XSPF 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+playlist_xspf \- Read an XSPF playlist from a buffer
+
+.SH SYNOPSIS
+.IB #include <lib/playlist.h>
+
+.IB void
+.IB playlist_xspf(playlist* pls, buffer* b);
+
+.SH DESCRIPTION
+The \fBplaylist_xspf\fR function reads an XSPF playlist from a buffer and populates a playlist structure with the track information. It sets up the necessary callbacks and parses the XML data.
+
+.SH ARGUMENTS
+.TP
+.IB pls
+The pointer to the playlist structure that will be populated with track information.
+.TP
+.IB b
+The pointer to the buffer containing the XSPF playlist data.
+
+.SH RETURN VALUES
+.TP
+.IB playlist_xspf
+No return value.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBplaylist_xspf\fR function:
+
+.nf
+#include <stdio.h>
+#include <lib/playlist.h>
+#include <lib/byte.h>
+
+void process_track(stralloc* title, stralloc* location, uint32 length) {
+    printf("Title: %.*s\n", title->len, title->s);
+    printf("Location: %.*s\n", location->len, location->s);
+    printf("Length: %u\n", length);
+}
+
+int main() {
+    playlist pl;
+    buffer b;
+    stralloc_init(&b.s);
+    playlist_init(&pl);
+    pl.type = XSPF;
+    pl.callback = process_track;
+    playlist_xspf(&pl, &b);
+
+    // Read XSPF data into buffer and call playlist_xspf to parse
+
+    return 0;
+}
+.nef
+
+.SH SEE ALSO
+.IB playlist,
+.IB buffer,
+.IB str

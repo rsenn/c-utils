@@ -1,0 +1,35 @@
+.TH SLIST_SHIFTS 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+slist_shifts \- Shift and free a link from the head of a linked list
+
+.SH SYNOPSIS
+.IB #include <lib/slist.h>
+
+.IB int
+.IB slist_shifts(slink** list);
+
+.SH DESCRIPTION
+The \fBslist_shifts\fR function is used to shift and free a link from the head of a linked list.
+
+.SH RETURN VALUE
+The \fBslist_shifts\fR function returns 0.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBslist_shifts\fR function:
+
+.nf
+#include <stdio.h>
+#include <lib/slist.h>
+
+int main() {
+    slink* head = NULL;
+    slink* p = (slink*)malloc(sizeof(slink));
+
+    head = p;
+
+    slist_shifts(&head);
+
+    return 0;
+}
+.nef

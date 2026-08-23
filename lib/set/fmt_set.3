@@ -1,0 +1,60 @@
+.TH FMT_SET 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+fmt_set \- Format a set of elements into a string
+
+.SH SYNOPSIS
+.IB #include <lib/set.h>
+.IB #include <lib/str.h>
+.IB #include <lib/byte.h>
+
+.IB size_t
+.IB fmt_set(char* out, const set_t* set, const char* separator);
+
+.SH DESCRIPTION
+The \fBfmt_set\fR function formats a set of elements into a string. It takes a set of elements, a separator, and an output buffer. If the output buffer is provided, the function will copy the formatted string into it. Otherwise, it will return the length of the formatted string without copying it.
+
+.SH ARGUMENTS
+.TP
+.IB out
+The output buffer to copy the formatted string into. If \fBNULL\fR, the function returns the length of the formatted string without copying it.
+.TP
+.IB set
+The set of elements to format.
+.TP
+.IB separator
+The separator to use between elements.
+
+.SH RETURN VALUE
+The length of the formatted string.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBfmt_set\fR function:
+
+.nf
+#include <stdio.h>
+#include <lib/set.h>
+#include <lib/str.h>
+#include <lib/byte.h>
+
+int main() {
+    set_t set;
+    char buffer[1024];
+
+    set_init(&set);
+    set_insert(&set, "apple");
+    set_insert(&set, "banana");
+    set_insert(&set, "cherry");
+
+    size_t len = fmt_set(buffer, &set, ", ");
+    if (len < sizeof(buffer)) {
+        buffer[len] = '\0';
+        printf("Formatted set: %s\n", buffer);
+    } else {
+        printf("Buffer too small to hold the formatted set.\n");
+    }
+
+    set_free(&set);
+    return 0;
+}
+.nef

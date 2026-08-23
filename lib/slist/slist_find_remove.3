@@ -1,0 +1,45 @@
+.TH SLIST_FIND_DELETE 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+slist_find_delete \- Find and remove a link from a linked list based on a predicate
+
+.SH SYNOPSIS
+.IB #include <lib/slist.h>
+
+.IB slink*
+.IB slist_find_delete(slink** l, int (*pred)(slink*));
+
+.SH DESCRIPTION
+The \fBslist_find_delete\fR function is used to find and remove a link from a linked list based on a predicate.
+
+.SH RETURN VALUE
+The \fBslist_find_delete\fR function returns a pointer to the link that was removed.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBslist_find_delete\fR function:
+
+.nf
+#include <stdio.h>
+#include <lib/slist.h>
+
+int pred(slink* p) {
+    return p->data == 1;
+}
+
+int main() {
+    slink* head = NULL;
+    slink* p = (slink*)malloc(sizeof(slink));
+
+    p->data = 1;
+    head = p;
+
+    slink* f = slist_find_delete(&head, pred);
+
+    if(f != NULL)
+        printf("Link removed.\n");
+    else
+        printf("Link not removed.\n");
+
+    return 0;
+}
+.nef

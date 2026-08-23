@@ -1,0 +1,44 @@
+.TH SLIST_FIND 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+slist_find \- Find a link in a linked list based on a predicate
+
+.SH SYNOPSIS
+.IB #include <lib/slist.h>
+
+.IB slink**
+.IB slist_find(slink** l, int (*pred)(slink*));
+
+.SH DESCRIPTION
+The \fBslist_find\fR function is used to find a link in a linked list based on a predicate.
+
+.SH RETURN VALUE
+The \fBslist_find\fR function returns a pointer to a pointer to the link if found, and NULL otherwise.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBslist_find\fR function:
+
+.nf
+#include <stdio.h>
+#include <lib/slist.h>
+
+int pred(slink* p) {
+    return p->data == 1;
+}
+
+int main() {
+    slink* head = NULL;
+    slink* p = (slink*)malloc(sizeof(slink));
+
+    p->data = 1;
+
+    slink** f = slist_find(&head, pred);
+
+    if(f != NULL)
+        printf("Link found.\n");
+    else
+        printf("Link not found.\n");
+
+    return 0;
+}
+.nef

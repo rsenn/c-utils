@@ -1,0 +1,45 @@
+.TH OMF_RECORD_NEXT 3 "OMF Format" "LIBOMF" "Library Functions"
+.SH NAME
+omf_record_next - Get the next field or sub-record in an OMF record
+.SH SYNOPSIS
+.B #include <lib/omf/omf.h>
+.PP
+.B void* omf_record_next(omf_record* rec, void* ptr);
+.SH DESCRIPTION
+The
+.B omf_record_next
+function returns a pointer to the next field or sub-record in an OMF record.
+This pointer can be used to iterate over the data in the record.
+.SH ARGUMENTS
+.TP
+.I rec
+A pointer to an
+.B omf_record
+structure representing the OMF record.
+.TP
+.I ptr
+A pointer to the current field or sub-record within the record.
+.SH RETURN VALUE
+A pointer to the next field or sub-record in the OMF record.
+.SH EXAMPLE
+The following example demonstrates how to use the
+.B omf_record_next
+function:
+.PP
+.B #include <lib/omf/omf.h>
+.B #include <stdio.h>
+.PP
+.B int main() {
+.B \tomf_file omf;
+.B \tomf_record* rec = omf_read(&omf);
+.B \tvoid* ptr = omf_data(rec);
+.B \twhile(ptr != omf_record_end(rec)) {
+.B \tprintf("Field data: %.*s\n", (int)(omf_record_end(rec) - ptr), (char*)ptr);
+.B \tptr = omf_record_next(rec, ptr);
+.B \t}
+.B \treturn 0;
+.B }
+.SH SEE ALSO
+.B omf_init,
+.B omf_read,
+.B omf_record

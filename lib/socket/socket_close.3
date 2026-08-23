@@ -1,0 +1,39 @@
+.TH SOCKET_CLOSE 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+socket_close \- Close a socket
+
+.SH SYNOPSIS
+.IB #include <lib/socket.h>
+
+.IB int
+.IB socket_close(fd_type s);
+
+.SH DESCRIPTION
+The \fBsocket_close\fR function is used to close a socket.
+
+.SH RETURN VALUE
+The \fBsocket_close\fR function returns 0 on success, -1 on failure.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBsocket_close\fR function:
+
+.nf
+#include <stdio.h>
+#include <lib/socket.h>
+
+int main() {
+    fd_type s = socket(AF_INET, SOCK_STREAM, 0);
+    if (s == -1) {
+        perror("socket");
+        return 1;
+    }
+
+    if (socket_close(s) == -1) {
+        perror("socket_close");
+        return 1;
+    }
+
+    return 0;
+}
+.nef

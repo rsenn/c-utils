@@ -1,0 +1,62 @@
+.TH SET_SUB 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+set_sub \- Subtract one set from another and store the result
+
+.SH SYNOPSIS
+.IB #include <lib/set.h>
+
+.IB int
+.IB set_sub(const set_t* a, const set_t* b, set_t* c);
+
+.SH DESCRIPTION
+The \fBset_sub\fR function subtracts one set from another and stores the result. It takes three arguments: the set to subtract from, the set to subtract, and a set to store the result. The function returns the number of elements in the result.
+
+.SH ARGUMENTS
+.TP
+.IB a
+The set to subtract from.
+.TP
+.IB b
+The set to subtract.
+.TP
+.IB c
+A set to store the result.
+
+.SH RETURN VALUE
+The function returns the number of elements in the result.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBset_sub\fR function:
+
+.nf
+#include <stdio.h>
+#include <lib/set.h>
+
+int main() {
+    set_t set_a, set_b, set_c;
+    set_init(&set_a);
+    set_init(&set_b);
+    set_init(&set_c);
+
+    set_inserts(&set_a, "apple");
+    set_inserts(&set_a, "banana");
+    set_inserts(&set_a, "cherry");
+
+    set_inserts(&set_b, "banana");
+    set_inserts(&set_b, "cherry");
+    set_inserts(&set_b, "date");
+
+    printf("Set A: %u elements\n", set.len);
+    printf("Set B: %u elements\n", set_b.len);
+
+    int r = set_sub(&set_a, &set_b, &set_c);
+
+    printf("Set C (result of A - B): %u elements\n", set_c.len);
+
+    set_free(&set_a);
+    set_free(&set_b);
+    set_free(&set_c);
+    return 0;
+}
+.nef

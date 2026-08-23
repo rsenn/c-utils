@@ -1,0 +1,77 @@
+.TH SET_FILTER 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+set_filter, set_filter_out \- Filter elements of a set based on a predicate
+
+.SH SYNOPSIS
+.IB #include <lib/set.h>
+
+.IB int
+.IB set_filter(const set_t* in, set_t* out, int (*pred)(const char*, size_t));
+
+.IB int
+.IB set_filter_out(const set_t* in, set_t* out, int (*pred)(const char*, size_t));
+
+.SH DESCRIPTION
+The \fBset_filter\fR and \fBset_filter_out\fR functions filter elements of a set based on a predicate. They take three arguments: an input set, an output set, and a predicate function. The predicate function takes a pointer to an element and its size as arguments and returns a non-zero value if the element should be included in the output set.
+
+The \fBset_filter\fR function includes elements that satisfy the predicate, while the \fBset_filter_out\fR function includes elements that do not satisfy the predicate.
+
+.SH ARGUMENTS
+.TP
+.IB in
+The input set.
+.TP
+.IB out
+The output set.
+.TP
+.IB pred
+A pointer to the predicate function.
+
+.SH RETURN VALUE
+The function returns the number of elements added to the output set.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBset_filter\fR and \fBset_filter_out\fR functions:
+
+.nf
+#include <stdio.h>
+#include <lib/set.h>
+
+int is_even(const char* x, size_t n) {
+    return (x[0] - '0') % 2 == 0;
+}
+
+int main() {
+    set_t set, filtered_set, filtered_out_set;
+    char* elements[] = {"1", "2", "3", "4", "5"};
+    int num_elements = sizeof(elements) / sizeof(elements[0]);
+
+    set_init(&set);
+    set_init(&filtered_set);
+    set_init(&filtered_out_set);
+
+    for (int i = 0; i < num_elements; i++) {
+        set_add(&set, elements[i], strlen(elements[i]));
+    }
+
+    set_filter(&set, &filtered_set, is_even);
+
+    printf("Filtered set (even numbers):\n");
+    set_foreach(&filtered_set, it, x, n) {
+        printf("%.*s\n", (int)n, x);
+    }
+
+    set_filter_out(&set, &filtered_out_set, is_even);
+
+    printf("Filtered out set (odd numbers):\n");
+    set_foreach(&filtered_out_set, it, x, n) {
+        printf("%.*s\n", (int)n, x);
+    }
+
+    set_free(&set);
+    set_free(&filtered_set);
+    set_free(&filtered_out_set);
+    return 0;
+}
+.nef

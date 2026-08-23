@@ -1,0 +1,51 @@
+.TH SET_ITERATOR_INIT 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+set_iterator_init \- Initialize an iterator for a set
+
+.SH SYNOPSIS
+.IB #include <lib/set.h>
+
+.IB int
+.IB set_iterator_init(set_iterator_t* it, const set_t* set);
+
+.SH DESCRIPTION
+The \fBset_iterator_init\fR function initializes an iterator for a set. It takes two arguments: the iterator and the set. The function returns 1 if the iterator is successfully initialized, and 0 if the set is invalid.
+
+.SH ARGUMENTS
+.TP
+.IB it
+The iterator to initialize.
+.TP
+.IB set
+The set to initialize the iterator for.
+
+.SH RETURN VALUE
+The function returns 1 if the iterator is successfully initialized, and 0 if the set is invalid.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBset_iterator_init\fR function:
+
+.nf
+#include <stdio.h>
+#include <lib/set.h>
+
+int main() {
+    set_t set;
+    set_iterator_t it;
+    set_init(&set);
+
+    set_inserts(&set, "apple");
+    set_inserts(&set, "banana");
+    set_inserts(&set, "cherry");
+
+    if(set_iterator_init(&it, &set)) {
+        printf("Iterator initialized successfully\n");
+    } else {
+        printf("Failed to initialize iterator\n");
+    }
+
+    set_free(&set);
+    return 0;
+}
+.nef

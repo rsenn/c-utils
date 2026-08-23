@@ -1,0 +1,70 @@
+.TH SET_DIFFERENCE 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+set_difference \- Compute the difference between two sets
+
+.SH SYNOPSIS
+.IB #include <lib/set.h>
+
+.IB int
+.IB set_difference(set_t* in_a, set_t* in_b, const set_t* a, const set_t* b);
+
+.SH DESCRIPTION
+The \fBset_difference\fR function computes the difference between two sets. It takes four sets as arguments, two of which are input sets and two of which are output sets. The function adds elements that are in the first input set but not in the second input set to the first output set, and adds elements that are in the second input set but not in the first input set to the second output set.
+
+.SH ARGUMENTS
+.TP
+.IB in_a
+The output set that will contain elements from the first input set that are not in the second input set.
+.TP
+.IB in_b
+The output set that will contain elements from the second input set that are not in the first input set.
+.TP
+.IB a
+The first input set.
+.TP
+.IB b
+The second input set.
+
+.SH RETURN VALUE
+The function returns the total number of elements added to the output sets.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBset_difference\fR function:
+
+.nf
+#include <stdio.h>
+#include <lib/set.h>
+
+int main() {
+    set_t set_a, set_b, diff_a, diff_b;
+    char* element_a = "apple";
+    char* element_b = "banana";
+
+    set_init(&set_a);
+    set_init(&set_b);
+    set_init(&diff_a);
+    set_init(&diff_b);
+
+    set_add(&set_a, element_a, strlen(element_a));
+    set_add(&set_b, element_b, strlen(element_b));
+
+    set_difference(&diff_a, &diff_b, &set_a, &set_b);
+
+    printf("Elements in A but not in B:\n");
+    set_foreach(&diff_a, it, x, n) {
+        printf("%.*s\n", (int)n, x);
+    }
+
+    printf("Elements in B but not in A:\n");
+    set_foreach(&diff_b, it, x, n) {
+        printf("%.*s\n", (int)n, x);
+    }
+
+    set_free(&set_a);
+    set_free(&set_b);
+    set_free(&diff_a);
+    set_free(&diff_b);
+    return 0;
+}
+.nef

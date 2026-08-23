@@ -1,0 +1,53 @@
+.TH PLAYLIST_WRITE_FINISH 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+playlist_write_finish \- Finish writing a playlist to a buffer
+
+.SH SYNOPSIS
+.IB #include <lib/playlist.h>
+
+.IB int
+.IB playlist_write_finish(buffer* b, playlist* pl);
+
+.SH DESCRIPTION
+The \fBplaylist_write_finish\fR function finishes writing a playlist to a buffer by appending any necessary closing tags or updating any metadata. It returns 1 on success, or 0 on error.
+
+.SH ARGUMENTS
+.TP
+.IB b
+The pointer to the buffer containing the playlist data.
+.TP
+.IB pl
+The pointer to the playlist structure.
+
+.SH RETURN VALUES
+.TP
+.IB playlist_write_finish
+Returns 1 on success, or 0 on error.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBplaylist_write_finish\fR function:
+
+.nf
+#include <stdio.h>
+#include <lib/playlist.h>
+#include <lib/byte.h>
+
+int main() {
+    playlist pl;
+    buffer b;
+    stralloc_init(&b.s);
+    playlist_init(&pl);
+    pl.type = M3U;
+    playlist_write_finish(&b, &pl);
+
+    printf("Buffer: %.*s\n", b.len, b.s);
+
+    return 0;
+}
+.nef
+
+.SH SEE ALSO
+.IB playlist,
+.IB buffer,
+.IB str

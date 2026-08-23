@@ -1,0 +1,56 @@
+.TH SET_AT_N 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+set_at_n \- Retrieve an element from a set by index, with length
+
+.SH SYNOPSIS
+.IB #include <lib/set.h>
+
+.IB char*
+.IB set_at_n(const set_t* set, int64 pos, size_t* len);
+
+.SH DESCRIPTION
+The \fBset_at_n\fR function retrieves an element from a set by index, along with its length. It takes a set, an index, and a pointer to a size_t variable, and returns a pointer to the element at the specified index. If the index is out of bounds, the function returns \fBNULL\fR.
+
+.SH ARGUMENTS
+.TP
+.IB set
+The set from which to retrieve the element.
+.TP
+.IB pos
+The index of the element to retrieve.
+.TP
+.IB len
+A pointer to a size_t variable that will receive the length of the element.
+
+.SH RETURN VALUE
+A pointer to the element at the specified index, or \fBNULL\fR if the index is out of bounds.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBset_at_n\fR function:
+
+.nf
+#include <stdio.h>
+#include <lib/set.h>
+
+int main() {
+    set_t set;
+    char* element;
+    size_t element_len;
+
+    set_init(&set);
+    set_insert(&set, "apple");
+    set_insert(&set, "banana");
+    set_insert(&set, "cherry");
+
+    element = set_at_n(&set, 1, &element_len);
+    if (element != NULL) {
+        printf("Element at index 1: %s, length: %zu\n", element, element_len);
+    } else {
+        printf("Index out of bounds.\n");
+    }
+
+    set_free(&set);
+    return 0;
+}
+.nef

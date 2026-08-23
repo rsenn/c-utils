@@ -1,0 +1,59 @@
+.TH PLAYLIST_READ 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+playlist_read \- Read and parse a playlist
+
+.SH SYNOPSIS
+.IB #include <lib/playlist.h>
+
+.IB int
+.IB playlist_read(playlist* pl);
+
+.SH DESCRIPTION
+The \fBplaylist_read\fR function reads and parses a playlist using the reader function set in the playlist structure. It repeatedly calls the reader function until it returns an error or reaches the end of the playlist.
+
+.SH ARGUMENTS
+.TP
+.IB pl
+The pointer to the playlist structure.
+
+.SH RETURN VALUES
+.TP
+.IB playlist_read
+Returns the number of entries successfully read, or -1 on error.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBplaylist_read\fR function:
+
+.nf
+#include <stdio.h>
+#include <lib/playlist.h>
+#include <lib/byte.h>
+
+void my_callback(playlist* pl, stralloc* title, stralloc* path, unsigned long length) {
+    printf("Title: %.*s\n", title->len, title->s);
+    printf("Path: %.*s\n", path->len, path->s);
+    printf("Length: %lu\n", length);
+}
+
+int main() {
+    playlist pl;
+    buffer b;
+    stralloc_init(&b.s);
+    stralloc_append(&b.s, "#EXTM3U\n");
+    stralloc_append(&b.s, "#EXTINF:120,Example Title\n");
+    stralloc_append(&b.s, "example.mp3\n");
+
+    playlist_init(&pl);
+    playlist_m3u(&pl, &b);
+    pl.callback = my_callback;
+    playlist_read(&pl);
+
+    return 0;
+}
+.nef
+
+.SH SEE ALSO
+.IB playlist,
+.IB buffer,
+.IB str

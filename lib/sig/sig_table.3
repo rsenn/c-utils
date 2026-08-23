@@ -1,0 +1,31 @@
+.TH SIG_TABLE 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+sig_table \- Signal table
+
+.SH SYNOPSIS
+.IB #include <lib/sig.h>
+
+.SH DESCRIPTION
+The \fBsig_table\fR is a table of signal numbers and their corresponding names.
+
+.SH RETURN VALUE
+The \fBsig_table\fR returns a pointer to the signal table.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBsig_table\fR:
+
+.nf
+#include <stdio.h>
+#include <lib/sig.h>
+
+int main() {
+    sigtable_t const* table = sig_table();
+
+    for (int i = 0; table[i].signal != 0; i++) {
+        printf("Signal %d: %s\n", table[i].signal, table[i].name);
+    }
+
+    return 0;
+}
+.nef

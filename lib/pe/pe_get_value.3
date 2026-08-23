@@ -1,0 +1,63 @@
+.TH PE_GET_VALUE 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+pe_get_value \- Retrieve a value from a Portable Executable (PE) file
+
+.SH SYNOPSIS
+.IB #include <lib/pe.h>
+.IB #include <lib/uint64.h>
+
+.IB uint64
+.IB pe_get_value(void* pe, void* ptr, unsigned off32, unsigned size32, unsigned off64, unsigned size64);
+
+.SH DESCRIPTION
+The \fBpe_get_value\fR function retrieves a value from a Portable Executable (PE) file. It takes a pointer to the PE file, a pointer to the data, and offsets and sizes for both 32-bit and 64-bit formats. It returns the value as a 64-bit unsigned integer.
+
+.SH ARGUMENTS
+.TP
+.IB pe
+The pointer to the PE file.
+.TP
+.IB ptr
+The pointer to the data.
+.TP
+.IB off32
+The offset for 32-bit formats.
+.TP
+.IB size32
+The size for 32-bit formats.
+.TP
+.IB off64
+The offset for 64-bit formats.
+.TP
+.IB size64
+The size for 64-bit formats.
+
+.SH RETURN VALUE
+The function returns the retrieved value as a 64-bit unsigned integer.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBpe_get_value\fR function:
+
+.nf
+#include <stdio.h>
+#include <lib/pe.h>
+#include <lib/uint64.h>
+
+int main() {
+    uint8 pe_data[1024];
+    void* pe = pe_data;
+    void* ptr = pe_data + 10;
+    unsigned off32 = 20;
+    unsigned size32 = 4;
+    unsigned off64 = 28;
+    unsigned size64 = 8;
+    uint64 value = pe_get_value(pe, ptr, off32, size32, off64, size64);
+    printf("Retrieved value: %llu\n", value);
+    return 0;
+}
+.nef
+
+.SH SEE ALSO
+.IB pe,
+.IB uint64

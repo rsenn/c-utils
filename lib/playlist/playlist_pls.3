@@ -1,0 +1,78 @@
+.TH PLAYLIST_PLS 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+playlist_pls, pls_reader \- Read and parse PLS playlists
+
+.SH SYNOPSIS
+.IB #include <lib/playlist.h>
+.IB #include <lib/buffer.h>
+.IB #include <lib/scan.h>
+.IB #include <lib/str.h>
+
+.IB static int
+.IB pls_reader(playlist* pl);
+
+.IB void
+.IB playlist_pls(playlist* pls, buffer* b);
+
+.SH DESCRIPTION
+The \fBplaylist_pls\fR function sets up a playlist to read and parse PLS playlists. It initializes the playlist structure and sets the reader function to \fBpls_reader\fR.
+
+The \fBpls_reader\fR function reads and parses lines from the playlist buffer. It handles different types of PLS tags, such as \fBNumber\fR, \fBFile\fR, \fBTitle\fR, and \fBLength\fR. When a valid entry is found, it calls the callback function provided in the playlist structure.
+
+.SH ARGUMENTS
+.TP
+.IB pl
+The pointer to the playlist structure to be initialized.
+.TP
+.IB pls
+The pointer to the playlist structure.
+.TP
+.IB b
+The pointer to the buffer containing the PLS playlist data.
+
+.SH RETURN VALUES
+.TP
+.IB pls_reader
+Returns 0 on success, or -1 on error.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBplaylist_pls\fR function:
+
+.nf
+#include <stdio.h>
+#include <lib/playlist.h>
+#include <lib/buffer.h>
+#include <lib/scan.h>
+#include <lib/str.h>
+
+void my_callback(playlist* pl, stralloc* title, stralloc* path, unsigned long length) {
+    printf("Title: %.*s\n", title->len, title->s);
+    printf("Path: %.*s\n", path->len, path->s);
+    printf("Length: %lu\n", length);
+}
+
+int main() {
+    playlist pl;
+    buffer b;
+    stralloc_init(&b.s);
+    stralloc_append(&b.s, "[playlist]\n");
+    stralloc_append(&b.s, "NumberOfEntries=1\n");
+    stralloc_append(&b.s, "File1=example.mp3\n");
+    stralloc_append(&b.s, "Title1=Example Title\n");
+    stralloc_append(&b.s, "Length1=120\n");
+
+    playlist_init(&pl);
+    playlist_pls(&pl, &b);
+    pl.callback = my_callback;
+    playlist_read(&pl);
+
+    return 0;
+}
+.nef
+
+.SH SEE ALSO
+.IB playlist,
+.IB buffer,
+.IB scan,
+.IB str

@@ -1,0 +1,61 @@
+.TH SET_ITERATOR_VALUE 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+set_iterator_value \- Get the value of the current element in a set using an iterator
+
+.SH SYNOPSIS
+.IB #include <lib/set.h>
+
+.IB char*
+.IB set_iterator_value(const set_iterator_t* it, size_t* size_ptr);
+
+.SH DESCRIPTION
+The \fBset_iterator_value\fR function gets the value of the current element in a set using an iterator. It takes two arguments: the iterator and a pointer to a size_t to store the size of the value. The function returns a pointer to the value if the iterator is valid, and NULL if the iterator is invalid.
+
+.SH ARGUMENTS
+.TP
+.IB it
+The iterator to use to get the value of the current element.
+.TP
+.IB size_ptr
+A pointer to a size_t to store the size of the value.
+
+.SH RETURN VALUE
+The function returns a pointer to the value of the current element if the iterator is valid, and NULL if the iterator is invalid.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBset_iterator_value\fR function:
+
+.nf
+#include <stdio.h>
+#include <lib/set.h>
+
+int main() {
+    set_t set;
+    set_iterator_t it;
+    set_init(&set);
+
+    set_inserts(&set, "apple");
+    set_inserts(&set, "banana");
+    set_inserts(&set, "cherry");
+
+    if(set_iterator_init(&it, &set)) {
+        printf("Iterator initialized successfully\n");
+        while(set_iterator_next(&it)) {
+            char* value;
+            size_t size;
+            value = set_iterator_value(&it, &size);
+            if(value) {
+                printf("Element: %.*s\n", (int)size, value);
+            } else {
+                printf("No more elements\n");
+            }
+        }
+    } else {
+        printf("Failed to initialize iterator\n");
+    }
+
+    set_free(&set);
+    return 0;
+}
+.nef

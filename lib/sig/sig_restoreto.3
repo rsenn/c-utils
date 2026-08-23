@@ -1,0 +1,66 @@
+.TH SIG_RESTORETO 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+sig_restoreto - Restore the signal dispositions for a set of signals
+
+.SH SYNOPSIS
+.IB #include <lib/sig.h>
+
+.IB void
+.IB sig_restoreto(const sigset_t* ss, unsigned int n);
+
+.SH DESCRIPTION
+The \fBsig_restoreto\fR function restores the signal dispositions for a set of signals. It takes two arguments: a set of signals and the number of signals in the set.
+
+.SH ARGUMENTS
+.TP
+.IB ss
+A set of signals.
+.TP
+.IB n
+The number of signals in the set.
+
+.SH RETURN VALUE
+The function does not return.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBsig_restoreto\fR function:
+
+.nf
+#include <stdio.h>
+#include <lib/sig.h>
+#include <signal.h>
+
+void handle_sigint(int signum) {
+    printf("Caught SIGINT.\n");
+}
+
+int main() {
+    struct sigaction sa;
+    sigset_t ss;
+
+    printf("Setting SIGINT to be handled...\n");
+
+    sa.sa_handler = handle_sigint;
+    sigemptyset(&sa.sa_mask);
+    sa.sa_flags = 0;
+
+    int r = sigaction(SIGINT, &sa, NULL);
+
+    if(r == 0)
+        printf("SIGINT set to be handled successfully.\n");
+    else
+        printf("Failed to set SIGINT to be handled.\n");
+
+    printf("Restoring signal disposition for SIGINT...\n");
+
+    sigemptyset(&ss);
+    sigaddset(&ss, SIGINT);
+
+    sig_restoreto(&ss, 1);
+
+    printf("Signal disposition for SIGINT restored.\n");
+
+    return 0;
+}
+.nef

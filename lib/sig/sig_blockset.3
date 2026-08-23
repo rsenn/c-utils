@@ -1,0 +1,47 @@
+.TH SIG_BLOCKSET 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+sig_blockset \- Block a set of signals
+
+.SH SYNOPSIS
+.IB #include <lib/sig.h>
+
+.IB int
+.IB sig_blockset(const void* set);
+
+.SH DESCRIPTION
+The \fBsig_blockset\fR function blocks a set of signals. It takes one argument: a set of signals to block. The function returns 0 on success, -1 on failure.
+
+.SH ARGUMENTS
+.TP
+.IB set
+The set of signals to block.
+
+.SH RETURN VALUE
+The function returns 0 on success, -1 on failure.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBsig_blockset\fR function:
+
+.nf
+#include <stdio.h>
+#include <lib/sig.h>
+
+int main() {
+    sigset_t set;
+    sigemptyset(&set);
+    sigaddset(&set, SIGINT);
+    sigaddset(&set, SIGTERM);
+
+    printf("Blocking signals...\n");
+
+    int r = sig_blockset(&set);
+
+    if(r == 0)
+        printf("Signals blocked successfully.\n");
+    else
+        printf("Failed to block signals.\n");
+
+    return 0;
+}
+.nef

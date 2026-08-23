@@ -1,0 +1,77 @@
+.TH SIG_STACK 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+sig_pusha, sig_pop - Save and restore signal actions
+
+.SH SYNOPSIS
+.IB #include <lib/sig_internal.h>
+
+.IB int
+.IB sig_pusha(int sig, struct sigaction const* ssa);
+
+.IB int
+.IB sig_pop(int sig);
+
+.SH DESCRIPTION
+The \fBsig_pusha\fR and \fBsig_pop\fR functions are used to save and restore signal actions. They take one or two arguments: a signal and an optional signal action.
+
+.SH ARGUMENTS
+.TP
+.IB sig
+A signal.
+.TP
+.IB ssa
+An optional signal action.
+
+.SH RETURN VALUE
+The \fBsig_pusha\fR function returns the current stack pointer for the signal on success, and -1 on failure. The \fBsig_pop\fR function returns the new stack pointer for the signal on success, and -1 on failure.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBsig_pusha\fR and \fBsig_pop\fR functions:
+
+.nf
+#include <stdio.h>
+#include <lib/sig_internal.h>
+#include <signal.h>
+
+void handle_sigint(int signum) {
+    printf("Caught SIGINT.\n");
+}
+
+int main() {
+    struct sigaction sa;
+
+    printf("Setting SIGINT to be handled...\n");
+
+    sa.sa_handler = handle_sigint;
+    sigemptyset(&sa.sa_mask);
+    sa.sa_flags = 0;
+
+    int r = sigaction(SIGINT, &sa, NULL);
+
+    if(r == 0)
+        printf("SIGINT set to be handled successfully.\n");
+    else
+        printf("Failed to set SIGINT to be handled.\n");
+
+    printf("Pushing signal action for SIGINT...\n");
+
+    int stack_ptr = sig_pusha(SIGINT, &sa);
+
+    if(stack_ptr >= 0)
+        printf("Signal action for SIGINT pushed successfully.\n");
+    else
+        printf("Failed to push signal action for SIGINT.\n");
+
+    printf("Popping signal action for SIGINT...\n");
+
+    int new_stack_ptr = sig_pop(SIGINT);
+
+    if(new_stack_ptr >= 0)
+        printf("Signal action for SIGINT popped successfully.\n");
+    else
+        printf("Failed to pop signal action for SIGINT.\n");
+
+    return 0;
+}
+.nef

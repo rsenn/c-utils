@@ -1,0 +1,37 @@
+.TH SIGSEGV 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+sigsegv \- Raise a SIGSEGV signal
+
+.SH SYNOPSIS
+.IB #include <lib/sig.h>
+
+.IB int
+.IB sigsegv(void);
+
+.SH DESCRIPTION
+The \fBsigsegv\fR function is used to raise a SIGSEGV signal.
+
+.SH RETURN VALUE
+The \fBsigsegv\fR function returns 0 on success, and -1 on failure.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBsigsegv\fR function:
+
+.nf
+#include <stdio.h>
+#include <lib/sig.h>
+
+int main() {
+    printf("Raising SIGSEGV signal...\n");
+
+    int r = sigsegv();
+
+    if(r == 0)
+        printf("SIGSEGV signal raised successfully.\n");
+    else
+        printf("Failed to raise SIGSEGV signal.\n");
+
+    return 0;
+}
+.nef

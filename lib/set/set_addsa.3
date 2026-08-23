@@ -1,0 +1,52 @@
+.TH SET_ADDSA 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+set_addsa \- Add an element from a stralloc to a set
+
+.SH SYNOPSIS
+.IB #include <lib/set.h>
+.IB #include <lib/stralloc.h>
+
+.IB int
+.IB set_addsa(set_t* set, const stralloc* sa);
+
+.SH DESCRIPTION
+The \fBset_addsa\fR function adds an element from a stralloc to a set. It takes a set and a stralloc, and adds the element from the stralloc to the set.
+
+.SH ARGUMENTS
+.TP
+.IB set
+The set to add the element to.
+.TP
+.IB sa
+The stralloc containing the element to add.
+
+.SH RETURN VALUE
+The function returns 0 if the element was successfully added to the set, or -1 if an error occurred.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBset_addsa\fR function:
+
+.nf
+#include <stdio.h>
+#include <lib/set.h>
+#include <lib/stralloc.h>
+
+int main() {
+    set_t set;
+    stralloc sa;
+    stralloc_init(&sa);
+    stralloc_copy(&sa, "apple");
+
+    set_init(&set);
+    if (set_addsa(&set, &sa) == 0) {
+        printf("Element added to set.\n");
+    } else {
+        printf("Failed to add element to set.\n");
+    }
+
+    set_free(&set);
+    stralloc_free(&sa);
+    return 0;
+}
+.nef

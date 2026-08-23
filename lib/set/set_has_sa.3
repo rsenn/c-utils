@@ -1,0 +1,54 @@
+.TH SET_HAS_SA 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+set_has_sa \- Check if a string allocation exists in a set
+
+.SH SYNOPSIS
+.IB #include <lib/set.h>
+.IB #include <lib/stralloc.h>
+
+.IB int
+.IB set_has_sa(const set_t* set, const stralloc* sa);
+
+.SH DESCRIPTION
+The \fBset_has_sa\fR function checks if a string allocation exists in a set. It takes two arguments: the set and the string allocation. The function returns 1 if the string allocation exists in the set, or 0 otherwise.
+
+.SH ARGUMENTS
+.TP
+.IB set
+The set in which to check for the string allocation.
+.TP
+.IB sa
+The string allocation to check.
+
+.SH RETURN VALUE
+The function returns 1 if the string allocation exists in the set, or 0 otherwise.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBset_has_sa\fR function:
+
+.nf
+#include <stdio.h>
+#include <lib/set.h>
+#include <lib/stralloc.h>
+
+int main() {
+    set_t set;
+    stralloc sa;
+    stralloc_init(&sa);
+    stralloc_append(&sa, "apple");
+
+    set_init(&set);
+    set_add(&set, sa.s, sa.len);
+
+    if (set_has_sa(&set, &sa)) {
+        printf("String allocation exists in set\n");
+    } else {
+        printf("String allocation does not exist in set\n");
+    }
+
+    set_free(&set);
+    stralloc_free(&sa);
+    return 0;
+}
+.nef

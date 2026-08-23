@@ -1,0 +1,59 @@
+.TH SET_JOINQ 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+set_joinq \- Join all elements in a set into a single string, quoting elements that contain a separator
+
+.SH SYNOPSIS
+.IB #include <lib/stralloc.h>
+.IB #include <lib/set.h>
+.IB #include <lib/byte.h>
+
+.IB void
+.IB set_joinq(const set_t* set, stralloc* out, char sep, char quote);
+
+.SH DESCRIPTION
+The \fBset_joinq\fR function joins all elements in a set into a single string, quoting elements that contain a separator. It takes four arguments: the set, a stralloc to store the result, a separator, and a quote character. The function does not return a value.
+
+.SH ARGUMENTS
+.TP
+.IB set
+The set to join into a single string.
+.TP
+.IB out
+A stralloc to store the result.
+.TP
+.IB sep
+The separator to use to join the elements.
+.TP
+.IB quote
+The quote character to use to quote elements that contain the separator.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBset_joinq\fR function:
+
+.nf
+#include <stdio.h>
+#include <lib/stralloc.h>
+#include <lib/set.h>
+#include <lib/byte.h>
+
+int main() {
+    set_t set;
+    set_init(&set);
+
+    set_inserts(&set, "apple");
+    set_inserts(&set, "banana");
+    set_inserts(&set, "cherry");
+
+    stralloc out;
+    stralloc_init(&out);
+
+    set_joinq(&set, &out, ',', '"');
+
+    printf("Joined string: %s\n", out.s);
+
+    set_free(&set);
+    stralloc_free(&out);
+    return 0;
+}
+.nef

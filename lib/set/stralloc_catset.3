@@ -1,0 +1,60 @@
+.TH STRALLOC_CATSET 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+stralloc_catset \- Append the contents of a set to a string allocation with a separator
+
+.SH SYNOPSIS
+.IB #include <lib/set.h>
+.IB #include <lib/str.h>
+.IB #include <lib/stralloc.h>
+
+.IB size_t
+.IB stralloc_catset(stralloc* sa, const set_t* set, const char* separator);
+
+.SH DESCRIPTION
+The \fBstralloc_catset\fR function appends the contents of a set to a string allocation with a separator. It takes three arguments: the string allocation to append to, the set to append, and the separator to use. The function returns the number of characters appended.
+
+.SH ARGUMENTS
+.TP
+.IB sa
+The string allocation to append to.
+.TP
+.IB set
+The set to append.
+.TP
+.IB separator
+The separator to use.
+
+.SH RETURN VALUE
+The function returns the number of characters appended.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBstralloc_catset\fR function:
+
+.nf
+#include <stdio.h>
+#include <lib/set.h>
+#include <lib/str.h>
+#include <lib/stralloc.h>
+
+int main() {
+    set_t set;
+    stralloc sa;
+    set_init(&set);
+    stralloc_init(&sa);
+
+    set_inserts(&set, "apple");
+    set_inserts(&set, "banana");
+    set_inserts(&set, "cherry");
+
+    printf("Set: %u elements\n", set.len);
+
+    stralloc_catset(&sa, &set, ", ");
+
+    printf("String allocation: %s\n", sa.s);
+
+    set_free(&set);
+    stralloc_free(&sa);
+    return 0;
+}
+.nef

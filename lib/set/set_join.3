@@ -1,0 +1,54 @@
+.TH SET_JOIN 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+set_join \- Join all elements in a set into a single string
+
+.SH SYNOPSIS
+.IB #include <lib/stralloc.h>
+.IB #include <lib/set.h>
+
+.IB void
+.IB set_join(const set_t* set, const char* sep, stralloc* out);
+
+.SH DESCRIPTION
+The \fBset_join\fR function joins all elements in a set into a single string using a separator. It takes three arguments: the set, the separator, and a stralloc to store the result. The function does not return a value.
+
+.SH ARGUMENTS
+.TP
+.IB set
+The set to join into a single string.
+.TP
+.IB sep
+The separator to use to join the elements.
+.TP
+.IB out
+A stralloc to store the result.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBset_join\fR function:
+
+.nf
+#include <stdio.h>
+#include <lib/stralloc.h>
+#include <lib/set.h>
+
+int main() {
+    set_t set;
+    set_init(&set);
+
+    set_inserts(&set, "apple");
+    set_inserts(&set, "banana");
+    set_inserts(&set, "cherry");
+
+    stralloc out;
+    stralloc_init(&out);
+
+    set_join(&set, ", ", &out);
+
+    printf("Joined string: %s\n", out.s);
+
+    set_free(&set);
+    stralloc_free(&out);
+    return 0;
+}
+.nef

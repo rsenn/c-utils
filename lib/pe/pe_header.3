@@ -1,0 +1,107 @@
+.TH PE_HEADER 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+pe_header, pe_header_nt, pe_header_sig, pe_header_nt32, pe_header_nt64, pe_header_coff, pe_header_opt, pe_header_opt32, pe_header_opt64, pe_header_sections, pe_header_datadir \- Retrieve headers and directories from a Portable Executable (PE) file
+
+.SH SYNOPSIS
+.IB #include <lib/pe.h>
+.IB #include <lib/uint16.h>
+
+.IB void*
+.IB pe_header_nt(void* pe);
+
+.IB uint32
+.IB pe_header_sig(void* pe);
+
+.IB pe32_nt_headers*
+.IB pe_header_nt32(void* pe);
+
+.IB pe64_nt_headers*
+.IB pe_header_nt64(void* pe);
+
+.IB pe_coff_header*
+.IB pe_header_coff(void* pe);
+
+.IB void*
+.IB pe_header_opt(void* pe);
+
+.IB pe32_opt_header*
+.IB pe_header_opt32(void* pe);
+
+.IB pe64_opt_header*
+.IB pe_header_opt64(void* pe);
+
+.IB pe_section_header*
+.IB pe_header_sections(void* pe, uint16* nsections);
+
+.IB pe_data_directory*
+.IB pe_header_datadir(void* pe);
+
+.SH DESCRIPTION
+The \fBpe_header\fR family of functions retrieves various headers and directories from a Portable Executable (PE) file. These functions help in accessing the different parts of a PE file's structure, such as the DOS header, NT headers, COFF header, optional header, and section headers.
+
+.SH ARGUMENTS
+.TP
+.IB pe
+The pointer to the PE file.
+
+.SH RETURN VALUES
+.TP
+.IB pe_header_nt
+Returns a pointer to the NT headers.
+.TP
+.IB pe_header_sig
+Returns the signature of the PE file.
+.TP
+.IB pe_header_nt32
+Returns a pointer to the 32-bit NT headers if the PE file is 32-bit, otherwise returns NULL.
+.TP
+.IB pe_header_nt64
+Returns a pointer to the 64-bit NT headers if the PE file is 64-bit, otherwise returns NULL.
+.TP
+.IB pe_header_coff
+Returns a pointer to the COFF header.
+.TP
+.IB pe_header_opt
+Returns a pointer to the optional header.
+.TP
+.IB pe_header_opt32
+Returns a pointer to the 32-bit optional header if the PE file is 32-bit, otherwise returns NULL.
+.TP
+.IB pe_header_opt64
+Returns a pointer to the 64-bit optional header if the PE file is 64-bit, otherwise returns NULL.
+.TP
+.IB pe_header_sections
+Returns a pointer to the section headers and sets the number of sections if \fInsections\fR is not NULL.
+.TP
+.IB pe_header_datadir
+Returns a pointer to the data directories.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBpe_header\fR functions:
+
+.nf
+#include <stdio.h>
+#include <lib/pe.h>
+#include <lib/uint16.h>
+
+int main() {
+    uint8 pe_data[1024];
+    void* pe = pe_data;
+    uint32 sig = pe_header_sig(pe);
+    if (sig == 0x45504544) {  // "PE\0\0"
+        pe32_nt_headers* nt32 = pe_header_nt32(pe);
+        if (nt32) {
+            printf("PE file is 32-bit\n");
+            printf("Machine: %u\n", nt32->machine);
+            printf("Number of Sections: %u\n", nt32->number_of_sections);
+            printf("Optional Header Size: %u\n", nt32->size_of_optional_header);
+        }
+    }
+    return 0;
+}
+.nef
+
+.SH SEE ALSO
+.IB pe,
+.IB uint16

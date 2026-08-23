@@ -1,0 +1,50 @@
+.TH SET_REALLOC 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+set_realloc \- Reallocate a set to make more space
+
+.SH SYNOPSIS
+.IB #include <lib/set.h>
+
+.IB int
+.IB set_realloc(set_t* set);
+
+.SH DESCRIPTION
+The \fBset_realloc\fR function reallocates a set to make more space. It takes one argument: the set to reallocate. The function returns 1 if the set is successfully reallocated, and 0 if the set is invalid.
+
+.SH ARGUMENTS
+.TP
+.IB set
+The set to reallocate.
+
+.SH RETURN VALUE
+The function returns 1 if the set is successfully reallocated, and 0 if the set is invalid.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBset_realloc\fR function:
+
+.nf
+#include <stdio.h>
+#include <lib/set.h>
+
+int main() {
+    set_t set;
+    set_init(&set);
+
+    set_inserts(&set, "apple");
+    set_inserts(&set, "banana");
+    set_inserts(&set, "cherry");
+
+    printf("Original set length: %u\n", set.len);
+
+    if(set_realloc(&set)) {
+        printf("Set reallocated successfully\n");
+        printf("New set length: %u\n", set.len);
+    } else {
+        printf("Failed to reallocate set\n");
+    }
+
+    set_free(&set);
+    return 0;
+}
+.nef

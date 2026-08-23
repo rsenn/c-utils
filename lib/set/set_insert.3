@@ -1,0 +1,52 @@
+.TH SET_INSERT 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+set_insert \- Insert an element into a set
+
+.SH SYNOPSIS
+.IB #include <lib/set.h>
+
+.IB int
+.IB set_insert(set_t* set, const void* val, const size_t size);
+
+.SH DESCRIPTION
+The \fBset_insert\fR function inserts an element into a set. It takes three arguments: the set, a pointer to the element, and the size of the element. The function returns 1 if the element is successfully inserted, 2 if the element already exists in the set, and -1 if an error occurs.
+
+.SH ARGUMENTS
+.TP
+.IB set
+The set into which to insert the element.
+.TP
+.IB val
+A pointer to the element to insert.
+.TP
+.IB size
+The size of the element.
+
+.SH RETURN VALUE
+The function returns 1 if the element is successfully inserted, 2 if the element already exists in the set, and -1 if an error occurs.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBset_insert\fR function:
+
+.nf
+#include <stdio.h>
+#include <lib/set.h>
+
+int main() {
+    set_t set;
+    char* element = "apple";
+
+    set_init(&set);
+    if (set_insert(&set, element, strlen(element)) == 1) {
+        printf("Element inserted successfully\n");
+    } else if (set_insert(&set, element, strlen(element)) == 2) {
+        printf("Element already exists in set\n");
+    } else {
+        printf("Error inserting element\n");
+    }
+
+    set_free(&set);
+    return 0;
+}
+.nef

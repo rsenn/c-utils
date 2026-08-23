@@ -1,0 +1,62 @@
+.TH SIG_DFL 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+sig_dfl, sig_ign - Default and ignore signal actions
+
+.SH SYNOPSIS
+.IB #include <lib/sig.h>
+
+.IB extern struct sigaction const sig_dfl;
+.IB extern struct sigaction const sig_ign;
+
+.SH DESCRIPTION
+The \fBsig_dfl\fR and \fBsig_ign\fR variables are used to specify default and ignore signal actions, respectively. They can be used with the \fBsigaction\fR function to set the signal handling behavior for a particular signal.
+
+.SH VARIABLES
+.TP
+.IB sig_dfl
+The default signal action, which causes the signal to be terminated the process.
+.TP
+.IB sig_ign
+The ignore signal action, which causes the signal to be ignored by the process.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBsig_dfl\fR and \fBsig_ign\fR variables with the \fBsigaction\fR function:
+
+.nf
+#include <stdio.h>
+#include <lib/sig.h>
+#include <signal.h>
+
+void handle_sigint(int signum) {
+    printf("Caught SIGINT.\n");
+}
+
+int main() {
+    struct sigaction sa;
+
+    printf("Setting SIGINT to be handled...\n");
+
+    sa.sa_handler = handle_sigint;
+    sigemptyset(&sa.sa_mask);
+    sa.sa_flags = 0;
+
+    int r = sigaction(SIGINT, &sa, NULL);
+
+    if(r == 0)
+        printf("SIGINT set to be handled successfully.\n");
+    else
+        printf("Failed to set SIGINT to be handled.\n");
+
+    printf("Setting SIGINT to be ignored...\n");
+
+    r = sigaction(SIGINT, &sig_ign, NULL);
+
+    if(r == 0)
+        printf("SIGINT set to be ignored successfully.\n");
+    else
+        printf("Failed to set SIGINT to be ignored.\n");
+
+    return 0;
+}
+.nef

@@ -1,0 +1,51 @@
+.TH SET_HAS_S 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+set_has_s \- Check if a string exists in a set
+
+.SH SYNOPSIS
+.IB #include <lib/set.h>
+.IB #include <lib/str.h>
+
+.IB int
+.IB set_has_s(const set_t* set, const char* s);
+
+.SH DESCRIPTION
+The \fBset_has_s\fR function checks if a string exists in a set. It takes two arguments: the set and the string. The function returns 1 if the string exists in the set, or 0 otherwise.
+
+.SH ARGUMENTS
+.TP
+.IB set
+The set in which to check for the string.
+.TP
+.IB s
+The string to check.
+
+.SH RETURN VALUE
+The function returns 1 if the string exists in the set, or 0 otherwise.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBset_has_s\fR function:
+
+.nf
+#include <stdio.h>
+#include <lib/set.h>
+#include <lib/str.h>
+
+int main() {
+    set_t set;
+    const char* s = "apple";
+
+    set_init(&set);
+    set_add(&set, s, str_len(s));
+
+    if (set_has_s(&set, s)) {
+        printf("String exists in set\n");
+    } else {
+        printf("String does not exist in set\n");
+    }
+
+    set_free(&set);
+    return 0;
+}
+.nef

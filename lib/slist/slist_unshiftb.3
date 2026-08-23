@@ -1,0 +1,38 @@
+.TH SLIST_UNSHIFTB 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+slist_unshiftb \- Unshift a byte array to the front of a linked list
+
+.SH SYNOPSIS
+.IB #include <lib/slist.h>
+.IB #include <lib/byte.h>
+.IB #include <lib/alloc.h>
+
+.IB int
+.IB slist_unshiftb(slink** list, const void* x, size_t len);
+
+.SH DESCRIPTION
+The \fBslist_unshiftb\fR function is used to unshift a byte array to the front of a linked list.
+
+.SH RETURN VALUE
+The \fBslist_unshiftb\fR function returns 1 on success, 0 on failure.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBslist_unshiftb\fR function:
+
+.nf
+#include <stdio.h>
+#include <lib/slist.h>
+#include <lib/byte.h>
+#include <lib/alloc.h>
+
+int main() {
+    slink* head = NULL;
+    const void* x = "Hello";
+    size_t len = 5;
+
+    slist_unshiftb(&head, x, len);
+
+    return 0;
+}
+.nef

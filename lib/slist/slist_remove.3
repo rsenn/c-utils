@@ -1,0 +1,40 @@
+.TH SLIST_REMOVE 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+slist_remove \- Remove a link from a linked list
+
+.SH SYNOPSIS
+.IB #include <lib/slist.h>
+
+.IB slink*
+.IB slist_remove(slink** p);
+
+.SH DESCRIPTION
+The \fBslist_remove\fR function is used to remove a link from a linked list.
+
+.SH RETURN VALUE
+The \fBslist_remove\fR function returns a pointer to the link that was removed.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBslist_remove\fR function:
+
+.nf
+#include <stdio.h>
+#include <lib/slist.h>
+
+int main() {
+    slink* head = NULL;
+    slink* p = (slink*)malloc(sizeof(slink));
+
+    head = p;
+
+    slink* f = slist_remove(&head);
+
+    if(f != NULL)
+        printf("Link removed.\n");
+    else
+        printf("Link not removed.\n");
+
+    return 0;
+}
+.nef

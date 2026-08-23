@@ -1,0 +1,37 @@
+.TH SLIST_ADD_BEFORE 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+slist_add_before \- Add a link before a specified link in a linked list
+
+.SH SYNOPSIS
+.IB #include <lib/slist.h>
+
+.IB void
+.IB slist_add_before(slink** l, slink* p, slink* before);
+
+.SH DESCRIPTION
+The \fBslist_add_before\fR function is used to add a link before a specified link in a linked list.
+
+.SH RETURN VALUE
+The \fBslist_add_before\fR function returns nothing.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBslist_add_before\fR function:
+
+.nf
+#include <stdio.h>
+#include <lib/slist.h>
+
+int main() {
+    slink* head = NULL;
+    slink* p = (slink*)malloc(sizeof(slink));
+    slink* before = (slink*)malloc(sizeof(slink));
+
+    p->data = 1;
+    before->data = 2;
+
+    slist_add_before(&head, p, before);
+
+    return 0;
+}
+.nef

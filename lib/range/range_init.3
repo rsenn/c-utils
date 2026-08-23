@@ -1,0 +1,55 @@
+.TH RANGE_INIT 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+range_init \- Initialize a range structure
+
+.SH SYNOPSIS
+.IB #include <lib/range.h>
+
+.IB void
+.IB range_init(range* r, void* start, size_t n_elem, size_t elem_size);
+
+.SH DESCRIPTION
+The \fBrange_init\fR function initializes a range structure with the specified start address, number of elements, and element size. It sets up the range's start and end pointers accordingly.
+
+.SH ARGUMENTS
+.TP
+.IB r
+The pointer to the range structure to be initialized.
+.TP
+.IB start
+The starting address of the range.
+.TP
+.IB n_elem
+The number of elements in the range.
+.TP
+.IB elem_size
+The size of each element in the range. If zero, the size is assumed to be one.
+
+.SH RETURN VALUES
+.TP
+.IB range_init
+No return value.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBrange_init\fR function:
+
+.nf
+#include <stdio.h>
+#include <lib/range.h>
+
+int main() {
+    range r;
+    int arr[5] = {1, 2, 3, 4, 5};
+    range_init(&r, arr, 5, sizeof(int));
+
+    // Use the range structure
+
+    return 0;
+}
+.nef
+
+.SH SEE ALSO
+.IB range,
+.IB range_size,
+.IB range_end

@@ -1,0 +1,62 @@
+.TH SET_INTERSECTION 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+set_intersection \- Compute the intersection of two sets
+
+.SH SYNOPSIS
+.IB #include <lib/set.h>
+
+.IB int
+.IB set_intersection(set_t* out, const set_t* a, const set_t* b);
+
+.SH DESCRIPTION
+The \fBset_intersection\fR function computes the intersection of two sets, storing the result in the third set. It takes three arguments: the set to store the result, and the two sets to compute the intersection of. The function returns the number of elements in the intersection.
+
+.SH ARGUMENTS
+.TP
+.IB out
+The set to store the intersection of the two sets.
+.TP
+.IB a
+The first set to compute the intersection of.
+.TP
+.IB b
+The second set to compute the intersection of.
+
+.SH RETURN VALUE
+The function returns the number of elements in the intersection of the two sets.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBset_intersection\fR function:
+
+.nf
+#include <stdio.h>
+#include <lib/set.h>
+
+int main() {
+    set_t set1, set2, result;
+    set_init(&set1);
+    set_init(&set2);
+    set_init(&result);
+
+    set_inserts(&set1, "apple");
+    set_inserts(&set1, "banana");
+    set_inserts(&set2, "banana");
+    set_inserts(&set2, "cherry");
+
+    int count = set_intersection(&result, &set1, &set2);
+
+    printf("Intersection contains %d elements:\n", count);
+    set_iterator_t it;
+    const char* x;
+    size_t n;
+    set_foreach(&result, it, x, n) {
+        printf("%.*s\n", (int)n, x);
+    }
+
+    set_free(&set1);
+    set_free(&set2);
+    set_free(&result);
+    return 0;
+}
+.nef

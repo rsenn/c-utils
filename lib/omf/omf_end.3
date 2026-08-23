@@ -1,0 +1,38 @@
+.TH OMF_END 3 "OMF Format" "LIBOMF" "Library Functions"
+.SH NAME
+omf_end - Get the end of an OMF file
+.SH SYNOPSIS
+.B #include <lib/omf/omf.h>
+.PP
+.B omf_record* omf_end(omf_file* omf);
+.SH DESCRIPTION
+The
+.B omf_end
+function returns a pointer to the end of an OMF file.
+This pointer can be used to iterate over the records in the file.
+.SH ARGUMENTS
+.TP
+.I omf
+A pointer to an
+.B omf_file
+structure representing the OMF file.
+.SH RETURN VALUE
+A pointer to the end of the OMF file.
+.SH EXAMPLE
+The following example demonstrates how to use the
+.B omf_end
+function:
+.PP
+.B #include <lib/omf/omf.h>
+.B #include <stdio.h>
+.PP
+.B int main() {
+.B \tomf_file omf;
+.B \tomf_record* end = omf_end(&omf);
+.B \tprintf("End of OMF file: %p\n", (void*)end);
+.B \treturn 0;
+.B }
+.SH SEE ALSO
+.B omf_init,
+.B omf_read,
+.B omf_record

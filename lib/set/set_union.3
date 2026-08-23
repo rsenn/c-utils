@@ -1,0 +1,62 @@
+.TH SET_UNION 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+set_union \- Compute the union of two sets and store the result
+
+.SH SYNOPSIS
+.IB #include <lib/set.h>
+
+.IB int
+.IB set_union(set_t* out, const set_t* a, const set_t* b);
+
+.SH DESCRIPTION
+The \fBset_union\fR function computes the union of two sets and stores the result. It takes three arguments: the set to store the result, and the two sets to compute the union of. The function returns the number of elements in the result.
+
+.SH ARGUMENTS
+.TP
+.IB out
+The set to store the result.
+.TP
+.IB a
+The first set to compute the union of.
+.TP
+.IB b
+The second set to compute the union of.
+
+.SH RETURN VALUE
+The function returns the number of elements in the result.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBset_union\fR function:
+
+.nf
+#include <stdio.h>
+#include <lib/set.h>
+
+int main() {
+    set_t set_a, set_b, set_c;
+    set_init(&set_a);
+    set_init(&set_b);
+    set_init(&set_c);
+
+    set_inserts(&set_a, "apple");
+    set_inserts(&set_a, "banana");
+    set_inserts(&set_a, "cherry");
+
+    set_inserts(&set_b, "banana");
+    set_inserts(&set_b, "cherry");
+    set_inserts(&set_b, "date");
+
+    printf("Set A: %u elements\n", set_a.len);
+    printf("Set B: %u elements\n", set_b.len);
+
+    int r = set_union(&set_c, &set_a, &set_b);
+
+    printf("Set C (result of A ∪ B): %u elements\n", set_c.len);
+
+    set_free(&set_a);
+    set_free(&set_b);
+    set_free(&set_c);
+    return 0;
+}
+.nef

@@ -1,0 +1,56 @@
+.TH SET_TOSTRARRAY 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+set_tostrarray \- Convert a set to a string array
+
+.SH SYNOPSIS
+.IB #include <lib/set.h>
+.IB #include <lib/strarray.h>
+
+.IB void
+.IB set_tostrarray(const set_t* set, strarray* stra);
+
+.SH DESCRIPTION
+The \fBset_tostrarray\fR function converts a set to a string array. It takes two arguments: the set to convert and a string array to store the result.
+
+.SH ARGUMENTS
+.TP
+.IB set
+The set to convert.
+.TP
+.IB stra
+A string array to store the result.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBset_tostrarray\fR function:
+
+.nf
+#include <stdio.h>
+#include <lib/set.h>
+#include <lib/strarray.h>
+
+int main() {
+    set_t set;
+    strarray stra;
+    set_init(&set);
+    strarray_init(&stra);
+
+    set_inserts(&set, "apple");
+    set_inserts(&set, "banana");
+    set_inserts(&set, "cherry");
+
+    printf("Set: %u elements\n", set.len);
+
+    set_tostrarray(&set, &stra);
+
+    printf("String array: ");
+    for(int i = 0; i < stra.len; ++i) {
+        printf("%s ", stra.array[i]);
+    }
+    printf("\n");
+
+    set_free(&set);
+    strarray_free(&stra);
+    return 0;
+}
+.nef

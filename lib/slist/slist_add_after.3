@@ -1,0 +1,37 @@
+.TH SLIST_ADD_AFTER 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+slist_add_after \- Add a link after a specified link in a linked list
+
+.SH SYNOPSIS
+.IB #include <lib/slist.h>
+
+.IB void
+.IB slist_add_after(slink** l, slink* p, slink* after);
+
+.SH DESCRIPTION
+The \fBslist_add_after\fR function is used to add a link after a specified link in a linked list.
+
+.SH RETURN VALUE
+The \fBslist_add_after\fR function returns nothing.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBslist_add_after\fR function:
+
+.nf
+#include <stdio.h>
+#include <lib/slist.h>
+
+int main() {
+    slink* head = NULL;
+    slink* p = (slink*)malloc(sizeof(slink));
+    slink* after = (slink*)malloc(sizeof(slink));
+
+    p->data = 1;
+    after->data = 2;
+
+    slist_add_after(&head, p, after);
+
+    return 0;
+}
+.nef

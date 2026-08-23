@@ -1,0 +1,41 @@
+.TH PLAYLIST_INIT 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+playlist_init \- Initialize a playlist structure
+
+.SH SYNOPSIS
+.IB #include <lib/playlist.h>
+.IB #include <lib/byte.h>
+
+.IB void
+.IB playlist_init(playlist* pl);
+
+.SH DESCRIPTION
+The \fBplaylist_init\fR function initializes a playlist structure. It sets all the fields of the playlist to zero.
+
+.SH ARGUMENTS
+.TP
+.IB pl
+The pointer to the playlist structure to be initialized.
+
+.SH RETURN VALUE
+The function does not return a value.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBplaylist_init\fR function:
+
+.nf
+#include <stdio.h>
+#include <lib/playlist.h>
+#include <lib/byte.h>
+
+int main() {
+    playlist pl;
+    playlist_init(&pl);
+    printf("Playlist initialized\n");
+    return 0;
+}
+.nef
+
+.SH SEE ALSO
+.IB playlist

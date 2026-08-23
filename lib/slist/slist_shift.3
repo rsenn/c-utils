@@ -1,0 +1,40 @@
+.TH SLIST_SHIFT 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+slist_shift \- Shift a link from the head of a linked list
+
+.SH SYNOPSIS
+.IB #include <lib/slist.h>
+
+.IB slink*
+.IB slist_shift(slink** list);
+
+.SH DESCRIPTION
+The \fBslist_shift\fR function is used to shift a link from the head of a linked list.
+
+.SH RETURN VALUE
+The \fBslist_shift\fR function returns a pointer to the link that was shifted.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBslist_shift\fR function:
+
+.nf
+#include <stdio.h>
+#include <lib/slist.h>
+
+int main() {
+    slink* head = NULL;
+    slink* p = (slink*)malloc(sizeof(slink));
+
+    head = p;
+
+    slink* f = slist_shift(&head);
+
+    if(f != NULL)
+        printf("Link shifted.\n");
+    else
+        printf("Link not shifted.\n");
+
+    return 0;
+}
+.nef

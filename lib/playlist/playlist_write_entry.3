@@ -1,0 +1,63 @@
+.TH PLAYLIST_WRITE_ENTRY 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+playlist_write_entry \- Write a playlist entry to a buffer
+
+.SH SYNOPSIS
+.IB #include <lib/playlist.h>
+
+.IB int
+.IB playlist_write_entry(buffer* b, playlist* pl, playlist_entry* e);
+
+.SH DESCRIPTION
+The \fBplaylist_write_entry\fR function writes a playlist entry to a buffer using the format specified in the playlist structure. It appends the entry to the buffer and returns 1 on success, or 0 on error.
+
+.SH ARGUMENTS
+.TP
+.IB b
+The pointer to the buffer to which the entry will be written.
+.TP
+.IB pl
+The pointer to the playlist structure.
+.TP
+.IB e
+The pointer to the playlist entry to be written.
+
+.SH RETURN VALUES
+.TP
+.IB playlist_write_entry
+Returns 1 on success, or 0 on error.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBplaylist_write_entry\fR function:
+
+.nf
+#include <stdio.h>
+#include <lib/playlist.h>
+#include <lib/byte.h>
+
+int main() {
+    playlist pl;
+    buffer b;
+    playlist_entry e;
+    stralloc_init(&b.s);
+    stralloc_init(&e.title);
+    stralloc_init(&e.path);
+    stralloc_copys(&e.title, "Example Title");
+    stralloc_copys(&e.path, "example.mp3");
+    e.length = 120;
+
+    playlist_init(&pl);
+    pl.type = M3U;
+    playlist_write_entry(&b, &pl, &e);
+
+    printf("Buffer: %.*s\n", b.len, b.s);
+
+    return 0;
+}
+.nef
+
+.SH SEE ALSO
+.IB playlist,
+.IB buffer,
+.IB str
