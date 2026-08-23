@@ -1,0 +1,43 @@
+.TH BUFFER_SKIPN 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+buffer_skipn \- Skip a specified number of bytes in a buffer
+
+.SH SYNOPSIS
+.IB #include <lib/buffer.h>
+
+.IB int
+.IB buffer_skipn (buffer* b, size_t n);
+
+.SH DESCRIPTION
+The \fBbuffer_skipn\fR function skips a specified number of bytes in a buffer. It takes a buffer and a number of bytes as arguments. The function skips the specified number of bytes in the buffer if available, otherwise it returns 0.
+
+The function takes the following parameters:
+.IB buffer*
+A pointer to the buffer structure.
+.IB size_t
+The number of bytes to skip.
+
+The function returns the number of bytes skipped, which can be less than the specified number if the buffer does not have enough data.
+
+The \fBbuffer_skipn\fR function is intended to be used to skip a specified number of bytes in a buffer, such as when parsing binary data.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBbuffer_skipn\fR function to skip 5 bytes in a buffer:
+
+.nf
+#include <stdio.h>
+#include <lib/buffer.h>
+
+int main() {
+    buffer* b = buffer_new();
+    buffer_add(b, "Hello, World!", 13);
+
+    int skipped = buffer_skipn(b, 5);
+
+    printf("Skipped %d bytes\n", skipped);
+
+    buffer_free(b);
+    return 0;
+}
+.nef

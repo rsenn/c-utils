@@ -1,0 +1,50 @@
+.TH BUFFER_PUTULONGLONGPAD 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+buffer_putulonglongpad \- Put an unsigned long long into a buffer with padding
+
+.SH SYNOPSIS
+.IB #include <lib/buffer.h>
+.IB #include <lib/fmt.h>
+
+.IB int
+.IB buffer_putulonglongpad (buffer* b, uint64 l, int pad);
+
+.SH DESCRIPTION
+The \fBbuffer_putulonglongpad\fR function puts an unsigned long long into a buffer with padding. It takes a buffer, an unsigned long long value, and a padding size as arguments. If the number of characters required to represent the unsigned long long value is less than the padding size, it pads the number with spaces at the start to make its length equal to the padding size. Then, it appends the number to the buffer.
+
+The function takes the following parameters:
+.IB buffer*
+A pointer to the buffer structure.
+.IB uint64
+The unsigned long long value to be put into the buffer.
+.IB int
+The padding size.
+
+The function returns 0 on success, or -1 if an error occurred.
+
+The \fBbuffer_putulonglongpad\fR function is intended to be used to put an unsigned long long into a buffer with padding, such as when formatting output with aligned columns.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBbuffer_putulonglongpad\fR function to put an unsigned long long into a buffer with padding:
+
+.nf
+#include <stdio.h>
+#include <lib/buffer.h>
+#include <lib/fmt.h>
+
+int main() {
+    buffer* b = buffer_new();
+    uint64 num = 12345;
+    int pad = 10;
+
+    if(buffer_putulonglongpad(b, num, pad) == -1) {
+        perror("buffer_putulonglongpad");
+        buffer_free(b);
+        return 1;
+    }
+
+    buffer_free(b);
+    return 0;
+}
+.nef

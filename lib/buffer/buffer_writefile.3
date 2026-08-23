@@ -1,0 +1,41 @@
+.TH BUFFER_WRITEFILE 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+buffer_writefile \- Write the contents of a buffer to a file
+
+.SH SYNOPSIS
+.IB #include <lib/buffer.h>
+
+.IB int
+.IB buffer_writefile (buffer* b, const char* fn);
+
+.SH DESCRIPTION
+The \fBbuffer_writefile\fR function is used to write the contents of a buffer \fBb\fR to a file specified by the file name \fBfn\fR. It opens the file in write mode and writes the buffer contents to the file.
+
+The function returns 0 on success, or -1 if an error occurred.
+
+The \fBbuffer_writefile\fR function is intended to be used to save the contents of a buffer to a file, such as when writing data to a log file or a configuration file.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBbuffer_writefile\fR function to write the contents of a buffer to a file:
+
+.nf
+#include <stdio.h>
+#include <lib/buffer.h>
+
+int main() {
+    buffer* b = buffer_new();
+    buffer_append(b, "Hello, world!\n");
+
+    const char* filename = "example.txt";
+    int result = buffer_writefile(b, filename);
+    if(result == -1) {
+        perror("buffer_writefile");
+        buffer_free(b);
+        return 1;
+    }
+
+    buffer_free(b);
+    return 0;
+}
+.nef

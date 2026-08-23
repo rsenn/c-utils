@@ -1,0 +1,44 @@
+.TH BUFFER_1SMALL 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+buffer_1small \- Initialize a small buffer for writing to a file descriptor
+
+.SH SYNOPSIS
+.IB #include <lib/buffer.h>
+
+.IB buffer*
+.IB buffer_1small;
+
+.SH DESCRIPTION
+The \fBbuffer_1small\fR buffer is initialized for writing to a file descriptor. It uses a static buffer \fBbuffer_1small_space\fR with a size of 128 bytes for storing the data to be written.
+
+The \fBbuffer_1small\fR buffer is intended for use with the \fBbuffer_read\fR function to implement buffered I/O operations. The \fBbuffer_flush\fR function can be used to ensure that all data is written out before closing the file descriptor.
+
+The \fBbuffer_1small\fR buffer is a static buffer and is initialized automatically when the library is loaded.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBbuffer_1small\fR buffer to write data to a file descriptor:
+
+.nf
+#include <stdio.h>
+#include <lib/buffer.h>
+
+int main() {
+    fd_type fd = open("example.txt", O_WRONLY | O_CREAT, 0644);
+    if(fd < 0) {
+        perror("open");
+        return 1;
+    }
+
+    const char* data = "Hello, world!";
+    ssize_t n = buffer_write(fd, data, strlen(data));
+    if(n < 0) {
+        perror("buffer_write");
+        close(fd);
+        return 1;
+    }
+
+    close(fd);
+    return 0;
+}
+.nef

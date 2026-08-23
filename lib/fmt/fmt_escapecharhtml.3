@@ -1,0 +1,42 @@
+.TH FMT_ESCAPECHARHTML 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+fmt_escapecharhtml \- Escape a character for HTML
+
+.SH SYNOPSIS
+.IB #include <lib/fmt.h>
+
+.IB size_t
+.IB fmt_escapecharhtml(char* dest, unsigned int ch);
+
+.SH DESCRIPTION
+The \fBfmt_escapecharhtml\fR function escapes a character for HTML. It takes a destination buffer and a character as arguments. The function escapes the character if it is special in HTML, otherwise it copies the character unchanged.
+
+The function takes the following parameters:
+.IB char*
+A pointer to the destination buffer.
+.IB unsigned int
+The character to escape.
+
+The function returns the number of bytes written to the destination buffer.
+
+The \fBfmt_escapecharhtml\fR function is intended to be used to escape special characters for HTML, such as `<`, `>`, and `&`.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBfmt_escapecharhtml\fR function to escape a character for HTML:
+
+.nf
+#include <stdio.h>
+#include <lib/fmt.h>
+
+int main() {
+    char dest[10];
+    unsigned int ch = '<';
+
+    size_t written = fmt_escapecharhtml(dest, ch);
+
+    printf("Written %d bytes: %s\n", written, dest);
+
+    return 0;
+}
+.nef

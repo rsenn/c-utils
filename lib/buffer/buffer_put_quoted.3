@@ -1,0 +1,53 @@
+.TH BUFFER_PUT_QUOTED 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+buffer_put_quoted \- Put quoted data into a buffer
+
+.SH SYNOPSIS
+.IB #include <lib/buffer.h>
+.IB #include <lib/uint32.h>
+.IB #include <lib/fmt.h>
+
+.IB int
+.IB buffer_put_quoted (buffer* b, const char* x, size_t n);
+
+.SH DESCRIPTION
+The \fBbuffer_put_quoted\fR function puts quoted data into a buffer. It iterates over the input data, and for each character, it checks if the character is a control character (less than 0x20). If it is, it converts the character to a quoted representation using the \fBfmt_8long\fR function and appends it to the buffer. If it is not a control character, it simply appends the character to the buffer.
+
+The function takes the following parameters:
+.IB buffer*
+A pointer to the buffer structure.
+.IB const char*
+The input data to be put into the buffer.
+.IB size_t
+The length of the input data.
+
+The function returns the number of bytes put into the buffer.
+
+The \fBbuffer_put_quoted\fR function is intended to be used to put quoted data into a buffer, such as when formatting data for output.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBbuffer_put_quoted\fR function to put quoted data into a buffer:
+
+.nf
+#include <stdio.h>
+#include <lib/buffer.h>
+#include <lib/uint32.h>
+#include <lib/fmt.h>
+
+int main() {
+    buffer* b = buffer_new();
+    const char* data = "Hello, world!";
+    size_t n = strlen(data);
+
+    int bytes = buffer_put_quoted(b, data, n);
+    if(bytes < 0) {
+        perror("buffer_put_quoted");
+        buffer_free(b);
+        return 1;
+    }
+
+    buffer_free(b);
+    return 0;
+}
+.nef

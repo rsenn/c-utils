@@ -1,0 +1,48 @@
+.TH BUFFER_SKIP_PRED 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+buffer_skip_pred \- Skip bytes in a buffer based on a predicate function
+
+.SH SYNOPSIS
+.IB #include <lib/buffer.h>
+
+.IB int
+.IB buffer_skip_pred (buffer* b, int (*pred)(int));
+
+.SH DESCRIPTION
+The \fBbuffer_skip_pred\fR function skips bytes in a buffer based on a predicate function. It takes a buffer and a predicate function as arguments. The function skips bytes in the buffer until the predicate function returns 0, counting the number of bytes skipped.
+
+The function takes the following parameters:
+.IB buffer*
+A pointer to the buffer structure.
+.IB int (*pred)(int)
+A pointer to the predicate function, which takes an integer and returns 0 when the byte should be skipped.
+
+The function returns the number of bytes skipped.
+
+The \fBbuffer_skip_pred\fR function is intended to be used to skip bytes in a buffer based on a condition, such as skipping whitespace characters.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBbuffer_skip_pred\fR function to skip whitespace characters in a buffer:
+
+.nf
+#include <stdio.h>
+#include <ctype.h>
+#include <lib/buffer.h>
+
+int skip_space(int c) {
+    return isspace(c);
+}
+
+int main() {
+    buffer* b = buffer_new();
+    buffer_add(b, "Hello, World!", 13);
+
+    int skipped = buffer_skip_pred(b, skip_space);
+
+    printf("Skipped %d bytes\n", skipped);
+
+    buffer_free(b);
+    return 0;
+}
+.nef

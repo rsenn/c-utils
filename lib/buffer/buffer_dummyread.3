@@ -1,0 +1,56 @@
+.TH BUFFER_DUMMYREAD 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+buffer_dummyread \- Dummy read function for buffer operations
+
+.SH SYNOPSIS
+.IB #include <lib/buffer.h>
+
+.IB ssize_t
+.IB buffer_dummyread (fd_type fd, void* buf, size_t len, buffer* b);
+
+.SH DESCRIPTION
+The \fBbuffer_dummyread\fR function is a dummy read function used in buffer operations. It simply returns 0, indicating that no data was read.
+
+The function takes the following parameters:
+.IB fd_type
+The file descriptor for the buffer.
+.IB void*
+The buffer to store the read data.
+.IB size_t
+The length of the buffer to store the read data.
+.IB buffer*
+A pointer to the buffer structure.
+
+The \fBbuffer_dummyread\fR function is intended to be used as a placeholder for a real read function when no data needs to be read from the buffer.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBbuffer_dummyread\fR function in a buffer operation:
+
+.nf
+#include <stdio.h>
+#include <lib/buffer.h>
+
+int main() {
+    buffer* b = buffer_new();
+    fd_type fd = open("example.txt", O_RDONLY, 0644);
+    if(fd < 0) {
+        perror("open");
+        buffer_free(b);
+        return 1;
+    }
+
+    char buffer[1024];
+    ssize_t n = buffer_read(fd, buffer, sizeof(buffer), b, &buffer_dummyread);
+    if(n < 0) {
+        perror("buffer_read");
+        close(fd);
+        buffer_free(b);
+        return 1;
+    }
+
+    close(fd);
+    buffer_free(b);
+    return 0;
+}
+.nef

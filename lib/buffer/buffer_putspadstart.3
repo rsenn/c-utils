@@ -1,0 +1,50 @@
+.TH BUFFER_PUTSPADSTART 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+buffer_putspadstart \- Put a string into a buffer with padding at the start
+
+.SH SYNOPSIS
+.IB #include <lib/buffer.h>
+.IB #include <lib/str.h>
+
+.IB int
+.IB buffer_putspadstart (buffer* b, const char* x, size_t pad);
+
+.SH DESCRIPTION
+The \fBbuffer_putspadstart\fR function puts a string into a buffer with padding at the start. It takes a buffer, a string, and a padding size as arguments. If the string length is less than the padding size, it pads the string with spaces at the start to make its length equal to the padding size. Then, it appends the string to the buffer.
+
+The function takes the following parameters:
+.IB buffer*
+A pointer to the buffer structure.
+.IB const char*
+The string to be put into the buffer.
+.IB size_t
+The padding size.
+
+The function returns 0 on success, or -1 if an error occurred.
+
+The \fBbuffer_putspadstart\fR function is intended to be used to put a string into a buffer with padding at the start, such as when formatting output with aligned columns.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBbuffer_putspadstart\fR function to put a string into a buffer with padding at the start:
+
+.nf
+#include <stdio.h>
+#include <lib/buffer.h>
+#include <lib/str.h>
+
+int main() {
+    buffer* b = buffer_new();
+    const char* str = "Hello";
+    size_t pad = 10;
+
+    if(buffer_putspadstart(b, str, pad) == -1) {
+        perror("buffer_putspadstart");
+        buffer_free(b);
+        return 1;
+    }
+
+    buffer_free(b);
+    return 0;
+}
+.nef

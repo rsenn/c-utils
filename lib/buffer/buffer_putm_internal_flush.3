@@ -1,0 +1,44 @@
+.TH BUFFER_PUTM_INTERNAL_FLUSH 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+buffer_putm_internal_flush \- Put multiple strings into a buffer and flush
+
+.SH SYNOPSIS
+.IB #include <lib/buffer.h>
+
+.IB int
+.IB buffer_putm_internal_flush (buffer* b, ...);
+
+.SH DESCRIPTION
+The \fBbuffer_putm_internal_flush\fR function puts multiple strings into a buffer and then flushes the buffer. It takes a variable number of arguments, each of which should be a string to be put into the buffer. The function returns 0 on success, or -1 if an error occurred.
+
+The function takes the following parameters:
+.IB buffer*
+A pointer to the buffer structure.
+
+The function returns 0 on success, or -1 if an error occurred.
+
+The \fBbuffer_putm_internal_flush\fR function is intended to be used to put multiple strings into a buffer and then flush the buffer, such as when formatting multiple lines of output.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBbuffer_putm_internal_flush\fR function to put multiple strings into a buffer and then flush the buffer:
+
+.nf
+#include <stdio.h>
+#include <lib/buffer.h>
+
+int main() {
+    buffer* b = buffer_new();
+    const char* line1 = "Hello, world!";
+    const char* line2 = "This is a test.";
+
+    if(buffer_putm_internal_flush(b, line1, line2, NULL) == -1) {
+        perror("buffer_putm_internal_flush");
+        buffer_free(b);
+        return 1;
+    }
+
+    buffer_free(b);
+    return 0;
+}
+.nef

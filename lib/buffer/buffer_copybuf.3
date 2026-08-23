@@ -1,0 +1,41 @@
+.TH BUFFER_COPYBUF 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+buffer_copybuf \- Copy a buffer into a new buffer
+
+.SH SYNOPSIS
+.IB #include <lib/buffer.h>
+
+.IB ssize_t
+.IB buffer_copybuf (buffer* b, const char* x, size_t n);
+
+.SH DESCRIPTION
+The \fBbuffer_copybuf\fR function creates a new buffer and copies the data from the input string \fBx\fR with length \fBn\fR into the new buffer. The new buffer is allocated using the \fBalloc\fR function, and it is initialized with the \fBbuffer_dummyreadbuf\fR function as the read function.
+
+The function returns 0 on success, or -1 if an error occurred.
+
+The \fBbuffer_copybuf\fR function is intended to be used to create a copy of an existing buffer, such as when duplicating data for processing or storage.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBbuffer_copybuf\fR function to copy data into a new buffer:
+
+.nf
+#include <stdio.h>
+#include <lib/buffer.h>
+
+int main() {
+    const char* data = "Hello, world!";
+    size_t n = strlen(data);
+
+    buffer* b = buffer_new();
+    ssize_t result = buffer_copybuf(b, data, n);
+    if(result == -1) {
+        perror("buffer_copybuf");
+        buffer_free(b);
+        return 1;
+    }
+
+    buffer_free(b);
+    return 0;
+}
+.nef

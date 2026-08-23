@@ -1,0 +1,41 @@
+.TH BUFFER_SKIPSPACE 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+buffer_skipspace \- Skip whitespace characters in a buffer
+
+.SH SYNOPSIS
+.IB #include <lib/buffer.h>
+
+.IB int
+.IB buffer_skipspace (buffer* b);
+
+.SH DESCRIPTION
+The \fBbuffer_skipspace\fR function skips whitespace characters in a buffer. It takes a buffer as argument. The function skips whitespace characters in the buffer until a non-whitespace character is encountered or the buffer is exhausted.
+
+The function takes the following parameter:
+.IB buffer*
+A pointer to the buffer structure.
+
+The function returns the number of whitespace characters skipped.
+
+The \fBbuffer_skipspace\fR function is intended to be used to skip whitespace characters in a buffer, such as when parsing text data.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBbuffer_skipspace\fR function to skip whitespace characters in a buffer:
+
+.nf
+#include <stdio.h>
+#include <lib/buffer.h>
+
+int main() {
+    buffer* b = buffer_new();
+    buffer_add(b, "  Hello, World!", 13);
+
+    int skipped = buffer_skipspace(b);
+
+    printf("Skipped %d bytes\n", skipped);
+
+    buffer_free(b);
+    return 0;
+}
+.nef

@@ -1,0 +1,39 @@
+.TH BUFFER_REALLOC 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+buffer_realloc \- Reallocate the memory of a buffer
+
+.SH SYNOPSIS
+.IB #include <lib/buffer.h>
+
+.IB void
+.IB buffer_realloc (buffer* b, size_t ylen);
+
+.SH DESCRIPTION
+The \fBbuffer_realloc\fR function reallocates the memory of a buffer to a new size. It takes a buffer and a new length as arguments. The function reallocates the memory of the buffer to a new size, setting the buffer's length to the new size.
+
+The function takes the following parameters:
+.IB buffer*
+A pointer to the buffer structure.
+.IB size_t
+The new length of the buffer.
+
+The \fBbuffer_realloc\fR function is intended to be used to adjust the size of a buffer's memory allocation, such as when adding or removing data from a buffer.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBbuffer_realloc\fR function to reallocate the memory of a buffer:
+
+.nf
+#include <stdio.h>
+#include <lib/buffer.h>
+
+int main() {
+    buffer* b = buffer_new();
+    size_t new_length = 1024;
+
+    buffer_realloc(b, new_length);
+
+    buffer_free(b);
+    return 0;
+}
+.nef

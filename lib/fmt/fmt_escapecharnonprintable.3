@@ -1,0 +1,42 @@
+.TH FMT_ESCAPECHARNONPRINTABLE 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+fmt_escapecharnonprintable \- Escape non-printable characters
+
+.SH SYNOPSIS
+.IB #include <lib/fmt.h>
+
+.IB size_t
+.IB fmt_escapecharnonprintable(char* dest, int c);
+
+.SH DESCRIPTION
+The \fBfmt_escapecharnonprintable\fR function escapes non-printable characters. It takes a destination buffer and a character as arguments. The function escapes the character if it is non-printable, otherwise it copies the character unchanged.
+
+The function takes the following parameters:
+.IB char*
+A pointer to the destination buffer.
+.IB int
+The character to escape.
+
+The function returns the number of bytes written to the destination buffer.
+
+The \fBfmt_escapecharnonprintable\fR function is intended to be used to escape non-printable characters for display, such as `\n`, `\r`, and `\t`.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBfmt_escapecharnonprintable\fR function to escape non-printable characters:
+
+.nf
+#include <stdio.h>
+#include <lib/fmt.h>
+
+int main() {
+    char dest[20];
+    int c = '\n';
+
+    size_t written = fmt_escapecharnonprintable(dest, c);
+
+    printf("Written %d bytes: %s\n", written, dest);
+
+    return 0;
+}
+.nef

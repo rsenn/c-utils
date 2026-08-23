@@ -1,0 +1,61 @@
+.TH BUFFER_MMAPPRIVATE_FD 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+buffer_mmapprivate_fd \- Map a file descriptor to a private memory region
+
+.SH SYNOPSIS
+.IB #include <lib/buffer.h>
+.IB #include <lib/mmap.h>
+
+.IB ssize_t
+.IB buffer_dummyreadmmap (fd_type fd, void* buf, size_t len, buffer* b);
+
+.IB void
+.IB buffer_munmap (buffer* b);
+
+.IB int
+.IB buffer_mmapprivate_fd (buffer* b, fd_type fd);
+
+.SH DESCRIPTION
+The \fBbuffer_mmapprivate_fd\fR function maps a file descriptor \fBfd\fR to a private memory region and initializes a buffer with it. The buffer is initialized with the \fBbuffer_dummyreadmmap\fR function as the read function and the \fBbuffer_munmap\fR function as the deinit function.
+
+The function takes the following parameters:
+.IB buffer*
+A pointer to the buffer structure.
+.IB fd_type
+The file descriptor to be mapped.
+
+The function returns 0 on success, or -1 if an error occurred.
+
+The \fBbuffer_mmapprivate_fd\fR function is intended to be used to map a file descriptor to a private memory region, such as when reading data from a file into a buffer for processing.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBbuffer_mmapprivate_fd\fR function to map a file descriptor to a private memory region:
+
+.nf
+#include <stdio.h>
+#include <lib/buffer.h>
+#include <lib/mmap.h>
+
+int main() {
+    buffer* b = buffer_new();
+    fd_type fd = open("example.txt", O_RDONLY, 0644);
+    if(fd < 0) {
+        perror("open");
+        buffer_free(b);
+        return 1;
+    }
+
+    ssize_t result = buffer_mmapprivate_fd(b, fd);
+    if(result == -1) {
+        perror("buffer_mmapprivate_fd");
+        close(fd);
+        buffer_free(b);
+        return 1;
+    }
+
+    close(fd);
+    buffer_free(b);
+    return 0;
+}
+.nef
