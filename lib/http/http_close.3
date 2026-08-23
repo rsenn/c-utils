@@ -1,0 +1,35 @@
+.TH http_close 3 "HTTP Library Functions" "QuickJS" "HTTP Library Functions"
+
+.SH NAME
+http_close \- Close an HTTP connection
+
+.SH SYNOPSIS
+.B #include <lib/http.h>
+.B void http_close(http* h);
+
+.SH DESCRIPTION
+The .B http_close function closes an HTTP connection.
+
+The function takes one parameter:
+.I h
+A pointer to the HTTP connection to be closed.
+
+The function does not return a value.
+
+.SH EXAMPLE
+The following example demonstrates how to use the .B http_close function:
+
+.I
+.nf
+#include <stdio.h>
+#include <lib/http.h>
+
+int main() {
+  // Assume h is a valid pointer to an HTTP connection
+  http_close(h);
+
+  return 0;
+}
+.!
+.SH "SEE ALSO"
+http_connect(3)

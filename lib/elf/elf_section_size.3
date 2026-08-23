@@ -1,0 +1,44 @@
+.TH elf_section_size 3 "ELF Library Functions" "QuickJS" "ELF Library Functions"
+
+.SH NAME
+elf_section_size \- Retrieve the size of a section by its index
+
+.SH SYNOPSIS
+.B #include <lib/elf.h>
+.B size_t elf_section_size(void* elf, int sn);
+
+.SH DESCRIPTION
+The .B elf_section_size function retrieves the size of a section by its index.
+
+The function takes two parameters:
+.I elf
+A pointer to the ELF file structure.
+.I sn
+The index of the section to find.
+
+The function returns the size of the section if it is found. If the section is not found, the function returns 0.
+
+.SH EXAMPLE
+The following example demonstrates how to use the .B elf_section_size function:
+
+.I
+.nf
+#include <stdio.h>
+#include <lib/elf.h>
+
+int main() {
+  // Assume elf is a valid pointer to an ELF file structure
+  int sn = 1; // Example section index
+  size_t size = elf_section_size(elf, sn);
+
+  if (size != 0) {
+    printf("Section size: %zu\n", size);
+  } else {
+    printf("Section not found.\n");
+  }
+
+  return 0;
+}
+.!
+.SH "SEE ALSO"
+elf_section_headers(3)
