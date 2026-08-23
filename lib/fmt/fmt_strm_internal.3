@@ -1,0 +1,47 @@
+.TH FMT_STRM_INTERNAL 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+fmt_strm_internal \- Internal function for formatting a string stream
+
+.SH SYNOPSIS
+.IB #include <lib/fmt.h>
+
+.IB size_t
+.IB fmt_strm_internal(char* dest, ...);
+
+.SH DESCRIPTION
+The \fBfmt_strm_internal\fR function is an internal function used for formatting a string stream. It takes a destination buffer and a variable number of arguments, each of which is a string to be appended to the buffer.
+
+The function takes the following parameters:
+.IB char*
+A pointer to the destination buffer.
+.IB ...
+A variable number of arguments, each a pointer to a string to be appended.
+
+The function returns the total number of bytes written to the destination buffer, or \fB(size_t)-1\fR if an overflow occurs.
+
+The \fBfmt_strm_internal\fR function is intended to be used internally by the library to format strings efficiently.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBfmt_strm_internal\fR function to format a string stream:
+
+.nf
+#include <stdio.h>
+#include <lib/fmt.h>
+
+int main() {
+    char dest[100];
+    const char* s1 = "Hello";
+    const char* s2 = "World";
+
+    size_t written = fmt_strm_internal(dest, s1, s2, NULL);
+
+    if (written != (size_t)-1) {
+        printf("Written %d bytes: %s\n", written, dest);
+    } else {
+        printf("Error: Buffer overflow\n");
+    }
+
+    return 0;
+}
+.nef

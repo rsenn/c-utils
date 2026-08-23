@@ -1,0 +1,42 @@
+.TH FMT_ESCAPECHARQUOTEDSHELL 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+fmt_escapecharquotedshell \- Escape characters for quoted shell format
+
+.SH SYNOPSIS
+.IB #include <lib/fmt.h>
+
+.IB size_t
+.IB fmt_escapecharquotedshell(char* dest, int chr);
+
+.SH DESCRIPTION
+The \fBfmt_escapecharquotedshell\fR function escapes characters for quoted shell format. It takes a destination buffer and a character as arguments. The function escapes the character if it is a single quote (`'`), otherwise it copies the character unchanged.
+
+The function takes the following parameters:
+.IB char*
+A pointer to the destination buffer.
+.IB int
+The character to escape.
+
+The function returns the number of bytes written to the destination buffer.
+
+The \fBfmt_escapecharquotedshell\fR function is intended to be used to escape characters for quoted shell format, such as to safely include shell commands within quotes.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBfmt_escapecharquotedshell\fR function to escape characters for quoted shell format:
+
+.nf
+#include <stdio.h>
+#include <lib/fmt.h>
+
+int main() {
+    char dest[20];
+    int c = '\'';
+
+    size_t written = fmt_escapecharquotedshell(dest, c);
+
+    printf("Written %d bytes: %s\n", written, dest);
+
+    return 0;
+}
+.nef

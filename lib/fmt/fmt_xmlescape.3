@@ -1,0 +1,42 @@
+.TH FMT_XMLESCAPE 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+fmt_xmlescape \- Escape characters for XML format
+
+.SH SYNOPSIS
+.IB #include <lib/fmt.h>
+
+.IB size_t
+.IB fmt_xmlescape(char* dest, int c);
+
+.SH DESCRIPTION
+The \fBfmt_xmlescape\fR function escapes characters for XML format. It takes a destination buffer and a character as arguments. The function escapes the character based on its value according to the rules of XML.
+
+The function takes the following parameters:
+.IB char*
+A pointer to the destination buffer.
+.IB int
+The character to escape.
+
+The function returns the number of bytes written to the destination buffer.
+
+The \fBfmt_xmlescape\fR function is intended to be used to escape characters for XML format, ensuring that strings can be safely included within XML documents.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBfmt_xmlescape\fR function to escape characters for XML format:
+
+.nf
+#include <stdio.h>
+#include <lib/fmt.h>
+
+int main() {
+    char dest[20];
+    int c = '<';
+
+    size_t written = fmt_xmlescape(dest, c);
+
+    printf("Written %d bytes: %s\n", written, dest);
+
+    return 0;
+}
+.nef

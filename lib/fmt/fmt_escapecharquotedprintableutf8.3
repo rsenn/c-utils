@@ -1,0 +1,42 @@
+.TH FMT_ESCAPECHARQUOTEDPRINTABLEUTF8 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+fmt_escapecharquotedprintableutf8 \- Escape characters for quoted printable format in UTF-8
+
+.SH SYNOPSIS
+.IB #include <lib/fmt.h>
+
+.IB size_t
+.IB fmt_escapecharquotedprintableutf8(char* dest, int c);
+
+.SH DESCRIPTION
+The \fBfmt_escapecharquotedprintableutf8\fR function escapes characters for quoted printable format in UTF-8. It takes a destination buffer and a character as arguments. The function escapes the character if it is not in the printable ASCII range, otherwise it copies the character unchanged.
+
+The function takes the following parameters:
+.IB char*
+A pointer to the destination buffer.
+.IB int
+The character to escape.
+
+The function returns the number of bytes written to the destination buffer.
+
+The \fBfmt_escapecharquotedprintableutf8\fR function is intended to be used to escape characters for quoted printable format in UTF-8, such as non-ASCII characters and control characters.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBfmt_escapecharquotedprintableutf8\fR function to escape characters for quoted printable format in UTF-8:
+
+.nf
+#include <stdio.h>
+#include <lib/fmt.h>
+
+int main() {
+    char dest[50];
+    int c = 0x80;
+
+    size_t written = fmt_escapecharquotedprintableutf8(dest, c);
+
+    printf("Written %d bytes: %s\n", written, dest);
+
+    return 0;
+}
+.nef

@@ -1,0 +1,49 @@
+.TH HASHMAP_DELETE 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+hashmap_delete \- Delete a key from a hashmap
+
+.SH SYNOPSIS
+.IB #include <lib/hashmap.h>
+
+.IB void
+.IB hashmap_delete(hashmap* map, const char* key);
+
+.SH DESCRIPTION
+The \fBhashmap_delete\fR function deletes a key and its associated value from a hashmap. It takes a pointer to the hashmap and the key as arguments.
+
+The function takes the following parameters:
+.IB hashmap*
+A pointer to the hashmap.
+.IB const char*
+The key to be deleted.
+
+The function does not return any value.
+
+The \fBhashmap_delete\fR function is intended to be used to remove entries from a hashmap when they are no longer needed.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBhashmap_delete\fR function to delete a key from a hashmap:
+
+.nf
+#include <stdio.h>
+#include <lib/hashmap.h>
+#include <lib/str.h>
+
+int main() {
+    hashmap* map = hashmap_new();
+    const char* key = "example";
+
+    hashmap_set(map, key, "value");
+
+    printf("Value before deletion: %s\n", (char*)hashmap_get(map, key));
+
+    hashmap_delete(map, key);
+
+    printf("Value after deletion: %s\n", (char*)hashmap_get(map, key));
+
+    hashmap_free(map);
+
+    return 0;
+}
+.nef
