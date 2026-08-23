@@ -1,6 +1,7 @@
 #include "../io_internal.h"
 #include "../windoze.h"
 #include "../socket_internal.h"
+#include "../ndelay.h"
 
 #if WINDOWS_NATIVE
 #undef __BSD_VISIBLE
@@ -12,12 +13,7 @@
 
 #endif
 
-#include <fcntl.h>
 #include <errno.h>
-
-#ifndef O_NONBLOCK
-#define O_NONBLOCK O_NDELAY
-#endif
 
 void
 io_nonblock(fd_type d) {
@@ -37,7 +33,7 @@ io_nonblock(fd_type d) {
     if(e)
       e->nonblock = 1;
 #else
-  if(fcntl(d, F_SETFL, fcntl(d, F_GETFL, 0) | O_NONBLOCK) == 0)
+  if(ndelay_on(d) == 0)
     if(e)
       e->nonblock = 1;
 #endif

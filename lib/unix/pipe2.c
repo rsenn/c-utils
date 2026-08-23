@@ -111,10 +111,7 @@ pipe2(int fd[2], int flags) {
      fcntl().  */
 #ifdef F_SETFL
   if(flags & O_NONBLOCK) {
-    int fcntl_flags;
-
-    if((fcntl_flags = fcntl(fd[1], F_GETFL, 0)) < 0 || fcntl(fd[1], F_SETFL, fcntl_flags | O_NONBLOCK) == -1 ||
-       (fcntl_flags = fcntl(fd[0], F_GETFL, 0)) < 0 || fcntl(fd[0], F_SETFL, fcntl_flags | O_NONBLOCK) == -1)
+    if(ndelay_on(fd[1]) == -1 || ndelay_on(fd[0]) == -1)
       goto fail;
   }
 

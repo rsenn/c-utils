@@ -1,17 +1,9 @@
 #include "../io_internal.h"
 #include "../windoze.h"
 #include "../socket_internal.h"
-
-#if WINDOWS_NATIVE
-#else
-#include <fcntl.h>
-#endif
+#include "../ndelay.h"
 
 #include <errno.h>
-
-#ifndef O_NONBLOCK
-#define O_NONBLOCK O_NDELAY
-#endif
 
 void
 io_block(fd_type d) {
@@ -24,7 +16,7 @@ io_block(fd_type d) {
     if(e)
       e->nonblock = 0;
 #else
-  if(fcntl(d, F_SETFL, fcntl(d, F_GETFL, 0) & ~O_NONBLOCK) == 0)
+  if(ndelay_off(d) == 0)
     if(e)
       e->nonblock = 0;
 #endif

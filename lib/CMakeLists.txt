@@ -137,7 +137,13 @@ if(NOT BUILD_SHARED AND NOT BUILD_STATIC)
   target_link_libraries(gpio PRIVATE mmap)
   target_link_libraries(hmap PRIVATE str)
   target_link_libraries(http PRIVATE fmt dns errmsg byte io scan socket stralloc str ${TLS_LIBRARIES})
-  target_link_libraries(io PRIVATE buffer iarray array byte fmt open taia ${LIBMSWSOCK})
+  # io_block.c/io_nonblock.c call ndelay_off/ndelay_on (already an
+  # equivalent fcntl/ioctlsocket sequence) instead of duplicating it. This
+  # makes io<->ndelay mutually dependent, same as the pre-existing
+  # socket<->ndelay cycle below -- CMake resolves circular STATIC lib deps
+  # by repeating them on the link line, so this is a known-working pattern
+  # here already.
+  target_link_libraries(io PRIVATE buffer iarray array byte fmt open taia ndelay ${LIBMSWSOCK})
   target_link_libraries(iob PRIVATE io array byte str)
   target_link_libraries(iom PRIVATE ${LIBPTHREAD})
   target_link_libraries(json PRIVATE hashmap fmt scan)
