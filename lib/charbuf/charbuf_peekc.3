@@ -1,0 +1,47 @@
+.TH CHARBUF_PEEKC 3 "2023-04-01" "1.0" "lib/charbuf/charbuf_peekc"
+.SH NAME
+charbuf_peekc \- Peek at the next character from a character buffer and store it in a buffer
+.SH SYNOPSIS
+#include <lib/charbuf.h>
+
+ssize_t charbuf_peekc(charbuf *b, unsigned char* ch);
+.SH DESCRIPTION
+The \fBcharbuf_peekc\fR function peeks at the next character from the character buffer \fBb\fR and stores it in the buffer pointed to by \fBch\fR. It does not advance the buffer's position. If the buffer is empty, it reads more characters into the buffer and then attempts to peek again. If no characters are available, it returns -1.
+
+This function is useful for looking at the next character in a buffer without consuming it.
+.SH ARGUMENTS
+\fBb\fR
+The character buffer from which to peek at the next character.
+\fBch\fR
+The buffer in which to store the next character.
+.SH RETURN VALUE
+The next character from the buffer, or -1 if no characters are available.
+.SH EXAMPLE
+The following example demonstrates how to use the \fBcharbuf_peekc\fR function:
+.nf
+#include <lib/charbuf.h>
+#include <stdio.h>
+
+int main() {
+    charbuf b;
+    charbuf_init(&b);
+    charbuf_append(&b, "Hello, world!");
+
+    unsigned char ch;
+    ssize_t ret = charbuf_peekc(&b, &ch);
+    if (ret != -1) {
+        printf("Next character: %c\n", ch);
+    } else {
+        printf("No characters available\n");
+    }
+
+    charbuf_free(&b);
+
+    return 0;
+}
+.ne
+.fi
+.SH AUTHOR
+This manual page was written by John Doe.
+.SH SEE ALSO
+charbuf_stubborn_read(3)

@@ -1,0 +1,51 @@
+.TH CHARBUF_PRED_LOOKAHEAD 3 "2023-04-01" "1.0" "lib/charbuf/charbuf_pred_lookahead"
+.SH NAME
+charbuf_pred_lookahead \- Look ahead for characters in a character buffer based on a predicate
+.SH SYNOPSIS
+#include <lib/charbuf.h>
+#include <lib/stralloc.h>
+
+ssize_t charbuf_pred_lookahead(charbuf *b, int (*pred)(int, size_t, void*), void *ptr);
+.SH DESCRIPTION
+The \fBcharbuf_pred_lookahead\fR function looks ahead at characters in the character buffer \fBb\fR and counts the number of characters that satisfy a predicate function \fBpred\fR. The predicate function is called for each character in the buffer, and if it returns non-zero, the character is counted. The function continues to look ahead until the predicate returns zero or there are no more characters to look ahead.
+
+This function is useful for counting the number of characters in a buffer that satisfy a certain condition without consuming them.
+.SH ARGUMENTS
+\fBb\fR
+The character buffer to look ahead in.
+\fBpred\fR
+A predicate function that determines whether a character should be counted.
+\fBptr\fR
+A pointer to data that will be passed to the predicate function.
+.SH RETURN VALUE
+The number of characters that satisfy the predicate.
+.SH EXAMPLE
+The following example demonstrates how to use the \fBcharbuf_pred_lookahead\fR function:
+.nf
+#include <lib/charbuf.h>
+#include <stdio.h>
+
+int is_alpha(int c, size_t len, void *ptr) {
+    (void)ptr; // Unused
+    return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z');
+}
+
+int main() {
+    charbuf b;
+    charbuf_init(&b);
+    charbuf_append(&b, "Hello, world!");
+
+    size_t count = charbuf_pred_lookahead(&b, is_alpha, NULL);
+
+    printf("Number of alphabetic characters: %zu\n", count);
+
+    charbuf_free(&b);
+
+    return 0;
+}
+.ne
+.fi
+.SH AUTHOR
+This manual page was written by John Doe.
+.SH SEE ALSO
+charbuf_peekc(3), stralloc(3)

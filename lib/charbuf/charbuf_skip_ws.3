@@ -1,0 +1,43 @@
+.TH CHARBUF_SKIP_WS 3 "2023-04-01" "1.0" "lib/charbuf/charbuf_skip_ws"
+.SH NAME
+charbuf_skip_ws \- Skip whitespace characters in a character buffer
+.SH SYNOPSIS
+#include <lib/charbuf.h>
+#include <lib/stralloc.h>
+
+ssize_t charbuf_skip_ws(charbuf *b);
+.SH DESCRIPTION
+The \fBcharbuf_skip_ws\fR function skips whitespace characters in the character buffer \fBb\fR. The function continues to skip characters until a non-whitespace character is encountered or there are no more characters to skip.
+
+This function is useful for skipping leading whitespace in a buffer.
+.SH ARGUMENTS
+\fBb\fR
+The character buffer from which to skip whitespace characters.
+.SH RETURN VALUE
+The number of whitespace characters skipped.
+.SH EXAMPLE
+The following example demonstrates how to use the \fBcharbuf_skip_ws\fR function:
+.nf
+#include <lib/charbuf.h>
+#include <stdio.h>
+
+int main() {
+    charbuf b;
+    charbuf_init(&b);
+    charbuf_append(&b, "  Hello, world!");
+
+    size_t count = charbuf_skip_ws(&b);
+
+    printf("Number of whitespace characters skipped: %zu\n", count);
+    printf("Remaining buffer: %s\n", charbuf_data(&b));
+
+    charbuf_free(&b);
+
+    return 0;
+}
+.ne
+.fi
+.SH AUTHOR
+This manual page was written by John Doe.
+.SH SEE ALSO
+charbuf_peekc(3), stralloc(3)

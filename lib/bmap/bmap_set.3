@@ -1,0 +1,58 @@
+.TH BMAP_SET 3 "2023-04-01" "1.0" "lib/bmap/bmap_set"
+.SH NAME
+bmap_set_ \- Set a key-value pair in a hash map
+.SH SYNOPSIS
+#include <lib/bmap/bmap.h>
+
+int bmap_set_(bmap_base_t *m, const char *key, void *value, int vsize);
+.SH DESCRIPTION
+The \fBbmap_set_\fR function sets a key-value pair in the hash map \fIm\fR. If the key already exists, it updates the value associated with that key. If the key does not exist, it adds a new key-value pair to the hash map.
+
+This function is useful for updating or inserting data into a hash map based on a specific key.
+.SH ARGUMENTS
+\fIm\fR
+The hash map in which to set the key-value pair.
+\fIkey\fR
+The key of the key-value pair.
+\fIvalue\fR
+The value to set for the key.
+\fIvsize\fR
+The size of the value.
+.SH RETURN VALUE
+0 on success, -1 on failure.
+.SH EXAMPLE
+The following example demonstrates how to use the \fBbmap_set_\fR function:
+.nf
+#include <lib/bmap/bmap.h>
+#include <stdio.h>
+
+int main() {
+    bmap_base_t *m = bmap_init(100);
+    if (m == NULL) {
+        fprintf(stderr, "Failed to initialize hash map\n");
+        return 1;
+    }
+
+    // Insert a key-value pair
+    if (bmap_set_(m, "key1", "value1", 6) == 0) {
+        printf("Key 'key1' set successfully\n");
+    } else {
+        printf("Failed to set key 'key1'\n");
+    }
+
+    // Update the key-value pair
+    if (bmap_set_(m, "key1", "new_value1", 11) == 0) {
+        printf("Key 'key1' updated successfully\n");
+    } else {
+        printf("Failed to update key 'key1'\n");
+    }
+
+    bmap_deinit_(m);
+    return 0;
+}
+.ne
+.fi
+.SH AUTHOR
+This manual page was written by John Doe.
+.SH SEE ALSO
+bmap_init(3), bmap_get_(3), bmap_remove_(3), bmap_deinit_(3)

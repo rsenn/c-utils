@@ -1,0 +1,47 @@
+.TH CHARBUF_NEXTC 3 "2023-04-01" "1.0" "lib/charbuf/charbuf_nextc"
+.SH NAME
+charbuf_nextc \- Get the next character from a character buffer and store it in a buffer
+.SH SYNOPSIS
+#include <lib/charbuf.h>
+
+ssize_t charbuf_nextc(charbuf *b, unsigned char* ch);
+.SH DESCRIPTION
+The \fBcharbuf_nextc\fR function retrieves the next character from the character buffer \fBb\fR and stores it in the buffer pointed to by \fBch\fR. It first skips any whitespace characters (as defined by \fBisspace\fR) and then returns the next non-whitespace character. If no non-whitespace character is found, it returns -1.
+
+This function is useful for parsing and processing text in a character buffer.
+.SH ARGUMENTS
+\fBb\fR
+The character buffer from which to retrieve the next character.
+\fBch\fR
+The buffer in which to store the next character.
+.SH RETURN VALUE
+The next non-whitespace character from the buffer, or -1 if no non-whitespace character is found.
+.SH EXAMPLE
+The following example demonstrates how to use the \fBcharbuf_nextc\fR function:
+.nf
+#include <lib/charbuf.h>
+#include <stdio.h>
+
+int main() {
+    charbuf b;
+    charbuf_init(&b);
+    charbuf_append(&b, "Hello, world!");
+
+    unsigned char ch;
+    ssize_t ret = charbuf_nextc(&b, &ch);
+    if (ret != -1) {
+        printf("Next character: %c\n", ch);
+    } else {
+        printf("No non-whitespace character found\n");
+    }
+
+    charbuf_free(&b);
+
+    return 0;
+}
+.ne
+.fi
+.SH AUTHOR
+This manual page was written by John Doe.
+.SH SEE ALSO
+isspace(3), charbuf_skip(3), charbuf_peekc(3)

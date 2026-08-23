@@ -1,0 +1,47 @@
+.TH CHARBUF_PEEKN 3 "2023-04-01" "1.0" "lib/charbuf/charbuf_peekn"
+.SH NAME
+charbuf_peekn \- Peek at the next N characters from a character buffer
+.SH SYNOPSIS
+#include <lib/charbuf.h>
+
+uint8* charbuf_peekn(charbuf *b, unsigned int n);
+.SH DESCRIPTION
+The \fBcharbuf_peekn\fR function peeks at the next \fBn\fR characters from the character buffer \fBb\fR and returns a pointer to the buffer containing these characters. It does not advance the buffer's position. If the buffer contains fewer than \fBn\fR characters, it reads more characters into the buffer and then attempts to peek again. If fewer than \fBn\fR characters are available, it returns 0.
+
+This function is useful for looking at a sequence of characters in a buffer without consuming them.
+.SH ARGUMENTS
+\fBb\fR
+The character buffer from which to peek at the next \fBn\fR characters.
+\fBn\fR
+The number of characters to peek.
+.SH RETURN VALUE
+A pointer to the buffer containing the next \fBn\fR characters, or 0 if fewer than \fBn\fR characters are available.
+.SH EXAMPLE
+The following example demonstrates how to use the \fBcharbuf_peekn\fR function:
+.nf
+#include <lib/charbuf.h>
+#include <stdio.h>
+
+int main() {
+    charbuf b;
+    charbuf_init(&b);
+    charbuf_append(&b, "Hello, world!");
+
+    unsigned int n = 5;
+    uint8* ret = charbuf_peekn(&b, n);
+    if (ret) {
+        printf("Next %d characters: %.*s\n", n, n, ret);
+    } else {
+        printf("Fewer than %d characters available\n", n);
+    }
+
+    charbuf_free(&b);
+
+    return 0;
+}
+.ne
+.fi
+.SH AUTHOR
+This manual page was written by John Doe.
+.SH SEE ALSO
+charbuf_stubborn_read(3)

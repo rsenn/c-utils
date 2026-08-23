@@ -1,0 +1,44 @@
+.TH BYTE_CASE_EQUAL 3 "2023-04-01" "1.0" "lib/byte/byte_case_equal"
+.SH NAME
+byte_case_equal \- Compare two strings case-insensitively
+.SH SYNOPSIS
+#include <lib/byte.h>
+
+size_t byte_case_equal(const void *s, size_t len, const void *t);
+.SH DESCRIPTION
+The \fBbyte_case_equal\fR function compares two strings \fIs\fR and \fIt\fR of length \fIl\fR in a case-insensitive manner. It returns 1 if the first \fIl\fR bytes of \fIs\fR are equal to the first \fIl\fR bytes of \fIt\fR, and 0 otherwise.
+
+This function is useful for comparing strings without considering their case.
+.SH ARGUMENTS
+\fIs\fR
+The first string to compare.
+\fIl\fR
+The length of the strings.
+\fIt\fR
+The second string to compare.
+.SH RETURN VALUE
+1 if the first \fIl\fR bytes of \fIs\fR are equal to the first \fIl\fR bytes of \fIt\fR, 0 otherwise.
+.SH EXAMPLE
+The following example demonstrates how to use the \fBbyte_case_equal\fR function:
+.nf
+#include <lib/byte.h>
+#include <stdio.h>
+
+int main() {
+    const char *str1 = "Hello";
+    const char *str2 = "hello";
+
+    if (byte_case_equal(str1, 5, str2)) {
+        printf("Strings match case-insensitively\n");
+    } else {
+        printf("Strings differ case-insensitively\n");
+    }
+
+    return 0;
+}
+.ne
+.fi
+.SH AUTHOR
+This manual page was written by John Doe.
+.SH SEE ALSO
+strcmp(3)

@@ -1,0 +1,45 @@
+.TH CHARBUF_SKIPN 3 "2023-04-01" "1.0" "lib/charbuf/charbuf_skipn"
+.SH NAME
+charbuf_skipn \- Skip the next n characters in a character buffer
+.SH SYNOPSIS
+#include <lib/charbuf.h>
+#include <lib/stralloc.h>
+
+ssize_t charbuf_skipn(charbuf *b, size_t n);
+.SH DESCRIPTION
+The \fBcharbuf_skipn\fR function skips the next \fBn\fR characters in the character buffer \fBb\fR. The function continues to skip characters until \fBn\fR characters have been skipped or there are no more characters to skip.
+
+This function is useful for skipping a specified number of characters in a buffer.
+.SH ARGUMENTS
+\fBb\fR
+The character buffer from which to skip characters.
+\fBn\fR
+The number of characters to skip.
+.SH RETURN VALUE
+The number of characters actually skipped.
+.SH EXAMPLE
+The following example demonstrates how to use the \fBcharbuf_skipn\fR function:
+.nf
+#include <lib/charbuf.h>
+#include <stdio.h>
+
+int main() {
+    charbuf b;
+    charbuf_init(&b);
+    charbuf_append(&b, "Hello, world!");
+
+    size_t count = charbuf_skipn(&b, 5);
+
+    printf("Number of characters skipped: %zu\n", count);
+    printf("Remaining buffer: %s\n", charbuf_data(&b));
+
+    charbuf_free(&b);
+
+    return 0;
+}
+.ne
+.fi
+.SH AUTHOR
+This manual page was written by John Doe.
+.SH SEE ALSO
+charbuf_peekc(3), stralloc(3)

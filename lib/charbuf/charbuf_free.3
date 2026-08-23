@@ -1,0 +1,39 @@
+.TH CHARBUF_FREE 3 "2023-04-01" "1.0" "lib/charbuf/charbuf_free"
+.SH NAME
+charbuf_free \- Free a character buffer
+.SH SYNOPSIS
+#include <lib/charbuf.h>
+
+void charbuf_free(charbuf *b);
+.SH DESCRIPTION
+The \fBcharbuf_free\fR function frees the memory associated with the character buffer \fBb\fR. It releases the memory allocated for the buffer's characters and resets the buffer's state to its initial values.
+
+This function is useful for cleaning up a character buffer when it is no longer needed.
+.SH ARGUMENTS
+\fBb\fR
+The character buffer to free.
+.SH RETURN VALUE
+None.
+.SH EXAMPLE
+The following example demonstrates how to use the \fBcharbuf_free\fR function:
+.nf
+#include <lib/charbuf.h>
+#include <stdio.h>
+
+int main() {
+    charbuf b;
+    charbuf_init(&b);
+    charbuf_append(&b, "Hello, world!");
+
+    printf("Buffer contents: %s\n", b.chrs);
+
+    charbuf_free(&b);
+
+    return 0;
+}
+.ne
+.fi
+.SH AUTHOR
+This manual page was written by John Doe.
+.SH SEE ALSO
+charbuf_init(3), charbuf_append(3)

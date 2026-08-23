@@ -1,0 +1,44 @@
+.TH BYTE_CASE_START 3 "2023-04-01" "1.0" "lib/byte/byte_case_start"
+.SH NAME
+byte_case_start \- Compare the start of two strings case-insensitively
+.SH SYNOPSIS
+#include <lib/byte.h>
+
+size_t byte_case_start(const void *x1, size_t len, const void *x2);
+.SH DESCRIPTION
+The \fBbyte_case_start\fR function compares the start of two strings \fIx1\fR and \fIx2\fR of length \fIl\fR in a case-insensitive manner. It returns 1 if the first \fIl\fR bytes of \fIx1\fR match the start of the string \fIx2\fR, and 0 otherwise.
+
+This function is useful for comparing the start of strings without considering their case.
+.SH ARGUMENTS
+\fIx1\fR
+The first string to compare.
+\fIl\fR
+The length of the strings.
+\fIx2\fR
+The second string to compare.
+.SH RETURN VALUE
+1 if the first \fIl\fR bytes of \fIx1\fR match the start of the string \fIx2\fR, 0 otherwise.
+.SH EXAMPLE
+The following example demonstrates how to use the \fBbyte_case_start\fR function:
+.nf
+#include <lib/byte.h>
+#include <stdio.h>
+
+int main() {
+    const char *str1 = "Hello";
+    const char *str2 = "hello world";
+
+    if (byte_case_start(str2, 5, str1)) {
+        printf("Start of strings match case-insensitively\n");
+    } else {
+        printf("Start of strings differ case-insensitively\n");
+    }
+
+    return 0;
+}
+.ne
+.fi
+.SH AUTHOR
+This manual page was written by John Doe.
+.SH SEE ALSO
+strncmp(3)

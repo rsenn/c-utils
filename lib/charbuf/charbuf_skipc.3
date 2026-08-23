@@ -1,0 +1,47 @@
+.TH CHARBUF_SKIPC 3 "2023-04-01" "1.0" "lib/charbuf/charbuf_skipc"
+.SH NAME
+charbuf_skipc \- Skip a character in a character buffer
+.SH SYNOPSIS
+#include <lib/charbuf.h>
+#include <lib/stralloc.h>
+
+ssize_t charbuf_skipc(charbuf *b, uint8 *ch);
+.SH DESCRIPTION
+The \fBcharbuf_skipc\fR function skips a single character in the character buffer \fBb\fR. If a pointer \fBch\fR is provided, the skipped character is copied to the location pointed to by \fBch\fR. The function continues to skip characters until a non-character is encountered or there are no more characters to skip.
+
+This function is useful for skipping individual characters in a buffer.
+.SH ARGUMENTS
+\fBb\fR
+The character buffer from which to skip a character.
+\fBch\fR
+A pointer to a location where the skipped character will be copied (optional).
+.SH RETURN VALUE
+The number of characters skipped.
+.SH EXAMPLE
+The following example demonstrates how to use the \fBcharbuf_skipc\fR function:
+.nf
+#include <lib/charbuf.h>
+#include <stdio.h>
+
+int main() {
+    charbuf b;
+    charbuf_init(&b);
+    charbuf_append(&b, "Hello, world!");
+
+    uint8 ch;
+    size_t count = charbuf_skipc(&b, &ch);
+
+    printf("Number of characters skipped: %zu\n", count);
+    printf("Skipped character: %c\n", ch);
+    printf("Remaining buffer: %s\n", charbuf_data(&b));
+
+    charbuf_free(&b);
+
+    return 0;
+}
+.ne
+.fi
+.SH AUTHOR
+This manual page was written by John Doe.
+.SH SEE ALSO
+charbuf_peekc(3), stralloc(3)

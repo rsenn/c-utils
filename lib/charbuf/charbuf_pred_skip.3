@@ -1,0 +1,51 @@
+.TH CHARBUF_PRED_SKIP 3 "2023-04-01" "1.0" "lib/charbuf/charbuf_pred_skip"
+.SH NAME
+charbuf_pred_skip \- Skip characters in a character buffer based on a predicate
+.SH SYNOPSIS
+#include <lib/charbuf.h>
+#include <lib/stralloc.h>
+
+ssize_t charbuf_pred_skip(charbuf *b, int (*pred)(int, size_t, void*), void *ptr);
+.SH DESCRIPTION
+The \fBcharbuf_pred_skip\fR function skips characters in the character buffer \fBb\fR based on a predicate function \fBpred\fR. The predicate function is called for each character in the buffer, and if it returns non-zero, the character is skipped. The function continues to skip characters until the predicate returns zero or there are no more characters to skip.
+
+This function is useful for skipping a sequence of characters in a buffer that satisfy a certain condition.
+.SH ARGUMENTS
+\fBb\fR
+The character buffer from which to skip characters.
+\fBpred\fR
+A predicate function that determines whether a character should be skipped.
+\fBptr\fR
+A pointer to data that will be passed to the predicate function.
+.SH RETURN VALUE
+The number of characters skipped.
+.SH EXAMPLE
+The following example demonstrates how to use the \fBcharbuf_pred_skip\fR function:
+.nf
+#include <lib/charbuf.h>
+#include <stdio.h>
+
+int is_alpha(int c, size_t len, void *ptr) {
+    (void)ptr; // Unused
+    return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z');
+}
+
+int main() {
+    charbuf b;
+    charbuf_init(&b);
+    charbuf_append(&b, "Hello, world!");
+
+    size_t count = charbuf_pred_skip(&b, is_alpha, NULL);
+
+    printf("Number of alphabetic characters skipped: %zu\n", count);
+
+    charbuf_free(&b);
+
+    return 0;
+}
+.ne
+.fi
+.SH AUTHOR
+This manual page was written by John Doe.
+.SH SEE ALSO
+charbuf_peekc(3), stralloc(3)

@@ -1,0 +1,54 @@
+.TH BMAP_REMOVE 3 "2023-04-01" "1.0" "lib/bmap/bmap_remove"
+.SH NAME
+bmap_remove_ \- Remove a key-value pair from a hash map
+.SH SYNOPSIS
+#include <lib/bmap/bmap.h>
+
+void bmap_remove_(bmap_base_t *m, const char *key);
+.SH DESCRIPTION
+The \fBbmap_remove_\fR function removes a key-value pair associated with a given key from the hash map \fIm\fR. If the key exists, it is removed and the memory allocated for the node is freed.
+
+This function is useful for removing data from a hash map based on a specific key.
+.SH ARGUMENTS
+\fIm\fR
+The hash map from which to remove the key-value pair.
+\fIkey\fR
+The key of the key-value pair to be removed.
+.SH RETURN VALUE
+None.
+.SH EXAMPLE
+The following example demonstrates how to use the \fBbmap_remove_\fR function:
+.nf
+#include <lib/bmap/bmap.h>
+#include <stdio.h>
+
+int main() {
+    bmap_base_t *m = bmap_init(100);
+    if (m == NULL) {
+        fprintf(stderr, "Failed to initialize hash map\n");
+        return 1;
+    }
+
+    // Insert some data into the hash map
+    bmap_insert(m, "key1", "value1");
+    bmap_insert(m, "key2", "value2");
+
+    // Remove a key-value pair
+    bmap_remove_(m, "key1");
+
+    // Verify removal
+    if (bmap_get_(m, "key1") == NULL) {
+        printf("Key 'key1' removed successfully\n");
+    } else {
+        printf("Key 'key1' not removed\n");
+    }
+
+    bmap_deinit_(m);
+    return 0;
+}
+.ne
+.fi
+.SH AUTHOR
+This manual page was written by John Doe.
+.SH SEE ALSO
+bmap_init(3), bmap_insert(3), bmap_get_(3), bmap_deinit_(3)

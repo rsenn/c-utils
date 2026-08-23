@@ -1,0 +1,52 @@
+.TH BMAP_NEXT 3 "2023-04-01" "1.0" "lib/bmap/bmap_next"
+.SH NAME
+bmap_next_ \- Get the next key from a hash map iteration
+.SH SYNOPSIS
+#include <lib/bmap/bmap.h>
+
+const char* bmap_next_(bmap_base_t *m, bmap_iter_t *iter);
+.SH DESCRIPTION
+The \fBbmap_next_\fR function retrieves the next key from a hash map iteration. It advances the iterator to the next key and returns the key as a string. If there are no more keys, it returns \fBNULL\fR.
+
+This function is useful for iterating over the keys in a hash map.
+.SH ARGUMENTS
+\fIm\fR
+The hash map being iterated over.
+\fIiter\fR
+The hash map iterator.
+.SH RETURN VALUE
+A string representing the next key, or \fBNULL\fR if there are no more keys.
+.SH EXAMPLE
+The following example demonstrates how to use the \fBbmap_next_\fR function:
+.nf
+#include <lib/bmap/bmap.h>
+#include <stdio.h>
+
+int main() {
+    bmap_base_t *m = bmap_init(100);
+    if (m == NULL) {
+        fprintf(stderr, "Failed to initialize hash map\n");
+        return 1;
+    }
+
+    // Insert some data into the hash map
+    bmap_insert(m, "key1", "value1");
+    bmap_insert(m, "key2", "value2");
+
+    // Initialize the iterator
+    bmap_iter_t iter = bmap_iter_();
+
+    // Iterate over the hash map
+    while (const char *key = bmap_next_(m, &iter)) {
+        printf("Key: %s\n", key);
+    }
+
+    bmap_deinit_(m);
+    return 0;
+}
+.ne
+.fi
+.SH AUTHOR
+This manual page was written by John Doe.
+.SH SEE ALSO
+bmap_init(3), bmap_insert(3), bmap_remove(3), bmap_iter_(3), bmap_deinit_(3)
