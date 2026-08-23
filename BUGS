@@ -199,16 +199,3 @@
   call sites need converting to the `mtx_t`/`cnd_t` API before `iom` can
   actually work on `WINDOWS_NATIVE`; not fixed since it's a real behavioral
   rewrite of the module's mingw path, not a header/build-config issue.
-
-- env-put2-windows-use-after-free: `env_put2()` in `lib/env/env_put.c`, on
-  the non-MSVC `WINDOWS_NATIVE` branch (the mingw/win32 path, as opposed to
-  the `_MSC_VER` branch just above it which correctly uses `_putenv_s`
-  directly), builds a `"name=value"` string into `tmp`, calls
-  `env_put(tmp)` (which calls `putenv(tmp)`), then immediately
-  `free(tmp)`. `putenv()` does not copy its argument -- the CRT keeps the
-  pointer live in the environment table -- so this frees memory the
-  environment block still references, corrupting any later
-  `getenv()`/`GetEnvironmentVariableA()` read of that variable. Found
-  while implementing `lib/unix/win32_setenv.c` and fixing `env_put2b()`/
-  `env_init()` for `WINDOWS_NATIVE`; not fixed since it's a pre-existing,
-  unrelated bug in code this session didn't otherwise touch.

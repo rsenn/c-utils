@@ -55,7 +55,11 @@ int
 env_putb(const char* x, size_t n) {
   char* tmp = str_ndup(x, n);
   int ret = env_put(tmp);
-  free(tmp);
+
+  /* putenv(3) keeps `tmp` live in the environment table on success --
+   * only free it when putenv() itself failed and never adopted it. */
+  if(!ret)
+    free(tmp);
   return ret;
 }
 
@@ -70,7 +74,9 @@ env_put2(const char* name, const char* value) {
     str_cat(tmp, "=");
     str_cat(tmp, value);
     ret = env_put(tmp);
-    free(tmp);
+
+    if(!ret)
+      free(tmp);
   }
   return ret;
 }
