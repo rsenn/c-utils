@@ -1,0 +1,61 @@
+.TH CBMAP_DELETE 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+cbmap_delete \- Delete a key-value pair from a CBMap
+
+.SH SYNOPSIS
+.IB #include <lib/cbmap_internal.h>
+
+.IB int
+.IB cbmap_delete (cbmap_t map, void* key, size_t key_len);
+
+.SH DESCRIPTION
+The \fBcbmap_delete\fR function is used to delete a key-value pair from a CBMap. This function removes the key and its associated value from the map and frees the memory allocated for the key and value.
+
+The function takes three parameters:
+.TP
+.B map
+A pointer to the CBMap from which the key-value pair should be deleted.
+.TP
+.B key
+A pointer to the key to be deleted.
+.TP
+.B key_len
+The length of the key.
+
+The function returns one of the following values:
+.TP
+.B NOT_FOUND
+The key was not found in the map.
+.TP
+.B FOUND
+The key was successfully deleted from the map.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBcbmap_delete\fR function to delete a key-value pair from a CBMap:
+
+.nf
+#include <stdio.h>
+#include <lib/cbmap_internal.h>
+
+int main() {
+    cbmap_t map = cbmap_new();
+    void* key = ...;  // Initialize key
+    size_t key_len = ...;  // Initialize key length
+
+    // Assume map is initialized and used somewhere
+
+    // Delete the key-value pair
+    int result = cbmap_delete(map, key, key_len);
+
+    if(result == NOT_FOUND) {
+        printf("Key not found\n");
+    } else if(result == FOUND) {
+        printf("Key deleted successfully\n");
+    }
+
+    cbmap_free(map);
+
+    return 0;
+}
+.nef

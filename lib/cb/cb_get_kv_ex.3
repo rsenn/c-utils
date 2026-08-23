@@ -1,0 +1,47 @@
+.TH CB_GET_KV_EX 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+cb_get_kv_ex \- Extract the value from a key-value pair and return it as a pointer
+
+.SH SYNOPSIS
+.IB #include <lib/cb_internal.h>
+.IB #include <lib/str.h>
+
+.IB void
+.IB cb_get_kv_ex (
+.IB void* kv,
+.IB void** value
+.IB );
+
+.SH DESCRIPTION
+The \fBcb_get_kv_ex\fR function extracts the value from a key-value pair and sets the provided pointer to point to the value.
+
+The function takes two arguments:
+.TP
+.IR kv (void*)
+A pointer to the key-value pair.
+.TP
+.IR value (void**)
+A pointer to a pointer where the value will be stored.
+
+The function does not return any value.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBcb_get_kv_ex\fR function:
+
+.nf
+#include <stdio.h>
+#include <lib/cb_internal.h>
+#include <lib/str.h>
+
+int main() {
+    const char* kv = "key:value";
+    void* value;
+
+    cb_get_kv_ex((void*)kv, &value);
+
+    printf("Value: %s\n", (char*)value);
+
+    return 0;
+}
+.nef

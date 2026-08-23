@@ -1,0 +1,54 @@
+.TH CBMAP_VISIT 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+cbmap_visit, cbmap_visit_prefix \- Visit nodes in a CBMap
+
+.SH SYNOPSIS
+.IB #include <lib/cbmap_internal.h>
+
+.IB int
+.IB cbmap_visit (unsigned char* top, cbmap_visitor visitor_fn, void* user_data);
+
+.IB int
+.IB cbmap_visit_prefix (cbmap_t map, unsigned char* key_prefix, size_t key_prefix_len, cbmap_visitor visitor_fn, void* user_data);
+
+.SH DESCRIPTION
+The \fBcbmap_visit\fR and \fBcbmap_visit_prefix\fR functions are used to visit nodes in a CBMap. These functions allow you to traverse the map and perform actions on each node.
+
+.SH cbmap_visit
+The \fBcbmap_visit\fR function visits all nodes in a CBMap. It takes a callback function \fBvisitor_fn\fR and user data as parameters. The function traverses the map and calls the visitor function for each node.
+
+The function returns 1 if successful, or 0 if an error occurs.
+
+.SH cbmap_visit_prefix
+The \fBcbmap_visit_prefix\fR function visits nodes in a CBMap that match a specified key prefix. It takes a CBMap pointer \fBmap\fR, a key prefix \fBkey_prefix\fR, and user data as parameters. The function traverses the map and calls the visitor function for nodes that match the key prefix.
+
+The function returns 1 if successful, or 0 if an error occurs.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBcbmap_visit\fR and \fBcbmap_visit_prefix\fR functions to visit nodes in a CBMap:
+
+.nf
+#include <stdio.h>
+#include <lib/cbmap_internal.h>
+
+int my_visitor(const unsigned char* key, size_t key_len, const unsigned char* value, size_t value_len, void* user_data) {
+    printf("Key: %.*s, Value: %.*s\n", key_len, key, value_len, value);
+    return 1;
+}
+
+int main() {
+    cbmap_t map = cbmap_new();
+
+    // Assume map is initialized and used somewhere
+
+    // Visit all nodes in the CBMap
+    cbmap_visit((unsigned char*)map->root, my_visitor, NULL);
+
+    // Visit nodes with a specific key prefix
+    unsigned char prefix[] = "prefix";
+    cbmap_visit_prefix(map, prefix, sizeof(prefix) - 1, my_visitor, NULL);
+
+    return 0;
+}
+.nef

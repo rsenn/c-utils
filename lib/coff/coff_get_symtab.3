@@ -1,0 +1,44 @@
+.TH COFF_GET_SYMTAB 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+coff_get_symtab \- Retrieve the symbol table from a COFF file
+
+.SH SYNOPSIS
+.IB #include <lib/coff.h>
+
+.IB coff_symtab_entry*
+.IB coff_get_symtab (void* coff, uint32* num);
+
+.SH DESCRIPTION
+The \fBcoff_get_symtab\fR function retrieves the symbol table from a COFF (Common Object File Format) file. It takes a COFF file pointer \fBcoff\fR and a pointer to a \fBuint32\fR variable \fBnum\fR as parameters. The function returns a pointer to the symbol table entry, and optionally sets the number of symbols in the symbol table.
+
+.SH coff_get_symtab
+The \fBcoff_get_symtab\fR function retrieves the symbol table from a COFF file. It takes a COFF file pointer \fBcoff\fR and a pointer to a \fBuint32\fR variable \fBnum\fR as parameters. The function returns a pointer to the symbol table entry, and optionally sets the number of symbols in the symbol table.
+
+The function returns a pointer to the symbol table entry, or \fBNULL\fR if the symbol table is not found or an error occurs.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBcoff_get_symtab\fR function to retrieve the symbol table from a COFF file:
+
+.nf
+#include <stdio.h>
+#include <lib/coff.h>
+
+int main() {
+    void* coff_file = load_coff_file("example.coff");
+    uint32 num_symtab_entries = 0;
+    coff_symtab_entry* symtab = coff_get_symtab(coff_file, &num_symtab_entries);
+
+    if(symtab != NULL) {
+        // Use the symbol table
+
+        printf("Number of symbols: %u\n", num_symtab_entries);
+    } else {
+        printf("Failed to retrieve symbol table\n");
+    }
+
+    free_coff_file(coff_file);
+
+    return 0;
+}
+.nef

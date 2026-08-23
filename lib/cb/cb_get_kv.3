@@ -1,0 +1,53 @@
+.TH CB_GET_KV 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+cb_get_kv \- Extract the value from a key-value pair
+
+.SH SYNOPSIS
+.IB #include <lib/cb_internal.h>
+.IB #include <lib/str.h>
+.IB #include <lib/byte.h>
+
+.IB void
+.IB cb_get_kv (
+.IB const void* kv,
+.IB void* value,
+.IB size_t len
+.IB );
+
+.SH DESCRIPTION
+The \fBcb_get_kv\fR function extracts the value from a key-value pair and copies it into the provided buffer.
+
+The function takes three arguments:
+.TP
+.IR kv (const void*)
+A pointer to the key-value pair.
+.TP
+.IR value (void*)
+A pointer to the buffer where the value will be copied.
+.TP
+.IR len (size_t)
+The size of the buffer.
+
+The function does not return any value.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBcb_get_kv\fR function:
+
+.nf
+#include <stdio.h>
+#include <lib/cb_internal.h>
+#include <lib/str.h>
+#include <lib/byte.h>
+
+int main() {
+    const char* kv = "key:value";
+    char value[20];
+
+    cb_get_kv(kv, value, sizeof(value));
+
+    printf("Value: %s\n", value);
+
+    return 0;
+}
+.nef

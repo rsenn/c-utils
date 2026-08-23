@@ -1,0 +1,51 @@
+.TH CBMAP_INTERNAL_NODE 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+cbmap_internal_node_new, cbmap_internal_node_destroy \- Manage internal nodes in a CBMap
+
+.SH SYNOPSIS
+.IB #include <lib/cbmap_internal.h>
+
+.IB struct cbmap_internal_node*
+.IB cbmap_internal_node_new (void);
+
+.IB void
+.IB cbmap_internal_node_destroy (struct cbmap_internal_node* node);
+
+.SH DESCRIPTION
+The \fBcbmap_internal_node_new\fR and \fBcbmap_internal_node_destroy\fR functions are used to manage internal nodes in a CBMap. These functions are essential for the structure and maintenance of the CBMap data structure.
+
+.SH cbmap_internal_node_new
+The \fBcbmap_internal_node_new\fR function creates a new internal node for a CBMap. It allocates memory for the node and initializes its fields to default values.
+
+The function returns a pointer to the newly created internal node, or \fBNULL\fR if memory allocation fails.
+
+.SH cbmap_internal_node_destroy
+The \fBcbmap_internal_node_destroy\fR function destroys an internal node in a CBMap. It frees the memory allocated for the node. Note that this function assumes that all child nodes have already been freed.
+
+The function takes one parameter:
+.TP
+.B node
+A pointer to the internal node to be destroyed.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBcbmap_internal_node_new\fR and \fBcbmap_internal_node_destroy\fR functions to manage internal nodes in a CBMap:
+
+.nf
+#include <stdio.h>
+#include <lib/cbmap_internal.h>
+
+int main() {
+    struct cbmap_internal_node* node = cbmap_internal_node_new();
+
+    if(node != NULL) {
+        // Use the internal node
+
+        cbmap_internal_node_destroy(node);
+    } else {
+        printf("Memory allocation failed\n");
+    }
+
+    return 0;
+}
+.nef

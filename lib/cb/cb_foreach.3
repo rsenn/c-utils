@@ -1,0 +1,72 @@
+.TH CB_FOREACH 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+cb_foreach \- Iterate over keys in a Critbit tree that match a given prefix
+
+.SH SYNOPSIS
+.IB #include <lib/byte.h>
+.IB #include <lib/cb_internal.h>
+
+.IB int
+.IB cb_foreach (
+.IB critbit_tree* cb,
+.IB const void* key,
+.IB size_t keylen,
+.IB int (*match_cb)(const void* match, const void* key, size_t keylen, void*),
+.IB void* data
+.IB );
+
+.SH DESCRIPTION
+The \fBcb_foreach\fR function iterates over keys in a Critbit tree that match a given prefix and calls a callback function for each matching key.
+
+The function takes five arguments:
+.TP
+.IR cb (critbit_tree*)
+A pointer to the Critbit tree.
+.TP
+.IR key (const void*)
+A pointer to the prefix key.
+.TP
+.IR keylen (size_t)
+The length of the prefix key.
+.TP
+.IR match_cb (int (*match_cb)(const void* match, const void* key, size_t keylen, void*))
+A callback function that is called for each matching key. The callback function should return 0 to continue iteration or a non-zero value to stop iteration.
+.TP
+.IR data (void*)
+A pointer to user-defined data that is passed to the callback function.
+
+The function returns 0 if iteration completes successfully, or a non-zero value if the iteration is stopped by the callback function.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBcb_foreach\fR function:
+
+.nf
+#include <stdio.h>
+#include <lib/cb_internal.h>
+#include <lib/byte.h>
+
+int match_cb(const void* match, const void* key, size_t keylen, void* data) {
+    printf("Matching key: %s\n", (char*)match);
+    return 0;  // Continue iteration
+}
+
+int main() {
+    critbit_tree* cb = cb_create();
+    const char* key1 = "example";
+    const char* key2 = "explanation";
+    const char* key3 = "example1";
+    size_t keylen = strlen("example");
+
+    cb_insert(cb, key1, keylen, (void*)key1);
+    cb_insert(cb, key2, strlen(key2), (void*)key2);
+    cb_insert(cb, key3, strlen(key3), (void*)key3);
+
+    int result = cb_foreach(cb, "example", keylen, match_cb, NULL);
+
+    printf("Iteration result: %d\n", result);
+
+    cb_destroy(cb);
+    return 0;
+}
+.nef

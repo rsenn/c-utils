@@ -1,0 +1,48 @@
+.TH CBMAP_DATA_NODE_DESTROY 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+cbmap_data_node_destroy \- Destroy a CBMap data node
+
+.SH SYNOPSIS
+.IB #include <lib/cbmap_internal.h>
+
+.IB void
+.IB cbmap_data_node_destroy (struct cbmap_data_node* data, cbmap_allocator_t key_allocator, cbmap_allocator_t value_allocator);
+
+.SH DESCRIPTION
+The \fBcbmap_data_node_destroy\fR function is used to destroy a CBMap data node. This function releases the memory allocated for the node's key and value using the provided allocators.
+
+The function takes three parameters:
+.TP
+.B data
+A pointer to the CBMap data node to be destroyed.
+.TP
+.B key_allocator
+A pointer to the allocator used for allocating memory for the node's key.
+.TP
+.B value_allocator
+A pointer to the allocator used for allocating memory for the node's value.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBcbmap_data_node_destroy\fR function to destroy a CBMap data node:
+
+.nf
+#include <stdio.h>
+#include <lib/cbmap_internal.h>
+
+int main() {
+    struct cbmap_data_node node;
+    cbmap_allocator_t key_allocator, value_allocator;
+
+    // Initialize allocators
+    key_allocator = ...;  // Initialize key allocator
+    value_allocator = ...;  // Initialize value allocator
+
+    // Assume node is initialized and used somewhere
+
+    // Destroy the node
+    cbmap_data_node_destroy(&node, key_allocator, value_allocator);
+
+    return 0;
+}
+.nef

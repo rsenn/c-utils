@@ -1,0 +1,63 @@
+.TH COFF_HEADER 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+coff_header_file, coff_header_opt, coff_header_sections \- Retrieve COFF header components
+
+.SH SYNOPSIS
+.IB #include <lib/coff.h>
+
+.IB coff_file_header*
+.IB coff_header_file (void* obj);
+
+.IB coff_opt_header*
+.IB coff_header_opt (void* obj);
+
+.IB coff_section_header*
+.IB coff_header_sections (void* obj, uint16* nsections);
+
+.SH DESCRIPTION
+The \fBcoff_header_file\fR, \fBcoff_header_opt\fR, and \fBcoff_header_sections\fR functions are used to retrieve different components of the COFF (Common Object File Format) header. They take a COFF object pointer \fBobj\fR and optionally a pointer to a \fBuint16\fR variable \fBnsections\fR as parameters.
+
+.SH coff_header_file
+The \fBcoff_header_file\fR function retrieves the file header component of a COFF object. It takes a COFF object pointer \fBobj\fR as a parameter. The function returns a pointer to the file header component.
+
+The function returns a pointer to the file header component.
+
+.SH coff_header_opt
+The \fBcoff_header_opt\fR function retrieves the optional header component of a COFF object. It takes a COFF object pointer \fBobj\fR as a parameter. The function returns a pointer to the optional header component.
+
+The function returns a pointer to the optional header component.
+
+.SH coff_header_sections
+The \fBcoff_header_sections\fR function retrieves the section headers component of a COFF object. It takes a COFF object pointer \fBobj\fR and a pointer to a \fBuint16\fR variable \fBnsections\fR as parameters. The function returns a pointer to the section headers component, and optionally sets the number of sections.
+
+The function returns a pointer to the section headers component, or \fBNULL\fR if the section headers are not found or an error occurs.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBcoff_header_file\fR, \fBcoff_header_opt\fR, and \fBcoff_header_sections\fR functions to retrieve different components of a COFF header:
+
+.nf
+#include <stdio.h>
+#include <lib/coff.h>
+
+int main() {
+    void* coff_file = load_coff_file("example.coff");
+
+    coff_file_header* file_header = coff_header_file(coff_file);
+    coff_opt_header* opt_header = coff_header_opt(coff_file);
+    uint16 num_sections = 0;
+    coff_section_header* sections = coff_header_sections(coff_file, &num_sections);
+
+    if(file_header != NULL && opt_header != NULL && sections != NULL) {
+        // Use the COFF header components
+
+        printf("Number of sections: %u\n", num_sections);
+    } else {
+        printf("Failed to retrieve COFF header components\n");
+    }
+
+    free_coff_file(coff_file);
+
+    return 0;
+}
+.nef

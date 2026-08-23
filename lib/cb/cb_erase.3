@@ -1,0 +1,65 @@
+.TH CB_ERASE 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+cb_erase \- Erase a key from a Critbit tree
+
+.SH SYNOPSIS
+.IB #include <lib/byte.h>
+.IB #include <lib/cb_internal.h>
+
+.IB int
+.IB cb_erase (
+.IB critbit_tree* cb,
+.IB const void* key,
+.IB size_t keylen
+.IB );
+
+.SH DESCRIPTION
+The \fBcb_erase\fR function erases a key from a Critbit tree. If the key is found and erased, it returns \fBCB_SUCCESS\fR; otherwise, it returns \fBCB_NOTFOUND\fR.
+
+The function takes three arguments:
+.TP
+.IR cb (critbit_tree*)
+A pointer to the Critbit tree.
+.TP
+.IR key (const void*)
+A pointer to the key to be erased.
+.TP
+.IR keylen (size_t)
+The length of the key.
+
+The function returns:
+.TP
+.IR CB_SUCCESS (int)
+If the key is successfully erased.
+.TP
+.IR CB_NOTFOUND (int)
+If the key is not found in the tree.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBcb_erase\fR function:
+
+.nf
+#include <stdio.h>
+#include <lib/cb_internal.h>
+#include <lib/byte.h>
+
+int main() {
+    critbit_tree* cb = cb_create();
+    const char* key = "example";
+    size_t keylen = strlen(key);
+    const char* value = "data";
+
+    cb_insert(cb, key, keylen, value);
+
+    int result = cb_erase(cb, key, keylen);
+    if (result == CB_SUCCESS) {
+        printf("Key erased successfully\n");
+    } else {
+        printf("Failed to erase key\n");
+    }
+
+    cb_destroy(cb);
+    return 0;
+}
+.nef

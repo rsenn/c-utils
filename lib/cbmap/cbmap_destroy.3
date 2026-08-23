@@ -1,0 +1,37 @@
+.TH CBMAP_DESTROY 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+cbmap_destroy \- Destroy a CBMap and release its memory
+
+.SH SYNOPSIS
+.IB #include <lib/cbmap_internal.h>
+
+.IB void
+.IB cbmap_destroy (cbmap_t* cmap_ptr);
+
+.SH DESCRIPTION
+The \fBcbmap_destroy\fR function is used to destroy a CBMap and release all associated memory. This function traverses the entire map, deleting each key-value pair, and frees the memory allocated for the map.
+
+The function takes one parameter:
+.TP
+.B cmap_ptr
+A pointer to the pointer of the CBMap to be destroyed.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBcbmap_destroy\fR function to destroy a CBMap and release its memory:
+
+.nf
+#include <stdio.h>
+#include <lib/cbmap_internal.h>
+
+int main() {
+    cbmap_t map = cbmap_new();
+
+    // Assume map is initialized and used somewhere
+
+    // Destroy the CBMap and release its memory
+    cbmap_destroy(&map);
+
+    return 0;
+}
+.nef

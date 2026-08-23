@@ -1,0 +1,77 @@
+.TH CB_FIND_PREFIX 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+cb_find_prefix \- Find all keys in a Critbit tree with a given prefix
+
+.SH SYNOPSIS
+.IB #include <lib/byte.h>
+.IB #include <lib/cb_internal.h>
+
+.IB int
+.IB cb_find_prefix (
+.IB const critbit_tree* cb,
+.IB const void* key,
+.IB size_t keylen,
+.IB void** results,
+.IB int numresults,
+.IB int offset
+.IB );
+
+.SH DESCRIPTION
+The \fBcb_find_prefix\fR function finds all keys in a Critbit tree that have a given prefix. It returns the number of keys found that match the prefix.
+
+The function takes six arguments:
+.TP
+.IR cb (const critbit_tree*)
+A pointer to the Critbit tree.
+.TP
+.IR key (const void*)
+A pointer to the prefix key.
+.TP
+.IR keylen (size_t)
+The length of the prefix key.
+.TP
+.IR results (void**)
+A pointer to an array where the matching keys will be stored.
+.TP
+.IR numresults (int)
+The maximum number of keys to store in the results array.
+.TP
+.IR offset (int)
+The offset to skip keys that match the prefix.
+
+The function returns the number of keys found that match the prefix.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBcb_find_prefix\fR function:
+
+.nf
+#include <stdio.h>
+#include <lib/cb_internal.h>
+#include <lib/byte.h>
+
+int main() {
+    critbit_tree* cb = cb_create();
+    const char* key1 = "example";
+    const char* key2 = "explanation";
+    const char* key3 = "example1";
+    size_t keylen = strlen("example");
+    void* results[10];
+    int numresults = 10;
+    int offset = 0;
+
+    cb_insert(cb, key1, keylen, (void*)key1);
+    cb_insert(cb, key2, strlen(key2), (void*)key2);
+    cb_insert(cb, key3, strlen(key3), (void*)key3);
+
+    int count = cb_find_prefix(cb, "example", keylen, results, numresults, offset);
+
+    printf("Number of keys with prefix 'example': %d\n", count);
+    for (int i = 0; i < count; i++) {
+        printf("Key: %s\n", (char*)results[i]);
+    }
+
+    cb_destroy(cb);
+    return 0;
+}
+.nef

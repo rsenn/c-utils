@@ -1,0 +1,50 @@
+.TH CB_CLEAR 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+cb_clear \- Clear all nodes from a Critbit tree
+
+.SH SYNOPSIS
+.IB #include <lib/cb_internal.h>
+
+.IB void
+.IB cb_clear (
+.IB critbit_tree* cb
+.IB );
+
+.SH DESCRIPTION
+The \fBcb_clear\fR function clears all nodes from a Critbit tree, effectively freeing all memory associated with the tree.
+
+The function takes one argument:
+.TP
+.IR cb (critbit_tree*)
+A pointer to the Critbit tree to be cleared.
+
+The function does not return any value.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBcb_clear\fR function:
+
+.nf
+#include <stdio.h>
+#include <lib/cb_internal.h>
+
+int main() {
+    critbit_tree* cb = cb_create();
+    const char* key = "example";
+    size_t keylen = strlen(key);
+    const char* value = "data";
+
+    cb_insert(cb, key, keylen, value);
+
+    cb_clear(cb);
+
+    if (cb->root == NULL) {
+        printf("Tree cleared successfully\n");
+    } else {
+        printf("Failed to clear tree\n");
+    }
+
+    cb_destroy(cb);
+    return 0;
+}
+.nef

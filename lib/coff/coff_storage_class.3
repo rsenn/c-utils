@@ -1,0 +1,41 @@
+.TH COFF_STORAGE_CLASS 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+coff_storage_class \- Retrieve the storage class name for a COFF symbol
+
+.SH SYNOPSIS
+.IB #include <lib/coff.h>
+
+.IB const char*
+.IB coff_storage_class (uint8 sclass);
+
+.SH DESCRIPTION
+The \fBcoff_storage_class\fR function is used to retrieve the storage class name for a COFF symbol. It takes a storage class value \fBsclass\fR as a parameter. The function returns a pointer to a string representing the storage class name.
+
+.SH coff_storage_class
+The \fBcoff_storage_class\fR function retrieves the storage class name for a COFF symbol. It takes a storage class value \fBsclass\fR as a parameter. The function returns a pointer to a string representing the storage class name.
+
+The function returns a pointer to a string representing the storage class name, or \fBNULL\fR if the storage class value is not recognized.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBcoff_storage_class\fR function to retrieve the storage class name for a COFF symbol:
+
+.nf
+#include <stdio.h>
+#include <lib/coff.h>
+
+int main() {
+    uint8 storage_class = COFF_C_EXT;
+    const char* class_name = coff_storage_class(storage_class);
+
+    if(class_name != NULL) {
+        // Use the storage class name
+
+        printf("Storage class: %s\n", class_name);
+    } else {
+        printf("Unknown storage class\n");
+    }
+
+    return 0;
+}
+.nef

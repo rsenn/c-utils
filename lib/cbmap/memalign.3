@@ -1,0 +1,66 @@
+.TH MEMALIGN 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+memalign_alloc, memalign_free, memalign_alloc_aligned \- Memory allocation with alignment
+
+.SH SYNOPSIS
+.IB #include <lib/memalign.h>
+
+.IB void*
+.IB memalign_alloc (size_t boundary, size_t size);
+
+.IB void
+.IB memalign_free (void* ptr);
+
+.IB void*
+.IB memalign_alloc_aligned (size_t size);
+
+.SH DESCRIPTION
+The \fBmemalign_alloc\fR, \fBmemalign_free\fR, and \fBmemalign_alloc_aligned\fR functions are used to allocate and free memory with specific alignment requirements.
+
+.SH memalign_alloc
+The \fBmemalign_alloc\fR function allocates memory with a specified alignment boundary and size. It takes a boundary and size as parameters. The function allocates memory and ensures that the allocated memory is aligned according to the specified boundary.
+
+The function returns a pointer to the allocated memory, or \fBNULL\fR if memory allocation fails.
+
+.SH memalign_free
+The \fBmemalign_free\fR function frees memory that was allocated with \fBmemalign_alloc\fR. It takes a pointer to the allocated memory as a parameter. The function frees the memory.
+
+The function does not return any value.
+
+.SH memalign_alloc_aligned
+The \fBmemalign_alloc_aligned\fR function allocates memory with a default alignment boundary. It takes a size as a parameter. The function allocates memory and ensures that the allocated memory is aligned to the default boundary.
+
+The function returns a pointer to the allocated memory, or \fBNULL\fR if memory allocation fails.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBmemalign_alloc\fR, \fBmemalign_free\fR, and \fBmemalign_alloc_aligned\fR functions to allocate and free memory:
+
+.nf
+#include <stdio.h>
+#include <lib/memalign.h>
+
+int main() {
+    void* ptr = memalign_alloc(64, 1024);
+
+    if(ptr != NULL) {
+        // Use the allocated memory
+
+        memalign_free(ptr);
+    } else {
+        printf("Memory allocation failed\n");
+    }
+
+    void* aligned_ptr = memalign_alloc_aligned(1024);
+
+    if(aligned_ptr != NULL) {
+        // Use the aligned memory
+
+        memalign_free(aligned_ptr);
+    } else {
+        printf("Memory allocation failed\n");
+    }
+
+    return 0;
+}
+.nef

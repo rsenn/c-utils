@@ -1,0 +1,100 @@
+.TH CBMAP_ALLOC 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+cbmap_alloc \- Memory allocation and management functions for CBMap
+
+.SH SYNOPSIS
+.IB #include <lib/cbmap_internal.h>
+
+.IB #include <lib/memalign.h>
+.IB #include <lib/byte.h>
+.IB #include <lib/str.h>
+
+.IB double
+.IB cbmap_mem_allocated (void);
+
+.IB int
+.IB cbmap_mem_memalign (void** p, size_t alignment, size_t size);
+
+.IB void*
+.IB cbmap_mem_debug_calloc (size_t count, size_t size, const char* file, int line);
+
+.IB char*
+.IB cbmap_mem_debug_strndup (const char* p, size_t size, const char* file, int line);
+
+.IB char*
+.IB cbmap_mem_debug_strdup (const char* p, const char* file, int line);
+
+.IB void*
+.IB cbmap_mem_mem_dup (const void* p, size_t size, const char* file, int line);
+
+.IB void
+.IB cbmap_mem_debug_free (const void* ptr, const char* file, int line);
+
+.IB int
+.IB cbmap_mem_posix_memalign (void** memptr, size_t alignment, size_t size, const char* file, int line);
+
+.IB void
+.IB cbmap_mem_debug_mem (const char* file, int line);
+
+.SH DESCRIPTION
+The \fBcbmap_alloc\fR library provides memory allocation and management functions specifically designed for use with CBMap. These functions include allocation, deallocation, and memory debugging features.
+
+The functions provided by this library are:
+.TP
+.B cbmap_mem_allocated
+Returns the total number of bytes allocated by the library.
+.TP
+.B cbmap_mem_memalign
+Allocates memory aligned to a specified alignment boundary.
+.TP
+.B cbmap_mem_debug_calloc
+Allocates memory for an array and initializes it to zero, with debugging information.
+.TP
+.B cbmap_mem_debug_strndup
+Duplicates a string up to a specified length, with debugging information.
+.TP
+.B cbmap_mem_debug_strdup
+Duplicates a string, with debugging information.
+.TP
+.B cbmap_mem_mem_dup
+Duplicates a block of memory, with debugging information.
+.TP
+.B cbmap_mem_debug_free
+Frees memory allocated by the library, with debugging information.
+.TP
+.B cbmap_mem_posix_memalign
+Allocates memory aligned to a specified alignment boundary using POSIX functions, with debugging information.
+.TP
+.B cbmap_mem_debug_mem
+Logs the current allocation and deallocation status, with debugging information.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBcbmap_alloc\fR library to allocate and free memory:
+
+.nf
+#include <stdio.h>
+#include <lib/cbmap_internal.h>
+#include <lib/memalign.h>
+#include <lib/byte.h>
+#include <lib/str.h>
+
+int main() {
+    void* ptr;
+    int result;
+
+    // Allocate aligned memory
+    result = cbmap_mem_memalign(&ptr, 64, 1024);
+    if (result == 0) {
+        printf("Memory allocated at %p\n", ptr);
+        // Use the memory
+        byte_copy(ptr, 1024, "example data");
+        // Free the memory
+        cbmap_mem_debug_free(ptr, __FILE__, __LINE__);
+    } else {
+        printf("Memory allocation failed\n");
+    }
+
+    return 0;
+}
+.nef

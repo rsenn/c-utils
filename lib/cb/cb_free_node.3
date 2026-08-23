@@ -1,0 +1,45 @@
+.TH CB_FREE_NODE 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+cb_free_node \- Free memory allocated for a Critbit tree node
+
+.SH SYNOPSIS
+.IB #include <lib/cb_internal.h>
+
+.IB void
+.IB cb_free_node (
+.IB void* ptr
+.IB );
+
+.SH DESCRIPTION
+The \fBcb_free_node\fR function frees the memory allocated for a Critbit tree node. It recursively frees all child nodes before freeing the current node itself.
+
+The function takes one argument:
+.TP
+.IR ptr (void*)
+A pointer to the node to be freed.
+
+The function does not return any value.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBcb_free_node\fR function:
+
+.nf
+#include <stdio.h>
+#include <lib/cb_internal.h>
+#include <stdlib.h>
+
+int main() {
+    struct critbit_node* node = (struct critbit_node*)malloc(sizeof(struct critbit_node));
+    if (!node) {
+        fprintf(stderr, "Failed to allocate memory\n");
+        return 1;
+    }
+
+    // Assume the node is initialized and has children
+
+    cb_free_node(node);
+
+    return 0;
+}
+.nef

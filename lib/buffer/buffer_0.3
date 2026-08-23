@@ -1,0 +1,46 @@
+.TH BUFFER_0 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+buffer_0 \- Initialize a buffer for reading from a file descriptor
+
+.SH SYNOPSIS
+.IB #include <lib/buffer.h>
+
+.IB buffer*
+.IB buffer_0;
+
+.SH DESCRIPTION
+The \fBbuffer_0\fR buffer is initialized for reading from a file descriptor. It uses a static buffer \fBbuffer_0_space\fR for storing the read data.
+
+The \fBbuffer_0\fR buffer is intended for use with the \fBbuffer_1\fR buffer, which is used for writing. The \fBbuffer_flush\fR function is called before reading to ensure that any data in \fBbuffer_1\fR is written out.
+
+The \fBbuffer_0\fR buffer is a static buffer and is initialized automatically when the library is loaded.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBbuffer_0\fR buffer to read data from a file descriptor:
+
+.nf
+#include <stdio.h>
+#include <lib/buffer.h>
+
+int main() {
+    fd_type fd = open("example.txt", O_RDONLY);
+    if(fd < 0) {
+        perror("open");
+        return 1;
+    }
+
+    char data[BUFFER_INSIZE];
+    ssize_t n = buffer_read(buffer_0, data, sizeof data);
+    if(n < 0) {
+        perror("buffer_read");
+        close(fd);
+        return 1;
+    }
+
+    printf("Data: %.*s\n", (int)n, data);
+
+    close(fd);
+    return 0;
+}
+.nef

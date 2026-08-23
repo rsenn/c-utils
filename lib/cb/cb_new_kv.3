@@ -1,0 +1,63 @@
+.TH CB_NEW_KV 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+cb_new_kv \- Create a new key-value pair in a buffer
+
+.SH SYNOPSIS
+.IB #include <lib/cb_internal.h>
+.IB #include <lib/byte.h>
+
+.IB size_t
+.IB cb_new_kv (
+.IB const char* key,
+.IB size_t keylen,
+.IB const void* value,
+.IB size_t len,
+.IB void* out
+.IB );
+
+.SH DESCRIPTION
+The \fBcb_new_kv\fR function creates a new key-value pair in a buffer. The key and value are copied into the buffer, and the function returns the total length of the key-value pair, including the null terminator for the key.
+
+The function takes five arguments:
+.TP
+.IR key (const char*)
+A pointer to the buffer containing the key data.
+.TP
+.IR keylen (size_t)
+The length of the key.
+.TP
+.IR value (const void*)
+A pointer to the buffer containing the value data.
+.TP
+.IR len (size_t)
+The length of the value.
+.TP
+.IR out (void*)
+A pointer to the buffer where the key-value pair will be stored.
+
+The function returns the total length of the key-value pair, including the null terminator for the key.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBcb_new_kv\fR function:
+
+.nf
+#include <stdio.h>
+#include <lib/cb_internal.h>
+#include <lib/byte.h>
+
+int main() {
+    char buffer[100];
+    const char* key = "example_key";
+    const char* value = "example_value";
+    size_t keylen = 13;
+    size_t vallen = 15;
+
+    size_t length = cb_new_kv(key, keylen, value, vallen, buffer);
+
+    printf("Buffer: %s\n", buffer);
+    printf("Length: %zu\n", length);
+
+    return 0;
+}
+.nef
