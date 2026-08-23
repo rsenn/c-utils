@@ -1,0 +1,44 @@
+.TH SCAN_UTF8_SEM 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+scan_utf8_sem \- Scan a semantically valid UTF-8 character from a string
+
+.SH SYNOPSIS
+.IB #include <lib/scan.h>
+
+.IB size_t
+.IB scan_utf8_sem(const char* in, size_t len, uint32* num);
+
+.SH DESCRIPTION
+The \fBscan_utf8_sem\fR function scans a semantically valid UTF-8 character from a given string and stores the result in the location pointed to by \fBnum\fR. The function checks for non-characters and surrogates, and returns 0 if any of these are encountered.
+
+.SH ARGUMENTS
+.TP
+.IB in
+The input string containing the UTF-8 character.
+.TP
+.IB len
+The maximum number of characters to read from the input string.
+.TP
+.IB num
+The destination where the scanned UTF-8 character will be stored.
+
+.SH RETURN VALUE
+The function returns the number of characters processed. If a non-character or surrogate is encountered, the function returns 0.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBscan_utf8_sem\fR function:
+
+.nf
+#include <stdio.h>
+#include <lib/scan.h>
+
+int main() {
+    const char* input = "\xed\xa0\x80";  # Non-character
+    size_t len = 4;
+    uint32 result;
+    size_t processed = scan_utf8_sem(input, len, &result);
+    printf("Processed characters: %zu\n", processed);
+    return 0;
+}
+.nef

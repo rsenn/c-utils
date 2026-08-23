@@ -1,0 +1,50 @@
+.TH SCAN_VARINT 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+scan_varint, scan_pb_type0_int \- Scan a variable-length integer from a string
+
+.SH SYNOPSIS
+.IB #include <lib/scan.h>
+
+.IB size_t
+.IB scan_varint(const char* in, size_t len, uint64* n);
+
+.IB size_t
+.IB scan_pb_type0_int(const char* dest, size_t len, uint64* l);
+
+.SH DESCRIPTION
+The \fBscan_varint\fR function scans a variable-length integer from a given string and stores the result in the location pointed to by \fBn\fR. Variable-length integers are commonly used in Protocol Buffers and other binary data formats. The function reads up to \fBlen\fR bytes from the input string starting at \fBin\fR and decodes the integer.
+
+The \fBscan_pb_type0_int\fR function is an alias for \fBscan_varint\fR, providing compatibility with Protocol Buffers (PB) type 0.
+
+.SH ARGUMENTS
+.TP
+.IB in/dest
+The input string containing the variable-length integer.
+.TP
+.IB len
+The maximum number of characters to read from the input string.
+.TP
+.IB n/l
+The destination where the scanned variable-length integer will be stored.
+
+.SH RETURN VALUE
+The function returns the number of characters processed. If the input string is empty or does not contain a valid variable-length integer, the function returns 0.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBscan_varint\fR function:
+
+.nf
+#include <stdio.h>
+#include <lib/scan.h>
+
+int main() {
+    const char* input = "\x08\x96\x01";  # 123 as a varint
+    size_t len = 3;
+    uint64 result;
+    size_t processed = scan_varint(input, len, &result);
+    printf("Scanned variable-length integer: %llu\n", result);
+    printf("Processed characters: %zu\n", processed);
+    return 0;
+}
+.nef

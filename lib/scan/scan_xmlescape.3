@@ -1,0 +1,45 @@
+.TH SCAN_XMLESCAPE 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+scan_xmlescape \- Scan and decode an XML character entity reference
+
+.SH SYNOPSIS
+.IB #include <lib/scan.h>
+.IB #include <lib/str.h>
+.IB #include <lib/uint8.h>
+
+.IB size_t
+.IB scan_xmlescape(const char* src, char* dest);
+
+.SH DESCRIPTION
+The \fBscan_xmlescape\fR function scans and decodes an XML character entity reference from a given string and stores the result in the location pointed to by \fBdest\fR. The function handles named character entities (e.g., &amp;) and numeric character entities (e.g., &#x3C;).
+
+.SH ARGUMENTS
+.TP
+.IB src
+The input string containing the XML character entity reference.
+.TP
+.IB dest
+The destination where the decoded character will be stored.
+
+.SH RETURN VALUE
+The function returns the number of characters processed. If the input string is empty or does not contain a valid character entity reference, the function returns 1 and stores the original character in \fBdest\fR.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBscan_xmlescape\fR function:
+
+.nf
+#include <stdio.h>
+#include <lib/scan.h>
+#include <lib/str.h>
+#include <lib/uint8.h>
+
+int main() {
+    const char* input = "&amp;";
+    char decoded;
+    size_t processed = scan_xmlescape(input, &decoded);
+    printf("Decoded character: %c\n", decoded);
+    printf("Processed characters: %zu\n", processed);
+    return 0;
+}
+.nef
