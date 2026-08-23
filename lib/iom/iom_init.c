@@ -1,5 +1,8 @@
 #include "../io_internal.h"
 #include "../iom.h"
+#if WINDOWS_NATIVE
+#include <limits.h>
+#endif
 #ifdef HAVE_EPOLL
 #include <sys/epoll.h>
 #endif
@@ -32,7 +35,9 @@ iom_init(iomux_t* c) {
     c->q[i].fd = -1;
     c->q[i].events = 0;
   }
-#ifdef __dietlibc__
+#if WINDOWS_NATIVE
+  c->sem = CreateSemaphoreW(0, 1, LONG_MAX, 0);
+#elif defined(__dietlibc__)
   mtx_init(&c->mtx, mtx_timed);
   cnd_init(&c->sem);
 #else

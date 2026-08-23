@@ -6,13 +6,14 @@
 
 #include "uint64.h"
 #include "taia.h"
+#include "windoze.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#ifdef __MINGW32__
-#include <mcfgthread/c11thread.h>
+#if WINDOWS_NATIVE
+#include <windows.h>
 #elif defined(__dietlibc__)
 #include <threads.h>
 #else
@@ -28,7 +29,11 @@ typedef struct iomux {
   struct {
     int fd, events;
   } q[SLOTS];
-#if defined(__MINGW32__) || defined(__dietlibc__)
+#if WINDOWS_NATIVE
+  /* a Win32 kernel semaphore is a counting primitive on its own -- unlike
+   * cnd_t, it needs no paired mutex/predicate to behave like sem_t. */
+  HANDLE sem;
+#elif defined(__dietlibc__)
   mtx_t mtx;
   cnd_t sem;
 #else

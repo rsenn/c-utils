@@ -9,6 +9,9 @@
 #include <sys/time.h>
 #endif
 #include <errno.h>
+#if !WINDOWS_NATIVE
+#include <time.h>
+#endif
 
 int
 iom_wait(iomux_t* c, int64* s, unsigned int* revents, unsigned long timeout) {
@@ -45,7 +48,9 @@ iom_wait(iomux_t* c, int64* s, unsigned int* revents, unsigned long timeout) {
         /* we ran into a timeout, so let someone else take over */
         if(__sync_val_compare_and_swap(&c->working, 1, 0) == -2)
           return -2;
-#ifdef __dietlibc__
+#if WINDOWS_NATIVE
+        ReleaseSemaphore(c->sem, 1, 0);
+#elif defined(__dietlibc__)
         cnd_broadcast(&c->sem);
 #else
         sem_post(&c->sem);
@@ -76,7 +81,9 @@ iom_wait(iomux_t* c, int64* s, unsigned int* revents, unsigned long timeout) {
         /* we ran into a timeout, so let someone else take over */
         if(__sync_val_compare_and_swap(&c->working, 1, 0) == -2)
           return -2;
-#ifdef __dietlibc__
+#if WINDOWS_NATIVE
+        ReleaseSemaphore(c->sem, 1, 0);
+#elif defined(__dietlibc__)
         cnd_broadcast(&c->sem);
 #else
         sem_post(&c->sem);
@@ -105,7 +112,9 @@ iom_wait(iomux_t* c, int64* s, unsigned int* revents, unsigned long timeout) {
      doing it anymore */
       if(__sync_val_compare_and_swap(&c->working, 1, 0) == -2)
         return -2;
-#ifdef __dietlibc__
+#if WINDOWS_NATIVE
+      ReleaseSemaphore(c->sem, 1, 0);
+#elif defined(__dietlibc__)
       cnd_signal(&c->sem);
 #else
       sem_post(&c->sem);
@@ -113,9 +122,25 @@ iom_wait(iomux_t* c, int64* s, unsigned int* revents, unsigned long timeout) {
       return 1;
     } else {
       /* somebody else has the job to fill the queue */
+#if WINDOWS_NATIVE
+      /* WaitForSingleObject takes a relative timeout in milliseconds,
+       * matching the units of `timeout` directly -- no deadline to build. */
+      DWORD wr = WaitForSingleObject(c->sem, timeout);
+      if(wr == WAIT_TIMEOUT)
+        return 0;
+      if(wr != WAIT_OBJECT_0)
+        return -1;
+#else
+      /* sem_timedwait()/cnd_timedwait() want an ABSOLUTE deadline, not a
+       * duration -- build one from the current time plus `timeout` ms. */
       struct timespec ts;
-      ts.tv_sec = timeout / 1000;
-      ts.tv_nsec = (timeout % 1000) * 1000000;
+      clock_gettime(CLOCK_REALTIME, &ts);
+      ts.tv_sec += timeout / 1000;
+      ts.tv_nsec += (long)(timeout % 1000) * 1000000L;
+      if(ts.tv_nsec >= 1000000000L) {
+        ts.tv_nsec -= 1000000000L;
+        ts.tv_sec += 1;
+      }
 #ifdef __dietlibc__
       r = cnd_timedwait(&c->sem, &c->mtx, &ts);
 #else
@@ -126,6 +151,7 @@ iom_wait(iomux_t* c, int64* s, unsigned int* revents, unsigned long timeout) {
           return 0;
         return -1;
       }
+#endif
       /* fall through into next loop iteration */
     }
   }
