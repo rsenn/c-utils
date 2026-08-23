@@ -2,9 +2,10 @@
 .SH NAME
 byte_case_equal \- Compare two strings case-insensitively
 .SH SYNOPSIS
-#include <lib/byte.h>
+.IB #include <lib/byte.h>
 
-size_t byte_case_equal(const void *s, size_t len, const void *t);
+.IB size_t
+.IB byte_case_equal(const void *s, size_t len, const void *t);
 .SH DESCRIPTION
 The \fBbyte_case_equal\fR function compares two strings \fIs\fR and \fIt\fR of length \fIl\fR in a case-insensitive manner. It returns 1 if the first \fIl\fR bytes of \fIs\fR are equal to the first \fIl\fR bytes of \fIt\fR, and 0 otherwise.
 

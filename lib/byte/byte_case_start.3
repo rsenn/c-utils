@@ -2,9 +2,10 @@
 .SH NAME
 byte_case_start \- Compare the start of two strings case-insensitively
 .SH SYNOPSIS
-#include <lib/byte.h>
+.IB #include <lib/byte.h>
 
-size_t byte_case_start(const void *x1, size_t len, const void *x2);
+.IB size_t
+.IB byte_case_start(const void *x1, size_t len, const void *x2);
 .SH DESCRIPTION
 The \fBbyte_case_start\fR function compares the start of two strings \fIx1\fR and \fIx2\fR of length \fIl\fR in a case-insensitive manner. It returns 1 if the first \fIl\fR bytes of \fIx1\fR match the start of the string \fIx2\fR, and 0 otherwise.
 

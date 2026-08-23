@@ -2,9 +2,10 @@
 .SH NAME
 byte_case_diff \- Compare two strings case-insensitively
 .SH SYNOPSIS
-#include <lib/byte.h>
+.IB #include <lib/byte.h>
 
-int byte_case_diff(const void *x1, size_t len, const void *x2);
+.IB int
+.IB byte_case_diff(const void *x1, size_t len, const void *x2);
 .SH DESCRIPTION
 The \fBbyte_case_diff\fR function compares two strings \fIx1\fR and \fIx2\fR of length \fIl\fR in a case-insensitive manner. It returns an integer less than, equal to, or greater than zero if the first \fIl\fR bytes of \fIx1\fR are found, respectively, to be less than, to match, or be greater than the first \fIl\fR bytes of \fIx2\fR.
 
