@@ -1,0 +1,51 @@
+.TH HMAP_DESTROY 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+hmap_destroy \- Destroy a hash map database
+
+.SH SYNOPSIS
+.IB #include <lib/hmap_internal.h>
+
+.IB int
+.IB hmap_destroy(HMAP_DB** hmap_db);
+
+.SH DESCRIPTION
+The \fBhmap_destroy\fR function destroys a hash map database. It takes a pointer to the hash map database as an argument.
+
+The function takes the following parameter:
+.IB HMAP_DB**
+A pointer to the hash map database to be destroyed.
+
+The function returns an integer indicating the result of the operation. Possible return values include:
+.IB 0
+The hash map database was destroyed successfully.
+
+The \fBhmap_destroy\fR function is intended to be used to destroy a hash map database.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBhmap_destroy\fR function to destroy a hash map database:
+
+.nf
+#include <stdio.h>
+#include <lib/hmap_internal.h>
+
+int main() {
+    HMAP_DB* hmap_db;
+    // Initialize the hash map database
+    hmap_init(&hmap_db);
+
+    // Add a tuple to the hash map
+    hmap_add_tuple_with_data(&hmap_db, "example", 7, "data");
+
+    // Destroy the hash map database
+    int result = hmap_destroy(&hmap_db);
+
+    if(result == 0) {
+        printf("Hash map database destroyed successfully\n");
+    } else {
+        printf("Failed to destroy hash map database\n");
+    }
+
+    return 0;
+}
+.nef

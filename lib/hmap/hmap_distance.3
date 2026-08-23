@@ -1,0 +1,57 @@
+.TH HMAP_DISTANCE 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+hmap_distance \- Calculate the distance between two tuples in a hash map
+
+.SH SYNOPSIS
+.IB #include <lib/hmap_internal.h>
+
+.IB int
+.IB hmap_distance(TUPLE** it1, TUPLE** it2);
+
+.SH DESCRIPTION
+The \fBhmap_distance\fR function calculates the distance between two tuples in a hash map. It takes pointers to two tuples as arguments.
+
+The function takes the following parameters:
+.IB TUPLE**
+Pointers to the two tuples for which the distance is to be calculated.
+
+The function returns an integer indicating the distance between the two tuples. Possible return values include:
+.IB >= 0
+The distance between the two tuples.
+.IB -1
+The tuples are not part of the same hash map or are not valid tuples.
+
+The \fBhmap_distance\fR function is intended to be used to calculate the distance between two tuples in a hash map.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBhmap_distance\fR function to calculate the distance between two tuples in a hash map:
+
+.nf
+#include <stdio.h>
+#include <lib/hmap_internal.h>
+
+int main() {
+    HMAP_DB* hmap_db;
+    // Initialize the hash map database
+    hmap_init(&hmap_db);
+
+    // Add tuples to the hash map
+    TUPLE* tuple1 = hmap_add_tuple_with_data(&hmap_db, "example1", 8, "data1");
+    TUPLE* tuple2 = hmap_add_tuple_with_data(&hmap_db, "example2", 8, "data2");
+
+    // Calculate the distance between the two tuples
+    int distance = hmap_distance(&tuple1, &tuple2);
+
+    if(distance >= 0) {
+        printf("Distance between tuples: %d\n", distance);
+    } else {
+        printf("Failed to calculate distance between tuples\n");
+    }
+
+    // Free the hash map database
+    hmap_destroy(&hmap_db);
+
+    return 0;
+}
+.nef

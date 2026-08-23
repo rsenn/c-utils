@@ -1,0 +1,52 @@
+.TH HASHMAP_GET2 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+hashmap_get2 \- Retrieve a value from a hashmap using a specified key length
+
+.SH SYNOPSIS
+.IB #include <lib/hashmap.h>
+
+.IB void*
+.IB hashmap_get2(hashmap* map, const char* key, size_t keylen);
+
+.SH DESCRIPTION
+The \fBhashmap_get2\fR function retrieves a value associated with a key from a hashmap. It takes a pointer to the hashmap, the key, and the length of the key as arguments.
+
+The function takes the following parameters:
+.IB hashmap*
+A pointer to the hashmap.
+.IB const char*
+The key whose value is to be retrieved.
+.IB size_t
+The length of the key.
+
+The function returns a pointer to the value associated with the key, or NULL if the key is not found in the hashmap.
+
+The \fBhashmap_get2\fR function is intended to be used to access values in a hashmap when the key length is known.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBhashmap_get2\fR function to retrieve a value from a hashmap using a specified key length:
+
+.nf
+#include <stdio.h>
+#include <lib/hashmap.h>
+
+int main() {
+    hashmap* map = hashmap_new();
+    const char* key = "example";
+
+    hashmap_set(map, key, "value");
+
+    void* value = hashmap_get2(map, key, 7);
+
+    if (value) {
+        printf("Value: %s\n", (char*)value);
+    } else {
+        printf("Key not found\n");
+    }
+
+    hashmap_free(map);
+
+    return 0;
+}
+.nef

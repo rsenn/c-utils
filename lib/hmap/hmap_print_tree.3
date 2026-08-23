@@ -1,0 +1,56 @@
+.TH HMAP_PRINT_TREE 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+hmap_print_tree \- Print the contents of a hash map in a tree-like format
+
+.SH SYNOPSIS
+.IB #include <lib/hmap_internal.h>
+
+.IB int
+.IB hmap_print_tree(HMAP_DB* hmap);
+
+.SH DESCRIPTION
+The \fBhmap_print_tree\fR function prints the contents of a hash map in a tree-like format. It takes a pointer to the hash map database as an argument.
+
+The function takes the following parameter:
+.IB HMAP_DB*
+A pointer to the hash map database.
+
+The function returns an integer indicating the success or failure of the operation. Possible return values include:
+.IB HMAP_SUCCESS
+The hash map was successfully printed in a tree-like format.
+.IB HMAP_DB_EMPTY
+The hash map is empty.
+
+The \fBhmap_print_tree\fR function is intended to be used to print the contents of a hash map in a tree-like format for debugging purposes.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBhmap_print_tree\fR function to print the contents of a hash map in a tree-like format:
+
+.nf
+#include <stdio.h>
+#include <lib/hmap_internal.h>
+
+int main() {
+    HMAP_DB* hmap_db;
+    // Initialize the hash map database
+    hmap_init(&hmap_db);
+
+    // Add a tuple with a string data type
+    hmap_add_tuple_with_data(&hmap_db, "example1", 8, "data1");
+
+    // Print the contents of the hash map in a tree-like format
+    int result = hmap_print_tree(hmap_db);
+
+    if(result == HMAP_SUCCESS) {
+        printf("Hash map printed successfully in a tree-like format\n");
+    } else {
+        printf("Failed to print hash map in a tree-like format\n");
+    }
+
+    // Free the hash map database
+    hmap_destroy(&hmap_db);
+
+    return 0;
+}
+.nef

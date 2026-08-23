@@ -1,0 +1,58 @@
+.TH HMAP_CMP 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+hmap_cmp \- Compare two values of equal length
+
+.SH SYNOPSIS
+.IB #include <lib/hmap_internal.h>
+
+.IB int
+.IB hmap_cmp(void* v1, size_t v1_len, void* v2, size_t v2_len);
+
+.SH DESCRIPTION
+The \fBhmap_cmp\fR function compares two values of equal length. It takes two pointers to the values and their lengths as arguments.
+
+The function takes the following parameters:
+.IB void*
+A pointer to the first value.
+.IB size_t
+The length of the first value.
+.IB void*
+A pointer to the second value.
+.IB size_t
+The length of the second value.
+
+The function returns an integer indicating the result of the comparison. Possible return values include:
+.IB 0
+The values are equal.
+.IB -1
+The first value is less than the second value.
+.IB 1
+The first value is greater than the second value.
+
+The \fBhmap_cmp\fR function is intended to be used to compare two values of equal length.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBhmap_cmp\fR function to compare two values of equal length:
+
+.nf
+#include <stdio.h>
+#include <lib/hmap_internal.h>
+
+int main() {
+    char v1[] = "example";
+    char v2[] = "example";
+
+    int result = hmap_cmp(v1, sizeof(v1), v2, sizeof(v2));
+
+    if(result == 0) {
+        printf("Values are equal\n");
+    } else if(result == -1) {
+        printf("First value is less than the second value\n");
+    } else {
+        printf("First value is greater than the second value\n");
+    }
+
+    return 0;
+}
+.nef

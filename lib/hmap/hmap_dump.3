@@ -1,0 +1,57 @@
+.TH HMAP_DUMP 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+hmap_dump \- Dump the contents of a hash map to a buffer
+
+.SH SYNOPSIS
+.IB #include <lib/hmap.h>
+
+.IB void
+.IB hmap_dump(HMAP_DB* hmap, buffer* b);
+
+.SH DESCRIPTION
+The \fBhmap_dump\fR function dumps the contents of a hash map to a buffer. It takes a pointer to the hash map database and a pointer to the buffer as arguments.
+
+The function takes the following parameters:
+.IB HMAP_DB*
+A pointer to the hash map database.
+.IB buffer*
+A pointer to the buffer where the contents of the hash map will be dumped.
+
+The function does not return any value. It populates the buffer with the contents of the hash map in a specific format.
+
+The \fBhmap_dump\fR function is intended to be used to dump the contents of a hash map to a buffer for debugging or logging purposes.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBhmap_dump\fR function to dump the contents of a hash map to a buffer:
+
+.nf
+#include <stdio.h>
+#include <lib/hmap.h>
+#include <lib/buffer.h>
+
+int main() {
+    HMAP_DB* hmap_db;
+    // Initialize the hash map database
+    hmap_init(&hmap_db);
+
+    // Add tuples to the hash map
+    hmap_add_tuple_with_data(&hmap_db, "example1", 8, "data1");
+    hmap_add_tuple_with_data(&hmap_db, "example2", 8, "data2");
+
+    // Create a buffer to hold the dump
+    buffer* b = buffer_new();
+
+    // Dump the contents of the hash map to the buffer
+    hmap_dump(hmap_db, b);
+
+    // Print the contents of the buffer
+    printf("Dump of hash map:\n%s\n", buffer_data(b));
+
+    // Free the hash map database and buffer
+    hmap_destroy(&hmap_db);
+    buffer_free(b);
+
+    return 0;
+}
+.nef

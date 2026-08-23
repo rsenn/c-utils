@@ -1,0 +1,40 @@
+.TH HASHMAP_REHASH 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+hashmap_rehash \- Rehash a hashmap to optimize for space and performance
+
+.SH SYNOPSIS
+.IB #include <lib/hashmap.h>
+
+.IB void
+.IB hashmap_rehash(hashmap* map);
+
+.SH DESCRIPTION
+The \fBhashmap_rehash\fR function rehashes a hashmap to optimize for space and performance. It computes the size of the new hashmap, creates a new hashmap, and copies all key-value pairs from the old hashmap to the new hashmap.
+
+The function takes the following parameters:
+.IB hashmap*
+A pointer to the hashmap that will be rehashed.
+
+The \fBhashmap_rehash\fR function is intended to be called internally by the hashmap library to optimize the hashmap for space and performance when necessary.
+
+.SH EXAMPLES
+The following example demonstrates how the \fBhashmap_rehash\fR function is called internally by the hashmap library:
+
+.nf
+#include <stdio.h>
+#include <lib/hashmap.h>
+
+int main() {
+    hashmap map;
+
+    hashmap_init(&map);
+
+    // Add key-value pairs to the hashmap
+    hashmap_put2(&map, "example1", 7, "value1");
+    hashmap_put2(&map, "example2", 7, "value2");
+
+    // The hashmap may be rehashed internally
+    return 0;
+}
+.nef

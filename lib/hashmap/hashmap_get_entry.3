@@ -1,0 +1,53 @@
+.TH HASHMAP_GET_ENTRY 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+hashmap_get_entry \- Retrieve an entry from a hashmap using a specified key length
+
+.SH SYNOPSIS
+.IB #include <lib/hashmap.h>
+
+.IB hashentry*
+.IB hashmap_get_entry(hashmap* map, const char* key, size_t keylen);
+
+.SH DESCRIPTION
+The \fBhashmap_get_entry\fR function retrieves an entry associated with a key from a hashmap. It takes a pointer to the hashmap, the key, and the length of the key as arguments.
+
+The function takes the following parameters:
+.IB hashmap*
+A pointer to the hashmap.
+.IB const char*
+The key whose entry is to be retrieved.
+.IB size_t
+The length of the key.
+
+The function returns a pointer to the hashentry associated with the key, or NULL if the key is not found in the hashmap.
+
+The \fBhashmap_get_entry\fR function is intended to be used to access entries in a hashmap when the key length is known.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBhashmap_get_entry\fR function to retrieve an entry from a hashmap using a specified key length:
+
+.nf
+#include <stdio.h>
+#include <lib/hashmap.h>
+
+int main() {
+    hashmap* map = hashmap_new();
+    const char* key = "example";
+
+    hashmap_set(map, key, "value");
+
+    hashentry* entry = hashmap_get_entry(map, key, 7);
+
+    if (entry) {
+        printf("Key: %s\n", entry->key);
+        printf("Value: %s\n", (char*)entry->val);
+    } else {
+        printf("Key not found\n");
+    }
+
+    hashmap_free(map);
+
+    return 0;
+}
+.nef

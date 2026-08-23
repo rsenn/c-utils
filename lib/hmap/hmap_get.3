@@ -1,0 +1,56 @@
+.TH HMAP_GET 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+hmap_get \- Retrieve data associated with a key from a hash map
+
+.SH SYNOPSIS
+.IB #include <lib/hmap.h>
+
+.IB void*
+.IB hmap_get(HMAP_DB* db, const char* key, size_t keylen);
+
+.SH DESCRIPTION
+The \fBhmap_get\fR function retrieves the data associated with a key from a hash map. It takes a pointer to the hash map database, a key, and the length of the key as arguments.
+
+The function takes the following parameters:
+.IB HMAP_DB*
+A pointer to the hash map database.
+.IB const char*
+The key whose data needs to be retrieved.
+.IB size_t
+The length of the key.
+
+The function returns a pointer to the data associated with the key. If the key is not found, it returns \fBNULL\fB.
+
+The \fBhmap_get\fR function is intended to be used to retrieve data from a hash map based on a key.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBhmap_get\fR function to retrieve data from a hash map:
+
+.nf
+#include <stdio.h>
+#include <lib/hmap.h>
+
+int main() {
+    HMAP_DB* hmap_db;
+    // Initialize the hash map database
+    hmap_init(&hmap_db);
+
+    // Add a tuple with a string data type
+    hmap_add_tuple_with_data(&hmap_db, "example1", 8, "data1");
+
+    // Retrieve the data associated with the key "example1"
+    const char* data = hmap_get(hmap_db, "example1", 8);
+
+    if(data != NULL) {
+        printf("Retrieved data: %s\n", data);
+    } else {
+        printf("Key not found\n");
+    }
+
+    // Free the hash map database
+    hmap_destroy(&hmap_db);
+
+    return 0;
+}
+.nef

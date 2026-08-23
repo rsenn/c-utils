@@ -1,0 +1,56 @@
+.TH HMAP_FREE_DATA 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+hmap_free_data \- Free the data associated with a tuple in a hash map
+
+.SH SYNOPSIS
+.IB #include <lib/hmap_internal.h>
+
+.IB int
+.IB hmap_free_data(TUPLE* tuple);
+
+.SH DESCRIPTION
+The \fBhmap_free_data\fR function frees the data associated with a tuple in a hash map. It takes a pointer to the tuple as an argument.
+
+The function takes the following parameter:
+.IB TUPLE*
+A pointer to the tuple whose data needs to be freed.
+
+The function returns an integer indicating the result of the operation. Possible return values include:
+.IB HMAP_SUCCESS
+The data was successfully freed.
+.IB HMAP_DATA_TYPE_INVALID
+The data type of the tuple is invalid.
+
+The \fBhmap_free_data\fR function is intended to be used to free the data associated with a tuple in a hash map to avoid memory leaks.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBhmap_free_data\fR function to free the data associated with a tuple in a hash map:
+
+.nf
+#include <stdio.h>
+#include <lib/hmap_internal.h>
+
+int main() {
+    HMAP_DB* hmap_db;
+    // Initialize the hash map database
+    hmap_init(&hmap_db);
+
+    // Add a tuple with a string data type
+    TUPLE* tuple = hmap_add_tuple_with_data(&hmap_db, "example1", 8, "data1");
+
+    // Free the data associated with the tuple
+    int result = hmap_free_data(tuple);
+
+    if(result == HMAP_SUCCESS) {
+        printf("Data freed successfully\n");
+    } else {
+        printf("Failed to free data\n");
+    }
+
+    // Free the hash map database
+    hmap_destroy(&hmap_db);
+
+    return 0;
+}
+.nef

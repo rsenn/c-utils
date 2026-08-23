@@ -1,0 +1,47 @@
+.TH HASHMAP_PUT2 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+hashmap_put2 \- Add or update a key-value pair in a hashmap with a specified key length
+
+.SH SYNOPSIS
+.IB #include <lib/hashmap.h>
+
+.IB void
+.IB hashmap_put2(hashmap* map, const char* key, size_t keylen, void* val);
+
+.SH DESCRIPTION
+The \fBhashmap_put2\fR function adds or updates a key-value pair in a hashmap. It takes a pointer to the hashmap, a key, the length of the key, and a value as arguments.
+
+The function takes the following parameters:
+.IB hashmap*
+A pointer to the hashmap where the key-value pair will be added or updated.
+.IB const char*
+The key to be added or updated.
+.IB size_t
+The length of the key.
+.IB void*
+The value to be associated with the key.
+
+The function adds or updates the key-value pair in the hashmap. If the key already exists, its value is updated. This function differs from \fBhashmap_put\fR in that it allows specifying the key length explicitly.
+
+The \fBhashmap_put2\fR function is intended to be used to add or update key-value pairs in a hashmap with explicit key lengths.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBhashmap_put2\fR function to add or update a key-value pair in a hashmap with a specified key length:
+
+.nf
+#include <stdio.h>
+#include <lib/hashmap.h>
+
+int main() {
+    hashmap map;
+
+    hashmap_init(&map);
+
+    hashmap_put2(&map, "example", 7, "value");
+
+    // map now contains the key-value pair "example" -> "value"
+
+    return 0;
+}
+.nef

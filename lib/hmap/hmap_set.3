@@ -1,0 +1,68 @@
+.TH HMAP_SET 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+hmap_set \- Set a value in a hash map
+
+.SH SYNOPSIS
+.IB #include <lib/hmap_internal.h>
+
+.IB TUPLE*
+.IB hmap_set(HMAP_DB** hmap_db, const void* key, size_t k_len, void* data, size_t d_len);
+
+.SH DESCRIPTION
+The \fBhmap_set\fR function sets a value in a hash map. It takes a double pointer to the hash map database, a key, the length of the key, data, and the length of the data as arguments.
+
+The function takes the following parameters:
+.IB HMAP_DB**
+.IB hmap_db
+A double pointer to the hash map database.
+
+.IB const void*
+.IB key
+A pointer to the key.
+
+.IB size_t
+.IB k_len
+The length of the key.
+
+.IB void*
+.IB data
+A pointer to the data.
+
+.IB size_t
+.IB d_len
+The length of the data.
+
+The function returns a pointer to the tuple representing the set value. If the tuple could not be set, it returns 0.
+
+The \fBhmap_set\fR function is intended to be used to set a value in a hash map. If the key already exists, it updates the value. If the key does not exist, it adds a new tuple to the hash map.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBhmap_set\fR function to set a value in a hash map:
+
+.nf
+#include <stdio.h>
+#include <lib/hmap_internal.h>
+
+int main() {
+    HMAP_DB* hmap_db = 0;
+    // Initialize the hash map database
+    hmap_init(&hmap_db);
+
+    // Set a value in the hash map
+    char key[] = "example1";
+    char data[] = "data1";
+    TUPLE* tuple = hmap_set(&hmap_db, key, sizeof(key), data, sizeof(data));
+
+    if(tuple != 0) {
+        printf("Value set successfully\n");
+    } else {
+        printf("Failed to set value\n");
+    }
+
+    // Free the hash map database
+    hmap_destroy(&hmap_db);
+
+    return 0;
+}
+.nef

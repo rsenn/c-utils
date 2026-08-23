@@ -1,0 +1,52 @@
+.TH HASHMAP_MATCH 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+hashmap_match \- Check if an entry matches a key and key length
+
+.SH SYNOPSIS
+.IB #include <lib/hashmap.h>
+
+.IB bool
+.IB hashmap_match(hashentry* ent, const char* key, size_t keylen);
+
+.SH DESCRIPTION
+The \fBhashmap_match\fR function checks if an entry matches a given key and key length. It takes a pointer to the hashentry, the key, and the length of the key as arguments.
+
+The function takes the following parameters:
+.IB hashentry*
+A pointer to the hashentry to be checked.
+.IB const char*
+The key to be compared.
+.IB size_t
+The length of the key.
+
+The function returns true if the entry matches the key and key length, and false otherwise.
+
+The \fBhashmap_match\fR function is intended to be used internally by the hashmap implementation to determine if an entry corresponds to a given key.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBhashmap_match\fR function to check if an entry matches a key and key length:
+
+.nf
+#include <stdio.h>
+#include <lib/hashmap.h>
+
+int main() {
+    hashmap* map = hashmap_new();
+    const char* key = "example";
+
+    hashmap_set(map, key, "value");
+
+    hashentry* entry = hashmap_get_entry(map, key, 7);
+
+    if (entry && hashmap_match(entry, key, 7)) {
+        printf("Entry matches key\n");
+    } else {
+        printf("Entry does not match key\n");
+    }
+
+    hashmap_free(map);
+
+    return 0;
+}
+.nef

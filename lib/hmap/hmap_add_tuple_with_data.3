@@ -1,0 +1,63 @@
+.TH HMAP_ADD_TUPLE_WITH_DATA 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+hmap_add_tuple_with_data \- Add a tuple with associated data to a hash map
+
+.SH SYNOPSIS
+.IB #include <lib/hmap_internal.h>
+
+.IB int
+.IB hmap_add_tuple_with_data(HMAP_DB** hmap_db, const void* key, size_t k_len, void* data);
+
+.SH DESCRIPTION
+The \fBhmap_add_tuple_with_data\fR function adds a tuple with associated data to a hash map. It takes a pointer to the hash map database, the key, the length of the key, and the data as arguments.
+
+The function takes the following parameters:
+.IB HMAP_DB**
+A pointer to the hash map database.
+.IB const void*
+The key to be added to the hash map.
+.IB size_t
+The length of the key.
+.IB void*
+The data to be associated with the key.
+
+The function returns an integer indicating the result of the operation. Possible return values include:
+.IB HMAP_SUCCESS
+The tuple was added successfully.
+.IB HMAP_TUPLE_ALREADY_EXIST
+The tuple already exists in the hash map.
+.IB HMAP_TUPLE_NOT_FOUND
+The tuple was not found in the hash map.
+.IB HMAP_ALLOCATED_ERROR
+An error occurred during memory allocation.
+
+The \fBhmap_add_tuple_with_data\fR function is intended to be used to add tuples with associated data to a hash map.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBhmap_add_tuple_with_data\fR function to add a tuple with associated data to a hash map:
+
+.nf
+#include <stdio.h>
+#include <lib/hmap_internal.h>
+
+int main() {
+    HMAP_DB* hmap_db;
+    // Initialize the hash map database
+    hmap_init(&hmap_db);
+
+    // Add a tuple with associated data
+    int result = hmap_add_tuple_with_data(&hmap_db, "example", 7, "data");
+
+    if(result == HMAP_SUCCESS) {
+        printf("Tuple added successfully\n");
+    } else {
+        printf("Failed to add tuple\n");
+    }
+
+    // Free the hash map database
+    hmap_free(&hmap_db);
+
+    return 0;
+}
+.nef

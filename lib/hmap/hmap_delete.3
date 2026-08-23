@@ -1,0 +1,60 @@
+.TH HMAP_DELETE 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+hmap_delete \- Delete a tuple from a hash map
+
+.SH SYNOPSIS
+.IB #include <lib/hmap_internal.h>
+
+.IB int
+.IB hmap_delete(HMAP_DB** hmap_db, const void* key, size_t k_len);
+
+.SH DESCRIPTION
+The \fBhmap_delete\fR function deletes a tuple from a hash map. It takes a pointer to the hash map database and the key of the tuple to be deleted as arguments.
+
+The function takes the following parameters:
+.IB HMAP_DB**
+A pointer to the hash map database.
+.IB const void*
+The key of the tuple to be deleted.
+.IB size_t
+The length of the key.
+
+The function returns an integer indicating the result of the operation. Possible return values include:
+.IB HMAP_SUCCESS
+The tuple was deleted successfully.
+.IB HMAP_TUPLE_NOT_FOUND
+The tuple was not found in the hash map.
+
+The \fBhmap_delete\fR function is intended to be used to delete a tuple from a hash map.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBhmap_delete\fR function to delete a tuple from a hash map:
+
+.nf
+#include <stdio.h>
+#include <lib/hmap_internal.h>
+
+int main() {
+    HMAP_DB* hmap_db;
+    // Initialize the hash map database
+    hmap_init(&hmap_db);
+
+    // Add a tuple to the hash map
+    hmap_add_tuple_with_data(&hmap_db, "example", 7, "data");
+
+    // Delete a tuple from the hash map
+    int result = hmap_delete(&hmap_db, "example", 7);
+
+    if(result == HMAP_SUCCESS) {
+        printf("Tuple deleted successfully\n");
+    } else {
+        printf("Failed to delete tuple\n");
+    }
+
+    // Free the hash map database
+    hmap_free(&hmap_db);
+
+    return 0;
+}
+.nef

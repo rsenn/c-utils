@@ -1,0 +1,60 @@
+.TH HMAP_IS_LOCATE 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+hmap_is_locate \- Check if a key is located in a hash map
+
+.SH SYNOPSIS
+.IB #include <lib/hmap_internal.h>
+
+.IB int
+.IB hmap_is_locate(HMAP_DB* hmap_db, void* key, size_t k_len);
+
+.SH DESCRIPTION
+The \fBhmap_is_locate\fR function checks if a key is located in a hash map. It takes a pointer to the hash map database, a key, and the length of the key as arguments.
+
+The function takes the following parameters:
+.IB HMAP_DB*
+A pointer to the hash map database.
+.IB void*
+The key to check.
+.IB size_t
+The length of the key.
+
+The function returns an integer indicating whether the key is located in the hash map. Possible return values include:
+.IB HMAP_SUCCESS
+The key is located in the hash map.
+.IB HMAP_NOT_FOUND
+The key is not located in the hash map.
+
+The \fBhmap_is_locate\fR function is intended to be used to check if a key exists in a hash map.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBhmap_is_locate\fR function to check if a key is located in a hash map:
+
+.nf
+#include <stdio.h>
+#include <lib/hmap_internal.h>
+
+int main() {
+    HMAP_DB* hmap_db;
+    // Initialize the hash map database
+    hmap_init(&hmap_db);
+
+    // Add a tuple with a string data type
+    hmap_add_tuple_with_data(&hmap_db, "example1", 8, "data1");
+
+    // Check if the key "example1" is located in the hash map
+    int result = hmap_is_locate(hmap_db, "example1", 8);
+
+    if(result == HMAP_SUCCESS) {
+        printf("Key is located in the hash map\n");
+    } else {
+        printf("Key is not located in the hash map\n");
+    }
+
+    // Free the hash map database
+    hmap_destroy(&hmap_db);
+
+    return 0;
+}
+.nef

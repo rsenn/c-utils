@@ -1,0 +1,39 @@
+.TH HASHMAP_INIT 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+hashmap_init \- Initialize a hashmap
+
+.SH SYNOPSIS
+.IB #include <lib/hashmap.h>
+
+.IB void
+.IB hashmap_init(hashmap* map);
+
+.SH DESCRIPTION
+The \fBhashmap_init\fR function initializes a hashmap. It takes a pointer to the hashmap as an argument.
+
+The function takes the following parameter:
+.IB hashmap*
+A pointer to the hashmap to be initialized.
+
+The function initializes the hashmap to its default state, setting all fields to zero.
+
+The \fBhashmap_init\fR function is intended to be used to prepare a hashmap for use before any other functions are called on it.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBhashmap_init\fR function to initialize a hashmap:
+
+.nf
+#include <stdio.h>
+#include <lib/hashmap.h>
+
+int main() {
+    hashmap map;
+
+    hashmap_init(&map);
+
+    // hashmap can now be used
+
+    return 0;
+}
+.nef
