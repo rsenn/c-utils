@@ -1,0 +1,53 @@
+.TH lib/ihex/ihex_record_next.c 3 "2023-04-10" "lib/ihex" "Manual Page"
+.SH NAME
+ihex_record_next - Find the next IHEX record of a specific type
+.SH SYNOPSIS
+.I #include <lib/ihex.h>
+.I ihex_record*
+.I ihex_record_next
+.I (
+.I ihex_file *ihf,
+.I ihex_record *rec,
+.I int type
+.I )
+.SH DESCRIPTION
+The .B ihex_record_next function finds the next IHEX record of a specific type.
+
+The function takes three parameters:
+.I ihf
+The IHEX file structure.
+.I rec
+The current IHEX record.
+.I type
+The type of the next record to find.
+
+The function returns a pointer to the next IHEX record of the specified type on success, or NULL if no such record exists.
+
+.SH EXAMPLE
+The following example demonstrates how to use the .B ihex_record_next function:
+
+.I
+.nf
+#include <stdio.h>
+#include <lib/ihex.h>
+
+int main() {
+  // Assume ihf is a valid IHEX file structure
+  ihex_file ihf;
+
+  // Initialize ihf
+
+  ihex_record* rec = ihex_record_next(&ihf, NULL, 0);
+
+  if (rec == NULL) {
+    perror("ihex_record_next");
+    return 1;
+  }
+
+  // Use the record
+
+  return 0;
+}
+.!
+.SH "SEE ALSO"
+ihex_record_prev(3)

@@ -1,0 +1,38 @@
+.TH JSON_NEWNODE 3 "JSON Utility" "LIBJSON" "Library Functions"
+.SH NAME
+json_newnode - Create a new JSON node
+.SH SYNOPSIS
+.B #include <lib/json/json.h>
+.PP
+.B jsonval* json_newnode(jsontype type);
+.SH DESCRIPTION
+The
+.B json_newnode
+function creates a new JSON node with the specified
+.IR type .
+The function returns a pointer to the new JSON node, or NULL if memory allocation fails.
+.SH ARGUMENTS
+.TP
+.I type
+The type of the new JSON node.
+.SH RETURN VALUE
+The function returns a pointer to the new JSON node, or NULL if memory allocation fails.
+.SH EXAMPLE
+The following example demonstrates how to use the
+.B json_newnode
+function:
+.PP
+.B #include <lib/json/json.h>
+.B #include <stdio.h>
+.PP
+.B int main() {
+.B \tjsonval* node = json_newnode(JSON_OBJECT);
+.B \tif (node) {
+.B \t\tprintf("Node created\n");
+.B \t\tjson_free(node);
+.B \t}
+.B \treturn 0;
+.B }
+.SH SEE ALSO
+.B json_init,
+.B json_free

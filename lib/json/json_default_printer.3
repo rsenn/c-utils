@@ -1,0 +1,54 @@
+.TH JSON_DEFAULT_PRINTER 3 "JSON Utility" "LIBJSON" "Library Functions"
+.SH NAME
+json_default_printer - Initialize a default JSON printer
+.SH SYNOPSIS
+.B #include <lib/json/json.h>
+.PP
+.B void json_default_printer(jsonfmt* p, jsonval* v, int depth, int index, char quote);
+.SH DESCRIPTION
+The
+.B json_default_printer
+function initializes a JSON printer
+.IR p
+with default formatting options. The printer will use indentation, newlines, and spacing between elements if the JSON object is nested.
+The printer will use the specified
+.IR quote
+character for string values.
+.SH ARGUMENTS
+.TP
+.I p
+A pointer to a
+.B jsonfmt
+structure to be initialized.
+.TP
+.I v
+A pointer to a
+.B jsonval
+structure to be formatted.
+.TP
+.I depth
+The depth of the current element in the JSON object.
+.TP
+.I index
+The index of the current element in the JSON array.
+.TP
+.I quote
+The quote character to use for string values.
+.SH EXAMPLE
+The following example demonstrates how to use the
+.B json_default_printer
+function:
+.PP
+.B #include <lib/json/json.h>
+.B #include <stdio.h>
+.PP
+.B int main() {
+.B \tjsonval val = ...;
+.B \tjsonfmt p;
+.B \tjson_default_printer(&p, &val, 0, 0, '"');
+.B \tjson_print(&p, &val);
+.B \treturn 0;
+.B }
+.SH SEE ALSO
+.B json_init,
+.B json_free

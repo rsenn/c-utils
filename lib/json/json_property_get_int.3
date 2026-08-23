@@ -1,0 +1,45 @@
+.TH JSON_PROPERTY_GET_INT 3 "JSON Utility" "LIBJSON" "Library Functions"
+.SH NAME
+json_property_get_int - Get a JSON property by integer index
+.SH SYNOPSIS
+.B #include <lib/json/json.h>
+.PP
+.B jsonval json_property_get_int(jsonval obj, int64 i);
+.SH DESCRIPTION
+The
+.B json_property_get_int
+function retrieves the value of a property from a JSON object by integer index.
+If the property is not found, the function returns a JSON undefined value.
+.SH ARGUMENTS
+.TP
+.I obj
+A
+.B jsonval
+structure representing the JSON object.
+.TP
+.I i
+An integer index representing the property to retrieve.
+.SH RETURN VALUE
+The value of the property, or a JSON undefined value if the property is not found.
+.SH EXAMPLE
+The following example demonstrates how to use the
+.B json_property_get_int
+function:
+.PP
+.B #include <lib/json/json.h>
+.B #include <stdio.h>
+.PP
+.B int main() {
+.B \tjsonval obj = json_array();
+.B \tjsonval val = json_property_get_int(obj, 0);
+.B \tif (!json_isundefined(val)) {
+.B \t\tprintf("Property value: %d\n", json_toint(val));
+.B \t}
+.B \tjson_free(&obj);
+.B \treturn 0;
+.B }
+.SH SEE ALSO
+.B json_init,
+.B json_free,
+.B json_array,
+.B json_property_get

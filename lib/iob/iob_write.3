@@ -1,0 +1,42 @@
+.TH IOB_WRITE 3 "QuickJS IO" "LIBIOB" "Library Functions"
+.SH NAME
+iob_write - Write data to a network socket using a callback
+.SH SYNOPSIS
+.B #include <lib/iob/iob.h>
+.PP
+.B int64 iob_write(fd_type s, io_batch* b, io_write_callback cb);
+.SH DESCRIPTION
+The
+.B iob_write
+function writes data to a network socket
+.I s
+using the data in the
+.IR b .
+The function uses a callback
+.IR cb
+to write the data, which can be useful for asynchronous I/O.
+.SH RETURN VALUE
+The function returns the number of bytes written, or -1 on error.
+.SH EXAMPLE
+The following example demonstrates how to use the
+.B iob_write
+function:
+.PP
+.B #include <lib/iob/iob.h>
+.B #include <stdio.h>
+.PP
+.B int main() {
+.B \tfd_type s = ...;
+.B \tiob_batch b = ...;
+.B \tiob_init_batch(&b);
+.B \tiob_add_buffer(&b, ...);
+.B \ti64 written = iob_write(s, &b, io_write_callback);
+.B \tif (written == -1) {
+.B \t\tprintf("Error: %s\n", strerror(errno));
+.B \t}
+.B \treturn 0;
+.B }
+.SH SEE ALSO
+.B iob_init_batch,
+.B iob_add_buffer,
+.B iob_reset_batch

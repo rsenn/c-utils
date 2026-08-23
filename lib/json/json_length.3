@@ -1,0 +1,35 @@
+.TH JSON_LENGTH 3 "JSON Utility" "LIBJSON" "Library Functions"
+.SH NAME
+json_length - Get the length of a JSON value
+.SH SYNOPSIS
+.B #include <lib/json/json.h>
+.PP
+.B int64 json_length(jsonval v);
+.SH DESCRIPTION
+The
+.B json_length
+function returns the length of the JSON value
+.IR v .
+For a JSON string, the length is the number of characters in the string.
+For a JSON array, the length is the number of elements in the array.
+For a JSON object, the length is the number of key-value pairs in the object.
+The function returns 0 for other types of JSON values.
+.SH RETURN VALUE
+The function returns the length of the JSON value, or 0 for other types of JSON values.
+.SH EXAMPLE
+The following example demonstrates how to use the
+.B json_length
+function:
+.PP
+.B #include <lib/json/json.h>
+.B #include <stdio.h>
+.PP
+.B int main() {
+.B \tjsonval val = ...;
+.B \tint64 len = json_length(val);
+.B \tprintf("Length: %lld\n", len);
+.B \treturn 0;
+.B }
+.SH SEE ALSO
+.B json_init,
+.B json_free

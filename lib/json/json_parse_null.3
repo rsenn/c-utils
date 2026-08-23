@@ -1,0 +1,52 @@
+.TH JSON_PARSE_NULL 3 "JSON Utility" "LIBJSON" "Library Functions"
+.SH NAME
+json_parse_null - Parse a JSON null value
+.SH SYNOPSIS
+.B #include <lib/json/json.h>
+.PP
+.B int json_parse_null(jsonval* j, charbuf* b);
+.SH DESCRIPTION
+The
+.B json_parse_null
+function parses a JSON null value from the specified
+.IR charbuf
+and stores the result in the specified
+.IR jsonval
+structure.
+The function returns 1 on success, and 0 on failure.
+.SH ARGUMENTS
+.TP
+.I j
+A pointer to a
+.B jsonval
+structure to store the result.
+.TP
+.I b
+A pointer to a
+.B charbuf
+structure containing the JSON null value to parse.
+.SH RETURN VALUE
+The function returns 1 on success, and 0 on failure.
+.SH EXAMPLE
+The following example demonstrates how to use the
+.B json_parse_null
+function:
+.PP
+.B #include <lib/json/json.h>
+.B #include <stdio.h>
+.PP
+.B int main() {
+.B \tcharbuf b = CHARBUF_INIT;
+.B \tcharbuf_append(&b, "null");
+.B \tjsonval val;
+.B \tint r = json_parse_null(&val, &b);
+.B \tif (r) {
+.B \t\tprintf("JSON null value parsed successfully\n");
+.B \t\tjson_free(&val);
+.B \t}
+.B \tcharbuf_free(&b);
+.B \treturn 0;
+.B }
+.SH SEE ALSO
+.B json_init,
+.B json_free

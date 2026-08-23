@@ -1,0 +1,55 @@
+.TH lib/ihex/ihex_record_at.c 3 "2023-04-10" "lib/ihex" "Manual Page"
+.SH NAME
+ihex_record_at - Get an IHEX record at a specific address
+.SH SYNOPSIS
+.I #include <lib/ihex.h>
+.I ihex_record*
+.I ihex_record_at
+.I (
+.I ihex_file *ihf,
+.I uint32 at,
+.I uint32 *roffs
+.I )
+.SH DESCRIPTION
+The .B ihex_record_at function retrieves an IHEX record at a specific address.
+
+The function takes three parameters:
+.I ihf
+The IHEX file structure.
+.I at
+The address to search for.
+.I roffs
+A pointer to an integer that will hold the offset within the record.
+
+The function returns a pointer to the IHEX record on success, or NULL on error.
+
+.SH EXAMPLE
+The following example demonstrates how to use the .B ihex_record_at function:
+
+.I
+.nf
+#include <stdio.h>
+#include <lib/ihex.h>
+
+int main() {
+  // Assume ihf is a valid IHEX file structure
+  ihex_file ihf;
+
+  // Initialize ihf
+
+  uint32 at = 0x1000;
+  uint32 roffs;
+  ihex_record* rec = ihex_record_at(&ihf, at, &roffs);
+
+  if (rec == NULL) {
+    perror("ihex_record_at");
+    return 1;
+  }
+
+  // Use the record
+
+  return 0;
+}
+.!
+.SH "SEE ALSO"
+ihex_record_find(3)

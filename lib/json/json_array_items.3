@@ -1,0 +1,38 @@
+.TH JSON_ARRAY_ITEMS 3 "JSON Utility" "LIBJSON" "Library Functions"
+.SH NAME
+json_array_items - Get the items from a JSON array
+.SH SYNOPSIS
+.B #include <lib/json/json.h>
+.PP
+.B jsonitem* json_array_items(jsonval val);
+.SH DESCRIPTION
+The
+.B json_array_items
+function returns a pointer to the first item in the JSON array
+.IR val .
+If
+.IR val
+is not a JSON array, the function returns NULL.
+.SH RETURN VALUE
+The function returns a pointer to the first item in the JSON array, or NULL if
+.IR val
+is not a JSON array.
+.SH EXAMPLE
+The following example demonstrates how to use the
+.B json_array_items
+function:
+.PP
+.B #include <lib/json/json.h>
+.B #include <stdio.h>
+.PP
+.B int main() {
+.B \tjsonval val = ...;
+.B \tjsonitem* item = json_array_items(val);
+.B \tif (item) {
+.B \t\tprintf("Item: %d\n", item->value);
+.B \t}
+.B \treturn 0;
+.B }
+.SH SEE ALSO
+.B json_init,
+.B json_free

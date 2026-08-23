@@ -1,0 +1,52 @@
+.TH JSON_PARSE_ARRAY 3 "JSON Utility" "LIBJSON" "Library Functions"
+.SH NAME
+json_parse_array - Parse a JSON array
+.SH SYNOPSIS
+.B #include <lib/json/json.h>
+.PP
+.B int json_parse_array(jsonval* val, charbuf* b);
+.SH DESCRIPTION
+The
+.B json_parse_array
+function parses a JSON array from the specified
+.IR charbuf
+and stores the result in the specified
+.IR jsonval
+structure.
+The function returns 1 on success, and 0 on failure.
+.SH ARGUMENTS
+.TP
+.I val
+A pointer to a
+.B jsonval
+structure to store the result.
+.TP
+.I b
+A pointer to a
+.B charbuf
+structure containing the JSON array to parse.
+.SH RETURN VALUE
+The function returns 1 on success, and 0 on failure.
+.SH EXAMPLE
+The following example demonstrates how to use the
+.B json_parse_array
+function:
+.PP
+.B #include <lib/json/json.h>
+.B #include <stdio.h>
+.PP
+.B int main() {
+.B \tcharbuf b = CHARBUF_INIT;
+.B \tcharbuf_append(&b, "[1,2,3]");
+.B \tjsonval val;
+.B \tint r = json_parse_array(&val, &b);
+.B \tif (r) {
+.B \t\tprintf("JSON array parsed successfully\n");
+.B \t\tjson_free(&val);
+.B \t}
+.B \tcharbuf_free(&b);
+.B \treturn 0;
+.B }
+.SH SEE ALSO
+.B json_init,
+.B json_free

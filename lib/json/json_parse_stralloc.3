@@ -1,0 +1,63 @@
+.TH JSON_PARSE_STRALLOC 3 "JSON Utility" "LIBJSON" "Library Functions"
+.SH NAME
+json_parse_stralloc - Parse a JSON string into a stralloc
+.SH SYNOPSIS
+.B #include <lib/json/json.h>
+.PP
+.B int json_parse_stralloc(charbuf* b, stralloc* out, int quoted);
+.SH DESCRIPTION
+The
+.B json_parse_stralloc
+function parses a JSON string from the specified
+.IR charbuf
+and stores the result in the specified
+.IR stralloc
+structure.
+If
+.IR quoted
+is non-zero, the function expects the string to be quoted with double quotes.
+If
+.IR quoted
+is zero, the function expects the string to be unquoted and separated from the next token by a colon.
+The function returns 1 on success, and 0 on failure.
+.SH ARGUMENTS
+.TP
+.I b
+A pointer to a
+.B charbuf
+structure containing the JSON string to parse.
+.TP
+.I out
+A pointer to a
+.B stralloc
+structure to store the result.
+.TP
+.I quoted
+An integer indicating whether the string is quoted (non-zero) or unquoted (zero).
+.SH RETURN VALUE
+The function returns 1 on success, and 0 on failure.
+.SH EXAMPLE
+The following example demonstrates how to use the
+.B json_parse_stralloc
+function:
+.PP
+.B #include <lib/json/json.h>
+.B #include <stdio.h>
+.PP
+.B int main() {
+.B \tcharbuf b = CHARBUF_INIT;
+.B \tcharbuf_append(&b, "\"Hello, World!\"");
+.B \tstralloc sa;
+.B \tstralloc_init(&sa);
+.B \tint ret = json_parse_stralloc(&b, &sa, 1);
+.B \tif (ret) {
+.B \t\tprintf("JSON string parsed successfully\n");
+.B \t\tprintf("Parsed string: %s\n", sa.s);
+.B \t\tstralloc_free(&sa);
+.B \t}
+.B \tcharbuf_free(&b);
+.B \treturn 0;
+.B }
+.SH SEE ALSO
+.B json_init,
+.B json_free

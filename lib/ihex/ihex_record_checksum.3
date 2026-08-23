@@ -1,0 +1,42 @@
+.TH lib/ihex/ihex_record_checksum.c 3 "2023-04-10" "lib/ihex" "Manual Page"
+.SH NAME
+ihex_record_checksum - Calculate the checksum of an IHEX record
+.SH SYNOPSIS
+.I #include <lib/ihex.h>
+.I uint8
+.I ihex_record_checksum
+.I (
+.I const ihex_record *ihr
+.I )
+.SH DESCRIPTION
+The .B ihex_record_checksum function calculates the checksum of an IHEX record.
+
+The function takes one parameter:
+.I ihr
+The IHEX record structure.
+
+The function returns the checksum of the IHEX record.
+
+.SH EXAMPLE
+The following example demonstrates how to use the .B ihex_record_checksum function:
+
+.I
+.nf
+#include <stdio.h>
+#include <lib/ihex.h>
+
+int main() {
+  // Assume ihr is a valid IHEX record structure
+  ihex_record ihr;
+
+  // Initialize ihr
+
+  uint8 checksum = ihex_record_checksum(&ihr);
+
+  // Use the checksum
+
+  return 0;
+}
+.!
+.SH "SEE ALSO"
+ihex_record_validate(3)

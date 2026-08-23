@@ -1,0 +1,39 @@
+.TH IOB_SEND 3 "QuickJS IO" "LIBIOB" "Library Functions"
+.SH NAME
+iob_send - Send data over a network socket
+.SH SYNOPSIS
+.B #include <lib/iob/iob.h>
+.PP
+.B int64 iob_send(fd_type s, io_batch* b);
+.SH DESCRIPTION
+The
+.B iob_send
+function sends data over a network socket
+.I s
+using the data in the
+.IR b .
+.SH RETURN VALUE
+The function returns the number of bytes sent, or -1 on error.
+.SH EXAMPLE
+The following example demonstrates how to use the
+.B iob_send
+function:
+.PP
+.B #include <lib/iob/iob.h>
+.B #include <stdio.h>
+.PP
+.B int main() {
+.B \tfd_type s = ...;
+.B \tiob_batch b = ...;
+.B \tiob_init_batch(&b);
+.B \tiob_add_buffer(&b, ...);
+.B \ti64 sent = iob_send(s, &b);
+.B \tif (sent == -1) {
+.B \t\tprintf("Error: %s\n", strerror(errno));
+.B \t}
+.B \treturn 0;
+.B }
+.SH SEE ALSO
+.B iob_init_batch,
+.B iob_add_buffer,
+.B iob_reset_batch

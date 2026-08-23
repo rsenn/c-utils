@@ -1,0 +1,42 @@
+.TH JSON_ARRAY_AT 3 "JSON Utility" "LIBJSON" "Library Functions"
+.SH NAME
+json_array_at - Get an item from a JSON array by index
+.SH SYNOPSIS
+.B #include <lib/json/json.h>
+.PP
+.B jsonitem* json_array_at(jsonval val, int64 pos);
+.SH DESCRIPTION
+The
+.B json_array_at
+function returns the
+.I pos
+th item from a JSON array
+.IR val .
+If
+.I pos
+is out of bounds, the function returns NULL.
+.SH RETURN VALUE
+The function returns the
+.I pos
+th item from a JSON array, or NULL if
+.I pos
+is out of bounds.
+.SH EXAMPLE
+The following example demonstrates how to use the
+.B json_array_at
+function:
+.PP
+.B #include <lib/json/json.h>
+.B #include <stdio.h>
+.PP
+.B int main() {
+.B \tjsonval val = ...;
+.B \tjsonitem* item = json_array_at(val, 0);
+.B \tif (item) {
+.B \t\tprintf("Item: %d\n", item->value);
+.B \t}
+.B \treturn 0;
+.B }
+.SH SEE ALSO
+.B json_init,
+.B json_free

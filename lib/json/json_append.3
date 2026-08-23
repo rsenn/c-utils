@@ -1,0 +1,34 @@
+.TH JSON_APPEND 3 "JSON Utility" "LIBJSON" "Library Functions"
+.SH NAME
+json_append - Append a JSON value to a list
+.SH SYNOPSIS
+.B #include <lib/json/json.h>
+.PP
+.B jsonitem* json_append(jsonitem** list, const jsonval value);
+.SH DESCRIPTION
+The
+.B json_append
+function appends a JSON value
+.IR value
+to the end of a JSON list
+.IR list .
+The function returns a pointer to the new item, or NULL on error.
+.SH RETURN VALUE
+The function returns a pointer to the new item, or NULL on error.
+.SH EXAMPLE
+The following example demonstrates how to use the
+.B json_append
+function:
+.PP
+.B #include <lib/json/json.h>
+.B #include <stdio.h>
+.PP
+.B int main() {
+.B \tjsonitem* list = NULL;
+.B \tjsonval value = ...;
+.B \tjson_append(&list, value);
+.B \treturn 0;
+.B }
+.SH SEE ALSO
+.B json_init,
+.B json_free

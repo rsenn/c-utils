@@ -1,0 +1,38 @@
+.TH JSON_ISNULL 3 "JSON Utility" "LIBJSON" "Library Functions"
+.SH NAME
+json_isnull - Check if a JSON value is null
+.SH SYNOPSIS
+.B #include <lib/json/json.h>
+.PP
+.B int json_isnull(jsonval v);
+.SH DESCRIPTION
+The
+.B json_isnull
+function checks if the JSON value
+.IR v
+is null.
+The function returns 1 if
+.IR v
+is null, and 0 otherwise.
+.SH RETURN VALUE
+The function returns 1 if
+.IR v
+is null, and 0 otherwise.
+.SH EXAMPLE
+The following example demonstrates how to use the
+.B json_isnull
+function:
+.PP
+.B #include <lib/json/json.h>
+.B #include <stdio.h>
+.PP
+.B int main() {
+.B \tjsonval val = ...;
+.B \tif (json_isnull(val)) {
+.B \t\tprintf("Value is null\n");
+.B \t}
+.B \treturn 0;
+.B }
+.SH SEE ALSO
+.B json_init,
+.B json_free

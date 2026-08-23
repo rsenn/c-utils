@@ -1,0 +1,50 @@
+.TH JSON_PROPERTY_GET 3 "JSON Utility" "LIBJSON" "Library Functions"
+.SH NAME
+json_property_get - Get a JSON property
+.SH SYNOPSIS
+.B #include <lib/json/json.h>
+.PP
+.B jsonval json_property_get(jsonval obj, jsonval name);
+.SH DESCRIPTION
+The
+.B json_property_get
+function retrieves the value of a property from a JSON object.
+If the property is not found, the function returns a JSON undefined value.
+.SH ARGUMENTS
+.TP
+.I obj
+A
+.B jsonval
+structure representing the JSON object.
+.TP
+.I name
+A
+.B jsonval
+structure representing the name of the property to retrieve.
+.SH RETURN VALUE
+The value of the property, or a JSON undefined value if the property is not found.
+.SH EXAMPLE
+The following example demonstrates how to use the
+.B json_property_get
+function:
+.PP
+.B #include <lib/json/json.h>
+.B #include <stdio.h>
+.PP
+.B int main() {
+.B \tjsonval obj = json_object();
+.B \tjsonval key = json_string("length");
+.B \tjsonval val = json_property_get(obj, key);
+.B \tif (!json_isundefined(val)) {
+.B \t\tprintf("Property value: %d\n", json_toint(val));
+.B \t}
+.B \tjson_free(&obj);
+.B \tjson_free(&key);
+.B \treturn 0;
+.B }
+.SH SEE ALSO
+.B json_init,
+.B json_free,
+.B json_object,
+.B json_string,
+.B json_property_get_int

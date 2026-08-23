@@ -1,0 +1,51 @@
+.TH lib/ihex/ihex_write.c 3 "2023-04-10" "lib/ihex" "Manual Page"
+.SH NAME
+ihex_write - Write an IHEX file to a buffer
+.SH SYNOPSIS
+.I #include <lib/ihex.h>
+.I int
+.I ihex_write
+.I (
+.I ihex_file *ihf,
+.I buffer *b
+.I )
+.SH DESCRIPTION
+The .B ihex_write function writes an IHEX file to a buffer.
+
+The function takes two parameters:
+.I ihf
+The IHEX file structure.
+.I b
+The buffer to write to.
+
+The function returns the number of records written to the buffer.
+
+.SH EXAMPLE
+The following example demonstrates how to use the .B ihex_write function:
+
+.I
+.nf
+#include <stdio.h>
+#include <lib/ihex.h>
+#include <buffer.h>
+
+int main() {
+  // Assume ihf is a valid IHEX file structure
+  ihex_file ihf;
+
+  // Initialize ihf
+
+  buffer b;
+  buffer_init(&b);
+
+  int count = ihex_write(&ihf, &b);
+
+  // Use the buffer
+
+  buffer_free(&b);
+
+  return 0;
+}
+.!
+.SH "SEE ALSO"
+ihex_read(3)
