@@ -14,7 +14,7 @@
 #include "lib/alloc.h"
 #include "lib/windoze.h"
 
-#ifdef WINDOWS_NATIVE
+#if WINDOWS_NATIVE
 #include <io.h>
 #else
 #include <unistd.h>
