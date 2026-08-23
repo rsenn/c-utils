@@ -6,7 +6,6 @@
 
 sigtable_t const sigtable[] = {
 #if !WINDOWS_NATIVE
-
     {SIGABRT, "ABRT"},
     {SIGALRM, "ALRM"},
     {SIGBUS, "BUS"},
@@ -82,4 +81,5 @@ sigtable_t const sigtable[] = {
     {SIGUNUSED, "UNUSED"},
 #endif
 #endif
-    {0, 0}};
+    {0, 0},
+};
