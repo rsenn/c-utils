@@ -1,0 +1,40 @@
+.TH BUFFER_REWIND 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+buffer_rewind \- Rewind a buffer to the beginning
+
+.SH SYNOPSIS
+.IB #include <lib/buffer.h>
+.IB #include <lib/seek.h>
+
+.IB void
+.IB buffer_rewind(buffer* b);
+
+.SH DESCRIPTION
+The \fBbuffer_rewind\fR function rewinds a buffer to the beginning. It resets the file descriptor to 0 (the start of the file) if the buffer has an associated file descriptor. It also sets the buffer's read position and number of characters read to 0.
+
+.SH ARGUMENTS
+.TP
+.IB b
+The buffer to be rewound.
+
+.SH RETURN VALUE
+The function does not return a value.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBbuffer_rewind\fR function:
+
+.nf
+#include <stdio.h>
+#include <lib/buffer.h>
+#include <lib/seek.h>
+
+int main() {
+    buffer b;
+    buffer_init(&b, "/path/to/file");
+    buffer_read(&b);
+    buffer_rewind(&b);
+    buffer_read(&b);
+    return 0;
+}
+.nef

@@ -1,0 +1,57 @@
+.TH DLIST_FIND 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+dlist_find \- Find a node in a doubly linked list using a predicate
+
+.SH SYNOPSIS
+.IB #include <lib/dlist.h>
+
+.IB node*
+.IB dlist_find(dlist* l, int (*pred)(void*));
+
+.SH DESCRIPTION
+The \fBdlist_find\fR function searches for a node in a doubly linked list \fBl\fR that satisfies the predicate function \fBpred\fR. The predicate function should return a non-zero value if the node meets the criteria, and zero otherwise.
+
+.SH ARGUMENTS
+.TP
+.IB l
+The doubly linked list to search in.
+.TP
+.IB pred
+The predicate function used to find the node.
+
+.SH RETURN VALUE
+The function returns a pointer to the node if found, or \fBNULL\fR if no node satisfies the predicate.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBdlist_find\fR function:
+
+.nf
+#include <lib/dlist.h>
+
+int is_even(void* node) {
+    return (*(int*)node % 2 == 0);
+}
+
+int main() {
+    dlist l;
+    dlist_init(&l);
+
+    node node1, node2, node3;
+    dlist_node_init(&node1);
+    dlist_node_init(&node2);
+    dlist_node_init(&node3);
+
+    dlist_push(&l, &node1);
+    dlist_push(&l, &node2);
+    dlist_push(&l, &node3);
+
+    *(int*)&node1 = 1;
+    *(int*)&node2 = 2;
+    *(int*)&node3 = 3;
+
+    node* found_node = dlist_find(&l, is_even); // Find a node with an even value
+
+    return 0;
+}
+.nef

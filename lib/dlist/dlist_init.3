@@ -1,0 +1,39 @@
+.TH DLIST_INIT 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+dlist_init \- Initialize a doubly linked list
+
+.SH SYNOPSIS
+.IB #include <lib/dlist.h>
+.IB #include <lib/byte.h>
+
+.IB void
+.IB dlist_init(dlist* l);
+
+.SH DESCRIPTION
+The \fBdlist_init\fR function initializes a doubly linked list \fBl\fR by setting all its members to zero using the \fBbyte_zero\fR function from the \fBlib/byte.h\fR library.
+
+.SH ARGUMENTS
+.TP
+.IB l
+The doubly linked list to initialize.
+
+.SH RETURN VALUE
+The function does not return a value.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBdlist_init\fR function:
+
+.nf
+#include <lib/dlist.h>
+#include <lib/byte.h>
+
+int main() {
+    dlist l;
+    dlist_init(&l); // Initialize the list
+
+    // List can now be used with other dlist functions
+
+    return 0;
+}
+.nef

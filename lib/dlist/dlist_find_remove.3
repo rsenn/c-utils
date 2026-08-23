@@ -1,0 +1,57 @@
+.TH DLIST_FIND_REMOVE 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+dlist_find_delete \- Find and remove a node in a doubly linked list using a predicate
+
+.SH SYNOPSIS
+.IB #include <lib/dlist.h>
+
+.IB node*
+.IB dlist_find_delete(dlist* l, int (*pred)(void*));
+
+.SH DESCRIPTION
+The \fBdlist_find_delete\fR function searches for a node in a doubly linked list \fBl\fR that satisfies the predicate function \fBpred\fR. If such a node is found, it is removed from the list and returned. If no node satisfies the predicate, the function returns \fBNULL\fR.
+
+.SH ARGUMENTS
+.TP
+.IB l
+The doubly linked list to search and remove from.
+.TP
+.IB pred
+The predicate function used to find the node.
+
+.SH RETURN VALUE
+The function returns a pointer to the removed node if found, or \fBNULL\fR if no node satisfies the predicate.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBdlist_find_delete\fR function:
+
+.nf
+#include <lib/dlist.h>
+
+int is_odd(void* node) {
+    return (*(int*)node % 2 != 0);
+}
+
+int main() {
+    dlist l;
+    dlist_init(&l);
+
+    node node1, node2, node3;
+    dlist_node_init(&node1);
+    dlist_node_init(&node2);
+    dlist_node_init(&node3);
+
+    dlist_push(&l, &node1);
+    dlist_push(&l, &node2);
+    dlist_push(&l, &node3);
+
+    *(int*)&node1 = 1;
+    *(int*)&node2 = 2;
+    *(int*)&node3 = 3;
+
+    node* removed_node = dlist_find_delete(&l, is_odd); // Remove a node with an odd value
+
+    return 0;
+}
+.nef

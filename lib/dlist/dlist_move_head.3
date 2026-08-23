@@ -1,0 +1,46 @@
+.TH DLIST_MOVE_HEAD 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+dlist_move_head \- Move the head of a doubly linked list to another list
+
+.SH SYNOPSIS
+.IB #include <lib/dlist.h>
+
+.IB void
+.IB dlist_move_head(dlist* from, dlist* to);
+
+.SH DESCRIPTION
+The \fBdlist_move_head\fR function moves the head of a doubly linked list \fBfrom\fR to the beginning of another list \fBto\fR. If \fBto\fR is initially empty, it simply becomes the same as \fBfrom\fR. If \fBto\fR is not empty, the head of \fBfrom\fR is prepended to the head of \fBto\fR, and \fBfrom\fR becomes empty.
+
+.SH ARGUMENTS
+.TP
+.IB from
+The doubly linked list from which the head is to be moved.
+.TP
+.IB to
+The doubly linked list to which the head is to be moved.
+
+.SH RETURN VALUE
+The function does not return a value.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBdlist_move_head\fR function:
+
+.nf
+#include <lib/dlist.h>
+
+int main() {
+    dlist from, to;
+    dlist_init(&from);
+    dlist_init(&to);
+
+    // Add some elements to from
+    // ...
+
+    dlist_move_head(&from, &to); // Move the head of from to to
+
+    // from is now empty, and to contains the elements from from
+
+    return 0;
+}
+.nef

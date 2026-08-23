@@ -1,0 +1,38 @@
+.TH STR_ANSILEN 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+str_ansilen \- Calculate the length of an ANSI string
+
+.SH SYNOPSIS
+.IB #include <lib/str.h>
+.IB #include <lib/scan.h>
+
+.IB size_t
+.IB str_ansilen(const char* in);
+
+.SH DESCRIPTION
+The \fBstr_ansilen\fR function calculates the length of an ANSI string, ignoring ANSI escape sequences. ANSI escape sequences are commonly used for text styling in terminal output.
+
+.SH ARGUMENTS
+.TP
+.IB in
+The input string containing the ANSI escape sequences.
+
+.SH RETURN VALUE
+The function returns the number of characters in the string after ignoring ANSI escape sequences.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBstr_ansilen\fR function:
+
+.nf
+#include <stdio.h>
+#include <lib/str.h>
+#include <lib/scan.h>
+
+int main() {
+    const char* input = "\x1b[31mHello, World!\x1b[0m";
+    size_t len = str_ansilen(input);
+    printf("Length without ANSI escape sequences: %zu\n", len);
+    return 0;
+}
+.nef

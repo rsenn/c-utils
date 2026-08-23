@@ -1,0 +1,48 @@
+.TH SEEK_BY_READ 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+seek_by_read \- Seek to a position in a file by reading
+
+.SH SYNOPSIS
+.IB #include <lib/seek.h>
+.IB #include <lib/io.h>
+.IB #include <lib/alloc.h>
+
+.IB void
+.IB seek_by_read(fd_type fd, int64 amount);
+
+.SH DESCRIPTION
+The \fBseek_by_read\fR function seeks to a position in a file by reading data from the file descriptor until the desired position is reached. This function is used when regular seek operations are not possible, such as when reading through a pipe or from standard input.
+
+.SH ARGUMENTS
+.TP
+.IB fd
+The file descriptor of the file to be seeked.
+.TP
+.IB amount
+The amount to seek in the file. Positive values move forward, negative values move backward.
+
+.SH RETURN VALUE
+The function does not return a value.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBseek_by_read\fR function:
+
+.nf
+#include <stdio.h>
+#include <lib/seek.h>
+#include <lib/io.h>
+#include <lib/alloc.h>
+
+int main() {
+    fd_type fd = open("/path/to/file", O_RDONLY);
+    if (fd == -1) {
+        perror("open");
+        return 1;
+    }
+
+    seek_by_read(fd, 100); // Seek 100 bytes forward
+    close(fd);
+    return 0;
+}
+.nef

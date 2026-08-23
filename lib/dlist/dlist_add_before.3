@@ -1,0 +1,51 @@
+.TH DLIST_ADD_BEFORE 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+dlist_add_before \- Add a node before another node in a doubly linked list
+
+.SH SYNOPSIS
+.IB #include <lib/dlist.h>
+
+.IB void
+.IB dlist_add_before(dlist* l, node* p, node* before);
+
+.SH DESCRIPTION
+The \fBdlist_add_before\fR function adds a new node \fIp\fR before another node \fBbefore\fR in a doubly linked list \fBl\fR. If \fBbefore\fR is the head of the list, the function calls \fBdlist_unshift\fR to add the node at the beginning of the list.
+
+.SH ARGUMENTS
+.TP
+.IB l
+The doubly linked list to which the node will be added.
+.TP
+.IB p
+The new node to be added.
+.TP
+.IB before
+The node before which the new node will be added.
+
+.SH RETURN VALUE
+The function does not return a value.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBdlist_add_before\fR function:
+
+.nf
+#include <lib/dlist.h>
+
+int main() {
+    dlist l;
+    dlist_init(&l);
+
+    node node1, node2, node3;
+    dlist_node_init(&node1);
+    dlist_node_init(&node2);
+    dlist_node_init(&node3);
+
+    dlist_push(&l, &node1);
+    dlist_push(&l, &node2);
+
+    dlist_add_before(&l, &node3, &node2); // Add node3 before node2
+
+    return 0;
+}
+.nef

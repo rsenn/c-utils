@@ -1,0 +1,48 @@
+.TH SEEK_BY_JUMP 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+seek_by_jump \- Seek to a position in a file using a jump
+
+.SH SYNOPSIS
+.IB #include <lib/seek.h>
+.IB #include <lib/io.h>
+.IB #include <lib/errmsg.h>
+
+.IB void
+.IB seek_by_jump(fd_type fd, int64 amount);
+
+.SH DESCRIPTION
+The \fBseek_by_jump\fR function seeks to a position in a file using a jump. If the seek operation fails (due to an error like ESPIPE), it falls back to reading the file to achieve the desired seek position.
+
+.SH ARGUMENTS
+.TP
+.IB fd
+The file descriptor of the file to be seeked.
+.TP
+.IB amount
+The amount to jump in the file. Positive values move forward, negative values move backward.
+
+.SH RETURN VALUE
+The function does not return a value.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBseek_by_jump\fR function:
+
+.nf
+#include <stdio.h>
+#include <lib/seek.h>
+#include <lib/io.h>
+#include <lib/errmsg.h>
+
+int main() {
+    fd_type fd = open("/path/to/file", O_RDWR);
+    if (fd == -1) {
+        perror("open");
+        return 1;
+    }
+
+    seek_by_jump(fd, 100); // Seek 100 bytes forward
+    close(fd);
+    return 0;
+}
+.nef
