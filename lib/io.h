@@ -132,6 +132,9 @@ void* io_getcookie(fd_type d);
 void io_nonblock(fd_type d);
 /* put descriptor in blocking mode */
 void io_block(fd_type d);
+/* query current non-blocking mode: 1 non-blocking, 0 blocking, -1 if d is
+ * not a tracked descriptor (never passed to io_fd()/io_nonblock()/io_block()) */
+int io_isnonblock(fd_type d);
 /* put descriptor in close-on-exec mode */
 void io_closeonexec(fd_type d);
 

@@ -29,7 +29,6 @@ io_nonblock(fd_type d) {
   unsigned long i = 1;
 
   if(ioctlsocket(d, FIONBIO, &i) == 0)
-
     if(e)
       e->nonblock = 1;
 #else
