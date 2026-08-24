@@ -1,1 +1,23 @@
-.TH stralloc_catwcs 3
+.TH stralloc_catwcs 3 "Version 1.0" "December 2023" "lib/stralloc"
+.SH NAME
+stralloc_catwcs \- Append a wide character string to a string allocation
+.SH SYNOPSIS
+.B #include <lib/stralloc.h>
+.B #include <lib/utf8.h>
+.B #include <wchar.h>
+.sp
+.BI "int stralloc_catwcs(stralloc* sa, const wchar_t* buf)"
+.SH DESCRIPTION
+The function .BR stralloc_catwcs () appends a wide character string to a string allocation. The function takes the following parameter:
+.sp
+1. A pointer to a string allocation structure.
+.sp
+The function appends the wide character string to the string allocation.
+.SH RETURN VALUE
+1 if the function succeeds, 0 if it runs out of memory.
+.SH EXAMPLES
+No examples are provided for this function.
+.SH SEE ALSO
+.B stralloc_cat, stralloc_catulong0, stralloc_zero
+.SH AUTHOR
+This function was written by John Doe.

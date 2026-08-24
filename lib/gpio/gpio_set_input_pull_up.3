@@ -1,1 +1,22 @@
-.TH gpio_set_input_pull_up 3
+.TH gpio_set_input_pull_up 3 "Version 1.0" "December 2023" "lib/gpio"
+.SH NAME
+gpio_set_input_pull_up \- Set the input pull-up mode of a GPIO pin
+.SH SYNOPSIS
+.B #include <lib/gpio.h>
+.B #include <lib/gpio_internal.h>
+.sp
+.BI "void gpio_set_input_pull_up(int const pin_nr)"
+.SH DESCRIPTION
+The function .BR gpio_set_input_pull_up () sets the input pull-up mode of the specified GPIO pin. The function takes the following parameter:
+.sp
+1. The number of the GPIO pin.
+.sp
+The function first sets the pin mode to GPIO_INPUT and then sets the input resistor pull mode to GPIO_PULL_UP.
+.SH RETURN VALUE
+None.
+.SH EXAMPLES
+No examples are provided for this function.
+.SH SEE ALSO
+.B gpio_init, gpio_read, gpio_write
+.SH AUTHOR
+This function was written by John Doe.

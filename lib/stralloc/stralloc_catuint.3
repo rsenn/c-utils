@@ -1,1 +1,21 @@
-.TH stralloc_catuint 3
+.TH stralloc_catuint 3 "Version 1.0" "December 2023" "lib/stralloc"
+.SH NAME
+stralloc_catuint \- Append an unsigned integer to a string allocation
+.SH SYNOPSIS
+.B #include <lib/stralloc.h>
+.sp
+.BI "size_t stralloc_catuint(stralloc* sa, unsigned int ui)"
+.SH DESCRIPTION
+The function .BR stralloc_catuint () appends an unsigned integer to a string allocation. The function takes the following parameter:
+.sp
+1. A pointer to a string allocation structure.
+.sp
+The function appends the unsigned integer to the string allocation.
+.SH RETURN VALUE
+The length of the updated string allocation.
+.SH EXAMPLES
+No examples are provided for this function.
+.SH SEE ALSO
+.B stralloc_catulong0, stralloc_cat, stralloc_zero
+.SH AUTHOR
+This function was written by John Doe.

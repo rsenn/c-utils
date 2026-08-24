@@ -1,1 +1,23 @@
-.TH gpio_write 3
+.TH gpio_write 3 "Version 1.0" "December 2023" "lib/gpio"
+.SH NAME
+gpio_write \- Write to a GPIO pin
+.SH SYNOPSIS
+.B #include <lib/gpio.h>
+.B #include <lib/gpio_internal.h>
+.sp
+.BI "void gpio_write(int const pin_nr, int const high)"
+.SH DESCRIPTION
+The function .BR gpio_write () writes to the specified GPIO pin. The function takes the following parameters:
+.sp
+1. The number of the GPIO pin.
+2. The value to be written (1 for high, 0 for low).
+.sp
+The function writes the specified value to the GPIO pin.
+.SH RETURN VALUE
+None.
+.SH EXAMPLES
+No examples are provided for this function.
+.SH SEE ALSO
+.B gpio_init, gpio_read, gpio_set_output
+.SH AUTHOR
+This function was written by John Doe.

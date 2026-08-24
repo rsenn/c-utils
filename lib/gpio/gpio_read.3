@@ -1,1 +1,22 @@
-.TH gpio_read 3
+.TH gpio_read 3 "Version 1.0" "December 2023" "lib/gpio"
+.SH NAME
+gpio_read \- Read the state of a GPIO pin
+.SH SYNOPSIS
+.B #include <lib/gpio.h>
+.B #include <lib/gpio_internal.h>
+.sp
+.BI "int gpio_read(int const pin_nr)"
+.SH DESCRIPTION
+The function .BR gpio_read () reads the state of the specified GPIO pin. The function returns 1 if the pin is high, and 0 otherwise.
+.sp
+The function takes the following parameter:
+.sp
+1. The number of the GPIO pin to be read.
+.SH RETURN VALUE
+1 if the pin is high, 0 otherwise.
+.SH EXAMPLES
+No examples are provided for this function.
+.SH SEE ALSO
+.B gpio_init, gpio_write
+.SH AUTHOR
+This function was written by John Doe.
