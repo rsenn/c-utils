@@ -1,1 +1,23 @@
-.TH scan_to_array 3
+.TH scan_to_array 3 "Version 1.0" "December 2023" "lib/textcode"
+.SH NAME
+scan_to_array \- Scan and store data into an array
+.SH SYNOPSIS
+.B #include <lib/textcode.h>
+.sp
+.BI "size_t scan_to_array(size_t (*func)(const char*, char*, size_t*), const char* src, array* dest)"
+.SH DESCRIPTION
+The function .BR scan_to_array () scans and stores data into an array. The function takes the following parameters:
+.sp
+1. A pointer to a scanning function that takes a source string, a destination buffer, and a pointer to the size of the destination buffer, and returns the number of bytes processed from the source string.
+2. A pointer to the source string.
+3. A pointer to the destination array.
+.sp
+The function returns the number of bytes processed from the source string.
+.SH RETURN VALUE
+The number of bytes processed from the source string.
+.SH EXAMPLES
+No examples are provided for this function.
+.SH SEE ALSO
+.B array, str
+.SH AUTHOR
+This function was written by John Doe.

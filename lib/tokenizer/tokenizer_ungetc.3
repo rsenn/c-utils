@@ -1,1 +1,22 @@
-.TH tokenizer_ungetc 3
+.TH tokenizer_ungetc 3 "Version 1.0" "December 2023" "lib/tokenizer"
+.SH NAME
+tokenizer_ungetc \- Push a character back into the tokenizer's input stream
+.SH SYNOPSIS
+.B #include <lib/tokenizer.h>
+.sp
+.BI "int tokenizer_ungetc(tokenizer* t, int c)"
+.SH DESCRIPTION
+The function .BR tokenizer_ungetc () pushes a character back into the tokenizer's input stream, allowing it to be read again. The function takes the following parameters:
+.sp
+1. A pointer to the tokenizer.
+2. An int value representing the character to be pushed back.
+.sp
+The function returns the character that was pushed back.
+.SH RETURN VALUE
+The character that was pushed back.
+.SH EXAMPLES
+No examples are provided for this function.
+.SH SEE ALSO
+.B tokenizer
+.SH AUTHOR
+This function was written by John Doe.

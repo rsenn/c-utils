@@ -1,1 +1,34 @@
-.TH fmt_urlencoded 3
+.TH fmt_urlencoded 3 "Version 1.0" "December 2023" "lib/textcode"
+.SH NAME
+fmt_urlencoded \- Convert a string to URL-encoded format
+.SH SYNOPSIS
+.B #include <lib/textcode.h>
+.sp
+.BI "size_t fmt_urlencoded(char* dest, const char* src, size_t len)"
+.sp
+.BI "size_t fmt_urlencoded2(char* dest, const char* src, size_t len, const char* escapeme)"
+.SH DESCRIPTION
+The function .BR fmt_urlencoded () converts a string to URL-encoded format. The function takes the following parameters:
+.sp
+1. A pointer to the destination buffer.
+2. The source string.
+3. The length of the source string.
+.sp
+The function returns the number of bytes written to the destination buffer.
+.SH SYNOPSIS
+The function .BR fmt_urlencoded2 () converts a string to URL-encoded format with additional escaping. The function takes the following parameters:
+.sp
+1. A pointer to the destination buffer.
+2. The source string.
+3. The length of the source string.
+4. A string containing characters to be additionally escaped.
+.sp
+The function returns the number of bytes written to the destination buffer.
+.SH RETURN VALUE
+The number of bytes written to the destination buffer, or (size_t)-1 on failure.
+.SH EXAMPLES
+No examples are provided for this function.
+.SH SEE ALSO
+.B issafe, stralloc_readyplus
+.SH AUTHOR
+This function was written by John Doe.

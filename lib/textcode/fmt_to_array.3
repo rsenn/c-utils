@@ -1,1 +1,25 @@
-.TH fmt_to_array 3
+.TH fmt_to_array 3 "Version 1.0" "December 2023" "lib/textcode"
+.SH NAME
+fmt_to_array \- Convert a string to an array using a formatting function
+.SH SYNOPSIS
+.B #include <lib/array.h>
+.B #include <lib/textcode.h>
+.sp
+.BI "void fmt_to_array(size_t (*func)(char*, const char*, size_t), array* a, const char* src, size_t len)"
+.SH DESCRIPTION
+The function .BR fmt_to_array () converts a string to an array using a formatting function. The function takes the following parameters:
+.sp
+1. A pointer to a formatting function.
+2. A pointer to an array.
+3. The string to convert.
+4. The length of the string to convert.
+.sp
+The function converts the string to an array using the formatting function.
+.SH RETURN VALUE
+None.
+.SH EXAMPLES
+No examples are provided for this function.
+.SH SEE ALSO
+.B array_allocate, array_fail
+.SH AUTHOR
+This function was written by John Doe.

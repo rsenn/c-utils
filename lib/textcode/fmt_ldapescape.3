@@ -1,1 +1,25 @@
-.TH fmt_ldapescape 3
+.TH fmt_ldapescape 3 "Version 1.0" "December 2023" "lib/textcode"
+.SH NAME
+fmt_ldapescape \- Escape a string for LDAP
+.SH SYNOPSIS
+.B #include <lib/textcode.h>
+.B #include <lib/fmt.h>
+.B #include <lib/str.h>
+.sp
+.BI "size_t fmt_ldapescape(char* dest, const char* src, size_t len)"
+.SH DESCRIPTION
+The function .BR fmt_ldapescape () escapes a string for LDAP. The function takes the following parameters:
+.sp
+1. A pointer to a destination buffer.
+2. The string to escape.
+3. The length of the string to escape.
+.sp
+The function escapes the string for LDAP by replacing certain characters with their escaped forms.
+.SH RETURN VALUE
+The length of the escaped string.
+.SH EXAMPLES
+No examples are provided for this function.
+.SH SEE ALSO
+.B textcode_ldapescape
+.SH AUTHOR
+This function was written by John Doe.

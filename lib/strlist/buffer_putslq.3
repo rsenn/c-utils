@@ -1,1 +1,25 @@
-.TH buffer_putslq 3
+.TH buffer_putslq 3 "Version 1.0" "December 2023" "lib/strlist"
+.SH NAME
+buffer_putslq \- Append a string list to a buffer with quoting and delimiters
+.SH SYNOPSIS
+.B #include <lib/buffer.h>
+.B #include <lib/strlist.h>
+.sp
+.BI "void buffer_putslq(buffer* out, const strlist* sl, char delim, char quote)"
+.SH DESCRIPTION
+The function .BR buffer_putslq () appends a string list to a buffer with quoting and delimiters. The function takes the following parameters:
+.sp
+1. A pointer to a buffer.
+2. A pointer to the string list.
+3. The delimiter to use.
+4. The quote character to use.
+.sp
+The function appends the string list to the buffer, quoting and delimiting each string as necessary.
+.SH RETURN VALUE
+None.
+.SH EXAMPLES
+No examples are provided for this function.
+.SH SEE ALSO
+.B strlist_foreach, buffer_put
+.SH AUTHOR
+This function was written by John Doe.

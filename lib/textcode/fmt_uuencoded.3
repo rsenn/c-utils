@@ -1,1 +1,23 @@
-.TH fmt_uuencoded 3
+.TH fmt_uuencoded 3 "Version 1.0" "December 2023" "lib/textcode"
+.SH NAME
+fmt_uuencoded \- Convert a string to UU-encoded format
+.SH SYNOPSIS
+.B #include <lib/textcode.h>
+.sp
+.BI "size_t fmt_uuencoded(char* dest, const char* src, size_t len)"
+.SH DESCRIPTION
+The function .BR fmt_uuencoded () converts a string to UU-encoded format. The function takes the following parameters:
+.sp
+1. A pointer to the destination buffer.
+2. The source string.
+3. The length of the source string.
+.sp
+The function returns the number of bytes written to the destination buffer.
+.SH RETURN VALUE
+The number of bytes written to the destination buffer, or (size_t)-1 on failure.
+.SH EXAMPLES
+No examples are provided for this function.
+.SH SEE ALSO
+.B enc
+.SH AUTHOR
+This function was written by John Doe.

@@ -1,1 +1,24 @@
-.TH stralloc_catxlong0 3
+.TH stralloc_catxlong0 3 "Version 1.0" "December 2023" "lib/stralloc"
+.SH NAME
+stralloc_catxlong0 \- Append an unsigned long to a string allocation with padding
+.SH SYNOPSIS
+.B #include <lib/stralloc.h>
+.B #include <lib/fmt.h>
+.sp
+.BI "size_t stralloc_catxlong0(stralloc* sa, unsigned long n, unsigned int pad)"
+.SH DESCRIPTION
+The function .BR stralloc_catxlong0 () appends an unsigned long to a string allocation with padding. The function takes the following parameters:
+.sp
+1. A pointer to a string allocation structure.
+2. The unsigned long to append.
+3. The number of characters to pad.
+.sp
+The function appends the unsigned long to the string allocation, padding with zeros if necessary.
+.SH RETURN VALUE
+The length of the updated string allocation.
+.SH EXAMPLES
+No examples are provided for this function.
+.SH SEE ALSO
+.B stralloc_cat, stralloc_catulong0, stralloc_zero
+.SH AUTHOR
+This function was written by John Doe.

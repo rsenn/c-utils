@@ -1,1 +1,23 @@
-.TH scan_yenc 3
+.TH scan_yenc 3 "Version 1.0" "December 2023" "lib/textcode"
+.SH NAME
+scan_yenc \- Scan and decode YENC encoded content
+.SH SYNOPSIS
+.B #include <lib/textcode.h>
+.sp
+.BI "size_t scan_yenc(const char* src, char* dest, size_t* destlen)"
+.SH DESCRIPTION
+The function .BR scan_yenc () scans and decodes YENC encoded content. The function takes the following parameters:
+.sp
+1. A pointer to the source YENC encoded string.
+2. A pointer to the destination buffer.
+3. A pointer to the size of the destination buffer.
+.sp
+The function returns the number of bytes processed from the source string.
+.SH RETURN VALUE
+The number of bytes processed from the source string.
+.SH EXAMPLES
+No examples are provided for this function.
+.SH SEE ALSO
+.B fmt
+.SH AUTHOR
+This function was written by John Doe.

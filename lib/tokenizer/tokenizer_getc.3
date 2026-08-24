@@ -1,1 +1,21 @@
-.TH tokenizer_getc 3
+.TH tokenizer_getc 3 "Version 1.0" "December 2023" "lib/tokenizer"
+.SH NAME
+tokenizer_getc \- Read the next character from a tokenizer's input
+.SH SYNOPSIS
+.B #include <lib/tokenizer.h>
+.sp
+.BI "int tokenizer_getc(tokenizer* t)"
+.SH DESCRIPTION
+The function .BR tokenizer_getc () reads the next character from a tokenizer's input. The function takes the following parameter:
+.sp
+1. A pointer to the tokenizer.
+.sp
+The function returns the next character as an int value.
+.SH RETURN VALUE
+The next character as an int value, or -1 if the end of the input is reached.
+.SH EXAMPLES
+No examples are provided for this function.
+.SH SEE ALSO
+.B tokenizer
+.SH AUTHOR
+This function was written by John Doe.

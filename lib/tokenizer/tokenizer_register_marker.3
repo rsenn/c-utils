@@ -1,1 +1,23 @@
-.TH tokenizer_register_marker 3
+.TH tokenizer_register_marker 3 "Version 1.0" "December 2023" "lib/tokenizer"
+.SH NAME
+tokenizer_register_marker \- Register a marker for a tokenizer
+.SH SYNOPSIS
+.B #include <lib/tokenizer.h>
+.sp
+.BI "void tokenizer_register_marker(tokenizer* t, enum markertype mt, const char* marker)"
+.SH DESCRIPTION
+The function .BR tokenizer_register_marker () registers a marker for a tokenizer. The function takes the following parameters:
+.sp
+1. A pointer to the tokenizer.
+2. An enum markertype indicating the type of marker.
+3. A string representing the marker.
+.sp
+The function does not return a value.
+.SH RETURN VALUE
+No return value.
+.SH EXAMPLES
+No examples are provided for this function.
+.SH SEE ALSO
+.B tokenizer
+.SH AUTHOR
+This function was written by John Doe.

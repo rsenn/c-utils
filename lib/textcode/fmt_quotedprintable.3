@@ -1,1 +1,27 @@
-.TH fmt_quotedprintable 3
+.TH fmt_quotedprintable 3 "Version 1.0" "December 2023" "lib/textcode"
+.SH NAME
+fmt_quotedprintable \- Encode a string in quoted-printable format
+.SH SYNOPSIS
+.B #include <lib/textcode.h>
+.B #include <lib/fmt.h>
+.B #include <lib/str.h>
+.sp
+.BI "size_t fmt_quotedprintable(char* dest, const char* src, size_t len)"
+.sp
+.BI "size_t fmt_quotedprintable2(char* dest, const char* src, size_t len, const char* escapeme)"
+.SH DESCRIPTION
+The function .BR fmt_quotedprintable () encodes a string in quoted-printable format. The function takes the following parameters:
+.sp
+1. A pointer to a destination buffer.
+2. The string to encode.
+3. The length of the string to encode.
+.sp
+The function encodes the string in quoted-printable format by replacing certain characters with their quoted forms.
+.SH RETURN VALUE
+The length of the encoded string.
+.SH EXAMPLES
+No examples are provided for this function.
+.SH SEE ALSO
+.B textcode_quotedprintable
+.SH AUTHOR
+This function was written by John Doe.

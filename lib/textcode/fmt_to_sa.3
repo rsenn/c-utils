@@ -1,1 +1,25 @@
-.TH fmt_to_sa 3
+.TH fmt_to_sa 3 "Version 1.0" "December 2023" "lib/textcode"
+.SH NAME
+fmt_to_sa \- Convert a string to a string allocation using a formatting function
+.SH SYNOPSIS
+.B #include <lib/stralloc.h>
+.B #include <lib/textcode.h>
+.sp
+.BI "int fmt_to_sa(size_t (*func)(char*, const char*, size_t), stralloc* sa, const char* src, size_t len)"
+.SH DESCRIPTION
+The function .BR fmt_to_sa () converts a string to a string allocation using a formatting function. The function takes the following parameters:
+.sp
+1. A pointer to a formatting function.
+2. A pointer to a string allocation.
+3. The string to convert.
+4. The length of the string to convert.
+.sp
+The function converts the string to a string allocation using the formatting function.
+.SH RETURN VALUE
+The number of bytes written to the string allocation, or 0 on failure.
+.SH EXAMPLES
+No examples are provided for this function.
+.SH SEE ALSO
+.B stralloc_readyplus
+.SH AUTHOR
+This function was written by John Doe.

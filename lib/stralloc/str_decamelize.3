@@ -1,1 +1,23 @@
-.TH str_decamelize 3
+.TH str_decamelize 3 "Version 1.0" "December 2023" "lib/stralloc"
+.SH NAME
+str_decamelize \- Convert a string from camelCase to a specified separator
+.SH SYNOPSIS
+.B #include <lib/str.h>
+.B #include <lib/stralloc.h>
+.sp
+.BI "char* str_decamelize(const char* s, char sep)"
+.SH DESCRIPTION
+The function .BR str_decamelize () converts a string from camelCase to a specified separator. The function takes the following parameters:
+.sp
+1. The string to convert.
+2. The separator to use.
+.sp
+The function returns a new string with the characters converted to lowercase and separated by the specified character.
+.SH RETURN VALUE
+A new string with the characters converted to lowercase and separated by the specified character.
+.SH EXAMPLES
+No examples are provided for this function.
+.SH SEE ALSO
+.B stralloc_decamelize, stralloc_nul
+.SH AUTHOR
+This function was written by John Doe.

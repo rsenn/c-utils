@@ -1,1 +1,23 @@
-.TH scan_tofrom_array 3
+.TH scan_tofrom_array 3 "Version 1.0" "December 2023" "lib/textcode"
+.SH NAME
+scan_tofrom_array \- Scan data from an array and store it into another array
+.SH SYNOPSIS
+.B #include <lib/textcode.h>
+.sp
+.BI "size_t scan_tofrom_array(size_t (*func)(const char*, char*, size_t*), array* src, array* dest)"
+.SH DESCRIPTION
+The function .BR scan_tofrom_array () scans data from an array and stores it into another array. The function takes the following parameters:
+.sp
+1. A pointer to a scanning function that takes a source string, a destination buffer, and a pointer to the size of the destination buffer, and returns the number of bytes processed from the source string.
+2. A pointer to the source array.
+3. A pointer to the destination array.
+.sp
+The function returns the number of bytes processed from the source array.
+.SH RETURN VALUE
+The number of bytes processed from the source array.
+.SH EXAMPLES
+No examples are provided for this function.
+.SH SEE ALSO
+.B array, str
+.SH AUTHOR
+This function was written by John Doe.

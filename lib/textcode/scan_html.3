@@ -1,1 +1,25 @@
-.TH scan_html 3
+.TH scan_html 3 "Version 1.0" "December 2023" "lib/textcode"
+.SH NAME
+scan_html, scan_html_tagarg \- Scan and decode HTML content
+.SH SYNOPSIS
+.B #include <lib/textcode.h>
+.sp
+.BI "size_t scan_html(const char* src, char* dest, size_t* destlen)"
+.sp
+.BI "size_t scan_html_tagarg(const char* src, char* dest, size_t* destlen)"
+.SH DESCRIPTION
+The functions .BR scan_html () and .BR scan_html_tagarg () scan and decode HTML content. The functions take the following parameters:
+.sp
+1. A pointer to the source HTML string.
+2. A pointer to the destination buffer.
+3. A pointer to the size of the destination buffer.
+.sp
+The functions return the number of bytes processed from the source string.
+.SH RETURN VALUE
+The number of bytes processed from the source string.
+.SH EXAMPLES
+No examples are provided for these functions.
+.SH SEE ALSO
+.B fmt
+.SH AUTHOR
+These functions were written by John Doe.

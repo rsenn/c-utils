@@ -1,1 +1,23 @@
-.TH fmt_xml 3
+.TH fmt_xml 3 "Version 1.0" "December 2023" "lib/textcode"
+.SH NAME
+fmt_xml \- Convert a string to XML format
+.SH SYNOPSIS
+.B #include <lib/textcode.h>
+.sp
+.BI "size_t fmt_xml(char* dest, const char* src, size_t len)"
+.SH DESCRIPTION
+The function .BR fmt_xml () converts a string to XML format. The function takes the following parameters:
+.sp
+1. A pointer to the destination buffer.
+2. The source string.
+3. The length of the source string.
+.sp
+The function returns the number of bytes written to the destination buffer.
+.SH RETURN VALUE
+The number of bytes written to the destination buffer, or (size_t)-1 on failure.
+.SH EXAMPLES
+No examples are provided for this function.
+.SH SEE ALSO
+.B enc, fmt_str
+.SH AUTHOR
+This function was written by John Doe.

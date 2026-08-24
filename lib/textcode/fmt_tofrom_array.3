@@ -1,1 +1,24 @@
-.TH fmt_tofrom_array 3
+.TH fmt_tofrom_array 3 "Version 1.0" "December 2023" "lib/textcode"
+.SH NAME
+fmt_tofrom_array \- Convert an array to another array using a formatting function
+.SH SYNOPSIS
+.B #include <lib/array.h>
+.B #include <lib/textcode.h>
+.sp
+.BI "void fmt_tofrom_array(size_t (*func)(char*, const char*, size_t), array* dest, array* src)"
+.SH DESCRIPTION
+The function .BR fmt_tofrom_array () converts an array to another array using a formatting function. The function takes the following parameters:
+.sp
+1. A pointer to a formatting function.
+2. A pointer to the destination array.
+3. A pointer to the source array.
+.sp
+The function converts the source array to the destination array using the formatting function.
+.SH RETURN VALUE
+None.
+.SH EXAMPLES
+No examples are provided for this function.
+.SH SEE ALSO
+.B array_allocate, array_fail
+.SH AUTHOR
+This function was written by John Doe.
