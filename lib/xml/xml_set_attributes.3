@@ -1,0 +1,52 @@
+.TH LIBXML_XML_SET_ATTRIBUTES 3 "2023-04-01" "libxml" "XML Library"
+.SH NAME
+xml_set_attributes \- Set multiple attributes of an XML node
+.SH SYNOPSIS
+.B #include <lib/xml.h>
+.B #include <lib/str.h>
+.sp
+.B int
+.B xml_set_attributes(xmlnode* node, ...);
+.sp
+.B int
+.B xml_vset_attributes(xmlnode* node, va_list args);
+.SH DESCRIPTION
+The
+.B xml_set_attributes
+function sets multiple attributes of an XML node. The
+.B node
+argument is a pointer to an
+.B xmlnode
+structure representing the node.
+The
+.B xml_set_attributes
+function takes a variable number of arguments, where each argument is a pointer to a constant character string representing the name of an attribute to set, followed by a pointer to a constant character string representing the value of the attribute. The function returns 0 if all attributes are successfully set, or -1 if any error occurs.
+The
+.B xml_vset_attributes
+function is a variadic version of
+.B xml_set_attributes
+that takes a
+.B va_list
+argument instead of a variable number of arguments.
+.SH EXAMPLE
+The following example demonstrates how to use the
+.B xml_set_attributes
+function to set multiple attributes of an XML node:
+.nf
+.B #include <lib/xml.h>
+.B #include <lib/str.h>
+.B #include <stdio.h>
+.sp
+.B int main() {
+.B   xmlnode* node = xml_parse("<root></root>");
+.B   xml_set_attributes(node, "attribute1", "value1", "attribute2", "value2", NULL);
+.B   // Now you can use the node with the new attributes
+.B   // ...
+.B   // Free the allocated memory
+.B   xml_free(node);
+.B   return 0;
+.B }
+.ne
+.fi
+.SH SEE ALSO
+.B xml_set_attribute(3)

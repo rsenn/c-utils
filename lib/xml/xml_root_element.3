@@ -1,0 +1,42 @@
+.TH LIBXML_XML_ROOT_ELEMENT 3 "2023-04-01" "libxml" "XML Library"
+.SH NAME
+xml_root_element \- Get the root element of a document
+.SH SYNOPSIS
+.B #include <lib/xml.h>
+.sp
+.B xmlnode*
+.B xml_root_element(xmlnode* node);
+.SH DESCRIPTION
+The
+.B xml_root_element
+function returns the root element of the document that contains the specified
+.B node.
+The
+.B xml_root_element
+function takes a pointer to an
+.B xmlnode
+structure representing the node.
+The
+.B xml_root_element
+function returns a pointer to an
+.B xmlnode
+structure representing the root element of the document.
+.SH EXAMPLE
+The following example demonstrates how to use the
+.B xml_root_element
+function to get the root element of a document:
+.nf
+.B #include <lib/xml.h>
+.B #include <stdio.h>
+.sp
+.B int main() {
+.B   xmlnode* root = ...; // initialize the root node
+.B   xmlnode* node = ...; // initialize the node
+.B   xmlnode* elem = xml_root_element(node);
+.B   printf("Root element name: %s\n", elem->name);
+.B   return 0;
+.B }
+.ne
+.fi
+.SH SEE ALSO
+.B xmlnode(3)

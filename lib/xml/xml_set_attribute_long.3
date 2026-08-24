@@ -1,0 +1,45 @@
+.TH LIBXML_XML_SET_ATTRIBUTE_LONG 3 "2023-04-01" "libxml" "XML Library"
+.SH NAME
+xml_set_attribute_long \- Set an attribute to a long value
+.SH SYNOPSIS
+.B #include <lib/xml.h>
+.B #include <lib/scan.h>
+.sp
+.B long
+.B xml_set_attribute_long(xmlnode* node, const char* attr);
+.SH DESCRIPTION
+The
+.B xml_set_attribute_long
+function sets an attribute of an XML node to a long value. The
+.B node
+argument is a pointer to an
+.B xmlnode
+structure representing the node, and the
+.B attr
+argument is a pointer to a constant character string representing the name of the attribute to set.
+The
+.B xml_set_attribute_long
+function returns the value of the attribute as a long integer.
+.SH EXAMPLE
+The following example demonstrates how to use the
+.B xml_set_attribute_long
+function to set an attribute of an XML node to a long value:
+.nf
+.B #include <lib/xml.h>
+.B #include <lib/scan.h>
+.B #include <stdio.h>
+.sp
+.B int main() {
+.B   xmlnode* node = xml_parse("<root></root>");
+.B   xml_set_attribute_long(node, "attribute", 42);
+.B   // Now you can use the node with the new attribute
+.B   // ...
+.B   // Free the allocated memory
+.B   xml_free(node);
+.B   return 0;
+.B }
+.ne
+.fi
+.SH SEE ALSO
+.B xml_get_attribute(3),
+.B xml_set_attribute(3)

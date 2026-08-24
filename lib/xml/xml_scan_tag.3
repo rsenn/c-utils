@@ -1,0 +1,46 @@
+.TH LIBXML_XML_SCAN_TAG 3 "2023-04-01" "libxml" "XML Library"
+.SH NAME
+xml_scan_tag \- Scan for an XML tag
+.SH SYNOPSIS
+.B #include <lib/xml.h>
+.B #include <lib/scan.h>
+.B #include <lib/byte.h>
+.sp
+.B size_t
+.B xml_scan_tag(const char* x, size_t len, size_t* toklen);
+.SH DESCRIPTION
+The
+.B xml_scan_tag
+function scans for an XML tag in the specified
+.B x
+string, which is of length
+.B len.
+The
+.B xml_scan_tag
+function takes a pointer to a constant character string representing the string, a size_t representing the length of the string, and a pointer to a size_t representing the length of the token.
+The
+.B xml_scan_tag
+function returns the number of characters scanned.
+.SH EXAMPLE
+The following example demonstrates how to use the
+.B xml_scan_tag
+function to scan for an XML tag:
+.nf
+.B #include <lib/xml.h>
+.B #include <lib/scan.h>
+.B #include <lib/byte.h>
+.B #include <stdio.h>
+.sp
+.B int main() {
+.B   const char* x = "<tag>content</tag>";
+.B   size_t len = strlen(x);
+.B   size_t toklen;
+.B   size_t j = xml_scan_tag(x, len, &toklen);
+.B   printf("Tag length: %zu\n", toklen);
+.B   return 0;
+.B }
+.ne
+.fi
+.SH SEE ALSO
+.B xml_scan(3),
+.B xml_scanns(3)

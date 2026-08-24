@@ -1,0 +1,55 @@
+.TH LIBXML_XML_SCANNER_SA 3 "2023-04-01" "libxml" "XML Library"
+.SH NAME
+xml_scanner_sa \- Initialize an XML scanner with a string
+.SH SYNOPSIS
+.B #include <lib/xml.h>
+.B #include <lib/stralloc.h>
+.B #include <lib/buffer.h>
+.B #include <lib/byte.h>
+.B #include <lib/alloc.h>
+.sp
+.B void
+.B xml_scanner_sa(xmlscanner* s, const stralloc* sa);
+.SH DESCRIPTION
+The
+.B xml_scanner_sa
+function initializes an XML scanner with a string. The
+.B s
+argument is a pointer to an
+.B xmlscanner
+structure, and the
+.B sa
+argument is a pointer to a
+.B stralloc
+structure containing the string to scan.
+The
+.B xml_scanner_sa
+function initializes the scanner with the string, sets up the buffer, and allocates memory as needed.
+.SH EXAMPLE
+The following example demonstrates how to use the
+.B xml_scanner_sa
+function to initialize an XML scanner with a string:
+.nf
+.B #include <lib/xml.h>
+.B #include <lib/stralloc.h>
+.B #include <lib/buffer.h>
+.B #include <lib/byte.h>
+.B #include <lib/alloc.h>
+.B #include <stdio.h>
+.sp
+.B int main() {
+.B   xmlscanner s;
+.B   stralloc sa;
+.B   stralloc_init(&sa);
+.B   stralloc_copy(&sa, "<root><child>value</child></root>");
+.B   xml_scanner_sa(&s, &sa);
+.B   // Now you can use the scanner to parse the XML
+.B   // ...
+.B   // Free the allocated memory
+.B   stralloc_free(&sa);
+.B   return 0;
+.B }
+.ne
+.fi
+.SH SEE ALSO
+.B xml_scanner_init(3)
