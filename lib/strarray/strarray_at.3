@@ -1,0 +1,46 @@
+.TH LIBSTRARRAY_STRARRAY_AT 3 "2023-04-01" "libstrarray" "String Array Library"
+.SH NAME
+strarray_at \- Get the element at a specified index in a string array
+.SH SYNOPSIS
+.B #include <libstrarray.h>
+.sp
+.B char*
+.B strarray_at(strarray* stra, size_t n);
+.SH DESCRIPTION
+The
+.B strarray_at
+function returns the element at the specified index in a string array. The
+.B stra
+argument is a pointer to a
+.B strarray
+structure representing the array, and the
+.B n
+argument is a size_t representing the index of the element to retrieve.
+The
+.B strarray_at
+function returns a pointer to the element at the specified index, or NULL if the index is out of bounds.
+.SH EXAMPLE
+The following example demonstrates how to use the
+.B strarray_at
+function to retrieve an element from a string array:
+.nf
+.B #include <libstrarray.h>
+.B #include <stdio.h>
+.sp
+.B int main() {
+.B   strarray arr;
+.B   strarray_init(&arr);
+.B   strarray_append(&arr, "Hello");
+.B   strarray_append(&arr, "world");
+.B   char* element = strarray_at(&arr, 1);
+.B   printf("Element at index 1: %s\n", element);
+.B   // Free the allocated memory
+.B   strarray_done(&arr);
+.B   return 0;
+.B }
+.ne
+.fi
+.SH SEE ALSO
+.B strarray_init(3),
+.B strarray_append(3),
+.B strarray_done(3)

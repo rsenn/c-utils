@@ -1,0 +1,47 @@
+.TH LIBSTRARRAY_STRARRAY_APPENDS 3 "2023-04-01" "libstrarray" "String Array Library"
+.SH NAME
+strarray_appends \- Append a string to each element in a string array
+.SH SYNOPSIS
+.B #include <libstrarray.h>
+.sp
+.B int
+.B strarray_appends(strarray* arr, const char* s);
+.SH DESCRIPTION
+The
+.B strarray_appends
+function appends a string to each element in a string array. The
+.B arr
+argument is a pointer to a
+.B strarray
+structure representing the array, and the
+.B s
+argument is a pointer to a constant character string representing the string to append.
+The
+.B strarray_appends
+function returns 1 if all elements are successfully appended, or 0 if any error occurs.
+.SH EXAMPLE
+The following example demonstrates how to use the
+.B strarray_appends
+function to append a string to each element in a string array:
+.nf
+.B #include <libstrarray.h>
+.B #include <stdio.h>
+.sp
+.B int main() {
+.B   strarray arr;
+.B   strarray_init(&arr);
+.B   strarray_append(&arr, "Hello");
+.B   strarray_append(&arr, "world");
+.B   strarray_appends(&arr, ", ");
+.B   // Now you can use the array with the appended strings
+.B   // ...
+.B   // Free the allocated memory
+.B   strarray_done(&arr);
+.B   return 0;
+.B }
+.ne
+.fi
+.SH SEE ALSO
+.B strarray_init(3),
+.B strarray_append(3),
+.B strarray_done(3)

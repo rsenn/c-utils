@@ -1,0 +1,46 @@
+.TH LIBSTRARRAY_STRARRAY_POP 3 "2023-04-01" "libstrarray" "String Array Library"
+.SH NAME
+strarray_pop \- Remove and return the last element of a string array
+.SH SYNOPSIS
+.B #include <libstrarray.h>
+.sp
+.B char*
+.B strarray_pop(strarray* arr);
+.SH DESCRIPTION
+The
+.B strarray_pop
+function removes and returns the last element of a string array. The
+.B arr
+argument is a pointer to a
+.B strarray
+structure representing the array.
+The
+.B strarray_pop
+function returns the removed element, or NULL if the array is empty.
+.SH EXAMPLE
+The following example demonstrates how to use the
+.B strarray_pop
+function to remove and return the last element of a string array:
+.nf
+.B #include <libstrarray.h>
+.B #include <stdio.h>
+.sp
+.B int main() {
+.B   strarray arr;
+.B   strarray_init(&arr);
+.B   strarray_append(&arr, "Hello");
+.B   strarray_append(&arr, "world");
+.B   char* last_element = strarray_pop(&arr);
+.B   printf("Last element: %s\n", last_element);
+.B   // Free the allocated memory
+.B   strarray_done(&arr);
+.B   return 0;
+.B }
+.ne
+.fi
+.SH SEE ALSO
+.B strarray_init(3),
+.B strarray_append(3),
+.B strarray_done(3),
+.B strarray_size(3),
+.B strarray_at(3)

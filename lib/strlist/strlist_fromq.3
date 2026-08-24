@@ -1,0 +1,62 @@
+.TH LIBSTRLIST_STRLIST_FROMQ 3 "2023-04-01" "libstrlist" "String List Library"
+.SH NAME
+strlist_fromq \- Convert a string to a string list using a delimiter and quote
+.SH SYNOPSIS
+.B #include <libstrlist.h>
+.sp
+.B void
+.B strlist_fromq(strlist* sl, const char* s, size_t len, const char* delim, const char* quote);
+.SH DESCRIPTION
+The
+.B strlist_fromq
+function converts a string to a string list using a delimiter and quote. The
+.B sl
+argument is a pointer to a
+.B strlist
+structure where the resulting string list will be stored.
+The
+.B s
+argument is a pointer to a
+.B char
+string representing the input string.
+The
+.B len
+argument is a
+.B size_t
+value representing the length of the input string.
+The
+.B delim
+argument is a pointer to a
+.B char
+string representing the delimiter used to split the input string.
+The
+.B quote
+argument is a pointer to a
+.B char
+string representing the quote used to escape the delimiter within the input string.
+.SH EXAMPLE
+The following example demonstrates how to use the
+.B strlist_fromq
+function to convert a string to a string list using a delimiter and quote:
+.nf
+.B #include <libstrlist.h>
+.B #include <stdio.h>
+.B #include <lib/stralloc.h>
+.sp
+.B int main() {
+.B   strlist sl;
+.B   stralloc_init(&sl.sa);
+.B   strlist_fromq(&sl, "apple,banana,cherry,date", 28, ",", "\"");
+.B   printf("String list: %s\n", sl.sa.s);
+.B   // Free the allocated memory
+.B   stralloc_free(&sl.sa);
+.B   return 0;
+.B }
+.ne
+.fi
+.SH SEE ALSO
+.B strlist_init(3),
+.B stralloc_init(3),
+.B stralloc_copys(3),
+.B stralloc_free(3),
+.B free(3)

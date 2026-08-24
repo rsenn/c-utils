@@ -1,0 +1,66 @@
+.TH LIBSTRARRAY_STRARRAY_INTERSECTION 3 "2023-04-01" "libstrarray" "String Array Library"
+.SH NAME
+strarray_intersection \- Compute the intersection of two string arrays
+.SH SYNOPSIS
+.B #include <libstrarray.h>
+.B #include <lib/str.h>
+.sp
+.B void
+.B strarray_intersection(const strarray* s1, const strarray* s2, strarray* out);
+.SH DESCRIPTION
+The
+.B strarray_intersection
+function computes the intersection of two string arrays. The
+.B s1
+argument is a pointer to a
+.B strarray
+structure representing the first array, and the
+.B s2
+argument is a pointer to a
+.B strarray
+structure representing the second array. The
+.B out
+argument is a pointer to a
+.B strarray
+structure that will contain the intersection of the two arrays.
+The
+.B strarray_intersection
+function does not modify the input arrays.
+.SH EXAMPLE
+The following example demonstrates how to use the
+.B strarray_intersection
+function to compute the intersection of two string arrays:
+.nf
+.B #include <libstrarray.h>
+.B #include <stdio.h>
+.B #include <lib/str.h>
+.sp
+.B int main() {
+.B   strarray arr1, arr2, intersection;
+.B   strarray_init(&arr1);
+.B   strarray_init(&arr2);
+.B   strarray_init(&intersection);
+.B   strarray_append(&arr1, "Hello");
+.B   strarray_append(&arr1, "world");
+.B   strarray_append(&arr2, "world");
+.B   strarray_append(&arr2, "foo");
+.B   strarray_intersection(&arr1, &arr2, &intersection);
+.B   printf("Intersection: ");
+.B   strarray_foreach(&intersection, p) {
+.B     printf("%s ", *p);
+.B   }
+.B   printf("\n");
+.B   // Free the allocated memory
+.B   strarray_done(&arr1);
+.B   strarray_done(&arr2);
+.B   strarray_done(&intersection);
+.B   return 0;
+.B }
+.ne
+.fi
+.SH SEE ALSO
+.B strarray_init(3),
+.B strarray_append(3),
+.B strarray_done(3),
+.B strarray_foreach(3),
+.B str_diff(3)

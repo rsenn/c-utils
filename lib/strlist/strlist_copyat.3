@@ -1,0 +1,60 @@
+.TH LIBSTRLIST_STRLIST_COPYAT 3 "2023-04-01" "libstrlist" "String List Library"
+.SH NAME
+strlist_copyat \- Copy a string from a string list at a specific index
+.SH SYNOPSIS
+.B #include <libstrlist.h>
+.sp
+.B int
+.B strlist_copyat(const strlist* sl, size_t i, stralloc* out);
+.SH DESCRIPTION
+The
+.B strlist_copyat
+function copies a string from a string list at a specific index. The
+.B sl
+argument is a pointer to a
+.B strlist
+structure representing the input list.
+The
+.B i
+argument is the index of the string to be copied.
+The
+.B out
+argument is a pointer to a
+.B stralloc
+structure where the string will be copied.
+The
+.B strlist_copyat
+function returns 1 if the string is successfully copied, or 0 otherwise.
+.SH EXAMPLE
+The following example demonstrates how to use the
+.B strlist_copyat
+function to copy a string from a string list at a specific index:
+.nf
+.B #include <libstrlist.h>
+.B #include <stdio.h>
+.B #include <lib/stralloc.h>
+.sp
+.B int main() {
+.B   strlist sl;
+.B   stralloc out;
+.B   stralloc_init(&out);
+.B   stralloc_init(&sl.sa);
+.B   stralloc_copys(&sl.sa, "hello,world,test");
+.B   if(strlist_copyat(&sl, 1, &out)) {
+.B     printf("Copied string: %s\n", out.s);
+.B   } else {
+.B     printf("Failed to copy string\n");
+.B   }
+.B   // Free the allocated memory
+.B   stralloc_free(&out);
+.B   stralloc_free(&sl.sa);
+.B   return 0;
+.B }
+.ne
+.fi
+.SH SEE ALSO
+.B strlist_init(3),
+.B stralloc_init(3),
+.B stralloc_copys(3),
+.B stralloc_free(3),
+.B free(3)

@@ -1,0 +1,90 @@
+.TH LIBSTRARRAY_STRARRAY_TRANSFORM 3 "2023-04-01" "libstrarray" "String Array Library"
+.SH NAME
+strarray_transform \- Transform each element of a string array using a predicate function
+.SH SYNOPSIS
+.B #include <libstrarray.h>
+.B #include <lib/str.h>
+.B #include <lib/stralloc.h>
+.sp
+.B int
+.B strarray_transform(strarray* in, strarray* out, char* (*pred)(const char*));
+.SH DESCRIPTION
+The
+.B strarray_transform
+function transforms each element of a string array using a predicate function. The
+.B in
+argument is a pointer to a
+.B strarray
+structure representing the input array, and the
+.B out
+argument is a pointer to a
+.B strarray
+structure representing the output array.
+The
+.B pred
+argument is a pointer to a function that takes a constant character string as input and returns a transformed character string.
+The
+.B strarray_transform
+function applies the specified predicate function to each string in the input array and appends the transformed string to the output array. The output array is resized to match the number of transformed strings.
+The
+.B strarray_transform
+function returns the number of transformed strings.
+.SH EXAMPLE
+The following example demonstrates how to use the
+.B strarray_transform
+function to transform each element of a string array by converting it to uppercase:
+.nf
+.B #include <libstrarray.h>
+.B #include <stdio.h>
+.B #include <lib/str.h>
+.B #include <lib/stralloc.h>
+.sp
+.B #include <ctype.h>
+.B #include <stdlib.h>
+.B #include <string.h>
+.sp
+.B char* uppercase(const char* s) {
+.B   char* t = malloc(strlen(s) + 1);
+.B   if(t) {
+.B     for(size_t i = 0; s[i]; ++i) {
+.B       t[i] = toupper(s[i]);
+.B     }
+.B     t[strlen(s)] = '\0';
+.B   }
+.B   return t;
+.B }
+.sp
+.B int main() {
+.B   strarray arr;
+.B   strarray_init(&arr);
+.B   strarray_append(&arr, "hello");
+.B   strarray_append(&arr, "world");
+.B   strarray* out = strarray_new();
+.B   int n = strarray_transform(&arr, out, uppercase);
+.B   printf("Transformed array: ");
+.B   strarray_foreach(out, p) {
+.B     printf("%s ", *p);
+.B   }
+.B   printf("\n");
+.B   // Free the allocated memory
+.B   strarray_done(&arr);
+.B   strarray_done(out);
+.B   for(size_t i = 0; i < n; ++i) {
+.B     free((char*)array_get((array*)out, sizeof(char*), i));
+.B   }
+.B   free(out);
+.B   return 0;
+.B }
+.ne
+.fi
+.SH SEE ALSO
+.B strarray_init(3),
+.B strarray_append(3),
+.B strarray_done(3),
+.B strarray_foreach(3),
+.B str_len(3),
+.B stralloc_starts(3),
+.B byte_copy(3),
+.B toupper(3),
+.B malloc(3),
+.B free(3)

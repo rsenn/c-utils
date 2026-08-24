@@ -1,0 +1,49 @@
+.TH LIBSTRARRAY_STRARRAY_EACH 3 "2023-04-01" "libstrarray" "String Array Library"
+.SH NAME
+strarray_each \- Apply a function to each element in a string array
+.SH SYNOPSIS
+.B #include <libstrarray.h>
+.sp
+.B int
+.B strarray_each(strarray* arr, void (*pred)(char**));
+.SH DESCRIPTION
+The
+.B strarray_each
+function applies a function to each element in a string array. The
+.B arr
+argument is a pointer to a
+.B strarray
+structure representing the array, and the
+.B pred
+argument is a pointer to a function that takes a pointer to a pointer to a constant character string as an argument and applies some operation to the element.
+The
+.B strarray_each
+function returns the number of elements in the array.
+.SH EXAMPLE
+The following example demonstrates how to use the
+.B strarray_each
+function to apply a function to each element in a string array:
+.nf
+.B #include <libstrarray.h>
+.B #include <stdio.h>
+.sp
+.B void print_element(char** element) {
+.B   printf("Element: %s\n", *element);
+.B }
+.sp
+.B int main() {
+.B   strarray arr;
+.B   strarray_init(&arr);
+.B   strarray_append(&arr, "Hello");
+.B   strarray_append(&arr, "world");
+.B   strarray_each(&arr, print_element);
+.B   // Free the allocated memory
+.B   strarray_done(&arr);
+.B   return 0;
+.B }
+.ne
+.fi
+.SH SEE ALSO
+.B strarray_init(3),
+.B strarray_append(3),
+.B strarray_done(3)

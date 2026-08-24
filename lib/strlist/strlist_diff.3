@@ -1,0 +1,62 @@
+.TH LIBSTRLIST_STRLIST_DIFF 3 "2023-04-01" "libstrlist" "String List Library"
+.SH NAME
+strlist_diff \- Compute the difference between two string lists
+.SH SYNOPSIS
+.B #include <libstrlist.h>
+.sp
+.B size_t
+.B strlist_diff(const strlist* a, const strlist* b, strlist* out);
+.SH DESCRIPTION
+The
+.B strlist_diff
+function computes the difference between two string lists. The
+.B a
+argument is a pointer to a
+.B strlist
+structure representing the first input list.
+The
+.B b
+argument is a pointer to a
+.B strlist
+structure representing the second input list.
+The
+.B out
+argument is a pointer to a
+.B strlist
+structure where the difference will be stored.
+The
+.B strlist_diff
+function returns the number of unique elements in the first list that are not present in the second list.
+.SH EXAMPLE
+The following example demonstrates how to use the
+.B strlist_diff
+function to compute the difference between two string lists:
+.nf
+.B #include <libstrlist.h>
+.B #include <stdio.h>
+.B #include <lib/stralloc.h>
+.sp
+.B int main() {
+.B   strlist a, b, diff;
+.B   stralloc_init(&a.sa);
+.B   stralloc_init(&b.sa);
+.B   stralloc_init(&diff.sa);
+.B   stralloc_copys(&a.sa, "hello,world,test");
+.B   stralloc_copys(&b.sa, "hello,world,example");
+.B   size_t count = strlist_diff(&a, &b, &diff);
+.B   printf("Difference: %s\n", diff.sa.s);
+.B   printf("Number of elements in difference: %zu\n", count);
+.B   // Free the allocated memory
+.B   stralloc_free(&a.sa);
+.B   stralloc_free(&b.sa);
+.B   stralloc_free(&diff.sa);
+.B   return 0;
+.B }
+.ne
+.fi
+.SH SEE ALSO
+.B strlist_init(3),
+.B stralloc_init(3),
+.B stralloc_copys(3),
+.B stralloc_free(3),
+.B free(3)

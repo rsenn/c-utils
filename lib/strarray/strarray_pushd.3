@@ -1,0 +1,61 @@
+.TH LIBSTRARRAY_STRARRAY_PUSHD 3 "2023-04-01" "libstrarray" "String Array Library"
+.SH NAME
+strarray_pushd \- Push a duplicated string onto a string array
+.SH SYNOPSIS
+.B #include <libstrarray.h>
+.B #include <lib/str.h>
+.sp
+.B int
+.B strarray_pushd(strarray* arr, const char* s);
+.SH DESCRIPTION
+The
+.B strarray_pushd
+function pushes a duplicated string onto a string array. The
+.B arr
+argument is a pointer to a
+.B strarray
+structure representing the array, and the
+.B s
+argument is a pointer to a constant character string representing the string to push.
+The
+.B strarray_pushd
+function duplicates the string before appending it to the array, so the caller is responsible for freeing the original string.
+The
+.B strarray_pushd
+function returns 1 if the operation is successful, or 0 if an error occurs.
+.SH EXAMPLE
+The following example demonstrates how to use the
+.B strarray_pushd
+function to push a duplicated string onto a string array:
+.nf
+.B #include <libstrarray.h>
+.B #include <stdio.h>
+.B #include <lib/str.h>
+.sp
+.B int main() {
+.B   strarray arr;
+.B   strarray_init(&arr);
+.B   const char* s = "Hello";
+.B   if(strarray_pushd(&arr, s)) {
+.B     printf("String array: ");
+.B     strarray_foreach(&arr, p) {
+.B       printf("%s ", *p);
+.B     }
+.B     printf("\n");
+.B     // Free the duplicated string
+.B     free((char*)array_get((array*)&arr, sizeof(char*), strarray_size(&arr) - 1));
+.B   } else {
+.B     printf("Error pushing duplicated string to array\n");
+.B   }
+.B   // Free the allocated memory
+.B   strarray_done(&arr);
+.B   return 0;
+.B }
+.ne
+.fi
+.SH SEE ALSO
+.B strarray_init(3),
+.B strarray_append(3),
+.B strarray_done(3),
+.B strarray_foreach(3),
+.B str_dup(3)

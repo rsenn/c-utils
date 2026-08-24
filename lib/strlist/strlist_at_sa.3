@@ -1,0 +1,62 @@
+.TH LIBSTRLIST_STRLIST_AT_SA 3 "2023-04-01" "libstrlist" "String List Library"
+.SH NAME
+strlist_at_sa \- Get a string allocation from a string list
+.SH SYNOPSIS
+.B #include <libstrlist.h>
+.B #include <lib/stralloc.h>
+.sp
+.B size_t
+.B strlist_at_sa(const strlist* sl, stralloc* out, size_t i);
+.SH DESCRIPTION
+The
+.B strlist_at_sa
+function gets a string allocation from a string list. The
+.B sl
+argument is a pointer to a
+.B strlist
+structure representing the input list.
+The
+.B out
+argument is a pointer to a
+.B stralloc
+structure where the string allocation will be copied.
+The
+.B i
+argument is the index of the string to be copied.
+The
+.B strlist_at_sa
+function returns the length of the copied string allocation.
+.SH EXAMPLE
+The following example demonstrates how to use the
+.B strlist_at_sa
+function to get a string allocation from a string list:
+.nf
+.B #include <libstrlist.h>
+.B #include <stdio.h>
+.B #include <lib/stralloc.h>
+.sp
+.B int main() {
+.B   strlist sl;
+.B   stralloc out;
+.B   stralloc_init(&out);
+.B   stralloc_init(&sl.sa);
+.B   stralloc_copys(&sl.sa, "hello,world,test");
+.B   size_t len = strlist_at_sa(&sl, &out, 1);
+.B   if(len > 0) {
+.B     printf("Second element: %s\n", out.s);
+.B   } else {
+.B     printf("Failed to get element\n");
+.B   }
+.B   // Free the allocated memory
+.B   stralloc_free(&out);
+.B   stralloc_free(&sl.sa);
+.B   return 0;
+.B }
+.ne
+.fi
+.SH SEE ALSO
+.B strlist_init(3),
+.B stralloc_init(3),
+.B stralloc_copys(3),
+.B stralloc_free(3),
+.B free(3)

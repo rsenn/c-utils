@@ -1,0 +1,50 @@
+.TH LIBSTRARRAY_STRARRAY_INDEX_OF_B 3 "2023-04-01" "libstrarray" "String Array Library"
+.SH NAME
+strarray_index_of_b \- Find the index of a string in a string array
+.SH SYNOPSIS
+.B #include <libstrarray.h>
+.B #include <lib/uint64.h>
+.sp
+.B int64
+.B strarray_index_of_b(strarray* arr, const char* s, size_t len);
+.SH DESCRIPTION
+The
+.B strarray_index_of_b
+function finds the index of a string in a string array. The
+.B arr
+argument is a pointer to a
+.B strarray
+structure representing the array, and the
+.B s
+argument is a pointer to a constant character string representing the string to search for. The
+.B len
+argument is a size_t representing the length of the string to search for.
+The
+.B strarray_index_of_b
+function returns the index of the string if it is found, or -1 if it is not found.
+.SH EXAMPLE
+The following example demonstrates how to use the
+.B strarray_index_of_b
+function to find the index of a string in a string array:
+.nf
+.B #include <libstrarray.h>
+.B #include <stdio.h>
+.B #include <lib/uint64.h>
+.sp
+.B int main() {
+.B   strarray arr;
+.B   strarray_init(&arr);
+.B   strarray_append(&arr, "Hello");
+.B   strarray_append(&arr, "world");
+.B   int64 index = strarray_index_of_b(&arr, "world", 5);
+.B   printf("Index of 'world': %ld\n", index);
+.B   // Free the allocated memory
+.B   strarray_done(&arr);
+.B   return 0;
+.B }
+.ne
+.fi
+.SH SEE ALSO
+.B strarray_init(3),
+.B strarray_append(3),
+.B strarray_done(3)

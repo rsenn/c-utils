@@ -1,0 +1,53 @@
+.TH LIBSTRLIST_STRLIST_COUNT_PRED 3 "2023-04-01" "libstrlist" "String List Library"
+.SH NAME
+strlist_count_pred \- Count the number of elements in a string list that satisfy a predicate
+.SH SYNOPSIS
+.B #include <libstrlist.h>
+.sp
+.B size_t
+.B strlist_count_pred(strlist* list, int (*predicate)(const char*, size_t));
+.SH DESCRIPTION
+The
+.B strlist_count_pred
+function counts the number of elements in a string list that satisfy a predicate. The
+.B list
+argument is a pointer to a
+.B strlist
+structure representing the input list.
+The
+.B predicate
+argument is a pointer to a function that takes a pointer to a string and its length as arguments and returns 1 if the string satisfies the predicate, or 0 otherwise.
+The
+.B strlist_count_pred
+function returns the number of elements in the string list that satisfy the predicate.
+.SH EXAMPLE
+The following example demonstrates how to use the
+.B strlist_count_pred
+function to count the number of elements in a string list that satisfy a predicate:
+.nf
+.B #include <libstrlist.h>
+.B #include <stdio.h>
+.B #include <lib/stralloc.h>
+.sp
+.B int even_length(const char* str, size_t len) {
+.B   return len % 2 == 0;
+.B }
+.sp
+.B int main() {
+.B   strlist sl;
+.B   stralloc_init(&sl.sa);
+.B   stralloc_copys(&sl.sa, "hello,world,test,even");
+.B   size_t count = strlist_count_pred(&sl, even_length);
+.B   printf("Number of even-length strings: %zu\n", count);
+.B   // Free the allocated memory
+.B   stralloc_free(&sl.sa);
+.B   return 0;
+.B }
+.ne
+.fi
+.SH SEE ALSO
+.B strlist_init(3),
+.B stralloc_init(3),
+.B stralloc_copys(3),
+.B stralloc_free(3),
+.B free(3)

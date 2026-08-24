@@ -1,0 +1,58 @@
+.TH LIBSTRARRAY_STRARRAY_INDEX_OF_SA 3 "2023-04-01" "libstrarray" "String Array Library"
+.SH NAME
+strarray_index_of_sa \- Find the index of a string allocation in a string array
+.SH SYNOPSIS
+.B #include <libstrarray.h>
+.B #include <lib/stralloc.h>
+.B #include <lib/uint64.h>
+.sp
+.B int64
+.B strarray_index_of_sa(strarray* arr, const stralloc* sa);
+.SH DESCRIPTION
+The
+.B strarray_index_of_sa
+function finds the index of a string allocation in a string array. The
+.B arr
+argument is a pointer to a
+.B strarray
+structure representing the array, and the
+.B sa
+argument is a pointer to a
+.B stralloc
+structure representing the string allocation to search for.
+The
+.B strarray_index_of_sa
+function returns the index of the string allocation if it is found, or -1 if it is not found.
+.SH EXAMPLE
+The following example demonstrates how to use the
+.B strarray_index_of_sa
+function to find the index of a string allocation in a string array:
+.nf
+.B #include <libstrarray.h>
+.B #include <stdio.h>
+.B #include <lib/stralloc.h>
+.B #include <lib/uint64.h>
+.sp
+.B int main() {
+.B   strarray arr;
+.B   stralloc sa;
+.B   strarray_init(&arr);
+.B   stralloc_init(&sa);
+.B   stralloc_copys(&sa, "world");
+.B   strarray_append(&arr, sa.s);
+.B   int64 index = strarray_index_of_sa(&arr, &sa);
+.B   printf("Index of 'world': %ld\n", index);
+.B   // Free the allocated memory
+.B   strarray_done(&arr);
+.B   stralloc_done(&sa);
+.B   return 0;
+.B }
+.ne
+.fi
+.SH SEE ALSO
+.B strarray_init(3),
+.B strarray_append(3),
+.B strarray_done(3),
+.B stralloc_init(3),
+.B stralloc_copys(3),
+.B stralloc_done(3)

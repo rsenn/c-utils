@@ -1,0 +1,42 @@
+.TH LIBXML_XML_TEXTNODEB 3 "2023-04-01" "libxml" "XML Library"
+.SH NAME
+xml_textnodeb \- Create a text node with a specified length
+.SH SYNOPSIS
+.B #include <lib/xml.h>
+.B #include <lib/str.h>
+.sp
+.B xmlnode*
+.B xml_textnodeb(const char* text, size_t len);
+.SH DESCRIPTION
+The
+.B xml_textnodeb
+function creates a text node with the specified text and length. The
+.B text
+argument is a pointer to a constant character string representing the text, and the
+.B len
+argument is a size_t representing the length of the text.
+The
+.B xml_textnodeb
+function returns a pointer to the new text node.
+.SH EXAMPLE
+The following example demonstrates how to use the
+.B xml_textnodeb
+function to create a text node:
+.nf
+.B #include <lib/xml.h>
+.B #include <lib/str.h>
+.B #include <stdio.h>
+.sp
+.B int main() {
+.B   xmlnode* node = xml_textnodeb("Hello, world!", 13);
+.B   // Now you can use the node as a text node
+.B   // ...
+.B   // Free the allocated memory
+.B   xml_free(node);
+.B   return 0;
+.B }
+.ne
+.fi
+.SH SEE ALSO
+.B xml_newnode(3),
+.B xml_free(3)

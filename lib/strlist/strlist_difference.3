@@ -1,0 +1,74 @@
+.TH LIBSTRLIST_STRLIST_DIFFERENCE 3 "2023-04-01" "libstrlist" "String List Library"
+.SH NAME
+strlist_difference \- Compute the difference between two string lists and store the results in two separate lists
+.SH SYNOPSIS
+.B #include <libstrlist.h>
+.sp
+.B void
+.B strlist_difference(const strlist* s1, const strlist* s2, strlist* out1, strlist* out2);
+.SH DESCRIPTION
+The
+.B strlist_difference
+function computes the difference between two string lists and stores the results in two separate lists. The
+.B s1
+argument is a pointer to a
+.B strlist
+structure representing the first input list.
+The
+.B s2
+argument is a pointer to a
+.B strlist
+structure representing the second input list.
+The
+.B out1
+argument is a pointer to a
+.B strlist
+structure where the elements in
+.B s1
+that are not present in
+.B s2
+will be stored.
+The
+.B out2
+argument is a pointer to a
+.B strlist
+structure where the elements in
+.B s2
+that are not present in
+.B s1
+will be stored.
+.SH EXAMPLE
+The following example demonstrates how to use the
+.B strlist_difference
+function to compute the difference between two string lists and store the results in two separate lists:
+.nf
+.B #include <libstrlist.h>
+.B #include <stdio.h>
+.B #include <lib/stralloc.h>
+.sp
+.B int main() {
+.B   strlist s1, s2, out1, out2;
+.B   stralloc_init(&s1.sa);
+.B   stralloc_init(&s2.sa);
+.B   stralloc_init(&out1.sa);
+.B   stralloc_init(&out2.sa);
+.B   stralloc_copys(&s1.sa, "hello,world,test");
+.B   stralloc_copys(&s2.sa, "hello,world,example");
+.B   strlist_difference(&s1, &s2, &out1, &out2);
+.B   printf("Elements in s1 that are not in s2: %s\n", out1.sa.s);
+.B   printf("Elements in s2 that are not in s1: %s\n", out2.sa.s);
+.B   // Free the allocated memory
+.B   stralloc_free(&s1.sa);
+.B   stralloc_free(&s2.sa);
+.B   stralloc_free(&out1.sa);
+.B   stralloc_free(&out2.sa);
+.B   return 0;
+.B }
+.ne
+.fi
+.SH SEE ALSO
+.B strlist_init(3),
+.B stralloc_init(3),
+.B stralloc_copys(3),
+.B stralloc_free(3),
+.B free(3)
