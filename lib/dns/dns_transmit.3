@@ -1,0 +1,20 @@
+.TH DNS_TRANSMIT 3 "2023-10-15" "c-utils" "DNS Transmission Functions"
+.SH NAME
+ dns_transmit \- Transmit DNS data over a socket
+.SH LIBRARY
+ libdns
+.SH SYNOPSIS
+ .B #include <dns/dns.h>
+
+ .B void
+ dns_transmit(int sockfd, const void *data, size_t len);
+.SH DESCRIPTION
+ Transmits DNS data over a connected socket. This function sends the provided
+ data buffer of length len to the specified socket descriptor. It is used
+ for sending DNS queries or responses in the c-utils library.
+.SH RETURN VALUES
+ None. Errors are reported via standard I/O or logging mechanisms.
+.SH SEE ALSO
+ dns_receive(3), dns_init(3)
+.SH AUTHORS
+ Written by the c-utils development team.

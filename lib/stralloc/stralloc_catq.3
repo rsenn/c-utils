@@ -1,0 +1,19 @@
+.TH STRALLOC_CATQ 3 "2023-10-15" "c-utils" "String Allocation Functions"
+.SH NAME
+ stralloc_catq \- Append a quoted string to a string
+.SH LIBRARY
+ libstralloc
+.SH SYNOPSIS
+ .B #include <stralloc/stralloc.h>
+
+ .B void
+ stralloc_catq(stralloc *sa, const char *s);
+.SH DESCRIPTION
+ Appends the quoted string s to the string allocation object sa. This function
+ is used for safely appending quoted strings in the c-utils library.
+.SH RETURN VALUES
+ None. Errors are reported via standard I/O or logging mechanisms.
+.SH SEE ALSO
+ stralloc_cat(3), stralloc_catb(3)
+.SH AUTHORS
+ Written by the c-utils development team.

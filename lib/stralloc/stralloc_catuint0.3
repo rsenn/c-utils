@@ -1,0 +1,20 @@
+.TH STRALLOC_CATUINT0 3 "2023-10-15" "c-utils" "String Allocation Functions"
+.SH NAME
+ stralloc_catuint0 \- Append an unsigned integer to a string
+.SH LIBRARY
+ libstralloc
+.SH SYNOPSIS
+ .B #include <stralloc/stralloc.h>
+
+ .B void
+ stralloc_catuint0(stralloc *sa, unsigned int val);
+.SH DESCRIPTION
+ Appends the unsigned integer val to the string allocation object sa as a decimal
+ string. This function is used for converting unsigned integers to strings in the
+ c-utils library.
+.SH RETURN VALUES
+ None. Errors are reported via standard I/O or logging mechanisms.
+.SH SEE ALSO
+ stralloc_catuint(3), stralloc_catint(3)
+.SH AUTHORS
+ Written by the c-utils development team.

@@ -1,0 +1,20 @@
+.TH STRALLOC_CATHEXB 3 "2023-10-15" "c-utils" "String Allocation Functions"
+.SH NAME
+ stralloc_cathexb \- Append hex bytes to a string
+.SH LIBRARY
+ libstralloc
+.SH SYNOPSIS
+ .B #include <stralloc/stralloc.h>
+
+ .B void
+ stralloc_cathexb(stralloc *sa, const void *data, size_t len);
+.SH DESCRIPTION
+ Appends hex-encoded byte representations of the data buffer to the string allocation
+ object sa. This function is used for converting binary data to hexadecimal strings
+ in the c-utils library.
+.SH RETURN VALUES
+ None. Errors are reported via standard I/O or logging mechanisms.
+.SH SEE ALSO
+ stralloc_catint(3), stralloc_cathex(3)
+.SH AUTHORS
+ Written by the c-utils development team.
