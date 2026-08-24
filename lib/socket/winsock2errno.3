@@ -1,0 +1,30 @@
+.TH WINSOCK2ERRNO 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+winsock2errno \- Convert Winsock error code to POSIX error code
+
+.SH SYNOPSIS
+.IB #include <lib/socket.h>
+
+.IB int
+.IB winsock2errno(long l);
+
+.SH DESCRIPTION
+The \fBwinsock2errno\fR function is used to convert a Winsock error code to a POSIX error code. If the input value is -1, it retrieves the last Winsock error using \fBWSAGetLastError\fR and maps it to the corresponding POSIX error code. Otherwise, it returns the input value unchanged.
+
+.SH RETURN VALUE
+The \fBwinsock2errno\fR function returns the converted POSIX error code or the input value unchanged.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBwinsock2errno\fR function:
+
+.nf
+#include <stdio.h>
+#include <lib/socket.h>
+
+int main() {
+    int result = winsock2errno(-1);
+    printf("Converted Error Code: %d\n", result);
+    return 0;
+}
+.nef

@@ -1,0 +1,43 @@
+.TH LIBXML_XML_REMOVE 3 "2023-04-01" "libxml" "XML Library"
+.SH NAME
+xml_remove \- Remove a node from a list
+.SH SYNOPSIS
+.B #include <lib/xml.h>
+.sp
+.B xmlnode*
+.B xml_remove(xmlnode** nptr);
+.SH DESCRIPTION
+The
+.B xml_remove
+function removes the specified
+.B node
+from the list that starts at
+.B nptr.
+The
+.B xml_remove
+function takes a pointer to a pointer to an
+.B xmlnode
+structure representing the list.
+The
+.B xml_remove
+function returns a pointer to the removed
+.B node.
+.SH EXAMPLE
+The following example demonstrates how to use the
+.B xml_remove
+function to remove a node from a list:
+.nf
+.B #include <lib/xml.h>
+.B #include <stdio.h>
+.sp
+.B int main() {
+.B   xmlnode* root = ...; // initialize the root node
+.B   xmlnode* node = ...; // initialize the node
+.B   xml_remove(&root);
+.B   printf("Node removed from list\n");
+.B   return 0;
+.B }
+.ne
+.fi
+.SH SEE ALSO
+.B xmlnode(3)

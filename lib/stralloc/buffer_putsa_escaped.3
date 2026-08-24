@@ -1,0 +1,65 @@
+.TH BUFFER_PUTSA_ESCAPED 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+buffer_putsa_escaped \- Put a string from a stralloc into a buffer with escaping
+
+.SH SYNOPSIS
+.IB #include <lib/buffer.h>
+.IB #include <lib/stralloc.h>
+
+.IB int
+.IB buffer_putsa_escaped(buffer* b, const stralloc* sa, size_t (*escape)(char*, int));
+
+.SH DESCRIPTION
+The \fBbuffer_putsa_escaped\fR function writes the contents of the stralloc \fIsa\fR to the buffer \fIb\fR, applying the specified escape function to each character.
+
+.SH PARAMETERS
+.IB b
+The buffer to which the content will be written.
+
+.IB sa
+The stralloc containing the content to be written.
+
+.IB escape
+A function pointer to the escape function to be applied to each character.
+
+.SH RETURN VALUE
+The \fBbuffer_putsa_escaped\fR function returns the number of characters written on success, or -1 if an error occurred.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBbuffer_putsa_escaped\fR function to write escaped content from a stralloc to a buffer:
+
+.nf
+#include <stdio.h>
+#include <lib/buffer.h>
+#include <lib/stralloc.h>
+
+// Example escape function
+size_t escape_char(char* buf, int c) {
+    if (c == '\n') {
+        buf[0] = '\\';
+        buf[1] = 'n';
+        return 2;
+    }
+    buf[0] = c;
+    return 1;
+}
+
+int main() {
+    buffer b;
+    stralloc sa;
+
+    buffer_init(&b, NULL, 0);
+    stralloc_init(&sa);
+
+    stralloc_copys(&sa, "Hello\nWorld");
+    buffer_putsa_escaped(&b, &sa, escape_char);
+
+    printf("Buffer contents: %s\n", b.s);
+
+    buffer_done(&b);
+    stralloc_done(&sa);
+
+    return 0;
+}
+.nef

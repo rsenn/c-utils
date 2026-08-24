@@ -1,0 +1,49 @@
+.TH WINSOCK_SOCKETPAIR 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+winsock_socketpair \- Create a socket pair using Winsock
+
+.SH SYNOPSIS
+.IB #include <lib/socket.h>
+
+.IB int
+.IB wsa_socketpair(int af, int type, int proto, fd_type sock[2]);
+
+.SH DESCRIPTION
+The \fBwsa_socketpair\fR function is used to create a socket pair using the specified protocol. It uses Winsock semantics, returning SOCKET handles, not file descriptors. Currently, it supports TCP/IPv4 socket pairs only.
+
+.SH PARAMETERS
+.IB af
+The address family, currently limited to AF_INET.
+
+.IB type
+The socket type, currently limited to SOCK_STREAM.
+
+.IB proto
+The protocol, currently limited to IPPROTO_IP or IPPROTO_TCP.
+
+.IB sock
+An array of two SOCKET handles, where the first element is the synchronous socket and the second element is the asynchronous socket.
+
+.SH RETURN VALUE
+The \fBwsa_socketpair\fR function returns 0 on success, or SOCKET_ERROR on failure.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBwsa_socketpair\fR function to create a socket pair:
+
+.nf
+#include <stdio.h>
+#include <lib/socket.h>
+
+int main() {
+    fd_type sock[2];
+    if (wsa_socketpair(AF_INET, SOCK_STREAM, IPPROTO_IP, sock) == 0) {
+        // Your code to use the socket pair here
+        closesocket(sock[0]);
+        closesocket(sock[1]);
+    } else {
+        printf("Failed to create socket pair\n");
+    }
+    return 0;
+}
+.nef

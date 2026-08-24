@@ -1,0 +1,41 @@
+.TH LIBXML_XML_CONTENT_SA 3 "2023-04-01" "libxml" "XML Library"
+.SH NAME
+xml_content_sa \- Extract the content of an XML node into a string allocation
+.SH SYNOPSIS
+.B #include <lib/xml.h>
+.sp
+.B int
+.B xml_content_sa(xmlnode* node, stralloc* sa);
+.SH DESCRIPTION
+The
+.B xml_content_sa
+function extracts the content of an XML node and stores it in a string allocation.
+The function takes a pointer to an
+.B xmlnode
+structure representing the node and a pointer to a
+.B stralloc
+structure representing the string allocation.
+The function returns the number of bytes added to the string allocation.
+.SH EXAMPLE
+The following example demonstrates how to use the
+.B xml_content_sa
+function to extract the content of an XML node:
+.nf
+.B #include <lib/xml.h>
+.B #include <stralloc.h>
+.B #include <stdio.h>
+.sp
+.B int main() {
+.B   stralloc sa = stralloc_init();
+.B   xmlnode* node = ...; // initialize the XML node
+.B   int len = xml_content_sa(node, &sa);
+.B   if(len >= 0) {
+.B     printf("Content: %.*s\n", (int)sa.len, sa.s);
+.B   }
+.B   stralloc_free(&sa);
+.B   return 0;
+.B }
+.ne
+.fi
+.SH SEE ALSO
+.B xmlnode(3)

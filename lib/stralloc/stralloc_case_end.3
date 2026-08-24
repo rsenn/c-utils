@@ -1,0 +1,54 @@
+.TH STRALLOC_CASE_END 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+stralloc_case_end \- Check if a stralloc ends with a specific suffix, ignoring case
+
+.SH SYNOPSIS
+.IB #include <lib/byte.h>
+.IB #include <lib/stralloc.h>
+
+.IB size_t
+.IB stralloc_case_end(const stralloc* sa, const stralloc* suffix);
+
+.SH DESCRIPTION
+The \fBstralloc_case_end\fR function checks if the stralloc \fIsa\fR ends with the suffix \fIsuffix\fR, ignoring case differences, and returns 1 if it does, or 0 if it does not.
+
+.SH PARAMETERS
+.IB sa
+The stralloc to check.
+
+.IB suffix
+The suffix to check for.
+
+.SH RETURN VALUE
+The \fBstralloc_case_end\fR function returns 1 if the stralloc ends with the suffix, or 0 if it does not.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBstralloc_case_end\fR function to check if a stralloc ends with a specific suffix:
+
+.nf
+#include <stdio.h>
+#include <lib/byte.h>
+#include <lib/stralloc.h>
+
+int main() {
+    stralloc sa;
+    stralloc suffix;
+
+    stralloc_init(&sa);
+    stralloc_init(&suffix);
+
+    // Your code to initialize sa and suffix here
+
+    if (stralloc_case_end(&sa, &suffix)) {
+        printf("sa ends with suffix\n");
+    } else {
+        printf("sa does not end with suffix\n");
+    }
+
+    stralloc_done(&sa);
+    stralloc_done(&suffix);
+
+    return 0;
+}
+.nef

@@ -1,0 +1,65 @@
+.TH BUFFER_GETTOK_SA 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+buffer_gettok_sa \- Get a token from a buffer and store it in a stralloc
+
+.SH SYNOPSIS
+.IB #include <lib/buffer.h>
+.IB #include <lib/stralloc.h>
+
+.IB int
+.IB buffer_gettok_sa(buffer* b, stralloc* sa, const char* charset, size_t setlen);
+
+.SH DESCRIPTION
+The \fBbuffer_gettok_sa\fR function reads a token from the buffer \fIb\fR and stores it in the stralloc \fIsa\fR. A token is defined as a sequence of characters that are not in the specified charset.
+
+.SH PARAMETERS
+.IB b
+The buffer from which to read the token.
+
+.IB sa
+The stralloc where the token will be stored.
+
+.IB charset
+A string containing the characters that define the token.
+
+.IB setlen
+The length of the charset string.
+
+.SH RETURN VALUE
+The \fBbuffer_gettok_sa\fR function returns the number of characters read on success, or 0 if no characters were read, or -1 if an error occurred (e.g., memory allocation failure).
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBbuffer_gettok_sa\fR function to read a token from a buffer and store it in a stralloc:
+
+.nf
+#include <stdio.h>
+#include <lib/buffer.h>
+#include <lib/stralloc.h>
+
+int main() {
+    buffer b;
+    stralloc sa;
+    const char* charset = " \t\n";
+    size_t setlen = 3;
+
+    buffer_init(&b, "Hello, World!");
+    stralloc_init(&sa);
+
+    int result = buffer_gettok_sa(&b, &sa, charset, setlen);
+
+    if (result > 0) {
+        // Your code to use the token stored in sa here
+        printf("Token: %s\n", sa.s);
+    } else if (result == 0) {
+        printf("No token found\n");
+    } else {
+        printf("Error: %d\n", errno);
+    }
+
+    buffer_done(&b);
+    stralloc_done(&sa);
+
+    return 0;
+}
+.nef

@@ -1,0 +1,43 @@
+.TH SOCKET_DEFERACCEPT 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+socket_deferaccept \- Defer accept on a socket
+
+.SH SYNOPSIS
+.IB #include <lib/socket.h>
+
+.IB void
+.IB socket_deferaccept(int s, enum defermode mode);
+
+.SH DESCRIPTION
+The \fBsocket_deferaccept\fR function is used to defer accept on a socket.
+
+.SH ARGUMENTS
+.IB s
+The socket file descriptor.
+
+.IB mode
+The defer mode.
+
+.SH RETURN VALUE
+The \fBsocket_deferaccept\fR function does not return a value.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBsocket_deferaccept\fR function:
+
+.nf
+#include <stdio.h>
+#include <lib/socket.h>
+
+int main() {
+    int s = socket(AF_INET, SOCK_STREAM, 0);
+    if (s == -1) {
+        perror("socket");
+        return 1;
+    }
+
+    socket_deferaccept(s, HTTPIN);
+
+    return 0;
+}
+.nef

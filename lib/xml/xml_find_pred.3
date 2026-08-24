@@ -1,0 +1,78 @@
+.TH LIBXML_XML_FIND_PRED 3 "2023-04-01" "libxml" "XML Library"
+.SH NAME
+xml_find_pred \- Find a node that matches a predicate
+.SH SYNOPSIS
+.B #include <lib/xml.h>
+.sp
+.B xmlnode*
+.B xml_find_pred(xmlnode* node, xml_pred_t* pred);
+.B xmlnode*
+.B xml_find_pred_1(xmlnode* node, xml_pred_t* pred, const void* arg);
+.B xmlnode*
+.B xml_find_pred_2(xmlnode* node, xml_pred_t* pred, const void* a0, const void* a1);
+.B xmlnode*
+.B xml_find_pred_3(xmlnode* node, xml_pred_t* pred, const void* a0, const void* a1, const void* a2);
+.B xmlnode*
+.B xml_find_pred_n(xmlnode* node, xml_pred_t* pred, int n, ...);
+.B xmlnode*
+.B xml_vfind_pred_n(xmlnode* node, xml_pred_t* pred, int n, va_list args);
+.SH DESCRIPTION
+The
+.B xml_find_pred
+function finds a node of the specified
+.B node
+that matches the specified predicate.
+The
+.B xml_find_pred_1,
+.B xml_find_pred_2
+and
+.B xml_find_pred_3
+functions provide convenient ways to call
+.B xml_find_pred
+with a fixed number of arguments.
+The
+.B xml_find_pred_n
+and
+.B xml_vfind_pred_n
+functions provide convenient ways to call
+.B xml_find_pred
+with a variable number of arguments.
+The
+.B xml_find_pred
+function takes a pointer to an
+.B xmlnode
+structure representing the node, and a pointer to a predicate function.
+The predicate function takes a pointer to an
+.B xmlnode
+structure, a pointer to a variable-length argument list, and returns 1 if the node matches the predicate, and 0 otherwise.
+.SH EXAMPLE
+The following example demonstrates how to use the
+.B xml_find_pred
+function to find a node with a specific attribute:
+.nf
+.B #include <lib/xml.h>
+.B #include <stdio.h>
+.sp
+.B int has_attr(xmlnode* node, const void* arg) {
+.B   const char* attr = arg;
+.B   return node->attr && node->attr->name && str_eq(node->attr->name, attr);
+.B }
+.B int main() {
+.B   xmlnode* root = ...; // initialize the root node
+.B   xmlnode* node = ...; // initialize the node
+.B   xmlnode* found = xml_find_pred(node, (xml_pred_t*)has_attr, "attr");
+.B   if(found) {
+.B     printf("Node found with attribute attr: %s\n", found->name);
+.B   } else {
+.B     printf("No node found with attribute attr\n");
+.B   }
+.B   return 0;
+.B }
+.ne
+.fi
+.SH SEE ALSO
+.B xml_pred_t(3),
+.B xml_find_all_pred(3),
+.B xml_find_all_1(3),
+.B xml_find_all_2(3),
+.B xml_find_all_3(3)

@@ -1,0 +1,44 @@
+.TH LIBXML_XML_INSERT 3 "2023-04-01" "libxml" "XML Library"
+.SH NAME
+xml_insert \- Insert a node into a list
+.SH SYNOPSIS
+.B #include <lib/xml.h>
+.sp
+.B void
+.B xml_insert(xmlnode** nptr, xmlnode* node);
+.SH DESCRIPTION
+The
+.B xml_insert
+function inserts the specified
+.B node
+into the list that starts at
+.B nptr.
+The
+.B xml_insert
+function takes a pointer to a pointer to an
+.B xmlnode
+structure representing the list, and a pointer to an
+.B xmlnode
+structure representing the node.
+The
+.B xml_insert
+function returns nothing.
+.SH EXAMPLE
+The following example demonstrates how to use the
+.B xml_insert
+function to insert a node into a list:
+.nf
+.B #include <lib/xml.h>
+.B #include <stdio.h>
+.sp
+.B int main() {
+.B   xmlnode* root = ...; // initialize the root node
+.B   xmlnode* node = ...; // initialize the node
+.B   xml_insert(&root, node);
+.B   printf("Node inserted into list\n");
+.B   return 0;
+.B }
+.ne
+.fi
+.SH SEE ALSO
+.B xmlnode(3)

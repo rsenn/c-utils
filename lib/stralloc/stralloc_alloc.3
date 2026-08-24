@@ -1,0 +1,43 @@
+.TH STRALLOC_ALLOC 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+stralloc_alloc \- Allocate memory for a stralloc
+
+.SH SYNOPSIS
+.IB #include <lib/stralloc.h>
+
+.IB void
+.IB stralloc_alloc(stralloc* sa);
+
+.SH DESCRIPTION
+The \fBstralloc_alloc\fR function allocates memory for the stralloc \fIsa\fR based on its current length and sets the allocated size.
+
+.SH PARAMETERS
+.IB sa
+The stralloc for which memory will be allocated.
+
+.SH RETURN VALUE
+The \fBstralloc_alloc\fR function does not return a value.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBstralloc_alloc\fR function to allocate memory for a stralloc:
+
+.nf
+#include <stdio.h>
+#include <lib/stralloc.h>
+
+int main() {
+    stralloc sa;
+    stralloc_init(&sa);
+
+    // Your code to use the stralloc here
+
+    stralloc_alloc(&sa);
+
+    // Your code to use the allocated memory here
+
+    stralloc_done(&sa);
+
+    return 0;
+}
+.nef

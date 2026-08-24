@@ -1,0 +1,29 @@
+.TH SOCKET_NOIPV6 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+socket_noipv6 \- Set the noipv6 flag
+
+.SH SYNOPSIS
+.IB #include <lib/socket.h>
+
+.IB extern int noipv6;
+
+.SH DESCRIPTION
+The \fBsocket_noipv6\fR variable is used to set the noipv6 flag.
+
+.SH RETURN VALUE
+The \fBsocket_noipv6\fR variable does not return a value.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBsocket_noipv6\fR variable:
+
+.nf
+#include <stdio.h>
+#include <lib/socket.h>
+
+int main() {
+    noipv6 = 1;
+
+    return 0;
+}
+.nef

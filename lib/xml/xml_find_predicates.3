@@ -1,0 +1,131 @@
+.TH LIBXML_XML_FIND_PREDICATES 3 "2023-04-01" "libxml" "XML Library"
+.SH NAME
+xml_match_name \- Check if a node matches a set of names
+.xml_match_name_and_attr \- Check if a node matches a set of names and attributes
+.xml_has_attr \- Check if a node has a set of attributes
+.SH SYNOPSIS
+.B #include <lib/xml.h>
+.sp
+.B int
+.B xml_match_name(xmlnode* node, strlist* names, const char* attr, const char* value);
+.B int
+.B xml_match_name_and_attr(xmlnode* node, strlist* names, const char* attr, const char* value);
+.B int
+.B xml_has_attr(xmlnode* node, const void* n, const strlist* attrs);
+.SH DESCRIPTION
+The
+.B xml_match_name
+function checks if the specified
+.B node
+matches the specified set of
+.B names.
+The
+.B xml_match_name_and_attr
+function checks if the specified
+.B node
+matches the specified set of
+.B names
+and
+.B attributes.
+The
+.B xml_has_attr
+function checks if the specified
+.B node
+has the specified set of
+.B attributes.
+The
+.B xml_match_name
+function takes a pointer to an
+.B xmlnode
+structure representing the node, a pointer to a
+.B strlist
+structure representing the set of names, a pointer to a constant character string representing the attribute, and a pointer to a constant character string representing the value.
+The
+.B xml_match_name_and_attr
+function takes a pointer to an
+.B xmlnode
+structure representing the node, a pointer to a
+.B strlist
+structure representing the set of names, a pointer to a constant character string representing the attribute, and a pointer to a constant character string representing the value.
+The
+.B xml_has_attr
+function takes a pointer to an
+.B xmlnode
+structure representing the node, and a pointer to a constant character string representing the set of attributes.
+The
+.B xml_match_name
+function returns 1 if the node matches the set of names, and 0 otherwise.
+The
+.B xml_match_name_and_attr
+function returns 1 if the node matches the set of names and attributes, and 0 otherwise.
+The
+.B xml_has_attr
+function returns 1 if the node has the set of attributes, and 0 otherwise.
+.SH EXAMPLE
+The following example demonstrates how to use the
+.B xml_match_name
+function to check if a node has a specific name:
+.nf
+.B #include <lib/xml.h>
+.B #include <stdio.h>
+.sp
+.B int main() {
+.B   xmlnode* root = ...; // initialize the root node
+.B   xmlnode* node = ...; // initialize the node
+.B   strlist* names = strlist_new("name1", "name2", NULL);
+.B   if(xml_match_name(node, names, NULL, NULL)) {
+.B     printf("Node has one of the names: name1 or name2\n");
+.B   } else {
+.B     printf("Node does not have one of the names: name1 or name2\n");
+.B   }
+.B   strlist_free(names);
+.B   return 0;
+.B }
+.ne
+.fi
+The following example demonstrates how to use the
+.B xml_match_name_and_attr
+function to check if a node has a specific name and attribute:
+.nf
+.B #include <lib/xml.h>
+.B #include <stdio.h>
+.sp
+.B int main() {
+.B   xmlnode* root = ...; // initialize the root node
+.B   xmlnode* node = ...; // initialize the node
+.B   strlist* names = strlist_new("name1", "name2", NULL);
+.B   if(xml_match_name_and_attr(node, names, "attr", "value")) {
+.B     printf("Node has one of the names: name1 or name2 and attribute attr with value value\n");
+.B   } else {
+.B     printf("Node does not have one of the names: name1 or name2 and attribute attr with value value\n");
+.B   }
+.B   strlist_free(names);
+.B   return 0;
+.B }
+.ne
+.fi
+The following example demonstrates how to use the
+.B xml_has_attr
+function to check if a node has a specific attribute:
+.nf
+.B #include <lib/xml.h>
+.B #include <stdio.h>
+.sp
+.B int main() {
+.B   xmlnode* root = ...; // initialize the root node
+.B   xmlnode* node = ...; // initialize the node
+.B   strlist* attrs = strlist_new("attr1", "attr2", NULL);
+.B   if(xml_has_attr(node, attrs)) {
+.B     printf("Node has one of the attributes: attr1 or attr2\n");
+.B   } else {
+.B     printf("Node does not have one of the attributes: attr1 or attr2\n");
+.B   }
+.B   strlist_free(attrs);
+.B   return 0;
+.B }
+.ne
+.fi
+.SH SEE ALSO
+.B strlist_new(3),
+.B xml_get_attribute(3),
+.B xml_has_attribute(3)

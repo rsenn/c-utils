@@ -1,0 +1,30 @@
+.TH WINSOCK_INIT 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+winsock_init \- Initialize Winsock
+
+.SH SYNOPSIS
+.IB #include <lib/socket.h>
+
+.IB void
+.IB __winsock_init(void);
+
+.SH DESCRIPTION
+The \fB__winsock_init\fR function is used to initialize Winsock. It ensures that Winsock is only initialized once by using a static variable to track initialization status. If Winsock is not already initialized, it calls \fBWSAStartup\fR to initialize Winsock version 2.2.
+
+.SH RETURN VALUE
+The \fB__winsock_init\fR function does not return a value.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fB__winsock_init\fR function to initialize Winsock:
+
+.nf
+#include <stdio.h>
+#include <lib/socket.h>
+
+int main() {
+    __winsock_init();
+    // Your socket-related code here
+    return 0;
+}
+.nef

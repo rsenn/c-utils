@@ -1,0 +1,32 @@
+.TH SOCKET_V6LOOPBACK 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+socket_v6loopback \- Get the IPv6 loopback address
+
+.SH SYNOPSIS
+.IB #include <lib/socket.h>
+
+.IB const char*
+.IB socket_ip6loopback(void);
+
+.SH DESCRIPTION
+The \fBsocket_ip6loopback\fR function is used to get the IPv6 loopback address.
+
+.SH RETURN VALUE
+The \fBsocket_ip6loopback\fR function returns a pointer to the IPv6 loopback address as a string.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBsocket_ip6loopback\fR function:
+
+.nf
+#include <stdio.h>
+#include <lib/socket.h>
+
+int main() {
+    const char* v6loopback = socket_ip6loopback();
+
+    printf("IPv6 Loopback Address: %s\n", v6loopback);
+
+    return 0;
+}
+.nef

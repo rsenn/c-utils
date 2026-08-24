@@ -1,0 +1,33 @@
+.TH SOCKET_V6ANY 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+socket_v6any \- Get the IPv6 any address
+
+.SH SYNOPSIS
+.IB #include <lib/socket.h>
+
+.IB extern const unsigned char V6any[16];
+
+.SH DESCRIPTION
+The \fBsocket_v6any\fR variable is used to get the IPv6 any address.
+
+.SH RETURN VALUE
+The \fBsocket_v6any\fR variable returns a pointer to the IPv6 any address.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBsocket_v6any\fR variable:
+
+.nf
+#include <stdio.h>
+#include <lib/socket.h>
+
+int main() {
+    printf("IPv6 Any Address: ");
+    for (int i = 0; i < 16; i++) {
+        printf("%02x ", V6any[i]);
+    }
+    printf("\n");
+
+    return 0;
+}
+.nef

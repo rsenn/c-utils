@@ -1,0 +1,42 @@
+.TH SOCKET_IS4 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+socket_is4 \- Check if a socket is IPv4
+
+.SH SYNOPSIS
+.IB #include <lib/socket.h>
+
+.IB int
+.IB socket_is4(int s);
+
+.SH DESCRIPTION
+The \fBsocket_is4\fR function is used to check if a socket is IPv4.
+
+.SH RETURN VALUE
+The \fBsocket_is4\fR function returns 1 if the socket is IPv4, 0 if it is IPv6, and -1 on failure.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBsocket_is4\fR function:
+
+.nf
+#include <stdio.h>
+#include <lib/socket.h>
+
+int main() {
+    int s = socket(AF_INET, SOCK_STREAM, 0);
+    if (s == -1) {
+        perror("socket");
+        return 1;
+    }
+
+    if (socket_is4(s) == 1) {
+        printf("Socket is IPv4\n");
+    } else if (socket_is4(s) == 0) {
+        printf("Socket is IPv6\n");
+    } else {
+        perror("socket_is4");
+    }
+
+    return 0;
+}
+.nef

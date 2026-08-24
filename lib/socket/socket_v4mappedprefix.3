@@ -1,0 +1,33 @@
+.TH SOCKET_V4MAPPEDPREFIX 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+socket_v4mappedprefix \- Get the IPv4 mapped prefix
+
+.SH SYNOPSIS
+.IB #include <lib/socket.h>
+
+.IB extern const unsigned char V4mappedprefix[12];
+
+.SH DESCRIPTION
+The \fBsocket_v4mappedprefix\fR variable is used to get the IPv4 mapped prefix.
+
+.SH RETURN VALUE
+The \fBsocket_v4mappedprefix\fR variable returns a pointer to the IPv4 mapped prefix.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBsocket_v4mappedprefix\fR variable:
+
+.nf
+#include <stdio.h>
+#include <lib/socket.h>
+
+int main() {
+    printf("IPv4 Mapped Prefix: ");
+    for (int i = 0; i < 12; i++) {
+        printf("%02x ", V4mappedprefix[i]);
+    }
+    printf("\n");
+
+    return 0;
+}
+.nef

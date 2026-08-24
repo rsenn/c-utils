@@ -1,0 +1,42 @@
+.TH LIBXML_XML_GET_DOCUMENT 3 "2023-04-01" "libxml" "XML Library"
+.SH NAME
+xml_get_document \- Get the root node of a document
+.SH SYNOPSIS
+.B #include <lib/xml.h>
+.sp
+.B xmlnode*
+.B xml_get_document(xmlnode* node);
+.SH DESCRIPTION
+The
+.B xml_get_document
+function returns the root node of the document that contains the specified
+.B node.
+The
+.B xml_get_document
+function takes a pointer to an
+.B xmlnode
+structure representing the node.
+The
+.B xml_get_document
+function returns a pointer to an
+.B xmlnode
+structure representing the root node of the document.
+.SH EXAMPLE
+The following example demonstrates how to use the
+.B xml_get_document
+function to get the root node of a document:
+.nf
+.B #include <lib/xml.h>
+.B #include <stdio.h>
+.sp
+.B int main() {
+.B   xmlnode* root = ...; // initialize the root node
+.B   xmlnode* node = ...; // initialize the node
+.B   xmlnode* doc = xml_get_document(node);
+.B   printf("Root node name: %s\n", doc->name);
+.B   return 0;
+.B }
+.ne
+.fi
+.SH SEE ALSO
+.B xmlnode(3)

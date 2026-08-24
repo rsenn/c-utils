@@ -1,0 +1,36 @@
+.TH LIBXML_XML_ATTRNODE 3 "2023-04-01" "libxml" "XML Library"
+.SH NAME
+xml_attrnode \- Create a new XML attribute node
+.SH SYNOPSIS
+.B #include <lib/xml.h>
+.B #include <lib/str.h>
+.sp
+.B xmlnode*
+.B xml_attrnode(const char* name, size_t name_len, const char* value, size_t value_len);
+.SH DESCRIPTION
+The
+.B xml_attrnode
+function creates a new XML attribute node with the specified name and value.
+The name and value are specified as pointers to character strings and their lengths.
+The function returns a pointer to the newly created attribute node, or NULL if an error occurs.
+.SH EXAMPLE
+The following example demonstrates how to use the
+.B xml_attrnode
+function to create a new attribute node:
+.nf
+.B #include <lib/xml.h>
+.B #include <lib/str.h>
+.B #include <stdio.h>
+.sp
+.B int main() {
+.B   xmlnode* attr = xml_attrnode("name", 4, "value", 5);
+.B   if(attr) {
+.B     printf("Attribute created: %s=%s\n", attr->name, attr->children->name);
+.B   }
+.B   return 0;
+.B }
+.ne
+.fi
+.SH SEE ALSO
+.B xml_newnode(3),
+.B str_ndup(3)

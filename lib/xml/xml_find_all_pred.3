@@ -1,0 +1,67 @@
+.TH LIBXML_XML_FIND_ALL_PRED 3 "2023-04-01" "libxml" "XML Library"
+.SH NAME
+xml_find_all_pred \- Find all nodes that match a predicate
+.SH SYNOPSIS
+.B #include <lib/xml.h>
+.sp
+.B xmlnodeset
+.B xml_find_all_pred(xmlnode* node, xml_pred_t* pred, ...);
+.B xmlnodeset
+.B xml_find_all_3(xmlnode* node, xml_pred_t* pred, const void* a1, const void* a2, const void* a3);
+.B xmlnodeset
+.B xml_find_all_2(xmlnode* node, xml_pred_t* pred, const void* a1, const void* a2);
+.B xmlnodeset
+.B xml_find_all_1(xmlnode* node, xml_pred_t* pred, const void* a1);
+.SH DESCRIPTION
+The
+.B xml_find_all_pred
+function finds all nodes in the XML tree that match a specified predicate.
+The function takes a pointer to an
+.B xmlnode
+structure representing the root of the XML tree, a pointer to an
+.B xml_pred_t
+function representing the predicate, and a variable-length argument list that can be used by the predicate function.
+The function returns a
+.B xmlnodeset
+structure containing the nodes that match the predicate.
+The
+.B xml_find_all_1,
+.B xml_find_all_2,
+.B xml_find_all_3
+and
+.B xml_find_all_pred
+functions provide convenient ways to call
+.B xml_find_all_pred
+with a fixed number of arguments.
+.SH EXAMPLE
+The following example demonstrates how to use the
+.B xml_find_all_pred
+function to find all nodes with a specific attribute:
+.nf
+.B #include <lib/xml.h>
+.B #include <stdio.h>
+.sp
+.B int attribute_match(xmlnode* node, const void* name, const void* value, const void* data) {
+.B   if(node->type == XML_ATTRIBUTE && !strcmp(node->name, (const char*)name) && !strcmp(node->children->name, (const char*)value)) {
+.B     return 1;
+.B   }
+.B   return 0;
+.B }
+.sp
+.B int main() {
+.B   xmlnode* root = ...; // initialize the root node
+.B   xmlnodeset nodes = xml_find_all_pred(root, attribute_match, "attr1", "value1", NULL);
+.B   for(int i = 0; i < nodes.size; i++) {
+.B     printf("Node found with attribute attr1=value1: %s\n", nodes.nodes[i]->name);
+.B   }
+.B   xmlnodeset_free(&nodes);
+.B   return 0;
+.B }
+.ne
+.fi
+.SH SEE ALSO
+.B xml_pred_t(3),
+.B xml_find_all_pred(3),
+.B xml_find_all_1(3),
+.B xml_find_all_2(3),
+.B xml_find_all_3(3)

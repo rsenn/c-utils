@@ -1,0 +1,54 @@
+.TH OPEN_FILENAME 3 "15 Mar 2023" "CB" "Library Functions"
+
+.SH NAME
+open_filename \- Get the filename associated with a file descriptor
+
+.SH SYNOPSIS
+.IB #include <lib/stralloc.h>
+.IB #include <lib/typedefs.h>
+.IB #include <lib/mmap.h>
+
+.IB int
+.IB open_filename(fd_type fd, stralloc* sa);
+
+.SH DESCRIPTION
+The \fBopen_filename\fR function retrieves the filename associated with a file descriptor \fIfd\fR and stores it in the stralloc \fIsa\fR. The function uses either the \fBF_GETPATH\fR system call or memory mapping to obtain the filename.
+
+.SH PARAMETERS
+.IB fd
+The file descriptor for which to retrieve the filename.
+
+.IB sa
+The stralloc where the filename will be stored.
+
+.SH RETURN VALUE
+The \fBopen_filename\fR function returns 1 on success, or 0 if an error occurred.
+
+.SH EXAMPLES
+The following example demonstrates how to use the \fBopen_filename\fR function to retrieve the filename associated with a file descriptor and store it in a stralloc:
+
+.nf
+#include <stdio.h>
+#include <lib/stralloc.h>
+#include <lib/typedefs.h>
+#include <lib/mmap.h>
+
+int main() {
+    fd_type fd = open("example.txt", O_RDONLY);
+    stralloc sa;
+
+    stralloc_init(&sa);
+
+    if (open_filename(fd, &sa) == 1) {
+        // Your code to use the filename stored in sa here
+        printf("Filename: %s\n", sa.s);
+    } else {
+        printf("Failed to retrieve filename\n");
+    }
+
+    stralloc_done(&sa);
+    close(fd);
+
+    return 0;
+}
+.nef

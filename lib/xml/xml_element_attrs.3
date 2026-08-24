@@ -1,0 +1,37 @@
+.TH LIBXML_XML_ELEMENT_ATTRS 3 "2023-04-01" "libxml" "XML Library"
+.SH NAME
+xml_element_attrs \- Create a new XML element with attributes
+.SH SYNOPSIS
+.B #include <lib/xml.h>
+.B #include <lib/str.h>
+.sp
+.B xmlnode*
+.B xml_element_attrs(const char* name, const char* arg, ...);
+.SH DESCRIPTION
+The
+.B xml_element_attrs
+function creates a new XML element with the specified name and attributes.
+The name is specified as a pointer to a character string.
+The attributes are specified as a variable-length argument list, where each attribute is a pair of character strings representing the attribute name and value.
+The function returns a pointer to the newly created element node.
+.SH EXAMPLE
+The following example demonstrates how to use the
+.B xml_element_attrs
+function to create a new element node with attributes:
+.nf
+.B #include <lib/xml.h>
+.B #include <lib/str.h>
+.B #include <stdio.h>
+.sp
+.B int main() {
+.B   xmlnode* element = xml_element_attrs("element", "attr1", "value1", "attr2", "value2", NULL);
+.B   if(element) {
+.B     printf("Element created with attributes: %s\n", element->name);
+.B   }
+.B   return 0;
+.B }
+.ne
+.fi
+.SH SEE ALSO
+.B xml_element(3),
+.B xml_vattributes(3)

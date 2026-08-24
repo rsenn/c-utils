@@ -1,0 +1,79 @@
+.TH LIBXML_XML_FIND_PARENT 3 "2023-04-01" "libxml" "XML Library"
+.SH NAME
+xml_find_parent \- Find the first parent node that matches a predicate
+.SH SYNOPSIS
+.B #include <lib/xml.h>
+.sp
+.B xmlnode*
+.B xml_find_parent(xmlnode* node, const char* tag);
+.B xmlnode*
+.B xml_find_parent_attr(xmlnode* node, const char* attrs);
+.B xmlnode*
+.B xml_find_parent_pred_1(xmlnode* node, int (*pred)(xmlnode*, const void*, const void*, const void*), const void* arg);
+.B xmlnode*
+.B xml_find_parent_pred_2(xmlnode* node, int (*pred)(xmlnode*, const void*, const void*, const void*), const void* a0, const void* a1);
+.B xmlnode*
+.B xml_find_parent_pred_3(xmlnode* node, int (*pred)(xmlnode*, const void*, const void*, const void*), const void* a0, const void* a1, const void* a2);
+.B xmlnode*
+.B xml_find_parent_pred(xmlnode* node, int (*pred)(xmlnode*, const void*, const void*, const void*), const void* ptr[]);
+.SH DESCRIPTION
+The
+.B xml_find_parent
+function finds the first parent node of the specified
+.B node
+that matches the specified
+.B tag.
+The
+.B xml_find_parent_attr
+function finds the first parent node of the specified
+.B node
+that matches the specified
+.B attrs.
+The
+.B xml_find_parent_pred
+function finds the first parent node of the specified
+.B node
+that matches the specified predicate.
+The
+.B xml_find_parent_pred_1,
+.B xml_find_parent_pred_2
+and
+.B xml_find_parent_pred_3
+functions provide convenient ways to call
+.B xml_find_parent_pred
+with a fixed number of arguments.
+The
+.B xml_find_parent_pred
+function takes a pointer to an
+.B xmlnode
+structure representing the node, a pointer to a predicate function, and a pointer to a variable-length argument list.
+The predicate function takes a pointer to an
+.B xmlnode
+structure, a pointer to a variable-length argument list, and returns 1 if the node matches the predicate, and 0 otherwise.
+.SH EXAMPLE
+The following example demonstrates how to use the
+.B xml_find_parent
+function to find the first parent node with a specific tag:
+.nf
+.B #include <lib/xml.h>
+.B #include <stdio.h>
+.sp
+.B int main() {
+.B   xmlnode* root = ...; // initialize the root node
+.B   xmlnode* node = ...; // initialize the node
+.B   xmlnode* parent = xml_find_parent(node, "tag");
+.B   if(parent) {
+.B     printf("Parent node found with tag tag: %s\n", parent->name);
+.B   } else {
+.B     printf("No parent node found with tag tag\n");
+.B   }
+.B   return 0;
+.B }
+.ne
+.fi
+.SH SEE ALSO
+.B xml_pred_t(3),
+.B xml_find_all_pred(3),
+.B xml_find_all_1(3),
+.B xml_find_all_2(3),
+.B xml_find_all_3(3)
