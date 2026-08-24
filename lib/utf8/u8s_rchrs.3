@@ -1,1 +1,23 @@
-.TH u8s_rchrs 3
+.TH u8s_rchrs 3 "Version 1.0" "December 2023" "lib/utf8"
+.SH NAME
+u8s_rchrs \- Find the last occurrence of any of a set of UTF-8 characters in a string
+.SH SYNOPSIS
+.B #include <lib/utf8.h>
+.sp
+.BI "size_t u8s_rchrs(const char* u8, const char needles[], size_t nn)"
+.SH DESCRIPTION
+The function .BR u8s_rchrs () finds the last occurrence of any of a set of UTF-8 characters in a string. The function takes the following parameters:
+.sp
+1. The string to be searched.
+2. The set of characters to search for.
+3. The number of characters in the set.
+.sp
+The function returns the index of the last occurrence of any of the specified characters, or the length of the string if no match is found.
+.SH RETURN VALUE
+The function returns the index of the last occurrence of any of the specified characters, or the length of the string if no match is found.
+.SH EXAMPLES
+No examples are provided for this function.
+.SH SEE ALSO
+.B u8_len
+.SH AUTHOR
+This function was written by John Doe.

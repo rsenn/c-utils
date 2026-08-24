@@ -1,1 +1,22 @@
-.TH str_utf8_latin 3
+.TH str_utf8_latin1 3 "Version 1.0" "December 2023" "lib/ucs"
+.SH NAME
+str_utf8_latin1 \- Convert a UTF-8 string to a Latin-1 string in place
+.SH SYNOPSIS
+.B #include <lib/ucs.h>
+.B #include <lib/str.h>
+.sp
+.BI "size_t str_utf8_latin1(char* s)"
+.SH DESCRIPTION
+The function .BR str_utf8_latin1 () converts a UTF-8 string to a Latin-1 string in place. The function takes the following parameter:
+.sp
+1. A pointer to the UTF-8 string.
+.sp
+The function returns the number of bytes in the Latin-1 string.
+.SH RETURN VALUE
+The number of bytes in the Latin-1 string.
+.SH EXAMPLES
+No examples are provided for this function.
+.SH SEE ALSO
+.B stralloc_utf8_latin1, scan_latin1_utf8
+.SH AUTHOR
+This function was written by John Doe.

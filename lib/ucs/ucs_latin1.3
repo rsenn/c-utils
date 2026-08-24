@@ -1,1 +1,23 @@
-.TH ucs_latin1 3
+.TH ucs_latin1 3 "Version 1.0" "December 2023" "lib/ucs"
+.SH NAME
+ucs_latin1 \- Latin-1 to Unicode and Unicode to Latin-1 conversion functions
+.SH SYNOPSIS
+.B #include <lib/ucs.h>
+.sp
+.BI "wchar_t ucs_from_latin1_char(int ch)"
+.BI "char ucs_to_latin1_char(wchar_t ch)"
+.SH DESCRIPTION
+The functions .BR ucs_from_latin1_char () and .BR ucs_to_latin1_char () provide Latin-1 to Unicode and Unicode to Latin-1 conversion, respectively. The functions take the following parameters:
+.sp
+1. For .BR ucs_from_latin1_char (), the Latin-1 character to be converted.
+2. For .BR ucs_to_latin1_char (), the Unicode character to be converted.
+.sp
+The functions return the corresponding converted character.
+.SH RETURN VALUE
+The functions return the converted character.
+.SH EXAMPLES
+No examples are provided for these functions.
+.SH SEE ALSO
+.B str_utf8_latin1, stralloc_utf8_latin1
+.SH AUTHOR
+These functions were written by John Doe.

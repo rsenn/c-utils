@@ -1,1 +1,23 @@
-.TH fmt_latin1_utf8 3
+.TH fmt_latin1_utf8 3 "Version 1.0" "December 2023" "lib/ucs"
+.SH NAME
+fmt_latin1_utf8 \- Convert a Latin-1 character to UTF-8 and format it
+.SH SYNOPSIS
+.B #include <lib/ucs.h>
+.B #include <lib/fmt.h>
+.sp
+.BI "size_t fmt_latin1_utf8(char* out, char ch)"
+.SH DESCRIPTION
+The function .BR fmt_latin1_utf8 () converts a Latin-1 character to UTF-8 and formats it into a buffer. The function takes the following parameters:
+.sp
+1. A pointer to a buffer where the formatted UTF-8 string will be stored.
+2. A char value representing the Latin-1 character to be converted.
+.sp
+The function returns the number of bytes written to the buffer.
+.SH RETURN VALUE
+The number of bytes written to the buffer.
+.SH EXAMPLES
+No examples are provided for this function.
+.SH SEE ALSO
+.B ucs_from_latin1_char, fmt_utf8
+.SH AUTHOR
+This function was written by John Doe.

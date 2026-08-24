@@ -1,1 +1,21 @@
-.TH u8s_len 3
+.TH u8s_len 3 "Version 1.0" "December 2023" "lib/utf8"
+.SH NAME
+u8s_len \- Calculate the length of a UTF-8 string
+.SH SYNOPSIS
+.B #include <lib/utf8.h>
+.sp
+.BI "size_t u8s_len(const char* u8)"
+.SH DESCRIPTION
+The function .BR u8s_len () calculates the length of a UTF-8 string. The function takes the following parameters:
+.sp
+1. The input UTF-8 string to be processed.
+.sp
+The function returns the number of characters in the UTF-8 string.
+.SH RETURN VALUE
+The function returns the number of characters in the UTF-8 string.
+.SH EXAMPLES
+No examples are provided for this function.
+.SH SEE ALSO
+.B u8_to_wc
+.SH AUTHOR
+This function was written by John Doe.

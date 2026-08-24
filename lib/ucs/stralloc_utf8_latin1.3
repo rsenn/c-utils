@@ -1,1 +1,22 @@
-.TH stralloc_utf8_latin1 3
+.TH stralloc_utf8_latin1 3 "Version 1.0" "December 2023" "lib/ucs"
+.SH NAME
+stralloc_utf8_latin1 \- Convert a UTF-8 string in a stralloc to a Latin-1 string
+.SH SYNOPSIS
+.B #include <lib/stralloc.h>
+.B #include <lib/ucs.h>
+.sp
+.BI "size_t stralloc_utf8_latin1(stralloc* sa)"
+.SH DESCRIPTION
+The function .BR stralloc_utf8_latin1 () converts a UTF-8 string in a stralloc to a Latin-1 string in place. The function takes the following parameter:
+.sp
+1. A pointer to a stralloc containing the UTF-8 string.
+.sp
+The function returns the number of bytes in the Latin-1 string.
+.SH RETURN VALUE
+The number of bytes in the Latin-1 string.
+.SH EXAMPLES
+No examples are provided for this function.
+.SH SEE ALSO
+.B stralloc, scan_latin1_utf8
+.SH AUTHOR
+This function was written by John Doe.

@@ -1,1 +1,25 @@
-.TH scan_latin1_utf8 3
+.TH scan_latin1_utf8 3 "Version 1.0" "December 2023" "lib/ucs"
+.SH NAME
+scan_latin1_utf8 \- Scan a UTF-8 string and convert it to a Latin-1 character
+.SH SYNOPSIS
+.B #include <lib/ucs.h>
+.B #include <lib/scan.h>
+.B #include <lib/buffer.h>
+.sp
+.BI "size_t scan_latin1_utf8(const char* x, size_t n, char* out)"
+.SH DESCRIPTION
+The function .BR scan_latin1_utf8 () scans a UTF-8 string and attempts to convert the first character to a Latin-1 character. The function takes the following parameters:
+.sp
+1. A pointer to the UTF-8 string to be scanned.
+2. The number of bytes to scan from the UTF-8 string.
+3. A pointer to a buffer where the Latin-1 character will be stored.
+.sp
+The function returns the number of bytes processed from the UTF-8 string.
+.SH RETURN VALUE
+The number of bytes processed from the UTF-8 string.
+.SH EXAMPLES
+No examples are provided for this function.
+.SH SEE ALSO
+.B scan_utf8, ucs_to_latin1_char
+.SH AUTHOR
+This function was written by John Doe.

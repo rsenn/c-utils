@@ -1,1 +1,23 @@
-.TH u8s_to_wcs 3
+.TH u8s_to_wcs 3 "Version 1.0" "December 2023" "lib/utf8"
+.SH NAME
+u8s_to_wcs \- Convert a UTF-8 string to a wide character string
+.SH SYNOPSIS
+.B #include <lib/utf8.h>
+.sp
+.BI "size_t u8s_to_wcs(wchar_t* out, const char* u8, size_t count)"
+.SH DESCRIPTION
+The function .BR u8s_to_wcs () converts a UTF-8 string to a wide character string. The function takes the following parameters:
+.sp
+1. A pointer to the output wide character string.
+2. The input UTF-8 string to be converted.
+3. The maximum number of wide characters to be written to the output string.
+.sp
+The function returns the number of wide characters written to the output string.
+.SH RETURN VALUE
+The function returns the number of wide characters written to the output string, or -1 if an error occurs.
+.SH EXAMPLES
+No examples are provided for this function.
+.SH SEE ALSO
+.B u8_to_wc
+.SH AUTHOR
+This function was written by John Doe.

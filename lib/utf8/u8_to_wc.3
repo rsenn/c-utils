@@ -1,1 +1,22 @@
-.TH u8_to_wc 3
+.TH u8_to_wc 3 "Version 1.0" "December 2023" "lib/utf8"
+.SH NAME
+u8_to_wc \- Convert a UTF-8 character to a wide character
+.SH SYNOPSIS
+.B #include <lib/utf8.h>
+.sp
+.BI "size_t u8_to_wc(wchar_t* out, const char* u8)"
+.SH DESCRIPTION
+The function .BR u8_to_wc () converts a UTF-8 character to a wide character. The function takes the following parameters:
+.sp
+1. A pointer to the output wide character.
+2. The input UTF-8 character to be converted.
+.sp
+The function returns the length of the UTF-8 character, or -1 if an error occurs.
+.SH RETURN VALUE
+The function returns the length of the UTF-8 character, or -1 if an error occurs.
+.SH EXAMPLES
+No examples are provided for this function.
+.SH SEE ALSO
+.B u8_len
+.SH AUTHOR
+This function was written by John Doe.
