@@ -1,0 +1,44 @@
+.TH LIBTLS_TLS_BY_FD 3 "2023-04-01" "libtls" "TLS Library"
+.SH NAME
+tls_by_fd - Get TLS instance by file descriptor
+.SH SYNOPSIS
+.B #include <libtls.h>
+.sp
+.B tls_t*
+.B tls_by_fd(int fd);
+.SH DESCRIPTION
+The
+.B tls_by_fd
+function returns the TLS instance associated with a file descriptor.
+The
+.B fd
+argument is the file descriptor of the TLS instance.
+The function returns a pointer to a
+.B tls_t
+structure that represents the TLS instance.
+.SH EXAMPLE
+The following example demonstrates how to use the
+.B tls_by_fd
+function to get the TLS instance associated with a file descriptor:
+.nf
+.B #include <libtls.h>
+.B #include <stdio.h>
+.sp
+.B int main() {
+.B   int fd = 0; // Assume a valid file descriptor
+.B   tls_t* tls = tls_by_fd(fd);
+.B   if(tls == NULL) {
+.B     fprintf(stderr, "Error getting TLS instance\n");
+.B     return 1;
+.B   }
+
+.B   // Use the TLS instance
+
+.B   return 0;
+.B }
+.ne
+.fi
+.SH SEE ALSO
+.B libtls,
+.B tls_accept(3),
+.B tls_connect(3)

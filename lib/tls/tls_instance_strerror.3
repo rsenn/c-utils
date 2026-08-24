@@ -1,0 +1,49 @@
+.TH LIBTLS_TLS_INSTANCE_STRERROR 3 "2023-04-01" "libtls" "TLS Library"
+.SH NAME
+tls_instance_strerror - Get TLS instance error string
+.SH SYNOPSIS
+.B #include <libtls.h>
+.sp
+.B const char*
+.B tls_instance_strerror(tls_instance_t* i);
+.SH DESCRIPTION
+The
+.B tls_instance_strerror
+function gets the error string for a TLS instance.
+The
+.B i
+argument is a pointer to the TLS instance.
+The function returns the error string for the TLS instance.
+.SH EXAMPLE
+The following example demonstrates how to use the
+.B tls_instance_strerror
+function to get the error string for a TLS instance:
+.nf
+.B #include <libtls.h>
+.B #include <stdio.h>
+.sp
+.B int main() {
+.B   tls_t* tls = ...; // Assume a valid TLS instance
+.B   const char* errstr = tls_instance_strerror(tls);
+
+.B   // Use the error string
+
+.B   return 0;
+.B }
+.ne
+.fi
+.SH SEE ALSO
+.B libtls,
+.B tls_accept(3),
+.B tls_connect(3),
+.B tls_by_fd(3),
+.B tls_close(3),
+.B tls_errno(3),
+.B tls_error(3),
+.B tls_get_fd(3),
+.B tls_instance_debug(3),
+.B tls_instance_errno(3),
+.B tls_instance_get(3),
+.B tls_instance_handshake(3),
+.B tls_instance_new(3),
+.B tls_instance_return(3)

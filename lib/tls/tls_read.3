@@ -1,0 +1,58 @@
+.TH LIBTLS_TLS_READ 3 "2023-04-01" "libtls" "TLS Library"
+.SH NAME
+tls_read - Read data from a TLS connection
+.SH SYNOPSIS
+.B #include <libtls.h>
+.sp
+.B ssize_t
+.B tls_read(fd_type fd, void* data, size_t len);
+.SH DESCRIPTION
+The
+.B tls_read
+function reads data from a TLS connection.
+The function takes a
+.IR fd " "
+and a
+.IR data " "
+and a
+.IR len " "
+as arguments.
+The function returns the number of bytes read, or -1 on error.
+.SH EXAMPLE
+The following example demonstrates how to use the
+.B tls_read
+function to read data from a TLS connection:
+.nf
+.B #include <libtls.h>
+.B #include <stdio.h>
+.sp
+.B int main() {
+.B   char buffer[1024];
+.B   ssize_t bytes_read = tls_read(fd, buffer, sizeof(buffer));
+.B   if(bytes_read < 0) {
+.B     // Handle error
+.B   }
+.B   // Use buffer
+.B   return 0;
+.B }
+.ne
+.fi
+.SH SEE ALSO
+.B libtls,
+.B tls_accept(3),
+.B tls_connect(3),
+.B tls_by_fd(3),
+.B tls_close(3),
+.B tls_errno(3),
+.B tls_error(3),
+.B tls_get_fd(3),
+.B tls_instance_debug(3),
+.B tls_instance_errno(3),
+.B tls_instance_get(3),
+.B tls_instance_handshake(3),
+.B tls_instance_new(3),
+.B tls_instance_return(3),
+.B tls_instance_strerror(3),
+.B tls_method(3),
+.B tls_new(3),
+.B tls_read(3)

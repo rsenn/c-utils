@@ -1,0 +1,45 @@
+.TH LIBSTR_STR_TRIML 3 "2023-04-01" "libstr" "String Library"
+.SH NAME
+str_triml \- Trim leading characters from a string
+.SH SYNOPSIS
+.B #include <libstr.h>
+.B #include <libbyte.h>
+.sp
+.B char*
+.B str_triml(char* s, const char* charset, unsigned int charsetlen);
+.SH DESCRIPTION
+The
+.B str_triml
+function trims leading characters from a string. The
+.B s
+argument is a pointer to the string to be trimmed.
+The
+.B charset
+argument is a pointer to a string containing the characters to be trimmed.
+The
+.B charsetlen
+argument is the length of the charset string.
+The function returns a pointer to the trimmed string.
+.SH EXAMPLE
+The following example demonstrates how to use the
+.B str_triml
+function to trim leading characters from a string:
+.nf
+.B #include <libstr.h>
+.B #include <libbyte.h>
+.B #include <stdio.h>
+.sp
+.B int main() {
+.B   char s[] = "   hello world";
+.B   const char* charset = " ";
+.B   unsigned int charsetlen = 1;
+.B   char* trimmed = str_triml(s, charset, charsetlen);
+.B   printf("Trimmed string: %s\n", trimmed);
+.B   return 0;
+.B }
+.ne
+.fi
+.SH SEE ALSO
+.B str_init(3),
+.B str_copys(3),
+.B free(3)

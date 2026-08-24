@@ -1,0 +1,37 @@
+.TH LIBSTR_TIME_TABLE_SPD 3 "2023-04-01" "libstr" "String Library"
+.SH NAME
+time_table_spd \- Days per month table
+.SH SYNOPSIS
+.B #include <time.h>
+.sp
+.B extern const short __spm[13];
+.SH DESCRIPTION
+The
+.B __spm
+array is a table of the number of days per month in a nonleap year. The first element of the array is not used, and the remaining elements correspond to the months of the year, starting with January.
+.SH EXAMPLE
+The following example demonstrates how to use the
+.B __spm
+table to get the number of days in a month:
+.nf
+.B #include <time.h>
+.B #include <stdio.h>
+.sp
+.B int main() {
+.B   int month = 2;
+.B   int year = 2022;
+.B   int days;
+.B   if(year % 4 == 0 && (year % 100 != 0 || year % 400 == 0)) {
+.B     days = 29;
+.B   } else {
+.B     days = __spm[month + 1] - __spm[month];
+.B   }
+.B   printf("Days in month %d of year %d: %d\n", month, year, days);
+.B   return 0;
+.B }
+.ne
+.fi
+.SH SEE ALSO
+.B time.h,
+.B mktime(3),
+.B localtime(3)

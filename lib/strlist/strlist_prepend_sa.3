@@ -1,0 +1,56 @@
+.TH LIBSTRLIST_STRLIST_PREPEND_SA 3 "2023-04-01" "libstrlist" "String List Library"
+.SH NAME
+strlist_prepend_sa \- Prepend a stralloc string to a string list
+.SH SYNOPSIS
+.B #include <libstrlist.h>
+.sp
+.B int
+.B strlist_prepend_sa(strlist* sl, const stralloc* sa);
+.SH DESCRIPTION
+The
+.B strlist_prepend_sa
+function prepends a stralloc string to a string list. The
+.B sl
+argument is a pointer to a
+.B strlist
+structure representing the input string list.
+The
+.B sa
+argument is a pointer to a
+.B stralloc
+structure representing the stralloc string to prepend.
+The function returns 1 if the stralloc string was successfully prepended, or 0 if there was not enough space to allocate the new string.
+.SH EXAMPLE
+The following example demonstrates how to use the
+.B strlist_prepend_sa
+function to prepend a stralloc string to a string list:
+.nf
+.B #include <libstrlist.h>
+.B #include <stdio.h>
+.B #include <lib/stralloc.h>
+.sp
+.B int main() {
+.B   strlist sl;
+.B   stralloc sa;
+.B   stralloc_init(&sl.sa);
+.B   stralloc_init(&sa);
+.B   stralloc_copys(&sl.sa, "apple,banana,cherry,date");
+.B   stralloc_copys(&sa, "new_element");
+.B   int result = strlist_prepend_sa(&sl, &sa);
+.B   if(result)
+.B     printf("Stralloc string prepended\n");
+.B   else
+.B     printf("Not enough space to prepend stralloc string\n");
+.B   // Free the allocated memory
+.B   stralloc_free(&sl.sa);
+.B   stralloc_free(&sa);
+.B   return 0;
+.B }
+.ne
+.fi
+.SH SEE ALSO
+.B strlist_init(3),
+.B stralloc_init(3),
+.B stralloc_copys(3),
+.B stralloc_free(3),
+.B free(3)

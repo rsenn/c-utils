@@ -1,0 +1,38 @@
+.TH LIBTEXTBUF_TEXTBUF_FREE 3 "2023-04-01" "libtextbuf" "Text Buffer Library"
+.SH NAME
+textbuf_free \- Free a text buffer
+.SH SYNOPSIS
+.B #include <libtextbuf.h>
+.sp
+.B void
+.B textbuf_free(buffer* b);
+.SH DESCRIPTION
+The
+.B textbuf_free
+function frees a text buffer. The
+.B b
+argument is a pointer to the text buffer to free.
+The function does not return any value.
+.SH EXAMPLE
+The following example demonstrates how to use the
+.B textbuf_free
+function to free a text buffer:
+.nf
+.B #include <libtextbuf.h>
+.B #include <stdio.h>
+.sp
+.B int main() {
+.B   buffer b;
+.B   textbuf_create(&b);
+.B   // use buffer
+.B   textbuf_free(&b);
+.B   return 0;
+.B }
+.ne
+.fi
+.SH SEE ALSO
+.B buffer,
+.B textbuf,
+.B textbuf_create(3),
+.B textbuf_destroy(3),
+.B textbuf_free(3)

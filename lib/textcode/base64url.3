@@ -1,0 +1,69 @@
+.TH LIBTEXTCODE_BASE64URL 3 "2023-04-01" "libtextcode" "Text Encoding Library"
+.SH NAME
+base64url - Base64 URL and Filename Safe Encoding and Decoding
+.SH SYNOPSIS
+.B #include <libtextcode.h>
+.sp
+.B const char base64url[];
+.SH DESCRIPTION
+The
+.B base64url
+array contains the characters used in Base64 URL and Filename Safe encoding.
+The characters in the array are:
+.TP
+.B A-Z
+The uppercase English alphabet.
+.TP
+.B a-z
+The lowercase English alphabet.
+.TP
+.B 0-9
+The digits 0 through 9.
+.TP
+.B -
+The hyphen.
+.TP
+.B _
+The underscore.
+.TP
+.B =
+The equals sign.
+The equals sign is used to pad the encoded string to a multiple of 4 characters.
+.SH EXAMPLE
+The following example demonstrates how to use the
+.B base64url
+array to encode a string:
+.nf
+.B #include <libtextcode.h>
+.B #include <stdio.h>
+.sp
+.B int main() {
+.B   const char* str = "Hello, World!";
+.B   size_t len = strlen(str);
+.B   size_t encoded_len = ((len + 2) / 3) * 4;
+.B   char* encoded = malloc(encoded_len + 1);
+.B   if(encoded) {
+.B     for(size_t i = 0, j = 0; i < len; i += 3) {
+.B       encoded[j++] = base64url[str[i] >> 2];
+.B       encoded[j++] = base64url[((str[i] & 0x3) << 4) | (str[i + 1] >> 4)];
+.B       if(i + 1 < len) {
+.B         encoded[j++] = base64url[((str[i + 1] & 0xF) << 2) | (str[i + 2] >> 6)];
+.B         encoded[j++] = base64url[str[i + 2] & 0x3F];
+.B       } else if(i + 1 == len) {
+.B         encoded[j++] = base64url[((str[i] & 0x3) << 4)];
+.B         encoded[j++] = '=';
+.B       }
+.B     }
+.B     encoded[encoded_len] = '\0';
+.B     printf("Encoded string: %s\n", encoded);
+.B     free(encoded);
+.B   }
+.B   return 0;
+.B }
+.ne
+.fi
+.SH SEE ALSO
+.B textcode,
+.B libtextcode,
+.B textcode_encode(3),
+.B textcode_decode(3)

@@ -1,0 +1,40 @@
+.TH LIBTLS_TLS_INSTANCE_DEBUG 3 "2023-04-01" "libtls" "TLS Library"
+.SH NAME
+tls_instance_debug - Debug TLS instance
+.SH SYNOPSIS
+.B #include <libtls.h>
+.sp
+.B void
+.B tls_instance_debug(tls_instance_t* i);
+.SH DESCRIPTION
+The
+.B tls_instance_debug
+function prints debugging information about a TLS instance.
+The
+.B i
+argument is a pointer to the TLS instance.
+The function does not return a value.
+.SH EXAMPLE
+The following example demonstrates how to use the
+.B tls_instance_debug
+function to print debugging information about a TLS instance:
+.nf
+.B #include <libtls.h>
+.B #include <stdio.h>
+.sp
+.B int main() {
+.B   tls_t* tls = ...; // Assume a valid TLS instance
+.B   tls_instance_debug(tls);
+.B   return 0;
+.B }
+.ne
+.fi
+.SH SEE ALSO
+.B libtls,
+.B tls_accept(3),
+.B tls_connect(3),
+.B tls_by_fd(3),
+.B tls_close(3),
+.B tls_errno(3),
+.B tls_error(3),
+.B tls_get_fd(3)

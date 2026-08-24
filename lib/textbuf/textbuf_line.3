@@ -1,0 +1,37 @@
+.TH LIBTEXTBUF_TEXTBUF_LINE 3 "2023-04-01" "libtextbuf" "Text Buffer Library"
+.SH NAME
+textbuf_line \- Get the current line in a text buffer
+.SH SYNOPSIS
+.B #include <libtextbuf.h>
+.sp
+.B uint64
+.B textbuf_line(buffer* b);
+.SH DESCRIPTION
+The
+.B textbuf_line
+function gets the current line in a text buffer. The
+.B b
+argument is a pointer to the text buffer.
+The function returns the current line in the text buffer.
+.SH EXAMPLE
+The following example demonstrates how to use the
+.B textbuf_line
+function to get the current line in a text buffer:
+.nf
+.B #include <libtextbuf.h>
+.B #include <stdio.h>
+.sp
+.B int main() {
+.B   buffer b;
+.B   uint64 line = textbuf_line(&b);
+.B   printf("Current line in buffer: %lu\n", line);
+.B   return 0;
+.B }
+.ne
+.fi
+.SH SEE ALSO
+.B buffer,
+.B textbuf,
+.B textbuf_create(3),
+.B textbuf_destroy(3),
+.B textbuf_line_set(3)

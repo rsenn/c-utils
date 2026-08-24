@@ -1,0 +1,36 @@
+.TH LIBSTR_STR_CAMELIZE 3 "2023-04-01" "libstr" "String Library"
+.SH NAME
+str_camelize \- Convert a string to camel case
+.SH SYNOPSIS
+.B #include <libstr.h>
+.sp
+.B size_t
+.B str_camelize(char* s);
+.SH DESCRIPTION
+The
+.B str_camelize
+function converts a string to camel case. The
+.B s
+argument is a pointer to the string to be converted.
+The function returns the number of characters in the camel case string.
+.SH EXAMPLE
+The following example demonstrates how to use the
+.B str_camelize
+function to convert a string to camel case:
+.nf
+.B #include <libstr.h>
+.B #include <stdio.h>
+.sp
+.B int main() {
+.B   char s[] = "hello-world-this-is-a-string";
+.B   size_t result = str_camelize(s);
+.B   printf("Camel case string: %s\n", s);
+.B   printf("Number of characters in camel case string: %zu\n", result);
+.B   return 0;
+.B }
+.ne
+.fi
+.SH SEE ALSO
+.B str_init(3),
+.B str_copys(3),
+.B free(3)

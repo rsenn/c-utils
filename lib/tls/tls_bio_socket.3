@@ -1,0 +1,68 @@
+.TH LIBTLS_TLS_BIO_SOCKET 3 "2023-04-01" "libtls" "TLS Library"
+.SH NAME
+tls_bio_socket - BIO socket for TLS
+.SH SYNOPSIS
+.B #include <libtls.h>
+.sp
+.B BIO*
+.B tls_bio_socket(int fd);
+.SH DESCRIPTION
+The
+.B tls_bio_socket
+function returns a BIO socket for TLS.
+The
+.B fd
+argument is the file descriptor of the socket.
+The function returns a pointer to a
+.B BIO
+structure that can be used with OpenSSL's BIO API to perform TLS operations on the specified socket.
+.SH EXAMPLE
+The following example demonstrates how to use the
+.B tls_bio_socket
+function with OpenSSL's BIO API:
+.nf
+.B #include <libtls.h>
+.B #include <openssl/bio.h>
+.B #include <openssl/ssl.h>
+.B #include <stdio.h>
+.sp
+.B int main() {
+.B   int fd = 0; // Assume a valid file descriptor
+.B   BIO* bio = tls_bio_socket(fd);
+.B   if(bio == NULL) {
+.B     fprintf(stderr, "Error creating BIO\n");
+.B     return 1;
+.B   }
+
+.B   SSL_CTX* ctx = SSL_CTX_new(SSLv23_client_method());
+.B   if(ctx == NULL) {
+.B     fprintf(stderr, "Error creating SSL context\n");
+.B     BIO_free(bio);
+.B     return 1;
+.B   }
+
+.B   SSL* ssl = SSL_new(ctx);
+.B   if(ssl == NULL) {
+.B     fprintf(stderr, "Error creating SSL object\n");
+.B     SSL_CTX_free(ctx);
+.B     BIO_free(bio);
+.B     return 1;
+.B   }
+
+.B   BIO_set_ssl(bio, ssl, BIO_CLOSE);
+
+.B   // Perform TLS operations using the bio
+
+.B   SSL_free(ssl);
+.B   SSL_CTX_free(ctx);
+.B   BIO_free(bio);
+.B   return 0;
+.B }
+.ne
+.fi
+.SH SEE ALSO
+.B libtls,
+.B BIO_new(3),
+.B SSL_new(3),
+.B SSL_CTX_new(3),
+.B BIO_set_ssl(3)

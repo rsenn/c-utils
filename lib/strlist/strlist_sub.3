@@ -1,0 +1,62 @@
+.TH LIBSTRLIST_STRLIST_SUB 3 "2023-04-01" "libstrlist" "String List Library"
+.SH NAME
+strlist_sub \- Remove all occurrences of a string from a string list
+.SH SYNOPSIS
+.B #include <libstrlist.h>
+.sp
+.B int
+.B strlist_sub(strlist* l, const strlist* o);
+.SH DESCRIPTION
+The
+.B strlist_sub
+function removes all occurrences of a string from a string list. The
+.B l
+argument is a pointer to a
+.B strlist
+structure representing the input string list.
+The
+.B o
+argument is a pointer to a
+.B strlist
+structure representing the string to be removed.
+The function returns the number of occurrences of the string that were removed.
+.SH EXAMPLE
+The following example demonstrates how to use the
+.B strlist_sub
+function to remove all occurrences of a string from a string list:
+.nf
+.B #include <libstrlist.h>
+.B #include <stdio.h>
+.B #include <lib/stralloc.h>
+.sp
+.B int main() {
+.B   strlist l;
+.B   strlist o;
+.B   stralloc sa;
+.B   stralloc_init(&l.sa);
+.B   stralloc_init(&o.sa);
+.B   stralloc_copys(&l.sa, "apple,banana,cherry,date,apple");
+.B   stralloc_copys(&o.sa, "apple");
+.B   int result = strlist_sub(&l, &o);
+.B   if(result) {
+.B     printf("Removed %d occurrences of the string\n", result);
+.B   } else {
+.B     printf("No occurrences of the string found\n");
+.B   }
+.B   // Print the contents of the string list
+.B   for(size_t i = 0; i < l.len; i++) {
+.B     printf("%s\n", l.sl[i]);
+.B   }
+.B   // Free the allocated memory
+.B   stralloc_free(&l.sa);
+.B   stralloc_free(&o.sa);
+.B   return 0;
+.B }
+.ne
+.fi
+.SH SEE ALSO
+.B strlist_init(3),
+.B stralloc_init(3),
+.B stralloc_copys(3),
+.B stralloc_free(3),
+.B free(3)

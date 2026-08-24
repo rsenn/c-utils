@@ -1,0 +1,52 @@
+.TH LIBTEXTCODE_FMT_JSONESCAPE 3 "2023-04-01" "libtextcode" "Text Encoding Library"
+.SH NAME
+fmt_jsonescape - Format a string for JSON escaping
+.SH SYNOPSIS
+.B #include <libtextcode.h>
+.sp
+.B size_t
+.B fmt_jsonescape(char* dest, const char* src, size_t len);
+.SH DESCRIPTION
+The
+.B fmt_jsonescape
+function formats a string for JSON escaping. The
+.B dest
+argument is a pointer to the buffer to store the formatted string.
+The
+.B src
+argument is a pointer to the string to format.
+The
+.B len
+argument is the length of the string to format.
+The function formats the specified string for JSON escaping by replacing special characters with their escaped versions and storing the result in the specified buffer.
+The function returns the number of characters written to the buffer.
+.SH EXAMPLE
+The following example demonstrates how to use the
+.B fmt_jsonescape
+function to format a string for JSON escaping:
+.nf
+.B #include <libtextcode.h>
+.B #include <stdio.h>
+.sp
+.B int main() {
+.B   const char* str = "Hello, World!";
+.B   size_t jsonescape_len = strlen(str) * 2;
+.B   char* jsonescape = malloc(jsonescape_len + 1);
+.B   if(jsonescape) {
+.B     size_t written = fmt_jsonescape(jsonescape, str, strlen(str));
+.B     if(written != (size_t)-1) {
+.B       printf("JSON escape: %s\n", jsonescape);
+.B     } else {
+.B       printf("Error formatting string for JSON escaping\n");
+.B     }
+.B     free(jsonescape);
+.B   }
+.B   return 0;
+.B }
+.ne
+.fi
+.SH SEE ALSO
+.B textcode,
+.B libtextcode,
+.B fmt_encode(3),
+.B fmt_decode(3)

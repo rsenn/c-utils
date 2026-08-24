@@ -1,0 +1,42 @@
+.TH LIBTLS_TLS_CLOSE 3 "2023-04-01" "libtls" "TLS Library"
+.SH NAME
+tls_close - Close TLS instance
+.SH SYNOPSIS
+.B #include <libtls.h>
+.sp
+.B int
+.B tls_close(int fd);
+.SH DESCRIPTION
+The
+.B tls_close
+function closes a TLS instance.
+The
+.B fd
+argument is the file descriptor of the TLS instance.
+The function returns 0 on success, or -1 on failure with
+.B errno
+set to indicate the error.
+.SH EXAMPLE
+The following example demonstrates how to use the
+.B tls_close
+function to close a TLS instance:
+.nf
+.B #include <libtls.h>
+.B #include <stdio.h>
+.sp
+.B int main() {
+.B   int fd = 0; // Assume a valid file descriptor
+.B   if(tls_close(fd) < 0) {
+.B     fprintf(stderr, "Error closing TLS instance\n");
+.B     return 1;
+.B   }
+
+.B   return 0;
+.B }
+.ne
+.fi
+.SH SEE ALSO
+.B libtls,
+.B tls_accept(3),
+.B tls_connect(3),
+.B tls_by_fd(3)

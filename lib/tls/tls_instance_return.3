@@ -1,0 +1,55 @@
+.TH LIBTLS_TLS_INSTANCE_RETURN 3 "2023-04-01" "libtls" "TLS Library"
+.SH NAME
+tls_instance_return - Return from TLS instance operation
+.SH SYNOPSIS
+.B #include <libtls.h>
+.sp
+.B ssize_t
+.B tls_instance_return(tls_instance_t* i, tls_op_t op, int ret);
+.SH DESCRIPTION
+The
+.B tls_instance_return
+function returns from a TLS instance operation.
+The
+.B i
+argument is a pointer to the TLS instance.
+The
+.B op
+argument is the TLS operation.
+The
+.B ret
+argument is the return value of the TLS operation.
+The function returns the return value of the TLS operation.
+.SH EXAMPLE
+The following example demonstrates how to use the
+.B tls_instance_return
+function to return from a TLS instance operation:
+.nf
+.B #include <libtls.h>
+.B #include <stdio.h>
+.sp
+.B int main() {
+.B   tls_t* tls = ...; // Assume a valid TLS instance
+.B   ssize_t ret = ...; // Assume a valid return value
+.B   tls_instance_return(tls, TLS_OP_ACCEPT, ret);
+
+.B   // Use the TLS instance
+
+.B   return 0;
+.B }
+.ne
+.fi
+.SH SEE ALSO
+.B libtls,
+.B tls_accept(3),
+.B tls_connect(3),
+.B tls_by_fd(3),
+.B tls_close(3),
+.B tls_errno(3),
+.B tls_error(3),
+.B tls_get_fd(3),
+.B tls_instance_debug(3),
+.B tls_instance_errno(3),
+.B tls_instance_get(3),
+.B tls_instance_handshake(3),
+.B tls_instance_new(3)

@@ -1,0 +1,48 @@
+.TH LIBSTR_STR_ENDB 3 "2023-04-01" "libstr" "String Library"
+.SH NAME
+str_endb \- Check if a string ends with a given suffix
+.SH SYNOPSIS
+.B #include <libstr.h>
+.B #include <lib/byte.h>
+.sp
+.B int
+.B str_endb(const char* a, const char* x, size_t n);
+.SH DESCRIPTION
+The
+.B str_endb
+function checks if a string ends with a given suffix. The
+.B a
+argument is a pointer to the string to be checked.
+The
+.B x
+argument is a pointer to the suffix to be checked.
+The
+.B n
+argument is the length of the suffix to be checked.
+The function returns 1 if the string ends with the suffix, and 0 otherwise.
+.SH EXAMPLE
+The following example demonstrates how to use the
+.B str_endb
+function to check if a string ends with a given suffix:
+.nf
+.B #include <libstr.h>
+.B #include <stdio.h>
+.sp
+.B int main() {
+.B   const char* s = "hello world";
+.B   const char* suffix = "world";
+.B   size_t len = 5;
+.B   int result = str_endb(s, suffix, len);
+.B   if(result) {
+.B     printf("String ends with suffix\n");
+.B   } else {
+.B     printf("String does not end with suffix\n");
+.B   }
+.B   return 0;
+.B }
+.ne
+.fi
+.SH SEE ALSO
+.B str_init(3),
+.B str_copys(3),
+.B free(3)

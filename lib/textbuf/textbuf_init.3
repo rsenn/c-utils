@@ -1,0 +1,48 @@
+.TH LIBTEXTBUF_TEXTBUF_INIT 3 "2023-04-01" "libtextbuf" "Text Buffer Library"
+.SH NAME
+textbuf_init \- Initialize a text buffer
+.SH SYNOPSIS
+.B #include <libtextbuf.h>
+.B #include <libbyte.h>
+.sp
+.B void
+.B textbuf_init(buffer* b, buffer* src, size_t bufsize);
+.SH DESCRIPTION
+The
+.B textbuf_init
+function initializes a text buffer. The
+.B b
+argument is a pointer to the buffer to initialize.
+The
+.B src
+argument is a pointer to the source buffer.
+The
+.B bufsize
+argument is the size of the buffer.
+The function initializes the text buffer with the specified source buffer and buffer size.
+.SH EXAMPLE
+The following example demonstrates how to use the
+.B textbuf_init
+function to initialize a text buffer:
+.nf
+.B #include <libtextbuf.h>
+.B #include <libbyte.h>
+.B #include <stdio.h>
+.sp
+.B int main() {
+.B   buffer b;
+.B   buffer src;
+.B   size_t bufsize = 1024;
+.B   textbuf_init(&b, &src, bufsize);
+.B   // use buffer
+.B   textbuf_free(&b);
+.B   return 0;
+.B }
+.ne
+.fi
+.SH SEE ALSO
+.B buffer,
+.B textbuf,
+.B textbuf_create(3),
+.B textbuf_destroy(3),
+.B textbuf_init(3)

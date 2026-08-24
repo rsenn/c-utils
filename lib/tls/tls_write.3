@@ -1,0 +1,60 @@
+.TH LIBTLS_TLS_WRITE 3 "2023-04-01" "libtls" "TLS Library"
+.SH NAME
+tls_write - Write data to a TLS connection
+.SH SYNOPSIS
+.B #include <libtls.h>
+.sp
+.B ssize_t
+.B tls_write(fd_type fd, const void* data, size_t len);
+.SH DESCRIPTION
+The
+.B tls_write
+function writes data to a TLS connection.
+The function takes a
+.IR fd " ",
+a
+.IR data " ",
+and a
+.IR len " "
+as arguments.
+The function returns the number of bytes written, or -1 on error.
+.SH EXAMPLE
+The following example demonstrates how to use the
+.B tls_write
+function to write data to a TLS connection:
+.nf
+.B #include <libtls.h>
+.B #include <stdio.h>
+.sp
+.B int main() {
+.B   char data[] = "Hello, TLS!";
+.B   ssize_t bytes_written = tls_write(fd, data, sizeof(data));
+.B   if(bytes_written < 0) {
+.B     // Handle error
+.B   }
+.B   // Use bytes_written
+.B   return 0;
+.B }
+.ne
+.fi
+.SH SEE ALSO
+.B libtls,
+.B tls_accept(3),
+.B tls_connect(3),
+.B tls_by_fd(3),
+.B tls_close(3),
+.B tls_errno(3),
+.B tls_error(3),
+.B tls_get_fd(3),
+.B tls_instance_debug(3),
+.B tls_instance_errno(3),
+.B tls_instance_get(3),
+.B tls_instance_handshake(3),
+.B tls_instance_new(3),
+.B tls_instance_return(3),
+.B tls_instance_strerror(3),
+.B tls_method(3),
+.B tls_new(3),
+.B tls_read(3),
+.B tls_strerror(3),
+.B tls_want(3)

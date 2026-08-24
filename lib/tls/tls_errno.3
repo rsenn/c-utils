@@ -1,0 +1,44 @@
+.TH LIBTLS_TLS_ERRNO 3 "2023-04-01" "libtls" "TLS Library"
+.SH NAME
+tls_errno - Get TLS error number
+.SH SYNOPSIS
+.B #include <libtls.h>
+.sp
+.B int
+.B tls_errno(int fd);
+.SH DESCRIPTION
+The
+.B tls_errno
+function returns the error number associated with a TLS instance.
+The
+.B fd
+argument is the file descriptor of the TLS instance.
+The function returns the error number, or -1 if the TLS instance does not exist.
+.SH EXAMPLE
+The following example demonstrates how to use the
+.B tls_errno
+function to get the error number associated with a TLS instance:
+.nf
+.B #include <libtls.h>
+.B #include <stdio.h>
+.sp
+.B int main() {
+.B   int fd = 0; // Assume a valid file descriptor
+.B   int err = tls_errno(fd);
+.B   if(err < 0) {
+.B     fprintf(stderr, "Error getting TLS error number\n");
+.B     return 1;
+.B   }
+
+.B   // Handle the error
+
+.B   return 0;
+.B }
+.ne
+.fi
+.SH SEE ALSO
+.B libtls,
+.B tls_accept(3),
+.B tls_connect(3),
+.B tls_by_fd(3),
+.B tls_close(3)

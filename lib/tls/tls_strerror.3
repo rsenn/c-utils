@@ -1,0 +1,55 @@
+.TH LIBTLS_TLS_STRERROR 3 "2023-04-01" "libtls" "TLS Library"
+.SH NAME
+tls_strerror - Get TLS error string
+.SH SYNOPSIS
+.B #include <libtls.h>
+.sp
+.B const char*
+.B tls_strerror(fd_type fd);
+.SH DESCRIPTION
+The
+.B tls_strerror
+function gets the TLS error string.
+The function takes a
+.IR fd " "
+as an argument.
+The function returns a pointer to the TLS error string.
+.SH EXAMPLE
+The following example demonstrates how to use the
+.B tls_strerror
+function to get the TLS error string:
+.nf
+.B #include <libtls.h>
+.B #include <stdio.h>
+.sp
+.B int main() {
+.B   fd_type fd = ...;
+.B   const char* errstr = tls_strerror(fd);
+.B   if(errstr == NULL) {
+.B     // Handle error
+.B   }
+.B   // Use errstr
+.B   return 0;
+.B }
+.ne
+.fi
+.SH SEE ALSO
+.B libtls,
+.B tls_accept(3),
+.B tls_connect(3),
+.B tls_by_fd(3),
+.B tls_close(3),
+.B tls_errno(3),
+.B tls_error(3),
+.B tls_get_fd(3),
+.B tls_instance_debug(3),
+.B tls_instance_errno(3),
+.B tls_instance_get(3),
+.B tls_instance_handshake(3),
+.B tls_instance_new(3),
+.B tls_instance_return(3),
+.B tls_instance_strerror(3),
+.B tls_method(3),
+.B tls_new(3),
+.B tls_read(3),
+.B tls_strerror(3)

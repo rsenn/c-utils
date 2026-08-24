@@ -1,0 +1,37 @@
+.TH LIBTEXTBUF_TEXTBUF_COLUMN 3 "2023-04-01" "libtextbuf" "Text Buffer Library"
+.SH NAME
+textbuf_column \- Get the current column in a text buffer
+.SH SYNOPSIS
+.B #include <libtextbuf.h>
+.sp
+.B uint64
+.B textbuf_column(buffer* b);
+.SH DESCRIPTION
+The
+.B textbuf_column
+function gets the current column in a text buffer. The
+.B b
+argument is a pointer to the text buffer.
+The function returns the current column in the text buffer.
+.SH EXAMPLE
+The following example demonstrates how to use the
+.B textbuf_column
+function to get the current column in a text buffer:
+.nf
+.B #include <libtextbuf.h>
+.B #include <stdio.h>
+.sp
+.B int main() {
+.B   buffer b;
+.B   uint64 column = textbuf_column(&b);
+.B   printf("Current column in buffer: %lu\n", column);
+.B   return 0;
+.B }
+.ne
+.fi
+.SH SEE ALSO
+.B buffer,
+.B textbuf,
+.B textbuf_create(3),
+.B textbuf_destroy(3),
+.B textbuf_column_set(3)

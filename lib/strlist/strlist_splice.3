@@ -1,0 +1,67 @@
+.TH LIBSTRLIST_STRLIST_SPLICE 3 "2023-04-01" "libstrlist" "String List Library"
+.SH NAME
+strlist_splice \- Replace a portion of a string list with a new string
+.SH SYNOPSIS
+.B #include <libstrlist.h>
+.sp
+.B int
+.B strlist_splice(strlist* l, size_t pos, size_t ndelete, char* buf, size_t len);
+.SH DESCRIPTION
+The
+.B strlist_splice
+function replaces a portion of a string list with a new string. The
+.B l
+argument is a pointer to a
+.B strlist
+structure representing the input string list.
+The
+.B pos
+argument is the starting index of the portion to be replaced.
+The
+.B ndelete
+argument is the number of elements in the portion to be replaced.
+The
+.B buf
+argument is a pointer to a buffer containing the new string.
+The
+.B len
+argument is the length of the new string.
+The function returns 1 if the splice was successful, or 0 if an error occurred.
+.SH EXAMPLE
+The following example demonstrates how to use the
+.B strlist_splice
+function to replace a portion of a string list with a new string:
+.nf
+.B #include <libstrlist.h>
+.B #include <stdio.h>
+.B #include <lib/stralloc.h>
+.sp
+.B int main() {
+.B   strlist l;
+.B   stralloc sa;
+.B   stralloc_init(&l.sa);
+.B   stralloc_copys(&l.sa, "apple,banana,cherry,date");
+.B   char buf[] = "grape";
+.B   size_t len = sizeof(buf) - 1;
+.B   int result = strlist_splice(&l, 1, 1, buf, len);
+.B   if(result) {
+.B     printf("Splice successful\n");
+.B   } else {
+.B     printf("Splice failed\n");
+.B   }
+.B   // Print the contents of the string list
+.B   for(size_t i = 0; i < l.len; i++) {
+.B     printf("%s\n", l.sl[i]);
+.B   }
+.B   // Free the allocated memory
+.B   stralloc_free(&l.sa);
+.B   return 0;
+.B }
+.ne
+.fi
+.SH SEE ALSO
+.B strlist_init(3),
+.B stralloc_init(3),
+.B stralloc_copys(3),
+.B stralloc_free(3),
+.B free(3)

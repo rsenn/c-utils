@@ -1,0 +1,43 @@
+.TH LIBSTR_STR_COPYB 3 "2023-04-01" "libstr" "String Library"
+.SH NAME
+str_copyb \- Copy a string to a destination buffer with a maximum length
+.SH SYNOPSIS
+.B #include <libstr.h>
+.sp
+.B size_t
+.B str_copyb(void* p1, const void* p2, size_t max);
+.SH DESCRIPTION
+The
+.B str_copyb
+function copies a string to a destination buffer, with a maximum length. The
+.B p1
+argument is a pointer to the destination buffer.
+The
+.B p2
+argument is a pointer to the source string.
+The
+.B max
+argument is the maximum length of the destination buffer.
+The function returns the number of characters copied to the destination buffer.
+.SH EXAMPLE
+The following example demonstrates how to use the
+.B str_copyb
+function to copy a string to a destination buffer with a maximum length:
+.nf
+.B #include <libstr.h>
+.B #include <stdio.h>
+.sp
+.B int main() {
+.B   char s1[100];
+.B   const char* s2 = "hello world";
+.B   size_t result = str_copyb(s1, s2, sizeof(s1));
+.B   printf("Copied string: %s\n", s1);
+.B   printf("Number of characters copied: %zu\n", result);
+.B   return 0;
+.B }
+.ne
+.fi
+.SH SEE ALSO
+.B str_init(3),
+.B str_copys(3),
+.B free(3)

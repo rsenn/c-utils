@@ -1,0 +1,66 @@
+.TH LIBTLS_TLS_WANT 3 "2023-04-01" "libtls" "TLS Library"
+.SH NAME
+tls_want - Handle TLS want operations
+.SH SYNOPSIS
+.B #include <libtls.h>
+.sp
+.B int
+.B tls_want(fd_type fd, void (*wantread)(fd_type), void (*wantwrite)(fd_type));
+.SH DESCRIPTION
+The
+.B tls_want
+function handles TLS want operations.
+The function takes a
+.IR fd " ",
+a
+.IR wantread " ",
+and a
+.IR wantwrite " "
+as arguments.
+The function returns the TLS error code.
+.SH EXAMPLE
+The following example demonstrates how to use the
+.B tls_want
+function to handle TLS want operations:
+.nf
+.B #include <libtls.h>
+.B #include <stdio.h>
+.sp
+.B void want_read(fd_type fd) {
+.B   // Handle read
+.B }
+.B void want_write(fd_type fd) {
+.B   // Handle write
+.B }
+.B int main() {
+.B   fd_type fd = ...;
+.B   int error = tls_want(fd, want_read, want_write);
+.B   if(error != SSL_ERROR_NONE) {
+.B     // Handle error
+.B   }
+.B   // Use error
+.B   return 0;
+.B }
+.ne
+.fi
+.SH SEE ALSO
+.B libtls,
+.B tls_accept(3),
+.B tls_connect(3),
+.B tls_by_fd(3),
+.B tls_close(3),
+.B tls_errno(3),
+.B tls_error(3),
+.B tls_get_fd(3),
+.B tls_instance_debug(3),
+.B tls_instance_errno(3),
+.B tls_instance_get(3),
+.B tls_instance_handshake(3),
+.B tls_instance_new(3),
+.B tls_instance_return(3),
+.B tls_instance_strerror(3),
+.B tls_method(3),
+.B tls_new(3),
+.B tls_read(3),
+.B tls_strerror(3),
+.B tls_want(3)

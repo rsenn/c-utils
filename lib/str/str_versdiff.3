@@ -1,0 +1,47 @@
+.TH LIBSTR_STR_VERSDIFF 3 "2023-04-01" "libstr" "String Library"
+.SH NAME
+str_versdiff \- Compare two version strings
+.SH SYNOPSIS
+.B #include <libstr.h>
+.B #include <libuint64.h>
+.sp
+.B int
+.B str_versdiff(const char* s1, const char* s2);
+.SH DESCRIPTION
+The
+.B str_versdiff
+function compares two version strings. The
+.B s1
+argument is a pointer to the first version string.
+The
+.B s2
+argument is a pointer to the second version string.
+The function returns -1 if the first version string is less than the second, 0 if they are equal, and 1 if the first version string is greater than the second.
+.SH EXAMPLE
+The following example demonstrates how to use the
+.B str_versdiff
+function to compare two version strings:
+.nf
+.B #include <libstr.h>
+.B #include <libuint64.h>
+.B #include <stdio.h>
+.sp
+.B int main() {
+.B   char s1[] = "1.2.3";
+.B   char s2[] = "1.2.4";
+.B   int result = str_versdiff(s1, s2);
+.B   if(result == -1) {
+.B     printf("s1 is less than s2\n");
+.B   } else if(result == 0) {
+.B     printf("s1 is equal to s2\n");
+.B   } else {
+.B     printf("s1 is greater than s2\n");
+.B   }
+.B   return 0;
+.B }
+.ne
+.fi
+.SH SEE ALSO
+.B str_init(3),
+.B str_copys(3),
+.B free(3)

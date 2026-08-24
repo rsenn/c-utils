@@ -1,0 +1,48 @@
+.TH LIBTLS_TLS_INSTANCE_ERRNO 3 "2023-04-01" "libtls" "TLS Library"
+.SH NAME
+tls_instance_errno - Get TLS instance error number
+.SH SYNOPSIS
+.B #include <libtls.h>
+.sp
+.B int
+.B tls_instance_errno(tls_instance_t* i);
+.SH DESCRIPTION
+The
+.B tls_instance_errno
+function returns the error number associated with a TLS instance.
+The
+.B i
+argument is a pointer to the TLS instance.
+The function returns the error number, or 0 if there is no error.
+.SH EXAMPLE
+The following example demonstrates how to use the
+.B tls_instance_errno
+function to get the error number associated with a TLS instance:
+.nf
+.B #include <libtls.h>
+.B #include <stdio.h>
+.sp
+.B int main() {
+.B   tls_t* tls = ...; // Assume a valid TLS instance
+.B   int err = tls_instance_errno(tls);
+.B   if(err != 0) {
+.B     fprintf(stderr, "Error getting TLS instance error number\n");
+.B     return 1;
+.B   }
+
+.B   // Handle the error
+
+.B   return 0;
+.B }
+.ne
+.fi
+.SH SEE ALSO
+.B libtls,
+.B tls_accept(3),
+.B tls_connect(3),
+.B tls_by_fd(3),
+.B tls_close(3),
+.B tls_errno(3),
+.B tls_error(3),
+.B tls_get_fd(3),
+.B tls_instance_debug(3)

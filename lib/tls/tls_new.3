@@ -1,0 +1,58 @@
+.TH LIBTLS_TLS_NEW 3 "2023-04-01" "libtls" "TLS Library"
+.SH NAME
+tls_new - Create a new TLS instance
+.SH SYNOPSIS
+.B #include <libtls.h>
+.sp
+.B tls_t*
+.B tls_new(tls_ctx_t* ctx, fd_type fd);
+.B tls_t*
+.B tls_client(fd_type fd);
+.B tls_t*
+.B tls_server(fd_type fd);
+.SH DESCRIPTION
+The
+.B tls_new
+function creates a new TLS instance.
+The function takes a
+.IR ctx " "
+and a
+.IR fd " "
+as arguments.
+The function returns a pointer to the new TLS instance.
+.SH EXAMPLE
+The following example demonstrates how to use the
+.B tls_new
+function to create a new TLS instance:
+.nf
+.B #include <libtls.h>
+.B #include <stdio.h>
+.sp
+.B int main() {
+.B   tls_t* tls = tls_new(tls_client_ctx, fd);
+.B   if(tls == NULL) {
+.B     // Handle error
+.B   }
+.B   // Use tls
+.B   return 0;
+.B }
+.ne
+.fi
+.SH SEE ALSO
+.B libtls,
+.B tls_accept(3),
+.B tls_connect(3),
+.B tls_by_fd(3),
+.B tls_close(3),
+.B tls_errno(3),
+.B tls_error(3),
+.B tls_get_fd(3),
+.B tls_instance_debug(3),
+.B tls_instance_errno(3),
+.B tls_instance_get(3),
+.B tls_instance_handshake(3),
+.B tls_instance_new(3),
+.B tls_instance_return(3),
+.B tls_instance_strerror(3),
+.B tls_method(3),
+.B tls_new(3)

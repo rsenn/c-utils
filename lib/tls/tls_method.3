@@ -1,0 +1,46 @@
+.TH LIBTLS_TLS_METHOD 3 "2023-04-01" "libtls" "TLS Library"
+.SH NAME
+tls_method - Get TLS method
+.SH SYNOPSIS
+.B #include <libtls.h>
+.sp
+.B const BIO_METHOD*
+.B tls_method(void);
+.SH DESCRIPTION
+The
+.B tls_method
+function gets the TLS method.
+The function returns the TLS method.
+.SH EXAMPLE
+The following example demonstrates how to use the
+.B tls_method
+function to get the TLS method:
+.nf
+.B #include <libtls.h>
+.B #include <stdio.h>
+.sp
+.B int main() {
+.B   const BIO_METHOD* method = tls_method();
+
+.B   // Use the method
+
+.B   return 0;
+.B }
+.ne
+.fi
+.SH SEE ALSO
+.B libtls,
+.B tls_accept(3),
+.B tls_connect(3),
+.B tls_by_fd(3),
+.B tls_close(3),
+.B tls_errno(3),
+.B tls_error(3),
+.B tls_get_fd(3),
+.B tls_instance_debug(3),
+.B tls_instance_errno(3),
+.B tls_instance_get(3),
+.B tls_instance_handshake(3),
+.B tls_instance_new(3),
+.B tls_instance_return(3),
+.B tls_instance_strerror(3)

@@ -1,0 +1,49 @@
+.TH LIBTEXTBUF_TEXTBUF_READ 3 "2023-04-01" "libtextbuf" "Text Buffer Library"
+.SH NAME
+textbuf_read \- Read from a text buffer
+.SH SYNOPSIS
+.B #include <libtextbuf.h>
+.sp
+.B ssize_t
+.B textbuf_read(fd_type fd, char* x, size_t n, void* buf);
+.SH DESCRIPTION
+The
+.B textbuf_read
+function reads from a text buffer. The
+.B fd
+argument is the file descriptor to read from.
+The
+.B x
+argument is a pointer to the buffer to read into.
+The
+.B n
+argument is the number of bytes to read.
+The
+.B buf
+argument is a pointer to the text buffer to read from.
+The function reads from the specified text buffer into the specified buffer.
+The function returns the number of bytes read.
+.SH EXAMPLE
+The following example demonstrates how to use the
+.B textbuf_read
+function to read from a text buffer:
+.nf
+.B #include <libtextbuf.h>
+.B #include <stdio.h>
+.sp
+.B int main() {
+.B   buffer b;
+.B   buffer_init(&b, 0, NULL, 0);
+.B   textbuf_init(&b, &b, 1024);
+.B   // read from buffer
+.B   textbuf_free(&b);
+.B   return 0;
+.B }
+.ne
+.fi
+.SH SEE ALSO
+.B buffer,
+.B textbuf,
+.B textbuf_create(3),
+.B textbuf_destroy(3),
+.B textbuf_read(3)

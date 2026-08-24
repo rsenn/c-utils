@@ -1,0 +1,40 @@
+.TH LIBTEXTBUF_IS_TEXTBUF 3 "2023-04-01" "libtextbuf" "Text Buffer Library"
+.SH NAME
+is_textbuf \- Check if a buffer is a text buffer
+.SH SYNOPSIS
+.B #include <libtextbuf.h>
+.sp
+.B textbuf*
+.B is_textbuf(buffer* b);
+.SH DESCRIPTION
+The
+.B is_textbuf
+function checks if a buffer is a text buffer. The
+.B b
+argument is a pointer to the buffer to check.
+The function returns a pointer to the text buffer if it is a text buffer, or 0 otherwise.
+.SH EXAMPLE
+The following example demonstrates how to use the
+.B is_textbuf
+function to check if a buffer is a text buffer:
+.nf
+.B #include <libtextbuf.h>
+.B #include <stdio.h>
+.sp
+.B int main() {
+.B   buffer b;
+.B   textbuf* tb = is_textbuf(&b);
+.B   if(tb) {
+.B     printf("Buffer is a text buffer\n");
+.B   } else {
+.B     printf("Buffer is not a text buffer\n");
+.B   }
+.B   return 0;
+.B }
+.ne
+.fi
+.SH SEE ALSO
+.B buffer,
+.B textbuf,
+.B textbuf_create(3),
+.B textbuf_destroy(3)

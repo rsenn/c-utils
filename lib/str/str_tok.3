@@ -1,0 +1,45 @@
+.TH LIBSTR_STR_TOK 3 "2023-04-01" "libstr" "String Library"
+.SH NAME
+str_tok \- Tokenize a string
+.SH SYNOPSIS
+.B #include <libstr.h>
+.sp
+.B char*
+.B str_tok(char* s, const char* delims, char** ptrptr);
+.SH DESCRIPTION
+The
+.B str_tok
+function tokenizes a string. The
+.B s
+argument is a pointer to the string to be tokenized.
+The
+.B delims
+argument is a pointer to a string containing the delimiter characters.
+The
+.B ptrptr
+argument is a pointer to a pointer that will be updated with the position of the next token.
+The function returns a pointer to the next token, or NULL if there are no more tokens.
+.SH EXAMPLE
+The following example demonstrates how to use the
+.B str_tok
+function to tokenize a string:
+.nf
+.B #include <libstr.h>
+.B #include <stdio.h>
+.sp
+.B int main() {
+.B   char s[] = "hello,world,universe";
+.B   const char* delims = ",";
+.B   char* tok;
+.B   char* ptrptr = s;
+.B   while((tok = str_tok(ptrptr, delims, &ptrptr)) != NULL) {
+.B     printf("Token: %s\n", tok);
+.B   }
+.B   return 0;
+.B }
+.ne
+.fi
+.SH SEE ALSO
+.B str_init(3),
+.B str_copys(3),
+.B free(3)

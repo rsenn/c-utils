@@ -1,0 +1,34 @@
+.TH LIBSTR_STR_LOWER 3 "2023-04-01" "libstr" "String Library"
+.SH NAME
+str_lower \- Convert a string to lowercase
+.SH SYNOPSIS
+.B #include <libstr.h>
+.sp
+.B void
+.B str_lower(void* str);
+.SH DESCRIPTION
+The
+.B str_lower
+function converts a string to lowercase. The
+.B str
+argument is a pointer to the string to be converted.
+.SH EXAMPLE
+The following example demonstrates how to use the
+.B str_lower
+function to convert a string to lowercase:
+.nf
+.B #include <libstr.h>
+.B #include <stdio.h>
+.sp
+.B int main() {
+.B   char s[] = "HELLO WORLD";
+.B   str_lower(s);
+.B   printf("Lowercase string: %s\n", s);
+.B   return 0;
+.B }
+.ne
+.fi
+.SH SEE ALSO
+.B str_init(3),
+.B str_copys(3),
+.B free(3)

@@ -1,0 +1,43 @@
+.TH LIBSTR_STR_RFINDB 3 "2023-04-01" "libstr" "String Library"
+.SH NAME
+str_rfind \- Find the last occurrence of a substring within a string
+.SH SYNOPSIS
+.B #include <libstr.h>
+.sp
+.B size_t
+.B str_rfind(const void* s, const void* what);
+.SH DESCRIPTION
+The
+.B str_rfind
+function finds the last occurrence of a substring within a string. The
+.B s
+argument is a pointer to the string to be searched.
+The
+.B what
+argument is a pointer to the substring to be searched for.
+The function returns the starting index of the last occurrence of the substring within the string, or the length of the string if the substring is not found.
+.SH EXAMPLE
+The following example demonstrates how to use the
+.B str_rfind
+function to find the last occurrence of a substring within a string:
+.nf
+.B #include <libstr.h>
+.B #include <stdio.h>
+.sp
+.B int main() {
+.B   const char* s = "hello world, hello universe";
+.B   const char* substring = "hello";
+.B   size_t result = str_rfind(s, substring);
+.B   if(result < str_len(s)) {
+.B     printf("Substring found at index: %zu\n", result);
+.B   } else {
+.B     printf("Substring not found\n");
+.B   }
+.B   return 0;
+.B }
+.ne
+.fi
+.SH SEE ALSO
+.B str_init(3),
+.B str_copys(3),
+.B free(3)

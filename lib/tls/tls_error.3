@@ -1,0 +1,47 @@
+.TH LIBTLS_TLS_ERROR 3 "2023-04-01" "libtls" "TLS Library"
+.SH NAME
+tls_error - Get TLS error
+.SH SYNOPSIS
+.B #include <libtls.h>
+.sp
+.B tls_err_t
+.B tls_error(int fd);
+.SH DESCRIPTION
+The
+.B tls_error
+function returns the error associated with a TLS instance.
+The
+.B fd
+argument is the file descriptor of the TLS instance.
+The function returns the error, or
+.B TLS_OK
+if there is no error.
+.SH EXAMPLE
+The following example demonstrates how to use the
+.B tls_error
+function to get the error associated with a TLS instance:
+.nf
+.B #include <libtls.h>
+.B #include <stdio.h>
+.sp
+.B int main() {
+.B   int fd = 0; // Assume a valid file descriptor
+.B   tls_err_t err = tls_error(fd);
+.B   if(err != TLS_OK) {
+.B     fprintf(stderr, "Error getting TLS error\n");
+.B     return 1;
+.B   }
+
+.B   // Handle the error
+
+.B   return 0;
+.B }
+.ne
+.fi
+.SH SEE ALSO
+.B libtls,
+.B tls_accept(3),
+.B tls_connect(3),
+.B tls_by_fd(3),
+.B tls_close(3),
+.B tls_errno(3)

@@ -1,0 +1,46 @@
+.TH LIBSTR_STR_STARTB 3 "2023-04-01" "libstr" "String Library"
+.SH NAME
+str_startb \- Check if a string starts with a given substring
+.SH SYNOPSIS
+.B #include <libstr.h>
+.sp
+.B int
+.B str_startb(const char* a, const char* x, size_t len);
+.SH DESCRIPTION
+The
+.B str_startb
+function checks if a string starts with a given substring. The
+.B a
+argument is a pointer to the string to be checked.
+The
+.B x
+argument is a pointer to the substring to be searched for.
+The
+.B len
+argument is the length of the substring to be searched for.
+The function returns 1 if the string starts with the substring, and 0 otherwise.
+.SH EXAMPLE
+The following example demonstrates how to use the
+.B str_startb
+function to check if a string starts with a given substring:
+.nf
+.B #include <libstr.h>
+.B #include <stdio.h>
+.sp
+.B int main() {
+.B   const char* s = "hello world";
+.B   const char* substring = "hello";
+.B   size_t len = 5;
+.B   if(str_startb(s, substring, len)) {
+.B     printf("String starts with substring\n");
+.B   } else {
+.B     printf("String does not start with substring\n");
+.B   }
+.B   return 0;
+.B }
+.ne
+.fi
+.SH SEE ALSO
+.B str_init(3),
+.B str_copys(3),
+.B free(3)

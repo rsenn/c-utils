@@ -1,0 +1,49 @@
+.TH LIBTLS_TLS_INSTANCE_GET 3 "2023-04-01" "libtls" "TLS Library"
+.SH NAME
+tls_instance_get - Get TLS instance
+.SH SYNOPSIS
+.B #include <libtls.h>
+.sp
+.B tls_instance_t*
+.B tls_instance_get(int fd);
+.SH DESCRIPTION
+The
+.B tls_instance_get
+function returns a pointer to the TLS instance associated with a file descriptor.
+The
+.B fd
+argument is the file descriptor.
+The function returns a pointer to the TLS instance, or 0 if the file descriptor is not associated with a TLS instance.
+.SH EXAMPLE
+The following example demonstrates how to use the
+.B tls_instance_get
+function to get a pointer to the TLS instance associated with a file descriptor:
+.nf
+.B #include <libtls.h>
+.B #include <stdio.h>
+.sp
+.B int main() {
+.B   int fd = ...; // Assume a valid file descriptor
+.B   tls_instance_t* inst = tls_instance_get(fd);
+.B   if(inst == 0) {
+.B     fprintf(stderr, "Error getting TLS instance\n");
+.B     return 1;
+.B   }
+
+.B   // Use the TLS instance
+
+.B   return 0;
+.B }
+.ne
+.fi
+.SH SEE ALSO
+.B libtls,
+.B tls_accept(3),
+.B tls_connect(3),
+.B tls_by_fd(3),
+.B tls_close(3),
+.B tls_errno(3),
+.B tls_error(3),
+.B tls_get_fd(3),
+.B tls_instance_debug(3),
+.B tls_instance_errno(3)
