@@ -69,12 +69,14 @@ gm_skip() {
 # useful to quote (bad arguments to gm_run_case itself, not something
 # genmakefile or a build tool did).
 gm_fail_simple() {
-  GM_FAIL=$((GM_FAIL + 1))
-  printf 'FAIL    %s -- %s\n' "$1" "$2"
-  GM_REPORT="$GM_REPORT
-## $1
+  local name=$1 message=$2
 
-- result: $2
+  GM_FAIL=$((GM_FAIL + 1))
+  printf 'FAIL    %s -- %s\n' "$name" "$message"
+  GM_REPORT="$GM_REPORT
+## $name
+
+- result: $message
 "
 }
 
@@ -104,8 +106,7 @@ gm_fence_lang() {
 # "subcommand" if the build tool ran fine but a command it invoked
 # (the compiler/archiver/linker) failed on its own terms.
 gm_classify_build_failure() {
-  logfile=$1
-  make_type=$2
+  local logfile=$1 make_type=$2
 
   case "$make_type" in
     ninja)
@@ -150,11 +151,8 @@ gm_build_cmd_str() {
 # records a failure of the genmakefile invocation itself (the
 # generator, not the build tool it produces a file for).
 gm_report_generate_failure() {
-  name=$1
-  status=$2
-  cmd=$3
-  logfile=$4
-  note=${5:-}
+  local name=$1 status=$2 cmd=$3 logfile=$4 note=${5:-}
+  local msg
 
   GM_FAIL=$((GM_FAIL + 1))
   msg="genmakefile exited $status"
@@ -179,15 +177,9 @@ $(gm_tail "$logfile")
 # the file genmakefile produced. When FAILKIND is "buildtool", the
 # generated file's full contents are quoted too.
 gm_report_build_failure() {
-  name=$1
-  status=$2
-  failkind=$3
-  gencmd=$4
-  builddir=$5
-  buildcmd=$6
-  logfile=$7
-  genfile=$8
-  genfile_name=$9
+  local name=$1 status=$2 failkind=$3 gencmd=$4 builddir=$5
+  local buildcmd=$6 logfile=$7 genfile=$8 genfile_name=$9
+  local label
 
   GM_FAIL=$((GM_FAIL + 1))
 
@@ -359,8 +351,7 @@ EOF
 # gm_dirs_for_partition PARTITION BASEDIR
 # sets GM_WORKDIR, GM_BUILDDIR, GM_OUTDIR (paths under BASEDIR).
 gm_dirs_for_partition() {
-  partition=$1
-  base=$2
+  local partition=$1 base=$2
 
   case "$partition" in
     all-same)
@@ -408,13 +399,20 @@ gm_outfile_name() {
   esac
 }
 
-# gm_run_build MAKE_TYPE DIR OUTFILE -- invoke the build tool that
-# corresponds to MAKE_TYPE against DIR/OUTFILE. Echoes nothing; returns
-# the build tool's exit status (127 if the tool itself isn't installed).
+# gm_run_build MAKE_TYPE DIR OUTFILE [BINDIR] -- invoke the build tool
+# that corresponds to MAKE_TYPE against DIR/OUTFILE, with BINDIR (if
+# given) prepended to PATH so a compiler that only lives under a
+# versioned /opt install is reachable by the commands the generated
+# file runs. Echoes nothing; returns the build tool's exit status (127
+# if the build tool itself isn't installed).
 gm_run_build() (
   make_type=$1
   dir=$2
   outfile=$3
+  bindir=${4:-}
+
+  [ -n "$bindir" ] && PATH="$bindir:$PATH"
+  export PATH
 
   cd "$dir" || return 1
 
@@ -441,40 +439,68 @@ gm_run_build() (
   esac
 )
 
-# --- toolchain availability ---------------------------------------------
+# --- toolchain discovery -------------------------------------------------
+#
+# sdcc/xc8/xc8-cc are typically installed as several parallel versions
+# under /opt, none of them on PATH by default. Rather than assume one
+# is already reachable, glob for every install found and run the
+# matrix once per instance found -- so the testsuite output is driven
+# by what's actually installed on this machine, not a fixed list of
+# compiler-types.
 
-# gm_compiler_available COMPILER -- 0 if the underlying compiler binary
-# for -t COMPILER is on PATH.
-gm_compiler_available() {
-  case "$1" in
-    gcc) command -v gcc >/dev/null 2>&1 ;;
-    sdcc) command -v sdcc >/dev/null 2>&1 ;;
-    xc8) command -v sdcc >/dev/null 2>&1 || command -v xc8-cc >/dev/null 2>&1 ;;
-    *) command -v "$1" >/dev/null 2>&1 ;;
-  esac
+# gm_discover_compilers -- prints one "label:compilertype:kind:bindir"
+# record per usable compiler found, one per line.
+#   label        unique id for the test case name (embeds the version)
+#   compilertype the -t value to pass to genmakefile
+#   kind         host | pic -- which mock_tree_* to use
+#   bindir       directory to prepend to PATH for this instance ("" for
+#                gcc, which is expected to already be on PATH)
+gm_discover_compilers() {
+  local f bindir label ver
+
+  if command -v gcc >/dev/null 2>&1; then
+    echo "gcc:gcc:host:"
+  fi
+
+  for f in /opt/sdcc*/bin/sdcc; do
+    [ -x "$f" ] || continue
+    bindir=$(dirname "$f")
+    label=$(basename "$(dirname "$bindir")")
+    echo "$label:sdcc:pic:$bindir"
+  done
+
+  for f in /opt/microchip/xc8/v*.*/bin/xc8; do
+    [ -x "$f" ] || continue
+    bindir=$(dirname "$f")
+    ver=$(basename "$(dirname "$bindir")")
+    echo "xc8-$ver:xc8:pic:$bindir"
+  done
+
+  for f in /opt/microchip/xc8/v*.*/bin/xc8-cc; do
+    [ -x "$f" ] || continue
+    bindir=$(dirname "$f")
+    ver=$(basename "$(dirname "$bindir")")
+    echo "xc8cc-$ver:xc8-cc:pic:$bindir"
+  done
 }
 
 # --- the actual per-case driver -----------------------------------------
 
-# gm_run_case NAME KIND COMPILER MAKE_TYPE PARTITION [EXTRA_GENMAKEFILE_ARGS...]
+# gm_run_case NAME KIND COMPILER BINDIR MAKE_TYPE PARTITION [EXTRA_GENMAKEFILE_ARGS...]
 #   NAME       short id for the test log
 #   KIND       host | pic  -- which mock_tree_* to use
 #   COMPILER   -t value (gcc, sdcc, xc8, ...)
+#   BINDIR     directory holding the COMPILER binary, prepended to PATH
+#              for the build-tool run ("" to leave PATH as inherited)
 #   MAKE_TYPE  make | gmake | ninja | shell
 #   PARTITION  one of $GM_PARTITIONS
 gm_run_case() {
-  name=$1
-  kind=$2
-  compiler=$3
-  make_type=$4
-  partition=$5
-  shift 5
+  local name=$1 kind=$2 compiler=$3 bindir=$4 make_type=$5 partition=$6
+  local extra_args caseroot srcroot outfile_name outfile_rel
+  local genmakefile_log build_log genmakefile_cmd gm_status
+  local build_dir build_cmd build_status failkind
+  shift 6
   extra_args=$*
-
-  if ! gm_compiler_available "$compiler"; then
-    gm_skip "$name" "compiler for -t $compiler not found on PATH"
-    return
-  fi
 
   case "$make_type" in
     gmake) command -v gmake >/dev/null 2>&1 || { gm_skip "$name" "gmake not on PATH"; return; } ;;
@@ -539,8 +565,9 @@ gm_run_case() {
 
   build_dir="$srcroot/$GM_WORKDIR"
   build_cmd=$(gm_build_cmd_str "$make_type" "$outfile_name")
+  [ -n "$bindir" ] && build_cmd="PATH=\"$bindir:\$PATH\" $build_cmd"
 
-  gm_run_build "$make_type" "$build_dir" "$outfile_name" >"$build_log" 2>&1
+  gm_run_build "$make_type" "$build_dir" "$outfile_name" "$bindir" >"$build_log" 2>&1
   build_status=$?
 
   if [ "$build_status" -eq 127 ]; then
