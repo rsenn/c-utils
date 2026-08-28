@@ -210,3 +210,13 @@
   option parsing, regardless of whether `-w` already set it. Either `-w`
   is dead when combined with `-o` (the common case), or the intent was
   `if(dirs.work.sa.len == 0)` before falling back to `-o`'s dirname.
+
+- genmakefile-shell-backend-flaky: `tests/genmakefile/testsuite.sh --all`
+  gives a different set of pass/fail results for `-m shell` cases on
+  every run, with an unchanged `genmakefile` binary and unchanged mock
+  source tree -- e.g. two back-to-back runs each had ~20 shell-mode
+  cases flip between pass and fail, while `make`/`gmake`/`ninja` cases
+  for the same compilers stayed identical across both runs. Points at a
+  race or an ordering assumption in the generated `build.sh` (or in how
+  `gm_run_build`/`sh -x` executes it) rather than anything
+  compiler/toolchain-specific. Not investigated yet.

@@ -2429,17 +2429,25 @@ main(int argc, char* argv[]) {
   }
 
   if(str_start(tools.make, "g")) {
-    stralloc builddir;
+    stralloc builddir, workabs;
+
+    /* dirs.build.sa was made absolute above (path_absolute_sa), but
+     * dirs.work.sa never is -- path_relative_to() needs both sides
+     * absolute to produce a sane result, so resolve a throwaway
+     * absolute copy of dirs.work.sa here (same trick path_output2()
+     * uses for the same reason). */
+    stralloc_init(&workabs);
+    path_absolute(dirs.work.sa.s, &workabs);
 
     stralloc_init(&builddir);
-    path_relative_to(dirs.build.sa.s, dirs.work.sa.s, &builddir);
+    path_relative_to_sa(&dirs.build.sa, &workabs, &builddir);
     stralloc_nul(&builddir);
 
-    if(!stralloc_endc(&dirs.work.sa, PATHSEP_C))
-      stralloc_catc(&dirs.work.sa, PATHSEP_C);
-    var_set(builddir_varname, dirs.work.sa.s);
-    stralloc_copys(&dirs.build.sa, "$(BUILDDIR)");
+    if(!stralloc_endc(&builddir, PATHSEP_C))
+      stralloc_catc(&builddir, PATHSEP_C);
+    var_set(builddir_varname, builddir.s);
     stralloc_free(&builddir);
+    stralloc_free(&workabs);
   }
 
   if(((build_tool == TOOL_BATCH || build_tool == TOOL_SHELL) && stralloc_equals(&dirs.work.sa, ".")))
