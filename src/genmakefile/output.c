@@ -342,10 +342,13 @@ output_ninja_target(buffer* b, target* rule, char psa) {
 
   if(rule_is_compile(rule) || rule->recipe.s == commands.compile.s)
     rule_name = "cc";
+  else if(str_end(rule->name, exts.lib) || rule->recipe.s == commands.lib.s)
+    /* checked ahead of rule_is_link(): a plain program's link rule can
+     * also have only-object prereqs, which rule_is_lib()'s fallback
+     * heuristic (no extension check) would also match */
+    rule_name = "lib";
   else if(rule_is_link(rule) || rule->recipe.s == commands.link.s)
     rule_name = "link";
-  else if(rule_is_lib(rule) || stralloc_equal(&rule->recipe, &commands.lib))
-    rule_name = "lib";
 
   if(rule_name) {
     stralloc path;
