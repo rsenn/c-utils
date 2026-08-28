@@ -210,16 +210,3 @@
   option parsing, regardless of whether `-w` already set it. Either `-w`
   is dead when combined with `-o` (the common case), or the intent was
   `if(dirs.work.sa.len == 0)` before falling back to `-o`'s dirname.
-
-- genmakefile-xc8-invokes-sdcc-with-incompatible-flags: `-t xc8` (and
-  `-t picc`) makes genmakefile call `var_set("CC", "sdcc")` and emit
-  XC8-style flags (`--mode=pro`, `--opt=default,+asm,...`, `--pass1`,
-  `-ofoo.p1`, `--output=-elf,+mcof`, ...). Run against this system's
-  actual `sdcc` (4.3.0) and `xc8-cc` (Microchip XC8 v4.00, also on PATH),
-  every one of those flags is rejected as unrecognized, and the pass1
-  `.p1` intermediate files produced aren't files sdcc itself knows how to
-  consume ("don't know what to do with file 'foo.p1'"), so the link step
-  always fails. Unclear whether this compiler-type is meant to shell out
-  to the real `xc8-cc` binary instead, or whether the XC8-style flags
-  target an sdcc version/fork that actually understands them. Found via
-  `tests/genmakefile/testsuite.sh` -- every `-t xc8` case currently fails.

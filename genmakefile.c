@@ -1264,10 +1264,43 @@ set_compiler_type(const char* compiler) {
     stralloc_copys(&commands.link,
                    "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(LDFLAGS) $(EXTRA_LDFLAGS) -o$@ "
                    "$^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
+  } else if(str_start(compiler, "xc8-cc")) {
+    /* modern (v2.00+), LLVM-based XC8 driver -- gcc-like CLI, entirely
+     * different from the legacy (v1.x, HI-TECH-derived) "xc8"/"picc"
+     * compiler-type below, which "xc8-cc" would otherwise also match
+     * via str_start(compiler, "xc8"), hence this branch comes first. */
+    var_unset("CXX");
+    var_set("CC", "xc8-cc");
+    var_set("LIB", "xc8-ar");
+    cfg.mach.arch = PIC;
+    exts.bin = ".elf";
+    exts.obj = ".o";
+    exts.lib = ".a";
+
+    if(cfg.chip.len == 0)
+      stralloc_copys(&cfg.chip, "16f876a");
+
+    var_push("CFLAGS", "-mcpu=$(CHIP)");
+
+    if(cfg.build_type == BUILD_TYPE_MINSIZEREL)
+      var_push("CFLAGS", "-Os");
+    else if(cfg.build_type != BUILD_TYPE_DEBUG)
+      var_push("CFLAGS", "-O2");
+
+    if(cfg.build_type == BUILD_TYPE_DEBUG || cfg.build_type == BUILD_TYPE_RELWITHDEBINFO)
+      var_push("CFLAGS", "-gdwarf-3");
+
+    var_push("CPPFLAGS", "-D__$(CHIP)=1");
+
+    set_command(&commands.lib, "$(LIB) rcs $@", "$^");
+    stralloc_copys(&commands.compile, "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) $(DEFS) -c $< -o $@");
+    stralloc_copys(&commands.link,
+                   "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(LDFLAGS) $(EXTRA_LDFLAGS) -o "
+                   "$@ $^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
   } else if(str_start(compiler, "xc8") || str_start(compiler, "picc")) {
     // no_libs = 1;
     var_unset("CXX");
-    var_set("CC", "sdcc");
+    var_set("CC", "xc8");
     var_set("LINK", "mplink");
     var_set("LIB", "mplib");
     cfg.mach.arch = PIC;
@@ -1920,7 +1953,7 @@ main(int argc, char* argv[]) {
       stralloc_copyb(&tok, s, n);
       stralloc_nul(&tok);
 
-      if(is_compiler(tok.s)) {
+      if(!tools.compiler && is_compiler(tok.s)) {
         tools.compiler = (char*)s;
         break;
       }
