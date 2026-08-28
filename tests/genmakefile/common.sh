@@ -47,6 +47,9 @@ GM_PASS=0
 GM_FAIL=0
 GM_SKIP=0
 GM_FAILED_NAMES=""
+# one "name:logpath" record per failure (logpath may be empty), used by
+# gm_summary to print every failed case's full log at the end.
+GM_FAILED_LOGS=""
 
 gm_info() { printf '  %s\n' "$*" >&2; }
 
@@ -55,11 +58,18 @@ gm_pass() {
   printf 'ok      %s\n' "$1"
 }
 
+# gm_fail NAME MESSAGE [LOGFILE...] -- LOGFILE(s), if given, are
+# concatenated into the combined failure report gm_summary prints.
 gm_fail() {
+  name=$1
+  message=$2
+  shift 2
   GM_FAIL=$((GM_FAIL + 1))
   GM_FAILED_NAMES="$GM_FAILED_NAMES
-$1 -- $2"
-  printf 'FAIL    %s -- %s\n' "$1" "$2"
+$name -- $message"
+  GM_FAILED_LOGS="$GM_FAILED_LOGS
+$name:$*"
+  printf 'FAIL    %s -- %s\n' "$name" "$message"
 }
 
 gm_skip() {
@@ -70,11 +80,31 @@ gm_skip() {
 gm_summary() {
   echo
   echo "genmakefile testsuite: $GM_PASS passed, $GM_FAIL failed, $GM_SKIP skipped"
+
   if [ "$GM_FAIL" -gt 0 ]; then
     echo "failed cases:"
     printf '%s\n' "$GM_FAILED_NAMES" | sed '/^$/d; s/^/  - /'
+
+    echo
+    echo "=== combined logs for failed cases ==="
+    while IFS=: read -r case_name logfiles; do
+      [ -z "$case_name" ] && continue
+      for logfile in $logfiles; do
+        echo
+        echo "----- $case_name: $logfile -----"
+        if [ -f "$logfile" ]; then
+          cat "$logfile"
+        else
+          echo "(no log file)"
+        fi
+      done
+    done <<EOF
+$GM_FAILED_LOGS
+EOF
+
     return 1
   fi
+
   return 0
 }
 
@@ -348,7 +378,11 @@ gm_run_case() {
   # (see the note in gm_dirs_for_partition), so place it under $GM_WORKDIR
   outfile_rel="$GM_WORKDIR/$outfile_name"
 
+  genmakefile_log="$caseroot.genmakefile.log"
+  build_log="$caseroot.build.log"
+
   (
+    set -x
     cd "$srcroot" || exit 1
     mkdir -p "$GM_WORKDIR" "$GM_BUILDDIR" "$GM_OUTDIR"
 
@@ -361,20 +395,23 @@ gm_run_case() {
       -d "$GM_BUILDDIR" -O "$GM_OUTDIR" \
       -o "$outfile_rel" \
       $extra_args
-  ) >"$caseroot.genmakefile.log" 2>&1
+  ) >"$genmakefile_log" 2>&1
   gm_status=$?
 
   if [ "$gm_status" -ne 0 ]; then
-    gm_fail "$name" "genmakefile exited $gm_status (see $caseroot.genmakefile.log)"
+    gm_fail "$name" "genmakefile exited $gm_status" "$genmakefile_log"
     return
   fi
 
   if [ ! -f "$srcroot/$outfile_rel" ]; then
-    gm_fail "$name" "genmakefile did not write $outfile_rel"
+    gm_fail "$name" "genmakefile did not write $outfile_rel" "$genmakefile_log"
     return
   fi
 
-  gm_run_build "$make_type" "$srcroot/$GM_WORKDIR" "$outfile_name" >"$caseroot.build.log" 2>&1
+  (
+    set -x
+    gm_run_build "$make_type" "$srcroot/$GM_WORKDIR" "$outfile_name"
+  ) >"$build_log" 2>&1
   build_status=$?
 
   if [ "$build_status" -eq 127 ]; then
@@ -383,7 +420,7 @@ gm_run_case() {
   fi
 
   if [ "$build_status" -ne 0 ]; then
-    gm_fail "$name" "$make_type build exited $build_status (see $caseroot.build.log)"
+    gm_fail "$name" "$make_type build exited $build_status" "$genmakefile_log" "$build_log"
     return
   fi
 
