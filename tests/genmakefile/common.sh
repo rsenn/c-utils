@@ -50,6 +50,12 @@ GM_SKIP=0
 # gm_report_generate_failure / gm_report_build_failure and dumped
 # verbatim by gm_summary.
 GM_REPORT=""
+# subcommand (non-buildtool) failures are the same underlying toolchain
+# problem regardless of which build tool wrapped it, so only the first
+# one seen per GROUP (see gm_run_case) gets a full report; the rest are
+# just noted here and folded into a summary section by gm_summary.
+GM_SUBCMD_SEEN=""
+GM_SUBCMD_ACCUM=""
 # how many trailing lines of a log to quote in the report
 GM_LOG_TAIL=${GM_LOG_TAIL:-20}
 
@@ -171,14 +177,28 @@ $(gm_tail "$logfile")
 "
 }
 
+# gm_subcmd_seen GROUP -- true if a subcommand failure has already been
+# fully reported for GROUP.
+gm_subcmd_seen() {
+  printf '%s\n' "$GM_SUBCMD_SEEN" | grep -Fxq -- "$1"
+}
+
 # gm_report_build_failure NAME STATUS FAILKIND GENCMD BUILDDIR BUILDCMD
-#                          LOGFILE GENFILE GENFILE_NAME
+#                          LOGFILE GENFILE GENFILE_NAME GROUP
 # records a failure of the build tool (or a subcommand it ran) against
 # the file genmakefile produced. When FAILKIND is "buildtool", the
 # generated file's full contents are quoted too.
+#
+# FAILKIND "subcommand" failures are the same underlying toolchain
+# problem no matter which build tool (make/gmake/ninja/shell) or
+# directory layout wrapped it, so they'd otherwise repeat identically
+# many times over. Only the first one seen per GROUP (the compiler
+# instance, from gm_run_case) gets a full report; later ones for the
+# same GROUP are just tallied for gm_summary's accumulated-failures
+# section instead.
 gm_report_build_failure() {
   local name=$1 status=$2 failkind=$3 gencmd=$4 builddir=$5
-  local buildcmd=$6 logfile=$7 genfile=$8 genfile_name=$9
+  local buildcmd=$6 logfile=$7 genfile=$8 genfile_name=$9 group=${10}
   local label
 
   GM_FAIL=$((GM_FAIL + 1))
@@ -187,6 +207,15 @@ gm_report_build_failure() {
     label="build tool itself failed"
   else
     label="a subcommand failed (build tool ran fine)"
+    if gm_subcmd_seen "$group"; then
+      GM_SUBCMD_ACCUM="$GM_SUBCMD_ACCUM
+$group:$name"
+      printf 'FAIL    %s -- %s (exit %s) [same as earlier %s failure, accumulated]\n' \
+        "$name" "$label" "$status" "$group"
+      return
+    fi
+    GM_SUBCMD_SEEN="$GM_SUBCMD_SEEN
+$group"
   fi
 
   printf 'FAIL    %s -- %s (exit %s)\n' "$name" "$label" "$status"
@@ -217,6 +246,18 @@ $(cat "$genfile")
 gm_summary() {
   echo
   echo "genmakefile testsuite: $GM_PASS passed, $GM_FAIL failed, $GM_SKIP skipped"
+
+  if [ -n "$GM_SUBCMD_ACCUM" ]; then
+    GM_REPORT="$GM_REPORT
+## Repeated subcommand failures
+
+Same underlying toolchain failure as the matching case detailed above --
+only the build tool/directory layout wrapping it differs, so these
+aren't shown again in full.
+
+$(printf '%s\n' "$GM_SUBCMD_ACCUM" | sed '/^$/d' | while IFS=: read -r g n; do printf -- '- %s (same as first %s failure above)\n' "$n" "$g"; done)
+"
+  fi
 
   if [ "$GM_FAIL" -gt 0 ]; then
     printf '%s\n' "$GM_REPORT"
@@ -486,8 +527,12 @@ gm_discover_compilers() {
 
 # --- the actual per-case driver -----------------------------------------
 
-# gm_run_case NAME KIND COMPILER BINDIR MAKE_TYPE PARTITION [EXTRA_GENMAKEFILE_ARGS...]
+# gm_run_case NAME GROUP KIND COMPILER BINDIR MAKE_TYPE PARTITION [EXTRA_GENMAKEFILE_ARGS...]
 #   NAME       short id for the test log
+#   GROUP      id shared by every case using the same compiler instance
+#              (just the discovered label, e.g. "xc8cc-v4.00") -- used to
+#              dedup/accumulate repeated subcommand (toolchain) failures
+#              across the make_type/partition combinations run for it
 #   KIND       host | pic  -- which mock_tree_* to use
 #   COMPILER   -t value (gcc, sdcc, xc8, ...)
 #   BINDIR     directory holding the COMPILER binary, prepended to PATH
@@ -495,11 +540,11 @@ gm_discover_compilers() {
 #   MAKE_TYPE  make | gmake | ninja | shell
 #   PARTITION  one of $GM_PARTITIONS
 gm_run_case() {
-  local name=$1 kind=$2 compiler=$3 bindir=$4 make_type=$5 partition=$6
+  local name=$1 group=$2 kind=$3 compiler=$4 bindir=$5 make_type=$6 partition=$7
   local extra_args caseroot srcroot outfile_name outfile_rel
   local genmakefile_log build_log genmakefile_cmd gm_status
   local build_dir build_cmd build_status failkind
-  shift 6
+  shift 7
   extra_args=$*
 
   case "$make_type" in
@@ -578,7 +623,7 @@ gm_run_case() {
   if [ "$build_status" -ne 0 ]; then
     failkind=$(gm_classify_build_failure "$build_log" "$make_type")
     gm_report_build_failure "$name" "$build_status" "$failkind" "$genmakefile_cmd" \
-      "$build_dir" "$build_cmd" "$build_log" "$srcroot/$outfile_rel" "$outfile_name"
+      "$build_dir" "$build_cmd" "$build_log" "$srcroot/$outfile_rel" "$outfile_name" "$group"
     return
   fi
 

@@ -32,7 +32,7 @@ while IFS=: read -r label compiler kind bindir; do
     for partition in $GM_PARTITIONS; do
       name="$label-$make_type-$partition"
       # shellcheck disable=SC2086
-      gm_run_case "$name" "$kind" "$compiler" "$bindir" "$make_type" "$partition" $extra_args
+      gm_run_case "$name" "$label" "$kind" "$compiler" "$bindir" "$make_type" "$partition" $extra_args
     done
   done
 done <<EOF
