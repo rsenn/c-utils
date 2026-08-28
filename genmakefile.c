@@ -46,13 +46,14 @@ static const char* compiler_types[] = {
 
 const char* const build_types[] = {"Release", "RelWithDebInfo", "MinSizeRel", "Debug"};
 
-static const char *make_begin_inline, *make_sep_inline, *make_end_inline,
-    *comment = "#", *cross_compile = "", *builddir_varname = "BUILDDIR", *quote_args = "";
+static const char *make_begin_inline, *make_sep_inline, *make_end_inline, *comment = "#", *cross_compile = "",
+                   *quote_args = "";
 static bool batchmode, cygming;
 static strlist system_path;
 static build_tool_t build_tool = 0;
 
 char pathsep_make = DEFAULT_PATHSEP, pathsep_args = DEFAULT_PATHSEP;
+const char* builddir_varname = "BUILDDIR";
 strarray dirstack = {0};
 int cmd_objs = 0, cmd_libs = 0, cmd_bins = 0, cmd_module = 0;
 commands_t commands;

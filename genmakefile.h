@@ -113,5 +113,6 @@ extern strarray dirstack;
 extern set_t build_directories;
 extern char pathsep_make;
 extern char pathsep_args;
+extern const char* builddir_varname;
 
 #endif

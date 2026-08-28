@@ -314,8 +314,22 @@ output_make_rule(buffer* b, target* rule, build_tool_t tool, const char quote[],
   stralloc_catc(&output, '\n');
 
   if(str_equal(tools.make, "gmake")) {
-    stralloc_replaces(&output, dirs.work.sa.s, "$(BUILDDIR)");
-    // stralloc_replaces(&output, dirs.out.sa.s, "$(DISTDIR)");
+    const char* bd;
+    size_t bdlen;
+
+    if((bd = var_get(builddir_varname)) && (bdlen = str_len(bd)) > 0 && stralloc_starts(&output, bd)) {
+      stralloc repl;
+
+      stralloc_init(&repl);
+      stralloc_copys(&repl, "$(");
+      stralloc_cats(&repl, builddir_varname);
+      stralloc_cats(&repl, ")");
+
+      stralloc_remove(&output, 0, bdlen);
+      stralloc_insertb(&output, repl.s, 0, repl.len);
+
+      stralloc_free(&repl);
+    }
   }
 
   buffer_putsa(b, &output);
