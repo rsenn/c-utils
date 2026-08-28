@@ -15,8 +15,10 @@ path_basepos2(const char* path, size_t len) {
 again:
   n = u8b_rchrs(x, len, PATHSEP_S_MIXED, sizeof(PATHSEP_S_MIXED) - 1);
 
+  /* u8b_rchrs() returns len (not found) when path has no separator at
+   * all -- the whole string is then the basename, i.e. position 0 */
   if(n == len)
-    return n;
+    return 0;
 
   if(n + 1 == len) {
     len = n;

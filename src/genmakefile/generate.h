@@ -16,7 +16,7 @@ target* generate_srcdir_lib_rule(
     sourcedir* srcdir, const char* name, bool shell, bool batch, bool batchmode, char psa, char psm);
 void generate_srcdir_rule(sourcedir* sdir, bool batchmode, char psm);
 void generate_lib_rules(bool shell, bool batch, bool batchmode, char psa, char psm);
-target* generate_program_rule(const char* filename, char psa, strarray* other_sources, set_t* main_dirs);
+target* generate_program_rule(const char* filename, char psa, char psm, strarray* other_sources, set_t* main_dirs);
 int generate_link_rules(char psa, char psm);
 target* generate_install_rules(void);
 

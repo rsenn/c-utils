@@ -555,6 +555,8 @@ generate_lib_rules(bool shell, bool batch, bool batchmode, char psa, char psm) {
     target* rule;
     sourcedir* srcdir = *(sourcedir**)MAP_ITER_VALUE(t);
     const char* base = path_basename(MAP_ITER_KEY(t));
+    sourcefile* pfile;
+    bool has_main = false;
 
     if(str_equal(base, ".")) {
       stralloc_zero(&abspath);
@@ -569,6 +571,19 @@ generate_lib_rules(bool shell, bool batch, bool batchmode, char psa, char psm) {
 #endif
 
     if(strlist_contains(&build_as_lib, base) || base[0] == '.' || base[0] == '\0')
+      continue;
+
+    /* a directory holding a main() is a program directory, not a
+     * library -- don't archive it (e.g. src/miditest.c must not
+     * become src.a) */
+    slist_foreach(srcdir->sources, pfile) {
+      if(pfile->has_main) {
+        has_main = true;
+        break;
+      }
+    }
+
+    if(has_main)
       continue;
 
     rule = generate_srcdir_lib_rule(srcdir, base, shell, batch, batchmode, psa, psm);
@@ -590,7 +605,7 @@ generate_lib_rules(bool shell, bool batch, bool batchmode, char psa, char psm) {
  * @return    Rule
  */
 target*
-generate_program_rule(const char* name, char psa, strarray* other_sources, set_t* main_dirs) {
+generate_program_rule(const char* name, char psa, char psm, strarray* other_sources, set_t* main_dirs) {
   target *preprocess = 0, *compile = 0, *rule = 0, *all = 0;
   const char *x, *link_lib;
   set_t incs = SET(), deps = SET();
@@ -675,24 +690,54 @@ generate_program_rule(const char* name, char psa, strarray* other_sources, set_t
 
     if(other_sources) {
       char** sp;
+      set_t linked_libdirs = SET();
+
+      set_init(&linked_libdirs, 0);
 
       strarray_foreach(other_sources, sp) {
         stralloc odir;
+        bool same_dir, is_libdir;
 
         stralloc_init(&odir);
         path_dirname(*sp, &odir);
 
+        same_dir = dir.len == odir.len && !byte_diff2(dir.s, dir.len, odir.s, odir.len);
+        is_libdir = !main_dirs || !set_has_sa(main_dirs, &odir);
+
         /* pull in a non-main source if it's in this program's own
          * directory, or in a directory that contains no main() at all
          * (a shared library directory, e.g. lib/) */
-        if(!main_dirs || !set_has_sa(main_dirs, &odir) || !byte_diff2(dir.s, dir.len, odir.s, odir.len)) {
-          stralloc_zero(&obj);
-          path_output(*sp, &obj, exts.obj, psa);
-          add_path_sa(&rule->prereq, &obj);
+        if(same_dir || is_libdir) {
+          if(cmd_libs && is_libdir && !same_dir) {
+            /* that directory was archived by generate_lib_rules() --
+             * depend on the .a once instead of on each raw object */
+            if(!set_has_sa(&linked_libdirs, &odir)) {
+              stralloc libname;
+              const char* base;
+
+              stralloc_nul(&odir);
+              base = path_basename(odir.s);
+
+              stralloc_init(&libname);
+              path_prefix_s(&dirs.work.sa, base, &libname, psm);
+              stralloc_cats(&libname, exts.lib);
+
+              add_path_sa(&rule->prereq, &libname);
+              set_addsa(&linked_libdirs, &odir);
+
+              stralloc_free(&libname);
+            }
+          } else {
+            stralloc_zero(&obj);
+            path_output(*sp, &obj, exts.obj, psa);
+            add_path_sa(&rule->prereq, &obj);
+          }
         }
 
         stralloc_free(&odir);
       }
+
+      set_free(&linked_libdirs);
     }
 
     stralloc_weak(&rule->recipe, &commands.link);
@@ -723,12 +768,11 @@ generate_program_rule(const char* name, char psa, strarray* other_sources, set_t
     rule_dep_list(rule, &deps);
 
     set_foreach(&link_libraries, it, link_lib, n) {
-      const char* s;
-      size_t len;
       target* lib = rule_find_b(link_lib, n);
 
-      set_foreach(&lib->prereq, it, s, len) { set_add(&deps, s, len); }
-
+      /* the program's own dependency on the libraries it actually uses
+       * is set up above (by directory) -- this loop only needs to make
+       * sure every generated library still gets built as part of "all" */
       add_path(&all->prereq, lib->name);
     }
 
@@ -799,7 +843,7 @@ generate_link_rules(char psa, char psm) {
    * directory's objects plus every shared-library directory's objects */
   strarray_foreach(&mains, pp) {
     const char* filename = *pp;
-    target* rule = generate_program_rule(filename, psa, &others, &main_dirs);
+    target* rule = generate_program_rule(filename, psa, psm, &others, &main_dirs);
 
     if(!link && rule)
       link = rule;
