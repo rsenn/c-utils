@@ -82,9 +82,7 @@ TEST(test_env_put_variants) {
 /*
  * size_t env_init(void);
  */
-TEST(test_env_init) {
-  ASSERT_NE(0, env_init());
-}
+TEST(test_env_init) { ASSERT_NE(0, env_init()); }
 
 /*
  * int env_make(const char** v, size_t argc, const char* s, size_t len);

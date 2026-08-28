@@ -43,9 +43,16 @@ typedef struct queue_entry_s {
   uri_t uri;
   http* http;
 } queue_entry;
+/*
+ *
+ *  URL:
+ * http://verteiler1.mediathekview.de/Filmliste-akt.xz
+ */
 
-static const char default_url[] = "http://www.google.ch/search?q=SSL_bio";
-
+/* https://github.com/rsenn/lc-meter/raw/master/doc/LCmeter0-LCD-8pinlcd-PIC_COMP.pdf
+ */
+static const char default_url[] = "https://www.google.com/"
+                                  "search?q=SSL_bio"; //"https://raw.githubusercontent.com/rsenn/lc-meter/master/doc/LCmeter0-LCD-8pinlcd-PIC_COMP.pdf";
 static const char* const url_host = "127.0.0.1";
 static const char* const url_location = "/login";
 static const uint16 url_port = 8080;
@@ -83,8 +90,10 @@ usage(char* av0) {
                        "\n"
                        "Options:\n"
                        "\n"
-                       "  -h, --help              Show                        his help\n"
-                       "  -o, --output FILE                              utput file\n"
+                       "  -h, --help              Show "
+                       "this help\n"
+                       "  -o, --output FILE       "
+                       "Output file\n"
                        "\n",
                        NULL);
   buffer_flush(buffer_1);

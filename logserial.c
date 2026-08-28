@@ -39,7 +39,6 @@
 typedef struct port {
   struct taia time;
 } port_t;
-
 typedef struct link {
   union {
     struct slink link;
@@ -89,6 +88,7 @@ find_port(const char* name) {
   struct link** it;
 
   for(it = &port_list; *it; it = &(*it)->next) {
+
     if(str_equal(name, (*it)->name))
       return it;
   }
@@ -114,6 +114,7 @@ clear_ports() {
   struct link **it, **next;
 
   slink_foreach_safe(port_list, it, next) {
+
     struct link* l = *it;
 
     free((char*)l->name);
@@ -126,6 +127,7 @@ list_ports(const strarray* ports) {
   char** port;
   int fd;
   strarray_foreach(ports, port) {
+
     if((fd = serial_open(*port, baudrate)) == -1)
       continue;
 
@@ -212,6 +214,7 @@ detect_ports(strarray* ports) {
     byte_zero(&st, sizeof(st));
 
     if(stat(*port, &st) != -1) {
+
       taia_uint(&t, st.st_ctime);
 #if _POSIX_C_SOURCE >= 200809L
       t.nano = st.st_ctim.tv_nsec;
@@ -222,6 +225,7 @@ detect_ports(strarray* ports) {
 
     // if(strarray_index_of(&ports,
     // *port) == -1) {
+
     if(!find_port(*port)) {
       port_t p;
       taia_uint(&p.time, 0);
@@ -252,6 +256,7 @@ detect_ports(strarray* ports) {
   }
 
   for(entry = port_list; entry; entry = entry->next) {
+
     char* port = entry->name;
 
     if(strarray_index_of(&temp, port) == -1) {
@@ -319,6 +324,7 @@ term_init(fd_type fd, struct termios* state) {
   raw = old;
 
   if(rawmode) {
+
     raw.c_lflag &= ~(ICANON | IEXTEN | ISIG);
     raw.c_lflag |= ECHONL | ISIG;
 
@@ -391,6 +397,7 @@ term_restore(fd_type fd, const struct termios* state) {
  */
 /*ssize_t
 term_process(char* ch) {
+
   ssize_t ret = charbuf_getc(&term_buf,
 ch);
 
@@ -412,6 +419,7 @@ process_serial(fd_type serial_fd) {
   size_t bytes = 0;
 
   if((ret = read(serial_fd, x, sizeof(x))) > 0) {
+
     buffer_put(buffer_1, x, ret);
     buffer_flush(buffer_1);
 
@@ -570,7 +578,9 @@ process_loop(fd_type serial_fd, int64 timeout) {
           if(debugmode) {
             buffer_puts(buffer_2, "Queued ");
             buffer_putulong(buffer_2, bytes);
-            buffer_puts(buffer_2, " bytes to                         erial port");
+            buffer_puts(buffer_2,
+                        " bytes to "
+                        "serial port");
             buffer_putnlflush(buffer_2);
           }
         }
@@ -599,7 +609,9 @@ usage(char* progname) {
   buffer_puts(buffer_1, "  --list                            list serial ports\n");
   buffer_puts(buffer_1, "  --baud, -b RATE                   baud rate\n");
   buffer_puts(buffer_1, "  --send, -i FILE                   send file\n");
-  buffer_puts(buffer_1, "  --debug                           show verbose debug               nformation\n");
+  buffer_puts(buffer_1,
+              "  --debug                           show verbose debug "
+              "information\n");
   buffer_putnlflush(buffer_1);
 }
 
@@ -669,7 +681,9 @@ main(int argc, char* argv[]) {
       case 'x': debugmode++; break;
 
       default:
-        buffer_puts(buffer_2, "WARNING: Invalid                     rgument -");
+        buffer_puts(buffer_2,
+                    "WARNING: Invalid "
+                    "argument -");
         buffer_putc(buffer_2, isprint(c) ? c : '?');
         buffer_putm_internal(buffer_2, " '", unix_optarg ? unix_optarg : argv[unix_optind], "'", NULL);
         buffer_putnlflush(buffer_2);
@@ -771,6 +785,7 @@ getopt_end:
     int64 idx = strarray_index_of(&ports, portname);
 
     if(idx != -1) {
+
       /*buffer_puts(buffer_2, "removed
       port: "); buffer_puts(buffer_2,
       strarray_AT(&ports, idx));

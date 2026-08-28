@@ -19,7 +19,6 @@ tls_instance_return(tls_instance_t* i, tls_op_t op, int ret) {
     if(i->error == SSL_ERROR_SYSCALL)
       i->syserr = errno;
   }
-
   return ret;
 }
 #endif

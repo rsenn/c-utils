@@ -194,8 +194,7 @@ output_make_rule(buffer* b, target* rule, build_tool_t tool, const char quote[],
   buffer_putnlflush(debug_buf);
 #endif
 
-  if(rule->phony || (num_prereqs == 0 && str_diffn(rule->name, dirs.work.sa.s, dirs.work.sa.len) &&
-                     !rule->name[str_chr(rule->name, psm)] && str_end(rule->name, ":"))) {
+  if(rule->phony || (num_prereqs == 0 && str_diffn(rule->name, dirs.work.sa.s, dirs.work.sa.len) && !rule->name[str_chr(rule->name, psm)] && str_end(rule->name, ":"))) {
     buffer_putm_internal(b, ".PHONY: ", rule->name, newline, NULL);
   }
 
@@ -496,8 +495,7 @@ output_script(buffer* b, target* rule, build_tool_t tool, const char quote[], ch
   if(!rule->name[str_chr(rule->name, '%')])
 
     if(rule->recipe.s != commands.compile.s)
-      buffer_putm_internal(
-          b, newline, tool == TOOL_BATCH ? "REM" : "#", " Rules for '", rule->name, "'", newline, NULL);
+      buffer_putm_internal(b, newline, tool == TOOL_BATCH ? "REM" : "#", " Rules for '", rule->name, "'", newline, NULL);
 
   set_foreach(&rule->prereq, it, x, n) {
     target* dep = rule_find_b(x, n);
@@ -537,23 +535,7 @@ output_script(buffer* b, target* rule, build_tool_t tool, const char quote[], ch
 
   if(str_equal(rule->name, "all")) {
     if(tool == TOOL_BATCH)
-      buffer_putm_internal(b,
-                           newline,
-                           ":SUCCESS",
-                           newline,
-                           "ECHO Done.",
-                           newline,
-                           "GOTO QUIT",
-                           newline,
-                           newline,
-                           ":FAIL",
-                           newline,
-                           "ECHO Fail.",
-                           newline,
-                           newline,
-                           ":QUIT",
-                           newline,
-                           0);
+      buffer_putm_internal(b, newline, ":SUCCESS", newline, "ECHO Done.", newline, "GOTO QUIT", newline, newline, ":FAIL", newline, "ECHO Fail.", newline, newline, ":QUIT", newline, 0);
   }
 
   buffer_putnl(b, flush);

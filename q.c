@@ -14,7 +14,6 @@
 #include "lib/alloc.h"
 #include "lib/byte.h"
 #include "lib/uint8.h"
-#include "lib/unix.h"
 
 #include <ctype.h>
 #include "lib/bool.h"
@@ -39,6 +38,7 @@ fmt_default(char* dest, int c, int quote) {
   uint8 ch = c;
 
   if(byte_chr(quote_chars.s, quote_chars.len, ch) < quote_chars.len) {
+
     if(c == '\t')
       c = 't';
     else if(c == '\n')
@@ -229,6 +229,7 @@ run_quote(buffer* in, buffer* out) {
   c = 0;
 
   while(buffer_getc(in, (char*)&c) > 0) {
+
     if(c == ' ' && prev_c != ' ') {
       add_output(buf.s, buf.len, out);
       stralloc_zero(&buf);
@@ -299,14 +300,20 @@ usage(char* av0) {
                        "      --quote-tabs                 Quote tabs (\\t)\n"
                        "      --quote-nul                  Quote nul (\\0)\n"
                        "  -b, --quote-backslash            Quote backslash (\\)\n"
-                       "  -c, --escape-c                   Escape characters for C strings\n"
-                       "  -C, --escape-cmake               Escape characters for CMake strings\n"
-                       "  -S, --escape-shell               Escape characters for shell strings\n"
-                       "  -D, --escape-doublequoted-shell  Escape characters for double-quoted shell strings\n"
-                       "  -Q, --escape-quoted-shell        Escape characters for single-quoted shell strings\n"
+                       "  -c, --escape-c                   Escape characters for C "
+                       "strings\n"
+                       "  -C, --escape-cmake               Escape characters for CMake "
+                       "strings\n"
+                       "  -S, --escape-shell               Escape characters for shell "
+                       "strings\n"
+                       "  -D, --escape-doublequoted-shell  Escape characters for "
+                       "double-quoted shell strings\n"
+                       "  -Q, --escape-quoted-shell        Escape characters for "
+                       "single-quoted shell strings\n"
                        "  -X, --escape-xml                 Escape characters for XML\n"
                        "  -J, --escape-json                Escape characters for JSON\n"
-                       "  -P, --escape-printable           Escape non-printable characters\n"
+                       "  -P, --escape-printable           Escape non-printable "
+                       "characters\n"
                        "  -a, --add-quotes QUOTE           Add quotes of type\n"
                        "\n",
                        NULL);
@@ -491,6 +498,7 @@ again:
 
     if((x = mmap_read(out_path, &n)) &&
     n > 1) {
+
       buffer_puts(buffer_1, "out: ");
       buffer_put(buffer_1, x, n);
       buffer_putnlflush(buffer_1);

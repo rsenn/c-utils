@@ -1,29 +1,39 @@
-/*
- * ntldd - lists dynamic dependencies of a module
- *
- *  Copyright (C) 2010 LRN
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
-
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- *
- */
 
 /*
- * Code is mostly written after
- * "An In-Depth Look into the Win32 Portable Executable File Format"
- * MSDN Magazine articles
- */
+    ntldd - lists dynamic dependencies
+   of a module
+
+    Copyright (C) 2010 LRN
+
+    This program is free software: you
+   can redistribute it and/or modify it
+   under the terms of the GNU General
+   Public License as published by the
+   Free Software Foundation, either
+   version 3 of the License, or (at your
+   option) any later version.
+
+    This program is distributed in the
+   hope that it will be useful, but
+   WITHOUT ANY WARRANTY; without even
+   the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A
+   PARTICULAR PURPOSE.  See the GNU
+   General Public License for more
+   details.
+
+    You should have received a copy of
+   the GNU General Public License along
+   with this program.  If not, see
+   <http://www.gnu.org/licenses/>.
+*/
+
+/*
+Code is mostly written after
+"An In-Depth Look into the Win32
+Portable Executable File Format" MSDN
+Magazine articles
+*/
 
 #include "lib/windoze.h"
 #include "lib/uint64.h"
@@ -190,6 +200,7 @@ process_dep(build_tree_config* cfg, uint32 name, struct dep_tree_element* root, 
   }
 
   if(deep == 1) {
+
     build_dep_tree(cfg, dllname, root, child);
   }
   return child;
@@ -634,16 +645,21 @@ Written by LRN.");
 
 void
 printhelp(char* argv0) {
-  buffer_putm_internal(
-      buffer_1,
-      "Usage: ",
-      argv0,
-      " [OPTION]... FILE...\n OPTIONS:\n --version         Displays                            Does not work\n -d, --data-relocs                           Does not work\n -r, "
-      "--function-relocs Does not work\n -R,                        -recursive       Lists dependencies recursively,\n eliminating                        uplicates\n -D, "
-      "--search-dir                             dditional search directory\n --list-exports        Lists exports                        f a module (single file only)\n "
-      "--list-imports        Lists                        mports of modules\n --help                                      Displays this message\n \n Use -- option to pass "
-      "filenames that                        tart with `--' or `-'\n For bug reporting instructions, please                        ee:\n <somewhere>.",
-      NULL);
+  buffer_putm_internal(buffer_1,
+                       "Usage: ",
+                       argv0,
+                       " [OPTION]... FILE...\n OPTIONS:\n --version         Displays "
+                       "     Does not work\n -d, --data-relocs   "
+                       "  Does not work\n -r, --function-relocs Does not work\n -R, "
+                       "--recursive       Lists dependencies recursively,\n eliminating "
+                       "duplicates\n -D, --search-dir      "
+                       "Additional search directory\n --list-exports        Lists exports "
+                       "of a module (single file only)\n --list-imports        Lists "
+                       "imports of modules\n --help               "
+                       " Displays this message\n \n Use -- option to pass filenames that "
+                       "start with `--' or `-'\n For bug reporting instructions, please "
+                       "see:\n <somewhere>.",
+                       NULL);
   buffer_putnlflush(buffer_1);
 }
 
@@ -933,7 +949,13 @@ main(int argc, char** argv) {
 
       case 'V': printversion(); break;
       default:
-        buffer_putm_internal(buffer_2, "Unrecognized option `", argv[unix_optind], "'\n", "Try `ntldd --help' for                              ore information", NULL);
+        buffer_putm_internal(buffer_2,
+                             "Unrecognized option `",
+                             argv[unix_optind],
+                             "'\n",
+                             "Try `ntldd --help' for "
+                             "more information",
+                             NULL);
         buffer_putnlflush(buffer_2);
         return 1;
     }
@@ -955,7 +977,9 @@ main(int argc, char** argv) {
 #if WINDOWS
   {
     const char* const keys[] = {"HKCU\\Environment",
-                                "HKLM\\SYSTEM\\CurrentControlSe                                \\Control\\Session                                 anager\\Environment",
+                                "HKLM\\SYSTEM\\CurrentControlSe"
+                                "t\\Control\\Session "
+                                "Manager\\Environment",
                                 0};
     int kidx;
     stralloc rpath;

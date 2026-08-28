@@ -126,7 +126,9 @@ usage(char* arg0) {
   buffer_puts(buffer_2, "Usage: ");
   buffer_puts(buffer_2, str_basename(arg0));
   buffer_puts(buffer_2, " [Options]\n");
-  buffer_puts(buffer_2, " -s num   Skip <num>               umber of fields\n");
+  buffer_puts(buffer_2,
+              " -s num   Skip <num> "
+              "Number of fields\n");
   buffer_flush(buffer_2);
   exit(1);
 }
@@ -150,6 +152,7 @@ main(int argc, char* argv[]) {
           argi++;
 
           if(argi < argc) {
+
             delimiters = argv[argi];
             delimiters_len = str_len(delimiters);
           }

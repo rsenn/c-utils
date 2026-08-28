@@ -38,7 +38,6 @@ io_tryread(fd_type d, char* buf, int64 len) {
     errno = EINVAL;
     return -3;
   }
-
 #ifdef USE_SELECT
   {
     int r = winsock2errno(recv(d, buf, len, 0));
@@ -47,11 +46,9 @@ io_tryread(fd_type d, char* buf, int64 len) {
 #elif WINDOWS_NATIVE
   if(e->readqueued == 2) {
     int x = e->bytes_read;
-
     if(e->errorcode) {
       errno = e->errorcode;
       e->canread = 0;
-
       return -3;
     }
 
@@ -69,6 +66,7 @@ io_tryread(fd_type d, char* buf, int64 len) {
 
       if(len > x) {
         /* queue next read */
+
         if(len > sizeof(e->inbuf))
           len = sizeof(e->inbuf);
 
@@ -100,17 +98,16 @@ io_tryread(fd_type d, char* buf, int64 len) {
     } else {
     }
   }
-
   errno = EAGAIN;
   return -1;
 #else
   {
-    ssize_t r;
+    long r;
     struct itimerval old, new;
     struct pollfd p;
-    io_entry* e;
+    io_entry* e = (io_entry*)iarray_get((iarray*)io_getfds(), d);
 
-    if(!(e = (io_entry*)iarray_get((iarray*)io_getfds(), d))) {
+    if(!e) {
       errno = EBADF;
       return -3;
     }
@@ -122,7 +119,6 @@ io_tryread(fd_type d, char* buf, int64 len) {
         errno = EBADF;
         return -3;
       } /* catch integer truncation */
-
       p.events = POLLIN;
 
       switch(poll(&p, 1, 0)) {
@@ -133,18 +129,17 @@ io_tryread(fd_type d, char* buf, int64 len) {
           e->next_read = -1;
           return -1;
       }
-
       new.it_interval.tv_usec = 10000;
       new.it_interval.tv_sec = 0;
       new.it_value.tv_usec = 10000;
       new.it_value.tv_sec = 0;
       setitimer(ITIMER_REAL, &new, &old);
     }
-
     r = read(d, buf, len);
 
-    if(!e->nonblock)
+    if(!e->nonblock) {
       setitimer(ITIMER_REAL, &old, 0);
+    }
 
     if(r == -1) {
       if(errno == EINTR)
@@ -156,16 +151,17 @@ io_tryread(fd_type d, char* buf, int64 len) {
 
     if(r != len) {
       e->canread = 0;
-
 #if defined(HAVE_SIGIO)
       if(d == alt_firstread) {
-        debug_printf(("io_tryread: dequeueing %ld from alt read queue next is %ld)\n", d, e->next_read));
+        debug_printf(("io_tryread: dequeueing %ld from alt read queue "
+                      "(next is %ld)\n",
+                      d,
+                      e->next_read));
         alt_firstread = e->next_read;
         e->next_read = -1;
       }
 #endif
     }
-
     return r;
   }
 #endif

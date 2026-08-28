@@ -481,7 +481,10 @@ serial_read_char(int fd, char* c) {
 #ifdef XONXOFF
   if(*c == XON) {
     if(tcflow(fd, TCOON) == -1) {
-      fprintf(stderr, "Could not restart flow:               s\n", strerror(errno));
+      fprintf(stderr,
+              "Could not restart flow: "
+              "%s\n",
+              strerror(errno));
     }
     serial_read_char(fd, c);
   } else if(*c == XOFF) {
@@ -522,6 +525,7 @@ serial_ports(void) {
   dir_open(&dir, "/dev/");
 
   while((entry = dir_read(&dir)) != NULL && (i < size)) {
+
 #ifdef SEARCH
     if(strstr(entry, SEARCH) != NULL) {
 #endif

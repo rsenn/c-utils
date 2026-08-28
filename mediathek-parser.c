@@ -213,6 +213,7 @@ cleanup_domain(stralloc* d) {
  */
 int
 process_entry(char** av, int ac) {
+
   if(!str_start(av[0], "\"X") && !str_start(av[0], "["))
     return 0;
 
@@ -346,6 +347,7 @@ put_quoted_string(const char* str) {
  */
 void
 output_m3u_entry(const char* sender, const char* thema, const char* title, unsigned duration, const char* datetime, const char* url, const char* description) {
+
   if(csv == 0) {
     buffer_puts(&output_buf, "#EXTINF:");
     buffer_putulong(&output_buf, duration);
@@ -360,7 +362,9 @@ output_m3u_entry(const char* sender, const char* thema, const char* title, unsig
     buffer_puts(&output_buf, "|");
     buffer_puts(&output_buf, description);
     buffer_put(&output_buf, "\r\n", 2);
-    buffer_puts(&output_buf, "#EXTVLCOPT:network-                aching=2500\r\n");
+    buffer_puts(&output_buf,
+                "#EXTVLCOPT:network-"
+                "caching=2500\r\n");
     buffer_puts(&output_buf, url);
   } else {
     put_quoted_string(sender);
@@ -412,6 +416,7 @@ output_wget_entry(const char* sender, const char* thema, const char* title, unsi
 
 void
 output_curl_entry(const char* sender, const char* thema, const char* title, unsigned duration, const char* datetime, const char* url, const char* description) {
+
   buffer_putm_internal(&output_buf, "curl -L -k ", url, NULL);
   buffer_putm_internal(&output_buf, " -o '", sender, " - ", thema, " - ", title, ".mp4'", NULL);
   /*    buffer_puts(&output_buf, "|");
@@ -433,16 +438,16 @@ get_line(buffer* input, stralloc* sa) {
     if(buffer_prefetch(input, 6) < 6)
       break;
 
-    done = byte_equal(buffer_PEEK(input), 5, ",\"X\":");
+    done = byte_equal(&input->x[input->p], 5, ",\"X\":");
 
     if(!done)
 
-      done = byte_equal(buffer_PEEK(input), 6, ",\n\"X\":");
+      done = byte_equal(&input->x[input->p], 6, ",\n\"X\":");
 
-    stralloc_append(sa, buffer_PEEK(input));
+    stralloc_append(sa, &input->x[input->p]);
     buffer_skipc(input);
 
-    if(*buffer_PEEK(input) == '\n')
+    if(input->x[input->p] == '\n')
       buffer_skipc(input);
   }
 
@@ -587,6 +592,7 @@ main(int argc, char* argv[]) {
   }
 
   while(unix_optind < argc) {
+
     if(str_diff(argv[unix_optind], "-")) {
       buffer_puts(buffer_2, "Processing '");
       buffer_puts(buffer_2, argv[unix_optind]);

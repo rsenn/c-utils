@@ -75,9 +75,12 @@ usage(char* av0) {
                        "\n",
                        "Options:\n",
                        "\n",
-                       "  -h, --help              Show                        his help\n",
-                       "  -i, --imports           List                        mports\n",
-                       "  -e, --exports           List                        xports\n",
+                       "  -h, --help              Show "
+                       "this help\n",
+                       "  -i, --imports           List "
+                       "imports\n",
+                       "  -e, --exports           List "
+                       "exports\n",
                        "\n",
                        NULL);
   buffer_flush(buffer_1);
@@ -118,6 +121,7 @@ main(int argc, char** argv) {
     omf_file omf;
 
     if(omf_open(&omf, argv[unix_optind])) {
+
       omf_record* r;
       char* p;
 
@@ -130,6 +134,7 @@ main(int argc, char** argv) {
         const char* name = omf_name(r);
 
         if((p = omf_record_begin(r))) {
+
           omf_record_foreach(r, p) {
 
             //  //|| r->type == 0x96

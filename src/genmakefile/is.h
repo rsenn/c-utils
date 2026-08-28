@@ -3,6 +3,9 @@
 
 #include "../../lib/strlist.h"
 #include "../../lib/path_internal.h"
+#include "../../lib/str.h"
+#include "../../lib/byte.h"
+#include "../../lib/stralloc.h"
 #include "../../lib/env.h"
 #include <ctype.h>
 
@@ -197,7 +200,7 @@ is_command_b(const char* filename, size_t len) {
   if((x = env_get("PATH")) == 0)
     x = "/usr/local/bin:/usr/bin:/bin";
 
-  path_split(x, &system_path, PATHLISTSEP_C);
+  path_split(x, &system_path, PATHSEP_C);
 
   strlist_foreach(&system_path, x, n) {
     stralloc_copyb(&path, x, n);
@@ -248,7 +251,10 @@ is_var_b(const char* x, size_t n) {
   n--;
 
   while(n > 0) {
-    if(byte_chr("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz01234                6789_", 63, *x) == 63) {
+    if(byte_chr("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz01234"
+                "56789_",
+                63,
+                *x) == 63) {
       if(*x == '=')
         return 1;
 

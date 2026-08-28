@@ -28,7 +28,8 @@ char hexdigits[] = "0123456789abcdef";
 
 typedef struct {
   uint64 offset;
-  uint8 from, to;
+  uint8 from;
+  uint8 to;
 } record_t;
 
 typedef struct {
@@ -40,8 +41,7 @@ typedef struct {
 
 static array patches;
 
-ssize_t buffer_dummyreadmmap(fd_type, void*, size_t, buffer*);
-void buffer_munmap(buffer*);
+extern ssize_t buffer_dummyreadmmap();
 
 uint32
 crc32(uint32 crc, const char* data, size_t size) {
@@ -121,9 +121,9 @@ buffer_backup(buffer* b) {
   stralloc_init(&orig);
   stralloc_init(&backup);
 
-  if(b->op == (buffer_op_proto*)&buffer_dummyreadmmap)
+  if(b->op == (buffer_op_proto*)&buffer_dummyreadmmap) {
     buffer_munmap(b);
-
+  }
   buffer_filename(b, &orig);
 
   stralloc_copy(&backup, &orig);
@@ -242,6 +242,7 @@ patch_check(unsigned char* x, size_t n, patch_t* p) {
     buffer_putxlong0(buffer_2, x[r->offset] == r->to ? r->to : r->from, 2);
 
     if(x[r->offset] == r->from || x[r->offset] == r->to) {
+
       buffer_puts(buffer_2, x[r->offset] == r->from ? " OK" : " ALREADY PATCHED");
       buffer_putnlflush(buffer_2);
     } else {
@@ -315,7 +316,8 @@ usage(const char* av0) {
                        av0,
                        " <file> [edit-specifier]\n"
                        "\n"
-                       "  [edit-specifier] is                        address>=<value>\n"
+                       "  [edit-specifier] is "
+                       "<address>=<value>\n"
                        "\n",
                        NULL);
   buffer_putnlflush(buffer_2);
@@ -346,12 +348,16 @@ main(int argc, char* argv[]) {
 
   x = (unsigned char*)file.x;
   n = file.n;
+  // x = (unsigned
+  // char*)mmap_shared(argv[index], &n);
 
   if(index + 1 < argc) {
     patch_new("command line", file.n, 0);
 
     while(++index < argc) {
-      uint64 addr = 0, val_cmp = 0, val_set = 0;
+      uint64 addr = 0;
+      uint64 val_cmp = 0, val_set = 0;
+      // size_t s_cmp = 0, s_set = 0;
 
       char* spec = argv[index];
       char sym = spec[0], *s = &spec[1];
@@ -594,102 +600,6 @@ main(int argc, char* argv[]) {
   patch(0x046fcc, 0x97, 0x00);
   patch(0x046fcd, 0x94, 0x00);
   patch(0x046fce, 0x0d, 0x00);
-
-  patch_new("Sublime Text 4113 Linux x64", 8444856, 0x089fdb4b);
-  patch(0x006b7996, 0x00, 0x90);
-  patch(0x006b7997, 0x00, 0x90);
-  patch(0x006b7998, 0xe9, 0x90);
-  patch(0x006b7999, 0x37, 0x90);
-  patch(0x006b799a, 0xff, 0x90);
-  patch(0x006b79cc, 0xc1, 0x90);
-  patch(0x006b79cd, 0x20, 0x90);
-  patch(0x006b79ce, 0x49, 0x90);
-  patch(0x006b79cf, 0x89, 0x90);
-  patch(0x006b79d0, 0x8d, 0x90);
-  patch(0x006cdabc, 0x78, 0x48);
-  patch(0x006cdabd, 0x02, 0x31);
-  patch(0x006cdabe, 0x00, 0xc0);
-  patch(0x006cdabf, 0x00, 0xc3);
-  patch(0x006ce2e2, 0x08, 0x48);
-  patch(0x006ce2e3, 0xe8, 0x31);
-  patch(0x006ce2e4, 0x08, 0xc0);
-  patch(0x006ce2e5, 0x14, 0x48);
-  patch(0x006ce2e6, 0xbf, 0xff);
-  patch(0x006ce2e7, 0xff, 0xc0);
-  patch(0x006ce2e8, 0x48, 0xc3);
-
-  patch_new("Sublime Text 4114 Linux x64", 8448168, 0xd9ae8d09);
-  patch(0x046fcc, 0x97, 0x00);
-  patch(0x046fcd, 0x94, 0x00);
-  patch(0x046fce, 0x0d, 0x00);
-
-  patch_new("Sublime Text 4115 Linux x64", 8811544, 0x4f5a0313);
-  patch(0x006e47aa, 0x49, 0x90);
-  patch(0x006e47ab, 0xff, 0x90);
-  patch(0x006e47ac, 0xff, 0x90);
-  patch(0x006e47ad, 0x48, 0x90);
-  patch(0x006e47ae, 0x89, 0x90);
-  patch(0x006e47e0, 0x44, 0x90);
-  patch(0x006e47e1, 0x24, 0x90);
-  patch(0x006e47e2, 0x50, 0x90);
-  patch(0x006e47e3, 0x0f, 0x90);
-  patch(0x006e47e4, 0x10, 0x90);
-  patch(0x006fab1c, 0x4c, 0x48);
-  patch(0x006fab1d, 0x29, 0x31);
-  patch(0x006fab1e, 0xf3, 0xc0);
-  patch(0x006fab1f, 0x48, 0xc3);
-  patch(0x006fb346, 0xb8, 0x48);
-  patch(0x006fb347, 0xd0, 0x31);
-  patch(0x006fb348, 0x5c, 0xc0);
-  patch(0x006fb349, 0x28, 0x48);
-  patch(0x006fb34a, 0x00, 0xff);
-  patch(0x006fb34b, 0x25, 0xc0);
-  patch(0x006fb34c, 0x74, 0xc3);
-
-  patch_new("Sublime Text 4143 Windows x64", 10178928, 0xd1a6bca1);
-  patch(0x00026524, 0x80, 0xc6);
-  patch(0x00026525, 0x78, 0x40);
-  patch(0x00026526, 0x05, 0x05);
-  patch(0x00026527, 0x00, 0x01);
-  patch(0x00026528, 0x0f, 0x48);
-  patch(0x00026529, 0x94, 0x85);
-  patch(0x0002652a, 0xc1, 0xc9);
-
-  patch_new("Sublime Text 4180 Linux x64", 9932224, 0xd9ab11ec);
-  patch(0x0042edf9, 0x80, 0xc6);
-  patch(0x0042edfa, 0x79, 0x41);
-  patch(0x0042edfb, 0x05, 0x05);
-  patch(0x0042edfc, 0x00, 0x01);
-  patch(0x0042edfd, 0x0f, 0xb2);
-  patch(0x0042edfe, 0x94, 0x00);
-  patch(0x0042edff, 0xc2, 0x90);
-
-  patch_new("Sublime Text 4180 Windows x64", 8114568, 0x82721620);
-  patch(0x0001a4e8, 0x80, 0xc6);
-  patch(0x0001a4e9, 0x79, 0x41);
-  patch(0x0001a4ea, 0x05, 0x05);
-  patch(0x0001a4eb, 0x00, 0x01);
-  patch(0x0001a4ec, 0x0f, 0xb2);
-  patch(0x0001a4ed, 0x94, 0x00);
-  patch(0x0001a4ee, 0xc2, 0x90);
-
-  patch_new("Sublime Text 4200 Linux x64", 9689376, 0x6e934906);
-  patch(0x005b6283, 0x0f, 0xc6);
-  patch(0x005b6284, 0xb6, 0x41);
-  patch(0x005b6285, 0x51, 0x05);
-  patch(0x005b6286, 0x05, 0x01);
-  patch(0x005b6287, 0x83, 0xb2);
-  patch(0x005b6288, 0xf2, 0x00);
-  patch(0x005b6289, 0x01, 0x90);
-
-  patch_new("Sublime Text 4200 Windows x64", 7752576, 0xb5fd809e);
-  patch(0x00046b80, 0x0f, 0xc6);
-  patch(0x00046b81, 0xb6, 0x41);
-  patch(0x00046b82, 0x51, 0x05);
-  patch(0x00046b83, 0x05, 0x01);
-  patch(0x00046b84, 0x83, 0xb2);
-  patch(0x00046b85, 0xf2, 0x00);
-  patch(0x00046b86, 0x01, 0x90);
 
   /* eagle-lin32-7.2.0 */
   patch_new("EAGLE 7.2.0 Linux x86", 20629928, 0);

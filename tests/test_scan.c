@@ -219,9 +219,7 @@ TEST(test_scan_line) {
 /*
  * size_t scan_eolskip(const char* s, size_t limit);
  */
-TEST(test_scan_eolskip) {
-  ASSERT_EQ(1, scan_eolskip("\ndef", 4));
-}
+TEST(test_scan_eolskip) { ASSERT_EQ(1, scan_eolskip("\ndef", 4)); }
 
 /*
  * size_t scan_human(const char*, uint64*);

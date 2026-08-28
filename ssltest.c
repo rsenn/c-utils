@@ -52,6 +52,7 @@ ssltest_connect(const address_t* addr, uint16 port) {
 
 int
 sendline_sa(buffer* b, const stralloc* data) {
+
   buffer_puts(buffer_2, "DATA → ");
   buffer_putsa(buffer_2, data);
   buffer_putnlflush(buffer_2);
@@ -89,6 +90,7 @@ ssltest_process_message(int ac, char** av, buffer* b) {
     unsigned int num;
 
     if(scan_uint(av[1], &num) > 0) {
+
       switch(num) {
 
         case 422:
@@ -97,7 +99,10 @@ ssltest_process_message(int ac, char** av, buffer* b) {
           return;
         }
         case 366: {
-          sendline_m(b, "PRIVMSG #bots :Hello,                      'am an idiot.", 0);
+          sendline_m(b,
+                     "PRIVMSG #bots :Hello, "
+                     "I'am an idiot.",
+                     0);
           return;
         }
       }
@@ -256,7 +261,10 @@ ssltest_loop(fd_type s) {
     if((ret == 1 || tls_established(s)) && !login_sent) {
       buffer_puts(buffer_2, "Handshake complete.");
       buffer_putnlflush(buffer_2);
-      sendline_m(&out, "USER x x x :Roman                  enn\r\nNICK roman\r\n", 0);
+      sendline_m(&out,
+                 "USER x x x :Roman "
+                 "Senn\r\nNICK roman\r\n",
+                 0);
       login_sent = true;
       //     io_onlywantwrite(s);
     }
@@ -272,7 +280,8 @@ usage(char* av0) {
                        "\n"
                        "Options:\n"
                        "\n"
-                       "  -h, --help              Show                        his help\n"
+                       "  -h, --help              Show "
+                       "this help\n"
                        "\n",
                        NULL);
   buffer_flush(buffer_1);
@@ -305,7 +314,6 @@ main(int argc, char* argv[]) {
       default: usage(argv[0]); return 1;
     }
   }
-
   tls_init("http.key", "http.crt");
 
   if(unix_optind < argc) {

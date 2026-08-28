@@ -115,15 +115,15 @@ static void handleevent(fd_type fd, int readable, int writable, int error) {
 
 static void
 put_fdset(buffer* b, const char* name, const fd_set* fds, fd_type maxfd) {
+  fd_type i;
   buffer_putm_internal(b, "fd_set ", name, "=[", NULL);
 
-  for(fd_type i = 0; i <= maxfd; ++i) {
+  for(i = 0; i <= maxfd; ++i) {
     if(FD_ISSET(i, fds)) {
       buffer_putspace(b);
       buffer_putlong(b, i);
     }
   }
-
   buffer_puts(b, " ]");
 }
 
@@ -137,13 +137,12 @@ io_waituntil2(int64 milliseconds) {
   if(!io_wanted_fds)
     return 0;
 
-#ifdef DEBUG_IO_
+#ifdef DEBUG_IO
   buffer_putspad(buffer_2, "io_waituntil2", 30);
   buffer_puts(buffer_2, "milliseconds=");
   buffer_putlonglong(buffer_2, milliseconds);
   buffer_putnlflush(buffer_2);
 #endif
-
 #ifdef USE_LINUX_AIO
 #warning USE_LINUX_AIO
   {
@@ -661,14 +660,20 @@ io_waituntil2(int64 milliseconds) {
             }
 
             if(info.si_band & POLLIN && !e->canread) {
-              debug_printf(("io_waituntil2: enqueueing %ld in normal read                             ueue before %ld\n", info.si_fd, first_readable));
+              debug_printf(("io_waituntil2: enqueueing %ld in normal read "
+                            "queue before %ld\n",
+                            info.si_fd,
+                            first_readable));
               e->canread = 1;
               e->next_read = first_readable;
               first_readable = info.si_fd;
             }
 
             if(info.si_band & POLLOUT && !e->canwrite) {
-              debug_printf(("io_waituntil2: enqueueing %ld in normal write                             ueue before %ld\n", info.si_fd, first_writeable));
+              debug_printf(("io_waituntil2: enqueueing %ld in normal write "
+                            "queue before %ld\n",
+                            info.si_fd,
+                            first_writeable));
               e->canwrite = 1;
               e->next_write = first_writeable;
               first_writeable = info.si_fd;
@@ -709,23 +714,20 @@ dopoll :
         return -1;
     }
   }
-
 #ifdef DEBUG_IO
   p = (struct pollfd*)array_start(&io_pollfds);
-  buffer_puts(buffer_2, "io_waituntil2( timeout=");
-  buffer_putlonglong(buffer_2, milliseconds);
-  buffer_puts(buffer_2, " ) ");
-  buffer_putsflush(buffer_2, "  [ ");
+  buffer_puts(buffer_2, "io_waituntil2(");
+  buffer_putulonglong(buffer_2, milliseconds);
+  buffer_puts(buffer_2, ") ");
+  buffer_putlong(buffer_2, r);
+  buffer_putsflush(buffer_2, " fds\n");
 
   for(i = 0; i < r; ++i) {
-    if(i > 0)
-      buffer_puts(buffer_2, ", ");
-    /*buffer_puts(buffer_2, "    pollfd[");
+    buffer_puts(buffer_2, "pollfd[");
     buffer_putlong(buffer_2, i);
-    buffer_puts(buffer_2, "] ");*/
-    buffer_puts(buffer_2, "{ ");
+    buffer_puts(buffer_2, "] { .fd=");
     buffer_putlong(buffer_2, p[i].fd);
-    buffer_puts(buffer_2, " ");
+    buffer_puts(buffer_2, ", events=");
 
     if(p[i].events & POLLIN)
       buffer_puts(buffer_2, "IN ");
@@ -735,34 +737,20 @@ dopoll :
 
     if(p[i].events & POLLERR)
       buffer_puts(buffer_2, "ERR ");
-
     buffer_puts(buffer_2, "}");
-    // buffer_putnlflush(buffer_2);
+    buffer_putnlflush(buffer_2);
   }
-
-  buffer_puts(buffer_2, " ]");
-  buffer_putnlflush(buffer_2);
-
 #endif
 
   if((i = poll((struct pollfd*)array_start(&io_pollfds), r, milliseconds)) < 1)
     return -1;
-
 #ifdef DEBUG_IO
-  buffer_puts(buffer_2, "io_waituntil2( timeout=");
-  buffer_putlonglong(buffer_2, milliseconds);
-  buffer_puts(buffer_2, " ) ");
-  buffer_putsflush(buffer_2, "  [ ");
-
   for(i = 0; i < r; ++i) {
-    if(i > 0)
-      buffer_puts(buffer_2, ", ");
-    /*buffer_puts(buffer_2, "    pollfd[");
-         buffer_putlong(buffer_2, i);
-         buffer_puts(buffer_2, "] ");*/
-    buffer_puts(buffer_2, "{ ");
+    buffer_puts(buffer_2, "pollfd[");
+    buffer_putlong(buffer_2, i);
+    buffer_puts(buffer_2, "] { .fd=");
     buffer_putlong(buffer_2, p[i].fd);
-    buffer_puts(buffer_2, " ");
+    buffer_puts(buffer_2, ", revents=");
 
     if(p[i].revents & POLLIN)
       buffer_puts(buffer_2, "IN ");
@@ -772,13 +760,9 @@ dopoll :
 
     if(p[i].revents & POLLERR)
       buffer_puts(buffer_2, "ERR ");
-
     buffer_puts(buffer_2, "}");
-    //  buffer_putnlflush(buffer_2);
+    buffer_putnlflush(buffer_2);
   }
-
-  buffer_puts(buffer_2, " ]");
-  buffer_putnlflush(buffer_2);
 #endif
 
   for(j = r - 1; j >= 0; --j) {

@@ -275,6 +275,7 @@ mounts_replace(MAP_T map, stralloc* sa, int col, bool first) {
 
 static void
 mounts_add(MAP_T map, const char* dev, const char* mnt) {
+
 #ifdef DEBUG_OUTPUT_
   buffer_puts(buffer_2, "mounts_add(map, \"");
   buffer_puts(buffer_2, dev);
@@ -443,6 +444,7 @@ pathtool(const char* arg, stralloc* sa) {
 #endif
 
   if(relative_to.sa.s) {
+
     stralloc_nul(&path.sa);
 
     if(!path_is_absolute(path.sa.s)) {
@@ -461,6 +463,7 @@ pathtool(const char* arg, stralloc* sa) {
     path_relative_to_b(path.sa.s, path.sa.len, relative_to.sa.s, relative_to.sa.len, sa);
 
   } else {
+
 #ifdef DEBUG_OUTPUT_
     buffer_puts(buffer_2, "PATHSEP_S_MIXED: ");
     buffer_puts(buffer_2, PATHSEP_S_MIXED);
@@ -489,12 +492,17 @@ usage(char* av0) {
                        "  -h, --help             Show this help\n",
                        "  -r, --relative-to DIR  Print the resolved path relative to DIR\n",
                        "  -s, --separator SEP    Use SEP as directory separator\n",
-                       "  -w, --windows          Print Windows form of path(s)                        C:\\WINNT)\n",
-                       "  -m, --mixed            Like --windows, but with regular slashes                        C:/WINNT)\n",
-                       "  -u, --unix   (default) Print Unix form of path(s)                        /cygdrive/c/winnt)\n",
+                       "  -w, --windows          Print Windows form of path(s) "
+                       "(C:\\WINNT)\n",
+                       "  -m, --mixed            Like --windows, but with regular slashes "
+                       "(C:/WINNT)\n",
+                       "  -u, --unix   (default) Print Unix form of path(s) "
+                       "(/cygdrive/c/winnt)\n",
                        "  -a, --absolute         Output absolute path\n",
-                       "  -f, --canonicalize     Canonicalize by following every symlink                        n\n"
-                       "                         every component of the given name                        ecursively;\n"
+                       "  -f, --canonicalize     Canonicalize by following every symlink "
+                       "in\n"
+                       "                         every component of the given name "
+                       "recursively;\n"
                        "                         all but the last component must exist\n",
                        "  -L, --dereference      Resolve symlinks\n",
                        "\n",
@@ -651,6 +659,7 @@ main(int argc, char* argv[]) {
     stralloc_init(&sa);
 
     if(pathtool(argv[unix_optind++], &sa)) {
+
       if(format == WIN)
         stralloc_replacec(&sa, '/', '\\');
       else

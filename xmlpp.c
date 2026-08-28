@@ -43,6 +43,7 @@ xml_read_function(xmlreader* reader, xmlnodeid id, stralloc* name, stralloc* val
       break;
     }
     case XML_ELEMENT: {
+
       /* buffer_puts(buffer_2, "Element:
       "); buffer_putsa(buffer_2, name);
 
@@ -57,6 +58,7 @@ xml_read_function(xmlreader* reader, xmlnodeid id, stralloc* name, stralloc* val
       }
 
       if(!(reader->closing && !prev_closing && stralloc_equal(&prev_element, name)) && stralloc_length(&prev_element)) {
+
         if(!newline_written && !one_line) {
           buffer_puts(output, "\n");
           buffer_flush(output);
@@ -104,15 +106,21 @@ usage(char* av0) {
                        "\n"
                        "Options:\n"
                        "\n"
-                       "  -h, --help              Show                        his help\n"
-                       "  -s, --single-quote      Use '                        s quote\n"
+                       "  -h, --help              Show "
+                       "this help\n"
+                       "  -s, --single-quote      Use ' "
+                       "as quote\n"
                        "  -d, --double-quote      Use "
                        "\" as quote\n"
-                       "  -o, --one-line                                 ne-line\n"
-                       "  -c, --compact                                  ompact\n"
-                       "  -l, --indent NUM                               ndent level\n"
-                       "  -t, --terminate                                erminate non-closed tags (img,                "
-                       "        ink, br, ...)\n"
+                       "  -o, --one-line          "
+                       "One-line\n"
+                       "  -c, --compact           "
+                       "Compact\n"
+                       "  -l, --indent NUM        "
+                       "Indent level\n"
+                       "  -t, --terminate         "
+                       "Terminate non-closed tags (img, "
+                       "link, br, ...)\n"
                        "\n",
                        NULL);
   buffer_flush(buffer_1);

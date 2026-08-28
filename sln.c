@@ -120,6 +120,7 @@ sln(const char* path) {
   stralloc_copy(&d, &s);
 
   while(reduce(&d)) {
+
     buffer_puts(buffer_2, "'");
     buffer_putsa(buffer_2, &d);
     buffer_puts(buffer_2, "' -> '");
@@ -145,12 +146,15 @@ usage(char* av0) {
   buffer_putm_internal(buffer_1,
                        "Usage: ",
                        str_basename(av0),
-                       " [OPTIONS] <FILE.list | TARGET                        INK>\n",
+                       " [OPTIONS] <FILE.list | TARGET "
+                       "LINK>\n",
                        "\n",
                        "Options:\n",
                        "\n",
-                       "  -h, --help              Show                        his help\n",
-                       "  -v, --verbose           Be                        erbose\n",
+                       "  -h, --help              Show "
+                       "this help\n",
+                       "  -v, --verbose           Be "
+                       "verbose\n",
                        "\n",
                        NULL);
   buffer_flush(buffer_1);

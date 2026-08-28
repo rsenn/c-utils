@@ -87,13 +87,7 @@ cfg_data_at(uint32 addr) {
   buffer_putnlflush(buffer_2);
 #endif
 
-  if(addr >= 0x300000) {
-    offset = (ssize_t)addr - 0x300000;
-
-    if(offset + 1 < cfg.len)
-      result = uint16_read(&cfg.s[offset]);
-
-  } else if(addr < 0x2007 && addr >= 0x2000) {
+  if(addr < 0x2007 && addr >= 0x2000) {
     offset = (ssize_t)addr - 0x2000;
 
     if(offset + 1 < cfg.len)
@@ -114,6 +108,7 @@ cfg_data_at(uint32 addr) {
     if(offset + 1 < cfg.len)
       result = uint16_read(&cfg.s[offset]);
   } else {
+
     offset = (ssize_t)addr & 0x0fff;
 
     if(offset < cfg.len)
@@ -258,6 +253,7 @@ cfg_get_bytes(ihex_file* ihf, stralloc* sa, uint32* addr) {
     *addr = 0x00300000;
 
   } else {
+
     if((bytes = ihex_read_at(&hex, 0x8007 << 1, sa->s, 4)) == 4)
       *addr = 0x8007;
     else if((bytes = ihex_read_at(&hex, 0x400e, sa->s, 2)) == 2)
@@ -351,7 +347,10 @@ cfg_infer_chip(const char* x, size_t n) {
         char c1 = setting[1];
 
         if(c1 == '2' || c1 == '6' || c1 == '8') {
-          len = scan_charsetnskip(setting, "0123456789aAbBcCeEfFgGhH                                  IjJkKlLmMnNpPrRtTvV", len);
+          len = scan_charsetnskip(setting,
+                                  "0123456789aAbBcCeEfFgGhH"
+                                  "iIjJkKlLmMnNpPrRtTvV",
+                                  len);
 
           if(len > 3) {
             stralloc_copyb(&chip, setting, len);
@@ -472,6 +471,7 @@ cfg_data(cfg_word** wptr, const char* buf, size_t len) {
   cfg_value *value = 0, **vptr = NULL;
 
   while(len > 0) {
+
     eol = byte_chr(buf, len, '\n');
 
     if(eol > 0 && buf[0] == 'C') {
@@ -528,6 +528,7 @@ cfg_process(cfg_item add_item, cfg_comment add_comment, strlist* output) {
       add_comment(output, word->name);
 
     for(cfg_setting* setting = word->settings; setting; setting = setting->next) {
+
       if((value = cfg_get_value(word, setting)) == NULL) {
         buffer_puts(buffer_2, "WARNING:  value ");
         buffer_putxlong(buffer_2, cfg_read_word(word, setting));
@@ -621,7 +622,8 @@ usage(char* argv0) {
                        "Options\n"
                        "  -h, --help                show this help\n"
                        "  -o, --oneline             output oneliner\n"
-                       "  -D, --no-default          don't output settings with default                        alue\n"
+                       "  -D, --no-default          don't output settings with default "
+                       "value\n"
                        "  -d, --default             output settings with default value\n"
                        "  -C, --no-comments         don't output description comments\n"
                        "  -n, --name                output register name\n"
@@ -653,6 +655,7 @@ main(int argc, char* argv[]) {
   };
 
   for(;;) {
+
     if((c = unix_getopt_long(argc, argv, "hodcCnNvp", opts, &index)) == -1)
       break;
 

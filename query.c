@@ -293,6 +293,7 @@ query_run(struct query* z, int state) {
     goto have_packet;
 
   if(state == -1) {
+
     log_servfail(z->name[z->level]);
     goto serv_fail;
   }
@@ -332,7 +333,9 @@ new_name:
     return 1;
   }
 
-  if(dns_domain_equal(d, "\0011\0010\0010\003127\7in-                      ddr\4arpa\0")) {
+  if(dns_domain_equal(d,
+                      "\0011\0010\0010\003127\7in-"
+                      "addr\4arpa\0")) {
     if(z->level)
       goto lower_level;
 
@@ -362,6 +365,7 @@ new_name:
     cached = cache_get(key, dlen + 2, &cachedlen, &ttl);
 
     if(cached) {
+
       log_cachednxdomain(d);
       goto NXDOMAIN;
     }
@@ -397,6 +401,7 @@ new_name:
       cached = cache_get(key, dlen + 2, &cachedlen, &ttl);
 
       if(cached && (cachedlen || byte_diff(dtype, 2, DNS_T_ANY))) {
+
         log_cachedanswer(d, DNS_T_NS, cached, cachedlen);
 
         if(!query_aliases(z))
@@ -424,6 +429,7 @@ new_name:
       cached = cache_get(key, dlen + 2, &cachedlen, &ttl);
 
       if(cached && (cachedlen || byte_diff(dtype, 2, DNS_T_ANY))) {
+
         log_cachedanswer(d, DNS_T_PTR, cached, cachedlen);
 
         if(!query_aliases(z))
@@ -451,6 +457,7 @@ new_name:
       cached = cache_get(key, dlen + 2, &cachedlen, &ttl);
 
       if(cached && (cachedlen || byte_diff(dtype, 2, DNS_T_ANY))) {
+
         log_cachedanswer(d, DNS_T_MX, cached, cachedlen);
 
         if(!query_aliases(z))
@@ -572,6 +579,7 @@ new_name:
       cached = cache_get(key, dlen + 2, &cachedlen, &ttl);
 
       if(cached && (cachedlen || byte_diff(dtype, 2, DNS_T_ANY))) {
+
         log_cachedanswer(d, dtype, cached, cachedlen);
 
         if(!query_aliases(z))
@@ -627,6 +635,7 @@ new_name:
           pos = dns_packet_getname(cached, cachedlen, pos, &t1);
 
           while(pos) {
+
             log_cachedns(d, t1);
 
             if(j < QUERY_MAXNS)
@@ -677,6 +686,7 @@ have_ns:
   dns_sortip(z->servers[z->level], 64);
 
   if(z->level) {
+
     log_tx(z->name[z->level], DNS_T_A, z->control[z->level], z->servers[z->level], z->level);
 
     if(dns_transmit_start(&z->dt, z->servers[z->level], flagforwardonly, z->name[z->level], DNS_T_A, z->localip) == -1)
@@ -948,6 +958,7 @@ have_packet:
           goto die;
 
         if(records[i] < posauthority) {
+
           log_rrsoa(whichserver, t1, t2, t3, misc, ttl);
           save_data(misc, 20);
           save_data(t2, dns_domain_length(t2));
@@ -1113,6 +1124,7 @@ have_packet:
   }
 
   if(rcode == 3) {
+
     log_nxdomain(whichserver, d, soattl);
     cachegeneric(DNS_T_ANY, d, "", 0, soattl);
 
@@ -1295,8 +1307,8 @@ have_packet:
     if(dns_domain_equal(referral, t1)) /* should always be true
                                         */
 
-      if(typematch(header, DNS_T_NS)) /* should always
-                                         be true */
+      if(typematch(header, DNS_T_NS))  /* should always
+                                          be true */
         /* should always be true */
 
         if(byte_equal(header + 2, 2, DNS_C_IN))

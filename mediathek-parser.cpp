@@ -25,8 +25,7 @@ struct dateparser {
     ss.imbue(std::locale(ss.getloc(), input_facet));
   }
 
-  bool
-  operator()(std::string const& text) {
+  bool operator()(std::string const& text) {
     ss.clear();
     ss.str(text);
 
@@ -152,7 +151,7 @@ main() {
     std::cout << v.second.data() << std::endl;
     /* etc */
   }
-  * /
+  */
       /*
           boost::property_tree::basic_ptree<std::string,std::string>::const_iterator iter = pt.begin(),iterEnd =
       pt.end(); for(;iter != iterEnd;++iter)
@@ -160,7 +159,7 @@ main() {
            iter->first; /* Your key, at this level it will be "electron", "proton", "proton" */
       iter->second; /* The object at each step {"pos": [0,0,0], "vel": [0,0,0]}, etc. */
 }
-* / return EXIT_SUCCESS;
+*/ return EXIT_SUCCESS;
 }
 catch(std::exception& e) {
   std::cerr << e.what() << std::endl;

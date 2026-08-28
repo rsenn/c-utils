@@ -20,7 +20,10 @@ io_canread() {
 #if defined(HAVE_SIGIO)
   {
     if(alt_firstread >= 0 && (e = (io_entry*)iarray_get((iarray*)io_getfds(), alt_firstread)) && e->canread) {
-      debug_printf(("io_canread: normal read queue is empty, swapping in alt                     ead queue (starting                     ith %ld)\n", alt_firstread));
+      debug_printf(("io_canread: normal read queue is empty, swapping in alt "
+                    "read queue (starting "
+                    "with %ld)\n",
+                    alt_firstread));
       first_readable = alt_firstread;
       alt_firstread = -1;
     } else
@@ -67,12 +70,11 @@ io_canread() {
 
 #ifdef DEBUG_IO
   if(ret != -1) {
-    buffer_putspad(buffer_2, "\x1b[38;5;165mio_canread\x1b[0m ", 30);
+    buffer_putspad(buffer_2, "io_canread ", 30);
     buffer_puts(buffer_2, "ret=");
     buffer_putlong(buffer_2, ret);
     buffer_putnlflush(buffer_2);
   }
 #endif
-
   return ret;
 }

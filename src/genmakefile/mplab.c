@@ -1,8 +1,10 @@
 #include "../../genmakefile.h"
 #include "../../ini.h"
-#include "../../debug.h"
 #define MAP_USE_HMAP 1
+#include "../../lib/map.h"
 #include "mplab.h"
+#include "../../lib/set.h"
+#include "../../debug.h"
 #include "sources.h"
 #include "is.h"
 
@@ -126,8 +128,7 @@ output_mplab_project(buffer* b, MAP_T* _rules, MAP_T* vars, const strlist* inclu
   size_t n;
   unsigned int i = 0, num_sources = 0;
   stralloc sa, file;
-  ini_section_t *ini, *section, *cat_subfolders, *file_subfolders, *generated_files, *other_files,
-      *active_file_settings, *tool_settings;
+  ini_section_t *ini, *section, *cat_subfolders, *file_subfolders, *generated_files, *other_files, *active_file_settings, *tool_settings;
   mplab_config_t mplab_cfg = {
       /* .warning_level = */ 0,
       /* .verbose_messages = */ 1,
@@ -147,7 +148,8 @@ output_mplab_project(buffer* b, MAP_T* _rules, MAP_T* vars, const strlist* inclu
       /* .program_default_config_words = */ 0,
       /* .link_in_peripheral_library = */ 0,
       /* .additional_command_line_options = */
-      "--output=default,-inhx032       -output=+mcof,-elf",
+      "--output=default,-inhx032 "
+      "--output=+mcof,-elf",
       /* .memory_model = */ 1,
       /* .size_of_double = */ 1,
       /* .size_of_float = */ 1,
@@ -505,6 +507,7 @@ output_mplab_project(buffer* b, MAP_T* _rules, MAP_T* vars, const strlist* inclu
   ini_set(tool_settings, make_tool_key(&sa, ""), tcfg.sa.s);
 
   if(get_suite() <= 1) {
+
     for(i = 0; i < num_sources; i++) {
       size_t len;
 

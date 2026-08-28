@@ -108,7 +108,12 @@ static struct {
 
 void
 usage(char* prog) {
-  buffer_putm_internal(buffer_2, "Usage: ", str_basename(prog), " [-q] [-t timeout_sec] [-u                        imeout_usec] <host> <port>", NULL);
+  buffer_putm_internal(buffer_2,
+                       "Usage: ",
+                       str_basename(prog),
+                       " [-q] [-t timeout_sec] [-u "
+                       "timeout_usec] <host> <port>",
+                       NULL);
   buffer_putnlflush(buffer_2);
 }
 
@@ -224,6 +229,7 @@ ftp_read(int fd, void* b, size_t len, void* arg) {
 
 ssize_t
 ftp_write(int fd, void* b, size_t len, void* arg) {
+
 #ifdef DEBUG_OUTPUT
   buffer_puts(buffer_1, "Write ");
   buffer_putulong(buffer_1, len);
@@ -316,9 +322,13 @@ list_ftp(ftp_client* ftp) {
       }
 
       if(w == ftp->control_sock /*|| w == ftp->data_sock*/) {
+
         switch(ftp->state) {
           case CONNECTED: {
-            ftplib_write_cmd_s(&out, "USER                                nonymous\r\nPASS                                tp@");
+            ftplib_write_cmd_s(&out,
+                               "USER "
+                               "anonymous\r\nPASS "
+                               "ftp@");
             ftp->state = LOGGED_IN;
             break;
           }
@@ -350,7 +360,7 @@ list_ftp(ftp_client* ftp) {
         buffer_feed(b);
         stralloc_zero(&meld);
 
-        while(!buffer_EMPTY(b) && byte_chr(buffer_PEEK(b), buffer_LEN(b), '\n') < (buffer_LEN(b))) {
+        while(b->p < b->n && byte_chr(&b->x[b->p], b->n - b->p, '\n') < (b->n - b->p)) {
           buffer_getline_sa(b, &meld);
         }
 
@@ -364,7 +374,7 @@ list_ftp(ftp_client* ftp) {
         b = &in;
         buffer_feed(b);
 
-        while(!buffer_EMPTY(b) && byte_chr(buffer_PEEK(b), buffer_LEN(b), '\n') < (buffer_LEN(b))) {
+        while(b->p < b->n && byte_chr(&b->x[b->p], b->n - b->p, '\n') < (b->n - b->p)) {
           int done = 0;
 
           buffer_getnewline_sa(b, &meld);

@@ -52,7 +52,7 @@ SpacesInCStyleCastParentheses: false
 SpacesInParentheses: false
 SpacesInSquareBrackets: false
 UseTab: Never
-ColumnLimit: 120
+ColumnLimit: 200
 ConstructorInitializerIndentWidth: 4
 ContinuationIndentWidth: 4
 IndentWidth: 2

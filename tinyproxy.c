@@ -1,6 +1,4 @@
 #define USE_WS2_32 1
-#include "lib/buffer.h"
-#include "lib/set.h"
 #include "lib/windoze.h"
 #include "lib/socket_internal.h"
 #include "lib/io_internal.h"
@@ -10,6 +8,7 @@
 #include "lib/stralloc.h"
 #include "lib/strlist.h"
 #include "lib/strarray.h"
+#include "lib/buffer.h"
 #include "lib/ip4.h"
 #include "lib/ip6.h"
 #include "lib/open.h"
@@ -35,7 +34,7 @@
 #include "debug.h"
 #include <errno.h>
 #include <fcntl.h>
-// #include <libgen.h>
+//#include <libgen.h>
 #include <signal.h>
 #include <stdarg.h>
 #include <stdio.h>
@@ -52,7 +51,7 @@
 #include "config.h"
 #endif
 #ifdef HAVE_ALLOCA_H
-// #include <alloca.h>
+//#include <alloca.h>
 #endif
 #if !WINDOWS_NATIVE
 #include <syslog.h>
@@ -680,6 +679,7 @@ sockbuf_put_addr(buffer* b, socketbuf_t* sb) {
 
 void
 sockbuf_close(socketbuf_t* sb) {
+
   buffer_flush(&sb->buf);
   buffer_close(&sb->buf);
   io_close(sb->sock);
@@ -690,8 +690,7 @@ sockbuf_close(socketbuf_t* sb) {
 
 void
 sockbuf_check(socketbuf_t* sb) {
-  int wantwrite = (line_buffer && !buffer_is_binary(&sb->buf) && !sb->force_write) ? buffer_numlines(&sb->buf, NULL) > 0
-                                                                                   : sb->buf.p > 0;
+  int wantwrite = (line_buffer && !buffer_is_binary(&sb->buf) && !sb->force_write) ? buffer_numlines(&sb->buf, NULL) > 0 : sb->buf.p > 0;
   io_entry* e = io_getentry(sb->sock);
 
   if(wantwrite) {
@@ -977,6 +976,7 @@ server_tar_files(const char* cmd, const stralloc* archive, strlist* files) {
   strarray_from_argv(strlist_count(files), (const char* const*)strlist_to_argv(files), &argv);
 
   if(str_start(base, "7z")) {
+
     strarray_unshiftm(&argv, "a", "-ssc", archive->s, 0);
   } else {
     if(str_equal(base, "star"))
@@ -1023,6 +1023,7 @@ server_tar_files(const char* cmd, const stralloc* archive, strlist* files) {
   pid = wait_pid(child_pid, &status);
 
   if(pid != -1) {
+
     buffer_puts(buffer_2, cmd);
     dump_strarray(buffer_2, &argv, "'", " ");
     buffer_puts(buffer_2, " (");
@@ -1042,6 +1043,7 @@ server_exit(int code) {
 
 void
 server_sigint(int sig) {
+
   buffer_puts(&log, "SIGINT received");
   buffer_putnlflush(&log);
   buffer_close(&log);
@@ -1084,6 +1086,7 @@ server_spawn() {
 /* Main server loop */
 void
 server_loop() {
+
   int sock;
   connection_t* c;
   socketbuf_t* sb;
@@ -1136,6 +1139,7 @@ server_loop() {
 #endif
 
         while(sb->buf.p > 0) {
+
           /*   if(line_buffer && !buffer_is_binary(&sb->buf) &&
              !sb->force_write) { size_t num_lines, end_pos; socketbuf_t*
              other; if((num_lines = buffer_numlines(&sb->buf, &end_pos)) >
@@ -1150,7 +1154,7 @@ server_loop() {
 
                      if(b->p) {
                        other = socket_other(sb->sock);
-                       r = io_tryread(other->sock, buffer_PEEK(b), b->a -
+                       r = io_tryread(other->sock, &b->x[b->p], b->a -
              b->p); if(r > 0) { b->p += r; continue;
                        }
                      }
@@ -1183,8 +1187,7 @@ server_loop() {
         char addr[16];
         uint16 port;
         socklen_t addrlen = sizeof(addr);
-        sock = server.af == AF_INET ? socket_accept4(server_sock, addr, &port)
-                                    : socket_accept6(server_sock, addr, &port, 0);
+        sock = server.af == AF_INET ? socket_accept4(server_sock, addr, &port) : socket_accept6(server_sock, addr, &port, 0);
 
         if(sock == -1) {
           errmsg_warn("Accept error: ", strerror(errno), 0);
@@ -1195,6 +1198,7 @@ server_loop() {
         connections_processed++;
 
       } else {
+
         if((c = connection_find(sock, -1))) {
 
           n = sockbuf_forward_data(&c->client, &c->proxy);
@@ -1210,6 +1214,7 @@ server_loop() {
 #endif
           }
         } else if((c = connection_find(-1, sock))) {
+
           n = sockbuf_forward_data(&c->proxy, &c->client);
 
           if(n > 0) {
@@ -1269,7 +1274,10 @@ server_loop() {
 void
 server_connection_count() {
 #ifdef USE_SYSTEMD
-  sd_notifyf(0, "STATUS=Ready. %d              onnections processed.\n", connections_processed);
+  sd_notifyf(0,
+             "STATUS=Ready. %d "
+             "connections processed.\n",
+             connections_processed);
 #endif
 }
 
@@ -1345,9 +1353,12 @@ main(int argc, char* argv[]) {
 
   taia_uint(&ttl, DNS_MAX_AGE);
 
-  while(
-      (c = unix_getopt_long(argc, argv, "hb:l:r:p:i:O:fso:a:m:LdB:                              :n:", opts, &index)) !=
-      -1) {
+  while((c = unix_getopt_long(argc,
+                              argv,
+                              "hb:l:r:p:i:O:fso:a:m:LdB:"
+                              "T:n:",
+                              opts,
+                              &index)) != -1) {
     switch(c) {
       case 'h':
         usage(argv[0]);

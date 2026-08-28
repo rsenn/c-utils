@@ -64,8 +64,11 @@ usage(char* argv0) {
   buffer_putm_internal(buffer_1,
                        "Usage: ",
                        argv0,
-                       " [-o output] [infile or                        tdin]\n\n",
-                       "  -1 ... -11                                  ompression level; default is                        \n",
+                       " [-o output] [infile or "
+                       "stdin]\n\n",
+                       "  -1 ... -11           "
+                       "compression level; default is "
+                       "3\n",
                        "\n",
                        "Supported types are:",
                        NULL);
@@ -126,7 +129,14 @@ main(int argc, char* argv[]) {
       case 't': type = compression_from_ext(unix_optarg); break;
       case 'o': out_filename = unix_optarg; break;
       case 'h': usage(str_basename(argv[0])); exit(EXIT_SUCCESS);
-      default: /* '?' */ buffer_putm_internal(buffer_2, "Usage: ", argv[0], "[-t TYPE] [-o OUTPUT]                              file]\n", NULL); exit(EXIT_FAILURE);
+      default: /* '?' */
+        buffer_putm_internal(buffer_2,
+                             "Usage: ",
+                             argv[0],
+                             "[-t TYPE] [-o OUTPUT] "
+                             "[file]\n",
+                             NULL);
+        exit(EXIT_FAILURE);
     }
   }
 
@@ -155,7 +165,11 @@ main(int argc, char* argv[]) {
     output = buffer_1;
   } else {
     if(!force && path_exists(out_filename)) {
-      buffer_putm_internal(buffer_2, "ERROR already exists (use                            f): ", out_filename, NULL);
+      buffer_putm_internal(buffer_2,
+                           "ERROR already exists (use "
+                           "-f): ",
+                           out_filename,
+                           NULL);
       buffer_putnlflush(buffer_2);
       return 1;
     }
@@ -198,13 +212,20 @@ main(int argc, char* argv[]) {
       case C_LZMA: buffer_lzma(&cbuf, decompress ? input : output, decompress ? 0 : level); break;
       case C_BROTLI: buffer_brotli(&cbuf, decompress ? input : output, decompress ? 0 : level); break;
       default:
-        buffer_putm_internal(buffer_2, "ERROR: Unable to detect                              ompression type from ", in_filename, NULL);
+        buffer_putm_internal(buffer_2,
+                             "ERROR: Unable to detect "
+                             "compression type from ",
+                             in_filename,
+                             NULL);
         buffer_putnlflush(buffer_2);
         exit(EXIT_FAILURE);
     }
 
     if(decompress == 0 && output == buffer_1) {
-      buffer_putsflush(buffer_2, "ERROR: Won't write                        ompressed data to a                        erminal\n");
+      buffer_putsflush(buffer_2,
+                       "ERROR: Won't write "
+                       "compressed data to a "
+                       "terminal\n");
       exit(EXIT_FAILURE);
     }
 

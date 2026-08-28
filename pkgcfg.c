@@ -256,8 +256,8 @@ exec_program(const char* compiler, const char* arg, stralloc* out) {
   char* envp[1];
   const char* bin;
   stralloc dir;
-  argv[0] = (char*)compiler;
-  argv[1] = (char*)arg;
+  argv[0] = compiler;
+  argv[1] = arg;
   argv[2] = NULL;
   envp[0] = NULL;
 
@@ -1125,6 +1125,7 @@ pkg_conf(strarray* modules, id code, int mode) {
 
 static int
 add_path(const stralloc* dir) {
+
   if(path_exists(dir->s)) {
     strlist_push_sa(&cmd.path, dir);
 
@@ -1331,16 +1332,30 @@ usage(char* progname) {
   buffer_puts(buffer_1, "  --help, -h                        show this help\n");
   buffer_puts(buffer_1, "  --prefix, -p DIRECTORY            Set prefix directory\n");
   buffer_puts(buffer_1, "  --host, -m MACHINE                Set canonical host\n");
-  buffer_puts(buffer_1, "  --cflags                          print required CFLAGS               o stdout\n");
-  buffer_puts(buffer_1, "  --libs                            print required linker               lags to stdout\n");
-  buffer_puts(buffer_1, "  --path                            show the exact               ilenames for any matching .pc files\n");
-  buffer_puts(buffer_1, "  --modversion                      print the specified               odule's version to stdout\n");
+  buffer_puts(buffer_1,
+              "  --cflags                          print required CFLAGS "
+              "to stdout\n");
+  buffer_puts(buffer_1,
+              "  --libs                            print required linker "
+              "flags to stdout\n");
+  buffer_puts(buffer_1,
+              "  --path                            show the exact "
+              "filenames for any matching .pc files\n");
+  buffer_puts(buffer_1,
+              "  --modversion                      print the specified "
+              "module's version to stdout\n");
   buffer_puts(buffer_1, "  --list-all                        list all known packages\n");
-  buffer_puts(buffer_1, "  --list-path                       list path of all known               ackages\n");
+  buffer_puts(buffer_1,
+              "  --list-path                       list path of all known "
+              "packages\n");
   buffer_puts(buffer_1, "  --verbose                         increase verbosity\n");
-  buffer_puts(buffer_1, "  --debug                           show verbose debug               nformation\n");
+  buffer_puts(buffer_1,
+              "  --debug                           show verbose debug "
+              "information\n");
   buffer_puts(buffer_1, "  --sorted                          sorted list output\n");
-  buffer_puts(buffer_1, "  --unsorted                        unsorted list output               default)\n\n");
+  buffer_puts(buffer_1,
+              "  --unsorted                        unsorted list output "
+              "(default)\n\n");
   buffer_putm_internal(buffer_1, "Default prefix: ", cmd.prefix.s, "\n", NULL);
   buffer_putm_internal(buffer_1, "Default host: ", cmd.host.s, "\n", NULL);
   buffer_puts(buffer_1, "Default search path:\n  ");
@@ -1432,6 +1447,7 @@ main(int argc, char* argv[], char* envp[]) {
       c = opts[index].val;
 
     switch(c) {
+
       case ATLEAST_PKGCONFIG_VERSION: atleast_version = 1; break;
       case 'm': {
         stralloc_copys(&cmd.host, unix_optarg);
@@ -1542,6 +1558,7 @@ getopt_end:
     stralloc_nul(&cmd.prefix);
 
     if((pos = stralloc_finds(&cmd.prefix, "/sys-root/")) < cmd.prefix.len || (pos = stralloc_finds(&cmd.prefix, "/sysroot/")) < cmd.prefix.len) {
+
       sysroot = str_ndup(cmd.prefix.s, pos + 9);
     } else {
       sysroot = "";

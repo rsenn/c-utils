@@ -20,8 +20,7 @@ public:
 
   directory_iterator& operator++();
 
-  directory_iterator
-  operator++(int) {
+  directory_iterator operator++(int) {
     directory_iterator temp = *this;
     ++*this;
     return temp;
@@ -29,25 +28,13 @@ public:
 
   bool operator==(const directory_iterator& other) const;
 
-  bool
-  operator!=(const directory_iterator& other) const {
-    return !(*this == other);
-  }
+  bool operator!=(const directory_iterator& other) const { return !(*this == other); }
 
-  const string&
-  operator*() const {
-    return m_buffer;
-  }
+  const string& operator*() const { return m_buffer; }
 
-  handle_type
-  handle() const {
-    return m_handle;
-  }
+  handle_type handle() const { return m_handle; }
 
-  retcode_type
-  retcode() const {
-    return m_retcode;
-  }
+  retcode_type retcode() const { return m_retcode; }
 
 protected:
   void close();

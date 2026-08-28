@@ -294,6 +294,7 @@ get_parent(void* n, const char* parent) {
  */
 xmlnode*
 get_child(xmlnode* node, const char* name) {
+
   for(node = node->children; node; node = node->next) {
     if(!str_diff(node->name, name))
       return node;
@@ -476,6 +477,7 @@ node_align(xmlnode* node) {
   int ret = 0;
 
   for(i = 0; i < (sizeof(attr_names) / sizeof(attr_names[0])); ++i) {
+
     if(xml_has_attribute(node, attr_names[i])) {
       double newval, oldval = get_double(node, attr_names[i]);
 
@@ -611,6 +613,7 @@ check_wire(xmlnode* node) {
     wire w = get_wire(node);
 
     if(layer == measures_layer) {
+
       array_catb(&wires, &w, sizeof(wire));
 
       xml_delete(node);
@@ -705,6 +708,7 @@ build_sym(xmlnode* part) {
  */
 void
 build_reflist(xmlnode* node, struct net* n, int* index) {
+
   for(; node; node = node->next) {
     char *nn, *part_name;
     struct ref* r;
@@ -907,6 +911,7 @@ for_set(xmlnodeset* ns, void (*fn)(xmlnode*)) {
     return;
 
   for(it = xmlnodeset_begin(ns), e = xmlnodeset_end(ns); it != e; ++it) {
+
     fn(*it);
   }
 }
@@ -1078,6 +1083,7 @@ node_depth(xmlnode* node) {
 
 int
 str_ischarset(const char* s, const char* set) {
+
   while(*s) {
     if(set[str_chr(set, *s)] == '\0')
       return 0;
@@ -1420,6 +1426,7 @@ print_script(buffer* b, xmlnode* e) {
     buffer_putm_internal(b, cmd.s, xml_get_attribute(e, "orientation"), " ", NULL);
     print_xml_rect(b, e);
   } else if(str_equal(e->name, "text")) {
+
     buffer_putm_internal(b, cmd.s, "'", xml_content(e), "' ", xml_get_attribute(e, "orientation"), " ", NULL);
 
     print_xml_xy(b, e);
@@ -1605,11 +1612,21 @@ void
 usage(char* progname) {
   buffer_putm_internal(buffer_1, "Usage: ", progname, " [OPTIONS] [PACKAGES...]\n", NULL);
   buffer_puts(buffer_1, "Options\n");
-  buffer_puts(buffer_1, "  --help, -h                                     show this help\n");
-  buffer_puts(buffer_1, "  --layer, -l NUM                     ayer name/number\n");
-  buffer_puts(buffer_1, "  --layers, -L                        ist layers\n");
-  buffer_puts(buffer_1, "  --draw, -d                          raw measures\n");
-  buffer_puts(buffer_1, "  --align-by, -A NUM    Align               o (inch, mm, mil)\n");
+  buffer_puts(buffer_1,
+              "  --help, -h                    "
+              "    show this help\n");
+  buffer_puts(buffer_1,
+              "  --layer, -l NUM       "
+              "Layer name/number\n");
+  buffer_puts(buffer_1,
+              "  --layers, -L          "
+              "List layers\n");
+  buffer_puts(buffer_1,
+              "  --draw, -d            "
+              "Draw measures\n");
+  buffer_puts(buffer_1,
+              "  --align-by, -A NUM    Align "
+              "to (inch, mm, mil)\n");
   buffer_putnlflush(buffer_1);
 }
 
@@ -1668,7 +1685,9 @@ main(int argc, char* argv[]) {
     symbols = cbmap_new();
 
     if(!argv[unix_optind]) {
-      argv[unix_optind] = "/home/roman/Sources/                          n-tronics/eagle/                          0106-4069-Synth.brd";
+      argv[unix_optind] = "/home/roman/Sources/"
+                          "an-tronics/eagle/"
+                          "40106-4069-Synth.brd";
     } else if(argv[unix_optind + 1]) {
       xq = argv[unix_optind + 1];
     }
@@ -1684,6 +1703,7 @@ main(int argc, char* argv[]) {
     dump_strarray("layers", &layers);
 
     if(do_list_layers) {
+
       size_t i, n = strarray_size(&layers);
 
       for(i = 0; i < n; ++i) {
