@@ -52,10 +52,19 @@ GM_SKIP=0
 GM_REPORT=""
 # subcommand (non-buildtool) failures are the same underlying toolchain
 # problem regardless of which build tool wrapped it, so only the first
-# one seen per GROUP (see gm_run_case) gets a full report; the rest are
-# just noted here and folded into a summary section by gm_summary.
+# one seen per GROUP (see gm_run_case) gets a full report; later ones
+# for the same GROUP are silently dropped (not even listed) -- the
+# per-group "entire matrix failed" note in testsuite.sh covers that
+# case instead.
 GM_SUBCMD_SEEN=""
-GM_SUBCMD_ACCUM=""
+# how many DISTINCT failures have been fully reported so far (i.e. not
+# silently deduped) -- what -n/--num counts against.
+GM_DISTINCT_FAILS=0
+# pass | fail | skip, set by whichever of gm_pass/gm_skip/gm_fail_simple/
+# gm_report_generate_failure/gm_report_build_failure last ran, so a
+# caller (testsuite.sh) can tell a case's outcome after gm_run_case
+# returns without adding a return-value protocol to gm_run_case itself.
+GM_LAST_OUTCOME=""
 # how many trailing lines of a log to quote in the report
 GM_LOG_TAIL=${GM_LOG_TAIL:-20}
 
@@ -63,11 +72,13 @@ gm_info() { printf '  %s\n' "$*" >&2; }
 
 gm_pass() {
   GM_PASS=$((GM_PASS + 1))
+  GM_LAST_OUTCOME=pass
   printf 'ok      %s\n' "$1"
 }
 
 gm_skip() {
   GM_SKIP=$((GM_SKIP + 1))
+  GM_LAST_OUTCOME=skip
   printf 'skip    %s -- %s\n' "$1" "$2"
 }
 
@@ -78,6 +89,8 @@ gm_fail_simple() {
   local name=$1 message=$2
 
   GM_FAIL=$((GM_FAIL + 1))
+  GM_DISTINCT_FAILS=$((GM_DISTINCT_FAILS + 1))
+  GM_LAST_OUTCOME=fail
   printf 'FAIL    %s -- %s\n' "$name" "$message"
   GM_REPORT="$GM_REPORT
 ## $name
@@ -161,6 +174,8 @@ gm_report_generate_failure() {
   local msg
 
   GM_FAIL=$((GM_FAIL + 1))
+  GM_DISTINCT_FAILS=$((GM_DISTINCT_FAILS + 1))
+  GM_LAST_OUTCOME=fail
   msg="genmakefile exited $status"
   [ -n "$note" ] && msg=$note
   printf 'FAIL    %s -- %s\n' "$name" "$msg"
@@ -194,23 +209,22 @@ gm_subcmd_seen() {
 # directory layout wrapped it, so they'd otherwise repeat identically
 # many times over. Only the first one seen per GROUP (the compiler
 # instance, from gm_run_case) gets a full report; later ones for the
-# same GROUP are just tallied for gm_summary's accumulated-failures
-# section instead.
+# same GROUP are silently dropped -- see the per-group "entire matrix
+# failed" note testsuite.sh prints instead.
 gm_report_build_failure() {
   local name=$1 status=$2 failkind=$3 gencmd=$4 builddir=$5
   local buildcmd=$6 logfile=$7 genfile=$8 genfile_name=$9 group=${10}
   local label
 
   GM_FAIL=$((GM_FAIL + 1))
+  GM_LAST_OUTCOME=fail
 
   if [ "$failkind" = buildtool ]; then
     label="build tool itself failed"
   else
     label="a subcommand failed (build tool ran fine)"
     if gm_subcmd_seen "$group"; then
-      GM_SUBCMD_ACCUM="$GM_SUBCMD_ACCUM
-$group:$name"
-      printf 'FAIL    %s -- %s (exit %s) [same as earlier %s failure, accumulated]\n' \
+      printf 'FAIL    %s -- %s (exit %s) [same as earlier %s failure, deduped]\n' \
         "$name" "$label" "$status" "$group"
       return
     fi
@@ -218,6 +232,7 @@ $group:$name"
 $group"
   fi
 
+  GM_DISTINCT_FAILS=$((GM_DISTINCT_FAILS + 1))
   printf 'FAIL    %s -- %s (exit %s)\n' "$name" "$label" "$status"
 
   GM_REPORT="$GM_REPORT
@@ -245,19 +260,7 @@ $(cat "$genfile")
 
 gm_summary() {
   echo
-  echo "genmakefile testsuite: $GM_PASS passed, $GM_FAIL failed, $GM_SKIP skipped"
-
-  if [ -n "$GM_SUBCMD_ACCUM" ]; then
-    GM_REPORT="$GM_REPORT
-## Repeated subcommand failures
-
-Same underlying toolchain failure as the matching case detailed above --
-only the build tool/directory layout wrapping it differs, so these
-aren't shown again in full.
-
-$(printf '%s\n' "$GM_SUBCMD_ACCUM" | sed '/^$/d' | while IFS=: read -r g n; do printf -- '- %s (same as first %s failure above)\n' "$n" "$g"; done)
-"
-  fi
+  echo "genmakefile testsuite: $GM_PASS passed, $GM_FAIL failed, $GM_SKIP skipped ($GM_DISTINCT_FAILS distinct)"
 
   if [ "$GM_FAIL" -gt 0 ]; then
     printf '%s\n' "$GM_REPORT"
