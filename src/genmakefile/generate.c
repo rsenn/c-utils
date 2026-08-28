@@ -590,13 +590,12 @@ generate_lib_rules(bool shell, bool batch, bool batchmode, char psa, char psm) {
  * @return    Rule
  */
 target*
-generate_program_rule(const char* name, char psa) {
+generate_program_rule(const char* name, char psa, strarray* other_sources, set_t* main_dirs) {
   target *preprocess = 0, *compile = 0, *rule = 0, *all = 0;
   const char *x, *link_lib;
   set_t incs = SET(), deps = SET();
   strlist libs;
   stralloc dir, bin, ppsrc, obj;
-  sourcedir* srcdir;
 
   strlist_init(&libs, ' ');
   stralloc_init(&ppsrc);
@@ -611,7 +610,6 @@ generate_program_rule(const char* name, char psa) {
 #endif
 
   path_dirname(name, &dir);
-  srcdir = sourcedir_getsa(&dir);
 
   if(tools.preproc)
     path_output(name, &ppsrc, exts.pps, psa);
@@ -671,36 +669,29 @@ generate_program_rule(const char* name, char psa) {
 
   if((rule = rule_get_sa(&bin))) {
     size_t n;
-    sourcefile* pfile;
     set_iterator_t it;
 
     add_path_sa(&rule->prereq, &obj);
 
-    if(1 || cmd_libs) {
-      slist_foreach(srcdir->sources, pfile) {
-        if(!pfile->has_main && !is_include(pfile->name)) {
+    if(other_sources) {
+      char** sp;
+
+      strarray_foreach(other_sources, sp) {
+        stralloc odir;
+
+        stralloc_init(&odir);
+        path_dirname(*sp, &odir);
+
+        /* pull in a non-main source if it's in this program's own
+         * directory, or in a directory that contains no main() at all
+         * (a shared library directory, e.g. lib/) */
+        if(!main_dirs || !set_has_sa(main_dirs, &odir) || !byte_diff2(dir.s, dir.len, odir.s, odir.len)) {
           stralloc_zero(&obj);
-          path_output(pfile->name, &obj, exts.obj, psa);
+          path_output(*sp, &obj, exts.obj, psa);
           add_path_sa(&rule->prereq, &obj);
         }
-      }
-    } else {
-      slink* source;
 
-      dlist_foreach_down(&sources_list, source) {
-        sourcefile* sfile = dlist_data(source, sourcefile*);
-        char* name = (char*)sfile->name;
-
-        stralloc_zero(&dir);
-        path_dirname(name, &dir);
-
-        if(str_end(name, exts.inc))
-          continue;
-
-        strlist_push_unique_sa(&vpath, &dir);
-        stralloc_zero(&obj);
-        path_output(name, &obj, exts.obj, psa);
-        add_path_sa(&rule->prereq, &obj);
+        stralloc_free(&odir);
       }
     }
 
@@ -767,12 +758,17 @@ generate_link_rules(char psa, char psm) {
   int num_main = 0, count = 0;
   target* link = 0;
   struct dnode* node;
+  strarray mains = {0}, others = {0};
+  set_t main_dirs = SET();
+  char** pp;
 
 #ifdef DEBUG_OUTPUT
   buffer_putm_internal(debug_buf, "[1]", GREEN256, "generate_link_rules(", NC, GREEN256, ") ", NC, 0);
   buffer_putnlflush(debug_buf);
 #endif
 
+  /* pass 1: classify sources with/without main(), and mark which
+   * directories contain a main() (those are per-program, not shared) */
   dlist_foreach_down(&sources_list, node) {
     sourcefile* file = dlist_data(node, sourcefile*);
     char* filename = (char*)file->name;
@@ -782,18 +778,39 @@ generate_link_rules(char psa, char psm) {
     buffer_putnlflush(debug_buf);
 #endif
 
-    if(is_source(filename) && main_present(filename)) {
-      target* rule;
+    if(!is_source(filename))
+      continue;
 
-      if(!link && (rule = generate_program_rule(filename, psa)))
-        link = rule;
+    if(main_present(filename)) {
+      stralloc dir;
 
-      strarray_push_unique(&progs, filename);
-      num_main++;
+      stralloc_init(&dir);
+      path_dirname(filename, &dir);
+      set_addsa(&main_dirs, &dir);
+      stralloc_free(&dir);
+
+      strarray_push_unique(&mains, filename);
+    } else if(!is_include(filename)) {
+      strarray_push_unique(&others, filename);
     }
-
-    // count++;
   }
+
+  /* pass 2: one program+link rule per main, depending on its own
+   * directory's objects plus every shared-library directory's objects */
+  strarray_foreach(&mains, pp) {
+    const char* filename = *pp;
+    target* rule = generate_program_rule(filename, psa, &others, &main_dirs);
+
+    if(!link && rule)
+      link = rule;
+
+    strarray_push_unique(&progs, filename);
+    num_main++;
+  }
+
+  strarray_free(&mains);
+  strarray_free(&others);
+  set_free(&main_dirs);
 
   if(num_main <= 1 && link && output_name.len) {
     stralloc oldname;
