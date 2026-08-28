@@ -2345,9 +2345,6 @@ main(int argc, char* argv[]) {
     goto quit;
   }
 
-  generate_mkdir_rule(&dirs.work.sa);
-  add_path_sa(&all->prereq, &dirs.work.sa);
-
 #ifdef DEBUG_OUTPUT_
   {
     size_t n;
@@ -2359,11 +2356,6 @@ main(int argc, char* argv[]) {
     buffer_putnlflush(buffer_2);
   }
 #endif
-
-  if(!stralloc_equals(&dirs.out.sa, "./")) {
-    generate_mkdir_rule(&dirs.out.sa);
-    add_path_sa(&all->prereq, &dirs.out.sa);
-  }
 
 #ifdef DEBUG_OUTPUT_
   buffer_puts(debug_buf, "args: ");
@@ -2585,6 +2577,58 @@ main(int argc, char* argv[]) {
           set_adds(&all->prereq, MAP_ITER_KEY(t));
       }
     }
+  }
+
+  {
+    MAP_PAIR_T t;
+    set_t rule_dirs = SET();
+    set_iterator_t it;
+    const char* d;
+    size_t dlen;
+
+    MAP_FOREACH(rule_map, t) {
+      target* rule = MAP_ITER_VALUE(t);
+      stralloc dir, name;
+      size_t namelen;
+
+      /* some rule names are "target: mask" pattern-rule keys (see
+       * generate_srcdir_rule()/generate_srcdir_compile_rules()), not a
+       * plain path -- only the part before ": " is an actual target.
+       * path_dirname_b() can't be handed that bound directly: its
+       * "no separator" check reads path[size], which for a bound
+       * short of the real NUL isn't '\0' -- so cut a properly
+       * NUL-terminated copy first. */
+      namelen = str_find(rule->name, ": ");
+
+      stralloc_init(&name);
+      stralloc_copyb(&name, rule->name, namelen);
+      stralloc_nul(&name);
+
+      stralloc_init(&dir);
+      path_dirname(name.s, &dir);
+      stralloc_nul(&dir);
+      stralloc_free(&name);
+
+      if(dir.len && !stralloc_equals(&dir, "."))
+        set_insert(&rule_dirs, dir.s, dir.len);
+
+      stralloc_free(&dir);
+    }
+
+    set_foreach(&rule_dirs, it, d, dlen) {
+      stralloc dirsa;
+
+      stralloc_init(&dirsa);
+      stralloc_copyb(&dirsa, d, dlen);
+      stralloc_nul(&dirsa);
+
+      generate_mkdir_rule(&dirsa);
+      set_insert(&all->prereq, dirsa.s, dirsa.len);
+
+      stralloc_free(&dirsa);
+    }
+
+    set_free(&rule_dirs);
   }
 
   generate_clean_rule(pathsep_make);

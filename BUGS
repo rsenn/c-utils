@@ -220,3 +220,22 @@
   race or an ordering assumption in the generated `build.sh` (or in how
   `gm_run_build`/`sh -x` executes it) rather than anything
   compiler/toolchain-specific. Not investigated yet.
+
+- genmakefile-program-object-empty-recipe: the object file compiled
+  from the source containing `main()` always gets an empty recipe in
+  `make`/`gmake` output. In `generate_program_rule()`
+  (`src/genmakefile/generate.c:639-642`):
+  ```c
+  if((compile = rule_get_sa(&obj))) {
+    add_source(&compile->prereq, name, psa);
+    stralloc_weak(&compile->recipe, &commands.compile);
+    stralloc_zero(&compile->recipe);
+  ```
+  the `stralloc_zero()` immediately erases the recipe `stralloc_weak()`
+  just set one line above -- looks like a stray leftover line, not
+  intentional. Reproduces even in the simplest all-same-directory gmake
+  case (`main.o: ../src/main.c` with no command follows), and since an
+  explicit (even recipe-less) rule for a target suppresses GNU Make's
+  implicit/pattern-rule fallback, the build then fails with "cannot
+  find main.o". Found while testing the BUILDDIR-substitution and
+  mkdir-rule changes; not the cause of either, not fixed here.
