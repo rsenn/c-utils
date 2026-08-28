@@ -298,7 +298,7 @@ gm_run_build() (
       ninja -f "$outfile"
       ;;
     shell)
-      sh "$outfile"
+      sh -x "$outfile"
       ;;
     gmake)
       command -v gmake >/dev/null 2>&1 || return 127
@@ -382,7 +382,6 @@ gm_run_case() {
   build_log="$caseroot.build.log"
 
   (
-    set -x
     cd "$srcroot" || exit 1
     mkdir -p "$GM_WORKDIR" "$GM_BUILDDIR" "$GM_OUTDIR"
 
@@ -408,10 +407,7 @@ gm_run_case() {
     return
   fi
 
-  (
-    set -x
-    gm_run_build "$make_type" "$srcroot/$GM_WORKDIR" "$outfile_name"
-  ) >"$build_log" 2>&1
+  gm_run_build "$make_type" "$srcroot/$GM_WORKDIR" "$outfile_name" >"$build_log" 2>&1
   build_status=$?
 
   if [ "$build_status" -eq 127 ]; then
