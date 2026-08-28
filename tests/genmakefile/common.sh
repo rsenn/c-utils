@@ -46,10 +46,12 @@ trap gm_cleanup EXIT INT TERM
 GM_PASS=0
 GM_FAIL=0
 GM_SKIP=0
-GM_FAILED_NAMES=""
-# one "name:logpath" record per failure (logpath may be empty), used by
-# gm_summary to print every failed case's full log at the end.
-GM_FAILED_LOGS=""
+# markdown report body, one "## name" section per failure, built up by
+# gm_report_generate_failure / gm_report_build_failure and dumped
+# verbatim by gm_summary.
+GM_REPORT=""
+# how many trailing lines of a log to quote in the report
+GM_LOG_TAIL=${GM_LOG_TAIL:-20}
 
 gm_info() { printf '  %s\n' "$*" >&2; }
 
@@ -58,23 +60,166 @@ gm_pass() {
   printf 'ok      %s\n' "$1"
 }
 
-# gm_fail NAME MESSAGE [LOGFILE...] -- LOGFILE(s), if given, are
-# concatenated into the combined failure report gm_summary prints.
-gm_fail() {
-  name=$1
-  message=$2
-  shift 2
-  GM_FAIL=$((GM_FAIL + 1))
-  GM_FAILED_NAMES="$GM_FAILED_NAMES
-$name -- $message"
-  GM_FAILED_LOGS="$GM_FAILED_LOGS
-$name:$*"
-  printf 'FAIL    %s -- %s\n' "$name" "$message"
-}
-
 gm_skip() {
   GM_SKIP=$((GM_SKIP + 1))
   printf 'skip    %s -- %s\n' "$1" "$2"
+}
+
+# gm_fail_simple NAME MESSAGE -- a harness-level failure with nothing
+# useful to quote (bad arguments to gm_run_case itself, not something
+# genmakefile or a build tool did).
+gm_fail_simple() {
+  GM_FAIL=$((GM_FAIL + 1))
+  printf 'FAIL    %s -- %s\n' "$1" "$2"
+  GM_REPORT="$GM_REPORT
+## $1
+
+- result: $2
+"
+}
+
+# gm_tail FILE -- last GM_LOG_TAIL lines of FILE, or a placeholder.
+gm_tail() {
+  if [ -f "$1" ]; then
+    tail -n "$GM_LOG_TAIL" "$1"
+  else
+    echo "(no log)"
+  fi
+}
+
+# gm_fence_lang FILENAME -- markdown code-fence language tag to use
+# when quoting FILENAME's contents.
+gm_fence_lang() {
+  case "$1" in
+    *.ninja) echo ninja ;;
+    *.sh) echo sh ;;
+    Makefile | *.mk) echo makefile ;;
+    *) echo text ;;
+  esac
+}
+
+# gm_classify_build_failure LOGFILE MAKE_TYPE -- "buildtool" if the
+# build tool itself couldn't process the generated file (bad rule,
+# parse error, missing target -- a genmakefile-output bug), or
+# "subcommand" if the build tool ran fine but a command it invoked
+# (the compiler/archiver/linker) failed on its own terms.
+gm_classify_build_failure() {
+  logfile=$1
+  make_type=$2
+
+  case "$make_type" in
+    ninja)
+      if grep -qE '^FAILED:|: subcommand failed' "$logfile" 2>/dev/null; then
+        echo subcommand
+      else
+        echo buildtool
+      fi
+      ;;
+    make | gmake)
+      if grep -qE '\*\*\* \[.+\] Error [0-9]+' "$logfile" 2>/dev/null; then
+        echo subcommand
+      else
+        echo buildtool
+      fi
+      ;;
+    shell)
+      if grep -qE 'syntax error|unexpected (end of file|EOF)|unexpected token' "$logfile" 2>/dev/null; then
+        echo buildtool
+      else
+        echo subcommand
+      fi
+      ;;
+    *)
+      echo subcommand
+      ;;
+  esac
+}
+
+# gm_build_cmd_str MAKE_TYPE OUTFILE -- the command line gm_run_build
+# actually runs for MAKE_TYPE, for display in the report.
+gm_build_cmd_str() {
+  case "$1" in
+    ninja) echo "ninja -f $2" ;;
+    shell) echo "sh -x $2" ;;
+    gmake) echo "gmake -f $2" ;;
+    make) echo "make -f $2" ;;
+  esac
+}
+
+# gm_report_generate_failure NAME STATUS CMD LOGFILE [NOTE]
+# records a failure of the genmakefile invocation itself (the
+# generator, not the build tool it produces a file for).
+gm_report_generate_failure() {
+  name=$1
+  status=$2
+  cmd=$3
+  logfile=$4
+  note=${5:-}
+
+  GM_FAIL=$((GM_FAIL + 1))
+  msg="genmakefile exited $status"
+  [ -n "$note" ] && msg=$note
+  printf 'FAIL    %s -- %s\n' "$name" "$msg"
+
+  GM_REPORT="$GM_REPORT
+## $name
+
+- result: genmakefile itself failed (exit $status)
+- command: \`$cmd\`
+
+\`\`\`text
+$(gm_tail "$logfile")
+\`\`\`
+"
+}
+
+# gm_report_build_failure NAME STATUS FAILKIND GENCMD BUILDDIR BUILDCMD
+#                          LOGFILE GENFILE GENFILE_NAME
+# records a failure of the build tool (or a subcommand it ran) against
+# the file genmakefile produced. When FAILKIND is "buildtool", the
+# generated file's full contents are quoted too.
+gm_report_build_failure() {
+  name=$1
+  status=$2
+  failkind=$3
+  gencmd=$4
+  builddir=$5
+  buildcmd=$6
+  logfile=$7
+  genfile=$8
+  genfile_name=$9
+
+  GM_FAIL=$((GM_FAIL + 1))
+
+  if [ "$failkind" = buildtool ]; then
+    label="build tool itself failed"
+  else
+    label="a subcommand failed (build tool ran fine)"
+  fi
+
+  printf 'FAIL    %s -- %s (exit %s)\n' "$name" "$label" "$status"
+
+  GM_REPORT="$GM_REPORT
+## $name
+
+- result: $label (exit $status)
+- genmakefile command: \`$gencmd\`
+- build command: \`(cd $builddir && $buildcmd)\`
+
+\`\`\`text
+$(gm_tail "$logfile")
+\`\`\`
+"
+
+  if [ "$failkind" = buildtool ] && [ -f "$genfile" ]; then
+    GM_REPORT="$GM_REPORT
+Generated \`$genfile_name\`:
+
+\`\`\`$(gm_fence_lang "$genfile_name")
+$(cat "$genfile")
+\`\`\`
+"
+  fi
 }
 
 gm_summary() {
@@ -82,26 +227,7 @@ gm_summary() {
   echo "genmakefile testsuite: $GM_PASS passed, $GM_FAIL failed, $GM_SKIP skipped"
 
   if [ "$GM_FAIL" -gt 0 ]; then
-    echo "failed cases:"
-    printf '%s\n' "$GM_FAILED_NAMES" | sed '/^$/d; s/^/  - /'
-
-    echo
-    echo "=== combined logs for failed cases ==="
-    while IFS=: read -r case_name logfiles; do
-      [ -z "$case_name" ] && continue
-      for logfile in $logfiles; do
-        echo
-        echo "----- $case_name: $logfile -----"
-        if [ -f "$logfile" ]; then
-          cat "$logfile"
-        else
-          echo "(no log file)"
-        fi
-      done
-    done <<EOF
-$GM_FAILED_LOGS
-EOF
-
+    printf '%s\n' "$GM_REPORT"
     return 1
   fi
 
@@ -363,13 +489,13 @@ gm_run_case() {
     host) mock_tree_host "$srcroot" ;;
     pic) mock_tree_pic "$srcroot" ;;
     *)
-      gm_fail "$name" "unknown tree kind '$kind'"
+      gm_fail_simple "$name" "unknown tree kind '$kind'"
       return
       ;;
   esac
 
   gm_dirs_for_partition "$partition" "_out" || {
-    gm_fail "$name" "bad partition '$partition'"
+    gm_fail_simple "$name" "bad partition '$partition'"
     return
   }
 
@@ -380,6 +506,9 @@ gm_run_case() {
 
   genmakefile_log="$caseroot.genmakefile.log"
   build_log="$caseroot.build.log"
+
+  # shellcheck disable=SC2089
+  genmakefile_cmd="genmakefile -t $compiler -m $make_type -I. -Ilib -Ilib/extra -Isrc src/main.c lib/ --create-bins --create-libs -d $GM_BUILDDIR -O $GM_OUTDIR -o $outfile_rel $extra_args"
 
   (
     cd "$srcroot" || exit 1
@@ -398,16 +527,20 @@ gm_run_case() {
   gm_status=$?
 
   if [ "$gm_status" -ne 0 ]; then
-    gm_fail "$name" "genmakefile exited $gm_status" "$genmakefile_log"
+    gm_report_generate_failure "$name" "$gm_status" "$genmakefile_cmd" "$genmakefile_log"
     return
   fi
 
   if [ ! -f "$srcroot/$outfile_rel" ]; then
-    gm_fail "$name" "genmakefile did not write $outfile_rel" "$genmakefile_log"
+    gm_report_generate_failure "$name" "$gm_status" "$genmakefile_cmd" "$genmakefile_log" \
+      "genmakefile did not write $outfile_rel"
     return
   fi
 
-  gm_run_build "$make_type" "$srcroot/$GM_WORKDIR" "$outfile_name" >"$build_log" 2>&1
+  build_dir="$srcroot/$GM_WORKDIR"
+  build_cmd=$(gm_build_cmd_str "$make_type" "$outfile_name")
+
+  gm_run_build "$make_type" "$build_dir" "$outfile_name" >"$build_log" 2>&1
   build_status=$?
 
   if [ "$build_status" -eq 127 ]; then
@@ -416,7 +549,9 @@ gm_run_case() {
   fi
 
   if [ "$build_status" -ne 0 ]; then
-    gm_fail "$name" "$make_type build exited $build_status" "$genmakefile_log" "$build_log"
+    failkind=$(gm_classify_build_failure "$build_log" "$make_type")
+    gm_report_build_failure "$name" "$build_status" "$failkind" "$genmakefile_cmd" \
+      "$build_dir" "$build_cmd" "$build_log" "$srcroot/$outfile_rel" "$outfile_name"
     return
   fi
 
