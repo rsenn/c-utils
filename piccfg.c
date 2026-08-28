@@ -312,7 +312,10 @@ cfg_find_setting(const char* str) {
   cfg_word* word;
   cfg_setting* setting;
 
-  slink_foreach(words, word) for(setting = word->settings; setting; setting = setting->next) if(!str_diffn(str, setting->name, str_len(setting->name))) return setting;
+  slink_foreach(words,
+                word) for(setting = word->settings; setting;
+                          setting =
+                              setting->next) if(!str_diffn(str, setting->name, str_len(setting->name))) return setting;
 
   return NULL;
 }
@@ -351,7 +354,10 @@ cfg_infer_chip(const char* x, size_t n) {
         char c1 = setting[1];
 
         if(c1 == '2' || c1 == '6' || c1 == '8') {
-          len = scan_charsetnskip(setting, "0123456789aAbBcCeEfFgGhH                                  IjJkKlLmMnNpPrRtTvV", len);
+          len = scan_charsetnskip(setting,
+                                  "0123456789aAbBcCeEfFgGhH"
+                                  "iIjJkKlLmMnNpPrRtTvV",
+                                  len);
 
           if(len > 3) {
             stralloc_copyb(&chip, setting, len);
@@ -572,7 +578,10 @@ cfg_output(const strlist* items) {
 
   strlist_foreach(items, x, n) {
     if(x[0] != '/') {
-      buffer_puts(buffer_1, i == 0 ? "#pragma config " : oneline ? ((i < 1 || col < 1) ? " " : ", ") : "\n#pragma config ");
+      buffer_puts(buffer_1,
+                  i == 0    ? "#pragma config "
+                  : oneline ? ((i < 1 || col < 1) ? " " : ", ")
+                            : "\n#pragma config ");
 
     } else if(comments) {
       if(i != 0) {
@@ -621,7 +630,8 @@ usage(char* argv0) {
                        "Options\n"
                        "  -h, --help                show this help\n"
                        "  -o, --oneline             output oneliner\n"
-                       "  -D, --no-default          don't output settings with default                        alue\n"
+                       "  -D, --no-default          don't output settings with default "
+                       "value\n"
                        "  -d, --default             output settings with default value\n"
                        "  -C, --no-comments         don't output description comments\n"
                        "  -n, --name                output register name\n"

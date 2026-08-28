@@ -15,7 +15,7 @@
 #if WINDOWS_NATIVE
 #include <process.h>
 #else
-//#include <unistd.h>
+// #include <unistd.h>
 #endif
 
 static stralloc cmd, execbin, root, fullcmd, specs;
@@ -46,12 +46,14 @@ setup_env() {
   if(!env_get("MSYS2_PREFIX"))
     env_set("MSYS2_PREFIX",
             "B:"
-            "\\PortableApps\\MSYS2Porta            le\\App\\msys32\\usr");
+            "\\PortableApps\\MSYS2Porta"
+            "ble\\App\\msys32\\usr");
 
   if(!env_get("MSYS2_ROOT"))
     env_set("MSYS2_ROOT",
             "B:"
-            "\\PortableApps\\MSYS2Porta            le\\App\\msys32");
+            "\\PortableApps\\MSYS2Porta"
+            "ble\\App\\msys32");
 
   if(!env_get("MSYSTEM"))
     env_set("MSYSTEM", "MSYS");
@@ -71,8 +73,15 @@ setup_env() {
  */
 void
 usage(char* errmsg_argv0) {
-  buffer_putm_internal(
-      buffer_1, "Usage: ", str_basename(errmsg_argv0), " [sources...]\n", "\n", "Options\n", "  -h, --help                                       how this help\n", "\n", NULL);
+  buffer_putm_internal(buffer_1,
+                       "Usage: ",
+                       str_basename(errmsg_argv0),
+                       " [sources...]\n",
+                       "\n",
+                       "Options\n",
+                       "  -h, --help                                       how this help\n",
+                       "\n",
+                       NULL);
   buffer_putnlflush(buffer_1);
 }
 
@@ -114,7 +123,14 @@ main(int argc, char* argv[], char* envp[]) {
       case 'e': stralloc_copys(&execbin, unix_optarg); break;
 
       default:
-        buffer_putm_internal(buffer_2, "Unrecognized option `", argv[unix_optind], "'\n", "Try `", argv[0], "\" --help' for more                              nformation");
+        buffer_putm_internal(buffer_2,
+                             "Unrecognized option `",
+                             argv[unix_optind],
+                             "'\n",
+                             "Try `",
+                             argv[0],
+                             "\" --help' for more "
+                             "information");
         buffer_putnlflush(buffer_2);
         return 1;
     }

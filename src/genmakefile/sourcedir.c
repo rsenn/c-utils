@@ -9,8 +9,9 @@ MAP_T sourcedir_map;
 const char* sourcedir_varname = "DISTDIR";
 
 static const char tok_charset[] = {
-    '_', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'a', 'b', 'c', 'd', 'e',
-    'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
+    '_', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T',
+    'U', 'V', 'W', 'X', 'Y', 'Z', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o',
+    'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
 };
 
 /**
@@ -234,7 +235,8 @@ sourcedir_addsource(const char* source, strarray* sources, strarray* progs, stra
 
     if(path_exists(r.s) || includes_find_sa(s, n, &r)) {
 #ifdef DEBUG_OUTPUT_
-      buffer_putm_internal(debug_buf, "[2]", GREEN256, "sourcedir_addsource(", NC, source, GREEN256, ") ", NC, "Adding include ", 0);
+      buffer_putm_internal(
+          debug_buf, "[2]", GREEN256, "sourcedir_addsource(", NC, source, GREEN256, ") ", NC, "Adding include ", 0);
       buffer_putsa(debug_buf, &r);
       buffer_putnlflush(debug_buf);
 #endif

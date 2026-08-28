@@ -192,7 +192,8 @@ main(int argc, char* argv[]) {
     /*      break; */
     default:
       buffer_putm_internal(buffer_2,
-                           "ERROR: Unable to detect                            ompression type from ",
+                           "ERROR: Unable to detect "
+                           "compression type from ",
                            in_filename,
                            NULL);
       buffer_putnlflush(buffer_2);
@@ -200,7 +201,9 @@ main(int argc, char* argv[]) {
   }
 
   if(decompress == 0 && output == buffer_1) {
-    buffer_putsflush(buffer_2, "ERROR: Won't write compressed                      ata to a terminal\n");
+    buffer_putsflush(buffer_2,
+                     "ERROR: Won't write compressed "
+                     "data to a terminal\n");
     exit(EXIT_FAILURE);
   }
 

@@ -326,7 +326,7 @@ serial_open(const char* port, int baud) {
   // Input Modes
   options.c_iflag &= ~IGNCR; // Ignore CR
 #ifdef XONXOFF
-  options.c_iflag |= IXON;   // XON-XOFF Flow Control
+  options.c_iflag |= IXON; // XON-XOFF Flow Control
 #endif
 
   // Output Modes
@@ -481,7 +481,10 @@ serial_read_char(int fd, char* c) {
 #ifdef XONXOFF
   if(*c == XON) {
     if(tcflow(fd, TCOON) == -1) {
-      fprintf(stderr, "Could not restart flow:               s\n", strerror(errno));
+      fprintf(stderr,
+              "Could not restart flow: "
+              "%s\n",
+              strerror(errno));
     }
     serial_read_char(fd, c);
   } else if(*c == XOFF) {

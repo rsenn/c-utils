@@ -164,7 +164,8 @@ sources_get(const char* basedir) {
     while((s = rdir_read(&rdir))) {
       size_t len = str_len(s);
 
-      if(len + 1 > dirs.this.sa.len && byte_equal(s, dirs.this.sa.len, dirs.this.sa.s) && path_is_separator(&s[dirs.this.sa.len]))
+      if(len + 1 > dirs.this.sa.len && byte_equal(s, dirs.this.sa.len, dirs.this.sa.s) &&
+         path_is_separator(&s[dirs.this.sa.len]))
         s += dirs.this.sa.len + 1;
 
       if(sources_add(s)) {
@@ -375,7 +376,19 @@ sources_addincludes(sourcefile* file, sourcedir* sdir, const strlist* includes, 
   stralloc_nul(&relative);
 
 #ifdef DEBUG_OUTPUT
-  buffer_putm_internal(debug_buf, "[1]", YELLOW256, "sources_addincludes(", NC, file->name, YELLOW256, ")", NC, "(2) file=", file->name, " relative=", 0);
+  buffer_putm_internal(debug_buf,
+                       "[1]",
+                       YELLOW256,
+                       "sources_addincludes(",
+                       NC,
+                       file->name,
+                       YELLOW256,
+                       ")",
+                       NC,
+                       "(2) file=",
+                       file->name,
+                       " relative=",
+                       0);
   buffer_putsa(debug_buf, &relative);
   buffer_puts(debug_buf, "\nIncludes: ");
   strlist_dump(debug_buf, includes);
@@ -435,7 +448,8 @@ sources_addincludes(sourcefile* file, sourcedir* sdir, const strlist* includes, 
         stralloc_nul(&path);
 
 #ifdef DEBUG_OUTPUT_
-        buffer_putm_internal(buffer_2, "[4]", YELLOW256, "sources_addincludes(", NC, file->name, YELLOW256, ")", NC, ": ", "Adding ", 0);
+        buffer_putm_internal(
+            buffer_2, "[4]", YELLOW256, "sources_addincludes(", NC, file->name, YELLOW256, ")", NC, ": ", "Adding ", 0);
         buffer_putsa(buffer_2, &path);
         buffer_putnlflush(buffer_2);
 #endif

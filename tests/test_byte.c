@@ -20,9 +20,7 @@ TEST(test_byte_chrs) {
 /*
  * size_t byte_chrns(const char*, size_t, const char charset[], size_t setlen);
  */
-TEST(test_byte_chrns) {
-  ASSERT_EQ(4, byte_chrns("aabbc", 5, "ab", 2));
-}
+TEST(test_byte_chrns) { ASSERT_EQ(4, byte_chrns("aabbc", 5, "ab", 2)); }
 
 /*
  * size_t byte_rchr(const void* haystack, size_t len, char needle);
@@ -35,9 +33,7 @@ TEST(test_byte_rchr) {
 /*
  * size_t byte_rchrs(const void*, size_t, const char*, size_t);
  */
-TEST(test_byte_rchrs) {
-  ASSERT_EQ(4, byte_rchrs("abcabc", 6, "xb", 2));
-}
+TEST(test_byte_rchrs) { ASSERT_EQ(4, byte_rchrs("abcabc", 6, "xb", 2)); }
 
 /*
  * void byte_copy(void* out, size_t len, const void* in);
@@ -117,9 +113,7 @@ TEST(test_byte_case_equal) {
 /*
  * size_t byte_count(const void* s, size_t n, char c);
  */
-TEST(test_byte_count) {
-  ASSERT_EQ(3, byte_count("aXaXaX", 6, 'X'));
-}
+TEST(test_byte_count) { ASSERT_EQ(3, byte_count("aXaXaX", 6, 'X')); }
 
 /*
  * size_t byte_equal(const void* s, size_t n, const void* t);
@@ -211,9 +205,7 @@ TEST(test_byte_triml) {
 /*
  * size_t byte_trimr(const char* x, size_t n, const char* trimchars, unsigned int trimcharslen);
  */
-TEST(test_byte_trimr) {
-  ASSERT_EQ(3, byte_trimr("foo  ", 5, " ", 1));
-}
+TEST(test_byte_trimr) { ASSERT_EQ(3, byte_trimr("foo  ", 5, " ", 1)); }
 
 /*
  * char* byte_trim(char* x, size_t* n, const char* trimchars, unsigned int trimcharslen);

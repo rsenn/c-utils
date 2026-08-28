@@ -62,7 +62,7 @@ output_var(buffer* b, MAP_T* vars, const char* name, int serial, build_tool_t to
 
     stralloc_init(&v);
 
-    if(var->value.sa.len) {
+    if(var->value.sa.s) {
       stralloc_copys(&v, MAP_ITER_KEY(t));
 
       if(tool == TOOL_NINJA)
@@ -146,7 +146,14 @@ output_all_vars(buffer* b, MAP_T* vars, strlist* varnames, build_tool_t tool) {
   stralloc_nul(&varnames->sa);
   ++serial;
 
-  strlist_foreach_s(varnames, name) { output_var(b, vars, name, serial, tool); }
+  strlist_foreach_s(varnames, name) {
+#ifdef DEBUG_OUTPUT
+    buffer_putm_internal(debug_buf, "Outputting variable '", name, "'.", 0);
+    buffer_putnlflush(debug_buf);
+#endif
+
+    output_var(b, vars, name, serial, tool);
+  }
 
   buffer_putnl(b, 1);
 }

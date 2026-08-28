@@ -39,7 +39,7 @@
 #define iround(f) ((double)((long)(f + 0.5)))
 
 #define mm2in(mm) ((mm) / 25.4)
-#define in2mm(in) ((mm)*25.4)
+#define in2mm(in) ((mm) * 25.4)
 
 /**
  * section: Parsing
@@ -189,7 +189,9 @@ static const char* base;
 static int active_layer = -1;
 static stralloc current_alignment;
 
-static struct { xmlnode *parts, *sheets, *elements; } nodes;
+static struct {
+  xmlnode *parts, *sheets, *elements;
+} nodes;
 
 static double
 human_to_mm(const char* measure) {
@@ -1144,7 +1146,8 @@ print_attrs(HMAP_DB* a) {
 
   for(t = a->list_tuple; t; t = t->next) {
     char* v = t->vals.val_chars;
-    buffer_putm_internal(buffer_1, " ", t->key, str_isdoublenum(v) ? "=" : "=\"", v, str_isdoublenum(v) ? "" : "\"", NULL);
+    buffer_putm_internal(
+        buffer_1, " ", t->key, str_isdoublenum(v) ? "=" : "=\"", v, str_isdoublenum(v) ? "" : "\"", NULL);
 
     if(t->next == a->list_tuple)
       break;
@@ -1305,7 +1308,17 @@ print_xml_rect(buffer* b, xmlnode* e) {
   y1 = xml_get_attribute(e, "y1");
   x2 = xml_get_attribute(e, "x2");
   y2 = xml_get_attribute(e, "y2");
-  buffer_putm_internal(b, "(", x1 ? x1 : "<null>", " ", y1 ? y1 : "<null>", ") (", x2 ? x2 : "<null>", " ", y2 ? y2 : "<null>", ")", NULL);
+  buffer_putm_internal(b,
+                       "(",
+                       x1 ? x1 : "<null>",
+                       " ",
+                       y1 ? y1 : "<null>",
+                       ") (",
+                       x2 ? x2 : "<null>",
+                       " ",
+                       y2 ? y2 : "<null>",
+                       ")",
+                       NULL);
   buffer_flush(b);
 }
 
@@ -1605,11 +1618,21 @@ void
 usage(char* progname) {
   buffer_putm_internal(buffer_1, "Usage: ", progname, " [OPTIONS] [PACKAGES...]\n", NULL);
   buffer_puts(buffer_1, "Options\n");
-  buffer_puts(buffer_1, "  --help, -h                                     show this help\n");
-  buffer_puts(buffer_1, "  --layer, -l NUM                     ayer name/number\n");
-  buffer_puts(buffer_1, "  --layers, -L                        ist layers\n");
-  buffer_puts(buffer_1, "  --draw, -d                          raw measures\n");
-  buffer_puts(buffer_1, "  --align-by, -A NUM    Align               o (inch, mm, mil)\n");
+  buffer_puts(buffer_1,
+              "  --help, -h                    "
+              "    show this help\n");
+  buffer_puts(buffer_1,
+              "  --layer, -l NUM       "
+              "Layer name/number\n");
+  buffer_puts(buffer_1,
+              "  --layers, -L          "
+              "List layers\n");
+  buffer_puts(buffer_1,
+              "  --draw, -d            "
+              "Draw measures\n");
+  buffer_puts(buffer_1,
+              "  --align-by, -A NUM    Align "
+              "to (inch, mm, mil)\n");
   buffer_putnlflush(buffer_1);
 }
 
@@ -1668,7 +1691,9 @@ main(int argc, char* argv[]) {
     symbols = cbmap_new();
 
     if(!argv[unix_optind]) {
-      argv[unix_optind] = "/home/roman/Sources/                          n-tronics/eagle/                          0106-4069-Synth.brd";
+      argv[unix_optind] = "/home/roman/Sources/"
+                          "an-tronics/eagle/"
+                          "40106-4069-Synth.brd";
     } else if(argv[unix_optind + 1]) {
       xq = argv[unix_optind + 1];
     }

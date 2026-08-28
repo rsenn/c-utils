@@ -107,7 +107,7 @@ static const char *opt_relative_to = 0, *opt_chdir = 0;
 static const char* opt_timestyle = "%b %2e %H:%M";
 static strarray etc_users, etc_groups;
 
-#if(defined(_WIN32) || defined(MINGW)) && !defined(__MSYS__)
+#if (defined(_WIN32) || defined(MINGW)) && !defined(__MSYS__)
 static uint64 filetime_to_unix(const FILETIME* ft);
 
 typedef struct column_s {
@@ -152,7 +152,8 @@ get_file_size(char* path) {
   typedef LONG(WINAPI getfilesizeex_fn)(HANDLE, PLARGE_INTEGER);
   static getfilesizeex_fn* api_fn;
 
-  HANDLE hFile = CreateFileA(path, GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
+  HANDLE hFile =
+      CreateFileA(path, GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
 
   if(hFile == INVALID_HANDLE_VALUE)
     return -1; /* error condition, could
@@ -187,7 +188,8 @@ uint64
 get_file_time(const char* path) {
   FILETIME c, la, lw;
   int64 t;
-  HANDLE hFile = CreateFileA(path, GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
+  HANDLE hFile =
+      CreateFileA(path, GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
 
   if(hFile == INVALID_HANDLE_VALUE)
     return -1; /* error condition, could
@@ -244,7 +246,9 @@ get_file_owner(const char* path) {
   PSECURITY_DESCRIPTOR pSD = 0;
   LPSTR strsid = 0;
   DWORD dwErrorCode = 0;
-  static DWORD(WINAPI * get_security_info)(HANDLE, DWORD, SECURITY_INFORMATION, PSID*, PSID*, PACL*, PACL*, PSECURITY_DESCRIPTOR*);
+  static DWORD(
+      WINAPI *
+      get_security_info)(HANDLE, DWORD, SECURITY_INFORMATION, PSID*, PSID*, PACL*, PACL*, PSECURITY_DESCRIPTOR*);
   static BOOL(WINAPI * convert_sid_to_string_sid_a)(PSID, LPSTR*);
   tmpbuf[0] = '\0';
   /* Get the handle of the file object.
@@ -357,7 +361,7 @@ get_file_owner(const char* path) {
 
 #endif
 #if WINDOWS_NATIVE
-//#warning PLAIN_WINDOWS
+// #warning PLAIN_WINDOWS
 #define WINDOWS_TICK 10000000
 #define SEC_TO_UNIX_EPOCH (int64)11644473600
 
@@ -764,7 +768,8 @@ stat_type(const char* path, int mode) {
   return dtype;
 }
 
-static const char* type_strs[] = {"D_PIPE", "D_CHARDEV", "D_BLKDEV", "D_SYMLINK", "D_DIRECTORY", "D_FILE", "D_SOCKET", 0};
+static const char* type_strs[] = {
+    "D_PIPE", "D_CHARDEV", "D_BLKDEV", "D_SYMLINK", "D_DIRECTORY", "D_FILE", "D_SOCKET", 0};
 
 static const char*
 type_str(dir_type_t type) {
@@ -1243,8 +1248,11 @@ usage(char* argv0) {
                        "  -C, --chdir       DIR      in directory\n",
                        "  -c, --crc                  cyclic redundancy check\n",
                        "  -d, --depth       NUM      MAX depth\n",
-                       "  -F, --filter-type TYPES    filter by type:\n\n    d = directory,                         =                        lock dev s = socket\n    f = file,     "
-                       " c = char dev\n    l =                        ymlink,                         p = pipe (fifo)\n\n",
+                       "  -F, --filter-type TYPES    filter by type:\n\n    d = directory, "
+                       "b = "
+                       "block dev s = socket\n    f = file,      c = char dev\n    l = "
+                       "symlink, "
+                       "  p = pipe (fifo)\n\n",
                        NULL);
   buffer_putnlflush(buffer_1);
 }
@@ -1252,29 +1260,50 @@ usage(char* argv0) {
 typedef const char* ext_class_t[2];
 
 static const ext_class_t ext_classes[] = {
-    {"archives", "^rar^zip^7z^cab^tar^tar.Z^tar.gz^tar.xz^tar.bz2^tar.lzma^tgz^txz^     bz2^     lzma"},
+    {"archives",
+     "^rar^zip^7z^cab^tar^tar.Z^tar.gz^tar.xz^tar.bz2^tar.lzma^tgz^txz^"
+     "tbz2^"
+     "tlzma"},
     {"audio", "^aif^aiff^flac^m4a^m4b^mp2^mp3^mpc^ogg^raw^rm^wav^wma"},
     {"books", "^pdf^epub^mobi^azw3^djv^djvu"},
-    {"documents", "^cdr^doc^docx^odf^odg^odp^ods^odt^pdf^ppt^pptx^rtf^vsd^xls^xlsx^     tml"},
+    {"documents",
+     "^cdr^doc^docx^odf^odg^odp^ods^odt^pdf^ppt^pptx^rtf^vsd^xls^xlsx^"
+     "html"},
     {"fonts", "^CompositeFont^pcf^ttc^otf^afm^pfb^fon^ttf"},
     {"images",
-     "^bmp^cin^cod^dcx^djvu^emf^fig^gif^ico^im1^im24^im8^jin^jpeg^jpg^lss^     iff^     pc^pbm^pcx^pgm^pgx^png^pnm^ppm^psd^rle^rmp^sgi^shx^svg^tga^tif^     iff^wim^     "
-     "cf^xpm^xwd^mng"},
+     "^bmp^cin^cod^dcx^djvu^emf^fig^gif^ico^im1^im24^im8^jin^jpeg^jpg^lss^"
+     "miff^"
+     "opc^pbm^pcx^pgm^pgx^png^pnm^ppm^psd^rle^rmp^sgi^shx^svg^tga^tif^"
+     "tiff^wim^"
+     "xcf^xpm^xwd^mng"},
     {"incomplete", "^*.part^*.!??^INCOMPL*"},
     {"music", "^mp3^ogg^flac^mpc^m4a^m4b^wma^wav^aif^aiff^mod^s3m^xm^it^669^mp4"},
     {"packages", "^tgz^txz^rpm^deb"},
     {"scripts", "^sh^py^rb^bat^cmd^js^ts^jsx^tsx"},
     {"software",
-     "^*setup*.exe^*install*.exe^*.msi^*.msu^*.cab^*.vbox-extpack^*.apk^*.     un^*     dmg^*.app^*.apk^7z^app^bin^daa^deb^dmg^exe^iso^msi^msu^cab^vbox-     xtpack^     "
-     "pk^nrg^pkg^rar^rpm^run^sh^tar.Z^tar.bz2^tar.gz^tar.xz^tbz2^tgz^txz^     ip"},
+     "^*setup*.exe^*install*.exe^*.msi^*.msu^*.cab^*.vbox-extpack^*.apk^*."
+     "run^*"
+     ".dmg^*.app^*.apk^7z^app^bin^daa^deb^dmg^exe^iso^msi^msu^cab^vbox-"
+     "extpack^"
+     "apk^nrg^pkg^rar^rpm^run^sh^tar.Z^tar.bz2^tar.gz^tar.xz^tbz2^tgz^txz^"
+     "zip"},
     {"sources", "^c^cs^cc^cpp^cxx^h^hh^hpp^hxx^ipp^mm^r^java^rb^py^S^s^asm^inc"},
-    {"scripts", "^lua^etlua^moon^py^rb^sh^js^jsx^es^es5^es6^es7^coffee^scss^sass^css^     sx^     cl^pl^awk^m4^php"},
+    {"scripts",
+     "^lua^etlua^moon^py^rb^sh^js^jsx^es^es5^es6^es7^coffee^scss^sass^css^"
+     "jsx^"
+     "tcl^pl^awk^m4^php"},
     {"web", "^js^css^htm^html^xml^svg"},
     {"videos", "^3gp^avi^f4v^flv^m4v^m2v^mkv^mov^mp4^mpeg^mpg^ogm^vob^webm^wmv"},
     {"vmdisk", "^vdi^vmdk^vhd^qed^qcow^qcow2^vhdx^hdd"},
     {"project",
-     "^avrgccproj^bdsproj^cbproj^coproj^cproj^cproject^csproj^dproj^     sproj^     roupproj^jsproj^jucer^lproj^lsxproj^metaproj^packproj^pbxproj^     kgproj^     "
-     "mproj^pnproj^pro^proj^project^pssproj^shfbproj^sln^tmproj^     nityproj^     vproj^vbproj^vcproj^vcxproj^vdproj^vfproj^webproj^winproj^wixproj^     dsproj^zfpproj"},
+     "^avrgccproj^bdsproj^cbproj^coproj^cproj^cproject^csproj^dproj^"
+     "fsproj^"
+     "groupproj^jsproj^jucer^lproj^lsxproj^metaproj^packproj^pbxproj^"
+     "pkgproj^"
+     "pmproj^pnproj^pro^proj^project^pssproj^shfbproj^sln^tmproj^"
+     "unityproj^"
+     "uvproj^vbproj^vcproj^vcxproj^vdproj^vfproj^webproj^winproj^wixproj^"
+     "zdsproj^zfpproj"},
     {"spice", "^sp^cir^spc^spi"},
     {"eda", "^sch^brd^lbr"},
     {"bin", "^hex^cof"},
@@ -1343,31 +1372,30 @@ main(int argc, char* argv[]) {
   int digit_optind = 0;
   const char *rel_to = 0, *input_file = 0;
   int index = 0;
-  static const struct unix_longopt opts[] =
-  { {"help", 0, 0, 'h'},
-    {"quiet", 0, 0, 'q'},
-    {"list", 0, &opt_list, 1},
-    {"numeric", 0, &opt_numeric, 1},
-    {"relative", 0, &opt_relative, 1},
-    {"human", 0, &opt_human, 'H'},
-    {"input", 1, 0, 'i'},
-    {"output", 1, 0, 'o'},
-    {"include", 1, 0, 'I'},
-    {"exclude", 1, 0, 'X'},
-    {"time-style", 1, 0, 't'},
-    {"dereference", 0, &opt_deref, 1},
-    {"no-dereference", 0, &opt_deref, 0},
-    {"one-filesysten", 0, &opt_samedev, 1},
-    {"cross-filesysten", 0, &opt_samedev, 0},
-    {"MIN-size", 1, 0, 'm'},
-    {"depth", 1, 0, 'd'},
-    {"filter-type", 1, 0, 'F'},
-    {"samedev", 0, 0, 'S'},
-    {"force", 1, 0, 'f'},
+  static const struct unix_longopt opts[] = {{"help", 0, 0, 'h'},
+                                             {"quiet", 0, 0, 'q'},
+                                             {"list", 0, &opt_list, 1},
+                                             {"numeric", 0, &opt_numeric, 1},
+                                             {"relative", 0, &opt_relative, 1},
+                                             {"human", 0, &opt_human, 'H'},
+                                             {"input", 1, 0, 'i'},
+                                             {"output", 1, 0, 'o'},
+                                             {"include", 1, 0, 'I'},
+                                             {"exclude", 1, 0, 'X'},
+                                             {"time-style", 1, 0, 't'},
+                                             {"dereference", 0, &opt_deref, 1},
+                                             {"no-dereference", 0, &opt_deref, 0},
+                                             {"one-filesysten", 0, &opt_samedev, 1},
+                                             {"cross-filesysten", 0, &opt_samedev, 0},
+                                             {"MIN-size", 1, 0, 'm'},
+                                             {"depth", 1, 0, 'd'},
+                                             {"filter-type", 1, 0, 'F'},
+                                             {"samedev", 0, 0, 'S'},
+                                             {"force", 1, 0, 'f'},
 #if WINDOWS
-    {"separator", 1, 0, 's'},
+                                             {"separator", 1, 0, 's'},
 #endif
-    {0, 0, 0, 0} };
+                                             {0, 0, 0, 0}};
 
 #if WINDOWS && defined(O_BINARY)
   setmode(STDOUT_FILENO, O_BINARY);

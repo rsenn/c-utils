@@ -661,14 +661,20 @@ io_waituntil2(int64 milliseconds) {
             }
 
             if(info.si_band & POLLIN && !e->canread) {
-              debug_printf(("io_waituntil2: enqueueing %ld in normal read                             ueue before %ld\n", info.si_fd, first_readable));
+              debug_printf(("io_waituntil2: enqueueing %ld in normal read "
+                            "queue before %ld\n",
+                            info.si_fd,
+                            first_readable));
               e->canread = 1;
               e->next_read = first_readable;
               first_readable = info.si_fd;
             }
 
             if(info.si_band & POLLOUT && !e->canwrite) {
-              debug_printf(("io_waituntil2: enqueueing %ld in normal write                             ueue before %ld\n", info.si_fd, first_writeable));
+              debug_printf(("io_waituntil2: enqueueing %ld in normal write "
+                            "queue before %ld\n",
+                            info.si_fd,
+                            first_writeable));
               e->canwrite = 1;
               e->next_write = first_writeable;
               first_writeable = info.si_fd;
@@ -725,7 +731,7 @@ dopoll :
     buffer_puts(buffer_2, "] ");*/
     buffer_puts(buffer_2, "{ ");
     buffer_putlong(buffer_2, p[i].fd);
-    buffer_puts(buffer_2, " ");
+    buffer_puts(buffer_2, ", events=");
 
     if(p[i].events & POLLIN)
       buffer_puts(buffer_2, "IN ");
@@ -762,7 +768,7 @@ dopoll :
          buffer_puts(buffer_2, "] ");*/
     buffer_puts(buffer_2, "{ ");
     buffer_putlong(buffer_2, p[i].fd);
-    buffer_puts(buffer_2, " ");
+    buffer_puts(buffer_2, ", revents=");
 
     if(p[i].revents & POLLIN)
       buffer_puts(buffer_2, "IN ");

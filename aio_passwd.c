@@ -59,7 +59,10 @@ main() {
   }
 
   char buf[BUF_SZ];
-  struct iocb cb = {.aio_fildes = fd, .aio_lio_opcode = IOCB_CMD_PREAD, .aio_buf = (uint64_t)&buf[0], .aio_nbytes = BUF_SZ};
+  struct iocb cb = {.aio_fildes = fd,
+                    .aio_lio_opcode = IOCB_CMD_PREAD,
+                    .aio_buf = (uint64_t)&buf[0],
+                    .aio_nbytes = BUF_SZ};
   struct iocb* list_of_iocb[1] = {&cb};
 
   r = io_submit(ctx, 1, list_of_iocb);
@@ -75,7 +78,9 @@ main() {
     PFATAL("io_getevents()");
   }
 
-  printf("read %lld bytes from          etc/passwd\n", events[0].res);
+  printf("read %lld bytes from "
+         "/etc/passwd\n",
+         events[0].res);
   io_destroy(ctx);
   close(fd);
   return 0;

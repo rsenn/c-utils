@@ -108,7 +108,12 @@ static struct {
 
 void
 usage(char* prog) {
-  buffer_putm_internal(buffer_2, "Usage: ", str_basename(prog), " [-q] [-t timeout_sec] [-u                        imeout_usec] <host> <port>", NULL);
+  buffer_putm_internal(buffer_2,
+                       "Usage: ",
+                       str_basename(prog),
+                       " [-q] [-t timeout_sec] [-u "
+                       "timeout_usec] <host> <port>",
+                       NULL);
   buffer_putnlflush(buffer_2);
 }
 
@@ -318,7 +323,10 @@ list_ftp(ftp_client* ftp) {
       if(w == ftp->control_sock /*|| w == ftp->data_sock*/) {
         switch(ftp->state) {
           case CONNECTED: {
-            ftplib_write_cmd_s(&out, "USER                                nonymous\r\nPASS                                tp@");
+            ftplib_write_cmd_s(&out,
+                               "USER "
+                               "anonymous\r\nPASS "
+                               "ftp@");
             ftp->state = LOGGED_IN;
             break;
           }
@@ -469,7 +477,8 @@ main(int argc, char* argv[]) {
 
   io_fd(sock);
 
-  if((ret = addr.ip6 ? socket_connect6(sock, addr.ip, port, addr.scope_id) : socket_connect4(sock, addr.ip, port)) != 0) {
+  if((ret = addr.ip6 ? socket_connect6(sock, addr.ip, port, addr.scope_id) : socket_connect4(sock, addr.ip, port)) !=
+     0) {
     if(errno != EINPROGRESS) {
 #if 1 // def HAVE_SOLARIS
       /* solaris immediately returns

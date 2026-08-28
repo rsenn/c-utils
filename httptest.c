@@ -83,8 +83,10 @@ usage(char* av0) {
                        "\n"
                        "Options:\n"
                        "\n"
-                       "  -h, --help              Show                        his help\n"
-                       "  -o, --output FILE                              utput file\n"
+                       "  -h, --help              Show "
+                       "this help\n"
+                       "  -o, --output FILE       "
+                       "Output file\n"
                        "\n",
                        NULL);
   buffer_flush(buffer_1);
@@ -232,8 +234,14 @@ http_io_handler(http* h, buffer* out) {
           buffer_puts(buffer_2, unix_errno(errno));
           buffer_puts(buffer_2, " status=");
           buffer_puts(buffer_2,
-                      ((const char* const[]){
-                          "0", "HTTP_RECV_HEADER", "HTTP_RECV_DATA", "HTTP_STATUS_CLOSED", "HTTP_STATUS_ERROR", "HTTP_STATUS_BUSY", "HTTP_STATUS_FINISH", 0})[response->status]);
+                      ((const char* const[]){"0",
+                                             "HTTP_RECV_HEADER",
+                                             "HTTP_RECV_DATA",
+                                             "HTTP_STATUS_CLOSED",
+                                             "HTTP_STATUS_ERROR",
+                                             "HTTP_STATUS_BUSY",
+                                             "HTTP_STATUS_FINISH",
+                                             0})[response->status]);
           buffer_puts(buffer_2, " len=");
           buffer_putlong(buffer_2, len);
           buffer_puts(buffer_2, " data='");
@@ -314,7 +322,8 @@ process_xml(const char* x, size_t len, strlist* urls, uri_t* uri) {
     } else
 
         if(tok.id == XML_ATTR_VALUE) {
-      if(stralloc_equals(&attr_name, "href") || stralloc_equals(&attr_name, "src") || stralloc_equals(&attr_name, "url") || byte_finds(tok.x, tok.len, "://") < tok.len) {
+      if(stralloc_equals(&attr_name, "href") || stralloc_equals(&attr_name, "src") ||
+         stralloc_equals(&attr_name, "url") || byte_finds(tok.x, tok.len, "://") < tok.len) {
         stralloc url;
         uri_t link;
 
@@ -360,9 +369,15 @@ http_process(http* h, strlist* urls, uri_t* uri) {
   size_t pos = http_skip_header(stralloc_begin(&response->data), stralloc_length(&response->data));
 
   buffer_puts(buffer_2, "STATUS: ");
-  buffer_puts(
-      buffer_2,
-      ((const char* const[]){"0", "HTTP_RECV_HEADER", "HTTP_RECV_DATA", "HTTP_STATUS_CLOSED", "HTTP_STATUS_ERROR", "HTTP_STATUS_BUSY", "HTTP_STATUS_FINISH", 0})[response->status]);
+  buffer_puts(buffer_2,
+              ((const char* const[]){"0",
+                                     "HTTP_RECV_HEADER",
+                                     "HTTP_RECV_DATA",
+                                     "HTTP_STATUS_CLOSED",
+                                     "HTTP_STATUS_ERROR",
+                                     "HTTP_STATUS_BUSY",
+                                     "HTTP_STATUS_FINISH",
+                                     0})[response->status]);
 
   buffer_putnlflush(buffer_2);
   buffer_puts(buffer_2, "PTR: ");
@@ -530,8 +545,14 @@ main(int argc, char* argv[]) {
 
       buffer_puts(buffer_2, " status=");
       buffer_puts(buffer_2,
-                  ((const char* const[]){
-                      "0", "HTTP_RECV_HEADER", "HTTP_RECV_DATA", "HTTP_STATUS_CLOSED", "HTTP_STATUS_ERROR", "HTTP_STATUS_BUSY", "HTTP_STATUS_FINISH", 0})[response->status]);
+                  ((const char* const[]){"0",
+                                         "HTTP_RECV_HEADER",
+                                         "HTTP_RECV_DATA",
+                                         "HTTP_STATUS_CLOSED",
+                                         "HTTP_STATUS_ERROR",
+                                         "HTTP_STATUS_BUSY",
+                                         "HTTP_STATUS_FINISH",
+                                         0})[response->status]);
       buffer_putnlflush(buffer_2);
 #endif
 

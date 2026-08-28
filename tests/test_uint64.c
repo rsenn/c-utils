@@ -46,9 +46,7 @@ TEST(test_uint64_pack_unpack_big) {
 /*
  * uint64_to_double macro
  */
-TEST(test_uint64_to_double) {
-  ASSERT_EQ(42.0, uint64_to_double((uint64)42));
-}
+TEST(test_uint64_to_double) { ASSERT_EQ(42.0, uint64_to_double((uint64)42)); }
 
 #define RUN_UINT64_TESTS() \
   RUN(test_uint64_pack_unpack); \

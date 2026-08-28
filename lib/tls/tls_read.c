@@ -67,7 +67,8 @@ tls_read(fd_type fd, void* data, size_t len) {
 
     buffer_puts(buffer_2,
                 "\n"
-                "                                              ata: \"");
+                "                              "
+                "data: \"");
 
     if(len > 16)
       len = 16;

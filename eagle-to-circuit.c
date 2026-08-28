@@ -398,7 +398,10 @@ build_reflist(xmlnode* node, struct net* n, int* index) {
     print_element_attrs(node);
     buffer_putnlflush(buffer_2);
   }
-  qsort(array_start(&n->contacts), array_length(&n->contacts, sizeof(struct ref)), sizeof(struct ref), (cmp_fn_t*)&compare_ref);
+  qsort(array_start(&n->contacts),
+        array_length(&n->contacts, sizeof(struct ref)),
+        sizeof(struct ref),
+        (cmp_fn_t*)&compare_ref);
 }
 
 /**
@@ -574,7 +577,8 @@ clean_pkgname(stralloc* pkgname, const struct package* pkg) {
   stralloc_copy(pkgname, &pkg->name);
   stralloc_lower(pkgname);
 
-  if(pkgname->len > 4 && pkgname->s[0] == '0' && isdigit(pkgname->s[1]) && isdigit(pkgname->s[2]) && isdigit(pkgname->s[3]) && pkgname->s[4] == '/') {
+  if(pkgname->len > 4 && pkgname->s[0] == '0' && isdigit(pkgname->s[1]) && isdigit(pkgname->s[2]) &&
+     isdigit(pkgname->s[3]) && pkgname->s[4] == '/') {
     // stralloc_remove(pkgname, 0, 1);
     pkgname->s[0] = 'r';
     pkgname->s[1] = 'e';
@@ -928,7 +932,8 @@ print_attrs(HMAP_DB* a) {
 
   for(t = a->list_tuple; t; t = t->next) {
     char* v = t->vals.val_chars;
-    buffer_putm_internal(buffer_2, " ", t->key, str_isdoublenum(v) ? "=" : "=\"", v, str_isdoublenum(v) ? "" : "\"", NULL);
+    buffer_putm_internal(
+        buffer_2, " ", t->key, str_isdoublenum(v) ? "=" : "=\"", v, str_isdoublenum(v) ? "" : "\"", NULL);
 
     if(t->next == a->list_tuple)
       break;
@@ -1072,7 +1077,8 @@ int
 main(int argc, char* argv[]) {
   xmlnode* doc;
   int argi = 1, output_fd = 1;
-  const char* input_file = "/home/roman/Sources/an-tronics/                           agle/40106-4069-Synth.brd";
+  const char* input_file = "/home/roman/Sources/an-tronics/"
+                           "eagle/40106-4069-Synth.brd";
   const char* output_file = NULL;
 
   MAP_NEW(devicesets);
@@ -1114,20 +1120,33 @@ main(int argc, char* argv[]) {
   match_foreach(doc, "net|signal", build_nets);
   match_foreach(doc, "symbol", build_sym);
 
-  buffer_puts(&output, "# Stripboard\n# board               width>,<height>\n\nboard ");
+  buffer_puts(&output,
+              "# Stripboard\n# board "
+              "<width>,<height>\n\nboard ");
 
   buffer_putlong(&output, ((bounds.max.x + 9) / 10 + 2) * 10);
   buffer_putc(&output, ',');
   buffer_putlong(&output, ((bounds.max.y + 9) / 10 + 2) * 10);
   buffer_puts(&output, "\n");
 
-  buffer_puts(&output, "\n# Packages\n# <package name>                <pin coordinates relative to               in 0>\n\n");
+  buffer_puts(&output,
+              "\n# Packages\n# <package name>  "
+              " <pin coordinates relative to "
+              "pin 0>\n\n");
   MAP_VISIT_ALL(packages, dump_package, "package");
 
-  buffer_puts(&output, "\n# Components\n# <component               ame> <package name>                  absolute position of               omponent pin 0>\n\n");
+  buffer_puts(&output,
+              "\n# Components\n# <component "
+              "name> <package name>    "
+              "<absolute position of "
+              "component pin 0>\n\n");
   MAP_VISIT_ALL(parts, output_part, "part");
 
-  buffer_puts(&output, "\n# Connections\n# <from               omponent name>.<pin index> <to               omponent name>.<pin               ndex>\n\n");
+  buffer_puts(&output,
+              "\n# Connections\n# <from "
+              "component name>.<pin index> <to "
+              "component name>.<pin "
+              "index>\n\n");
 
   MAP_VISIT_ALL(parts, dump_part, "part");
   MAP_VISIT_ALL(nets, dump_net, 0);

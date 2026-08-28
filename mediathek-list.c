@@ -59,7 +59,8 @@ static http h;
 #include "lib/http.h"
 
 const char* const mediathek_urls[] = {
-    "http://download10.onlinetvrecorder.com/mediathekview/Filmliste-akt.xz",
+    "http://download10.onlinetvrecorder.com/mediathekview/"
+    "Filmliste-akt.xz",
     "http://mediathekview.jankal.me/Filmliste-akt.xz",
     "http://verteiler1.mediathekview.de/Filmliste-akt.xz",
 };

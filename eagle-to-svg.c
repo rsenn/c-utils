@@ -9,8 +9,22 @@
 #define MAP_USE_HMAP 1
 #include "lib/map.h"
 
-static const char* palette[16] = {
-    "#000000", "#0000aa", "#555555", "#5555ff", "#aa0000", "#00aa00", "#55ff55", "#aaaaaa", "#00aaaa", "#55ffff", "#ff5555", "#aa00aa", "#ff55ff", "#aa5500", "#ffff55", "#aaaaaa"};
+static const char* palette[16] = {"#000000",
+                                  "#0000aa",
+                                  "#555555",
+                                  "#5555ff",
+                                  "#aa0000",
+                                  "#00aa00",
+                                  "#55ff55",
+                                  "#aaaaaa",
+                                  "#00aaaa",
+                                  "#55ffff",
+                                  "#ff5555",
+                                  "#aa00aa",
+                                  "#ff55ff",
+                                  "#aa5500",
+                                  "#ffff55",
+                                  "#aaaaaa"};
 
 static buffer input, output;
 static xmlnodeset nodeset;
@@ -112,8 +126,12 @@ pad(double x, double y) {
   xml_set_attribute(node, "stroke-width", ".265");
   xml_set_attribute(node,
                     "d",
-                    "M0 2.004a.536.536 0 100                     .072.536.536 0 000-1.072zm0                     124c.242 0 .438.185.438.412 0                     "
-                    "228-.196.412-.438.412s-.438-.                    84-.438-.412c0-.227.196-.412.                    38-.412z");
+                    "M0 2.004a.536.536 0 100 "
+                    "1.072.536.536 0 000-1.072zm0 "
+                    ".124c.242 0 .438.185.438.412 0 "
+                    ".228-.196.412-.438.412s-.438-."
+                    "184-.438-.412c0-.227.196-.412."
+                    "438-.412z");
   xml_set_attribute(node, "transform", sa.s);
   stralloc_free(&sa);
   return node;
@@ -128,7 +146,9 @@ main(int argc, char* argv[]) {
   MAP_PAIR_T t;
   int output_fd = 1;
   int argi = 1;
-  const char* input_file = "/home/roman/Dokumente/Sources/                           ictest/eagle/                           IC18F2550-USB+ICSP-Board.brd";
+  const char* input_file = "/home/roman/Dokumente/Sources/"
+                           "pictest/eagle/"
+                           "PIC18F2550-USB+ICSP-Board.brd";
   const char* output_file = NULL;
 
   if(argv[argi])
@@ -194,8 +214,11 @@ main(int argc, char* argv[]) {
     clip_p = xml_element("path");
     xml_set_attribute(clip_p,
                       "d",
-                      "M0 2.128c.242 0                       438.185.438.412 0                       228-.196.412-.438.412s-.438-.                      "
-                      "84-.438-.412c0-.227.196-.412.                      38-.412z");
+                      "M0 2.128c.242 0 "
+                      ".438.185.438.412 0 "
+                      ".228-.196.412-.438.412s-.438-."
+                      "184-.438-.412c0-.227.196-.412."
+                      "438-.412z");
     xml_add_child(clip_path, clip_p);
   }
   xml_set_attribute(svggroup, "stroke-width", "0.3");

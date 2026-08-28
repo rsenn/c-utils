@@ -68,12 +68,13 @@ char* search_path(const char* filename);
 #define MAX_PATH 260
 #endif
 
-#if(!defined(__MSYS__) && !defined(HAVE_CYGWIN_CONV_PATH)) || (defined(__MSYS__) && defined(__x86_64__))
+#if (!defined(__MSYS__) && !defined(HAVE_CYGWIN_CONV_PATH)) || (defined(__MSYS__) && defined(__x86_64__))
 #define HAVE_CYGWIN_CONV_PATH 1
 #endif
 
 #if 1 // def HAVE_CYGWIN_CONV_PATH
-#define cygwin_conv_to_full_posix_path(from, to) cygwin_conv_path(CCP_WIN_A_TO_POSIX | CCP_ABSOLUTE, (from), (to), MAX_PATH)
+#define cygwin_conv_to_full_posix_path(from, to) \
+  cygwin_conv_path(CCP_WIN_A_TO_POSIX | CCP_ABSOLUTE, (from), (to), MAX_PATH)
 #endif
 
 void
@@ -102,8 +103,10 @@ resize_array(void** data, uint64* data_size, size_t sizeof_data) {
   *data_size = new_size;
 }
 
-#define resize_dep_list(ptr_deptree, ptr_deptree_size) resize_array((void**)ptr_deptree, ptr_deptree_size, sizeof(struct dep_tree_element*))
-#define resize_import_list(ptr_import_list, ptr_import_list_size) resize_array((void**)ptr_import_list, ptr_import_list_size, sizeof(struct import_table_item))
+#define resize_dep_list(ptr_deptree, ptr_deptree_size) \
+  resize_array((void**)ptr_deptree, ptr_deptree_size, sizeof(struct dep_tree_element*))
+#define resize_import_list(ptr_import_list, ptr_import_list_size) \
+  resize_array((void**)ptr_import_list, ptr_import_list_size, sizeof(struct import_table_item))
 #define resize_stack(ptr_stack, ptr_stack_size) resize_array((void**)ptr_stack, ptr_stack_size, sizeof(char*))
 
 void
@@ -153,7 +156,8 @@ find_dep(struct dep_tree_element* root, char* name, struct dep_tree_element** re
 int build_dep_tree(build_tree_config* cfg, char* name, struct dep_tree_element* root, struct dep_tree_element* self);
 
 struct dep_tree_element*
-process_dep(build_tree_config* cfg, uint32 name, struct dep_tree_element* root, struct dep_tree_element* self, int deep) {
+process_dep(
+    build_tree_config* cfg, uint32 name, struct dep_tree_element* root, struct dep_tree_element* self, int deep) {
   struct dep_tree_element* child = NULL;
   int found;
   int64 i;
@@ -252,7 +256,10 @@ PE_FILE_MACHINE_I386) return
 }*/
 
 static void
-build_dep_tree32or64(pe_loaded_image* img, build_tree_config* cfg, struct dep_tree_element* root, struct dep_tree_element* self) {
+build_dep_tree32or64(pe_loaded_image* img,
+                     build_tree_config* cfg,
+                     struct dep_tree_element* root,
+                     struct dep_tree_element* self) {
   pe_data_directory* idata;
   pe_import_descriptor* iid;
   pe_export_directory* ied;
@@ -320,7 +327,9 @@ build_dep_tree32or64(pe_loaded_image* img, build_tree_config* cfg, struct dep_tr
 
     if(iid)
 
-      for(i = 0; iid[i].characteristics || iid[i].time_date_stamp || iid[i].forwarder_chain || iid[i].name || iid[i].first_thunk; i++) {
+      for(i = 0; iid[i].characteristics || iid[i].time_date_stamp || iid[i].forwarder_chain || iid[i].name ||
+                 iid[i].first_thunk;
+          i++) {
         struct dep_tree_element* dll;
         uint64 impaddress;
         dll = process_dep(cfg, iid[i].name, root, self, 0);
@@ -362,7 +371,8 @@ build_dep_tree32or64(pe_loaded_image* img, build_tree_config* cfg, struct dep_tr
 
     if(idd)
 
-      for(i = 0; idd[i].attributes.all_attributes || idd[i].dll_name_rva || idd[i].module_handle_rva || idd[i].import_address_table_rva || idd[i].import_name_table_rva ||
+      for(i = 0; idd[i].attributes.all_attributes || idd[i].dll_name_rva || idd[i].module_handle_rva ||
+                 idd[i].import_address_table_rva || idd[i].import_name_table_rva ||
                  idd[i].bound_import_address_table_rva || idd[i].unload_information_table_rva || idd[i].time_date_stamp;
           i++) {
         struct dep_tree_element* dll;
@@ -411,7 +421,9 @@ build_dep_tree32or64(pe_loaded_image* img, build_tree_config* cfg, struct dep_tr
 
     if(iid)
 
-      for(i = 0; iid[i].characteristics || iid[i].time_date_stamp || iid[i].forwarder_chain || iid[i].name || iid[i].first_thunk; i++)
+      for(i = 0; iid[i].characteristics || iid[i].time_date_stamp || iid[i].forwarder_chain || iid[i].name ||
+                 iid[i].first_thunk;
+          i++)
         process_dep(cfg, iid[i].name, root, self, 1);
   }
 
@@ -422,7 +434,8 @@ build_dep_tree32or64(pe_loaded_image* img, build_tree_config* cfg, struct dep_tr
 
     if(idd)
 
-      for(i = 0; idd[i].attributes.all_attributes || idd[i].dll_name_rva || idd[i].module_handle_rva || idd[i].import_address_table_rva || idd[i].import_name_table_rva ||
+      for(i = 0; idd[i].attributes.all_attributes || idd[i].dll_name_rva || idd[i].module_handle_rva ||
+                 idd[i].import_address_table_rva || idd[i].import_name_table_rva ||
                  idd[i].bound_import_address_table_rva || idd[i].unload_information_table_rva || idd[i].time_date_stamp;
           i++)
         process_dep(cfg, idd[i].dll_name_rva, root, self, 1);
@@ -585,12 +598,15 @@ build_dep_tree(build_tree_config* cfg, char* name, struct dep_tree_element* root
   */
 
   for(i = 0; i < self->imports_len; i++) {
-    if(self->imports[i].mapped == NULL && self->imports[i].dll != NULL && (self->imports[i].name != NULL || self->imports[i].ordinal > 0)) {
+    if(self->imports[i].mapped == NULL && self->imports[i].dll != NULL &&
+       (self->imports[i].name != NULL || self->imports[i].ordinal > 0)) {
       struct dep_tree_element* dll = self->imports[i].dll;
 
       for(j = 0; j < dll->exports_len; j++) {
-        if((self->imports[i].name != NULL && dll->exports[j].name != NULL && str_equal(self->imports[i].name, dll->exports[j].name)) ||
-           (self->imports[i].ordinal > 0 && dll->exports[j].ordinal > 0 && self->imports[i].ordinal == dll->exports[j].ordinal)) {
+        if((self->imports[i].name != NULL && dll->exports[j].name != NULL &&
+            str_equal(self->imports[i].name, dll->exports[j].name)) ||
+           (self->imports[i].ordinal > 0 && dll->exports[j].ordinal > 0 &&
+            self->imports[i].ordinal == dll->exports[j].ordinal)) {
           self->imports[i].mapped = &dll->exports[j];
           break;
         }
@@ -634,16 +650,20 @@ Written by LRN.");
 
 void
 printhelp(char* argv0) {
-  buffer_putm_internal(
-      buffer_1,
-      "Usage: ",
-      argv0,
-      " [OPTION]... FILE...\n OPTIONS:\n --version         Displays                            Does not work\n -d, --data-relocs                           Does not work\n -r, "
-      "--function-relocs Does not work\n -R,                        -recursive       Lists dependencies recursively,\n eliminating                        uplicates\n -D, "
-      "--search-dir                             dditional search directory\n --list-exports        Lists exports                        f a module (single file only)\n "
-      "--list-imports        Lists                        mports of modules\n --help                                      Displays this message\n \n Use -- option to pass "
-      "filenames that                        tart with `--' or `-'\n For bug reporting instructions, please                        ee:\n <somewhere>.",
-      NULL);
+  buffer_putm_internal(buffer_1,
+                       "Usage: ",
+                       argv0,
+                       " [OPTION]... FILE...\n OPTIONS:\n --version         Displays                            Does "
+                       "not work\n -d, --data-relocs                           Does not work\n -r, "
+                       "--function-relocs Does not work\n -R,                        -recursive       Lists "
+                       "dependencies recursively,\n eliminating                        uplicates\n -D, "
+                       "--search-dir                             dditional search directory\n --list-exports        "
+                       "Lists exports                        f a module (single file only)\n "
+                       "--list-imports        Lists                        mports of modules\n --help                  "
+                       "                    Displays this message\n \n Use -- option to pass "
+                       "filenames that                        tart with `--' or `-'\n For bug reporting instructions, "
+                       "please                        ee:\n <somewhere>.",
+                       NULL);
   buffer_putnlflush(buffer_1);
 }
 
@@ -677,7 +697,8 @@ print_image_links(int first,
       buffer_putspad(buffer_1, item->name, 16);
       buffer_puts(buffer_1, " (0x");
       buffer_putxlonglong0(buffer_1, item->address_offset, 8);
-      buffer_putm_internal(buffer_1, item->forward_str ? " ->" : "", item->forward_str ? item->forward_str : "", " <", NULL);
+      buffer_putm_internal(
+          buffer_1, item->forward_str ? " ->" : "", item->forward_str ? item->forward_str : "", " <", NULL);
       buffer_putulong(buffer_1, item->section_index);
       buffer_puts(buffer_1, ">");
       buffer_putnlflush(buffer_1);
@@ -762,7 +783,17 @@ print_image_links(int first,
           buffer_putm_internal(buffer_1, file, ": ", NULL);
         buffer_putnspace(buffer_1, depth * 2);
         buffer_puts(buffer_1, self->childs[i]->module);
-        print_image_links(0, verbose, unused, datarelocs, functionrelocs, self->childs[i], recursive, list_exports, list_imports, depth + 1, file);
+        print_image_links(0,
+                          verbose,
+                          unused,
+                          datarelocs,
+                          functionrelocs,
+                          self->childs[i],
+                          recursive,
+                          list_exports,
+                          list_imports,
+                          depth + 1,
+                          file);
       }
     }
   }
@@ -875,7 +906,8 @@ search_path(const char* filename) {
 int
 main(int argc, char** argv) {
   int i = 0;
-  static int verbose = 0, unused = 0, datarelocs = 0, functionrelocs = 0, recursive = 0, list_exports = 0, list_imports = 0;
+  static int verbose = 0, unused = 0, datarelocs = 0, functionrelocs = 0, recursive = 0, list_exports = 0,
+             list_imports = 0;
   int skip = 0;
   int files = 0;
   int files_start = -1;
@@ -933,7 +965,13 @@ main(int argc, char** argv) {
 
       case 'V': printversion(); break;
       default:
-        buffer_putm_internal(buffer_2, "Unrecognized option `", argv[unix_optind], "'\n", "Try `ntldd --help' for                              ore information", NULL);
+        buffer_putm_internal(buffer_2,
+                             "Unrecognized option `",
+                             argv[unix_optind],
+                             "'\n",
+                             "Try `ntldd --help' for "
+                             "more information",
+                             NULL);
         buffer_putnlflush(buffer_2);
         return 1;
     }
@@ -955,7 +993,9 @@ main(int argc, char** argv) {
 #if WINDOWS
   {
     const char* const keys[] = {"HKCU\\Environment",
-                                "HKLM\\SYSTEM\\CurrentControlSe                                \\Control\\Session                                 anager\\Environment",
+                                "HKLM\\SYSTEM\\CurrentControlSe"
+                                "t\\Control\\Session "
+                                "Manager\\Environment",
                                 0};
     int kidx;
     stralloc rpath;
@@ -1036,7 +1076,17 @@ main(int argc, char** argv) {
            buffer_putsflush(buffer_1, ":\n");
          }*/
 
-        print_image_links(1, verbose, unused, datarelocs, functionrelocs, root.childs[i - files_start], recursive, list_exports, list_imports, 0, multiple ? argv[i] : 0);
+        print_image_links(1,
+                          verbose,
+                          unused,
+                          datarelocs,
+                          functionrelocs,
+                          root.childs[i - files_start],
+                          recursive,
+                          list_exports,
+                          list_imports,
+                          0,
+                          multiple ? argv[i] : 0);
       }
     }
   }

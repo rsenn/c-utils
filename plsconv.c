@@ -62,11 +62,13 @@ usage(char* argv0) {
   buffer_putm_internal(buffer_1,
                        "Usage: ",
                        argv0,
-                       " [-f type] [-t type] [-o                        utput] [input or stdin]\n\n",
+                       " [-f type] [-t type] [-o "
+                       "output] [input or stdin]\n\n",
                        "  -f type  Input type\n"
                        "  -t type  Output type\n"
                        "\n"
-                       "Supported types are: m3u pls                        spf\n",
+                       "Supported types are: m3u pls "
+                       "xspf\n",
                        NULL);
   buffer_flush(buffer_1);
   exit(0);
@@ -96,7 +98,9 @@ main(int argc, char* argv[]) {
           outtype = XSPF;
         break;
       case 'h': usage(str_basename(argv[0])); exit(EXIT_SUCCESS);
-      default: /* '?' */ buffer_putm_internal(buffer_2, "Usage: ", argv[0], "[-t TYPE] [file]\n", NULL); exit(EXIT_FAILURE);
+      default: /* '?' */
+        buffer_putm_internal(buffer_2, "Usage: ", argv[0], "[-t TYPE] [file]\n", NULL);
+        exit(EXIT_FAILURE);
     }
   }
 

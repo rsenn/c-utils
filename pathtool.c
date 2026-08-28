@@ -44,7 +44,7 @@ static stralloc mingw, msys;
 static MAP_T mtab;
 
 #define tolower(c) ((c) >= 'A' && (c) <= 'Z' ? (c) + 0x20 : (c))
-#define toupper(c) ((c) >= 'a' && (c) <= 'z' ? (c)-0x20 : (c))
+#define toupper(c) ((c) >= 'a' && (c) <= 'z' ? (c) - 0x20 : (c))
 #define toslash(c) ((c) == '\\' ? '/' : (c))
 
 int
@@ -86,7 +86,7 @@ strlist_from_path(strlist* sl, const char* p) {
 #define MAX_PATH 260
 #endif
 
-#if(!defined(__MSYS__) && !defined(HAVE_CYGWIN_CONV_PATH)) || (defined(__MSYS__) && defined(__x86_64__))
+#if (!defined(__MSYS__) && !defined(HAVE_CYGWIN_CONV_PATH)) || (defined(__MSYS__) && defined(__x86_64__))
 #define HAVE_CYGWIN_CONV_PATH 1
 #endif
 
@@ -210,8 +210,8 @@ mounts_match(MAP_T map, const char* path, size_t pathlen, size_t* matchlen, int 
     cols[0] = KEY(t);
     cols[1] = VAL(t);
 
-    matched =
-        search->n >= ret.n && search->n <= pathlen && !path_diffb(path, search->n, search->s) && (search->n == pathlen || (search->n < pathlen && path_issep(path[search->n])));
+    matched = search->n >= ret.n && search->n <= pathlen && !path_diffb(path, search->n, search->s) &&
+              (search->n == pathlen || (search->n < pathlen && path_issep(path[search->n])));
 
 #ifdef DEBUG_OUTPUT_
     buffer_putulong(buffer_2, matched);
@@ -489,12 +489,17 @@ usage(char* av0) {
                        "  -h, --help             Show this help\n",
                        "  -r, --relative-to DIR  Print the resolved path relative to DIR\n",
                        "  -s, --separator SEP    Use SEP as directory separator\n",
-                       "  -w, --windows          Print Windows form of path(s)                        C:\\WINNT)\n",
-                       "  -m, --mixed            Like --windows, but with regular slashes                        C:/WINNT)\n",
-                       "  -u, --unix   (default) Print Unix form of path(s)                        /cygdrive/c/winnt)\n",
+                       "  -w, --windows          Print Windows form of path(s) "
+                       "(C:\\WINNT)\n",
+                       "  -m, --mixed            Like --windows, but with regular slashes "
+                       "(C:/WINNT)\n",
+                       "  -u, --unix   (default) Print Unix form of path(s) "
+                       "(/cygdrive/c/winnt)\n",
                        "  -a, --absolute         Output absolute path\n",
-                       "  -f, --canonicalize     Canonicalize by following every symlink                        n\n"
-                       "                         every component of the given name                        ecursively;\n"
+                       "  -f, --canonicalize     Canonicalize by following every symlink "
+                       "in\n"
+                       "                         every component of the given name "
+                       "recursively;\n"
                        "                         all but the last component must exist\n",
                        "  -L, --dereference      Resolve symlinks\n",
                        "\n",

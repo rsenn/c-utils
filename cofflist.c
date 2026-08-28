@@ -126,7 +126,9 @@ coff_list_symbols(buffer* b, void* coff) {
 
   symtab = coff_symbol_table(coff);
 
-  buffer_puts(b, "number of symbol table               ntries: ");
+  buffer_puts(b,
+              "number of symbol table "
+              "entries: ");
   buffer_putulong(b, range_size(&symtab));
   buffer_putnlflush(b);
 
@@ -179,7 +181,11 @@ coff_list_symbols(buffer* b, void* coff) {
       buffer_puts(b, "0x");
       buffer_putxlong0(b, (long)(uint16)entry->scnum, 4);
       buffer_putspace(b);
-      buffer_putspad(b, entry->type < countof(coff_symtab_mchp_types) && coff_symtab_mchp_types[entry->type] ? coff_symtab_mchp_types[entry->type] : "", 16);
+      buffer_putspad(b,
+                     entry->type < countof(coff_symtab_mchp_types) && coff_symtab_mchp_types[entry->type]
+                         ? coff_symtab_mchp_types[entry->type]
+                         : "",
+                     16);
       buffer_putspace(b);
       buffer_putlong0(b, (long)(uint32)entry->numaux, 2);
 
@@ -230,20 +236,31 @@ coff_list_symbols(buffer* b, void* coff) {
           buffer_puts(b, "Aux .bf/.ef def: ");
           buffer_puts(b, ".source_line_number: ");
           buffer_putulong(b, aux->bfef.source_line_number);
-          buffer_puts(b, ",                       pointer_to_next_                      unction: ");
+          buffer_puts(b,
+                      ", "
+                      ".pointer_to_next_"
+                      "function: ");
           buffer_putulong(b, aux->bfef.pointer_to_next_function);
           buffer_putnlflush(b);
 
         } else if(e->e.type & 0x20 && e->e.scnum > 0 && e->e.sclass == COFF_C_EXT) {
-          buffer_puts(b, "\t\t\tAux                       unction def: ");
-          buffer_puts(b, "\n\t\t\t.bf_tag_                      ndex: ");
+          buffer_puts(b,
+                      "\t\t\tAux "
+                      "function def: ");
+          buffer_puts(b,
+                      "\n\t\t\t.bf_tag_"
+                      "index: ");
           buffer_putulong(b, aux->func.tag_index);
 
           buffer_puts(b, "\n\t\t\t.code_size: ");
           buffer_putulong(b, aux->func.code_size);
-          buffer_puts(b, "\n\t\t\t.pointer_to_                      ine_number: 0x");
+          buffer_puts(b,
+                      "\n\t\t\t.pointer_to_"
+                      "line_number: 0x");
           buffer_putxlong0(b, aux->func.pointer_to_line_number, 8);
-          buffer_puts(b, "\n\t\t\t.pointer_to_                      ext_function: ");
+          buffer_puts(b,
+                      "\n\t\t\t.pointer_to_"
+                      "next_function: ");
           buffer_putulong(b, aux->func.pointer_to_next_function);
           buffer_putnlflush(b);
 
@@ -258,18 +275,28 @@ coff_list_symbols(buffer* b, void* coff) {
           buffer_putnlflush(b);
         } else if(e->e.sclass == COFF_C_FILE) {
         } else if(e->e.sclass == COFF_C_STATIC) {
-          buffer_puts(b, "\n\t\t\tAux                       ection def:");
+          buffer_puts(b,
+                      "\n\t\t\tAux "
+                      "section def:");
           buffer_puts(b, "\n\t\t\t.length:\t\t");
           buffer_putulong(b, aux->section.length);
-          buffer_puts(b, "\n\t\t\t.number_of_                      elocations:\t");
+          buffer_puts(b,
+                      "\n\t\t\t.number_of_"
+                      "relocations:\t");
           buffer_putulong(b, aux->section.number_of_relocations);
-          buffer_puts(b, "\n\t\t\t.number_of_line_                      umbers:");
+          buffer_puts(b,
+                      "\n\t\t\t.number_of_line_"
+                      "numbers:");
           buffer_putulong(b, aux->section.number_of_line_numbers);
-          buffer_puts(b, "\n\t\t\t.check_                      um:\t\t");
+          buffer_puts(b,
+                      "\n\t\t\t.check_"
+                      "sum:\t\t");
           buffer_putxlong0(b, aux->section.check_sum, sizeof(aux->section.check_sum) * 2);
           buffer_puts(b, "\n\t\t\t.number:\t\t");
           buffer_putulong(b, aux->section.number);
-          buffer_puts(b, "\n\t\t\t.                      election:\t\t");
+          buffer_puts(b,
+                      "\n\t\t\t."
+                      "selection:\t\t");
           buffer_putulong(b, aux->section.selection);
           buffer_putnlflush(b);
         }
@@ -291,14 +318,22 @@ usage(char* av0) {
                        "\n",
                        "Options:\n",
                        "\n",
-                       "  -h, --help              Show                        his help\n",
-                       "  -i, --imports           List                        mports\n",
-                       "  -e, --exports           List                        xports\n",
-                       "  -d, --deps              List                        LL dependencies\n",
-                       "  -s, --sections          List                        E32 sections\n",
-                       "  -E, --export-directory  Print                        xport directory\n",
-                       "  -D, --data-directory    Print                        ata directory\n",
-                       "  -O, --optional-header   Print                        ptional header\n",
+                       "  -h, --help              Show "
+                       "this help\n",
+                       "  -i, --imports           List "
+                       "imports\n",
+                       "  -e, --exports           List "
+                       "exports\n",
+                       "  -d, --deps              List "
+                       "DLL dependencies\n",
+                       "  -s, --sections          List "
+                       "PE32 sections\n",
+                       "  -E, --export-directory  Print "
+                       "export directory\n",
+                       "  -D, --data-directory    Print "
+                       "data directory\n",
+                       "  -O, --optional-header   Print "
+                       "optional header\n",
                        "\n",
                        NULL);
   buffer_flush(buffer_1);
@@ -370,8 +405,8 @@ main(int argc, char** argv) {
 
       buffer_putnlflush(buffer_2);
 
-      if(header->machine != COFF_FILE_MACHINE_I386 && header->machine != COFF_FILE_MACHINE_AMD64 && header->machine != COFF_FILE_MACHINE_MICROCHIP_V1 &&
-         header->machine != COFF_FILE_MACHINE_MICROCHIP_V2) {
+      if(header->machine != COFF_FILE_MACHINE_I386 && header->machine != COFF_FILE_MACHINE_AMD64 &&
+         header->machine != COFF_FILE_MACHINE_MICROCHIP_V1 && header->machine != COFF_FILE_MACHINE_MICROCHIP_V2) {
         buffer_putsflush(buffer_2, "not COFF\n");
         return -1;
       }

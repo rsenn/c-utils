@@ -332,7 +332,9 @@ new_name:
     return 1;
   }
 
-  if(dns_domain_equal(d, "\0011\0010\0010\003127\7in-                      ddr\4arpa\0")) {
+  if(dns_domain_equal(d,
+                      "\0011\0010\0010\003127\7in-"
+                      "addr\4arpa\0")) {
     if(z->level)
       goto lower_level;
 
@@ -566,8 +568,9 @@ new_name:
       }
     }
 
-    if(!typematch(DNS_T_ANY, dtype) && !typematch(DNS_T_AXFR, dtype) && !typematch(DNS_T_CNAME, dtype) && !typematch(DNS_T_NS, dtype) && !typematch(DNS_T_PTR, dtype) &&
-       !typematch(DNS_T_A, dtype) && !typematch(DNS_T_MX, dtype) && !typematch(DNS_T_SOA, dtype)) {
+    if(!typematch(DNS_T_ANY, dtype) && !typematch(DNS_T_AXFR, dtype) && !typematch(DNS_T_CNAME, dtype) &&
+       !typematch(DNS_T_NS, dtype) && !typematch(DNS_T_PTR, dtype) && !typematch(DNS_T_A, dtype) &&
+       !typematch(DNS_T_MX, dtype) && !typematch(DNS_T_SOA, dtype)) {
       byte_copy(key, 2, dtype);
       cached = cache_get(key, dlen + 2, &cachedlen, &ttl);
 

@@ -294,7 +294,14 @@ rule_match(target* rule, const char* pattern) {
  * @param[in]  sep              make separator inline
  */
 void
-rule_command_subst(target* rule, stralloc* out, const char* prereq, size_t plen, build_tool_t tool, const char* quote, char psa, const char* sep) {
+rule_command_subst(target* rule,
+                   stralloc* out,
+                   const char* prereq,
+                   size_t plen,
+                   build_tool_t tool,
+                   const char* quote,
+                   char psa,
+                   const char* sep) {
   size_t i;
   stralloc* in = &rule->recipe;
 
@@ -369,7 +376,13 @@ rule_command_subst(target* rule, stralloc* out, const char* prereq, size_t plen,
  * @param[in]  maketool         Make tool
  */
 void
-rule_command(target* rule, stralloc* out, build_tool_t tool, const char* quote, char psa, const char* sep, const char* maketool) {
+rule_command(target* rule,
+             stralloc* out,
+             build_tool_t tool,
+             const char* quote,
+             char psa,
+             const char* sep,
+             const char* maketool) {
   size_t len;
   const char* pfx = 0;
   char *s, from = psa == '/' ? '\\' : '/';
@@ -445,7 +458,8 @@ rule_command(target* rule, stralloc* out, build_tool_t tool, const char* quote, 
       p += linelen;
     }
 
-  } else*/ if(!(str_equal(tools.make, "gmake") || str_equal(tools.make, "make"))) {
+  } else*/
+  if(!(str_equal(tools.make, "gmake") || str_equal(tools.make, "make"))) {
     rule_command_subst(rule, out, prereq.sa.s, prereq.sa.len, tool, quote, psa, sep);
   } else {
     stralloc_copy(out, &rule->recipe);

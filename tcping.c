@@ -161,7 +161,8 @@ usage(char* prog) {
   buffer_putm_internal(buffer_2,
                        "Usage: ",
                        str_basename(prog),
-                       " [-4q] [-t timeout_sec] [-u                        imeout_usec] <host> <port>",
+                       " [-4q] [-t timeout_sec] [-u "
+                       "timeout_usec] <host> <port>",
                        NULL);
   buffer_putnlflush(buffer_2);
 }
@@ -210,7 +211,7 @@ main(int argc, char* argv[]) {
     return 109;
   }
 
-  while((c = unix_getopt(argc, argv, "46qt:u:")) != -1) {
+  while((c = unix_getopt(argc, argv, "4qt:u:")) != -1) {
     switch(c) {
       case '6': {
         no_ip6 = false;

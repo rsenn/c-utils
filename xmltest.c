@@ -173,7 +173,9 @@ xml_dump(xmlnode* n, buffer* b, const char* parent, int depth) {
             buffer_putsa(b, &name);
           } else {
           }
-          buffer_puts(b, "->attributes =                       ml_attributes(");
+          buffer_puts(b,
+                      "->attributes = "
+                      "xml_attributes(");
           i = 0;
           hmap_foreach(n->attributes, t) {
             if(1)

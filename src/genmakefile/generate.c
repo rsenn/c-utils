@@ -142,7 +142,9 @@ generate_clean_rule(char psm) {
         stralloc_catb(&fn, &(MAP_ITER_KEY(t)[bpos + 1]), epos);
         stralloc_catc(&fn, psm);
         stralloc_cats(&fn, "*");
-        stralloc_catb(&fn, &(MAP_ITER_KEY(t)[bpos + 1 + epos + 1]), str_chr(&(MAP_ITER_KEY(t)[bpos + 1 + epos + 1]), ':'));
+        stralloc_catb(&fn,
+                      &(MAP_ITER_KEY(t)[bpos + 1 + epos + 1]),
+                      str_chr(&(MAP_ITER_KEY(t)[bpos + 1 + epos + 1]), ':'));
         stralloc_nul(&fn);
 
         arg = fn.s;
@@ -214,7 +216,8 @@ generate_mkdir_rule(stralloc* name) {
  * @return     Compile rule
  */
 target*
-generate_srcdir_compile_rules(sourcedir* srcdir, const char* dir, bool shell, bool batch, bool batchmode, char psa, char psm) {
+generate_srcdir_compile_rules(
+    sourcedir* srcdir, const char* dir, bool shell, bool batch, bool batchmode, char psa, char psm) {
   sourcefile* src;
   target* rule = 0;
   MAP_PAIR_T t;
@@ -355,7 +358,8 @@ generate_srcdir_compile_rules(sourcedir* srcdir, const char* dir, bool shell, bo
  * @return     Rule
  */
 target*
-generate_simple_compile_rules(sourcedir* srcdir, const char* dir, const char* fromext, const char* toext, stralloc* cmd, char psa) {
+generate_simple_compile_rules(
+    sourcedir* srcdir, const char* dir, const char* fromext, const char* toext, stralloc* cmd, char psa) {
   sourcefile* src;
   stralloc ppsrc, obj;
 
@@ -424,7 +428,8 @@ generate_simple_compile_rules(sourcedir* srcdir, const char* dir, const char* fr
  * @return     Rule
  */
 target*
-generate_srcdir_lib_rule(sourcedir* srcdir, const char* name, bool shell, bool batch, bool batchmode, char psa, char psm) {
+generate_srcdir_lib_rule(
+    sourcedir* srcdir, const char* name, bool shell, bool batch, bool batchmode, char psa, char psm) {
   target *dep = 0, *rule;
   stralloc sa;
 
@@ -703,8 +708,21 @@ generate_program_rule(const char* name, char psa) {
     stralloc_nul(&rule->recipe);
 
 #ifdef DEBUG_OUTPUT
-    buffer_putm_internal(
-        debug_buf, "[3]", GREEN256, "generate_program_rule(", NC, name, GREEN256, ") ", NC, "link rule" NC " '", rule->name, "' recipe '", rule->recipe.s, "'", NULL);
+    buffer_putm_internal(debug_buf,
+                         "[3]",
+                         GREEN256,
+                         "generate_program_rule(",
+                         NC,
+                         name,
+                         GREEN256,
+                         ") ",
+                         NC,
+                         "link rule" NC " '",
+                         rule->name,
+                         "' recipe '",
+                         rule->recipe.s,
+                         "'",
+                         NULL);
     buffer_putnlflush(debug_buf);
 #endif
 
@@ -808,9 +826,10 @@ generate_install_rules(void) {
 
   MAP_FOREACH(rule_map, t) {
     target* rule = MAP_ITER_VALUE(t);
-    bool do_lib =
-        inst_libs && (str_end(MAP_ITER_KEY(t), ".lib") || str_end(MAP_ITER_KEY(t), ".a") || MAP_ITER_KEY(t)[str_find(MAP_ITER_KEY(t), ".so")] || rule->recipe.s == commands.lib.s);
-    bool do_bin = inst_bins && (str_end(MAP_ITER_KEY(t), ".dll") || str_end(MAP_ITER_KEY(t), ".exe") || rule->recipe.s == commands.link.s);
+    bool do_lib = inst_libs && (str_end(MAP_ITER_KEY(t), ".lib") || str_end(MAP_ITER_KEY(t), ".a") ||
+                                MAP_ITER_KEY(t)[str_find(MAP_ITER_KEY(t), ".so")] || rule->recipe.s == commands.lib.s);
+    bool do_bin = inst_bins && (str_end(MAP_ITER_KEY(t), ".dll") || str_end(MAP_ITER_KEY(t), ".exe") ||
+                                rule->recipe.s == commands.link.s);
 
     if(!(do_lib || do_bin))
       continue;
@@ -842,7 +861,8 @@ generate_install_rules(void) {
       }
 
       var_set("INSTALL_EXEC", str_start(v, "install") ? "$(INSTALL) -m 755" : "$(INSTALL)");
-      stralloc_catm_internal(&inst->recipe, newline, "\t$(INSTALL_EXEC) ", MAP_ITER_KEY(t), " $(DESTDIR)$(bindir)", NULL);
+      stralloc_catm_internal(
+          &inst->recipe, newline, "\t$(INSTALL_EXEC) ", MAP_ITER_KEY(t), " $(DESTDIR)$(bindir)", NULL);
     }
 
     if(do_lib) {
@@ -855,7 +875,8 @@ generate_install_rules(void) {
         stralloc_catm_internal(&inst->recipe, newline, "\t$(INSTALL_DIR) $(DESTDIR)$(libdir)", NULL);
       }
 
-      stralloc_catm_internal(&inst->recipe, newline, "\t$(INSTALL_DATA) ", MAP_ITER_KEY(t), " $(DESTDIR)$(libdir)", NULL);
+      stralloc_catm_internal(
+          &inst->recipe, newline, "\t$(INSTALL_DATA) ", MAP_ITER_KEY(t), " $(DESTDIR)$(libdir)", NULL);
     }
   }
 

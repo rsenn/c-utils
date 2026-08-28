@@ -143,7 +143,8 @@ reg2cmd() {
     len = buffer_getline(buffer_0, buffer, sizeof(buffer));
 
     if(lineno == 1) {
-      if(((unsigned char)buffer[0] == 0xff && (unsigned char)buffer[1] == 0xfe) || (buffer[0] == 0x00 || buffer[1] == 0x00)) {
+      if(((unsigned char)buffer[0] == 0xff && (unsigned char)buffer[1] == 0xfe) ||
+         (buffer[0] == 0x00 || buffer[1] == 0x00)) {
         unicode = 1;
       }
       /*
@@ -235,7 +236,9 @@ reg2cmd() {
         rr = ROOT_HKCR;
       else if(KEY_EQ(key, "HKU") || KEY_EQ(key, "HKEY_USERS"))
         rr = ROOT_HKU;
-      else if(KEY_EQ(key, "HKCC") || KEY_EQ(key, "HKEY_CURRENT_                                            ONFIG"))
+      else if(KEY_EQ(key, "HKCC") || KEY_EQ(key,
+                                            "HKEY_CURRENT_"
+                                            "CONFIG"))
         rr = ROOT_HKCC;
 
       if((o = strchr(key, '\\'))) {
@@ -338,7 +341,8 @@ reg2cmd() {
         buffer_puts(buffer_1, "\" ");
       }
 
-      has_newline = (find_char('\n', &line.s[valuestart], valueend - valuestart) || find_char('\r', &line.s[valuestart], valueend - valuestart));
+      has_newline = (find_char('\n', &line.s[valuestart], valueend - valuestart) ||
+                     find_char('\r', &line.s[valuestart], valueend - valuestart));
 
       has_expansion = (find_char('%', &line.s[valuestart], valueend - valuestart) >= 2);
 
@@ -442,7 +446,9 @@ void
 usage(char* arg0) {
   buffer_puts(buffer_2, "Usage: ");
   buffer_puts(buffer_2, mystr_basename(arg0));
-  buffer_puts(buffer_2, " [-f] [input - file]               output - file]\n");
+  buffer_puts(buffer_2,
+              " [-f] [input - file] "
+              "[output - file]\n");
   buffer_flush(buffer_2);
   exit(1);
 }

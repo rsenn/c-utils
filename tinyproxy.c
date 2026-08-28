@@ -1269,7 +1269,10 @@ server_loop() {
 void
 server_connection_count() {
 #ifdef USE_SYSTEMD
-  sd_notifyf(0, "STATUS=Ready. %d              onnections processed.\n", connections_processed);
+  sd_notifyf(0,
+             "STATUS=Ready. %d "
+             "connections processed.\n",
+             connections_processed);
 #endif
 }
 

@@ -317,7 +317,10 @@ var_subst_b(const char* name, stralloc* out, const char* in, size_t len, const c
 
   stralloc_zero(out);
 
-  if((value = var_get(name)) && value[0]) {
+  if(!(value = var_get(name)))
+    value = "";
+
+  {
     size_t vlen = str_len(value);
 
     vlen = byte_trimr(value, vlen, " \t\v\n", 3);

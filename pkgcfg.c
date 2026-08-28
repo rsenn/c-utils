@@ -746,7 +746,8 @@ pkg_list(id code) {
         buffer_putnlflush(buffer_2);
 #endif
 
-        if(match_pattern && path_fnmatch(match_pattern, str_len(match_pattern), path.s, path.len, FNM_CASEFOLD) == FNM_NOMATCH)
+        if(match_pattern &&
+           path_fnmatch(match_pattern, str_len(match_pattern), path.s, path.len, FNM_CASEFOLD) == FNM_NOMATCH)
           continue;
 
         pkg_init(&pf, path.s);
@@ -1331,16 +1332,30 @@ usage(char* progname) {
   buffer_puts(buffer_1, "  --help, -h                        show this help\n");
   buffer_puts(buffer_1, "  --prefix, -p DIRECTORY            Set prefix directory\n");
   buffer_puts(buffer_1, "  --host, -m MACHINE                Set canonical host\n");
-  buffer_puts(buffer_1, "  --cflags                          print required CFLAGS               o stdout\n");
-  buffer_puts(buffer_1, "  --libs                            print required linker               lags to stdout\n");
-  buffer_puts(buffer_1, "  --path                            show the exact               ilenames for any matching .pc files\n");
-  buffer_puts(buffer_1, "  --modversion                      print the specified               odule's version to stdout\n");
+  buffer_puts(buffer_1,
+              "  --cflags                          print required CFLAGS "
+              "to stdout\n");
+  buffer_puts(buffer_1,
+              "  --libs                            print required linker "
+              "flags to stdout\n");
+  buffer_puts(buffer_1,
+              "  --path                            show the exact "
+              "filenames for any matching .pc files\n");
+  buffer_puts(buffer_1,
+              "  --modversion                      print the specified "
+              "module's version to stdout\n");
   buffer_puts(buffer_1, "  --list-all                        list all known packages\n");
-  buffer_puts(buffer_1, "  --list-path                       list path of all known               ackages\n");
+  buffer_puts(buffer_1,
+              "  --list-path                       list path of all known "
+              "packages\n");
   buffer_puts(buffer_1, "  --verbose                         increase verbosity\n");
-  buffer_puts(buffer_1, "  --debug                           show verbose debug               nformation\n");
+  buffer_puts(buffer_1,
+              "  --debug                           show verbose debug "
+              "information\n");
   buffer_puts(buffer_1, "  --sorted                          sorted list output\n");
-  buffer_puts(buffer_1, "  --unsorted                        unsorted list output               default)\n\n");
+  buffer_puts(buffer_1,
+              "  --unsorted                        unsorted list output "
+              "(default)\n\n");
   buffer_putm_internal(buffer_1, "Default prefix: ", cmd.prefix.s, "\n", NULL);
   buffer_putm_internal(buffer_1, "Default host: ", cmd.host.s, "\n", NULL);
   buffer_puts(buffer_1, "Default search path:\n  ");
@@ -1486,9 +1501,13 @@ main(int argc, char* argv[], char* envp[]) {
           add_cmd(i);
 
           if(i == PRINT_LIBS)
-            libs_mode = arg[str_find(arg, "only")] ? (arg[str_find(arg, "other")] ? LIBS_ONLY_OTHER : (arg[str_find(arg, "L")] ? LIBS_ONLY_LIBPATH : LIBS_ONLY_L)) : 0;
+            libs_mode = arg[str_find(arg, "only")] ? (arg[str_find(arg, "other")]
+                                                          ? LIBS_ONLY_OTHER
+                                                          : (arg[str_find(arg, "L")] ? LIBS_ONLY_LIBPATH : LIBS_ONLY_L))
+                                                   : 0;
           else
-            cflags_mode = arg[str_find(arg, "only")] ? (arg[str_find(arg, "other")] ? CFLAGS_ONLY_OTHER : CFLAGS_ONLY_I) : 0;
+            cflags_mode =
+                arg[str_find(arg, "only")] ? (arg[str_find(arg, "other")] ? CFLAGS_ONLY_OTHER : CFLAGS_ONLY_I) : 0;
           //   argv[unix_optind] = "-";      for(i = unix_optind; argv[i];
           //   i++) argv[i] = argv[i+1];
           continue;
@@ -1541,7 +1560,8 @@ getopt_end:
     size_t pos;
     stralloc_nul(&cmd.prefix);
 
-    if((pos = stralloc_finds(&cmd.prefix, "/sys-root/")) < cmd.prefix.len || (pos = stralloc_finds(&cmd.prefix, "/sysroot/")) < cmd.prefix.len) {
+    if((pos = stralloc_finds(&cmd.prefix, "/sys-root/")) < cmd.prefix.len ||
+       (pos = stralloc_finds(&cmd.prefix, "/sysroot/")) < cmd.prefix.len) {
       sysroot = str_ndup(cmd.prefix.s, pos + 9);
     } else {
       sysroot = "";

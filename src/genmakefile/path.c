@@ -93,8 +93,16 @@ path_extension(const char* in, stralloc* out, const char* ext) {
  */
 char*
 path_output2(const char* in, stralloc* out, const char* ext, char psa) {
-  stralloc_copy(out, &dirs.build.sa);
-  stralloc_catc(out, psa);
+  stralloc abs;
+  stralloc_init(&abs);
+  path_absolute(dirs.work.sa.s, &abs);
+  path_relative_to_sa(&dirs.build.sa, &abs, out);
+  stralloc_free(&abs);
+
+  if(stralloc_equals(out, "."))
+    stralloc_zero(out);
+  else
+    stralloc_catc(out, psa);
 
   return path_extension(in, out, ext);
 }
