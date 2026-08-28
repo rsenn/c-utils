@@ -187,21 +187,20 @@
   instead of asserting the case-insensitive result a caller would expect.
 
 - genmakefile-make-gmake-shell-multidir-broken: `tests/genmakefile/testsuite.sh`
-  (a new shell testsuite exercising `genmakefile` against a mock source
-  tree across {gcc, sdcc, xc8} x {make, gmake, ninja, shell} x 5 workdir/
+  (a shell testsuite exercising `genmakefile` against a mock source tree
+  across {gcc, sdcc, xc8} x {make, gmake, ninja, shell} x 5 workdir/
   builddir/outdir layouts, actually invoking the resulting build tool)
-  shows the `make`, `gmake`, and `shell` (`-m shell`) output backends are
-  broken for any `--create-libs` build whose workdir/builddir/outdir
-  aren't identical: `make`/`gmake` report "No rule to make target
-  'lib/foo.o'" or "mixed implicit and static pattern rules", and the
-  `shell` backend's archiver/linker steps look for the `.a` files in the
-  wrong directory ("No such file or directory"). Only the `ninja` backend
-  reliably works, and only when workdir == builddir (outdir may differ).
-  This looks like relative-path computation in the make/gmake/shell
-  output paths (`src/genmakefile/output.c`, possibly
-  `generate_srcdir_lib_rule`/`generate_program_rule` in generate.c) not
-  accounting for builddir/workdir divergence the way the ninja path does.
-  Needs a focused investigation session; not fixed here.
+  used to show the `make`/`gmake`/`shell` backends broken for nearly
+  every divergent-directory layout; after fixing the include-path
+  computation (`src/genmakefile/includes.c`, `includes_cppflags()`)
+  distinct failures dropped from 104 to 19 and the remaining ones are
+  narrower: `-m make` fails "mixed implicit and static pattern rules"
+  specifically on the `all-same` partition (workdir==builddir==outdir)
+  for every compiler; `-m gmake` fails every partition for plain gcc
+  (likely `genmakefile-program-object-empty-recipe` below rather than a
+  separate multidir issue -- not confirmed); a handful of
+  `shell`/`work-build-same` cases remain unexplained. Needs a fresh,
+  narrower investigation session; not fixed here.
 
 - genmakefile-workdir-flag-overridden-by-outfile: passing `-w DIR`
   (`--workdir`) has no effect whenever `-o FILE` is also given: in

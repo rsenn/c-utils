@@ -76,14 +76,32 @@ includes_extract(const char* x, size_t n, strlist* includes, int sys) {
 void
 includes_cppflags(void) {
   const char* dir;
-  stralloc arg;
+  stralloc arg, absdir, workabs;
 
+  /* dirs.work.sa is never absolute, so it has to be resolved against
+   * dirs.this.sa (the invocation directory genmakefile recorded up
+   * front) rather than path_absolute()'s live getcwd() -- by the time
+   * this runs, the process may have chdir'd elsewhere (e.g. while
+   * processing an --infile, see input.c) and a getcwd()-based
+   * resolution would silently pick up the wrong base. */
+  stralloc_init(&workabs);
+  path_concat_sa(&dirs.this.sa, &dirs.work.sa, &workabs);
+  stralloc_nul(&workabs);
+
+  stralloc_init(&absdir);
   stralloc_init(&arg);
 
   strlist_foreach_s(&include_dirs, dir) {
+    /* include_dirs entries are stored relative to dirs.this.sa (see
+     * includes_add_b()) -- rebuild the absolute path before making it
+     * relative to the workdir. */
+    stralloc_zero(&absdir);
+    path_concatb(dirs.this.sa.s, dirs.this.sa.len, dir, str_len(dir), &absdir);
+    stralloc_nul(&absdir);
+
     stralloc_zero(&arg);
-    stralloc_cats(&arg, dir);
-    // path_relative_to(dir, dirs.this.sa.s, &arg);
+    path_relative_to(absdir.s, workabs.s, &arg);
+    stralloc_nul(&arg);
 
 #ifdef DEBUG_OUTPUT
     buffer_putm_internal(debug_buf, "[1]", PINK256, "includes_cppflags", NC, " include_dir=", 0);
@@ -96,6 +114,8 @@ includes_cppflags(void) {
   }
 
   stralloc_free(&arg);
+  stralloc_free(&absdir);
+  stralloc_free(&workabs);
 }
 
 /**
@@ -130,27 +150,31 @@ includes_get(const char* srcfile, strlist* includes, int sys, char psm) {
  */
 void
 includes_add_b(const char* dir, size_t len) {
-  stralloc d, tmp, to;
+  stralloc abs, d;
 
+  stralloc_init(&abs);
   stralloc_init(&d);
-  stralloc_init(&tmp);
-  stralloc_init(&to);
 
-  path_normalize_sa_b(dir, len, &d);
-  path_absolute(dirs.work.sa.s, &to);
-  path_relative_to_b(d.s, d.len, to.s, to.len, &tmp);
-  stralloc_free(&d);
+  /* normalize (resolve absolute + collapse "..") via the stable,
+   * recorded dirs.this.sa -- see path_normalize_sa() -- not the live
+   * process cwd, which may have moved by the time this is called from
+   * --infile processing -- then store it back relative to dirs.this.sa,
+   * so every consumer (includes_cppflags(), output_mplab_project())
+   * can rebuild the same absolute path from it the same way regardless
+   * of when/where this entry was added. */
+  path_normalize_sa_b(dir, len, &abs);
+  path_relative_to_sa(&abs, &dirs.this.sa, &d);
+  stralloc_free(&abs);
 
-  if(strlist_push_unique_sa(&include_dirs, &tmp)) {
+  if(strlist_push_unique_sa(&include_dirs, &d)) {
 #ifdef DEBUG_OUTPUT
-    buffer_putm_internal(debug_buf, "[1]", PINK256, "includes_add_b", NC, " tmp=", 0);
-    buffer_putsa(debug_buf, &tmp);
+    buffer_putm_internal(debug_buf, "[1]", PINK256, "includes_add_b", NC, " d=", 0);
+    buffer_putsa(debug_buf, &d);
     buffer_putnlflush(debug_buf);
 #endif
   }
 
-  stralloc_free(&tmp);
-  stralloc_free(&to);
+  stralloc_free(&d);
 }
 
 /**
