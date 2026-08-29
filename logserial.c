@@ -53,7 +53,7 @@ static strarray ports;
 // static fd_type term_buf.fd = 0;
 static buffer term_buf;
 static stralloc serial_buf;
-static int verbose, rawmode, debugmode;
+static int verbose, debugmode;
 static MAP_T port_map;
 static link_t* port_list;
 static jmp_buf context;
@@ -319,23 +319,21 @@ term_init(fd_type fd, struct termios* state) {
    * current ones. */
   raw = old;
 
-  if(rawmode) {
-    raw.c_lflag &= ~(ICANON | IEXTEN | ISIG);
-    raw.c_lflag |= ECHONL | ISIG;
+  raw.c_lflag &= ~(ICANON | IEXTEN | ISIG);
+  raw.c_lflag |= ECHONL | ISIG;
 
-    raw.c_iflag &= ~(BRKINT | INPCK | ISTRIP | IXON | IGNCR);
-    raw.c_iflag |= INLCR;
+  raw.c_iflag &= ~(BRKINT | INPCK | ISTRIP | IXON | IGNCR);
+  raw.c_iflag |= INLCR;
 
-    raw.c_cflag &= ~(CSIZE | PARENB);
+  raw.c_cflag &= ~(CSIZE | PARENB);
 
-    raw.c_cflag |= CS8;
+  raw.c_cflag |= CS8;
 
-    raw.c_oflag &= ~(OPOST);
-    raw.c_oflag |= ONLCR;
+  raw.c_oflag &= ~(OPOST);
+  raw.c_oflag |= ONLCR;
 
-    raw.c_cc[VMIN] = 0;
-    raw.c_cc[VTIME] = 0;
-  }
+  raw.c_cc[VMIN] = 0;
+  raw.c_cc[VTIME] = 0;
 
   /* Set the new terminal settings. */
 
@@ -641,7 +639,6 @@ main(int argc, char* argv[]) {
       {"verbose", 0, NULL, 'v'},
       {"baud", 1, NULL, 'b'},
       {"send", 1, NULL, 'i'},
-      {"raw", 0, NULL, 'r'},
       {"debug", 0, NULL, 'x'},
       {"list", 0, NULL, 'l'},
       {0, 0, 0, 0},
@@ -653,7 +650,7 @@ main(int argc, char* argv[]) {
   MAP_NEW(port_map);
 
   for(;;) {
-    c = unix_getopt_long(argc, argv, "b:hvri:xl", opts, &index);
+    c = unix_getopt_long(argc, argv, "b:hvi:xl", opts, &index);
 
     if(c == -1)
       break;
@@ -670,7 +667,6 @@ main(int argc, char* argv[]) {
       case 'h': usage(argv[0]); return 0;
       case 'v': verbose++; break;
       case 'i': send_file = unix_optarg; break;
-      case 'r': rawmode = 1; break;
       case 'b': scan_uint(unix_optarg, &baudrate); break;
       case 'x': debugmode++; break;
 
