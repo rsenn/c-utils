@@ -55,7 +55,7 @@ static build_tool_t build_tool = 0;
 char pathsep_make = DEFAULT_PATHSEP, pathsep_args = DEFAULT_PATHSEP;
 const char* builddir_varname = "BUILDDIR";
 strarray dirstack = {0};
-int cmd_objs = 0, cmd_libs = 0, cmd_bins = 0, cmd_module = 0;
+int cmd_objs = 0, cmd_libs = 0, cmd_bins = 0, cmd_module = 0, cmd_libs_explicit = 0;
 commands_t commands;
 strlist vpath = {0}, build_as_lib = {0}, link_dirs = {0};
 set_t link_libraries = {0, 0, 0, byte_hash}, build_directories = {0, 0, 0, byte_hash};
@@ -1134,14 +1134,22 @@ set_compiler_type(const char* compiler) {
                    "$(LINK) $(LDFLAGS) $(EXTRA_LDFLAGS) -o $@ $^ $(LIBS) "
                    "$(EXTRA_LIBS) $(STDC_LIBS)");
   } else if(str_start(compiler, "sdcc")) {
+    if(cmd_libs_explicit) {
+      buffer_putm_internal(
+          buffer_2, "WARNING: the \"sdcc\" compiler doesn't support --create-libs, ignoring", newline, NULL);
+      buffer_flush(buffer_2);
+    }
+
+    cmd_libs = 0;
+
     var_set("CC", "sdcc");
     var_set("LINK", "sdcc");
-    var_set("LIB", "sdar");
+    var_set("LIB", "sdcclib");
     var_unset("CXX");
     cfg.mach.arch = PIC;
     exts.bin = ".cof";
     exts.obj = ".o";
-    exts.lib = ".a";
+    exts.lib = ".lib";
 
     // var_set("TARGET", cfg.mach.bits == _14 ? "pic16" : "pic18");
 
@@ -1199,7 +1207,7 @@ set_compiler_type(const char* compiler) {
     else
       var_push("LIBS", "-llibm.lib");
 
-    set_command(&commands.lib, "$(LIB) rcs $@", "$^");
+    set_command(&commands.lib, "$(LIB) r $@", "$^");
     stralloc_copys(&commands.compile, "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) $(DEFS) -c $< -o $@");
     stralloc_copys(&commands.link,
                    "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(LDFLAGS) $(EXTRA_LDFLAGS) -o "
@@ -1282,6 +1290,12 @@ set_compiler_type(const char* compiler) {
       stralloc_copys(&cfg.chip, "16f876a");
 
     var_push("CFLAGS", "-mcpu=$(CHIP)");
+
+    /* the XC8 device pack directory -- resolved at build time from the
+     * DFP_DIR environment variable (as MPLAB X's own generated
+     * Makefiles do), not baked in at generation time */
+    var_set("MDFP", "$(DFP_DIR)/xc8");
+    var_push("CFLAGS", "-mdfp=\"$(MDFP)\"");
 
     if(cfg.build_type == BUILD_TYPE_MINSIZEREL)
       var_push("CFLAGS", "-Os");
@@ -1841,6 +1855,8 @@ main(int argc, char* argv[]) {
         goto quit;
     }
   }
+
+  cmd_libs_explicit = cmd_libs;
 
   if(!cmd_bins && !cmd_libs && !cmd_objs) {
     cmd_bins = 1;

@@ -186,22 +186,6 @@
   `tests/test_str.c`; the test documents the current (buggy) behavior
   instead of asserting the case-insensitive result a caller would expect.
 
-- genmakefile-make-gmake-shell-multidir-broken: `tests/genmakefile/testsuite.sh`
-  (a shell testsuite exercising `genmakefile` against a mock source tree
-  across {gcc, sdcc, xc8} x {make, gmake, ninja, shell} x 5 workdir/
-  builddir/outdir layouts, actually invoking the resulting build tool)
-  used to show the `make`/`gmake`/`shell` backends broken for nearly
-  every divergent-directory layout; after fixing the include-path
-  computation (`src/genmakefile/includes.c`, `includes_cppflags()`)
-  distinct failures dropped from 104 to 19 and the remaining ones are
-  narrower: `-m make` fails "mixed implicit and static pattern rules"
-  specifically on the `all-same` partition (workdir==builddir==outdir)
-  for every compiler; `-m gmake` fails every partition for plain gcc
-  (likely `genmakefile-program-object-empty-recipe` below rather than a
-  separate multidir issue -- not confirmed); a handful of
-  `shell`/`work-build-same` cases remain unexplained. Needs a fresh,
-  narrower investigation session; not fixed here.
-
 - genmakefile-workdir-flag-overridden-by-outfile: passing `-w DIR`
   (`--workdir`) has no effect whenever `-o FILE` is also given: in
   `genmakefile.c` (~line 1974), `dirs.work.sa` is unconditionally
@@ -220,21 +204,16 @@
   `gm_run_build`/`sh -x` executes it) rather than anything
   compiler/toolchain-specific. Not investigated yet.
 
-- genmakefile-program-object-empty-recipe: the object file compiled
-  from the source containing `main()` always gets an empty recipe in
-  `make`/`gmake` output. In `generate_program_rule()`
-  (`src/genmakefile/generate.c:639-642`):
-  ```c
-  if((compile = rule_get_sa(&obj))) {
-    add_source(&compile->prereq, name, psa);
-    stralloc_weak(&compile->recipe, &commands.compile);
-    stralloc_zero(&compile->recipe);
-  ```
-  the `stralloc_zero()` immediately erases the recipe `stralloc_weak()`
-  just set one line above -- looks like a stray leftover line, not
-  intentional. Reproduces even in the simplest all-same-directory gmake
-  case (`main.o: ../src/main.c` with no command follows), and since an
-  explicit (even recipe-less) rule for a target suppresses GNU Make's
-  implicit/pattern-rule fallback, the build then fails with "cannot
-  find main.o". Found while testing the BUILDDIR-substitution and
-  mkdir-rule changes; not the cause of either, not fixed here.
+- genmakefile-shell-backend-missing-compile-command: `-m shell` output
+  (`build.sh`) silently drops the compile command for one of the
+  library source files (e.g. `lib/extra/bar.c` -> `bar.o`) while still
+  emitting the `ar rcs extra.a bar.o` archive step that depends on it,
+  so `ar` fails with "bar.o: No such file or directory" and the
+  subsequent link fails with "cannot find _out/out/extra.a". The other
+  library's object (`foo.o`) compiles fine in the same run,
+  `main.c`/`main.o` compiles fine too -- only one source directory's
+  compile step goes missing. Reproduce: `tests/genmakefile/testsuite.sh`
+  with `-t gcc -m shell` on the standard host mock tree
+  (`gcc-shell-all-same` case). Not yet investigated; likely in the
+  `(shell | batch) && batchmode` branch of
+  `generate_srcdir_compile_rules()` (`src/genmakefile/generate.c`).

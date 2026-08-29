@@ -100,7 +100,7 @@ includes_cppflags(void) {
     stralloc_nul(&absdir);
 
     stralloc_zero(&arg);
-    path_relative_to(absdir.s, workabs.s, &arg);
+    path_relative_to(absdir.s, dirs.build.sa.s, &arg);
     stralloc_nul(&arg);
 
 #ifdef DEBUG_OUTPUT

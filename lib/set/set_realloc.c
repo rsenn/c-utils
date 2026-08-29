@@ -6,7 +6,6 @@ void set_free_array(set_t* set);
 
 int
 set_realloc(set_t* set) {
-  uint32 set_index;
   bucket_t* b;
 
   // allocate new set
@@ -17,16 +16,12 @@ set_realloc(set_t* set) {
   new_set.array = calloc(new_set.len, sizeof(bucket_t));
   assert(new_set.array);
 
-  // copy over old set
+  // copy over old set, preserving insertion order (set_foreach_ordered
+  // relies on it) -- walk the old list/list_next chain, not the bucket
+  // array, which is in hash order rather than insertion order
 
-  for(set_index = 0; set_index < set->len; ++set_index) {
-    b = &(set->array[set_index]);
-
-    while(b && b->value) {
-      set_add(&new_set, b->value, b->size);
-      b = b->next;
-    }
-  }
+  for(b = set->list; b; b = b->list_next)
+    set_add(&new_set, b->value, b->size);
 
   // delete old array
   set_free_array(set);

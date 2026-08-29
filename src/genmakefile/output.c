@@ -385,14 +385,14 @@ output_ninja_target(buffer* b, target* rule, char psa) {
     {
       const char* x;
       size_t n, i = 0;
-      set_iterator_t it;
+      bucket_t* it;
       stralloc tmp, outdir;
 
       stralloc_init(&tmp);
       stralloc_init(&outdir);
       path_concat_sa(&dirs.this.sa, &dirs.out.sa, &outdir);
 
-      set_foreach(&rule->prereq, it, x, n) {
+      set_foreach_ordered(&rule->prereq, it, x, n) {
         if(i)
           stralloc_catc(&path, ' ');
 

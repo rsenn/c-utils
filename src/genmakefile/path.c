@@ -330,7 +330,7 @@ add_path_b(set_t* out, const char* path, size_t len) {
   if(set_has(out, path, len))
     return 0;
 
-  set_insert(out, path, len);
+  set_add(out, path, len);
   return 1;
 }
 

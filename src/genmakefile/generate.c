@@ -221,7 +221,7 @@ generate_srcdir_compile_rules(
   sourcefile* src;
   target* rule = 0;
   MAP_PAIR_T t;
-  stralloc target, source, obj, defines;
+  stralloc target, source, srcpat, obj, defines;
   size_t len, tlen;
   strlist pptoks;
   const char* tok;
@@ -229,12 +229,12 @@ generate_srcdir_compile_rules(
 
   stralloc_init(&target);
   stralloc_init(&source);
+  stralloc_init(&srcpat);
   stralloc_init(&obj);
   stralloc_init(&defines);
   strlist_init(&pptoks, '\0');
 
   path_output("%", &target, exts.obj, psa);
-  stralloc_cats(&target, ": ");
   tlen = target.len;
 
   set_foreach(&srcdir->pptoks, it, tok, len) {
@@ -269,7 +269,7 @@ generate_srcdir_compile_rules(
     debug_str("Adding source", src->name);
 #endif
 
-    if(!is_source(src->name))
+    if(!is_source(src->name) || is_include(src->name))
       continue;
 
     target.len = tlen;
@@ -277,10 +277,23 @@ generate_srcdir_compile_rules(
     path_prefix_s(&sources_dir, src->name, &source, psm);
     path_wildcard(&source, "%");
     stralloc_replacec(&source, psm == '/' ? '\\' : '/', psm);
+    stralloc_zero(&srcpat);
+    stralloc_cats(&srcpat, src->name);
+    path_wildcard(&srcpat, "%");
+    stralloc_replacec(&srcpat, psm == '/' ? '\\' : '/', psm);
     stralloc_zero(&obj);
     path_output(src->name, &obj, exts.obj, psa);
 
-    if(str_start(tools.make, "g") || ((shell | batch) && batchmode)) {
+    bool is_gmake_pattern = str_start(tools.make, "g");
+
+    if(is_gmake_pattern) {
+      /* leave target as the bare "%.o" pattern -- the source path is
+       * recorded as a prerequisite below, not baked into the rule name.
+       * The rule_map lookup itself is keyed per source directory (see
+       * below) so multiple library directories don't collide on one
+       * shared "%.o" rule; only the printed name stays bare. */
+    } else if((shell | batch) && batchmode) {
+      stralloc_cats(&target, ": ");
       stralloc_cat(&target, &source);
     } else if(batchmode) {
       stralloc_zero(&target);
@@ -288,8 +301,27 @@ generate_srcdir_compile_rules(
     } else {
     }
 
-    if(!rule)
-      rule = rule_get_sa(&target);
+    if(!rule) {
+      if(is_gmake_pattern) {
+        stralloc key;
+
+        stralloc_init(&key);
+        stralloc_copy(&key, &target);
+        stralloc_catc(&key, '\1');
+        stralloc_cats(&key, dir);
+
+        rule = rule_get_sa(&key);
+
+        if(rule) {
+          free((void*)rule->name);
+          rule->name = str_ndup(target.s, target.len);
+        }
+
+        stralloc_free(&key);
+      } else {
+        rule = rule_get_sa(&target);
+      }
+    }
 
     if(rule) {
       size_t p, e;
@@ -303,7 +335,7 @@ generate_srcdir_compile_rules(
       }
 
       set_addsa(&rule->output, &obj);
-      add_srcpath(&rule->prereq, source.s, psm);
+      add_srcpath(&rule->prereq, srcpat.s, psm);
 
       if(rule->recipe.s)
         continue;
@@ -339,6 +371,7 @@ generate_srcdir_compile_rules(
   strlist_free(&pptoks);
   stralloc_free(&obj);
   stralloc_free(&source);
+  stralloc_free(&srcpat);
   stralloc_free(&target);
   stralloc_free(&defines);
 
@@ -463,11 +496,13 @@ generate_srcdir_lib_rule(
         if(pfile->name == NULL || !is_source(pfile->name))
           continue;
 
+        if(is_include(pfile->name)) continue;
+
         stralloc_zero(&sa);
 
-        if(vpath.sa.len)
+        /*if(vpath.sa.len)
           path_extension(pfile->name, &sa, exts.obj);
-        else
+        else*/
           path_output(pfile->name, &sa, exts.obj, psa);
 
         set_addsa(&rule->prereq, &sa);
@@ -639,7 +674,7 @@ generate_program_rule(const char* name, char psa, char psm, strarray* other_sour
   if((compile = rule_get_sa(&obj))) {
     add_source(&compile->prereq, name, psa);
     stralloc_weak(&compile->recipe, &commands.compile);
-    stralloc_zero(&compile->recipe);
+    //stralloc_zero(&compile->recipe);
 
 #ifdef DEBUG_OUTPUT
     buffer_putm_internal(debug_buf,

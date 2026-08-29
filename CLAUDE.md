@@ -28,6 +28,11 @@ Tests are off by default (`BUILD_TESTS` option). To enable, reconfigure with `-D
 
 **socket-intercept.c**: an `LD_PRELOAD` shim that intercepts libc socket/TLS calls per-thread (`thread_local` state throughout) to log traffic; not linked into the module system above.
 
+## Testing
+
+Do not run `tests/genmakefile/testsuite.sh` on your own initiative -- only when the user explicitly
+asks for it (it's slow, exercises real toolchains/build tools, and produces large scratch trees).
+
 ## TODO and BUGS files
 
 `TODO` and `BUGS` are plain text files in the repo root — the roadmap and known bugs,
